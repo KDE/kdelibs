@@ -49,35 +49,32 @@ CupsdNetworkPage::CupsdNetworkPage(QWidget *parent, const char *name)
 	keepalivetimeout_->setRange(0, 10000, 1, true);
 	keepalivetimeout_->setSteps(1, 10);
 	keepalivetimeout_->setSpecialValueText(i18n("Unlimited"));
+	keepalivetimeout_->setSuffix(i18n(" sec"));
+
 	maxclients_->setRange(1, 1000, 1, true);
 	maxclients_->setSteps(1, 10);
+
 	maxrequestsize_->setRange(0, 1000, 1, true);
 	maxrequestsize_->setSpecialValueText(i18n("Unlimited"));
 	maxrequestsize_->setSteps(1, 10);
+	maxrequestsize_->setSuffix(i18n("MB"));
+
+
 	clienttimeout_->setRange(0, 10000, 1, true);
 	clienttimeout_->setSteps(1, 10);
 	clienttimeout_->setSpecialValueText(i18n("Unlimited"));
+	clienttimeout_->setSuffix(i18n(" sec"));
 
 	hostnamelookup_->insertItem("Off");
 	hostnamelookup_->insertItem("On");
 	hostnamelookup_->insertItem("Double");
 
-
-	QFont	f(font());
-	f.setBold(true);
-	QLabel *l1 = new QLabel(i18n("Hostname Lookups:"), this);
-	QLabel *l2 = new QLabel(i18n("Keep-Alive Timeout (s):"), this);
-	QLabel *l3 = new QLabel(i18n("Max Clients:"), this);
-	QLabel *l4 = new QLabel(i18n("Max Request Size (Mb):"), this);
-	QLabel *l5 = new QLabel(i18n("Client Timeout (s):"), this);
-	QLabel *l6 = new QLabel(i18n("Listen To:"), this);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	l4->setFont(f);
-	l5->setFont(f);
-	l6->setFont(f);
-	keepalive_->setFont(f);
+	QLabel *l1 = new QLabel(i18n("Hostname lookups:"), this);
+	QLabel *l2 = new QLabel(i18n("Keep-alive timeout:"), this);
+	QLabel *l3 = new QLabel(i18n("Max clients:"), this);
+	QLabel *l4 = new QLabel(i18n("Max request size:"), this);
+	QLabel *l5 = new QLabel(i18n("Client timeout:"), this);
+	QLabel *l6 = new QLabel(i18n("Listen to:"), this);
 
 	QGridLayout	*m1 = new QGridLayout(this, 8, 2, 10, 7);
 	m1->setRowStretch(7, 1);

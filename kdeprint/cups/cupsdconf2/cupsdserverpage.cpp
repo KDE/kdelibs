@@ -80,22 +80,13 @@ CupsdServerPage::CupsdServerPage(QWidget *parent, const char *name)
 	printcapformat_->insertItem("BSD");
 	printcapformat_->insertItem("SOLARIS");
 
-	QFont	f(font());
-	f.setBold(true);
-	QLabel *l1 = new QLabel(i18n("Server Name:"), this);
-	QLabel *l2 = new QLabel(i18n("Server Administrator:"), this);
+	QLabel *l1 = new QLabel(i18n("Server name:"), this);
+	QLabel *l2 = new QLabel(i18n("Server administrator:"), this);
 	QLabel *l3 = new QLabel(i18n("Classification:"), this);
-	QLabel *l4 = new QLabel(i18n("Default Character Set:"), this);
-	QLabel *l5 = new QLabel(i18n("Default Language:"), this);
-	QLabel *l6 = new QLabel(i18n("Printcap File:"), this);
-	QLabel *l7 = new QLabel(i18n("Printcap Format:"), this);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	l4->setFont(f);
-	l5->setFont(f);
-	l6->setFont(f);
-	l7->setFont(f);
+	QLabel *l4 = new QLabel(i18n("Default character set:"), this);
+	QLabel *l5 = new QLabel(i18n("Default language:"), this);
+	QLabel *l6 = new QLabel(i18n("Printcap file:"), this);
+	QLabel *l7 = new QLabel(i18n("Printcap format:"), this);
 
 	connect(classification_, SIGNAL(activated(int)), SLOT(classChanged(int)));
 	classification_->setCurrentItem(0);

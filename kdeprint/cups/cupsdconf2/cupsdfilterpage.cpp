@@ -51,16 +51,10 @@ CupsdFilterPage::CupsdFilterPage(QWidget *parent, const char *name)
 	filterlimit_->setSpecialValueText(i18n("Unlimited"));
 	filterlimit_->setSteps(1, 10);
 
-	QFont	f(font());
-	f.setBold(true);
 	QLabel *l1 = new QLabel(i18n("User:"), this);
 	QLabel *l2 = new QLabel(i18n("Group:"), this);
-	QLabel *l3 = new QLabel(i18n("RIP Cache:"), this);
-	QLabel *l4 = new QLabel(i18n("Filter Limit:"), this);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	l4->setFont(f);
+	QLabel *l3 = new QLabel(i18n("RIP cache:"), this);
+	QLabel *l4 = new QLabel(i18n("Filter limit:"), this);
 
 	QGridLayout	*m1 = new QGridLayout(this, 5, 2, 10, 7);
 	m1->setRowStretch(4, 1);

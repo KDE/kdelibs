@@ -38,10 +38,6 @@ AddressDialog::AddressDialog(QWidget *parent, const char *name)
 
 	QLabel	*l1 = new QLabel(i18n("Type:"), w);
 	QLabel	*l2 = new QLabel(i18n("Address:"), w);
-	QFont	f(font());
-	f.setBold(true);
-	l1->setFont(f);
-	l2->setFont(f);
 
 	QGridLayout	*m1 = new QGridLayout(w, 2, 2, 0, 5);
 	m1->setColStretch(1, 1);

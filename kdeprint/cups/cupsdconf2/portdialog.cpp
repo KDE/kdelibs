@@ -40,13 +40,8 @@ PortDialog::PortDialog(QWidget *parent, const char *name)
 	port_->setValue(631);
 	usessl_ = new QCheckBox(i18n("Use SSL Encryption"), dummy);
 
-	QFont	f(font());
-	f.setBold(true);
 	QLabel	*l1 = new QLabel(i18n("Address:"), dummy);
 	QLabel	*l2 = new QLabel(i18n("Port:"), dummy);
-	l1->setFont(f);
-	l2->setFont(f);
-	usessl_->setFont(f);
 
 	QVBoxLayout	*m1 = new QVBoxLayout(dummy, 0, 10);
 	QGridLayout	*m2 = new QGridLayout(0, 3, 2, 0, 5);

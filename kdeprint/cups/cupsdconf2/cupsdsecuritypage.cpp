@@ -46,18 +46,11 @@ CupsdSecurityPage::CupsdSecurityPage(QWidget *parent, const char *name)
 	encryptkey_ = new QDirLineEdit(true, this);
 	locations_ = new EditList(this);
 
-	QFont	f(font());
-	f.setBold(true);
-	QLabel *l1 = new QLabel(i18n("Remote Root User:"), this);
-	QLabel *l2 = new QLabel(i18n("System Group:"), this);
-	QLabel *l3 = new QLabel(i18n("Encryption Certificate:"), this);
-	QLabel *l4 = new QLabel(i18n("Encryption Key:"), this);
+	QLabel *l1 = new QLabel(i18n("Remote root user:"), this);
+	QLabel *l2 = new QLabel(i18n("System group:"), this);
+	QLabel *l3 = new QLabel(i18n("Encryption certificate:"), this);
+	QLabel *l4 = new QLabel(i18n("Encryption key:"), this);
 	QLabel *l5 = new QLabel(i18n("Locations:"), this);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	l4->setFont(f);
-	l5->setFont(f);
 
 	QGridLayout	*m1 = new QGridLayout(this, 6, 2, 10, 7);
 	m1->setRowStretch(5, 1);

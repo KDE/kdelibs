@@ -58,24 +58,17 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent, const char *name)
 	browseport_->setSteps(1, 5);
 	browseinterval_->setRange(0, 10000, 1, true);
 	browseinterval_->setSteps(1, 10);
+	browseinterval_->setSuffix(i18n(" sec"));
 	browsetimeout_->setRange(0, 10000, 1, true);
 	browsetimeout_->setSteps(1, 10);
+	browsetimeout_->setSuffix(i18n(" sec"));
 
-	QFont	f(font());
-	f.setBold(true);
-	QLabel *l1 = new QLabel(i18n("Browse Port:"), this);
-	QLabel *l2 = new QLabel(i18n("Browse Interval (s):"), this);
-	QLabel *l3 = new QLabel(i18n("Browse Timeout (s):"), this);
-	QLabel *l4 = new QLabel(i18n("Browse Addresses:"), this);
-	QLabel *l5 = new QLabel(i18n("Browse Order:"), this);
-	QLabel *l6 = new QLabel(i18n("Browse Options:"), this);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	l4->setFont(f);
-	l5->setFont(f);
-	l6->setFont(f);
-	browsing_->setFont(f);
+	QLabel *l1 = new QLabel(i18n("Browse port:"), this);
+	QLabel *l2 = new QLabel(i18n("Browse interval:"), this);
+	QLabel *l3 = new QLabel(i18n("Browse timeout:"), this);
+	QLabel *l4 = new QLabel(i18n("Browse addresses:"), this);
+	QLabel *l5 = new QLabel(i18n("Browse order:"), this);
+	QLabel *l6 = new QLabel(i18n("Browse options:"), this);
 
 	QGridLayout	*m1 = new QGridLayout(this, 8, 2, 10, 7);
 	m1->setRowStretch(7, 1);
@@ -115,6 +108,14 @@ CupsdBrowsingPage::CupsdBrowsingPage(QWidget *parent, const char *name)
 	connect(browsing_, SIGNAL(toggled(bool)), useanyclasses_, SLOT(setEnabled(bool)));
 	connect(browsing_, SIGNAL(toggled(bool)), hideimplicitmembers_, SLOT(setEnabled(bool)));
 	connect(browsing_, SIGNAL(toggled(bool)), useshortnames_, SLOT(setEnabled(bool)));
+
+	connect(browsing_, SIGNAL(toggled(bool)), l1, SLOT(setEnabled(bool)));
+	connect(browsing_, SIGNAL(toggled(bool)), l2, SLOT(setEnabled(bool)));
+	connect(browsing_, SIGNAL(toggled(bool)), l3, SLOT(setEnabled(bool)));
+	connect(browsing_, SIGNAL(toggled(bool)), l4, SLOT(setEnabled(bool)));
+	connect(browsing_, SIGNAL(toggled(bool)), l5, SLOT(setEnabled(bool)));
+	connect(browsing_, SIGNAL(toggled(bool)), l6, SLOT(setEnabled(bool)));
+
 	connect(browseaddresses_, SIGNAL(add()), SLOT(slotAdd()));
 	connect(browseaddresses_, SIGNAL(edit(int)), SLOT(slotEdit(int)));
 	connect(browseaddresses_, SIGNAL(defaultList()), SLOT(slotDefaultList()));

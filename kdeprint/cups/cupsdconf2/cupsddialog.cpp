@@ -134,7 +134,13 @@ CupsdDialog::~CupsdDialog()
 
 void CupsdDialog::addConfPage(CupsdPage *page)
 {
-	QVBox	*box = addVBoxPage(page->pageLabel(), page->header(), DesktopIcon(page->pixmap()));
+	QPixmap icon = KGlobal::instance()->iconLoader()->loadIcon(
+	                                                           page->pixmap(),
+                                                                   KIcon::NoGroup,
+                                                                   KIcon::SizeMedium
+	                                                          );
+
+	QVBox	*box = addVBoxPage(page->pageLabel(), page->header(), icon);
 	page->reparent(box, QPoint(0,0));
 	pagelist_.append(page);
 }

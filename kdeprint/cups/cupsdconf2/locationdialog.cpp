@@ -77,16 +77,6 @@ LocationDialog::LocationDialog(QWidget *parent, const char *name)
 	QLabel	*l6 = new QLabel(i18n("Satisfy:"), dummy);
 	QLabel	*l7 = new QLabel(i18n("ACL Order:"), dummy);
 	QLabel	*l8 = new QLabel(i18n("ACL Addresses:"),dummy);
-	QFont	f(font());
-	f.setBold(true);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	l4->setFont(f);
-	l5->setFont(f);
-	l6->setFont(f);
-	l7->setFont(f);
-	l8->setFont(f);
 
 	QGridLayout	*m1 = new QGridLayout(dummy, 8, 2, 0, 5);
 	m1->setColStretch(1, 1);

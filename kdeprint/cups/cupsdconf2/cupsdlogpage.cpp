@@ -44,7 +44,7 @@ CupsdLogPage::CupsdLogPage(QWidget *parent, const char *name)
 	loglevel_ = new QComboBox(this);
 
 	loglevel_->insertItem(i18n("Detailed Debugging"));
-	loglevel_->insertItem(i18n("Debug information"));
+	loglevel_->insertItem(i18n("Debug Information"));
 	loglevel_->insertItem(i18n("General Information"));
 	loglevel_->insertItem(i18n("Warnings"));
 	loglevel_->insertItem(i18n("Errors"));
@@ -53,19 +53,13 @@ CupsdLogPage::CupsdLogPage(QWidget *parent, const char *name)
 	maxlogsize_->setRange(0, 100, 1, true);
 	maxlogsize_->setSteps(1, 5);
 	maxlogsize_->setSpecialValueText(i18n("Unlimited"));
+	maxlogsize_->setSuffix(i18n("MB"));
 
-	QFont	f(font());
-	f.setBold(true);
-	QLabel *l1 = new QLabel(i18n("Access Log:"), this);
-	QLabel *l2 = new QLabel(i18n("Error Log:"), this);
-	QLabel *l3 = new QLabel(i18n("Page Log:"), this);
-	QLabel *l4 = new QLabel(i18n("Max Log Size (Mb):"), this);
-	QLabel *l5 = new QLabel(i18n("Log Level:"), this);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	l4->setFont(f);
-	l5->setFont(f);
+	QLabel *l1 = new QLabel(i18n("Access log:"), this);
+	QLabel *l2 = new QLabel(i18n("Error log:"), this);
+	QLabel *l3 = new QLabel(i18n("Page log:"), this);
+	QLabel *l4 = new QLabel(i18n("Max log size:"), this);
+	QLabel *l5 = new QLabel(i18n("Log level:"), this);
 
 	loglevel_->setCurrentItem(2);
 

@@ -52,17 +52,9 @@ CupsdJobsPage::CupsdJobsPage(QWidget *parent, const char *name)
 	maxjobsperuser_->setSpecialValueText(i18n("Unlimited"));
 	maxjobsperuser_->setSteps(1, 10);
 
-	QFont	f(font());
-	f.setBold(true);
-	QLabel *l1 = new QLabel(i18n("Max Jobs:"), this);
-	QLabel *l2 = new QLabel(i18n("Max Jobs Per Printer:"), this);
-	QLabel *l3 = new QLabel(i18n("Max Jobs Per User:"), this);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	keepjobhistory_->setFont(f);
-	keepjobfiles_->setFont(f);
-	autopurgejobs_->setFont(f);
+	QLabel *l1 = new QLabel(i18n("Max jobs:"), this);
+	QLabel *l2 = new QLabel(i18n("Max jobs per printer:"), this);
+	QLabel *l3 = new QLabel(i18n("Max jobs per user:"), this);
 
 	QGridLayout	*m1 = new QGridLayout(this, 7, 2, 10, 7);
 	m1->setRowStretch(6, 1);

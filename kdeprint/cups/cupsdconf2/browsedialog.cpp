@@ -44,14 +44,9 @@ BrowseDialog::BrowseDialog(QWidget *parent, const char *name)
 	type_->insertItem(i18n("Relay"));
 	type_->insertItem(i18n("Poll"));
 
-	QFont	f(font());
-	f.setBold(true);
 	QLabel	*l1 = new QLabel(i18n("Type:"), dummy);
 	QLabel	*l2 = new QLabel(i18n("From:"), dummy);
 	QLabel	*l3 = new QLabel(i18n("To:"), dummy);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
 
 	QGridLayout	*m1 = new QGridLayout(dummy, 3, 2, 0, 5);
 	m1->addWidget(l1, 0, 0, Qt::AlignRight);

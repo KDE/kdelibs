@@ -43,22 +43,13 @@ CupsdDirPage::CupsdDirPage(QWidget *parent, const char *name)
 	serverfiles_ = new QDirLineEdit(false, this);
 	tmpfiles_ = new QDirLineEdit(false, this);
 
-	QFont	f(font());
-	f.setBold(true);
-	QLabel *l1 = new QLabel(i18n("Data Directory:"), this);
-	QLabel *l2 = new QLabel(i18n("Document Directory:"), this);
-	QLabel *l3 = new QLabel(i18n("Font Path:"), this);
-	QLabel *l4 = new QLabel(i18n("Request Directory:"), this);
-	QLabel *l5 = new QLabel(i18n("Server Binaries:"), this);
-	QLabel *l6 = new QLabel(i18n("Server Files:"), this);
-	QLabel *l7 = new QLabel(i18n("Temporary Files:"), this);
-	l1->setFont(f);
-	l2->setFont(f);
-	l3->setFont(f);
-	l4->setFont(f);
-	l5->setFont(f);
-	l6->setFont(f);
-	l7->setFont(f);
+	QLabel *l1 = new QLabel(i18n("Data directory:"), this);
+	QLabel *l2 = new QLabel(i18n("Document directory:"), this);
+	QLabel *l3 = new QLabel(i18n("Font path:"), this);
+	QLabel *l4 = new QLabel(i18n("Request directory:"), this);
+	QLabel *l5 = new QLabel(i18n("Server binaries:"), this);
+	QLabel *l6 = new QLabel(i18n("Server files:"), this);
+	QLabel *l7 = new QLabel(i18n("Temporary files:"), this);
 
 	QGridLayout	*m1 = new QGridLayout(this, 8, 2, 10, 7);
 	m1->setRowStretch(7, 1);
