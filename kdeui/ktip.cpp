@@ -32,6 +32,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <kapplication.h>
 #include <kglobal.h>
+#include <kglobalsettings.h>
 #include <klocale.h>
 #include <kconfig.h>
 #include <kstandarddirs.h>
@@ -156,7 +157,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
   QLabel *titlePane = new QLabel(this);
   titlePane->setBackgroundPixmap(locate("data", "kdeui/pics/ktip-background.png"));
   titlePane->setText(i18n("Did you know...?\n"));
-  titlePane->setFont(QFont("helvetica", 20, QFont::Bold));
+  titlePane->setFont(QFont(KGlobalSettings::generalFont().family(), 20,  QFont::Bold));
   titlePane->setAlignment(QLabel::AlignCenter);
   hbox->addWidget(titlePane,100);
 
