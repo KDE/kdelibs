@@ -1292,7 +1292,7 @@ QImage& KImageEffect::flatten(QImage &img, const QColor &ca,
     sb = ((float) b2 - b1) / (ncols - 1);
 
     for (int i=0; i<ncols; i++)
-	pal[i] = QColor(r1 + sr*i, g1 + sg*i, b1 + sb*i);
+	pal[i] = QColor(r1 + int(sr*i), g1 + int(sg*i), b1 + int(sb*i));
 	
     dither(img, pal, ncols);
 
