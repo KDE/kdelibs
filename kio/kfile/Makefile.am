@@ -51,7 +51,8 @@ libkfile_la_SOURCES = \
 	kurlbar.cpp kmetaprops.cpp\
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
-	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.ui knotifydialog.cpp
+	kfilemetainfowidget.cpp kcustommenueditor.cpp knotifywidgetbase.cpp \
+	knotifydialog.cpp
 
 EXTRA_DIST = NOTES
 
