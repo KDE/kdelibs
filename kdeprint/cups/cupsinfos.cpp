@@ -21,6 +21,7 @@
 
 #include "cupsinfos.h"
 #include "kmfactory.h"
+#include "kmtimer.h"
 
 #include <kio/passdlg.h>
 #include <klocale.h>
@@ -88,16 +89,18 @@ const char* CupsInfos::getPasswordCB()
 	else
 	{
 		QString	msg = i18n("<p>The access to the requested resource on the CUPS server running on <b>%1</b> (port <b>%2</b>) requires a password.</p>").arg(host_).arg(port_);
+		bool ok(false);;
 		KIO::PasswordDialog	dlg(msg,login_);
 		count_++;
+		KMTimer::blockTimer();
 		if (dlg.exec())
 		{
 			setLogin(dlg.username());
 			setPassword(dlg.password());
-			return password_.latin1();
+			ok = true;
 		}
-		else
-			return NULL;
+		KMTimer::releaseTimer(false);
+		return (ok ? password_.latin1() : NULL);
 	}
 	return NULL;
 }
