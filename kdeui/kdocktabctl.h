@@ -83,7 +83,6 @@ struct KDockTabCtl_PrivateStruct
  * methods like insert, remove, activate for tab widgets.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class EXPORT_DOCKCLASS KDockTabBar : public QWidget
 {
@@ -322,7 +321,6 @@ private:
  * Minor importance for application programmers who uses the dockwidget class set.
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class EXPORT_DOCKCLASS KDockTabBarPainter : public QWidget
 {
@@ -386,7 +384,6 @@ protected:
  * For some reasons it's more practical for the Dockwidget class set than @ref QTabBar or @ref KTabBar .
  *
  * @author Max Judin (documentation: Falk Brettschneider).
- * @version $Id$
  */
 class EXPORT_DOCKCLASS KDockTabCtl : public QWidget
 {

@@ -88,7 +88,6 @@ private:
  * @internal
  *
  * @author Max Judin.
- * @version $Id$
 */
 class KDockButton_Private : public QPushButton
 {
