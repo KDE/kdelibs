@@ -43,21 +43,23 @@
  * are needed and/or useful.
  *
  * KComboBox emits a few more additional signals than @ref QComboBox, the
- * main one being the @ref comepltion signal.  This signal can be connected
- * to a slot that will assist the user in filling out the remaining text.  Both
- * @ref returnPressed signals are emitted when the user presses return and are
- * only available whenthe widget is editable. The clicked and pressed signals
- * are necessary to allow the list box to be closed on a single-click event.
- * Otherwise, the listbox items are only selected by double-clicking.  See
- * @ref clicked, @ref pressed and @ref setSelectedItem for detials.
+ * main ones being the @ref comepltion and the @ref rotation signal.  The
+ * completion signal is intended to be connected to a slot that will assist
+ * the user in filling out the remaining text. While the rotation signals,
+ * both @ref rotateUp and @ref rotateDown, are intended to be used to transverse
+ * through some kind of list in opposing directions.  The @ref returnPressed
+ * signals are emitted when the user presses the return key and the reamining
+ * signals, @ref clicked and @ref pressed are emitted to allow the list box
+ * to be closed on a single mouse click event. Otherwise, the listbox items
+ * are only selectable through a double-click.  See @ref clicked, @ref pressed
+ * and @ref setSelectedItem for detials.
  *
- * The default key-binding for completion is determined from the global
- * setting in @ref KStdAccel.  However, this value can be set locally to
- * override the global setting.  Simply invoking @see useGlobalSettings then
+ * The default key-binding for completion and rotation is determined from the
+ * global settings in @ref KStdAccel.  However, these values can be set locally to
+ * override the global settings.  Simply invoking @see useGlobalSettings then
  * allows you to immediately default the bindings back to the global settings
- * again.  You can also default the key-binding by simply invoking the
- * @ref setCompletionKey method without any argumet.  This will then force the
- * key-event filter to use the global value.
+ * again.  You can also default the key-bindings by simply invoking the @ref setXXXKey
+ * method without any argumet.
  *
  * @sect A small example:
  *
@@ -66,7 +68,7 @@
  * <pre>
  * KComboBox *combo = new KComboBox( true, this, "mywidget" );
  *
- * combo->enableCompletion(); // enables completion
+ * combo->enableCompletion(); // enables completion and automatically deletes that object at the end.
  *
  * combo->autoHighLightItem(); // highlights items in the list box on mouse over
  *
@@ -75,13 +77,13 @@
  * // Connect to the return pressed signal - optional
  * connect( combo, SIGNAL( returnPressed( const QString& ) ), combo->completionObject(), SLOT( addItem( const QString& ) );
  *
- * // Connect to either clicked or pressed signal to the setSelectedItem slot to
- * // close combo-box on single-clicks.
+ * // Connect either clicked or pressed signal to the setSelectedItem slot to
+ * // close combo-box on single-clicks.  Otherwise, it requires a double-click.
  * connect( combo, SIGNAL( clicked( int ) ), combo, SLOT( setSelectedItem( int ) ) );
  * </pre>
  *
- * To use a customized completion object such as KURLCompletion
- * use setCompletionObject instead :
+ * To use a customized completion objects derived from KCompletion simply
+ * use setCompletionObject to create the completion object instead :
  *
  * <pre>
  * KComboBox *combo = new KComboBox( this,"mywidget" );
@@ -110,12 +112,16 @@ public:
     /**
     * Constructs a combo box widget with a parent object
     * and a name.
+    *
+    *
     */
     KComboBox( QWidget *parent=0, const char *name=0 );
 
     /**
     * Constructs a combo box widget in "select-only" or "read-write"
     * mode with a parent, a name and a context menu.
+    *
+    *
     *
     */
     KComboBox( bool rw, QWidget *parent=0, const char *name=0,
