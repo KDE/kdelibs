@@ -46,9 +46,7 @@ class RenderTableSection;
 class RenderTableRow;
 class RenderTableCell;
 class RenderTableCol;
-class RenderTableCaption;
-    class TableLayout;
-
+class TableLayout;
 
 class RenderTable : public RenderFlow
 {
@@ -167,7 +165,7 @@ protected:
     friend class AutoTableLayout;
     friend class FixedTableLayout;
 
-    RenderTableCaption *tCaption;
+    RenderFlow         *tCaption;
     RenderTableSection *head;
     RenderTableSection *foot;
     RenderTableSection *firstBody;
@@ -391,17 +389,6 @@ public:
 
 protected:
     short _span;
-};
-
-// -------------------------------------------------------------------------
-
-class RenderTableCaption : public RenderFlow
-{
-public:
-    RenderTableCaption(DOM::NodeImpl*);
-    ~RenderTableCaption();
-
-    virtual const char *renderName() const { return "RenderTableCaption"; }
 };
 
 };

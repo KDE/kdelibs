@@ -115,7 +115,7 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     switch(child->style()->display())
     {
     case TABLE_CAPTION:
-        tCaption = static_cast<RenderTableCaption *>(child);
+        tCaption = static_cast<RenderFlow *>(child);
         break;
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
@@ -396,6 +396,9 @@ void RenderTable::calcMinMaxWidth()
 
     tableLayout->calcMinMaxWidth();
 
+    if (tCaption && tCaption->minWidth() > m_minWidth)
+        m_minWidth = tCaption->minWidth();
+
     setMinMaxKnown();
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << " END: (Table " << this << ")::calcMinMaxWidth() min = " << m_minWidth << " max = " << m_maxWidth <<  endl;
@@ -540,7 +543,8 @@ void RenderTable::recalcSections()
 	switch(child->style()->display()) {
 	case TABLE_CAPTION:
 	    if ( !tCaption)
-		tCaption = static_cast<RenderTableCaption *>(child);
+		tCaption = static_cast<RenderFlow*>(child);
+            tCaption->setLayouted(false);
 	    break;
 	case TABLE_COLUMN:
 	case TABLE_COLUMN_GROUP:
@@ -1530,17 +1534,6 @@ void RenderTableCol::dump(QTextStream *stream, QString ind) const
     RenderContainer::dump(stream,ind);
 }
 #endif
-
-// -------------------------------------------------------------------------
-
-RenderTableCaption::RenderTableCaption(DOM::NodeImpl* node)
-  : RenderFlow(node)
-{
-}
-
-RenderTableCaption::~RenderTableCaption()
-{
-}
 
 #undef TABLE_DEBUG
 #undef DEBUG_LAYOUT

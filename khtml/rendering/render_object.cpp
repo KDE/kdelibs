@@ -46,6 +46,7 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
         break;
     case INLINE:
     case BLOCK:
+    case TABLE_CAPTION:
         o = new RenderFlow(node);
         break;
     case LIST_ITEM:
@@ -75,9 +76,6 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
         break;
     case TABLE_CELL:
         o = new RenderTableCell(node);
-        break;
-    case TABLE_CAPTION:
-        o = new RenderTableCaption(node);
         break;
     }
     if(o) o->setStyle(style);
