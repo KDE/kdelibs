@@ -71,7 +71,7 @@ public:
 	int write(void *buffer, int size);
 };
 
-REGISTER_AUDIO_IO(AudioIOOSS,"oss");
+REGISTER_AUDIO_IO(AudioIOOSS,"oss","Open Sound System");
 };
 
 using namespace std;

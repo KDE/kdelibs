@@ -65,7 +65,11 @@ public:
 		lastError = 201,	/* the last error message as human readable text */
 
 /* string parameters that -can- be supported */
-		deviceName = 301	/* name of the device to open */
+		deviceName = 301,	/* name of the device to open */
+
+/* class parameters: same semantics as above */
+		name = 1201,		/* name of the driver (i.e. oss) */
+		fullName = 1202		/* full name (i.e. Open Sound System) */
 	};
 
 	enum {
@@ -87,6 +91,11 @@ public:
 	virtual int read(void *buffer, int size) = 0;
 	virtual int write(void *buffer, int size) = 0;
 
+/* ---- factory querying stuff ---- */
+	static int queryAudioIOCount();
+	static int queryAudioIOParam(int audioIO, AudioParam param);
+	static const char *queryAudioIOParamStr(int audioIO, AudioParam param);
+
 /* ---- factory stuff ---- */
 	static AudioIO *createAudioIO(const char *name);
 	static void addFactory(AudioIOFactory *factory);
@@ -103,15 +112,17 @@ public:
 	void shutdown();
 	virtual AudioIO *createAudioIO() = 0;
 	virtual const char *name() = 0;
+	virtual const char *fullName() = 0;
 };
 
 };
 
-#define REGISTER_AUDIO_IO(impl,implName)					\
+#define REGISTER_AUDIO_IO(impl,implName,implFullName)			\
 	static class AudioIOFactory ## impl : AudioIOFactory {	\
 	public:													\
 		AudioIO *createAudioIO() { return new impl(); }		\
 		virtual const char *name() { return implName; }		\
+		virtual const char *fullName() { return implFullName; }	\
 	} The_ ## impl ## _Factory /* <- add semicolon when calling this macro */
 
 #endif /* ARTS_AUDIOIO_H */

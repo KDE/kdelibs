@@ -29,6 +29,7 @@
 #include <stdio.h>
 #include "soundserver.h"
 #include "audiosubsys.h"
+#include "audioio.h"
 #include "synthschedule.h"
 #include "tcpserver.h"
 #include "cpuusage.h"
@@ -68,9 +69,25 @@ static void exitUsage(const char *progname)
 	fprintf(stderr,"\n");
 	fprintf(stderr,"misc options:\n");
 	fprintf(stderr,"-h                  display this help and exit\n");
+	fprintf(stderr,"-A                  list possible audio i/o methods (for -a)\n");
 	fprintf(stderr,"-l <level>          information level\n");
 	fprintf(stderr,"  3: quiet, 2: warnings, 1: info, 0: debug\n");
 	exit(1);	
+}
+
+static void exitListAudioIO()
+{
+	fprintf(stderr,"possible choices for the audio i/o method:\n");
+	fprintf(stderr,"\n");
+
+	for(int i = 0; i < AudioIO::queryAudioIOCount(); i++)
+	{
+		fprintf(stderr, "  %-10s%s\n",
+			AudioIO::queryAudioIOParamStr(i, AudioIO::name),
+			AudioIO::queryAudioIOParamStr(i, AudioIO::fullName));
+	}
+	fprintf(stderr,"\n");
+	exit(0);	
 }
 
 static Dispatcher::StartServer	cfgServers		= Dispatcher::startUnixServer;
@@ -83,10 +100,12 @@ static bool  					cfgFullDuplex	= 0;
 static const char			   *cfgDeviceName   = 0;
 static const char              *cfgAudioIO      = 0;
 
+static bool						cmdListAudioIO  = false;
+
 static void handleArgs(int argc, char **argv)
 {
 	int optch;
-	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:")) > 0)
+	while((optch = getopt(argc,argv,"r:p:nuF:S:hD:dl:a:A")) > 0)
 	{
 		switch(optch)
 		{
@@ -108,6 +127,8 @@ static void handleArgs(int argc, char **argv)
 			case 'l': cfgDebugLevel = atoi(optarg);
 				break;
 			case 'u': cfgServers = static_cast<Dispatcher::StartServer>( cfgServers | Dispatcher::noAuthentication);
+				break;
+			case 'A': cmdListAudioIO = true;
 				break;
 			case 'h':
 			default:
@@ -187,6 +208,9 @@ int main(int argc, char **argv)
 	Dispatcher	dispatcher(0,cfgServers);
 
 	initSignals();
+
+	/* execute commands, if any */
+	if(cmdListAudioIO)	 exitListAudioIO();
 
 	/* apply configuration */
 	if(cfgAudioIO)       AudioSubSystem::the()->audioIO(cfgAudioIO);

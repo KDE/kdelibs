@@ -65,7 +65,7 @@ public:
 	int write(void *buffer, int size);
 };
 
-REGISTER_AUDIO_IO(AudioIONull,"null");
+REGISTER_AUDIO_IO(AudioIONull,"null","No audio input/output");
 };
 
 using namespace std;

@@ -87,7 +87,7 @@ public:
 	int write(void *buffer, int size);
 };
 
-REGISTER_AUDIO_IO(AudioIOALSA,"alsa");
+REGISTER_AUDIO_IO(AudioIOALSA,"alsa","Advanced Linux Sound Architecture");
 };
 
 using namespace std;

@@ -93,6 +93,34 @@ AudioIO *AudioIO::createAudioIO(const char *name)
 	return 0;
 }
 
+int AudioIO::queryAudioIOCount()
+{
+	return audioIOFactories->size();
+}
+
+int AudioIO::queryAudioIOParam(int /*audioIO*/, AudioParam /*p*/)
+{
+	return 0;
+}
+
+const char *AudioIO::queryAudioIOParamStr(int audioIO, AudioParam p)
+{
+	list<AudioIOFactory *>::iterator i = audioIOFactories->begin();
+
+	while(audioIO && i != audioIOFactories->end()) { i++; audioIO--; }
+	if(i == audioIOFactories->end()) return 0;
+	
+	switch(p)
+	{
+		case name:	
+			return (*i)->name();
+		case fullName:
+			return (*i)->fullName();
+		default:
+			return 0;
+	}
+}
+
 void AudioIO::addFactory(AudioIOFactory *factory)
 {
 	if(!audioIOFactories)
