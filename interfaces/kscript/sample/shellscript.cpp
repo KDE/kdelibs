@@ -48,6 +48,7 @@ QString ShellScript::script() const
 {
 //	return m_script;
 	kdDebug() << "return script path" << endl;
+	return QString::null;
 }
 
 void ShellScript::setScript( const QString &scriptFile  )
