@@ -29,9 +29,10 @@
 #include <qradiobutton.h>
 
 #include <kcursor.h>
-#include <klocale.h>
-#include <kiconloader.h>
+#include <kdebug.h>
 #include <kdialog.h>
+#include <kiconloader.h>
+#include <klocale.h>
 
 // Some ID's
 #define ORIENT_PORTRAIT_ID	0
@@ -317,6 +318,32 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 
 	if (driver())
 	{
+		value = opts["media"];
+		QStringList	l = QStringList::split(',',value,false);
+		for(QStringList::ConstIterator it = l.begin(); it != l.end(); ++it)
+		{
+			value = *it;
+			DrBase	*ch;
+			if ((ch = ((DrListOption*)driver()->findOption("PageSize"))->findChoice(value)))
+			{
+				if (m_pagesize->isEnabled())
+					setComboItem(m_pagesize, ch->get("text"));
+			}
+			else if ((ch = ((DrListOption*)driver()->findOption("MediaType"))->findChoice(value)))
+			{
+				if (m_papertype->isEnabled())
+					setComboItem(m_papertype, ch->get("text"));
+			}
+			else if ((ch = ((DrListOption*)driver()->findOption("InputSlot"))->findChoice(value)))
+			{
+				if (m_inputslot)
+					setComboItem(m_inputslot, ch->get("text"));
+			}
+			else
+			{
+				kdWarning() << "media option '" << value << "' not handled." << endl;
+			}
+		}
 		value = opts["PageSize"];
 		if (m_pagesize->isEnabled() && !value.isEmpty())
 		{
@@ -354,12 +381,19 @@ void KPGeneralPage::setOptions(const QMap<QString,QString>& opts)
 		{
 			int	index(-1);
 			QStringList	l = QStringList::split(',',value,false);
-			if (l.count() > 0 && (index=findOption(default_size,DEFAULT_SIZE,l[0])) >= 0)
-				m_pagesize->setCurrentItem(index);
-			if (l.count() > 1 && (index=findOption(default_type,DEFAULT_TYPE,l[1])) >= 0)
-				m_papertype->setCurrentItem(index);
-			if (l.count() > 2 && (index=findOption(default_source,DEFAULT_SOURCE,l[2])) >= 0)
-				m_inputslot->setCurrentItem(index);
+			for(QStringList::ConstIterator it = l.begin(); it != l.end(); ++it)
+			{
+				value = *it;
+
+				if ((index=findOption(default_size,DEFAULT_SIZE,value)) >= 0)
+					m_pagesize->setCurrentItem(index);
+				else if ((index=findOption(default_type,DEFAULT_TYPE,value)) >= 0)
+					m_papertype->setCurrentItem(index);
+				else if ((index=findOption(default_source,DEFAULT_SOURCE,value)) >= 0)
+					m_inputslot->setCurrentItem(index);
+				else
+					kdWarning() << "media option '" << value << "' not handled." << endl;
+			}		
 		}
 
 		// Try to find "sides" option
