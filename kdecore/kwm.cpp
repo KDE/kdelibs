@@ -354,6 +354,87 @@ int KWM::currentDesktop(){
   return (int) result;
 }
 
+
+
+void KWM::raiseSoundEvent(const QString &event){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KDE_SOUND_EVENT", False);
+
+  XEvent ev;
+  int status;
+  long mask;
+  memset(&ev, 0, sizeof(ev));
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = qt_xrootwin();
+  ev.xclient.message_type = a;
+  ev.xclient.format = 8;
+
+  int i;
+  const char* s = event.data();
+  for (i=0;i<19 && s[i];i++)
+    ev.xclient.data.b[i]=s[i];
+  
+  mask = SubstructureRedirectMask; 
+
+  status = XSendEvent(qt_xdisplay(),
+		      qt_xrootwin(),
+		      False, mask, &ev);
+  XFlush(qt_xdisplay());
+}
+
+void KWM::registerSoundEvent(const QString &event){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KDE_REGISTER_SOUND_EVENT", False);
+
+  XEvent ev;
+  int status;
+  long mask;
+  memset(&ev, 0, sizeof(ev));
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = qt_xrootwin();
+  ev.xclient.message_type = a;
+  ev.xclient.format = 8;
+
+  int i;
+  const char* s = event.data();
+  for (i=0;i<19 && s[i];i++)
+    ev.xclient.data.b[i]=s[i];
+  
+  mask = SubstructureRedirectMask; 
+
+  status = XSendEvent(qt_xdisplay(),
+		      qt_xrootwin(),
+		      False, mask, &ev);
+}
+
+void KWM::unregisterSoundEvent(const QString &event){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KDE_UNREGISTER_SOUND_EVENT", False);
+
+  XEvent ev;
+  int status;
+  long mask;
+  memset(&ev, 0, sizeof(ev));
+  ev.xclient.type = ClientMessage;
+  ev.xclient.window = qt_xrootwin();
+  ev.xclient.message_type = a;
+  ev.xclient.format = 8;
+
+  int i;
+  const char* s = event.data();
+  for (i=0;i<19 && s[i];i++)
+    ev.xclient.data.b[i]=s[i];
+  
+  mask = SubstructureRedirectMask; 
+
+  status = XSendEvent(qt_xdisplay(),
+		      qt_xrootwin(),
+		      False, mask, &ev);
+}
+
 void KWM::setKWMModule(Window w){
   static Atom a = 0;
   if (!a)

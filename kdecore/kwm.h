@@ -271,6 +271,20 @@ public:
   static int currentDesktop();
 
 
+
+  /**
+    * Raise/register/unregister sound events. The number of character in 
+    * the event name is limited to 20.
+    *
+    Note: May have no effect with other window mangers
+    */
+  static void raiseSoundEvent(const QString &event);
+  static void registerSoundEvent(const QString &event);
+  static void unregisterSoundEvent(const QString &event);
+
+
+
+
   /**
    *************************************************************************
    *
@@ -298,6 +312,10 @@ public:
    * KWM_MODULE_WIN_RAISE        - raise and lower allow a module (for example
    * KWM_MODULE_WIN_LOWER          a pager) to keep the stacking order
    * KWM_MODULE_WIN_ACTIVATE     - new active (focus) window
+   *
+   * KDE_SOUND_EVENT             - a sound event
+   * KDE_REGISTER_SOUND_EVENT    - registration of a new sound event
+   * KDE_UNREGISTER_SOUND_EVENT  - remove a registration 
    *
    * Please check out the KWMModuleApplication class which gives you easy
    * access to all these messages via Qt signals and slots. It also keeps
