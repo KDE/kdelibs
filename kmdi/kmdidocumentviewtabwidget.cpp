@@ -2,7 +2,7 @@
 #include "kmdidocumentviewtabwidget.h"
 
 KMdiDocumentViewTabWidget::KMdiDocumentViewTabWidget(QWidget* parent, const char* name):KTabWidget(parent,name) {
-	m_visibility = KMdi::NeverShowTabs;
+	m_visibility = KMdi::ShowWhenMoreThanOneTab;
 	tabBar()->hide();
 	setHoverCloseButton(true);
         connect(this, SIGNAL(closeRequest(QWidget*)), this, SLOT(closeTab(QWidget*)));
