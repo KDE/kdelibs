@@ -21,6 +21,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ******************************************************************/
 
+#include <qptrlist.h>
+
 #include "kpanelapplet.h"
 #include "kpanelapplet.moc"
 #include <kapplication.h>
@@ -29,10 +31,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 class KPanelApplet::KPanelAppletPrivate
 {
 public:
-  KPanelAppletPrivate() : customMenu(0) {}
+  KPanelAppletPrivate()
+    : customMenu(0),
+      hasFocus(false)
+      {}
 
   const QPopupMenu* customMenu;
   KSharedConfig::Ptr sharedConfig;
+  QPtrList<QObject> watchedForFocus;
+  bool hasFocus;
 };
 
 KPanelApplet::KPanelApplet(const QString& configFile, Type type,
@@ -126,6 +133,57 @@ const QPopupMenu* KPanelApplet::customMenu() const
 void KPanelApplet::setCustomMenu(const QPopupMenu* menu)
 {
     d->customMenu = menu;
+}
+
+void KPanelApplet::watchForFocus(QWidget* widget, bool watch)
+{
+    if (!widget)
+    {
+        return;
+    }
+
+    if (watch)
+    {
+        if (d->watchedForFocus.find(widget) == -1)
+        {
+            d->watchedForFocus.append(widget);
+            widget->installEventFilter(this);
+        }
+    }
+    else if (d->watchedForFocus.find(widget) != -1)
+    {
+        d->watchedForFocus.remove(widget);
+        widget->removeEventFilter(this);
+    }
+}
+
+void KPanelApplet::needsFocus(bool focus)
+{
+    if (focus == d->hasFocus)
+    {
+        return;
+    }
+
+    d->hasFocus = focus;
+    emit requestFocus(focus);
+}
+
+bool KPanelApplet::eventFilter(QObject *o, QEvent * e)
+{
+    if (d->watchedForFocus.find(o) != -1)
+    {
+        if (e->type() == QEvent::MouseButtonRelease ||
+                e->type() == QEvent::FocusIn)
+        {
+            needsFocus(true);
+        }
+        else if (e->type() == QEvent::FocusOut)
+        {
+            needsFocus(false);
+        }
+    }
+
+    return QFrame::eventFilter(o, e);
 }
 
 KSharedConfig::Ptr KPanelApplet::sharedConfig() const

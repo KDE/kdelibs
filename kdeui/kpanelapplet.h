@@ -245,8 +245,20 @@ signals:
 
     /**
      * Request keyboard focus from the panel.
+     * @deprecated
      **/
     void requestFocus();
+
+    /**
+     * Request keyboard focus from the panel. Applets should never call this directly
+     * but rather call needsFocus(bool)
+     * @see needsFocus
+     * @param focus activate the window and ensure the panel remains visible when true
+     * Each and ever time a requestFocus(true) is emitted, it MUST be paired eventually
+     * with a requestFocus(false) otherwise the panel may end up never hiding
+     * @since 3.4
+     **/
+    void requestFocus(bool focus);
 
 protected:
 
@@ -326,6 +338,22 @@ protected:
     void setCustomMenu(const QPopupMenu*);
 
     /**
+     * Register widgets that can receive keyboard focus with this this method
+     * This call results in an eventFilter being places on the widget.
+     * @param widget the widget to watch for keyboard focus
+     * @since 3.4
+     */
+    void watchForFocus(QWidget* widget, bool watch = true);
+
+    /**
+     * Call this whenever focus is needed or not needed. You do not have to call this method
+     * for widgets that have been registered with watchForFocus
+     * @param focus whether to or not to request focus
+     * @since 3.4
+     */
+    void needsFocus(bool focus);
+
+    /**
      * The orientation changed to @p orientation. Reimplement this
      * change handler in order to adjust the look of your applet.
      *
@@ -335,14 +363,10 @@ protected:
     virtual KDE_DEPRECATED void orientationChange( Orientation /* orientation*/) {}
 
     /**
-     * You may need this if you want to popup menus at the right position.
-     *
-     * See popupDirectionChange()
-     *
-     * @deprecated Use position() instead.
+     * A convenience method that translates the position of the applet into which
+     * direction to show a popup.
      **/
-    // FIXME: Remove for KDE 4
-    Direction popupDirection() KDE_DEPRECATED;
+    Direction popupDirection();
 
     /**
      * The popup direction changed to @p direction. Reimplement this
@@ -352,6 +376,8 @@ protected:
      **/
     // FIXME: Remove for KDE 4
     virtual KDE_DEPRECATED void popupDirectionChange( Direction /*direction*/ ) {}
+
+    bool eventFilter(QObject *, QEvent *);
 
 private:
     Type         _type;
