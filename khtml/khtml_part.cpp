@@ -324,21 +324,22 @@ KJSProxy *KHTMLPart::jScript()
     QString module = KGlobal::dirs()->findResource("lib", "kjs_html.la");
     if(module.isNull())
     {
-      fprintf(stderr, "didn't find kjs module\n");
+      kdError(300) << "didn't find kjscript module" << endl;
       return 0;
     }
     // try to obtain a handle on the module
     lt_dlhandle handle = lt_dlopen(module.ascii());
     if(!handle)
     {
-      fprintf(stderr, "error loading kjs module: %s\n", lt_dlerror());
+
+      kdError(300) << "error loading jscript module: " << lt_dlerror() << endl;
       return 0;
     }
     // look for plain C init function
     lt_ptr_t sym = lt_dlsym(handle, "kjs_html_init");
     if (lt_dlerror() != 0L)
     {
-      fprintf(stderr, "error finding init symbol: %s\n", lt_dlerror());
+      kdError(300) << "error finding init symbol: " << lt_dlerror() << endl;
       return 0;
     }
 
@@ -435,12 +436,12 @@ DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 
 void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 {
-  kDebugInfo(1202, "slotData: %d", data.size() );
+  kDebugInfo(300, "slotData: %d", data.size() );
 
   // The first data ?
   if ( !d->m_workingURL.isEmpty() )
   {
-    kDebugInfo(1202, "begin!" );
+    kDebugInfo(300, "begin!" );
     d->m_bParsing = true;
 
     begin( d->m_workingURL, d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
@@ -462,7 +463,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
     // TODO: what else ?
     return;
   }
-  kDebugInfo(1202, "slotFinished" );
+  kDebugInfo(300, "slotFinished" );
 
   d->m_workingURL = KURL();
 
@@ -470,7 +471,7 @@ void KHTMLPart::slotFinished( KIO::Job * job )
 
   if ( d->m_bParsing )
   {
-    kDebugInfo( 1202, "end()" );
+    kDebugInfo( 300, "end()" );
     end(); //will emit completed()
   }
 }
