@@ -183,24 +183,48 @@ VFolderMenu::takeSubMenu(SubMenu *parentMenu, const QString &menuName)
 }
 
 void
-VFolderMenu::mergeMenu(SubMenu *menu1, SubMenu *menu2)
+VFolderMenu::mergeMenu(SubMenu *menu1, SubMenu *menu2, bool reversePriority)
 {
-    // Merge newMenu with menu.
-   includeItems(&(menu1->items), &(menu2->items));
+   if (reversePriority)
+   {
+      // Merge menu1 with menu2, menu1 takes precedent
+      excludeItems(&(menu2->items), &(menu1->excludeItems));
+      includeItems(&(menu1->items), &(menu2->items));
+      excludeItems(&(menu2->excludeItems), &(menu1->items));
+      includeItems(&(menu1->excludeItems), &(menu2->excludeItems));
+   }
+   else
+   {
+      // Merge menu1 with menu2, menu2 takes precedent
+      excludeItems(&(menu1->items), &(menu2->excludeItems));
+      includeItems(&(menu1->items), &(menu2->items));
+      includeItems(&(menu1->excludeItems), &(menu2->excludeItems));
+      menu1->isDeleted = menu2->isDeleted;
+   }
    for(; menu2->subMenus.first(); )
    {
       SubMenu *subMenu = menu2->subMenus.take();
-      insertSubMenu(menu1, subMenu->name, subMenu);
+      insertSubMenu(menu1, subMenu->name, subMenu, reversePriority);
    }
 
-   if (!menu2->directoryFile.isEmpty())
-      menu1->directoryFile = menu2->directoryFile;
+   if (reversePriority)
+   {
+      // Merge menu1 with menu2, menu1 takes precedent
+      if (menu1->directoryFile.isEmpty())
+         menu1->directoryFile = menu2->directoryFile;
+   }
+   else
+   {
+      // Merge menu1 with menu2, menu2 takes precedent
+      if (!menu2->directoryFile.isEmpty())
+         menu1->directoryFile = menu2->directoryFile;
+   }
 
    delete menu2;
 }
 
 void 
-VFolderMenu::insertSubMenu(SubMenu *parentMenu, const QString &menuName, SubMenu *newMenu)
+VFolderMenu::insertSubMenu(SubMenu *parentMenu, const QString &menuName, SubMenu *newMenu, bool reversePriority)
 {
    int i = menuName.find('/');
    
@@ -214,12 +238,12 @@ VFolderMenu::insertSubMenu(SubMenu *parentMenu, const QString &menuName, SubMenu
       {
          if (i == -1)
          {
-            mergeMenu(menu, newMenu);
+            mergeMenu(menu, newMenu, reversePriority);
             return;
          }
          else
          {
-            insertSubMenu(menu, s2, newMenu);
+            insertSubMenu(menu, s2, newMenu, reversePriority);
             return;
          }
       }
@@ -1089,6 +1113,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
       QString tmp = locateDirectoryFile(directoryFile);
       if (! tmp.isEmpty())
          m_currentMenu->directoryFile = tmp;
+      m_currentMenu->isDeleted = isDeleted;
    }
    else
    {
@@ -1199,6 +1224,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
                items.clear();
                processCondition(e2, &items);
                includeItems(&(m_currentMenu->items), &items);
+               excludeItems(&(m_currentMenu->excludeItems), &items);
                n2 = n2.nextSibling();
             }
          }
@@ -1213,6 +1239,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
                items.clear();
                processCondition(e2, &items);
                excludeItems(&(m_currentMenu->items), &items);
+               includeItems(&(m_currentMenu->excludeItems), &items);
                n2 = n2.nextSibling();
             }
          }
@@ -1228,7 +1255,11 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
       {
          processMenu(e, pass);
       }
-      else if (((pass == 1) && !onlyUnallocated) || ((pass == 2) && onlyUnallocated))
+// We insert legacy dir in pass 0, this way the order in the .menu-file determines
+// which .directory file gets used, but the menu-entries of legacy-menus will always 
+// have the lowest priority.
+//      else if (((pass == 1) && !onlyUnallocated) || ((pass == 2) && onlyUnallocated))
+      else if (pass == 0)
       {
          if (e.tagName() == "LegacyDir")
          {
@@ -1279,7 +1310,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
               SubMenu *menu = takeSubMenu(m_currentMenu, orig);
               if (menu)
               {
-                insertSubMenu(m_currentMenu, dest, menu);
+                insertSubMenu(m_currentMenu, dest, menu, true); // Destination has priority
               } 
             }
          }

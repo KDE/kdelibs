@@ -61,7 +61,7 @@ public:
    * Add new menu @p menuName defined by @p file
    * When @p entry is non-null it is re-used, otherwise a new group is created.
    */
-  void addNew( const QString &menuName, const QString& file, KServiceGroup *entry);
+  void addNew( const QString &menuName, const QString& file, KServiceGroup *entry, bool isDeleted);
 
   /**
    * Add a new menu entry

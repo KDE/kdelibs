@@ -370,7 +370,7 @@ bool KBuildSycoca::build()
              
      VFolderMenu::SubMenu *kdeMenu = g_vfolder->parseMenu("applications.menu", true);
 
-     g_bsgf->addNew("/", kdeMenu->directoryFile, 0);
+     g_bsgf->addNew("/", kdeMenu->directoryFile, 0, false);
      createMenu(QString::null, kdeMenu);
      
      (void) existingResourceDirs();
@@ -419,7 +419,7 @@ void KBuildSycoca::createMenu(QString name, VFolderMenu::SubMenu *menu)
      }
      g_ctimeInfo->addCTime(directoryFile, timeStamp);
 
-     g_bsgf->addNew(subName, subMenu->directoryFile, entry);
+     g_bsgf->addNew(subName, subMenu->directoryFile, entry, subMenu->isDeleted);
      createMenu(subName, subMenu);
   }
   if (name.isEmpty())
@@ -446,7 +446,7 @@ void KBuildSycoca::recreate()
 
   m_str = database.dataStream();
 
-  kdDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSYCOCA_VERSION << ")" << endl;
+  kdDebug(7021) << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")" << endl;
 
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
@@ -508,7 +508,7 @@ void KBuildSycoca::save()
    // Write header (#pass 1)
    m_str->device()->at(0);
 
-   (*m_str) << (Q_INT32) KSYCOCA_VERSION;
+   (*m_str) << (Q_INT32) KSycoca::version();
    KSycocaFactory * servicetypeFactory = 0L;
    KSycocaFactory * serviceFactory = 0L;
    for(KSycocaFactory *factory = m_lstFactories->first();
@@ -549,7 +549,7 @@ void KBuildSycoca::save()
    // Write header (#pass 2)
    m_str->device()->at(0);
 
-   (*m_str) << (Q_INT32) KSYCOCA_VERSION;
+   (*m_str) << (Q_INT32) KSycoca::version();
    for(KSycocaFactory *factory = m_lstFactories->first();
        factory;
        factory = m_lstFactories->next())

@@ -284,4 +284,5 @@
 		</Menu>
 	</Menu>
 	<DefaultMergeDirs/>
+	<MergeFile>applications-kmenuedit.menu</MergeFile>
 </Menu>

@@ -64,7 +64,7 @@ signals:
 public:
   class SubMenu {
   public:
-     SubMenu() : items(43) { }
+     SubMenu() : items(43),isDeleted(false) { }
      ~SubMenu() { subMenus.setAutoDelete(true); }
   
   public:
@@ -72,6 +72,8 @@ public:
      QString directoryFile;
      QPtrList<SubMenu> subMenus;
      QDict<KService> items;
+     QDict<KService> excludeItems; // Needed when merging due to Move.
+     bool isDeleted;
   };
 
 public:  
@@ -197,13 +199,19 @@ private:
    * Insert the menu newMenu with name menuName into the parentMenu.
    * If such menu already exist the result is merged, if any additional
    * submenus are required they are created.
+   * If reversePriority is false, newMenu has priority over the existing 
+   * menu during merging.
+   * If reversePriority is true, the existing menu has priority over newMenu
+   * during merging.
    */
-  void insertSubMenu(VFolderMenu::SubMenu *parentMenu, const QString &menuName, VFolderMenu::SubMenu *newMenu);
+  void insertSubMenu(VFolderMenu::SubMenu *parentMenu, const QString &menuName, VFolderMenu::SubMenu *newMenu, bool reversePriority=false);
 
   /**
    * Merge menu2 and it's submenus into menu1 and it's submenus
+   * If reversePriority is false, menu2 has priority over menu1
+   * If reversePriority is true, menu1 has priority over menu2
    */
-  void mergeMenu(SubMenu *menu1, SubMenu *menu2);
+  void mergeMenu(SubMenu *menu1, SubMenu *menu2, bool reversePriority=false);
 
   /**
    * Inserts service into the menu using name relative to parentMenu

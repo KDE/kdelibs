@@ -72,7 +72,7 @@ void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, KService
 }
 
 void
-KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file, KServiceGroup *entry)
+KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file, KServiceGroup *entry, bool isDeleted)
 {
   KSycocaEntry::Ptr *ptr = m_entryDict->find(menuName);
   if (ptr)
@@ -108,7 +108,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
      }
      else
      {
-        if (!entry->isDeleted())
+        if (!isDeleted && !entry->isDeleted())
            parentEntry->addEntry( entry );
      }
   }
