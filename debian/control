@@ -1,5 +1,5 @@
 Source: kdelibs
-Build-Depends: debhelper (>> 3.0.0), automake, flex, bison, gettext, libqt-dev (>= 2:2.3.0-3), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev | libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libsasl-dev, libcupsys2-dev | cupsys-dev
+Build-Depends: debhelper (>> 3.0.0), automake, flex, bison, gettext, libqt-dev (>= 2:2.3.0-3), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound2-dev, docbook, libbz2-dev, libpcre3-dev, libsasl-dev, libcupsys2-dev | cupsys-dev
 Build-Depends-Indep: kdoc, qt-doc
 Section: libs
 Priority: optional
@@ -11,7 +11,7 @@ Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdebase (<< 4:2.2-alpha1), konqueror (<< 4:2.2-alpha1)
 Depends: ${shlibs:Depends}
-Recommends: libarts | libarts-alsa, libkmid | libkmid-alsa, kdelibs3-cups
+Recommends: libarts, libkmid, kdelibs3-cups
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
 Conflicts: kdebase (<< 4:2.2-alpha1), konqueror (<< 4:2.2-alpha1)
 Description: KDE core libraries (runtime files)
@@ -23,6 +23,7 @@ Architecture: any
 Section: libs
 Replaces: kdelibs3 (<< 4:2.2-alpha1-2)
 Depends: ${shlibs:Depends}, kdebase-libs
+Enhances: kdebase
 Conflicts: kdelibs3 (<< 4:2.2-alpha1-1)
 Description: KDE print system (CUPS support)
  This package contains the KDE printer bits which use CUPS. 
@@ -33,6 +34,7 @@ Section: libs
 Replaces: libarts-alsa
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
+Enhances: kdebase
 Conflicts: suidmanager (<< 0.50), libarts-alsa, kdelibs3 (<< 4:2.1-final-0)
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
@@ -48,6 +50,7 @@ Architecture: any
 Section: libs
 Replaces: libkmid-alsa, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
 Depends: ${shlibs:Depends}
+Enhances: kdebase
 Conflicts: libkmid-alsa
 Description: aRts Sound system (midi/kmedia support libraries)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
@@ -64,6 +67,7 @@ Architecture: any
 Section: libs
 Replaces: libkmid, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
 Depends: ${shlibs:Depends}
+Enhances: kdebase
 Provides: libkmid
 Description: aRts Sound system (midi/kmedia support libraries with alsa)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
@@ -81,6 +85,7 @@ Section: libs
 Replaces: libarts
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
+Enhances: kdebase
 Conflicts: suidmanager (<< 0.50)
 Provides: libarts
 Description: aRts Sound system
@@ -128,7 +133,7 @@ Section: devel
 Replaces: kdelibs2g-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
 Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt-dev (>= 2:2.3.0-3), kdelibs3-cups (= ${Source-Version}), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev, libsasl-dev
 Conflicts: kdelibs2g-dev, kdelibs3 (<< 4:2.2-alpha1-2), kdelibs3-dev
-Suggests: kdelibs3-doc, kdoc, libasound2-dev | libasound1-dev, automake, autoconf, libtool
+Suggests: kdelibs3-doc, kdoc, libasound2-dev, automake, autoconf, libtool
 Description: KDE core libraries (development files)
  KDE core libraries.
  You need these files to compile kde applications.
