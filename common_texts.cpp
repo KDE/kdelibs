@@ -125,11 +125,10 @@ i18n( "Layout");
 i18n( "Highscore");
 i18n( "&New View");
 i18n( "&Insert");
-// the following are out of kwizard.h, but it
-// seems, xgettext ignores them
-i18n( "&Next >>");
-i18n( "<< &Previous");
-
+// (Rikkus) Removed << and >> for next and previous and put '+ " >>"' in
+// kwizard.h - fixes translation ?
+i18n( "&Next");
+i18n( "&Previous");
 i18n( "Replace");
 i18n( "Insert");
 i18n( "Default");
