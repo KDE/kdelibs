@@ -266,10 +266,23 @@ void DownloadDialog::slotResult(KIO::Job *job)
   m_data[job] = "";
 }
 
+int DownloadDialog::installStatus(Entry *entry)
+{
+  QDate date;
+  int installed;
+ 
+  kapp->config()->setGroup("KNewStuffStatus");
+  date = QDate::fromString(kapp->config()->readEntry(entry->name()));
+  if(!date.isValid()) installed = 0;
+  else if(date < entry->releaseDate()) installed = -1;
+  else installed = 1;
+
+  return installed;
+}
+
 void DownloadDialog::addEntry(Entry *entry)
 {
   QPixmap pix;
-  QDate date;
   int installed;
 
   /*if(m_engine)
@@ -283,11 +296,7 @@ void DownloadDialog::addEntry(Entry *entry)
       slotPage(m_frame);
     }
   }*/
-  kapp->config()->setGroup("KNewStuffStatus");
-  date = QDate::fromString(kapp->config()->readEntry(entry->name()));
-  if(!date.isValid()) installed = 0;
-  else if(date < entry->releaseDate()) installed = -1;
-  else installed = 1;
+  installed = installStatus(entry);
 
   if(installed > 0) pix = KGlobal::iconLoader()->loadIcon("ok", KIcon::Small);
   else if(installed < 0) pix = KGlobal::iconLoader()->loadIcon("history", KIcon::Small);
@@ -362,8 +371,8 @@ void DownloadDialog::slotInstall()
 
   if(m_engine)
   {
-    install(e);
     m_engine->download(e);
+    install(e);
   }
   else
   {
@@ -392,6 +401,11 @@ void DownloadDialog::install(Entry *e)
   if(m_entryitem) m_entryitem->setPixmap(0, pix);
   m_entryitem = lv_l->findItem(m_entryname, 0);
   if(m_entryitem) m_entryitem->setPixmap(0, pix);
+
+ 
+  QPushButton *de, *in;
+  in = *(m_buttons[m_page]->at(0));
+  if(in) in->setEnabled(false);
 }
 
 void DownloadDialog::slotInstalled(KIO::Job *job)
@@ -429,7 +443,9 @@ void DownloadDialog::slotTab(int tab)
 void DownloadDialog::slotSelected()
 {
   QString tmp;
+  bool enabled;
   Entry *e = getEntry();
+
   if(e)
   {
     if(!e->preview().isValid())
@@ -443,6 +459,15 @@ void DownloadDialog::slotSelected()
       m_rt->setText(QString("<b>%1</b><br>%2<br>%3<br><br><img src='%4'><br><i>%5</i><br>(%6)").arg(
         e->name()).arg(e->author()).arg(e->releaseDate().toString()).arg(tmp).arg(e->summary()).arg(e->license()));
     }
+    
+    if(installStatus(e) == 1) enabled = false;
+    else enabled = true;
+
+    QPushButton *de, *in;
+    in = *(m_buttons[m_page]->at(0));
+    de = *(m_buttons[m_page]->at(1));
+    if(in) in->setEnabled(enabled);
+    if(de) de->setEnabled(true);
   }
 }
 
@@ -452,12 +477,6 @@ Entry *DownloadDialog::getEntry()
   else if(m_curtab == 1) m_entryitem = lv_d->currentItem();
   else if(m_curtab == 2) m_entryitem = lv_l->currentItem();
   else return 0;
-
-  QPushButton *de, *in;
-  in = *(m_buttons[m_page]->at(0));
-  de = *(m_buttons[m_page]->at(1));
-  if(in) in->setEnabled(true);
-  if(de) de->setEnabled(true);
 
   m_entryname = m_entryitem->text(0);
 

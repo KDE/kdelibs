@@ -153,6 +153,7 @@ class DownloadDialog : public KDialogBase
     Entry *getEntry();
     void loadProvider(Provider *p);
     void install(Entry *e);
+    int installStatus(Entry *e);
 
     ProviderLoader *m_loader;
     QString m_entryname;
