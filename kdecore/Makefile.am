@@ -65,7 +65,7 @@ ckey.h : convert_key.c
 
 install-data-local: charsets.config 
 	$(mkinstalldirs) $(kde_confdir)
-	$(INSTALL_DATA) charsets.config $(kde_confdir)/charsets   
+	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets   
 
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
