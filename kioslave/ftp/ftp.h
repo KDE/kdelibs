@@ -49,6 +49,73 @@ struct FtpEntry
 
 class Ftp : public KIO
 {
+public:
+  enum Mode { READ = 1, WRITE = 2, OVERWRITE = 4 };
+
+  Ftp();
+  virtual ~Ftp();
+
+  bool ftpConnect( KURL& _url );
+  /**
+   * The counterpart to @ref #ftpConnect
+   * Does nothing if persistent connections are on
+   * except if @p really is true.
+   */
+  void ftpDisconnect( bool really = false );
+
+  bool isConnected() { return m_bLoggedOn; }
+
+  bool ftpOpenDir( KURL& _url );
+  bool ftpCloseDir();
+  /**
+   * Get information about a file or directory, from its URL
+   * @param _url full URL
+   * @param bFullDetails if true, a complete FtpEntry is returned.
+   * If false, the functions returns as soon as it knows whether it's
+   * a file or a directory. Don't use the other fields in this case !
+   * This is because getting the full details, on a directory, is a long
+   * operation (involves listing the parent dir). For a file, it's fast, though.
+   * Assumes we are connected. Use @ref #stat if not.
+   */
+  FtpEntry* ftpStat( const KURL& _url, bool bFullDetails );
+
+  bool ftpOpen( KURL& _url, Mode mode, unsigned long offset = 0 );
+  bool ftpClose();
+  bool ftpPort();
+
+  bool ftpRmdir( const char *path );
+  bool ftpMkdir( const char *path );
+  bool ftpDelete( const char *fnm );
+  bool ftpRename( const char *src, const char *dst );
+  bool ftpChmod( const char *path, int mode );
+
+  // this will send "rest offset" , use it before ftpOpen()
+  bool ftpResume( unsigned long offset );
+
+  bool opendir( KURL& _url );
+  FtpEntry *readdir();
+  bool closedir();
+
+  /**
+   * Like ftpStat, but connects first
+   */
+  FtpEntry* stat( KURL& _url, bool bFullDetails );
+
+  bool open( KURL& _url, Mode mode );
+  bool close();
+  size_t size();
+  size_t read( void *buffer, long len );
+  size_t write( void *buffer, long len );
+  bool atEOF();
+
+  bool mkdir( KURL& _url );
+
+  int error() { return m_error; }
+  QString errorText() { return m_errorText; }
+
+protected:
+  virtual void redirection( const char* /* _url */ ) { }
+
 private:
   /**
    * Connected to the socket from which we read a directory listing.
@@ -128,7 +195,6 @@ private:
 
   bool ftpChdir( const char *path );
   bool ftpSize( const char *path, char mode );
-//   FtpEntry* ftpStat( const char *_path );
 
   /**
    * Runs a command on the ftp server like "list" or "retr". In contrast to
@@ -163,59 +229,6 @@ private:
 
   FtpEntry* ftpParseDir( char* _info );
 
-protected:
-  virtual void redirection( const char* /* _url */ ) { }
-
-public:
-  enum Mode { READ = 1, WRITE = 2, OVERWRITE = 4 };
-
-  Ftp();
-  virtual ~Ftp();
-
-  bool ftpConnect( KURL& _url );
-  /**
-   * The counterpart to @ref #ftpConnect
-   * Does nothing if persistent connections are on
-   * except if @p really is true.
-   */
-  void ftpDisconnect( bool really = false );
-
-  bool isConnected() { return m_bLoggedOn; }
-
-  bool ftpOpenDir( KURL& _url );
-  bool ftpCloseDir();
-  FtpEntry* ftpStat( const KURL& _url );
-
-  bool ftpOpen( KURL& _url, Mode mode, unsigned long offset = 0 );
-  bool ftpClose();
-  bool ftpPort();
-
-  bool ftpRmdir( const char *path );
-  bool ftpMkdir( const char *path );
-  bool ftpDelete( const char *fnm );
-  bool ftpRename( const char *src, const char *dst );
-  bool ftpChmod( const char *path, int mode );
-
-  // this will send "rest offset" , use it before ftpOpen()
-  bool ftpResume( unsigned long offset );
-
-  bool opendir( KURL& _url );
-  FtpEntry *readdir();
-  bool closedir();
-
-  FtpEntry* stat( KURL& _url );
-
-  bool open( KURL& _url, Mode mode );
-  bool close();
-  size_t size();
-  size_t read( void *buffer, long len );
-  size_t write( void *buffer, long len );
-  bool atEOF();
-
-  bool mkdir( KURL& _url );
-
-  int error() { return m_error; }
-  QString errorText() { return m_errorText; }
 };
 
 #endif

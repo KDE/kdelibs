@@ -92,7 +92,7 @@ void FtpProtocol::slotMkdir( const char *_url, int _mode )
 	return;
       }
 
-  FtpEntry* e = ftp.ftpStat( usrc );
+  FtpEntry* e = ftp.ftpStat( usrc, false );
 
   if ( !e  ) {
     if ( !ftp.ftpMkdir( usrc.path() ) ) {
@@ -431,7 +431,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
 	    m = (RenameDlg_Mode)(M_MULTI | M_SKIP | M_OVERWRITE ); */
 	  RenameDlg_Mode m = (RenameDlg_Mode)( M_MULTI | M_SKIP | M_OVERWRITE );
 	  QString tmp2 = udest.url(), n;
-	  bool sn = (*dit).m_mtime >= ftp.ftpStat( usrc )->date;
+	  bool sn = (*dit).m_mtime >= ftp.ftpStat( usrc, true )->date;
 
 	  RenameDlg_Result r = open_RenameDlg( (*dit).m_strAbsSource.path(), tmp2,
 					       m, sn, n );
@@ -642,7 +642,7 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
 	    }
 
 	    QString tmp2 = ud.url();
-	    bool sn = (*dit).m_mtime >= ftp.ftpStat( usrc )->date;
+	    bool sn = (*dit).m_mtime >= ftp.ftpStat( usrc, true )->date;
 	    r = open_RenameDlg( (*fit).m_strAbsSource.path(), tmp2, m, sn, n );
 	  }
 
@@ -805,6 +805,9 @@ void FtpProtocol::doCopy( QStringList& _source, const char *_dest,
 
 void FtpProtocol::slotGet( const char *_url )
 {
+
+  kDebugInfo( 7102, "slotGet( %s )", _url );
+
   KURL usrc( _url );
   if ( usrc.isMalformed() ) {
     error( ERR_MALFORMED_URL, strdup(_url) );
@@ -825,13 +828,14 @@ void FtpProtocol::slotGet( const char *_url )
     return;
   }
 
-  FtpEntry *e = ftp.ftpStat( usrc );
+  FtpEntry *e = ftp.ftpStat( usrc, true );
   if ( !e ) {
     error( ERR_DOES_NOT_EXIST, strdup(_url) );
     m_cmd = CMD_NONE;
     return;
   }
 
+  // Why is this connected ? (David)
 /*  if ( S_ISDIR( e->type ) ) {
     error( ERR_IS_DIRECTORY, strdup(_url) );
     m_cmd = CMD_NONE;
@@ -982,7 +986,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
 
   FtpEntry* e;
 
-  if ( ( e = ftp.ftpStat( udest_orig ) ) ) { // original file exists
+  if ( ( e = ftp.ftpStat( udest_orig, true ) ) ) { // original file exists
     if ( e->size == 0 ) {  // delete files with zero size
       ftp.ftpDelete( udest_orig.path() );
     } else if ( !_overwrite && !_resume ) {
@@ -998,7 +1002,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
     } else if ( m_bMarkPartial ) { // when using mark partial, append .part extension
       ftp.ftpRename( udest_orig.path(), udest_part.path() );
     }
-  } else if ( ( e = ftp.ftpStat( udest_part ) ) ) { // file with extension .part exists
+  } else if ( ( e = ftp.ftpStat( udest_part, true ) ) ) { // file with extension .part exists
     if ( e->size == 0 ) {  // delete files with zero size
       ftp.ftpDelete( udest_part.path() );
     } else if ( !_overwrite && !_resume ) {
@@ -1065,7 +1069,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   ftp.ftpClose(); // check order !!!
   ftp.ftpDisconnect( true );
 
-  if ( (e = ftp.ftpStat( udest )) ) {
+  if ( (e = ftp.ftpStat( udest, true )) ) {
     if ( e->size == _size ) {
       // after full download rename the file back to original name
       if ( m_bMarkPartial ) {
@@ -1262,9 +1266,10 @@ long FtpProtocol::listRecursive( const KURL & url, QValueList<Copy>&
 
   kDebugInfo( 7102, "########## RECURSIVE LISTING %s", url.url().ascii() );
 
-  FtpEntry* e = ftp.ftpStat( url );
+  FtpEntry* e = ftp.ftpStat( url, true );
   if ( !e )  {
     error( ERR_DOES_NOT_EXIST, url.url());
+    kDebugInfo( 7102, "ftpStat FAILED !" );
     return -1;
   }
 
@@ -1523,7 +1528,7 @@ void FtpProtocol::slotTestDir( const char *_url )
   }
   kDebugInfo( 7102, "=============== slotTestDir ==============" );
   FtpEntry* e;
-  if ( !( e = ftp.stat( usrc ) ) ) {
+  if ( !( e = ftp.stat( usrc, false ) ) ) {
     kDebugInfo( 7102, " =========== ERROR ========" );
     error( ERR_DOES_NOT_EXIST, strdup(_url) );
     m_cmd = CMD_NONE;

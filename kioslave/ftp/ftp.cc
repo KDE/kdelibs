@@ -651,30 +651,7 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
     return false;
   }
 
-  QCString tmp;
-
-  // Special hack for the list command. We try to change to this
-  // directory first to see whether it really is a directory.
-  if ( strcmp( _command, "list" ) == 0 )
-  {
-    tmp = "cwd ";
-    tmp += ( _path ) ? _path : "/";
-
-    if ( !ftpSendCmd( tmp.data(), '2' ) )
-    {
-      if ( !m_error && rspbuf[0] == '5' )
-      {
-	m_error = ERR_IS_FILE;
-	m_errorText = _path;
-      }
-      else if ( !m_error )
-      {
-        m_error = ERR_DOES_NOT_EXIST;
-	m_errorText = _path;
-      }
-      return false;
-    }
-  } else if ( _offset > 0 ) {
+  if ( _offset > 0 ) {
     // send rest command if offset > 0, this applies to retr and stor commands
     char buf[100];
     sprintf(buf, "rest %ld", _offset);
@@ -688,12 +665,9 @@ bool Ftp::ftpOpenCommand( const char *_command, const char *_path, char _mode, u
     }
   }
 
-  tmp = _command;
+  QCString tmp = _command;
 
-  // only add path if it's not a list command
-  // we are changing into this directory anyway, so it's enough just to send "list"
-  // and this also works for symlinks
-  if ( _path != 0L && strcmp( _command, "list" )) {
+  if ( _path != 0L ) {
     tmp += " ";
     tmp += _path;
   }
@@ -841,7 +815,7 @@ bool Ftp::ftpChmod( const char *src, int mode )
 }
 
 
-FtpEntry* Ftp::stat( KURL& _url )
+FtpEntry* Ftp::stat( KURL& _url, bool bFullDetails )
 {
   QString redirect;
 
@@ -854,7 +828,7 @@ FtpEntry* Ftp::stat( KURL& _url )
     url.setPath( redirect );
   }
 
-  FtpEntry* e = ftpStat( _url );
+  FtpEntry* e = ftpStat( _url, bFullDetails );
 
   ftpDisconnect();
 
@@ -862,12 +836,12 @@ FtpEntry* Ftp::stat( KURL& _url )
 }
 
 
-FtpEntry* Ftp::ftpStat( const KURL& _url )
+FtpEntry* Ftp::ftpStat( const KURL& _url, bool bFullDetails )
 {
   static FtpEntry fe;
   m_error = 0;
 
-  kDebugInfo( 7102, "ftpStat : %s", _url.url().ascii());
+  kDebugInfo( 7102, "ftpStat : %s (full details : %d)", _url.url().ascii(), bFullDetails);
 
   QString path = _url.path();
   if ( path.isEmpty() || path == "/" ) {
@@ -884,7 +858,9 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
 
   // Argument to the list command (defaults to the directory containing the file)
   QString listarg = _url.directory();
+  QString search = _url.filename();
 
+  fe.type = S_IFDIR;
   // Try cwd into it, if it works it's a dir (and then we'll use dir in the parent directory)
   // if it doesn't work, it's a file (and then we'll use dir filename)
   QString tmp = "cwd " + path;
@@ -893,7 +869,9 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
       if ( !m_error && rspbuf[0] == '5' )
       {
         // It is a file, use the name in the list command
-        listarg = path;
+        listarg = _url.path();
+        search = _url.path();
+        fe.type = S_IFREG;
       }
       else if ( !m_error )
       {
@@ -901,6 +879,8 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
         return 0L;
       }
     }
+  // No more details required, return now
+  if (!bFullDetails) return &fe;
 
   if( !ftpOpenCommand( "list", listarg, 'A' ) ) {
     kDebugError( 7102, "COULD NOT LIST");
@@ -913,19 +893,18 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
 
   kDebugInfo( 7102, "Starting of list was ok");
 
-  QString search = _url.filename();
   assert( search != "" && search != "/" );
 
   bool found = false;
   FtpEntry *e;
-  while( ( e = readdir() ) ) //&& !found ) !!! fix - when not at and, don't read any response
+  while( ( e = readdir() ) )
   {
     if ( m_error ) {
       kDebugError( 7102, "FAILED: Read %d %s", m_error, errorText().ascii());
       return 0L;
     }
 
-    if ( search == e->name ) {
+    if ( !found && ( search == e->name ) ) {
       found = true;
       fe = *e;
     }
@@ -939,6 +918,7 @@ FtpEntry* Ftp::ftpStat( const KURL& _url )
   if ( !found )
     return 0L;
 
+  kDebugInfo( 7102, "ftpStat : finished successfully" );
   return &fe;
 }
 
@@ -972,7 +952,30 @@ bool Ftp::ftpOpenDir( KURL& _url )
 {
   QString path( _url.path(-1) );
 
-  if( !ftpOpenCommand( "list", path, 'A' ) ) {
+  // We try to change to this directory first to see whether it really is a directory.
+  // (And also to follow symlinks)
+  QString tmp = "cwd ";
+  tmp += ( !path.isEmpty() ) ? path : QString("/");
+
+  if ( !ftpSendCmd( tmp.data(), '2' ) )
+  {
+    if ( !m_error && rspbuf[0] == '5' )
+    {
+      m_error = ERR_IS_FILE;
+      m_errorText = path;
+      return false;
+    }
+    else if ( !m_error )
+    {
+      m_error = ERR_DOES_NOT_EXIST;
+      m_errorText = path;
+    }
+    return false;
+  }
+
+  // don't use the path in the list command
+  // we changed into this directory anyway ("cwd"), so it's enough just to send "list"
+  if( !ftpOpenCommand( "list", 0L, 'A' ) ) {
     kDebugError( 7102, "COULD NOT LIST %d %s", m_error, errorText().ascii() );
     return false;
   }
