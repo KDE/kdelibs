@@ -25,7 +25,6 @@ B2Style::B2Style()
 
 B2Style::~B2Style()
 {
-    ;
 }
 
 void B2Style::polish(QPalette &)
@@ -721,8 +720,6 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         }
         if (!btext.isNull()){
             int tf = AlignVCenter|AlignLeft;
-            if (!enabled)
-                p->setPen(g.dark());
             if (pixmap)
                 dx= 4 + pixmap->width() + 2;
             else
@@ -769,8 +766,6 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
         }
         if (!btext.isNull()){
             int tf = AlignBottom|AlignHCenter;
-            if (!enabled)
-                p->setPen(g.dark());
             dy= pixmap->height();
             dx = 2;
             if ( sunken ){
@@ -781,7 +776,7 @@ void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
                 p->setFont(*font);
             if(raised)
                 p->setPen(Qt::blue);
-            p->drawText(x, y, w, h-4, tf, btext);
+            p->drawText(x, y, w, h-3, tf, btext);
         }
     }
     if (popup){
