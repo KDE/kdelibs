@@ -67,6 +67,7 @@ AttrImpl::AttrImpl(ElementImpl* element, DocumentPtr* docPtr, AttributeImpl* a)
     assert(!m_attribute->_impl);
     m_attribute->_impl = this;
     m_attribute->ref();
+    m_specified = true; // we don't yet support default attributes
 }
 
 AttrImpl::~AttrImpl()
