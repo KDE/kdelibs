@@ -95,9 +95,9 @@ void KFind::setData( const QString& data, int startPos )
     Q_ASSERT( m_index != -1 );
 }
 
-KDialogBase* KFind::dialog()
+KDialogBase* KFind::findNextDialog( bool create )
 {
-    if ( !m_dialog )
+    if ( !m_dialog && create )
     {
         m_dialog = new KFindNextDialog( m_pattern, parentWidget() );
         connect( m_dialog, SIGNAL( user1Clicked() ), this, SLOT( slotFindNext() ) );
@@ -128,7 +128,7 @@ KFind::Result KFind::find()
                 // highlight it.
                 emit highlight(m_text, m_index, m_matchedLength);
                 if ( !m_dialogClosed )
-                    dialog()->show();
+                    findNextDialog(true)->show();
                 // Get ready for next match
                 if (m_options & KFindDialog::FindBackwards)
                     m_index--;

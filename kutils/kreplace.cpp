@@ -69,6 +69,13 @@ KReplace::~KReplace()
 {
 }
 
+KDialogBase* KReplace::replaceNextDialog( bool create )
+{
+    if ( m_dialog || create )
+        return dialog();
+    return 0L;
+}
+
 KReplaceNextDialog* KReplace::dialog()
 {
     if ( !m_dialog )
