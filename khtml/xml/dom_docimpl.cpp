@@ -1152,7 +1152,7 @@ void DocumentImpl::open( bool clearEventListeners )
     delete m_tokenizer;
     m_tokenizer = 0;
 
-    {
+    //{
         RenderObject* render = m_render;
         m_render = 0; // indicate destruction mode
         removeChildren();
