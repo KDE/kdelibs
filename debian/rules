@@ -79,13 +79,13 @@ build-stamp: configure-stamp
 	cd $(objdir) && \
 	$(MAKE)
 
-	cd $(objdir) && \
-	$(MAKE) apidox
-
 	# generate manpages
 	for i in debian/*.sgml; do \
 		docbook-to-man $$i > `dirname $$i`/`basename $$i .sgml`.1 ;\
 	done
+
+	cd $(objdir) && \
+	$(MAKE) apidox
 
 	touch build-stamp
 
@@ -171,7 +171,7 @@ binary-common:
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_perl
-	dh_shlibdeps -ldebian/kdelibs-bin/usr/lib:debian/kdelibs4/usr/lib:debian/libkdefakes4/usr/lib
+	dh_shlibdeps -ldebian/kdelibs-bin/usr/lib:debian/kdelibs4/usr/lib
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb

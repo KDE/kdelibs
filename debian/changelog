@@ -1,10 +1,18 @@
-kdelibs (4:3.0.99+cvs20021212-1) unstable; urgency=low
+kdelibs (4:3.1.0-1) unstable; urgency=low
 
   * New Upstream.
   * Rebuilt debian dir.
   * Split arts out of kdelibs source.
 
- -- Christopher L Cheney <ccheney@debian.org>  Thu, 12 Dec 2002 21:00:00 -0600
+ -- Christopher L Cheney <ccheney@debian.org>  Sat, 01 Feb 2003 01:00:00 -0600
+
+kdelibs (4:2.2.2-13.woody.6) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Applied upstream patches to fix several potential vulnerabilities.
+    http://www.kde.org/info/security/advisory-20021220-1.txt
+
+ -- Martin Schulze <joey@infodrom.org>  Mon,  6 Jan 2003 08:20:04 +0100
 
 kdelibs (4:2.2.2-13.woody.5) stable-security; urgency=high
 
