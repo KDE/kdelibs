@@ -20,8 +20,7 @@
 
 SUBDIRS = dcop kdecore kimgio kdeui kformula mimetypes \
 	mediatool kspell kio kfile kab khtml kstyles \
-	kparts doc toolbar interfaces kdetest \
-	kidl kidl2cpp
+	kparts doc toolbar interfaces kdetest
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl.m4
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in libltdl.m4 > acinclude.m4 

@@ -253,11 +253,11 @@ AC_OUTPUT(Makefile \
 	kstyles/utils/settheme/Makefile \
 	kstyles/themes/Makefile \
 	kstyles/pics/Makefile \
-	kidl/Makefile \
-	kidl2cpp/Makefile \
 	kparts/Makefile \
 	interfaces/Makefile \
 	dcop/Makefile \
+	dcop/dcopidl/Makefile \
+	dcop/dcopidl2cpp/Makefile \
 	dcop/ICE/Makefile )
 
 
