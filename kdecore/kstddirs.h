@@ -81,6 +81,7 @@ class KStandardDirsPrivate;
 * @li services - Services.
 * @li servicetypes - Service types.
 * @li sound - Application sounds.
+* @li templates - Templates
 * @li wallpaper - Wallpapers.
 *
 * @sect KStandardDirs supports the following environment variables:

@@ -55,7 +55,7 @@ template class QDict<QStringList>;
 static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "cgi", "config", "exe",
-			      "wallpaper", "lib", "pixmap", 0};
+			      "wallpaper", "lib", "pixmap", "templates", 0};
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -571,6 +571,8 @@ QString KStandardDirs::kde_default(const char *type) {
 	return "cgi-bin/";
     if (!strcmp(type, "wallpaper"))
 	return "share/wallpapers/";
+    if (!strcmp(type, "templates"))
+	return "share/templates/";
     if (!strcmp(type, "exe"))
 	return "bin/";
     if (!strcmp(type, "lib"))
