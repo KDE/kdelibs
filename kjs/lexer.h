@@ -95,7 +95,6 @@ namespace KJS {
     int lookupKeyword(const char *);
 
     bool isWhiteSpace() const;
-    bool isLineTerminator();
     bool isHexDigit(unsigned short c) const;
     bool isOctalDigit(unsigned short c) const;
 
