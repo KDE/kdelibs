@@ -144,6 +144,8 @@ public:
 			  bool important, QList<CSSProperty> *propList);
 	bool parseFont(const QChar *curP, const QChar *endP,
 		       bool important, QList<CSSProperty> *propList);
+	void setParsedValue(int propId, bool important, QList<CSSProperty> *propList,
+			    CSSValueImpl *parsedValue);
 
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units

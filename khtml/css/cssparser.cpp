@@ -1636,8 +1636,16 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
 
  end:
 
-    if(!parsedValue) return false;
+    if ( parsedValue ) {
+        setParsedValue( propId, important, propList, parsedValue );
+        return true;
+    }
 
+    return false;
+}
+
+void StyleBaseImpl::setParsedValue(int propId, bool important, QList<CSSProperty> *propList, CSSValueImpl *parsedValue)
+{
     QListIterator<CSSProperty> propIt(*propList);
     propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property
     while (propIt.current() && propIt.current()->m_id != propId)
@@ -1651,9 +1659,9 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     prop->m_bImportant = important;
 
     propList->append(prop);
-    //kdDebug( 6080 ) << "added property " << propId << endl;
-
-    return true;
+#ifdef CSS_DEBUG
+    kdDebug( 6080 ) << "added property: " << propId << ", value: " << parsedValue->cssText().string() << endl;
+#endif
 }
 
 static const QChar *getNext( const QChar *curP, const QChar *endP, bool &last )
@@ -1824,6 +1832,14 @@ bool StyleBaseImpl::parse4Values(const QChar *curP, const QChar *endP, const int
         curP = nextP+1;
         if(curP >= endP) break;
     }
+
+    /* From the CSS 2 specs, 8.3
+     * If there is only one value, it applies to all sides. If there are two values, the top and bottom margins are
+     * set to the first value and the right and left margins are set to the second. If there are three values, the top
+     * is set to the first value, the left and right are set to the second, and the bottom is set to the third. If there
+     * are four values, they apply to the top, right, bottom, and left, respectively.
+     */
+
     switch(list.count())
     {
     case 2:
@@ -1831,42 +1847,29 @@ bool StyleBaseImpl::parse4Values(const QChar *curP, const QChar *endP, const int
         // property
         if(!parseValue(list.at(0), list.at(1), properties[0],
                    important, propList)) return false;
-        parseValue(list.at(0), list.at(1), properties[1],
-                   important, propList);
-        parseValue(list.at(0), list.at(1), properties[2],
-                   important, propList);
-        parseValue(list.at(0), list.at(1), properties[3],
-                   important, propList);
+	// We don't reparse the same section up to 4 times, but set it to
+	// value we parsed the first time.
+        setParsedValue(properties[1], important, propList, propList->last()->value());
+        setParsedValue(properties[2], important, propList, propList->last()->value());
+        setParsedValue(properties[3], important, propList, propList->last()->value());
         return true;
     case 4:
-        if(!parseValue(list.at(0), list.at(1), properties[0],
-                   important, propList)) return false;
-        if(!parseValue(list.at(2), list.at(3), properties[1],
-                   important, propList)) return false;
-        parseValue(list.at(0), list.at(1), properties[2],
-                   important, propList);
-        parseValue(list.at(2), list.at(3), properties[3],
-                   important, propList);
+        if(!parseValue(list.at(0), list.at(1), properties[0],important, propList)) return false;
+        setParsedValue(properties[2], important, propList, propList->last()->value());
+        if(!parseValue(list.at(2), list.at(3), properties[1],important, propList)) return false;
+	setParsedValue(properties[3], important, propList, propList->last()->value());
         return true;
     case 6:
-        if(!parseValue(list.at(0), list.at(1), properties[0],
-                   important, propList)) return false;
-        if(!parseValue(list.at(2), list.at(3), properties[1],
-                   important, propList)) return false;
-        if(!parseValue(list.at(4), list.at(5), properties[2],
-                   important, propList)) return false;
-        parseValue(list.at(2), list.at(3), properties[3],
-                   important, propList);
+        if(!parseValue(list.at(0), list.at(1), properties[0],important, propList)) return false;
+        if(!parseValue(list.at(2), list.at(3), properties[1],important, propList)) return false;
+        setParsedValue(properties[3], important, propList, propList->last()->value());
+        if(!parseValue(list.at(4), list.at(5), properties[2],important, propList)) return false;
         return true;
     case 8:
-        if(!parseValue(list.at(0), list.at(1), properties[0],
-                   important, propList)) return false;
-        if(!parseValue(list.at(2), list.at(3), properties[1],
-                   important, propList)) return false;
-        if(!parseValue(list.at(4), list.at(5), properties[2],
-                   important, propList)) return false;
-        if(!parseValue(list.at(6), list.at(7), properties[3],
-                   important, propList)) return false;
+        if(!parseValue(list.at(0), list.at(1), properties[0],important, propList)) return false;
+        if(!parseValue(list.at(2), list.at(3), properties[1],important, propList)) return false;
+        if(!parseValue(list.at(4), list.at(5), properties[2],important, propList)) return false;
+        if(!parseValue(list.at(6), list.at(7), properties[3],important, propList)) return false;
         return true;
     default:
         return false;
@@ -2042,14 +2045,15 @@ StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)
 
     startP = curP;
     curP = parseToChar(startP, endP, '}', false);
-#ifdef CSS_DEBUG
-    kdDebug( 6080 ) << "rules are \'" << QString(startP, curP-startP) << "\'" << endl;
-#endif
+
     if (!curP)
     {
         delete slist;
         return(0);
     }
+#ifdef CSS_DEBUG
+    kdDebug( 6080 ) << "rules are \'" << QString(startP, curP-startP) << "\'" << endl;
+#endif
 
     plist = parseProperties(startP, curP );
 
