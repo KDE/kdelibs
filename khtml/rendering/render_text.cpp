@@ -39,8 +39,6 @@
 #include <qrect.h>
 #include <kdebug.h>
 
-#include <assert.h>
-
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
 #define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
 
@@ -570,11 +568,9 @@ void RenderText::calcMinMaxWidth()
     for(int i = 0; i < len; i++)
     {
         int wordlen = 0;
-        char c;
         do {
             wordlen++;
-        } while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) ); // && c != '-'
-        if(i+wordlen < len) wordlen--;
+        } while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) );
         if (wordlen)
         {
             int w = fm->width(QConstString(str->s+i, wordlen).string());
@@ -583,9 +579,8 @@ void RenderText::calcMinMaxWidth()
         }
         if(i+wordlen < len)
         {
-            if ( c == '\n' )
+            if ( (*(str->s+i+wordlen)).latin1() == '\n' )
             {
-                assert(c == '\n');
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
                 if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
