@@ -55,10 +55,11 @@ class KPasswordDialog::KPasswordDialogPrivate
 {
     public:
 	KPasswordDialogPrivate()
-	    : m_MatchLabel( 0 ), iconName( 0 )
+	    : m_MatchLabel( 0 ), iconName( 0 ), allowEmptyPasswords( false )
 	    {}
 	QLabel *m_MatchLabel;
 	QString iconName;
+	bool allowEmptyPasswords;
 	KProgress* m_strengthBar;
 };
 
@@ -519,16 +520,22 @@ void KPasswordDialog::virtual_hook( int id, void* data )
 void KPasswordDialog::enableOkBtn()
 {
     if (m_Type == NewPassword) {
-      const bool match = (!(strcmp(m_pEdit->password(), m_pEdit2->password())))
-                         && (strcmp(m_pEdit->password(), ""));
-      enableButtonOK( match );
-      d->m_MatchLabel->setText( match? i18n("Passwords match")
-                                      :i18n("Passwords do not match") );
+      const bool match = strcmp(m_pEdit->password(), m_pEdit2->password()) == 0
+                   && (d->allowEmptyPasswords || m_pEdit->password()[0]);
 
-// Password strength calculator
-// Based on code in the Master Password dialog in Firefox (pref-masterpass.js)
-// Original code triple-licensed under the MPL, GPL, and LGPL
-// so is license-compatible with this file
+      enableButtonOK( match );
+      if ( match && d->allowEmptyPasswords && m_pEdit->password()[0] == 0 ) {
+          d->m_MatchLabel->setText( i18n("Password is empty") );
+      } else {
+          d->m_MatchLabel->setText( match? i18n("Passwords match")
+                                          :i18n("Passwords do not match") );
+      }
+
+      // Password strength calculator
+      // Based on code in the Master Password dialog in Firefox
+      // (pref-masterpass.js)
+      // Original code triple-licensed under the MPL, GPL, and LGPL
+      // so is license-compatible with this file
 
       const QString pass(m_pEdit->password());
       int pwlength = pass.length();
@@ -558,6 +565,17 @@ void KPasswordDialog::enableOkBtn()
       d->m_strengthBar->setProgress(pwstrength);
 
    }
+}
+
+
+void KPasswordDialog::setAllowEmptyPasswords(bool allowed) {
+    d->allowEmptyPasswords = allowed;
+    enableOkBtn();
+}
+
+
+bool KPasswordDialog::allowEmptyPasswords() const {
+    return d->allowEmptyPasswords;
 }
 
 #include "kpassdlg.moc"

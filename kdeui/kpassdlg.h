@@ -233,6 +233,16 @@ public:
     void addLine(QString key, QString value);
 
     /**
+     * Allow empty passwords? - Default: false
+     */
+    void setAllowEmptyPasswords(bool allowed);
+
+    /**
+     * Allow empty passwords?
+     */
+    bool allowEmptyPasswords() const;
+
+    /**
      * Returns the password entered. The memory is freed in the destructor,
      * so you should make a copy.
      */
