@@ -15,22 +15,8 @@ private:
 };
 
 
-/*  Static Factory Functions
- *
- */
-KJavaAppletContext* KJavaAppletContext::getDefaultContext()
-{
-   static KJavaAppletContext* context = 0;
-
-    if ( context == 0 )
-    {
-        context = new KJavaAppletContext();
-        CHECK_PTR( context );
-    }
-
-    return context;
-}
-
+//  Static Factory Functions
+int KJavaAppletContext::contextCount = 0;
 
 /*  Class Implementation
  */
@@ -40,12 +26,10 @@ KJavaAppletContext::KJavaAppletContext()
     d = new KJavaAppletContextPrivate;
     server = KJavaAppletServer::allocateJavaServer();
 
-    static int contextIdSource = 0;
+    id = contextCount;
+    server->createContext( id, this );
 
-    id = contextIdSource;
-    server->createContext( contextIdSource, this );
-
-    contextIdSource++;
+    contextCount++;
 }
 
 KJavaAppletContext::~KJavaAppletContext()

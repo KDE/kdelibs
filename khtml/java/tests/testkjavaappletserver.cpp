@@ -33,7 +33,6 @@ int main(int argc, char **argv)
     a->applet()->setAppletClass( "lake.class" );
     a->applet()->setParameter( "image", "konqi.gif" );
 
-    a->applet()->create();
     a->showApplet();
     a->applet()->start();
 

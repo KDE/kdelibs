@@ -12,7 +12,6 @@ class KJavaProcessPrivate
 {
 friend class KJavaProcess;
 private:
-    bool ok;
     QString jvmPath;
     QString classPath;
     QString mainClass;
@@ -31,8 +30,6 @@ KJavaProcess::KJavaProcess()
 
     connect( javaProcess, SIGNAL( wroteStdin( KProcess * ) ),
              this, SLOT( slotWroteData() ) );
-    connect( javaProcess, SIGNAL( processExited( KProcess * ) ),
-             this, SLOT( slotJavaDied() ) );
     connect( javaProcess, SIGNAL( receivedStdout( int, int& ) ),
              this, SLOT( slotReceivedData(int, int&) ) );
 
@@ -42,7 +39,7 @@ KJavaProcess::KJavaProcess()
 
 KJavaProcess::~KJavaProcess()
 {
-    if ( d->ok && isRunning() )
+    if ( isRunning() )
     {
         kdDebug(6100) << "stopping java process" << endl;
         stopJava();
@@ -50,16 +47,6 @@ KJavaProcess::~KJavaProcess()
 
     delete javaProcess;
     delete d;
-}
-
-bool KJavaProcess::isOK()
-{
-   return d->ok;
-}
-
-void KJavaProcess::slotJavaDied()
-{
-    d->ok = false;
 }
 
 bool KJavaProcess::isRunning()
@@ -108,6 +95,7 @@ void KJavaProcess::setClassArgs( const QString& args )
    d->classArgs = args;
 }
 
+//Private Utility Functions used by the two send() methods
 QByteArray* KJavaProcess::addArgs( char cmd_code, const QStringList& args )
 {
     //the buffer to store stuff, etc.
@@ -164,23 +152,29 @@ void KJavaProcess::sendBuffer( QByteArray* buff )
 
 void KJavaProcess::send( char cmd_code, const QStringList& args )
 {
-    QByteArray* buff = addArgs( cmd_code, args );
-    storeSize( buff );
-    sendBuffer( buff );
+    if( isRunning() )
+    {
+        QByteArray* buff = addArgs( cmd_code, args );
+        storeSize( buff );
+        sendBuffer( buff );
+    }
 }
 
 void KJavaProcess::send( char cmd_code, const QStringList& args,
                          const QByteArray& data )
 {
-    QByteArray* buff = addArgs( cmd_code, args );
+    if( isRunning() )
+    {
+        QByteArray* buff = addArgs( cmd_code, args );
 
-    int cur_size = buff->size();
-    int data_size = buff->size();
-    buff->resize( buff->size() + data_size );
-    memcpy( buff->data() + cur_size, data.data(), data_size );
+        int cur_size = buff->size();
+        int data_size = buff->size();
+        buff->resize( buff->size() + data_size );
+        memcpy( buff->data() + cur_size, data.data(), data_size );
 
-    storeSize( buff );
-    sendBuffer( buff );
+        storeSize( buff );
+        sendBuffer( buff );
+    }
 }
 
 void KJavaProcess::popBuffer()

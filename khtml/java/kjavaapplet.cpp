@@ -31,7 +31,7 @@ KJavaApplet::KJavaApplet( KJavaAppletWidget* _parent,
     if( _context )
         context = _context;
     else
-        context = KJavaAppletContext::getDefaultContext();
+        context = new KJavaAppletContext();
 
     d->reallyExists = false;
     id = -1;

@@ -1,5 +1,26 @@
 // -*- c++ -*-
 
+/* This file is part of the KDE project
+ *
+ * Copyright (C) 2000 Richard Moore <rich@kde.org>
+ *               2000 Wynn Wilkes <wynnw@caldera.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 #ifndef KJAVAAPPLETSERVER_H
 #define KJAVAAPPLETSERVER_H
 
@@ -32,7 +53,18 @@ public:
      * class is usually instantiated.
      */
     static KJavaAppletServer *allocateJavaServer();
-    static void               freeJavaServer();
+
+    /**
+     * When you are done using your reference to the AppletServer,  you must
+     * dereference it by calling freeJavaServer().
+     */
+    static void freeJavaServer();
+
+    /**
+     * This allows the KJavaAppletWidget to display some feedback in a QLabel
+     * while the applet is being loaded.  If the java process could not be
+     * started, an error message is displayed instead.
+     */
     static QString getAppletLabel();
 
     /**
@@ -57,6 +89,9 @@ public:
                        const QMap<QString, QString>& params,
                        const QString windowTitle );
 
+    /**
+     * This should be called by the KJavaAppletWidget
+     */
     void initApplet( int contextId, int appletId );
 
     /**
@@ -74,6 +109,11 @@ public:
      */
     void stopApplet( int contextId, int appletId );
 
+    /**
+     * Send data we got back from a KJavaDownloader back to the appropriate
+     * class loader.
+     * (This is currently unimplemented on the java side.
+     */
     void sendURLData( const QString& loaderID, const QString& url,
                       const QByteArray& data );
 
