@@ -761,7 +761,6 @@ public:
    * Use this method, together with its opposite, fromPathOrURL(),
    * to display and even let the user edit URLs.
    *
-   * @param text the string representation of the URL to convert
    * @return the new KURL
    * @since 3.4
    */

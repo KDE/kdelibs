@@ -131,7 +131,7 @@ class KABC_EXPORT StdAddressBook : public AddressBook
     /**
       Sets the users contact. See whoAmI() for more information.
 
-      @param uid The uid of the users contact.
+      @param addr The users contact.
      */
     void setWhoAmI( const Addressee &addr );
 
