@@ -116,3 +116,6 @@ bool KWhatsThisManager::eventFilter (QObject *o, QEvent *e)
     }
     return false;
 }
+
+#include "kwhatsthismanager_p.moc"
+
