@@ -348,7 +348,7 @@
    (list "LINK" "#AA0000")
    (list "VLINK" "#AA0055")
    (list "ALINK" "#AA0000")
-   (list "STYLE" "font-family: sans-serif;")))
+   (list "STYLE" "font-family: sans-serif; position:absolute; left: 0px; top: 0px; right: 0px; bottom: 0px;"))) ; added for new navigation design
 
 (define %shade-verbatim% #t)
 (define ($shade-verbatim-attr$)
