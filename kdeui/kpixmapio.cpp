@@ -131,7 +131,7 @@ KPixmapIO::KPixmapIO()
     else if ((bpp == 17) && (red_shift == 11) && (green_shift == 5) &&
 	    (blue_shift == 0))
 	d->byteorder = bo16_BGR_565;
-    else if ((bpp == 16) && (red_shift == 10) && (green_shift == 5) &&
+    else if ((bpp == 17) && (red_shift == 10) && (green_shift == 5) &&
 	    (blue_shift == 0))
 	d->byteorder = bo16_BGR_555;
     else if ((bpp == 8) || (bpp == 9))
@@ -566,10 +566,10 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		for (x=0; x<width/2; x++)
 		{
 		    pixel = *src++;
-		    val = ((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 5) |
+		    val = ((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 6) |
 			     ((pixel & 0xff) >> 3);
 		    pixel = *src++;
-		    val |= (((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 5) |
+		    val |= (((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 6) |
 			    ((pixel & 0xff) >> 3)) << 16;
 		    *dst++ = val;
 		}
@@ -577,7 +577,7 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		{
 		    pixel = *src++;
 		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 9) |
-			    ((pixel & 0xf800) >> 5) | ((pixel & 0xff) >> 3);
+			    ((pixel & 0xf800) >> 6) | ((pixel & 0xff) >> 3);
 		}
 	    }
 	} else
@@ -592,10 +592,10 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		for (x=0; x<width/2; x++)
 		{
 		    pixel = clut[*src++];
-		    val = ((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 5) |
+		    val = ((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 6) |
 			    ((pixel & 0xff) >> 3);
 		    pixel = clut[*src++];
-		    val |= (((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 5) |
+		    val |= (((pixel & 0xf80000) >> 9) | ((pixel & 0xf800) >> 6) |
 			    ((pixel & 0xff) >> 3)) << 16;
 		    *dst++ = val;
 		}
@@ -603,7 +603,7 @@ void KPixmapIO::convertToXImage(const QImage &img)
 		{
 		    pixel = clut[*src++];
 		    *((Q_INT16 *)dst) = ((pixel & 0xf80000) >> 9) |
-			    ((pixel & 0xf800) >> 5) | ((pixel & 0xff) >> 3);
+			    ((pixel & 0xf800) >> 6) | ((pixel & 0xff) >> 3);
 		}
 	    }
 	}
