@@ -30,7 +30,7 @@
 #define HTML_MISC_H
 
 #include <dom/html_element.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 namespace DOM {
 
@@ -45,7 +45,7 @@ class HTMLCollectionImpl;
  * deprecated in HTML 4.0.
  *
  */
-class HTMLBaseFontElement : public HTMLElement
+class KHTML_EXPORT HTMLBaseFontElement : public HTMLElement
 {
 public:
     HTMLBaseFontElement();
@@ -123,7 +123,7 @@ public:
  * automatically updated when the underlying document is changed.
  *
  */
-class HTMLCollection
+class KHTML_EXPORT HTMLCollection
 {
     friend class HTMLDocument;
     friend class HTMLSelectElement;
@@ -201,7 +201,7 @@ protected:
     HTMLCollectionImpl *impl;
 };
 
-class HTMLFormCollection : public HTMLCollection
+class KHTML_EXPORT HTMLFormCollection : public HTMLCollection
 {
     friend class HTMLFormElement;
 protected:

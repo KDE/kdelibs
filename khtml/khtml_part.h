@@ -181,7 +181,7 @@ namespace KWallet
  * @author Lars Knoll (knoll@kde.org)
  *
  */
-class KHTMLPart : public KParts::ReadOnlyPart
+class KHTML_EXPORT KHTMLPart : public KParts::ReadOnlyPart
 {
   Q_OBJECT
   friend class KHTMLView;

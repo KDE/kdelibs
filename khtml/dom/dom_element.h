@@ -32,6 +32,8 @@
 #include <dom/dom_node.h>
 #include <dom/css_value.h>
 
+#include <kdelibs_export.h>
+
 namespace DOM {
 
 class DOMString;
@@ -84,7 +86,7 @@ class DocumentImpl;
  * unknown, there are no tokenized attribute values.
  *
  */
-class Attr : public Node
+class KHTML_EXPORT Attr : public Node
 {
     friend class Element;
     friend class Document;
@@ -205,7 +207,7 @@ class DOMString;
  * access an attribute value can safely be used as a convenience.
  *
  */
-class Element : public Node
+class KHTML_EXPORT Element : public Node
 {
     friend class Document;
     friend class HTMLDocument;

@@ -25,6 +25,8 @@
 #include <kdebug.h>
 #include <qstring.h>
 
+#include <kdelibs_export.h>
+
 namespace DOM {
 
 class DOMStringImpl;
@@ -38,7 +40,7 @@ class DOMStringImpl;
  * that modifications to one instance will also modify all others. If you
  * wish to get a DOMString that is independent, use copy().
  */
-class DOMString
+class KHTML_EXPORT DOMString
 {
     friend class CharacterDataImpl;
     friend bool operator==( const DOMString &a, const char *b );
@@ -126,17 +128,17 @@ inline kndbgstream &operator<<(kndbgstream &stream, const DOMString &) {
 }
 #endif
 
-bool operator==( const DOMString &a, const DOMString &b );
-bool operator==( const DOMString &a, const QString &b );
-bool operator==( const DOMString &a, const char *b );
+KHTML_EXPORT bool operator==( const DOMString &a, const DOMString &b );
+KHTML_EXPORT bool operator==( const DOMString &a, const QString &b );
+KHTML_EXPORT bool operator==( const DOMString &a, const char *b );
 inline bool operator!=( const DOMString &a, const DOMString &b ) { return !(a==b); }
 inline bool operator!=( const DOMString &a, const QString &b ) { return !(a==b); }
 inline bool operator!=( const DOMString &a, const char *b )  { return !(a==b); }
 inline bool strcmp( const DOMString &a, const DOMString &b ) { return a != b; }
 
 // returns false when equal, true otherwise (ignoring case)
-bool strcasecmp( const DOMString &a, const DOMString &b );
-bool strcasecmp( const DOMString& a, const char* b );
+KHTML_EXPORT bool strcasecmp( const DOMString &a, const DOMString &b );
+KHTML_EXPORT bool strcasecmp( const DOMString& a, const char* b );
 
 }
 #endif

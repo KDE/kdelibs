@@ -30,7 +30,7 @@
 #define _DOM_Node_h_
 
 #include <qstring.h>
-#include <kdemacros.h>
+#include <kdelibs_export.h>
 
 class QRect;
 
@@ -59,7 +59,7 @@ class Event;
  * imply that the DOM specifies an order to these Nodes.
  *
  */
-class NamedNodeMap
+class KHTML_EXPORT NamedNodeMap
 {
 public:
     NamedNodeMap();
@@ -267,7 +267,7 @@ class NodeImpl;
  * mechanisms to get and set the relevant information.
  *
  */
-class Node
+class KHTML_EXPORT Node
 {
     friend class NamedNodeMap;
     friend class NodeList;
@@ -894,7 +894,7 @@ class NodeListImpl;
  * integral index, starting from 0.
  *
  */
-class NodeList
+class KHTML_EXPORT NodeList
 {
     friend class Element;
     friend class Node;

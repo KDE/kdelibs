@@ -33,6 +33,8 @@
 #include <dom/dom_doc.h>
 #include <dom/dom_string.h>
 
+#include <kdelibs_export.h>
+
 class KHTMLView;
 class KHTMLPart;
 
@@ -68,7 +70,7 @@ class HTMLElement;
  *
  *
  */
-class HTMLDocument : public Document
+class KHTML_EXPORT HTMLDocument : public Document
 {
     friend class ::KHTMLView;
     friend class ::KHTMLPart;

@@ -22,11 +22,13 @@
    Boston, MA 02111-1307, USA.
 */
 
-#ifndef KHTML_H
-#define KHTML_H
+#ifndef KHTMLVIEW_H
+#define KHTMLVIEW_H
 
 // qt includes and classes
 #include <qscrollview.h>
+
+#include <kdelibs_export.h>
 
 class QPainter;
 class QRect;
@@ -72,7 +74,7 @@ class KHTMLViewPrivate;
  *
  * Suitable for use as an application's main view.
  **/
-class KHTMLView : public QScrollView
+class KHTML_EXPORT KHTMLView : public QScrollView
 {
     Q_OBJECT
 
