@@ -68,9 +68,9 @@ static const colorMap cmap[] = {
 };
 
 struct uiColors {
-    const char * const name;
-    const char * const configGroup;
-    const char * const configEntry;
+    const char * name;
+    const char * configGroup;
+    const char * configEntry;
     const QPalette::ColorGroup group;
     const QColorGroup::ColorRole role;
 };
