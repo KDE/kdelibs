@@ -188,14 +188,14 @@ static bool kdither_32_to_8( const QImage *src, QImage *dst )
     return true;
 }
 
-void KPixmap::gradientFill(QColor ca, QColor cb, GradientMode direction,
-                           int ncols)
+void KPixmap::gradientFill(QColor , QColor , GradientMode,
+                           int )
 {
     warning("KPixmap: gradientFill(QColor, QColor, enum GradientMode, int) is obsolete");
     warning("KPixmap: use KPixmapEffect::gradient(KPixmap&,QColor, QColor, enum KPixmapEffect::GradientType, int)");
 }
 
-void KPixmap::gradientFill(QColor ca, QColor cb, bool upDown, int ncols)
+void KPixmap::gradientFill(QColor , QColor , bool , int )
 {
     warning("KPixmap: gradientFill(QColor, QColor, bool, int) is obsolete");
     warning("KPixmap: use KPixmapEffect::gradient(KPixmap&,QColor, QColor, enum KPixmapEffect::GradientType, int)");
