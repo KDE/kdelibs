@@ -487,7 +487,7 @@ KDockWidgetPrivate::KDockWidgetPrivate()
   ,container(0)
 {
 #ifndef NO_KDE2
-  windowType = NET::Normal;
+  windowType = NET::Toolbar;
 #endif
 
   _parent = 0L;

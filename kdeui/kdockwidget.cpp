@@ -463,8 +463,9 @@ void KDockWidget::updateHeader()
 
 void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 {
-  if ( parent() != s ){
-    hide();
+  if ( parent() != s )
+  {
+    hide();  
     reparent(s, 0, QPoint(0,0), false);
   }
 
