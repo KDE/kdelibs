@@ -75,13 +75,13 @@ void KComboBox::init()
     connect( listBox(), SIGNAL( clicked( QListBoxItem* ) ), SLOT( itemSelected( QListBoxItem* ) ) );
 }
 
-bool KComboBox::isInserted( const QString& text ) const
+bool KComboBox::isInserted( const QString& _text ) const
 {
-    if ( text.isEmpty() )
+    if ( _text.isEmpty() )
 	return false;
 
     for (int i = 0; i < count(); i++ ) {
-	if ( text(i) == text )
+	if ( text(i) == _text )
 	    return true;
     }
     return false;

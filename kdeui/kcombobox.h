@@ -212,6 +212,14 @@ public:
     */
     bool isEditable() const { return !m_pEdit.isNull() ; }
 
+    /**
+     * Convenience method which iterates over all items and checks if
+     * any of them is equal to @p text. If @p text is an empty string, false
+     * is returned.
+     * @returns true if an item with the string @p text is in the combobox.
+     */
+    bool isInserted( const QString& text ) const;
+
 signals:
     /**
     * This signal is emitted when the user presses
@@ -257,14 +265,6 @@ signals:
     */
     void textRotation( KCompletionBase::KeyBindingType );
 
-    /**
-     * Convenience method which iterates over all items and checks if 
-     * any of them is equal to @p text. If @p text is an empty string, false
-     * is returned.
-     * @returns true if an item with the string @p text is in the combobox.
-     */
-    bool isInserted( const QString& text ) const;
-    
 public slots:
 
     /**
