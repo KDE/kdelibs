@@ -4,6 +4,7 @@
 #include <kmimetype.h>
 #include <assert.h>
 #include <kstddirs.h>
+#include <kservicegroup.h>
 
 #include <kapp.h>
 
@@ -36,7 +37,7 @@ int main(int argc, char *argv[])
    }
      
    debug("Trying to look for Desktop Pager");
-   KService::Ptr se = KService::service("Desktop Pager");
+   KService::Ptr se = KService::serviceByName("Desktop Pager");
    if ( se )
    {
      debug("Found it !");
@@ -48,7 +49,7 @@ int main(int argc, char *argv[])
    }
 
    debug("Trying to look for kpager");
-   se = KService::service("kpager");
+   se = KService::serviceByDesktopName("kpager");
    if ( se )
    {
      debug("Found it !");
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
    }
 
    debug("Trying to look for System/kpager.desktop");
-   se = KService::service("System/kpager.desktop");
+   se = KService::serviceByDesktopPath("System/kpager.desktop");
    if ( se )
    {
      debug("Found it !");
@@ -72,7 +73,7 @@ int main(int argc, char *argv[])
    }
 
    debug("Trying to look for System/fake-entry.desktop");
-   se = KService::service("System/fake-entry.desktop");
+   se = KService::serviceByDesktopPath("System/fake-entry.desktop");
    if ( se )
    {
      debug("Found it !");
@@ -151,6 +152,55 @@ int main(int argc, char *argv[])
    sl  = KService::allServices( );
    assert( sl.count() );
    debug(QString("Found %1 services.").arg(sl.count()));
+
+   KServiceGroup::Ptr root = KServiceGroup::root();
+   KServiceGroup::List list = root->entries();
+
+   KServiceGroup::Ptr first;
+
+   debug("Found %d entries", list.count());
+   for( KServiceGroup::List::ConstIterator it = list.begin();
+       it != list.end(); it++)
+   {
+      KSycocaEntry *p = (*it);
+      if (p->isType(KST_KService)) 
+      {
+         KService *service = static_cast<KService *>(p);
+         debug("             %s", service->name().ascii());
+      }
+      else if (p->isType(KST_KServiceGroup))
+      {
+         KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+         debug("             %s -->", serviceGroup->caption().ascii());
+         if (!first) first = serviceGroup;
+      }
+      else
+      {
+         debug("KServiceGroup: Unexpected object in list!");
+      }
+   }
+
+   list = first->entries();
+   debug("Found %d entries", list.count());
+   for( KServiceGroup::List::ConstIterator it = list.begin();
+       it != list.end(); it++)
+   {
+      KSycocaEntry *p = (*it);
+      if (p->isType(KST_KService)) 
+      {
+         KService *service = static_cast<KService *>(p);
+         debug("             %s", service->name().ascii());
+      }
+      else if (p->isType(KST_KServiceGroup))
+      {
+         KServiceGroup *serviceGroup = static_cast<KServiceGroup *>(p);
+         debug("             %s -->", serviceGroup->caption().ascii());
+      }
+      else
+      {
+         debug("KServiceGroup: Unexpected object in list!");
+      }
+   }
 
    debug("done");
    return 0;

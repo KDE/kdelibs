@@ -22,6 +22,8 @@
 #define __k_build_service_factory_h__
 
 #include <kservicefactory.h>
+// We export the services to the service group factory!
+#include <kbuildservicegroupfactory.h>
 
 /**
  * @internal
@@ -33,7 +35,8 @@ public:
   /**
    * Create factory
    */
-  KBuildServiceFactory( KSycocaFactory *serviceTypeFactory );
+  KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
+                        KBuildServiceGroupFactory *serviceGroupFactory );
   
   virtual ~KBuildServiceFactory() { }
 
@@ -63,6 +66,7 @@ private:
   void saveOfferList(QDataStream &str);
 
   KSycocaFactory *m_serviceTypeFactory;
+  KBuildServiceGroupFactory *m_serviceGroupFactory;
 };
 
 #endif

@@ -84,7 +84,8 @@ void Kded::build()
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
-  (void) new KBuildServiceFactory(stf);
+  KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory;
+  (void) new KBuildServiceFactory(stf, bsgf);
 
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );

@@ -26,13 +26,15 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <kmessageboxwrapper.h>
-#include <kdebug.h>
 #include <klocale.h>
+#include <kdebug.h>
 #include <assert.h>
 
-KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory ) :
+KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
+	KBuildServiceGroupFactory *serviceGroupFactory ) :
   KServiceFactory(),
-  m_serviceTypeFactory( serviceTypeFactory)
+  m_serviceTypeFactory( serviceTypeFactory ),
+  m_serviceGroupFactory( serviceGroupFactory )
 {
    m_resourceList->append( "apps" );
    m_resourceList->append( "services" );
@@ -51,6 +53,12 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
   if (name.isEmpty())
      return 0;
 
+  if ( name == ".directory")
+  {
+     m_serviceGroupFactory->addNewEntry(file, resource, 0);
+     return 0;
+  }
+
   // Just a backup file ?
   if ( ( name.right(1) == "~") ||
        ( name.right(4) == ".bak") ||
@@ -62,9 +70,12 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
 
   KService * serv = new KService( &desktopFile );
 
-  if ( serv->isValid() )
+  if ( serv->isValid() ) 
+  {
+     if (!serv->isDeleted())
+        m_serviceGroupFactory->addNewEntry(file, resource, serv);
      return serv;
-  else {
+  } else {
      kdWarning(7012) << "Invalid Service : " << file << endl;
      delete serv;
      return 0L;
@@ -76,7 +87,6 @@ void
 KBuildServiceFactory::saveHeader(QDataStream &str)
 {
    KSycocaFactory::saveHeader(str);
-   kdDebug(7012) << QString("KBuildServiceFactory m_offerListOffset = %1")	.arg( m_offerListOffset, 8, 16) << endl;
 
    str << (Q_INT32) m_nameDictOffset;
    str << (Q_INT32) m_relNameDictOffset;
@@ -128,8 +138,6 @@ KBuildServiceFactory::saveOfferList(QDataStream &str)
          {
             str << (Q_INT32) it.current()->offset();
             str << (Q_INT32) itserv.current()->offset();
-            //kdebug(KDEBUG_INFO, 7020, QString("<< %1 %2")
-            //       .arg(it.current()->offset(),8,16).arg(itserv.current()->offset(),8,16));
          }
       }
    }

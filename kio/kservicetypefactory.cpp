@@ -61,7 +61,6 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
    if (!m_sycocaDict) return 0L; // Error!
    assert (!KSycoca::self()->isBuilding());
-   //kdDebug(7011) << QString("findServiceTypeByName(%1)").arg(_name) << endl;
    int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
    KServiceType * newServiceType = createServiceType(offset);
@@ -78,7 +77,6 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 
 bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString& _pattern  ) const
 {
-  //kdDebug(7011) << QString("matchFilename filename='%1' pattern='%2'")  //                          .arg(_filename).arg(_pattern) << endl;
   int len = _filename.length();
   const char* s = _pattern.ascii();
   int pattern_len = _pattern.length();
@@ -132,15 +130,12 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
    {
       QString extension = _filename.right( _filename.length() - _filename.findRev('.') - 1 );
       extension = extension.leftJustify(4);
-      //kdDebug(7011) << QString("extension is '%1'").arg(extension) << endl;
 
       while (left <= right) {
          middle = (left + right) / 2;
-         //kdDebug(7011) << QString("the situation is left=%1 middle=%2 right=%3")         //       .arg(left).arg(middle).arg(right) << endl;
          // read pattern at position "middle"
          str->device()->at( middle * entrySize + fastOffset );
          (*str) >> pattern;
-         //kdDebug(7011) << QString("testing extension '%1'").arg(pattern) << endl;
          int cmp = pattern.compare( extension );
          if (cmp < 0)
             left = middle + 1;
@@ -181,7 +176,6 @@ KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
 
 KMimeType::List KServiceTypeFactory::allMimeTypes()
 {
-   kdDebug(7011) << "KServiceTypeFactory::allMimeTypes()" << endl;
    KMimeType::List list;
    if (!m_str) return list;
 
@@ -215,7 +209,6 @@ KMimeType::List KServiceTypeFactory::allMimeTypes()
 
 KServiceType::List KServiceTypeFactory::allServiceTypes()
 {
-   kdDebug(7011) << "KServiceTypeFactory::allServiceTypes()" << endl;
    KServiceType::List list;
    if (!m_str) return list;
 

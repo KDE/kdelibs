@@ -34,9 +34,9 @@ libksycoca_la_SOURCES = \
 	ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
-	kmimetype.cpp \
+	kmimetype.cpp kservicegroup.cpp \
 	kservice.cpp kservicefactory.cpp \
-	kuserprofile.cpp \
+	kuserprofile.cpp kservicegroupfactory.cpp \
 	kdirwatch.cpp kurifilter.cpp \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp \
@@ -46,7 +46,7 @@ include_HEADERS = ksycoca.h ksycocaentry.h ksycocatype.h \
         kservicetype.h kmimetype.h kmimemagic.h kservice.h \
         krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
-	kshellcompletion.h kfileitem.h \
+	kshellcompletion.h kfileitem.h kservicegroup.h\
 	progressbase.h defaultprogress.h statusbarprogress.h
 
 libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)

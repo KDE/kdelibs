@@ -109,8 +109,6 @@ void
 KBuildServiceTypeFactory::saveHeader(QDataStream &str)
 {
    KSycocaFactory::saveHeader(str);
-   kdDebug(7012) << QString("KBuildServiceTypeFactory m_fastPatternOffset = %1 m_otherPatternOffset = %2")	.arg( m_fastPatternOffset, 8, 16)	.arg( m_otherPatternOffset, 8, 16) << endl;
-
    str << (Q_INT32) m_fastPatternOffset;
    str << (Q_INT32) m_otherPatternOffset;
 }

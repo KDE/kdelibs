@@ -24,6 +24,7 @@
 #include <kmimetype.h>
 #include <kbuildservicetypefactory.h>
 #include <kbuildservicefactory.h>
+#include <kbuildservicegroupfactory.h>
 
 #include <qdatastream.h>
 #include <qfile.h>
@@ -109,7 +110,8 @@ void KBuildSycoca::recreate()
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
-  (void) new KBuildServiceFactory(stf);
+  KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory();
+  (void) new KBuildServiceFactory(stf, bsgf);
 
   build(); // Parse dirs
   save(); // Save database
