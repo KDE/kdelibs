@@ -2324,9 +2324,6 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_ButtonMargin:				// Space btw. frame and label
 			return 4;
 
-		case PM_ButtonDefaultIndicator:
-			return 4;
-
 		case PM_SliderLength:
 			return 12;
 		case PM_SliderControlThickness:
