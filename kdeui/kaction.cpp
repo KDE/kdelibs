@@ -273,8 +273,10 @@ KAction::~KAction()
        unplugAccel();
 #endif
 
-    // If actionCollection hasn't already been destructed,
-    if ( m_parentCollection ) {
+    // parent() returns 0 when we are being destructed as part
+    // of our parents destructor. 
+    // Don't call back into our parent in that case.
+    if ( parent() && m_parentCollection) {
         m_parentCollection->take( this );
         for( uint i = 0; i < d->m_kaccelList.count(); i++ )
             d->m_kaccelList[i]->remove( name() );
@@ -3124,11 +3126,6 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
 KActionCollection::~KActionCollection()
 {
   kdDebug(129) << "KActionCollection::~KActionCollection(): this = " << this << endl;
-  for ( QAsciiDictIterator<KAction> it( d->m_actionDict ); it.current(); ++it ) {
-    KAction* pAction = it.current();
-    if ( pAction->m_parentCollection == this )
-      pAction->m_parentCollection = 0L;
-  }
 
   delete d->m_kaccel;
   delete d->m_builderKAccel;
@@ -3299,11 +3296,18 @@ const KAccel* KActionCollection::kaccel() const
 
 void KActionCollection::_insert( KAction* action )
 {
-  KAction *a = d->m_actionDict[ action->name() ];
+  char unnamed_name[100];
+  const char *name = action->name();
+  if( qstrcmp( name, "unnamed" ) == 0 )
+  {
+     sprintf(unnamed_name, "unnamed-%p", (void *)action);
+     name = unnamed_name;
+  }
+  KAction *a = d->m_actionDict[ name ];
   if ( a == action )
       return;
 
-  d->m_actionDict.insert( action->name(), action );
+  d->m_actionDict.insert( name, action );
 
   emit inserted( action );
 }
@@ -3315,7 +3319,15 @@ void KActionCollection::_remove( KAction* action )
 
 KAction* KActionCollection::_take( KAction* action )
 {
-  KAction *a = d->m_actionDict.take( action->name() );
+  char unnamed_name[100];
+  const char *name = action->name();
+  if( qstrcmp( name, "unnamed" ) == 0 )
+  {
+     sprintf(unnamed_name, "unnamed-%p", (void *) action);
+     name = unnamed_name;
+  }
+
+  KAction *a = d->m_actionDict.take( name );
   if ( !a || a != action )
       return 0;
 
