@@ -70,6 +70,17 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &thisObj, const List
     //doc.clear(); // TODO
     return Undefined();
   case HTMLDocument::Open:
+    if (args.size() >= 3) // IE extension for document.open: it means window.open if it has 3 args or more
+    {
+      KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+      if ( view && view->part() ) {
+        Window* win = Window::retrieveWindow(view->part());
+        if( win ) {
+          win->openWindow(exec, args);
+        }
+      }
+    }
+
     doc.open();
     return Undefined();
   case HTMLDocument::Close:
@@ -144,18 +155,12 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &propertyName
 #endif
   DOM::HTMLDocument doc = static_cast<DOM::HTMLDocument>(node);
   // Keep in sync with tryGet
-  DOM::NodeListImpl* list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() );
-  if ( list->length() ) {
-    delete list;
+  DOM::NodeList list( new DOM::NamedTagNodeListImpl( doc.handle(), ID_IMG, propertyName.string() ) );
+  if ( list.length() )
     return true;
-  }
-  delete list;
   list = new DOM::NamedTagNodeListImpl( doc.handle(), ID_FORM, propertyName.string() );
-  if ( list->length() ) {
-    delete list;
+  if ( list.length() )
     return true;
-  }
-  delete list;
   KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
   if ( view && view->part() )
   {

@@ -994,6 +994,161 @@ void Window::goHistory( int steps )
   //emit ext->goHistory(steps);
 }
 
+Value Window::openWindow(ExecState *exec, const List& args)
+{
+  KHTMLView *widget = m_part->view();
+  Value v = args[0];
+  UString s = v.toString(exec);
+  QString str = s.qstring();
+
+  KConfig *config = new KConfig("konquerorrc");
+  config->setGroup("Java/JavaScript Settings");
+  int policy = config->readUnsignedNumEntry( "WindowOpenPolicy", 0 ); // 0=allow, 1=ask, 2=deny, 3=smart
+  delete config;
+  if ( policy == 1 ) {
+    if ( KMessageBox::questionYesNo(widget,
+                                    i18n( "This site is trying to open up a new browser "
+                                          "window using Javascript.\n"
+                                          "Do you want to allow this?" ),
+                                    i18n( "Confirmation: Javascript Popup" ) ) == KMessageBox::Yes )
+      policy = 0;
+  } else if ( policy == 3 ) // smart
+  {
+    // window.open disabled unless from a key/mouse event
+    if (static_cast<ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed())
+      policy = 0;
+  }
+  if ( policy != 0 ) {
+    return Undefined();
+  } else {
+    KParts::WindowArgs winargs;
+
+    // scan feature argument
+    v = args[2];
+    QString features;
+    if (!v.isNull()) {
+      features = v.toString(exec).qstring();
+      // specifying window params means false defaults
+      winargs.menuBarVisible = false;
+      winargs.toolBarsVisible = false;
+      winargs.statusBarVisible = false;
+      QStringList flist = QStringList::split(',', features);
+      QStringList::ConstIterator it = flist.begin();
+      while (it != flist.end()) {
+        QString s = *it++;
+        QString key, val;
+        int pos = s.find('=');
+        if (pos >= 0) {
+          key = s.left(pos).stripWhiteSpace().lower();
+          val = s.mid(pos + 1).stripWhiteSpace().lower();
+
+          int scnum = QApplication::desktop()->screenNumber(widget->topLevelWidget());
+
+          QRect screen = QApplication::desktop()->screenGeometry(scnum);
+          if (key == "left" || key == "screenx") {
+            winargs.x = val.toInt() + screen.x();
+            if (winargs.x < screen.x() || winargs.x > screen.right())
+              winargs.x = screen.x(); // only safe choice until size is determined
+          } else if (key == "top" || key == "screeny") {
+            winargs.y = val.toInt() + screen.y();
+            if (winargs.y < screen.y() || winargs.y > screen.bottom())
+              winargs.y = screen.y(); // only safe choice until size is determined
+          } else if (key == "height") {
+            winargs.height = val.toInt() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
+            if (winargs.height > screen.height())  // should actually check workspace
+              winargs.height = screen.height();
+            if (winargs.height < 100)
+              winargs.height = 100;
+          } else if (key == "width") {
+            winargs.width = val.toInt() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
+            if (winargs.width > screen.width())    // should actually check workspace
+              winargs.width = screen.width();
+            if (winargs.width < 100)
+              winargs.width = 100;
+          } else {
+            goto boolargs;
+          }
+          continue;
+        } else {
+          // leaving away the value gives true
+          key = s.stripWhiteSpace().lower();
+          val = "1";
+        }
+      boolargs:
+        if (key == "menubar")
+          winargs.menuBarVisible = (val == "1" || val == "yes");
+        else if (key == "toolbar")
+          winargs.toolBarsVisible = (val == "1" || val == "yes");
+        else if (key == "location")  // ### missing in WindowArgs
+          winargs.toolBarsVisible = (val == "1" || val == "yes");
+        else if (key == "status" || key == "statusbar")
+          winargs.statusBarVisible = (val == "1" || val == "yes");
+        else if (key == "resizable")
+          winargs.resizable = (val == "1" || val == "yes");
+        else if (key == "fullscreen")
+          winargs.fullscreen = (val == "1" || val == "yes");
+      }
+    }
+
+    // prepare arguments
+    KURL url;
+    if (!str.isEmpty())
+    {
+      KHTMLPart* p = Window::retrieveActive(exec)->m_part;
+      if ( p )
+        url = p->htmlDocument().completeURL(str).string();
+    }
+
+    KParts::URLArgs uargs;
+    KHTMLPart *p = m_part;
+    uargs.frameName = !args[1].isNull() ?
+                      args[1].toString(exec).qstring()
+                      : QString("_blank");
+    if ( uargs.frameName == "_top" )
+    {
+      while ( p->parentPart() )
+        p = p->parentPart();
+      p->scheduleRedirection(-1, url.url(), false/*don't lock history*/);
+      return Window::retrieve(p);
+    }
+    if ( uargs.frameName == "_parent" )
+    {
+      if ( p->parentPart() )
+        p = p->parentPart();
+      p->scheduleRedirection(-1, url.url(), false/*don't lock history*/);
+      return Window::retrieve(p);
+    }
+    uargs.serviceType = "text/html";
+
+    // request window (new or existing if framename is set)
+    KParts::ReadOnlyPart *newPart = 0L;
+    emit p->browserExtension()->createNewWindow("", uargs,winargs,newPart);
+    if (newPart && newPart->inherits("KHTMLPart")) {
+      KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
+      //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
+      khtmlpart->setOpener(p);
+      khtmlpart->setOpenedByJS(true);
+      if (khtmlpart->document().isNull()) {
+        khtmlpart->begin();
+        khtmlpart->write("<HTML><BODY>");
+        khtmlpart->end();
+        if ( p->docImpl() ) {
+          kdDebug(6070) << "Setting domain to " << p->docImpl()->domain().string() << endl;
+          khtmlpart->docImpl()->setDomain( p->docImpl()->domain());
+          khtmlpart->docImpl()->setBaseURL( p->docImpl()->baseURL() );
+        }
+      }
+      uargs.serviceType = QString::null;
+      if (uargs.frameName == "_blank")
+        uargs.frameName = QString::null;
+      if (!url.isEmpty())
+        emit khtmlpart->browserExtension()->openURLRequest(url,uargs);
+      return Window::retrieve(khtmlpart); // global object
+    } else
+      return Undefined();
+  }
+}
+
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
   KJS_CHECK_THIS( Window, thisObj );
@@ -1034,153 +1189,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     else
         return Null();
   case Window::Open:
-  {
-    KConfig *config = new KConfig("konquerorrc");
-    config->setGroup("Java/JavaScript Settings");
-    int policy = config->readUnsignedNumEntry( "WindowOpenPolicy", 0 ); // 0=allow, 1=ask, 2=deny, 3=smart
-    delete config;
-    if ( policy == 1 ) {
-      if ( KMessageBox::questionYesNo(widget,
-                                      i18n( "This site is trying to open up a new browser "
-                                            "window using Javascript.\n"
-                                            "Do you want to allow this?" ),
-                                      i18n( "Confirmation: Javascript Popup" ) ) == KMessageBox::Yes )
-        policy = 0;
-    } else if ( policy == 3 ) // smart
-    {
-      // window.open disabled unless from a key/mouse event
-      if (static_cast<ScriptInterpreter *>(exec->interpreter())->isWindowOpenAllowed())
-        policy = 0;
-    }
-    if ( policy != 0 ) {
-      return Undefined();
-    } else {
-      KParts::WindowArgs winargs;
-
-      // scan feature argument
-      v = args[2];
-      QString features;
-      if (!v.isNull()) {
-        features = v.toString(exec).qstring();
-        // specifying window params means false defaults
-        winargs.menuBarVisible = false;
-        winargs.toolBarsVisible = false;
-        winargs.statusBarVisible = false;
-        QStringList flist = QStringList::split(',', features);
-        QStringList::ConstIterator it = flist.begin();
-        while (it != flist.end()) {
-          QString s = *it++;
-          QString key, val;
-          int pos = s.find('=');
-          if (pos >= 0) {
-            key = s.left(pos).stripWhiteSpace().lower();
-            val = s.mid(pos + 1).stripWhiteSpace().lower();
-
-            int scnum = QApplication::desktop()->screenNumber(widget->topLevelWidget());
-
-	    QRect screen = QApplication::desktop()->screenGeometry(scnum);
-            if (key == "left" || key == "screenx") {
-              winargs.x = val.toInt() + screen.x();
-	      if (winargs.x < screen.x() || winargs.x > screen.right())
-		  winargs.x = screen.x(); // only safe choice until size is determined
-            } else if (key == "top" || key == "screeny") {
-              winargs.y = val.toInt() + screen.y();
-	      if (winargs.y < screen.y() || winargs.y > screen.bottom())
-		  winargs.y = screen.y(); // only safe choice until size is determined
-            } else if (key == "height") {
-              winargs.height = val.toInt() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
-	      if (winargs.height > screen.height())  // should actually check workspace
-		  winargs.height = screen.height();
-              if (winargs.height < 100)
-		  winargs.height = 100;
-            } else if (key == "width") {
-              winargs.width = val.toInt() + 2*qApp->style().pixelMetric( QStyle::PM_DefaultFrameWidth ) + 2;
-	      if (winargs.width > screen.width())    // should actually check workspace
-		  winargs.width = screen.width();
-              if (winargs.width < 100)
-		  winargs.width = 100;
-            } else {
-              goto boolargs;
-	    }
-            continue;
-          } else {
-            // leaving away the value gives true
-            key = s.stripWhiteSpace().lower();
-            val = "1";
-          }
-        boolargs:
-          if (key == "menubar")
-            winargs.menuBarVisible = (val == "1" || val == "yes");
-          else if (key == "toolbar")
-            winargs.toolBarsVisible = (val == "1" || val == "yes");
-          else if (key == "location")  // ### missing in WindowArgs
-            winargs.toolBarsVisible = (val == "1" || val == "yes");
-          else if (key == "status" || key == "statusbar")
-            winargs.statusBarVisible = (val == "1" || val == "yes");
-          else if (key == "resizable")
-            winargs.resizable = (val == "1" || val == "yes");
-          else if (key == "fullscreen")
-            winargs.fullscreen = (val == "1" || val == "yes");
-        }
-      }
-
-      // prepare arguments
-      KURL url;
-      if (!str.isEmpty())
-      {
-        KHTMLPart* p = Window::retrieveActive(exec)->m_part;
-        if ( p )
-          url = p->htmlDocument().completeURL(str).string();
-      }
-
-      KParts::URLArgs uargs;
-      uargs.frameName = !args[1].isNull() ?
-                        args[1].toString(exec).qstring()
-                        : QString("_blank");
-      if ( uargs.frameName == "_top" )
-      {
-          while ( part->parentPart() )
-              part = part->parentPart();
-          part->scheduleRedirection(-1, url.url(), false/*don't lock history*/);
-          return Window::retrieve(part);
-      }
-      if ( uargs.frameName == "_parent" )
-      {
-          if ( part->parentPart() )
-              part = part->parentPart();
-          part->scheduleRedirection(-1, url.url(), false/*don't lock history*/);
-          return Window::retrieve(part);
-      }
-      uargs.serviceType = "text/html";
-
-      // request window (new or existing if framename is set)
-      KParts::ReadOnlyPart *newPart = 0L;
-      emit part->browserExtension()->createNewWindow("", uargs,winargs,newPart);
-      if (newPart && newPart->inherits("KHTMLPart")) {
-        KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
-        //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
-        khtmlpart->setOpener(part);
-        khtmlpart->setOpenedByJS(true);
-        if (khtmlpart->document().isNull()) {
-          khtmlpart->begin();
-          khtmlpart->write("<HTML><BODY>");
-          khtmlpart->end();
-          if ( part->docImpl() ) {
-            kdDebug(6070) << "Setting domain to " << part->docImpl()->domain().string() << endl;
-            khtmlpart->docImpl()->setDomain( part->docImpl()->domain());
-            khtmlpart->docImpl()->setBaseURL( part->docImpl()->baseURL() );
-          }
-        }
-        uargs.serviceType = QString::null;
-        if (uargs.frameName == "_blank")
-          uargs.frameName = QString::null;
-        if (!url.isEmpty())
-          emit khtmlpart->browserExtension()->openURLRequest(url,uargs);
-        return Window::retrieve(khtmlpart); // global object
-      } else
-        return Undefined();
-    }
-  }
+    return window->openWindow(exec, args);
   case Window::ScrollBy:
     if(args.size() == 2 && widget)
       widget->scrollBy(args[0].toInt32(exec), args[1].toInt32(exec));
