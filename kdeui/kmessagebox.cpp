@@ -94,7 +94,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon, const 
     // Calculate a proper size for the text.
     {
        QSimpleRichText rt(qt_text, dialog->font());
-       int scr = dialog ? QApplication::desktop()->screenNumber(dialog) : QApplication::desktop()->primaryScreen();
+       int scr = QApplication::desktop()->screenNumber(dialog);
        
        pref_width = QApplication::desktop()->screenGeometry(scr).width() / 3;
        rt.setWidth(pref_width);
