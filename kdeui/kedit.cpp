@@ -5,6 +5,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  1999/01/15 09:30:57  kulow
+ * it's official - kdelibs builds with srcdir != builddir. For this I
+ * automocifized it, the generated rules are easier to maintain than
+ * selfwritten rules. I have to fight with some bugs of this tool, but
+ * generally it's better than keeping them updated by hand.
+ *
  * Revision 1.5  1997/06/21 11:10:12  kalle
  * Kalle: KEdit restores file permissions when saving
  * KIconLoader patch (not binary compatible!)
@@ -486,7 +492,7 @@ const char *KEdit::getName(){
 void KEdit::selectFont(){
  
 
-  QFont font = this->font();//QFont("Times",18,QFont::Bold);
+  QFont font = this->font();
   KFontDialog::getFont(font);
   this->setFont(font);
 

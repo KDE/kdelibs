@@ -27,7 +27,7 @@
 #include <qmessagebox.h>
 #include <qradiobutton.h>
 
-#include <kapp.h>
+#include <kglobal.h>
 #include <klocale.h>
 #include <kbuttonbox.h>
 #include <kckey.h>
@@ -460,7 +460,10 @@ KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
 	
 	lNotConfig = new QLabel(fCArea);
 	lNotConfig->resize(0,0);
-	lNotConfig->setFont( QFont("Helvetica", 14, QFont::Bold) );
+	QFont f = KGlobal::generalFont();
+	f.setPointSize(f.pointSize()+2);
+	f.setBold(true);
+	lNotConfig->setFont( f );
 	lNotConfig->setAlignment( AlignCenter );
 	lNotConfig->setFrameStyle( QFrame::Panel | QFrame::Sunken );
 	if ( wList->count()==0 )

@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.19  1999/06/16 07:47:46  kulow
+ * fixing some misc warnings
+ * in trader.cc I had to change getFirst() -> first(). Don't know why
+ *
  * Revision 1.18  1999/04/19 18:28:16  cschlaeg
  * sizeHint() added; showTab() now also selects the tab; paintEvent updated to
  * match Qt 2.0 style frame
@@ -135,7 +139,6 @@ KTabCtl::KTabCtl(QWidget *parent, const char *name)
     
     blBorder = TRUE;
 
-    //    setFont(QFont("helvetica")); //BL: Why force a font ?
 }
 
 KTabCtl::~KTabCtl()

@@ -34,7 +34,7 @@
 
 #include <qpainter.h>
 #include <qstring.h>
-#include <kapp.h>
+#include <kglobal.h>
 #include <klocale.h>
 
 #include "kdatetbl.h"
@@ -93,14 +93,16 @@ void KDateTable::paintCell( QPainter *p, int row, int col )
   if (row==0) 
     { // paint headline
       p->setPen(darkBlue);
-      p->setFont(QFont("Arial", fontsize, QFont::Bold, false));
+      QFont f = KGlobal::generalFont();
+      f.setBold(true);
+      p->setFont(f);
       p->drawText(0, 0, w, h, AlignCenter, Days[col]);
       p->setPen(black);
       p->moveTo(0, h-1);
       p->lineTo(w-1, h-1);
     } else { // paint day cell
       int nDay = dayNum(row, col);
-      p->setFont(QFont("Arial", fontsize));
+      p->setFont(KGlobal::generalFont());
       /* Will be implemented the next time: the preset date
        * will be drawn with a gray background to give feedback 
        * to the user. --Mirko

@@ -61,7 +61,7 @@ extern "C" {
   // ^^^^^^^^^^^^^^^^^^^
 	   }
 #include <qbitmap.h>
-#include <kapp.h>
+#include <kglobal.h>
 #include <klocale.h>
 
 // Mirko, March 17 1998:
@@ -159,9 +159,13 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
 		     white,      // white text
 		     old_cg.base());
   m_header->setPalette(QPalette(new_cg,new_cg,new_cg));
-   
-  m_footer->setFont(QFont("Arial", fontsize, QFont::Bold));
-  m_header->setFont(QFont("Times", fontsize+2/*, QFont::Bold*/));   
+  
+  QFont f = KGlobal::generalFont();
+  f.setBold(true);
+  m_footer->setFont(f);
+  f = KGlobal::generalFont();
+  f.setPointSize(f.pointSize()+2);
+  m_header->setFont(f);   
 }
 
 
