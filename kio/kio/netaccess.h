@@ -28,6 +28,7 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <kurl.h>
+#include <kio/global.h>
 
 namespace KIO {
 
