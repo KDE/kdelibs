@@ -136,8 +136,21 @@ setEncoding(int) instead.
 
 <H4>Accelerators Keys</H4>
 <h5>KAccel</h5>
+The following methods of been depricated, and if KDE_NO_COMPAT is defined they will
+not be available.
 <ul>
-	<li> KAccel::changeMenuAccel() has been depricated, because it was
+	<li> KAccel::insertItem() and KAccel::connectItem().
+<pre>
+	- kaccel->insertItem( i18n("Scroll Up"), "Scroll Up", "Up" );
+	- kaccel->connectItem( "Scroll Up", this, SLOT(scrollUp()) );
+	+ kaccel->insert( "Scroll Up", i18n("Scroll Up"), QString::null,
+		Key_Up, this, SLOT(scrollUp()) );
+</pre>
+	Note that a What's This parameter is now a part of the insert function.
+	You might replace the QString::null paramter with
+	<pre> i18n("Scroll the current document's contents up by one line.") </pre>
+	for example.</li>
+	<li> KAccel::changeMenuAccel() has been depricated because it was
 	never used in cvs.  If you've used it in your application, the following
 	can replace it.  Note, however, that this would be handled automatically
 	by using KAction instead.
@@ -147,10 +160,15 @@ setEncoding(int) instead.
 </pre>
 	</li>
 </ul>
+The preferred means of defining a shortcut, however, is to use <b>KAction</b>.
+<pre>
+	new KAction( i18n("Scroll Up"), Key_Up,
+		this, SLOT(scrollUp()), actionCollection(), "Scroll Up" );
+</pre>
 
 <h5>KGlobalAccel</h5>
 <ul>
-	<li>Call <i>updateConnections()</i> after all <i>insertAction()</i> or
+	<li>Call <i>updateConnections()</i> after all <i>insert()</i> or
 	<i>insertItem()</i> (depricated) calls have been made.  This function then performs the
 	actually key grabbing.  In order to improve program startup speed,
 	grabbing is no longer done automatically: usually <i>readSettings()</i>
@@ -171,7 +189,7 @@ setEncoding(int) instead.
 			<tr><th>Old</th><th>New</th></tr>
 			<tr><td>QString action(StdAccel id)</td><td>QString name(StdAccel id)</td></tr>
 			<tr><td>int defaultKey(StdAccel accel)</td><td>KShortcut shortcutDefault(StdAccel id)</td></tr>
-			<tr><td>QString description(StdAccel id)</td><td>QString desc(StdAccel id)</td></tr>
+			<tr><td>QString description(StdAccel id)</td><td>QString label(StdAccel id)</td></tr>
 			<tr><td>bool isEqual(const QKeyEvent* pEvent, int keyQt)</td>
 				<td>The best method for replacing this varies.  One possibility is to use
 				<i>KKey(const QKeyEvent*) == KKey(int)</i>.  Another is to use
@@ -189,7 +207,16 @@ This class has been removed, Qt offers the same functionality.
 Use QPopupMenu/KPopupMenu or the XML-UI method for building menus.
 
 <H4>KAction</H4>
-<i>menuId()</i> has been depricated.  Use <i>itemId()</i>.
+<ul>
+	<li>The following methods have been depricated and will need to be
+	replaced if KDE_NO_COMPAT is defined.
+		<table border=1>
+			<tr><th>Old</th><th>New</th></tr>
+			<tr><td>int accel()</td><td>const KShortcut& shortcut()</td></tr>
+			<tr><td>int menuId()</td><td>int itemId()</td></tr>
+			<tr><td>void setAccel(int)</td><td>void setShortcut(const KShortcut&)</td></tr>
+		</table></li>
+</ul>
 
 <H4>KAlphaPainter</H4>
 KAlphaPainter has been dropped, since Qt 3 has native support for
