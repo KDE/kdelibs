@@ -756,6 +756,8 @@ bool KHTMLPart::closeURL()
   d->m_bLoadEventEmitted = true; // don't want that one either
   d->m_cachePolicy = KProtocolManager::cacheControl(); // reset cache policy
 
+  disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+
   KHTMLPageCache::self()->cancelFetch(this);
   if ( d->m_doc && d->m_doc->parsing() )
   {
@@ -1552,7 +1554,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
         d->m_lastModified = QString::null; // done on-demand by lastModified()
 
     // Reset contents position
-    d->m_view->setContentsPos( 0, 0 );
+    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
   }
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
@@ -5109,8 +5111,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.docState = docState;
     d->m_extension->setURLArgs( args );
 
-    d->m_view->resizeContents( wContents,  hContents);
-    d->m_view->setContentsPos( xOffset, yOffset );
+    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
 
     m_url = u;
   }
@@ -5166,8 +5167,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     args.yOffset = yOffset;
     args.docState = docState;
 
-    d->m_view->resizeContents( wContents,  hContents);
-    d->m_view->setContentsPos( xOffset, yOffset );
+    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
 
     d->m_extension->setURLArgs( args );
     if (!KHTMLPageCache::self()->isComplete(d->m_cacheId))
@@ -6614,10 +6614,6 @@ void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
 void KHTMLPart::restoreScrollPosition()
 {
   KParts::URLArgs args = d->m_extension->urlArgs();
-  if (!args.reload) {
-    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
-    return;	// should not happen
-  }
 
   // Check whether the viewport has become large enough to encompass the stored
   // offsets. If the document has been fully loaded, force the new coordinates,

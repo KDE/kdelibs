@@ -1,3 +1,8 @@
+2004-11-05  Germain Garand  <germain@ebooksfrance.org>
+        
+        * khtml_part.cpp (closeURL/slotData/restoreState): avoid triggering 
+        full repaints of the view before the first layout is done.
+
 2004-11-05  Germain Garand  <germain@ebooksfrance.com>
 
         * css/cssstyleselector.cpp (computeFontSizes): add compensated font scale
