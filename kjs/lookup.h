@@ -240,6 +240,112 @@ namespace KJS {
       thisObj->putValueProperty(exec, entry->value, value, attr);
   }
 
+
+  /**
+   * This template method retrieves or create an object that is unique
+   * (for a given interpreter) The first time this is called (for a given
+   * property name), the Object will be constructed, and set as a property
+   * of the interpreter's global object. Later calls will simply retrieve
+   * that cached object. Note that the object constructor must take 1 argument, exec.
+   */
+  template <class ClassCtor>
+  inline KJS::Object cacheGlobalObject(ExecState *exec, const UString &propertyName)
+  {
+    ValueImp *obj = static_cast<KJS::ObjectImp*>(exec->interpreter()->globalObject().imp())->getDirect(propertyName);
+    if (obj)
+      return KJS::Object::dynamicCast(Value(obj));
+    else
+    {
+      KJS::Object newObject(new ClassCtor(exec));
+      exec->interpreter()->globalObject().put(exec, propertyName, newObject, Internal);
+      return newObject;
+    }
+  }
+
+
+  /**
+   * Helpers to define prototype objects (each of which simply implements
+   * the functions for a type of objects).
+   * Sorry for this not being very readable, but it actually saves much copy-n-paste.
+   * ParentProto is not our base class, it's the object we use as fallback.
+   * The reason for this is that there should only be ONE DOMNode.hasAttributes (e.g.),
+   * not one in each derived class. So we link the (unique) prototypes between them.
+   *
+   * Using those macros is very simple: define the hashtable (e.g. "DOMNodeProtoTable"), then
+   * DEFINE_PROTOTYPE("DOMNode",DOMNodeProto)
+   * IMPLEMENT_PROTOFUNC(DOMNodeProtoFunc)
+   * IMPLEMENT_PROTOTYPE(DOMNodeProto,DOMNodeProtoFunc)
+   * and use DOMNodeProto::self(exec) as prototype in the DOMNode constructor.
+   * If the prototype has a "parent prototype", e.g. DOMElementProto falls back on DOMNodeProto,
+   * then the last line will use IMPLEMENT_PROTOTYPE_WITH_PARENT, with DOMNodeProto as last argument.
+   */
+#define DEFINE_PROTOTYPE(ClassName,ClassProto) \
+  namespace KJS { \
+  class ClassProto : public KJS::ObjectImp { \
+    friend KJS::Object cacheGlobalObject<ClassProto>(KJS::ExecState *exec, const KJS::UString &propertyName); \
+  public: \
+    static KJS::Object self(KJS::ExecState *exec) \
+    { \
+      return cacheGlobalObject<ClassProto>( exec, "[[" ClassName ".prototype]]" ); \
+    } \
+  protected: \
+    ClassProto( KJS::ExecState *exec ) \
+      : KJS::ObjectImp( exec->interpreter()->builtinObjectPrototype() ) {} \
+    \
+  public: \
+    virtual const ClassInfo *classInfo() const { return &info; } \
+    static const ClassInfo info; \
+    KJS::Value get(KJS::ExecState *exec, const KJS::UString &propertyName) const; \
+    bool hasProperty(KJS::ExecState *exec, const KJS::UString &propertyName) const; \
+  }; \
+  const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
+  };
+
+#define IMPLEMENT_PROTOTYPE(ClassProto,ClassFunc) \
+    KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::UString &propertyName) const \
+    { \
+      /*fprintf( stderr, "%sProto::get(%s) [in macro, no parent]\n", info.className, propertyName.ascii());*/ \
+      return lookupGetFunction<ClassFunc,KJS::ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
+    } \
+    bool KJS::ClassProto::hasProperty(KJS::ExecState *exec, const KJS::UString &propertyName) const \
+    { /*stupid but we need this to have a common macro for the declaration*/ \
+      return KJS::ObjectImp::hasProperty(exec, propertyName); \
+    }
+
+#define IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto)  \
+    KJS::Value KJS::ClassProto::get(KJS::ExecState *exec, const KJS::UString &propertyName) const \
+    { \
+      /*fprintf( stderr, "%sProto::get(%s) [in macro]\n", info.className, propertyName.ascii());*/ \
+      KJS::Value val = lookupGetFunction<ClassFunc,KJS::ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
+      if ( val.type() != UndefinedType ) return val; \
+      /* Not found -> forward request to "parent" prototype */ \
+      return ParentProto::self(exec).get( exec, propertyName ); \
+    } \
+    bool KJS::ClassProto::hasProperty(KJS::ExecState *exec, const KJS::UString &propertyName) const \
+    { \
+      if (KJS::ObjectImp::hasProperty(exec, propertyName)) \
+        return true; \
+      return ParentProto::self(exec).hasProperty(exec, propertyName); \
+    }
+
+#define IMPLEMENT_PROTOFUNC(ClassFunc) \
+  namespace KJS { \
+  class ClassFunc : public ObjectImp { \
+  public: \
+    ClassFunc(KJS::ExecState *exec, int i, int len) \
+       : ObjectImp( /*proto? */ ), id(i) { \
+       KJS::Value protect(this); \
+       put(exec,"length",Number(len),DontDelete|ReadOnly|DontEnum); \
+    } \
+    /** You need to implement that one */ \
+    virtual KJS::Value call(KJS::ExecState *exec, KJS::Object &thisObj, const KJS::List &args); \
+  private: \
+    int id; \
+  }; \
+  };
+
+
+
   /*
    * List of things to do when porting an objectimp to the 'static hashtable' mechanism:
    * - write the hashtable source, between @begin and @end
