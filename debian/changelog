@@ -3,6 +3,7 @@ kdelibs (4:2.1-20010122-1) unstable; urgency=low
    * more upstream bug fixes
      more html and js fixes
    * Fixing shlibs
+   * Fixing confliction problem (Closes: #83083)
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 22 Jan 2001 00:10:00 -0700
 
