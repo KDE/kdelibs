@@ -6,7 +6,7 @@
 <BODY>
 
 <H2>Porting Applications to KDE 2.0</H2>
-<H3>Last Modified on October 22, 2000</H3>
+<H3>Last Modified on November 28, 2000</H3>
 This document contains the changes you have to apply to programs written for
 KDE1.1 when you want to port them to KDE2.0.<P>
 
@@ -118,12 +118,20 @@ or <a href="http://doc.trolltech.com/porting.html">this page online</a>.<P>
 
   kde_*dir() have been removed as they require a unique top level directory
   for all applications (KDEDIR). This concept doesn't exist in KDE 2.0
-  any more.<P>
+  any more, it has been replaced with "multiple levels of directories",
+  set in KDEDIRS, so that it's possible to have global settings and
+  group settings, applied before user settings.<P>
 
   Replace code that uses kde_*dir() + filename with calls to
   locate(filetype, filename) where filetype is what * used to be
   in kde_*dir(). locate is defined as function in kstddirs.h to call
-  KGlobal::dirs()-&gt;findResource<P>
+  KGlobal::dirs()-&gt;findResource.<P>
+
+  Use locateLocal to get the path of a writable file. For instance,
+  KApplication::localconfigdir()+filename is now locateLocal( "config", filename ),
+  but for most cases, simply using KGlobal::config() is enough, if you're happy
+  with saving the application's configuration into appnamerc. locateLocal should be
+  reserved for finding/creating a config file with a different name.<P>
 
   generalFont() and fixedFont() are deprecated and will be removed soon.
   Please use KGlobalSettings::generalFont() and KGlobalSettings::fixedFont() instead.<P>
