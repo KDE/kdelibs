@@ -34,7 +34,6 @@
 #include "kab.h"
 #include "debug.h"
 #include <kprocess.h>
-#include <kfm.h>
 #include "editentry.h"
 #include "functions.h"
 #include "SearchDialog.h"
@@ -61,8 +60,7 @@ const unsigned int AddressWidget::ButtonSize=24;
 AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   : QWidget(parent, name),
     AddressBook(readonly_),
-    showSearchResults(false),
-    kfm(0)
+    showSearchResults(false)
 {
   register bool GUARD; GUARD=true;
   // ############################################################################
@@ -790,22 +788,19 @@ void AddressWidget::enableWidgets()
 void AddressWidget::browse()
 {
   register bool GUARD; GUARD=false;
-  LG(GUARD, "AddressWidget::browse: calling kfm.\n");
+  LG(GUARD, "AddressWidget::browse: calling kfmclient.\n");
   // ############################################################################
   Entry entry;
-  if(kfm==0)
-    {
+
       if(noOfEntries()!=0)
 	{
 	  currentEntry(entry);
 	  CHECK(currentEntry(entry));
 	  if(!entry.URL.empty())
 	    {
-	      kfm=new KFM;
-	      CHECK(kfm!=0);
-	      kfm->openURL(entry.URL.c_str());
-	      delete kfm;
-	      kfm=0;
+	      QString cmd = "kfmclient openURL ";
+	      cmd += entry.URL.c_str();
+	      system(cmd);
 	      emit(setStatus(i18n("Opened browser window.")));
 	    } else {
 	      qApp->beep();
@@ -815,13 +810,8 @@ void AddressWidget::browse()
 	  qApp->beep();
 	  emit(setStatus(i18n("No entries.")));
 	}
-    } else {
-      QMessageBox::information
-	(this, i18n("Sorry"), 
-	 i18n("The filemanager is busy, please try again."));
-    }
+
   // ############################################################################
-  ENSURE(kfm==0);
 } 
 
 

@@ -28,8 +28,6 @@ class QTimer;
 class BusinessCard;
 class SearchResults;
 
-class KFM;
-
 class AddressWidget : public QWidget, public AddressBook
 {
   // ############################################################################
@@ -82,7 +80,6 @@ protected:
   bool showSearchResults;
   SearchResults *searchResults; // zero if off
   // data elements
-  KFM* kfm;
   string tmpFile;
   bool readonlyGUI;
   // methods
