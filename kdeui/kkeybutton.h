@@ -24,7 +24,7 @@
 #include <kshortcut.h>
 
 /**
- * A push button that looks like a keyboard key.
+ * @short A push button that looks like a keyboard key.
  *
  * You must call setShortcut() to set the widget's currently displayed key.
  * You can call captureShortcut() to get a new shortcut from the user.
@@ -34,7 +34,6 @@
  * is valid.  If it is, you will need to call setShortcut() with the new
  * value in order make it the key currently displayed.
  *
- * @short A push button that looks like a keyboard key.
  * @author Mark Donohoe <donohoe@kde.org>
  * @internal
  */
@@ -63,7 +62,7 @@ class KDEUI_EXPORT KKeyButton: public QPushButton
 	* Reimplemented for internal purposes.
 	*/
 	void setText( const QString& text );
- 
+
  signals:
 	void capturedShortcut( const KShortcut& );
 
