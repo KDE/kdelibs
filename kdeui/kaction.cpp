@@ -526,6 +526,18 @@ void KAction::setText( const QString& text )
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     setText( i, text );
+
+  KActionCollection *coll = parentCollection();
+  if (coll)
+  {
+    QDict<KKeyEntry> *keys = coll->keyDict();
+    KKeyEntry *entry = keys->find( name() );
+    if (entry)
+    {
+      entry->descr= plainText();
+      keys->replace( name(), entry );
+    }
+  }   
 }
 
 void KAction::setText( int i, const QString &text )
