@@ -24,6 +24,7 @@
 #include <qvaluelist.h>
 
 #include "addressee.h"
+#include "field.h"
 
 namespace KABC {
 
@@ -135,6 +136,8 @@ class AddresseeList : public QValueList<Addressee>
      * @param c    the criterion by which should be sorted 
      */
     void sortBy( SortingCriterion c );
+
+    void sortByField( Field *field );
 
     /**
      * Sorts this list by its active sorting criterion. This normally is the 

@@ -210,3 +210,29 @@ void AddresseeList::sortByTrait()
     --i2;
   }
 }
+
+void AddresseeList::sortByField( Field *field )
+{
+  iterator i1 = begin();
+  iterator endIt = end();
+  --endIt;
+  if ( i1 == endIt ) // don't need sorting
+    return;
+
+  iterator i2 = endIt;
+  while( i1 != endIt ) {
+    iterator j1 = begin();
+    iterator j2 = j1;
+    ++j2;
+    while( j1 != i2 ) {
+      if ( !mReverseSorting && ( QString::localeAwareCompare( field->value( *j2 ), field->value( *j1 ) ) < 0 )
+           || mReverseSorting && ( QString::localeAwareCompare( field->value( *j1 ), field->value( *j2 ) ) < 0 ) ) {
+        qSwap( *j1, *j2 );
+      }
+      ++j1;
+      ++j2;
+    }
+    ++i1;
+    --i2;
+  }
+}
