@@ -46,6 +46,7 @@ public:
    KConfig *config;
    KConfig *http_config;
    KPAC *pac;
+   bool init_busy;
    KURL url;
    QString protocol;
    QString proxy;
@@ -56,7 +57,7 @@ public:
 static KStaticDeleter<KProtocolManagerPrivate> kpmpksd;
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
- : config(0), http_config(0), pac(0) 
+ : config(0), http_config(0), pac(0), init_busy(false) 
 { 
    kpmpksd.setObject(this);        
 }
@@ -112,26 +113,30 @@ KPAC *KProtocolManager::pac()
  
   if (!d->pac)
   {
+    if (d->init_busy) return 0;
+    d->init_busy = true;
+
     KLibrary *lib = KLibLoader::self()->library("libkpac");
     if (lib)
     {
       KPAC *(*create_pac)() = (KPAC *(*)())(lib->symbol("create_pac"));
       if (create_pac)
       {
-        d->pac = create_pac();
-        // Need to set d->pac here to avoid infinite recursion
+        KPAC *newPAC = create_pac();
         switch (type)
         {
           case PACProxy:
-            d->pac->init( proxyConfigScript() );
+            newPAC->init( proxyConfigScript() );
             break;
           case WPADProxy:
-            d->pac->discover();
+            newPAC->discover();
           default:
             break;
         }
+        d->pac = newPAC;
       }
     }
+    d->init_busy = false;
   }
   return d->pac;
 }
