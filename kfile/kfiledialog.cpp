@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 #include <qaccel.h>
+#include <qbitmap.h>
 #include <qbuttongroup.h>
 #include <qcollection.h>
 #include <qcolor.h>
@@ -126,7 +127,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     d->myStatusLine = 0;
     KDirComboBox *combo = new KDirComboBox( this, "path combo" );
-    connect( combo, SIGNAL( urlActivated( const QString&  )), 
+    connect( combo, SIGNAL( urlActivated( const QString&  )),
 	     this,  SLOT( comboActivated( const QString& )));
     QToolTip::add( combo, i18n("Quick directories") );
     d->pathCombo = combo;
@@ -1075,28 +1076,28 @@ KDirComboBox::KDirComboBox( QWidget *parent, const char *name )
     : QComboBox( parent, name )
 {
     itemList.setAutoDelete( true );
-    
+
     desktopDir = QDir::homeDirPath() + QString::fromLocal8Bit("/Desktop");
-    
+
     rootItem = new KDirComboItem;
     homeItem = new KDirComboItem;
     desktopItem = new KDirComboItem;
-    
+
     rootItem->url = QDir::rootDirPath();
     rootItem->text = i18n("Root Directory: %1").arg(rootItem->url);
-    rootItem->icon = KMimeType::pixmapForURL( rootItem->url, 0, 
+    rootItem->icon = KMimeType::pixmapForURL( rootItem->url, 0,
 					      KIconLoader::Small );
 
     homeItem->url = QDir::homeDirPath();
     homeItem->text = i18n("Home Directory: %1").arg(homeItem->url);
-    homeItem->icon = KMimeType::pixmapForURL( homeItem->url, 0, 
+    homeItem->icon = KMimeType::pixmapForURL( homeItem->url, 0,
 					      KIconLoader::Small );
-    
+
     desktopItem->url= desktopDir;
     desktopItem->text = i18n("Desktop: %1").arg(desktopDir);
-    desktopItem->icon = KMimeType::pixmapForURL( desktopItem->url, 0, 
+    desktopItem->icon = KMimeType::pixmapForURL( desktopItem->url, 0,
 						 KIconLoader::Small );
-    
+
     connect( this, SIGNAL( activated( int )), SLOT( slotActivated( int )));
     opendirPix = KGlobal::iconLoader()->loadIcon( QString::fromLocal8Bit("folder_open"), KIconLoader::Small );
 }
@@ -1113,7 +1114,7 @@ void KDirComboBox::setCurrentURL( const KURL& url )
 {
     if ( url.isEmpty() )
 	return;
-    
+
     itemList.clear();
     QString urlstr = url.path( +1 ); // we want a / at the end
     bool isLocal = url.isLocalFile();
@@ -1121,17 +1122,28 @@ void KDirComboBox::setCurrentURL( const KURL& url )
     int startpos = 0;
     int protopos = url.url().find( '/', 0 );
     KDirComboItem *item = 0L;
+    // QBitmap b;
 
     if ( underDesktop )
 	startpos = desktopDir.length();
-    
+
     int pos = startpos;
+    int indent = 2;
+    int w = opendirPix.width();
+    int h = opendirPix.height();
+    if ( w == 0 ) { // empty pixmap
+	w = 20;
+	h = 15;
+    }
 
     // split the URL into directories and create KDirComboItems out of them
     while( pos >= 0 ) {
 	int newpos = urlstr.find('/', pos + 1);
-	if (newpos < 0)
+	if (newpos < 0) {
+	    if ( item )
+		item->text = item->url; // the current item shows the full path
 	    break;
+	}
 
 	item = new KDirComboItem;
 	item->url = urlstr.left( newpos );
@@ -1139,7 +1151,18 @@ void KDirComboBox::setCurrentURL( const KURL& url )
 	    item->url.prepend( url.url().left( protopos ) );
 
 	// item->icon = KMimeType::pixmapForURL(item->url, 0, KIconLoader::Small);
+	
 	item->icon = opendirPix;
+	/*
+	int pixw = (indent -1) * w;
+	QPixmap indentPix( indent * w, h );
+	indentPix.fill( Qt::white );
+	bitBlt( &indentPix, pixw, 0, &opendirPix, 0, 0, w,h, CopyROP );
+	b = indentPix;
+	indentPix.setMask( b );
+	item->icon = indentPix;
+	// indent++;
+	*/
 	item->text = urlstr.mid(pos + 1, newpos - pos -1);
 
 	itemList.append( item );
@@ -1147,24 +1170,25 @@ void KDirComboBox::setCurrentURL( const KURL& url )
 	
 	// debug("url: %s, text: %s", item->url.ascii(), item->text.ascii());
     }
-    
+
     clear();
 
     int id = 0;
     // Desktop
     insertItem( desktopItem->icon, desktopItem->text, id );
     itemMapper.insert( id, desktopItem );
-    
+
     // Root
     if ( !underDesktop ) {
 	id = count();
-	if ( url.path( -1 ) == QDir::rootDirPath() )
+	//	if ( url.path( -1 ) == QDir::rootDirPath() )
+	if ( isLocal )
 	    insertItem( opendirPix, rootItem->text, id );
 	else
 	    insertItem( rootItem->icon, rootItem->text, id );
 	itemMapper.insert( id, rootItem );
     }
-    
+
     // Dirs
     QListIterator<KDirComboItem> it( itemList );
     for ( ; (item = it.current()); ++it ) {
@@ -1174,7 +1198,7 @@ void KDirComboBox::setCurrentURL( const KURL& url )
     }
 
     int current = count() -1;
-    
+
     // Root below Dirs
     if ( underDesktop ) {
 	id = count();
@@ -1188,7 +1212,7 @@ void KDirComboBox::setCurrentURL( const KURL& url )
 void KDirComboBox::slotActivated( int index )
 {
     KDirComboItem *item = itemMapper[ index ];
-    
+
     if ( item )
 	emit urlActivated( item->url );
 }
