@@ -267,7 +267,7 @@ public:
     // internal
     NodeImpl *findElement( Id id );
 
-     bool prepareMouseEvent( int x, int y, MouseEvent *ev );
+    bool prepareMouseEvent( bool readonly, int x, int y, MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short nodeType );

@@ -1374,11 +1374,11 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     }
 }
 
-bool DocumentImpl::prepareMouseEvent( int _x, int _y, MouseEvent *ev )
+bool DocumentImpl::prepareMouseEvent( bool readonly, int _x, int _y, MouseEvent *ev )
 {
     if ( m_render ) {
         assert(m_render->isRoot());
-        RenderObject::NodeInfo renderInfo(false, ev->type == MousePress);
+        RenderObject::NodeInfo renderInfo(readonly, ev->type == MousePress);
         bool isInside = m_render->nodeAtPoint(renderInfo, _x, _y, 0, 0);
         ev->innerNode = renderInfo.innerNode();
 
@@ -1397,7 +1397,8 @@ bool DocumentImpl::prepareMouseEvent( int _x, int _y, MouseEvent *ev )
 //            qDebug("url: *%s*", ev->url.string().latin1());
         }
 
-        updateRendering();
+        if (!readonly)
+            updateRendering();
 
         return isInside;
     }
