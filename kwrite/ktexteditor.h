@@ -73,7 +73,14 @@ signals:
   void textChanged();
 
 protected:
+  /**
+   * Call this method in your document implementation whenever you created a new view.
+   * (like in @ref createView )
+   */
   virtual void addView( View *view );
+  /**
+   * Call this method in your document implementation whenever you delete a view.
+   */
   virtual void removeView( View *view );
 
 private slots:
