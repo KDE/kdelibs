@@ -46,6 +46,7 @@
 #include <kopenssl.h>
 #include <ksslpkcs12.h>
 #include <klocale.h>
+#include <ksocks.h>
 
 class KSSLPrivate {
 public:
@@ -357,7 +358,7 @@ void KSSL::setPeerInfo(int sock) {
   if (!d->proxying) {
     ksockaddr_in sa;
     socklen_t nl = sizeof(ksockaddr_in);
-    int rc = getpeername(sock, (sockaddr *)&sa, &nl);
+    int rc = KSocks::self()->getpeername(sock, (sockaddr *)&sa, &nl);
 
     if (rc != -1) {
       QString haddr;
