@@ -73,6 +73,11 @@ void CSSStyleDeclaration::setCssText( const DOMString &value )
 
 DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
 {
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyValue( propertyName );
+}
+
+DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName ) const
+{
     if(!impl) return DOMString();
     int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
     if (!id) return DOMString();
@@ -129,10 +134,14 @@ unsigned long CSSStyleDeclaration::length() const
 
 DOMString CSSStyleDeclaration::item( unsigned long index )
 {
+    return const_cast<const CSSStyleDeclaration*>( this )->item( index );
+}
+
+DOMString CSSStyleDeclaration::item( unsigned long index ) const
+{
     if(!impl) return DOMString();
     return static_cast<CSSStyleDeclarationImpl *>(impl)->item( index );
 }
-
 CSSRule CSSStyleDeclaration::parentRule() const
 {
     if(!impl) return 0;

@@ -118,7 +118,7 @@ public:
      *
      */
     DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName ) const;
-    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName ) KDE_DEPRECATED;
+    DOM::DOMString getPropertyValue ( const DOM::DOMString &propertyName );
 
     /**
      * Used to retrieve the object representation of the value of a
@@ -140,7 +140,7 @@ public:
      *
      */
     CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName ) const;
-    CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName ) KDE_DEPRECATED;
+    CSSValue getPropertyCSSValue ( const DOM::DOMString &propertyName );
 
     /**
      * Used to remove a CSS property if it has been explicitly set
@@ -177,7 +177,7 @@ public:
      *
      */
     DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName ) const;
-    DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName ) KDE_DEPRECATED;
+    DOM::DOMString getPropertyPriority ( const DOM::DOMString &propertyName );
 
     /**
      * Used to set a property value and priority within this
@@ -219,7 +219,7 @@ public:
      *
      */
     DOM::DOMString item ( unsigned long index ) const;
-    DOM::DOMString item ( unsigned long index ) KDE_DEPRECATED;
+    DOM::DOMString item ( unsigned long index );
 
     /**
      * @internal
