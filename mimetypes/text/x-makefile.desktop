@@ -3,10 +3,12 @@ Encoding=UTF-8
 MimeType=text/x-makefile
 Comment=Makefile
 Comment[af]=Maakleêr
-Comment[ca]=Fitxer del make
+Comment[bg]=Файл за изпълнение (Makefile)
+Comment[ca]=Fitxer del comandament make
 Comment[da]=Make-fil
 Comment[eo]=Muntdosiero
 Comment[es]=Script Makefile
+Comment[fi]=Makefile-tiedosto
 Comment[fr]=Fichier d'instructions Makefile
 Comment[he]=קובץ Make
 Comment[hu]=Makefájl
@@ -19,10 +21,12 @@ Comment[ro]=Fişier Makefile
 Comment[uk]=Файл Makefile
 Comment[ven]=Itanifaela
 Comment[xh]=Yenza ifayile
+Comment[xx]=xxMakefilexx
 Comment[zu]=Yenza ifayela
 Type=MimeType
 Patterns=GNUmakefile;Makefile;makefile;Makefile.*;makefile.*
 Icon=make
+X-KDE-IsAlso=text/plain
 
 [Property::X-KDE-text]
 Type=bool

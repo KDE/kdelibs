@@ -2,9 +2,28 @@
 Encoding=UTF-8
 MimeType=text/rdf
 Comment=Resource Description Framework File
+Comment[bg]=Файл за описание на ресурси (RDF)
+Comment[ca]=Fitxer estructurat per a la descripció de recursos
+Comment[cs]=Soubor RDF
+Comment[cy]=Ffeil Fframwaith Disgrifiad Adnoddau (RDF)
+Comment[da]=Ressourcebeskrivelsesrammefil-fil
+Comment[es]=Archivo de entorno descripción de recursos (RDF)
+Comment[et]=Resource Description Framework (RDF) fail
+Comment[fa]=پرونده‌ی قالب‌گار توضیح منابع
+Comment[fi]=Resurssin Framework-kuvaustiedosto
+Comment[hu]=RDF erőforrás-leíró fájl
+Comment[nl]=Resource Description Framework-bestand
+Comment[pt]=Ficheiro de Descrição de Recursos
+Comment[pt_BR]=Arquivo Principal de Descrição de Recursos 
+Comment[sk]=Definičný súbor zdroja (RDF)
+Comment[sr]=Фајл са описом ресурса Framework-а
+Comment[sv]=Resursbeskrivningsramverksfil
+Comment[uz]=RDF-файли
+Comment[xx]=xxResource Description Framework Filexx
 Icon=news
 Type=MimeType
 Patterns=*.rdf;*.RDF;
+X-KDE-IsAlso=text/plain
 
 [Property::X-KDE-text]
 Type=bool

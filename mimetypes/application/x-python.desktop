@@ -58,6 +58,7 @@ Type=MimeType
 MimeType=application/x-python
 Icon=source_py
 Patterns=*.py;
+X-KDE-IsAlso=text/plain
 
 [Property::X-KDE-text]
 Type=bool
