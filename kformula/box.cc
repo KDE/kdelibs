@@ -118,7 +118,7 @@ void box::offset(int xoffs, int yoffs)
 //far harder.
 //Now the 0 of the bounding rect represents the "midline" to which
 //everything is valigned-- Andrea Rizzi's idea
-void box::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *bc, QColor *fc)
+void box::calculate(QPainter &p, int setFontsize, QFont *f_, QColor *, QColor *fc)
 {
   if(!dirty) return;
 

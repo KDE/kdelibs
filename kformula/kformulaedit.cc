@@ -310,7 +310,7 @@ void KFormulaEdit::paintEvent(QPaintEvent *)
   QRect bound(0, 0, form->size().width() + 10, form->size().height() + 10);
   bound.moveCenter(QPoint(pm.width() / 2, pm.height() / 2));
 
-  QRect tmp = bound | oldBound;
+  // QRect tmp = bound | oldBound;
 
   //draw only what's necessary--faster
 //   bitBlt(this, tmp.left(), tmp.top(), &pm, tmp.left(), tmp.top(),tmp.width(), tmp.height());
