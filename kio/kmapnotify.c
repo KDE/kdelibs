@@ -64,11 +64,8 @@ void KDE_SetNetWmPid(Display *, Window);
   int
 XMapWindow(Display * d, Window w)
 {
-  /*fprintf(stderr, "XMapWindow\n");*/
-  if (NULL == KDE_RealXMapWindow) {
-    /*fprintf(stderr, "intercepting XMapWindow\n");*/
+  if (NULL == KDE_RealXMapWindow)
     KDE_InterceptXMapRequest(d, w);
-  }
 
   /* kdeinit needs to have libkmapnotify preloaded, so all new
    * applications spawned are in effect also preloaded.  however,
