@@ -44,7 +44,7 @@ class HTTPProtocol : public KIO::SlaveBase
 {
 public:
   HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app );
-  virtual ~HTTPProtocol() { }
+  virtual ~HTTPProtocol();
 
   enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};

@@ -455,6 +455,11 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   cleanCache();
 }
 
+HTTPProtocol::~HTTPProtocol()
+{
+  m_bKeepAlive = false;
+  http_close();
+}
 
 #ifdef DO_SSL
 void HTTPProtocol::initSSL() {
