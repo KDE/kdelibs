@@ -91,6 +91,10 @@ crash/hang).
 - maybe implement atomic setting of fragmentcount and -size
   (useful for implementing SNDCTL_DSP_SETFRAGMENT)
 
+  => support for other audio output than OSS
+
+- maybe use some code from the XMMS-Solaris plugin for the aRtsd sound output.
+  http://www.scms.rgu.ac.uk/staff/jr/computing/unix/xmms/                       
 
 4. KDE2.0.1
 
