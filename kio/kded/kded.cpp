@@ -86,7 +86,9 @@ void Kded::build()
   KSycocaFactory *stf = new KBuildServiceTypeFactory;
   KBuildServiceGroupFactory *bsgf = new KBuildServiceGroupFactory;
   (void) new KBuildServiceFactory(stf, bsgf);
-  (void) KImageIOFactory::self();
+  // We don't include KImageIOFactory here because it doesn't add
+  // new resourceList entries anyway.
+  //(void) KImageIOFactory::self();
 
   // For each factory
   QListIterator<KSycocaFactory> factit ( *m_lstFactories );

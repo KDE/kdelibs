@@ -230,7 +230,6 @@ KImageIOFactory::KImageIOFactory() : KSycocaFactory( KST_KImageIO )
      {
         formatList = new KImageIOFormatList();
      }
-     m_resourceList->append("lib");
      QStringList list = KGlobal::dirs()->findAllResources("services", "*.kimgio");
      for (QStringList::ConstIterator it = list.begin(); 
           it != list.end(); ++it) 
