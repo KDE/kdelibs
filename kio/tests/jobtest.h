@@ -21,9 +21,13 @@
 #define JOBTEST_H
 
 #include <qstring.h>
+#include <qobject.h>
+#include <kio/job.h>
 
-class JobTest
+class JobTest : public QObject
 {
+    Q_OBJECT
+
 public:
     JobTest() {}
     void setup();
@@ -34,12 +38,18 @@ public:
     void copyDirectoryToSamePartition();
     void copyFileToOtherPartition();
     void copyDirectoryToOtherPartition();
+    void listRecursive();
+
+private slots:
+    void slotEntries( KIO::Job*, const KIO::UDSEntryList& lst );
 
 private:
     QString homeTmpDir() const;
     QString otherTmpDir() const;
     void copyLocalFile( const QString& src, const QString& dest );
     void copyLocalDirectory( const QString& src, const QString& dest );
+
+    QStringList m_names;
 };
 
 #endif

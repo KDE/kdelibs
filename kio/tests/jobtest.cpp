@@ -96,6 +96,7 @@ void JobTest::runAll()
     copyDirectoryToSamePartition();
     copyFileToOtherPartition();
     copyDirectoryToOtherPartition();
+    listRecursive();
 }
 
 void JobTest::cleanup()
@@ -195,3 +196,39 @@ void JobTest::copyDirectoryToOtherPartition()
     // src is already created by copyDirectoryToSamePartition()
     copyLocalDirectory( src, dest );
 }
+
+void JobTest::listRecursive()
+{
+    const QString src = homeTmpDir();
+    KURL u;
+    u.setPath( src );
+    KIO::ListJob* job = KIO::listRecursive( u );
+    connect( job, SIGNAL( entries( KIO::Job*, const KIO::UDSEntryList& ) ),
+             SLOT( slotEntries( KIO::Job*, const KIO::UDSEntryList& ) ) );
+    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    assert( ok );
+    m_names.sort();
+    check( "listRecursive", m_names.join( "," ), ".,..,dirFromHome,dirFromHome/testfile,dirFromHome_copied,dirFromHome_copied/dirFromHome,dirFromHome_copied/dirFromHome/testfile,dirFromHome_copied/testfile,fileFromHome,fileFromHome_copied" );
+}
+
+void JobTest::slotEntries( KIO::Job*, const KIO::UDSEntryList& lst )
+{
+    for( KIO::UDSEntryList::ConstIterator it = lst.begin(); it != lst.end(); ++it ) {
+        KIO::UDSEntry::ConstIterator it2 = (*it).begin();
+        QString displayName;
+        KURL url;
+        for( ; it2 != (*it).end(); it2++ ) {
+            switch ((*it2).m_uds) {
+            case KIO::UDS_NAME:
+                displayName = (*it2).m_str;
+                break;
+            case KIO::UDS_URL:
+                url = (*it2).m_str;
+                break;
+            }
+        }
+        m_names.append( displayName );
+    }
+}
+
+#include "jobtest.moc"
