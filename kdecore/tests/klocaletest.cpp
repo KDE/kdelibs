@@ -137,6 +137,13 @@ int main( int argc, char ** argv )
   check("readTime(\"foo\")", (!ok && !time.isValid()) ?
         "invalid" : "valid", "invalid");
 
+  time = KGlobal::locale()->readTime( "11:22:33", KLocale::WithoutSeconds, &ok );
+  check("readTime(\"11:22:33\", WithoutSeconds)", (!ok && !time.isValid()) ?
+        "invalid" : "valid", "invalid");
+  time = KGlobal::locale()->readTime( "11:22", KLocale::WithoutSeconds, &ok );
+  check("readTime(\"11:22\", WithoutSeconds)", (ok && time == QTime(11, 22, 0)) ?
+        "yes" : "no", "yes");
+
   kdDebug() << "setLanguage C\n";
   KGlobal::locale()->setLanguage(QString::fromLatin1("C"));
   kdDebug() << "C: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
