@@ -304,3 +304,4 @@ extern "C"
 	return new KCMkabc( parent, "kcmkabc" );
     }
 }
+#include "kcmkabc.moc"
