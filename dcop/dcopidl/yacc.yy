@@ -605,6 +605,18 @@ type
 		*tmp = tmp->arg( *($2) );
 		$$ = tmp;
 	}
+    | type_name T_CONST %prec T_UNIMPORTANT {
+        QString* tmp = new QString("<TYPE>%1</TYPE>");
+        *tmp = tmp->arg( *($1) );
+        $$ = tmp;
+    }
+    | type_name T_CONST T_AMPERSAND { 
+        if (dcop_area) { 
+           QString* tmp = new QString("<TYPE  qleft=\"const\" qright=\"" AMP_ENTITY "\">%1</TYPE>"); 
+           *tmp = tmp->arg( *($1) ); 
+           $$ = tmp; 
+        } 
+    } 
 	| type_name T_AMPERSAND {
 	     if (dcop_area)
 		yyerror("in dcop areas are only const references allowed!");

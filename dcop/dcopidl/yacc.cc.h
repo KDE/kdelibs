@@ -171,7 +171,7 @@ typedef union YYSTYPE {
   unsigned short          _char;
   double _float;
 } YYSTYPE;
-/* Line 1248 of yacc.c.  */
+/* Line 1249 of yacc.c.  */
 #line 175 "yacc.hh"
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
