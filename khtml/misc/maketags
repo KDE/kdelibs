@@ -50,10 +50,10 @@ while (<IN>) {
     push(@b, "    \"/$up\",");
     $up =~ s/-/_/;
     print out $attr . ", ID_" . $up . "\n";
-
     print header "#define ID_" . $up . " " . $num . "\n";
-
 }
+print out "anchor, ID_A\n";
+print out "image, ID_IMG\n";
 $num = $num+1;
 print header "#define ID_TEXT $num\n";
 $num = $num+1;

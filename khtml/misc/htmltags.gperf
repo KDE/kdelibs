@@ -103,4 +103,6 @@ tt, ID_TT
 u, ID_U
 ul, ID_UL
 var, ID_VAR
+anchor, ID_A
+image, ID_IMG
 %%
