@@ -41,7 +41,6 @@ class KDirLister::KDirListerPrivate
 public:
   KDirListerPrivate()
   {
-    numJobs = 0;
     complete = false;
 
     autoUpdate = false;
@@ -74,8 +73,6 @@ public:
 
   // toplevel URL
   KURL url;
-
-  unsigned short numJobs;
 
   bool complete;
 
@@ -193,7 +190,10 @@ private slots:
   void slotUpdateResult( KIO::Job *job );
 
 private:
-  bool killJob( const QString& _url );
+
+  KIO::ListJob *jobForUrl(const QString& _url);
+  void killJob( KIO::ListJob *job );
+
   // check if _url is held by some lister and return true,
   // otherwise schedule a delayed update and return false
   bool checkUpdate( const QString& _url );

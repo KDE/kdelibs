@@ -600,8 +600,10 @@ private slots:
   void slotProcessedSize( KIO::Job *, KIO::filesize_t );
   void slotSpeed( KIO::Job *, unsigned long );
 
-  void slotJobToBeKilled( const KURL& );
-  void slotClearState();
+private:
+  void jobDone( KIO::ListJob *);
+  void jobStarted( KIO::ListJob *);
+  uint numJobs();
 
 private:
   virtual void addNewItem( const KFileItem *item );
