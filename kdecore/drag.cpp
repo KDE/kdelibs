@@ -20,6 +20,11 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.21  1998/06/19 18:18:04  kalle
+ * Cleaned up debugging messages
+ *
+ * This was my last change before KDE 1.0.
+ *
  * Revision 1.20  1998/06/16 06:03:12  kalle
  * Implemented copy constructors and assignment operators or disabled them
  *
@@ -526,7 +531,7 @@ KDNDIcon::KDNDIcon( QPixmap &_pixmap, int _x, int _y ) :
 }
 
 
-KDNDIcon::KDNDIcon( const KDNDIcon& icon )
+KDNDIcon::KDNDIcon( const KDNDIcon& icon ) : QWidget()
 {
   pixmap = icon.pixmap; // implicitly ref-counted
 }

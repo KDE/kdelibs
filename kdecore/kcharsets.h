@@ -171,7 +171,11 @@ private:
    const KCharsetEntry *entry;
    static KCharsetsData *data;
    static KCharsets *charsets;
+
+   KCharset(const KCharset&);
+   KCharset& operator=(const KCharset&);
 };
+
 
 
 /**
@@ -345,8 +349,8 @@ public:
 
 private:
   // Disallow assignment and copy-construction
-  KCharsetConverter( const KCharsetConverter& ) {};
-  KCharsetConverter& operator= ( const KCharsetConverter& ) { return *this; }
+  KCharsetConverter( const KCharsetConverter& );
+  KCharsetConverter& operator= ( const KCharsetConverter& );
 };
     
 /**

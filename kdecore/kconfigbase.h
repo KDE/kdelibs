@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.10  1998/03/29 19:07:30  kalle
+// Methods for reading and writing bool, unsigned int, long, unsigned long,
+// double, QRect, QSize, QPoint
+//
 // Revision 1.9  1998/01/18 14:38:51  kulow
 // reverted the changes, Jacek commited.
 // Only the RCS comments were affected, but to keep them consistent, I
@@ -705,10 +709,11 @@ public:
 	* @param group the new group that the KConfig/KSimpleConfig object
 	* should switch to
 	*/
-  KConfigGroupSaver( KConfigBase* config, QString group )
+  KConfigGroupSaver( KConfigBase* config, QString group ) 
+      : _config(config), _oldgroup(config->group())
 	{
-	  _config = config; 
-	  _oldgroup = _config->group();
+	  //	  _config = config; 
+	  //	  _oldgroup = _config->group();
 	  _config->setGroup( group );
 	};
 
@@ -720,6 +725,9 @@ public:
 private:
   KConfigBase* _config;
   QString _oldgroup;
+  
+  KConfigGroupSaver(const KConfigGroupSaver&);
+  KConfigGroupSaver& operator=(const KConfigGroupSaver&);
 };
 
 #endif

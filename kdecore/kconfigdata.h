@@ -1,6 +1,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.8  1998/04/26 02:24:45  ssk
+// Some classes marked internal.
+//
 // Revision 1.7  1998/01/18 14:38:53  kulow
 // reverted the changes, Jacek commited.
 // Only the RCS comments were affected, but to keep them consistent, I
@@ -83,26 +86,26 @@ public:
 };
 
 inline KConfigBaseData::KConfigBaseData() :
-    aGroupDict( 37, false )
+    aLocalAppFile(0), aGlobalAppFile(0),
+    aGroup("<default>"), aLocaleString(0), bDirty(false),
+    bLocaleInitialized(false), bReadOnly(false), aGroupDict( 37, false )
+#ifndef NDEBUG
+  , aFile(0)
+#endif
 {
   aGroupDict.setAutoDelete( true );
-  aGroup = "<default>";
-  bDirty = false;
-  bLocaleInitialized = false;
-  bReadOnly = false;
 }
   
 inline KConfigBaseData::KConfigBaseData( const char* pGlobalAppFile,
-										 const char* pLocalAppFile ) :
-    aGroupDict( 37, false )
+					 const char* pLocalAppFile ) :
+  aLocalAppFile(pLocalAppFile), aGlobalAppFile(pGlobalAppFile), 
+  aGroup("<default>"), aLocaleString(0), bDirty(false), 
+  bLocaleInitialized(false), bReadOnly(false), aGroupDict( 37, false )
+#ifndef NDEBUG
+  , aFile(0)
+#endif
 {
   aGroupDict.setAutoDelete( true );
-  aLocalAppFile = pLocalAppFile;
-  aGlobalAppFile = pGlobalAppFile;
-  aGroup = "<default>";
-  bDirty = false;
-  bLocaleInitialized = false;
-  bReadOnly = false;
 }
 
 inline KGroupIterator* KConfigBaseData::groupIterator(void)

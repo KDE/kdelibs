@@ -37,7 +37,7 @@ dnl Checks for header files.
 AC_LANG_CPLUSPLUS
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/cdefs.h fnmatch.h sysent.h strings.h sys/stat.h sys/select.h sys/socket.h linux/socket.h)
+AC_CHECK_HEADERS(fcntl.h sys/time.h unistd.h sys/cdefs.h fnmatch.h sysent.h strings.h sys/stat.h sys/select.h sys/socket.h linux/socket.h sigaction.h)
 
 dnl Checks for libraries.
 AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case
@@ -90,7 +90,7 @@ AC_HEADER_TIME
 
 dnl check if the compiler has bool
 AC_CHECK_BOOL
-AC_CHECK_GNU_EXTENSIONS
+dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions. 
 AC_CHECK_FUNCS(socket vsnprintf)

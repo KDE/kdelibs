@@ -40,6 +40,10 @@
 
 #include "kprocctrl.moc"
 
+#include "config.h"
+#ifdef HAVE_SIGACTION_H
+#include <sigaction.h>
+#endif
 
 KProcessController *theKProcessController = 0;
 

@@ -130,8 +130,8 @@ KURL::KURL()
 
 KURL::KURL( KURL & _base_url, const char * _rel_url )
 {
-    char * pos1 = index( _rel_url, ':');
-    char * pos2 = index( _rel_url, '/');
+    char * pos1 = strchr( _rel_url, ':');
+    char * pos2 = strchr( _rel_url, '/');
     
     // A full URL has a ':' and no '/' in front of the ':'
 

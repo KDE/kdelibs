@@ -491,8 +491,8 @@ protected:
 
 private:
   // Disallow assignment and copy-construction
-  KProcess( const KProcess& ) {};
-  KProcess& operator= ( const KProcess& ) { return *this; }
+  KProcess( const KProcess& );
+  KProcess& operator= ( const KProcess& );
 };
 
 /**
@@ -558,8 +558,8 @@ private:
   char *shell;
 
   // Disallow assignment and copy-construction
-  KShellProcess( const KShellProcess& ) {};
-  KShellProcess& operator= ( const KShellProcess& ) { return *this; }
+  KShellProcess( const KShellProcess& );
+  KShellProcess& operator= ( const KShellProcess& );
 };
 
 

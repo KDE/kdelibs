@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.53  1998/07/16 14:49:23  ssk
+// Removed extra KApplication:: qualification that caused an egcs warning.
+//
 // Revision 1.52  1998/07/02 15:42:43  ettrich
 // Matthias: Added a new signal
 //
@@ -833,7 +836,9 @@ public:
 
 
 private:
-  // Disallow assignment and copy-construction is already done in base class
+  
+  KApplication(const KApplication&);
+  KApplication& operator=(const KApplication&);
 };
 
 

@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.17  1998/03/28 11:02:08  kulow
+ * undef NULL for egcs's sake
+ *
  * Revision 1.16  1998/03/26 22:06:41  torben
  * Torben: Little bug fix in copy constructor
  *
@@ -137,7 +140,9 @@ public:
      * Create a KSocket with the provided file descriptor.
      * @param _sock	the file descriptor to use.
      */
-    KSocket( int _sock ) { sock = _sock; readNotifier = 0L; writeNotifier = 0L; }
+    KSocket( int _sock )
+	: sock(_sock), domain(0), 
+	readNotifier(0), writeNotifier(0) {}
     
     /** 
      * Create a socket and connect to a host.
@@ -236,6 +241,10 @@ protected:
   
     QSocketNotifier *readNotifier;
     QSocketNotifier *writeNotifier;
+
+ private:
+    KSocket(const KSocket&);
+    KSocket& operator=(const KSocket&);
 };
 
 
@@ -318,6 +327,10 @@ protected:
     int sock;  
 
     int domain;
+
+private:
+    KServerSocket(const KServerSocket&);
+    KServerSocket& operator=(const KServerSocket&);
 };
 
 #endif

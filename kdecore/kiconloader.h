@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.11  1998/08/17 10:34:03  konold
+
+   Martin K.: Fixed a typo
+
    Revision 1.10  1998/06/16 06:03:22  kalle
    Implemented copy constructors and assignment operators or disabled them
 
@@ -165,8 +169,8 @@ private:
   void addPath(QString path);
 
   // Disallow assignment and copy-construction
-  KIconLoader( const KIconLoader& ) {};
-  KIconLoader& operator= ( const KIconLoader& ) { return *this; }
+  KIconLoader( const KIconLoader& );
+  KIconLoader& operator= ( const KIconLoader& );
 
 };
 
