@@ -36,6 +36,7 @@ public:
     QStringList translatedGroups();
 
     const QStringList& groupsToUse() const { return m_groupsToUse; }
+    bool userSuppliedGroups() const { return m_userSuppliedGroups; }
 
     QStringList supportedKeys( const QString& group ) const;
     QStringList availableKeys( const QString& group ) const;
@@ -62,6 +63,7 @@ private:
 
     KFileMetaInfo *m_info;
     bool m_dirty;
+    bool m_userSuppliedGroups;
 
     QStringList m_groupsToUse;
 

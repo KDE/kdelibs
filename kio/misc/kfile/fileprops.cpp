@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2002 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (C) 2002,2003 Carsten Pfeiffer <pfeiffer@kde.org>
 
    library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -47,9 +47,9 @@ static QString beatifyValue( const QString& value )
 FileProps::FileProps( const QString& path, const QStringList& suppliedGroups )
     : m_dirty( false )
 {
-    m_info = new KFileMetaInfo( path );
-    m_groupsToUse = suppliedGroups.isEmpty() ? 
-                    m_info->groups() : suppliedGroups;
+    m_info = new KFileMetaInfo(path, QString::null, KFileMetaInfo::Everything);
+    m_userSuppliedGroups = !suppliedGroups.isEmpty();
+    m_groupsToUse = m_userSuppliedGroups ? suppliedGroups : m_info->groups();
 }
 
 FileProps::~FileProps()
@@ -119,7 +119,16 @@ bool FileProps::setValue( const QString& group,
                           const QString& key, const QString &value )
 {
     KFileMetaInfoGroup g = m_info->group( group );
+    if ( !g.isValid() )
+    {
+        if ( m_info->addGroup( group ) )
+            g = m_info->group( group );
+        else
+            return false;
+    }
+
     bool ok = g[key].setValue( value );
+    
     m_dirty |= ok;
     return ok;
 }
@@ -138,15 +147,22 @@ QStringList FileProps::preferredValues( const QString& group ) const
 
 // static helper:
 // creates strings like
-// "translatedKey:               value"
+// "group:       translatedKey:               value"
 QString FileProps::createKeyValue( const KFileMetaInfoGroup& g,
                                    const QString& key )
 {
-    static const int MAX_SPACE = 20;
+    static const int MAX_SPACE = 30;
     KFileMetaInfoItem item = g.item( key );
+    
     QString result("%1");
-    result = result.arg( item.translatedKey() + ":", -MAX_SPACE );
+    result = result.arg( (item.isValid() ? item.translatedKey() : key) + ":",
+                         -MAX_SPACE );
     result.append( beatifyValue( item.string() ) );
+
+    QString group("%1");
+    group = group.arg( g.translatedName() + ":", -MAX_SPACE );
+    result.prepend( group );
+    
     return result;
 }
 
@@ -173,7 +189,7 @@ QStringList FileProps::createKeyValueList( const KFileMetaInfoGroup& g,
 static KCmdLineOptions options[] =
 {
     { "m", 0, 0 }, // short option for --mimetype
-    { "nomimetype", I18N_NOOP("Print the mimetype of the given file(s)"), 0 },
+    { "nomimetype", I18N_NOOP("Don't print the mimetype of the given file(s)"), 0 },
 
     { "ls", 0, 0 }, // short option for --listsupported
     { "listsupported <mimetype>",
@@ -224,7 +240,7 @@ static KCmdLineOptions options[] =
       I18N_NOOP("Attempts to set the value 'value' for the metadata key "
                 "'key' for the given file(s)"), 0 },
 
-    { "groups <arguments>", I18N_NOOP("The group to get or set values from/to."),
+    { "!groups <arguments>", I18N_NOOP("The group to get or set values from/to."),
       0 },
     
     { "+[files]",
@@ -334,10 +350,25 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
             QString key = QString::fromLocal8Bit( args->getOption("getValue"));
             QStringList::ConstIterator git = props->groupsToUse().begin();
             for ( ; git != props->groupsToUse().end(); ++git )
-            {
-                cout << (*git).local8Bit() << endl;
                 cout << props->getValue( *git, key ).local8Bit() << endl;
-            }
+        }
+        
+        if ( args->isSet( "setValue" ) )
+        {
+            // separate key and value from the line "key=value"
+            QString cmd = QString::fromLocal8Bit( args->getOption("setValue"));
+            QString key = cmd.section( '=', 0, 0 );
+            QString value = cmd.section( '=', 1 );
+
+            // either use supplied groups or all supported groups 
+            // (not only the available!)
+            QStringList groups = props->userSuppliedGroups() ?
+                                 props->groupsToUse() : 
+                                 props->supportedGroups();
+            
+            QStringList::ConstIterator git = groups.begin();
+            for ( ; git != groups.end(); ++git )
+                props->setValue( *git, key, value );
         }
         
         if ( args->isSet( "allValues" ) )
@@ -346,10 +377,7 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
             QStringList groups = props->availableGroups();
             QStringList::ConstIterator group = groups.begin();
             for ( ; group != groups.end(); ++group )
-            {
-                cout << (*group).local8Bit() << endl;
                 printList( props->allValues( *group ) );
-            }
         }
         if ( args->isSet( "preferredValues" ) && !args->isSet("allValues") )
         {
@@ -357,10 +385,7 @@ static void processMetaDataOptions( const QPtrList<FileProps> propList,
             QStringList groups = props->availableGroups();
             QStringList::ConstIterator group = groups.begin();
             for ( ; group != groups.end(); ++group )
-            {
-                cout << (*group).local8Bit() << endl;
                 printList( props->preferredValues( *group ) );
-            }
         }
     }
 
@@ -435,6 +460,7 @@ int main( int argc, char **argv )
 
     processMetaDataOptions( m_props, args );
 
+    m_props.clear(); // force destruction/sync of props
     cout.flush();
     
     return 0;
