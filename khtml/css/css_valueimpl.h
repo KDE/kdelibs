@@ -31,6 +31,7 @@
 #include <qintdict.h>
 
 namespace khtml {
+    class RenderStyle;
     class CachedImage;
 };
 
@@ -152,6 +153,21 @@ public:
     unsigned short primitiveType() const {
 	    return m_type;
     }
+
+    /*
+     * computes a length in pixels out of the given CSSValue. Need the RenderStyle to get
+     * the fontinfo in case val is defined in em or ex.
+     *
+     * The metrics have to be a bit different for screen and printer output.
+     * For screen output we assume 1 inch == 72 px, for printer we assume 300 dpi
+     *
+     * this is screen/printer dependent, so we probably need a config option for this,
+     * and some tool to calibrate.
+     */
+    int computeLength( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics );
+
+    float computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics );
+
 
     // use with care!!!
     void setPrimitiveType(unsigned short type) { m_type = type; }

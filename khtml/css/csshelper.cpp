@@ -42,57 +42,6 @@
 using namespace DOM;
 using namespace khtml;
 
-int khtml::computeLength(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics )
-{
-    return ( int ) computeLengthFloat( val, style, devMetrics );
-}
-
-float khtml::computeLengthFloat(DOM::CSSPrimitiveValueImpl *val, RenderStyle *style, QPaintDeviceMetrics *devMetrics )
-{
-    unsigned short type = val->primitiveType();
-
-    float dpiY = 72.; // fallback
-    if ( devMetrics )
-        dpiY = devMetrics->logicalDpiY();
-    if ( !khtml::printpainter && dpiY < 96 )
-        dpiY = 96.;
-
-    float factor = 1.;
-    switch(type)
-    {
-    case CSSPrimitiveValue::CSS_EMS:
-       	factor = style->font().pixelSize();
-		break;
-    case CSSPrimitiveValue::CSS_EXS:
-	{
-        QFontMetrics fm = style->fontMetrics();
-        QRect b = fm.boundingRect('x');
-        factor = b.height();
-        break;
-	}
-    case CSSPrimitiveValue::CSS_PX:
-        break;
-    case CSSPrimitiveValue::CSS_CM:
-	factor = dpiY/2.54; //72dpi/(2.54 cm/in)
-        break;
-    case CSSPrimitiveValue::CSS_MM:
-	factor = dpiY/25.4;
-        break;
-    case CSSPrimitiveValue::CSS_IN:
-            factor = dpiY;
-        break;
-    case CSSPrimitiveValue::CSS_PT:
-            factor = dpiY/72.;
-        break;
-    case CSSPrimitiveValue::CSS_PC:
-        // 1 pc == 12 pt
-            factor = dpiY*12./72.;
-        break;
-    default:
-        return -1;
-    }
-    return val->getFloatValue(type)*factor;
-}
 
 DOMString khtml::parseURL(const DOMString &url)
 {

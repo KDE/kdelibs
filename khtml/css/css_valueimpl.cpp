@@ -34,8 +34,12 @@
 
 #include "misc/loader.h"
 
+#include "rendering/render_style.h"
+
 #include <kdebug.h>
 #include <qregexp.h>
+#include <qpaintdevice.h>
+#include <qpaintdevicemetrics.h>
 
 // Hack for debugging purposes
 extern DOM::DOMString getPropertyName(unsigned short id);
@@ -346,6 +350,58 @@ void CSSPrimitiveValueImpl::cleanup()
     else if(m_type == CSSPrimitiveValue::CSS_RECT)
 	m_value.rect->deref();
     m_type = 0;
+}
+
+int CSSPrimitiveValueImpl::computeLength( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics )
+{
+    return ( int ) computeLengthFloat( style, devMetrics );
+}
+
+float CSSPrimitiveValueImpl::computeLengthFloat( khtml::RenderStyle *style, QPaintDeviceMetrics *devMetrics )
+{
+    unsigned short type = primitiveType();
+
+    float dpiY = 72.; // fallback
+    if ( devMetrics )
+        dpiY = devMetrics->logicalDpiY();
+    if ( !khtml::printpainter && dpiY < 96 )
+        dpiY = 96.;
+
+    float factor = 1.;
+    switch(type)
+    {
+    case CSSPrimitiveValue::CSS_EMS:
+       	factor = style->font().pixelSize();
+		break;
+    case CSSPrimitiveValue::CSS_EXS:
+	{
+        QFontMetrics fm = style->fontMetrics();
+        QRect b = fm.boundingRect('x');
+        factor = b.height();
+        break;
+	}
+    case CSSPrimitiveValue::CSS_PX:
+        break;
+    case CSSPrimitiveValue::CSS_CM:
+	factor = dpiY/2.54; //72dpi/(2.54 cm/in)
+        break;
+    case CSSPrimitiveValue::CSS_MM:
+	factor = dpiY/25.4;
+        break;
+    case CSSPrimitiveValue::CSS_IN:
+            factor = dpiY;
+        break;
+    case CSSPrimitiveValue::CSS_PT:
+            factor = dpiY/72.;
+        break;
+    case CSSPrimitiveValue::CSS_PC:
+        // 1 pc == 12 pt
+            factor = dpiY*12./72.;
+        break;
+    default:
+        return -1;
+    }
+    return getFloatValue(type)*factor;
 }
 
 void CSSPrimitiveValueImpl::setFloatValue( unsigned short unitType, float floatValue, int &exceptioncode )

@@ -997,7 +997,7 @@ static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyl
     } else {
 	int type = primitiveValue->primitiveType();
 	if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-	    l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+	    l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
 	else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
 	else if(type == CSSPrimitiveValue::CSS_NUMBER)
@@ -1560,7 +1560,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
       Length l;
       int type = primitiveValue->primitiveType();
       if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-	l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+	l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
       else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
       else
@@ -1574,7 +1574,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
       Length l;
       int type = primitiveValue->primitiveType();
       if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-	l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+	l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
       else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
       else
@@ -1586,7 +1586,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         {
         if(!primitiveValue) break;
         short spacing = 0;
-        spacing = computeLength(primitiveValue, style, paintDeviceMetrics);
+        spacing =  primitiveValue->computeLength(style, paintDeviceMetrics);
         style->setBorderSpacing(spacing);
         break;
         }
@@ -1792,7 +1792,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             width = 5;
             break;
         case CSS_VAL_INVALID:
-            width = computeLength(primitiveValue, style, paintDeviceMetrics);
+            width = primitiveValue->computeLength(style, paintDeviceMetrics);
             break;
         default:
             return;
@@ -1844,7 +1844,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             return;
         }
         if(!primitiveValue) return;
-        int width = computeLength(primitiveValue, style, paintDeviceMetrics);
+        int width = primitiveValue->computeLength(style, paintDeviceMetrics);
 // reason : letter or word spacing may be negative.
 //      if( width < 0 ) return;
         switch(prop->m_id)
@@ -1942,7 +1942,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         } else if(primitiveValue && !apply) {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+                l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 l = Length((int)primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE), Percent);
             else
@@ -2019,7 +2019,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+                l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
             {
                 // ### compute from parents height!!!
@@ -2086,7 +2086,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 	  int type = primitiveValue->primitiveType();
 	  Length l;
 	  if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-	    l = Length( computeLength(primitiveValue, style, paintDeviceMetrics), Fixed );
+	    l = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed );
 	  else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
 	    l = Length( int( primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE) ), Percent );
 
@@ -2147,7 +2147,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         } else {
             int type = primitiveValue->primitiveType();
             if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-                size = computeLengthFloat(primitiveValue, parentStyle, paintDeviceMetrics);
+                size = primitiveValue->computeLengthFloat(parentStyle, paintDeviceMetrics);
             else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
                 size = (primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)
                                   * parentStyle->font().pixelSize()) / 100;
@@ -2210,7 +2210,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         if(primitiveValue->getIdent() == CSS_VAL_NORMAL)
             lineHeight = Length( -100, Percent );
         else if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
-            lineHeight = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+            lineHeight = Length(primitiveValue->computeLength(style, paintDeviceMetrics), Fixed);
         else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
             lineHeight = Length( ( style->font().pixelSize() * int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)) ) / 100, Fixed );
         else if(type == CSSPrimitiveValue::CSS_NUMBER)
