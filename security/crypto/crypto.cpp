@@ -1114,7 +1114,7 @@ void KCryptoConfig::slotCWcompatible() {
 
   mUseTLS->setChecked(true);
   mUseSSLv2->setChecked(true);
-  mUseSSLv3->setChecked(false);
+  mUseSSLv3->setChecked(true);
   configChanged();
   #endif
 }
