@@ -36,6 +36,7 @@
 #include <misc/htmltags.h>
 
 using namespace khtml;
+using namespace DOM;
 
 RenderApplet::RenderApplet(QScrollView *view,
                            QMap<QString, QString> args, HTMLElementImpl *applet)

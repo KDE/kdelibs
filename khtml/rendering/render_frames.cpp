@@ -27,7 +27,6 @@
 #include "render_frames.h"
 #include "html_baseimpl.h"
 #include "html_objectimpl.h"
-//#include "html_inlineimpl.h"
 #include "htmltags.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -42,6 +41,7 @@
 #include <kdebug.h>
 
 using namespace khtml;
+using namespace DOM;
 
 RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
                                 QList<khtml::Length> *rows, QList<khtml::Length> *cols )
@@ -115,7 +115,7 @@ void RenderFrameSet::layout( )
     int rowsPercent = 0;
     int colsPercent = 0;
     int remainingRelativeWidth = 0;
-    
+
     if(m_rows)
     {
 	// another one for bad html. If all rows have a fixed width, convert the numbers to percentages.
@@ -132,8 +132,8 @@ void RenderFrameSet::layout( )
 		m_rows->at(i)->type = Percent;
 		m_rows->at(i)->value = m_rows->at(i)->value *100 / totalFixed;
 	    }
-	}	    
-    
+	}
+
 	    // fixed rows first, then percent and then relative
         for(i = 0; i< m_frameset->totalRows(); i++)
         {
@@ -210,7 +210,7 @@ void RenderFrameSet::layout( )
 		m_cols->at(i)->type = Percent;
 		m_cols->at(i)->value = m_cols->at(i)->value * 100 / totalFixed;
 	    }
-	}	    
+	}
 
         totalRelative = 0;
         remainingRelativeWidth = 0;
@@ -399,7 +399,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
 #ifdef DEBUG_LAYOUT
     kdDebug( 6031 ) << "mouseEvent:check" << endl;
 #endif
-    
+
     m_hSplit = -1;
     m_vSplit = -1;
     //bool resizePossible = true;
@@ -438,7 +438,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
 #ifdef DEBUG_LAYOUT
     kdDebug( 6031 ) << m_hSplit << "/" << m_vSplit << endl;
 #endif
-    
+
     QCursor cursor;
     if(m_hSplit != -1 && m_vSplit != -1)
     {

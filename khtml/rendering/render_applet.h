@@ -37,7 +37,7 @@ class RenderApplet : public RenderWidget
 {
 public:
   RenderApplet(QScrollView *view,
-               QMap<QString, QString> args, HTMLElementImpl *node);
+               QMap<QString, QString> args, DOM::HTMLElementImpl *node);
     virtual ~RenderApplet();
 
     virtual const char *renderName() const { return "RenderApplet"; }
@@ -50,7 +50,7 @@ public:
 private:
     void processArguments( QMap<QString, QString> args );
 
-    HTMLElementImpl *m_applet;
+    DOM::HTMLElementImpl *m_applet;
 };
 
 class RenderEmptyApplet : public RenderWidget
