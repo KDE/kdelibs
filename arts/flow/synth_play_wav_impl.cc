@@ -111,6 +111,13 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
 	}
 
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
+	if(frameCount <= 0)
+	{
+		cerr << "CachedWav: Invalid length for '" << filename << "'" << endl;
+		afCloseFile(file);
+		return;
+	}
+
 	channelCount = afGetChannels(file, AF_DEFAULT_TRACK);
 	afGetSampleFormat(file, AF_DEFAULT_TRACK, &sampleFormat, &sampleWidth);
 
