@@ -73,12 +73,15 @@ public:
     virtual void determineParseMode( const QString &str );
     virtual void close();
 
+    void setAutoFill() { m_doAutoFill = true; }
+
 protected:
     HTMLElementImpl *bodyElement;
     HTMLElementImpl *htmlElement;
     friend class HTMLMapElementImpl;
     friend class HTMLImageElementImpl;
     QMap<QString,HTMLMapElementImpl*> mapMap;
+    bool m_doAutoFill;
 
 protected slots:
     /**

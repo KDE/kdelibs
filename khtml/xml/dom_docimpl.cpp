@@ -1181,17 +1181,6 @@ void DocumentImpl::close(  )
     delete m_tokenizer;
     m_tokenizer = 0;
 
-    // set the title once if not already set
-    for (NodeImpl *n = this; n; n = n->traverseNextNode()) {
-        if (!title().isEmpty())
-            break;
-        if (n->id() == ID_TITLE)
-            setTitle(static_cast<HTMLTitleElementImpl*>(n)->text());
-        else if (n->id() == ID_BODY ||
-                 n->id() == ID_FRAMESET)
-            break;
-    }
-
     if (m_view)
         m_view->part()->checkEmitLoadEvent();
 }

@@ -27,6 +27,7 @@
 #include "html/html_baseimpl.h"
 #include "html/htmltokenizer.h"
 #include "html/html_miscimpl.h"
+#include "html/html_formimpl.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"
@@ -67,6 +68,8 @@ HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, KHTML
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
     bodyElement = 0;
     htmlElement = 0;
+
+    m_doAutoFill = false;
 
 /* dynamic history stuff to be fixed later (pfeiffer)
     connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
@@ -290,6 +293,26 @@ void HTMLDocumentImpl::close()
 
     HTMLElementImpl* b = body();
     if (b && doload) {
+
+        // set the title once if not already set
+        for (NodeImpl *n = this; n; n = n->traverseNextNode()) {
+            if (!title().isEmpty())
+                break;
+            if (n->id() == ID_TITLE)
+                setTitle(static_cast<HTMLTitleElementImpl*>(n)->text());
+            else if (n->id() == ID_BODY ||
+                     n->id() == ID_FRAMESET)
+                break;
+        }
+
+        // auto fill: walk the tree and try to fill in login credentials
+        if (view() && m_doAutoFill) {
+            for (NodeImpl* n = this; n; n = n->traverseNextNode())
+                if (n->id() == ID_FORM)
+                    static_cast<HTMLFormElementImpl*>(n)->doAutoFill();
+            m_doAutoFill = false;
+        }
+
         // According to dom the load event must not bubble
         // but other browsers execute in a frameset document
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the

@@ -74,6 +74,7 @@ public:
     void setEnctype( const DOMString & );
 
     bool autoComplete() const { return m_autocomplete; }
+    void doAutoFill();
 
     virtual void parseAttribute(AttributeImpl *attr);
 

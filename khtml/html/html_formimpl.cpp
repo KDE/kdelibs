@@ -339,6 +339,37 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
     m_encCharset = QString::null;
 }
 
+void HTMLFormElementImpl::doAutoFill()
+{
+    // assert(view())
+    KWallet::Wallet* w = getDocument()->view()->part()->wallet();
+
+    if (w) {
+        KURL k(getDocument()->URL());
+        k.setRef(QString::null);
+        // ensure that we have the user / password inside the url
+        // otherwise we might have a potential security problem
+        // by saving passwords under wrong lookup key.
+        QString name = getAttribute(ATTR_NAME).string().stripWhiteSpace();
+        QString key = k.url() + '#' + name;
+
+        w->setFolder(KWallet::Wallet::FormDataFolder);
+        QMap<QString, QString> map;
+        if (w->readMap(key, map))
+            return; // failed, abort
+
+        for (QPtrListIterator<HTMLGenericFormElementImpl> it(formElements); it.current(); ++it) {
+            if (it.current()->id() == ID_INPUT) {
+                HTMLInputElementImpl* current = static_cast<HTMLInputElementImpl*>(it.current());
+                if (current->inputType() == HTMLInputElementImpl::PASSWORD ||
+                    current->inputType() == HTMLInputElementImpl::TEXT &&
+                    map.contains(current->name().string()))
+                    current->setValue(map[current->name().string()]);
+            }
+        }
+    }
+}
+
 void HTMLFormElementImpl::submitFromKeyboard()
 {
     // Activate the first nondisabled submit button
@@ -1141,8 +1172,11 @@ void HTMLInputElementImpl::attach()
     // priority than inherited color, but lesser priority than
     // any color specified by CSS for the elements.
     switch( m_type ) {
-    case TEXT:
     case PASSWORD:
+        if (getDocument()->isHTMLDocument())
+            static_cast<HTMLDocumentImpl*>(getDocument())->setAutoFill();
+        /* nobreak */
+    case TEXT:
         addCSSProperty(CSS_PROP_FONT_FAMILY, CSS_VAL_MONOSPACE);
         /* nobreak */
     case ISINDEX:
