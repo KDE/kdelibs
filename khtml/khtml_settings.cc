@@ -385,7 +385,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     // The global setting for JavaScript debugging
     // This is currently always enabled by default
     if ( reset || config->hasKey( "EnableJavaScriptDebug" ) )
-      d->m_bEnableJavaScriptDebug = config->readBoolEntry( "EnableJavaScriptDebug", true );
+      d->m_bEnableJavaScriptDebug = config->readBoolEntry( "EnableJavaScriptDebug", false );
 
     // The global setting for JavaScript error reporting
     if ( reset || config->hasKey( "ReportJavaScriptErrors" ) )

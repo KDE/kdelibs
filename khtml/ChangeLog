@@ -1,5 +1,7 @@
 2003-10-04  Dirk Mueller  <mueller@kde.org>
 
+	* khtml_settings.cc (init): change default for JS debugger to off.
+
 	* html/html_elementimpl.cpp (createContextualFragment): Fix memory
 	leaks. Adjust code style. Adjust return to avoid dangling return leaks.
 
