@@ -32,95 +32,95 @@ class KConfig;
 class KStandardDirsPrivate;
 
 /**
- * * @short Site-independent access to standard KDE directories.
-* @author Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
-* @version $Id$
-*
-* This is one of the most central classes in kdelibs as
-* it provides a basic service: It knows where the files
-* reside on the user's hard disk. And it's meant to be the
-* only one that knows -- to make the real location as
-* transparent as possible to both the user and the applications.
-*
-* To this end it insulates the application from all information
-* and applications always refer to a file with a resource type
-* (e.g. icon) and a filename (e.g. khexdit.xpm). In an ideal world
-* the application would make no assumption where this file is and
-* leave it up to @ref KStandardDirs::findResource("apps", "Home.desktop")
-* to apply this knowledge to return /opt/kde/share/applnk/Home.desktop
-* or ::locate("data", "kgame/background.jpg") to return
-* /opt/kde/share/apps/kgame/background.jpg
-*
-* The main idea behind KStandardDirs is that there are several
-* toplevel prefixes below which the files lie. One of these prefixes is
-* the one where the user installed kdelibs, one is where the
-* application was installed, and one is $HOME/.kde, but there
-* may be even more. Under these prefixes there are several well
-* defined suffixes where specific resource types are to be found.
-* For example, for the resource type "html" the suffixes could be
-* share/doc/HTML and share/doc/kde/HTML.
-* So the search algorithm basicly appends to each prefix each registered
-* suffix and tries to locate the file there.
-* To make the thing even more complex, it's also possible to register
-* absolute paths that KStandardDirs looks up after not finding anything
-* in the former steps. They can be useful if the user wants to provide
-* specific directories that aren't in his $HOME/.kde directory for,
-* for example, icons.
-*
-* @sect Standard resources that kdelibs allocates are:
-*
-* @li apps - Applications menu (.desktop files).
-* @li cache - Cached information (e.g. favicons, web-pages)
-* @li cgi - CGIs to run from kdehelp.
-* @li config - Configuration files.
-* @li data - Where applications store data.
-* @li exe - Executables in $prefix/bin. @ref #findExe for a function that takes $PATH into account.
-* @li html - HTML documentation.
-* @li icon - Icons, see @ref KIconLoader.
-* @li lib - Libraries.
-* @li locale - Translation files for @ref KLocale.
-* @li mime - Mime types.
-* @li module - Module (dynamically loaded library).
-* @li qtplugins - Qt plugins (dynamically loaded objects for Qt)
-* @li services - Services.
-* @li servicetypes - Service types.
-* @li scripts - Application scripting additions.
-* @li sound - Application sounds.
-* @li templates - Templates
-* @li wallpaper - Wallpapers.
-* @li tmp - Temporary files (specfic for both current host and current user)
-* @li socket - UNIX Sockets (specific for both current host and current user)
-*
-* A type that is added by the class @ref KApplication if you use it, is
-* appdata. This one makes the use of the type data a bit easier as it
-* appends the name of the application.
-* So while you had to ::locate("data", "appname/filename") so you can
-* also write ::locate("appdata", "filename") if your KApplication instance
-* is called "appname" (as set via KApplication's constructor or KAboutData, if
-* you use the global KStandardDirs object @ref KGlobal::dirs()).
-* Please note though that you cannot use the "appdata"
-* type if you intend to use it in an applet for Kicker because 'appname' would
-* be "Kicker" instead of the applet's name. Therefore, for applets, you've got
-* to work around this by using ::locate("data", "appletname/filename").
-*
-* @sect KStandardDirs supports the following environment variables:
-*
-* @li KDEDIRS: This may set an additional number of directory prefixes to
-*          search for resources. The directories should be seperated
-*          by ':'. The directories are searched in the order they are
-*          specified.
-* @li KDEDIR:  Used for backwards compatibility. As KDEDIRS but only a single
-*          directory may be specified. If KDEDIRS is set KDEDIR is
-*          ignored.
-* @li KDEHOME: The directory where changes are saved to. This directory is
-*          used to search for resources first. If KDEHOME is not
-*          specified it defaults to "$HOME/.kde"
-* @li KDEROOTHOME: Like KDEHOME, but used for the root user.
-*          If KDEROOTHOME is not set it defaults to the .kde directory in the
-*          home directory of root, usually "/root/.kde".
-*          Note that the setting of $HOME is ignored in this case.
-*
-**/
+ * @short Site-independent access to standard KDE directories.
+ * @author Stephan Kulow <coolo@kde.org> and Sirtaj Singh Kang <taj@kde.org>
+ * @version $Id$
+ *
+ * This is one of the most central classes in kdelibs as
+ * it provides a basic service: It knows where the files
+ * reside on the user's hard disk. And it's meant to be the
+ * only one that knows -- to make the real location as
+ * transparent as possible to both the user and the applications.
+ *
+ * To this end it insulates the application from all information
+ * and applications always refer to a file with a resource type
+ * (e.g. icon) and a filename (e.g. khexdit.xpm). In an ideal world
+ * the application would make no assumption where this file is and
+ * leave it up to @ref KStandardDirs::findResource("apps", "Home.desktop")
+ * to apply this knowledge to return /opt/kde/share/applnk/Home.desktop
+ * or ::locate("data", "kgame/background.jpg") to return
+ * /opt/kde/share/apps/kgame/background.jpg
+ *
+ * The main idea behind KStandardDirs is that there are several
+ * toplevel prefixes below which the files lie. One of these prefixes is
+ * the one where the user installed kdelibs, one is where the
+ * application was installed, and one is $HOME/.kde, but there
+ * may be even more. Under these prefixes there are several well
+ * defined suffixes where specific resource types are to be found.
+ * For example, for the resource type "html" the suffixes could be
+ * share/doc/HTML and share/doc/kde/HTML.
+ * So the search algorithm basicly appends to each prefix each registered
+ * suffix and tries to locate the file there.
+ * To make the thing even more complex, it's also possible to register
+ * absolute paths that KStandardDirs looks up after not finding anything
+ * in the former steps. They can be useful if the user wants to provide
+ * specific directories that aren't in his $HOME/.kde directory for,
+ * for example, icons.
+ *
+ * @sect Standard resources that kdelibs allocates are:
+ *
+ * @li apps - Applications menu (.desktop files).
+ * @li cache - Cached information (e.g. favicons, web-pages)
+ * @li cgi - CGIs to run from kdehelp.
+ * @li config - Configuration files.
+ * @li data - Where applications store data.
+ * @li exe - Executables in $prefix/bin. @ref #findExe for a function that takes $PATH into account.
+ * @li html - HTML documentation.
+ * @li icon - Icons, see @ref KIconLoader.
+ * @li lib - Libraries.
+ * @li locale - Translation files for @ref KLocale.
+ * @li mime - Mime types.
+ * @li module - Module (dynamically loaded library).
+ * @li qtplugins - Qt plugins (dynamically loaded objects for Qt)
+ * @li services - Services.
+ * @li servicetypes - Service types.
+ * @li scripts - Application scripting additions.
+ * @li sound - Application sounds.
+ * @li templates - Templates
+ * @li wallpaper - Wallpapers.
+ * @li tmp - Temporary files (specfic for both current host and current user)
+ * @li socket - UNIX Sockets (specific for both current host and current user)
+ *
+ * A type that is added by the class @ref KApplication if you use it, is
+ * appdata. This one makes the use of the type data a bit easier as it
+ * appends the name of the application.
+ * So while you had to ::locate("data", "appname/filename") so you can
+ * also write ::locate("appdata", "filename") if your KApplication instance
+ * is called "appname" (as set via KApplication's constructor or KAboutData, if
+ * you use the global KStandardDirs object @ref KGlobal::dirs()).
+ * Please note though that you cannot use the "appdata"
+ * type if you intend to use it in an applet for Kicker because 'appname' would
+ * be "Kicker" instead of the applet's name. Therefore, for applets, you've got
+ * to work around this by using ::locate("data", "appletname/filename").
+ *
+ * @sect KStandardDirs supports the following environment variables:
+ *
+ * @li KDEDIRS: This may set an additional number of directory prefixes to
+ *          search for resources. The directories should be seperated
+ *          by ':'. The directories are searched in the order they are
+ *          specified.
+ * @li KDEDIR:  Used for backwards compatibility. As KDEDIRS but only a single
+ *          directory may be specified. If KDEDIRS is set KDEDIR is
+ *          ignored.
+ * @li KDEHOME: The directory where changes are saved to. This directory is
+ *          used to search for resources first. If KDEHOME is not
+ *          specified it defaults to "$HOME/.kde"
+ * @li KDEROOTHOME: Like KDEHOME, but used for the root user.
+ *          If KDEROOTHOME is not set it defaults to the .kde directory in the
+ *          home directory of root, usually "/root/.kde".
+ *          Note that the setting of $HOME is ignored in this case.
+ *
+ */
 class KStandardDirs
 {
 public:
