@@ -31,7 +31,9 @@
 
 #include "address.h"
 #include "geo.h"
+#include "key.h"
 #include "phonenumber.h"
+#include "secrecy.h"
 #include "timezone.h"
 
 namespace KABC {
@@ -168,6 +170,44 @@ class Addressee
       Return phone number with the given id.
      */
     PhoneNumber findPhoneNumber( const QString &id ) const;
+
+    /**
+      Insert a key. If a key with the same id already exists
+      in this addressee it is not duplicated.
+     */
+    void insertKey( const Key &key );
+
+    /**
+      Remove a key. If no key with the given id exists for this
+      addresse nothing happens.
+     */
+    void removeKey( const Key &key );
+
+    /**
+      Return key, which matches the given type.
+      If @param type == Key::Custom you can specify a string
+      that should match. If you leave the string empty, the first
+      key with a custom value is returned.
+     */
+    Key key( int type, QString customTypeString = QString::null ) const;
+
+    /**
+      Return list of all keys.
+     */
+    Key::List keys() const;
+
+    /**
+      Return list of keys with a special type.
+      If @param type == Key::Custom you can specify a string
+      that should match. If you leave the string empty, all custom
+      keys will be returned.
+     */
+    Key::List keys( int type, QString customTypeString = QString::null  ) const;
+
+    /**
+      Return key with the given id.
+     */
+    Key findKey( const QString &id ) const;
     
     /**
       Insert an address. If an address with the same id already exists

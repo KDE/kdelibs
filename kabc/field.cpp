@@ -68,7 +68,8 @@ class Field::FieldImpl
       Title,
       Role,
       Organization,
-      Url
+      Url,
+      Key
     };
 
     int fieldId() { return mFieldId; }
@@ -164,6 +165,8 @@ QString Field::label()
       return Addressee::organizationLabel();
     case FieldImpl::Url:
       return Addressee::urlLabel();
+    case FieldImpl::Key:
+      return Addressee::keyLabel();
     case FieldImpl::CustomField:
       return mImpl->label();
     default:
@@ -351,6 +354,7 @@ Field::List Field::allFields()
     createField( FieldImpl::Role, Organization );
     createField( FieldImpl::Organization, Organization );
     createField( FieldImpl::Url );
+    createField( FieldImpl::Key, CustomCategory );
   }
 
   return mAllFields;

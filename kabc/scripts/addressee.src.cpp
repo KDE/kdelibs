@@ -33,6 +33,7 @@ struct Addressee::AddresseeData : public KShared
 
   PhoneNumber::List phoneNumbers;
   Address::List addresses;
+  Key::List keys;
   QStringList emails;
   QStringList categories;
   QStringList custom;
@@ -87,6 +88,7 @@ bool Addressee::operator==( const Addressee &a ) const
        ( mData->url != a.mData->url ) ) return false;
   if ( mData->phoneNumbers != a.mData->phoneNumbers ) return false;
   if ( mData->addresses != a.mData->addresses ) return false;
+  if ( mData->keys != a.mData->keys ) return false;
   if ( mData->emails != a.mData->emails ) return false;
   if ( mData->categories != a.mData->categories ) return false;
   if ( mData->custom != a.mData->custom ) return false;
@@ -297,6 +299,91 @@ PhoneNumber Addressee::findPhoneNumber( const QString &id ) const
   return PhoneNumber();
 }
 
+void Addressee::insertKey( const Key &key )
+{
+  detach();
+  mData->empty = false;
+
+  Key::List::Iterator it;
+  for( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
+    if ( (*it).id() == key.id() ) {
+      *it = key;
+      return;
+    }
+  }
+  mData->keys.append( key );
+}
+
+void Addressee::removeKey( const Key &key )
+{
+  detach();
+
+  Key::List::Iterator it;
+  for( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
+    if ( (*it).id() == key.id() ) {
+      mData->keys.remove( key );
+      return;
+    }
+  }
+}
+
+Key Addressee::key( int type, QString customTypeString ) const
+{
+  Key::List::ConstIterator it;
+  for( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
+    if ( (*it).type() == type ) {
+      if ( type == Key::Custom ) {
+        if ( customTypeString.isEmpty() ) {
+          return *it;
+        } else {
+          if ( (*it).customTypeString() == customTypeString )
+            return (*it);
+        }
+      } else {
+        return *it;
+      }
+    }
+  }
+  return Key( QString(), type );
+}
+
+Key::List Addressee::keys() const
+{
+  return mData->keys;
+}
+
+Key::List Addressee::keys( int type, QString customTypeString ) const
+{
+  Key::List list;
+
+  Key::List::ConstIterator it;
+  for( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
+    if ( (*it).type() == type ) {
+      if ( type == Key::Custom ) {
+        if ( customTypeString.isEmpty() ) {
+          list.append(*it);
+        } else {
+          if ( (*it).customTypeString() == customTypeString )
+            list.append(*it);
+        }
+      } else {
+        list.append(*it);
+      }
+    }
+  }
+  return list;
+}
+
+Key Addressee::findKey( const QString &id ) const
+{
+  Key::List::ConstIterator it;
+  for( it = mData->keys.begin(); it != mData->keys.end(); ++it ) {
+    if ( (*it).id() == id ) {
+      return *it;
+    }
+  }
+  return Key();
+}
 
 void Addressee::dump() const
 {
@@ -325,6 +412,16 @@ void Addressee::dump() const
   for( it3 = a.begin(); it3 != a.end(); ++it3 ) {
     (*it3).dump();
   }
+
+  kdDebug(5700) << "  Keys {" << endl;
+  Key::List k = keys();
+  Key::List::ConstIterator it4;
+  for( it4 = k.begin(); it4 != k.end(); ++it4 ) {
+    kdDebug(5700) << "    Type: " << int((*it4).type()) <<
+                     " Key: " << (*it4).key() <<
+                     " CustomString: " << (*it4).customTypeString() << endl;
+  }
+  kdDebug(5700) << "  }" << endl;
 
   kdDebug(5700) << "}" << endl;
 }
@@ -589,6 +686,7 @@ QDataStream &KABC::operator<<( QDataStream &s, const Addressee &a )
   s << a.mData->emails;
   s << a.mData->categories;
   s << a.mData->custom;
+  s << a.mData->keys;
   return s;
 }
 
@@ -602,6 +700,7 @@ QDataStream &KABC::operator>>( QDataStream &s, Addressee &a )
   s >> a.mData->emails;
   s >> a.mData->categories;
   s >> a.mData->custom;
+  s >> a.mData->keys;
 
   a.mData->empty = false;
 

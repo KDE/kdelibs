@@ -24,7 +24,6 @@ ALFE,honorific prefixes,QString,prefix
 ALFE,honorific suffixes,QString,suffix
 
 ALFE,nick name,QString,nickName,Personal
-,photo,QPixmap,photo
 
 ALFE,birthday,QDateTime,birthday,Personal,.toString()
 
@@ -34,14 +33,14 @@ LF,home address locality,QString,homeAddressLocality,Address|Personal
 LF,home address region,QString,homeAddressRegion,Address|Personal
 LF,home address postal code,QString,homeAddressPostalCode,Address|Personal
 LF,home address country,QString,homeAddressCountry,Address|Personal
+#LF,home address label,QString,homeAddressLabel,Address|Personal
 
 LF,business address street,QString,businessAddressStreet,Address|Organization
 LF,business address locality,QString,businessAddressLocality,Address|Organization
 LF,business address region,QString,businessAddressRegion,Address|Organization
 LF,business address postal code,QString,businessAddressPostalCode,Address|Organization
 LF,business address country,QString,businessAddressCountry,Address|Organization
-
-#QString label (part of Address)
+#LF,business address label,QString,businessAddressLabel,Address|Organization
 
 #phoneNumbers
 LF,home phone,QString,homePhone,Personal|Frequent
@@ -60,8 +59,6 @@ ALE,geographic position,Geo,geo,,.asString()
 
 ALFE,title,QString,title,Organization
 ALFE,role,QString,role,Organization
-#QPixmap logo
-#Agent agent
 ALFE,organization,QString,organization,Organization
 
 ALE,note,QString,note
@@ -71,8 +68,13 @@ ALE,revision date,QDateTime,revision,,.toString()
 
 ALE,sort string,QString,sortString
 
-#sound
-#class (PUBLIC, PRIVATE, CONFIDENTIAL)
-#key
-
 ALF,URL,KURL,url,,.url()
+
+ALE,security class,Secrecy,secrecy,,.asString()
+LF,encryption key,QString,key,CustomCategory
+
+#QPixmap logo
+#,photo,QPixmap,photo
+#sound
+#Agent agent
+
