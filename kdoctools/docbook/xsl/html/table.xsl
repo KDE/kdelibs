@@ -120,8 +120,11 @@
               <xsl:when test="contains($vendor, 'Apache Software Foundation')">
                 <xsl:value-of select="xtbl:convertLength($table.width)"/>
               </xsl:when>
+              <xsl:when test="contains($vendor, 'libxslt')">
+                <xsl:value-of select="$table.width"/>
+              </xsl:when>
               <xsl:otherwise>
-                <xsl:message terminate="no">
+                <xsl:message terminate="yes">
                   <xsl:text>Don't know how to do convert lengths with </xsl:text>
                   <xsl:value-of select="$vendor"/>
                 </xsl:message>
