@@ -1894,7 +1894,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       bool ok;
-      uint u = propertyName.toULong(&ok);
+      /*uint u =*/ propertyName.toULong(&ok);
       if (ok) {
         Object coll = Object::dynamicCast( getSelectHTMLCollection(exec, select.options(), select) );
         if ( !coll.isNull() )
