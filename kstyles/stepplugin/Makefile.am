@@ -23,7 +23,7 @@ INCLUDES= $(all_includes)
 
 noinst_HEADERS = kstep.h 
 lib_LTLIBRARIES = kstepstyle.la
-kstepstyle_la_LDFLAGS =  $(all_libraries) -module  -avoid-version 
-
+kstepstyle_la_LDFLAGS =  $(all_libraries) -module  -avoid-version -no-undefined 
+kstepstyle_la_LIBADD = $(LIB_KDEUI)
 kstepstyle_la_SOURCES = kstep.cpp plugin.cpp
 

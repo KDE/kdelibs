@@ -22,8 +22,8 @@
 INCLUDES= $(all_includes)
 noinst_HEADERS = b2style.h 
 lib_LTLIBRARIES = b2style.la
-b2style_la_LDFLAGS =  $(all_libraries) -module  -avoid-version 
-
+b2style_la_LDFLAGS =  $(all_libraries) -module  -avoid-version -no-undefined 
+b2style_la_LIBADD = $(LIB_KDEUI)
 b2style_la_SOURCES = b2style.cpp plugin.cpp
 b2style_la_METASOURCES = AUTO  
 

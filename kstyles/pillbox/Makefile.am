@@ -24,6 +24,6 @@ INCLUDES= $(all_includes)
 METASOURCES=USE_AUTOMOC
 noinst_HEADERS = pillbox.h 
 lib_LTLIBRARIES = pillboxstyle.la
-pillboxstyle_la_LDFLAGS =  $(all_libraries) -module  -avoid-version 
+pillboxstyle_la_LDFLAGS =  $(all_libraries) -module  -avoid-version -no-undefined 
 pillboxstyle_la_SOURCES = pillbox.cpp plugin.cpp
-
+pillboxstyle_la_LIBADD = $(LIB_KDEUI)

@@ -22,7 +22,7 @@
 INCLUDES= $(all_includes)
 
 lib_LTLIBRARIES = basicstyle.la
-basicstyle_la_LDFLAGS = $(all_libraries) -module  -avoid-version 
-
+basicstyle_la_LDFLAGS = $(all_libraries) -module  -avoid-version -no-undefined 
+basicstyle_la_LIBADD = $(LIB_KDEUI)
 basicstyle_la_SOURCES = plugin.cpp
 
