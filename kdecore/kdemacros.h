@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (c) 2002 KDE Team
+    Copyright (c) 2002-2003 KDE Team
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -20,12 +20,37 @@
 #ifndef _KDE_MACROS_H_
 #define _KDE_MACROS_H_
 
+/**
+ * The KDE_NO_EXPORT macro marks the symbol of the given variable 
+ * to be hidden. A hidden symbol is stripped during the linking step, 
+ * so it can't be used from outside the resulting library, which is similiar
+ * to static. However, static limits the visibility to the current 
+ * compilation unit. hidden symbols can still be used in multiple compilation
+ * units.
+ *
+ * \code
+ * int KDE_NO_EXPORT foo;
+ * int KDE_EXPORT bar;
+ * \end
+ */
+
 #if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 > 2)
 #define KDE_NO_EXPORT __attribute__ ((visibility("hidden")))
 #define KDE_EXPORT __attribute__ ((visibility("visible")))
 #else
 #define KDE_NO_EXPORT
 #define KDE_EXPORT
+#endif
+
+/**
+ * The KDE_PACKED can be used to hint the compiler that a particular
+ * structure or class should not contain unnecessary paddings. 
+ */
+
+#ifdef __GNUC__
+#define KDE_PACKED __attribute__((__packed__))
+#else
+#define KDE_PACKED
 #endif
 
 /**
