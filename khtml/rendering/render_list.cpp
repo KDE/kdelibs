@@ -84,8 +84,10 @@ static QString toHebrew( int number ) {
     const QChar tenDigit[] = {1497, 1499, 1500, 1502, 1504, 1505, 1506, 1508, 1510};
 
     QString letter;
-    //I will adress numbers past 1000 tomorrow
-    number = number % 1000;
+    if (number>999) {
+  	letter = toHebrew(number/1000) + QString::fromLatin1("'");
+   	number = number%1000;
+    }
     
     int hunderts = (number/400);
     if (hunderts > 0) {
