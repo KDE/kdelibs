@@ -229,6 +229,8 @@ void KDockTabCtl::removePage( QWidget* widget )
     if ( mainData->count() == 0 ){
       tabs->hide();
     }
+  } else {
+    debug("Try delete notexists page %s",widget->name());
   }
 }
 

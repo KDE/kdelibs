@@ -167,8 +167,8 @@ KDockMainWindow::KDockMainWindow( const char *name )
   DockL.dock = 0L;
   DockL.pos  = KDockWidget::DockLeft;
 
-  QString new_name = QString(name) + QString::fromLatin1("_DockManager");
-  dockManager = new KDockManager( this, new_name.latin1());
+  QString new_name = QString(name) + QString("_DockManager");
+  dockManager = new KDockManager( this, new_name );
   toolbar = 0L;
   mainDockWidget = 0L;
 
@@ -226,7 +226,7 @@ void KDockMainWindow::setView( QWidget *view )
 
 KDockWidget* KDockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent )
 {
-  return new KDockWidget( dockManager, name.latin1(), pixmap, parent );
+  return new KDockWidget( dockManager, name, pixmap, parent );
 }
 
 void KDockMainWindow::slotDockChange()
@@ -247,6 +247,11 @@ void KDockMainWindow::slotDockChange()
   }
 
   KDockWidget* base = mainDockWidget;
+  if ( base->parentTabGroup() )
+    base =dockManager->findWidgetParentDock( base->parentTabGroup() );
+
+  if ( !base )
+    return;
 
   while ( base != 0L && base->parent()!= 0L && base->parent()->inherits("KDockSplitter") )
   {
@@ -1383,7 +1388,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
     }
 /*************************************************************************************************/
     if ( obj->isGroup ){
-      if ( findList.find( obj->firstName.latin1() ) != -1 && findList.find( obj->lastName.latin1() ) != -1 ){
+      if ( findList.find( obj->firstName ) != -1 && findList.find( obj->lastName ) != -1 ){
 
         c->writeEntry( cname+":type", "GROUP");
         if ( !obj->parent() ){
@@ -1445,7 +1450,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
         } else {
           c->writeEntry( cname+":type", "DOCK");
         }
-        nameList.append( cname.latin1() );
+        nameList.append( cname );
         //debug("  Save %s", nList.current());
         findList.append( obj->name() );
         nList.remove();
@@ -1517,7 +1522,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       if ( first  && last ){
         obj = first->manualDock( last, ( p == Vertical ) ? KDockWidget::DockLeft : KDockWidget::DockTop, sepPos );
         if (obj){
-          obj->setName( oname.latin1() );
+          obj->setName( oname );
         }
       }
     }
@@ -1539,7 +1544,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
           list.next();
         }
         if ( tabDockGroup ){
-          tabDockGroup->setName( oname.latin1() );
+          tabDockGroup->setName( oname );
   				c->setGroup( group );
           tab->setVisiblePage( c->readNumEntry( oname+":curTab" ) );
         }
@@ -1569,10 +1574,6 @@ void KDockManager::readConfig( KConfig* c, QString group )
     nameList.next();
 	}
 
-  // delete all autocreate dock
-  delete autoCreateDock;
-  autoCreateDock = 0L;
-
   if ( main->inherits("KDockMainWindow") ){
     KDockMainWindow* dmain = (KDockMainWindow*)main;
 
@@ -1600,6 +1601,9 @@ void KDockManager::readConfig( KConfig* c, QString group )
     }
   
   }
+  // delete all autocreate dock
+  delete autoCreateDock;
+  autoCreateDock = 0L;
 
   c->setGroup( group );
   QRect mr = c->readRectEntry("Main:Geometry");
@@ -1618,7 +1622,7 @@ KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
 
   KDockWidget* autoCreate = 0L;
   if ( autoCreateDock ){
-    autoCreate = new KDockWidget( this, dockName.latin1(), QPixmap("") );
+    autoCreate = new KDockWidget( this, dockName, QPixmap("") );
     autoCreateDock->append( autoCreate );
   }
 	return autoCreate;
