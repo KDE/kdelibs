@@ -82,6 +82,15 @@ void KTextEdit::keyPressEvent( QKeyEvent *e )
         return;
     }
 
+    // ignore Ctrl-Return so that KDialogs can close the dialog
+    else if ( e->state() == ControlButton &&
+              (e->key() == Key_Return || e->key() == Key_Enter) &&
+              topLevelWidget()->inherits( "KDialog" ) )
+    {
+        e->ignore();
+        return;
+    }
+
     QTextEdit::keyPressEvent( e );
 }
 

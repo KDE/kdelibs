@@ -1,6 +1,6 @@
 /*  This file is part of the KDE Libraries
  *  Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
- *  Additions 1999-2000 by Espen Sand (espen@kde.org) 
+ *  Additions 1999-2000 by Espen Sand (espen@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -16,9 +16,9 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
- */  
+ */
 
-#include <qabstractlayout.h> 
+#include <qabstractlayout.h>
 #include <qobjectlist.h>
 #include <qguardedptr.h>
 #include <qlineedit.h>
@@ -28,7 +28,7 @@
 
 #include <kapplication.h>
 #include <kdialog.h>
-#include <kdebug.h> 
+#include <kdebug.h>
 #include <kstaticdeleter.h>
 
 int KDialog::mMarginSize = 11;
@@ -71,7 +71,19 @@ void KDialog::keyPressEvent(QKeyEvent *e)
   }
   else
   {
-    e->ignore();
+      // accept the dialog when Ctrl-Return is pressed
+      if ( e->state() == ControlButton && 
+           qApp->focusWidget()  && 
+           qApp->focusWidget()->inherits( "QTextEdit" ) &&
+           (e->key() == Key_Return || e->key() == Key_Enter) )
+      {
+          e->accept();
+          accept();
+      }
+      else
+      {
+          e->ignore();
+      }
   }
 }
 
@@ -142,7 +154,7 @@ void KDialog::resizeLayout( QLayoutItem *lay, int margin, int spacing )
 {
   QLayoutIterator it = lay->iterator();
   QLayoutItem *child;
-  while ( (child = it.current() ) ) 
+  while ( (child = it.current() ) )
   {
     resizeLayout( child, margin, spacing );
     ++it;
@@ -202,7 +214,7 @@ KDialogQueue::~KDialogQueue()
    _self = 0;
 }
 
-// static 
+// static
 void KDialogQueue::queueDialog(QDialog *dialog)
 {
    KDialogQueue *_this = self();

@@ -164,11 +164,11 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 
   buttonMask &= Details|Yes|No|Cancel;
 
-  makeButtonBox( buttonMask, defaultButton, 
+  makeButtonBox( buttonMask, defaultButton,
                  no.text().isEmpty()  ? KStdGuiItem::no()  : no,
                  yes.text().isEmpty() ? KStdGuiItem::yes() : yes );
 
-  setButtonCancelText( cancel.text().isEmpty() ? 
+  setButtonCancelText( cancel.text().isEmpty() ?
                        KStdGuiItem::cancel().text() : cancel.text() );
 
   mIsActivated = true;
@@ -1487,7 +1487,21 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
     e->accept();
     return;
   }
-
+  
+  // accept the dialog when Ctrl-Return is pressed
+  else if ( e->state() == ControlButton && 
+            qApp->focusWidget() && 
+            qApp->focusWidget()->inherits( "QTextEdit" ) &&
+            (e->key() == Key_Return || e->key() == Key_Enter) )
+  {
+    QPushButton *pb = actionButton( Ok );
+    if ( pb )
+    {
+      pb->animateClick();
+      e->accept();
+      return;
+    }
+  }
 
   //
   // Do the default action instead. Note KDialog::keyPressEvent is bypassed
@@ -1623,12 +1637,12 @@ void KDialogBase::saveDialogSize( const QString& groupName, bool global )
    int scnum = QApplication::desktop()->screenNumber(parentWidget());
    QRect desk = QApplication::desktop()->screenGeometry(scnum);
    KConfig *kc = KGlobal::config();
-   
+
    if( kc )
    {
       KConfigGroupSaver cs(kc, groupName);
       QSize sizeToSave = size();
-      
+
       kc->writeEntry( QString::fromLatin1("Width %1").arg( desk.width()),
 		      QString::number( sizeToSave.width()), true, global);
       kc->writeEntry( QString::fromLatin1("Height %1").arg( desk.height()),
