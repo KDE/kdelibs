@@ -2696,8 +2696,9 @@ int KWidgetAction::plug( QWidget* w, int index )
   return containerCount() - 1;
 }
 
-void KWidgetAction::unplug( QWidget *w )
+void KWidgetAction::unplug( QWidget * /*w*/)
 {
+  // ### shouldn't this method check if w == m_widget->parent() ? (Simon)
   if( !m_widget )
     return;
   m_widget->hide();
