@@ -2337,7 +2337,7 @@ void KHTMLPart::slotSecurity()
 //                   << d->m_ssl_cert_state
 //                   << endl;
 
-  KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget());
+  KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
   if (d->m_ssl_in_use) {
     kid->setup(d->m_ssl_peer_cert_subject,
                d->m_ssl_peer_cert_issuer,
@@ -2351,7 +2351,7 @@ void KHTMLPart::slotSecurity()
                (KSSLCertificate::KSSLValidation) d->m_ssl_cert_state.toInt(),
                d->m_ssl_good_from, d->m_ssl_good_until);
   }
-  kid->show();
+  kid->exec();
 }
 
 void KHTMLPart::slotSaveFrame()
