@@ -101,6 +101,15 @@ static char * trimLead (char *orig_string)
   return orig_string;
 }
 
+#define NO_SIZE		((KIO::filesize_t) -1)
+
+#ifdef HAVE_STRTOLL
+#define STRTOLL	strtoll
+#else
+#define STRTOLL	strtol
+#endif
+
+
 /************************************** HTTPProtocol **********************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
@@ -113,7 +122,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_bBusy = false;
   m_bFirstRequest = false;
   
-  m_iSize = -1;
+  m_iSize = NO_SIZE;
   m_lineBufUnget = 0;
   
   m_protocol = protocol;    
@@ -173,7 +182,7 @@ void HTTPProtocol::resetResponseSettings()
 {
   m_bRedirect = false;
   m_bChunked = false;
-  m_iSize = -1;
+  m_iSize = NO_SIZE;
 
   m_responseHeader.clear();
   m_qContentEncodings.clear();
@@ -2570,6 +2579,13 @@ bool HTTPProtocol::readHeader()
         m_request.bCachedWrite = false; // Don't put in cache
         mayCache = false;
       }
+      //
+      else if (m_responseCode == 416) // Range not supported
+      {
+        m_request.offset = 0;
+        httpCloseConnection();
+        return false; // Try again.
+      }
       // Upgrade Required
       else if (m_responseCode == 426)
       {
@@ -2709,7 +2725,7 @@ bool HTTPProtocol::readHeader()
          }
          else if (strncasecmp(cacheControl.latin1(), "max-age=", 8) == 0)
          {
-            maxAge = atol(cacheControl.mid(8).stripWhiteSpace().latin1());
+            maxAge = STRTOLL(cacheControl.mid(8).stripWhiteSpace().latin1(), 0, 10);
          }
       }
       hasCacheDirective = true;
@@ -2717,7 +2733,7 @@ bool HTTPProtocol::readHeader()
 
     // get the size of our data
     else if (strncasecmp(buf, "Content-length:", 15) == 0) {
-      m_iSize = atol(trimLead(buf + 15));
+      m_iSize = STRTOLL(trimLead(buf + 15), 0, 10);
     }
 
     // what type of data do we have?
@@ -3131,7 +3147,7 @@ bool HTTPProtocol::readHeader()
   
   // Do not do a keep-alive connection if the size of the 
   // response is not known and the response is not Chunked.
-  if (!m_bChunked && m_iSize == -1)
+  if (!m_bChunked && m_iSize == NO_SIZE)
     m_bKeepAlive = false;
 
   if (m_request.bMustRevalidate)
@@ -3348,7 +3364,7 @@ bool HTTPProtocol::readHeader()
   if (!m_qContentEncodings.isEmpty())
   {
      // If we still have content encoding we can't rely on the Content-Length.
-     m_iSize = -1;
+     m_iSize = NO_SIZE;
   }
 #endif
 
@@ -3431,7 +3447,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
     m_bChunked = true;
     // Anyone know of a better way to handle unknown sizes possibly/ideally with unsigned ints?
     //if ( m_cmd != CMD_COPY )
-      m_iSize = -1;
+      m_iSize = NO_SIZE;
   } else if ((encoding == "x-gzip") || (encoding == "gzip")) {
     encs.append(QString::fromLatin1("gzip"));
   } else if ((encoding == "x-bzip2") || (encoding == "bzip2")) {
@@ -3668,7 +3684,7 @@ void HTTPProtocol::special( const QByteArray &data )
  */
 int HTTPProtocol::readChunked()
 {
-  if (m_iBytesLeft <= 0)
+  if ((m_iBytesLeft == 0) || (m_iBytesLeft == NO_SIZE))
   {
      m_bufReceive.resize(4096);
 
@@ -3693,12 +3709,13 @@ int HTTPProtocol::readChunked()
         return -1;
      }
 
-     m_iBytesLeft = strtol(m_bufReceive.data(), 0, 16);
-     if (m_iBytesLeft < 0)
+     long long trunkSize = STRTOLL(m_bufReceive.data(), 0, 16);
+     if (trunkSize < 0)
      {
         kdDebug(7113) << "(" << m_pid << ") Negative chunk size" << endl;
         return -1;
      }
+     m_iBytesLeft = trunkSize;
 
      // kdDebug(7113) << "(" << m_pid << ") Chunk size = " << m_iBytesLeft << " bytes" << endl;
 
@@ -3723,7 +3740,7 @@ int HTTPProtocol::readChunked()
 
   int bytesReceived = readLimited();
   if (!m_iBytesLeft)
-     m_iBytesLeft = -1; // Don't stop, continue with next chunk
+     m_iBytesLeft = NO_SIZE; // Don't stop, continue with next chunk
   return bytesReceived;
 }
 
@@ -3737,7 +3754,7 @@ int HTTPProtocol::readLimited()
   int bytesReceived;
   int bytesToReceive;
 
-  if (m_iBytesLeft > (int) m_bufReceive.size())
+  if (m_iBytesLeft > m_bufReceive.size())
      bytesToReceive = m_bufReceive.size();
   else
      bytesToReceive = m_iBytesLeft;
@@ -3829,7 +3846,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   // internally (webDAV).  If compressed we have to wait
   // until we uncompress to find out the actual data size
   if ( !dataInternal ) {
-    if ( m_iSize > 0 ) {
+    if ( (m_iSize > 0) && (m_iSize != NO_SIZE)) {
        totalSize(m_iSize);
        infoMessage( i18n( "Retrieving %1 from %2...").arg(KIO::convertSize(m_iSize))
          .arg( m_request.hostname ) );
@@ -3873,15 +3890,15 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   }
   
 
-  if (m_iSize > -1)
+  if (m_iSize != NO_SIZE)
     m_iBytesLeft = m_iSize - sz;
   else
-    m_iBytesLeft = -1;
+    m_iBytesLeft = NO_SIZE;
 
   if (m_bChunked)
-    m_iBytesLeft = -1;
+    m_iBytesLeft = NO_SIZE;
 
-  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retreive data. "<<m_iBytesLeft<<" bytes left." << endl;
+  kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::readBody: retreive data. "<<KIO::number(m_iBytesLeft)<<" left." << endl;
 
   // Main incoming loop...  Gather everything while we can...
   bool cpMimeBuffer = false;
@@ -3944,7 +3961,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     
     if (m_bChunked)
        bytesReceived = readChunked();
-    else if (m_iSize > -1)
+    else if (m_iSize != NO_SIZE)
        bytesReceived = readLimited();
     else
        bytesReceived = readUnlimited();
@@ -3981,7 +3998,8 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
           mimeTypeBuffer.resize( old_size + bytesReceived );
           memcpy( mimeTypeBuffer.data() + old_size, m_bufReceive.data(),
                   bytesReceived );
-          if ( m_iBytesLeft > 0 && mimeTypeBuffer.size() < 1024 )
+          if ( (m_iBytesLeft != NO_SIZE) && (m_iBytesLeft > 0) 
+               && (mimeTypeBuffer.size() < 1024) )
           {
             cpMimeBuffer = true;
             continue;   // Do not send up the data since we do not yet know its mimetype!
@@ -4052,7 +4070,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
     if (m_iBytesLeft == 0)
     {
-      kdDebug(7113) << "("<<m_pid<<") EOD received! Left = "<< m_iBytesLeft << endl;
+      kdDebug(7113) << "("<<m_pid<<") EOD received! Left = "<< KIO::number(m_iBytesLeft) << endl;
       break;
     }
   }
@@ -4076,7 +4094,7 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
         closeCacheEntry();
      else if (m_request.bCachedWrite) kdDebug(7113) << "(" << m_pid << ") no cache file!\n";
   }
-  else kdDebug(7113) << "(" << m_pid << ") still "<<m_iBytesLeft<<" bytes left! can't close cache entry!\n";
+  else kdDebug(7113) << "(" << m_pid << ") still "<< KIO::number(m_iBytesLeft) <<" bytes left! can't close cache entry!\n";
 
   if (!dataInternal)
     data( QByteArray() );
@@ -4461,7 +4479,7 @@ void HTTPProtocol::writeCacheEntry( const char *buffer, int nbytes)
    if ( file_pos > m_maxCacheSize )
    {
       kdDebug(7113) << "writeCacheEntry: File size reaches " << file_pos 
-                    << "Kb, exceeds cache limits." << endl;
+                    << "Kb, exceeds cache limits. (" << m_maxCacheSize << "Kb)" << endl;
       fclose(m_request.fcache);
       m_request.fcache = 0;
       QString filename = m_request.cef + ".new";

@@ -22,11 +22,11 @@
 #ifndef _KDE_VERSION_H_
 #define _KDE_VERSION_H_
 
-#define KDE_VERSION 310
-#define KDE_VERSION_STRING "3.1.0"
+#define KDE_VERSION 311
+#define KDE_VERSION_STRING "3.1.1 (CVS >= 20021124)"
 #define KDE_VERSION_MAJOR 3
 #define KDE_VERSION_MINOR 1
-#define KDE_VERSION_RELEASE 0
+#define KDE_VERSION_RELEASE 1
 
 /**
  * Namespace for general KDE functions.
