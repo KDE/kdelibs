@@ -354,7 +354,8 @@ void RenderBox::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
     int end = kMin( paintInfo.r.y() + paintInfo.r.height(), _ty + h );
     int mh = end - my;
 
-    paintBackground(paintInfo.p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
+    if (!isWidget())
+        paintBackground(paintInfo.p, style()->backgroundColor(), style()->backgroundImage(), my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder()) {
         paintBorder(paintInfo.p, _tx, _ty, w, h, style());
