@@ -976,14 +976,7 @@ void KFileDialog::setSelection(const QString& url)
         return;
     }
 
-    KURL u;
-    if ( KURL::isRelativeURL( url ) ) // perhaps we have a relative path!?
-    {
-      u = ops->url();
-      u.addPath( url );
-    }
-    else
-      u = KURL( url );
+    KURL u(ops->url(), url);
 
     if (u.isMalformed()) { // if it still is
         kdWarning() << url << " is not a correct argument for setSelection!" << endl;
