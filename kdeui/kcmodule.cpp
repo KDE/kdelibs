@@ -29,7 +29,7 @@ public:
 	bool _useRootOnlyMsg;
 };
 
-KCModule::KCModule(QWidget *parent, const char *name)
+KCModule::KCModule(QWidget *parent, const char *name, const QStringList &args)
 	: QWidget(parent, name), _btn(Help|Default|Apply)
 {
 	d = new KCModulePrivate;

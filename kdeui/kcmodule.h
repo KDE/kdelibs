@@ -23,6 +23,7 @@
 #define __KCMODULE_H__
 
 #include <qwidget.h>
+#include <qstringlist.h>
 class KAboutData;
 class KCModulePrivate;
 
@@ -77,7 +78,7 @@ public:
   /*
    * Creates a new module.
    */
-  KCModule(QWidget *parent=0, const char *name=0);
+  KCModule(QWidget *parent=0, const char *name=0, const QStringList &args=0 );
 
   /*
    * Destroys the module.
