@@ -77,6 +77,11 @@ public:
    */
   static void check();
   
+  /**
+   * Get all the mimetypes dict. Useful for showing the list of available mimetypes.
+   */
+  static QDict<KMimeType> * allTypes() { return s_mapTypes; }
+
 protected:
   static void errorMissingMimeType( const char *_type );
   static void scanMimeTypes( const char* _path );

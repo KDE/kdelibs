@@ -59,6 +59,11 @@ public:
    * @param _file is only used while displaying error messages.
    */
   static KService* parseService( const char *_file, KSimpleConfig &config, bool _put_in_list = true );
+
+  /**
+   * Return the whole list of services. Useful to display them.
+   */
+  static QList <KService>* allServices() { return s_lstServices; }
   
 protected:
   static void initServices( const char * _path );
