@@ -251,7 +251,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
     KDockWidget *c1=(KDockWidget*)child1;
     bool stdHandling=false;
     if ((fixedWidth0==-1) && (fixedWidth1==-1)) {
-	    if ((c0->getWidget()) && (dc=static_cast<KDockContainer*>(c0->getWidget()->qt_cast("KDockContainer")))
+	    if ((c0->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c0->getWidget()))
 		 && (dc->m_overlapMode)) {
 			int position= (m_orientation == Vertical ? width() : height()) * xpos/factor;
 			position=checkValueOverlapped(position,child0);
@@ -269,7 +269,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
         		        divider->setGeometry(position, 0, 4, height());
 		              }
 	    } else {
-		 if ((c1->getWidget()) && (dc=static_cast<KDockContainer*>(c1->getWidget()->qt_cast("KDockContainer")))
+		 if ((c1->getWidget()) && (dc=dynamic_cast<KDockContainer*>(c1->getWidget()))
         	 && (dc->m_overlapMode)) {
                 	int position= (m_orientation == Vertical ? width() : height()) * xpos/factor;
 			position=checkValueOverlapped(position,child1);

@@ -723,6 +723,12 @@ protected:
 
 signals:
   /**
+   *@since 3.2
+   *is emitted after the setWidget method has finished
+   */
+   void widgetSet(QWidget*);
+
+  /**
    * Emitted when another dock widget is docking to this.
    *
    * @param dw the dockwidget that is docking to this
@@ -1017,7 +1023,15 @@ public:
    * Returns true if the splitter uses the high resolution, false otherwise.
    */
   bool splitterHighResolution() const;
-
+#if 0
+  /**
+   * @since 3.2
+   */
+  void setSpecialLeftDockContainer(KDockWidget* container);  
+  void setSpecialTopDockContainer(KDockWidget* container);  
+  void setSpecialRightDockContainer(KDockWidget* container);  
+  void setSpecialBottomDockContainer(KDockWidget* container);  
+#endif
 signals:
 
   /**

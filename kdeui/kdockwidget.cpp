@@ -1415,6 +1415,7 @@ void KDockWidget::setWidget( QWidget* mw )
      layout->addWidget( widget,1 );
   }
   updateHeader();
+  emit widgetSet(mw);
 }
 
 void KDockWidget::setDockTabName( KDockTabGroup* tab )
@@ -2839,6 +2840,7 @@ void KDockContainer::activateOverlapMode(int nonOverlapSize) {
 	m_overlapMode=true;
 	if (parentDockWidget()) {
 		if (parentDockWidget()->parent()) {
+			kdDebug()<<"KDockContainer::activateOverlapMode: recalculating sizes"<<endl;
 			KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
 				parent()->qt_cast("KDockSplitter"));
 			if (sp) sp->resizeEvent(0);
@@ -2851,6 +2853,7 @@ void KDockContainer::deactivateOverlapMode() {
 	m_overlapMode=false;
 	if (parentDockWidget()) {
 		if (parentDockWidget()->parent()) {
+			kdDebug()<<"KDockContainer::deactivateOverlapMode: recalculating sizes"<<endl;
 			KDockSplitter *sp= static_cast<KDockSplitter*>(parentDockWidget()->
 				parent()->qt_cast("KDockSplitter"));
 			if (sp) sp->resizeEvent(0);
