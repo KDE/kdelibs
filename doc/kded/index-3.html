@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>The KDE Daemon: KTrader</TITLE>
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="keywords" CONTENT="KDE Daemon CORBA MICO">
+<META NAME="description" CONTENT="KDE Daemon Documentation">
+</HEAD>
+<BODY BGCOLOR="#ffffff" LINK="#aa0000" TEXT="#000000" > 
+<FONT FACE="Helvetica">
+<A HREF="http://www.kde.org/"><IMG SRC="logotp3.gif" BORDER="0" ALT="The K Desktop Environment"></A>
+<HR WIDTH="100%" SIZE=2 ALIGN="CENTER" NOSHADE>
+
+ 
+<P ALIGN="RIGHT">
+
+<A HREF="index-4.html">Next</A>
+ <A HREF="index-2.html">Previous</A>
+ <A HREF="index.html#toc3">Table of Contents</A>
+</P>
+<H3><A NAME="s3">3. KTrader</A></H3>
+
+<P>As already mentioned in the introduction, KTrader gives you access to the registry.
+"Now what the hell is the registry?" you might ask. As this is just a documentation
+about kded/libkded, I can only respond: "Please consult the documentation of/in 
+libkio for more information" :-} . Just one thing about it here: KTrader loads
+the whole and bloaty registry for you. Thanks to the magic of libkio the loaded
+registry will always be in sync with the "real" registry, the .desktop files in
+the following standard directories (both types, the system wide and the user ones) :
+<UL>
+<LI>applnk</LI>
+<LI>mimelnk</LI>
+<LI>services</LI>
+<LI>servicetypes</LI>
+</UL>
+<P>
+<P>Now over to KTrader and it's API. Similar to <CODE>KdedInstance</CODE> there can
+be only one single instance. The difference is that you don't have to care
+about allocating it, just simply get a reference to the KTrader by calling
+the <CODE>ktrader()</CODE> method of <CODE>KdedInstance</CODE> . And: don't
+even think about deleting the returned reference! Just simply use it and be
+happy with it :-) . (hey, kded is designed to be easy to use, no need for difficult
+stuff...)
+<P>
+<P>The KTrader API is even so simple that it contains only two methods ;-) . But
+before I describe these methods you have to know something about the kind of
+data KTrader returns. In simple words: You will always get a list of KService
+objects. More detailed: The returned list is a <CODE>QValueList</CODE> and the
+entries are <CODE>KSharedPtr</CODE>'s (FIXME: will soon be renamed to QSharedPtr, 
+as it will become part of Qt.... AFAIK) to <CODE>KService</CODE> objects. Please
+read the corresponding Qt documentation about these two classes. The big advantage
+of using these two template classes is that everything becomes easy for you
+and that the memory consumption is kept at a minimum . You don't have to care 
+about pointers, freeing them and cleaning up the list, as long as you use 
+<CODE>KTrader::ServicePtr</CODE> variables to hold the KService objects and as 
+long as you use <CODE>KTrader::OfferList</CODE> to pass the list around in your 
+program. So: Remember to always use these two types when dealing with KTrader!
+<P>Now over to the two methods.
+<P>
+<P><CODE>KTrader::listServices()</CODE> returns your a list of <B>all</B> available
+services in the whole KDE. (no need for further explanations I think...)
+<P><CODE>KTrader::query()</CODE> is the key method of this beast. It performs a lookup
+in the registry database, given your information about what you want to have.
+The first argument is the name of the servicetype which all returned services
+must implement. If you're unsure about the word "servicetype" , then you can
+replace it with "mimetype" , for most, but not all, cases.
+<P>The second argument is an additional constraint expression, which has to be
+fulfilled by a service.
+<P>The third argument is a preference expression after which the returned services
+will be sorted. The value of the expression has to be numeric.
+<P>The syntax of these two expressions is equal with the language of the standard
+CORBA Trader (this is due to the fact that the parsing code is from the COS
+Trader of MICO) . The language is not very difficult and I don't want to bloat
+this documentation with further explanations about it. Please consult your
+CORBA literature for more information. Just one thing you have to know:
+Comparisons are always done with the properties of the KService object,
+which are the standard entries (Name, ServiceType, RepoIds, ...) plus
+the ones specified in the servicetype declaration and read by KService.
+<P>Well, after so much theoretical explanations it's time for some practical example
+code:
+<P>
+<PRE>
+  ...
+  //get a reference to the KTrader
+  KTrader *trader = KdedInstance::self()->ktrader();
+  
+  ...
+  //will return a list of all services which implement the servicetype
+  //named "text/plain"
+  KTrader::OfferList offers = trader->query( "text/plain" );
+  
+
+  ...
+  //will return a list of all services which implement the servicetype
+  //named "image/gif" and which have the AllowAsDefault property set true
+  KTrader::OfferList offers = trader->query( "image/gif", "AllowAsDefault == TRUE" );
+  
+  ...
+  //will return KSpread ;-)
+  KTrader::OfferList offers = trader->query( "KOfficeDocument", "(Exec == 'kspread') and (Path != '/opt/gnome/bin')" );
+  
+  ...
+  //will return a list of all services which implement the servicetype
+  //named "BlahFoo" and which will be sorted (from lowest to highest) by 
+  //the value of the property "Price" , declared in the servicetype 
+  //declaration of BlahFoo.
+  KTrader::OfferList offers = trader->query( "BlahFoo", QString::null, "min Price" );
+</PRE>
+<P>
+<P>Please note that KTrader, since it queries libkio for services, will
+always return services sorted by the user's preferences for the specific 
+servicetype. These preferences can be specified in the file "profilerc" .
+<P>
+<H3><A NAME="ss3.1">3.1 KTraderServiceProvider</A>
+</H3>
+
+<P>This section requires to be familiar with libkio and it is meant for everybody who
+wants to use KRun in his application.
+<P>KRun requires a fully loaded registry in order to resolve mimetype &lt;-> application
+bindings. A fully loaded registry means that you need a KServiceTypeFactory and
+a KServiceFactory, which both load the appropriate KServiceType/KService objects.
+Now the KServiceType information doesn't need that much memory, but the KService
+object really eat loooots of it. And isn't it kind of stupid to load this information
+if this is already done by kded? Yes, it is ;-) .
+<P>
+<P>What we would need is to make KRun query KTrader for KService data, instead of
+directly using KServiceTypeProfile. Fortunately KRun is flexible enough for this,
+we just need a re-implementation of the KServiceProvider, defined in krun.h
+and used by KRun. Guess what, but KTrader provides you this re-implementation :-) .
+Just have a look at the end of ktrader.h .
+<P>
+<P>To sum it up: The following line makes KRun query kded, in your application:
+<PRE>
+  ...
+  //place this somewhere BEFORE the first usage of KRun, preferable somewhere
+  //in main()
+  KTraderServiceProvider serviceProvider;
+  ...
+</PRE>
+
+That's all, except that you <B>must</B> have a KdedInstance in order to be
+able to use it.
+<P>
+<P ALIGN="RIGHT">
+
+<A HREF="index-4.html">Next</A>
+ <A HREF="index-2.html">Previous</A>
+ <A HREF="index.html#toc3">Table of Contents</A>
+</P>
+<CENTER>
+<HR WIDTH="100%" SIZE=3 ALIGN=CENTER NOSHADE>
+</CENTER>    
+</FONT>
+
+ 
+</BODY>
+</HTML>

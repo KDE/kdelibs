@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>The KDE Daemon: Using The KDE Daemon In Your Application</TITLE>
+<META HTTP-EQUIV="content-type" CONTENT="text/html; charset=iso-8859-1">
+<META NAME="keywords" CONTENT="KDE Daemon CORBA MICO">
+<META NAME="description" CONTENT="KDE Daemon Documentation">
+</HEAD>
+<BODY BGCOLOR="#ffffff" LINK="#aa0000" TEXT="#000000" > 
+<FONT FACE="Helvetica">
+<A HREF="http://www.kde.org/"><IMG SRC="logotp3.gif" BORDER="0" ALT="The K Desktop Environment"></A>
+<HR WIDTH="100%" SIZE=2 ALIGN="CENTER" NOSHADE>
+
+ 
+<P ALIGN="RIGHT">
+
+<A HREF="index-3.html">Next</A>
+ <A HREF="index-1.html">Previous</A>
+ <A HREF="index.html#toc2">Table of Contents</A>
+</P>
+<H3><A NAME="s2">2. Using The KDE Daemon In Your Application</A></H3>
+
+<P>Before we can use any of kded's services, we have to know something about it's
+"position" in the KDE and the way it itself and the services can be accessed.
+<P>
+<P>As kded uses CORBA to communicate with it's clients, your application (as client),
+has to
+<UL>
+<LI>link to the kded library, libkded.</LI>
+<LI>link to libmico</LI>
+<LI>initialize the MICO ORB</LI>
+</UL>
+<P>
+<P>The first two points are fixed for all clients, the third one depends on the
+specific client. In general you have to choices:
+<P>
+<UL>
+<LI>If your application already uses KOM, then you're fine with using 
+KOMApplication (as you need it anyway) .</LI>
+<LI>If you don't want to use KOM, then you can initialize the ORBA "manually":
+<PRE>
+CORBA::ORB_ptr orb = CORBA::ORB_init( argc, argv, "mico-local-orb" );
+</PRE>
+
+Please note that when using this construct or similar ones, your application is
+<B>not</B> able to act as CORBA server if you are using KDE/Qt classes at the
+same time. This is due to the fact that the ORB needs it's own event loop, beside
+the main Qt event loop. Currently only KOMApplication, as part of the KDE Object
+Model, implements the needed functionality to combine both event loops and thus
+making KDE apps able to serve CORBA Objects.</LI>
+</UL>
+<P>
+<P>Although kded uses CORBA extensively, the API is kept simple and free from
+complicated CORBA stuff. In fact when talking about kded and it's API not the
+kded server is meant but the KDE Daemon library. This library contains the 
+interface to the server (for the clients) as well as the whole server functionality.
+The reason for this is based on the idea that an application using kded should
+not be forced to rely on an existing kded server binary nor a running server at
+all. The following three situations may exist when a client app gets started:
+<P>
+<UL>
+<LI>No kded is running and there's no kded server binary in the path. In this
+situation libkded will automatically start a local instance of kded in
+the application's process.</LI>
+<LI>No kded is running but there's a kded server binary available. Here libkded
+will start the kded executable and connect to it.</LI>
+<LI>kded is already running :-) . The fact that a kded is running is indicated
+by a special property on the X Root Window. kded publishes it's IOR
+(Interoperable Object Reference) in this property. This also ensures that
+a kded instance is specific to a X display and therefore to your KDE session.</LI>
+</UL>
+<P>To sum it up: libkded will always make sure that the services of kded are available
+for your client application, no matter in what alien environment the app is 
+running :-) . And, although you don't have to care about this, you can optionally
+control this behaviour of libkded by adding one of the following three commandline
+arguments to your app:
+<UL>
+<LI>"-kdedlocal" , which will make libkded <B>always</B> start a process-local 
+instance of kded and it's services.</LI>
+<LI>"-kdedremote" , which will make libkded try to look for a running kded 
+instance before starting a local one.</LI>
+<LI>"-kdedior ior_here" , which will make libkded connect to the kded server 
+specified by the given IOR.      </LI>
+</UL>
+<P>
+<P>Your actual interface to kded and it's services is the <CODE>KdedInstance</CODE> class,
+defined in kded_instance.h . So if you want to use kded (I guess that's why you're
+reading this shit ;) ) then make sure to create <B>one</B> single instance
+of it, preferably by adding the following line somewhere in the beginning of
+your <CODE>main()</CODE> :
+<PRE>
+KdedInstance( argc, argv, _a_reference_to_the_orb_here_ );
+</PRE>
+
+If you're using KOMApplication as application object (make sure to create the
+instance before this line) , then you're fine by specifying <CODE>komapp_orb</CODE> as
+reference to the ORB.
+<P>
+<P>As there is always only one single instance of this class, you can simply access
+it by the static <CODE>self()</CODE> method of the class from anywhere you want. No 
+need to pass KdedInstance arguments all around in your program ;-) .
+<P>
+<P>For further information about <CODE>KdedInstance</CODE> you might want to read
+kded_instance.h , it's pretty good documented.
+<P>
+<P ALIGN="RIGHT">
+
+<A HREF="index-3.html">Next</A>
+ <A HREF="index-1.html">Previous</A>
+ <A HREF="index.html#toc2">Table of Contents</A>
+</P>
+<CENTER>
+<HR WIDTH="100%" SIZE=3 ALIGN=CENTER NOSHADE>
+</CENTER>    
+</FONT>
+
+ 
+</BODY>
+</HTML>
