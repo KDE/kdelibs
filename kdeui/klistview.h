@@ -636,6 +636,8 @@ protected:
    * using a non-default DragMode
    */
   virtual void startDrag();
+ // TODO: change to bool
+
 
   /**
    * Reimplemented for internal reasons.
