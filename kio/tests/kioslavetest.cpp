@@ -379,6 +379,9 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
             case KIO::UDS_LINK_DEST:
                 kdDebug() << "LinkDest : " << ((*it).m_str.ascii() ) << endl;
                 break;
+            case KIO::UDS_SIZE:
+                kdDebug() << "Size: " << KIO::convertSize((*it).m_long) << endl;
+                break;
         }
     }
 }
