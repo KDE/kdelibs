@@ -308,7 +308,7 @@ public:
    * add popups that are already in the menu bar or are submenus of
    * other popups.
    */
-  void setDelayedPopup (int id , QPopupMenu *_popup);
+  void setDelayedPopup (int id , QPopupMenu *_popup, bool toggle = false);
 
  /**
    * Make a button an autorepeat button.

@@ -1507,11 +1507,11 @@ void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 }
 
 
-void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup)
+void KToolBar::setDelayedPopup (int id , QPopupMenu *_popup, bool toggle )
 {
   for (KToolBarItem *b = items->first(); b; b=items->next())
     if (b->ID() == id )
-      ((KToolBarButton *) b->getItem())->setDelayedPopup(_popup);
+      ((KToolBarButton *) b->getItem())->setDelayedPopup(_popup, toggle);
 }
 
 
