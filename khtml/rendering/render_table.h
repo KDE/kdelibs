@@ -47,6 +47,8 @@ class RenderTableRow;
 class RenderTableCell;
 class RenderTableCol;
 class RenderTableCaption;
+    class TableLayout;
+
 
 class RenderTable : public RenderFlow
 {
@@ -81,29 +83,17 @@ public:
     virtual bool isRendered() const { return true; }
     virtual bool isTable() const { return true; }
 
-    int getColumnPos(int col)
+    int getColumnPos(int col) const
         { return columnPos[col]; }
-    int getColumnWidth(int col)
-        { if(!actColWidth.size() < col) return 0; return actColWidth[col]; }
 
-    int cellSpacing() { return spacing; }
+    int cellSpacing() const { return spacing; }
 
-    Rules getRules() { return rules; }
+    Rules getRules() const { return rules; }
 
-    QColor bgColor() { return style()->backgroundColor(); }
+    const QColor &bgColor() const { return style()->backgroundColor(); }
 
-
-    void startRow();
-    void addCell( RenderTableCell *cell );
-    void endTable();
-    void  addColInfo(RenderTableCell *cell, bool recalc = true);
-    void  addColInfo(RenderTableCol *colel);
-
-    void addColInfo(int _startCol, int _colSpan,
-                    int _minSize, int _maxSize, khtml::Length _width,
-                    RenderTableCell* _cell, bool recalc = true);
-
-    void recalcColInfos();
+    uint cellPadding() const { return padding; }
+    void setCellPadding( uint p ) { padding = p; }
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
@@ -115,8 +105,6 @@ public:
 
     virtual void setCellWidths( );
 
-    int getBaseline(int row) {return rowBaselines[row];}
-
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
 
     virtual void calcWidth();
@@ -124,144 +112,73 @@ public:
     virtual int borderTopExtra();
     virtual int borderBottomExtra();
 
-    void closeRow();
-    void setNeedsCellsRecalc();
-    void recalcCells();
-
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif
-
-public:
-    /*
-     * For each table element with a different width a ColInfo struct is
-     * maintained. Consider for example the following table:
-     * +---+---+---+
-     * | A | B | C |
-     * +---+---+---+
-     * |   D   | E |
-     * +-------+---+
-     *
-     * This table would result in 4 ColInfo structs being allocated.
-     * 1 for A, 1 for B, 1 for C & E, and 1 for D.
-     *
-     * Note that C and E share the same ColInfo.
-     *
-     * Note that D has a seperate ColInfo entry.
-     *
-     * There is always 1 default ColInfo entry which stretches across the
-     * entire table.
-     */
-    struct ColInfo
-    {
-        ColInfo()
-        {
-	    span = 0;
-	    start = 0;
-            min=0;
-            max=0;
-            type=khtml::Variable;
-            value=0;
-            minCell=0;
-            maxCell=0;
-	    widthCell=0;
-        }
-
-        ushort     span;
-        ushort     start;
-        ushort     min;
-        ushort     max;
-        int     value : 29;
-        khtml::LengthType       type : 3;
-        RenderTableCell* minCell;
-        RenderTableCell* maxCell;
-	RenderTableCell* widthCell;
+    struct ColumnStruct {
+	enum {
+	    WidthUndefined = 0xffff
+	};
+	ColumnStruct() {
+	    span = 1;
+	    width = WidthUndefined;
+	}
+	ushort span;
+	ushort width; // the calculated position of the column
     };
-
-protected:
-
-    void recalcColInfo( ColInfo *col );
-
-    // This function calculates the actual widths of the columns
-    void calcColWidth();
-
-    // calculates the height of each row
-    void calcRowHeight(int r);
-
-    void layoutRows(int yoff);
-
-    void setCells( unsigned int r, unsigned int c, RenderTableCell *cell );
-    void addRows( int num );
-    void addColumns( int num );
-
-    RenderTableCell ***cells;
-
-    class ColInfoLine : public QPtrVector<ColInfo>
-    {
-    public:
-        ColInfoLine() : QPtrVector<ColInfo>()
-        { setAutoDelete(true); }
-        ColInfoLine(int i) : QPtrVector<ColInfo>(i)
-        { setAutoDelete(true); }
-        ColInfoLine(const QPtrVector<ColInfo> &v) : QPtrVector<ColInfo>(v)
-        { setAutoDelete(true); }
-    };
-
-    QPtrVector<ColInfoLine> colInfos;
-
-    void calcColMinMax();
-    void calcSingleColMinMax(int c, ColInfo* col);
-    void calcFinalColMax(int c, ColInfo* col);
-    void spreadSpanMinMax(int col, int span, int min, int max, khtml::LengthType type);
-    int distributeWidth(int distrib, khtml::LengthType type, int typeCols );
-    int distributePercentWidth(int distrib);
-    int distributeMinWidth(int distrib, khtml::LengthType distType,
-            khtml::LengthType toType, int start, int span, bool minlimit );
-    int distributeMaxWidth(int distrib, LengthType distType,
-            LengthType toType, int start, int span);
-    int distributeRest(int distrib, khtml::LengthType type, int divider );
-
-    int maxColSpan;
-
 
     QMemArray<int> columnPos;
-    QMemArray<int> colMaxWidth;
-    QMemArray<int> colMinWidth;
-    QMemArray<khtml::LengthType> colType;
-    QMemArray<int> colValue;
-    QMemArray<int> rowHeights;
-    QMemArray<int> rowBaselines;
-    QMemArray<int> actColWidth;
-    unsigned int col;
-    unsigned int totalCols;
-    unsigned int row;
-    unsigned int totalRows;
-    unsigned int allocRows;
+    QMemArray<ColumnStruct> columns;
 
-    unsigned int totalPercent ;
-    unsigned int totalRelative ;
+    void splitColumn( int pos, int firstSpan );
+    void appendColumn( int span );
+    int numEffCols() const { return columns.size(); }
+    int spanOfEffCol( int effCol ) const { return columns[effCol].span; }
+    int colToEffCol( int col ) const {
+	int c = 0;
+	int i = 0;
+	while ( c < col ) {
+	    c += columns[i].span;
+	    i++;
+	}
+	return i;
+    }
+    int effColToCol( int effCol ) const {
+	int c = 0;
+	for ( int i = 0; i < effCol; i++ )
+	    c += columns[i].span;
+	return c;
+    }
+
+    int bordersAndSpacing() const {
+	return borderLeft() + borderRight() + cellSpacing();
+    }
+
+    RenderTableCol *colElement( int col );
+
+protected:
+    friend class AutoTableLayout;
+    friend class FixedTableLayout;
 
     RenderTableCaption *tCaption;
     RenderTableSection *head;
     RenderTableSection *foot;
     RenderTableSection *firstBody;
 
-    Frame frame;
-    Rules rules;
+    TableLayout *tableLayout;
 
-    RenderTableCol *_oldColElem;
-    int _currentCol; // keeps track of current col for col/colgroup stuff
-    int spacing;
-    short _lastParentWidth 	: 16;
-    bool incremental 		: 1;
-    bool colWidthKnown 		: 1;
-    bool needsCellsRecalc 	: 1;
-    bool hasPercent 		: 1;
+    Frame frame                 : 4;
+    Rules rules                 : 4;
+
+    bool has_col_elems		: 1;
+    uint spacing                : 11;
+    uint padding		: 11;
+    uint unused			: 1;
 };
 
 // -------------------------------------------------------------------------
 
-class RenderTableSection : public RenderContainer
+class RenderTableSection : public RenderBox
 {
 public:
     RenderTableSection(DOM::NodeImpl* node);
@@ -276,14 +193,47 @@ public:
     virtual short lineHeight(bool) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool, int) {}
 
-    virtual void setTable(RenderTable *t) { table = t; }
-
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif
 
+    void addCell( RenderTableCell *cell );
+
+    void setCellWidths();
+    void calcRowHeight();
+    int layoutRows( int height );
+
+    RenderTable *table() const { return static_cast<RenderTable *>(parent()); }
+
+    typedef QMemArray<RenderTableCell *> Row;
+    struct RowStruct {
+	Row *row;
+	int baseLine;
+    };
+
+    RenderTableCell *&cellAt( int row,  int col ) {
+	return (*(grid[row].row))[col];
+    }
+    RenderTableCell *cellAt( int row,  int col ) const {
+	return (*(grid[row].row))[col];
+    }
+
+    virtual void print( QPainter *, int x, int y, int w, int h,
+                        int tx, int ty);
+
+    int numRows() const { return grid.size(); }
+    int getBaseline(int row) {return grid[row].baseLine;}
+
+    // this gets a cell grid data structure. changing the number of
+    // columns is done by the table
+    QMemArray<RowStruct> grid;
+    QMemArray<int> rowPos;
+
+    short cRow : 16;
+    short cCol : 16;
+
 protected:
-    RenderTable *table;
+    void ensureRows( int numRows );
 };
 
 // -------------------------------------------------------------------------
@@ -296,9 +246,6 @@ public:
 
     virtual const char *renderName() const { return "RenderTableRow"; }
 
-    long rowIndex() const;
-    void setRowIndex( long );
-
     virtual bool isTableRow() const { return true; }
 
     // overrides
@@ -307,21 +254,15 @@ public:
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool, int) {}
 
-    virtual void close();
-
     virtual void repaint();
 
     virtual void layout();
 
-    virtual void setTable(RenderTable *t) { table = t; }
+    RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()); }
 
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
 #endif
-
-protected:
-    RenderTable *table;
-
 };
 
 // -------------------------------------------------------------------------
@@ -353,8 +294,6 @@ public:
     int row() const { return _row; }
     void setRow(int r) { _row = r; }
 
-    khtml::LengthType colType();
-
     // overrides
     virtual void calcMinMaxWidth();
     virtual void calcWidth();
@@ -364,15 +303,8 @@ public:
 
     virtual void updateFromElement();
 
-    void setRowHeight(int h) { rowHeight = h; }
-
-    void setRowImpl(RenderTableRow *r) { rowimpl = r; }
-
     void setCellTopExtra(int p) { _topExtra = p; }
     void setCellBottomExtra(int p) { _bottomExtra = p; }
-
-    virtual void setTable(RenderTable *t) { m_table = t; }
-    RenderTable *table() const { return m_table; }
 
     virtual void print( QPainter* p, int x, int y,
                         int w, int h, int tx, int ty);
@@ -386,6 +318,8 @@ public:
     virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
 
     virtual short baselinePosition( bool = false ) const;
+
+    RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()->parent()); }
 
 #ifndef NDEBUG
     virtual void dump(QTextStream *stream, QString ind = "") const;
@@ -403,21 +337,16 @@ protected:
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }
 
-
-    RenderTable *m_table;
-
     short _row;
     short _col;
-    short rSpan;
-    short cSpan;
+    ushort rSpan;
+    ushort cSpan;
     short _topExtra;
     short _bottomExtra;
     bool nWrap : 1;
     bool m_widthChanged : 1;
-    int rowHeight : 30;
-
-    RenderTableRow *rowimpl;
 };
+
 
 // -------------------------------------------------------------------------
 
@@ -429,20 +358,16 @@ public:
 
     virtual const char *renderName() const { return "RenderTableCol"; }
 
-    void setStartCol( int c ) {_startCol = _currentCol = c; }
-    int col() { return _startCol; }
-    int lastCol() { return _currentCol; }
-
     long span() const { return _span; }
     void setSpan( long s ) { _span = s; }
 
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 
+    virtual bool isTableCol() const { return true; }
+
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool, int) {}
     virtual void layout() {}
-
-    virtual void setTable(RenderTable *t) { table = t; }
 
     virtual void updateFromElement();
 
@@ -451,10 +376,7 @@ public:
 #endif
 
 protected:
-    RenderTable *table;
     short _span;
-    short _currentCol;
-    short _startCol;
 };
 
 // -------------------------------------------------------------------------
@@ -466,10 +388,6 @@ public:
     ~RenderTableCaption();
 
     virtual const char *renderName() const { return "RenderTableCaption"; }
-
-    virtual void setTable(RenderTable *t) { table = t; }
-protected:
-    RenderTable *table;
 };
 
 };

@@ -56,7 +56,6 @@ HTMLTableElementImpl::HTMLTableElementImpl(DocumentPtr *doc)
     rules = None;
     frame = Void;
 
-    incremental = false;
     m_noBorder = true;
     m_solid = false;
 
@@ -269,24 +268,18 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
         break;
     case ID_COL:
     case ID_COLGROUP:
-        {
-        // these have to come before the table definition!
         if(head || foot || firstBody)
             return 0;
+    case ID_TR:
         HTMLElementImpl::addChild(child);
-        // ###
-        }
         return child;
     case ID_THEAD:
-        //      if(incremental && !columnPos[totalCols]);// calcColWidth();
         return setTHead(static_cast<HTMLTableSectionElementImpl *>(child));
         break;
     case ID_TFOOT:
-        //if(incremental && !columnPos[totalCols]);// calcColWidth();
         return setTFoot(static_cast<HTMLTableSectionElementImpl *>(child));
         break;
     case ID_TBODY:
-        //if(incremental && !columnPos[totalCols]);// calcColWidth();
         return setTBody(static_cast<HTMLTableSectionElementImpl *>(child));
         break;
     }
@@ -401,22 +394,24 @@ void HTMLTableElementImpl::parseAttribute(AttributeImpl *attr)
         break;
    case ATTR_CELLSPACING:
         if (!attr->value().isEmpty())
-            addCSSLength(CSS_PROP_BORDER_SPACING, attr->value());
+            addCSSLength(CSS_PROP_BORDER_SPACING, attr->value(), true);
         else
             removeCSSProperty(CSS_PROP_BORDER_SPACING);
         break;
     case ATTR_CELLPADDING:
         if (!attr->value().isEmpty()) {
-            addCSSLength(CSS_PROP_PADDING_TOP, attr->value());
-            addCSSLength(CSS_PROP_PADDING_LEFT, attr->value());
-            addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value());
-            addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value());
+            addCSSLength(CSS_PROP_PADDING_TOP, attr->value(), true);
+            addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), true);
+            addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), true);
+            addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), true);
+	    padding = attr->value().toInt();
         }
         else {
             removeCSSProperty(CSS_PROP_PADDING_TOP);
             removeCSSProperty(CSS_PROP_PADDING_LEFT);
             removeCSSProperty(CSS_PROP_PADDING_BOTTOM);
             removeCSSProperty(CSS_PROP_PADDING_RIGHT);
+	    padding = 1;
         }
         break;
     case ATTR_COLS:
@@ -459,6 +454,8 @@ void HTMLTableElementImpl::attach()
     }
 
     HTMLElementImpl::attach();
+    if ( m_render && m_render->isTable() )
+	static_cast<RenderTable *>(m_render)->setCellPadding( padding );
 }
 
 // --------------------------------------------------------------------------
@@ -742,7 +739,7 @@ void HTMLTableCellElementImpl::attach()
 // -------------------------------------------------------------------------
 
 HTMLTableColElementImpl::HTMLTableColElementImpl(DocumentPtr *doc, ushort i)
-    : HTMLElementImpl(doc)
+    : HTMLTablePartElementImpl(doc)
 {
     _id = i;
     _span = (_id == ID_COLGROUP ? 0 : 1);
@@ -757,29 +754,6 @@ NodeImpl::Id HTMLTableColElementImpl::id() const
     return _id;
 }
 
-
-NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
-{
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6030 ) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
-#endif
-
-    switch(child->id())
-    {
-    case ID_COL:
-    {
-        // these have to come before the table definition!
-        HTMLElementImpl::addChild(child);
-        return child;
-    }
-    default:
-        return 0;
-        break;
-        // ####
-    }
-    return child;
-
-}
 
 void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
 {
@@ -801,7 +775,7 @@ void HTMLTableColElementImpl::parseAttribute(AttributeImpl *attr)
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLTablePartElementImpl::parseAttribute(attr);
     }
 
 }

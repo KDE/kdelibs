@@ -576,14 +576,24 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 
                 NodeImpl *parentparent = parent->parentNode();
 
-                if(( node->id() == ID_TR &&
-                   ( parent->id() == ID_THEAD ||
-                     parent->id() == ID_TBODY ||
-                     parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE ) ||
-                   ( !checkChild( ID_TR, id ) && ( node->id() == ID_THEAD || node->id() == ID_TBODY || node->id() == ID_TFOOT ) &&
-                     parent->id() == ID_TABLE ) )
+                if( ( node->id() == ID_TR &&
+		      ( parent->id() == ID_TABLE ||
+			( ( parent->id() == ID_THEAD ||
+			    parent->id() == ID_TBODY ||
+			    parent->id() == ID_TFOOT ) &&
+			  parentparent->id() == ID_TABLE ) )
+			) ||
+		    ( !checkChild( ID_TR, id ) &&
+		      ( node->id() == ID_TABLE ||
+			( ( node->id() == ID_THEAD ||
+			    node->id() == ID_TBODY ||
+			    node->id() == ID_TFOOT ) &&
+			  parent->id() == ID_TABLE ) )
+			)
+		    )
                 {
-                    node = ( node->id() == ID_TR ) ? parentparent : parent;
+		    while ( node->id() != ID_TABLE )
+			node = node->parentNode();
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
                     NodeImpl *container = new HTMLGenericElementImpl( document, ID__KONQBLOCK );
@@ -605,8 +615,6 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 
                 if ( current->id() == ID_TR )
                     e = new HTMLTableCellElementImpl(document, ID_TD);
-                else if ( current->id() == ID_TABLE )
-                    e = new HTMLTableSectionElementImpl( document, ID_TBODY );
                 else
                     e = new HTMLTableRowElementImpl( document );
 

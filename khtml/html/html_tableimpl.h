@@ -108,9 +108,10 @@ protected:
     Frame frame;
     Rules rules;
 
-    bool incremental : 1;
-    bool m_noBorder  : 1;
-    bool m_solid     : 1;
+    bool m_noBorder     : 1;
+    bool m_solid        : 1;
+    uint unused		: 14;
+    ushort padding	: 16;
     friend class HTMLTableCellElementImpl;
 };
 
@@ -209,7 +210,7 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class HTMLTableColElementImpl : public HTMLElementImpl
+class HTMLTableColElementImpl : public HTMLTablePartElementImpl
 {
 public:
     HTMLTableColElementImpl(DocumentPtr *doc, ushort i);
@@ -219,8 +220,6 @@ public:
     virtual Id id() const;
 
     void setTable(HTMLTableElementImpl *t) { table = t; }
-
-    virtual NodeImpl *addChild(NodeImpl *child);
 
     // overrides
     virtual void parseAttribute(AttributeImpl *attr);

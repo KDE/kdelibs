@@ -381,9 +381,6 @@ public:
                     QColor c, const QColor& textcolor, EBorderStyle style,
                     int adjbw1, int adjbw2, bool invalidisInvert = false);
 
-    // ### remove after merging in the new table code.
-    virtual void setTable(RenderTable*) {};
-
     // force a complete repaint
     virtual void repaint() { if(m_parent) m_parent->repaint(); }
     virtual void repaintRectangle(int x, int y, int w, int h, bool f=false);
