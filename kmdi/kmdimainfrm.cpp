@@ -540,105 +540,12 @@ KMdiToolViewAccessor *KMdiMainFrm::addToolWindow( QWidget* pWnd, KDockWidget::Do
 
       KDockWidget *pCover=mtva->d->widgetContainer;
 
-      mtva->show(pos, pTargetWnd,percent);
+      mtva->place(pos, pTargetWnd,percent);
 
    }
 
-#if 0
-//      pCover->setWidget( pToolView);
-//      pCover->setToolTipString( tabToolTip);
-      pCover->setDockWindowTransient(this,true);
-
-      KDockWidget* pTargetDock = 0L;
-        // Should we dock to ourself?
-      bool DockToOurself = false;
-      if(m_pDockbaseAreaOfDocumentViews)
-      {
-        if (pTargetWnd == m_pDockbaseAreaOfDocumentViews->getWidget()) DockToOurself = true;
-      }
-      if (pTargetWnd == this) DockToOurself = true;
-      if (DockToOurself) pTargetDock = m_pDockbaseAreaOfDocumentViews;
-      else if(pTargetWnd != 0L) {
-         pTargetDock = dockManager->findWidgetParentDock( pTargetWnd);
-         if (!pTargetDock) {
-            if (pTargetWnd->parentWidget() && pTargetWnd->parentWidget()->inherits("KMdiChildView")) {
-               pTargetDock = dockManager->findWidgetParentDock( pTargetWnd->parentWidget());
-            }
-         }
-      }
-      if (pTargetDock) {
-         pCover->manualDock( pTargetDock, pos, percent);
-//check      pCover->show();
-      }
-   }
-#endif
    return mtva;
 
-#if 0
-   KMdiChildView* pToolView = 0L;
-   QRect r = pWnd->geometry();
-
-   // if pWnd is not a KMdiChildView already, cover it by such widget
-   if (pWnd->inherits("KMdiChildView")) {
-      pToolView = (KMdiChildView*) pWnd;
-   }
-   else {
-      pToolView = new KMdiChildView( pWnd->caption());
-      QHBoxLayout* pLayout = new QHBoxLayout( pToolView, 0, -1, "internal_kmdichildview_layout");
-      pWnd->reparent( pToolView, QPoint(0,0));
-      pToolView->setName( pWnd->name());
-      pToolView->setFocusPolicy( pWnd->focusPolicy());
-      const QPixmap& wndIcon = pWnd->icon() ? *(pWnd->icon()) : QPixmap();
-      pToolView->setIcon( wndIcon);
-      pToolView->setCaption( pWnd->caption());
-      QApplication::sendPostedEvents();
-      pLayout->addWidget( pWnd);
-   }
-
-   // if docking is not desired, add the toolview as stay-on-top toplevel view
-   if (pos == KDockWidget::DockNone) {
-      pToolView->reparent(this, Qt::WType_TopLevel | Qt::WType_Dialog, r.topLeft(), pToolView->isVisible());
-      QObject::connect( pToolView, SIGNAL(childWindowCloseRequest(KMdiChildView*)), this, SLOT(childWindowCloseRequest(KMdiChildView*)) );
-      QObject::connect( pToolView, SIGNAL(focusInEventOccurs(KMdiChildView*)), this, SLOT(activateView(KMdiChildView*)) );
-      m_pToolViews->append(pToolView);
-      pToolView->m_bToolView = true;
-      pToolView->setGeometry(r);
-   }
-   else {   // add (and dock) the toolview as DockWidget view
-      const QPixmap& wndIcon = pWnd->icon() ? *(pWnd->icon()) : QPixmap();
-      KDockWidget* pCover = createDockWidget( pToolView->name(),
-                                              wndIcon,
-                                              0L,  // parent
-                                              pToolView->caption(),
-                                              tabCaption );
-      pCover->setWidget( pToolView);
-      pCover->setToolTipString( tabToolTip);
-      pCover->setDockWindowTransient(this,true);
-
-      KDockWidget* pTargetDock = 0L;
-        // Should we dock to ourself?
-      bool DockToOurself = false;
-      if(m_pDockbaseAreaOfDocumentViews)
-      {
-        if (pTargetWnd == m_pDockbaseAreaOfDocumentViews->getWidget()) DockToOurself = true;
-      }
-      if (pTargetWnd == this) DockToOurself = true;
-      if (DockToOurself) pTargetDock = m_pDockbaseAreaOfDocumentViews;
-      else if(pTargetWnd != 0L) {
-         pTargetDock = dockManager->findWidgetParentDock( pTargetWnd);
-         if (!pTargetDock) {
-            if (pTargetWnd->parentWidget() && pTargetWnd->parentWidget()->inherits("KMdiChildView")) {
-               pTargetDock = dockManager->findWidgetParentDock( pTargetWnd->parentWidget());
-            }
-         }
-      }
-      if (pTargetDock) {
-         pCover->manualDock( pTargetDock, pos, percent);
-//check      pCover->show();
-      }
-   }
-
-#endif
 }
 
 //============ attachWindow ============//

@@ -145,8 +145,8 @@ void KMdiDockContainer::insertWidget (KDockWidget *dwdg, QPixmap pixmap, const Q
     tab=m_map[w];
     if (m_ws->addWidget(w,tab)!=tab) kdDebug(760)<<"ERROR COULDN'T READD WIDGET************"<<endl;
     kdDebug(760)<<"READDED WIDGET***********************************"<<endl;
-    m_tb->setTab(tab,true);
-    tabClicked(tab);
+/*JOWENN    m_tb->setTab(tab,true);
+    tabClicked(tab);*/
   }
   else
   {
@@ -281,7 +281,7 @@ void KMdiDockContainer::undockWidget(KDockWidget *dwdg)
 void KMdiDockContainer::tabClicked(int t)
 {
   kdDebug(760)<<"KMdiDockContainer::tabClicked()"<<endl;
-
+  bool call_makeVisible=!m_tabSwitching;
   m_tabSwitching=true;
   if (m_tb->isTabRaised(t))
   {
@@ -294,6 +294,7 @@ void KMdiDockContainer::tabClicked(int t)
       if (!m_ws->widget(t))
     {
       m_revMap[t]->manualDock(parentDockWidget(),KDockWidget::DockCenter,20);
+      if (call_makeVisible) m_revMap[t]->makeDockVisible();//manualDock(parentDockWidget(),KDockWidget::DockCenter,20);
       m_tabSwitching=false;
       emit activated(this);
       return;

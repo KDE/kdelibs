@@ -149,7 +149,12 @@ bool KMdiToolViewAccessor::eventFilter(QObject *o, QEvent *e) {
 	return false;
 }
 
-void KMdiToolViewAccessor::show(KDockWidget::DockPosition pos, QWidget* pTargetWnd ,int percent)
+void KMdiToolViewAccessor::placeAndShow(KDockWidget::DockPosition pos, QWidget* pTargetWnd ,int percent)
+{
+	place(pos,pTargetWnd,percent);
+	show();	
+}
+void KMdiToolViewAccessor::place(KDockWidget::DockPosition pos, QWidget* pTargetWnd ,int percent)
 {
     Q_ASSERT(d->widgetContainer);
     if (!d->widgetContainer) return;
@@ -208,6 +213,13 @@ void KMdiToolViewAccessor::hide() {
 	if (!d->widgetContainer) return;
 	d->widgetContainer->undock();
 }
+
+void KMdiToolViewAccessor::show() {
+	Q_ASSERT(d->widgetContainer);
+	if (!d->widgetContainer) return;
+	d->widgetContainer->makeDockVisible();
+}
+
 
 #ifndef NO_INCLUDE_MOCFILES
 #include "kmditoolviewaccessor.moc"
