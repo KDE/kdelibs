@@ -57,30 +57,9 @@
 #define S44 21
 
 static const char Base64EncMap[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static char Base64DecMap[128] = 
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-};
-
 static const char UUEncMap[] = "`!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";
-static char UUDecMap[128] =
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0    
-};
+static char* Base64DecMap = new char[128];
+static char* UUDecMap = new char [128];
 
 // ROTATE_LEFT rotates x left n bits.
 inline Q_UINT32 rotate_left  (Q_UINT32 x, Q_UINT32 n)
@@ -170,11 +149,13 @@ QString KCodecs::base64Encode( const QString& data )
     if ( data.isEmpty() )
         return QString::null;
 
-    int sidx = 0, didx = 0;
+    int sidx = 0;
+    int didx = 0;
     int len = data.length();
     int out_len = ((len+2)/3)*4;
-    char* out = new char[out_len];
+
     const Q_UINT8* buf = reinterpret_cast<Q_UINT8*>(const_cast<char*>(data.latin1()));
+    char * out = new char[out_len];
 
     // 3-byte to 4-byte conversion + 0-63 to ascii printable conversion
     for ( ; sidx < len-2; sidx += 3)
@@ -184,7 +165,7 @@ QString KCodecs::base64Encode( const QString& data )
                                     (buf[sidx] << 4) & 077];
         out[didx++] = Base64EncMap[(buf[sidx+2] >> 6) & 003 |
                                    (buf[sidx+1] << 2) & 077];
-    out[didx++] = Base64EncMap[buf[sidx+2] & 077];
+        out[didx++] = Base64EncMap[buf[sidx+2] & 077];
     }
 
     if (sidx < len)
@@ -204,7 +185,9 @@ QString KCodecs::base64Encode( const QString& data )
     for ( ; didx < out_len; didx++)
         out[didx] = '=';
 
-    return QString(out);
+    QString result = QString::fromLatin1(out, out_len);
+    delete out;
+    return result;
 }
 
 QString KBase64::base64Decode( const QString& data )
@@ -241,7 +224,9 @@ QString KBase64::base64Decode( const QString& data )
     if (++didx < out_len)
         out[didx] = (((buf[sidx+1] << 4) & 255) | ((buf[sidx+2] >> 2) & 017));
 
-    return QString(out);
+    QString result = QString::fromLatin1(out, out_len);
+    delete out;
+    return result;
 }
 
 QString KCodecs::uuencode( const QString& data )
@@ -317,7 +302,9 @@ QString KCodecs::uuencode( const QString& data )
     if ( didx !=  out_len )
         return QString("");
 
-    return QString(out);
+    QString result = QString::fromLatin1(out, out_len);
+    delete out;
+    return result;
 }
 
 QString KCodecs::uudecode( const QString& data )
@@ -381,7 +368,10 @@ QString KCodecs::uudecode( const QString& data )
         memcpy( tmp, out, sizeof(out) );
         out = tmp;
     }
-    return QString(out);
+
+    QString result = QString::fromLatin1(out, out_len);
+    delete out;
+    return result;
 }
 
 /******************************** KMD5 ********************************/
