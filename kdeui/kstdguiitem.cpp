@@ -112,7 +112,7 @@ KGuiItem KStdGuiItem::dontSave()
 
 KGuiItem KStdGuiItem::saveAs()
 {
-  return KGuiItem( i18n( "Save &As..." ), "saveas",
+  return KGuiItem( i18n( "Save &As..." ), "filesaveas",
                    i18n( "Save file with another name" ) );
 }
 
