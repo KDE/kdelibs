@@ -30,21 +30,27 @@ static bool sendNotifyEvent(const QString &message, const QString &text,
 {
   DCOPClient *client=kapp->dcopClient();
   if (!client->isAttached())
-    client->attach();
-  if (!client->isAttached())
-    return false;
-
-  if (!kapp->dcopClient()->isApplicationRegistered("knotify"))
   {
-    KNotifyClient::startDaemon();
+    client->attach();
+    if (!client->isAttached())
+      return false;
   }
-     
+
   QByteArray data;
   QDataStream ds(data, IO_WriteOnly);
   QString appname = kapp->name();
   ds << message << appname << text << sound << file << present << level;
 
-  return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
+  bool result = client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
+  if (!result)
+  {
+    if (!kapp->dcopClient()->isApplicationRegistered("knotify"))
+    {
+      KNotifyClient::startDaemon();
+      result = client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int,int)", data, true);
+    }
+  }
+  return result;
 }
 
 bool KNotifyClient::event(const QString &message, const QString &text)
