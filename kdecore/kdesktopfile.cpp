@@ -100,14 +100,14 @@ QString KDesktopFile::readURL() const
 	QCString fstabFile;
 	int indexDevice = 0;  // device on first column
 	int indexMountPoint = 1; // mount point on second column
-	int indexFSType = 2; // fstype on third column 
+	int indexFSType = 2; // fstype on third column
 	if (QFile::exists(QString::fromLatin1("/etc/fstab"))) { // Linux, ...
 	    fstabFile = "/etc/fstab";
 	} else if (QFile::exists(QString::fromLatin1("/etc/vfstab"))) { // Solaris
 	    fstabFile = "/etc/vfstab";
 	    indexMountPoint++;
 	    indexFSType++;
-	} 
+	}
 	// insert your favorite location for fstab here
 	
 	if ( !fstabFile.isEmpty() ) {
@@ -177,7 +177,7 @@ bool KDesktopFile::tryExec() const
 
   if (!te.isEmpty()) {
     if (te[0] == '/') {
-      if (::access(te.utf8(), R_OK & X_OK))
+      if (::access(QFile::encodeName(te), R_OK & X_OK))
 	return false;
       else
 	return true;
@@ -186,7 +186,7 @@ bool KDesktopFile::tryExec() const
       QStringList::Iterator it(dirs.begin());
       for (; it != dirs.end(); ++it) {
 	QString fName = *it + te;
-	if (::access(fName.utf8(), R_OK & X_OK) == 0)
+	if (::access(QFile::encodeName(fName), R_OK & X_OK) == 0)
 	  return true;
       }
       // didn't match at all
@@ -199,13 +199,13 @@ bool KDesktopFile::tryExec() const
 /**
  * @return the filename as passed to the constructor.
  */
-QString 
+QString
 KDesktopFile::filename() const { return backEnd->filename(); }
-  
+
 /**
  * @return the resource type as passed to the constructor.
  */
-QString 
+QString
 KDesktopFile::resource() const { return backEnd->resource(); }
 
 QStringList
