@@ -924,7 +924,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	} while( (uint)iOffsetToken < keyStr.length() );
 
 	if( !c.isNull() ) {
-#if _WS_X11_
+#ifdef _WS_X11_
 		if( c.isLetter() && !(keyModX & ShiftMask) )
 			c = c.lower();
 		keySymX = c.unicode();
@@ -1002,7 +1002,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	return keyCombQt;
 }
 
-#if _WS_X11_
+#ifdef _WS_X11_
 uint KAccel::keyCodeXToKeySymX( uchar keyCodeX, uint keyModX )
 {
 	uint keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, 0 );
