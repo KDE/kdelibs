@@ -63,6 +63,11 @@ These libraries are:
     Something witty and creative about DCOP and it's Davidlyness goes
     here, David, D, you get it, sure.
 
+* kssl
+    An SSL intergration for KDE. It currently uses OpenSSL. Read kssl/README
+    for up-to-date informations.
+
+
 Licensing
 ---------
 
@@ -83,7 +88,7 @@ Common Mistakes
 ---------------
 
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 2.2.0 or newer.  If you have peeked there
+to get a copy of Qt, version 2.2.1 or newer.  If you have peeked there
 already, grab the CVS module qt-copy from anoncvs.kde.org, or a snapshot
 thereof.
 
@@ -101,6 +106,14 @@ Upgrading
 If you have an older kdebase installed, just copy all your .k*rc files
 from $HOME to $HOME/.kde/share/config. In the other case, default values
 are used for most apps.
+
+Compile Problems
+----------------
+
+Often, KDE compile failures are not KDE's faults but the one of the
+compiler or the distribution used. For that reason, please have a look at
+http://www.kde.org/compilationfaq.html for know issues in certain OS
+environments before reporting bugs or going mad :). 
 
 More Info
 ---------
