@@ -156,7 +156,7 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
     char errstr[256];
     XGetErrorText( dpy, err->error_code, errstr, 256 );
     if ( err->error_code != BadWindow )
-        kdWarning() << "KDE detected X Error: " << errstr << " " << err->error_code
+        kdDebug() << "KDE detected X Error: " << errstr << " " << err->error_code
 		<< "\n  Major opcode:  " << err->request_code << endl;
     return 0;
 }
