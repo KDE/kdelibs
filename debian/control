@@ -11,7 +11,7 @@ Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdebase (<< 4:2.2-cvs20010618-1), konqueror (<< 4:2.2-cvs20010618-1), kscreensaver (<< 4:2.2-cvs20010528-1), kdebase-libs (<< 4:2.2-cvs20010618-1), kdevelop (<= 1:1.4.0-3.4)
 Depends: ${shlibs:Depends}, python-base
-Recommends: libarts, libkmid, kdelibs3-cups
+Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
 Conflicts: kdelibs3-crypto (<< 4:2.2.0-0beta1-1)
 Description: KDE core libraries (runtime files)

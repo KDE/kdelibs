@@ -2,6 +2,7 @@ kdelibs (4:2.2.0-0beta1-5) unstable; urgency=low
  
   * synce with upstream
   * Add -mieee for Alpha builds
+  * Add Recommends for aspell | ispell
  
  -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 07 Jul 2001 00:57:00 -0700
 
