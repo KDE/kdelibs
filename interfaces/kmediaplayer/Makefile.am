@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(srcdir)/..
+INCLUDES = -I$(srcdir)/.. $(all_includes)
 
 lib_LTLIBRARIES = libkmediaplayer.la
 
