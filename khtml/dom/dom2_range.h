@@ -3,6 +3,7 @@
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
  * (C) 2000 Gunnstein Lye (gunnstein@netcom.no)
+ * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -97,7 +98,7 @@ public:
      * The common ancestor container of the range's two end-points.
      *
      */
-    Node getCommonAncestorContainer() const;
+    Node getCommonAncestorContainer() /*const*/;
 
     /**
      * TRUE if the range is collapsed
@@ -443,6 +444,8 @@ public:
      *
      */
     void detach (  );
+    DocumentFragment masterTraverse(bool contentExtract);
+    
 protected:
     Node startContainer;
     unsigned long startOffset;
