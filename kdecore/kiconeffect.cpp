@@ -276,9 +276,9 @@ void KIconEffect::colorize(QImage &img, const QColor &col, float value)
         }
 	else if (val == 128)
 	{
-             rval = rcol;
-             gval = gcol;
-             bval = bcol;
+             rval = static_cast<int>(rcol);
+             gval = static_cast<int>(gcol);
+             bval = static_cast<int>(bcol);
 	}
 	if (value < 1.0)
 	{
