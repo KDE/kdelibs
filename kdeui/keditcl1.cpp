@@ -757,7 +757,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	    //	    printf("SETCURSOR1 %d %d\n",templine +1,cursor_offset);
 	  }
 	  else{
-	    setCursorPosition(templine,tempcol);
+	      setCursorPosition(templine,tempcol);
 	    //	    printf("SETCURSOR2 %d %d\n",templine ,tempcol);
 
 	  }
@@ -773,7 +773,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	  int y2  = -1;
 
 	  rowYPos(templine,&y1);
-	  rowYPos(templine + num_of_rows -1,&y2);
+	  rowYPos(templine + num_of_rows ,&y2);
 
 	  if(y1 == -1)
 	    y1 = 0;
@@ -966,6 +966,7 @@ bool KEdit::format(QStrList& par){
     
       par.remove(i);
       par.insert(i,pstring.left(space_pos));
+      
 
       if(i < (int)par.count() - 1){
 	QString temp1 = par.at(i+1);
