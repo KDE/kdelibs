@@ -219,8 +219,8 @@ int TextSlaveArray::findFirstMatching( Item d) const
 	    break;
 	}
     }
-    if ( !found && !1)
-	return -1;
+    /* if ( !found )
+	return -1; */
     // search to first one equal or bigger
     while ( found && (mid > 0) && !((QGVector*)this)->compareItems(d, (*this)[mid-1]) )
 	mid--;
@@ -280,10 +280,12 @@ void RenderText::deleteSlaves()
 
 bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
 {
-    TextSlave *s = m_lines.count() ? m_lines[0] : 0;
-    int si = 0;
-    while(s)
+    // ### this might be wrong, if combining chars are used ( eg arabic )
+
+    int len = 0; // length found until here
+    for ( unsigned int si = 0 ; si < m_lines.count() ; ++si )
     {
+        TextSlave * s = m_lines[si];
         if( s->checkPoint(_x, _y, _tx, _ty) )
         {
             // now we need to get the exact position
@@ -300,13 +302,12 @@ bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
                 pos++;
                 delta -= w;
             }
-            offset = s->m_text - m_lines[0]->m_text + pos;
+            offset = len + pos;
             //kdDebug( 6040 ) << " Text  --> inside at position " << offset << endl;
 
             return true;
         }
-        // ### this might be wrong, if combining chars are used ( eg arabic )
-        s = si < (int)m_lines.count()-1 ? m_lines[++si] : 0;
+        len += s->m_len;
     }
     return false;
 }
@@ -325,6 +326,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   while(offset > off && si < (int)m_lines.count())
   {
       s = m_lines[++si];
+      // DF: this is wrong. We've changed that to a for loop in all other methods
       off = s->m_text - m_lines[0]->m_text + s->m_len;
   }   // we are now in the correct text slave
   int pos = (offset > off ? s->m_len : s->m_len - (off - offset ));
@@ -395,21 +397,22 @@ void RenderText::posOfChar(int chr, int &x, int &y)
 void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                       int tx, int ty)
 {
+    //kdDebug(6040) << "RenderText::printObject y=" << y << " ty=" << ty << " y-ty=" << y-ty<< endl;
     RenderStyle* pseudoStyle = m_style->getPseudoStyle(RenderStyle::FIRST_LINE);
     int d = m_style->textDecoration();
     TextSlave f(0, y-ty);
-    int firstSi = m_lines.findFirstMatching(&f);
-    int si = firstSi;
+    int si = m_lines.findFirstMatching(&f);
+
+    // something matching found, find the first one to print
     if(si >= 0)
     {
-        // something matching found, find the first one to print
+        // Move up until out of area to be printed
         while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h))
             si--;
+        int firstSi = si;
 
-        firstSi = si;
-
+        // Now calculate startPos and endPos, for printing selection
         int endPos, startPos;
-        bool breakAtEnd = false;
         if (selectionState() != SelectionNone)
         {
             if (selectionState() == SelectionInside)
@@ -420,13 +423,26 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             else
             {
                 selectionStartEnd(startPos, endPos);
-                breakAtEnd = true;
                 if(selectionState() == SelectionStart) {
                     endPos = -1;
-                    breakAtEnd = false;
                 }
                 else if(selectionState() == SelectionEnd)
+                {
                     startPos = 0;
+                }
+            }
+
+            // Eat the lines we don't print (startPos and endPos are from line 0!)
+            for ( int i = 0 ; i < si ; ++i )
+            {
+                int len = m_lines[i]->m_len;
+                startPos -= len;
+                endPos -= len;
+                if ( endPos < 0 )
+                {
+                    endPos = 0; // finished
+                    break; // don't bother
+                }
             }
         }
 
@@ -456,18 +472,18 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             }
 
 
-            if (selectionState() != SelectionNone && endPos)
+            if (selectionState() != SelectionNone && endPos != 0)
             {
+                //kdDebug(6040) << "printSelection with startPos=" << startPos << " endPos=" << endPos << endl;
 
                 s->printSelection(p, style, tx, ty, startPos, endPos);
 
-                int diff;
-                if(si < (int)m_lines.count()-1)
-                    diff = m_lines[si+1]->m_text - s->m_text;
-                else
-                    diff = s->m_len;
-                endPos -= diff;
-                startPos -= diff;
+                //kdDebug(6040) << "substracting s->m_len=" << s->m_len << endl;
+                endPos -= s->m_len;
+                if ( endPos < 0 )
+                    endPos = 0; // finished
+                startPos -= s->m_len;
+                //kdDebug(6040) << "startPos now " << startPos << ", endPos now " << endPos << endl;
             }
         } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
 
