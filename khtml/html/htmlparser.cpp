@@ -25,7 +25,7 @@
 // KDE HTML Widget -- HTML Parser
 // $Id$
 
-//#define PARSER_DEBUG
+#define PARSER_DEBUG
 //#define COMMENTS_IN_DOM
 
 #include "htmlparser.h"
@@ -692,6 +692,10 @@ void KHTMLParser::insertNode(NodeImpl *n)
                 insertNode(e);
                 handled = true;
                 break;
+	    case ID_DT:
+		popBlock(ID_DT);
+		handled = true;
+		break;
         case ID_SELECT:
             if( n->isInline() )
                 throw exception;
