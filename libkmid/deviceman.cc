@@ -90,6 +90,7 @@ void DEBUGPRINTF(const char *,const char * ) { }
 
 #endif
 
+
 DeviceManager::DeviceManager(int def)
 {
 #if 1
@@ -123,7 +124,7 @@ DeviceManager::DeviceManager(int def)
   _ok=1;
   alsa=false;
   device = 0L;
-  //rate=100;
+  m_rate=0;
   convertrate=10;
   seqfd=-1;
   timerstarted=0;
@@ -361,6 +362,11 @@ void DeviceManager::openDev(void)
     _seqbufptr = 0;
     ioctl(seqfd,SNDCTL_SEQ_RESET);
     //ioctl(seqfd,SNDCTL_SEQ_PANIC);
+    m_rate=0;
+    int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&m_rate);
+    if ((r==-1)||(m_rate<=0)) m_rate=HZ;
+    
+    convertrate=1000/m_rate;
 
 #endif
   }
@@ -397,6 +403,7 @@ void DeviceManager::closeDev(void)
 
 #ifdef HAVE_OSS_SUPPORT
   if (seqfd==-1) return;
+  tmrStop(); 
   /*
      DEBUGPRINTF("Closing devices : ");
      if (device!=NULL) for (int i=0;i<n_total;i++)
@@ -478,7 +485,8 @@ void DeviceManager::wait (double ticks)
   unsigned long int t=(unsigned long int)(ticks/convertrate);
   if (lastwaittime==t) return;
   lastwaittime=t;
-  device[default_dev]->wait(ticks);
+  SEQ_WAIT_TIME(t);
+  SEQ_DUMPBUF();     
 #endif
 }
 
@@ -506,7 +514,18 @@ tpcn /*name the argument only if it is used*/
 #endif
 
 #ifdef HAVE_OSS_SUPPORT
-  device[default_dev]->tmrStart();
+#ifdef CONTROLTIMER
+  if (!timerstarted)
+  {
+      SEQ_START_TIMER();
+      SEQ_DUMPBUF();
+      timerstarted=1;
+  }
+  lastwaittime=0;
+#else
+  SEQ_START_TIMER();
+  SEQ_DUMPBUF();
+#endif          
 #endif
 }
 
@@ -517,7 +536,17 @@ void DeviceManager::tmrStop(void)
 #endif
 
 #ifdef HAVE_OSS_SUPPORT
-  device[default_dev]->tmrStop();
+#ifdef CONTROLTIMER
+  if (timerstarted)
+  {
+    SEQ_STOP_TIMER();
+    SEQ_DUMPBUF();
+    timerstarted=0;
+  }
+#else
+  SEQ_STOP_TIMER();
+  SEQ_DUMPBUF();
+#endif          
 #endif
 }
 
@@ -528,7 +557,16 @@ void DeviceManager::tmrContinue(void)
 #endif
 
 #ifdef HAVE_OSS_SUPPORT
-  device[default_dev]->tmrContinue();
+#ifdef CONTROLTIMER
+  if (timerstarted)
+  {
+    SEQ_CONTINUE_TIMER();
+    SEQ_DUMPBUF();
+  }
+#else
+  SEQ_CONTINUE_TIMER();
+  SEQ_DUMPBUF();
+#endif        
 #endif
 }
 
@@ -539,7 +577,22 @@ void DeviceManager::sync(bool f)
 #endif
 
 #ifdef HAVE_OSS_SUPPORT
-  device[default_dev]->sync(f);
+#ifdef DEVICEMANDEBUG
+  printf("Sync %d\n",f);
+#endif
+  if (f)
+  {
+    seqbuf_clean();
+    /* If you have any problem, try removing the next 2 lines,
+       I though they would be useful here but the may have side effects */
+    ioctl(seqfd,SNDCTL_SEQ_RESET);
+    ioctl(seqfd,SNDCTL_SEQ_PANIC);
+  }
+  else
+  {
+    seqbuf_dump();
+    ioctl(seqfd, SNDCTL_SEQ_SYNC);
+  };
 #endif
 }
 

@@ -114,9 +114,6 @@ GUSOut::GUSOut(int d,int total)
   seqfd = -1;
   devicetype=KMID_GUS;
   device= d;
-  count=0.0;
-  lastcount=0.0;
-  m_rate=100;
   _ok=1;
 
   use8bit=0;
@@ -147,16 +144,6 @@ void GUSOut::openDev (int sqfd)
   }
 
 #ifdef HAVE_OSS_SUPPORT
-  ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
-  ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
-
-  m_rate=0;
-  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&m_rate);
-  if ((r==-1)||(m_rate<=0)) m_rate=HZ;
-  convertrate=1000/m_rate;
-
-  count=0.0;
-  lastcount=0.0;
 
   //seqbuf_clean();
   //ioctl(seqfd,SNDCTL_SEQ_RESET);
@@ -172,10 +159,6 @@ void GUSOut::openDev (int sqfd)
   freememory = device;
   ioctl(seqfd, SNDCTL_SYNTH_MEMAVL, &freememory);
 
-  printfdebug("GUS Device %d opened (%d voices)\n",device,nvoices);
-  printfdebug("Number of synth devices : %d\n",ndevs);
-  printfdebug("Number of midi ports : %d\n",nmidiports);
-  printfdebug("Rate : %d\n",m_rate);
 #endif
 
 
@@ -184,8 +167,6 @@ void GUSOut::openDev (int sqfd)
 void GUSOut::closeDev (void)
 {
   if (!ok()) return;
-  SEQ_STOP_TIMER();
-  SEQ_DUMPBUF();
   vm->clearLists();
   //if (seqfd>=0)
   //    close(seqfd);
@@ -197,8 +178,6 @@ void GUSOut::initDev (void)
 #ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
-  count=0.0;
-  lastcount=0.0;
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)

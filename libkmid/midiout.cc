@@ -48,10 +48,6 @@ MidiOut::MidiOut(int d)
   seqfd = -1;
   devicetype=KMID_EXTERNAL_MIDI;
   device= d;
-  count=0.0;
-  lastcount=0.0;
-  m_rate=100;
-  convertrate=10;
   volumepercentage=100;
   map=new MidiMapper(NULL);
   if (map==NULL) { printfdebug("ERROR : midiOut : Map is NULL\n"); return; };
@@ -75,74 +71,7 @@ void MidiOut::openDev (int sqfd)
     _ok=0;
     return;
   }
-
-  ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
-  ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
-  m_rate=0;
-  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&m_rate);
-  if ((r==-1)||(m_rate<=0)) m_rate=HZ;
-
-  midi_info midiinfo;
-  midiinfo.device=device;
-  convertrate=1000/m_rate;
-
-#ifdef MIDIOUTDEBUG
-  printfdebug("Number of synth devices : %d\n",ndevs);
-  printfdebug("Number of midi ports : %d\n",nmidiports);
-  printfdebug("Rate : %d\n",m_rate);
-
-  int i;
-  synth_info synthinfo;
-  for (i=0;i<ndevs;i++)
-  {
-    synthinfo.device=i;
-    if (ioctl(seqfd,SNDCTL_SYNTH_INFO,&synthinfo)!=-1)
-    {
-      printfdebug("----");
-      printfdebug("Device : %d\n",i);
-      printfdebug("Name : %s\n",synthinfo.name);
-      switch (synthinfo.synth_type)
-      {
-	case (SYNTH_TYPE_FM) : printfdebug("FM\n");break;
-	case (SYNTH_TYPE_SAMPLE) : printfdebug("Sample\n");break;
-	case (SYNTH_TYPE_MIDI) : printfdebug("Midi\n");break;
-	default : printfdebug("default type\n");break;
-      }
-      switch (synthinfo.synth_subtype)
-      {
-	case (FM_TYPE_ADLIB) : printfdebug("Adlib\n");break;
-	case (FM_TYPE_OPL3) : printfdebug("Opl3\n");break;
-	case (MIDI_TYPE_MPU401) : printfdebug("Mpu-401\n");break;
-	case (SAMPLE_TYPE_GUS) : printfdebug("Gus\n");break;
-	default : printfdebug("default subtype\n");break;
-      }
-    }
-  }
-
-  for (i=0;i<nmidiports;i++)
-  {
-    midiinfo.device=i;
-    if (ioctl(seqfd,SNDCTL_MIDI_INFO,&midiinfo)!=-1)
-    {
-      printfdebug("----");
-      printfdebug("Device : %d\n",i);
-      printfdebug("Name : %s\n",midiinfo.name);
-      printfdebug("Device type : %d\n",midiinfo.dev_type);
-    }
-  }
-
 #endif
-
-  count=0.0;
-  lastcount=0.0;
-  if (nmidiports<=0)
-  {
-    printfdebug("ERROR: There is no midi port !!\n");
-    _ok=0;
-    return;
-  }
-#endif
-
 }
 
 void MidiOut::closeDev (void)
@@ -158,8 +87,6 @@ void MidiOut::initDev (void)
 #ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
-  count=0.0;
-  lastcount=0.0;
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)
@@ -332,65 +259,6 @@ void MidiOut::seqbuf_clean(void)
 #ifdef HAVE_OSS_SUPPORT
   _seqbufptr=0;
 #endif
-}
-
-void MidiOut::wait(double ticks)
-{
-  SEQ_WAIT_TIME(((int)(ticks/convertrate)));
-#ifdef MIDIOUTDEBUG
-  printfdebug("Wait  >\t ticks: %g\n",ticks);
-#endif
-}
-
-#ifdef MIDIOUTDEBUG
-void MidiOut::tmrSetTempo(int v)
-#else
-void MidiOut::tmrSetTempo(int)
-#endif
-{
-#ifdef MIDIOUTDEBUG
-  printfdebug("SETTEMPO  >\t tempo: %d\n",v);
-#endif
-
-  //SEQ_SET_TEMPO(v);
-  //SEQ_DUMPBUF();
-}
-
-void MidiOut::sync(int i)
-{
-#ifdef MIDIOUTDEBUG
-  printfdebug("Sync %d\n",i);
-#endif
-#ifdef HAVE_OSS_SUPPORT
-  if (i==1)
-  {
-    seqbuf_clean();
-    /* If you have any problem, try removing the next 2 lines,
-       I though they would be useful here, but I don't know
-       what they exactly do :-) */
-    ioctl(seqfd,SNDCTL_SEQ_RESET);
-    ioctl(seqfd,SNDCTL_SEQ_PANIC);
-  }
-  ioctl(seqfd, SNDCTL_SEQ_SYNC);
-#endif
-}
-
-void MidiOut::tmrStart(void)
-{
-  SEQ_START_TIMER();
-  SEQ_DUMPBUF();
-}
-
-void MidiOut::tmrStop(void)
-{
-  SEQ_STOP_TIMER();
-  SEQ_DUMPBUF();
-}
-
-void MidiOut::tmrContinue(void)
-{
-  SEQ_CONTINUE_TIMER();
-  SEQ_DUMPBUF();
 }
 
 const char *MidiOut::midiMapFilename(void)

@@ -246,9 +246,12 @@ void AlsaOut::timerEventSend(int type)
 
 #endif // HAVE_LIBASOUND
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::noteOn  (uchar , uchar , uchar )
+{
+#else
 void AlsaOut::noteOn  (uchar chn, uchar note, uchar vel)
 {
-#ifdef HAVE_LIBASOUND
   if (vel==0)
   {
     noteOff(chn,note,vel);
@@ -265,9 +268,12 @@ void AlsaOut::noteOn  (uchar chn, uchar note, uchar vel)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::noteOff (uchar , uchar , uchar )
+{
+#else
 void AlsaOut::noteOff (uchar chn, uchar note, uchar vel)
 {
-#ifdef HAVE_LIBASOUND
   eventInit(di->ev);
   snd_seq_ev_set_noteoff(di->ev,map->channel(chn), map->key(chn,chnpatch[chn],note), vel);
   eventSend(di->ev);
@@ -277,22 +283,28 @@ void AlsaOut::noteOff (uchar chn, uchar note, uchar vel)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::keyPressure (uchar , uchar , uchar )
+{
+#else
 void AlsaOut::keyPressure (uchar chn, uchar note, uchar vel)
 {
-#ifdef HAVE_LIBASOUND
   eventInit(di->ev);
   snd_seq_ev_set_keypress(di->ev,map->channel(chn), map->key(chn,chnpatch[chn],note), vel);
   eventSend(di->ev);
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::chnPatchChange (uchar , uchar )
+{
+#else
 void AlsaOut::chnPatchChange (uchar chn, uchar patch)
 {
 #ifdef MIDIOUTDEBUG
   printfdebug("PATCHCHANGE [%d->%d] %d -> %d\n",
       chn,map->channel(chn),patch,map->patch(chn,patch));
 #endif
-#ifdef HAVE_LIBASOUND
   eventInit(di->ev);
   snd_seq_ev_set_pgmchange(di->ev,map->channel(chn), map->patch(chn,patch));
   eventSend(di->ev);
@@ -300,9 +312,12 @@ void AlsaOut::chnPatchChange (uchar chn, uchar patch)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::chnPressure (uchar , uchar )
+{
+#else
 void AlsaOut::chnPressure (uchar chn, uchar vel)
 {
-#ifdef HAVE_LIBASOUND
   eventInit(di->ev);
   snd_seq_ev_set_chanpress(di->ev,map->channel(chn), vel);
   eventSend(di->ev);
@@ -311,9 +326,12 @@ void AlsaOut::chnPressure (uchar chn, uchar vel)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::chnPitchBender(uchar ,uchar , uchar )
+{
+#else
 void AlsaOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 {
-#ifdef HAVE_LIBASOUND
   map->pitchBender(chn,lsb,msb);
   chnbender[chn]=((short)msb<<7) | (lsb & 0x7F);
   chnbender[chn]=chnbender[chn]-0x2000;
@@ -324,9 +342,12 @@ void AlsaOut::chnPitchBender(uchar chn,uchar lsb, uchar msb)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::chnController (uchar , uchar , uchar )
+{
+#else
 void AlsaOut::chnController (uchar chn, uchar ctl, uchar v)
 {
-#ifdef HAVE_LIBASOUND
   map->controller(chn,ctl,v);
   if ((ctl==11)||(ctl==7))
   {
@@ -342,9 +363,12 @@ void AlsaOut::chnController (uchar chn, uchar ctl, uchar v)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::sysex(uchar *, ulong )
+{
+#else
 void AlsaOut::sysex(uchar *data, ulong size)
 {
-#ifdef HAVE_LIBASOUND
   eventInit(di->ev);
   snd_seq_ev_set_sysex(di->ev, size, data);
   eventSend(di->ev);
@@ -355,9 +379,12 @@ void AlsaOut::sysex(uchar *data, ulong size)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::channelSilence (uchar )
+{
+#else
 void AlsaOut::channelSilence (uchar chn)
 {
-#ifdef HAVE_LIBASOUND
   uchar i;
   for ( i=0; i<127; i++)
   {
@@ -366,9 +393,12 @@ void AlsaOut::channelSilence (uchar chn)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::channelMute(uchar , int )
+{
+#else
 void AlsaOut::channelMute(uchar chn, int a)
 {
-#ifdef HAVE_LIBASOUND
   if (a==1)
   {
     chnmute[chn]=a;
@@ -402,6 +432,10 @@ void AlsaOut::wait(double ticks)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::tmrSetTempo(int )
+{
+#else
 void AlsaOut::tmrSetTempo(int v)
 {
 /*  eventInit(ev);
@@ -416,7 +450,6 @@ printf("tempo _ : _ : _ : %d\n",v);
 #ifdef MIDIOUTDEBUG
   printfdebug("SETTEMPO  >\t tempo: %d\n",v);
 #endif
-#ifdef HAVE_LIBASOUND
   snd_seq_queue_tempo_t ev;
   ev.queue=di->queue;
   ev.tempo=v;
@@ -425,9 +458,12 @@ printf("tempo _ : _ : _ : %d\n",v);
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::sync(int )
+{
+#else
 void AlsaOut::sync(int i)
 {
-#ifdef HAVE_LIBASOUND
   if (i==1)
   {
     snd_seq_flush_output(di->handle);
@@ -443,9 +479,12 @@ void AlsaOut::sync(int i)
 #endif
 }
 
+#ifndef HAVE_LIBASOUND
+void AlsaOut::tmrStart(int )
+{
+#else
 void AlsaOut::tmrStart(int tpcn)
 {
-#ifdef HAVE_LIBASOUND
   snd_seq_queue_tempo_t queuetempo;
   int  ret;
 

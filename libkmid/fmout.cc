@@ -46,9 +46,6 @@ FMOut::FMOut( int d, int total )
   seqfd = -1;
   devicetype = KMID_FM;
   device = d;
-  count = 0.0;
-  lastcount = 0.0;
-  m_rate = 100;
   _ok = 1;
   // Put opl=3 for opl/3 (better quality/ 6 voices)
   //  or opl=2 for fm output (less quality/ 18 voices, which is better imho) :
@@ -81,20 +78,6 @@ void FMOut::openDev (int sqfd)
     printfdebug("ERROR: Could not open /dev/sequencer\n");
     return;
   }
-  ioctl( seqfd, SNDCTL_SEQ_NRSYNTHS, &ndevs);
-  ioctl( seqfd, SNDCTL_SEQ_NRMIDIS, &nmidiports);
-
-  m_rate = 0;
-  int r = ioctl( seqfd, SNDCTL_SEQ_CTRLRATE, &m_rate);
-  if ( ( r == -1 ) || ( m_rate <= 0 ) ) m_rate = HZ;
-  convertrate = 1000/m_rate;
-
-  count = 0.0;
-  lastcount = 0.0;
-
-  //seqbufClean();
-  //ioctl(seqfd,SNDCTL_SEQ_RESET);
-  //ioctl(seqfd,SNDCTL_SEQ_PANIC);
 
   loadFMPatches();
 #endif
@@ -104,8 +87,6 @@ void FMOut::openDev (int sqfd)
 void FMOut::closeDev (void)
 {
   if (!ok()) return;
-  SEQ_STOP_TIMER();
-  SEQ_DUMPBUF();
   vm->clearLists();
   //if (seqfd>=0) close(seqfd);
   seqfd = -1;
@@ -116,8 +97,6 @@ void FMOut::initDev (void)
 #ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
-  count=0.0;
-  lastcount=0.0;
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)

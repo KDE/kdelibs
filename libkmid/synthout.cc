@@ -48,9 +48,6 @@ SynthOut::SynthOut(int d)
   seqfd = -1;
   devicetype=KMID_SYNTH;
   device= d;
-  count=0.0;
-  lastcount=0.0;
-  m_rate=100;
   _ok=1;
 }
 
@@ -69,12 +66,6 @@ void SynthOut::openDev (int sqfd)
     return;
   }
 #ifdef HAVE_OSS_SUPPORT
-  ioctl(seqfd,SNDCTL_SEQ_NRSYNTHS,&ndevs);
-  ioctl(seqfd,SNDCTL_SEQ_NRMIDIS,&nmidiports);
-  m_rate=0;
-  int r=ioctl(seqfd,SNDCTL_SEQ_CTRLRATE,&m_rate);
-  if ((r==-1)||(m_rate<=0)) m_rate=HZ;
-  convertrate=1000/m_rate;
   /*
      int i=1;
      ioctl(seqfd,SNDCTL_SEQ_THRESHOLD,i);
@@ -85,9 +76,6 @@ void SynthOut::openDev (int sqfd)
   printfdebug("Number of midi ports : %d\n",nmidiports);
   printfdebug("Rate : %d\n",m_rate);
 #endif
-
-  count=0.0;
-  lastcount=0.0;
 
 #ifdef HAVE_AWE32
 
@@ -118,8 +106,6 @@ void SynthOut::openDev (int sqfd)
 void SynthOut::closeDev (void)
 {
   if (!ok()) return;
-  SEQ_STOP_TIMER();
-  SEQ_DUMPBUF();
   //if (seqfd>=0) close(seqfd);
   seqfd=-1;
 }
@@ -129,8 +115,6 @@ void SynthOut::initDev (void)
 #ifdef HAVE_OSS_SUPPORT
   int chn;
   if (!ok()) return;
-  count=0.0;
-  lastcount=0.0;
   uchar gm_reset[5]={0x7e, 0x7f, 0x09, 0x01, 0xf7};
   sysex(gm_reset, sizeof(gm_reset));
   for (chn=0;chn<16;chn++)

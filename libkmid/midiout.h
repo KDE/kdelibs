@@ -64,29 +64,6 @@ class MidiOut
   int seqfd;
 
   int device;
-/**
- * @internal
- * Total number of devices.
- */
-  int ndevs;
-
-/**
- * @internal
- * Total number of midi ports
- */
-  int nmidiports;
-
-  double count;
-  double lastcount;
-  double lasttime;
-  double begintime;
-
-  int    m_rate;
-/**
- * @internal
- * A "constant" used to convert from milliseconds to the computer rate
- */
-  double convertrate;
 
   int devicetype;
 
@@ -166,11 +143,6 @@ class MidiOut
    * @see #deviceType
    */
   const char * deviceName (void) const;
-
-  /**
-   * @internal
-   */
-  int  rate	(void) { return m_rate; };
 
   /**
    * Sets a @ref MidiMapper object to be used to modify the midi events before
@@ -254,18 +226,6 @@ class MidiOut
   { if (seqfd<0) return 0;
     return (_ok>0);
   };
-
-  virtual void wait        (double ticks);
-  virtual void tmrSetTempo (int v);
-  virtual void tmrStart    ();
-  virtual void tmrStop     ();
-  virtual void tmrContinue ();
-  /**
-   * @internal
-   * If i==1 syncronizes by cleaning the buffer instead of sending it (in fact,
-   * this is what syncronizing really means :-) )
-   */
-  virtual void sync        (int i=0);
 
   /**
    * Returns the path to the file where the current used @ref MidiMapper object

@@ -91,6 +91,12 @@ class DeviceManager
 
     /**
      * @internal
+     * rate
+     */
+    int m_rate;
+
+    /**
+     * @internal
      * A "constant" used to convert from milliseconds to the computer rate.
      */
     double convertrate;
@@ -456,6 +462,11 @@ class DeviceManager
      * @see #midiMapFilename()
      */
     void setMidiMap(MidiMapper *map);
+
+    /**
+     * Returns the SNDCTL_SEQ_CTRLRATE ioctl value
+     */
+    int rate(void) { return m_rate; };
 
     /**
      * Returns the number of MIDI ports available on the system. It's common that
