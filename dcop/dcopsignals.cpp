@@ -32,7 +32,7 @@ DCOPSignals::DCOPSignals()
 /**
  * Client "conn" emits the signal "fun" with "data" as arguments.
  *
- * If "excludeSelf" is true, signal is never send to "conn" itself.
+ * If "excludeSelf" is true, signal is never sent to "conn" itself.
  */
 void
 DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByteArray &data, bool excludeSelf)

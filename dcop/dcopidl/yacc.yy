@@ -39,6 +39,7 @@ extern int idl_line_no;
 extern int function_mode;
 
 static int dcop_area = 0;
+static int dcop_signal_area = 0;
 
 static QString in_namespace( "" );
 
@@ -116,6 +117,7 @@ void yyerror( const char *s )
 %token T_CHAR
 %token T_DCOP
 %token T_DCOP_AREA
+%token T_DCOP_SIGNAL_AREA
 %token T_SIGNED
 %token T_UNSIGNED
 %token T_LONG
@@ -243,16 +245,24 @@ nodcop_area_begin
 	: nodcop_area sigslot T_COLON
         {
 	  dcop_area = 0;
+	  dcop_signal_area = 0;
 	}
 	| sigslot T_COLON
 	{
 	  dcop_area = 0;
+	  dcop_signal_area = 0;
 	}
 
 dcop_area_begin
 	: T_DCOP_AREA T_COLON
 	{
 	  dcop_area = 1;
+	}
+
+dcop_signal_area_begin
+	: T_DCOP_SIGNAL_AREA T_COLON
+	{
+	  dcop_signal_area = 1;
 	}
 
 Identifier
@@ -332,6 +342,10 @@ body
 	| function body
 	  {
 		$$ = new QString( *($1) + *($2) );
+	  }
+	| dcop_signal_area_begin body
+	  {
+		$$ = $2;
 	  }
 	| enum body
 	  {
@@ -624,25 +638,31 @@ operator
 function_header
 	: type Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS const_qualifier
 	  {
-	     if (dcop_area) {
+	     if (dcop_area || dcop_signal_area) {
 		QString* tmp = 0;
-		if ( $6 )
-			tmp = new QString(
-				"    <FUNC qual=\"const\">\n"
-				"        %2\n"
-				"        <NAME>%1</NAME>"
-				"%3\n"
-				"     </FUNC>\n");
-		else
-			tmp = new QString(
-				"    <FUNC>\n"
-				"        %2\n"
-				"        <NAME>%1</NAME>"
-				"%3\n"
-				"     </FUNC>\n");
+                tmp = new QString(
+                        "    <%4>\n"
+                        "        %2\n"
+                        "        <NAME>%1</NAME>"
+                        "%3\n"
+                        "     </%5>\n");
 		*tmp = tmp->arg( *($2) );
 		*tmp = tmp->arg( *($1) );
-		*tmp = tmp->arg( *($4) );
+                if ($6) {
+                   *tmp = tmp->arg( *($4) + " qual=\"const\">" );
+                } else {
+                   *tmp = tmp->arg( *($4) );
+                }
+                
+                QString tagname = "";
+                QString attr = "";
+                if (dcop_signal_area) {
+                   tagname = "SIGNAL";
+                } else {
+                   tagname = "FUNC";
+                }
+                *tmp = tmp->arg( QString("%1%2").arg(tagname).arg(attr) );
+                *tmp = tmp->arg( QString("%1").arg(tagname) );
 		$$ = tmp;
    	     } else
 	        $$ = new QString("");
@@ -703,10 +723,15 @@ function
 	  }
 	| T_STATIC function_header function_body
 	  {
-		if (dcop_area)
-		  yyerror("static is not allowed in dcop area!");
-		$$ = new QString();
-	  }
+              if (dcop_area) {
+                 if (dcop_signal_area)
+                     $$ = $2;
+                 else
+                     yyerror("static is not allowed in dcop area!");
+              } else {
+                 $$ = new QString();
+              }  
+	  }      
 
 function_begin : T_LEFT_CURLY_BRACKET
 	{

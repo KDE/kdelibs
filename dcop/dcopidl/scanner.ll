@@ -231,6 +231,7 @@ false			return T_FALSE;
 TRUE			return T_TRUE;
 FALSE			return T_FALSE;
 "k_dcop"		return T_DCOP_AREA;
+"k_dcop_signals"		return T_DCOP_SIGNAL_AREA;
 typedef			return T_TYPEDEF;
 K_DCOP			return T_DCOP;
 Q_OBJECT		;

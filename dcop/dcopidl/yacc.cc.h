@@ -59,13 +59,14 @@ typedef union
 #define	T_CHAR	308
 #define	T_DCOP	309
 #define	T_DCOP_AREA	310
-#define	T_SIGNED	311
-#define	T_UNSIGNED	312
-#define	T_LONG	313
-#define	T_SHORT	314
-#define	T_FUNOPERATOR	315
-#define	T_MISCOPERATOR	316
-#define	T_SHIFT	317
+#define	T_DCOP_SIGNAL_AREA	311
+#define	T_SIGNED	312
+#define	T_UNSIGNED	313
+#define	T_LONG	314
+#define	T_SHORT	315
+#define	T_FUNOPERATOR	316
+#define	T_MISCOPERATOR	317
+#define	T_SHIFT	318
 
 
 extern YYSTYPE yylval;

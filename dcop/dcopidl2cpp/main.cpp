@@ -106,12 +106,14 @@ int main( int argc, char** argv )
 	generateSkel( idl, base + "_skel." + suffix, de );
 
     if ( generate_stub ) {
-	QString header = base + "_stub.h";
-	generateStub( idl, header, de );
+	QString header = base;
+	generateStub( idl, header + "_stub.h", de, false );
+	generateStub( idl, header + "_signals.h", de, true );
 	pos = header.findRev('/');
 	if ( pos != -1 )
 	    header = header.mid( pos+1 );
-	generateStubImpl( idl, header, base + "_stub." + suffix, de );
+	generateStubImpl( idl, header + "_stub.h", base+".h", base + "_stub." + suffix, de, false );
+	generateStubImpl( idl, header + "_signals.h", base+".h", base + "_signals." + suffix, de, true );
     }
 
     return 0;

@@ -48,6 +48,9 @@ k_dcop:
     void setCell( const int& point = 3 );
     QValueList<DCOPRef> getWindows();
 
+k_dcop_signals:
+    static void blah_signal();
+
 private:
     Test3 *doc();
 

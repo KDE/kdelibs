@@ -36,7 +36,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 /**
  * Writes the stubs header
  */
-void generateStub( const QString& idl, const QString& filename, QDomElement de )
+void generateStub( const QString& idl, const QString& filename, QDomElement de, bool signals )
 {
     QFile stub( filename );
     if ( !stub.open( IO_WriteOnly ) )
@@ -58,8 +58,9 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
     if ( pos != -1 )
 	ifdefstring = ifdefstring.left( pos );
 
-    str << "#ifndef __" << ifdefstring << "_STUB__" << endl;
-    str << "#define __" << ifdefstring << "_STUB__" << endl << endl;
+    QString ifdefsuffix = signals ? "_SIGNALS__" : "_STUB__";
+    str << "#ifndef __" << ifdefstring << ifdefsuffix << endl;
+    str << "#define __" << ifdefstring << ifdefsuffix << endl << endl;
 
     str << "#include <dcopstub.h>" << endl;
 
@@ -84,7 +85,8 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 	
 	    QDomElement n = e.firstChild().toElement();
 	    Q_ASSERT( n.tagName() == "NAME" );
-	    QString className = n.firstChild().toText().data() + "_stub";
+	    QString className = n.firstChild().toText().data() 
+                         + ( signals ? "_signals" : "_stub" );
 	
 	    // find dcop parent ( rightmost super class )
 	    QString DCOPParent;
@@ -116,27 +118,32 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de )
 	    str << "class " << className;
 
 	    // Parent : inherited interface stub or dcopstub
-	    if ( !DCOPParent.isEmpty() && DCOPParent != "DCOPObject" ) {
-		str << " : ";
-		str << "virtual public " << DCOPParent << "_stub";
-	    } else {
-		str << " : virtual public DCOPStub";
-	    }
+            if (!signals) {
+               if ( !DCOPParent.isEmpty() && DCOPParent != "DCOPObject" ) {
+                   str << " : ";
+                   str << "virtual public " << DCOPParent << "_stub";
+               } else {
+                   str << " : virtual public DCOPStub";
+               }
+            }
 
 	    str << endl;
 	    str << "{" << endl;
 	    str << "public:" << endl;
 	
-	    // Constructors
-	    str << "    " << className << "( const QCString& app, const QCString& id );" << endl;
-	    str << "    " << className << "( DCOPClient* client, const QCString& app, const QCString& id );" << endl;
+            if (!signals) {
+               // Constructors
+               str << "    " << className << "( const QCString& app, const QCString& id );" << endl;
+               str << "    " << className << "( DCOPClient* client, const QCString& app, const QCString& id );" << endl;
+            }
 
 	    s = e.firstChild().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-		if ( s.tagName() == "FUNC" ) {
+		if ( (!signals && s.tagName() == "FUNC")
+                  || (signals && s.tagName() == "SIGNAL") ) {
 		    QDomElement r = s.firstChild().toElement();
 		    Q_ASSERT( r.tagName() == "TYPE" );
-		    str << "    virtual ";
+		    str << (signals ? "    static " : "    virtual ");
 		    if ( r.hasAttribute( "qleft" ) )
 			str << r.attribute("qleft") << " ";
 		    str << r.firstChild().toText().data();
