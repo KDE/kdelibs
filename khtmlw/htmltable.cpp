@@ -84,6 +84,18 @@ int HTMLTableCell::calcMinWidth()
 
     if ( isFixedWidth() )
     {
+        // Our minimum width is at least our fixed width
+        if (width > minWidth)
+            minWidth = width;
+
+        // And our actual width is at least our minimum width.
+        if (width < minWidth)
+            width = minWidth;
+    }
+                                                                    
+                                                                        
+    if ( isFixedWidth() )
+    {
         if (width > minWidth)
             minWidth = width;
     }
@@ -180,7 +192,7 @@ HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
 //WABA does this make sense? 
 //Lars: sorry... no, it makes some tbales look _really_ ugly
     	max_width = width; 
-//	setFixedWidth( TRUE );
+	setFixedWidth( TRUE );
     }
 }
 
@@ -384,6 +396,7 @@ void HTMLTable::reset()
 	    cell->reset();
 	}
     }
+    calcColInfo();
 }
 
 void HTMLTable::calcSize( HTMLClue * )
@@ -1120,6 +1133,17 @@ void HTMLTable::calcColInfo()
 	    _prefWidth = pref;
 	}
     }
+
+    if ( isFixedWidth() )
+    {
+        // Our minimum width is at least our fixed width
+        if (width > _minWidth)
+            _minWidth = width;
+
+        // And our actual width is at least our minimum width.
+        if (width < _minWidth)
+            width = _minWidth;
+    }
     
     // DEBUG: Show the results :)
 #if 0    
@@ -1186,23 +1210,19 @@ void HTMLTable::calcRowHeights()
 
 int HTMLTable::calcMinWidth()
 {
-    calcColInfo();
-//    return columnPos[totalCols] + border;
     return _minWidth;
 }
 
 int HTMLTable::calcPreferredWidth()
 {
-//    return columnPrefPos[totalCols] + border;
     return _prefWidth;
 }
 
 void HTMLTable::setMaxWidth( int _max_width )
 {
+    max_width = _max_width;
     if (!isFixedWidth())
     {
-        max_width = _max_width;
-
         if ( percent > 0 )
             width = max_width * percent / 100;
         else 
