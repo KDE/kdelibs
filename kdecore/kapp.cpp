@@ -538,6 +538,7 @@ static QString sessionConfigName()
 }
 
 static SmcConn mySmcConnection = 0;
+static SmcConn tmpSmcConnection = 0;
 static QTime* smModificationTime = 0;
 
 KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
@@ -791,7 +792,11 @@ bool KApplication::requestShutDown()
 {
     if ( mySmcConnection ) {
         // we already have a connection to the session manager, use it.
-        SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True, SmInteractStyleAny, False, True );
+        SmcRequestSaveYourself( mySmcConnection, SmSaveBoth, True,
+				SmInteractStyleAny, False, True );
+
+	// flush the request
+	IceFlush(SmcGetIceConnection(mySmcConnection));
         return TRUE;
     }
 
@@ -802,22 +807,27 @@ bool KApplication::requestShutDown()
     if (smEnv.isEmpty())
         return FALSE;
 
-    char cerror[256];
-    char* myId = 0;
-    char* prevId = 0;
-    SmcCallbacks cb;
-    SmcConn smcConnection = SmcOpenConnection( 0, 0, 1, 0,
-                                               0, &cb,
-                                               prevId,
-                                               &myId,
-                                               255,
-                                               cerror );
-    ::free( myId ); // it was allocated by C
-    if (!smcConnection )
-        return FALSE;
+    if (! tmpSmcConnection) {
+	char cerror[256];
+	char* myId = 0;
+	char* prevId = 0;
+	SmcCallbacks cb;
+	tmpSmcConnection = SmcOpenConnection( 0, 0, 1, 0,
+					      0, &cb,
+					      prevId,
+					      &myId,
+					      255,
+					      cerror );
+	::free( myId ); // it was allocated by C
+	if (!tmpSmcConnection )
+	    return FALSE;
+    }
 
-    SmcRequestSaveYourself( smcConnection, SmSaveBoth, True, SmInteractStyleAny, False, True );
-    SmcCloseConnection( smcConnection, 0, 0 );
+    SmcRequestSaveYourself( tmpSmcConnection, SmSaveBoth, True,
+			    SmInteractStyleAny, False, True );
+
+    // flush the request
+    IceFlush(SmcGetIceConnection(tmpSmcConnection));
     return TRUE;
 }
 
@@ -1155,6 +1165,12 @@ KApplication::~KApplication()
   mySmcConnection = 0;
   delete smModificationTime;
   smModificationTime = 0;
+
+  // close the temporary smc connection
+  if (tmpSmcConnection) {
+      SmcCloseConnection( tmpSmcConnection, 0, 0 );
+      tmpSmcConnection = 0;
+  }
 }
 
 
