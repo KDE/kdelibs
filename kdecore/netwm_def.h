@@ -261,7 +261,8 @@ public:
        the root window if the dialog is a modal for its window group.
 
        @li Sticky indicates that the Window Manager SHOULD keep the window's position
-       fixed on the screen, even when the virtual desktop scrolls.
+       fixed on the screen, even when the virtual desktop scrolls. Note that this is
+       different from being kept on all desktops.
 
        @li Max{Vert,Horiz} indicates that the window is {vertically,horizontally}
        maximized.
@@ -272,17 +273,21 @@ public:
 
        @li SkipTaskbar indicates that a window should not be included on a taskbar.
 
-       @li StaysOnTop indicate that a window should be kept on top of other windows.
-
        @li SkipPager indicates that a window should not be included on a pager.
 
        @li Hidden indicates that a window should not be visible on the screen (e.g. when minimised).
+           Only the window manager is allowed to change it.
 
        @li FullScreen indicates that a window should fill the entire screen and have no window decorations.
 
        @li Above indicates that a window should on top of most windows (but below fullscreen windows).
 
        @li Below indicates that a window should be below most windows (but above any desktop windows).
+
+       @li StaysOnTop is an obsolete name for Above.
+       
+       Note that Above (StaysOnTop) and Below are meant as user preference and applications
+       should avoid setting these states themselves.
     **/
 
     enum State {
