@@ -18,7 +18,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-COMPILE_FIRST = dcop libltdl kdefx kdecore kdeui kdesu kjs kio kioslave kded ksmartcard kimgio kparts kdeprint libkmid kconf_update interfaces
+COMPILE_FIRST = dcop libltdl kdefx kdecore kdeui kdesu kjs kio kioslave kded ksmartcard kimgio kparts kdeprint libkmid kconf_update interfaces kspell
 COMPILE_LAST = doc
 
 SUBDIRS = $(COMPILE_FIRST) $(TOPSUBDIRS) $(COMPILE_LAST)
