@@ -90,6 +90,47 @@
 ;; svse - Swedish
 ;; usen - English
 
+(define (author-string #!optional (author (current-node)))
+  (let ((lang   (if (string? author) ($lang$) ($lang$ author))))
+    (case lang
+      ;; ISO 639/ISO 3166/RFC 1766
+      <![%l10n-ca[   (("ca")    (ca-author-string author)) ]]>
+      <![%l10n-cs[   (("cs")    (cs-author-string author)) ]]>
+      <![%l10n-da[   (("da")    (da-author-string author)) ]]>
+      <![%l10n-de[   (("de")    (de-author-string author)) ]]>
+      <![%l10n-el[   (("el")    (el-author-string author)) ]]>
+      <![%l10n-en[   (("en")    (en-author-string author)) ]]>
+      <![%l10n-es[   (("es")    (es-author-string author)) ]]>
+      <![%l10n-et[   (("et")    (et-author-string author)) ]]>
+      <![%l10n-fi[   (("fi")    (fi-author-string author)) ]]>
+      <![%l10n-fr[   (("fr")    (fr-author-string author)) ]]>
+      <![%l10n-hu[   (("hu")    (hu-author-string author)) ]]>
+      <![%l10n-id[   (("id")    (id-author-string author)) ]]>
+      <![%l10n-it[   (("it")    (it-author-string author)) ]]>
+      <![%l10n-ja[   (("ja")    (ja-author-string author)) ]]>
+      <![%l10n-ko[   (("ko")    (ko-author-string author)) ]]>
+      <![%l10n-nl[   (("nl")    (nl-author-string author)) ]]>
+      <![%l10n-no[   (("no")    (no-author-string author)) ]]>
+      <![%l10n-pl[   (("pl")    (pl-author-string author)) ]]>
+      <![%l10n-pt[   (("pt")    (pt-author-string author)) ]]>
+      <![%l10n-ptbr[ (("pt_br") (ptbr-author-string author)) ]]>
+      <![%l10n-ro[   (("ro")    (ro-author-string author)) ]]>
+      <![%l10n-ru[   (("ru")    (ru-author-string author)) ]]>
+      <![%l10n-sk[   (("sk")    (sk-author-string author)) ]]>
+      <![%l10n-sl[   (("sl")    (sl-author-string author)) ]]>
+      <![%l10n-sv[   (("sv")    (sv-author-string author)) ]]>
+      <![%l10n-zhcn[ (("zh_cn") (zhcn-author-string author)) ]]>
+      <![%l10n-zhtw[ (("zh_tw") (zhtw-author-string author)) ]]>
+
+      ;; Historical
+      <![%l10n-da[   (("dk")    (da-author-string author)) ]]>
+      <![%l10n-de[   (("dege")  (de-author-string author)) ]]>
+      <![%l10n-en[   (("usen")  (en-author-string author)) ]]>
+      <![%l10n-no[   (("bmno")  (no-author-string author)) ]]>
+      <![%l10n-sv[   (("svse")  (sv-author-string author)) ]]>
+      (else (error (string-append "L10N ERROR: author-string: "
+				  lang))))))
+
 (define (gentext-xref-strings target)
   (let ((giname (if (string? target) (normalize target) (gi target)))
 	(lang   (if (string? target) ($lang$) ($lang$ target))))
