@@ -519,12 +519,12 @@ void BuildHelper::processElement( const QDomElement &e )
     if ( ( isActionTag = ( tag == tagAction ) ) ||
            customTags.findIndex( tag ) != -1 )
         processActionOrCustomElement( e, isActionTag );
+   else if ( containerTags.findIndex( tag ) != -1 )
+        processContainerElement( e, tag, currName );
     else if ( tag == tagMerge || tag == tagDefineGroup || tag == tagActionList )
         processMergeElement( tag, currName );
     else if ( tag == tagState )
         processStateElement( e );
-    else if ( containerTags.findIndex( tag ) != -1 )
-        processContainerElement( e, tag, currName );
 }
 
 void BuildHelper::processActionOrCustomElement( const QDomElement &e, bool isActionTag )
@@ -688,74 +688,64 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
     static const QString &attrGroup = KGlobal::staticQString( "group" );
     static const QString &defaultMergingName = KGlobal::staticQString( "<default>" );
 
-    ContainerNode *matchingContainer = parentNode->findContainer( name, tag,
-                                                                  &containerList,
-                                                                  m_state.guiClient );
+    ContainerNode *containerNode = parentNode->findContainer( name, tag,
+                                                              &containerList,
+                                                              m_state.guiClient );
 
-    if ( matchingContainer )
+    if ( !containerNode )
     {
-        BuildHelper( m_state, matchingContainer ).build( e );
+        MergingIndexList::Iterator it( m_state.currentClientMergingIt );
 
-        // re-calculate current default merging indices and client merging indices,
-        // as they have changed in the recursive invocation.
-        m_state.currentDefaultMergingIt = parentNode->findIndex( defaultMergingName );
-        parentNode->calcMergingIndex( QString::null, m_state.currentClientMergingIt,
-                                      m_state, ignoreDefaultMergingIndex );
-
-        return;
-    }
-    
-    MergingIndexList::Iterator it( m_state.currentClientMergingIt );
-
-    bool haveGroup = false;
-    QString group( e.attribute( attrGroup ) );
-    if ( !group.isEmpty() )
-    {
-        group.prepend( attrGroup );
-        haveGroup = true;
-    }
-
-    int idx;
-    if ( haveGroup )
-        idx = parentNode->calcMergingIndex( group, it, m_state, ignoreDefaultMergingIndex );
-    else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
-        idx = parentNode->index;
-    else
-        idx = (*m_state.currentClientMergingIt).value;
-
-    int id;
-
-    KXMLGUIBuilder *builder;
-
-    QWidget *container = createContainer( parentNode->container, idx, e, id, &builder );
-
-    // no container? (probably some <text> tag or so ;-)
-    if ( !container )
-        return;
-
-    parentNode->adjustMergingIndices( 1, it );
-
-    ContainerNode *containerNode = parentNode->findContainerNode( container );
-
-    if ( !containerNode ) 
-    {
-        containerList.append( container );
-
-        QString mergingName;
-        if ( it != parentNode->mergingIndices.end() )
-            mergingName = (*it).mergingName;
-
-        QStringList cusTags = m_state.builderCustomTags;
-        QStringList conTags = m_state.builderContainerTags;
-        if ( builder != m_state.builder )
+        bool haveGroup = false;
+        QString group( e.attribute( attrGroup ) );
+        if ( !group.isEmpty() )
         {
-            cusTags = m_state.clientBuilderCustomTags;
-            conTags = m_state.clientBuilderContainerTags;
+            group.prepend( attrGroup );
+            haveGroup = true;
         }
 
-        containerNode = new ContainerNode( container, tag, name, parentNode,
-                                            m_state.guiClient, builder, id, 
-                                            mergingName, group, cusTags, conTags );
+        int idx;
+        if ( haveGroup )
+            idx = parentNode->calcMergingIndex( group, it, m_state, ignoreDefaultMergingIndex );
+        else if ( m_state.currentClientMergingIt == parentNode->mergingIndices.end() )
+            idx = parentNode->index;
+        else
+            idx = (*m_state.currentClientMergingIt).value;
+
+        int id;
+
+        KXMLGUIBuilder *builder;
+
+        QWidget *container = createContainer( parentNode->container, idx, e, id, &builder );
+
+        // no container? (probably some <text> tag or so ;-)
+        if ( !container )
+            return;
+
+        parentNode->adjustMergingIndices( 1, it );
+
+        containerNode = parentNode->findContainerNode( container );
+
+        if ( !containerNode ) 
+        {
+            containerList.append( container );
+
+            QString mergingName;
+            if ( it != parentNode->mergingIndices.end() )
+                mergingName = (*it).mergingName;
+
+            QStringList cusTags = m_state.builderCustomTags;
+            QStringList conTags = m_state.builderContainerTags;
+            if ( builder != m_state.builder )
+            {
+                cusTags = m_state.clientBuilderCustomTags;
+                conTags = m_state.clientBuilderContainerTags;
+            }
+
+            containerNode = new ContainerNode( container, tag, name, parentNode,
+                                               m_state.guiClient, builder, id, 
+                                               mergingName, group, cusTags, conTags );
+        }
     }
 
     BuildHelper( m_state, containerNode ).build( e );
