@@ -150,7 +150,7 @@ void KStatusBar::setItemFixed(int id, int w)
     if (w==-1)
       w=fontMetrics().boundingRect(l->text()).width()+3;
 
-    l->setFixedSize(w, l->height());
+    l->setFixedSize(w, l->sizeHint().height());
     //reformat(); Not needed I, think (sven)
   }
   else
