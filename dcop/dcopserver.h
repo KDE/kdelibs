@@ -50,29 +50,29 @@ typedef QValueList<QCString> QCStringList;
 
 class DCOPServer : public QObject
 {
-Q_OBJECT
- public:
-  DCOPServer();
- ~DCOPServer();
+    Q_OBJECT
+public:
+    DCOPServer();
+    ~DCOPServer();
 
- void* watchConnection( IceConn iceConn );
- void removeConnection( void* data );
- void processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap);
+    void* watchConnection( IceConn iceConn );
+    void removeConnection( void* data );
+    void processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap);
+    void ioError( IceConn iceConn );
 
- virtual bool receive(const QCString &app, const QCString &obj,
-		      const QCString &fun, const QByteArray& data,
-		      QCString& replyType, QByteArray &replyData, IceConn iceConn);
+    virtual bool receive(const QCString &app, const QCString &obj,
+			 const QCString &fun, const QByteArray& data,
+			 QCString& replyType, QByteArray &replyData, IceConn iceConn);
 
 private slots:
-  void newClient( int socket );
-  void processData( int socket );
+    void newClient( int socket );
+    void processData( int socket );
 
- private:
-  int majorOpcode;
-  QList<DCOPListener> listener;
-  QList<_IceConn> busy;
-  QDict<DCOPConnection> appIds;
-  QPtrDict<DCOPConnection> clients;
+private:
+    int majorOpcode;
+    QList<DCOPListener> listener;
+    QDict<DCOPConnection> appIds;
+    QPtrDict<DCOPConnection> clients;
 };
 
 #endif

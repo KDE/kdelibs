@@ -44,7 +44,7 @@ typedef QValueList<QCString> QCStringList;
  *
  * Before being able to send or receive any DCOP messages, you will have
  * to attach your client object to the DCOP server, and then register
- * your application with a specific name. See @ref attach() 
+ * your application with a specific name. See @ref attach()
  * and @ref registerAs() for
  * more information.
  *
@@ -98,7 +98,7 @@ class DCOPClient : public QObject
    * "anonymous".
    *
    * If you want to register differently, you should use @ref registerAs()
-   * instead. 
+   * instead.
    *
    * @return @p true if attaching was successful.
    */
@@ -138,7 +138,7 @@ class DCOPClient : public QObject
    * to you.  They can do so using your @p appId as first parameter
    * for @ref send() or @ref call(). If you just want to talk to
    *  other clients, you
-   * do not need to register at the server. In that case @ref attach() is 
+   * do not need to register at the server. In that case @ref attach() is
    * enough.
    * It will implicitly register you as "anonymous".
    *
@@ -153,7 +153,7 @@ class DCOPClient : public QObject
   bool isRegistered() const;
 
  /**
-  * Returns the current app id or a null string if the application 
+  * Returns the current app id or a null string if the application
   * hasn't yet been registered.
   */
   QCString appId() const;
@@ -216,7 +216,7 @@ class DCOPClient : public QObject
 		       QCString& replyType, QByteArray &replyData);
 
   /**
-   * Delay the reply of the current function call 
+   * Delay the reply of the current function call
    * until @ref endTransaction() is called.
    *
    * This allows a server to queue requests.
@@ -224,7 +224,7 @@ class DCOPClient : public QObject
    * NOTE: Should be called from inside process(...) only!
    */
   DCOPClientTransaction *beginTransaction( );
-  
+
   /**
    * Send the delayed reply of a function call.
    */
@@ -237,8 +237,8 @@ class DCOPClient : public QObject
    * @return The ID of the current transaction
    *         0 if no transaction is going on.
    */
-  Q_INT32 transactionId(); 
-   
+  Q_INT32 transactionId();
+
   /**
    * Check whether @p remApp is registered with the @ref DCOPServer.
    * @return @p true if the remote application is registered, otherwise @p false.
@@ -289,18 +289,18 @@ class DCOPClient : public QObject
    * Retrieve the @p appId of the last application that talked to us.
    */
   QCString senderId() const;
-    
-    
+
+
     /*
-     * Install object @p objId as application-wide default object. 
+     * Install object @p objId as application-wide default object.
      *
      * All app-wide messages that have not been processed by the dcopclient
      * will be send further to @p objId.
      */
     void setDefaultObject( const QCString& objId );
-    
+
     /*
-     * Retrieve the current default object or an empty string if no object is 
+     * Retrieve the current default object or an empty string if no object is
      * installed as default object.
      *
      * A default object receives application-wide messages that have not
@@ -321,7 +321,7 @@ signals:
    * Indicates that the application @p appId has been registered with
    * the server we are attached to.
    *
-   * You need to call @ref setNotifications() first, to tell the @ref DCOPServer 
+   * You need to call @ref setNotifications() first, to tell the @ref DCOPServer
    * that you want to get these events
    */
   void applicationRegistered( const QCString& appId );
@@ -329,7 +329,7 @@ signals:
    * Indicates that the formerly registered application @p appId has
    * been removed.
    *
-   * You need to call @ref setNotifications() first, to tell the @ref DCOPServer 
+   * You need to call @ref setNotifications() first, to tell the @ref DCOPServer
    * that you want to get these events
    */
   void applicationRemoved( const QCString& appId );
@@ -340,12 +340,12 @@ signals:
    *  Usually attached to a dialog box or some other visual
    * aid.
    */
-  void attachFailed(const QString &msg);
+    void attachFailed(const QString &msg);
 
- public slots:
+public slots:
 
- protected slots:
-  void processSocketData(int socknum);
+    protected slots:
+    void processSocketData(int socknum);
 
  protected:
 
