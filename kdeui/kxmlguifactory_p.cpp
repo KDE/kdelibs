@@ -149,8 +149,23 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
         for (; nIt.current(); ++nIt )
         {
             if ( nIt.current()->tagName == tagName &&
-                 !excludeList->containsRef( nIt.current()->container ) &&
-                 nIt.current()->client == currClient )
+                 !excludeList->containsRef( nIt.current()->container )
+                 /* 
+                  * It is a bad idea to also compare the client, because
+                  * we don't want to do so in situations like these:
+                  *
+                  * <MenuBar>
+                  *   <Menu>
+                  *     ...
+                  *
+                  * other client:
+                  * <MenuBar>
+                  *   <Menu>
+                  *    ...
+                  *
+                 && nIt.current()->client == currClient )
+                 */
+                )
             {
                 res = nIt.current();
                 break;
@@ -724,28 +739,25 @@ void BuildHelper::processContainerElement( const QDomElement &e, const QString &
 
         parentNode->adjustMergingIndices( 1, it );
 
-        containerNode = parentNode->findContainerNode( container );
+        assert( parentNode->findContainerNode( container ) == 0 );
+        
+        containerList.append( container );
 
-        if ( !containerNode ) 
+        QString mergingName;
+        if ( it != parentNode->mergingIndices.end() )
+            mergingName = (*it).mergingName;
+
+        QStringList cusTags = m_state.builderCustomTags;
+        QStringList conTags = m_state.builderContainerTags;
+        if ( builder != m_state.builder )
         {
-            containerList.append( container );
-
-            QString mergingName;
-            if ( it != parentNode->mergingIndices.end() )
-                mergingName = (*it).mergingName;
-
-            QStringList cusTags = m_state.builderCustomTags;
-            QStringList conTags = m_state.builderContainerTags;
-            if ( builder != m_state.builder )
-            {
-                cusTags = m_state.clientBuilderCustomTags;
-                conTags = m_state.clientBuilderContainerTags;
-            }
-
-            containerNode = new ContainerNode( container, tag, name, parentNode,
-                                               m_state.guiClient, builder, id, 
-                                               mergingName, group, cusTags, conTags );
+            cusTags = m_state.clientBuilderCustomTags;
+            conTags = m_state.clientBuilderContainerTags;
         }
+
+        containerNode = new ContainerNode( container, tag, name, parentNode,
+                                           m_state.guiClient, builder, id, 
+                                           mergingName, group, cusTags, conTags );
     }
 
     BuildHelper( m_state, containerNode ).build( e );
