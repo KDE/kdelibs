@@ -63,7 +63,7 @@ KCModule* KCModuleLoader::load(const KCModuleInfo &mod, const QString &libname, 
       // create the module
       KCModule* (*func)(QWidget *, const char *);
       func = (KCModule* (*)(QWidget *, const char *)) create;
-      return  func( parent, name );
+      return  func( parent, name ? name : mod.handle().latin1() );
     }
 
     lib->unload();
