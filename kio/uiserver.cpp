@@ -946,6 +946,7 @@ int main(int argc, char **argv)
 
     // This app is started automatically, no need for session management
     app.disableSessionManagement();
+    app.dcopClient()->setDaemonMode( true );
 
     uiserver =  new UIServer;
 
