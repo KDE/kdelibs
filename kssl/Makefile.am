@@ -1,7 +1,7 @@
 INCLUDES=$(all_includes) $(SSL_INCLUDES)
 
 lib_LTLIBRARIES = libkssl.la
-KSSLVERSION=	2.2.0
+KSSLVERSION=	2.9.8
 KSSLPATCH=	0
 METASOURCES= AUTO
 
@@ -21,6 +21,7 @@ include_HEADERS = \
 		ksslall.h	 	 \
 		ksslpkcs12.h		 \
 		ksslcertchain.h		 \
+		ksslkeygen.h		 \
 		ksslx509map.h
  
 
@@ -39,6 +40,7 @@ libkssl_la_SOURCES	= \
 			kopenssl.cc		  \
 			ksslpkcs12.cc		  \
 			ksslcertchain.cc	  \
+			ksslkeygen.cc		  \
 			ksslx509map.cc
 
 libkssl_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
