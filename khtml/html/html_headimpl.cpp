@@ -37,6 +37,7 @@ using namespace DOM;
 
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
+#include "css/csshelper.h"
 using namespace khtml;
 
 //#include <qfile.h>
@@ -196,6 +197,7 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
     kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
+    if( m_sheet ) return;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->parseString(sheet);
@@ -278,10 +280,7 @@ void HTMLMetaElementImpl::attach(KHTMLView *v)
             if(strncasecmp(str, "url=", 4) == 0)
             {
                 str = str.mid(4).simplifyWhiteSpace();
-		if ( str[0] == '\'' || str[0] == '"' )
-		    str.remove( 0, 1 );
-		if ( str[str.length()-1] == '\'' || str[str.length()-1] == '"' )
-		    str.remove( str.length() - 1, 1 );
+		str = parseURL( DOMString(str) ).string();
                 kdDebug( 6030 ) << "====> got redirect to " << str << endl;
                 v->part()->scheduleRedirection(delay, str);
             }
