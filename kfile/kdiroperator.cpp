@@ -198,7 +198,7 @@ void KDirOperator::activatedMenu( const KFileViewItem * )
     slotViewSortingChanged();
 
     updateSelectionDependentActions();
-    
+
     actionMenu->popup( QCursor::pos() );
 }
 
@@ -804,6 +804,7 @@ void KDirOperator::setView( KFile::FileView view )
         preview=( (defaultView & KFile::PreviewInfo) == KFile::PreviewInfo ||
                   (defaultView & KFile::PreviewContents) == KFile::PreviewContents );
         if ( preview ) { // instantiates KImageFilePreview and calls setView()
+            viewKind = view;
             slotDefaultPreview();
             return;
         }
@@ -1183,9 +1184,9 @@ void KDirOperator::setupActions()
     connect( showHiddenAction, SIGNAL( toggled( bool ) ),
              SLOT( slotToggleHidden( bool ) ));
 
-    KAction *props = new KAction( i18n("Properties..."), 0, this, 
+    KAction *props = new KAction( i18n("Properties..."), 0, this,
                                   SLOT(slotProperties()), this, "properties" );
-    
+
     // insert them into the actionCollection
     myActionCollection = new KActionCollection( this, "action collection" );
     myActionCollection->insert( actionMenu );
@@ -1520,7 +1521,7 @@ void KDirOperator::slotProperties()
         KFileViewItemListIterator it( *fileView->selectedItems() );
         for ( ; it.current(); ++it )
             list.append( it.current() );
-        
+
         if ( !list.isEmpty() )
             (void) new KPropertiesDialog( list, this, "props dlg", true );
     }
