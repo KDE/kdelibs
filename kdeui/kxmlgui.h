@@ -65,6 +65,7 @@ class KXMLGUIFactory
 
   // XXX move to somewhere else? (Simon)
   static QString readConfigFile( const QString &filename );
+  static bool saveConfigFile( const QDomDocument& doc, const QString& filename);
 
   static QString documentToXML( const QDomDocument& doc );
   static QString elementToXML( const QDomElement& elem );

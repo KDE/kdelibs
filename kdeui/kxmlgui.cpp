@@ -152,6 +152,29 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename )
   return text;
 }
 
+bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
+                                     const QString& filename)
+{
+  QString xml_file(filename);
+
+  if (xml_file[0] != '/')
+    xml_file = locateLocal("data", QString(KGlobal::instance()->instanceName())+
+                                   "/" + filename);
+
+  QFile file( xml_file );
+  if ( !file.open( IO_WriteOnly ) )
+  {
+    kdError(1000) << "Could not write to " << filename.local8Bit().data() << endl;
+    return false;
+  }
+
+  // write out our document
+  QTextStream ts(&file);
+  ts << doc;
+
+  file.close();
+}
+
 QString KXMLGUIFactory::documentToXML( const QDomDocument& doc )
 {
   QString str;
