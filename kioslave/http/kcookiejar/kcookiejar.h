@@ -63,7 +63,6 @@ protected:
     bool    mSecure;
     bool    mCrossDomain;
 
-    KHttpCookiePtr nextCookie;
     QString cookieStr(bool useDOMFormat);
 
 public:
@@ -89,14 +88,13 @@ public:
     bool    isExpired(time_t currentDate);
     bool    isCrossDomain(void) { return mCrossDomain; }
     bool    match(const QString &fqdn, const QStringList &domainList, const QString &path);
-    KHttpCookiePtr next() { return nextCookie; }
 };
 
 class KHttpCookieList : public QPtrList<KHttpCookie>
 {
 public:
     KHttpCookieList() : QPtrList<KHttpCookie>(), advice( KCookieDunno )
-    { setAutoDelete(true); }
+    { }
     virtual ~KHttpCookieList() { }
 
     virtual int compareItems( void * item1, void * item2);
@@ -167,7 +165,7 @@ public:
      * cookie_headers should be a concatenation of all lines of a HTTP-header
      * which start with "Set-Cookie". The lines should be separated by '\n's.
      */
-    KHttpCookiePtr makeCookies(const QString &_url, const QCString &cookie_headers, long windowId);
+    KHttpCookieList makeCookies(const QString &_url, const QCString &cookie_headers, long windowId);
 
     /**
      * This function parses cookie_headers and returns a linked list of
@@ -177,7 +175,7 @@ public:
      * cookie_domstr should be a concatenation of "name=value" pairs, seperated
      * by a semicolon ';'.
      */
-    KHttpCookiePtr makeDOMCookies(const QString &_url, const QCString &cookie_domstr, long windowId);
+    KHttpCookieList makeDOMCookies(const QString &_url, const QCString &cookie_domstr, long windowId);
 
     /**
      * This function hands a KHttpCookie object over to the cookie jar.

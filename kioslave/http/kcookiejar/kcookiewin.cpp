@@ -67,7 +67,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiejar.h"
 #include "kcookiewin.h"
 
-KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
+KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )
            :KDialog( parent, "cookiealert", true )
 {
@@ -93,19 +93,14 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
 
-    int count = 0;
-    KHttpCookie* nextCookie = cookie;
-    while ( nextCookie )
-    {
-        count++;
-        nextCookie = nextCookie->next();
-    }
+    int count = cookieList.count();
 
     QVBox* vBox = new QVBox( hBox );
     QString txt = (count == 1) ? i18n("You received a cookie from"):
                   i18n("You received %1 cookies from").arg(count);
     QLabel* lbl = new QLabel( txt, vBox );
     lbl->setAlignment( Qt::AlignCenter );
+    KHttpCookiePtr cookie = cookieList.first();
     txt = i18n("<b>%1</b>").arg( cookie->host() );
     if (cookie->isCrossDomain())
        txt += i18n(" <b>[Cross Domain!]</b>");
@@ -116,7 +111,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
     vlayout->addWidget( hBox, 0, Qt::AlignLeft );
 
     // Cookie Details dialog...
-    m_detailView = new KCookieDetail( cookie, count, this );
+    m_detailView = new KCookieDetail( cookieList, count, this );
     vlayout->addWidget( m_detailView );
     m_showDetails = showDetails;
     m_showDetails ? m_detailView->show():m_detailView->hide();
@@ -231,10 +226,11 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, KHttpCookie* cookie )
     return advice;
 }
 
-KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
+KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
                               QWidget* parent, const char* name )
               :QGroupBox( parent, name )
 {
+    KHttpCookiePtr cookie = cookieList.first();
     setTitle( i18n("Cookie Details") );
     QGridLayout* grid = new QGridLayout( this, 9, 2,
                                          KDialog::spacingHint(),
@@ -307,8 +303,8 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
         QToolTip::add( btnNext, i18n("Show details of the next cookie") );
 #endif
     }
+    m_cookieList = cookieList;
     m_cookie = cookie;
-    m_cookie_orig = cookie;
 }
 
 KCookieDetail::~KCookieDetail()
@@ -317,9 +313,19 @@ KCookieDetail::~KCookieDetail()
 
 void KCookieDetail::slotNextCookie()
 {
-    m_cookie = m_cookie->next();
-    if ( !m_cookie )
-        m_cookie = m_cookie_orig;
+    KHttpCookiePtr cookie = m_cookieList.first();
+    while(cookie)
+    {
+       if (cookie == m_cookie)
+       {
+          cookie = m_cookieList.next();
+          break;
+       }
+       cookie = m_cookieList.next();
+    }
+    m_cookie = cookie;
+    if (!m_cookie)
+        m_cookie = m_cookieList.first();
 
     if ( m_cookie )
     {

@@ -120,7 +120,6 @@ KHttpCookie::KHttpCookie(const QString &_host,
        mProtocolVersion(_protocolVersion),
        mSecure(_secure)
 {
-    nextCookie = 0;
 }
 
 //
@@ -545,11 +544,11 @@ void KCookieJar::extractDomains(const QString &_fqdn,
 // cookie_headers should be a concatenation of all lines of a HTTP-header
 // which start with "Set-Cookie". The lines should be separated by '\n's.
 //
-KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
+KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                                        const QCString &cookie_headers,
                                        long windowId)
 {
-    KHttpCookiePtr cookieChain = 0;
+    KHttpCookieList cookieList;
     KHttpCookiePtr lastCookie = 0;
     const char *cookieStr = cookie_headers.data();
     QString Name;
@@ -561,7 +560,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
     if (!parseURL(_url, fqdn, path))
     {
         // Error parsing _url
-        return 0;
+        return KHttpCookieList();
     }
 
     //  The hard stuff :)
@@ -585,10 +584,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             cookie->mCrossDomain = crossDomain;
 
             // Insert cookie in chain
-            if (lastCookie)
-               lastCookie->nextCookie = cookie;
-            else
-               cookieChain = cookie;
+            cookieList.append(cookie);
             lastCookie = cookie;
         }
         else if (lastCookie && (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0))
@@ -661,7 +657,7 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
         cookieStr++;
     }
 
-    return cookieChain;
+    return cookieList;
 }
 
 /**
@@ -670,12 +666,12 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
 * pairs. Any whitespace before "name" or around '=' is discarded.
 * If no cookies are found, 0 is returned.
 */
-KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
+KHttpCookieList KCookieJar::makeDOMCookies(const QString &_url,
                                           const QCString &cookie_domstring,
                                           long windowId)
 {
     // A lot copied from above
-    KHttpCookiePtr cookieChain = 0;
+    KHttpCookieList cookieList;
     KHttpCookiePtr lastCookie = 0;
 
     const char *cookieStr = cookie_domstring.data();
@@ -687,7 +683,7 @@ KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
     if (!parseURL(_url, fqdn, path))
     {
         // Error parsing _url
-        return 0;
+        return KHttpCookieList();
     }
 
     //  This time it's easy
@@ -702,19 +698,14 @@ KHttpCookiePtr KCookieJar::makeDOMCookies(const QString &_url,
                                 Name, Value );
         cookie->mWindowId = windowId;
 
-        // Insert cookie in chain
-        if (lastCookie)
-            lastCookie->nextCookie = cookie;
-        else
-            cookieChain = cookie;
-
+        cookieList.append(cookie);
         lastCookie = cookie;
 
         if (*cookieStr != '\0')
             cookieStr++;         // Skip ';' or '\n'
      }
 
-     return cookieChain;
+     return cookieList;
 }
 
 //
@@ -764,6 +755,7 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
     {
         // Make a new cookie list
         cookieList = new KHttpCookieList();
+        cookieList->setAutoDelete(true);
 
         // All cookies whose domain is not already
         // known to us should be added with KCookieDunno.
@@ -910,6 +902,7 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
             configChanged = true;
             // Make a new cookie list
             cookieList = new KHttpCookieList();
+            cookieList->setAutoDelete(true);
             cookieList->setAdvice( _advice);
             cookieDomains.insert( domain, cookieList);
             // Update the list of domains

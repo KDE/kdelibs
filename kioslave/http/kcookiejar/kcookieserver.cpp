@@ -68,6 +68,7 @@ KCookieServer::KCookieServer()
 {
    mCookieJar = new KCookieJar;
    mPendingCookies = new KHttpCookieList;
+   mPendingCookies->setAutoDelete(true);
    mRequestList = new RequestList;
    mAdvicePending = false;
    mTimer = 0;
@@ -150,94 +151,121 @@ bool KCookieServer::cookiesPending( const QString &url )
 void KCookieServer::addCookies( const QString &url, const QCString &cookieHeader,
                                long windowId, bool useDOMFormat )
 {
-    KHttpCookiePtr cookie = 0;
+    KHttpCookieList cookieList;
     if (useDOMFormat)
-       cookie = mCookieJar->makeDOMCookies(url, cookieHeader, windowId);
+       cookieList = mCookieJar->makeDOMCookies(url, cookieHeader, windowId);
     else
-       cookie = mCookieJar->makeCookies(url, cookieHeader, windowId);
+       cookieList = mCookieJar->makeCookies(url, cookieHeader, windowId);
 
-    if (mAdvicePending)
-    {
-       checkCookies(cookie, true);
-    }
-    else
+    checkCookies(&cookieList);
+    
+    for(KHttpCookiePtr cookie = cookieList.first(); cookie; cookie = cookieList.first())
+       mPendingCookies->append(cookieList.take());
+
+    if (!mAdvicePending)
     {
        mAdvicePending = true;
-       do {
-          checkCookies(cookie, false);
-          cookie = mPendingCookies->count() ? mPendingCookies->take(0) : 0;
+       while (!mPendingCookies->isEmpty())
+       {
+          checkCookies(0);
        }
-       while (cookie);
        mAdvicePending = false;
     }
-
 }
 
-void KCookieServer::checkCookies( KHttpCookie *cookie, bool queue )
+void KCookieServer::checkCookies( KHttpCookieList *cookieList)
 {
-    QString host;
-    KCookieAdvice userAdvice = KCookieDunno;
-    if (cookie) host = cookie->host();
+    KHttpCookieList *list;
+    
+    if (cookieList)
+       list = cookieList;
+    else
+       list = mPendingCookies;
+
+    KHttpCookiePtr cookie = list->first();
     while (cookie)
     {
-        KHttpCookiePtr next_cookie = cookie->next();
         KCookieAdvice advice = mCookieJar->cookieAdvice(cookie);
-        if ((advice == KCookieAsk) || (advice == KCookieDunno))
-        {
-            // We only ask the user once, even if we get multiple
-            // cookies from the same site.
-            if (userAdvice == KCookieDunno)
-            {
-                if (queue)
-                {
-                    mPendingCookies->append(cookie);
-                    return;
-                }
-                else
-                {
-                    mPendingCookies->prepend(cookie);
-                    KCookieWin *kw = new KCookieWin( 0L, cookie,
-                                                     mCookieJar->defaultRadioButton,
-                                                     mCookieJar->showCookieDetails );
-                    userAdvice = kw->advice(mCookieJar, cookie);
-                    delete kw;
-                    mPendingCookies->take(0);
-                    // Save the cookie config if it has changed
-                    mCookieJar->saveConfig( kapp->config() );
-                }
-            }
-            advice = userAdvice;
-        }
         switch(advice)
         {
         case KCookieAccept:
+            list->take();
             mCookieJar->addCookie(cookie);
+            cookie = list->current();
             break;
 
         case KCookieReject:
-        default:
+            list->take();
             delete cookie;
+            cookie = list->current();
+            break;
+
+        default:
+            cookie = list->next();
             break;
         }
-        cookie = next_cookie;
-        if (!cookie && !queue)
+    }
+    
+    if (cookieList || list->isEmpty())
+       return;
+       
+    KHttpCookiePtr currentCookie = mPendingCookies->first();
+    
+    KHttpCookieList currentList;
+    currentList.append(currentCookie);
+    QString currentHost = currentCookie->host();
+
+    cookie = mPendingCookies->next();
+    while (cookie)
+    {
+        if (cookie->host() == currentHost)
         {
-           // Check if there are cookies on the pending list from the
-           // same host.
-           for( cookie = mPendingCookies->first();
-                cookie;
-                cookie = mPendingCookies->next())
+            currentList.append(cookie);
+        }
+        cookie = mPendingCookies->next();
+    }
+
+    KCookieWin *kw = new KCookieWin( 0L, currentList,
+                                     mCookieJar->defaultRadioButton,
+                                     mCookieJar->showCookieDetails );
+    KCookieAdvice userAdvice = kw->advice(mCookieJar, cookie);
+    delete kw;
+    // Save the cookie config if it has changed
+    mCookieJar->saveConfig( kapp->config() );
+
+    // Apply the user's choice to all cookies that are currently
+    // queued for this host.
+    cookie = mPendingCookies->first();
+    while (cookie)
+    {
+        if (cookie->host() == currentHost)
+        {
+           switch(userAdvice)
            {
-               if (cookie->host() == host)
-                  break;
-           }
-           if (cookie)
-           {
-               // Found a matching cookie, remove it from the pending list.
-               cookie = mPendingCookies->take();
+           case KCookieAccept:
+               mPendingCookies->take();
+               mCookieJar->addCookie(cookie);
+               cookie = mPendingCookies->current();
+               break;
+
+           case KCookieReject:
+               mPendingCookies->take();
+               delete cookie;
+               cookie = mPendingCookies->current();
+               break;
+
+           default:
+               qWarning("kcookieserver.cpp:253 Problen!");
+               cookie = mPendingCookies->next();
+               break;
            }
         }
+        else
+        {
+            cookie = mPendingCookies->next();
+        }
     }
+
 
     // Check if we can handle any request
     for ( CookieRequest *request = mRequestList->first(); request;)

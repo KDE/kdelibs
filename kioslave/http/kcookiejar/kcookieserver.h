@@ -65,7 +65,7 @@ public:
   bool cookiesPending(const QString &url);
   void addCookies(const QString &url, const QCString &cookieHeader,
                   long windowId, bool useDOMFormat);
-  void checkCookies(KHttpCookie *cookie, bool queue);
+  void checkCookies(KHttpCookieList *cookieList);
 
 public slots:
   void slotSave();
