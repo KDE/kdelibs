@@ -24,6 +24,9 @@
  
   */
 
+#include <qlayout.h>
+#include <qlabel.h>
+#include <qapplication.h>
 #include <klocale.h>
 
 #include "keditcl.h"

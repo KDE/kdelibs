@@ -27,10 +27,7 @@
 #define __KEDIT_H__
 
 #include <qpopupmenu.h>
-#include <qmenubar.h>
 #include <qstrlist.h>
-#include <qkeycode.h>
-#include <qaccel.h>
 #include <qmultilinedit.h>
 #include <qlineedit.h>
 #include <qradiobutton.h>
@@ -39,9 +36,6 @@
 #include <qmessagebox.h>
 #include <qpushbutton.h>
 #include <qgroupbox.h>
-#include <qtextstream.h>
-#include <qkeycode.h>
-#include <qfileinfo.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,11 +48,10 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <ctype.h>
-#include <pwd.h>
 
-#include <kapp.h>
-#include <kfontdialog.h>
 #include <kintlineedit.h>
+
+class KApplication;
 
 ///
 class KEdGotoLine : public QDialog
@@ -238,15 +231,15 @@ public:
     int 	loadFile( const QString& filename , int mode );
 
 
-    /** Returns the filename of the currnet file. You can use setName() to set the
+    /** Returns the filename of the current file. You can use setName() to set the
         filename of the current file
     */
     QString getName();
 
-    /** Sets the filename of the currnet file. You can use getName() to set the
+    /** Sets the filename of the current file. You can use getName() to set the
         filename of the current file
     */
-    void 	setName( const QString&_name );
+    void 	setName( const QString& _name );
 
     /** Returns the currently marked text.
      */
@@ -313,7 +306,7 @@ public:
     /** Returns TRUE if word wrap is on. You also need to specify the fill column
         with setFillColumnMode() otherwise wordwrap is not in effect.
     */
-    bool 	WordWrap();
+    bool 	wordWrap();
 
     /** You also need to specify the fill column
         with setFillColumnMode() otherwise wordwrap is not in effect.
@@ -324,7 +317,7 @@ public:
          be broken automatically when if a character is to be inserted past
          this position.
     */
-    bool 	FillColumnMode();
+    bool 	fillColumnMode();
 
     /**  Set the fill column to column col, if col is strictly larger than 0.
          If col  is 0, fill column mode is turned off.
@@ -449,7 +442,6 @@ private:
     KEdReplace 	*replace_dialog;
     KEdGotoLine *gotodialog;
     QPopupMenu  *rb_popup;
-    KApplication* mykapp;
     QFileDialog *file_dialog;
     QStrList	par;
 

@@ -27,8 +27,10 @@
 
   */
 
+#include <qtextstream.h>
 #include <klocale.h>
 #include <kapp.h>
+#include <kfontdialog.h>
 
 #include "keditcl.h"
 
@@ -37,7 +39,6 @@ KEdit::KEdit(KApplication *a, QWidget *parent, const char *name,
     QMultiLineEdit(parent, name){
 
 
-    mykapp = a;
     filename = fname;
     rb_popup =  0L;
     modified = FALSE;
@@ -101,7 +102,7 @@ int KEdit::currentColumn(){
 }
 
 
-bool KEdit::WordWrap(){
+bool KEdit::wordWrap(){
 
   return word_wrap_is_set;
 
@@ -112,7 +113,7 @@ void  KEdit::setWordWrap(bool flag ){
   word_wrap_is_set = flag;
 }
 
-bool  KEdit::FillColumnMode(){
+bool  KEdit::fillColumnMode(){
 
   return fill_column_is_set;
 }
@@ -210,7 +211,7 @@ int KEdit::loadFile(const QString& name, int mode){
     }
 
     emit loading();
-    mykapp->processEvents();
+    kapp->processEvents();
 
     fstat(fdesc, &s);
     addr = (char *)mmap(0, s.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fdesc, 0);
@@ -1479,7 +1480,7 @@ int KEdit::saveFile(){
 
     if(!modified) {
       emit saving();
-      mykapp->processEvents();
+      kapp->processEvents();
       return KEDIT_OK;
     }
 
@@ -1513,7 +1514,7 @@ int KEdit::saveFile(){
     }
 
     emit saving();
-    mykapp->processEvents();
+    kapp->processEvents();
 
     QTextStream t(&file);
 
