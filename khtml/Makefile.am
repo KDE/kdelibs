@@ -34,7 +34,7 @@ AM_CPPFLAGS = -DQT_NO_ASCII_CAST -DQT_NO_COMPAT
 # gprof -l -y
 # AM_CXXFLAGS += -pg
 
-SUBDIRS = misc dom css xml html rendering java kjs . ecma
+SUBDIRS = misc dom css xml html rendering java . ecma
 
 lib_LTLIBRARIES = libkhtml.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp
@@ -48,7 +48,7 @@ noinst_HEADERS = design.h testkhtml.h
 libkhtml_la_LDFLAGS = -version-info 3:0 -module -no-undefined
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la ./rendering/libkhtmlrender.la ./css/libkhtmlcss.la ./misc/libkhtmlmisc.la ./dom/libkhtmldom.la ./java/libkjava.la ../kimgio/libkimgio.la ../kio/libkio.la $(top_builddir)/kparts/libkparts.la $(top_builddir)/kfile/libkfile.la
 
-INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
+INCLUDES = -I$(top_srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
 	-I$(srcdir)/java -I$(top_srcdir)/dcop -I$(srcdir)/misc \
 	-I$(srcdir)/dom -I$(srcdir)/xml -I$(srcdir)/html -I$(srcdir)/css \
 	-I$(top_srcdir)/kfile -I$(top_srcdir)/libltdl \
