@@ -296,15 +296,19 @@ void Addressee::setNameFromString( const QString &str )
 
 QString Addressee::realName() const
 {
-  if ( !formattedName().isEmpty() )
-    return formattedName();
+  QString n( formattedName() );
+  if ( !n.isEmpty() )
+	return n;
 
-  QString n = assembledName();
+  n = assembledName();
+  if ( !n.isEmpty() )
+	return n;
 
-  if ( n.isEmpty() )
-    n = name();
+  n = name();
+  if ( !n.isEmpty() )
+	return n;
 
-  return n;
+  return organization();
 }
 
 QString Addressee::assembledName() const
