@@ -27,7 +27,7 @@ using namespace khtml;
 
 #include "kdebug.h"
 
-//#define BIDI_DEBUG 2
+#define BIDI_DEBUG 0 // 2
 
 // ---------------------------------------------------------------------
 

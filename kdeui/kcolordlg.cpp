@@ -33,7 +33,7 @@
 
 #include <qdrawutil.h>
 #include <qevent.h>
-#include <qfile.h> 
+#include <qfile.h>
 #include <qimage.h>
 #include <qlabel.h>
 #include <qlayout.h>
@@ -57,7 +57,7 @@
 
 #include "kcolordlg.h"
 #include "kcolordrag.h"
-
+#include "kstaticdeleter.h"
 
 #define HSV_X 305
 #define RGB_X 385
@@ -68,7 +68,7 @@ static const char *customColors = "Custom_Colors";
 
 #define STANDARD_PAL_SIZE 17
 
-KColor::KColor() 
+KColor::KColor()
 : QColor()
 {
   r = 0; g = 0; b = 0; h = 0; s = 0; v = 0;
@@ -94,7 +94,7 @@ bool KColor::operator==(const KColor& col) const
          (r == col.r) && (g == col.g) && (b == col.b);
 }
 
-KColor& KColor::operator=(const KColor& col) 
+KColor& KColor::operator=(const KColor& col)
 {
   *(QColor *)this = col;
   h = col.h; s = col.s; v = col.v;
@@ -102,32 +102,32 @@ KColor& KColor::operator=(const KColor& col)
   return *this;
 }
 
-void 
-KColor::setHsv(int _h, int _s, int _v) 
-{ 
-  h = _h; s = _s; v = _v; 
-  QColor::setHsv(h, s, v); 
+void
+KColor::setHsv(int _h, int _s, int _v)
+{
+  h = _h; s = _s; v = _v;
+  QColor::setHsv(h, s, v);
   QColor::rgb(&r, &g, &b);
 };
 
-void 
+void
 KColor::setRgb(int _r, int _g, int _b)
-{ 
-  r = _r; g = _g; b = _b; 
-  QColor::setRgb(r, g, b); 
+{
+  r = _r; g = _g; b = _b;
+  QColor::setRgb(r, g, b);
   QColor::hsv(&h, &s, &v);
 };
 
-void 
+void
 KColor::rgb(int *_r, int *_g, int *_b)
-{ 
-  *_r = r; *_g = g; *_b = b; 
+{
+  *_r = r; *_g = g; *_b = b;
 };
 
-void 
+void
 KColor::hsv(int *_h, int *_s, int *_v)
-{ 
-  *_h = h; *_s = s; *_v = v; 
+{
+  *_h = h; *_s = s; *_v = v;
 };
 
 
@@ -299,12 +299,12 @@ void KColorCells::paintCell( QPainter *painter, int row, int col )
 
 	if (shade)
         {
-		qDrawShadePanel( painter, 1, 1, cellWidth()-2, 
+		qDrawShadePanel( painter, 1, 1, cellWidth()-2,
 		    cellHeight()-2, colorGroup(), TRUE, 1, &brush );
 		w = 2;
         }
         QColor color = colors[ row * numCols() + col ];
-        if (!color.isValid()) 
+        if (!color.isValid())
 	{
 		if (!shade) return;
 		color = backgroundColor();
@@ -481,7 +481,7 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
   paletteList.prepend(i18n_recentColors);
   paletteList.append( i18n_namedColors );
 
-  QVBoxLayout *layout = new QVBoxLayout( this );   
+  QVBoxLayout *layout = new QVBoxLayout( this );
 
   combo = new QComboBox( false, this );
   combo->insertStringList( paletteList );
@@ -505,7 +505,7 @@ KPaletteTable::KPaletteTable( QWidget *parent, int minWidth, int cols)
 	   this, SLOT( slotColorTextSelected( const QString & )) );
 
   setFixedSize( sizeHint());
-  connect( combo, SIGNAL(activated(const QString &)), 
+  connect( combo, SIGNAL(activated(const QString &)),
 	this, SLOT(slotSetPalette( const QString &)));
 }
 
@@ -527,7 +527,7 @@ static const char **namedColorFilePath( void )
   // 2000-02-05 Espen Sand.
   // Add missing filepaths here. Make sure the last entry is 0!
   //
-  static const char *path[] = 
+  static const char *path[] =
   {
     "/usr/X11R6/lib/X11/rgb.txt",
     0
@@ -558,7 +558,7 @@ KPaletteTable::readNamedColor( void )
     {
       continue;
     }
-    
+
     QString line;
     QStringList list;
     while( paletteFile.readLine( line, 100 ) != -1 )
@@ -573,7 +573,7 @@ KPaletteTable::readNamedColor( void )
 	// that start with "gray".
 	//
 	QString name = line.mid(pos).stripWhiteSpace();
-	if( name.isNull() == true || name.find(' ') != -1 || 
+	if( name.isNull() == true || name.find(' ') != -1 ||
 	    name.find( "gray" ) != -1 )
 	{
 	  continue;
@@ -590,10 +590,10 @@ KPaletteTable::readNamedColor( void )
   if( mNamedColorList->count() == 0 )
   {
     //
-    // Give the error dialog box a chance to center above the 
+    // Give the error dialog box a chance to center above the
     // widget (or dialog). If we had displayed it now we could get a
     // situation where the (modal) error dialog box pops up first
-    // preventing the real dialog to become visible until the 
+    // preventing the real dialog to become visible until the
     // error dialog box is removed (== bad UI).
     //
     QTimer::singleShot( 10, this, SLOT(slotShowNamedColorReadError()) );
@@ -601,7 +601,7 @@ KPaletteTable::readNamedColor( void )
 }
 
 
-void 
+void
 KPaletteTable::slotShowNamedColorReadError( void )
 {
   if( mNamedColorList->count() == 0 )
@@ -626,8 +626,8 @@ KPaletteTable::slotShowNamedColorReadError( void )
 // Set the color in two steps. The setPalette() slot will not emit a signal
 // with the current color setting. The reason is that setPalette() is used
 // by the color selector dialog on startup. In the color selector dialog
-// we normally want to display a startup color which we specify 
-// when the dialog is started. The slotSetPalette() slot below will 
+// we normally want to display a startup color which we specify
+// when the dialog is started. The slotSetPalette() slot below will
 // set the palette and then use the information to emit a signal with the
 // new color setting. It is only used by the combobox widget.
 //
@@ -682,10 +682,10 @@ KPaletteTable::setPalette( const QString &_paletteName )
 
   //
   // 2000-02-12 Espen Sand
-  // The palette mode "i18n_namedColors" does not use the KPalette class. 
-  // In fact, 'mPalette' and 'cells' are 0 when in this mode. The reason 
-  // for this is maninly that KPalette reads from and writes to files using 
-  // "locate()". The colors used in "i18n_namedColors" mode comes from the 
+  // The palette mode "i18n_namedColors" does not use the KPalette class.
+  // In fact, 'mPalette' and 'cells' are 0 when in this mode. The reason
+  // for this is maninly that KPalette reads from and writes to files using
+  // "locate()". The colors used in "i18n_namedColors" mode comes from the
   // X11 diretory and is not writable. I dont think this fit in KPalette.
   //
   if( mPalette == 0 || mPalette->name() != paletteName )
@@ -729,7 +729,7 @@ KPaletteTable::setPalette( const QString &_paletteName )
 
 
 
-void 
+void
 KPaletteTable::slotColorCellSelected( int col )
 {
   if (!mPalette || (col >= mPalette->nrColors()))
@@ -737,14 +737,14 @@ KPaletteTable::slotColorCellSelected( int col )
   emit colorSelected( mPalette->color(col), mPalette->colorName(col) );
 }
 
-void 
+void
 KPaletteTable::slotColorTextSelected( const QString &colorText )
 {
   emit colorSelected( QColor (colorText), colorText );
 }
 
 
-void 
+void
 KPaletteTable::addToCustomColors( const QColor &color)
 {
   setPalette(i18n_customColors);
@@ -755,7 +755,7 @@ KPaletteTable::addToCustomColors( const QColor &color)
   setPalette(i18n_customColors);
 }
 
-void 
+void
 KPaletteTable::addToRecentColors( const QColor &color)
 {
   //
@@ -770,7 +770,7 @@ KPaletteTable::addToRecentColors( const QColor &color)
      recentIsSelected = true;
   }
   KPalette *recentPal = new KPalette(recentColors);
-  if (recentPal->findColor(color) == -1) 
+  if (recentPal->findColor(color) == -1)
   {
      recentPal->addColor( color );
      recentPal->save();
@@ -786,7 +786,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   :KDialogBase( parent, name, modal, i18n("Select Color"), Help|Ok|Cancel,
 		Ok, true )
 {
-  bRecursion = true; 
+  bRecursion = true;
   bColorPicking = false;
   setHelp( QString::fromLatin1("kcolordialog.html"), QString::null );
   connect( this, SIGNAL(okClicked(void)),this,SLOT(slotWriteSettings(void)));
@@ -932,7 +932,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   QPushButton *button = new QPushButton( page );
   button->setText(i18n("&Add to Custom Colors"));
   l_hbox->addWidget(button, 0, AlignLeft);
-  connect( button, SIGNAL( clicked()), 
+  connect( button, SIGNAL( clicked()),
            SLOT( slotAddToCustomColors()));
 
   //
@@ -941,7 +941,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   button = new QPushButton( page );
   button->setPixmap( BarIcon("colorpicker"));
   l_hbox->addWidget(button, 0, AlignHCenter );
-  connect( button, SIGNAL( clicked()), 
+  connect( button, SIGNAL( clicked()),
            SLOT( slotColorPicker()));
 
   //
@@ -962,7 +962,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 
   colorName = new QLabel( page );
   w = colorName->fontMetrics().width(QString::fromLatin1("Very Very long name")); // 7xF!
-  colorName->setFixedWidth(w);  
+  colorName->setFixedWidth(w);
   l_grid->addWidget(colorName, 0, 2, AlignLeft);
 
   label = new QLabel( page );
@@ -973,7 +973,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   htmlName->setMaxLength( 7 );
   htmlName->setText("#FFFFFF");
   w = htmlName->fontMetrics().width(QString::fromLatin1("#FFFFFFFF")); // 8xF!
-  htmlName->setFixedWidth(w);  
+  htmlName->setFixedWidth(w);
   l_grid->addWidget(htmlName, 1, 2, AlignLeft);
 
   patch = new KColorPatch( page );
@@ -997,7 +997,7 @@ void
 KColorDialog::readSettings()
 {
   KConfig* config = KGlobal::config();
- 
+
   QString oldgroup = config->group();
 
   config->setGroup("Colors");
@@ -1011,7 +1011,7 @@ void
 KColorDialog::slotWriteSettings()
 {
   KConfig* config = KGlobal::config();
- 
+
   QString oldgroup = config->group();
 
   config->setGroup("Colors");
@@ -1153,7 +1153,7 @@ void KColorDialog::_setColor(const KColor &color, const QString &name)
   emit colorSelected( selColor );
 }
 
-void 
+void
 KColorDialog::slotColorPicker()
 {
   bColorPicking = true;
@@ -1181,7 +1181,7 @@ KColorDialog::grabColor(const QPoint &p)
   QWidget *desktop = QApplication::desktop();
   QPixmap pm = QPixmap::grabWindow( desktop->winId(), p.x(), p.y(), 1, 1);
   QImage i = pm.convertToImage();
-  return i.pixel(0,0); 
+  return i.pixel(0,0);
 }
 
 void

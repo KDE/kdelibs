@@ -37,7 +37,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
-	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h
+	netwm_def.h netwm_p.h kpixmapprovider.h kunload.h kstaticdeleter.h
 
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h
 

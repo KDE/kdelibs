@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstddirs.h>
+#include <kstaticdeleter.h>
 
 KServiceFactory::KServiceFactory()
  : KSycocaFactory( KST_KServiceFactory )

@@ -217,7 +217,8 @@ class AlsaOut : public MidiOut
 
   virtual void wait        (double ticks);
   virtual void tmrSetTempo (int v);
-  virtual void tmrStart    (int tpcn=-1);
+  virtual void tmrStart    (int tpcn);
+  virtual void tmrStart    () { tmrStart(-1); }
   virtual void tmrStop     ();
   virtual void tmrContinue ();
   /**

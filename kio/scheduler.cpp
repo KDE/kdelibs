@@ -25,6 +25,7 @@
 #include <kglobal.h>
 #include <kprotocolmanager.h>
 #include <assert.h>
+#include <kstaticdeleter.h>
 
 //
 // Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned

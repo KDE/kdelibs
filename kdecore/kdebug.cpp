@@ -51,7 +51,7 @@
 #include <errno.h>
 #include <string.h>
 #include <kconfig.h>
-
+#include "kstaticdeleter.h"
 #include <config.h>
 
 class KDebugEntry;

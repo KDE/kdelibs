@@ -35,6 +35,7 @@
 #include <kiconloader.h>
 #include <kstddirs.h>
 #include <kinstance.h>
+#include "kstaticdeleter.h"
 
 #include <qfont.h>
 
