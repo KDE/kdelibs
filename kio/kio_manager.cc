@@ -46,6 +46,107 @@ bool ProtocolManager::listing( const char *_protocol, list<string>& _listing )
   return g->readStringList( "listing", _listing );
 }
 
+bool ProtocolManager::supportsReading( const char *_protocol )
+{
+  K2Config *g = findIntern( _protocol );
+  if ( !g )
+  {
+    cerr << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+
+  bool b;
+
+  if ( g->readBool( "reading" , b ) )
+    return b;
+
+  return false;
+}
+
+bool ProtocolManager::supportsWriting( const char *_protocol )
+{
+  K2Config *g = findIntern( _protocol );
+  if ( !g )
+  {
+    cerr << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+  
+  bool b;
+
+  if ( g->readBool( "writing" , b ) )
+    return b;
+
+  return false;
+}
+
+bool ProtocolManager::supportsMakeDir( const char *_protocol )
+{
+  K2Config *g = findIntern( _protocol );
+  if ( !g )
+  {
+    cerr << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+
+  bool b;
+  if ( g->readBool( "makedir" , b ) )
+    return b;
+
+  return false;
+}
+
+bool ProtocolManager::supportsDeleting( const char *_protocol )
+{
+  K2Config *g = findIntern( _protocol );
+  if ( !g )
+  {
+    cerr << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+  
+  bool b;
+
+  if ( g->readBool( "deleting" , b ) )
+    return b;
+
+  return false;
+}
+
+bool ProtocolManager::supportsLinking( const char *_protocol )
+{
+  K2Config *g = findIntern( _protocol );
+  if ( !g )
+  {
+    cerr << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+  
+  bool b;
+
+  if ( g->readBool( "linking" , b ) )
+    return b;
+
+  return false;
+}
+
+bool ProtocolManager::supportsMoving( const char *_protocol )
+{
+  K2Config *g = findIntern( _protocol );
+  if ( !g )
+  {
+    cerr << "Protocol " << _protocol << " not found" << endl;
+    return false;
+  }
+  
+  bool b;
+
+  if ( g->readBool( "moving" , b ) )
+    return b;
+
+  return false;
+}
+
 string ProtocolManager::find( const char *_protocol )
 {
   K2Config *g = findIntern( _protocol );

@@ -18,7 +18,13 @@ public:
   Type outputType( const char *_protocol );
   bool listing( const char *_protocol, list<string>& _listing );
   bool supportsListing( const char *_protocol );
-  
+  bool supportsReading( const char *_protocol );
+  bool supportsWriting( const char *_protocol );
+  bool supportsMakeDir( const char *_protocol );
+  bool supportsDeleting( const char *_protocol );
+  bool supportsLinking( const char *_protocol );
+  bool supportsMoving( const char *_protocol );
+
   int getConnectTimeout();
   int getReadTimeout();
   int getReadTimeoutNoResume();

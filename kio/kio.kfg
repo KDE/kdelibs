@@ -13,6 +13,12 @@ kioslave 'file'
 	input<string> = 'none';
 	output<string> = 'filesystem';
 	listing<@string> = { 'Name', 'Type', 'Size', 'Date', 'Access', 'Owner', 'Group', 'Link' };
+	reading<bool> = true;
+	writing<bool> = true;
+	makedir<bool> = true;
+	deleting<bool> = true;
+	linking<bool> = true;
+	moving<bool> = true;
 };
 
 kioslave 'ftp' 
@@ -22,6 +28,10 @@ kioslave 'ftp'
 	input<string> = 'none';
 	output<string> = 'filesystem';
 	listing<@string> = { 'Name', 'Type', 'Size', 'Access', 'Owner', 'Group', 'Link' };
+	reading<bool> = true;
+	writing<bool> = true;
+	makedir<bool> = true;
+	deleting<bool> = true;
 };
 
 kioslave 'gzip'
@@ -30,6 +40,7 @@ kioslave 'gzip'
 	protocol<string> = 'gzip';
 	input<string> = 'stream';
 	output<string> = 'stream';
+	reading<bool> = true;
 };
 
 kioslave 'http'
@@ -38,6 +49,7 @@ kioslave 'http'
 	protocol<string> = 'http';
 	input<string> = 'none';
 	output<string> = 'filesystem';
+	reading<bool> = true;
 };
 
 kioslave 'trader' 
@@ -47,4 +59,5 @@ kioslave 'trader'
 	input<string> = 'none';
 	output<string> = 'filesystem';
 	listing<@string> = { 'Name', 'Type' };
+	reading<bool> = true;
 };
