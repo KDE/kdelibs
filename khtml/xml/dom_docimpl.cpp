@@ -346,8 +346,6 @@ ElementImpl *DocumentImpl::createElement( const DOMString &name )
     default:
 	kdDebug( 6020 ) << "Unknown tag " << id << "!" << endl;
     }
-    if (n)
-	n->ref();
     return n;
 }
 
