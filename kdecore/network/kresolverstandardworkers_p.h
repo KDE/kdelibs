@@ -30,6 +30,7 @@
 
 #include <qptrlist.h>
 #include <qcstring.h>
+#include <qstringlist.h>
 
 #include "kresolver.h"
 #include "kresolverworkerbase.h"
@@ -39,6 +40,24 @@
 namespace KNetwork { namespace Internal
 {
   extern void initStandardWorkers() KDE_NO_EXPORT;
+
+  /**
+   * @internal
+   * The blacklist worker.
+   */
+  class KBlacklistWorker: public KNetwork::KResolverWorkerBase
+  {
+  public:
+    static QStringList blacklist;
+    
+    static void loadBlacklist();
+    static void init();
+    static bool isBlacklisted(const QString&);
+    
+    virtual bool preprocess();
+    virtual bool run();
+    virtual bool postprocess() { return true; }
+  };
 
   /** @internal
    * Standard worker.

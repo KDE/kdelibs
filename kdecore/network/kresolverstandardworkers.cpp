@@ -32,6 +32,7 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #ifdef HAVE_NET_IF_H
 #include <net/if.h>
@@ -40,8 +41,11 @@
 #include <qthread.h>
 #include <qmutex.h>
 #include <qstrlist.h>
+#include <qfile.h>
 
 #include "kdebug.h"
+#include "kglobal.h"
+#include "kstandarddirs.h"
 
 #include "kresolver.h"
 #include "ksocketaddress.h"
@@ -52,6 +56,103 @@ struct addrinfo;
 
 using namespace KNetwork;
 using namespace KNetwork::Internal;
+
+static bool hasIPv6()
+{
+#ifndef AF_INET6
+  return false;
+#else
+  if (getenv("KDE_NO_IPV6") != 0L)
+    return false;
+
+  int fd = ::socket(AF_INET6, SOCK_STREAM, 0);
+  if (fd == -1)
+    return false;
+
+  ::close(fd);
+  return true;
+#endif
+}
+
+// blacklist management
+QStringList KBlacklistWorker::blacklist;
+
+void KBlacklistWorker::init()
+{
+  loadBlacklist();
+}
+
+void KBlacklistWorker::loadBlacklist()
+{
+  QStringList filelist = KGlobal::dirs()->findAllResources("config", "ipv6blacklist");
+
+  QStringList::ConstIterator it = filelist.constBegin(),
+    end = filelist.constEnd();
+  for ( ; it != end; ++it)
+    {
+      // for each file, each line is a domainname to be blacklisted
+      QFile f(*it);
+      if (!f.open(IO_ReadOnly))
+	continue;
+
+      QTextStream stream(&f);
+      stream.setEncoding(QTextStream::Latin1);
+      for (QString line = stream.readLine(); !line.isNull(); 
+	   line = stream.readLine())
+	{
+	  if (line.isEmpty())
+	    continue;
+
+	  // make sure there are no surrounding whitespaces
+	  // and that it starts with .
+	  line = line.stripWhiteSpace();
+	  if (line[0] != '.')
+	    line.prepend('.');
+	  
+	  blacklist.append(line.lower());
+	}
+    }
+}
+
+// checks the blacklist to see if the domain is listed
+// it matches the domain ending part
+bool KBlacklistWorker::isBlacklisted(const QString& host)
+{
+  // empty hostnames cannot be blacklisted
+  if (host.isEmpty())
+    return false;
+
+  // KDE4: QLatin1String
+  QString ascii = QString::fromLatin1(KResolver::domainToAscii(host));
+
+  // now find out if this hostname is present
+  QStringList::ConstIterator it = blacklist.constBegin(),
+    end = blacklist.constEnd();
+  for ( ; it != end; ++it)
+    if (ascii.endsWith(*it))
+      return true;
+
+  // no match:
+  return false;
+}
+
+bool KBlacklistWorker::preprocess()
+{
+  if (isBlacklisted(nodeName()))
+    {
+      results.setError(KResolver::NoName);
+      finished();
+      return true;
+    }
+  return false;
+}
+
+bool KBlacklistWorker::run()
+{
+  results.setError(KResolver::NoName);
+  finished();
+  return false;			// resolution failure
+}
 
 namespace
 {
@@ -297,6 +398,9 @@ namespace
 # ifdef AI_NUMERICHOST
 	if (flags() & KResolver::NoResolve)
 	  hint.ai_flags |= AI_NUMERICHOST;
+# endif
+# ifdef AI_ADDRCONFIG
+	hint.ai_flags |= AI_ADDRCONFIG;
 # endif
 
 	// now we do the blocking processing
@@ -732,9 +836,7 @@ bool KStandardWorker::run()
 #endif
   };
   int familyCount = sizeof(families)/sizeof(families[0]);
-  bool skipIPv6 = false;
-  if (getenv("KDE_NO_IPV6") != 0L)
-    skipIPv6 = true;
+  bool skipIPv6 = !hasIPv6();
   resultList.setAutoDelete(true);
 
   for (int i = 0; i < familyCount; i++)
@@ -883,10 +985,9 @@ bool KGetAddrinfoWorker::wantThis(int family)
 
 void KNetwork::Internal::initStandardWorkers()
 {
-  // register the workers in the order we want them to be tried
-  // note the no-resolving worker isn't registered. It's handled as a
-  // special case in KResolverManager::findWorker
+  KBlacklistWorker::init();
 
+  KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KBlacklistWorker>);
   KResolverWorkerFactoryBase::registerNewWorker(new KResolverWorkerFactory<KStandardWorker>);
 
 #ifdef HAVE_GETADDRINFO
