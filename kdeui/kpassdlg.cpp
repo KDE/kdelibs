@@ -308,6 +308,7 @@ KPasswordDialog::~KPasswordDialog()
 }
 
 
+/* KDE 4: Make it const QString & */
 void KPasswordDialog::setPrompt(QString prompt)
 {
     m_pHelpLbl->setText(prompt);
@@ -322,6 +323,7 @@ QString KPasswordDialog::prompt() const
 }
 
 
+/* KDE 4: Make them const QString & */
 void KPasswordDialog::addLine(QString key, QString value)
 {
     if (m_Row > 3)
@@ -381,7 +383,7 @@ void KPasswordDialog::slotKeep(bool keep)
 }
 
 
-// static
+// static . antlarr: KDE 4: Make it const QString & prompt
 int KPasswordDialog::getPassword(QCString &password, QString prompt,
 	int *keep)
 {
@@ -398,7 +400,7 @@ int KPasswordDialog::getPassword(QCString &password, QString prompt,
 }
 
 
-// static
+// static . antlarr: KDE 4: Make it const QString & prompt
 int KPasswordDialog::getNewPassword(QCString &password, QString prompt)
 {
     KPasswordDialog *dlg = new KPasswordDialog(NewPassword, prompt);

@@ -741,6 +741,7 @@ bool KKeyChooser::isKeyPresentLocally( const KShortcut& cut, KKeyChooserItem* ig
         return false;            
 }
 
+/* antlarr: KDE 4: make them const QString & */
 void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sTitle )
 {
 	sAction = sAction.stripWhiteSpace();

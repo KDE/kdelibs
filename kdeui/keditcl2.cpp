@@ -143,6 +143,7 @@ void KEdit::searchdone_slot(){
 
 }
 
+/* antlarr: KDE 4: make it const QString & */
 int KEdit::doSearch(QString s_pattern, bool case_sensitive,
 		    bool wildcard, bool forward, int line, int col){
 
@@ -467,6 +468,7 @@ void KEdit::replacedone_slot(){
 
 
 
+/* antlarr: KDE 4: make it const QString & */
 int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	   bool wildcard, bool forward, int line, int col, bool replace_all){
 
@@ -716,6 +718,7 @@ QString KEdFind::getText() const
 }
 
 
+/* antlarr: KDE 4: make it const QString & */
 void KEdFind::setText(QString string)
 {
   d->combo->setEditText(string);
@@ -888,6 +891,7 @@ QString KEdReplace::getReplaceText()
 }
 
 
+/* antlarr: KDE 4: make it const QString & */
 void KEdReplace::setText(QString string)
 {
   d->searchCombo->setEditText(string);
