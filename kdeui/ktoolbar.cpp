@@ -1477,12 +1477,12 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         // we read in the IconText property *only* if we intend on actually
         // honoring it
         if (d->m_honorStyle)
-            icontext = gconfig->readEntry(attrIconText, "IconOnly");
+            d->IconTextDefault = gconfig->readEntry(attrIconText, "IconOnly");
         else
-            icontext = "IconOnly";
+            d->IconTextDefault = "IconOnly";
 
         // Use the default icon size for toolbar icons.
-        iconsize = gconfig->readNumEntry(attrSize, 0);
+        d->IconSizeDefault = gconfig->readNumEntry(attrSize, 0);
 
         if ( !forceGlobal && config->hasGroup(configGroup) )
         {
@@ -1492,11 +1492,17 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             highlight   = config->readBoolEntry(attrHighlight, highlight);
             transparent = config->readBoolEntry(attrTrans, transparent);
             // now we always read in the IconText property
-            icontext = config->readEntry(attrIconText, icontext);
+            icontext = config->readEntry(attrIconText, d->IconTextDefault);
 
             // now get the size
-            iconsize = config->readNumEntry(attrSize, iconsize);
+            iconsize = config->readNumEntry(attrSize, d->IconSizeDefault);
         }
+        else
+        {
+            iconsize = d->IconSizeDefault;
+            icontext = d->IconTextDefault;
+        }
+
         // revert back to the old group
     } // end block for KConfigGroupSaver
 
@@ -1542,10 +1548,6 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
         emit modechange(); // tell buttons what happened
     if (isVisible ())
         updateGeometry();
-
-    // Store as the default values.
-    d->IconSizeDefault = iconSize();
-    d->IconTextDefault = iconText();
 }
 
 void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
