@@ -29,7 +29,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kaccel.h kglobalaccel.h kclipboard.h ltdl.h \
 	kprotocolmanager.h kregexp.h kstyle.h \
 	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h qproperty.h \
-    kstartparams.h kallocator.h
+        kstartparams.h kallocator.h kautoarray.h
 
 noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 
