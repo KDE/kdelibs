@@ -148,8 +148,10 @@ KJSO KJS::getString(DOM::DOMString s)
     return String(s);
 }
 
-bool KJS::originCheck(const QString url1, const QString url2)
+bool KJS::originCheck(const QString & url1, const QString & url2)
 {
+  if ( url1 == url2 ) // avoid parsing if possible
+    return true;
   KURL kurl1 = url1;
   KURL kurl2 = url2;
   if (kurl1.protocol() == kurl2.protocol() &&

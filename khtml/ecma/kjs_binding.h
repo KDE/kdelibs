@@ -65,7 +65,7 @@ namespace KJS {
    */
   DOM::Range toRange(const KJSO&);
 
-  bool originCheck(const QString url1, const QString url2);
+  bool originCheck(const QString & url1, const QString & url2);
 
 }; // namespace
 
