@@ -55,6 +55,7 @@ signals:
 public:
   class SubMenu {
   public:
+     SubMenu() : items(43) { }
      ~SubMenu() { subMenus.setAutoDelete(true); }
   
   public:
@@ -74,9 +75,6 @@ public:
   QStringList m_defaultLegacyDirs;
 
   QStringList m_directoryDirs; // Current set of applicable <DirectoryDir> dirs
-  QDict<KService> m_applications; // All applications
-  
-  QPtrDict<QString> m_appRelPaths; // Dictionary with relative paths
   QDict<SubMenu> m_legacyNodes; // Dictionary that stores Menu nodes 
                                 // associated with legacy tree.
 
@@ -87,13 +85,28 @@ public:
      QString baseName; // Filename of current menu file without ".menu"
      QString path; // Filename of current menu file without ".menu"
   };
+  
 
-  docInfo m_docInfo;
+  docInfo m_docInfo; // docInfo for current doc
   QValueStack<VFolderMenu::docInfo> m_docInfoStack;
+
+  class appsInfo {
+  public:
+     appsInfo() : dictCategories(53), applications(997), appRelPaths(997)
+     {
+        dictCategories.setAutoDelete(true);
+     }
+
+     QDict<KService::List> dictCategories; // category -> apps
+     QDict<KService> applications; // rel path -> service
+     QPtrDict<QString> appRelPaths; // service -> rel path
+  };
+  
+  appsInfo *m_appsInfo; // appsInfo for current menu
+  QPtrList<appsInfo> m_appsInfoStack; // All applicable appsInfo for current menu
+  QDict<appsInfo> m_appsInfoDict; // menu -> appsInfo
   
   QString m_desktopUserDir;
-  QDict<KService> *m_serviceDict;
-  QDict<KService::List> *m_dictCategories;
   QDomDocument m_doc;
   SubMenu *m_rootMenu;
   SubMenu *m_currentMenu;
@@ -101,9 +114,91 @@ public:
   bool m_legacyLoaded;
 
 private:
+  /**
+   * Lookup application by relative path
+   */
+  KService *findApplication(const QString &relPath);
+
+  /**
+   * Lookup relative path of an application
+   */
+  QString relativePath(KService *service);
+
+  /**
+   * Lookup applications by category
+   */
+  QPtrList<KService::List> findCategory(const QString &category);
+  
+  /**
+   * Add new application
+   */
+  void addApplication(const QString &relPath, KService *service);
+  
+  /**
+   * Build application indices
+   */
+  void buildApplicationIndex();
+  
+  /**
+   * Create a appsInfo frame for this menu
+   */
+  void createAppsInfo(const QString &menuName);
+
+  /**
+   * Load additional appsInfo frame for this menu
+   */
+  void loadAppsInfo(const QString &menuName);
+
+  /**
+   * Unload additional appsInfo frame for this menu
+   */
+  void unloadAppsInfo(const QString &menuName);
+
   void mergeMenus(QDomElement &docElem, QString &name);
   void mergeFile(QDomElement &docElem, const QDomNode &mergeHere);
   void loadMenu(const QString &filename);
+
+  /**
+   * Merge the items2 set into the items1 set
+   */
+  void includeItems(QDict<KService> *items1, QDict<KService> *items2);
+
+  /**
+   * Remove all items from the items1 set that aren't also in the items2 set
+   */
+  void matchItems(QDict<KService> *items1, QDict<KService> *items2);
+
+  /**
+   * Remove all items in the items2 set from the items1 set
+   */
+  void excludeItems(QDict<KService> *items1, QDict<KService> *items2);
+
+  /**
+   * Search the parentMenu tree for the menu menuName and takes it
+   * out.
+   *
+   * This function returns a pointer to the menu if it was found 
+   * or 0 if it was not found.
+   */
+  SubMenu* takeSubMenu(SubMenu *parentMenu, const QString &menuName);
+
+  /**
+   * Insert the menu newMenu with name menuName into the parentMenu.
+   * If such menu already exist the result is merged, if any additional
+   * submenus are required they are created.
+   */
+  void insertSubMenu(VFolderMenu::SubMenu *parentMenu, const QString &menuName, VFolderMenu::SubMenu *newMenu);
+
+  /**
+   * Merge menu2 and it's submenus into menu1 and it's submenus
+   */
+  void mergeMenu(SubMenu *menu1, SubMenu *menu2);
+
+  /**
+   * Inserts service into the menu using name relative to parentMenu
+   * Any missing sub-menus are created.
+   */
+  void insertService(SubMenu *parentMenu, const QString &name, KService *newService);
 
   void processKDELegacyDirs();
   void processLegacyDir(const QString &dir, const QString &relDir);

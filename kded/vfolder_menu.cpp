@@ -36,14 +36,6 @@
 
 static VFolderMenu* g_this = 0;
 
-static QString relPath(KService *service)
-{
-   QString *result = g_this->m_appRelPaths.find(service);
-   if (result)
-      return *result;
-kdWarning(7021) << "Panic! " << service->desktopEntryPath() << " not found!" << endl;
-   return QString::null;
-}
 
 static QDomDocument loadDoc(const QString &filename)
 {
@@ -102,44 +94,45 @@ static void replaceNode(QDomElement &docElem, QDomNode &n, const QStringList &li
 //   kdDebug(7021) << "Next tag = " << n.toElement().tagName() << endl;
 }
 
-static void
-includeItems(QDict<KService> *items1, QDict<KService> *items2)
+void
+VFolderMenu::includeItems(QDict<KService> *items1, QDict<KService> *items2)
 {
    for(QDictIterator<KService> it(*items2); it.current(); ++it)
    {
-       items1->replace(relPath(it.current()), it.current());
+       items1->replace(relativePath(it.current()), it.current());
    }
 }
 
-static void
-matchItems(QDict<KService> *items1, QDict<KService> *items2)
+void
+VFolderMenu::matchItems(QDict<KService> *items1, QDict<KService> *items2)
 {
    for(QDictIterator<KService> it(*items1); it.current(); )
    {
-       QString entry = relPath(it.current());
+       QString entry = relativePath(it.current());
        ++it;
        if (!items2->find(entry))
           items1->remove(entry);
    }
 }
 
-static void
-excludeItems(QDict<KService> *items1, QDict<KService> *items2)
+void
+VFolderMenu::excludeItems(QDict<KService> *items1, QDict<KService> *items2)
 {
    for(QDictIterator<KService> it(*items2); it.current(); ++it)
    {
-       items1->remove(relPath(it.current()));
+       items1->remove(relativePath(it.current()));
    }
 }
 
-static VFolderMenu::SubMenu* takeSubMenu(VFolderMenu::SubMenu *parentMenu, const QString &name)
+VFolderMenu::SubMenu* 
+VFolderMenu::takeSubMenu(SubMenu *parentMenu, const QString &menuName)
 {
-   int i = name.find('/');
-   QString s1 = i > 0 ? name.left(i) : name;
-   QString s2 = name.mid(i+1);
+   int i = menuName.find('/');
+   QString s1 = i > 0 ? menuName.left(i) : menuName;
+   QString s2 = menuName.mid(i+1);
       
    // Look up menu
-   for(VFolderMenu::SubMenu *menu = parentMenu->subMenus.first(); menu; menu = parentMenu->subMenus.next())
+   for(SubMenu *menu = parentMenu->subMenus.first(); menu; menu = parentMenu->subMenus.next())
    {
       if (menu->name == s1)
       {
@@ -157,15 +150,14 @@ static VFolderMenu::SubMenu* takeSubMenu(VFolderMenu::SubMenu *parentMenu, const
    return 0; // Not found
 }
 
-static bool insertSubMenu(VFolderMenu::SubMenu *parentMenu, const QString &name, VFolderMenu::SubMenu *newMenu);
-
-static void mergeMenu(VFolderMenu::SubMenu *menu1, VFolderMenu::SubMenu *menu2)
+void
+VFolderMenu::mergeMenu(SubMenu *menu1, SubMenu *menu2)
 {
     // Merge newMenu with menu.
    includeItems(&(menu1->items), &(menu2->items));
    for(; menu2->subMenus.first(); )
    {
-      VFolderMenu::SubMenu *subMenu = menu2->subMenus.take();
+      SubMenu *subMenu = menu2->subMenus.take();
       insertSubMenu(menu1, subMenu->name, subMenu);
    }
 
@@ -175,50 +167,48 @@ static void mergeMenu(VFolderMenu::SubMenu *menu1, VFolderMenu::SubMenu *menu2)
    delete menu2;
 }
 
-static bool insertSubMenu(VFolderMenu::SubMenu *parentMenu, const QString &name, VFolderMenu::SubMenu *newMenu)
+void 
+VFolderMenu::insertSubMenu(SubMenu *parentMenu, const QString &menuName, SubMenu *newMenu)
 {
-   int i = name.find('/');
+   int i = menuName.find('/');
    
-   QString s1 = name.left(i);
-   QString s2 = name.mid(i+1);
+   QString s1 = menuName.left(i);
+   QString s2 = menuName.mid(i+1);
       
    // Look up menu
-   for(VFolderMenu::SubMenu *menu = parentMenu->subMenus.first(); menu; menu = parentMenu->subMenus.next())
+   for(SubMenu *menu = parentMenu->subMenus.first(); menu; menu = parentMenu->subMenus.next())
    {
       if (menu->name == s1)
       {
          if (i == -1)
          {
             mergeMenu(menu, newMenu);
-
-            return true;
+            return;
          }
          else
          {
-            return insertSubMenu(menu, s2, newMenu);
+            insertSubMenu(menu, s2, newMenu);
+            return;
          }
       }
    }
    if (i == -1)
    {
      // Add it here
-     newMenu->name = name;
+     newMenu->name = menuName;
      parentMenu->subMenus.append(newMenu);
-     return true;
    }
    else
    {
-     VFolderMenu::SubMenu *menu = new VFolderMenu::SubMenu;
+     SubMenu *menu = new SubMenu;
      menu->name = s1;
      parentMenu->subMenus.append(menu);
-     return insertSubMenu(menu, s2, newMenu);
+     insertSubMenu(menu, s2, newMenu);
    }
-   return false; // Never reached
 }
 
-// TODO: bool makes no sense, always succeeds.
-// Insert a service into a menu, creating any missing submenu
-static bool insertService(VFolderMenu::SubMenu *parentMenu, const QString &name, KService *newService)
+void 
+VFolderMenu::insertService(SubMenu *parentMenu, const QString &name, KService *newService)
 {
    int i = name.find('/');
    
@@ -226,38 +216,158 @@ static bool insertService(VFolderMenu::SubMenu *parentMenu, const QString &name,
    {
      // Add it here
      parentMenu->items.replace(name, newService);
-     return true;
+     return;
    }
 
    QString s1 = name.left(i);
    QString s2 = name.mid(i+1);
       
    // Look up menu
-   for(VFolderMenu::SubMenu *menu = parentMenu->subMenus.first(); menu; menu = parentMenu->subMenus.next())
+   for(SubMenu *menu = parentMenu->subMenus.first(); menu; menu = parentMenu->subMenus.next())
    {
       if (menu->name == s1)
       {
-         return insertService(menu, s2, newService);
+         insertService(menu, s2, newService);
+         return;
       }
    }
    
-   VFolderMenu::SubMenu *menu = new VFolderMenu::SubMenu;
+   SubMenu *menu = new SubMenu;
    menu->name = s1;
    parentMenu->subMenus.append(menu);
-   return insertService(menu, s2, newService);
+   insertService(menu, s2, newService);
 }
 
 
 VFolderMenu::VFolderMenu()
 {
    m_rootMenu = 0;
-   m_dictCategories = 0;
    initDirs();
 }
 
 VFolderMenu::~VFolderMenu()
 {
    delete m_rootMenu;
+}
+
+#define FOR_ALL_APPLICATIONS(it) \
+   for(appsInfo *info = m_appsInfoStack.first(); \
+       info; info = m_appsInfoStack.next()) \
+   { \
+      for(QDictIterator<KService> it( info->applications ); \
+          it.current(); ++it ) \
+      {
+#define FOR_ALL_APPLICATIONS_END } }
+
+#define FOR_CATEGORY(category, it) \
+   for(appsInfo *info = m_appsInfoStack.first(); \
+       info; info = m_appsInfoStack.next()) \
+   { \
+      KService::List *list = info->dictCategories.find(category); \
+      if (list) for(KService::List::ConstIterator it = list->begin(); \
+             it != list->end(); ++it) \
+      { 
+#define FOR_CATEGORY_END } }
+
+KService *
+VFolderMenu::findApplication(const QString &relPath)
+{
+   for(appsInfo *info = m_appsInfoStack.first();
+       info; info = m_appsInfoStack.next())
+   {
+      KService *s = info->applications.find(relPath);
+      if (s)
+         return s;
+   }
+   return 0;
+}
+
+QString
+VFolderMenu::relativePath(KService *service)
+{
+   for(appsInfo *info = m_appsInfoStack.first();
+       info; info = m_appsInfoStack.next())
+   {
+      QString *result = info->appRelPaths.find(service);
+      if (result)
+         return *result;
+   }
+kdWarning(7021) << "Panic! " << service->desktopEntryPath() << " not found!" << endl;
+   return QString::null;
+}
+
+void
+VFolderMenu::addApplication(const QString &relPath, KService *service)
+{
+   m_appsInfo->appRelPaths.insert(service, new QString(relPath));
+   m_appsInfo->applications.replace(relPath, service);
+}
+
+void
+VFolderMenu::buildApplicationIndex()
+{
+   QDictIterator<appsInfo> it( m_appsInfoDict );
+   for( ; it.current(); ++it )
+   {
+      appsInfo *info = it.current();
+      for(QDictIterator<KService> it( info->applications );
+          it.current(); ++it )
+      {
+         KService *s = it.current();
+         QStringList cats = s->categories();
+         for(QStringList::ConstIterator it2 = cats.begin();
+             it2 != cats.end(); ++it2)
+         {
+            const QString &cat = *it2;
+            KService::List *list = info->dictCategories.find(cat);
+            if (!list)
+            {
+               list = new KService::List();
+               info->dictCategories.insert(cat, list);
+            }
+            list->append(s);
+         }
+      }
+   }
+}
+
+void
+VFolderMenu::createAppsInfo(const QString &name)
+{
+   if (m_appsInfo) return;
+   
+   m_appsInfo = new appsInfo;
+   m_appsInfoStack.prepend(m_appsInfo);
+   m_appsInfoDict.replace(name, m_appsInfo);
+}
+
+void
+VFolderMenu::loadAppsInfo(const QString &menuName)
+{
+   m_appsInfo = m_appsInfoDict.find(menuName);
+   if (!m_appsInfo)
+      return; // No appsInfo for this menu
+   
+   if (m_appsInfoStack.first() == m_appsInfo)
+      return; // Already added (By createAppsInfo?)
+      
+   m_appsInfoStack.prepend(m_appsInfo); // Add
+}
+
+void
+VFolderMenu::unloadAppsInfo(const QString &menuName)
+{
+   m_appsInfo = m_appsInfoDict.find(menuName);
+   if (!m_appsInfo)
+      return; // No appsInfo for this menu
+   
+   if (m_appsInfoStack.first() != m_appsInfo)
+   {
+      return; // Already removed (huh?)
+   }
+      
+   m_appsInfoStack.remove(m_appsInfo); // Remove
+   m_appsInfo = 0;
 }
 
 QString 
@@ -715,12 +825,13 @@ VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
    }
    else if (domElem.tagName() == "Not")
    {
-      for(QDictIterator<KService> it( m_applications );
-          it.current(); ++it )
+      FOR_ALL_APPLICATIONS(it)
       {
          KService *s = it.current();
-         items->replace(relPath(s), s);
+         items->replace(relativePath(s), s);
       }
+      FOR_ALL_APPLICATIONS_END
+      
       QDict<KService> notItems;
       QDomNode n = domElem.firstChild();
       while( !n.isNull() ) {
@@ -733,31 +844,27 @@ VFolderMenu::processCondition(QDomElement &domElem, QDict<KService> *items)
    }
    else if (domElem.tagName() == "Category")
    {
-      KService::List *list = m_dictCategories->find(domElem.text());
-      if (!list) return;
-      
-      for(KService::List::ConstIterator it = list->begin();
-            it != list->end(); ++it)
+      FOR_CATEGORY(domElem.text(), it)
       {
          KService *s = *it;
-         items->replace(relPath(s), s);
+         items->replace(relativePath(s), s);
       }
+      FOR_CATEGORY_END
    }
    else if (domElem.tagName() == "All")
    {
-      for(QDictIterator<KService> it( m_applications );
-          it.current(); ++it )
+      FOR_ALL_APPLICATIONS(it)
       {
          KService *s = it.current();
-         items->replace(relPath(s), s);
+         items->replace(relativePath(s), s);
       }
+      FOR_ALL_APPLICATIONS_END
    }
    else if (domElem.tagName() == "Filename")
    {
       QString filename = domElem.text();
 kdDebug(7021) << "Adding file " << filename << endl;
-      // TODO: Argh, we need to search m_applications :(
-      KService *s = m_applications.find(filename);
+      KService *s = findApplication(filename);
       if (s)
          items->replace(filename, s);
    }
@@ -804,9 +911,7 @@ kdDebug(7021) << "Found " << pathfn << " (" << (relDir+fn) << ")" << endl;
          emit newService(pathfn, &service); 
          if (service)
          {
-            QString relPath = relDir+fn;
-            m_appRelPaths.insert(service, new QString(relPath));
-            m_applications.replace(relPath, service);
+            addApplication(relDir+fn, service);
          }
          else
          {
@@ -867,14 +972,12 @@ kdDebug(7021) << "KDE Legacy Found " << name << endl;
             if (i >= 0)
                relPath = relPath.mid(i+1);
 
-            m_appRelPaths.insert(service, new QString(relPath));
+            // TODO: add Legacy category
+            addApplication(relPath, service);
+
             if (service->categories().isEmpty())
             {
                insertService(m_currentMenu, name, service);
-            }
-            else
-            {
-               m_applications.replace(relPath, service);
             }
          }
       }
@@ -934,11 +1037,12 @@ kdDebug(7021) << "Found " << pathfn << " (" << (relDir+fn) << ")" << endl;
          if (service)
          {
             QString relPath = relDir+fn;
-            m_appRelPaths.insert(service, new QString(relPath));
+
+            // TODO: Add legacy category
+            addApplication(relPath, service);
+            
             if (service->categories().isEmpty())
                m_currentMenu->items.replace(relPath, service);
-            else
-               m_applications.replace(relPath, service); // TODO: Should always happen according to spec.
          }
       }
     }
@@ -1064,12 +1168,15 @@ kdDebug(7021) << "VFolder: adding menu " << name << endl;
          QDomElement e = n.toElement(); // try to convert the node to an element.
          if (e.tagName() == "AppDir")
          {
+            createAppsInfo(name);
             QString dir = absoluteDir(e.text());
+            
 
             loadApplications(dir, QString::null);
          }
          else if (e.tagName() == "KDELegacyDirs")
          {
+            createAppsInfo(name);
             if (!kdeLegacyDirsDone)
             {
 kdDebug(7021) << "Processing KDE Legacy dirs for <KDE>" << endl;
@@ -1086,6 +1193,7 @@ kdDebug(7021) << "Processing KDE Legacy dirs for <KDE>" << endl;
          }
          else if (e.tagName() == "LegacyDir")
          {
+            createAppsInfo(name);
             QString dir = absoluteDir(e.text());
 
             if (m_defaultLegacyDirs.contains(dir))
@@ -1119,6 +1227,8 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
       }
    }
 
+   loadAppsInfo(name); // Update the scope wrt the list of applications
+   
    if (((pass == 1) && !onlyUnallocated) || ((pass == 2) && onlyUnallocated))
    {
       n = docElem.firstChild();
@@ -1224,6 +1334,8 @@ kdDebug(7021) << "Processing KDE Legacy dirs for " << dir << endl;
    
    }
 
+   unloadAppsInfo(name); // Update the scope wrt the list of applications
+
    while (m_directoryDirs.count() > oldDirectoryDirsCount)
       m_directoryDirs.pop_front();
 
@@ -1237,6 +1349,7 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
 
    m_forcedLegacyLoad = false;
    m_legacyLoaded = false;
+   m_appsInfo = 0;
 
    loadMenu(file);
 
@@ -1251,26 +1364,7 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
 
       if (pass == 0)
       {
-         m_dictCategories = new QDict<KService::List>(43);
-         m_dictCategories->setAutoDelete(true);
-         for(QDictIterator<KService> it( m_applications );
-            it.current(); ++it )
-         {
-            KService *s = it.current();
-            QStringList cats = s->categories();
-            for(QStringList::ConstIterator it2 = cats.begin();
-                it2 != cats.end(); ++it2)
-            {
-               const QString &cat = *it2;
-               KService::List *list = m_dictCategories->find(cat);
-               if (!list)
-               {
-                  list = new KService::List();
-                  m_dictCategories->insert(cat, list);
-               }
-               list->append(s);
-            }
-         }
+         buildApplicationIndex();
       }
    }
    
@@ -1280,9 +1374,6 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
       processKDELegacyDirs();
    }
 
-   delete m_dictCategories;
-   m_dictCategories = 0;
-   
    return m_rootMenu;   
 }
 
