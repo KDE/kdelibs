@@ -47,6 +47,7 @@ public:
 class StartupManager {
 	static std::list<StartupClass *> *startupClasses;
 	static class ExtensionLoader *activeExtensionLoader;
+	static bool running;
 public:
 	static void add(StartupClass *sc);
 	static void startup();

@@ -23,8 +23,8 @@
 #include <config.h>
 #include "startupmanager.h"
 #include "extensionloader.h"
+#include "debug.h"
 #include <iostream>
-#include <assert.h>
 
 using namespace std;
 using namespace Arts;
@@ -49,6 +49,7 @@ void StartupClass::shutdown()
 
 list<StartupClass *> *StartupManager::startupClasses = 0;
 ExtensionLoader *StartupManager::activeExtensionLoader = 0;
+bool StartupManager::running = false;
 
 void StartupManager::add(StartupClass *sc)
 {
@@ -58,6 +59,25 @@ void StartupManager::add(StartupClass *sc)
 	}
 	else
 	{
+		if(running)
+		{
+			/*
+			 * the problem with adding a StartupClass when we're already running
+			 * is that we can't execute the startup() function immediately (for
+			 * this might break the dependancy of the StartupClass on other
+			 * globally constructed objects)
+			 *
+			 * so will never execute it, which is likely to break something
+			 * else (i.e. implementations defined in the library the startup
+			 * class is contained in can't be found)
+			 *
+			 * usually, this warning is triggered when an application
+			 * dynamically loads a library containing StartupClasses, without
+			 * libmcop knowing about it
+			 */
+			arts_warning("MCOP StartupManager: adding a StartupClass after Dispatcher init will not work.");
+		}
+
 		if(!startupClasses) startupClasses = new list<StartupClass *>;
 
 		startupClasses->push_back(sc);
@@ -74,15 +94,18 @@ void StartupManager::setExtensionLoader(ExtensionLoader *extension)
 	 * lt_dlopen()d
 	 */
 	if(activeExtensionLoader)
-		assert(extension == 0);
+		arts_assert(extension == 0);
 	else
-		assert(extension != 0);
+		arts_assert(extension != 0);
 
 	activeExtensionLoader = extension;
 }
 
 void StartupManager::startup()
 {
+	arts_return_if_fail(running == false);
+	running = true;
+
 	if(startupClasses)
 	{
 		list<StartupClass *>::iterator i;
@@ -94,6 +117,9 @@ void StartupManager::startup()
 
 void StartupManager::shutdown()
 {
+	arts_return_if_fail(running == true);
+	running = false;
+
 	if(startupClasses)
 	{
 		list<StartupClass *>::iterator i;
