@@ -467,6 +467,11 @@ bool KLocale::isApplicationTranslatedInto( const QString & language)
     return false;
   }
   
+  if ( language == defaultLanguage() ) {
+    // en_us is always "installed"
+    return true;
+  }
+  
   QString appName = d->appName;
   if (maincatalogue) {
     appName = QString::fromLatin1(maincatalogue);
