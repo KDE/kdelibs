@@ -199,6 +199,7 @@ public:
    * @param enabled Enable or disable the button at startup
    * @param text    The tooltip or toolbar text (depending on state)
    * @param index   The position of the button. (-1 = at end).
+   * @param _instance instance this button will belong to
    *
    * @return The item index.
    */
@@ -220,6 +221,7 @@ public:
    * @param enabled  Enable or disable the button at startup
    * @param text     The tooltip or toolbar text (depending on state)
    * @param index    The position of the button. (-1 = at end).
+   * @param _instance instance this button will belong to
    *
    * @return The item index.
    */

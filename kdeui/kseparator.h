@@ -35,28 +35,33 @@ class KSeparator : public QFrame
  public:
   /**
    * Constructor.
+   * @param parent parent object.
+   * @param name name of the new object.
+   * @param f extra QWidget flags.
    **/
   KSeparator(QWidget* parent=0, const char* name=0, WFlags f=0);
+
   /**
    * Constructor.
-   *
    * @param orientation Set the orientation of the separator.
    * Possible values are HLine or Horizontal and VLine or Vertical.
+   * @param parent parent object.
+   * @param name name of the new object.
+   * @param f extra QWidget flags.
    **/
   KSeparator(int orientation, QWidget* parent=0, const char* name=0, 
 	     WFlags f=0);
   
   /**
    * Returns the orientation of the separator.
-   *
-   * Possible values are VLine and HLine.
+   * @return int Possible values are VLine and HLine.
    **/
   int orientation() const;
   
   /**
    * Set the orientation of the separator to @p orient
    *
-   * Possible values are VLine and HLine.
+   * @param orient Possible values are VLine and HLine.
    */
   void setOrientation(int orient);
   
@@ -66,7 +71,10 @@ class KSeparator : public QFrame
   virtual QSize sizeHint() const;
 
 protected:
-  virtual void drawFrame( QPainter * );
+  /**
+   * @param p pointer to painter
+   */
+  virtual void drawFrame( QPainter *p );
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
