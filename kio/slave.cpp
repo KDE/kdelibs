@@ -31,6 +31,7 @@
 #include <sys/types.h>
 
 #include <qfile.h>
+#include <qtimer.h>
 
 #include <dcopclient.h>
 #include <kdebug.h>
@@ -57,6 +58,18 @@
 
 using namespace KIO;
 
+#define SLAVE_CONNECTION_TIMEOUT_MIN	   2
+
+// Without debug info we consider it an error if the slave doesn't connect
+// within 10 seconds.
+// With debug info we give the slave an hour so that developers have a chance
+// to debug their slave.
+#ifdef NDEBUG
+#define SLAVE_CONNECTION_TIMEOUT_MAX      10
+#else
+#define SLAVE_CONNECTION_TIMEOUT_MAX    3600
+#endif
+
 void Slave::accept(KSocket *socket)
 {
     kdDebug(7002) << "slave has connected to application" << endl;
@@ -66,6 +79,41 @@ void Slave::accept(KSocket *socket)
     QCString filename = QFile::encodeName(m_socket);
     unlink(filename.data());
     m_socket = QString::null;
+}
+
+void Slave::timeout()
+{
+   if (!serv) return; 
+   kdDebug(7002) << "slave failed to connect to application pid=" << m_pid << endl;
+   if (m_pid && (::kill(m_pid, 0) == 0))
+   {
+      int delta_t = (int) difftime(time(0), contact_started);
+      kdDebug(7002) << "slave is slow..." << delta_t << endl;
+      if (delta_t < SLAVE_CONNECTION_TIMEOUT_MAX)
+      {
+         QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, this, SLOT(timeout()));
+         return;
+      }
+   }
+   kdDebug(7002) << "Houston, we lost our slave, pid=" << m_pid << endl;
+   delete serv;
+   serv = 0;
+   QCString filename = QFile::encodeName(m_socket);
+   unlink(filename.data());
+   m_socket = QString::null;
+   dead = true;
+   QString arg = m_protocol;
+   if (!m_host.isEmpty())
+      arg += "://"+m_host;
+   kdDebug(7002) << "slave died (1) pid = " << m_pid << endl;
+   ref();
+   // Tell the job about the problem.
+   emit error(ERR_SLAVE_DIED, arg);
+   kdDebug(7002) << "slave died (2) pid = " << m_pid << endl;
+   // Tell the scheduler about the problem.
+   emit slaveDied(this);
+   // After the above signal we're dead!!
+   deref();
 }
 
 Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &socketname)
@@ -88,7 +136,7 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
 
 Slave::~Slave()
 {
-    //kdDebug(7002) << "destructing slave object pid = " << m_pid << endl;
+    // kdDebug(7002) << "destructing slave object pid = " << m_pid << endl;
     if (serv != 0) {
         delete serv;
         serv = 0;
@@ -244,6 +292,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     }
     kdDebug(7002) << "PID of slave = " << pid << endl;
     slave->setPID(pid);
+    QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, slave, SLOT(timeout()));
 
     return slave;
 }

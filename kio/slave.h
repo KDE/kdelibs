@@ -142,6 +142,7 @@ namespace KIO {
         void accept(KSocket *socket);
 	void gotInput();
 	void gotAnswer();
+	void timeout();
     signals:
         void slaveDied(KIO::Slave *slave);
 
