@@ -2924,7 +2924,7 @@ void KateViewInternal::editEnd(int editTagLineStart, int editTagLineEnd, bool ta
     m_madeVisible = false;
     updateCursor ( cursor, true );
   }
-  else
+  else if ( m_view->isActive() )
   {
     makeVisible(displayCursor, displayCursor.col());
   }
