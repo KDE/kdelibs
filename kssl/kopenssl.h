@@ -171,6 +171,24 @@ public:
 
 
    /*
+    *   RAND_file_name 
+    */
+   const char *RAND_file_name(char *buf, size_t num);
+
+
+   /*
+    *   RAND_load_file 
+    */
+   int RAND_load_file(const char *filename, long max_bytes);
+
+
+   /*
+    *   RAND_write_file 
+    */
+   int RAND_write_file(const char *filename);
+
+
+   /*
     *   TLSv1_client_method - return a TLSv1 client method object
     */
    SSL_METHOD *TLSv1_client_method();

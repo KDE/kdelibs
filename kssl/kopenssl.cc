@@ -44,6 +44,9 @@ static int (*K_SSL_use_certificate)(SSL *, X509 *) = NULL;
 static SSL_CIPHER *(*K_SSL_get_current_cipher)(SSL *) = NULL;
 static long (*K_SSL_ctrl)      (SSL *,int, long, char *) = NULL;
 static int (*K_RAND_egd)        (const char *) = NULL;
+static const char* (*K_RAND_file_name) (char *, size_t) = NULL;
+static int (*K_RAND_load_file)  (const char *, long) = NULL;
+static int (*K_RAND_write_file) (const char *) = NULL;
 static SSL_METHOD * (*K_TLSv1_client_method) () = NULL;
 static SSL_METHOD * (*K_SSLv2_client_method) () = NULL;
 static SSL_METHOD * (*K_SSLv3_client_method) () = NULL;
@@ -269,6 +272,9 @@ KConfig *cfg;
 #ifdef HAVE_SSL 
       K_X509_free = (void (*) (X509 *)) _cryptoLib->symbol("X509_free");
       K_RAND_egd = (int (*)(const char *)) _cryptoLib->symbol("RAND_egd");
+      K_RAND_load_file = (int (*)(const char *, long)) _cryptoLib->symbol("RAND_load_file");
+      K_RAND_file_name = (const char* (*)(char *, size_t)) _cryptoLib->symbol("RAND_file_name");
+      K_RAND_write_file = (int (*)(const char *)) _cryptoLib->symbol("RAND_write_file");
       K_CRYPTO_free = (void (*) (void *)) _cryptoLib->symbol("CRYPTO_free");
       K_d2i_X509 = (X509 * (*)(X509 **,unsigned char **,long)) _cryptoLib->symbol("d2i_X509");
       K_i2d_X509 = (int (*)(X509 *,unsigned char **)) _cryptoLib->symbol("i2d_X509");
@@ -1045,6 +1051,26 @@ int KOpenSSLProxy::SSL_peek(SSL *ssl,void *buf,int num) {
    if (K_SSL_peek) return (K_SSL_peek)(ssl,buf,num);
    else return -1;
 }
+
+
+const char *KOpenSSLProxy::RAND_file_name(char *buf, size_t num) {
+   if (K_RAND_file_name) return (K_RAND_file_name)(buf, num);
+   else return NULL;
+}
+
+
+int KOpenSSLProxy::RAND_load_file(const char *filename, long max_bytes) {
+   if (K_RAND_load_file) return (K_RAND_load_file)(filename, max_bytes);
+   else return -1;
+}
+
+
+int KOpenSSLProxy::RAND_write_file(const char *filename) {
+   if (K_RAND_write_file) return (K_RAND_write_file)(filename);
+   else return -1;
+}
+
+
 
 #endif
 
