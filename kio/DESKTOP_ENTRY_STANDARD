@@ -166,7 +166,7 @@ Notes:
     or 1.  With this version of the standard they are now to be
     represented as a boolean string.  However, if an implementation is
     reading a pre-1.0 desktop entry, it should interpret 0 and 1 as false
-    and true, respectively.  
+    and true, respectively.
 
 (3) historically this has been a comma separated list.  This is inconsistent
     with other lists which are separated by a semicolon.  When reading
@@ -186,29 +186,39 @@ Each "Exec" field may take a number of arguments which will be
 expanded by the file manager or program launcher and passed to the
 program if necessary.  Recognized fields are as follows:
 
-%f - a list of files.  If files are not on the local file system
-     (i.e. HTTP or FTP locations), the files will be copied to the local
-     file system and %f will be expanded to point at the temporary
-     file.  Used for programs that do not understand URL syntax.
-
-%F - a single file name, even if multiple files are selected.  The system
+%f - a single file name, even if multiple files are selected.  The system
      reading the Desktop Entry should recognize that the program in
      question cannot handle multiple file arguments, and it should
      should probably spawn and execute multiple copies of a program
      for each selected file if the program is not able to handle
      additional file arguments.
 
-%u - a list of URLs.
+%F - a list of files.  If files are not on the local file system
+     (i.e. HTTP or FTP locations), the files will be copied to the local
+     file system and %f will be expanded to point at the temporary
+     file.  Used for programs that do not understand URL syntax.
 
-%U - a single URL.
+%u - a single URL.
 
-%d - the working directory.
+%U - a list of URLs.
+
+%d - the directory of the file to open.
+
+%D - a list of directories
+
+%n - a single filename (without path)
+
+%N - a list of filenames (without path)
 
 %i - the icon associated with the desktop entry
 
 %m - the mini-icon associated with the desktop entry
 
 %c - the comment associated with the desktop entry
+
+%k - the name of the desktop file
+
+%v - the name of the Device entry in the desktop file
 
 
 5. Detailed discussion of supporting MIME types
@@ -316,5 +326,5 @@ Icon=fooview-edit.png
 
 ---
   Preston Brown                                    Systems Engineer
-  pbrown@redhat.com                                Red Hat Software, Inc. 
+  pbrown@redhat.com                                Red Hat Software, Inc.
 
