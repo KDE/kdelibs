@@ -18,8 +18,9 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
 
     QStringList list;
     list << "Tree" << "Suuupa" << "Stroustrup" << "Stone" << "Slick"
-         << "Slashdot" << "Sand" << "Peables" << "Mankind" << "Ocean"
-         << "Chips" << "Computer";
+         << "Slashdot" << "Send" << "Peables" << "Mankind" << "Ocean"
+         << "Chips" << "Computer" << "Sandworm" << "Sandstorm" 
+	 << "Chops";
     list.sort();
 
     lineedit = new KLineEdit( this, "klineedittest" );
