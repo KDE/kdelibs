@@ -542,7 +542,6 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_REQ_READ)
 			result = indent + type+" "+name+"(*request);\n";
 		//if(model==MODEL_REQ_READ_SEQ) TODO
-		//if(model==MODEL_REQ_READ_SEQ) TODO
 
 		if(model==MODEL_WRITE)
 			result = name+".writeType(stream)";
@@ -557,12 +556,26 @@ string createTypeCode(string type, const string& name, long model,
 			result = indent + type + " _returnCode = "+name+";\n"
 			       + indent + "_returnCode.writeType(*result);\n";
 
-		// if(model==MODEL_INVOKE_SEQ) TODO
+		if(model==MODEL_INVOKE_SEQ)
+		{
+			result = indent + "std::vector<"+type+"> *_returnCode = "+name+";\n"
+				   + indent + "writeTypeSeq(*result,*_returnCode);\n"
+				   + indent + "delete _returnCode;\n";
+		}
 		if(model==MODEL_RES_READ)
 		{
 			result = indent +
 					"if(!result) return "+type+"(); // error occured\n";
 			result += indent+ type + " _returnCode(*result);\n";
+			result += indent + "delete result;\n";
+			result += indent + "return _returnCode;\n";
+		}
+		if(model==MODEL_RES_READ_SEQ)
+		{
+			result = indent + "std::vector<"+type+"> *_returnCode ="
+											" new std::vector<"+type+">;\n";
+			result += indent + "if(!result) return _returnCode; // error occured\n";
+			result += indent + "readTypeSeq(*result,*_returnCode);\n";
 			result += indent + "delete result;\n";
 			result += indent + "return _returnCode;\n";
 		}
