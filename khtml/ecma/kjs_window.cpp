@@ -845,8 +845,25 @@ void Window::closeNow()
 {
   if (!m_part.isNull())
   {
-    //kdDebug(6070) << "WindowQObject::timeoutClose -> closing window" << endl;
+    //kdDebug(6070) << k_funcinfo << " -> closing window" << endl;
     delete m_part;
+  }
+}
+
+void Window::afterScriptExecution()
+{
+  DOM::DocumentImpl::updateDocumentsRendering();
+  QValueList<DelayedAction>::Iterator it = m_delayed.begin();
+  for ( ; it != m_delayed.end() ; ++it )
+  {
+    switch ((*it).actionId) {
+    case DelayedClose:
+      scheduleClose();
+      return; // stop here, in case of multiple actions
+    case DelayedGoHistory:
+      goHistory( (*it).param.toInt() );
+      break;
+    };
   }
 }
 
@@ -949,6 +966,25 @@ void Window::setCurrentEvent( DOM::Event *evt )
 {
   m_evt = evt;
   //kdDebug(6070) << "Window " << this << " (part=" << m_part << ")::setCurrentEvent m_evt=" << evt << endl;
+}
+
+void Window::delayedGoHistory( int steps )
+{
+    m_delayed.append( DelayedAction( DelayedGoHistory, steps ) );
+}
+
+void Window::goHistory( int steps )
+{
+  KParts::BrowserExtension *ext = m_part->browserExtension();
+  if(!ext)
+    return;
+  KParts::BrowserInterface *iface = ext->browserInterface();
+
+  if ( !iface )
+    return;
+
+  iface->callMethod( "goHistory(int)", steps );
+  //emit ext->goHistory(steps);
 }
 
 Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
@@ -1293,9 +1329,11 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       // If this is the current window (the one the interpreter runs in),
       // then schedule a delayed close (so that the script terminates first).
       // But otherwise, close immediately. This fixes w=window.open("","name");w.close();window.open("name");
-      if ( Window::retrieveActive(exec) == window )
-        (const_cast<Window*>(window))->scheduleClose();
-      else
+      if ( Window::retrieveActive(exec) == window ) {
+        // We'll close the window at the end of the script execution
+        Window* w = const_cast<Window*>(window);
+        w->m_delayed.append( Window::DelayedAction( Window::DelayedClose ) );
+      } else
         (const_cast<Window*>(window))->closeNow();
     }
     return Undefined();
@@ -1722,20 +1760,11 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     return err;
   }
   History *history = static_cast<History *>(thisObj.imp());
-  KParts::BrowserExtension *ext = history->part->browserExtension();
 
   Value v = args[0];
   Number n;
   if(!v.isNull())
     n = v.toInteger(exec);
-
-  if(!ext)
-    return Undefined();
-
-  KParts::BrowserInterface *iface = ext->browserInterface();
-
-  if ( !iface )
-    return Undefined();
 
   int steps;
   switch (id) {
@@ -1761,8 +1790,10 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     history->part->openURL( history->part->url() ); /// ## need args.reload=true?
   } else
   {
-    iface->callMethod( "goHistory(int)", steps );
-//      emit ext->goHistory(steps);
+    // Delay it.
+    // Testcase: history.back(); alert("hello");
+    Window* window = Window::retrieveWindow( history->part );
+    window->delayedGoHistory( steps );
   }
   return Undefined();
 }
@@ -1835,4 +1866,3 @@ UString Konqueror::toString(ExecState *) const
 /////////////////////////////////////////////////////////////////////////////
 
 #include "kjs_window.moc"
-

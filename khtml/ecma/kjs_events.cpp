@@ -104,7 +104,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
         if (ret.type() == QVariant::Bool && ret.toBool() == false)
             evt.preventDefault();
     }
-    DOM::DocumentImpl::updateDocumentsRendering();
+    window->afterScriptExecution();
     deref();
   }
 }

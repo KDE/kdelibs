@@ -91,6 +91,9 @@ namespace KJS {
     void clearTimeout(int timerId);
     void scheduleClose();
     void closeNow();
+    void delayedGoHistory(int steps);
+    void goHistory(int steps);
+    void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const;
     Location *location() const;
     JSEventListener *getJSEventListener(const Value &val, bool html = false);
@@ -126,6 +129,15 @@ namespace KJS {
     Location *loc;
     WindowQObject *winq;
     DOM::Event *m_evt;
+
+    enum DelayedActionId { NullAction, DelayedClose, DelayedGoHistory };
+    struct DelayedAction {
+      DelayedAction() : actionId(NullAction) {} // for QValueList
+      DelayedAction( DelayedActionId id, QVariant p = QVariant() ) : actionId(id), param(p) {}
+      DelayedActionId actionId;
+      QVariant param; // just in case
+    };
+    QValueList<DelayedAction> m_delayed;
   };
 
   /**
