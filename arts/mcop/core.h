@@ -1316,227 +1316,227 @@ public:
 	inline Arts::Object loadObject(Arts::TraderOffer offer);
 };
 
+};
 // Forward wrapper calls to _base classes:
 
-inline long InterfaceRepo::insertModule(const Arts::ModuleDef& newModule)
+inline long Arts::InterfaceRepo::insertModule(const Arts::ModuleDef& newModule)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->insertModule(newModule):static_cast<Arts::InterfaceRepo_base*>(_method_call())->insertModule(newModule);
 }
 
-inline void InterfaceRepo::removeModule(long moduleID)
+inline void Arts::InterfaceRepo::removeModule(long moduleID)
 {
 	 _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->removeModule(moduleID):static_cast<Arts::InterfaceRepo_base*>(_method_call())->removeModule(moduleID);
 }
 
-inline Arts::InterfaceDef InterfaceRepo::queryInterface(const std::string& name)
+inline Arts::InterfaceDef Arts::InterfaceRepo::queryInterface(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryInterface(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryInterface(name);
 }
 
-inline Arts::TypeDef InterfaceRepo::queryType(const std::string& name)
+inline Arts::TypeDef Arts::InterfaceRepo::queryType(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryType(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryType(name);
 }
 
-inline Arts::EnumDef InterfaceRepo::queryEnum(const std::string& name)
+inline Arts::EnumDef Arts::InterfaceRepo::queryEnum(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnum(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnum(name);
 }
 
-inline std::vector<std::string> * InterfaceRepo::queryChildren(const std::string& name)
+inline std::vector<std::string> * Arts::InterfaceRepo::queryChildren(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryChildren(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryChildren(name);
 }
 
-inline std::vector<std::string> * InterfaceRepo::queryInterfaces()
+inline std::vector<std::string> * Arts::InterfaceRepo::queryInterfaces()
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryInterfaces():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryInterfaces();
 }
 
-inline std::vector<std::string> * InterfaceRepo::queryTypes()
+inline std::vector<std::string> * Arts::InterfaceRepo::queryTypes()
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryTypes():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryTypes();
 }
 
-inline std::vector<std::string> * InterfaceRepo::queryEnums()
+inline std::vector<std::string> * Arts::InterfaceRepo::queryEnums()
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnums():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnums();
 }
 
-inline long InterfaceRepoV2::insertModule(const Arts::ModuleDef& newModule)
+inline long Arts::InterfaceRepoV2::insertModule(const Arts::ModuleDef& newModule)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->insertModule(newModule):static_cast<Arts::InterfaceRepo_base*>(_method_call())->insertModule(newModule);
 }
 
-inline void InterfaceRepoV2::removeModule(long moduleID)
+inline void Arts::InterfaceRepoV2::removeModule(long moduleID)
 {
 	 _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->removeModule(moduleID):static_cast<Arts::InterfaceRepo_base*>(_method_call())->removeModule(moduleID);
 }
 
-inline Arts::InterfaceDef InterfaceRepoV2::queryInterface(const std::string& name)
+inline Arts::InterfaceDef Arts::InterfaceRepoV2::queryInterface(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryInterface(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryInterface(name);
 }
 
-inline Arts::TypeDef InterfaceRepoV2::queryType(const std::string& name)
+inline Arts::TypeDef Arts::InterfaceRepoV2::queryType(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryType(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryType(name);
 }
 
-inline Arts::EnumDef InterfaceRepoV2::queryEnum(const std::string& name)
+inline Arts::EnumDef Arts::InterfaceRepoV2::queryEnum(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnum(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnum(name);
 }
 
-inline std::vector<std::string> * InterfaceRepoV2::queryChildren(const std::string& name)
+inline std::vector<std::string> * Arts::InterfaceRepoV2::queryChildren(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryChildren(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryChildren(name);
 }
 
-inline std::vector<std::string> * InterfaceRepoV2::queryInterfaces()
+inline std::vector<std::string> * Arts::InterfaceRepoV2::queryInterfaces()
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryInterfaces():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryInterfaces();
 }
 
-inline std::vector<std::string> * InterfaceRepoV2::queryTypes()
+inline std::vector<std::string> * Arts::InterfaceRepoV2::queryTypes()
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryTypes():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryTypes();
 }
 
-inline std::vector<std::string> * InterfaceRepoV2::queryEnums()
+inline std::vector<std::string> * Arts::InterfaceRepoV2::queryEnums()
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnums():static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnums();
 }
 
-inline Arts::TypeIdentification InterfaceRepoV2::identifyType(const std::string& name)
+inline Arts::TypeIdentification Arts::InterfaceRepoV2::identifyType(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepoV2_base*>(_cache)->identifyType(name):static_cast<Arts::InterfaceRepoV2_base*>(_method_call())->identifyType(name);
 }
 
-inline void FlowSystemSender::processed()
+inline void Arts::FlowSystemSender::processed()
 {
 	 _cache?static_cast<Arts::FlowSystemSender_base*>(_cache)->processed():static_cast<Arts::FlowSystemSender_base*>(_method_call())->processed();
 }
 
-inline void FlowSystemSender::disconnect()
+inline void Arts::FlowSystemSender::disconnect()
 {
 	 _cache?static_cast<Arts::FlowSystemSender_base*>(_cache)->disconnect():static_cast<Arts::FlowSystemSender_base*>(_method_call())->disconnect();
 }
 
-inline long FlowSystemReceiver::receiveHandlerID()
+inline long Arts::FlowSystemReceiver::receiveHandlerID()
 {
 	return _cache?static_cast<Arts::FlowSystemReceiver_base*>(_cache)->receiveHandlerID():static_cast<Arts::FlowSystemReceiver_base*>(_method_call())->receiveHandlerID();
 }
 
-inline void FlowSystemReceiver::disconnect()
+inline void Arts::FlowSystemReceiver::disconnect()
 {
 	 _cache?static_cast<Arts::FlowSystemReceiver_base*>(_cache)->disconnect():static_cast<Arts::FlowSystemReceiver_base*>(_method_call())->disconnect();
 }
 
-inline void FlowSystem::startObject(Arts::Object node)
+inline void Arts::FlowSystem::startObject(Arts::Object node)
 {
 	 _cache?static_cast<Arts::FlowSystem_base*>(_cache)->startObject(node):static_cast<Arts::FlowSystem_base*>(_method_call())->startObject(node);
 }
 
-inline void FlowSystem::stopObject(Arts::Object node)
+inline void Arts::FlowSystem::stopObject(Arts::Object node)
 {
 	 _cache?static_cast<Arts::FlowSystem_base*>(_cache)->stopObject(node):static_cast<Arts::FlowSystem_base*>(_method_call())->stopObject(node);
 }
 
-inline void FlowSystem::connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort)
+inline void Arts::FlowSystem::connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort)
 {
 	 _cache?static_cast<Arts::FlowSystem_base*>(_cache)->connectObject(sourceObject, sourcePort, destObject, destPort):static_cast<Arts::FlowSystem_base*>(_method_call())->connectObject(sourceObject, sourcePort, destObject, destPort);
 }
 
-inline void FlowSystem::disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort)
+inline void Arts::FlowSystem::disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort)
 {
 	 _cache?static_cast<Arts::FlowSystem_base*>(_cache)->disconnectObject(sourceObject, sourcePort, destObject, destPort):static_cast<Arts::FlowSystem_base*>(_method_call())->disconnectObject(sourceObject, sourcePort, destObject, destPort);
 }
 
-inline Arts::AttributeType FlowSystem::queryFlags(Arts::Object node, const std::string& port)
+inline Arts::AttributeType Arts::FlowSystem::queryFlags(Arts::Object node, const std::string& port)
 {
 	return _cache?static_cast<Arts::FlowSystem_base*>(_cache)->queryFlags(node, port):static_cast<Arts::FlowSystem_base*>(_method_call())->queryFlags(node, port);
 }
 
-inline void FlowSystem::setFloatValue(Arts::Object node, const std::string& port, float value)
+inline void Arts::FlowSystem::setFloatValue(Arts::Object node, const std::string& port, float value)
 {
 	 _cache?static_cast<Arts::FlowSystem_base*>(_cache)->setFloatValue(node, port, value):static_cast<Arts::FlowSystem_base*>(_method_call())->setFloatValue(node, port, value);
 }
 
-inline Arts::FlowSystemReceiver FlowSystem::createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender)
+inline Arts::FlowSystemReceiver Arts::FlowSystem::createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender)
 {
 	return _cache?static_cast<Arts::FlowSystem_base*>(_cache)->createReceiver(destObject, destPort, sender):static_cast<Arts::FlowSystem_base*>(_method_call())->createReceiver(destObject, destPort, sender);
 }
 
-inline bool GlobalComm::put(const std::string& variable, const std::string& value)
+inline bool Arts::GlobalComm::put(const std::string& variable, const std::string& value)
 {
 	return _cache?static_cast<Arts::GlobalComm_base*>(_cache)->put(variable, value):static_cast<Arts::GlobalComm_base*>(_method_call())->put(variable, value);
 }
 
-inline std::string GlobalComm::get(const std::string& variable)
+inline std::string Arts::GlobalComm::get(const std::string& variable)
 {
 	return _cache?static_cast<Arts::GlobalComm_base*>(_cache)->get(variable):static_cast<Arts::GlobalComm_base*>(_method_call())->get(variable);
 }
 
-inline void GlobalComm::erase(const std::string& variable)
+inline void Arts::GlobalComm::erase(const std::string& variable)
 {
 	 _cache?static_cast<Arts::GlobalComm_base*>(_cache)->erase(variable):static_cast<Arts::GlobalComm_base*>(_method_call())->erase(variable);
 }
 
-inline bool TmpGlobalComm::put(const std::string& variable, const std::string& value)
+inline bool Arts::TmpGlobalComm::put(const std::string& variable, const std::string& value)
 {
 	return _cache?static_cast<Arts::GlobalComm_base*>(_cache)->put(variable, value):static_cast<Arts::GlobalComm_base*>(_method_call())->put(variable, value);
 }
 
-inline std::string TmpGlobalComm::get(const std::string& variable)
+inline std::string Arts::TmpGlobalComm::get(const std::string& variable)
 {
 	return _cache?static_cast<Arts::GlobalComm_base*>(_cache)->get(variable):static_cast<Arts::GlobalComm_base*>(_method_call())->get(variable);
 }
 
-inline void TmpGlobalComm::erase(const std::string& variable)
+inline void Arts::TmpGlobalComm::erase(const std::string& variable)
 {
 	 _cache?static_cast<Arts::GlobalComm_base*>(_cache)->erase(variable):static_cast<Arts::GlobalComm_base*>(_method_call())->erase(variable);
 }
 
-inline std::string TraderOffer::interfaceName()
+inline std::string Arts::TraderOffer::interfaceName()
 {
 	return _cache?static_cast<Arts::TraderOffer_base*>(_cache)->interfaceName():static_cast<Arts::TraderOffer_base*>(_method_call())->interfaceName();
 }
 
-inline std::vector<std::string> * TraderOffer::getProperty(const std::string& name)
+inline std::vector<std::string> * Arts::TraderOffer::getProperty(const std::string& name)
 {
 	return _cache?static_cast<Arts::TraderOffer_base*>(_cache)->getProperty(name):static_cast<Arts::TraderOffer_base*>(_method_call())->getProperty(name);
 }
 
-inline void TraderQuery::supports(const std::string& property, const std::string& value)
+inline void Arts::TraderQuery::supports(const std::string& property, const std::string& value)
 {
 	 _cache?static_cast<Arts::TraderQuery_base*>(_cache)->supports(property, value):static_cast<Arts::TraderQuery_base*>(_method_call())->supports(property, value);
 }
 
-inline std::vector<Arts::TraderOffer> * TraderQuery::query()
+inline std::vector<Arts::TraderOffer> * Arts::TraderQuery::query()
 {
 	return _cache?static_cast<Arts::TraderQuery_base*>(_cache)->query():static_cast<Arts::TraderQuery_base*>(_method_call())->query();
 }
 
-inline std::string Loader::dataVersion()
+inline std::string Arts::Loader::dataVersion()
 {
 	return _cache?static_cast<Arts::Loader_base*>(_cache)->dataVersion():static_cast<Arts::Loader_base*>(_method_call())->dataVersion();
 }
 
-inline std::vector<Arts::TraderEntry> * Loader::traderEntries()
+inline std::vector<Arts::TraderEntry> * Arts::Loader::traderEntries()
 {
 	return _cache?static_cast<Arts::Loader_base*>(_cache)->traderEntries():static_cast<Arts::Loader_base*>(_method_call())->traderEntries();
 }
 
-inline std::vector<Arts::ModuleDef> * Loader::modules()
+inline std::vector<Arts::ModuleDef> * Arts::Loader::modules()
 {
 	return _cache?static_cast<Arts::Loader_base*>(_cache)->modules():static_cast<Arts::Loader_base*>(_method_call())->modules();
 }
 
-inline Arts::Object Loader::loadObject(Arts::TraderOffer offer)
+inline Arts::Object Arts::Loader::loadObject(Arts::TraderOffer offer)
 {
 	return _cache?static_cast<Arts::Loader_base*>(_cache)->loadObject(offer):static_cast<Arts::Loader_base*>(_method_call())->loadObject(offer);
 }
 
-};
 #endif /* CORE_H */
