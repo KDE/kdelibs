@@ -175,9 +175,9 @@ public:
     ~HTMLFieldSetElement();
 
     /**
-     * @deprecated. ### KDE 4.0: remove.
+     * ### KDE 4.0: remove.
      */
-    HTMLFormElement form() const KDE_DEPRECATED;
+    HTMLFormElement form() const;
 };
 
 // --------------------------------------------------------------------------
@@ -377,9 +377,9 @@ public:
     void setDefaultChecked( bool );
 
     /**
-     * @deprecated. ### KDE 4.0: remove.
+     * ### KDE 4.0: remove.
      */
-    HTMLFormElement form() const KDE_DEPRECATED;
+    HTMLFormElement form() const;
 
     /**
      * A comma-separated list of content types that a server
@@ -712,9 +712,9 @@ public:
     ~HTMLLegendElement();
 
     /**
-     * @deprecated. ### KDE 4.0: remove
+     * ### KDE 4.0: remove
      */
-    HTMLFormElement form() const KDE_DEPRECATED;
+    HTMLFormElement form() const;
 
     /**
      * A single character access key to give access to the form
@@ -861,9 +861,9 @@ public:
     long length() const;
 
     /**
-     * @deprecated. ### KDE 4.0: remove.
+     * ### KDE 4.0: remove.
      */
-    HTMLFormElement form() const KDE_DEPRECATED;
+    HTMLFormElement form() const;
 
     /**
      * The collection of \c OPTION elements contained by
@@ -1013,9 +1013,9 @@ public:
     void setDefaultValue( const DOMString & );
 
     /**
-     * @deprecated. ### KDE 4.0: remove.
+     * ### KDE 4.0: remove.
      */
-    HTMLFormElement form() const KDE_DEPRECATED;
+    HTMLFormElement form() const;
 
     /**
      * A single character access key to give access to the form
@@ -1172,9 +1172,9 @@ public:
     ~HTMLOptionElement();
 
     /**
-     * @deprecated. ### KDE 4.0: remove
+     * ### KDE 4.0: remove
      */
-    HTMLFormElement form() const KDE_DEPRECATED;
+    HTMLFormElement form() const;
 
     /**
      * Stores the initial value of the \c selected
@@ -1292,7 +1292,7 @@ public:
     ~HTMLIsIndexElement();
 
     /**
-     * @deprecated: ### KDE 4.0: remove
+     * ### KDE 4.0: remove
      */
     HTMLFormElement form() const;
 
