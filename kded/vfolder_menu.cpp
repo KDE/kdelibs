@@ -1445,6 +1445,13 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
    m_legacyLoaded = false;
    m_appsInfo = 0;
 
+   QStringList dirs = KGlobal::dirs()->resourceDirs("xdgconf-menu");
+   for(QStringList::ConstIterator it=dirs.begin();
+       it != dirs.end(); ++it)
+   {
+      registerDirectory(*it);
+   }
+
    loadMenu(file);
 
    delete m_rootMenu;
