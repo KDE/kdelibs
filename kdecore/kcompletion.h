@@ -280,11 +280,18 @@ public:
     //  bool ignoreCase() const { return myIgnoreCase; }
 
     /**
-     * @returns a list of all matching items. Might take some time, when you
-     * have LOTS of items.
+     * @returns a list of all items matching the last completed string. 
+     * Might take some time, when you have LOTS of items.
      */
     QStringList allMatches() { return findAllCompletions( myLastString ); }
 
+    /**
+     * @returns a list of all items matching @p string.
+     */
+    QStringList allMatches( const QString& string ) {
+	return findAllCompletions( string ); 
+    }
+    
     /**
      * Enables playing a sound when
      * @li @ref makeCompletion() can't find a match
