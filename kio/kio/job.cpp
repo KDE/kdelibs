@@ -1893,7 +1893,6 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
         for (; it != end; ++it) {
             bool isDir = false;
             bool isLink = false;
-            QString filename;
             KURL itemURL;
 
             UDSEntry::ConstIterator it2 = (*it).begin();
@@ -1904,10 +1903,9 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                         isDir = S_ISDIR((*it2).m_long);
                         break;
                     case UDS_NAME:
-                        filename = (*it2).m_str;
                         if( itemURL.isEmpty() ) {
                             itemURL = url();
-                            itemURL.addPath(filename);
+                            itemURL.addPath( (*it2).m_str );
                         }
                         break;
                     case UDS_URL:
@@ -1922,6 +1920,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                 }
             }
             if (isDir && !isLink) {
+                const QString filename = itemURL.fileName();
                 // skip hidden dirs when listing if requested
                 if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
                     ListJob *job = new ListJob(itemURL,
@@ -1963,7 +1962,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
                 }
             }
             // Avoid returning entries like subdir/. and subdir/.., but include . and .. for
-            // the the toplevel dir, and skip hidden files/dirs if that was requested
+            // the toplevel dir, and skip hidden files/dirs if that was requested
             if (  (prefix.isNull() || (filename != ".." && filename != ".") )
                && (includeHidden || (filename[0] != '.') )  )
                 newlist.append(newone);
@@ -2368,15 +2367,10 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     //info.type = (mode_t)((*it2).m_long);
                     isDir = S_ISDIR( (mode_t)((*it2).m_long) );
                     break;
-                case UDS_NAME:
+                case UDS_NAME: // recursive listing, displayName can be a/b/c/d
                     displayName = (*it2).m_str;
-                    if( url.isEmpty() ) {
-	                url = ((SimpleJob *)job)->url();
-                        if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
-                            url.addPath( displayName );
-		    }
                     break;
-                case UDS_URL:
+                case UDS_URL: // optional
                     url = KURL((*it2).m_str);
                     break;
                 case UDS_LINK_DEST:
@@ -2400,6 +2394,15 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         }
         if (displayName != ".." && displayName != ".")
         {
+            bool hasCustomURL = !url.isEmpty();
+            if( !hasCustomURL ) {
+                // Make URL from displayName
+                url = ((SimpleJob *)job)->url();
+                if ( m_bCurrentSrcIsDir ) // Only if src is a directory. Otherwise uSource is fine as is
+                    url.addPath( displayName );
+            }
+            //kdDebug(7007) << "displayName=" << displayName << " url=" << url << endl;
+
             info.uSource = url;
             info.uDest = m_currentDest;
             //kdDebug(7007) << " uSource=" << info.uSource << " uDest(1)=" << info.uDest << endl;
@@ -2409,21 +2412,41 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                  // (passed here during stating) but not its children (during listing)
                  ( ! ( m_asMethod && state == STATE_STATING ) ) )
             {
+                QString destFileName;
+                if ( hasCustomURL &&
+                     KProtocolInfo::fileNameUsedForCopying( url ) == KProtocolInfo::FromURL ) {
+                    //destFileName = url.fileName(); // Doesn't work for recursive listing
+                    // Count the number of prefixes used by the recursive listjob
+                    int numberOfSlashes = displayName.contains( '/' ); // don't make this a find()!
+                    QString path = url.path();
+                    int pos = 0;
+                    for ( int n = 0; n < numberOfSlashes + 1; ++n ) {
+                        pos = path.findRev( '/', pos - 1 );
+                        if ( pos == -1 ) { // error
+                            kdWarning(7007) << "kioslave bug: not enough slashes in UDS_URL " << path << " - looking for " << numberOfSlashes << " slashes" << endl;
+                            break;
+                        }
+                    }
+                    if ( pos >= 0 ) {
+                        destFileName = path.mid( pos + 1 );
+                    }
+
+                } else { // destination filename taken from UDS_NAME
+                    destFileName = displayName;
+                }
+
                 // Here we _really_ have to add some filename to the dest.
                 // Otherwise, we end up with e.g. dest=..../Desktop/ itself.
                 // (This can happen when dropping a link to a webpage with no path)
-                QString destFileName;
-                if ( KProtocolInfo::fileNameUsedForCopying( url ) == KProtocolInfo::FromURL ) // default
-                    destFileName = url.fileName();
-                else // destination filename taken from UDS_NAME (e.g. for kio_trash)
-                    destFileName = displayName;
                 if ( destFileName.isEmpty() )
                     destFileName = KIO::encodeFileName( info.uSource.prettyURL() );
+
+                //kdDebug(7007) << " adding destFileName=" << destFileName << endl;
                 info.uDest.addPath( destFileName );
             }
             //kdDebug(7007) << " uDest(2)=" << info.uDest << endl;
             //kdDebug(7007) << " " << info.uSource << " -> " << info.uDest << endl;
-            if ( info.linkDest.isEmpty() && (isDir /*S_ISDIR(info.type)*/) && m_mode != Link ) // Dir
+            if ( info.linkDest.isEmpty() && isDir && m_mode != Link ) // Dir
             {
                 dirs.append( info ); // Directories
                 if (m_mode == Move)
@@ -2596,7 +2619,7 @@ void CopyJob::startListing( const KURL & src )
 void CopyJob::skip( const KURL & sourceUrl )
 {
     // Check if this is one if toplevel sources
-    // IF yes, remove it from m_srcList, for a correct FilesRemoved() signal
+    // If yes, remove it from m_srcList, for a correct FilesRemoved() signal
     //kdDebug(7007) << "CopyJob::skip: looking for " << sourceUrl << endl;
     KURL::List::Iterator sit = m_srcList.find( sourceUrl );
     if ( sit != m_srcList.end() )
@@ -3311,8 +3334,10 @@ void CopyJob::deleteNextDir()
             //kdDebug(7007) << "KDirNotify'ing FilesAdded " << url << endl;
             allDirNotify.FilesAdded( url );
 
-            if ( m_mode == Move && !m_srcList.isEmpty() )
+            if ( m_mode == Move && !m_srcList.isEmpty() ) {
+                //kdDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList() << endl;
                 allDirNotify.FilesRemoved( m_srcList );
+            }
         }
         if (m_reportTimer!=0)
             m_reportTimer->stop();
@@ -3713,10 +3738,7 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             break;
          case UDS_NAME:
             displayName = (*it2).m_str;
-            if( url.isEmpty() ) {
-                url = ((SimpleJob *)job)->url(); // assumed to be a dir
-                url.addPath( displayName );
-	    }
+            atomsFound++;
             break;
          case UDS_URL:
             url = KURL((*it2).m_str);
@@ -3733,11 +3755,15 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
          default:
             break;
          }
-         if (atomsFound==4) break;
+         if (atomsFound==5) break;
       }
       assert(!displayName.isEmpty());
       if (displayName != ".." && displayName != ".")
       {
+          if( url.isEmpty() ) {
+              url = ((SimpleJob *)job)->url(); // assumed to be a dir
+              url.addPath( displayName );
+          }
          //kdDebug(7007) << "DeleteJob::slotEntries " << displayName << " (" << url << ")" << endl;
          if ( bLink )
             symlinks.append( url );
@@ -3875,6 +3901,7 @@ void DeleteJob::deleteNextDir()
     if ( !m_srcList.isEmpty() )
     {
         KDirNotify_stub allDirNotify("*", "KDirNotify*");
+        //kdDebug(7007) << "KDirNotify'ing FilesRemoved " << m_srcList.toStringList() << endl;
         allDirNotify.FilesRemoved( m_srcList );
     }
     if (m_reportTimer!=0)
