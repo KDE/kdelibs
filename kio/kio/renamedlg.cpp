@@ -46,6 +46,7 @@
 #include <kstringhandler.h>
 #include <kstdguiitem.h>
 #include <kguiitem.h>
+#include <ksqueezedtextlabel.h>
 
 using namespace KIO;
 
@@ -227,8 +228,9 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
             else if (mtimeDest == mtimeSrc)
                 sentence1 = i18n("A similar file named '%1' already exists.");
             else
-                sentence1 = i18n("A newer item named '%1' already exists.");
-            QLabel * lb1 = new QLabel( sentence1.arg(KStringHandler::csqueeze(d->dest,100)), this );
+                sentence1 = i18n("A newer item named '%1' already exists.");            
+            
+            QLabel * lb1 = new KSqueezedTextLabel( sentence1.arg(d->dest), this );
             gridLayout->addMultiCellWidget( lb1, 0, 0, 0, 1 ); // takes the complete first line
 
             lb1 = new QLabel( this );
@@ -263,7 +265,7 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                 // rows 1 to 3 are the details (size/ctime/mtime), row 4 is empty
                 gridLayout->addRowSpacing( 4, 20 );
 
-                QLabel * lb2 = new QLabel( i18n("The source file is '%1'").arg(d->src), this );
+                QLabel * lb2 = new KSqueezedTextLabel( i18n("The source file is '%1'").arg(d->src), this );
                 gridLayout->addMultiCellWidget( lb2, 5, 5, 0, 1 ); // takes the complete first line
 
                 lb2 = new QLabel( this );
@@ -302,13 +304,15 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
         // file must be preserved. This doesn't happen in KIO though. (David)
         QString sentence1;
         if (mtimeDest < mtimeSrc)
-            sentence1 = i18n("An older item than '%1' already exists.\n").arg(d->src);
+            sentence1 = i18n("An older item than '%1' already exists.\n");
         else if (mtimeDest == mtimeSrc)
-            sentence1 = i18n("A similar file named '%1' already exists.").arg(d->src);
+            sentence1 = i18n("A similar file named '%1' already exists.\n");
         else
-            sentence1 = i18n("A newer item than '%1' already exists.\n").arg(d->src);
-
-        QLabel *lb = new QLabel( sentence1 + i18n("Do you want to use another file name?"), this );
+            sentence1 = i18n("A newer item than '%1' already exists.\n");
+        
+        sentence1 +=  i18n("Do you want to use another file name ?");            
+        
+        QLabel *lb = new KSqueezedTextLabel ( sentence1.arg(d->src), this );
         d->m_pLayout->addWidget(lb);
     }
     QHBoxLayout* layout2 = new QHBoxLayout();
@@ -323,8 +327,8 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
                 SLOT(enableRenameButton(const QString &)));
     if ( d->b8 )
     {
-	layout2->addWidget( d->b8 );
-	setTabOrder( d->m_pLineEdit, d->b8 );
+        layout2->addWidget( d->b8 );
+        setTabOrder( d->m_pLineEdit, d->b8 );
     }
 
     KSeparator* separator = new KSeparator( this );
@@ -338,37 +342,37 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     if ( d->b1 )
     {
         layout->addWidget( d->b1 );
-	setTabOrder( d->b1, d->b0 );
+        setTabOrder( d->b1, d->b0 );
     }
     if ( d->b2 )
     {
         layout->addWidget( d->b2 );
-	setTabOrder( d->b2, d->b0 );
+        setTabOrder( d->b2, d->b0 );
     }
     if ( d->b3 )
     {
         layout->addWidget( d->b3 );
-	setTabOrder( d->b3, d->b0 );
+        setTabOrder( d->b3, d->b0 );
     }
     if ( d->b4 )
     {
         layout->addWidget( d->b4 );
-	setTabOrder( d->b4, d->b0 );
+        setTabOrder( d->b4, d->b0 );
     }
     if ( d->b5 )
     {
         layout->addWidget( d->b5 );
-	setTabOrder( d->b5, d->b0 );
+        setTabOrder( d->b5, d->b0 );
     }
     if ( d->b6 )
     {
         layout->addWidget( d->b6 );
-	setTabOrder( d->b6, d->b0 );
+        setTabOrder( d->b6, d->b0 );
     }
     if ( d->b7 )
     {
         layout->addWidget( d->b7 );
-	setTabOrder( d->b7, d->b0 );
+        setTabOrder( d->b7, d->b0 );
     }
 
     d->b0->setDefault( true );
