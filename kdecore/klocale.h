@@ -333,6 +333,11 @@ public:
       * @return Name of the prefered charset for fonts
       */
     QString charset() const { return chset; }
+
+    /**
+      * @return The instance used to decode translations.
+      */
+    QTextCodec *codec() const { return _codec; }
     
     /**
      * adds anther catalogue to search for translation lookup.
@@ -380,7 +385,7 @@ private:
     QString money;
     QString time;
     QString chset;
-    QTextCodec *codec;
+    QTextCodec *_codec;
     QString langs;
     
     // Numbers and money

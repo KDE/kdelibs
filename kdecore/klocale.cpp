@@ -156,7 +156,7 @@ QString KLocale::WeekDayName (int i) const
 #ifdef ENABLE_NLS
 
 KLocale::KLocale( const QString& _catalogue )
-  : _inited(false), codec( 0 )
+  : _inited(false), _codec( 0 )
 {
 #ifdef HAVE_SETLOCALE
     /* "" instructs setlocale to use the default locale
@@ -196,17 +196,17 @@ void KLocale::setEncodingLang(const QString &_lang)
       if (l>0)
       {
         if (buf[l-1]=='\n') buf[l-1]=0;
-        codec = QTextCodec::codecForName( buf );
+        _codec = QTextCodec::codecForName( buf );
       }
       f.close();
       delete [] buf;
     }
   }
   // default to ISO 8859-1
-  if (!codec)
+  if (!_codec)
   {
     debug("charset file invalide or not found. Defaulting to latin 1");
-    codec = QTextCodec::codecForName( "ISO 8859-1" );
+    _codec = QTextCodec::codecForName( "ISO 8859-1" );
   }
 }
 
@@ -437,7 +437,7 @@ QString KLocale::translate(const char* msgid) const
 	    break;
     }
 
-    return codec->toUnicode( text );
+    return _codec->toUnicode( text );
 }
 
 QString KLocale::decimalSymbol() const {
