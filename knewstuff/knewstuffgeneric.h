@@ -73,11 +73,13 @@ class KDE_EXPORT KNewStuffGeneric : public KNewStuff
       Queries the preferred destination file for a download.
 
       @param entry a Hotstuff data entry
-      @return destination filename
+      @return destination filename, or 0 to return directory only
     */
     QString downloadDestination( KNS::Entry *entry );
 
   private:
+    QString destinationPath( KNS::Entry *entry );
+
     KConfig *mConfig;
 };
 

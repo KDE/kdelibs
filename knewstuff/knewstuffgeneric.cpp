@@ -29,6 +29,7 @@
 #include <kconfig.h>
 #include <kstandarddirs.h>
 #include <kmessagebox.h>
+#include <ktar.h>
 
 #include "entry.h"
 
@@ -40,7 +41,6 @@ KNewStuffGeneric::KNewStuffGeneric( const QString &type, QWidget *parent )
   : KNewStuff( type, parent )
 {
   mConfig = KGlobal::config();
-  mConfig->setGroup("KNewStuff");
 }
 
 KNewStuffGeneric::~KNewStuffGeneric()
@@ -51,6 +51,19 @@ bool KNewStuffGeneric::install( const QString &fileName )
 {
   kdDebug(5850) << "KNewStuffGeneric::install(): " << fileName << endl;
   QStringList list, list2;
+
+  mConfig->setGroup("KNewStuff");
+
+  QString uncompress = mConfig->readEntry( "Uncompress" );
+  if ( !uncompress.isEmpty() ) {
+    kdDebug(5850) << "Uncompression method: " << uncompress << endl;
+    KTar tar(fileName, uncompress);
+    tar.open(IO_ReadOnly);
+    const KArchiveDirectory *dir = tar.directory();
+    dir->copyTo(destinationPath(0));
+    tar.close();
+    QFile::remove(fileName);
+  }
 
   QString cmd = mConfig->readEntry( "InstallationCommand" );
   if ( !cmd.isEmpty() ) {
@@ -72,10 +85,14 @@ bool KNewStuffGeneric::createUploadFile( const QString & /*fileName*/ )
   return false;
 }
 
-QString KNewStuffGeneric::downloadDestination( KNS::Entry *entry )
+QString KNewStuffGeneric::destinationPath( KNS::Entry *entry )
 {
-  QString path;
-  QString target = entry->fullName();
+  QString path, file, target;
+
+  mConfig->setGroup("KNewStuff");
+
+  if( entry ) target = entry->fullName();
+  else target = "/";
   QString res = mConfig->readEntry( "StandardResource" );
   if ( res.isEmpty() )
   {
@@ -83,18 +100,34 @@ QString KNewStuffGeneric::downloadDestination( KNS::Entry *entry )
     if ( !target.isEmpty())
     {
       res = "data";
-      target.append("/" + entry->fullName());
+      if ( entry ) target.append("/" + entry->fullName());
+      else target.append("/");
     }
   }
   if ( res.isEmpty() )
   {
     path = mConfig->readEntry( "InstallPath" );
   }
-  if ( res.isEmpty() && path.isEmpty() ) return KNewStuff::downloadDestination( entry );
+  if ( res.isEmpty() && path.isEmpty() )
+  {
+    if ( !entry ) return QString::null;
+    else return KNewStuff::downloadDestination( entry );
+  }
 
-  QString file;
-  if ( !path.isEmpty() ) file = QDir::home().path() + "/" + path + "/" + entry->fullName();
+  if ( !path.isEmpty() )
+  {
+    file = QDir::home().path() + "/" + path + "/";
+    if ( entry ) file += entry->fullName();
+  }
   else file = locateLocal( res.utf8() , target );
+
+  return file;
+}
+
+QString KNewStuffGeneric::downloadDestination( KNS::Entry *entry )
+{
+  QString file = destinationPath(entry);
+
   if ( KStandardDirs::exists( file ) ) {
     int result = KMessageBox::questionYesNo( parentWidget(),
         i18n("The file '%1' already exists. Do you want to override it?")
