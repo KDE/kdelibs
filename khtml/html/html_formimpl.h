@@ -314,6 +314,7 @@ public:
 
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
+    virtual void attach();
 
  private:
     DOMString m_formElementID;

@@ -252,7 +252,7 @@ void RenderSubmitButton::calcMinMaxWidth()
 
     bool empty = raw.isEmpty();
     if ( empty )
-        raw = QString::fromLatin1(" ");
+        raw = QString::fromLatin1("X");
     QFontMetrics fm = pb->fontMetrics();
     QSize ts = fm.size( ShowPrefix, raw);
     QSize s(pb->style().sizeFromContents( QStyle::CT_PushButton, pb, ts )
@@ -667,6 +667,7 @@ void RenderFieldset::paintBorderMinusLegend(QPainter *p, int _tx, int _ty, int w
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
 {
+    // this sucks, it creates a grey background
     QHBox *w = new QHBox(view()->viewport());
 
     m_edit = new LineEditWidget(w);
@@ -692,18 +693,17 @@ void RenderFileButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     const QFontMetrics &fm = style()->fontMetrics();
-    QSize s;
     int size = element()->size();
 
     int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
-    w += 6 + fm.width( m_button->text() ) + 2*fm.width( ' ' );
-    s = QSize(w + 2 + 2*m_edit->frameWidth(),
-              QMAX(h, 14) + 2 + 2*m_edit->frameWidth())
+    QSize s = m_edit->style().sizeFromContents(QStyle::CT_LineEdit, m_edit,
+          QSize(w + 2 + 2*m_edit->frameWidth(), kMax(h, 14) + 2 + 2*m_edit->frameWidth()))
         .expandedTo(QApplication::globalStrut());
+    QSize bs = m_button->sizeHint();
 
-    setIntrinsicWidth( s.width() );
-    setIntrinsicHeight( s.height() );
+    setIntrinsicWidth( s.width() + bs.width() );
+    setIntrinsicHeight( kMax(s.height(), bs.height()) );
 
     RenderFormElement::calcMinMaxWidth();
 }
