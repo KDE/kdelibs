@@ -24,6 +24,7 @@
 #include <qlabel.h>
 #include <qobjectlist.h>
 #include <qbuttongroup.h>
+#include <qcombobox.h>
 #include <qsqlpropertymap.h>
 #include <qmetaobject.h>
 
@@ -169,10 +170,17 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         }
         else
         {
-          if (!childWidget->isA("QButtonGroup"))
-            bParseChildren = false;
           connect(childWidget, *changedIt,
                   this, SIGNAL(widgetModified()));
+
+          QButtonGroup *bg = dynamic_cast<QButtonGroup *>(childWidget);
+          if (!bg)
+            bParseChildren = false;
+
+          QComboBox *cb = dynamic_cast<QComboBox *>(childWidget);
+          if (cb && cb->editable())
+            connect(cb, SIGNAL(textChanged(const QString &)),
+                    this, SIGNAL(widgetModified()));
         }
       }
       else
@@ -282,10 +290,17 @@ void KConfigDialogManager::updateSettings()
 
 void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 {
-  if (w->isA("QButtonGroup"))
+  QButtonGroup *bg = dynamic_cast<QButtonGroup *>(w);
+  if (bg)
   {
-    QButtonGroup *bg = static_cast<QButtonGroup *>(w);
     bg->setButton(v.toInt());
+    return;
+  }
+
+  QComboBox *cb = dynamic_cast<QComboBox *>(w);
+  if (cb && cb->editable())
+  {
+    cb->setCurrentText(v.toString());
     return;
   }
 
@@ -294,11 +309,13 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
 
 QVariant KConfigDialogManager::property(QWidget *w)
 {
-  if (w->isA("QButtonGroup"))
-  {
-    QButtonGroup *bg = static_cast<QButtonGroup *>(w);
+  QButtonGroup *bg = dynamic_cast<QButtonGroup *>(w);
+  if (bg)
     return QVariant(bg->selectedId());
-  }
+
+  QComboBox *cb = dynamic_cast<QComboBox *>(w);
+  if (cb && cb->editable())
+      return QVariant(cb->currentText());
 
   return propertyMap->property(w);
 }
