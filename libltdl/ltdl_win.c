@@ -33,7 +33,6 @@ void win32_mapSo2Dll( char *path )
     len=strlen(path);
     if (len<=3)
         return;
-//    fprintf(stderr,"mapLibWin32( '%s' -> ", path );
     // (optionally) remove .[0-9] suffix
     p = path+len-2;
     if (p[0]=='.' && p[1]>='0' && p[1]<='9') {
@@ -53,13 +52,13 @@ void win32_mapSo2Dll( char *path )
     }
     //.so -> .dll
     if (len>3 && strncmp(path+len-3,".so",3)==0) {
-#ifndef NDEBUG //debug library version
+#ifndef QT_NO_DEBUG //debug library version
         strcpy(path+len-3, "_d");
         len += 2;
 #endif
         strcpy(path+len-3, ".dll");
     }
-//    fprintf(stderr,"'%s' )\n", path );
+    fprintf(stderr,"win32_mapSo2Dll: '%s' )\n", path );
 }
 
 #define MAX_PATH 0x1ff
