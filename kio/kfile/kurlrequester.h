@@ -47,9 +47,9 @@ class QTimer;
  * selected.
  *
  * You can change this behavior by using setMode() or setFilter().
- * 
+ *
  * \image html kurlrequester.png "KDE URL Requester"
- * 
+ *
  * @short A widget to request a filename/url from the user
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
@@ -57,6 +57,7 @@ class KURLRequester : public QHBox
 {
     Q_OBJECT
     Q_PROPERTY( QString url READ url WRITE setURL )
+    Q_PROPERTY( bool showLocalProtocol READ showLocalProtocol WRITE setShowLocalProtocol )
 
 public:
     /**
@@ -255,7 +256,7 @@ private:
 class KURLComboRequester : public KURLRequester // For use in Qt Designer
 {
     Q_OBJECT
-public:    
+public:
     /**
      * Constructs a KURLRequester widget with a combobox.
      */
