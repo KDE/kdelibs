@@ -26,6 +26,7 @@
  */
 
 //#define TABLE_DEBUG
+//#define TABLE_PRINT
 //#define DEBUG_LAYOUT
 //#define BOX_DEBUG
 
@@ -451,7 +452,10 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
     }
 
     // percent has highest priority, even over fixed
-    if (_width.type == Percent || ( _width.type > col->type && col->type < Percent ))
+    // variable overwrites fixed, but not percent
+    if ( ( _width.type == Percent ) ||
+         ( _width.type == Variable && col->type != Percent ) ||
+         ( _width.type > col->type && col->type < Percent ))
         col->type = _width.type;
 
     if (_width.type == col->type)
@@ -805,7 +809,7 @@ void RenderTable::calcColMinMax()
                 continue;
 #ifdef TABLE_DEBUG
             kdDebug( 6040 ) << " s=" << s << " c=" << c << " min=" << col->min << " value=" << col->value  <<
-                        "max="<<col->max<< endl;
+                        " max="<<col->max<< endl;
 #endif
             spanMax += col->max + spacing;
 
@@ -1164,7 +1168,9 @@ int RenderTable::distributeWidth(int distrib, LengthType type, int typeCols )
     int c=0;
 
     int tdis = distrib;
-//    kdDebug( 6040 ) << "DISTRIBUTING " << distrib << " pixels to type " << type << " cols" << endl;
+#ifdef TABLE_DEBUG
+    kdDebug( 6040 ) << "DISTRIBUTING " << distrib << " pixels to type " << type << " cols" << endl;
+#endif
 
     while(tdis>0)
     {
@@ -1194,7 +1200,9 @@ int RenderTable::distributeRest(int distrib, LengthType type, int divider )
     if (!divider)
         return distrib;
 
-//    kdDebug( 6040 ) << "DISTRIBUTING rest, " << distrib << " pixels to type " << type << " cols" << endl;
+#ifdef TABLE_DEBUG
+    kdDebug( 6040 ) << "DISTRIBUTING rest, " << distrib << " pixels to type " << type << " cols" << endl;
+#endif
 
     int olddis=0;
     int c=0;
@@ -1506,7 +1514,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     _tx += xPos();
     _ty += yPos();
 
-#ifdef TABLE_DEBUG
+#ifdef TABLE_PRINT
     kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     if (!containsPositioned() && !isRelPositioned() && !isPositioned())
@@ -1515,7 +1523,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
         if((_tx > _x + _w) || (_tx + width() < _x)) return;
     }
 
-#ifdef DEBUG_LAYOUT
+#ifdef TABLE_PRINT
      kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _x << "/" << _y << ")" << endl;
 #endif
 
@@ -1938,7 +1946,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
 {
 
-#ifdef DEBUG_LAYOUT
+#ifdef TABLE_PRINT
     kdDebug( 6040 ) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
 
