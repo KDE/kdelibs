@@ -124,7 +124,7 @@ public class Main
                 Main.debug( "could not get provider: SunJSSE" );
         } catch( Exception e )
         {
-            Main.kjas_err( "Unable to load JSSE SSL stream handler, https support not available", e );
+            System.out.println( "Unable to load JSSE SSL stream handler, https support not available" );
         }
 
         //start the command parsing
