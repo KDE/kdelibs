@@ -47,7 +47,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 
 EXTRA_DIST = NOTES
 
-libkfile_la_LDFLAGS = -no-undefined -version-info 3:0
+libkfile_la_LDFLAGS = -no-undefined -version-info 4:0
 libkfile_la_LIBADD =  $(LIB_KSYCOCA)
 
 servicetype_DATA = kpropsdlgplugin.desktop

@@ -1,7 +1,7 @@
 INCLUDES= $(all_includes) 
 
 lib_LTLIBRARIES = libkab.la
-KABVERSION=	3.0.0
+KABVERSION=	4.0.0
 KABPATCH=	0
 
 include_HEADERS = \
@@ -14,7 +14,7 @@ libkab_la_SOURCES	= \
 	addressbook.cc \
 	qconfigDB.cc 
 
-libkab_la_LDFLAGS = -version-info 3:0 -no-undefined
+libkab_la_LDFLAGS = -version-info 4:0 -no-undefined
 libkab_la_LIBADD = $(LIB_KDEUI) 
 
 libkab_la_METASOURCES = AUTO

@@ -23,7 +23,7 @@ SUBDIRS = . tests
 INCLUDES= $(all_includes)
 
 lib_LTLIBRARIES = libkdeui.la
-libkdeui_la_LDFLAGS = -no-undefined -version-info 3:0
+libkdeui_la_LDFLAGS = -no-undefined -version-info 4:0
 # we should get this to work when libtool 1.3 is released
 libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 

@@ -24,7 +24,7 @@ AM_CPPFLAGS = -DQT_NO_COMPAT
 INCLUDES= -I$(top_srcdir)/dcop $(all_includes)
 
 lib_LTLIBRARIES  = libkspell.la
-libkspell_la_LDFLAGS = -version-info 3:0 -no-undefined
+libkspell_la_LDFLAGS = -version-info 4:0 -no-undefined
 libkspell_la_LIBADD = ../kdeui/libkdeui.la
 
 include_HEADERS = kspell.h ksconfig.h kspelldlg.h

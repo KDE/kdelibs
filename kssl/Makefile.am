@@ -41,7 +41,7 @@ libkssl_la_SOURCES	= \
 			ksslcertchain.cc	  \
 			ksslx509map.cc
 
-libkssl_la_LDFLAGS = $(all_libraries) -version-info 2:2 -no-undefined
+libkssl_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
 libkssl_la_LIBADD = $(LIB_KDEUI) 
 libkssl_la_DEPENDENCIES = $(LIB_KDEUI)
 

@@ -24,11 +24,11 @@ SUBDIRS = . klauncher kded file http ftp pics tests ksendbugmail kpac \
 lib_LTLIBRARIES = libkio.la libksycoca.la kio_uiserver.la
 bin_PROGRAMS = kio_uiserver kmailservice
 
-#libkioslave_la_LDFLAGS = -version-info 3:0
+#libkioslave_la_LDFLAGS = -version-info 4:0
 #libkioslave_la_LIBADD = ../kdeui/libkdeui.la
 #libkioslave_la_SOURCES = slavebase.cpp connection.cpp passdlg.cpp
 
-libksycoca_la_LDFLAGS = -version-info 3:0 -no-undefined
+libksycoca_la_LDFLAGS = -version-info 4:0 -no-undefined
 libksycoca_la_LIBADD = ./libkio.la
 
 libksycoca_la_SOURCES = \
@@ -61,7 +61,7 @@ include_HEADERS = \
         kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h
 
-libkio_la_LDFLAGS = -version-info 3:0 -no-undefined $(all_libraries)
+libkio_la_LDFLAGS = -version-info 4:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kssl/libkssl.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
 
 libkio_la_SOURCES = \
