@@ -468,11 +468,12 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 case Key_Up:
                 case Key_Prior:
                 case Key_Next:
-                    kapp->beep();
+                    KNotifyClient::event( "Textcompletion: no match" );
                     e->accept();
                     return true;
 
                 default:
+                    break;
                 }
             }
 
