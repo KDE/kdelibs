@@ -3539,8 +3539,6 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
 
                 bool repaint = true;
 
-                // if hoverTab is 0, we can simply skip this...
-                if (hoverTab != 0) {
                     // go through the tabbar and see which tabs are hovered by the mouse.
                     // tabs are overlapping 1 px, so it's possible that 2 tabs are under the mouse.
                     int tabCount = 0;
@@ -3562,7 +3560,6 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
     
                         }
                     }
-                }
 
                 if (repaint)
                     tabbar->repaint(false);
