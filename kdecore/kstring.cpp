@@ -1,5 +1,5 @@
 #include "kstring.h"
-#include <stdio.h>  
+#include <stdio.h>
 #include <stdarg.h>
 
 QString& operator<<( QString& _str, short _v )
@@ -66,7 +66,7 @@ QString& operator<<( QString& _str, double _v )
     return _str;
 }
 
-QString& operator<<( QString& _str, const char* _v )
+QString& operator<<( QString& _str, const QString &_v )
 {
     _str += _v;
     return _str;
@@ -92,7 +92,7 @@ void ksprintf(QString *str, const char *fmt, ...)
 	} else // jump over "%%"
 	    if (fmt[i] == '%' && fmt[i+1] == '%') i++;
 
-	i++; 
+	i++;
     }
 
     va_end( ap); // oh god, what I hope, that restarting is portable
@@ -104,6 +104,6 @@ void ksprintf(QString *str, const char *fmt, ...)
     va_end( ap );
 
     *str = tmp_data; // makes deep copy, that is also resized
-    
+
     delete [] tmp_data; // clear the heap
 }
