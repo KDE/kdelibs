@@ -16,6 +16,9 @@ AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})
 dnl generate the config header
 AM_CONFIG_HEADER(config.h) dnl at the distribution this done
 
+dnl checks, if the debug code is wanted
+AC_CHECK_FLAGS
+
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
@@ -31,9 +34,6 @@ AC_DECL_YYTEXT
 dnl find out some variables (not supported yet)
 AC_AIX
 AC_MINIX
-
-dnl checks, if the debug code is wanted
-AC_CHECK_FLAGS
 
 dnl Checks for header files.
 AC_LANG_CPLUSPLUS

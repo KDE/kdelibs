@@ -9,7 +9,7 @@
 #include "kurl.h"
 #include <iostream.h>
 
-QString& KURL::encodeURL( QString& _url ) const {
+void KURL::encodeURL( QString& _url ) {
     
     int old_length = _url.length();
    
@@ -18,7 +18,7 @@ QString& KURL::encodeURL( QString& _url ) const {
     int new_length = 0;
      
     for (int i = 0; i < old_length; i++) {
-	if ( strchr("#@\"&%$:,;?=", _url[i]) ) {
+	if ( strchr("#@\"&%$:,;?={}|^~[]\'", _url[i]) ) {
 	    new_url[ new_length++ ] = '%';
 
 	    char c = _url[ i ] / 16;
@@ -35,7 +35,6 @@ QString& KURL::encodeURL( QString& _url ) const {
     new_url[new_length]=0;
     _url = new_url;
     delete new_url;
-    return _url;
 };
 
 static uchar hex2int( char _char ) {
@@ -48,7 +47,7 @@ static uchar hex2int( char _char ) {
     return 0;
 };
 
-QString& KURL::decodeURL( QString& _url) const {
+void KURL::decodeURL( QString& _url ) {
     int old_length = _url.length();
     int new_length = 0;
 
@@ -67,7 +66,6 @@ QString& KURL::decodeURL( QString& _url) const {
     new_url [ new_length ] = 0;
     _url = new_url;
     delete new_url;
-    return _url;
 };
 
 void

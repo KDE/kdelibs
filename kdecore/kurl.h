@@ -72,7 +72,7 @@ public:
 	This functions encodes the given URL and returns a reference
 	to the result for convidence.
 	*/
-    QString& encodeURL( QString& _url) const;
+    static void encodeURL( QString& url );
 
     /// Deescapes reserverd characters within URLs
     /**
@@ -81,7 +81,7 @@ public:
        If the next characters are not hex chararcters, 0 will be
        used and the character will be skipped.
        */
-    QString& decodeURL( QString& _url) const;
+    static void decodeURL( QString& url );
 
   /// Returns the URL.
   /** Returns the URL. */
@@ -139,7 +139,7 @@ public:
        This function returns the port number of 0, if no
        port number has been specified.
        */
-    const int port() { return port_number; }
+    unsigned int port() const { return port_number; }
     
   /// Returns the directory only
   /**
