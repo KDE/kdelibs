@@ -53,6 +53,16 @@ main(int argc, char *argv[])
    
    printf("Baudrate = %s\n", baudrate.data());
 
+   printf("Full list of baudrates:\n");
+   QCStringList result = args->getOptionList("baud");
+   for(QCStringList::ConstIterator it=result.begin();
+       it != result.end();
+       ++it)
+   {
+      printf("Baudrate = %s\n", (*it).data());
+   }
+   printf("End of list\n");
+
    for(int i = 0; i < args->count(); i++)
    {
       printf("%d: %s\n", i, args->arg(i));

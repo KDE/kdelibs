@@ -53,6 +53,9 @@ public:
 
    // WABA: Huh?
    // The compiler doesn't find KCmdLineParsedOptions::write(s) by itself ???
+   // WABA: No, because there is another write function that hides the
+   // write function in the base class even though this function has a
+   // different signature. (obscure C++ feature)
    QDataStream& save( QDataStream &s) const
    { return QGDict::write(s); }
 
@@ -903,7 +906,7 @@ KCmdLineArgs::setOption(const QCString &opt, const char *value)
 	parsedOptionList->setAutoDelete(true);
    }
 
-   parsedOptionList->replace( opt, new QCString(value) );
+   parsedOptionList->insert( opt, new QCString(value) );
 }
 
 QCString
@@ -936,6 +939,36 @@ KCmdLineArgs::getOption(const char *_opt)
       exit(255);
    }
    return QCString(def);
+}
+
+QCStringList
+KCmdLineArgs::getOptionList(const char *_opt)
+{
+   QCStringList result;
+   if (!parsedOptionList) 
+      return result;
+
+   while(true)
+   {
+      QCString *value = parsedOptionList->take(_opt);
+      if (!value)
+         break;
+      result.prepend(*value);
+      delete value;
+   }
+
+   // Reinsert items in dictionary
+   // WABA: This is rather silly, but I don't want to add restrictions
+   // to the API like "you can only call this function once".
+   // I can't access all items without taking them out of the list.
+   // So taking them out and then putting them back is the only way.
+   for(QCStringList::ConstIterator it=result.begin();
+       it != result.end();
+       ++it)
+   {
+      parsedOptionList->insert(_opt, new QCString(*it));
+   }
+   return result;
 }
 
 bool

@@ -23,6 +23,9 @@
 
 #include <qlist.h>
 #include <qstring.h>
+#include <qvaluelist.h>
+
+typedef QValueList<QCString> QCStringList;
 
 struct KCmdLineOptions
 {
@@ -150,9 +153,27 @@ class KCmdLineArgsPrivate;
  *     myapp --nooption4
  *  </pre>
  *
+ *  Normally if an option value is provided multiple times only the last 
+ *  value is used:
+ *  <pre>
+ *     myapp -c 1200 -c 2400 -c 4800
+ *  </pre>
+ *  is usually the same as:
+ *  <pre>
+ *     myapp -c 4800
+ *  </pre>
+ *
+ *  However, an application can choose to use all values specified as well.
+ *  E.g. to specify a number of directories to use:
+ *  <pre>
+ *     myapp -I /usr/include -I /opt/kde/include -I /usr/X11/include
+ *  </pre>
+ *  When an application does this it should mention this in the description
+ *  of the option. @ref getOptionList()
+ *
  *  @short A class for command-line argument handling.
  *  @author Waldo Bastian
- *  @version 0.0.2
+ *  @version 0.0.3
  */
 class KCmdLineArgs
 {
@@ -316,8 +337,20 @@ public:
    *
    *  @return The value of the option. If the option was not
    *          present on the command line the default is returned.
+   *          If the option was present more than the value of the
+   *          last occurence is used.
    */
   QCString getOption(const char *option);
+
+  /**
+   *  Read out all occurences of a string option.
+   *  
+   *  @param option The name of the option without '-'.
+   *
+   *  @return A list of all option values. If no option was present
+   *          on the command line, an empty list is returned.
+   */
+  QCStringList getOptionList(const char *option);
 
   /**
    *  Read out a boolean option or check for the presence of string option.
