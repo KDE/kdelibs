@@ -88,7 +88,7 @@ KDE_InterceptXMapRequest()
   writeText(char * buf, const char * text)
   {
     char * pos = buf;
-    int l = strlen( text ) + 1; // we need the \0! (Simon)
+    int l = strlen( text ) + 1; /* we need the \0! (Simon) */
     pos = writeInt(buf, l);
     memcpy(pos, text, l);
     return pos + l;
