@@ -89,6 +89,8 @@ class Wallet : public QObject, public DCOPObject {
 
 		virtual int readPassword(const QString& key, QString& value);
 
+		virtual int writeEntry(const QString& key, const QByteArray& value, EntryType entryType);
+
 		virtual int writeEntry(const QString& key, const QByteArray& value);
 
 		virtual int writeMap(const QString& key, const QMap<QString,QString>& value);

@@ -374,6 +374,22 @@ return rc;
 }
 
 
+int Wallet::writeEntry(const QString& key, const QByteArray& value, EntryType entryType) {
+int rc = -1;
+
+	if (_handle == -1) {
+		return rc;
+	}
+
+	DCOPReply r = _dcopRef->call("writeEntry", _handle, _folder, key, value, long(entryType));
+	if (r.isValid()) {
+		r.get(rc);
+	}
+
+return rc;
+}
+
+
 int Wallet::writeEntry(const QString& key, const QByteArray& value) {
 int rc = -1;
 
