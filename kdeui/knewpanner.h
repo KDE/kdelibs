@@ -180,6 +180,11 @@ protected:
      */
     void resizeEvent(QResizeEvent *);
 
+  /**
+   * Filter the events from the divider
+   */
+  bool eventFilter(QObject *, QEvent *);
+
 private:
   // The managed children
   QWidget *child0, *child1;
@@ -199,13 +204,10 @@ private:
   // The divider widget
   QFrame *divider;
 
-  // Filter the events from the divider
-  bool eventFilter(QObject *, QEvent *);
-
-    // The position in pixel units
-    int position;
-    Units currentunits;
-    Orientation orientation;
+  // The position in pixel units
+  int position;
+  Units currentunits;
+  Orientation orientation;
 };
 
 #endif
