@@ -143,13 +143,13 @@ public:
 	/* parses generic CSSValues, return true, if it found a valid value */
 	bool parseValue(const QChar *curP, const QChar *endP, int propId);	
 	bool parseValue(const QChar *curP, const QChar *endP, int propId, 
-			bool important, QList<CSSProperty> *propList);	
+			bool important, bool nonCSSHint, QList<CSSProperty> *propList);	
 	bool parseFont(const QChar *curP, const QChar *endP);
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties);
 	bool parseShortHand(const QChar *curP, const QChar *endP, const int *properties, int num);
 	void setParsedValue(int propId, const CSSValueImpl *parsedValue);
 	void setParsedValue(int propId, const CSSValueImpl *parsedValue,
-			    bool important, QList<CSSProperty> *propList);
+			    bool important, bool nonCSSHint, QList<CSSProperty> *propList);
 	QList<QChar> splitShorthandProperties(const QChar *curP, const QChar *endP);
 	bool parseBackgroundPosition(const QChar *curP, const QChar *&nextP, const QChar *endP);
 	
@@ -183,17 +183,16 @@ public:
 	virtual void checkLoaded();
 
 	void setStrictParsing( bool b ) { strictParsing = b; }
-	
-   	QTime m_pingTimer;   
 
+    private:
+        QList<CSSProperty> *m_propList;
     protected:
 	StyleBaseImpl *m_parent;
 	bool hasInlinedDecl : 1;
 	bool strictParsing : 1;
-	
     private:
-	bool m_bImportant;
-        QList<CSSProperty> *m_propList;
+	bool m_bImportant : 1;
+        bool m_bnonCSSHint : 1;
     };
 
     // a style class which has a list of children (StyleSheets for example)

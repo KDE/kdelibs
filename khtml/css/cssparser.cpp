@@ -502,24 +502,21 @@ StyleBaseImpl::parseSelector2(const QChar *curP, const QChar *endP,
                 root = root->parent();
             if (root->isCSSStyleSheet())
                 doc = static_cast<CSSStyleSheetImpl*>(root)->doc();
-            if ( doc ) {
-                if ( doc->isHTMLDocument() ) {
-                    int tagID = khtml::getTagID(tag.lower().ascii(), tag.length());
-                    if (tagID != 0) {
-                        cs->tag = tagID;
-                    } else if (!(tag.isEmpty())) {
-                        const DOMString s = tag;
-                        cs->tag = doc->elementId(s.implementation());
-                    } else {
-                        kdWarning() << "Error in CSS" << endl;
-                    }
-                }
-                else {
+            if ( doc && !doc->isHTMLDocument() ) {
+                const DOMString s = tag;
+                cs->tag = doc->elementId(s.implementation());
+            }
+            else {
+                int tagID = khtml::getTagID(tag.lower().ascii(), tag.length());
+                if (tagID) {
+                    cs->tag = tagID;
+                } else if (doc && !(tag.isEmpty())) {
                     const DOMString s = tag;
                     cs->tag = doc->elementId(s.implementation());
+                } else {
+                    kdWarning() << "Error in CSS" << endl;
                 }
             }
-	    else cs->tag = khtml::getTagID(tag.lower().ascii(), tag.length());
         }
    }
 #ifdef CSS_DEBUG
@@ -655,6 +652,7 @@ StyleBaseImpl::parseSelector(const QChar *curP, const QChar *endP)
 
 void StyleBaseImpl::parseProperty(const QChar *curP, const QChar *endP)
 {
+    m_bnonCSSHint = false;
     m_bImportant = false;
     // Get rid of space in front of the declaration
 
@@ -1096,10 +1094,11 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 
 // ---------------- end font property --------------------------
 
-bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId, bool important,
-                                QList<CSSProperty> *propList)
+bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId,
+                                bool important, bool nonCSSHint, QList<CSSProperty> *propList)
 {
   m_bImportant = important;
+  m_bnonCSSHint = nonCSSHint;
   m_propList = propList;
   return parseValue(curP, endP, propId);
 }
@@ -1490,7 +1489,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	   * -> No mix between keywords and other units.
 	   */
 	  if (valX !=-1 && valY !=-1) {
-	    setParsedValue( CSS_PROP_BACKGROUND_POSITION_X,
+            setParsedValue( CSS_PROP_BACKGROUND_POSITION_X,
 			    new CSSPrimitiveValueImpl(valX, CSSPrimitiveValue::CSS_PERCENTAGE));
 	    setParsedValue( CSS_PROP_BACKGROUND_POSITION_Y,
 			    new CSSPrimitiveValueImpl(valY, CSSPrimitiveValue::CSS_PERCENTAGE));
@@ -2144,9 +2143,10 @@ bool StyleBaseImpl::parseAuralValue( const QChar *curP, const QChar *endP, int p
 #endif
 
 void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
-				   bool important, QList<CSSProperty> *propList)
+				   bool important, bool nonCSSHint, QList<CSSProperty> *propList)
 {
   m_bImportant = important;
+  m_bnonCSSHint = nonCSSHint;
   m_propList = propList;
   setParsedValue( propId, parsedValue);
 }
@@ -2155,7 +2155,9 @@ void StyleBaseImpl::setParsedValue( int propId, const CSSValueImpl *parsedValue)
 {
     QListIterator<CSSProperty> propIt(*m_propList);
     propIt.toLast(); // just remove the top one - not sure what should happen if we have multiple instances of the property
-    while (propIt.current() && propIt.current()->m_id != propId)
+    while (propIt.current() &&
+           ( propIt.current()->m_id != propId || propIt.current()->nonCSSHint != m_bnonCSSHint ||
+             propIt.current()->m_bImportant != m_bImportant) )
         --propIt;
     if (propIt.current())
         m_propList->removeRef(propIt.current());
@@ -2164,11 +2166,14 @@ void StyleBaseImpl::setParsedValue( int propId, const CSSValueImpl *parsedValue)
     prop->m_id = propId;
     prop->setValue((CSSValueImpl *) parsedValue);
     prop->m_bImportant = m_bImportant;
+    prop->nonCSSHint = m_bnonCSSHint;
 
     m_propList->append(prop);
 #ifdef CSS_DEBUG
     kdDebug( 6080 ) << "added property: " << getPropertyName(propId).string()
-					<< ", value: " << parsedValue->cssText().string() << endl;
+                    << ", value: " << parsedValue->cssText().string()
+                    << " important: " << prop->m_bImportant
+                    << " nonCSS: " << prop->nonCSSHint << endl;
 #endif
 }
 
@@ -2300,7 +2305,7 @@ bool StyleBaseImpl::parse2Values( const QChar *curP, const QChar *endP, const in
     {
     case 2:
         if(!parseValue(list.at(0), list.at(1), properties[0])) return false;
-        setParsedValue(properties[1], m_propList->last()->value());
+        setParsedValue(properties[1], m_propList->last()->value() );
         return true;
     case 4:
         if(!parseValue(list.at(0), list.at(1), properties[0])) return false;
@@ -2392,7 +2397,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
         // ### according to the css specs only 0 is allowed without unit.
         // there are however too many web pages out there using CSS without units
         // cause ie and ns allow them. We do so if the document is not using a strict dtd
-        if(allowedUnits & LENGTH  && (value == 0 || !strictParsing ))
+        if(( allowedUnits & LENGTH ) && (value == 0 || !strictParsing) )
             return new CSSPrimitiveValueImpl(value, CSSPrimitiveValue::CSS_PX);
 
         return 0;

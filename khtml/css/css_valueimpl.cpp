@@ -101,7 +101,8 @@ bool CSSStyleDeclarationImpl::removeProperty( int propertyID, bool onlyNonCSSHin
 {
     QListIterator<CSSProperty> lstValuesIt(*m_lstValues);
     lstValuesIt.toLast();
-    while (lstValuesIt.current() && lstValuesIt.current()->m_id != propertyID)
+    while (lstValuesIt.current() &&
+           ( lstValuesIt.current()->m_id != propertyID || onlyNonCSSHints != lstValuesIt.current()->nonCSSHint) )
         --lstValuesIt;
     if (lstValuesIt.current()) {
 	if ( onlyNonCSSHints && !lstValuesIt.current()->nonCSSHint )
@@ -189,21 +190,13 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
     }
     if ( !removeProperty(id, nonCSSHint ) )
 	return;
-    int pos = m_lstValues->count();
-    DOMString ppValue = preprocess(value.string(),true);
-    parseValue(ppValue.unicode(), ppValue.unicode()+ppValue.length(), id, important, m_lstValues);
 
-    if( nonCSSHint && pos < (int)m_lstValues->count() ) {
-	CSSProperty *p = m_lstValues->at(pos);
-	while ( p ) {
-	    p->nonCSSHint = true;
-	    p = m_lstValues->next();
-	}
-    } else if((unsigned) pos == m_lstValues->count() )
-	{
+    DOMString ppValue = preprocess(value.string(),true);
+    bool success = parseValue(ppValue.unicode(), ppValue.unicode()+ppValue.length(), id, important, nonCSSHint, m_lstValues);
+
+    if(!success)
 	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
 					<< "] value: [" << value.string() << "]"<< endl;
-	}
     if (m_node)
 	m_node->setChanged(true);
 }
@@ -216,21 +209,10 @@ void CSSStyleDeclarationImpl::setProperty(int id, int value, bool important, boo
     }
     if ( !removeProperty(id, nonCSSHint ) )
 	return;
-    int pos = m_lstValues->count();
-    CSSValueImpl * cssValue = new CSSPrimitiveValueImpl(value);
-    setParsedValue(id, cssValue, important, m_lstValues);
 
-    if( nonCSSHint && pos < (int)m_lstValues->count() ) {
-	CSSProperty *p = m_lstValues->at(pos);
-	while ( p ) {
-	    p->nonCSSHint = true;
-	    p = m_lstValues->next();
-	}
-    } else if((unsigned) pos == m_lstValues->count() )
-	{
-	kdDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
-					<< "] value: [" << value << "]" << endl;
-	}
+    CSSValueImpl * cssValue = new CSSPrimitiveValueImpl(value);
+    setParsedValue(id, cssValue, important, nonCSSHint, m_lstValues);
+
     if (m_node)
 	m_node->setChanged(true);
 }
@@ -266,45 +248,12 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
 	m_node->setChanged(true);
 }
 
-void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOMString &value,
-						bool important, bool nonCSSHint)
+void CSSStyleDeclarationImpl::setLengthProperty(int id, const DOM::DOMString &value, bool important, bool nonCSSHint)
 {
     bool parseMode = strictParsing;
     strictParsing = false;
     setProperty( id, value, important, nonCSSHint);
     strictParsing = parseMode;
-#if 0 // ### FIXME after 2.0
-    if(!value.unicode() || value.length() == 0)
-	return;
-
-    if(!m_lstValues)
-    {
-	m_lstValues = new QList<CSSProperty>;
-	m_lstValues->setAutoDelete(true);
-    }
-
-    CSSValueImpl *v = parseUnit(value.unicode(), value.unicode()+value.length(),
-				INTEGER | PERCENT | LENGTH, );
-    if(!v)
-    {
-	kdDebug( 6080 ) << "invalid length" << endl;
-	return;
-    }
-
-    CSSPrimitiveValueImpl *p = static_cast<CSSPrimitiveValueImpl *>(v);
-    if(p->primitiveType() == CSSPrimitiveValue::CSS_NUMBER)
-    {
-	// set the parsed number in pixels
-	p->setPrimitiveType(CSSPrimitiveValue::CSS_PX);
-    }
-    CSSProperty *prop = new CSSProperty();
-    prop->m_id = id;
-    prop->setValue(v);
-    prop->m_bImportant = important;
-    prop->nonCSSHint = nonCSSHint;
-
-    m_lstValues->append(prop);
-#endif
 }
 
 unsigned long CSSStyleDeclarationImpl::length() const

@@ -284,7 +284,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
         border=1;
 #endif
         m_noBorder = !border;
-        addCSSLength(CSS_PROP_BORDER_WIDTH, DOMString( QString::number( border) ) );
+        DOMString v = QString::number( border );
+        addCSSLength(CSS_PROP_BORDER_WIDTH, v );
 #if 0
         // wanted by HTML4 specs
         if(!border)
@@ -303,10 +304,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BORDERCOLOR:
         if(!attr->value().isEmpty()) {
             addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
         }
         break;
     case ATTR_BACKGROUND:
@@ -437,10 +435,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     {
         if(!attr->value().isEmpty()) {
             addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
-            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
+            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
         }
         break;
     }
@@ -643,10 +638,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_BORDER:
-        addCSSLength(CSS_PROP_BORDER_TOP_WIDTH, attr->value());
-        addCSSLength(CSS_PROP_BORDER_RIGHT_WIDTH, attr->value());
-        addCSSLength(CSS_PROP_BORDER_BOTTOM_WIDTH, attr->value());
-        addCSSLength(CSS_PROP_BORDER_LEFT_WIDTH, attr->value());
+        addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
         break;
     case ATTR_ROWSPAN:
         // ###
@@ -694,12 +686,8 @@ void HTMLTableCellElementImpl::attach()
         if(table->m_noBorder && getAttribute(ATTR_BORDER).isNull()) {
             addCSSProperty(CSS_PROP_BORDER_WIDTH, "0");
 	}
-        if(!table->getAttribute(ATTR_BORDERCOLOR).isNull()) {
-            addCSSProperty(CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID);
-            addCSSProperty(CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID);
-	}
+        if(!table->getAttribute(ATTR_BORDERCOLOR).isNull())
+            addCSSProperty(CSS_PROP_BORDER_STYLE, CSS_VAL_SOLID);
     }
 
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
