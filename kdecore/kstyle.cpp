@@ -191,5 +191,16 @@ void KStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                    -1, &btext );;
 }
 
+void KStyle::drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
+                                const QColorGroup &, QBrush *fill)
+{
+    p->fillRect(x, y, w, h, *fill);
+}
+
+void KStyle::getKProgressBackground(const QColorGroup &g, QBrush &bg)
+{
+    bg = g.brush(QColorGroup::Base);
+}
+
 #include "kstyle.moc"
 

@@ -33,6 +33,10 @@ public:
     virtual void drawKMenuItem(QPainter *p, int x, int y, int w, int h,
                                const QColorGroup &g, bool active,
                                QMenuItem *item, QBrush *fill=NULL);
+    virtual void drawKProgressBlock(QPainter *p, int x, int y, int w, int h,
+                                    const QColorGroup &g, QBrush *fill);
+    // this isn't a drawXXX method due to KProgress implementation
+    virtual void getKProgressBackground(const QColorGroup &g, QBrush &bg);
 };
 
 #endif
