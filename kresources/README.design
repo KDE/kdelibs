@@ -1,0 +1,173 @@
+kresources
+README.design
+
+KDE RESOURCES
+-------------
+The KDE Resource framework can be used to manage resources of 
+different types, organized in families. The Resource framework is 
+currently used for addressbook resources in kdelibs/libkabc and for 
+calendar resources in libkcal.
+A resource family represents stores of information of a certain kind
+(appointments, contacts). A resource type class represents a way in 
+which this information is stored, or a way to access the information.
+
+                           resources
+                               |
+                    +----------+----------+----------------+---
+                    |                     |                |
+Families:        calendar              contacts           ...
+                    |                     | 
+                +---+--+            +-----+-----+-----+--
+                |      |            |     |     |     |
+Types:          local  Exchange   file   dir   ldap  ...
+                file   server    
+
+
+Resource families are usually implemented as (abstract) classes
+in a library, e.g. the calendar resource in libkcal en the
+addressbook resource family in libkabc. Resource type are like 
+plugins: that can be loaded on-demand, they are implemented in
+their own library, and a .desktop file tells KDE where to find 
+them.
+
+The user then configures one or more resources for a certain
+family, making use of the resource types. For instance, a user
+might define two Exchange-based resources, one with her own 
+calendar data and one with the calendar data of her workgroup.
+She might also have two ldap contacts resources, together with
+a local file-based address book.
+
+Both Exchange-based calendar resources are objects of the same 
+type, but with different settings. These resources are persistent,
+and they are managed by the ResourceManager for the calendar
+resource family. The list of resources, and the settings for
+each resource, are stored by the resource manager using KConfig,
+in $HOME/.kde/share/config/<family>.
+
+The resource manager is a singleton object for every resource family. 
+Use the resource manager to get the list of available resource types 
+in this family, to create a new resource of a given type, to get a 
+configuration widget for a resource, to get the list of defined 
+resources in this family, and to get a specific resource object.
+
+USE CASES
+---------
+Opening all resources of resource family "calendar". The associated 
+(abstract) class is ResourceCalendar.
+
+    KRES::ResourceManager<ResourceCalendar> mManager = new KRES::ResourceManager<ResourceCalendar>( "calendar" );
+    QPtrList<ResourceCalendar> mResources = mManager->resources(); 
+    // Open resources
+    ResourceCalendar *resource;
+    for ( resource = mResources.first(); resource; resource = mResources.next() ) {
+      kdDebug(5800) << "Opening resource " + resource->name() << endl;
+      bool result = resource->open();
+      if ( ! result )
+        kdDebug() << "Error opening resource" << endl;
+    }
+
+Note that the resources are configured by the user in a kcontrol
+applet. The singleton resourcemanager reads the configuration from
+the config file that the kcm applet writes.
+
+Getting the events for a certain date range from all resources. 
+ResourceCalendar defines a function 
+QPtrList<Event> rawEvents( QDate start, QDate end, bool inclusive )
+that returns the events in the resource in the date range. We just
+iterate over all available resources to harvest all events.
+
+    QPtrList<Event> result;
+    ResourceCalendar *resource;
+    for ( resource = mResources.first(); resource; resource = mResources.next() ) {
+      QPtrList<Event> list = resource->rawEvents( start, end, inclusive );
+      Event* item;
+      for ( item = list.first(); item; item = list.next() ) {
+        result.append( item );
+      }
+    }
+
+EXAMPLES
+--------
+For examples, check the following files in kdepim/libkcal:
+- resourcecalendar.{h,cpp} 
+  Defines the base class of the calendar resource family
+- kcmcalendars.{h,cpp}
+  Defines the KControl applet for calendar resources
+- kcalendars.desktop
+  This .desktop files tells KControl where to find the 
+  applet for calendar resources.
+- Makefile.am
+  How to build and install the calendar resource family
+
+The "local" resource is compiled and installed together
+with libkcal:
+- resourcelocal.{h,cpp}
+  Defines the local resource type, in the calendar resource family
+- resourcelocalconfig.{h,cpp}
+  Defines the configuration widget for the local resource
+- local.desktop
+  Information on the local resource type, in order to know 
+  which resource types are available
+
+The "exchange" calendar resource is compiled in a separate 
+library, dynamically loaded by the resource manager if 
+resources of this type are used. This resource is in
+kdepim/libkpimexchange/resources/calendar:
+- resourceexchange.{h,cpp}
+  Defines the exchange resource
+- resourceexchangeconfig.{h,cpp}
+  Defines the configuration widget for the exchange resource
+- exchange.desktop
+  This file is installed so that the resource manager can
+  find the exchange resource type
+- Makefile.am
+  How to build and install the exchange resource type
+
+IDEAS/ISSUES/PROBLEMS
+---------------------
+- What happens when there are resource manager in two separate
+processes (like kcontrol and korganizer, or two kcontrols) both
+accessing the same resource family?
+  
+  + If there are more than one resource managers running in the
+  same KDE session, but in separate processes, they should keep 
+  each other informed. I've implemented some DCOP stuff so that
+  the various managers know when resources have been added, 
+  deleted or modified. These messages are not yet handled 
+  completely.
+
+- The resource manager should send a signal when a resource
+has changed, so that the applications can update their information.
+
+  + Problem with this: ResourceManager is a template class. 
+  Templates cannot have signals or slots. An app should
+  implement the ManagerListener interface (sorry about 
+  the Java-talk) and register with the resource manager.
+
+- Maybe the flags that marks each resource as active or passive,
+and the Standard resource, should be application-specific? E.g., 
+I can imagine karm looking only in the business calendar, so it
+should have only one active calendar, while KORganizer would also
+have my wife's calendar active read-only.
+
+- There should be a way to synchronise the concurrent use of a 
+resource, be it in the same process, on different processes in
+the same KDE session, or even when e.g. korganizer uses an
+Exchange calendar while also Outlook is running on a Windows PC.
+
+- have the item that resource object delivers (events, contacts) 
+derived from ResourceItem. Then introduce locking and unlocking,
+that every resource type should extend using its own locking 
+mechanism, like SQL locks, or file locks, or whatever.
+
+  + This means that Addressee, Event etc. should be
+  derived from ResourceItem.
+  + Communication via DCOP via the Resource, I think.
+  + Drawback: flexibility is lost, because the Resource
+  would have to be a factory for these objects.
+
+- Maybe the resource class should have some generic support
+for searching. In the calendar family, you could search by
+date, by category or by key word, in the kabc family you 
+could search by key word, name, country, etc.
+
