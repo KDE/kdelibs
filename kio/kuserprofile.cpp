@@ -207,11 +207,6 @@ bool KServiceTypeProfile::allowAsDefault( const QString& _service ) const
   return it.data().m_bAllowAsDefault;
 }
 
-KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _servicetype )
-{
-    return serviceTypeProfile(_servicetype, QString::null);
-}
-
 KServiceTypeProfile* KServiceTypeProfile::serviceTypeProfile( const QString& _servicetype, const QString& _genericServiceType )
 {
   initStatic();

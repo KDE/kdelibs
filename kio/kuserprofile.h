@@ -114,12 +114,7 @@ public:
   /**
    * @return the profile for the requested service type.
    */
-  static KServiceTypeProfile* serviceTypeProfile( const QString& servicetype );
-  /**
-   * @return the profile for the requested service type.
-   */
-  static KServiceTypeProfile* serviceTypeProfile( const QString& servicetype, const QString & genericServiceType );
-  // BCI : merge into one, with genericServiceType = QString::null
+  static KServiceTypeProfile* serviceTypeProfile( const QString& servicetype, const QString & genericServiceType = QString::null );
 
   /**
    * @return the offers associated with a given servicetype, sorted by preference
