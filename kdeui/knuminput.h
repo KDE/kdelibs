@@ -196,7 +196,7 @@ public:
     /**
      * @return the current value
      */
-    int value();
+    int value() const;
 
     /**
      * @param lower  lower bound on range
@@ -257,7 +257,6 @@ protected:
     void resetEditBox();
 
     KIntSpinBox* m_spin;
-    QSlider*     m_slider;
     QSize        m_sizeSpin;
 };
 
@@ -322,7 +321,7 @@ public:
     /**
      * @return the current value
      */
-    double value();
+    double value() const;
 
      /**
      * @param lower  lower bound on range

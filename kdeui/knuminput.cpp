@@ -420,7 +420,7 @@ void KIntNumInput::setValue(int val)
 
 // -----------------------------------------------------------------------------
 
-int  KIntNumInput::value()
+int  KIntNumInput::value() const
 {
     return m_spin->value();
 }
@@ -495,9 +495,8 @@ void KDoubleNumInput::init(double value)
     edit->setAlignment(AlignRight);
     edit->setValidator(new KFloatValidator(this, "KDoubleNumInput::KFloatValidator"));
 
-    setFocusProxy(edit);
+    //setFocusProxy(edit);
 
-    m_slider = 0;
     m_suffix = m_prefix = "";
 
     resetEditBox();
@@ -673,7 +672,7 @@ void KDoubleNumInput::setRange(double lower, double upper, double step, bool sli
 
 // -----------------------------------------------------------------------------
 
-double  KDoubleNumInput::value()
+double  KDoubleNumInput::value() const
 {
     return m_value;
 }
