@@ -67,7 +67,7 @@
 <!-- To allow for translated file names, ID attributes must be 
      present (the style sheets use them to generate the file names).
  -->
-<!ENTITY % kde.compulsory.id "INCLUDE">
+<!ENTITY % kde.compulsory.id "IGNORE">
 <![ %kde.compulsory.id; [
 <!ENTITY % chapter.attlist "IGNORE">
 <!ENTITY % sect1.attlist "IGNORE">
