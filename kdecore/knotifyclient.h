@@ -44,6 +44,10 @@ class KInstance;
  * default_presentation contains these ORed events:
  *	None=0, Sound=1, Messagebox=2, Logfile=4, Stderr=8
  *
+ * KNotify will search for sound files given with a relative path first in
+ * the application's sound directory ( share/apps/Application Name/sounds ), then in
+ * the KDE global sound directory ( share/sounds ).
+ *
  * You can also use the "nopresentation" key, with any the presentations
  * ORed.  Those that are in that field will not appear in the kcontrol
  * module.  This was intended for software like KWin to not allow a window-opening
