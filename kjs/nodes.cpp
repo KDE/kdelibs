@@ -850,16 +850,16 @@ Completion DoWhileNode::execute()
 {
   KJSO be, bv;
   Completion c;
-  Boolean b(false);
   KJSO value;
 
   do {
     c = statement->execute();
     /* TODO */
+    if (c.complType() != Normal)
+      return c;
     be = expr->evaluate();
     bv = be.getValue();
-    b = bv.toBoolean();
-  } while (b.value());
+  } while (bv.toBoolean().value());
 
   return Completion(Normal, value);
 }
