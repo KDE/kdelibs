@@ -382,7 +382,7 @@ int main(int argc, char *argv[])
 	}
 	else {
 	    printf("\nTests completed.\n");
-            printf("Total:    %d\n",regressionTest->m_passes+regressionTest->m_failures+regressionTest->m_errors); 
+            printf("Total:    %d\n",regressionTest->m_passes+regressionTest->m_failures+regressionTest->m_errors);
 	    printf("Passes:   %d\n",regressionTest->m_passes);
 	    printf("Failures: %d\n",regressionTest->m_failures);
 	    printf("Errors:   %d\n",regressionTest->m_errors);
@@ -659,9 +659,9 @@ void RegressionTest::evalJS( ScriptInterpreter &interp, const QString &filename,
                 reportResult( true, QString( "Expected Failure: %1" ).arg( errmsg ) );
             }
         } else if ( saw_failure ) {
-            reportResult( false, "saw 'FAILED!'" );
+            reportResult( filename.endsWith( "-n.js" ), "saw 'FAILED!'" );
         } else {
-            reportResult( true, "passed" );
+            reportResult( !filename.endsWith( "-n.js" ), "passed" );
         }
     }
 }
