@@ -287,6 +287,17 @@ void kDebugInfo( unsigned short area, const char* fmt, ... )
     va_end( arguments );
 }
 
+void kDebugInfo( bool cond, unsigned short area, const char* fmt, ... )
+{
+  if(cond)
+    {
+      va_list arguments;
+      va_start( arguments, fmt );
+      kDebugBackend( KDEBUG_INFO, area, fmt, arguments );
+      va_end( arguments );
+    }
+}
+
 void kDebugWarning( const char* fmt, ... )
 {
     va_list arguments;
@@ -301,6 +312,17 @@ void kDebugWarning( unsigned short area, const char* fmt, ... )
     va_start( arguments, fmt );
     kDebugBackend( KDEBUG_WARN, area, fmt, arguments );
     va_end( arguments );
+}
+
+void kDebugWarning( bool cond, unsigned short area, const char* fmt, ... )
+{
+  if(cond)
+    {
+      va_list arguments;
+      va_start( arguments, fmt );
+      kDebugBackend( KDEBUG_INFO, area, fmt, arguments );
+      va_end( arguments );
+    }
 }
 
 void kDebugError( const char* fmt, ... )
@@ -319,6 +341,17 @@ void kDebugError( unsigned short area, const char* fmt, ... )
     va_end( arguments );
 }
 
+void kDebugEror( bool cond, unsigned short area, const char* fmt, ... )
+{
+  if(cond)
+    {
+      va_list arguments;
+      va_start( arguments, fmt );
+      kDebugBackend( KDEBUG_INFO, area, fmt, arguments );
+      va_end( arguments );
+    }
+}
+
 void kDebugFatal(const char* fmt, ... )
 {
     va_list arguments;
@@ -333,6 +366,17 @@ void kDebugFatal(unsigned short area, const char* fmt, ... )
     va_start( arguments, fmt );
     kDebugBackend( KDEBUG_FATAL, area, fmt, arguments );
     va_end( arguments );
+}
+
+void kDebugFatal( bool cond, unsigned short area, const char* fmt, ... )
+{
+  if(cond)
+    {
+      va_list arguments;
+      va_start( arguments, fmt );
+      kDebugBackend( KDEBUG_INFO, area, fmt, arguments );
+      va_end( arguments );
+    }
 }
 
 // For compatibility

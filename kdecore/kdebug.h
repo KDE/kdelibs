@@ -66,12 +66,16 @@
 
 void kDebugInfo( const char* fmt, ... );
 void kDebugInfo( unsigned short area, const char* fmt, ... );
+void kDebugInfo( bool cond, unsigned short area, const char* fmt, ... );
 void kDebugWarning( const char* fmt, ... );
 void kDebugWarning( unsigned short area, const char* fmt, ... );
+void kDebugWarning( bool cond, unsigned short area, const char* fmt, ... );
 void kDebugError( const char* fmt, ... );
 void kDebugError( unsigned short area, const char* fmt, ... );
+void kDebugError( bool cond, unsigned short area, const char* fmt, ... );
 void kDebugFatal( const char* fmt, ... );
 void kDebugFatal( unsigned short area, const char* fmt, ... );
+void kDebugFatal( bool cond, unsigned short area, const char* fmt, ... );
 
 #ifdef NDEBUG
 inline void kDebug_null( unsigned short , const char* , ... ) { return; }

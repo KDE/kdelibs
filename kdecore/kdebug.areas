@@ -4,11 +4,12 @@
 #
 #Format : number<tab>description
 
-# kdelibs
-125	kaccel
-126	kurl
-250	kfile
-750	kspell
+125	kaccel (kdecore)
+126	kurl (kdecore)
+250	kfile (kdelibs)
+750	kspell (kdelibs)
+800	kabapi (kdelibs)
+
 1000	kparts
 1001	kparts (builder)
 
