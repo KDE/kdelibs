@@ -4,5 +4,8 @@ MimeType=application/x-javascript
 Icon=Script
 Patterns=*.js;
 Comment=JavaScript File
-X-KDE-IsAlso=text/plain
-
+Comment[da]=JavaScript-fil
+Comment[sv]=Javaskript-fil
+Comment[ta]=ஜாவா மூலக் கோப்பு
+Comment[xx]=xxJavaScript Filexx
+X-KDE-IsAlso=application/x-executable-script

@@ -36,6 +36,7 @@ Comment[mn]=Shell-Скрипт
 Comment[ms]=Skrip Cengkerang
 Comment[mt]=Skritt shell
 Comment[nb]=Skallskript
+Comment[nds]=Shellskript
 Comment[nl]=Shell-script
 Comment[nn]=Skalskript
 Comment[nso]=Tshwaelo ya Shell
@@ -49,7 +50,8 @@ Comment[sk]=Shellovský skript
 Comment[sl]=Lupinski skript
 Comment[sr]=Скрипта шкољке
 Comment[sv]=Skalskript
-Comment[ta]=ஓட்டுக் கிறுவல்
+Comment[ta]=ஓட்டு எழுத்தாக்கம்
+Comment[th]=สคริปต์เชลล์
 Comment[tr]=Kabuk Betiği
 Comment[uk]=Скрипт командної оболонки
 Comment[uz]=Шелл скрипти
@@ -64,7 +66,7 @@ Icon=shellscript
 Type=MimeType
 MimeType=application/x-shellscript
 Patterns=*.sh;*.csh
-X-KDE-IsAlso=text/plain
+X-KDE-IsAlso=application/x-executable-script
 
 [Property::X-KDE-text]
 Type=bool

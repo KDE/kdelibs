@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=Ruby Program
+Comment[ar]=برنامج بلغة Ruby
 Comment[az]=Ruby Proqramı
 Comment[be]=Праграма Ruby
 Comment[bg]=Програма на Ruby
@@ -20,12 +21,15 @@ Comment[fr]=Programme Ruby
 Comment[gl]=Programa en Ruby
 Comment[he]=תוכנית Ruby
 Comment[hi]=रूबी प्रोग्राम
+Comment[hr]=Ruby program
 Comment[hu]=Ruby-program
 Comment[it]=Programma Ruby
+Comment[ko]=루비 프로그램
 Comment[lt]=Ruby programa
 Comment[mn]=Ruby Програм
 Comment[ms]=Program Ruby
 Comment[nb]=Ruby-program
+Comment[nds]=Ruby-Programm
 Comment[nl]=Ruby-programma
 Comment[nn]=Ruby-program
 Comment[pl]=Program w języku Ruby
@@ -40,6 +44,7 @@ Comment[sr]=Ruby програм
 Comment[sv]=Ruby-program
 Comment[ta]=Ruby நிரல்
 Comment[tg]=Нақшаи Ruby
+Comment[th]=โปรแกรม Ruby
 Comment[tr]=Ruby Programı
 Comment[uk]=Програма на мові програмування Ruby
 Comment[uz]=Ruby'да тузилган дастур
@@ -52,6 +57,7 @@ Icon=source
 Type=MimeType
 MimeType=application/x-ruby
 Patterns=*.rb;*.RB;*.ruby;*.RUBY
+X-KDE-IsAlso=application/x-executable-script
 
 [Property::X-KDE-text]
 Type=bool

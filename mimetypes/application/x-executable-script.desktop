@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Script that is possibly executabl.
+Icon=exec
+Type=MimeType
+MimeType=application/x-executable-script
+X-KDE-IsAlso=text/plain

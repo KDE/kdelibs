@@ -43,6 +43,7 @@
 #include <kprocess.h>
 #include <dcopclient.h>
 #include <qfile.h>
+#include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qdatetime.h>
 #include <qregexp.h>
@@ -83,6 +84,21 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile )
     return runURL( u, _mimetype, tempFile, true );
 }
 
+bool KRun::isExecutableFile( const KURL& url, const QString &mimetype )
+{
+  if ( !url.isLocalFile() )
+     return false;
+  QFileInfo file( url.path() ); 
+  if ( file.isExecutable() )  // Got a prospective file to run
+  {
+    KMimeType::Ptr mimeType = KMimeType::mimeType( mimetype );
+
+    if ( mimeType->is("application/x-executable") || mimeType->is("application/x-executable-script") )
+      return true;
+  }
+  return false;
+}
+
 // This is called by foundMimeType, since it knows the mimetype of the URL
 pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool runExecutables )
 {
@@ -99,8 +115,7 @@ pid_t KRun::runURL( const KURL& u, const QString& _mimetype, bool tempFile, bool
     if ( u.isLocalFile() && runExecutables)
       return KDEDesktopMimeType::run( u, true );
   }
-  else if ( _mimetype == "application/x-executable"  ||
-            _mimetype == "application/x-shellscript")
+  else if ( isExecutableFile(u, _mimetype) )
   {
     if ( u.isLocalFile() && runExecutables)
     {

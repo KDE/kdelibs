@@ -294,6 +294,21 @@ public:
    */
   static bool isExecutable( const QString& serviceType );
 
+  /**
+   * Returns wether the @p url of @p mimetype is executable.
+   * To be executable the file must pass the following rules:
+   * -# Must reside on the local filesystem.
+   * -# Must be marked as executable for the user by the filesystem.
+   * -# The mime type must inherit application/x-executable or application/x-executable-script.
+   * To allow a script to run when the above rules are satisfied add the entry
+   * @code
+   * X-KDE-IsAlso=application/x-executable-script
+   * @endcode 
+   * to the mimetype's desktop file.
+   * @since 3.3
+   */
+   static bool isExecutableFile( const KURL& url, const QString &mimetype );
+
 signals:
   /**
    * Emitted when the operation finished.
