@@ -25,10 +25,10 @@ ContainerNode::ContainerNode( QWidget *_container, const QString &_tagName,
  * Find a merging index with the given name. Used to find an index defined by <Merge name="blah"/>
  * or by a <DefineGroup name="foo" /> tag.
  */
-QValueList<MergingIndex>::Iterator ContainerNode::findIndex( const QString &name )
+MergingIndexList::Iterator ContainerNode::findIndex( const QString &name )
 {
-    QValueList<MergingIndex>::Iterator it( mergingIndices.begin() );
-    QValueList<MergingIndex>::Iterator end( mergingIndices.end() );
+    MergingIndexList::Iterator it( mergingIndices.begin() );
+    MergingIndexList::Iterator end( mergingIndices.end() );
     for (; it != end; ++it )
         if ( (*it).mergingName == name )
             return it;
@@ -41,7 +41,7 @@ QValueList<MergingIndex>::Iterator ContainerNode::findIndex( const QString &name
  */
 ContainerNode *ContainerNode::findContainerNode( QWidget *container )
 {
-    QPtrListIterator<ContainerNode> it( children );
+    ContainerNodeListIt it( children );
 
     for (; it.current(); ++it )
         if ( it.current()->container == container )
@@ -61,7 +61,7 @@ ContainerNode *ContainerNode::findContainer( const QString &_name, bool tag )
          ( !tag && name == _name ) )
         return this;
 
-    QPtrListIterator<ContainerNode> it( children );
+    ContainerNodeListIt it( children );
     for (; it.current(); ++it )
     {
         ContainerNode *res = it.current()->findContainer( _name, tag );
@@ -82,7 +82,7 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
                                              KXMLGUIClient *currClient )
 {
     ContainerNode *res = 0L;
-    QPtrListIterator<ContainerNode> nIt( children );
+    ContainerNodeListIt nIt( children );
 
     if ( !name.isEmpty() )
     {
@@ -113,10 +113,10 @@ ContainerNode *ContainerNode::findContainer( const QString &name, const QString 
 }
 
 void ContainerNode::adjustMergingIndices( int offset,
-                                          const QValueList<MergingIndex>::Iterator &it )
+                                          const MergingIndexList::Iterator &it )
 {
-    QValueList<MergingIndex>::Iterator mergingIt = it;
-    QValueList<MergingIndex>::Iterator mergingEnd = mergingIndices.end();
+    MergingIndexList::Iterator mergingIt = it;
+    MergingIndexList::Iterator mergingEnd = mergingIndices.end();
 
     for (; mergingIt != mergingEnd; ++mergingIt )
         (*mergingIt).value += offset;

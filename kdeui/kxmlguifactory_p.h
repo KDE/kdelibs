@@ -13,6 +13,10 @@ class KXMLGUIBuilder;
 namespace KXMLGUI
 {
 
+typedef QPtrList<KAction> ActionList;
+typedef QPtrListIterator<KAction> ActionListIt;
+typedef QMap< QString, ActionList > ActionListMap;
+
 /*
  * This structure is used to know to which client certain actions and custom elements
  * (i.e. menu separators) belong.
@@ -28,12 +32,14 @@ namespace KXMLGUI
 struct ContainerClient
 {
     KXMLGUIClient *client;
-    QPtrList<KAction> actions;
+    ActionList actions;
     QValueList<int> customElements;
     QString groupName; //is empty if no group client
-    QMap<QString, QPtrList<KAction> > actionLists;
+    ActionListMap actionLists;
     QString mergingName;
 };
+typedef QPtrList<ContainerClient> ContainerClientList;
+typedef QPtrListIterator<ContainerClient> ContainerClientListIt;
 
 class ContainerNode;
 
@@ -44,6 +50,7 @@ struct MergingIndex
                          // Merge or DefineGroup tag)
     QString clientName; // the name of the client that defined this index
 };
+typedef QValueList<MergingIndex> MergingIndexList;
 
 /*
  * Here we store detailed information about a container, its clients (client=a guiclient having actions
@@ -87,22 +94,25 @@ struct ContainerNode
 
     QString groupName; //is empty if the container is in no group
 
-    QPtrList<ContainerClient> clients;
+    ContainerClientList clients;
     QPtrList<ContainerNode> children;
 
     int index;
-    QValueList<MergingIndex> mergingIndices;
+    MergingIndexList mergingIndices;
 
     QString mergingName;
 
-    QValueList<MergingIndex>::Iterator findIndex( const QString &name );
+    MergingIndexList::Iterator findIndex( const QString &name );
     ContainerNode *findContainerNode( QWidget *container );
     ContainerNode *findContainer( const QString &_name, bool tag );
     ContainerNode *findContainer( const QString &name, const QString &tagName,
                                   const QPtrList<QWidget> *excludeList,
                                          KXMLGUIClient *currClient );
-    void adjustMergingIndices( int offset, const QValueList<MergingIndex>::Iterator &it );
+    void adjustMergingIndices( int offset, const MergingIndexList::Iterator &it );
 };
+
+typedef QPtrList<ContainerNode> ContainerNodeList;
+typedef QPtrListIterator<ContainerNode> ContainerNodeListIt;
 
 };
 
