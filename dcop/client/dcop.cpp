@@ -204,9 +204,12 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	types = QStringList::split( ',', f.mid( left + 1, right - left - 1) );
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
 	    (*it).stripWhiteSpace();
+#if 0
+// This destroys all possible support for things like unsigned long int
 	    int s = (*it).find(' ');
 	    if ( s > 0 )
 		(*it) = (*it).left( s );
+#endif
 	}
 	QString fc = f.left( left );
 	fc += '(';
@@ -238,8 +241,18 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 	    arg << s.toInt();
 	else if ( type == "uint" )
 	    arg << s.toUInt();
+	else if ( type == "unsigned" )
+	    arg << s.toUInt();
+	else if ( type == "unsigned int" )
+	    arg << s.toUInt();
 	else if ( type == "long" )
 	    arg << s.toLong();
+	else if ( type == "long int" )
+	    arg << s.toLong();
+	else if ( type == "unsigned long" )
+	    arg << s.toULong();
+	else if ( type == "unsigned long int" )
+	    arg << s.toULong();
 	else if ( type == "float" )
 	    arg << s.toFloat();
 	else if ( type == "double" )
