@@ -41,9 +41,7 @@ KFilterDev::KFilterDev( KFilterBase * _filter )
 {
     assert(filter);
     d = new KFilterDevPrivate;
-    // Some setFlags calls are probably missing here,
-    // for proper results of the state methods,
-    // but the Qt doc says "internal" ??.
+    setFlags(IO_Sequential);
 }
 
 KFilterDev::KFilterDev( KFilterBase * _filter, bool autoDeleteFilterBase )
