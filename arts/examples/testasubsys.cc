@@ -55,7 +55,7 @@ SinTest::SinTest() : done(0), as(AudioSubSystem::the())
 	}
 	else
 	{
-		audiofd = as->open(false);
+		audiofd = as->open();
 		if(audiofd < 0)
 		{
 			cout << "audio subsystem init failed ("
