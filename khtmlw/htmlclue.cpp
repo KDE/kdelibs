@@ -1547,7 +1547,13 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 		    newLine = true;
 		    break;		
 		}
-		run->calcSize(parent);
+		//run->calcSize(parent);
+		// Lars: the above gives wrong lmargins, since run 
+		// run->setSize() usually calls 
+		// parent->getLeftMargin( getYSize() ) to determine the
+		// left margin. But y is relative to the clues parent,
+		// not absolute... So this should fix it.
+		run->calcSize(this);
 		runWidth += run->getWidth();
 
 		// If this run cannot fit in the allowed area, break it
