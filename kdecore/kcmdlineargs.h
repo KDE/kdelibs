@@ -140,6 +140,7 @@ class KCmdLineArgsPrivate;
  *     { "c \<speed>", I18N_NOOP("As above but with a default value."), "9600" },
  *     { "option1", I18N_NOOP("A long binary option, off by default."), 0 },
  *     { "nooption2", I18N_NOOP("A long binary option, on by default."), 0 },
+ *     { ":", I18N_NOOP("Extra options:"), 0 },
  *     { "option3 \<file>", I18N_NOOP("A long option which takes an argument."), 0 },
  *     { "option3 \<speed>", I18N_NOOP("As above with 9600 as default."), "9600" },
  *     { "d", 0, 0 },
@@ -152,6 +153,7 @@ class KCmdLineArgsPrivate;
  *     { "+file", I18N_NOOP("A required argument 'file'.), 0 },
  *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'."), 0 },
  *     { "!+command", I18N_NOOP("A required argument 'command', that can contain multiple words, even starting with '-'.), 0 },
+ *     { "", I18N_NOOP("Additional help text not associated with any particular option.") 0 },
  *     KCmdLineLastOption // End of options.
  *  };
  *  \endcode

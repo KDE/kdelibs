@@ -362,6 +362,12 @@ findOption(const KCmdLineOptions *options, QCString &opt,
       result = 0;
       inverse = false;
       opt_name = options->name;
+      if ((opt_name[0] == ':') || (opt_name[0] == 0))
+      {
+         options++;
+         continue;
+      }
+
       if (opt_name[0] == '!')
       {
          opt_name++;
@@ -827,6 +833,12 @@ KCmdLineArgs::usage(const char *id)
    {
      bool hasArgs = false;
      bool hasOptions = false;
+     QString optionsHeader;
+     if (args->name)
+        optionsHeader = optionHeaderString.arg(i18n("%1 options").arg(QString::fromLatin1(args->name)));
+     else
+        optionsHeader = i18n("\nOptions:\n");
+
      while (args)
      {
        const KCmdLineOptions *option = args->options;
@@ -837,6 +849,33 @@ KCmdLineArgs::usage(const char *id)
          QString description;
          QString descriptionRest;
          QStringList dl;
+         
+         // Option header
+         if (option->name[0] == ':')
+         {
+            if (option->description)
+            {
+               optionsHeader = "\n"+i18n(option->description);
+               if (!optionsHeader.endsWith("\n"))
+                  optionsHeader.append("\n");
+               hasOptions = false;
+            }
+            option++;
+            continue;
+         }
+         
+         // Free-form comment
+         if (option->name[0] == 0)
+         {
+            if (option->description)
+            {
+               printQ("\n"+i18n(option->description));
+            }
+            option++;
+            continue;
+         }
+         
+         // Options
          if (option->description)
          {
             description = i18n(option->description);
@@ -866,10 +905,7 @@ KCmdLineArgs::usage(const char *id)
          {
             if (!hasOptions)
             {
-               if (!args->name)
-                  printQ(i18n("\nOptions:\n"));
-               else if (args->name)
-                  printQ(optionHeaderString.arg(i18n("%1 options").arg(QString::fromLatin1(args->name))));
+               printQ(optionsHeader);
                hasOptions = true;
             }
 
