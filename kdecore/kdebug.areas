@@ -45,16 +45,20 @@
 8004    kded (corba)
 
 # 30001-65534 are for KOffice
-30001 koffice
-31000 koffice
-31001 kxcl
-32000 kxcl
-32001 kword
-33000 kword
-33001 kpresenter
-34000 kpresenter
-34001 klyx
-35000 klyx
-35001 kchart
-36000 kchart
-37000 kspread
+30001   koffice (lib koml)
+30002   koffice (lib store)
+30003   koffice (lib kofficecore)
+30004   koffice (lib kofficeui)
+31000   koffice
+31001   kxcl
+32000   kxcl
+32001   kword
+33000   kword
+33001   kpresenter
+34000   kpresenter
+34001   klyx
+35000   klyx
+35001   kchart
+36000   kchart
+36001   kspread
+37000   kspread
