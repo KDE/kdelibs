@@ -533,7 +533,7 @@ void Location::put(const UString &p, const KJSO &v)
 
   KURL url = part->url();
     
-  if (p == "href") url=str;
+  if (p == "href") url = KURL(url,str);
   if (p == "hash") url.setRef(str);;
   if (p == "host") {
     // danimo: KURL doesn't have a way to
