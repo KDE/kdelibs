@@ -149,7 +149,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
             QTab *tab = selectTab( e->pos() );
             if( tab!= 0L ) {
                 int reorderStopTab = indexOf( tab->identifier() );
-                if ( mReorderStartTab!=reorderStopTab /*&& mReorderPreviousTab!=reorderStopTab JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJj*/) {
+                if ( mReorderStartTab!=reorderStopTab && mReorderPreviousTab!=reorderStopTab ) {
                     emit( moveTab( mReorderStartTab, reorderStopTab ) );
                     mReorderPreviousTab=mReorderStartTab;
                     mReorderStartTab=reorderStopTab;
