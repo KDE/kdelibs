@@ -253,9 +253,10 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
     if ((fixedWidth0==-1) && (fixedWidth1==-1)) {
 	    if ((c0->getWidget()) && (dc=static_cast<KDockContainer*>(c0->getWidget()->qt_cast("KDockContainer")))
 		 && (dc->m_overlapMode)) {
+			int position= (m_orientation == Vertical ? width() : height()) * xpos/factor;
+			position=checkValueOverlapped(position,child0);
 			child0->raise();
 			divider->raise();
-			int position= (m_orientation == Vertical ? width() : height()) * xpos/factor;
 	        	      if (m_orientation == Horizontal){
         	        	child0->setGeometry(0, 0, width(), position);
 	                	child1->setGeometry(0, dc->m_nonOverlapSize+4, width(), 
@@ -270,9 +271,10 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 	    } else {
 		 if ((c1->getWidget()) && (dc=static_cast<KDockContainer*>(c1->getWidget()->qt_cast("KDockContainer")))
         	 && (dc->m_overlapMode)) {
+                	int position= (m_orientation == Vertical ? width() : height()) * xpos/factor;
+			position=checkValueOverlapped(position,child1);
 	                child1->raise();
         	        divider->raise();
-                	int position= (m_orientation == Vertical ? width() : height()) * xpos/factor;
 	                      if (m_orientation == Horizontal){
         	                child0->setGeometry(0, 0, width(), height()-dc->m_nonOverlapSize-4);
                 	        child1->setGeometry(0, position+4, width(),
@@ -305,6 +307,33 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 	}
 	
   }
+}
+
+int KDockSplitter::checkValueOverlapped(int position, QWidget *overlappingWidget) const {
+	if (initialised) {
+		if (m_orientation == Vertical) {
+			if (child0==overlappingWidget) {
+				if (position<(child0->minimumSize().width()))
+					position=child0->minimumSize().width();
+				if (position>width()) position=width()-4;
+			} else if (position>(width()-(child1->minimumSize().width())-4)){
+				position=width()-(child1->minimumSize().width())-4;
+				if (position<0) position=0;
+			}
+		} else {// orientation  == Horizontal
+			if (child0==overlappingWidget) {
+				if (position<(child0->minimumSize().height()))
+					position=child0->minimumSize().height();
+				if (position>height()) position=height()-4;
+			} else if (position>(height()-(child1->minimumSize().height())-4)){
+				position=height()-(child1->minimumSize().height())-4;
+				if (position<0) position=0;
+
+			}
+		}
+
+	}
+	return position;
 }
 
 int KDockSplitter::checkValue( int position ) const

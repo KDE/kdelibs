@@ -79,6 +79,7 @@ public:
 protected:
   friend class  KDockContainer;
   int checkValue( int ) const;
+  int checkValueOverlapped( int ,QWidget*) const;
   virtual void resizeEvent(QResizeEvent *);
 /*
 protected slots:
