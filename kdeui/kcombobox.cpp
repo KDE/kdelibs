@@ -27,17 +27,17 @@
 #include "kcombobox.moc"
 
 
-KComboBox::KComboBox( QWidget *parent, const char *name )
+KComboBox::KComboBox( QWidget *parent, const char *name, bool hsig )
           :QComboBox( parent, name )
 {
     m_pEdit = 0;
     m_pContextMenu = 0;
-    m_bShowContextMenu = false;
+    m_bEnableMenu = false;
     m_bShowModeChanger = false;
-    init();
+    init( hsig );
 }
 
-KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
+KComboBox::KComboBox( bool rw, QWidget *parent, const char *name, bool hsig )
           :QComboBox( rw, parent, name )
 {
     if ( rw )
@@ -51,19 +51,19 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
         list = queryList( "QPopupMenu" );
         it = QObjectListIt( *list );
         m_pContextMenu = (QPopupMenu*) it.current();
-        setEnableContextMenu( true ); // enable context menu by default
-        setEnableModeChanger( true ); // enable mode changer by default
+        setEnableContextMenu(); // enable context menu by default
         m_iSubMenuId = -1;
+        m_bEnableMenu = true;
         delete list;
     }
     else
     {
         m_pEdit = 0;
         m_pContextMenu = 0;
-        m_bShowContextMenu = false;
+        m_bEnableMenu = false;
         m_bShowModeChanger = false;
     }
-    init();
+    init( hsig );
 }
 
 KComboBox::~KComboBox()
@@ -77,7 +77,7 @@ KComboBox::~KComboBox()
         delete m_pCompObj;
 }
 
-void KComboBox::init()
+void KComboBox::init( bool hsig )
 {
     // Permanently set some parameters in the parent object.
     setAutoCompletion( false );
@@ -114,13 +114,16 @@ void KComboBox::init()
     // By default emit rotation signals
     m_bEmitRotation = true;
 
-    // Handle rotation & completion signals
-    // internally by default.
+    // Do not handle rotation & completion signals
+    // internally by default.  It will be enabled below
+    // based on the value of "hsig".
     m_bHandleCompletion = false; //do not remove
     m_bHandleRotation = false; //do not remove
-    setHandleCompletion ( true );
-    setHandleRotation ( true );
-
+    if( hsig )
+    {
+        setHandleCompletion ( true );
+        setHandleRotation ( true );
+    }
     // Connect the signals and slots.
     connect( this, SIGNAL( textChanged( const QString& ) ), this, SLOT( entryChanged( const QString& ) ) );
     connect( listBox(), SIGNAL( returnPressed( QListBoxItem* ) ), this, SLOT( itemSelected( QListBoxItem* ) ) );
@@ -223,14 +226,16 @@ bool KComboBox::setRotateDownKey( int rDnKey )
     return false;
 }
 
-void KComboBox::setEnableContextMenu( bool showMenu )
+void KComboBox::setEnableContextMenu( bool showMenu, bool showChanger )
 {
     if( m_pEdit != 0 && m_pCompObj != 0 )
     {
         if( showMenu )
         {
             connect ( m_pContextMenu, SIGNAL( aboutToShow() ), this, SLOT( aboutToShowMenu() ) );
-            m_bShowContextMenu = showMenu;
+            m_bEnableMenu = showMenu;
+            if( showChanger )
+                showModeChanger();
         }
         else
         {
@@ -242,14 +247,14 @@ void KComboBox::setEnableContextMenu( bool showMenu )
                 m_iSubMenuId = -1;
                 m_pSubMenu = 0;
             }
-            m_bShowContextMenu = showMenu;
+            m_bEnableMenu = showMenu;
         }
     }
 }
 
-void KComboBox::setEnableModeChanger( bool showChanger )
+void KComboBox::hideModeChanger()
 {
-    if ( !showChanger && m_bShowContextMenu )
+    if ( m_bEnableMenu )
     {
         if( m_pSubMenu != 0 )
         {
@@ -258,7 +263,7 @@ void KComboBox::setEnableModeChanger( bool showChanger )
             m_pSubMenu = 0;
         }
     }
-    m_bShowModeChanger = showChanger;
+    m_bShowModeChanger = false;
 }
 
 void KComboBox::setEditText( const QString& text )
@@ -460,7 +465,7 @@ bool KComboBox::eventFilter( QObject *o, QEvent *ev )
             QMouseEvent *e = (QMouseEvent *) ev;
             if( e->button() == Qt::RightButton )
             {
-                    if( m_bShowContextMenu )
+                    if( m_bEnableMenu )
                         return false;
                     return true;
             }

@@ -60,7 +60,7 @@
  * again.  You can also default the key-bindings by simply invoking the @ref
  * setXXXKey method without any argumet.
  *
- * @sect A small example:
+ * @sect Example:
  *
  * To enable the basic completion feature :
  *
@@ -70,14 +70,26 @@
  * connect( combo, SIGNAL( returnPressed( const QString& ) ), combo->completionObject(), SLOT( addItem( const QString& ) );
  * </pre>
  *
- * To use a customized completion objects derived from KCompletion simply
- * use setCompletionObject to create the completion object instead :
+ * To use a customized completion objects :
  *
  * <pre>
  * KComboBox *combo = new KComboBox( this,"mywidget" );
  * KURLCompletion *comp = new KURLCompletion();
  * combo->setCompletionObject( comp );
+ * combo->setHandleCompletion();
+ * combo->setHandleRotation();
+ *
+ * Alternatively you could also tell the combobox to handle the signals and then
+ * change the reference :
+ *
+ * KComboBox *combo = new KComboBox( this,"mywidget", true );
+ * KURLCompletion *comp = new KURLCompletion();
+ * combo->setCompletionObject( comp );
  * </pre>
+ *
+ * To show the context (popup) menu :
+ *
+ * combo->setEnableContextMenu();
  *
  * Of course @ref setCompletionObject can also be used to assign the base
  * KCompletion class as the comepltion object.  This is specailly important
@@ -93,21 +105,26 @@ class KComboBox : public QComboBox
 public:
 
     /**
-    * Constructs a combo box widget with a parent object
+    * Constructs a read-only or rather select-only combo box with a parent object
     * and a name.
     *
-    *
+    * @param @p parent the parent object of this widget
+    * @param @p name the name of this widget
+    * @param @p hsig determines if this widget automatically handles the signals internally.
     */
-    KComboBox( QWidget *parent=0, const char *name=0 );
+    KComboBox( QWidget *parent=0, const char *name=0, bool hsig = true );
 
     /**
-    * Constructs a combo box widget in "select-only" or "read-write"
-    * mode with a parent, a name and a context menu.
+    * Constructs a "read-write" or "read-only" combo box depending on the value of
+    * the first argument( bool rw ) with a parent, a name.
     *
-    *
-    *
+    * @param @p string text to be shown in the edit widget
+    * @param @p parent the parent object of this widget
+    * @param @p name the name of this widget
+    * @param @p hsig determines if this widget automatically handles the signals internally.
     */
-    KComboBox( bool rw, QWidget *parent=0, const char *name=0 );
+    KComboBox( bool rw, QWidget *parent=0, const char *name=0, bool hsig = true );
+
     /**
     * Destructor
     */
@@ -175,7 +192,7 @@ public:
     *
     * @return true if the completion object
     */
-    bool deleteCompletion() const { return m_bAutoDelCompObj; }
+    bool deleteCompletionObject() const { return m_bAutoDelCompObj; }
 
     /**
     * Sets the completion object for deletion upon this widget's destruction.
@@ -185,7 +202,7 @@ public:
     *
     * @param @p autoDelete if set to true the completion object is deleted on exit.
     */
-    void setDeleteCompletion( bool autoDelete = false ) { m_bAutoDelCompObj = autoDelete; }
+    void setDeleteCompletionObject( bool autoDelete = false ) { m_bAutoDelCompObj = autoDelete; }
 
     /**
     * Enables or disables basic completion feature for this widget.
@@ -206,13 +223,12 @@ public:
     /**
     * Enables/disables this widget's ability to emit completion signals.
     *
-    * Note that if you invoke this function with the argument set to false,
-    * no completion signals will be emitted.  Thus, this widget will not be
-    * able to handle the completion signals even if setHandleCompletion has
-    * been or is called.  Also note that disabling the emition of the
-    * completion signals through this method does NOT delete the comlpetion
-    * object if one has already been created.  See also @ref setHandleCompletion
-    * and @ref setHandleCompletion.
+    * Invoking this function with the argument set to false, no completion
+    * signals will be emitted.  Thus, this widget will not be able to handle
+    * the completion signals even if setHandleCompletion has been or is called.
+    * Note that disabling the emition of the completion signal through
+    * this method does NOT delete the comlpetion object if one has already been
+    * created.  See also @ref setHandleCompletion and @ref setHandleCompletion.
     *
     * @param @p emit if true emits completion signal.
     */
@@ -264,14 +280,14 @@ public:
     *
     * @return true when this widget handles completion signal.
     */
-    bool handlesCompletion() { return m_bHandleCompletion; }
+    bool handlesCompletion() const { return m_bHandleCompletion; }
 
     /**
     * Returns true if this widget handles rotation signal internally.
     *
     * @return true when this widget handles rotation signal.
     */
-    bool handlesRotation() { return m_bHandleRotation; }
+    bool handlesRotation() const { return m_bHandleRotation; }
 
     /**
     * Sets the type of completion to be used.
@@ -417,30 +433,47 @@ public:
     void useGlobalSettings() { m_iCompletionKey = 0; }
 
     /**
-    * Enables/disables the popup (context) menu for this widget.
+    * Enables/disables the popup (context) menu.
     *
-    * This method only works if this widget is editable ( i.e. read-write ).
-    * If this widget is not editable, invoking this function accomplishs nothing.
-    * Hence, the return value will always be false under those circumstances.
+    * This method only works if this widget is editable ( i.e. read-write ) and allows
+    * you to enable/disable the context menu. If this method is invoked without an
+    * argument, the context menu will be disabled.  Note that by default the mode changer
+    * is visible when context menu is enabled.  Use either hideModechanger() or call this
+    * function with the second argument set to "false" if you do not want that item to be
+    * inserted.
     *
-    * @param @p showChanger if set to true, the mode changer item is enabled.
+    * @param @p showMenu if true, shows the context menu.
+    * @param @p showModeChanger if true, shows the mode changer item in popup menu.
     */
-    void setEnableContextMenu( bool showMenu = false );
-
+    virtual void setEnableContextMenu( bool showMenu = false, bool showChanger = false );
 
     /**
-    * Shows the completion mode changer in the context menu.
+    * Makes the completion mode changer visible in the context menu.
     *
-    * This function allows to enable/disable the apperance of the mode changer
-    * item from the context menu.  Note that there is no need to call this
-    * function unless you have disabled the mode changer.  It is automatically
-    * enabled by default.
-    *
-    * NOTE : this function is meaningless if this widget is "select-only".
-    *
-    * @param @p showChanger if set to true, the mode changer item is enabled.
+    * This function allows you to show the completion mode changer, thus, enabling
+    * the user to change the comepltion mode on the fly.
     */
-    void setEnableModeChanger( bool showMode = false );
+    void showModeChanger() { m_bShowModeChanger = true; }
+
+    /**
+    * Hides the completion mode changer in the context menu.
+    */
+    void hideModeChanger();
+
+    /**
+    * Returns true when the context menu is enabled.
+    *
+    * @return @p true if context menu is enabled.
+    */
+    bool isContextMenuEnabled() const { return m_bEnableMenu; }
+
+    /**
+    * Returns true if the mode changer item is visible in
+    * the context menu.
+    *
+    * @return @p true if the mode changer is visible in context menu.
+    */
+    bool isModeChangerVisible() const { return m_bShowModeChanger; }
 
 signals:
 
@@ -559,7 +592,7 @@ protected slots:
 
 protected:
     // Initializes the variables upon construction.
-    virtual void init();
+    virtual void init( bool );
     // Override the key-press event for "select-only" box.
     virtual void keyPressEvent ( QKeyEvent* );
     /*
@@ -585,7 +618,7 @@ private :
 
     // Flag that indicates whether we enable/disable
     // the context (popup) menu.
-    bool m_bShowContextMenu;
+    bool m_bEnableMenu;
     // Flag that indicates whether we show/hide the mode
     // changer item in the context menu.
     bool m_bShowModeChanger;
