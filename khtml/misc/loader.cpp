@@ -323,9 +323,6 @@ namespace khtml
 }
 
 
-/*!
-  This Class defines the DataSource for incremental loading of images.
-*/
 ImageSource::ImageSource(QByteArray buf)
 {
   buffer = buf;
@@ -335,10 +332,6 @@ ImageSource::ImageSource(QByteArray buf)
   rewable = true;
 }
 
-/**
- * Overload QDataSource::readyToSend() and returns the number
- * of bytes ready to send if not eof instead of returning -1.
-*/
 int ImageSource::readyToSend()
 {
     if(eof && pos == buffer.size())
@@ -347,9 +340,6 @@ int ImageSource::readyToSend()
     return  buffer.size() - pos;
 }
 
-/*!
-  Reads and sends a block of data.
-*/
 void ImageSource::sendTo(QDataSink* sink, int n)
 {
     sink->receive((const uchar*)&buffer.at(pos), n);
@@ -364,9 +354,6 @@ void ImageSource::sendTo(QDataSink* sink, int n)
     }
 }
 
-/**
- * Sets the EOF state.
- */
 void ImageSource::setEOF( bool state )
 {
     eof = state;
@@ -393,7 +380,6 @@ void ImageSource::rewind()
     } else
         ready();
 }
-
 
 void ImageSource::cleanBuffer()
 {
@@ -606,12 +592,8 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 {
     CachedObjectClient *c;
 
-    for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
-#ifdef CACHE_DEBUG
-        kdDebug( 6060 ) << "found a client to update: " << c << endl;
-#endif
+    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
         c->setPixmap( p, r, this);
-    }
 }
 
 
@@ -662,6 +644,7 @@ void CachedImage::movieStatus(int status)
         delete bg;
         bg = 0;
     }
+
 
     if((status == QMovie::EndOfMovie && (!m || m->frameNumber() <= 1)) ||
        ((status == QMovie::EndOfLoop) && (m_showAnimations == KHTMLSettings::KAnimationLoopOnce)) ||
@@ -714,6 +697,7 @@ void CachedImage::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimati
         imgSource->cleanBuffer();
         delete p;
         p = new QPixmap(m->framePixmap());
+
         m->disconnectUpdate( this, SLOT( movieUpdated( const QRect &) ));
         m->disconnectStatus( this, SLOT( movieStatus( int ) ));
         m->disconnectResize( this, SLOT( movieResize( const QSize& ) ) );
