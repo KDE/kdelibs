@@ -37,6 +37,7 @@ namespace DOM {
 
 class HTMLElementImpl;
 class DOMString;
+class HTMLCollection;
 
 /**
  * All HTML element interfaces derive from this class. Elements that

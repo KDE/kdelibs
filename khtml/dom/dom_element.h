@@ -37,6 +37,7 @@ namespace DOM {
 
 class DOMString;
 class AttrImpl;
+class Element;
 class ElementImpl;
 class NamedAttrMapImpl;
 class DocumentImpl;
