@@ -11,3 +11,6 @@ include_HEADERS = kmdichildarea.h kmdichildfrm.h kmdichildfrmcaption.h kmdidefin
                   kmditaskbar.h kmdichildview.h
 
 METASOURCES = AUTO
+
+DOXYGEN_REFERENCES = kdecore kdeui kparts kutils
+
