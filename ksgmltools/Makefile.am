@@ -5,10 +5,3 @@ bin_SCRIPTS = kdb2html
 # Don't add plain yet!  It may overwrite the customisations.
 # lang-conv gives problems when added
 SUBDIRS = customization
-
-install-data-local:
-	-$(INSTALL_CATALOG) --add /etc/sgml/sgml-docbook-3.1.cat $(kde_datadir)/docbook/catalog
-
-uninstall-local:
-	-$(INSTALL_CATALOG) --remove /etc/sgml/sgml-docbook-3.1.cat $(kde_datadir)/docbook/catalog
-
