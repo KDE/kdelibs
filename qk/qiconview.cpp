@@ -1647,7 +1647,7 @@ void QIconViewItem::calcTmpText()
     if ( view->d->wordWrapIconText || !fm || !wordWrapDirty )
 	return;
     wordWrapDirty = FALSE;
-
+    
     int w = iconView()->maxItemWidth() - ( iconView()->itemTextPos() == QIconView::Bottom ? 0 :
 					   iconRect().width() ) - 4;
     if ( fm->width( itemText ) < w ) {
@@ -3264,10 +3264,15 @@ bool QIconView::sortDirection() const
 
 void QIconView::setWordWrapIconText( bool b )
 {
+    if ( d->wordWrapIconText == b )
+	return;
+
     d->wordWrapIconText = b;
-    for ( QIconViewItem *item = d->firstItem; item; item = item->next )
+    for ( QIconViewItem *item = d->firstItem; item; item = item->next ) {
 	item->wordWrapDirty = TRUE;
-    viewport()->repaint( FALSE );
+	item->calcRect();
+    }
+    alignItemsInGrid( TRUE );
 }
 
 /*!
