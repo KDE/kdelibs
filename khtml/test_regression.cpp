@@ -18,7 +18,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #include <stdlib.h>
@@ -812,12 +811,12 @@ const QString &KHTMLSettings::availableFamilies()
   return *avFamilies;
 }
 
-int QPaintDevice::x11AppDpiY( int screen )
+int QPaintDevice::x11AppDpiY( int )
 {
     return 96;
 }
 
-int QPaintDevice::x11AppDpiX( int screen )
+int QPaintDevice::x11AppDpiX( int )
 {
     return 90;
 }
