@@ -233,9 +233,60 @@ class KAccel
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
 			uint defaultKeyCode, bool configurable = true );
+	
+	/**
+	 * Inserts an accelerator item
+	 *
+	 *  @param descr is the localized name of the action, useful in
+	 *  menus or the keybinding editor.
+	 *  @param action is the internal accelerator item action name. It
+	 *  is supposed to be the same for all language.
+	 *  @param defaultKeyCode is a key code to be used as the default
+	 *  for the action.  
+	 *  Set it to 0 for no default key (still allows to be configured later)
+	 *  @param id menu index of menu item associated with this action
+	 *  @param qmenu menu containing item associated with this action
+	 *  @param configurable indicates whether a user can configure
+	 *  the key binding using the KKeyChooser GUI and whether the
+	 *  key will be written back to configuration files on calling
+	 *  writeSettings.
+	 *  @return true on success
+	 *
+	 * If an action already exists the old association and connections
+	 * will be removed..
+
+	 */
 	bool insertItem( const QString& descr, const QString& action, 
 			uint defaultKeyCode, int id, QPopupMenu *qmenu, 
 			bool configurable = true );
+	
+	 /**
+	 * Inserts an accelerator item
+	 *	
+	 * Arguments:
+	 *
+	 *  @param descr is the localized name of the action, useful in
+	 *  menus or the keybinding
+	 *	      editor.
+	 *  @param action is the internal accelerator item action name. It
+	 *  is supposed to be the same for all language.
+	 *  @param defaultKeyCode is a key plus a combination of SHIFT, CTRL
+	 *	and ALT to be used as the default for the action.
+	 *  @param id menu index of menu item associated with this action
+	 *  @param qmenu menu containing item associated with this action
+	 *  @param configurable indicates whether a user can configure
+	 *  the key
+	 *	binding using the KKeyChooser GUI and whether the key
+	 *	will be written back to configuration files on calling
+	 *	writeSettings.
+	 *  @return true on success
+	 *
+	 * If an action already exists the old association and connections
+	 * will be removed..
+	 */
+	bool insertItem( const QString& descr, const QString& action,
+			 const QString& defaultKeyCode,
+			 bool configurable = true );
 	
 	 /**
 	 * Inserts an accelerator item
@@ -259,9 +310,6 @@ class KAccel
 	 * If an action already exists the old association and connections
 	 * will be removed..
 	 */
-	bool insertItem( const QString& descr, const QString& action,
-			 const QString& defaultKeyCode,
-			 bool configurable = true );
         bool insertItem( const QString& descr, const QString& action,
                      const QString& defaultKeyCode,
 			 int id, QPopupMenu *qmenu, bool configurable = true );
@@ -288,6 +336,13 @@ class KAccel
 	 */
 	bool insertItem( const QString& action, uint defaultKeyCode,
 				 bool configurable = true );
+
+	/**
+	 * Convenience function without the need to specify a localized
+	 * function name for the user. This is useful if the accelerator
+	 * is only used internally, without appearing in a menu or a
+	 * keybinding editor.
+	 */
 	bool insertItem( const QString& action, uint defaultKeyCode,
 				 int id, QPopupMenu *qmenu, 
 				 bool configurable = true );
