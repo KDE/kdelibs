@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     kDebugWarning("1+1 = %d",1+1+1);
     kDebugError(1+1 != 2, "there is something really odd!");
     QString s = "mystring";
-    kdDebug() << s;
+    kdDebug() << s << endl;
     kDebugError(1202,"Error !!!");
     kDebugError("Error with no area");
     return 0;
