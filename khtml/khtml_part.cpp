@@ -6,6 +6,7 @@
  *                     1999 Antti Koivisto <koivisto@kde.org>
  *                     2000 Simon Hausmann <hausmann@kde.org>
  *                     2000 Stefan Schimanski <1Stein@gmx.de>
+ *                     2001 George Staikos <staikos@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -356,6 +357,7 @@ public:
   bool m_bFirstData:1;
   bool m_bClearing:1;
   bool m_bCleared:1;
+  bool m_bSecurityInQuestion:1;
 
   bool m_focusNodeRestored:1;
   int m_focusNodeNumber;
@@ -1228,6 +1230,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
     d->m_cacheId = KHTMLPageCache::self()->createCacheEntry();
 
     // When the first data arrives, the metadata has just been made available
+    d->m_bSecurityInQuestion = false;
     d->m_ssl_in_use = (d->m_job->queryMetaData("ssl_in_use") == "TRUE");
     kdDebug(6050) << "SSL in use? " << d->m_job->queryMetaData("ssl_in_use") << endl;
 
@@ -1237,6 +1240,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 	while (p->parentPart()) p = p->parentPart();
 	
 	p->d->m_paSecurity->setIcon( "halflock" );
+        p->d->m_bSecurityInQuestion = true;
 	kdDebug(6050) << "parent setIcon half done." << endl;
     }
     }
@@ -2471,6 +2475,10 @@ void KHTMLPart::slotSecurity()
 //                   << endl;
 
   KSSLInfoDlg *kid = new KSSLInfoDlg(d->m_ssl_in_use, widget(), "kssl_info_dlg", true );
+  
+  if (d->m_bSecurityInQuestion)
+	  kid->setSecurityInQuestion(true);
+  
   if (d->m_ssl_in_use) {
     KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.local8Bit());
     if (x) {
