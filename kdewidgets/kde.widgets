@@ -113,6 +113,12 @@ ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings
 Group=Buttons (KDE)
 
+[KKeyButton]
+ToolTip=Keyboard Key Button. (KDE)
+WhatsThis=A push button that looks like a keyboard key.
+IncludeFile=kkeybutton.h
+Group=Buttons (KDE)
+
 [KRestrictedLine]
 ToolTip=Line Edit for restricted input (KDE)
 Group=Input (KDE)
@@ -183,3 +189,15 @@ ToolTip=Enhanced Spinbox for Floating Point Values (KDE)
 WhatsThis=A spinbox widget for floating point numbers.
 IncludeFile=knuminput.h
 Group=Input (KDE)
+
+[KTimeWidget]
+ToolTip=This widget can be used to display or allow user selection of time. (KDE)
+IncludeFile=ktimewidget.h
+Group=Input (KDE)
+
+[KDateTimeWidget]
+ToolTip=This widget can be used to display or allow user selection of date and time. (KDE)
+IncludeFile=kdatetimewidget.h
+Group=Input (KDE)
+
+

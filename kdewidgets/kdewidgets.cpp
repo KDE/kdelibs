@@ -15,15 +15,21 @@
 #include "kcolorcombo.h"
 #include "kcombobox.h"
 #include "kdatepicker.h"
+#include "kdatetimewidget.h"
 #include "kdatewidget.h"
 #include "kdialog.h"
+#include "knuminput.h"
 #include "knuminput.h"
 #include "kdualcolorbutton.h"
 #include "keditlistbox.h"
 #include "kfontcombo.h"
 #include "kselect.h"
 #include "kcolordialog.h"
+#include "kcombobox.h"
 #include "kicondialog.h"
+#include "knuminput.h"
+#include "knuminput.h"
+#include "kkeybutton.h"
 #include "kled.h"
 #include "klineedit.h"
 #include "klistbox.h"
@@ -36,6 +42,7 @@
 #include "ksqueezedtextlabel.h"
 #include "ktextbrowser.h"
 #include "ktextedit.h"
+#include "ktimewidget.h"
 #include "kurlrequester.h"
 #include "kurllabel.h"
 #include "kurlrequester.h"
@@ -155,6 +162,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	m_widgets.insert("KDatePicker", widget);
 
 	widget.group = "Input (KDE)";
+	widget.iconSet = "kdatetimewidget.png";
+	widget.includeFile = "kdatetimewidget.h";
+	widget.toolTip = "This widget can be used to display or allow user selection of date and time. (KDE)";
+	widget.whatsThis = "KDateTimeWidget";
+	widget.isContainer = false;
+	m_widgets.insert("KDateTimeWidget", widget);
+
+	widget.group = "Input (KDE)";
 	widget.iconSet = "kdatewidget.png";
 	widget.includeFile = "kdatewidget.h";
 	widget.toolTip = "Date preview (KDE)";
@@ -258,6 +273,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	widget.isContainer = false;
 	m_widgets.insert("KIntSpinBox", widget);
 
+	widget.group = "Buttons (KDE)";
+	widget.iconSet = "kkeybutton.png";
+	widget.includeFile = "kkeybutton.h";
+	widget.toolTip = "Keyboard Key Button. (KDE)";
+	widget.whatsThis = "KKeyButton";
+	widget.isContainer = false;
+	m_widgets.insert("KKeyButton", widget);
+
 	widget.group = "Display (KDE)";
 	widget.iconSet = "kled.png";
 	widget.includeFile = "kled.h";
@@ -355,6 +378,14 @@ KDEWidgetsPlugin::KDEWidgetsPlugin()
 	m_widgets.insert("KTextEdit", widget);
 
 	widget.group = "Input (KDE)";
+	widget.iconSet = "ktimewidget.png";
+	widget.includeFile = "ktimewidget.h";
+	widget.toolTip = "This widget can be used to display or allow user selection of time. (KDE)";
+	widget.whatsThis = "KTimeWidget";
+	widget.isContainer = false;
+	m_widgets.insert("KTimeWidget", widget);
+
+	widget.group = "Input (KDE)";
 	widget.iconSet = "kurlcomborequester.png";
 	widget.includeFile = "kurlrequester.h";
 	widget.toolTip = "URL Requester (KDE)";
@@ -401,6 +432,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KComboBox(parent, name);
 	if (key == "KDatePicker")
 		return new KDatePicker(parent, QDate::currentDate(), name);
+	if (key == "KDateTimeWidget")
+		return new KDateTimeWidget(parent, name);
 	if (key == "KDateWidget")
 		return new KDateWidget(parent, name);
 	if (key == "KDialog")
@@ -427,6 +460,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KIntNumInput(parent, name);
 	if (key == "KIntSpinBox")
 		return new KIntSpinBox(parent, name);
+	if (key == "KKeyButton")
+		return new KKeyButton(parent, name);
 	if (key == "KLed")
 		return new KLed(parent, name);
 	if (key == "KLineEdit")
@@ -451,6 +486,8 @@ QWidget *KDEWidgetsPlugin::create(const QString &key, QWidget *parent, const cha
 		return new KTextBrowser(parent, name);
 	if (key == "KTextEdit")
 		return new KTextEdit(parent, name);
+	if (key == "KTimeWidget")
+		return new KTimeWidget(parent, name);
 	if (key == "KURLComboRequester")
 		return new KURLRequester(new KComboBox(true), parent, name);
 	if (key == "KURLLabel")

@@ -8,7 +8,7 @@ data_DATA =  klineedit.png ktextbrowser.png kpasswordedit.png kdatewidget.png \
              kpushbutton.png kcharselect.png kdatepicker.png \
              kdialog.png keditlistbox.png kfontcombo.png khistorycombo.png \
              kintnuminput.png krestrictedline.png ktextedit.png \
-             kurlcomborequester.png 
+             kurlcomborequester.png kkeybutton.png
 
 datadir = $(kde_datadir)/kdewidgets/pics
 
