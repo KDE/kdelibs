@@ -386,13 +386,7 @@ public:
    */
   void paint(QPainter *, const QRect &, int = 0, bool * = 0);
 
-  /**
-   * Stops all animated images on the current page.
-   */
-  void stopAnimations();
-
-  /**
-   * Mainly used internally.
+  /* Mainly used internally.
    *
    * Sets the document's base URL.
    */
@@ -829,6 +823,11 @@ public slots:
    * current document.
    */
   void setActiveNode(const DOM::Node &);
+
+  /**
+   * Stops all animated images on the current and child pages
+   */
+  void stopAnimations();
 
 protected slots:
 
