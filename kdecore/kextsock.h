@@ -26,7 +26,9 @@
 #include <qstring.h>
 #include <qlist.h>
 #include <qiodevice.h>
+#include <qsocketnotifier.h>
 
+#include "kbufferedio.h"
 #include "ksockaddr.h"
 
 /* External reference to netdb.h */
@@ -37,6 +39,8 @@ class KAddressInfo;		/* our abstraction of it */
  * This is extending QIODevice's error codes
  *
  * According to qiodevice.h, the last error is IO_UnspecifiedError
+ * These errors will never occur in functions declared in QIODevice
+ * (except open, but you shouldn't call open)
  */
 #define IO_ListenError		(IO_UnspecifiedError+1)
 #define IO_AcceptError		(IO_UnspecifiedError+2)
@@ -75,7 +79,7 @@ class KAddressInfo;		/* our abstraction of it */
  * @version $Id$
  * @short an extended socket
  */
-class KExtendedSocket: public QObject, public QIODevice
+class KExtendedSocket: public KBufferedIO // public QObject, public QIODevice
 {
   Q_OBJECT
 
@@ -97,15 +101,18 @@ public:
     ipv4Socket = inetSocket | 0x100,
     ipv6Socket = inetSocket | 0x200,
 
-    passiveSocket = 0x1000, /* passive socket (i.e., one that accepts connections) */
-    canonName = 0x2000, /* request that the canon name be found */
-    noResolve = 0x4000,	/* do not attempt to resolve, treat as numeric host */
+    passiveSocket = 0x1000,	/* passive socket (i.e., one that accepts connections) */
+    canonName = 0x2000,		/* request that the canon name be found */
+    noResolve = 0x4000,		/* do not attempt to resolve, treat as numeric host */
 
-    streamSocket = 0x8000, /* request a streaming socket (e.g., TCP) */
-    datagramSocket = 0x10000, /* request a datagram socket (e.g., UDP) */
-    rawSocket = 0x20000, /* request a raw socket. This probably requires privileges */
+    streamSocket = 0x8000,	/* request a streaming socket (e.g., TCP) */
+    datagramSocket = 0x10000,	/* request a datagram socket (e.g., UDP) */
+    rawSocket = 0x20000,	/* request a raw socket. This probably requires privileges */
 
-    unixSocketKeep = 0x100000 /* do not unlink() the unix socket, if one is created */
+    unixSocketKeep = 0x100000,	/* do not unlink() the unix socket, if one is created */
+    inputBufferedSocket = 0x200000, /* buffer input in this socket */
+    outputBufferedSocket = 0x400000, /* buffer output in this socket */
+    bufferedSocket = 0x600000	/* make this a fully buffered socket */
   };
 
   /**
@@ -115,24 +122,27 @@ public:
    */
   enum SockStatus
   {
+    // the numbers are scattered so that we leave room for future expansion
     error = -1,			// invalid status!
 
     nothing = 0,		// no status, the class has just been created
 
-    lookupDone = 1,		// lookup has been done. Flags cannot be changed
+    lookupInProgress = 4,	// lookup is in progress. Signals will be sent
+    lookupDone = 5,		// lookup has been done. Flags cannot be changed
 				// from this point on
 
-				// These two modes will never be seen on KExtendedSocket:
-    created = 2,		// ::socket() has been called, a socket exists
-    bound = 3,			// socket has been bound
+    created = 10,		// ::socket() has been called, a socket exists
+    bound = 11,			// socket has been bound
 
-    connecting = 4,		// socket is connecting (not passiveSocket)
-    connected = 5,		// socket has connected (not passiveSocket)
+    connecting = 20,		// socket is connecting (not passiveSocket)
+    connected = 21,		// socket has connected (not passiveSocket)
 
-    listening = 4,		// socket is listening (passiveSocket)
-    accepting = 5,		// socket is accepting (passiveSocket)
+    listening = 20,		// socket is listening (passiveSocket)
+    accepting = 21,		// socket is accepting (passiveSocket)
+
+    closing = 35,		// socket is closing (delayed close)
     
-    closed = 6			// socket has been closed
+    done = 40			// socket has been closed
   };
 
 public:
@@ -319,6 +329,34 @@ public:
   bool blockingMode();
 
   /**
+   * Sets/unsets address reusing flag for this socket.
+   * This function returns true if the value was set correctly. That is NOT
+   * the result of the set.
+   * @param enable	if true, set address reusable
+   */
+  bool setAddressReusable(bool enable);
+
+  /**
+   * Returns whether this socket can be reused
+   */
+  bool addressReusable();
+
+  /**
+   * Sets the buffer sizes for this socket.
+   * This implementation allows any size for both parameters. The value given
+   * will be interpreted as the maximum size allowed for the buffers, after
+   * which the functions will stop buffering. The value of -1 will be
+   * interpreted as "unlimited" size.
+   * Note: changing the buffer size to 0 for any buffer will cause the given
+   * buffer's to be discarded. Likewise, setting the size to a value less than
+   * the current size will cause the buffer to be shrunk to the wanted value,
+   * as if the data had been read.
+   * @param rsize	read buffer size
+   * @param wsize	write buffer size
+   */
+  virtual bool setBufferSize(int rsize, int wsize = -2);
+
+  /**
    * Returns the local socket address
    */
   KSocketAddress *localAddress();
@@ -347,6 +385,27 @@ public:
   virtual int lookup();
 
   /**
+   * Starts an asynchronous lookup for the addresses given
+   * This function returns 0 on success or -1 on error. Note that
+   * returning 0 means that either we are in the process of doing
+   * lookup or that it has finished already.
+   * When the lookup is done, the lookupReady signal will be emitted.
+   * Note that, depending on the parameters for the lookup, this function might
+   * know the results without the need for blocking or queueing an
+   * asynchronous lookup. That means that the lookupReady signal might be
+   * emitted by this function, so your code should be prepared for that.
+   * One such case is when noResolve flag is set.
+   * If this function were able to determine the results without queueing
+   * and we found an error during lookup, this function will return -1.
+   */
+  virtual int startAsyncLookup();
+
+  /**
+   * Cancels any on-going asynchronous lookups
+   */
+  virtual void cancelAsyncLookup();
+
+  /**
    * Place the socket in listen mode. The parameters are the same as for
    * the system listen() call. Returns 0 on success, -1 on system error (errno
    * available) and -2 if this is not a passiveSocket.
@@ -371,31 +430,63 @@ public:
    * -1: system error, errno was set accordingly
    * -2: this socket cannot connect(); this is a passiveSocket. It can also
    *   mean that the function was unable to make a connection with the given
-   *   bind address
+   *   bind address or that an asynchronous connection attempt is already
+   *   in progress.
    * -3: connection timed out
    */
   virtual int connect();
 
   /**
+   * Starts an asynchronous connect. This works exactly the same as @ref connect,
+   * except that the connection result won't be returned. This function will 
+   * return either 0 on successful queueing of the connect or -1 on error. If 
+   * this function returns 0, then the connectionSuccess or the connectionFailed
+   * signals will be emitted.
+   * Note that those signals might be emitted before this function returns, so your
+   * code should be prepared for that condition.
+   */
+  virtual int startAsyncConnect();
+
+  /**
+   * Cancels any on-going asynchronous connection attempt.
+   */
+  virtual void cancelAsyncConnect();
+
+  /**
    * Implementation of QIODevice's open() pure virtual function.
    * This depends on the target host address already being there.
    * If this is a passiveSocket, this is identical to call listen(); else, if
-   * this is not a passiveSocket, this is like connect().
+   * this is not a passiveSocket and no connection attempt is in progress, this
+   * is like connect(). If one is in progress, this function will fail.
    * @param mode	the open mode. Must be IO_Raw | IO_ReadWrite
    */
   virtual bool open(int mode = IO_Raw | IO_ReadWrite);
 
   /**
-   * Closes the socket
+   * Closes the socket. If we have data still in the write buffer yet to be
+   * sent, the socket won't be closed right now. It'll be closed after we managed
+   * to send everything out.
+   * If you want to close the socket now, you may want to call @ref flush first,
+   * and then @ref closeNow.
    */
   virtual void close();
 
   /**
+   * Closes the socket now, discarding the contents of the write buffer, if any.
+   * The read buffer's contents are kept until they are emptied by read operations
+   * or the class is destroyed.
+   */
+  virtual void closeNow();
+
+  /**
    * Releases the socket and anything we have holding on it. The class cannot 
-   * be used anymore. In other words, this is just like close(), but it does 
+   * be used anymore. In other words, this is just like closeNow(), but it does 
    * not actually close the socket.
    * This is useful if you just want to connect and don't need the rest of the
    * class.
+   * Note that the buffers' contents will be discarded. And usage of this
+   * method is discouraged, because the socket created might be such that
+   * normal library routines can't handle (read, write, close, etc.)
    */
   virtual void release();
 
@@ -404,10 +495,19 @@ public:
    */
 
   /**
-   * Flushes the socket buffer. This socket is not buffered, so this does nothing
+   * Flushes the socket buffer. You need not call this method during normal 
+   * operation as we will try and send everything as soon as possible.
+   * However, if you want to make sure that data in the buffer is being sent
+   * at this moment, you can call this function. It will try to send as much
+   * data as possible, but it will stop as soon as the kernel cannot receive
+   * any more data, and would possibly block.
+   * By repeatedly calling this function, the behaviour will be like that of
+   * a blocking socket. Indeed, if this function is called with the kernel not
+   * ready to receive data, it will block, unless this is a non-blocking socket.
+   * This function does not touch the read buffer. You can empty it by calling
+   * @ref readBlock with a null destination buffer.
    */
-  virtual inline void flush()
-  { }
+  virtual void flush();
 
   /**
    * Returns length of this socket. This call is not supported on sockets
@@ -436,6 +536,30 @@ public:
 
   /**
    * reads a block of data from the socket
+   *
+   * If the socket is not buffered, this function will simply call the underlying
+   * read method. This function will block if the socket is not on non-blocking mode
+   * (see @ref setBlockingMode) and there is not enough data to be read in the
+   * Operating System yet. If we are in non-blocking operation, the call will
+   * fail in this case.
+   * However, if we are buffering, this function will instead read from the
+   * buffer while there is available data. This function will never block
+   * in buffering mode, which means that if you try to read while the buffers
+   * are empty, this function will always return -1 and set the system error to
+   * EWOULDBLOCK (aka EAGAIN), so as to mimic non-blocking operation.
+   *
+   * The return value for this function is the number of bytes effectively
+   * read. If the @p data param is not null, then this is also the number
+   * of bytes copied into that buffer. If the return value is different than
+   * @p maxlen, then this function encountered a situation in which no more
+   * bytes were available. Subsequent calls might cause this function to one
+   * of these behaviours:
+   * - block, if we are not buffering and we are not in non-blocking mode
+   * - return an error, with EWOULDBLOCK system error, if we buffering
+   *   or we are in non-blocking mode
+   * This function returns 0, if the function detected end-of-file condition
+   * (socket was closed)
+   *
    * @param data	where we will write the read data to
    * @param maxlen	maximum length of data to be read
    */
@@ -443,10 +567,57 @@ public:
 
   /**
    * writes a block of data to the socket
+   *
+   * If the socket is not buffered, this function will simply call the underlying
+   * write method. This means that the function might block if that method blocks
+   * as well. That situation is possible if we are not in non-blocking mode and
+   * the operating system buffers are full for this socket. If we are in
+   * non-blocking mode and the operating system buffers are full, this function
+   * will return -1 and the system error will be set to EWOULDBLOCK.
+   * If we are buffering, this function will simply transfer the data into the
+   * write buffer. This function will always succeed, as long as there is
+   * enough room in the buffer. If the buffer size was limited and that limit
+   * is reached, this function will copy no more bytes than that limit. Trying
+   * to write with a full buffer will return -1 and set system error to
+   * EWOULDBLOCK.
+   *
+   * The function returns the number of bytes written from @p data buffer.
+   * The return value might be less than @p len if the output buffers cannot
+   * accomodate that many bytes.
+   *
    * @param data	the data to write
    * @param len		the length of data to write
    */
   virtual int writeBlock(const char *data, uint len);
+
+  /**
+   * peeks at a block of data from the socket
+   * This is exactly like read, except that the data won't be flushed from the
+   * read buffer.
+   * If this socket is not buffered, this function will always return with
+   * 0 bytes copied.
+   * The return value of 0 does not mean end-of-file condition.
+   * @param data	where to store the data
+   * @param maxlen	how many bytes to copy, at most
+   */
+  virtual int peekBlock(char *data, uint maxlen);
+
+  /**
+   * reimplementation of unreadBlock method. This is so because unreading in 
+   * sockets doesn't make sense, so this function will always return -1 (error)
+   * and set the system error to ENOSYS.
+   */
+  virtual int unreadBlock(const char *data, uint len);
+
+  /**
+   * Waits @p msec milliseconds for more data to be available, or 0 to
+   * wait forever. The return value is the amount of data available for
+   * read in the read buffer.
+   * This function returns -1 in case of system error and -2 in case of
+   * invalid socket state
+   * @param msec	milliseconds to wait
+   */
+  virtual int waitForMore(int msec);
 
   /**
    * gets a single character from the stream
@@ -465,6 +636,46 @@ public:
   virtual int ungetch(int)
   { return -1; }
 
+  /**
+   * Toggles the emission of the readyRead signal
+   * Note that this signal is emitted every time more data is available to be
+   * read, so you might get flooded with it being emitted every time, when in
+   * non-buffered mode. However, in buffered mode, this signal will be
+   * emitted only when there is data coming in from the wire.
+   * By default, this flag is set to false, i.e., signal not being emitted.
+   * @param enable	if true, the signal will be emitted
+   */
+  virtual void enableRead(bool enable);
+
+  /**
+   * Toggles the emission of the readyWrite signal
+   * Note that this signal is emitted only when the OS is ready to receive more
+   * data, which means that the write buffer is empty. And when that is reached,
+   * this signal will possibly be emitted on every loop, so you might
+   * want to disable it. By default, this flag is set to false.
+   * @param enable	if true, the signal will be emitted
+   */
+  virtual void enableWrite(bool enable);
+
+signals:
+  /**
+   * This signal is emitted whenever an asynchronous lookup process is done.
+   * The parameter @p count tells how many results were found.
+   */
+  void lookupFinished(int count);
+
+  /**
+   * This signal is emitted whenever we connected asynchronously to a host.
+   */
+  void connectionSuccess();
+
+  /**
+   * This signal is emitted whenever our asynchronous connection attempt
+   * failed to all hosts listed.
+   * @param error	the errno code of the last connection attempt
+   */
+  void connectionFailed(int error);
+
 protected:
   int m_flags;			// current flags
   int m_status;			// status
@@ -472,13 +683,23 @@ protected:
 
   int sockfd;			// file descriptor of the socket
 
+protected slots:
+
+  void socketActivityRead();
+  void socketActivityWrite();
+  void dnsResultsReady();
+  void startAsyncConnectSlot();
+  void connectionEvent();
+
 private:
-  /* for the future */
   class KExtendedSocketPrivate;
   KExtendedSocketPrivate *d;
 
-protected:
+  // protection against accidental use
+  KExtendedSocket(KExtendedSocket&);
+  KExtendedSocket& operator=(KExtendedSocket&);
 
+protected:
   /**
    * Sets the error code
    */
@@ -494,9 +715,10 @@ protected:
 		      addrinfo** result);
 
 public:
-
   /**
    * Performs resolution on the given socket address
+   * That is, tries to resolve the raw form of the socket address into a textual
+   * representation.
    * @param sockaddr	the socket address
    * @param host	where the hostname will be written
    * @param port	where the service-port will be written
@@ -509,7 +731,14 @@ public:
    * Performs lookup on the given hostname/port combination and returns a list
    * of matching addresses.
    * The error code can be transformed into string by @ref KExtendedSocket::strError
-   * with code of IO_LookupError
+   * with code of IO_LookupError.
+   *
+   * IMPORTANT: the result values of the QList must be deleted after use. So,
+   * if you don't copy the KAddressInfo objects, the best way to assure that
+   * is to call setAutoDelete(true) on the list right after this function 
+   * returns. If you do copy the results out, you must assure that the objects
+   * get deleted when they are not needed any more.
+   *
    * @param host	the hostname to look up
    * @param port	the port/service to look up
    * @param flags	flags to be used when looking up
@@ -519,6 +748,7 @@ public:
 
   /**
    * Returns the local socket address
+   * Remember to delete the returned object when it is no longer needed.
    * @param fd		the file descriptor
    */
   static KSocketAddress *localAddress(int fd);
@@ -526,6 +756,7 @@ public:
   /**
    * Returns the peer socket address. Use KExtendedSocket::resolve() to
    * resolve this to a human-readable hostname/service or port.
+   * Remember to delete the returned object when it is no longer needed.
    * @param fd		the file descriptor
    */
   static KSocketAddress *peerAddress(int fd);
@@ -547,17 +778,20 @@ private:
   inline KAddressInfo() : ai(0), addr(0)
   { }
 
+  KAddressInfo(KAddressInfo&);
+  KAddressInfo& operator=(KAddressInfo&);
+
 public:
   ~KAddressInfo();
-
-  inline KAddressInfo& operator=(KAddressInfo& kai)
-  { ai = kai.ai; addr = kai.addr; return *this; }
 
   inline operator const KSocketAddress*() const
   { return addr; }
 
   inline operator const addrinfo&() const
   { return *ai; }
+
+  inline operator const addrinfo*() const
+  { return ai; }
 
   inline const KSocketAddress* address() const
   { return addr; }
