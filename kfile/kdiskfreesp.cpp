@@ -59,6 +59,7 @@ KDiskFreeSp::KDiskFreeSp(QObject *parent, const char *name)
 **/
 KDiskFreeSp::~KDiskFreeSp()
 {
+    delete dfProc;
 };
 
 /***************************************************************************
