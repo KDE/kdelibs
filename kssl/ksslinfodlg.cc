@@ -49,8 +49,9 @@ private:
 
 KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *name, bool modal)
  : KDialog(parent, name, modal, Qt::WDestructiveClose), d(new KSSLInfoDlgPrivate) {
+    QVBoxLayout *topLayout = new QVBoxLayout(this, KDialog::marginHint(), KDialog::spacingHint());
     d->m_secCon = secureConnection;
-    d->m_layout = new QGridLayout(this, 4, 3, KDialog::marginHint(), KDialog::spacingHint());
+    d->m_layout = new QGridLayout(topLayout, 3, 3, KDialog::spacingHint());
     d->m_layout->setColStretch(1, 1);
     d->m_layout->setColStretch(2, 1);
     QLabel *pixmap = new QLabel(this);
@@ -71,14 +72,17 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     }
     d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
 
+    QHBoxLayout *buttonLayout = new QHBoxLayout(topLayout, KDialog::spacingHint());
+    buttonLayout->addStretch( 1 );
+
     QPushButton *button = new QPushButton(i18n("Close"), this);
     connect(button, SIGNAL(clicked()), SLOT(close()));
-    d->m_layout->addWidget(button, 3, 1);
+    buttonLayout->addWidget( button );
 
     if (KSSL::doesSSLWork()) {
       button = new QPushButton(i18n("Cryptography Configuration..."), this);
       connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
-      d->m_layout->addWidget(button, 3, 2);
+      buttonLayout->addWidget( button );
     }
 
     setCaption(i18n("KDE SSL Information"));
