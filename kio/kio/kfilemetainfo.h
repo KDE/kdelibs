@@ -485,6 +485,7 @@ class KFileMetaInfoGroup
   friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfoGroup& );
 
 public:
+    class Data;
     KFileMetaInfoGroup( const QString& name, const KFileMimeTypeInfo* info );
 
     KFileMetaInfoGroup( const KFileMetaInfoGroup& original );
@@ -568,7 +569,6 @@ public:
 protected:
       KFileMetaInfoItem appendItem( const QString& key, const QVariant& value);
 
-      class Data;
       Data* d;
       void ref();
       void deref();
