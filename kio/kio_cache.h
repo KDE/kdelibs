@@ -23,7 +23,7 @@ class KIOCache;
  *
  * KIOCacheEntry encapsulates all data associated with one entry
  * in KIOCache. It is mainly used for communication between @see
- * #KIOCache and @see #CachedKIOJob.
+ * #KIOCache and @see #KIOCachedJob.
  */
 class KIOCacheEntry
 {
@@ -106,7 +106,7 @@ public:
 
     /**
      * Appends to the document content. Should not be used outside of @see
-     * KIOCache and @see CachedKIOJob
+     * KIOCache and @see KIOCachedJob
      */
     void addData(const QByteArray &_data);
     void addData( const char *_data, int _len );
@@ -210,7 +210,7 @@ private:
  *
  * KIOCache should not be used directly to perform cached IO, the
  * recommended way to access documents from the cache is by using @ref
- * CachedKIOJob. This class provides transparent access to cached
+ * KIOCachedJob. This class provides transparent access to cached
  * documents and handles all the tedious details such as checking if a
  * document is in cache and valid (and retrieving it from the source
  * if not) for you.
@@ -460,15 +460,15 @@ private:
 /**
  * @short Transparent access to cached data.
  *
- * CachedKIOJob provides a means to transparently access data that may
+ * KIOCachedJob provides a means to transparently access data that may
  * reside in a local on-disk cache. Transparent means you don't need
- * to worry about the details, just use CachedKIOJob like you would
- * use KIOJob. CachedKIOJob will fetch the requested documents from the
+ * to worry about the details, just use KIOCachedJob like you would
+ * use KIOJob. KIOCachedJob will fetch the requested documents from the
  * cache if appropriate and get them from their original source if not
  * (see @ref #KIOCache for details like caching strategy and the
  * like).
  *
- * CachedKIOJob provides the same interface as KIOJob with one
+ * KIOCachedJob provides the same interface as KIOJob with one
  * addition: @ref #forceReload can be used to force reloading of a
  * document even if it is in cache and valid.
  *
@@ -495,7 +495,7 @@ public:
   
     /**
       * Calling forceReload(TRUE) (or forceReload() for convenience)
-      * forces CachedKIOJob to retrieve all documents requested before a
+      * forces KIOCachedJob to retrieve all documents requested before a
       * subsequent call to forceReload(FALSE) directly from the original
       * source, even if they are in cache and valid. It doesn't turn off
       * caching of these documents however, use KIOCache::enable(FALSE)
@@ -519,7 +519,7 @@ protected slots:
 
     /**
      * This slot is connected to the see #finished signal of the same
-     * CachedKIOJob when a document is retrieved and should be stored
+     * KIOCachedJob when a document is retrieved and should be stored
      * in cache. The document is written to the cache in this function.
      */
     virtual void slotFinished();
@@ -529,7 +529,7 @@ protected slots:
      * while a document is retrieved that should be stored in cache.
      * It simply adds all data received to @see dataBuffer which is
      * used later to store all of the data in cache (and maybe to pass
-     * the data already available to CachedKIOJobs in repeater mode).
+     * the data already available to KIOCachedJobs in repeater mode).
      */
     virtual void slotData( void *_data, int _len);
 
