@@ -47,6 +47,14 @@ public:
 
     static KAboutData* createAboutData();
 
+    // Forward everything from the embedded part
+    virtual KAction *action( const QDomElement &element ) const;
+    virtual KActionCollection* actionCollection() const;
+    virtual KInstance *instance() const;
+    virtual QDomDocument domDocument() const;
+    virtual QString xmlFile() const;
+    virtual QString localXMLFile() const;
+
 protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *e );
     void setPart( const QString& mimeType );

@@ -31,6 +31,7 @@
 #include <kparts/genericfactory.h>
 #include <khtml_part.h>
 #include <unistd.h>
+#include <kxmlguifactory.h>
 
 typedef KParts::GenericFactory<KMultiPart> KMultiPartFactory; // factory for the part
 K_EXPORT_COMPONENT_FACTORY( libkmultipart /*library name*/, KMultiPartFactory );
@@ -246,6 +247,8 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
 
 void KMultiPart::setPart( const QString& mimeType )
 {
+    KXMLGUIFactory *guiFactory = factory();
+    guiFactory->removeClient( this );
     kdDebug() << "KMultiPart::setPart " << mimeType << endl;
     delete m_part;
     // Try to find an appropriate viewer component
@@ -316,6 +319,8 @@ void KMultiPart::setPart( const QString& mimeType )
     }
 
     m_isHTMLPart = ( mimeType == "text/html" );
+    // Get the part's GUI to appear
+    guiFactory->addClient( this );
 }
 
 void KMultiPart::startOfData()
@@ -461,6 +466,34 @@ void KMultiPartBrowserExtension::reparseConfiguration()
 }
 #endif
 
-//using namespace KParts;
+KAction * KMultiPart::action( const QDomElement &element ) const
+{
+    return m_part ? m_part->action( element ) : KParts::ReadOnlyPart::action( element );
+}
+
+KActionCollection* KMultiPart::actionCollection() const
+{
+    return m_part ? m_part->actionCollection() : KParts::ReadOnlyPart::actionCollection();
+}
+
+KInstance * KMultiPart::instance() const
+{
+    return m_part ? m_part->instance() : KParts::ReadOnlyPart::instance();
+}
+
+QDomDocument KMultiPart::domDocument() const
+{
+    return m_part ? m_part->domDocument() : KParts::ReadOnlyPart::domDocument();
+}
+
+QString KMultiPart::xmlFile() const
+{
+    return m_part ? m_part->xmlFile() : KParts::ReadOnlyPart::xmlFile();
+}
+
+QString KMultiPart::localXMLFile() const
+{
+    return m_part ? m_part->localXMLFile() : KParts::ReadOnlyPart::localXMLFile();
+}
 
 #include "kmultipart.moc"
