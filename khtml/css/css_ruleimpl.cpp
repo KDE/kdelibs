@@ -60,7 +60,7 @@ CSSStyleSheetImpl *CSSRuleImpl::parentStyleSheet() const
 
 CSSRuleImpl *CSSRuleImpl::parentRule() const
 {
-    return ( m_parent && m_parent->isRule() )  ? 
+    return ( m_parent && m_parent->isRule() )  ?
 	static_cast<CSSRuleImpl *>(m_parent) : 0;
 }
 
@@ -129,7 +129,11 @@ CSSImportRuleImpl::CSSImportRuleImpl( StyleBaseImpl *parent,
 CSSImportRuleImpl::~CSSImportRuleImpl()
 {
     if(m_lstMedia) m_lstMedia->deref();
-    if(m_styleSheet) m_styleSheet->deref();
+    if(m_styleSheet) {
+        m_styleSheet->setParent(0);
+        m_styleSheet->deref();
+    }
+
     if(m_cachedSheet) m_cachedSheet->deref(this);
 }
 
@@ -150,9 +154,10 @@ CSSStyleSheetImpl *CSSImportRuleImpl::styleSheet() const
 
 void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
-    kdDebug( 6080 ) << "CSSImportRule::setStyleSheet()" << endl;
-
-    if ( m_styleSheet ) m_styleSheet->deref();
+    if ( m_styleSheet ) {
+        m_styleSheet->setParent(0);
+        m_styleSheet->deref();
+    }
     m_styleSheet = new CSSStyleSheetImpl(this, url);
     m_styleSheet->ref();
 
@@ -191,10 +196,6 @@ void CSSImportRuleImpl::init()
       absHref = KURL(doc->URL(),m_strHref.string()).url();
     }
 */
-    kdDebug( 6080 ) << "CSSImportRule: requesting sheet " << m_strHref.string() << endl;
-    kdDebug( 6080 ) << "CSSImportRule: requesting absolute url " << absHref.string() << endl;
-
-    // we must have a docLoader !
     // ### pass correct charset here!!
     m_cachedSheet = docLoader->requestStyleSheet(absHref, QString::null);
 
