@@ -342,7 +342,8 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
   }
 
   // catch the case the eventfilter cannot handle: nested parts
-  if ( d->m_activePart && part && d->m_activePart == part )
+  if ( d->m_activePart && part && d->m_activePart == part &&
+       d->m_activeWidget == widget )
     return;
 
   KParts::Part *oldActivePart = d->m_activePart;
