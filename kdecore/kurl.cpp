@@ -97,7 +97,7 @@ static QString encode( const QString& segment, bool encode_slash, int encoding_h
   return result;
 }
 
-static char hex2int( unsigned int _char )
+static int hex2int( unsigned int _char )
 {
   if ( _char >= 'A' && _char <='F')
     return _char - 'A' + 10;
@@ -186,8 +186,8 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
        bKeepEncoded = false;
     if (character == '%' )
     {
-      signed char a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
-      signed char b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
+      int a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
+      int b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
       if ((a == -1) || (b == -1)) // Only replace if sequence is valid
       {
          // Contains stray %, make sure to re-encode!
