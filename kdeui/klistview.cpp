@@ -21,6 +21,7 @@
 #include <qtimer.h>
 #include <qheader.h>
 #include <qcursor.h>
+#include <qtooltip.h>
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
@@ -37,6 +38,33 @@
 
 #include <X11/Xlib.h>
 
+class KListView::Tooltip : public QToolTip
+{
+public:
+  Tooltip (KListView* parent, QToolTipGroup* group = 0L);
+  virtual ~Tooltip () {}
+
+protected:
+  /**
+   * Reimplemented from QToolTip for internal reasons.
+   */
+  virtual void maybeTip (const QPoint&);
+
+private:
+  KListView* mParent;
+};
+
+KListView::Tooltip::Tooltip (KListView* parent, QToolTipGroup* group)
+  : QToolTip (parent, group),
+	mParent (parent)
+{
+}
+
+void KListView::Tooltip::maybeTip (const QPoint&)
+{
+  // FIXME
+}
+
 class KListView::KListViewPrivate
 {
 public:
@@ -46,12 +74,11 @@ public:
   QListViewItem* pCurrentItem;
   bool cursorInExecuteArea;
 
-  QTimer* pAutoSelect;
+  QTimer autoSelect;
   int autoSelectDelay;
 
   QCursor oldCursor;
 
-  QRect invalidateRect;
   QPoint pressPos;
   QPoint startDragPos;
   KListViewLineEdit *editor;
@@ -65,7 +92,7 @@ public:
   bool dropHighlighter;
   bool createChildren;
 
-  int toolTipColumn;
+  int tooltipColumn;
 };
 
 
@@ -120,50 +147,54 @@ void KListViewLineEdit::terminate()
 
 void KListViewLineEdit::focusOutEvent(QFocusEvent *)
 {
-	terminate();
+  terminate();
 }
 
 KListView::KListView( QWidget *parent, const char *name )
-    : QListView( parent, name )
+  : QListView( parent, name ),
+	d (new KListViewPrivate()),
+	mDropVisualizerWidth (4)
 {
-	{
-		d=new KListViewPrivate;
-		d->editor=new KListViewLineEdit(this);
-		d->itemsMovable=true;
-		d->itemsRenameable=false;
-		d->dragEnabled=false;
-		d->autoOpen=true;
-		d->toolTipColumn=0;
-		d->dropVisualizer=true;
-		d->dropHighlighter=true;
-		d->createChildren=true;
-		connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
-	}
+  {
+	d->editor=new KListViewLineEdit(this);
+	d->itemsMovable=true;
+	d->itemsRenameable=false;
+	d->dragEnabled=false;
+	d->autoOpen=true;
+	d->tooltipColumn=0;
+	d->dropVisualizer=true;
+	d->dropHighlighter=true;
+	d->createChildren=true;
+	connect(d->editor, SIGNAL(done(QListViewItem*,int)), this, SLOT(doneEditing(QListViewItem*,int)));
+  }
 
-	setAcceptDrops(true);
-    setDragAutoScroll(true);
-    d->oldCursor = viewport()->cursor();
-    connect( this, SIGNAL( onViewport() ),
-	     this, SLOT( slotOnViewport() ) );
-    connect( this, SIGNAL( onItem( QListViewItem * ) ),
-	     this, SLOT( slotOnItem( QListViewItem * ) ) );
+//   setAcceptDrops(true);
+  setDragAutoScroll(true);
+  d->oldCursor = viewport()->cursor();
+  connect( this, SIGNAL( onViewport() ),
+		   this, SLOT( slotOnViewport() ) );
+  connect( this, SIGNAL( onItem( QListViewItem * ) ),
+		   this, SLOT( slotOnItem( QListViewItem * ) ) );
 
-    slotSettingsChanged(KApplication::SETTINGS_MOUSE);
-    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-    kapp->addKipcEventMask( KIPC::SettingsChanged );
+  connect (this, SIGNAL(contentsMoving(int,int)),
+		   this, SLOT(cleanDropVisualizer()));  
 
-    d->pCurrentItem = 0L;
+  slotSettingsChanged(KApplication::SETTINGS_MOUSE);
+  connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
+  kapp->addKipcEventMask( KIPC::SettingsChanged );
+  
+  d->pCurrentItem = 0L;
 
-    d->pAutoSelect = new QTimer( this );
-    connect( d->pAutoSelect, SIGNAL( timeout() ),
-    	     this, SLOT( slotAutoSelect() ) );
+  connect(&d->autoSelect, SIGNAL( timeout() ),
+		  this, SLOT( slotAutoSelect() ) );
 }
 
 
 
 KListView::~KListView()
 {
-    delete d->editor;
+  delete d->editor;
+  delete d;
 }
 
 bool KListView::isExecuteArea( const QPoint& point )
@@ -191,7 +222,7 @@ bool KListView::isExecuteArea( const QPoint& point )
 void KListView::slotOnItem( QListViewItem *item )
 {
   if ( item && (d->autoSelectDelay > -1) && d->bUseSingle ) {
-    d->pAutoSelect->start( d->autoSelectDelay, true );
+    d->autoSelect.start( d->autoSelectDelay, true );
     d->pCurrentItem = item;
   }
 }
@@ -201,7 +232,7 @@ void KListView::slotOnViewport()
   if ( d->bChangeCursorOverItem )
     viewport()->setCursor( d->oldCursor );
 
-  d->pAutoSelect->stop();
+  d->autoSelect.stop();
   d->pCurrentItem = 0L;
 }
 
@@ -244,6 +275,12 @@ void KListView::slotSettingsChanged(int category)
 
 void KListView::slotAutoSelect()
 {
+  if (!isActiveWindow())
+	{
+	  d->autoSelect.stop();
+	  return;
+	}
+
   //Give this widget the keyboard focus.
   if( !hasFocus() )
     setFocus();
@@ -253,7 +290,7 @@ void KListView::slotAutoSelect()
   int root_x, root_y, win_x, win_y;
   uint keybstate;
   XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
-		 &root_x, &root_y, &win_x, &win_y, &keybstate );
+				 &root_x, &root_y, &win_x, &win_y, &keybstate );
 
   QListViewItem* previousItem = currentItem();
   setCurrentItem( d->pCurrentItem );
@@ -266,7 +303,7 @@ void KListView::slotAutoSelect()
 
       //No Ctrl? Then clear before!
       if( !(keybstate & ControlMask) )
-	clearSelection();
+		clearSelection();
 
       bool select = !d->pCurrentItem->isSelected();
       bool update = viewport()->isUpdatesEnabled();
@@ -275,15 +312,15 @@ void KListView::slotAutoSelect()
       bool down = previousItem->itemPos() < d->pCurrentItem->itemPos();
       QListViewItemIterator lit( down ? previousItem : d->pCurrentItem );
       for ( ; lit.current(); ++lit ) {
-	if ( down && lit.current() == d->pCurrentItem ) {
-	  d->pCurrentItem->setSelected( select );
-	  break;
-	}
-	if ( !down && lit.current() == previousItem ) {
-	  previousItem->setSelected( select );
-	  break;
-	}
-	lit.current()->setSelected( select );
+		if ( down && lit.current() == d->pCurrentItem ) {
+		  d->pCurrentItem->setSelected( select );
+		  break;
+		}
+		if ( !down && lit.current() == previousItem ) {
+		  previousItem->setSelected( select );
+		  break;
+		}
+		lit.current()->setSelected( select );
       }
 
       blockSignals( block );
@@ -293,7 +330,7 @@ void KListView::slotAutoSelect()
       emit selectionChanged();
 
       if( selectionMode() == QListView::Single )
-	emit selectionChanged( d->pCurrentItem );
+		emit selectionChanged( d->pCurrentItem );
     }
     else if( (keybstate & ControlMask) )
       setSelected( d->pCurrentItem, !d->pCurrentItem->isSelected() );
@@ -302,7 +339,7 @@ void KListView::slotAutoSelect()
       blockSignals( true );
 
       if( !d->pCurrentItem->isSelected() )
-	clearSelection();
+		clearSelection();
 
       blockSignals( block );
 
@@ -324,7 +361,7 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
     XQueryPointer( qt_xdisplay(), qt_xrootwin(), &root, &child,
 		   &root_x, &root_y, &win_x, &win_y, &keybstate );
 
-    d->pAutoSelect->stop();
+    d->autoSelect.stop();
 
     //Don´t emit executed if in SC mode and Shift or Ctrl are pressed
     if( !( d->bUseSingle && ((keybstate & ShiftMask) || (keybstate & ControlMask)) ) ) {
@@ -336,14 +373,16 @@ void KListView::emitExecute( QListViewItem *item, const QPoint &pos, int c )
 
 void KListView::focusOutEvent( QFocusEvent *fe )
 {
-  d->pAutoSelect->stop();
+  cleanDropVisualizer();
 
+  d->autoSelect.stop();
+  
   QListView::focusOutEvent( fe );
 }
 
 void KListView::leaveEvent( QEvent *e )
 {
-  d->pAutoSelect->stop();
+  d->autoSelect.stop();
 
   QListView::leaveEvent( e );
 }
@@ -391,35 +430,35 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
   if ( item && d->bChangeCursorOverItem && d->bUseSingle ) {
     //Cursor moved on a new item or in/out the execute area
     if( (item != d->pCurrentItem) ||
-	(isExecuteArea(vp) != d->cursorInExecuteArea) ) {
+		(isExecuteArea(vp) != d->cursorInExecuteArea) ) {
 
       d->cursorInExecuteArea = isExecuteArea(vp);
 
       if( d->cursorInExecuteArea ) //cursor moved in execute area
-	viewport()->setCursor( KCursor().handCursor() );
+		viewport()->setCursor( KCursor().handCursor() );
       else //cursor moved out of execute area
-	viewport()->setCursor( d->oldCursor );
+		viewport()->setCursor( d->oldCursor );
     }
   }
 
-	QListView::contentsMouseMoveEvent( e );
+  QListView::contentsMouseMoveEvent( e );
 
-	// I have just started to move my mouse..
-	if ((e->state() == LeftButton) && d->startDragPos.isNull())
+  // I have just started to move my mouse..
+  if ((e->state() == LeftButton) && d->startDragPos.isNull())
 	{
 	  d->startDragPos = e->pos();
 	}
-	else // Now, I may begin dragging!
-		if ((e->state() == LeftButton) && dragEnabled())
-	{
+  else // Now, I may begin dragging!
+	if ((e->state() == LeftButton) && dragEnabled())
+	  {
 		// Have we moved the mouse far enough?
 		if ((d->startDragPos - e->pos()).manhattanLength() > QApplication::startDragDistance())
-		{
+		  {
 			d->startDragPos = e->pos();
 		
 			startDrag();
-		}
-	}
+		  }
+	  }
 }
 
 void KListView::contentsMouseDoubleClickEvent ( QMouseEvent *e )
@@ -444,110 +483,78 @@ void KListView::slotMouseButtonClicked( int btn, QListViewItem *item, const QPoi
     emitExecute( item, pos, c );
 }
 
-void KListView::dropEvent(QDropEvent* event)
+void KListView::contentsDropEvent (QDropEvent* e)
 {
-    QListView::dropEvent(event);
-    cleanRect();
-    QListViewItem *afterme;
-    QListViewItem *parent;
-    findDrop(event->pos(), parent, afterme);
-	
-    if (event->source()==viewport()) // Moving an item
+  cleanDropVisualizer ();
+
+  if (acceptDrag (e))
 	{
-		if (dragEnabled() && itemsMovable())
-		{
-			for (QListViewItem *i=firstChild(); i!=0; i=i->itemBelow())
-			{
-				if (!i->isSelected())
-					continue;
-				moveItem(i, parent, afterme);
-				afterme=i;
-			}		
-		}	
+	  QListViewItem *afterme;
+	  QListViewItem *parent;
+	  findDrop(e->pos(), parent, afterme);
+
+	  emit dropped (e, afterme);
 	}
-    else
-		dropEvent(event, this, afterme);
 }
 
-void KListView::dropEvent(QDropEvent *event, QListView *parent, QListViewItem *after)
+void KListView::contentsDragMoveEvent(QDragMoveEvent *event)
 {
-    QString text;
-    if (!QTextDrag::decode(event, text)) return;
-
-    after=new QListViewItem(parent, after,text);
-}
-
-void KListView::dragMoveEvent(QDragMoveEvent *event)
-{
-	QListView::dragMoveEvent(event);
-	if (!event->isAccepted()) return;
-
-	//Clean up the view
-	QListViewItem *afterme;
-	QListViewItem *parent;
-	findDrop(event->pos(), parent, afterme);
-
-	if (dropVisualizer())
+  if (acceptDrops() && acceptDrag (event))
 	{
-		QRect rectTemp (drawDropVisualizer(0,0, afterme));
-		if (d->invalidateRect != rectTemp)
+	  //Clean up the view
+	  QListViewItem *afterme;
+	  QListViewItem *parent;
+	  findDrop(event->pos(), parent, afterme);
+	  
+	  if (dropVisualizer())
 		{
-			cleanRect();
-			QPainter painter(viewport());
-			drawDropVisualizer(&painter,0, afterme);
+		  QPainter painter(viewport());
+		  drawDropVisualizer(&painter,parent, afterme);
 		}
-		d->invalidateRect = rectTemp;
+	}
+  else
+	{
+	  event->ignore();
 	}
 }
 
-void KListView::dragLeaveEvent(QDragLeaveEvent *event)
+void KListView::contentsDragLeaveEvent (QDragLeaveEvent*)
 {
-    QListView::dragLeaveEvent(event);
-    cleanRect();
+    cleanDropVisualizer();
 }
 
-void KListView::cleanRect()
+void KListView::cleanDropVisualizer()
 {
-    if (!d->invalidateRect.isValid()) return;
-
-    QRect temp = d->invalidateRect;
-    d->invalidateRect = QRect();
-	
-    viewport()->update(temp);
+    if (mOldDropVisualizer.isValid())
+	  {
+		viewport()->update (mOldDropVisualizer);
+		mOldDropVisualizer = QRect();
+	  }
 }
 
-void KListView::viewportPaintEvent(QPaintEvent *event)
-{
-    QListView::viewportPaintEvent(event);
-	d->invalidateRect = QRect();
-}
-
-void KListView::findDrop(const QPoint &_p, QListViewItem *&parent, QListViewItem *&after) const
-{
-	QPoint p(_p);
-	// Move the point if the header is shown
-	if (header()->isVisible())
-		p.setY(p.y()-header()->height());
-	
-    // Get the position to put it in
-    QListViewItem *atpos(itemAt(p));
-	
-    if (!atpos) // put it at the end
-		after=lastItem();
-    else
-	{ // get the one closer to me..
-	  // That is, the space between two listviewitems
-	  // Since this aims to be user-friendly :)
-		int dropY=mapFromGlobal(p).y();
-		int itemHeight=atpos->height();
-		int topY=mapFromGlobal(itemRect(atpos).topLeft()).y();
-		
-		if ((dropY-topY)<itemHeight/2)
-			after=atpos->itemAbove();	
-		else
-			after=atpos;
+void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after)
+{ 
+  after = itemAt (contentsToViewport(pos));
+  
+  if (after)
+	{
+      if (!(pos.x() > header()->cellPos( header()->mapToActual( 0 ) ) +
+			treeStepSize() * (after->depth() + ( rootIsDecorated() ? 1 : 0) ) + itemMargin() ||
+			pos.x() < header()->cellPos (header()->mapToActual (0))))
+		{
+		  after = 0L;
+		}
+  
+	  if (after && !below (after, pos))
+		after = after->itemAbove();
 	}
-	parent=0;
+  else
+	{
+	  after = lastItem();
+	}
+
+  if (after)
+	parent = after->parent();
 }
 
 
@@ -662,29 +669,62 @@ void KListView::moveItem(QListViewItem *item, QListViewItem *parent, QListViewIt
 		item->moveToJustAfter(after);
 }
 
-void KListView::dragEnterEvent(QDragEnterEvent *event)
+void KListView::contentsDragEnterEvent(QDragEnterEvent *event)
 {
-	QListView::dragEnterEvent(event);
-	if (itemsMovable())
-		event->accept(event->source()==viewport());
+  acceptDrag (event); // acceptDrag should call "accept"
 }
 
-QRect KListView::drawDropVisualizer(QPainter *painter, QListViewItem */*parent*/, QListViewItem *after)
+void KListView::setDropVisualizerWidth (int w)
 {
-	QRect rect(treeStepSize(), itemRect(after).bottom(), width(), 2);
+  mDropVisualizerWidth = w > 0 ? w : 1;
+}
 
-	if (painter)
-	{	
-		QColor barcolor(foregroundColor());	
-		painter->setPen(barcolor);
-		painter->drawRect(rect);
+void KListView::drawDropVisualizer(QPainter *p, QListViewItem */*parent*/,
+								   QListViewItem *after)
+{
+  QRect insertmarker;
+
+  if (after)
+	{
+	  insertmarker = itemRect (after);
+
+	  insertmarker.setLeft (0);
+	  insertmarker.setRight (viewport()->width());
+	  insertmarker.setTop (insertmarker.bottom() - mDropVisualizerWidth/2 + 1);
+	  insertmarker.setBottom (insertmarker.bottom() + mDropVisualizerWidth/2);
 	}
-	return rect;
+  else
+	{
+	  insertmarker = QRect (0, 0, viewport()->width(), mDropVisualizerWidth/2);
+	}
+
+  if (insertmarker != mOldDropVisualizer)
+	cleanDropVisualizer();
+
+  if (p)
+	p->fillRect(insertmarker, Dense4Pattern);
+  
+  mOldDropVisualizer = insertmarker;
 }
 
-QRect KListView::drawItemHighlighter(QPainter */*painter*/, QListViewItem */*item*/)
+void KListView::drawItemHighlighter(QPainter */*painter*/, QListViewItem */*item*/)
 {
-	return QRect(0,0,0,0);
+  //	return QRect(0,0,0,0);
+}
+
+void KListView::cleanItemHighlighter ()
+{
+  // FIXME
+}
+
+void KListView::setOldItemHighlighter (const QRect&)
+{
+  //FIXME
+}
+
+const QRect& KListView::oldItemHighlighter () const
+{
+  return QRect(); // FIXME
 }
 
 void KListView::rename(QListViewItem *item, int c)
@@ -693,12 +733,12 @@ void KListView::rename(QListViewItem *item, int c)
 
 }
 
-bool KListView::getRenameableColumn(int col) const
+bool KListView::isRenameable (int col) const
 {
-	return (bool)d->renameable.contains(col);
+	return d->renameable.contains(col);
 }
 
-void KListView::setRenameableColumn(int col, bool yesno)
+void KListView::setRenameable (int col, bool yesno)
 {
 	if (col>=header()->count()) return;
 
@@ -720,16 +760,6 @@ bool KListView::acceptDrag(QDropEvent*) const
 	return true;
 }
 
-void KListView::doToolTip(QListViewItem *item)
-{
-	doToolTip(item, toolTipColumn());
-}
-
-void KListView::doToolTip(QListViewItem */*item*/, int /*column*/)
-{
-
-}
-
 
 void KListView::setCreateChildren(bool b)
 {
@@ -742,14 +772,14 @@ bool KListView::createChildren() const
 }
 
 
-int KListView::toolTipColumn() const
+int KListView::tooltipColumn() const
 {
-	return d->toolTipColumn;
+	return d->tooltipColumn;
 }
 
-void KListView::setToolTipColumn(int column)
+void KListView::setTooltipColumn(int column)
 {
-	d->toolTipColumn=column;
+	d->tooltipColumn=column;
 }
 
 void KListView::setDropHighlighter(bool b)
@@ -762,12 +792,12 @@ bool KListView::dropHighlighter() const
 	return d->dropHighlighter;
 }
 
-bool KListView::showToolTip(QListViewItem *item, const QPoint &, int column) const
+bool KListView::showTooltip(QListViewItem *item, const QPoint &, int column) const
 {
-	return ((toolTip(item, column).length()>0) && (column==toolTipColumn()));
+	return ((tooltip(item, column).length()>0) && (column==tooltipColumn()));
 }
 
-QString KListView::toolTip(QListViewItem *item, int column) const
+QString KListView::tooltip(QListViewItem *item, int column) const
 {
 	return item->text(column);
 }

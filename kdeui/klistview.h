@@ -62,13 +62,24 @@ public:
 
   QListViewItem *lastItem() const;
 
+  /**
+   * For future expansions.
+   * 
+   * Do not use.
+   */
   bool itemsMovable() const;
   bool itemsRenameable() const;
   bool dragEnabled() const;
   bool autoOpen() const;
-  bool getRenameableColumn(int column) const;
+  bool isRenameable (int column) const;
   bool dropVisualizer() const;
-  int toolTipColumn() const;
+  int tooltipColumn() const;
+
+  /**
+   * For future expansions.
+   * 
+   * Do not use.
+   */
   bool createChildren() const;
   bool dropHighlighter() const;
 
@@ -115,7 +126,14 @@ signals:
   void doubleClicked( QListViewItem *item, const QPoint &pos, int c );
 
   void dropped(QDropEvent * e, QListViewItem *after);
+
+  /**
+   * For future expansions.
+   * 
+   * Do not use.
+   */
   void moved();
+
   void itemRenamed(QListViewItem * item, const QString &str, int col);
   void itemRenamed(QListViewItem * item);
 
@@ -129,28 +147,30 @@ public slots:
    * and override @ref rename where you only call
    * KListView::rename if you want it renamed.
    **/
-  void setRenameableColumn(int column, bool yesno=true);
+  void setRenameable (int column, bool yesno=true);
+
+  /**
+   * For future expansions.
+   * 
+   * Do not use.
+   */
   virtual void setItemsMovable(bool b);
   virtual void setItemsRenameable(bool b);
   virtual void setDragEnabled(bool b);
   virtual void setAutoOpen(bool b);
   virtual void setDropVisualizer(bool b);
-  virtual void setToolTipColumn(int column);
+  virtual void setTooltipColumn(int column);
   /**
    * Highlight a parent if I drop into it's children
    **/
   virtual void setDropHighlighter(bool b);
 
   /**
-   * should I _ever_ allow creating children via dnd?
-   **/
+   * For future expansions.
+   * 
+   * Do not use.
+   */
   virtual void setCreateChildren(bool b);
-
-  /**
-   * show a tooltip for the item. just calls doToolTip(item, toolTipColumn());
-   **/
-  void doToolTip(QListViewItem *item);
-  virtual void doToolTip(QListViewItem *item, int column);
 
 protected slots:
   void slotOnItem( QListViewItem *item );
@@ -163,69 +183,111 @@ protected slots:
    */
   void slotAutoSelect();
 
+  /**
+   * Repaint the rect where I was drawing the drop line.
+   */
+  void cleanDropVisualizer();
+
 protected:
+  /**
+   * Determine whether a drop on this position (@param p) would count as
+   * being above or below the QRect (@param rect).
+   *
+   * Note: @param p is assumed to be in viewport coordinates.
+   */
+  inline bool below (const QRect& rect, const QPoint& p)
+  {
+	return (p.y() > (rect.top() + (rect.bottom() - rect.top())/2));
+  }
+
+  /**
+   * An overloaded version of below(const QRect&, const QPoint&).
+   *
+   * It differs from the above only in what arguments it takes.
+   * Note that @param p is assumed to be in contents coordinates!
+   */
+  inline bool below (QListViewItem* i, const QPoint& p)
+  {
+	return below (itemRect(i), contentsToViewport(p));
+  }
+
   void emitExecute( QListViewItem *item, const QPoint &pos, int c );
 
   virtual void focusOutEvent( QFocusEvent *fe );
   virtual void leaveEvent( QEvent *e );
+  virtual QString tooltip(QListViewItem*, int column) const;
+  virtual bool showTooltip(QListViewItem *item, const QPoint &pos, int column) const;
+
+  /**
+   * Draw a line when you drag it somewhere nice.
+   */
+  virtual void contentsDragMoveEvent (QDragMoveEvent *event);
   virtual void contentsMousePressEvent( QMouseEvent *e );
   virtual void contentsMouseMoveEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent *e );
-  virtual QString toolTip(QListViewItem*, int column) const;
-
-  virtual bool showToolTip(QListViewItem *item, const QPoint &pos, int column) const;
-
-  /**
-   * Override this method.  event is as you'd expect
-   * after is the item to drop this after
-   **/
-  virtual void dropEvent(QDropEvent *event, QListView *parent, QListViewItem *after);
-
-  virtual void dropEvent(QDropEvent* event);
-  /**
-   * Draw a line when you drag it somewhere nice.
-   **/
-  virtual void dragMoveEvent(QDragMoveEvent *event);
-  virtual void viewportPaintEvent(QPaintEvent *event);
-  virtual void dragLeaveEvent(QDragLeaveEvent *event);
-  virtual void contentsMouseReleaseEvent(QMouseEvent*);
-  virtual void dragEnterEvent(QDragEnterEvent *);
+  virtual void contentsDragLeaveEvent (QDragLeaveEvent *event);
+  virtual void contentsMouseReleaseEvent (QMouseEvent*);
+  virtual void contentsDropEvent (QDropEvent*);
+  virtual void contentsDragEnterEvent (QDragEnterEvent *);
 
   virtual QDragObject *dragObject() const;
 
   virtual bool acceptDrag(QDropEvent*) const;
 
   /**
-   * paint the drag line.  if painter is null, don't try to :)
-   * return the rectangle painted to
-   **/
-  virtual QRect drawDropVisualizer(QPainter *painter, QListViewItem *parent, QListViewItem *after);	
+   * Paint the drag line. If painter is null, don't try to :)
+   *
+   * If after == 0 then the marker should be drawn at the top.
+   *
+   * Use @ref setOldDropVisualizer to set the rectangle that you
+   * painted to.
+   *
+   * You also have to call @ref cleanDropVisualizer if necessary!
+   */
+  virtual void drawDropVisualizer (QPainter *p, QListViewItem *parent, QListViewItem *after);	
 
   /**
+   * For future expansion. 
+   *
+   * Do not use.
+   *
    * Highlight @arg item.  painter may be null
    * return the rect drawn to
-   **/
-  virtual QRect drawItemHighlighter(QPainter *painter, QListViewItem *item);
+   * @deprecated
+   */
+  virtual void drawItemHighlighter(QPainter *painter, QListViewItem *item);
+  const QRect& oldItemHighlighter () const;
+  void setOldItemHighlighter (const QRect&);
+  void cleanItemHighlighter ();
 
   virtual void startDrag();
+
+  inline const QRect& oldDropVisualizer () const { return mOldDropVisualizer; }
+  inline void setOldDropVisualizer (const QRect& r) { mOldDropVisualizer = r; }
+
+  inline int dropVisualizerWidth () const { return mDropVisualizerWidth; }
+  void setDropVisualizerWidth (int w);
 
 private slots:
   void slotMouseButtonClicked( int btn, QListViewItem *item, const QPoint &pos, int c );
   void doneEditing(QListViewItem *item, int row);
 
+
+
 private:
-  /**
-   * Repaint the rect where I was drawing the drop line.
-   **/
-  void cleanRect();
+
   /**
    * Where is the nearest QListViewItem that I'm going to drop?
    **/
-  void findDrop(const QPoint &_p, QListViewItem *&parent, QListViewItem *&after) const;
+  void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
 
 private:
   class KListViewPrivate;
+  class Tooltip;
   KListViewPrivate *d;
+
+  QRect mOldDropVisualizer;
+  int mDropVisualizerWidth;
 };
 
 #endif
