@@ -195,6 +195,7 @@ class kndbgstream {
     kndbgstream() {}
     ~kndbgstream() {}
     kndbgstream &operator<<(int )  { return *this; }
+    kndbgstream &operator<<(unsigned int )  { return *this; }
     void flush() {}
     kndbgstream &operator<<(const QString& ) { return *this; }
     kndbgstream &operator<<(const QCString& ) { return *this; }
