@@ -107,9 +107,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     // initialize QScrollview
 
-//*** DISABLED because of clipper bugs in QTbeta2
-    //enableClipper(true);
-        enableClipper(false);
+    enableClipper(true);
+
     viewport()->setMouseTracking(true);
     viewport()->setBackgroundMode(NoBackground);
 
@@ -968,12 +967,11 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     if( m_part->docImpl() )
 	body = m_part->docImpl()->body();
 
-    //*** DISABLED because of clipper bugs in QTbeta2
-    /*QRect rr(
+    QRect rr(
 	-viewport()->x(), -viewport()->y(),
 	clipper()->width(), clipper()->height()
     );
-    r &= rr;*/
+    r &= rr;
     int ex = r.x() + viewport()->x() + contentsX();;
     int ey = r.y() + viewport()->y() + contentsY();;
     int ew = r.width();
