@@ -18,11 +18,34 @@
    Boston, MA 02111-1307, USA.
 */
 
+/*
+	This class implements a kioslave to acces ZIP files from KDE.
+    you can use it in IO_ReadOnly or in IO_WriteOnly mode, and it 
+    behaves just as expected (i hope ;-) ).
+    It can also be used in IO_ReadWrite mode, in this case one can
+    append files to an existing zip archive. when you append new files, which
+    are not yet in the zip, it works as expected, they are appended at the end.
+    when you append a file, which is already in the file, the reference to the
+    old file is dropped and the new one is added to the zip. but the
+    old data from the file itself is not deleted, it is still in the
+    zipfile. so when you want to have a small and garbagefree zipfile,
+    just read the contents of the appended zipfile and write it to a new one
+    in IO_WriteOnly mode. exspecially take care of this, when you don´t want
+    to leak information of how intermediate versions of files in the zip
+    were looking.
+    for more information on the zip fileformat go to 
+    http://www.pkware.com/support/appnote.html .
+
+*/
+
+
+
 #include <sys/time.h>
 
 #include <qfile.h>
 #include <qdir.h>
 #include <time.h>
+#include <string.h>
 #include <qdatetime.h>
 #include <kdebug.h>
 #include <qptrlist.h>
@@ -38,29 +61,27 @@ static void transformToMsDos(const QDateTime& dt, char* buffer)
     if ( dt.isValid() )
     {
         Q_UINT16 time =
-             ( ( ( ( dt.time().hour() ) ) & 0x1f ) << 11 )      // 5 bit hour
-             + ( ( ( ( dt.time().minute() ) ) & 0x3f ) << 5 )   // 6 bit minute
-             + ( ( ( ( dt.time().second() >> 1 ) ) & 0x1f ) );  // 5 bit double seconds
+             ( dt.time().hour() << 11 )    // 5 bit hour
+           | ( dt.time().minute() << 5 )   // 6 bit minute
+           | ( dt.time().second() >> 1 );  // 5 bit double seconds
 
-        buffer[0]=char( time & 0xff );          // Least significant byte of time
-        buffer[1]=char( ( time >> 8 ) & 0xff ); // Most significant byte of time
+        buffer[0] = char(time);
+        buffer[1] = char(time >> 8);
 
         Q_UINT16 date =
-             ( ( ( ( dt.date().year() - 1980 ) ) & 0x7f ) << 9 )    // 7 bit year 1980-based
-             + ( ( ( ( dt.date().month() ) ) & 0xf ) << 5 )         // 4 bit month
-             + ( ( ( ( dt.date().day() ) ) & 0x1f ) );              // 5 bit day
+             ( ( dt.date().year() - 1980 ) << 9 ) // 7 bit year 1980-based
+           | ( dt.date().month() << 5 )           // 4 bit month
+           | ( dt.date().day() );                 // 5 bit day
 
-        buffer[2]=char( date & 0xff );          // Least significant byte of date
-        buffer[3]=char( ( date >> 8 ) & 0xff ); // Most significant byte of date
-
+        buffer[2] = char(date);
+        buffer[3] = char(date >> 8);
     }
-    else
+    else // !dt.isValid(), assume 1980-01-01 midnight
     {
-        // We have no valid date, so assume 1980-01-01 midnight
-        buffer[0]=0;
-        buffer[1]=0;
-        buffer[2]=33;
-        buffer[3]=0;
+        buffer[0] = 0;
+        buffer[1] = 0;
+        buffer[2] = 33;
+        buffer[3] = 0;
     }
 }
 
@@ -79,12 +100,21 @@ class KZip::KZipPrivate
 {
 public:
     KZipPrivate()
-        : m_crc( 0 ), m_currentFile( 0L ), m_currentDev( 0L ), m_compression( 8 ) {}
-    unsigned long m_crc;
-    KZipFileEntry* m_currentFile; // file currently being written
-    QIODevice* m_currentDev; // filterdev used to write to the above file
-    QPtrList<KZipFileEntry> m_fileList; // flat list of all files, for the index (saves a recursive method ;)
-    int m_compression;
+        : m_crc( 0 ),
+          m_currentFile( 0L ),
+          m_currentDev( 0L ),
+          m_compression( 8 ),
+	  m_offset( 0L ) { }
+ 
+    unsigned long           m_crc;         // checksum
+    KZipFileEntry*          m_currentFile; // file currently being written
+    QIODevice*              m_currentDev;  // filterdev used to write to the above file
+    QPtrList<KZipFileEntry> m_fileList;    // flat list of all files, for the index (saves a recursive method ;)
+    int                     m_compression;
+    unsigned int	        m_offset; // holds the offset of the place in the zip,
+    // where new data can be appended. after openarchive it points to 0, when in 
+    // writeonly mode, or it points to the beginning of the central directory.
+    // each call to writefile updates this value.
 };
 
 KZip::KZip( const QString& filename )
@@ -132,113 +162,121 @@ bool KZip::openArchive( int mode )
     // Check that it's a valid ZIP file
     // KArchive::open() opened the underlying device already.
     QIODevice* dev = device();
-    int n = dev->readBlock( buffer, 4 );
-    if ( n < 4 )
+
+    uint offset = 0; // holds offset, where we read
+    int n;
+
+    for (;;) // repeat until 'end of entries' signature is reached
     {
-        kdWarning(7040) << "Zip file too small " << m_filename << endl;
-        return false;
-    }
-    if ( buffer[0] != 'P' || buffer[1] != 'K' || buffer[2] != 3 || buffer[3] != 4 )
-    {
-        kdWarning(7040) << "Not a Zip file " << m_filename << endl;
-        return false;
-    }
+        n = dev->readBlock( buffer, 4 );
 
-    uint size = dev->size(); // size of archive
+        if (n < 4)
+        {
+            kdWarning(7040) << "Invalid ZIP file. Unexpected end of file." << endl;
 
-    bool b = (dev->at( size - 6 )); //location of offset of start of central directry
-			    // FIXME works only if archive contains no comment
-    //kdDebug(7040) << "dev->at() " << dev->at() << endl;
-    Q_ASSERT( b );
-    if ( !b ) return false;
-    n = dev->readBlock( buffer, 4 );
-//    kdDebug(7040) << "buf1: " << buffer << endl;
-//    kdDebug(7040) << "buf1[0]: " << (uchar)buffer[0] << endl;
-//    kdDebug(7040) << "buf1[1]: " << (uchar)buffer[1] << endl;
-//    kdDebug(7040) << "buf1[2]: " << (uchar)buffer[2] << endl;
-//    kdDebug(7040) << "buf1[3]: " << (uchar)buffer[3] << endl;
+            return false;
+        }
 
-    // begin of central header
-    uint offset = (uchar)buffer[3]*256*256*256 +(uchar)buffer[2]*256*256
-	    +(uchar)buffer[1]*256 + (uchar)buffer[0];
-    //kdDebug(7040) << "central header starts at offset=" << offset << endl;
-    if (offset >= size) kdWarning(7040) << "offset >= size" << endl;
+        if ( !memcmp( buffer, "PK\5\6", 4 ) ) // 'end of entries'
+            break;
 
-    b = dev->at(offset);
-    Q_ASSERT( b );
-    if ( !b ) return false;
+        if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
+        {
+		    // here we calculate the length of the file in the zip
+		    // with headers and jump to the next header.
+            dev->at( dev->at() + 14 );
 
-    bool end = false;
-    do {
-        n = dev->readBlock( buffer, 46 );
-	if (n < 4)
-	{
-	    kdWarning(7040) << "Invalid ZIP file." << endl;
-	    return false;
-	}
-	if (buffer[0] == 0x50 && buffer[1] == 0x4b
-	    && buffer[2] == 0x01 && buffer[3] == 0x02 )
-	{  // valid central entry signature
+            uint skip;
+          
+            n = dev->readBlock( buffer, 4 ); // compressed file size
+            skip = (uchar)buffer[3] << 24 | (uchar)buffer[2] << 16 |
+	    	(uchar)buffer[1] << 8 | (uchar)buffer[0];
 
-	    if (n < 46) {
+            dev->at( dev->at() + 4 );
+            n = dev->readBlock( buffer, 2 ); // file name length
+            skip += (uchar)buffer[1] << 8 | (uchar)buffer[0];
+
+            n = dev->readBlock( buffer, 2 ); // extra field length
+            skip += (uchar)buffer[1] << 8 | (uchar)buffer[0];
+
+            dev->at( dev->at() + skip );
+            offset += 30 + skip;
+        }
+        else if ( !memcmp( buffer, "PK\1\2", 4 ) ) // central block
+        {
+            
+            // so we reached the central header at the end of the zip file
+		    // here we get all interesting data out of the central header
+            // of a file
+            offset = dev->at() - 4;
+
+            //set offset for appending new files
+            if ( d->m_offset == 0L ) d->m_offset = offset;	      
+            
+		    n = dev->readBlock( buffer + 4, 42 );
+            if (n < 42) {
                 kdWarning(7040) << "Invalid ZIP file, central entry too short" << endl; // not long enough for valid entry
                 return false;
             }
-
-	    int namelen = (uchar)buffer[29] * 256 + (uchar)buffer[28];
+			// length of the filename (well, pathname indeed)
+            int namelen = (uchar)buffer[29] << 8 | (uchar)buffer[28];
             char* bufferName = new char[ namelen + 1 ];
             n = dev->readBlock( bufferName, namelen );
             if ( n < namelen )
                 kdWarning(7040) << "Invalid ZIP file. Name not completely read" << endl;
-	    QString name( QString::fromLocal8Bit(bufferName, namelen) );
+            QString name( QString::fromLocal8Bit(bufferName, namelen) );
             delete[] bufferName;
 
-	    //kdDebug(7040) << "name: " << name << endl;
-	    // only in central header ! see below.
-    	    int extralen = (uchar)buffer[31] * 256 + (uchar)buffer[30];
-	    int commlen = (uchar)buffer[33] * 256 + (uchar)buffer[32];
-	    int cmethod = (uchar)buffer[11] * 256 + (uchar)buffer[10];
+            //kdDebug(7040) << "name: " << name << endl;
+            // only in central header ! see below.
+            // length of extra attributes
+            int extralen = (uchar)buffer[31] << 8 | (uchar)buffer[30];
+            // length of comment for this file
+            int commlen =  (uchar)buffer[33] << 8 | (uchar)buffer[32];
+            // compression method of this file
+            int cmethod =  (uchar)buffer[11] << 8 | (uchar)buffer[10];
 
-	    //kdDebug(7040) << "cmethod: " << cmethod << endl;
-	    //kdDebug(7040) << "extralen: " << extralen << endl;
-//	    kdDebug(7040) << "buf1[2]: " << (uchar)buffer[26] << endl;
-//	    kdDebug(7040) << "buf1[3]: " << (uchar)buffer[27] << endl;
+            //kdDebug(7040) << "cmethod: " << cmethod << endl;
+            //kdDebug(7040) << "extralen: " << extralen << endl;
 
-	    // uncompressed file size
-	    uint esize = (uchar)buffer[27]*256*256*256 +(uchar)buffer[26]*256*256
-		    +(uchar)buffer[25]*256 + (uchar)buffer[24];
-	    // compressed file size
-	    uint csize = (uchar)buffer[23]*256*256*256 +(uchar)buffer[22]*256*256
-		    +(uchar)buffer[21]*256 + (uchar)buffer[20];
-	    // offset of local header
-	    uint eoffset = (uchar)buffer[45]*256*256*256 +(uchar)buffer[44]*256*256
-		    +(uchar)buffer[43]*256 + (uchar)buffer[42];
+            // uncompressed file size
+            uint ucsize = (uchar)buffer[27] << 24 | (uchar)buffer[26] << 16 |
+	    		(uchar)buffer[25] << 8 | (uchar)buffer[24];
+            // compressed file size
+            uint csize = (uchar)buffer[23] << 24 | (uchar)buffer[22] << 16 |
+	    		(uchar)buffer[21] << 8 | (uchar)buffer[20];
+		    
+            // offset of local header
+            uint localheaderoffset = (uchar)buffer[45] << 24 | (uchar)buffer[44] << 16 |
+				(uchar)buffer[43] << 8 | (uchar)buffer[42];
+	    
+            // some clever people use different extra field lengths
+            // in the central header and in the local header... funny.
+            // so we need to get the localextralen to calculate the offset
+            // from localheaderstart to dataoffset
+            char localbuf[5];
+            int save_at = dev->at();
+		    dev->at( localheaderoffset + 28 );
+            dev->readBlock( localbuf, 4);
+            int localextralen = (uchar)localbuf[1] << 8 | (uchar)localbuf[0];
+		    dev->at(save_at);
 
-	    // some clever people use different extra field lengths
-	    // in the central header and in the local header... funny.
-	    char localbuf[5];
-	    int save_at = dev->at();
-	    dev->at( eoffset + 28 );
-	    dev->readBlock( localbuf, 4);
-	    int localextralen = (uchar)localbuf[1] * 256 + (uchar)localbuf[0];
-	    dev->at(save_at);
+            //kdDebug(7040) << "localextralen: " << localextralen << endl;
+            
+            // offset, where the real data for uncompression starts
+            uint dataoffset = localheaderoffset + 30 + localextralen + namelen; //comment only in central header
 
-	    //kdDebug(7040) << "localextralen: " << localextralen << endl;
-
-	    eoffset = eoffset + 30 + localextralen + namelen; //comment only in central header
-
-	    //kdDebug(7040) << "esize: " << esize << endl;
-	    //kdDebug(7040) << "eoffset: " << eoffset << endl;
-	    //kdDebug(7040) << "csize: " << csize << endl;
-	    //kdDebug(7040) << "buffer[29]: " << buffer[29] << endl;
+            //kdDebug(7040) << "esize: " << esize << endl;
+            //kdDebug(7040) << "eoffset: " << eoffset << endl;
+            //kdDebug(7040) << "csize: " << csize << endl;
 
             bool isdir = false;
             int access = 0777; // TODO available in zip file?
             int time = getActualTime();
 
-	    QString entryName;
-
-            if ( name.right(1) == "/" ) // Entries with a trailing slash are directories
+            QString entryName;
+              
+		    if ( name.endsWith( "/" ) ) // Entries with a trailing slash are directories
             {
                 isdir = true;
                 name = name.left( name.length() - 1 );
@@ -257,46 +295,40 @@ bool KZip::openArchive( int mode )
                 entry = new KArchiveDirectory( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null );
             else
             {
-	        entry = new KZipFileEntry( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null,
-                                          name, eoffset, esize, cmethod, csize );
-                static_cast<KZipFileEntry *>(entry)->setHeaderStart( offset );
-	        //kdDebug(7040) << "KZipFileEntry created" << endl;
+                entry = new KZipFileEntry( this, entryName, access, time, rootDir()->user(), rootDir()->group(), QString::null,
+                                          name, dataoffset, ucsize, cmethod, csize );
+                static_cast<KZipFileEntry *>(entry)->setHeaderStart( localheaderoffset );
+                //kdDebug(7040) << "KZipFileEntry created" << endl;
                 d->m_fileList.append( static_cast<KZipFileEntry *>( entry ) );
             }
 
             if ( pos == -1 )
             {
-	        rootDir()->addEntry(entry);
-	    }
+                rootDir()->addEntry(entry);
+            }
             else
-	    {
+            {
                 // In some tar files we can find dir/./file => call cleanDirPath
                 QString path = QDir::cleanDirPath( name.left( pos ) );
                 // Ensure container directory exists, create otherwise
                 KArchiveDirectory * tdir = findOrCreate( path );
-	        tdir->addEntry(entry);
-	    }
-
-	    //calculate offset to next entry
-	    //kdDebug(7040) << "offset before: " << offset << endl;
-	    offset = offset + 46 + commlen + extralen + namelen;
-	    //kdDebug(7040) << "offset after: " << offset << endl;
-	    b = dev->at(offset);
-            Q_ASSERT( b );
-            if ( !b ) return false;
-	}
-	else
-	{
-    	    if (buffer[0] == 0x50 && buffer[1] == 0x4b
-		&& buffer[2] == 0x05 && buffer[3] == 0x06 )
-		end = true;	//start of end of central dir reached.
-            else {
-                // Hmm, we arrived onto something not valid
-                kdWarning(7040) << "Invalid ZIP file. Offset " << offset << " has neither 'central entry' nor 'end of entries' signature." << endl;
-                return false;
+                tdir->addEntry(entry);
             }
-	} // do exit
-    } while ( !end);
+
+            //calculate offset to next entry
+            offset += 46 + commlen + extralen + namelen;
+            bool b = dev->at(offset);
+            Q_ASSERT( b );
+            if ( !b )
+              return false;
+        }
+        else
+        {
+            kdWarning(7040) << "Invalid ZIP file. Unrecognized header at offset " << offset << endl;
+
+            return false;
+        }
+    }
     //kdDebug(7040) << "*** done *** " << endl;
     return true;
 }
@@ -328,111 +360,86 @@ bool KZip::closeArchive()
 //	    << " encoding: "<< (*it).encoding() << endl;
 
         uLong mycrc = it.current()->crc32();
-	buffer[ 0 ] = (uchar)(mycrc % 256); //crc checksum, at headerStart+14
-        buffer[ 1 ] = (uchar)((mycrc / 256) % 256);
-	buffer[ 2 ] = (uchar)((mycrc / (256*256)) % 256);
-        buffer[ 3 ] = (uchar)((mycrc / (256*256*256))% 256);
+        buffer[0] = char(mycrc); // crc checksum, at headerStart+14
+        buffer[1] = char(mycrc >> 8);
+        buffer[2] = char(mycrc >> 16);
+        buffer[3] = char(mycrc >> 24);
 
         int mysize1 = it.current()->compressedSize();
-	buffer[ 4 ] = (uchar)(mysize1 % 256); //compressed file size, at headerStart+18
-        buffer[ 5 ] = (uchar)((mysize1 / 256) % 256);
-	buffer[ 6 ] = (uchar)((mysize1 / (256*256)) % 256);
-        buffer[ 7 ] = (uchar)((mysize1 / (256*256*256))% 256);
+        buffer[4] = char(mysize1); // compressed file size, at headerStart+18
+        buffer[5] = char(mysize1 >> 8);
+        buffer[6] = char(mysize1 >> 16);
+        buffer[7] = char(mysize1 >> 24);
 
         int myusize = it.current()->size();
-	buffer[ 8 ] = (uchar)(myusize % 256); //uncompressed file size, at headerStart+22
-        buffer[ 9 ] = (uchar)((myusize / 256) % 256);
-	buffer[ 10 ] = (uchar)((myusize / (256*256)) % 256);
-        buffer[ 11 ] = (uchar)((myusize / (256*256*256))% 256);
+        buffer[8] = char(myusize); // uncompressed file size, at headerStart+22
+        buffer[9] = char(myusize >> 8);
+        buffer[10] = char(myusize >> 16);
+        buffer[11] = char(myusize >> 24);
 
-	device()->writeBlock( buffer, 12 );
+        device()->writeBlock( buffer, 12 );
     }
-    device()->at( atbackup);
+    device()->at( atbackup );
 
     for ( it.toFirst(); it.current() ; ++it )
     {
-	kdDebug(7040) << "closearchive: filename: " << it.current()->path()
-	    << " encoding: "<< it.current()->encoding() << endl;
+        //kdDebug(7040) << "closearchive: filename: " << it.current()->path()
+        //              << " encoding: "<< it.current()->encoding() << endl;
 
         QCString path = QFile::encodeName(it.current()->path());
-	int bufferSize = path.length() + 46;
+
+        int bufferSize = path.length() + 46;
         char* buffer = new char[ bufferSize ];
 
-        buffer[ 0 ] = 'P'; //central file header signature
-        buffer[ 1 ] = 'K';
-        buffer[ 2 ] = 1;
-        buffer[ 3 ] = 2;
+        memset(buffer, 0, 46); // zero is a nice default for most header fields
 
-        buffer[ 4 ] = 0x14; // version made by
-        buffer[ 5 ] = 0;
+        const char head[] =
+        {
+            'P', 'K', 1, 2, // central file header signature
+            0x14, 0,        // version made by
+            0x14, 0         // version needed to extract
+        };
 
-        buffer[ 6 ] = 0x14; // version needed to extract
-	buffer[ 7 ] = 0;
+        memcpy(buffer, head, sizeof(head));
 
-	if ( it.current()->encoding() == 8 )
-	    buffer[ 8 ] = 8; // general purpose bit flag,deflated
-	else
-    	    buffer[ 8 ] = 0; // general purpose bit flag,stored
-
-	buffer[ 9 ] = 0;
-
-	if ( it.current()->encoding() == 8 )
+        if ( it.current()->encoding() == 8 )
+            buffer[ 8 ] = 8, // general purpose bit flag, deflated
             buffer[ 10 ] = 8; // compression method, deflated
-	else
-            buffer[ 10 ] = 0; // compression method, stored
-        buffer[ 11 ] = 0;
 
         transformToMsDos( it.current()->datetime(), &buffer[ 12 ] );
 
         uLong mycrc = it.current()->crc32();
-	buffer[ 16 ] = (uchar)(mycrc % 256); //crc checksum
-        buffer[ 17 ] = (uchar)((mycrc / 256) % 256);
-	buffer[ 18 ] = (uchar)((mycrc / (256*256)) % 256);
-        buffer[ 19 ] = (uchar)((mycrc / (256*256*256))% 256);
+        buffer[ 16 ] = char(mycrc); // crc checksum
+        buffer[ 17 ] = char(mycrc >> 8);
+        buffer[ 18 ] = char(mycrc >> 16);
+        buffer[ 19 ] = char(mycrc >> 24);
 
         int mysize1 = it.current()->compressedSize();
-	buffer[ 20 ] = (uchar)(mysize1 % 256); //compressed file size
-        buffer[ 21 ] = (uchar)((mysize1 / 256) % 256);
-	buffer[ 22 ] = (uchar)((mysize1 / (256*256)) % 256);
-        buffer[ 23 ] = (uchar)((mysize1 / (256*256*256))% 256);
+        buffer[ 20 ] = char(mysize1); // compressed file size
+        buffer[ 21 ] = char(mysize1 >> 8);
+        buffer[ 22 ] = char(mysize1 >> 16);
+        buffer[ 23 ] = char(mysize1 >> 24);
 
         int mysize = it.current()->size();
-	buffer[ 24 ] = (uchar)(mysize % 256); //uncompressed file size
-        buffer[ 25 ] = (uchar)((mysize / 256) % 256);
-	buffer[ 26 ] = (uchar)((mysize / (256*256)) % 256);
-        buffer[ 27 ] = (uchar)((mysize / (256*256*256))% 256);
+        buffer[ 24 ] = char(mysize); // uncompressed file size
+        buffer[ 25 ] = char(mysize >> 8);
+        buffer[ 26 ] = char(mysize >> 16);
+        buffer[ 27 ] = char(mysize >> 24);
 
-	buffer[ 28 ] = (uchar)it.current()->path().length(); //filename length
-        buffer[ 29 ] = (uchar)((it.current()->path().length() / 256) % 256);
-
-	buffer[ 30 ] = 0; // extra field length
-        buffer[ 31 ] = 0;
-
-	buffer[ 32 ] = 0; // file comment length
-        buffer[ 33 ] = 0;
-
-	buffer[ 34 ] = 0; // disk number start
-        buffer[ 35 ] = 0;
-
-	buffer[ 36 ] = 0; // internal file attributes
-        buffer[ 37 ] = 0;
-
-        buffer[ 38 ] = 0; // external file attributes
-	buffer[ 39 ] = 0;
-        buffer[ 40 ] = 0;
-	buffer[ 41 ] = 0;
+        buffer[ 28 ] = char(it.current()->path().length()); // filename length
+        buffer[ 29 ] = char(it.current()->path().length() >> 8);
 
         int myhst = it.current()->headerStart();
-	buffer[ 42 ] = (uchar)(myhst % 256); //relative offset of local header
-        buffer[ 43 ] = (uchar)((myhst / 256) % 256);
-	buffer[ 44 ] = (uchar)((myhst / (256*256)) % 256 );
-        buffer[ 45 ] = (uchar)((myhst / (256*256*256)) % 256);
+        buffer[ 42 ] = char(myhst); //relative offset of local header
+        buffer[ 43 ] = char(myhst >> 8);
+        buffer[ 44 ] = char(myhst >> 16);
+        buffer[ 45 ] = char(myhst >> 24);
 
         // file name
-	strncpy( buffer + 46, path, path.length() );
+        strncpy( buffer + 46, path, path.length() );
 	//kdDebug(7040) << "closearchive length to write: " << bufferSize << endl;
-	crc = crc32(crc, (Bytef *)buffer, bufferSize );
-	device()->writeBlock( buffer, bufferSize );
+        crc = crc32(crc, (Bytef *)buffer, bufferSize );
+        device()->writeBlock( buffer, bufferSize );
         delete[] buffer;
     }
     Q_LONG centraldirendoffset = device()->at();
@@ -455,25 +462,25 @@ bool KZip::closeArchive()
     //kdDebug(7040) << "number of files (count): " << count << endl;
 
 
-    buffer[ 8 ] = (uchar)(count % 256); // total number of entries in central dir of
-    buffer[ 9 ] = (uchar)((count / 256) % 256); // this disk
+    buffer[ 8 ] = char(count); // total number of entries in central dir of
+    buffer[ 9 ] = char(count >> 8); // this disk
 
     buffer[ 10 ] = buffer[ 8 ]; // total number of entries in the central dir
     buffer[ 11 ] = buffer[ 9 ];
 
     int cdsize = centraldirendoffset - centraldiroffset;
-    buffer[ 12 ] = (uchar)(cdsize % 256); //size of the central dir
-    buffer[ 13 ] = (uchar)((cdsize / 256) % 256);
-    buffer[ 14 ] = (uchar)((cdsize / (256*256)) % 256);
-    buffer[ 15 ] = (uchar)((cdsize / (256*256*256))% 256);
+    buffer[ 12 ] = char(cdsize); // size of the central dir
+    buffer[ 13 ] = char(cdsize >> 8);
+    buffer[ 14 ] = char(cdsize >> 16);
+    buffer[ 15 ] = char(cdsize >> 24);
 
     //kdDebug(7040) << "end : centraldiroffset: " << centraldiroffset << endl;
     //kdDebug(7040) << "end : centraldirsize: " << cdsize << endl;
 
-    buffer[ 16 ] = (uchar)(centraldiroffset % 256) ; //central dir offset
-    buffer[ 17 ] = (uchar)((centraldiroffset / 256) % 256);
-    buffer[ 18 ] = (uchar)((centraldiroffset / (256*256)) % 256);
-    buffer[ 19 ] = (uchar)((centraldiroffset / (256*256*256)) % 256);
+    buffer[ 16 ] = char(centraldiroffset); // central dir offset
+    buffer[ 17 ] = char(centraldiroffset >> 8);
+    buffer[ 18 ] = char(centraldiroffset >> 16);
+    buffer[ 19 ] = char(centraldiroffset >> 24);
 
     buffer[ 20 ] = 0; //zipfile comment length
     buffer[ 21 ] = 0;
@@ -487,7 +494,8 @@ bool KZip::closeArchive()
 // Reimplemented to replace device()->writeBlock with writeData
 bool KZip::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
 {
-
+    // set right offset in zip.
+    device()->at( d->m_offset );
     if ( !prepareWriting( name, user, group, size ) )
     {
         kdWarning() << "KZip::writeFile prepareWriting failed" << endl;
@@ -506,6 +514,8 @@ bool KZip::writeFile( const QString& name, const QString& user, const QString& g
         kdWarning() << "KZip::writeFile doneWriting failed" << endl;
         return false;
     }
+    // update saved offset for appending new files 
+    d->m_offset = device()->at();
     return true;
 }
 
@@ -524,12 +534,23 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
         return false;
     }
 
-    //kdDebug(7040) << "prepareWriting: currently at: " << device()->at() << " going to end of file: " << device()->size() << endl;
-    if ( device()->at() < device()->size() )
+    // delete entries in the filelist with the same filename as the one we want
+    // to save, so that we don´t have duplicate file entries when viewing the zip
+    // with konqi...
+    // CAUTION: the old file itself is still in the zip and won´t be removed !!!
+    QPtrListIterator<KZipFileEntry> it( d->m_fileList );
+
+	//kdDebug(7040) << "filename to write: " << name <<endl;
+    for ( ; it.current() ; ++it )
     {
-        bool bEnd = device()->at( device()->size() );
-        Q_ASSERT( bEnd );
-    }
+    	//kdDebug(7040) << "prepfilename: " << it.current()->path() <<endl;
+		if (name == it.current()->path() )
+        {
+	    	//kdDebug(7040) << "removing following entry: " << it.current()->path() <<endl;
+	        d->m_fileList.remove();
+        }
+
+    }    
     // Find or create parent dir
     KArchiveDirectory* parentDir = rootDir();
     QString fileName( name );
@@ -572,8 +593,8 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
     buffer[ 6 ] = 0; // general purpose bit flag
     buffer[ 7 ] = 0;
 
-    buffer[ 8 ] = (uchar)(e->encoding() % 256); // compression method
-    buffer[ 9 ] = (uchar)(e->encoding() / 256);
+    buffer[ 8 ] = char(e->encoding()); // compression method
+    buffer[ 9 ] = char(e->encoding() >> 8);
 
     transformToMsDos( e->datetime(), &buffer[ 10 ] );
 
@@ -592,8 +613,8 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
     buffer[ 24 ] = 'I';
     buffer[ 25 ] = 'Z';
 
-    buffer[ 26 ] = (uchar)name.length(); //filename length
-    buffer[ 27 ] = (uchar)((name.length() / 256) % 256);
+    buffer[ 26 ] = (uchar)(encodedName.length()); //filename length
+    buffer[ 27 ] = (uchar)(encodedName.length() >> 8);
 
     buffer[ 28 ] = 0; // extra field length
     buffer[ 29 ] = 0;
@@ -645,7 +666,7 @@ bool KZip::doneWriting( uint size )
     d->m_currentFile->setSize(size);
     int csize = device()->at() -
         d->m_currentFile->headerStart() - 30 -
-	d->m_currentFile->path().length();
+		d->m_currentFile->path().length();
     d->m_currentFile->setCompressedSize(csize);
     //kdDebug(7040) << "usize: " << d->m_currentFile->size() << endl;
     //kdDebug(7040) << "csize: " << d->m_currentFile->compressedSize() << endl;
@@ -659,7 +680,9 @@ bool KZip::doneWriting( uint size )
 }
 
 void KZip::virtual_hook( int id, void* data )
-{ KArchive::virtual_hook( id, data ); }
+{
+  KArchive::virtual_hook( id, data );
+}
 
 bool KZip::writeData(const char * c, uint i)
 {
@@ -723,3 +746,4 @@ QIODevice* KZipFileEntry::device() const
               <<" please use a command-line tool to handle this file." << endl;
     return 0L;
 }
+
