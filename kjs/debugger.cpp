@@ -97,7 +97,9 @@ bool Debugger::hit(int line)
   if (!eng || mode() == Continue || mode() == Disabled)
       return true;
 
-  return stopEvent();
+  bool ret = stopEvent();
+  eng->init();	// in case somebody used a different interpreter meanwhile
+  return ret;
 }
 
 #endif
