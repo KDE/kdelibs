@@ -47,7 +47,8 @@ static const KCmdLineOptions options[] =
 extern "C" int kdemain(int argc, char *argv[])
 {
    KLocale::setMainCatalogue("kdelibs");
-   KCmdLineArgs::init(argc, argv, "kcookiejar", description, version);
+   KCmdLineArgs::init(argc, argv, "kcookiejar", I18N_NOOP("HTTP Cookie Daemon"),
+		      description, version);
 
    KCmdLineArgs::addCmdLineOptions( options );
 
