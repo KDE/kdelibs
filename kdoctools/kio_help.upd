@@ -1,4 +1,3 @@
 # Move kio_help cache from $KDEHOME/share/apps/kio_help/cache to $KDEHOME/cache-$HOST/kio_help
 Id=kde3_2
-File=dummy
 Script=move_kio_help_cache.sh,sh
