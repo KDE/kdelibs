@@ -161,6 +161,54 @@ static QCString stringToPrintable(const QCString& str){
   return result;
 }
 
+static QCString decodeGroup(const char*s, int l)
+{
+  QCString result(l);
+  register char *r = result.data();
+
+  l--; // Correct for trailing \0
+  while(l)
+  {
+    if ((*s == '[') && (l > 1))
+    {
+       if ((*(s+1) == '['))
+       {
+          l--;
+          s++;
+       }
+    }
+    if ((*s == ']') && (l > 1))
+    {
+       if ((*(s+1) == ']'))
+       {
+          l--;
+          s++;
+       }
+    }
+    *r++ = *s++;
+    l--;
+  }
+  result.truncate(r - result.data());
+  return result;
+}
+
+static QCString encodeGroup(const QCString &str)
+{
+  int l = str.length();
+  QCString result(l*2+1);
+  register char *r = result.data();
+  register char *s = str.data();
+  while(l)
+  {
+    if ((*s == '[') || (*s == ']'))
+       *r++ = *s;
+    *r++ = *s++;
+    l--;
+  }
+  result.truncate(r - result.data());
+  return result;
+}
+
 class KConfigBackEnd::KConfigBackEndPrivate
 {
 public:
@@ -398,7 +446,19 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
       if (*s == '[')  //group
       {
-         while ((s < eof) && (*s != '\n') && (*s != ']')) s++; // Search till end of group
+         // In a group [[ and ]] have a special meaning
+         while ((s < eof) && (*s != '\n')) 
+         {
+            if (*s == ']')
+            {
+               if ((s+1 < eof) && (*(s+1) == ']'))
+                  s++; // Skip "]]"
+               else
+                  break;
+            }
+
+            s++; // Search till end of group
+         }
          const char *e = s;
          while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
          if ((e >= eof) || (*e != ']'))
@@ -416,7 +476,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
             continue;
          }
 
-         aCurrentGroup = QCString(startLine + 1, e - startLine);
+         aCurrentGroup = decodeGroup(startLine + 1, e - startLine);
          //cout<<"found group ["<<aCurrentGroup<<"]"<<endl;
 
          // Backwards compatibility
@@ -722,7 +782,7 @@ static void writeEntries(FILE *pStream, const KEntryMap& entryMap, bool defaultG
 	if (!firstEntry)
 	    fprintf(pStream, "\n");
 	currentGroup = key.mGroup;
-	fprintf(pStream, "[%s]\n", currentGroup.data());
+	fprintf(pStream, "[%s]\n", encodeGroup(currentGroup).data());
      }
 
      firstEntry = false;
@@ -944,30 +1004,30 @@ bool KConfigBackEnd::checkConfigFilesWritable(bool warnUser)
 {
   // WARNING: Do NOT use the event loop as it may not exist at this time.
   bool allWritable = true;
-  QString errorMsg( I18N_NOOP("Will not save configuration.\n") );
+  QString errorMsg( i18n("Will not save configuration.\\n") );
   if ( !mLocalFileName.isEmpty() && !bFileImmutable && !checkAccess(mLocalFileName,W_OK) )
   {
     allWritable = false;
-    errorMsg = errorMsg + QString(I18N_NOOP("Configuration file \"%1\" not writable.\n")).arg(mLocalFileName);
+    errorMsg += i18n("Configuration file \"%1\" not writable.\\n").arg(mLocalFileName);
   }
   // We do not have an immutability flag for kdeglobals. However, making kdeglobals mutable while making
   // the local config file immutable is senseless.
   if ( !mGlobalFileName.isEmpty() && useKDEGlobals && !bFileImmutable && !checkAccess(mGlobalFileName,W_OK) )
   {
-    errorMsg = errorMsg + QString(I18N_NOOP("Configuration file \"%1\" not writable.\n")).arg(mGlobalFileName);
+    errorMsg += i18n("Configuration file \"%1\" not writable.\\n").arg(mGlobalFileName);
     allWritable = false;
   }
 
   if (warnUser && !allWritable)
   {
     // Note: We don't ask the user if we should not ask this question again because we can't save the answer.
-    errorMsg = errorMsg + QString(I18N_NOOP("Please contact your systems administrator.\n"));
+    errorMsg += i18n("Please contact your system administrator.");
     QString cmdToExec = KStandardDirs::findExe(QString("kdialog"));
     KApplication *app = kapp;
     if (!cmdToExec.isEmpty() && app)
     {
       KProcess lprocess;
-      lprocess << cmdToExec << "--title" << app->instanceName() << "--msgbox" << errorMsg;
+      lprocess << cmdToExec << "--title" << app->instanceName() << "--msgbox" << errorMsg.local8Bit();
       lprocess.start( KProcess::Block );
     }
   }
