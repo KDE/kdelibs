@@ -29,33 +29,48 @@
 namespace KMediaPlayer
 {
 
+/** View is part of the user interface of a Player. */
 class View : public QWidget
 {
 Q_OBJECT
 
 public:
+	/** Your typical QWidget constructor. */
 	View(QWidget *parent, const char *name);
 	virtual ~View(void);
 
+	/** The Possible buttons that can appear in the UI. */
 	enum Button
 	{
+		/** Button that connects to Player::play */
 		Play = 1,
+		/** Button that connects to Player::stop */
 		Stop = 2,
+		/** Button that connects to Player::pause */
 		Pause = 4,
+		/** A seeker that interfaces with Player::seek */
 		Seeker = 8,
+		/** Show all buttons. */
 		All = 255
 	};
 
+	/** Return which buttons are being displayed. */
 	int buttons(void);
 public slots:
+	/** Set which buttons to display. @see Button. */
 	void setButtons(int);
 
+	/** Returns if a particular button is being displayed. */
 	bool button(int);
+	/** Display a particular button. */
 	void showButton(int);
+	/** Stop displaying a particular button. */
 	void hideButton(int);
+	/** Toggle the display of a particular button. */
 	void toggleButton(int);
 
 signals:
+	/** Emitted when the set of displayed buttons changes. */
 	void buttonsChanged(int);
 
 private:
