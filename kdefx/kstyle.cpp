@@ -1957,7 +1957,11 @@ bool TransparencyHandler::eventFilter( QObject* object, QEvent* event )
 		}
 
 		// Handle drop shadow
-		if (dropShadow && p->width() > 16 && p->height() > 16)
+		// * FIXME : !shadowMap().contains(p) is a workaround for leftover
+		// * shadows after duplicate show events.
+		// * TODO : determine real cause for duplicate events
+		// * till 20021005
+		if (dropShadow && p->width() > 16 && p->height() > 16 && !shadowMap().contains( p ))
 			createShadowWindows(p);
 	}
 	else if (et == QEvent::Hide)
