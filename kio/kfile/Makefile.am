@@ -18,7 +18,7 @@
 
 
 INCLUDES= -I$(srcdir)/../libltdl/ -I$(top_srcdir) -I$(top_srcdir)/kdefx \
-    -I$(top_srcdir)/kio/kio -I$(top_srcdir)/kio/bookmarks $(all_includes)
+    -I$(top_builddir)/kio/kio -I$(top_srcdir)/kio/bookmarks $(all_includes)
 
 noinst_LTLIBRARIES  = libkfile.la
 
