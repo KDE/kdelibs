@@ -20,11 +20,31 @@
 <!ENTITY kcontrol       '<application>Centro di controllo di &kde;</application>'>
 <!ENTITY kcontrolcenter	"<application>Centro di controllo di &kde;</application>">
 <!ENTITY khelpcenter    '<application>Centro di informazioni di &kde;</application>'>
+<!-- --------------------------------------------------- -->
+<!-- Note (EB): please translate the following two ones: -->
+
+<!ENTITY kicon	"<guiicon>
+<inlinemediaobject>
+ <objectinfo><title>&kde;'s K-icon</title></objectinfo>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
+ <textobject><phrase>K</phrase></textobject>
+</inlinemediaobject>
+</guiicon> icon"><!-- if image is localised, then entityref should be used 
+                      instead of fileref -->
+<!ENTITY kmenu  "<guimenu>K</guimenu> menu">
+<!-- --------------------------------------------------- -->
 <!ENTITY LMB    "tasto <mousebutton>sinistro</mousebutton> del mouse">
 <!ENTITY MMB    "tasto <mousebutton>centrale</mousebutton> del mouse">
 <!ENTITY OS     "sistema operativo"><!-- <acronym>OS</acronym>-->
 <!ENTITY RMB    "tasto <mousebutton>destro</mousebutton> del mouse">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
+<!-- --------------------------------------------------- -->
+<!-- Note (EB): you can translate the entity names as well:
+     &cioe;
+     &ecc;
+     &TSM; &TCM; &TDM;
+     etc. -->
+<!-- --------------------------------------------------- -->
 
 <!-- Entit&agrave; aggiunte dai traduttori -->
 
