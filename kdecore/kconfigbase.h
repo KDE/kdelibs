@@ -88,7 +88,7 @@ public:
    * calls to @ref readEntry() will look only for keys in the currently
    * activated group.
    *
-   * Switch back to the default group by passing an empty string.
+   * Switch back to the default group by passing a null string.
    * @param group The name of the new group.
    */
   void setGroup( const QString& group );
