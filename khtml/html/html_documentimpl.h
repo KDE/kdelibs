@@ -25,11 +25,8 @@
 #ifndef HTML_DOCUMENTIMPL_H
 #define HTML_DOCUMENTIMPL_H
 
-//#include "dtd.h"
 #include "dom_docimpl.h"
 #include "misc/loader_client.h"
-
-//#include "html_baseimpl.h"
 
 class KHTMLView;
 

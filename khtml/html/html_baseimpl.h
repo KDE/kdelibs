@@ -28,6 +28,7 @@
 
 #include "dtd.h"
 #include "html_elementimpl.h"
+#include "khtmllayout.h"
 #include <qscrollview.h>
 
 class KHTMLView;

@@ -25,6 +25,7 @@
 #define HTML_IMAGEIMPL_H
 
 #include "html_inlineimpl.h"
+#include "misc/khtmllayout.h"
 
 #include <qregion.h>
 
