@@ -217,7 +217,7 @@ protected:
     inline int getLeftMargin(int y) const;
     inline int getLeftBottom();
     inline int getRightBottom();
-    virtual int getWidth(int y) const;
+    inline int getWidth(int y) const;
 
     void insertMarginElement(HAlign align, int y, NodeImpl* node);
     void clearMargins();

@@ -253,7 +253,7 @@ AttrImpl *ElementImpl::setAttributeNode( AttrImpl *newAttr )
     //  if (newAttr->father!=this)
     //    throw DOMException(INUSE_ATTRIBUTE_ERR);
 
-    Attribute a(newAttr->id(), newAttr->value());
+    Attribute a(newAttr->attrId(), newAttr->value());
     attributeMap.add(a);
     parseAttribute(&a);
 

@@ -63,7 +63,7 @@ public:
 	    return vspace.minWidth(getHeight());
     }
 
-    virtual int getHeight() { return ascent+descent; }
+    virtual int getHeight() const { return ascent+descent; }
 
     virtual void calcMinMaxWidth();
 

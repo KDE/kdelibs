@@ -65,10 +65,7 @@
 
 #define PAINT_BUFFER_HEIGHT 150
 
-template class QList<HTMLURLRequester>;
-template class QList<HTMLImageRequester>;
 template class QDict<HTMLURLRequest>;
-template class QDict<KHTMLCachedImage>;
 template class QList<HTMLURLRequestJob>;
 template class QList<KHTMLWidget>;
 template class QList<KHTMLWidget::Child>;
@@ -295,7 +292,7 @@ KHTMLWidget* KHTMLWidget::findFrame( const QString &_name )
 {
     KHTMLWidget *v;
 
-    if ( _name == "_top" )
+    if ( _name == "_top" || _name == "_TOP" )
     {
 	v = this;
 
@@ -304,16 +301,16 @@ KHTMLWidget* KHTMLWidget::findFrame( const QString &_name )
 	
 	return v;
     }
-    else if ( _name == "_self"  )
+    else if ( _name == "_self" || _name == "_SELF" )
     {
 	return this;
     }
-    else if ( _name == "_parent" )
+    else if ( _name == "_parent" || _name == "_PARENT" )
     {
 	if ( parentView() )
 	    return parentView();
     }
-    else if ( _name == "_blank" )
+    else if ( _name == "_blank" || _name == "_BLANK" )
     {
 	return 0;
     }

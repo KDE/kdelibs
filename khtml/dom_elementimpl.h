@@ -75,7 +75,7 @@ public:
 protected:
     AttrImpl(const DOMString &, const DOMString &, DocumentImpl *, bool);
 
-    int id() { return attr.id; }
+    int attrId() { return attr.id; }
 
     Attribute attr;
     bool _specified;
