@@ -1236,16 +1236,19 @@ void KFontSizeAction::slotActivated( const QString& size )
 KActionMenu::KActionMenu( QObject* parent, const char* name )
  : QActionMenu( parent, name )
 {
+    popupMenu()->setFont(KGlobal::menuFont());
 }
 
 KActionMenu::KActionMenu( const QString& text, QObject* parent, const char* name )
  : QActionMenu( text, parent, name )
 {
+    popupMenu()->setFont(KGlobal::menuFont());
 }
 
 KActionMenu::KActionMenu( const QString& text, const QIconSet& icon, QObject* parent, const char* name )
  : QActionMenu( text, icon, parent, name )
 {
+    popupMenu()->setFont(KGlobal::menuFont());
 }
 
 int KActionMenu::plug( QWidget* widget, int index )
