@@ -1281,7 +1281,7 @@ void KDockTabBar::resizeEvent(QResizeEvent *)
         barPainter->delta = 0;
         leftTab = 0;
       }
-      maxAllowHeight = height() - 50 + barPainter->delta;
+      maxAllowHeight = height(); //CCC - 50 + barPainter->delta;
       barPainter->resize( width() - 1, QMIN(tabsWidth(),maxAllowHeight) );
       barPainter->move( 0, height() - barPainter->height() + barPainter->delta );
       break;
