@@ -1,3 +1,7 @@
+2003-10-14  Wilco Greven <greven@kde.org>
+	* ecma/kjs_window.cpp (tryCall): Scroll should do the same as
+	ScrollTo, not ScrollBy. #63301
+
 2003-10-14  David Faure  <faure@kde.org>
 
 	* xml/dom_nodeimpl.cpp (handleLocalEvents): Fixed infinite loop in
