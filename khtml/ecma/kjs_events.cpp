@@ -71,15 +71,11 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     // Add the event's target element to the scope
     // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
     Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
-    List scope;
-    List oldScope = listener.scope();
+    ScopeChain oldScope = listener.scope();
     if ( thisObj.isValid() ) {
-      scope = static_cast<DOMNode*>(thisObj.imp())->eventHandlerScope(exec);
-      if ( !scope.isEmpty() ) {
-        List curScope = oldScope.copy();
-        curScope.prependList( scope );
-        listener.setScope( curScope );
-      }
+      ScopeChain scope = oldScope;
+      static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
+      listener.setScope( scope );
     }
     else {
       if ( m_hackThisObj.isValid() )
@@ -99,9 +95,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     Value retval = listener.call(exec, thisObj, args);
     guard.stop();
 
-    if ( !scope.isEmpty() ) {
-      listener.setScope( oldScope );
-    }
+    listener.setScope( oldScope );
 
     window->setCurrentEvent( 0 );
     interpreter->setCurrentEvent( 0 );

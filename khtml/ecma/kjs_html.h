@@ -61,7 +61,7 @@ namespace KJS {
     void putValueProperty(ExecState *exec, int token, const Value& value, int);
     virtual bool hasProperty(ExecState *exec, const Identifier &propertyName) const;
     virtual UString toString(ExecState *exec) const;
-    virtual List eventHandlerScope(ExecState *exec) const;
+    virtual void pushEventHandlerScope(ExecState *exec, ScopeChain &scope) const;
     virtual const ClassInfo* classInfo() const;
     static const ClassInfo info;
 

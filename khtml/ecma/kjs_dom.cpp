@@ -476,9 +476,8 @@ Value DOMNode::getListener(int eventId) const
 	return Null();
 }
 
-List DOMNode::eventHandlerScope(ExecState *) const
+void DOMNode::pushEventHandlerScope(ExecState *, ScopeChain &) const
 {
-  return List::empty();
 }
 
 Value DOMNodeProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
