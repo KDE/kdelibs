@@ -40,6 +40,7 @@
 #include <khelpmenu.h>
 #include <kmenubar.h>
 #include <kstatusbar.h>
+#include <kwin.h>
 
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -821,19 +822,23 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
 {
   int scnum = QApplication::desktop()->screenNumber(parentWidget());
   QRect desk = QApplication::desktop()->screenGeometry(scnum);
-  QRect size( desk.width(), width(), desk.height(), height() );
+  // save maximalization as desktop size + 1 in that direction
+  KWin::WindowInfo info = KWin::windowInfo( winId(), NET::WMState );
+  int w = info.state() & NET::MaxHoriz ? desk.width() + 1 : width();
+  int h = info.state() & NET::MaxVert ? desk.height() + 1 : height();
+  QRect size( desk.width(), w, desk.height(), h );
   bool defaultSize = (size == d->defaultWindowSize);
   QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
   QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
   if (!config->hasDefault(widthString) && defaultSize)
      config->revertToDefault(widthString);
   else
-     config->writeEntry(widthString, width() );
+     config->writeEntry(widthString, w );
 
   if (!config->hasDefault(heightString) && defaultSize)
      config->revertToDefault(heightString);
   else
-     config->writeEntry(heightString, height() );
+     config->writeEntry(heightString, h );
 }
 
 void KMainWindow::restoreWindowSize( KConfig * config )
@@ -856,8 +861,20 @@ void KMainWindow::restoreWindowSize( KConfig * config )
                 config->writeEntry( QString::fromLatin1("Height"), 0 );
             }
         }
-        if ( !size.isEmpty() )
-            resize( size );
+        if ( !size.isEmpty() ) {
+            int state = ( size.width() > desk.width() ? NET::MaxHoriz : 0 )
+                        | ( size.height() > desk.height() ? NET::MaxVert : 0 );
+            if( state & NET::Max )
+                ; // no resize
+            else if( state & NET::MaxHoriz )
+                resize( width(), size.height());
+            else if( state & NET::MaxVert )
+                resize( size.height(), height());
+            else
+                resize( size );
+            // QWidget::showMaximized() is both insufficient and broken
+            KWin::setState( winId(), state );
+        }
     }
 }
 
