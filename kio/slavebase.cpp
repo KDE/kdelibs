@@ -290,11 +290,15 @@ void SlaveBase::errorPage()
 
 void SlaveBase::mimeType( const QString &_type)
 {
-  if (!mOutgoingMetaData.isEmpty())
-     sendMetaData();
   int cmd;
   do
   {
+    // Send the meta-data each time we send the mime-type.
+    if (!mOutgoingMetaData.isEmpty())
+    {
+      KIO_DATA << mOutgoingMetaData;
+      m_pConnection->send( INF_META_DATA, data );
+    }
     KIO_DATA << _type;
     m_pConnection->send( INF_MIME_TYPE, data );
     while(true)
@@ -315,6 +319,7 @@ void SlaveBase::mimeType( const QString &_type)
     }
   }
   while (cmd != CMD_NONE);
+  mOutgoingMetaData.clear();
 // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
 // had been put on hold.) [or special, for http posts].
 // Something else is basically an error
@@ -434,11 +439,12 @@ void SlaveBase::sigsegv_handler (int)
 
 void SlaveBase::sigpipe_handler (int)
 {
-    // TODO: maybe access the only instance of SlaveBase and call abort() on it
-    // Default implementation of abort would exit(1), but specific slaves can
-    // abort in a nicer way and be ready for more invocations
+    // We ignore a SIGPIPE in slaves.
+    // A SIGPIPE can happen in two cases:
+    // 1) Communication error with application.
+    // 2) Communication error with network.
+
     kdDebug(7019) << "SIGPIPE" << endl;
-    exit(1);
 }
 
 void SlaveBase::setHost(QString const &host, int, QString const &, QString const &)
