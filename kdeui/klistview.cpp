@@ -23,7 +23,6 @@
 #include <qheader.h>
 #include <qcursor.h>
 #include <qtooltip.h>
-#include <qpaintdevice.h>
 
 #include <kglobalsettings.h>
 #include <kcursor.h>
@@ -1183,16 +1182,21 @@ int KListView::dropVisualizerWidth () const
 void KListView::viewportPaintEvent(QPaintEvent *e)
 {
   QListView::viewportPaintEvent(e);
+
+  QWidget* view = viewport();
+
   if (d->mOldDropVisualizer.isValid())
-  {
-    QPixmap surface(viewport()->size());
-    QPainter painter(&surface, viewport());
-    if (e->rect().intersects(drawDropVisualizer(&painter,d->parentItemDrop, d->afterItemDrop)))
     {
-      bitBlt(viewport(), d->mOldDropVisualizer.topLeft(), &surface,
-             d->mOldDropVisualizer, Qt::CopyROP);
+      QPixmap surface(view->size());
+      bitBlt (&surface, QPoint (0,0), view, view->rect(), CopyROP);
+      QPainter painter(&surface, view);
+      
+      if (e->rect().intersects(drawDropVisualizer(&painter,d->parentItemDrop, d->afterItemDrop)))
+        {
+          bitBlt(view, d->mOldDropVisualizer.topLeft(), &surface,
+                 d->mOldDropVisualizer, CopyROP);
+        }
     }
-  }
 }
 
 #include "klistview.moc"
