@@ -96,9 +96,6 @@ class KIntValidator : public QValidator {
   @version 0.0.1
 */
 
-// Just a marker for a feature that was added after 2.2-beta2.
-// When KOffice depends on kdelibs-2.2, this can be removed.
-#define KFLOATVALIDATOR_HAS_USEDLOCALPARAMETER
 class KFloatValidatorPrivate;
 class KFloatValidator : public QValidator {
 

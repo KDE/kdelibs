@@ -36,10 +36,6 @@ class QLabel;
 class QStringList;
 class KListBox;
 
-// Just a marker for a feature that was added after 2.2-beta2.
-// When KOffice depends on kdelibs-2.2, this can be removed.
-#define KFONTCHOOSER_HAS_SETCOLOR
-
 /**
  * A widget for interactive font selection.
  *
