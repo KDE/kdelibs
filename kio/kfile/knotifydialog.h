@@ -68,7 +68,7 @@ public:
      * addApplicationEvents().
      */
     KNotifyDialog( QWidget *parent = 0, const char *name = 0,
-                   bool modal = true,
+                   bool modal = false,
                    const KAboutData *aboutData =
                    KGlobal::instance()->aboutData() );
     /**
