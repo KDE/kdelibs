@@ -549,6 +549,7 @@ bool ReadWritePart::saveAs( const KURL & kurl )
       kdError(1000) << "saveAs: Malformed URL" << kurl.url() << endl;
       return false;
   }
+  KURL oldURL = m_url;
   m_url = kurl; // Store where to upload in saveToURL
   // Local file
   if ( m_url.isLocalFile() )
@@ -571,8 +572,13 @@ bool ReadWritePart::saveAs( const KURL & kurl )
     }
     // otherwise, we already had a temp file
   }
-  emit setWindowCaption( m_url.prettyURL() );
-  return save(); // Save local file and upload local file
+  bool result = save(); // Save local file and upload local file
+  if (result)
+    emit setWindowCaption( m_url.prettyURL() );
+  else
+    m_url = oldURL;
+      
+  return result;    
 }
 
 bool ReadWritePart::saveToURL()
