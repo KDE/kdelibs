@@ -1,13 +1,19 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=audio/vnd.rn-realaudio
-Icon=mimetypes/sound
+Icon=sound
 Patterns=
 Comment=RealAudio broadcast
+Comment[ca]=Emisió RealAudio
 Comment[cs]=RealAudio vysílání
 Comment[de]=RealAudio-Sendung
 Comment[eo]=RealAudio-elsendo
 Comment[fi]=RealAudio lähetys
+Comment[fr]=Diffusion RealAudio
 Comment[hu]=RealAudió program sugárzás
 Comment[no]=RealAudio-sending
+Comment[no_NY]=RealAudio-kringkasting
+Comment[pt]=Transmissão RealAudio
+Comment[ro]=Flux multimedia RealAudio
 Comment[sl]=Oddaja v obliki RealAudio
+Comment[sv]=RealAudio-utsändning

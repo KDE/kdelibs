@@ -1,13 +1,20 @@
 [Desktop Entry]
 Comment=Desktop config file
+Comment[ca]=Fitxer de configuració de l'escriptori
 Comment[cs]=Konfigurační soubor pracovní plochy
 Comment[de]=Konfigurationsdatei für die Arbeitsfläche
 Comment[eo]=Labortabula agordo-dosiero
 Comment[fi]=Työpöydän asetustiedosto
+Comment[fr]=Fichier de configuration du bureau
 Comment[hu]=Munkaasztal konfigurációs fájl
+Comment[ja]=デスクトップ設定ファイル
 Comment[no]=Konfigurasjonsfil til skrivebord
+Comment[no_NY]=Skrivebordsoppsett-fil
+Comment[pt]=Ficheiro de configuração de ambiente de trabalho
+Comment[ro]=Fişier de configurare KDE
 Comment[sl]=Nastavitvena datoteka namizja
-Icon=filesystems/exec
+Comment[sv]=Skrivbordsinställningsfil
+Icon=exec
 Type=MimeType
 MimeType=application/x-desktop
 Patterns=*.desktop;*.kdelnk;

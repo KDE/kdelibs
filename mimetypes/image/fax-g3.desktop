@@ -1,20 +1,18 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/fax-g3
-Icon=mimetypes/image
+Icon=image
 Patterns=*.g3;*.G3;
 Comment=CCITT g3 fax
 Comment[ca]=Fax CCITT g3
 Comment[de]=CCITT G3-Fax
 Comment[eo]=CCITT-g3-faksdosiero
-Comment[fi]=CCITT g3 faksi
+Comment[fi]=CCITT g3 -faksi
 Comment[fr]=Fax CCITT groupe 3
-Comment[it]=Fax III Gruppo CCITT
 Comment[no]=CCITT G3-Fax
 Comment[no_NY]=CCITT g3 faks
 Comment[pt]=Fax grupo 3 CCITT
-Comment[ro]=Fi∫ier de fax (CCITT G3)
-Comment[ru]=Ê¡ Ã ∆¡À”¡ (CCITT G3)
+Comment[ro]=Fi≈üier Fax (CCITT G3)
 Comment[sl]=Faks CCITT g3
 Comment[sv]=CCITT grupp 3 fax
 Comemnt[es]=Fax CCITT Grupo 3

@@ -1,6 +1,19 @@
 [Desktop Entry]
 Comment=Python program
-Icon=mimetypes/unknown
+Comment[ca]=Programa Python
+Comment[cs]=Program v jazyce Python
+Comment[de]=Python-Programm
+Comment[eo]=Piton-programo
+Comment[fi]=Python ohjelma
+Comment[fr]=Programme Python
+Comment[ja]=Pythonプログラム
+Comment[no]=Python-program
+Comment[no_NY]=Python-program
+Comment[pt]=Programa de Python
+Comment[ro]=Program Python
+Comment[sl]=Program v Pythonu
+Comment[sv]=Python-program
+Icon=unknown
 Type=MimeType
 MimeType=application/x-python
 Patterns=*.py;

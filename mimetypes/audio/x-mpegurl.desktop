@@ -1,6 +1,19 @@
 [Desktop Entry]
 Type=MimeType
 Comment=Streaming MPEG layer 3 audio
+Comment[ca]=Àudio MPEG nivell 3
+Comment[cs]=MPEG layer 3 audio proud
+Comment[de]=MPEG Layer-3-Audio
+Comment[eo]=MPEG-3-sondosiero
+Comment[fi]=Striimattu MPEG taso 3 musiikki
+Comment[hu]=MPEG layer 3 audió folyam
+Comment[ja]=ストリーミング MPEG layer 3 オーディオ
+Comment[no]=MPEG layer 3-lydstrøm
+Comment[no_NY]=Strøymande MPEG lag 3-lyd
+Comment[pt]=Transmissão de audio MPEG Layer 3
+Comment[ro]=Flux audio MPEG layer 3
+Comment[sl]=Tokovni zvok MPEG layer 3
+Comment[sv]=Strömmande MPEG lager 3-ljud
 MimeType=audio/x-mpegurl
-Icon=mimetypes/sound
+Icon=sound
 Patterns=*.m3u;*.M3U;

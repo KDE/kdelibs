@@ -1,12 +1,20 @@
 [Desktop Entry]
 Type=MimeType
-Icon=mimetypes/core
+Icon=core
 Patterns=core;core.*;*.core;
 MimeType=application/x-core
 Comment=Program crash data
 Comment[ca]=Dades d'un programa petat
-Comment[de]=Crashdaten für die Programmierung
+Comment[cs]=Data zapsanÃ¡ po pÃ¡du programu
+Comment[de]=Crashdaten fÃ¼r die Programmierung
+Comment[eo]=Protokolo de mortanta programo
 Comment[fi]=Ohjelman kaatumistiedot
-Comment[fr]=Données de crash de programme
-Comment[hu]=Összeomlott-program adatai
-Comment[ja]=¥×¥í¥°¥é¥à¥¯¥é¥Ã¥·¥å¥Ç¡¼¥¿
+Comment[fr]=DonnÃ©es de crash de programme
+Comment[hu]=Ã–sszeomlott-program adatai
+Comment[ja]=ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚¯ãƒ©ãƒƒã‚·ãƒ¥ãƒ‡ãƒ¼ã‚¿
+Comment[no]=Krasj-data til et program
+Comment[no_NY]=Programkrasj-data
+Comment[pt]=Dados de um "crash" de um programa
+Comment[ro]=FiÅŸier core-dump
+Comment[sl]=Podatki o sesutju programa
+Comment[sv]=Minnesdump av kraschat program

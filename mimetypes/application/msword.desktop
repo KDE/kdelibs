@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/msword
-Icon=mimetypes/document
+Icon=document
 Patterns=*.doc;*.DOC;
 Comment=Microsoft Word document
+Comment[ca]=Document Microsoft Word
+Comment[cs]=Dokument programu Microsoft Word
+Comment[de]=MS-Word-Dokument
+Comment[eo]=Mikrosoft-Word-dokumento
+Comment[fi]=Microsoft Word -asiakirja
+Comment[fr]=Document MS Word
+Comment[hu]=Microsoft Word dokumentum
+Comment[ja]=Microsoft Wordドキュメント
+Comment[no]=Microsoft Word-dokument
+Comment[no_NY]=Microsoft Word-dokument
+Comment[pt]=Documento do Microsoft Word
+Comment[ro]=Document Microsoft Word
+Comment[sl]=Spis za Microsoft Word
+Comment[sv]=Microsoft Word-dokument

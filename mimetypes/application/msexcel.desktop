@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/msexcel
-Icon=mimetypes/document
+Icon=document
 Patterns=*.xls;*.XLS;*.xlc;*.XLC;*.xll;*.XLL;*.xlm;*.XLM;*.xlw;*.XLW;
 Comment=Microsoft Excel spreadsheet
+Comment[ca]=Fulla de càlcul Microsoft Excel
+Comment[cs]=Tabulka Microsoft Excel
+Comment[de]=MS-Excel-Tabelle 
+Comment[eo]=Mikrosoft-Excel-dokumento
+Comment[fi]=Microsoft Excel -taulukko
+Comment[fr]=Feuille de calcule MS Excel
+Comment[hu]=Microsoft Excel számolótábla
+Comment[ja]=Microsoft Excelフォーマット
+Comment[no]=Microsoft Excel-regneskap
+Comment[no_NY]=Microsoft Excel-rekneark
+Comment[pt]=Folha de cálculo Microsoft Excel
+Comment[ro]=Document Microsoft Excel
+Comment[sl]=Preglednica za Microsoft Excel
+Comment[sv]=Microsoft Excel kalkylark

@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/wordperfect
-Icon=mimetypes/document
+Icon=document
 Patterns=*.wpd;*.WPD;
 Comment=WordPerfect document
+Comment[ca]=Document WordPerfect
+Comment[cs]=Dokument textového procesoru WordPerfect
+Comment[de]=WordPerfect-Dokument
+Comment[eo]=WordPerfect-dokumento
+Comment[fi]=WordPerfect-asiakirja
+Comment[fr]=Document WordPerfect
+Comment[hu]=WordPerfect dokumentum
+Comment[ja]=WordPerfect ドキュメント
+Comment[no]=WordPerfect-dokument
+Comment[no_NY]=Word Perfect-dokument
+Comment[pt]=Documento WordPerfect
+Comment[ro]=Document WordPerfect
+Comment[sl]=Spis za WordPerfect
+Comment[sv]=Wordperfect-dokument

@@ -1,11 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/x-xbm
-Icon=mimetypes/image
+Icon=image
 Patterns=*.xbm;*.XBM;
 Comment=X BitMap image
 Comment[ca]=Imatge de bitmap X
+Comment[cs]=Obrázek ve formátu X Bitmap
 Comment[de]=X Bitmaps
+Comment[eo]=XBitmap-grafiko
 Comment[fi]=X bittikarttakuva
-Comment[hu]=X bitt�rk�p k�p
-Comment[ja]=X�ӥåȥޥåץ��᡼��
+Comment[fr]=Image X Bitmap
+Comment[hu]=X bittérkép kép
+Comment[ja]=Xビットマップイメージ
+Comment[no]=X BitMap-bilde
+Comment[no_NY]=X 'BitMap'-bilete
+Comment[pt]=Imagem X BitMap
+Comment[ro]=Fişier imagine XBM
+Comment[sl]=Bitna slika za X
+Comment[sv]=X bitmapp-bild

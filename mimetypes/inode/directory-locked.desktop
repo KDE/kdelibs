@@ -1,13 +1,20 @@
 [Desktop Entry]
 Comment=Locked Directory
+Comment[ca]=Directori bloquejat
 Comment[cs]=Uzamknutý adresář
 Comment[de]=Gesperrtes Verzeichnis
 Comment[eo]=Ŝlosita dosierujo
 Comment[fi]=Lukittu hakemisto
+Comment[fr]=Répertoire verrouillé
 Comment[hu]=Zárolt könyvtár
+Comment[ja]=ロックされたディレクトリ
 Comment[no]=Låst mappe
+Comment[no_NY]=Låst katalog
+Comment[pt]=Directoria inacessivel
+Comment[ro]=Director inaccesibil
 Comment[sl]=Zaklenjeni imenik
-Icon=filesystems/folder_locked
+Comment[sv]=Låst katalog
+Icon=folder_locked
 Type=MimeType
 MimeType=inode/directory-locked
 Patterns=

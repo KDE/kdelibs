@@ -1,6 +1,19 @@
 [Desktop Entry]
 Type=MimeType
 Comment=PCM audio
+Comment[ca]=Àudio PCM
+Comment[de]=PCM-Audio
+Comment[eo]=PCM-sondosiero
+Comment[fi]=PCM-ääni
+Comment[fr]=Son PCM
+Comment[hu]=PCM audió
+Comment[ja]=PCMオーディオ
+Comment[no]=PCM-lyd
+Comment[no_NY]=PCM-lyd
+Comment[pt]=Audio em formato PCM
+Comment[ro]=Fişier audio PCM
+Comment[sl]=Zvok oblike PCM
+Comment[sv]=PCM-ljud
 MimeType=audio/x-adpcm
-Icon=mimetypes/sound
+Icon=sound
 Patterns=;

@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=message/news
-Icon=mimetypes/unknown
+Icon=unknown
 Patterns=
 Comment=Usenet news message
+Comment[ca]=Missatge de les notícies Usenet
+Comment[cs]=Zpráva diskuzní skupiny (Usenet news)
+Comment[de]=Usenet-Artikel
+Comment[eo]=Diskutgrupa mesaĝo
+Comment[fi]=Usenet viesti
+Comment[fr]=Message de forum de discussions
+Comment[hu]=Usenet hír üzenet
+Comment[ja]=Usenetニュースメッセージ
+Comment[no]=Usenet nyhetsmelding
+Comment[no_NY]=Usenet diskusjonsmelding
+Comment[pt]=Mensagem de news usenet
+Comment[ro]=Mesaj de ştiri Usenet
+Comment[sl]=Novičarsko sporočilo Useneta
+Comment[sv]=Usenet diskussionsmeddelande

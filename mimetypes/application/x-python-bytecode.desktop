@@ -1,6 +1,20 @@
 [Desktop Entry]
 Comment=Python bytecode
-Icon=mimetypes/unknown
+Comment[ca]=Bytecode Python
+Comment[cs]=Byte kód Pythonu
+Comment[de]=Python-Bytecode
+Comment[eo]=Piton-kompilaĵo
+Comment[fi]=Python tavukoodi
+Comment[fr]=Bytecode Python
+Comment[hu]=Python bájt-kód
+Comment[ja]=Pythonバイトコード
+Comment[no]=Python-bytecode
+Comment[no_NY]=Python byte-kode
+Comment[pt]=Código-objecto Python
+Comment[ro]=Fişier Python compilat
+Comment[sl]=Bitna koda v Pythonu
+Comment[sv]=Python-bytekod
+Icon=unknown
 Type=MimeType
 MimeType=application/x-python-bytecode
 Patterns=*.pyc;

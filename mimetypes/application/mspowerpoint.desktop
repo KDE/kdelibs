@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/mspowerpoint
-Icon=mimetypes/document
+Icon=document
 Patterns=*.ppz;*.PPZ;
 Comment=Microsoft PowerPoint document
+Comment[ca]=Document Microsoft PowerPoint
+Comment[cs]=Dokument programu Microsoft Powerpoint
+Comment[de]=MS-PowerPoint-Dokument
+Comment[eo]=Mikrosoft-PowerPoint-dokumento
+Comment[fi]=Microsoft PowerPoint -asiakirja
+Comment[fr]=Document MS PowerPoint
+Comment[hu]=Microsoft PowerPoint dokumentum
+Comment[ja]=Microsoft PowerPointドキュメント
+Comment[no]=Microsoft PowerPoint-dokument
+Comment[no_NY]=Microsoft PowerPoint-dokument
+Comment[pt]=Documento do Microsoft PowerPoint
+Comment[ro]=Document Microsoft PowerPoint
+Comment[sl]=Predstavitev za Microsoft PowerPoint
+Comment[sv]=Microsoft PowerPoint-dokument

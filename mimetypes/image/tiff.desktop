@@ -1,11 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/tiff
-Icon=mimetypes/image
+Icon=image
 Patterns=*.tif;*.TIF;*.TIFF;*.tiff;
 Comment=TIFF Image
 Comment[ca]=Imatge TIFF
+Comment[cs]=Obr√°zek ve form√°tu TIFF
 Comment[de]=TIFF-Bilder
-Comment[fi]=TIFF -kuva
-Comment[hu]=TIFF kÈp
-Comment[ja]=TIFF•§•·°º•∏
+Comment[eo]=TIFF-grafiko
+Comment[fi]=TIFF-kuva
+Comment[fr]=Image TIFF
+Comment[hu]=TIFF k√©p
+Comment[ja]=TIFF„Ç§„É°„Éº„Ç∏
+Comment[no]=TIFF-bilde
+Comment[no_NY]=TIFF-bilete
+Comment[pt]=Imagem TIFF
+Comment[ro]=Fi≈üier imagine TIFF
+Comment[sl]=Slika TIFF
+Comment[sv]=TIFF-bild

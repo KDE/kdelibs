@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/x-compress
-Icon=mimetypes/tgz
+Icon=tgz
 Patterns=*.Z;
 Comment=UNIX compressed file
+Comment[ca]=Fitxer UNIX comprimit
+Comment[cs]=UNIXový komprimovaný soubor
+Comment[de]=Komprimierte UNIX-Datei
+Comment[eo]=UNIX-compress - dosiero
+Comment[fi]=UNIX pakattu tiedosto
+Comment[fr]=Fichier compressé par UNIX
+Comment[hu]=UNIX tömörített fájl
+Comment[ja]=UNIX compressedファイル
+Comment[no]=UNIX-kompremert fil
+Comment[no_NY]=UNIX-komprimert fil
+Comment[pt]=Ficheiro comprimido UNIX
+Comment[ro]=Fişier comprimat UNIX
+Comment[sl]=Datoteka, stisnjena s compress-om za UNIX
+Comment[sv]=UNIX komprimerad fil

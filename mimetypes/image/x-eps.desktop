@@ -1,6 +1,19 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=image/x-eps
-Icon=mimetypes/image
+Icon=image
 Patterns=*.eps;*.EPS;*.epsi;*.EPSI;*.epsf;*.EPSF;
 Comment=Encapsulated PostScript image
+Comment[ca]=Imatge PostScript encapsulat
+Comment[cs]=Obrázek ve formátu Encapsulated PostScript
+Comment[de]=Encapsulated PostScript-Dokument
+Comment[eo]=EPS-bildo
+Comment[fi]=Encapsulated Postscript -kuva
+Comment[fr]=Image PostScript encapsulée
+Comment[hu]=Csomagolt PostScript kép
+Comment[ja]=Encapsulated PostScriptイメージ
+Comment[no]=Innpakket PostScript-bilde
+Comment[no_NY]=Encapsulated PostScript-bilete
+Comment[pt]=Documento Postscript Escapsulado
+Comment[ro]=Imagine EPS
+Comment[sl]=Slika v enkapsuliranem PostScriptu

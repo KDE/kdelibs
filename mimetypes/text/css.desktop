@@ -1,10 +1,15 @@
 [Desktop Entry]
 MimeType=text/css
 Comment=Context Style Sheet
-Comment[ca]=Fulla de c‡lcul Context
+Comment[ca]=Fulla de c√†lcul Context
 Comment[de]=Kontext-Stilvorlage
+Comment[eo]=CSS - Kontekststildifino
 Comment[fi]=Tyylisivu
-Comment[hu]=StÌluslap
-Icon=mimetypes/txt
+Comment[hu]=St√≠luslap
+Comment[no]=Kontekst stilark
+Comment[ro]=Fi≈üier de stil HTML
+Comment[sl]=Kontekstna stilna predloga
+Comment[sv]=Stilmall
+Icon=txt
 Type=MimeType
 Patterns=*.css;*.CSSL;

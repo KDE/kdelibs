@@ -1,6 +1,19 @@
 [Desktop Entry]
 Comment=PERL program
-Icon=mimetypes/unknown
+Comment[ca]=Programa PERL
+Comment[cs]=Program v jazyce Perl
+Comment[de]=Perl-Programm
+Comment[eo]=Perlo-programo
+Comment[fi]=PERL-ohjelma
+Comment[fr]=Programme PERL
+Comment[ja]=PERLプログラム
+Comment[no]=PERL-program
+Comment[no_NY]=PERL-program
+Comment[pt]=Programa PERL
+Comment[ro]=Program PERL
+Comment[sl]=Program v Perlu
+Comment[sv]=Perl-program
+Icon=unknown
 Type=MimeType
 MimeType=application/x-perl
 Patterns=*.pl;*.perl;

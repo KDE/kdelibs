@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/x-rpm
-Icon=mimetypes/tgz
+Icon=tgz
 Patterns=*.rpm;
 Comment=RPM package file
+Comment[ca]=Fitxer paquet RPM
+Comment[cs]=RPM balíček
+Comment[de]=RPM-Paket
+Comment[eo]=RPM-pakaĵo
+Comment[fi]=RPM-paketti
+Comment[fr]=Paquetage RPM
+Comment[hu]=RPM csomag
+Comment[ja]=RPMパッケージファイル
+Comment[no]=RPM-pakkefil
+Comment[no_NY]=RPM-pakkefil
+Comment[pt]=Pacote RPM
+Comment[ro]=Pachet RPM
+Comment[sl]=Paket RPM
+Comment[sv]=RPM-paketfil

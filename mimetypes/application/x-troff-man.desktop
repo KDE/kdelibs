@@ -1,6 +1,20 @@
 [Desktop Entry]
 Comment=Troff document with manpage macros
-Icon=mimetypes/man
+Comment[ca]=Document troff amb macros de pàgina man
+Comment[cs]=Dokument ve formátu troff s macry manuálových stránek
+Comment[de]=Troff-Dokument mit Manpage-Makros
+Comment[eo]=Troff-dokumento kun "man"-makrooj
+Comment[fi]=Troff-asiakirja manpage makroilla
+Comment[fr]=Document Troff avec macros de page de manuel
+Comment[hu]=Troff dokumentum, man oldal makrókkal
+Comment[ja]=manpageマクロのTroffドキュメント
+Comment[no]=Troff-dokument med manualsidemakroer
+Comment[no_NY]=Troff-dokument med manpage-makroar
+Comment[pt]=Documento troff com macros para páginas man
+Comment[ro]=Document TROFF cu macrouri de pagină de manual
+Comment[sl]=Sestavek za Troff z makroukazi za man
+Comment[sv]=Troff-dokument med manualsidemakron
+Icon=man
 Type=MimeType
 MimeType=application/x-troff-man
 Patterns=*.man;*.1;*.2;*.3;*.4;*.5;*.6;*.7;*.8;

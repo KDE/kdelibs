@@ -1,12 +1,19 @@
 [Desktop Entry]
 Type=MimeType
 Comment=MPEG layer 3 audio
-Comment[ca]=Àudio MPEG nivell 3
+Comment[ca]=Ã€udio MPEG nivell 3
 Comment[de]=MPEG Layer-3-Audio
+Comment[eo]=MPEG-3-sondosiero
 Comment[fi]=MPEG taso 3 musiikki
-Comment[fr]=MPEG niveau 3 audio
-Comment[hu]=MPEG layer 3 audió
-Comment[ja]=MPEG layer 3 ¥ª¡¼¥Ç¥£¥ª
+Comment[fr]=Fichier MPEG niveau 3
+Comment[hu]=MPEG layer 3 audiÃ³
+Comment[ja]=MPEG layer 3 ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª
+Comment[no]=MPEG layer 3-lyd
+Comment[no_NY]=MPEG lag 3-lyd
+Comment[pt]=Audio MPEG layer 3
+Comment[ro]=FiÅŸier audio MPEG layer 3
+Comment[sl]=Zvok oblike MPEG layer 3
+Comment[sv]=MPEG layer 3-ljud
 MimeType=audio/x-mp3
-Icon=mimetypes/sound
+Icon=sound
 Patterns=*.mp3;*.MP3;

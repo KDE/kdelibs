@@ -1,13 +1,20 @@
 [Desktop Entry]
 Comment=Directory
+Comment[ca]=Directori
 Comment[cs]=Adresář
 Comment[de]=Ordner
 Comment[eo]=Dosierujo
 Comment[fi]=Hakemisto
+Comment[fr]=Répertoire
 Comment[hu]=Könyvtár
+Comment[ja]=ディレクトリ
 Comment[no]=Mappe
+Comment[no_NY]=Katalog
+Comment[pt]=Directoria
+Comment[ro]=Director
 Comment[sl]=Imenik
-Icon=filesystems/folder
+Comment[sv]=Katalog
+Icon=folder
 Type=MimeType
 MimeType=inode/directory
 Patterns=

@@ -1,11 +1,19 @@
 [Desktop Entry]
 Type=MimeType
 Comment=ULAW (Sun) audio
-Comment[ca]=Àudio ULAW (Sun)
+Comment[ca]=Ã€udio ULAW (Sun)
 Comment[de]=ULAW (Sun) Audio
-Comment[fi]=ULAW (Sun) ääni
-Comment[hu]=ULAW (Sun) audió
-Comment[ja]=ULAW (Sun) ¥ª¡¼¥Ç¥£¥ª
+Comment[eo]=ULAW (Sun) sondosiero
+Comment[fi]=ULAW (Sun) -Ã¤Ã¤ni
+Comment[fr]=Son ULAW (Sun)
+Comment[hu]=ULAW (Sun) audiÃ³
+Comment[ja]=ULAW (Sun) ã‚ªãƒ¼ãƒ‡ã‚£ã‚ª
+Comment[no]=ULAW (Sun-lyd)
+Comment[no_NY]=ULAW-lyd (Sun)
+Comment[pt]=Audio em formato ULaw (Sun)
+Comment[ro]=FiÅŸier audio ULAW (Sun)
+Comment[sl]=Zvok oblike ULAW (Sun)
+Comment[sv]=ULAW-ljud (Sun)
 MimeType=audio/basic
-Icon=mimetypes/sound
+Icon=sound
 Patterns=*.au;*.AU;*.snd;*.SND

@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=message/rfc822
-Icon=mimetypes/unknown
+Icon=unknown
 Patterns=
 Comment=E-Mail message
+Comment[ca]=Missatge de correu
+Comment[cs]=E-mailová zpráva
+Comment[de]=Email-Nachricht
+Comment[eo]=Retpoŝta mesaĝo
+Comment[fi]=Sähköpostiviesti
+Comment[fr]=Courrier E-Mail
+Comment[hu]=E-mail
+Comment[ja]=Eメールメッセージ
+Comment[no]=Epostmelding
+Comment[no_NY]=Epostmelding
+Comment[pt]=Mensagem de correio electrónico
+Comment[ro]=Fişier E-Mail
+Comment[sl]=E-poštno sporočilo
+Comment[sv]=E-postmeddelande

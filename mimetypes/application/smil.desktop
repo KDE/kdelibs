@@ -1,6 +1,12 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/smil
-Icon=mimetypes/sound
+Icon=sound
 Patterns=*.smil;*.smi;
 Comment=Synchronized Multimedia Integration Language
+Comment[ca]=Llenguatge d'integració multimèdia sincronitzat
+Comment[fi]=Synkronoitu multimedianintergoimiskieli
+Comment[hu]=Szinkronizált multimédia integrációs nyelv
+Comment[no]=Synkronisert multimediaintegrasjonsspråk
+Comment[ro]=Limbaj de integrare pentru multimedia sincronizată
+Comment[sl]=Jezik za usklajeno vključitev večpredstavnosti

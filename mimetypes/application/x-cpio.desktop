@@ -1,6 +1,20 @@
 [Desktop Entry]
 Type=MimeType
 MimeType=application/x-cpio
-Icon=mimetypes/tgz
+Icon=tgz
 Patterns=*.cpio;
 Comment=CPIO archive
+Comment[ca]=Arxiu CPIO
+Comment[cs]=Cpio archív
+Comment[de]=CPIO-Archiv
+Comment[eo]=CPIO-arĥivo
+Comment[fi]=CPIO-paketti
+Comment[fr]=Archive CPIO
+Comment[hu]=CPIO arhívum
+Comment[ja]=CPIOアーカイブ
+Comment[no]=CPIO-arkiv
+Comment[no_NY]=CPIO-arkiv
+Comment[pt]=Arquivo CPIO
+Comment[ro]=Fişier arhivă CPIO
+Comment[sl]=Arhiv CPIO
+Comment[sv]=CPIO-arkiv

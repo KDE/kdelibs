@@ -1,6 +1,19 @@
 [Desktop Entry]
 Type=MimeType
 Comment=AIFF/Amiga audio
+Comment[ca]=Àudio AIFF/Amiga
+Comment[de]=AIFF/Amiga-Audio
+Comment[eo]=AIFF/Amiga-sondosiero
+Comment[fi]=AIFF/Amiga -ääni
+Comment[fr]=Son AIFF/Amiga
+Comment[hu]=AIFF/Amiga audió
+Comment[ja]=AIFF/Amigaオーディオ
+Comment[no]=AIFF/Amiga-lyd
+Comment[no_NY]=AIFF-/Amiga-lyd
+Comment[pt]=Audio AIFF/Amiga
+Comment[ro]=Fişier audio AIFF (Amiga)
+Comment[sl]=Zvok oblike AIFF/Amiga
+Comment[sv]=AIFF/Amiga-ljud
 MimeType=audio/x-aiff
-Icon=mimetypes/sound
+Icon=sound
 Patterns=*.aiff;*.AIFF

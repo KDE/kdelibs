@@ -1,14 +1,21 @@
 [Desktop Entry]
 Comment=shell script
+Comment[ca]=Guió shell
 Comment[cs]=Shellový skript
 Comment[de]=Shell-Skript
 Comment[eo]=Komandoskripto
 Comment[fi]=Komentotulkin skripti
+Comment[fr]=Script shell
 Comment[hu]=parancsértelmező szkript
+Comment[ja]=シェルスクリプト
 Comment[no]=Skallskript
+Comment[no_NY]=Skal-skript
+Comment[pt]=Shell script
+Comment[ro]=Script de interpretor (shell)
 Comment[sl]=Lupinski skript
+Comment[sv]=skalskript
 Commnet[cs]=Shellov� skript
-Icon=apps/terminal
+Icon=terminal
 Type=MimeType
 MimeType=application/x-shellscript
 Patterns=

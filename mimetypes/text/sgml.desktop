@@ -2,10 +2,9 @@
 MimeType=text/sgml
 Comment=SGML
 Comment[eo]=SGML-teskto
-Comment[ro]=Fi∫ier SGML
-Comment[ru]=‰œÀ’Õ≈Œ‘ SGML
+Comment[ro]=Document SGML
 Comment[sv]=Dokument i SGML-format
 DefaultApp=kwrite
-Icon=mimetypes/txt
+Icon=txt
 Type=MimeType
 Patterns=*.sgml;*.SGML;

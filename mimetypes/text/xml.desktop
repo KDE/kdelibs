@@ -1,11 +1,20 @@
 [Desktop Entry]
 Comment=eXtended Markup Language document
 Comment[ca]=Document XML
+Comment[cs]=Dokument ve formÃ¡tu XML (eXtended Markup Language)
 Comment[de]=XML-Dokument
-Comment[fi]=XML -dokumentti
-Comment[hu]=Kiterjesztett jelölõ nyelvû dokumentum
-Comment[ja]=eXtended Markup Language ¥É¥­¥å¥á¥ó¥È
-Icon=mimetypes/html
+Comment[eo]=XML-dokumento
+Comment[fi]=XML-dokumentti
+Comment[fr]=Document en langage de marquage Ã©tendu (xml)
+Comment[hu]=Kiterjesztett jelÃ¶lÅ‘ nyelvÅ± dokumentum
+Comment[ja]=eXtended Markup Language ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ
+Comment[no]=Utvidet markupsprÃ¥k-dokument
+Comment[no_NY]='eXtended Markup Language'-dokument
+Comment[pt]=Documento eXtended Markup Language
+Comment[ro]=Document XML
+Comment[sl]=Spis v razÅ¡irjenem opisnem jeziku XML
+Comment[sv]=XML-dokument (extended markup language)
+Icon=html
 Type=MimeType
 MimeType=text/xml
 Patterns=*.xml;*.XML;
