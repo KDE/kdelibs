@@ -827,7 +827,6 @@ int KWM::desktop(Window w){
   long result = 1;
   if (!getSimpleProperty(w, a, result) || result <= 0){
     result = currentDesktop();
-    moveToDesktop(w, (int) result);
     kwm_error = true; // restore error
   }
   return (int) result;
