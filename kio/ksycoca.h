@@ -121,6 +121,8 @@ protected:
    QDataStream *m_str;
    static KSycoca *_self;
    bool bNoDatabase;
+   size_t m_sycoca_size;
+   const char *m_sycoca_mmap;
    Q_UINT32 m_timeStamp;
 };
 

@@ -1,5 +1,5 @@
 /*  This file is part of the KDE libraries
- *  Copyright (C) 1999 Waldo Bastian <bastian@kde.org>
+ *  Copyright (C) 1999-2000 Waldo Bastian <bastian@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -15,6 +15,8 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  **/
+
+#include "config.h"
 
 #include "ksycoca.h"
 #include "ksycocatype.h"
@@ -32,6 +34,11 @@
 #include <kstddirs.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <unistd.h>
+
+#ifdef HAVE_SYS_MMAN_H
+#include <sys/mman.h>
+#endif
 
 template class QList<KSycocaFactory>;
 
@@ -55,7 +62,28 @@ bool KSycoca::openDatabase( bool ignoreErrors )
    QFile *database = new QFile(path);
    if (database->open( IO_ReadOnly ))
    {
-     m_str = new QDataStream(database);
+     m_sycoca_size = database->size();
+     m_sycoca_mmap = 0;
+#ifdef HAVE_MMAP
+     m_sycoca_mmap = (const char *) mmap(0, m_sycoca_size, 
+				PROT_READ, MAP_SHARED,
+				database->handle(), 0);
+     if (!m_sycoca_mmap)
+     {
+#endif
+        kdDebug(7011) << "mmap failed. (length = " << m_sycoca_size << ")" << endl;
+        m_str = new QDataStream(database);
+#ifdef HAVE_MMAP
+     }
+     else
+     {
+        QByteArray b_array;
+        b_array.setRawData(m_sycoca_mmap, m_sycoca_size);
+        QBuffer *buffer = new QBuffer( b_array );
+        buffer->open(IO_ReadWrite);
+        m_str = new QDataStream( buffer);
+     }
+#endif   
      bNoDatabase = false;
    }
    else
@@ -113,6 +141,14 @@ void KSycoca::closeDatabase()
    QIODevice *device = 0;
    if (m_str)
       device = m_str->device();
+#ifdef HAVE_MMAP
+   if (m_sycoca_mmap)
+   {
+      QBuffer *buf = (QBuffer *) device;
+      buf->buffer().resetRawData(m_sycoca_mmap, m_sycoca_size);
+      munmap((void *) m_sycoca_mmap, m_sycoca_size);
+   }
+#endif
    if (device)
       device->close();
 
