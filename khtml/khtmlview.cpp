@@ -1114,6 +1114,24 @@ void KHTMLView::doAutoScroll()
          (pos.x() < 0) || (pos.x() > visibleWidth()) )
     {
         ensureVisible( xm, ym, 0, 5 );
+
+#ifndef KHTML_NO_SELECTION
+        // extend the selection while scrolling
+	DOM::Node innerNode;
+	if (m_part->isExtendingSelection()) {
+            RenderObject::NodeInfo renderInfo(true/*readonly*/, false/*active*/);
+            m_part->xmlDocImpl()->renderer()->layer()
+				->nodeAtPoint(renderInfo, xm, ym, 0, 0);
+            innerNode = renderInfo.innerNode();
+	}/*end if*/
+
+        if (innerNode.handle() && innerNode.handle()->renderer()) {
+            int absX, absY;
+            innerNode.handle()->renderer()->absolutePosition(absX, absY);
+
+            m_part->extendSelectionTo(xm, ym, absX, absY, innerNode);
+        }/*end if*/
+#endif // KHTML_NO_SELECTION
     }
 }
 

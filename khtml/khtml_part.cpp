@@ -5245,6 +5245,72 @@ bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
   return result;
 }
 
+#ifndef KHTML_NO_SELECTION
+void KHTMLPart::extendSelectionTo(int x, int y, int absX, int absY, const DOM::Node &innerNode)
+{                                 
+      int offset;
+      //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y() << endl;
+      DOM::NodeImpl* node=0;
+      khtml::RenderObject::SelPointState state;
+      innerNode.handle()->renderer()->checkSelectionPoint( x, y,
+                                                           absX-innerNode.handle()->renderer()->xPos(),
+                                                           absY-innerNode.handle()->renderer()->yPos(), node, offset, state);
+      d->m_selectionEnd = node;
+      d->m_endOffset = offset;
+      //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/" << d->m_endOffset << endl;
+
+      // we have to get to know if end is before start or not...
+#if 0
+      DOM::Node n = d->m_selectionStart;
+      d->m_startBeforeEnd = false;
+      while(!n.isNull()) {
+        if(n == d->m_selectionEnd) {
+          d->m_startBeforeEnd = true;
+          break;
+        }
+        DOM::Node next = n.firstChild();
+        if(next.isNull()) next = n.nextSibling();
+        while( next.isNull() && !n.parentNode().isNull() ) {
+          n = n.parentNode();
+          next = n.nextSibling();
+        }
+        n = next;
+        //d->m_view->viewport()->repaint(false);
+      }
+#else
+      d->m_startBeforeEnd = isBeforeNode(d->m_selectionStart, d->m_selectionEnd);
+#endif
+
+      if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
+      {
+        if (d->m_selectionEnd == d->m_selectionStart && d->m_endOffset < d->m_startOffset)
+          d->m_doc
+            ->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
+                           d->m_selectionEnd.handle(),d->m_startOffset);
+        else if (d->m_startBeforeEnd)
+          d->m_doc
+            ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
+                           d->m_selectionEnd.handle(),d->m_endOffset);
+        else
+          d->m_doc
+            ->setSelection(d->m_selectionEnd.handle(),d->m_endOffset,
+                           d->m_selectionStart.handle(),d->m_startOffset);
+      }
+#ifndef KHTML_NO_CARET
+      bool v = d->m_view->placeCaret();
+      emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+#endif
+}
+
+bool KHTMLPart::isExtendingSelection() const
+{
+  // This is it, the whole detection. khtmlMousePressEvent only sets this
+  // on LMB or MMB, but never on RMB. As text selection doesn't work for MMB,
+  // it's sufficient to only rely on this flag to detect selection extension.
+  return d->m_bMousePressed;
+}
+#endif // KHTML_NO_SELECTION
+
 void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 {
   QMouseEvent *_mouse = event->qmouseEvent();
@@ -5374,59 +5440,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     // selection stuff
     if( d->m_bMousePressed && innerNode.handle() && innerNode.handle()->renderer() &&
         ( (_mouse->state() & LeftButton) != 0 )) {
-      int offset;
-      //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y() << endl;
-      DOM::NodeImpl* node=0;
-      khtml::RenderObject::SelPointState state;
-      innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
-                                                           event->absX()-innerNode.handle()->renderer()->xPos(),
-                                                           event->absY()-innerNode.handle()->renderer()->yPos(), node, offset, state);
-      d->m_selectionEnd = node;
-      d->m_endOffset = offset;
-      //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/" << d->m_endOffset << endl;
-
-      // we have to get to know if end is before start or not...
-#if 0
-      DOM::Node n = d->m_selectionStart;
-      d->m_startBeforeEnd = false;
-      while(!n.isNull()) {
-        if(n == d->m_selectionEnd) {
-          d->m_startBeforeEnd = true;
-          break;
-        }
-        DOM::Node next = n.firstChild();
-        if(next.isNull()) next = n.nextSibling();
-        while( next.isNull() && !n.parentNode().isNull() ) {
-          n = n.parentNode();
-          next = n.nextSibling();
-        }
-        n = next;
-        //d->m_view->viewport()->repaint(false);
-      }
-#else
-      d->m_startBeforeEnd = isBeforeNode(d->m_selectionStart, d->m_selectionEnd);
-#endif
-
-      if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
-      {
-        if (d->m_selectionEnd == d->m_selectionStart && d->m_endOffset < d->m_startOffset)
-          d->m_doc
-            ->setSelection(d->m_selectionStart.handle(),d->m_endOffset,
-                           d->m_selectionEnd.handle(),d->m_startOffset);
-        else if (d->m_startBeforeEnd)
-          d->m_doc
-            ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
-                           d->m_selectionEnd.handle(),d->m_endOffset);
-        else
-          d->m_doc
-            ->setSelection(d->m_selectionEnd.handle(),d->m_endOffset,
-                           d->m_selectionStart.handle(),d->m_startOffset);
-      }
-#ifndef KHTML_NO_CARET
-      bool v = d->m_view->placeCaret();
-      emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
-#endif
-
+      extendSelectionTo(event->x(), event->y(),
+                        event->absX(), event->absY(), innerNode);
 #else
       if ( d->m_doc && d->m_view ) {
         QPoint diff( _mouse->globalPos() - d->m_dragLastPos );

@@ -1359,6 +1359,20 @@ private:
   void findText();
   void findTextNext();
   void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
+  /** extends the current selection to the given content-coordinates @p x, @p y
+   * @param x content x-coordinate
+   * @param y content y-coordinate
+   * @param absX absolute x-coordinate of @p innerNode
+   * @param absY absolute y-coordinate of @p innerNode
+   * @param innerNode node from which to start extending the selection. The
+   *	caller has to ensure that the node has a renderer.
+   * @internal
+   */
+  void extendSelectionTo(int x, int y, int absX, int absY, const DOM::Node &innerNode);
+  /** checks whether a selection is extended.
+   * @return @p true if a selection is extended by the mouse.
+   */
+  bool isExtendingSelection() const;
   khtml::Decoder *createDecoder();
 
   /** @internal
