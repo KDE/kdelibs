@@ -75,4 +75,5 @@ int main(int argc, char **argv)
 #endif
 
   fprintf(stderr, "OK.\n");
+  return 0;
 }

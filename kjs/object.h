@@ -410,6 +410,8 @@ namespace KJS {
     void setConstructor(const KJSO& c);
 
     void* operator new(size_t);
+    void operator delete(void*);
+    /** @deprecated  */
     void operator delete(void*, size_t);
 
 #ifdef KJS_DEBUG_MEM

@@ -833,6 +833,11 @@ void* Imp::operator new(size_t s)
 
 void Imp::operator delete(void*, size_t)
 {
+  // deprecated. a mistake.
+}
+
+void Imp::operator delete(void*)
+{
   // Do nothing. So far.
 }
 
