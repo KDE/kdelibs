@@ -725,8 +725,11 @@ void KCookieJar::addCookie(KHttpCookiePtr &cookiePtr)
     // They are removed
     for ( KHttpCookiePtr cookie=cookieList->first(); cookie != 0; )
     {
+        // The name and path must match.
+        // Also, either the domain name, or the host name must match.
         if ((cookie->name() == cookiePtr->name()) &&
-            (cookie->domain() == cookiePtr->domain()) &&
+            ((cookie->domain() == cookiePtr->domain()) ||
+            (cookie->host() == cookiePtr->host())) &&
             (cookie->path() == cookiePtr->path()))
         {
             KHttpCookiePtr old_cookie = cookie;
