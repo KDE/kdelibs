@@ -939,7 +939,7 @@ void KHTMLView::print()
     // this only works on Unix - we assume 72dpi
     KPrinter *printer = new KPrinter(QPrinter::PrinterResolution);
     if(printer->setup(this)) {
-        QApplication::setOverrideCursor( waitCursor );
+        viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer->setFullPage(true);
         printer->setCreator("KDE 3.0 HTML Library");
@@ -1029,7 +1029,7 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
         m_part->xmlDocImpl()->recalcStyle( NodeImpl::Force );
-        QApplication::restoreOverrideCursor();
+        viewport()->unsetCursor();
     }
     delete printer;
 }
