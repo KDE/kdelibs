@@ -714,7 +714,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
 
   start = pos + 1;
 
- Node10: // parse query or reference depending on what comes first
+ //Node10: // parse query or reference depending on what comes first
   delim = (buf[pos++]=='#'?'?':'#');
 
   while(buf[pos]!=delim && pos < len) pos++;
@@ -728,7 +728,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   if (pos == len)
       goto NodeOk;
 
- Node11: // feed the rest into the remaining variable
+ //Node11: // feed the rest into the remaining variable
   tmp = QString( buf + pos + 1, len - pos - 1);
   if (delim == '#')
       m_strRef_encoded = tmp;
@@ -1249,7 +1249,7 @@ QString KURL::fileName( bool _strip_trailing_slash ) const
   // If ( i == -1 ) => the first character is not a '/'
   // So it's some URL like file:blah.tgz, return the whole path
   if ( i == -1 ) {
-    if ( len == m_strPath.length() )
+    if ( len == (int)m_strPath.length() )
       return m_strPath;
     else
       // Might get here if _strip_trailing_slash is true
@@ -1498,6 +1498,13 @@ void KURL::setQuery( const QString &_txt, int )
       m_strQuery_encoded = _txt.mid(1);
    else
       m_strQuery_encoded = _txt;
+}
+
+QString KURL::query() const
+{
+    if (m_strQuery_encoded.isEmpty())
+        return QString::null;
+    return '?'+m_strQuery_encoded;
 }
 
 QString KURL::decode_string(const QString &str, int encoding_hint)

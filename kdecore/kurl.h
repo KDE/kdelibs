@@ -255,7 +255,7 @@ public:
    * A single '?' means an empty query.
    * An empty string means no query.
    */
-  QString query() const { if (m_strQuery_encoded.isEmpty()) return QString::null; return "?"+m_strQuery_encoded; }
+  QString query() const;
 
   /**
    * The reference is @em never decoded automatically.
