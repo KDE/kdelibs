@@ -1,0 +1,12 @@
+
+
+This directory consists of two libraries: kwalletbackend and kwalletclient
+
+
+KWalletBackend makes use of KWalletClient.
+
+KWalletBackend is used inside kdesud to manage the actual files and
+encryption.  On the other hand, KWalletClient is used to represent
+wallet entries and to encapsulate communication to and from the
+wallet server inside kdesud.
+
