@@ -179,17 +179,5 @@ kdbgstream kdError(bool cond, int area = 0);
 kdbgstream kdFatal(int area = 0);
 kdbgstream kdFatal(bool cond, int area = 0);
 
-// -----
-
-/*  Script to help porting from kdebug to kDebug* :
-#!/bin/sh
-perl -pi -e 's/kdebug\([ ]*KDEBUG_INFO,/kDebugInfo\(/' $*
-perl -pi -e 's/kdebug\([ ]*0,/kDebugInfo\(/' $*
-perl -pi -e 's/kdebug\([ ]*KDEBUG_WARN,/kDebugWarning\(/' $*
-perl -pi -e 's/kdebug\([ ]*KDEBUG_ERROR,/kDebugError\(/' $*
-perl -pi -e 's/kdebug\([ ]*KDEBUG_FATAL,/kDebugFatal\(/' $*
-
-(Then cvs update -A, check compile and cvs commit)
-*/
-
 #endif
+
