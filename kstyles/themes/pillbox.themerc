@@ -15,7 +15,7 @@ Name[sl]=Škatlica tablet
 Name[sv]=Bunker
 Name[ta]=பிலஂபாகஂஸஂ
 Name[tr]=Hap Kutusu
-Name[uk]=Скринька
+Name[uk]=Маленька скринька
 Comment=Pillbox unthemed style.
 Comment[ca]=Estil sense tema Pillbox.
 Comment[cs]=Pillbox styl (bez motivu)
@@ -45,6 +45,6 @@ Comment[sr]=Pillbox stil bez teme
 Comment[sv]=Otemad bunker-stil.
 Comment[ta]=பிலஂபாகஂஸஂ பாநஂதமஂ.
 Comment[tr]=Temasız Hap Kutusu stili
-Comment[uk]=Стиль 'скринька' без теми
+Comment[uk]=Стиль 'маленька скринька' без теми
 [KDE]
 widgetStyle=pillboxstyle.la
