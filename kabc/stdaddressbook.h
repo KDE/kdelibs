@@ -27,25 +27,25 @@ namespace KABC {
 
 /**
   Standard KDE address book
- 
+
   This class provides access to the standard KDE address book shared by all
   applications.
- 
+
   It's implemented as a singleton. Use self() to get the address book
   object. On the first self() call the address book also gets loaded.
-  
+
   Example:
- 
+
   \code
   KABC::AddressBook *ab = KABC::StdAddressBook::self();
- 
+
   KABC::AddressBook::Iterator it;
   for ( it = ab->begin(); it != ab->end(); ++it ) {
     kdDebug() << "UID=" << (*it).uid() << endl;
- 
+
     // do some other stuff
   }
- 
+
   KABC::StdAddressBook::save();
   \endcode
 */
@@ -59,50 +59,52 @@ class StdAddressBook : public AddressBook
     ~StdAddressBook();
 
     /**
-      Return the standard addressbook object. It also loads slow resources.
-      It is the same as self(false); .
-    */
+      Returns the standard addressbook object. It also loads all resources of
+      the users standard address book synchronously.
+     */
     static StdAddressBook *self();
 
     /**
-      This is the same as above, but with specified
-      behavior of resource loading.
+      This is the same as above, but with specified behaviour of resource loading.
 
       @param asynchronous When true, the resources are loaded asynchronous, that
                           means you have the data foremost the addressBookChanged()
                           signal has been emitted. So connect to this signal when
                           using this method!
-    */
+     */
     static StdAddressBook *self( bool asyncronous );
 
     /**
-      Save the standard address book to disk.
-    */
+      Saves the standard address book to disk.
+
+      @deprecated Use AddressBook::save( Ticket* ) instead
+     */
     static bool save();
 
     /**
-      Call this method in your crash handler to allow the library clean up
+      Call this method in your crash handler to allow the resources to clean up
       possible locks.
      */
     static void handleCrash();
 
     /**
       Returns the default file name for vcard-based addressbook
-    */
+     */
     static QString fileName();
 
     /**
       Returns the default directory name for vcard-based addressbook
-    */
-    static QString directoryName();
-    
-    /**
-      Set the automatic save property of the address book.
-      If @p enable is true (default) the address book is saved at
-      destruction time otherwise you have to call save() to
-      explicitly save it.
      */
-    static void setAutomaticSave( bool enable );
+    static QString directoryName();
+
+    /**
+      Sets the automatic save property of the address book.
+
+      @param state If true, the address book is saved automatically
+                   at destruction time, otherwise you have to call
+                   AddressBook::save( Ticket* ).
+     */
+    static void setAutomaticSave( bool state );
 
     /**
       Closes the address book. Depending on automaticSave() it will
