@@ -184,7 +184,7 @@
 
 
 #ifndef Long
-#define Long long
+#define Long int
 #endif
 #ifndef ULong
 typedef unsigned Long ULong;
@@ -284,26 +284,16 @@ typedef union { double d; ULong L[2]; } U;
 #ifdef YES_ALIAS
 #define dval(x) x
 #ifdef IEEE_8087
-#if ULONG_MAX == 18446744073709551615UL
-#define word0(x) ((ULong *)&x)[3]
-#define word1(x) ((ULong *)&x)[2]
-#else
 #define word0(x) ((ULong *)&x)[1]
 #define word1(x) ((ULong *)&x)[0]
-#endif
 #else
 #define word0(x) ((ULong *)&x)[0]
 #define word1(x) ((ULong *)&x)[1]
 #endif
 #else
 #ifdef IEEE_8087
-#if ULONG_MAX == 18446744073709551615UL
-#define word0(x) ((U*)&x)->L[3]
-#define word1(x) ((U*)&x)->L[2]
-#else
 #define word0(x) ((U*)&x)->L[1]
 #define word1(x) ((U*)&x)->L[0]
-#endif
 #else
 #define word0(x) ((U*)&x)->L[0]
 #define word1(x) ((U*)&x)->L[1]
