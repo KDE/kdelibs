@@ -25,6 +25,7 @@
 #include <qevent.h>
 #include <qstyle.h>
 
+#include <kdebug.h>
 #include <knotifyclient.h>
 
 #include "kcompletionbox.h"
@@ -39,11 +40,11 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    : KListBox( parent, name, WType_Popup )
+               :KListBox( parent, name, WType_Popup )
 {
     d = new KCompletionBoxPrivate;
     d->m_parent        = parent;
-    d->tabHandling     = false;
+    d->tabHandling     = true;
     d->down_workaround = false;
 
     setColumnMode( 1 );
@@ -101,12 +102,16 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
             if ( type == QEvent::KeyPress ) {
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
                 switch ( ev->key() ) {
+                    case Key_BackTab:
+                        if ( d->tabHandling ) {
+                            up();
+                            ev->accept();
+                            return true;
+                        }
+                        break;
                     case Key_Tab:
                         if ( d->tabHandling ) {
-                            if ( ev->state() & ShiftButton )
-                                up();
-                            else if ( !ev->state() )
-                                down(); // Only on TAB!!
+                            down(); // Only on TAB!!
                             ev->accept();
                             return true;
                         }
@@ -133,8 +138,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         return true;
                     case Key_Enter:
                     case Key_Return:
-                        if ( ev->state() & ShiftButton )
-                        {
+                        if ( ev->state() & ShiftButton ) {
                             hide();
                             ev->accept();  // Consume the Enter event
                             return true;
@@ -144,14 +148,13 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                         break;
                 }
             }
-            else if ( type == QEvent::AccelOverride )
-            {
+            else if ( type == QEvent::AccelOverride ) {
                 // Override any acceleartors that match
                 // the key sequences we use here...
                 QKeyEvent *ev = static_cast<QKeyEvent *>( e );
-                switch ( ev->key() )
-                {
+                switch ( ev->key() ) {
                     case Key_Tab:
+                    case Key_BackTab:
                     case Key_Down:
                     case Key_Up:
                     case Key_Prior:
@@ -169,7 +172,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
             // parent loses focus or gets a click -> we hide
             else if ( type == QEvent::FocusOut || type == QEvent::Resize ||
-                      type == QEvent::Close || type == QEvent::Hide || 
+                      type == QEvent::Close || type == QEvent::Hide ||
                       type == QEvent::Move ) {
                 hide();
             }
@@ -186,7 +189,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         if ( !rect().contains( ev->pos() )) // this widget
             hide();
     }
-        
+
     return KListBox::eventFilter( o, e );
 }
 
@@ -241,14 +244,14 @@ QSize KCompletionBox::sizeHint() const
 void KCompletionBox::down()
 {
     int i = currentItem();
-    
+
     if ( i == 0 && d->down_workaround ) {
         d->down_workaround = false;
         setCurrentItem( 0 );
         setSelected( 0, true );
         emit highlighted( currentText() );
     }
-    
+
     else if ( i < (int) count() - 1 )
         setCurrentItem( i + 1 );
 }

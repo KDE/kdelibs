@@ -444,21 +444,20 @@ private:
 
     /** Initializes variables.  Called from the constructors. */
     void init();
+
     /** Creates the completion box */
     void makeCompletionBox();
-
-    /**
-     * Temporary functions to delete words back and foward until
-     * alternatives are available in QT3 (Seth Chaiklin, 21 may 2001)
-     */
-    void deleteWordBack();
-    void deleteWordForward();
+    
+    /** Checks whether we should/should not consume a key used as 
+        an accelerator.*/
+    bool overrideAccel (const QKeyEvent* e);
 
     bool m_bEnableMenu;
-    class KLineEditPrivate;
-    KLineEditPrivate *d;
 
     bool possibleTripleClick;  // set in mousePressEvent, deleted in tripleClickTimeout
+
+    class KLineEditPrivate;
+    KLineEditPrivate *d;
 };
 
 #endif
