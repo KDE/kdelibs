@@ -292,7 +292,7 @@ DOMString CSSSelector::selectorText() const
     // #### fix namespace
     DOMString str;
     const CSSSelector* cs = this;
-    if ( cs->tag == 0xffffffff && cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
+    if ( cs->tag == 0xffffffff && cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
     {
         str = "#";
         str += cs->value;
@@ -311,9 +311,9 @@ DOMString CSSSelector::selectorText() const
     {
         if ( cs->tag == 0xffffffff )
             str = "*";
-        else
+        else if ( cs->tag != 0xffff )
             str = getTagName( cs->tag );
-        if ( cs->attr == ATTR_ID && cs->match == CSSSelector::Exact )
+        if ( cs->attr == ATTR_ID && cs->match == CSSSelector::Id )
         {
             str += "#";
             str += cs->value;
@@ -329,7 +329,7 @@ DOMString CSSSelector::selectorText() const
             str += cs->value;
         }
         // optional attribute
-        if ( cs->attr ) {
+        else if ( cs->attr ) {
             DOMString attrName = getAttrName( cs->attr );
             str += "[";
             str += attrName;
