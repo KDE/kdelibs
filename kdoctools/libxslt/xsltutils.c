@@ -153,7 +153,7 @@ xsltMessage(xsltTransformContextPtr ctxt, xmlNodePtr node, xmlNodePtr inst) {
     if (prop != NULL) {
 	if (xmlStrEqual(prop, (const xmlChar *)"yes")) {
 	    terminate = 1;
-	} else if (xmlStrEqual(prop, (const xmlChar *)"yes")) {
+	} else if (xmlStrEqual(prop, (const xmlChar *)"no")) {
 	    terminate = 0;
 	} else {
 	    xsltGenericError(xsltGenericErrorContext,
@@ -165,7 +165,8 @@ xsltMessage(xsltTransformContextPtr ctxt, xmlNodePtr node, xmlNodePtr inst) {
     if (message != NULL) {
 	int len = xmlStrlen(message);
 
-	xsltGenericError(xsltGenericErrorContext, (const char *)message);
+	xsltGenericError(xsltGenericErrorContext, "%s",
+		         (const char *)message);
 	if ((len > 0) && (message[len - 1] != '\n'))
 	    xsltGenericError(xsltGenericErrorContext, "\n");
 	xmlFree(message);
@@ -270,6 +271,82 @@ xsltSetGenericDebugFunc(void *ctx, xmlGenericErrorFunc handler) {
 	xsltGenericDebug = handler;
     else
 	xsltGenericDebug = xsltGenericDebugDefaultFunc;
+}
+
+/**
+ * xsltPrintErrorContext:
+ * @ctxt:  the transformation context
+ * @style:  the stylesheet
+ * @node:  the current node being processed
+ *
+ * Display the context of an error.
+ */
+void
+xsltPrintErrorContext(xsltTransformContextPtr ctxt,
+	              xsltStylesheetPtr style, xmlNodePtr node) {
+    int line = 0;
+    const xmlChar *file = NULL;
+    const xmlChar *name = NULL;
+    const char *type = "error";
+
+    if ((node == NULL) && (ctxt != NULL))
+	node = ctxt->inst;
+
+    if (node != NULL)  {
+	if ((node->type == XML_DOCUMENT_NODE) ||
+	    (node->type == XML_HTML_DOCUMENT_NODE)) {
+	    xmlDocPtr doc = (xmlDocPtr) node;
+
+	    file = doc->URL;
+	} else {
+	    /*
+	     * Try to find contextual informations to report
+	     */
+	    if (node->type == XML_ELEMENT_NODE) {
+		line = (int) node->content;
+	    } else if ((node->prev != NULL) &&
+		       (node->prev->type == XML_ELEMENT_NODE)) {
+		line = (int) node->prev->content;
+	    } else if ((node->parent != NULL) &&
+		       (node->parent->type == XML_ELEMENT_NODE)) {
+		line = (int) node->parent->content;
+	    }
+	    if ((node->doc != NULL) && (node->doc->URL != NULL))
+		file = node->doc->URL;
+	    if (node->name != NULL)
+		name = node->name;
+	}
+    } 
+    
+    if (ctxt != NULL)
+	type = "runtime error";
+    else if (style != NULL)
+	type = "compilation error";
+
+    if ((file != NULL) && (line != 0) && (name != NULL))
+	xsltGenericError(xsltGenericErrorContext,
+		"%s: file %s line %d element %s\n",
+		type, file, line, name);
+    else if ((file != NULL) && (name != NULL))
+	xsltGenericError(xsltGenericErrorContext,
+		"%s: file %s element %s\n",
+		type, file, name);
+    else if ((file != NULL) && (line != 0))
+	xsltGenericError(xsltGenericErrorContext,
+		"%s: file %s line %d\n",
+		type, file, line);
+    else if (file != NULL)
+	xsltGenericError(xsltGenericErrorContext,
+		"%s: file %s\n",
+		type, file);
+    else if (name != NULL)
+	xsltGenericError(xsltGenericErrorContext,
+		"%s: element %s\n",
+		type, name);
+    else
+	xsltGenericError(xsltGenericErrorContext,
+		"%s\n",
+		type);
 }
 
 /************************************************************************
@@ -485,6 +562,7 @@ xsltComputeSortResult(xsltTransformContextPtr ctxt, xmlNodePtr sort) {
 		}
 	    }
 	} else {
+	    ctxt->state = XSLT_STATE_STOPPED;
 	    results[i] = NULL;
 	}
     }
@@ -689,7 +767,9 @@ xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 
     if ((buf == NULL) || (result == NULL) || (style == NULL))
 	return(-1);
-    if (result->children == NULL)
+    if ((result->children == NULL) ||
+	((result->children->type == XML_DTD_NODE) &&
+	 (result->children->next == NULL)))
 	return(0);
 
     if ((style->methodURI != NULL) &&
@@ -818,9 +898,11 @@ xsltSaveResultTo(xmlOutputBufferPtr buf, xmlDocPtr result,
 	    while (child != NULL) {
 		xmlNodeDumpOutput(buf, result, child, 0, (indent == 1),
 			          (const char *) encoding);
-		xmlOutputBufferWriteString(buf, "\n");
+		if (child->type == XML_DTD_NODE)
+		    xmlOutputBufferWriteString(buf, "\n");
 		child = child->next;
 	    }
+	    xmlOutputBufferWriteString(buf, "\n");
 	}
 	xmlOutputBufferFlush(buf);
     }
@@ -964,6 +1046,8 @@ xsltSaveResultToFd(int fd, xmlDocPtr result, xsltStylesheetPtr style) {
  * 									*
  ************************************************************************/
 
+static long calibration = -1;
+
 /**
  * xsltCalibrateTimestamps:
  *
@@ -982,39 +1066,83 @@ xsltCalibrateTimestamps(void) {
 }
 
 /**
+ * xsltCalibrateAdjust:
+ * @delta:  a negative dealy value found
+ *
+ * Used for to correct the calibration for xsltTimestamp()
+ */
+void
+xsltCalibrateAdjust(long delta) {
+    calibration += delta;
+}
+
+/**
  * xsltTimestamp:
  *
  * Used for gathering profiling data
  *
- * Returns the number of milliseconds since the beginning of the
+ * Returns the number of tenth of milliseconds since the beginning of the
  * profiling
  */
 long
-xsltTimestamp(void) {
+xsltTimestamp(void)
+{
+#ifdef XSLT_WIN32_PERFORMANCE_COUNTER
+    BOOL ok;
+    LARGE_INTEGER performanceCount;
+    LARGE_INTEGER performanceFrequency;
+    LONGLONG quadCount;
+    double seconds;
+    static LONGLONG startupQuadCount = 0;
+    static LONGLONG startupQuadFreq = 0;
+
+    ok = QueryPerformanceCounter(&performanceCount);
+    if (!ok)
+        return 0;
+    quadCount = performanceCount.QuadPart;
+    if (calibration < 0) {
+        calibration = 0;
+        ok = QueryPerformanceFrequency(&performanceFrequency);
+        if (!ok)
+            return 0;
+        startupQuadFreq = performanceFrequency.QuadPart;
+        startupQuadCount = quadCount;
+        return (0);
+    }
+    if (startupQuadFreq == 0)
+        return 0;
+    seconds = (quadCount - startupQuadCount) / (double) startupQuadFreq;
+    return (long) (seconds * XSLT_TIMESTAMP_TICS_PER_SEC);
+
+#else /* XSLT_WIN32_PERFORMANCE_COUNTER */
 #ifdef HAVE_GETTIMEOFDAY
-    static long calibration = -1;
     static struct timeval startup;
     struct timeval cur;
-    long msec;
+    long tics;
 
-    if (calibration == -1) {
-	gettimeofday(&startup, NULL);
-	calibration = 0;
-	calibration = xsltCalibrateTimestamps();
-	gettimeofday(&startup, NULL);
-	return(0);
+    if (calibration < 0) {
+        gettimeofday(&startup, NULL);
+        calibration = 0;
+        calibration = xsltCalibrateTimestamps();
+        gettimeofday(&startup, NULL);
+        return (0);
     }
 
     gettimeofday(&cur, NULL);
-    msec = cur.tv_sec - startup.tv_sec;
-    msec *= 10000;
-    msec += (cur.tv_usec - startup.tv_usec) / 100;
+    tics = (cur.tv_sec - startup.tv_sec) * XSLT_TIMESTAMP_TICS_PER_SEC;
+    tics += (cur.tv_usec - startup.tv_usec) /
+                          (1000000l / XSLT_TIMESTAMP_TICS_PER_SEC);
     
-    msec -= calibration;
-    return((unsigned long) msec);
+    tics -= calibration;
+    return(tics);
 #else
-    return(0);
-#endif
+
+    /* Neither gettimeofday() nor Win32 performance counter available */
+
+    return (0);
+
+#endif /* HAVE_GETTIMEOFDAY */
+#endif /* XSLT_WIN32_PERFORMANCE_COUNTER */
 }
 
 #define MAX_TEMPLATES 10000

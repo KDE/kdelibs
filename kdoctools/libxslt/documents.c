@@ -17,6 +17,8 @@
 #include "xsltInternals.h"
 #include "xsltutils.h"
 #include "documents.h"
+#include "transform.h"
+#include "imports.h"
 #include "keys.h"
 
 #ifdef LIBXML_XINCLUDE_ENABLED
@@ -46,6 +48,7 @@ xsltNewDocument(xsltTransformContextPtr ctxt, xmlDocPtr doc) {
 
     cur = (xsltDocumentPtr) xmlMalloc(sizeof(xsltDocument));
     if (cur == NULL) {
+	xsltPrintErrorContext(ctxt, NULL, (xmlNodePtr) doc);
         xsltGenericError(xsltGenericErrorContext,
 		"xsltNewDocument : malloc failed\n");
 	return(NULL);
@@ -73,6 +76,7 @@ xsltNewStyleDocument(xsltStylesheetPtr style, xmlDocPtr doc) {
 
     cur = (xsltDocumentPtr) xmlMalloc(sizeof(xsltDocument));
     if (cur == NULL) {
+	xsltPrintErrorContext(NULL, style, (xmlNodePtr) doc);
         xsltGenericError(xsltGenericErrorContext,
 		"xsltNewStyleDocument : malloc failed\n");
 	return(NULL);
@@ -165,11 +169,18 @@ xsltLoadDocument(xsltTransformContextPtr ctxt, const xmlChar *URI) {
 #ifdef LIBXML_XINCLUDE_ENABLED
 	xmlXIncludeProcess(doc);
 #else
+	xsltPrintErrorContext(ctxt, NULL, NULL);
         xsltGenericError(xsltGenericErrorContext,
 	    "xsltLoadDocument(%s) : XInclude processing not compiled in\n",
 	                 URI);
 #endif
     }
+    /*
+     * Apply white-space stripping if asked for
+     */
+    if (xsltNeedElemSpaceHandling(ctxt))
+	xsltApplyStripSpaces(ctxt, xmlDocGetRootElement(doc));
+
     ret = xsltNewDocument(ctxt, doc);
     return(ret);
 }
@@ -235,6 +246,8 @@ xsltFindDocument (xsltTransformContextPtr ctxt, xmlDocPtr doc) {
 	    return(ret);
 	ret = ret->next;
     }
+    if (doc == ctxt->style->doc)
+	return(ctxt->document);
     return(NULL);
 }
 

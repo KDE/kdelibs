@@ -24,8 +24,29 @@ void		xsltSetXIncludeDefault	(int xinclude);
 int		xsltGetXIncludeDefault	(void);
 
 /**
+ * Export context to users.
+ */
+xsltTransformContextPtr xsltNewTransformContext	(xsltStylesheetPtr style,
+						 xmlDocPtr doc);
+
+void			xsltFreeTransformContext(xsltTransformContextPtr ctxt);
+
+xmlDocPtr		xsltApplyStylesheetUser	(xsltStylesheetPtr style,
+						 xmlDocPtr doc,
+						 const char **params,
+						 const char *output,
+						 FILE * profile,
+					     xsltTransformContextPtr userCtxt);
+/**
  * Private Interfaces
  */
+void		xsltApplyStripSpaces	(xsltTransformContextPtr ctxt,
+					 xmlNodePtr node);
+xsltTransformFunction
+		xsltExtElementLookup	(xsltTransformContextPtr ctxt,
+					 const xmlChar *name,
+					 const xmlChar *URI);
+
 xmlDocPtr	xsltApplyStylesheet	(xsltStylesheetPtr style,
 					 xmlDocPtr doc,
 					 const char **params);

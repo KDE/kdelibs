@@ -52,6 +52,7 @@ xsltNewStackElem(void) {
 
     cur = (xsltStackElemPtr) xmlMalloc(sizeof(xsltStackElem));
     if (cur == NULL) {
+	xsltPrintErrorContext(NULL, NULL, NULL);
         xsltGenericError(xsltGenericErrorContext,
 		"xsltNewStackElem : malloc failed\n");
 	return(NULL);
@@ -80,6 +81,7 @@ xsltCopyStackElem(xsltStackElemPtr elem) {
 
     cur = (xsltStackElemPtr) xmlMalloc(sizeof(xsltStackElem));
     if (cur == NULL) {
+	xsltPrintErrorContext(NULL, NULL, NULL);
         xsltGenericError(xsltGenericErrorContext,
 		"xsltCopyStackElem : malloc failed\n");
 	return(NULL);
@@ -332,8 +334,10 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr elem,
 	if ((precomp == NULL) || (precomp->comp == NULL))
 	    xmlXPathFreeCompExpr(comp);
 	if (result == NULL) {
+	    xsltPrintErrorContext(ctxt, NULL, precomp->inst);
 	    xsltGenericError(xsltGenericErrorContext,
 		"Evaluating variable %s failed\n", elem->name);
+	    ctxt->state = XSLT_STATE_STOPPED;
 #ifdef WITH_XSLT_DEBUG_VARIABLE
 #ifdef LIBXML_DEBUG_ENABLED
 	} else {
@@ -354,8 +358,8 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr elem,
 	    xmlNodePtr container;
 	    xmlNodePtr oldInsert;
 
-	    container = xmlNewDocNode(ctxt->output, NULL,
-		                      (const xmlChar *) "fake", NULL);
+	    container = xmlNewDocNode(ctxt->document->doc, NULL,
+				      (const xmlChar *) "fake", NULL);
 	    if (container == NULL)
 		return(NULL);
 
@@ -367,6 +371,11 @@ xsltEvalVariable(xsltTransformContextPtr ctxt, xsltStackElemPtr elem,
 	    result = xmlXPathNewValueTree(container);
 	    if (result == NULL) {
 		result = xmlXPathNewCString("");
+	    } else {
+		/*
+		 * Tag the subtree for removal once consumed
+		 */
+		result->boolval = 1;
 	    }
 #ifdef WITH_XSLT_DEBUG_VARIABLE
 #ifdef LIBXML_DEBUG_ENABLED
@@ -445,8 +454,10 @@ xsltEvalGlobalVariable(xsltStackElemPtr elem, xsltTransformContextPtr ctxt) {
 	if ((precomp == NULL) || (precomp->comp == NULL))
 	    xmlXPathFreeCompExpr(comp);
 	if (result == NULL) {
+	    xsltPrintErrorContext(ctxt, NULL, precomp->inst);
 	    xsltGenericError(xsltGenericErrorContext,
 		"Evaluating global variable %s failed\n", elem->name);
+	    ctxt->state = XSLT_STATE_STOPPED;
 #ifdef WITH_XSLT_DEBUG_VARIABLE
 #ifdef LIBXML_DEBUG_ENABLED
 	} else {
@@ -467,8 +478,8 @@ xsltEvalGlobalVariable(xsltStackElemPtr elem, xsltTransformContextPtr ctxt) {
 	    xmlNodePtr container;
 	    xmlNodePtr oldInsert;
 
-	    container = xmlNewDocNode(ctxt->output, NULL,
-		                      (const xmlChar *) "fake", NULL);
+	    container = xmlNewDocNode(ctxt->document->doc, NULL,
+				      (const xmlChar *) "fake", NULL);
 	    if (container == NULL)
 		return(NULL);
 
@@ -480,6 +491,11 @@ xsltEvalGlobalVariable(xsltStackElemPtr elem, xsltTransformContextPtr ctxt) {
 	    result = xmlXPathNewValueTree(container);
 	    if (result == NULL) {
 		result = xmlXPathNewCString("");
+	    } else {
+		/*
+		 * Tag the subtree for removal once consumed
+		 */
+		result->boolval = 1;
 	    }
 #ifdef WITH_XSLT_DEBUG_VARIABLE
 #ifdef LIBXML_DEBUG_ENABLED
@@ -555,8 +571,17 @@ xsltEvalGlobalVariables(xsltTransformContextPtr ctxt) {
 				 elem->name, elem->nameURI, def);
 	    } else if ((elem->comp != NULL) &&
 		       (elem->comp->type == XSLT_FUNC_VARIABLE)) {
-		xsltGenericError(xsltGenericErrorContext,
-		    "Global variable %s already defined\n", elem->name);
+		/*
+		 * Redefinition of variables from a different stylesheet
+		 * should not generate a message.
+		 */
+		if ((elem->comp->inst != NULL) &&
+		    (def->comp != NULL) && (def->comp->inst != NULL) &&
+		    (elem->comp->inst->doc == def->comp->inst->doc)) {
+		    xsltPrintErrorContext(ctxt, style, elem->comp->inst);
+		    xsltGenericError(xsltGenericErrorContext,
+			"Global variable %s already defined\n", elem->name);
+		}
 	    }
 	    elem = elem->next;
 	}
@@ -640,79 +665,107 @@ xsltRegisterGlobalVariable(xsltStylesheetPtr style, const xmlChar *name,
 }
 
 /**
- * xsltEvalUserParams:
- * @ctxt:  the XSLT transformation context
- * @params:  a NULL terminated arry of parameters names/values tuples
+ * xsltProcessUserParamInternal
  *
- * Evaluate the global variables of a stylesheet. This needs to be
- * done on parsed stylesheets before starting to apply transformations
+ * @ctxt:  the XSLT transformation context
+ * @name:  a null terminated parameter name
+ * @value: a null terminated value (may be an XPath expression)
+ * @eval:  0 to treat the value literally, else evaluate as XPath expression
+ *
+ * If @eval is 0 then @value is treated literally and is stored in the global
+ * parameter/variable table without any change.
+ *
+ * Uf @eval is 1 then @value is treated as an XPath expression and is
+ * evaluated.  In this case, if you want to pass a string which will be
+ * interpreted literally then it must be enclosed in single or double quotes.
+ * If the string contains single quotes (double quotes) then it cannot be
+ * enclosed single quotes (double quotes).  If the string which you want to
+ * be treated literally contains both single and double quotes (e.g. Meet
+ * at Joe's for "Twelfth Night" at 7 o'clock) then there is no suitable
+ * quoting character.  You cannot use &apos; or &quot; inside the string
+ * because the replacement of character entities with their equivalents is
+ * done at a different stage of processing.  The solution is to call
+ * xsltQuoteUserParams or xsltQuoteOneUserParam.
+ *
+ * This needs to be done on parsed stylesheets before starting to apply
+ * transformations.  Normally this will be called (directly or indirectly)
+ * only from xsltEvalUserParams, xsltEvalOneUserParam, xsltQuoteUserParams,
+ * or xsltQuoteOneUserParam.
  *
  * Returns 0 in case of success, -1 in case of error
  */
+
+static
 int
-xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
+xsltProcessUserParamInternal(xsltTransformContextPtr ctxt,
+		             const xmlChar * name,
+			     const xmlChar * value,
+			     int eval) {
+
     xsltStylesheetPtr style;
-    int indx = 0;
-    const xmlChar *name;
-    const xmlChar *value;
-    xmlChar *ncname, *prefix;
+    xmlChar *ncname;
+    xmlChar *prefix;
     const xmlChar *href;
     xmlXPathCompExprPtr comp;
     xmlXPathObjectPtr result;
-    int oldProximityPosition, oldContextSize;
+    int oldProximityPosition;
+    int oldContextSize;
     int oldNsNr;
     xmlNsPtr *oldNamespaces;
+    xsltStackElemPtr elem;
+    int res;
 
     if (ctxt == NULL)
 	return(-1);
-    if (params == NULL)
+    if (name == NULL)
 	return(0);
- 
+    if (value == NULL)
+	return(0);
+
     style = ctxt->style;
-    while (params[indx] != NULL) {
-	name = (const xmlChar *)params[indx++];
-	value = (const xmlChar *)params[indx++];
-	if ((name == NULL) || (value == NULL))
-	    break;
 
 #ifdef WITH_XSLT_DEBUG_VARIABLE
-	xsltGenericDebug(xsltGenericDebugContext,
+    xsltGenericDebug(xsltGenericDebugContext,
 	    "Evaluating user parameter %s=%s\n", name, value);
 #endif
 
-	/*
-	 * Name lookup
-	 */
-	ncname = xmlSplitQName2(name, &prefix);
-	href = NULL;
-	if (ncname != NULL) {
-	    if (prefix != NULL) {
-		xmlNsPtr ns;
+    /*
+     * Name lookup
+     */
 
-		ns = xmlSearchNs(style->doc, xmlDocGetRootElement(style->doc),
-			         prefix);
-		if (ns == NULL) {
-		    xsltGenericError(xsltGenericErrorContext,
-		    "user param : no namespace bound to prefix %s\n", prefix);
-		    href = NULL;
-		} else {
-		    href = ns->href;
-		}
-		xmlFree(prefix);
-	    } else {
+    ncname = xmlSplitQName2(name, &prefix);
+    href = NULL;
+    if (ncname != NULL) {
+	if (prefix != NULL) {
+	    xmlNsPtr ns;
+
+	    ns = xmlSearchNs(style->doc, xmlDocGetRootElement(style->doc),
+			     prefix);
+	    if (ns == NULL) {
+		xsltPrintErrorContext(ctxt, style, NULL);
+		xsltGenericError(xsltGenericErrorContext,
+		"user param : no namespace bound to prefix %s\n", prefix);
 		href = NULL;
+	    } else {
+		href = ns->href;
 	    }
-	    xmlFree(ncname);
+	    xmlFree(prefix);
 	} else {
 	    href = NULL;
-	    ncname = xmlStrdup(name);
 	}
+	xmlFree(ncname);
+    } else {
+	href = NULL;
+	ncname = xmlStrdup(name);
+    }
 
-	/*
-	 * Do the evaluation
-	 */
-        result = NULL;
-	comp = xmlXPathCompile(value);
+    /*
+     * Do the evaluation if @eval is non-zero.
+     */
+
+    result = NULL;
+    if (eval != 0) {
+        comp = xmlXPathCompile(value);
 	if (comp != NULL) {
 	    oldProximityPosition = ctxt->xpathCtxt->proximityPosition;
 	    oldContextSize = ctxt->xpathCtxt->contextSize;
@@ -722,6 +775,7 @@ xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
 	     * There is really no in scope namespace for parameters on the
 	     * command line.
 	     */
+
 	    oldNsNr = ctxt->xpathCtxt->nsNr;
 	    oldNamespaces = ctxt->xpathCtxt->namespaces;
 	    ctxt->xpathCtxt->namespaces = NULL;
@@ -734,50 +788,178 @@ xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
 	    xmlXPathFreeCompExpr(comp);
 	}
 	if (result == NULL) {
+	    xsltPrintErrorContext(ctxt, style, NULL);
 	    xsltGenericError(xsltGenericErrorContext,
 		"Evaluating user parameter %s failed\n", name);
-	} else {
-	    xsltStackElemPtr elem;
-	    int res;
+	    ctxt->state = XSLT_STATE_STOPPED;
+	    xmlFree(ncname);
+	    return(-1);
+	}
+    }
+
+    /* 
+     * If @eval is 0 then @value is to be taken literally and result is NULL
+     * 
+     * If @eval is not 0, then @value is an XPath expression and has been
+     * successfully evaluated and result contains the resulting value and
+     * is not NULL.
+     *
+     * Now create an xsltStackElemPtr for insertion into the context's
+     * global variable/parameter hash table.
+     */
 
 #ifdef WITH_XSLT_DEBUG_VARIABLE
 #ifdef LIBXML_DEBUG_ENABLED
-	    if ((xsltGenericDebugContext == stdout) ||
-		(xsltGenericDebugContext == stderr))
-		xmlXPathDebugDumpObject((FILE *)xsltGenericDebugContext,
-					result, 0);
+    if ((xsltGenericDebugContext == stdout) ||
+        (xsltGenericDebugContext == stderr))
+	    xmlXPathDebugDumpObject((FILE *)xsltGenericDebugContext,
+				    result, 0);
 #endif
 #endif
 
-	    elem = xsltNewStackElem();
-	    if (elem != NULL) {
-		elem->name = xmlStrdup(ncname);
-		if (value != NULL)
-		    elem->select = xmlStrdup(value);
-		else
-		    elem->select = NULL;
-		if (href)
-		    elem->nameURI = xmlStrdup(href);
-		elem->tree = NULL;
-		elem->computed = 1;
-		elem->value = result;
-	    }
-	    /*
-	     * Global parameters are stored in the XPath context
-	     * variables pool.
-	     */
-	    res = xmlHashAddEntry2(ctxt->globalVars,
-			     ncname, href, elem);
-	    if (res != 0) {
-		xsltFreeStackElem(elem);
-		xsltGenericError(xsltGenericErrorContext,
-		    "Global parameter %s already defined\n", ncname);
-	    }
+    elem = xsltNewStackElem();
+    if (elem != NULL) {
+	elem->name = xmlStrdup(ncname);
+	if (value != NULL)
+	    elem->select = xmlStrdup(value);
+	else
+	    elem->select = NULL;
+	if (href)
+	    elem->nameURI = xmlStrdup(href);
+	elem->tree = NULL;
+	elem->computed = 1;
+	if (eval == 0) {
+	    elem->value = xmlXPathNewString(value);
+	} 
+	else {
+	    elem->value = result;
 	}
-	xmlFree(ncname);
     }
 
+    /*
+     * Global parameters are stored in the XPath context variables pool.
+     */
+
+    res = xmlHashAddEntry2(ctxt->globalVars, ncname, href, elem);
+    if (res != 0) {
+	xsltFreeStackElem(elem);
+	xsltPrintErrorContext(ctxt, style, NULL);
+	xsltGenericError(xsltGenericErrorContext,
+	    "Global parameter %s already defined\n", ncname);
+    }
+    xmlFree(ncname);
     return(0);
+}
+
+/**
+ * xsltEvalUserParams:
+ *
+ * @ctxt:  the XSLT transformation context
+ * @params:  a NULL terminated array of parameters name/value tuples
+ *
+ * Evaluate the global variables of a stylesheet. This needs to be
+ * done on parsed stylesheets before starting to apply transformations.
+ * Each of the parameters is evaluated as an XPath expression and stored
+ * in the global variables/parameter hash table.  If you want your
+ * parameter used literally, use xsltQuoteUserParams.
+ *
+ * Returns 0 in case of success, -1 in case of error
+ */
+ 
+int
+xsltEvalUserParams(xsltTransformContextPtr ctxt, const char **params) {
+    int indx = 0;
+    const xmlChar *name;
+    const xmlChar *value;
+
+    if (params == NULL)
+	return(0);
+    while (params[indx] != NULL) {
+	name = (const xmlChar *) params[indx++];
+	value = (const xmlChar *) params[indx++];
+    	if (xsltEvalOneUserParam(ctxt, name, value) != 0) 
+	    return(-1);
+    }
+    return 0;
+}
+
+/**
+ * xsltQuoteUserParams:
+ *
+ * @ctxt:  the XSLT transformation context
+ * @params:  a NULL terminated arry of parameters names/values tuples
+ *
+ * Similar to xsltEvalUserParams, but the values are treated literally and
+ * are * *not* evaluated as XPath expressions. This should be done on parsed
+ * stylesheets before starting to apply transformations.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+ 
+int
+xsltQuoteUserParams(xsltTransformContextPtr ctxt, const char **params) {
+    int indx = 0;
+    const xmlChar *name;
+    const xmlChar *value;
+
+    if (params == NULL)
+	return(0);
+    while (params[indx] != NULL) {
+	name = (const xmlChar *) params[indx++];
+	value = (const xmlChar *) params[indx++];
+    	if (xsltQuoteOneUserParam(ctxt, name, value) != 0) 
+	    return(-1);
+    }
+    return 0;
+}
+
+/**
+ * xsltEvalOneUserParam:
+ *
+ * @ctxt:  the XSLT transformation context
+ * @name:  a null terminated string giving the name of the parameter
+ * @value  a null terminated string giving the XPath expression to be evaluated
+ *
+ * This is normally called from xsltEvalUserParams to process a single
+ * parameter from a list of parameters.  The @value is evaluated as an
+ * XPath expression and the result is stored in the context's global
+ * variable/parameter hash table.
+ *
+ * To have a parameter treated literally (not as an XPath expression)
+ * use xsltQuoteUserParams (or xsltQuoteOneUserParam).  For more
+ * details see description of xsltProcessOneUserParamInternal.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+
+int
+xsltEvalOneUserParam(xsltTransformContextPtr ctxt,
+    		     const xmlChar * name,
+		     const xmlChar * value) {
+    return xsltProcessUserParamInternal(ctxt, name, value,
+		                        1 /* xpath eval ? */);
+}
+
+/**
+ * xsltQuoteOneUserParam:
+ *
+ * @ctxt:  the XSLT transformation context
+ * @name:  a null terminated string giving the name of the parameter
+ * @value  a null terminated string giving the parameter value
+ *
+ * This is normally called from xsltQuoteUserParams to process a single
+ * parameter from a list of parameters.  The @value is stored in the
+ * context's global variable/parameter hash table.
+ *
+ * Returns 0 in case of success, -1 in case of error.
+ */
+
+int
+xsltQuoteOneUserParam(xsltTransformContextPtr ctxt,
+			 const xmlChar * name,
+			 const xmlChar * value) {
+    return xsltProcessUserParamInternal(ctxt, name, value,
+					0 /* xpath eval ? */);
 }
 
 /**
@@ -842,6 +1024,7 @@ xsltRegisterVariable(xsltTransformContextPtr ctxt, xsltStylePreCompPtr comp,
 
     if (xsltCheckStackElem(ctxt, comp->name, comp->ns) != 0) {
 	if (!param) {
+	    xsltPrintErrorContext(ctxt, NULL, comp->inst);
 	    xsltGenericError(xsltGenericErrorContext,
 	    "xsl:variable : redefining %s\n", comp->name);
 	}
@@ -956,12 +1139,14 @@ xsltParseStylesheetCallerParam(xsltTransformContextPtr ctxt, xmlNodePtr cur) {
 	return(NULL);
     comp = (xsltStylePreCompPtr) cur->_private;
     if (comp == NULL) {
+	xsltPrintErrorContext(ctxt, NULL, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:param : compilation error\n");
 	return(NULL);
     }
 
     if (comp->name == NULL) {
+	xsltPrintErrorContext(ctxt, NULL, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:param : missing name attribute\n");
 	return(NULL);
@@ -1006,12 +1191,14 @@ xsltParseGlobalVariable(xsltStylesheetPtr style, xmlNodePtr cur) {
     xsltStylePreCompute(style, cur);
     comp = (xsltStylePreCompPtr) cur->_private;
     if (comp == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	     "xsl:variable : compilation failed\n");
 	return;
     }
 
     if (comp->name == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:variable : missing name attribute\n");
 	return;
@@ -1045,12 +1232,14 @@ xsltParseGlobalParam(xsltStylesheetPtr style, xmlNodePtr cur) {
     xsltStylePreCompute(style, cur);
     comp = (xsltStylePreCompPtr) cur->_private;
     if (comp == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	     "xsl:param : compilation failed\n");
 	return;
     }
 
     if (comp->name == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:param : missing name attribute\n");
 	return;
@@ -1083,12 +1272,14 @@ xsltParseStylesheetVariable(xsltTransformContextPtr ctxt, xmlNodePtr cur) {
 
     comp = (xsltStylePreCompPtr) cur->_private;
     if (comp == NULL) {
+	xsltPrintErrorContext(ctxt, NULL, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	     "xsl:variable : compilation failed\n");
 	return;
     }
 
     if (comp->name == NULL) {
+	xsltPrintErrorContext(ctxt, NULL, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:variable : missing name attribute\n");
 	return;
@@ -1120,12 +1311,14 @@ xsltParseStylesheetParam(xsltTransformContextPtr ctxt, xmlNodePtr cur) {
 
     comp = (xsltStylePreCompPtr) cur->_private;
     if (comp == NULL) {
+	xsltPrintErrorContext(ctxt, NULL, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	     "xsl:param : compilation failed\n");
 	return;
     }
 
     if (comp->name == NULL) {
+	xsltPrintErrorContext(ctxt, NULL, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:param : missing name attribute\n");
 	return;
@@ -1179,6 +1372,7 @@ xsltXPathVariableLookup(void *ctxt, const xmlChar *name,
     context = (xsltTransformContextPtr) ctxt;
     ret = xsltVariableLookup(context, name, ns_uri);
     if (ret == NULL) {
+	xsltPrintErrorContext(ctxt, NULL, NULL);
 	xsltGenericError(xsltGenericErrorContext,
 	    "unregistered variable %s\n", name);
     }

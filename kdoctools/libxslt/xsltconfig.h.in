@@ -9,12 +9,6 @@
 #ifndef __XML_XSLTCONFIG_H__
 #define __XML_XSLTCONFIG_H__
 
-#ifdef WIN32
-#include <win32config.h>
-#else
-#include "config.h"
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -85,6 +79,15 @@ extern "C" {
 #endif
 #else
 #define ATTRIBUTE_UNUSED
+#endif
+
+/**
+ * LIBXSLT_PUBLIC:
+ *
+ * This macro is used to declare PUBLIC variables for MSC on Windows
+ */
+#if !defined(WIN32) || defined(__CYGWIN__)
+#define LIBXSLT_PUBLIC
 #endif
 
 #ifdef __cplusplus

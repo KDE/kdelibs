@@ -73,6 +73,7 @@ xsltParseStylesheetImport(xsltStylesheetPtr style, xmlNodePtr cur) {
 
     uriRef = xsltGetNsProp(cur, (const xmlChar *)"href", XSLT_NAMESPACE);
     if (uriRef == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:import : missing href attribute\n");
 	goto error;
@@ -81,12 +82,14 @@ xsltParseStylesheetImport(xsltStylesheetPtr style, xmlNodePtr cur) {
     base = xmlNodeGetBase(style->doc, cur);
     URI = xmlBuildURI(uriRef, base);
     if (URI == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:import : invalid URI reference %s\n", uriRef);
 	goto error;
     }
     import = xmlParseFile((const char *)URI);
     if (import == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:import : unable to load %s\n", URI);
 	goto error;
@@ -130,6 +133,7 @@ xsltParseStylesheetInclude(xsltStylesheetPtr style, xmlNodePtr cur) {
 
     uriRef = xsltGetNsProp(cur, (const xmlChar *)"href", XSLT_NAMESPACE);
     if (uriRef == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:include : missing href attribute\n");
 	goto error;
@@ -138,6 +142,7 @@ xsltParseStylesheetInclude(xsltStylesheetPtr style, xmlNodePtr cur) {
     base = xmlNodeGetBase(style->doc, cur);
     URI = xmlBuildURI(uriRef, base);
     if (URI == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:include : invalid URI reference %s\n", uriRef);
 	goto error;
@@ -145,6 +150,7 @@ xsltParseStylesheetInclude(xsltStylesheetPtr style, xmlNodePtr cur) {
 
     include = xsltLoadStyleDocument(style, URI);
     if (include == NULL) {
+	xsltPrintErrorContext(NULL, style, cur);
 	xsltGenericError(xsltGenericErrorContext,
 	    "xsl:include : unable to load %s\n", URI);
 	goto error;
@@ -187,6 +193,30 @@ xsltNextImport(xsltStylesheetPtr cur) {
 	if (cur->next != NULL) return(cur->next);
     } while (cur != NULL);
     return(cur);
+}
+
+/**
+ * xsltNeedElemSpaceHandling:
+ * @ctxt:  an XSLT transformation context
+ *
+ * Returns whether that stylesheet requires white-space stripping
+ *
+ * Returns 1 if space should be stripped, 0 if not
+ */
+
+int
+xsltNeedElemSpaceHandling(xsltTransformContextPtr ctxt) {
+    xsltStylesheetPtr style;
+
+    if (ctxt == NULL)
+	return(0);
+    style = ctxt->style;
+    while (style != NULL) {
+	if (style->stripSpaces != NULL)
+	    return(1);
+	style = xsltNextImport(style);
+    }
+    return(0);
 }
 
 /**

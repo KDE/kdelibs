@@ -16,19 +16,13 @@
 #include <limits.h>
 #include <float.h>
 
-#ifdef HAVE_IEEEFP_H
-#include <ieeefp.h>
-#endif
-#ifdef HAVE_NAN_H
-#include <nan.h>
-#endif
-
 #include <libxml/xmlmemory.h>
 #include <libxml/parserInternals.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 #include "xsltutils.h"
 #include "pattern.h"
+#include "templates.h"
 #include "numbersInternals.h"
 
 #ifndef FALSE
@@ -36,17 +30,33 @@
 # define TRUE (1 == 1)
 #endif
 
-#define SYMBOL_QUOTE             ((xmlChar)'\'')
+#define SYMBOL_QUOTE		((xmlChar)'\'')
 
-typedef struct _xsltNumberFormatToken {
-    xmlChar token;
-    int width;
-    xmlChar *filling;
-} xsltNumberFormatToken, *xsltNumberFormatTokenPtr;
+#define DEFAULT_TOKEN		(xmlChar)'0'
+#define DEFAULT_SEPARATOR	"."
+
+#define MAX_TOKENS		1024
+
+typedef struct _xsltFormatToken xsltFormatToken;
+typedef xsltFormatToken *xsltFormatTokenPtr;
+struct _xsltFormatToken {
+    xmlChar	*separator;
+    xmlChar	 token;
+    int		 width;
+};
+
+typedef struct _xsltFormat xsltFormat;
+typedef xsltFormat *xsltFormatPtr;
+struct _xsltFormat {
+    xmlChar		*start;
+    xsltFormatToken	 tokens[MAX_TOKENS];
+    int			 nTokens;
+    xmlChar		*end;
+};
 
 static char alpha_upper_list[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 static char alpha_lower_list[] = "abcdefghijklmnopqrstuvwxyz";
-static xsltNumberFormatToken default_token;
+static xsltFormatToken default_token;
 
 
 /************************************************************************
@@ -63,7 +73,7 @@ static xsltNumberFormatToken default_token;
      ((letter) == (self)->patternSeparator[0]))
 
 #define IS_DIGIT_ZERO(x) xsltIsDigitZero(x)
-#define IS_DIGIT_ONE(x) xsltIsDigitZero((x)-1)
+#define IS_DIGIT_ONE(x) xsltIsDigitZero((xmlChar)(x)-1)
 
 static int
 xsltIsDigitZero(xmlChar ch)
@@ -82,48 +92,6 @@ xsltIsDigitZero(xmlChar ch)
 	return FALSE;
     }
 }
-
-#ifndef isnan
-#ifndef HAVE_ISNAN
-
-/*
- * NaN (Not-A-Number)
- *
- * In C99 isnan() is defined as a macro, so its existence can be determined
- * with the preprocessor.
- *
- * ANSI/IEEE 754-1986 states that "Every NaN shall compare unordered
- * with everything, including itself." This means that "number == number"
- * will return true for all numbers, except NaN. Unfortunately, this
- * simple test does not work on all platforms supporting NaNs. Instead
- * we use an almost equivalent comparison.
- */
-static int
-isnan(volatile double number)
-{
-    return (!(number < 0.0 || number > 0.0) && (number != 0.0));
-}
-#endif /* !HAVE_ISNAN */
-#endif /* !isnan */
-
-#ifndef isinf
-#ifndef HAVE_ISINF
-/*
- * Infinity (positive and negative)
- *
- * C99 defines isinf() as a macro. See comment for isnan().
- */
-static int
-isinf(double number)
-{
-# ifdef HUGE_VAL
-    return ((number == HUGE_VAL) ? 1 : ((number == -HUGE_VAL) ? -1 : 0));
-# else
-    return FALSE;
-# endif
-}
-#endif /* !HAVE_ISINF */
-#endif /* !isinf */
 
 static void
 xsltNumberFormatDecimal(xmlBufferPtr buffer,
@@ -242,44 +210,71 @@ xsltNumberFormatRoman(xmlBufferPtr buffer,
     }
 }
 
-static int
+static void
 xsltNumberFormatTokenize(xmlChar *format,
-			 xsltNumberFormatTokenPtr array,
-			 int array_max)
+			 xsltFormatPtr tokens)
 {
     int index = 0;
-    int cnt;
     int j;
 
-    default_token.token = (xmlChar)'0';
+    default_token.token = DEFAULT_TOKEN;
     default_token.width = 1;
-    default_token.filling = BAD_CAST(".");
-    
-    for (cnt = 0; cnt < array_max; cnt++) {
-	if (format[index] == 0) {
+    default_token.separator = BAD_CAST(DEFAULT_SEPARATOR);
+
+
+    tokens->start = NULL;
+    tokens->tokens[0].separator = NULL;
+    tokens->end = NULL;
+
+    /*
+     * Insert initial non-alphanumeric token.
+     * There is always such a token in the list, even if NULL
+     */
+    while (! (IS_LETTER(format[index]) || IS_DIGIT(format[index]))) {
+	if (format[index] == 0)
+	    break; /* while */
+	index++;
+    }
+    if (index > 0)
+	tokens->start = xmlStrndup(format, index);
+
+
+    for (tokens->nTokens = 0; tokens->nTokens < MAX_TOKENS;
+	 tokens->nTokens++) {
+	if (format[index] == 0)
 	    break; /* for */
-	} else if (IS_DIGIT_ONE(format[index]) ||
+
+	/*
+	 * separator has already been parsed (except for the first
+	 * number) in tokens->end, recover it.
+	 */
+	if (tokens->nTokens > 0) {
+	    tokens->tokens[tokens->nTokens].separator = tokens->end;
+	    tokens->end = NULL;
+	}
+
+	if (IS_DIGIT_ONE(format[index]) ||
 		 IS_DIGIT_ZERO(format[index])) {
-	    array[cnt].width = 1;
+	    tokens->tokens[tokens->nTokens].width = 1;
 	    while (IS_DIGIT_ZERO(format[index])) {
-		array[cnt].width++;
+		tokens->tokens[tokens->nTokens].width++;
 		index++;
 	    }
 	    if (IS_DIGIT_ONE(format[index])) {
-		array[cnt].token = format[index] - 1;
+		tokens->tokens[tokens->nTokens].token = format[index] - 1;
 		index++;
 	    }
 	} else if (format[index] == (xmlChar)'A') {
-	    array[cnt].token = format[index];
+	    tokens->tokens[tokens->nTokens].token = format[index];
 	    index++;
 	} else if (format[index] == (xmlChar)'a') {
-	    array[cnt].token = format[index];
+	    tokens->tokens[tokens->nTokens].token = format[index];
 	    index++;
 	} else if (format[index] == (xmlChar)'I') {
-	    array[cnt].token = format[index];
+	    tokens->tokens[tokens->nTokens].token = format[index];
 	    index++;
 	} else if (format[index] == (xmlChar)'i') {
-	    array[cnt].token = format[index];
+	    tokens->tokens[tokens->nTokens].token = format[index];
 	    index++;
 	} else {
 	    /* XSLT section 7.7
@@ -288,9 +283,8 @@ xsltNumberFormatTokenize(xmlChar *format,
 	     *  not support a numbering sequence that starts with that
 	     *  token, it must use a format token of 1."
 	     */
-	    array[cnt].token = (xmlChar)'0';
-	    array[cnt].width = 1;
-	    index++;
+	    tokens->tokens[tokens->nTokens].token = (xmlChar)'0';
+	    tokens->tokens[tokens->nTokens].width = 1;
 	}
 	/*
 	 * Skip over remaining alphanumeric characters from the Nd
@@ -303,8 +297,9 @@ xsltNumberFormatTokenize(xmlChar *format,
 	 */
 	while (IS_LETTER(format[index]) || IS_DIGIT(format[index]))
 	    index++;
+
 	/*
-	 * Insert non-alphanumeric separator.
+	 * Insert temporary non-alphanumeric final tooken.
 	 */
 	j = index;
 	while (! (IS_LETTER(format[index]) || IS_DIGIT(format[index]))) {
@@ -313,42 +308,54 @@ xsltNumberFormatTokenize(xmlChar *format,
 	    index++;
 	}
 	if (index > j)
-	    array[cnt].filling = xmlStrndup(&format[j], index - j);
-	else
-	    array[cnt].filling = NULL;
+	    tokens->end = xmlStrndup(&format[j], index - j);
     }
-    return cnt;
 }
-
 
 static void
 xsltNumberFormatInsertNumbers(xsltNumberDataPtr data,
 			      double *numbers,
 			      int numbers_max,
-			      xsltNumberFormatToken (*array)[],
-			      int array_max,
+			      xsltFormatPtr tokens,
 			      xmlBufferPtr buffer)
 {
     int i = 0;
-    int minmax;
     double number;
-    xsltNumberFormatTokenPtr token;
-    int is_last_default_token = 0;
+    xsltFormatTokenPtr token;
 
-    minmax = (array_max >= numbers_max) ? numbers_max : array_max;
+    /*
+     * Handle initial non-alphanumeric token
+     */
+    if (tokens->start != NULL)
+	 xmlBufferCat(buffer, tokens->start);
+
     for (i = 0; i < numbers_max; i++) {
 	/* Insert number */
 	number = numbers[(numbers_max - 1) - i];
-	if (i < array_max) {
-	  token = &(*array)[i];
-	} else if (array_max > 0) {
-	  token = &(*array)[array_max - 1];
+	if (i < tokens->nTokens) {
+	  /* The "n"th format token will be used to format the "n"th
+	   * number in the list */
+	  token = &(tokens->tokens[i]);
+	} else if (tokens->nTokens > 0) {
+	  /* If there are more numbers than format tokens, then the
+	   * last format token will be used to format the remaining
+	   * numbers. */
+	  token = &(tokens->tokens[tokens->nTokens - 1]);
 	} else {
+	  /* If there are no format tokens, then a format token of
+	   * 1 is used to format all numbers. */
 	  token = &default_token;
-	  is_last_default_token = (i >= numbers_max - 1);
 	}
-	
-	switch (isinf(number)) {
+
+	/* Print separator, except for the first number */
+	if (i > 0) {
+	    if (token->separator != NULL)
+		xmlBufferCat(buffer, token->separator);
+	    else
+		xmlBufferCCat(buffer, DEFAULT_SEPARATOR);
+	}
+
+	switch (xmlXPathIsInf(number)) {
 	case -1:
 	    xmlBufferCCat(buffer, "-Infinity");
 	    break;
@@ -356,7 +363,7 @@ xsltNumberFormatInsertNumbers(xsltNumberDataPtr data,
 	    xmlBufferCCat(buffer, "Infinity");
 	    break;
 	default:
-	    if (isnan(number)) {
+	    if (xmlXPathIsNaN(number)) {
 		xmlBufferCCat(buffer, "NaN");
 	    } else {
 
@@ -399,10 +406,14 @@ xsltNumberFormatInsertNumbers(xsltNumberDataPtr data,
 	    }
 
 	}
-
-	if ((token->filling != NULL) && !is_last_default_token)
-	    xmlBufferCat(buffer, token->filling);
     }
+
+    /*
+     * Handle final non-alphanumeric token
+     */
+    if (tokens->end != NULL)
+	 xmlBufferCat(buffer, tokens->end);
+
 }
 
 static int
@@ -411,75 +422,78 @@ xsltNumberFormatGetAnyLevel(xsltTransformContextPtr context,
 			    xmlChar *count,
 			    xmlChar *from,
 			    double *array,
-			    int max ATTRIBUTE_UNUSED,
 			    xmlDocPtr doc,
 			    xmlNodePtr elem)
 {
     int amount = 0;
     int cnt = 0;
-    int keep_going = TRUE;
-    xmlNodePtr ancestor;
-    xmlNodePtr preceding;
-    xmlXPathParserContextPtr parser;
-    xsltCompMatchPtr countPat;
-    xsltCompMatchPtr fromPat;
+    xmlNodePtr cur;
+    xsltCompMatchPtr countPat = NULL;
+    xsltCompMatchPtr fromPat = NULL;
 
     if (count != NULL)
 	countPat = xsltCompilePattern(count, doc, elem);
-    else
-	countPat = NULL;
     if (from != NULL)
 	fromPat = xsltCompilePattern(from, doc, elem);
-    else
-	fromPat = NULL;
-    context->xpathCtxt->node = node;
-    parser = xmlXPathNewParserContext(NULL, context->xpathCtxt);
-    if (parser) {
-	/* preceding */
-	for (preceding = xmlXPathNextPreceding(parser, node);
-	     preceding != NULL;
-	     preceding = xmlXPathNextPreceding(parser, preceding)) {
-	    if ((from != NULL) &&
-		xsltTestCompMatchList(context, preceding, fromPat)) {
-		keep_going = FALSE;
-		break; /* for */
-	    }
-	    if (count == NULL) {
-		if ((node->type == preceding->type) &&
-		    /* FIXME: must use expanded-name instead of local name */
-		    xmlStrEqual(node->name, preceding->name))
-		    cnt++;
-	    } else {
-		if (xsltTestCompMatchList(context, preceding, countPat))
-		    cnt++;
-	    }
+	
+    /* select the starting node */
+    switch (node->type) {
+	case XML_ELEMENT_NODE:
+	    cur = node;
+	    break;
+	case XML_ATTRIBUTE_NODE:
+	    cur = ((xmlAttrPtr) node)->parent;
+	    break;
+	case XML_TEXT_NODE:
+	case XML_PI_NODE:
+	case XML_COMMENT_NODE:
+	    cur = node->parent;
+	    break;
+	default:
+	    cur = NULL;
+	    break;
+    }
+
+    while (cur != NULL) {
+	/* process current node */
+	if (count == NULL) {
+	    if ((node->type == cur->type) &&
+		/* FIXME: must use expanded-name instead of local name */
+		xmlStrEqual(node->name, cur->name))
+		cnt++;
+	} else {
+	    if (xsltTestCompMatchList(context, cur, countPat))
+		cnt++;
+	}
+	if ((from != NULL) &&
+	    xsltTestCompMatchList(context, cur, fromPat)) {
+	    break; /* while */
 	}
 
-	if (keep_going) {
-	    /* ancestor-or-self */
-	    for (ancestor = node;
-		 ancestor != NULL;
-		 ancestor = xmlXPathNextAncestor(parser, ancestor)) {
-		if ((from != NULL) &&
-		    xsltTestCompMatchList(context, ancestor, fromPat)) {
-		    break; /* for */
-		}
-		if (count == NULL) {
-		    if ((node->type == ancestor->type) &&
-			/* FIXME */
-			xmlStrEqual(node->name, ancestor->name))
-			cnt++;
-		} else {
-		    if (xsltTestCompMatchList(context, ancestor, countPat))
-			cnt++;
-		}
-	    }
+	/* Skip to next preceding or ancestor */
+	if ((cur->type == XML_DOCUMENT_NODE) ||
+#ifdef LIBXML_DOCB_ENABLED
+            (cur->type == XML_DOCB_DOCUMENT_NODE) ||
+#endif
+            (cur->type == XML_HTML_DOCUMENT_NODE))
+	    break; /* while */
+
+	while ((cur->prev != NULL) && (cur->prev->type == XML_DTD_NODE))
+	    cur = cur->prev;
+	if (cur->prev != NULL) {
+	    for (cur = cur->prev; cur->last != NULL; cur = cur->last);
+	} else {
+	    cur = cur->parent;
 	}
-	array[amount++] = (double)cnt;
-	xmlXPathFreeParserContext(parser);
+
     }
-    xsltFreeCompMatchList(countPat);
-    xsltFreeCompMatchList(fromPat);
+
+    array[amount++] = (double) cnt;
+
+    if (countPat != NULL)
+	xsltFreeCompMatchList(countPat);
+    if (fromPat != NULL)
+	xsltFreeCompMatchList(fromPat);
     return(amount);
 }
 
@@ -596,17 +610,23 @@ xsltNumberFormat(xsltTransformContextPtr ctxt,
     xmlBufferPtr output = NULL;
     xmlNodePtr copy = NULL;
     int amount, i;
-    int array_amount;
     double number;
-    xsltNumberFormatToken array[1024];
+    xsltFormat tokens;
+
+    if ((data->format == NULL) && (data->has_format != 0)) {
+	data->format = xsltEvalAttrValueTemplate(ctxt, data->node,
+					     (const xmlChar *) "format",
+					     XSLT_NAMESPACE);
+    }
+    if (data->format == NULL) {
+	return;
+    }
 
     output = xmlBufferCreate();
     if (output == NULL)
 	goto XSLT_NUMBER_FORMAT_END;
 
-    array_amount = xsltNumberFormatTokenize(data->format,
-					    array,
-					    sizeof(array)/sizeof(array[0]));
+    xsltNumberFormatTokenize(data->format, &tokens);
 
     /*
      * Evaluate the XPath expression to find the value(s)
@@ -620,8 +640,7 @@ xsltNumberFormat(xsltTransformContextPtr ctxt,
 	    xsltNumberFormatInsertNumbers(data,
 					  &number,
 					  1,
-					  &array,
-					  array_amount,
+					  &tokens,
 					  output);
 	}
 	
@@ -640,8 +659,7 @@ xsltNumberFormat(xsltTransformContextPtr ctxt,
 		xsltNumberFormatInsertNumbers(data,
 					      &number,
 					      1,
-					      &array,
-					      array_amount,
+					      &tokens,
 					      output);
 	    }
 	} else if (xmlStrEqual(data->level, (const xmlChar *) "multiple")) {
@@ -659,8 +677,7 @@ xsltNumberFormat(xsltTransformContextPtr ctxt,
 		xsltNumberFormatInsertNumbers(data,
 					      numarray,
 					      amount,
-					      &array,
-					      array_amount,
+					      &tokens,
 					      output);
 	    }
 	} else if (xmlStrEqual(data->level, (const xmlChar *) "any")) {
@@ -668,16 +685,14 @@ xsltNumberFormat(xsltTransformContextPtr ctxt,
 						 node,
 						 data->count,
 						 data->from,
-						 &number,
-						 1,
+						 &number, 
 						 data->doc,
 						 data->node);
 	    if (amount > 0) {
 		xsltNumberFormatInsertNumbers(data,
 					      &number,
 					      1,
-					      &array,
-					      array_amount,
+					      &tokens,
 					      output);
 	    }
 	}
@@ -687,9 +702,14 @@ xsltNumberFormat(xsltTransformContextPtr ctxt,
     if (copy != NULL) {
 	xmlAddChild(ctxt->insert, copy);
     }
-    for (i = 0;i < array_amount;i++) {
-	if (array[i].filling != NULL)
-	    xmlFree(array[i].filling);
+
+    if (tokens.start != NULL)
+	xmlFree(tokens.start);
+    if (tokens.end != NULL)
+	xmlFree(tokens.end);
+    for (i = 0;i < tokens.nTokens;i++) {
+	if (tokens.tokens[i].separator != NULL)
+	    xmlFree(tokens.tokens[i].separator);
     }
     
  XSLT_NUMBER_FORMAT_END:
@@ -812,6 +832,30 @@ xsltFormatNumberConversion(xsltDecimalFormatPtr self,
     char	default_sign = 0;
     /* flag to show error found, should use default format */
     char	found_error = 0;
+
+    *result = NULL;
+    switch (xmlXPathIsInf(number)) {
+	case -1:
+	    if (self->minusSign == NULL)
+		*result = xmlStrdup(BAD_CAST "-");
+	    else
+		*result = xmlStrdup(self->minusSign);
+	    /* no-break on purpose */
+	case 1:
+	    if ((self == NULL) || (self->infinity == NULL))
+		*result = xmlStrcat(*result, BAD_CAST "Infinity");
+	    else
+		*result = xmlStrcat(*result, self->infinity);
+	    return(status);
+	default:
+	    if (xmlXPathIsNaN(number)) {
+		if ((self == NULL) || (self->noNumber == NULL))
+		    *result = xmlStrdup(BAD_CAST "NaN");
+		else
+		    *result = xmlStrdup(self->noNumber);
+		return(status);
+	    }
+    }
 
     buffer = xmlBufferCreate();
     if (buffer == NULL) {
@@ -1012,6 +1056,7 @@ xsltFormatNumberConversion(xsltDecimalFormatPtr self,
 
 OUTPUT_NUMBER:
     if (found_error != 0) {
+	xsltPrintErrorContext(NULL, NULL, NULL);
         xsltGenericError(xsltGenericErrorContext,
                 "xsltFormatNumberConversion : error in format string, using default\n");
 	default_sign = (number < 0.0) ? 1 : 0;
