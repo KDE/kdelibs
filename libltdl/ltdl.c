@@ -2041,6 +2041,7 @@ lt_dlopen (filename)
 	  MUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
 	  return 0;
 	}
+      memset( handle, 0, sizeof( struct lt_dlhandle_struct ) );
 
       handle->info.ref_count	= 0;
       handle->depcount		= 0;
@@ -2272,7 +2273,6 @@ lt_dlopen (filename)
 
     /* allocate the handle */
     handle = (lt_dlhandle) LT_DLMALLOC (struct lt_dlhandle_struct, 1);
-    memset( handle, 0, sizeof( struct lt_dlhandle_struct ) );
     if (!handle || error)
       {
         LT_DLFREE (handle);
@@ -2285,6 +2285,7 @@ lt_dlopen (filename)
 	/* handle is already set to 0 */
 	goto cleanup;
       }
+    memset( handle, 0, sizeof( struct lt_dlhandle_struct ) );
 
     handle->info.ref_count = 0;
     if (load_deplibs (handle, deplibs) == 0)
@@ -2327,6 +2328,7 @@ lt_dlopen (filename)
 	  /* handle is already set to 0 */
 	  goto cleanup;
 	}
+      memset( handle, 0, sizeof( struct lt_dlhandle_struct ) );
       handle->info.ref_count = 0;
       /* non-libtool modules don't have dependencies */
       handle->depcount    = 0;
@@ -3289,6 +3291,7 @@ sys_dl_init( )
 		  LT_DLFREE( buffer );
                   return;
                 }
+	      memset( handle, 0, sizeof( struct lt_dlhandle_struct ) );
 
 	      last_slash = strrchr( libname, '/' );
 	      if( last_slash == NULL )
@@ -3381,6 +3384,7 @@ sys_dl_not_found_entry( const char* tmp )
         MUTEX_SETERROR (LT_DLSTRERROR (NO_MEMORY));
         return;
       }
+    memset( handle, 0, sizeof( struct lt_dlhandle_struct ) );
 
     handle->loader = NULL;
 
