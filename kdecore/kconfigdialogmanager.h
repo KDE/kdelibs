@@ -63,7 +63,7 @@ class QSqlPropertyMap;
  *
  * \code
  * QSqlPropertyMap *map = QSqlPropertyMap::defaultMap();
- * map.insert("KColorButton", "color");
+ * map->insert("KColorButton", "color");
  * QSqlPropertyMap::installDefaultMap(map);
  * \endcode
  *
