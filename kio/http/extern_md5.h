@@ -1,6 +1,8 @@
 #ifndef EXTERN_MD5_H
 #define EXTERN_MD5_H "$Id$"
 
+typedef unsigned INT32_BASETYPE UINT32_T;
+
 #ifdef DO_MD5
 
 #define HASHLEN 16
@@ -10,8 +12,8 @@ typedef char HASHHEX[HASHHEXLEN+1];
 
 /* MD5 context. */
 typedef struct Local_MD5Context {
-  u_int32_t state[4];   /* state (ABCD) */
-  u_int32_t count[2];   /* number of bits, modulo 2^64 (lsb first) */
+  UINT32_T state[4];   /* state (ABCD) */
+  UINT32_T count[2];   /* number of bits, modulo 2^64 (lsb first) */
   unsigned char buffer[64];     /* input buffer */
 } Local_MD5_CTX;
 
@@ -31,7 +33,7 @@ extern "C" {
 	char *MD5End(Local_MD5_CTX *, char *);
 	char *MD5File(const char *, char *);
 	char *MD5Data(const unsigned char *, unsigned int, char *);
-	static void MD5Transform (u_int32_t state[4], const unsigned char block[64]);
+	static void MD5Transform (UINT32_T state[4], const unsigned char block[64]);
 #ifdef __cplusplus
 }
 #endif
