@@ -68,11 +68,14 @@ kckey_h : generate_keys.sh $(QNAMESPACE_H)
 	./generate_keys.sh $(QNAMESPACE_H)
 
 install-data-local: charsets.config
+	$(mkinstalldirs) $(includedir)
+	$(INSTALL_DATA) $(srcdir)/../libltdl/ltdl.h $(includedir)/ltdl.h
 	$(mkinstalldirs) $(kde_confdir)
 	$(INSTALL_DATA) $(srcdir)/charsets.config $(kde_confdir)/charsets
 
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
+	-rm -f $(includedir)/ltdl.h
 
 EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) kdebugareas.txt
 
