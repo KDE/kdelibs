@@ -82,20 +82,16 @@ QString KPACImpl::proxyForURL(const KURL &url)
             QString proxy = (*it).simplifyWhiteSpace();
             if (proxy.left(5) == "PROXY")
             {
-                int p = proxy.find(':');
-                if (p >= 0)
+                proxy = proxy.mid(5).stripWhiteSpace();
+                if (proxy.left(7) != "http://")
+                    proxy = "http://" + proxy;
+                time_t badMark = blackList.readNumEntry(proxy);
+                if (badMark < time(0) - 1800)
                 {
-                    proxy = proxy.mid(p + 1).stripWhiteSpace();
-                    if (proxy.left(7) != "http://")
-                        proxy = "http://" + proxy;
-                    time_t badMark = blackList.readNumEntry(proxy);
-                    if (badMark < time(0) - 1800)
-                    {
-                        if (badMark)
-                            blackList.deleteEntry(proxy, false);
-                        kdDebug(7025) << "KPACImpl::proxyForURL(): returning " << proxy << endl;
-                        return proxy;
-                    }
+                    if (badMark)
+                        blackList.deleteEntry(proxy, false);
+                    kdDebug(7025) << "KPACImpl::proxyForURL(): returning " << proxy << endl;
+                    return proxy;
                 }
             }
             else if (proxy == "DIRECT")
