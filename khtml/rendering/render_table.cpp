@@ -29,6 +29,7 @@
 //#define DEBUG_LAYOUT
 //#define BOX_DEBUG
 #include "rendering/render_table.h"
+#include "rendering/render_replaced.h"
 #include "rendering/table_layout.h"
 #include "html/html_tableimpl.h"
 #include "misc/htmltags.h"
@@ -1162,6 +1163,12 @@ void RenderTableSection::calcRowHeight()
 	    if ( ( indx = r - cell->rowSpan() + 1 ) < 0 )
 		indx = 0;
 
+            if (cell->cellPercentageHeight()) {
+                cell->setCellPercentageHeight(0);
+                cell->setChildNeedsLayout(true, false);
+                cell->layoutIfNeeded();
+            }
+
             ch = cell->style()->height().width(0);
             if ( cell->height() > ch)
                 ch = cell->height();
@@ -1304,7 +1311,11 @@ int RenderTableSection::layoutRows( int toAdd )
             bool cellChildrenFlex = false;
             RenderObject* o = cell->firstChild();
             while (o) {
-                if (o->style()->height().isPercent()) {
+                if (!o->isText() && o->style()->height().isPercent()) {
+                    if (o->isWidget()) {
+                        // cancel resizes from transitory relayouts
+                        static_cast<RenderWidget *>(o)->cancelPendingResize();
+                    }
                     o->setNeedsLayout(true, false);
                     cell->setChildNeedsLayout(true, false);
                     cellChildrenFlex = true;
@@ -1700,10 +1711,6 @@ void RenderTableRow::layout()
     while( child ) {
 	if ( child->isTableCell() ) {
             RenderTableCell *cell = static_cast<RenderTableCell *>(child);
-            if ( cell->cellPercentageHeight() ) {
-                cell->setCellPercentageHeight( 0 );
-                cell->layoutIfNeeded();
-            }
             if ( child->needsLayout() ) {
                 cell->calcVerticalMargins();
                 cell->layout();

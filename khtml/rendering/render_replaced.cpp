@@ -97,6 +97,7 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     assert(!isAnonymous());
     m_view = node->getDocument()->view();
     m_resizePending = false;
+    m_discardResizes = false;
 
     // this is no real reference counting, its just there
     // to make sure that we're not deleted while we're recursed
@@ -159,10 +160,21 @@ void  RenderWidget::resizeWidget( int w, int h )
     }
 }
 
+void RenderWidget::cancelPendingResize()
+{
+    if (!m_widget)
+        return;
+    m_discardResizes = true;
+    QApplication::sendPostedEvents(this, QWidgetResizeEvent::Type);
+    m_discardResizes = false;
+}
+
 bool RenderWidget::event( QEvent *e )
 {
     if ( m_widget && (e->type() == (QEvent::Type)QWidgetResizeEvent::Type) ) {
         m_resizePending = false;
+        if (m_discardResizes)
+            return true;
         QWidgetResizeEvent *re = static_cast<QWidgetResizeEvent *>(e);
         m_widget->resize( re->w,  re->h );
         repaint();

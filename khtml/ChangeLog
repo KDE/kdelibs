@@ -1,3 +1,15 @@
+2004-11-16  Germain Garand  <germain@ebooksfrance.org>
+
+        * rendering/render_replaced.{cpp,h} (cancelPendingResize): allow
+        canceling of scheduled widget resizes, to avoid flicker when we
+        had to perform temporary layouts.
+
+        * rendering/render_table.cpp (calcRowHeight): displace resetting layout of cells with 
+        percent children here and mark those dirty, or we might get zero-height widgets on resize
+        (cf. map24.com)
+        (layout): ditto.
+        (layoutRows): cancel widget resizes from temporary layouts.
+
 2004-11-16  Stephan Kulow  <coolo@kde.org>
 
         * rendering/break_lines.cpp (khtml): adding patch by Otto Pattara to support

@@ -100,6 +100,8 @@ public:
     KHTMLView* view() const { return m_view; }
 
     void deref();
+    
+    void cancelPendingResize();
 
     static void paintWidget(PaintInfo& pI, QWidget *widget, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
@@ -126,6 +128,7 @@ protected:
     KHTMLView* m_view;
 
     bool m_resizePending;
+    bool m_discardResizes;
 
 public:
     class EventPropagator : public QWidget {
