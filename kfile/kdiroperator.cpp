@@ -683,6 +683,9 @@ void KDirOperator::connectView(KFileView *view)
     updateViewActions();
     fileView->widget()->show();
     fileView->widget()->resize(size());
+
+    // FIXME : only installed because focusNextPrevChild() isn't called
+    fileView->widget()->installEventFilter( this );
 }
 
 KFile::Mode KDirOperator::mode() const
@@ -1141,6 +1144,19 @@ void KDirOperator::slotIOFinished()
     QTimer::singleShot(0, this, SLOT(readNextMimeType()));
     QTimer::singleShot(200, this, SLOT(resetCursor()));
     emit finishedLoading();
+}
+
+
+// somehow focusNextPrevChild() is not called ;(
+bool KDirOperator::eventFilter( QObject *o, QEvent *e )
+{
+    if ( o == fileView->widget() ) {
+	if ( e->type() == QEvent::FocusOut ) {
+	    focusNextPrevChild( true );
+	    return true;
+	}
+    }
+    return false;
 }
 
 #include "kdiroperator.moc"
