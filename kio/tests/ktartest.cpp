@@ -1,5 +1,6 @@
 #include "ktar.h"
 #include <stdio.h>
+#include <kinstance.h>
 #include <qfile.h>
 
 void recursive_print( const KTarDirectory * dir, const QString & path )
@@ -27,6 +28,7 @@ int main( int argc, char** argv )
  " ./ktartest bytearray /path/to/existing_file.tar.gz  tests KTarData\n");
     return 1;
   }
+  KInstance instance("ktartest");
   QString command = argv[1];
   if ( command == "list" )
   {
