@@ -1110,6 +1110,7 @@ static const KCmdLineOptions qt_options[] =
 #ifdef Q_WS_QWS
    { "qws", I18N_NOOP("forces the application to run as QWS Server."), 0},
 #endif
+   { "reverse", I18N_NOOP("mirrors the whole layout of widgets."), 0},
    { 0, 0, 0 }
 };
 
