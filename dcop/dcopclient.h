@@ -31,14 +31,40 @@ class DCOPClientPrivate;
 
 typedef QValueList<QCString> QCStringList;
 
+/**
+ * Provides inter-process communication and remote procedure calls
+ * for KDE applications.
+ *
+ * This class provides IPC and RPC for KDE applications.  Usually you
+ * will not have to instantiate one yourself, because KApplication 
+ * contains a method to return a pointer to a DCOPClient object which
+ * can be used for your whole application.
+ *
+ * Before being able to send or receive any DCOP messages, you will have
+ * to attach your client object to the DCOP server, and then register
+ * your application with a specific name. See #attach and #registerAs for
+ * more information.
+ *
+ * Data to be sent should be serialized into a QDataStream which was
+ * initialized with the QByteArray that you actually intend to send
+ * the data in.  An example of how you might do this:
+ *
+ * <pre>
+ *   QByteArray data;
+ *   QDataStream dataStream(data, IO_WriteOnly);
+ *   dataStream << QString("This is text I am serializing");
+ *   client->send("someApp", "someObject", "someFunction", data);
+ * </pre>
+ *
+ * @see KApplication::dcopClient
+ */
 class DCOPClient : public QObject
 {
   Q_OBJECT
 
  public:
   /**
-   * Creates a new DCOP client, but does not attach to any server.
-   */
+   * Creates a new DCOP client, but does not attach to any server.  */
   DCOPClient();
 
   /**
@@ -124,15 +150,15 @@ class DCOPClient : public QObject
 		       QByteArray &replyData);
 
   /**
-   * Check whether @param remApp is attached to the DCOPServer.
-   * @return true if the remote application is attached, otherwise false.
+   * Check whether @param remApp is registered with the DCOPServer.
+   * @return true if the remote application is registered, otherwise false.
    */
-  bool isApplicationAttached( const QCString& remApp);
+  bool isApplicationRegistered( const QCString& remApp);
 
   /**
-   * Return the list of all currently attached applications.
+   * Return the list of all currently registered applications.
    */
-  QCStringList attachedApplications();
+  QCStringList registeredApplications();
 
   /**
    * receive a piece of data from the server.

@@ -312,24 +312,24 @@ bool DCOPClient::process(const QCString &fun, const QByteArray &data,
   return false;
 }
 
-bool DCOPClient::isApplicationAttached( const QCString& remApp)
+bool DCOPClient::isApplicationRegistered( const QCString& remApp)
 {
   QByteArray data, replyData;
   QDataStream arg( data, IO_WriteOnly );
   arg << remApp;
   int result = false;
-  if ( call( "DCOPServer", "", "isApplicationAttached", data, replyData ) ) {
+  if ( call( "DCOPServer", "", "isApplicationRegistered", data, replyData ) ) {
     QDataStream reply( replyData, IO_ReadOnly );
     reply >> result;
   }
   return result;
 }
 
-QCStringList DCOPClient::attachedApplications()
+QCStringList DCOPClient::registeredApplications()
 {
   QByteArray data, replyData;
   QCStringList result;
-  if ( call( "DCOPServer", "", "attachedApplications", data, replyData ) ) {
+  if ( call( "DCOPServer", "", "registeredApplications", data, replyData ) ) {
     QDataStream reply( replyData, IO_ReadOnly );
     reply >> result;
   }

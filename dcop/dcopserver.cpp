@@ -441,7 +441,7 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
 			 const QCString &fun, const QByteArray& data,
 			 QByteArray &replyData)
 {
-  if ( fun == "attachedApplications" ) {
+  if ( fun == "registeredApplications" ) {
     QDataStream reply( replyData, IO_WriteOnly );
     QCStringList applications;
     QDictIterator<DCOPConnection> it( appIds );
@@ -451,7 +451,7 @@ bool DCOPServer::receive(const QCString &app, const QCString &obj,
     }
     reply << applications;
     return TRUE;
-  } else if ( fun == "isApplicationAttached" ) {
+  } else if ( fun == "isApplicationRegistered" ) {
     QDataStream args( data, IO_ReadOnly );
     if (!args.atEnd()) {
       QCString s;
