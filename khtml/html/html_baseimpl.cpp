@@ -257,7 +257,6 @@ void HTMLFrameElementImpl::parseAttribute(AttributeImpl *attr)
         noresize = true;
         break;
     case ATTR_SCROLLING:
-        kdDebug( 6031 ) << "set scroll mode" << endl;
         if( strcasecmp( attr->value(), "auto" ) == 0 )
             scrolling = QScrollView::Auto;
         else if( strcasecmp( attr->value(), "yes" ) == 0 )
