@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.67  1999/08/10 16:50:12  kulow
+   what would you do with absolute paths in "getIconPath"? Returning them
+   seems to be the only good thing - instead of this warning
+
    Revision 1.66  1999/08/09 02:51:14  tibirna
    CT: needed ugly special treatment for icons given as fully qualified path filenames. Perhaps temporary, but I finally tested it and works :-(
 
@@ -400,6 +404,10 @@ void KIconLoader::flush( const QString& )
 {
 	// This is a NO-OP
 	warning( "KIconLoader::flush is deprecated." );
+}
+
+QPixmap BarIcon(const QString& pixmap) {
+  return KGlobal::iconLoader()->loadIcon(pixmap, 0, 0, false);
 }
 
 #include "kiconloader.moc"

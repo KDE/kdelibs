@@ -8,28 +8,28 @@ KFormulaToolBar::KFormulaToolBar(QWidget *parent, const char *name, int _item_si
 {
   // doesn't matter if we do this twice - KStandardDirs ignores doubled additions
   KGlobal::dirs()->addResourceType("toolbar", KStandardDirs::kde_default("data") + "kformula/pics/");
-  insertButton(ICON("editcut"), CUT_CHAR, true, "Cut");
-  insertButton(ICON("editcopy"), COPY_CHAR, true, "Copy");
-  insertButton(ICON("editpaste"), PASTE_CHAR, true, "Paste");
+  insertButton(BarIcon("editcut"), CUT_CHAR, true, "Cut");
+  insertButton(BarIcon("editcopy"), COPY_CHAR, true, "Copy");
+  insertButton(BarIcon("editpaste"), PASTE_CHAR, true, "Paste");
 
   insertSeparator();
 
-  insertButton(ICON("undo"), UNDO_CHAR, true, "Undo");
-  insertButton(ICON("redo"), REDO_CHAR, true, "Redo");
+  insertButton(BarIcon("undo"), UNDO_CHAR, true, "Undo");
+  insertButton(BarIcon("redo"), REDO_CHAR, true, "Redo");
 
   insertSeparator();
 
-  insertButton(ICON("index2"), POWER, true, "Power");
-  insertButton(ICON("index3"), SUB, true, "Subscript");
-  insertButton(ICON("bra"), PAREN, true, "Parentheses");
-  insertButton(ICON("abs"), ABS, true, "Absolute value");
-  insertButton(ICON("brackets"), BRACKET, true, "Brackets");
-  insertButton(ICON("frac"), DIVIDE, true, "Fraction");
-  insertButton(ICON("root"), SQRT, true, "Root");
-  insertButton(ICON("integral"), INTEGRAL, true, "Integral");
-  insertButton(ICON("matrix"), MATRIX, true, "Matrix");
-  insertButton(ICON("index0"), LSUP, true, "Left superscript");
-  insertButton(ICON("index1"), LSUB, true, "Left subscript");
+  insertButton(BarIcon("index2"), POWER, true, "Power");
+  insertButton(BarIcon("index3"), SUB, true, "Subscript");
+  insertButton(BarIcon("bra"), PAREN, true, "Parentheses");
+  insertButton(BarIcon("abs"), ABS, true, "Absolute value");
+  insertButton(BarIcon("brackets"), BRACKET, true, "Brackets");
+  insertButton(BarIcon("frac"), DIVIDE, true, "Fraction");
+  insertButton(BarIcon("root"), SQRT, true, "Root");
+  insertButton(BarIcon("integral"), INTEGRAL, true, "Integral");
+  insertButton(BarIcon("matrix"), MATRIX, true, "Matrix");
+  insertButton(BarIcon("index0"), LSUP, true, "Left superscript");
+  insertButton(BarIcon("index1"), LSUB, true, "Left subscript");
 }
 
 

@@ -126,19 +126,19 @@ void KFileBaseDialog::init()
     toolbar= new KToolBar(wrapper, "fileDialogToolbar");
 
     // Build the toolbar
-    toolbar->insertButton(ICON("back"),
+    toolbar->insertButton(BarIcon("back"),
 			  BACK_BUTTON, false,
 			  i18n("Back"));
-    toolbar->insertButton(ICON("forward"),
+    toolbar->insertButton(BarIcon("forward"),
 			  FORWARD_BUTTON, false,
 			  i18n("Forward"));
-    toolbar->insertButton(ICON("up"),
+    toolbar->insertButton(BarIcon("up"),
 			  PARENT_BUTTON, true,
 			  i18n("Up to parent"));
-    toolbar->insertButton(ICON("home"),
+    toolbar->insertButton(BarIcon("home"),
 			  HOME_BUTTON, true,
 			  i18n("Home"));
-    toolbar->insertButton(ICON("reload"),
+    toolbar->insertButton(BarIcon("reload"),
 			  RELOAD_BUTTON, true,
 			  i18n("Reload"));
 
@@ -153,17 +153,17 @@ void KFileBaseDialog::init()
     if (!bmFile.isNull())
 	bookmarks->read(bmFile);
 
-    toolbar->insertButton(ICON("flag"),
+    toolbar->insertButton(BarIcon("flag"),
 			  HOTLIST_BUTTON, true,
 			  i18n("Bookmarks"), -1);
 
-    toolbar->insertButton(ICON("idea"),
+    toolbar->insertButton(BarIcon("idea"),
 			  MKDIR_BUTTON, true,
 			  i18n("Create new folder"));
-    toolbar->insertButton(ICON("search"),
+    toolbar->insertButton(BarIcon("search"),
 			  FIND_BUTTON, true,
 			  i18n("Search for a file"));
-    toolbar->insertButton(ICON("configure"),
+    toolbar->insertButton(BarIcon("configure"),
 			  CONFIGURE_BUTTON, true,
 			  i18n("Configure this dialog [development only]"));
 

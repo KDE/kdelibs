@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.36  1999/06/27 17:33:28  waba
+   WABA: Updated docu, fixed directory scan order
+
    Revision 1.35  1999/06/17 11:50:38  kulow
    yet another addition to make KIconLoader flexible (some kcontrol apps tried
    really hard to ruin all internals of KIconLoader ;(
@@ -132,9 +135,6 @@ class KConfig;
 #include <qpixmap.h>
 #include <qstringlist.h>
 #include <qstring.h>
-
-#define Icon(x) KGlobal::iconLoader()->loadIcon(x,0,0,false)
-#define ICON(x) KGlobal::iconLoader()->loadIcon(x,0,0,false)
 
 /**
 	Icon loader with caching.
@@ -336,6 +336,8 @@ private:
   KIconLoader& operator= ( const KIconLoader& );
 
 };
+
+QPixmap BarIcon(const QString& pixmap);
 
 #endif // KICONLOADER_H
 

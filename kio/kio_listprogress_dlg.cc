@@ -134,11 +134,11 @@ KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" )
 //   setMinimumSize( 350, 150 ); // !!!
 
   // setup toolbar
-  toolBar()->insertButton(Icon("delete.xpm"), TOOL_CANCEL,
+  toolBar()->insertButton(BarIcon("delete"), TOOL_CANCEL,
 			  SIGNAL(clicked()), this,
 			  SLOT(cancelCurrent()), FALSE, i18n("Cancel"));
 
-  toolBar()->insertButton(Icon("bottom.xpm"), TOOL_DOCK,
+  toolBar()->insertButton(BarIcon("bottom"), TOOL_DOCK,
 			  SIGNAL(clicked()), this,
 			  SLOT(toggleDocking()), TRUE, i18n("Dock"));
   toolBar()->setToggle(TOOL_DOCK, true);
