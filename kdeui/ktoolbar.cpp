@@ -54,10 +54,6 @@
 
 #define TOOLBAR_IS_RAISED
       qDrawArrow (_painter, DownArrow, WindowsStyle, false,
-
-// MD (17-9-97) Height reduced from 34 pixels
-#define TOOLBARHEIGHT 26
-
 #define CONTEXT_LEFT 0
 #define CONTEXT_RIGHT 1
 #define CONTEXT_TOP 2
@@ -107,16 +103,16 @@ void KToolBarCombo::enable (bool enable)
 
 
 KToolBarButton::KToolBarButton( const QPixmap& pixmap, int ID,
-		QWidget *parent, const char *name) : KButton( parent, name )
+		QWidget *parent, const char *name, int item_size) : KButton( parent, name )
 {
-  resize(24,24);
+  resize(item_size-2,item_size-2);
   id = ID;
   if ( ! pixmap.isNull() ) 
     enabledPixmap = pixmap;
   else 
     {
       warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
-      enabledPixmap.resize( 22, 22);
+      enabledPixmap.resize( item_size-4, item_size-4);
     };
   makeDisabledPixmap();
   KButton::setPixmap( enabledPixmap );
@@ -175,7 +171,7 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
   else
     {
       warning(klocale->translate("KToolBarButton: pixmap is empty, perhaps some missing file"));
-      enabledPixmap.resize( 22, 22);
+      enabledPixmap.resize(width()-2, height()-2);
     }
   // makeDisabledPixmap();
   KButton::setPixmap( enabledPixmap );
@@ -197,14 +193,14 @@ void KToolBarButton::makeDisabledPixmap()
     } 
   else 
     {
-      pm.resize(22 , 22);
+      pm.resize(width()-4 , height()-4);
       enabledPixmap.fill(this, 0, 0);
       // warning("KToolBarButton::makeDisabledPixmap: mask is null.");
     };
   
   // Prepare the disabledPixmap for drawing
   
-  disabledPixmap.resize(22,22);
+  disabledPixmap.resize(width()-4,height()-4);
   disabledPixmap.fill( g.background() );
   
   // Draw the outline found above in highlight and then overlay a grey version
@@ -271,9 +267,10 @@ void KToolBarButton::ButtonToggled()
  *  KToolBar
  */
 	    context->popup( mapToGlobal( m->pos() ), 0 );
-KToolBar::KToolBar(QWidget *parent, const char *name)
+KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   : QFrame( parent, name )
 {
+  item_size = _item_size;
   init();
   Parent = parent;        // our father
   max_width=-1;
@@ -326,7 +323,7 @@ void KToolBar::init()
   moving = TRUE;
   setFrameStyle(NoFrame);
   setLineWidth( 1 );
-  resize( width(), TOOLBARHEIGHT );
+  resize( width(), item_size );
   items.setAutoDelete(TRUE);
   enableFloating (TRUE);
   // To make touch-sensitive handle - sven 040198
@@ -389,7 +386,7 @@ void KToolBar::layoutHorizontal ()
     toolbarWidth = offset;
   item->show();
   rightOffset=maxwidth;
-  toolbarHeight= TOOLBARHEIGHT;
+  toolbarHeight= item_size;
     updateRects( true );
   for ( KToolBarItem *b = items.first(); b; b=items.next() )
    {
@@ -401,8 +398,8 @@ void KToolBar::layoutHorizontal ()
 
            if (rightOffset <= (offset+3))
             {
-              yOffset += TOOLBARHEIGHT;
-              toolbarHeight += TOOLBARHEIGHT;
+              yOffset += item_size;
+              toolbarHeight += item_size;
             }
            b->move (rightOffset, yOffset);
          }
@@ -419,8 +416,8 @@ void KToolBar::layoutHorizontal ()
            if (offset > (rightOffset-myWidth+3))
             {
               offset =3+4+9;
-              yOffset += TOOLBARHEIGHT;
-              toolbarHeight += TOOLBARHEIGHT;
+              yOffset += item_size;
+              toolbarHeight += item_size;
             }
            b->move( offset, yOffset );
            offset+=myWidth+3;
@@ -431,8 +428,8 @@ void KToolBar::layoutHorizontal ()
         if (offset > (maxwidth-b->width()-3))
          {
            offset = 3+9+4;
-           yOffset += TOOLBARHEIGHT;
-           toolbarHeight += TOOLBARHEIGHT;
+           yOffset += item_size;
+           toolbarHeight += item_size;
            b->move( offset, yOffset );
            offset += b->width()+3;
          }
@@ -458,10 +455,12 @@ void KToolBar::layoutVertical ()
   horizontal=false; // sven - 040198
   
   toolbarHeight = offset;
-  toolbarWidth= TOOLBARHEIGHT;
+
+  toolbarWidth= item_size;
   if (position==Floating)  // sven 060198
-      toolbarWidth += 13; // some lucky number
-  widest =  TOOLBARHEIGHT;
+    toolbarWidth += 13; // some lucky number
+  widest =  item_size;
+
   /*
    I have (had) ten thousand problems here. When toplevel shrinked (vert.) it's ok.
    But when we enlarge toplevel (vert.), it first sets up toolbars and then view.
@@ -476,7 +475,7 @@ void KToolBar::layoutVertical ()
       {
         offset = 4+9+3;
         yOffset += widest;
-        toolbarWidth += TOOLBARHEIGHT;
+        toolbarWidth += item_size;
         b->move( yOffset, offset );
         if (isItemAutoSized(b) == TRUE)
           b->resize ((widest>100)?widest:100, b->height());
@@ -817,7 +816,7 @@ void KToolBar::ButtonReleased( int id )
 int KToolBar::insertButton( const QPixmap& pixmap, int id, bool enabled,
 			    const char *tooltiptext, int index )
 {
-  KToolBarButton *button = new KToolBarButton( pixmap, id, this );
+  KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, item_size );
   if ( index == -1 )
     items.append( button );
   else
@@ -841,7 +840,7 @@ int KToolBar::insertButton( const QPixmap& pixmap, int id, const char *signal,
 			    const QObject *receiver, const char *slot, bool enabled,
 			    const char *tooltiptext, int index )
 {
-  KToolBarButton *button = new KToolBarButton( pixmap, id, this );
+  KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0L, item_size );
   if ( index == -1 ) 
     items.append( button );
   else
@@ -883,7 +882,7 @@ int KToolBar::insertFrame (int _id, int _size, int _index)
     items.append (frame);
   else
     items.insert(_index, frame);
-  frame -> resize (_size, 24);
+  frame -> resize (_size, item_size-2);
   frame->show();
   updateRects(TRUE);
   return items.at();
@@ -905,7 +904,7 @@ int KToolBar::insertLined(const char *text, int id, const char *signal,
   if (tooltiptext)
     QToolTip::add( lined, tooltiptext );
   connect( lined, signal, receiver, slot );
-  lined->resize(size, 24);
+  lined->resize(size, item_size-2);
   lined->enable(enabled);
   lined->show();
   updateRects(TRUE);
@@ -933,7 +932,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(TRUE);
-  combo->resize(size, TOOLBARHEIGHT);
+  combo->resize(size, item_size);
   combo->enable(enabled);
   combo->show();
   updateRects(TRUE);
@@ -959,7 +958,7 @@ int KToolBar::insertCombo (const char *text, int id, bool writable,
   if (tooltiptext)
     QToolTip::add( combo, tooltiptext );
   connect (combo, signal, receiver, slot);
-  combo->resize(size, TOOLBARHEIGHT);
+  combo->resize(size, item_size);
   combo->enable(enabled);
   combo->show();
   updateRects(TRUE);
@@ -1316,7 +1315,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         emit moved (bpos);
         setMouseTracking(true);
         mouseEntered=false;
-        setMinimumSize (TOOLBARHEIGHT+9+4, TOOLBARHEIGHT);
+        setMinimumSize (item_size+9+4, item_size);
         return;
       }
      else if (position == Floating) // was floating
@@ -1324,7 +1323,7 @@ void KToolBar::setBarPos(BarPosition bpos)
         position = bpos;
         hide();
         recreate(Parent, oldWFlags, QPoint(oldX, oldY), TRUE);
-        setMinimumSize (TOOLBARHEIGHT, TOOLBARHEIGHT);
+        setMinimumSize (item_size, item_size);
         updateRects (TRUE);
         context->changeItem (klocale->translate("Float"), CONTEXT_FLOAT);
         emit moved (bpos);

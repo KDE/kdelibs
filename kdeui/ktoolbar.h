@@ -115,7 +115,7 @@ class KToolBarButton : public KButton
    Q_OBJECT
 
  public:
-   KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent, const char *name=0L);
+   KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent, const char *name=0L, int item_size = 26);
    KToolBarButton(QWidget *parent=0L, const char *name=0L);
    void enable(bool enable);
    void makeDisabledPixmap();
@@ -150,6 +150,7 @@ class KToolBarButton : public KButton
      void pressed(int);
      void released(int);
      void toggled(int);
+
  };
 
 /**
@@ -179,7 +180,6 @@ class KToolBarButton : public KButton
  */
  class KToolBar : public QFrame
   {
-
   Q_OBJECT
 
 public:
@@ -189,7 +189,7 @@ public:
   /**
    * Constructor
    */
-  KToolBar(QWidget *parent=0L, const char *name=0L);
+  KToolBar(QWidget *parent=0L, const char *name=0L, int _item_size = 26);
 
   /**
    * Destructor. If toolbar is floating it will cleanup itself.
@@ -557,6 +557,7 @@ public:
    */
   void setItemPixmap( int id, const QPixmap& _pixmap );
 
+
 signals:
     /**
      * Emits when button id is clicked
@@ -652,5 +653,7 @@ protected:
 private:
    QPoint pointerOffset;
    QPoint parentOffset;
+   int item_size;
+
 };
 #endif
