@@ -345,7 +345,16 @@ bool KWM::isKWMDockModule(Window w){
     a = XInternAtom(qt_xdisplay(), "KWM_MODULE", False);
   long result = 0;
   getSimpleProperty(w, a, result);
-  return result != 2;
+  return result == 2;
+}
+
+bool KWM::isKWMInitialized(){
+  static Atom a = 0;
+  if (!a)
+    a = XInternAtom(qt_xdisplay(), "KWM_RUNNING", False);
+  long result = 0;
+  getSimpleProperty(qt_xrootwin(), a, result);
+  return result != 0;
 }
 
 
@@ -540,8 +549,8 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
 		  0, 0, w, h, 0, 0);
 	pm.setMask(bm);
       }
-      if (width > 0 && height > 0 && (w >= (unsigned int)width 
-				      || h >= (unsigned int) height)){
+      if (width > 0 && height > 0 && (w > (unsigned int)width 
+				      || h > (unsigned int) height)){
 	// scale
 	QWMatrix m;
 	m.scale(width/(float)w, height/(float)h);
@@ -590,8 +599,8 @@ QPixmap KWM::icon(Window w, int width, int height){
 		  0, 0, w, h, 0, 0);
 	pm.setMask(bm);
       }
-      if (width > 0 && height > 0 && (w >= (unsigned int)width 
-				      || h >= (unsigned int) height)){
+      if (width > 0 && height > 0 && (w > (unsigned int)width 
+				      || h > (unsigned int) height)){
 	// scale
 	QWMatrix m;
 	m.scale(width/(float)w, height/(float)h);

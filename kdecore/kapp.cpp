@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.36  1997/09/29 19:56:01  kalle
+// Bugfix: automatic derivation of logical from physical appname (reported by Coolo)
+//
 // Revision 1.35  1997/09/29 19:34:07  kalle
 // support for -icon and -miniicon
 //
@@ -266,9 +269,10 @@
 // Revision 1.57  1997/10/14 13:31:57  kulow
 // removed one more default value from the implementation
 //
+// Revision 1.56  1997/10/13 14:31:03  ettrich
+// Matthias: fixed the caption bug (AGAIN THESE WEIRD SHALLOW QSTRING COPIES...)
 //
 // Revision 1.55  1997/10/13 11:00:04  ettrich
-  init();
 // Matthias: fix to generation of SM command
 //
 // Revision 1.54  1997/10/12 14:36:34  kalle
@@ -279,9 +283,10 @@
 
 //
 // Revision 1.53  1997/10/11 22:39:27  ettrich
+// Matthias: BINARY INCOMPATIBLE CHANGES
+//     - removed senseless method setUnsavedData
 //
 // Revision 1.52  1997/10/11 19:25:32  ettrich
-  init();
 // Matthias: mainWidget -> topWidget for SM
 // Matthias: fixed an async reply problem with invokeHTMLHelp
 //
@@ -506,10 +511,7 @@ KLocale* KApplication::getLocale()
 		}
 	  if( !strcmp( argv[i], "-icon" ) )
 		{
-		  QString aIconFile = kdedir() + "/share/icons/" + argv[i+1];
-		  bool bSuccess = aIconPixmap.load( aIconFile );
-		  KASSERT1( bSuccess, KDEBUG_WARN, 101, "Could not load icon file %s", aIconFile.data() );
-		  
+		  aIconPixmap = getIconLoader()->loadIcon( argv[i+1] );
 		  for( int j = i;  j < argc-2; j++ )
 			strcpy( argv[j], argv[j+2] );
 
@@ -517,10 +519,7 @@ KLocale* KApplication::getLocale()
 		}
 	  if( !strcmp( argv[i], "-miniicon" ) )
 		{
-		  QString aMiniIconFile = kdedir() + "/share/icons/mini/" + argv[i+1];
-		  bool bSuccess = aMiniIconPixmap.load( aMiniIconFile );
-		  KASSERT1( bSuccess, KDEBUG_WARN, 101, "Could not load mini-icon file %s", aMiniIconFile.data() );
-		  
+		  aMiniIconPixmap = getIconLoader()->loadMiniIcon( argv[i+1] );
 		  for( int j = i;  j < argc-2; j++ )
 			strcpy( argv[j], argv[j+2] );
 
@@ -528,7 +527,14 @@ KLocale* KApplication::getLocale()
 		}
 	  i++;
 	}
-}  
+    case caption:
+      aCaption = argv[i+1];
+      aDummyString2 += parameter_strings[caption-1];
+      aDummyString2 += " \"";
+      aDummyString2 += argv[i+1];
+      aDummyString2 += "\" ";
+      break;
+      if (argv[i+1][0] == '/')
 
         aIconPixmap = QPixmap(argv[i+1]);
       else

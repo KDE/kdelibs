@@ -44,9 +44,10 @@ KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString 
 QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
   config->readListEntry( var_name, pixmap_dirs, ':' );
   QString temp = KApplication::kdedir();
-  pixmap_dirs.insert( 0, temp + "/share/toolbar" );
-  pixmap_dirs.insert( 1, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
-  pixmap_dirs.insert( 2, temp + "/share/apps/" + kapp->appName() + "/pics" );
+  pixmap_dirs.insert( 0, temp + "/share/icons" );
+  pixmap_dirs.insert( 1, temp + "/share/toolbar" );
+  pixmap_dirs.insert( 2, temp + "/share/apps/" + kapp->appName() + "/toolbar" );
+  pixmap_dirs.insert( 3, temp + "/share/apps/" + kapp->appName() + "/pics" );
   pixmap_dirs.append( QDir::homeDirPath() + "/.kde/icons" );
   name_list.setAutoDelete(TRUE);
   pixmap_dirs.setAutoDelete(TRUE);
@@ -74,7 +75,40 @@ KIconLoader::~KIconLoader()
   pixmap_list.clear();
 }
 
-QPixmap KIconLoader::loadIcon ( const QString &name )
+QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h ){
+  QPixmap result = loadInternal(name, w, h);
+  if (result.isNull())
+    warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char *) name);
+  return result;
+}
+
+QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
+  QPixmap result;
+  if (name.left(1)!='/'){
+    result = loadInternal(QString("mini/")+name, w, h);
+  }
+  if (result.isNull())
+    result = loadInternal(name, w, h);
+  if (result.isNull())
+    warning(klocale->translate("ERROR: couldn't find mini icon: %s"), (const char *) name);
+  return result;
+			// Let's be recursive (but just once at most)
+			full_path = getIconPath( "unknown.xpm" , false); 
+QPixmap KIconLoader::loadApplicationIcon ( const QString &name, int w, int h ){
+  pixmap_dirs.insert( 0, KApplication::kdedir() + "/share/icons" );
+  QPixmap result = loadIcon(name, w, h);
+  pixmap_dirs.remove((unsigned int) 0);
+  return result;
+}
+
+QPixmap KIconLoader::loadApplicationMiniIcon ( const QString &name, int w, int h ){
+  pixmap_dirs.insert( 0, KApplication::kdedir() + "/share/icons" );
+  QPixmap result = loadMiniIcon(name, w, h);
+  pixmap_dirs.remove((unsigned int) 0);
+  return result;
+}
+	pixmap_dirs.insert( pixmap_dirs.at(index), dir_name ); 
+QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h )
 {
   QPixmap *pix;
   QPixmap new_xpm;
@@ -102,11 +136,7 @@ QPixmap KIconLoader::loadIcon ( const QString &name )
 	}
       new_xpm.load( full_path );
       *pix = new_xpm;
-      if( pix->isNull() )
-	{
-	  warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char *) name);
-	}
-      else
+      if( !pix->isNull() )
 	{
 	  name_list.append(name);
 	  pixmap_list.append(pix);
@@ -116,9 +146,17 @@ QPixmap KIconLoader::loadIcon ( const QString &name )
     {
       pix = pixmap_list.at(index);
     }
+
+
+  if (!pix->isNull() && 
+      w > 0 && h > 0 && 
+      (pix->width() > w || pix->height() > h)){
+    QWMatrix m;
+    m.scale(w/(float)pix->width(), h/(float)pix->height());
+    return pix->xForm(m);
+  }
   return *pix;
 }
-
 
 	warning( "KIconLoader::flush is deprecated." );
 }

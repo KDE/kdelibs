@@ -39,6 +39,8 @@ loading routine in KPixmap
 Christian Czezatke <e9025461@student.tuwien.ac.at>
 KProcess class
 
+Matthias Ettrich <ettrich@kde.org>
+KWM, Changes to KApplication and KIconLoader
+
 Stephan Kulow <coolo@kde.org>
 heavy modifications to KURL, autoconf and automake stuff
-

@@ -91,8 +91,14 @@ public:
 	 its cache. By this you don't have to worry about multiple copies
 	 of one and the same icon in memory, and you can call loadIcon() 
 	 as often as you like.
+
+         If the icon is larger then the specified size, it is 
+         scaled down automatically. If the specified size is 
+         0, the icon is not scaled at all.
+
   */
-  QPixmap loadIcon( const QString &name );
+  QPixmap loadIcon( const QString &name, int w = 0, int h = 0 );
+
   /// Insert directory into searchpath
   /**
          This functions inserts a new directory into the searchpath at position index.
@@ -104,15 +110,39 @@ public:
 	 index 3 to n: a list of directories in [KDE Setup]:IconPath=...
 	 index n+1:    $HOME/.kde/icons
   */
+
+  /// Load an mini icon from disk
+  /**
+	 Same like loadIcon, but looks for "mini/name" first.
+  */
+  QPixmap loadMiniIcon( const QString &name , int w = 0, int h = 0 );
+
+  /* 
+   * The loadApplication-Icon functions are similar to the 
+   * usual loadIcon functions except that they look in
+   * $KDEDIR/share/icon first.
+   *
+   * These function should be used if you are loading the
+   * application icons. Normally KApplication does this for
+   * you, but special programs like kpanel or kmenuedit
+   * need to load the application icons of foreign applications.
+   */
+  QPixmap loadApplicationIcon( const QString &name, int w = 0, int h = 0 );
+  QPixmap loadApplicationMiniIcon( const QString &name, int w = 0, int h = 0 );
+
+
   bool insertDirectory( int index, const QString &dir_name ) {
     return pixmap_dirs.insert( index, dir_name ); }
   QStrList* getDirList() { return &pixmap_dirs; }
+
+
 
 protected:
   KConfig           *config;
   QStrList           name_list;
   QStrList           pixmap_dirs;
   QList<QPixmap>     pixmap_list;
+  QPixmap loadInternal(const QString &name, int w = 0, int h = 0 );
 };
 
 #endif // KICONLOADER_H

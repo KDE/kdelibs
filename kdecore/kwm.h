@@ -286,6 +286,18 @@ public:
   static void setKWMDockModule(Window w);
   static bool isKWMDockModule(Window w);
 
+  /**
+    * This is usefull for modules which depend on a running
+    * windowmanager for the correct settings of the number of desktops
+    * or the desktop names (for example kpanel).
+    * Just insert
+    *         while (!KWM::isKWMInitialized()) sleep(1);
+    * in the main function of your application to wait for kwm being
+    * ready. As an alternative you can also wait for the init-signal
+    * of KWMModuleApplication.
+    */
+  static bool isKWMInitialized();
+
   static Window activeWindow();
   static void switchToDesktop(int desk);
 
