@@ -77,7 +77,8 @@ Q_OBJECT
 
 signals:
   /**
-   * One or more of the settings have been changed.
+   * One or more of the settings have been permanently changed.
+   * Such as if the user clicked on the Apply button.
    * Is only emited by @ref saveSettings if one or more setting were changed.
    */ 
   void settingsChanged();
