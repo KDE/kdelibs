@@ -575,6 +575,7 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     QHBox *w = new FileHBoxWidget(view->viewport());
 
     m_edit = new LineEditWidget(w);
+    m_edit->setFocusPolicy(QWidget::ClickFocus);
     connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(m_edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
     connect(m_edit,SIGNAL(focused()),this,SLOT(slotFocused()));
@@ -591,7 +592,7 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     if (element->maxLength() > 0) m_edit->setMaxLength(element->maxLength());
 
     w->setStretchFactor(m_edit, 2);
-    w->setFocusProxy(m_edit);
+    w->setFocusProxy(m_button);
 
     setQWidget(w, false);
     m_haveFocus = false;
