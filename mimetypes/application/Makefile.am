@@ -9,7 +9,8 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop gzip.desktop \
 	x-tbz.desktop x-pn-realaudio.desktop x-awk.desktop \
 	x-perl.desktop x-compress.desktop x-cpio.desktop \
 	x-rpm.desktop msword.desktop x-sharedlib.desktop \
-	wordperfect.desktop x-troff.desktop x-troff-man.desktop
+	wordperfect.desktop x-troff.desktop x-troff-man.desktop \
+	x-python.desktop
 
 datadir = $(kde_mimedir)/application
 

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Comment=Python program
+Icon=mimetypes/unknown
+Type=MimeType
+MimeType=application/x-python
+Patterns=*.py;
