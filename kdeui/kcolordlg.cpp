@@ -460,20 +460,21 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	
 	// the standard buttons
 	KButtonBox *bbox = new KButtonBox(this);
-	button = bbox->addButton(klocale->translate("OK"));
+        button  = bbox->addButton(klocale->translate("Help"));
+          connect( button, SIGNAL(clicked()),
+		                   SLOT(getHelp()));                              
+        bbox->addStretch(1);
+        button = bbox->addButton(klocale->translate("OK"));
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( slotOkPressed() ) );
 	button = bbox->addButton(klocale->translate("Cancel"));
-	//button->setDefault(TRUE);
+
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( reject() ) );
-	bbox->addStretch(1);
-	button  = bbox->addButton(klocale->translate("Help"));
-	connect( button, SIGNAL(clicked()),
-		 SLOT(getHelp()));
 	bbox->layout();
 	bbox->setMinimumSize(bbox->sizeHint());
-	tl_layout->addMultiCellWidget(bbox, 2, 2, 0, 2);
+
+        tl_layout->addMultiCellWidget(bbox, 2, 2, 0, 2);
 	tl_layout->setRowStretch(0, 1);
 	tl_layout->setRowStretch(1, 0);
 	tl_layout->setRowStretch(2, 0);
