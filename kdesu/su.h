@@ -41,6 +41,9 @@ protected:
 
 private:
     int ConverseSU(const char *password);
+
+    class SuProcessPrivate;
+    SuProcessPrivate *d;
 };
 
 #endif

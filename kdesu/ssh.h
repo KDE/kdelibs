@@ -59,6 +59,9 @@ private:
 
     int m_dcopPort, m_dcopSrv;
     QCString m_Prompt, m_Host;
+
+    class SshProcessPrivate;
+    SshProcessPrivate *d;
 };
 
 #endif

@@ -59,6 +59,9 @@ private:
 
     int ptyfd;
     QCString ptyname, ttyname;
+
+    class PTYPrivate;
+    PTYPrivate *d;
 };
     
 #endif  // __PTY_h_Included__

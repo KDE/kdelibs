@@ -89,6 +89,9 @@ protected:
     
 private:
     QCString commaSeparatedList(QCStringList);
+
+    class StubProcessPrivate;
+    StubProcessPrivate *d;
 };
 
 #endif // __Stub_h_Included__

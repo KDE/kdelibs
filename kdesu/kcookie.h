@@ -54,6 +54,9 @@ private:
 
     QCString m_Display, m_DisplayAuth;
     QCStringList m_DCOPSrv, m_DCOPAuth, m_ICEAuth;
+
+    class KCookiePrivate;
+    KCookiePrivate *d;
 };
 
 

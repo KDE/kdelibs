@@ -94,6 +94,9 @@ private:
 
     PTY *m_pPTY;
     QCString m_Inbuf, m_TTY;
+
+    class PtyProcessPrivate;
+    PtyProcessPrivate *d;
 };
 
 #endif

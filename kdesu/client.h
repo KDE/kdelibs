@@ -111,6 +111,8 @@ public:
     int connect();
 
 private:
+    class KDEsuClientPrivate;
+    KDEsuClientPrivate *d;
 
     int sockfd;
     QCString sock;
