@@ -174,6 +174,7 @@ public:
 
     virtual void repaint();
 protected:
+    TextSlave * findTextSlave( int offset, int &pos );
     TextSlaveArray m_lines;
 
     QFontMetrics *fm;
