@@ -544,6 +544,25 @@ bool KIOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume,
   return IOJob::put( _url, _mode, _overwrite, _resume, _len);
 }
 
+bool KIOJob::mkdir( const char *_url, int _mode )
+{
+  assert( !m_pSlave );
+  
+  KURL u( _url );
+  
+  QString error;
+  int errid = 0;
+  if ( !createSlave( u.protocol().ascii(), u.host().ascii(), u.user().ascii(), u.pass().ascii(), errid, error ) )
+  {
+    slotError( errid, error.ascii() );
+    return false;
+  }
+  
+  createGUI();
+  
+  return IOJob::mkdir( _url, _mode );
+}
+
 void KIOJob::cont()
 {
   if ( !m_strPreGetMimeType.isEmpty() )

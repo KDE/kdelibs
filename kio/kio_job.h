@@ -155,6 +155,8 @@ public:
   virtual bool put( const char *_url, int _mode, bool _overwrite,
 		            bool _resume, int _len );
 
+  virtual bool mkdir( const char *_url, int _mode );
+  
   virtual bool listDir( const char *_url );
   /**
    * Tests whether _url is a directory.

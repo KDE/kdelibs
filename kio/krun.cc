@@ -585,7 +585,7 @@ const KSharedPtr<KService> KServiceProvider::service( const char *mime_type )
     return 0L;
   }
 
-  KService *s = ( *offers.begin() ).service();
+  KService *s = (KService*)( *offers.begin() ).service();
   s->ref();
   return KSharedPtr<KService>( s );
 }
