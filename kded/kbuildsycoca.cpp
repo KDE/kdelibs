@@ -739,6 +739,7 @@ int main(int argc, char **argv)
    bool incremental = !bGlobalDatabase && args->isSet("incremental");
    if (incremental)
    {
+     KSycoca::self()->disableAutoRebuild(); // Prevent deadlock
      QString current_language = KGlobal::locale()->language();
      QString ksycoca_language = KSycoca::self()->language();
      Q_UINT32 current_update_sig = KGlobal::dirs()->calcResourceHash("services", "update_ksycoca", true);
