@@ -442,8 +442,8 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
     m_pService = KService::serviceByName( qName );
     if (!m_terminaldirty)
     {
-	// ### indicate that default value was restored
-	terminal->setChecked(m_pService->terminal());
+        // ### indicate that default value was restored
+        terminal->setChecked(m_pService->terminal());
         m_terminaldirty = false; // slotTerminalToggled changed it
     }
 }
@@ -580,6 +580,14 @@ void KOpenWithDlg::slotOK()
         desktop.writeEntry(QString::fromLatin1("Terminal"), true);
       else
         desktop.writeEntry(QString::fromLatin1("Terminal"), false);
+
+      if ( !qServiceType.isEmpty() )
+      {
+        // Also make sure the "auto embed" setting for this mimetype is off
+        KDesktopFile mimeDesktop( locateLocal( "mime", qServiceType + ".desktop" ) );
+        mimeDesktop.writeEntry( QString::fromLatin1( "X-KDE-AutoEmbed" ), false );
+        mimeDesktop.sync();
+      }
     }
 
 
