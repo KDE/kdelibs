@@ -236,7 +236,7 @@ KRFCDate::parseDate(const QString &_date)
 
      // If epoch 0 return epoch +1 which is Thu, 01-Jan-70 00:00:01 GMT
      // This is so that parse error and valid epoch 0 return values won't
-     // be the same for sensitive applications...     
+     // be the same for sensitive applications...
      if (result < 1) result = 1;
 
      return result;
@@ -255,7 +255,7 @@ int KRFCDate::localUTCOffset()
   unsigned int timeLocal = ymdhms_to_seconds(tM->tm_year+1900, tM->tm_mon+1, tM->tm_mday,
                                              tM->tm_hour, tM->tm_min, tM->tm_sec);
 
-  return (timeLocal-timeUTC)/60;
+  return ((int)(timeLocal-timeUTC))/60;
 }
 
 
