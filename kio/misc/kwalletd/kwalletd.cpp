@@ -428,6 +428,24 @@ return -1;
 }
 
 
+int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value, long entryType) {
+KWallet::Backend *b;
+
+	if ((b = getWallet(handle))) {
+		b->setFolder(folder);
+		KWallet::Entry e;
+		e.setKey(key);
+		e.setValue(value);
+		e.setType(KWallet::Wallet::EntryType(entryType));
+		b->writeEntry(&e);
+		emitFolderUpdated(b->walletName(), folder);
+		return 0;
+	}
+
+return -1;
+}
+
+
 int KWalletD::writeEntry(int handle, const QString& folder, const QString& key, const QByteArray& value) {
 KWallet::Backend *b;
 
