@@ -372,7 +372,7 @@ private:
     bool m_lastResult;
 
     // Binary compatible extensibility.
-    class Private;
+    struct Private;
     Private *d;
 };
 
