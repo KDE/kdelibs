@@ -127,8 +127,7 @@ void CachedObject::setRequest(Request *_request)
 
 void CachedObject::ref(CachedObjectClient *c)
 {
-    m_clients.remove(c);
-    m_clients.append(c);
+    m_clients.replace(c,c);
     Cache::removeFromLRUList(this);
     m_accessCount++;
 }
@@ -239,7 +238,7 @@ void CachedCSSStyleSheet::checkNotify()
 
     // it() first increments, then returnes the current item.
     // this avoids skipping an item when setStyleSheet deletes the "current" one.
-    for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)
+    for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
         it()->setStyleSheet( m_url, m_sheet );
 }
 
@@ -253,7 +252,7 @@ void CachedCSSStyleSheet::error( int err, const char* text )
 
     // it() first increments, then returnes the current item.
     // this avoids skipping an item when setStyleSheet deletes the "current" one.
-    for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)
+    for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
         it()->error( m_err, m_errText );
 }
 
@@ -322,7 +321,7 @@ void CachedScript::checkNotify()
 {
     if(m_loading) return;
 
-    for (QPtrListIterator<CachedObjectClient> it( m_clients); it.current();)
+    for (QPtrDictIterator<CachedObjectClient> it( m_clients); it.current();)
         it()->notifyFinished(this);
 }
 
@@ -692,10 +691,8 @@ QRect CachedImage::valid_rect() const
 
 void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 {
-    CachedObjectClient *c;
-
-    for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-        c->setPixmap( p, r, this);
+    for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
+        it()->setPixmap( p, r, this);
 }
 
 
@@ -773,7 +770,7 @@ void CachedImage::movieStatus(int status)
                 monochrome = false;
             }
         }
-        for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)
+        for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
             it()->notifyFinished(this);
     }
 
@@ -908,7 +905,7 @@ void CachedImage::error( int /*err*/, const char* /*text*/ )
     m_hadError = true;
     m_loading = false;
     do_notify(pixmap(), QRect(0, 0, 16, 16));
-    for (QPtrListIterator<CachedObjectClient> it( m_clients ); it.current();)
+    for (QPtrDictIterator<CachedObjectClient> it( m_clients ); it.current();)
         it()->notifyFinished(this);
 }
 
