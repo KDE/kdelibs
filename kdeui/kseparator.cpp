@@ -19,6 +19,7 @@
 
 
 #include <kdebug.h>
+#include <kapp.h>
 
 #include "kseparator.h"
 
@@ -26,8 +27,8 @@
 KSeparator::KSeparator(QWidget* parent, const char* name, WFlags f)
    : QFrame(parent, name, f)
 {
-   this->setLineWidth(1);
-   this->setMidLineWidth(0);
+   setLineWidth(1);
+   setMidLineWidth(0);
    setOrientation( HLine );
 }
 
@@ -75,6 +76,23 @@ int KSeparator::orientation() const
    return 0;
 }
 
+void KSeparator::drawFrame(QPainter *p)
+{
+   QPoint	p1, p2;
+   QRect	r     = frameRect();
+   const QColorGroup & g = colorGroup();
+
+   if ( frameStyle() & HLine ) {
+      p1 = QPoint( r.x(), r.height()/2 );
+      p2 = QPoint( r.x()+r.width(), p1.y() );
+   }
+   else {
+      p1 = QPoint( r.x()+r.width()/2, 0 );
+      p2 = QPoint( p1.x(), r.height() );
+   }
+
+   kapp->style().drawSeparator( p, p1.x(), p1.y(), p2.x(), p2.y(), g, true, 1, midLineWidth() );
+}
 
 
 QSize KSeparator::sizeHint() const

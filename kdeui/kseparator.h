@@ -62,6 +62,9 @@ class KSeparator : public QFrame
    * The recommended height (width) for a horizontal (vertical) separator.
    **/
   virtual QSize sizeHint() const;
+
+protected:
+  virtual void drawFrame( QPainter * );
 };
 
 
