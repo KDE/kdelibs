@@ -1703,8 +1703,13 @@ void KHTMLPart::slotRedirect()
     return;
   }
   KParts::URLArgs args;
-  if ( urlcmp( u, m_url.url(), true, true ) )
+  // Redirecting to the current URL leads to a reload.
+  // But jumping to an anchor never leads to a reload.
+  KURL url( u );
+  if ( !url.hasRef() && urlcmp( u, m_url.url(), true, true ) )
+  {
     args.reload = true;
+  }
 
   args.setLockHistory( d->m_redirectLockHistory );
   // _self: make sure we don't use any <base target=>'s
