@@ -192,7 +192,7 @@ uint KStdAccel::help()
 
 uint KStdAccel::completion()
 {
-  return readKey(KAccel::TextCompletion, Qt::CTRL+Qt::Key_End);
+  return readKey(KAccel::TextCompletion, Qt::CTRL+Qt::Key_E);
 }
 
 uint KStdAccel::rotateUp()
