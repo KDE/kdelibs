@@ -815,7 +815,7 @@ bool Ftp::ftpOpenDataConnection()
   int on = 1;
 
   ////////////// First try passive (EPSV & PASV) modes
-  if ( KIO::SlaveConfig::self()->configData( "ftp", m_host, "DisablePassiveMode" ) != "true" )
+  if ( config()->readBoolEntry( "DisablePassiveMode", false ) == false )
   {
     if (ftpOpenEPSVDataConnection())
       return true;
