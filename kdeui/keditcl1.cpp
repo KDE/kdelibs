@@ -666,19 +666,16 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
   if( fill_column_value > 20 ){
 
     if ((e->state() & ControlButton ) && (e->key() == Key_J) ){
-
+	deselect(); //Matthias
 	int templine,tempcol;
 	getCursorPosition(&templine,&tempcol);	
 	setAutoUpdate(false);
 	int upperbound;
 
-	QMultiLineEdit::insertChar((char)1); //Matthias
 	bool did_format = format2(par,upperbound);
 
-	if(!did_format){
-	  backspace(); //Matthias
+	if(!did_format)
 	  return;
-	}
     
 	int num_of_rows = 0;
 	QString newpar;
@@ -752,14 +749,10 @@ void KEdit::keyPressEvent ( QKeyEvent *e){
 	//	printf("LINEPOS %d\n",col_pos);
 	setAutoUpdate(false);
 	
-	QMultiLineEdit::insertChar((char)1); //Matthias
 	bool did_break = format(par);
 	int num_of_rows = 0;
 
-	if(!did_break){
-	  backspace(); //Matthias
-	}
-	else {
+	if(did_break){
 
 	  QString newpar;
 
@@ -947,13 +940,17 @@ bool KEdit::format(QStrList& par){
 
     /*    if((int)pstring.length() <= fill_column_value)
       break;*/
-
+    space_pos = -1; //Matthias
     for( k = 0, l = 0; k < (int) pstring.length() /* && l <= fill_column_value */; k++){//Matthias: commented out
     
       if(pstring.data()[k] == '\t')
         l +=8 - l%8;
       else
 	l ++;
+
+      if ((!space_pos||l<=fill_column_value) && 
+	  (pstring.data()[k]==' '||pstring.data()[k]=='\t')) //Matthias
+	space_pos = k;
 
       if( l <= fill_column_value )
 	last_ok = k;
@@ -962,10 +959,10 @@ bool KEdit::format(QStrList& par){
     if( l <= fill_column_value)
       break;
 
-    mstring = pstring.left( k );
-    space_pos = mstring.findRev( " ", -1, TRUE );
-    if(space_pos == -1) // well let try to find a TAB then ..
-          space_pos = mstring.findRev( "\t", -1, TRUE );
+    //mstring = pstring.left( k ); //Matthias no longer needed
+    //space_pos = mstring.findRev( " ", -1, TRUE );//Matthias no longer needed
+//     if(space_pos == -1) // well let try to find a TAB then ..//Matthias no longer needed
+//           space_pos = mstring.findRev( "\t", -1, TRUE );//Matthias no longer needed
 
     right = col_pos - space_pos - 1;
   
@@ -1045,12 +1042,20 @@ bool KEdit::format(QStrList& par){
 
 void KEdit::getpar(int line,QStrList& par){
 
-  QString linestr;
+  
+  int templine,tempcol; //Matthias
+  getCursorPosition(&templine,&tempcol);//Matthias
 
+  QString linestr;
   par.clear();
   int num = numLines();
   for(int i = line ; i < num ; i++){
     linestr = textLine(line);
+    if (i == templine){
+      // Matthias
+      // cursor is in this line. At least it was. Insert mark.
+      linestr.insert(tempcol, (char)1);
+    }
     if(linestr.isEmpty())
       break;
     par.append(linestr);
@@ -1115,12 +1120,17 @@ bool KEdit::format2(QStrList& par, int& upperbound){
     last_ok = 0;
     pstring = par.at(i);
 
+    space_pos = -1; //Matthias
     for( k = 0, l = 0; k < (int) pstring.length() /* && l <= fill_column_value */; k++){ //Matthias: commented out
     
       if(pstring.data()[k] == '\t')
         l +=8 - l%8;
       else
 	l ++;
+
+      if ((!space_pos||l<=fill_column_value) && 
+	  (pstring.data()[k]==' '||pstring.data()[k]=='\t')) //Matthias
+	space_pos = k;
 
       if( l <= fill_column_value )
 	last_ok = k;
@@ -1129,10 +1139,10 @@ bool KEdit::format2(QStrList& par, int& upperbound){
     if( l <= fill_column_value)
       continue;
 
-    mstring = pstring.left( k );
-    space_pos = mstring.findRev( " ", -1, TRUE );
-    if(space_pos == -1) // well let try to find a TAB then ..
-          space_pos = mstring.findRev( "\t", -1, TRUE );
+//     mstring = pstring.left( k );
+//     space_pos = mstring.findRev( " ", -1, TRUE ); // Matthias: no longer needed
+//     if(space_pos == -1) // well let try to find a TAB then ..// Matthias: no longer needed
+//           space_pos = mstring.findRev( "\t", -1, TRUE );// Matthias: no longer needed
 
     right = col_pos - space_pos - 1;
   
@@ -1309,6 +1319,9 @@ bool KEdit::format2(QStrList& par, int& upperbound){
 
 void KEdit::getpar2(int line,QStrList& par,int& upperbound,QString& prefix){
 
+  int templine,tempcol; //Matthias
+  getCursorPosition(&templine,&tempcol);//Matthias
+
   QString linestr;
   QString string, string2;
   bool foundone = false;
@@ -1353,6 +1366,11 @@ void KEdit::getpar2(int line,QStrList& par,int& upperbound,QString& prefix){
   int num = numLines();
   for(int i = line2 ; i < num ; i++){
     linestr = textLine(line2);
+    if (i == templine){
+      // Matthias
+      // cursor is in this line. At least it was. Insert mark.
+      linestr.insert(tempcol, (char)1);
+    }
 
     if((linestr.stripWhiteSpace()).isEmpty())
       break;
