@@ -825,8 +825,8 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // values.
         if (shouldCollapseChild) {
             // Get our max pos and neg top margins.
-            int posTop =  kMax( int( child->marginTop() ), 0 );
-            int negTop = -kMin( int( child->marginTop() ), 0 );
+            int posTop = child->maxTopMargin(true);
+            int negTop = child->maxTopMargin(false);
 
             // See if the top margin is quirky. We only care if this child has
             // margins that will collapse with us.
