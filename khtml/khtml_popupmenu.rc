@@ -1,4 +1,4 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="11">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="12">
 <Menu name="popupmenu">
  <Action name="copy" group="editactions"/>
  <Action name="selectAll" group="editactions"/>
@@ -8,6 +8,7 @@
  <Action name="copylinklocation" group="linkactions"/>
  <Menu name="frame"><text>Frame</text>
   <Action name="frameinwindow"/>
+  <Action name="frameintop"/>
   <Action name="frameintab"/>
   <Separator weakSeparator="1" />
   <Action name="reloadframe"/>

@@ -429,6 +429,8 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QString &doc, 
     {
       new KAction( i18n( "Open in New &Window" ), "window_new", 0, this, SLOT( slotFrameInWindow() ),
                                           actionCollection(), "frameinwindow" );
+      new KAction( i18n( "Open in &This Window" ), 0, this, SLOT( slotFrameInTop() ),
+                                          actionCollection(), "frameintop" );
       new KAction( i18n( "Open in &New Tab" ), "tab_new", 0, this, SLOT( slotFrameInTab() ),
                                        actionCollection(), "frameintab" );
       new KAction( i18n( "Reload Frame" ), 0, this, SLOT( slotReloadFrame() ),
@@ -569,6 +571,14 @@ void KHTMLPopupGUIClient::slotFrameInWindow()
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   args.metaData()["forcenewwindow"] = "true";
   emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args );
+}
+
+void KHTMLPopupGUIClient::slotFrameInTop()
+{
+  KParts::URLArgs args( d->m_khtml->browserExtension()->urlArgs() );
+  args.metaData()["referrer"] = d->m_khtml->pageReferrer();
+  args.frameName = "_top";
+  emit d->m_khtml->browserExtension()->openURLRequest( d->m_khtml->url(), args );
 }
 
 void KHTMLPopupGUIClient::slotFrameInTab()
