@@ -142,7 +142,7 @@ void KMdiToolViewAccessor::setWidgetToWrap(QWidget *widgetToWrap, const QString&
 }
 
 
-bool KMdiToolViewAccessor::eventFilter(QObject *o, QEvent *e) {
+bool KMdiToolViewAccessor::eventFilter(QObject *, QEvent *e) {
 	if (e->type()==QEvent::IconChange) {
 		d->widgetContainer->setPixmap(d->widget->icon()?(*d->widget->icon()):QPixmap());
 	}
