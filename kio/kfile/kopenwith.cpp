@@ -319,6 +319,7 @@ void KOpenWithDlg::setServiceType( const KURL::List& _urls )
 
 void KOpenWithDlg::init( const QString& _text, const QString& _value )
 {
+  bool bReadOnly = kapp && !kapp->authorize("shell_access");
   m_terminaldirty = false;
   m_pTree = 0L;
   m_pService = 0L;
@@ -341,17 +342,27 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   hbox->addWidget( clearButton );
 
-  // init the history combo and insert it into the URL-Requester
-  KHistoryCombo *combo = new KHistoryCombo();
-  combo->setDuplicatesEnabled( false );
-  KConfig *kc = KGlobal::config();
-  KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
-  int max = kc->readNumEntry( QString::fromLatin1("Maximum history"), 15 );
-  combo->setMaxCount( max );
-  QStringList list = kc->readListEntry( QString::fromLatin1("History") );
-  combo->setHistoryItems( list, true );
+  if (!bReadOnly)
+  {
+    // init the history combo and insert it into the URL-Requester
+    KHistoryCombo *combo = new KHistoryCombo();
+    combo->setDuplicatesEnabled( false );
+    KConfig *kc = KGlobal::config();
+    KConfigGroupSaver ks( kc, QString::fromLatin1("Open-with settings") );
+    int max = kc->readNumEntry( QString::fromLatin1("Maximum history"), 15 );
+    combo->setMaxCount( max );
+    QStringList list = kc->readListEntry( QString::fromLatin1("History") );
+    combo->setHistoryItems( list, true );
+    edit = new KURLRequester( combo, page );
+  }
+  else
+  { 
+    clearButton->hide();
+    edit = new KURLRequester( page );
+    edit->lineEdit()->setReadOnly(true);
+    edit->button()->hide();
+  }
 
-  edit = new KURLRequester( combo, page );
   edit->setURL( _value );
 
   hbox->addWidget(edit);
@@ -375,6 +386,8 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
            SLOT( slotDbClick() ) );
 
   terminal = new QCheckBox( i18n("Run in &terminal"), page );
+  if (bReadOnly)
+     terminal->hide();
   connect(terminal, SIGNAL(toggled(bool)), SLOT(slotTerminalToggled(bool)));
 
   topLayout->addWidget(terminal);
