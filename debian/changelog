@@ -1,3 +1,10 @@
+kdelibs (4:2.2.2-9) unstable; urgency=low
+
+  * Move all .la files from /usr/lib into -dev package.  We leave all the
+    .la files out of /usr/lib/kde2
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 17 Dec 2001 13:52:00 -0700
+
 kdelibs (4:2.2.2-8) unstable; urgency=low
 
   * Depend on libfam-dev (Closes: #124264)
