@@ -89,6 +89,7 @@ protected:
     virtual void resizeEvent( QResizeEvent* );
     virtual bool eventFilter(QObject *, QEvent *);
     virtual bool x11Event( XEvent* );
+    virtual void closeEvent( QCloseEvent* );
 private slots:
     void updateFallbackSize();
     void selectionTimeout();
