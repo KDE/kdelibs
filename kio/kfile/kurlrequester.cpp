@@ -232,12 +232,19 @@ void KURLRequester::init()
 
 void KURLRequester::setURL( const QString& url )
 {
-    bool hasLocalPrefix = (url.startsWith("file:"));
-
-    if ( !myShowLocalProt && hasLocalPrefix )
-	d->setText( url.mid( 5, url.length()-5 ));
+    if ( myShowLocalProt )
+    {
+        d->setText( url );
+    }
     else
-	d->setText( url );
+    {
+        if ( url.startsWith("file://") )
+            d->setText( url.mid( 7 ) );
+        else if ( url.startsWith("file:") )
+            d->setText( url.mid( 5 ) );
+        else
+            d->setText( url );
+    }
 }
 
 void KURLRequester::setCaption( const QString& caption )
