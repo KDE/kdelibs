@@ -226,7 +226,7 @@ public:
   static void setDecoration(Window w, long value);
 
   enum {noDecoration = 0, normalDecoration = 1, tinyDecoration = 2,
-	noFocus = 256, standaloneMenuBar = 512};
+	noFocus = 256, standaloneMenuBar = 512, desktopIcon = 1024};
 
   /**
    * Invokes the logout process (session management, logout dialog, ...)
