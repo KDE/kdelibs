@@ -24,36 +24,26 @@
 
 #include <config.h>
 
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>         // Needed on some systems.
-#endif
-
-#ifdef HAVE_LIBZ
-#define DO_GZIP
-#endif
-
-#ifdef DO_GZIP
-#include <zlib.h>
-#endif
-
-#include <sys/time.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
-#include <assert.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <unistd.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <utime.h>
-#include <errno.h>
-#include <netdb.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
 
-#include <qregexp.h>
-#include <qfile.h>
+/*
+#include <netdb.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <netinet/in.h>
+*/
+
 #include <qdom.h>
+#include <qfile.h>
+#include <qregexp.h>
 #include <qdatetime.h>
 #include <qstringlist.h>
 
@@ -179,12 +169,6 @@ void HTTPProtocol::reparseConfiguration()
 
 void HTTPProtocol::resetConnectionSettings()
 {
-  // Reset the POST buffer unless the previous request
-  // was a POST action or a WebDav request that 
-  // required authentication.
-  if (m_responseCode != 401 && m_responseCode != 407)
-    m_bufPOST.resize(0);
-
   m_bEOF = false;
   m_bError = false;
   m_bChunked = false;
@@ -219,9 +203,12 @@ void HTTPProtocol::resetSessionSettings()
     kdDebug(7113) << "(" << m_pid << ") Using proxy: " << m_bUseProxy << endl;
     kdDebug(7113) << "(" << m_pid << ")   URL: " << m_proxyURL.url() << endl;
     kdDebug(7113) << "(" << m_pid << ")   Realm: " << m_strRealm << endl;
-  }
+  }  
 
   m_bPersistentProxyConnection = config()->readBoolEntry("PersistentProxyConnection", true);
+  kdDebug(7113) << "(" << m_pid << ") Enable Persistent Proxy Connection: "
+                << m_bPersistentProxyConnection << endl;  
+  
   m_bUseCookiejar = config()->readBoolEntry("Cookies");
   m_bUseCache = config()->readBoolEntry("UseCache", true);
   m_strCacheDir = config()->readEntry("CacheDir");
@@ -442,9 +429,16 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
       if (m_responseCode < 400 && (m_prevResponseCode == 401 ||
           m_prevResponseCode == 407))
         saveAuthorization();
-
       break;
     }
+  }
+  
+  // Clear of the temporary POST buffer if it is not empty...
+  if (!m_bufPOST.isEmpty())
+  {
+    m_bufPOST.resize(0);
+    kdDebug(7113) << "(" << m_pid << ") HTTP::retreiveHeader: Cleared POST "
+                     "buffer..." << endl;
   }
 
   if ( close_connection )
@@ -1332,7 +1326,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     case HTTP_HEAD:
     default:
       // this should not happen, this function is for webdav errors only
-      assert(0);
+      Q_ASSERT(0);
   }
 
   // default error message if the following code fails
@@ -2054,13 +2048,10 @@ bool HTTPProtocol::httpOpen()
       header += DEFAULT_ACCEPT_HEADER;
     header += "\r\n";
 
-    if (m_request.allowCompressedPage)
-    {
 #ifdef DO_GZIP
-      // Content negotiation
+    if (m_request.allowCompressedPage)
       header += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
 #endif
-    }
 
     if (!m_request.charsets.isEmpty())
       header += "Accept-Charset: " + m_request.charsets + "\r\n";
@@ -3901,7 +3892,15 @@ void HTTPProtocol::error( int _err, const QString &_text )
     forwardHttpResponseHeader();
     sendMetaData();
   }
-
+    
+  // Clear of the temporary POST buffer if it is not empty...
+  if (!m_bufPOST.isEmpty())
+  {
+    m_bufPOST.resize(0);
+    kdDebug(7113) << "(" << m_pid << ") HTTP::retreiveHeader: Cleared POST "
+                     "buffer..." << endl;
+  }
+        
   SlaveBase::error( _err, _text );
   m_bError = true;
 }
@@ -4511,7 +4510,7 @@ bool HTTPProtocol::getAuthorization()
   kdDebug (7113) << "(" << m_pid << ") HTTPProtocol::getAuthorization: "
                  << "Current Response: " << m_responseCode << ", "
                  << "Previous Response: " << m_prevResponseCode << endl;
-                 
+  
   bool repeatFailure = (m_prevResponseCode == m_responseCode);
 
   QString errorMsg;
@@ -4556,6 +4555,7 @@ bool HTTPProtocol::getAuthorization()
         }
       }
     }
+
     if ( prompt )
     {
       switch ( m_responseCode )
