@@ -90,6 +90,7 @@ public:
 
 private:
    int mOffset;
+protected:
    bool m_bDeleted;
 };
 

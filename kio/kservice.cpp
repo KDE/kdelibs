@@ -109,6 +109,7 @@ KService::KService( const QString & _fullpath )
   m_strTerminalOptions = config.readEntry( "TerminalOptions" );
   m_strPath = config.readEntry( "Path" );
   m_strComment = config.readEntry( "Comment" );
+  m_bDeleted = config.readBoolEntry( "Hidden", false );
   m_strCORBAExec = config.readEntry( "X-KDE-CORBAExec" );
   m_strActivationMode = config.readEntry( "X-KDE-ActivationMode", "UNIX" );
   m_lstRepoIds = config.readListEntry( "X-KDE-RepoIds" );

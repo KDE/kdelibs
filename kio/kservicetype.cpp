@@ -43,6 +43,7 @@ KServiceType::KServiceType( const QString & _fullpath, const QString & _resource
   }
 
   m_strComment = config.readEntry( "Comment" );
+  m_bDeleted = config.readBoolEntry( "Hidden", false );
   m_strIcon = config.readEntry( "Icon" );
 
   QStringList tmpList = config.groupList();
