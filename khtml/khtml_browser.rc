@@ -41,7 +41,5 @@
 </ToolBar>
 <ActionProperties>
  <Action shortcut="F7" name="caretMode" />
- <Action shortcut="Ctrl+KP_Add" name="incZoomFast" />
- <Action shortcut="Ctrl+KP_Subtract" name="decZoomFast" />
 </ActionProperties>
 </kpartgui>
