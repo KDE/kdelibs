@@ -1716,10 +1716,11 @@ void HTMLSelectElementImpl::reset()
             HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[i]);
             bool selected = (!option->getAttribute(ATTR_SELECTED).isNull());
             option->setSelected(selected);
-            if (!m_multiple && selected)
-                return;
         }
     }
+    if ( m_render ) 
+        static_cast<RenderSelect*>(m_render)->setSelectionChanged(true);
+    setChanged( true );
 }
 
 void HTMLSelectElementImpl::notifyOptionSelected(HTMLOptionElementImpl *selectedOption, bool selected)
