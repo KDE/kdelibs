@@ -153,6 +153,7 @@ void KHTMLView::clear()
     d->selectionEnd = 0;
     d->startOffset = 0;
     d->endOffset = 0;
+    d->underMouse = 0;
 }
 
 /*
