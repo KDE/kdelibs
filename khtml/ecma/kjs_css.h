@@ -38,7 +38,7 @@ namespace KJS {
     virtual ~DOMCSSStyleDeclaration();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
-    virtual bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive = true) const;
+    virtual bool hasProperty(ExecState *exec, const UString &propertyName) const;
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
     enum { CssText, Length, ParentRule,

@@ -262,7 +262,7 @@ namespace KJS {
     virtual const ClassInfo *classInfo() const { return &info; } \
     static const ClassInfo info; \
     Value get(ExecState *exec, const UString &propertyName) const; \
-    bool hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const; \
+    bool hasProperty(ExecState *exec, const UString &propertyName) const; \
   }; \
   const ClassInfo ClassProto::info = { ClassName, 0, &ClassProto##Table, 0 }; \
   };
@@ -273,9 +273,9 @@ namespace KJS {
       /*fprintf( stderr, "%sProto::get(%s) [in macro, no parent]\n", info.className, propertyName.ascii());*/ \
       return lookupGetFunction<ClassFunc,ObjectImp>(exec, propertyName, &ClassProto##Table, this ); \
     } \
-    bool KJS::ClassProto::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const \
+    bool KJS::ClassProto::hasProperty(ExecState *exec, const UString &propertyName) const \
     { /*stupid but we need this to have a common macro for the declaration*/ \
-      return ObjectImp::hasProperty(exec, propertyName, recursive ); \
+      return ObjectImp::hasProperty(exec, propertyName); \
     }
 
 #define IMPLEMENT_PROTOTYPE_WITH_PARENT(ClassProto,ClassFunc,ParentProto)  \
@@ -287,11 +287,11 @@ namespace KJS {
       /* Not found -> forward request to "parent" prototype */ \
       return ParentProto::self(exec).get( exec, propertyName ); \
     } \
-    bool KJS::ClassProto::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const \
+    bool KJS::ClassProto::hasProperty(ExecState *exec, const UString &propertyName) const \
     { \
-      if ( ObjectImp::hasProperty(exec, propertyName, recursive ) ) \
+      if (ObjectImp::hasProperty(exec, propertyName)) \
         return true; \
-      return ParentProto::self(exec).hasProperty(exec, propertyName, recursive); \
+      return ParentProto::self(exec).hasProperty(exec, propertyName); \
     }
 
 #define IMPLEMENT_PROTOFUNC(ClassFunc) \

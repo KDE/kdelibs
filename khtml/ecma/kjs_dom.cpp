@@ -483,11 +483,11 @@ DOMNodeList::~DOMNodeList()
 
 // We have to implement hasProperty since we don't use a hashtable for 'length' and 'item'
 // ## this breaks "for (..in..)" though.
-bool DOMNodeList::hasProperty(ExecState *exec, const UString &p, bool recursive) const
+bool DOMNodeList::hasProperty(ExecState *exec, const UString &p) const
 {
   if (p == "length" || p == "item")
     return true;
-  return ObjectImp::hasProperty(exec,p,recursive);
+  return ObjectImp::hasProperty(exec, p);
 }
 
 Value DOMNodeList::tryGet(ExecState *exec, const UString &p) const
@@ -862,7 +862,7 @@ Value DOMElement::tryGet(ExecState *exec, const UString &propertyName) const
   // We have to check in DOMNode before giving access to attributes, otherwise
   // onload="..." would make onload return the string (attribute value) instead of
   // the listener object (function).
-  if ( DOMNode::hasProperty(exec, propertyName, true) )
+  if (DOMNode::hasProperty(exec, propertyName))
     return DOMNode::tryGet(exec, propertyName);
 
   DOM::DOMString attr = element.getAttribute( propertyName.string() );
@@ -1050,11 +1050,11 @@ DOMNamedNodeMap::~DOMNamedNodeMap()
 
 // We have to implement hasProperty since we don't use a hashtable for 'length'
 // ## this breaks "for (..in..)" though.
-bool DOMNamedNodeMap::hasProperty(ExecState *exec, const UString &p, bool recursive) const
+bool DOMNamedNodeMap::hasProperty(ExecState *exec, const UString &p) const
 {
   if (p == "length")
     return true;
-  return DOMObject::hasProperty(exec,p,recursive);
+  return DOMObject::hasProperty(exec, p);
 }
 
 Value DOMNamedNodeMap::tryGet(ExecState* exec, const UString &p) const

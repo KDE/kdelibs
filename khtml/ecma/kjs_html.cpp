@@ -132,7 +132,7 @@ const ClassInfo KJS::HTMLDocument::info =
 # ids
 @end
 */
-bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recursive) const
+bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
   //kdDebug(6070) << "KJS::HTMLDocument::hasProperty " << p.qstring() << endl;
@@ -140,7 +140,7 @@ bool KJS::HTMLDocument::hasProperty(ExecState *exec, const UString &p, bool recu
   if (!static_cast<DOM::HTMLDocument>(node).all().
       namedItem(p.string()).isNull())
     return true;
-  return DOMDocument::hasProperty(exec, p, recursive);
+  return DOMDocument::hasProperty(exec, p);
 }
 
 Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) const
@@ -236,7 +236,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return String(body.dir());
     }
   }
-  if (DOMDocument::hasProperty(exec, propertyName, true))
+  if (DOMDocument::hasProperty(exec, propertyName))
     return DOMDocument::tryGet(exec, propertyName);
 
   //kdDebug(6070) << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
@@ -1665,7 +1665,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   return Undefined();
 }
 
-bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
+bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName) const
 {
 #ifdef KJS_VERBOSE
   //kdDebug(6070) << "HTMLElement::hasProperty " << propertyName.qstring() << endl;
@@ -1695,7 +1695,7 @@ bool KJS::HTMLElement::hasProperty(ExecState *exec, const UString &propertyName,
       break;
   }
 
-  return DOMElement::hasProperty(exec, propertyName, recursive);
+  return DOMElement::hasProperty(exec, propertyName);
 }
 
 UString KJS::HTMLElement::toString(ExecState *exec) const
@@ -2597,11 +2597,11 @@ HTMLCollection::~HTMLCollection()
 
 // We have to implement hasProperty since we don't use a hashtable for 'selectedIndex' and 'length'
 // ## this breaks "for (..in..)" though.
-bool KJS::HTMLCollection::hasProperty(ExecState *exec, const UString &p, bool recursive) const
+bool KJS::HTMLCollection::hasProperty(ExecState *exec, const UString &p) const
 {
   if (p == "selectedIndex" || p == "length")
     return true;
-  return DOMObject::hasProperty(exec,p,recursive);
+  return DOMObject::hasProperty(exec, p);
 }
 
 Value KJS::HTMLCollection::tryGet(ExecState *exec, const UString &propertyName) const

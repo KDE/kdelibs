@@ -83,7 +83,7 @@ namespace KJS {
     static Window *retrieveActive(ExecState *exec);
     QGuardedPtr<KHTMLPart> part() const { return m_part; }
     virtual void mark();
-    virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive = true) const;
+    virtual bool hasProperty(ExecState *exec, const UString &p) const;
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
     virtual bool toBoolean(ExecState *exec) const;
@@ -190,7 +190,7 @@ namespace KJS {
   public:
     Konqueror(KHTMLPart *p) : part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
-    virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
+    virtual bool hasProperty(ExecState *exec, const UString &p) const;
     virtual UString toString(ExecState *exec) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;

@@ -311,7 +311,7 @@ void Window::mark()
     loc->mark();
 }
 
-bool Window::hasProperty(ExecState * /*exec*/, const UString &/*p*/, bool /*recursive*/) const
+bool Window::hasProperty(ExecState * /*exec*/, const UString &/*p*/) const
 {
   //fprintf( stderr, "Window::hasProperty: always saying true\n" );
 
@@ -1682,7 +1682,7 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
 const ClassInfo Konqueror::info = { "Konqueror", 0, 0, 0 };
 
-bool Konqueror::hasProperty(ExecState *exec, const UString &p, bool recursive) const
+bool Konqueror::hasProperty(ExecState *exec, const UString &p) const
 {
   if ( p.qstring().startsWith( "goHistory" ) ) return false;
 

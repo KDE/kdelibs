@@ -108,9 +108,9 @@ bool Object::canPut(ExecState *exec, const UString &propertyName) const
   return static_cast<ObjectImp*>(rep)->canPut(exec,propertyName);
 }
 
-bool Object::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
+bool Object::hasProperty(ExecState *exec, const UString &propertyName) const
 {
-  return static_cast<ObjectImp*>(rep)->hasProperty(exec,propertyName,recursive);
+  return static_cast<ObjectImp*>(rep)->hasProperty(exec, propertyName);
 }
 
 bool Object::deleteProperty(ExecState *exec, const UString &propertyName)
@@ -356,7 +356,7 @@ bool ObjectImp::canPut(ExecState *, const UString &propertyName) const
 }
 
 // ECMA 8.6.2.4
-bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
+bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName) const
 {
   if (propertyName == "__proto__")
     return true;
@@ -369,10 +369,7 @@ bool ObjectImp::hasProperty(ExecState *exec, const UString &propertyName, bool r
 
   // Look in the prototype
   Object proto = Object::dynamicCast(prototype());
-  if (proto.isNull() || !recursive)
-    return false;
-
-  return proto.hasProperty(exec,propertyName);
+  return !proto.isNull() && proto.hasProperty(exec,propertyName);
 }
 
 // ECMA 8.6.2.5

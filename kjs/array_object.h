@@ -34,6 +34,11 @@ namespace KJS {
 
     virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
     virtual void putDirect(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
+    /**
+     * A shallow hasProperty() variant that doesn't look at the prototype's
+     * properties.
+     */
+    virtual bool hasOwnProperty(ExecState *exec, const UString &propertyName);
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;

@@ -74,15 +74,14 @@ DOMCSSStyleDeclaration::~DOMCSSStyleDeclaration()
   ScriptInterpreter::forgetDOMObject(styleDecl.handle());
 }
 
-bool DOMCSSStyleDeclaration::hasProperty(ExecState *exec, const UString &p,
-					 bool recursive) const
+bool DOMCSSStyleDeclaration::hasProperty(ExecState *exec, const UString &p) const
 {
   DOM::DOMString cssprop = jsNameToProp(p);
   // strip pos- / pixel- prefix here?
   if (DOM::getPropertyID(cssprop.string().ascii(), cssprop.length()))
       return true;
 
-  return ObjectImp::hasProperty(exec, p, recursive);
+  return ObjectImp::hasProperty(exec, p);
 }
 
 Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyName) const
