@@ -385,14 +385,6 @@ BUTTON:active {
         border-style: inset;
 }
 
-/* we want a fixed font for form elements (input & textarea) */
-      
-INPUT[type="text"],
-INPUT[type="password"],
-TEXTAREA { 
-	font-family: monospace;
-}
-
 INPUT[type="hidden"] {
 	display: none; 
 }
