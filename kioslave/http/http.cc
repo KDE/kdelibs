@@ -266,15 +266,16 @@ void HTTPProtocol::resetSessionSettings()
 
   // Deal with HTTP tunneling
   if ( m_bIsSSL && m_bUseProxy && m_proxyURL.protocol() != "https" &&
-       m_proxyURL.protocol() != "webdavs" && !m_bIsTunneled )
+       m_proxyURL.protocol() != "webdavs")
   {
-    setEnableSSLTunnel( true );
+    m_bNeedTunnel = true;
     setRealHost( m_request.hostname );
     kdDebug(7113) << "(" << m_pid << ") SSL tunnel: Setting real hostname to: "
                   << m_request.hostname << endl;
   }
   else
   {
+    m_bNeedTunnel = false;
     setRealHost( QString::null);
   }
 
@@ -395,8 +396,6 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
       {
         kdDebug(7113) << "(" << m_pid << ") Re-establishing SSL tunnel..." << endl;
         httpCloseConnection();
-        setEnableSSLTunnel (true);
-        m_bIsTunneled = false;
       }
     }
     else
@@ -1675,7 +1674,7 @@ void HTTPProtocol::httpCheckConnection()
   kdDebug(7113) << "(" << m_pid << ")   Socket status: " << m_iSock << endl;
   kdDebug(7113) << "(" << m_pid << ")   Keep Alive: " << m_bKeepAlive << endl;
   kdDebug(7113) << "(" << m_pid << ")   First: " << m_bFirstRequest << endl;
-  
+
   if ( !m_bFirstRequest && (m_iSock != -1) )
   {
      bool closeDown = false;
@@ -1981,8 +1980,9 @@ bool HTTPProtocol::httpOpen()
       break;
   }
 
-  if ( isSSLTunnelEnabled() )
+  if ( !m_bIsTunneled && m_bNeedTunnel )
   {
+    setEnableSSLTunnel( true );
     header = QString("CONNECT %1:%2 HTTP/1.1"
                      "\r\n").arg( m_request.hostname).arg(m_request.port);
 
@@ -2041,7 +2041,7 @@ bool HTTPProtocol::httpOpen()
     // purposes as well as performance improvements while giving end
     // users the ability to disable this feature proxy servers that 
     // don't not support such feature, e.g. junkbuster proxy server.
-    if (!m_bUseProxy || m_bPersistentProxyConnection)
+    if (!m_bUseProxy || m_bPersistentProxyConnection || m_bIsTunneled)
       header += "Connection: Keep-Alive\r\n";
     else
       header += "Connection: close\r\n";
@@ -2240,17 +2240,15 @@ bool HTTPProtocol::httpOpen()
   bool sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
   if (!sendOk)
   {
-    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen: Connection "
-                     "broken! (" << m_state.hostname << ")" << endl;
+    kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpOpen: "
+                     "Connection broken! (" << m_state.hostname << ")" << endl;
     
     // With a Keep-Alive connection this can happen.
     // Just reestablish the connection.                  
     if (m_bKeepAlive)
     {
        httpCloseConnection();
-       if (!httpOpenConnection())
-          return false;
-       sendOk = (write(header.latin1(), header.length()) == (ssize_t) header.length());
+       return true; // Try again
     }
     
     if (!sendOk)
@@ -2368,6 +2366,12 @@ bool HTTPProtocol::readHeader()
   bool mayCache = true;
   bool hasCacheDirective = false;
 
+  if (m_iSock == -1)
+  {
+     kdDebug(7113) << "HTTPProtocol::readHeader: No connection." << endl;
+     return false; // Restablish connection and try again 
+  }
+
   if (!waitForResponse(m_remoteRespTimeout))
   {
      // No response error
@@ -2384,37 +2388,24 @@ bool HTTPProtocol::readHeader()
     if (m_bKeepAlive) // Try to reestablish connection.
     {
       httpCloseConnection();
-      if ( !httpOpen() )
-        return false;
-
-      if (!waitForResponse(m_remoteRespTimeout))
-      {
-        // No response error
-        error( ERR_SERVER_TIMEOUT, m_state.hostname );
-        return false;
-      }
-
-      gets(buffer, sizeof(buffer)-1);
+      return false; // Reestablish connection and try again.
     }
 
-    if (m_bEOF)
+    if (m_request.method == HTTP_HEAD)
     {
-      if (m_request.method == HTTP_HEAD)
-      {
-        // HACK
-        // Some web-servers fail to respond properly to a HEAD request.
-        // We compensate for their failure to properly implement the HTTP standard
-        // by assuming that they will be sending html.
-        kdDebug(7113) << "(" << m_pid << ") HTTPPreadHeader: HEAD -> returned "
-                      << "mimetype: " << DEFAULT_MIME_TYPE << endl;
-        mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
-        return true;
-      }
-
-      kdDebug(7113) << "HTTPProtocol::readHeader: Connnection broken !" << endl;
-      error( ERR_CONNECTION_BROKEN, m_state.hostname );
-      return false;
+      // HACK
+      // Some web-servers fail to respond properly to a HEAD request.
+      // We compensate for their failure to properly implement the HTTP standard
+      // by assuming that they will be sending html.
+      kdDebug(7113) << "(" << m_pid << ") HTTPPreadHeader: HEAD -> returned "
+                    << "mimetype: " << DEFAULT_MIME_TYPE << endl;
+      mimeType(QString::fromLatin1(DEFAULT_MIME_TYPE));
+      return true;
     }
+
+    kdDebug(7113) << "HTTPProtocol::readHeader: Connection broken !" << endl;
+    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    return false;
   }
 
   kdDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
@@ -3422,14 +3413,12 @@ void HTTPProtocol::httpClose( bool keepAlive )
      }
   }
 
-  m_bIsTunneled = false;
-
   // Only allow persistent connections for GET requests.
   // NOTE: we might even want to narrow this down to non-form
   // based submit requests which will require a meta-data from
   // khtml.
   if (keepAlive && (!m_bUseProxy ||
-      m_bPersistentProxyConnection))
+      m_bPersistentProxyConnection || m_bIsTunneled))
   {
     kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpClose: keep alive" << endl;
     return;
@@ -3447,6 +3436,7 @@ void HTTPProtocol::closeConnection()
 void HTTPProtocol::httpCloseConnection ()
 {
   kdDebug(7113) << "(" << m_pid << ") HTTPProtocol::httpCloseConnection" << endl;
+  m_bIsTunneled = false;
   m_bKeepAlive = false;
   closeDescriptor();
 }
