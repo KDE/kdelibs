@@ -1,5 +1,6 @@
 /*  This file is part of the KDE Libraries
     Copyright (C) 1998 Thomas Tanghus (tanghus@earthling.net)
+    Additions by Espen Sand (espensa@online.no) 
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -17,17 +18,20 @@
     Boston, MA 02111-1307, USA.
 */  
 
-#include <qdialog.h>
+#include <kapp.h>
 #include <kdialog.h>
+
+KDialog::mMarginSize = 6;
+KDialog::mSpacingSize = 6;
+
+
 
 KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f)
 {
   //debug("KDialog creation");
-
-  initMetaObject();
+  //initMetaObject();
   setFocusPolicy(QWidget::StrongFocus);
-
 }
 
 // Grab QDialogs keypresses if non-modal.
@@ -60,5 +64,34 @@ void KDialog::keyPressEvent(QKeyEvent *e)
     e->ignore();
   }
 }
+
+
+int KDialog::marginHint( void ) const
+{
+  return( mMarginSize );
+}
+
+
+int KDialog::spacingHint( void ) const
+{
+  return( mSpacingSize );
+}
+
+
+void KDialog::setCaption( const QString &caption )
+{
+  QDialog::setCaption( kapp->makeStdCaption( caption ) );
+}
+
+
+void KDialog::setPlainCaption( const QString &caption )
+{
+  QDialog::setCaption( caption );
+}
+
+
+
+
+
 
 #include "kdialog.moc"
