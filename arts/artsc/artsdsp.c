@@ -55,8 +55,7 @@
 /**
  * the stream status: sndfd is -1 when unused, otherwise it is a useless fd
  * which points to /dev/null, to ensure compatibility with more weird
- * operations on streams - arts_init has been run (and must be freed again)
- * if sndfd != -1
+ * operations on streams
  *
  * settings contains what has already been set (speed, bits, channels), and
  * is 7 when all of these are true
@@ -65,6 +64,7 @@
  */
 static int sndfd = -1;
 static int settings;
+static int arts_init_done = 0;
 static arts_stream_t stream = 0;
 
 #if defined(HAVE_IOCTL_INT_INT_DOTS)
@@ -197,14 +197,18 @@ int open (const char *pathname, int flags, ...)
   sndfd = orig_open("/dev/null",flags,mode);
   if(sndfd >= 0)
   {
-    int rc = arts_init();
-    if(rc < 0)
-    {
-      artsdspdebug("error on aRts init: %s\n", arts_error_text(rc));
-      orig_close(sndfd);
-	  sndfd = -1;
-      return -1;
+	if(!arts_init_done)
+	{
+      int rc = arts_init();
+      if(rc < 0)
+      {
+        artsdspdebug("error on aRts init: %s\n", arts_error_text(rc));
+        orig_close(sndfd);
+	    sndfd = -1;
+        return -1;
+	  }
     }
+	arts_init_done = 1;
   }
 
   /* success */
@@ -472,7 +476,12 @@ int close(int fd)
 		mmapemu_obuffer = 0;
 	  }
 
-      arts_free();
+	  /*
+	   * there are problems with library unloading in conjunction with X11,
+	   * (Arts::X11GlobalComm), so we don't unload stuff again here
+	   */
+
+      /* arts_free(); */
 
       orig_close(sndfd);
       sndfd = -1;
