@@ -292,7 +292,7 @@ RenderStyle object out of Nodes and the CSS style sheets.
 that defines the DTD to use for HTML (used mainly in the parser).
 <dt><a href="java/">java:</a>
 <dd>Java related stuff.
-<dt><a href="misc/>misc:</a>
+<dt><a href="misc/">misc:</a>
 <dd>Some misc stuff needed in khtml. Contains the image loader, some misc definitions and the
 decoder class that converts the incoming stream to unicode.
 <dt><a href="rendering">rendering:</a>
@@ -302,6 +302,12 @@ the definition of the objects used in the rendering tree, the layouting code, an
 <dd>The XML part of the DOM implementation, the xml tokenizer.
 </dl>
 
+<h2>Exception handling</h2>
+To save on library size, C++-exceptions are only enabled in the dom/ subdirectory,
+since exceptions are mandated by the DOM API. In the rest of KHTML's code,
+we pass an error flag (usually called "exceptionCode"), and the class that
+is part of dom/* checks for this flag and throws the exception.
+  
 <h2>Final words...</h2>
 <p>
 All the above is to give you a quick introduction into the way khtml brings an HTML/XML file to the screen.
