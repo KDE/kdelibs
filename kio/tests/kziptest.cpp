@@ -35,9 +35,8 @@ void recursive_transfer(const KArchiveDirectory * dir,
     QStringList::Iterator it = l.begin();
     for( ; it != l.end(); ++it )
     {
-	kdDebug(7122) << "hi folks!" << endl;
         const KArchiveEntry* e = dir->entry( (*it) );
-	kdDebug(7122) << "actual file: " << e->name() << endl;
+	kdDebug() << "actual file: " << e->name() << endl;
 	if (e->isFile())
 	{
     	    Q_ASSERT( e && e->isFile() );
@@ -223,18 +222,20 @@ int main( int argc, char** argv )
   else if (command == "print" )
   {
     KZip zip( argv[2] );
+    kdDebug() << "Opening zip file" << endl;
     if ( !zip.open( IO_ReadOnly ) )
     {
       printf("Could not open %s for reading\n", argv[2] );
       return 1;
     }
     const KArchiveDirectory* dir = zip.directory();
+    kdDebug() << "Listing toplevel of zip file" << endl;
     QStringList l = dir->entries();
     QStringList::Iterator it = l.begin();
     for( ; it != l.end(); ++it )
     {
-	kdDebug(7122) << "hi folks!" << endl;
         const KArchiveEntry* e = dir->entry( (*it) );
+	kdDebug() << "Printing " << (*it) << endl;
 	if (e->isFile())
 	{
     	    Q_ASSERT( e && e->isFile() );
