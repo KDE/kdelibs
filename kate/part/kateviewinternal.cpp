@@ -176,7 +176,6 @@ KateViewInternal::KateViewInternal(KateView *view, KateDocument *doc)
   setBackgroundMode( NoBackground );
 
   setCursor( KCursor::ibeamCursor() );
-  KCursor::setAutoHideCursor( this, true, true );
 
   dragInfo.state = diNone;
 
@@ -988,7 +987,7 @@ void KateViewInternal::moveWord( Bias bias, bool sel )
         c+= bias;
       }
     }
-      
+
   } else {
     c += bias;
   }
@@ -1928,9 +1927,6 @@ bool KateViewInternal::eventFilter( QObject *obj, QEvent *e )
     // continue processing
     return false;
   }
-
-  if ( obj == this )
-      KCursor::autoHideEventFilter( obj, e );
 
   switch( e->type() )
   {
