@@ -893,11 +893,7 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
   bool defaultSize = (size == d->defaultWindowSize);
   QString widthString = QString::fromLatin1("Width %1").arg(desk.width());
   QString heightString = QString::fromLatin1("Height %1").arg(desk.height());
-  if(defaultSize)
-	  qDebug("The size's are the same");
-	qDebug("%i, %i, %i, %i", size.x(), size.y(), size.width(), size.height());
-	qDebug("%i, %i, %i, %i", d->defaultWindowSize.x(), d->defaultWindowSize.y(), d->defaultWindowSize.width(), d->defaultWindowSize.height());
-	if (!config->hasDefault(widthString) && defaultSize)
+  if (!config->hasDefault(widthString) && defaultSize)
      config->revertToDefault(widthString);
   else
      config->writeEntry(widthString, w );
