@@ -753,7 +753,7 @@ bool KJScriptImp::call(const KJSO &func, const KJSO &thisV,
 
   running++;
   recursion++;
-  func.executeCall(thisV, &args, &extraScope);
+  retVal = func.executeCall(thisV, &args, &extraScope).imp();
   recursion--;
   running--;
 
