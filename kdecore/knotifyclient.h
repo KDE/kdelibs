@@ -45,6 +45,11 @@
  * default_presentation contains these ANDed events:
  *	None=0, Sound=1, Messagebox=2, Logfile=4, Stderr=8
  *
+ * You can also use the following events, which are system controlled
+ * and do not need to be placed in your eventsrc:
+ *
+ * cannotopenfile (more to come)
+ *
  * This class works, but is still in testing.
  *
  * @author Charles Samuels <charles@altair.dhs.org>
