@@ -26,7 +26,7 @@ void RenderHtml::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int
 void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
-    kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
 
     QColor c = m_style->backgroundColor();
 
@@ -47,7 +47,7 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 	p->fillRect(bx, by, bw, bh, c);
     }
     if(m_bgImage) {
-	kdDebug( 6040 ) << "printing bgimage at " << bx << "/" << by << " " << bw << "/" << bh << endl;
+	//kdDebug( 6040 ) << "printing bgimage at " << bx << "/" << by << " " << bw << "/" << bh << endl;
 	// ### might need to add some correct offsets
 	// ### use paddingX/Y
 	
@@ -77,7 +77,6 @@ void RenderHtml::printBoxDecorations(QPainter *p,int, int _y,
 	case REPEAT:
 	    break;
 	}
-	kdDebug( 6040 ) << "printing bgimage at " << bx << "/" << by << " " << bw << "/" << bh << endl;
 	p->drawTiledPixmap(bx, by, bw, bh,m_bgImage->pixmap(), sx, sy);
     }
 

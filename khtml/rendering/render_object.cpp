@@ -269,7 +269,8 @@ RenderObject *RenderObject::containingBlock() const
 
     RenderObject *o = parent();
     if(m_style->position() == FIXED) {
-	// ### containing block is viewport
+	while ( o && !o->isRoot() )
+	    o = o->parent();
     }
     else if(m_style->position() == ABSOLUTE) {
 	while (o && o->style()->position() == STATIC && !o->isRoot())

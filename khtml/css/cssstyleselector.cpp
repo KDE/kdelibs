@@ -653,7 +653,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	}
 	style->setCaptionSide(c);
 	return;
-    }    
+    }
     case CSS_PROP_CLEAR:
     {
   	if(value->valueType() == CSSValue::CSS_INHERIT)
@@ -983,7 +983,12 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	case CSS_VAL_ABSOLUTE:
 	    p = ABSOLUTE; break;
 	case CSS_VAL_FIXED:
-	    p = FIXED; break;
+	    {
+		DocumentImpl *doc = e->ownerDocument();
+		if(doc && doc->view())
+		    doc->view()->useSlowRepaints();
+		p = FIXED; break;
+	    }
 	default:
 	    return;
 	}

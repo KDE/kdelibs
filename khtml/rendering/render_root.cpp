@@ -92,6 +92,7 @@ void RenderRoot::layout()
     RenderFlow::layout();
 
     m_height = m_view->visibleHeight();
+    m_width = m_view->visibleWidth();
     //kdDebug(0) << "visibleHeight = " << contentsHeight << endl;
 
     layoutSpecialObjects();
@@ -113,6 +114,57 @@ void RenderRoot::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int
 {
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
+
+void RenderRoot::printObject(QPainter *p, int _x, int _y,
+				       int _w, int _h, int _tx, int _ty)
+{
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << endl;
+#endif
+    // add offset for relative positioning
+    if(isRelPositioned())
+	relativePositionOffset(_tx, _ty);
+
+    // 1. print background, borders etc
+    if(m_printSpecial && !isInline())
+	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+
+    // 2. print contents
+    RenderObject *child = firstChild();
+    while(child != 0) {
+	if(!child->isFloating() && !child->isPositioned()) {
+	    child->print(p, _x, _y, _w, _h, _tx, _ty);
+	}
+	child = child->nextSibling();
+    }
+
+    // 3. print floats and other non-flow objects.
+    // we have to do that after the contents otherwise they would get obscured by background settings.
+    // it is anyway undefined if regular text is above fixed objects or the other way round.
+    _tx += m_view->contentsX();
+    _ty += m_view->contentsY();
+    
+    if(specialObjects)
+    {
+	SpecialObject* r;	
+	QListIterator<SpecialObject> it(*specialObjects);
+	for ( ; (r = it.current()); ++it )
+	{
+    	    if (r->node->containingBlock()==this)
+	    {
+		RenderObject *o = r->node;	
+		//kdDebug(0) << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
+		o->print(p, _x, _y, _w, _h, _tx , _ty);
+	    }
+	}
+    }
+
+#ifdef BOX_DEBUG
+    outlineBox(p, _tx, _ty);
+#endif
+
+}
+
 
 void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 {
