@@ -58,7 +58,7 @@ QString LdapObject::toString() const
         //l->show();
 #endif
       } else {
-        result += QString("%1: %2\n").arg( attr).arg( *it2 );
+        result += QString("%1: %2\n").arg(attr).arg(QString::fromUtf8(*it2));
       }
     }
   }
@@ -147,7 +147,7 @@ void LdapClient::startQuery( const QString& filter )
     query = QString("ldap://%1%2/%3?%4?%5?(%6)").arg( auth ).arg( host ).arg( mBase )
       .arg( mAttrs.join(",") ).arg( mScope ).arg( filter );
   }
-  kdDebug(5700) << "Doing query" << query.latin1() << endl;
+  kdDebug(5700) << "Doing query " << query << endl;
 
   startParseLDIF();
   mActive = true;
@@ -357,6 +357,7 @@ void LdapSearch::startSearch( const QString& txt )
     return;
 
   cancelSearch();
+
   int pos = txt.find( '\"' );
   if( pos >= 0 )
   {
@@ -433,14 +434,15 @@ QStringList LdapSearch::makeSearchData()
 
     LdapAttrMap::ConstIterator it2;
     for ( it2 = (*it1).attrs.begin(); it2 != (*it1).attrs.end(); ++it2 ) {
+      QString tmp = QString::fromUtf8((*it2).first());
       if ( it2.key() == "cn" )
-        name = QString( "%1" ).arg( (*it2).first() ); // TODO loop?
+        name = tmp; // TODO loop?
       else if( it2.key() == "mail" ) 
-        mail = QString( "%1" ).arg( (*it2).first() );
-	    else if( it2.key() == "givenName" )
-        givenname = QString( "%1" ).arg( (*it2).first() );
-	    else if( it2.key() == "sn" )
-        sn = QString( "%1" ).arg( (*it2).first() );
+        mail = tmp;
+      else if( it2.key() == "givenName" )
+        givenname = tmp;
+      else if( it2.key() == "sn" )
+        sn = tmp;
     }
 
     if( mail.isEmpty())
@@ -448,7 +450,7 @@ QStringList LdapSearch::makeSearchData()
     else if ( name.isEmpty() )
       ret.append( mail );
     else {
-        kdDebug() << "<" << name << "><" << mail << ">" << endl;
+        kdDebug(5700) << "<" << name << "><" << mail << ">" << endl;
       ret.append( QString( "%1 <%2>" ).arg( name ).arg( mail ) );
       // this sucks
       if ( givenname.upper().startsWith( search_text_upper ) )

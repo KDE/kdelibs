@@ -1,7 +1,7 @@
 /*
     This file is part of libkabc.
     Copyright (c) 2002 Helge Deller <deller@gmx.de>
-		  2002 Lubos Lunak <llunak@suse.cz>
+                  2002 Lubos Lunak <llunak@suse.cz>
                   2001,2003 Carsten Pfeiffer <pfeiffer@kde.org>
                   2001 Waldo Bastian <bastian@kde.org>
 
@@ -126,7 +126,6 @@ void AddressLineEdit::init()
                                       // virtual in KDE 4
       // Why? This is only called once. Why should this be called more
       // than once? And why was this protected?
-      // And while I'm at it: who deletes all those static objects? (pfeiffer)
   }
 }
 
@@ -344,10 +343,10 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             items += s_completion->allMatches( "\"" + s );
             items += s_completion->substringCompletion( '<' + s );
             uint beforeDollarCompletionCount = items.count();
-            
+
             if( !s.contains( ' ' )) // one word, possibly given name
                 items += s_completion->allMatches( "$$" + s );
-            
+
             if ( items.isEmpty() )
                 box->hide();
             else
@@ -365,7 +364,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
                         (*it)=(*it).mid( pos + 1 );
                     }
                 }
-                
+
                 items = removeMailDupes( items );
                 box->setItems( items );
                 box->setCancelledText( text() );
@@ -381,7 +380,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
             if ( !match.isNull() && match != s )
             {
                 slotSetTextAsEdited( prevAddr + match );
-		cursorAtEnd();
+                cursorAtEnd();
             }
             break;
         }
@@ -546,7 +545,6 @@ QStringList AddressLineEdit::addresses()
 
   QStringList result;
   QString space = QChar(' ');
-  QString empty = "";
   QRegExp needQuotes("[^ 0-9A-Za-z\\x0080-\\xFFFF]");
   QString endQuote = "\" ";
   QString addr, email;
@@ -556,10 +554,10 @@ QStringList AddressLineEdit::addresses()
   for( it = addressBook->begin(); it != addressBook->end(); ++it ) {
     QStringList emails = (*it).emails();
     QString n = (*it).prefix() + space +
-		(*it).givenName() + space +
-		(*it).additionalName() + space +
-	        (*it).familyName() + space +
-		(*it).suffix();
+        (*it).givenName() + space +
+        (*it).additionalName() + space +
+        (*it).familyName() + space +
+        (*it).suffix();
     n = n.simplifyWhiteSpace();
 
     QStringList::ConstIterator mit;
@@ -568,7 +566,7 @@ QStringList AddressLineEdit::addresses()
       email = *mit;
       if (!email.isEmpty()) {
 	if (n.isEmpty() || (email.find( '<' ) != -1))
-	  addr = empty;
+	  addr = QString::null;
 	else { /* do we really need quotes around this name ? */
           if (n.find(needQuotes) != -1)
 	    addr = '"' + n + endQuote;
