@@ -34,7 +34,7 @@ Test::Test( QWidget* parent, const char *name )
   QPushButton * addTab = new QPushButton( "Add Tab", grid );
   gridlayout->addWidget( addTab, 0, 0 );
   connect( addTab, SIGNAL( clicked() ), this, SLOT( addTab() ) );
-  connect( mWidget, SIGNAL( LeftButtonClicked() ), this, SLOT( addTab() ) );
+  connect( mWidget, SIGNAL( leftButtonClicked() ), this, SLOT( addTab() ) );
 
   QPushButton * removeTab = new QPushButton( "Remove Current Tab", grid );
   gridlayout->addWidget( removeTab, 0, 1 );
