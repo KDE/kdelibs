@@ -261,7 +261,11 @@ protected:
    */
   void saveAuthorization();
 
-protected: // Members
+  QString createBasicAuth( bool isForProxy = false );
+
+  QString createDigestAuth( bool isForProxy = false );
+
+protected:
   HTTPState m_state;
   HTTPRequest m_request;
 
@@ -290,7 +294,8 @@ protected: // Members
   time_t m_expireDate;
 
   // Language/Encoding
-  QStringList m_qTransferEncodings, m_qContentEncodings;
+  QStringList m_qTransferEncodings;
+  QStringList m_qContentEncodings;
   QByteArray big_buffer;
   QString m_sContentMD5;
   QString m_strMimeType;
@@ -310,9 +315,10 @@ protected: // Members
 
   // Authentication
   QString m_strRealm;
-  QString m_strAuthString;
-  QString m_strProxyAuthString;
-  HTTP_AUTH Authentication, ProxyAuthentication;
+  QString m_strAuthorization;
+  QString m_strProxyAuthorization;
+  HTTP_AUTH Authentication;
+  HTTP_AUTH ProxyAuthentication;
   bool m_bUnauthorized;
   bool m_bRepeatAuthFail;
 
@@ -325,18 +331,25 @@ protected: // Members
   // Chunked tranfer encoding
   bool m_bChunked;
 
+  // Flag that indicates whether there was some connection
+  // error...
+  bool m_bError;
+
   DCOPClient *m_dcopClient;
 
   short unsigned int m_DefaultPort;
 
-  //
+  // Previous and current response codes
   unsigned int m_responseCode;
   unsigned int m_prevResponseCode;
 
   // Values that determine the remote connection timeouts.
-  int m_proxyConnTimeout, m_remoteConnTimeout, m_remoteRespTimeout;
+  int m_proxyConnTimeout;
+  int m_remoteConnTimeout;
+  int m_remoteRespTimeout;
 
-  // Buffer to hold POST data for 401/407 and such responses...
+  // Buffer to hold POST data so it won't get lost on
+  // if we get a 401/407 response when submitting...
   QList<QByteArray> m_bufferList;
 
 #ifdef DO_SSL

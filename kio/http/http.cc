@@ -1,7 +1,4 @@
 // -*- c-basic-offset: 2 -*-
-
-#include <config.h>
-
 //
 //  Portions Copyright 2000 George Staikos <staikos@kde.org>
 //  (mostly SSL related)
@@ -24,12 +21,12 @@
 #define DO_SSL
 #endif
 
+#include <config.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/socket.h>
 #include <sys/wait.h>
-
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>         // Needed on some systems.
 #endif
@@ -41,28 +38,10 @@
 #include <time.h>
 #include <unistd.h>
 #include <utime.h>
-
-#include <kconfig.h>
-#include <kdesu/client.h>
-
-#ifdef DO_SSL
-#include <kssl.h>
-#endif
-
-#define DO_MD5
-#ifdef DO_MD5
-#include "extern_md5.h"
-#endif
-
-#include "base64.h"
-
 #include <fcntl.h>
-
 #ifdef DO_GZIP
 #include <zlib.h>
 #endif
-
-#include "http.h"
 
 #include <qregexp.h>
 
@@ -80,6 +59,14 @@
 #include <kservice.h>
 #include <krfcdate.h>
 #include <kmessagebox.h>
+#include <kconfig.h>
+#include <kdesu/client.h>
+#ifdef DO_SSL
+#include <kssl.h>
+#endif
+
+#include "kmdbase.h"
+#include "http.h"
 
 using namespace KIO;
 
@@ -92,9 +79,6 @@ using namespace KIO;
 #define DEFAULT_EXPIRE (1*60)
 
 extern "C" {
-  const char* create_basic_auth (const char *header, const char *user, const char *passwd);
-  const char* create_digest_auth (const char *header, const char *user,
-                                  const char *passwd, const char *auth_str);
   void sigalrm_handler(int);
   int kdemain(int argc, char **argv);
 };
@@ -136,12 +120,6 @@ int kdemain( int argc, char **argv )
   return 0;
 }
 
-static char * trimLead (char *orig_string) {
-  while (*orig_string == ' ')
-    orig_string++;
-  return orig_string;
-}
-
 /*
  * We'll use an alarm that will set this flag when transfer has timed out
  */
@@ -159,174 +137,20 @@ void setup_alarm(unsigned int timeout)
   signal(SIGALRM, sigalrm_handler);
 }
 
-#ifdef DO_MD5
-const char * create_digest_auth (const char *header, const char *user,
-                                 const char *passwd, const char *auth_str)
+
+/***********************************  Generic utility functions ********************/
+
+static char * trimLead (char *orig_string)
 {
-  int i;
-  HASHHEX HA1;
-  HASHHEX HA2 = "";
-  HASHHEX Response;
-
-  const char *p=auth_str;
-  QCString domain ="", realm = "", algorithm="MD5", nonce="", opaque="", qop="";
-
-  if (!user || !passwd || p == 0)
-    return "";
-
-  QCString t1;
-  kdDebug(7113) << "User ::" << user << "::  ,  Password ::[protected]::" << endl;
-  while (*p)
-  {
-    while( (*p == ' ') || (*p == ',') || (*p == '\t')) { p++; }
-    i = 0;
-    if (strncasecmp(p, "realm=", 6 )==0)
-    {
-      p+=6;
-      while( *p == '"' ) p++;  // Go past any number of " mark(s) first
-      while( p[i] != '"' ) i++;  // Read everything until the last " mark
-      realm = QCString( p, i+1 );
-      kdDebug(7113) << "realm:==> " << realm.data() << endl;
-    }
-    else if (strncasecmp(p, "algorith=", 9)==0)
-    {
-      p+=9;
-      while( *p == '"' ) p++;  // Go past any number of " mark(s) first
-      while( p[i] != '"' ) i++;  // Read everything until the last " mark
-      algorithm = QCString(p, i+1);
-      kdDebug(7113) << "algorith:==> " << algorithm << endl;
-    }
-    else if (strncasecmp(p, "algorithm=", 10)==0)
-    {
-      p+=10;
-      while( *p == '"' ) p++;  // Go past any " mark(s) first
-      while( p[i] != '"' ) i++;  // Read everything until the last " mark
-      algorithm = QCString(p,i+1);
-      kdDebug(7113) << "algorithm:==> " << algorithm << endl;
-    }
-    else if (strncasecmp(p, "domain=", 7)==0)
-    {
-      p+=7;
-      while( *p == '"' ) p++;  // Go past any " mark(s) first
-      while( p[i] != '"' ) i++;  // Read everything until the last " mark
-      domain = QCString(p,i+1);
-      kdDebug(7113) << "domain:==> " << domain << endl;
-    }
-    else if (strncasecmp(p, "nonce=", 6)==0)
-    {
-      p+=6;
-      while( *p == '"' ) p++;  // Go past any " mark(s) first
-      while( p[i] != '"' ) i++;  // Read everything until the last " mark
-      nonce = QCString(p,i+1);
-      kdDebug(7113) << "nonce:==> " << nonce << endl;
-    }
-    else if (strncasecmp(p, "opaque=", 7)==0)
-    {
-      p+=7;
-      while( *p == '"' ) p++;  // Go past any " mark(s) first
-      while( p[i] != '"' ) i++;  // Read everything until the last " mark
-      opaque = QCString(p,i+1);
-      kdDebug(7113) << "opaque:==> " << opaque << endl;
-    }
-    else if (strncasecmp(p, "qop=", 4)==0)
-    {
-      p+=4;
-      while( *p == '"' ) p++;  // Go past any " mark(s) first
-      while( p[i] != '"' ) i++;  // Read everything until the last " mark
-      qop = QCString(p,i+1);
-      kdDebug(7113) << "qop:==> " << qop << endl;
-    }
-    p+=(i+1);
-  }
-
-  t1 += header;
-  t1 += ": Digest username=\"";
-  t1 += user;
-  t1 += "\"";
-
-  t1 += ", realm=\"";
-  t1 += realm.data();
-  t1 += "\"";
-
-  t1 += ", nonce=\"";
-  t1 += nonce.data();
-  t1 += "\"";
-
-  if( !domain.isEmpty() )
-  {
-    t1 += ", uri=";
-    t1 += domain.data();
-  }
-
-  const char* szCNonce = "4477b65d"; // RIDDLE: Can anyone guess what this value means ??
-  const char* szNonceCount = "00000001";
-
-  DigestCalcHA1(algorithm.data(), user, realm.data(), passwd, nonce.data(), szCNonce, HA1);
-
-  // FIXME- I ONLY WORK FOR "GET"!!  What about other methods ??
-  DigestCalcResponse(HA1, nonce.data(), szNonceCount, szCNonce, qop.data(), "GET", domain.data(), HA2, Response);
-
-  if( !qop.isEmpty() )
-  {
-    t1 += ", qop=";
-    t1 += qop.data();
-    t1 += ", nc=";
-    t1 += szNonceCount; // HACK: Should be fixed according to RFC 2617 section 3.2.2
-    t1 += ", cnonce=\"";
-    t1 += szCNonce;
-    t1 += "\"";
-  }
-
-  t1 += ", response=\"";
-  t1 += Response;
-  t1 += "\"";
-
-  if ( !opaque.isEmpty() )
-  {
-    t1 += ", opaque=\"";
-    t1 += opaque.data();
-    t1 += "\"";
-  }
-  kdDebug(7113) << "Digest Response: " << t1.data() << endl;
-  return qstrdup(t1.data());
-}
-#else
-const char *create_digest_auth (const char *, const char *, const char *, const char *)
-{
-  kdError(7113) << "Cannot perform digest authentication!!!" << endl;
-  // error(ERR_COULD_NOT_AUTHENTICATE, "digest");
-  return strdup("");
-}
-#endif
-
-const char *create_basic_auth (const char *header, const char *user, const char *passwd)
-{
-  char *wwwauth;
-  if (user && passwd) {
-    char *t1, *t2;
-
-    t1 = (char *)malloc(strlen(user)+strlen(passwd)+2);
-    memset(t1, 0, strlen(user)+strlen(passwd)+2);
-    sprintf(t1, "%s:%s", user, passwd);
-    t2 = base64_encode_line(t1);
-    free(t1);
-    wwwauth = (char *)malloc(strlen(t2) + strlen(header) + 11); // UPDATE WHEN FORMAT BELOW CHANGES !!!
-
-    // Please do not add things that should be done
-    // by the header generator method itself!! (DA)
-    // sprintf(wwwauth, "%s: Basic %s\r\n", header, t2);
-    sprintf(wwwauth, "%s: Basic %s", header, t2);
-    free(t2);
-  }
-  else
-    wwwauth = NULL;
-
-  return(wwwauth);
+  while (*orig_string == ' ')
+    orig_string++;
+  return orig_string;
 }
 
-/* Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
-   nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
-   "localhost".
+/* 
+    Domain suffix match. E.g. return true if host is "cuzco.inka.de" and
+    nplist is "inka.de,hadiko.de" or if host is "localhost" and nplist is
+    "localhost".
 */
 bool revmatch(const char *host, const char *nplist)
 {
@@ -355,7 +179,14 @@ bool revmatch(const char *host, const char *nplist)
   return false;
 }
 
-/*****************************************************************************/
+/************************************** KDigestAuthentication *************************************/
+// This RFC 2617 implementation is added here temporarily for now.  At some
+// point in the future it will probably be moved out of here to a more centeral
+// place so that other protocols can make use of it.
+
+
+
+/************************************** HTTPProtocol **********************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
              :SlaveBase( (protocol=="ftp") ? QCString("ftp-proxy") : protocol , pool, app )
@@ -588,7 +419,8 @@ void HTTPProtocol::http_checkConnection()
   // If so, we had first better make sure that
   // our host isn't on the "No Proxy List".
   if (m_request.do_proxy && !m_strNoProxyFor.isEmpty())
-    m_request.do_proxy = !revmatch( m_request.hostname.latin1(), m_strNoProxyFor.latin1() );
+    m_request.do_proxy = !revmatch( m_request.hostname.lower().latin1(),
+                                    m_strNoProxyFor.lower().latin1() );
 
   if (m_sock)
   {
@@ -989,6 +821,7 @@ bool HTTPProtocol::http_open()
   m_qContentEncodings.clear();
   m_qTransferEncodings.clear();
   m_bChunked = false;
+  m_bError = false;
   m_iSize = -1;
 
   // let's try to open up our socket if we don't have one already.
@@ -1063,9 +896,7 @@ bool HTTPProtocol::http_open()
   if( !agent.isEmpty() )
   {
     header += "User-Agent: " + agent;
-#ifdef DO_MD5
     header+="; Supports MD5-Digest";
-#endif
 #ifdef DO_GZIP
     header+="; Supports gzip encoding";
 #endif
@@ -1163,21 +994,18 @@ bool HTTPProtocol::http_open()
       m_state.passwd = info.password;
       m_strRealm = info.realmValue;
       if ( Authentication == AUTH_Digest )
-        m_strAuthString = info.digestInfo;
+        m_strAuthorization = info.digestInfo;
     }
   }
 
   switch ( Authentication )
   {
     case AUTH_Basic:
-        header += create_basic_auth( "Authorization", m_state.user.latin1(),
-                                     m_state.passwd.latin1() );
+        header += createBasicAuth();
         header+="\r\n";
         break;
     case AUTH_Digest:
-        header += create_digest_auth( "Authorization", m_state.user.latin1(),
-                                      m_state.passwd.latin1(),
-                                      m_strAuthString.latin1() );
+        header += createDigestAuth();
         header+="\r\n";
         break;
     case AUTH_None:
@@ -1195,7 +1023,7 @@ bool HTTPProtocol::http_open()
                   << " USER= " << m_state.user << endl
                   << " PASSWORD= " << m_state.passwd << endl
                   << " REALM= " << m_strRealm << endl
-                  << " EXTRA= " << m_strAuthString  << endl;
+                  << " EXTRA= " << m_strAuthorization  << endl;
   }
 
   // Do we need to authorize to the proxy server ?
@@ -1231,7 +1059,7 @@ bool HTTPProtocol::http_open()
             else
             {
                 ProxyAuthentication = AUTH_Digest;
-                m_strProxyAuthString = info.digestInfo;
+                m_strProxyAuthorization = info.digestInfo;
             }
         }
         else
@@ -1250,22 +1078,17 @@ bool HTTPProtocol::http_open()
                       << " USER= " << m_proxyURL.user() << endl
                       << " PASSWORD= " << m_proxyURL.pass() << endl
                       << " REALM= " << m_strProxyRealm << endl
-                      << " EXTRA= " << m_strProxyAuthString  << endl;
+                      << " EXTRA= " << m_strProxyAuthorization  << endl;
     }
 
     switch ( ProxyAuthentication )
     {
         case AUTH_Basic:
-            header+= create_basic_auth( "Proxy-Authorization",
-                                        m_proxyURL.user().latin1(),
-                                        m_proxyURL.pass().latin1() );
+            header+= createBasicAuth( true );
             header+="\r\n";
             break;
         case AUTH_Digest:
-            header+= create_digest_auth( "Proxy-Authorization",
-                                       m_proxyURL.user().latin1(),
-                                       m_proxyURL.pass().latin1(),
-                                       m_strProxyAuthString.latin1() );
+            header+= createDigestAuth( true );
             header+="\r\n";
             break;
         case AUTH_None:
@@ -1522,6 +1345,11 @@ bool HTTPProtocol::readHeader()
          mayCache = false;
       }
     }
+	// The deprecated Refresh Response
+	else if (strncasecmp(buffer,"Refresh:", 8) == 0) {
+	    kdDebug(7113) << buffer << endl;
+	    setMetaData( "meta-refresh", trimLead(buffer+8) );
+	}
     // We got the header
     else if (strncasecmp(buffer, "HTTP/", 5) == 0) {
       if (strncmp(buffer+5, "1.0 ",4) == 0)
@@ -1800,10 +1628,7 @@ bool HTTPProtocol::readHeader()
   {
     if ( m_responseCode == 401 || m_responseCode == 407 )
     {
-        bool flag = m_bKeepAlive;
-        m_bKeepAlive = false;
-        http_close();  // Close the connection first
-        m_bKeepAlive = flag;
+        http_closeConnection();  // Close the connection first
         return false;
     }
     m_bUnauthorized = false;
@@ -1965,21 +1790,25 @@ void HTTPProtocol::addEncoding(QString encoding, QStringList &encs)
   }
 }
 
-void HTTPProtocol::configAuth(const char *p, bool b)
+void HTTPProtocol::configAuth( const char *p, bool b )
 {
   HTTP_AUTH f;
-  char * strAuth=0, *assign=0;
-  int i;
+  char *strAuth = 0;
 
   while( *p == ' ' ) p++;
-  if ( strncasecmp( p, "Basic", 5 ) == 0 ) {
+  if ( strncasecmp( p, "Basic", 5 ) == 0 )
+  {
     f = AUTH_Basic;
     p += 5;
-  } else if (strncasecmp (p, "Digest", 6) ==0 ) {
+  }
+  else if (strncasecmp (p, "Digest", 6) ==0 )
+  {
     p += 6;
     f = AUTH_Digest;
     strAuth = strdup(p);
-  } else if (strncasecmp (p, "NTLM", 4) == 0) {
+  }
+  else if (strncasecmp (p, "NTLM", 4) == 0)
+  {
     // NT Authentification sheme. not yet implemented
     // we try to ignore it. maybe we return later here
     // with a Basic or Digest authentification request
@@ -1988,39 +1817,51 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     // WWW-Authentification: NTLM\r\n
     // WWW-Authentification: Basic\r\n
     return;
-  } else {
+  }
+  else
+  {
     kdWarning(7103) << "Invalid Authorization type requested" << endl;
-    kdWarning(7103) << "buffer: " << p << endl;
-    error(ERR_UNSUPPORTED_ACTION,
-          QCString().sprintf("Unknown Authorization method: %s", p).data());
+    kdWarning(7103) << "Buffer: " << p << endl;
+    error( ERR_UNSUPPORTED_ACTION, "Unknown Authorization method!" );
     return;
   }
 
-  while (*p) {
-    while( (*p == ' ') || (*p == ',') || (*p == '\t'))
-      p++;
-    i=0;
-    if ( strncasecmp( p, "realm=\"", 7 ) == 0 ) {
+  // Always prefer the stronger authentication mode:
+  // AUTH_NONE < AUTH_BASIC < AUTH_DIGEST...
+  if ( (b && f < ProxyAuthentication) || (!b && f < Authentication) )
+    return;
+
+  while (*p)
+  {
+    int i = 0;
+    while( (*p == ' ') || (*p == ',') || (*p == '\t') ) { p++; }
+    if ( strncasecmp( p, "realm=\"", 7 ) == 0 )
+    {
       p += 7;
       while( p[i] != '"' ) i++;
-      assign=(char *)malloc(i+1);
-      memcpy((void *)assign, (const void *)p, i);
-      assign[i]=0;
       if( b )
-        m_strProxyRealm = assign;
+      {
+        m_strProxyRealm = p;
+        m_strProxyRealm.truncate( i );
+      }
       else
-        m_strRealm = assign;
-      free(assign);
+      {
+        m_strRealm = p;
+        m_strRealm.truncate( i );
+      }
     }
-    p+=i;
-    p++;
+    p+=(i+1);
   }
-  if (b) {
-    ProxyAuthentication=f;
-    m_strProxyAuthString = strAuth;
-  } else {
-    Authentication=f;
-    m_strAuthString = strAuth;
+
+  if( b )
+  {
+    ProxyAuthentication = f;
+    m_strProxyAuthorization = strAuth;
+  }
+  else
+  {
+    Authentication = f;
+    m_strAuthorization = strAuth;
   }
 }
 
@@ -2191,12 +2032,13 @@ static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
 // Returns only the file size, that's all kio_http can guess.
 void HTTPProtocol::stat(const KURL& url)
 {
-  kdDebug() << "HTTPProtocol::stat " << url.prettyURL() << endl;
   if (m_request.hostname.isEmpty())
   {
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
      return;
   }
+
+  kdDebug(7113) << "HTTPProtocol::stat " << url.prettyURL() << endl;
 
   m_request.method = HTTP_HEAD;
   m_request.path = url.path();
@@ -2244,6 +2086,8 @@ void HTTPProtocol::get( const KURL& url )
      return;
   }
 
+  kdDebug(7113) << "HTTPProtocol::get " << url.prettyURL() << endl;
+
   m_request.method = HTTP_GET;
   m_request.path = url.path();
   m_request.query = url.query();
@@ -2265,6 +2109,8 @@ void HTTPProtocol::put( const KURL &url, int, bool, bool)
      return;
   }
 
+  kdDebug(7113) << "HTTPProtocol::put " << url.prettyURL() << endl;
+
   m_request.method = HTTP_PUT;
   m_request.path = url.path();
   m_request.query = QString::null;
@@ -2284,6 +2130,8 @@ void HTTPProtocol::post( const KURL& url)
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
      return;
   }
+
+  kdDebug(7113) << "HTTPProtocol::post " << url.prettyURL() << endl;
 
   m_request.method = HTTP_POST;
   m_request.path = url.path();
@@ -2326,12 +2174,13 @@ void HTTPProtocol::cache_update( const KURL& url, bool no_cache, time_t expireDa
 
 void HTTPProtocol::mimetype( const KURL& url )
 {
-  kdDebug() << "HTTPProtocol::mimetype " << url.prettyURL() << endl;
   if (m_request.hostname.isEmpty())
   {
      error( KIO::ERR_UNKNOWN_HOST, i18n("No host specified!"));
      return;
   }
+
+  kdDebug(7113) << "HTTPProtocol::mimetype " << url.prettyURL() << endl;
 
   m_request.method = HTTP_HEAD;
   m_request.path = url.path();
@@ -2380,7 +2229,7 @@ void HTTPProtocol::decodeDeflate()
 {
 #ifdef DO_GZIP
   // Okay the code below can probably be replaced with
-  // the a single call to decompress(...) instead of a read/write
+  // a single call to decompress(...) instead of a read/write
   // to and from a temporary file, but I was not sure of how to
   // estimate the size of the decompressed data which needs to be
   // passed as a parameter to decompress function call.  Anyone
@@ -2404,8 +2253,8 @@ void HTTPProtocol::decodeDeflate()
   int fd = mkstemp(filename);
 
   // TODO: Need sanity check here. Doing no error checking when writing
-  // to HD cannot be good :))  What if the target is full buddy or could
-  // not be written to for some reason ??
+  // to HD cannot be good :))  What if the target is bloody full or it
+  // for some reason could not be written to ?? (DA)
   ::write(fd, big_buffer.data(), big_buffer.size()); // Write data into file
   lseek(fd, 0, SEEK_SET);
   FILE* fin = fdopen( fd, "rb" );
@@ -2437,7 +2286,7 @@ void HTTPProtocol::decodeDeflate()
   {
     status = inflate( &z, Z_FINISH );
     unsigned int count = max_len - z.avail_out;
-    if( count )
+    if ( count )
     {
         unsigned int old_len = tmp_buf.size();
         // Copy the data into a temporary buffer
@@ -2670,12 +2519,9 @@ bool HTTPProtocol::readBody( )
   QByteArray array;
 
   // Check if we need to decode the data.
-  // If we are in copy mode the use only transfer decoding.
+  // If we are in copy mode, then use only transfer decoding.
   bool decode = !m_qTransferEncodings.isEmpty() || !m_qContentEncodings.isEmpty();
-
-#ifdef DO_MD5
   bool useMD5 = !m_sContentMD5.isEmpty();
-#endif
 
   // Get the starting time.  This is used
   // later to compute the transfer speed.
@@ -2718,32 +2564,29 @@ bool HTTPProtocol::readBody( )
      return true;
   }
 
-#ifdef DO_MD5
-  Local_MD5_CTX context;
-  MD5Init(&context);
-#endif
-
-   if (m_iSize > -1)
+  if (m_iSize > -1)
     m_iBytesLeft = m_iSize - sz;
   else
     m_iBytesLeft = 1;
 
   kdDebug(7113) << "HTTPProtocol::readBody m_iBytesLeft=" << m_iBytesLeft << endl;
 
-  // this is the main incoming loop.  gather everything while we can...
+  // Main incoming loop...  Gather everything while we can...
+  KMD5 context;
   big_buffer.resize(0);
-  while (!eof()) {
+  while (!eof())
+  {
     int bytesReceived;
     if (m_bChunked)
        bytesReceived = readChunked();
     else if (m_iSize > -1)
        bytesReceived = readLimited();
-    else {
+    else
        bytesReceived = readUnlimited();
-    }
 
     // make sure that this wasn't an error, first
-    if (bytesReceived == -1) {
+    if (bytesReceived == -1)
+    {
       // erg.  oh well, log an error and bug out
       error(ERR_CONNECTION_BROKEN, m_state.hostname);
       return false;
@@ -2751,14 +2594,17 @@ bool HTTPProtocol::readBody( )
 
     // i guess that nbytes == 0 isn't an error.. but we certainly
     // won't work with it!
-    if (bytesReceived > 0) {
+    if (bytesReceived > 0)
+    {
       // check on the encoding.  can we get away with it as is?
-      if ( !decode ) {
-#ifdef DO_MD5
-        if (useMD5) {
-          MD5Update(&context, (const unsigned char*)m_bufReceive.data(), bytesReceived);
+      if ( !decode )
+      {
+        if (useMD5)
+        {
+          Q_UINT8* data = (Q_UINT8*) strdup( m_bufReceive.data() );
+          context.update( data, bytesReceived );
         }
-#endif
+
         // yep, let the world know that we have some data
         array.setRawData( m_bufReceive.data(), bytesReceived );
         data( array );
@@ -2769,39 +2615,40 @@ bool HTTPProtocol::readBody( )
         sz += bytesReceived;
         processedSize( sz );
         time_t t = time( 0L );
-        if ( t - t_last >= 1 ) {
+        if ( t - t_last >= 1 )
+        {
           speed( sz / ( t - t_start ) );
           t_last = t;
         }
-      } else {
-        // nope.  slap this all onto the end of a big buffer
-        // for later use
+      }
+      else
+      {
+        // nope.  slap this all onto the end of a big buffer for later use
+        kdDebug( 7113 ) << "Further decoding needed..." << endl;
         unsigned int old_len = 0;
         old_len = big_buffer.size();
         big_buffer.resize(old_len + bytesReceived);
         memcpy(big_buffer.data() + old_len, m_bufReceive.data(), bytesReceived);
       }
     }
-
     if (m_iBytesLeft == 0)
-       break;
+      break;
   }
 
   m_bufReceive.resize(0);
-
   // if we have something in big_buffer, then we know that we have
   // encoded data.  of course, we need to do something about this
-  if (!big_buffer.isNull()) {
+  if (!big_buffer.isNull())
+  {
     // decode all of the transfer encodings
-    while (!m_qTransferEncodings.isEmpty()) {
+    while (!m_qTransferEncodings.isEmpty())
+    {
       QString enc = m_qTransferEncodings.last();
       m_qTransferEncodings.remove(m_qTransferEncodings.fromLast());
-      if ( enc == "gzip" ) {
+      if ( enc == "gzip" )
         decodeGzip();
-      }
-      else if( enc == "deflate" ) {
+      else if ( enc == "deflate" )
         decodeDeflate();
-      }
     }
 
     // From HTTP 1.1 Draft 6:
@@ -2810,10 +2657,11 @@ bool HTTPProtocol::readBody( )
     // any transfer-encoding applied to the message-body. If the message is
     // received with a transfer-encoding, that encoding MUST be removed
     // prior to checking the Content-MD5 value against the received entity.
-#ifdef DO_MD5
-    MD5Update(&context, (const unsigned char*)big_buffer.data(),
-               big_buffer.size());
-#endif
+    if ( useMD5 )
+    {
+        Q_UINT8* data = (Q_UINT8*) strdup( big_buffer.data() );
+        context.update( data, big_buffer.size() );
+    }
 
     // now decode all of the content encodings
     // -- Why ?? We are not
@@ -2823,42 +2671,34 @@ bool HTTPProtocol::readBody( )
     // WB: Some braindead www-servers however, give .tgz files an encoding
     // WB: of "gzip" (or even "x-gzip") and a content-type of "applications/tar"
     // WB: They shouldn't do that. We can work around that though...
-    while (!m_qContentEncodings.isEmpty()) {
+    while (!m_qContentEncodings.isEmpty())
+    {
       QString enc = m_qContentEncodings.last();
       m_qContentEncodings.remove(m_qContentEncodings.fromLast());
-      if ( enc == "gzip" ) {
+      if ( enc == "gzip" )
         decodeGzip();
-      }
-      else if( enc == "deflate" ) {
+      else if ( enc == "deflate" )
         decodeDeflate();
-      }
+
     }
     sz = sendData();
   }
 
-  // this block is all final MD5 stuff
-#ifdef DO_MD5
-  char buf[16], *enc_digest;
-  MD5Final((unsigned char*)buf, &context); // Wrap everything up
-  enc_digest = base64_encode_string(buf, 16);
-  if ( useMD5 ) {
-    int f;
-    if ((f = m_sContentMD5.find("=")) <= 0) {
-      f = m_sContentMD5.length();
-    }
+  if ( useMD5 )
+  {
+    context.finalize();
+    QString enc_digest = KBase64::encodeString(reinterpret_cast<char*>(context.rawDigest()));
+    // TODO: We need to notify the user if content MD5 check does
+    if ( m_sContentMD5 == enc_digest )
+      kdDebug(7103) << "MD5 checksum present, and hey it matched what "
+                       "I calculated." << endl;
+    else
+      kdDebug(7103) << "MD5 checksum mismatch : got " << m_sContentMD5
+                    << " , calculated " << enc_digest << endl;
 
-    if (m_sContentMD5.left(f) != enc_digest) {
-      kdDebug(7103) << "MD5 checksum mismatch : got " << m_sContentMD5.left(f) << " , calculated " << enc_digest << endl;
-    } else {
-      kdDebug(7103) << "MD5 checksum present, and hey it matched what I calculated." << endl;
-    }
-  } else {
-    kdDebug(7103) << "No MD5 checksum found.  Too Bad." << endl;
   }
-
-  fflush(stderr);
-  free(enc_digest);
-#endif
+  else
+    kdDebug(7103) << "No MD5 checksum found.  Too Bad." << endl;
 
   // Close cache entry
   if (m_iBytesLeft == 0)
@@ -2867,14 +2707,14 @@ bool HTTPProtocol::readBody( )
         closeCacheEntry();
   }
 
-  // FINALLY, we compute our final speed and let everybody know that we
-  // are done
+  // FINALLY, we compute our final speed and let
+  // everybody know that we are done...
   t_last = time(0L);
-  if (t_last - t_start) {
+  if (t_last - t_start)
     speed(sz / (t_last - t_start));
-  } else {
+  else
     speed(0);
-  }
+
   data( QByteArray() );
   return true;
 }
@@ -2884,6 +2724,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
   m_bKeepAlive = false;
   http_close();
   SlaveBase::error( _err, _text );
+  m_bError = true;
 }
 
 void HTTPProtocol::addCookies( const QString &url, const QCString &cookieHeader )
@@ -3250,7 +3091,7 @@ void HTTPProtocol::reparseConfiguration()
   kdDebug(7103) << "(" << getpid() << ") Reparse Configuration!" << endl;
   m_bUseProxy = false;
   m_strProxyRealm = QString::null;
-  m_strProxyAuthString = QString::null;
+  m_strProxyAuthorization = QString::null;
   if ( KProtocolManager::useProxy() )
   {
     // Use the appropriate proxy depending on the protocol
@@ -3264,7 +3105,7 @@ void HTTPProtocol::reparseConfiguration()
                       << "HOST= " << m_proxyURL.host() << endl
                       << "PORT= " << m_proxyURL.port() << endl
                       << "REALM= " << m_strProxyRealm << endl
-                      << "AUTH_STRING= " << m_strProxyAuthString << endl
+                      << "AUTH_STRING= " << m_strProxyAuthorization << endl
                       << "No Proxy for= " << m_strNoProxyFor << endl;
     }
     else
@@ -3311,7 +3152,7 @@ void HTTPProtocol::resetSessionSettings()
   m_prevResponseCode = 0;
 
   m_strRealm = QString::null;
-  m_strAuthString = QString::null;
+  m_strAuthorization = QString::null;
   Authentication = AUTH_None;
 
   m_bCanResume = false;
@@ -3345,17 +3186,16 @@ bool HTTPProtocol::retrieveHeader( bool close_connection )
 
     if (!readHeader())
     {
-        if ( m_bUnauthorized )
-        {
-            if ( !getAuthorization() )
-                return false;
-        }
-        else
+        if ( m_bError || ( m_bUnauthorized && !getAuthorization() ) )
             return false;
     }
     else
     {
-        saveAuthorization();
+        // Do not save authorization if the current response code is
+        // 4xx (client error) or 5xx (server error).
+        if ( m_responseCode < 400 &&
+            (m_prevResponseCode == 401 || m_prevResponseCode == 407) )
+            saveAuthorization();
         break;
     }
   }
@@ -3408,7 +3248,7 @@ bool HTTPProtocol::getAuthorization()
                 info.realmValue = m_strRealm;
                 info.verifyPath = false;
                 if ( Authentication == AUTH_Digest )
-                    info.digestInfo = m_strAuthString;
+                    info.digestInfo = m_strAuthorization;
                 info.commentLabel = i18n( "Site:" );
                 info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strRealm ).arg( m_request.hostname );
             }
@@ -3426,7 +3266,7 @@ bool HTTPProtocol::getAuthorization()
                 info.realmValue = m_strProxyRealm;
                 info.verifyPath = false;
                 if ( ProxyAuthentication == AUTH_Digest )
-                    info.digestInfo = m_strProxyAuthString;
+                    info.digestInfo = m_strProxyAuthorization;
                 info.commentLabel = i18n( "Proxy:" );
                 info.comment = i18n("<b>%1</b> at <b>%2</b>").arg( m_strProxyRealm ).arg( m_proxyURL.host() );
             }
@@ -3478,19 +3318,221 @@ bool HTTPProtocol::getAuthorization()
 
 void HTTPProtocol::saveAuthorization()
 {
-    switch ( m_prevResponseCode )
+    AuthInfo info;
+    if ( m_prevResponseCode == 407 )
     {
-        case 401:
-            cacheAuthentication( m_request.url, m_request.user,
-                                 m_request.passwd, m_strRealm,
-                                 m_strAuthString );
-            break;
-        case 407:
-            cacheAuthentication( m_proxyURL, m_proxyURL.user(),
-                                 m_proxyURL.pass(), m_strProxyRealm,
-                                 m_strProxyAuthString );
-            break;
-        default:
-            break;
+        info.url = m_proxyURL;
+        info.username = m_proxyURL.user();
+        info.password = m_proxyURL.pass();
+        info.realmValue = m_strProxyRealm;
+        info.digestInfo = m_strProxyAuthorization;
+        cacheAuthentication( info );
     }
+    else
+    {
+        info.url = m_request.url;
+        info.username = m_request.user;
+        info.password = m_request.passwd;
+        info.realmValue = m_strRealm;
+        info.digestInfo = m_strAuthorization;
+        cacheAuthentication( info );
+    }
+}
+
+QString HTTPProtocol::createDigestAuth ( bool isForProxy )
+{
+
+  QString auth;
+/*
+  const char *p;
+  HASHHEX Response;
+  QCString opaque = "";
+  KDigestAuth::Info info;
+
+  if ( isForProxy )
+  {
+    auth = "Proxy-Authorization";
+    info.username = m_proxyURL.user().latin1();
+    info.password = m_proxyURL.pass().latin1();
+    p = m_strProxyAuthorization.latin1();
+  }
+  else
+  {
+    auth = "Authorization";
+    info.username = m_state.user.latin1();
+    info.password = m_state.passwd.latin1();
+    p = m_strAuthorization.latin1();
+
+  }
+
+  if ( info.username.isEmpty() || info.password.isEmpty() || !p )
+    return QString::null;
+
+  info.entity_body = p;
+  info.realm = "";
+  info.algorithm = "MD5";
+  info.nonce = "";
+  info.qop = "";
+  info.digestURI = m_request.path.latin1();
+  // RIDDLE: Can anyone guess what this value means ??
+  info.cnonce = "4477b65d";
+  // HACK: Should be fixed according to RFC 2617 section 3.2.2
+  info.nc = "00000001";
+
+  // Set the method used...
+  switch ( m_request.method )
+  {
+    case HTTP_GET:
+        info.method = "GET";
+        break;
+    case HTTP_PUT:
+        info.method = "PUT";
+        break;
+    case HTTP_POST:
+        info.method = "POST";
+        break;
+    case HTTP_HEAD:
+        info.method = "HEAD";
+        break;
+    case HTTP_DELETE:
+        info.method = "DELETE";
+        break;
+    default:
+        break;
+  }
+
+  // Parse the Digest response....
+  while (*p)
+  {
+    int i = 0;
+    while ( (*p == ' ') || (*p == ',') || (*p == '\t')) { p++; }
+    if (strncasecmp(p, "realm=", 6 )==0)
+    {
+      p+=6;
+      while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
+      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
+      info.realm = QCString( p, i+1 );
+    }
+    else if (strncasecmp(p, "algorith=", 9)==0)
+    {
+      p+=9;
+      while ( *p == '"' ) p++;  // Go past any number of " mark(s) first
+      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
+      info.algorithm = QCString(p, i+1);
+    }
+    else if (strncasecmp(p, "algorithm=", 10)==0)
+    {
+      p+=10;
+      while ( *p == '"' ) p++;  // Go past any " mark(s) first
+      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
+      info.algorithm = QCString(p,i+1);
+    }
+    else if (strncasecmp(p, "domain=", 7)==0)
+    {
+      p+=7;
+      while ( *p == '"' ) p++;  // Go past any " mark(s) first
+      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
+      info.digestURI = QCString(p,i+1);
+    }
+    else if (strncasecmp(p, "nonce=", 6)==0)
+    {
+      p+=6;
+      while ( *p == '"' ) p++;  // Go past any " mark(s) first
+      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
+      info.nonce = QCString(p,i+1);
+    }
+    else if (strncasecmp(p, "opaque=", 7)==0)
+    {
+      p+=7;
+      while ( *p == '"' ) p++;  // Go past any " mark(s) first
+      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
+      opaque = QCString(p,i+1);
+    }
+    else if (strncasecmp(p, "qop=", 4)==0)
+    {
+      p+=4;
+      while ( *p == '"' ) p++;  // Go past any " mark(s) first
+      while ( p[i] != '"' ) i++;  // Read everything until the last " mark
+      info.qop = QCString(p,i+1);
+    }
+    p+=(i+1);
+  }
+
+  kdDebug(7113) << "Parse result:" << endl
+                << "  algorithm: " << info.algorithm << endl
+                << "  realm:     " << info.realm << endl
+                << "  domain:    " << info.digestURI << endl
+                << "  nonce:     " << info.nonce << endl
+                << "  opaque:    " << opaque << endl
+                << "  qop:       " << info.qop << endl;
+
+  // Calculate the response...
+  KDigestAuth::calculateResponse( info, Response );
+
+  auth += ": Digest username=\"";
+  auth += info.username;
+  auth += "\"";
+
+  auth += ", realm=\"";
+  auth += info.realm;
+  auth += "\"";
+
+  auth += ", nonce=\"";
+  auth += info.nonce;
+  auth += "\"";
+
+  auth += ", uri=\"";
+  auth += info.digestURI;
+  auth += "\"";
+
+  if ( !info.qop.isEmpty() )
+  {
+    auth += ", qop=";
+    auth += info.qop;
+    auth += ", cnonce=\"";
+    auth += info.cnonce;
+    auth += "\"";
+    auth += ", nc=";
+    auth += info.nc;
+  }
+
+  auth += ", response=\"";
+  auth += Response;
+  auth += "\"";
+
+  if ( !opaque.isEmpty() )
+  {
+    auth += ", opaque=\"";
+    auth += opaque;
+    auth += "\"";
+  }
+
+  kdDebug(7113) << "Digest header: " << auth << endl;
+*/
+  return auth;
+}
+
+QString HTTPProtocol::createBasicAuth( bool isForProxy )
+{
+  QString auth;
+  QCString user, passwd;
+  if ( isForProxy )
+  {
+    auth = "Proxy-Authorization";
+    user = m_proxyURL.user().latin1();
+    passwd = m_proxyURL.pass().latin1();
+  }
+  else
+  {
+    auth = "Authorization";
+    user = m_state.user.latin1();
+    passwd = m_state.passwd.latin1();
+  }
+
+  if ( !user.isEmpty() && !passwd.isEmpty() )
+  {
+    auth += ": Basic ";
+    auth += KBase64::encodeString( user + ":" + passwd );
+  }
+  return auth;
 }

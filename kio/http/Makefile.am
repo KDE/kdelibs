@@ -12,11 +12,11 @@ bin_PROGRAMS = kio_http_cache_cleaner
 lib_LTLIBRARIES = kio_http_cache_cleaner.la
 kde_module_LTLIBRARIES = kio_http.la kio_https.la
 
-kio_https_la_SOURCES = https.cc extern_md5.c base64.c
+kio_https_la_SOURCES = https.cc
 kio_https_la_LIBADD = ../libkio.la $(LIB_KSSL) $(LIBZ)
 kio_https_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 
-kio_http_la_SOURCES = http.cc base64.c extern_md5.c
+kio_http_la_SOURCES = http.cc
 kio_http_la_LIBADD = ../libkio.la $(LIBZ)
 kio_http_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 
@@ -28,7 +28,7 @@ kio_http_cache_cleaner_la_SOURCES = http_cache_cleaner.cpp
 kio_http_cache_cleaner_la_LIBADD  = $(LIB_KIO)
 kio_http_cache_cleaner_la_LDFLAGS = -module -avoid-version
 
-noinst_HEADERS = http.h extern_md5.h base64.h
+noinst_HEADERS = http.h
 
 kdelnkdir = $(kde_servicesdir)
 kdelnk_DATA = http_cache_cleaner.desktop http.protocol https.protocol
