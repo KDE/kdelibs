@@ -309,7 +309,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
         abort();
 }
 
-kdbgstream &perror( kdbgstream &s) { return s << " " << QString::fromLocal8Bit(strerror(errno)); }
+kdbgstream &perror( kdbgstream &s) { return s << QString::fromLocal8Bit(strerror(errno)); }
 kdbgstream kdDebug(int area) { return kdbgstream(area, KDEBUG_INFO); }
 kdbgstream kdDebug(bool cond, int area) { if (cond) return kdbgstream(area, KDEBUG_INFO); else return kdbgstream(0, 0, false); }
 
