@@ -211,11 +211,11 @@ void KMMainView::initActions()
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 
-	tact = new KToggleAction(i18n("Toggle Printer Filtering"), "filter", 0, m_actions, "view_pfilter");
+	tact = new KToggleAction(i18n("Toggle Printer &Filtering"), "filter", 0, m_actions, "view_pfilter");
 	tact->setChecked(KMManager::self()->isFilterEnabled());
 	connect(tact, SIGNAL(toggled(bool)), SLOT(slotToggleFilter(bool)));
 
-	KActionMenu	*mact = new KActionMenu(i18n("Printer Tools"), "package_utilities", m_actions, "printer_tool");
+	KActionMenu	*mact = new KActionMenu(i18n("Pri&nter Tools"), "package_utilities", m_actions, "printer_tool");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(), SIGNAL(activated(int)), SLOT(slotToolSelected(int)));
 	QStringList	files = KGlobal::dirs()->findAllResources("data", "kdeprint/tools/*.desktop");

@@ -157,7 +157,7 @@ void KMJobViewer::refresh(bool reload)
 		    && (m_username.isEmpty() || m_username == it.current()->owner()))
 			m_jobs.append(it.current());
 	updateJobs();
-	slotSelectionChanged();
+
 
 	// update the caption and icon (doesn't do anything if it has a parent widget)
 	updateCaption();
@@ -198,17 +198,17 @@ void KMJobViewer::init()
 void KMJobViewer::initActions()
 {
 	// job actions
-	KAction	*hact = new KAction(i18n("Hold"),"stop",0,this,SLOT(slotHold()),actionCollection(),"job_hold");
-	KAction	*ract = new KAction(i18n("Resume"),"run",0,this,SLOT(slotResume()),actionCollection(),"job_resume");
-	KAction	*dact = new KAction(i18n("Remove"),"edittrash",Qt::Key_Delete,this,SLOT(slotRemove()),actionCollection(),"job_remove");
-	KAction *sact = new KAction(i18n("Restart"),"redo",0,this,SLOT(slotRestart()),actionCollection(),"job_restart");
-	KActionMenu *mact = new KActionMenu(i18n("Move to Printer..."),"fileprint",actionCollection(),"job_move");
+	KAction	*hact = new KAction(i18n("&Hold"),"stop",0,this,SLOT(slotHold()),actionCollection(),"job_hold");
+	KAction	*ract = new KAction(i18n("&Resume"),"run",0,this,SLOT(slotResume()),actionCollection(),"job_resume");
+	KAction	*dact = new KAction(i18n("R&emove"),"edittrash",Qt::Key_Delete,this,SLOT(slotRemove()),actionCollection(),"job_remove");
+	KAction *sact = new KAction(i18n("Res&tart"),"redo",0,this,SLOT(slotRestart()),actionCollection(),"job_restart");
+	KActionMenu *mact = new KActionMenu(i18n("&Move to Printer..."),"fileprint",actionCollection(),"job_move");
 	mact->setDelayed(false);
 	connect(mact->popupMenu(),SIGNAL(activated(int)),SLOT(slotMove(int)));
 	connect(mact->popupMenu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
 	connect(mact->popupMenu(),SIGNAL(aboutToHide()),KMTimer::self(),SLOT(release()));
 	connect(mact->popupMenu(),SIGNAL(aboutToShow()),SLOT(slotShowMoveMenu()));
-	KToggleAction	*tact = new KToggleAction(i18n("Toggle Completed Jobs"),"history",0,actionCollection(),"view_completed");
+	KToggleAction	*tact = new KToggleAction(i18n("&Toggle Completed Jobs"),"history",0,actionCollection(),"view_completed");
 	tact->setEnabled(m_manager->actions() & KMJob::ShowCompleted);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowCompleted(bool)));
 	KToggleAction	*uact = new KToggleAction(i18n("Show Only User Jobs"), "personal", 0, actionCollection(), "view_user_jobs");
@@ -229,7 +229,7 @@ void KMJobViewer::initActions()
 	}
 
 	// Filter actions
-	KActionMenu	*fact = new KActionMenu(i18n("Select Printer"), "kdeprint_printer", actionCollection(), "filter_modify");
+	KActionMenu	*fact = new KActionMenu(i18n("&Select Printer"), "kdeprint_printer", actionCollection(), "filter_modify");
 	fact->setDelayed(false);
 	connect(fact->popupMenu(),SIGNAL(activated(int)),SLOT(slotPrinterSelected(int)));
 	connect(fact->popupMenu(),SIGNAL(aboutToShow()),KMTimer::self(),SLOT(hold()));
