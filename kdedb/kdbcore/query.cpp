@@ -636,7 +636,7 @@ Query::buildSQL()
                     default:
                         break;
                     }
-                    QString strQuotes = quotes ? "'": QString::null;
+                    QString strQuotes = quotes ? QString::fromLatin1("'"): QString::null;
 
                     if (!first)
                         tmpSql += ",";
