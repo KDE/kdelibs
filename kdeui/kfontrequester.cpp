@@ -38,6 +38,7 @@ KFontRequester::KFontRequester( QWidget *parent, const char *name,
   m_button = new QPushButton( i18n( "Choose..." ), this, "m_button" );
 
   m_sampleLabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+  setFocusProxy( m_button );
 
   layout->addWidget( m_sampleLabel, 1 );
   layout->addWidget( m_button );
