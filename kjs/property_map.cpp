@@ -18,7 +18,6 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 
@@ -270,13 +269,24 @@ void PropertyMap::checkTree(const PropertyMapNode *node) const
 PropertyMapNode *PropertyMap::getNode(const UString &name) const
 {
   PropertyMapNode *node = root;
-
+#if 1 // optimized version of ...
+  int len1 = name.size();
+  int ulen = len1 * sizeof(UChar);
+  const UChar* const data1 = name.data();
   while (node) {
-    int cmp = uscompare(name, node->name);
-    if (cmp == 0)
-      return node;
-    node = cmp < 0 ? node->left : node->right;
+    int diff = len1 - node->name.size();
+    if (diff == 0 && (diff = memcmp(data1, node->name.data(), ulen)) == 0)
+	return node;
+    node = diff < 0 ? node->left : node->right;
   }
+#else // this one
+    while (node) {
+      int cmp = uscompare(name, node->name);
+      if (cmp == 0)
+	return node;
+      node = cmp < 0 ? node->left : node->right;
+    }
+#endif
   return 0;
 }
 
