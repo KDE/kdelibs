@@ -89,6 +89,9 @@ ssl_parent_cert	string		Set in TCPSlaveBase and in the caller.  As above, this m
 
 main_frame_request	bool	Actually for SSL, this is set in the caller to tell TCPSlaveBase if this is the request for the main frame of an html page. (dfault: true)
 
+HTTP-Version		string	The HTTP version in use for kio_http
+
+HTTP-Headers		string	The HTTP headers, concatenated, \n delimited
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
 
