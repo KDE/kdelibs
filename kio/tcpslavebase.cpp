@@ -182,8 +182,8 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	m_iSock = ks.fd();
 
         // store the IP for later
-        KSocketAddress *sa = ks.peerAddress();
-        d->ip = sa->pretty();
+        const KSocketAddress *sa = ks.peerAddress();
+        d->ip = sa->nodeName();
 
 	ks.release();		// KExtendedSocket no longer applicable
 

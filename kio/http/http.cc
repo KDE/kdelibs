@@ -524,7 +524,7 @@ HTTPProtocol::http_openConnection()
             m_bUseSSL = useSSLSaved;
         }  // if m_bUseSSL
         // m_ssl_ip = i18n("Proxied by %1.").arg(inet_ntoa(m_proxySockaddr.sin_addr));
-        KSocketAddress *sa = ks.peerAddress();
+        const KSocketAddress *sa = ks.peerAddress();
         m_ssl_ip = i18n("Proxied by %1.").arg(sa->pretty());
 #endif // DO_SSL
         ks.release();
@@ -551,7 +551,7 @@ HTTPProtocol::http_openConnection()
 
 #ifdef DO_SSL
         // m_ssl_ip = inet_ntoa(server_name.sin_addr);
-        KSocketAddress *sa = ks.peerAddress();
+        const KSocketAddress *sa = ks.peerAddress();
 	m_ssl_ip = sa->nodeName();
 #endif
         ks.release();

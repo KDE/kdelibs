@@ -808,7 +808,7 @@ bool KExtendedSocket::setBufferSize(int rsize, int wsize)
  * if we have done this already, we return it. Otherwise, we'll have
  * to find the socket name
  */
-KSocketAddress *KExtendedSocket::localAddress()
+const KSocketAddress *KExtendedSocket::localAddress()
 {
   if (d->local != NULL)
     return d->local;
@@ -823,7 +823,7 @@ KSocketAddress *KExtendedSocket::localAddress()
  * passiveSocket and that we require to be connected already. Also note that
  * the behaviour on connectionless sockets is not defined here.
  */
-KSocketAddress* KExtendedSocket::peerAddress()
+const KSocketAddress* KExtendedSocket::peerAddress()
 {
   if (d->peer != NULL)
     return d->peer;
@@ -1426,16 +1426,6 @@ void KExtendedSocket::closeNow()
 
   if (sockfd != -1)
     ::close(sockfd);
-
-#if 0
-  if (m_flags & passiveSocket)
-    {
-      localAddress();
-      if (d->local != NULL && d->local->data != NULL && d->local->data->sa_family == PF_UNIX &&
-	  (m_flags & unixSocketKeep) == 0)
-	unlink( ((KUnixSocketAddress*)d->local)->pathname() );
-    }
-#endif
 
   emit closed(closedNow | 
 	      (readBufferSize() != 0 ? availRead : 0) |

@@ -585,7 +585,7 @@ bool Ftp::ftpOpenPASVDataConnection()
   int on=1;
   struct linger lng = { 1, 120 };
   KExtendedSocket ks;
-  KSocketAddress *sa = ksControl->peerAddress();
+  const KSocketAddress *sa = ksControl->peerAddress();
   QString host;
 
   // Check that we can do PASV
@@ -647,11 +647,11 @@ bool Ftp::ftpOpenEPSVDataConnection()
   struct linger lng = { 1, 120 };
 
   KExtendedSocket ks;
-  KSocketAddress *sa = ksControl->peerAddress();
+  const KSocketAddress *sa = ksControl->peerAddress();
   int portnum;
   // we are sure sa is a KInetSocketAddress, because we asked for KExtendedSocket::inetSocket
   // when we connected
-  KInetSocketAddress *sin = (KInetSocketAddress*)sa;
+  const KInetSocketAddress *sin = static_cast<const KInetSocketAddress*>(sa);
 
   if (m_extControl & epsvUnknown || sa == NULL)
     return false;
@@ -705,7 +705,7 @@ bool Ftp::ftpOpenEPRTDataConnection()
 {
   KExtendedSocket ks;
   // yes, we are sure this is a KInetSocketAddress
-  KInetSocketAddress *sin = (KInetSocketAddress*)ksControl->localAddress();
+  const KInetSocketAddress *sin = static_cast<const KInetSocketAddress*>(ksControl->localAddress());
 
   m_bPasv = false;
 
@@ -722,7 +722,7 @@ bool Ftp::ftpOpenEPRTDataConnection()
       return false;
     }
 
-  sin = (KInetSocketAddress*)ks.localAddress();
+  sin = static_cast<const KInetSocketAddress*>(ks.localAddress());
   if (sin == NULL)
     // error ?
     return false;

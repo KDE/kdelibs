@@ -110,7 +110,6 @@ public:
     datagramSocket = 0x10000,	/* request a datagram socket (e.g., UDP) */
     rawSocket = 0x20000,	/* request a raw socket. This probably requires privileges */
 
-    unixSocketKeep = 0x100000,	/* do not unlink() the unix socket, if one is created */
     inputBufferedSocket = 0x200000, /* buffer input in this socket */
     outputBufferedSocket = 0x400000, /* buffer output in this socket */
     bufferedSocket = 0x600000	/* make this a fully buffered socket */
@@ -320,7 +319,7 @@ public:
    * I/O operations might return error and set errno to EWOULDBLOCK. Also,
    * it's not recommended to use this when using signals. Returns false on
    * error.
-   * @param enable	if true, set blocking mode. False, non-blocking mode
+   * @param enable	if true, set blocking mode. False, non-blocking mode.
    */
   bool setBlockingMode(bool enable);
 
@@ -344,14 +343,20 @@ public:
 
   /**
    * Sets the buffer sizes for this socket.
+   *
    * This implementation allows any size for both parameters. The value given
    * will be interpreted as the maximum size allowed for the buffers, after
    * which the functions will stop buffering. The value of -1 will be
    * interpreted as "unlimited" size.
+   *
    * Note: changing the buffer size to 0 for any buffer will cause the given
    * buffer's to be discarded. Likewise, setting the size to a value less than
    * the current size will cause the buffer to be shrunk to the wanted value,
    * as if the data had been read.
+   *
+   * Note 2: if we are not doing input buffering, the #ref closed signal will
+   * not be emitted for remote connection closing. That happens because we aren't
+   * reading from the connection, so we don't know when it closed.
    * @param rsize	read buffer size
    * @param wsize	write buffer size
    */
@@ -360,13 +365,13 @@ public:
   /**
    * Returns the local socket address
    */
-  KSocketAddress *localAddress();
+  const KSocketAddress *localAddress();
 
   /**
    * Returns the peer socket address. Use KExtendedSocket::resolve() to
    * resolve this to a human-readable hostname/service or port.
    */
-  KSocketAddress *peerAddress();
+  const KSocketAddress *peerAddress();
 
   /**
    * Returns the file descriptor
