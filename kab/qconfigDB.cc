@@ -414,7 +414,7 @@ KeyValueMap::parseComplexString
 		kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "KeyValueMap::parseComplexString: "
 		    "invalid control character.\n            "
 		    "                     This is no valid complex string." << endl;
-	      return false;	
+	      return false;
 	    }
 	  count+=2; // this took 2 characters
 	  ++first;
@@ -425,7 +425,7 @@ KeyValueMap::parseComplexString
 	      break;
 	    }
 	  temp+=mod[first];
-	  ++first;	
+	  ++first;
 	}
       if((unsigned)first>=mod.length())
 	{
@@ -618,7 +618,7 @@ KeyValueMap::insertLine(QCString line, bool force, bool relax, bool encode)
   for(index=key.length()-1; index>-1; /* nothing */)
     {
       if(!(isalnum(key[index]) || ispunct(key[index])))
-	 {	
+	 {
 	   key=key.remove(index, 1); // WORK_TO_DO: optimize this (very slow)!
 	 }
       --index;
@@ -1414,7 +1414,7 @@ KeyValueMap::get(const QCString& key, QDate& date) const
     }
   y=values.front(); values.pop_front();
   m=values.front(); values.pop_front();
-  d=values.front(); 
+  d=values.front();
   // -----
   if(y!=0 || m!=0 || d!=0) temp.setYMD(y, m, d); // avoid QDate messages
   if(!temp.isValid() && !temp.isNull())
@@ -1923,7 +1923,7 @@ QConfigDB::get()
 
 bool
 QConfigDB::createSection(const list<QCString>& key)
-{ 
+{
   // ############################################################################
   Section* section=&top;
   unsigned int index;
@@ -2407,7 +2407,7 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 	    }
 	  readonly=readonly_;
 	  filename=filename_;
-	  storeFileAge(); 
+	  storeFileAge();
 	  return true;
 	} else {
 	  kdDebug() << "QConfigDB::setFileName: permission denied, " << endl;
@@ -2434,12 +2434,12 @@ QConfigDB::setFileName(const QString& filename_, bool mustexist, bool readonly_)
 		}
 	      readonly=readonly_;
 	      filename=filename_;
-	      storeFileAge(); 
+	      storeFileAge();
 	      return true;
 	    } else {
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<  "QConfigDB::setFileName: "
 	      "permission denied, filename not set." << endl;
-	      return false;	
+	      return false;
 	    }
 	} else {
 	  kdDebug(GUARD, KAB_KDEBUG_AREA) <<
@@ -2518,7 +2518,7 @@ QConfigDB::save(const char* header, bool force)
 	      kdDebug(GUARD, KAB_KDEBUG_AREA) <<
 			 "QConfigDB::save: error saving subsections." << endl;
 	    }
-	  storeFileAge(); 
+	  storeFileAge();
 	  file.close();
 	  rc=true;
 	} else {
@@ -2554,7 +2554,6 @@ QConfigDB::load()
   register bool GUARD; GUARD=false ;
   // ############################################################################
   QFile file(filename);
-  QCString line;
   // -----
   if(file.open(IO_ReadOnly))
     {
@@ -2563,7 +2562,7 @@ QConfigDB::load()
       // -----
       clear();
       bool rc=top.readSection(stream, false);
-      storeFileAge(); 
+      storeFileAge();
       file.close();
       emit(changed(this));
       kdDebug(GUARD, KAB_KDEBUG_AREA) << "QConfigDB::load: done." << endl;
