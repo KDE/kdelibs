@@ -356,14 +356,14 @@ void RMB::slotRMBActionInsert( int val )
   {
     KBookmarkGroup parentBookmark = bookmark.toGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    parentBookmark.addBookmark( m_pManager, title, url );
+    parentBookmark.addBookmark( m_pManager, title, KURL(  url ) );
     m_pManager->emitChanged( parentBookmark );
   }
   else
   {
     KBookmarkGroup parentBookmark = bookmark.parentGroup();
     Q_ASSERT(!parentBookmark.isNull());
-    KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, title, url );
+    KBookmark newBookmark = parentBookmark.addBookmark( m_pManager, title, KURL( url ) );
     parentBookmark.moveItem( newBookmark, parentBookmark.previous(bookmark) );
     m_pManager->emitChanged( parentBookmark );
   }
@@ -378,11 +378,11 @@ void RMB::slotRMBActionRemove( int val )
   bool folder = bookmark.isGroup();
 
   if (KMessageBox::warningYesNo(
-          m_parentMenu, 
+          m_parentMenu,
           folder ? i18n("Are you sure you wish to remove this bookmark folder?")
                  : i18n("Are you sure you wish to remove this bookmark?"),
           folder ? i18n("Bookmark Folder Removal")
-                 : i18n("Bookmark Removal"), 
+                 : i18n("Bookmark Removal"),
           i18n("Remove"), i18n("Cancel"))
         != KMessageBox::Yes
      )
@@ -421,7 +421,7 @@ void RMB::hidePopup() {
 
 void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
 {
-  RMB::begin_rmb_action(this); 
+  RMB::begin_rmb_action(this);
   rmbSelf(this)->fillContextMenu(contextMenu, address, val);
   emit aboutToShowContextMenu( rmbSelf(this)->atAddress(address), contextMenu);
   rmbSelf(this)->fillContextMenu2(contextMenu, address, val);
