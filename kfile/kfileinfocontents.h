@@ -168,7 +168,7 @@ public:
     /**
       * returns the number of added files 
       **/
-    uint count() const { return itemsList->count(); }
+    uint count() const { return sorted_length; }
 
     /**
       * to connect a slot to the internal signal, that is emited, if
@@ -344,11 +344,19 @@ private:
     uint sorted_length;
     uint sorted_max;
 
-    KFileInfoList *itemsList;
-
+    /**
+     * filled for completion
+     **/
     QStrIList *nameList;
     
+    /**
+     * counters 
+     **/
     uint filesNumber, dirsNumber;
+    /**
+     * @internal
+     * class to distribute the signals
+     **/
     KFileInfoContentsSignaler *sig;
 
     /**

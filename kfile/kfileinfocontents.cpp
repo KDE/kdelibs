@@ -39,7 +39,6 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
     sorted_max = 10000;
     sortedArray = new KFileInfo*[sorted_max];
     sorted_length = 0;
-    itemsList  = new KFileInfoList;
     reversed   = false;        // defaults
     mySortMode = Increasing;
     mySorting  = sorting; 
@@ -73,7 +72,6 @@ KFileInfoContents::KFileInfoContents( bool use, QDir::SortSpec sorting )
 KFileInfoContents::~KFileInfoContents()
 {
     delete [] sortedArray;
-    delete itemsList;
     delete nameList;
 }
 
@@ -89,8 +87,6 @@ bool KFileInfoContents::addItem(const KFileInfo *i)
 	dirsNumber++;
     else
 	filesNumber++;
-
-    itemsList->append(i);
 
     return addItemInternal(i);
 }
@@ -113,8 +109,10 @@ void KFileInfoContents::addItemList(const KFileInfoList *list)
 
 void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
 {
-    QDir::SortSpec old_sort = static_cast<QDir::SortSpec>(sorting() & QDir::SortByMask);
-    QDir::SortSpec sortflags = static_cast<QDir::SortSpec>(sorting() & (~QDir::SortByMask));
+    QDir::SortSpec old_sort = 
+	static_cast<QDir::SortSpec>(sorting() & QDir::SortByMask);
+    QDir::SortSpec sortflags = 
+	static_cast<QDir::SortSpec>(sorting() & (~QDir::SortByMask));
     
     if (mySortMode == Switching) {
 	if (new_sort == old_sort)
@@ -141,7 +139,7 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
     QuickSort(sortedArray, 0, sorted_length - 1);
     debugC("qsort %ld", time(0));
     for (uint i = 0; i < sorted_length; i++)
-      insertItem(sortedArray[i], -1);
+	insertItem(sortedArray[i], -1);
     debugC("qsort %ld", time(0));
     setAutoUpdate(true);
     repaint(true);
@@ -150,7 +148,6 @@ void KFileInfoContents::setSorting(QDir::SortSpec new_sort)
 void KFileInfoContents::clear()
 {
     sorted_length = 0;
-    itemsList->clear();
     delete nameList;
     nameList = 0;
     clearView();
@@ -314,8 +311,11 @@ bool KFileInfoContents::addItemInternal(const KFileInfo *i)
 	else
 	    pos = sorted_length;
     }
-    // debugC("insertItem %s %d %d", i->fileName(), pos, sorted_length);
-
+    // if the namelist already exist, we can use inSort. In general 
+    // this is too slow
+    if (nameList)
+	nameList->inSort(i->fileName());
+    
     insertSortedItem(i, pos); 
     return insertItem(i, pos);
 } 
@@ -386,8 +386,23 @@ QString KFileInfoContents::findCompletion( const char *base,
 {
 
     if (!nameList) {
-	warning("not implemented yet");
-	return "";
+	uint i;
+	
+	nameList = new QStrIList();
+	// prepare an array for quicksort. This is much faster than
+	// calling n times inSort
+	const char **nameArray = new const char*[sorted_length];
+	// fill it
+	for (i = 0; i < sorted_length; i++)
+	    nameArray[i] = sortedArray[i]->fileName();
+	
+	qsort(nameArray, sorted_length, sizeof(const char*), stricmp);
+	
+	// insert into list. Keeps deep copies
+	for (i = 0; i < sorted_length; i++)
+	    nameList->append(nameArray[i]);
+
+	delete [] nameArray;
     }
 
     if ( strlen(base) == 0 ) return 0;
