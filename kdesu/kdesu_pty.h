@@ -18,6 +18,8 @@
 #ifndef __PTY_h_Included__
 #define __PTY_h_Included__
 
+#include <qcstring.h>
+
 class PTY {
 
 public:
