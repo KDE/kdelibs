@@ -873,9 +873,14 @@ QVariant KHTMLPart::executeScript( const QString &script )
     return executeScript( DOM::Node(), script );
 }
 
+//Enable this to see all JS scripts being executed
+//#define KJS_VERBOSE
+
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
-  //kdDebug(6070) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " << script << endl;
+#endif
   KJSProxy *proxy = jScript();
 
   if (!proxy || proxy->paused())
@@ -887,7 +892,9 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
       submitFormAgain();
     DocumentImpl::updateDocumentsRendering();
 
-  //kdDebug(6070) << "KHTMLPart::executeScript - done" << endl;
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "KHTMLPart::executeScript - done" << endl;
+#endif
   return ret;
 }
 
@@ -4275,7 +4282,9 @@ bool KHTMLPart::checkLinkSecurity(const KURL &linkURL,const QString &message, co
 
 QVariant KHTMLPart::executeScript(QString filename, int baseLine, const DOM::Node &n, const QString &script)
 {
-  //kdDebug(6070) << "executeScript: filename=" << filename << " baseLine=" << baseLine << " script=" << script << endl;
+#ifdef KJS_VERBOSE
+  kdDebug(6070) << "executeScript: filename=" << filename << " baseLine=" << baseLine << " script=" << script << endl;
+#endif
   KJSProxy *proxy = jScript();
 
   if (!proxy || proxy->paused())
