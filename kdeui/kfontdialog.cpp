@@ -23,6 +23,14 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.20  1998/06/01 08:42:41  kalle
+    KFontDialog:
+    - you can now enter your own example string
+    - new static method getXLFD() that converts a QFont() to a X Logical Font Description
+
+    KIntegerLine:
+    - new signal valueChanged( int )
+
     Revision 1.19  1998/05/27 20:38:48  schreter
 
 
@@ -398,6 +406,20 @@ int KFontDialog::getFont( QFont &theFont )
 	return result;
 }
 
+
+int KFontDialog::getFontAndText( QFont &theFont, QString &theString )
+{
+  KFontDialog dlg( 0L, "Font and Text Selector", TRUE );
+  dlg.setFont( theFont );
+  int result = dlg.exec();
+
+  if( result == Accepted ) {
+	theFont = dlg.font();
+	theString = dlg.example_edit->text();
+  }
+
+  return result;
+}
 
 void KFontDialog::setFont( const QFont& aFont){
 

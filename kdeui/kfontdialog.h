@@ -23,6 +23,14 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.10  1998/06/01 08:42:42  kalle
+    KFontDialog:
+    - you can now enter your own example string
+    - new static method getXLFD() that converts a QFont() to a X Logical Font Description
+
+    KIntegerLine:
+    - new signal valueChanged( int )
+
     Revision 1.9  1998/01/21 15:07:00  jacek
     Added real KCharsets support
 
@@ -147,6 +155,12 @@ public:
      */
 
     static int getFont( QFont &theFont );
+
+  /*
+   * When you are not only interested in the font selected, but also
+   * in the example string typed in, you can call this method.
+   */
+  static int getFontAndText( QFont &theFont, QString &theString );
 
   /*
    * This function converts a QFont into the corresponding X Logical Font 
