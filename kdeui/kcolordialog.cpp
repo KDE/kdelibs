@@ -1330,8 +1330,11 @@ void KColorDialog::slotHtmlChanged( void )
   if (d->bRecursion || d->htmlName->text().isEmpty()) return;
 
   QString strColor( d->htmlName->text() );
+
+  QRegExp re( QString::fromLatin1( "#?[0-9a-f]{3,6}" ), false);
+
   // Assume that a user does not want to type the # all the time
-  if ( strColor[0] != '#' )
+  if ( re.exactMatch(strColor) && ( strColor[0] != '#' ) )
     strColor.prepend("#");
 
   const QColor color( strColor );
