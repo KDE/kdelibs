@@ -191,6 +191,11 @@ KKey& KKey::null()
 	return *g_pspec;
 }
 
+QString KKey::modFlagLabel( ModFlag modFlag )
+{
+	return KKeyServer::modToStringUser( modFlag );
+}
+
 //---------------------------------------------------------------------
 // KKeySequence
 //---------------------------------------------------------------------

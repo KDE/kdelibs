@@ -24,9 +24,6 @@
 #include <qstring.h>
 
 class QKeyEvent;
-class QVariant;
-class KConfigBase;
-class KInstance;
 
 /**********************************************************************
 * A KKey object represents a single key with possible modifiers
@@ -87,6 +84,7 @@ class KKey
 	QString toStringInternal() const;
 
 	static KKey& null();
+	static QString modFlagLabel( ModFlag );
 
  protected:
 	/**
