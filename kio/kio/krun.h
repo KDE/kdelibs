@@ -85,6 +85,16 @@ public:
 	bool isLocalFile = false, bool showProgressInfo = true );
 
   /**
+   * BIC: Combine with the above ctor for KDE 4.0.
+   * @param window
+   *        The top-level widget of the app that invoked this object.
+   *        It is used to make sure private information like passwords
+   *        are properly handled per application.
+   */
+  KRun( const KURL& url, QWidget* window, mode_t mode = 0,
+	bool isLocalFile = false, bool showProgressInfo = true );
+
+  /**
    * Destructor. Don't call it yourself, since a KRun object auto-deletes
    * itself.
    */
@@ -321,6 +331,10 @@ protected:
 
 protected:
   virtual void virtual_hook( int id, void* data );
+
+private:
+  void init (const KURL& url, QWidget* window, mode_t mode,
+             bool isLocalFile, bool showProgressInfo);
 private:
   class KRunPrivate;
   KRunPrivate *d;

@@ -41,7 +41,7 @@ public:
 BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
                         KParts::ReadOnlyPart *part, QWidget* window,
                         bool removeReferrer, bool trustedSource )
-    : KRun( url, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
+    : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
       m_args( args ), m_part( part ), m_window( window ),
       m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource )
 {
@@ -53,7 +53,7 @@ BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
 BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
                         KParts::ReadOnlyPart *part, QWidget* window,
                         bool removeReferrer, bool trustedSource, bool hideErrorDialog )
-    : KRun( url, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
+    : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
       m_args( args ), m_part( part ), m_window( window ),
       m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource )
 {
@@ -177,7 +177,7 @@ void BrowserRun::slotBrowserScanFinished(KIO::Job *job)
 void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 {
   Q_ASSERT( _job == m_job );
-  KIO::TransferJob *job = (KIO::TransferJob *) m_job;
+  KIO::TransferJob *job = static_cast<KIO::TransferJob *>(m_job);
   // Update our URL in case of a redirection
   //kdDebug(1000) << "old URL=" << m_strURL.url() << endl;
   //kdDebug(1000) << "new URL=" << job->url().url() << endl;
@@ -238,6 +238,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
                 KURL destURL;
                 destURL.setPath( tempFile.name() );
                 KIO::Job *job = KIO::file_copy( m_strURL, destURL, 0600, true /*overwrite*/, false /*no resume*/, true /*progress info*/ );
+                job->setWindow (m_window);
                 connect( job, SIGNAL( result( KIO::Job *)),
                          this, SLOT( slotCopyToTempFileResult(KIO::Job *)) );
                 return Delayed; // We'll continue after the job has finished
@@ -294,11 +295,17 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
 // Default implementation, overridden in KHTMLRun
 void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
 {
-    simpleSave( url, suggestedFilename );
+    simpleSave( url, suggestedFilename, m_window );
 }
 
 // static
 void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename )
+{
+    simpleSave (url, suggestedFilename, 0);
+}
+
+void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename,
+                             QWidget* window )
 {
     // DownloadManager <-> konqueror integration
     // find if the integration is enabled
@@ -336,7 +343,7 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
 
     // no download manager available, let's do it ourself
     KFileDialog *dlg = new KFileDialog( QString::null, QString::null /*all files*/,
-                                        0L , "filedialog", true );
+                                        window , "filedialog", true );
     dlg->setOperationMode( KFileDialog::Saving );
     dlg->setCaption(i18n("Save As"));
 
@@ -347,7 +354,8 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
         if ( !destURL.isMalformed() )
         {
             KIO::Job *job = KIO::copy( url, destURL );
-	    job->setAutoErrorHandlingEnabled( true );
+            job->setWindow (window);
+            job->setAutoErrorHandlingEnabled( true );
         }
     }
     delete dlg;

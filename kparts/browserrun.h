@@ -47,7 +47,7 @@ namespace KParts {
          * @param window the mainwindow - passed to KIO::Job::setWindow()
          * @param removeReferrer if true, the "referrer" metadata from @p args isn't passed on
          * @param trustedSource if false, a warning will be shown before launching an executable
-	 * Always pass false for @p trustedSource, except for local directory views.
+         * Always pass false for @p trustedSource, except for local directory views.
          */
         BrowserRun( const KURL& url, const KParts::URLArgs& args,
                     KParts::ReadOnlyPart *part, QWidget *window,
@@ -62,7 +62,7 @@ namespace KParts {
          * @param removeReferrer if true, the "referrer" metadata from @p args isn't passed on
          * @param trustedSource if false, a warning will be shown before launching an executable
          * @param hideErrorDialog if true, no dialog will be shown in case of errors.
-	 * Always pass false for @p trustedSource, except for local directory views.
+         * Always pass false for @p trustedSource, except for local directory views.
          */
         BrowserRun( const KURL& url, const KParts::URLArgs& args,
                     KParts::ReadOnlyPart *part, QWidget *window,
@@ -81,7 +81,12 @@ namespace KParts {
 
         // virtual so that KHTML can implement differently (HTML cache)
         virtual void save( const KURL & url, const QString & suggestedFilename );
+
         // static so that it can be called from other classes
+        static void simpleSave( const KURL & url, const QString & suggestedFilename,
+                                QWidget* window );
+
+        /** BIC: Combine with the above function for KDE 4.0. */
         static void simpleSave( const KURL & url, const QString & suggestedFilename );
 
         static bool allowExecution( const QString &serviceType, const KURL &url );
@@ -112,9 +117,10 @@ namespace KParts {
          * i.e. launch an external app.
          */
         enum NonEmbeddableResult { Handled, NotHandled, Delayed };
+
         /**
-	 * Helper for foundMimeType: call this if the mimetype couldn't be embedded
-	 */
+         * Helper for foundMimeType: call this if the mimetype couldn't be embedded
+         */
         NonEmbeddableResult handleNonEmbeddable( const QString& mimeType );
 
     protected slots:

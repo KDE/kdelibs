@@ -52,13 +52,17 @@
 #include <kmacroexpander.h>
 #include <kshell.h>
 #include <typeinfo>
+#include <qwidget.h>
+#include <qguardedptr.h>
 
 class KRun::KRunPrivate
 {
 public:
     KRunPrivate() { m_showingError = false; }
+
     bool m_showingError;
     QString m_preferredService;
+    QGuardedPtr <QWidget> m_window;
 };
 
 pid_t KRun::runURL( const KURL& u, const QString& _mimetype )
@@ -602,20 +606,34 @@ pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QStri
   return runCommandInternal( proc, service.data(), bin, execName, iconName );
 }
 
-KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgressInfo )
-  : m_timer(0,"KRun::timer")
+KRun::KRun( const KURL& url, mode_t mode, bool isLocalFile, bool showProgressInfo )
+     :m_timer(0,"KRun::timer")
+{
+  init (url, 0, mode, isLocalFile, showProgressInfo);
+}
+
+KRun::KRun( const KURL& url, QWidget* window, mode_t mode, bool isLocalFile,
+            bool showProgressInfo )
+     :m_timer(0,"KRun::timer")
+{
+  init (url, window, mode, isLocalFile, showProgressInfo);
+}
+
+void KRun::init ( const KURL& url, QWidget* window, mode_t mode, bool isLocalFile,
+                  bool showProgressInfo )
 {
   m_bFault = false;
   m_bAutoDelete = true;
-  m_bProgressInfo = _showProgressInfo;
+  m_bProgressInfo = showProgressInfo;
   m_bFinished = false;
   m_job = 0L;
-  m_strURL = _url;
+  m_strURL = url;
   m_bScanFile = false;
   m_bIsDirectory = false;
-  m_bIsLocalFile = _is_local_file;
-  m_mode = _mode;
+  m_bIsLocalFile = isLocalFile;
+  m_mode = mode;
   d = new KRunPrivate;
+  d->m_window = window;
 
   // Start the timer. This means we will return to the event
   // loop and do initialization afterwards.
@@ -623,7 +641,7 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _showProgr
   m_bInit = true;
   connect( &m_timer, SIGNAL( timeout() ), this, SLOT( slotTimeout() ) );
   m_timer.start( 0, true );
-  kdDebug(7010) << " new KRun " << this << " " << _url.prettyURL() << " timer=" << &m_timer << endl;
+  kdDebug(7010) << " new KRun " << this << " " << url.prettyURL() << " timer=" << &m_timer << endl;
 
   kapp->ref();
 }
@@ -716,6 +734,7 @@ void KRun::init()
 
   // It may be a directory or a file, let's stat
   KIO::StatJob *job = KIO::stat( m_strURL, true, 0 /* no details */, m_bProgressInfo );
+  job->setWindow (d->m_window);
   connect( job, SIGNAL( result( KIO::Job * ) ),
            this, SLOT( slotStatResult( KIO::Job * ) ) );
   m_job = job;
@@ -764,6 +783,7 @@ void KRun::scanFile()
   kdDebug(7010) << this << " Scanning file " << m_strURL.url() << endl;
 
   KIO::TransferJob *job = KIO::get( m_strURL, false /*reload*/, m_bProgressInfo );
+  job->setWindow (d->m_window);
   connect(job, SIGNAL( result(KIO::Job *)),
           this, SLOT( slotScanFinished(KIO::Job *)));
   connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
@@ -968,7 +988,7 @@ void KRun::foundMimeType( const QString& type )
   }
   else{
     m_bFinished = true;
-    m_bFault = true;
+     m_bFault = true;
   }
 
   m_timer.start( 0, true );
