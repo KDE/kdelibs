@@ -45,7 +45,7 @@ struct MdPlayItem MdEmptyItem = {NULL,NULL,NULL};
  *		program.
  *
  *****************************************************************************/
-MdPlaylist* PlaylistNew(void)
+MdPlaylist* PlaylistNew()
 {
   MdPlaylist	*tmpPlaylist;
   struct MdPlayItem	*tmpItem;

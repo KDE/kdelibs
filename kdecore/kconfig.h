@@ -118,7 +118,7 @@ public:
    * clears all internal data structures and then rereads
    * configuration information from disk.
    */
-  virtual void reparseConfiguration(void);
+  virtual void reparseConfiguration();
 
 protected:
 

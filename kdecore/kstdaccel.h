@@ -38,61 +38,61 @@ public:
   ~KStdAccel();
 
   /** Open file. Default: Ctrl-o */
-  uint open(void) const;
+  uint open() const;
 
   /** Create a new document (or whatever). Default: Ctrl-n */
-  uint openNew(void) const;
+  uint openNew() const;
 
   /** Close current document. Default: Ctrl-w */
-  uint close(void) const;
+  uint close() const;
 
   /** Save current document. Default: Ctrl-s */
-  uint save(void) const;
+  uint save() const;
 
   /** Print current document. Default: Ctrl-p */
-  uint print(void) const;
+  uint print() const;
 
   /** Quit the program. Default: Ctrl-q */
-  uint quit(void) const;
+  uint quit() const;
 
   /** Cut selected area and store it in the clipboard. Default: Ctrl-x */
-  uint cut(void) const;
+  uint cut() const;
 
   /** Copy selected area into the clipboard. Default: Ctrl-c */
-  uint copy(void) const;
+  uint copy() const;
 
   /** Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v */
-  uint paste(void) const;
+  uint paste() const;
 
   /** Undo last operation. Default: Ctrl-z */
-  uint undo(void) const;
+  uint undo() const;
 
   /** Redo. Default: Ctrl-y */
-  uint redo(void) const;
+  uint redo() const;
 
   /** Find, search. Default: Ctrl-f */
-  uint find(void) const;
+  uint find() const;
 
   /** Find and replace matches. Default: Ctrl-r */
-  uint replace(void) const;
+  uint replace() const;
 
   /** Toggle insert/overwrite (with visual feedback, e.g. in the statusbar). Default: Insert */
-  uint insert(void) const;
+  uint insert() const;
 
   /** Goto beginning of current line. Default: Home */
-  uint home(void) const;
+  uint home() const;
 
   /** Goto end of current line. Default: End */
-  uint end(void) const;
+  uint end() const;
 
   /** Scroll up one page. Default: Prior */
-  uint prior(void) const;
+  uint prior() const;
 
   /** Scroll down one page. Default: Next */
-  uint next(void) const;
+  uint next() const;
 
   /** Help the user in the current situation. Default: F1 */
-  uint help(void) const;
+  uint help() const;
 
 protected:
   uint readKey(KAccel::StdAccel accel, uint defaultKey=0) const;

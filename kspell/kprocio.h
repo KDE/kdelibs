@@ -30,7 +30,7 @@ class KProcIO : public KProcess
 {
   Q_OBJECT
 public:
-  KProcIO (void);
+  KProcIO ();
   
   bool start (RunMode  runmode = NotifyOnExit);
 
@@ -72,7 +72,7 @@ public:
   /**
    * Reset the class.  Doesn't kill the process.
    **/
-   virtual void resetAll (void);
+   virtual void resetAll ();
 
   /**
    * Call this after you have finished processing a readReady()
@@ -83,7 +83,7 @@ public:
    * data.  If this doesn't matter, then call ackRead() right away in
    * your readReady()-processing slot.
    **/
-  virtual void ackRead (void);
+  virtual void ackRead ();
 
   /**
    *  Turns readReady() signals on and off.
@@ -101,7 +101,7 @@ protected:
   int rbi;
   bool needreadsignal, readsignalon, writeready;
 
-  void controlledEmission (void);
+  void controlledEmission ();
 
 protected slots:
   void received (KProcess *proc, char *buffer, int buflen);

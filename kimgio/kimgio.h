@@ -15,7 +15,7 @@
 /**
 * Registers all available image format encoders and decoders.
 */
-void kimgioRegister(void);
+void kimgioRegister();
 
 /**
 * Interface to the KDE Image IO library.

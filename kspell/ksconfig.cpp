@@ -254,13 +254,13 @@ KSpellConfig::~KSpellConfig ()
 
 
 bool
-KSpellConfig::dictFromList (void) const
+KSpellConfig::dictFromList () const
 {
   return dictfromlist;
 }
 
 bool
-KSpellConfig::readGlobalSettings (void)
+KSpellConfig::readGlobalSettings ()
 {
   kc->setGroup ("KSpell");
 
@@ -276,7 +276,7 @@ KSpellConfig::readGlobalSettings (void)
 }
 
 bool
-KSpellConfig::writeGlobalSettings (void)
+KSpellConfig::writeGlobalSettings ()
 {
   kc->setGroup ("KSpell");
   kc->writeEntry ("KSpell_NoRootAffix",(int) noRootAffix (), TRUE, TRUE);
@@ -362,7 +362,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
 }
 
 void
-KSpellConfig::fillInDialog (void)
+KSpellConfig::fillInDialog ()
 {
   if (nodialog)
     return;
@@ -518,39 +518,39 @@ KSpellConfig::setEncoding (int enctype)
   Options reading routines.
  */
 int
-KSpellConfig::client (void) const
+KSpellConfig::client () const
 {
   return iclient;
 }
 
 
 bool
-KSpellConfig::noRootAffix (void) const
+KSpellConfig::noRootAffix () const
 {
   return bnorootaffix;
 }
 
 bool
-KSpellConfig::runTogether(void) const
+KSpellConfig::runTogether() const
 {
   return bruntogether;
 }
 
 const
-QString KSpellConfig::dictionary (void) const
+QString KSpellConfig::dictionary () const
 {
   return qsdict;
 }
 
 /*
-const QString KSpellConfig::personalDict (void) const
+const QString KSpellConfig::personalDict () const
 {
   return qspdict;
 }
 */
 
 int
-KSpellConfig::encoding (void) const
+KSpellConfig::encoding () const
 {
   return enc;
 }
@@ -676,7 +676,7 @@ KSpellConfig::setIgnoreList (QStrList _ignorelist)
 }
 
 QStrList
-KSpellConfig::ignoreList (void) const
+KSpellConfig::ignoreList () const
 {
   return ignorelist;
 }

@@ -19,6 +19,10 @@
 /*
  *
  * $Log$
+ * Revision 1.21  1999/09/18 18:26:14  espensa
+ * Added QSize(4,4) to the returned sizeHint(). Seems that the border size has
+ * been forgotten.
+ *
  * Revision 1.21  1999/09/18 20:30:00  espensa
  * Added QSize(4,4) to the returned value of sizeHint(). Seems that the 
  * border size has been forgotten.
@@ -295,7 +299,7 @@ void KTabCtl::setShape( QTabBar::Shape shape )
 }
 
 QSize
-KTabCtl::sizeHint(void) const
+KTabCtl::sizeHint() const
 {
 	/* desired size of the tabbar */
 	QSize hint(tabs->sizeHint());

@@ -998,7 +998,7 @@ void KConfigBase::writeEntry( const QString& pKey, const QColor& rColor,
   writeEntry( pKey, aValue, bPersistent, bGlobal, bNLS );
 }
 
-void KConfigBase::parseConfigFiles(void)
+void KConfigBase::parseConfigFiles()
 {
   backEnd->parseConfigFiles();
 }

@@ -113,7 +113,7 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
 
 
 void
-KSpell::startIspell(void)
+KSpell::startIspell()
   //trystart = {0,1,2}
 {
 
@@ -289,7 +289,7 @@ bool KSpell::addPersonal (QString word)
   return proc->fputs (qs.data());
 }
 
-bool KSpell::writePersonalDictionary (void)
+bool KSpell::writePersonalDictionary ()
 {
   return proc->fputs ("#");
 }
@@ -403,7 +403,7 @@ void KSpell::checkWord2 (KProcIO *)
   emit corrected (word, word, 0L);
 }
 
-void KSpell::checkWord3 (void)
+void KSpell::checkWord3 ()
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (checkWord3()));
 
@@ -567,7 +567,7 @@ bool KSpell::checkList (QStrList *_wordlist)
   return TRUE;
 }
 
-void KSpell::checkList2 (void)
+void KSpell::checkList2 ()
   //output some words from the list
 {
   //  disconnect (this, SIGNAL (eza()), this, SLOT (checkList2()));
@@ -920,7 +920,7 @@ KSpell:: ~KSpell ()
 }
 
 
-KSpellConfig KSpell::ksConfig (void) const
+KSpellConfig KSpell::ksConfig () const
 {
   ksconfig->setIgnoreList (ignorelist);
   return *ksconfig;
@@ -965,7 +965,7 @@ void KSpell::setProgressResolution (unsigned int res)
   progres=res;
 }
 
-void KSpell::emitProgress (void)
+void KSpell::emitProgress ()
 {
   uint nextprog = (uint) (100.*lastpos/totalpos);
 

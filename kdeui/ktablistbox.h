@@ -101,7 +101,7 @@ protected:
   virtual void paintCell (QPainter*, int row, int col);
   virtual int cellWidth (int col);
 
-  void reconnectSBSignals (void);
+  void reconnectSBSignals ();
 
   QPoint dragStartPos;
   int dragCol;
@@ -139,10 +139,10 @@ public:
   /** This enable the key-bindings (and set StrongFocus!)
    * if you don't want StrongFocus you can implement your own keyPressEvent
    * and send an event to KTabListBox from there... */
-  void enableKey(void) { lbox.enableKey(); }
+  void enableKey() { lbox.enableKey(); }
   
   /** Returns the number of rows */
-  uint count (void) const { return numRows(); };
+  uint count () const { return numRows(); };
   
   /** Insert a line before given index, using the separator character to separate the fields. If no index is given the line is appended at the end. Returns index of inserted item. */
   virtual void insertItem (const QString& string, int itemIndex=-1);
@@ -163,7 +163,7 @@ public:
   virtual void changeItemColor (const QColor& color, int itemIndex=-1);
 
   /** Get number of pixels one tab character stands for. Default: 10 */
-  int tabWidth(void) const { return tabPixels; }
+  int tabWidth() const { return tabPixels; }
   /** Set number of pixels one tab character stands for. Default: 10 */
   virtual void setTabWidth(int);
 
@@ -178,17 +178,17 @@ public:
   virtual void removeItem (int itemIndex);
 
   /** Remove contents of listbox */
-  virtual void clear (void);
+  virtual void clear ();
 
   /** Return index of current item */
-  int currentItem (void) const { return current; }
+  int currentItem () const { return current; }
 
   /** Set the current (selected) column. colId is the value that
     is transfered with the selected() signal that is emited. */
   virtual void setCurrentItem (int idx, int colId=-1);
 
   /** Unmark all items */
-  virtual void unmarkAll (void);
+  virtual void unmarkAll ();
 
   /** Mark/unmark item with index idx. */
   virtual void markItem (int idx, int colId=-1);
@@ -201,7 +201,7 @@ public:
   int findItem (int yPos) const { return (itemShowList[lbox.findRow(yPos)]); }
 
   /** Returns first item that is currently displayed in the widget. */
-  int topItem (void) const { return (itemShowList[lbox.topCell()]); }
+  int topItem () const { return (itemShowList[lbox.topCell()]); }
 
   /** Change first displayed item by repositioning the visible part
     of the list. */
@@ -215,33 +215,33 @@ public:
   virtual void setNumRows (int);
 
   /** See the docs for the QTableView class. */
-  int numRows (void) const { return lbox.numRows(); }
+  int numRows () const { return lbox.numRows(); }
   /** See the docs for the QTableView class. */
-  int numCols (void) const { return lbox.numCols(); }
+  int numCols () const { return lbox.numCols(); }
   /** See the docs for the QTableView class. */
   int cellWidth (int col) { return lbox.cellWidth(col); }
   /** See the docs for the QTableView class. */
-  int totalWidth (void) { return lbox.totalWidth(); }
+  int totalWidth () { return lbox.totalWidth(); }
   /** See the docs for the QTableView class. */
   int cellHeight (int row) { return lbox.cellHeight(row); }
   /** See the docs for the QTableView class. */
-  int totalHeight (void) { return lbox.totalHeight(); }
+  int totalHeight () { return lbox.totalHeight(); }
   /** See the docs for the QTableView class. */
-  int topCell (void) const { return itemShowList[lbox.topCell()]; }
+  int topCell () const { return itemShowList[lbox.topCell()]; }
   /** See the docs for the QTableView class. */
-  int leftCell (void) const { return colShowList[lbox.leftCell()]; }
+  int leftCell () const { return colShowList[lbox.leftCell()]; }
   /** See the docs for the QTableView class. */
-  int lastColVisible (void) const { return colShowList[lbox.lastColVisible()]; }
+  int lastColVisible () const { return colShowList[lbox.lastColVisible()]; }
   /** See the docs for the QTableView class. */
-  int lastRowVisible (void) const { return itemShowList[lbox.lastRowVisible()]; }
+  int lastRowVisible () const { return itemShowList[lbox.lastRowVisible()]; }
   /** See the docs for the QTableView class. */
-  bool autoUpdate (void) const { return lbox.autoUpdate(); }
+  bool autoUpdate () const { return lbox.autoUpdate(); }
   /** See the docs for the QTableView class. */
   void setAutoUpdate (bool upd) { lbox.setAutoUpdate(upd); }
   /** See the docs for the QTableView class. */
   void clearTableFlags(uint f=~0) { lbox.clearTableFlags(f); }
   /** See the docs for the QTableView class. */
-  uint tableFlags(void) { return lbox.tableFlags(); }
+  uint tableFlags() { return lbox.tableFlags(); }
   /** See the docs for the QTableView class. */
   bool testTableFlags(uint f) { return lbox.testTableFlags(f); }
   /** See the docs for the QTableView class. */
@@ -289,20 +289,20 @@ public:
   virtual void setSeparator (char sep) { sepChar = sep; } 
 
   /** Return separator character. */
-  virtual char separator (void) const { return sepChar; }
+  virtual char separator () const { return sepChar; }
 
   /** For convenient access to the dictionary of pictures that this listbox understands. */
-  KTabListBoxDict& dict (void) { return pixDict; }
+  KTabListBoxDict& dict () { return pixDict; }
 
-  void repaint (void);
+  void repaint ();
 
-  QPixmap& dndPixmap(void) { return dndDefaultPixmap; }
+  QPixmap& dndPixmap() { return dndDefaultPixmap; }
 
   /** Read the config file entries in the group with the name of the listbox and set the default column widths and those. */
-  virtual void readConfig(void);
+  virtual void readConfig();
 
   /** Write the config file entries in the group with the name of the listbox*/
-  virtual void writeConfig(void);
+  virtual void writeConfig();
   
   /** Return the actual position of the colum in the table.*/
   int colPosList(int num);
@@ -312,7 +312,7 @@ public:
 
   /** Get/set font of the table. font() and setFont() apply to the
     caption only. */
-  QFont tableFont(void) const { return lbox.font(); }
+  QFont tableFont() const { return lbox.font(); }
   void setTableFont(const QFont& fnt) { lbox.setFont(fnt); }
   
 signals:
@@ -340,7 +340,7 @@ protected:
    * in a subclass to have your own column objects (e.g. with custom
    * data in it). You will then also need customData()/setCustomData()
    * methods in here that access the elememts in itemList[]. */
-  virtual KTabListBoxColumn* newKTabListBoxColumn(void);
+  virtual KTabListBoxColumn* newKTabListBoxColumn();
 
   bool itemVisible (int idx) { return lbox.rowIsVisible(idx); }
   void updateItem (int idx, bool clear = TRUE);
@@ -436,12 +436,12 @@ public:
   virtual const QString& text(int column) const { return txt[column]; }
   void setText (int column, const QString& text) { txt[column] = text; }
   virtual void setForeground (const QColor& fg ) { fgColor = fg; }
-  const QColor& foreground (void) { return fgColor; }
+  const QColor& foreground () { return fgColor; }
 
   KTabListBoxItem& operator= (const KTabListBoxItem&);
 
-  int marked (void) const { return mark; }
-  bool isMarked (void) const { return (mark >= -1); }
+  int marked () const { return mark; }
+  bool isMarked () const { return (mark >= -1); }
   virtual void setMarked (int m) { mark = m; }
  
 private:
@@ -465,25 +465,25 @@ public:
   KTabListBoxColumn (KTabListBox* parent, int w=0);
   virtual ~KTabListBoxColumn();
 
-  int width (void) const { return iwidth; }
+  int width () const { return iwidth; }
   virtual void setWidth (int w) { iwidth = w; }
 
-  int defaultWidth (void) const { return idefwidth; }
+  int defaultWidth () const { return idefwidth; }
   virtual void setDefaultWidth (int w) { idefwidth = w; }
 
   virtual void setType (KTabListBox::ColumnType lbt) { colType = lbt; }
-  KTabListBox::ColumnType type (void) const { return colType; }
+  KTabListBox::ColumnType type () const { return colType; }
 
   /// @return true if need repaint.
-  virtual bool changeMode (void);
+  virtual bool changeMode ();
   
   virtual void setNumber(int num);
-  int number (void) const { return inumber;}
-  void hideCheckButton(void) { if(mbut) mbut->hide(); }
+  int number () const { return inumber;}
+  void hideCheckButton() { if(mbut) mbut->hide(); }
   virtual void setOrder (KTabListBox::OrderType type,
                              KTabListBox::OrderMode mode);
-  KTabListBox::OrderType orderType (void) const {return ordtype;}
-  KTabListBox::OrderMode orderMode (void) const {return ordmode;}
+  KTabListBox::OrderType orderType () const {return ordtype;}
+  KTabListBox::OrderMode orderMode () const {return ordmode;}
   
   virtual void paintCell (QPainter*, int row, const QString& string, 
 			  bool marked);

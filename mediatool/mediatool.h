@@ -50,7 +50,7 @@ typedef struct
 void MdConnect(int shm_talkid, MediaCon *mcon);
 void MdConnectNew(MediaCon *mcon);
 void MdDisconnect(MediaCon *mcon);
-void MdConnectInit(void);
+void MdConnectInit();
 
 
 /*****************************************************************************
@@ -72,7 +72,7 @@ typedef struct
   struct MdPlayItem		*Last;
 } MdPlaylist;
 
-MdPlaylist* PlaylistNew(void);
+MdPlaylist* PlaylistNew();
 struct MdPlayItem* PlaylistAdd( MdPlaylist* Playlist, const char *fileURL, int32 pos );
 void PlaylistShow( MdPlaylist* Playlist );
 
@@ -260,7 +260,7 @@ void FileNameSet(MdCh_FNAM *fnChunk, const char *filename);
 int8 FileNameGet(MdCh_FNAM *fnChunk, char *filename);
 
 
-int MediatypesInit(void);
+int MediatypesInit();
 
 typedef struct
 {

@@ -260,7 +260,7 @@ KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
     allocator     = _allocator;
     if (formData)
     {
-        (void) formData->first();
+        () formData->first();
     }
 
     leftBorder    = LEFT_BORDER;
@@ -333,7 +333,7 @@ KHTMLParser::~KHTMLParser()
 }
 
 // Set font according to currentStyle
-void KHTMLParser::setFont(void)
+void KHTMLParser::setFont()
 {
     int fontsize = currentStyle->font.size;
     if ( fontsize < 0 )
@@ -363,7 +363,7 @@ void KHTMLParser::setFont(void)
     painter->setFont( *fp );
 }
 
-void KHTMLParser::restoreFont(void)
+void KHTMLParser::restoreFont()
 {
     painter->setFont( *(currentStyle->font.fp) );
 }
@@ -878,12 +878,12 @@ void KHTMLParser::parseOneToken()
 }
 
 
-void KHTMLParser::parseTagEnd(void)
+void KHTMLParser::parseTagEnd()
 {
     popBlock(tagID - ID_CLOSE_TAG);
 }
 
-void KHTMLParser::parseTagA(void)
+void KHTMLParser::parseTagA()
 {
     // implemented attributes:
     // href, name, target
@@ -948,17 +948,17 @@ void KHTMLParser::parseTagA(void)
     }
 }
 
-void KHTMLParser::parseTagAbbr(void)
+void KHTMLParser::parseTagAbbr()
 {
     // attributes: %attrs
 }
 
-void KHTMLParser::parseTagAcronym(void)
+void KHTMLParser::parseTagAcronym()
 {
     // attributes: %attrs
 }
 
-void KHTMLParser::parseTagAddress(void)
+void KHTMLParser::parseTagAddress()
 {
     pushBlock(tagID, 2, &KHTMLParser::blockEnd);
     currentStyle->font.style = CSSStyleFont::stItalic;
@@ -967,12 +967,12 @@ void KHTMLParser::parseTagAddress(void)
     flow = 0;
 }
 
-void KHTMLParser::parseTagApplet(void)
+void KHTMLParser::parseTagApplet()
 {
     // java stuff... ignore for the moment
 }
 
-void KHTMLParser::parseTagArea(void)
+void KHTMLParser::parseTagArea()
 {
     // attributes missing: %attrs, shape, coords, href, nohref,
     // alt, tabindex, accesskey, onfocus, onblur
@@ -1085,7 +1085,7 @@ void KHTMLParser::parseTagArea(void)
         imageMap->addArea( area );
 }
 
-void KHTMLParser::parseTagB(void)
+void KHTMLParser::parseTagB()
 {
     // attrs: %attrs
     pushBlock(tagID, 1);
@@ -1093,7 +1093,7 @@ void KHTMLParser::parseTagB(void)
     setFont();
 }
 
-void KHTMLParser::parseTagBase(void)
+void KHTMLParser::parseTagBase()
 {
     const Attribute *p;
     while ( (p = ht->nextOption()) != 0 )
@@ -1109,17 +1109,17 @@ void KHTMLParser::parseTagBase(void)
     }
 }
 
-void KHTMLParser::parseTagBaseFont(void)
+void KHTMLParser::parseTagBaseFont()
 {
     // attrs: id size color face
 }
 
-void KHTMLParser::parseTagBdo(void)
+void KHTMLParser::parseTagBdo()
 {
     // I think we'll wait for qt to support right to left...
 }
 
-void KHTMLParser::parseTagBig(void)
+void KHTMLParser::parseTagBig()
 {
     // attrs %attrs
 
@@ -1128,7 +1128,7 @@ void KHTMLParser::parseTagBig(void)
     setFont();
 }
 
-void KHTMLParser::parseTagBlockQuote(void)
+void KHTMLParser::parseTagBlockQuote()
 {
     // attrs: cite, %attrs
 
@@ -1137,7 +1137,7 @@ void KHTMLParser::parseTagBlockQuote(void)
     flow = 0; 
 }
 
-void KHTMLParser::parseTagBody(void)
+void KHTMLParser::parseTagBody()
 {
     // missing attrs: %attrs, onload, onunload, alink
 
@@ -1179,7 +1179,7 @@ void KHTMLParser::parseTagBody(void)
     }
 }
 
-void KHTMLParser::parseTagBr(void)
+void KHTMLParser::parseTagBr()
 {
     //attrs: %coreattrs
 
@@ -1206,12 +1206,12 @@ void KHTMLParser::parseTagBr(void)
     vspace_inserted = false;
 }
 
-void KHTMLParser::parseTagButton(void)
+void KHTMLParser::parseTagButton()
 {
     // forms... HTML4 unimplemented
 }
 
-void KHTMLParser::parseTagCenter(void)
+void KHTMLParser::parseTagCenter()
 {
     pushBlock(tagID, 2, &KHTMLParser::blockEndAlign, divAlign);
 
@@ -1219,7 +1219,7 @@ void KHTMLParser::parseTagCenter(void)
     flow = 0;
 }
 
-void KHTMLParser::parseTagCite(void)
+void KHTMLParser::parseTagCite()
 {
     pushBlock(tagID, 1 );
 
@@ -1228,7 +1228,7 @@ void KHTMLParser::parseTagCite(void)
     setFont();
 }
 
-void KHTMLParser::parseTagCode(void)
+void KHTMLParser::parseTagCode()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.family = settings->fixedFontFace;
@@ -1238,7 +1238,7 @@ void KHTMLParser::parseTagCode(void)
     setFont();
 }
 
-void KHTMLParser::parseTagDD(void)
+void KHTMLParser::parseTagDD()
 {
     // attrs: %attrs
 
@@ -1253,18 +1253,18 @@ void KHTMLParser::parseTagDD(void)
     flow = 0;
 }
 
-void KHTMLParser::parseTagDel(void)
+void KHTMLParser::parseTagDel()
 {
     // attrs: %attrs, cite, datetime
     // marks deleted text. Could be rendered as struck-through
 }
 
-void KHTMLParser::parseTagDfn(void)
+void KHTMLParser::parseTagDfn()
 {
     // attrs: %attrs
 }
 
-void KHTMLParser::parseTagDiv(void)
+void KHTMLParser::parseTagDiv()
 {
     pushBlock(tagID, 2, &KHTMLParser::blockEndAlign, divAlign);
 
@@ -1285,7 +1285,7 @@ void KHTMLParser::parseTagDiv(void)
     flow = 0;
 }
 
-void KHTMLParser::parseTagDL(void)
+void KHTMLParser::parseTagDL()
 {
     // attrs: %attrs
 
@@ -1299,7 +1299,7 @@ void KHTMLParser::parseTagDL(void)
     flow = 0;
 }
 
-void KHTMLParser::parseTagDLEnd(void)
+void KHTMLParser::parseTagDLEnd()
 {
     if ( !glossaryStack.top() )
         return;
@@ -1327,7 +1327,7 @@ void KHTMLParser::parseTagDLEnd(void)
     vspace_inserted = insertVSpace( vspace_inserted );
 }
 
-void KHTMLParser::parseTagDT(void)
+void KHTMLParser::parseTagDT()
 {
     // attrs: %attrs
 
@@ -1348,19 +1348,19 @@ void KHTMLParser::parseTagDT(void)
     flow = 0;
 }
 
-void KHTMLParser::parseTagEM(void)
+void KHTMLParser::parseTagEM()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.style = CSSStyleFont::stItalic;
     setFont();
 }
 
-void KHTMLParser::parseTagFieldset(void)
+void KHTMLParser::parseTagFieldset()
 {
     // Unimplemented HTML 4 
 }
 
-void KHTMLParser::parseTagFont(void)
+void KHTMLParser::parseTagFont()
 {
     pushBlock(tagID, 1 );
     const Attribute *token;
@@ -1403,7 +1403,7 @@ void KHTMLParser::parseTagFont(void)
     setFont();
 }
 
-void KHTMLParser::parseTagForm(void)
+void KHTMLParser::parseTagForm()
 {
     QString action = "";
     QString method = "GET";
@@ -1437,7 +1437,7 @@ void KHTMLParser::parseTagForm(void)
     //pushBlock( ID_FORM, 2, &blockEndForm);
 }
 
-void KHTMLParser::parseTagFormEnd(void)
+void KHTMLParser::parseTagFormEnd()
 {
     if(form)
     {
@@ -1449,7 +1449,7 @@ void KHTMLParser::parseTagFormEnd(void)
     //popBlock( ID_FORM );
 }
 
-void KHTMLParser::parseTagFrame(void)
+void KHTMLParser::parseTagFrame()
 {
     if ( !frameSet)
     	return; // Frames need a frameset
@@ -1508,7 +1508,7 @@ void KHTMLParser::parseTagFrame(void)
 		    	frameborder, marginwidth, marginheight, src);
 }
 
-void KHTMLParser::parseTagEmbed(void)
+void KHTMLParser::parseTagEmbed()
 {
   if ( !frameSet)
     return; // Frames need a frameset
@@ -1567,7 +1567,7 @@ void KHTMLParser::parseTagEmbed(void)
   HTMLWidget->addEmbededFrame( frameSet, embed );
 }
 
-void KHTMLParser::parseTagFrameset(void)
+void KHTMLParser::parseTagFrameset()
 {
     QString cols;
     QString rows;
@@ -1630,7 +1630,7 @@ void KHTMLParser::parseTagFrameset(void)
     pushBlock( tagID, 4, &KHTMLParser::blockEndFrameSet, (int) oldFrameSet );
 }
 
-void KHTMLParser::parseTagHeader(void)
+void KHTMLParser::parseTagHeader()
 {
     pushBlock(ID_H1, 2, &KHTMLParser::blockEnd );
 
@@ -1697,17 +1697,17 @@ void KHTMLParser::parseTagHeader(void)
     // closing tag
 }
 
-void KHTMLParser::parseTagHeaderEnd(void)
+void KHTMLParser::parseTagHeaderEnd()
 {
     popBlock(ID_H1);
 }
 
-void KHTMLParser::parseTagHead(void)
+void KHTMLParser::parseTagHead()
 {
     // There is nothing we need to do here at the moment :]
 }
 
-void KHTMLParser::parseTagHR(void)
+void KHTMLParser::parseTagHR()
 {
     int size = 1;
     int length = UNDEFINED;
@@ -1769,19 +1769,19 @@ printf("HR: length = %d, percent = %d, size = %d, shade = %d\n",
     vspace_inserted = false;
 }
 
-void KHTMLParser::parseTagI(void)
+void KHTMLParser::parseTagI()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.style = CSSStyleFont::stItalic;
     setFont();
 }
 
-void KHTMLParser::parseTagIframe(void)
+void KHTMLParser::parseTagIframe()
 {
     // inlined frame
 }
 
-void KHTMLParser::parseTagImg(void)
+void KHTMLParser::parseTagImg()
 {
   printf("************** Parsing an image ****************\n" );
   
@@ -1918,7 +1918,7 @@ void KHTMLParser::parseTagImg(void)
     } 
 }
 
-void KHTMLParser::parseTagInput(void)
+void KHTMLParser::parseTagInput()
 {
     if ( form == 0 )
 	return;
@@ -2104,17 +2104,17 @@ void KHTMLParser::parseTagInput(void)
     vspace_inserted = false;
 }
 
-void KHTMLParser::parseTagIns(void)
+void KHTMLParser::parseTagIns()
 {
     // inserted text... opposite of <del>
 }
 
-void KHTMLParser::parseTagIsindex(void)
+void KHTMLParser::parseTagIsindex()
 {
     // deprecated... is it used at all?
 }
 
-void KHTMLParser::parseTagKbd(void)
+void KHTMLParser::parseTagKbd()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.family = settings->fixedFontFace;
@@ -2124,17 +2124,17 @@ void KHTMLParser::parseTagKbd(void)
     setFont();
 }
 
-void KHTMLParser::parseTagLabel(void)
+void KHTMLParser::parseTagLabel()
 {
     // Unimplemented
 }
 
-void KHTMLParser::parseTagLegend(void)
+void KHTMLParser::parseTagLegend()
 {
     // Unimplemented
 }
 
-void KHTMLParser::parseTagLi(void)
+void KHTMLParser::parseTagLi()
 {
     popBlock(ID_A); // Close any <A..> tags
     QString item;
@@ -2220,12 +2220,12 @@ void KHTMLParser::parseTagLi(void)
 	listStack.top()->itemNumber++;
 }
 
-void KHTMLParser::parseTagLink(void)
+void KHTMLParser::parseTagLink()
 {
     // Not yet implemented
 }
 
-void KHTMLParser::parseTagMap(void)
+void KHTMLParser::parseTagMap()
 {
     const Attribute *token;
     while ( (token = ht->nextOption()) != 0)
@@ -2239,7 +2239,7 @@ void KHTMLParser::parseTagMap(void)
     }
 }
 
-void KHTMLParser::parseTagMeta(void)
+void KHTMLParser::parseTagMeta()
 {
     HTMLString httpequiv;
     HTMLString name;
@@ -2297,28 +2297,28 @@ void KHTMLParser::parseTagMeta(void)
     } 
 }
 
-void KHTMLParser::parseTagNobr(void)
+void KHTMLParser::parseTagNobr()
 {
     // Non standardized extension, not supported (yet)
 }
 
-void KHTMLParser::parseTagNoframes(void)
+void KHTMLParser::parseTagNoframes()
 {
     if (HTMLWidget->htmlView)
     	inNoframes=true;
 }
 
-void KHTMLParser::parseTagNoscript(void)
+void KHTMLParser::parseTagNoscript()
 {
      // Only needed when we support scipts
 }
 
-void KHTMLParser::parseTagObject(void)
+void KHTMLParser::parseTagObject()
 {
      // HTML4 not impl.
 }
 
-void KHTMLParser::parseTagOl(void)
+void KHTMLParser::parseTagOl()
 {
     popBlock(ID_A); // Close any <A..> tags
     if ( listStack.isEmpty() )
@@ -2363,12 +2363,12 @@ void KHTMLParser::parseTagOl(void)
     currentStyle->text.indent += INDENT_SIZE;
 }
 
-void KHTMLParser::parseTagOptgroup(void)
+void KHTMLParser::parseTagOptgroup()
 {
     // Grouoing options, HTML4, not impl.
 }
 
-void KHTMLParser::parseTagOption(void)
+void KHTMLParser::parseTagOption()
 {
     if ( !formSelect )
  	return;
@@ -2398,14 +2398,14 @@ void KHTMLParser::parseTagOption(void)
     formText = "";
 }
 
-void KHTMLParser::parseTagOptionEnd(void)
+void KHTMLParser::parseTagOptionEnd()
 {
     if ( inOption )
 	formSelect->setText( formText );
     inOption = false;
 }
 
-void KHTMLParser::parseTagP(void)
+void KHTMLParser::parseTagP()
 {
     popBlock(ID_A); // Close any <A..> tags
     vspace_inserted = insertVSpace( vspace_inserted );
@@ -2431,18 +2431,18 @@ void KHTMLParser::parseTagP(void)
         flow->setHAlign( align );
 }
 
-void KHTMLParser::parseTagPEnd(void)
+void KHTMLParser::parseTagPEnd()
 {
     popBlock(ID_A); // Close any <A..> tags
     vspace_inserted = insertVSpace( vspace_inserted );
 }
 
-void KHTMLParser::parseTagParam(void)
+void KHTMLParser::parseTagParam()
 {
     // HTML4, not impl.
 }
 
-void KHTMLParser::parseTagPre(void)
+void KHTMLParser::parseTagPre()
 {
     // Used by PRE and LISTING!!
     vspace_inserted = insertVSpace( vspace_inserted );
@@ -2459,7 +2459,7 @@ void KHTMLParser::parseTagPre(void)
     inPre = true;
 }
 
-void KHTMLParser::parseTagQ(void)
+void KHTMLParser::parseTagQ()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.style = CSSStyleFont::stItalic;
@@ -2467,7 +2467,7 @@ void KHTMLParser::parseTagQ(void)
 }
 
 
-void KHTMLParser::parseTagSamp(void)
+void KHTMLParser::parseTagSamp()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.family = settings->fixedFontFace;
@@ -2543,7 +2543,7 @@ void KHTMLParser::parseTagSpan()
     // obscure HTML4 tag. not impl.
 }
 
-void KHTMLParser::parseTagStrike(void)
+void KHTMLParser::parseTagStrike()
 {
     // used by S and STRIKE
     pushBlock(tagID, 1 );
@@ -2581,7 +2581,7 @@ void KHTMLParser::parseTagSup()
     setFont();
 }
 
-void KHTMLParser::parseTagTable(void)
+void KHTMLParser::parseTagTable()
 {
     popBlock(ID_A); // Close any <A..> tags
     if ( !vspace_inserted || !flow )
@@ -2975,7 +2975,7 @@ void KHTMLParser::parseTagTable(void)
     flow = 0;
 }
 
-void KHTMLParser::parseTagTextarea(void)
+void KHTMLParser::parseTagTextarea()
 {
     if ( !form )
 	return;
@@ -3014,14 +3014,14 @@ void KHTMLParser::parseTagTextarea(void)
     pushBlock(tagID, 3, &KHTMLParser::blockEndTextarea);
 }
 
-void KHTMLParser::parseTagTitle(void)
+void KHTMLParser::parseTagTitle()
 {
     title = "";
     inTitle = true;
     pushBlock(tagID, 3, &KHTMLParser::blockEndTitle);
 }
 
-void KHTMLParser::parseTagTT(void)
+void KHTMLParser::parseTagTT()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.family = settings->fixedFontFace;
@@ -3031,14 +3031,14 @@ void KHTMLParser::parseTagTT(void)
     setFont();    
 }
 
-void KHTMLParser::parseTagU(void)
+void KHTMLParser::parseTagU()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.decoration = CSSStyleFont::decUnderline;
     setFont();
 }
 
-void KHTMLParser::parseTagUL(void)
+void KHTMLParser::parseTagUL()
 {
     // Used by DIR, MENU and UL!
     popBlock(ID_A); // Close any <A..> tags
@@ -3067,7 +3067,7 @@ void KHTMLParser::parseTagUL(void)
     flow = 0;
 }
 
-void KHTMLParser::parseTagVar(void)
+void KHTMLParser::parseTagVar()
 {
     pushBlock(tagID, 1 );
     currentStyle->font.style = CSSStyleFont::stItalic;

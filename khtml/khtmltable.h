@@ -192,11 +192,11 @@ protected:
 
     //
     // This function calculates the minimum and prefered sizes of the table
-    void calcColInfoI(void);
+    void calcColInfoI();
 
     //
     // This function calculates the actual widths of the columns
-    void calcColInfoII(void);
+    void calcColInfoII();
 
     int  addColInfo(int _startCol, int _colSpan, int _minSize,
                     int _prefSize, ColType _colType);

@@ -98,7 +98,7 @@ KTMLayout::setGeometry(const QRect& rect)
 }
 
 QSize 
-KTMLayout::sizeHint(void) const
+KTMLayout::sizeHint() const
 {
 	/* Return the current size if we are not fully set up yet to avoid
 	 * unnecessary resize events. */
@@ -145,7 +145,7 @@ KTMLayout::sizeHint(void) const
 }
 
 QSize
-KTMLayout::minimumSize(void) const
+KTMLayout::minimumSize() const
 {
 	/* Return the current size if we are not fully set up yet to avoid
 	 * unnecessary resize events. */

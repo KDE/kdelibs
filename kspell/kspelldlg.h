@@ -44,7 +44,7 @@ public:
   KSpellDlg (QWidget *parent, const char *name,
 	     bool _progressbar = FALSE, bool _modal = FALSE );
 
-  inline QString replacement (void)
+  inline QString replacement ()
     { return newword; }
 
   /**
@@ -57,7 +57,7 @@ public:
   /**
    * Disable some buttons and gray out the misspelled word.
    **/
-  void standby (void);
+  void standby ();
 
 
   public slots:

@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.131  1999/10/08 23:11:12  bero
+// Fix compilation
+//
 // Revision 1.130  1999/09/21 11:03:54  waba
 // WABA: Clean up interface
 //
@@ -1777,7 +1780,7 @@ void KToolBar::setFullWidth(bool flag)
   fullSizeMode = flag;
 }
 
-bool KToolBar::fullSize(void) const
+bool KToolBar::fullSize() const
 {
 	return (fullSizeMode);
 }

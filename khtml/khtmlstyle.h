@@ -179,7 +179,7 @@ public:
     CSSStyleSheet(const HTMLSettings *);
     ~CSSStyleSheet();
 
-    void test(void);
+    void test();
     /*
      * newStyle
      *

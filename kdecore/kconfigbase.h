@@ -22,6 +22,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.33  1999/07/25 20:51:42  reggie
+// fixing problems helps more than adding #error :-)
+//
 // Revision 1.32  1999/07/25 10:55:46  kulow
 // adding #errors in case Bool is defined
 //
@@ -169,7 +172,7 @@ public:
   /**
    * @return A string representing the current locale.
    */
-  QString locale(void) const { return aLocaleString; }
+  QString locale() const { return aLocaleString; }
 
   /**
    * Read the value of an entry specified by rKey in the current group
@@ -797,7 +800,7 @@ public:
    *
    * @see #parseConfigFiles
    */
-  virtual void reparseConfiguration(void) = 0;
+  virtual void reparseConfiguration() = 0;
 
   /**
    * Possible return values for getConfigState().
@@ -826,7 +829,7 @@ protected:
    * Note: This should be done in the constructor, but this is not
    * possible due to some mutual dependencies in KApplication::init()
    */
-  void setLocale(void);
+  void setLocale();
 
   /**
    * Sets the global dirty flag of the config object
@@ -840,7 +843,7 @@ protected:
    *
    * The actual parsing is done by the associated KConfigBackEnd.
    */
-  void parseConfigFiles(void);
+  void parseConfigFiles();
 
   /**
    * Returns an map (tree) of the entries in the specified group.

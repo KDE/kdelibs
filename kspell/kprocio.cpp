@@ -10,14 +10,14 @@
 
 #include <kdebug.h>
 
-KProcIO::KProcIO (void)
+KProcIO::KProcIO ()
 {
   rbi=0;
   readsignalon=writeready=TRUE;
 }
 
 void
-KProcIO::resetAll (void)
+KProcIO::resetAll ()
 {
   if (isRunning())
     kill();
@@ -103,14 +103,14 @@ void KProcIO::received (KProcess *, char *buffer, int buflen)
   controlledEmission();
 }
 
-void KProcIO::ackRead (void)
+void KProcIO::ackRead ()
 {
   readsignalon=TRUE;
   if (needreadsignal || recvbuffer.length()!=0)
     controlledEmission();
 }
 
-void KProcIO::controlledEmission (void)
+void KProcIO::controlledEmission ()
 {
   if (readsignalon)
     {

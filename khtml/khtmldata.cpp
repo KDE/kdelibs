@@ -78,7 +78,7 @@ void HTMLSettings::getFontSizes(int *oldFontSizes, int *oldFixedFontSizes)
     }
 }                                    
 
-void HTMLSettings::resetFontSizes(void)
+void HTMLSettings::resetFontSizes()
 {
     memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     memcpy( fixedFontSizes, defaultFontSizes, sizeof(fixedFontSizes) );

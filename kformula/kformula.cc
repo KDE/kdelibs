@@ -36,7 +36,7 @@ QString *KFormula::LOC = NULL;
 QString *KFormula::BIGOP = NULL;
 QString *KFormula::EVAL = NULL;
 
-void KFormula::initStrings(void)
+void KFormula::initStrings()
 {
   if(SPECIAL) return;
   SPECIAL = new QString();

@@ -170,12 +170,12 @@ public:
 	/**
 	 * Returns the preferred size of the layout.
 	 */
-	QSize sizeHint(void) const;
+	QSize sizeHint() const;
 
 	/**
 	 * Returns the minimum required size of the layout.
 	 */
-	QSize minimumSize(void) const;
+	QSize minimumSize() const;
 
 	/**
 	 * Never use this function. It is provided to be compliant with Qt.

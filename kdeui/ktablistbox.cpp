@@ -295,7 +295,7 @@ void KTabListBoxColumn::paint(QPainter* paint)
 
 
 //-----------------------------------------------------------------------------
-void KTabListBoxColumn::setButton(void)
+void KTabListBoxColumn::setButton()
 {
   if(inumber<=0)
   {
@@ -310,7 +310,7 @@ void KTabListBoxColumn::setButton(void)
 
 
 //-----------------------------------------------------------------------------
-void KTabListBoxColumn::resetButton(void)
+void KTabListBoxColumn::resetButton()
 {
   if(inumber>0)
   {
@@ -545,14 +545,14 @@ void KTabListBox::setNumCols(int aCols)
 
 
 //-----------------------------------------------------------------------------
-KTabListBoxColumn* KTabListBox::newKTabListBoxColumn(void)
+KTabListBoxColumn* KTabListBox::newKTabListBoxColumn()
 {
   return (new KTabListBoxColumn(this));
 }
 
 
 //-----------------------------------------------------------------------------
-void KTabListBox::readConfig(void)
+void KTabListBox::readConfig()
 {
   KConfig* conf = KGlobal::config();
   int beg, end, i, w;
@@ -589,7 +589,7 @@ void KTabListBox::readConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void KTabListBox::writeConfig(void)
+void KTabListBox::writeConfig()
 {
   KConfig* conf = KGlobal::config();
   int t;
@@ -846,7 +846,7 @@ void KTabListBox::unmarkItem(int idx)
 
 
 //-----------------------------------------------------------------------------
-void KTabListBox::unmarkAll(void)
+void KTabListBox::unmarkAll()
 {
   int i;
 
@@ -1083,7 +1083,7 @@ void KTabListBox::clearAllNum()
 
 
 //-----------------------------------------------------------------------------
-void KTabListBox::clear(void)
+void KTabListBox::clear()
 {
   int i;
 
@@ -1756,7 +1756,7 @@ void KTabListBoxTable::mouseMoveEvent(QMouseEvent* e)
 
 
 //-----------------------------------------------------------------------------
-void KTabListBoxTable::reconnectSBSignals(void)
+void KTabListBoxTable::reconnectSBSignals()
 {
   QScrollBar* hsb = (QScrollBar*)horizontalScrollBar();
   KTabListBox* owner =(KTabListBox*)parentWidget();

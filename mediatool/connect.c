@@ -34,7 +34,7 @@
 
 
 /* Some utility function prototypes */
-int ConnGetNewRef(void);
+int ConnGetNewRef();
 void LogError(char *message);
 /*void MdConnectFindSlot(MediaCon **mcon); */
 void GetShmAdrByRef(int shm_id, char **shm_adr);
@@ -75,7 +75,7 @@ static MediaCon	*Connections [MAX_CONN];
  * out:		-
  *
  *****************************************************************************/
-void MdConnectInit(void)
+void MdConnectInit()
 {
   int i;
   static char		LibraryInitialized=0;
@@ -386,7 +386,7 @@ void MdConnectDelete(int ref)
  *		problem at the current moment.
  *
  *****************************************************************************/
-int ConnGetNewRef(void)
+int ConnGetNewRef()
 {
   static int ref = 0;
   time_t myToD;

@@ -88,20 +88,20 @@ public:
   /**
    * Options reading routines.
    */
-  bool noRootAffix (void) const;
-  bool runTogether(void) const;
-  const QString dictionary (void) const;
-  bool dictFromList (void) const;
-  //QString personalDict (void) const;
-  int encoding (void) const;
-  QStrList ignoreList (void) const;
-  int client (void) const; //see enums at top of file
+  bool noRootAffix () const;
+  bool runTogether() const;
+  const QString dictionary () const;
+  bool dictFromList () const;
+  //QString personalDict () const;
+  int encoding () const;
+  QStrList ignoreList () const;
+  int client () const; //see enums at top of file
 
   /**
    * Call this method before this class is deleted  if you want the settings
    *  you have (or the user has) chosen to become the global, default settings.
    */
-  bool writeGlobalSettings (void);
+  bool writeGlobalSettings ();
 
 
 protected:
@@ -129,8 +129,8 @@ protected:
   QPushButton *browsebutton1;
 
   QStrList *langnames, *langfnames;
-  void fillInDialog (void);
-  bool readGlobalSettings (void);
+  void fillInDialog ();
+  bool readGlobalSettings ();
 
   /**
    * This takes a dictionary file name (fname) and returns

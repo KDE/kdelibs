@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  1999/06/16 07:47:46  kulow
+ * fixing some misc warnings
+ * in trader.cc I had to change getFirst() -> first(). Don't know why
+ *
  * Revision 1.8  1999/05/08 12:47:59  ssk
  * Various documentation changes.
  *
@@ -71,7 +75,7 @@ public:
     void setTabEnabled(const QString&, bool);
     void setBorder(bool);
     void setShape( QTabBar::Shape shape );
-    virtual QSize sizeHint(void) const;
+    virtual QSize sizeHint() const;
 
 protected:
     void paintEvent(QPaintEvent *);

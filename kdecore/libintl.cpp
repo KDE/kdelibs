@@ -1526,7 +1526,7 @@ static size_t maxmap = 0;
 
 /* Prototypes for local functions.  */
 static size_t read_alias_file (const char *fname, int fname_len);
-static void extend_alias_table  (void);
+static void extend_alias_table  ();
 static int alias_compare  (const struct alias_map *map1,
 			   const struct alias_map *map2);
 

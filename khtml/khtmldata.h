@@ -47,7 +47,7 @@ public:
 
     void setFontSizes(const int *newFontSizes, const int *newFixedFontSizes);
     void getFontSizes(int *newFontSizes, int *newFixedFontSizes);
-    void resetFontSizes(void);
+    void resetFontSizes();
 
     int     fontSizes[MAXFONTSIZES];
     int     fixedFontSizes[MAXFONTSIZES];

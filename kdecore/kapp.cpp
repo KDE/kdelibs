@@ -701,7 +701,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
             }
             else{
                 KStyle* (*alloc_ptr)();
-                alloc_ptr = (KStyle* (*)(void))alloc_func;
+                alloc_ptr = (KStyle* (*)())alloc_func;
                 pKStyle = alloc_ptr();
                 if(pKStyle){
                     setStyle(pKStyle);

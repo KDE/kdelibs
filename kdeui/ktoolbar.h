@@ -22,6 +22,11 @@
 
 // $Id$
 // $Log$
+// Revision 1.65  1999/10/08 22:49:18  bero
+// - Replace KTopLevelWidget with KTMainWindow where it's still used
+// - Disable ktopwidget.h
+// - Remove ktopwidget stuff from libs
+//
 // Revision 1.64  1999/09/21 11:03:55  waba
 // WABA: Clean up interface
 //
@@ -593,7 +598,7 @@ public:
    * This function returns true of the full-size mode is enabled. Otherwise
    * false.
    */
-  bool fullSize(void) const;
+  bool fullSize() const;
 
   /**
    * Enables or disables moving of toolbar.
@@ -634,7 +639,7 @@ public:
   /**
    * Returns the value that was set with @ref setMaxHeight().
    */
-  int maxHeight(void)
+  int maxHeight()
   {
 	  return (maxVerHeight);
   }
@@ -649,7 +654,7 @@ public:
   /**
    * Return the value that was set with @ref setMaxWidth().
    */
-  int maxWidth(void)
+  int maxWidth()
   {
 	  return (maxHorWidth);
   }

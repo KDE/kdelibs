@@ -19,8 +19,8 @@ public:
   
   virtual ~KIOListBox();
 
-  virtual void readConfig(void);
-  virtual void writeConfig(void);
+  virtual void readConfig();
+  virtual void writeConfig();
 
   /**
    * Field constants

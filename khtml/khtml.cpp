@@ -1928,7 +1928,7 @@ KHTMLWidget::getFontSizes(int *newFontSizes, int *newFixedFontSizes)
 }
 
 void
-KHTMLWidget::resetFontSizes(void)
+KHTMLWidget::resetFontSizes()
 {
     defaultSettings->resetFontSizes();
 }

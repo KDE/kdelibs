@@ -246,7 +246,7 @@ KSpellDlg::init (const QString& _word, QStrList *_sugg)
 }
 
 void
-KSpellDlg::standby (void)
+KSpellDlg::standby ()
 {
   QWidget *widget;
   //  printf ("STANDBY\n");

@@ -20,6 +20,11 @@
 
 //$Id$
 //$Log$
+//Revision 1.27  1999/10/08 22:49:18  bero
+//- Replace KTopLevelWidget with KTMainWindow where it's still used
+//- Disable ktopwidget.h
+//- Remove ktopwidget stuff from libs
+//
 //Revision 1.26  1999/08/16 21:14:44  mkoch
 //fixed kdoc documentation
 //
@@ -163,7 +168,7 @@ class KMenuBar : public QFrame
    /**
     * Reimplemented to return some useful measures.
     */
-   QSize sizeHint(void) const;
+   QSize sizeHint() const;
 
    /**
     * The rest is standard QMenuBar interface. See Qt docs for

@@ -78,9 +78,9 @@ public:
 class CSSSelector
 {
 public:
-    CSSSelector(void);
-    ~CSSSelector(void);
-    void print(void);
+    CSSSelector();
+    ~CSSSelector();
+    void print();
     int          tag;
     QString      id;
     QString      klass;
@@ -88,12 +88,12 @@ public:
     CSSPropList *propList;
 };
 
-CSSSelector::CSSSelector(void)
+CSSSelector::CSSSelector()
 : tag(-1), tagHistory(0), propList(0)
 {
 }
 
-CSSSelector::~CSSSelector(void)
+CSSSelector::~CSSSelector()
 {
     if (tagHistory)
     {
@@ -101,7 +101,7 @@ CSSSelector::~CSSSelector(void)
     }
 }
 
-void CSSSelector::print(void)
+void CSSSelector::print()
 {
     printf("[Selector: tag = %d, id = \"%s\", class = \"%s\"\n",
     	tag, id.data(), klass.data());
@@ -561,7 +561,7 @@ CSSStyleSheet::parseSheet(const char *src, int len)
 }
 
 void
-CSSStyleSheet::test(void)
+CSSStyleSheet::test()
 {
     char buf[40000];
 

@@ -40,97 +40,97 @@ uint KStdAccel::readKey(KAccel::StdAccel accel, uint defaultKey) const
 
 }
 
-uint KStdAccel::open(void) const
+uint KStdAccel::open() const
 {
   return readKey(KAccel::Open, Qt::CTRL + Qt::Key_O);
 }
 
-uint KStdAccel::openNew(void) const
+uint KStdAccel::openNew() const
 {
   return readKey(KAccel::New, Qt::CTRL+Qt::Key_N);
 }
 
-uint KStdAccel::close(void) const
+uint KStdAccel::close() const
 {
   return readKey(KAccel::Close, Qt::CTRL+Qt::Key_W);
 }
 
-uint KStdAccel::save(void) const
+uint KStdAccel::save() const
 {
   return readKey(KAccel::Save, Qt::CTRL+Qt::Key_S);
 }
 
-uint KStdAccel::print(void) const
+uint KStdAccel::print() const
 {
   return readKey(KAccel::Print, Qt::CTRL+Qt::Key_P);
 }
 
-uint KStdAccel::quit(void) const
+uint KStdAccel::quit() const
 {
   return readKey(KAccel::Quit, Qt::CTRL+Qt::Key_Q);
 }
 
-uint KStdAccel::cut(void) const
+uint KStdAccel::cut() const
 {
   return readKey(KAccel::Cut, Qt::CTRL+Qt::Key_X);
 }
 
-uint KStdAccel::copy(void) const
+uint KStdAccel::copy() const
 {
   return readKey(KAccel::Copy, Qt::CTRL+Qt::Key_C);
 }
 
-uint KStdAccel::paste(void) const
+uint KStdAccel::paste() const
 {
   return readKey(KAccel::Paste, Qt::CTRL+Qt::Key_V);
 }
 
-uint KStdAccel::undo(void) const
+uint KStdAccel::undo() const
 {
   return readKey(KAccel::Undo, Qt::CTRL+Qt::Key_Z);
 }
 
-uint KStdAccel::redo(void) const
+uint KStdAccel::redo() const
 {
   return readKey(KAccel::Redo, Qt::CTRL+Qt::Key_Y);
 }
 
-uint KStdAccel::find(void) const
+uint KStdAccel::find() const
 {
   return readKey(KAccel::Find, Qt::CTRL+Qt::Key_F);
 }
 
-uint KStdAccel::replace(void) const
+uint KStdAccel::replace() const
 {
   return readKey(KAccel::Replace, Qt::CTRL+Qt::Key_R);
 }
 
-uint KStdAccel::insert(void) const
+uint KStdAccel::insert() const
 {
   return readKey(KAccel::Insert, Qt::CTRL+Qt::Key_Insert);
 }
 
-uint KStdAccel::home(void) const
+uint KStdAccel::home() const
 {
   return readKey(KAccel::Home, Qt::CTRL+Qt::Key_Home);
 }
 
-uint KStdAccel::end(void) const
+uint KStdAccel::end() const
 {
   return readKey(KAccel::End, Qt::CTRL+Qt::Key_End);
 }
 
-uint KStdAccel::prior(void) const
+uint KStdAccel::prior() const
 {
   return readKey(KAccel::Prior, Qt::Key_Prior);
 }
 
-uint KStdAccel::next(void) const
+uint KStdAccel::next() const
 {
   return readKey(KAccel::Next, Qt::Key_Next);
 }
 
-uint KStdAccel::help(void) const
+uint KStdAccel::help() const
 {
   return readKey(KAccel::Help, Qt::Key_F1);
 }

@@ -63,7 +63,7 @@ KIOListBox::~KIOListBox()
 }
 
 
-void KIOListBox::readConfig(void)
+void KIOListBox::readConfig()
 {
   KConfig* conf = new KConfig("kioslaverc");
 
@@ -100,7 +100,7 @@ void KIOListBox::readConfig(void)
 }
 
 
-void KIOListBox::writeConfig(void)
+void KIOListBox::writeConfig()
 {
   KConfig* conf = new KConfig("kioslaverc");
 

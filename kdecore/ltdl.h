@@ -67,18 +67,18 @@ typedef struct {
 } lt_dlsymlist;
 
 __BEGIN_DECLS
-extern int lt_dlinit LTDL_PARAMS((void));
+extern int lt_dlinit LTDL_PARAMS(());
 extern int lt_dlpreload LTDL_PARAMS((const lt_dlsymlist *preloaded));
 extern int lt_dlpreload_default LTDL_PARAMS((const lt_dlsymlist *preloaded));
-extern int lt_dlexit LTDL_PARAMS((void));
+extern int lt_dlexit LTDL_PARAMS(());
 extern lt_dlhandle lt_dlopen LTDL_PARAMS((const char *filename));
 extern lt_dlhandle lt_dlopenext LTDL_PARAMS((const char *filename));
 extern int lt_dlclose LTDL_PARAMS((lt_dlhandle handle));
 extern lt_ptr_t lt_dlsym LTDL_PARAMS((lt_dlhandle handle, const char *name));
-extern const char *lt_dlerror LTDL_PARAMS((void));
+extern const char *lt_dlerror LTDL_PARAMS(());
 extern int lt_dladdsearchdir LTDL_PARAMS((const char *search_dir));
 extern int lt_dlsetsearchpath LTDL_PARAMS((const char *search_path));
-extern const char *lt_dlgetsearchpath LTDL_PARAMS((void));
+extern const char *lt_dlgetsearchpath LTDL_PARAMS(());
 
 extern const lt_dlsymlist lt_preloaded_symbols[];
 #define LTDL_SET_PRELOADED_SYMBOLS() lt_dlpreload_default(lt_preloaded_symbols)

@@ -115,7 +115,7 @@ public:
      * Returns date and time when this document expires. If an invalid
      * date is returned, this document will never expire.
      */
-    QDateTime expiresAt(void) const 
+    QDateTime expiresAt() const 
 	{ return expires; }
     /**
      * Set date and time when this document expires. You can pass a
@@ -129,7 +129,7 @@ public:
      * QDateTime indicates there is no cretion date available for this
      * document.
      */
-    QDateTime createdAt(void) const
+    QDateTime createdAt() const
 	{ return created; }
     /**
      * Sets the creation date and time of this document. This function
@@ -146,7 +146,7 @@ public:
      * (e.g. for an LRU algorithm to discard cached documents in order
      * to limit on-disk cache size).
      */
-    QDateTime lastAccessedAt(void) const 
+    QDateTime lastAccessedAt() const 
 	{ return lastAccess; }
 
     /**
@@ -161,7 +161,7 @@ public:
      * invalid QDateTime indicates there is no modification date
      * available for this document.
      */
-    QDateTime lastModifiedAt(void) const
+    QDateTime lastModifiedAt() const
 	{ return lastModified; }
     /**
      * Sets the modification date and timefor this document.

@@ -1279,7 +1279,7 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,
     return filenames;
 }
 
-QStringList KFileBaseDialog::selectedFiles(void) const
+QStringList KFileBaseDialog::selectedFiles() const
 {
     return QStringList();
 }

@@ -120,7 +120,7 @@ int getdomainname(char *name, size_t len)
 #endif
 
 #ifndef HAVE_RANDOM
-long int random(void)
+long int random()
 {
     return lrand48();
 }

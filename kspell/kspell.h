@@ -66,14 +66,14 @@ public:
    *   Delete it, reconfigure a KSpellConfig and try again (perhaps with
    *   the system defaults).
    **/
-  inline bool isOk (void) { return ok; }
+  inline bool isOk () { return ok; }
 
   /**
    * Clean up ISpell (write out the personal dictionary and close ispell's
    *  stdin).  A "death()" signal will be emitted when the cleanup is
    *  complete, but the cleanUp() method will return immediately.
    **/
-  virtual void cleanUp (void);
+  virtual void cleanUp ();
   /**
    *  check() will spell check a buffer of many words in plain text 
    *  format
@@ -94,7 +94,7 @@ public:
    * Returns the position (for check())  or word number (for checkList()) of
    * the last word checked.
    **/
-  inline int lastPosition(void)
+  inline int lastPosition()
     { return lastpos;}
 
   /**
@@ -139,20 +139,20 @@ public:
    * You can use this to manually hide the dialog box.  You only _need_ to
    *  do this when you are done with checkWord();
    */
-  void hide (void)   { ksdlg->hide(); }
+  void hide ()   { ksdlg->hide(); }
 
   /**
    * After calling checkWord (an in response to a misspelled() signal you can
    *  use this to get the list of
    *  suggestions (if any were available)
    */
-  inline QStrList *suggestions (void)	{ return &sugg; }
+  inline QStrList *suggestions ()	{ return &sugg; }
 
   /**
    * After calling checkWord, you can use this to get the dialog box's
    *  result code.
    */
-  inline int dlgResult (void)
+  inline int dlgResult ()
     { return dlgresult; }
 
   /**
@@ -161,13 +161,13 @@ public:
    */
   void moveDlg (int x, int y);
 
-  inline int heightDlg (void) {return ksdlg->height();}
-  inline int widthDlg (void) {return ksdlg->width();}
+  inline int heightDlg () {return ksdlg->height();}
+  inline int widthDlg () {return ksdlg->width();}
 
   /**
    * You might want the full buffer in its partially-checked state.
    */
-  const QString *intermediateBuffer (void) {return &newbuffer;}
+  const QString *intermediateBuffer () {return &newbuffer;}
 
   /**
    * Tell ispell to ignore this word for the life of this KSpell instance.
@@ -185,7 +185,7 @@ public:
   /**
    * Returns the KSpellConfig object being used by this KSpell.
    */
-  KSpellConfig ksConfig (void) const;
+  KSpellConfig ksConfig () const;
 
   /**
    * Set the resolution (in percent) of the progress() signals.
@@ -360,16 +360,16 @@ protected:
   int parseOneResponse (const QString &_buffer, QString &word, QStrList *sugg);
   QString funnyWord (QString word);
   void dialog (QString word, QStrList *sugg, const char* _slot);
-  inline QString replacement (void)
+  inline QString replacement ()
     { return dlgreplacement; }
 
   void setUpDialog ( bool reallyusedialogbox = TRUE);
 
-  void emitProgress (void);
+  void emitProgress ();
   bool cleanFputs (QString s, bool appendCR=TRUE);
   bool cleanFputsWord (QString s, bool appendCR=TRUE);
-  void startIspell(void);
-  bool writePersonalDictionary (void);
+  void startIspell();
+  bool writePersonalDictionary ();
 };
 
 #endif

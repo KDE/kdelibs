@@ -110,8 +110,8 @@ void	 (*lt_dlfree)  LTDL_PARAMS((lt_ptr_t ptr)) = (void(*)LTDL_PARAMS((lt_ptr_t)
 typedef struct lt_dltype_t {
 	struct lt_dltype_t *next;
 	const char *sym_prefix;	/* prefix for symbols */
-	int (*mod_init) LTDL_PARAMS((void));
-	int (*mod_exit) LTDL_PARAMS((void));
+	int (*mod_init) LTDL_PARAMS(());
+	int (*mod_exit) LTDL_PARAMS(());
 	int (*lib_open) LTDL_PARAMS((lt_dlhandle handle, const char *filename));
 	int (*lib_close) LTDL_PARAMS((lt_dlhandle handle));
 	lt_ptr_t (*find_sym) LTDL_PARAMS((lt_dlhandle handle, const char *symbol));
@@ -246,13 +246,13 @@ strrchr(str, ch)
 #endif
 
 static int
-sys_dl_init LTDL_PARAMS((void))
+sys_dl_init LTDL_PARAMS(())
 {
 	return 0;
 }
 
 static int
-sys_dl_exit LTDL_PARAMS((void))
+sys_dl_exit LTDL_PARAMS(())
 {
 	return 0;
 }
@@ -364,13 +364,13 @@ sys_dl = { LTDL_TYPE_TOP, 0, sys_dl_init, sys_dl_exit,
 #define	LTDL_BIND_FLAGS	(BIND_IMMEDIATE | BIND_NONFATAL | DYNAMIC_PATH)
 
 static int
-sys_shl_init LTDL_PARAMS((void))
+sys_shl_init LTDL_PARAMS(())
 {
 	return 0;
 }
 
 static int
-sys_shl_exit LTDL_PARAMS((void))
+sys_shl_exit LTDL_PARAMS(())
 {
 	return 0;
 }
@@ -433,13 +433,13 @@ sys_shl = { LTDL_TYPE_TOP, 0, sys_shl_init, sys_shl_exit,
 #endif
 
 static int
-sys_dld_init LTDL_PARAMS((void))
+sys_dld_init LTDL_PARAMS(())
 {
 	return 0;
 }
 
 static int
-sys_dld_exit LTDL_PARAMS((void))
+sys_dld_exit LTDL_PARAMS(())
 {
 	return 0;
 }
@@ -503,13 +503,13 @@ sys_dld = { LTDL_TYPE_TOP, 0, sys_dld_init, sys_dld_exit,
 #include <windows.h>
 
 static int
-sys_wll_init LTDL_PARAMS((void))
+sys_wll_init LTDL_PARAMS(())
 {
 	return 0;
 }
 
 static int
-sys_wll_exit LTDL_PARAMS((void))
+sys_wll_exit LTDL_PARAMS(())
 {
 	return 0;
 }
@@ -607,13 +607,13 @@ sys_wll = { LTDL_TYPE_TOP, 0, sys_wll_init, sys_wll_exit,
 #include <kernel/image.h>
 
 static int
-sys_bedl_init LTDL_PARAMS((void))
+sys_bedl_init LTDL_PARAMS(())
 {
 	return 0;
 }
 
 static int
-sys_bedl_exit LTDL_PARAMS((void))
+sys_bedl_exit LTDL_PARAMS(())
 {
 	return 0;
 }
@@ -689,7 +689,7 @@ static const lt_dlsymlist *default_preloaded_symbols = 0;
 static lt_dlsymlists_t *preloaded_symbols = 0;
 
 static int
-presym_init LTDL_PARAMS((void))
+presym_init LTDL_PARAMS(())
 {
 	preloaded_symbols = 0;
 	if (default_preloaded_symbols)
@@ -698,7 +698,7 @@ presym_init LTDL_PARAMS((void))
 }
 
 static int
-presym_free_symlists LTDL_PARAMS((void))
+presym_free_symlists LTDL_PARAMS(())
 {
 	lt_dlsymlists_t	*lists = preloaded_symbols;
 	
@@ -713,7 +713,7 @@ presym_free_symlists LTDL_PARAMS((void))
 }
 
 static int
-presym_exit LTDL_PARAMS((void))
+presym_exit LTDL_PARAMS(())
 {
 	presym_free_symlists();
 	return 0;
@@ -823,7 +823,7 @@ static lt_dltype_t *types = LTDL_TYPE_TOP;
 #undef LTDL_TYPE_TOP
 
 int
-lt_dlinit LTDL_PARAMS((void))
+lt_dlinit LTDL_PARAMS(())
 {
 	/* initialize libltdl */
 	lt_dltype_t **type = &types;
@@ -874,7 +874,7 @@ lt_dlpreload_default (preloaded)
 }
 
 int
-lt_dlexit LTDL_PARAMS((void))
+lt_dlexit LTDL_PARAMS(())
 {
 	/* shut down libltdl */
 	lt_dltype_t *type = types;
@@ -1558,7 +1558,7 @@ lt_dlsym (handle, symbol)
 }
 
 const char *
-lt_dlerror LTDL_PARAMS((void))
+lt_dlerror LTDL_PARAMS(())
 {
 	const char *error = last_error;
 	
@@ -1611,7 +1611,7 @@ lt_dlsetsearchpath (search_path)
 }
 
 const char *
-lt_dlgetsearchpath LTDL_PARAMS((void))
+lt_dlgetsearchpath LTDL_PARAMS(())
 {
 	return user_search_path;
 }

@@ -85,7 +85,7 @@ private:
     static QString *BIGOP;   //sums, products, integrals
     static QString *EVAL;    //things we can evaluate
 
-    static void initStrings(void);
+    static void initStrings();
 
     bool restricted; // if will be evaluated
 
@@ -96,7 +96,7 @@ public:
 
     void redraw(QPainter &p);
     void setBoxes(QArray<box *> newBoxes);
-    QArray<box *> getBoxes(void);
+    QArray<box *> getBoxes();
     void setPos(int x, int y); //sets the position for the center of the formula
     void parse(QString text, QArray<charinfo> *info = NULL);
     QRect getCursorPos(charinfo i);

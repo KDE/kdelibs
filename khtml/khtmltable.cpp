@@ -930,7 +930,7 @@ printf("START calcColInfoI() this = %p\n", this);
 //
 // Both the minimum and preferred column sizes are calculated here.
 // During this phase we are going to calculate the actual widths.
-void HTMLTable::calcColInfoII(void)
+void HTMLTable::calcColInfoII()
 {
     unsigned int r, c;
     int borderExtra = ( border == 0 ) ? 0 : 1;

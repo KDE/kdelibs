@@ -44,7 +44,7 @@ extern "C" void kimgio_init_krl();
 #include <qimageio.h>
 #endif
 
-void kimgioRegister(void)
+void kimgioRegister()
 {
 	if( registered ) {
 	    return;
@@ -89,7 +89,7 @@ void kimgioRegister(void)
 			lt_dlerror());
 	    } else {
 		void (*func)();
-		func = (void (*)(void))init_func;
+		func = (void (*)())init_func;
 		func();
 	    }
 	}
