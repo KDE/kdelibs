@@ -146,6 +146,42 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
             return bookmarks;
         }
     }
+    if( e->provides("text/plain") )
+    {        
+        //kdDebug(7043) << "KBookmarkDrag::decode text/plain" << endl;
+        QString s;
+        if(QTextDrag::decode( e, s ))
+        {
+            
+            QStringList listDragURLs = QStringList::split(QChar('\n'), s);
+            QStringList::ConstIterator it = listDragURLs.begin();
+            QStringList::ConstIterator end = listDragURLs.end();
+            for( ; it!=end; ++it)
+            {
+                //kdDebug(7043)<<"KBookmarkDrag::decode string"<<(*it)<<endl;
+                bookmarks.append( KBookmark::standaloneBookmark( KURL(*it).prettyURL(), KURL(*it)));
+            }
+            return bookmarks;
+        }
+    }
+    if( e->provides("text/plain") )
+    {        
+        //kdDebug(7043) << "KBookmarkDrag::decode text/plain" << endl;
+        QString s;
+        if(QTextDrag::decode( e, s ))
+        {
+            
+            QStringList listDragURLs = QStringList::split(QChar('\n'), s);
+            QStringList::ConstIterator it = listDragURLs.begin();
+            QStringList::ConstIterator end = listDragURLs.end();
+            for( ; it!=end; ++it)
+            {
+                //kdDebug(7043)<<"KBookmarkDrag::decode string"<<(*it)<<endl;
+                bookmarks.append( KBookmark::standaloneBookmark( KURL(*it).prettyURL(), KURL(*it)));
+            }
+            return bookmarks;
+        }
+    }
     bookmarks.append( KBookmark() );
     return bookmarks;
 }
