@@ -1639,7 +1639,7 @@ void KHTMLPart::slotRedirect()
     args.reload = true;
 
   args.setLockHistory( d->m_redirectLockHistory );
-  urlSelected( u, 0, 0, QString::null, args );
+  urlSelected( u, 0, 0, "_self", args );
 }
 
 void KHTMLPart::slotRedirection(KIO::Job*, const KURL& url)
@@ -2807,7 +2807,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    */
 
   // This causes crashes... needs to be fixed.
-  if (u.protocol() != "https" && u.protocol() != "mailto") {
+  if (!d->m_submitForm && u.protocol() != "https" && u.protocol() != "mailto") {
 	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
 					"\nA third party may be able to intercept and view this information."
@@ -2841,7 +2841,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     }
   }
 
-  if (u.protocol() == "mailto") {
+  if (!d->m_submitForm && u.protocol() == "mailto") {
      int rc = KMessageBox::warningContinueCancel(NULL, 
                  i18n("This site is attempting to submit form data via email."),
                  i18n("KDE"), 
@@ -3626,7 +3626,8 @@ QStringList KHTMLPart::frameNames() const
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
-    res += (*it).m_name;
+    if (!(*it).m_bPreloaded)
+      res += (*it).m_name;
 
   return res;
 }
@@ -3638,7 +3639,8 @@ QPtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
-     res.append( (*it).m_part );
+    if (!(*it).m_bPreloaded)
+      res.append( (*it).m_part );
 
   return res;
 }
@@ -4168,6 +4170,8 @@ void KHTMLPart::slotAutoScroll()
 
 void KHTMLPart::selectAll()
 {
+  if(!d->m_doc) return;
+
   NodeImpl *first;
   if (d->m_doc->isHTMLDocument())
     first = static_cast<HTMLDocumentImpl*>(d->m_doc)->body();
