@@ -881,9 +881,8 @@ void RegressionTest::testStaticFile(const QString & filename)
         KJS::ExecState *exec = m_part->jScriptInterpreter()->globalExec();
         if ( comp.complType() == ReturnValue || comp.complType() == Normal )
         {
-            if (!comp.value().isNull() && comp.value().isA(ObjectType) &&
-                (Object::dynamicCast(comp.value()).inherits(&ArrayInstanceImp::info) ) )
-            {
+            if ( comp.value().isValid() && comp.value().isA(ObjectType) &&
+                (Object::dynamicCast(comp.value()).className() == "Array" ) )          {
                 Object argArrayObj = Object::dynamicCast(comp.value());
                 unsigned int length = argArrayObj.get(exec,lengthPropertyName).toUInt32(exec);
                 if ( length == 1 )
@@ -901,7 +900,7 @@ void RegressionTest::testStaticFile(const QString & filename)
         if ( comp2.complType() == Throw ) {
             KJS::Value val = comp2.value();
             KJS::Object obj = Object::dynamicCast(val);
-            if ( !obj.isNull() && obj.hasProperty( exec, "jsUnitMessage" ) )
+            if ( obj.isValid() && obj.hasProperty( exec, "jsUnitMessage" ) )
                 description = obj.get( exec, "jsUnitMessage" ).toString( exec ).qstring();
             else
                 description = comp2.value().toString( exec ).qstring();
