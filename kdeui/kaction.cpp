@@ -728,17 +728,21 @@ int KAction::plug( QWidget *w, int index )
     else
       instance = KGlobal::instance();
 
-    if ( icon().isEmpty() ) // old code using QIconSet directly
+    if ( icon().isEmpty() && !iconSet().pixmap().isNull() ) // old code using QIconSet directly
     {
-      bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
-                         SLOT( slotActivated() ),
-                         d->isEnabled(), d->plainText(), index );
+        bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
+                           SLOT( slotActivated() ),
+                           d->isEnabled(), d->plainText(), index );
     }
     else
-      bar->insertButton( d->iconName(), id_, SIGNAL( clicked() ), this,
-                         SLOT( slotActivated() ),
-                         d->isEnabled(), d->plainText(), index, instance );
-
+    {
+        QString icon = d->iconName();
+        if ( icon.isEmpty() )
+            icon = "unknown";
+        bar->insertButton( icon, id_, SIGNAL( clicked() ), this,
+                           SLOT( slotActivated() ),
+                           d->isEnabled(), d->plainText(), index, instance );
+    }
     bar->getButton( id_ )->setName( QCString("toolbutton_")+name() );
 
     if ( !d->whatsThis().isEmpty() )
