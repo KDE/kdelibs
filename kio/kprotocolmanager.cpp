@@ -397,21 +397,29 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
      proxy = proxyForURL(url);
      if ((proxy != "DIRECT") && (!proxy.isEmpty()))
      {
-        KConfig* cfg = config();
-        cfg->setGroup("Proxy Settings");
-        bool reversedException = cfg->readBoolEntry("ReversedException", false);
-
         QString noProxy = noProxyFor();
-        bool isException = (!noProxy.isEmpty() &&
-                            revmatch(url.host().lower().latin1(),
-                                     noProxy.lower().latin1()));
-        if ( !isException || url.host().isEmpty() ||
-             (reversedException && proxyType() == ManualProxy) )
+        ProxyType type = proxyType();
+        bool useRevProxy = ( (type == ManualProxy || type == EnvVarProxy) &&
+                            useReverseProxy() );
+        bool isRevMatch = (!noProxy.isEmpty() &&
+                           revmatch(url.host().lower().latin1(),
+                                    noProxy.lower().latin1()));
+        if ( (!useRevProxy && !isRevMatch) ||
+             (useRevProxy && isRevMatch) )
         {
-           d->url = url;
-           d->protocol = QString::fromLatin1("http");
-           d->proxy = proxy;
-           return d->protocol;
+           // Let's not assume all proxying is done through
+           // the http io-slave.  Instead attempt to determine
+           // the protocol to use from the proxy URL itself.
+           // If the proxy URL is then determined to be invalid,
+           // bypass it all together.
+           d->url = proxy;
+           if ( d->url.isValid() )
+           {
+              d->protocol = d->url.protocol();
+              d->url = url;
+              d->proxy = proxy;
+              return d->protocol;
+           }
         }
      }
   }
