@@ -86,6 +86,19 @@ public:
     */
     bool automaticResizeTabs() const;
 
+    /*!
+      If \a hide is true, the tabbar is hidden along with any corner
+      widgets.
+      @since 3.4
+    */
+    void setTabBarHidden( bool hide );
+
+    /*!
+      Return true if the tabbar is hidden.
+      @since 3.4
+    */
+    bool isTabBarHidden() const;
+
 public slots:
     /*!
       Move a widget's tab from first to second specified index and emit

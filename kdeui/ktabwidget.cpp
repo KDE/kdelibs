@@ -73,6 +73,27 @@ KTabWidget::~KTabWidget()
     delete d;
 }
 
+void KTabWidget::setTabBarHidden( bool hide )
+{
+    QWidget *rightcorner = this->cornerWidget( TopRight );
+    QWidget *leftcorner = this->cornerWidget( TopLeft );
+
+    if ( hide ) {
+        if ( leftcorner ) leftcorner->hide();
+        if ( rightcorner ) rightcorner->hide();
+        tabBar()->hide();
+    } else {
+        tabBar()->show();
+        if ( leftcorner ) leftcorner->show();
+        if ( rightcorner ) rightcorner->show();
+    }
+}
+
+bool KTabWidget::isTabBarHidden() const
+{
+    return !( tabBar()->isVisible() );
+}
+
 void KTabWidget::setTabColor( QWidget *w, const QColor& color )
 {
     QTab *t = tabBar()->tabAt( indexOf( w ) );
