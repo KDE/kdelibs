@@ -1,0 +1,11 @@
+properly handle capitalization on "Replace All" (in parseOneResponse())
+
+change all constant strings to klocale->translate(string);  (or i18n?)
+
+set the dialog box's icon to that of the parent
+
+
+add a "move()" function to move the dialog box (calling app should use this
+	in response to a mispelled() signale to move the d.b.  out of the way
+	of the mispelled word)
+ This is done, but it doesn't work on the first call -- any ideas?

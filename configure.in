@@ -128,6 +128,7 @@ AC_OUTPUT(Makefile \
 	jscript/Makefile \
 	kfmlib/Makefile \
 	mediatool/Makefile \
+	kspell/Makefile \
 	po/Makefile \
 	toolbar/Makefile \
 	doc/Makefile \

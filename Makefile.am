@@ -18,7 +18,8 @@
 #    Boston, MA 02111-1307, USA.
 
 
-SUBDIRS = kdecore kdeui jscript khtmlw kfmlib kfile mediatool po doc toolbar kdetest
+SUBDIRS = kdecore kdeui jscript khtmlw kfmlib kfile mediatool kspell \
+		po doc toolbar kdetest
 
 acinclude.m4: acinclude.m4.in libtool.m4.in
 	cat acinclude.m4.in libtool.m4.in   > acinclude.m4
@@ -28,4 +29,4 @@ messages:
 	(cd po && $(MAKE) merge)
 
 EXTRA_DIST = acinclude.m4.in libtool.m4.in
- 
+
