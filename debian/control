@@ -65,6 +65,7 @@ Description: aRts Sound system (midi/kmedia support libraries)
 Package: libkmid-alsa
 Architecture: any
 Section: libs
+Priority: extra
 Replaces: libkmid, libarts (<< 4:2.2-alpha1-4), libarts-alsa (<< 4:2.2-alpha1-4)
 Depends: ${shlibs:Depends}
 Enhances: kdebase
@@ -82,6 +83,7 @@ Description: aRts Sound system (midi/kmedia support libraries with alsa)
 Package: libarts-alsa
 Architecture: any
 Section: libs
+Priority: extra
 Replaces: libarts
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3, artsbuilder
