@@ -36,21 +36,6 @@ static int ymd_to_days(int year, int mon, int day)
             - 2440588;
 }
 
-/*
- * Converts broken-down UTC time to time in seconds since 1 Jan 1970 00:00.
- * Pays no attention to time zone or daylight savings time.  
- */
-static time_t my_inv_gmtime(struct tm* ptms)
-{
-    time_t t;
-
-    t = ymd_to_days(ptms->tm_year+1900, ptms->tm_mon+1, ptms->tm_mday); /* days */
-    t = 24*t + ptms->tm_hour;  /* hours   */
-    t = 60*t + ptms->tm_min;   /* minutes */
-    t = 60*t + ptms->tm_sec;   /* seconds */
-    return t;
-}
-
 static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
 
 time_t 
@@ -75,7 +60,6 @@ KRFCDate::parseDate(const QString &_date)
      int hour;
      int minute;
      int second;
-     struct tm tm_s;
 
      while(*dateString && (*dateString != ' '))
      	dateString++;
@@ -177,15 +161,10 @@ KRFCDate::parseDate(const QString &_date)
      if ((second < 0) || (second > 59))
      	return result; // Invalid expire date
 
-     tm_s.tm_sec = second;
-     tm_s.tm_min = minute;
-     tm_s.tm_hour = hour;
-     tm_s.tm_mday = day;
-     tm_s.tm_mon = month;
-     tm_s.tm_year = year-1900;
-     tm_s.tm_isdst = -1;
-
-     result = my_inv_gmtime(&tm_s);
+     result = ymd_to_days(year, month+1, day); /* days */
+     result = 24*result + hour;  /* hours   */
+     result = 60*result + minute;   /* minutes */
+     result = 60*result + second;   /* seconds */
 
 ////////////////
 // Debug stuff
