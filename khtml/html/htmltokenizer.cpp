@@ -223,7 +223,7 @@ void HTMLTokenizer::parseListing( HTMLStringIt &src)
 	    {
 	        /* Parse scriptCode containing <script> info */
 		// ### use KHTMLWidget::executeScript...
-	        KJSWorld *jscript = view->jScript();
+	        KJScript *jscript = view->jScript();
 		//printf("scriptcode is: %s\n", QString(scriptCode, scriptCodeSize).ascii());
 		if(jscript) jscript->evaluate((KJS::UnicodeChar*)scriptCode, scriptCodeSize);
 	    }
