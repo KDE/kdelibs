@@ -52,8 +52,8 @@ class KMdiDockContainer: public QWidget, public KDockContainer
 
     void hideIfNeeded();
 
-    virtual void save(KConfig *);
-    virtual void load(KConfig *);
+    virtual void save(KConfig *,const QString& group_or_prefix);
+    virtual void load(KConfig *,const QString& group_or_prefix);
 
 
   public slots:

@@ -333,12 +333,11 @@ void KMdiDockContainer::setPixmap(KDockWidget* widget ,const QPixmap& pixmap)
   tab->setIcon(pixmap.isNull()?SmallIcon("misc"):pixmap);
 }
 
-void KMdiDockContainer::save(KConfig*)
+void KMdiDockContainer::save(KConfig* cfg,const QString& group_or_prefix)
 {
-  KConfig *cfg=kapp->config();
   QString grp=cfg->group();
-  cfg->deleteGroup(QString("KMdiDock::%1").arg(parent()->name()));
-  cfg->setGroup(QString("KMdiDock::%1").arg(parent()->name()));
+  cfg->deleteGroup(group_or_prefix+QString("::KMdiDock::%1").arg(parent()->name()));
+  cfg->setGroup(group_or_prefix+QString("::KMdiDock::%1").arg(parent()->name()));
 
   if (isOverlapMode()) cfg->writeEntry("overlapMode","true");
     else cfg->writeEntry("overlapMode","false");
@@ -361,11 +360,10 @@ void KMdiDockContainer::save(KConfig*)
 
 }
 
-void KMdiDockContainer::load(KConfig*)
+void KMdiDockContainer::load(KConfig* cfg,const QString& group_or_prefix)
 {
-  KConfig *cfg=kapp->config();
   QString grp=cfg->group();
-  cfg->setGroup(QString("KMdiDock::%1").arg(parent()->name()));
+  cfg->setGroup(group_or_prefix+QString("::KMdiDock::%1").arg(parent()->name()));
 
   if (cfg->readEntry("overlapMode")!="false")
     activateOverlapMode(m_tb->width());

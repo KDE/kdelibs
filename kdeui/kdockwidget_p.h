@@ -50,8 +50,8 @@ public:
   virtual void showWidget(KDockWidget *);
   virtual void removeWidget(KDockWidget*);
   virtual void undockWidget(KDockWidget*);
-  virtual void save(KConfig *cfg);
-  virtual void load(KConfig *cfg);
+  virtual void save(KConfig *cfg,const QString& group_or_prefix);
+  virtual void load(KConfig *cfg,const QString& group_or_prefix);
   virtual void setToolTip (KDockWidget *, QString &);
   virtual void  setPixmap(KDockWidget*,const QPixmap&);
   QStringList containedWidgets() const;

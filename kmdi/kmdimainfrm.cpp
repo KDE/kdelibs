@@ -1675,6 +1675,7 @@ void KMdiMainFrm::setupToolViewsForIDEALMode()
 
     KMdiDockContainer *tmpDC;
     m_leftContainer->setWidget(tmpDC=new KMdiDockContainer(m_leftContainer, this, KDockWidget::DockLeft));
+    m_leftContainer->setEnableDocking(KDockWidget::DockLeft);
     m_leftContainer->manualDock(mainDock, KDockWidget::DockLeft,20);
     tmpDC->init();
     if (m_mdiGUIClient) connect (this,SIGNAL(toggleLeft()),tmpDC,SLOT(toggle()));
@@ -1683,6 +1684,7 @@ void KMdiMainFrm::setupToolViewsForIDEALMode()
     connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
 
     m_rightContainer->setWidget(tmpDC=new KMdiDockContainer(m_rightContainer, this, KDockWidget::DockRight));
+    m_rightContainer->setEnableDocking(KDockWidget::DockRight);
     m_rightContainer->manualDock(mainDock, KDockWidget::DockRight,20);
     tmpDC->init();
     if (m_mdiGUIClient) connect (this,SIGNAL(toggleRight()),tmpDC,SLOT(toggle()));
@@ -1691,6 +1693,7 @@ void KMdiMainFrm::setupToolViewsForIDEALMode()
     connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
 
     m_topContainer->setWidget(tmpDC=new KMdiDockContainer(m_topContainer, this, KDockWidget::DockTop));
+    m_topContainer->setEnableDocking(KDockWidget::DockTop);
     m_topContainer->manualDock(mainDock, KDockWidget::DockTop,20);
     tmpDC->init();
     if (m_mdiGUIClient) connect (this,SIGNAL(toggleTop()),tmpDC,SLOT(toggle()));
@@ -1699,6 +1702,7 @@ void KMdiMainFrm::setupToolViewsForIDEALMode()
     connect(tmpDC,SIGNAL(deactivated(KMdiDockContainer*)),this,SLOT(removeFromActiveDockList(KMdiDockContainer*)));
 
     m_bottomContainer->setWidget(tmpDC=new KMdiDockContainer(m_bottomContainer, this, KDockWidget::DockBottom));
+    m_bottomContainer->setEnableDocking(KDockWidget::DockBottom);
     m_bottomContainer->manualDock(mainDock, KDockWidget::DockBottom,20);
     tmpDC->init();
     if (m_mdiGUIClient) connect (this,SIGNAL(toggleBottom()),tmpDC,SLOT(toggle()));

@@ -2363,7 +2363,7 @@ void KDockManager::writeConfig( KConfig* c, QString group )
     if ( obj->header ){
       obj->header->saveConfig( c );
     }
-    if (obj->d->isContainer) dynamic_cast<KDockContainer*>(obj->widget)->save(c);
+    if (obj->d->isContainer) dynamic_cast<KDockContainer*>(obj->widget)->save(c,group);
 /*************************************************************************************************/
     if ( obj->isGroup ){
       if ( (findList.find( obj->firstName ) != findList.end()) && (findList.find( obj->lastName ) != findList.end() )){
@@ -2548,7 +2548,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
       obj = getDockWidgetFromName( oname );
     }
 
-    if (obj && obj->d->isContainer)  dynamic_cast<KDockContainer*>(obj->widget)->load(c);
+    if (obj && obj->d->isContainer)  dynamic_cast<KDockContainer*>(obj->widget)->load(c,group);
     if ( obj && obj->header){
       obj->header->loadConfig( c );
     }
@@ -2982,8 +2982,8 @@ void KDockContainer::removeWidget (KDockWidget *dw){
 void KDockContainer::undockWidget (KDockWidget *){;}
 void KDockContainer::setToolTip(KDockWidget *, QString &){;}
 void KDockContainer::setPixmap(KDockWidget*,const QPixmap&){;}
-void KDockContainer::load (KConfig*){;}
-void KDockContainer::save (KConfig*){;}
+void KDockContainer::load (KConfig*, const QString&){;}
+void KDockContainer::save (KConfig*, const QString&){;}
 void KDockContainer::prepareSave(QStringList &names)
 {
 
