@@ -6,6 +6,7 @@ Name=Application
 Name[af]=aansoek
 Name[ar]=تطبيق
 Name[az]=Proqram
+Name[be]=Дастасаваньне
 Name[bg]=Приложение
 Name[br]=Arload
 Name[bs]=Program
@@ -77,3 +78,5 @@ Type=QString
 [PropertyDef::X-KDE-StartupNotify]
 Type=bool
 
+[PropertyDef::X-DCOP-ServiceName]
+Type=QString
