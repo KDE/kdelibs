@@ -1,10 +1,11 @@
-kdelibs-cvs (4:2.0-19990822-1.1) experimental; urgency=low
+kdelibs-cvs (4:2.0-19990823-1.0) experimental; urgency=low
 
   * More CVS updates
   * Adding in a process to the postinst to verify that /usr/doc/kde/HTML/default
     is a link and not a directory
+  * Removing ldconfig from postrm
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 22 Aug 1999 10:00:28 -0400
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 23 Aug 1999 07:30:28 -0400
 
 kdelibs-cvs (4:2.0-19990822-1.0) experimental; urgency=low
 

@@ -11,7 +11,7 @@ case "$1" in
       if [ ! -L /usr/doc/kde/HTML/default ]; then
         mv /usr/doc/kde/HTML/default/* /usr/doc/kde/HTML/en >/dev/null 2>&1
         rm -rf /usr/doc/kde/HTML/default > /dev/null 2>&1
-        ln -s en /usr/doc/kde/HTML/default
+        ln -s en /usr/doc/kde/HTML/default > /dev/null 2>&1
         echo "It wasn't, I fixed it"
       else
         echo "Looks ok"
