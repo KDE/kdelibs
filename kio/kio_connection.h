@@ -35,7 +35,7 @@ public:
   size_t bufferSize() {return m_iBufferSize;}
 
 protected:
-  Connection();
+  // Connection();
 
   void init( int _in_fd, int _out_fd, size_t _buf_len );
   /**
