@@ -378,6 +378,24 @@ public:
    */
   static QString docPath( const QString& protocol );
 
+  /**
+   * Returns the protocol class for the specified protocol.
+   *
+   * This corresponds to the "Class=" field in the protocol description file. 
+   *
+   * The following classes are defined:
+   * @li ":internet" for common internet protocols
+   * @li ":local" for protocols that access local resources
+   *
+   * Protocol classes always start with a ':' so that they can not be confused with
+   * the protocols themselves.
+   *
+   * @param protocol the protocol to check
+   * @return the class of the protocol, or null if unknown
+   * @since 3.2
+   */
+  static QString protocolClass( const QString& protocol );
+
 
 public:
   // Internal functions:
