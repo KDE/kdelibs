@@ -16,14 +16,6 @@ KPart::~KPart()
 {
 }
 
-KPart* KPart::parentPart()
-{
-    if ( parent() && parent()->inherits( "KPart" ) )
-	return (KPart*)parent();
-
-    return 0;
-}
-
 QString KPart::readConfigFile( const QString& filename ) const
 {
     QFile file( filename );

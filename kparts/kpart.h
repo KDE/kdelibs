@@ -15,12 +15,6 @@ public:
     KPart( QWidget* parent = 0, const char* name = 0 );
     ~KPart();
 
-    /**
-     * @return a pointer to the parent part. If there is no parent
-     *         or if the parent is not a Part, then 0 is returned.
-     */
-    KPart* parentPart();
-
     QString config();
 
     QAction* action( const char* name );
