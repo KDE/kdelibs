@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Comment=XHTML Family Document
+Comment[ar]=مستند XHTML
 Comment[az]=XHTML Ailəsi Sənədi
 Comment[be]=Дакумэнт XHTML
 Comment[bg]=Документ XHTML
@@ -63,6 +64,7 @@ Type=MimeType
 Icon=html
 MimeType=application/xhtml+xml
 X-KDE-IsAlso=text/xml
+Patterns=*.xhtml
 
 [Property::X-KDE-text]
 Type=bool
