@@ -186,7 +186,7 @@ void RenderListItem::layout( )
         m_marker->layout();
     RenderFlow::layout();
     const QFontMetrics &fm = style()->fontMetrics();
-    m_height = QMAX( fm.height(),  m_height );
+    m_height = QMAX( m_marker->height() + fm.descent(),  m_height );
 }
 
 // -----------------------------------------------------------
@@ -260,18 +260,27 @@ void RenderListMarker::printObject(QPainter *p, int, int _y,
     }
 
 
-    int xoff = 0;
+    int xoff = m_x;
     int yoff = fm.ascent() - offset;
 
-    if(style()->listStylePosition() != INSIDE) {
-        xoff = -7 - offset;
-        if(style()->direction() == RTL)
-            xoff = -xoff + parent()->width();
-    }
 
     if ( m_listImage && !m_listImage->isErrorImage()) {
-        p->drawPixmap( QPoint( _tx + xoff, _ty ), m_listImage->pixmap());
+	if ( style()->listStylePosition() != INSIDE ) {
+	    if ( style()->direction() == LTR )
+		xoff = - m_listImage->pixmap().width();
+	    else
+		xoff = parent()->width();
+	}
+	p->drawPixmap( QPoint( _tx + xoff, _ty ), m_listImage->pixmap());
         return;
+    }
+
+    if(style()->listStylePosition() != INSIDE) {
+	if(style()->direction() == RTL)
+	    xoff = 7 + parent()->width();
+	else
+	    xoff = -7 - offset;
+
     }
 
 #ifdef BOX_DEBUG
@@ -348,7 +357,7 @@ void RenderListMarker::calcMinMaxWidth()
 
     if(m_listImage) {
         if(style()->listStylePosition() == INSIDE)
-            m_width = m_listImage->pixmap().width() + 5;
+            m_width = m_listImage->pixmap().width();
         m_height = m_listImage->pixmap().height();
 	setMinMaxKnown();
         return;
