@@ -44,14 +44,14 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   grid->setColStretch(0,1);
   grid->setColStretch(1,100);
 
-  lb_from = new QLabel( i18n("From :"), main_widget );
+  lb_from = new QLabel( "From :", main_widget );
   grid->addWidget( lb_from, 0, 0 );
 
   le_source = new QLineEdit( main_widget );
   grid->addWidget( le_source, 0, 1 );
   le_source->setText( src );
 
-  lb_to = new QLabel( i18n("To :"), main_widget );
+  lb_to = new QLabel( "To :", main_widget );
   grid->addWidget( lb_to, 1, 0 );
 
   le_dest = new QLineEdit( main_widget );
@@ -113,21 +113,21 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   changeOperation( op );
 
   // Progress groupbox & buttons
-  progressButtons = new QButtonGroup( i18n("Progress dialog mode"), main_widget );
+  progressButtons = new QButtonGroup( "Progress dialog mode", main_widget );
   topLayout->addWidget( progressButtons, 10 );
   connect( progressButtons, SIGNAL(clicked(int)), SLOT(changeProgressMode(int)) );
 
   hbLayout = new QHBoxLayout( progressButtons, 15 );
 
-  rbProgressNone = new QRadioButton( i18n("None"), progressButtons );
+  rbProgressNone = new QRadioButton( "None", progressButtons );
   progressButtons->insert( rbProgressNone, ProgressNone );
   hbLayout->addWidget( rbProgressNone, 5 );
 
-  rbProgressDefault = new QRadioButton( i18n("Default"), progressButtons );
+  rbProgressDefault = new QRadioButton( "Default", progressButtons );
   progressButtons->insert( rbProgressDefault, ProgressDefault );
   hbLayout->addWidget( rbProgressDefault, 5 );
 
-  rbProgressStatus = new QRadioButton( i18n("Status"), progressButtons );
+  rbProgressStatus = new QRadioButton( "Status", progressButtons );
   progressButtons->insert( rbProgressStatus, ProgressStatus );
   hbLayout->addWidget( rbProgressStatus, 5 );
 
@@ -137,19 +137,19 @@ KioslaveTest::KioslaveTest( QString src, QString dest, uint op, uint pr )
   // run & stop butons
   hbLayout = new QHBoxLayout( topLayout, 15 );
 
-  pbStart = new QPushButton( i18n("Start"), main_widget );
+  pbStart = new QPushButton( "Start", main_widget );
   pbStart->setFixedSize( pbStart->sizeHint() );
   connect( pbStart, SIGNAL(clicked()), SLOT(startJob()) );
   hbLayout->addWidget( pbStart, 5 );
 
-  pbStop = new QPushButton( i18n("Stop"), main_widget );
+  pbStop = new QPushButton( "Stop", main_widget );
   pbStop->setFixedSize( pbStop->sizeHint() );
   pbStop->setEnabled( false );
   connect( pbStop, SIGNAL(clicked()), SLOT(stopJob()) );
   hbLayout->addWidget( pbStop, 5 );
 
   // close button
-  close = new QPushButton( i18n("Close"), main_widget );
+  close = new QPushButton( "Close", main_widget );
   close->setFixedSize( close->sizeHint() );
   connect(close, SIGNAL(clicked()), kapp, SLOT(quit()));
 
@@ -201,7 +201,7 @@ void KioslaveTest::startJob() {
   KURL src( sCurrent, sSrc );
 
   if ( src.isMalformed() ) {
-    QMessageBox::critical(this, i18n("Kioslave Error Message"), i18n("Source URL is malformed") );
+    QMessageBox::critical(this, "Kioslave Error Message", "Source URL is malformed" );
     return;
   }
 
@@ -210,8 +210,8 @@ void KioslaveTest::startJob() {
 
   if ( dest.isMalformed() &&
        ( selectedOperation == Copy || selectedOperation == Move ) ) {
-    QMessageBox::critical(this, i18n("Kioslave Error Message"),
-		       i18n("Destination URL is malformed") );
+    QMessageBox::critical(this, "Kioslave Error Message",
+		       "Destination URL is malformed" );
     return;
   }
 
