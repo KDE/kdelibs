@@ -1260,6 +1260,11 @@ void KDockWidget::toDesktop()
    manualDock( 0, DockDesktop, 50, p );
 }
 
+KDockWidget::DockPosition KDockWidget::currentDockPosition()
+{
+	return currentDockPos;
+}
+
 void KDockWidget::undock()
 {
 //  kdDebug()<<"KDockWidget::undock()"<<endl;
@@ -2781,6 +2786,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
     }
 
   }
+  
   // delete all autocreate dock
   if (d->m_readDockConfigMode == WrapExistingWidgetsOnly) {
     finishReadDockConfig(); // remove empty dockwidgets
