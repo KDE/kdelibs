@@ -114,7 +114,7 @@ KService::init( KDesktopFile *config )
        !absPath)
   {
     kdWarning(7012) << "The desktop entry file " << entryPath()
-           << " has Type=" << m_strType << "but is located under \"" << resource
+           << " has Type=" << m_strType << " but is located under \"" << resource
            << "\" instead of \"apps\"" << endl;
     m_bValid = false;
     return;
@@ -126,7 +126,7 @@ KService::init( KDesktopFile *config )
        !absPath)
   {
     kdWarning(7012) << "The desktop entry file " << entryPath()
-           << " has Type=" << m_strType << "but is located under \"" << resource
+           << " has Type=" << m_strType << " but is located under \"" << resource
            << "\" instead of \"services\"" << endl;
     m_bValid = false;
     return;
