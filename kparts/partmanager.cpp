@@ -113,13 +113,13 @@ bool PartManager::allowNestedParts() const
 
 void PartManager::setIgnoreScrollBars( bool ignore )
 {
-  d->m_bIgnoreScrollBars = ignore; 
-} 
+  d->m_bIgnoreScrollBars = ignore;
+}
 
 bool PartManager::ignoreScrollBars() const
 {
-  return d->m_bIgnoreScrollBars; 
-} 
+  return d->m_bIgnoreScrollBars;
+}
 
 bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 {
@@ -151,7 +151,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
     if ( d->m_bIgnoreScrollBars && w->inherits( "QScrollBar" ) )
       return false;
-    
+
     part = findPartFromWidget( w, pos );
     if ( part ) // We found a part whose widget is w
     {
@@ -271,6 +271,23 @@ void PartManager::removePart( Part *part )
     setActivePart( 0 );
 
   emit partRemoved( part );
+}
+
+void PartManager::replacePart( Part * oldPart, Part * newPart, bool setActive )
+{
+  kdDebug(1000) << QString("replacePart %1 -> %2").arg(oldPart->name()).arg(newPart->name()) << endl;
+  // This methods does exactly removePart + addPart but without calling setActivePart(0) in between
+  if ( d->m_parts.findRef( oldPart ) == -1 )
+  {
+    kdFatal(1000) << QString("Can't remove part %1, not in KPartManager's list.").arg(oldPart->name()) << endl;
+    return;
+  }
+  disconnect( oldPart, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
+
+  d->m_parts.removeRef( oldPart );
+  emit partRemoved( oldPart );
+
+  addPart( newPart, setActive );
 }
 
 void PartManager::setActivePart( Part *part, QWidget *widget )

@@ -124,6 +124,13 @@ public:
   virtual void removePart( Part *part );
 
   /**
+   * Replaces @p oldPart with @p newPart, and sets @p newPart as active if
+   * @p setActive is true.
+   * This is an optimised version of @ref removePart + @ref addPart
+   */
+  virtual void replacePart( Part * oldPart, Part * newPart, bool setActive = true );
+
+  /**
    * Set the active part.
    *
    * The active part receives activation events.
