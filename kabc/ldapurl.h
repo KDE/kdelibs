@@ -59,12 +59,12 @@ namespace KABC {
      * Returns the dn part of the LDAP Url (same as path(), but slash removed
      * from the beginning).
      */
-    QString dn() const { return m_dn; };
+    const QString& dn() const { return m_dn; };
     /** Sets the the dn part of the LDAP Url. */ 
     void setDn( const QString &dn );
 
     /** Returns the attributes part of the LDAP Url */
-    QStringList &attributes() { return m_attributes; }
+    const QStringList &attributes() { return m_attributes; }
     /** Sets the attributes part of the LDAP Url */
     void setAttributes( const QStringList &attributes ) 
       { m_attributes=attributes; updateQuery(); }
@@ -75,7 +75,7 @@ namespace KABC {
     void setScope(Scope scope) { m_scope = scope; updateQuery(); }
 
     /** Returns the filter part of the LDAP Url */
-    QString filter() const { return m_filter; }
+    const QString &filter() const { return m_filter; }
     /** Sets the filter part of the LDAP Url */
     void setFilter( QString filter ) { m_filter = filter; updateQuery(); }
 

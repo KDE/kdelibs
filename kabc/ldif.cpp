@@ -334,6 +334,15 @@ LDIF::ParseVal LDIF::nextItem()
   return retval;
 }
 
+void LDIF::endLDIF()
+{
+  mLdif.resize( 3 );  
+  mLdif[ 0 ] = '\n';
+  mLdif[ 1 ] = '\n';
+  mLdif[ 2 ] = '\n';
+  mPos = 0;
+}
+
 void LDIF::startParsing()
 {
   mPos = mLineNo = 0;

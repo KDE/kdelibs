@@ -98,15 +98,20 @@ namespace KABC {
      * EndEntry if the parser reached the end of the current entry
      * and MoreData if the parser encountered the end of the current chunk of 
      * the LDIF. If you want to finish the parsing after receiving 
-     * MoreData, then supply a buffer with '\\n\\n\\n' with setLDIF, so the 
-     * parser can safely flush the current entry.
+     * MoreData, then call endLDIF(), so the parser can safely flush 
+     * the current entry.
      */
     ParseVal nextItem();
     /**
      * Sets a chunk of LDIF. Call before startParsing(), or if nextItem() returned
      * MoreData.
      */
-    void setLDIF(QByteArray ldif) { mLdif = ldif; mPos = 0; };
+    void setLDIF( const QByteArray &ldif ) { mLdif = ldif; mPos = 0; };
+    /**
+      * Indicates the end of the LDIF file/stream. Call if nextItem() returned
+      * MoreData, but actually you don't have more data.
+      */
+    void endLDIF();
     /**
      * Returns the requested LDAP operation extracted from the current entry.
      */
@@ -118,15 +123,15 @@ namespace KABC {
     /**
      * Returns the Distinguished Name of the current entry.
      */
-    QString dn() const { return mDn; }
+    const QString& dn() const { return mDn; }
     /**
      * Returns the new Relative Distinguished Name if modType() returned Entry_Modrdn.
      */
-    QString newRdn() const { return mNewRdn; }
+    const QString& newRdn() const { return mNewRdn; }
     /**
      * Returns the new parent of the entry if modType() returned Entry_Modrdn.
      */
-    QString newSuperior() const { return mNewSuperior; }
+    const QString& newSuperior() const { return mNewSuperior; }
     /**
      * Returns if the delete of the old RDN is required.
      */
@@ -134,11 +139,11 @@ namespace KABC {
     /**
      * Returns the attribute name.
      */
-    QString attr() const { return mAttr; }
+    const QString& attr() const { return mAttr; }
     /**
      * Returns the attribute value.
      */
-    QByteArray val() const { return mVal; }
+    const QByteArray& val() const { return mVal; }
     /**
      * Returns if val() is an url
      */
@@ -150,7 +155,7 @@ namespace KABC {
     /**
      * Returns the OID when modType() returned Control.
      */
-    QString oid() const { return mOid; }
+    const QString& oid() const { return mOid; }
     /**
      * Returns the line number which the parser processes.
      */
