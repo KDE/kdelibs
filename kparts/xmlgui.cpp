@@ -23,6 +23,9 @@
 #include <kdebug.h>
 #include <assert.h>
 
+#include <qpopupmenu.h>
+#include <ktoolbar.h>
+
 using namespace KParts;
 
 namespace KParts
