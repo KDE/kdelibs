@@ -38,16 +38,16 @@
 //#include <time.h>
 #include <fcntl.h>
 #include <signal.h>
-#include <qintdict.h>
 #endif
 
 #include <assert.h>
-#include <qptrlist.h>
-#include <qtimer.h>
-#include <qstringlist.h>
-#include <qfile.h>
 #include <qdir.h>
+#include <qfile.h>
+#include <qintdict.h>
+#include <qptrlist.h>
 #include <qsocketnotifier.h>
+#include <qstringlist.h>
+#include <qtimer.h>
 
 #include <kapplication.h>
 #include <kdebug.h>
