@@ -1,7 +1,8 @@
 kdelibs (4:2.1-20010101-1) unstable; urgency=low
  
    * more upstream bug fixes
-    
+   * Applying new i18n patch
+
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 01 Jan 2001 03:30:00 -0700
 
 kdelibs (4:2.1-20001218-2) unstable; urgency=low
