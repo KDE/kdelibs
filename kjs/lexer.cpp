@@ -63,7 +63,7 @@ int kjsyylex()
 Lexer::Lexer()
   : yylineno(0),
     size8(128), size16(128), restrKeyword(false),
-    stackToken(-1), lastToken(-1), pos(0),
+    eatNextIdentifier(false), stackToken(-1), lastToken(-1), pos(0),
     code(0), length(0),
 #ifndef KJS_PURE_ECMA
     bol(true),
@@ -97,6 +97,7 @@ void Lexer::setCode(const UChar *c, unsigned int len)
   yylineno = 0;
   restrKeyword = false;
   delimited = false;
+  eatNextIdentifier = false;
   stackToken = -1;
   lastToken = -1;
   pos = 0;
