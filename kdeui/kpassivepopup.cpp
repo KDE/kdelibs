@@ -26,7 +26,7 @@ static const int POPUP_FLAGS = Qt::WStyle_Customize | Qt::WDestructiveClose | Qt
 
 
 KPassivePopup::KPassivePopup( QWidget *parent, const char *name, WFlags f )
-    : QFrame( 0, name, f | POPUP_FLAGS ),
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( parent ? parent->winId() : 0L ), msgView( 0 ), layout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
@@ -34,7 +34,7 @@ KPassivePopup::KPassivePopup( QWidget *parent, const char *name, WFlags f )
 }
 
 KPassivePopup::KPassivePopup( WId win, const char *name, WFlags f )
-    : QFrame( 0, name, f | POPUP_FLAGS ),
+    : QFrame( 0, name, f ? f : POPUP_FLAGS ),
       window( win ), msgView( 0 ), layout( 0 ),
       hideDelay( DEFAULT_POPUP_TIME ), hideTimer( new QTimer( this, "hide_timer" ) ), m_autoDelete( false ), d( 0 )
 {
@@ -177,7 +177,7 @@ void KPassivePopup::positionSelf()
     QRect target;
 
     if ( window == 0L ) {
-	target = defaultArea();
+        target = defaultArea();
     }
 
     else {
@@ -196,8 +196,8 @@ void KPassivePopup::positionSelf()
             target = defaultArea();
         }
         else {
-                NETRect r = ni.iconGeometry();
-                target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height);
+            NETRect r = ni.iconGeometry();
+            target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
                 if ( target.isNull() ) { // bogus value, use the exact position
                     NETRect dummy;
                     ni.kdeGeometry( dummy, r );
