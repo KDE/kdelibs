@@ -81,7 +81,7 @@ ResourceLDAPConfig::ResourceLDAPConfig( QWidget* parent,  const char* name )
   mainLayout->addWidget( label, 5, 0 );
   mainLayout->addWidget( mFilter, 5, 1 );
 
-  mAnonymous = new QCheckBox( i18n( "Anonymous Login" ), this );
+  mAnonymous = new QCheckBox( i18n( "Anonymous login" ), this );
   mainLayout->addMultiCellWidget( mAnonymous, 6, 6, 0, 1 );
 
   connect( mAnonymous, SIGNAL( toggled(bool) ), mUser, SLOT( setDisabled(bool) ) );
