@@ -1076,19 +1076,21 @@ public:
 
   /**
    *  Loads the recent files entries from a given KConfig object.
-   *  All entries are load from a group called 'RecentFiles'
+   *  You can provide the name of the group used to load the entries.
+   *  If the groupname is empty, entries are load from a group called 'RecentFiles'
    *
    *  This method does not effect the active group of KConfig.
    */
-  void loadEntries( KConfig* config );
+  void loadEntries( KConfig* config, QString groupname=QString::null );
 
   /**
    *  Saves the current recent files entries to a given KConfig object.
-   *  All entries are save to a group called 'RecentFiles'
+   *  You can provide the name of the group used to load the entries.
+   *  If the groupname is empty, entries are saved to a group called 'RecentFiles'
    *
    *  This method does not effect the active group of KConfig.
    */
-  void saveEntries( KConfig* config );
+  void saveEntries( KConfig* config, QString groupname=QString::null );
 
 signals:
 
