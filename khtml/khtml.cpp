@@ -70,6 +70,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     // initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
+    viewport()->setBackgroundMode(NoBackground);
 
     kimgioRegister();
 
@@ -92,6 +93,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString
   // Initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
+    viewport()->setBackgroundMode(NoBackground);
 
     kimgioRegister();
 
@@ -971,7 +973,10 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
 				 int clipy, int clipw, int cliph )
 
 {
-
+    if(!document) return;
+    NodeImpl *body = document->body();
+    if(!body) return;
+#if 0
     if (paintBuffer==0)
             paintBuffer=new QPixmap(width()+100,height()+100);
     else if ( paintBuffer->width() < width() 
@@ -989,9 +994,6 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
     tp->translate(-clipx,-clipy);
     
 
-    if(!document) return;
-    NodeImpl *body = document->body();
-    if(!body) return;
     // ### fix this for frames...
     body->print(tp, clipx, clipy, clipw, cliph, 0, 0);
     
@@ -999,6 +1001,10 @@ void KHTMLWidget::drawContents ( QPainter * p, int clipx,
     delete tp;
     
     p->drawPixmap(clipx,clipy,*paintBuffer,0,0,clipw,cliph);
+
+#else
+    body->print(p, clipx, clipy, clipw, cliph, 0, 0);
+#endif
 }
 
 void KHTMLWidget::layout()
