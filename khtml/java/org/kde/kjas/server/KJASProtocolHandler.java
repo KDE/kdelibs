@@ -845,13 +845,16 @@ public class KJASProtocolHandler
 
         signals.write( bytes, 0, bytes.length );
     }
-    public void sendSecurityConfirm( String text, String id )
+    public void sendSecurityConfirm( String [] certs, int certsnr, String perm, String id )
     {
-        Main.debug("sendSecurityConfirm, ID = " + id + " text = " + text);
+        Main.debug("sendSecurityConfirm, ID = " + id + " certsnr = " + certsnr);
 
         byte [] id_bytes = id.getBytes();
-        byte [] text_bytes = text.getBytes();
-        int length = text_bytes.length + id_bytes.length + 4;
+        byte [] perm_bytes = perm.getBytes();
+        byte [] certsnr_bytes = String.valueOf( certsnr ).getBytes();
+        int length = perm_bytes.length + id_bytes.length + certsnr_bytes.length + 5;
+        for (int i = 0; i < certsnr; i++)
+            length += certs[i].length() + 1;
         byte [] bytes = new byte[ length + 8 ]; //for length of message
         byte [] tmp_bytes = getPaddedLengthBytes( length );
         int index = 0;
@@ -865,9 +868,20 @@ public class KJASProtocolHandler
         index += id_bytes.length;
         bytes[index++] = sep;
 
-        System.arraycopy( text_bytes, 0, bytes, index, text_bytes.length );
-        index += text_bytes.length;
+        System.arraycopy( perm_bytes, 0, bytes, index, perm_bytes.length );
+        index += perm_bytes.length;
         bytes[index++] = sep;
+
+        System.arraycopy( certsnr_bytes, 0, bytes, index, certsnr_bytes.length );
+        index += certsnr_bytes.length;
+        bytes[index++] = sep;
+
+        for (int i = 0; i < certsnr; i++) {
+            byte [] cert_bytes = certs[i].getBytes();
+            System.arraycopy( cert_bytes, 0, bytes, index, cert_bytes.length );
+            index += cert_bytes.length;
+            bytes[index++] = sep;
+        }
 
         signals.write( bytes, 0, bytes.length );
     }

@@ -14,6 +14,41 @@ public class KJASSecurityManager extends SecurityManager
     HashSet grantAllPermissions = new HashSet();
     HashSet rejectAllPermissions = new HashSet();
 
+    private static final char [] base64table = {
+      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+      'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+      'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+      'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+      '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'
+    };
+    static String encode64( byte [] data)
+    {
+        StringBuffer buf = new StringBuffer( 4*((data.length + 2)/3) );
+        int i = 0, b1, b2, b3;
+        while (i < data.length - 2) {
+            b1 = data[i++];
+            b2 = data[i++];
+            b3 = data[i++];
+            buf.append( base64table[(b1 >>> 2) & 0x3F] );
+            buf.append( base64table[((b1 << 4) & 0x30) | ((b2 >>> 4) & 0xF)] );
+            buf.append( base64table[((b2 << 2) & 0x3C) | ((b3 >>> 6) & 0x03)] );
+            buf.append( base64table[b3 & 0x3F] );
+        }
+        if ( i < data.length ) {
+            b1 = data[i++];
+            buf.append( base64table[(b1 >>> 2) & 0x3F] );
+            if ( i < data.length ) {
+                b2 = data[i++];
+                buf.append( base64table[((b1 << 4) & 0x30) | ((b2 >>> 4) & 0xF)] );
+                buf.append( base64table[(b2 << 2) & 0x3C] );
+            } else {
+                buf.append( base64table[(b1 << 4) & 0x30] );
+                buf.append( "=" );
+            }
+            buf.append( '=' );
+        }
+        return buf.toString();
+    }
     public KJASSecurityManager()
     {
     }
@@ -43,11 +78,10 @@ public class KJASSecurityManager extends SecurityManager
                         signers.add(objs[j]);
             }
             Main.debug("Certificates " + signers.size() + " for " + perm);
-            if (signers.size() == 0)
-                throw se;
 
             // Check granted/denied permission
-            String text = new String();
+            String [] certs = new String[signers.size()];
+            int certsnr = 0;
             for (Iterator i = signers.iterator(); i.hasNext(); ) {
                 Object cert = i.next();
                 if ( grantAllPermissions.contains(cert) )
@@ -57,15 +91,17 @@ public class KJASSecurityManager extends SecurityManager
                 Permissions permissions = (Permissions) grantedPermissions.get(cert);
                 if (permissions != null && permissions.implies(perm))
                     return;
-                if (cert instanceof X509Certificate)
-                    text += ((X509Certificate) cert).getIssuerDN().getName();
-                else
-                    text += cert.toString();
-                text += "\n";
+                if (cert instanceof X509Certificate) {
+                    try {
+                        certs[certsnr++] = encode64( ((X509Certificate) cert).getEncoded() );
+                    } catch (CertificateEncodingException cee) {}
+                }
             }
+            if (certsnr == 0)
+                throw se;
             String id = "" + confirmId++;
             confirmRequests.put(id, Thread.currentThread());
-            Main.protocol.sendSecurityConfirm(text + perm, id);
+            Main.protocol.sendSecurityConfirm(certs, certsnr, perm.toString(), id);
             boolean granted = false;
             try {
                 Thread.currentThread().sleep(300000);
@@ -86,7 +122,7 @@ public class KJASSecurityManager extends SecurityManager
                     granted = true;
                 } else if (((String) confirmRequests.get(id)).equals("reject")) {
                     rejectAllPermissions.addAll( signers );
-                } // else "no"
+                } // else "no", "nossl" or "invalid"
             } finally {
                 confirmRequests.remove(id);
             }

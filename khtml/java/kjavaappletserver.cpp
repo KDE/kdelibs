@@ -34,6 +34,8 @@
 
 #include <kio/job.h>
 #include <kio/kprotocolmanager.h>
+#include <ksslcertificate.h>
+#include <kssl.h>
 
 #include <qtimer.h>
 #include <qguardedptr.h>
@@ -107,7 +109,10 @@ class KJavaAppletServerPrivate
 {
 friend class KJavaAppletServer;
 private:
-   //KJavaAppletServerPrivate() : locked_context(-1) {}
+   KJavaAppletServerPrivate() : kssl( 0L ) {}
+   ~KJavaAppletServerPrivate() {
+       delete kssl;
+   }
    int counter;
    QMap< int, QGuardedPtr<KJavaAppletContext> > contexts;
    QString appletLabel;
@@ -115,6 +120,7 @@ private:
    KIOJobMap kiojobs;
    bool javaProcessFailed;
    bool useKIO;
+   KSSL * kssl;
    //int locked_context;
    //QValueList<QByteArray> java_requests;
 };
@@ -598,9 +604,73 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             cmd = QString::fromLatin1( "AppletFailed" );
             break;
         case KJAS_SECURITY_CONFIRM: {
-            kdDebug(6100) << "Security confirm " << args[0] << endl;
+            if (KSSL::doesSSLWork() && !d->kssl)
+                d->kssl = new KSSL;
             QStringList sl;
-            sl.push_front( QString( PermissionDialog( qApp->activeWindow() ).exec( i18n("Security Alert"), args[0] ) ) );
+
+            if (!d->kssl) {
+                sl.push_front( QString( "nossl" ) );
+            } else {
+                int certsnr = args.size() > 2 ? args[1].toInt() : 0;
+                QString text;
+                QValueList<KSSLCertificate *> certs;
+                for (int i = 0; i < certsnr; i++) {
+                    KSSLCertificate * cert = KSSLCertificate::fromString(args[i+2].ascii());
+                    if (cert) {
+                        certs.push_back(cert);
+                        text += i18n("Validation: ");
+                        switch (cert->validate()) {
+                            case KSSLCertificate::Unknown:
+                                text += i18n("Unknown"); break;
+                            case KSSLCertificate::Ok:
+                                text += i18n("Ok"); break;
+                            case KSSLCertificate::NoCARoot:
+                                text += i18n("NoCARoot"); break;
+                            case KSSLCertificate::InvalidPurpose:
+                                text += i18n("InvalidPurpose"); break;
+                            case KSSLCertificate::PathLengthExceeded:
+                                text += i18n("PathLengthExceeded"); break;
+                            case KSSLCertificate::InvalidCA:
+                                text += i18n("InvalidCA"); break;
+                            case KSSLCertificate::Expired:
+                                text += i18n("Expired"); break;
+                            case KSSLCertificate::SelfSigned:
+                                text += i18n("SelfSigned"); break;
+                            case KSSLCertificate::ErrorReadingRoot:
+                                text += i18n("ErrorReadingRoot"); break;
+                            case KSSLCertificate::NoSSL:
+                                text += i18n("NoSSL"); break;
+                            case KSSLCertificate::Revoked:
+                                text += i18n("Revoked"); break;
+                            case KSSLCertificate::Untrusted:
+                                text += i18n("Untrusted"); break;
+                            case KSSLCertificate::SignatureFailed:
+                                text += i18n("SignatureFailed"); break;
+                            case KSSLCertificate::Rejected:
+                                text += i18n("Rejected"); break;
+                            case KSSLCertificate::PrivateKeyFailed:
+                                text += i18n("PrivateKeyFailed"); break;
+                            case KSSLCertificate::InvalidHost:
+                                text += i18n("InvalidHost"); break;
+                            default:
+                                text += i18n("Unknown validation"); break;
+                        }
+                        text += QChar('\n');
+                        QString subject = cert->getSubject() + QChar('\n');
+                        QRegExp reg(QString("/[A-Z]+="));
+                        int pos = 0;
+                        while ((pos = subject.find(reg, pos)) > -1)
+                            subject.replace(pos, 1, QString("\n    "));
+                        text += subject.mid(1);
+                    }
+                }
+                kdDebug(6100) << "Security confirm " << args[0] << certs.size() << endl;
+                if (!certs.size()) {
+                    sl.push_front( QString( "invalid" ) );
+                } else {
+                    sl.push_front( QString( PermissionDialog( qApp->activeWindow() ).exec( i18n("Security Alert"), text, args[0] ) ) );
+                }
+            }
             sl.push_front(QString::number(ID_num));
             process->send( KJAS_SECURITY_CONFIRM, sl );
             return;
@@ -692,7 +762,7 @@ PermissionDialog::PermissionDialog( QWidget* parent )
     : QObject(parent), m_button("no")
 {}
 
-QCString PermissionDialog::exec( const QString & title, const QString & msg ) {
+QCString PermissionDialog::exec( const QString & title, const QString & cert, const QString & perm ) {
     QGuardedPtr<QDialog> dialog = new QDialog( static_cast<QWidget*>(parent()), "PermissionDialog");
 
     dialog->setSizePolicy( QSizePolicy( (QSizePolicy::SizeType)1, (QSizePolicy::SizeType)1, 0, 0, dialog->sizePolicy().hasHeightForWidth() ) );
@@ -701,8 +771,10 @@ QCString PermissionDialog::exec( const QString & title, const QString & msg ) {
 
     QVBoxLayout * dialogLayout = new QVBoxLayout( dialog, 11, 6, "dialogLayout");
 
-    QLabel * message = new QLabel( msg, dialog, "message" );
-    dialogLayout->addWidget( message );
+    dialogLayout->addWidget( new QLabel( i18n("Do you grant Java applet with certificate(s):"), dialog ) );
+    dialogLayout->addWidget( new QLabel( cert, dialog, "message" ) );
+    dialogLayout->addWidget( new QLabel( i18n("the following permission"), dialog, "message" ) );
+    dialogLayout->addWidget( new QLabel( perm, dialog, "message" ) );
     QSpacerItem * spacer2 = new QSpacerItem( 20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding );
     dialogLayout->addItem( spacer2 );
 
