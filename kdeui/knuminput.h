@@ -106,11 +106,6 @@ public:
     virtual QSize sizeHint() const;
     
     /**
-     * Sets the value of the control.
-     */
-    void setValue(int);
-    
-    /**
      * @return the current value
      */
     int value();
@@ -156,17 +151,20 @@ public:
      */
     void setSpecialValueText(const QString& text);
 
+public slots:
     /**
      * Sets the Widget enabled/disabled
      */
     void setEnabled(bool);
     
+    /**
+     * Sets the value of the control.
+     */
+    void setValue(int);
+    
 signals:
     void valueChanged(int);
 
-protected slots:
-    void resetValueField(int);
-    
 protected:
     void init(const QString& label, int lower, int upper, int step, int val,
               const QString& units, int _base, bool use_slider);

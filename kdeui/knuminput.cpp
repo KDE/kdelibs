@@ -98,6 +98,7 @@ void KIntNumInput::init(const QString& label, int lower, int upper, int step, in
 
     spin = new KIntSpinBox(lower, upper, step, int_value, _base, this, "KIntSpinBox");
     spin->setValidator(new KIntValidator(this, _base, "KNumInput::KIntValidtr"));
+    connect(spin, SIGNAL(valueChanged(int)), SLOT(setValue(int)));
 
     main_label = new QLabel( spin, label, this, "KNumInput::QLabel" );
     
@@ -108,8 +109,7 @@ void KIntNumInput::init(const QString& label, int lower, int upper, int step, in
         slider = new QSlider(lower, upper, step, int_value, QSlider::Horizontal, this);
         slider->setTickmarks(QSlider::Below);
         
-        connect(slider, SIGNAL(valueChanged(int)), SLOT(resetValueField(int)));
-        connect(spin, SIGNAL(valueChanged(int)), slider, SLOT(setValue(int)));
+        connect(slider, SIGNAL(valueChanged(int)), SLOT(setValue(int)));
 
         // default values
         int major = (upper-lower)/_base; 
@@ -124,19 +124,7 @@ void KIntNumInput::init(const QString& label, int lower, int upper, int step, in
     spin_size = spin->sizeHint();
 }
 
-
 // -----------------------------------------------------------------------------
-
-void KIntNumInput::resetValueField(int val)
-{
-    int_value = val;
-    spin->setValue(val);
-    emit valueChanged(val);
-}
-
-
-// -----------------------------------------------------------------------------
-
 QSize KIntNumInput::minimumSize() const
 {
     QSize qs;
@@ -234,8 +222,14 @@ void KIntNumInput::setSteps(int minor, int major)
 
 void KIntNumInput::setValue(int val)
 {
-    int_value = val;
-    spin->setValue(val);
+    if (val != int_value)
+    {
+        int_value = val;
+        spin->setValue(val);
+        if (slider)
+            slider->setValue(val);
+        emit valueChanged(val);
+    }
 }
 
 
@@ -261,7 +255,6 @@ void KIntNumInput::setSpinBoxSize(int frac)
 {
     spin_frac = QMIN(QMAX(frac,1),100);
     setMinimumSize(minimumSize());
-    
 }
 
 
