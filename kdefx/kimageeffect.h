@@ -34,6 +34,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class QImage;
 class QSize;
 class QColor;
+class QPoint;
+class QRect;
 
 /**
  * This class includes various @ref QImage based graphical effects.
