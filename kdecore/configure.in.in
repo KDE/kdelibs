@@ -30,7 +30,7 @@ AC_CHECK_FUNC(getaddrinfo,
 
     dnl Even though we now know that getaddrinfo is there, make sure getnameinfo is there too
     kde_gai_ok=true
-    AC_CHECK_FUNCS(freeaddrinfo getnameinfo gai_strerror, /bin/true, 
+    AC_CHECK_FUNCS(freeaddrinfo getnameinfo gai_strerror, : , 
     [
       kde_gai_ok=false
       AC_DEFINE(HAVE_BROKEN_GETADDRINFO, 1, [Define if getaddrinfo is broken and should be replaced])
