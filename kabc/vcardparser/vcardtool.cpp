@@ -31,34 +31,44 @@
 
 using namespace KABC;
 
-VCardTool::VCardTool()
+class VCardTool::VCardToolPrivate
 {
-  mAddressTypeMap.insert( "dom", Address::Dom );
-  mAddressTypeMap.insert( "intl", Address::Intl );
-  mAddressTypeMap.insert( "postal", Address::Postal );
-  mAddressTypeMap.insert( "parcel", Address::Parcel );
-  mAddressTypeMap.insert( "home", Address::Home );
-  mAddressTypeMap.insert( "work", Address::Work );
-  mAddressTypeMap.insert( "pref", Address::Pref );
+  public:
+    QMap<QString, int> mAddressTypeMap;
+    QMap<QString, int> mPhoneTypeMap;
+};
 
-  mPhoneTypeMap.insert( "HOME", PhoneNumber::Home );
-  mPhoneTypeMap.insert( "WORK", PhoneNumber::Work );
-  mPhoneTypeMap.insert( "MSG", PhoneNumber::Msg );
-  mPhoneTypeMap.insert( "PREF", PhoneNumber::Pref );
-  mPhoneTypeMap.insert( "VOICE", PhoneNumber::Voice );
-  mPhoneTypeMap.insert( "FAX", PhoneNumber::Fax );
-  mPhoneTypeMap.insert( "CELL", PhoneNumber::Cell );
-  mPhoneTypeMap.insert( "VIDEO", PhoneNumber::Video );
-  mPhoneTypeMap.insert( "BBS", PhoneNumber::Bbs );
-  mPhoneTypeMap.insert( "MODEM", PhoneNumber::Modem );
-  mPhoneTypeMap.insert( "CAR", PhoneNumber::Car );
-  mPhoneTypeMap.insert( "ISDN", PhoneNumber::Isdn );
-  mPhoneTypeMap.insert( "PCS", PhoneNumber::Pcs );
-  mPhoneTypeMap.insert( "PAGER", PhoneNumber::Pager );
+VCardTool::VCardTool()
+  : d( new VCardToolPrivate )
+{
+  d->mAddressTypeMap.insert( "dom", Address::Dom );
+  d->mAddressTypeMap.insert( "intl", Address::Intl );
+  d->mAddressTypeMap.insert( "postal", Address::Postal );
+  d->mAddressTypeMap.insert( "parcel", Address::Parcel );
+  d->mAddressTypeMap.insert( "home", Address::Home );
+  d->mAddressTypeMap.insert( "work", Address::Work );
+  d->mAddressTypeMap.insert( "pref", Address::Pref );
+
+  d->mPhoneTypeMap.insert( "HOME", PhoneNumber::Home );
+  d->mPhoneTypeMap.insert( "WORK", PhoneNumber::Work );
+  d->mPhoneTypeMap.insert( "MSG", PhoneNumber::Msg );
+  d->mPhoneTypeMap.insert( "PREF", PhoneNumber::Pref );
+  d->mPhoneTypeMap.insert( "VOICE", PhoneNumber::Voice );
+  d->mPhoneTypeMap.insert( "FAX", PhoneNumber::Fax );
+  d->mPhoneTypeMap.insert( "CELL", PhoneNumber::Cell );
+  d->mPhoneTypeMap.insert( "VIDEO", PhoneNumber::Video );
+  d->mPhoneTypeMap.insert( "BBS", PhoneNumber::Bbs );
+  d->mPhoneTypeMap.insert( "MODEM", PhoneNumber::Modem );
+  d->mPhoneTypeMap.insert( "CAR", PhoneNumber::Car );
+  d->mPhoneTypeMap.insert( "ISDN", PhoneNumber::Isdn );
+  d->mPhoneTypeMap.insert( "PCS", PhoneNumber::Pcs );
+  d->mPhoneTypeMap.insert( "PAGER", PhoneNumber::Pager );
 }
 
 VCardTool::~VCardTool()
 {
+  delete d;
+  d = 0;
 }
 
 QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
@@ -88,7 +98,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
 
       bool hasLabel = !(*it).label().isEmpty();
       QMap<QString, int>::Iterator typeIt;
-      for ( typeIt = mAddressTypeMap.begin(); typeIt != mAddressTypeMap.end(); ++typeIt ) {
+      for ( typeIt = d->mAddressTypeMap.begin(); typeIt != d->mAddressTypeMap.end(); ++typeIt ) {
         if ( typeIt.data() & (*it).type() ) {
           adrLine.addParameter( "type", typeIt.key() );
           if ( hasLabel )
@@ -197,7 +207,7 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       VCardLine line( "tel", (*phoneIt).number() );
 
       QMap<QString, int>::Iterator typeIt;
-      for ( typeIt = mPhoneTypeMap.begin(); typeIt != mPhoneTypeMap.end(); ++typeIt ) {
+      for ( typeIt = d->mPhoneTypeMap.begin(); typeIt != d->mPhoneTypeMap.end(); ++typeIt ) {
         if ( typeIt.data() & (*phoneIt).type() )
           line.addParameter( "type", typeIt.key() );
       }
@@ -294,7 +304,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
-            type += mAddressTypeMap[ (*it).lower() ];
+            type += d->mAddressTypeMap[ (*it).lower() ];
 
           if ( !type )
             type = Address::Home; // default
@@ -352,7 +362,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
-            type += mAddressTypeMap[ (*it).lower() ];
+            type += d->mAddressTypeMap[ (*it).lower() ];
 
           if ( !type )
             type = Address::Home;
@@ -435,7 +445,7 @@ Addressee::List VCardTool::parseVCards( const QString& vcard )
 
           QStringList types = (*lineIt).parameters( "type" );
           for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it )
-            type += mPhoneTypeMap[(*it).upper()];
+            type += d->mPhoneTypeMap[(*it).upper()];
 
           if ( !type )
             type = PhoneNumber::Home; // default

@@ -81,9 +81,8 @@ class VCardLine
     QString parameter( const QString& param ) const;
 
   private:
-    QMap< QString, QStringList > mParamMap;
-    QString mIdentifier;
-    QVariant mValue;
+    class VCardLinePrivate;
+    VCardLinePrivate *d;
 };
 
 #endif

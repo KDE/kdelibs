@@ -73,7 +73,8 @@ class VCard
     Version version() const;
 
   private:
-    QMap< QString, VCardLine::List > mLineMap;
+    class VCardPrivate;
+    VCardPrivate *d;
 };
 
 #endif
