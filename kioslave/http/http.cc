@@ -439,9 +439,8 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 	m_state.postDataSize = _post_data_size;
 
 	// try to ensure that the port is something reasonable
-	int port = _url.port();
-	if ( port == -1 )
-	{
+	unsigned short int port = _url.port();
+	if ( port == 0 ) {
 #ifdef DO_SSL
 		if (_url.protocol()=="https")
 			port = DEFAULT_HTTPS_PORT;
@@ -457,8 +456,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 	}
 
 	// make sure that we can support what we are asking for
-	if (_url.protocol() == "https")
-	{
+	if (_url.protocol() == "https") {
 #ifdef DO_SSL
 		m_bUseSSL=true;
 #else
@@ -469,8 +467,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
 	// okay, we know now that our URL is at least half-way decent.  let's
 	// try to open up our socket
 	m_sock = ::socket(PF_INET,SOCK_STREAM,0);
-	if (m_sock < 0)
-	{
+	if (m_sock < 0) {
 		error( ERR_COULD_NOT_CREATE_SOCKET, _url.url() );
 		return false;
 	}
@@ -644,8 +641,7 @@ bool HTTPProtocol::http_open(KURL &_url, int _post_data_size, bool _reload,
   	header += "\r\n";  /* end header */
 
 	// now that we have our formatted header, let's send it!
-	if (write(header, header.length()) == -1)
-	{
+	if (write(header, header.length()) == -1) {
 		error( ERR_CONNECTION_BROKEN, _url.host() );
 		return false;
 	}
@@ -1670,8 +1666,7 @@ void HTTPProtocol::slotDataEnd()
 		nbytes = read(buffer, 2048);
 
 		// make sure that this wasn't an error, first
-		if (nbytes == -1)
-		{
+		if (nbytes == -1) {
 			// erg.  oh well, log an error and bug out
 			error(ERR_CONNECTION_BROKEN, m_state.url.host());
 			m_cmd = CMD_NONE;
