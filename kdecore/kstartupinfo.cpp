@@ -620,7 +620,6 @@ void KStartupInfoId::initId( const QCString& id_P )
     if( !id_P.isEmpty())
         {
         d->id = id_P;
-        kdDebug( 172 ) << "using: " << d->id << endl;
         return;
         }
     const char* startup_env = getenv( KDE_STARTUP_ENV );
