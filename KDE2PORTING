@@ -94,6 +94,9 @@ khtmlw has been replaced with khtml.
  
   appName() is deprecated. Please use QApplication::name() instead.
 
+  The methods tempSaveName() and checkRecoverFile() return QString
+  now. The returned values must _not_ be free()d.
+
 //////////////////////////////////////////////////////////////////////
 // * KDNDIcon, KDNDDropZone, KDNDWidget, kdecore/drag.h
 

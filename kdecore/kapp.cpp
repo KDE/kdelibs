@@ -413,6 +413,7 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	}
 
     }
+    pArgc = argc;
 }
 
 QPixmap KApplication::getIcon() const

@@ -82,6 +82,12 @@ public:
   /** Destructor */
   virtual ~KApplication();
 
+  /** Returns the number of command line arguments, i. e. the length
+   *  of the array KApplication::argv(). In this array, the arguments
+   *  handled by KApplication itself (i. e. '-icon') are already removed
+   */
+  int argc() const { return pArgc; }
+      
   /** A global event filter for KApplication.
 	* Filters out Ctrl-Shift-F12 for KDebug.
 	*/
@@ -230,8 +236,7 @@ public:
    *
    * @param pFilename The full path to the current file of your
    * document.
-   * @return A new filename for auto-saving. You have to free() this
-   * yourself, otherwise you have a memory leak!
+   * @return A new filename for auto-saving.
    */
   QString tempSaveName( const QString& pFilename ) const;
 
@@ -242,8 +247,7 @@ public:
    * @param pFilename The full path to the document you want to open.
    * @param bRecover  This gets set to true if there was a recover
    * file.
-   * @return The full path of the file to open. You must free() this
-   * pointer yourself, otherwise you have a memory leak.
+   * @return The full path of the file to open.
    */
   QString checkRecoverFile( const QString& pFilename, bool& bRecover ) const;
 
@@ -272,6 +276,7 @@ protected:
 
   /// Current application object.
   static KApplication *KApp;
+  int pArgc;
 
 public slots:
   void aboutKDE();
@@ -423,6 +428,11 @@ private:
 #endif
 
 // $Log$
+// Revision 1.99  1999/08/03 22:56:28  ettrich
+// removed some debug output (it was impossible to work with this),
+// some smaller cleanups, reintroduced support for local colos/fonts
+// in addition to styles. Will soon be property based.
+//
 // Revision 1.98  1999/08/03 20:21:32  kulow
 // removing the last kde_ function and kdedir() with it  ;)
 //
