@@ -322,7 +322,7 @@ bool KIOJob::copy( QStringList& _source, const char *_dest, bool _move )
   {    
     KURL u( (*it) );
     if ( u.isMalformed() ){
-      slotError( ERR_MALFORMED_URL, (*it) );
+      slotError( ERR_MALFORMED_URL, (*it).ascii() );
       return false;
     }
 
@@ -405,7 +405,7 @@ bool KIOJob::del( QStringList& _source )
   for( ; it != _source.end(); ++it ) {
     KURL u( (*it) );
     if ( u.isMalformed() ) {
-      slotError( ERR_MALFORMED_URL, (*it) );
+      slotError( ERR_MALFORMED_URL, (*it).ascii() );
       return false;
     }
 
