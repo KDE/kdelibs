@@ -23,6 +23,8 @@
 #ifndef _DOM_DOMStringImpl_h_
 #define _DOM_DOMStringImpl_h_
 
+#include <stdlib.h>
+
 #include <qstring.h>
 
 #include "dom/dom_misc.h"
@@ -79,7 +81,11 @@ public:
     khtml::Length toLength() const;
 
     // ignores trailing garbage, unlike QString
-    int toInt(bool* ok=0) const {
+    int toInt() const {
+        return strtol(QConstString(s, l).string().latin1(), 0, 10);
+    }
+
+    int toInt(bool* ok) const {
         int len = l;
         while(len > 0 && !s[len-1].isDigit())
             len--;
