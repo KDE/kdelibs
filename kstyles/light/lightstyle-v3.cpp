@@ -1035,7 +1035,7 @@ void LightStyleV3::drawControl( ControlElement control,
 		QPixmap pixmap = *mi->pixmap();
 		if (pixmap.depth() == 1)
 		    p->setBackgroundMode(OpaqueMode);
-		p->drawPixmap(ir.x(), (ir.height() - pixmap.height()) / 2, pixmap);
+		p->drawPixmap(ir.x(), ir.y() + (ir.height() - pixmap.height()) / 2, pixmap);
 		if (pixmap.depth() == 1)
 		    p->setBackgroundMode(TransparentMode);
 	    }
