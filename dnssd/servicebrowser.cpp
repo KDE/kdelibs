@@ -22,6 +22,10 @@
 #include "domainbrowser.h"
 #include "query.h"
 #include "servicebrowser.h"
+#include <config.h>
+#ifdef HAVE_DNSSD
+#include <dns_sd.h>
+#endif
 
 namespace DNSSD
 {
