@@ -599,6 +599,7 @@ KCmdLineArgs::parseAllArgs()
 	     } else {
 		 printQ( i18n("%1 was written by somebody who wants to remain anonymous.").arg(about->programName()) );
 	     }
+	     printQ( i18n( "Please use http://bugs.kde.org to report bugs, do not mail the authors directly.\n" ) );
 	     exit(0);
          } else {
            if ((option[0] == 'n') && (option[1] == 'o'))
