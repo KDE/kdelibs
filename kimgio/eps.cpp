@@ -11,6 +11,7 @@
 #include <qpaintdevicemetrics.h>
 #include <qstring.h>
 #include <kapp.h>
+#include <ktempfile.h>
 
 #include "eps.h"
 
@@ -54,7 +55,6 @@ int bbox ( const char *fileName, int *x1, int *y1, int *x2, int *y2)
 void kimgio_epsf_read (QImageIO *image)
 {
 	FILE * ghostfd, * imagefd;
-	char * tmpFileName;
 	int x1, y1, x2, y2;
 
 	QString cmdBuf;
@@ -62,15 +62,16 @@ void kimgio_epsf_read (QImageIO *image)
 
 	// find bounding box
 	if ( bbox (image->fileName().ascii(), &x1, &y1, &x2, &y2) == 0 ) {
-		return;
+	    return;
 	}
 
-	// temporary file name
-	tmpFileName = tmpnam(NULL); 
+        KTempFile tmpFile;
+        tmpFile.setAutoDelete(true);
 
-	if( tmpFileName == 0 ) {
-		return;
+	if( tmpFile.status() != 0 ) {
+	    return;
 	}
+        tmpFile.close(); // Close the file, we just want the filename
 
 	// x1, y1 -> translation
 	// x2, y2 -> new size
@@ -81,7 +82,7 @@ void kimgio_epsf_read (QImageIO *image)
 	// create GS command line
 
 	cmdBuf = "gs -sOutputFile=";
-	cmdBuf += tmpFileName;
+	cmdBuf += tmpFile.name();
 	cmdBuf += " -q -g";
 	tmp.setNum( x2 );
 	cmdBuf += tmp;
@@ -123,7 +124,7 @@ void kimgio_epsf_read (QImageIO *image)
 
 	// load image
 	QImage myimage;
-	bool loadstat = myimage.load (tmpFileName);
+	bool loadstat = myimage.load (tmpFile.name());
 
 	if( loadstat ) {
 		myimage.createHeuristicMask();
@@ -131,8 +132,6 @@ void kimgio_epsf_read (QImageIO *image)
 		image->setImage (myimage);
 		image->setStatus (0);
 	}
-
-	unlink (tmpFileName);
 
 	return;
 }
@@ -147,11 +146,13 @@ void kimgio_epsf_write( QImageIO *imageio )
   psOut.setCreator( "KDE " KDE_VERSION_STRING  );
   psOut.setOutputToFile( TRUE );
 
-  // Make up a name for the temporary file
-  QString tempname;
-  tempname = tmpnam(NULL); 
+  KTempFile tmpFile;
+  tmpFile.setAutoDelete(true);
+  if ( tmpFile.status() != 0)
+     return;
+  tmpFile.close(); // Close the file, we just want the filename
 
-  psOut.setOutputFileName(tempname);
+  psOut.setOutputFileName(tmpFile.name());
 
   // painting the pixmap to the "printer" which is a file
   p.begin( &psOut );
@@ -164,7 +165,7 @@ void kimgio_epsf_write( QImageIO *imageio )
   p.end();
 
   // write BoundingBox to File
-  QFile		 inFile(tempname);
+  QFile		 inFile(tmpFile.name());
   QFile		 outFile(imageio->fileName());
   QString		 szBoxInfo;
 
@@ -199,7 +200,6 @@ void kimgio_epsf_write( QImageIO *imageio )
   inFile.close();
   outFile.close();
 
-  unlink( tempname );
   imageio->setStatus(0);
 }
 
