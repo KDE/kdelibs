@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.60  1999/06/27 17:33:28  waba
+   WABA: Updated docu, fixed directory scan order
+
    Revision 1.59  1999/06/24 21:03:15  kulow
    register appname + "/icons/mini" to "mini" too
 
@@ -267,15 +270,10 @@ KIconLoader::KIconLoader() : config(0), varname("IconPath")
 }
 
 QPixmap KIconLoader::loadIcon ( const QString& name, int w,
-		int h, bool canReturnNull ) {
+		int h, bool canReturnNull ) 
+{
 	QPixmap result = loadInternal(name, w, h);
 
-	/* Stephan: It's OK to know, how many icons are still missing, but
-	   we don't need to tell everybody ;) Perhaps this can be con-
-	   verted to a KDEBUG solution, that is more silent? Don't know.
-	David: Re-enabled the warning. Most applications (esp. koffice) crash
-	if the icon doesn't exist, anyway. And base apps should be ok now.
-	 */
 	if (result.isNull() && !canReturnNull) {
 	    warning("%s : ERROR: couldn't find icon: %s",
 		    appname.ascii(), name.ascii() );
@@ -315,8 +313,16 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 {
     QString full_path;
-    if (!name.isEmpty())
-       full_path = locate(iconType, name);
+    if (!name.isEmpty()) {
+      QString path = name;
+      if (path.right(4) == ".xpm") {
+	path.truncate(path.length() - 4); 
+	warning("stripping .xpm from icon %s", name.ascii());
+      }
+      full_path = locate(iconType, path + ".png");
+      if (full_path.isNull())
+	full_path = locate(iconType, path + ".xpm" );
+    }
     if (full_path.isNull() && always_valid)
 	full_path = locate(iconType, "unknown.xpm");
     
@@ -326,7 +332,6 @@ QString KIconLoader::getIconPath( const QString& name, bool always_valid)
 QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h,
 	bool hcache )
 {
-
 	QString cacheKey = "$kico_";
 	cacheKey += name;
 	KPixmap pix;
