@@ -1127,11 +1127,6 @@ KSelectAction::~KSelectAction()
 
 void KSelectAction::setCurrentItem( int id )
 {
-    if ( id < 0 ) {
-        ASSERT(id >= 0);
-        return;
-    }
-
     if ( id >= (int)d->m_list.count() ) {
         ASSERT(id < (int)d->m_list.count());
         return;
@@ -1257,6 +1252,9 @@ int KSelectAction::currentItem() const
 
 void KSelectAction::setCurrentItem( int id, int index )
 {
+  if ( index < 0 )
+	return;
+
   QWidget* w = container( id );
   if ( w->inherits( "KToolBar" ) ) {
     QWidget* r = static_cast<KToolBar*>( w )->getWidget( itemId( id ) );
