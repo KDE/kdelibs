@@ -37,7 +37,6 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
              this, SLOT( slotOnItem( QIconViewItem * ) ) );
     slotSettingsChanged( KApplication::SETTINGS_MOUSE );
     connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
-    connect( kapp, SIGNAL( settingsChanged(int) ), SLOT( slotSettingsChanged(int) ) );
     kapp->addKipcEventMask( KIPC::SettingsChanged );
 
     m_pCurrentItem = 0L;
