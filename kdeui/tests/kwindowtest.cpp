@@ -156,7 +156,7 @@ testWindow::testWindow (QWidget *parent, const char *name)
     tb->alignItemRight (6);
 
     // Another toolbar
-    tb1 = new KToolBar (this); // this one is normal and has separators
+    tb1 = new KToolBar (this, QMainWindow::Top); // this one is normal and has separators
 
 
     pix = BarIcon("filenew");
