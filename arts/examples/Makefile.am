@@ -10,7 +10,7 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 check_PROGRAMS = helloserver helloclient referenceinfo \
   irdemo x11commtest streamsound hellomain flow artsctest \
   dcasttest hellodynamic hellodynamic2 testasubsys testaggregation \
-  playtofile tradercheck testthreads testnothreads
+  playtofile tradercheck testthreads testnothreads catfile
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
 helloclient_SOURCES = hello.cc helloclient.cc
 hellodynamic_SOURCES = hello.cc hellodynamic.cc hello_impl.cc
@@ -52,6 +52,10 @@ playtofile_SOURCES = playtofile.cc playtofile_impl.cc playtofile_main.cc
 playtofile_LDADD	= $(FLOWLIBS) \
     $(top_builddir)/arts/soundserver/libsoundserver_idl.la \
     $(top_builddir)/arts/soundserver/libkmedia2_idl.la
+
+catfile_SOURCES = catfile.cc 
+
+catfile_LDADD	= $(top_builddir)/arts/soundserver/libkmedia2.la
 
 DISTCLEANFILES = hello.cc hello.h aggregation.cc aggregation.h \
 				 playtofile.cc playtofile.h
