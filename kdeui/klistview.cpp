@@ -88,7 +88,8 @@ public:
       selectionMode (Single),
       contextMenuKey (KGlobalSettings::contextMenuKey()),
       showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
-      mDropVisualizerWidth (4)
+      mDropVisualizerWidth (4),
+      shiftStartPos(-1)
   {
       renameable += 0;
       connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
@@ -137,6 +138,8 @@ public:
   int mDropVisualizerWidth;
   QListViewItem *afterItemDrop;
   QListViewItem *parentItemDrop;
+
+  int shiftStartPos;
 };
 
 
@@ -1160,6 +1163,12 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 
     bool emitSelectionChanged(false);
 
+    if ( shiftOrCtrl && d->shiftStartPos == -1 ) 
+        d->shiftStartPos = item->itemPos();
+
+    if ( !shiftOrCtrl )
+        d->shiftStartPos = -1;
+
     switch (e->key())
     {
     case Key_Escape:
@@ -1204,13 +1213,30 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     case Key_Down:
        nextItem=item->itemBelow();
        //toggle selection of current item and move to the next item
+
        if (shiftOrCtrl)
        {
           if (d->selectedBySimpleMove)
              d->selectedBySimpleMove=false;
           else
           {
-             item->setSelected(!item->isSelected());
+             int pos = item->itemPos();
+
+             if ( pos >= d->shiftStartPos ) 
+                 item->setSelected(!item->isSelected());
+             else {
+                 if ( nextItem )
+                     nextItem->setSelected(!nextItem->isSelected());
+
+                 // Special for the first item. It should be reset to
+                 // what it was before, but there's no way of knowing
+                 // what that was.
+                 // Most likely, though, is that it should be the
+                 // same as nextItem
+                 if ( !item->itemAbove() )
+                     item->setSelected( nextItem->isSelected() );
+             }
+                    
              emitSelectionChanged=TRUE;
           }
        }
@@ -1241,7 +1267,23 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
              d->selectedBySimpleMove=false;
           else
           {
-             item->setSelected(!item->isSelected());
+             int pos = item->itemPos();
+
+             if ( pos <= d->shiftStartPos ) 
+                 item->setSelected(!item->isSelected());
+             else {
+                 if ( nextItem )
+                     nextItem->setSelected(!nextItem->isSelected());
+
+                 // Special for the last item. It should be reset to
+                 // what it was before, but there's no way of knowing
+                 // what that was.
+                 // Most likely, though, is that it should be the
+                 // same as nextItem
+                 if ( !item->itemBelow() )
+                     item->setSelected( nextItem->isSelected() );
+             }
+
              emitSelectionChanged=TRUE;
           }
        }
