@@ -84,10 +84,6 @@ public:
      * @param target String containing the final local location of the
      *               file.  If you insert an empty string, it will
      *               return a location in a temporary spot
-     *
-     * @param job For experts only.  You may supply your own KIO::Job
-     *            object if you want to do some special processing
-     *            with it before or after the download
      */
     static bool download(const KURL& src, QString & target);
 
@@ -117,7 +113,7 @@ public:
      * of KIO::file_copy (not KIO::copy!).
      */
     static bool copy( const KURL& src, const KURL& target );
-    
+
     /**
      * Test whether a url exists
      * This is a convenience function for KIO::stat

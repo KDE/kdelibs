@@ -147,7 +147,7 @@ void Slave::setHost( const QString &host, int port,
 {
     m_host = host;
     m_port = port;
-
+    m_user = user; // Why was this missing ? (David)
     m_passwd = passwd;
 
     slaveconn.connect(this, SLOT(gotAnswer()));
@@ -205,7 +205,7 @@ Slave* Slave::createSlave( const KURL& url, int& error, QString& error_text )
     stream << url.protocol() << url.host() << socketfile.name();
 
     QCString launcher = KApplication::launcher();
-    if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)", 
+    if (!client->call(launcher, launcher, "requestSlave(QString,QString,QString)",
 	    params, replyType, reply)) {
 	error_text = i18n("can't talk to klauncher");
 	error = KIO::ERR_INTERNAL;

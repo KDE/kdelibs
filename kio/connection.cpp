@@ -1,3 +1,23 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
+                       David Faure <faure@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
+
 // $Id$
 
 #ifdef HAVE_CONFIG_H
@@ -37,6 +57,7 @@ Connection::Connection()
     receiver = 0;
     member = 0;
     queueonly = false;
+    m_suspended = false;
     unqueuedTasks = 0;
 }
 
@@ -47,12 +68,14 @@ Connection::~Connection()
 
 void Connection::suspend()
 {
+    m_suspended = true;
     if (notifier)
        notifier->setEnabled(false);
 }
 
 void Connection::resume()
 {
+    m_suspended = false;
     if (notifier)
        notifier->setEnabled(true);
 }
@@ -128,6 +151,8 @@ void Connection::init(KSocket *sock)
     f_out = fdopen( socket->socket(), "wb" );
     if (receiver && fd_in) {
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+        if ( m_suspended )
+            suspend();
 	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
     }
     dequeue();
@@ -141,6 +166,8 @@ void Connection::connect(QObject *_receiver, const char *_member)
     notifier = 0;
     if (receiver && fd_in) {
 	notifier = new QSocketNotifier(fd_in, QSocketNotifier::Read);
+        if ( m_suspended )
+            suspend();
 	QObject::connect(notifier, SIGNAL(activated(int)), receiver, member);
     }
 }

@@ -428,6 +428,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     : Job(), m_src(src), m_dest(dest), m_permissions(permissions), m_move(move),
       m_overwrite(overwrite), m_resume(resume)
 {
+    kdDebug(7007) << "FileCopyJob::FileCopyJob()" << endl;
     m_moveJob = 0;
     m_copyJob = 0;
     m_getJob = 0;
@@ -459,6 +460,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
 
 void FileCopyJob::startCopyJob()
 {
+    kdDebug(7007) << "FileCopyJob::startCopyJob()" << endl;
     KIO_ARGS << m_src.path() << m_dest.path() << m_permissions << (Q_INT8) m_overwrite;
     m_copyJob = new SimpleJob(m_src, CMD_COPY, packedArgs);
     addSubjob( m_copyJob );
@@ -466,12 +468,15 @@ void FileCopyJob::startCopyJob()
 
 void FileCopyJob::startDataPump()
 {
+    kdDebug(7007) << "FileCopyJob::startDataPump()" << endl;
     m_getJob = get( m_src );
+    kdDebug(7007) << "FileCopyJob: m_getJob = " << m_getJob << endl;
     m_putJob = put( m_dest, m_permissions, m_overwrite, m_resume);
+    kdDebug(7007) << "FileCopyJob: m_putJob = " << m_putJob << endl;
+    m_putJob->suspend();
     addSubjob( m_getJob );
     addSubjob( m_putJob );
     m_getJob->resume(); // Order a beer
-    m_putJob->suspend();
 
     connect( m_getJob, SIGNAL(data(KIO::Job *, const QByteArray&)),
              SLOT( slotData(KIO::Job *, const QByteArray&)));
@@ -479,8 +484,10 @@ void FileCopyJob::startDataPump()
              SLOT( slotDataReq(KIO::Job *, QByteArray&)));
 }
 
-void FileCopyJob::slotData( KIO::Job *, const QByteArray &data)
+void FileCopyJob::slotData( KIO::Job * job, const QByteArray &data)
 {
+   kdDebug(7007) << "FileCopyJob::slotData(" << job << ")" << endl;
+   kdDebug(7007) << " data size : " << data.size() << endl;
    assert(m_putJob);
    m_getJob->suspend();
    m_putJob->resume(); // Drink the beer
@@ -492,8 +499,9 @@ void FileCopyJob::slotData( KIO::Job *, const QByteArray &data)
    emit processedSize( this, m_processedSize );
 }
 
-void FileCopyJob::slotDataReq( KIO::Job *, QByteArray &data)
+void FileCopyJob::slotDataReq( KIO::Job * job, QByteArray &data)
 {
+   kdDebug(7007) << "FileCopyJob::slotDataReq(" << job << ")" << endl;
    if (m_getJob)
       m_getJob->resume(); // Order more beer
    m_putJob->suspend();
@@ -503,6 +511,7 @@ void FileCopyJob::slotDataReq( KIO::Job *, QByteArray &data)
 
 void FileCopyJob::slotResult( KIO::Job *job)
 {
+   kdDebug(7007) << "FileCopyJob::slotResult(" << job << ")" << endl;
    // Did job have an error ?
    if ( job->error() )
    {
@@ -552,9 +561,13 @@ void FileCopyJob::slotResult( KIO::Job *job)
 
    if (job == m_putJob)
    {
+      kdDebug(7007) << "FileCopyJob: m_putJob finished " << endl;
       m_putJob = 0;
       if (m_getJob)
+      {
+         kdWarning(7007) << "WARNING ! Get still going on..." << endl;
          m_getJob->resume();
+      }
       if (m_move)
       {
          m_delJob = file_delete( m_src ); // Delete source
