@@ -385,7 +385,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                         changed = true;
                     }
                 if ( changed )
-                    doc()->body()->applyChanges();
+                    doc()->applyChanges();
                 noRealBody = false;
             } else if ( current->isDocumentNode() )
                 break;
