@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2004 Jakub Stachowski <qbast@go2.pl>
+ * Copyright (C) 2004, 2005 Jakub Stachowski <qbast@go2.pl>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,6 +24,7 @@
 #include <qobject.h>
 #include <dnssd/servicebase.h>
 
+class KURL;
 namespace DNSSD
 {
 class PublicServicePrivate;
@@ -119,6 +120,13 @@ public:
 	published, it will be re-announced with new data.
 	 */
 	void setDomain(const QString& domain);
+	
+	/**
+	Translates service into URL that can be sent to another user. 
+	@param host Use specified hostname. If left empty, public IP address (the one used for 
+	default route) will be used.
+	 */
+	const KURL toInvitation(const QString& host=QString::null);
 
 signals:
 	/**

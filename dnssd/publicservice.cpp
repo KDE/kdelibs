@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2004 Jakub Stachowski <qbast@go2.pl>
+ * Copyright (C) 2004, 2005 Jakub Stachowski <qbast@go2.pl>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,13 +20,18 @@
 
 #include "publicservice.h"
 #include <netinet/in.h>
+#include <sys/socket.h>
 #include <qapplication.h>
+#include <ksocketaddress.h>
+#include <kurl.h>
+#include <unistd.h>
 #include "sdevent.h"
 #include "responder.h"
 #include "settings.h"
 
 namespace DNSSD
 {
+static unsigned long publicIP();
 #ifdef HAVE_DNSSD
 void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType errorCode, const char *name,
 		       const char*, const char*, void *context);
@@ -159,6 +164,25 @@ void publish_callback (DNSServiceRef, DNSServiceFlags, DNSServiceErrorType error
 }
 #endif
 
+const KURL PublicService::toInvitation(const QString& host)
+{
+	KURL url;
+	url.setProtocol("invitation");
+	if (host.isEmpty()) { // select best address
+		unsigned long s_addr = publicIP();
+		if (!s_addr) return KURL();
+		KNetwork::KIpAddress addr(s_addr);
+		url.setHost(addr.toString());
+	} else 	url.setHost(host);
+	//FIXME: if there is no public interface, select any non-loopback
+	url.setPort(m_port);
+	url.setPath("/"+m_type+"/"+KURL::encode_string(m_serviceName));
+	QString query;
+	QMap<QString,QString>::ConstIterator itEnd = m_textData.end();
+	for (QMap<QString,QString>::ConstIterator it = m_textData.begin(); it!=itEnd ; ++it) 
+		url.addQueryItem(it.key(),it.data());;
+	return url;
+}
 
 void PublicService::customEvent(QCustomEvent* event)
 {
@@ -176,6 +200,22 @@ void PublicService::customEvent(QCustomEvent* event)
 void PublicService::virtual_hook(int, void*)
 {
 }
+
+static unsigned long publicIP()
+{
+	struct sockaddr_in addr;
+	socklen_t len = sizeof(addr);
+	int sock = socket(AF_INET,SOCK_DGRAM,0);
+	if (sock == -1) return 0;
+	addr.sin_family = AF_INET;
+	addr.sin_port = 1;	// Not important, any port and public address will do
+	addr.sin_addr.s_addr = 0x11111111;
+	if ((connect(sock,(const struct sockaddr*)&addr,sizeof(addr))) == -1) { close(sock); return 0; }
+	if ((getsockname(sock,(struct sockaddr*)&addr, &len)) == -1) { close(sock); return 0; }
+	::close(sock);
+	return addr.sin_addr.s_addr;
+}
+	
 
 }
 

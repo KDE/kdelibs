@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2004 Jakub Stachowski <qbast@go2.pl>
+ * Copyright (C) 2004, 2005 Jakub Stachowski <qbast@go2.pl>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -22,6 +22,7 @@
 
 #include <qeventloop.h>
 #include <qapplication.h>
+#include <kurl.h>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -64,6 +65,20 @@ RemoteService::RemoteService(const QString& name,const QString& type,const QStri
 		: ServiceBase(name, type, domain)
 {
 	d = new RemoteServicePrivate();
+}
+
+RemoteService::RemoteService(const KURL& url)
+{
+	d = new RemoteServicePrivate();
+	if (!url.isValid()) return;
+	if (url.protocol()!="invitation") return;
+	if (!url.hasPath()) return;
+	m_hostName = url.host();
+	m_port = url.port();
+	m_type = url.path().section('/',1,1);
+	m_serviceName = url.path().section('/',2);
+	m_textData = url.queryItems();
+	d->m_resolved=true;
 }
 
 RemoteService::~RemoteService()

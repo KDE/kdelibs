@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2004 Jakub Stachowski <qbast@go2.pl>
+ * Copyright (C) 2004, 2005 Jakub Stachowski <qbast@go2.pl>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -25,6 +25,7 @@
 #include <dnssd/servicebase.h>
 
 class QDataStream;
+class KURL;
 namespace DNSSD
 {
 class RemoteServicePrivate;
@@ -55,6 +56,12 @@ public:
 	Creates unresolved remote service with given name, type and domain.
 	 */
 	RemoteService(const QString& name,const QString& type,const QString& domain);
+	
+	/**
+	Creates resolved remote service from invitation URL constructed by PublicService::toInvitation.
+	If URL was invalid, service is set to unresolved and other fields should not be used.
+	 */
+	RemoteService(const KURL& url);
 	
 	virtual ~RemoteService();
 	
