@@ -338,7 +338,6 @@ int main()
 
     if (strcmp(params[P_XWIN_ONLY].value, "no"))
     {
-	system("kded --check");
 	system("kdeinit");
     }
 
