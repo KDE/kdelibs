@@ -132,6 +132,9 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
   case KS_E_LATIN9:
       codec = QTextCodec::codecForName("ISO 8859-9");
       break;
+  case KS_E_LATIN13:
+      codec = QTextCodec::codecForName("ISO 8859-13");
+      break;
   case KS_E_LATIN15:
       codec = QTextCodec::codecForName("ISO 8859-15");
       break;
@@ -256,6 +259,7 @@ KSpell::startIspell()
       case KS_E_LATIN7:
       case KS_E_LATIN8:
       case KS_E_LATIN9:
+      case KS_E_LATIN13:
       case KS_E_LATIN15:
 
 	// will work, if this is the default charset in the dictionary
