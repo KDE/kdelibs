@@ -1944,7 +1944,9 @@ void KHTMLView::displayAccessKeys()
 	        lab->setFrameStyle(QFrame::Box | QFrame::Plain);
 	        lab->setMargin(3);
 	        lab->adjustSize();
-	        addChild(lab,rec.left()+rec.width()/2,rec.top()+rec.height()/2);
+	        addChild(lab,
+                    KMIN(rec.left()+rec.width()/2, contentsWidth() - lab->width()),
+                    KMIN(rec.top()+rec.height()/2, contentsHeight() - lab->height()));
 	        showChild(lab);
 	    }
         }
