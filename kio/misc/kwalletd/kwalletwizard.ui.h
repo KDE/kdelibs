@@ -12,18 +12,20 @@ void KWalletWizard::passwordPageUpdate()
 {
     bool fe = true;
     if (_basic->isChecked()) {
-	fe = !_useWallet->isChecked() || (_pass1->text() == _pass2->text());
-	fe = !_pass1->text().isEmpty() && fe;
+	fe = !_useWallet->isChecked() || ((_pass1->text() == _pass2->text()) && !_pass1->text().isEmpty());
         setFinishEnabled(page2, fe);
     } else {
-	fe = !_useWallet->isChecked() || (_pass1->text() == _pass2->text());
-	fe = !_pass1->text().isEmpty() && fe;
+	fe = !_useWallet->isChecked() || ((_pass1->text() == _pass2->text()) && !_pass1->text().isEmpty());
         setFinishEnabled(page3, fe);
     }
     
     if (_useWallet->isChecked()) {
 	if (_pass1->text() == _pass2->text()) {
-	    _matchLabel->setText(tr("Passwords match."));
+            if (_pass1->text().isEmpty()) {
+                _matchLabel->setText(tr("Password is empty."));
+            } else {
+                _matchLabel->setText(tr("Passwords match."));
+            }
 	} else {
 	    _matchLabel->setText(tr("Passwords do not match."));
 	}
@@ -42,6 +44,7 @@ void KWalletWizard::init()
     setHelpEnabled(page4, false);
     setAppropriate(page3, false);
     setAppropriate(page4, false);
+    setFinishEnabled(page2, true);
 }
 
 
@@ -49,6 +52,9 @@ void KWalletWizard::setAdvanced()
 {
     setAppropriate(page3, true);
     setAppropriate(page4, true);
+    bool fe = !_useWallet->isChecked() || ((_pass1->text() == _pass2->text()) && !_pass1->text().isEmpty());
+    setFinishEnabled(page2, false);
+    setFinishEnabled(page3, fe);
 }
 
 
@@ -56,6 +62,9 @@ void KWalletWizard::setBasic()
 {
     setAppropriate(page3, false);
     setAppropriate(page4, false);
+    bool fe = !_useWallet->isChecked() || ((_pass1->text() == _pass2->text()) && !_pass1->text().isEmpty());
+    setFinishEnabled(page3, false);
+    setFinishEnabled(page2, fe);
 }
 
 
