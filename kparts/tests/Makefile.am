@@ -5,7 +5,7 @@ LDADD = ../lib/libkparts2.la $(LIB_KDECORE)
 
 bin_PROGRAMS = example
 
-example_SOURCES = example.cpp
+example_SOURCES = example.cpp notepad.cpp
 
-example_METASOURCES = example.moc
+example_METASOURCES = AUTO
 

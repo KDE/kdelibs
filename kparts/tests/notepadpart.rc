@@ -1,0 +1,9 @@
+<!DOCTYPE kpartgui>
+<kpartgui>
+<MenuBar>
+ <Menu name="Edit"><text>Edit</text>
+  <Action name="searchreplace"/>
+ </Menu>
+</MenuBar>
+<StatusBar/>
+</kpartgui>

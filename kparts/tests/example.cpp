@@ -1,5 +1,6 @@
 
 #include "example.h"
+#include "notepad.h"
 #include <kguibuilder.cpp>
 
 #include <qsplitter.h>
@@ -28,8 +29,11 @@ Shell::Shell()
 
   QActionCollection *coll = m_builder->actionCollection();
 
-  (void)new KAction( i18n( "&Open local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
-  (void)new KAction( i18n( "&Open remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
+  (void)new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
+  (void)new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
+
+  (void)new KAction( i18n( "&Edit file" ), 0, this, SLOT( slotFileEdit() ), coll, "edit_file" );
+  (void)new KAction( i18n( "&Close file editor" ), 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
   (void)new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), coll, "shell_quit" );
 
   (void)new KAction( i18n( "Yet another menu item" ), 0, coll, "shell_yami" );
@@ -49,6 +53,7 @@ Shell::Shell()
 
   m_manager->addPart( m_part1 );
   m_manager->addPart( m_part2 );
+  m_editorpart = 0;
 
   slotActivePartChanged( m_part1, 0 );
 }
@@ -70,7 +75,37 @@ void Shell::slotFileOpenRemote()
     KMessageBox::error(this,"Couldn't open file !");
 }
 
+void Shell::embedEditor()
+{
+  // replace part2 with the editor part
+  delete m_part2;
+  m_part2 = 0L;
+  m_editorpart = new NotepadPart( m_splitter );
+  m_manager->addPart( m_editorpart );
+// TODO : setActivePart or something like that
+// (or slotActivePartChanged( m_editorpart, whatever the old part was ))
+}
+
+void Shell::slotFileCloseEditor()
+{
+  delete m_editorpart;
+  m_editorpart = 0L;
+  m_part2 = new Part2(m_splitter);
+  m_manager->addPart( m_part2 );
+// Same as above
+}
+
+void Shell::slotFileEdit()
+{
+  if ( !m_editorpart )
+    embedEditor();
+  // TODO use KFileDialog to allow testing remote files
+  if ( ! m_editorpart->openURL( QDir::current().absPath()+"/example_shell.rc" ) )
+    KMessageBox::error(this,"Couldn't open file !");
+}
+
 void Shell::slotActivePartChanged( KPart *newPart, KPart *oldPart )
+
 {
   qDebug( "%s -> %s", oldPart ? oldPart->name() : "0L",
                       newPart ? newPart->name() : "0L");

@@ -21,14 +21,18 @@ public:
 protected slots:
   void slotFileOpen();
   void slotFileOpenRemote();
+  void slotFileEdit();
+  void slotFileCloseEditor();
   void slotActivePartChanged( KPart *newPart, KPart *oldPart );
 
 protected:
   virtual void resizeEvent( QResizeEvent * );
+  void embedEditor();
   
 private:
   KReadOnlyPart *m_part1;
   KPart *m_part2;
+  KReadWritePart *m_editorpart;
   KPartManager *m_manager;
   QSplitter *m_splitter;
   KTMainWindowGUIBuilder *m_builder;
