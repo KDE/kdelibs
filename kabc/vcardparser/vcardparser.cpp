@@ -209,11 +209,14 @@ QString VCardParser::createVCards( const VCard::List& list )
 
           if ( hasEncoding ) { // have to encode the data
             QByteArray input, output;
-            input = (*lineIt).value().toString().utf8();
-            if ( encodingType == "b" )
+            if ( encodingType == "b" ) {
+              input = (*lineIt).value().toByteArray();
               KCodecs::base64Encode( input, output );
-            else if ( encodingType == "quoted-printable" )
+            } else if ( encodingType == "quoted-printable" ) {
+              input = (*lineIt).value().toString().utf8();
+              input.resize( input.size() - 1 ); // strip \0
               KCodecs::quotedPrintableEncode( input, output, false );
+            }
             textLine.append( ":" + QString( output ) );
           } else
             textLine.append( ":" + (*lineIt).value().asString().replace( "\n", "\\n" ) );
