@@ -20,6 +20,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.82  1998/01/16 21:29:30  kalle
+// mention the new bug site in the about dialog
+//
 // Revision 1.81  1998/01/03 15:24:33  kulow
 // added accelerators and ... to the returned Help - Menu
 //
@@ -464,7 +467,8 @@ KLocale* KApplication::getLocale()
 
 
 bool KApplication::eventFilter ( QObject*, QEvent* e )
-  int i = 0;
+{
+  if ( e->type() == Event_KeyPress ) 
 	{    
 	  QKeyEvent *k = (QKeyEvent*)e;  
 	  if( ( k->key() == Key_F12 ) &&
@@ -483,18 +487,30 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 		  pDialog->setWarnOutput( pConfig->readNumEntry( "WarnOutput", 4 ) );
 		  pDialog->setWarnFile( pConfig->readEntry( "WarnFilename", 
 													"kdebug.dbg" ) );
+		  pDialog->setWarnShow( pConfig->readEntry( "WarnShow", "" ) );
+		  pDialog->setErrorOutput( pConfig->readNumEntry( "ErrorOutput", 4 ) );
+		  pDialog->setErrorFile( pConfig->readEntry( "ErrorFilename", 
+													 "kdebug.dbg" ) );
 		  pDialog->setErrorShow( pConfig->readEntry( "ErrorShow", "" ) );
 		  pDialog->setFatalOutput( pConfig->readNumEntry( "FatalOutput", 4 ) );
 		  pDialog->setFatalFile( pConfig->readEntry( "FatalFilename", 
 													 "kdebug.dbg" ) );
 		  pDialog->setFatalShow( pConfig->readEntry( "FatalShow", "" ) );
 		  pDialog->setAbortFatal( pConfig->readNumEntry( "AbortFatal", 0 ) );
+			  /* User pressed OK, retrieve values */
+			  pConfig->writeEntry( "InfoOutput", pDialog->infoOutput() );
+			  pConfig->writeEntry( "InfoFilename", pDialog->infoFile() );
+			  pConfig->writeEntry( "InfoShow", pDialog->infoShow() );
 			  pConfig->writeEntry( "WarnOutput", pDialog->warnOutput() );
 			  pConfig->writeEntry( "WarnFilename", pDialog->warnFile() );
 			  pConfig->writeEntry( "WarnShow", pDialog->warnShow() );
 			  pConfig->writeEntry( "ErrorOutput", pDialog->errorOutput() );
 			  pConfig->writeEntry( "ErrorFilename", pDialog->errorFile() );
 			  pConfig->writeEntry( "ErrorShow", pDialog->errorShow() );
+	if (argv[i+1][0] == '/')
+	  aMiniIconPixmap = aIconPixmap;
+	else
+	  aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( argv[i+1] );
   int parameter_count = 4;
 
 			  bAreaCalculated = false;
@@ -523,6 +539,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 	    aSessionConfigName = pHome;
 	  else
 	    aSessionConfigName = "."; // use current dir if $HOME is not set
+	  aSessionConfigName += "/.kde/share/config/";
 	  aSessionConfigName += argv[i+1];
 	}
 	if (QFile::exists(aSessionConfigName)){
@@ -595,7 +612,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
       
       argc -=2 ;
     }
-				  aCommand+=(getcwd(s, 1024));
+
   }
 
 			                     // save their data 
@@ -603,12 +620,15 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
   }
   if (aMiniIconPixmap.isNull()){
     aMiniIconPixmap = getIconLoader()->loadApplicationMiniIcon( aAppName + ".xpm");
+  }
 
 }
 				if (argv()[0][0]=='/')
 				  aCommand = argv()[0];
+				else {
+				  char* s = new char[1024];
 				  aCommand=(getcwd(s, 1024));
-						 argv()[0]);
+				  aCommand+="/";
 				  delete [] s;
 				  aCommand+=aAppName;
 				}
