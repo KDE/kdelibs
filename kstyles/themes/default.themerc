@@ -1,5 +1,5 @@
 [Misc]
-Name=KDE default
+Name=KDE Classic
 Name[af]=Kde verstek
 Name[ar]=افتراضي
 Name[az]=KDE əsas
@@ -59,7 +59,7 @@ Name[xh]=KDE yendalo
 Name[zh_CN]=KDE 默认
 Name[zh_TW]=KDE 預設
 Name[zu]=Okwendalo ye-KDE
-Comment=Default KDE style
+Comment=Classic KDE style
 Comment[af]=Verstek Kde styl
 Comment[ar]=مظهر كيدي الافتراضي
 Comment[az]=Əsas KDE tərzi
