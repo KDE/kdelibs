@@ -58,7 +58,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 						      S_IFDIR  ),
 				       this );
    }
-   
+
    m_root->setExpandable( true );
    m_root->setPixmap( 0, pix );
    m_root->setText( 0, name );
@@ -82,10 +82,10 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 
    connect( this, SIGNAL( clear()),
 	    this, SLOT( slotDirlisterClear()));
-   
+
    connect( this, SIGNAL( clear(const KURL&)),
 	    this, SLOT( slotDirlisterClearURL(const KURL&)));
-   
+
    connect( this, SIGNAL( redirection( const KURL& , const KURL& ) ),
 	    this, SLOT( slotRedirect( const KURL&, const KURL& )));
 
@@ -137,11 +137,11 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
    KFileItem *currItem;
    KFileTreeViewItemList treeViewItList;
    KFileTreeViewItem *parentItem = 0;
-   
+
    while ( (currItem = it.current()) != 0 )
    {
       parentItem = parentKFTVItem( currItem );
-     
+
       /* Only create a new KFileTreeViewItem if it does not yet exist */
       KFileTreeViewItem *newKFTVI =
 	 static_cast<KFileTreeViewItem *>(currItem->extraData( this ));
@@ -168,7 +168,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
       if( dirOnlyMode() && m_recurseChildren && currItem->isLocalFile( ) && currItem->isDir() )
       {
 	 KURL url = currItem->url();
-	 QString filename = url.directory( false, true ) + url.filename();
+	 QString filename = url.directory( false, true ) + url.fileName();
 	 /* do the stat trick of Carsten. The problem is, that the hardlink
 	 *  count only contains directory links. Thus, this method only seem
          * to work in dir-only mode */
@@ -204,7 +204,7 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 
       treeViewItList.append( newKFTVI );
    }
-      
+
    emit( newTreeViewItems( this, treeViewItList ));
 }
 
@@ -212,7 +212,7 @@ KFileTreeViewItem* KFileTreeBranch::createTreeViewItem( KFileTreeViewItem *paren
 							KFileItem *fileItem )
 {
    KFileTreeViewItem  *tvi = 0;
-   
+
    if( parent && fileItem )
    {
       tvi = new KFileTreeViewItem( parent,
@@ -254,7 +254,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 
    if( !it ) return;
    kdDebug(250) << "Slot Delete Item hitted for " << it->url().prettyURL() << endl;
-   
+
    KFileTreeViewItem *kfti = static_cast<KFileTreeViewItem*>(it->extraData(this));
 
    if( kfti )
@@ -263,7 +263,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
       if( kfti->childCount() > 0 )
       {
 	 KFileTreeViewItem *child = static_cast<KFileTreeViewItem*>(kfti->firstChild());
-      
+
 	 while( child )
 	 {
 	    kdDebug(250) << "Calling child to be deleted !" << endl;
@@ -272,7 +272,7 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
 	    child = nextChild;
 	 }
       }
-      
+
       kdDebug(250) << "Found corresponding KFileTreeViewItem" << endl;
       delete( kfti );
       it->removeExtraData( this );
@@ -291,7 +291,7 @@ void KFileTreeBranch::slotCanceled( const KURL& url )
    m_openChildrenURLs.remove( url);
 
    // stop animations etc.
-   emit populateFinished( findTVIByURL(url));      
+   emit populateFinished( findTVIByURL(url));
 }
 
 void KFileTreeBranch::slotDirlisterClear()
@@ -302,7 +302,7 @@ void KFileTreeBranch::slotDirlisterClear()
 
    QListViewItem *child = m_root->firstChild();
    QListViewItem *next = child;
-   
+
    while( child )
    {
       next = child->nextSibling();
@@ -317,13 +317,13 @@ void KFileTreeBranch::slotRedirect( const KURL& oldUrl, const KURL&newUrl )
    {
       m_startURL = newUrl;
    }
-   
+
 }
 
 void KFileTreeBranch::slotDirlisterClearURL( const KURL& url )
 {
    kdDebug(250)<< "*** Clear for URL !" << url.prettyURL() << endl;
-   KFileItem *item = find( url );
+   KFileItem *item = findByURL( url );
    if( item )
    {
       KFileTreeViewItem *ftvi =
@@ -371,10 +371,10 @@ void KFileTreeBranch::slCompleted( const KURL& url )
 
    kdDebug(250) << "current parent " << currParent << " is already listed: "
 		<< currParent->alreadyListed() << endl;
-   
+
    emit( populateFinished(currParent));
    emit( directoryChildCount(currParent, currParent->childCount()));
-   
+
    /* This is a walk through the children of the last populated directory.
     * Here we start the dirlister on every child of the dir and wait for its
     * finish. When it has finished, we go to the next child.
@@ -389,7 +389,7 @@ void KFileTreeBranch::slCompleted( const KURL& url )
    kdDebug(250) << "isLocalFile: " << m_startURL.isLocalFile() << endl;
    kdDebug(250) << "dirOnlyMode: " << dirOnlyMode() << endl;
 
-   
+
    if( m_recurseChildren && (!m_startURL.isLocalFile() || ! dirOnlyMode()) )
    {
       bool wantRecurseUrl = false;
@@ -407,7 +407,7 @@ void KFileTreeBranch::slCompleted( const KURL& url )
 
       if( wantRecurseUrl && currParent )
       {
-	 
+
 	 /* now walk again through the tree and populate the children to get +-signs */
 	 /* This is the starting point. The visible folder has finished,
             processing the children has not yet started */
@@ -463,7 +463,7 @@ bool KFileTreeBranch::populate( const KURL& url,  KFileTreeViewItem *currItem )
    bool ret = false;
    if( ! currItem )
       return ret;
-   
+
    kdDebug(250) << "Populating <" << url.prettyURL() << ">" << endl;
 
    /* Add this url to the list of urls to recurse for children */
@@ -472,7 +472,7 @@ bool KFileTreeBranch::populate( const KURL& url,  KFileTreeViewItem *currItem )
       m_openChildrenURLs.append( url );
       kdDebug(250) << "Appending to list " << url.prettyURL() << endl;
    }
-   
+
    if( ! currItem->alreadyListed() )
    {
       /* start the lister */
