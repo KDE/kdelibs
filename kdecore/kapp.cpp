@@ -236,6 +236,8 @@ DCOPClient *KApplication::dcopClient()
 
   // create an instance specific DCOP client object
   pDCOPClient = new DCOPClient();
+  connect(pDCOPClient, SIGNAL(attachFailed(const QString &)),
+	  SLOT(dcopFailure(const QString &)));
 
   return pDCOPClient;
 }
@@ -423,6 +425,12 @@ void KApplication::aboutQt(){
   //  QMessageBox::aboutQt( w, caption() );
 }
 
+void KApplication::dcopFailure(const QString &msg)
+{
+  QMessageBox::critical(kapp->mainWidget(), 
+			i18n("DCOP communications error"),
+			msg, i18n("Ok"));
+}
 
 bool KApplication::eventFilter ( QObject*, QEvent* e )
 {

@@ -321,6 +321,9 @@ public slots:
 protected slots:
   void appHelpActivated();
 
+private slots:
+  void dcopFailure(const QString &);
+ 
 private:
   KApplicationPrivate* pAppData;
   KConfig* pSessionConfig; //instance specific application config object
@@ -482,6 +485,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.109  1999/10/13 15:13:09  ettrich
+// the appname is programmers space and therefore QCString
+//
 // Revision 1.108  1999/10/13 02:39:02  boloni
 // fix it to compile. (dcopclient can not be declared const)
 //
