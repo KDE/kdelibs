@@ -527,6 +527,8 @@ public:
     void ignoreInitialGeometry();
 
     /**
+     * @deprecated 
+     *
      * @return the size the mainwindow should have so that the central
      * widget will be of @p size.
      *
@@ -540,6 +542,7 @@ public:
      * @li Now call adjustSize() in the mainwindow to resize the
      * mainwindow such that the central widget will become the desired size.
      */
+    // KDE4 to be removed
     QSize sizeForCentralWidgetSize(QSize size);
 
 public slots:
