@@ -719,10 +719,14 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	case CSS_VAL_LIST_ITEM:
 	    d = LIST_ITEM; break;
 	case CSS_VAL_RUN_IN:
+	    // ### we don't support run-in and compact so let's completely ignore the vlaues.
+	    return;
 	    d = RUN_IN; break;
 	case CSS_VAL_COMPACT:
+	    return;
 	    d = COMPACT; break;
 	case CSS_VAL_MARKER:
+	    return;
 	    d = MARKER; break;
 	case CSS_VAL_TABLE:
 	    d = TABLE; break;
