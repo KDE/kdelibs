@@ -194,10 +194,8 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     if ( d->m_widget->inherits( "KTMainWindow" ) )
     {
-      KTMainWindow *mw = static_cast<KTMainWindow *>( d->m_widget );
-      mw->addToolBar( bar );
-      if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
-        bar->setXMLGUIClient( d->m_client );
+	if ( d->m_client && !d->m_client->xmlFile().isEmpty() )
+	    bar->setXMLGUIClient( d->m_client );
     }
 
     bar->loadState( element );
@@ -333,4 +331,10 @@ void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )
 {
     if ( !d->m_widget || !d->m_widget->inherits( "KTMainWindow" ) )
 	return;
+    KToolBar *toolbar = 0;
+    QListIterator<KToolBar> it( ( (KTMainWindow*)d->m_widget )->toolBarIterator() );
+    while ( ( toolbar = it.current() ) ) {
+	++it;
+	toolbar->positionYourself();
+    }
 }

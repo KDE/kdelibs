@@ -862,6 +862,8 @@ public:
     void loadState( const QDomElement &e );
     void saveState( QDomElement &e );
 
+    void positionYourself();
+    
 signals:
     /**
      * Emitted when button @p id is clicked.
@@ -970,7 +972,7 @@ private:
     void doConnections( KToolBarButton *button );
     void insertWidgetInternal( QWidget *w, int &index, int id );
     void getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine );
-
+    
     QMap<QWidget*, int > widget2id;
     QMap<int, QWidget* > id2widget;
     KToolBarPrivate *d;

@@ -94,6 +94,8 @@ public:
 	hasRealPos = FALSE;
 
 	oldPos = QMainWindow::Unmanaged;
+	
+	positioned = FALSE;
     }
 
     int m_iconSize;
@@ -111,14 +113,15 @@ public:
     int realIndex, realOffset;
     bool realNl;
     QMainWindow::ToolBarDock oldPos;
-    
+
     KXMLGUIClient *m_xmlguiClient;
 
     bool modified;
-    
+    bool positioned;
+
     struct ToolBarInfo
     {
-	ToolBarInfo() {}
+	ToolBarInfo() : index( 0 ), offset( -1 ), newline( FALSE ), dock( QMainWindow::Top ) {}
 	ToolBarInfo( QMainWindow::ToolBarDock d,
 		     int i, bool n, int o ) : index( i ), offset( o ), newline( n ), dock( d ) {
 	}
@@ -1093,9 +1096,9 @@ void KToolBar::saveState()
 	for( ; !elem.isNull(); elem = elem.nextSibling().toElement() ) {
 	    if ( elem.tagName().lower() != "toolbar" )
 		continue;
-	    
+	
 	    QString curname(elem.attribute( "name" ));
-	    
+	
 	    if ( curname == barname ) {
 		just_append = false;
 		local.documentElement().replaceChild( current, elem );
@@ -1110,7 +1113,7 @@ void KToolBar::saveState()
 	
 	return;
     }
-    
+
     // if that didn't work, we save to the config file
     QString grpToolbarStyle;
     if (!strcmp(name(), "unnamed") || !strcmp(name(), "mainToolBar"))
@@ -1518,7 +1521,6 @@ void KToolBar::slotReadConfig()
 		// first, get the generic settings
 	    highlight   = config->readBoolEntry(attrHighlight, highlight);
 	    transparent = config->readBoolEntry(attrTrans, transparent);
-
 		// now we always read in the IconText property
 	    icontext = config->readEntry(attrIconText, "icontext");
 
@@ -1770,6 +1772,19 @@ void KToolBar::saveState( QDomElement &current )
     d->modified = true;
 }
 
- 
+
+void KToolBar::positionYourself()
+{
+    if ( d->positioned || !parentWidget() || !parentWidget()->inherits( "QMainWindow" ) )
+	return;
+    ( (QMainWindow*)parentWidget() )->moveToolBar( this, d->toolBarInfo.dock,
+						   d->toolBarInfo.newline,
+						   d->toolBarInfo.index,
+						   d->toolBarInfo.offset );
+    if ( testWState( Qt::WState_ForceHide ) )
+	hide();                                                    
+    d->positioned = FALSE; // should be set to TRUE, but for a koffice hack we can't do that at the moment
+}
+
 #include "ktoolbar.moc"
 
