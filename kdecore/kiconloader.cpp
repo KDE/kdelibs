@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
@@ -136,12 +136,12 @@ KIconLoader::KIconLoader(QString appname)
 	    mpGroups[i].size = root->defaultSize(i);
     }
 
-    // SCI: Add legacy directories for special Group = User
+    // Add application specific directories for special Group = User
     if (appname.isEmpty()) 
 	appname = KGlobal::instance()->instanceName();
-    mpDirs->addResourceType("toolbar", KStandardDirs::kde_default("data") +
+    mpDirs->addResourceType("usricon", KStandardDirs::kde_default("data") +
 		appname + "/pics/");
-    mpDirs->addResourceType("toolbar", KStandardDirs::kde_default("data") +
+    mpDirs->addResourceType("usricon", KStandardDirs::kde_default("data") +
 		appname + "/toolbar/");
 }
 
@@ -168,42 +168,69 @@ void KIconLoader::addIconTheme(KIconTheme *theme, KIconThemeNode *node)
     }
 }
 
+void KIconLoader::printThemeTree(KIconThemeNode *node)
+{
+    d->dbgString += "(";
+    d->dbgString += node->theme->name();
+    bool first;
+    KIconThemeNode *n;
+    for (first=true, n=node->links.first(); n; n=node->links.next(), first=false)
+    {
+	if (first) d->dbgString += ": ";
+	else d->dbgString += ", ";
+	printThemeTree(n);
+    }
+    d->dbgString += ")";
+}
+
 QString KIconLoader::iconPath(QString name, int group_or_size,
 	bool canReturnNull)
 {
-    bool sci = false;
+    if (name.at(0) == '/')
+	return name;
+    if (mpThemeRoot == 0L)
+	return QString::null;
+
+    QString ext = name.right(4);
+    if ((ext == ".png") || (ext == ".xpm"))
+    {
+	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
+		<< " loads icon with extension.\n";
+	name = name.left(name.length() - 4);
+    }
+
+    QString path;
+    bool sci = false;  // Source compatibility with older apps
     switch (group_or_size)
     {
-    case KIcon::User:
-    {
-	// Special case for nonthemed icons
-	QString path = mpDirs->findResource("toolbar", name + ".png");
-	if (path.isEmpty())
-	     path = mpDirs->findResource("toolbar", name + ".xpm");
-	return path;
-    }
-    // SCI
-    case KIcon::_Small:
+    case KIconLoader::Small:
 	group_or_size = -16;
 	sci = true;
 	break;
-    case KIcon::_Medium:
+    case KIconLoader::Medium:
 	group_or_size = -32;
 	sci = true;
 	break;
-    case KIcon::_Large:
+    case KIconLoader::Large:
 	group_or_size = -48;
 	sci = true;
 	break;
-    case KIcon::_Default:
+    case KIconLoader::Default:
 	group_or_size = -d->defOldSize;
 	sci = true;
 	break;
+    case KIcon::User:
+	path = mpDirs->findResource("usricon", name + ".png");
+	if (path.isEmpty())
+	     path = mpDirs->findResource("usricon", name + ".xpm");
+	return path;
     }
-    // SCI
-    if (name.at(0) == '/')
-	return name;
 
+    if (group_or_size >= KIcon::LastGroup)
+    {
+	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
+	return path;
+    }
     int size;
     if (group_or_size >= 0)
 	size = mpGroups[group_or_size].size;
@@ -212,11 +239,21 @@ QString KIconLoader::iconPath(QString name, int group_or_size,
     KIcon icon = iconPath2(name, size);
     if (!icon.isValid())
     {
-	// SCI
 	if (sci)
-	    return iconPath(name, KIcon::User, canReturnNull);
-	if (!canReturnNull)
-	    icon = iconPath2("unknown", size);
+	{
+	    path = iconPath(name, KIcon::User, canReturnNull);
+	    if (!path.isEmpty() || canReturnNull)
+		return path;
+	}
+	if (canReturnNull)
+	    return QString::null;
+	icon = iconPath2("unknown", size);
+	if (!icon.isValid())
+	{
+	    kdDebug(264) << "Warning: could not find \"Unknown\" icon for size = "
+		         << size << "\n";
+	    return QString::null;
+	}
     }
     return icon.path;
 }
@@ -247,67 +284,62 @@ KIcon KIconLoader::iconPath2(QString name, int size,
     return icon;
 }
 
-void KIconLoader::printThemeTree(KIconThemeNode *node)
-{
-    d->dbgString += "(";
-    d->dbgString += node->theme->name();
-    bool first;
-    KIconThemeNode *n;
-    for (first=true, n=node->links.first(); n; n=node->links.next(), first=false)
-    {
-	if (first) d->dbgString += ": ";
-	else d->dbgString += ", ";
-	printThemeTree(n);
-    }
-    d->dbgString += ")";
-}
-
 QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
 	QString *path_store, bool canReturnNull)
 {
     QPixmap pix;
-    bool sci = false;
-    switch (group_or_size)
-    {
-    case KIcon::User:
-    {
-	QString path = iconPath(name, KIcon::User, canReturnNull);
-	if (path.isEmpty())
-	    return pix;
-	pix.load(path);
-	if (path_store != 0L)
-	    *path_store = path;
-	kdDebug(264) << "Icon resolved to user icon " << path << "\n";
+    if (mpThemeRoot == 0L)
 	return pix;
-    }
-    // SCI
-    case KIcon::_Small:
-	group_or_size = -16;
-	sci = true;
-	break;
-    case KIcon::_Medium:
-	group_or_size = -32;
-	sci = true;
-	break;
-    case KIcon::_Large:
-	group_or_size = -48;
-	sci = true;
-	break;
-    case KIcon::_Default:
-	group_or_size = -d->defOldSize;
-	sci = true;
-	break;
-    }
-
-    // SCI
     if (name.at(0) == '/')
     {
 	pix.load(name);
 	return pix;
     }
 
-    if ((mpThemeRoot == 0L) || (group_or_size >= KIcon::LastGroup))
+    QString ext = name.right(4);
+    if ((ext == ".png") || (ext == ".xpm"))
+    {
+	kdDebug(264) << "Application " << KGlobal::instance()->instanceName()
+		<< " loads icon with extension.\n";
+	name = name.left(name.length() - 4);
+    }
+
+    QString path;
+    bool sci = false;
+    switch (group_or_size)
+    {
+    case KIconLoader::Small:
+	group_or_size = -16;
+	sci = true;
+	break;
+    case KIconLoader::Medium:
+	group_or_size = -32;
+	sci = true;
+	break;
+    case KIconLoader::Large:
+	group_or_size = -48;
+	sci = true;
+	break;
+    case KIconLoader::Default:
+	group_or_size = -d->defOldSize;
+	sci = true;
+	break;
+    case KIcon::User:
+	path = iconPath(name, KIcon::User, canReturnNull);
+	if (path.isEmpty())
+	    return pix;
+	pix.load(path);
+	if (path_store != 0L)
+	    *path_store = path;
+	kdDebug(264) << "User icon resolved to " << path << "\n";
 	return pix;
+    }
+
+    if (group_or_size >= KIcon::LastGroup)
+    {
+	kdDebug(264) << "Illegal icon group: " << group_or_size << "\n";
+	return path;
+    }
 
     int size;
     if (group_or_size >= 0)
@@ -326,15 +358,18 @@ QPixmap KIconLoader::loadIcon(QString name, int group_or_size,
     {
 	kdDebug(264) << "Application " << KGlobal::instance()->instanceName() 
 		<< " requests to load legacy icon " << name << " of size "
-		<< -group_or_size << "\n";
+		<< size << "\n";
     }
 
     KIcon icon = iconPath2(name, size);
     if (!icon.isValid())
     {
-	// SCI: Try app specific directories too
 	if (sci)
-	     return loadIcon(name, KIcon::User, path_store, canReturnNull);
+	{
+	    pix = loadIcon(name, KIcon::User, path_store, canReturnNull);
+	    if (!pix.isNull() || canReturnNull)
+		return pix;
+	}
 	if (canReturnNull)
 	    return pix;
 	icon = iconPath2("unknown", size);
@@ -457,7 +492,7 @@ QPixmap BarIcon(QString name, KInstance *instace)
 QPixmap BarIcon(QString name, int size, KInstance *instace)
 {
     KIconLoader *loader = instace->iconLoader();
-    return loader->loadIcon(name, -size);
+    return loader->loadIcon(name, size);
 }
 
 QPixmap SmallIcon(QString name, KInstance *instance)

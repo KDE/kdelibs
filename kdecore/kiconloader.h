@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
@@ -51,7 +51,7 @@ class KIconLoader
 public:
 
     // Source compatibility issue
-    enum Size { Small=0, Medium, Large, Default };
+    enum Size { Small=10, Medium, Large, Default };
 
     /**
      * Construct the iconloader.

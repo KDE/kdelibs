@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
@@ -36,11 +36,7 @@ public:
     enum Context { Any, Action, Application, Device, FileSystem, MimeType };
     enum Types { Fixed, Scalable };
     enum MatchType { MatchExact, MatchBest };
-
-    // The first 4 are for source compatiblity. They can be removed when every
-    // app is ported to the current iconloader.
-    enum Group { _Small=0, _Medium, _Large, _Default, Desktop, Kicker, Toolbar, 
-	    Small, ListItem, LastGroup, User };
+    enum Group { Desktop, Kicker, Toolbar, Small, ListItem, LastGroup, User };
 
     /** The size in pixels of the icon. */
     int size;
