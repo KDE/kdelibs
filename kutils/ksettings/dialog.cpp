@@ -65,6 +65,7 @@ KConfigureDialog::~KConfigureDialog()
 	delete d;
 }
 
+#if 0
 void KConfigureDialog::addKPartsPluginPage()
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
@@ -82,6 +83,7 @@ void KConfigureDialog::addKPartsPluginPage()
 		d->dlg->addModule( *moduleinfo );
 	}
 }
+#endif
 
 void KConfigureDialog::show()
 {
