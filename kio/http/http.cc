@@ -1137,6 +1137,7 @@ bool HTTPProtocol::readHeader()
       // unauthorized access
       if ((code == 401) || (code == 407)) {
 	unauthorized = true;
+        m_bCachedWrite = false; // Don't put in cache
       } 
       // server side errors
       else if ((code >= 500) && (code <= 599)) {
@@ -1145,6 +1146,7 @@ bool HTTPProtocol::readHeader()
         } else {
            errorPage();
         }
+        m_bCachedWrite = false; // Don't put in cache
       }
       // client errors
       else if ((code >= 400) && (code <= 499)) {
@@ -1156,6 +1158,7 @@ bool HTTPProtocol::readHeader()
 #endif
 	// Tell that we will only get an error page here.
 	errorPage();
+        m_bCachedWrite = false; // Don't put in cache
       }
       else if (code == 100)
       {
@@ -1169,6 +1172,7 @@ bool HTTPProtocol::readHeader()
         if (m_request.method == HTTP_POST)
         {
            errorPage();	
+           m_bCachedWrite = false; // Don't put in cache
            noRedirect = true;
         }
       }
@@ -1486,7 +1490,7 @@ void HTTPProtocol::stat(const QString& path, const QString& /*query*/)
   if (m_request.hostname.isEmpty())
      error( KIO::ERR_INTERNAL, "stat: No host specified!");
 
-  m_request.method = HTTP_GET;
+  m_request.method = HTTP_HEAD;
   m_request.path = path;
   m_request.query = ""; // Do we need to add query to the arguments /
   m_request.reload = false; // Use the cache
