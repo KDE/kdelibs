@@ -210,7 +210,7 @@ bool ConnectionSignals::renamed( const char *_new )
   return true;
 }
 
-bool ConnectionSignals::resumed( bool _resume )
+bool ConnectionSignals::canResume( bool _resume )
 {
   assert( m_pConnection );
 
@@ -537,7 +537,8 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 	if ( *((char*)_p) == '1' )
 	  overwrite = true;
 	bool resume = false;
-	if ( *((char*)(_p + 1)) == '1' )
+	p = (char*)_p + 1;
+	if ( *p == '1' )
 	  resume = true;
 	slotPut( (const char*)(_p) + 11, mode, overwrite, resume );
       }
@@ -585,7 +586,7 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 	bool resume = false;
 	if ( *((char*)_p) == '1' )
 	  resume = true;
-	slotResume( resume );
+	slotCanResume( resume );
       }
       break;
     case MSG_ERROR:

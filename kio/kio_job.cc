@@ -41,6 +41,7 @@ KIOJob::KIOJob() : QObject(), IOJob( 0L )
   
   m_bAutoDelete = true;
   m_bGUI = true;
+  m_bCacheToPool = true;
 
   m_pCopyProgressDlg = 0L;
   m_pDialog = 0L;
@@ -413,19 +414,25 @@ void KIOJob::slotFinished()
 
   m_id = 0;
   
-  
+  cerr << "kiojob: slotFinished1  " << m_pSlave->pid() << endl;
   // Put the slave back to the pool
   if ( m_pSlave )
   {  
+    cerr << "kiojob: slotFinished2  " << m_pSlave->pid() << endl;
     // Delete the notifier NOW. One never know what happens ....
     if ( m_pNotifier )
     {
+      cerr << "kiojob: slotFinished3  " << m_pSlave->pid() << endl;
       m_pNotifier->setEnabled( false );
       delete m_pNotifier;
       m_pNotifier = 0L;
     }
 
-    KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str() );
+    if ( m_bCacheToPool )
+      KIOSlavePool::self()->addSlave( m_pSlave, m_strSlaveProtocol.c_str() );
+    else
+      delete m_pSlave;
+
     m_pSlave = 0L;
   }
   
@@ -486,9 +493,9 @@ void KIOJob::slotRenamed( const char *_new )
   emit sigRenamed( m_id, _new );
 }
 
-void KIOJob::slotResume( bool _resume )
+void KIOJob::slotCanResume( bool _resume )
 {
-  emit sigResumed( m_id, _resume );
+  emit sigCanResume( m_id, _resume );
 }
 
 void KIOJob::slotTotalSize( unsigned long _bytes )
@@ -567,7 +574,7 @@ void KIOJob::slotCopyingFile( const char *_from, const char *_to )
   if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->copyingFile( _from, _to );
 
-  emit sigCopying( m_id, _from );
+  emit sigCopying( m_id, _from, _to );
   cerr << "CopyingFile " << _from << " -> " << _to << endl;
 }
 
@@ -660,8 +667,10 @@ void KIOJob::slotDispatch( int )
 {
   if ( !dispatch() )
   {    
+    cerr << "slotDispatch0  " << m_pSlave->pid() << endl;
     if ( m_pNotifier )
     {
+      cerr << "slotDispatch1  " << m_pSlave->pid() << endl;
       m_pNotifier->setEnabled( false );
       delete m_pNotifier;
       m_pNotifier = 0L;
@@ -670,6 +679,7 @@ void KIOJob::slotDispatch( int )
       // putback in the pool.
       if ( m_pSlave )
       {    
+	cerr << "slotDispatch2  " << m_pSlave->pid() << endl;
 	delete m_pSlave;
 	m_pSlave = 0L;
       }

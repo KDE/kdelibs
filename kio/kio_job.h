@@ -33,6 +33,7 @@ public:
    */
   void setAutoDelete( bool _mode ) { m_bAutoDelete = _mode; }
   void enableGUI( bool _mode ) { m_bGUI = _mode; }
+  void setCacheToPool( bool _mode ) { m_bCacheToPool = _mode; }
   
   virtual bool copy( list<string>& _source, const char *_dest );
   virtual bool copy( QStrList& _source, const char *_dest );
@@ -65,7 +66,7 @@ public:
   virtual void slotIsDirectory();
   virtual void slotIsFile();
   virtual void slotRenamed( const char *_new );
-  virtual void slotResume( bool _resume );
+  virtual void slotCanResume( bool _resume );
   
   virtual void slotTotalSize( unsigned long _bytes );
   virtual void slotTotalFiles( unsigned long _files );
@@ -103,8 +104,8 @@ signals:
   void sigListEntry( int id, UDSEntry& _entry );
   void sigMimeType( int id, const char *_mimetype );
   void sigRenamed( int id, const char *_new );
-  void sigCopying(int id, const char *_file );
-  void sigResumed( int id, bool _resume );
+  void sigCopying(int id, const char *_from, const char *_to );
+  void sigCanResume( int id, bool _resume );
 
   /**
    * @param _data may be 0L if the file has zero size.
@@ -158,6 +159,7 @@ protected:
   
   bool m_bAutoDelete;
   bool m_bGUI;
+  bool m_bCacheToPool;
   
   KIOCopyProgressDlg* m_pCopyProgressDlg;
   QDialog *m_pDialog;

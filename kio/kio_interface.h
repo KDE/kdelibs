@@ -93,7 +93,7 @@
 #define ERR_COULD_NOT_STAT 37
 #define ERR_COULD_NOT_CLOSEDIR 38
 #define ERR_CANNOT_RESUME 39
-
+#define ERR_COULD_NOT_READSIZE 40
 /************
  *
  * Universal Directory Service
@@ -181,7 +181,7 @@ public:
   virtual bool isDirectory();
   virtual bool isFile();
   virtual bool renamed( const char *_new );
-  virtual bool resumed( bool _resume );
+  virtual bool canResume( bool _resume );
 
   ///////////
   // Info Signals
@@ -248,7 +248,7 @@ public:
   virtual void slotIsDirectory() { };
   virtual void slotIsFile() { };
   virtual void slotRenamed( const char* _new ) { };
-  virtual void slotResume( bool _resume ) { };
+  virtual void slotCanResume( bool _resume ) { };
   
   ///////////
   // Infos

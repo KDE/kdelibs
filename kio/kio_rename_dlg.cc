@@ -20,7 +20,7 @@ KIORenameDlg::KIORenameDlg(QWidget *parent, const char *_src, const char *_dest,
 
   K2URL d( dest.c_str() );
   QFileInfo info;
-  info.setFile( d.filename().c_str() );
+  info.setFile( d.path() );
   offset = info.size();
     
   b0 = b1 = b2 = b3 = b4 = b5 = b6 = b7 = 0L;

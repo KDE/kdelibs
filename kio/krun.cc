@@ -17,7 +17,7 @@
 #include <string.h>
 
 // This function is implemeneted in kfmgui.cc and in kfmlib
-//extern void openFileManagerWindow( const char *_url );
+extern void openFileManagerWindow( const char *_url );
 
 bool KRun::runURL( const char *_url, const char *_mimetype )
 {
@@ -25,12 +25,12 @@ bool KRun::runURL( const char *_url, const char *_mimetype )
   
   if ( strcmp( _mimetype, "text/html" ) == 0 )
   {
-    //    openFileManagerWindow( _url );
+    openFileManagerWindow( _url );
     return true;
   }
   else if ( strcmp( _mimetype, "inode/directory" ) == 0 )
   {
-    //    openFileManagerWindow( _url );
+    openFileManagerWindow( _url );
     return true;
   }
   else if ( strcmp( _mimetype, "inode/directory-locked" ) == 0 )
