@@ -828,9 +828,8 @@ void RenderText::paint( PaintInfo& pI, int tx, int ty)
     int s = m_lines.count() - 1;
     if ( s < 0 ) return;
 
-    // ### incorporate padding/border here!
-    if ( ty + m_lines[0]->m_y > pI.r.bottom() + 64 ) return;
-    if ( ty + m_lines[s]->m_y + m_lines[s]->m_baseline + m_lineHeight + 64 < pI.r.top() ) return;
+    if ( ty + m_lines[0]->m_y > pI.r.bottom() ) return;
+    if ( ty + m_lines[s]->m_y + m_lines[s]->height() < pI.r.top() ) return;
 
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
