@@ -3,7 +3,6 @@
 # to complain, so we can ask them to provide one :)
 application/x-arc
 application/x-dbm
-application/x-debian-package
 application/x-elc
 application/x-frame
 application/x-gdbm
