@@ -236,7 +236,7 @@ typedef struct asc_type {
 } asc_type;
 
 static asc_type types[] = {
-	{ "text/html",          6, 2 }, // 10 items but 6 different words only
+	{ "text/html",          19, 2 }, // 10 items but 10 different words only
 	{ "text/x-c",           9, 1.3 },
 	{ "text/x-makefile",    4, 1.9 },
 	{ "text/x-pli",         1, 3 },
@@ -306,6 +306,12 @@ static struct names {
 	{
 		"<DIV", L_HTML
 	},
+        {
+                "<script", L_HTML
+        },
+        {
+                "<SCRIPT", L_HTML
+        },
 	{
 		"/*", L_C|L_CPP|L_JAVA
 	},                      /* must precede "The", "the", etc. */
