@@ -1903,11 +1903,14 @@ void KExtendedSocket::socketActivityRead()
 	      else if (len == 0)
 		{
 		  // EOF condition here
-		  d->qsnIn->setEnabled(false);
 		  emit closed(involuntary |
 			      (readBufferSize() ? availRead : 0) |
 			      (writeBufferSize() ? dirtyWrite : 0));
+		  ::close(sockfd);
 		  sockfd = -1;	// we're closed
+		  delete d->qsnIn;
+		  delete d->qsnOut;
+		  d->qsnIn = d->qsnOut = NULL;
 		  d->status = done;
 		  return;
 		}
