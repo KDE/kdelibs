@@ -71,7 +71,7 @@ bool XMLHandler::startDocument()
     errorProt = "";
     state = StateInit;
 
-    return TRUE;
+    return true;
 }
 
 
@@ -88,17 +88,17 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         int exceptioncode = 0;
         newElement->setAttribute(atts.localName(i),atts.value(i),exceptioncode);
         if (exceptioncode) // exception setting attributes
-            return FALSE;
+            return false;
     }
     if (m_currentNode->addChild(newElement)) {
         if (m_view)
             newElement->attach();
         m_currentNode = newElement;
-        return TRUE;
+        return true;
     }
     else {
         delete newElement;
-        return FALSE;
+        return false;
     }
 }
 
@@ -114,7 +114,7 @@ bool XMLHandler::endElement( const QString& /*namespaceURI*/, const QString& /*l
     }
 // ###  else error
 
-    return TRUE;
+    return true;
 }
 
 
@@ -128,11 +128,11 @@ bool XMLHandler::startCDATA()
         if (m_view)
             newNode->attach();
         m_currentNode = newNode;
-        return TRUE;
+        return true;
     }
     else {
         delete newNode;
-        return FALSE;
+        return false;
     }
 
 }
@@ -147,30 +147,26 @@ bool XMLHandler::endCDATA()
 bool XMLHandler::characters( const QString& ch )
 {
     if (ch.stripWhiteSpace().isEmpty())
-        return TRUE;
+        return true;
 
-    if (m_currentNode->nodeType() == Node::TEXT_NODE || m_currentNode->nodeType() == Node::CDATA_SECTION_NODE
-        || enterText()) {
+    if (m_currentNode->nodeType() == Node::TEXT_NODE ||
+        m_currentNode->nodeType() == Node::CDATA_SECTION_NODE ||
+        enterText()) {
 
-        if (m_currentNode->parentNode() &&
-            (m_currentNode->parentNode()->nodeName() == "script" ||
-             m_currentNode->parentNode()->nodeName() == "style" ||
-             m_currentNode->parentNode()->nodeName() == "xmp" ||
-             m_currentNode->parentNode()->nodeName() == "textarea")) {
+        unsigned short parentId = m_currentNode->parentNode() ? m_currentNode->parentNode()->id() : 0;
+        if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
             // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
             // way of doing this?
-            // ### use lowercase
-            // ### only do this for elements in the xhtml namespace
             static_cast<TextImpl*>(m_currentNode)->appendData(ch);
         }
         else {
             // for all others, simplify the whitespace
             static_cast<TextImpl*>(m_currentNode)->appendData(ch.simplifyWhiteSpace());
         }
-        return TRUE;
+        return true;
     }
     else
-        return FALSE;
+        return false;
 }
 
 bool XMLHandler::comment(const QString & ch)
@@ -220,11 +216,11 @@ bool XMLHandler::enterText()
         if (m_view)
             newNode->attach();
         m_currentNode = newNode;
-        return TRUE;
+        return true;
     }
     else {
         delete newNode;
-        return FALSE;
+        return false;
     }
 }
 
@@ -275,8 +271,6 @@ bool XMLHandler::unparsedEntityDecl(const QString &/*name*/, const QString &/*pu
 
 //------------------------------------------------------------------------------
 
-
-
 XMLTokenizer::XMLTokenizer(DOM::DocumentPtr *_doc, KHTMLView *_view)
 {
     m_doc = _doc;
@@ -325,53 +319,66 @@ void XMLTokenizer::finish()
     reader.setDTDHandler( &handler );
     bool ok = reader.parse( source );
 
-    // ### handle exceptions inserting nodes
     if (!ok) {
         // An error occurred during parsing of the code. Display an error page to the user (the DOM
         // tree is created manually and includes an excerpt from the code where the error is located)
+
+        // ### for multiple error messages, display the code for each (can this happen?)
+
+        // Clear the document
         int exceptioncode = 0;
         while (m_doc->document()->hasChildNodes())
             static_cast<NodeImpl*>(m_doc->document())->removeChild(m_doc->document()->firstChild(),exceptioncode);
 
-        // construct a HTML page giving the error message
-        // ### for multiple error messages, display the code for each
         QTextIStream stream(&m_xmlCode);
         unsigned long lineno;
         for (lineno = 0; lineno < handler.errorLine-1; lineno++)
           stream.readLine();
         QString line = stream.readLine();
 
-        m_doc->document()->appendChild(m_doc->document()->createElementNS(XHTML_NAMESPACE,"html"),exceptioncode);
-        NodeImpl *body = m_doc->document()->createElementNS(XHTML_NAMESPACE,"body");
-        m_doc->document()->firstChild()->appendChild(body,exceptioncode);
-
-        NodeImpl *h1 = m_doc->document()->createElementNS(XHTML_NAMESPACE,"h1");
-        body->appendChild(h1,exceptioncode);
-        h1->appendChild(m_doc->document()->createTextNode(i18n("XML parsing error")),exceptioncode);
-        h1->renderer()->close();
-
-        body->appendChild(m_doc->document()->createTextNode(handler.errorProtocol()),exceptioncode);
-        body->appendChild(m_doc->document()->createElementNS(XHTML_NAMESPACE,"hr"),exceptioncode);
-        NodeImpl *pre = m_doc->document()->createElementNS(XHTML_NAMESPACE,"pre");
-        body->appendChild(pre,exceptioncode);
-        pre->appendChild(m_doc->document()->createTextNode(line+"\n"),exceptioncode);
-
         unsigned long colno;
-        QString indent = "";
+        QString errorLocPtr = "";
         for (colno = 0; colno < handler.errorCol-1; colno++)
-            indent += " ";
+            errorLocPtr += " ";
+        errorLocPtr += "^";
 
-        pre->appendChild(m_doc->document()->createTextNode(indent+"^"),exceptioncode);
+        // Create elements for display
+        DocumentImpl *doc = m_doc->document();
+        NodeImpl *html = doc->createElementNS(XHTML_NAMESPACE,"html");
+        NodeImpl   *body = doc->createElementNS(XHTML_NAMESPACE,"body");
+        NodeImpl     *h1 = doc->createElementNS(XHTML_NAMESPACE,"h1");
+        NodeImpl       *headingText = doc->createTextNode(i18n("XML parsing error"));
+        NodeImpl     *errorText = doc->createTextNode(handler.errorProtocol());
+        NodeImpl     *hr = doc->createElementNS(XHTML_NAMESPACE,"hr");
+        NodeImpl     *pre = doc->createElementNS(XHTML_NAMESPACE,"pre");
+        NodeImpl       *lineText = doc->createTextNode(line+"\n");
+        NodeImpl       *errorLocText = doc->createTextNode(errorLocPtr);
+
+        // Construct DOM tree. We ignore exceptions as we assume they will not be thrown here (due to the
+        // fact we are using a known tag set)
+        doc->appendChild(html,exceptioncode);
+        html->appendChild(body,exceptioncode);
+        body->appendChild(h1,exceptioncode);
+        h1->appendChild(headingText,exceptioncode);
+        body->appendChild(errorText,exceptioncode);
+        body->appendChild(hr,exceptioncode);
+        body->appendChild(pre,exceptioncode);
+        pre->appendChild(lineText,exceptioncode);
+        pre->appendChild(errorLocText,exceptioncode);
+
+        // Close the renderers so that they update their display correctly
+        // ### this should not be necessary, but requires changes in the rendering code...
+        h1->renderer()->close();
         pre->renderer()->close();
-
         body->renderer()->close();
+
         m_doc->document()->applyChanges();
         m_doc->document()->updateRendering();
 
         end();
     }
     else {
-        // Parsing was successfull. Now locate all html <script> tags in the document and execute them
+        // Parsing was successful. Now locate all html <script> tags in the document and execute them
         // one by one
         addScripts(m_doc->document());
         m_scriptsIt = new QListIterator<HTMLScriptElementImpl>(m_scripts);
@@ -385,7 +392,7 @@ void XMLTokenizer::addScripts(NodeImpl *n)
     // Recursively go through the entire document tree, looking for html <script> tags. For each of these
     // that is found, add it to the m_scripts list from which they will be executed
 
-    if (n->nodeName() == "script") { // ### also check that namespace is html (and SCRIPT should be lowercase)
+    if (n->id() == ID_SCRIPT) {
         m_scripts.append(static_cast<HTMLScriptElementImpl*>(n));
     }
 

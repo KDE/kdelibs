@@ -690,6 +690,8 @@ void DocumentImpl::setChanged(bool b)
 {
     if (b)
         changedNodes.append(this);
+    else
+        changedNodes.remove(this);
     NodeBaseImpl::setChanged(b);
 }
 
