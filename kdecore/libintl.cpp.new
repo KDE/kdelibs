@@ -290,7 +290,7 @@ SWAP (nls_uint32  i)
 /* Defines the so called `hashpjw' function by P.J. Weinberger
    [see Aho/Sethi/Ullman, COMPILERS: Principles, Techniques and Tools,
    1986, 1987 Bell Telephone Laboratories, Inc.]  */
-static unsigned long hash_string  (const char *__str_param);
+static inline unsigned long hash_string  (const char *__str_param);
 
 /* @@ end of prolog @@ */
 
@@ -802,9 +802,7 @@ find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
    to be defined.  */
 #if !_LIBC && !HAVE_STPCPY
 static char *
-stpcpy (dest, src)
-     char *dest;
-     const char *src;
+stpcpy (char *dest, const char *src)
 {
   while ((*dest++ = *src++) != '\0')
     /* Do nothing. */ ;
