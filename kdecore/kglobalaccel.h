@@ -214,9 +214,15 @@ class KGlobalAccel : public QObject
 	KKeyEntryMap keyDict() const;
 				
 	/**
-	 * Reads all key associations from the application's configuration
-	 * files.
+	 * Read all key associations from @p config, or (if @p config
+	 * is zero) from the application's configuration file
+	 * @ref KGlobal::config().
+	 *
+	 * The group in which the configuration is stored can be
+	 * set with @ref setConfigGroup().
 	 */
+	void readSettings(KConfig* config);
+        // BCI merge with the one above
 	void readSettings();
 		
  	/**
@@ -265,9 +271,12 @@ class KGlobalAccel : public QObject
 	bool ungrabKey(uint keyCombQt);
 
 	/**
-	 * Writes the current configurable associations to the application's
-	 * configuration files
-	 */	
+	 * Write the current configurable associations to @p config,
+         * or (if @p config is zero) to the application's
+	 * configuration file.
+	 */
+	void writeSettings(KConfig* config) const;
+        // BCI merge with the one above
 	void writeSettings() const;
 
 

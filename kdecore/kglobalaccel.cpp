@@ -282,13 +282,13 @@ KKeyEntryMap KGlobalAccel::keyDict() const
 	return aKeyMap;
 }
 
-void KGlobalAccel::readSettings()
+void KGlobalAccel::readSettings(KConfig* config)
 {
 	kdDebug(125) << "KGlobalAccel::readSettings()\n";
 	QArray<uint> aKeysToGrab( aKeyMap.count() );
 	int cKeysToGrab = 0;
 
-	KConfigBase *pConfig = KGlobal::config();
+	KConfigBase *pConfig = config ? config : KGlobal::config();
 	KConfigGroupSaver cgs( pConfig, aGroup );
 
 	// Read settings from config file, and if it differs
@@ -315,6 +315,11 @@ void KGlobalAccel::readSettings()
 	// Grab the changed keys.
 	for( int i = 0; i < cKeysToGrab; i++ )
 		grabKey( aKeysToGrab[i] );
+}
+
+void KGlobalAccel::readSettings()
+{
+    readSettings( NULL );
 }
 
 void KGlobalAccel::removeItem( const QString& action )
@@ -437,6 +442,11 @@ bool KGlobalAccel::ungrabKey( uint keysym, uint mod ) {
 	XSetErrorHandler(savedErrorHandler);
 
 	return !grabFailed;
+}
+
+void KGlobalAccel::writeSettings(KConfig* config) const
+{
+    KAccel::writeKeyMap( aKeyMap, aGroup, config );
 }
 
 void KGlobalAccel::writeSettings() const
