@@ -37,7 +37,7 @@ libksycoca_la_SOURCES = \
 	kautomount.cpp krun.cpp \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
 	yacc.c lex.c  \
-	chmodjob.cpp kscan.cpp ktar.cpp previewjob.cpp \
+	chmodjob.cpp kscan.cpp ktar.cpp previewjob.cpp metainfojob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
 	kfilemetainfo.cpp
 
@@ -94,7 +94,8 @@ kioinclude_HEADERS = connection.h \
 	statusbarprogress.h tcpslavebase.h \
 	observer.h chmodjob.h uiserver_stub.h \
         kpac.h kmdbase.h authinfo.h \
-	ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h
+	ioslave_defaults.h http_slave_defaults.h previewjob.h thumbcreator.h \
+	metainfojob.h
 
 # Internal
 noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
