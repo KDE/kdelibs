@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Docbook Document
+Icon=wordprocessing
+Type=MimeType
+MimeType=text/docbook
+Patterns=*.docbook;
