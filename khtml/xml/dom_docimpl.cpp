@@ -467,12 +467,17 @@ NodeImpl *DocumentImpl::importNode(NodeImpl *importedNode, bool deep, int &excep
 
     if(importedNode->nodeType() == Node::ELEMENT_NODE)
     {
-	ElementImpl *tempElementImpl = createElementNS(tempElementImpl->namespaceURI(), importedNode->nodeName());
-	result = tempElementImpl;
-
 	ElementImpl *otherElem = static_cast<ElementImpl*>(importedNode);
 	DocumentImpl *otherDoc = importedNode->getDocument();
 	NamedAttrMapImpl *otherMap = static_cast<ElementImpl *>(importedNode)->attributes(true);
+
+	ElementImpl *tempElementImpl;
+	if (!importedNode->localName().isNull())
+	    tempElementImpl = createElementNS(otherElem->namespaceURI(),otherElem->nodeName());
+	else
+	    tempElementImpl = createElement(otherElem->nodeName());
+	result = tempElementImpl;
+
 
 	if(otherMap) {
 	    for(unsigned long i = 0; i < otherMap->length(); i++)
