@@ -53,6 +53,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopserver.h>
 #include <dcopsignals.h>
 #include <dcopglobal.h>
+#include <dcopclient.h>
 
 template class QDict<DCOPConnection>;
 template class QPtrDict<DCOPConnection>;
@@ -356,7 +357,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     sprintf (command, "iceauth source %s", addAuthFile);
     system (command);
 
-    unlink (addAuthFile);
+    unlink(addAuthFile);
 
     return (1);
 
@@ -1291,12 +1292,39 @@ int main( int argc, char* argv[] )
     pipe(ready);
 
     if (!nofork) {
-	if (fork() > 0) {
+        pid_t pid = fork();
+	if (pid > 0) {
 	    char c = 1;
 	    close(ready[1]);
 	    read(ready[0], &c, 1); // Wait till dcopserver is started
 	    close(ready[0]);
-	    return c; // I am the parent
+	    // I am the parent
+	    if (c == 0) 
+            {
+               // Test whether we are functional.
+               DCOPClient client;
+               if (client.attach())
+               {
+                  qWarning("DCOPServer up and running.");
+                  return 0;
+               }
+            }
+            qWarning("DCOPServer self-test failed.");
+            if (::access(fName.data(), R_OK) == 0) {
+	       QFile f(fName);
+	       f.open(IO_ReadOnly);
+	       QTextStream t(&f);
+	       t.readLine(); // skip over connection list
+	       bool ok = false;
+	       pid_t pid = t.readLine().toUInt(&ok);
+	       f.close();
+	       if (ok) {
+                  kill(pid, SIGTERM);
+                  sleep(1);
+               }
+            }
+            unlink(fName.data()); // Make sure to clean up socket.
+            return 1;
 	}
 	close(ready[0]);
 
