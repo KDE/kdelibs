@@ -26,7 +26,7 @@ kresinclude_HEADERS = resource.h \
   manager.h \
   selectdialog.h \
   configdialog.h \
-  configpage.h 
+  configpage.h
 
 kde_module_LTLIBRARIES = kcm_kresources.la
 
@@ -44,6 +44,6 @@ testresources_SOURCES = testresources.cpp
 xdg_apps_DATA = kresources.desktop
 
 servicetypedir = $(kde_servicetypesdir)
-servicetype_DATA = kresources_plugin.desktop
+servicetype_DATA = kresources_plugin.desktop kresources_manager.desktop
 
 include ../admin/Doxyfile.am

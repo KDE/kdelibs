@@ -70,6 +70,10 @@ class ManagerNotifier
   are notified by the ManagerObserver interface. If your application needs to be
   notified about resource configuration changes, you have to subclass
   ManagerObserver and add it to the Manager by addObserver().
+
+  Since KDE 3.4 it's required to supply your application with a *.desktop
+  file for each resource family you introduce. The ServiceType should be of
+  KResources/Manager.
 */
 template<class T>
 class Manager : private ManagerNotifier

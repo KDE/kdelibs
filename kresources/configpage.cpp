@@ -171,28 +171,29 @@ void ConfigPage::load()
   mFamilyMap.clear();
   mInfoMap.clear();
 
-  KTrader::OfferList plugins = KTrader::self()->query( "KResources/Plugin" );
-  KTrader::OfferList::ConstIterator it;
-  for ( it = plugins.begin(); it != plugins.end(); ++it ) {
-    QVariant tmp = (*it)->property( "X-KDE-ResourceFamily" );
+  KTrader::OfferList managers = KTrader::self()->query( "KResources/Manager" );
+  KTrader::OfferList::ConstIterator m_it;
+  for( m_it = managers.begin(); m_it != managers.end(); ++m_it ) {
+    QVariant tmp = (*m_it)->property( "Name" );
+    QString displayName = tmp.toString();
+    mFamilyMap.append( displayName );
+    tmp = (*m_it)->property( "X-KDE-ResourceFamily" );
     QString family = tmp.toString();
     if ( !family.isEmpty() ) {
-      if ( !mFamilyMap.contains( family ) ) {
-        mCurrentManager = new Manager<Resource>( family );
-        if ( mCurrentManager ) {
-          mFamilyMap.append( family );
-          mCurrentManager->addObserver( this );
+      mCurrentManager = new Manager<Resource>( family );
+      if ( mCurrentManager ) {
+        mCurrentManager->addObserver( this );
 
-          ResourcePageInfo *info = new ResourcePageInfo;
-          info->mManager = mCurrentManager;
-          info->mConfig = new KConfig( KRES::ManagerImpl::defaultConfigFile( family ) );
-          info->mManager->readConfig( info->mConfig );
+        ResourcePageInfo *info = new ResourcePageInfo;
+        info->mManager = mCurrentManager;
+        info->mConfig = new KConfig( KRES::ManagerImpl::defaultConfigFile( family ) );
+        info->mManager->readConfig( info->mConfig );
 
-          mInfoMap.append( KSharedPtr<ResourcePageInfo>(info) );
-        }
+        mInfoMap.append( KSharedPtr<ResourcePageInfo>(info) );
       }
     }
   }
+
   mCurrentManager = 0;
 
   mFamilyCombo->clear();
