@@ -341,7 +341,7 @@ void ReadOnlyPart::slotJobError( int, int, const char * text )
 
 void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
 {
-  if (event->activated())
+  if (event->activated() && !m_url.isEmpty())
   {
     kDebugInfo( 1000, "ReadOnlyPart::guiActivateEvent -> %s", m_url.decodedURL().ascii() );
     emit setWindowCaption( m_url.decodedURL() );
