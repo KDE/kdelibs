@@ -467,6 +467,13 @@ public:
     void insertCatalogue(const QString& catalogue);
 
     /**
+     * translates a message as a QTranslator is supposed to.
+     * The parameters are similiar to i18n(), but the result
+     * value has other semantics (it can be QString::null)
+     **/
+    QString translateQt(const char *context, const char *sourceText) const;
+
+    /**
      * returns the parts of the parameter str understood as language setting
      * the format is language_country.charset
      * @param str The string to split.
@@ -567,7 +574,7 @@ private:
     /**
      * @internal function used by the two translate versions
      */
-    QString translate_priv(const char *index, const char *text) const;
+    QString translate_priv(const char *index, const char *text, const char **original = 0) const;
 
     KLocalePrivate *d;
 };

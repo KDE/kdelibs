@@ -606,8 +606,8 @@ class KDETranslator : public QTranslator
 {
 public:
   KDETranslator(QObject *parent) : QTranslator(parent, "kdetranslator") {}
-  virtual QString find(const char*, const char* message) const {
-    return i18n(message);
+  virtual QString find(const char* context, const char* message) const {
+      return KGlobal::locale()->translateQt(context, message);
   }
 };
 
