@@ -65,7 +65,7 @@ KSpinBox::KSpinBox(QWidget *parent,const char *name,int align)
 {
   // create the widgets
   _label=new QLabel(this,"_label");
-  _label->setBackgroundColor(white);
+//  _label->setBackgroundColor(white);
   _label->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
 	
   _edit=new QLineEdit(this,"_edit");
