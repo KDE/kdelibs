@@ -39,6 +39,20 @@
 
 using namespace KABC;
 
+DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidget *parent)
+    : KDialogBase( parent, "", true, i18n("Configure distribution lists"), Ok, Ok, true)
+{
+    mEditor = new DistributionListEditorWidget( addressBook, this );
+    setMainWidget( mEditor );
+
+    connect( this, SIGNAL( okClicked() ), mEditor, SLOT( save() ) );
+}
+
+DistributionListEditor::~DistributionListEditor()
+{
+}
+
+
 EmailSelectDialog::EmailSelectDialog( const QStringList &emails, const QString &current,
                                       QWidget *parent ) :
   KDialogBase( KDialogBase::Plain, i18n("Select Email Address"), Ok, Ok,
@@ -114,7 +128,7 @@ class EntryItem : public QListViewItem
     QString mEmail;
 };
 
-DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidget *parent) :
+DistributionListEditorWidget::DistributionListEditorWidget( AddressBook *addressBook, QWidget *parent) :
   QWidget( parent ),
   mAddressBook( addressBook )
 {
@@ -185,15 +199,19 @@ DistributionListEditor::DistributionListEditor( AddressBook *addressBook, QWidge
   updateNameCombo();
 }
 
-DistributionListEditor::~DistributionListEditor()
+DistributionListEditorWidget::~DistributionListEditorWidget()
 {
   kdDebug() << "~DistributionListEditor()" << endl;
 
-  mManager->save();
   delete mManager;
 }
 
-void DistributionListEditor::slotSelectionEntryViewChanged()
+void DistributionListEditorWidget::save()
+{
+  mManager->save();
+}
+
+void DistributionListEditorWidget::slotSelectionEntryViewChanged()
 {
     EntryItem *entryItem =dynamic_cast<EntryItem *>( mEntryView->selectedItem() );
     bool state=entryItem;
@@ -202,7 +220,7 @@ void DistributionListEditor::slotSelectionEntryViewChanged()
     removeEntryButton->setEnabled(state);
 }
 
-void DistributionListEditor::newList()
+void DistributionListEditorWidget::newList()
 {
   bool ok = false;
   QString name = QInputDialog::getText( i18n("New Distribution List"),
@@ -221,7 +239,7 @@ void DistributionListEditor::newList()
   slotSelectionAddresseeViewChanged();
 }
 
-void DistributionListEditor::editList()
+void DistributionListEditorWidget::editList()
 {
   bool ok = false;
   QString oldName = mNameCombo->currentText();
@@ -243,7 +261,7 @@ void DistributionListEditor::editList()
   slotSelectionAddresseeViewChanged();
 }
 
-void DistributionListEditor::removeList()
+void DistributionListEditorWidget::removeList()
 {
   delete mManager->list( mNameCombo->currentText() );
   mNameCombo->removeItem( mNameCombo->currentItem() );
@@ -252,7 +270,7 @@ void DistributionListEditor::removeList()
   slotSelectionAddresseeViewChanged();
 }
 
-void DistributionListEditor::addEntry()
+void DistributionListEditorWidget::addEntry()
 {
   AddresseeItem *addresseeItem =
       dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );
@@ -273,7 +291,7 @@ void DistributionListEditor::addEntry()
   slotSelectionAddresseeViewChanged();
 }
 
-void DistributionListEditor::removeEntry()
+void DistributionListEditorWidget::removeEntry()
 {
   DistributionList *list = mManager->list( mNameCombo->currentText() );
   if ( !list ) return;
@@ -286,7 +304,7 @@ void DistributionListEditor::removeEntry()
   delete entryItem;
 }
 
-void DistributionListEditor::changeEmail()
+void DistributionListEditorWidget::changeEmail()
 {
   DistributionList *list = mManager->list( mNameCombo->currentText() );
   if ( !list ) return;
@@ -303,7 +321,7 @@ void DistributionListEditor::changeEmail()
   updateEntryView();
 }
 
-void DistributionListEditor::updateEntryView()
+void DistributionListEditorWidget::updateEntryView()
 {
   mListLabel->setText( QString( i18n("Selected addresses in '%1':") ).arg( mNameCombo->currentText() ) );
 
@@ -336,7 +354,7 @@ void DistributionListEditor::updateEntryView()
   removeEntryButton->setEnabled(state);
 }
 
-void DistributionListEditor::updateAddresseeView()
+void DistributionListEditorWidget::updateAddresseeView()
 {
   mAddresseeView->clear();
 
@@ -346,14 +364,14 @@ void DistributionListEditor::updateAddresseeView()
   }
 }
 
-void DistributionListEditor::updateNameCombo()
+void DistributionListEditorWidget::updateNameCombo()
 {
   mNameCombo->insertStringList( mManager->listNames() );
 
   updateEntryView();
 }
 
-void DistributionListEditor::slotSelectionAddresseeViewChanged()
+void DistributionListEditorWidget::slotSelectionAddresseeViewChanged()
 {
     AddresseeItem *addresseeItem =
         dynamic_cast<AddresseeItem *>( mAddresseeView->selectedItem() );

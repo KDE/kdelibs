@@ -32,6 +32,18 @@ namespace KABC {
 
 class AddressBook;
 class DistributionListManager;
+class DistributionListEditorWidget;
+
+class DistributionListEditor : public KDialogBase
+{
+    Q_OBJECT
+public:
+    DistributionListEditor( AddressBook *, QWidget *parent );
+    virtual ~DistributionListEditor();
+
+private:
+    DistributionListEditorWidget *mEditor;
+};
 
 class EmailSelectDialog : public KDialogBase
 {
@@ -48,13 +60,12 @@ class EmailSelectDialog : public KDialogBase
     QButtonGroup *mButtonGroup;
 };
 
-
-class DistributionListEditor : public QWidget
+class DistributionListEditorWidget : public QWidget
 {
     Q_OBJECT
   public:
-    DistributionListEditor( AddressBook *, QWidget *parent );
-    virtual ~DistributionListEditor();
+    DistributionListEditorWidget( AddressBook *, QWidget *parent );
+    virtual ~DistributionListEditorWidget();
 
   private slots:
     void newList();
@@ -68,6 +79,7 @@ class DistributionListEditor : public QWidget
     void updateNameCombo();
     void slotSelectionEntryViewChanged();
     void slotSelectionAddresseeViewChanged();
+    void save();
 
   private:
     QComboBox *mNameCombo;  
@@ -78,7 +90,7 @@ class DistributionListEditor : public QWidget
     AddressBook *mAddressBook;
     DistributionListManager *mManager;
     QPushButton *newButton, *editButton, *removeButton;
-    QPushButton *changeEmailButton,*removeEntryButton,*addEntryButton;
+    QPushButton *changeEmailButton, *removeEntryButton, *addEntryButton;
 };
 
 }
