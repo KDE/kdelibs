@@ -11,6 +11,8 @@
 #include "qpopupmenu.h"
 #include "qvalidator.h"
 #include "qtl.h"
+#include "qtooltip.h"
+#include "qobjectlist.h"
 
 // NOT REVISED
 
@@ -368,14 +370,14 @@ int QAction::plug( QWidget* widget )
 	int id;
 	if ( !m_pixmap.isNull() )
         {
-	    id = menu->insertItem( m_pixmap, this, SLOT( slotActivated() ) );	
+	    id = menu->insertItem( m_pixmap, this, SLOT( slotActivated() ), accel() );	
 	}
 	else
         {
 	    if ( m_bIconSet )
-		id = menu->insertItem( m_iconSet, m_text, this, SLOT( slotActivated() ) );
+		id = menu->insertItem( m_iconSet, m_text, this, SLOT( slotActivated() ), accel() );
 	    else
-		id = menu->insertItem( m_text, this, SLOT( slotActivated() ) );
+		id = menu->insertItem( m_text, this, SLOT( slotActivated() ), accel() );
 	}
 
 	menu->setItemEnabled( id, m_enabled );
@@ -398,13 +400,13 @@ int QAction::plug( QWidget* widget )
 	QToolBar* bar = (QToolBar*)widget;
 	QToolButton* b;
 	if ( !m_pixmap.isNull() )
-	    b = new QToolButton( m_pixmap, m_text, m_groupText, this, SLOT( slotActivated() ), bar );
+	    b = new QToolButton( m_pixmap, plainText(), m_groupText, this, SLOT( slotActivated() ), bar );
 	else if ( hasIconSet() )
-	    b = new QToolButton( m_iconSet, m_text, m_groupText, this, SLOT( slotActivated() ), bar );
+	    b = new QToolButton( m_iconSet, plainText(), m_groupText, this, SLOT( slotActivated() ), bar );
 	else
-        {
+	{
 	    b = new QToolButton( bar );
-	    b->setTextLabel( m_text );
+	    b->setTextLabel( plainText() );
 	    connect( b, SIGNAL( clicked() ), this, SLOT( slotActivated() ) );
 	}
 
@@ -413,6 +415,9 @@ int QAction::plug( QWidget* widget )
 	addContainer( bar, b );
 	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 	
+	if ( !m_toolTip.isEmpty() )
+	    QToolTip::add( b, m_toolTip );
+		
 	return m_containers.count() - 1;
     }
 
@@ -450,6 +455,27 @@ void QAction::unplug( QWidget* widget )
     }
 }
 
+void QAction::setToolTip( const QString& tt )
+{
+    m_toolTip = tt;
+
+    int len = containerCount();
+    for( int i = 0; i < len; ++i )
+    {
+	QWidget* w = container( i );
+	QWidget* r = representative( i );
+	if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
+	    QToolTip::add( w, m_toolTip );
+	else if ( w->inherits( "QActionWidget" ) )
+	    ((QActionWidget*)w)->updateAction( this );	
+    }
+}
+
+QString QAction::toolTip() const
+{
+    return m_toolTip;
+}
+
 void QAction::setText( const QString& text )
 {
     m_text = text;
@@ -460,7 +486,7 @@ void QAction::setText( const QString& text )
 	QWidget* w = container( i );
 	QWidget* r = representative( i );
 	if ( w->inherits( "QToolBar" ) && r->inherits( "QToolButton" ) )
-	    ((QToolButton*)r)->setTextLabel( text );
+	    ((QToolButton*)r)->setTextLabel( plainText() );
 	else if ( w->inherits( "QPopupMenu" ) )
 	    ((QPopupMenu*)w)->changeItem( menuId( i ), text );
 	else if ( w->inherits( "QMenuBar" ) )
@@ -757,17 +783,20 @@ int QActionMenu::plug( QWidget* widget )
 	QToolBar* bar = (QToolBar*)widget;
 	QToolButton* b;
 	if ( !pixmap().isNull() )
-	    b = new QToolButton( pixmap(), text(), group(), this, SLOT( slotActivated() ), bar );
+	    b = new QToolButton( pixmap(), plainText(), group(), this, SLOT( slotActivated() ), bar );
 	else if ( hasIconSet() )
-	    b = new QToolButton( iconSet(), text(), group(), this, SLOT( slotActivated() ), bar );
+	    b = new QToolButton( iconSet(), plainText(), group(), this, SLOT( slotActivated() ), bar );
 	else
         {
 	    b = new QToolButton( bar );
-	    b->setTextLabel( text() );
+	    b->setTextLabel( plainText() );
 	    connect( b, SIGNAL( clicked() ), this, SLOT( slotActivated() ) );
 	}
 
 	b->setEnabled( isEnabled() );
+
+	if ( !toolTip().isEmpty() )
+	    QToolTip::add( b, toolTip() );
 
 	addContainer( bar, b );
 	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -1447,6 +1476,22 @@ void QToggleAction::setChecked( bool checked )
 	    ((QActionWidget*)w)->updateAction( this );	
     }
 
+    // Uncheck all the other toggle actions in the same group
+    if ( parent() && !m_exclusiveGroup.isEmpty() )
+    {
+	const QObjectList *list = parent()->children();
+	if ( list )
+	{
+	    QObjectListIt it( *list );
+	    for( ; it.current(); ++it )
+	    {
+		if ( it.current()->inherits( "QToggleAction" ) &&
+		     ((QToggleAction*)it.current())->exclusiveGroup() == m_exclusiveGroup )
+		    ((QToggleAction*)it.current())->setChecked( FALSE );
+	    }
+	}
+    }
+
     m_checked = checked;
 
     emit activated();
@@ -1466,6 +1511,29 @@ void QToggleAction::slotActivated()
     m_lock = TRUE;
     setChecked( !m_checked );
     m_lock = FALSE;
+}
+
+/*!
+ In certain cases you may want to make a group of QToggleAction
+ exclusive, that means: Only one may be checked at a time. Checking
+ one toggles all the others in the group.
+
+ All QToggleAction in an exclusive group need to have the same parent.
+*/
+void QToggleAction::setExclusiveGroup( const QString& name )
+{
+    m_exclusiveGroup = name;
+}
+
+/*!
+  Returns the name of the exclusive group or an empty string if
+  no such group was set until now.
+
+  \sa setExclusiveGroup()
+*/
+QString QToggleAction::exclusiveGroup() const
+{
+    return m_exclusiveGroup;
 }
 
 // ------------------------------------------------------------
@@ -1723,6 +1791,7 @@ QFontAction::QFontAction( const QString& text, int accel, QObject* parent, const
     : QSelectAction( text, accel, parent, name )
 {
     setItems( m_fdb.families() );
+    setEditable( TRUE );
 }
 
 QFontAction::QFontAction( const QString& text, int accel,
@@ -1730,6 +1799,7 @@ QFontAction::QFontAction( const QString& text, int accel,
     : QSelectAction( text, accel, receiver, slot, parent, name )
 {
     setItems( m_fdb.families() );
+    setEditable( TRUE );
 }
 
 QFontAction::QFontAction( const QString& text, const QIconSet& pix, int accel,
@@ -1737,6 +1807,7 @@ QFontAction::QFontAction( const QString& text, const QIconSet& pix, int accel,
     : QSelectAction( text, pix, accel, parent, name )
 {
     setItems( m_fdb.families() );
+    setEditable( TRUE );
 }
 
 QFontAction::QFontAction( const QString& text, const QIconSet& pix, int accel,
@@ -1744,12 +1815,14 @@ QFontAction::QFontAction( const QString& text, const QIconSet& pix, int accel,
     : QSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
     setItems( m_fdb.families() );
+    setEditable( TRUE );
 }
 
 QFontAction::QFontAction( QObject* parent, const char* name )
     : QSelectAction( parent, name )
 {
     setItems( m_fdb.families() );
+    setEditable( TRUE );
 }
 
 // ------------------------------------------------------------
