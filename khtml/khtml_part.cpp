@@ -610,7 +610,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 }
 
 //Enable this to see all JS scripts being executed
-//#define KJS_VERBOSE
+#define KJS_VERBOSE
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
@@ -1960,7 +1960,7 @@ void KHTMLPart::slotClearSelection()
     d->m_startOffset = 0;
     d->m_selectionEnd = 0;
     d->m_endOffset = 0;
-    d->m_doc->clearSelection();
+    if ( d->m_doc ) d->m_doc->clearSelection();
     emitSelectionChanged();
 }
 
