@@ -220,7 +220,7 @@ QPtrList<DocumentImpl> * DocumentImpl::changedDocuments;
 
 // KHTMLView might be 0
 DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
-    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0)
+    : NodeBaseImpl( new DocumentPtr() ), m_domtree_version(0), m_counterDict(257)
 {
     document->doc = this;
     m_paintDeviceMetrics = 0;
@@ -278,6 +278,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_styleSelectorDirty = false;
     m_styleSelector = 0;
     m_windowEventListeners.setAutoDelete(true);
+    m_counterDict.setAutoDelete(true);
 
     m_inStyleRecalc = false;
     m_pendingStylesheets = 0;
@@ -1824,7 +1825,7 @@ void DocumentImpl::addStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
 
     m_addedStyleSheets->add(sheet);
     if (sheet->isCSSStyleSheet()) updateStyleSelector();
-    
+
     if (exceptioncode) *exceptioncode = excode;
 }
 
@@ -1833,7 +1834,7 @@ void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
     int excode = 0;
     bool removed = false;
     bool is_css = sheet->isCSSStyleSheet();
-    
+
     if (m_addedStyleSheets) {
         bool in_main_list = !sheet->hasOneRef();
         removed = m_addedStyleSheets->styleSheets.removeRef(sheet);
@@ -1848,7 +1849,7 @@ void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
         // remove from main list, too
         if (in_main_list) m_styleSheets->remove(sheet);
     }
-    
+
     if (removed) {
         if (is_css) updateStyleSelector();
     } else
@@ -2009,7 +2010,7 @@ void DocumentImpl::recalcStyleSelector()
                 m_styleSheets->add(*it);
         }
     }
-    
+
     // De-reference all the stylesheets in the old list
     QPtrListIterator<StyleSheetImpl> it(oldStyleSheets);
     for (; it.current(); ++it)

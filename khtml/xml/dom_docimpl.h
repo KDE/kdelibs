@@ -52,6 +52,8 @@ namespace khtml {
     class DocLoader;
     class CSSStyleSelectorList;
     class RenderArena;
+    class RenderObject;
+    class CounterNode;
     class CachedObject;
     class CachedCSSStyleSheet;
 }
@@ -452,6 +454,10 @@ public:
     void incDOMTreeVersion() { ++m_domtree_version; }
     unsigned int domTreeVersion() const { return m_domtree_version; }
 
+    QDict<khtml::CounterNode>* counters(const khtml::RenderObject* o) { return m_counterDict[(void*)o]; }
+    void setCounters(const khtml::RenderObject* o, QDict<khtml::CounterNode> *dict) { m_counterDict.insert((void*)o, dict);}
+    void removeCounters(const khtml::RenderObject* o) { m_counterDict.remove((void*)o); }
+
 signals:
     void finishedParsing();
 
@@ -521,6 +527,9 @@ protected:
     LocalStyleRefs m_localStyleRefs; // references to inlined style elements
     QPtrList<RegisteredEventListener> m_windowEventListeners;
     QPtrList<NodeImpl> m_maintainsState;
+
+    // ### evaluate for placement in RenderStyle
+    QPtrDict<QDict<khtml::CounterNode> > m_counterDict;
 
     bool visuallyOrdered;
     bool m_bParsing;

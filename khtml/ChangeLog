@@ -1,3 +1,9 @@
+2005-03-18  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * xml/dom_docimpl.h: Add dictionary of CounterNodes
+        * rendering/render_object.{h,cpp}: Save 8 bytes overhead by moving counternodes to document
+        * rendering/render_list.cpp: Do not calculate counter value for unordered lists
+
 2005-03-18  Germain Garand  <germain@ebooksfrance.org>
 
         * xml/dom_nodeimpl.cpp (traverseNextNode): fix broken algorithm for stayWithin

@@ -157,7 +157,6 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_parent( 0 ),
       m_previous( 0 ),
       m_next( 0 ),
-      m_counterList( 0 ),
       m_verticalPosition( PositionUndefined ),
       m_needsLayout( false ),
       m_normalChildNeedsLayout( false ),
@@ -179,9 +178,11 @@ RenderObject::RenderObject(DOM::NodeImpl* node)
       m_replaced( false ),
       m_mouseInside( false ),
       m_hasFirstLine( false ),
-      m_isSelectionBorder( false )
+      m_isSelectionBorder( false ),
+      m_isRoot( false )
 {
   assert( node );
+  if (node->getDocument()->documentElement() == node) setIsRoot(true);
 }
 
 RenderObject::~RenderObject()
@@ -226,12 +227,12 @@ RenderObject* RenderObject::objectAbove() const
     }
     return obj;
 }
-
+/*
 bool RenderObject::isRoot() const
 {
     return !isAnonymous() &&
         element()->getDocument()->documentElement() == element();
-}
+}*/
 
 bool RenderObject::isHR() const
 {
@@ -293,7 +294,7 @@ void RenderObject::addLayers(RenderLayer* parentLayer, RenderObject* newObject)
 {
     if (!parentLayer)
         return;
-    
+
     RenderObject* object = newObject;
     RenderLayer* beforeChild = 0;
     ::addLayers(this, parentLayer, object, beforeChild);
@@ -1082,7 +1083,7 @@ QString RenderObject::information() const
         if (element()->hasAnchor()) ts << "anchor ";
         if (element()->focused()) ts << "focus ";
         ts << " <" <<  getTagName(element()->id()) << ">";
-        
+
     } else if (isPseudoAnonymous() && style() && style()->styleType() != RenderStyle::NOPSEUDO) {
         ts << " <" <<  getTagName(node()->id());
         QString pseudo;
@@ -1289,8 +1290,8 @@ void RenderObject::dirtyFormattingContext( bool checkContainer )
         return;
     m_markedForRepaint = true;
     if (layer() && (style()->position() == FIXED || style()->position() == ABSOLUTE))
-        return;        
-    if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() || 
+        return;
+    if (m_parent && (checkContainer || style()->width().isVariable() || style()->height().isVariable() ||
                      !(isFloating() || flowAroundFloats() || isTableCell())))
         m_parent->dirtyFormattingContext(false);
 }
@@ -1931,7 +1932,7 @@ bool RenderObject::usesLineWidth() const
     return (flowAroundFloats() && (style()->width().isVariable() || isHR() || (style()->htmlHacks() && !isTable())));
 }
 
-bool RenderObject::hasCounter(const DOMString& counter) const
+bool RenderObject::hasCounter(const QString& counter) const
 {
     if (style()) {
         if (lookupCounter(counter)) return true;
@@ -1954,7 +1955,7 @@ bool RenderObject::hasCounter(const DOMString& counter) const
     return false;
 }
 
-CounterNode* RenderObject::getCounter(const DOMString& counter, bool view, bool counters)
+CounterNode* RenderObject::getCounter(const QString& counter, bool view, bool counters)
 {
 //     kdDebug( 6040 ) << renderName() << " getCounter(" << counter << ")" << endl;
 
@@ -2078,37 +2079,40 @@ CounterNode* RenderObject::getCounter(const DOMString& counter, bool view, bool 
     return i;
 }
 
-CounterNode* RenderObject::lookupCounter(const DOMString& counter) const
+CounterNode* RenderObject::lookupCounter(const QString& counter) const
 {
-    CounterList *i = m_counterList;
-    while (i) {
-        if (i->counter == counter)
-            return i->m_counterNode;
-        i = i->next;
-    }
-    return 0;
+    QDict<khtml::CounterNode>* counters = document()->counters(this);
+    if (counters)
+        return counters->find(counter);
+    else
+        return 0;
 }
 
 void RenderObject::detachCounters()
 {
-    CounterList *j, *i = m_counterList;
-    m_counterList = 0;
-    while (i) {
-        i->m_counterNode->remove();
-        delete i->m_counterNode;
-        j = i;
-        i = i->next;
-        delete j;
+    QDict<khtml::CounterNode>* counters = document()->counters(this);
+    if (!counters) return;
+
+    QDictIterator<khtml::CounterNode> i(*counters);
+
+    while (i.current()) {
+        (*i)->remove();
+        delete (*i);
+        ++i;
     }
+    document()->removeCounters(this);
 }
 
-void RenderObject::insertCounter(const DOMString& counter, CounterNode* val)
+void RenderObject::insertCounter(const QString& counter, CounterNode* val)
 {
-    CounterList* i = new CounterList;
-    i->counter = counter;
-    i->m_counterNode = val;
-    i->next = m_counterList;
-    m_counterList = i;
+    QDict<khtml::CounterNode>* counters = document()->counters(this);
+
+    if (!counters) {
+        counters = new QDict<khtml::CounterNode>(11);
+        document()->setCounters(this, counters);
+    }
+
+    counters->insert(counter, val);
 }
 
 

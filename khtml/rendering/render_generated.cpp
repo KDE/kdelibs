@@ -160,7 +160,7 @@ void RenderCounter::calcMinMaxWidth()
     counters = !m_counter->separator().isEmpty();
 
     if (!m_counterNode)
-        m_counterNode = getCounter(m_counter->identifier(), true, counters);
+        m_counterNode = getCounter(m_counter->identifier().string(), true, counters);
 
     int value = m_counterNode->count();
     if (m_counterNode->isReset()) value = m_counterNode->value();

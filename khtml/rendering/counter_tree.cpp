@@ -30,7 +30,10 @@ CounterNode::CounterNode(RenderObject *o)
       m_value(0), m_count(0), m_parent(0), m_previous(0), m_next(0),
       m_renderer(o) {}
 
-CounterNode::~CounterNode() {}
+CounterNode::~CounterNode()
+{
+    if (m_parent) m_parent->removeChild(this);
+}
 
 void CounterNode::insertAfter ( CounterNode *, CounterNode *)
 {
@@ -133,19 +136,24 @@ void CounterReset::removeChild ( CounterNode *oldChild )
             prev->m_next = first;
             first->m_previous = prev;
         }
-        else
+        else {
+            assert ( m_first == oldChild );
             m_first = first;
+         }
 
         if (next) {
             next->m_previous = last;
             last->m_next = next;
         }
-        else
+        else {
+            assert ( m_last == oldChild );
             m_last = last;
+        }
 
         next = first;
         while (next) {
             next->m_parent = this;
+            if (next == last) break;
             next = next->m_next;
         }
 

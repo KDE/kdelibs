@@ -161,17 +161,17 @@ public:
     RenderObject *objectAbove() const;
 
     // Returns if an object has counter-increment or counter-reset
-    bool hasCounter(const DOM::DOMString& counter) const;
+    bool hasCounter(const QString& counter) const;
     // Calculates the value of the counter
-    CounterNode* getCounter(const DOM::DOMString& counter, bool view = false, bool counters = false);
+    CounterNode* getCounter(const QString& counter, bool view = false, bool counters = false);
     // Detaches all counterNodes
     void detachCounters();
 
 
 protected:
     // Helper functions for counter-cache
-    void insertCounter(const DOM::DOMString& counter, CounterNode* value);
-    CounterNode* lookupCounter(const DOM::DOMString& counter) const;
+    void insertCounter(const QString& counter, CounterNode* value);
+    CounterNode* lookupCounter(const QString& counter) const;
 
 public:
     //////////////////////////////////////////
@@ -219,7 +219,8 @@ public:
     virtual bool isInlineContinuation() const { return false; }
 
 
-    bool isRoot() const;
+    bool isRoot() const { return m_isRoot && !m_isAnonymous; }
+    void setIsRoot(bool b) { m_isRoot = b; }
     bool isHR() const;
     // some helper functions...
     virtual bool isRenderBlock() const { return false; }
@@ -703,12 +704,6 @@ private:
     RenderObject *m_previous;
     RenderObject *m_next;
 
-    struct CounterList {
-        DOM::DOMString counter;
-        CounterNode *m_counterNode;
-        CounterList *next;
-    } *m_counterList;
-
     short m_verticalPosition;
 
     bool m_needsLayout               : 1;
@@ -734,7 +729,10 @@ private:
     bool m_mouseInside               : 1;
     bool m_hasFirstLine              : 1;
     bool m_isSelectionBorder         : 1;
-    // note: do not add unnecessary bitflags, we have 32 bit already!
+
+    bool m_isRoot                    : 1;
+
+    // ### we have 16 + 19 bits. Cut 3 and save 32
 
 
     void arenaDelete(RenderArena *arena, void *objectBase);

@@ -157,11 +157,6 @@ void RenderListItem::updateMarkerLocation()
 
 void RenderListItem::calcMinMaxWidth()
 {
-    if (!m_counter) {
-        m_counter = getCounter("list-item", true);
-        if (m_marker) m_counter->setRenderer(m_marker);
-    }
-
     // Make sure our marker is in the correct location.
     updateMarkerLocation();
     if (!minMaxKnown())
@@ -412,7 +407,31 @@ void RenderListMarker::calcMinMaxWidth()
         return;
     }
 
+    const QFontMetrics &fm = style()->fontMetrics();
+    m_height = fm.ascent();
+
+    // Skip uncounted elements
+    switch(style()->listStyleType()) {
+    // Glyphs:
+        case LDISC:
+        case LCIRCLE:
+        case LSQUARE:
+        case LBOX:
+        case LDIAMOND:
+            m_markerWidth = fm.ascent();
+        	goto end;
+        default:
+            break;
+    }
+
+    { // variable scope
     CounterNode *counter = m_listItem->m_counter;
+    if (!counter) {
+        counter = m_listItem->getCounter("list-item", true);
+        counter->setRenderer(this);
+        m_listItem->m_counter = counter;
+    }
+
 
     assert(counter);
     int value = counter->count();
@@ -420,19 +439,8 @@ void RenderListMarker::calcMinMaxWidth()
     int total = value;
     if (counter->parent()) total = counter->parent()->total();
 
-    const QFontMetrics &fm = style()->fontMetrics();
-    m_height = fm.ascent();
-
     switch(style()->listStyleType())
     {
-// Glyphs:
-    case LDISC:
-    case LCIRCLE:
-    case LSQUARE:
-    case LBOX:
-    case LDIAMOND:
-        m_markerWidth = fm.ascent();
-    	goto end;
 // Unsupported:
     case CJK_IDEOGRAPHIC:
         // ### unsupported, we use decimal instead
@@ -512,10 +520,12 @@ void RenderListMarker::calcMinMaxWidth()
         break;
     case LNONE:
         break;
+    default:
+        KHTMLAssert(false);
     }
     m_item += QString::fromLatin1(". ");
     m_markerWidth = fm.width(m_item);
-
+    }
 
 end:
     if(listPositionInside())
