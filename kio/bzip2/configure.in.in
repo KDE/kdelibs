@@ -28,8 +28,6 @@ if test ! "$ac_cv_lib_bzip2" = no; then
   LIBBZ2="$ac_cv_lib_bzip2"
   AC_SUBST(LIBBZ2)
 
-  AC_DEFINE(NEED_BZ2_PREFIX, 0, [Define if the libbz2 functions need the BZ2_ prefix])
-
 else
   
    AC_MSG_CHECKING([for BZ2_bzDecompress in libbz2])
