@@ -1,7 +1,8 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		version="1.0">
 
-<xsl:include href="../docbook/xsl/html/chunk-common.xsl"/>
+<xsl:import href="../docbook/xsl/html/chunk-common.xsl"/>
+<xsl:include href="kde-navig.xsl"/>
 
 <xsl:template name="make-relative-filename">
   <xsl:param name="base.dir" select="'./'"/>
