@@ -130,3 +130,6 @@ that we would like to make for the next binary incompatible release.
   the about information seems to be duplicated.
 
 - Make API use US English, (eg. KCatalogue -> KCatalog)
+
+- It would be nice if some insan^H^H^H brave soul had a look at the KAccel/KShortcut/KKeyWhatever
+  classes and cleaned it up.
