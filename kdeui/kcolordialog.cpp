@@ -21,7 +21,7 @@
 //
 // 1999-09-27 Espen Sand <espensa@online.no>
 // KColorDialog is now subclassed from KDialogBase. I have also extended
-// KColorDialog::getColor() so that in contains a parent argument. This
+// KColorDialog::getColor() so that it contains a parent argument. This
 // improves centering capability.
 //
 // layout management added Oct 1997 by Mario Weilguni

@@ -157,10 +157,10 @@ private:
 
 
 /**
- * A color class that preserves both rgb and hsv-values, this is
- * unlike QColor which only preserves rgb values and recalculates hsv
+ * A color class that preserves both RGB and HSV values; this is
+ * unlike QColor which only preserves RGB values and recalculates HSV
  * values. The QColor behavior leads to an accumulation of rounding 
- * errors whn working in the hsv color space.
+ * errors when working in the HSV color space.
  * @author Waldo Bastian <bastian@kde.org>
  **/
 class KColor : public QColor
@@ -330,7 +330,7 @@ private:
  * a selected color e. g. in the @ref KColorDialog. It
  * automatically handles drag and drop from and on the widget.
  *
- * @short A color shower.
+ * @short A color displayer.
  */
 class KColorPatch : public QFrame
 {
@@ -379,8 +379,8 @@ private:
  *
  * @sect Features:
  *
- * @li Colour selection from a wide range of palettes.
- * @li Colour selection from a palette of H vs S and V selectors (similar to windoze).
+ * @li Color selection from a wide range of palettes.
+ * @li Color selection from a palette of H vs S and V selectors (similar to windoze).
  * @li Direct input of HSV or RGB values.
  * @li Saving of custom colors
  *
