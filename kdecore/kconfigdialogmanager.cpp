@@ -30,6 +30,7 @@
 
 #include <kapplication.h>
 #include <kconfigskeleton.h>
+#include <kdebug.h>
 #include <kglobal.h>
 
 #include <assert.h>
@@ -166,7 +167,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         QMap<QString, QCString>::const_iterator changedIt = changedMap.find(childWidget->className());
         if (changedIt == changedMap.end())
         {
-          qWarning("Don't know how to monitor widget '%s' for changes!", childWidget->className());
+          kdWarning(178) << "Don't know how to monitor widget '" << childWidget->className() << "' for changes!" << endl;
         }
         else
         {
@@ -185,7 +186,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       }
       else
       {
-        qWarning("Not found %s !!", configId.latin1());
+        kdWarning(178) << "A widget named '" << widgetName << "' was found but there is no setting named '" << configId << "'" << endl;
         assert(false);
       }
     }
@@ -207,7 +208,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
     {
       QMap<QString, QCString>::const_iterator changedIt = changedMap.find(childWidget->className());
       if (changedIt != changedMap.end())
-        qWarning("Skipping %s (%s)!", widgetName, childWidget->className());
+        kdDebug(178) << "Widget '" << widgetName << "' (" << childWidget->className() << ") remains unmanaged." << endl;
     }
     
     if(bParseChildren)
@@ -232,7 +233,7 @@ void KConfigDialogManager::updateWidgets()
      KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
      if (!item)
      {
-        qWarning("knownWidget went missing!");
+        kdWarning(178) << "The setting '" << it.currentKey() << "' has disappeared!" << endl;
         continue;
      }
 
@@ -270,7 +271,7 @@ void KConfigDialogManager::updateSettings()
      KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
      if (!item)
      {
-        qWarning("knownWidget went missing!");
+        kdWarning(178) << "The setting '" << it.currentKey() << "' has disappeared!" << endl;
         continue;
      }
 
@@ -330,13 +331,14 @@ bool KConfigDialogManager::hasChanged()
      KConfigSkeletonItem *item = m_conf->findItem(it.currentKey());
      if (!item)
      {
-        qWarning("knownWidget went missing!");
+        kdWarning(178) << "The setting '" << it.currentKey() << "' has disappeared!" << endl;
         continue;
      }
 
      QVariant p = property(widget);
      if (p != item->property())
      {
+//      kdDebug(178) << "Widget for '" << it.currentKey() << "' has changed." << endl;
         return true;
      }
   }

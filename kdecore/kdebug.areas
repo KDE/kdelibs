@@ -21,6 +21,7 @@
 175        kdecore (KProcess)
 176        kdecore (KWin)
 177        kdecore (KConfigSkeleton)
+178        kdecore (KConfigDialogManager)
 180        kdecore (kdelibs)
 200        kdeui (KMainWindow)
 220        kdeui (KToolBar)
