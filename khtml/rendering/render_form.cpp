@@ -439,6 +439,7 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
         if (completions.count()) {
             edit->completionObject()->setItems(completions);
             edit->setContextMenuEnabled(true);
+            edit->completionBox()->setTabHandling( false );
         }
     }
 
@@ -465,8 +466,10 @@ void RenderLineEdit::slotReturnPressed()
 {
     // don't submit the form when return was pressed in a completion-popup
     KCompletionBox *box = widget()->completionBox(false);
-    if ( box && box->isVisible() && box->currentItem() != -1 )
-	return;
+    if ( box && box->isVisible() && box->currentItem() != -1 ) {
+        box->hide();
+        return;
+    }
 
     // Emit onChange if necessary
     // Works but might not be enough, dirk said he had another solution at
