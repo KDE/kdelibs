@@ -41,17 +41,19 @@ void KPopupMenu::initialize(const char *title)
    
 void KPopupMenu::paintCell(QPainter *p, int row, int col)
 {
-    if (row)
+    if (row != 0)
         QPopupMenu::paintCell(p, row, col);
-    else {
+    else if (!row && col==1) {
         int cellh = cellHeight(0);
         int cellw = cellWidth(0);
         QColorGroup cg = colorGroup();
         
         p->setPen(cg.light());
-        p->drawText(1, 1, cellw, cellh, AlignCenter, text(0));
+		p->drawText(6, 3, cellw, cellh-4, 
+					DontClip|AlignVCenter|ShowPrefix|SingleLine, text(0));
         p->setPen(cg.text());
-        p->drawText(0, 0, cellw, cellh, AlignCenter, text(0));
+		p->drawText(5, 2, cellw, cellh-4, 
+					DontClip|AlignVCenter|ShowPrefix|SingleLine, text(0));
     }
 }
     
