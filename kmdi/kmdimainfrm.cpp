@@ -123,12 +123,14 @@ public:
     for (int i=0;i<4;i++) {
       activeDockPriority[i]=0;
       m_styleIDEAlMode = 0;
+      m_toolviewStyle = 0;
     }
   }
   ~KMdiMainFrmPrivate() {}
   KMdiDockContainer* activeDockPriority[4];
   KMdiFocusList *focusList;
   int m_styleIDEAlMode;
+  int m_toolviewStyle;
 };
 
 //============ constructor ============//
@@ -262,7 +264,7 @@ void KMdiMainFrm::setStandardMDIMenuEnabled(bool showModeMenu) {
       connect(this,SIGNAL(toggleBottom()),m_bottomContainer->getWidget(),SLOT(toggle()));
   }
 
-  mdiModeHasBeenChangedTo(m_mdiMode);
+  emit mdiModeHasBeenChangedTo(m_mdiMode);
 }
 
 //============ ~KMdiMainFrm ============//
@@ -1231,7 +1233,7 @@ void KMdiMainFrm::findRootDockWidgets(QPtrList<KDockWidget>* pRootDockWidgetList
 void KMdiMainFrm::switchToToplevelMode()
 {
   if (m_mdiMode == KMdi::ToplevelMode) {
-    mdiModeHasBeenChangedTo(KMdi::ToplevelMode);
+    emit mdiModeHasBeenChangedTo(KMdi::ToplevelMode);
     return;
   }
 
@@ -1319,7 +1321,7 @@ void KMdiMainFrm::switchToToplevelMode()
   m_mdiMode = KMdi::ToplevelMode;
   //qDebug("ToplevelMode on");
 
-  mdiModeHasBeenChangedTo(KMdi::ToplevelMode);
+  emit mdiModeHasBeenChangedTo(KMdi::ToplevelMode);
 
 }
 
@@ -1335,7 +1337,7 @@ void KMdiMainFrm::finishToplevelMode()
 void KMdiMainFrm::switchToChildframeMode()
 {
   if (m_mdiMode == KMdi::ChildframeMode) {
-    mdiModeHasBeenChangedTo(KMdi::ChildframeMode);
+    emit mdiModeHasBeenChangedTo(KMdi::ChildframeMode);
     return;
   }
 
@@ -1442,7 +1444,7 @@ void KMdiMainFrm::switchToChildframeMode()
     //qDebug("TopLevelMode off");
     emit leftTopLevelMode();
   }
-  mdiModeHasBeenChangedTo(KMdi::ChildframeMode);
+  emit mdiModeHasBeenChangedTo(KMdi::ChildframeMode);
 }
 
 void KMdiMainFrm::finishChildframeMode()
@@ -1479,7 +1481,7 @@ void KMdiMainFrm::switchToTabPageMode()
   KMdiChildView* pRemActiveWindow = activeWindow();
 
   if (m_mdiMode == KMdi::TabPageMode) {
-    mdiModeHasBeenChangedTo(KMdi::TabPageMode);
+    emit mdiModeHasBeenChangedTo(KMdi::TabPageMode);
     return;  // nothing need to be done
   }
 
@@ -1490,7 +1492,7 @@ void KMdiMainFrm::switchToTabPageMode()
     finishToplevelMode();
   } else if (m_mdiMode == KMdi::IDEAlMode) {
     finishIDEAlMode(false);
-    mdiModeHasBeenChangedTo(KMdi::TabPageMode);
+    emit mdiModeHasBeenChangedTo(KMdi::TabPageMode);
     m_mdiMode=KMdi::TabPageMode;
     return;
   }
@@ -1508,7 +1510,7 @@ void KMdiMainFrm::switchToTabPageMode()
     m_pClose->show();
   }
   //qDebug("TabPageMode on");
-  mdiModeHasBeenChangedTo(KMdi::TabPageMode);
+  emit mdiModeHasBeenChangedTo(KMdi::TabPageMode);
 }
 
 void KMdiMainFrm::finishTabPageMode()
@@ -1562,8 +1564,10 @@ void KMdiMainFrm::setupTabbedDocumentViewSpace() {
     QApplication::sendPostedEvents();
 
     // restore the old dock szenario which we memorized at the time we switched to toplevel mode
-    QDomElement oldDockState = m_pTempDockSession->namedItem("cur_dock_state").toElement();
-    readDockConfig( oldDockState);
+    if (m_pTempDockSession) {
+      QDomElement oldDockState = m_pTempDockSession->namedItem("cur_dock_state").toElement();
+      readDockConfig( oldDockState);
+    }
   }
 
 #if 0
@@ -1618,7 +1622,33 @@ void KMdiMainFrm::setIDEAlModeStyle(int flags)
 
 void KMdiMainFrm::setToolviewStyle(int flag)
 {
-//Will come soon...
+  if (m_mdiMode == KMdi::IDEAlMode) {
+    setIDEAlModeStyle(flag);
+  }
+  d->m_toolviewStyle = flag;
+  QMap<QWidget*,KMdiToolViewAccessor*>::Iterator it;
+  for (it = m_pToolViews->begin(); it != m_pToolViews->end(); ++it) {
+    KDockWidget *dockWidget = dynamic_cast<KDockWidget*>(it.data()->wrapperWidget());
+    if (dockWidget) {
+      if (flag == KMdi::IconOnly)
+      {
+        dockWidget->setTabPageLabel(" ");
+        dockWidget->setPixmap(*(it.data()->wrappedWidget()->icon()));
+      } else
+      if (flag == KMdi::TextOnly)
+      {
+        dockWidget->setPixmap(); //FIXME: Does not hide the icon in the IDEAl mode.
+        dockWidget->setTabPageLabel(it.data()->wrappedWidget()->caption());
+      } else
+      if (flag == KMdi::TextAndIcon)
+      {
+        dockWidget->setPixmap(*(it.data()->wrappedWidget()->icon()));
+        dockWidget->setTabPageLabel(it.data()->wrappedWidget()->caption());
+      }
+    }
+  }
+  writeDockConfig();
+  readDockConfig();
 }
 
 /**
@@ -1630,7 +1660,7 @@ void KMdiMainFrm::switchToIDEAlMode()
   KMdiChildView* pRemActiveWindow = activeWindow();
 
   if (m_mdiMode == KMdi::IDEAlMode) {
-    mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
+    emit mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
     return;  // nothing need to be done
   }
 
@@ -1642,7 +1672,7 @@ void KMdiMainFrm::switchToIDEAlMode()
   } else if (m_mdiMode == KMdi::TabPageMode) {
     m_mdiMode=KMdi::IDEAlMode;
     setupToolViewsForIDEALMode();
-    mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
+    emit mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
     return;
   }
 
@@ -1664,7 +1694,7 @@ void KMdiMainFrm::switchToIDEAlMode()
   }
   //qDebug("IDEAlMode on");
 
-  mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
+  emit mdiModeHasBeenChangedTo(KMdi::IDEAlMode);
 }
 
 

@@ -96,11 +96,14 @@ namespace KMdi
       ShowWhenMoreThanOneTab = 1,
       NeverShowTabs          = 2
    };
-   
+
+  /** The style of the toolview tabs
+        @since 3.3
+  */
    enum ToolviewStyle {
       IconOnly	= 0,
       TextOnly	= 1,
-      TextAndIcon = 3 
+      TextAndIcon = 3
    };
 } //namespace
 
