@@ -21,13 +21,13 @@
 */
 
 #ifndef _KDEBUG_CLASSES_H_
-#define _KDEBUG_CLASSES_H_ "$Id$"
+#define _KDEBUG_CLASSES_H_ 
 
-/** This header is deprectaed! */
-
-#if defined(__GNUC__) && !defined(_KDE_DISABLE_KDEBUG_WARNING_)
-#warning this header is deprecated (disable this warning with #define _KDE_DISABLE_KDEBUG_WARNING)
+#if defined(__GNUC__) 
+#warning include kdebug.h instead 
 #endif
+
+#include <kdebug.h>
 
 #endif
 
