@@ -331,7 +331,11 @@ Completion DateProtoFunc::execute(const List &)
     result = Undefined();
     break;
   case GetTimezoneOffset:
+#ifndef BSD
     result = Number(timezone / 3600);
+#else
+    result = Number(-localtime(0)->tm_gmtoff);
+#endif
     break;
   case SetTime:
   case SetMilliSeconds:
