@@ -41,10 +41,9 @@ KProgress::KProgress(QWidget *parent, const char *name, WFlags f)
     setProgress(0);
 }
 
-KProgress::KProgress(int totalSteps, const QString& format,
-                         QWidget *parent, const char *name, WFlags f)
+KProgress::KProgress(int totalSteps, QWidget *parent, const char *name, WFlags f)
   : QProgressBar(totalSteps, parent, name, f),
-    mFormat(format)
+    mFormat("%p%")
 {
     setProgress(0);
 }

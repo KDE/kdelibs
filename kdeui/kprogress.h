@@ -56,8 +56,7 @@ public:
   /**
    * Construct a progress bar with minimum, maximum and initial values.
    */
-  KProgress(int totalSteps, const QString& format = "%p%",
-              QWidget *parent=0, const char *name=0, WFlags f = 0);
+  KProgress(int totalSteps, QWidget *parent=0, const char *name=0, WFlags f = 0);
 
   /**
    * Destruct the progress bar.
