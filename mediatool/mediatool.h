@@ -1,9 +1,10 @@
 #ifndef MEDIATOOL_H
 #define MEDIATOOL_H
 
-typedef signed char   int8;
-typedef signed int    int32;
-typedef unsigned int  uint32;
+typedef signed char    int8;
+typedef signed int     int32;
+typedef unsigned int   uint32;
+typedef unsigned short uint16;
 
 #define LEN_NAME	 32
 #define LEN_FNAME	256
@@ -173,7 +174,7 @@ typedef struct
 /* CHUNK: Player status ("Slave status") */
 typedef struct
 {
-  int32		status;		/* Status of client. (Bit array).      	*/
+  uint32	status;		/* Status of client. (Bit array).      	*/
   int32		supp_keys;	/* Which keys are supported by the	*/
 		       		/* player (Bit array).			*/
   uint32	pos_current;	/* Curr. play position (eg: event num) 	*/
