@@ -40,7 +40,7 @@ protected:
   int result;
   /** Contains the largest rectangle needed by the month names. */
   QRect max;
-signals: 
+signals:
   /** This is send from the mouse click event handler. */
   void closeMe(int);
 public:
@@ -58,7 +58,7 @@ protected:
   void resizeEvent(QResizeEvent*);
   /** Paint a cell. This simply draws the month names in it. */
   void paintCell(QPainter* painter, int row, int col);
-  /** Catch mouse click events. 
+  /** Catch mouse click events.
       Emit monthSelected(int) when a cell has been clicked. */
   void mousePressEvent(QMouseEvent *e);
 
@@ -67,7 +67,7 @@ private:
   KDateInternalMonthPrivate *d;
 };
 
-/** Year selection widget. 
+/** Year selection widget.
 * @internal
 * @version $Id$
 * @author Tim Gilman, Mirko Sucker
@@ -83,8 +83,8 @@ public slots:
 signals:
   void closeMe(int);
 public:
-  KDateInternalYearSelector(int fontsize, 
-			    QWidget* parent=0, 
+  KDateInternalYearSelector(int fontsize,
+			    QWidget* parent=0,
 			    const char* name=0);
   int getYear();
   void setYear(int year);
@@ -110,19 +110,19 @@ protected:
   /** The only subwidget that uses the whole dialog window. */
   QWidget *main;
 public slots:
-  /** Close the popup window. This is called from the main widget, usually. 
+  /** Close the popup window. This is called from the main widget, usually.
       r is the result returned from exec(). */
   void close(int r);
 public:
   /** The contructor. Creates a dialog without buttons. */
   QPopupFrame(QWidget* parent=0, const char*  name=0);
   /** Set the main widget. You cannot set the main widget from the constructor,
-      since it must be a child of the frame itselfes. 
-      Be careful: the size is set to the main widgets size. It is up to you to 
-      set the main widgets correct size before setting it as the main 
+      since it must be a child of the frame itselfes.
+      Be careful: the size is set to the main widgets size. It is up to you to
+      set the main widgets correct size before setting it as the main
       widget. */
   void setMainWidget(QWidget* m);
-  /** The resize event. Simply resizes the main widget to the whole 
+  /** The resize event. Simply resizes the main widget to the whole
       widgets client size. */
   void resizeEvent(QResizeEvent*);
   /** Execute the popup window. */
@@ -151,65 +151,65 @@ public:
  * This is a support class for the KDatePicker class.  It just
  * draws the calender table without titles, but could theoretically
  * be used as a standalone.
- * 
- * When a date is selected by the user, it emits a signal: 
+ *
+ * When a date is selected by the user, it emits a signal:
  * dateSelected(QDate)
- * 
+ *
  * @internal
  * @version $Id$
  * @author Tim Gilman, Mirko Sucker
  */
 class KDateTable : public QTableView
 {
-  Q_OBJECT
+    Q_OBJECT
 public:
-  /** The constructor. */
-  KDateTable(QWidget *parent=0,
-	     QDate date=QDate::currentDate(),
-	     const char* name=0, WFlags f=0);
-  /** Returns a recommended size for the widget.
-      To save some time, the size of the largest used cell content is
-      calculated in each paintCell() call, since all calculations have
-      to be done there anyway. The size is stored in maxCell. The
-      sizeHint() simply returns a multiple of maxCell. */
-  QSize sizeHint() const;
-  /** Set the font size of the date table. */
-  void setFontSize(int size);  
-  /** Select and display this date. */
-  bool setDate(const QDate&);
-  const QDate& getDate();
+    /** The constructor. */
+    KDateTable(QWidget *parent=0,
+	       QDate date=QDate::currentDate(),
+	       const char* name=0, WFlags f=0);
+    /** Returns a recommended size for the widget.
+	To save some time, the size of the largest used cell content is
+	calculated in each paintCell() call, since all calculations have
+	to be done there anyway. The size is stored in maxCell. The
+	sizeHint() simply returns a multiple of maxCell. */
+    virtual QSize sizeHint() const;
+    /** Set the font size of the date table. */
+    void setFontSize(int size);
+    /** Select and display this date. */
+    bool setDate(const QDate&);
+    const QDate& getDate();
 protected:
-  /** Paint a cell. */
-  void paintCell(QPainter*, int, int);
-  /** Handle the resize events. */
-  void resizeEvent(QResizeEvent *);
-  /** React on mouse clicks that select a date. */
-  void mousePressEvent(QMouseEvent *);
-  /** The font size of the displayed text. */
-  int fontsize;
-  /** The currently selected date. */
-  QDate date;
-  /** The day of the first day in the month [1..7]. */
-  int firstday;
-  /** The number of days in the current month. */
-  int numdays;
-  /** The number of days in the previous month. */
-  int numDaysPrevMonth;
-  /** Whether something has been selected or not. */
-  bool hasSelection;
-  /** Save the size of the largest used cell content. */
-  QRect maxCell;
-  /** The day names. */
-  QString Days[7];
+    /** Paint a cell. */
+    virtual void paintCell(QPainter*, int, int);
+    /** Handle the resize events. */
+    virtual void resizeEvent(QResizeEvent *);
+    /** React on mouse clicks that select a date. */
+    virtual void mousePressEvent(QMouseEvent *);
+    /** The font size of the displayed text. */
+    int fontsize;
+    /** The currently selected date. */
+    QDate date;
+    /** The day of the first day in the month [1..7]. */
+    int firstday;
+    /** The number of days in the current month. */
+    int numdays;
+    /** The number of days in the previous month. */
+    int numDaysPrevMonth;
+    /** Whether something has been selected or not. */
+    bool hasSelection;
+    /** Save the size of the largest used cell content. */
+    QRect maxCell;
+    /** The day names. */
+    QString Days[7];
 signals:
-  /** The selected date changed. */
-  void dateChanged(QDate);
-  /** A date has been selected by clicking on the table. */
-  void tableClicked();
+    /** The selected date changed. */
+    void dateChanged(QDate);
+    /** A date has been selected by clicking on the table. */
+    void tableClicked();
 
 private:
-  class KDateTablePrivate;
-  KDateTablePrivate *d;
+    class KDateTablePrivate;
+    KDateTablePrivate *d;
 };
 
 #endif // KDATETBL_H

@@ -106,60 +106,59 @@ KDatePicker::~KDatePicker()
 void
 KDatePicker::resizeEvent(QResizeEvent*)
 {
-  int cx, cy; // counters for storing size hint values
-  QWidget *buttons[]={
-    yearBackward,
-    monthBackward,
-    selectMonth,
-    selectYear,
-    monthForward,
-    yearForward };
-  const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
-  QSize sizes[NoOfButtons];
-  int buttonHeight=0;
-  int count;
-  int w;
-  int x=0;
-  // ----- calculate button row height:
-  for(count=0; count<NoOfButtons; ++count)
-    {
-      sizes[count]=buttons[count]->sizeHint();
-      buttonHeight=QMAX(buttonHeight, sizes[count].height());
+    int cx, cy; // counters for storing size hint values
+    QWidget *buttons[] = {
+	yearBackward,
+	    monthBackward,
+	    selectMonth,
+	    selectYear,
+	    monthForward,
+	    yearForward };
+    const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
+    QSize sizes[NoOfButtons];
+    int buttonHeight=0;
+    int count;
+    int w;
+    int x=0;
+    // ----- calculate button row height:
+    for(count=0; count<NoOfButtons; ++count) {
+	sizes[count]=buttons[count]->sizeHint();
+	buttonHeight=QMAX(buttonHeight, sizes[count].height());
     }
-  cy=buttonHeight;
-  // ----- calculate size of the month button:
-  w=0;
-  for(count=0; count<NoOfButtons; ++count)
-    {
-      if(buttons[count]!=selectMonth)
+    cy=buttonHeight;
+    // ----- calculate size of the month button:
+    w=0;
+    for(count=0; count<NoOfButtons; ++count) {
+	if(buttons[count]!=selectMonth)
 	{
-	  w+=sizes[count].width();
+	    w+=sizes[count].width();
 	} else {
-	  x=count;
+	    x=count;
 	}
     }
-  cx=w+sizes[count].width(); // sum of all recommended button widths
-  sizes[x].setWidth(width()-w); // stretch the month button
-  // ----- place the buttons:
-  x=0;
-  for(count=0; count<NoOfButtons; ++count)
+    cx=w+sizes[count].width(); // sum of all recommended button widths
+    sizes[x].setWidth(width()-w); // stretch the month button
+    // ----- place the buttons:
+    x=0;
+    for(count=0; count<NoOfButtons; ++count)
     {
-      w=sizes[count].width();
-      buttons[count]->setGeometry(x, 0, w, buttonHeight);
-      x+=w;
+	w=sizes[count].width();
+	buttons[count]->setGeometry(x, 0, w, buttonHeight);
+	x+=w;
     }
-  // ----- place the line edit for direct input:
-  sizes[0]=line->sizeHint();
-  line->setGeometry(0, height()-sizes[0].height(), width(), sizes[0].height());
-  // ----- adjust the table:
-  table->setGeometry(0, buttonHeight, width(), height()-buttonHeight-sizes[0].height());
+    // ----- place the line edit for direct input:
+    sizes[0]=line->sizeHint();
+    line->setGeometry(0, height()-sizes[0].height(), width(), sizes[0].height());
+    // ----- adjust the table:
+    table->setGeometry(0, buttonHeight, width(),
+		       height()-buttonHeight-sizes[0].height());
 }
 
 void
 KDatePicker::dateChangedSlot(QDate date)
 {
-  kdDebug() << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
-  emit(dateChanged(date));
+    kdDebug() << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
+    emit(dateChanged(date));
 }
 
 void
@@ -179,41 +178,38 @@ KDatePicker::getDate()
 bool
 KDatePicker::setDate(const QDate& date)
 {
-  if(date.isValid())
-    {
-      QString temp;
-      // -----
-      table->setDate(date);
-      selectMonth->setText(*Month[date.month()-1]);
-      temp.setNum(date.year());
-      selectYear->setText(temp);
-      return true;
+    if(date.isValid()) {
+	QString temp;
+	// -----
+	table->setDate(date);
+	selectMonth->setText(*Month[date.month()-1]);
+	temp.setNum(date.year());
+	selectYear->setText(temp);
+	return true;
     } else {
-      kdDebug() << "KDatePicker::setDate: refusing to set invalid date." << endl;
-      return false;
+	kdDebug() << "KDatePicker::setDate: refusing to set invalid date." << endl;
+	return false;
     }
 }
 
 void
 KDatePicker::monthForwardClicked()
 {
-  QDate temp=table->getDate();
-  int day=temp.day();
-  // -----
-  if(temp.month()==12)
-    {
-      temp.setYMD(temp.year()+1, 1, 1);
+    QDate temp=table->getDate();
+    int day=temp.day();
+    // -----
+    if(temp.month()==12) {
+	temp.setYMD(temp.year()+1, 1, 1);
     } else {
-      temp.setYMD(temp.year(), temp.month()+1, 1);
+	temp.setYMD(temp.year(), temp.month()+1, 1);
     }
-  if(temp.daysInMonth()<day)
-    {
-      temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
+    if(temp.daysInMonth()<day) {
+	temp.setYMD(temp.year(), temp.month(), temp.daysInMonth());
     } else {
-      temp.setYMD(temp.year(), temp.month(), day);
+	temp.setYMD(temp.year(), temp.month(), day);
     }
-  // assert(temp.isValid());
-  setDate(temp);
+    // assert(temp.isValid());
+    setDate(temp);
 }
 
 void

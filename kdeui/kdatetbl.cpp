@@ -29,7 +29,7 @@
 // draws the calender table without titles, but could theoretically
 // be used as a standalone.
 //
-// When a date is selected by the user, it emits a signal: 
+// When a date is selected by the user, it emits a signal:
 //      dateSelected(QDate)
 
 #include <kglobal.h>
@@ -47,7 +47,7 @@
 #include "kdatetbl.moc"
 
 KDateValidator::KDateValidator(QWidget* parent, const char* name)
-  : QValidator(parent, name)
+    : QValidator(parent, name)
 {
 }
 
@@ -66,7 +66,7 @@ KDateValidator::date(const QString& text, QDate& d) const
   unsigned int count;
   QString temp;
   bool ok;
-  // -----  
+  // -----
   /* Input is expected to be in the following form:
      19990816.
      If 990816 is entered, 1999 is expected. */
@@ -92,7 +92,7 @@ KDateValidator::date(const QString& text, QDate& d) const
     }
   temp=text.mid(0, yearwidth);
   y=temp.toInt(&ok);
-  if(!ok) 
+  if(!ok)
     {
       return Valid;
     }
@@ -102,13 +102,13 @@ KDateValidator::date(const QString& text, QDate& d) const
     }
   temp=text.mid(yearwidth, 2);
   m=temp.toInt(&ok);
-  if(!ok) 
+  if(!ok)
     {
       return Valid;
     }
   temp=text.mid(yearwidth+2, 2);
   day=temp.toInt(&ok);
-  if(!ok) 
+  if(!ok)
     {
       return Valid;
     }
@@ -139,9 +139,14 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   // setTableFlags(Tbl_clipCellPainting); // enable to find drawing failures
   setBackgroundColor(lightGray);
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
-  Days[0]=i18n("Mon"); Days[1]=i18n("Tue"); Days[2]=i18n("Wed"); 
-  Days[3]=i18n("Thu"); Days[4]=i18n("Fri"); Days[5]=i18n("Sat"); 
-  Days[6]=i18n("Sun");
+  int dayoff = KGlobal::locale()->weekStartsMonday() ? 0 : 1;
+  Days[0+dayoff]=i18n("Monday", "Mon");
+  Days[1+dayoff]=i18n("Tuesday", "Tue");
+  Days[2+dayoff]=i18n("Wednesday", "Wed");
+  Days[3+dayoff]=i18n("Thursday", "Thu");
+  Days[4+dayoff]=i18n("Friday", "Fri");
+  Days[5+dayoff]=i18n("Saturday", "Sat");
+  Days[dayoff ? 0 : 6]=i18n("Sunday", "Sun");
 }
 
 void
@@ -162,34 +167,40 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
     { // we are drawing the headline
       font.setBold(true);
       painter->setFont(font);
-      switch(col)
-	{
-	case 5: // saturday
-	case 6: // sunday
+      bool normalday = true;
+      if (KGlobal::locale()->weekStartsMonday()) {
+	if (col == 5 || col == 6)
+	  normalday = false;
+      } else {
+	if (col == 0 || col == 6)
+	  normalday = false;
+      }
+      if (!normalday) {
 	  painter->setPen(lightGray);
 	  painter->setBrush(brushLightblue);
 	  painter->drawRect(0, 0, cellWidth(), cellHeight());
 	  painter->setPen(blue);
-	  painter->drawText(0, 0, w, h-1, AlignCenter, 
+	  painter->drawText(0, 0, w, h-1, AlignCenter,
 			    Days[col], -1, &rect);
-	  break;
-	default: // normal weekday
+      } else {
 	  painter->setPen(blue);
 	  painter->setBrush(brushBlue);
 	  painter->drawRect(0, 0, w, h);
 	  painter->setPen(white);
-	  painter->drawText(0, 0, w, h-1, AlignCenter, 
+	  painter->drawText(0, 0, w, h-1, AlignCenter,
 			    Days[col], -1, &rect);
-	};
+      }
       painter->setPen(black);
       painter->moveTo(0, h-1);
       painter->lineTo(w-1, h-1);
       // ----- draw the weekday:
     } else {
       painter->setFont(font);
-      pos=7*(row-1)+col+1;
+      pos=7*(row-1)+col;
+      if (KGlobal::locale()->weekStartsMonday())
+	pos++;
       if(pos<firstday || (firstday+numdays<=pos))
-	{ // we are either 
+	{ // we are either
 	  // ° painting a day of the previous month or
 	  // ° painting a day of the following month
 	  if(pos<firstday)
@@ -349,11 +360,11 @@ KDateTable::getDate()
 }
 
 QSize
-KDateTable::sizeHint() const 
+KDateTable::sizeHint() const
 {
   if(maxCell.height()>0 && maxCell.width()>0)
     {
-      return QSize(maxCell.width()*numCols()+2*frameWidth(), 
+      return QSize(maxCell.width()*numCols()+2*frameWidth(),
 		   (maxCell.height()+2)*numRows()+2*frameWidth());
     } else {
       kdDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
@@ -371,12 +382,12 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   QFont font;
   // -----
   font=KGlobal::generalFont();
-  font.setPointSize(fontsize);    
+  font.setPointSize(fontsize);
   setFont(font);
-  setNumRows(4); 
+  setNumRows(4);
   setNumCols(3);
   // enable to find drawing failures:
-  // setTableFlags(Tbl_clipCellPainting); 
+  // setTableFlags(Tbl_clipCellPainting);
   setBackgroundColor(lightGray); // for consistency with the datepicker
   // ----- find the preferred size
   //       (this is slow, possibly, but unfortunatly it is needed here):
@@ -387,7 +398,7 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
       if(max.width()<rect.width()) max.setWidth(rect.width());
       if(max.height()<rect.height()) max.setHeight(rect.height());
     }
-  
+
 }
 
 QSize
@@ -397,26 +408,26 @@ KDateInternalMonthPicker::sizeHint() const
 	       (max.height()+6)*numRows()+2*frameWidth());
 }
 
-int 
+int
 KDateInternalMonthPicker::getResult()
 {
   return result;
 }
 
-void 
+void
 KDateInternalMonthPicker::setupPainter(QPainter *p)
 {
   p->setPen(black);
 }
 
-void 
+void
 KDateInternalMonthPicker::resizeEvent(QResizeEvent*)
 {
   setCellWidth(width()/3);
   setCellHeight(height()/4);
 }
 
-void 
+void
 KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
 {
   int index;
@@ -427,7 +438,7 @@ KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
   painter->drawText(0, 0, cellWidth(), cellHeight(), AlignCenter, text);
 }
 
-void 
+void
 KDateInternalMonthPicker::mousePressEvent(QMouseEvent *e)
 {
   if(e->type()!=QEvent::MouseButtonPress)
@@ -464,21 +475,21 @@ KDateInternalYearSelector::KDateInternalYearSelector
   QFont font;
   // -----
   font=KGlobal::generalFont();
-  font.setPointSize(fontsize);    
+  font.setPointSize(fontsize);
   setFont(font);
   // we have to respect the limits of QDate here, I fear:
-  val->setRange(0, 8000); 
+  val->setRange(0, 8000);
   setValidator(val);
   connect(this, SIGNAL(returnPressed()), SLOT(yearEnteredSlot()));
 }
 
-void 
+void
 KDateInternalYearSelector::yearEnteredSlot()
 {
   bool ok;
   int year;
   QDate date;
-  // ----- check if this is a valid year: 
+  // ----- check if this is a valid year:
   year=text().toInt(&ok);
   if(!ok)
     {
@@ -493,15 +504,15 @@ KDateInternalYearSelector::yearEnteredSlot()
     }
   result=year;
   emit(closeMe(1));
-}  
+}
 
-int 
+int
 KDateInternalYearSelector::getYear()
 {
   return result;
 }
 
-void 
+void
 KDateInternalYearSelector::setYear(int year)
 {
   QString temp;
@@ -519,7 +530,7 @@ QPopupFrame::QPopupFrame(QWidget* parent, const char*  name)
   setMidLineWidth(2);
 }
 
-void 
+void
 QPopupFrame::keyPressEvent(QKeyEvent* e)
 {
   if(e->key()==Key_Escape)
@@ -529,14 +540,14 @@ QPopupFrame::keyPressEvent(QKeyEvent* e)
     }
 }
 
-void 
+void
 QPopupFrame::close(int r)
 {
   result=r;
   kapp->exit_loop();
 }
 
-void 
+void
 QPopupFrame::setMainWidget(QWidget* m)
 {
   main=m;
@@ -546,24 +557,24 @@ QPopupFrame::setMainWidget(QWidget* m)
     }
 }
 
-void 
+void
 QPopupFrame::resizeEvent(QResizeEvent*)
 {
   if(main!=0)
     {
       main->setGeometry
-	(frameWidth(), frameWidth(), 
+	(frameWidth(), frameWidth(),
 	 width()-2*frameWidth(), height()-2*frameWidth());
     }
 }
 
-int 
+int
 QPopupFrame::exec(QPoint p)
 {
   return exec(p.x(), p.y());
 }
 
-int 
+int
 QPopupFrame::exec(int x, int y)
 {
   move(x, y);
