@@ -1240,7 +1240,7 @@ QString KApplication::kde_bindir()
 
 QString KApplication::kde_configdir()
 {
-    warning("kde_confdir() is obsolete. Try to use KStandardDirs instead");
+    warning("kde_configdir() is obsolete. Try to use KStandardDirs instead");
     static QString dir;
     if (dir.isNull()) {
 	dir = KDE_CONFIGDIR;
