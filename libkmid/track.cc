@@ -38,7 +38,6 @@
 
 #define MS2T(ms) (((ms)*(double)tempoToMetronomeTempo(tempo)*(double)tPCN)/((double)60000L))
 
-
 #define PEDANTIC_TRACK
 #define CHANGETEMPO_ONLY_IN_TRACK0
 //#define TRACKDEBUG
@@ -534,3 +533,6 @@ double track::absMsOfNextEvent (void)
     return time_at_next_event;
 }
 */
+
+#undef T2MS
+#undef MS2T

@@ -120,7 +120,7 @@ public:
   int numberOfMidiPorts(void) {return n_midi;};
   int numberOfSynthDevices(void) {return n_synths;};
   char *name(int i);
-  char *type(int i);
+  const char *type(int i);
 
 };
 

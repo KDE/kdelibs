@@ -164,7 +164,7 @@ void synthOut::noteOn  (uchar chn, uchar note, uchar vel)
 #endif
 }
 
-void synthOut::noteOff (uchar chn, uchar note, uchar vel)
+void synthOut::noteOff (uchar chn, uchar note, uchar)
 {
     SEQ_STOP_NOTE(device, Map->Channel(chn),
                   Map->Key(chn,chn_patch[chn],note), 0);

@@ -26,8 +26,8 @@
 
 ushort readShort(FILE *fh)
 {
-    register uchar c1;
-    register uchar c2;
+    uchar c1;
+    uchar c2;
     
     fread(&c1,1,1,fh);
     fread(&c2,1,1,fh);
@@ -36,11 +36,11 @@ ushort readShort(FILE *fh)
 
 ulong readLong(FILE *fh)
 {
-    register uchar c1;
-    register uchar c2;
-    register uchar c3;
-    register uchar c4;
-    register ulong l;
+    uchar c1;
+    uchar c2;
+    uchar c3;
+    uchar c4;
+    ulong l;
     
     fread(&c1,1,1,fh);
     fread(&c2,1,1,fh);

@@ -394,7 +394,7 @@ char *midiOut::getMidiMapFilename(void)
     return (Map!=NULL) ? Map->getFilename() : (char *)"";
 }
 
-char * midiOut::devName(void)
+const char * midiOut::devName(void) const
 {
     switch (devType())
     {

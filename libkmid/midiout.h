@@ -79,8 +79,8 @@ virtual   ~midiOut();
 virtual    void openDev		(int sqfd);
 virtual    void closeDev	(void);
 virtual    void initDev		(void);
-	int 	devType		(void) {return devicetype;};
-	char *	devName		(void);
+	int 	devType		(void) const {return devicetype;};
+	const char *	devName(void) const;
 #ifdef HANDLETIMEINDEVICES
     int Rate		(void) { return rate; };
 #endif

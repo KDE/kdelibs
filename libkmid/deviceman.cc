@@ -494,7 +494,7 @@ char *DeviceManager::name(int i)
     return (char *)"";
 }
 
-char *DeviceManager::type(int i)
+const char *DeviceManager::type(int i)
 {
     if (checkInit()<0) {ok = 0; return NULL;}
     
@@ -511,9 +511,9 @@ char *DeviceManager::type(int i)
         case (MIDI_TYPE_MPU401) : return "MPU 401";break;
         case (SAMPLE_TYPE_GUS) : return "GUS";break;
         }
-        return (char *)"";
+        return "";
     }
-    return (char *)"";
+    return "";
 }
 
 int DeviceManager::getDefaultDevice(void)

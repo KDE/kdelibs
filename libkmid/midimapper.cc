@@ -428,7 +428,7 @@ uchar MidiMapper::Patch(uchar chn,uchar pgm)
         patchmap[pgm] : (uchar)channelPatchForced[chn] ;
 }
 
-void MidiMapper::PitchBender(uchar chn,uchar &lsb,uchar &msb)
+void MidiMapper::PitchBender(uchar ,uchar &lsb,uchar &msb)
 {
     if (mapPitchBender)
     {
@@ -444,7 +444,7 @@ void MidiMapper::PitchBender(uchar chn,uchar &lsb,uchar &msb)
     }
 }
 
-void MidiMapper::Controller(uchar chn,uchar &ctl, uchar &v)
+void MidiMapper::Controller(uchar ,uchar &ctl, uchar &)
 {
     if ((mapExpressionToVolumeEvents)&&(ctl==11)) ctl=7;
 }

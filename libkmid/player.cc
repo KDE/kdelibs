@@ -920,3 +920,6 @@ void player::changeTempoRatio(double ratio)
     }
     
 }
+
+#undef T2MS
+#undef MS2T
