@@ -70,7 +70,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& cut, QWidget* parent, const c
 KShortcutDialog::~KShortcutDialog()
 {
 	if( m_bKeyboardGrabbed ) {
-		kdWarning(125) << "KShortcutDialog::~KShortcutDialog(): m_bKeyboardGrabbed still true." << endl;
+		kdDebug(125) << "KShortcutDialog::~KShortcutDialog(): m_bKeyboardGrabbed still true." << endl;
 		releaseKeyboard();
 	}
 }
