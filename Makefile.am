@@ -37,7 +37,7 @@ AUTOMAKE_OPTIONS = foreign 1.4
 include_HEADERS = kde.pot
 
 messages:
-	dirs=`find . -type d ! -name kwrite | grep -v CVS`  ;\
+	dirs=`find . -type d | grep -v CVS`  ;\
 	find $$dirs -maxdepth 1 -name "*.cpp" -print > files ;\
 	find $$dirs -maxdepth 1 -name "*.cc" -print >> files ;\
 	$(EXTRACTRC) `find $$dirs -maxdepth 1 -name "*.rc"` > rc.cpp	;\
