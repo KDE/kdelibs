@@ -522,6 +522,7 @@ void KEditToolbarWidget::setupLayout()
   iconSet = SmallIconSet( "up" );
   m_upAction->setIconSet( iconSet );
   m_upAction->setEnabled(false);
+  m_upAction->setAutoRepeat(true);
   connect(m_upAction, SIGNAL(clicked()), SLOT(slotUpButton()));
 
   m_insertAction = new QToolButton(this);
@@ -540,6 +541,7 @@ void KEditToolbarWidget::setupLayout()
   iconSet = SmallIconSet( "down" );
   m_downAction->setIconSet( iconSet );
   m_downAction->setEnabled(false);
+  m_downAction->setAutoRepeat(true);
   connect(m_downAction, SIGNAL(clicked()), SLOT(slotDownButton()));
 
   d->m_helpArea = new QLabel(this);
