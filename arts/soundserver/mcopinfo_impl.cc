@@ -31,6 +31,7 @@
 #include "debug.h"
 
 using namespace Arts;
+using namespace std;
 
 long MCOPInfo_impl::objectCount()
 {
