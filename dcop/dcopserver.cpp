@@ -4,6 +4,7 @@
 
 Copyright (c) 1999,2000 Preston Brown <pbrown@kde.org>
 Copyright (c) 1999,2000 Matthias Ettrich <ettrich@kde.org>
+Copyright (c) 1999,2001 Waldo Bastian <bastian@kde.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -1473,7 +1474,7 @@ void IoErrorHandler ( IceConn iceConn)
     the_server->ioError( iceConn );
 }
 
-static bool isRunning(const QCString &fName)
+static bool isRunning(const QCString &fName, bool printNetworkId = false)
 {
     if (::access(fName.data(), R_OK) == 0) {
 	QFile f(fName);
@@ -1487,7 +1488,10 @@ static bool isRunning(const QCString &fName)
 	pid_t pid = ok ? contents.mid(pos+1).toUInt(&ok) : 0;
 	f.close();
 	if (ok && pid && (kill(pid, SIGHUP) == 0)) {
-	    qWarning( "---------------------------------\n"
+	    if (printNetworkId)
+	        qWarning("%s", contents.left(pos).data());
+	    else
+		qWarning( "---------------------------------\n"
 		      "It looks like dcopserver is already running. If you are sure\n"
 		      "that it is not already running, remove %s\n"
 		      "and start dcopserver again.\n"
@@ -1507,16 +1511,18 @@ static bool isRunning(const QCString &fName)
 
 const char* const ABOUT =
 "Usage: dcopserver [--nofork] [--nosid] [--nolocal] [--help]\n"
+"       dcopserver --serverid\n"
 "\n"
 "DCOP is KDE's Desktop Communications Protocol. It is a lightweight IPC/RPC\n"
 "mechanism built on top of the X Consortium's Inter Client Exchange protocol.\n"
 "It enables desktop applications to communicate reliably with low overhead.\n"
 "\n"
-"Copyright (C) 1999-2000, The KDE Developers <http://www.kde.org>\n"
+"Copyright (C) 1999-2001, The KDE Developers <http://www.kde.org>\n"
 ;
 
 int main( int argc, char* argv[] )
 {
+    bool serverid = false;
     bool nofork = false;
     bool nosid = false;
     bool nolocal = false;
@@ -1530,10 +1536,19 @@ int main( int argc, char* argv[] )
 	    nolocal = true;
 	else if (strcmp(argv[i], "--suicide") == 0)
 	    suicide = true;
+	else if (strcmp(argv[i], "--serverid") == 0)
+	    serverid = true;
 	else {
 	    fprintf(stdout, ABOUT );
 	    return 0;
 	}
+    }
+    
+    if (serverid)
+    {
+       if (isRunning(DCOPClient::dcopServerFile(), true))
+          return 0;
+       return 1;
     }
 
     // check if we are already running
