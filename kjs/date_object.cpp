@@ -353,11 +353,12 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
 #endif
     value = Number(utc);
   } else if (numArgs == 1) {
-    Value p = args[0].toPrimitive(exec);
-    if (p.type() == StringType)
-      value = parseDate(p.toString(exec));
+    UString s = args[0].toString(exec);
+    double d = s.toDouble();
+    if (d == NaN)
+      value = parseDate(s);
     else
-      value = Number(p.toNumber(exec));
+      value = Number(d);
   } else {
     struct tm t;
     memset(&t, 0, sizeof(t));
