@@ -60,7 +60,7 @@ class KProcessPrivate;
  *not interested in any notification to determine whether the
  *child process has already exited or not.
  *
- *@li  KProcess::NotifyOnExit -- The child process is invoked both the
+ *@li  KProcess::NotifyOnExit -- The child process is invoked and both the
  *child and the parent process run concurrently.
  *
  *When the child process exits, the KProcess instance
