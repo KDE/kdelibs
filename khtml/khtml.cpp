@@ -361,7 +361,8 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
 {
     debug("KHTMLWidget::begin(....)");
 
-    end();
+    m_bComplete = true;
+    if(document) document->close();
     clear();
 
     m_iNextXOffset = _x_offset;
