@@ -37,7 +37,7 @@ check_PROGRAMS =kledlamptest kprogresstest \
 		kgradienttest kmemtest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
 		kdualcolortest kpalettetest kmessageboxtest khashtest ktartest \
-		kruntest kspelltest kidlservertest kidlclienttest
+		kspelltest kidlservertest kidlclienttest a
 
 
 noinst_HEADERS = \
@@ -46,13 +46,14 @@ noinst_HEADERS = \
 		kledtest.h kcontainertest.h \
 		krulertest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
-		kdualcolortest.h khashtest.h kruntest.h KIDLTest.h
+		kdualcolortest.h khashtest.h KIDLTest.h
 
 METASOURCES = AUTO
 
 LDADD =  $(LIB_KDEUI)
 
 kbuttonboxtest_SOURCES = kbuttonboxtest.cpp
+a_SOURCES = a.cpp
 kaboutdialogtest_SOURCES = kaboutdialogtest.cpp
 kaboutdialogtest_LDADD = $(LIB_KIMGIO) $(LIB_KDEUI)
 dialogbasetest_SOURCES = dialogbasetest.cpp
@@ -93,8 +94,6 @@ kspelltest_SOURCES = kspelltest.cpp
 kspelltest_LDADD = $(top_builddir)/kspell/libkspell.la
 ktartest_SOURCES = ktartest.cpp
 ktartest_LDADD = $(LIB_KIO)
-kruntest_SOURCES = kruntest.cpp
-kruntest_LDADD = $(LIB_KIO)
 kmemtest_SOURCES = kmemtest.cpp
 kidlservertest_SOURCES = KIDLTest.cpp KIDLTest_skel.cpp
 kidlservertest_LDADD = $(LIB_KDECORE)
