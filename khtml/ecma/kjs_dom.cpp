@@ -361,10 +361,10 @@ Completion DOMElementFunction::tryExecute(const List &args)
       result = getDOMNode(element.getAttributeNode(args[0].toString().value().string()));
       break;
     case SetAttributeNode:
-      result = getDOMNode(element.setAttributeNode(DOMNode(KJS::toNode(args[0])).toNode()));
+      result = getDOMNode(element.setAttributeNode((new DOMNode(KJS::toNode(args[0])))->toNode()));
       break;
     case RemoveAttributeNode:
-      result = getDOMNode(element.removeAttributeNode(DOMNode(KJS::toNode(args[0])).toNode()));
+      result = getDOMNode(element.removeAttributeNode((new DOMNode(KJS::toNode(args[0])))->toNode()));
       break;
     case GetElementsByTagName:
       result = new DOMNodeList(element.getElementsByTagName(args[0].toString().value().string()));
@@ -489,7 +489,7 @@ Completion DOMNamedNodeMapFunction::tryExecute(const List &args)
       result = getDOMNode(map.getNamedItem(args[0].toString().value().string()));
       break;
     case SetNamedItem:
-      result = getDOMNode(map.setNamedItem(DOMNode(KJS::toNode(args[0])).toNode()));
+      result = getDOMNode(map.setNamedItem((new DOMNode(KJS::toNode(args[0])))->toNode()));
       break;
     case RemoveNamedItem:
       result = getDOMNode(map.removeNamedItem(args[0].toString().value().string()));

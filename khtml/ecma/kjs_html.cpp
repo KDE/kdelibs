@@ -194,7 +194,7 @@ void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
   if (p == "title")
     doc.setTitle(v.toString().value().string());
   else if (p == "body")
-    doc.setBody(DOMNode(KJS::toNode(v)).toNode());
+    doc.setBody((new DOMNode(KJS::toNode(v)))->toNode());
   else if (p == "cookie")
     doc.setCookie(v.toString().value().string());
   else {
@@ -781,7 +781,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       if (id == Add) {
-        select.add(DOMNode(KJS::toNode(args[0])).toNode(),DOMNode(KJS::toNode(args[1])).toNode());
+        select.add((new DOMNode(KJS::toNode(args[0])))->toNode(),(new DOMNode(KJS::toNode(args[1])))->toNode());
         result = Undefined();
       }
       else if (id == Remove) {
