@@ -488,7 +488,9 @@
 
 # PostScript
 0	string		%!		application/postscript
+>15	string		EPS		image/x-eps
 0	string		\004%!		application/postscript
+>16	string		EPS		image/x-eps
 
 # Acrobat
 # (due to clamen@cs.cmu.edu)
