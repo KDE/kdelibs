@@ -356,6 +356,11 @@ public:
     virtual bool isPlugged() const;
 
     /**
+     * returns whether the action is plugged into the given container
+     */
+    bool isPlugged( const QWidget *container ) const;
+
+    /**
      * returns whether the action is plugged into the given container with the given, container specific, id (often
      * menu or toolbar id ) .
      */

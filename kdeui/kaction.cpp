@@ -337,6 +337,11 @@ bool KAction::isPlugged() const
   return (containerCount() > 0) || d->m_kaccel;
 }
 
+bool KAction::isPlugged( const QWidget *container ) const
+{
+  return findContainer( container ) > -1;
+}
+
 bool KAction::isPlugged( const QWidget *container, int id ) const
 {
   int i = findContainer( container );
