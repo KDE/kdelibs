@@ -56,7 +56,6 @@
 using namespace khtml;
 
 static const QChar commentStart [] = { '<','!','-','-', QChar::null };
-static const QChar commentEnd [] = { '-','-','>', QChar::null };
 static const QChar scriptEnd [] = { '<','/','s','c','r','i','p','t','>', QChar::null };
 static const QChar styleEnd [] = { '<','/','s','t','y','l','e','>', QChar::null };
 static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>', QChar::null };
@@ -433,91 +432,32 @@ void HTMLTokenizer::parseComment(DOMStringIt &src)
     kdDebug( 6036 ) << "HTMLTokenizer::parseComment()" << endl;
 #endif
 
+    checkScriptBuffer(src.length());
     while ( src.length() )
     {
-        // do we need to enlarge the buffer?
-        checkBuffer();
-
-        // Allocate memory to store the script. We will write maximal
-        // 10 characers.
-        checkScriptBuffer();
-
-        char ch = src[0].latin1();
-        if (ch == '>' && searchFor[ searchCount ] == '>')
+        if (src->latin1() == '>' && scriptCodeSize > 2 &&
+            scriptCode[scriptCodeSize-2] == '-' &&
+            (scriptCode[scriptCodeSize-1] == '-' ||
+             (scriptCode[scriptCodeSize-3] == '-' && scriptCode[scriptCodeSize-1] == '!')))
         {
             ++src;
 #ifdef COMMENTS_IN_DOM
+            checkBuffer();
             scriptCode[ scriptCodeSize ] = 0;
             scriptCode[ scriptCodeSize + 1 ] = 0;
             currToken.id = ID_COMMENT;
-            addListing(DOMStringIt(scriptCode, scriptCodeSize));
+            addListing(DOMStringIt(scriptCode, scriptCodeSize - 2));
             processToken();
             currToken.id = ID_COMMENT + ID_CLOSE_TAG;
             processToken();
 #endif
-            script = style = listing = comment = textarea = false;
+            comment = false;
             scriptCodeSize = 0;
             return; // Finished parsing comment
         }
-        // Find out wether we see an end tag without looking at
-        // any other then the current character, since further characters
-        // may still be on their way thru the web!
-        else if ( searchCount > 0 )
-        {
-            const QChar& cmp = src[0];
-            // broken HTML: "--->"
-            if (searchCount == 2 && cmp.latin1() == '-' && searchBuffer[0].latin1() != '<')
-            {
-                scriptCode[ scriptCodeSize++ ] = cmp;
-                ++src;
-            }
-            // broken HTML: "--!>"
-            else if (searchCount == 2 && cmp.latin1() == '!' && searchBuffer[0].latin1() != '<')
-            {
-                ++src;
-            }
-            // be tolerant: skip spaces before the ">", i.e "</script >"
-            else if (cmp.isSpace() && searchFor[searchCount].latin1() == '>')
-            {
-                ++src;
-            }
-            else if ( cmp.lower() == searchFor[ searchCount ] )
-            {
-                searchBuffer[ searchCount++ ] = cmp;
-                ++src;
-            }
-            // We were wrong => print all buffered characters and the current one;
-            else
-            {
-                searchBuffer[ searchCount ] = 0;
-		DOMStringIt pit(searchBuffer,searchCount);
-		while (pit.length()) {
-		    if (textarea && pit[0] == '&') {
-			QChar *scriptCodeDest = scriptCode+scriptCodeSize;
-			++pit;
-			parseEntity(pit,scriptCodeDest,true);
-			scriptCodeSize = scriptCodeDest-scriptCode;
-		    }
-		    else {
-			scriptCode[ scriptCodeSize++ ] = pit[0];
-			++pit;
-		    }
-		}
-                searchCount = 0;
-            }
-        }
-        // Is this perhaps the start of the --> (end of comment)?
-        else if ( ch == '-' )
-        {
-            searchCount = 1;
-            searchBuffer[ 0 ] = src[0];
-            ++src;
-        }
-	else
-        {
-            scriptCode[ scriptCodeSize++ ] = src[0];
-            ++src;
-        }
+
+        scriptCode[ scriptCodeSize++ ] = *src;
+        ++src;
     }
 }
 
@@ -792,8 +732,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                             ++src;
                             dest = buffer; // ignore the previous part of this tag
                             comment = true;
-                            searchCount = 0;
-                            searchFor = commentEnd;
                             tag = NoTag;
                             parseComment(src);
 
