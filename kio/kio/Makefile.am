@@ -40,7 +40,7 @@ libksycoca_la_SOURCES = \
 	yacc.c lex.c  \
 	chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
-	kfilemetainfo.cpp
+	kfilemetainfo.cpp kdcopservicestarter.cpp
 
 #This dependency is needed, cause am_edit does not include it automatically
 #(different programs), but nevertheless kmimetype.cpp includes
@@ -60,7 +60,7 @@ include_HEADERS = \
 	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
 	karchive.h kfilefilter.h kfilemetainfo.h renamedlgplugin.h \
-	kmimetyperesolver.h
+	kmimetyperesolver.h kdcopservicestarter.h
 
 #libkiocore_la_LDFLAGS = $(all_libraries)
 #libkiocore_la_LIBADD = ../../kdeui/libkdeui.la ../../kdesu/libkdesu.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
