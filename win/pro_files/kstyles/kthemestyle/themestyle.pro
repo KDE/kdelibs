@@ -1,6 +1,6 @@
 include( ../common.pro )
 
-win32:LIBS += $$QKWLIB\kdecore$$KDELIB_SUFFIX
+LIBS += $$KDELIBDESTDIR\kdecore$$KDELIB_SUFFIX
 
 TARGET		= kthemestyle$$KDEBUG
 

@@ -1,17 +1,16 @@
 TEMPLATE	= lib
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
+
 
 # needed to export library classes:
 DEFINES += MAKE_KDEUI_LIB
-win32:LIBS += $$QKWLIB\kdecore$$KDELIB_SUFFIX $$QKWLIB\kdefx$$KDELIB_SUFFIX
-win32:LIBS += $$QKWLIB\dcop$$KDELIB_SUFFIX 
+
+LIBS += $$KDELIBDESTDIR\kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdefx$$KDELIB_SUFFIX \
+	$$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX 
 
 system( bash kmoc )
 system( bash kdcopidl )
-
-#system( dcopidl kmainwindowiface.h > kmainwindowiface.kidl && dcopidl2cpp kmainwindowiface.kidl )
-
 
 TARGET		= kdeui$$KDEBUG
 
@@ -132,11 +131,6 @@ kinputdialog.cpp
 SOURCES += \
 kmessagebox_win.cpp
 
-#kmessagebox.cpp \
-
-#qxembed.cpp
-#ksharedpixmap.cpp \
-#kwindowlistmenu.cpp \
 
 # generated:
 SOURCES += \

@@ -1,19 +1,17 @@
 TEMPLATE	= lib
 DEFINES += MAKE_KDEWIN32_LIB
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
 
 TARGET		= kdewin32$$KDEBUG
 
-#QMAKE_LFLAGS +=  /Lib:DelayImp.lib /DelayLoad:$$TARGET$(KDE_VER).dll
-
-QMAKE_CXXFLAGS += /FI$(QKW)/kdelibs/kdecore/kdelibs_export.h
-QMAKE_CFLAGS += /FI$(QKW)/kdelibs/kdecore/kdelibs_export.h
+QMAKE_CXXFLAGS += /FI$(KDELIBS)/kdecore/kdelibs_export.h
+QMAKE_CFLAGS += /FI$(KDELIBS)/kdecore/kdelibs_export.h
 
 WIN9x {
 	DEFINES += KDEWIN32_9x
 
-	DESTDIR = $$QKWLIB/win9x
+	DESTDIR = $$KDELIBDESTDIR/win9x
 
 	contains(KW_CONFIG,release) {
 		OBJECTS_DIR = 9x/obj_rel
@@ -48,9 +46,5 @@ mmap.c \
 getenv.c \
 bootstrap.cpp \
 mkdir.c
-
-#stdlib.c \
-
-HEADERS = 
 
 

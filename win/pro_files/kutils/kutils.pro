@@ -1,24 +1,19 @@
 TEMPLATE	= lib
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
+
 
 # needed to export library classes:
 DEFINES += MAKE_KUTILS_LIB
 
 TARGET		= kutils$$KDEBUG
 
-win32:LIBS += $$QKWLIB/kdecore$$KDELIB_SUFFIX $$QKWLIB/kdeui$$KDELIB_SUFFIX 
-win32:LIBS += $$QKWLIB/kio$$KDELIB_SUFFIX 
+LIBS += $$KDELIBDESTDIR/kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR/kdeui$$KDELIB_SUFFIX \
+	$$KDELIBDESTDIR/kio$$KDELIB_SUFFIX 
 
-QMAKE_CXXFLAGS += /I$(QKW)/kdelibs/interfaces/kregexpeditor
+INCLUDEPATH += $(KDELIBS)/interfaces/kregexpeditor
 
 system( bash kmoc )
-
-#kcmoduleinfo.cpp \
-#kcmoduleloader.cpp \
-#kcmoduleproxy.cpp \
-#kcmultidialog.cpp \
-#kpluginselector.cpp \
 
 SOURCES = \
 kfind.cpp \

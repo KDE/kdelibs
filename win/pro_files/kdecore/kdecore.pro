@@ -1,18 +1,16 @@
 TEMPLATE	= lib
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
 
 # needed to export library classes:
 DEFINES += MAKE_KDECORE_LIB
 
-#DEFINES += KPATH_NDEBUG
-
-win32:LIBS += $$QKWLIB/dcop$$KDELIB_SUFFIX $$QKWLIB/kdefx$$KDELIB_SUFFIX \
+LIBS += $$KDELIBDESTDIR/dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR/kdefx$$KDELIB_SUFFIX \
 	-lqassistantclient
 
 TARGET		= kdecore$$KDEBUG
 
-QMAKE_CXXFLAGS += /I$(QKW)/kdelibs/libltdl /I$(QKW)/kdelibs/kdecore/network
+INCLUDEPATH += $(KDELIBS)/libltdl $(KDELIBS)/kdecore/network
 
 system( bash kmoc )
 system( bash kdcopidl )
@@ -126,6 +124,9 @@ ksycoca_skel.cpp \
 kdebugdcopiface_stub.cpp \
 kdebugdcopiface_skel.cpp
 
-SOURCES += $(QKW)/qtext/qfixedwindowsstyle.cpp
+
+exists( custom_kdecore.pro ) {
+  include( custom_kdecore.pro )
+}
 
 HEADERS		=

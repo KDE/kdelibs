@@ -17,7 +17,8 @@ KW_CONFIG = release
 CONFIG -= debug
 CONFIG += release
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
+
 
 LIBS= #DONT BE DEPENDENT ON ANY OTHER LIBS
 
@@ -26,7 +27,6 @@ CONFIG -= debug
 # needed to export library classes:
 DEFINES += MAKE_KSTYLE_LIB MAKE_KDEFX_LIB
 
-#DESTDIR = $(QKW)/lib
 TARGET		= thinkeramik
 
 SOURCES = \

@@ -4,4 +4,3 @@ SUBDIRS += \
 interfaces \
 part
 
-#plugins

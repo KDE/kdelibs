@@ -1,20 +1,15 @@
 TEMPLATE	= app
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
 
-win32:LIBS += $$QKWLIB\dcop$$KDELIB_SUFFIX $$QKWLIB\kio$$KDELIB_SUFFIX
+LIBS += $$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR\kio$$KDELIB_SUFFIX
 
 # icon
-win32:LIBS+=$(QKW)/files/resources/kbuildsycoca.res
+LIBS+=$(KDELIBS)/win/resources/kbuildsycoca.res
 
-QMAKE_CXXFLAGS += /I$(QKW)/kdelibs/kded
-
-#system( moc kbuildsycoca.h -o moc/kbuildsycoca.moc )
-#system( moc vfolder_menu.h -o moc/vfolder_menu.moc )
+INCLUDEPATH += $(KDELIBS)/kded
 
 system( bash kmoc )
-
-#DEFINES += i18n=KLocale::translateQt
 
 TARGET		= kbuildsycoca
 

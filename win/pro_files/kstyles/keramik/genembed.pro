@@ -1,6 +1,7 @@
 TEMPLATE	= app
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
+
 
 win32 {
 	CONFIG +=console

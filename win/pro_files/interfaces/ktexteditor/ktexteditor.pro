@@ -1,15 +1,16 @@
 TEMPLATE	= lib
 DEFINES += MAKE_KTEXTEDITOR_LIB
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
 
-win32:LIBS += $$QKWLIB/kdecore$$KDELIB_SUFFIX $$QKWLIB/kdeui$$KDELIB_SUFFIX $$QKWLIB/kdefx$$KDELIB_SUFFIX \
-    $$QKWLIB\dcop$$KDELIB_SUFFIX $$QKWLIB\kparts$$KDELIB_SUFFIX \
-    $$QKWLIB\kio$$KDELIB_SUFFIX $$QKWLIB\kabc$$KDELIB_SUFFIX \
-    $$QKWLIB\kdewin32$$KDELIB_SUFFIX
+LIBS += $$KDELIBDESTDIR/kdecore$$KDELIB_SUFFIX \
+    $$KDELIBDESTDIR/kdeui$$KDELIB_SUFFIX $$KDELIBDESTDIR/kdefx$$KDELIB_SUFFIX \
+    $$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR\kparts$$KDELIB_SUFFIX \
+    $$KDELIBDESTDIR\kio$$KDELIB_SUFFIX $$KDELIBDESTDIR\kabc$$KDELIB_SUFFIX \
+    $$KDELIBDESTDIR\kdewin32$$KDELIB_SUFFIX
 
-INCLUDEPATH += $(QKW)/kdelibs/interfaces $(QKW)/kdelibs/interfaces/ktexteditor \
- $(QKW)/kdelibs/kabc
+INCLUDEPATH += $(KDELIBS)/interfaces $(KDELIBS)/interfaces/ktexteditor \
+ $(KDELIBS)/kabc
 
 TARGET		= ktexteditor$$KDEBUG
 

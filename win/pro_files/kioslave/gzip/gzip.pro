@@ -1,6 +1,6 @@
 include( ../common.pri )
 
-INCLUDEPATH += $(QKW)/3rdparty/zlib
+INCLUDEPATH += $(KDELIBS)/win/3rdparty/zlib
 
 TARGET		= kgzipfilter$$KDELIBDEBUG
 

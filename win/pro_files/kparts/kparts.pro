@@ -1,16 +1,17 @@
 TEMPLATE	= lib
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
+
 
 # needed to export library classes:
 DEFINES += MAKE_KPARTS_LIB
 
 TARGET		= kparts$$KDEBUG
 
-win32:LIBS += $$QKWLIB/kdecore$$KDELIB_SUFFIX $$QKWLIB/kdeui$$KDELIB_SUFFIX \
- $$QKWLIB/dcop$$KDELIB_SUFFIX $$QKWLIB/kio$$KDELIB_SUFFIX
+LIBS += $$KDELIBDESTDIR/kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR/kdeui$$KDELIB_SUFFIX \
+ $$KDELIBDESTDIR/dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR/kio$$KDELIB_SUFFIX
 
-QMAKE_CXXFLAGS += /I$(QKW)/kdelibs/kio/kfile
+INCLUDEPATH += $(KDELIBS)/kio/kfile
 
 system( bash kmoc )
 

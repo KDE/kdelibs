@@ -4,7 +4,8 @@ KW_CONFIG = release
 CONFIG -= debug
 CONFIG += release
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
+
 
 # needed to export library classes:
 DEFINES += MAKE_KDEFX_LIB

@@ -1,6 +1,6 @@
 TEMPLATE	= lib
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
 
 # needed to export library classes:
 DEFINES += MAKE_DCOP_LIB
@@ -16,7 +16,3 @@ dcopclient.cpp \
 dcopstub.cpp \
 dcopsignals.cpp
 
-#dcopserver.cpp \
-
-HEADERS		=
-#dcopclient.h

@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# copies all used .pro files from kdelibs/win/pro_files/ to kdelibs/
-# so they can be used to build kdelibs
-# (c) 2005, Jaroslaw Staniek
+# Copies all used .pro files from kdelibs/win/pro_files/ to kdelibs/
+# so they can be used to build kdelibs.
+# Note: only newer files are copied over older.
+# (c) 2005, Jaroslaw Staniek, js@iidea.pl
 
 [ -z "$KDELIBS" ] && echo "KDELIBS?" && exit 1
 
@@ -14,12 +15,14 @@ cd "$KDELIBS/$src"
 for pro in `find . -name \*.pro` ; do
 	dir=`dirname "$pro"`
 	if [ ! -d "$KDELIBS/$dir" ] ; then
-		echo "*SKIPPED* - no \$KDEDIR/$dir directory"
+		true
+#		echo "*SKIPPED* - no \$KDELIBS/$dir directory"
 	else
 		if [ ! "$pro" -nt "$dest/$pro" ] ; then
-			echo "*SKIPPED* $pro is not newer than destination"
+			true
+#			echo "*SKIPPED* $pro is not newer than destination in $KDELIBS"
 		else
-			echo "UPDATING \$KDEDIR/$pro"
+			echo "UPDATING \$KDELIBS/$pro"
 			cp $pro $dest/$pro
 		fi
 	fi

@@ -1,22 +1,21 @@
 TEMPLATE	= lib
 CONFIG += kde3lib #this is a kde module library
 
-include( $(QKW)/kwcommon.pro )
+include( $(KDELIBS)/win/common.pro )
 
 # needed to export library classes:
 DEFINES += MAKE_KATEPART_LIB
 
 TARGET		= katepart$$KDELIBDEBUG
 
-win32:LIBS += $$QKWLIB/katepartinterfaces$$KDELIB_SUFFIX \
-$$QKWLIB/ktexteditor$$KDELIB_SUFFIX $$QKWLIB/kdecore$$KDELIB_SUFFIX $$QKWLIB/kdeui$$KDELIB_SUFFIX \
-$$QKWLIB/kutils$$KDELIB_SUFFIX $$QKWLIB/kparts$$KDELIB_SUFFIX \
-$$QKWLIB/dcop$$KDELIB_SUFFIX $$QKWLIB/kio$$KDELIB_SUFFIX
+LIBS += $$KDELIBDESTDIR/katepartinterfaces$$KDELIB_SUFFIX \
+	$$KDELIBDESTDIR/ktexteditor$$KDELIB_SUFFIX $$KDELIBDESTDIR/kdecore$$KDELIB_SUFFIX \
+	$$KDELIBDESTDIR/kdeui$$KDELIB_SUFFIX \
+	$$KDELIBDESTDIR/kutils$$KDELIB_SUFFIX $$KDELIBDESTDIR/kparts$$KDELIB_SUFFIX \
+	$$KDELIBDESTDIR/dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR/kio$$KDELIB_SUFFIX
 
-#$$QKWLIB/kdeprint$$KDELIB_SUFFIX
-
-INCLUDEPATH += $(QKW)/kdelibs/interfaces $(QKW)/kdelibs/interfaces/kregexpeditor \
-	$(QKW)/kdelibs/kutils $(QKW)/kdelibs/kdeprint
+INCLUDEPATH += $(KDELIBS)/interfaces $(KDELIBS)/interfaces/kregexpeditor \
+	$(KDELIBS)/kutils $(KDELIBS)/kdeprint
 
 system( bash kmoc )
 system( bash kdcopidl )

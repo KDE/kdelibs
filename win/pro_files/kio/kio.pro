@@ -6,20 +6,20 @@ include( $(KDELIBS)/win/common.pro )
 # needed to export library classes:
 DEFINES += MAKE_KIO_LIB
 
-win32:LIBS += $$KDELIBDESTDIR\kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdeui$$KDELIB_SUFFIX \
+LIBS += $$KDELIBDESTDIR\kdecore$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdeui$$KDELIB_SUFFIX \
 	$$KDELIBDESTDIR\dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR\kdewin32$$KDELIB_SUFFIX \
-	win32:LIBS += $$KDELIBDESTDIR\zlib.lib
+	$$KDELIBDESTDIR\zlib.lib
 
 system( bash kmoc kio kfile misc )
 
 TARGET = kio$$KDEBUG
 
-INCLUDEPATH += $(QKW)/kdelibs/kio/kio $(QKW)/kdelibs/kio/misc $(QKW)/kdelibs/kio/bookmarks \
-  $(QKW)/kdelibs/kio/kssl \
-  $(QKW)/3rdparty/zlib $(QKW)/kdelibs/libltdl $(QKW)/kdelibs/interfaces \
-  $(QKW)/kdelibs/kio/kio/moc (QKW)/kdelibs/kio/misc/moc $(QKW)/kdelibs/kio/kfile/moc \
-  $(QKW)/kdelibs/kio/misc/moc \
-  $(QKW)/kdelibs/kio/kssl/moc $(QKW)/kdelibs/kwallet/client 
+INCLUDEPATH += $(KDELIBS)/kio/kio $(KDELIBS)/kio/misc $(KDELIBS)/kio/bookmarks \
+  $(KDELIBS)/kio/kssl \
+  $(KDELIBS)/win/3rdparty/zlib $(KDELIBS)/libltdl $(KDELIBS)/interfaces \
+  $(KDELIBS)/kio/kio/moc $(KDELIBS)/kio/misc/moc $(KDELIBS)/kio/kfile/moc \
+  $(KDELIBS)/kio/misc/moc \
+  $(KDELIBS)/kio/kssl/moc $(KDELIBS)/kwallet/client 
 
 system( cd kio && dcopidl2cpp observer.kidl )
 system( cd kio && dcopidl kdirnotify.h > kdirnotify.kidl && dcopidl2cpp --no-stub kdirnotify.kidl )

@@ -1,6 +1,6 @@
 include( ../common.pri )
 
-INCLUDEPATH += $(QKW)/3rdparty/bzip2
+INCLUDEPATH += $(KDELIBS)/win/3rdparty/bzip2
 
 TARGET		= kbzip2filter$$KDELIBDEBUG
 

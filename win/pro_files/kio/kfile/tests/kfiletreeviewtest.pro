@@ -9,19 +9,15 @@ kdebase_release:CONFIG += windows
 kdebase_release:QMAKE_MAKEFILE = Makefile.release
 
 
-
-
 TARGET		= kfiletreeviewtest
 
-win32:LIBS +=  $$KDELIBDESTDIR/kdefx$$KDELIB_SUFFIX \
+LIBS +=  $$KDELIBDESTDIR/kdefx$$KDELIB_SUFFIX \
   $$KDELIBDESTDIR/kio$$KDELIB_SUFFIX \
   $$KDELIBDESTDIR/kparts$$KDELIB_SUFFIX \
   $$KDELIBDESTDIR/dcop$$KDELIB_SUFFIX $$KDELIBDESTDIR/kio$$KDELIB_SUFFIX
 
-#INCLUDEPATH	+= $(QKW)/kdelibs/interfaces/kregexpeditor
-
 # icon
-win32:LIBS+=$(QKW)/files/resources/kfind.res
+LIBS+=$(KDELIBS)/win/resources/kfind.res
 
 system( bash kmoc )
 
