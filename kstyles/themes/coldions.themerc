@@ -1,12 +1,16 @@
 [Misc]
 Name=Cold Ions
+Name[ca]=Ions freds
 Name[da]=Kolde ioner
 Name[de]=Kalte Ionen
+Name[et]=Külmad ioonid
 Name[hu]=Fagyos ionok
 Name[sl]=Mrzli ioni
 Comment=Cold Ions unthemed style
+Comment[ca]=Estil sense tema "Ions freds".
 Comment[da]=Kolde ioner stil uden tema
 Comment[de]=Kalte Ionen (kein komplettes Design)
+Comment[et]=Külmad ioonid stiil
 Comment[hu]=Fagyos ionok - téma nélküli stílus
 Comment[no_NY]='Cold Ions'-stil utan tema
 Comment[pt]=Estilo Cold Ions
