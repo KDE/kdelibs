@@ -135,6 +135,8 @@ void KJSProxyImpl::clear() {
     Window *win = Window::retrieveWindow(m_part);
     if (win)
         win->clear( m_script->globalExec() );
+    delete m_script;
+    m_script = 0;
   }
 }
 
