@@ -36,6 +36,7 @@
 #include "css/cssstyleselector.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/cssproperties.h"
+#include "css/csshelper.h"
 #include "misc/loader.h"
 #include "misc/htmlhashes.h"
 #include "dom/dom_string.h"
@@ -222,7 +223,7 @@ void HTMLFrameElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_SRC:
-        url = attr->value();
+        url = khtml::parseURL(attr->val());
         break;
     case ATTR_NAME:
         name = attr->value();
