@@ -59,6 +59,7 @@
       <item> END </item>
       <item>require</item>
       <item> package </item>
+      <item> sub </item>
       <item> do </item>
       <item> __END__ </item>
       <item> __DATA__ </item>
@@ -270,6 +271,7 @@
       <item>srand</item>
       <item>stat</item>
       <item>study</item>
+      <item>sub</item>
       <item>substr</item>
       <item>symlink</item>
       <item>syscall</item>
@@ -322,13 +324,13 @@
         <RegExpr attribute="Keyword" context="#stay" String="^#!\/.*" />
         <RegExpr attribute="Keyword" context="data_handle" String="^__DATA__" />
         <RegExpr attribute="Keyword" context="#stay" String="^__END__" />
+        <RegExpr attribute="Keyword" context="sub_name_def" String="\s*sub\s+" />
         <keyword attribute="Keyword" context="#stay" String="keywords" />
         <keyword attribute="Operator" context="#stay" String="operators" />
         <keyword attribute="Function" context="#stay" String="functions" />
         <keyword attribute="Pragma" context="#stay" String="pragmas" />
         <RegExpr attribute="Comment" context="comment" String="#" />
         <RegExpr attribute="Pod" context="pod" String="^\=(?:head[1-6]|over|back|item|for|begin|end|pod)\s*.*" beginRegion="POD"/>
-        <RegExpr attribute="Keyword" context="sub_name_def" String="\s*sub\s+" />
 
         <HlCOct attribute="Octal" context="slash_safe_escape" />
         <HlCHex attribute="Hex" context="slash_safe_escape" />
