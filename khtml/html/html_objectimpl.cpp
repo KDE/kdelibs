@@ -85,33 +85,38 @@ void LiveConnectElementImpl::setLiveConnect(KParts::LiveConnectExtension * lc) {
         connect(lc, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), static_cast<LiveConnectElementImpl*>(this), SLOT(liveConnectEvent( const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
 }
 
-void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args) {
+void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args) 
+{
     if (timer->isActive())
         timer->stop();
-    if (event == "__evaluate")
-        script = (*args.begin()).second;
-    else {
-        script.sprintf("document.%s.%s(", getAttribute(ATTR_NAME).string().latin1(), event.latin1());
-        KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
-        for ( ; i != args.end(); i++) {
-            if (i != args.begin())
-                script += ",";
-            if ((*i).first == KParts::LiveConnectExtension::TypeString) {
-                script += "\"";
-                script += (*i).second;
-                script += "\"";
-            } else
-                script += (*i).second;
-        }
-        script += ")";
+
+    script.sprintf("%s(", event.latin1());
+    KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
+    for ( ; i != args.end(); i++) {
+        if (i != args.begin())
+            script += ",";
+        if ((*i).first == KParts::LiveConnectExtension::TypeString) {
+            script += "\"";
+            script += (*i).second;
+            script += "\"";
+        } else
+            script += (*i).second;
     }
+    script += ")";
+
     timer->start(0, true);
     kdDebug(6036) << "HTMLEmbedElementImpl::liveConnectEvent " << script << endl;
 }
 
 void LiveConnectElementImpl::timerDone() {
     KHTMLView* w = getDocument()->view();
-    w->part()->executeScript(script);
+    w->part()->executeScript(this, script);
+}
+
+void LiveConnectElementImpl::detach() {
+    setLiveConnect(0L);
+
+    HTMLElementImpl::detach();
 }
 
 // -------------------------------------------------------------------------
@@ -128,6 +133,14 @@ HTMLAppletElementImpl::~HTMLAppletElementImpl()
 NodeImpl::Id HTMLAppletElementImpl::id() const
 {
     return ID_APPLET;
+}
+
+KJavaApplet* HTMLAppletElementImpl::applet() const
+{
+    if (!m_render)
+        return 0L;
+
+    return static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget())->applet();
 }
 
 void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
@@ -187,8 +200,7 @@ void HTMLAppletElementImpl::attach()
 
 	args.insert( "baseURL", getDocument()->baseURL() );
         m_render = new RenderApplet(this, args);
-        KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget());
-        setLiveConnect(w->applet()->getLiveConnectExtension());
+        setLiveConnect(applet()->getLiveConnectExtension());
     }
     else
         // ### remove me. we should never show an empty applet, instead

@@ -32,6 +32,7 @@
 
 class KHTMLView;
 class QTimer;
+class KJavaApplet;
 
 // -------------------------------------------------------------------------
 namespace DOM {
@@ -49,12 +50,18 @@ public:
     bool put(const unsigned long, const QString &, const QString &);
     bool call(const unsigned long, const QString &, const QStringList &, KParts::LiveConnectExtension::Type &, unsigned long &, QString &);
     void unregister(const unsigned long);
+
+    virtual void detach();
+
 protected slots:
     void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
+
 protected:
     void setLiveConnect(KParts::LiveConnectExtension * lc);
+
 private slots:
     void timerDone();
+
 private:
     KParts::LiveConnectExtension *liveconnect;
     QTimer *timer;
@@ -75,6 +82,7 @@ public:
     virtual void parseAttribute(AttributeImpl *token);
     virtual void attach();
 
+    KJavaApplet* applet() const;
 protected:
     khtml::VAlign valign;
 };
