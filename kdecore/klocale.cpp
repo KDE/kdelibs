@@ -68,6 +68,7 @@ public:
 
   QString calendarType;
   KCalendarSystem * calendar;
+  QString first_language;
 };
 
 static KLocale *this_klocale = 0;
@@ -379,11 +380,18 @@ bool KLocale::isLanguageInstalled(const QString & language) const
 
 bool KLocale::setLanguage(const QString & language)
 {
-  bool bRes = isLanguageInstalled( language );
+  bool bRes = true;
+
+  if (d->first_language.isNull() || language != d->first_language)
+    bRes = isLanguageInstalled( language );
 
   if ( bRes )
     {
       m_language = language;
+
+      // remember our first time - it will be our true love
+      if (d->first_language.isNull())
+        d->first_language = language;
 
       doBindInit();
     }
