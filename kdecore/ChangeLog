@@ -1,3 +1,8 @@
+1998-07-16  Jochen Küpper  <jochen@uni-duesseldorf.de>
+
+	* kdebug.h (KASSERT): Fixed wrong defines for KASSERT
+	macros whith NDEBUG defined ( cond hasn't been there ).
+
 Fri Mar 27 16:49:49 1998    <weis@snoopy.rz.uni-frankfurt.de>
 
 	* kconfigbase.cpp (readEntry): Returns a copy
