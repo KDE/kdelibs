@@ -42,6 +42,7 @@
 
 #include <assert.h>
 
+#include <X11/Xlib.h>
 
 extern "C" {
    KDEDModule *create_kwalletd(const QCString &name) {
@@ -124,7 +125,8 @@ int KWalletD::open(const QString& wallet, uint wId) {
 	if (_firstUse && !wallets().contains(KWallet::Wallet::LocalWallet())) {
 	       	// First use wizard
 		KApplication::dcopClient()->suspend();
-		KWalletWizard *wiz = new KWalletWizard(QWidget::find(wId));
+		KWalletWizard *wiz = new KWalletWizard(0);
+		XSetTransientForHint(qt_xdisplay(), wiz->winId(), wId);
 		int rc = wiz->exec();
 		KApplication::dcopClient()->resume();
 		if (rc == QDialog::Accepted) {
@@ -193,19 +195,19 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		KWallet::Backend *b = new KWallet::Backend(wallet, isPath);
 		KPasswordDialog *kpd;
 		if ((isPath || QFile::exists(wallet)) || KWallet::Backend::exists(wallet)) {
-			kpd = new KPasswordDialog(KPasswordDialog::Password, false, 0, QWidget::find(w));
+			kpd = new KPasswordDialog(KPasswordDialog::Password, false, 0);
 			kpd->setPrompt(i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(appid).arg(wallet));
 			brandNew = false;
 			kpd->setButtonOKText(i18n("&Open"));
 		} else if (wallet == KWallet::Wallet::LocalWallet() ||
 				wallet == KWallet::Wallet::NetworkWallet()) {
 			// Auto create these wallets.
-			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0, QWidget::find(w));
+			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
 			kpd->setPrompt(i18n("The application '%1' has requested to open the KDE wallet. This is used to store sensitive data in a secure fashion.  Please enter a password to use with this wallet or cancel to deny the application's request.").arg(appid));
 			brandNew = true;
 			kpd->setButtonOKText(i18n("&Open"));
 		} else {
-			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0, QWidget::find(w));
+			kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
 			kpd->setPrompt(i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(appid).arg(wallet));
 			brandNew = true;
 			kpd->setButtonOKText(i18n("&Create"));
@@ -214,6 +216,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		kpd->setCaption(i18n("KDE Wallet Service"));
 		const char *p = 0L;
 		while (!b->isOpen()) {
+			XSetTransientForHint(qt_xdisplay(), kpd->winId(), w);
 			if (kpd->exec() == KDialog::Accepted) {
 				p = kpd->password();
 				int rc = b->open(QByteArray().duplicate(p, strlen(p)));
@@ -319,7 +322,7 @@ bool reclose = false;
 	if (!it.current()) {
 		handle = open(wallet, wId);
 		if (-1 == handle) {
-			KMessageBox::sorry(QWidget::find(wId), i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
+			KMessageBox::sorryWId(wId, i18n("Unable to open wallet. The wallet must be opened in order to change the password."), i18n("KDE Wallet Service"));
 			return;
 		}
 
@@ -333,9 +336,10 @@ bool reclose = false;
 	assert(w);
 
 	KPasswordDialog *kpd;
-	kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0, QWidget::find(wId));
+	kpd = new KPasswordDialog(KPasswordDialog::NewPassword, false, 0);
 	kpd->setPrompt(i18n("Please choose a new password for the wallet '%1'.").arg(wallet));
 	kpd->setCaption(i18n("KDE Wallet Service"));
+	XSetTransientForHint(qt_xdisplay(), kpd->winId(), wId);
 	if (kpd->exec() == KDialog::Accepted) {
 		const char *p = kpd->password();
 		if (p) {
@@ -344,12 +348,12 @@ bool reclose = false;
 			pa.duplicate(p, strlen(p));
 			int rc = w->close(pa);
 			if (rc < 0) {
-				KMessageBox::sorry(QWidget::find(wId), i18n("Error re-encrypting the wallet. Password was not changed."), i18n("KDE Wallet Service"));
+				KMessageBox::sorryWId(wId, i18n("Error re-encrypting the wallet. Password was not changed."), i18n("KDE Wallet Service"));
 				reclose = true;
 			} else {
 				rc = w->open(pa);
 				if (rc < 0) {
-					KMessageBox::sorry(QWidget::find(wId), i18n("Error reopening the wallet. Data may be lost."), i18n("KDE Wallet Service"));
+					KMessageBox::sorryWId(wId, i18n("Error reopening the wallet. Data may be lost."), i18n("KDE Wallet Service"));
 					reclose = true;
 				}
 			}
