@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.22  1998/09/01 20:21:25  kulow
+   I renamed all old qt header files to the new versions. I think, this looks
+   nicer (and gives the change in configure a sense :)
+
    Revision 1.21  1998/08/26 18:37:47  neerfeld
    bug fix for loadInternal;  changed email address
 	config = KApplication::getKApplication()->getConfig();
@@ -219,20 +223,16 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
   int index;
 
   if ( (index = name_list.find(name)) < 0){
-  
 
     QString full_path;
     QFileInfo finfo;
     
     pix = new QPixmap;
-    
-    if( name[0] == '/' ){
+    if( name.left(1) == "/" ){
       full_path = name;
     }
     else{
-
       QStrListIterator it( pixmap_dirs );
-      
       while ( it.current() ){
 	
 	full_path = it.current();
