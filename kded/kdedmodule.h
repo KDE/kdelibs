@@ -55,7 +55,6 @@ class Kded;
 class KDEDModule : public QObject, public DCOPObject
 {
   Q_OBJECT
-  K_DCOP
   friend class Kded;
 public:
   
