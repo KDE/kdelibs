@@ -393,6 +393,9 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   if (kurl.isMalformed())
       return false;
   m_url = kurl; // Store where to upload in saveToURL
+  // We haven't saved yet - provide a local file name
+  if ( m_file.isEmpty() )
+    m_file = tmpnam(0);
   return save(); // Save local file and upload local file
 }
 
