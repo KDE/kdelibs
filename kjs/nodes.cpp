@@ -777,11 +777,7 @@ Value FunctionCallNode::value(ExecState *exec) const
     return throwError(exec, TypeError, "Expression does not allow calls.");
   }
 
-  Value thisVal;
-  if (ref.isValid())
-    thisVal = ref.base();
-  else
-    thisVal = Null();
+  Value thisVal = ref.isValid() ? ref.base() : Null();
 
   if (thisVal.type() == ObjectType &&
       Object::dynamicCast(thisVal).inherits(&ActivationImp::info))
@@ -1148,11 +1144,8 @@ Node* AddNode::create(Node *t1, Node *t2, char op)
       (t2->type() == NumberType || t2->type() == BooleanType)) {
     double d = t2->toNumber(0);
     Node* n = new NumberNode(t1->toNumber(0) + (op == '+' ? d : -d));
-    // ### probably always count == 1
-    if (t1->deref())
-      delete t1;
-    if (t2->deref())
-      delete t2;
+    delete t1;
+    delete t2;
     return n;
   }
 
@@ -2103,7 +2096,7 @@ Completion ForNode::execute(ExecState *exec)
       if ((c.complType() == Break) && ls.contains(c.target()))
         return Completion(Normal, cval);
       if (c.complType() != Normal)
-      return c;
+        return c;
     }
     if (expr3) {
       v = expr3->value(exec);
