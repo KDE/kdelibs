@@ -106,8 +106,8 @@ struct CaretViewContext {
     int freqTimerId;		// caret blink frequency timer id
     int x, y;			// caret position in viewport coordinates
     				// (y specifies the top, not the baseline)
-    int height;			// height of caret in pixels
     int width;			// width of caret in pixels
+    int height;			// height of caret in pixels
     bool visible;		// true if currently visible.
     bool displayed;		// true if caret is to be displayed at all.
 
@@ -120,7 +120,7 @@ struct CaretViewContext {
      */
     int origX;
 
-    CaretViewContext() : freqTimerId(-1), x(0), y(0), height(16), visible(true),
+    CaretViewContext() : freqTimerId(-1), x(0), y(0), width(1), height(16), visible(true),
     	displayed(false), origX(0)
     {}
 };
@@ -2933,7 +2933,7 @@ static InlineFlowBox* generateDummyFlowBox(RenderArena *arena, RenderFlow *cb)
  * @param cb block which to create the flow for.
  * @return the constructed flow.
  */
-static RenderFlow *generateDummyBlock(RenderArena *arena, RenderObject *cb)
+static RenderFlow* generateDummyBlock(RenderArena *arena, RenderObject *cb)
 {
   RenderFlow *result = new(arena) RenderFlow(cb->element());
   result->setParent(cb->parent());
@@ -2970,7 +2970,7 @@ static RenderFlow *generateDummyBlock(RenderArena *arena, RenderObject *cb)
  *	there is no inline flow box containing this node. The containing block
  *	will still be set. If it is 0 too, @p node was invalid.
  */
-static InlineFlowBox *findFlowBox(DOM::NodeImpl *node, long offset,
+static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
 		RenderArena *arena, RenderFlow *&cb)
 {
   RenderObject *r = findRenderer(node);
