@@ -189,6 +189,7 @@ public:
 class RMB
 {
 public:
+  static void begin_rmb_action(KBookmarkMenu *);
   bool invalid( int val );
   KBookmark atAddress(const QString & address);
   void fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val );

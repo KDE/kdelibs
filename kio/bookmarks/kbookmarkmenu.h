@@ -77,7 +77,7 @@ class KBookmarkMenu : public QObject
 {
   Q_OBJECT
   friend class KBookmarkMenuNSImporter;
-  friend void begin_rmb_action(KBookmarkMenu *self);
+  friend class RMB;
 public:
   /**
    * Fills a bookmark menu

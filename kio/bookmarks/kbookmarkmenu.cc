@@ -204,7 +204,7 @@ static RMB* rmbSelf(KBookmarkMenu *m) { return KBookmarkMenuRMBAssoc::d(m); }
 
 // TODO check via dcop before making any changes to the bookmarks file???
 
-inline extern void begin_rmb_action(KBookmarkMenu *self)
+void RMB::begin_rmb_action(KBookmarkMenu *self)
 {
   RMB *s = rmbSelf(self);
   s->recv = self;
@@ -401,27 +401,27 @@ void RMB::hidePopup() {
 
 void KBookmarkMenu::fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val )
 { 
-   begin_rmb_action(this); rmbSelf(this)->fillContextMenu(contextMenu, address, val);
-   emit aboutToShowContextMenu( rmbSelf(this)->atAddress(address), contextMenu );
+  RMB::begin_rmb_action(this); rmbSelf(this)->fillContextMenu(contextMenu, address, val);
+  emit aboutToShowContextMenu( rmbSelf(this)->atAddress(address), contextMenu );
 }
 
 void KBookmarkMenu::slotRMBActionEditAt( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionEditAt( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionEditAt( val ); }
 
 void KBookmarkMenu::slotRMBActionProperties( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionProperties( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionProperties( val ); }
 
 void KBookmarkMenu::slotRMBActionInsert( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionInsert( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionInsert( val ); }
 
 void KBookmarkMenu::slotRMBActionRemove( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionRemove( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionRemove( val ); }
 
 void KBookmarkMenu::slotRMBActionCopyLocation( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionCopyLocation( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionCopyLocation( val ); }
 
 void KBookmarkMenu::slotRMBActionOpen( int val )
-{ begin_rmb_action(this); rmbSelf(this)->slotRMBActionOpen( val ); }
+{ RMB::begin_rmb_action(this); rmbSelf(this)->slotRMBActionOpen( val ); }
 
 void KBookmarkMenu::slotBookmarksChanged( const QString & groupAddress )
 {
