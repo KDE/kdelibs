@@ -23,7 +23,7 @@
 #include <qgroupbox.h>
 #include <qlistbox.h>
 
-class QLineEdit;
+class KLineEdit;
 class QPushButton;
 
 /**
@@ -38,6 +38,13 @@ class KEditListBox : public QGroupBox
 {
    Q_OBJECT
    public:
+
+      /**
+       * Enumeration of the buttons, the listbox offers. Specify them in the
+       * constructor in the buttons parameter.
+       */
+      enum Button { Add = 1, Remove = 2, UpDown = 4, All = Add|Remove|UpDown };
+
       /**
        * Create an editable listbox.
        *
@@ -50,14 +57,17 @@ class KEditListBox : public QGroupBox
        * it will be checked if you press the Add-button. It is not
        * possible to enter items twice into the listbox.
        */
-      KEditListBox(QWidget *parent = 0, const char *name = 0, bool checkAtEntering=false);
+      KEditListBox(QWidget *parent = 0, const char *name = 0,
+		   bool checkAtEntering=false, int buttons = All );
       /**
        * Create an editable listbox.
        *
        * The same as the other constructor, additionally it takes
        * @title, which will be the title of the frame around the listbox.
        */
-      KEditListBox(const QString& title, QWidget *parent = 0, const char *name = 0, bool checkAtEntering=false);
+      KEditListBox(const QString& title, QWidget *parent = 0,
+		   const char *name = 0, bool checkAtEntering=false,
+		   int buttons = All );
       virtual ~KEditListBox();
 
       //do we need this ?
@@ -124,15 +134,16 @@ class KEditListBox : public QGroupBox
       void enableAddButton(const QString& text);
 
    protected:
-      //this is called in both ctors, to avoid code duplication
-      void init();
       //should they be private ?
       //I don't think so, at least not the listbo
       QListBox *m_listBox;
       QPushButton *servUpButton, *servDownButton;
       QPushButton *servNewButton, *servRemoveButton;
-      QLineEdit *m_lineEdit;
+      KLineEdit *m_lineEdit;
    private:
+      //this is called in both ctors, to avoid code duplication
+      void init( bool checkAtEntering, int buttons );
+
       //our lovely private d-pointer
       class PrivateData;
       PrivateData *d;
