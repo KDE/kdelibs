@@ -399,6 +399,8 @@ void ConfigPage::slotStandard()
 
   item->setStandard( true );
   mCurrentManager->setStandardResource( item->resource() );
+
+  emit changed( true );
 }
 
 void ConfigPage::slotSelectionChanged()
