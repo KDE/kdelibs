@@ -158,39 +158,40 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       exec_blind( name, arg_list);
       return true;
    }
-   if ((fun == "start_service_by_name(QString,QString)") ||
-       (fun == "start_service_by_desktop_path(QString,QString)")||
-       (fun == "start_service_by_desktop_name(QString,QString)"))
+   if ((fun == "start_service_by_name(QString,QStringList)") ||
+       (fun == "start_service_by_desktop_path(QString,QStringList)")||
+       (fun == "start_service_by_desktop_name(QString,QStringList)"))
    {
       QDataStream stream(data, IO_ReadOnly);
 
       QString serviceName;
-      QString filename;
+      QStringList urls;
       DCOPresult.result = -1;
       DCOPresult.dcopName = 0;
       DCOPresult.error = QString::null;
-      stream >> serviceName >> filename;
+      DCOPresult.pid = 0;
+      stream >> serviceName >> urls;
       bool finished;
-      if (fun == "start_service_by_name(QString,QString)")
+      if (fun == "start_service_by_name(QString,QStringList)")
       {
          kdDebug(7016) << "KLauncher: Got start_service_by_name('" << serviceName << "', ...)" << endl;
-         finished = start_service_by_name(serviceName, filename);
+         finished = start_service_by_name(serviceName, urls);
       }
-      else if (fun == "start_service_by_desktop_path(QString,QString)")
+      else if (fun == "start_service_by_desktop_path(QString,QStringList)")
       {
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_path('" << serviceName << "', ...)" << endl;
-         finished = start_service_by_desktop_path(serviceName, filename);
+         finished = start_service_by_desktop_path(serviceName, urls);
       }
       else
       {
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_name('" << serviceName << "', ...)" << endl;
-         finished = start_service_by_desktop_name(serviceName, filename);
+         finished = start_service_by_desktop_name(serviceName, urls);
       }
       if (!finished)
       {
          replyType = "serviceResult";
          QDataStream stream2(replyData, IO_WriteOnly);
-         stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error;
+         stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error << DCOPresult.pid;
       }
       return true;
    }
@@ -366,12 +367,14 @@ KLauncher::requestDone(KLaunchRequest *request)
       DCOPresult.result = 0;
       DCOPresult.dcopName = request->dcop_name;
       DCOPresult.error = QString::null;
+      DCOPresult.pid = request->pid;
    }
    else
    {
       DCOPresult.result = 1;
       DCOPresult.dcopName = "";
       DCOPresult.error = i18n("KInit could not launch '%1'").arg(request->name);
+      DCOPresult.pid = 0;
    }
    if (request->transaction)
    {
@@ -379,7 +382,7 @@ KLauncher::requestDone(KLaunchRequest *request)
       QCString replyType;
       replyType = "serviceResult";
       QDataStream stream2(replyData, IO_WriteOnly);
-      stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error;
+      stream2 << DCOPresult.result << DCOPresult.dcopName << DCOPresult.error << DCOPresult.pid;
       dcopClient()->endTransaction( request->transaction,
                                     replyType, replyData);
       requestList.removeRef( request );
@@ -449,7 +452,7 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
 
 
 bool
-KLauncher::start_service_by_name(const QString &serviceName, const QString &filename)
+KLauncher::start_service_by_name(const QString &serviceName, const QStringList &urls)
 {
    KService::Ptr service = 0;
    // Find service
@@ -460,11 +463,11 @@ KLauncher::start_service_by_name(const QString &serviceName, const QString &file
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
       return false;
    }
-   return start_service(service, filename);
+   return start_service(service, urls);
 }
 
 bool
-KLauncher::start_service_by_desktop_path(const QString &serviceName, const QString &filename)
+KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStringList &urls)
 {
    KService::Ptr service = 0;
    // Find service
@@ -483,11 +486,11 @@ KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStri
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
       return false;
    }
-   return start_service(service, filename);
+   return start_service(service, urls);
 }
 
 bool
-KLauncher::start_service_by_desktop_name(const QString &serviceName, const QString &filename)
+KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStringList &urls)
 {
    KService::Ptr service = 0;
    // Find service
@@ -498,12 +501,13 @@ KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStri
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
       return false;
    }
-   return start_service(service, filename);
+   return start_service(service, urls);
 }
 
 bool
-KLauncher::start_service(KService::Ptr service, const QString &filename)
+KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool blind)
 {
+   QStringList urls = _urls;
    if (!service->isValid())
    {
       DCOPresult.result = ENOEXEC;
@@ -512,7 +516,27 @@ KLauncher::start_service(KService::Ptr service, const QString &filename)
    }
    KLaunchRequest *request = new KLaunchRequest;
 
-   createArgs(request, service, filename);
+   if ((urls.count() > 1) && !allowMultipleFiles(service))
+   {
+      // We need to launch the application N times. That sucks.
+      // We ignore the result for application 2 to N.
+      // For the first file we launch the application in the
+      // usual way. The reported result is based on this 
+      // application.
+      QStringList::ConstIterator it = urls.begin();
+      for(++it;
+          it != urls.end();
+          ++it)
+      {
+         QStringList singleUrl;
+         singleUrl.append(*it);
+         start_service( service, singleUrl, true);
+      }
+      QString firstURL = *(urls.begin());
+      urls.clear();
+      urls.append(firstURL);
+   }
+   createArgs(request, service, urls);
 
    // We must have one argument at least!
    if (!request->arg_list.count())
@@ -537,7 +561,10 @@ KLauncher::start_service(KService::Ptr service, const QString &filename)
    request->transaction = 0;
 
    // Request will be handled later.
-   request->transaction = dcopClient()->beginTransaction();
+   if (!blind)
+   {
+      request->transaction = dcopClient()->beginTransaction();
+   }
    queueRequest(request);
    return true;
 }
@@ -585,10 +612,22 @@ KLauncher::slotDequeue()
    bProcessingQueue = false;
 }
 
+bool 
+KLauncher::allowMultipleFiles(const KService::Ptr service)
+{
+  QString exec = service->exec();
+
+  // Can we pass multiple files on the command line or do we have to start the application for every single file ?
+  if ( exec.find( "%F" ) != -1 || exec.find( "%U" ) != -1 || exec.find( "%N" ) != -1 ||
+       exec.find( "%D" ) != -1 )
+    return true;
+  else
+    return false;
+}
 
 void
 KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
-                       const QString &url)
+                       const QStringList &urls)
 {
   QString exec = service->exec();
   bool b_local_app = false;
@@ -601,15 +640,7 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
   if ( exec.find( "%f" ) == -1 && exec.find( "%u" ) == -1 && exec.find( "%n" ) == -1 &&
       exec.find( "%d" ) == -1 && exec.find( "%F" ) == -1 && exec.find( "%U" ) == -1 &&
       exec.find( "%N" ) == -1 && exec.find( "%D" ) == -1 )
-    exec += " %f";
-
-#if 0
-  // Can we pass multiple files on the command line or do we have to start the application for every single file ?
-  bool b_allow_multiple = false;
-  if ( exec.find( "%F" ) != -1 || exec.find( "%U" ) != -1 || exec.find( "%N" ) != -1 ||
-       exec.find( "%D" ) != -1 )
-    b_allow_multiple = true;
-#endif
+    exec += " %F";
 
   // Put args in request->arg_list;
   {
@@ -649,34 +680,38 @@ KLauncher::createArgs( KLaunchRequest *request, const KService::Ptr service ,
   // Desktop-file
   replaceArg(request->arg_list, "%k", QFile::encodeName(service->desktopEntryPath()));
 
-  if (url.isEmpty())
+  for(QStringList::ConstIterator it = urls.begin();
+      it != urls.end();
+      ++it)
   {
-    removeArg(request->arg_list, "%f");
-    removeArg(request->arg_list, "%n");
-    removeArg(request->arg_list, "%d");
-    removeArg(request->arg_list, "%u");
-    removeArg(request->arg_list, "%F");
-    removeArg(request->arg_list, "%N");
-    removeArg(request->arg_list, "%D");
-    removeArg(request->arg_list, "%U");
+    QString url = *it;
+    KURL kurl = url;
+    
+    QCString f ( QFile::encodeName(kurl.path( -1 )) );
+    QCString d ( QFile::encodeName(kurl.directory()) );
+    QCString n ( QFile::encodeName(kurl.filename()) );
+
+    replaceArg(request->arg_list, "%f", f);
+    replaceArg(request->arg_list, "%F", f, "%F");
+
+    replaceArg(request->arg_list, "%n", n);
+    replaceArg(request->arg_list, "%N", n, "%N");
+  
+    replaceArg(request->arg_list, "%d", d);
+    replaceArg(request->arg_list, "%D", d, "%D");
+
+    replaceArg(request->arg_list, "%u", url.ascii());
+    replaceArg(request->arg_list, "%U", url.ascii(), "%U");
   }
 
-  KURL kurl = url;
-  QCString f ( QFile::encodeName(kurl.path( -1 )) );
-  QCString d ( QFile::encodeName(kurl.directory()) );
-  QCString n ( QFile::encodeName(kurl.filename()) );
-
-  replaceArg(request->arg_list, "%f", f);
-  replaceArg(request->arg_list, "%F", f);
-
-  replaceArg(request->arg_list, "%n", n);
-  replaceArg(request->arg_list, "%N", n);
-
-  replaceArg(request->arg_list, "%d", d);
-  replaceArg(request->arg_list, "%D", d);
-
-  replaceArg(request->arg_list, "%u", url.ascii());
-  replaceArg(request->arg_list, "%U", url.ascii());
+  removeArg(request->arg_list, "%f");
+  removeArg(request->arg_list, "%n");
+  removeArg(request->arg_list, "%d");
+  removeArg(request->arg_list, "%u");
+  removeArg(request->arg_list, "%F");
+  removeArg(request->arg_list, "%N");
+  removeArg(request->arg_list, "%D");
+  removeArg(request->arg_list, "%U");
 }
 
 void

@@ -76,6 +76,7 @@ struct serviceResult
   int result;        // 0 means success. > 0 means error (-1 means pending)
   QCString dcopName; // Contains DCOP name on success
   QString error;     // Contains error description on failure.
+  pid_t pid;
 };
 
 class KLauncher : public KUniqueApplication
@@ -96,13 +97,15 @@ protected:
 
    void setLaunchEnv(const QCString &name, const QCString &value);
    void exec_blind(const QCString &name, const QValueList<QCString> &arg_list);
-   bool start_service(KService::Ptr service, const QString &filename);
-   bool start_service_by_name(const QString &serviceName, const QString &filename);
-   bool start_service_by_desktop_path(const QString &serviceName, const QString &filename);
-   bool start_service_by_desktop_name(const QString &serviceName, const QString &filename);
+   bool start_service(KService::Ptr service, const QStringList &urls, bool blind = false);
+   bool start_service_by_name(const QString &serviceName, const QStringList &urls);
+   bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls);
+   bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls);
+
+   bool allowMultipleFiles(const KService::Ptr service);
 
    void createArgs( KLaunchRequest *request, const KService::Ptr service,
-                    const QString &url);
+                    const QStringList &url);
 
    void replaceArg( QValueList<QCString> &args, const QCString &target, 
                     const QCString &replace, const char *replacePrefix = 0);
