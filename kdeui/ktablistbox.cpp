@@ -509,7 +509,6 @@ void KTabListBox::changeItem(const char* aStr, int row)
   sepStr[1] = '\0';
 
   item = itemList[row];
-  debug("row %d",row);
   pos = strtok(str, sepStr);
   for (i=0; pos && *pos && i<numCols(); i++)
   {
