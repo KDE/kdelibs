@@ -88,6 +88,7 @@ KCustomMenuEditor::KCustomMenuEditor(QWidget *parent)
    buttonBox->addButton(i18n("Remove"), this, SLOT(slotRemoveItem()));
    buttonBox->addButton(i18n("Move Up"), this, SLOT(slotMoveUp()));
    buttonBox->addButton(i18n("Move Down"), this, SLOT(slotMoveDown()));
+   buttonBox->layout();
 }
 
 void 
