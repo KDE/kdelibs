@@ -37,6 +37,8 @@
 
 using namespace KIO;
 
+#define MAX_IPC_SIZE (1024*32)
+
 QString testLogFile( const QString& _filename );
 
 extern "C" { int kdemain(int argc, char **argv); }
@@ -132,12 +134,12 @@ void FileProtocol::get( const QString& path, const QString& /*query*/, bool /* r
     time_t t_start = time( 0L );
     time_t t_last = t_start;
 
-    char buffer[ 4090 ];
+    char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
 
-    while( !feof( f ) )
+    while( !feof( f ) && !ferror(f) )
 	{
-	    int n = fread( buffer, 1, 2048, f );
+	    int n = fread( buffer, 1, MAX_IPC_SIZE, f );
             if (n == -1)
             {
                error( KIO::ERR_COULD_NOT_READ, path);
@@ -373,12 +375,12 @@ void FileProtocol::copy( const QString &src, const QString &dest,
     time_t t_start = time( 0L );
     time_t t_last = t_start;
 
-    char buffer[ 4090 ];
+    char buffer[ MAX_IPC_SIZE ];
     QByteArray array;
 
     while( !feof( f ) )
 	{
-	    int n = fread( buffer, 1, 2048, f );
+	    int n = fread( buffer, 1, MAX_IPC_SIZE, f );
 
 	    // delay loop
 // 	    for ( int ij = 0; ij < 500000; ij++ );
