@@ -154,15 +154,15 @@ QValueList<KPluginInfo> KPluginSelectionWidget::kpartsPluginInfos() const
 		QStringList desktopfilenames = d->instance->dirs()->findAllResources(
 				"data", d->instance->instanceName() +
 				"/kpartplugins/*.desktop", true, false );
-		KConfigGroup cfgGroup( d->instance->config(), "KParts Plugins" );
+		KConfigGroup * cfgGroup = new KConfigGroup( d->instance->config(), "KParts Plugins" );
 		for( QStringList::ConstIterator it = desktopfilenames.begin();
 				it != desktopfilenames.end(); ++it )
 		{
 			KPluginInfo info( *it );
-			info.setPluginLoaded( cfgGroup.readBoolEntry( info.pluginname() +
-						"Enabled", false ) ); //FIXME default value
+			info.load( cfgGroup );
 			infolist += info;
 		}
+		delete cfgGroup;
 	}
 	return infolist;
 }
@@ -200,7 +200,7 @@ void KPluginSelectionWidget::init( const QValueList<KPluginInfo> & plugininfos,
 			item->setText( 2, ( *it ).author()  );
 			item->setText( 3, ( *it ).version() );
 			item->setText( 3, ( *it ).license() );
-			item->setOn( ( *it ).pluginLoaded() );
+			item->setOn( ( *it ).pluginEnabled() );
 			d->pluginInfoMap.insert( item, *it );
 		}
 	}
@@ -219,7 +219,7 @@ bool KPluginSelectionWidget::pluginIsLoaded( const QString & pluginname ) const
 	for( QMap<QCheckListItem*, KPluginInfo>::ConstIterator it =
 			d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
 		if( it.data().pluginname() == pluginname )
-			return it.data().pluginLoaded();
+			return it.data().pluginEnabled();
 	return false;
 }
 
@@ -325,6 +325,8 @@ void KPluginSelectionWidget::clientChanged( bool didchange )
 void KPluginSelectionWidget::executed( QListViewItem * item )
 {
 	kdDebug( 702 ) << k_funcinfo << endl;
+	if( item == 0 )
+		return;
 	if( item->rtti() != 1 ) //check for a QCheckListItem
 		return;
 
@@ -353,9 +355,9 @@ void KPluginSelectionWidget::load()
 	for( QMap<QCheckListItem*, KPluginInfo>::Iterator it =
 			d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
 	{
-		bool checked = d->config->readBoolEntry( ( *it ).pluginname() + "Enabled", false ); // FIXME default value
-		it.data().setPluginLoaded( checked );
-		it.key()->setOn( checked );
+		KPluginInfo * info = &it.data();
+		info->load( d->config );
+		it.key()->setOn( info->pluginEnabled() );
 	}
 	updateConfigPage( d->currentplugininfo, d->currentchecked );
 	// TODO: update changed state
@@ -368,11 +370,14 @@ void KPluginSelectionWidget::save()
 	for( QMap<QCheckListItem*, KPluginInfo>::Iterator it =
 			d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
 	{
+		KPluginInfo * info = &it.data();
 		bool checked = it.key()->isOn();
-		d->config->writeEntry( ( *it ).pluginname() + "Enabled", checked );
-		it.data().setPluginLoaded( checked );
+		info->setPluginEnabled( checked );
+		info->save( d->config );
 	}
 	updateConfigPage( d->currentplugininfo, d->currentchecked );
+	d->config->sync();
+	d->changed = 0;
 	emit changed( false );
 }
 
@@ -383,9 +388,8 @@ void KPluginSelectionWidget::defaults()
 	for( QMap<QCheckListItem*, KPluginInfo>::Iterator it =
 			d->pluginInfoMap.begin(); it != d->pluginInfoMap.end(); ++it )
 	{
-		bool checked = false; //FIXME: need the real default here
-		it.data().setPluginLoaded( checked );
-		it.key()->setOn( checked );
+		it.data().defaults();
+		it.key()->setOn( it.data().pluginEnabled() );
 	}
 	updateConfigPage( d->currentplugininfo, d->currentchecked );
 	// TODO: update changed state

@@ -26,6 +26,8 @@
 #include <qvaluelist.h>
 #include <kservice.h>
 
+class KConfigGroup;
+
 /**
  * Information about a plugin.
  *
@@ -57,6 +59,7 @@ class KPluginInfo
 		   Category=playlist
 		   Require=plugin1,plugin3
 		   License=GPL
+		   EnabledByDefault=true
 		   \endverbatim
 		 * The first three entries in the "Desktop Entry" group always need to be
 		 * present. The Type is always "Plugin".
@@ -64,6 +67,10 @@ class KPluginInfo
 		 * In the "X-KDE Plugin Info" section you may add further entries which
 		 * will be available using @ref property(). The Website,Category,Require
 		 * keys are optional.
+		 * For EnabledByDefault look at setPluginEnabledByDefault and/or
+		 * pluginEnabledByDefault.
+		 *
+		 * @param filename  The filename of the .desktop file.
 		 */
 		KPluginInfo( const QString & filename );
 
@@ -94,19 +101,24 @@ class KPluginInfo
 		 * Set whether the plugin is currently loaded.
 		 *
 		 * You might need to reimplement this method for special needs.
+		 *
+		 * @see pluginEnabled()
 		 */
-		virtual void setPluginLoaded( bool loaded );
+		virtual void setPluginEnabled( bool enabled );
 
 		/**
 		 * @return Whether the plugin is currently loaded.
 		 *
 		 * You might need to reimplement this method for special needs.
+		 *
+		 * @see setPluginEnabled()
 		 */
-		virtual bool pluginLoaded() const;
+		virtual bool pluginEnabled() const;
 
 		/**
 		 * @return The default value whether the plugin is enabled or not.
-		 * Defaults to false.
+		 * Defaults to the value set in the desktop file, or if that isn't set
+		 * to false.
 		 *
 		 * @see setPluginEnabledByDefault( bool )
 		 */
@@ -207,6 +219,27 @@ class KPluginInfo
 		 *         @ref KCModule
 		 */
 		const QValueList<KService::Ptr> & services() const;
+
+		/**
+		 * Save state of the plugin - enabled or not. This function is provided
+		 * for reimplementation if you need to save somewhere else.
+		 * @param config    The KConfigGroup holding the information whether
+		 *                  plugin is enabled.
+		 */
+		virtual void save( KConfigGroup * config );
+
+		/**
+		 * Load the state of the plugin - enabled or not. This function is provided
+		 * for reimplementation if you need to save somewhere else.
+		 * @param config    The KConfigGroup holding the information whether
+		 *                  plugin is enabled.
+		 */
+		virtual void load( KConfigGroup * config );
+
+		/**
+		 * Restore defaults (enabled or not).
+		 */
+		virtual void defaults();
 
 	private:
 		QMap<QString,QString> m_propertymap;

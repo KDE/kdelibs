@@ -21,11 +21,14 @@
 #include <ksimpleconfig.h>
 #include <ktrader.h>
 #include <kdebug.h>
+#include <kconfigbase.h>
 
 class KPluginInfo::KPluginInfoPrivate
 {
 	public:
-		KPluginInfoPrivate() : hidden( false ), enabledbydefault( false )
+		KPluginInfoPrivate()
+			: hidden( false )
+			, enabledbydefault( false )
 		{}
 
 		QString specfile; // the filename of the file containing all the info
@@ -87,6 +90,7 @@ KPluginInfo::KPluginInfo( const QString & filename )
 	d->services = KTrader::self()->query( "KCModule", "'" + pluginname() + "' in [X-KDE-KCDParents]" );
 	//d->services = KTrader::self()->query( "KCModule", "'" + pluginname() + "' == [X-KDE-KCDParents]" );
 	kdDebug( 702 ) << "found " << d->services.count() << " offers for " << pluginname() << endl;
+	d->enabledbydefault = file.readBoolEntry( "EnabledByDefault", d->enabledbydefault );
 }
 
 KPluginInfo::KPluginInfo()
@@ -103,8 +107,8 @@ KPluginInfo::KPluginInfo( const KPluginInfo & tocp )
 	d->specfile = tocp.d->specfile;
 	d->requirements = tocp.d->requirements;
 	d->hidden = tocp.d->hidden;
-	d->enabledbydefault = tocp.d->enabledbydefault;
 	d->services = tocp.d->services;
+	d->enabledbydefault = tocp.d->enabledbydefault;
 }
 
 const KPluginInfo & KPluginInfo::operator=( const KPluginInfo & tocp )
@@ -116,8 +120,8 @@ const KPluginInfo & KPluginInfo::operator=( const KPluginInfo & tocp )
 	d->specfile = tocp.d->specfile;
 	d->requirements = tocp.d->requirements;
 	d->hidden = tocp.d->hidden;
-	d->enabledbydefault = tocp.d->enabledbydefault;
 	d->services = tocp.d->services;
+	d->enabledbydefault = tocp.d->enabledbydefault;
 	return *this;
 }
 
@@ -131,24 +135,28 @@ bool KPluginInfo::isHidden() const
 	return d->hidden;
 }
 
-void KPluginInfo::setPluginLoaded( bool loaded )
+void KPluginInfo::setPluginEnabled( bool loaded )
 {
+	kdDebug( 702 ) << k_funcinfo << endl;
 	m_loaded = loaded;
 }
 
-bool KPluginInfo::pluginLoaded() const
+bool KPluginInfo::pluginEnabled() const
 {
+	kdDebug( 702 ) << k_funcinfo << endl;
 	return m_loaded;
 }
 
 bool KPluginInfo::pluginEnabledByDefault() const
 {
+	kdDebug( 702 ) << k_funcinfo << endl;
 	return d->enabledbydefault;
 }
 
-void KPluginInfo::setPluginEnabledByDefault( bool ebd )
+void KPluginInfo::setPluginEnabledByDefault( bool enabled )
 {
-	d->enabledbydefault = ebd;
+	kdDebug( 702 ) << k_funcinfo << endl;
+	d->enabledbydefault = enabled;
 }
 
 const QString & KPluginInfo::specfile() const
@@ -166,4 +174,22 @@ const QValueList<KService::Ptr> & KPluginInfo::services() const
 	return d->services;
 }
 
-// vim: sw=4 ts=4
+void KPluginInfo::save( KConfigGroup * config )
+{
+	kdDebug( 702 ) << k_funcinfo << endl;
+	config->writeEntry( pluginname() + "Enabled", pluginEnabled() );
+}
+
+void KPluginInfo::load( KConfigGroup * config )
+{
+	kdDebug( 702 ) << k_funcinfo << endl;
+	setPluginEnabled( config->readBoolEntry( pluginname() + "Enabled", pluginEnabledByDefault() ) );
+}
+
+void KPluginInfo::defaults()
+{
+	kdDebug( 702 ) << k_funcinfo << endl;
+	setPluginEnabled( pluginEnabledByDefault() );
+}
+
+// vim: sw=4 ts=4 noet
