@@ -659,7 +659,7 @@ void KAboutContainerBase::setImageFrame( bool state )
   {
     if( state == true )
     {
-      mImageFrame->setFrameStyle( QFrame::Panel | QFrame::Plain );
+      mImageFrame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
       mImageFrame->setLineWidth(1);
     }
     else
