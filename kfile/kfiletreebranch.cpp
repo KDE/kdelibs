@@ -69,7 +69,7 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
 
    connect( this, SIGNAL( deleteItem( KFileItem* )),
 	    this,   SLOT( slotDeleteItem( KFileItem* )));
-   
+
    connect( this, SIGNAL( canceled() ),
             this,   SLOT( slotCanceled() ));
 }
@@ -215,10 +215,10 @@ void KFileTreeBranch::slCompleted()
 	    /* This happens if there is no child at all */
 	    kdDebug( 1201 ) << "No children to recuse" << endl;
 	 }
-	 else
-	 {
-	    KFileItem *fi = m_currParent->fileItem();
-	 }
+// 	 else
+// 	 {
+// 	    KFileItem *fi = m_currParent->fileItem();
+// 	 }
 
       }
 

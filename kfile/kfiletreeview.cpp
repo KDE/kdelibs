@@ -162,7 +162,7 @@ void KFileTreeView::contentsDragLeaveEvent( QDragLeaveEvent * )
 
 }
 
-void KFileTreeView::contentsDropEvent( QDropEvent *ev )
+void KFileTreeView::contentsDropEvent( QDropEvent * /*ev*/ )
 {
 
     m_autoOpenTimer->stop();
@@ -174,7 +174,7 @@ void KFileTreeView::contentsDropEvent( QDropEvent *ev )
     }
     else
     {
-       KFileTreeViewItem *selection = currentKFileTreeViewItem();
+        //KFileTreeViewItem *selection = currentKFileTreeViewItem();
        // selection->drop( ev );
     }
 
@@ -240,7 +240,7 @@ QDragObject * KFileTreeView::dragObject()
         if ( item->isSelected() || item == current ) {
             urls.append( static_cast<KFileTreeViewItem*>( item )->url() );
         }
-        
+
         if ( !item->nextSibling() )
             item = item->firstChild();
         else
@@ -311,7 +311,7 @@ void KFileTreeView::slotExecuted( QListViewItem *item )
 }
 
 
-void KFileTreeView::slotMouseButtonPressed(int _button, QListViewItem* _item, 
+void KFileTreeView::slotMouseButtonPressed(int _button, QListViewItem* _item,
                                            const QPoint&, int col)
 {
    KFileTreeViewItem * item = static_cast<KFileTreeViewItem*>(_item);
@@ -397,7 +397,7 @@ KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
 {
    KFileTreeBranch *branch = 0;
    QPtrListIterator<KFileTreeBranch> it( m_branches );
-   
+
    while ( (branch = it.current()) != 0 ) {
       ++it;
       QString bname = branch->name();
@@ -408,7 +408,7 @@ KFileTreeBranch *KFileTreeView::branch( const QString& searchName )
 	 return( branch );
       }
    }
-   return ( 0L ); 
+   return ( 0L );
 }
 
 bool KFileTreeView::removeBranch( const KFileTreeBranch *branch )
@@ -567,16 +567,16 @@ KFileTreeViewItem *KFileTreeView::findItem( KFileTreeBranch* brnch, const QStrin
    if( brnch )
    {
       KURL url = brnch->rootUrl();
-      
+
       if( ! relUrl.isEmpty() && relUrl != QString::fromLatin1("/") )
       {
 	 QString partUrl( relUrl );
-      
+
 	 if( partUrl.endsWith("/"))
 	    partUrl.truncate( relUrl.length()-1 );
-      
+
 	 url.addPath( partUrl );
-      
+
 	 kdDebug(1201) << "assembled complete dir string " << url.prettyURL() << endl;
 
 	 KFileItem *fi = brnch->find( url );

@@ -70,7 +70,7 @@ private:
 KURLBarItem::KURLBarItem( KURLBar *parent,
                           const KURL& url, const QString& description,
                           const QString& icon, int group,
-                          KURLBarItem *after = 0L )
+                          KURLBarItem * /* after */ )
     : QListBoxPixmap( KIconLoader::unknown() /*, parent->listBox()*/ ),
       m_url( url ),
       m_pixmap( 0L ),
@@ -677,8 +677,8 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
                                       const QString& description,
                                       QString icon, bool appLocal,
                                       QWidget *parent, const char *name )
-    : KDialogBase( parent, "drop dialog", true,
-                   i18n("Edit Quick Access entry"), Ok | Cancel, Ok, true)
+    : KDialogBase( parent, name, true,
+                   i18n("Edit Quick Access entry"), Ok | Cancel, Ok, true )
 {
     QVBox *box = new QVBox( this );
     QString text = i18n("<qt><b>Please set url, icon and a description.</b></br></qt>");
