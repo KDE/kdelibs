@@ -215,9 +215,6 @@ private:
 	bool m_list_urls_no_hidden; // bool m_running; // flag set when all dirs have been listed
 	QString m_list_urls_filter; // QString m_file_filter; // filter for listed files
 
-	QStringList dummy_for_bc1; // QStringList m_dirs; // dirs to be listed
-	KURL *dummy_for_bc2; //	KURL *m_current_url; // the url beeing listed by KIO
-
 	QChar m_word_break_char;
 	QChar m_quote_char1;
 	QChar m_quote_char2;
