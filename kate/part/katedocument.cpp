@@ -2131,10 +2131,10 @@ bool KateDocument::printDialog ()
          {
            QString s( i18n("(Selection of) ") );
            tags["f"].prepend( s );
-           tags["F"].prepend( s );
+           tags["U"].prepend( s );
          }
 
-         QRegExp reTags( "%([dDfFhuyY])" ); // TODO tjeck for "%%<TAG>"
+         QRegExp reTags( "%([dDfUhuyY])" ); // TODO tjeck for "%%<TAG>"
 
          if (useHeader)
          {
