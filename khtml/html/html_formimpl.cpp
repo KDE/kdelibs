@@ -1874,6 +1874,8 @@ bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
     kg->setKeySize(0);
     successful = (QDialog::Accepted == kg->exec());
 
+    delete kg;
+
     encoded_values += "deadbeef";
 
     return successful;
