@@ -242,6 +242,11 @@ QString KSocketBase::errorString(KSocketBase::SocketError code)
 		    "an unknown/unexpected error has happened");
       break;
 
+    case RemotelyDisconnected:
+      reason = i18n("Socket error code RemotelyDisconnected",
+		    "remote host closed connection");
+      break;
+
     default:
       reason = QString::null;
       break;

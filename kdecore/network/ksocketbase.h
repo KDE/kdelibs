@@ -145,6 +145,7 @@ public:
    * - NotSupported: requested operation is not supported
    * - Timeout: a timed operation timed out
    * - UnknownError: an unknown/unexpected error has happened
+   * - RemotelyDisconnected: when a connection is disconnected by the other end (since 3.4)
    *
    * @sa error, errorString
    */
@@ -166,7 +167,8 @@ public:
       NetFailure,
       NotSupported,
       Timeout,
-      UnknownError
+      UnknownError,
+      RemotelyDisconnected
     };
 
 public:

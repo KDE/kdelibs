@@ -1,5 +1,5 @@
 /*  -*- C++ -*-
- *  Copyright (C) 2003 Thiago Macieira <thiago.macieira@kdemail.net>
+ *  Copyright (C) 2003,2004 Thiago Macieira <thiago.macieira@kdemail.net>
  *
  *
  *  Permission is hereby granted, free of charge, to any person obtaining
@@ -319,6 +319,7 @@ void KBufferedSocket::slotReadActivity()
 	      // nope, another error!
 	      copyError();
 	      mutex()->unlock();
+	      emit gotError(error());
 	      closeNow();	// emits closed
 	      return;
 	    }
@@ -326,8 +327,9 @@ void KBufferedSocket::slotReadActivity()
       else if (len == 0)
 	{
 	  // remotely closed
-	  resetError();
+	  setError(IO_ReadError, RemotelyDisconnected);
 	  mutex()->unlock();
+	  emit gotError(error());
 	  closeNow();		// emits closed
 	  return;
 	}
@@ -365,6 +367,7 @@ void KBufferedSocket::slotWriteActivity()
 	      // nope, another error!
 	      copyError();
 	      mutex()->unlock();
+	      emit gotError(error());
 	      closeNow();
 	      return;
 	    }
@@ -372,8 +375,9 @@ void KBufferedSocket::slotWriteActivity()
       else if (len == 0)
 	{
 	  // remotely closed
-	  resetError();
+	  setError(IO_ReadError, RemotelyDisconnected);
 	  mutex()->unlock();
+	  emit gotError(error());
 	  closeNow();
 	  return;
 	}

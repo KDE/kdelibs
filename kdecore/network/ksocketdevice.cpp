@@ -401,6 +401,8 @@ static int do_read_common(int sockfd, char *data, Q_ULONG maxlen, KSocketAddress
       else
 	return KSocketDevice::UnknownError;
     }
+  if (retval == 0)
+    return KSocketDevice::RemotelyDisconnected;
 
   if (from)
     from->setLength(len);
@@ -514,6 +516,8 @@ Q_LONG KSocketDevice::writeBlock(const char *data, Q_ULONG len, const KSocketAdd
 	setError(IO_WriteError, UnknownError);
       return -1;		// nothing written
     }
+  else if (retval == 0)
+    setError(IO_WriteError, RemotelyDisconnected);
 
   return retval;
 }
