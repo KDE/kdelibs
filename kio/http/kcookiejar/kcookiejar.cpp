@@ -503,13 +503,16 @@ KHttpCookiePtr KCookieJar::makeCookies(const QString &_url,
             // Host = FQDN
             // Default domain = ""
             // Default path = ""
-            lastCookie = new KHttpCookie(fqdn, QString::null, QString::null,
+            KHttpCookie *cookie = new KHttpCookie(fqdn, QString::null, QString::null,
                                      Name, Value );
-            lastCookie->mWindowId = windowId;
+            cookie->mWindowId = windowId;
 
             // Insert cookie in chain
-            lastCookie->nextCookie = cookieChain;
-            cookieChain = lastCookie;
+            if (lastCookie)
+               lastCookie->nextCookie = cookie;
+            else
+               cookieChain = cookie;
+            lastCookie = cookie;
         }
         else if (lastCookie && (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0))
         {
