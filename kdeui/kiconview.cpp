@@ -2,6 +2,7 @@
 
 #include "kiconview.h"
 #include <kglobalsettings.h>
+#include <kapp.h>
 #include <kcursor.h>
 
 #include <X11/Xlib.h>
@@ -9,17 +10,13 @@
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     : QIconView( parent, name, f )
 {
-    //initializing so that checkSettings() actually does something
-    m_bUseSingle = !KGlobalSettings::singleClick();
-    checkSettings();
     oldCursor = viewport()->cursor();
-    m_bChangeCursorOverItem = true;
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
              this, SLOT( slotOnItem( QIconViewItem * ) ) );
-    checkSettings();
-
+    slotSettingsChanged();
+    connect( kapp, SIGNAL( settingsChanged() ), SLOT( slotSettingsChanged() ) );
     m_pCurrentItem = 0L;
 
     m_pAutoSelect = new QTimer( this );
@@ -27,40 +24,44 @@ KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     	     this, SLOT( slotAutoSelect() ) );
 }
 
-void KIconView::checkSettings()
+void KIconView::slotSettingsChanged()
 {
-  if( m_bUseSingle != KGlobalSettings::singleClick() ) {
     m_bUseSingle = KGlobalSettings::singleClick();
     if( m_bUseSingle )
-      connect( this, SIGNAL( clicked( QIconViewItem * ) ),
-	       this, SLOT( slotExecute( QIconViewItem * ) ) );
+    {
+        connect( this, SIGNAL( clicked( QIconViewItem * ) ),
+                 this, SLOT( slotExecute( QIconViewItem * ) ) );
+        disconnect( this, SIGNAL( doubleClicked( QIconViewItem * ) ),
+                    this, SLOT( slotExecute( QIconViewItem * ) ) );
+    }
     else
-      connect( this, SIGNAL( doubleClicked( QIconViewItem * ) ),
-	       this, SLOT( slotExecute( QIconViewItem * ) ) );
-  }
-  
-  m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
-  m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
+    {
+        connect( this, SIGNAL( doubleClicked( QIconViewItem * ) ),
+                 this, SLOT( slotExecute( QIconViewItem * ) ) );
+        disconnect( this, SIGNAL( clicked( QIconViewItem * ) ),
+                    this, SLOT( slotExecute( QIconViewItem * ) ) );
+    }
 
-  if( !m_bUseSingle || !m_bChangeCursorOverItem )
-    viewport()->setCursor( oldCursor );
+    m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
+    m_autoSelectDelay = KGlobalSettings::autoSelectDelay();
+
+    if( !m_bUseSingle || !m_bChangeCursorOverItem )
+        viewport()->setCursor( oldCursor );
 }
 
 void KIconView::slotOnItem( QIconViewItem *item )
 {
-    checkSettings();
     if ( item && m_bChangeCursorOverItem && m_bUseSingle )
         viewport()->setCursor( KCursor().handCursor() );
 
     if ( item && (m_autoSelectDelay > -1) && m_bUseSingle ) {
-      m_pAutoSelect->start( m_autoSelectDelay, true ); 
+      m_pAutoSelect->start( m_autoSelectDelay, true );
       m_pCurrentItem = item;
     }
 }
 
 void KIconView::slotOnViewport()
 {
-    checkSettings();
     if ( m_bChangeCursorOverItem )
         viewport()->setCursor( oldCursor );
 
@@ -85,7 +86,7 @@ void KIconView::slotAutoSelect()
     //Shift pressed?
     if( (keybstate & ShiftMask) ) {
       //No Ctrl? Then clear before!
-      if( !(keybstate & ControlMask) )  
+      if( !(keybstate & ControlMask) )
 	clearSelection();
 
       //Temporary implementaion of the selection until QIconView supports it
@@ -94,7 +95,7 @@ void KIconView::slotAutoSelect()
       blockSignals( true );
       viewport()->setUpdatesEnabled( FALSE );
 
-      //Calculate the smallest rectangle that contains the current Item 
+      //Calculate the smallest rectangle that contains the current Item
       //and the one that got the autoselect event
       QRect r;
       QRect redraw;
@@ -114,7 +115,7 @@ void KIconView::slotAutoSelect()
 	r.setHeight( currentItem()->y() - m_pCurrentItem->y() + currentItem()->height() );
       r = r.normalize();
 
-      //Check for each item whether it is within the rectangle. 
+      //Check for each item whether it is within the rectangle.
       //If yes, select it
       for( QIconViewItem* i = firstItem(); i; i = i->nextItem() ) {
 	if( i->intersects( r ) ) {
@@ -129,9 +130,9 @@ void KIconView::slotAutoSelect()
       emit selectionChanged();
       //setSelected( m_pCurrentItem, true, (keybstate & ControlMask), (keybstate & ShiftMask) );
     }
-    else if( (keybstate & ControlMask) ) 
+    else if( (keybstate & ControlMask) )
       setSelected( m_pCurrentItem, !m_pCurrentItem->isSelected(), true );
-    else 
+    else
       setSelected( m_pCurrentItem, true );
   }
   else
@@ -143,6 +144,6 @@ void KIconView::slotAutoSelect()
 void KIconView::slotExecute( QIconViewItem *item )
 {
   m_pAutoSelect->stop();
-  
+
   emit executed( item );
 }

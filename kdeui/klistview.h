@@ -15,10 +15,12 @@ protected slots:
     void slotOnItem( QListViewItem *item );
     void slotOnViewport();
 
+    void slotSettingsChanged();
+
 private:
-    void checkClickMode();
     QCursor oldCursor;
-    bool useDouble;
+    bool m_bUseSingle;
+    bool m_bChangeCursorOverItem;
 
 };
 

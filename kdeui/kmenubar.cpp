@@ -43,7 +43,7 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
 #define KTHEMESTYLE_CONSTANTS
 #endif
 
-KMenuBar::KMenuBar(QWidget *parent=0, const char *name=0)
+KMenuBar::KMenuBar(QWidget *parent, const char *name)
   : QMenuBar(parent, name)
 {
     mouseActive = false;

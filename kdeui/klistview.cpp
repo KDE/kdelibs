@@ -1,50 +1,45 @@
 #include "klistview.h"
 #include <kglobalsettings.h>
 #include <kcursor.h>
+#include <kapp.h>
 
 KListView::KListView( QWidget *parent, const char *name )
     : QListView( parent, name )
 {
-    useDouble = KGlobalSettings::singleClick();
     oldCursor = viewport()->cursor();
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QListViewItem * ) ),
 	     this, SLOT( slotOnItem( QListViewItem * ) ) );
-    checkClickMode();
+    slotSettingsChanged();
+    connect( kapp, SIGNAL( settingsChanged() ), SLOT( slotSettingsChanged() ) );
 }
 
-void KListView::checkClickMode()
+void KListView::slotSettingsChanged()
 {
-    if ( !KGlobalSettings::singleClick() == useDouble )
-	return;
+    m_bUseSingle = KGlobalSettings::singleClick();
+    m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
 
-    if ( !useDouble )
+    if ( !m_bUseSingle )
 	disconnect( this, SIGNAL( clicked( QListViewItem * ) ),
-			this, SIGNAL( doubleClicked( QListViewItem * ) ) );
-    useDouble = !KGlobalSettings::singleClick();
-    if ( !useDouble )
+                    this, SIGNAL( doubleClicked( QListViewItem * ) ) );
+    else
 	connect( this, SIGNAL( clicked( QListViewItem * ) ),
 		 this, SIGNAL( doubleClicked( QListViewItem * ) ) );
-    else
+
+    if( !m_bUseSingle || !m_bChangeCursorOverItem )
 	viewport()->setCursor( oldCursor );
 }
 
 void KListView::slotOnItem( QListViewItem *item )
 {
-    checkClickMode();
-    if ( useDouble )
-	return;
-    if ( !item )
-	return;
-    viewport()->setCursor( KCursor().handCursor() );
+    if ( item && m_bChangeCursorOverItem && m_bUseSingle )
+        viewport()->setCursor( KCursor().handCursor() );
 }
 
 void KListView::slotOnViewport()
 {
-    checkClickMode();
-    if ( useDouble )
-	return;
-    viewport()->setCursor( oldCursor );
+    if ( m_bChangeCursorOverItem )
+        viewport()->setCursor( oldCursor );
 }
 

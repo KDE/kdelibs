@@ -18,10 +18,12 @@ protected slots:
     void slotOnItem( QListBoxItem *item );
     void slotOnViewport();
 
+    void slotSettingsChanged();
+
 private:
-    void checkClickMode();
     QCursor oldCursor;
-    bool useDouble;
+    bool m_bUseSingle;
+    bool m_bChangeCursorOverItem;
 
 };
 
