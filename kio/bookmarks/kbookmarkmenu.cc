@@ -133,7 +133,12 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
   m_actions.setAutoDelete( true );
 
   if (m_actionCollection)
+  {
     m_actionCollection->setHighlightingEnabled(true);
+    disconnect( m_actionCollection, SIGNAL( actionHighlighted( KAction * ) ), 0, 0 );
+    connect( m_actionCollection, SIGNAL( actionHighlighted( KAction * ) ),
+             this, SLOT( slotActionHighlighted( KAction * ) ) );
+  }
 
   m_bNSBookmark = m_parentAddress.isNull();
   if ( !m_bNSBookmark ) // not for the netscape bookmark
@@ -148,9 +153,6 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
       (void) _parentMenu->contextMenu();
       connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
                this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ));
-      disconnect( m_actionCollection, SIGNAL( actionHighlighted( KAction * ) ), 0, 0 );
-      connect( m_actionCollection, SIGNAL( actionHighlighted( KAction * ) ),
-               this, SLOT( slotActionHighlighted( KAction * ) ) );
     }
 
     if ( m_bIsRoot )
@@ -538,6 +540,7 @@ void KBookmarkMenu::fillBookmarkMenu()
   {
     if ( m_parentMenu->count() > 0 )
       m_parentMenu->insertSeparator();
+
     if (isAdvanced())
     {
       KActionMenu * actionMenu = new KActionMenu( i18n("Actions"), m_actionCollection, 0L );
