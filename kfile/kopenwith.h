@@ -27,6 +27,7 @@
 #include <kapp.h>
 #include <kurl.h>
 #include <klistview.h>
+#include <krun.h>
 
 #include <kservice.h>
 

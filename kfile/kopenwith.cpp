@@ -49,7 +49,6 @@
 #include <klistview.h>
 
 #include "kopenwith.h"
-#include <krun.h>
 
 template class QList<QString>;
 
