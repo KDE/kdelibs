@@ -1624,7 +1624,7 @@ void NodeBaseImpl::dispatchChildInsertedEvents( NodeImpl *child, int &exceptionc
             return;
     }
 
-    // dispatch the DOMNOdeInsertedInfoDocument event to all descendants
+    // dispatch the DOMNodeInsertedIntoDocument event to all descendants
     bool hasInsertedListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEINSERTEDINTODOCUMENT_LISTENER);
     NodeImpl *p = this;
     while (p->parentNode())
@@ -1656,7 +1656,7 @@ void NodeBaseImpl::dispatchChildRemovalEvents( NodeImpl *child, int &exceptionco
 
     bool hasRemovalListeners = getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVEDFROMDOCUMENT_LISTENER);
 
-    // dispatch the DOMNOdeRemovedFromDocument event to all descendants
+    // dispatch the DOMNodeRemovedFromDocument event to all descendants
     NodeImpl *p = this;
     while (p->parentNode())
 	p = p->parentNode();
