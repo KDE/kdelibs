@@ -1,5 +1,7 @@
 aRts-0.7.0:
 - new interface for video embedding (Arts::VideoPlayObject) via X11 embedding
+- threaded oss audio i/o (-a toss) which works better with some kernel drivers
+- irix audio i/o method (-a sgi)
 
 aRts-0.6.0:
 - new interfaces (Arts::InputStream, Arts::StreamPlayObject) for decoding
