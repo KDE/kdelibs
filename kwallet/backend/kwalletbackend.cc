@@ -32,8 +32,8 @@
 
 using namespace KWallet;
 
-#define KWMAGIC "KWALLET\n\r\0\n"
-#define KWMAGIC_LEN 11
+#define KWMAGIC "KWALLET\n\r\0\r\n"
+#define KWMAGIC_LEN 12
 
 Backend::Backend(const QString& name) : _name(name), _ref(0) {
 	KGlobal::dirs()->addResourceType("kwallet", "share/apps/kwallet");
@@ -76,6 +76,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 	}
 
 	// If that failed, try /dev/random
+	// FIXME: open in noblocking mode!
 	if (QFile::exists("/dev/random")) {
 		QFile devrand("/dev/random");
 		if (devrand.open(IO_ReadOnly)) {
@@ -114,6 +115,7 @@ static int getRandomBlock(QByteArray& randBlock) {
 static int password2hash(const QByteArray& password, QByteArray& hash) {
 	QByteArray first, second, third;
 
+	// FIXME: really broken
 	first.resize(password.size()/3 + (password.size()%3 == 1 ? 1 : 0));
 	second.resize(password.size()/3 + (password.size()%3 == 2 ? 1 : 0));
 	third.resize(password.size()/3);
@@ -173,20 +175,21 @@ static int password2hash(const QByteArray& password, QByteArray& hash) {
 
 int Backend::open(const QByteArray& password) {
 
-	if (_open)
+	if (_open) {
 		return -255;  // already open
+	}
 
 	QString path = KGlobal::dirs()->saveLocation("kwallet") + 
 		       "/"+_name+".kwl";
-
 
 	QByteArray passhash;
 
 	// No wallet existed.  Let's create it.
 	if (!QFile::exists(path)) {
 		QFile newfile(path);
-		if (!newfile.open(IO_ReadWrite))
+		if (!newfile.open(IO_ReadWrite)) {
 			return -2;   // error opening file
+		}
 		newfile.close();
 		_open = true;
 		return 1;          // new file opened, but OK
@@ -194,12 +197,14 @@ int Backend::open(const QByteArray& password) {
 
 	QFile db(path);
 
-	if (!db.open(IO_ReadOnly))
+	if (!db.open(IO_ReadOnly)) {
 		return -2;         // error opening file
+	}
 
 	char magicBuf[10];
 	db.readBlock(magicBuf, KWMAGIC_LEN);
-	if (qstrncmp(magicBuf, KWMAGIC, KWMAGIC_LEN)) {
+	if (qstrncmp(magicBuf, KWMAGIC, KWMAGIC_LEN)) { // FIXME: can't use
+							// this anymore. 
 		return -3;         // bad magic
 	}
 
@@ -207,19 +212,22 @@ int Backend::open(const QByteArray& password) {
 
 	// First byte is major version, second byte is minor version
 	//    OUR VERSION: 0.0
-	if (magicBuf[0] != 0)
+	if (magicBuf[0] != 0) {
 		return -4;         // unknown version
+	}
 
-	if (magicBuf[1] != 0)
+	if (magicBuf[1] != 0) {
 		return -4;	   // unknown version
+	}
 
 	QByteArray encrypted = db.readAll();
 	assert(encrypted.size() < db.size());
 
 	BlowFish bf;
 	int blksz = bf.blockSize();
-	if ((encrypted.size() % blksz) != 0)
+	if ((encrypted.size() % blksz) != 0) {
 		return -5;	   // invalid file structure
+	}
 
 	// Decrypt the encrypted data
 	password2hash(password, passhash);
@@ -291,16 +299,18 @@ int Backend::open(const QByteArray& password) {
 
 	
 int Backend::close(const QByteArray& password) {
-	if (!_open)
+	if (!_open) {
 		return -255;  // not open yet
+	}
 
 	QString path = KGlobal::dirs()->saveLocation("kwallet") + 
 		       "/"+_name+".kwl";
 
 	QFile qf(path);
 
-	if (!qf.open(IO_WriteOnly))
+	if (!qf.open(IO_WriteOnly)) {
 		return -1;		// error opening file
+	}
 
 	qf.writeBlock(KWMAGIC, KWMAGIC_LEN);
 
@@ -341,21 +351,26 @@ int Backend::close(const QByteArray& password) {
 		return -3;		// Fatal error: can't get random
 	}
 	
-	for (int i = 0; i < blksz; i++)
+	for (int i = 0; i < blksz; i++) {
 		wholeFile[i] = randBlock[i];
+	}
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 4; i++) {
 		wholeFile[(int)(i+blksz)] = (decrypted.size() >> 8*(3-i))&0xff;
+	}
 
-	for (unsigned int i = 0; i < decrypted.size(); i++)
+	for (unsigned int i = 0; i < decrypted.size(); i++) {
 		wholeFile[(int)(i+blksz+4)] = decrypted[i];
+	}
 
-	for (int i = 0; i < delta; i++)
+	for (int i = 0; i < delta; i++) {
 		wholeFile[(int)(i+blksz+4+decrypted.size())] = randBlock[(int)(i+blksz)];
+	}
 
 	const char *hash = (const char *)sha.getHash();
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 20; i++) {
 		wholeFile[(int)(newsize-20+i)] = hash[i];
+	}
 
 	sha.reset();
 	decrypted.fill(0);
@@ -426,11 +441,10 @@ void Backend::writeEntry(Entry *e) {
 	if (!_open)
 		return;
 
-	if (hasEntry(e->key())) {
-		_entries[_folder][e->key()]->copy(e);
-	} else {
-		_entries[_folder][e->key()] = e;
+	if (!hasEntry(e->key())) {
+		_entries[_folder][e->key()] = new Entry;
 	}
+	_entries[_folder][e->key()]->copy(e);
 }
 
 
@@ -440,11 +454,12 @@ bool Backend::hasEntry(const QString& key) const {
 
 
 bool Backend::removeEntry(const QString& key) {
-	if (!_open)
+	if (!_open) {
 		return false;
+	}
 
-FolderMap::Iterator fi = _entries.find(_folder);
-EntryMap::Iterator ei = fi.data().find(key);
+	FolderMap::Iterator fi = _entries.find(_folder);
+	EntryMap::Iterator ei = fi.data().find(key);
 
 	if (ei != fi.data().end()) {
 		delete ei.data();
@@ -457,10 +472,11 @@ return false;
 
 
 bool Backend::removeFolder(const QString& f) {
-	if (!_open)
+	if (!_open) {
 		return false;
+	}
 
-FolderMap::Iterator fi = _entries.find(f);
+	FolderMap::Iterator fi = _entries.find(f);
 
 	if (fi != _entries.end()) {
 		if (_folder == f) {
