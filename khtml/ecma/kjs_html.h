@@ -85,6 +85,7 @@ namespace KJS {
     HTMLCollection(DOM::HTMLCollection c) : collection(c) { }
     ~HTMLCollection();
     virtual KJSO tryGet(const UString &p) const;
+    virtual void tryPut(const UString &p, const KJSO& v);
     virtual Boolean toBoolean() const { return Boolean(true); }
   private:
     DOM::HTMLCollection collection;

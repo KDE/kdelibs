@@ -1540,6 +1540,28 @@ KJSO KJS::HTMLCollection::tryGet(const UString &p) const
   return result;
 }
 
+void KJS::HTMLCollection::tryPut(const UString &p, const KJSO& v)
+{
+  // NON-STANDARD inserting new'ed Option objects into the collection
+  // is v an option element ?
+  DOM::Node node = KJS::toNode(v);
+  if (node.isNull() || node.elementId() != ID_OPTION)
+      return;
+  DOM::HTMLOptionElement option = static_cast<DOM::HTMLOptionElement>(node);
+  // an index ?
+  bool ok;
+  unsigned int u = p.toULong(&ok);
+  if (!ok)
+    return;
+  node = collection.item(0).parentNode();
+  while (node.elementId() != ID_SELECT) {
+      if (node.isNull())
+	  return;
+      node = node.parentNode();
+  }
+  DOM::HTMLSelectElement sel = static_cast<DOM::HTMLSelectElement>(node);
+}
+
 Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
 {
   KJSO result;
