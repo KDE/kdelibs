@@ -39,6 +39,8 @@
 
 //-----------------------------------------------------------------------------
 namespace KFILE {
+
+static const int BUFSIZE = 1024;
     
 BookmarkTokenizer::BookmarkTokenizer()
 {
@@ -66,7 +68,7 @@ void BookmarkTokenizer::begin()
 {
     reset();
     size = 1000;
-    buffer = new char[ 1024 ];
+    buffer = new char[ BUFSIZE ];
     dest = buffer;
     tag = false;
     space = false;
@@ -89,12 +91,12 @@ void BookmarkTokenizer::write( const QString& str )
 	// do we need to enlarge the buffer?
 	if ( dest - buffer > size )
 	{
-	    char *newbuf = new char [ size + 1024 ];
+	    char *newbuf = new char [ size + BUFSIZE ];
 	    memcpy( newbuf, buffer, dest - buffer + 1 );
 	    dest = newbuf + ( dest - buffer );
 	    delete [] buffer;
 	    buffer = newbuf;
-	    size += 1024;
+	    size += BUFSIZE;
 	}
 	if ( comment )
 	{

@@ -90,11 +90,12 @@ void KFileBookmarkManager::read( const QString& filename )
 	root.clear();
 
 	QString text;
-	char buffer[256];
+        int BUFSIZE = 256;
+	char buffer[BUFSIZE];
 
 	do
 	{
-		file.readLine( buffer, 256 );
+		file.readLine( buffer, BUFSIZE );
 		text += QString::fromLatin1(buffer);
 	}
 	while ( !file.atEnd() );
