@@ -375,7 +375,19 @@ bool KXMLGUIClient::mergeXML( QDomElement &base, const QDomElement &additive, KA
         matchingElement.setAttribute( attrAlreadyVisited, (uint)1 );
 
         if ( mergeXML( currElement, matchingElement, actionCollection ) )
+        {
           base.removeChild( currElement );
+          continue;
+        }
+
+        // Merge attributes
+        QDomNamedNodeMap attribs = matchingElement.attributes();
+        for(int i = 0; i < attribs.count(); i++)
+        {
+          QDomNode node = attribs.item(i);
+          currElement.setAttribute(node.nodeName(), node.nodeValue());
+        }
+        
         continue;
       }
       else
