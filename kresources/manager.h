@@ -27,6 +27,7 @@
 #include <qdict.h>
 #include <qstringlist.h>
 
+#include <kdebug.h>
 #include <kresources/factory.h>
 #include <kresources/managerimpl.h>
 
@@ -240,10 +241,12 @@ class Manager : private ManagerImplListener
       return mImpl->resourceNames();
     }
 
+#if 0
     ConfigWidget *configWidget( const QString& type, QWidget *parent = 0 )
     {
       return mFactory->resourceConfigWidget( type, parent );
     }
+#endif
 
     /**
       Creates a new resource of type @param type, with default 
