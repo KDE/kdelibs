@@ -140,7 +140,8 @@ static void testReplaceSimple( int options, int button = 0 )
     }
 }
 
-
+// Replacing "a" with "".
+// input="aaaaaa", expected output=""
 static void testReplaceBlank( int options, int button = 0 )
 {
     kdDebug() << "testReplaceBlank: " << options << endl;
@@ -154,6 +155,8 @@ static void testReplaceBlank( int options, int button = 0 )
     }
 }
 
+// Replacing "" with "foo"
+// input="bbbb", expected output="foobfoobfoobfoobfoo"
 static void testReplaceBlankSearch( int options, int button = 0 )
 {
     kdDebug() << "testReplaceBlankSearch: " << options << endl;

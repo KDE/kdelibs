@@ -263,8 +263,12 @@ void KReplace::doReplace()
     m_replacements++;
     if (m_options & KReplaceDialog::FindBackwards)
         m_index--;
-    else
+    else {
         m_index += replacedLength;
+        // when replacing the empty pattern, move on. See also kjs/regexp.cpp for how this should be done for regexps.
+        if ( m_pattern.isEmpty() )
+            ++m_index;
+    }
 #ifdef DEBUG_REPLACE
     kdDebug() << k_funcinfo << "after adjustement: m_index=" << m_index << endl;
 #endif

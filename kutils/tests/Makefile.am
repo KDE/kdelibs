@@ -2,8 +2,7 @@ INCLUDES = $(all_includes)
 
 check_PROGRAMS = kfindtest kreplacetest
 
-check: kfindtest
-	./kfindtest
+TESTS = kfindtest kreplacetest
 
 kfindtest_SOURCES = kfindtest.cpp
 kfindtest_LDADD = ../libkutils.la
