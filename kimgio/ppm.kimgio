@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Pixmap Image
+Name[da]=Portabelt Pixmap-billede
 Name[eu]=Pixmap Irudi Eramangarria
 Name[ga]=Íomhá "Portable Pixmap"
 Name[pt_BR]=Imagem Pixmap Portável

@@ -3,6 +3,7 @@ Type=BMP
 Header=
 Name=Windows BMP Image
 Name[be]=Малюнак Windows BMP
+Name[da]=Windows BMP-billede
 Name[eu]=Windows BMP Irudia
 Name[ga]=Íomhá Windows BMP
 Name[pt_BR]=Imagem BMP Windows

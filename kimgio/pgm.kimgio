@@ -2,6 +2,7 @@
 Type=PNM
 Header=
 Name=Portable Graymap Image
+Name[da]=Portabelt Graymap-billede
 Name[eu]=Portable Graymap Irudia
 Name[ga]=Íomhá "Portable Graymap"
 Name[pt_BR]=Imagem de Mapas de Escalas de Cinza Portável
