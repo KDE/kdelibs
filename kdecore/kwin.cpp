@@ -309,13 +309,13 @@ void KWin::setType( WId win, NET::WindowType windowType )
     info.setWindowType( windowType );
 }
 
-void KWin::setState( WId win, int state )
+void KWin::setState( WId win, unsigned long state )
 {
     NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMState );
     info.setState( state, state );
 }
 
-void KWin::clearState( WId win, int state )
+void KWin::clearState( WId win, unsigned long state )
 {
     NETWinInfo info( qt_xdisplay(), win, qt_xrootwin(), NET::WMState );
     info.setState( 0, state );

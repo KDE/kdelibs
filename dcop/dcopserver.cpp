@@ -992,7 +992,7 @@ int main( int argc, char* argv[] )
 
     setjmp (JumpHere);
     a.exec();
-    delete server;    
+    delete server;
 }
 
 #include "dcopserver.moc"

@@ -140,18 +140,18 @@ public:
      *
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
-     * NET::SkipTaskbar.
+     * NET::SkipTaskbar, NET::StaysOnTop
      */
-    static void setState( WId win, int state );
+    static void setState( WId win, unsigned long state );
 
     /**
      * Cleras the state of window @p win from @p state.
      *
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
-     * NET::SkipTaskbar.
+     * NET::SkipTaskbar, NET::StaysOnTop
      */
-    static void clearState( WId win, int state );
+    static void clearState( WId win, unsigned long  state );
 
     /**
      * Sets window @p win to be present on all virtual desktops if @p

@@ -1680,7 +1680,7 @@ NETWinInfo::NETWinInfo(Display *display, Window window, Window rootWindow,
     p->root = rootWindow;
     p->mapping_state = Withdrawn;
     p->mapping_state_dirty = True;
-    p->state = Unknown;
+    p->state = 0;
     p->type = Unknown;
     p->name = (char *) 0;
     p->visible_name = (char *) 0;
@@ -1813,9 +1813,9 @@ void NETWinInfo::setState(unsigned long state, unsigned long mask) {
     } else {
 	p->state &= ~mask;
 	p->state |= state;
-
+	CARD32 data = p->state;
 	XChangeProperty(p->display, p->window, net_wm_state, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *) &(p->state), 1);
+			PropModeReplace, (unsigned char *) &data, 1);
     }
 }
 
