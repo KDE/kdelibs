@@ -788,6 +788,13 @@ vector<std::string> InterfaceRepo_base::_defaultPortsOut() const {
 	return ret;
 }
 
+void *InterfaceRepo_base::_cast(std::string interface)
+{
+	if(interface == "InterfaceRepo") return (InterfaceRepo_base *)this;
+	if(interface == "Object") return (Object *)this;
+	return 0;
+}
+
 InterfaceRepo_stub::InterfaceRepo_stub()
 {
 	// constructor for subclasses (don't use directly)
@@ -872,13 +879,6 @@ std::string InterfaceRepo_skel::_interfaceName()
 std::string InterfaceRepo_skel::_interfaceNameSkel()
 {
 	return "InterfaceRepo";
-}
-
-void *InterfaceRepo_skel::_cast(std::string interface)
-{
-	if(interface == "InterfaceRepo") return (InterfaceRepo_base *)this;
-	if(interface == "Object") return (Object *)this;
-	return 0;
 }
 
 // insertModule
@@ -987,6 +987,13 @@ vector<std::string> FlowSystemSender_base::_defaultPortsOut() const {
 	return ret;
 }
 
+void *FlowSystemSender_base::_cast(std::string interface)
+{
+	if(interface == "FlowSystemSender") return (FlowSystemSender_base *)this;
+	if(interface == "Object") return (Object *)this;
+	return 0;
+}
+
 FlowSystemSender_stub::FlowSystemSender_stub()
 {
 	// constructor for subclasses (don't use directly)
@@ -1015,13 +1022,6 @@ std::string FlowSystemSender_skel::_interfaceName()
 std::string FlowSystemSender_skel::_interfaceNameSkel()
 {
 	return "FlowSystemSender";
-}
-
-void *FlowSystemSender_skel::_cast(std::string interface)
-{
-	if(interface == "FlowSystemSender") return (FlowSystemSender_base *)this;
-	if(interface == "Object") return (Object *)this;
-	return 0;
 }
 
 // processed
@@ -1093,6 +1093,13 @@ vector<std::string> FlowSystemReceiver_base::_defaultPortsOut() const {
 	return ret;
 }
 
+void *FlowSystemReceiver_base::_cast(std::string interface)
+{
+	if(interface == "FlowSystemReceiver") return (FlowSystemReceiver_base *)this;
+	if(interface == "Object") return (Object *)this;
+	return 0;
+}
+
 FlowSystemReceiver_stub::FlowSystemReceiver_stub()
 {
 	// constructor for subclasses (don't use directly)
@@ -1128,13 +1135,6 @@ std::string FlowSystemReceiver_skel::_interfaceName()
 std::string FlowSystemReceiver_skel::_interfaceNameSkel()
 {
 	return "FlowSystemReceiver";
-}
-
-void *FlowSystemReceiver_skel::_cast(std::string interface)
-{
-	if(interface == "FlowSystemReceiver") return (FlowSystemReceiver_base *)this;
-	if(interface == "Object") return (Object *)this;
-	return 0;
 }
 
 // _get_receiveHandlerID
@@ -1204,6 +1204,13 @@ vector<std::string> FlowSystem_base::_defaultPortsIn() const {
 vector<std::string> FlowSystem_base::_defaultPortsOut() const {
 	vector<std::string> ret;
 	return ret;
+}
+
+void *FlowSystem_base::_cast(std::string interface)
+{
+	if(interface == "FlowSystem") return (FlowSystem_base *)this;
+	if(interface == "Object") return (Object *)this;
+	return 0;
 }
 
 FlowSystem_stub::FlowSystem_stub()
@@ -1325,13 +1332,6 @@ std::string FlowSystem_skel::_interfaceName()
 std::string FlowSystem_skel::_interfaceNameSkel()
 {
 	return "FlowSystem";
-}
-
-void *FlowSystem_skel::_cast(std::string interface)
-{
-	if(interface == "FlowSystem") return (FlowSystem_base *)this;
-	if(interface == "Object") return (Object *)this;
-	return 0;
 }
 
 // startObject
@@ -1496,6 +1496,13 @@ vector<std::string> GlobalComm_base::_defaultPortsOut() const {
 	return ret;
 }
 
+void *GlobalComm_base::_cast(std::string interface)
+{
+	if(interface == "GlobalComm") return (GlobalComm_base *)this;
+	if(interface == "Object") return (Object *)this;
+	return 0;
+}
+
 GlobalComm_stub::GlobalComm_stub()
 {
 	// constructor for subclasses (don't use directly)
@@ -1565,13 +1572,6 @@ std::string GlobalComm_skel::_interfaceName()
 std::string GlobalComm_skel::_interfaceNameSkel()
 {
 	return "GlobalComm";
-}
-
-void *GlobalComm_skel::_cast(std::string interface)
-{
-	if(interface == "GlobalComm") return (GlobalComm_base *)this;
-	if(interface == "Object") return (Object *)this;
-	return 0;
 }
 
 // put
@@ -1669,6 +1669,17 @@ vector<std::string> TmpGlobalComm_base::_defaultPortsOut() const {
 	return ret;
 }
 
+void *TmpGlobalComm_base::_cast(std::string interface)
+{
+	if(interface == "TmpGlobalComm") return (TmpGlobalComm_base *)this;
+
+	void *result;
+	result = GlobalComm_base::_cast(interface);
+	if(result) return result;
+
+	return 0;
+}
+
 TmpGlobalComm_stub::TmpGlobalComm_stub()
 {
 	// constructor for subclasses (don't use directly)
@@ -1688,17 +1699,6 @@ std::string TmpGlobalComm_skel::_interfaceName()
 std::string TmpGlobalComm_skel::_interfaceNameSkel()
 {
 	return "TmpGlobalComm";
-}
-
-void *TmpGlobalComm_skel::_cast(std::string interface)
-{
-	if(interface == "TmpGlobalComm") return (TmpGlobalComm_base *)this;
-
-	void *result;
-	result = GlobalComm_skel::_cast(interface);
-	if(result) return result;
-
-	return 0;
 }
 
 void TmpGlobalComm_skel::_buildMethodTable()

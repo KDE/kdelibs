@@ -119,6 +119,9 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
+	// cast operation
+	virtual void *_cast(std::string interface);
+
 	/*
 	 * when this is true, a fatal communication error has occured (of course
 	 * only possible for remote objects) - maybe your returncode is invalid,
@@ -202,7 +205,6 @@ public:
 	 */
 	static std::string _interfaceNameSkel();
 	virtual void _buildMethodTable();
-	virtual void *_cast(std::string interface) = 0;
 
 	/*
 	 * reference counting

@@ -123,6 +123,12 @@ ScheduleNode *Object::_node()
 	return _scheduleNode;
 }
 
+void *Object::_cast(std::string interface)
+{
+	if(interface == "Object") return (Object *)this;
+	return 0;
+}
+
 bool Object::_error()
 {
 	// no error as default ;)

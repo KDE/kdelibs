@@ -293,6 +293,8 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
+	void *_cast(std::string interface);
+
 	virtual long insertModule(const ModuleDef& newModule) = 0;
 	virtual void removeModule(long moduleID) = 0;
 	virtual InterfaceDef* queryInterface(const std::string& name) = 0;
@@ -321,7 +323,6 @@ public:
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void *_cast(std::string interface);
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
@@ -336,7 +337,7 @@ private:
 	InterfaceRepo_base *cache;
 	inline InterfaceRepo_base *_method_call() {
 		_pool->checkcreate();
-		cache=dynamic_cast<InterfaceRepo_base *>(_pool->base);
+		cache=(InterfaceRepo_base *)_pool->base->_cast("InterfaceRepo");
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -353,7 +354,7 @@ public:
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		InterfaceRepo_base *sav = dynamic_cast<InterfaceRepo_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
@@ -361,7 +362,7 @@ public:
 	}
 	inline ~InterfaceRepo() {
 	if (!_pool) return;
-		InterfaceRepo_base *sav = dynamic_cast<InterfaceRepo_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -388,6 +389,8 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
+	void *_cast(std::string interface);
+
 	virtual void processed() = 0;
 };
 
@@ -410,7 +413,6 @@ public:
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void *_cast(std::string interface);
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
@@ -425,7 +427,7 @@ private:
 	FlowSystemSender_base *cache;
 	inline FlowSystemSender_base *_method_call() {
 		_pool->checkcreate();
-		cache=dynamic_cast<FlowSystemSender_base *>(_pool->base);
+		cache=(FlowSystemSender_base *)_pool->base->_cast("FlowSystemSender");
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -442,7 +444,7 @@ public:
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		FlowSystemSender_base *sav = dynamic_cast<FlowSystemSender_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
@@ -450,7 +452,7 @@ public:
 	}
 	inline ~FlowSystemSender() {
 	if (!_pool) return;
-		FlowSystemSender_base *sav = dynamic_cast<FlowSystemSender_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -474,6 +476,8 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
+	void *_cast(std::string interface);
+
 	virtual long receiveHandlerID() = 0;
 };
 
@@ -496,7 +500,6 @@ public:
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void *_cast(std::string interface);
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
@@ -511,7 +514,7 @@ private:
 	FlowSystemReceiver_base *cache;
 	inline FlowSystemReceiver_base *_method_call() {
 		_pool->checkcreate();
-		cache=dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
+		cache=(FlowSystemReceiver_base *)_pool->base->_cast("FlowSystemReceiver");
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -528,7 +531,7 @@ public:
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		FlowSystemReceiver_base *sav = dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
@@ -536,7 +539,7 @@ public:
 	}
 	inline ~FlowSystemReceiver() {
 	if (!_pool) return;
-		FlowSystemReceiver_base *sav = dynamic_cast<FlowSystemReceiver_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -559,6 +562,8 @@ public:
 
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
+
+	void *_cast(std::string interface);
 
 	virtual void startObject(Object_base * node) = 0;
 	virtual void stopObject(Object_base * node) = 0;
@@ -592,7 +597,6 @@ public:
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void *_cast(std::string interface);
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
@@ -607,7 +611,7 @@ private:
 	FlowSystem_base *cache;
 	inline FlowSystem_base *_method_call() {
 		_pool->checkcreate();
-		cache=dynamic_cast<FlowSystem_base *>(_pool->base);
+		cache=(FlowSystem_base *)_pool->base->_cast("FlowSystem");
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -624,7 +628,7 @@ public:
 	inline FlowSystem& operator=(const FlowSystem& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		FlowSystem_base *sav = dynamic_cast<FlowSystem_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
@@ -632,7 +636,7 @@ public:
 	}
 	inline ~FlowSystem() {
 	if (!_pool) return;
-		FlowSystem_base *sav = dynamic_cast<FlowSystem_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -661,6 +665,8 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
+	void *_cast(std::string interface);
+
 	virtual bool put(const std::string& variable, const std::string& value) = 0;
 	virtual std::string get(const std::string& variable) = 0;
 	virtual void erase(const std::string& variable) = 0;
@@ -687,7 +693,6 @@ public:
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void *_cast(std::string interface);
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
@@ -702,7 +707,7 @@ private:
 	GlobalComm_base *cache;
 	inline GlobalComm_base *_method_call() {
 		_pool->checkcreate();
-		cache=dynamic_cast<GlobalComm_base *>(_pool->base);
+		cache=(GlobalComm_base *)_pool->base->_cast("GlobalComm");
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -719,7 +724,7 @@ public:
 	inline GlobalComm& operator=(const GlobalComm& target) {
 		if (_pool == target._pool) return *this;
 		cacheOK=false;
-		GlobalComm_base *sav = dynamic_cast<GlobalComm_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
@@ -727,7 +732,7 @@ public:
 	}
 	inline ~GlobalComm() {
 	if (!_pool) return;
-		GlobalComm_base *sav = dynamic_cast<GlobalComm_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
@@ -753,6 +758,8 @@ public:
 	virtual vector<std::string> _defaultPortsIn() const;
 	virtual vector<std::string> _defaultPortsOut() const;
 
+	void *_cast(std::string interface);
+
 };
 
 typedef ReferenceHelper<TmpGlobalComm_base> TmpGlobalComm_var;
@@ -773,7 +780,6 @@ public:
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void *_cast(std::string interface);
 	void dispatch(Buffer *request, Buffer *result,long methodID);
 };
 
@@ -788,7 +794,7 @@ private:
 	TmpGlobalComm_base *cache;
 	inline TmpGlobalComm_base *_method_call() {
 		_pool->checkcreate();
-		cache=dynamic_cast<TmpGlobalComm_base *>(_pool->base);
+		cache=(TmpGlobalComm_base *)_pool->base->_cast("TmpGlobalComm");
 		assert(cache);
 		cacheOK=true;
 		return cache;
@@ -806,7 +812,7 @@ public:
 		if (_pool == target._pool) return *this;
 		GlobalComm::cacheOK=false;
 		cacheOK=false;
-		TmpGlobalComm_base *sav = dynamic_cast<TmpGlobalComm_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = target._pool;
 		_pool->Inc();
@@ -814,7 +820,7 @@ public:
 	}
 	inline ~TmpGlobalComm() {
 	if (!_pool) return;
-		TmpGlobalComm_base *sav = dynamic_cast<TmpGlobalComm_base *>(_pool->base);
+		Object_base *sav = _pool->base;
 		if (_pool->Dec() && sav) sav->_release();
 		_pool = 0;
 	}
