@@ -43,9 +43,47 @@ public:
    */
   KUniqueApplication( int& argc, char** argv,
 		      const QCString& rAppName = 0, bool allowStyles=true);
+
+  /**
+   * Fork and register with dcop.
+   * The command line arguments are being sent via DCOP to newInstance()
+   * and will be received once the application enters the event loop.
+   * @return True if registration is succesfull
+   *         False if another process was already running.
+   *
+   * Typically this is used like:
+   *
+   * int main(int argc, char **argv) {
+   *    if (!KUniqueApplication::start(argc, argv, "myAppName")) {
+   *       fprintf(stderr, "myAppName is already running!\n");
+   *       exit(0);
+   *    }
+   *    KUniqueApplication a(argc, argv, "myAppName");
+   *    a.exec();
+   * }
+   *
+   * or
+   *
+   * int main(int argc, char **argv) {
+   *    if (!KUniqueApplication::start(argc, argv, "myAppName"))
+   *       exit(0);
+   *    KUniqueApplication a(argc, argv, "myAppName");
+   *    a.exec();
+   * }
+   * 
+   * Although it is not necassery to call start() before creating a
+   * KUniqueApplication it is adviced to so because it is about
+   * 40% faster if the application was already running: 
+   * If you use start() the KApplication constructor will not be 
+   * called if this isn't necassery.
+   */
+  static bool start(int& argc, char** argv, const QCString &rAppName);
+   
   
   /** Destructor */
   virtual ~KUniqueApplication();
+
+  virtual DCOPClient *dcopClient();
   
   /** 
    * dispatch any incoming DCOP message for a new instance.  If
@@ -67,6 +105,8 @@ public:
    * @return An exit value. The calling process will exit with this value.
    */
   virtual int newInstance(QValueList<QCString> params);
+private:
+  static DCOPClient *s_DCOPClient;
 };
 
 #endif

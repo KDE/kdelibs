@@ -171,7 +171,7 @@ public:
   /**
    * Returns a pointer to an DCOPClient for the application.
    */
-  DCOPClient *dcopClient();
+  virtual DCOPClient *dcopClient();
 
   // See kapp.cpp for explanation
   /*
@@ -551,6 +551,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.123  1999/11/25 13:25:46  waba
+// WABA: Reverted last change
+//
 // Revision 1.121  1999/11/22 12:33:31  mkoch
 // docu
 //
