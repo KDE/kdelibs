@@ -1,13 +1,15 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
-Comment=ULAW (Sun) audio
+Comment=ULAW (Sun) Audio
 Comment[af]=ulaw (sun) audio
 Comment[ar]=ملف ULAW (صن) صوتي
 Comment[az]=ULAW (Sun) səsləri
+Comment[be]=ULAW (Sun) аўдыё
 Comment[bg]=Звуков файл ULAW (Sun)
 Comment[br]=Klevet ULAW (Sun)
 Comment[ca]=Àudio ULAW (Sun)
+Comment[da]=ULAW-audio (Sun)
 Comment[de]=ULAW (Sun) Audio
 Comment[el]=ήχος ULAW (Sun)
 Comment[eo]=ULAW (Sun) sondosiero
@@ -27,7 +29,7 @@ Comment[mi]=Oro ULAW (Sun)
 Comment[mk]=ULAW (Sun) аудио
 Comment[mt]=Awdio ULAW (Sun)
 Comment[nb]=ULAW (Sun-lyd)
-Comment[nl]=VLAW (Sun) audiobestand
+Comment[nl]=ULAW (Sun) audiobestand
 Comment[nn]=ULAW-lyd (Sun)
 Comment[oc]=Audio ULAW (Sun)
 Comment[pl]=Plik audio ULAW (Sun)

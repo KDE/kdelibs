@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=GIMP native image format
+Comment=GIMP Native Image Format
 Comment[af]=gimp plaaslike beeld formaat
 Comment[ar]=رسم نسق GIMP
 Comment[az]=GIMP təbii rəsm formatı
@@ -17,6 +17,7 @@ Comment[eu]=GIMPen irudi formatoa
 Comment[fi]=GIMP:in oma tiedostomuoto
 Comment[fr]=Format graphique natif de GIMP
 Comment[he]=תבנית תמונה טבעית של GIMP
+Comment[hr]=GIMP format za slike
 Comment[hu]=GIMP képformátum
 Comment[is]=Skráarsnið GIMP forritsins
 Comment[it]=Formato immagini nativo di GIMP
@@ -31,7 +32,7 @@ Comment[pl]=Oryginalny format obrazu GIMP-a
 Comment[pt]=Formato nativo de imagem do GIMP
 Comment[pt_BR]=Formato nativo de Imagem do GIMP
 Comment[ro]=Format nativ GIMP
-Comment[ru]=родной формат GIMP
+Comment[ru]=Формат изображения GIMP
 Comment[sk]=Formát obrázkov GIMP
 Comment[sl]=Domorodni slikovni format za Gimp
 Comment[sr]=GIMP-ov osnovni format slike

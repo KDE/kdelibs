@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=MimeType
-Comment=Streaming MPEG layer 3 audio
+Comment=Streaming MPEG Layer 3 Audio
 Comment[af]=stroomende mpeg laag 3 audio
 Comment[ar]=ملف MPEG3 صوتي انسيابي
 Comment[az]=Axışqan MPEG layer 3 səsi
@@ -10,7 +10,7 @@ Comment[br]=Klevet lanv MPEG gwelead 3
 Comment[ca]=Àudio MPEG nivell 3
 Comment[cs]=MPEG layer 3 audio proud
 Comment[da]=Streaming MPEG layer 3-audio
-Comment[de]=MPEG Layer-3-Audio
+Comment[de]=MPEG-Layer-3-Audio
 Comment[el]=Ρέων ήχος MPEG layer 3
 Comment[eo]=MPEG-3-sondosiero
 Comment[es]=Sonido MPEG esquema 3 por transmisión
@@ -51,6 +51,7 @@ Comment[vi]=Audio Streaming MPEG layer 3
 Comment[xh]=Equkuqelayo i MPEG layer 3 evakalayo
 Comment[xx]=xx
 Comment[zh_CN]=流式 MP3 音频文件
+Comment[zh_TW]=串流 MPEG layer 3 audio
 Comment[zu]= Streaming MPEG layer 3 audio
 MimeType=audio/x-mpegurl
 Icon=sound

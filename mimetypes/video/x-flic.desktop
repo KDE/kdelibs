@@ -4,7 +4,7 @@ Type=MimeType
 MimeType=video/x-flic
 Icon=video
 Patterns=*.fli;*.flc;*.FLI;*.FLC;
-Comment=Autodesk's FLIC files
+Comment=Autodesk's FLIC File
 Comment[ar]=ملف أوتوديسك FLIC
 Comment[az]=Autodesk'in FLIC faylları
 Comment[be]=Autodesk FLIC файл
@@ -58,6 +58,6 @@ Comment[vi]=File FLIC của Autodesk
 Comment[xh]=Iifayile zedesk ezenzekelayo ze FLIC
 Comment[xx]=xx
 Comment[zh_CN]=Autodesk FLIC 文件
-Comment[zh_TW]=Autodesk FLIC 文件
+Comment[zh_TW]=Autodesk 的 FLIC 文件
 Comment[zu]=Amafayela e Autodesk's FLIC files
 

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=Python bytecode
+Comment=Python Bytecode
 Comment[af]=python bytekode
 Comment[ar]=شيفرة بايثون بايتية
 Comment[az]=Python bayt kodu
@@ -51,6 +51,7 @@ Comment[vi]=Bytecode Python
 Comment[xh]=Ikhowudi yebyte yenyoka enkulu engenancindi inetyhefu ebulala ixhoba ngokulisonga
 Comment[xx]=xx
 Comment[zh_CN]=Python 字节码
+Comment[zh_TW]=Python 位元碼
 Type=MimeType
 MimeType=application/x-python-bytecode
 Patterns=*.pyc;

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=TeX Device Independent file
+Comment=TeX Device Independent File
 Comment[af]=tex toestel onafhanklike lêer
 Comment[ar]=مستند TeX DVI
 Comment[az]=Avadanlıqdan bağımsız TeX faylı
@@ -19,6 +19,7 @@ Comment[fi]=TeX DVI -tiedosto
 Comment[fr]=Document DVI de TeX
 Comment[gl]=Ficheiro Independente de Dispositivo (DVI) de TeX
 Comment[he]=קובץ TeX עצמאי מהתקן
+Comment[hr]=TeX DVI datoteka
 Comment[hu]=TeX eszközfüggetlen fájl
 Comment[id]=File Device Independent TeX
 Comment[is]=TeX DVI-skjal

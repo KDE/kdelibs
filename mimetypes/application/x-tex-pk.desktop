@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=Packed Font file
+Comment=Packed Font
 Comment[af]=gekompakteerde skrif tipe lêer
 Comment[ar]=ملفات خطوط محزومة
 Comment[az]=Sıxışdırılmış yazı növü faylı
@@ -33,7 +33,7 @@ Comment[mi]=Konae Momotuhi takotoranga
 Comment[mk]=Спакувана фонт датотека
 Comment[mt]=Font ippakkjat
 Comment[nb]=Komprimiert skrifttypefil
-Comment[nl]=gecomprimeerd lettertypebestand
+Comment[nl]=Gecomprimeerd lettertypebestand
 Comment[nn]=Komprimert skrifttypefil
 Comment[oc]=FiquièR de font empaquetada
 Comment[pl]=Spakowany plik czcionek
@@ -54,7 +54,7 @@ Comment[vi]=File phông đã nén
 Comment[xh]=Ifayile yomgca odityanisiweyo
 Comment[xx]=xx
 Comment[zh_CN]=压缩的字体文件
-Comment[zh_TW]=壓縮的字型文件
+Comment[zh_TW]=壓縮的字型檔案
 Comment[zu]=Ifayela Ye Font Epakishiweyo
 Icon=pk
 Type=MimeType

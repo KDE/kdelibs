@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=File List for the (Kate File List Loader Plugin)
+Comment=File List (for the Kate File List Loader Plugin)
+Comment[sv]=Fillista för (insticksprogram för Kates fillistladdare)
 Icon=unknown
 Type=MimeType
 MimeType=text/x-katefilelist

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=Generic Font files
+Comment=Generic Font
 Comment[af]=generies skrif tipe lêers
 Comment[ar]=ملفات خطوط عادية
 Comment[az]=Ümumi yazı növü faylı
@@ -33,7 +33,7 @@ Comment[mi]=Konae Momotuhi whänui
 Comment[mk]=Општи фонт датотеки
 Comment[mt]=Fonts Ġeneriċi
 Comment[nb]=Generelle skrifttypefiler
-Comment[nl]=generieke lettertypebestanden
+Comment[nl]=Algemene lettertypebestanden
 Comment[nn]=Generelle skrifttypefiler
 Comment[oc]=FiquièRs font genèrics
 Comment[pl]=Pierwotne pliki czcionek
@@ -54,7 +54,7 @@ Comment[vi]=File phông nói chung
 Comment[xh]=Iifayile zemigca ngokubanzi
 Comment[xx]=xx
 Comment[zh_CN]=普通字体文件
-Comment[zh_TW]=一般字型文件
+Comment[zh_TW]=一般字型檔案
 Comment[zu]=Amafayela e Font Abanzi
 Icon=gf
 Type=MimeType

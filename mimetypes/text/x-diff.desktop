@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 MimeType=text/x-diff
-Comment=Differences between files
+Comment=Differences Between Files
 Comment[af]=verskille tussen lêers
 Comment[ar]=الإختلاف بين الملفات
 Comment[az]=İki fayl arasındakı qısa fərqlər
@@ -9,7 +9,7 @@ Comment[be]=Розьніца паміж файламі
 Comment[bg]=Различия между файлове
 Comment[bs]=Razlika između datoteka
 Comment[cs]=Souhrn rozdílů mezi soubory
-Comment[da]=Forskel mellem filer
+Comment[da]=Forskelle mellem filer
 Comment[de]=Unterschiede zwischen Dateien
 Comment[el]=Διαφορές μεταξύ αρχείων
 Comment[eo]=Diferencoj inter dosieroj
@@ -30,7 +30,7 @@ Comment[lt]=Skirtumai tarp bylų
 Comment[lv]=Atšķirības starp failiem
 Comment[mt]=Differenzi bejn fajls
 Comment[nb]=Sammendragsforskjell mellom to filer
-Comment[nl]=geeft de verschillen tussen twee bestanden weer
+Comment[nl]=Geeft de verschillen tussen twee bestanden weer
 Comment[nn]=Skilnadar mellom to filer
 Comment[pl]=Różnice między dwoma plikami
 Comment[pt]=Diferenças entre ficheiros

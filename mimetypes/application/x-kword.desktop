@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 MimeType=application/x-kword
-Comment=KWord
+Comment=KWord Document
 Comment[af]=kword
 Comment[ar]=مستند KWord
 Comment[bg]=Текстов процесор KWord
@@ -17,7 +17,6 @@ Comment[ru]=Текстовый процессор KWord
 Comment[sr]=KWord dokument
 Comment[sv]=Kword
 Comment[th]=เวิร์ด - K
-Comment[ven]=Fhungo la K
 Comment[xx]=xx
 Icon=kword
 Type=MimeType

@@ -1,7 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=MS Windows Media File
-Comment[de]=Microsoft Mediaplayer Datei
+Comment=Windows Media File
+Comment[es]=Archivo de medios de MS Windows
+Comment[pt_BR]=Arquivo de Mídia do MS Windows
+Comment[sv]=MS Windows-mediafil
 Hidden=false
 Icon=video
 MimeType=video/x-ms-asf

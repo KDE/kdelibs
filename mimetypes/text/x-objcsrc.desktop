@@ -1,7 +1,7 @@
 # KDE Config File
 [KDE Desktop Entry]
 Encoding=UTF-8
-Comment=Objective-C sources
+Comment=Objective-C Source File
 Comment[af]=objek-c bronkodes
 Comment[ar]=شفرة Objective C
 Comment[az]=Objective-C mənbə kodları
@@ -10,7 +10,7 @@ Comment[br]=Tarzh Objective-C
 Comment[bs]=Objective-C izvorni kod
 Comment[ca]=Fonts Objective-C
 Comment[cs]=Zdrojový kód v jazyku Objective C
-Comment[da]=Objektive C-kilder
+Comment[da]=Objective-C-kilder
 Comment[de]=Objective-C-Quellcode
 Comment[el]=Πηγαίος κώδικας Objective-C
 Comment[eo]=Objekt-C-fontoj

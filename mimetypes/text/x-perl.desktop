@@ -1,6 +1,6 @@
 [Desktop Entry]
 Encoding=UTF-8
-Comment=Perl sources
+Comment=Perl Source File
 Comment[af]=perl bronkodes
 Comment[ar]=شفرة بيرل
 Comment[az]=Perl mənbə kodları
@@ -52,7 +52,7 @@ Comment[vi]=Mã nguồn Perl
 Comment[xh]=Iimvelaphi ze Perl
 Comment[xx]=xx
 Comment[zh_CN]=Perl 源文件
-Comment[zh_TW]=Perl原始檔案
+Comment[zh_TW]=Perl 原始檔案
 Comment[zu]=Izimvelaphi ze Perl
 Icon=source
 Type=MimeType
