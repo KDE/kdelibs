@@ -40,7 +40,6 @@
 #include "kconfig.h"
 #include "kdebug.h"
 #include "klocale.h"
-#include "kcharsets.h"
 
 static const char * const SYSTEM_MESSAGES = "kdelibs";
 
