@@ -416,3 +416,32 @@ QStringList KStringHandler::split( const QString &text , const char *sep )
     
     return tmp;
 }
+
+QString KStringHandler::lsqueeze( const QString & str, uint maxlen )
+{
+  if (str.length() > maxlen) {
+    int part = maxlen-3;
+    return QString("..." + str.right(part));
+  }
+  else return str;
+}
+
+QString KStringHandler::csqueeze( const QString & str, uint maxlen )
+{
+  if (str.length() > maxlen) {
+    int part = (maxlen-3)/2;
+    return QString(str.left(part) + "..." + str.right(part));
+  }
+  else return str;
+}
+
+QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
+{
+  if (str.length() > maxlen) {
+    int part = maxlen-3;
+    return QString(str.left(part) + "...");
+  }
+  else return str;
+}
+
+

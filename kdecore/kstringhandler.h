@@ -156,6 +156,12 @@ public:
 
     /** Returns a new string built from the list */
     static QString        join( const QStringList &list , const char *sep = " " );
-};
 
+   /** Substitute characters at the beginning/middle/end str by "...".  
+     */
+    static QString        lsqueeze( const QString & str, uint maxlen = 30 );
+    static QString        csqueeze( const QString & str, uint maxlen = 30 );
+    static QString        rsqueeze( const QString & str, uint maxlen = 30 );
+    
+};
 #endif
