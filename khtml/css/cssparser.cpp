@@ -21,7 +21,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-// #define CSS_DEBUG
+//#define CSS_DEBUG
 // #define TOKEN_DEBUG
 #define YYDEBUG 0
 
@@ -213,7 +213,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
     if ( numParsedProperties ) {
 	ok = true;
 	for ( int i = 0; i < numParsedProperties; i++ ) {
-	    declaration->removeProperty(parsedProperties[i]->m_id, false);
+	    declaration->removeProperty(parsedProperties[i]->m_id, nonCSSHint);
 	    declaration->values()->append( parsedProperties[i] );
 	}
 	numParsedProperties = 0;
@@ -274,6 +274,7 @@ void CSSParser::addProperty( int propId, CSSValueImpl *value, bool important )
     prop->m_id = propId;
     prop->setValue( value );
     prop->m_bImportant = important;
+    prop->nonCSSHint = nonCSSHint;
 
     if ( numParsedProperties >= maxParsedProperties ) {
 	maxParsedProperties += 32;
