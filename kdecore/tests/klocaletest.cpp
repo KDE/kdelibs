@@ -147,11 +147,12 @@ int main( int argc, char ** argv )
   check("readTime(\"11:22\", WithoutSeconds)", (ok && time == QTime(11, 22, 0)) ?
         "yes" : "no", "yes");
 
-  time = QTime( 11, 22, 33 );
+  KGlobal::locale()->setTimeFormat( "%H:%M %p" );
+  time = QTime( 0, 22, 33 );
   QString timeStr = KGlobal::locale()->formatTime( time, true /*seconds*/, false /*duration*/ );
-  kdDebug() << "11:22 (as time) -> " << timeStr << endl;
+  check("formatTime(\"0:22\", as time)", timeStr, "00:22 am" );
   timeStr = KGlobal::locale()->formatTime( time, true /*seconds*/, true /*duration*/ );
-  kdDebug() << "11:22 (as duration) -> " << timeStr << endl;
+  check("formatTime(\"0:22\", as duration)", timeStr, "00:22" );
 
   kdDebug() << "setLanguage C\n";
   KGlobal::locale()->setLanguage(QString::fromLatin1("C"));
@@ -160,6 +161,7 @@ int main( int argc, char ** argv )
   kdDebug() << "setLanguage de\n";
   KGlobal::locale()->setLanguage(QString::fromLatin1("de"));
   kdDebug() << "de: " << i18n("yes") << " " << i18n("QAccel", "Space") << endl;
+
 
   Test m;
   a.setMainWidget( &m );

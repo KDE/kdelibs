@@ -1664,7 +1664,10 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs, bool isDuratio
     }
   QString ret( buffer, index );
   delete [] buffer;
-  return ret;
+  if ( isDuration ) // eliminate trailing-space due to " %p"
+    return ret.stripWhiteSpace();
+  else
+    return ret;
 }
 
 bool KLocale::use12Clock() const
