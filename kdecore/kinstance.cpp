@@ -35,8 +35,8 @@
   #include <qptrdict.h>
   static QPtrList<KInstance> *allInstances = 0;
   static QPtrDict<QCString> *allOldInstances = 0;
-  #define DEBUG_ADD do { qWarning("#### KInstance(%s, %p)", _name.data(), this); if (!allInstances) { allInstances = new QPtrList<KInstance>(); allOldInstances = new QPtrDict<QCString>(); } allInstances->append(this); allOldInstances->insert( this, new QCString( _name)); } while (false);
-  #define DEBUG_REMOVE do { qWarning("#### ~KInstance(%s, %p)", _name.data(), this); allInstances->removeRef(this); } while (false);
+  #define DEBUG_ADD do { if (!allInstances) { allInstances = new QPtrList<KInstance>(); allOldInstances = new QPtrDict<QCString>(); } allInstances->append(this); allOldInstances->insert( this, new QCString( _name)); } while (false);
+  #define DEBUG_REMOVE do { allInstances->removeRef(this); } while (false);
   #define DEBUG_CHECK_ALIVE do { if (!allInstances->contains((KInstance*)this)) { QCString *old = allOldInstances->find((KInstance*)this); qWarning("ACCESSING DELETED KINSTANCE! (%s)", old ? old->data() : "<unknown>"); assert(false); } } while (false);
 #else
   #define DEBUG_ADD
@@ -130,7 +130,7 @@ KInstance::~KInstance()
 {
     DEBUG_CHECK_ALIVE
     DEBUG_REMOVE
-    
+
     if (d->ownAboutdata)
         delete _aboutData;
     _aboutData = 0;
@@ -173,7 +173,7 @@ KConfig	*KInstance::config() const
         if ( !d->configName.isEmpty() )
         {
             d->sharedConfig = KSharedConfig::openConfig( d->configName );
-            
+
             // Check whether custom config files are allowed.
             d->sharedConfig->setGroup( "KDE Action Restrictions" );
             if (d->sharedConfig->readBoolEntry( "custom_config", true))
