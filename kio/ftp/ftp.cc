@@ -22,6 +22,7 @@
 #include "ftp.h"
 
 #include <errno.h>
+#include <config.h>
 #include <assert.h>
 #include <string.h>
 
@@ -224,6 +225,7 @@ void Ftp::closeConnection()
 
 void Ftp::setHost( const QString& _host, int _port, const QString& _user, const QString& _pass )
 {
+  kdDebug(7102) << "Ftp::setHost " << _host << endl;
   QString user = _user;
   QString pass = _pass;
   if( !_user.isEmpty() )
@@ -249,6 +251,12 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user, const 
 void Ftp::openConnection()
 {
   kdDebug(7102) << "openConnection " << m_host << ":" << m_port << " " << m_user << " " << m_pass << endl;
+
+  if ( m_host.isEmpty() )
+  {
+    error( ERR_UNKNOWN_HOST, "" );
+    return;
+  }
 
   assert( !m_bLoggedOn );
 
@@ -986,6 +994,7 @@ void Ftp::stat( const QString & path, const QString& /*query*/ )
 
 void Ftp::listDir( const QString & _path, const QString& /*query*/ )
 {
+  kdDebug(7102) << "Ftp::listDir " << _path << endl;
   if (!m_bLoggedOn)
      openConnection();
 
