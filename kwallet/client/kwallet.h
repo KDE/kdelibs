@@ -127,10 +127,11 @@ class Wallet : public QObject, public DCOPObject {
 		 *               the walletOpened() signal to a slot so that
 		 *               you will know when it is opened, or when it
 		 *               fails.
+		 *  @param w The window id to associate any dialogs with.
 		 *  @return Returns a pointer to the wallet if successful,
 		 *          or a null pointer on error or if rejected.
 		 */
-		static Wallet* openWallet(const QString& name, OpenType ot = Synchronous);
+		static Wallet* openWallet(const QString& name, WId w = 0, OpenType ot = Synchronous);
 
 		/**
 		 *  List the applications that are using the wallet @p wallet.
@@ -165,7 +166,7 @@ class Wallet : public QObject, public DCOPObject {
 		 *  the wallet @p name.
 		 *  @param name The the wallet to change the password of.
 		 */
-		static void changePassword(const QString& name);
+		static void changePassword(const QString& name, WId w = 0);
 
 		/**
 		 *  This syncs the wallet file on disk with what is in memory.
@@ -198,7 +199,7 @@ class Wallet : public QObject, public DCOPObject {
 		 *  Request to the wallet service to change the password of
 		 *  the current wallet.
 		 */
-		virtual void requestChangePassword();
+		virtual void requestChangePassword(WId w = 0);
 
 		/**
 		 *  Obtain the list of all folders contained in the wallet.

@@ -113,8 +113,8 @@ return rc;
 }
 
 
-void Wallet::changePassword(const QString& name) {
-DCOPRef("kded", "kwalletd").send("changePassword", name);
+void Wallet::changePassword(const QString& name, WId w) {
+DCOPRef("kded", "kwalletd").send("changePassword", name, uint(w));
 }
 
 
@@ -158,10 +158,10 @@ return rc;
 }
 
 
-Wallet *Wallet::openWallet(const QString& name, OpenType ot) {
+Wallet *Wallet::openWallet(const QString& name, WId w, OpenType ot) {
 	if (ot == Asynchronous) {
 		Wallet *w = new Wallet(-1, name);
-		DCOPRef("kded", "kwalletd").send("openAsynchronous", name, w->objId());
+		DCOPRef("kded", "kwalletd").send("openAsynchronous", name, w->objId(), uint(w));
 		return w;
 	}
 
@@ -170,15 +170,15 @@ Wallet *Wallet::openWallet(const QString& name, OpenType ot) {
 
 #if KDE_IS_VERSION(3,1,90)
 	if (isPath) {
-		r = DCOPRef("kded", "kwalletd").callExt("openPath", DCOPRef::UseEventLoop, -1, name);
+		r = DCOPRef("kded", "kwalletd").callExt("openPath", DCOPRef::UseEventLoop, -1, name, uint(w));
 	} else {
-		r = DCOPRef("kded", "kwalletd").callExt("open", DCOPRef::UseEventLoop, -1, name);
+		r = DCOPRef("kded", "kwalletd").callExt("open", DCOPRef::UseEventLoop, -1, name, uint(w));
 	}
 #else
 	if (isPath) {
-		r = DCOPRef("kded", "kwalletd").call("openPath", name);
+		r = DCOPRef("kded", "kwalletd").call("openPath", name, uint(w));
 	} else {
-		r = DCOPRef("kded", "kwalletd").call("open", name);
+		r = DCOPRef("kded", "kwalletd").call("open", name, uint(w));
 	}
 #endif
 	if (r.isValid()) {
@@ -256,12 +256,12 @@ bool Wallet::isOpen() const {
 }
 
 
-void Wallet::requestChangePassword() {
+void Wallet::requestChangePassword(WId w) {
 	if (_handle == -1) {
 		return;
 	}
 
-	_dcopRef->send("changePassword", _handle);
+	_dcopRef->send("changePassword", _name, uint(w));
 }
 
 

@@ -23,8 +23,9 @@
 #define _KWALLETD_H_
 
 #include <kded/kdedmodule.h>
-#include <qstring.h>
 #include <qintdict.h>
+#include <qstring.h>
+#include <qwidget.h>
 #include "kwalletbackend.h"
 
 #include <time.h>
@@ -45,14 +46,14 @@ class KWalletD : public KDEDModule {
 		virtual bool isEnabled() const;
 
 		// Open and unlock the wallet
-		virtual int open(const QString& wallet);
+		virtual int open(const QString& wallet, uint wId);
 
 		// Open and unlock the wallet with this path
-		virtual int openPath(const QString& path);
+		virtual int openPath(const QString& path, uint wId);
 
 		// Asynchronous open - must give the object to return the handle
 		// to.
-		virtual void openAsynchronous(const QString& wallet, const QCString& returnObject);
+		virtual void openAsynchronous(const QString& wallet, const QCString& returnObject, uint wId);
 
 		// Close and lock the wallet
 		// If force = true, will close it for all users.  Behave.  This
@@ -75,7 +76,7 @@ class KWalletD : public KDEDModule {
 		virtual QStringList users(const QString& wallet) const;
 
 		// Change the password of this wallet
-		virtual void changePassword(const QString& wallet);
+		virtual void changePassword(const QString& wallet, uint wId);
 
 		// A list of all wallets
 		virtual QStringList wallets() const;
@@ -137,7 +138,7 @@ class KWalletD : public KDEDModule {
 		void timedOut(int);
 
 	private:
-		int internalOpen(const QString& wallet, bool isPath = false);
+		int internalOpen(const QString& wallet, bool isPath = false, WId w = 0);
 		// This also validates the handle.  May return NULL.
 		KWallet::Backend* getWallet(int handle);
 		// Generate a new unique handle.
