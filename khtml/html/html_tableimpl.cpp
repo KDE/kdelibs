@@ -214,6 +214,7 @@ void HTMLTableElementImpl::deleteCaption(  )
 
 HTMLElementImpl *HTMLTableElementImpl::insertRow( long index )
 {
+    // Note: we now can have both TR and sections (THEAD/TBODY/TFOOT) as children of a TABLE
     // IE treats index=-1 as default value meaning 'append after last'
     // This isn't in the DOM. So, not implemented yet.
     HTMLTableSectionElementImpl* section = 0L;
@@ -522,11 +523,11 @@ HTMLTableSectionElementImpl::HTMLTableSectionElementImpl(DocumentPtr *doc,
     : HTMLTablePartElementImpl(doc)
 {
     _id = tagid;
+    nrows = 0;
 }
 
 HTMLTableSectionElementImpl::~HTMLTableSectionElementImpl()
 {
-    nrows = 0;
 }
 
 NodeImpl::Id HTMLTableSectionElementImpl::id() const
