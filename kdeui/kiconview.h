@@ -38,6 +38,7 @@
  **/
 class KIconView : public QIconView
 {
+  friend class KIconViewItem;
   Q_OBJECT
   Q_ENUMS( Mode )
   Q_PROPERTY( Mode mode READ mode WRITE setMode )
@@ -139,7 +140,7 @@ protected:
   virtual void contentsMousePressEvent( QMouseEvent *e );
   virtual void contentsMouseDoubleClickEvent ( QMouseEvent * e );
   virtual void contentsMouseReleaseEvent( QMouseEvent *e );
-    
+
   QCursor oldCursor;
   bool m_bUseSingle;
   bool m_bChangeCursorOverItem;
@@ -153,8 +154,106 @@ private slots:
   void slotMouseButtonClicked( int btn, QIconViewItem *item, const QPoint &pos );
 
 private:
+  /**
+   * @internal. For use by KIconViewItem.
+   */
+  QFontMetrics *itemFontMetrics() const;
+  /**
+   * @internal. For use by KIconViewItem.
+   */
+  QBitmap itemMask( QPixmap *pix ) const;
+
   class KIconViewPrivate;
   KIconViewPrivate *d;
+};
+
+class KWordWrap;
+/**
+ * KIconViewItem exists to improve the word-wrap functionality of QIconViewItem
+ * Use KIconViewItem instead of QIconViewItem for any iconview item you might have :)
+ *
+ * @short A variant of QIconViewItem that wraps words better.
+ * @author David Faure <david@mandrakesoft.com>
+ */
+class KIconViewItem : public QIconViewItem
+{
+public:
+    // Need to redefine all the constructors - I want Java !
+    KIconViewItem( QIconView *parent )
+        : QIconViewItem( parent ) { init(); } // We need to call it because the parent ctor won't call our reimplementation :(((
+    KIconViewItem( QIconView *parent, QIconViewItem *after )
+        : QIconViewItem( parent, after ) { init(); }
+    KIconViewItem( QIconView *parent, const QString &text )
+        : QIconViewItem( parent, text ) { init(); }
+    KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text )
+        : QIconViewItem( parent, after, text ) { init(); }
+    KIconViewItem( QIconView *parent, const QString &text, const QPixmap &icon )
+        : QIconViewItem( parent, text, icon ) { init(); }
+    KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPixmap &icon )
+        : QIconViewItem( parent, after, text, icon ) { init(); }
+    KIconViewItem( QIconView *parent, const QString &text, const QPicture &picture )
+        : QIconViewItem( parent, text, picture ) { init(); }
+    KIconViewItem( QIconView *parent, QIconViewItem *after, const QString &text, const QPicture &picture )
+        : QIconViewItem( parent, after, text, picture ) { init(); }
+    virtual ~KIconViewItem();
+protected:
+    void init();
+    virtual void calcRect( const QString& text_ = QString::null );
+    virtual void paintItem( QPainter *p, const QColorGroup &c );
+private:
+    KWordWrap* m_wordWrap;
+};
+
+// To be moved somewhere else....
+/**
+ * Word-wrap algorithm that takes into account beautifulness ;)
+ * That means: not letting a letter alone on the last line,
+ * breaking at punctuation signs, etc.
+ *
+ * Usage: call the static method, @ref formatText, with the text to
+ * wrap and the constraining rectangle etc., it will return an instance of KWordWrap
+ * containing internal data, result of the word-wrapping.
+ * From that instance you can retrieve the boundingRect, and invoke drawing.
+ *
+ * This design allows to call the word-wrap algorithm only when the text changes
+ * and not every time we want to know the bounding rect or draw the text.
+ */
+class KWordWrap
+{
+public:
+    /**
+     * Main method for wrapping text.
+     *
+     * @param fm Font metrics, for the chosen font. Better cache it, creating a QFontMetrics is expensive.
+     * @param r Constraining rectangle. Only the width and height matter.
+     * @param flags Alignment flags - not supported yet.
+     * @param str The text to be wrapped.
+     * @param len Length of text to wrap (default is -1 for all).
+     * @return a KWordWrap instance. The caller is responsible for storing and deleting the result.
+     */
+    static KWordWrap* formatText( QFontMetrics &fm, const QRect & r, int flags, const QString & str, int len = -1 );
+
+    /**
+     * @return the bounding rect, calculated by formatText.
+     */
+    QRect boundingRect() const { return m_boundingRect; }
+
+    /**
+     * @return the original string, with '\n' inserted where
+     * the text is broken by the wordwrap algorithm.
+     */
+    QString wrappedString() const; // gift for Dirk :)
+
+    /**
+     * Draw the text that has been previously wrapped, at position x,y.
+     */
+    void drawText( QPainter *painter, int x, int y ) const;
+
+private:
+    QValueList<int> m_breakPositions;
+    QValueList<int> m_lineWidths;
+    QRect m_boundingRect;
+    QString m_text;
 };
 
 #endif
