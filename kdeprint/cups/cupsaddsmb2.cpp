@@ -26,6 +26,7 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
+#include <qlineedit.h>
 #include <klocale.h>
 #include <kmessagebox.h>
 #include <qmessagebox.h>
@@ -51,10 +52,8 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	m_side = new SidePixmap(this);
 	m_doit = new QPushButton(i18n("&Export"), this);
 	m_cancel = new QPushButton(i18n("&Cancel"), this);
-	m_passbtn = new QPushButton(i18n("Change &Login/Password"), this);
 	connect(m_cancel, SIGNAL(clicked()), SLOT(reject()));
 	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
-	connect(m_passbtn, SIGNAL(clicked()), SLOT(slotChangePassword()));
 	m_bar = new QProgressBar(this);
 	m_text = new KActiveLabel(this);
 	QLabel	*m_title = new QLabel(i18n("Export printer driver to Windows clients"), this);
@@ -63,6 +62,17 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	f.setBold(true);
 	m_title->setFont(f);
 	KSeparator	*m_sep = new KSeparator(Qt::Horizontal, this);
+	m_textinfo = new QLabel( this );
+	m_logined = new QLineEdit( this );
+	m_passwded = new QLineEdit( this );
+	m_passwded->setEchoMode( QLineEdit::Password );
+	m_servered = new QLineEdit( this );
+	QLabel *m_loginlab = new QLabel( i18n( "&Username:" ), this );
+	QLabel *m_serverlab = new QLabel( i18n( "&Server:" ), this );
+	QLabel *m_passwdlab = new QLabel( i18n( "&Password:" ), this );
+	m_loginlab->setBuddy( m_logined );
+	m_serverlab->setBuddy( m_servered );
+	m_passwdlab->setBuddy( m_passwded );
 
 	QHBoxLayout	*l0 = new QHBoxLayout(this, 10, 10);
 	QVBoxLayout	*l1 = new QVBoxLayout(0, 0, 10);
@@ -70,20 +80,31 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	l0->addLayout(l1);
 	l1->addWidget(m_title);
 	l1->addWidget(m_sep);
-	l1->addWidget(m_text, 1);
+	l1->addWidget(m_text);
+	QGridLayout *l3 = new QGridLayout( 0, 3, 2, 0, 10 );
+	l1->addLayout( l3 );
+	l3->addWidget( m_loginlab, 0, 0 );
+	l3->addWidget( m_passwdlab, 1, 0 );
+	l3->addWidget( m_serverlab, 2, 0 );
+	l3->addWidget( m_logined, 0, 1 );
+	l3->addWidget( m_passwded, 1, 1 );
+	l3->addWidget( m_servered, 2, 1 );
+	l3->setColStretch( 1, 1 );
+	l1->addSpacing( 10 );
 	l1->addWidget(m_bar);
-	l1->addSpacing(50);
+	l1->addWidget( m_textinfo );
+	l1->addSpacing(30);
 	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
 	l1->addLayout(l2);
 	l2->addStretch(1);
-	l2->addWidget(m_passbtn);
 	l2->addWidget(m_doit);
 	l2->addWidget(m_cancel);
 
-	m_login = CupsInfos::self()->realLogin();
-	m_password = CupsInfos::self()->password();
+	m_logined->setText( CupsInfos::self()->realLogin() );
+	m_passwded->setText( CupsInfos::self()->password() );
+	m_servered->setText( cupsServer() );
 
-	setMinimumHeight(350);
+	setMinimumHeight(400);
 }
 
 CupsAddSmb::~CupsAddSmb()
@@ -105,7 +126,7 @@ void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
 	bool	partial(false);
 	static bool incomplete(false);
 
-	// kdDebug() << "slotReceived()" << endl;
+	kdDebug() << "slotReceived()" << endl;
 	while (1)
 	{
 		// read a line
@@ -125,11 +146,11 @@ void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
 
 		if (line.isEmpty())
 		{
-			// kdDebug() << "NOTHING TO READ" << endl;
+			kdDebug() << "NOTHING TO READ" << endl;
 			return;
 		}
 
-		// kdDebug() << "ANSWER = " << line << " (END = " << line.length() << ")" << endl;
+		kdDebug() << "ANSWER = " << line << " (END = " << line.length() << ")" << endl;
 		if (!partial)
 		{
 			if (incomplete && m_buffer.count() > 0)
@@ -137,22 +158,22 @@ void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
 			else
 				m_buffer << line;
 			incomplete = false;
-			// kdDebug() << "COMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
+			kdDebug() << "COMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
 		}
 		else
 		{
 			if (line.startsWith("smb:") || line.startsWith("rpcclient $"))
 			{
-				// kdDebug() << "END OF ACTION" << endl;
+				kdDebug() << "END OF ACTION" << endl;
 				checkActionStatus();
 				if (m_status)
 					nextAction();
 				else
 				{
 					// quit program
-					// kdDebug() << "EXITING PROGRAM..." << endl;
+					kdDebug() << "EXITING PROGRAM..." << endl;
 					m_proc.writeStdin("quit\n", 5);
-					// kdDebug() << "SENT" << endl;
+					kdDebug() << "SENT" << endl;
 				}
 				return;
 			}
@@ -163,7 +184,7 @@ void CupsAddSmb::slotReceived(KProcess*, char *buf, int buflen)
 				else
 					m_buffer << line;
 				incomplete = true;
-				// kdDebug() << "INCOMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
+				kdDebug() << "INCOMPLETE LINE READ (" << m_buffer.count() << ")" << endl;
 			}
 		}
 	}
@@ -181,7 +202,7 @@ void CupsAddSmb::checkActionStatus()
 			m_status = true;
 			break;
 		case Copy:
-			m_status = (m_buffer.count() == 1);
+			m_status = (m_buffer.count() == 0);
 			break;
 		case MkDir:
 			m_status = (m_buffer.count() == 1 || m_buffer[1].find("ERRfilexists") != -1);
@@ -191,7 +212,7 @@ void CupsAddSmb::checkActionStatus()
 			m_status = (m_buffer.count() == 1 || !m_buffer[1].startsWith("result"));
 			break;
 	}
-	// kdDebug() << "ACTION STATUS = " << m_status << endl;
+	kdDebug() << "ACTION STATUS = " << m_status << endl;
 }
 
 void CupsAddSmb::nextAction()
@@ -208,7 +229,7 @@ void CupsAddSmb::doNextAction()
 	{
 		QCString	s = m_actions[m_actionindex++].latin1();
 		m_bar->setProgress(m_bar->progress()+1);
-		// kdDebug() << "NEXT ACTION = " << s << endl;
+		kdDebug() << "NEXT ACTION = " << s << endl;
 		if (s == "quit")
 		{
 			// do nothing
@@ -216,28 +237,32 @@ void CupsAddSmb::doNextAction()
 		else if (s == "mkdir")
 		{
 			m_state = MkDir;
-			m_text->setText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
+			//m_text->setText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
+			m_textinfo->setText(i18n("Creating directory %1").arg(m_actions[m_actionindex]));
 			s.append(" ").append(m_actions[m_actionindex].latin1());
 			m_actionindex++;
 		}
 		else if (s == "put")
 		{
 			m_state = Copy;
-			m_text->setText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
+			//m_text->setText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
+			m_textinfo->setText(i18n("Uploading %1").arg(m_actions[m_actionindex+1]));
 			s.append(" ").append(QFile::encodeName(m_actions[m_actionindex]).data()).append(" ").append(m_actions[m_actionindex+1].latin1());
 			m_actionindex += 2;
 		}
 		else if (s == "adddriver")
 		{
 			m_state = AddDriver;
-			m_text->setText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
+			//m_text->setText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
+			m_textinfo->setText(i18n("Installing driver for %1").arg(m_actions[m_actionindex]));
 			s.append(" \"").append(m_actions[m_actionindex].latin1()).append("\" \"").append(m_actions[m_actionindex+1].latin1()).append("\"");
 			m_actionindex += 2;
 		}
 		else if (s == "addprinter" || s == "setdriver")
 		{
 			m_state = AddPrinter;
-			m_text->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
+			//m_text->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
+			m_textinfo->setText(i18n("Installing printer %1").arg(m_actions[m_actionindex]));
 			QCString	dest = m_actions[m_actionindex].local8Bit();
 			if (s == "addprinter")
 				s.append(" ").append(dest).append(" ").append(dest).append(" \"").append(dest).append("\" \"\"");
@@ -247,12 +272,12 @@ void CupsAddSmb::doNextAction()
 		}
 		else
 		{
-			// kdDebug() << "ACTION = unknown action" << endl;
+			kdDebug() << "ACTION = unknown action" << endl;
 			m_proc.kill();
 			return;
 		}
 		// send action
-		// kdDebug() << "ACTION = " << s << endl;
+		kdDebug() << "ACTION = " << s << endl;
 		s.append("\n");
 		m_proc.writeStdin(s.data(), s.length());
 	}
@@ -260,7 +285,7 @@ void CupsAddSmb::doNextAction()
 
 void CupsAddSmb::slotProcessExited(KProcess*)
 {
-	// kdDebug() << "PROCESS EXITED (" << m_state << ")" << endl;
+	kdDebug() << "PROCESS EXITED (" << m_state << ")" << endl;
 	if (m_proc.normalExit() && m_state != Start && m_status)
 	{
 		// last process went OK. If it was smbclient, then switch to rpcclient
@@ -272,12 +297,16 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 		else
 		{
 			m_doit->setEnabled(false);
-			m_passbtn->setEnabled(false);
 			m_cancel->setEnabled(true);
-			m_cancel->setText(i18n("Close"));
+			m_cancel->setText(i18n("&Close"));
 			m_cancel->setDefault(true);
 			m_cancel->setFocus();
+			m_logined->setEnabled( true );
+			m_servered->setEnabled( true );
+			m_passwded->setEnabled( true );
 			m_text->setText(i18n("Driver successfully exported."));
+			m_bar->reset();
+			m_textinfo->setText( QString::null );
 			return;
 		}
 	}
@@ -298,17 +327,14 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 	}
 }
 
-void CupsAddSmb::slotChangePassword()
-{
-	KIO::PasswordDialog::getNameAndPassword(m_login, m_password, 0);
-}
-
 void CupsAddSmb::showError(const QString& msg)
 {
-	m_text->setText(i18n("<h1>Operation failed !</h1><p>%1</p>").arg(msg));
+	m_text->setText(i18n("<h3>Operation failed !</h3><p>%1</p>").arg(msg));
 	m_cancel->setEnabled(true);
-	m_passbtn->setEnabled(true);
-	m_doit->setText(i18n("Export"));
+	m_logined->setEnabled( true );
+	m_servered->setEnabled( true );
+	m_passwded->setEnabled( true );
+	m_doit->setText(i18n("&Export"));
 	m_state = None;
 }
 
@@ -318,11 +344,11 @@ bool CupsAddSmb::exportDest(const QString &dest, const QString& datadir)
 	dlg.m_dest = dest;
 	dlg.m_datadir = datadir;
 	dlg.m_text->setText(
-			i18n("You are about to export the <b>%1</b> driver to a Windows client "
+			i18n("You are about to export the <b>%1</b> driver to Windows clients "
 				 "through Samba. This operation requires the <a href=\"http://www.adobe.com\">"
 				 "Adobe PostScript Driver</a>, <a href=\"http://www.samba.org\">Samba</a> "
-				 "version 2.2 and a running SMB service on server <b>%1</b>. Click <b>Export</b> "
-				 "to start the operation.").arg(dest).arg(cupsServer()));
+				 "version 2.2 and a running SMB service on the target server. Click <b>Export</b> "
+				 "to start the operation.").arg(dest));
 	dlg.exec();
 	return dlg.m_status;
 }
@@ -346,10 +372,13 @@ bool CupsAddSmb::doExport()
 
 	m_bar->setTotalSteps(18);
 	m_bar->setProgress(0);
-	m_text->setText(i18n("<p>Preparing to upload driver to host <b>%1</b>").arg(cupsServer()));
+	//m_text->setText(i18n("<p>Preparing to upload driver to host <b>%1</b>").arg(m_servered->text()));
+	m_textinfo->setText(i18n("Preparing to upload driver to host %1").arg(m_servered->text()));
 	m_cancel->setEnabled(false);
-	m_passbtn->setEnabled(false);
-	m_doit->setText(i18n("Abort"));
+	m_logined->setEnabled( false );
+	m_servered->setEnabled( false );
+	m_passwded->setEnabled( false );
+	m_doit->setText(i18n("&Abort"));
 
 	const char	*ppdfile;
 
@@ -376,7 +405,7 @@ bool CupsAddSmb::doExport()
 	m_actions << "quit";
 
 	m_proc.clearArguments();
-	m_proc << "smbclient" << QString::fromLatin1("//")+cupsServer()+"/print$";
+	m_proc << "smbclient" << QString::fromLatin1("//")+m_servered->text()+"/print$";
 	return startProcess();
 }
 
@@ -394,24 +423,25 @@ bool CupsAddSmb::doInstall()
 	m_actions << "setdriver" << m_dest;
 	m_actions << "quit";
 
-	m_text->setText(i18n("Preparing to install driver on host <b>%1</b>").arg(cupsServer()));
+	//m_text->setText(i18n("Preparing to install driver on host <b>%1</b>").arg(m_servered->text()));
+	m_textinfo->setText(i18n("Preparing to install driver on host %1").arg(m_servered->text()));
 
 	m_proc.clearArguments();
-	m_proc << "rpcclient" << QString::fromLatin1(cupsServer());
+	m_proc << "rpcclient" << m_servered->text();
 	return startProcess();
 }
 
 bool CupsAddSmb::startProcess()
 {
 	m_proc << "-d" << "0" << "-N" << "-U";
-	if (m_password.isEmpty())
-		m_proc << m_login;
+	if (m_passwded->text().isEmpty())
+		m_proc << m_logined->text();
 	else
-		m_proc << m_login+"%"+m_password;
+		m_proc << m_logined->text()+"%"+m_passwded->text();
 	m_state = Start;
 	m_actionindex = 0;
 	m_buffer.clear();
-	// kdDebug() << "PROCESS STARTED = " << m_proc.args()->at(0) << endl;
+	kdDebug() << "PROCESS STARTED = " << m_proc.args()[0] << endl;
 	return m_proc.start(KProcess::NotifyOnExit, KProcess::All);
 }
 

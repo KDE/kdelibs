@@ -30,6 +30,7 @@ class SidePixmap;
 class QPushButton;
 class QLabel;
 class KActiveLabel;
+class QLineEdit;
 
 class CupsAddSmb : public KDialog
 {
@@ -47,7 +48,6 @@ protected slots:
 	void doNextAction();
 	void slotProcessExited(KProcess*);
 	void slotActionClicked();
-	void slotChangePassword();
 
 protected:
 	void checkActionStatus();
@@ -65,10 +65,12 @@ private:
 	int			m_actionindex;
 	bool		m_status;
 	QProgressBar	*m_bar;
-	QString		m_login, m_password, m_dest;
+	QString		m_dest;
 	SidePixmap	*m_side;
-	QPushButton	*m_doit, *m_cancel, *m_passbtn;
+	QPushButton	*m_doit, *m_cancel;
 	KActiveLabel	*m_text;
+	QLabel *m_textinfo;
+	QLineEdit *m_logined, *m_passwded, *m_servered;
 	QString	m_datadir;
 };
 
