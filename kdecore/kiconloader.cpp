@@ -404,6 +404,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 	return pix;
 
     // Special case for absolute path icons.
+    if (name.startsWith("favicons/"))
+    {
+       name = locateLocal("cache", name+".png");
+    }
     if (name.at(0) == '/') absolutePath=true;
 
     static const QString &str_unknown = KGlobal::staticQString("unknown");
