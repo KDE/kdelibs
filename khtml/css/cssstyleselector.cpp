@@ -2687,9 +2687,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         if (primitiveValue->getIdent() == CSS_VAL_AUTO) {
             style->setHasAutoZIndex();
-#ifndef APPLE_CHANGES
-            style->setZIndex(0);
-#endif
             return;
         }
 
