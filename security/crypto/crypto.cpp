@@ -26,6 +26,7 @@
 #include <pwd.h>
 #include <unistd.h>
 
+#include <qfile.h>
 #include <qlayout.h>
 #include <qvbox.h>
 #include <qlabel.h>
@@ -136,15 +137,18 @@ QString whatstr;
   SSLv2Box->setSelectionMode(QListView::NoSelection);
 
   grid->addWidget( SSLv2Box, 2, 0 );
+  connect( mUseSSLv2, SIGNAL( toggled( bool ) ), 
+	   SSLv2Box, SLOT( setEnabled( bool )));
 #else
   QLabel *nossllabel = new QLabel(i18n("SSL ciphers cannot be configured"
                                " because this module was not linked"
-                               " with OpenSSL."), tabSSL); 
+                               " with OpenSSL."), tabSSL);
   grid->addWidget(nossllabel, 2, 0);
   grid->addRowSpacing( 3, 100 ); // give minimum height to look better
 #endif
 
-  config = new KConfig("cryptodefaults");
+  // no need to parse kdeglobals.
+  config = new KConfig("cryptodefaults", false, false);
 
 #ifdef HAVE_SSL
   SSLv3Box = new QListView(tabSSL, "v3ciphers");
@@ -155,6 +159,8 @@ QString whatstr;
   QWhatsThis::add(SSLv3Box, whatstr);
   SSLv3Box->setSelectionMode(QListView::NoSelection);
   grid->addWidget(SSLv3Box, 2, 1);
+  connect( mUseSSLv3, SIGNAL( toggled( bool ) ), 
+	   SSLv3Box, SLOT( setEnabled( bool )));
 
   loadCiphers();
 #endif
@@ -335,10 +341,10 @@ QString whatstr;
   grid->addMultiCellWidget(mWarnSelfSigned, 0, 0, 0, 3);
   grid->addMultiCellWidget(mWarnExpired, 1, 1, 0, 3);
   grid->addMultiCellWidget(mWarnRevoked, 2, 2, 0, 3);
-  
+
   macCert = new QLineEdit(tabSSLCOpts);
   grid->addMultiCellWidget(macCert, 4, 4, 0, 2);
-  
+
   macBox = new QListBox(tabSSLCOpts);
   whatstr = i18n("This list box shows which sites you have decided to accept"
                 " a certificate from even though the certificate might fail"
@@ -417,7 +423,6 @@ void KCryptoConfig::load()
   config->setGroup("SSLv2");
   CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
   while ( item ) {
-      QString ciphername("cipher_%1");
       item->setOn(config->readBoolEntry(item->configName(),
 					item->bits() >= 40));
       item = static_cast<CipherItem *>(item->nextSibling());
@@ -426,12 +431,13 @@ void KCryptoConfig::load()
   config->setGroup("SSLv3");
   item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
-      QString ciphername("cipher_%1");
       item->setOn(config->readBoolEntry(item->configName(),
 					item->bits() >= 40));
       item = static_cast<CipherItem *>(item->nextSibling());
   }
 
+  SSLv2Box->setEnabled( mUseSSLv2->isChecked() );
+  SSLv3Box->setEnabled( mUseSSLv3->isChecked() );
 #endif
 
   emit changed(false);
@@ -439,8 +445,6 @@ void KCryptoConfig::load()
 
 void KCryptoConfig::save()
 {
-  KConfig *config = new KConfig("cryptodefaults");
-
   if (!mUseTLS->isChecked() &&
       !mUseSSLv2->isChecked() &&
       !mUseSSLv3->isChecked())
@@ -455,16 +459,16 @@ void KCryptoConfig::save()
 
   config->setGroup("SSLv2");
   config->writeEntry("Enabled", mUseSSLv2->isChecked());
-  
+
   config->setGroup("SSLv3");
   config->writeEntry("Enabled", mUseSSLv3->isChecked());
-  
+
   config->setGroup("Warnings");
   config->writeEntry("OnEnter", mWarnOnEnter->isChecked());
   config->writeEntry("OnLeave", mWarnOnLeave->isChecked());
   config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
-  
+
   config->setGroup("Validation");
   config->writeEntry("WarnSelfSigned", mWarnSelfSigned->isChecked());
   config->writeEntry("WarnExpired", mWarnExpired->isChecked());
@@ -475,7 +479,6 @@ void KCryptoConfig::save()
   config->setGroup("SSLv2");
   CipherItem *item = static_cast<CipherItem *>(SSLv2Box->firstChild());
   while ( item ) {
-    QString ciphername("cipher_%1");
     if (item->isOn()) {
       config->writeEntry(item->configName(), true);
       ciphercount++;
@@ -493,7 +496,6 @@ void KCryptoConfig::save()
   config->setGroup("SSLv3");
   item = static_cast<CipherItem *>(SSLv3Box->firstChild());
   while ( item ) {
-    QString ciphername("cipher_%1");
     if (item->isOn()) {
       config->writeEntry(item->configName(), true);
       ciphercount++;
@@ -511,12 +513,11 @@ void KCryptoConfig::save()
   config->sync();
 
   // insure proper permissions -- contains sensitive data
-  QString cfgName(KGlobal::dirs()->findResource("config", "kcmcryptorc"));
+  QString cfgName(KGlobal::dirs()->findResource("config", "cryptodefaults"));
   if (!cfgName.isEmpty())
-    ::chmod(cfgName.utf8(), 0600);
+    ::chmod(QFile::encodeName(cfgName), 0600);
 
   emit changed(false);
-  delete config;
 }
 
 void KCryptoConfig::defaults()
@@ -537,7 +538,7 @@ void KCryptoConfig::defaults()
     // ciphers < 40 bit a default selection.  This is very unsafe and
     // I have already witnessed OpenSSL negotiate a 0 bit connection
     // on me after tracing the https ioslave on a suspicion.
- 
+
   CipherItem *item;
   for ( item = static_cast<CipherItem *>(SSLv2Box->firstChild()); item;
 	item = static_cast<CipherItem *>(item->nextSibling()) ) {
@@ -567,12 +568,15 @@ unsigned int i;
 SSL_CTX *ctx;
 SSL *ssl;
 SSL_METHOD *meth;
+
+  SSLv2Box->clear(); 
+  SSLv3Box->clear(); 
  
   meth = SSLv2_client_method();
   SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return false;
- 
+
   ssl = SSL_new(ctx);
   if (!ssl) return false;
 
@@ -587,7 +591,7 @@ SSL_METHOD *meth;
 
     item = new CipherItem( SSLv2Box, sc->name, k, j, this );
   }
- 
+
   if (ctx) SSL_CTX_free(ctx);
   if (ssl) SSL_free(ssl);
 
@@ -596,10 +600,10 @@ SSL_METHOD *meth;
   SSLeay_add_ssl_algorithms();
   ctx = SSL_CTX_new(meth);
   if (ctx == NULL) return false;
- 
+
   ssl = SSL_new(ctx);
   if (!ssl) return false;
- 
+
   for (i=0; ; i++) {
     int j, k;
     SSL_CIPHER *sc;
@@ -610,7 +614,7 @@ SSL_METHOD *meth;
 
     item = new CipherItem( SSLv3Box, sc->name, k, j, this );
   }
- 
+
   if (ctx) SSL_CTX_free(ctx);
   if (ssl) SSL_free(ssl);
 
