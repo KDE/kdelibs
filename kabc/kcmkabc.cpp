@@ -185,7 +185,7 @@ void ConfigPage::slotAdd()
     QStringList types = factory->resources();
     bool ok = false;
     QString type = QInputDialog::getItem( i18n( "Resource Configuration" ),
-	    i18n( "Please select type of the new resource" ), types, 0, false, &ok, this );
+	    i18n( "Please select type of the new resource:" ), types, 0, false, &ok, this );
     if ( !ok )
 	return;
 
