@@ -2953,8 +2953,6 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
         p->d->m_doc->setBaseURL(d->m_doc->baseURL());
       if (!url.url().startsWith("about:")) {
         p->write(url.path());
-      } else {
-	p->m_url = url;
       }
       p->end();
       return true;
