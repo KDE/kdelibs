@@ -131,6 +131,7 @@ void DockMainWindow::createShellGUI( bool create )
 {
     bool bAccelAutoUpdate = accel()->setAutoUpdate( false );
     assert( d->m_bShellGUIActivated != create );
+    d->m_bShellGUIActivated = create;
     if ( create )
     {
         if ( isHelpMenuEnabled() )
