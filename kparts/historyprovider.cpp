@@ -19,9 +19,13 @@
 
 #include <qdict.h>
 
+#include <kapp.h>
+
 #include "historyprovider.h"
 
 using namespace KParts;
+
+HistoryProvider * HistoryProvider::s_self = 0L;
 
 class HistoryProvider::HistoryProviderPrivate
 {
@@ -31,15 +35,28 @@ public:
     QDict<void> dict;
 };
 
+HistoryProvider * HistoryProvider::self()
+{
+    if ( !s_self )
+	s_self = new HistoryProvider( kapp, "history provider" );
+    return s_self;
+}
+
 HistoryProvider::HistoryProvider( QObject *parent, const char *name )
     : QObject( parent, name )
 {
+    if ( !s_self )
+	s_self = this;
+
     d = new HistoryProviderPrivate;
 }
 
 HistoryProvider::~HistoryProvider()
 {
     delete d;
+
+    if ( s_self == this )
+	s_self = 0;
 }
 
 bool HistoryProvider::contains( const QString& item ) const

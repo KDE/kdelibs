@@ -35,10 +35,13 @@ class HistoryProvider : public QObject
     Q_OBJECT
 
 public:
+    static HistoryProvider * self();
+
     /**
      * Creates a KHistoryProvider with an optional parent and name
      */
     HistoryProvider( QObject *parent = 0L, const char *name = 0 );
+    
     /**
      * Destroys the provider.
      */
@@ -71,10 +74,12 @@ signals:
     void inserted( const QString& );
 
 private:
+    static HistoryProvider *s_self;
+    
     class HistoryProviderPrivate;
     HistoryProviderPrivate *d;
 };
 
 };
-    
+
 #endif // KHISTORYPROVIDER_H
