@@ -50,14 +50,14 @@ class Lock : public QObject
     /**
       Lock resource.
     */
-    bool lock();
+    virtual bool lock();
     
     /**
       Unlock resource.
     */
-    bool unlock();
+    virtual bool unlock();
 
-    QString error() const;
+    virtual QString error() const;
 
     QString lockFileName() const;
 

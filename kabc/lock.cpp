@@ -96,8 +96,8 @@ bool Lock::lock()
     int retval = ::kill( pid, 0 );
     if ( retval == -1 && errno == ESRCH ) { // process doesn't exists anymore
       QFile::remove( lockName );
-      kdError(5700) << "Removed stale lock file from process '" << app << "'"
-                    << endl;
+      kdWarning(5700) << "Removed stale lock file from process '" << app << "'"
+                      << endl;
     } else {
       mError = i18n("The resource '%1' is locked by application '%2'.")
                .arg( mIdentifier ).arg( app );
