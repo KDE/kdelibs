@@ -62,7 +62,11 @@ KDirOperator::KDirOperator(const KURL& url,
     mySorting = static_cast<QDir::SortSpec>(QDir::Name | QDir::DirsFirst);
 
     if (url.isEmpty()) // no dir specified -> current dir
-	lastDirectory = new KURL(QDir::currentDirPath());
+      {
+	QString strPath = QDir::currentDirPath();
+	strPath.append('/');
+	lastDirectory = new KURL(strPath);
+      }
     else
 	lastDirectory = new KURL(url);
 
