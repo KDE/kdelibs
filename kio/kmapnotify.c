@@ -15,6 +15,7 @@
  *
  * (C) 2000 Rik Hemsley <rik@kde.org>
  * (C) 2000 Simon Hausmann <hausmann@kde.org>
+ * (C) 2000 Bill Soudan <soudan@kde.org>
  */
 
 #include <malloc.h>
@@ -38,13 +39,32 @@ typedef Window (*KDE_XMapRequestSignature)(Display *, Window);
 KDE_XMapRequestSignature KDE_RealXMapWindow = NULL;
 KDE_XMapRequestSignature KDE_RealXMapRaised = NULL;
 
+static long KDE_initialDesktop = 0;
+
 void KDE_InterceptXMapRequest(Display *, Window);
+void KDE_SetInitialDesktop(Display *, Window);
 
   int
 XMapWindow(Display * d, Window w)
 {
   if (NULL == KDE_RealXMapWindow)
     KDE_InterceptXMapRequest(d, w);
+
+  /* The first Window that's mapped doesn't seem to actually be the
+   * first Window that KWin manages.  The first window that KWin manages
+   * seems to be the first one that has more than 0 properties.
+   * Is this a valid assumption? */
+
+  /* only set the KWIN_INITIAL_DESKTOP property on the first window
+   * that already has properties */
+  if (KDE_initialDesktop) {
+    int num;
+    (void)XListProperties(d, w, &num);
+    if (num>1) {
+      KDE_SetInitialDesktop(d, w);
+      KDE_initialDesktop=0;
+    }
+  }
 
   return KDE_RealXMapWindow(d, w);
 }
@@ -54,6 +74,23 @@ XMapRaised(Display * d, Window w)
 {
   if (NULL == KDE_RealXMapRaised)
     KDE_InterceptXMapRequest(d, w);
+
+  /* The first Window that's mapped doesn't seem to actually be the
+   * first Window that KWin manages.  The first window that KWin manages
+   * seems to be the first one that has more than 0 properties.
+   * Is this a valid assumption? */
+
+  /* only set the KWIN_INITIAL_DESKTOP property on the first window
+   * that already has properties */
+  if (KDE_initialDesktop) {
+    int num;
+    (void)XListProperties(d, w, &num);
+    if (num>1) {
+      KDE_SetInitialDesktop(d, w);
+      KDE_initialDesktop=0;
+    }
+  }
+
 
   return KDE_RealXMapRaised(d, w);
 }
@@ -67,12 +104,18 @@ KDE_InterceptXMapRequest(Display * d, Window w)
   XTextProperty prop;
   Status status;
   char * pidString = 0L;
+  char *xInitialDesktop;
 
   lt_dlhandle libX11Handle;
 
   /* Init *****************************************************************/
 
+  xInitialDesktop = getenv("X_INITIAL_DESKTOP");
+  if (xInitialDesktop)
+    KDE_initialDesktop = atoi(xInitialDesktop);
+  
   putenv("LD_PRELOAD=");
+  putenv("X_INITIAL_DESKTOP=");
 
   /* Find symbols *********************************************************/
 
@@ -117,5 +160,20 @@ KDE_InterceptXMapRequest(Display * d, Window w)
   else
     fprintf(stderr, "KDE: kmapnotify: Could not set text property\n");
 }
+
+  void
+KDE_SetInitialDesktop(Display *d, Window w) {
+
+  Atom a;
+
+  // FIXME - what name to use for the atom?
+  //         read by kdebase/kwin/client.cpp Client::manage
+  a = XInternAtom(d, "KWIN_INITIAL_DESKTOP", False); // _NET_INITIAL_DESKTOP?
+
+  XChangeProperty(d, w, a, a, 32, PropModeReplace, (unsigned char *)
+    &KDE_initialDesktop, 1);
+
+}
+
 
 /* vim: set ts=2:sw=2:tw=78: */
