@@ -38,7 +38,7 @@ build-stamp:
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --with-ssl --without-alsa \
+	--includedir=/usr/include/kde --without-alsa \
 	--disable-cups
 
 	$(MAKE)
@@ -53,7 +53,7 @@ alsa-stamp:
 	-$(MAKE) -C libkmid/ clean
 	-$(MAKE) -C kdeprint/cups clean
 	$(COMPILER_FLAGS) \
-	./configure $(configkde) --with-alsa --with-ssl --enable-cups \
+	./configure $(configkde) --with-alsa --enable-cups \
 		--includedir=/usr/include/kde
 	$(MAKE) -C libkmid/ 
 	$(MAKE) -C arts/ 
