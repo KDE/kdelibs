@@ -82,7 +82,7 @@ bool KRun::isExecutableFile( const KURL& url, const QString &mimetype )
 {
   if ( !url.isLocalFile() )
      return false;
-  QFileInfo file( url.path() ); 
+  QFileInfo file( url.path() );
   if ( file.isExecutable() )  // Got a prospective file to run
   {
     KMimeType::Ptr mimeType = KMimeType::mimeType( mimetype );
@@ -596,7 +596,8 @@ static pid_t runTempService( const KService& _service, const KURL::List& _urls, 
   if (!_service.path().isEmpty())
      proc->setWorkingDirectory(_service.path());
 
-  return runCommandInternal( proc, &_service, _service.exec(), _service.name(), _service.icon() );
+  return runCommandInternal( proc, &_service, KRun::binaryName( _service.exec(), false ),
+                             _service.name(), _service.icon() );
 }
 
 // BIC merge with method below
@@ -804,7 +805,7 @@ void KRun::init()
           ok = true;
        }
     }
-       
+
     if (ok)
     {
        m_bFinished = true;
