@@ -667,7 +667,7 @@ bool KHTMLPart::openURL( const KURL &url )
            SLOT( slotFinished( KIO::Job * ) ) );
   connect( d->m_job, SIGNAL( data( KIO::Job*, const QByteArray &)),
            SLOT( slotData( KIO::Job*, const QByteArray &)));
-  connect( d->m_job, SIGNAL( mimeType(KIO::Job*, const QString& ) ),
+  connect( d->m_job, SIGNAL( mimetype(KIO::Job*, const QString& ) ),
            SLOT( slotMimeType(KIO::Job*, const QString& ) ) );
 
   connect( d->m_job, SIGNAL(redirection(KIO::Job*, const KURL&) ),
