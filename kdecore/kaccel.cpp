@@ -148,7 +148,7 @@ QString KAccel::findKey( int key ) const
 	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
 	aKeyIt.toFirst();
 	while ( aKeyIt.current() ) {
-	    if ( (unsigned int)key == aKeyIt.current()->aCurrentKeyCode )
+	    if ( key == aKeyIt.current()->aCurrentKeyCode )
 		return aKeyIt.currentKey();
 	    ++aKeyIt;
 	}
