@@ -37,6 +37,7 @@ class QListView;
 
 class KMUiManager : public QObject
 {
+	Q_OBJECT
 public:
 	enum PrintDialogFlagType
 	{
