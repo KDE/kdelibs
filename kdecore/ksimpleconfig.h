@@ -48,7 +48,10 @@ public:
    * Construct a KSimpleConfig object and make it either read-write
    * or read-only.  
    *
-   * @param pFileName The file used for saving the config data.
+   * @param pFileName The file used for saving the config data. Either
+   *                  a full path can be specified or just the filename. 
+   *                  If only a flename is specified, the default 
+   *                  directory for "config" files is used.
    * @param bReadOnly Whether the object should be read-only.
    */
   KSimpleConfig( const QString& pFileName, bool bReadOnly = false );

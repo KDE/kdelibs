@@ -31,17 +31,25 @@
 
 #include <qfileinfo.h>
 
-#include <kapp.h>
+#include "kglobal.h"
+#include "kstddirs.h"
 #include "kconfigbackend.h"
 
 #include "ksimpleconfig.h"
 #include "ksimpleconfig.moc"
 
 KSimpleConfig::KSimpleConfig(const QString &pFileName, bool bReadOnly)
-  : KConfig(pFileName, bReadOnly, false)
+  : KConfig("", bReadOnly, false)
 {
   // the difference between KConfig and KSimpleConfig is just that 
   // for KSimpleConfig an absolute filename is guaranteed
+  if (pFileName[0] != '/') {
+     backEnd->changeFileName(KGlobal::dirs()->getSaveLocation("config")+
+	pFileName, false);
+  } else {
+     backEnd->changeFileName(pFileName, false);
+  }
+  parseConfigFiles();
 }
 
 QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
