@@ -43,7 +43,7 @@
 class QComboBox;
 class QLabel;
 class QLineEdit;
-class QProgressBar;
+class KProgress;
 class QTimer;
 
 /**
@@ -109,19 +109,19 @@ class KIconLoaderDialog : public KDialogBase
      * KApplication::getKApplication()->getIconLoader() to load any icons.
      * Note that it will not use this KIconLoader to display the icons, but
      * the QPixmap that it returns will be know to this KIconLoader.
-     * KIconLoaderDialog caches all icons it has loaded as long as they 
-     * are in the same directory between two calls to selectIcon(). So it 
-     * is a good idea to delete the KIconLoaderDialog when it is not 
+     * KIconLoaderDialog caches all icons it has loaded as long as they
+     * are in the same directory between two calls to selectIcon(). So it
+     * is a good idea to delete the KIconLoaderDialog when it is not
      * needed anymore.
      */
     KIconLoaderDialog ( QWidget *parent=0, const char *name=0 );
 
     /**
-     * If you want to use another KIconLoader you can create the 
-     * KIconLoaderDialog with this constructor which accepts a pointer to a 
+     * If you want to use another KIconLoader you can create the
+     * KIconLoaderDialog with this constructor which accepts a pointer to a
      * KIconLoader. Make sure that this pointer is valid.
      */
-    KIconLoaderDialog ( KIconLoader *loader, QWidget *parent=0, 
+    KIconLoaderDialog ( KIconLoader *loader, QWidget *parent=0,
 			const char *name=0  );
 
     /**
@@ -169,7 +169,7 @@ class KIconLoaderDialog : public KDialogBase
     QLabel	      *text;
     QComboBox	      *cb_dirs;
     KIconLoader	      *icon_loader;
-    QProgressBar *progressBar;
+    KProgress *progressBar;
 };
 
 /**

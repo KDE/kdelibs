@@ -31,7 +31,7 @@
 #include <qlabel.h>
 #include <qcombobox.h>
 #include <qtimer.h>
-#include <qprogressbar.h>
+#include <kprogress.h>
 
 #include "kiconloaderdialog.h"
 
@@ -50,7 +50,6 @@ KIconLoaderCanvas::KIconLoaderCanvas (QWidget *parent, const char *name )
     : QIconView( parent, name )
 {
     setGridX( 65 );
-    setResizeMode( Adjust );
     connect( this, SIGNAL( doubleClicked( QIconViewItem * ) ),
 	     this, SIGNAL( doubleClicked() ) );
     loadTimer = new QTimer( this );
@@ -75,6 +74,7 @@ void KIconLoaderCanvas::loadDir( QString dirname, QString filter_ )
 
 void KIconLoaderCanvas::slotLoadDir()
 {
+    setResizeMode( Fixed );
     QDir d( dir_name );
     if( !filter.isEmpty() )
    	d.setNameFilter(filter);
@@ -111,10 +111,14 @@ void KIconLoaderCanvas::slotLoadDir()
 	    item->setDragEnabled( FALSE );
 	    item->setDropEnabled( FALSE );
 	    item->setSelectable( FALSE );
+	    
+	    if ( i == 30 )
+		slotUpdate();
 	}
 	QApplication::restoreOverrideCursor();
 	emit finished();
     }
+    setResizeMode( Adjust );
 }
 
 
@@ -196,7 +200,7 @@ void KIconLoaderDialog::init( void )
   canvas->setMinimumSize( 450, 125 );
   topLayout->addWidget( canvas );
 
-  progressBar = new QProgressBar( page );
+  progressBar = new KProgress( page );
   topLayout->addWidget( progressBar );
 
   connect( canvas, SIGNAL(doubleClicked()), this, SLOT(accept()) );
@@ -240,15 +244,15 @@ void KIconLoaderDialog::initProgressBar( int steps )
   }
   else
   {
-    progressBar->setTotalSteps( steps );
-    progressBar->reset();
+    progressBar->setRange( 0, steps );
+    progressBar->setValue( 0 );
     progressBar->show();
   }
 }
 
 void KIconLoaderDialog::progress( int p )
 {
-  progressBar->setProgress( p );
+  progressBar->setValue( p );
 }
 
 void KIconLoaderDialog::hideProgressBar( void )
