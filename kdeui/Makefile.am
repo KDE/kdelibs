@@ -119,7 +119,7 @@ libkdeui_la_SOURCES = \
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
 		kdepackages.h kdeui-doc.h kshortcutdialog.h kxmlguifactory_p.h \
-		kstdaction_private.h
+		kstdaction_p.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)

@@ -30,7 +30,7 @@
 #include <klocale.h>
 #include <kstdaccel.h>
 #include <kmainwindow.h>
-#include "kstdaction_private.h"
+#include "kstdaction_p.h"
 
 namespace KStdAction
 {
