@@ -57,6 +57,12 @@ KSycocaFactory::~KSycocaFactory()
    delete m_entryDict;
 }
 
+void KSycocaFactory::clear()
+{
+  m_entryDict->clear();
+  m_entryList->clear();
+}
+
 void
 KSycocaFactory::save(QDataStream &str)
 {
@@ -95,7 +101,7 @@ KSycocaFactory::save(QDataStream &str)
 }
 
 void 
-KSycocaFactory::add(KSycocaEntry *newEntry)
+KSycocaFactory::addEntry(KSycocaEntry *newEntry)
 {
    if (!m_entryList) return; // Error! Function should only be called when
                              // building database

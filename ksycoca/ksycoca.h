@@ -19,6 +19,7 @@
 #ifndef __ksycoca_h__
 #define __ksycoca_h__ "$Id$"
 
+#include <qobject.h>
 #include "ksycocatype.h"
 
 class QDataStream;
@@ -28,8 +29,9 @@ class KSycocaFactoryList;
 /**
  * Read-only SYstem COnfiguration CAche
  */
-class KSycoca
+class KSycoca : public QObject
 {
+  Q_OBJECT
 protected:
    /**
     * @internal

@@ -24,6 +24,9 @@
 #include <qdatastream.h>
 #include <qlist.h>
 
+/**
+ * Base class for all entries.
+ */
 class KSycocaEntry
 {
  
@@ -44,7 +47,13 @@ public:
     */
    virtual QString name() const = 0L;
   
+   /**
+    * @return the position of the entry in the sycoca file
+    */
    int offset() { return mOffset; }
+   /**
+    * Store the position of the entry in the sycoca file
+    */
    void setOffset(int _offset) { mOffset = _offset; }
 
    /**

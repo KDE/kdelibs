@@ -54,16 +54,16 @@ public:
   
   virtual ~KServiceTypeFactory();
 
+  /**
+   * Construct a KServiceType from a config file.
+   */
+  virtual KSycocaEntry *createEntry(const QString &file);
+
   static KServiceType *findServiceTypeByName( const QString &_name);
 
 protected:
   KServiceType *_findServiceTypeByName( const QString &_name);
   KServiceType *createServiceType(int offset);
-
-  /**
-   * Construct a KServiceType from a config file.
-   */
-  KServiceType *createEntry(const QString &file);
 
 // Is this still usefull?
   /*

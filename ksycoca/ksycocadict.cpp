@@ -66,6 +66,7 @@ KSycocaDict::~KSycocaDict()
 void 
 KSycocaDict::add(const QString &key, KSycocaEntry *payload)
 {
+   if (key.isEmpty()) abort();
    if (!payload) return; // Not allowed!
    if (!d)
    {
@@ -260,6 +261,7 @@ fprintf(stderr, "Calculating hash keys..\n");
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
       entry->hash = 0;
+fprintf( stderr, "%s\n", entry->key.ascii() );
       if ((int) entry->key.length() > maxLength)
          maxLength = entry->key.length();
    }
@@ -347,6 +349,7 @@ fprintf(stderr, "Clearing hashtable...\n");
 fprintf(stderr, "Filling hashtable...\n");
    for(string_entry *entry=d->first(); entry; entry = d->next())
    {
+fprintf(stderr, "Filling with %s\n", entry->key.ascii());
       int hash = entry->hash % mHashTableSize;
       if (!hashTable[hash].entry)
       { // First entry

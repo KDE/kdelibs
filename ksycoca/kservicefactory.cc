@@ -38,19 +38,30 @@ KServiceFactory::KServiceFactory(bool buildDatabase)
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "apps" );
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "services" );
    }
+   self = this;
 }
 
 KServiceFactory::~KServiceFactory()
 {
 }
 
-KService* KServiceFactory::createEntry( const QString& file )
+KSycocaEntry* KServiceFactory::createEntry( const QString& file )
 {
   // Just a backup file ?
   if ( file.right(1) == "~" || file.right(4) == ".bak" || ( file[0] == '%' && file.right(1) == "%" ) )
       return 0;
 
-  return new KService( file );
+  KSimpleConfig cfg( file, true);
+  cfg.setDesktopGroup();
+  KService * serv = new KService( cfg );
+
+  if ( serv->isValid() )
+     return serv;
+  else {
+     kdebug( KDEBUG_WARN, 7012, "Invalid Service : %s", file.ascii() );
+     delete serv;
+     return 0L;
+  }
 }
 
 // Static function!
@@ -96,12 +107,15 @@ KServiceFactory::createService(int offset)
 
      default:
         QString tmp = i18n("KServiceFactory: unexpected object entry in KSycoca database (type = %1)\n");
-        KMessageBox::error( 0L, tmp.arg((int)type) );
+        debug(tmp.arg((int)type));
+        //KMessageBox::error( 0L, tmp.arg((int)type) );
         break;
    } 
    if (!newEntry->isValid())
    {
-      KMessageBox::error( 0L, i18n("KServiceFactory: corrupt object in KSycoca database!\n") );
+      QString tmp = i18n("KServiceFactory: corrupt object in KSycoca database!\n");
+      debug(tmp);
+      //KMessageBox::error( 0L, tmp );
       delete newEntry;
       newEntry = 0;
    }   

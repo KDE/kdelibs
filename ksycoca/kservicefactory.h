@@ -47,16 +47,16 @@ public:
   KServiceFactory(bool buildDatabase = false);
   virtual ~KServiceFactory();
   
+  /**
+   * Construct a KService from a config file.
+   */
+  virtual KSycocaEntry *createEntry(const QString &file);
+
   static KService *findServiceByName( const QString &_name);
 
 protected:
   KService *_findServiceByName( const QString &_name);
   KService *createService(int offset);
-
-  /**
-   * Construct a KService from a config file.
-   */
-  KService *createEntry(const QString &file);
 
 private:
   static KServiceFactory *self;

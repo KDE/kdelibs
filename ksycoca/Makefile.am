@@ -44,7 +44,7 @@ libkio_la_SOURCES = \
 
 libkio_la_METASOURCES = AUTO
 
-include_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h \
+include_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h ksycocatype.h \
 	kservicetype.h kservicetypefactory.h \
 	kmimetype.h kmimemagic.h kservice.h kservicefactory.h \
         krun.h kdirwatch.h \

@@ -38,9 +38,10 @@ KServiceTypeFactory::KServiceTypeFactory(bool buildDatabase)
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "servicetypes" );
       (*m_pathList) += KGlobal::dirs()->resourceDirs( "mime" );
    }
+   self = this;
 }
 
-KServiceType *
+KSycocaEntry *
 KServiceTypeFactory::createEntry(const QString &file)
 {
   // Just a backup file ?
@@ -135,13 +136,16 @@ KServiceTypeFactory::createServiceType(int offset)
         break;
 
      default:
-        QString tmp = i18n("KServiceFactory: unexpected object entry in KSycoca database (type = %1)\n");
+        QString tmp = i18n("KServiceTypeFactory: unexpected object entry in KSycoca database (type = %1)\n");
+        debug(tmp);
         KMessageBox::error( 0L, tmp.arg((int)type) );
         break;
    } 
    if (!newEntry->isValid())
    {
-      KMessageBox::error( 0L, i18n("KServiceFactory: corrupt object in KSycoca database!\n") );
+      QString tmp = i18n("KServiceTypeFactory: corrupt object in KSycoca database!\n");
+      debug(tmp);
+      KMessageBox::error( 0L, tmp );
       delete newEntry;
       newEntry = 0;
    }   

@@ -3,12 +3,15 @@
 #include "kservicetypefactory.h"
 #include "kservicefactory.h"
 
+#include <kapp.h>
 #include <qfile.h>
 #include <qdatastream.h>
 
 
 main(int argc, char *argv[])
 {
+   // KApplication k(argc,argv); // KMessageBox needs KApp for makeStdCaption
+
    bool build = false;
 
    for(int i = 1; i < argc; i++)
@@ -25,6 +28,8 @@ main(int argc, char *argv[])
      sycoca->addFactory(factory);
      KServiceFactory *sfactory = new KServiceFactory(true); // Build data base
      sycoca->addFactory(sfactory);
+
+     sycoca->build(); // Parse dirs
      sycoca->save(); // Save database
      delete sycoca;
      delete factory;

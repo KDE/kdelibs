@@ -15,8 +15,12 @@
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
  **/
+
+#include <qdir.h>
+
 #include "kbuildsycoca.h"
 #include "ksycocatype.h"
+#include "ksycocaentry.h"
 #include "ksycocafactory.h"
 
 #include <qdatastream.h>
@@ -24,22 +28,123 @@
 
 #include <assert.h>
 #include <kglobal.h>
+#include <kdebug.h>
+#include <kdirwatch.h>
 #include <kstddirs.h>
 
-KBuildSycoca::KBuildSycoca()
+KBuildSycoca::KBuildSycoca() : KSycoca( true )
 {
+  m_pDirWatch = new KDirWatch;
+
+  QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
+	   this, SLOT(update(const QString&)));
+  QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
+	   this, SLOT(dirDeleted(const QString&)));
 }
    
 KBuildSycoca::~KBuildSycoca()
 {
 }
 
-void
-KBuildSycoca::addFactory( KSycocaFactory *factory)
+void KBuildSycoca::addFactory( KSycocaFactory *factory)
 {
    assert(m_lstFactories);
    m_lstFactories->append(factory);
-   // TODO borrow code from KRegistry for parsing files
+}
+
+void KBuildSycoca::build()
+{
+  // For each factory
+  QListIterator<KSycocaFactory> factit ( *m_lstFactories );
+  for ( ; factit.current(); ++factit )
+  {
+    // Clear it
+    factit.current()->clear();
+    // For each path the factory deals with
+    QStringList::ConstIterator it = factit.current()->pathList()->begin();
+    for( ; it != factit.current()->pathList()->end(); ++it )
+    {
+      readDirectory( *it, factit.current() );
+    }
+  }
+}
+
+void KBuildSycoca::dirDeleted(const QString& /*path*/)
+{
+  // We could be smarter here, and find out which factory
+  // deals with that dir, and update only that...
+  // But rebuilding everything is fine for me.
+  build();
+}
+
+void KBuildSycoca::update(const QString& /*path*/)
+{
+  // We could be smarter here, and find out which factory
+  // deals with that dir, and update only that...
+  // But rebuilding everything is fine for me.
+  build();
+}
+
+void KBuildSycoca::readDirectory( const QString& _path, KSycocaFactory * factory )
+{
+  kdebug(KDEBUG_INFO, 7011, QString("reading %1").arg(_path));
+
+  QDir d( _path );                               // set QDir ...
+  if ( !d.exists() )                            // exists&isdir?
+    return;                             // return false
+  d.setSorting(QDir::Name);                  // just name
+
+  QString path( _path );
+  if ( path.right(1) != "/" )
+    path += "/";
+
+  QString file;
+
+  //************************************************************************
+  //                           Setting dirs
+  //************************************************************************
+
+  if ( !m_pDirWatch->contains( path ) ) // New dir?
+    m_pDirWatch->addDir(path);          // add watch on this dir
+
+  // Note: If some directory is gone, dirwatch will delete it from the list.
+
+  //************************************************************************
+  //                               Reading
+  //************************************************************************
+
+  unsigned int i;                           // counter and string length.
+  unsigned int count = d.count();
+  for( i = 0; i < count; i++ )                        // check all entries
+    {
+      if (d[i] == "." || d[i] == ".." || d[i] == "magic")
+	continue;                          // discard those ".", "..", "magic"...
+
+      file = path;                           // set full path
+      file += d[i];                          // and add the file name.
+      struct stat m_statbuff;
+      if ( stat( file.ascii(), &m_statbuff ) == -1 )           // get stat...
+	continue;                                   // no such, continue.
+
+      if ( S_ISDIR( m_statbuff.st_mode ) )               // isdir?
+	{
+          readDirectory( file, factory );      // yes, dive into it.
+	}
+      else                                         // no, not a dir/no recurse...
+	{
+          if ( file.right(1) != "~" )
+          {
+            // Can we read the file ?
+            if ( access( file.ascii(), R_OK ) != -1 )
+            {
+              // Create a new entry
+              KSycocaEntry* entry = factory->createEntry( file );
+              if ( entry )
+                factory->addEntry( entry );
+            }
+          }
+	}
+    }
 }
 
 void 
@@ -90,3 +195,4 @@ KBuildSycoca::save()
    str->device()->at(endOfData);
 }
 
+#include "kbuildsycoca.moc"

@@ -38,24 +38,9 @@
  * Represents a service, i.e. an application bound to one or several mimetypes
  * as written in its desktop entry file. A service may be a libary, too.
  *
- * To use the public static methods of this class, you must do
- * the following registry initialisation (in main() for instance)
- * <pre>
- * #include <kregistry.h>
- * #include <kregfactories.h>
- *
- * KRegistry::self()->addFactory( new KServiceTypeFactory );
- * KRegistry::self()->addFactory( new KServiceFactory );
- * KRegistry::self()->load();
- * </pre>
- *
- * The ServiceTypeFactory is more or less mandatory, but if you don't want to
- * keep all the services in your application's memory (and you probably don't),
- * see KTraderServiceProvider in corba/kded/ktrader.h
- *
  * @author Torben Weis <weis@kde.org>
  */
-class KService : public KShared, KSycocaEntry
+class KService : public KShared, public KSycocaEntry
 {
   K_SYCOCATYPE( KST_KService, KSycocaEntry );
 
@@ -67,9 +52,6 @@ public:
    * Constructor.  You may pass in arguments to create a service with
    * specific properties, otherwise a null service will be constructed.
    *
-   * @param _put_in_list will add the service to the list of known
-   *        services. But sometimes you may just want to create
-   *        a service object for internal purposes.
    */
   KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
             const QString& _icon, const QStringList& _lstServiceTypes,
@@ -77,8 +59,7 @@ public:
 	    const QString& _path = QString::null, const QString& _terminal = QString::null,
 	    const QString& _file = QString::null, const QString& _act_mode = QString::null,
 	    const QStringList& _repoids = QStringList(),
-	    const QString& _lib = QString::null, int _minor = 0, int _major = 0, const QStringList& _deps = QStringList(),
-	    bool _put_in_list = TRUE );
+	    const QString& _lib = QString::null, int _minor = 0, int _major = 0, const QStringList& _deps = QStringList());
   /**
    * Create an invalid service. This is only usefull in combination
    * with the streaming operators if you want to load a service from
@@ -86,16 +67,16 @@ public:
    *
    * @see #isValid.
    */
-  KService( bool _put_in_list = true );
+  //KService();
   /**
    * Construct a service and take all informations from a @ref KSimpleConfig object.
    */
-  KService( KSimpleConfig& _cfg, bool _put_in_list = true );
+  KService( KSimpleConfig& _cfg );
   /**
    * Construct a service from a stream. That feature is used when dumping the complete
    * @ref KRegistry in a single file and reading it afterwards.
    */
-  KService( QDataStream& _str, bool _put_in_list = true );
+  KService( QDataStream& _str );
 
   /**
    * Destroys the service and automatically removes it from the
@@ -230,8 +211,7 @@ public:
   /**
    * @return the whole list of services. Useful to display them.
    */
-  static KService* parseService( const QString& _file, KSimpleConfig &config,
-				 bool _put_in_list = true );
+  static KService* parseService( const QString& _file, KSimpleConfig &config );
 
   /**
    * @return the whole list of services. Useful for being able to
@@ -261,8 +241,6 @@ private:
   bool m_bAllowAsDefault;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;
-
-  static QList<KService>* s_lstServices;
 };
 
 class KServiceList : public QList<KService>

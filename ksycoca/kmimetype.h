@@ -165,7 +165,7 @@ public:
    * available mimetypes.  The returned dict contains a subset of the
    * entries returned by @ref KServiceType::serviceTypes 
    */
-  static const QDict<KMimeType>& mimeTypes() { return *s_mapMimeTypes; }
+  // TODO static const QDict<KMimeType>& mimeTypes() { return *s_mapMimeTypes; } 
 
 protected:
   /**
@@ -173,11 +173,6 @@ protected:
    */
   static void errorMissingMimeType( const QString& _type );
 
-  /**
-   * Check for static variables initialised. Called by constructor
-   * and by check().
-   */
-  static void initStatic();
   /**
    * Called after the registry parsed all mimetype config files.
    * This function makes sure that vital mime types are installed.
@@ -191,7 +186,6 @@ protected:
 
   QStringList m_lstPatterns;
   
-  static QDict<KMimeType>* s_mapMimeTypes;
   static KMimeType* s_pDefaultType;
 };
 

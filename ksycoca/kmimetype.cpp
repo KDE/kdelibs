@@ -44,8 +44,6 @@
 #include <kurl.h>
 #include <kdebug.h>
 
-// Should we keep that ? probably not
-QDict<KMimeType>* KMimeType::s_mapMimeTypes = 0L; 
 KMimeType* KMimeType::s_pDefaultType = 0L;
 bool KMimeType::s_bChecked = false;
 
@@ -53,8 +51,6 @@ void KMimeType::check()
 {
   if ( s_bChecked )
     return;
-
-  kdebug( KDEBUG_INFO, 7009, "==== %d MimeTypes =======", s_mapMimeTypes->count() );
 
   s_bChecked = true; // must be done before building mimetypes
 
@@ -71,8 +67,10 @@ void KMimeType::check()
 
   // No Mime-Types installed ?
   // Lets do some rescue here.
+  /*
   if ( s_mapMimeTypes->count() <= 1 )
     KMessageBox::error( 0, i18n( "No mime types installed!" ) );
+  */
 	
   if ( KMimeType::mimeType( "inode/directory" ) == s_pDefaultType )
     errorMissingMimeType( "inode/directory" );
@@ -112,7 +110,7 @@ void KMimeType::errorMissingMimeType( const QString& _type )
   else
     e = new KMimeType( _type, "unknown.xpm", "", dummy );
 
-  s_mapMimeTypes->insert( _type, e );
+  //  s_mapMimeTypes->insert( _type, e );
 }
 
 KMimeType* KMimeType::mimeType( const QString& _name )
@@ -177,11 +175,14 @@ KMimeType* KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( ! path.isNull() )
     {
       // Try to find it out by looking at the filename
+#warning FIXME matchFilename on all mimetypes
+#if 0
       assert( s_mapMimeTypes );
       QDictIterator<KMimeType> it( *s_mapMimeTypes );
       for( ; it.current() != 0L; ++it )
 	if ( it.current()->matchFilename( path.data() ) )
 	  return it.current();
+#endif
       
       // Another filename binding, hardcoded, is .desktop:
       if ( path.right(8) == ".desktop" )
@@ -219,9 +220,7 @@ KMimeType::KMimeType( const QString& _type, const QString& _icon, const QString&
 		      const QStringList& _patterns )
   : KServiceType( _type, _icon, _comment )
 {
-  assert( s_mapMimeTypes );
-
-  s_mapMimeTypes->insert( _type, this );
+  //s_mapMimeTypes->insert( _type, this );
   m_lstPatterns = _patterns;
 }
 
@@ -233,7 +232,7 @@ KMimeType::KMimeType( KSimpleConfig& _cfg ) : KServiceType( _cfg )
   if ( isValid() )
   {
     // kdebug( KDEBUG_INFO, 7009, "inserting mimetype in map for m_strName = '%s'", m_strName.ascii());
-    s_mapMimeTypes->insert( m_strName, this );
+    //s_mapMimeTypes->insert( m_strName, this );
   } else
     kdebug( KDEBUG_WARN, 7009, "mimetype not valid '%s' (missing entry in the file ?)", m_strName.ascii());
 }
@@ -296,7 +295,7 @@ QStringList KMimeType::propertyNames() const
 
 KMimeType::~KMimeType()
 {
-  s_mapMimeTypes->remove( m_strName );
+  //s_mapMimeTypes->remove( m_strName );
 }
 
 bool KMimeType::matchFilename( const QString& _filename ) const
@@ -560,7 +559,7 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
 
 bool KDEDesktopMimeType::runApplication( const QString& , KSimpleConfig &cfg )
 {
-  KService s( cfg, false );
+  KService s( cfg );
   if ( !s.isValid() )
     // The error message was already displayed, so we can just quit here
     return false;

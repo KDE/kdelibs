@@ -36,7 +36,8 @@
 
 
 /**
- * A service type is the generic notion for a mimetype.
+ * A service type is the generic notion for a mimetype, a type of service
+ * instead of a type of file.
  * For instance, KOfficeFilter is a service type.
  * It is associated to services according to the user profile (kuserprofile.h)
  * and there are factories and registry entry classes for it (kservicetypefactories.h)

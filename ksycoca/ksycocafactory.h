@@ -22,6 +22,7 @@
 #include "ksycocatype.h"
 
 #include <qlist.h>
+#include <qstring.h>
 class KSycoca;
 class QStringList;
 class KSycocaDict;
@@ -54,7 +55,22 @@ public:
     */
    void setOffset(int _offset) { mOffset = _offset; }
 
-   void add(KSycocaEntry *newEntry);
+   /**
+    * Add an entry
+    */
+   void addEntry(KSycocaEntry *newEntry);
+   /**
+    * Construct an entry from a config file.
+    * To be implemented in the real factories.
+    */
+   virtual KSycocaEntry *createEntry(const QString &file) = 0L;
+
+   /**
+    * Clear the whole factory - often called before updating it
+    * Destroys every entry since the list and the dict are autodelete
+    * Keeps the paths.
+    */
+   void clear();
 
    /**
     * Saves all entries it maintains as well as index files

@@ -38,27 +38,6 @@
 #include <kapp.h>
 #include <kdebug.h>
 #include <klocale.h>
-QList<KService>* KService::s_lstServices = 0L;
-
-void KService::initStatic()
-{
-  if ( !s_lstServices )
-    s_lstServices = new QList<KService>;
-}
-
-KService* KService::service( const QString& _name )
-{
-  initStatic();
-
-  assert( s_lstServices );
-
-  KService *s;
-  for( s = s_lstServices->first(); s != 0L; s = s_lstServices->next() )
-    if ( s->name() == _name )
-      return s;
-
-  return 0L;
-}
 
 KService::KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
                     const QString& _icon, const QStringList& _lstServiceTypes,
@@ -66,13 +45,9 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
 		    const QString& _path, const QString& _terminal,
 		    const QString&, const QString& _act_mode,
 		    const QStringList& _repo_ids,
-		    const QString& _lib, int _minor, int _major, const QStringList& deps, bool _put_in_list )
+		    const QString& _lib, int _minor, int _major, const QStringList& deps )
 {
-  initStatic();
   m_bValid = true;
-
-  if ( _put_in_list )
-    s_lstServices->append( this );
 
   m_strName = _name;
   m_strExec = _exec;
@@ -91,22 +66,16 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
   m_lstLibraryDeps = deps;
 }
 
-KService::KService( bool _put_in_list )
+/*
+KService::KService()
 {
-  initStatic();
   m_bValid = false;
-
-  if ( _put_in_list )
-    s_lstServices->append( this );
 }
+*/
 
-KService::KService( KSimpleConfig& config, bool _put_in_list )
+KService::KService( KSimpleConfig& config )
 {
-  initStatic();
   m_bValid = true;
-
-  if ( _put_in_list )
-    s_lstServices->append( this );
 
   config.setDesktopGroup();
   m_strExec = config.readEntry( "Exec" );
@@ -152,19 +121,13 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
 
 }
 
-KService::KService( QDataStream& _str, bool _put_in_list )
+KService::KService( QDataStream& _str )
 {
-  initStatic();
-
-  if ( _put_in_list )
-    s_lstServices->append( this );
-
   load( _str );
 }
 
 KService::~KService()
 {
-  s_lstServices->removeRef( this );
 }
 
 void KService::load( QDataStream& s )
@@ -292,14 +255,14 @@ QDataStream& operator<<( QDataStream& _str, const KService& s )
 
 const QList<KService>& KService::services()
 {
-  if ( !s_lstServices)
-  {
-    initStatic();
-#warning FIXME
-/*    
-    KRegistry::self()->addFactory( new KServiceFactory );
-    KRegistry::self()->load();
-*/    
-  }
-  return *s_lstServices;
+#warning TODO KService::services()
+   // TODO !!
+   QList<KService> l;
+   return l;
 }
+
+KService* KService::service( const QString& _name )
+{
+  return KServiceFactory::findServiceByName( _name );
+}
+
