@@ -115,7 +115,8 @@ QStringList KConfig::groupList() const
 
          if (!aIt.key().bDefault && !(*aIt).bDeleted)
          {
-            retList.append(QString::fromUtf8(group));
+            if (group != "$Version") // Special case!
+               retList.append(QString::fromUtf8(group));
             break; // Grou is non-empty, added, next gropup
          }
          ++aIt;
