@@ -23,8 +23,6 @@
 #include "sha1.h"
 #include <string.h>
 
-// FIXME: check 64bit compatibility
-
 // FIXME: this can be optimized to one instruction on most cpus.
 #define rol(x,y) ((x << y) | (x >> (32-y)))
 

@@ -18,7 +18,6 @@
 */
 
 
-// FIXME: does this work on 64 bit machines?
 // FIXME: should we unroll some loops?  Optimization can be done here.
 
 
@@ -53,9 +52,9 @@ bool BlowFish::init() {
 		_S[3][i] = ks3[i];
 	}
 
-	unsigned long datal = 0;
-	unsigned long datar = 0;
-	unsigned long data = 0;
+	uint32_t datal = 0;
+	uint32_t datar = 0;
+	uint32_t data = 0;
 	int j = 0;
 
 
@@ -144,7 +143,7 @@ bool BlowFish::setKey(void *key, int bitlength) {
 
 #ifdef WORDS_BIGENDIAN
 #define shuffle(x) do {				\
-	unsigned long r = x;			\
+	uint32_t r = x;				\
 		x  = (r & 0xff000000) >> 24;	\
 		x |= (r & 0x00ff0000) >>  8;	\
 		x |= (r & 0x0000ff00) <<  8;	\
@@ -153,7 +152,7 @@ bool BlowFish::setKey(void *key, int bitlength) {
 #endif
 
 int BlowFish::encrypt(void *block, int len) {
-	unsigned long *d = (unsigned long *)block;
+	uint32_t *d = (uint32_t *)block;
 
 	if (!_init || len % _blksz != 0) {
 		return -1;
@@ -177,7 +176,7 @@ int BlowFish::encrypt(void *block, int len) {
 
 
 int BlowFish::decrypt(void *block, int len) {
-	unsigned long *d = (unsigned long *)block;
+	uint32_t *d = (uint32_t *)block;
 
 	if (!_init || len % _blksz != 0) {
 		return -1;
@@ -200,9 +199,9 @@ int BlowFish::decrypt(void *block, int len) {
 }
 
 
-unsigned long BlowFish::F(unsigned long x) {
+uint32_t BlowFish::F(uint32_t x) {
 	unsigned short a, b, c, d;
-	unsigned long y;
+	uint32_t y;
 
 	d = x & 0x000000ff;
 	x >>= 8;
@@ -220,8 +219,8 @@ unsigned long BlowFish::F(unsigned long x) {
 }
 
 
-void BlowFish::encipher(unsigned long *xl, unsigned long *xr) {
-	unsigned long Xl = *xl, Xr = *xr, temp;
+void BlowFish::encipher(uint32_t *xl, uint32_t *xr) {
+	uint32_t Xl = *xl, Xr = *xr, temp;
 
 	for (int i = 0; i < 16; ++i) {
 		Xl ^= _P[i];
@@ -241,8 +240,8 @@ void BlowFish::encipher(unsigned long *xl, unsigned long *xr) {
 }
 
 
-void BlowFish::decipher(unsigned long *xl, unsigned long *xr) {
-	unsigned long Xl = *xl, Xr = *xr, temp;
+void BlowFish::decipher(uint32_t *xl, uint32_t *xr) {
+	uint32_t Xl = *xl, Xr = *xr, temp;
 
 	for (int i = 17; i > 1; --i) {
 		Xl ^= _P[i];

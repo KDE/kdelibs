@@ -20,6 +20,7 @@
 #ifndef _BLOWFISH_H
 #define _BLOWFISH_H
 
+#include <stdint.h>
 #include "blockcipher.h"
 
 
@@ -43,8 +44,8 @@ class BlowFish : public BlockCipher {
 		virtual int decrypt(void *block, int len);
 
 	private:
-		unsigned long _S[4][256];
-		unsigned long _P[18];
+		uint32_t _S[4][256];
+		uint32_t _P[18];
 
 		void *_key;
 		int _keylen;  // in bits
@@ -52,9 +53,9 @@ class BlowFish : public BlockCipher {
 		bool _init;
 
 		bool init();
-		unsigned long F(unsigned long x);
-		void encipher(unsigned long *xl, unsigned long *xr);
-		void decipher(unsigned long *xl, unsigned long *xr);
+		uint32_t F(uint32_t x);
+		void encipher(uint32_t *xl, uint32_t *xr);
+		void decipher(uint32_t *xl, uint32_t *xr);
 };
 
 #endif
