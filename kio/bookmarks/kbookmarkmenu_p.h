@@ -74,14 +74,18 @@ class KBookmarkActionMenu : public KActionMenu {
   Q_OBJECT
   Q_PROPERTY( QString url READ getUrl WRITE setUrl )
   Q_PROPERTY( QString address READ getAddress WRITE setAddress )
+  Q_PROPERTY( bool readOnly READ getReadOnly WRITE setReadOnly )
 public:
   const QString getUrl() const { return m_url; }
   void setUrl(const QString &url) { m_url = url; }
   const QString getAddress() const { return m_address; }
   void setAddress(const QString &address) { m_address = address; }
+  bool getReadOnly() const { return m_readOnly; }
+  void setReadOnly(bool readOnly) { m_readOnly = readOnly; }
 private:
   QString m_url;
   QString m_address;
+  bool m_readOnly;
 public:
   KBookmarkActionMenu( 
     const QString &text, const QString& sIconName,
@@ -119,9 +123,9 @@ class KBookmarkEditDialog : public KDialogBase
 
 public:
   KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
-  QString finalUrl();
-  QString finalTitle();
-  QString finalAddress();
+  QString finalUrl() const;
+  QString finalTitle() const;
+  QString finalAddress() const;
 
 protected slots:
   void slotOk();

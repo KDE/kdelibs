@@ -752,17 +752,17 @@ void KBookmarkEditDialog::slotCancel()
   reject(); 
 } 
 
-QString KBookmarkEditDialog::finalAddress()
+QString KBookmarkEditDialog::finalAddress() const
 { 
   return KBookmarkFolderTree::selectedAddress( m_folderTree ); 
 }
 
-QString KBookmarkEditDialog::finalUrl() 
+QString KBookmarkEditDialog::finalUrl() const
 { 
   return m_url->text(); 
 }
 
-QString KBookmarkEditDialog::finalTitle() 
+QString KBookmarkEditDialog::finalTitle() const
 { 
   return m_title->text(); 
 }
