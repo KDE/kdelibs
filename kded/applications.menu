@@ -14,9 +14,14 @@
 		<Separator/>
 		<Menuname>More</Menuname>
 	</DefaultLayout>
+	<Layout>
+		<Merge type="menus"/>
+		<Menuname>Applications</Menuname>
+		<Merge type="files"/>
+	</Layout>
 
 	<Menu>
-		<Name>Unknown</Name>
+		<Name>Applications</Name>
 		<Directory>kde-unknown.directory</Directory>
 		<OnlyUnallocated/>
 		<Include>
