@@ -395,13 +395,13 @@ bool KTar::prepareWriting( const QString& name, const QString& user, const QStri
 {
     if ( !isOpened() )
     {
-        kdWarning(7041) << "KArchive::writeFile: You must open the tar file before writing to it\n";
+        kdWarning(7041) << "KTar::prepareWriting: You must open the tar file before writing to it\n";
         return false;
     }
 
     if ( !(mode() & IO_WriteOnly) )
     {
-        kdWarning(7041) << "KArchive::writeFile: You must open the tar file for writing\n";
+        kdWarning(7041) << "KTar::prepareWriting: You must open the tar file for writing\n";
         return false;
     }
 

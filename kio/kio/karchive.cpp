@@ -123,6 +123,79 @@ const KArchiveDirectory* KArchive::directory() const
     return const_cast<KArchive *>(this)->rootDir();
 }
 
+
+bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
+{
+    QFileInfo fileInfo( fileName );
+    if ( !fileInfo.isFile() )
+    {
+        kdWarning() << "KArchive::addLocalFile " << fileName << " doesn't exist or is not a regular file." << endl;
+        return false;
+    }
+
+    uint size = fileInfo.size();
+    if ( !prepareWriting( destName, fileInfo.owner(), fileInfo.group(), size ) )
+    {
+        kdWarning() << "KArchive::addLocalFile prepareWriting " << destName << " failed" << endl;
+        return false;
+    }
+
+    QFile file( fileName );
+    if ( !file.open( IO_ReadOnly ) )
+    {
+        kdWarning() << "KArchive::addLocalFile couldn't open file " << fileName << endl;
+        return false;
+    }
+
+    // Read and write data in chunks to minimize memory usage
+    QByteArray array(8*1024);
+    int n;
+    uint total = 0;
+    while ( ( n = file.readBlock( array.data(), array.size() ) ) > 0 )
+    {
+        if ( !writeData( array.data(), n ) )
+        {
+            kdWarning() << "KArchive::addLocalFile writeData failed" << endl;
+            return false;
+        }
+        total += n;
+    }
+    Q_ASSERT( total == size );
+
+    if ( !doneWriting( size ) )
+    {
+        kdWarning() << "KArchive::addLocalFile doneWriting failed" << endl;
+        return false;
+    }
+    return true;
+}
+
+bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
+{
+    QString dot = ".";
+    QString dotdot = "..";
+    QDir dir( path );
+    if ( !dir.exists() )
+        return false;
+    QStringList files = dir.entryList();
+    for ( QStringList::Iterator it = files.begin(); it != files.end(); ++it )
+    {
+        if ( *it != dot && *it != dotdot )
+        {
+            QString fileName = path + "/" + *it;
+            QString dest = destName.isEmpty() ? *it : (destName + "/" + *it);
+            QFileInfo fileInfo( fileName );
+
+            if ( fileInfo.isDir() )
+                addLocalDirectory( fileName, dest );
+            else if ( fileInfo.isFile() )
+                addLocalFile( fileName, dest );
+            // We omit symlinks and sockets
+        }
+    }
+    return true;
+}
+
 bool KArchive::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
 {
 
@@ -134,13 +207,13 @@ bool KArchive::writeFile( const QString& name, const QString& user, const QStrin
 
     // Write data
     // Note: if data is 0L, don't call writeBlock, it would terminate the KFilterDev
-    if ( data && device()->writeBlock( data, size ) != (int)size )
+    if ( data && size && !writeData( data, size ) )
     {
-        kdWarning() << "KArchive::writeFile writeBlock failed" << endl;
+        kdWarning() << "KArchive::writeFile writeData failed" << endl;
         return false;
     }
 
-    if ( ! doneWriting( size ) )
+    if ( !doneWriting( size ) )
     {
         kdWarning() << "KArchive::writeFile doneWriting failed" << endl;
         return false;
@@ -426,9 +499,24 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
   }
 }
 
+bool KArchive::writeData( const char* data, uint size )
+{
+    WriteDataParams params;
+    params.data = data;
+    params.size = size;
+    virtual_hook( 1, &params );
+    return params.retval;
+}
 
-void KArchive::virtual_hook( int, void* )
-{ /*BASE::virtual_hook( id, data );*/ }
+void KArchive::virtual_hook( int id, void* data )
+{
+    if ( id == 1 ) {
+        WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
+        params->retval = device()->writeBlock( params->data, params->size ) == (Q_LONG)params->size;
+    } else {
+        /*BASE::virtual_hook( id, data );*/
+    }
+}
 
 void KArchiveEntry::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
@@ -438,4 +526,3 @@ void KArchiveFile::virtual_hook( int id, void* data )
 
 void KArchiveDirectory::virtual_hook( int id, void* data )
 { KArchiveEntry::virtual_hook( id, data ); }
-

@@ -44,7 +44,7 @@ class KZipFileEntry;
  *   in IO_WriteOnly mode. exspecially take care of this, when you don´t want
  *   to leak information of how intermediate versions of files in the zip
  *   were looking.
- *   for more information on the zip fileformat go to 
+ *   for more information on the zip fileformat go to
  *   http://www.pkware.com/support/appnote.html .
  * @short A class for reading/writing zip archives.
  * @author Holger Schroeder <holger-kde@holgis.net>
@@ -117,7 +117,7 @@ public:
      * @param data a pointer to the data
      * @return true if successful, false otherwise
      */
-    virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data );
+    virtual bool writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data ); // BC: remove reimplementation for KDE-4.0
 
     /**
      * Alternative method for writing: call prepareWriting(), then feed the data 
@@ -136,7 +136,7 @@ public:
      * @param size the size of the chunk
      * @return true if successful, false otherwise
      */
-    bool writeData( const char* data, uint size );
+    bool writeData( const char* data, uint size ); // TODO make virtual
 
     /**
      * Write data to a file that has been created using @ref prepareWriting().

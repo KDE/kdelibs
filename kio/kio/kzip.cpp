@@ -1,4 +1,3 @@
-
 /* This file is part of the KDE libraries
    Copyright (C) 2000 David Faure <faure@kde.org>
    Copyright (C) 2002 Holger Schroeder <holger-kde@holgis.net>
@@ -535,32 +534,10 @@ bool KZip::closeArchive()
     return true;
 }
 
-// Reimplemented to replace device()->writeBlock with writeData
+// Doesn't need to be reimplemented anymore. Remove for KDE-4.0
 bool KZip::writeFile( const QString& name, const QString& user, const QString& group, uint size, const char* data )
 {
-    // set right offset in zip.
-    device()->at( d->m_offset );
-    if ( !prepareWriting( name, user, group, size ) )
-    {
-        kdWarning() << "KZip::writeFile prepareWriting failed" << endl;
-        return false;
-    }
-
-    // Write data
-    if ( data && size && !writeData( data, size ) )
-    {
-        kdWarning() << "KZip::writeFile writeData failed" << endl;
-        return false;
-    }
-
-    if ( ! doneWriting( size ) )
-    {
-        kdWarning() << "KZip::writeFile doneWriting failed" << endl;
-        return false;
-    }
-    // update saved offset for appending new files
-    d->m_offset = device()->at();
-    return true;
+    return KArchive::writeFile( name, user, group, size, data );
 }
 
 bool KZip::prepareWriting( const QString& name, const QString& user, const QString& group, uint /*size*/ )
@@ -577,6 +554,9 @@ bool KZip::prepareWriting( const QString& name, const QString& user, const QStri
         qWarning( "KZip::writeFile: You must open the zip file for writing\n");
         return false;
     }
+
+    // set right offset in zip.
+    device()->at( d->m_offset );
 
     // delete entries in the filelist with the same filename as the one we want
     // to save, so that we don´t have duplicate file entries when viewing the zip
@@ -720,12 +700,20 @@ bool KZip::doneWriting( uint size )
     d->m_currentFile->setCRC32( d->m_crc );
 
     d->m_currentFile = 0L;
+
+    // update saved offset for appending new files
+    d->m_offset = device()->at();
     return true;
 }
 
 void KZip::virtual_hook( int id, void* data )
 {
-  KArchive::virtual_hook( id, data );
+    if ( id == 1 ) {
+        WriteDataParams* params = reinterpret_cast<WriteDataParams *>(data);
+        params->retval = writeData( params->data, params->size );
+    } else {
+        KArchive::virtual_hook( id, data );
+    }
 }
 
 bool KZip::writeData(const char * c, uint i)

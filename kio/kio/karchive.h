@@ -92,6 +92,23 @@ public:
     const KArchiveDirectory* directory() const;
 
     /**
+     * Writes a local file into the archive. The main difference with @ref writeFile,
+     * is that this method minimizes memory usage, by not loading the whole file
+     * into memory in one go.
+     * @param fileName full path to an existing local file, to be added to the archive.
+     * @param destName the resulting name (or relative path) of the file in the archive.
+     */
+    bool addLocalFile( const QString& fileName, const QString& destName );
+
+    /**
+     * Writes a local directory into the archive, including all its contents, recursively.
+     * Calls addLocalFile for each file to be added.
+     * @param path full path to an existing local directory, to be added to the archive.
+     * @param destName the resulting name (or relative path) of the file in the archive.
+     */
+    bool addLocalDirectory( const QString& path, const QString& destName );
+
+    /**
      * If an archive is opened for writing then you can add new directories
      * using this function. KArchive won't write one directory twice.
      * @param name the name of the directory
@@ -115,8 +132,7 @@ public:
 
     /**
      * Here's another way of writing a file into an archive:
-     * Call @ref prepareWriting, then call device()->writeBlock() (for tar files)
-     * or writeData (for zip files) [NEW VIRTUAL METHOD NEEDED]
+     * Call @ref prepareWriting, then call @ref writeData()
      * as many times as wanted then call @ref doneWriting( totalSize ).
      * For tar.gz files, you need to know the size before hand, it is needed in the header!
      * For zip files, size isn't used.
@@ -126,6 +142,18 @@ public:
      * @param size the size of the file
      */
     virtual bool prepareWriting( const QString& name, const QString& user, const QString& group, uint size ) = 0;
+
+    /**
+     * Write data into the current file - to be called after calling @ref prepareWriting
+     * // TODO(BIC) make virtual. For now virtual_hook allows reimplementing it.
+     */
+    bool writeData( const char* data, uint size );
+    /** @internal for virtual_hook */
+    struct WriteDataParams {
+        const char* data;
+        uint size;
+        bool retval;
+    };
 
     /**
      * Call @ref doneWriting after writing the data.
