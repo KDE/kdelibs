@@ -5,8 +5,7 @@
 
 #include "kjavaappletcontext.h"
 #include "kjavaapplet.h"
-#include <qxembed.h>
-
+#include <javaembed.h>
 
 /**
  * @short A widget for displaying Java applets
@@ -49,7 +48,7 @@
 
 class KWinModule; 
  
-class KJavaAppletWidget : public QXEmbed
+class KJavaAppletWidget : public JavaEmbed
 {
 Q_OBJECT
 

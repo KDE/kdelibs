@@ -11,38 +11,31 @@
 // For future expansion
 struct KJavaAppletWidgetPrivate
 {
-
 };
 
 static unsigned int count = 0;
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
                                       QWidget* parent, const char* name )
-   : QXEmbed( parent, name )
+   : JavaEmbed( parent, name )
 {
     applet = new KJavaApplet( this, context );
-    CHECK_PTR( applet );
-
     init();
 }
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaApplet* _applet,
                                       QWidget* parent, const char* name )
-   : QXEmbed( parent, name )
+   : JavaEmbed( parent, name )
 {
     applet = _applet;
-
     init();
 }
 
 KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
-   : QXEmbed( parent, name )
+   : JavaEmbed( parent, name )
 {
     KJavaAppletContext* context = KJavaAppletContext::getDefaultContext();
-
     applet = new KJavaApplet( this, context );
-    CHECK_PTR( applet );
-
     init();
 }
 
@@ -54,16 +47,12 @@ KJavaAppletWidget::~KJavaAppletWidget()
 void KJavaAppletWidget::init()
 {
     kwm = new KWinModule( this );
-    CHECK_PTR( kwm );
 
     uniqueTitle();
     shown = false;
 
-    //remove event filters in qApp, topLevelWidget
-    //this helps keyboard focus sometimes???
-    qApp->removeEventFilter( this );
-    topLevelWidget()->removeEventFilter( this );
-    setAutoDelete( true );
+//    qApp->removeEventFilter( this );
+//    topLevelWidget()->removeEventFilter( this );
 }
 
 void KJavaAppletWidget::create()
@@ -169,20 +158,20 @@ void KJavaAppletWidget::setWindow( WId w )
     if ( swallowTitle == w_info.name ||
          swallowTitle == w_info.visibleName )
     {
-        kdDebug() << "swallowing our window: " << swallowTitle << endl;
+        kdDebug(6100) << "swallowing our window: " << swallowTitle
+                      << ", window id = " << w << endl;
 
         // disconnect from KWM events
         disconnect( kwm, SIGNAL( windowAdded( WId ) ),
                     this, SLOT( setWindow( WId ) ) );
 
         embed( w );
-        setFocus();
     }
 }
 
 void KJavaAppletWidget::resize( int w, int h)
 {
-    QXEmbed::resize( w, h );
+    JavaEmbed::resize( w, h );
     applet->setSize( QSize(w, h) );
 }
 

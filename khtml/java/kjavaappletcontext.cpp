@@ -117,22 +117,22 @@ void KJavaAppletContext::processCmd( QString cmd, QStringList args )
 
 void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 {
-    kdDebug() << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
-    kdDebug() << "arg count = " << arg.count() << endl;;
+    kdDebug(6100) << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
+    kdDebug(6100) << "arg count = " << arg.count() << endl;;
 
     if ( cmd=="showstatus" && arg.count()>0 )
     {
-        kdDebug() << "status message = " << arg[0] << endl;
+        kdDebug(6100) << "status message = " << arg[0] << endl;
         emit showStatus( arg[0] );
     }
     else if ( cmd=="showurlinframe" && arg.count()>1 )
     {
-        kdDebug() << "url = " << arg[0] << ", frame = " << arg[1] << endl;
+        kdDebug(6100) << "url = " << arg[0] << ", frame = " << arg[1] << endl;
         emit showDocument( arg[0], arg[1] );
     }
     else if ( cmd=="showdocument" && arg.count()>0 )
     {
-        kdDebug() << "url = " << arg[0] << endl;
+        kdDebug(6100) << "url = " << arg[0] << endl;
         emit showDocument( arg[0], "_top" );
     }
     else if ( cmd=="resizeapplet" )
@@ -147,7 +147,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
 
         if( !ok )
         {
-            kdError() << "could not parse out parameters for resize" << endl;
+            kdError(6002) << "could not parse out parameters for resize" << endl;
         }
         else
         {

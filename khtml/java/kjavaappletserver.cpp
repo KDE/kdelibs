@@ -52,7 +52,7 @@ KJavaAppletServer::KJavaAppletServer()
 
 KJavaAppletServer::~KJavaAppletServer()
 {
-    kdDebug() << "KJavaAppletServer::~KJavaAppletServer" << endl;
+    kdDebug(6100) << "KJavaAppletServer::~KJavaAppletServer" << endl;
 
     self->quit();
 
@@ -81,7 +81,7 @@ void KJavaAppletServer::freeJavaServer()
         //instead of immediately quitting here, set a timer to kill us
         //if there are still no servers- give us one minute
         //this is to prevent repeated loading and unloading of the jvm
-        QTimer::singleShot( 10*1000, self, SLOT( checkShutdown() ) );
+        QTimer::singleShot( 60*1000, self, SLOT( checkShutdown() ) );
     }
 }
 
@@ -148,7 +148,7 @@ void KJavaAppletServer::setupJava( KJavaProcess *p )
 
 void KJavaAppletServer::createContext( int contextId )
 {
-    kdDebug() << "createContext: " << contextId << endl;
+    kdDebug(6100) << "createContext: " << contextId << endl;
 
     QStringList args;
     args.append( QString::number( contextId ) );
@@ -164,7 +164,7 @@ void KJavaAppletServer::createContext( int contextId, KJavaAppletContext* contex
 
 void KJavaAppletServer::destroyContext( int contextId )
 {
-    kdDebug() << "destroyContext: " << contextId << endl;
+    kdDebug(6100) << "destroyContext: " << contextId << endl;
 
     QStringList args;
     args.append( QString::number( contextId ) );
@@ -182,7 +182,7 @@ void KJavaAppletServer::createApplet( int contextId, int appletId,
                                       const QString jarFile,
                                       QSize size )
 {
-    kdDebug() << "createApplet: contextId = " << contextId     << endl
+    kdDebug(6100) << "createApplet: contextId = " << contextId     << endl
               << "              appletId  = " << appletId      << endl
               << "              name      = " << name          << endl
               << "              clazzName = " << clazzName     << endl
@@ -222,7 +222,7 @@ void KJavaAppletServer::destroyApplet( int contextId, int appletId )
 void KJavaAppletServer::setParameter( int contextId, int appletId,
                                       const QString name, const QString value )
 {
-    kdDebug() << "setParameter, contextId = " << contextId << endl
+    kdDebug(6100) << "setParameter, contextId = " << contextId << endl
               << "              appletId  = " << appletId  << endl
               << "              name      = " << name      << endl
               << "              value     = " << value     << endl;
@@ -296,7 +296,7 @@ void KJavaAppletServer::received( const QByteArray& qb )
 {
     // qb should be one command only without the length string,
     // we parse out the command and it's meaning here...
-    kdDebug() << "begin KJavaAppletServer::received buffer of length = " << qb.count() << endl;
+    kdDebug(6100) << "begin KJavaAppletServer::received buffer of length = " << qb.count() << endl;
     QString buff;
     int qb_count = (int)qb.count();
     for( int i = 0; i < qb_count; i++ )
@@ -309,7 +309,7 @@ void KJavaAppletServer::received( const QByteArray& qb )
         else
             buff += qb[i];
     }
-    kdDebug() << "buffer = >>" << buff << "<<" << endl;
+    kdDebug(6100) << "buffer = >>" << buff << "<<" << endl;
 
     QString cmd;
     QStringList args;
@@ -369,7 +369,7 @@ void KJavaAppletServer::received( const QByteArray& qb )
 
     if( !ok )
     {
-        kdError() << "could not parse out contextID to call command on" << endl;
+        kdError(6002) << "could not parse out contextID to call command on" << endl;
         return;
     }
 
@@ -378,7 +378,7 @@ void KJavaAppletServer::received( const QByteArray& qb )
         tmp->processCmd( cmd, args );
 
     else
-        kdError() << "no context object for this id" << endl;
+        kdError(6002) << "no context object for this id" << endl;
 }
 
 #include "kjavaappletserver.moc"

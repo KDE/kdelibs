@@ -18,13 +18,10 @@ static KCmdLineOptions options[] =
 int main(int argc, char **argv)
 {
     KCmdLineArgs::init( argc, argv, "testKJASSever", "test program", "0.0" );
-    KCmdLineArgs::addCmdLineOptions( options );
 
     KApplication app;
 
-    KCmdLineArgs* args = KCmdLineArgs::parsedArgs();
-    kdDebug() << "num args = " << args->count() << endl;
-    QString path_to_kdelibs = args->arg(0);
+    QString path_to_kdelibs = "/build/wynnw/kde-src";
     
     KJavaAppletContext* context = new KJavaAppletContext();
     KJavaAppletWidget *applet = new KJavaAppletWidget( context );

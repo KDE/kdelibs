@@ -62,11 +62,11 @@ KJavaProcess::KJavaProcess()
 
 KJavaProcess::~KJavaProcess()
 {
-    kdDebug() << "KJavaProcess::~KJavaProcess" << endl;
+    kdDebug(6100) << "KJavaProcess::~KJavaProcess" << endl;
 
     if ( d->ok && isRunning() )
     {
-        kdDebug() << "stopping java process" << endl;
+        kdDebug(6100) << "stopping java process" << endl;
         stopJava();
     }
 
@@ -151,7 +151,7 @@ void KJavaProcess::send( const QString& /*command*/ )
 
 void KJavaProcess::send( char cmd_code, const QStringList& args )
 {
-    kdDebug() << "KJavaProcess::send" << endl;
+    kdDebug(6100) << "KJavaProcess::send" << endl;
 
     //the buffer to store stuff, etc.
     QByteArray* buff = new QByteArray();
@@ -163,7 +163,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
     output << space;
 
     //write command code
-    kdDebug() << "cmd_code = " << (int)cmd_code << endl;
+    kdDebug(6100) << "cmd_code = " << (int)cmd_code << endl;
     output << cmd_code;
 
     //store the arguments...
@@ -186,7 +186,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
 
     int size = buff->size() - 8;  //subtract out the length of the size_str
     QString size_str = QString("%1").arg( size, 8 );
-    kdDebug() << "size of message = " << size_str << endl;
+    kdDebug(6100) << "size of message = " << size_str << endl;
 
     const char* size_ptr = size_str.latin1();
     for( int i = 0; i < 8; i++ )
@@ -194,7 +194,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
 
     d->BufferList.append( buff );
 
-    kdDebug() << "just added this buffer of size: " << buff->size() << " to the queue: " << endl;
+    kdDebug(6100) << "just added this buffer of size: " << buff->size() << " to the queue: " << endl;
 
     if( d->BufferList.count() == 1 )
     {
@@ -276,7 +276,7 @@ void KJavaProcess::invokeJVM()
     if ( d->classArgs != QString::null )
         *javaProcess << d->classArgs;
 
-    kdDebug() << "Invoking JVM now...with arguments = " << endl;
+    kdDebug(6100) << "Invoking JVM now...with arguments = " << endl;
     QStrList* args = javaProcess->args();
     QString str_args;
     for( char* it = args->first(); it; it = args->next() )
@@ -284,12 +284,12 @@ void KJavaProcess::invokeJVM()
         str_args += it;
         str_args += ' ';
     }
-    kdDebug() << str_args << endl;
+    kdDebug(6100) << str_args << endl;
 
     KProcess::Communication flags =  (KProcess::Communication)
                                      (KProcess::Stdin | KProcess::Stdout |
                                       KProcess::NoRead);
-    kdDebug() << "kprocess flags = " << flags << endl;
+    kdDebug(6100) << "kprocess flags = " << flags << endl;
     javaProcess->start( KProcess::NotifyOnExit, flags );
     javaProcess->resume(); //start processing stdout on the java process
 
@@ -311,7 +311,7 @@ void KJavaProcess::processExited()
  */
 void KJavaProcess::receivedData( int fd, int& )
 {
-    kdDebug() << "KJavaProcess::receivedData" << endl;
+    kdDebug(6100) << "KJavaProcess::receivedData" << endl;
 
     //read out the length of the message,
     //read the message and send it to the applet server
@@ -319,7 +319,7 @@ void KJavaProcess::receivedData( int fd, int& )
     int num_bytes = ::read( fd, length, 8 );
     if( num_bytes == -1 )
     {
-        kdError() << "could not read 8 characters for the message length!!!!" << endl;
+        kdError(6002) << "could not read 8 characters for the message length!!!!" << endl;
         return;
     }
 
@@ -328,18 +328,18 @@ void KJavaProcess::receivedData( int fd, int& )
     int num_len = lengthstr.toInt( &ok );
     if( !ok )
     {
-        kdError() << "could not parse length out of: " << lengthstr << endl;
+        kdError(6002) << "could not parse length out of: " << lengthstr << endl;
         return;
     }
 
-    kdDebug() << "msg length = " << num_len << endl;
+    kdDebug(6100) << "msg length = " << num_len << endl;
 
     //now parse out the rest of the message.
     char* msg = new char[num_len];
     num_bytes = ::read( fd, msg, num_len );
     if( num_bytes == -1 ||  num_bytes != num_len )
     {
-        kdError() << "could not read the msg, num_bytes = " << num_bytes << endl;
+        kdError(6002) << "could not read the msg, num_bytes = " << num_bytes << endl;
         return;
     }
 
