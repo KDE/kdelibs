@@ -39,6 +39,8 @@
 #ifndef KDOCKWIDGET_H
 #define KDOCKWIDGET_H
 
+#define _KDOCKWIDGET_2_2_  
+
 #include <qpoint.h>
 #include <qlist.h>
 #include <qframe.h>
