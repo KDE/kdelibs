@@ -56,7 +56,7 @@
 #include <kpalette.h>
 #include <kimageeffect.h>
 
-//#include "kcolordlg.h"
+//#include "kcolordialog.h"
 //#include "kcolordrag.h"
 #include "kcolorcombo.h"
 

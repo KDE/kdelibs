@@ -25,7 +25,7 @@
 #include <kfileitem.h>
 #include <kio/global.h>
 #include <kmimetype.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kurldrag.h>
 #include <stdlib.h>
 #include <assert.h>

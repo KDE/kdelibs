@@ -3,7 +3,7 @@
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kinstance.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <stdio.h>

@@ -2,7 +2,7 @@
 #define __KDUALCOLORTEST_H
 
 #include <qlabel.h>
-#include <kdualcolorbtn.h>
+#include <kdualcolorbutton.h>
 
 class KDualColorWidget : public QWidget
 {

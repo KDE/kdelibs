@@ -1,4 +1,4 @@
-#include "kdatepik.h"
+#include "kdatepicker.h"
 #include <qlineedit.h>
 #include <kapplication.h>
 #include <klocale.h>

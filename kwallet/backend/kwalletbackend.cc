@@ -21,7 +21,7 @@
 #include "kwalletbackend.h"
 #include <kglobal.h>
 #include <kdebug.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 #include <qfile.h>
 #include "blowfish.h"
 #include "sha1.h"

@@ -1,4 +1,6 @@
 // kstddirs.h is the old name, use #include <kstandarddirs.h> from now on
-#ifndef KDE_NO_COMPAT
+#ifdef KDE_NO_COMPAT
+#error kstddirs.h is the old name, use #include <kstandarddirs.h> from now on
+#else
 #include <kstandarddirs.h>
 #endif

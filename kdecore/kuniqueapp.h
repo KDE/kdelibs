@@ -1,4 +1,6 @@
 // kuniqueapp.h is the old name. Use #include <kuniqueapplication.h> from now on
-#ifndef KDE_NO_COMPAT
+#ifdef KDE_NO_COMPAT
+#error kuniqueapp.h is the old name. Use #include <kuniqueapplication.h> from now on
+#else
 #include <kuniqueapplication.h>
 #endif

@@ -33,7 +33,7 @@
 #include <kio/connection.h>
 #include <ksock.h>
 #include <kurl.h>
-#include <kuniqueapp.h>
+#include <kuniqueapplication.h>
 
 #include <kservice.h>
 

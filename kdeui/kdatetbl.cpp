@@ -38,7 +38,7 @@
 #include <klocale.h>
 #include <kdebug.h>
 #include <knotifyclient.h>
-#include "kdatepik.h"
+#include "kdatepicker.h"
 #include "kdatetbl.h"
 #include <qdatetime.h>
 #include <qstring.h>

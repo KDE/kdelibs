@@ -18,7 +18,7 @@
 */
 
 #include <kapplication.h>
-#include "kcolordlg.h"
+#include "kcolordialog.h"
 #include <kconfig.h>
 #include <klocale.h>
 

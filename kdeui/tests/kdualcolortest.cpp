@@ -1,5 +1,5 @@
 #include "kdualcolortest.h"
-#include <kdualcolorbtn.h>
+#include <kdualcolorbutton.h>
 #include <kapplication.h>
 #include <klocale.h>
 #include <qlayout.h>

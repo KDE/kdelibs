@@ -3,7 +3,7 @@
 #include <kparts/componentfactory.h>
 #include <kapplication.h>
 #include <kdesktopfile.h>
-#include <kstddirs.h>
+#include <kstandarddirs.h>
 
 //using namespace KScriptInterface;
 class ScriptInfo
