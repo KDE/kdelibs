@@ -116,9 +116,7 @@ void KMenuBar::drawContents(QPainter *p)
 {
 // From Qt's spacing
 static const int motifBarFrame          = 2;    // menu bar frame width
-
 static const int motifBarHMargin        = 2;    // menu bar hor margin to item
-
 static const int motifItemHMargin       = 5;    // menu item hor text margin
 static const int motifItemVMargin       = 4;    // menu item ver text margin
     KStyle *stylePtr = kapp->kstyle();
@@ -126,38 +124,42 @@ static const int motifItemVMargin       = 4;    // menu item ver text margin
         QMenuBar::drawContents(p);
     else{
         int i, x, y, nlitems;
+        int dw = stylePtr->defaultFrameWidth();
         QFontMetrics fm = fontMetrics();
         stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
                                d->topLevel, NULL);
 
-        for(i=0, nlitems=0, x=2, y=2; i < (int)mitems->count(); ++i, ++nlitems)
+        for(i=0, nlitems=0, x=dw, y=dw; i < (int)mitems->count(); ++i, ++nlitems)
         {
             int h=0;
             int w=0;
             QMenuItem *mi = mitems->at(i);
             if(mi->pixmap()){
-                w = mi->pixmap()->width();
-                h = mi->pixmap()->height();
+                w = QMAX(mi->pixmap()->width() + 4, QApplication::globalStrut().width());
+                h = QMAX(mi->pixmap()->height() + 4, QApplication::globalStrut().height());
             }
             else if(!mi->text().isEmpty()){
                 QString s = mi->text();
                 w = fm.boundingRect(s).width() + 2*motifItemHMargin;
                 w -= s.contains('&')*fm.width('&');
                 w += s.contains(QString::fromLatin1("&&"))*fm.width('&');
-                h = fm.height() + motifItemVMargin;
+                w = QMAX(w, QApplication::globalStrut().width());
+                h = QMAX(fm.height() + motifItemVMargin, QApplication::globalStrut().height());
             }
 
             if (!mi->isSeparator()){
-                if (x + w + motifBarFrame - width() > 0 && nlitems > 0 ){
+                if (x + w + dw - width() > 0 && nlitems > 0 ){
                     nlitems = 0;
-                    x = motifBarFrame + motifBarHMargin;
-                    y += h + motifBarHMargin;
+                    x = dw;
+                    y += h;
                 }
             }
+
             stylePtr->drawKMenuItem(p, x, y, w, h, mi->isEnabled()  ?
                                     palette().normal() : palette().disabled(),
                                     i == actItem,
                                     mi, NULL);
+
             x += w;
         }
     }

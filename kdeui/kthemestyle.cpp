@@ -1111,8 +1111,8 @@ void KThemeStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
 // I changed the following method to be based from Qt's instead of my own
 // wacky code. Works much better now :P (mosfet)
 static const int motifItemFrame         = 2;    // menu item frame width
-static const int motifItemHMargin       = 3;    // menu item hor text margin
-static const int motifItemVMargin       = 2;    // menu item ver text margin
+static const int motifItemHMargin       = 5;    // menu item hor text margin
+static const int motifItemVMargin       = 4;    // menu item ver text margin
 
 static const int motifArrowHMargin      = 6;    // arrow horizontal margin
 static const int windowsRightBorder     = 12;       // right border on windowsstatic const int windowsCheckMarkWidth = 12;       // checkmarks width on windows
