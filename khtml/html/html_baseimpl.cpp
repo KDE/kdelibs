@@ -318,8 +318,11 @@ void HTMLFrameElementImpl::attach()
       name = DOMString(w->part()->requestFrameName());
 
     // load the frame contents
-    if (!url.isEmpty())
-        w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
+    if (!url.isEmpty()) {
+        KURL fullURL = getDocument()->completeURL( url.string() );
+        if ( !(w->part()->onlyLocalReferences() && fullURL.protocol() != "file"))
+            w->part()->requestFrame( static_cast<RenderFrame*>(m_render), url.string(), name.string() );
+    }
 }
 
 void HTMLFrameElementImpl::detach()
