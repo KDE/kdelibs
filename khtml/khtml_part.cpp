@@ -1341,8 +1341,6 @@ void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url,
 
     }
 
-    connect( part, SIGNAL( setStatusBarText( const QString & ) ),
-	     this, SIGNAL( setStatusBarText( const QString & ) ) );
   }
 
   if ( child->m_bPreloaded )
@@ -2046,8 +2044,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     }
     else if ( d->m_overURL != surl )
     {
-      overURL( d->m_overURL );
       d->m_overURL = surl;
+      overURL( d->m_overURL );
     }
     return;
   }
