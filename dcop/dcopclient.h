@@ -265,6 +265,7 @@ signals:
     friend class DCOPObjectProxy;
     void installObjectProxy( DCOPObjectProxy*);
     void removeObjectProxy( DCOPObjectProxy*);
+    bool attachInternal( bool registerAsAnonymous = TRUE );
 
 
 };

@@ -85,6 +85,8 @@ int main(int argc, char **argv)
   else
       qDebug("return type was '%s'", replyType.data() ); 
 
+  client->send(app.name(), "object1", "  aFunction(   QString , int  )", data );
+
   int n = client->registeredApplications().count();
   qDebug("number of attached applications = %d", n );
 

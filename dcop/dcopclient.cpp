@@ -170,6 +170,11 @@ void DCOPClient::setServerAddress(const QCString &addr)
 
 bool DCOPClient::attach()
 {
+    return attachInternal();
+}
+
+bool DCOPClient::attachInternal( bool registerAsAnonymous )
+{
     qDebug("attach");
     char errBuf[1024];
 
@@ -239,7 +244,8 @@ bool DCOPClient::attach()
 		SLOT(processSocketData(int)));
     }
 
-    registerAs( "anonymous" );
+    if ( registerAsAnonymous )
+	registerAs( "anonymous" );
 
     return true;
 }
@@ -275,7 +281,7 @@ QCString DCOPClient::registerAs( const QCString& appId )
     qDebug("registeras %s", appId.data() );
     QCString result;
     if ( !isAttached() ) {
-	if ( !attach() ) {
+	if ( !attachInternal( FALSE ) ) {
 	    return result;
 	}
     }
@@ -375,7 +381,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
   pMsg->length += datalen;
 
   IceSendData( d->iceConn, ba.size(), (char *) ba.data() );
-  IceSendData( d->iceConn, data.size(), (char *) data.size() );
+  IceSendData( d->iceConn, data.size(), (char *) data.data() );
 
   if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
     return false;
