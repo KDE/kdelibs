@@ -130,7 +130,7 @@ Value FunctionProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &a
 
         Object argArrayObj = Object::dynamicCast(argArray);
         unsigned int length = argArrayObj.get(exec,"length").toUInt32(exec);
-        for (uint i = 0; i < length; i++)
+        for (unsigned int i = 0; i < length; i++)
           applyArgs.append(argArrayObj.get(exec,UString::from(i)));
       }
       else {

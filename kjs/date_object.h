@@ -26,6 +26,8 @@
 #include "internal.h"
 #include "function_object.h"
 
+#include <sys/time.h>
+
 namespace KJS {
 
   class DateInstanceImp : public ObjectImp {
@@ -119,7 +121,7 @@ namespace KJS {
 
   // helper functions
   Value parseDate(const String &s);
-  time_t KRFCDate_parseDate(const UString &_date);
+  time_t KRFCDate_parseDate(const UString &_date); 
   Value timeClip(const Value &t);
 
 }; // namespace
