@@ -1604,6 +1604,11 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 		m_render->absolutePosition(offsetX,offsetY);
 		xPos = me->clientX()-offsetX;
 		yPos = me->clientY()-offsetY;
+                KHTMLView* v = getDocument()->view();
+                if ( v ) {
+                    xPos += v->contentsX();
+                    yPos += v->contentsY();
+                }
 	    }
 	}
 
