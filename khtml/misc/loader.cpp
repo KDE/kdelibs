@@ -1247,11 +1247,13 @@ CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool rel
         kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
         CachedImage *im = new CachedImage(dl, kurl.url(), cachePolicy, _expireDate);
-        if ( dl && dl->autoloadImages() ) Cache::loader()->load(dl, im, true);
         cache->insert( kurl.url(), im );
         lru->prepend( kurl.url() );
         o = im;
     }
+
+    if (o->status() == CachedObject::Unknown && dl && dl->autoloadImages())
+        Cache::loader()->load(dl, o, true);
 
     o->setExpireDate(_expireDate, true);
 
