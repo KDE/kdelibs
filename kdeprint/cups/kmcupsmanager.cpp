@@ -872,7 +872,7 @@ void KMCupsManager::ippReport(IppRequest& req, int group, const QString& caption
 		QTextEdit	*edit = new QTextEdit;
 		edit->setReadOnly(true);
 		edit->setText(report);
-		KDialogBase	dlg(KDialogBase::Swallow, caption, KDialogBase::Close, KDialogBase::Close);
+		KDialogBase	dlg(KDialogBase::Swallow, caption, KDialogBase::Close, KDialogBase::Close, 0, 0, true, false, QString::null);
 		dlg.setMainWidget(edit);
 		dlg.resize(540, 500);
 		dlg.setFocusProxy(edit);
