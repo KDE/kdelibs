@@ -107,6 +107,8 @@ class Backend {
 
 		bool entryDoesNotExist(const QString& folder, const QString& entry) const;
 
+		static QString openRCToString(int rc);
+
 	private:
 		class BackendPrivate;
 		BackendPrivate *d;

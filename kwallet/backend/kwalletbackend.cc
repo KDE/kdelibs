@@ -24,6 +24,7 @@
 
 #include <kdebug.h>
 #include <kglobal.h>
+#include <klocale.h>
 #include <kmdcodec.h>
 #include <ksavefile.h>
 #include <kstandarddirs.h>
@@ -240,6 +241,33 @@ QString path = KGlobal::dirs()->saveLocation("kwallet") + "/" + wallet + ".kwl";
 	// Note: 60 bytes is presently the minimum size of a wallet file.
 	//       Anything smaller is junk.
 return QFile::exists(path) && QFileInfo(path).size() >= 60;
+}
+
+
+QString Backend::openRCToString(int rc) {
+	switch (rc) {
+		case -255:
+			return i18n("Already open.");
+		case -2:
+			return i18n("Error opening file.");
+		case -3:
+			return i18n("Not a wallet file.");
+		case -4:
+			return i18n("Unsupported file format revision.");
+		case -42:
+			return i18n("Unknown encryption scheme.");
+		case -43:
+			return i18n("Corrupt file?");
+		case -8:
+			return i18n("Error validating wallet integrity.  Possibly corrupted.");
+		case -5:
+		case -7:
+			return i18n("Read error - possibly incorrect password.");
+		case -6:
+			return i18n("Decryption error.");
+		default:
+			return QString::null;
+	}
 }
 
 
