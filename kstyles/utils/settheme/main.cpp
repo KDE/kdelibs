@@ -1,10 +1,10 @@
+
 #include <kthemebase.h>
 #include <qfileinfo.h>
 #include <qdir.h>
 #include <kapp.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
-#include <kipc.h>
 
 static const char *description = 
 	I18N_NOOP("KDE tool to change themes.");
@@ -38,6 +38,5 @@ int main(int argc, char **argv)
         return(2);
     }
     KThemeBase::applyConfigFile(args->arg(0));
-    KIPC::sendMessageAll(KIPC::StyleChanged);
     return(0);
 }
