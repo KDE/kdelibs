@@ -17,6 +17,7 @@ inline QDataStream & operator >> (QDataStream & str, bool & b)
   return str;
 }
 
+#if QT_VERSION < 0x030200
 inline QDataStream & operator << (QDataStream & str, long long int ll)
 {
   Q_INT32 l1,l2;
@@ -50,5 +51,6 @@ inline QDataStream & operator >> (QDataStream & str, unsigned long long int &ll)
   ll = ((unsigned long long int)(l2) << 32) + (unsigned long long int) l1;
   return str;
 }
+#endif
 
 #endif
