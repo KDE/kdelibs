@@ -3,7 +3,7 @@ kconfig_compiler - The Configuration Compiler
 
 kconfig_compiler generates C++ source code from an XML file containing 
 information about configuration options (.kcfg) and a file that provides 
-the code generation options (.kcfgc) The generated class is bases on 
+the code generation options (.kcfgc) The generated class is based on 
 KConfigSkeleton and provides an API for the application to access its
 configuration data.
 
@@ -17,20 +17,23 @@ are needed to compile the code needed to compute default values.
 The remaining entries in the XML file are grouped by the tag <group> 
 which describes the corresponding group in the configuration file.
 
-The individual entries must have at least a name or a key. The name if used to
-create accessor and modifier functions. It's also used as key in the config
+The individual entries must have at least a name or a key. The name is used to
+create accessor and modifier functions. It's also used as the key in the config
 file. If <key> is given, but not <name>, the name is constructed by removing
 all spaces from <key>.
 
-An entry must also have a type. The type can be one of the basic Qt types
-or one of the following special types:
+An entry must also have a type. The list of allowable types is
+specified in the DTD and loosely follows the list of types supported
+by the QVariant with exception of the clearly binary types
+(e.g. Pixmap, Image...) which are not supported. Besides those basic
+type the following special types are supported:
 
-- Path  This is a QString that is specially treated as a file-path. 
+- Path  This is a string that is specially treated as a file-path. 
   In particular paths in the home directory are prefixed with $HOME in
   when being stored in the configuration file.
   
 - Enum  This indicates an enumaration. The possible enum values should
-  be provided via the <values> tag. Enum values are accessed as integeres
+  be provided via the <values> tag. Enum values are accessed as integers
   by the application but stored as string in the configuration file. This
   makes it possible to add more values at a later date without breaking
   compatibility.
@@ -41,12 +44,12 @@ or one of the following special types:
 
 An entry can optionally have a default value which is used as default when
 the value isn't specified in any config file. Default values are interpreted
-as literal constant values. If a default value needs to be computated
+as literal constant values. If a default value needs to be computed
 or if it needs to be obtained from a function call, the <default> tag
 should contain the code="true" attribute. The contents of the <default>
 tag is then considered to be a C++ expression.
 
-Additional code for computating default values can be provided via
+Additional code for computing default values can be provided via
 the <code> tag. The contents of the <code> tag is inserted as-is. A
 typical use for this is to compute a common default value which can
 then be referenced by multiple entries that follow.
@@ -79,8 +82,8 @@ param attribute is specified the default value only applies to that
 particular parameter value.
 
 Example 1:
-  <entry name="Color$(ColorIndex)" type="QColor" key="color_$(ColorIndex)">
-    <parameter name="ColorIndex" type="int" max="3"/>
+  <entry name="Color$(ColorIndex)" type="Color" key="color_$(ColorIndex)">
+    <parameter name="ColorIndex" type="Int" max="3"/>
     <default param="0">#ff0000</default>
     <default param="1">#00ff00</default>
     <default param="2">#0000ff</default>
@@ -99,7 +102,7 @@ a QColor color(int ColorIndex) and a
 void setColor(int ColorIndex, const QColor &v) function.
 
 Example 2:
-  <entry name="Sound$(SoundEvent)" type="QString" key="sound_$(SoundEvent)">
+  <entry name="Sound$(SoundEvent)" type="String" key="sound_$(SoundEvent)">
     <parameter name="SoundEvent" type="Enum"/>
     <values>
       <value>Explosion</value>
