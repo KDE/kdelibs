@@ -274,6 +274,52 @@ void Scheduler::startStep()
     }
 }
 
+void Scheduler::setupSlave(KIO::Slave *slave, const KURL &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config)
+{
+    QString host = url.host();
+    int port = url.port();
+    QString user = url.user();
+    QString passwd = url.pass();
+
+    if ((newSlave) ||
+        (slave->host() != host) ||
+        (slave->port() != port) ||
+        (slave->user() != user) ||
+        (slave->passwd() != passwd))
+    {
+        MetaData configData = slaveConfig->configData(protocol, host);
+        sessionData->configDataFor( configData, protocol, host );
+       
+        configData["UseProxy"] = proxy; 
+
+        QString autoLogin = configData["EnableAutoLogin"].lower();
+        if ( autoLogin == "true" )
+        {
+            NetRC::AutoLogin l;
+            l.login = user;
+            bool usern = (protocol == "ftp");
+            if ( NetRC::self()->lookup( url, l, usern) )
+            {
+                configData["autoLoginUser"] = l.login;
+                configData["autoLoginPass"] = l.password;
+                if ( usern )
+                {
+                    QString macdef;
+                    QMap<QString, QStringList>::ConstIterator it = l.macdef.begin();
+                    for ( ; it != l.macdef.end(); ++it )
+                        macdef += it.key() + '\\' + it.data().join( "\\" ) + '\n';
+                    configData["autoLoginMacro"] = macdef;
+                }
+            }
+        }
+        if (config)
+           configData += *config;
+        slave->setConfig(configData);
+        slave->setProtocol(url.protocol());
+        slave->setHost(host, port, user, passwd);
+    }
+}
+
 bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
 {
     if (protInfo->joblist.isEmpty())
@@ -345,53 +391,11 @@ bool Scheduler::startJobScheduled(ProtocolInfo *protInfo)
     protInfo->joblist.removeRef(job);
 //       kdDebug(7006) << "scheduler: job started " << job << endl;
 
-    KURL url =job->url();
-    QString host = url.host();
-    int port = url.port();
-    QString user = url.user();
-    QString passwd = url.pass();
-
-    if ((newSlave) ||
-        (slave->host() != host) ||
-        (slave->port() != port) ||
-        (slave->user() != user) ||
-        (slave->passwd() != passwd))
-    {
-        JobData *jobData = extraJobData->find(job);
-        slaveConfig->setConfigData( jobData->protocol, QString::null,
-                                    "UseProxy", jobData->proxy );
-        sessionData->configDataFor( slaveConfig, jobData->protocol, host );
-        QString autoLogin = slaveConfig->configData( jobData->protocol, host,
-                                                    "EnableAutoLogin").lower();
-        if ( autoLogin == "true" )
-        {
-            NetRC::AutoLogin l;
-            l.login = user;
-            bool usern = (jobData->protocol == "ftp");
-            if ( NetRC::self()->lookup( url, l, usern) )
-            {
-                slaveConfig->setConfigData( jobData->protocol, host,
-                                            "autoLoginUser", l.login );
-                slaveConfig->setConfigData( jobData->protocol, host,
-                                            "autoLoginPass", l.password );
-                if ( usern )
-                {
-                    QString macdef;
-                    QMap<QString, QStringList>::ConstIterator it = l.macdef.begin();
-                    for ( ; it != l.macdef.end(); ++it )
-                        macdef += it.key() + '\\' + it.data().join( "\\" ) + '\n';
-                    slaveConfig->setConfigData( jobData->protocol, host,
-                                                "autoLoginMacro", macdef );
-                }
-            }
-        }
-
-        MetaData configData = slaveConfig->configData(jobData->protocol, host);
-        slave->setConfig(configData);
-        slave->setProtocol(url.protocol());
-        slave->setHost(host, port, user, passwd);
-    }
+    
+    JobData *jobData = extraJobData->find(job);
+    setupSlave(slave, job->url(), jobData->protocol, jobData->proxy, newSlave);
     job->start(slave);
+
     slaveTimer.start(0, true);
     return true;
 }
@@ -428,50 +432,7 @@ if (!jobData)
     idleSlaves->removeRef(slave);
 //       kdDebug(7006) << "scheduler: job started " << job << endl;
 
-    KURL url =job->url();
-    QString host = url.host();
-    int port = url.port();
-    QString user = url.user();
-    QString passwd = url.pass();
-
-    if ((newSlave) ||
-        (slave->host() != host) ||
-        (slave->port() != port) ||
-        (slave->user() != user) ||
-        (slave->passwd() != passwd))
-    {
-        slaveConfig->setConfigData( protocol, QString::null, "UseProxy",
-                                    jobData->proxy );
-        sessionData->configDataFor( slaveConfig, protocol, host );
-        QString autoLogin = slaveConfig->configData(protocol, host,
-                                                    "EnableAutoLogin").lower();
-        if ( autoLogin == "true" )
-        {
-            NetRC::AutoLogin l;
-            l.login = user;
-            bool usern = (protocol == "ftp");
-            if ( NetRC::self()->lookup( url, l, usern) )
-            {
-                slaveConfig->setConfigData( protocol, host , "autoLoginUser",
-                                            l.login );
-                slaveConfig->setConfigData( protocol, host, "autoLoginPass",
-                                            l.password );
-                if ( usern )
-                {
-                    QString macdef;
-                    QMap<QString, QStringList>::ConstIterator it = l.macdef.begin();
-                    for ( ; it != l.macdef.end(); ++it )
-                        macdef += it.key() + '\\' + it.data().join( "\\" ) + '\n';
-                    slaveConfig->setConfigData( jobData->protocol, host,
-                                                "autoLoginMacro", macdef );
-                }
-            }
-        }
-        MetaData configData = slaveConfig->configData(protocol, host);
-        slave->setConfig(configData);
-        slave->setProtocol(url.protocol());
-        slave->setHost(host, port, user, passwd);
-    }
+    setupSlave(slave, job->url(), protocol, jobData->proxy, newSlave);
     job->start(slave);
     return true;
 }
@@ -738,39 +699,7 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
        return 0; // Error
     idleSlaves->removeRef(slave);
 
-    QString host = url.host();
-
-    slaveConfig->setConfigData(protocol, QString::null, "UseProxy", proxy);
-    sessionData->configDataFor( slaveConfig, protocol, host );
-    QString autoLogin = slaveConfig->configData(protocol, host,
-                                                "EnableAutoLogin").lower();
-    if ( autoLogin == "true" )
-    {
-        NetRC::AutoLogin l;
-        l.login = url.user();
-        bool usern = (protocol == "ftp");
-        if ( NetRC::self()->lookup( url, l, usern) )
-        {
-          slaveConfig->setConfigData(protocol, host,
-                                     "autoLoginUser", l.login );
-          slaveConfig->setConfigData(protocol, host,
-                                     "autoLoginPass", l.password );
-          if ( usern )
-          {
-              QString macdef;
-              QMap<QString, QStringList>::ConstIterator it = l.macdef.begin();
-              for ( ; it != l.macdef.end(); ++it )
-                  macdef += it.key() + '\\' + it.data().join( "\\" ) + '\n';
-              slaveConfig->setConfigData( protocol, host,
-                                          "autoLoginMacro", macdef );
-          }
-        }
-    }
-    MetaData configData = slaveConfig->configData(protocol, host);
-    configData += config;
-    slave->setConfig(configData);
-    slave->setProtocol(url.protocol());
-    slave->setHost(host, url.port(), url.user(), url.pass());
+    setupSlave(slave, url, protocol, proxy, true, &config);
 
     slave->connection()->send( CMD_CONNECT );
     connect(slave, SIGNAL(connected()),

@@ -22,6 +22,7 @@
 #define __KIO_SESSIONDATA_H
 
 #include <qobject.h>
+#include <kio/global.h>
 
 namespace KIO  {
 
@@ -38,8 +39,8 @@ public:
     SessionData();
     ~SessionData();
 
-    virtual void configDataFor( SlaveConfig*, const QString&,
-                                const QString& = QString::null );
+    virtual void configDataFor( KIO::MetaData &configData, const QString &proto,
+                                const QString &host );
     virtual void reset();
 
 public slots:

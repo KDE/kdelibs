@@ -206,33 +206,27 @@ SessionData::~SessionData()
     authData = 0L;
 }
 
-void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
-                                      const QString& host )
+void KIO::SessionData::configDataFor( KIO::MetaData &configData, const QString &proto,
+                                      const QString & )
 {
-    if ( cfg && proto.find("http", 0, false) == 0 )
+    if ( proto.find("http", 0, false) == 0 )
     {
         if (!d->initDone)
             reset();
-        cfg->setConfigData( proto, host, "Cookies",
-                            d->useCookie ? "true":"false" );
-
+            
         // These might have already been set so check first
         // to make sure that we do not trumpt settings sent
         // by apps or end-user.
-        if ( cfg->configData(proto,host)["Languages"].isEmpty() )
-            cfg->setConfigData( proto, host, "Languages", d->language );
-        if ( cfg->configData(proto,host)["Charsets"].isEmpty() )
-            cfg->setConfigData( proto, host, "Charsets", d->charsets );
-        if ( cfg->configData(proto,host)["CacheDir"].isEmpty() )
-        {
-            cfg->setConfigData( proto, host, "CacheDir",
-                                KGlobal::dirs()->saveLocation("cache", "http"));
-        }
-        if ( cfg->configData(proto,host)["UserAgent"].isEmpty() )
-        {
-            cfg->setConfigData( proto, host, "UserAgent",
-                                KProtocolManager::defaultUserAgent() );
-        }
+        if ( configData["Cookies"].isEmpty() )
+            configData["Cookies"] = d->useCookie ? "true" : "false";
+        if ( configData["Languages"].isEmpty() )
+            configData["Languages"] = d->language;
+        if ( configData["Charsets"].isEmpty() )
+            configData["Charsets"] = d->charsets;
+        if ( configData["CacheDir"].isEmpty() )
+            configData["CacheDir"] = KGlobal::dirs()->saveLocation("cache", "http");
+        if ( configData["UserAgent"].isEmpty() )
+            configData["UserAgent"] = KProtocolManager::defaultUserAgent();
     }
 }
 

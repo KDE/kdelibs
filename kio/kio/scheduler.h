@@ -256,6 +256,7 @@ namespace KIO {
         void slaveError(KIO::Slave *slave, int error, const QString &errorMsg);
 
     protected:
+        void setupSlave(KIO::Slave *slave, const KURL &url, const QString &protocol, const QString &proxy , bool newSlave, const KIO::MetaData *config=0);
         bool startJobScheduled(ProtocolInfo *protInfo);
         bool startJobDirect();
         Scheduler();
