@@ -59,7 +59,8 @@ KBookmarkManager* KBookmarkManager::self()
   return s_pSelf;
 }
 
-KBookmarkManager::KBookmarkManager() : m_Root( 0L, 0L, 0L )
+KBookmarkManager::KBookmarkManager( QString path ) : m_Root( 0L, 0L, 0L ),
+  m_sPath( path )
 {
   s_pSelf = this;
 
@@ -70,9 +71,7 @@ KBookmarkManager::KBookmarkManager() : m_Root( 0L, 0L, 0L )
   m_bAllowSignalChanged = true;
   m_bNotify = true;
 
-  QString p = kapp->localkdedir();
-  p += "/share/apps/kfm/bookmarks";
-  scan( p );
+  scan( m_sPath );
 
   // HACK
   // connect( KIOServer::getKIOServer(), SIGNAL( notify( const char* ) ),
@@ -88,9 +87,7 @@ void KBookmarkManager::slotNotify( const char *_url )
   if ( !u.isLocalFile() )
     return;
 
-  QString p = kapp->localkdedir();
-  p += "/share/apps/kfm/bookmarks";
-  QDir dir2( p );
+  QDir dir2( m_sPath );
   QDir dir1( u.path() );
 
   QString p1( dir1.canonicalPath() );
@@ -98,13 +95,11 @@ void KBookmarkManager::slotNotify( const char *_url )
   if ( p1.isEmpty() )
     p1 = u.path();
   if ( p2.isEmpty() )
-    p2 = p;
+    p2 = m_sPath;
 
   if ( qstrncmp( p1, p2, p2.length() ) == 0 )
   {
-    QString d = kapp->localkdedir();
-    d += "/share/apps/kfm/bookmarks/";
-    scan( d );
+    scan( m_sPath );
   }
 }
 
@@ -216,10 +211,7 @@ void KBookmarkManager::scanIntern( KBookmark *_bm, const char * _path )
 
 void KBookmarkManager::slotEditBookmarks()
 {
-  QString q = kapp->localkdedir();
-  KURL u ( q + "/share/apps/kfm/bookmarks");
-
-  editBookmarks( u.url() );
+  editBookmarks( m_sPath );
 }
 
 /********************************************************************
@@ -268,9 +260,7 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_te
   m_type = Folder;
   m_text = _text;
 
-  QString p = kapp->localkdedir();
-  p += "/share/apps/kfm/bookmarks";
-  const char *dir = p;
+  const char *dir = _bm->path();
   if ( _parent )
     dir = _parent->file();
   m_file = dir;
@@ -340,10 +330,10 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_te
 
   // Update opened KFM windows. Perhaps there is one
   // that shows the bookmarks directory.
-  QString fe( _parent->file() );
+  //QString fe( _parent->file() );
   // To make an URL, we have th encode the path
-  KURL::encode( fe );
-  fe.prepend( "file:" );
+  //KURL::encode( fe );
+  //fe.prepend( "file:" );
   // HACK
   // KIOServer::sendNotify( fe );
 

@@ -105,9 +105,17 @@ class KBookmarkManager : public QObject
   
   Q_OBJECT
 public:
-  KBookmarkManager();
+  /**
+   * Creates a bookmark manager with a path to the bookmarks
+   * (e.g. kapp->localkdedir()+"/share/apps/kfm/bookmarks")
+   */
+  KBookmarkManager( QString path );
   ~KBookmarkManager() {};
 
+  /**
+   * For internal use only
+   */
+  QString path() { return m_sPath; }
   /**
    * For internal use only
    */
@@ -129,9 +137,9 @@ public:
   virtual void editBookmarks( const char *_url ) = 0L;
   
   /**
-   * @return a pointer to the instance of the KBookmarkManager. Make shure that
+   * @return a pointer to the instance of the KBookmarkManager. Make sure that
    *         an instance of this class or a derived one exists before you call this
-   *         function. It wont return 0L in this case, but it will raise an error.
+   *         function. It won't return 0L in this case, but it will raise an error.
    */
   static KBookmarkManager* self();
   
@@ -163,6 +171,7 @@ protected:
   KBookmark m_Root;
   bool m_bAllowSignalChanged;
   bool m_bNotify;
+  QString m_sPath;
 
   /**
    * This list is to prevent infinite looping while
