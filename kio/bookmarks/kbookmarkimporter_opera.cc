@@ -98,11 +98,14 @@ void KOperaBookmarkImporterImpl::parse() {
    importer.parseOperaBookmarks();
 }
 
-QString KOperaBookmarkImporterImpl::findDefaultLocation(bool) const
+QString KOperaBookmarkImporterImpl::findDefaultLocation(bool saving) const
 {
-   return KFileDialog::getOpenFileName( 
-               QDir::homeDirPath() + "/.opera", 
-               i18n("*.adr|Opera Bookmark Files (*.adr)") );
+   return saving ? KFileDialog::getSaveFileName( 
+                       QDir::homeDirPath() + "/.opera", 
+                       i18n("*.adr|Opera Bookmark Files (*.adr)") )
+                 : KFileDialog::getOpenFileName( 
+                       QDir::homeDirPath() + "/.opera", 
+                       i18n("*.adr|Opera Bookmark Files (*.adr)") );
 }
 
 /////////////////////////////////////////////////
@@ -121,11 +124,12 @@ private:
 };
 
 OperaExporter::OperaExporter() : m_out(&m_string, IO_WriteOnly) {
-    ;
+    m_out << "Opera Hotlist version 2.0" << endl;
+    m_out << "Options: encoding = utf8, version=3" << endl;
 }
 
 void OperaExporter::visit( const KBookmark &bk ) {
-    kdDebug() << "visit(" << bk.text() << ")" << endl;
+    // kdDebug() << "visit(" << bk.text() << ")" << endl;
     m_out << "#URL" << endl;
     m_out << "\tNAME=" << bk.fullText() << endl;
     m_out << "\tURL=" << bk.url().url().utf8() << endl;
@@ -133,15 +137,14 @@ void OperaExporter::visit( const KBookmark &bk ) {
 }
 
 void OperaExporter::visitEnter( const KBookmarkGroup &grp ) {
-    kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
+    // kdDebug() << "visitEnter(" << grp.text() << ")" << endl;
     m_out << "#FOLDER" << endl;
     m_out << "\tNAME="<< grp.fullText() << endl;
     m_out << endl;
 }
 
 void OperaExporter::visitLeave( const KBookmarkGroup & ) {
-    kdDebug() << "visitLeave()" << endl;
-    m_out << endl;
+    // kdDebug() << "visitLeave()" << endl;
     m_out << "-" << endl;
     m_out << endl;
 }
