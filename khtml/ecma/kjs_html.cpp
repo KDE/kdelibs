@@ -143,10 +143,16 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     break;
   }
 
-  // retrieve n'th element of collection
+  // retrieve element from collection. Either by name or indexed.
   if (id == Images || id == Applets || id == Links ||
-      id == Forms || id == Anchors) {
-    element = coll.item(v.toNumber().value());
+      id == Forms || id == Anchors || id == All) {
+    bool ok;
+    UString s = args[0].toString().value();
+    unsigned int u = s.toULong(&ok);
+    if (ok)
+      element = coll.item(u);
+    else
+      element = coll.namedItem(s.string());
     result = getDOMNode(element);
   }
 
