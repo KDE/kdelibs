@@ -94,9 +94,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
         // we then might restart the same job again
 
 
-        // Remove quotes from the text
-        //
-        QString text_copy = unquote(text);
+		QString text_copy = text;
 
         // This is a bad hack to make it work with file: URLs
         // Please, let me find time to fix this up later...
@@ -391,82 +389,14 @@ QString KURLCompletion::makeCompletion(const QString &text)
  *
  * Called by KCompletion before emitting match() and matches()
  *
- * Add quotes when needed and add the part of the text that
- * was not completed
+ * These are just empty functions now, can they be removed?
  */
-void KURLCompletion::postProcessMatch( QString *match )
+void KURLCompletion::postProcessMatch( QString * /*match*/ )
 {
-        //kdDebug() "KURLCompletion::postProcessMatch() -- in: " << *match << endl;
-
-        if ( *match == QString::null )
-                return;
-
-        if ( match->right(1) == QChar('/') )
-                quoteText( match, false, true ); // don't quote the trailing '/'
-        else
-                quoteText( match, false, false ); // quote the whole text
-
-        //kdDebug() << "KURLCompletion::postProcessMatch() -- ut: " << *match << endl;
 }
 
-void KURLCompletion::postProcessMatches( QStringList *matches )
+void KURLCompletion::postProcessMatches( QStringList * /*matches*/ )
 {
-        //kDebugInfo("KURLCompletion::postProcessMatches()");
-
-        for ( QStringList::Iterator it = matches->begin();
-                  it != matches->end(); it++ )
-        {
-                if ( (*it) != QString::null ) {
-
-                        if ( (*it).right(1) == QChar('/') )
-                                quoteText( &(*it), false, true ); // don't quote trailing '/'
-                        else
-                                quoteText( &(*it), false, false ); // quote the whole text
-                }
-        }
-}
-
-/*
- * unquote
- *
- * Remove quotes and return the result in a new string
- *
- */
-QString KURLCompletion::unquote(const QString &text)
-{
-        bool in_quote = false;
-        bool escaped = false;
-        QChar p_last_quote_char;
-        QString result;
-
-        for (uint pos = 0; pos < text.length(); pos++) {
-
-                if ( escaped ) {
-                        escaped = false;
-                        result.insert( result.length(), text[pos] );
-                }
-                else if ( in_quote && text[pos] == p_last_quote_char ) {
-                        in_quote = false;
-                }
-                else if ( !in_quote && text[pos] == m_quote_char1 ) {
-                        p_last_quote_char = m_quote_char1;
-                        in_quote = true;
-                }
-                else if ( !in_quote && text[pos] == m_quote_char2 ) {
-                        p_last_quote_char = m_quote_char2;
-                        in_quote = true;
-                }
-                else if ( text[pos] == m_escape_char ) {
-                        escaped = true;
-                        result.insert( result.length(), text[pos] );
-                }
-                else {
-                        result.insert( result.length(), text[pos] );
-                }
-
-        }
-
-        return result;
 }
 
 /*
@@ -547,63 +477,6 @@ void KURLCompletion::list(const QString& dir, const QString& filter,
 
         (void) closedir( dp );
 
-}
-
-/*
- * quoteText()
- *
- * Add quotations to 'text' if needed or if 'force' = true
- * Returns true if quotes were added
- *
- * skip_last => ignore the last charachter (we add a space or '/' to all filenames)
- */
-bool KURLCompletion::quoteText(QString *text, bool force, bool skip_last)
-{
-        int pos;
-
-        if ( !force ) {
-                pos = text->find( m_word_break_char );
-                if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
-        }
-
-        if ( !force && pos == -1 ) {
-                pos = text->find( m_quote_char1 );
-                if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
-        }
-
-        if ( !force && pos == -1 ) {
-                pos = text->find( m_quote_char2 );
-                if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
-        }
-
-        if ( !force && pos == -1 ) {
-                pos = text->find( m_escape_char );
-                if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
-        }
-
-        if ( force || (pos >= 0) ) {
-
-                // Escape \ in the string
-                text->replace( QRegExp( m_escape_char ),
-                                          QString( m_escape_char ) + m_escape_char );
-
-                // Escape " in the string
-                text->replace( QRegExp( m_quote_char1 ),
-                                          QString( m_escape_char ) + m_quote_char1 );
-
-                // " at the beginning
-                text->insert( 0, m_quote_char1 );
-
-                // " at the end
-                if ( skip_last )
-                        text->insert( text->length()-1, m_quote_char1 );
-                else
-                        text->insert( text->length(), m_quote_char1 );
-
-                return true;
-        }
-
-        return false;
 }
 
 /*

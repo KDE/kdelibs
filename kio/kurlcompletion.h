@@ -171,11 +171,7 @@ private:
 
 	KURL *m_current_url; // the url beeing listed by KIO
 
-	// Insert quotes and neseccary escapes
-	bool quoteText(QString *text, bool force, bool skip_last);
-	
 	// Remove quotes/escapes
-	QString unquote(const QString &text);
 	QString unescape(const QString &text);
 
 	QChar m_word_break_char;

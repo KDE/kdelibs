@@ -48,8 +48,10 @@ QString KShellCompletion::makeCompletion(const QString &text)
 	//
 	splitText(text, m_text_start, m_text_compl);
 	
-	//kDebugInfo("KShellCompletion: split: '%s' - '%s'", 
-	//	m_text_start.latin1(), m_text_compl.latin1());
+	// Remove quotes from the text to be completed
+	//
+	QString tmp = unquote(m_text_compl);
+	m_text_compl = tmp;
 
 	// Do exe-completion if there was no unquoted space
 	//
@@ -77,6 +79,7 @@ QString KShellCompletion::makeCompletion(const QString &text)
  * Called by KCompletion before emitting match() and matches()
  *
  * Add add the part of the text that was not completed
+ * Add quotes when needed 
  */
 void KShellCompletion::postProcessMatch( QString *match )
 {
@@ -88,6 +91,11 @@ void KShellCompletion::postProcessMatch( QString *match )
 	if ( *match == QString::null )
 		return;
 		
+	if ( match->right(1) == QChar('/') )
+		quoteText( match, false, true ); // don't quote the trailing '/'
+	else
+		quoteText( match, false, false ); // quote the whole text
+	
 	match->prepend( m_text_start );
 
 	//kDebugInfo("KShellCompletion::postProcessMatch() ut: '%s'",
@@ -101,8 +109,14 @@ void KShellCompletion::postProcessMatches( QStringList *matches )
 	for ( QStringList::Iterator it = matches->begin();
 		  it != matches->end(); it++ )
 	{
-		if ( (*it) != QString::null ) 
+		if ( (*it) != QString::null ) {
+			if ( (*it).right(1) == QChar('/') )
+				quoteText( &(*it), false, true ); // don't quote trailing '/'
+			else
+				quoteText( &(*it), false, false ); // quote the whole text
+
 			(*it).prepend( m_text_start );
+		}
 	}
 }
 
@@ -171,6 +185,105 @@ void KShellCompletion::splitText(const QString &text, QString &text_start,
 	//kDebugInfo("split right = '%s'", text_compl.latin1());
 }
 
+/*
+ * quoteText()
+ *
+ * Add quotations to 'text' if needed or if 'force' = true
+ * Returns true if quotes were added
+ *
+ * skip_last => ignore the last charachter (we add a space or '/' to all filenames)
+ */
+bool KShellCompletion::quoteText(QString *text, bool force, bool skip_last)
+{
+	int pos;
+
+	if ( !force ) {
+		pos = text->find( m_word_break_char );
+		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
+	}
+
+	if ( !force && pos == -1 ) {
+		pos = text->find( m_quote_char1 );
+		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
+	}
+
+	if ( !force && pos == -1 ) {
+		pos = text->find( m_quote_char2 );
+		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
+	}
+
+	if ( !force && pos == -1 ) {
+		pos = text->find( m_escape_char );
+		if ( skip_last && (pos == (int)(text->length())-1) ) pos = -1;
+	}
+
+	if ( force || (pos >= 0) ) {
+
+		// Escape \ in the string
+		text->replace( QRegExp( m_escape_char ),
+		               QString( m_escape_char ) + m_escape_char );
+
+		// Escape " in the string
+		text->replace( QRegExp( m_quote_char1 ),
+		               QString( m_escape_char ) + m_quote_char1 );
+
+		// " at the beginning
+		text->insert( 0, m_quote_char1 );
+
+		// " at the end
+		if ( skip_last )
+			text->insert( text->length()-1, m_quote_char1 );
+		else
+			text->insert( text->length(), m_quote_char1 );
+
+		return true;
+	}
+
+	return false;
+}
+ 
+/*
+ * unquote
+ *
+ * Remove quotes and return the result in a new string
+ *
+ */
+QString KShellCompletion::unquote(const QString &text)
+{
+	bool in_quote = false;
+	bool escaped = false;
+	QChar p_last_quote_char;
+	QString result;
+
+	for (uint pos = 0; pos < text.length(); pos++) {
+
+		if ( escaped ) {
+			escaped = false;
+			result.insert( result.length(), text[pos] );
+		}
+		else if ( in_quote && text[pos] == p_last_quote_char ) {
+			in_quote = false;
+		}
+		else if ( !in_quote && text[pos] == m_quote_char1 ) {
+			p_last_quote_char = m_quote_char1;
+			in_quote = true;
+		}
+		else if ( !in_quote && text[pos] == m_quote_char2 ) {
+			p_last_quote_char = m_quote_char2;
+			in_quote = true;
+		}
+		else if ( text[pos] == m_escape_char ) {
+			escaped = true;
+			result.insert( result.length(), text[pos] );
+		}
+		else {
+			result.insert( result.length(), text[pos] );
+		}
+
+	}
+
+	return result;
+}
 
 #include "kshellcompletion.moc"
 
