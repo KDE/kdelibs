@@ -728,7 +728,7 @@ void HTMLInputElementImpl::layout( bool )
 	    ((QLineEdit *)w)->setMaxLength( _maxLen );
 
 	QFontMetrics m = w->fontMetrics();
-	QSize size( _size * m.maxWidth() + 2, m.height() + 6);
+	QSize size( _size * m.maxWidth() + 2, w->sizeHint().height());
 	w->resize( size );
 	descent = 5;
 	ascent = size.height() - descent;
