@@ -1,4 +1,4 @@
-/**
+/*
  * This file is part of the DOM implementation for KDE.
  *
  * (C) 1999 Lars Knoll (knoll@kde.org)
@@ -74,6 +74,11 @@ void CSSStyleDeclaration::setCssText( const DOMString &value )
 
 DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
 {
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyValue( propertyName );
+}
+
+DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName ) const
+{
     if(!impl) return DOMString();
     int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
     if (!id) return DOMString();
@@ -81,6 +86,11 @@ DOMString CSSStyleDeclaration::getPropertyValue( const DOMString &propertyName )
 }
 
 CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName )
+{
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyCSSValue( propertyName );
+}
+
+CSSValue CSSStyleDeclaration::getPropertyCSSValue( const DOMString &propertyName ) const
 {
     if(!impl) return 0;
     int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
@@ -96,6 +106,11 @@ DOMString CSSStyleDeclaration::removeProperty( const DOMString &property )
 }
 
 DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName )
+{
+    return const_cast<const CSSStyleDeclaration*>( this )->getPropertyPriority( propertyName );
+}
+
+DOMString CSSStyleDeclaration::getPropertyPriority( const DOMString &propertyName ) const
 {
     int id = getPropertyID(propertyName.string().ascii(), propertyName.length());
     if(!impl || !id) return DOMString();
@@ -124,6 +139,11 @@ unsigned long CSSStyleDeclaration::length() const
 }
 
 DOMString CSSStyleDeclaration::item( unsigned long index )
+{
+    return const_cast<const CSSStyleDeclaration*>( this )->item( index );
+}
+
+DOMString CSSStyleDeclaration::item( unsigned long index ) const
 {
     if(!impl) return DOMString();
     return static_cast<CSSStyleDeclarationImpl *>(impl)->item( index );
