@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.96  1999/01/18 10:57:11  kulow
+// .moc files are back in kdelibs. Built fine here using automake 1.3
+//
 // Revision 1.95  1999/01/15 09:31:30  kulow
 // it's official - kdelibs builds with srcdir != builddir. For this I
 // automocifized it, the generated rules are easier to maintain than
@@ -204,6 +207,7 @@
 #include "ktoolbar.h"
 #include "klined.h"
 #include "kcombo.h"
+#include "kseparator.h"
 #include <ktopwidget.h>
 #include <klocale.h>
 #include <kapp.h>
@@ -1667,6 +1671,31 @@ int KToolBar::insertSeparator( int index )
     emit (moved(position));
   return items.at();
 }
+
+
+/********* LINESEPARATOR *********/
+/// Inserts line separator
+
+int KToolBar::insertLineSeparator( int index )
+{
+
+  KSeparator *separ = new KSeparator(QFrame::VLine, this);
+  
+  KToolBarItem *item = new KToolBarItem(separ, ITEM_FRAME, -1, true);
+  item->resize( 5, item_size - 2 );
+
+  if ( index == -1 )
+    items.append( item );
+  else
+    items.insert( index, item );
+	
+  if (position == Floating)
+    updateRects( true );
+  else if (isVisible())
+    emit (moved(position));
+  return items.at();
+}
+
 
 /********* Frame **********/
 /// inserts QFrame

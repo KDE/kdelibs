@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.46  1998/11/25 13:22:00  radej
+// sven: Someone made some private things protected (was it me?).
+//
 // Revision 1.45  1998/11/21 19:27:20  radej
 // sven: doubleClicked signal for buttons.
 //
@@ -358,6 +361,11 @@ public:
    * Insert separator
    */
   int insertSeparator(int index=-1);
+
+  /**
+   * Insert line separator
+   */
+  int insertLineSeparator(int index=-1);
 
   /**
    * This function is deprecated and will be removed. Use @ref #insertWidget
