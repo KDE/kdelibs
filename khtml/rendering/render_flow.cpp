@@ -540,8 +540,8 @@ RenderFlow::insertPositioned(RenderObject *o)
     else
         f->type = SpecialObject::Positioned;
     f->node = o;
-    f->zindex = o->style()->zIndex();
-    
+    f->count = specialObjects->count();
+
     specialObjects->append(f);
 }
 
@@ -570,6 +570,7 @@ RenderFlow::insertFloat(RenderObject *o)
 
     if(!f) f = new SpecialObject;
 
+    f->count = specialObjects->count();
     f->startY = -1;
     f->endY = -1;
     f->width = o->width() + o->marginLeft() + o->marginRight();
@@ -609,6 +610,7 @@ RenderFlow::insertFloat(RenderObject *o)
 	    }	
 	
 	    SpecialObject* so = new SpecialObject(*f);
+	    so->count = specialObjects->count();
 	    so->startY = so->startY + m_y;
 	    so->endY = so->endY + m_y;
 	    par->specialObjects->append(so);
@@ -896,6 +898,7 @@ RenderFlow::clearFloats()
 	    {
 		// we need to add the float here too
 		SpecialObject *special = new SpecialObject;
+		special->count = specialObjects->count();
 		special->startY = r->startY - offset;
 		special->endY = r->endY - offset;
 		special->left = r->left; // ### the object might have different m,p&b

@@ -1282,7 +1282,6 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     float value = s.toFloat(&ok);
     if(!ok) return 0;
 
-
     if(split >= endP) // no unit
     {
 	if(allowedUnits & LENGTH && value == 0)

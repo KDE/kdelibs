@@ -1364,7 +1364,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 		    style->setHeight(e->parentNode()->style()->height()); break;
 		case CSS_PROP_MIN_HEIGHT:
 		    style->setMinHeight(e->parentNode()->style()->minHeight()); break;
-		defualt: 
+		defualt:
 		    return;
 		}
 	    return;

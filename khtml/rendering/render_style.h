@@ -252,7 +252,7 @@ public:
 // Box attributes. Not inherited.
 
 
-const short ZAUTO=-11111;
+const int ZAUTO=0;
 
 class StyleBoxData : public SharedData
 {
@@ -305,8 +305,8 @@ public:
 
     Length min_height;
     Length max_height;
-    
-    short z_index;
+
+    int z_index;
 };
 
 
@@ -827,9 +827,9 @@ public:
 
     bool flowAroundFloats() const { return _flowAroundFloats; }
     void setFlowAroundFloats(bool b=true) { _flowAroundFloats = b; }
-    
-    short zIndex() const { return box->z_index; }
-    void setZIndex(short v) { box.set()->z_index = v; }
+
+    int zIndex() const { return box->z_index; }
+    void setZIndex(int v) { box.set()->z_index = v; }
 };
 
 } // namespace

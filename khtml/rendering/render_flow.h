@@ -123,7 +123,7 @@ protected:
 
     struct SpecialObject {
 	SpecialObject() {
-	    zindex = 0;
+	    count = 0;
 	    noPaint = false;
 	}
 	enum Type {
@@ -139,14 +139,16 @@ protected:
 	Type type; // left or right aligned
 	RenderObject* node;
 	bool noPaint;
-	short zindex;
-	bool operator==(const SpecialObject& o) const
+	short count;
+	bool operator==(const SpecialObject& ) const
 	{
-	    return zindex==o.zindex;
+	    return false;
 	}
 	bool operator<(const SpecialObject& o) const
 	{
-	    return zindex<o.zindex;
+	    if(node->style()->zIndex() == o.node->style()->zIndex())
+		return count < o.count;
+	    return node->style()->zIndex() < o.node->style()->zIndex();
 	}
     };
 
