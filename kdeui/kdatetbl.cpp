@@ -36,7 +36,7 @@
 #include "kdatetbl.h"
 #include "kdatetbl.moc"
 
-char *day[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
+static char *day[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 
 KDateTable::KDateTable(QWidget *parent, QDate date, const char *name, WFlags f) 
    : QTableView(parent, name, f)
