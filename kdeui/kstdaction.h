@@ -526,7 +526,10 @@ namespace KStdAction
 
 	/**
 	* Display the configure key bindings dialog.
-	*/
+	* 
+	*  Note that you might be able to use the pre-built KXMLGUIFactory's fuction:
+	*  KStdAction::keyBindings(guiFactory(), SLOT(configureShortcuts()), actionCollection());
+        */
 	KAction *keyBindings(const QObject *recvr, const char *slot,
 					KActionCollection* parent, const char *name = 0 );
 
