@@ -65,7 +65,7 @@ class StdAddressBook : public AddressBook
     /**
       Return the standard addressbook object.
     */
-    static AddressBook *self();
+    static StdAddressBook *self();
 
     /**
       This is the same as above, but with specified
@@ -73,7 +73,7 @@ class StdAddressBook : public AddressBook
 
       @param onlyFastResource Only resources marked as 'fast' should be loaded
     */
-    static AddressBook *self( bool onlyFastResources );
+    static StdAddressBook *self( bool onlyFastResources );
 
     /**
       Save the standard address book to disk.
@@ -137,7 +137,7 @@ class StdAddressBook : public AddressBook
     void init( bool onlyFastResources );
 
   private:
-    static AddressBook *mSelf;
+    static StdAddressBook *mSelf;
     static bool mAutomaticSave;
 };
 

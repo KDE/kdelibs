@@ -35,7 +35,7 @@
 
 using namespace KABC;
 
-AddressBook *StdAddressBook::mSelf = 0;
+StdAddressBook *StdAddressBook::mSelf = 0;
 bool StdAddressBook::mAutomaticSave = true;
 
 static KStaticDeleter<AddressBook> addressBookDeleter;
@@ -55,7 +55,7 @@ void StdAddressBook::handleCrash()
   StdAddressBook::self()->cleanUp();
 }
 
-AddressBook *StdAddressBook::self()
+StdAddressBook *StdAddressBook::self()
 {
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
@@ -65,7 +65,7 @@ AddressBook *StdAddressBook::self()
   return mSelf;
 }
 
-AddressBook *StdAddressBook::self( bool onlyFastResources )
+StdAddressBook *StdAddressBook::self( bool onlyFastResources )
 {
   kdDebug(5700) << "StdAddressBook::self()" << endl;
 
