@@ -1,7 +1,8 @@
 #include <stdlib.h>
 
-#include <kjavaappletserver.moc>
-#include <kjavaprocess.h>
+#include "kjavaappletserver.moc"
+#include "kjavaprocess.h"
+#include "kjavaappletcontext.h"
 #include <kconfig.h>
 #include <kstddirs.h>
 #include <kdebug.h>
