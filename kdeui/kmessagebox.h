@@ -508,12 +508,12 @@ public:
  /**
   * Display an "Information" dialog with a listbox.
   *
-  * @param parent  If @p parent is 0, then the message box becomes an 
+  * @param parent  If @p parent is 0, then the message box becomes an
   *                application-global modal dialog box. If @p parent is a
   *                widget, the message box becomes modal relative to parent.
   * @param text    Message string.
-  * @param strlist List of strings to be written in the listbox. If the 
-  *                list is empty, it doesn't show any listbox, working 
+  * @param strlist List of strings to be written in the listbox. If the
+  *                list is empty, it doesn't show any listbox, working
   *                as information.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Information").
@@ -534,12 +534,12 @@ public:
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   * @since 3.1
   */
-   
-  static void informationList(QWidget *parent, 
-			      const QString &text, 
+
+  static void informationList(QWidget *parent,
+			      const QString &text,
 			      const QStringList & strlist,
 			      const QString &caption = QString::null,
-			      const QString &dontShowAgainName = QString::null, 
+			      const QString &dontShowAgainName = QString::null,
 			      int options = Notify);
 
   /**
@@ -623,6 +623,41 @@ public:
                     DialogType type, const QString &text,
                     const QString &caption = QString::null );
 
+    /**
+     * @return true if the corresponding yes/no message box should be shown.
+     * @param dontShowAgainName the name that identify the message box. If
+     * empty, true is always returned.
+     * @param result is set to the result (Yes or No) that was chosen the last
+     * time the message box was shown. Only meaningful, if the message box
+     * should not be shown.
+     */
+    static bool shouldBeShownYesNo(const QString &dontShowAgainName,
+                                   ButtonCode &result);
+    /**
+     * @return true if the corresponding continue/cancel message box should be
+     * shown.
+     * @param dontShowAgainName the name that identify the message box. If
+     * empty, true is always returned.
+     */
+    static bool shouldBeShownContinue(const QString &dontShowAgainName);
+
+    /**
+     * Save the fact that the yes/no message box should not be shown again.
+     * @param dontShowAgainName the name that identify the message box. If
+     * empty, this method does nothing.
+     * @param result the value (Yes or No) that should be used as the result
+     * for the message box.
+     */
+    static void saveDontShowAgainYesNo(const QString &dontShowAgainName,
+                                       ButtonCode result);
+
+    /**
+     * Save the fact that the continue/cancel message box should not be shown
+     * again.
+     * @param dontShowAgainName the name that identify the message box. If
+     * empty, this method does nothing.
+     */
+    static void saveDontShowAgainContinue(const QString &dontShowAgainName);
 };
 
 #endif
