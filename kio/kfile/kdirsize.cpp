@@ -19,6 +19,7 @@
 
 #include "kdirsize.h"
 #include <kdebug.h>
+#include <kglobal.h>
 #include <qapplication.h>
 #include <qtimer.h>
 #include <config-kfile.h>
@@ -26,13 +27,13 @@
 using namespace KIO;
 
 KDirSize::KDirSize( const KURL & directory )
-    : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L)
+    : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L)
 {
     startNextJob( directory );
 }
 
 KDirSize::KDirSize( const KFileItemList & lstItems )
-    : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L), m_lstItems(lstItems)
+    : KIO::Job(false /*No GUI*/), m_bAsync(true), m_totalSize(0L), m_totalFiles(0L), m_totalSubdirs(0L), m_lstItems(lstItems)
 {
     QTimer::singleShot( 0, this, SLOT(processList()) );
 }
@@ -74,16 +75,19 @@ void KDirSize::startNextJob( const KURL & url )
              SLOT( slotEntries( KIO::Job*,
                                 const KIO::UDSEntryList& )));
     addSubjob( listJob );
+    m_totalSubdirs--; //decrement 1 to account for current directory
 }
 
 void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
+    static const QString& dotdot = KGlobal::staticQString( ".." );
     KIO::UDSEntryListConstIterator it = list.begin();
     KIO::UDSEntryListConstIterator end = list.end();
     for (; it != end; ++it) {
         KIO::UDSEntry::ConstIterator it2 = (*it).begin();
         KIO::filesize_t size = 0;
         bool isLink = false;
+        bool isDir = false;
         QString name;
         for( ; it2 != (*it).end(); it2++ ) {
           switch( (*it2).m_uds ) {
@@ -96,13 +100,21 @@ void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
             case KIO::UDS_SIZE:
               size = ((*it2).m_long);
               break;
+            case KIO::UDS_FILE_TYPE:
+              isDir = S_ISDIR((*it2).m_long);
+              break;
             default:
               break;
           }
         }
-        if ( !isLink && name != QString::fromLatin1("..") )
+        if ( name != dotdot ) // i.e. name != ".."
         {
-            m_totalSize += size;
+            if (!isLink)
+              m_totalSize += size;
+            if (!isDir)
+              m_totalFiles++;
+            else
+              m_totalSubdirs++;
             //kdDebug(kfile_area) << name << ":" << size << endl;
         }
     }

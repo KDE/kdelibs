@@ -1112,9 +1112,13 @@ void KFilePropsPlugin::slotDirSizeFinished( KIO::Job * job )
   else
   {
     KIO::filesize_t totalSize = static_cast<KDirSize*>(job)->totalSize();
-    m_sizeLabel->setText( QString::fromLatin1("%1 (%2)")
+	KIO::filesize_t totalFiles = static_cast<KDirSize*>(job)->totalFiles();
+	KIO::filesize_t totalSubdirs = static_cast<KDirSize*>(job)->totalSubdirs();
+    m_sizeLabel->setText( QString::fromLatin1("%1 (%2) %3, %4")
 			  .arg(KIO::convertSize(totalSize))
-			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) );
+			  .arg(KGlobal::locale()->formatNumber(totalSize, 0)) 
+        .arg(i18n("1 file","%n files",totalFiles)) 
+        .arg(i18n("1 sub-folder","%n sub-folders",totalSubdirs)));
   }
   m_sizeStopButton->setEnabled(false);
   // just in case you change something and try again :)

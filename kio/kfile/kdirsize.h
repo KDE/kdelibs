@@ -42,6 +42,21 @@ public:
   KIO::filesize_t totalSize() const { return m_totalSize; }
 
   /**
+   * @return the total number of files (counting symlinks to files, sockets
+   * and character devices as files) in this directory and all sub-directories
+   * @since 3.3
+   */
+  KIO::filesize_t totalFiles() const { return m_totalFiles; }
+
+  /**
+   * @return the total number of sub-directories found (not including the
+   * directory the search started from and treating symlinks to directories
+   * as directories)
+   * @since 3.3
+   */
+  KIO::filesize_t totalSubdirs() const { return m_totalSubdirs; }
+
+  /**
    * Asynchronous method. Connect to the result signal.
    * This one lists a single directory.
    */
@@ -73,15 +88,17 @@ protected:
 protected slots:
 
   virtual void slotResult( KIO::Job *job );
-  void slotEntries( KIO::Job * , const KIO::UDSEntryList & );
+  void slotEntries( KIO::Job * , const KIO::UDSEntryList &);
   void processList();
 
 private:
   bool m_bAsync;
   KIO::filesize_t m_totalSize;
+  KIO::filesize_t m_totalFiles;
+  KIO::filesize_t m_totalSubdirs;
   KFileItemList m_lstItems;
 protected:
-    virtual void virtual_hook( int id, void* data );
+  virtual void virtual_hook( int id, void* data );
 private:
   class KDirSize* d;
 };
