@@ -46,7 +46,8 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kjanuswidget.h kaboutdialog.h \
 		kauthicon.h kmessagebox.h ksharedpixmap.h \
 		kdualcolorbtn.h kdualcolorbutton.h ktoolbarbutton.h \
-		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h \
+		ktoolbarradiogroup.h ktextbrowser.h \
+		kaction.h kactioncollection.h kactionclasses.h khelpmenu.h \
 		kcmodule.h kcmenumngr.h kpanelmenu.h kpanelappmenu.h \
 		kactionshortcutlist.h kstdaction.h kcombobox.h \
 		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
@@ -70,6 +71,7 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 libkdeui_la_SOURCES = \
 		qxembed.cpp ksharedpixmap.cpp \
 		kpopupmenu.cpp kaction.cpp kstdaction.cpp \
+		kactioncollection.cpp kactionclasses.cpp \
 		kurllabel.cpp \
 		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
 		kcolordialog.cpp kselect.cpp kdatepicker.cpp \
