@@ -59,9 +59,9 @@ void KIconLoader::initPath()
 	// able to specify its own key. (Taj)
 
 	QString key = "KDE";
-	if (strcmp( kapp->name(), "kpanel" ) == 0)
+	if (kapp->name() == "kpanel")
 		key = "kpanel";
-	if (strcmp( kapp->name(), "kfm" ) == 0)
+	if (kapp->name() == "kfm")
 		key = "kfm";
 	KConfig config; // read .kderc
 	config.setGroup("KDE");
@@ -183,7 +183,7 @@ QPixmap KIconLoader::loadMiniIcon ( const QString& name, int w, int h ){
 
 	if (name[0] != '/'){
 
-		result = loadInternal( (QString("mini/") + name).ascii(), w, h);
+		result = loadInternal( (QString("mini/") + name), w, h);
 	}
 
 	if (result.isNull())
