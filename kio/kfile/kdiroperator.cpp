@@ -464,7 +464,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
                 i18n( "<qt>Do you really want to delete\n <b>'%1'</b>?</qt>" )
                 .arg( files.first() ),
                                                       i18n("Delete File"),
-                                                      KGuiItem(i18n("Delete"),"editdelete"), "AskForDelete" );
+                                                      KStdGuiItem::del(), "AskForDelete" );
         }
         else
             ret = KMessageBox::warningContinueCancelList( parent,

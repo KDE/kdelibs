@@ -266,7 +266,7 @@ void DistributionListEditorWidget::removeList()
 {
   int result = KMessageBox::warningContinueCancel( this,
       i18n("Delete distribution list '%1'?") .arg( mNameCombo->currentText() ),
-      QString::null, KGuiItem( i18n("Delete"), "editdelete") );
+      QString::null, KStdGuiItem::del() );
 
   if ( result != KMessageBox::Continue ) return;
 
