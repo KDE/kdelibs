@@ -90,57 +90,27 @@ bool
 KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 		  int mode)
 {
-#ifdef __FreeBSD__
-   mTmpName = filePrefix+QString("XXXX")+fileExtension;
-   char *mktmpName = (char *)malloc(mTmpName.length());
-   strcpy(mktmpName, QFile::encodeName(mTmpName));
-   mFd = mkstemps(mktmpName, fileExtension.length());
-   if (mFd == -1) {
-            mError = errno;
-            mTmpName = QString::null;
-            free(mktmpName);
-            return false;
+   mTmpName = filePrefix+QString("XXXXXX")+fileExtension;
+   QCString nme = QFile::encodeName(mTmpName);
+   if((mFd = mkstemps(nme.data(), nme.length()-nme.findRev('X')-1)) < 0)
+   {
+       mError = EACCES;
+       mTmpName = QString::null;
+       return false;
    }
-   mTmpName = mktmpName;
-   free(mktmpName);
-   fchmod( mFd, mode); // Fix the mode
-#else
-   // The following is not guranteed to work correctly on NFS
-   // In that case we depend on a good random number
-   int maxTries = 3;
-   int tries = 0;
-   do {
-      tries++;
-      mTmpName = filePrefix+QString(".%1").arg(kapp->random())+fileExtension;
 
-      if (checkAccess(mTmpName, W_OK))
-      {
-         mFd = open(QFile::encodeName(mTmpName), O_RDWR|O_CREAT|O_EXCL, mode);
-         if ((mFd <= 0) && (tries >= maxTries))
-         {
-            mError = errno;
-            mTmpName = QString::null;
-            return false;
-         }
-      }
-      else
-      {
-         if (tries >= maxTries)
-         {
-            mError = EACCES;
-            mTmpName = QString::null;
-            return false;
-         }
-      }
-   }
-   while( mFd <= 0);
-#endif
+   // got a file descriptor. nme contains the name
+   mTmpName = QFile::decodeName(nme);
+   mode_t tmp = 0;
+   mode_t umsk = umask(tmp);
+   umask(umsk);
+   chmod(nme, mode&(~umsk));
 
    // Success!
    bOpen = true;
 
    // Set uid/gid (neccesary for SUID programs)
-   chown(QFile::encodeName(mTmpName), getuid(), getgid());
+   chown(nme, getuid(), getgid());
    return true;
 }
 
