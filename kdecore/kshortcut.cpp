@@ -580,6 +580,21 @@ bool KShortcut::setSeq( uint iSeq, const KKeySequence& seq )
 		return false;
 }
 
+void KShortcut::remove( const KKeySequence& seq )
+{
+	if (seq.isNull()) return;
+	
+	for( uint iSeq = 0; iSeq < m_nSeqs; iSeq++ )
+	{
+		if (m_rgseq[iSeq] == seq)
+		{
+			for( uint jSeq = iSeq + 1; jSeq < m_nSeqs; jSeq++)
+				m_rgseq[jSeq-1] = m_rgseq[jSeq];
+			m_nSeqs--;
+		}
+	}
+}
+
 bool KShortcut::append( const KKeySequence& seq )
 {
 	if( m_nSeqs < MAX_SEQUENCES ) {

@@ -764,6 +764,13 @@ class KShortcut
 	bool append( const KKeySequence& keySeq );
 
 	/**
+	 * Removes the given key sequence from this shortcut
+	 * @param keySeq the key sequence to remove
+	 * @since 3.3
+	*/
+	void remove( const KKeySequence& keySeq );
+
+	/**
 	 * Appends the given key
 	 * @param spec the key to add
 	 * @return true if successful, false otherwise
