@@ -55,4 +55,4 @@ protocol_DATA = kmailservice.protocol telnet.protocol rlogin.protocol
 protocoldir = $(kde_servicesdir)
 
 kiomiscdir = $(includedir)/kio
-kiomisc_HEADERS = uiserver.h
+kiomisc_HEADERS = uiserver.h renamedlg.h skipdlg.h
