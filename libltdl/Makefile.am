@@ -9,6 +9,6 @@ libltdlc_la_SOURCES = ltdl.c
 libltdlc_la_LIBADD = $(LIBADD_DL)
 
 ## Because we do not have automatic dependency tracking:
-ltdl.lo: ltdl.h $(top_builddir)/config.h
+ltdl.lo: $(srcdir)/ltdl.h $(top_builddir)/config.h
 
 apidox:
