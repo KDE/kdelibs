@@ -65,7 +65,7 @@ public:
     virtual tagStatus endTag() const { return FORMEndTag; }
 
     long length() const;
-    void prepareSubmit();
+    bool prepareSubmit();
     void prepareReset();
 
     QByteArray formData( );

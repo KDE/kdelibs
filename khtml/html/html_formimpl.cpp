@@ -306,14 +306,16 @@ void HTMLFormElementImpl::setBoundary( const DOMString& bound )
     m_boundary = bound;
 }
 
-void HTMLFormElementImpl::prepareSubmit()
+bool HTMLFormElementImpl::prepareSubmit()
 {
     if(!view) return;
 
-    if (!dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true))
-	return; // don't submit if preventDefault() called
+    if (!dispatchHTMLEvent(EventImpl::SUBMIT_EVENT,true,true)) {
+	return false; // don't submit if preventDefault() called
+    }
 
     submit();
+    return true;
 }
 
 void HTMLFormElementImpl::submit(  )
@@ -728,6 +730,8 @@ void HTMLInputElementImpl::init()
     m_haveType = false;
     m_firstAttach = true;
     m_activeSubmit = false;
+    xPos = 0;
+    yPos = 0;
 
     view = 0;
 }
@@ -1195,25 +1199,37 @@ void HTMLInputElementImpl::setOwnerDocument(DocumentImpl *_document)
 
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    // ### shouldn't we emit a DOMACTIVATE event for type=Image as well?
-    if (((evt->id() == EventImpl::DOMACTIVATE_EVENT) ||
-        (m_type == IMAGE && evt->id() == EventImpl::CLICK_EVENT)) &&
-        (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
-	if (!m_form || !m_render)
-	    return;
-
-	// ### actually submit image on DOMActivate event?
+    if (evt->isMouseEvent() &&
+	evt->id() == EventImpl::CLICK_EVENT &&
+	m_type == IMAGE
+	&& m_render) {
+	// record the mouse position for when we get the DOMActivate event
 	MouseEventImpl *me = static_cast<MouseEventImpl*>(evt);
 	int offsetX, offsetY;
 	m_render->absolutePosition(offsetX,offsetY);
 	xPos = me->clientX()-offsetX;
 	yPos = me->clientY()-offsetY;
+	
+	// since we are not called from a RenderFormElement, the DOMActivate event will not get
+	// sent so we have to do it here
+	if (me->detail() % 2 == 0) // single click
+	    dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,2);
+	else
+	    dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,1);
+    }
+
+    if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
+        (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
+	if (!m_form || !m_render)
+	    return;
 
 	m_clicked = true;
         if(m_type == RESET)
             m_form->prepareReset();
-        else
-            m_form->prepareSubmit();
+        else if (!m_form->prepareSubmit()) {
+	    xPos = 0;
+	    yPos = 0;
+        }
     }
 }
 
