@@ -623,10 +623,17 @@ QString KLocale::translate( const char *singular, const char *plural,
   delete [] newstring;
 
   if ( r.isEmpty() || useDefaultLanguage() || d->plural_form == -1) {
-    if ( n == 1 )
+    if ( n == 1 ) {
       return put_n_in( QString::fromUtf8( singular ),  n );
-    else
-      return put_n_in( QString::fromUtf8( plural ),  n );
+	} else {	
+	  QString tmp = QString::fromUtf8( plural );
+#ifndef NDEBUG
+	  if (tmp.find("%n") == -1) {
+			  kdWarning() << "the message for i18n should contain a '%n'! " << plural << endl;
+	  }
+#endif
+      return put_n_in( tmp,  n );
+	}
   }
 
   QStringList forms = QStringList::split( "\n", r, false );
