@@ -785,6 +785,11 @@ void KonfUpdate::gotScript(const QString &_script)
    int result;
    if (oldConfig1)
    {
+       if (debug)
+       {
+           tmp1.setAutoDelete(false);
+           log() << "Script input stored in " << tmp1.name() << endl;
+       }
        KSimpleConfig cfg(tmp1.name());
 
        if (oldGroup.isEmpty())
