@@ -312,7 +312,6 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-    NodeImpl *relatedTarget = 0; // ###
 
     //kdDebug( 6000 ) << "\nmousePressEvent: x=" << xm << ", y=" << ym << endl;
 
@@ -336,7 +335,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 	d->clickX = xm;
 	d->clickY = ym;
     }
-    dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,relatedTarget,true);
+    dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,true);
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed();
 
@@ -353,7 +352,6 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-    NodeImpl *relatedTarget = 0; // ###
 
     //kdDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
@@ -371,7 +369,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 	d->clickX = xm;
 	d->clickY = ym;
     }
-    dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,relatedTarget,true);
+    dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,true);
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed();
 
@@ -390,12 +388,10 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-    int detail = 0; // ###
-    NodeImpl *relatedTarget = 0; // ###
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
     m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
-    dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),true,detail,_mouse,relatedTarget,true);
+    dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,0,_mouse,true);
     d->clickCount = 0;  // moving the mouse invalidats the click (### support mouse threshold)
 
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
@@ -457,17 +453,16 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
-    NodeImpl *relatedTarget = 0; // ###
 
     //kdDebug( 6000 ) << "\nmouseReleaseEvent: x=" << xm << ", y=" << ym << endl;
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
 
-    dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,relatedTarget,false);
+    dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,false);
 
     if (d->clickCount > 0 && d->clickX == xm && d->clickY == ym)
-	dispatchMouseEvent(EventImpl::CLICK_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,0,true);
+	dispatchMouseEvent(EventImpl::CLICK_EVENT,mev.innerNode.handle(),true,d->clickCount,_mouse,true);
 
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed(false);
@@ -936,10 +931,8 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
     d->formCompletions->writeEntry(name, items);
 }
 
-void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool canBubble,
-				   int detail,QMouseEvent *_mouse,
-				   DOM::NodeImpl *relatedTarget,
-				   bool setUnder)
+void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
+				   int detail,QMouseEvent *_mouse, bool setUnder)
 {
     if (!targetNode)
 	return;
@@ -947,8 +940,8 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     int exceptioncode;
     int clientX, clientY;
     viewportToContents(_mouse->x(), _mouse->y(), clientX, clientY);
-    int screenX = 0; // ###
-    int screenY = 0; // ###
+    int screenX = _mouse->globalX();
+    int screenY = _mouse->globalY();
     int button = -1;
     switch (_mouse->button()) {
 	case LeftButton:
@@ -1001,10 +994,10 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 
     // send the actual event
     MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
-					    canBubble,true,m_part->xmlDocImpl()->defaultView(),
+					    true,cancelable,m_part->xmlDocImpl()->defaultView(),
 					    detail,screenX,screenY,clientX,clientY,
 					    ctrlKey,altKey,shiftKey,metaKey,
-					    button,relatedTarget);
+					    button,0);
     me->ref();
     targetNode->dispatchEvent(me,exceptioncode);
     me->deref();

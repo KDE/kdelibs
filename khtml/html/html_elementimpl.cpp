@@ -98,31 +98,31 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
 // standard events
     case ATTR_ONCLICK:
         removeHTMLEventListener(EventImpl::CLICK_EVENT);
-        addEventListener("click",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+        addEventListener(EventImpl::CLICK_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
 	break;
     case ATTR_ONDBLCLICK:
         removeHTMLEventListener(EventImpl::CLICK_EVENT,true);
-        addEventListener("click",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string(),true),false,exceptioncode);
+        addEventListener(EventImpl::CLICK_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string(),true),false,exceptioncode);
 	break;
     case ATTR_ONMOUSEDOWN:
         removeHTMLEventListener(EventImpl::MOUSEDOWN_EVENT);
-        addEventListener("mousedown",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+        addEventListener(EventImpl::MOUSEDOWN_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
 	break;
     case ATTR_ONMOUSEMOVE:
         removeHTMLEventListener(EventImpl::MOUSEMOVE_EVENT);
-        addEventListener("mousemove",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+        addEventListener(EventImpl::MOUSEMOVE_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
 	break;
     case ATTR_ONMOUSEOUT:
         removeHTMLEventListener(EventImpl::MOUSEOUT_EVENT);
-        addEventListener("mouseout",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+        addEventListener(EventImpl::MOUSEOUT_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
 	break;
     case ATTR_ONMOUSEOVER:
         removeHTMLEventListener(EventImpl::MOUSEOVER_EVENT);
-        addEventListener("mouseover",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+        addEventListener(EventImpl::MOUSEOVER_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
 	break;
     case ATTR_ONMOUSEUP:
         removeHTMLEventListener(EventImpl::MOUSEUP_EVENT);
-        addEventListener("mouseup",new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
+        addEventListener(EventImpl::MOUSEUP_EVENT,new HTMLEventListener(document->view()->part(),DOMString(attr->value()).string()),false,exceptioncode);
 	break;
     case ATTR_ONKEYDOWN:
     case ATTR_ONKEYPRESS:

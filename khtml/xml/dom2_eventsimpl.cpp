@@ -40,6 +40,10 @@ EventImpl::EventImpl()
     m_propagationStopped = false;
     m_defaultPrevented = false;
     m_id = UNKNOWN_EVENT;
+    m_currentTarget = 0;
+    m_eventPhase = 0;
+    m_target = 0;
+    m_createTime = QDateTime::currentDateTime();
 }
 
 EventImpl::EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg)
@@ -54,12 +58,18 @@ EventImpl::EventImpl(EventId _id, bool canBubbleArg, bool cancelableArg)
     m_propagationStopped = false;
     m_defaultPrevented = false;
     m_id = _id;
+    m_currentTarget = 0;
+    m_eventPhase = 0;
+    m_target = 0;
+    m_createTime = QDateTime::currentDateTime();
 }
 
 EventImpl::~EventImpl()
 {
     if (m_type)
 	m_type->deref();
+    if (m_target)
+	m_target->deref();
 }
 
 DOMString EventImpl::type() const
@@ -69,25 +79,41 @@ DOMString EventImpl::type() const
 
 NodeImpl *EventImpl::target() const
 {
-    // ###
-    return 0;
+    return m_target;
+}
+
+void EventImpl::setTarget(NodeImpl *_target)
+{
+    if (m_target)
+	m_target->deref();
+    m_target = _target;
+    if (m_target)
+	m_target->ref();
 }
 
 NodeImpl *EventImpl::currentTarget() const
 {
-    // ###
-    return 0;
+    return m_currentTarget;
+}
+
+void EventImpl::setCurrentTarget(NodeImpl *_currentTarget)
+{
+    m_currentTarget = _currentTarget;
 }
 
 unsigned short EventImpl::eventPhase() const
 {
-    // ###
-    return 0;
+    return m_eventPhase;
+}
+
+void EventImpl::setEventPhase(unsigned short _eventPhase)
+{
+    m_eventPhase = _eventPhase;
 }
 
 bool EventImpl::bubbles() const
 {
-    return m_canBubble; // ### is this the same as bubbles?
+    return m_canBubble;
 }
 
 bool EventImpl::cancelable() const
@@ -97,8 +123,9 @@ bool EventImpl::cancelable() const
 
 DOMTimeStamp EventImpl::timeStamp()
 {
-    // ###
-    return 0;
+    QDateTime epoch(QDate(1970,1,1),QTime(0,0));
+    // ### kjs does not yet support long long (?) so the value wraps around
+    return epoch.secsTo(m_createTime)*1000+m_createTime.time().msec();
 }
 
 void EventImpl::stopPropagation()

@@ -27,6 +27,7 @@
 #include "dom2_events.h"
 #include "dom2_viewsimpl.h"
 #include "dom/dom_misc.h"
+#include <qdatetime.h>
 
 class KHTMLPart;
 
@@ -79,8 +80,11 @@ public:
 
     DOMString type() const;
     NodeImpl *target() const;
+    void setTarget(NodeImpl *_target);
     NodeImpl *currentTarget() const;
+    void setCurrentTarget(NodeImpl *_currentTarget);
     unsigned short eventPhase() const;
+    void setEventPhase(unsigned short _eventPhase);
     bool bubbles() const;
     bool cancelable() const;
     DOMTimeStamp timeStamp();
@@ -107,6 +111,10 @@ protected:
     bool m_propagationStopped;
     bool m_defaultPrevented;
     EventId m_id;
+    NodeImpl *m_currentTarget; // ref > 0 maintained externally
+    unsigned short m_eventPhase;
+    NodeImpl *m_target;
+    QDateTime m_createTime;
 };
 
 

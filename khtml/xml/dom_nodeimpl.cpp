@@ -406,6 +406,7 @@ void NodeImpl::removeHTMLEventListener(int id, bool doubleClickOnly)
 bool NodeImpl::dispatchEvent(EventImpl *evt,
 			     int &/*exceptioncode*/)
 {
+    evt->setTarget(this);
     // work out what nodes to send event to
     QList<NodeImpl> nodeChain;
     NodeImpl *n;
@@ -415,19 +416,34 @@ bool NodeImpl::dispatchEvent(EventImpl *evt,
     }
 
     // trigger any capturing event handlers on our way down
+    evt->setEventPhase(Event::CAPTURING_PHASE);
     QListIterator<NodeImpl> it(nodeChain);
     for (; it.current() && it.current() != this && !evt->propagationStopped(); ++it) {
+	evt->setCurrentTarget(it.current());
 	it.current()->handleLocalEvents(evt,true);
     }
 
+    // dispatch to the actual target node
+    it.toLast();
+    if (!evt->propagationStopped()) {
+	evt->setEventPhase(Event::AT_TARGET);
+	evt->setCurrentTarget(it.current());
+	it.current()->handleLocalEvents(evt,false);
+    }
+    --it;
+
     // ok, now bubble up again (only non-capturing event handlers will be called)
     // ### recalculate the node chain here? (e.g. if target node moved in document by previous event handlers)
-    it.toLast();
     if (evt->bubbles()) {
+	evt->setEventPhase(Event::BUBBLING_PHASE);
 	for (; it.current() && !evt->propagationStopped(); --it) {
+	    evt->setCurrentTarget(it.current());
 	    it.current()->handleLocalEvents(evt,false);
 	}
     }
+
+    evt->setCurrentTarget(0);
+    evt->setEventPhase(0); // I guess this is correct, the spec does not seem to say
 
     // deref all nodes in chain
     it.toFirst();
