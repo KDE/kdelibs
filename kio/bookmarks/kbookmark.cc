@@ -54,38 +54,57 @@ bool KBookmarkGroup::isOpen() const
     return element.attribute("folded") == "no"; // default is: folded
 }
 
+// Returns first element node equal to or after node n
+static QDomElement firstElement(QDomNode n)
+{
+    while(!n.isNull() && !n.isElement())
+        n = n.nextSibling();
+    return n.toElement();
+}
+
+// Returns first element node equal to or before node n
+static QDomElement lastElement(QDomNode n)
+{
+    while(!n.isNull() && !n.isElement())
+        n = n.previousSibling();
+    return n.toElement();
+}
+
 KBookmark KBookmarkGroup::first() const
 {
-    return KBookmark( nextKnownTag( element.firstChild().toElement(), true ) );
+    return KBookmark( nextKnownTag( firstElement(element.firstChild()), true ) );
 }
 
 KBookmark KBookmarkGroup::previous( const KBookmark & current ) const
 {
-    return KBookmark( nextKnownTag( current.element.previousSibling().toElement(), false ) );
+    return KBookmark( nextKnownTag( lastElement(current.element.previousSibling()), false ) );
 }
 
 KBookmark KBookmarkGroup::next( const KBookmark & current ) const
 {
-    return KBookmark( nextKnownTag( current.element.nextSibling().toElement(), true ) );
+    return KBookmark( nextKnownTag( firstElement(current.element.nextSibling()), true ) );
 }
 
+// KDE4: Change QDomElement to QDomNode so that we can get rid of
+// firstElement() and lastElement()
 QDomElement KBookmarkGroup::nextKnownTag( QDomElement start, bool goNext ) const
 {
     static const QString & bookmark = KGlobal::staticQString("bookmark");
     static const QString & folder = KGlobal::staticQString("folder");
     static const QString & separator = KGlobal::staticQString("separator");
-    QDomElement elem = start;
-    while ( !elem.isNull() )
+
+    for( QDomNode n = start; !n.isNull(); )
     {
+        QDomElement elem = n.toElement();
         QString tag = elem.tagName();
         if (tag == folder || tag == bookmark || tag == separator)
-            break;
+            return elem;
         if (goNext)
-            elem = elem.nextSibling().toElement();
+            n = n.nextSibling();
         else
-            elem = elem.previousSibling().toElement();
+            n = n.previousSibling();
     }
-    return elem;
+    return QDomElement();
 }
 
 KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QString & text, bool emitSignal )
@@ -196,9 +215,9 @@ QDomElement KBookmarkGroup::findToolbar() const
 {
     if ( element.attribute("toolbar") == "yes" )
         return element;
-    QDomElement e = element.firstChild().toElement();
-    for ( ; !e.isNull() ; e = e.nextSibling().toElement() )
+    for (QDomNode n = element.firstChild(); !n.isNull() ; n = n.nextSibling() )
     {
+        QDomElement e = n.toElement();
         // Search among the "folder" children only
         if ( e.tagName() == "folder" )
         {
