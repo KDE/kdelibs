@@ -1,12 +1,27 @@
-## KDE/src/lib/ui/test/Makefile.am
-##
-## (C) 1996 Matthias Kalle Dalheimer
-## (C) 1997 Stephan Kulow
+#	This file is part of the KDE libraries
+#    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+#			  (C) 1997 Stephan Kulow (coolo@kde.org)
+
+#    This library is free software; you can redistribute it and/or
+#    modify it under the terms of the GNU Library General Public
+#    License as published by the Free Software Foundation; either
+#    version 2 of the License, or (at your option) any later version.
+
+#    This library is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#    Library General Public License for more details.
+
+#    You should have received a copy of the GNU General Public License
+#    along with this library; see the file COPYING.  If not, write to
+#    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+#    Boston, MA 02111-1307, USA.
+
 
 MOC = @MOC@
 INCLUDES= @QT_INCLUDES@ @X_INCLUDES@ -I../kdecore
 EXTRA_DIST = error.xpm exclamation.xpm info.xpm stopsign.xpm
-DISTCLEANFILES = $(BUILT_SOURCES)
+CLEANFILES = $(BUILT_SOURCES)
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -version-info 0:10  -allow-undefined
@@ -17,8 +32,8 @@ include_HEADERS = kledlamp.h kprogress.h kpanner.h kcolordlg.h kselect.h \
 		ktreelist.h kstatusbar.h ktopwidget.h ktoolbar.h kmenubar.h \
 		kbutton.h kslider.h kseparator.h \
 		klined.h kcombo.h krestrictedline.h kintegerline.h	\
-		kspinbox.h kdocktoolbar.h kcolorbtn.h kiconloaderdialog.h \
-		kwmmapp.h kbuttonbox.h kconfigmodule.h ktablistbox.h knewpanner.h
+		kspinbox.h kcolorbtn.h kiconloaderdialog.h \
+		kwmmapp.h kbuttonbox.h kconfigmodule.h ktablistbox.h
 
 libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		kselect.cpp dither.cpp kdatepik.cpp kdatetbl.cpp \
@@ -26,7 +41,7 @@ libkdeui_la_SOURCES = kledlamp.cpp kprogress.cpp kpanner.cpp kcolordlg.cpp\
 		ktreelist.cpp kstatusbar.cpp ktopwidget.cpp kmenubar.cpp \
 		ktoolbar.cpp kbutton.cpp kslider.cpp kseparator.cpp \
 		klined.cpp kcombo.cpp krestrictedline.cpp \
-		kintegerline.cpp kspinbox.cpp kdocktoolbar.cpp \
+		kintegerline.cpp kspinbox.cpp \
 		kcolorbtn.cpp kiconloaderdialog.cpp kwmmapp.cpp	\
 		kbuttonbox.cpp ktablistbox.cpp knewpanner.cpp
 
@@ -36,7 +51,7 @@ BUILT_SOURCES = kledlamp.moc kprogress.moc kpanner.moc kcolordlg.moc\
 		kfontdialog.moc ktoolbar.moc kstatusbar.moc kmenubar.moc \
 		ktopwidget.moc kbutton.moc kslider.moc  \
 		klined.moc kcombo.moc krestrictedline.moc kintegerline.moc \
-		kspinbox.moc kdocktoolbar.moc kcolorbtn.moc \
+		kspinbox.moc kcolorbtn.moc \
 		kiconloaderdialog.moc kwmmapp.moc kbuttonbox.moc \
 		ktablistbox.moc knewpanner.moc
 
@@ -63,7 +78,6 @@ kcombo.cpp: kcombo.moc
 kintegerline.cpp: kintegerline.moc
 krestrictedline.cpp: krestrictedline.moc
 kspinbox.cpp: kspinbox.moc
-kdocktoolbar.cpp: kdocktoolbar.moc
 kcolorbtn.cpp: kcolorbtn.moc
 kiconloaderdialog.cpp: kiconloaderdialog.moc
 kwmmapp.cpp: kwmmapp.moc
@@ -139,9 +153,6 @@ krestrictedline.moc: krestrictedline.h
 
 kspinbox.moc: kspinbox.h
 	$(MOC) kspinbox.h -o kspinbox.moc
-
-kdocktoolbar.moc: kdocktoolbar.h
-	$(MOC) kdocktoolbar.h -o kdocktoolbar.moc
 
 kcolorbtn.moc: kcolorbtn.h
 	$(MOC) kcolorbtn.h -o kcolorbtn.moc

@@ -1,3 +1,21 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 The KDE Team
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 // $Id$
 
 #include "ktablistbox.h"
@@ -298,7 +316,7 @@ void KTabListBox::setNumCols(int aCols)
       colList[i] = new KTabListBoxColumn(this);
   
   itemList = (KTabListBoxItem**)malloc(INIT_MAX_ITEMS * sizeof(KTabListBoxItem*));
-  for (i = 0; i < INIT_MAX_ITEMS; i++)
+  for (i = 0; i < aCols; i++)
       itemList[i] = new KTabListBoxItem(aCols);
 
   maxItems = INIT_MAX_ITEMS;
@@ -469,8 +487,7 @@ void KTabListBox::insertItem(const char* aStr, int row)
   setNumRows(numRows()+1);
   changeItem(aStr, row);
 
-  if (needsUpdate(row)) 
-      lbox.repaint();
+  if (needsUpdate(row)) lbox.repaint();
 }
 
 //-----------------------------------------------------------------------------
@@ -509,6 +526,7 @@ void KTabListBox::changeItem(const char* aStr, int row)
   sepStr[1] = '\0';
 
   item = itemList[row];
+
   pos = strtok(str, sepStr);
   for (i=0; pos && *pos && i<numCols(); i++)
   {
@@ -606,20 +624,17 @@ void KTabListBox::resizeList(int newNumItems)
 
   newItemList = (KTabListBoxItem**)malloc(newNumItems * sizeof(KTabListBoxItem*));
   int nc = numCols();
+  for (i = 0; i < newNumItems; i++)
+      newItemList[i] = new KTabListBoxItem[nc];
   
   ih = newNumItems < numRows() ? newNumItems : numRows();
-  for ( i = ih-1; i>=0; i--)
+  for (i=ih-1; i>=0; i--)
   {
       newItemList[i] = itemList[i];
   }
 
-  if (newNumItems > numRows())
-      for (i = 0; i < newNumItems - numRows(); i++)
-	  newItemList[i + numRows()] = new KTabListBoxItem(nc);
-  else
-      for (i = 0; i < numRows() - newNumItems; i++)
-	  delete itemList[i + newNumItems];
-  
+  for (i = 0; i < maxItems; i++)
+      delete itemList[i];
   free( itemList );
   itemList = newItemList;
   maxItems = newNumItems;

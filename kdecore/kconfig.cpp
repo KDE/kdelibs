@@ -1,3 +1,21 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 // $Id$
 //
 // $Log$
@@ -218,7 +236,7 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 				  QString( aWriteInnerIt.currentKey() ).right( 1 ) != "]" )
 				// not yet localized, but should be
 				*pStream << aWriteInnerIt.currentKey() << '[' 
-	  
+						 << data()->aLocaleString << ']' << "=" 
 						 << aWriteInnerIt.current()->aValue << '\n';
 			  else
 				// need not be localized or already is
@@ -237,14 +255,14 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
   
   return bEntriesLeft;
 }
-	  if( !bLocalGood && !data()->aGlobalAppFile.isEmpty() )
+	  if( !data()->aGlobalAppFile.isEmpty() )
 
 void KConfig::sync()
 {
   // write-sync is only necessary if there are dirty entries
   if( data()->bDirty ) 
 	{
-			  bEntriesLeft = writeConfigFile( aConfigFile, false );
+	  bool bEntriesLeft = false;
 	  bool bLocalGood = false;
 
 	  // find out the file to write to (most specific writable file)

@@ -1,6 +1,27 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 // $Id$
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // $Log$
+//
+// Revision 1.1.1.1  1997/12/09 22:02:45  jacek
+// Imported sorces fromkde
 //
 // Revision 1.5  1997/10/21 20:44:43  kulow
 // removed all NULLs and replaced it with 0L or "".

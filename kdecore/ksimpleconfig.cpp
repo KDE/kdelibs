@@ -1,6 +1,27 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 // $Id$
 //
 // $Log$
+// Write tag line for MIME detection even in KSimpleConfig
+// Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
+// Revision 1.6  1997/12/18 20:51:34  kalle
 // Some patches by Alex and me
 // Revision 1.1.1.3  1997/12/11 07:19:14  jacek
 // Imported sources from KDE CVS

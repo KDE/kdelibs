@@ -1,3 +1,21 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 The KDE Team
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 /* $Id$
  * A multi column listbox. Requires the Qt widget set.
  */
@@ -54,9 +72,6 @@ protected:
 
 //--------------------------------------------------
 #define KTabListBoxInherited KDNDWidget
-
-/** A multi column listbox */
-
 class KTabListBox : public KDNDWidget
 {
   Q_OBJECT
@@ -70,10 +85,11 @@ public:
 	       int columns=1, WFlags f=0);
   virtual ~KTabListBox();
 
-  /** Returns the number of rows */
-  uint count (void) const { return numRows(); };
-  
-  /** Insert a line before given index, using the separator character to separate the fields. If no index is given the line is appended at the end. Returns index of inserted item. */
+  uint count (void) const { return numRows(); }
+
+  /** Insert a line before given index, using the separator character
+    to separate the fields. If no index is given the line is 
+    appended at the end. Returns index of inserted item. */
   virtual void insertItem (const char* string, int itemIndex=-1);
 
   /** Append a QStrList */
@@ -82,7 +98,8 @@ public:
   /** Same as insertItem, but always appends the new item. */
   void appendItem (const char* string) { insertItem(string); }
 
-  /** Change contents of a line using the separator character to separate the fields. */
+  /** Change contents of a line using the separator character
+    to separate the fields. */
   virtual void changeItem (const char* string, int itemIndex);
 
   /** Change part of the contents of a line. */
@@ -91,12 +108,15 @@ public:
   /** Change color of line. */
   virtual void changeItemColor (const QColor& color, int itemIndex=-1);
 
-  /** Get number of pixels one tab character stands for. Default: 10 */
+  /** Set/get number of pixels one tab character stands for. Default: 10 */
   int tabWidth(void) const { return tabPixels; }
-  /** Set number of pixels one tab character stands for. Default: 10 */
   virtual void setTabWidth(int);
 
-  /** Returns contents of given row/column. If col is not set the contents of the whole row is returned, seperated with the current seperation character. In this case the string returned is a temporary string that will change on the next text() call on any KTabListBox object. */
+  /** Returns contents of given row/column. If col is not set the
+   contents of the whole row is returned, seperated with the current 
+   seperation character. In this case the string returned is a 
+   temporary string that will change on the next text() call on any
+   KTabListBox object. */
   const QString& text(int idx, int col=-1) const;
 
   /** Remove one item from the list. */
@@ -139,80 +159,64 @@ public:
   /** Set number of rows in the listbox. The contents stays as it is. */
   virtual void setNumRows (int);
 
-  /** See the docs for the QTableView class. */
+  /** See QTableView for a description of the following methods. */
   int numRows (void) const { return lbox.numRows(); }
-  /** See the docs for the QTableView class. */
   int numCols (void) const { return lbox.numCols(); }
-  /** See the docs for the QTableView class. */
   int cellWidth (int col) { return lbox.cellWidth(col); }
-  /** See the docs for the QTableView class. */
   int totalWidth (void) { return lbox.totalWidth(); }
-  /** See the docs for the QTableView class. */
   int cellHeight (int row) { return lbox.cellHeight(row); }
-  /** See the docs for the QTableView class. */
   int totalHeight (void) { return lbox.totalHeight(); }
-  /** See the docs for the QTableView class. */
   int topCell (void) const { return lbox.topCell(); }
-  /** See the docs for the QTableView class. */
   int leftCell (void) const { return lbox.leftCell(); }
-  /** See the docs for the QTableView class. */
   int lastColVisible (void) const { return lbox.lastColVisible(); }
-  /** See the docs for the QTableView class. */
   int lastRowVisible (void) const { return lbox.lastRowVisible(); }
-  /** See the docs for the QTableView class. */
   bool autoUpdate (void) const { return lbox.autoUpdate(); }
-  /** See the docs for the QTableView class. */
   void setAutoUpdate (bool upd) { lbox.setAutoUpdate(upd); }
-  /** See the docs for the QTableView class. */
   void clearTableFlags(uint f=~0) { lbox.clearTableFlags(f); }
-  /** See the docs for the QTableView class. */
   uint tableFlags(void) { return lbox.tableFlags(); }
-  /** See the docs for the QTableView class. */
   bool testTableFlags(uint f) { return lbox.testTableFlags(f); }
-  /** See the docs for the QTableView class. */
   void setTableFlags(uint f) { lbox.setTableFlags(f); }
-  /** See the docs for the QTableView class. */
   int findCol(int x) { return lbox.findCol(x); }
-  /** See the docs for the QTableView class. */
   int findRow(int y) { return lbox.findRow(y); }
-  /** See the docs for the QTableView class. */
   bool colXPos(int col, int* x) { return lbox.colXPos(col,x); }
-  /** See the docs for the QTableView class. */
   bool rowYPos(int row, int* y) { return lbox.rowYPos(row,y); }
 
   /** Set column caption, width, and type. */
   virtual void setColumn (int col, const char* caption, 
 			  int width=0, ColumnType type=TextColumn);
 
-  /** Set column width. */
+  /** Set/get column width. */
   virtual void setColumnWidth (int col, int width=0);
-  /** Get column width. */
   int columnWidth (int col) { return lbox.cellWidth(col); }
 
   /** Set default width of all columns. */
   virtual void setDefaultColumnWidth(int width0, ...);
 
-  /** Set separator character, e.g. '\t'. */
+  /** set separator character, e.g. '\t'. */
   virtual void setSeparator (char sep);
 
   /** Return separator character. */
   virtual char separator (void) const { return sepChar; }
 
-  /** For convenient access to the dictionary of pictures that this listbox understands. */
+  /** For convenient access to the dictionary of pictures that this
+   listbox understands. */
   KTabListBoxDict& dict (void) { return pixDict; }
 
   void repaint (void) { QWidget::repaint(); lbox.repaint(); }
 
-  /** Indicates that a drag has started with given item. Returns TRUE if we are dragging, FALSE if drag-start failed. */
+  /** Indicates that a drag has started with given item.
+    Returns TRUE if we are dragging, FALSE if drag-start failed. */
   bool startDrag(int col, int row, const QPoint& mousePos);
 
   QPixmap& dndPixmap(void) { return dndDefaultPixmap; }
 
-  /** Read the config file entries in the group with the name of the listbox and set the column widths and those. */
+  /** Read the config file entries in the group with the name of the
+    listbox and set the column widths and those. */
   virtual void readConfig(void);
 
 signals:
-  /** emited when the current item changes (either via setCurrentItem() or via mouse single-click). */
+  /** emited when the current item changes (either via setCurrentItem()
+    or via mouse single-click). */
   void highlighted (int Index, int column);
 
   /** emitted when the user double-clicks into a line. */
@@ -245,14 +249,15 @@ protected:
   /** Resize item array. Per default enlarge it to double size. */
   virtual void resizeList (int newNumItems=-1);
 
-  /** Called to set drag data, size, and type. If this method returns FALSE then no drag occurs. */
+  /** Called to set drag data, size, and type. If this method
+    returns FALSE then no drag occurs. */
   virtual bool prepareForDrag (int col, int row, char** data, int* size, 
 			       int* type);
 
-  /** Internal method that handles resizing of columns with the mouse. */
+  // Internal method that handles resizing of columns with the mouse.
   virtual void doMouseResizeCol(QMouseEvent*);
 
-  /** Internal method that handles moving of columns with the mouse. */
+  // Internal method that handles moving of columns with the mouse.
   virtual void doMouseMoveCol(QMouseEvent*);
 
   KTabListBoxColumn**	colList;

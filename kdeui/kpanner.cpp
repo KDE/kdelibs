@@ -1,7 +1,34 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Alexander Sanda (alex@darkstar.ping.at)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 /*
  * $Id$
  *
  * $Log$
+ * Revision 1.6  1997/05/17 20:38:23  kalle
+ * Kalle:
+ * - Bugfix for KPanner (from Paul Kendall)
+ * - Better colors with kdisplay schemes (from Bernd Wuebben)
+ * - new behavior in KApplication::invokeHTMLHelp(): if the first
+ *   argument (the filename) is empty, the filename is defaulted to
+ * 	$KDEDIR/doc/HTML/<appname>/<appname>.html
+ * - KApplication::getCaption for Matthias added (breaks binary compatibility!)
+ *
  * Revision 1.5  1997/05/09 15:10:12  kulow
  * Coolo: patched ltconfig for FreeBSD
  * removed some stupid warnings

@@ -1,6 +1,27 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 // $Id$
 //
 // $Log$
+// Revision 1.4  1998/01/15 13:22:31  kalle
+// Read-only mode for KSimpleConfig
+// Revision 1.1.1.3  1997/12/11 07:19:14  jacek
 // Imported sources from KDE CVS
 //
 // Revision 1.1.1.2  1997/12/10 07:08:33  jacek
@@ -21,7 +42,7 @@
 //
 
 #ifndef _KSIMPLECONFIG_H
-* @version $Id$
+#define _KSIMPLECONFIG_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>

@@ -1,6 +1,28 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Torben Weis (weis@kde.org)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 /* $Id$
  *
  * $Log$
+ * Revision 1.11  1997/12/12 14:40:12  denis
+ * Reverting to false :-)
+ * Added KCharset class - small changes in interface. I hope it is all source
+ * Revision 1.10  1997/12/12 14:36:22  denis
  * false to FALSE
  * Revision 1.1.1.3  1997/12/11 07:19:09  jacek
  * Imported sources from KDE CVS
@@ -98,7 +120,7 @@
 #define DndDir          5
 // Dont use that any more
 #define DndLink         6
-* @version $Id$
+// Dont use that any more
 #define DndExe          7
 // For Offix internal use only
 #define DndEND          8
@@ -139,7 +161,7 @@ protected:
   virtual void resizeEvent( QResizeEvent * );
   
 /**
-* @version $Id$
+* The pixmap displayed.
 */
   QPixmap pixmap;
 };
@@ -335,7 +357,7 @@ protected:
 */
   int dndY;
 /**
-* @version $Id$
+* Data type mask.
 */
   int acceptType;
 

@@ -41,6 +41,7 @@ protected:
     QPopupMenu *itemsMenu;
     QPopupMenu *completions;
     QPopupMenu *toolBarMenu;
+  QPopupMenu* helpMenu;
     KStatusBar *statusBar;
     KToolBar *toolBar;
     KToolBar *tb1;

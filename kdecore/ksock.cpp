@@ -1,6 +1,28 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Torben Weis (weis@kde.org)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 /*
  * $Id$
  * $Log$
+ *
+ * Revision 1.1.1.2  1997/12/10 07:08:33  jacek
+ * Imported sources from KDE CVS
+ *
  * Revision 1.1.1.1  1997/12/09 22:02:46  jacek
  * Imported sorces fromkde
  *
@@ -42,31 +64,6 @@
  * Even more SGI and SCC patches, security patch for kapp, various fixes for ksock
  *
  * Revision 1.5  1997/07/17 18:43:18  kalle
- *
- * Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
- * Source imported
- *
- * Revision 1.1.1.1  1997/04/09 00:28:06  cvsuser
- * Sources imported
- *
- * Revision 1.4  1997/01/15 20:31:41  kalle
- * merged changes from 0.52
- *
- * Revision 1.3  1996/12/07 18:31:00  kalle
- * Qt debugging functions instead of printf and formatting
- *
- * Revision 1.2  1996/12/07 18:22:56  kalle
- * RCS-Header
- *
- *
- * The KDE Socket Classes.
- *
- * Torben Weis
- * weis@stud.uni-frankfurt.de
- *
- * Last change: 10.11.96
- *
- * Part of the KDE Project.
  * Kalle: new stopsign.xpm
  * 			KConfig: environment variables are resolved in readEntry()
  * 			(meaning you can write() an entry with an environment

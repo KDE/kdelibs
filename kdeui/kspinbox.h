@@ -1,9 +1,25 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Andre Fornacon (afc@fh-zwickau.de)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 // -*- c++ -*-
 // KSpinBox.h - cycle through a bunch of items
 // started: 970506 afo
 // [Last modified: 970717 09:51:42 by afo@fh-zwickau.de (Andre Fornacon)]
-
-// (c) 1997 by Andre Fornacon (afo@fh-zwickau.de)
 
 
 #ifndef _KSPINBOX_H

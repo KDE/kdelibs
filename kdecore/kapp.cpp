@@ -1,3 +1,22 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+	*/
+
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
@@ -28,293 +47,15 @@
 // Revision 1.71  1997/11/11 05:41:53  wuebben
 // Bernd: implemented iso charset support
 //
-// Revision 1.49  1997/10/09 11:46:17  kalle
-// Assorted patches by Fritz Elfert, Rainer Bawidamann, Bernhard Kuhn and Lars Kneschke
-//
-// Revision 1.48  1997/10/08 13:44:48  kulow
-// corrected the path creation due to Torben's changes
-//
-// Revision 1.47  1997/10/08 02:18:15  torben
-// Torben: Monster-Patch for KDEFSSTD, see posting
-// added KIconLoaderButton, changed search pathes in
-// kiconloader to match home directory, too
-// Changed config files of KFm in kfmlib
-//
-// Revision 1.46  1997/10/07 06:52:15  kulow
-// my new path modell
-//
-// Revision 1.45  1997/10/05 21:32:32  ettrich
-// Matthias: set the default icon/miniicon for the mainwidget
-//
-// Revision 1.44  1997/10/05 19:01:37  kalle
-// Default color scheme is now KDE Default
-//
-// Revision 1.43  1997/10/05 16:40:09  mark
-// MD:
-// 1) Bug fix for unregisterMainWidget method; IDs and separators are removed
-// properly from the string held in _DT_APP_WINDOWS.
-//
-// 2) Added unregisterMainWidget to the destructor of KApplication.
-//
-// Revision 1.42  1997/10/05 13:12:24  kalle
-// Coolos patch for creating the directories
-//
-// Revision 1.41  1997/10/05 12:52:40  kalle
-// Three new methods from Mark Donohoe
-//
-// Revision 1.40  1997/10/04 20:29:11  kulow
-// I just waited for Kalle' "I go to bed" ;)
-//
-// parseCommandLine works now correct. I've just rewritten it,
-// so you easy add more command line options.
-//
-// Revision 1.39  1997/10/04 20:03:02  kalle
-// You can turn of debugging output completely.
-//
-// Revision 1.38  1997/10/04 19:42:44  kalle
-// new KConfig
-//
-// Revision 1.37  1997/10/02 22:09:49  ettrich
-// Matthias: BINARY INCOMPATIBLE CHANGES:
-//      * enhancements to icon loading and additional features for kwm modules
-//      * automatic icon loading in KApplication
-//
-// Revision 1.36  1997/09/29 19:56:01  kalle
-// Bugfix: automatic derivation of logical from physical appname (reported by Coolo)
-//
-// Revision 1.35  1997/09/29 19:34:07  kalle
-// support for -icon and -miniicon
-//
-// Revision 1.34  1997/09/29 18:57:35  kalle
-// BINARY INCOMPATIBLE!!!!!!!!!!!!!!!!!!!!!!
-// Support for session management
-// make KDebug compile on HP-UX
-//
-// Revision 1.33  1997/09/28 09:03:15  kulow
-// disabled the "contras=" message, since this breaks kdisplay
-//
-// Revision 1.32  1997/09/26 07:01:12  kalle
-// Here are the promised dummies for session management:
-//
-// - KApplication::saveYourself (signal)
-// - KApplication::tempFileName()
-// - KApplication::checkRecoverFile()
-//
-// A short documentation is in kapp.h, more docs will follow.
-//
-// Revision 1.31  1997/09/23 21:02:37  kalle
-// KApplication deletes -caption and the following arguments from the command line arguments
-//
-// Revision 1.30  1997/09/19 16:28:42  mark
-// MD: Implemented reading of the colour scheme contrast variable. This allows
-// you to choose the highlights and lowlights used to draw widgets and has been
-// part of the colour scheme specification for some time
-//
-// Sorry if this breaks anything; it is the last of the binary incompatible
-// changes that Kalle announced yesterday.
-//
-// Revision 1.29  1997/09/13 05:51:40  kalle
-// new features in KDebug
-// - asserts
-// - varargs
-// - output to syslog
-// - areas implemented
-//
-// Revision 1.28  1997/09/11 19:44:53  kalle
-// New debugging scheme for KDE (binary incompatible!)
-//
-// Revision 1.27  1997/09/06 20:43:51  kdecvs
-// Coolo: doc are now in share. locale support still missing, but I have plans
-//
-// Revision 1.26  1997/09/04 19:51:26  kdecvs
-// Coolo: set KApp first, if we can make sure, that the current instance is
-// 	complete
-//
-// Revision 1.25  1997/09/04 16:31:57  kdecvs
-// Coolo: I have introduced some dependecies, that I can't resolve.
-// 	Kalle knows about it.
-//
-// Revision 1.24  1997/08/31 19:18:32  kdecvs
-// Kalle:
-// new usage of KLocale
-// default string for KConfig::readEntry to const char*
-//
-// Revision 1.23  1997/08/31 16:30:42  kdecvs
-// Kalle: KProcess 0.23
-//
-// Revision 1.22  1997/08/30 18:57:11  kdecvs
-// Initialized pIconLoader
-//
-// Revision 1.21  1997/08/30 15:51:57  kdecvs
-// Kalle: BINARY INCOMPATIBLE!!!!!
-// KApplication provides an IconLoader
-// KConfig writes a cookie to the start of every config file
-// KIconLoader now in kdecore (KIconLoaderDialog and KIconLoaderCanvas stay
-// in kdeui)
-//
-// Revision 1.20  1997/08/30 00:09:56  kdecvs
-// Kalle: new signal appearanceChanged when either font, palette or GUI style has changed
-//
-// Revision 1.19  1997/08/29 23:52:02  kdecvs
-// Kalle: Do not crash when $HOME/.kde/config does not exist
-//
-// Revision 1.18  1997/08/29 15:56:55  kdecvs
-// Torben: added some needed functions and bugfixes for kfm-0.9
-//
-// Revision 1.17  1997/08/07 08:50:35  ettrich
-// Matthias: replaced $KDEDIR with kdedir() in the searchpath
-//
-// Revision 1.16  1997/07/27 13:43:57  kalle
-// Even more SGI and SCC patches, security patch for kapp, various fixes for ksock
-//
-// Revision 1.15  1997/07/25 19:46:41  kalle
-// SGI changes
-//
-// Revision 1.14  1997/07/24 21:04:38  kalle
-// Kalle: Patches for SGI
-//
-// Revision 1.13  1997/06/29 18:26:35  kalle
-// 29.06.97:	KConfig reads and writes string lists
-// 			Torben's patches to ktoolbar.*, kurl.h
-//
-// 22.06.97:	KApplications save and restore position and size of their top
-// (unstable)	level widget.
-//
-// Revision 1.12  1997/05/30 20:04:37  kalle
-// Kalle:
-// 30.05.97:	signal handler for reaping zombie help processes reinstalls itself
-// 		patch to KIconLoader by Christian Esken
-// 		slightly better look for KTabCtl
-// 		kdecore Makefile does not expect current dir to be in path
-// 		Better Alpha support
-//
-// Revision 1.11  1997/05/17 20:38:21  kalle
-// Kalle:
-// - Bugfix for KPanner (from Paul Kendall)
-// - Better colors with kdisplay schemes (from Bernd Wuebben)
-// - new behavior in KApplication::invokeHTMLHelp(): if the first
-//   argument (the filename) is empty, the filename is defaulted to
-// 	$KDEDIR/doc/HTML/<appname>/<appname>.html
-// - KApplication::getCaption for Matthias added (breaks binary compatibility!)
-//
-// Revision 1.10  1997/05/15 20:33:19  wuebben
-// Bernd: Added signals:
-// kdisplayFontChanged()
-// kdisplayPaletteChanged()
-// kdisplayStyleChaned()
-// Some applications such as kedit need to know when the Font, Palette,
-// or Style ngeduy.
-//
-// Revision 1.9  1997/05/13 05:49:00  kalle
-// Kalle: Default arguments for KConfig::read*Entry()
-// app-specific config files don't start with a dot
-// Bufgix for the bugfix in htmlobj.cpp (FontManager)
-//
-// Revision 1.8  1997/05/09 19:52:54  kalle
-// Kalle: Application-specific config files without leading .
-//
-// Revision 1.7  1997/05/08 22:53:16  kalle
-// Kalle:
-// KPixmap gone for good
-// Eliminated static objects from KApplication and HTML-Widget
-//
-// Revision 1.6  1997/05/02 16:46:34  kalle
-// Kalle: You may now override how KApplication reacts to external changes
-// KButton uses the widget default palette
-// new kfontdialog version 0,5
-// new kpanner by Paul Kendall
-// new: KIconLoader
-//
-// Revision 1.5  1997/04/28 06:57:44  kalle
-// Various widgets moved from apps to libs
-// Added KSeparator
-// Several bugs fixed
-// Patches from Matthias Ettrich
-// Made ksock.cpp more alpha-friendly
-// Removed XPM-Loading from KPixmap
-// Reaping zombie KDEHelp childs
-// WidgetStyle of KApplication objects configurable via kdisplay
-//
-// Revision 1.4  1997/04/23 16:45:14  kulow
-// fixed a bug in acinclude.m4 (Thanks to Paul)
-// solved some little problems with some gcc versions (no new code)
-//
-// Revision 1.3  1997/04/21 22:37:23  kalle
-// Bug in Kconfig gefixed (schrieb sein app-spezifisches File nicht mehr)
-// kcolordlg und kapp abgedated (von Martin Jones)
-//
-// Revision 1.2  1997/04/15 20:01:55  kalle
-// Kalles changes for 0.8
-//
-// Revision 1.1.1.1  1997/04/13 14:42:41  cvsuser
-// Source imported
-//
-// Revision 1.1.1.1  1997/04/09 00:28:06  cvsuser
-// Sources imported
-//
-// Revision 1.10  1997/03/16 22:29:56  kalle
-// look for config variables in ~/.kde/config/.appnamerc if the
-// environment variable USE_NEW_CONFIG_LOCATION is set
-//
-// Revision 1.9  1997/03/16 22:21:26  kalle
-// patches from Nicolas Hadacek
-//
-// Revision 1.8  1997/03/16 21:59:58  kalle
-// initialize KKeyConfig
-//
-// Revision 1.7  1997/03/10 20:04:39  kalle
-// Merged changes from 0.6.3
-//
-// Revision 1.6  1997/03/09 17:28:46  kalle
-// KTextStream -> QTextStream
-//
-// Revision 1.5  1997/01/15 20:14:28  kalle
-// merged changes from 0.52
-//
-// Revision 1.4  1996/12/14 13:50:08  kalle
-// finding out the state the application config object is in
-//
-// Revision 1.3  1996/12/07 22:23:26  kalle
-// Drag and Drop stuff from Torben added
-//
-// Revision 1.2  1996/12/07 17:50:49  kalle
-// Patches from Nicolas
-//
-// Revision 1.1  1996/12/01 11:19:55  kalle
-// Initial revision
-//
-//
-// KApplication implementation
-//
-// (C) 1996 Matthias Kalle Dalheimer <kalle@kde.org>
-//
-// DND stuff by Torben Weis <weis@stud.uni-frankfurt.de>
-// 09.12.96
-//
 // Revision 1.70  1997/11/09 04:08:54  wuebben
 // Bernd: iso charset changes (minimal and harmless )
 //
 // Revision 1.69  1997/11/03 14:41:28  ettrich
-#ifndef _KAPP_H
 // Matthias: tiny fix for command line arguments: "-icon" will also be used
-#endif
-
-#ifndef _KKEYCONF_H
 //       for the miniicon if "-miniicon" is not defined.
-#endif
-
-#ifndef _KICONLOADER_H
 //
-#endif
-
-#ifndef _KLOCALE_H
 // Revision 1.68  1997/11/03 13:50:15  kulow
-#endif
-
-#ifndef _KDEBUG_H
 // delete theKProcessController in the destructor
-#endif
-
 //
 // Revision 1.67  1997/10/30 13:30:15  ettrich
 // Matthias: fix for setWmCommand: now setWmCommand can also be used for
@@ -326,6 +67,7 @@
 // Revision 1.66  1997/10/25 22:27:40  kalle
 // Fixed bug with default help menu (Thanks, Bernd! This one was just in time!)
 //
+// Revision 1.65  1997/10/24 16:58:55  ettrich
 // Matthias: bugfixes for session management.
 //
 // Revision 1.64  1997/10/22 20:42:52  kalle
@@ -547,6 +289,64 @@ void KApplication::init()
   pSessionConfig = 0L;
   bIsRestored = False;
   bSessionManagement = False;
+QPopupMenu* KApplication::getHelpMenu( bool bAboutQtMenu )
+
+  // register a communication window for desktop changes (Matthias)
+  {
+    Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", False);
+    QWidget* w = new QWidget(0,0);
+    long data = 1;
+    XChangeProperty(qt_xdisplay(), w->winId(), a, a, 32,
+					PropModeReplace, (unsigned char *)&data, 1);
+KConfig* KApplication::getSessionConfig() {
+  if (pSessionConfig)
+
+  // create a instance specific config object
+  QString aConfigName;
+  char* pHome;
+  if( (pHome = getenv( "HOME" )) )
+    aConfigName = pHome;
+
+    aConfigName = "."; // use current dir if $HOME is not set
+  aConfigName += "/.kde/share/config/";
+  aConfigName += aAppName;
+  aConfigName += "rc";
+
+  QString aSessionConfigName;
+  invokeHTMLHelp( aAppName, "" );
+  int i = 0;
+  do {
+  if( bAboutQtMenu )
+    num.setNum(i);
+	  id = pMenu->insertItem( klocale->translate( "About Qt" ) );
+  QMessageBox::about( NULL, getCaption(),
+					  "The KDE Desktop Environment was written by\n\n"
+					  "Christian Czezatke\n"
+					  "Kalle Dalheimer (kalle@kde.org)\n"
+					  "Christian Esken\n"
+					  "Fritz Elfert (fritz@wuemaus.franken.de)\n"
+					  "Matthias Ettrich (ettrich@kde.org)\n"
+					  "Martin Jones (mjones@kde.org)\n"
+					  "Martin Konold (konold@kde.org)\n"
+					  "Stephan Kulow (coolo@kde.org)\n"
+					  "Christoph Neerfeld\n"
+					  "Sven Radej\n"
+					  "Uwe Thiem\n"
+					  "Torben Weis (weis@kde.org)\n"
+					  "Robert David Williams (rwilliam@kde.org)\n"
+					  "Bernd Johannes Wuebben (wuebben@kde.org)\n"
+					  "Markus Wuebben\n"
+					  "and lots of other developers, contributors, documentation writers and maintainers"
+  }
+  return pSessionConfig;
+}
+					  "The KDE Desktop Environment was written by "
+					  "the KDE team.\n\n"
+					  "Please send bug reports to kde-bugs@kde.org.\n\n\n"
+  QMessageBox::aboutQt( NULL, getCaption() );
+					  "Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n" 
+					  "Qt may be used freely to develop free software on the X Window System.\n"
+					  )
     KWM::setWmCommand( topWidget()->winId(), aWmCommand);
 }
 
@@ -1049,8 +849,7 @@ QString KApplication::findFile( const char *file )
 
 const char* KApplication::getCaption() const
 {
-        KConfig* config = getConfig();
-        config->reparseConfiguration();
+  KConfig* config = getConfig();
   else
 	return aAppName;
 }

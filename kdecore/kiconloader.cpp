@@ -1,31 +1,23 @@
 // -*- C++ -*-
+// -*- C++ -*-
+/* This file is part of the KDE libraries
+    Copyright (C) 1997 Christoph Neerfeld (Christoph.Neerfeld@boon.netsurf.de)
 
-//
-//  kiconloader
-//
-//  Copyright (C) 1997 Christoph Neerfeld
-//  email:  Christoph.Neerfeld@bonn.netsurf.de
-//
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-//
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
 
-// CHANGES
-// Torben: Priority for local icons, added full KDEFSSTD to ~/.kde
-//         /share/icons is exclusively searched in if you want to
-//        load an applications icon.
-// Matthias: hopefully completed Torben's atempt.
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 	if (result.isNull() && !canReturnNull) {
 #include <qapp.h>
 #include <qdir.h>
@@ -37,6 +29,7 @@
 	}
 #include <klocale.h>
 #include <kapp.h>
+#define klocale KApplication::getKApplication()->getLocale()
 }
 //----------------------------------------------------------------------
 //---------------  KICONLOADER   ---------------------------------------
@@ -92,12 +85,8 @@ KIconLoader::~KIconLoader()
 
 QPixmap KIconLoader::loadIcon ( const QString &name, int w, int h ){
   QPixmap result = loadInternal(name, w, h);
-/* Stephan: It's OK to know, how many icons are still missing, but
-       we don't need to tell everybody ;) Perhaps this can be con-
-       verted to a KDEBUG solution, that is more silent? Don't know.
   if (result.isNull())
     warning(klocale->translate("ERROR: couldn't find icon: %s"), (const char *) name);
-*/
   return result;
 }
 
@@ -108,10 +97,8 @@ QPixmap KIconLoader::loadMiniIcon ( const QString &name, int w, int h ){
   }
   if (result.isNull())
     result = loadInternal(name, w, h);
-/* Stephan: See above
   if (result.isNull())
     warning(klocale->translate("ERROR: couldn't find mini icon: %s"), (const char *) name);
-*/
   return result;
 			// Let's be recursive (but just once at most)
 			full_path = getIconPath( "unknown.xpm" , false); 
