@@ -48,12 +48,13 @@ private:
   * This allows me to test KMdiMainFrm::read/writeDockConfig by
   * closing and restarting the MainWidget via checkbox click.
   */
-class RestartWidget : public QWidget
+class RestartWidget : public KMainWindow
 {
     Q_OBJECT
 // methods
 public:
     RestartWidget();
+    void setWindow(MainWidget *w);
 
 private slots:
     void onStateChanged(int on);
@@ -62,6 +63,8 @@ private slots:
 public:
     QDomDocument domDoc;
     QDomElement dockConfig;
+private:
+    MainWidget *m_w;
 };
 
 #endif

@@ -105,7 +105,7 @@ void MainWidget::resizeEvent( QResizeEvent *pRSE)
    setSysButtonsAtMenuPosition();
 }
 
-RestartWidget::RestartWidget()
+RestartWidget::RestartWidget():KMainWindow()
 {
     QVBoxLayout* bl = new QVBoxLayout(this);
     QLabel* l = new QLabel("This is for the testing of\nKMdiMainFrm::read/writeDockConfig().\n", this);
@@ -125,14 +125,18 @@ RestartWidget::RestartWidget()
 void RestartWidget::onStateChanged(int on)
 {
     if (on) {
-        MainWidget* mainWdg = new MainWidget(dockConfig);
-        mainWdg->resize(500,500);
-        qApp->setMainWidget( mainWdg );
-        mainWdg->show();
+        m_w = new MainWidget(dockConfig);
+        m_w->resize(500,500);
+        m_w->show();
     }
     else {
-        MainWidget* mw = dynamic_cast<MainWidget*>(qApp->mainWidget());
-        qApp->setMainWidget(this);
-        mw->close();
+        m_w->close();
+	delete m_w;
     }
+
 }
+
+void RestartWidget::setWindow(MainWidget *w) {
+	m_w=w;
+}
+		

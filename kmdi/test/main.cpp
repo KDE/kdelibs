@@ -50,6 +50,7 @@ int main( int argc, char **argv )
 
    RestartWidget* restartWidget = new RestartWidget;
    MainWidget* mainWdg = new MainWidget(restartWidget->dockConfig);
+   restartWidget->setWindow(mainWdg);
 
    Hello* h1 = new Hello( "Hello1", "Click the right mouse button on the mainframe!", mainWdg);
    h1->setTabCaption("Tab changed");
@@ -93,7 +94,8 @@ int main( int argc, char **argv )
 #endif
 
    mainWdg->resize(500,500);
-   a.setMainWidget( mainWdg );
+   a.setMainWidget( restartWidget );
+   restartWidget->show();
    mainWdg->show();
 
    mainWdg->cascadeWindows();
