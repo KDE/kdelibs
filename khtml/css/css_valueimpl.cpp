@@ -344,10 +344,10 @@ unsigned long CSSStyleDeclarationImpl::length() const
     return m_lstValues ? m_lstValues->count() : 0;
 }
 
-DOMString CSSStyleDeclarationImpl::item( unsigned long /*index*/ ) const
+DOMString CSSStyleDeclarationImpl::item( unsigned long index ) const
 {
-    // ###
-    //return m_lstValues->at(index);
+    if(m_lstValues && index < m_lstValues->count() && m_lstValues->at(index))
+	return getPropertyName(m_lstValues->at(index)->m_id);
     return DOMString();
 }
 
