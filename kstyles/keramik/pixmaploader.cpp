@@ -148,6 +148,7 @@ QPixmap PixmapLoader::scale( const QCString& name, int width, int height, const 
 			QPixmapCache::insert( key, result );
 			return result;
 		}
+		img = new QImage( image );
 
 		if ( disabled )
 			makeDisabled( *img, color );
