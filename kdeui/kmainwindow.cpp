@@ -1066,8 +1066,8 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
             break;
         }
     }
-    KMenuBar *mb = menuBar();
-    if (!mb->isHidden()) {
+    KMenuBar *mb = internalMenuBar();
+    if (mb && !mb->isHidden()) {
         size += QSize(0,mb->heightForWidth(size.width()));
         if (style().styleHint(QStyle::SH_MainWindow_SpaceBelowMenuBar, this))
            size += QSize( 0, dockWindowsMovable() ? 1 : 2);
