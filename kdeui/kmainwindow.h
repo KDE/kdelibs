@@ -886,13 +886,15 @@ private:
 
 #define KDE_RESTORE_MAIN_WINDOWS_NUM_TEMPLATE_ARGS 3
 
-/** @since 3.2
-
-    These global convenience functions (that come with a varying
-    number of template arguments) are a replacement for the RESTORE
-    macro provided in earlier versions of KDE. The old RESTORE macro
-    is still provided for backwards compatibility. See
- KMainWindow documentation for more.
+/**
+ *  These global convenience functions (that come with a varying
+ *  number of template arguments) are a replacement for the RESTORE
+ *  macro provided in earlier versions of KDE. The old RESTORE macro
+ *  is still provided for backwards compatibility. See
+ *  KMainWindow documentation for more.
+ *
+ * \since KDE 3.2
+ *
  **/
 template <typename T>
 inline void kRestoreMainWindows() {
@@ -903,14 +905,6 @@ inline void kRestoreMainWindows() {
   }
 }
 
-/** @since 3.2
-
-    These global convenience functions (that come with a varying
-    number of template arguments) are a replacement for the RESTORE
-    macro provided in earlier versions of KDE. The old RESTORE macro
-    is still provided for backwards compatibility. See
-    KMainWindow documentation for more.
- **/
 template <typename T0, typename T1>
 inline void kRestoreMainWindows() {
   const char * classNames[2];
@@ -925,14 +919,6 @@ inline void kRestoreMainWindows() {
   }
 }
 
-/** @since 3.2
-
-    These global convenience functions (that come with a varying
-    number of template arguments) are a replacement for the RESTORE
-    macro provided in earlier versions of KDE. The old RESTORE macro
-    is still provided for backwards compatibility. See
- KMainWindow documentation for more.
- **/
 template <typename T0, typename T1, typename T2>
 inline void kRestoreMainWindows() {
   const char * classNames[3];

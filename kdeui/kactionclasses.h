@@ -423,7 +423,7 @@ public:
     virtual QStringList items() const;
 
     /**
-     * Changes the text of item @param index to @param text.
+     * Changes the text of item @param index to @param text .
      */
     virtual void changeItem( int index, const QString& text );
 

@@ -301,7 +301,7 @@ public:
    * again before destroying the collection.
    * @param action The KAction to add.
    */
-  void insert( KAction* );
+  void insert( KAction* action);
 
   /**
    * Removes an action from the collection and deletes it.

@@ -64,10 +64,16 @@ class KKeyChooser : public QWidget
 	/**
 	 * Constructor.
 	 *
+	 * @param parent the parent widget for this widget
+	 * @param type the ActionType for this KKeyChooser
 	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
 	 **/
 	KKeyChooser( QWidget* parent, ActionType type = Application, bool bAllowLetterShortcuts = true );
+	/**
+	 * \overload
+ 	 * @param coll the KActionCollection to configure
+	 */
 	KKeyChooser( KActionCollection* coll, QWidget* parent, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KAccel* actions, QWidget* parent, bool bAllowLetterShortcuts = true );
 	KKeyChooser( KGlobalAccel* actions, QWidget* parent );
@@ -310,7 +316,7 @@ public:
 	/**
 	 * Pops up a modal dialog for configuring key settings. The new
 	 * shortcut settings will be active if the user presses OK.  If
-	 * @p bSaveSettings is true, the settings will also be saved back to
+	 * @p bSaveSettings if true, the settings will also be saved back to
 	 * the *uirc file which they were intially read from.
 	 * @return Accept if the dialog was closed with OK, Reject otherwise.
 	 */
@@ -333,8 +339,13 @@ public:
 	/**
 	 * This is an overloaded member function, provided for convenience.
 	 * It behaves essentially like the above function.
+	 *
+	 * @param coll the KActionCollection to configure
 	 * @param bAllowLetterShortcuts Set to false if unmodified alphanumeric
 	 *  keys ('A', '1', etc.) are not permissible shortcuts.
+	 * @param parent the parent widget to attach to
+	 * @param bSaveSettings if true, the settings will also be saved back to
+	 * the *uirc file which they were intially read from.
 	 */
 	static int configure( KActionCollection* coll, bool bAllowLetterShortcuts, QWidget* parent = 0, bool bSaveSettings = true ); // BCI: merge with bAllowLetterShortcuts = true
 

@@ -603,7 +603,7 @@ KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
 
     bool checkboxResult = false;
     int result = createKMessageBox(dialog, QMessageBox::Warning, text, strlist,
-                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not ask again"),
+                       dontAskAgainName.isEmpty() ? QString::null : i18n("&Do not warn about this again"),
                        &checkboxResult, options);
 
     if ( result==KDialogBase::No )

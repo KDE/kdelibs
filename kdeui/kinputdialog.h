@@ -106,7 +106,7 @@ class KInputDialog : public KDialogBase
      * @param parent    Parent of the dialog widget
      * @param name      Name of the dialog widget
      * @param validator A @ref QValidator to be associated with the line edit
-     * @paran mask      Mask associated with the line edit. See the
+     * @param mask      Mask associated with the line edit. See the
      *                  documentation for @ref QLineEdit about masks.
      *
      * @return String user entered if Ok was pressed, else a null string
