@@ -453,37 +453,52 @@ void RenderText::calcMinMaxWidth()
     int currMinWidth = 0;
     int currMaxWidth = 0;
 
+    int space_width = fm->width(QChar(' '));
+    int minus_width = fm->width(QChar('-'));
+
     int len = str->l;
     for(int i = 0; i < len; i++)
     {
-        const QChar c = *(str->s+i);
-        if( c == QChar(' '))
+        int wordlen = 0;
+        char c;
+        do {
+            // doesn't hurt as we only do ASCII comparisons.
+            c = (*(str->s+i+wordlen)).latin1();
+            wordlen++;
+        } while( c != ' ' && c != '-' && c != '\n' && i+wordlen <= len);
+        wordlen--;
+        if (wordlen)
         {
-            if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-            currMinWidth = 0;
-            currMaxWidth += fm->width(c);
-        }
-        else if( c == QChar('-'))
-        {
-            currMinWidth += fm->width(c);
-            if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-            currMinWidth = 0;
-            currMaxWidth += fm->width(c);
-        }
-        else if( c == QChar('\n'))
-        {
-            if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
-            currMinWidth = 0;
-            if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
-            currMaxWidth = 0;
-        }
-        else
-        {
-            //kdDebug( 6040 ) << "c = " << c.unicode() << endl;
-            int w = fm->width(c);
+            // DOH. this is slow. QConstString would be better
+            int w = fm->width(QString(str->s+i, wordlen));
             currMinWidth += w;
             currMaxWidth += w;
         }
+        if(i+wordlen < len)
+        {
+            if( c == ' ')
+            {
+                if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+                currMinWidth = 0;
+                currMaxWidth += space_width;
+            }
+            else if( c == '-')
+            {
+                currMinWidth += minus_width;
+                if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+                currMinWidth = 0;
+                currMaxWidth += minus_width;
+            }
+            else
+            {
+                assert(c == '\n');
+                if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
+                currMinWidth = 0;
+                if(currMaxWidth > m_maxWidth) m_maxWidth = currMaxWidth;
+                currMaxWidth = 0;
+            }
+        }
+        i += wordlen;
     }
     if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
     currMinWidth = 0;
@@ -640,10 +655,10 @@ unsigned int RenderText::width( int from, int len) const
 
     int w;
     if( len == 1)
-	w = fm->width( *(str->s+from) );
+        w = fm->width( *(str->s+from) );
     else {
-	QString s = QConstString(str->s+from, len).string();
-	w = fm->width(s);
+        QString s = QConstString(str->s+from, len).string();
+        w = fm->width(s);
     }
 
     // ### add margins and support for RTL
