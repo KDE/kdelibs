@@ -73,7 +73,7 @@ public:
    *
    * @see KCModule::buttons
    */
-  enum Button {Help=1, Default=2, Reset=4, Cancel=8, Apply=16, Ok=32};
+  enum Button {Help=1, Default=2, Reset=4, Cancel=8, Apply=16, Ok=32, SysDefault=64};
 
   /*
    * Creates a new module.
@@ -112,6 +112,16 @@ public:
    * button. It should set the display to usefull values.
    */
   virtual void defaults() {};
+
+  /**
+   * Set the configuration to system default values.
+   *
+   * This method is called when the user clicks the "System-Default"
+   * button. It should set the display to the system default values.
+   *
+   * NOTE: The default behaviour is to call defaults().
+   */
+  virtual void sysdefaults() { defaults(); };
 
   /**
    * Realizes the settings in the config files.
