@@ -249,15 +249,13 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
 
   const int BUFSIZE = 4096;
   char buf[BUFSIZE];
-  int nSize;
   if ( !kDebug_data->aAreaName.isEmpty() ) {
       strlcpy( buf, kDebug_data->aAreaName.data(), BUFSIZE );
       strlcat( buf, ": ", BUFSIZE );
       strlcat( buf, data, BUFSIZE );
-      nSize = strlen( buf );
   }
   else
-      nSize = strlcpy( buf, data, BUFSIZE );
+      strlcpy( buf, data, BUFSIZE );
 
 
   // Output
@@ -284,10 +282,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
       }
       QFile aOutputFile( kDebug_data->config->readPathEntry(aKey, "kdebug.dbg") );
       aOutputFile.open( IO_WriteOnly | IO_Append | IO_Raw );
-      if ( ( nSize == -1 ) || ( nSize >= BUFSIZE ) )
-          aOutputFile.writeBlock( buf, BUFSIZE-1 );
-      else
-          aOutputFile.writeBlock( buf, nSize );
+      aOutputFile.writeBlock( buf, strlen( buf ) );
       aOutputFile.close();
       break;
   }
@@ -302,7 +297,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned int nArea, const char
   }
   case 2: // Shell
   {
-      write( 2, buf, nSize ); //fputs( buf, stderr );
+      write( 2, buf, strlen( buf ) );  //fputs( buf, stderr );
       break;
   }
   case 3: // syslog
