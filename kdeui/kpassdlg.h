@@ -201,8 +201,8 @@ public:
      * a default icon is used
      * @since 3.3
      */
-    KPasswordDialog(Types type, bool enableKeep, int extraBttn, 
-	    QWidget *parent = 0, const char *name = 0, const QString& iconName=0 );
+    KPasswordDialog(Types type, bool enableKeep, int extraBttn, const QString& iconName,
+	    QWidget *parent = 0, const char *name = 0);
 
     /**
      * Destructs the password dialog.
@@ -287,7 +287,6 @@ private:
     void init();
     void erase();
 
-    // KDE4 d pointer.. d pointer..
     int m_Keep, m_Type, m_Row;
     QLabel *m_pHelpLbl;
     QGridLayout *m_pGrid;

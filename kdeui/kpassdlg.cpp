@@ -243,8 +243,8 @@ KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn,
     init();
 }
 
-KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn, 
-				  QWidget *parent, const char *name, const QString& icon )
+KPasswordDialog::KPasswordDialog(Types type, bool enableKeep, int extraBttn, const QString& icon,
+				  QWidget *parent, const char *name )
     : KDialogBase(parent, name, true, "", Ok|Cancel|extraBttn,
                   Ok, true), m_Keep(enableKeep? 1 : 0), m_Type(type), d(new KPasswordDialogPrivate)
 {

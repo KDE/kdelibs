@@ -98,3 +98,6 @@ that we would like to make for the next binary incompatible release.
 	* Some option names are too short for being understandable. fixed->fixedFont; font->systemWideFont
 	* Perhaps an own font section?
 
+- kpassdlg.h needs to be renamed to kpassworddialog.h - consistent with other classes(it won't 
+  break many apps). The class needs a facelift - see the comments in kpassdlg.{h,cpp}
+
