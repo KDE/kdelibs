@@ -1331,11 +1331,15 @@ void KColorDialog::slotHtmlChanged( void )
 
   QString strColor( d->htmlName->text() );
 
-  QRegExp re( QString::fromLatin1( "#?[0-9a-f]{3,6}" ), false);
-
   // Assume that a user does not want to type the # all the time
-  if ( re.exactMatch(strColor) && ( strColor[0] != '#' ) )
+  if ( strColor[0] != '#' )
+  {
+    bool signalsblocked = d->htmlName->signalsBlocked();
+    d->htmlName->blockSignals(true);
     strColor.prepend("#");
+    d->htmlName->setText(strColor);
+    d->htmlName->blockSignals(signalsblocked);
+  }
 
   const QColor color( strColor );
 
