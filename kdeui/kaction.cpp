@@ -1853,6 +1853,13 @@ KActionMenu::KActionMenu( const QString& text, const QIconSet& icon,
   d = new KActionMenuPrivate;
 }
 
+KActionMenu::KActionMenu( const QString& text, const QString& icon,
+                          QObject* parent, const char* name )
+  : KAction( text, icon, 0, parent, name )
+{
+  d = new KActionMenuPrivate;
+}
+
 KActionMenu::~KActionMenu()
 {
   delete d; d = 0;
