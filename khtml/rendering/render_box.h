@@ -95,8 +95,6 @@ public:
 
     void calcVerticalMargins();
 
-    void relativePositionOffset(int &tx, int &ty);
-
 protected:
     virtual void paintBoxDecorations(QPainter *p,int _x, int _y,
                                        int _w, int _h, int _tx, int _ty);

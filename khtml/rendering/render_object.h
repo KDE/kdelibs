@@ -29,6 +29,8 @@
 #include <qrect.h>
 #include <assert.h>
 
+#include <kdebug.h>
+
 #include "misc/khtmllayout.h"
 #include "misc/loader_client.h"
 #include "misc/helper.h"
@@ -43,7 +45,7 @@ class KHTMLView;
 #define KHTMLAssert( x ) if( !(x) ) { \
     const RenderObject *o = this; while( o->parent() ) o = o->parent(); \
     o->printTree(); \
-    qDebug(" this object = %p", (void*) this ); \
+    qDebug(" this object = %p, %s", (void*) this, kdBacktrace().latin1() ); \
     assert( false ); \
 }
 #else
@@ -160,6 +162,8 @@ public:
     // don't even think about making this method virtual!
     DOM::NodeImpl* element() const { return m_node; }
 
+    void relativePositionOffset(int &tx, int &ty) const;
+
    /**
      * returns the object containing this one. can be different from parent for
      * positioned elements
@@ -224,7 +228,7 @@ public:
      */
     virtual void paint( QPainter *p, int x, int y, int w, int h, int tx, int ty);
 
-    virtual void paintObject( QPainter */*p*/, int /*x*/, int /*y*/,
+    virtual void paintObject( QPainter* /*p*/, int /*x*/, int /*y*/,
                         int /*w*/, int /*h*/, int /*tx*/, int /*ty*/) {}
     void paintBorder(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style, bool begin=true, bool end=true);
     void paintOutline(QPainter *p, int _tx, int _ty, int w, int h, const RenderStyle* style);
@@ -345,6 +349,13 @@ public:
     // width and height are without margins but include paddings and borders
     virtual short width() const { return 0; }
     virtual int height() const { return 0; }
+
+    // IE extensions, heavily used in ECMA
+    virtual short offsetWidth() const { return width(); }
+    virtual int offsetHeight() const { return height(); }
+    virtual int offsetLeft() const;
+    virtual int offsetTop() const;
+    virtual RenderObject* offsetParent() const;
 
     virtual short marginTop() const { return 0; }
     virtual short marginBottom() const { return 0; }

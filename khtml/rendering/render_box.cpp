@@ -407,26 +407,6 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h, bool f)
     if( o ) o->repaintRectangle(x, y, w, h, f);
 }
 
-void RenderBox::relativePositionOffset(int &tx, int &ty)
-{
-    if(!style()->left().isVariable())
-        tx += style()->left().width(containingBlockWidth());
-    else if(!style()->right().isVariable())
-        tx -= style()->right().width(containingBlockWidth());
-    if(!style()->top().isVariable())
-    {
-        if (!style()->top().isPercent()
-                || containingBlock()->style()->height().isFixed())
-            ty += style()->top().width(containingBlockHeight());
-    }
-    else if(!style()->bottom().isVariable())
-    {
-        if (!style()->bottom().isPercent()
-                || containingBlock()->style()->height().isFixed())
-            ty -= style()->bottom().width(containingBlockHeight());
-    }
-}
-
 void RenderBox::calcWidth()
 {
 #ifdef DEBUG_LAYOUT

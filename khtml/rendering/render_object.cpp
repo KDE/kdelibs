@@ -20,7 +20,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #include "rendering/render_object.h"
@@ -179,6 +178,74 @@ void RenderObject::appendChildNode(RenderObject*)
 void RenderObject::insertChildNode(RenderObject*, RenderObject*)
 {
     KHTMLAssert(0);
+}
+
+void RenderObject::relativePositionOffset(int &tx, int &ty) const
+{
+    if(!style()->left().isVariable())
+        tx += style()->left().width(containingBlockWidth());
+    else if(!style()->right().isVariable())
+        tx -= style()->right().width(containingBlockWidth());
+    if(!style()->top().isVariable())
+    {
+        if (!style()->top().isPercent()
+                || containingBlock()->style()->height().isFixed())
+            ty += style()->top().width(containingBlockHeight());
+    }
+    else if(!style()->bottom().isVariable())
+    {
+        if (!style()->bottom().isPercent()
+                || containingBlock()->style()->height().isFixed())
+            ty -= style()->bottom().width(containingBlockHeight());
+    }
+}
+
+int RenderObject::offsetLeft() const
+{
+    int x = xPos();
+    if (!isPositioned()) {
+        if (isRelPositioned()) {
+            int y = 0;
+            relativePositionOffset(x, y);
+        }
+
+        RenderObject* offsetPar = offsetParent();
+        for( RenderObject* curr = parent();
+             curr && curr != offsetPar;
+             curr = curr->parent() )
+            x += curr->xPos();
+    }
+    return x;
+}
+
+int RenderObject::offsetTop() const
+{
+    int y = yPos();
+    if (!isPositioned()) {
+        if (isRelPositioned()) {
+            int x = 0;
+            relativePositionOffset(x, y);
+        }
+        RenderObject* offsetPar = offsetParent();
+        for( RenderObject* curr = parent();
+             curr && curr != offsetPar;
+             curr = curr->parent() ) 
+            y += curr->yPos();
+    }
+    return y;
+}
+
+RenderObject* RenderObject::offsetParent() const
+{
+    bool skipTables = isPositioned() || isRelPositioned();
+    RenderObject* curr = parent();
+    while (curr && !curr->isPositioned() && !curr->isRelPositioned() &&
+           !curr->isBody()) {
+        if (!skipTables && (curr->isTableCell() || curr->isTable()))
+            break;
+        curr = curr->parent();
+    }
+    return curr;
 }
 
 RenderObject *RenderObject::containingBlock() const
@@ -558,6 +625,7 @@ QString RenderObject::information() const
     if (isAnonymousBox()) ts << "an ";
     if (isRelPositioned()) ts << "rp ";
     if (isPositioned()) ts << "ps ";
+    if (isReplaced()) ts << "rp ";
     if (overhangingContents()) ts << "oc ";
     if (layouted()) ts << "lt ";
     if (minMaxKnown()) ts << "mmk ";
@@ -673,12 +741,12 @@ void RenderObject::setStyle(RenderStyle *style)
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
     if ( d >= RenderStyle::Position && m_parent ) {
-	//qDebug("triggering relayout");
-	setMinMaxKnown(false);
-	setLayouted(false);
+        //qDebug("triggering relayout");
+        setMinMaxKnown(false);
+        setLayouted(false);
     } else if ( m_parent ) {
-	//qDebug("triggering repaint");
-	repaint();
+        //qDebug("triggering repaint");
+        repaint();
     }
 }
 
