@@ -159,12 +159,15 @@
 9008        kdevelop (gcc options)
 9009        kdevelop (astyle)
 9010        kdevelop (appwizard)
-9011        kdevelop (python)
+9011        kdevelop (python scripting)
 9012        kdevelop (debugger)
 9013        kdevelop (java support)
 9014        kdevelop (python support)
 9015        kdevelop (script project) 
 9016        kdevelop (perl support)
+9017        kdevelop (file view)
+9018        kdevelop (php support)
+9019        kdevelop (fortran support)
 9020        kdevelop (auto project)
 
 # toys and games
