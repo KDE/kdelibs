@@ -26,7 +26,7 @@
 class QKeyEvent;
 class KKeyNative;
 
-/*
+/**
 * A KKey object represents a single key with possible modifiers
 * (Shift, Ctrl, Alt, Win).  It can represent both keys which are
 * understood by Qt as well as those which are additionally supported
@@ -528,7 +528,7 @@ class KKeySequence
 	friend class KKeyNative;
 };
 
-/*
+/**
 * The KShortcut class is used to represent a keyboard shortcut to an action.
 * A shortcut is normally a single key with modifiers, such as Ctrl+V.
 * A KShortcut object may also contain an alternate key which will also

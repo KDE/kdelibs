@@ -286,7 +286,7 @@ public:
     static QPixmap unknown();
 
     /**
-     * Returns if the user wants to use blend the icons with the background
+     * Checks whether the user wants to use blend the icons with the background
      *  using the alpha channel information for a given group.
      * @param group the group to check
      * @return true if alpha blending is desired
@@ -322,6 +322,7 @@ public:
      * (Some broken applications use temporary KIconLoader objects).
      * Every @ref KInstance 's iconloader has this feature enabled.
      *
+     * @param enable true to enable delayed icon loading, false to disable
      * @see isDelayedIconSetLoadingEnabled()
      * @see QIconFactory
      * @since 3.1
@@ -329,6 +330,7 @@ public:
     void enableDelayedIconSetLoading( bool enable );
 
     /**
+     * Checks whether delayed loading for @ref QIconSet is enabled.
      * @return whether icons for QIconSets will be loaded on demand.
      * @see enableDelayedIconSetLoading()
      * @see QIconFactory
