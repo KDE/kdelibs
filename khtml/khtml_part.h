@@ -1036,6 +1036,9 @@ private:
   bool openedByJS();
   void setOpenedByJS(bool _openedByJS);
 
+  void checkEmitLoadEvent();
+  void emitLoadEvent();
+
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;
 };

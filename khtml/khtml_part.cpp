@@ -144,6 +144,7 @@ public:
     m_kjs_lib = 0;
     m_job = 0L;
     m_bComplete = true;
+    m_bLoadEventEmitted = true;
     m_bParsing = false;
     m_bReloading = false;
     m_manager = 0L;
@@ -179,6 +180,7 @@ public:
 
     m_bFirstData = true;
     m_submitForm = 0;
+    m_delayRedirect = 0;
 
     // inherit security settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -265,6 +267,7 @@ public:
           m_ssl_good_until;
 
   bool m_bComplete:1;
+  bool m_bLoadEventEmitted:1;
   bool m_bParsing:1;
   bool m_bReloading:1;
   bool m_haveEncoding:1;
@@ -586,6 +589,7 @@ bool KHTMLPart::restoreURL( const KURL &url )
   closeURL();
 
   d->m_bComplete = false;
+  d->m_bLoadEventEmitted = false;
   d->m_workingURL = url;
 
   // set the java(script) flags according to the current host.
@@ -638,6 +642,8 @@ bool KHTMLPart::openURL( const KURL &url )
     d->m_bComplete = true;
     d->m_bParsing = false;
 
+    emitLoadEvent();
+
     kdDebug( 6050 ) << "completed..." << endl;
     emit completed();
     return true;
@@ -666,6 +672,7 @@ bool KHTMLPart::openURL( const KURL &url )
            SLOT( slotRedirection(KIO::Job*,const KURL&) ) );
 
   d->m_bComplete = false;
+  d->m_bLoadEventEmitted = false;
 
   // Tell the slave if we are the main frame
   d->m_job->addMetaData( "main_frame_request", parentPart() == 0 ? "TRUE" : "FALSE" );
@@ -717,6 +724,7 @@ bool KHTMLPart::closeURL()
   }
 
   d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
+  d->m_bLoadEventEmitted = true; // don't want that one either
   d->m_bReloading = false;
 
   KHTMLPageCache::self()->cancelFetch(this);
@@ -834,7 +842,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
-  //kdDebug(6050) << "KHTMLPart::executeScript " << script << endl;
+  //kdDebug(6050) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
   KJSProxy *proxy = jScript();
 
   if (!proxy)
@@ -1302,6 +1310,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_bCleared = false;
   d->m_cacheId = 0;
   d->m_bComplete = false;
+  d->m_bLoadEventEmitted = false;
 
   // ### the setFontSizes in restore currently doesn't seem to work,
   // so let's also reset the font base here, so that the font buttons start
@@ -1560,28 +1569,7 @@ void KHTMLPart::checkCompleted()
 
   d->m_bComplete = true;
 
-  if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
-    HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
-
-    if ( hdoc->body() ) {
-      if ( hdoc->body()->id() == ID_BODY ) {
-        HTMLBodyElementImpl* hbody = static_cast<HTMLBodyElementImpl*>( hdoc->body() );
-        if ( !hbody->m_loaded ) {
-          hbody->m_loaded = true;
-          hbody->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
-        }
-      }
-      else if ( hdoc->body()->id() == ID_FRAMESET ) {
-        HTMLFrameSetElementImpl* hbody = static_cast<HTMLFrameSetElementImpl*>( hdoc->body() );
-        if ( !hbody->m_loaded ) {
-          hbody->m_loaded = true;
-          hbody->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
-        }
-      }
-      else
-        assert ( false );
-    }
-  }
+  checkEmitLoadEvent();
 
   requests = khtml::Cache::loader()->numRequests( m_url.url() );
   //kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
@@ -1629,6 +1617,47 @@ void KHTMLPart::checkCompleted()
 #ifdef SPEED_DEBUG
   kdDebug(6050) << "DONE: " <<d->m_parsetime.elapsed() << endl;
 #endif
+}
+
+void KHTMLPart::checkEmitLoadEvent()
+{
+  if ( d->m_bLoadEventEmitted )
+    return;
+  kdDebug(6050) << "KHTMLPart::checkEmitLoadEvent " << this << endl;
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
+  for (; it != end; ++it )
+    if ( (*it).m_run ) // still got a frame running -> too early
+      return;
+  emitLoadEvent();
+}
+
+void KHTMLPart::emitLoadEvent()
+{
+  kdDebug(6050) << "KHTMLPart::emitLoadEvent " << this << endl;
+  if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
+    HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
+
+    if ( hdoc->body() ) {
+      if ( hdoc->body()->id() == ID_BODY ) {
+        HTMLBodyElementImpl* hbody = static_cast<HTMLBodyElementImpl*>( hdoc->body() );
+        if ( !hbody->m_loaded ) {
+          hbody->m_loaded = true;
+          hbody->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
+        }
+      }
+      else if ( hdoc->body()->id() == ID_FRAMESET ) {
+        HTMLFrameSetElementImpl* hbody = static_cast<HTMLFrameSetElementImpl*>( hdoc->body() );
+        if ( !hbody->m_loaded ) {
+          hbody->m_loaded = true;
+          hbody->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
+        }
+      }
+      else
+        assert ( false );
+    }
+  }
+  d->m_bLoadEventEmitted = true;
 }
 
 const KHTMLSettings *KHTMLPart::settings() const
@@ -2488,7 +2517,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   if ( it == d->m_frames.end() )
   {
     khtml::ChildFrame child;
-//    kdDebug( 6050 ) << "inserting new frame into frame map" << endl;
+//    kdDebug( 6050 ) << "inserting new frame into frame map " << frameName << endl;
     child.m_name = frameName;
     it = d->m_frames.append( child );
   }
@@ -2588,6 +2617,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   // khtmlrun called us this way to indicate a loading error
   if ( url.isEmpty() && mimetype.isEmpty() )
   {
+      checkEmitLoadEvent();
       child->m_bCompleted = true;
       return true;
   }
@@ -2613,6 +2643,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
         if ( child->m_frame )
             child->m_frame->partLoadingErrorNotify();
 
+        checkEmitLoadEvent();
         return false;
     }
 
@@ -2674,6 +2705,8 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       child->m_extension->setBrowserInterface( d->m_extension->browserInterface() );
     }
   }
+
+  checkEmitLoadEvent();
 
   if ( child->m_bPreloaded )
   {
@@ -2989,16 +3022,37 @@ khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
 
 KHTMLPart *KHTMLPart::findFrame( const QString &f )
 {
+#if 0
+  kdDebug() << "KHTMLPart::findFrame '" << f << "'" << endl;
+  FrameIt it2 = d->m_frames.begin();
+  FrameIt end = d->m_frames.end();
+  for (; it2 != end; ++it2 )
+      kdDebug() << "  - having frame '" << (*it2).m_name << "'" << endl;
+#endif
   // ### http://www.w3.org/TR/html4/appendix/notes.html#notes-frames
   ConstFrameIt it = d->m_frames.find( f );
   if ( it == d->m_frames.end() )
+  {
+    //kdDebug() << "KHTMLPart::findFrame frame " << f << " not found" << endl;
     return 0L;
+  }
   else {
     KParts::ReadOnlyPart *p = (*it).m_part;
     if ( p && p->inherits( "KHTMLPart" ))
+    {
+      //kdDebug() << "KHTMLPart::findFrame frame " << f << " is a KHTMLPart, ok" << endl;
       return (KHTMLPart*)p;
+    }
     else
+    {
+#if 0
+      if (p)
+        kdWarning() << "KHTMLPart::findFrame frame " << f << " found but isn't a KHTMLPart ! " << p->className() << endl;
+      else
+        kdWarning() << "KHTMLPart::findFrame frame " << f << " found but m_part=0L" << endl;
+#endif
       return 0L;
+    }
   }
 }
 
@@ -3196,6 +3250,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
          >> frameURLs >> frameStateBuffers;
 
   d->m_bComplete = false;
+  d->m_bLoadEventEmitted = false;
 
 //   kdDebug( 6050 ) << "restoreStakte() docState.count() = " << docState.count() << endl;
 //   kdDebug( 6050 ) << "m_url " << m_url.url() << " <-> " << u.url() << endl;
@@ -3897,7 +3952,11 @@ void KHTMLPart::slotFind()
   if(!part)
       part = this;
 
-  assert( part->inherits( "KHTMLPart" ) );
+  if (!part->inherits("KHTMLPart") )
+  {
+      kdError(6000) << "slotFind: part is a " << part->className() << ", can't do a search into it" << endl;
+      return;
+  }
 
   // use the part's (possibly frame) widget as parent widget, so that it gets
   // properly destroyed when the (possible) frame dies
