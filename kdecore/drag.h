@@ -19,6 +19,12 @@
 /* $Id$
  *
  * $Log$
+ * Revision 1.13  1998/01/18 14:38:29  kulow
+ * reverted the changes, Jacek commited.
+ * Only the RCS comments were affected, but to keep them consistent, I
+ * thought, it's better to revert them.
+ * I checked twice, that only comments are affected ;)
+ *
  * Revision 1.11  1997/12/12 14:40:12  denis
  * Reverting to false :-)
  *
@@ -121,6 +127,14 @@
 
 #define Dnd_X_Precision 2
 #define Dnd_Y_Precision 2
+
+#ifdef Color
+#undef Color
+#endif
+
+#ifdef GrayScale
+#undef GrayScale
+#endif
 
 #define kapp KApplication::getKApplication()
 
