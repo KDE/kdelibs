@@ -67,7 +67,7 @@ class KHTMLView : public QScrollView
     friend class KHTMLPart;
     friend khtml::RenderRoot;
     friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
-    
+
 public:
     /**
      * Construct a @ref KHTMLView.
@@ -180,8 +180,6 @@ protected:
     void followLink();
 
     void useSlowRepaints();
-    
-    DOM::NodeImpl *nodeUnderMouse() const;
 
     // ------------------------------------- member variables ------------------------------------
  private:
@@ -189,6 +187,8 @@ protected:
      * List of all open browsers.
      */
     static QList<KHTMLView> *lstViews;
+
+    DOM::NodeImpl *nodeUnderMouse() const;
 
     int _width;
     int _height;
