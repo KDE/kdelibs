@@ -18,7 +18,9 @@ DCOPRef::DCOPRef( const DCOPRef& ref )
 
 DCOPRef::DCOPRef( DCOPObject* object )
 {
-    m_app = kapp->dcopClient()->appId();
+  //    m_app = kapp->dcopClient()->appId();
+  // torben we can't do this, it makes libDCOP depend on kdecore!! (PGB)
+  m_app = 0;
     m_obj = object->objId();
 }
 
