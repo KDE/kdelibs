@@ -62,9 +62,14 @@ libkio_la_SOURCES = \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
 	kurlcompletion.cpp kshellcompletion.cpp \
-	observer.cpp
+	observer.cpp uiserver.stub
 
 #listprogressdlg.cpp
+
+bin_PROGRAMS = kio_uiserver
+kio_uiserver_SOURCES = uiserver.cpp uiserver.skel
+kio_uiserver_LDADD = libkio.la
+kio_uiserver_LDFLAGS = $(all_libraries)
 
 METASOURCES = AUTO
 
@@ -81,10 +86,12 @@ kioinclude_HEADERS = connection.h renamedlg.h \
 # Internal
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
-	ktraderparse.h ktraderparsetree.h yacc.h
+	ktraderparse.h ktraderparsetree.h yacc.h \
+	uiserver.h
 
 kde_mime_DATA = magic
 kde_servicetypes_DATA = kurifilterplugin.desktop
+kde_services_DATA = kio_uiserver.desktop
 
 parserfiles = yacc.y lex.l
 

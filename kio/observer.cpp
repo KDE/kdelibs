@@ -18,7 +18,12 @@
 */
 
 #include <kio/observer.h>
+#include <kio/global.h>
 #include <kdebug.h>
+#include <kapp.h>
+#include <dcopclient.h>
+
+#include "uiserver_stub.h"
 
 using namespace KIO;
 
@@ -26,6 +31,24 @@ Observer * Observer::s_pObserver = 0L;
 
 Observer::Observer()
 {
+    if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
+    {
+        QCString dcopService;
+        QString error;
+        if ( KApplication::startServiceByDesktopPath( "kio_uiserver.desktop",
+               "", dcopService, error ) > 0 )
+        {
+            kdError() << "Couldn't start kio_uiserver from kio_uiserver.desktop: " << error << endl;
+        }
+        // What to do with dcopServer ? Isn't it 'kio_uiserver' ? Let's see.
+        kdDebug() << "dcopService : " << dcopService << endl;
+    }
+    m_uiserver = new UIServer_stub( "kio_uiserver", "UIServer" );
+}
+
+int Observer::newJob( KIO::Job* )
+{
+    return m_uiserver->newJob();
 }
 
 void Observer::slotTotalEntries( KIO::Job* job, unsigned long count )

@@ -29,7 +29,6 @@
 #include <sys/stat.h>
 
 #include <assert.h>
-#include <dirent.h>
 
 #include <signal.h>
 #include <stdlib.h>
@@ -37,10 +36,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <qsocketnotifier.h>
-#include <qdialog.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
 #include <qtimer.h>
 #include <qfile.h>
 
@@ -49,11 +44,9 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kdebug.h>
-#include <kprotocolmanager.h>
 #include <kdialog.h>
 #include <kmessagebox.h>
 
-#include <dcopclient.h>
 #include <errno.h>
 
 #include "slave.h"
@@ -69,9 +62,13 @@ using namespace KIO;
 
 #define KIO_ARGS QByteArray packedArgs; QDataStream stream( packedArgs, IO_WriteOnly ); stream
 
-Job::Job() : QObject(0, "job"), m_error(0), m_processedSize(0)
+Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_processedSize(0)
 {
-   // All jobs delete themselves after emiting 'result'.
+    // All jobs delete themselves after emiting 'result'.
+
+    // Notify the UI Server and get an id
+    if (showProgressInfo)
+        id = Observer::self()->newJob( this );
 }
 
 void Job::addSubjob(Job *job)
@@ -124,9 +121,10 @@ void Job::showErrorDialog( QWidget * parent )
       KMessageBox::error( parent, errorString() );
 }
 
-SimpleJob::SimpleJob(const KURL& url, int command,
-		     const QByteArray &packedArgs)
-  : Job(), m_slave(0), m_packedArgs(packedArgs), m_url(url), m_command(command)
+SimpleJob::SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
+                     bool showProgressInfo )
+  : Job(showProgressInfo), m_slave(0), m_packedArgs(packedArgs),
+    m_url(url), m_command(command)
 {
     if (m_url.isMalformed())
     {
@@ -761,7 +759,7 @@ bool KIO::link( const KURL::List &srcUrls, const KURL & destDir )
 //////////
 
 ListJob::ListJob(const KURL& u, bool showProgressInfo, bool _recursive, QString _prefix) :
-    SimpleJob(u, CMD_LISTDIR, QByteArray()),
+    SimpleJob(u, CMD_LISTDIR, QByteArray(), showProgressInfo),
     recursive(_recursive), prefix(_prefix)
 {
     // We couldn't set the args when calling the parent constructor,

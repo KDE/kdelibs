@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Service
+Name=kio_uiserver
+Exec=kio_uiserver
+Comment=KDE's Progress Info UI server
+ServiceTypes=

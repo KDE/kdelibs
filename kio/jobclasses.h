@@ -59,7 +59,7 @@ namespace KIO {
         Q_OBJECT
 
     protected:
-        Job();
+        Job( bool showProgressInfo = true );
 
     public:
         virtual ~Job() {}
@@ -168,8 +168,9 @@ namespace KIO {
         QList<Job> subjobs;
         int m_error;
         QString m_errorText;
+        int id; // for uiserver
 
-        long int m_processedSize;
+        long int m_processedSize; // to be removed
     };
 
     /**
@@ -182,7 +183,8 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        SimpleJob(const KURL& url, int command, const QByteArray &packedArgs);
+        SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
+                  bool showProgressInfo = true);
 
         ~SimpleJob();
 

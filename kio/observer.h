@@ -22,6 +22,7 @@
 #include <kio/global.h>
 #include <qobject.h>
 
+class UIServer_stub;
 class KURL;
 namespace KIO {
 
@@ -47,11 +48,15 @@ public:
       return s_pObserver;
   }
 
+  int newJob( KIO::Job * job );
+
 protected:
 
   static Observer * s_pObserver;
   Observer();
   virtual ~Observer() {}
+
+  UIServer_stub * m_uiserver;
 
 public slots:
 

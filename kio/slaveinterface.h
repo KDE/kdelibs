@@ -166,15 +166,6 @@ protected:
 
 };
 
-inline QDataStream& operator>>(QDataStream& s, unsigned long& n)
-{
-    Q_INT32 hi, lo;
-    s >> hi >> lo;
-    n = hi;
-    n = (n << 16) + lo;
-    return s;
-}
-
 inline QDataStream& operator<<(QDataStream& s, signed long n)
 {
     register unsigned long un = n;
