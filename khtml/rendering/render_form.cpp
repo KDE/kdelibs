@@ -362,7 +362,12 @@ void LineEditWidget::slotCheckSpelling()
 
 void LineEditWidget::spellCheckerMisspelling( const QString &_text, const QStringList &, unsigned int pos)
 {
-    setSelection ( pos, _text.length() );
+    highLightWord( _text.length(),pos );
+}
+
+void LineEditWidget::highLightWord( unsigned int length, unsigned int pos )
+{
+    setSelection ( pos, length );
 }
 
 void LineEditWidget::spellCheckerCorrected( const QString &old, const QString &corr, unsigned int pos )
@@ -478,6 +483,13 @@ RenderLineEdit::RenderLineEdit(HTMLInputElementImpl *element)
     }
 
     setQWidget(edit);
+}
+
+void RenderLineEdit::highLightWord( unsigned int length, unsigned int pos )
+{
+    LineEditWidget* w = static_cast<LineEditWidget*>(m_widget);
+    if ( w )
+        w->highLightWord( length, pos );
 }
 
 void RenderLineEdit::slotClearCompletionHistory()
@@ -1297,8 +1309,6 @@ void TextAreaWidget::highLightWord( unsigned int length, unsigned int pos )
     unsigned int l = 0;
     unsigned int cnt = 0;
     posToRowCol (pos, l, cnt);
-    kdDebug()<<" pos :"<<pos<<endl;
-    kdDebug()<<" l :"<<l<<endl;
     setSelection(l, cnt, l, cnt+length);
 }
 

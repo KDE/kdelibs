@@ -2373,7 +2373,7 @@ void KHTMLPart::findTextNext()
         else
           lastNode = 0;
       } // end while
-
+      //kdDebug()<<" str : "<<str<<endl;
       if ( !str.isEmpty() )
       {
         d->m_find->setData( str, d->m_findPos );
@@ -2428,14 +2428,23 @@ void KHTMLPart::slotHighlight( const QString &text, int index, int length )
 
   khtml::RenderObject* obj = node->renderer();
   khtml::RenderTextArea *parent = 0L;
+  khtml::RenderLineEdit *parentLine = 0L;
+  bool renderLineText =false;
+
   bool renderAreaText =false;
   Q_ASSERT( obj );
   if ( obj )
   {
     int x = 0, y = 0;
     renderAreaText = (obj->parent()->renderName()=="RenderTextArea");
+    renderLineText = (obj->parent()->renderName()=="RenderLineEdit");
+    kdDebug()<<" obj->parent()->renderName() :"<<obj->parent()->renderName()<<endl;
+
     if( renderAreaText )
       parent= static_cast<khtml::RenderTextArea *>(obj->parent());
+    if ( renderLineText )
+      parentLine= static_cast<khtml::RenderLineEdit *>(obj->parent());
+
     if (static_cast<khtml::RenderText *>(node->renderer())
       ->posOfChar(d->m_startOffset, x, y))
         d->m_view->setContentsPos(x-50, y-50);
@@ -2460,15 +2469,20 @@ void KHTMLPart::slotHighlight( const QString &text, int index, int length )
   for ( ; it != d->m_stringPortions.end() ; ++it )
     kdDebug(6050) << "  StringPortion: from index=" << (*it).index << " -> node=" << (*it).node << endl;
 #endif
-  if( !renderAreaText )
-  {
-    d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
-                            d->m_selectionEnd.handle(), d->m_endOffset );
-  }
-  else
+  if( renderAreaText )
   {
     if( parent )
       parent->highLightWord( length, d->m_endOffset-length );
+  }
+  else if ( renderLineText )
+  {
+    if( parentLine )
+      parentLine->highLightWord( length, d->m_endOffset-length );
+  }
+  else
+  {
+    d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
+                            d->m_selectionEnd.handle(), d->m_endOffset );
   }
   emitSelectionChanged();
 }

@@ -222,6 +222,7 @@ public:
     KLineEdit *widget() const { return static_cast<KLineEdit*>(m_widget); }
     DOM::HTMLInputElementImpl* element() const
     { return static_cast<DOM::HTMLInputElementImpl*>(RenderObject::element()); }
+    void highLightWord( unsigned int length, unsigned int pos );
 
 public slots:
     void slotReturnPressed();
@@ -242,6 +243,8 @@ class LineEditWidget : public KLineEdit
 public:
     LineEditWidget(QWidget *parent);
     ~LineEditWidget();
+    void highLightWord( unsigned int length, unsigned int pos );
+
 protected:
     virtual bool event( QEvent *e );
     void clearMenuHistory();
