@@ -83,7 +83,10 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         {
             color.setRgb((0xff << 24) | val);
             return;
-        }
+        } else if ( name[0] < 'a' || name[0] > 'z' ) {
+	    color = QColor();
+	    return;
+	}
     }
 
     if ( len > 4 && ch == 'r' && name[1].latin1() == 'g' &&
@@ -95,7 +98,8 @@ void khtml::setNamedColor(QColor &color, const QString &_name)
         QList<Length> *l = rgb.implementation()->toLengthList();
         if(l->count() != 3)
         {
-            color.setRgb(0, 0, 0);
+	    // transparent in case of an invalid color.
+            color = QColor();
             delete l;
             return;
         }
