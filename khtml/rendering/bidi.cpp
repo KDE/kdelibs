@@ -784,7 +784,8 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 void RenderFlow::layoutInlineChildren()
 {
     // ### a hack to make khtml not hang completely during initial parsing
-    if( root() && root()->parsing() ) return;
+#warning fix me (check www.spiegel.de)
+    //    if( root() && root()->parsing() ) return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "layoutInlineChildren" << endl;
