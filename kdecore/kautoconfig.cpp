@@ -132,7 +132,7 @@ bool KAutoConfig::saveSettings() {
   return false;
 }
 
-bool KAutoConfig::hasChanged() {
+bool KAutoConfig::hasChanged() const {
   QSqlPropertyMap *propertyMap = QSqlPropertyMap::defaultMap();
   // Go through all of the widgets
   QPtrListIterator<QWidget> it( d->widgets );

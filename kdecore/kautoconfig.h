@@ -127,6 +127,8 @@ public:
    **/ 
   void ignoreSubWidget(QWidget *widget);
 
+  bool hasChanged() const;
+
 public slots:
   /**
    * Traverse the specified widgets, retrieve the settings for all known
