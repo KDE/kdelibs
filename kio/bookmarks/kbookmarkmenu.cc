@@ -169,8 +169,8 @@ QString KBookmarkMenu::contextMenuItemAddress()
   int idx = 0 - (KPopupMenu::contextMenuFocusItem() - m_parentMenu->idAt(0));
 
   // take into account the menu items and seperator in main bookmarks menu
-  if ( (m_parentMenu->count() - length) == 4 )
-    idx = idx - 4;
+  if ( (m_parentMenu->count() - length) == 3 )
+    idx = idx - 3;
 
   // bounds checks
   if ( idx >= 0 && idx <= length )
@@ -357,12 +357,12 @@ void KBookmarkMenu::fillBookmarkMenu()
 
   if ( m_bIsRoot )
   {
-    if ( m_bAddBookmark )
+    if ( m_bAddBookmark && !isAdvanced() )
       addAddBookmark();
 
     addEditBookmarks();
 
-    if ( m_bAddBookmark )
+    if ( m_bAddBookmark && !isAdvanced() )
       addNewFolder();
 
     if ( m_pManager->showNSBookmarks()
@@ -430,7 +430,7 @@ void KBookmarkMenu::fillBookmarkMenu()
     }
   }
 
-  if ( !m_bIsRoot && m_bAddBookmark )
+  if ( !m_bIsRoot && m_bAddBookmark && !isAdvanced() )
   {
     if ( m_parentMenu->count() > 0 )
       m_parentMenu->insertSeparator();
