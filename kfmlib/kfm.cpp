@@ -232,6 +232,15 @@ void KFM::sortDesktop()
     ipc->sortDesktop();
 }
 
+//CT 13Nov 1998
+void KFM::showConfig()
+{
+  if ( !test() )
+    return;
+  ipc->showConfig();
+}
+//CT
+
 void KFM::openURL()
 {
     if ( !test() )

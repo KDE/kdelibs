@@ -135,6 +135,16 @@ void KfmIpc::sortDesktop()
 	write_string( sock->socket(), "sortDesktop" );
 }
 
+//CT 13Nov1998
+void KfmIpc::showConfig()
+{
+	int len = 0;
+	len += len_string("showConfig");
+	write_int( sock->socket(), len );
+	write_string( sock->socket(), "showConfig" );
+}
+//CT
+
 void KfmIpc::auth(const char* _password)
 {
 	int len = 0;

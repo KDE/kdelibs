@@ -62,6 +62,10 @@ public slots:
 	void copyClient(const char* _src, const char* _dest);
 public slots:
 	void sortDesktop();
+//CT 13Nov1998
+public slots:
+        void showConfig();
+//CT
 public slots:
 	void auth(const char* _password);
 public slots:
