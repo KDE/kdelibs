@@ -20,6 +20,8 @@
 // $Id$
 
 #include <netdb.h>
+#include <resolv.h>
+#include <arpa/nameser.h>
 #include <sys/utsname.h>
 
 #include <qtimer.h>
@@ -40,6 +42,12 @@ namespace KPAC
         connect( m_helper, SIGNAL( processExited( KProcess* ) ), SLOT( failed() ) );
         *m_helper << "kpac_dhcp_helper";
 
+        if ( !m_helper->start() )
+            QTimer::singleShot( 0, this, SLOT( failed() ) );
+    }
+
+    bool Discovery::initHostName()
+    {
         struct utsname uts;
 
         if (uname (&uts) > -1)
@@ -59,22 +67,55 @@ namespace KPAC
                 m_hostname = QString::fromLocal8Bit( buf );
             }
         }
+        return !m_hostname.isEmpty();
+    }
 
-        if ( !m_helper->start() )
-            QTimer::singleShot( 0, this, SLOT( failed() ) );
+    bool Discovery::checkDomain() const
+    {
+        // If a domain has a SOA record, don't traverse any higher.
+        // Returns true if no SOA can be found (domain is "ok" to use)
+        // Stick to old resolver interface for portability reasons.
+        union
+        {
+            HEADER header;
+            unsigned char buf[ PACKETSZ ];
+        } response;
+        int len = res_query( m_hostname.local8Bit(), C_IN, T_SOA,
+                             response.buf, sizeof( response.buf ) );
+        if ( len <= int( sizeof( response.header ) ) ||
+             ntohs( response.header.ancount ) != 1 ) return true;
+        unsigned char* pos = response.buf + sizeof( response.header );
+        unsigned char* end = response.buf + len;
+        // skip query section
+        pos += dn_skipname( pos, end ) + QFIXEDSZ;
+        if ( pos >= end ) return true;
+        // skip answer domain
+        pos += dn_skipname( pos, end );
+        short type;
+        GETSHORT( type, pos );
+        return type != T_SOA;
     }
 
     void Discovery::failed()
     {
         setError( i18n( "Could not find a usable proxy configuration script" ) );
+
+        // If this is the first DNS query, initialize our host name or abort
+        // on failure. Otherwise abort if the current domain (which was already
+        // queried for a host called "wpad" contains a SOA record)
+        bool firstQuery = m_hostname.isEmpty();
+        if ( ( firstQuery && !initHostName() ) ||
+             ( !firstQuery && !checkDomain() ) )
+        {
+            emit result( false );
+            return;
+        }
+
         int dot = m_hostname.find( '.' );
         if ( dot >= 0 )
         {
-            m_hostname.remove( 0, dot + 1 ); // remove one level
-            dot = m_hostname.find( '.' );    // require TLD and SLD
-            if ( dot >= 0 )
-                download( "http://wpad." + m_hostname + "./wpad.dat" );
-            else emit result( false );
+            m_hostname.remove( 0, dot + 1 ); // remove one domain level
+            download( "http://wpad." + m_hostname + "./wpad.dat" );
         }
         else emit result( false );
     }

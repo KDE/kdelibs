@@ -54,7 +54,7 @@ namespace KPAC
         void downloadResult( bool );
 
     private:
-        void startDownload();
+        bool startDownload();
         QString handleRequest( const KURL& url );
 
         KInstance* m_instance;

@@ -43,6 +43,9 @@ namespace KPAC
         void helperOutput();
 
     private:
+        bool initHostName();
+        bool checkDomain() const;
+
         KProcIO* m_helper;
         QString m_hostname;
     };

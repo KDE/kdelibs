@@ -68,9 +68,12 @@ namespace KPAC
 
         if ( m_script ) return handleRequest( url );
 
-        m_requestQueue.append( url );
-        if ( !m_downloader ) startDownload();
-        return QString::null;
+        if ( m_downloader || startDownload() )
+        {
+            m_requestQueue.append( url );
+            return QString::null;
+        }
+        else return "DIRECT";
     }
 
     ASYNC ProxyScout::blackListProxy( const QString& proxy )
@@ -89,7 +92,7 @@ namespace KPAC
         KProtocolManager::reparseConfiguration();
     }
 
-    void ProxyScout::startDownload()
+    bool ProxyScout::startDownload()
     {
         switch ( KProtocolManager::proxyType() )
         {
@@ -101,11 +104,11 @@ namespace KPAC
                 m_downloader->download( KProtocolManager::proxyConfigScript() );
                 break;
             default:
-                downloadResult( false );
-                return;
+                return false;
         }
         connect( m_downloader, SIGNAL( result( bool ) ),
                  SLOT( downloadResult( bool ) ) );
+        return true;
     }
 
     void ProxyScout::downloadResult( bool success )
