@@ -4,6 +4,7 @@
 
 #include <qapplication.h>
 #include <qclipboard.h>
+#include <qpopupmenu.h>
 
 #include <kdebug.h>
 #include <klocale.h>
