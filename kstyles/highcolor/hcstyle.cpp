@@ -1484,7 +1484,8 @@ static const int windowsRightBorder     = 12;
 
         int checkcol = maxpmw;
 
-        if(vDark){
+        if(vDark)
+        {
             int x2 = x+w-1;
             int y2 = y+h-1;
             p->setPen(itemg.mid());
@@ -1524,7 +1525,7 @@ static const int windowsRightBorder     = 12;
         p->setPen(Qt::white);
         QColor discol;
         if (dis) {
-            discol = itemg.midlight();
+            discol = itemg.mid();
             p->setPen(discol);
         }
         int xm = motifItemFrame + checkcol + motifItemHMargin;
