@@ -1205,8 +1205,10 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta, 
                   meta["ssl_cipher_bits"].toInt(),
                   KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
       kdDebug(7024) << "Showing SSL Info dialog" << endl;
+#ifndef Q_WS_WIN
       if( mainwindow != 0 )
           KWin::setMainWindow( kid, mainwindow );
+#endif
       kid->exec();
       delete x;
       kdDebug(7024) << "SSL Info dialog closed" << endl;
@@ -1231,8 +1233,10 @@ KSSLCertDlgRet UIServer::showSSLCertDialog(const QString& host, const QStringLis
       kcd->setupDialog(certList);
       kcd->setHost(host);
       kdDebug(7024) << "Showing SSL certificate dialog" << endl;
+#ifndef Q_WS_WIN
       if( mainwindow != 0 )
           KWin::setMainWindow( kcd, mainwindow );
+#endif
       kcd->exec();
       rc.ok = true;
       rc.choice = kcd->getChoice();
