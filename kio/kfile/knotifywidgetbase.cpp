@@ -131,23 +131,23 @@ KNotifyWidgetBase::KNotifyWidgetBase( QWidget* parent,  const char* name, WFlags
     m_controlsBoxLayout->setAlignment( Qt::AlignTop );
 
     m_affectAllApps = new QCheckBox( m_controlsBox, "m_affectAllApps" );
-    m_affectAllApps->setText( tr2i18n( "Apply to all App&lications" ) );
+    m_affectAllApps->setText( tr2i18n( "Apply to all app&lications" ) );
     m_controlsBoxLayout->addWidget( m_affectAllApps );
 
-    Layout12 = new QHBoxLayout( 0, 0, 6, "Layout12"); 
+    Layout12 = new QHBoxLayout( 0, 0, 6, "Layout12");
     QSpacerItem* spacer_5 = new QSpacerItem( 30, 20, QSizePolicy::Fixed, QSizePolicy::Minimum );
     Layout12->addItem( spacer_5 );
 
-    Layout4 = new QGridLayout( 0, 1, 1, 0, 6, "Layout4"); 
+    Layout4 = new QGridLayout( 0, 1, 1, 0, 6, "Layout4");
 
     m_buttonDisable = new QPushButton( m_controlsBox, "m_buttonDisable" );
-    m_buttonDisable->setText( tr2i18n( "Turn O&ff All:" ) );
+    m_buttonDisable->setText( tr2i18n( "Turn O&ff All" ) );
     QToolTip::add( m_buttonDisable, tr2i18n( "Allows you to change the behavior for all events at once" ) );
 
     Layout4->addWidget( m_buttonDisable, 1, 0 );
 
     m_buttonEnable = new QPushButton( m_controlsBox, "m_buttonEnable" );
-    m_buttonEnable->setText( tr2i18n( "Turn O&n All:" ) );
+    m_buttonEnable->setText( tr2i18n( "Turn O&n All" ) );
     QToolTip::add( m_buttonEnable, tr2i18n( "Allows you to change the behavior for all events at once" ) );
 
     Layout4->addWidget( m_buttonEnable, 0, 0 );
