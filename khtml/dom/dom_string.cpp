@@ -296,7 +296,7 @@ bool DOM::operator==( const DOMString &a, const char *b )
     if(a.length() != blen) return false;
 
     const QChar* aptr = a.stringPtr();
-    for(int i = 0; i < blen; i++)
+    for(unsigned int i = 0; i < blen; i++)
     {
         if((*aptr++).latin1() != *b++)
             return false;
