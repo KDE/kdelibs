@@ -107,7 +107,10 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(DocLoader* dl, const DOMString &url, bo
     Cache::loader()->load(dl, this, false);
     loading = true;
     bool b;
-    m_codec = KGlobal::charsets()->codecForName(charset, b);
+    if(!charset.isEmpty())
+	m_codec = KGlobal::charsets()->codecForName(charset, b);
+    else
+        m_codec = QTextCodec::codecForMib(4); // latin-1
 }
 
 CachedCSSStyleSheet::~CachedCSSStyleSheet()
@@ -173,7 +176,10 @@ CachedScript::CachedScript(DocLoader* dl, const DOMString &url, bool reload, int
     Cache::loader()->load(dl, this, false);
     loading = true;
     bool b;
-    m_codec = KGlobal::charsets()->codecForName(charset, b);
+    if(!charset.isEmpty())
+        m_codec = KGlobal::charsets()->codecForName(charset, b);
+    else
+	m_codec = QTextCodec::codecForMib(4); // latin-1
 }
 
 CachedScript::~CachedScript()
