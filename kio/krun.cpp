@@ -249,7 +249,18 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   // The application accepts only local files ?
   if ( b_local_app && !b_local_files )
   {
-    return runOldApplication( exec, _urls, b_allow_multiple );
+      // TODO (BCI)
+      return /*pid_t pid = */runOldApplication( exec, _urls, b_allow_multiple );
+      /*
+        if ( pid != -1 )
+          if (_appStartNotify)
+            clientStarted(_bin_name, mini_icon, _res_name, pid);
+          return true;
+        }
+        else
+          return false;
+      */
+
   }
 
   if ( b_allow_multiple || _urls.isEmpty() )
@@ -340,8 +351,6 @@ pid_t KRun::run( const QString& _cmd )
 
 bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
 {
-  char **argv = 0L;
-
   // find kfmexec in $PATH
   QString kfmexec = KStandardDirs::findExe( "kfmexec" );
 
@@ -349,44 +358,33 @@ bool KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool 
   {
     kdDebug(7010) << "Allow Multiple" << endl;
 
-    QApplication::flushX();
-    int pid;
-    if ( ( pid = fork() ) == 0 )
-    {
-	argv = new char*[ _urls.count() + 3 ];
-	argv[ 0 ] = qstrdup(kfmexec.latin1());
-	
-	int i = 1;
-	argv[ i++ ] = qstrdup(app.latin1());
-	KURL::List::ConstIterator it = _urls.begin();
-	for( ; it != _urls.end(); ++it )
-	    argv[ i++ ] = qstrdup((*it).url().latin1());
-	argv[ i ] = 0;
-	
-	execvp( argv[0], argv );
-	_exit(0);
-    }	
+    KProcess proc;
+    proc << kfmexec;
+    proc << app;
+    KURL::List::ConstIterator it = _urls.begin();
+    for( ; it != _urls.end(); ++it )
+        proc << (*it).url();
+    proc.start(KProcess::DontCare);
+
+    return proc.getPid() != -1;
   }
   else
   {
     kdDebug(7010) << "Not multiple" << endl;
     KURL::List::ConstIterator it = _urls.begin();
+    pid_t pid; // we'll return only the last one...
     for( ; it != _urls.end(); ++it )
     {
-      QApplication::flushX();
-      int pid;
-      if ( ( pid = fork() ) == 0 )
-      {
-	  argv = new char*[ 3 ];
-	  argv[ 0 ] = qstrdup(kfmexec.latin1());
-	  argv[ 1 ] = qstrdup(app.latin1());
-	  argv[ 2 ] = qstrdup((*it).url().latin1());
-	  argv[ 3 ] = 0;
-	
-	  execvp( argv[0], argv );
-	  _exit(1);
-      }
+        KProcess proc;
+        proc << kfmexec;
+        proc << app;
+        proc << (*it).url();
+        proc.start(KProcess::DontCare);
+
+        pid = proc.getPid();
     }
+
+    return pid != -1;
   }
 
   return true;
