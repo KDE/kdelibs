@@ -617,7 +617,8 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
 
 QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 {
-    QImage *image = d->imgDict.find(name);
+    QString key = name + '_' + QString::number(size);
+    QImage *image = d->imgDict.find(key);
     if (image != 0L)
 	return image;
 
@@ -628,7 +629,7 @@ QImage *KIconLoader::loadOverlay(const QString &name, int size) const
 	return 0L;
     }
     image = new QImage(icon.path);
-    d->imgDict.insert(name, image);
+    d->imgDict.insert(key, image);
     return image;
 }
 
