@@ -98,6 +98,21 @@ public:
   QString readURL();
 
   /**
+   * Returns a list of the "Actions=" entries.
+   */
+  QStringList readActions();
+
+  /**
+   * Sets the desktop action group.
+   */
+  void setActionGroup(const QString &group);
+
+  /**
+   * Returns @p if the action group exists.
+   */
+  bool hasActionGroup(const QString &group);
+
+  /**
    * Check to see if there is a "Type=Link" entry.
    *
    * The link points to the "URL=" entry.

@@ -88,6 +88,21 @@ QString KDesktopFile::readURL()
     return readEntry("URL");
 }
 
+QStringList KDesktopFile::readActions()
+{
+    return readListEntry("Actions", ';');
+}
+
+void KDesktopFile::setActionGroup(const QString &group)
+{
+    setGroup("Desktop Action " + group);
+}
+
+bool KDesktopFile::hasActionGroup(const QString &group)
+{
+  return hasGroup("Desktop Action " + group);
+}
+
 bool KDesktopFile::hasLinkType()
 {
   return readEntry("Type") == "Link";
