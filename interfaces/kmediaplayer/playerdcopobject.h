@@ -35,7 +35,7 @@ class PlayerDCOPObject : virtual public DCOPObject
 K_DCOP
 
 k_dcop:
-	virtual bool open(const KURL &file) = 0;
+	virtual bool openURL(const KURL &file) = 0;
 	virtual void pause() = 0;
 	virtual void play() = 0;
 	virtual void stop() = 0;
