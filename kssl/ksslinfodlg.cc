@@ -69,6 +69,7 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
         pixmap->setPixmap(BarIcon("unlock"));
         info->setText(i18n("SSL support is not available in this build of KDE."));
     }
+    d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
 
     QPushButton *button = new QPushButton(i18n("Close"), this);
     connect(button, SIGNAL(clicked()), SLOT(close()));
