@@ -126,8 +126,8 @@ int main(int argc, char **argv)
                       "Arts::Dispatcher. Do you want to try again or disable "
                       "aRts sound output?"),
                  i18n("KNotify Problem"),
-                 i18n("Try again"),
-                 i18n("Disable aRts output"),
+                 i18n("Try Again"),
+                 i18n("Disable aRts Output"),
                  "KNotifyStartProgress",
                  0 /* don't call KNotify :) */ 
                  )
@@ -162,8 +162,8 @@ int main(int argc, char **argv)
                       "KNotify. Do you want to try again or disable "
                       "aRts sound output?"),
                  i18n("KNotify Problem"),
-                 i18n("Try again"),
-                 i18n("Disable aRts output"),
+                 i18n("Try Again"),
+                 i18n("Disable aRts Output"),
                  "KNotifyStartProgress",
                  0 /* don't call KNotify :) */
                  )
