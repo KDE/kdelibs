@@ -414,6 +414,8 @@ KLauncher::start_service(KService::Ptr service, const QString &filename)
    else
       request->dcop_name = request->name;
    
+   request->pid = 0;
+   request->transaction = 0;
    // Are we already running?
    if (request->dcop_service_type == KService::DCOP_Unique)
    {
@@ -428,9 +430,7 @@ KLauncher::start_service(KService::Ptr service, const QString &filename)
       }
    }
 
-   request->pid = 0;
    request->status = KLaunchRequest::Launching;
-   request->transaction = 0;
    requestStart(request);
    if (request->status == KLaunchRequest::Launching)
    {
