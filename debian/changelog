@@ -1,3 +1,10 @@
+kdelibs (4:1.1-19990306-1) unstable; urgency=low
+
+  * new upstream version out of CVS (many translation updates and some
+    security fixes
+
+ -- Stephan Kulow <coolo@kde.org>  Sat,  6 Mar 1999 18:03:04 +0100
+
 kdelibs (4:1.1-19990217-1) unstable; urgency=low
 
   * new upstream version
