@@ -969,7 +969,7 @@ public:
             elm->unregister(objid);
     }
     static Value getValue(const DOM::HTMLElement elm, const QString & name,
-                          const KParts::LiveConnectExtension::Type t, 
+                          const KParts::LiveConnectExtension::Type t,
                           const QString & value, int id=0)
     {
         switch(t) {
@@ -1829,9 +1829,7 @@ List KJS::HTMLElement::eventHandlerScope(ExecState *exec) const
   // The element is the first one, so that it is the most prioritary
   scope.append(getDOMNode(exec,element));
 
-  DOM::Node form = element.parentNode();
-  while (!form.isNull() && form.elementId() != ID_FORM)
-    form = form.parentNode();
+  DOM::Node form = element.form();
   if (!form.isNull())
     scope.append(getDOMNode(exec,form));
 
@@ -2021,7 +2019,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const UString &propertyName, cons
     case ID_APPLET:
     case ID_EMBED: {
       DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
-      if (elm && elm->put(0, propertyName.qstring(), 
+      if (elm && elm->put(0, propertyName.qstring(),
                           value.toString(exec).qstring()))
           return;
       break;
