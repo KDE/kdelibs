@@ -145,14 +145,6 @@ NodeListImpl *HTMLDocumentImpl::getElementsByName( const DOMString &elementName 
 // not part of the DOM
 // --------------------------------------------------------------------------
 
-void HTMLDocumentImpl::detach()
-{
-    if ( view() && view()->part() )
-        view()->part()->emitUnloadEvent();
-
-    DocumentImpl::detach();
-}
-
 bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
 {
     // ### support comments. etc as a child

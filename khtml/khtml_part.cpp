@@ -723,6 +723,15 @@ bool KHTMLPart::closeURL()
     d->m_job = 0;
   }
 
+  if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
+    HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
+
+    if ( hdoc->body() && d->m_bLoadEventEmitted ) {
+      hdoc->body()->dispatchWindowEvent( EventImpl::UNLOAD_EVENT, false, false );
+      d->m_bLoadEventEmitted = false;
+    }
+  }
+
   d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
   d->m_bLoadEventEmitted = true; // don't want that one either
   d->m_bReloading = false;
@@ -1653,13 +1662,14 @@ void KHTMLPart::checkCompleted()
 
 void KHTMLPart::checkEmitLoadEvent()
 {
-  if ( d->m_bLoadEventEmitted || d->m_bParsing )
-    return;
+  if ( d->m_bLoadEventEmitted || d->m_bParsing ) return;
+
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( (*it).m_run ) // still got a frame running -> too early
       return;
+
   emitLoadEvent();
 }
 
@@ -1672,18 +1682,6 @@ void KHTMLPart::emitLoadEvent()
 
     if ( hdoc->body() )
         hdoc->body()->dispatchWindowEvent( EventImpl::LOAD_EVENT, false, false );
-  }
-}
-
-void KHTMLPart::emitUnloadEvent()
-{
-  if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
-    HTMLDocumentImpl* hdoc = static_cast<HTMLDocumentImpl*>( d->m_doc );
-
-    if ( hdoc->body() && d->m_bLoadEventEmitted ) {
-      hdoc->body()->dispatchWindowEvent( EventImpl::UNLOAD_EVENT, false, false );
-      d->m_bLoadEventEmitted = false;
-    }
   }
 }
 

@@ -997,7 +997,6 @@ private:
 
   void checkEmitLoadEvent();
   void emitLoadEvent();
-  void emitUnloadEvent();
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

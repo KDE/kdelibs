@@ -63,8 +63,6 @@ public:
     virtual Tokenizer *createTokenizer();
     NodeListImpl *getElementsByName ( const DOMString &elementName );
 
-    virtual void detach();
-
     virtual bool childAllowed( NodeImpl *newChild );
 
     void setOnload( const QString &script ) { onloadScript = script; }
