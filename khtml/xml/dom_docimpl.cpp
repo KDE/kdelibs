@@ -746,18 +746,14 @@ void DocumentImpl::open(  )
 
 void DocumentImpl::close(  )
 {
-    if(m_tokenizer) {
+    RenderObject *o;
+    for ( RenderObject* o = m_render; o; o = o->lastChild() )
+        o->setParsing( false );
+    if ( m_render )
+        m_render->close();
 
-        if(m_tokenizer->close()) {
-            RenderObject *o;
-            for (o = m_render; o; o = o->lastChild())
-                o->setParsing(false);
-            if (m_render)
-                m_render->close();
-            delete m_tokenizer;
-            m_tokenizer = 0;
-        }
-    }
+    delete m_tokenizer;
+    m_tokenizer = 0;
 }
 
 void DocumentImpl::write( const DOMString &text )
