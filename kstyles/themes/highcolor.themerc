@@ -1,6 +1,10 @@
 [Misc]
 Name=HighColor Classic
+Name[hu]=KDE Classic (színgazdag változat)
+Name[sv]=Färgrik klassisk
 Comment=Highcolor version of the classic style
 Comment[ga]=Leagan ildaite den stíl chlaisaiceach
+Comment[hu]=A KDE korábbi stílusának színgazdag változata
+Comment[sv]=Färgrik version av den klassiska stilen
 [KDE]
 WidgetStyle=HighColor

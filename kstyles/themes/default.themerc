@@ -1,8 +1,11 @@
 [Misc]
 Name=KDE Classic
 Name[ga]=KDE Claisaiceach
+Name[sv]=KDE klassisk
 Comment=Classic KDE style
 Comment[ga]=Stíl Chlaisaiceach KDE
+Comment[hu]=A KDE korábbi stílusa
+Comment[sv]=Klassisk KDE-stil
 Highcolor=hcstyle.la
 InactiveShading=true
 [KDE]
