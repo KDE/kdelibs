@@ -51,7 +51,7 @@ void KURL::encodeURL( QString& _url ) {
 
     new_url[new_length]=0;
     _url = new_url;
-    delete new_url;
+    delete [] new_url;
 };
 
 static uchar hex2int( char _char ) {
