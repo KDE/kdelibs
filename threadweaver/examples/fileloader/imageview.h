@@ -3,32 +3,24 @@
 
 #include <qiconview.h>
 #include <fileloaderjob.h>
+#include <qimageloaderjob.h>
 #include "imageview_base.h" // designer made
 
-class ImageView : public ImageViewBase
-{
-    Q_OBJECT
-public:
-    ImageView ( QWidget *parent = 0, const char *name = 0);
-    ~ImageView();
-protected:
-    void slotQuit();
-    void slotSelectFiles();
-};
+using ThreadWeaver::Job;
 
-class ComputeThumbNail : public ThreadWeaver::Job
+class ComputeThumbNailJob : public ThreadWeaver::Job
 {
     Q_OBJECT
 public:
-    ComputeThumbNail ( ThreadWeaver::FileLoaderJob *fileLoader,
+    ComputeThumbNailJob ( ThreadWeaver::QImageLoaderJob *imageLoader,
                        QObject *parent = 0);
     /** Returns the "ready made" thumbnail. */
-    const QPixmap& thumb();
+    const QPixmap* thumb();
+
 protected:
     void run();
     QPixmap m_thumb;
-    QImage m_image;
-    const ThreadWeaver::FileLoaderJob *m_fileLoader;
+    const ThreadWeaver::QImageLoaderJob *m_image;
 };
 
 /** Have the file loaded, then create a thumbnail. Interdependant jobs are
@@ -39,18 +31,34 @@ class ThumbNail : public QObject
     Q_OBJECT
 public:
     ThumbNail ( ThreadWeaver::Weaver *weaver,
-                QString filename, QIconView *iconview, 
+                QString filename,
 		QObject *parent);
     ~ThumbNail();
+    const QPixmap* thumb();
 protected slots:
-    void thumbReady();
+    void slotImageReady( Job* ); // delete the file data
+    void slotThumbReady( Job* ); // display it
+signals:
+    void thumbReady ( ThumbNail*, QString);
 protected:
     ThreadWeaver::FileLoaderJob *m_fileLoader;
+    ThreadWeaver::QImageLoaderJob *m_imageLoader;
     ThreadWeaver::Weaver *m_weaver;
-    QIconView *m_iconview;
-    QIconViewItem *m_item;
-    ComputeThumbNail *m_thumb;
+    ComputeThumbNailJob *m_thumb;
     QString m_text;
+};
+
+class ImageView : public ImageViewBase
+{
+    Q_OBJECT
+public:
+    ImageView ( QWidget *parent = 0, const char *name = 0);
+    ~ImageView();
+protected:
+    void slotQuit();
+    void slotSelectFiles();
+public slots:
+    void slotThumbReady ( ThumbNail*, QString);
 };
 
 #endif

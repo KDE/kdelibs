@@ -176,7 +176,10 @@ namespace ThreadWeaver {
 	/** Construct a Job object. */
         Job (QObject* parent=0, const char* name=0);
 
-        /** Construct a Job object which depends on dep. */
+        /** Construct a Job object which depends on dep.
+            dep will be considered a dependancy if it is not finished
+            yet. Otherwise, no dependancy will be added.
+         */
         Job (Job* dep, QObject* parent=0, const char* name=0);
 
 	/** Destructor. */
@@ -188,8 +191,9 @@ namespace ThreadWeaver {
             implementation, overload run(). */
         virtual void execute(Thread*);
 
-        /** Returns true if the jobs's execute method finished. */
-        virtual bool isFinished();
+        /** Returns true if the jobs's execute method finished.
+            Thread Safe. */
+        virtual bool isFinished() const;
 
 	/** Wake the thread after an APR has been processed. */
 	void wakeAPR ();
@@ -249,9 +253,9 @@ namespace ThreadWeaver {
 
     signals:
 	/** This signal is emitted when a thread starts to process a job. */
-	void started ();
+	void started ( Job* );
 	/** This signal is emitted when a job has been finished. */
-	void done ();
+	void done ( Job* );
 	/** This signal is emitted when the job needs some operation done by
 	    the main thread (usually the creator of the job).
 	    It is important to understand that the emitting thread is

@@ -1,6 +1,7 @@
 #include <qapplication.h>
 #include <qfiledialog.h>
 #include <qimage.h>
+#include <qdir.h>
 
 #include <weaver.h>
 #include <weavervisualizer.h>
@@ -27,13 +28,18 @@ void ImageView::slotQuit()
     close();
 }
 
+void ImageView::slotThumbReady ( ThumbNail *nail, QString name )
+{
+    new QIconViewItem ( ivThumbs, name, *(nail->thumb()) );
+}
+
 void ImageView::slotSelectFiles()
 {
     ivThumbs->clear();
 
     QStringList files = QFileDialog::getOpenFileNames (
         "Images (*.png *.xpm *.jpg *.JPG)",
-        "/home",
+        QDir::homeDirPath(),
         this,
         "open file dialog",
         "Choose Files to display" );
@@ -43,7 +49,9 @@ void ImageView::slotSelectFiles()
         QStringList::Iterator it;
         for ( it = files.begin(); it != files.end(); ++it )
         {
-            new ThumbNail (theWeaver, *it, ivThumbs, this);
+            ThumbNail *thumb = new ThumbNail (theWeaver, *it, this);
+            connect ( thumb, SIGNAL (thumbReady (ThumbNail*, QString) ),
+                      SLOT ( slotThumbReady ( ThumbNail*, QString)) );
         }
     } else {
         qApp->beep();
@@ -51,17 +59,23 @@ void ImageView::slotSelectFiles()
 }
 
 ThumbNail::ThumbNail ( ThreadWeaver::Weaver *weaver,
-                       QString filename, QIconView *iconview,
+                       QString filename,
                        QObject *parent)
     : QObject (parent),
-      m_weaver (weaver),
-      m_iconview (iconview)
+      m_weaver (weaver)
 {
     m_text = filename.section ('/', -1);
+    // load the image data from the file:
     m_fileLoader = new ThreadWeaver::FileLoaderJob (filename, this);
-    m_thumb = new ComputeThumbNail (m_fileLoader, this);
-    connect (m_thumb, SIGNAL (done()), SLOT (thumbReady()));
+    // convert it to a QImage:
+    m_imageLoader = new ThreadWeaver::QImageLoaderJob (m_fileLoader, this);
+    connect (m_imageLoader, SIGNAL (done( Job* )),
+             SLOT (slotImageReady( Job* )) );
+    // make a thumbnail from it:
+    m_thumb = new ComputeThumbNailJob (m_imageLoader, this);
+    connect (m_thumb, SIGNAL (done( Job* )), SLOT (slotThumbReady( Job* )));
     weaver->enqueue (m_fileLoader);
+    weaver->enqueue (m_imageLoader);
     weaver->enqueue (m_thumb);
 }
 
@@ -69,37 +83,57 @@ ThumbNail::~ThumbNail ()
 {
 }
 
-void ThumbNail::thumbReady()
+void ThumbNail::slotImageReady( Job* )
 {
-    // free the memory that holds the file contents
+    // free the memory that holds the file contents:
     delete m_fileLoader;
-    // display the thumbnail
-    m_item = new QIconViewItem (m_iconview, m_text, m_thumb->thumb());
 }
 
-ComputeThumbNail::ComputeThumbNail(
-    ThreadWeaver::FileLoaderJob *fileLoader, QObject *parent)
-    : ThreadWeaver::Job (fileLoader, parent),
-      m_fileLoader (fileLoader)
+const QPixmap* ThumbNail::thumb()
 {
-}
-
-const QPixmap& ComputeThumbNail::thumb()
-{
-    return m_thumb;
-}
-
-void ComputeThumbNail::run()
-{
-    if ( m_image.loadFromData ( (const uchar*) m_fileLoader->data(),
-                                m_fileLoader->size() ) )
+    if ( m_thumb->isFinished() )
     {
-        m_thumb = m_image.smoothScale ( 64, 48, QImage::ScaleMin );
+        return m_thumb->thumb();
+    } else {
+        return 0;
+    }
+}
+
+void ThumbNail::slotThumbReady( Job* )
+{
+    delete m_imageLoader;
+    // tell the icon view the thumbnail is ready:
+    if (!m_thumb->thumb()->isNull())
+    {
+        emit ( thumbReady ( this, m_text ) );
     } else {
         ThreadWeaver::debug
-            ( 0, "ComputeThumbNail::run: cannot load image.\n" );
+            ( 0, "ComputeThumbNailJob::thumbReady: skipping image.\n" );
     }
-    m_image.reset();
+}
+
+ComputeThumbNailJob::ComputeThumbNailJob(
+    ThreadWeaver::QImageLoaderJob *imageLoader, QObject *parent)
+    : ThreadWeaver::Job (imageLoader, parent),
+      m_image (imageLoader)
+{
+}
+
+const QPixmap* ComputeThumbNailJob::thumb()
+{
+    return &m_thumb;
+}
+
+void ComputeThumbNailJob::run()
+{
+    if ( m_image->image() != 0)
+    {
+        m_thumb = m_image->image()->smoothScale ( 64, 48, QImage::ScaleMin );
+    } else {
+        ThreadWeaver::debug
+            ( 0, "ComputeThumbNailJob::run: cannot load image.\n" );
+        m_thumb.resize(0, 0);
+    }
 }
 
 int main ( int argc, char ** argv)

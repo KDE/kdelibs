@@ -10,7 +10,6 @@ namespace ThreadWeaver {
         : Job (parent, name),
           m_filename (filename),
           m_data (0),
-          m_finished (false),
           m_error (0)
     {
     }
@@ -31,7 +30,7 @@ namespace ThreadWeaver {
     const char* FileLoaderJob::data () const
     {   // we make sure data cannot be accesses until the file is completely
         // loaded, this way we do not need to mutex it:
-        if (m_finished)
+        if ( isFinished() )
         {
             return m_data;
         } else {
@@ -91,8 +90,6 @@ namespace ThreadWeaver {
             free (m_data);
             m_data = 0;
         }
-        // set m_finished and return:
-        m_finished = true;
     }
 
     const int FileLoaderJob::size () const

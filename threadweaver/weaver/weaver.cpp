@@ -42,7 +42,7 @@ namespace ThreadWeaver {
 	  m_mutex (new QMutex (true) ),
 	  m_thread (0)
     {
-        addDependancy (dep);
+        if (dep->isFinished() == false) addDependancy (dep);
     }
 
     Job::~Job()
@@ -81,7 +81,7 @@ namespace ThreadWeaver {
 	return m_thread;
     }
 
-    bool Job::isFinished()
+    bool Job::isFinished() const
     {
         QMutexLocker l (m_mutex);
         return m_finished;
@@ -98,10 +98,10 @@ namespace ThreadWeaver {
 	switch ( e->action() )
 	{
 	    case Event::JobStarted:
-		emit ( started() );
+		emit ( started( this ) );
 		break;
 	    case Event::JobFinished:
-		emit ( done() );
+		emit ( done( this ) );
 		break;
 	    case Event::JobSPR:
 		emit ( SPR () );

@@ -47,8 +47,6 @@ namespace ThreadWeaver {
 	const QString m_filename;
 	/** Pointer to memory buffer. */
 	char *m_data;
-	/** False until file is loaded. */
-	bool m_finished;
 	/** stat information for the file. */
 	struct stat m_statinfo;
 	/** Keep the errno value. */

@@ -9,50 +9,53 @@
 
 #include "processrequest.h"
 
-class SPRExample : public ThreadWeaver::Job
-{
-    Q_OBJECT
-public:
-    SPRExample (QObject *parent = 0, const char* name = 0);
-    ~SPRExample () {}
-protected:
-    void run ();
-};
+namespace ThreadWeaver {
+
+    class SPRExample : public Job
+	{
+	    Q_OBJECT
+		public:
+	    SPRExample (QObject *parent = 0, const char* name = 0);
+	    ~SPRExample () {}
+	protected:
+	    void run ();
+	};
 
 
-class APRExample : public ThreadWeaver::Job
-{
-    Q_OBJECT
-public:
-    APRExample (QObject *parent = 0, const char* name = 0);
-    ~APRExample () {}
-protected:
-    void run ();
-};
+    class APRExample : public Job
+	{
+	    Q_OBJECT
+		public:
+	    APRExample (QObject *parent = 0, const char* name = 0);
+	    ~APRExample () {}
+	protected:
+	    void run ();
+	};
 
-class Main : public ProcessRequestBase
-{
-    Q_OBJECT
+    class Main : public ProcessRequestBase
+	{
+	    Q_OBJECT
 
-public:
-    Main ();
-    ~Main () {}
-    void slotStartSPR ();
-    void slotStartAPR ();
-    void slotFinishAPR ();
-    void slotQuit();
+		public:
+	    Main ();
+	    ~Main () {}
+	    void slotStartSPR ();
+	    void slotStartAPR ();
+	    void slotFinishAPR ();
+	    void slotQuit();
 
-protected:
-    SPRExample *spr;
-    APRExample *apr;
-    ThreadWeaver::Weaver weaver;
-    ThreadWeaver::WeaverThreadLogger logger;
+	protected:
+	    SPRExample *spr;
+	    APRExample *apr;
+	    Weaver weaver;
+	    WeaverThreadLogger logger;
 
-protected slots:
-    void processSPR ();
-    void processAPR ();
-    void sprDone ();
-    void aprDone ();
-};	    
+	    protected slots:
+		void processSPR ();
+	    void processAPR ();
+	    void sprDone ( Job* );
+	    void aprDone ( Job* );
+	};	    
 	    
+}
 #endif // REQUESTS.H
