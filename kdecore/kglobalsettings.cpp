@@ -459,8 +459,6 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     // Desktop Path
     *s_desktopPath = QDir::homeDirPath() + "/Desktop/";
     *s_desktopPath = config->readPathEntry( "Desktop", *s_desktopPath);
-    if ( !s_desktopPath->startsWith("/") )
-      s_desktopPath->prepend( QDir::homeDirPath() + "/" );
     *s_desktopPath = QDir::cleanDirPath( *s_desktopPath );
     if ( !s_desktopPath->endsWith("/") )
       s_desktopPath->append('/');
@@ -468,8 +466,6 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     // Trash Path
     *s_trashPath = *s_desktopPath + i18n("Trash") + "/";
     *s_trashPath = config->readPathEntry( "Trash" , *s_trashPath);
-    if ( !s_trashPath->startsWith("/") )
-      s_trashPath->prepend( QDir::homeDirPath() + "/" );
     *s_trashPath = QDir::cleanDirPath( *s_trashPath );
     if ( !s_trashPath->endsWith("/") )
       s_trashPath->append('/');
@@ -483,16 +479,12 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
     // Autostart Path
     *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
     *s_autostartPath = config->readPathEntry( "Autostart" , *s_autostartPath);
-    if ( !s_autostartPath->startsWith("/") )
-      s_autostartPath->prepend( QDir::homeDirPath() + "/" );
     *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
     if ( !s_autostartPath->endsWith("/") )
       s_autostartPath->append('/');
 
     // Document Path
     *s_documentPath = config->readPathEntry( "Documents" );
-    if ( !s_documentPath->startsWith("/") )
-      s_documentPath->prepend( QDir::homeDirPath() + "/" );
     *s_documentPath = QDir::cleanDirPath( *s_documentPath );
     if ( !s_documentPath->endsWith("/"))
       s_documentPath->append('/');
