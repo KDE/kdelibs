@@ -11,7 +11,5 @@ all:
 	   exit 1 ;\
 	fi
 	$(MAKE) -f admin/Makefile.common cvs
-	(cd libltdl && \
-		aclocal && autoheader && automake && autoconf && touch stamp-h.in)
 
 .SILENT:

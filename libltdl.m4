@@ -1,24 +1,11 @@
-dnl Process this file with autoconf to create configure.
-dnl Initialize the libltdl package.
-AC_INIT(ltdl.c)
 
-AM_INIT_AUTOMAKE(libltdl,1.0,-)
-AM_CONFIG_HEADER(config.h)
-
-AC_CONFIG_AUX_DIR(../admin)
-
-AC_LIBLTDL_CONVENIENCE
-AC_PROG_CC
+AC_DEFUN(AC_LIBLTDL,
+[
+AC_REQUIRE([AC_PROG_CC])
 AC_C_CONST
 AC_C_INLINE
 AM_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
-
-AC_ARG_ENABLE(ltdl-install,
-[  --enable-ltdl-install   install libltdl])
-
-AM_CONDITIONAL(INSTALL_LTDL, test x"${enable_ltdl_install-no}" != xno)
-AM_CONDITIONAL(CONVENIENCE_LTDL, test x"${enable_ltdl_convenience-no}" != xno)
 
 AC_CACHE_CHECK([which extension is used for shared libraries],
   libltdl_cv_shlibext, [dnl
@@ -186,10 +173,4 @@ if test x"$libltdl_cv_need_uscore" = xyes; then
     [Define if dlsym() requires a leading underscode in symbol names. ])
 fi
 
-dnl Output the makefile
-AC_OUTPUT(Makefile)
-
-# Local Variables:
-# mode:shell-script
-# sh-indentation:2
-# End:
+])
