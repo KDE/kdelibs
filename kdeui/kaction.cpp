@@ -496,8 +496,6 @@ bool KAction::updateKAccelShortcut( KAccel* kaccel )
           d->m_cut,
           this, SLOT(slotActivated()),
           isShortcutConfigurable(), isEnabled() );
-      if( !b )
-        kdWarning(129) << "KAction::updateKAccelShortcut: KAccel::insert() failed." << endl;
     }
   }
   else
@@ -514,8 +512,6 @@ void KAction::insertKAccel( KAccel* kaccel )
       d->m_kaccelList.append( kaccel );
       connect( kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()) );
     }
-    else
-      kdWarning(129) << "KAction::insertKAccel: KAccel::insert() failed." << endl;
   }
   else
     kdWarning(129) << "KAction::insertKAccel( kaccel = " << kaccel << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
