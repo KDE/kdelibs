@@ -280,7 +280,8 @@
 <!ENTITY Alexander.Neundorf.mail '<email>neundorf@kde.org</email>'>
 <!ENTITY Carsten.Niehaus '<personname><firstname>Carsten</firstname><surname>Niehaus</surname></personname>'>
 <!ENTITY Carsten.Niehaus.mail '<email>cniehaus@kde.org</email>'>
-
+<!ENTITY Virgil.J.Nisly '<personname><firstname>Virgil</firstname><othername>J.</othername><surname>Nisly</surname></personname>'>
+<!ENTITY Virgil.J.Nisly.mail '<email>virgil@vigilite.com</email>'>
 <!ENTITY Maren.Pakura '<personname><firstname>Maren</firstname><surname>Pakura</surname></personname>'>
 <!ENTITY Maren.Pakura.mail '<email>maren@kde.org</email>'>
 <!ENTITY Randy.Pearson '<personname><firstname>Randy</firstname><surname>Pearson</surname></personname>'>
