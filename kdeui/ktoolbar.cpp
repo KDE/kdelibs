@@ -379,6 +379,8 @@ KToolBar::layoutHorizontal(int w)
 int
 KToolBar::heightForWidth(int w) const
 {
+	if (!w) return min_height;
+
 	/* This function only works for Top, Bottom or Floating tool
 	 * bars. For other positions it should never be called. To be save
 	 * on the save side the current minimum height is returned. */
