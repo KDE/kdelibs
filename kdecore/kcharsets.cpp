@@ -502,14 +502,14 @@ QString KCharsets::encodingForName( const QString &descriptiveName )
     if (left<0) // No parenthesis, so assume it is a normal encoding name
 	return descriptiveName;
     
-    QString name(descriptiveName.mid(left+1));
+    QString name(descriptiveName.mid(left+2));
     
     const int right = name.find( ')' );
     
     if (right<0) 
         return name;
 	
-    return name.left(right);
+    return name.left(right-1);
 }
 
 QStringList KCharsets::descriptiveEncodingNames()
