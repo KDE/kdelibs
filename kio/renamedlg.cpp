@@ -107,28 +107,31 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
 
       // TODO rewrite this with a GridLayout and even icons, a la kpropsdlg
       if (mtimeDest < mtimeSrc)
-	  sentence1 = i18n("An older item named %1 already exists\n"
-                           "    size %2\n    created on %3\n    modified on %4\n");
+          // The url is last since it may contain '%'
+	  sentence1 = i18n("An older item named %4 already exists\n"
+                           "    size %1\n    created on %2\n    modified on %3\n");
       else
-	  sentence1 = i18n("A newer item named %1 already exists\n"
-                           "    size %2\n    created on %3\n    modified on %4\n");
+	  sentence1 = i18n("A newer item named %4 already exists\n"
+                           "    size %1\n    created on %2\n    modified on %3\n");
 
       QDateTime dctime; dctime.setTime_t( ctimeDest );
       QDateTime dmtime; dmtime.setTime_t( mtimeDest );
 
-      sentence1 = sentence1.arg(dest).
+      sentence1 = sentence1.
         arg(sizeDest == (unsigned long)-1 ? i18n("unknown") : KIO::convertSize(sizeDest)).
         arg(ctimeDest == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dctime)).
-        arg(mtimeDest == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime));
+        arg(mtimeDest == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime)).
+        arg(dest);
 
-      QString sentence2 = i18n("The original file is %1\n"
-                               "    size %2\n    created on %3\n    modified on %4\n");
+      QString sentence2 = i18n("The original file is %4\n"
+                               "    size %1\n    created on %2\n    modified on %3\n");
       dctime.setTime_t( ctimeSrc );
       dmtime.setTime_t( mtimeSrc );
-      sentence2 = sentence2.arg(src).
+      sentence2 = sentence2.
         arg(sizeSrc == (unsigned long)-1 ? i18n("unknown") : KIO::convertSize(sizeSrc)).
         arg(ctimeSrc == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dctime)).
-        arg(mtimeSrc == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime));
+        arg(mtimeSrc == (time_t)-1 ? i18n("unknown") : KGlobal::locale()->formatDateTime(dmtime)).
+        arg(src);
 
       lb = new QLabel( sentence1 + "\n" + sentence2, this );
   } else
