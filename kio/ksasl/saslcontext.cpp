@@ -11,7 +11,7 @@
 #include <kdebug.h>
 #include <klibloader.h>
 #include <ktrader.h>
-#include "../kmdcodec.h"
+#include <kmdcodec.h>
 
 #include "saslcontext.h"
 #include "saslmodule.h"

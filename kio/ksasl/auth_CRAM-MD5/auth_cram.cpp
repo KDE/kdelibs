@@ -9,7 +9,7 @@
 #include <kdebug.h>
 
 #include <kinstance.h>
-#include "../../kmdcodec.h"
+#include <kmdcodec.h>
 
 #include "auth_cram.h"
 
