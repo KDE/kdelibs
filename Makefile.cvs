@@ -18,5 +18,5 @@ dist:
 	LIST=`find ./po -name "*.po"`; \
 	for i in $$LIST; do \
 	 file2=`echo $$i | sed -e "s#\.po#\.gmo#"`; \
-	 msgfmt -o $$file2 $$i; \
+	 msgfmt -o $$file2 $$i || touch $$file2 ; \
 	done
