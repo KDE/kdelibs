@@ -11,6 +11,7 @@ kdesudir = $(includedir)/kdesu
 kdesu_HEADERS = defaults.h client.h process.h kdesu_pty.h kcookie.h su.h ssh.h stub.h
 
 install-data-local:
+	-rm -f $(includedir)/kdesu/pty.h
 	ln -s $(includedir)/kdesu/kdesu_pty.h $(includedir)/kdesu/pty.h
 uninstall-local:
 	-rm -f $(includedir)/kdesu/pty.h
