@@ -2,7 +2,7 @@
 //  MAIN -- a little demo of the capabilities of the "KProcess" class
 //
 //  version 0.2, Aug 2nd 1997
-//  $ld $
+//  $Id: $
 //
 //  (C) Christian Czezatke
 //  e9025461@student.tuwien.ac.at
