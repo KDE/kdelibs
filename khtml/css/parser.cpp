@@ -128,7 +128,7 @@ static inline int getValueID(const char *tagStr, int len)
 #define YYDEBUG 0
 #define YYMAXDEPTH 0
 #define YYPARSE_PARAM parser
-
+#ifndef KDE_USE_FINAL
 #line 79 "parser.y"
 typedef union {
     CSSRuleImpl *rule;
@@ -150,7 +150,7 @@ typedef union {
     ValueList *valueList;
 } YYSTYPE;
 #line 99 "parser.y"
-
+#endif
 
 static inline int cssyyerror(const char *x ) {
 #ifdef CSS_DEBUG
