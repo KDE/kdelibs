@@ -568,8 +568,12 @@ bool KIO::probably_slow_mounted(const QString& filename)
         if (realpath(device_name, realpath_buffer) != 0)
             // succes, use result from realpath
             device_name = realpath_buffer;
-
-        check_mount_point(mounted[i].f_mnttoname, mounted[i].f_fstypename, mounted[i].f_mntfromname,
+#ifdef __osf__
+        char * mounttype = "unknown";
+#else
+        char * mounttype = mounted[i].f_fstypename;
+#endif
+        check_mount_point(mounted[i].f_mnttoname, mounttype, mounted[i].f_mntfromname,
                           realname, isauto, isslow,max);
     }
 
