@@ -599,9 +599,11 @@ bool ElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType type,
         mouseEventHandler(button, type, inside);
     }
     
+    bool oldinside=mouseInside();
+    
     setMouseInside(inside);
     
-    if (m_style->getPseudoStyle(RenderStyle::HOVER))
+    if (oldinside != inside && m_style->getPseudoStyle(RenderStyle::HOVER))
         applyChanges(true,false);
 
     return inside;
