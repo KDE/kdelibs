@@ -1471,7 +1471,7 @@ bool HTTPProtocol::readHeader()
       }
       else if ( m_responseCode == 204 ) // No content
       {
-        error(ERR_NO_CONTENT, i18n("Data has been successfully send."));
+        error(ERR_NO_CONTENT, i18n("Data has been successfully sent."));
         return false;
       }
       else if ( m_responseCode == 206 )
