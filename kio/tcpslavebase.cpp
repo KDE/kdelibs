@@ -345,20 +345,32 @@ bool isChild = false;
            //      reject current session  - record a temp record
            //      reject always           - record a permarecord
            //        - pseudo response of "Display Info"
-           int result = messageBox( WarningYesNoCancel,
-                              i18n("Certificate verification failed (FIXME)"),
+           int result;
+             do {
+                result = messageBox( WarningYesNoCancel,
+                              i18n("The server's certificate failed the "
+                                   "authenticity test."),
                               i18n("Server Authentication"),
-                              i18n("Details..."),
-                              i18n("Continue") );
+                              i18n("&Details..."),
+                              i18n("Co&ntinue") );
 
-             if (result == KMessageBox::Yes) {
-                sendMetaData();
-                messageBox( SSLMessageBox, m_sServiceName );
-                // FIXME: we need to block here until the user makes a decision
-             } else if (result == KMessageBox::No) {
+                if (result == KMessageBox::Yes) {
+                   sendMetaData();
+                   messageBox( SSLMessageBox, m_sServiceName );
+                } 
+             } while (result == KMessageBox::Yes);
+
+             if (result == KMessageBox::No) {
                 setMetaData("ssl_action", "accept");
                 rc = 1;
                 cp = KSSLCertificateCache::Accept;
+                   result = messageBox( WarningYesNo,
+                                  i18n("Would you like to accept this "
+                                       "certificate forever without "
+                                       "being prompted?"),
+                                  i18n("Server Authentication"));
+                   if (result == KMessageBox::Yes) permacache = true;
+                   else permacache = false;
              } else {
                 setMetaData("ssl_action", "reject");
                 rc = -1;
