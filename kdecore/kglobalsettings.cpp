@@ -281,8 +281,9 @@ QFont KGlobalSettings::generalFont()
     if (_generalFont)
         return *_generalFont;
 
+    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _generalFont = new QFont("helvetica", 12);
-    _generalFont->setPixelSize(12);
+    _generalFont->setPointSize(12);
     _generalFont->setStyleHint(QFont::SansSerif);
 
     KConfig *c = KGlobal::config();
@@ -297,8 +298,9 @@ QFont KGlobalSettings::fixedFont()
     if (_fixedFont)
         return *_fixedFont;
 
+    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _fixedFont = new QFont("courier", 12);
-    _fixedFont->setPixelSize(12);
+    _fixedFont->setPointSize(12);
     _fixedFont->setStyleHint(QFont::TypeWriter);
 
     KConfig *c = KGlobal::config();
@@ -313,8 +315,9 @@ QFont KGlobalSettings::toolBarFont()
     if(_toolBarFont)
         return *_toolBarFont;
 
+    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _toolBarFont = new QFont("helvetica", 10);
-    _toolBarFont->setPixelSize(10);
+    _toolBarFont->setPointSize(10);
     _toolBarFont->setStyleHint(QFont::SansSerif);
 
     KConfig *c = KGlobal::config();
@@ -329,8 +332,9 @@ QFont KGlobalSettings::menuFont()
     if(_menuFont)
         return *_menuFont;
 
+    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _menuFont = new QFont("helvetica", 12);
-    _menuFont->setPixelSize(12);
+    _menuFont->setPointSize(12);
     _menuFont->setStyleHint(QFont::SansSerif);
 
     KConfig *c = KGlobal::config();
@@ -345,8 +349,9 @@ QFont KGlobalSettings::windowTitleFont()
     if(_windowTitleFont)
         return *_windowTitleFont;
 
+    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _windowTitleFont = new QFont("helvetica", 12, QFont::Bold);
-    _windowTitleFont->setPixelSize(12);
+    _windowTitleFont->setPointSize(12);
     _windowTitleFont->setStyleHint(QFont::SansSerif);
 
     KConfig *c = KGlobal::config();
@@ -361,8 +366,9 @@ QFont KGlobalSettings::taskbarFont()
     if(_taskbarFont)
         return *_taskbarFont;
 
+    // Sync default with kdebase/kcontrol/fonts/fonts.cpp
     _taskbarFont = new QFont("helvetica", 11);
-    _taskbarFont->setPixelSize(11);
+    _taskbarFont->setPointSize(11);
     _taskbarFont->setStyleHint(QFont::SansSerif);
 
     KConfig *c = KGlobal::config();
