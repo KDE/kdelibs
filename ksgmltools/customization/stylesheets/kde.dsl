@@ -330,6 +330,7 @@
   (list
    ; make CSS default style sheet type
    '("META" ("HTTP-EQUIV" "Content-Style-Type") ("CONTENT" "text/css"))
+   '("META" ("NAME" "Generator") ("CONTENT" "KDE DBMSS Customisation $Revision: $"))
     ; for KDE-wide style sheet
     (kde-external-ss (string-append %kde-doc-common-path% "kde-common.css"))
     ))
