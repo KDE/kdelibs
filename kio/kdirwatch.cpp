@@ -22,6 +22,7 @@
 #ifdef HAVE_DNOTIFY
 #undef _GNU_SOURCE
 #define _GNU_SOURCE
+#define __USE_GNU
 #include <fcntl.h>
 #include <signal.h>
 #include <qintdict.h>
