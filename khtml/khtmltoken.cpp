@@ -298,6 +298,20 @@ void HTMLTokenizer::addListing(const char *list)
         dest = buffer;
         prePos = 0;
     }
+
+    // Add </listing> tag
+    
+    *dest = TAG_ESCAPE;
+    dest++;
+    for(const char *p=listingEnd; *p; p++)
+    {
+       *dest = *p;
+       dest++;
+    }
+    *dest = 0;
+    appendToken( buffer, dest-buffer );
+    dest = buffer;
+    
     pre = old_pre;    
 }
 
