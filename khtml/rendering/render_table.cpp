@@ -1376,15 +1376,6 @@ void RenderTable::close()
 void RenderTable::updateSize()
 {
 //    printf("RenderTable::updateSize()\n");
-    if (parsing())
-    {
-	if (!updateTimer.isNull() && updateTimer.elapsed()<300)
-	{
-	    return;
-	}
-	else
-	    updateTimer.start();	
-    }
 
     RenderBox::updateSize();
 }
@@ -1609,7 +1600,9 @@ void RenderTableCell::updateSize()
 {
 //    printf("%s(RenderBox)::updateSize()\n", renderName());
 
-    int oldMin = m_minWidth;
+    RenderFlow::updateSize();
+
+/*    int oldMin = m_minWidth;
     int oldMax = m_maxWidth;
     setMinMaxKnown(false);
     calcMinMaxWidth();
@@ -1630,7 +1623,7 @@ void RenderTableCell::updateSize()
 	} else {
 	    repaint();
 	}
-    }
+    }*/
 
 }
 

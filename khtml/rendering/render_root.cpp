@@ -100,7 +100,7 @@ void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 {
     x += m_x;
     y += m_y;
-//    printf("updating views contents (%d/%d) (%d/%d)\n", x,y,w,h);
+ //   printf("updating views contents (%d/%d) (%d/%d)\n", x,y,w,h);
     if (m_view) m_view->updateContents(x, y, w, h);
 }
 

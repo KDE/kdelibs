@@ -403,7 +403,7 @@ void RenderBox::repaintRectangle(int x, int y, int w, int h)
 {
     x += m_x;
     y += m_y;
-    //printf("renderBox::repaintRectangle (%d/%d) (%d/%d)\n", x, y, w, h);
+    // printf("RenderBox(%s)::repaintRectangle (%d/%d) (%d/%d)\n", renderName(), x, y, w, h);
     if(m_parent) m_parent->repaintRectangle(x, y, w, h);
 }
 

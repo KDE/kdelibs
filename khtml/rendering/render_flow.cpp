@@ -941,7 +941,7 @@ void RenderFlow::addChild(RenderObject *newChild)
 #endif
 
     //to prevents non-layouted elements from getting printed
-    if (!newChild->isFloating())
+    if (!newChild->isInline() && !newChild->isFloating())
     {
     	newChild->setYPos(-100000);
     }

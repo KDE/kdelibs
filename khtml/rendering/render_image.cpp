@@ -60,7 +60,8 @@ void RenderImage::setPixmap( const QPixmap &p )
 	setLayouted(false);
 	layout();
 	// the updateSize() call should trigger a repaint too
-	if(m_parent) m_parent->updateSize();	
+	if(m_parent) m_parent->updateSize();
+	repaintRectangle(0, 0, m_width, m_height); //should not be needed!
     }
     else
     {
