@@ -1120,7 +1120,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 #endif // KHTML_NO_CARET
 
     // If CTRL was hit, be prepared for access keys
-    if (_ke->key() == Key_Control)
+    if (_ke->key() == Key_Control && _ke->state()==0)
 	    d->accessKeysPreActivate=true;
 
     // accesskey handling needs to be done before dispatching, otherwise e.g. lineedits
@@ -1410,9 +1410,8 @@ void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 	d->m_caretViewContext->keyReleasePending = false;
 	return;
     }
-
     if (d->accessKeysPreActivate && _ke->key() != Key_Control) d->accessKeysPreActivate=false;
-    if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton)
+    if (_ke->key() == Key_Control &&  d->accessKeysPreActivate && _ke->state() == Qt::ControlButton && KApplication::keyboardModifiers()==0)
 	{
 	    QString accessMsg=i18n("Access Keys activated");    
 	    #if 0 // added i18n string in case the feature makes it in KDE 3.3
@@ -1525,7 +1524,6 @@ class HackWidget : public QWidget
 bool KHTMLView::eventFilter(QObject *o, QEvent *e)
 {
     if ( e->type() == QEvent::AccelOverride ) {
-    d->accessKeysPreActivate=false;
 	QKeyEvent* ke = (QKeyEvent*) e;
 //kdDebug(6200) << "QEvent::AccelOverride" << endl;
 	if (m_part->isEditable() || m_part->isCaretMode()
@@ -1902,7 +1900,7 @@ m_part->setStatusBarText(QString::null, KHTMLPart::BarHoverText);
 // Handling of the HTML accesskey attribute.
 bool KHTMLView::handleAccessKey( const QKeyEvent* ev )
 {
-if (!d->accessKeysActivated) return false;
+if (!d->accessKeysActivated || ev->state()!=0) return false;
 
 // Qt interprets the keyevent also with the modifiers, and ev->text() matches that,
 // but this code must act as if the modifiers weren't pressed
