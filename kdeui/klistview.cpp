@@ -461,16 +461,18 @@ bool KListView::isExecuteArea( const QPoint& point )
 {
   QListViewItem* item = itemAt( point );
   if ( item ) {
-    int offset = treeStepSize() * ( item->depth() + ( rootIsDecorated() ? 1 : 0) );
-    if (point.x() > (item->width( fontMetrics() , this, 0 ) + offset ))
-      return false;
-    return isExecuteArea( point.x() );
+    return isExecuteArea( point.x(), item );
   }
 
   return false;
 }
 
 bool KListView::isExecuteArea( int x )
+{
+  return isExecuteArea( x, 0 );
+}
+
+bool KListView::isExecuteArea( int x, QListViewItem* item )
 {
   if( allColumnsShowFocus() )
     return true;
@@ -483,6 +485,16 @@ bool KListView::isExecuteArea( int x )
       offset += columnWidth( header()->mapToSection( index ) );
 
     x += contentsX(); // in case of a horizontal scrollbar
+
+    if ( item )
+    {
+	width = treeStepSize()*( item->depth() + ( rootIsDecorated() ? 1 : 0 ) );
+	width += itemMargin();
+	int ca = AlignHorizontal_Mask & columnAlignment( 0 );
+	if ( ca == AlignRight || ca == AlignAuto )
+	    width += item->width( fontMetrics(), this, 0 );
+    }
+
     return ( x > offset && x < ( offset + width ) );
   }
 }
