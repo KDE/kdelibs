@@ -63,7 +63,7 @@ void warningsFunc(void *ctx, const char *msg, ...)
     }
 
     va_start(args, msg);
-    vsprintf(&buffer[strlen(buffer)], msg, args);
+    vsnprintf(&buffer[strlen(buffer)], sizeof(buffer)-strlen(buffer)-1, msg, args);
     va_end(args);
 
     fprintf( stderr, "%s", buffer );
