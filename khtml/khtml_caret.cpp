@@ -62,7 +62,7 @@ static RenderObject* findRenderer(NodeImpl *&node)
     if (!node) break;
     r = node->renderer();
   }
-  if (r->isTableCol()) r = nextSuitableLeafRenderObject(r);
+  if (r && r->isTableCol()) r = nextSuitableLeafRenderObject(r);
   return r;
 }
 
