@@ -19,6 +19,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.34  1998/10/07 06:49:21  kalle
+// Correctly read double dollar signs (patch by Harri Porten)
+// Dollar expansion can be turned off with setDollarExpansion( false ).
+// \sa isDollarExpansion
+//
 // Revision 1.33  1998/08/23 15:58:34  kulow
 // fixed some more advanced warnings
 //
@@ -383,6 +388,7 @@ const QString KConfigBase::readEntry( const char* pKey,
 			  else {
 				  // remove one of the dollar signs
 				  aValue.remove( nDollarPos, 1 );
+				  nDollarPos++;
 			  }
 			  nDollarPos = aValue.find( '$', nDollarPos );
 		  };
