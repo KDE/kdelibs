@@ -379,29 +379,29 @@ void KThemeStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
     }
     // End of the button placement code
 
-    if((controls & SUB_PAGE)){
+    if((controls & SubPage)){
         drawScrollBarGroove(p, sb, horizontal, subPage, g);
     }
-    if((controls & ADD_PAGE)){
+    if((controls & AddPage)){
         drawScrollBarGroove(p, sb, horizontal, addPage, g);
     }
-    if(controls & ADD_LINE){
+    if(controls & AddLine){
         drawBaseButton(p, add.x(), add.y(), add.width(), add.height(), g,
-                       activeControl == ADD_LINE, ScrollButton);
+                       activeControl == AddLine, ScrollButton);
         drawArrow(p, (horizontal) ? RightArrow : DownArrow, false,
                   add.x()+3, add.y()+3, add.width()-6,
                   add.height()-6, *colorGroup(g, ScrollButton));
     }
-    if(controls & SUB_LINE){
+    if(controls & SubLine){
         p->setPen(g.dark());
         p->drawRect(sub);
         drawBaseButton(p, sub.x(), sub.y(), sub.width(), sub.height(), g,
-                       activeControl == SUB_LINE, ScrollButton);
+                       activeControl == SubLine, ScrollButton);
         drawArrow(p, (horizontal)  ? LeftArrow : UpArrow, false, sub.x()+3,
                   sub.y()+3, sub.width()-6, sub.height()-6,
                   *colorGroup(g, ScrollButton));
     }
-    if(controls & SLIDER){
+    if(controls & Slider){
         drawBaseButton(p, slider.x(), slider.y(), slider.width(),
                        slider.height(), g, false, ScrollBarSlider);
         if(isPixmap(ScrollDeco)){
@@ -488,44 +488,44 @@ QStyle::ScrollControl KThemeStyle::scrollBarPointOver(const QScrollBar *sb,
                                                       const QPoint &p)
 {
     if(!sb->rect().contains(p))
-        return(NONE);
+        return(NoScroll);
     int sliderMin, sliderMax, sliderLength, buttonDim;
     int pos = (sb->orientation() == QScrollBar::Horizontal) ? p.x() : p.y();
     scrollBarMetrics(sb, sliderMin, sliderMax, sliderLength, buttonDim);
 
     if(scrollBarLayout() == SBOpposite){
         if (pos < sliderMin )
-            return SUB_LINE;
+            return SubLine;
         if (pos < sliderStart )
-            return SUB_PAGE;
+            return SubPage;
         if (pos < sliderStart + sliderLength )
-            return SLIDER;
+            return Slider;
         if (pos < sliderMax + sliderLength )
-            return ADD_PAGE;
-        return ADD_LINE;
+            return AddPage;
+        return AddLine;
     }
     if(scrollBarLayout() == SBBottomLeft && sb->orientation() ==
        QScrollBar::Horizontal){
         if(pos <= buttonDim)
-            return(SUB_LINE);
+            return(SubLine);
         else if(pos <= buttonDim*2)
-            return(ADD_LINE);
+            return(AddLine);
         else if(pos < sliderStart)
-            return(SUB_PAGE);
+            return(SubPage);
         else if(pos < sliderStart+sliderLength)
-            return(SLIDER);
-        return(ADD_PAGE);
+            return(Slider);
+        return(AddPage);
     }
     else{
         if (pos < sliderStart)
-            return SUB_PAGE;
+            return SubPage;
         if (pos < sliderStart + sliderLength)
-            return SLIDER;
+            return Slider;
         if (pos < sliderMax + sliderLength)
-            return ADD_PAGE;
+            return AddPage;
         if (pos < sliderMax + sliderLength + buttonDim)
-            return SUB_LINE;
-        return ADD_LINE;
+            return SubLine;
+        return AddLine;
     }
 }
 
