@@ -6,7 +6,7 @@
 #include <kpartmanager.h>
 #include <ktmainwindow.h>
 
-class QVBox;
+class KAction;
 class QSplitter;
 class QMultiLineEdit;
 class KTMainWindowGUIBuilder;
@@ -25,15 +25,18 @@ protected slots:
   void slotFileCloseEditor();
 
 protected:
-  virtual void resizeEvent( QResizeEvent * );
   void embedEditor();
-  
+
 private:
+
+  KAction * m_paEditFile;
+  KAction * m_paCloseEditor;
+
   KReadOnlyPart *m_part1;
   KPart *m_part2;
   KReadWritePart *m_editorpart;
   KPartManager *m_manager;
-  QSplitter *m_splitter;
+  QWidget *m_splitter;
   KTMainWindowGUIBuilder *m_builder;
 };
 
@@ -50,7 +53,6 @@ protected:
 protected:
   virtual QString configFile() const;
   QMultiLineEdit * m_edit;
-  //  QVBox *m_box;
 };
 
 class Part2 : public KPart

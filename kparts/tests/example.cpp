@@ -11,6 +11,7 @@
 #include <qmultilinedit.h>
 #include <qvbox.h>
 
+#include <kiconloader.h>
 #include <kapp.h>
 #include <kmessagebox.h>
 #include <kaction.h>
@@ -22,6 +23,9 @@ Shell::Shell()
 
   m_builder->setXMLFile( "example_shell.rc" );
 
+  // We can do this "switch active part" because we have a splitter with
+  // two items in it.
+  // I wonder what kdevelop uses/will use to embed kedit, BTW.
   m_splitter = new QSplitter( this );
 
   m_part1 = new Part1(m_splitter);
@@ -32,9 +36,11 @@ Shell::Shell()
   (void)new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
   (void)new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );
 
-  (void)new KAction( i18n( "&Edit file" ), 0, this, SLOT( slotFileEdit() ), coll, "edit_file" );
-  (void)new KAction( i18n( "&Close file editor" ), 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
-  (void)new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), coll, "shell_quit" );
+  m_paEditFile = new KAction( i18n( "&Edit file" ), 0, this, SLOT( slotFileEdit() ), coll, "edit_file" );
+  m_paCloseEditor = new KAction( i18n( "&Close file editor" ), 0, this, SLOT( slotFileCloseEditor() ), coll, "close_editor" );
+  m_paCloseEditor->setEnabled(false);
+  KAction * paQuit = new KAction( i18n( "&Quit" ), 0, this, SLOT( close() ), coll, "shell_quit" );
+  paQuit->setIconSet(QIconSet(BarIcon("exit")));
 
   (void)new KAction( i18n( "Yet another menu item" ), 0, coll, "shell_yami" );
   (void)new KAction( i18n( "Yet another submenu item" ), 0, coll, "shell_yasmi" );
@@ -44,13 +50,10 @@ Shell::Shell()
   setView( m_splitter );
 
   m_splitter->show();
-  
-  m_manager->addPart( m_part1 );
-  m_manager->addPart( m_part2 );
-  m_editorpart = 0;
 
-  // Create initial GUI, setting part1 active
-  m_builder->createGUI( m_part1 );
+  m_manager->addPart( m_part1 );
+  m_manager->addPart( m_part2 ); // sets part 2 as the active part
+  m_editorpart = 0;
 }
 
 Shell::~Shell()
@@ -72,12 +75,14 @@ void Shell::slotFileOpenRemote()
 
 void Shell::embedEditor()
 {
+  debug("embedEditor()");
   // replace part2 with the editor part
   delete m_part2;
   m_part2 = 0L;
   m_editorpart = new NotepadPart( m_splitter );
   m_manager->addPart( m_editorpart );
-// TODO : set the active part to m_editorpart
+  m_paEditFile->setEnabled(false);
+  m_paCloseEditor->setEnabled(true);
 }
 
 void Shell::slotFileCloseEditor()
@@ -86,7 +91,8 @@ void Shell::slotFileCloseEditor()
   m_editorpart = 0L;
   m_part2 = new Part2(m_splitter);
   m_manager->addPart( m_part2 );
-// Same as above
+  m_paEditFile->setEnabled(true);
+  m_paCloseEditor->setEnabled(false);
 }
 
 void Shell::slotFileEdit()
@@ -98,19 +104,11 @@ void Shell::slotFileEdit()
     KMessageBox::error(this,"Couldn't open file !");
 }
 
-void Shell::resizeEvent( QResizeEvent * )
-{
-  m_splitter->setGeometry( 0, 0, width(), height() );
-}
-
 Part1::Part1( QWidget * parentWidget )
  : KReadOnlyPart( "Part1" )
 {
-  //  m_box = new QVBox;
-  //QBoxLayout *box = new QBoxLayout( this, QBoxLayout::TopToBottom );
   m_edit = new QMultiLineEdit( parentWidget );
   setWidget( m_edit );
-  //box->addWidget( m_edit );
 
   (void)new KAction( i18n( "Blah" ), 0, actionCollection(), "p1_blah" );
 }
@@ -137,7 +135,7 @@ bool Part1::openFile()
   if ( m_host )
   {
     m_host->setWindowCaption( m_url.url() );
-    
+
     ((KStatusBar *)m_host->topLevelContainer( "StatusBar" ))->message( m_url.url() );
   }
 
@@ -172,13 +170,13 @@ QString Part2::configFile() const
 int main( int argc, char **argv )
 {
   KApplication app( argc, argv, "example" );
-  
+
   Shell *shell = new Shell;
-  
+
   shell->show();
-  
+
   app.exec();
-  
+
   return 0;
 }
 

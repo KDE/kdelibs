@@ -12,11 +12,11 @@ KPartManager::KPartManager( KXMLGUIBuilder * builder )
 {
   m_activePart = 0;
 
-  // Oh oh, found a nice trick :-) Now I know why it's (new part, old part) 
+  // Oh oh, found a nice trick :-) Now I know why it's (new part, old part)
   // and not the other way round :)  (David)
   connect( this, SIGNAL( activePartChanged( KPart *, KPart * ) ),
            builder, SLOT( createGUI( KPart * ) ) );
-  
+
   qApp->installEventFilter( this );
 }
 
@@ -39,7 +39,7 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
         KPart *part = (KPart *)o;
 	if ( m_parts.findRef( part ) == -1 ) // TODO : port to findWidget
 	  return FALSE;
-		    
+		
         KPart *oldActivePart = m_activePart;
         m_activePart = part;
         emit activePartChanged( m_activePart, oldActivePart );
@@ -49,7 +49,7 @@ bool KPartManager::eventFilter( QObject *obj, QEvent *ev )
     } while( o );
 
     return FALSE;
-  }   
+  }
   */
 
   if ( ev->type() != QEvent::MouseButtonPress &&
@@ -101,8 +101,12 @@ KPart * KPartManager::findPartFromWidget( QWidget * widget )
 void KPartManager::addPart( KPart *part )
 {
   connect( part, SIGNAL( destroyed() ), this, SLOT( slotObjectDestroyed() ) );
-  
+
   m_parts.append( part );
+
+  KPart *oldActivePart = m_activePart;
+  m_activePart = part;
+  emit activePartChanged( m_activePart, oldActivePart );
 }
 
 void KPartManager::removePart( KPart *part )

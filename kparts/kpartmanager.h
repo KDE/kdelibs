@@ -17,10 +17,18 @@ public:
   // automatically called. (That's not docu, it's internal stuff !)
   KPartManager( KXMLGUIBuilder * builder );
   virtual ~KPartManager();
-  
+
   virtual bool eventFilter( QObject *obj, QEvent *ev );
-  
+
+  /**
+   * Call this to add a Part to the manager
+   * Sets it to the active part automatically
+   */
   virtual void addPart( KPart *part );
+  /**
+   * Call this to remove a part
+   * Set the active part to 0
+   */
   virtual void removePart( KPart *part );
 
   KPart *activePart() { return m_activePart; }
@@ -30,7 +38,7 @@ signals:
 
 protected slots:
   void slotObjectDestroyed();
-  
+
 private:
   KPart * findPartFromWidget( QWidget * widget );
   KPart *m_activePart;

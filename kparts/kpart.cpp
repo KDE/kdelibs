@@ -22,7 +22,13 @@ KPart::KPart( const char* name )
 KPart::~KPart()
 {
   if ( m_widget )
+  {
+    // We need to disconnect first, to avoid calling it !
+    disconnect( m_widget, SIGNAL( destroyed() ),
+                this, SLOT( slotWidgetDestroyed() ) );
+    qDebug(QString("***** deleting widget '%1'").arg(m_widget->name()));
     delete (QWidget *)m_widget;
+  }
 }
 
 void KPart::embed( QWidget * parentWidget )
@@ -105,6 +111,7 @@ KPlugin* KPart::plugin( const char* libname )
 
 void KPart::slotWidgetDestroyed()
 {
+  debug(QString(" ********** KPart::slotWidgetDestroyed(), deleting part '%1'").arg(name()));
   m_widget = 0;
   delete this;
 }
@@ -150,7 +157,7 @@ bool KReadOnlyPart::openURL( const QString &url )
              this, SLOT( slotJobError ( int, int, const char * ) ) );
     job->copy( url, m_file );
     return true;
-  }  
+  }
 }
 
 void KReadOnlyPart::closeURL()
@@ -208,7 +215,7 @@ QAction *KPartGUIServant::action( const QDomElement &element )
 
     return plugin->action( name );
   }
- 
+
   return m_part->action( name );
 }
 

@@ -16,7 +16,9 @@
 NotepadPart::NotepadPart( QWidget * parentWidget )
  : KReadWritePart( "NotepadPart" )
 {
-  m_edit = new QMultiLineEdit( parentWidget );
+  debug("NotepadPart::NotepadPart");
+  m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
+  m_edit->show(); // don't forget this !
   setWidget( m_edit );
   (void)new KAction( i18n( "Search and replace" ), 0, actionCollection(), "searchreplace" );
 }
@@ -27,7 +29,7 @@ NotepadPart::~NotepadPart()
 
 bool NotepadPart::openFile()
 {
-  debug("Part1: opening %s", m_file.ascii());
+  debug("NotepadPart: opening %s", m_file.ascii());
   // Hehe this is from a tutorial I did some time ago :)
   QFile f(m_file);
   QString s;
@@ -43,7 +45,7 @@ bool NotepadPart::openFile()
   if ( m_host )
   {
     m_host->setWindowCaption( m_url.url() );
-    
+
     ((KStatusBar *)m_host->topLevelContainer( "StatusBar" ))->message( m_url.url() );
   }
 
