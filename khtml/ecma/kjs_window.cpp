@@ -58,7 +58,8 @@ namespace KJS {
   class History : public ObjectImp {
     friend class HistoryFunc;
   public:
-    History(KHTMLPart *p) : part(p) { }
+    History(ExecState *exec, KHTMLPart *p)
+      : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -70,7 +71,8 @@ namespace KJS {
 
   class FrameArray : public ObjectImp {
   public:
-    FrameArray(KHTMLPart *p) : part(p) { }
+    FrameArray(ExecState *exec, KHTMLPart *p)
+      : ObjectImp(exec->interpreter()->builtinObjectPrototype()), part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
   private:
     QGuardedPtr<KHTMLPart> part;
@@ -254,7 +256,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
 IMPLEMENT_PROTOFUNC(WindowFunc)
 
 Window::Window(KHTMLPart *p)
-  : m_part(p), screen(0), history(0), frames(0), loc(0), m_evt(0)
+  : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), frames(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name() << endl;
@@ -403,10 +405,10 @@ Value Window::get(ExecState *exec, const UString &p) const
       return getEventConstructor(exec);
     case Frames:
       return Value(frames ? frames :
-                   (const_cast<Window*>(this)->frames = new FrameArray(m_part)));
+                   (const_cast<Window*>(this)->frames = new FrameArray(exec,m_part)));
     case _History:
       return Value(history ? history :
-                   (const_cast<Window*>(this)->history = new History(m_part)));
+                   (const_cast<Window*>(this)->history = new History(exec,m_part)));
 
     case Event:
       if (m_evt)
@@ -651,7 +653,7 @@ Value Window::get(ExecState *exec, const UString &p) const
       Value ret = parentObject.get(exec,p);
       if (ret.type() != UndefinedType ) {
 #ifdef KJS_VERBOSE
-        kdDebug() << "Window::get property " << p.qstring() << " found in parent part" << endl;
+        kdDebug(6070) << "Window::get property " << p.qstring() << " found in parent part" << endl;
 #endif
         return ret;
       }
@@ -1256,7 +1258,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     {
       // To conform to the SPEC, we only ask if the window
       // has more than one entry in the history (NS does that too).
-      History history(part);
+      History history(exec,part);
       if ( history.get( exec, "length" ).toInt32(exec) <= 1 ||
            KMessageBox::questionYesNo( window->part()->widget(), i18n("Close window?"), i18n("Confirmation Required") ) == KMessageBox::Yes )
         (const_cast<Window*>(window))->scheduleClose();
