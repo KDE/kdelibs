@@ -95,14 +95,13 @@ DOMString HTMLDocumentImpl::domain() const
     return m_domain;
 }
 
-void HTMLDocumentImpl::setDomain(const DOMString &newDomain, bool force /*=false*/)
+void HTMLDocumentImpl::setDomain(const DOMString &newDomain)
 {
-    if ( force ) {
-        m_domain = newDomain;
-        return;
-    }
     if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        m_domain = KURL(URL()).host(); // Initially set to the host
+        m_domain = KURL(URL()).host().lower(); // Initially set to the host
+
+    if ( m_domain.isEmpty() /*&& view() && view()->part()->openedByJS()*/ )
+        m_domain = newDomain.lower();
 
     // Both NS and IE specify that changing the domain is only allowed when
     // the new domain is a suffix of the old domain.
@@ -111,11 +110,12 @@ void HTMLDocumentImpl::setDomain(const DOMString &newDomain, bool force /*=false
     if ( newLength < oldLength ) // e.g. newDomain=kde.org (7) and m_domain=www.kde.org (11)
     {
         DOMString test = m_domain.copy();
+        DOMString reference = newDomain.lower();
         if ( test[oldLength - newLength - 1] == '.' ) // Check that it's a subdomain, not e.g. "de.org"
         {
             test.remove( 0, oldLength - newLength ); // now test is "kde.org" from m_domain
-            if ( test == newDomain )                 // and we check that it's the same thing as newDomain
-                m_domain = newDomain;
+            if ( test == reference )                 // and we check that it's the same thing as newDomain
+                m_domain = reference;
         }
     }
 }
@@ -131,7 +131,7 @@ DOMString HTMLDocumentImpl::cookie() const
 {
     long windowId = 0;
     KHTMLView *v = view ();
-    
+
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
 
@@ -140,7 +140,7 @@ DOMString HTMLDocumentImpl::cookie() const
     QDataStream stream(params, IO_WriteOnly);
     stream << URL() << windowId;
     if (!kapp->dcopClient()->call("kcookiejar", "kcookiejar",
-                                  "findDOMCookies(QString, int)", params, 
+                                  "findDOMCookies(QString, int)", params,
                                   replyType, reply)) {
          // Maybe it wasn't running (e.g. we're opening local html files)
          KApplication::startServiceByDesktopName( "kcookiejar");
@@ -167,10 +167,10 @@ void HTMLDocumentImpl::setCookie( const DOMString & value )
 {
     long windowId = 0;
     KHTMLView *v = view ();
-    
+
     if ( v && v->topLevelWidget() )
       windowId = v->topLevelWidget()->winId();
-     
+
     QByteArray params;
     QDataStream stream(params, IO_WriteOnly);
     QString fake_header("Set-Cookie: ");

@@ -55,7 +55,7 @@ public:
 
     DOMString referrer() const;
     DOMString domain() const;
-    void setDomain( const DOMString &newDomain, bool force = false ); // not part of the DOM
+    void setDomain( const DOMString &newDomain ); // not part of the DOM
     DOMString lastModified() const;
     DOMString cookie() const;
     void setCookie( const DOMString &);

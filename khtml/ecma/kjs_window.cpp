@@ -897,7 +897,7 @@ bool Window::isSafeScript(ExecState *exec) const
   }
   DOM::DOMString actDomain = actDocument.domain();
   DOM::DOMString thisDomain = thisDocument.domain();
-  //kdDebug(6070) << "current domain:" << actDomain.string() << ", frame domain:" << thisDomain.string() << endl;
+
   if ( actDomain == thisDomain )
     return true;
 
@@ -1166,7 +1166,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
           khtmlpart->end();
           if ( part->docImpl() ) {
             kdDebug(6070) << "Setting domain to " << part->docImpl()->domain().string() << endl;
-            khtmlpart->docImpl()->setDomain( part->docImpl()->domain(), true );
+            khtmlpart->docImpl()->setDomain( part->docImpl()->domain());
             khtmlpart->docImpl()->setBaseURL( part->docImpl()->baseURL() );
           }
         }
