@@ -1190,7 +1190,7 @@ int main( int argc, char **argv )
 
   if ( !nameSpace.isEmpty() ) h << "}" << endl << endl;
 
-  h << "#endif" << endl;
+  h << "#endif" << endl << endl;
 
 
   header.close();
