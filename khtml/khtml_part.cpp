@@ -98,7 +98,13 @@ namespace khtml
   {
       enum Type { Frame, IFrame, Object };
 
-      ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
+      ChildFrame() { 
+        m_bCompleted = false;
+        m_frame = 0L;
+        m_bPreloaded = false;
+        m_type = Frame;
+        m_bNotify = false;
+      }
 
       ~ChildFrame() {  delete (KHTMLRun*) m_run; }
 
@@ -180,6 +186,8 @@ public:
     m_bFirstData = true;
     m_submitForm = 0;
     m_delayRedirect = 0;
+    
+    m_bPendingChildRedirection = false;
 
     // inherit security settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -371,6 +379,8 @@ public:
   KParts::Part * m_activeFrame;
   QGuardedPtr<KHTMLPart> m_opener;
   bool m_openedByJS;
+  
+  bool m_bPendingChildRedirection;
 };
 
 namespace khtml {
@@ -382,7 +392,7 @@ namespace khtml {
             m_part = part;
             m_cachedSheet = dl->requestStyleSheet( url, part->baseURL().url(), QString::null );
             if (m_cachedSheet)
-		m_cachedSheet->ref( this );
+                m_cachedSheet->ref( this );
         }
         virtual ~PartStyleSheetLoader()
         {
@@ -631,10 +641,9 @@ bool KHTMLPart::openURL( const KURL &url )
 
     kdDebug( 6050 ) << "completed..." << endl;
     if ( !d->m_redirectURL.isEmpty() )
-    {
        emit completed(true);
-    }
-    else emit completed();
+    else
+        emit completed();
 
     return true;
   }
@@ -701,6 +710,7 @@ bool KHTMLPart::openURL( const KURL &url )
 
 bool KHTMLPart::closeURL()
 {
+  //kdDebug( 6050 ) << "KHTMPart::closeURL called for: " << this << endl;  
   if ( d->m_job )
   {
     KHTMLPageCache::self()->cancelEntry(d->m_cacheId);
@@ -710,8 +720,8 @@ bool KHTMLPart::closeURL()
 
   d->m_bComplete = true; // to avoid emitting completed() in slotFinishedParsing() (David)
   d->m_bLoadEventEmitted = true; // don't want that one either
-  d->m_bReloading = false;
-
+  d->m_bReloading = false;  
+  
   KHTMLPageCache::self()->cancelFetch(this);
   if ( d->m_bParsing )
   {
@@ -732,12 +742,29 @@ bool KHTMLPart::closeURL()
   khtml::Cache::loader()->cancelRequests( m_url.url() );
 
   // Stop any started redirections as well!! (DA)
-  if ( d && d->m_redirectionTimer.isActive() )
+  if ( d && d->m_redirectionTimer.isActive() )  
     d->m_redirectionTimer.stop();
-
+  
+  // Force a ::closeURL on all the childern frames!
+  // This should only work if the current part contains
+  // child parts, ex: frames... (DA)
+  if ( d->m_bPendingChildRedirection )
+  {
+    d->m_bPendingChildRedirection = false;
+        
+    ConstFrameIt it = d->m_frames.begin();
+    ConstFrameIt end = d->m_frames.end();
+    for (; it != end; ++it )
+    {
+      KParts::ReadOnlyPart *p = (*it).m_part;
+      if ( p && p->inherits( "KHTMLPart" ))
+        ((KHTMLPart*)p)->closeURL();
+    }
+  }
+  
   // null node activated.
   emit nodeActivated(Node());
-
+  
   return true;
 }
 
@@ -1577,7 +1604,7 @@ void KHTMLPart::checkCompleted()
 
   // Still waiting for images/scripts from the loader ?
   requests = khtml::Cache::loader()->numRequests( m_url.url() );
-  //kdDebug( 6060 ) << "number of loader requests: " << requests << endl;
+  //kdDebug( 6060 ) << "Number of loader requests left: " << requests << endl;
   if ( requests > 0 )
     return;
 
@@ -1615,14 +1642,26 @@ void KHTMLPart::checkCompleted()
 
   if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
       d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
-
+  
+  // when encountering
   if ( !d->m_redirectURL.isEmpty() )
   {
-    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    // Do not start redirection for frames here! That action is
+    // deferred until the parent emits a completed signal.
+    if ( parentPart() == 0 )
+    {
+      //kdDebug(6050) << this << ": redirect to -> " << d->m_redirectURL << endl;
+      d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+    }
     emit completed( true );
-  }
+  }  
   else
-    emit completed();
+  {
+    if ( d->m_bPendingChildRedirection )
+      emit completed ( true );
+    else
+      emit completed();
+  }
 
   emit setStatusBarText( i18n("Loading complete") );
 #ifdef SPEED_DEBUG
@@ -1706,12 +1745,15 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
     if( d->m_redirectURL.isEmpty() || delay < d->m_delayRedirect )
     {
+       //kdDebug( 6050 ) << this << ": scheduling redirection to "
+       //                << url << " in " << delay << endl;
        d->m_delayRedirect = delay;
-       d->m_redirectURL = url;
-       if ( d->m_bComplete ) {
-	   d->m_redirectionTimer.stop();
-	   d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
-       }
+       d->m_redirectURL = url;       
+       if ( d->m_bComplete )
+       {
+          d->m_redirectionTimer.stop();
+          d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+       }       
     }
 }
 
@@ -2707,8 +2749,12 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
                this, SLOT( slotChildStarted( KIO::Job *) ) );
       connect( part, SIGNAL( completed() ),
                this, SLOT( slotChildCompleted() ) );
+      connect( part, SIGNAL( completed(bool) ),
+               this, SLOT( slotChildCompleted(bool) ) );
       connect( part, SIGNAL( setStatusBarText( const QString & ) ),
                this, SIGNAL( setStatusBarText( const QString & ) ) );
+      connect( this, SIGNAL( completed(bool) ),
+               part, SLOT( slotParentCompleted(bool) ) );
     }
 
     child->m_extension = KParts::BrowserExtension::childObject( part );
@@ -2962,6 +3008,15 @@ void KHTMLPart::popupMenu( const QString &url )
   emit popupMenu(url, QCursor::pos());
 }
 
+void KHTMLPart::slotParentCompleted( bool )
+{
+  if ( !d->m_redirectURL.isEmpty() && !d->m_redirectionTimer.isActive() )
+  {
+    // kdDebug(6050) << this << ": Child redirection -> " << d->m_redirectURL << endl;
+    d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+  }
+}
+
 void KHTMLPart::slotChildStarted( KIO::Job *job )
 {
   khtml::ChildFrame *child = frame( sender() );
@@ -2986,15 +3041,24 @@ void KHTMLPart::slotChildStarted( KIO::Job *job )
 
 void KHTMLPart::slotChildCompleted()
 {
+  slotChildCompleted( false );
+}
+
+void KHTMLPart::slotChildCompleted( bool complete )
+{
   khtml::ChildFrame *child = frame( sender() );
 
   assert( child );
 
   child->m_bCompleted = true;
   child->m_args = KParts::URLArgs();
-
+  
+  if ( parentPart() == 0 )
+    d->m_bPendingChildRedirection = (d->m_bPendingChildRedirection || complete);
+    
   checkCompleted();
 }
+
 
 void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &args )
 {
