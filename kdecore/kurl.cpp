@@ -102,7 +102,7 @@ KURL::KURL( const QUrl &u )
 {
   m_strProtocol = u.protocol();
   m_strUser = u.user();
-  m_strPass = u.pass();
+  m_strPass = u.password();
   m_strHost = u.host();
   m_strPath = u.path( FALSE );
   m_strQuery_encoded = u.query();
@@ -405,7 +405,7 @@ KURL& KURL::operator=( const QUrl & u )
 {
   m_strProtocol = u.protocol();
   m_strUser = u.user();
-  m_strPass = u.pass();
+  m_strPass = u.password();
   m_strHost = u.host();
   m_strPath = u.path( FALSE );
   m_strQuery_encoded = u.query();
