@@ -1085,11 +1085,11 @@ int main( int argc, char* argv[] )
 
     if (!nofork) {
 	if (fork() > 0) {
-	    char c;
+	    char c = 1;
 	    close(ready[1]);
 	    read(ready[0], &c, 1); // Wait till dcopserver is started
 	    close(ready[0]);
-	    return 0; // I am the parent
+	    return c; // I am the parent
 	}
 	close(ready[0]);
 
