@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.46  1998/03/29 19:07:28  kalle
+// Methods for reading and writing bool, unsigned int, long, unsigned long,
+// double, QRect, QSize, QPoint
+//
 // Revision 1.45  1998/03/21 23:05:14  mark
 // MD: Addition of a new font, a fixed font, for general use in applications.
 // Unfortunately, I think this is a BINARY INCOMPATIBLE change. (Cleared with Kalle.)
@@ -379,109 +383,122 @@ public:
 	*/
   void invokeHTMLHelp( QString aFilename, QString aTopic ) const;
 
-  /** 
-	* Get the KDE base dir. 
-	*
-	* This is the value of the KDEDIR
-	* environment variable if it is set in the process' environment,
-	* the compile time default of, if this was not present, either,
-	* /usr/local/kde. 
-	* @return the KDE base dir
-	*/
-  static QString kdedir();
-
-
   /**
-	* Returns the directory where KDE stores its HTML documentation
-	* @return the name of the directory
-	*/
+   * Returns the directory where KDE stores its HTML documentation
+   * 
+   * The default for this directory is $KDEDIR/share/doc/HTML
+   * @return the name of the directory
+   */
   static const QString& kde_htmldir();
 
   /**
-	* Returns the directory where KDE applications store their .kdelnk file
-	* @return the name of the directory
-	*/
+   * Returns the directory where KDE applications store their .kdelnk file
+   *
+   * The default for this directory is $KDEDIR/share/applnk
+   * @return the name of the directory
+   */
   static const QString& kde_appsdir();
 
   /**
-	* Returns the directory where KDE icons are stored
-	* @return the name of the directory
-	*/
+   * Returns the directory where KDE icons are stored
+   *
+   * The default for this directory is $KDEDIR/share/icons
+   * @return the name of the directory
+   */
   static const QString& kde_icondir();
 
   /** 	
-        * Returns the directory where KDE applications store their specific data
-    	* @return the name of the directory
-	*/
+   * Returns the directory where KDE applications store their specific data
+   * 
+   * The default for this directory is $KDEDIR/share/apps
+   * @return the name of the directory
+   */
   static const QString& kde_datadir();
 
   /**
-	* Returns the directory where locale-specific information (like
-	* translated on-screen messages are stored
-	* @return the name of the directory
-	*/
+   * Returns the directory where locale-specific information (like
+   * translated on-screen messages are stored
+   *
+   * The default for this directory is $KDEDIR/share/locale
+   * @return the name of the directory
+   */
   static const QString& kde_localedir();
 
   /**
-	* Returns the directory where cgi scripts are stored
-	* @return the name of the directory
-	*/
+   * Returns the directory where cgi scripts are stored
+   *
+   * The default for this directory is $KDEDIR/cgi-bin
+   * @return the name of the directory
+   */
   static const QString& kde_cgidir();
 
   /**
-	* Returns the directory where sound data are stored.
-	* This directory is for KDE specific sounds. Sound data of 
-	* Applications should go into kde_datadir()
-	*
-	* @return the name of the directory
-	*/
+   * Returns the directory where sound data are stored.
+   * This directory is for KDE specific sounds. Sound data of 
+   * Applications should go into kde_datadir()
+   *
+   * The default for this directory is $KDEDIR/share/sounds
+   *
+   * @return the name of the directory
+   */
   static const QString& kde_sounddir();
 
   /**
-	* Returns the directory where toolbar icons are stored
-	* @return the name of the directory
-	*/
+   * Returns the directory where toolbar icons are stored
+   *
+   * The default for this directory is $KDEDIR/share/toolbar
+   * @return the name of the directory
+   */
   static const QString& kde_toolbardir();
 
   /**
-	* Returns the directory where wallpapers are stored
-	* @return the name of the directory
-	*/
+   * Returns the directory where wallpapers are stored
+   *
+   * The default for this directory is $KDEDIR/share/wallpapers
+   * @return the name of the directory
+   */
   static const QString& kde_wallpaperdir();
 
   /**
-	* Returns the directory where executable programs are stored
-	* @return the name of the directory
-	*/
+   * Returns the directory where executable programs are stored
+   *
+   * The default for this directory is $KDEDIR/bin
+   * @return the name of the directory
+   */
   static const QString& kde_bindir();
 
   /**
-	* Returns the directory where KParts are stored
-	* @return the name of the directory
-	*/
+   * Returns the directory where KParts are stored
+   *
+   * The default for this directory is $KDEDIR/parts
+   * @return the name of the directory
+   */
   static const QString& kde_partsdir();
 
-
   /**
-	* Returns the directory where config files are stored
-	* @return the name of the directory
-	*/
+   * Returns the directory where config files are stored
+   *
+   * The default for this directory is $KDEDIR/share/config
+   * @return the name of the directory
+   */
   static const QString& kde_configdir();
 
     
  /**
-	* Returns the directory where mimetypes are stored
-	* @return the name of the directory
-	*/
+  * Returns the directory where mimetypes are stored
+  * 
+  * The default for this directory is $KDEDIR/share/mimelnk
+  * @return the name of the directory
+  */
   static const QString& kde_mimedir();
 
   /**
-	* Get the local KDE base dir
-	*
-	* This is usually $HOME/.kde
-	*
-	* @return the name of the directory
-	*/
+   * Get the local KDE base dir
+   *
+   * This is usually $HOME/.kde
+   *
+   * @return the name of the directory
+   */
   static QString localkdedir();
 
 
@@ -641,8 +658,19 @@ protected:
   /// Current application object.
   static KApplication *KApp;
 
- private slots:
- void appHelpActivated();
+  /** 
+   * Get the KDE base dir. 
+   *
+   * This is the value of the KDEDIR
+   * environment variable if it is set in the process' environment,
+   * the compile time default of, if this was not present, either,
+   * /usr/local/kde. 
+   * @return the KDE base dir
+   */
+  static QString kdedir();
+
+private slots:
+  void appHelpActivated();
   void aboutKDE();
   void aboutApp();
   void aboutQt();
