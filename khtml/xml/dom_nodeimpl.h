@@ -325,7 +325,7 @@ protected:
     bool m_hasTabindex  : 1;
     short m_tabindex : 16;
 
-    QList<RegisteredEventListener> *m_regdListeners;
+    QPtrList<RegisteredEventListener> *m_regdListeners;
 };
 
 // this class implements nodes, which can have a parent but no children:
