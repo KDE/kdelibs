@@ -120,7 +120,7 @@ KDB::Connector *ConnectorImpl::clone()
 
 QStringList ConnectorImpl::databases()
 {
-	KDB::RowList l = resultQuery("select datname from pg_database");
+	KDB::RowList l = resultQuery("SELECT datname FROM pg_database");
 
 	QStringList lst;
 	KDB::RowList::Iterator it;
@@ -132,7 +132,7 @@ QStringList ConnectorImpl::databases()
 
 QStringList ConnectorImpl::tables()
 {
-	KDB::RowList l = resultQuery("select tablename from pg_tables where tablename !~'^pg_'");
+	KDB::RowList l = resultQuery("SELECT tablename FROM pg_tables WHERE tablename !~'^pg_'");
 
 	QStringList lst;
 	KDB::RowList::Iterator it;
@@ -212,7 +212,7 @@ KDB::RowList ConnectorImpl::fields(const QString & tableName)
 
 bool ConnectorImpl::createDatabase(const QString & name)
 {
-	QString sql(QString::fromLatin1("Create database %1").arg(name));
+	QString sql(QString::fromLatin1("CREATE DATABASE %1").arg(name));
 	execute(sql);
 	return (!DBENGINE->error());
 }
@@ -295,14 +295,14 @@ bool ConnectorImpl::createTable(const KDB::Table &tab)
 
 bool ConnectorImpl::dropDatabase(const QString & name)
 {
-	QString sql(QString::fromLatin1("Drop database %1").arg(name));
+	QString sql(QString::fromLatin1("Drop DATABASE %1").arg(name));
 	execute(sql);
 	return (!DBENGINE->error());
 }
 
 bool ConnectorImpl::dropTable(const QString & name)
 {
-	QString sql(QString::fromLatin1("Drop table %1").arg(name));
+	QString sql(QString::fromLatin1("DROP TABLE %1").arg(name));
 	execute(sql);
 	return (!DBENGINE->error());
 }
@@ -316,7 +316,7 @@ QString ConnectorImpl::oidToTypeName(Oid oid)
 		//    kdDebug(20012) << "Found in cache " << *s << endl;
 		return *s;
 	} else {
-		QString sql(QString::fromLatin1("Select typname from pg_type where oid = %1").arg((unsigned int)oid));
+		QString sql(QString::fromLatin1("SELECT typname FROM pg_type WHERE oid = %1").arg((unsigned int)oid));
 
 		// we must do everything here to avoid recursive calls from HandlerImpl
 		PGresult *res = PQexec(connection(), sql.latin1());
