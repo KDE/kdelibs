@@ -36,7 +36,6 @@ debian/tmp/usr/share/mimelnk/application/starwriter.desktop
 debian/tmp/usr/share/mimelnk/application/vnd.mozilla.xul+xml.desktop
 debian/tmp/usr/share/mimelnk/application/vnd.ms-asf.desktop
 debian/tmp/usr/share/mimelnk/application/vnd.palm.desktop
-debian/tmp/usr/share/mimelnk/application/vnd.sun.xml.draw.desktop
 debian/tmp/usr/share/mimelnk/application/wordperfect.desktop
 debian/tmp/usr/share/mimelnk/application/x-abiword.desktop
 debian/tmp/usr/share/mimelnk/application/x-amipro.desktop
