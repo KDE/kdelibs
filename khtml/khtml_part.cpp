@@ -2765,6 +2765,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       KHTMLPart* p = static_cast<KHTMLPart*>(static_cast<KParts::ReadOnlyPart *>(child->m_part));
 
       p->begin();
+      p->m_url = url;
       p->write(url.path());
       p->end();
       return true;
