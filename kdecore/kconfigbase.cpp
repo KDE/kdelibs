@@ -1096,7 +1096,6 @@ bool KConfigBase::deleteGroup( const QString& group, bool bDeep, bool bGlobal )
   {
     if (!aIt.key().mKey.isEmpty() && !aIt.key().bDefault && !(*aIt).bDeleted)
     {
-qWarning("Deleting key = %s", aIt.key().mKey.data());
       (*aIt).bDeleted = true;
       (*aIt).bDirty = true;
       (*aIt).bGlobal = bGlobal;
