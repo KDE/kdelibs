@@ -186,7 +186,7 @@ void KMJobViewer::init()
 		m_view->setAllColumnsShowFocus(true);
 		m_view->setSelectionMode(QListView::Extended);
 		connect(m_view,SIGNAL(selectionChanged()),SLOT(slotSelectionChanged()));
-		connect(m_view,SIGNAL(rightButtonClicked(QListViewItem*,const QPoint&,int)),SLOT(slotRightClicked(QListViewItem*,const QPoint&,int)));
+		connect(m_view,SIGNAL(rightButtonPressed(QListViewItem*,const QPoint&,int)),SLOT(slotRightClicked(QListViewItem*,const QPoint&,int)));
 		setCentralWidget(m_view);
 	}
 
