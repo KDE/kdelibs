@@ -196,6 +196,10 @@ QByteArray HTMLFormElementImpl::formData()
     if(!codec)
         codec = QTextCodec::codecForLocale();
 
+    m_encCharset = codec->name();
+    for(unsigned int i=0; i < m_encCharset.length(); i++)
+        m_encCharset[i] = m_encCharset[i].latin1() == ' ' ? QChar('-') : m_encCharset[i].lower();
+
 #if 0
         // users with UTF8 locale should be killed immediately
         if(!codec || codec->mibEnum() == 106)
@@ -213,68 +217,59 @@ QByteArray HTMLFormElementImpl::formData()
 		// hack for isindex element
 		enc_string += encodeCString(*lst.begin());
 	    } else {
-            ASSERT(!(lst.count()&1));
+                ASSERT(!(lst.count()&1));
 
-            khtml::encodingList::Iterator it;
-            for( it = lst.begin(); it != lst.end(); ++it )
-            {
-                if (!m_multipart)
+                khtml::encodingList::Iterator it;
+                for( it = lst.begin(); it != lst.end(); ++it )
                 {
-                    if(enc_string.length())
-                        enc_string += '&';
-
-                    enc_string += encodeCString(*it);
-                    enc_string += "=";
-                    ++it;
-                    enc_string += encodeCString(*it);
-                }
-                else
-                {
-                    QCString hstr("--");
-                    hstr += m_boundary.string().latin1();
-                    hstr += "\r\n";
-                    hstr += "Content-Disposition: form-data; name=\"";
-                    hstr += (*it).data();
-                    hstr += "\"";
-
-                    // if the current type is FILE, then we also need to
-                    // include the filename
-                    if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
-                        static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
+                    if (!m_multipart)
                     {
-                        QString path = static_cast<HTMLInputElementImpl*>(current)->filename().string();
-                        QString onlyfilename = path.mid(path.findRev('/')+1);
+                        if(enc_string.length())
+                            enc_string += '&';
 
-                        hstr += ("; filename=\"" + onlyfilename + "\"\r\n").ascii();
-                        if(!static_cast<HTMLInputElementImpl*>(current)->filename().isEmpty())
-                        {
-                            hstr += "Content-Type: ";
-                            KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
-                            hstr += ptr->name().ascii();
-                            hstr += "\r\n";
-                        }
+                        enc_string += encodeCString(*it);
+                        enc_string += "=";
+                        ++it;
+                        enc_string += encodeCString(*it);
                     }
                     else
                     {
-                        hstr += "\r\nContent-Type: text/plain; charset=";
-                        QString chname = codec->name();
-                        for(unsigned int i=0; i < chname.length(); i++) if(chname[i].latin1() == ' ') chname[i] = '-';
-                        hstr += chname.latin1();
+                        QCString hstr("--");
+                        hstr += m_boundary.string().latin1();
                         hstr += "\r\n";
+                        hstr += "Content-Disposition: form-data; name=\"";
+                        hstr += (*it).data();
+                        hstr += "\"";
+
+                        // if the current type is FILE, then we also need to
+                        // include the filename
+                        if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
+                            static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
+                        {
+                            QString path = static_cast<HTMLInputElementImpl*>(current)->filename().string();
+                            QString onlyfilename = path.mid(path.findRev('/')+1);
+
+                            hstr += ("; filename=\"" + onlyfilename + "\"\r\n").ascii();
+                            if(!static_cast<HTMLInputElementImpl*>(current)->filename().isEmpty())
+                            {
+                                hstr += "Content-Type: ";
+                                KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
+                                hstr += ptr->name().ascii();
+                            }
+                        }
+
+                        hstr += "\r\n\r\n";
+                        ++it;
+
+                        // append body
+                        unsigned int old_size = form_data.size();
+                        form_data.resize( old_size + hstr.length() + (*it).size() + 1);
+                        memcpy(form_data.data() + old_size, hstr.data(), hstr.length());
+                        memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size());
+                        form_data[form_data.size()-2] = '\r';
+                        form_data[form_data.size()-1] = '\n';
                     }
-                    hstr += "\r\n";
-
-                    ++it;
-
-                    // append body
-                    unsigned int old_size = form_data.size();
-                    form_data.resize( old_size + hstr.length() + (*it).size() + 1);
-                    memcpy(form_data.data() + old_size, hstr.data(), hstr.length());
-                    memcpy(form_data.data() + old_size + hstr.length(), *it, (*it).size());
-                    form_data[form_data.size()-2] = '\r';
-                    form_data[form_data.size()-1] = '\n';
                 }
-            }
 	    }
         }
     }
@@ -300,6 +295,7 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
         m_enctype = "application/x-www-form-urlencoded";
         m_multipart = false;
     }
+    m_encCharset = QString::null;
 }
 
 void HTMLFormElementImpl::setBoundary( const DOMString& bound )
@@ -331,9 +327,12 @@ void HTMLFormElementImpl::submit(  )
     QByteArray form_data = formData();
     if(m_post)
     {
+
         view->part()->submitForm( "post", m_url.string(), form_data,
                                   m_target.string(),
                                   enctype().string(),
+//                                   m_encCharset.isEmpty() ? enctype().string()
+//                                   : QString(enctype().string() + "; charset=" + m_encCharset),
                                   boundary().string() );
     }
     else

@@ -109,6 +109,7 @@ public:
     DOMString m_enctype;
     DOMString m_boundary;
     DOMString m_acceptcharset;
+    QString m_encCharset;
     KHTMLView *view;
     bool m_post;
     bool m_multipart;
