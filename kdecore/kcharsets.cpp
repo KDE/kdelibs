@@ -31,6 +31,7 @@
 #include <kdebug.h>
 
 #include <qtextcodec.h>
+#include <qmap.h>
 
 template class QList<KFontStruct>;
 template class QList<QFont::CharSet>;
@@ -314,10 +315,30 @@ QStringList KCharsets::availableCharsetNames(QString family)
 
 QStringList KCharsets::availableEncodingNames()
 {
-#ifdef __GNUC__
-#warning Lars, implement this
-#endif
-  return availableCharsetNames();
+    QStringList available;
+
+    KConfig conf( "charsets", true );
+    QMap<QString, QString> map = conf.entryMap("charsetsForEncoding");
+    conf.setGroup("charsetsForEncoding");
+
+    QMap<QString, QString>::Iterator it;
+    for( it = map.begin(); it != map.end(); ++it ) {
+	//kdDebug(0) << "key = " << it.key() << " string =" << it.data() << endl;
+
+	//kdDebug(0) << "list is: " << conf.readEntry(it.key()) << endl;
+	QStringList charsets = conf.readListEntry(it.key());
+
+	// iterate thorugh the list and find the first charset that is available
+	for ( QStringList::Iterator sit = charsets.begin(); sit != charsets.end(); ++sit ) {
+	    //kdDebug(0) << "checking for " << *sit << endl;
+	    if( const_cast<KCharsets *>(this)->isAvailable(*sit) ) {
+		//kdDebug(0) << *sit << " available" << endl;
+		available.append(it.key());
+		break;
+	    }
+	}
+    }
+    return available;
 }
 
 
