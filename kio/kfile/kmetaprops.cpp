@@ -182,7 +182,7 @@ void KFileMetaPropsPlugin::createLayout()
             QHBoxLayout* sublayout = new QHBoxLayout;
             toplayout->addLayout(sublayout, count, 1);
             
-            if (item.prefix()!=QString::null)
+            if (editable && (item.prefix() != QString::null))
             {
                 QLabel* label = new QLabel( item.prefix(), d->m_frame );
                 label->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
@@ -205,7 +205,7 @@ void KFileMetaPropsPlugin::createLayout()
 
             sublayout->addWidget( w );
 
-            if (item.suffix()!=QString::null)
+            if (editable && (item.suffix() != QString::null))
             {
                 QLabel* label = new QLabel( item.suffix(), d->m_frame );
                 label->setAlignment( Qt::AlignLeft | Qt::AlignVCenter);
@@ -272,7 +272,7 @@ QWidget* KFileMetaPropsPlugin::makeBoolWidget(const KFileMetaInfoItem& item,
 QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item, 
                                              QWidget* parent, QString& valClass, bool editable)
 {
-  if (!editable) return new QLabel(item.value().toString(), parent);
+  if (!editable) return new QLabel(item.prefix() + item.value().toString() + item.suffix(), parent);
   
   QSpinBox* sb = new QSpinBox(parent);
   sb->setValue(item.value().toInt());
@@ -304,7 +304,7 @@ QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item,
 QWidget* KFileMetaPropsPlugin::makeStringWidget(const KFileMetaInfoItem& item, 
                                               QWidget* parent, QString& valClass, bool editable)
 {
-  if (!editable) return new QLabel(item.value().toString(), parent);
+  if (!editable) return new QLabel(item.prefix() + item.value().toString() + item.suffix(), parent);
 
   QValidator* validator = d->m_info.createValidator(item.key(), 0, 0);
   valClass = validator->className();
