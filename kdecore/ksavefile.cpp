@@ -99,8 +99,8 @@ KSaveFile::name() const
 void
 KSaveFile::abort()
 {
-   mTempFile.unlink();
    mTempFile.close();
+   mTempFile.unlink();
 }
 
 bool
