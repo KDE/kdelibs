@@ -1068,7 +1068,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			}
 
 			// Make the label indicate if the button is a default button or not
-			drawItem( p, r, AlignCenter | ShowPrefix, button->colorGroup(),
+			drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						&button->colorGroup().buttonText() );
 
@@ -1419,6 +1419,7 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 				if ( active ) flags |= Style_On;
 
 				QRect ar = querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxArrow );
+				ar.setWidth(ar.width()-13);
 
 				QRect rr = visualRect( QRect( ar.x(), ar.y() + 4, loader.size( keramik_ripple ).width(), ar.height() - 8 ), widget );
 
@@ -1799,7 +1800,7 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 			switch ( subcontrol )
 			{
 				case SC_ComboBoxArrow:
-					return QRect( widget->width() - arrow - 14, 0, arrow, widget->height() );
+					return QRect( widget->width() - arrow - 14, 0, arrow+13, widget->height() );
 
 				case SC_ComboBoxEditField:
 				{
