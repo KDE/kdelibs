@@ -514,12 +514,12 @@ void KMainWindow::slotStateChanged(const QString &newstate,
 
 void KMainWindow::closeEvent ( QCloseEvent *e )
 {
+    // Save settings if auto-save is enabled, and settings have changed
+    if (d->settingsDirty && d->autoSaveSettings)
+        saveAutoSaveSettings();
+
     if (queryClose()) {
         e->accept();
-
-        // Save settings if auto-save is enabled, and settings have changed
-        if (d->settingsDirty && d->autoSaveSettings)
-            saveAutoSaveSettings();
 
         int not_withdrawn = 0;
         QPtrListIterator<KMainWindow> it(*KMainWindow::memberList);
