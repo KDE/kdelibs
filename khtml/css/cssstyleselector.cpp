@@ -279,6 +279,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 		}
                 applyRule( ordprop->prop );
 	    }
+	    if ( fontDirty )
+		CSSStyleSelector::style->htmlFont().update( paintDeviceMetrics );
         }
 
         if ( pseudoProps->count() != 0 ) {
@@ -315,6 +317,13 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e, int state)
 
                 ordprop = pseudoProps->next();
             }
+	    if ( fontDirty ) {
+		RenderStyle *pseudoStyle = CSSStyleSelector::style->pseudoStyle;
+		while ( pseudoStyle ) {
+		    pseudoStyle->htmlFont().update( paintDeviceMetrics );
+		    pseudoStyle = pseudoStyle->pseudoStyle;
+		}
+	    }
         }
     }
 
