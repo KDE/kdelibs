@@ -61,7 +61,7 @@ public:
         connect( view->verticalScrollBar(), SIGNAL( sliderMoved(int) ),
                  SLOT( slotAdjust() ) );
 
-        view->installEventFilter( this );
+        view->viewport()->installEventFilter( this );
     }
     
     void start( int delay, bool singleShot )
