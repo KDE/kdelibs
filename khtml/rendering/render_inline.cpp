@@ -610,7 +610,7 @@ static QPoint *linkEndToBegin(QValueVector<QPoint> &pointArray)
     if (plast.x() == pfirst.x() && pfirst.x() == pnext.x()
         || plast.y() == pfirst.y() && pfirst.y() == pnext.y()) {
 
-        index++;
+        ++index;
         appendPoint(pointArray, pfirst);
         appendPoint(pointArray, pnext);
     } else if (linkup)
@@ -790,7 +790,7 @@ void RenderInline::paintOutlinePath(QPainter *p, int tx, int ty, const QPoint *b
     bs = newBorderSide(bs, direction, last, *begin);
 //     kdDebug(6040) << "newBorderSide: " << lastBS << " " << direction << "d " << last << " - " << *begin << " => " << bs << endl;
 
-    for (const QPoint *it = begin; it != end; it++) {
+    for (const QPoint *it = begin; it != end; ++it) {
         QPoint cur = *it;
 //         kdDebug(6040) << "cur: " << cur << endl;
         BorderSide nextBS;

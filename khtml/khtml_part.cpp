@@ -155,9 +155,13 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
 
     QString script;
     script.sprintf("%s(", event.latin1());
+
     KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
-    for ( ; i != args.end(); i++) {
-        if (i != args.begin())
+    const KParts::LiveConnectExtension::ArgList::const_iterator argsBegin = i;
+    const KParts::LiveConnectExtension::ArgList::const_iterator argsEnd = args.end();
+
+    for ( ; i != argsEnd; ++i) {
+        if (i != argsBegin)
             script += ",";
         if ((*i).first == KParts::LiveConnectExtension::TypeString) {
             script += "\"";
@@ -185,7 +189,7 @@ void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & ev
 KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
 {
     Iterator it = begin();
-    Iterator e = end();
+    const Iterator e = end();
 
     for (; it!=e; ++it )
         if ( (*it)->m_name==name )
@@ -755,22 +759,27 @@ bool KHTMLPart::closeURL()
     khtml::Cache::loader()->cancelRequests( d->m_doc->docLoader() );
 
   // tell all subframes to stop as well
-  ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
-  for (; it != end; ++it )
   {
-    if ( (*it)->m_run )
-      (*it)->m_run->abort();
-    if ( !( *it )->m_part.isNull() )
-      ( *it )->m_part->closeURL();
+    ConstFrameIt it = d->m_frames.begin();
+    const ConstFrameIt end = d->m_frames.end();
+    for (; it != end; ++it )
+    {
+      if ( (*it)->m_run )
+        (*it)->m_run->abort();
+      if ( !( *it )->m_part.isNull() )
+        ( *it )->m_part->closeURL();
+    }
   }
   // tell all objects to stop as well
-  for (it = d->m_objects.begin(); it != d->m_objects.end(); ++it)
   {
-    if ( !( *it )->m_part.isNull() )
-      ( *it )->m_part->closeURL();
+    ConstFrameIt it = d->m_objects.begin();
+    const ConstFrameIt end = d->m_objects.end();
+    for (; it != end; ++it)
+    {
+      if ( !( *it )->m_part.isNull() )
+        ( *it )->m_part->closeURL();
+    }
   }
-
   // Stop any started redirections as well!! (DA)
   if ( d && d->m_redirectionTimer.isActive() )
     d->m_redirectionTimer.stop();
@@ -910,7 +919,8 @@ KJSProxy *KHTMLPart::jScript()
           d->m_frame->m_part = this;
       } else {
           ConstFrameIt it = p->d->m_frames.begin();
-          for (; it != p->d->m_frames.end(); ++it)
+          const ConstFrameIt end = p->d->m_frames.end();
+          for (; it != end; ++it)
               if ((*it)->m_part.operator->() == this) {
                   d->m_frame = *it;
                   break;
@@ -1079,10 +1089,10 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
   if (!proxy || proxy->paused())
     return QVariant();
-  d->m_runningScripts++;
+  ++(d->m_runningScripts);
   KJS::Completion comp;
-  QVariant ret = proxy->evaluate( QString::null, 1, script, n, &comp );
-  d->m_runningScripts--;
+  const QVariant ret = proxy->evaluate( QString::null, 1, script, n, &comp );
+  --(d->m_runningScripts);
 
   /*
    *  Error handling
@@ -1181,13 +1191,13 @@ void KHTMLPart::slotDebugDOMTree()
 
   // Now print the contents of the frames that contain HTML
 
-  int indentLevel = s_DOMTreeIndentLevel++;
+  const int indentLevel = s_DOMTreeIndentLevel++;
 
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !( *it )->m_part.isNull() && (*it)->m_part->inherits( "KHTMLPart" ) ) {
-      KParts::ReadOnlyPart* p = ( *it )->m_part;
+      KParts::ReadOnlyPart* const p = ( *it )->m_part;
       kdDebug(6050) << QString().leftJustify(s_DOMTreeIndentLevel*4,' ') << "FRAME " << p->name() << " " << endl;
       static_cast<KHTMLPart*>( p )->slotDebugDOMTree();
     }
@@ -1262,7 +1272,7 @@ void KHTMLPart::clear()
 
   {
     ConstFrameIt it = d->m_frames.begin();
-    ConstFrameIt end = d->m_frames.end();
+    const ConstFrameIt end = d->m_frames.end();
     for(; it != end; ++it )
     {
       // Stop HTMLRun jobs for frames
@@ -1273,7 +1283,7 @@ void KHTMLPart::clear()
 
   {
     ConstFrameIt it = d->m_objects.begin();
-    ConstFrameIt end = d->m_objects.end();
+    const ConstFrameIt end = d->m_objects.end();
     for(; it != end; ++it )
     {
       // Stop HTMLRun jobs for objects
@@ -1313,7 +1323,7 @@ void KHTMLPart::clear()
 
   {
     ConstFrameIt it = d->m_frames.begin();
-    ConstFrameIt end = d->m_frames.end();
+    const ConstFrameIt end = d->m_frames.end();
     for(; it != end; ++it )
     {
       if ( (*it)->m_part )
@@ -1324,9 +1334,13 @@ void KHTMLPart::clear()
       delete *it;
     }
   }
-  for (ConstFrameIt oi = d->m_objects.begin(); oi != d->m_objects.end(); ++oi )
-    delete *oi;
+  {
+    ConstFrameIt oi = d->m_objects.begin();
+    const ConstFrameIt oiEnd = d->m_objects.end();
 
+    for (; oi != oiEnd; ++oi )
+      delete *oi;
+  }
   d->m_frames.clear();
   d->m_objects.clear();
 
@@ -1904,10 +1918,10 @@ void KHTMLPart::stopAnimations()
     d->m_doc->docLoader()->setShowAnimations( KHTMLSettings::KAnimationDisabled );
 
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !(*it)->m_part.isNull() && (*it)->m_part->inherits( "KHTMLPart" ) ) {
-      KParts::ReadOnlyPart* p = ( *it )->m_part;
+      KParts::ReadOnlyPart* const p = ( *it )->m_part;
       static_cast<KHTMLPart*>( p )->stopAnimations();
     }
 }
@@ -1929,8 +1943,8 @@ void KHTMLPart::slotLoaderRequestStarted( khtml::DocLoader* dl, khtml::CachedObj
   if ( obj && obj->type() == khtml::CachedObject::Image && d->m_doc && d->m_doc->docLoader() == dl ) {
     KHTMLPart* p = this;
     while ( p ) {
-      KHTMLPart* op = p;
-      p->d->m_totalObjectCount++;
+      KHTMLPart* const op = p;
+      ++(p->d->m_totalObjectCount);
       p = p->parentPart();
       if ( !p && op->d->m_loadedObjects <= op->d->m_totalObjectCount
         && !op->d->m_progressUpdateTimer.isActive())
@@ -1944,8 +1958,8 @@ void KHTMLPart::slotLoaderRequestDone( khtml::DocLoader* dl, khtml::CachedObject
   if ( obj && obj->type() == khtml::CachedObject::Image && d->m_doc && d->m_doc->docLoader() == dl ) {
     KHTMLPart* p = this;
     while ( p ) {
-      KHTMLPart* op = p;
-      p->d->m_loadedObjects++;
+      KHTMLPart* const op = p;
+      ++(p->d->m_loadedObjects);
       p = p->parentPart();
       if ( !p && op->d->m_loadedObjects <= op->d->m_totalObjectCount && op->d->m_jobPercent <= 100
         && !op->d->m_progressUpdateTimer.isActive())
@@ -2011,7 +2025,7 @@ void KHTMLPart::slotUserSheetStatDone( KIO::Job *_job )
 
   const UDSEntry entry = dynamic_cast<KIO::StatJob *>( _job )->statResult();
   UDSEntry::ConstIterator it = entry.begin();
-  UDSEntry::ConstIterator end = entry.end();
+  const UDSEntry::ConstIterator end = entry.end();
   for ( ; it != end; ++it ) {
     if ( ( *it ).m_uds == UDS_MODIFICATION_TIME ) {
      break;
@@ -2049,7 +2063,7 @@ void KHTMLPart::checkCompleted()
   bool bPendingChildRedirection = false;
   // Any frame that hasn't completed yet ?
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it ) {
     if ( !(*it)->m_bCompleted )
     {
@@ -2062,10 +2076,14 @@ void KHTMLPart::checkCompleted()
   }
 
   // Any object that hasn't completed yet ?
-  for (ConstFrameIt oi = d->m_objects.begin(); oi != d->m_objects.end(); ++oi )
-    if ( !(*oi)->m_bCompleted )
-      return;
+  {
+    ConstFrameIt oi = d->m_objects.begin();
+    const ConstFrameIt oiEnd = d->m_objects.end();
 
+    for (; oi != oiEnd; ++oi )
+      if ( !(*oi)->m_bCompleted )
+        return;
+  }
   // Are we still parsing - or have we done the completed stuff already ?
   if ( d->m_bComplete || (d->m_doc && d->m_doc->parsing()) )
     return;
@@ -2156,12 +2174,15 @@ void KHTMLPart::checkEmitLoadEvent()
   if ( d->m_bLoadEventEmitted || !d->m_doc || d->m_doc->parsing() ) return;
 
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !(*it)->m_bCompleted ) // still got a frame running -> too early
       return;
 
-  for (ConstFrameIt oi = d->m_objects.begin(); oi != d->m_objects.end(); ++oi )
+  ConstFrameIt oi = d->m_objects.begin();
+  const ConstFrameIt oiEnd = d->m_objects.end();
+
+  for (; oi != oiEnd; ++oi )
     if ( !(*oi)->m_bCompleted ) // still got a object running -> too early
       return;
 
@@ -2450,19 +2471,25 @@ void KHTMLPartPrivate::setFlagRecursively(
   this->*flag = value;
 
   // descend into child frames recursively
-  QValueList<khtml::ChildFrame*>::Iterator it = m_frames.begin();
-  for (; it != m_frames.end(); ++it) {
-    KHTMLPart *part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
-    if (part->inherits("KHTMLPart"))
-      part->d->setFlagRecursively(flag, value);
-  }/*next it*/
-
+  {
+    QValueList<khtml::ChildFrame*>::Iterator it = m_frames.begin();
+    const QValueList<khtml::ChildFrame*>::Iterator itEnd = m_frames.end();
+    for (; it != itEnd; ++it) {
+      KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
+      if (part->inherits("KHTMLPart"))
+        part->d->setFlagRecursively(flag, value);
+    }/*next it*/
+  }
   // do the same again for objects
-  for (it = m_objects.begin(); it != m_objects.end(); ++it) {
-    KHTMLPart *part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
-    if (part->inherits("KHTMLPart"))
-      part->d->setFlagRecursively(flag, value);
-  }/*next it*/
+  {
+    QValueList<khtml::ChildFrame*>::Iterator it = m_objects.begin();
+    const QValueList<khtml::ChildFrame*>::Iterator itEnd = m_objects.end();
+    for (; it != itEnd; ++it) {
+      KHTMLPart* const part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it)->m_part);
+      if (part->inherits("KHTMLPart"))
+        part->d->setFlagRecursively(flag, value);
+    }/*next it*/
+  }
 }
 
 void KHTMLPart::setCaretMode(bool enable)
@@ -3008,14 +3035,15 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
 {
   //kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
   QValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
+  const QValueList<KHTMLPartPrivate::StringPortion>::Iterator itEnd = d->m_stringPortions.end();
   QValueList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
   // We stop at the first portion whose index is 'greater than', and then use the previous one
-  while ( it != d->m_stringPortions.end() && (*it).index <= index )
+  while ( it != itEnd && (*it).index <= index )
   {
     prev = it;
     ++it;
   }
-  Q_ASSERT ( prev != d->m_stringPortions.end() );
+  Q_ASSERT ( prev != itEnd );
   DOM::NodeImpl* node = (*prev).node;
   Q_ASSERT( node );
 
@@ -3058,12 +3086,12 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
   }
   // Now look for end node
   it = prev; // no need to start from beginning again
-  while ( it != d->m_stringPortions.end() && (*it).index < index + length )
+  while ( it != itEnd && (*it).index < index + length )
   {
     prev = it;
     ++it;
   }
-  Q_ASSERT ( prev != d->m_stringPortions.end() );
+  Q_ASSERT ( prev != itEnd );
 
   d->m_selectionEnd = (*prev).node;
   d->m_endOffset = index + length - (*prev).index;
@@ -3247,11 +3275,11 @@ QString KHTMLPart::selectedText() const
 
     // Strip leading LFs
     while ((start < end) && (text[start] == '\n'))
-       start++;
+       ++start;
 
     // Strip excessive trailing LFs
     while ((start < (end-1)) && (text[end-1] == '\n') && (text[end-2] == '\n'))
-       end--;
+       --end;
 
     return text.mid(start, end-start);
 }
@@ -3436,7 +3464,9 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
       QString mailtoMsg /* = QString::fromLatin1("<img src=%1>").arg(locate("icon", QString::fromLatin1("locolor/16x16/actions/mail_send.png")))*/;
       mailtoMsg += i18n("Email to: ") + KURL::decode_string(u.path());
       QStringList queries = QStringList::split('&', u.query().mid(1));
-      for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
+      QStringList::Iterator it = queries.begin();
+      const QStringList::Iterator itEnd = queries.end();
+      for (; it != itEnd; ++it)
         if ((*it).startsWith(QString::fromLatin1("subject=")))
           mailtoMsg += i18n(" - Subject: ") + KURL::decode_string((*it).mid(8));
         else if ((*it).startsWith(QString::fromLatin1("cc=")))
@@ -3633,10 +3663,13 @@ void KHTMLPart::slotViewPageInfo()
     dlg->_lastModified->setText(lastModified());
 
   /* populate the list view now */
-  QStringList headers = QStringList::split("\n", d->m_httpHeaders);
+  const QStringList headers = QStringList::split("\n", d->m_httpHeaders);
 
-  for (QStringList::Iterator it = headers.begin(); it != headers.end(); ++it) {
-    QStringList header = QStringList::split(QRegExp(":[ ]+"), *it);
+  QStringList::ConstIterator it = headers.begin();
+  const QStringList::ConstIterator itEnd = headers.end();
+
+  for (; it != itEnd; ++it) {
+    const QStringList header = QStringList::split(QRegExp(":[ ]+"), *it);
     if (header.count() != 2)
        continue;
     new QListViewItem(dlg->_headers, header[0], header[1]);
@@ -3734,12 +3767,14 @@ void KHTMLPart::slotSecurity()
     KSSLCertificate *x = KSSLCertificate::fromString(d->m_ssl_peer_certificate.local8Bit());
     if (x) {
        // Set the chain back onto the certificate
-       QStringList cl = QStringList::split(QString("\n"), d->m_ssl_peer_chain);
+       const QStringList cl = QStringList::split(QString("\n"), d->m_ssl_peer_chain);
        QPtrList<KSSLCertificate> ncl;
 
        ncl.setAutoDelete(true);
-       for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
-          KSSLCertificate *y = KSSLCertificate::fromString((*it).local8Bit());
+       QStringList::ConstIterator it = cl.begin();
+       const QStringList::ConstIterator itEnd = cl.end();
+       for (; it != itEnd; ++it) {
+          KSSLCertificate* const y = KSSLCertificate::fromString((*it).local8Bit());
           if (y) ncl.append(y);
        }
 
@@ -3802,7 +3837,7 @@ void KHTMLPart::updateActions()
   bool frames = false;
 
   QValueList<khtml::ChildFrame*>::ConstIterator it = d->m_frames.begin();
-  QValueList<khtml::ChildFrame*>::ConstIterator end = d->m_frames.end();
+  const QValueList<khtml::ChildFrame*>::ConstIterator end = d->m_frames.end();
   for (; it != end; ++it )
       if ( (*it)->m_type == khtml::ChildFrame::Frame )
       {
@@ -3855,7 +3890,7 @@ void KHTMLPart::updateActions()
 }
 
 KParts::LiveConnectExtension *KHTMLPart::liveConnectExtension( const khtml::RenderPart *frame) const {
-    ConstFrameIt end = d->m_objects.end();
+    const ConstFrameIt end = d->m_objects.end();
     for(ConstFrameIt it = d->m_objects.begin(); it != end; ++it )
         if ((*it)->m_frame == frame)
             return (*it)->m_liveconnect;
@@ -4215,12 +4250,13 @@ KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *
         return 0L;
   }
 
-  KTrader::OfferList::Iterator it = offers.begin();
-  for (  ; it != offers.end() ; ++it )
+  KTrader::OfferList::ConstIterator it = offers.begin();
+  const KTrader::OfferList::ConstIterator itEnd = offers.end();
+  for ( ; it != itEnd; ++it )
   {
     KService::Ptr service = (*it);
 
-    KLibFactory *factory = KLibLoader::self()->factory( QFile::encodeName(service->library()) );
+    KLibFactory* const factory = KLibLoader::self()->factory( QFile::encodeName(service->library()) );
     if ( factory ) {
       KParts::ReadOnlyPart *res = 0L;
 
@@ -4396,13 +4432,23 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       QStringList nvps = QStringList::split("&", q);
       bool triedToAttach = false;
 
-      for (QStringList::Iterator nvp = nvps.begin(); nvp != nvps.end(); ++nvp) {
-         QStringList pair = QStringList::split("=", *nvp);
+      QStringList::Iterator nvp = nvps.begin();
+      const QStringList::Iterator nvpEnd = nvps.end();
+
+// cannot be a for loop as if something is removed we don't want to do ++nvp, as
+// remove returns an iterator pointing to the next item
+
+      while (nvp != nvpEnd) {
+         const QStringList pair = QStringList::split("=", *nvp);
          if (pair.count() >= 2) {
             if (pair.first().lower() == "attach") {
                nvp = nvps.remove(nvp);
                triedToAttach = true;
+            } else {
+               ++nvp;
             }
+         } else {
+            ++nvp;
          }
       }
 
@@ -4649,15 +4695,17 @@ void KHTMLPart::slotRequestFocus( KParts::ReadOnlyPart * )
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
 {
     assert( obj->inherits( "KParts::ReadOnlyPart" ) );
-    const KParts::ReadOnlyPart *part = static_cast<const KParts::ReadOnlyPart *>( obj );
+    const KParts::ReadOnlyPart* const part = static_cast<const KParts::ReadOnlyPart *>( obj );
 
     FrameIt it = d->m_frames.begin();
-    FrameIt end = d->m_frames.end();
+    const FrameIt end = d->m_frames.end();
     for (; it != end; ++it )
       if ( (KParts::ReadOnlyPart *)(*it)->m_part == part )
         return *it;
 
-    for (FrameIt oi = d->m_objects.begin(); oi != d->m_objects.end(); ++oi )
+    FrameIt oi = d->m_objects.begin();
+    const FrameIt oiEnd = d->m_objects.end();
+    for (; oi != oiEnd; ++oi )
       if ( (KParts::ReadOnlyPart *)(*oi)->m_part == part )
         return *oi;
 
@@ -4707,13 +4755,13 @@ KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f,
   kdDebug(6050) << "KHTMLPart::findFrameParent: this = " << this << " URL = " << m_url << " findFrameParent( " << f << " )" << endl;
 #endif
   // Check access
-  KHTMLPart *callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
+  KHTMLPart* const callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
 
   if (!checkFrameAccess(callingHtmlPart))
      return 0;
 
   FrameIt it = d->m_frames.find( f );
-  FrameIt end = d->m_frames.end();
+  const FrameIt end = d->m_frames.end();
   if ( it != end )
   {
 #ifdef DEBUG_FINDFRAME
@@ -4727,10 +4775,10 @@ KHTMLPart::findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f,
   it = d->m_frames.begin();
   for (; it != end; ++it )
   {
-    KParts::ReadOnlyPart *p = (*it)->m_part;
+    KParts::ReadOnlyPart* const p = (*it)->m_part;
     if ( p && p->inherits( "KHTMLPart" ))
     {
-      KHTMLPart *frameParent = static_cast<KHTMLPart*>(p)->findFrameParent(callingPart, f, childFrame);
+      KHTMLPart* const frameParent = static_cast<KHTMLPart*>(p)->findFrameParent(callingPart, f, childFrame);
       if (frameParent)
          return frameParent;
     }
@@ -4787,10 +4835,14 @@ bool KHTMLPart::frameExists( const QString &frameName )
 
 KJSProxy *KHTMLPart::framejScript(KParts::ReadOnlyPart *framePart)
 {
-  KHTMLPart *kp = ::qt_cast<KHTMLPart*>(framePart);
+  KHTMLPart* const kp = ::qt_cast<KHTMLPart*>(framePart);
   if (kp)
     return kp->jScript();
-  for (FrameIt it = d->m_frames.begin(); it != d->m_frames.end(); ++it)
+
+  FrameIt it = d->m_frames.begin();
+  const FrameIt itEnd = d->m_frames.end();
+
+  for (; it != itEnd; ++it)
     if (framePart == (*it)->m_part) {
       if (!(*it)->m_jscript)
         createJScript(*it);
@@ -4843,7 +4895,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 {
 #ifndef NDEBUG
   QString indent = QString().leftJustify( s_saveStateIndentLevel * 4, ' ' );
-  int indentLevel = s_saveStateIndentLevel++;
+  const int indentLevel = s_saveStateIndentLevel++;
   kdDebug( 6050 ) << indent << "saveState this=" << this << " '" << name() << "' saving URL " << m_url.url() << endl;
 #endif
 
@@ -4897,7 +4949,7 @@ void KHTMLPart::saveState( QDataStream &stream )
   QValueList<QByteArray> frameStateBufferLst;
 
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
   {
     if ( !(*it)->m_part )
@@ -4994,7 +5046,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     d->m_redirectionTimer.stop();
 
     FrameIt fIt = d->m_frames.begin();
-    FrameIt fEnd = d->m_frames.end();
+    const FrameIt fEnd = d->m_frames.end();
 
     for (; fIt != fEnd; ++fIt )
         (*fIt)->m_bCompleted = false;
@@ -5009,7 +5061,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
     for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
     {
-      khtml::ChildFrame *child = *fIt;
+      khtml::ChildFrame* const child = *fIt;
 
 //      kdDebug( 6050 ) <<  *fNameIt  << " ---- " <<  *fServiceTypeIt << endl;
 
@@ -5056,7 +5108,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
     d->m_sheetUsed = sheetUsed;
 
     QStringList::ConstIterator fNameIt = frameNames.begin();
-    QStringList::ConstIterator fNameEnd = frameNames.end();
+    const QStringList::ConstIterator fNameEnd = frameNames.end();
 
     QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
     QStringList::ConstIterator fServiceNameIt = frameServiceNames.begin();
@@ -5065,14 +5117,14 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
     for (; fNameIt != fNameEnd; ++fNameIt, ++fServiceTypeIt, ++fServiceNameIt, ++fURLIt, ++fBufferIt )
     {
-      khtml::ChildFrame *newChild = new khtml::ChildFrame;
+      khtml::ChildFrame* const newChild = new khtml::ChildFrame;
       newChild->m_bPreloaded = true;
       newChild->m_name = *fNameIt;
       newChild->m_serviceName = *fServiceNameIt;
 
 //      kdDebug( 6050 ) << *fNameIt << " ---- " << *fServiceTypeIt << endl;
 
-      FrameIt childFrame = d->m_frames.append( newChild );
+      const FrameIt childFrame = d->m_frames.append( newChild );
 
       processObjectRequest( *childFrame, *fURLIt, *fServiceTypeIt );
 
@@ -5226,10 +5278,10 @@ void KHTMLPart::setZoomFactor (int percent)
   }
 
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !( *it )->m_part.isNull() && (*it)->m_part->inherits( "KHTMLPart" ) ) {
-      KParts::ReadOnlyPart* p = ( *it )->m_part;
+      KParts::ReadOnlyPart* const p = ( *it )->m_part;
       static_cast<KHTMLPart*>( p )->setZoomFactor(d->m_zoomFactor);
     }
 
@@ -5336,10 +5388,10 @@ void KHTMLPart::slotLoadImages()
     d->m_doc->docLoader()->setAutoloadImages( !d->m_doc->docLoader()->autoloadImages() );
 
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if ( !( *it )->m_part.isNull() && (*it)->m_part->inherits( "KHTMLPart" ) ) {
-      KParts::ReadOnlyPart* p = ( *it )->m_part;
+      KParts::ReadOnlyPart* const p = ( *it )->m_part;
       static_cast<KHTMLPart*>( p )->slotLoadImages();
     }
 }
@@ -5375,7 +5427,7 @@ QStringList KHTMLPart::frameNames() const
   QStringList res;
 
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if (!(*it)->m_bPreloaded)
       res += (*it)->m_name;
@@ -5388,7 +5440,7 @@ QPtrList<KParts::ReadOnlyPart> KHTMLPart::frames() const
   QPtrList<KParts::ReadOnlyPart> res;
 
   ConstFrameIt it = d->m_frames.begin();
-  ConstFrameIt end = d->m_frames.end();
+  const ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
     if (!(*it)->m_bPreloaded)
       res.append( (*it)->m_part );
@@ -5467,9 +5519,10 @@ static bool firstRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&startN
 {
     for (khtml::RenderObject *n = renderNode; n; n = n->nextSibling()) {
         if (n->isText()) {
-            khtml::RenderText *textRenderer = static_cast<khtml::RenderText *>(n);
+            khtml::RenderText* const textRenderer = static_cast<khtml::RenderText *>(n);
             const khtml::InlineTextBoxArray &runs = textRenderer->inlineTextBoxes();
-            for (unsigned i = 0; i != runs.count(); i++) {
+	    const unsigned lim = runs.count();
+            for (unsigned i = 0; i != lim; ++i) {
                 if (runs[i]->m_y == y) {
                     startNode = textRenderer->element();
                     startOffset = runs[i]->m_start;
@@ -5508,9 +5561,9 @@ static bool lastRunAt(khtml::RenderObject *renderNode, int y, NodeImpl *&endNode
         }
 
         if (n->isText()) {
-            khtml::RenderText *textRenderer =  static_cast<khtml::RenderText *>(n);
+            khtml::RenderText* const textRenderer =  static_cast<khtml::RenderText *>(n);
             const khtml::InlineTextBoxArray &runs = textRenderer->inlineTextBoxes();
-            for (int i = (int)runs.count()-1; i >= 0; i--) {
+            for (int i = (int)runs.count()-1; i >= 0; --i) {
                 if (runs[i]->m_y == y) {
                     endNode = textRenderer->element();
                     endOffset = runs[i]->m_start + runs[i]->m_len;
@@ -5758,12 +5811,12 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
     if ( right )
     {
       Q_ASSERT( offset < len-1 );
-      offset++;
+      ++offset;
     }
     else
     {
       Q_ASSERT( offset > 0 );
-      offset--;
+      --offset;
     }
 
     // Test that char
@@ -5772,7 +5825,7 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
   } while ( !ch.isSpace() && !ch.isPunct() );
 
   // make offset point after last char
-  if (right) selectionOffset++;
+  if (right) ++selectionOffset;
 }
 
 #ifndef KHTML_NO_SELECTION
