@@ -329,6 +329,9 @@ void KKeyChooser::initGUI( ActionType type, bool bAllowLetterShortcuts )
   d->pList = new KListView( this );
   d->pList->setFocus();
   listViewSearch->setListView(d->pList); // Plug into search line
+  QValueList<int> columns;
+  columns.append(0);
+  listViewSearch->setSearchColumns(columns);
 
   stackLayout->addMultiCellWidget( d->pList, 1, 1, 0, 1 );
 
