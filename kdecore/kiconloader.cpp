@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.73  1999/10/09 09:48:41  kalle
+   more get killing
+   You need to cvs update your libc (joke!)
+
    Revision 1.72  1999/10/09 00:08:27  kalle
    The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
 
@@ -279,7 +283,7 @@ void KIconLoader::initPath()
       dirs = library->dirs();
   else
       dirs = KGlobal::dirs();
-  
+
   if ( large )
       dirs->addResourceType("icon",
 			    KStandardDirs::kde_default("data") +
@@ -353,7 +357,7 @@ QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h )
 
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 {
-	QString path = locate("icon", name);
+	QString path = locate("icon", name, library );
 	if (!path.isEmpty()) //CT 21Jun1999 if is *not* empty!!!
           return loadInternal(path, w, h);
 	else
@@ -364,10 +368,10 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 	int w, int h )
 {
-        QPixmap result = loadInternal(locate("mini", name), w, h);
+        QPixmap result = loadInternal(locate("mini", name, library), w, h);
 		
 	if (result.isNull())
-	  result = loadInternal(locate("icon", name), w, h);
+	  result = loadInternal(locate("icon", name, library), w, h);
 
 	return result;
 }
@@ -385,15 +389,15 @@ QString KIconLoader::iconPath( const QString& name, bool always_valid)
       path.truncate(path.length() - 4);
       warning("stripping .xpm from icon %s", name.ascii());
     }
-    full_path = locate(iconType, path + ".png");
+    full_path = locate(iconType, path + ".png", library);
     if (full_path.isNull())
-      full_path = locate(iconType, path + ".xpm" );
+      full_path = locate(iconType, path + ".xpm", library );
 
     if (full_path.isNull())
-      full_path = locate(iconType, path);
+      full_path = locate(iconType, path, library);
   }
   if (full_path.isNull() && always_valid)
-    full_path = locate(iconType, "unknown.png");
+    full_path = locate(iconType, "unknown.png", library);
 
   return full_path;
 }

@@ -53,7 +53,7 @@ KConfig	*KLibGlobal::config()
 KIconLoader *KLibGlobal::iconLoader()
 {
     if( _iconLoader == 0 ) {
-	_iconLoader = new KIconLoader( config(), name() );
+	_iconLoader = new KIconLoader( this, name() );
     }
 
     return _iconLoader;
