@@ -314,7 +314,7 @@ bool TCPSlaveBase::InitializeSSL()
 
 void TCPSlaveBase::CleanSSL()
 {
-    if (d->cc)
+    if (d->cc) {
         delete d->cc;
         d->cc = NULL;
     }
