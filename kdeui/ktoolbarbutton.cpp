@@ -61,6 +61,7 @@ KToolBarButton::KToolBarButton( const QPixmap& pixmap, int _id,
 {
   sep=false;
   delayPopup = false;
+  toggleButton = false;
   parentWidget = (KToolBar *) _parent;
   raised = false;
   myPopup = 0L;
@@ -147,9 +148,10 @@ void KToolBarButton::setPopup (QPopupMenu *p)
   p->installEventFilter (this);
 }
 
-void KToolBarButton::setDelayedPopup (QPopupMenu *p)
+void KToolBarButton::setDelayedPopup (QPopupMenu *p, bool toggle )
 {
   delayPopup = true;
+  toggleButton = toggle;
   delayTimer = new QTimer (this);
   connect (delayTimer, SIGNAL(timeout ()), this, SLOT(slotDelayTimeout()));
   setPopup(p);
@@ -159,9 +161,7 @@ void KToolBarButton::setEnabled( bool enabled )
 {
   QButton::setPixmap( (enabled ? enabledPixmap : disabledPixmap) );
   QButton::setEnabled( enabled );
-
 }
-
 
 void KToolBarButton::leaveEvent(QEvent *)
 {
@@ -243,7 +243,11 @@ bool KToolBarButton::eventFilter (QObject *o, QEvent *ev)
 
         if (r.contains(QCursor::pos()))   // but on button
         {
-          myPopup->hide();        //Sven: proposed by Carsten Pfeiffer
+          if( !isToggleButton() )
+            myPopup->hide();        //Sven: proposed by Carsten Pfeiffer
+          // Make the button normal again :) Dawit A.
+          if( toggleButton )
+            beToggle( false );
           emit clicked( id );
           //myPopup->setActiveItem(0 /*myPopup->idAt(1)*/); // set first active
           return true;  // ignore release
@@ -572,6 +576,8 @@ void KToolBarButton::showMenu()
 void KToolBarButton::slotDelayTimeout()
 {
   delayTimer->stop();
+  if( toggleButton )
+    beToggle( true );
   showMenu ();
 }
 

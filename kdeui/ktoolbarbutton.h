@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.2  1999/11/02 08:50:00  ssk
+// More internal flags.
+//
 // Revision 1.1  1999/09/21 11:03:53  waba
 // WABA: Clean up interface
 //
@@ -67,7 +70,7 @@ class KToolBarButton : public QButton
    void youreSeparator () {sep = true;};
    QPopupMenu *popup () {return myPopup;};
    void setPopup (QPopupMenu *p);
-   void setDelayedPopup (QPopupMenu *p);
+   void setDelayedPopup (QPopupMenu *p, bool toggle = false);
    void setRadio(bool f);
 
  public slots:
@@ -98,6 +101,7 @@ class KToolBarButton : public QButton
    QFont buttonFont;
    QPopupMenu *myPopup;
    bool delayPopup;
+   bool toggleButton;
    QTimer *delayTimer;
    bool radio;
 
