@@ -990,8 +990,6 @@ void KHTMLPart::clear()
 
   d->m_mousePressNode = DOM::Node();
 
-  if ( d->m_jscript )
-    d->m_jscript->clear();
 
   if ( d->m_doc )
   {
@@ -1000,6 +998,10 @@ void KHTMLPart::clear()
     d->m_doc->deref();
   }
   d->m_doc = 0;
+
+  // Moving past doc so that onUnload works.
+  if ( d->m_jscript )
+    d->m_jscript->clear();
 
   delete d->m_decoder;
 
