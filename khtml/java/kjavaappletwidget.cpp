@@ -16,7 +16,7 @@ struct KJavaAppletWidgetPrivate
 
 static unsigned int count = 0;
 
-    KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
+KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
                                       QWidget *parent, const char *name )
    : QXEmbed( parent, name )
 {
@@ -60,9 +60,9 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
 
 KJavaAppletWidget::~KJavaAppletWidget()
 {
-  XUnmapWindow(qt_xdisplay(), embeddedWinId());
+    XUnmapWindow( qt_xdisplay(), embeddedWinId() );
 
-  delete applet;
+    delete applet;
 }
 
 void KJavaAppletWidget::create()
@@ -138,57 +138,53 @@ void KJavaAppletWidget::uniqueTitle()
 
 void KJavaAppletWidget::showApplet()
 {
-  if ( !applet->isCreated() )
-    applet->create();
+    if ( !applet->isCreated() )
+        applet->create();
 
-   connect( kwm, SIGNAL( windowAdded( WId ) ),
-	    this, SLOT( setWindow( WId ) ) );
+    connect( kwm, SIGNAL( windowAdded( WId ) ),
+	         this, SLOT( setWindow( WId ) ) );
    
-   kwm->doNotManage(swallowTitle);
+    kwm->doNotManage(swallowTitle);
+    applet->show( swallowTitle );
    
-   applet->show( swallowTitle );
-   
-   shown = true;
+    shown = true;
 }
 
 void KJavaAppletWidget::start()
 {
-   applet->start();
+    applet->start();
 }
 
 void KJavaAppletWidget::stop()
 {
-   applet->stop();
+    applet->stop();
 }
 
 void KJavaAppletWidget::setWindow( WId w )
 {
-   XTextProperty titleProperty;
+    //make sure that this window has the right name, if so, embed it...
+    XTextProperty titleProperty;
+    XGetWMName( qt_xdisplay(), w, &titleProperty );
 
-   XGetWMName( qt_xdisplay(), w, &titleProperty );
+    if ( swallowTitle == QString::fromLatin1((char*)titleProperty.value))
+    {
+        // disconnect from KWM events
+        disconnect( kwm, SIGNAL( windowAdded( WId ) ),
+                    this, SLOT( setWindow( WId ) ) );
 
-   if ( swallowTitle == QString::fromLatin1((char*)titleProperty.value))
-       {
-         swallowWindow( w );
-	
-         // disconnect from KWM events
-         disconnect( kwm, SIGNAL( windowAdded( WId ) ),
-                     this, SLOT( setWindow( WId ) ) );
-       }
+        embed( w );
+    }
 }
 
 void KJavaAppletWidget::swallowWindow( WId w )
 {
-  // This is required for Java window to resize properly
-  XResizeWindow( qt_xdisplay(), w, width(), height() );
-
-  embed( w );
+    embed( w );
 }
 
 void KJavaAppletWidget::resize( int w, int h)
 {
-  QXEmbed::resize( w, h );
-  applet->setSize( QSize(w, h) );
+    QXEmbed::resize( w, h );
+    applet->setSize( QSize(w, h) );
 }
 
 
