@@ -793,7 +793,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
         n = new HTMLIFrameElementImpl(document);
-        discard_until = ID_IFRAME+ID_CLOSE_TAG;
+        if (!t->flat) discard_until = ID_IFRAME+ID_CLOSE_TAG;
         break;
 
 // form elements
@@ -1046,13 +1046,13 @@ NodeImpl *KHTMLParser::getElement(Token* t)
 
         // these are special, and normally not rendered
     case ID_NOEMBED:
-        discard_until = ID_NOEMBED + ID_CLOSE_TAG;
+        if (!t->flat) discard_until = ID_NOEMBED + ID_CLOSE_TAG;
         return 0;
     case ID_NOFRAMES:
-        discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
+        if (!t->flat) discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
         return 0;
     case ID_NOSCRIPT:
-        if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
+        if(HTMLWidget && HTMLWidget->part()->jScriptEnabled() && !t->flat)
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
         return 0;
     case ID_NOLAYER:
