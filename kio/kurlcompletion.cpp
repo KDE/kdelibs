@@ -98,6 +98,16 @@ QString KURLCompletion::makeCompletion(const QString &text)
 	//
 	QString text_copy = unquote(text);
 	
+	// This is a bad hack to make it work with file: URLs
+	// Please, let me find time to fix this up later...
+	//
+	QString file_hack;
+	
+	if ( text_copy.left(5) == QString("file:") ) {
+		file_hack = QString("file:");
+		text_copy = text_copy.mid(5);
+	}
+
 	// Split "/dir/file" => "/dir/" and "file" (we only complete "file")
 	//
 	int lastSlash = text_copy.findRev('/');
@@ -148,7 +158,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		//kDebugInfo("User name completion : '%s'", filePart.latin1());
 	
 		m_prepend = "";
-		m_compl_text = filePart;
+		m_compl_text = file_hack + filePart;
 		
 		// Get new values if needed
 		//
@@ -161,10 +171,10 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		 	listUsers( &l );
 			
 			for ( QStringList::Iterator it = l.begin(); it != l.end(); it++ )
-				addItem( QString("~") + *it );
+				addItem( file_hack + QString("~") + *it );
 				
 			// A single tilde is also a match...
-			addItem( QString("~") );
+			addItem( file_hack + QString("~") );
 		}
 		// Expand the directory if completion is done again
 		// on the same text
@@ -201,7 +211,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		//kDebugInfo("KURLCompletion: env completion (%s)", filePart.latin1());
 
 		m_prepend = "";
-		m_compl_text = pathPart + filePart;
+		m_compl_text = file_hack + pathPart + filePart;
 		
 		// Get new values if needed
 		//
@@ -214,7 +224,7 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		 	listEnvVar( &l );
 			
 			for ( QStringList::Iterator it = l.begin(); it != l.end(); it++ )
-				addItem( pathPart + QString("$") + (*it) );
+				addItem( file_hack + pathPart + QString("$") + (*it) );
 		}
 		// Expand the directory if completion is done again
 		// on the same text
@@ -255,8 +265,8 @@ QString KURLCompletion::makeCompletion(const QString &text)
 		kDebugInfo("0. last_mode = '%d'", m_last_mode);
 		kDebugInfo("0. last_type = '%d'", m_last_compl_type);
 */
-		m_compl_text = pathPart + filePart;
-		m_prepend = pathPart;
+		m_compl_text = file_hack + pathPart + filePart;
+		m_prepend = file_hack + pathPart;
 
 		// Get new values if needed
 		//
