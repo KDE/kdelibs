@@ -169,7 +169,7 @@ KNFSShare::~KNFSShare() {
 }
 
 
-bool KNFSShare::isDirectoryShared( const QString & path ) {
+bool KNFSShare::isDirectoryShared( const QString & path ) const {
   QString fixedPath = path;
   if ( path[path.length()-1] != '/' )
        fixedPath += '/';
@@ -177,7 +177,7 @@ bool KNFSShare::isDirectoryShared( const QString & path ) {
   return d->sharedPaths.find(fixedPath) > 0;
 }
 
-QStringList KNFSShare::sharedDirectories() {
+QStringList KNFSShare::sharedDirectories() const {
   QStringList result;
   QDictIterator<bool> it(d->sharedPaths);
   for( ; it.current(); ++it )
@@ -186,7 +186,7 @@ QStringList KNFSShare::sharedDirectories() {
   return result;       
 }
 
-QString KNFSShare::exportsPath() {
+QString KNFSShare::exportsPath() const {
   return d->exportsFile;
 }
 

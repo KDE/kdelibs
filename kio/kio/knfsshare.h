@@ -44,14 +44,14 @@ public:
    * @param path the path to check if it is shared by NFS.
    * @return wether the given path is shared by NFS.
    */
-  bool isDirectoryShared( const QString & path );
+  bool isDirectoryShared( const QString & path ) const;
   
   /**
    * Returns a list of all directories shared by NFS.
    * The resulting list is not sorted.
    * @return a list of all directories shared by NFS.
    */
-  QStringList sharedDirectories();
+  QStringList sharedDirectories() const;
   
   /**
    * KNFSShare destructor. 
@@ -64,7 +64,7 @@ public:
    * Returns the path to the used exports file,
    * or null if no exports file was found
    */
-  QString exportsPath();
+  QString exportsPath() const;
   
 signals:
   /**

@@ -43,14 +43,14 @@ public:
    * @param path the path to check if it is shared by Samba.
    * @return wether the given path is shared by Samba.
    */
-  bool isDirectoryShared( const QString & path );
+  bool isDirectoryShared( const QString & path ) const;
   
   /**
    * Returns a list of all directories shared by Samba.
    * The resulting list is not sorted.
    * @return a list of all directories shared by Samba.
    */
-  QStringList sharedDirectories();
+  QStringList sharedDirectories() const;
   
   /**
    * KSambaShare destructor. 
@@ -63,7 +63,7 @@ public:
    * Returns the path to the used smb.conf file
    * or null if no file was found
    */
-  QString smbConfPath();
+  QString smbConfPath() const;
   
 signals:
   /**

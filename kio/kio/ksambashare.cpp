@@ -175,11 +175,11 @@ KSambaShare::~KSambaShare() {
   delete d;
 }
 
-QString KSambaShare::smbConfPath() {
+QString KSambaShare::smbConfPath() const {
   return d->smbConf;
 }
 
-bool KSambaShare::isDirectoryShared( const QString & path ) {
+bool KSambaShare::isDirectoryShared( const QString & path ) const {
   QString fixedPath = path;
   if ( path[path.length()-1] != '/' )
        fixedPath += '/';
@@ -187,7 +187,7 @@ bool KSambaShare::isDirectoryShared( const QString & path ) {
   return d->sharedPaths.find(fixedPath) > 0;
 }
 
-QStringList KSambaShare::sharedDirectories() {
+QStringList KSambaShare::sharedDirectories() const {
   QStringList result;
   QDictIterator<bool> it(d->sharedPaths);
   for( ; it.current(); ++it )
