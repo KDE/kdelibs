@@ -282,9 +282,9 @@ void KLocale::initFormat()
   m_monetaryThousandsSeparator.replace(QRegExp(QString::fromLatin1("$0")),
 				       QString::null);
 
-  m_fracDigits = config->readNumEntry("FractDigits", -1);
+  m_fracDigits = config->readNumEntry("FracDigits", -1);
   if (m_fracDigits == -1)
-    m_fracDigits = entry.readNumEntry("FractDigits", 2);
+    m_fracDigits = entry.readNumEntry("FracDigits", 2);
 
   m_positivePrefixCurrencySymbol = entry.readBoolEntry("PositivePrefixCurrencySymbol", true);
   m_positivePrefixCurrencySymbol = config->readNumEntry("PositivePrefixCurrencySymbol", m_positivePrefixCurrencySymbol);
