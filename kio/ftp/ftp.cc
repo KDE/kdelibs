@@ -1071,15 +1071,15 @@ void Ftp::stat( const KURL &url)
     return;
   }
 
-  // Argument to the list command (defaults to the directory containing the file)
   KURL tempurl( url );
   tempurl.setPath( path ); // take the clean one
-  QString listarg = tempurl.directory(false /*keep trailing slash*/);
+  QString listarg; // = tempurl.directory(false /*keep trailing slash*/);
+  QString parentDir;
   QString filename = tempurl.fileName();
   QString search = filename;
   bool isDir = false;
 
-  // Try cwd into it, if it works it's a dir (and then we'll use dir in the parent directory)
+  // Try cwd into it, if it works it's a dir (and then we'll list the parent directory to get more info)
   // if it doesn't work, it's a file (and then we'll use dir filename)
   QCString tmp = "cwd ";
   tmp += path.latin1();
@@ -1090,16 +1090,14 @@ void Ftp::stat( const KURL &url)
     return;
   }
 
+  // TODO: if we're only interested in "file or directory", we should stop here
+
   if ( rspbuf[0] == '5' )
   {
-    // It is a file or it doesn't exist, use the name in the list command
-    listarg = path;
-    search = path;
-    // I committed a replace to '?', but that was MSDOS specific.
-    // Replacing with "\\ " could be an idea... However, it works as is on the
-    // sites I'm trying with, and I can't find the address of the site that
-    // didn't work :(
-    //listarg.replace(QRegExp(QString::fromLatin1(" ")),QString::fromLatin1("\\ "));
+    // It is a file or it doesn't exist, try going to parent directory
+    parentDir = tempurl.directory(false /*keep trailing slash*/);
+    // With files we can do "LIST <filename>" to avoid listing the whole dir
+    listarg = filename;
   }
   else
   {
@@ -1107,6 +1105,20 @@ void Ftp::stat( const KURL &url)
     // Reason: it could be a symlink to a dir, in which case ftpReadDir
     // in the parent dir will have no idea about that. But we know better.
     isDir = true;
+    // If the dir starts with '.', we'll need '-a' to see it in the listing.
+    if ( search[0] == '.' )
+       listarg = "-a";
+    parentDir = "..";
+  }
+
+  // Now cwd the parent dir, to prepare for listing
+  tmp = "cwd ";
+  tmp += parentDir.latin1();
+  if ( !ftpSendCmd( tmp, '2' ) )
+  {
+    kdDebug(7102) << "stat: Could not go to parent directory" << endl;
+    // error already emitted
+    return;
   }
 
   if( !ftpOpenCommand( "list", listarg, 'A', ERR_DOES_NOT_EXIST ) )
@@ -1284,9 +1296,11 @@ bool Ftp::ftpOpenDir( const QString & path )
       return false;
   }
 
-  // don't use the path in the list command
-  // we changed into this directory anyway ("cwd"), so it's enough just to send "list"
-  if( !ftpOpenCommand( "list", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
+  // Don't use the path in the list command:
+  // We changed into this directory anyway ("cwd"), so it's enough just to send "list".
+  // We use '-a' because the application MAY be interested in dot files.
+  // The only way to really know would be to have a metadata flag for this...
+  if( !ftpOpenCommand( "list -a", QString::null, 'A', ERR_CANNOT_ENTER_DIRECTORY ) )
   {
     kdWarning(7102) << "Can't open for listing" << endl;
     return false;
