@@ -62,7 +62,6 @@ bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
 extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
   const char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str);
-  char *trimLead(char *);
   void sigalrm_handler(int);
 #ifdef DO_SSL
   int verify_callback(int, X509_STORE_CTX *);
@@ -87,13 +86,10 @@ int main( int, char ** )
 }
 
 
-char * trimLead (char *orig_string) {
-  static unsigned int i=0; // I don't increment the string
-  // so that this can be called over
-  // and over
-  while ( (*(orig_string+i) == ' ') || (*(orig_string+i) == ' ') )
-    i++;
-  return orig_string+i;
+static char * trimLead (char *orig_string) {
+  while (*orig_string == ' ')
+    orig_string++;
+  return orig_string;
 }
 
 /*
@@ -994,7 +990,7 @@ void HTTPProtocol::addEncoding(QString encoding, QStack<char> *encs)
     if ( m_cmd != CMD_COPY )
       m_iSize = 0;
   } else {
-    kdebug( KDEBUG_INFO, 7103, "Unknown encoding encountered.  Please write code.");
+    kdebug( KDEBUG_INFO, 7103, "Unknown encoding encountered.  Please write code. Pid = %d Encoding = \"%s\"", getpid(), encoding.ascii());
     fflush(stderr);
     abort();
   }
@@ -1716,7 +1712,7 @@ int HTTPProtocol::readChunked()
     return 0;
   }
 
-  if (chunkSize > m_bufReceive.size())
+  if (chunkSize > (int) m_bufReceive.size())
   {
      if (!m_bufReceive.resize(chunkSize))
         return -1; // Failure
@@ -1755,7 +1751,7 @@ int HTTPProtocol::readLimited()
   int bytesReceived;
   int bytesToReceive;    
 
-  if (m_iBytesLeft > m_bufReceive.size())
+  if (m_iBytesLeft > (int) m_bufReceive.size())
      bytesToReceive = m_bufReceive.size();
   else
      bytesToReceive = m_iBytesLeft;
