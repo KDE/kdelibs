@@ -53,10 +53,10 @@ namespace KIO {
  *
  * It supports different views, e.g. a detailed view (see @KFileDetailView),
  * a simple icon view (see @KFileIconView), a combination of two views,
- * separating directories and files (@see KCombiView). 
+ * separating directories and files (@see KCombiView).
  *
- * Additionally, a preview view is available (see @KFilePreview), which can 
- * show either a simple or detailed view and additionally a preview widget 
+ * Additionally, a preview view is available (see @KFilePreview), which can
+ * show either a simple or detailed view and additionally a preview widget
  * (see @ref setPreviewWidget()). @ref KImageFilePreview is one implementation
  * of a preview widget, that displays previews for all supported filetypes
  * utilizing KIO::PreviewJob.
@@ -67,6 +67,30 @@ namespace KIO {
  * into this library. See http://master.kde.org/~pfeiffer/DnD-classes.tar.gz
  *
  * This widget is the one used in the KFileDialog.
+ *
+ * Basic usage is like this:
+ * <pre>
+ *   KDirOperator *op = new KDirOperator( KURL( "file:/home/gis" ), this );
+ *   // some signals you might be interested in
+ *   connect(op, SIGNAL(updateInformation(int, int)),
+ *           SLOT(updateStatusLine(int, int)));
+ *   connect(op, SIGNAL(urlEntered(const KURL&)),
+ *           SLOT(urlEntered(const KURL&)));
+ *   connect(op, SIGNAL(fileHighlighted(const KFileViewItem *)),
+ *           SLOT(fileHighlighted(const KFileViewItem *)));
+ *   connect(op, SIGNAL(fileSelected(const KFileViewItem *)),
+ *           SLOT(fileSelected(const KFileViewItem *)));
+ *   connect(op, SIGNAL(finishedLoading()),
+ *           SLOT(slotLoadingFinished()));
+ *
+ *   op->readConfig( KGlobal::config(), "Your KDiroperator ConfigGroup" );
+ *   op->setView(KFile::Default);
+ * </pre>
+ *
+ * This will create a childwidget of 'this' showing the directory contents
+ * of /home/gis in the default-view. The view is determined by the readConfig()
+ * call, which will read the KDirOperator settings, the user left your program
+ * with (and which you saved with op->saveConfig()).
  *
  * @short A widget for displaying files and browsing directories.
  * @author Stephan Kulow <coolo@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
@@ -80,7 +104,7 @@ class KDirOperator : public QWidget
      * Constructs the KDirOperator with no initial view. As the views are
      * configurable, call @ref readConfig() to load the user's configuration
      * and then @ref setView to explicitly set a view.
-     * 
+     *
      * This constructor doesn't start loading the url, @ref setView will do it.
      */
     KDirOperator(const KURL& urlName = KURL(),
@@ -108,7 +132,7 @@ class KDirOperator : public QWidget
     /**
      * Set a filter like "*.cpp *.h *.o". Only files matching that filter
      * will be shown. Call @ref rereadDir() to apply it.
-     * 
+     *
      * @see KDirLister::setNameFilter
      * @see #nameFilter
      */
@@ -139,7 +163,7 @@ class KDirOperator : public QWidget
     void setMimeFilter( const QStringList& mimetypes );
 
     QStringList mimeFilter() const { return dir->mimeFilter(); }
-    
+
     /**
      * Clears both the namefilter and mimetype filter, so that all files and
      * directories will be shown.
@@ -172,6 +196,9 @@ class KDirOperator : public QWidget
      * Note: this will read the current @ref url() to fill the view.
      *
      * @see KFileView
+     * @see KFileIconView
+     * @see KFileDetailView
+     * @see KFileCombiView
      * @see #view
      */
     void setView(KFileView *view);
@@ -199,7 +226,7 @@ class KDirOperator : public QWidget
      * Sets the way to sort files and directories.
      */
     void setSorting( QDir::SortSpec );
-    
+
     /**
      * @returns the current way of sorting files and directories
      */
@@ -211,7 +238,7 @@ class KDirOperator : public QWidget
     bool isRoot() const;
 
     /**
-     * @returns the object listing the directory (KFileReader inherits 
+     * @returns the object listing the directory (KFileReader inherits
      * KDirLister).
      */
     KFileReader *fileReader() const { return dir; }
@@ -230,7 +257,7 @@ class KDirOperator : public QWidget
      * @li ExistingOnly
      * @li LocalOnly
      *
-     * You cannot mix File and Files of course, as the former means 
+     * You cannot mix File and Files of course, as the former means
      * single-selection mode, the latter multi-selection.
      */
     void setMode( KFile::Mode m );
@@ -244,13 +271,13 @@ class KDirOperator : public QWidget
     void setPreviewWidget(const QWidget *w);
 
     /**
-     * @returns a list of all currently selected items. If there is no view, 
+     * @returns a list of all currently selected items. If there is no view,
      * then 0L is returned.
      */
     const KFileViewItemList * selectedItems() const {
 	return ( fileView ? fileView->selectedItems() : 0L );
     }
-    
+
     /**
      * @returns true if @p item is currently selected, or false otherwise.
      */
@@ -263,7 +290,7 @@ class KDirOperator : public QWidget
      * Returns 0 if there is no view.
      */
     int numDirs() const;
-    
+
     /**
      * @returns the number of files in the currently listed url.
      * Returns 0 if there is no view.
@@ -424,18 +451,18 @@ protected:
      * Sets a custom KFileReader to list directories.
      */
     void setFileReader( KFileReader *reader );
-    
+
     /**
      * @reimplemented
      */
     void resizeEvent( QResizeEvent * );
-    
+
     /**
-     * Sets up all the actions. Called from the constructor, you usually 
+     * Sets up all the actions. Called from the constructor, you usually
      * better not call this.
      */
     void setupActions();
-    
+
     /**
      * Updates the sorting-related actions to comply with the current sorting
      * @see #sorting
@@ -443,7 +470,7 @@ protected:
     void updateSortActions();
 
     /**
-     * Updates the view-related actions to comply with the current 
+     * Updates the view-related actions to comply with the current
      * KFile::FileView
      */
     void updateViewActions();
@@ -455,10 +482,10 @@ protected:
     void setupMenu();
 
     /**
-     * Synchronizes the completion objects with the entries of the 
+     * Synchronizes the completion objects with the entries of the
      * currently listed url.
      *
-     * Automatically called from @ref makeCompletion() and 
+     * Automatically called from @ref makeCompletion() and
      * @ref makeDirCompletion()
      */
     void prepareCompletionObjects();
@@ -479,7 +506,7 @@ public slots:
      * Goes one step forward in the history and opens that url.
      */
     void forward();
-    
+
     /**
      * Enters the home directory.
      */
@@ -511,7 +538,7 @@ public slots:
      * actions.
      */
     void updateSelectionDependentActions();
-    
+
     /**
      * Tries to complete the given string (only completes files).
      */
@@ -536,7 +563,7 @@ protected slots:
     void readNextMimeType();
 
     /**
-     * Called after @ref setURL() to load the directory, update the history, 
+     * Called after @ref setURL() to load the directory, update the history,
      * etc.
      */
     void pathChanged();
@@ -736,7 +763,7 @@ private slots:
     void slotViewActionAdded( KAction * );
     void slotViewActionRemoved( KAction * );
     void slotViewSortingChanged();
-    
+
     void slotProperties();
 
 private:

@@ -75,6 +75,9 @@ void KCombiView::insertSorted(KFileViewItem *tfirst, uint)
 
     KFileViewItem *tmp;
 
+    if ( !right )
+        kdFatal() << "You need to call setRight( someview ) before!" << endl;
+
     for (KFileViewItem *it = tfirst; it;) {
 	tmp = it->next();
 
@@ -119,37 +122,44 @@ void KCombiView::insertItem( KFileViewItem * )
 
 void KCombiView::setSorting( QDir::SortSpec sort )
 {
-    kdDebug(kfile_area) << "KCombiView::setSorting " << (int)sort << " " << name() << endl;
+    if ( !right )
+        kdFatal() << "You need to call setRight( someview ) before!" << endl;
     right->setSorting( sort );
 }
 
 void KCombiView::sortReversed()
 {
+    if ( !right )
+        kdFatal() << "You need to call setRight( someview ) before!" << endl;
     right->sortReversed();
 }
 
 void KCombiView::clearView()
 {
     left->clearView();
-    right->clearView();
+    if ( right )
+        right->clearView();
 }
 
 void KCombiView::updateView( bool b )
 {
     left->updateView( b );
-    right->updateView( b );
+    if ( right )
+        right->updateView( b );
 }
 
 void KCombiView::updateView( const KFileViewItem *i )
 {
     left->updateView( i );
-    right->updateView( i );
+    if ( right )
+        right->updateView( i );
 }
 
 void KCombiView::removeItem( const KFileViewItem *i )
 {
     left->removeItem( i );
-    right->removeItem( i );
+    if ( right )
+        right->removeItem( i );
     KFileView::removeItem( i );
 }
 
@@ -157,18 +167,21 @@ void KCombiView::clear()
 {
     KFileView::clear();
     left->KFileView::clear();
-    right->clear();
+    if ( right )
+        right->clear();
 }
 
 void KCombiView::clearSelection()
 {
     left->clearSelection();
-    right->clearSelection();
+    if ( right )
+        right->clearSelection();
 }
 
 bool KCombiView::isSelected( const KFileViewItem *item ) const
 {
-    return (left->isSelected( item ) || right->isSelected( item ));
+    assert( right ); // for performance reasons no if ( right ) check.
+    return (right->isSelected( item ) || left->isSelected( item ));
 }
 
 void KCombiView::setSelectionMode( KFile::SelectionMode sm )
@@ -176,13 +189,16 @@ void KCombiView::setSelectionMode( KFile::SelectionMode sm )
     // I think the left view (directories should always be in
     // Single-Mode, right?
     // left->setSelectionMode( sm );
+    if ( !right )
+        kdFatal() << "You need to call setRight( someview ) before!" << endl;
     right->setSelectionMode( sm );
 }
 
 void KCombiView::setSelected( const KFileViewItem *item, bool enable )
 {
     left->setSelected( item, enable );
-    right->setSelected( item, enable );
+    if ( right )
+        right->setSelected( item, enable );
 }
 
 void KCombiView::selectDir(const KFileViewItem* item)
@@ -208,7 +224,8 @@ void KCombiView::activatedMenu(const KFileViewItem *item)
 void KCombiView::ensureItemVisible(const KFileViewItem *item)
 {
     left->ensureItemVisible( item );
-    right->ensureItemVisible( item );
+    if ( right )
+        right->ensureItemVisible( item );
 }
 
 // ***************************************************************************

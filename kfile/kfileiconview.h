@@ -31,6 +31,10 @@ class QLabel;
 
 #include <kfile.h>
 
+/**
+ * An item for the iconview, that has a reference to its corresponding
+ * @ref KFileViewItem.
+ */
 class KFileIconViewItem : public QIconViewItem
 {
 public:
@@ -41,6 +45,9 @@ public:
 
     virtual ~KFileIconViewItem();
 
+    /**
+     * @returns the corresponding KFileViewItem
+     */
     const KFileViewItem *fileInfo() const {
 	return inf;
     }
@@ -54,6 +61,14 @@ private:
 
 };
 
+/**
+ * An icon-view capable of showing @ref KFileViewItems. Used in the filedialog
+ * for example. Most of the documentation is in @ref KFileView class.
+ *
+ * @see KDirOperator
+ * @see KCombiView
+ * @see KFileDetailView
+ */
 class KFileIconView : public KIconView, public KFileView
 {
     Q_OBJECT
@@ -77,7 +92,14 @@ public:
     virtual bool isSelected(const KFileViewItem *i) const;
     virtual void clearSelection();
 
+    /**
+     * Sets the size of the icons to show. Defaults to @ref KIcon::SizeSmall.
+     */
     void setIconSize( int size );
+
+    /**
+     * @returns the current size used for icons.
+     */
     int iconSize() const { return myIconSize; }
 
     void ensureItemVisible( const KFileViewItem * );
@@ -115,7 +137,7 @@ private:
 
     void readConfig();
     void writeConfig();
-    
+
 private:
     class KFileIconViewPrivate;
     KFileIconViewPrivate *d;

@@ -27,6 +27,10 @@ class QWidget;
 #include <klistview.h>
 #include "kfileview.h"
 
+/**
+ * An item for the listiew, that has a reference to its corresponding
+ * @ref KFileViewItem.
+ */
 class KFileListViewItem : public QListViewItem
 {
 public:
@@ -43,6 +47,9 @@ public:
 	    setText( 0, text );
     }
 
+    /**
+     * @returns the corresponding KFileViewItem
+     */
     const KFileViewItem *fileInfo() const {
 	return inf;
     }
@@ -56,11 +63,16 @@ private:
 
 };
 
+/**
+ * A list-view capable of showing @ref KFileViewItems. Used in the filedialog
+ * for example. Most of the documentation is in @ref KFileView class.
+ *
+ * @see KDirOperator
+ * @see KCombiView
+ * @see KFileIconView
+ */
 class KFileDetailView : public KListView, public KFileView
 {
-    friend class KSimpleCombiView;
-    friend class KDetailCombiView;
-
     Q_OBJECT
 
 public:

@@ -37,6 +37,18 @@ class QIconViewItem;
  *
  * Methods like selectedItems() to query status _only_ work on the right side,
  * i.e. on the files.
+ *
+ * After creating the KCombiView, you need to supply the view shown in the
+ * right, (see @ref setRight()). Available KFileView implementations are
+ * @ref KFileIconView and @ref KFileDetailView.
+ *
+ * Most of the below methods are just implementations of the baseclass
+ * @ref KFileView, so look there for documentation.
+ *
+ * @see KFileView
+ * @see KFileIconView
+ * @see KFileDetailView
+ * @see KDirOperator
  */
 class KCombiView : public QSplitter,
 		   public KFileView
@@ -53,7 +65,11 @@ public:
     virtual void updateView( bool );
     virtual void updateView(const KFileViewItem*);
     virtual void removeItem( const KFileViewItem * );
-    
+
+    /**
+     * Sets the view to be shown in the right. You need to call this before
+     * doing anything else with this widget.
+     */
     void setRight(KFileView *view);
 
     virtual void setSelectionMode( KFile::SelectionMode sm );
