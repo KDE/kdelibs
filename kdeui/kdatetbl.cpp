@@ -36,10 +36,13 @@
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kapplication.h>
+#include <kaccel.h>
 #include <klocale.h>
 #include <kdebug.h>
 #include <knotifyclient.h>
 #include <kcalendarsystem.h>
+#include <kshortcut.h>
+#include <kstdaccel.h>
 #include "kdatepicker.h"
 #include "kdatetbl.h"
 #include "kpopupmenu.h"
@@ -127,6 +130,7 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   setVScrollBarMode(AlwaysOff);
   viewport()->setEraseColor(KGlobalSettings::baseColor());
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
+  initAccels();
 }
 
 KDateTable::KDateTable(QWidget *parent, const char* name, WFlags f)
@@ -141,11 +145,24 @@ KDateTable::KDateTable(QWidget *parent, const char* name, WFlags f)
   setVScrollBarMode(AlwaysOff);
   viewport()->setEraseColor(KGlobalSettings::baseColor());
   setDate(QDate::currentDate()); // this initializes firstday, numdays, numDaysPrevMonth
+  initAccels();
 }
 
 KDateTable::~KDateTable()
 {
   delete d;
+}
+
+void KDateTable::initAccels()
+{
+  KAccel* accel = new KAccel(this, "date table accel");
+  accel->insert(KStdAccel::Next, this, SLOT(nextMonth()));
+  accel->insert(KStdAccel::Prior, this, SLOT(previousMonth()));
+  accel->insert(KStdAccel::Home, this, SLOT(beginningOfMonth()));
+  accel->insert(KStdAccel::End, this, SLOT(endOfMonth()));
+  accel->insert(KStdAccel::BeginningOfLine, this, SLOT(beginningOfWeek()));
+  accel->insert(KStdAccel::EndOfLine, this, SLOT(endOfWeek()));
+  accel->readSettings();
 }
 
 int KDateTable::posFromDate( const QDate &dt )
@@ -304,63 +321,78 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   if(rect.height()>maxCell.height()) maxCell.setHeight(rect.height());
 }
 
+void KDateTable::nextMonth()
+{
+    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+  setDate(calendar->addMonths( date, 1 ));
+}
+
+void KDateTable::previousMonth()
+{
+  const KCalendarSystem * calendar = KGlobal::locale()->calendar();
+  setDate(calendar->addMonths( date, -1 ));
+}
+
+void KDateTable::beginningOfMonth()
+{
+  setDate(date.addDays(1 - date.day()));
+}
+
+void KDateTable::endOfMonth()
+{
+  setDate(date.addDays(date.daysInMonth() - date.day()));
+}
+
+void KDateTable::beginningOfWeek()
+{
+  setDate(date.addDays(1 - date.dayOfWeek()));
+}
+
+void KDateTable::endOfWeek()
+{
+  setDate(date.addDays(7 - date.dayOfWeek()));
+}    
+
 void
 KDateTable::keyPressEvent( QKeyEvent *e )
 {
-    const KCalendarSystem * calendar = KGlobal::locale()->calendar();
-    QDate temp = date;
-
     switch( e->key() ) {
-    case Key_Prior:
-        temp = calendar->addMonths( date, -1 );
-        setDate(temp);
-        return;
-    case Key_Next:
-        temp = calendar->addMonths( date, 1 );
-        setDate(temp);
-        return;
     case Key_Up:
-        if ( calendar->day(date) > 7 ) {
             setDate(date.addDays(-7));
-            return;
-        }
         break;
     case Key_Down:
-        if ( calendar->day(date) <= calendar->daysInMonth(date)-7 ) {
             setDate(date.addDays(7));
-            return;
-        }
         break;
     case Key_Left:
-        if ( calendar->day(date) > 1 ) {
             setDate(date.addDays(-1));
-            return;
-        }
         break;
     case Key_Right:
-        if ( calendar->day(date) < calendar->daysInMonth(date) ) {
             setDate(date.addDays(1));
-            return;
-        }
         break;
     case Key_Minus:
         setDate(date.addDays(-1));
-        return;
+	break;
     case Key_Plus:
         setDate(date.addDays(1));
-        return;
+	break;
     case Key_N:
         setDate(QDate::currentDate());
-        return;
+	break;
     case Key_Return:
     case Key_Enter:
         emit tableClicked();
-        return;
-    default:
         break;
-    }
-
+    case Key_Control:
+    case Key_Alt:
+    case Key_Meta:
+    case Key_Shift:
+      // Don't beep for modifiers
+      break;
+    default:
+      if (!e->state()) { // hm
     KNotifyClient::beep();
+}
+    }
 }
 
 void

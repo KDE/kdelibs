@@ -20,6 +20,8 @@
 #ifndef KDATETBL_H
 #define KDATETBL_H
 
+// KDE4: rename this file to kdatetable.h
+
 #include <qvalidator.h>
 #include <qgridview.h>
 #include <qlineedit.h>
@@ -208,9 +210,9 @@ public:
   /**
    * Execute the popup window.
    */
-  int exec(QPoint p);
+  int exec(QPoint p); // KDE4: const QPoint&
   /**
-   * Dito.
+   * Execute the popup window.
    */
   int exec(int x, int y);
 
@@ -289,7 +291,7 @@ public:
      * Select and display this date.
      */
     bool setDate(const QDate&);
-    // ### 4.0 rename to date()
+    // ### KDE 4.0 rename to date()
     const QDate& getDate() const;
 
     /**
@@ -410,11 +412,21 @@ signals:
      */
     void aboutToShowContextMenu( KPopupMenu * menu, const QDate &date);
 
+private slots:
+  void nextMonth();
+  void previousMonth();
+  void beginningOfMonth();
+  void endOfMonth();
+  void beginningOfWeek();
+  void endOfWeek();
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
     class KDateTablePrivate;
     KDateTablePrivate *d;
+  
+  void initAccels();
 };
 
 #endif // KDATETBL_H
