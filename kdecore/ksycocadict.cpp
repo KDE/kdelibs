@@ -26,7 +26,7 @@
 
 struct string_entry {
   string_entry(QString _key, KSycocaEntry *_payload) 
-     { keyStr = _key; key = keyStr.unicode(); length = keyStr.length(); payload = _payload; hash = 0;}
+  { keyStr = _key; key = keyStr.unicode(); length = keyStr.length(); payload = _payload; hash = 0; }
   uint hash;
   int length;
   const QChar *key;
@@ -179,7 +179,6 @@ calcDiversity(KSycocaDictStringList *d, int pos, int sz)
 {
    if (pos == 0) return 0;
    bool *matrix = (bool *) calloc(sz, sizeof(bool));
-   memset(matrix, 0, sizeof(bool) * sz);
    uint usz = sz;
 
    if (pos < 0)
@@ -188,7 +187,7 @@ calcDiversity(KSycocaDictStringList *d, int pos, int sz)
       for(string_entry *entry=d->first(); entry; entry = d->next())
       {
 	register int l = entry->length;
-         if (pos < l)
+         if (pos < l && pos != 0)
          {
            register uint hash = ((entry->hash * 13) + (entry->key[l-pos].cell() % 29)) & 0x3ffffff;
 	   matrix[ hash % usz ] = true;
