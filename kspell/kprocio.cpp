@@ -22,7 +22,7 @@ KProcIO::KProcIO ( QTextCodec *_codec)
      codec = QTextCodec::codecForName("ISO 8859-1");
      if (!codec)
      {
-        kdebug(KDEBUG_ERROR, 0, "Can't create ISO 8859-1 codec!");
+        kDebugError( 0, "Can't create ISO 8859-1 codec!");
      }
   }
 }
@@ -68,33 +68,33 @@ bool KProcIO::writeStdin (const QString &line, bool appendnewline)
 
   qlist.append (qs.data());
 
-  //  kdebug(KDEBUG_INFO, 750, "KPIO::write [%s],[%s]", buffer, qlist.current());
+  //kDebugInfo( 750, "KPIO::write [%s],[%s]", buffer, qlist.current());
 
   if (writeready)
     {
-      //kdebug(KDEBUG_INFO, 750, "really writing");
+      kDebugInfo( 750, "really writing");
       writeready=FALSE;
       return KProcess::writeStdin (qlist.current(),
 				   strlen (qlist.current()));
     }
-  //  kdebug(KDEBUG_INFO, 750, "NOT really writing");
+  kDebugInfo( 750, "NOT really writing");
   return TRUE;
 }
 
 void KProcIO::sent (KProcess *)
 {
-  //  if (qlist.first())     kdebug(KDEBUG_INFO, 750, "KP::sent [%s]",qlist.first());
+  if (qlist.first())     kDebugInfo( 750, "KP::sent [%s]",qlist.first());
 
   qlist.removeFirst();
 
   if (qlist.count()==0)
     {
-      //      kdebug(KDEBUG_INFO, 750, "Empty");
+            kDebugInfo( 750, "Empty");
       writeready=TRUE;
     }
   else
     {
-      //kdebug(KDEBUG_INFO, 750, "Sending [%s]", qlist.first());
+      kDebugInfo( 750, "Sending [%s]", qlist.first());
       KProcess::writeStdin (qlist.first(), strlen (qlist.first()));
     }
 
@@ -106,7 +106,7 @@ void KProcIO::received (KProcess *, char *buffer, int buflen)
 
   buffer [buflen]='\0';
 
-  //kdebug(KDEBUG_INFO, 750, "KPIO: recv'd [%s]",buffer);
+  kDebugInfo( 750, "KPIO: recv'd [%s]",buffer);
 
   for (i=0;i<buflen;i++)
     recvbuffer+=buffer [i];
@@ -153,7 +153,7 @@ int KProcIO::readln (QString &line, bool autoAck)
 
   len=recvbuffer.find ('\n',rbi)-rbi;
 
-  //kdebug(KDEBUG_INFO, 750, "KPIO::readln\n");
+  kDebugInfo( 750, "KPIO::readln\n");
 
   //in case there's no '\n' at the end of the buffer
   if (len<0 && (unsigned int)rbi<recvbuffer.length())
