@@ -229,7 +229,7 @@ public:
    */
   virtual void end();
 
-  /**
+  /*
    * Print current HTML page layouted for the printer.
    * (not implemented at the moment)
    */

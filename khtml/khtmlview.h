@@ -80,28 +80,19 @@ public:
     int frameWidth() const { return _width; }
 
 
-    /**
-     * should the widget follow links automatically, if you click on them?
-     * Default is true.
-     */
-    //    void setFollowsLinks( bool follow );
-    /** does the widget follow links automatically?
-     */
-    //    bool followsLinks();
-
-    /**
+    /*
      * @return the width of the parsed HTML code. Remember that
      * the documents width depends on the width of the widget.
      */
     //    int docWidth() const;
 
-    /**
+    /*
      * @return the height of the parsed HTML code. Remember that
      * the documents height depends on the width of the widget.
      */
     //    int docHeight() const;
 
-    /**
+    /*
      * Causes the widget contents to scroll automatically.  Call
      * @ref #stopAutoScrollY to stop.  Stops automatically when the
      * top or bottom of the document is reached.
@@ -114,12 +105,12 @@ public:
      */
     //    void autoScrollY( int _delay, int _dy );
 
-    /**
+    /*
      * Stops the document from @ref #autoScrollY ing.
      */
     //void stopAutoScrollY();
 
-    /**
+    /*
      * Returns if the widget is currently auto scrolling.
      */
     //    bool isAutoScrollingY()
@@ -136,7 +127,7 @@ public:
      */
     const QCursor& urlCursor() const { return linkCursor; }
 
-    /**
+    /*
      * set a margin in x direction
      */
     //    void setMarginWidth(int x) { _marginWidth = x; }
@@ -145,11 +136,11 @@ public:
      */
      int marginWidth() const { return _marginWidth; }
 
-    /**
+    /*
      * set a margin in y direction
      */
     //    void setMarginHeight(int y) { _marginHeight = y; }
-    /**
+    /*
      * @return the margin height
      */
     //    int marginHeight() { return _marginHeight; }
@@ -192,7 +183,7 @@ protected:
 protected:
     // ------------------------------------- member variables ------------------------------------
 
-    /*
+    /**
      * List of all open browsers.
      */
     static QList<KHTMLView> *lstViews;
