@@ -124,7 +124,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
                               "<em>(see WebBrowsing/Cookies in the Control Center)</em>." ) );
 #endif
     m_btnGrp->insert( rb );
-    rb = new QRadioButton( i18n("All cookies from this &domain"), m_btnGrp );
+    rb = new QRadioButton( i18n("All cookies from this do&main"), m_btnGrp );
 #ifndef QT_NO_WHATSTHIS
     QWhatsThis::add( rb, i18n("Select this option to accept/reject all cookies from "
                               "this site. Choosing this option will add a new policy for "
@@ -149,25 +149,31 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookie* cookie,
         m_btnGrp->setButton( 0 );
 
     // Accept/Reject buttons
-    hBox = new QHBox( this );
-    hBox->setSpacing( KDialog::spacingHint() );
-    m_button = new QPushButton( i18n("&Accept"), hBox );
-    m_button->setDefault( true );
-    connect( m_button, SIGNAL(clicked()), SLOT(accept()) );
-    m_button = new QPushButton( i18n("&Reject"), hBox );
-    connect( m_button, SIGNAL(clicked()), SLOT(reject()) );
-#ifndef QT_NO_ACCEL
-    QAccel* a = new QAccel( this );
-    a->connectItem( a->insertItem(Qt::Key_Escape), m_button, SLOT(animateClick()) );
-#endif
-    m_button = new QPushButton( hBox );
+    QWidget* bbox = new QWidget( this );
+    QBoxLayout* bbLay = new QHBoxLayout( bbox );
+    bbLay->setSpacing( KDialog::spacingHint() );
+    m_button = new QPushButton( bbox );
     m_button->setText( m_showDetails ? i18n("&Details <<"):i18n("&Details >>") );
     connect( m_button, SIGNAL(clicked()), SLOT(slotCookieDetails()) );
+    bbLay->addWidget( m_button );
+    bbLay->addStretch( 1 );    
+    QPushButton* btn = new QPushButton( i18n("&Accept"), bbox );
+    btn->setDefault( true );
+    connect( btn, SIGNAL(clicked()), SLOT(accept()) );
+    bbLay->addWidget( btn );
+    btn = new QPushButton( i18n("&Reject"), bbox );
+    connect( btn, SIGNAL(clicked()), SLOT(reject()) );
+    bbLay->addWidget( btn );
+#ifndef QT_NO_ACCEL
+    QAccel* a = new QAccel( this );
+    a->connectItem( a->insertItem(Qt::Key_Escape), btn, SLOT(animateClick()) );
+#endif
+    
 
 #ifndef QT_NO_WHATSTHIS
-    QWhatsThis::add( m_button, i18n("Show/Hide detailed cookie information") );
+    QWhatsThis::add( btn, i18n("See or modify the cookie information") );
 #endif
-    vlayout->addWidget( hBox, 0, Qt::AlignCenter );
+    vlayout->addWidget( bbox );
     setFixedSize( sizeHint() );
 }
 
