@@ -23,8 +23,6 @@
 #ifndef _KTOOLBAR_H
 #define _KTOOLBAR_H
 
-
-#include <qlist.h>
 #include <qlist.h>
 #include <qframe.h>
 #include <qpixmap.h>
@@ -43,104 +41,70 @@
 
 class KToolBar;
 
-/**
- * This is internal class for use in toolbar
- *
- * @short Internal Combobox class for toolbar
- */
-class KToolBarCombo : public KCombo
- {
-   Q_OBJECT
+#define Item QWidget
 
- public:
-   KToolBarCombo (bool wr, int ID,
-                  QWidget *parent, const char *name=0);
-
-   void enable (bool enable);
-   int ID() {return id;};
-   bool isRight () {return right;};
-   void alignRight (bool flag) {right = flag;};
-   void autoSize (bool flag) {autoSized = flag;};
-   bool isAuto ()  {return autoSized;};
-   
- protected:
-   int id;
-   bool right;
-   bool autoSized;
- };
-/**
- * This is internal class for use in toolbar
- *
- * @short Internal Frame class for toolbar
- */
-class KToolBarFrame : public QFrame
- {
-   Q_OBJECT
-
- public:
-   KToolBarFrame (int ID, QWidget *parent, const char *name=0);
-
-   void enable (bool enable);
-   int ID() {return id;};
-   bool isRight () {return right;};
-   void alignRight (bool flag) {right = flag;};
-   void autoSize (bool flag) {autoSized = flag;};
-   bool isAuto ()  {return autoSized;};
-   
- protected:
-   int id;
-   bool right;
-   bool autoSized;
- };
-     
-/**
- * This is internal class for use in toolbar
- *
- * @short Internal Lined class for toolbar
- */
-class KToolBarLined : public KLined
- {
-   Q_OBJECT
- public:
-   KToolBarLined (const char *text, int ID,
-                  QWidget *parent, const char *name=0);
-   void enable (bool enable);
-   int ID() {return id;};
-   bool isRight () {return right;};
-   void alignRight (bool flag) {right = flag;};
-   void autoSize (bool flag) {autoSized = flag;};
-   bool isAuto ()  {return autoSized;};
-   
- protected:
-   int id;
-   bool right;
-   bool autoSized;
+enum itemType {
+    ITEM_LINED = 0,
+    ITEM_BUTTON = 1,
+    ITEM_COMBO = 2,
+    ITEM_FRAME = 3,
+    ITEM_TOGGLE = 4,
+    ITEM_ANYWIDGET=5
 };
 
-/**
- * This is internal class for use in toolbar
- *
- * @short Internal Button class for toolbar
- */
+class KToolBarItem
+{
+public:
+  KToolBarItem (Item *_item, itemType _type, int _id,
+                bool _myItem=true);
+  ~KToolBarItem ();
+    
+  void resize (int w, int h) { item->resize(w, h); };
+  void move(int x, int y) { item->move(x, y); };
+  void show () { item->show(); };
+  void hide () { item->hide(); };
+  void setEnabled (bool enable) { item->setEnabled(enable); };
+  bool isEnabled () { return item->isEnabled(); };
+  int ID() { return id; };
+  bool isRight () { return right; };
+  void alignRight  (bool flag) { right = flag; };
+  void autoSize (bool flag) { autoSized = flag; };
+  bool isAuto ()  { return autoSized; };
+  int width() { return item->width(); };
+  int height() { return item->height(); };
+  int x() { return item->x(); };
+  int y() { return item->y(); };
+  int winId () { return item->winId(); };
+  
+  Item *getItem() { return item; };
+  
+private:
+  int id;
+  bool right;
+  bool autoSized;
+  Item *item;
+  itemType type;
+  bool myItem;
+};
+
 class KToolBarButton : public QButton
  {
    Q_OBJECT
 
  public:
-   KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent,
+   KToolBarButton(const QPixmap& pixmap, int id, QWidget *parent,
                   const char *name=0L, int item_size = 26, const char *txt=0);
    KToolBarButton(QWidget *parent=0L, const char *name=0L);
    ~KToolBarButton() {};
-   void enable(bool enable);
+   void setEnabled(bool enable);
    void makeDisabledPixmap();
    
    void setPixmap( const QPixmap & );
-   int ID() {return id;};
-   bool isRight () {return right;};
-   void alignRight (bool flag) {right = flag;};
    void on(bool flag);
    void toggle();
    void beToggle(bool);
+   bool ImASeparator () {return sep;};
+   void youreSeparator () {sep = true;};
 
  public slots:
    void modeChange();
@@ -152,13 +116,13 @@ class KToolBarButton : public QButton
    void drawButton(QPainter *p);
    
  private:
-   int id;
+   bool sep;
    QPixmap enabledPixmap;
    QPixmap disabledPixmap;
-   bool right;
    int icontext;
    int highlight;
    bool raised;
+   int id;
    int _size;
    KToolBar *parentWidget;
    QString btext;
@@ -182,14 +146,15 @@ class KToolBarButton : public QButton
  * It is usually managed from KTopLevelWidget, but can be
  * used even if you don't use KTopLevelWidget. If you want
  * to handle this without KTopLevelWidget, see updateRects .<BR>
- * KToolBar can contain buttons Line inputs Combo Boxes, and frames
- * Combos, Frames and Lineds can be  autosized to full width. Items
- * can be right aligned, and buttons can be toggle buttons. Item height,
- * type of buttons (icon pr icon+text), and option for highlighting is
- * adjustable on constructor invocation by reading global config file.
+ * KToolBar can contain buttons Line inputs Combo Boxes, frames, and
+ * custom widgets.
+ * Combos, Frames and Lineds, and Widgets can be  autosized to full width.
+ * Any Item can be right aligned, and buttons can be toggle buttons. Item
+ * height,  type of buttons (icon or icon+text), and option for highlighting
+ * is adjustable on constructor invocation by reading global config file.
  * Toolbar will reread config-file when it recieves signal
  * Kapplication:appearanceChanged.
- * Toolbar can float, dragged from and docked back to parent window.
+ * Toolbar can float, be dragged from and docked back to parent window.
  * It autoresizes itself. This may lead to
  * some flickering, but there is no way to solve it (as far as I
  * know). <BR>
@@ -197,7 +162,7 @@ class KToolBarButton : public QButton
  * You normaly use toolbar from subclassed KTopLevelWidget. When
  * you create toolbar object, insert items that you want to be in it.
  * Items can be inserted or removed ( removeItem() ) later, when toolbar
- * is displayed. It will updte itself.
+ * is displayed. It will update itself.
  * Then set their propperties ( alignItemRight , setItemAutoSized ,
  * setToggle ...) After that set the toolbar itself, enable ,setBarPos ...).
  * Then simply do addToolbar (toolbar),
@@ -241,9 +206,9 @@ public:
                    const char *ToolTipText = 0L, int index=-1 );
   /**
    * This is the same as above, but with specified signals and
-   * slots to which this button will be connected. KButton emits
+   * slots to which this button will be connected. Button emits
    * signals pressed, clicked and released, and
-   * if toolbar is toggle button (@ref #setToggle ) @ref #toggled .
+   * if toolbar is toggle button ( @ref #setToggle ) @ref #toggled .
    * You can add more signals with @ref #addConnection .
    * If you want to bound an popup to button  @ref #setButton
    * @return Returns item index
@@ -304,13 +269,26 @@ public:
   int insertSeparator(int index=-1);
 
   /**
-   * Inserts frame with specified width. You can get pointer
-   * to this frame with @ref #getFrame
+   * This function is deprecated and will be removed. Use @ref #insertWidget
+   * to insert anything.
+   * Inserts frame with specified width. If _frame is not specified,
+   * it will be created. In that case you must not delete it. You can get
+   * pointer to this frame with @ref #getFrame
    * Frame can be autosized to full width.
    * @see #setItemAutoSized
    * @return Returns item index
    */
-  int insertFrame(int id, int width, int index =-1);
+  int insertFrame(int id, int width, QFrame *_frame=0, int index =-1);
+
+  /**
+   * Insert a user defined widget. Widget must have a QWidget for
+   * base class.
+   * Widget can be autosized to full width. If you forget about it, you
+   * can get pointer to this widget with @ref #getWidget .
+   * @see #setItemAutoSized
+   * @return Returns item index
+   */
+  int insertWidget(int id, int width, QWidget *_widget, int index=-1);
 
   /**
    * This adds connection to items. Therefore it is important that you
@@ -426,6 +404,7 @@ public:
    * Returns text of item index from Combo id.
    * index = -1 means current item
    */
+
   const char *getComboItem (int id, int index=-1);
 
   /**
@@ -438,7 +417,7 @@ public:
    * of @ref QComboBox plus two signals
    *
    */
-  KToolBarCombo * getCombo(int id);
+  KCombo * getCombo(int id);
   
   /**
    * This returns pointer to KToolBarLined. Example:
@@ -449,7 +428,7 @@ public:
    * that @ref KLined provides. @ref KLined is the same thing
    * as @ref QLineEdit plus completion signals.
    */  
-  KToolBarLined * getLined (int id);
+  KLined * getLined (int id);
 
   /**
    * This returns a pointer to KToolBarButton. Example:
@@ -469,10 +448,34 @@ public:
   void alignItemRight (int id, bool right = true);
 
   /**
+   * Returns pointer to inserted frame. Wrong ids are not tested.
+   * Example:
+   * <pre>
+   * QFrame *frame = toolbar->getframe (frameid);
+   * </pre>
+   * You can do with this frame whatever you want,
+   * except change its height (hardcoded). If you change its width
+   * you will probbably have to call toolbar->@ref #updateRects (true)
+   * @see QFrame
+   * @see #updateRects
+   */
+  QFrame * getFrame (int id);
+
+  /**
+   * Returns pointer to inserted widget. Wrong ids are not tested.
+   * You can do with this whatever you want,
+   * except change its height (hardcoded). If you change its width
+   * you will probbably have to call toolbar->@ref #updateRects (true)
+   * @see QWidget
+   * @see #updateRects
+   */
+  QWidget *getWidget (int id);
+  
+  /**
    * Sets item autosized. This works only if toolbar is set to full width.
    * ONLY ONE item can be autosized, and it has to be
    * the last left-aligned item. Items that come after this must be right
-   * aligned. Items that can be right aligned are Lineds, Frames, and
+   * aligned. Items that can be right aligned are Lineds, Frames, Widgets and
    * Combos. Auto sized item will resize itself whenever toolbar geometry
    * changes, to last right-aligned item (or till end of toolbar if there
    * are no right aligned items
@@ -482,25 +485,20 @@ public:
   void setItemAutoSized (int id, bool yes = true);
 
   /**
-   * Returns pointer to inserted frame, or 0 if id is wrong, or
-   * if item id is not a frame, or if there is no frame inserted.
-   * Example:
-   * <pre>
-   * QFrame *frame = toolbar->getframe (frameid);
-   * </pre>
-   * You can do with this frame whatever you want,
-   * except changing its height (hardcoded). If you change its width
-   * you will probbably have to call toolbar->@ref #updateRects (true)
-   * @see QFrame
-   * @see #updateRects
-   */
-  KToolBarFrame * getFrame (int id);
-
-  /**
    * Removes item id.
    * Item is deleted. Toolbar is redrawn after it.
    */
   void removeItem (int id);
+
+  /**
+   * Hides item.
+   */
+  void hideItem (int id);
+
+  /**
+   * shows item.
+   */
+  void showItem (int id);
   
   /**
    * Sets toolbar to full parent width (or to value set by setMaxWidth).
@@ -607,29 +605,6 @@ public:
   QSize sizeHint();
     
   // OLD  INTERFACE
-  
-  /**
-   * This is provided for compatibility with old KToolBar. Writes
-   * a warning, and calls @ref #InsertButton
-   *
-   */
-  int insertItem(const QPixmap& pixmap, int ID, bool enabled = true,
-               char *ToolTipText = 0L, int index=-1 );
-
-  /**
-   * This is provided for compatibility with old KToolBar. Writes
-   * a warning, and calls @ref #InsertButton
-   */
-  int insertItem(const QPixmap& pixmap, int ID, const char *signal,
-               const QObject *receiver, const char *slot,
-               bool enabled = true,
-               char *tooltiptext = 0L, int index=-1 );
-
-  /**
-   * This is provided for compatibility with old KToolBar. Writes
-   * a warning, and calls @ref #setButtonPixmap
-   */
-  void setItemPixmap( int id, const QPixmap& _pixmap );
 
 signals:
     /**
@@ -672,7 +647,7 @@ signals:
     void moved( BarPosition );
 
     /**
-     * Internal This signal is emited when toolbar detects changing of
+     * Internal. This signal is emited when toolbar detects changing of
      * following parameters:
      * highlighting, button-size, button-mode. This signal is
      * internal, aimed to buttons.
@@ -681,11 +656,7 @@ signals:
   
 private:
     
-  QList <QWidget> items;
-  int getType(QWidget *w);
-  int getID (QWidget *w);
-  bool isItemRight (QWidget *w);
-  bool isItemAutoSized(QWidget *w);
+  QList<KToolBarItem> items;
 
   const char *title;
   bool fullWidth;
@@ -728,6 +699,7 @@ protected slots:
   void ButtonClicked(int);
   void ButtonPressed(int);
   void ButtonReleased(int);
+  void ButtonToggled(int);
   void ContextCallback(int);
   void slotReadConfig ();
 

@@ -19,66 +19,64 @@
 */
 #ifndef _KSTATUSBAR_H
 #define _KSTATUSBAR_H
-
+#include <qtimer.h>
 #include <qframe.h>
 #include <qstring.h> 
 #include <qlist.h>
 #include <qlabel.h> 
 
 /**
-       * Internal class for use in KStatusBar
-       * @short Internal class for use in KStatusBar
-       */
-class KStatusBarItem : public QLabel {
+ * Internal item class for use in KStatusBar
+ * @short Internal class for use in KStatusBar
+ */
+class KStatusBarItem
+{
+public:
+  KStatusBarItem (QWidget *w, int i, bool m=false) {item=w;id=i;mine=m;};
+  ~KStatusBarItem () {if (mine) delete item;};
+  void setGeometry (int x, int y, int w, int h) {item->setGeometry(x,y,w,h);};
+  int width() {return item->width();};
+  int height() {return item->height();};
+  void show() {item->show();};
+  void hide() {item->hide();};
+  int ID() {return id;};
+  QWidget *getItem() { return item;};
+  
+private:
+  int id;
+  QWidget *item;
+  bool mine;
+};
+
+
+/**
+ * Internal label class for use in KStatusBar
+ * @short Internal class for use in KStatusBar
+ */
+class KStatusBarLabel : public QLabel {
   Q_OBJECT
 
 public:
 
-  KStatusBarItem( const char *text, int ID, QWidget *parent=0L,
+  KStatusBarLabel( const char *text, int ID, QWidget *parent=0L,
                   const char *name=0L );
-
-  /**
-	* Returns id of item. Internal
-	*/
-  int ID();
-
-  /**
-	* Store width and height of the KStatusBarItem
-	*/
+  ~KStatusBarLabel () {};
   int w,h;
   
 protected:
-
-  /**
-	* Internal. emits signal @ref pressed
-	*/
   void mousePressEvent(QMouseEvent *);
-
-  /**
-	* Internal. emits signal @ref released
-	*/
   void mouseReleaseEvent(QMouseEvent *);
 
 private:
-
-  /**
-	* Stores id
-	*/
   int id;
 
-  signals:
+signals:
 
-  /**
-	* Internal. Emits when mouse press occures
-	*/
   void Pressed(int);
-
-  /**
-	* Internal. Emits when mouse press occures
-	*/
   void Released(int);
-
 };
+
+
 /**
            * @short KDE statusbar with signals pressed and released
            */
@@ -94,56 +92,125 @@ public:
   ~KStatusBar();
 
   /**
-	* Enable disable status bar
-	*/
-  bool enable( BarStatus stat );
-	
-  /**
-	* Insert field into the status bar. When inserting the item send the
-	* longest text you expect to go into the field as the first argument.
-	* The field is sized to accomodate this text. However, the last field
-	* inserted is always stretched to fit the window width.
-	* @short Insert field into the status bar.
-	*/
+   * Insert text label into the status bar. When inserting the item send the
+   * longest text you expect to go into the field as the first argument.
+   * The field is sized to accomodate this text. However, the last field
+   * inserted is always stretched to fit the window width.
+   * @see #insertWidget
+   */
   int insertItem( const char *text, int ID );
-	
+
   /**
-	* Change the text in a status bar field. The field is not resized !!!
-	* @short Change the text in a status bar field.
-	*/
+   * Insert custom widget into the status bar. The widget must have statusbar as parent.
+   * The size is the width of
+   * the widget. However, the last item inserted is always stretched to fit
+   * the window width.
+   * @see #insertItem
+   */
+  int insertWidget (QWidget *_widget, int size, int id);
+
+  /**
+   * Removes item id. If that was your custom widget it's hidden
+   * but not deleted.
+   */
+  void removeItem (int id);
+
+  /**
+   * NOT YET IMPLEMENTED!
+   * Replaces item id with new label wich has text new_text. New
+   * label will have the same position and size as old. If old item was
+   * your custom widget it is not deleted. Note that it is rather pointless
+   * to replace one label by another; use @ref #changeItem for that.
+   */
+  void replaceItem(int _id, const char *new_text);
+
+  /**
+   * NOT YET IMPLEMENTED!
+   * Replaces item id with new widget new_widget. New widget will have the
+   * same position and size as old item. If old item was your custom widget
+   * it is not deleted.
+   */
+  
+  void replaceItem(int _id, QWidget *new_widget);
+
+  
+  /**
+   * Change the text in a status bar field. The field is not resized !!!
+   * Usefull only for labels.
+   */
   void changeItem( const char *text, int id );
 
   /** 
-	* If order is KStatusBar::LeftToRight the field are inserted from left
-	* to right, in particular the last field ist streched to the right
-	* border of the app. If order is KStatusBar::RightToLeft the fields
-	* are inserted from the right.
-	* @short Sets inserting order
-	*/
+   * If order is KStatusBar::LeftToRight the fields are inserted from left
+   * to right, in particular the last field ist streched to the right
+   * border of the window. If order is KStatusBar::RightToLeft the fields
+   * are inserted from the right.
+   */
   void setInsertOrder(InsertOrder order);
 
   /**
-	* Sets the alignment of a field. By default all fields are aligned left.
-	* @short Sets the alignment of a field.
-	*/
+   * Sets the alignment of a field. By default all fields are aligned left.
+   * Usefull only for labels.
+  */
   void setAlignment(int id, int align);
 
   /**
-	* Sets the Height of the StatusBar
-	* @short Sets the Height of the StatusBar
-	*/
+   * Sets the Height of the StatusBar. Default height is computed from
+   * default font height.
+   */
   void setHeight(int);
 
   /**
-	* Sets the border width of the status bar seperators and frame.
-	* @short Sets width of the seperators and frame.
-	*/
+   * Sets the border width of the status bar seperators and frame.
+   */
   void setBorderWidth(int);
 
-private:
-  QList <KStatusBarItem> labels;
-  InsertOrder insert_order;
-  int fieldheight, borderwidth;
+  /**
+   * Enable disable status bar. You can get the same effect with show
+   * or hide.
+   */
+  bool enable( BarStatus stat );
+
+  /**
+   * Hides all items and displays temporary text message in whole statusbar.
+   * Message will be removed (and old items redisplayed) after time (in ms).
+   * If time is 0 (default) message will remain untill you call @ref #clear.
+   * You can remove the message by calling @ref #clear any time.
+   */
+  void message (const char *text, int time=0);
+
+  /**
+   * Hides all items and displays temporary custom widget in whole statusbar.
+   * Widget must have statusbar for it's parent.
+   * Widget will be removed (and old items redisplayed) after time (in ms).
+   * If time is 0 (default) widget will remain untill you call @ref #clear.
+   * You can remove the message by calling @ref #clear any time. Upon
+   * @ref #clear your widget will be hidden, not deleted.
+   */
+  void message (QWidget *wiiidget, int time=0);
+  
+public slots:
+
+  /**
+   * Clears the message (if any), and shows back old
+   * state. This method is slot, you can connect to it. Does nothing if
+   * @ref #message was not called before. Message is hidden, not deleted.
+   * If message was your custom widget you have to clean it up.
+   */
+  void clear ();
+   
+signals:
+  /**
+   * Emits when mouse is pressed over llabel id. Connect to this signal
+   * if you want to notice mouse press events
+   */
+  void pressed(int);
+
+  /**
+   * Emits when mouse is released over item id. Conect to
+   * this signal if you want to receive mouse click
+   */
+  void released(int);
 
 protected:
   void drawContents ( QPainter * );
@@ -151,23 +218,24 @@ protected:
   void init();
   void updateRects( bool resize = FALSE );
 
- protected slots:
- void slotPressed(int);
+protected slots:
+  void slotPressed(int);
   void slotReleased(int);
 
-  signals:
-  /**
-	* Emits when mouse is pressed over item id. Connect to this signal
-	* if you want to notice mouse press events
-	*/
-  void pressed(int);
+private:
+  QList <KStatusBarItem> items;
+  InsertOrder insert_order;
+  int fieldheight, borderwidth;
+  KStatusBarLabel *tempMessage;
+  QWidget *tempWidget;
+  QTimer *tmpTimer; //for future bugfix
 
-  /**
-	* Emits when mouse is released over item id. Conect to
-	* this signal if you want to receive mouse click
-	*/
-  void released(int);
+  //fut:
+  bool bull;
+  int tni;
+  
 };
 
-
 #endif
+
+//Eh!!!
