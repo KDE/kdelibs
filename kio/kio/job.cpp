@@ -1999,36 +1999,19 @@ void ListJob::slotRedirection( const KURL & url )
 
 void ListJob::slotFinished()
 {
-    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error )
-    {
-
-	if (m_error==KIO::ERR_IS_FILE) {
-		KURL u=m_url;
-		if (u.isLocalFile()) {
-			KMimeType::Ptr ptr=KMimeType::findByURL(u,0,true,true /*false*/);
-			if (ptr!=0) {
-				if (ptr->is("inode/directory")) {
-					QString proto=ptr->property("X-KDE-LocalProtocol").toString();
-					if (!proto.isEmpty()) {
-						u.setProtocol(proto);
-						m_error=0;
-						emit redirection(this,u);
-						m_url=u;
-						m_redirectionURL=KURL();
-					        m_packedArgs.truncate(0);
-					        QDataStream stream( m_packedArgs, IO_WriteOnly );
-					        stream << m_url;
-
-					        // Return slave to the scheduler
-					        slaveDone();
-					        Scheduler::doJob(this);
-						return;
-					}
-				}
-			}
-		}
-	}
-
+    // Support for listing archives as directories
+    if ( m_error == KIO::ERR_IS_FILE && m_url.isLocalFile() ) {
+        KMimeType::Ptr ptr = KMimeType::findByURL( m_url, 0, true, true );
+        if ( ptr && ptr->is("inode/directory") ) {
+            QString proto = ptr->property("X-KDE-LocalProtocol").toString();
+            if ( !proto.isEmpty() ) {
+                m_redirectionURL = m_url;
+                m_redirectionURL.setProtocol( proto );
+                m_error = 0;
+            }
+        }
+    }
+    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid() || m_error ) {
         // Return slave to the scheduler
         SimpleJob::slotFinished();
     } else {
