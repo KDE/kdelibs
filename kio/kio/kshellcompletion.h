@@ -36,7 +36,6 @@ class KShellCompletionPrivate;
  *
  * @short Shell-like completion of file names
  * @author David Smith <dsmith@algonet.se>
- * @version $Id:
  */
 class KShellCompletion : public KURLCompletion 
 {

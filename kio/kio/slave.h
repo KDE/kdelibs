@@ -4,8 +4,6 @@
  *  Copyright (c) 2000 Waldo Bastian <bastian@kde.org>
  *                2000 Stephan Kulow <coolo@kde.org>
  *
- * $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.

@@ -20,7 +20,7 @@
 */
 
 #ifndef __kio_rename_dlg__
-#define __kio_rename_dlg__ "$Id$"
+#define __kio_rename_dlg__
 
 #include <kurl.h>
 #include <qdialog.h>

@@ -18,7 +18,7 @@
 */
 
 #ifndef __k_service_type_factory_h__
-#define __k_service_type_factory_h__ "$Id$"
+#define __k_service_type_factory_h__
 
 #include <assert.h>
 

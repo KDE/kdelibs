@@ -16,8 +16,6 @@
  *  along with this library; see the file COPYING.LIB.  If not, write to
  *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  *  Boston, MA 02111-1307, USA.
- *
- *  $Id$
  */
 #ifndef KILEMETAINFO_H
 #define KILEMETAINFO_H
@@ -46,7 +44,6 @@ class KFileMetaInfoGroup;
  * @short Represents the capabilities of a KFilePlugin for a given mimetype.
  * @author Rolf Magnus
  * @author Carsten Pfeiffer
- * $Id$
  */
 class KFileMimeTypeInfo
 {

@@ -18,7 +18,7 @@
 */
 
 #ifndef _THUMBCREATOR_H_
-#define _THUMBCREATOR_H_ "$Id$"
+#define _THUMBCREATOR_H_
 
 class QString;
 class QImage;

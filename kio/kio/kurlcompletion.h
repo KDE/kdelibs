@@ -37,7 +37,6 @@ class KURLCompletionPrivate;
  *
  * @short Completion of a single URL
  * @author David Smith <dsmith@algonet.se>
- * @version $Id$
  */
 class KURLCompletion : public KCompletion
 {

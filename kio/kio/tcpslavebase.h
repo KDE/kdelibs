@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright (C) 2000 Alex Zepeda <zipzippy@sonic.net>
  * Copyright (C) 2001 George Staikos <staikos@kde.org>
  * Copyright (C) 2001 Dawit Alemayehu <adawit@kde.org>
@@ -24,7 +22,7 @@
  */
 
 #ifndef _TCP_SLAVEBASE_H
-#define _TCP_SLAVEBASE_H "$Id$"
+#define _TCP_SLAVEBASE_H
 
 #include <sys/types.h>
 

@@ -23,7 +23,7 @@
  **/
 
 #ifndef __kurifilter_h__
-#define __kurifilter_h__ "$Id$"
+#define __kurifilter_h__
 
 #include <qptrlist.h>
 #include <qobject.h>

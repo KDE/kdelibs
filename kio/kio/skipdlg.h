@@ -17,7 +17,7 @@
 */
 
 #ifndef __kio_skip_dlg__
-#define __kio_skip_dlg__ "$Id$"
+#define __kio_skip_dlg__
 
 #include <kdialog.h>
 

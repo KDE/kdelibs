@@ -23,11 +23,10 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- *	$Id$
  */
 
 #ifndef _KEMAILSETTINGS_H
-#define _KEMAILSETTINGS_H "$Id$"
+#define _KEMAILSETTINGS_H
 
 #include <qstring.h>
 #include <qstringlist.h>

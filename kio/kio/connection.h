@@ -20,7 +20,7 @@
 */
 
 #ifndef __connection_h__
-#define __connection_h__ "$Id$"
+#define __connection_h__
 
 #include <sys/types.h>
 

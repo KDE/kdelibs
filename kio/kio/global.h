@@ -16,7 +16,7 @@
    Boston, MA 02111-1307, USA.
 */
 #ifndef __global_h__
-#define __global_h__ "$Id$"
+#define __global_h__
 
 #include <qstring.h>
 #include <qvaluelist.h>
