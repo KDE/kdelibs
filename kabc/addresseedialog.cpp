@@ -107,8 +107,11 @@ AddresseeDialog::AddresseeDialog( QWidget *parent, bool multiple ) :
              SLOT( addSelected( QListViewItem * ) ) );
   }
 
-  mAddressBook = StdAddressBook::self();
-  connect( mAddressBook, SIGNAL( addressBookChanged( AddressBook* ) ), SLOT( addressBookChanged() ) );
+  mAddressBook = StdAddressBook::self( true );
+  connect( mAddressBook, SIGNAL( addressBookChanged( AddressBook* ) ),
+           SLOT( addressBookChanged() ) );
+  connect( mAddressBook, SIGNAL( loadingFinished( Resource* ) ),
+           SLOT( addressBookChanged() ) );
 
   loadAddressBook();
 }
