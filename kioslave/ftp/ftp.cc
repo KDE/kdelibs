@@ -33,7 +33,7 @@ Ftp::Ftp()
   m_bLoggedOn = false;
   m_bFtpStarted = false;
   m_bPersistent = true;
-  kdebug(KDEBUG_INFO, 0, "Ftp::Ftp()");
+  kdebug(KDEBUG_INFO, 7102, "Ftp::Ftp()");
 }
 
 
@@ -127,7 +127,7 @@ bool Ftp::readresp(char c)
     return false;
   }
   if ( ftplib_debug > 1)
-    kdebug(KDEBUG_INFO, 0, "resp> %s",rspbuf);
+    kdebug(KDEBUG_INFO, 7102, "resp> %s",rspbuf);
   if ( rspbuf[3] == '-' )  {
     strncpy( match, rspbuf, 3 );
     match[3] = ' ';
@@ -139,7 +139,7 @@ bool Ftp::readresp(char c)
 	return false;
       }
       if ( ftplib_debug > 1)
-	kdebug(KDEBUG_INFO, 0, "%s",rspbuf);
+	kdebug(KDEBUG_INFO, 7102, "%s",rspbuf);
     }
     while ( strncmp( rspbuf, match, 4 ) );
   }
@@ -193,13 +193,15 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
     if ( m_bPersistent ) {
       // this should check whether there is still opened data connection.
       // is it enough ?  Should we check also the control connection ?
-      if ( ftpOpenDataConnection() )
+      if ( ftpOpenDataConnection() ) {
 	return true;
-      else
+      } else {
 	m_bLoggedOn = false;
+      }
 
-    } else
+    } else {
       assert( !m_bLoggedOn );
+    }
     
   
   _path = "";
@@ -219,23 +221,26 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
 
   if( _user && strlen( _user ) > 0 ) {
     user = _user;
-    if ( _pass && strlen( _pass ) > 0 )
+    if ( _pass && strlen( _pass ) > 0 ) {
       passwd = _pass;
-    else
+    } else {
       passwd = "";
+    }
   } else {
     user = FTP_LOGIN;
     passwd = FTP_PASSWD;
   }
 
-  if ( ftplib_debug > 2 )
-    kdebug(KDEBUG_INFO, 0, "Connected ...." );
+  if ( ftplib_debug > 2 ) {
+    kdebug(KDEBUG_INFO, 7102, "Connected ...." );
+  }
 
   QString redirect = "";
   m_bLoggedOn = ftpLogin( user, passwd, redirect );
   if ( !m_bLoggedOn ) {
-    if ( ftplib_debug > 2 )
-      kdebug(KDEBUG_INFO, 0, "Could not login" );
+    if ( ftplib_debug > 2 ) {
+      kdebug(KDEBUG_INFO, 7102, "Could not login" );
+    }
 
     m_error = ERR_COULD_NOT_LOGIN;
     m_errorText = _host;
@@ -244,12 +249,14 @@ bool Ftp::ftpConnect( const char *_host, unsigned short int _port, const char *_
 
   // We could login and got a redirect ?
   if ( !redirect.isEmpty() ) {
-    if ( redirect.right(1) != "/" )
+    if ( redirect.right(1) != "/" ) {
       redirect += "/";
+    }
     _path = redirect;
     
-    if ( ftplib_debug > 2 )
-      kdebug(KDEBUG_INFO, 0, "REDIRECTION '%s'", redirect.ascii());
+    if ( ftplib_debug > 2 ) {
+      kdebug(KDEBUG_INFO, 7102, "REDIRECTION '%s'", redirect.ascii());
+    }
   }
   
   m_bLoggedOn = true;
@@ -346,7 +353,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
 
     if ( !ftpSendCmd( tempbuf, '3' ) ) {
       if ( ftplib_debug > 2 )
-	kdebug(KDEBUG_INFO, 0, "1> %s", rspbuf );
+	kdebug(KDEBUG_INFO, 7102, "1> %s", rspbuf );
       
       if ( rspbuf[0] == '2' )
 	return true; /* no password required */
@@ -362,7 +369,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
       if ( !open_PassDlg( tmp, user, pass ) )
 	return false;
     }
-    kdebug( KDEBUG_INFO, 0, "New pass is '%s'", pass.ascii());
+    kdebug( KDEBUG_INFO, 7102, "New pass is '%s'", pass.ascii());
     
     tempbuf = "pass ";
     tempbuf += pass;
@@ -373,7 +380,7 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
     }
   }
   
-  kdebug( KDEBUG_INFO, 0, "Login ok");
+  kdebug( KDEBUG_INFO, 7102, "Login ok");
 
   // Okay, we're logged in. If this is IIS 4, switch dir listing style to Unix:
   // Thanks to jk@soegaard.net (Jens Kristian Søgaard) for this hint
@@ -387,14 +394,14 @@ bool Ftp::ftpLogin( const char *_user, const char *_pass, QString& _redirect )
   if ( _redirect.isEmpty() )
     return true;
 
-  kdebug( KDEBUG_INFO, 0, "Searching for pwd");
+  kdebug( KDEBUG_INFO, 7102, "Searching for pwd");
 
   // Get the current working directory
   if ( !ftpSendCmd( "pwd", '2' ) )
     return false;
 
   if ( ftplib_debug > 2 )
-    kdebug(KDEBUG_INFO, 0, "2> %s", rspbuf );
+    kdebug(KDEBUG_INFO, 7102, "2> %s", rspbuf );
   
   char *p = rspbuf;
   while ( isdigit( *p ) ) p++;
@@ -423,7 +430,7 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp )
   buf += "\r\n";
 
   if ( ftplib_debug > 2 )
-    kdebug(KDEBUG_INFO, 0, "%s", cmd.data() );
+    kdebug(KDEBUG_INFO, 7102, "%s", cmd.data() );
 
   if ( ::write( sControl, buf.data(), buf.length() ) <= 0 )  {
     m_error = ERR_COULD_NOT_WRITE;
@@ -873,7 +880,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   static FtpEntry fe;
   m_error = 0;
 
-  kdebug( KDEBUG_INFO, 0, "ftpStat : %s", _url.url().ascii());
+  kdebug( KDEBUG_INFO, 7102, "ftpStat : %s", _url.url().ascii());
 
   QString path = _url.directory();
 
@@ -898,7 +905,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
   if( !dirfile )
     return 0L;
 
-  kdebug(KDEBUG_INFO, 0, "Starting of list was ok");
+  kdebug(KDEBUG_INFO, 7102, "Starting of list was ok");
 
   QString search = _url.filename();
   assert( search != "" && search != "/" );
@@ -917,7 +924,7 @@ FtpEntry* Ftp::ftpStat( KURL& _url )
       fe = *e;
     }
     
-    kdebug(KDEBUG_INFO, 0, "%s", e->name.ascii());
+    kdebug(KDEBUG_INFO, 7102, "%s", e->name.ascii());
   }
 
   if ( !ftpCloseDir() )
@@ -946,7 +953,7 @@ bool Ftp::opendir( KURL& _url )
   else
     redirect = path;
 
-  kdebug(KDEBUG_INFO, 0, "hunting for path '%s'", redirect.ascii());
+  kdebug(KDEBUG_INFO, 7102, "hunting for path '%s'", redirect.ascii());
 
   KURL url( _url );
   url.setPath( redirect );
@@ -968,7 +975,7 @@ bool Ftp::ftpOpenDir( KURL& _url )
   if( !dirfile )
     return false;
 
-  kdebug(KDEBUG_INFO, 0, "Starting of list was ok");
+  kdebug(KDEBUG_INFO, 7102, "Starting of list was ok");
 
   return true;
 }
@@ -1091,10 +1098,10 @@ bool Ftp::closedir()
 
 bool Ftp::ftpCloseDir()
 {
-  kdebug(KDEBUG_INFO, 0, "... closing");
+  kdebug(KDEBUG_INFO, 7102, "... closing");
 
   if ( !readresp( '2' ) ) {
-    kdebug(KDEBUG_INFO, 0, "Did not get transfer complete message");
+    kdebug(KDEBUG_INFO, 7102, "Did not get transfer complete message");
     return false;
   }
 
@@ -1169,14 +1176,14 @@ bool Ftp::ftpOpen( KURL& _url, Ftp::Mode mode, unsigned long offset )
 
 bool Ftp::ftpClose()
 {
-  kdebug(KDEBUG_INFO, 0, "... closing");
+  kdebug(KDEBUG_INFO, 7102, "... closing");
 
   // first close, then read response ( should be 226 )
 
   bool tmp = ftpCloseCommand();
 
   if ( !readresp( '2' ) ) {
-      kdebug(KDEBUG_INFO, 0, "Did not get transfer complete message");
+      kdebug(KDEBUG_INFO, 7102, "Did not get transfer complete message");
       return false;
     }
   
