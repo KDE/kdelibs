@@ -208,7 +208,7 @@ QChar KCharsets::fromEntity(const QString &str) const
 
     if(!e)
     {
-	kdDebug( 0 ) << "unknown entity '%s', len = %d\n" << str.ascii() << str.length() << endl;
+	kdDebug( 0 ) << "unknown entity " << str.ascii() <<", len = " << str.length() << endl;
 	return QChar::null;
     }
     //printf("got entity %s = %x\n", str.ascii(), e->code);	
