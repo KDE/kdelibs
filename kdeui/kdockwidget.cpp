@@ -984,13 +984,8 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 
   //If we're not the target, and the target is our dock manager's main window
   //dock into the temp target as chosen above
-  if ( tmpTarget && this != tmpTarget)
-  {
-    if ( target && target == dockManager()->d->mainDockWidget )
-    {
-      return manualDock(tmpTarget,DockCenter,spliPos,pos,check,tabIndex);
-    }
-  }
+  if ( tmpTarget && target && this != tmpTarget && target == dockManager()->d->mainDockWidget )
+    return manualDock(tmpTarget,DockCenter,spliPos,pos,check,tabIndex);
 
   // check if the target allows us to oock into the requested position
   if ( target && !(target->sDocking & (int)dockPos) ){
