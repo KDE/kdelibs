@@ -85,7 +85,6 @@ KSycoca * KSycoca::self()
 
 KSycoca::~KSycoca()
 {
-  debug("KSycoca::~KSycoca()");
    QIODevice *device = 0;
    if (str)
       device = str->device();
@@ -107,7 +106,6 @@ void KSycoca::addFactory( KSycocaFactory *factory )
 bool KSycoca::process(const QCString &fun, const QByteArray &/*data*/,
                       QCString &replyType, QByteArray &/*replyData*/)
 {
-  debug(fun);
   if (fun == "databaseChanged()") {
     debug("got a databaseChanged signal !");
     // kded tells us the database file changed
