@@ -18,12 +18,10 @@ to ie. play a sound
 4	KURL file = "file:/home/nikoz/test.mp3";
 
 5	KPlayObject *playobj = new KPlayObject();
-6	playobj->setObject(Arts::PlayObject::null());
+6	KPlayObjectFactory factory(d->server);
+7	playobj = factory.createPlayObject(file, true);
 
-7	KPlayObjectFactory factory(d->server);
-8	playobj = factory.createPlayObject(file, true);
-
-9	playobj->play();
+8	playobj->play();
 <snap>
 
 Line:
@@ -32,18 +30,18 @@ Line:
 
 4	Simple test URL to demonstrate the use with KURL
 
-5-6	Sets up the PlayObject-Wrapper, KPlayObject, and sets the internal PlayObject to null()
+5	Sets up the PlayObject-Wrapper, KPlayObject
 
-7	Creates a KPlayObjectFactory, parameter: our SimpleSoundServer
-8	Sets the local KPlayObject to a new one, created in our running artsd process
+6	Creates a KPlayObjectFactory, parameter: our SoundServerV2
+7	Sets the local KPlayObject to a new one, created in our running artsd process
 	First Parameter: KURL url (specifies the url to be played)
 			 bool createBUS (specifies wheter to create a Synth_BUS_UPLINK or not,
 					 "false" is only interesting if you want to use EffectsStacks
 					 etc..., see Noatun)
-9	Play the file
+8	Play the file
 
-That's it, with 9 LOC a "full" media player :)
+That's it, with 8 LOC a "full" media player :)
 
 Enjoy...
-Nikolas Zimmermann
+Nikolas Zimmermann 
 <wildfox@kde.org>

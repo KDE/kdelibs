@@ -92,6 +92,8 @@ bool KIOInputStream_impl::openURL(const std::string& url)
 
 void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 {
+	if(m_finished)
+	    m_finished = false;
 	char *newdata = new char[m_size + data.size()];
 	memcpy(newdata, m_data, m_size);
 	memcpy(newdata, data.data(), data.size());
@@ -105,14 +107,14 @@ void KIOInputStream_impl::slotData(KIO::Job *, const QByteArray &data)
 
 void KIOInputStream_impl::slotResult(KIO::Job *job)
 {
-	kdDebug() << "RESULT HUH?!" << endl;
+	m_finished = true;
 	if(job->error())
 	    job->showErrorDialog();
 }
 
 bool KIOInputStream_impl::eof()
 {
-	return m_finished;
+	return (m_finished || m_position >= m_size) && (m_sendqueue.size() == PACKET_COUNT);
 }
 
 bool KIOInputStream_impl::seekOk()
@@ -122,7 +124,7 @@ bool KIOInputStream_impl::seekOk()
 
 long KIOInputStream_impl::size()
 {
-	return -1;
+	return m_size;
 }
 
 long KIOInputStream_impl::seek(long)
@@ -132,9 +134,9 @@ long KIOInputStream_impl::seek(long)
 
 void KIOInputStream_impl::processQueue()
 {
-	if(m_size > PACKET_SIZE * 10)
+	if(m_sendqueue.size() > 10)
 	    m_job->suspend();
-	else if(m_size < PACKET_SIZE * 4)
+	else if(m_sendqueue.size() < 10)
 	{
 	    if(m_job->isSuspended())
 		m_job->resume();
@@ -152,6 +154,8 @@ void KIOInputStream_impl::processQueue()
 		m_position += packet->size;
 		packet->send();
 	    }
+	    else
+		kdDebug() << "BIG ERROR!!" << endl;
 	}
 }
 

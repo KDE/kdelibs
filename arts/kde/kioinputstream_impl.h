@@ -36,7 +36,6 @@ Q_OBJECT
 public:
 	static const unsigned int PACKET_COUNT;
 	static const unsigned int PACKET_SIZE;
-
 	KIOInputStream_impl();
 	~KIOInputStream_impl();
 	
