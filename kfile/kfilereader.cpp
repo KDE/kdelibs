@@ -143,7 +143,7 @@ void KFileReader::setURL(const KURL& url)
 	    if (test) {
 		closedir(test);
 		if ( myAutoUpdate ) {
-		    dirWatch->removeDir( oldurl.url() );
+		    dirWatch->removeDir( oldurl.path() );
 		    dirWatch->addDir( path() );
 		}
 	    }
@@ -152,7 +152,7 @@ void KFileReader::setURL(const KURL& url)
 	readable = true; // what else can we say?
 
         if ( myAutoUpdate ) {
-	    dirWatch->removeDir( oldurl.url() );
+	    dirWatch->removeDir( oldurl.path() );
 	}
     }
 
