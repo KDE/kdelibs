@@ -40,13 +40,6 @@ QCString DCOPObject::id() const
   return ident;
 }
 
-bool DCOPObject::process(const QCString &fun, const QByteArray &data,
-			 QByteArray &replyData)
-{
-  qDebug("called DCOPObject::process");
-  return false;
-}
-
 bool DCOPObject::hasObject(const QCString &objId)
 {
   if (objMap()->contains(objId))

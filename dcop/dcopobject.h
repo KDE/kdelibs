@@ -18,7 +18,7 @@ class DCOPObject
    * dispatch a message.
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
-		       QByteArray &replyData);
+		       QByteArray &replyData) = 0;
 
   static bool hasObject(const QCString &objId);
   static DCOPObject *find(const QCString &objId);
