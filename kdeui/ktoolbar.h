@@ -18,7 +18,10 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
-*/
+    */
+
+// $Id$
+// $Log$
 
 #ifndef _KTOOLBAR_H
 #define _KTOOLBAR_H
@@ -35,11 +38,11 @@
 #include <config.h>
 #endif
 
-//#include "kbutton.h"
 #include "kcombo.h"
 #include "klined.h"
 
 class KToolBar;
+class KToolBoxManager;
 
 #define Item QWidget
 
@@ -271,14 +274,13 @@ public:
   /**
    * This function is deprecated and will be removed. Use @ref #insertWidget
    * to insert anything.
-   * Inserts frame with specified width. If _frame is not specified,
-   * it will be created. In that case you must not delete it. You can get
+   * Inserts frame with specified width. You can get
    * pointer to this frame with @ref #getFrame
    * Frame can be autosized to full width.
    * @see #setItemAutoSized
    * @return Returns item index
    */
-  int insertFrame(int id, int width, QFrame *_frame=0, int index =-1);
+  int insertFrame(int id, int width, int index =-1);
 
   /**
    * Insert a user defined widget. Widget must have a QWidget for
@@ -674,12 +676,14 @@ private:
   int max_height;
   
   BarPosition lastPosition; // Where was I last time I was?
-
+  BarPosition movePos;      // Where was I moved to?
   bool mouseEntered;  // Did the mouse touch the cheese?
   bool horizontal;    // Do I stand tall?
   bool localResize;   // Am I trying to understand recursion?
   bool wasFullWidth;  // Was I loong when I was?
   bool haveAutoSized; // Do I have a problem?
+
+  KToolBoxManager *mgr;
   
 protected:
   QPopupMenu *context;
@@ -702,7 +706,8 @@ protected slots:
   void ButtonToggled(int);
   void ContextCallback(int);
   void slotReadConfig ();
-
+  void slotHotSpot (int i);
+  
 protected:
   void mouseMoveEvent(QMouseEvent*);
   void mouseReleaseEvent ( QMouseEvent *);
@@ -714,6 +719,6 @@ private:
    int icon_text;  // 1 = icon+text, 0 icon+tooltip
    bool highlight; // yes/no
    QSize szh;      // Size for sizeHint
-   bool fixed_size; // do not change the toolbar size 
+   bool fixed_size; // do not change the toolbar size
 };
 #endif

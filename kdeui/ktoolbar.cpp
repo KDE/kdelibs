@@ -45,6 +45,14 @@
 //-------------------------------------------------------------------------
 // $Id$
 // $Log$
+// Revision 1.58  1998/04/27 19:22:41  ettrich
+// Matthias: the nifty feature that you can globally change the size of the
+//   toolbars broke the nifty-as-well feature that a client can pass another
+//   size than 26 to the toolbar´s constructor.
+//
+//   I hope I found a solution which allows both. If you pass an argument
+//   to the constructor, than a new attribute fixed_size is set.
+//
 // Revision 1.57  1998/04/26 13:30:16  kulow
 // fixed typo
 //
@@ -65,6 +73,7 @@
 #include <qstring.h>
 
 #include <qpainter.h>
+#include <qrect.h>
 #include <qpalette.h>
 #include <qbitmap.h>
 #include <qstring.h>
@@ -73,10 +82,11 @@
 #include "ktoolbar.h"
 #include "klined.h"
 #include "kcombo.h"
-
+#include <ktopwidget.h>
 #include <klocale.h>
 #include <kapp.h>
 #include <kwm.h>
+#include <ktoolboxmgr.h>
   default:
       qDrawArrow (_painter, DownArrow, WindowsStyle, false,
 // Use enums instead of defines. We are C++ and NOT C !
@@ -366,7 +376,7 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   item_size = _item_size;
   fixed_size =  (item_size > 0);
   if (!fixed_size)
-    item_size = 26;
+  item_size = 26;
   init();
   Parent = parent;        // our father
   max_width=-1;
@@ -711,17 +721,79 @@ void KToolBar::updateRects( bool res )
 
 void KToolBar::mousePressEvent ( QMouseEvent *m )
 {
-    if ((horizontal && m->x()<9) || (!horizontal && m->y()<9))
-    {
-        pointerOffset = m->pos();
-        if (moving)
-            if (m->button() != LeftButton)
-                context->popup( mapToGlobal( m->pos() ), 0 );
-            else
-                grabMouse(sizeAllCursor);
-    }
+  int ox, oy, ow, oh;
+  if ((horizontal && m->x()<9) || (!horizontal && m->y()<9))
+  {
+    pointerOffset = m->pos();
+    if (moving)
+      if (m->button() != LeftButton)
+        context->popup( mapToGlobal( m->pos() ), 0 );
+      else
+      {
+        ox = Parent->x();
+        oy = Parent->y();
+        ow = Parent->width();
+        oh = Parent->height();
+
+        int  fat = 25; //ness
+
+        mgr = new KToolBoxManager(this);
+
+        mgr->addHotSpot(ox, oy, ow, fat);           // top
+        mgr->addHotSpot(ox, oy+oh-fat, ow, fat);    // bottom
+        mgr->addHotSpot(ox, oy+fat, fat, oh-2*fat); // left
+        mgr->addHotSpot(ox+ow-fat, oy+fat, fat, oh-2*fat); //right
+
+        movePos = position;
+        connect (mgr, SIGNAL(onHotSpot(int)), SLOT(slotHotSpot(int)));
+        mgr->doMove(true, false, true);
+
+        setBarPos (movePos);
+        if (movePos == Floating)
+          move (mgr->x(), mgr->y());
+        if (!isVisible())
+          show();
+
+        delete mgr;
+        mgr=0;
+        debug ("KToolBar: moving done");
+      }
+  }
 }
 
+void KToolBar::slotHotSpot(int hs)
+{
+  if (mgr == 0)
+    return;
+  
+  switch (hs)
+  {
+    case 0: //top
+      mgr->setGeometry(0);
+      movePos=Top;
+      break;
+      
+    case 1: //bottom
+      mgr->setGeometry(1);
+      movePos=Bottom;
+      break;
+      
+    case 2: //left
+      mgr->setGeometry(2);
+      movePos=Left;
+      break;
+      
+    case 3: //right
+      mgr->setGeometry(3);
+      movePos=Right;
+      break;
+
+    case -1: // left all
+      mgr->setGeometry(mgr->mouseX(), mgr->mouseY(), width(), height());
+      movePos=Floating;
+      break;
+  }
+}
 void KToolBar::resizeEvent( QResizeEvent *)
 {
   /* Newest - sven */
@@ -927,20 +999,18 @@ int KToolBar::insertSeparator( int index )
 /********* Frame **********/
 /// inserts QFrame
 
-int KToolBar::insertFrame (int _id, int _size, QFrame *_frame, int _index)
+int KToolBar::insertFrame (int _id, int _size, int _index)
 {
-  QFrame *frame;
-  bool mine = false;;
-  if (_frame == 0)
-  {
-    // ok I'll do it for you;
-    frame = new QFrame (this);
-    mine = true;
-  }
-  else
-    frame = _frame;
+  debug ("insertFrame is deprecated. use insertWidget");
   
-   KToolBarItem *item = new KToolBarItem(frame, ITEM_FRAME, _id, mine);
+  QFrame *frame;
+  bool mine = false;
+
+  // ok I'll do it for you;
+  frame = new QFrame (this);
+  mine = true;
+  
+  KToolBarItem *item = new KToolBarItem(frame, ITEM_FRAME, _id, mine);
       
   if (_index == -1)
     items.append (item);
@@ -1466,89 +1536,49 @@ void KToolBar::leaveEvent (QEvent *)
     repaint();
 }
 
-void KToolBar::mouseMoveEvent(QMouseEvent* mev){
-
-
-    // Handle highlighting - sven 050198
-    if (horizontal)
-        if (mev->x() < 9)
-        {
-            if (!mouseEntered)
-            {
-                mouseEntered = true;
-                repaint();
-            }
-        }
-        else
-        {
-            if (mouseEntered)
-            {
-                mouseEntered = false;
-                repaint();
-            }
-        }
-    
+void KToolBar::mouseMoveEvent(QMouseEvent* mev)
+{
+  // Handle highlighting - sven 050198
+  if (horizontal)
+    if (mev->x() < 9)
+    {
+      if (!mouseEntered)
+      {
+        mouseEntered = true;
+        repaint();
+      }
+    }
     else
-        if (mev->y() < 9)
-        {
-            if (!mouseEntered)
-            {
-                mouseEntered = true;
-                repaint();
-            }
-        }
-        else
-        {
-            if (mouseEntered)
-            {
-                mouseEntered = false;
-                repaint();
-            }
-        }
+    {
+      if (mouseEntered)
+      {
+        mouseEntered = false;
+        repaint();
+      }
+    }
 
-
-
-  if (!moving || mouseGrabber() != this)
-      return;
-  if (position != Floating){
-    QPoint p = mapFromGlobal(QCursor::pos()) - pointerOffset;
-    if (p.x()*p.x()+p.y()*p.y()<169)
-      return;
-    
-    XUngrabPointer( qt_xdisplay(), CurrentTime );
-    setBarPos(Floating);
-    show();
-    QApplication::syncX();
-    while(XGrabPointer( qt_xdisplay(), winId(), true,
-			ButtonPressMask | ButtonReleaseMask |
-			PointerMotionMask | EnterWindowMask | LeaveWindowMask,
-			GrabModeAsync, GrabModeAsync,
-			None, sizeAllCursor.handle(), 
-			CurrentTime ) != GrabSuccess);
-    grabMouse(sizeAllCursor);
-  }
-  move(QCursor::pos() - pointerOffset);
-  QPoint p = QCursor::pos() - pointerOffset - (Parent->mapToGlobal(QPoint(0,0)) + parentOffset);
-
-  if (p.x()*p.x()+p.y()*p.y()<169){
-    releaseMouse();
-    setBarPos(lastPosition);
-    QApplication::syncX();
-    while(XGrabPointer( qt_xdisplay(), winId(), true,
-			ButtonPressMask | ButtonReleaseMask |
-			PointerMotionMask | EnterWindowMask | LeaveWindowMask,
-			GrabModeAsync, GrabModeAsync,
-			None, sizeAllCursor.handle(), 
-			CurrentTime ) != GrabSuccess);
-    grabMouse(sizeAllCursor);
-  }
+  else
+    if (mev->y() < 9)
+    {
+      if (!mouseEntered)
+      {
+        mouseEntered = true;
+        repaint();
+      }
+    }
+    else
+    {
+      if (mouseEntered)
+      {
+        mouseEntered = false;
+        repaint();
+      }
+    }
 }
 
 void KToolBar::mouseReleaseEvent ( QMouseEvent * ){
   releaseMouse();
 }
-
-
 
 // sven
 #include <ktoolbar.moc>
