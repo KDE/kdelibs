@@ -1022,13 +1022,13 @@ void RenderBox::caretPos(int offset, bool override, int &_x, int &_y, int &width
 
     // propagate it downwards to its children, someone will feel responsible
     RenderObject *child = firstChild();
-    if (child) kdDebug(6040) << "delegating caretPos to " << child->renderName() << endl;
+//    if (child) kdDebug(6040) << "delegating caretPos to " << child->renderName() << endl;
     if (child) child->caretPos(offset, override, _x, _y, width, height);
 
     // if not, use the extents of this box. offset 0 means left, offset 1 means
     // right
     if (_x == -1) {
-        kdDebug(6040) << "no delegation" << endl;
+        //kdDebug(6040) << "no delegation" << endl;
         _x = xPos() + (offset == 0 ? 0 : m_width);
 	_y = yPos();
 	height = m_height;

@@ -506,7 +506,7 @@ InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos, bool checkF
     if (si >= count) s = m_lines[nearest_idx];
     // we are now in the correct text box
     pos = QMIN(offset - s->m_start, s->m_len);
-    kdDebug(6040) << "offset=" << offset << " s->m_start=" << s->m_start << endl;
+    //kdDebug(6040) << "offset=" << offset << " s->m_start=" << s->m_start << endl;
     return s;
 }
 
@@ -632,9 +632,11 @@ void RenderText::caretPos(int offset, bool override, int &_x, int &_y, int &widt
   if (override) {
     width = offset < maxOffset() ? fm.width(str->s[offset]) : 1;
   }/*end if*/
+#if 0
   kdDebug(6040) << "_x="<<_x << " s->m_x="<<s->m_x
   		<< " s->m_start"<<s->m_start
 		<< " s->m_len"<<s->m_len << endl;
+#endif
 
   int absx, absy;
 
