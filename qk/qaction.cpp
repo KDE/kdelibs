@@ -1172,7 +1172,7 @@ void QActionWidget::selectionChanged()
 	return;
     }
 
-    QIconViewItem* item = m_icons->selectedItem();
+    QIconViewItem* item = m_icons->currentItem();
     if ( !item )
     {
 	emit selectionChanged( 0 );
@@ -1204,7 +1204,7 @@ QAction* QActionWidget::selectedAction()
     if ( !m_collection )
 	return 0;
 
-    QIconViewItem* item = m_icons->selectedItem();
+    QIconViewItem* item = m_icons->currentItem();
     if ( !item )
 	return 0;
 

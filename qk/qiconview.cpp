@@ -121,7 +121,7 @@ struct QIconViewPrivate
     bool cleared, dropped, clearing;
     int dragItems;
     QPoint oldDragPos;
-    QIconView::AlignMode alignMode;
+    QIconView::Arrangement arrangement;
     QIconView::ResizeMode resizeMode;
     QSize oldSize;
     QValueList<QIconDragItem> iconDragData;
@@ -1061,7 +1061,7 @@ void QIconViewItem::setSelected( bool s, bool cb )
 
 	repaint();
 	if ( !view->signalsBlocked() )
-	    view->emitSelectionChanged();
+	    view->emitSelectionChanged( this );
     }
 }
 
@@ -1658,10 +1658,10 @@ void QIconViewItem::calcTmpText()
   The QIconView provides a widget which can contain lots of iconview items which can
   be selected, dragged and so on.
 
-  Items can be inserted in a grid and can flow from top to bottom (South) or from
-  left to right (East). The text can be either displayed at the bottom of the icons
+  Items can be inserted in a grid and can flow from top to bottom (TopToBottom) or from
+  left to right (LeftToRight). The text can be either displayed at the bottom of the icons
   or the the right of the icons. Items can also be inserted in a sorted order. There
-  are also methods to re-align and re-sort the items after they have been inserted.
+  are also methods to re-arrange and re-sort the items after they have been inserted.
 
   There is a variety of selection modes, described in the
   QIconView::SelectionMode documentation. The default is
@@ -1808,14 +1808,14 @@ void QIconViewItem::calcTmpText()
   is for a iconview where the user can look but not touch.
 */
 
-/*! \enum QIconView::AlignMode
+/*! \enum QIconView::Arrangement
 
    This enum type descides in which direction the items, which do not fit onto the
    screen anymore flow.
 
    <ul>
-   <li> \c East - Items, which don't fit onto the view, go further down (you get a vertical scrollbar)
-   <li> \c South - Items, which don't fit onto the view, go further right (you get a horizontal scrollbar)
+   <li> \c LeftToRight - Items, which don't fit onto the view, go further down (you get a vertical scrollbar)
+   <li> \c TopToBottom - Items, which don't fit onto the view, go further right (you get a horizontal scrollbar)
    </ul>
 */
 
@@ -1846,25 +1846,6 @@ void QIconViewItem::calcTmpText()
 /*! \fn void  QIconView::returnPressed (QIconViewItem * item)
   This signal is emitted, if the user pressed the return or enter button.
   \a item is the item which was current while return or enter was pressed.
-*/
-
-/*! \fn void  QIconView::itemRightPressed (QIconViewItem * item)
-  This signal is emitted, if the user pressed on the item \a item using the right mouse button.
-*/
-
-/*! \fn void  QIconView::viewportRightPressed ()
-  This signal is emitted, when the user pressed with the right mouse button onto the viewport
-  (not on an item)
-*/
-
-/*! \fn void  QIconView::itemRightClicked (QIconViewItem * item)
-  This signal is emitted, if the user clicked (pressed + released) on the
-  item \a item using the right mouse button.
-*/
-
-/*! \fn void  QIconView::viewportRightClicked ()
-  This signal is emitted, when the user clicked (pressed + released) with
-  the right mouse button onto the viewport (not on an item)
 */
 
 /*! \fn void  QIconView::selectionChanged ()
@@ -1993,7 +1974,7 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->rastX = d->rastY = -1;
     d->spacing = 5;
     d->cleared = FALSE;
-    d->alignMode = East;
+    d->arrangement = LeftToRight;
     d->resizeMode = Fixed;
     d->dropped = FALSE;
     d->adjustTimer = new QTimer( this );
@@ -2171,6 +2152,11 @@ void QIconView::insertItem( QIconViewItem *item, QIconViewItem *after )
 	}
     }
 
+    if ( !d->currentItem && hasFocus() ) {
+ 	d->currentItem = d->firstItem;
+	repaintItem( d->currentItem );
+    }
+
     d->count++;
     d->dirty = TRUE;
 }
@@ -2204,13 +2190,13 @@ void QIconView::slotUpdate()
 
 	    w = QMAX( w, item->x() + item->width() );
 	    h = QMAX( h, item->y() + item->height() );
-	    if ( d->alignMode == East )
+	    if ( d->arrangement == LeftToRight )
 		h = QMAX( h, y );
 	
 	    item = item->next;
 	}
 
-	if ( d->lastItem && d->alignMode == South ) {
+	if ( d->lastItem && d->arrangement == TopToBottom ) {
 	    item = d->lastItem;
 	    int x = item->x();
 	    while ( item && item->x() >= x ) {
@@ -2223,7 +2209,7 @@ void QIconView::slotUpdate()
 	w = QMAX( QMAX( d->cachedW, w ), d->lastItem->x() + d->lastItem->width() );
 	h = QMAX( QMAX( d->cachedH, h ), d->lastItem->y() + d->lastItem->height() );
 
-	if ( d->alignMode == South )
+	if ( d->arrangement == TopToBottom )
 	    w += d->spacing;
 	else
 	    h += d->spacing;
@@ -2263,17 +2249,26 @@ void QIconView::takeItem( QIconViewItem *item )
     item->d->container1 = 0;
 
     bool block = signalsBlocked();
-    blockSignals( TRUE );
+    blockSignals( d->clearing );
 
     QRect r = item->rect();
 
     if ( d->currentItem == item ) {
-	if ( item->prev )
-	    setCurrentItem( item->prev );
-	else if ( item->next )
-	    setCurrentItem( item->next );
-	else
-	    setCurrentItem( 0 );
+	if ( item->prev ) {
+	    d->currentItem = item->prev;
+	    emit currentChanged();
+	    emit currentChanged( d->currentItem );
+	    repaintItem( d->currentItem );
+	} else if ( item->next ) {
+	    d->currentItem = item->next;
+	    emit currentChanged();
+	    emit currentChanged( d->currentItem );
+	    repaintItem( d->currentItem );
+	} else {
+	    d->currentItem = 0;
+	    emit currentChanged();
+	    emit currentChanged( d->currentItem );
+	}
     }
     if ( item->isSelected() )
 	item->setSelected( FALSE );
@@ -2305,7 +2300,8 @@ void QIconView::takeItem( QIconViewItem *item )
 }
 
 /*!
-  Returns the index of \a item or -1 if there is something wrong.
+  Returns the index of \a item or -1 if \a item doesn't exist
+  in this icon view.
 */
 
 int QIconView::index( const QIconViewItem *item ) const
@@ -2327,23 +2323,6 @@ int QIconView::index( const QIconViewItem *item ) const
 
 	return j;
     }
-}
-
-/*!
-  Returns the selected item. This only works in single selection mode.
-*/
-
-QIconViewItem *QIconView::selectedItem() const
-{
-    if ( selectionMode() != Single )
-	return 0;
-
-    QIconViewItem* item = firstItem();
-    for( ; item; item = item->nextItem() )
-	if ( item->isSelected() )
-	    return item;
-
-    return 0;
 }
 
 /*!
@@ -2382,10 +2361,14 @@ QIconViewItem *QIconView::currentItem() const
 
 void QIconView::setCurrentItem( QIconViewItem *item )
 {
+    if ( item == d->currentItem || ( !item && d->firstItem && d->firstItem->next ) )
+	return;
     QIconViewItem *old = d->currentItem;
     d->currentItem = item;
     emit currentChanged();
     emit currentChanged( d->currentItem );
+    if ( item && d->selectionMode == Single )
+	item->setSelected( TRUE );
 
     if ( old )
 	repaintItem( old );
@@ -2595,16 +2578,17 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
     }
 
     if ( ( hasFocus() || viewport()->hasFocus() ) && d->currentItem &&
-	 d->currentItem->rect().intersects( r ) )
+	 d->currentItem->rect().intersects( r ) ) {
 	d->currentItem->paintFocus( p, colorGroup() );
+    }
 }
 
 /*!
-  Align all items in the grid. For the grid the specified
+  Arranges all items in the grid. For the grid the specified
   values, given by QIconView::setGridX() and QIconView::setGridY()
   are used.
   Even if QIconView::sorting() is enabled, the items are not resorted
-  in this method. If you want to sort and re-align all items, use
+  in this method. If you want to sort and re-arrange all items, use
   iconview->sort( iconview->sortDirection() );
 
   If \a update is TRUE, the viewport is repainted.
@@ -2612,7 +2596,7 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
   \sa QIconView::setGridX(), QIconView::setGridY(), QIconView::sort()
 */
 
-void QIconView::alignItemsInGrid( bool update )
+void QIconView::arrangeItemsInGrid( bool update )
 {
     if ( !d->firstItem || !d->lastItem )
 	return;
@@ -2626,7 +2610,7 @@ void QIconView::alignItemsInGrid( bool update )
 	item = makeRowLayout( item, y );
 	w = QMAX( w, item->x() + item->width() );
 	h = QMAX( h, item->y() + item->height() );
-	if ( d->alignMode == East )
+	if ( d->arrangement == LeftToRight )
 	    h = QMAX( h, y );
 	
 	if ( !item || !item->next )
@@ -2635,7 +2619,7 @@ void QIconView::alignItemsInGrid( bool update )
 	item = item->next;
     }
 
-    if ( d->lastItem && d->alignMode == South ) {
+    if ( d->lastItem && d->arrangement == TopToBottom ) {
 	item = d->lastItem;
 	int x = item->x();
 	while ( item && item->x() >= x ) {
@@ -2649,7 +2633,7 @@ void QIconView::alignItemsInGrid( bool update )
     w = QMAX( QMAX( d->cachedW, w ), d->lastItem->x() + d->lastItem->width() );
     h = QMAX( QMAX( d->cachedH, h ), d->lastItem->y() + d->lastItem->height() );
 
-    if ( d->alignMode == South )
+    if ( d->arrangement == TopToBottom )
 	w += d->spacing;
     else
 	h += d->spacing;
@@ -2664,7 +2648,7 @@ void QIconView::alignItemsInGrid( bool update )
 }
 
 /*!
-  Aligns all items in the \a grid; If the grid is invalid
+  Arranges all items in the \a grid; If the grid is invalid
   (see QSize::isValid(), an invalid size is created when using
   the default constructor of QSize())
   the best fitting grid is calculated first and used then.
@@ -2673,7 +2657,7 @@ void QIconView::alignItemsInGrid( bool update )
 
 */
 
-void QIconView::alignItemsInGrid( const QSize &grid, bool update )
+void QIconView::arrangeItemsInGrid( const QSize &grid, bool update )
 {
     d->containerUpdateLocked = TRUE;
     QSize grid_( grid );
@@ -2731,7 +2715,7 @@ void QIconView::showEvent( QShowEvent * )
 {
     if ( d->dirty ) {
 	resizeContents( viewport()->width(), viewport()->height() );
-	alignItemsInGrid( FALSE );
+	arrangeItemsInGrid( FALSE );
     }
     QScrollView::show();
 }
@@ -2818,11 +2802,21 @@ void QIconView::clearSelection()
 }
 
 /*!
-  If \a select is TRUE, all items are selected, else all are unselected.
+  If \a select is TRUE, all items get selected, else all get unselected.
+  This works only in the selection modes Multi and Extended. In
+  Single and NoSelection mode the selection of the current item is
+  just set to \a select.
 */
 
 void QIconView::selectAll( bool select )
 {
+    if ( d->selectionMode == Single ||
+	 d->selectionMode == NoSelection ) {
+	if ( d->currentItem )
+	    d->currentItem->setSelected( select );
+	return;
+    }
+	
     bool b = signalsBlocked();
     blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
@@ -2977,6 +2971,7 @@ void QIconView::clear()
     clearSelection();
     blockSignals( FALSE );
     setContentsPos( 0, 0 );
+    d->currentItem = 0;
 
     if ( !d->firstItem ) {
 	d->clearing = FALSE;
@@ -3015,7 +3010,7 @@ void QIconView::clear()
 
 /*!
   Sets the horizontal grid to \a rx.  If \a rx is -1, there is no
-  horizontal grid used for aligning items.
+  horizontal grid used for arranging items.
 */
 
 void QIconView::setGridX( int rx )
@@ -3025,7 +3020,7 @@ void QIconView::setGridX( int rx )
 
 /*!
   Sets the vertical grid to \a ry.  If \a ry is -1, there is no
-  vertical grid used for aligning items.
+  vertical grid used for arranging items.
 */
 
 void QIconView::setGridY( int ry )
@@ -3091,7 +3086,7 @@ void QIconView::setItemTextPos( ItemTextPos pos )
 	item->calcRect();
     }
 
-    alignItemsInGrid( TRUE );
+    arrangeItemsInGrid( TRUE );
 }
 
 /*!
@@ -3129,35 +3124,35 @@ QBrush QIconView::itemTextBackground() const
 }
 
 /*!
-  Sets the alignment mode of the iconview to \a am. This can be
-  <li> East (Items, which don't fit onto the view, go further down (you get a
+  Sets the arrangement mode of the iconview to \a am. This can be
+  <li> LeftToRight (Items, which don't fit onto the view, go further down (you get a
   vertical scrollbar)
-  <li> South (Items, which don't fit onto the view, go further right (you get a
+  <li> TopToBottom (Items, which don't fit onto the view, go further right (you get a
   horizontal scrollbar)
 */
 
-void QIconView::setAlignMode( AlignMode am )
+void QIconView::setArrangement( Arrangement am )
 {
-    if ( d->alignMode == am )
+    if ( d->arrangement == am )
 	return;
 
-    d->alignMode = am;
+    d->arrangement = am;
 
     viewport()->setUpdatesEnabled( FALSE );
     resizeContents( viewport()->width(), viewport()->height() );
     viewport()->setUpdatesEnabled( TRUE );
-    alignItemsInGrid( TRUE );
+    arrangeItemsInGrid( TRUE );
 }
 
 /*!
-  Returns the alignment mode of the iconview.
+  Returns the arrangement mode of the iconview.
 
-  \sa QIconView::setAlignMode()
+  \sa QIconView::setArrangement()
 */
 
-QIconView::AlignMode QIconView::alignMode() const
+QIconView::Arrangement QIconView::arrangement() const
 {
-    return d->alignMode;
+    return d->arrangement;
 }
 
 /*!
@@ -3255,7 +3250,7 @@ bool QIconView::enableMoveItems() const
 }
 
 /*!
-  If \a b is TRUE, all items are re-aligned in the grid if a new one is
+  If \a b is TRUE, all items are re-arranged in the grid if a new one is
   inserted. Else, the best fitting place for the new item is searched and
   the other ones are not touched.
 
@@ -3264,19 +3259,19 @@ bool QIconView::enableMoveItems() const
   gets visible.
 */
 
-void QIconView::setAligning( bool b )
+void QIconView::setAutoArrange( bool b )
 {
     d->reorderItemsWhenInsert = b;
 }
 
 /*!
-  Returns TRUE if all items are re-aligned in the grid if a new one is
+  Returns TRUE if all items are re-arranged in the grid if a new one is
   inserted, else FALSE.
 
-  \sa QIconView::setAligning()
+  \sa QIconView::setAutoArrange()
 */
 
-bool QIconView::aligning() const
+bool QIconView::autoArrange() const
 {
     return d->reorderItemsWhenInsert;
 }
@@ -3285,10 +3280,10 @@ bool QIconView::aligning() const
   If \a sort is TRUE, new items are inserted sorted. The sort
   direction is specified using \a ascending.
 
-  Inserting items sorted only works when re-aligning items is
-  set to TRUE as well (using QIconView::setAligning()).
+  Inserting items sorted only works when re-arranging items is
+  set to TRUE as well (using QIconView::setAutoArrange()).
 
-  \sa QIconView::setAligning(), QIconView::aligning()
+  \sa QIconView::setAutoArrange(), QIconView::autoArrange()
 */
 
 void QIconView::setSorting( bool sort, bool ascending )
@@ -3311,9 +3306,9 @@ bool QIconView::sorting() const
 /*!
   Returns TRUE if the sort dorection for inserting new items is ascending,
   FALSE means descending. This sort dircction has only a meaning if re-sorting
-  and re-aligning of new inserted items is enabled.
+  and re-arranging of new inserted items is enabled.
 
-  \sa QIconView::setSorting(), QIconView::setAligning()
+  \sa QIconView::setSorting(), QIconView::setAutoArrange()
 */
 
 bool QIconView::sortDirection() const
@@ -3346,7 +3341,7 @@ void QIconView::setWordWrapIconText( bool b )
 	item->wordWrapDirty = TRUE;
 	item->calcRect();
     }
-    alignItemsInGrid( TRUE );
+    arrangeItemsInGrid( TRUE );
 }
 
 /*!
@@ -3373,6 +3368,11 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 
     if ( d->currentItem )
 	d->currentItem->renameItem();
+
+    if ( !d->currentItem && !item && d->firstItem ) {
+	d->currentItem = d->firstItem;
+	repaintItem( d->firstItem );
+    }
 
     d->startDrag = FALSE;
 
@@ -3444,15 +3444,18 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 	    else
 		item->setSelected( TRUE, e->state() & ControlButton );
 	}
-    } else if ( d->selectionMode == Single || !( e->state() & ControlButton ) )
+    } else if ( ( d->selectionMode != Single || e->button() == RightButton )
+		&& !( e->state() & ControlButton ) )
 	selectAll( FALSE );
 
     setCurrentItem( item );
 
     if ( e->button() == LeftButton ) {
-	
-	if ( !d->currentItem && ( d->selectionMode == Multi ||
+	if ( !item && ( d->selectionMode == Multi ||
 				  d->selectionMode == Extended ) ) {
+	    d->tmpCurrentItem = d->currentItem;
+	    d->currentItem = 0;
+	    repaintItem( d->tmpCurrentItem );
 	    if ( d->rubber )
 		delete d->rubber;
 	    d->rubber = 0;
@@ -3472,10 +3475,6 @@ void QIconView::contentsMousePressEvent( QMouseEvent *e )
 
     if ( e->button() == RightButton ) {
 	emit rightButtonPressed( item, e->globalPos() );
-	if ( item )
-	    emit itemRightPressed( item );
-	else
-	    emit viewportRightPressed();
     }
 }
 
@@ -3487,10 +3486,10 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 {
     QIconViewItem *item = findItem( e->pos() );
 
+    bool emitClicked = d->mousePressed;
     d->mousePressed = FALSE;
     d->startDrag = FALSE;
-    bool emitClicked = TRUE;
-    
+
     if ( d->rubber ) {
 	QPainter p;
 	p.begin( viewport() );
@@ -3502,9 +3501,15 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 
 	p.end();
 
+	if ( ( d->rubber->topLeft() - d->rubber->bottomRight() ).manhattanLength() >
+	     QApplication::startDragDistance() )
+	    emitClicked = FALSE;
 	delete d->rubber;
 	d->rubber = 0;
-	emitClicked = FALSE;
+	d->currentItem = d->tmpCurrentItem;
+	d->tmpCurrentItem = 0;
+	if ( d->currentItem )
+	    repaintItem( d->currentItem );
     }
 
     if ( d->scrollTimer ) {
@@ -3518,14 +3523,9 @@ void QIconView::contentsMouseReleaseEvent( QMouseEvent *e )
 	emit mouseButtonClicked( e->button(), item, e->globalPos() );
 	emit clicked( item );
 	emit clicked( item, e->globalPos() );
-    }
-    
-    if ( e->button() == RightButton ) {
-	emit rightButtonClicked( item, e->globalPos() );
-	if ( item )
-	    emit itemRightClicked( item );
-	else
-	    emit viewportRightClicked();
+	if ( e->button() == RightButton ) {
+	    emit rightButtonClicked( item, e->globalPos() );
+	}
     }
 }
 
@@ -3544,11 +3544,12 @@ void QIconView::contentsMouseMoveEvent( QMouseEvent *e )
 	d->highlightedItem = item;
     }
 
-    if ( d->mousePressed && d->currentItem && d->currentItem->dragEnabled() ) {
+    if ( d->mousePressed && item && item == d->currentItem &&
+	 item->isSelected() && item->dragEnabled() ) {
 	if ( !d->startDrag ) {
 	    d->currentItem->setSelected( TRUE, TRUE );
 	    d->startDrag = TRUE;
-	} else if ( ( d->dragStartPos - e->pos() ).manhattanLength() > 4 ) {
+	} else if ( ( d->dragStartPos - e->pos() ).manhattanLength() > QApplication::startDragDistance() ) {
 	    d->mousePressed = FALSE;
 	    d->cleared = FALSE;
 	    startDrag();
@@ -3733,7 +3734,7 @@ void QIconView::resizeEvent( QResizeEvent* e )
 	if ( d->resizeEvents > 2 )
 	    d->adjustTimer->start( 100, TRUE );
 	else
-	    alignItemsInGrid( FALSE );
+	    arrangeItemsInGrid( FALSE );
     }
 }
 
@@ -3746,7 +3747,7 @@ void QIconView::adjustItems()
     d->adjustTimer->stop();
     if ( d->resizeMode == Adjust ) {
 	if ( size() != d->oldSize )
-	    alignItemsInGrid( TRUE );
+	    arrangeItemsInGrid( TRUE );
     }
 }
 
@@ -3760,23 +3761,13 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	return;
 
     if ( !d->currentItem ) {
-	if ( !e->text().isEmpty() && e->text()[ 0 ].isPrint() ) {
-	    findItemByName( e->text() );
-	    return;
-	}
-	
-	if ( e->key() == Key_Control )
-	    return;
-
 	setCurrentItem( d->firstItem );
-
 	if ( d->selectionMode == Single )
 	    d->currentItem->setSelected( TRUE, TRUE );
 	return;
     }
 
-    switch ( e->key() )
-    {
+    switch ( e->key() ) {
     case Key_Home: {
 	d->currInputString = QString::null;
 	if ( !d->firstItem )
@@ -3812,7 +3803,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
     case Key_Right: {	
 	d->currInputString = QString::null;
 	QIconViewItem *item;
-	if ( d->alignMode == East ) {
+	if ( d->arrangement == LeftToRight ) {
 	    if ( !d->currentItem->next )
 		return;
 
@@ -3855,7 +3846,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
     case Key_Left: {
 	d->currInputString = QString::null;
 	QIconViewItem *item;
-	if ( d->alignMode == East ) {
+	if ( d->arrangement == LeftToRight ) {
 	    if ( !d->currentItem->prev )
 		return;
 
@@ -3910,7 +3901,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	d->currInputString = QString::null;
 	QIconViewItem *item;
 	
-	if ( d->alignMode == East ) {
+	if ( d->arrangement == LeftToRight ) {
 	    item = d->firstItem;
 	    QRect r( d->currentItem->x(), 0, d->currentItem->width(), contentsHeight() );
 	    for ( ; item; item = item->next ) {
@@ -3954,7 +3945,7 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	d->currInputString = QString::null;
 	QIconViewItem *item;
 	
-	if ( d->alignMode == East ) {
+	if ( d->arrangement == LeftToRight ) {
 	    item = d->lastItem;
 	    QRect r( d->currentItem->x(), 0, d->currentItem->width(), contentsHeight() );
 	    for ( ; item; item = item->prev ) {
@@ -3997,14 +3988,14 @@ void QIconView::keyPressEvent( QKeyEvent *e )
     case Key_Next: {
 	d->currInputString = QString::null;
 	QRect r;
-	if ( d->alignMode == East )
+	if ( d->arrangement == LeftToRight )
 	    r = QRect( 0, d->currentItem->y() + visibleHeight(), contentsWidth(), visibleHeight() );
 	else
 	    r = QRect( d->currentItem->x() + visibleWidth(), 0, visibleWidth(), contentsHeight() );
 	QIconViewItem *item = d->currentItem;
 	QIconViewItem *ni = findFirstVisibleItem( r  );
 	if ( !ni ) {
-	    if ( d->alignMode == East )
+	    if ( d->arrangement == LeftToRight )
 		r = QRect( 0, d->currentItem->y() + d->currentItem->height(), contentsWidth(), contentsHeight() );
 	    else
 		r = QRect( d->currentItem->x() + d->currentItem->width(), 0, contentsWidth(), contentsHeight() );
@@ -4025,14 +4016,14 @@ void QIconView::keyPressEvent( QKeyEvent *e )
     case Key_Prior: {
 	d->currInputString = QString::null;
 	QRect r;
-	if ( d->alignMode == East )
+	if ( d->arrangement == LeftToRight )
 	    r = QRect( 0, d->currentItem->y() - visibleHeight(), contentsWidth(), visibleHeight() );
 	else
 	    r = QRect( d->currentItem->x() - visibleWidth(), 0, visibleWidth(), contentsHeight() );
 	QIconViewItem *item = d->currentItem;
 	QIconViewItem *ni = findFirstVisibleItem( r  );
 	if ( !ni ) {
-	    if ( d->alignMode == East )
+	    if ( d->arrangement == LeftToRight )
 		r = QRect( 0, 0, contentsWidth(), d->currentItem->y() );
 	    else
 		r = QRect( 0, 0, d->currentItem->x(), contentsHeight() );
@@ -4051,10 +4042,18 @@ void QIconView::keyPressEvent( QKeyEvent *e )
 	}
     } break;
     default:
-	if ( !e->text().isEmpty() && e->text()[ 0 ].isPrint() )
+	if ( !e->text().isEmpty() && e->text()[ 0 ].isPrint() ) {
 	    findItemByName( e->text() );
-	else
+	} else {
 	    d->currInputString = QString::null;
+	    if ( e->state() & ControlButton ) {
+		switch ( e->key() ) {
+		case Key_A:
+		    selectAll( TRUE );
+		    break;
+		}
+	    }
+	}
     }
 
     if ( e->key() != Key_Shift &&
@@ -4067,12 +4066,14 @@ void QIconView::keyPressEvent( QKeyEvent *e )
   \reimp
 */
 
-void QIconView::focusInEvent( QFocusEvent * )
+void QIconView::focusInEvent( QFocusEvent *e )
 {
     if ( d->currentItem )
 	repaintItem( d->currentItem );
-    else
-	setCurrentItem( d->firstItem );
+    else if ( d->firstItem && e->reason() != QFocusEvent::Mouse ) {
+	d->currentItem = d->firstItem;
+	repaintItem( d->currentItem );
+    }
 }
 
 /*!
@@ -4096,7 +4097,8 @@ void QIconView::drawRubber( QPainter *p )
 
     QPoint pnt( d->rubber->x(), d->rubber->y() );
     pnt = contentsToViewport( pnt );
-    p->drawRect( QRect( pnt.x(), pnt.y(), d->rubber->width(), d->rubber->height() ) );
+    style().drawFocusRect( p, QRect( pnt.x(), pnt.y(), d->rubber->width(), d->rubber->height() ), 
+			   colorGroup() ); 
 }
 
 /*!
@@ -4226,11 +4228,11 @@ void QIconView::insertInGrid( QIconViewItem *item )
   Emits signals, that indciate selection changes.
 */
 
-void QIconView::emitSelectionChanged()
+void QIconView::emitSelectionChanged( QIconViewItem *i )
 {
     emit selectionChanged();
     if ( d->selectionMode == Single )
-	emit selectionChanged( d->currentItem );
+	emit selectionChanged( i ? i : d->currentItem );
 }
 
 /*!
@@ -4459,8 +4461,8 @@ void QIconView::findItemByName( const QString &text )
 }
 
 /*!
-  Layouts a row of icons (in AlignMode == South this is a column). Starts
-  layouting with the item \a begin. \a y is the starting coordinate.
+  Lays out a row of icons (in Arrangement == TopToBottom this is a column). Starts
+  laying out with the item \a begin. \a y is the starting coordinate.
   Returns the last item of the row and sets the new starting coordinate to \a y.
 */
 
@@ -4468,7 +4470,7 @@ QIconViewItem *QIconView::makeRowLayout( QIconViewItem *begin, int &y )
 {
     QIconViewItem *end = 0;
 	
-    if ( d->alignMode == East ) {
+    if ( d->arrangement == LeftToRight ) {
 	
 	if ( d->rastX == -1 ) {
 	    // first calculate the row height
@@ -4681,7 +4683,7 @@ static int cmpIconViewItems( const void *n1, const void *n2 )
 }
 
 /*!
-  Sorts the items of the listview and re-aligns them afterwards.
+  Sorts the items of the listview and re-arranges them afterwards.
   If \a ascending is TRUE, the items
   are sorted in increasing order, else in decreasing order. For sorting
   QIconViewItem::compare() is used. The default sort direction is set to
@@ -4742,7 +4744,7 @@ void QIconView::sort( bool ascending )
 
     delete [] items;
 
-    alignItemsInGrid( TRUE );
+    arrangeItemsInGrid( TRUE );
 }
 
 /*!
@@ -4754,7 +4756,7 @@ QSize QIconView::sizeHint() const
     if ( d->dirty && d->firstSizeHint ) {
 	( (QIconView*)this )->resizeContents( QMAX( 400, contentsWidth() ),
 					      QMAX( 400, contentsHeight() ) );
-	( (QIconView*)this )->alignItemsInGrid( FALSE );
+	( (QIconView*)this )->arrangeItemsInGrid( FALSE );
 	d->firstSizeHint = FALSE;
     }
 
@@ -4851,7 +4853,7 @@ void QIconView::appendItemContainer()
 {
     QSize s;
     // #### We have to find out which value is best here
-    if ( d->alignMode == East )
+    if ( d->arrangement == LeftToRight )
 	s = QSize( INT_MAX - 1, RECT_EXTENSION );
     else
 	s = QSize( RECT_EXTENSION, INT_MAX - 1 );
@@ -4860,7 +4862,7 @@ void QIconView::appendItemContainer()
 	d->firstContainer = new QIconViewPrivate::ItemContainer( 0, 0, QRect( QPoint( 0, 0 ), s ) );
 	d->lastContainer = d->firstContainer;
     } else {
-	if ( d->alignMode == East )
+	if ( d->arrangement == LeftToRight )
 	    d->lastContainer = new QIconViewPrivate::ItemContainer(
 		d->lastContainer, 0, QRect( d->lastContainer->rect.bottomLeft(), s ) );
 	else
@@ -4872,7 +4874,7 @@ void QIconView::appendItemContainer()
 /*!
   \internal
   Rebuilds the whole internal data structure. This is done when
-  most certainly all items change their geometry (e.g. in alignItemsInGrid()), because
+  most certainly all items change their geometry (e.g. in arrangeItemsInGrid()), because
   calling this is then more efiicient than calling updateItemContainer() for each
   item
 */
@@ -4909,7 +4911,7 @@ void QIconView::rebuildContainers()
 	    item = item->next;
 	    c = c->p;
 	} else {
-	    if ( d->alignMode == East ) {
+	    if ( d->arrangement == LeftToRight ) {
 		if ( item->y() < c->rect.y() && c->p ) {
 		    c = c->p;
 		    continue;
@@ -4940,9 +4942,5 @@ void QIconView::movedContents( int, int )
 	d->oldDragPos = QPoint( -1, -1 );
     }
 }
-
-/*!
-  \internal
-*/
 
 #include "qiconview.moc"
