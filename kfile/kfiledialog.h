@@ -65,13 +65,13 @@ class QHBoxLayout;
  * @author Richard J. Moore rich@kde.org
  * @version $Id$
  */
-class KFileDialog : public QDialog
+class KFileBaseDialog : public QDialog
 {
     Q_OBJECT
     
 public:
     /**
-      * Construct a KFileDialog
+      * Construct a KFileBaseDialog
       *
       * @param dirName  The name of the directory to start in.
       * @param filter   A shell glob that specifies which files to display.
@@ -80,7 +80,7 @@ public:
       * @param acceptURLs If set to false, kfiledialog will just accept
       * files on the local filesystem.
       */
-    KFileDialog(const char *dirName, const char *filter= 0,
+    KFileBaseDialog(const char *dirName, const char *filter= 0,
 		QWidget *parent= 0, const char *name= 0, 
 		bool modal = false, bool acceptURLs = true);
     
@@ -88,7 +88,7 @@ public:
     /**
       * Cleans up
       */
-    ~KFileDialog();
+    ~KFileBaseDialog();
     
     /**
       * Returns the fully qualified filename.
@@ -105,36 +105,12 @@ public:
       */
     void rereadDir();
     
-    /**
-      * This method creates a modal file dialog and returns the selected 
-      * filename or an empty string if none was chosen. Note that with 
-      * this method the user must select an existing filename.
-      *
-      * @param dir This specifies the path the dialog will start in.
-      * @param filter This is a space seperated list of shell globs.
-      * @param parent The widget the dialog will be centered on initially.
-      * @param name The name of the dialog widget.
-      */
-    static QString getOpenFileName(const char *dir= 0, const char *filter= 0,
-				   QWidget *parent= 0, const char *name= 0);
+   
 
 
     static QString getDirectory(const char *url, QWidget *parent = 0,  
 				const char *name = 0);
 
-    /**
-      * This method creates a modal file dialog and returns the selected 
-      * filename or an empty string if none was chosen. Note that with this 
-      * method the user need not select an existing filename.
-      *
-      * @param dir This specifies the path the dialog will start in.
-      * @param filter This is a space seperated list of shell globs.
-      * @param parent The widget the dialog will be centered on initially.
-      * @param name The name of the dialog widget.
-      */
-    static QString getSaveFileName(const char *dir= 0, const char *filter= 0,
-				   QWidget *parent= 0, const char *name= 0);
-    
     /**
       * Go back to the previous directory if this is not the first.
       */
@@ -164,20 +140,6 @@ public:
       * Returns the url of the selected filename
       */
     QString selectedFileURL();
-    
-    /**
-      * This function is similar to getOpenFilename() but allows the
-      * user to select a local file or a remote file.
-      */
-    static QString getOpenFileURL(const char *url= 0, const char *filter= 0,
-				  QWidget *parent= 0, const char *name= 0);
-    
-    /**
-      * This function is similar to getOpenFilename() but allows the
-      * user to select a local file or a remote file.
-      */
-    static QString getSaveFileURL(const char *url= 0, const char *filter= 0,
-				  QWidget *parent= 0, const char *name= 0);
     
     /**
       * Returns the URLs of the selected files.
@@ -311,12 +273,12 @@ protected:
       * function to provide another file view.
       * It will be used to display files.
       **/
-    virtual KFileInfoContents *initFileList( QWidget *parent );
+    virtual KFileInfoContents *initFileList( QWidget *parent ) = 0;
 
     /**
       * Overload this function, if you want the filter shown/unshown
       */
-    virtual bool getShowFilter();
+    virtual bool getShowFilter() = 0;
     
     /**
       * Set the directory to view 
@@ -350,9 +312,14 @@ protected:
      * @param takeFiles if set to true, if will close the dialog, if
      * txt is a file name
      */
+    void checkPath(const char *txt, bool takeFiles = false);
 
-    void KFileDialog::checkPath(const char *txt, bool takeFiles = false);
-    
+    /**
+     * this functions must be called by the constructor of a derived
+     * class. 
+     **/
+     void init();
+
 protected slots:
     void pathChanged();
     void comboActivated(int);
@@ -413,6 +380,69 @@ private:
     QPushButton *bOk, *bCancel, *bHelp;
     QLabel *locationLabel, *filterLabel;
     
+};
+
+class KDirDialog : public KFileBaseDialog
+{
+public:
+    
+    KDirDialog(const char *url, QWidget *parent, const char *name);
+    
+protected:
+    virtual KFileInfoContents *initFileList( QWidget *parent );
+    virtual bool getShowFilter() { return false; }
+};
+
+class KFileDialog : public KFileBaseDialog
+{
+public: 
+    KFileDialog(const char *dirName, const char *filter= 0,
+		QWidget *parent= 0, const char *name= 0, 
+		bool modal = false, bool acceptURLs = true);
+
+    /**
+      * This method creates a modal file dialog and returns the selected 
+      * filename or an empty string if none was chosen. Note that with 
+      * this method the user must select an existing filename.
+      *
+      * @param dir This specifies the path the dialog will start in.
+      * @param filter This is a space seperated list of shell globs.
+      * @param parent The widget the dialog will be centered on initially.
+      * @param name The name of the dialog widget.
+      */
+    static QString getOpenFileName(const char *dir= 0, const char *filter= 0,
+				   QWidget *parent= 0, const char *name= 0);
+
+    /**
+     * This method creates a modal file dialog and returns the selected 
+     * filename or an empty string if none was chosen. Note that with this 
+     * method the user need not select an existing filename.
+     *
+     * @param dir This specifies the path the dialog will start in.
+     * @param filter This is a space seperated list of shell globs.
+     * @param parent The widget the dialog will be centered on initially.
+     * @param name The name of the dialog widget.
+     */
+    static QString getSaveFileName(const char *dir= 0, const char *filter= 0,
+				   QWidget *parent= 0, const char *name= 0);
+
+    /**
+     * This function is similar to getOpenFilename() but allows the
+     * user to select a local file or a remote file.
+     */
+    static QString getOpenFileURL(const char *url= 0, const char *filter= 0,
+				  QWidget *parent= 0, const char *name= 0);
+    
+    /**
+     * This function is similar to getOpenFilename() but allows the
+     * user to select a local file or a remote file.
+     */
+    static QString getSaveFileURL(const char *url= 0, const char *filter= 0,
+				  QWidget *parent= 0, const char *name= 0);
+    
+protected:
+    virtual KFileInfoContents *initFileList( QWidget *parent);
+    virtual bool getShowFilter();
 };
 
 #endif

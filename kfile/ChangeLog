@@ -1,3 +1,9 @@
+1998-03-30  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.h: Moved KFileDialog into KFileBaseDialog and made
+	KFileDialog and KDirDialog a derived class of KFileBaseDialog to
+	make this virtual functions work
+
 Mon Mar 30 17:53:20 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
 
         * kcombiview.cpp: bug fixes for completion & corresponding

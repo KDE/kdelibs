@@ -44,7 +44,7 @@ enum SortItem { BY_NAME = 1000, BY_SIZE, BY_DATE, BY_OWNER, BY_GROUP };
 
 const int idStart = 1;
 
-KFileDialog::KFileDialog(const char *dirName, const char *filter,
+KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 			 QWidget *parent, const char *name, bool modal,
 			 bool acceptURLs)
     : QDialog(parent, name, modal), boxLayout(0)
@@ -109,7 +109,11 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
     
     backStack.setAutoDelete( true );
     forwardStack.setAutoDelete( true );
+    
+}
 
+void KFileBaseDialog::init() 
+{
     // Get the config object
     KConfig *c= kapp->getConfig();
     QString oldgroup= c->group();
@@ -122,12 +126,8 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
     int h = c->readNumEntry("Height", 400);
     
     showHidden = (c->readNumEntry("ShowHidden", 0) != 0);
-    showFilter = getShowFilter();
-
     showStatusLine = (c->readNumEntry("ShowStatusLine", 1) != 0);
       
-    resize(w, h);
-    
     toolbar= new KToolBar(wrapper, "fileDialogToolbar");
     
     // Build the toolbar
@@ -198,6 +198,9 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
         dir->setSorting( QDir::Name | QDir::DirsFirst);
     else
         dir->setSorting( QDir::Name );
+
+    showFilter = getShowFilter();
+
     fileList = initFileList( wrapper );
     
     locationEdit = new KCombo(true, wrapper, "locationedit");
@@ -214,7 +217,6 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
     connect(locationEdit, SIGNAL(activated(const char*)),
 	    SLOT(locationChanged(const char*)));
 
-    
     // Add the filter
     if (showFilter) {
 	filterLabel = new QLabel(i18n("&Filter:"), wrapper);
@@ -290,6 +292,7 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
     bHelp->setFixedHeight(bHelp->height());
     connect(bHelp, SIGNAL(clicked()), SLOT(help()));
 
+    // c->setGroup(oldgroup); // reset the group
     initGUI(); // activate GM
 
     visitedDirs = new QStrIList();
@@ -299,8 +302,6 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
     else
        pathChanged();
 
-    c->setGroup(oldgroup); // reset the group
-
     if (!filename_.isNull()) {
 	debug("edit %s", locationEdit->text(0));
 	checkPath(filename_);
@@ -308,7 +309,7 @@ KFileDialog::KFileDialog(const char *dirName, const char *filter,
     }
 }
 
-void KFileDialog::initGUI()
+void KFileBaseDialog::initGUI()
 {
     if (boxLayout)
 	delete boxLayout; // deletes all sub layouts
@@ -349,7 +350,7 @@ void KFileDialog::initGUI()
     fileList->connectFileHighlighted(this, SLOT(fileHighlighted()));
 }
 
-KFileDialog::~KFileDialog()
+KFileBaseDialog::~KFileBaseDialog()
 {
     backStack.clear();
     delete bookmarks;
@@ -358,7 +359,7 @@ KFileDialog::~KFileDialog()
     delete filters;
 }
 
-void KFileDialog::help() // SLOT
+void KFileBaseDialog::help() // SLOT
 {
     kapp->invokeHTMLHelp("kfiledialog/index.html", "");
 }
@@ -368,7 +369,7 @@ bool KFileDialog::getShowFilter()
     return (kapp->getConfig()->readNumEntry("ShowFilter", 1) != 0);
 }
 
-void KFileDialog::filterChanged() // SLOT
+void KFileBaseDialog::filterChanged() // SLOT
 {
     if (!showFilter)
        return;
@@ -390,7 +391,7 @@ void KFileDialog::filterChanged() // SLOT
     pathChanged();
 }
 
-void KFileDialog::setHiddenToggle(bool b) // SLOT
+void KFileBaseDialog::setHiddenToggle(bool b) // SLOT
 {
     showHidden = b;
     
@@ -398,13 +399,13 @@ void KFileDialog::setHiddenToggle(bool b) // SLOT
     pathChanged();
 }
 
-void KFileDialog::locationChanged(const char *_txt)
+void KFileBaseDialog::locationChanged(const char *_txt)
 {
     bool highlighted = strcmp(_txt, locationEdit->text(0));
     checkPath(_txt, highlighted);
 }
 
-void KFileDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
+void KFileBaseDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
 {
     QString text = _txt;
     text = text.stripWhiteSpace();
@@ -440,18 +441,18 @@ void KFileDialog::checkPath(const char *_txt, bool takeFiles) // SLOT
 }
 
 
-QString KFileDialog::selectedFile()
+QString KFileBaseDialog::selectedFile()
 {
     KURL u = filename_.data();
     return u.path();
 }
 
-QString KFileDialog::dirPath()
+QString KFileBaseDialog::dirPath()
 {
     return dir->path();
 }
 
-void KFileDialog::setDir(const char *_pathstr, bool clearforward)
+void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
 {
     QString pathstr = _pathstr;
     
@@ -509,11 +510,19 @@ void KFileDialog::setDir(const char *_pathstr, bool clearforward)
     toolbar->getButton(PARENT_BUTTON)->enable(!dir->isRoot());
 }
 
-void KFileDialog::rereadDir()
+void KFileBaseDialog::rereadDir()
 {
     // some would call this dirty. I don't ;)
     dir->setPath(dir->url());
     pathChanged();
+}
+
+KFileDialog::KFileDialog(const char *dirName, const char *filter,
+				 QWidget *parent, const char *name, 
+				 bool modal, bool acceptURLs)
+    : KFileBaseDialog(dirName, filter, parent, name, modal, acceptURLs)
+{
+    init();
 }
 
 QString KFileDialog::getOpenFileName(const char *dir, const char *filter,
@@ -550,7 +559,7 @@ QString KFileDialog::getSaveFileName(const char *dir, const char *filter,
 }
 
 // Protected
-void KFileDialog::pathChanged()
+void KFileBaseDialog::pathChanged()
 {
     // Not forgetting of course the path combo box
     toolbar->clearCombo(PATH_COMBO);
@@ -613,12 +622,12 @@ void KFileDialog::pathChanged()
     }
 }
 
-void KFileDialog::insertFile(const KFileInfo *entry)
+void KFileBaseDialog::insertFile(const KFileInfo *entry)
 {
     repaint_files |= fileList->addItem(entry);
 }
 
-void KFileDialog::insertNewFiles(const KFileInfoList *newone) 
+void KFileBaseDialog::insertNewFiles(const KFileInfoList *newone) 
 {
     repaint_files = false;
 
@@ -637,7 +646,7 @@ void KFileDialog::insertNewFiles(const KFileInfoList *newone)
 	updateStatusLine();
 }
 
-void KFileDialog::addDirEntry(KFileInfo *entry, bool disableUpdating)
+void KFileBaseDialog::addDirEntry(KFileInfo *entry, bool disableUpdating)
 {
     if (disableUpdating) {
 	repaint_files = false;
@@ -654,19 +663,19 @@ void KFileDialog::addDirEntry(KFileInfo *entry, bool disableUpdating)
 	updateStatusLine();
 }
 
-void KFileDialog::slotDirEntry(KFileInfo *entry)
+void KFileBaseDialog::slotDirEntry(KFileInfo *entry)
 {
     addDirEntry(entry, true);
 }
 
-void KFileDialog::slotFinished()
+void KFileBaseDialog::slotFinished()
 {
     if (!finished)
 	QApplication::restoreOverrideCursor();
     finished = true;
 }
 
-void KFileDialog::slotKfmError(int, const char *)
+void KFileBaseDialog::slotKfmError(int, const char *)
 {
     debug("slotKfmError");    
     if (!finished)
@@ -674,7 +683,7 @@ void KFileDialog::slotKfmError(int, const char *)
     finished = true;
 }
 
-void KFileDialog::comboActivated(int index)
+void KFileBaseDialog::comboActivated(int index)
 {
     KDir tmp = *dir;
     for (int i= 0; i < index; i++) {
@@ -685,7 +694,7 @@ void KFileDialog::comboActivated(int index)
 }
 
 // Code pinched from kfm then hacked
-void KFileDialog::back()
+void KFileBaseDialog::back()
 {
     if ( backStack.isEmpty() )
 	return;
@@ -701,7 +710,7 @@ void KFileDialog::back()
 }
 
 // Code pinched from kfm then hacked
-void KFileDialog::forward()
+void KFileBaseDialog::forward()
 {
     if ( forwardStack.isEmpty() )
 	return;
@@ -715,26 +724,26 @@ void KFileDialog::forward()
 }
 
 // SLOT
-void KFileDialog::updateHistory(bool f, bool b)
+void KFileBaseDialog::updateHistory(bool f, bool b)
 {
     emit historyUpdate(f, b);
     toolbar->setItemEnabled(FORWARD_BUTTON, f);
     toolbar->setItemEnabled(BACK_BUTTON, b);
 }
 
-void KFileDialog::addToBookmarks() // SLOT
+void KFileBaseDialog::addToBookmarks() // SLOT
 {
     debug("Add to bookmarks called");
     bookmarks->add(dir->url(), dir->url());
     bookmarks->write();
 }
 
-void KFileDialog::bookmarksChanged() // SLOT
+void KFileBaseDialog::bookmarksChanged() // SLOT
 {
   debug("Bookmarks changed called");
 }
 
-void KFileDialog::fillBookmarkMenu( KBookmark *parent, QPopupMenu *menu, int &id )
+void KFileBaseDialog::fillBookmarkMenu( KBookmark *parent, QPopupMenu *menu, int &id )
 {
     KBookmark *bm;
         
@@ -755,7 +764,7 @@ void KFileDialog::fillBookmarkMenu( KBookmark *parent, QPopupMenu *menu, int &id
     }
 }
 
-void KFileDialog::toolbarCallback(int i) // SLOT
+void KFileBaseDialog::toolbarCallback(int i) // SLOT
 {
     KConfig *c= kapp->getConfig();
     QString oldgroup= c->group();
@@ -813,20 +822,20 @@ void KFileDialog::toolbarCallback(int i) // SLOT
     c->setGroup(oldgroup);
 }
 
-void KFileDialog::cdUp()
+void KFileBaseDialog::cdUp()
 {
     KURL u = dir->url().data();
     u.cd("..");
     setDir(u.url(), true);
 }
 
-void KFileDialog::home()
+void KFileBaseDialog::home()
 {
     setDir( QDir::homeDirPath(), true);
 }
 
 
-void KFileDialog::mkdir()
+void KFileBaseDialog::mkdir()
 {
     // Modal widget asking the user the name of a new directory
     // 
@@ -911,7 +920,7 @@ void KFileDialog::mkdir()
     delete lMakeDir;
 }
 
-void KFileDialog::toolbarPressedCallback(int i)
+void KFileBaseDialog::toolbarPressedCallback(int i)
 {
     int id= idStart;
     if (i == HOTLIST_BUTTON) {
@@ -960,7 +969,7 @@ void KFileDialog::toolbarPressedCallback(int i)
     }    
 }
 
-void KFileDialog::dirActivated()
+void KFileBaseDialog::dirActivated()
 {
     QString tmp = dir->url();
     if (tmp.right(1)[0] != '/')
@@ -973,7 +982,7 @@ void KFileDialog::dirActivated()
     setDir(tmp, true);
 }
 
-void KFileDialog::fileActivated()
+void KFileBaseDialog::fileActivated()
 {
     debug("fileAct");
 	
@@ -993,7 +1002,7 @@ void KFileDialog::fileActivated()
     accept();
 }
 
-void KFileDialog::fileHighlighted()
+void KFileBaseDialog::fileHighlighted()
 {
     const char *highlighted = 
 	fileList->highlightedFile()->fileName();
@@ -1050,7 +1059,7 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
     
 }
 
-void KFileDialog::completion() // SLOT
+void KFileBaseDialog::completion() // SLOT
 {
     bool useSingleClick =
 	kapp->getConfig()->readNumEntry("SingleClick",1);
@@ -1092,17 +1101,17 @@ void KFileDialog::completion() // SLOT
     }
 }
 
-void KFileDialog::resizeEvent(QResizeEvent *)
+void KFileBaseDialog::resizeEvent(QResizeEvent *)
 {
     toolbar->updateRects(true);
 }
 
-void KFileDialog::initUpperChildren()
+void KFileBaseDialog::initUpperChildren()
 {
 
 }
 
-void KFileDialog::initLowerChildren()
+void KFileBaseDialog::initLowerChildren()
 {
 
 }
@@ -1110,7 +1119,7 @@ void KFileDialog::initLowerChildren()
 /**
  * Returns the url for the selected filename
  */
-QString KFileDialog::selectedFileURL()
+QString KFileBaseDialog::selectedFileURL()
 {
     if (filename_.isNull())
 	return 0;
@@ -1142,28 +1151,18 @@ QString KFileDialog::getOpenFileURL(const char *url, const char *filter,
     return retval;
 }
 
-class KDirDialog : public KFileDialog
+KDirDialog::KDirDialog(const char *url, QWidget *parent, const char *name) 
+    : KFileBaseDialog(url, 0, parent, name, true, false) 
 {
-public:
+    init();
+}
     
-    KDirDialog(const char *url, QWidget *parent, const char *name) 
-	: KFileDialog(url, 0, parent, name, true, false) 
-	{
-	    debug("cons"); 
-	}
-    
-protected:
-    virtual KFileInfoContents *initFileList( QWidget *parent );
-    virtual bool showFilter() { return false; }
-};
-
 KFileInfoContents *KDirDialog::initFileList( QWidget *parent )
 {
-    debug("return");
     return new KDirListBox( true, dir->sorting(), parent, "_dirs" );
 }
 
-QString KFileDialog::getDirectory(const char *url,
+QString KFileBaseDialog::getDirectory(const char *url,
 				  QWidget *parent, const char *name)
 {
     QString retval;
@@ -1227,13 +1226,13 @@ QStrList KFileDialog::getSaveFileURLList(const char *, const char *,
 /**
  * If the argument is true the dialog will accept multiple selections.
  */
-void KFileDialog::setMultiSelection(bool)
+void KFileBaseDialog::setMultiSelection(bool)
 {
     warning("WARNING: Multi Select is not supported yet");
     // fileList->setMultiSelection(isMulti);
 }
 
-void KFileDialog::updateStatusLine()
+void KFileBaseDialog::updateStatusLine()
 {
     QString lStatusText;
     QString lFileText("files"), lDirText("directories");
