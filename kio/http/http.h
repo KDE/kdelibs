@@ -332,7 +332,7 @@ protected:
   bool m_bChunked;
 
   // Cookie flags
-  bool m_bUseCookiejar; 
+  // bool m_bUseCookiejar;
   enum { CookiesAuto, CookiesManual, CookiesNone } m_cookieMode;
 
   // Flag that indicates whether there was some connection

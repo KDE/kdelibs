@@ -177,13 +177,6 @@ bool revmatch(const char *host, const char *nplist)
   return false;
 }
 
-/************************************** KDigestAuthentication *************************************/
-// This RFC 2617 implementation is added here temporarily for now.  At some
-// point in the future it will probably be moved out of here to a more centeral
-// place so that other protocols can make use of it.
-
-
-
 /************************************** HTTPProtocol **********************************************/
 
 HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, const QCString &app )
@@ -964,14 +957,14 @@ bool HTTPProtocol::http_open()
      m_cookieMode = CookiesManual;
      cookieStr = metaData("setcookies");
   }
-  else if (cookieMode == "none") 
+  else if (cookieMode == "none")
   {
      m_cookieMode = CookiesNone;
   }
-  else 
+  else
   {
      m_cookieMode = CookiesAuto;
-     if (m_bUseCookiejar)
+     // if (m_bUseCookiejar)
         cookieStr = findCookies( m_request.url.url());
   }
 
@@ -1614,7 +1607,7 @@ bool HTTPProtocol::readHeader()
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
   {
-     if ((m_cookieMode == CookiesAuto) && m_bUseCookiejar)
+     if ((m_cookieMode == CookiesAuto) ) //&& m_bUseCookiejar)
      {
         // Give cookies to the cookiejar.
         addCookies( m_request.url.url(), cookieStr );
@@ -3380,7 +3373,7 @@ void HTTPProtocol::saveAuthorization()
     }
 }
 
-QString HTTPProtocol::createDigestAuth ( bool isForProxy )
+QString HTTPProtocol::createDigestAuth ( bool /*isForProxy*/ )
 {
 
   QString auth;
