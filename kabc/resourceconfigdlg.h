@@ -24,15 +24,15 @@
 #define RESOURCECONFIGDLG_H
 
 #include <qcheckbox.h>
-#include <qdialog.h>
 
 #include <kbuttonbox.h>
+#include <kdialog.h>
 #include <kconfig.h>
 #include <klineedit.h>
 
 #include "resourceconfigwidget.h"
 
-class ResourceConfigDlg : QDialog
+class ResourceConfigDlg : KDialog
 {
     Q_OBJECT
 public:

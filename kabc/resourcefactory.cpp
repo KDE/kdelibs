@@ -27,6 +27,9 @@
 
 #include <qfile.h>
 
+#include "resourcefile.h"
+#include "resourcefileconfig.h"
+
 #include "resourcefactory.h"
 
 using namespace KABC;
@@ -48,6 +51,14 @@ ResourceFactory::ResourceFactory()
 {
     mResourceList.setAutoDelete( true );
 
+    // default resource
+    ResourceInfo *info = new ResourceInfo;
+    info->library = "<none>";
+    info->name = i18n( "File" );
+    info->desc = "<none>";
+
+    mResourceList.insert( "file", info );
+
     QStringList list = KGlobal::dirs()->findAllResources( "data" ,"kabc/*.plugin", true, true );
     for ( QStringList::iterator it = list.begin(); it != list.end(); ++it )
     {
@@ -56,7 +67,7 @@ ResourceFactory::ResourceFactory()
 	if ( !config.hasGroup( "Misc" ) || !config.hasGroup( "Plugin" ) )
 	    continue;
 
-	ResourceInfo *info = new ResourceInfo;
+	info = new ResourceInfo;
 
 	config.setGroup( "Plugin" );
 	QString descr = config.readEntry( "Type" );
@@ -79,9 +90,13 @@ QStringList ResourceFactory::resources()
 {
     QStringList retval;
 	
+    // make sure file is the first entry
+    retval << "file";
+
     QDictIterator<ResourceInfo> it( mResourceList );
     for ( ; it.current(); ++it )
-	retval << it.currentKey();
+	if ( it.currentKey() != "file" )
+	    retval << it.currentKey();
 
     return retval;
 }
@@ -101,8 +116,11 @@ ResourceConfigWidget *ResourceFactory::configWidget( const QString& resName, QWi
     if ( resName.isEmpty() )
 	return 0;
 
-    QString libName = mResourceList[ resName ]->library;
+    if ( resName == "file" ) {
+	return new ResourceFileConfig( parent, "ResourceFileConfig" );
+    }
 
+    QString libName = mResourceList[ resName ]->library;
 
     KLibrary *library = openLibrary( libName );
     if ( !library )
@@ -126,6 +144,10 @@ Resource *ResourceFactory::resource( const QString& resName, AddressBook *ab, co
 
     if ( resName.isEmpty() )
 	return 0;
+
+    if ( resName == "file" ) {
+	return new ResourceFile( ab, config );
+    }
 
     QString libName = mResourceList[ resName ]->library;
 

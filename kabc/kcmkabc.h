@@ -42,7 +42,6 @@ public:
 
     void load();
     void save();
-    void defaults();
 
 public slots:
     void slotAdd();
@@ -67,7 +66,6 @@ public:
 
     void load();
     void save();
-    void defaults();
 
 private:
     ConfigPageImpl *mConfigPage;

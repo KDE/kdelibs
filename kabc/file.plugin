@@ -1,8 +1,0 @@
-[Misc]
-Encoding=UTF-8
-Name=File
-Name[de]=Datei
-
-[Plugin]
-Type=file
-X-KDE-Library=kabc_file

@@ -43,7 +43,6 @@ class AddressBook : public QObject
 
     friend QDataStream &operator<<( QDataStream &, const AddressBook & );
     friend QDataStream &operator>>( QDataStream &, AddressBook & );
-    friend class Resource;
     friend class ResourceDlg;
 
   public:
@@ -231,6 +230,16 @@ class AddressBook : public QObject
                          const QString &key = QString::null,
                          const QString &app = QString::null );
 
+    /**
+      Add address book resource.
+    */
+    bool addResource( Resource * );
+
+    /**
+      Remove address book resource.
+    */
+    bool removeResource( Resource * );
+
   signals:
     /**
       Emitted, when the address book has changed on disk.
@@ -251,17 +260,6 @@ class AddressBook : public QObject
 
   protected:
     QPtrList<Resource> mResources;
-
-  protected:
-    /**
-      Add address book resource.
-    */
-    bool addResource( Resource * );
-
-    /**
-      Remove address book resource.
-    */
-    bool removeResource( Resource * );
 };
 
 QDataStream &operator<<( QDataStream &, const AddressBook & );

@@ -123,20 +123,6 @@ void ConfigPageImpl::save()
     emit changed( false );
 }
 
-void ConfigPageImpl::defaults()
-{
-    delete config;
-    config = new KConfig( "kabcrc" );
-
-    listBox->clear();
-    slotSelectionChanged();
-    typeCombo->setCurrentItem( 0 );
-
-    load();
-
-    emit changed( true );
-}
-
 void ConfigPageImpl::slotAdd()
 {
     QString key = KApplication::randomString( 10 );
@@ -145,6 +131,9 @@ void ConfigPageImpl::slotAdd()
     config->setGroup( "Resource_" + key );
 
     ResourceConfigDlg dlg( this, type, config, "ResourceConfigDlg" );
+
+    dlg.resourceName->setText( type + " Resource" );
+    dlg.resourceIsFast->setChecked( true );
 
     if ( dlg.exec() ) {
 	config->writeEntry( "ResourceName", dlg.resourceName->text() );
@@ -231,11 +220,6 @@ void KCMkabc::load()
 void KCMkabc::save()
 {
     mConfigPage->save();
-}
-
-void KCMkabc::defaults()
-{
-    mConfigPage->defaults();
 }
 
 extern "C"

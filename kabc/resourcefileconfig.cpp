@@ -1,0 +1,70 @@
+/*
+    This file is part of libkabc.
+    Copyright (c) 2002 Tobias Koenig <tokoe@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+
+    $Id$
+*/
+
+#include <qlabel.h>
+#include <qlayout.h>
+
+#include <klocale.h>
+#include <kstandarddirs.h>
+
+#include "format.h"
+#include "resourcefileconfig.h"
+
+ResourceFileConfig::ResourceFileConfig( QWidget* parent,  const char* name )
+    : ResourceConfigWidget( parent, name )
+{
+    resize( 245, 115 ); 
+    QGridLayout *mainLayout = new QGridLayout( this, 2, 2 );
+
+    QLabel *label = new QLabel( i18n( "Format:" ), this );
+    formatBox = new KComboBox( this );
+
+    mainLayout->addWidget( label, 0, 0 );
+    mainLayout->addWidget( formatBox, 0, 1 );
+
+    label = new QLabel( i18n( "Location:" ), this );
+    fileNameEdit = new KURLRequester( this );
+
+    mainLayout->addWidget( label, 1, 0 );
+    mainLayout->addWidget( fileNameEdit, 1, 1 );
+
+    formatBox->insertItem( i18n( "VCard" ), FORMAT_VCARD );
+    formatBox->insertItem( i18n( "Binary" ), FORMAT_BINARY );
+}
+
+void ResourceFileConfig::loadSettings( KConfig *config )
+{
+    uint format = config->readNumEntry( "FileFormat", FORMAT_VCARD );
+    formatBox->setCurrentItem( format );
+
+    fileNameEdit->setURL( config->readEntry( "FileName" ) );    
+    if ( fileNameEdit->url().isEmpty() )
+        fileNameEdit->setURL( locateLocal( "data", "kabc/addrbook.vcf" ) );
+}
+
+void ResourceFileConfig::saveSettings( KConfig *config )
+{
+    config->writeEntry( "FileFormat", formatBox->currentItem() );
+    config->writeEntry( "FileName", fileNameEdit->url() );
+}
+
+#include "resourcefileconfig.moc"

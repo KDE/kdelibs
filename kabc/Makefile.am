@@ -5,7 +5,7 @@ INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated -I$(top
 
 lib_LTLIBRARIES   = libkabc.la
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 1:0:0 -module
-libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la
+libkabc_la_LIBADD  = vcard/libvcard.la ../kdeui/libkdeui.la ../kio/libkio.la
 
 libkabc_la_SOURCES = \
   addressbook.cpp addressee.cpp phonenumber.cpp \
@@ -13,14 +13,25 @@ libkabc_la_SOURCES = \
   addresseedialog.cpp distributionlist.cpp \
   distributionlisteditor.cpp resource.cpp \
   vcard21parser.cpp field.cpp resourcefactory.cpp \
-  resourceconfigwidget.cpp resourcedlg.cpp
+  resourceconfigwidget.cpp resourcedlg.cpp \
+  resourcefile.cpp \
+  resourcefileconfig.cpp \
+  binaryformat.cpp \
+  simpleformat.cpp \
+  vcardformat.cpp \
+  vcardformatimpl.cpp
+
 
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   distributionlist.h distributionlisteditor.h geo.h phonenumber.h \
-  stdaddressbook.h timezone.h resource.h \
+  stdaddressbook.h timezone.h resource.h resourcefile.h \
   vcard21parser.h field.h resourcefactory.h \
-  resourceconfigwidget.h resourcedlg.h
+  resourceconfigwidget.h resourcedlg.h \
+  binaryformat.h \
+  simpleformat.h \
+  vcardformat.h \
+  vcardformatimpl.h
 
 METASOURCES = AUTO
 
@@ -70,7 +81,7 @@ autostartdir = $(prefix)/share/autostart
 
 DOXYGEN_REFERENCES = kdecore kdeui
 
-kde_module_LTLIBRARIES = kcm_kabc.la kabc_file.la kabc_sql.la
+kde_module_LTLIBRARIES = kcm_kabc.la kabc_sql.la
 
 kcm_kabc_la_SOURCES = kcmkabc.cpp kcm_config.ui resourceconfigdlg.cpp
 kcm_kabc_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
@@ -82,37 +93,16 @@ datadir = $(kde_appsdir)/Settings/Personalization
 ###########
 # plugins
 
-# file plugin
-kabc_file_la_SOURCES = \
-    resourcefile.cpp \
-    resourcefileconfig.ui \
-    resourcefileconfigimpl.cpp \
-    binaryformat.cpp \
-    simpleformat.cpp \
-    vcardformat.cpp \
-    vcardformatimpl.cpp
-
-kabc_file_la_LIBADD      = vcard/libvcard.la $(LIB_KDEUI) $(LIB_KIO) libkabc.la
-kabc_file_la_LDFLAGS     = $(all_libraries) $(KDE_PLUGIN) -module
-
 # sql plugin
 kabc_sql_la_SOURCES = \
     resourcesql.cpp \
-    resourcesqlconfig.ui \
-    resourcesqlconfigimpl.cpp
+    resourcesqlconfig.cpp
 
 kabc_sql_la_LIBADD      = $(LIB_KDEUI) libkabc.la
 kabc_sql_la_LDFLAGS     = $(all_libraries) $(KDE_PLUGIN) -module
 
-
-noinst_HEADERS = \
-    binaryformat.h \
-    simpleformat.h \
-    vcardformat.h \
-    vcardformatimpl.h
-
 linkdir                   = $(kde_datadir)/kabc/
-link_DATA                 = file.plugin sql.plugin
+link_DATA                 = sql.plugin
 EXTRA_DIST = $(data_DATA) $(link_DATA)
 
 include ../Doxyfile.am

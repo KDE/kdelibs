@@ -20,20 +20,28 @@
     $Id$
 */
 
-#ifndef RESOURCEFILECONFIGIMPL_H
-#define RESOURCEFILECONFIGIMPL_H
+#ifndef RESOURCESQLCONFIG_H
+#define RESOURCESQLCONFIG_H
 
-#include "resourcefileconfig.h"
+#include <klineedit.h>
 
-class ResourceFileConfigImpl : public ResourceFileConfig
-{
+#include "resourceconfigwidget.h"
+
+class ResourceSqlConfig : public ResourceConfigWidget
+{ 
     Q_OBJECT
+
 public:
-    ResourceFileConfigImpl( QWidget *parent = 0, const char *name = 0 );
+    ResourceSqlConfig( QWidget* parent = 0, const char* name = 0 );
+
+    KLineEdit* user;
+    KLineEdit* dbName;
+    KLineEdit* host;
+    KLineEdit* password;
 
 public slots:
     void loadSettings( KConfig *config );
     void saveSettings( KConfig *config );
 };
 
-#endif
+#endif // RESOURCESQLCONFIG_H

@@ -20,29 +20,27 @@
     $Id$
 */
 
-#include "format.h"
+#ifndef RESOURCEFILECONFIG_H
+#define RESOURCEFILECONFIG_H
 
-#include "resourcefileconfigimpl.h"
+#include <kcombobox.h>
+#include <kurlrequester.h>
 
-ResourceFileConfigImpl::ResourceFileConfigImpl( QWidget *parent, const char *name )
-    : ResourceFileConfig( parent, name )
-{
-    formatBox->insertItem( i18n( "VCard" ), FORMAT_VCARD );
-    formatBox->insertItem( i18n( "Binary" ), FORMAT_BINARY );
-}
+#include "resourceconfigwidget.h"
 
-void ResourceFileConfigImpl::loadSettings( KConfig *config )
-{
-    uint format = config->readNumEntry( "FileFormat", FORMAT_VCARD );
-    formatBox->setCurrentItem( format );
+class ResourceFileConfig : public ResourceConfigWidget
+{ 
+    Q_OBJECT
 
-    fileNameEdit->setURL( config->readEntry( "FileName" ) );    
-}
+public:
+    ResourceFileConfig( QWidget* parent = 0, const char* name = 0 );
 
-void ResourceFileConfigImpl::saveSettings( KConfig *config )
-{
-    config->writeEntry( "FileFormat", formatBox->currentItem() );
-    config->writeEntry( "FileName", fileNameEdit->url() );
-}
+    KComboBox* formatBox;
+    KURLRequester* fileNameEdit;
 
-#include "resourcefileconfigimpl.moc"
+public slots:
+    void loadSettings( KConfig *config );
+    void saveSettings( KConfig *config );
+};
+
+#endif // RESOURCEFILECONFIG_H

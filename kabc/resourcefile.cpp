@@ -17,25 +17,8 @@
 #include "vcardformat.h"
 
 #include "resourcefile.h"
-#include "resourcefileconfigimpl.h"
-
-#include "resourcefile.moc"
 
 using namespace KABC;
-
-extern "C"
-{
-    ResourceConfigWidget *config_widget( QWidget *parent )
-    {
-	return new ResourceFileConfigImpl( parent, "ResourceFileConfigImpl" );
-    }
-
-    Resource *resource( AddressBook *ab, const KConfig *config )
-    {
-	return new ResourceFile( ab, config );
-    }
-}
-
 
 ResourceFile::ResourceFile( AddressBook *addressBook, const KConfig *config )
     : Resource( addressBook )      
@@ -225,3 +208,5 @@ void ResourceFile::removeAddressee( const Addressee& addr )
 {
     mFormat->removeAddressee( addr );
 }
+
+#include "resourcefile.moc"

@@ -27,7 +27,7 @@
 #include <klineedit.h>
 
 #include "resourcesql.h"
-#include "resourcesqlconfigimpl.h"
+#include "resourcesqlconfig.h"
 
 using namespace KABC;
 
@@ -35,7 +35,7 @@ extern "C"
 {
     ResourceConfigWidget *config_widget( QWidget *parent )
     {
-	return new ResourceSqlConfigImpl( parent, "ResourceSqlConfigImpl" );
+	return new ResourceSqlConfig( parent, "ResourceSqlConfig" );
     }
 
     Resource *resource( AddressBook *ab, const KConfig *config )

@@ -20,14 +20,47 @@
     $Id$
 */
 
-#include "resourcesqlconfigimpl.h"
+#include <qlabel.h>
+#include <qlayout.h>
 
-ResourceSqlConfigImpl::ResourceSqlConfigImpl( QWidget *parent, const char *name )
-    : ResourceSqlConfig( parent, name )
+#include <klocale.h>
+
+#include "resourcesqlconfig.h"
+
+ResourceSqlConfig::ResourceSqlConfig( QWidget* parent,  const char* name )
+    : ResourceConfigWidget( parent, name )
 {
+    resize( 285, 167 ); 
+
+    QGridLayout *mainLayout = new QGridLayout( this, 4, 2 );
+
+    QLabel *label = new QLabel( i18n( "Username:" ), this );
+    user = new KLineEdit( this );
+
+    mainLayout->addWidget( label, 0, 0 );
+    mainLayout->addWidget( user, 0, 1 );
+
+    label = new QLabel( i18n( "Password:" ), this );
+    password = new KLineEdit( this );
+    password->setEchoMode( KLineEdit::Password );
+
+    mainLayout->addWidget( label, 1, 0 );
+    mainLayout->addWidget( password, 1, 1 );
+
+    label = new QLabel( i18n( "Host:" ), this );
+    host = new KLineEdit( this );
+
+    mainLayout->addWidget( label, 2, 0 );
+    mainLayout->addWidget( host, 2, 1 );
+
+    label = new QLabel( i18n( "Database:" ), this );
+    dbName = new KLineEdit( this );
+
+    mainLayout->addWidget( label, 3, 0 );
+    mainLayout->addWidget( dbName, 3, 1 );
 }
 
-void ResourceSqlConfigImpl::loadSettings( KConfig *config )
+void ResourceSqlConfig::loadSettings( KConfig *config )
 {
     user->setText( config->readEntry( "SqlUser" ) );
     password->setText( config->readEntry( "SqlPassword" ) );
@@ -35,7 +68,7 @@ void ResourceSqlConfigImpl::loadSettings( KConfig *config )
     host->setText( config->readEntry( "SqlHost" ) );
 }
 
-void ResourceSqlConfigImpl::saveSettings( KConfig *config )
+void ResourceSqlConfig::saveSettings( KConfig *config )
 {
     config->writeEntry( "SqlUser", user->text() );
     config->writeEntry( "SqlPassword", password->text() );
@@ -43,4 +76,4 @@ void ResourceSqlConfigImpl::saveSettings( KConfig *config )
     config->writeEntry( "SqlHost", host->text() );
 }
 
-#include "resourcesqlconfigimpl.moc"
+#include "resourcesqlconfig.moc"
