@@ -1,5 +1,5 @@
 #ifndef __KPIXMAP_EFFECT_H
-#define __KPIMAP_EFFECT_H
+#define __KPIXMAP_EFFECT_H
 
 #include <kpixmap.h>
 #include <qimage.h>
