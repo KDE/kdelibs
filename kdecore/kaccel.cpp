@@ -348,6 +348,7 @@ void KAccel::setItemEnabled( const QString& action, bool activate )
 	}
 
 	QAccel::setItemEnabled( pEntry->aAccelId, activate );
+	pEntry->bEnabled = activate;
 }
 
 bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
@@ -391,6 +392,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->aCurrentKeyCode = pE->aConfigKeyCode;
 		pEntry->aConfigKeyCode = pE->aConfigKeyCode;
 		pEntry->bConfigurable = pE->bConfigurable;
+		pEntry->bEnabled = pE->bEnabled;
 		pEntry->aAccelId = pE->aAccelId;
 		pEntry->receiver = pE->receiver;
 		pEntry->member = pE->member;
@@ -400,6 +402,7 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		
 		if ( pEntry->aAccelId && pEntry->aCurrentKeyCode ) {
 			QAccel::insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
+			QAccel::setItemEnabled( pEntry->aAccelId, pEntry->bEnabled );
 			QAccel::connectItem( pEntry->aAccelId, pEntry->receiver,
 					     pEntry->member);
 		}
