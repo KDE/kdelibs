@@ -862,6 +862,8 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
 void KMainWindow::resetAutoSaveSettings()
 {
     d->autoSaveSettings = false;
+    if ( d->settingsTimer )
+        d->settingsTimer->stop();
 }
 
 bool KMainWindow::autoSaveSettings() const
@@ -877,7 +879,7 @@ QString KMainWindow::autoSaveGroup() const
 void KMainWindow::saveAutoSaveSettings()
 {
     Q_ASSERT( d->autoSaveSettings );
-    //kdDebug(200) << "KMainWindow::closeEvent -> saving settings" << endl;
+    //kdDebug(200) << "KMainWindow::saveAutoSaveSettings -> saving settings" << endl;
     saveMainWindowSettings( KGlobal::config(), d->autoSaveGroup );
     KGlobal::config()->sync();
     d->settingsDirty = false;
