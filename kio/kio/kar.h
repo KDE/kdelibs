@@ -30,7 +30,7 @@
 
 /**
  * @short A class for reading ar archives.
- * @author Holger Schroeder <holger-kde@holgis.net>
+ * @author Laurence Anderson <l.d.anderson@warwick.ac.uk>
  */
 class KAr : public KArchive
 {
