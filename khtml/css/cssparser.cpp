@@ -89,7 +89,7 @@ DOMString StyleBaseImpl::baseUrl()
     while(b && !b->isStyleSheet())
         b = b->parent();
 
-    if(!b) return 0;
+    if(!b) return DOMString();
 
     StyleSheetImpl *sheet = static_cast<StyleSheetImpl *>(b);
     if(!sheet->href().isNull())
@@ -98,7 +98,7 @@ DOMString StyleBaseImpl::baseUrl()
     // find parent
     if(sheet->parent()) return sheet->parent()->baseUrl();
 
-    if(!sheet->ownerNode()) return 0;
+    if(!sheet->ownerNode()) return DOMString();
 
     DocumentImpl *doc = static_cast<DocumentImpl*>(sheet->ownerNode()->nodeType() == Node::DOCUMENT_NODE ? sheet->ownerNode() : sheet->ownerNode()->ownerDocument());
 
@@ -859,7 +859,7 @@ public:
 	const struct css_value *cssval = findValue(m_yyStr.latin1(), m_yyStr.length());
 	if (cssval) {
 	  int id = cssval->id;
-	  if ( id == CSS_VAL_NORMAL || id == CSS_VAL_ITALIC || 
+	  if ( id == CSS_VAL_NORMAL || id == CSS_VAL_ITALIC ||
 	       id == CSS_VAL_OBLIQUE || id == CSS_VAL_INHERIT ) {
 	    *fstyle = m_yyStr;
 	    m_yyTok = getToken();
@@ -947,8 +947,8 @@ public:
     }
 
     bool matchFontFamily( QString *ffamily )
-    { 
-	//kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl; 
+    {
+	//kdDebug( 6080 ) << "matchFontFamily: [" << *ffamily << "]" << endl;
       QStringList t;
       if ( !matchFontFamily( &t ) )
 	return false;
@@ -983,7 +983,7 @@ public:
     bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
 			QString *fsize, QString *lheight, QString *ffamily )
     {
-      //kdDebug( 6080 ) << "matchRealFont(..)" << endl;     
+      //kdDebug( 6080 ) << "matchRealFont(..)" << endl;
       bool metFstyle = matchFontStyle( fstyle );
       bool metFvariant = matchFontVariant( fvariant );
       matchFontWeight( fweight );
@@ -1016,12 +1016,12 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 
   //kdDebug( 6080 ) << str << endl;
   const struct css_value *cssval = findValue(fontParser.m_yyIn.latin1(), fontParser.m_yyIn.length());
-  
+
   if (cssval) {
     //kdDebug( 6080 ) << "System fonts requested: [" << str << "]" << endl;
     QFont sysFont;
-    switch (cssval->id) { 
-    case CSS_VAL_MENU: 
+    switch (cssval->id) {
+    case CSS_VAL_MENU:
       sysFont = KGlobalSettings::menuFont();
       break;
     case CSS_VAL_CAPTION:
@@ -1033,7 +1033,7 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
     case CSS_VAL_SMALL_CAPTION:
     default:
       sysFont = KGlobalSettings::generalFont();
-      break;	  
+      break;
     }
     if (sysFont.italic()) {
       fstyle = "italic";
@@ -1055,9 +1055,9 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 	return false;
       }
   }
-  //kdDebug(6080) << "[" << fstyle << "] [" << fvariant << "] [" << fweight << "] [" 
+  //kdDebug(6080) << "[" << fstyle << "] [" << fvariant << "] [" << fweight << "] ["
   //		<< fsize << "] / [" << lheight << "] [" << ffamily << "]" << endl;
-      
+
   if(!fstyle.isNull())
     parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(), CSS_PROP_FONT_STYLE);
   if(!fvariant.isNull())
@@ -1087,7 +1087,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 {
    if (curP==endP) {return 0; /* e.g.: width="" */}
 
-   QString value(curP, endP - curP);    
+   QString value(curP, endP - curP);
    value = value.lower().stripWhiteSpace();
 #ifdef CSS_DEBUG
    kdDebug( 6080 ) << "id [" << getPropertyName(propId).string() << "] parseValue [" << value << "]" << endl;
@@ -1238,7 +1238,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	{
         if (cssval) {
             int id = cssval->id;
-            if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT 
+            if (id == CSS_VAL_LEFT || id == CSS_VAL_RIGHT
 		|| id == CSS_VAL_NONE || id == CSS_VAL_CENTER) {
 				parsedValue = new CSSPrimitiveValueImpl(id);
 			}
@@ -1249,7 +1249,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	{
         if (cssval) {
             int id = cssval->id;
-            if (id == CSS_VAL_NONE || id == CSS_VAL_LEFT 
+            if (id == CSS_VAL_NONE || id == CSS_VAL_LEFT
 		|| id == CSS_VAL_RIGHT|| id == CSS_VAL_BOTH) {
 				parsedValue = new CSSPrimitiveValueImpl(id);
 			}
@@ -1415,7 +1415,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
     case CSS_PROP_BORDER_SPACING:
     {
         // ### should be able to have two values
-        parsedValue = parseUnit(curP, endP, LENGTH);
+        parsedValue = parseUnit(curP, endP, LENGTH | NONNEGATIVE);
         break;
     }
     case CSS_PROP_OUTLINE_COLOR:        // <color> | invert | inherit
@@ -1520,7 +1520,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
                 parsedValue = new CSSPrimitiveValueImpl(id);
             }
         } else {
-            parsedValue = parseUnit(curP, endP, LENGTH);
+            parsedValue = parseUnit(curP, endP, LENGTH|NONNEGATIVE);
         }
         break;
     }
@@ -1570,7 +1570,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
                 break;
             }
         } else {
-            parsedValue = parseUnit(curP, endP, LENGTH | PERCENT );
+            parsedValue = parseUnit(curP, endP, LENGTH | PERCENT | NONNEGATIVE);
         }
         break;
     }
@@ -1618,12 +1618,20 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         }
         break;
     }
+    case CSS_PROP_HEIGHT:               // <length> | <percentage> | auto | inherit
+    case CSS_PROP_WIDTH:                // <length> | <percentage> | auto | inherit
+    {
+        if (cssval && cssval->id == CSS_VAL_AUTO) {
+            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+        } else {
+            parsedValue = parseUnit(curP, endP, LENGTH | PERCENT | NONNEGATIVE );
+        }
+        break;
+    }
     case CSS_PROP_BOTTOM:               // <length> | <percentage> | auto | inherit
     case CSS_PROP_LEFT:                 // <length> | <percentage> | auto | inherit
     case CSS_PROP_RIGHT:                // <length> | <percentage> | auto | inherit
     case CSS_PROP_TOP:                  // <length> | <percentage> | auto | inherit
-    case CSS_PROP_HEIGHT:               // <length> | <percentage> | auto | inherit
-    case CSS_PROP_WIDTH:                // <length> | <percentage> | auto | inherit
     case CSS_PROP_MARGIN_TOP:           //// <margin-width> | inherit
     case CSS_PROP_MARGIN_RIGHT:         //   Which is defined as
     case CSS_PROP_MARGIN_BOTTOM:        //   <length> | <percentage> | auto | inherit
@@ -1666,7 +1674,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
         if (cssval && cssval->id == CSS_VAL_NORMAL) {
             parsedValue = new CSSPrimitiveValueImpl(cssval->id);
         } else {
-            parsedValue = parseUnit(curP, endP, NUMBER | LENGTH | PERCENT);
+            parsedValue = parseUnit(curP, endP, NUMBER | LENGTH | PERCENT | NONNEGATIVE);
         }
         break;
     }
@@ -2269,7 +2277,7 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
     split++;
 
     QString s(curP, split-curP);
-    
+
     bool isInt = false;
     if(s.find('.') == -1) isInt = true;
 
@@ -2399,7 +2407,9 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     if(unit & allowedUnits)
     {
-        //kdDebug( 6080 ) << "found allowed number " << value << ", unit " << type << endl;
+#ifdef CSS_DEBUG
+        kdDebug( 6080 ) << "found allowed number " << value << ", unit " << type << endl;
+#endif
         return new CSSPrimitiveValueImpl(value, type);
     }
 
@@ -2530,7 +2540,7 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
 
 /* Generated a sort of Normal Form for CSS.
  * Remove comments, it is guaranteed that there will not be more then one space between
- * tokens and all the tokens within curly braces are lower case (except text 
+ * tokens and all the tokens within curly braces are lower case (except text
  * within quotes and url tags). Space is replaced with QChar(' ') and removed where
  * it's not necessary.
  *
@@ -2538,11 +2548,11 @@ StyleBaseImpl::parseRule(const QChar *&curP, const QChar *endP)
  *
  * The following rules always hold:
  *
- *  All CSS style sheets are case-insensitive, except for parts that are not under 
- *  the control of CSS. For example, the case-sensitivity of values of the HTML 
- *  attributes "id" and "class", of font names, and of URIs lies outside the scope 
- *  of this specification. Note in particular that element names are case-insensitive 
- *  in HTML, but case-sensitive in XML. 
+ *  All CSS style sheets are case-insensitive, except for parts that are not under
+ *  the control of CSS. For example, the case-sensitivity of values of the HTML
+ *  attributes "id" and "class", of font names, and of URIs lies outside the scope
+ *  of this specification. Note in particular that element names are case-insensitive
+ *  in HTML, but case-sensitive in XML.
  */
 
 QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
@@ -2556,7 +2566,7 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
   bool comment = false; // Within comment
   bool firstChar = false; // Beginning of comment either /* or */
   bool space = true;    // Last token was space
-  int curlyBracket = 0; // Within curlyBrackets -> lower	
+  int curlyBracket = 0; // Within curlyBrackets -> lower
   hasInlinedDecl = false; // reset the inlined decl. flag
 
   const QChar *ch = str.unicode();
@@ -2567,8 +2577,8 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
   float orgLength = str.length();
   kdDebug(6080) << "Length: " << orgLength << endl;
 #endif
-  
-  while(ch < last) {  
+
+  while(ch < last) {
     if( !comment && !sq && *ch == '"' ) {
       dq = !dq;
       processed += *ch;
@@ -2594,7 +2604,7 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
       --curlyBracket;
       processed += *ch;
       processed += QChar(' '); // Adding a space after this token
-      space = true;    
+      space = true;
     } else if ( comment ) {
       if ( firstChar && *ch == '/' ) {
 	comment = false;
@@ -2632,12 +2642,12 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
   end:
     ++ch;
   }
-  
+
 #ifdef CSS_DEBUG
-  kdDebug(6080) << "---After ---" << endl; 
-  kdDebug(6080) <<  processed  << endl; 
+  kdDebug(6080) << "---After ---" << endl;
+  kdDebug(6080) <<  processed  << endl;
   kdDebug(6080) << "------------" << endl;
-  kdDebug(6080) << "Length: " << processed.length() << ", reduced size by: " 
+  kdDebug(6080) << "Length: " << processed.length() << ", reduced size by: "
 		<< 100.0 - (100.0 * (processed.length()/orgLength)) << "%" << endl;
   kdDebug(6080) << "------------" << endl;
 #endif
@@ -2657,7 +2667,7 @@ QString StyleBaseImpl::preprocess(const QString &str, bool justOneRule)
 	}
       }
     }
-    space = ch->isSpace();	
+    space = ch->isSpace();
   } else {
     processed += *ch; // We're within quotes or brackets, leave untouched
   }
