@@ -48,14 +48,14 @@ public:
   /**
    * Creates a real bookmark ( type = Folder ) and saves the bookmark on the disk.
    */
-  KBookmark( KBookmarkManager *, KBookmark *_parent, const char *_text, const char *_url );
+  KBookmark( KBookmarkManager *, KBookmark *_parent, QString _text, QString _url );
   
-  const char *text() { return m_text; }
-  const char *url() { return m_url; }
+  QString text() { return m_text; }
+  QString url() { return m_url; }
   int type() { return m_type; }
   int id() { return m_id; }
-  const char* file() { return m_file; }
-  QPixmap* pixmap( bool _mini );
+  QString file() { return m_file; }
+  QPixmap* pixmap();
   
   void append( KBookmark *_bm ) { m_lstChildren.append( _bm ); }
   
@@ -70,11 +70,11 @@ protected:
   /**
    * Creates a folder.
    */
-  KBookmark( KBookmarkManager *, KBookmark *_parent, const char *_text );
+  KBookmark( KBookmarkManager *, KBookmark *_parent, QString _text );
   /**
    * Creates a bookmark from a file.
    */
-  KBookmark( KBookmarkManager *, KBookmark *_parent, const char *_text,
+  KBookmark( KBookmarkManager *, KBookmark *_parent, QString _text,
              KSimpleConfig& _cfg, const char * _group );
 
   void clear();
@@ -83,8 +83,7 @@ protected:
   QString m_url;
   QString m_file;
   
-  QPixmap* m_pPixmap;
-  QPixmap* m_pMiniPixmap;
+  QString m_sPixmap;
   
   int m_type;
   int m_id;

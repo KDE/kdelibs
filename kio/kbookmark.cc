@@ -62,7 +62,7 @@ KBookmarkManager* KBookmarkManager::self()
 
 KBookmarkManager::KBookmarkManager( QString _path ) : m_sPath( _path )
 {
-  m_Root = new KBookmark( this, 0L, 0L );
+  m_Root = new KBookmark( this, 0L, QString::null );
   s_pSelf = this;
 
   m_lstParsedDirs.setAutoDelete( true );
@@ -224,8 +224,8 @@ void KBookmarkManager::slotEditBookmarks()
  *
  ********************************************************************/
 
-KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char
-                      *_text, KSimpleConfig& _cfg, const char * _group )
+KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, QString _text,
+                      KSimpleConfig& _cfg, const char * _group )
 {
   assert( _bm != 0L );
   assert( _parent != 0L );
@@ -233,8 +233,6 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char
   _cfg.setGroup( _group );
   m_url = _cfg.readEntry( "URL", "ERROR ! No URL !" );
 
-  m_pPixmap = 0L;
-  m_pMiniPixmap = 0L;
   m_id = g_id++;
   m_pManager = _bm;
   m_lstChildren.setAutoDelete( true );
@@ -254,10 +252,8 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char
   m_pManager->emitChanged();
 }
 
-KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_text )
+KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, QString _text )
 {
-  m_pPixmap = 0L;
-  m_pMiniPixmap = 0L;
   m_id = g_id++;
   m_pManager = _bm;
   m_lstChildren.setAutoDelete( true );
@@ -268,7 +264,7 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_te
   if ( _parent )
     dir = _parent->file();
   m_file = dir;
-  if ( _text )
+  if ( !_text.isEmpty() )
   {
     m_file += "/";
     m_file += encode( _text );
@@ -281,11 +277,11 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_te
     m_pManager->emitChanged();
 }
 
-KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_text, const char *_url )
+KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, QString _text, QString _url )
 {
   assert( _bm != 0L );
   assert( _parent != 0L );
-  assert( _text != 0L && _url != 0L );
+  assert( !_text.isEmpty() && !_url.isEmpty() );
 
   KURL u( _url );
 
@@ -301,8 +297,6 @@ KBookmark::KBookmark( KBookmarkManager *_bm, KBookmark *_parent, const char *_te
   else
     icon = "www.xpm";
 
-  m_pPixmap = 0L;
-  m_pMiniPixmap = 0L;
   m_id = g_id++;
   m_pManager = _bm;
   m_lstChildren.setAutoDelete( true );
@@ -416,20 +410,20 @@ QString KBookmark::decode( const char *_str )
   return str;
 }
 
-QPixmap* KBookmark::pixmap( bool _mini )
+QPixmap* KBookmark::pixmap( )
 {
-  if ( m_pPixmap == 0L )
+  if ( m_sPixmap.isEmpty() )
   {
     struct stat buff;
     stat( m_file, &buff );
-    QString encoded = m_file.data();
-    KURL::encode( encoded );
-    m_pPixmap = KPixmapCache::pixmapForURL( encoded, buff.st_mode, true, _mini );
+    QString url = m_file.data();
+    KURL::encode( url );
+    m_sPixmap = KMimeType::findByURL( url, buff.st_mode, true )->icon( url, true );
+    // The following is wrong. Never cache a QPixmap * got from the LRU cache !!
+    // KPixmapCache::pixmapForURL( url, buff.st_mode, true, true );
   }
 
-  assert( m_pPixmap );
-
-  return m_pPixmap;
+  return KPixmapCache::pixmap( m_sPixmap, true /* mini icon */);
 }
 
 #include "kbookmark.moc"
