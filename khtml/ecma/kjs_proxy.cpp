@@ -226,9 +226,10 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
   initScript();
 
 #ifdef KJS_DEBUGGER
-  if (KJSDebugWin::debugWindow())
+  if (KJSDebugWin::debugWindow()) {
     KJSDebugWin::debugWindow()->attach(m_script);
     KJSDebugWin::debugWindow()->setNextSourceInfo(sourceUrl,m_handlerLineno);
+  }
 #else
   Q_UNUSED(sourceUrl);
 #endif
