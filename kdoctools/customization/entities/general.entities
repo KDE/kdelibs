@@ -73,7 +73,7 @@
  -->
 <!ENTITY % addindex "INCLUDE">
 <![%addindex;[
-<!ENTITY documentation.index "<index></index>">
+<!ENTITY documentation.index '<index id="doc-index"></index>'>
 ]]>
 <!ENTITY documentation.index "">
 <!--ENTITY kapp "(Oops - someone forgot to fill in the application name here)" -->
@@ -202,6 +202,7 @@
 <!ENTITY khangman	"<application>KHangMan</application>">
 <!ENTITY kgeo	"<application>KGeo</application>">
 <!ENTITY kghostview	"<application>KGhostView</application>">
+<!ENTITY kgpgcertmanager "<application>KgpgCertManager</application>">
 <!ENTITY khelpcenter	"<application>KHelpCenter</application>">
 <!ENTITY khexedit	"<application>KHexEdit</application>">
 <!ENTITY kicker	"<application>Kicker</application>">
