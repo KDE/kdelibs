@@ -46,6 +46,7 @@
 #include "htmlhashes.h"
 #include <kcharsets.h>
 #include <kglobal.h>
+#include <assert.h>
 
 #include <kdebug.h>
 
@@ -76,6 +77,7 @@ HTMLTokenizer::HTMLTokenizer(KHTMLParser *p, KHTMLView *_view)
 
 void HTMLTokenizer::reset()
 {
+    assert(executingScript == false);
     if (cachedScript)
 	cachedScript->deref(this);
     cachedScript = 0;
@@ -95,6 +97,7 @@ void HTMLTokenizer::reset()
 
 void HTMLTokenizer::begin()
 {
+    executingScript = false;
     reset();
     currToken = 0;
     size = 1023;
@@ -123,7 +126,6 @@ void HTMLTokenizer::begin()
     pendingSrc = "";
     scriptOutput = "";
     noMoreData = false;
-    executingScript = false;
 }
 
 void HTMLTokenizer::addListing(DOMStringIt list)
