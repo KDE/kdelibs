@@ -34,6 +34,11 @@ KWalletEntry::~KWalletEntry() {
 }
 
 
+void KWalletEntry::clearDirty() {
+	_dirty = false;
+}
+
+
 bool KWalletEntry::isDirty() const {
 	return _dirty;
 }
@@ -54,11 +59,13 @@ void KWalletEntry::setValue(QByteArray& val) {
 	// temporary variables
 	_value.fill(0);
 	_value.duplicate(val);
+	_dirty = true;
 }
 
 
 void KWalletEntry::setKey(QStringList key) {
 	_key = key;
+	_dirty = true;
 }
 
 

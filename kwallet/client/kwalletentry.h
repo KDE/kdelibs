@@ -34,6 +34,7 @@ class KWalletEntry {
 		~KWalletEntry();
 		
 		bool isDirty() const;
+		void clearDirty();
 
 		const QStringList& key() const;
 		const QByteArray& value() const;
