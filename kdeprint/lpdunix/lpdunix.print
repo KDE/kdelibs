@@ -31,6 +31,7 @@ Comment[nso]=System ya Kgatiso ya LPD ya UNIX ya Kakaretso (thuso ya tshoganetso
 Comment[pt]=O sistema de impressão genérico do UNIX LPD (por omissão)
 Comment[pt_BR]= LPD - Sistema Genérico do UNIX de Impressão (padrão)
 Comment[ro]=Sistem generic de tipărire UNIX LPD (implicit)
+Comment[ru]=Система печати UNIX LPD (по умолчанию)
 Comment[sk]=Generický tlačový systém UNIX LPD (štandardné)
 Comment[sl]=Splošni tiskalniški sistem LDP za Unix (privzeto)
 Comment[sv]=Generellt Unix LPD-skrivarsystem (standard)
