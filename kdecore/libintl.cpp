@@ -39,8 +39,69 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <stdlib.h>
 #include <string.h>
 
+#include <errno.h>
 
-// #line 44 "loadinfo.h"
+#include <sys/param.h>
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+
+#ifdef HAVE_LOCALE_H
+# include <locale.h>
+#endif
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifdef HAVE_MMAP
+# include <sys/mman.h>
+#endif
+
+#if defined HAVE_ARGZ_H
+# include <argz.h>
+#endif
+#include <ctype.h>
+
+/* Amount to increase buffer size by in each try.  */
+#define PATH_INCR 32
+
+#ifndef _POSIX_PATH_MAX
+# define _POSIX_PATH_MAX 255
+#endif
+
+#if !defined(PATH_MAX) && defined(_PC_PATH_MAX)
+# define PATH_MAX (pathconf ("/", _PC_PATH_MAX) < 1 ? 1024 : pathconf ("/", _PC_PATH_MAX))
+#endif
+
+/* Don't include sys/param.h if it already has been.  */
+#if defined(HAVE_SYS_PARAM_H) && !defined(PATH_MAX) && !defined(MAXPATHLEN)
+# include <sys/param.h>
+#endif
+
+#if !defined(PATH_MAX) && defined(MAXPATHLEN)
+# define PATH_MAX MAXPATHLEN
+#endif
+
+#ifndef PATH_MAX
+# define PATH_MAX _POSIX_PATH_MAX
+#endif
+
+/* XPG3 defines the result of `setlocale (category, NULL)' as:
+   ``Directs `setlocale()' to query `category' and return the current
+     setting of `local'.''
+   However it does not specify the exact format.  And even worse: POSIX
+   defines this not at all.  So we can use this feature only on selected
+   system (e.g. those using GNU C Library).  */
+#ifdef _LIBC
+# define HAVE_LOCALE_NULL
+#endif
 
 /* Encoding of locale name parts.  */
 #define CEN_REVISION		1
@@ -223,9 +284,268 @@ struct binding
   char *dirname;
 };
 
-static struct loaded_l10nfile *_nl_find_domain (const char *__dirname,
-					 char *__locale,
-					 const char *__domainname);
+/* We need a sign, whether a new catalog was loaded, which can be associated
+   with all translations.  This is important if the translations are
+   cached by one of GCC's features.  */
+int _nl_msg_cat_cntr;
+
+/* Load the message catalogs specified by FILENAME.  If it is no valid
+   message catalog do nothing.  */
+static void
+_nl_load_domain (struct loaded_l10nfile *domain_file)
+{
+  int fd;
+  struct stat st;
+  struct mo_file_header *data = (struct mo_file_header *) -1;
+#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
+  int use_mmap = 0;
+#endif
+  struct loaded_domain *domain;
+
+  domain_file->decided = 1;
+  domain_file->data = NULL;
+
+  /* If the record does not represent a valid locale the FILENAME
+     might be NULL.  This can happen when according to the given
+     specification the locale file name is different for XPG and CEN
+     syntax.  */
+  if (domain_file->filename == NULL)
+    return;
+
+  /* Try to open the addressed file.  */
+  fd = open (domain_file->filename, O_RDONLY);
+  if (fd == -1)
+    return;
+
+  /* We must know about the size of the file.  */
+  if (fstat (fd, &st) != 0
+      && st.st_size < (off_t) sizeof (struct mo_file_header))
+    {
+      /* Something went wrong.  */
+      close (fd);
+      return;
+    }
+
+#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
+  /* Now we are ready to load the file.  If mmap() is available we try
+     this first.  If not available or it failed we try to load it.  */
+  data = (struct mo_file_header *) mmap (NULL, st.st_size, PROT_READ,
+					 MAP_PRIVATE, fd, 0);
+
+  if (data != (struct mo_file_header *) -1)
+    {
+      /* mmap() call was successful.  */
+      close (fd);
+      use_mmap = 1;
+    }
+#endif
+
+  /* If the data is not yet available (i.e. mmap'ed) we try to load
+     it manually.  */
+  if (data == (struct mo_file_header *) -1)
+    {
+      off_t to_read;
+      char *read_ptr;
+
+      data = (struct mo_file_header *) malloc (st.st_size);
+      if (data == NULL)
+	return;
+
+      to_read = st.st_size;
+      read_ptr = (char *) data;
+      do
+	{
+	  long int nb = (long int) read (fd, read_ptr, to_read);
+	  if (nb == -1)
+	    {
+	      close (fd);
+	      return;
+	    }
+
+	  read_ptr += nb;
+	  to_read -= nb;
+	}
+      while (to_read > 0);
+
+      close (fd);
+    }
+
+  /* Using the magic number we can test whether it really is a message
+     catalog file.  */
+  if (data->magic != _MAGIC && data->magic != _MAGIC_SWAPPED)
+    {
+      /* The magic number is wrong: not a message catalog file.  */
+#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP) 
+      if (use_mmap)
+	munmap ((caddr_t) data, st.st_size);
+      else
+#endif
+	free (data);
+      return;
+    }
+
+  domain_file->data
+    = (struct loaded_domain *) malloc (sizeof (struct loaded_domain));
+  if (domain_file->data == NULL)
+    return;
+
+  domain = (struct loaded_domain *) domain_file->data;
+  domain->data = (char *) data;
+  domain->must_swap = data->magic != _MAGIC;
+
+  /* Fill in the information about the available tables.  */
+  switch (W (domain->must_swap, data->revision))
+    {
+    case 0:
+      domain->nstrings = W (domain->must_swap, data->nstrings);
+      domain->orig_tab = (struct string_desc *)
+	((char *) data + W (domain->must_swap, data->orig_tab_offset));
+      domain->trans_tab = (struct string_desc *)
+	((char *) data + W (domain->must_swap, data->trans_tab_offset));
+      domain->hash_size = W (domain->must_swap, data->hash_tab_size);
+      domain->hash_tab = (nls_uint32 *)
+	((char *) data + W (domain->must_swap, data->hash_tab_offset));
+      break;
+    default:
+      /* This is an illegal revision.  */
+#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
+      if (use_mmap)
+	munmap ((caddr_t) data, st.st_size);
+      else
+#endif
+	free (data);
+      free (domain);
+      domain_file->data = NULL;
+      return;
+    }
+
+  /* Show that one domain is changed.  This might make some cached
+     translations invalid.  */
+  ++_nl_msg_cat_cntr;
+}
+
+/* List of already loaded domains.  */
+static struct loaded_l10nfile *_nl_loaded_domains;
+
+/* Return a data structure describing the message catalog described by
+   the DOMAINNAME and CATEGORY parameters with respect to the currently
+   established bindings.  */
+static struct loaded_l10nfile *
+k_nl_find_domain (const char *dirname, char *locale, const char *domainname)
+{
+  struct loaded_l10nfile *retval;
+  const char *language;
+  const char *modifier;
+  const char *territory;
+  const char *codeset;
+  const char *normalized_codeset;
+  const char *special;
+  const char *sponsor;
+  const char *revision;
+  const char *alias_value;
+  int mask;
+
+  /* LOCALE can consist of up to four recognized parts for the XPG syntax:
+
+		language[_territory[.codeset]][@modifier]
+
+     and six parts for the CEN syntax:
+
+	language[_territory][+audience][+special][,sponsor][_revision]
+
+     Beside the first all of them are allowed to be missing.  If the
+     full specified locale is not found, the less specific one are
+     looked for.  The various part will be stripped of according to
+     the following order:
+		(1) revision
+		(2) sponsor
+		(3) special
+		(4) codeset
+		(5) normalized codeset
+		(6) territory
+		(7) audience/modifier
+   */
+
+  /* If we have already tested for this locale entry there has to
+     be one data set in the list of loaded domains.  */
+  retval = _nl_make_l10nflist (&_nl_loaded_domains, dirname,
+			       strlen (dirname) + 1, 0, locale, NULL, NULL,
+			       NULL, NULL, NULL, NULL, NULL, domainname, 0);
+  if (retval != NULL)
+    {
+      /* We know something about this locale.  */
+      int cnt;
+
+      if (retval->decided == 0)
+	_nl_load_domain (retval);
+
+      if (retval->data != NULL)
+	return retval;
+
+      for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
+	{
+	  if (retval->successor[cnt]->decided == 0)
+	    _nl_load_domain (retval->successor[cnt]);
+
+	  if (retval->successor[cnt]->data != NULL)
+	    break;
+	}
+      return cnt >= 0 ? retval : NULL;
+      /* NOTREACHED */
+    }
+
+  /* See whether the locale value is an alias.  If yes its value
+     *overwrites* the alias name.  No test for the original value is
+     done.  */
+  alias_value = _nl_expand_alias (locale);
+  if (alias_value != NULL)
+    {
+      size_t len = strlen (alias_value) + 1;
+      locale = (char *) malloc (len);
+      if (locale == NULL)
+	return NULL;
+
+      memcpy (locale, alias_value, len);
+    }
+
+  /* Now we determine the single parts of the locale name.  First
+     look for the language.  Termination symbols are `_' and `@' if
+     we use XPG4 style, and `_', `+', and `,' if we use CEN syntax.  */
+  mask = _nl_explode_name (locale, &language, &modifier, &territory,
+			   &codeset, &normalized_codeset, &special,
+			   &sponsor, &revision);
+
+  /* Create all possible locale entries which might be interested in
+     generalzation.  */
+  retval = _nl_make_l10nflist (&_nl_loaded_domains, dirname,
+			       strlen (dirname) + 1, mask, language, territory,
+			       codeset, normalized_codeset, modifier, special,
+			       sponsor, revision, domainname, 1);
+  if (retval == NULL)
+    /* This means we are out of core.  */
+    return NULL;
+
+  if (retval->decided == 0)
+    _nl_load_domain (retval);
+  if (retval->data == NULL)
+    {
+      int cnt;
+      for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
+	{
+	  if (retval->successor[cnt]->decided == 0)
+	    _nl_load_domain (retval->successor[cnt]);
+	  if (retval->successor[cnt]->data != NULL)
+	    break;
+	}
+    }
+
+  /* The room for an alias was dynamically allocated.  Free it now.  */
+  if (alias_value != NULL)
+    free (locale);
+
+  return retval;
+}
+
 static void _nl_load_domain (struct loaded_l10nfile *__domain);
 
 //#line 22 "hash-string.h"
@@ -259,36 +579,6 @@ hash_string (const char *str_param)
     }
   return hval;
 }
-
-#include <errno.h>
-
-#include <sys/param.h>
-#ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
-
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-
-#ifdef HAVE_LOCALE_H
-# include <locale.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#ifdef HAVE_MMAP
-# include <sys/mman.h>
-#endif
-
-#if defined HAVE_ARGZ_H
-# include <argz.h>
-#endif
-#include <ctype.h>
 
 #ifndef HAVE_STPCPY
 static char *
@@ -423,40 +713,6 @@ char *getwd ();
 # else
 char *getcwd ();
 # endif
-
-/* Amount to increase buffer size by in each try.  */
-#define PATH_INCR 32
-
-#ifndef _POSIX_PATH_MAX
-# define _POSIX_PATH_MAX 255
-#endif
-
-#if !defined(PATH_MAX) && defined(_PC_PATH_MAX)
-# define PATH_MAX (pathconf ("/", _PC_PATH_MAX) < 1 ? 1024 : pathconf ("/", _PC_PATH_MAX))
-#endif
-
-/* Don't include sys/param.h if it already has been.  */
-#if defined(HAVE_SYS_PARAM_H) && !defined(PATH_MAX) && !defined(MAXPATHLEN)
-# include <sys/param.h>
-#endif
-
-#if !defined(PATH_MAX) && defined(MAXPATHLEN)
-# define PATH_MAX MAXPATHLEN
-#endif
-
-#ifndef PATH_MAX
-# define PATH_MAX _POSIX_PATH_MAX
-#endif
-
-/* XPG3 defines the result of `setlocale (category, NULL)' as:
-   ``Directs `setlocale()' to query `category' and return the current
-     setting of `local'.''
-   However it does not specify the exact format.  And even worse: POSIX
-   defines this not at all.  So we can use this feature only on selected
-   system (e.g. those using GNU C Library).  */
-#ifdef _LIBC
-# define HAVE_LOCALE_NULL
-#endif
 
 /* Prototypes for local functions.  */
 static char *find_msg (struct loaded_l10nfile *domain_file,
@@ -645,7 +901,7 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
 
       /* Find structure describing the message catalog matching the
 	 DOMAINNAME and CATEGORY.  */
-      domain = _nl_find_domain (dirname, single_locale, xdomainname);
+      domain = k_nl_find_domain (dirname, single_locale, xdomainname);
 
       if (domain != NULL)
 	{
@@ -754,7 +1010,7 @@ find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
     }
 
   /* If an translation is found return this.  */
-  return bottom >= top ? NULL : (char *) domain->data
+  return bottom >= top ? 0L : (char *) domain->data
                                 + W (domain->must_swap,
 				     domain->trans_tab[act].offset);
 }
@@ -866,129 +1122,6 @@ k_dgettext (const char *domainname, const char *msgid)
 
 //#line 62 "finddomain.c"
 
-/* List of already loaded domains.  */
-static struct loaded_l10nfile *_nl_loaded_domains;
-
-
-/* Return a data structure describing the message catalog described by
-   the DOMAINNAME and CATEGORY parameters with respect to the currently
-   established bindings.  */
-static struct loaded_l10nfile *
-_nl_find_domain (const char *dirname, char *locale, const char *domainname)
-{
-  struct loaded_l10nfile *retval;
-  const char *language;
-  const char *modifier;
-  const char *territory;
-  const char *codeset;
-  const char *normalized_codeset;
-  const char *special;
-  const char *sponsor;
-  const char *revision;
-  const char *alias_value;
-  int mask;
-
-  /* LOCALE can consist of up to four recognized parts for the XPG syntax:
-
-		language[_territory[.codeset]][@modifier]
-
-     and six parts for the CEN syntax:
-
-	language[_territory][+audience][+special][,sponsor][_revision]
-
-     Beside the first all of them are allowed to be missing.  If the
-     full specified locale is not found, the less specific one are
-     looked for.  The various part will be stripped of according to
-     the following order:
-		(1) revision
-		(2) sponsor
-		(3) special
-		(4) codeset
-		(5) normalized codeset
-		(6) territory
-		(7) audience/modifier
-   */
-
-  /* If we have already tested for this locale entry there has to
-     be one data set in the list of loaded domains.  */
-  retval = _nl_make_l10nflist (&_nl_loaded_domains, dirname,
-			       strlen (dirname) + 1, 0, locale, NULL, NULL,
-			       NULL, NULL, NULL, NULL, NULL, domainname, 0);
-  if (retval != NULL)
-    {
-      /* We know something about this locale.  */
-      int cnt;
-
-      if (retval->decided == 0)
-	_nl_load_domain (retval);
-
-      if (retval->data != NULL)
-	return retval;
-
-      for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
-	{
-	  if (retval->successor[cnt]->decided == 0)
-	    _nl_load_domain (retval->successor[cnt]);
-
-	  if (retval->successor[cnt]->data != NULL)
-	    break;
-	}
-      return cnt >= 0 ? retval : NULL;
-      /* NOTREACHED */
-    }
-
-  /* See whether the locale value is an alias.  If yes its value
-     *overwrites* the alias name.  No test for the original value is
-     done.  */
-  alias_value = _nl_expand_alias (locale);
-  if (alias_value != NULL)
-    {
-      size_t len = strlen (alias_value) + 1;
-      locale = (char *) malloc (len);
-      if (locale == NULL)
-	return NULL;
-
-      memcpy (locale, alias_value, len);
-    }
-
-  /* Now we determine the single parts of the locale name.  First
-     look for the language.  Termination symbols are `_' and `@' if
-     we use XPG4 style, and `_', `+', and `,' if we use CEN syntax.  */
-  mask = _nl_explode_name (locale, &language, &modifier, &territory,
-			   &codeset, &normalized_codeset, &special,
-			   &sponsor, &revision);
-
-  /* Create all possible locale entries which might be interested in
-     generalzation.  */
-  retval = _nl_make_l10nflist (&_nl_loaded_domains, dirname,
-			       strlen (dirname) + 1, mask, language, territory,
-			       codeset, normalized_codeset, modifier, special,
-			       sponsor, revision, domainname, 1);
-  if (retval == NULL)
-    /* This means we are out of core.  */
-    return NULL;
-
-  if (retval->decided == 0)
-    _nl_load_domain (retval);
-  if (retval->data == NULL)
-    {
-      int cnt;
-      for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
-	{
-	  if (retval->successor[cnt]->decided == 0)
-	    _nl_load_domain (retval->successor[cnt]);
-	  if (retval->successor[cnt]->data != NULL)
-	    break;
-	}
-    }
-
-  /* The room for an alias was dynamically allocated.  Free it now.  */
-  if (alias_value != NULL)
-    free (locale);
-
-  return retval;
-}
-
 /* Look up MSGID in the current default message catalog for the current
    LC_MESSAGES locale.  If not found, returns MSGID itself (the default
    text).  */
@@ -997,150 +1130,6 @@ k_gettext (const char *msgid)
 {
   return k_dgettext ((const char *)NULL, msgid);
 }
-
-//#line 41 "loadmsgcat.c"
-
-/* We need a sign, whether a new catalog was loaded, which can be associated
-   with all translations.  This is important if the translations are
-   cached by one of GCC's features.  */
-int _nl_msg_cat_cntr;
-
-
-/* Load the message catalogs specified by FILENAME.  If it is no valid
-   message catalog do nothing.  */
-static void
-_nl_load_domain (struct loaded_l10nfile *domain_file)
-{
-  int fd;
-  struct stat st;
-  struct mo_file_header *data = (struct mo_file_header *) -1;
-#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
-  int use_mmap = 0;
-#endif
-  struct loaded_domain *domain;
-
-  domain_file->decided = 1;
-  domain_file->data = NULL;
-
-  /* If the record does not represent a valid locale the FILENAME
-     might be NULL.  This can happen when according to the given
-     specification the locale file name is different for XPG and CEN
-     syntax.  */
-  if (domain_file->filename == NULL)
-    return;
-
-  /* Try to open the addressed file.  */
-  fd = open (domain_file->filename, O_RDONLY);
-  if (fd == -1)
-    return;
-
-  /* We must know about the size of the file.  */
-  if (fstat (fd, &st) != 0
-      && st.st_size < (off_t) sizeof (struct mo_file_header))
-    {
-      /* Something went wrong.  */
-      close (fd);
-      return;
-    }
-
-#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
-  /* Now we are ready to load the file.  If mmap() is available we try
-     this first.  If not available or it failed we try to load it.  */
-  data = (struct mo_file_header *) mmap (NULL, st.st_size, PROT_READ,
-					 MAP_PRIVATE, fd, 0);
-
-  if (data != (struct mo_file_header *) -1)
-    {
-      /* mmap() call was successful.  */
-      close (fd);
-      use_mmap = 1;
-    }
-#endif
-
-  /* If the data is not yet available (i.e. mmap'ed) we try to load
-     it manually.  */
-  if (data == (struct mo_file_header *) -1)
-    {
-      off_t to_read;
-      char *read_ptr;
-
-      data = (struct mo_file_header *) malloc (st.st_size);
-      if (data == NULL)
-	return;
-
-      to_read = st.st_size;
-      read_ptr = (char *) data;
-      do
-	{
-	  long int nb = (long int) read (fd, read_ptr, to_read);
-	  if (nb == -1)
-	    {
-	      close (fd);
-	      return;
-	    }
-
-	  read_ptr += nb;
-	  to_read -= nb;
-	}
-      while (to_read > 0);
-
-      close (fd);
-    }
-
-  /* Using the magic number we can test whether it really is a message
-     catalog file.  */
-  if (data->magic != _MAGIC && data->magic != _MAGIC_SWAPPED)
-    {
-      /* The magic number is wrong: not a message catalog file.  */
-#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP) 
-      if (use_mmap)
-	munmap ((caddr_t) data, st.st_size);
-      else
-#endif
-	free (data);
-      return;
-    }
-
-  domain_file->data
-    = (struct loaded_domain *) malloc (sizeof (struct loaded_domain));
-  if (domain_file->data == NULL)
-    return;
-
-  domain = (struct loaded_domain *) domain_file->data;
-  domain->data = (char *) data;
-  domain->must_swap = data->magic != _MAGIC;
-
-  /* Fill in the information about the available tables.  */
-  switch (W (domain->must_swap, data->revision))
-    {
-    case 0:
-      domain->nstrings = W (domain->must_swap, data->nstrings);
-      domain->orig_tab = (struct string_desc *)
-	((char *) data + W (domain->must_swap, data->orig_tab_offset));
-      domain->trans_tab = (struct string_desc *)
-	((char *) data + W (domain->must_swap, data->trans_tab_offset));
-      domain->hash_size = W (domain->must_swap, data->hash_tab_size);
-      domain->hash_tab = (nls_uint32 *)
-	((char *) data + W (domain->must_swap, data->hash_tab_offset));
-      break;
-    default:
-      /* This is an illegal revision.  */
-#if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
-      if (use_mmap)
-	munmap ((caddr_t) data, st.st_size);
-      else
-#endif
-	free (data);
-      free (domain);
-      domain_file->data = NULL;
-      return;
-    }
-
-  /* Show that one domain is changed.  This might make some cached
-     translations invalid.  */
-  ++_nl_msg_cat_cntr;
-}
-//#line 42 "textdomain.c"
 
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
