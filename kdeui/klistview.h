@@ -849,11 +849,6 @@ protected:
   virtual void findDrop(const QPoint &pos, QListViewItem *&parent, QListViewItem *&after);
 
   /**
-   * initializes the cached QColorGroup before painting
-   */
-  virtual void drawContentsOffset(QPainter *p, int offsetx, int offsety, int clipx, int clipy, int clipw, int cliph);
-
-  /**
    * A special keyPressEvent (for FileManager selection mode).
    */
   void fileManagerKeyPressEvent (QKeyEvent*);
@@ -864,7 +859,6 @@ protected:
   int depthToPixels( int depth );
 
 private:
-  friend class KListViewItem;
   class Tooltip;
 protected:
   virtual void virtual_hook( int id, void* data );
