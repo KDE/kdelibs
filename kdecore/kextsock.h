@@ -395,10 +395,6 @@ public:
    * buffer's to be discarded. Likewise, setting the size to a value less than
    * the current size will cause the buffer to be shrunk to the wanted value,
    * as if the data had been read.
-   *
-   * Note 2: The closed() signal will only be emitted for a connection closed
-   * by the remote end if we are doing input buffering. That happens because if we aren't
-   * reading from the connection, we don't know when it closed.
    * @param rsize	read buffer size
    * @param wsize	write buffer size
    * @return true on success, false if this is not possible in this state (e.g. connection
