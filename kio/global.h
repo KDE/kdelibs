@@ -51,7 +51,7 @@ namespace KIO
    * @param  size  size in kilo-bytes
    * @return converted size as a string - e.g. 123.4 kB , 12.0 MB
    */
-    QString KIO::convertSizeFromKB( unsigned long kbSize );
+    QString convertSizeFromKB( unsigned long kbSize );
 
   /**
    * Calculate remaining time from total size, processed size and speed.
