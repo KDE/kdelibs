@@ -102,7 +102,7 @@ QActionCollection* Part::actionCollection()
 
 Plugin* Part::plugin( const char* libname )
 {
-    QObject* ch = child( libname, "Plugin" );
+    QObject* ch = child( libname, "KParts::Plugin" );
     //if ( ch )
 	return (Plugin*)ch;
     // Plugin::loadPlugins has loaded all plugins, so this is useless, right ? (David)

@@ -13,6 +13,7 @@ using namespace KParts;
 Plugin::Plugin( QObject* parent, const char* name )
     : QObject( parent, name ), m_collection( this )
 {
+  qDebug( className() );
 }
 
 Plugin::~Plugin()
@@ -113,7 +114,7 @@ Plugin* Plugin::loadPlugin( QObject * parent, const char* libname )
         kDebugError( 1000, "Could not initialize library" );
         return 0;
     }
-    QObject* obj = f->create( parent, libname, "Plugin" );
+    QObject* obj = f->create( parent, libname, "KParts::Plugin" );
     if ( !obj->inherits("KParts::Plugin" ) )
     {
         kDebugError( 1000, "The library does not feature an object of class Plugin" );
