@@ -68,41 +68,34 @@
  *
  * @sect Examples:
  *
- * Basic completion & rotation features enabled:
- *
+ * To enable both completion & rotation :
  * <pre>
- * // Make sure the boolean paramter is set to true.  Otherwise,
- * // you have to turn on each of the new feature manually.
- * KLineEdit *edit = new KLineEdit( this, "mywidget", true );
+ * KLineEdit *edit = new KLineEdit( this, "mywidget" );
  * // Insert the enteries on RETURN pressed into the completion object's list
  * connect( edit, SIGNAL( returnPressed(const QString& ) ), edit->completionObject(), SLOT( addItem( const QString& ) ) );
  * </pre>
+ * Set the third argument in the constructor to "false" if you do not want
+ * this widget to handle completion & rotation automatically for you.  See
+ * below for an example.
  *
  * To use a customized completion object setCompletionObject:
- *
  * <pre>
- * KLineEdit *edit = new KLineEdit( this, "mywidget", true );
+ * KLineEdit *edit = new KLineEdit( this, "mywidget" );
  * KURLCompletion *comp = new KURLCompletion();
  * edit->setCompletionObject( comp, false );  //KLineEdit will NOT delete the completion object.
  * // Insert the enteries on RETURN pressed into the completion object's list
  * connect( edit, SIGNAL( returnPressed( const QString& ) ), comp, SLOT( addItem( const QString& ) ) );
  * </pre>
  *
- * To enable a single feature at a time :
- *
+ * To enable either rotation or completion one at a time :
  * <pre>
- * KLineEdit *edit = new KLineEdit( this, "mywidget" );
- * edit->setHandleCompletion( true );
- * edit->setHandleRotation( true );
+ * KLineEdit *edit = new KLineEdit( this, "mywidget", false );
+ * edit->setHandleCompletion( true );   // causes widget to handle rotation
+ * edit->setHandleRotation( true );     // causes widget to handle completion
  * // Insert the enteries on RETURN pressed into the completion object's list
  * connect( edit, SIGNAL( returnPressed( const QString& ) ), edit->CompletionObject(), SLOT( addItem( const QString& ) ) );
  * </pre>
  *
- * And do not forget to enable the context (popup) menu :
- *
- * <pre>
- * edit->setEnableContextMenu();
- * </pre>
  * @short An enhanced single line input widget.
  * @author Dawit Alemayehu <adawit@earthlink.net>
  */
@@ -116,20 +109,20 @@ public:
     * Constructs a KLineEdit object with a default text, a parent,
     * and a name.
     *
-    * @param @p string text to be shown in the edit widget
-    * @param @p parent the parent object of this widget
-    * @param @p name the name of this widget
-    * @param @p hsig determines if this widget automatically handles both signals internally.
+    * @param string text to be shown in the edit widget
+    * @param parent the parent object of this widget
+    * @param name the name of this widget
+    * @param hsig determines if this widget automatically handles both signals internally.
     */
     KLineEdit( const QString &string, QWidget *parent, const char *name = 0, bool hsig = true );
 
     /**
     * Constructs a KLineEdit object with a parent and a name.
     *
-    * @param @p string text to be shown in the edit widget
-    * @param @p parent the parent object of this widget
-    * @param @p name the name of this widget
-    * @param @p hsig determines if this widget automatically handles both signals internally.
+    * @param string text to be shown in the edit widget
+    * @param parent the parent object of this widget
+    * @param name the name of this widget
+    * @param hsig determines if this widget automatically handles both signals internally.
     */
     KLineEdit ( QWidget *parent=0, const char *name=0, bool hsig = true );
 
@@ -140,7 +133,7 @@ public:
 
     /**
     * Puts cursor at the end of the string.
-    * 
+    *
     * This method is deprecated.  Use @ref QLineEdit::end instead.
     *
     * @deprecated
@@ -168,7 +161,7 @@ public:
     * you have explicitly called the setHandleXXXX methods.
     *
     * @param a @ref KCompletion or a derived child object.
-    * @param @p autoDelete if true, the completion object is deleted in the destructor.
+    * @param autoDelete if true, the completion object is deleted in the destructor.
     */
     void setCompletionObject( KCompletion*,  bool autoDelete = false );
 
@@ -190,7 +183,7 @@ public:
     * this widget's destructor is called.  Be careful not to set this to true
     * if you want to re-use the completion objects in your own code.
     *
-    * @param @p autoDelete if set to true the completion object is deleted on exit.
+    * @param autoDelete if set to true the completion object is deleted on exit.
     */
     void setDeleteCompletionObject( bool autoDelete ) { m_bAutoDelCompObj = autoDelete; }
 
@@ -212,7 +205,7 @@ public:
     * object if one has already been created.  See also @ref setHandleCompletion
     * and @ref setHandleCompletion.
     *
-    * @param @p emit if true emits completion signal.
+    * @param emit if true emits completion signal.
     */
     void setEnableCompletionSignal( bool enable ) { m_bEmitCompletion = enable; }
 
@@ -237,7 +230,7 @@ public:
     * Note that calling this function does not hinder you from connecting and
     * hence receiving the completion signals externally.
     *
-    * @param @p complete when true enables this widget to handle completion.
+    * @param complete when true enables this widget to handle completion.
     */
     void setHandleCompletion( bool complete );
 
@@ -252,7 +245,7 @@ public:
     * Note that calling this function does not hinder you from connecting and
     * hence receiving the rotation signals externally.
     *
-    * @param @p autoHandle when true handle rotation signals internally.
+    * @param autoHandle when true handle rotation signals internally.
     */
     void setHandleRotation( bool rotate );
 
@@ -319,7 +312,7 @@ public:
     * NOTE: if @p ckey is negative or the key-binding conflicts with either
     * @ref completion or @ref rotateDown keys, this function will return false.
     *
-    * @param @p ckey Key binding to use for completion.  Default is 0.
+    * @param ckey Key binding to use for completion.  Default is 0.
     * @return @p true if key-binding can be successfully set.
     */
     bool setCompletionKey( int ckey = 0 );
@@ -334,7 +327,7 @@ public:
     * returns false if @p rDnkey is negative or the supplied key-binding
     * conflicts with either @ref completion or @ref rotateUp keys.
     *
-    * @param @p rDnkey the key-binding to use for rotating up in a list.
+    * @param rDnkey the key-binding to use for rotating up in a list.
     * @return @p true if key-binding can successfully be set.
     */
     bool setRotateDownKey( int rDnKey = 0 );
@@ -349,7 +342,7 @@ public:
     * returns false if @p rUpkey is negative or the supplied key-binding
     * conflicts with either @ref completion or @ref rotateDown keys.
     *
-    * @param @p rUpkey the key-binding to use for rotating down in a list.
+    * @param rUpkey the key-binding to use for rotating down in a list.
     * @return @p true if key-binding can successfully be set.
     */
     bool setRotateUpKey( int rUpKey = 0 );
@@ -410,25 +403,27 @@ public:
     * Enables/disables the popup (context) menu.
     *
     * This method also allows you to enable/disable the context menu. If this
-    * method is invoked without an argument, the context menu will be disabled.
+    * method is invoked without an argument, the context menu will be enabled.
     * By default the mode changer is visible when context menu is enabled.
-    * Use either hideModechanger() or call this function with the second argument set
-    * to "false" if you do not want that item to be inserted.  Please note that the
-    * @p showChanger flag is only used when a context menu is created.  That is it is
-    * only used when you invoke this function for the first time or when you disable
-    * and then subsequently  re-enable the context menu.  To show or hide the mode changer
-    * item under other circumstances use @ref showModeChanger and @ref hideModeChanger.
+    * Use either hideModechanger() or call this function with the second argument
+    * set to "false" if you do not want that item to be inserted.
     *
-    * @param @p showMenu if true, shows the context menu.
-    * @param @p showModeChanger if true, shows the mode changer item in popup menu.
+    * NOTE: the @p showChanger flag is only used when a context menu is created.  That
+    * is it is only used when you invoke this function for the first time or when you
+    * disable and then subsequently  re-enable the context menu.  To show or hide the
+    * mode changer item under other circumstances use @ref showModeChanger and
+    * @ref hideModeChanger.
+    *
+    * @param showMenu if true, shows the context menu.
+    * @param showModeChanger if true, shows the mode changer item in popup menu.
     */
     virtual void setEnableContextMenu( bool showMenu = true, bool showChanger = true );
 
     /**
     * Makes the completion mode changer visible in the context menu.
     *
-    * This function allows you to show the completion mode changer, thus, enabling
-    * the user to change the comepltion mode on the fly.
+    * This function allows you to show the completion mode changer, thus,
+    * enabling the user to change the comepltion mode on the fly.
     */
     void showModeChanger() { m_bShowModeChanger = true; }
 
