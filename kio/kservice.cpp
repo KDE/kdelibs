@@ -515,3 +515,11 @@ bool KService::noDisplay() const {
      return false;
 }
 
+bool KService::allowMultipleFiles() const {
+  // Can we pass multiple files on the command line or do we have to start the application for every single file ?
+  if ( m_strExec.find( "%F" ) != -1 || m_strExec.find( "%U" ) != -1 ||
+       m_strExec.find( "%N" ) != -1 || m_strExec.find( "%D" ) != -1 )
+    return true;
+  else
+    return false;
+}
