@@ -55,6 +55,7 @@ KShortcutDialog::KShortcutDialog( const KShortcut& shortcut, bool bQtShortcut, Q
 {
 	m_bQtShortcut = bQtShortcut;
 
+	m_bGrab = false;
 	m_iSeq = 0;
 	m_iKey = 0;
 	m_ptxtCurrent = 0;
@@ -218,29 +219,26 @@ void KShortcutDialog::slotMultiKeyMode( bool bOn )
 
 void KShortcutDialog::showEvent( QShowEvent * pEvent )
 {
+	//kdDebug(125) << "KShortcutDialog::showEvent" << endl;
 	if( m_shortcut.count() == 1 )
 		slotShowLess();
 	else
 		slotShowMore();
 
 	KDialog::showEvent( pEvent );
-
-	m_bGrab = true;
 }
 
+// TODO: delete me
 void KShortcutDialog::hideEvent( QHideEvent * pEvent )
 {
-	releaseKeyboard();
+	//kdDebug(125) << "KShortcutDialog::hideEvent" << endl;
 	KDialog::hideEvent( pEvent );
 }
 
+// TODO: delete me
 void KShortcutDialog::paintEvent( QPaintEvent * pEvent )
 {
-	if( m_bGrab ) {
-		grabKeyboard();
-		//grabMouse();
-		m_bGrab = false;
-	}
+	//kdDebug(125) << "KShortcutDialog::paintEvent" << endl;
 	KDialog::paintEvent( pEvent );
 }
 
@@ -255,12 +253,22 @@ bool KShortcutDialog::x11Event( XEvent *pEvent )
 			x11KeyReleaseEvent( pEvent );
 				return true;
 		case XFocusIn:
-			kdDebug(125) << "FocusIn" << endl;
+			if (!m_bGrab) {
+				//kdDebug(125) << "FocusIn and Grab!" << endl;
 				grabKeyboard();
+				m_bGrab = true;
+			}
+			//else
+			//	kdDebug(125) << "FocusIn" << endl;
 			break;
 		case XFocusOut:
-			kdDebug(125) << "FocusOut" << endl;
+			if (m_bGrab) {
+				//kdDebug(125) << "FocusOut and Ungrab!" << endl;
 				releaseKeyboard();
+				m_bGrab = false;
+			}
+			//else
+			//	kdDebug(125) << "FocusOut" << endl;
 			break;
 		default:
 			//kdDebug(125) << "x11Event->type = " << pEvent->type << endl;
@@ -351,23 +359,23 @@ void KShortcutDialog::keyPressed( KKey key )
 {
 	kdDebug(125) << "keyPressed: " << key.toString() << endl;
 
-				key.simplify();
+	key.simplify();
 	if( m_bQtShortcut ) {
-					key = key.keyCodeQt();
+		key = key.keyCodeQt();
 		if( key.isNull() ) {
-
+			// TODO: message box about key not able to be used as application shortcut
 		}
 	}
 
-				KKeySequence seq;
-				if( m_iKey == 0 )
-					seq = key;
-				else {
+	KKeySequence seq;
+	if( m_iKey == 0 )
+		seq = key;
+	else {
 		// Remove modifiers
 		key.init( key.sym(), 0 );
 		seq = m_shortcut.seq( m_iSeq );
-					seq.setKey( m_iKey, key );
-				}
+		seq.setKey( m_iKey, key );
+	}
 
 	m_shortcut.setSeq( m_iSeq, seq );
 
