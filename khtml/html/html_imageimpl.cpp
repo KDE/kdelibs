@@ -353,7 +353,7 @@ void HTMLAreaElementImpl::parseAttribute(AttributeImpl *attr)
         coords = attr->val()->toLengthList();
         break;
     case ATTR_NOHREF:
-        nohref = true;
+        nohref = attr->val() != 0;
         break;
     case ATTR_ALT:
         break;
@@ -382,9 +382,11 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
         if(isNoref())
             ev->noHref = true;
         else {
-            if(target && href)
+            DOMString href = khtml::parseURL(getAttribute(ATTR_HREF));
+            if(m_hasTarget && m_hasHref)
             {
-                DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
+                DOMString s = DOMString("target://") + getAttribute(ATTR_TARGET) + DOMString("/#")
+                              + DOMString(href);
                 ev->url = s;
             }
             else

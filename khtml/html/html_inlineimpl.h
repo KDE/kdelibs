@@ -37,9 +37,7 @@ public:
     HTMLAnchorElementImpl(DocumentPtr *doc);
     ~HTMLAnchorElementImpl();
 
-     DOMString areaHref() const { return href; }
-
-    virtual bool isSelectable() const { return href!=0; }
+    virtual bool isSelectable() const { return m_hasHref; }
     virtual Id id() const;
     virtual void parseAttribute(AttributeImpl *attr);
     virtual bool prepareMouseEvent( int x, int y,
@@ -47,8 +45,8 @@ public:
                                     MouseEvent *ev);
     virtual void defaultEventHandler(EventImpl *evt);
 protected:
-    DOMStringImpl* href;
-    DOMStringImpl* target;
+    bool m_hasHref : 1;
+    bool m_hasTarget : 1;
 };
 
 // -------------------------------------------------------------------------

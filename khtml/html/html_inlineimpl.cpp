@@ -45,14 +45,11 @@ using namespace DOM;
 HTMLAnchorElementImpl::HTMLAnchorElementImpl(DocumentPtr *doc)
     : HTMLElementImpl(doc)
 {
-    href = 0;
-    target = 0;
+    m_hasHref = m_hasTarget = false;
 }
 
 HTMLAnchorElementImpl::~HTMLAnchorElementImpl()
 {
-    if( href ) href->deref();
-    if( target ) target->deref();
 }
 
 NodeImpl::Id HTMLAnchorElementImpl::id() const
@@ -72,8 +69,10 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
     {
         //kdDebug() << "HTMLAnchorElementImpl::prepareMouseEvent" << _tx << "/" << _ty <<endl;
         // set the url
-        if(target && href)
-            ev->url = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
+        DOMString href = khtml::parseURL(getAttribute(ATTR_HREF));
+        if(m_hasTarget && m_hasHref)
+            ev->url = DOMString("target://") + getAttribute(ATTR_TARGET) +
+                      DOMString("/#") + href;
         else
             ev->url = href;
     }
@@ -85,7 +84,7 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if ( ( evt->id() == EventImpl::KHTML_CLICK_EVENT ||
-         ( evt->id() == EventImpl::KHTML_KEYUP_EVENT && m_focused)) && href ) {
+         ( evt->id() == EventImpl::KHTML_KEYUP_EVENT && m_focused)) && m_hasHref) {
 
         MouseEventImpl *e = 0;
         if ( evt->id() == EventImpl::KHTML_CLICK_EVENT )
@@ -111,10 +110,9 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
             if (k->qKeyEvent) k->qKeyEvent->accept();
         }
 
-        url = QConstString( href->s, href->l ).string();
+        url = khtml::parseURL(getAttribute(ATTR_HREF)).string();
 
-        if ( target )
-            utarget = QConstString( target->s, target->l ).string();
+        utarget = getAttribute(ATTR_TARGET).string();
 
         if ( e && e->button() == 1 )
             utarget = "_blank";
@@ -181,17 +179,10 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
     switch(attr->id())
     {
     case ATTR_HREF:
-    {
-        DOMString s = khtml::parseURL(attr->val());
-        if (href) href->deref();
-        href = s.implementation();
-        if(href) href->ref();
+        m_hasHref = attr->val() != 0;
         break;
-    }
     case ATTR_TARGET:
-        if (target) target->deref();
-        target = attr->val();
-        target->ref();
+        m_hasTarget = attr->val() != 0;
         break;
     case ATTR_NAME:
     case ATTR_TITLE:

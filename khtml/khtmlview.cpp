@@ -171,7 +171,7 @@ void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
 #endif
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
+    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase | WPaintUnclipped )
 {
     m_medium = "screen";
 
@@ -886,7 +886,12 @@ void KHTMLView::focusNextPrevNode(bool next)
         // Scroll the view as necessary to ensure that the new focus node is visible
         scrollTo(newFocusNode->getRect());
 
+        // this does not belong here. it should run a query on the tree (Dirk)
+        // I'll fix this very particular part of the code soon when I cleaned
+        // up the positioning code
+#if 0
         // If the newly focussed node is a link, notify the part
+
         HTMLAnchorElementImpl *anchor = 0;
         if ((newFocusNode->id() == ID_A || newFocusNode->id() == ID_AREA))
             anchor = static_cast<HTMLAnchorElementImpl *>(newFocusNode);
@@ -895,6 +900,7 @@ void KHTMLView::focusNextPrevNode(bool next)
             m_part->overURL(anchor->areaHref().string(), 0);
         else
             m_part->overURL(QString(), 0);
+#endif
     }
     else {
         // No new focus node, scroll to bottom or top depending on next
@@ -921,7 +927,7 @@ void KHTMLView::print()
     khtml::RenderRoot *root = static_cast<khtml::RenderRoot *>(m_part->xmlDocImpl()->renderer());
     if(!root) return;
 
-    KPrinter *printer = new KPrinter;
+    KPrinter *printer = new KPrinter(QPrinter::ScreenResolution);
     if(printer->setup(this)) {
         QApplication::setOverrideCursor( waitCursor );
         // set up KPrinter

@@ -90,7 +90,6 @@ static const char textareaEnd [] = "</textarea";
                 { \
                 /* ALL of these should be changed to Unicode SOON */ \
                 case 0x80: (x) = 0x20ac; break; \
-\
                 case 0x82: (x) = ',';    break; \
                 case 0x83: (x) = 0x0192; break; \
                 case 0x84: (x) = '"';    break; \

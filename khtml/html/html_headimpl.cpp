@@ -320,14 +320,7 @@ void HTMLStyleElementImpl::parseAttribute(AttributeImpl *attr)
     switch (attr->id())
     {
     case ATTR_TYPE:
-        m_type = attr->value();
-	if (inDocument())
-	    getDocument()->updateStyleSelector();
-	break;
     case ATTR_MEDIA:
-        m_media = attr->value();
-	if (inDocument())
-	    getDocument()->updateStyleSelector();
 	break;
     default:
         HTMLElementImpl::parseAttribute(attr);

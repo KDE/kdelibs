@@ -757,6 +757,7 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl
     m_clicked = false;
     m_defaultChecked = false;
     m_checked = false;
+
     m_filename = "";
     m_haveType = false;
     m_activeSubmit = false;
@@ -863,7 +864,6 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
     // ### IMPORTANT: check that the type can't be changed after the first time
     // otherwise a javascript programmer may be able to set a text field's value
     // to something like /etc/passwd and then change it to a file field
-    // ### also check that input defaults to something - text perhaps?
     switch(attr->id())
     {
     case ATTR_AUTOCOMPLETE:

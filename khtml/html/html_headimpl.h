@@ -140,7 +140,6 @@ class HTMLStyleElementImpl : public HTMLElementImpl
 {
 public:
     HTMLStyleElementImpl(DocumentPtr *doc);
-
     ~HTMLStyleElementImpl();
 
     virtual Id id() const;
@@ -158,8 +157,6 @@ public:
 
 protected:
     StyleSheetImpl *m_sheet;
-    DOMString m_type;
-    DOMString m_media;
 };
 
 // -------------------------------------------------------------------------
