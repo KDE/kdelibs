@@ -47,7 +47,11 @@ class KService;
  *   registry.addFactory( new KServiceFactory );
  *   registry.load();
  * </pre>
-
+ *
+ * This was the memory-eating solution.
+ * Alternatively, create a KDEDInstance and a KTraderServiceProvider instance
+ * (see ktrader.h) in order to use KRun without those registries loaded.
+ * You need to link to libkded in this case, of course.
  */
 class KRun : public QObject
 {
