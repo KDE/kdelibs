@@ -218,9 +218,11 @@ class HTMLInputElementImpl : public HTMLGenericFormElementImpl
     friend class khtml::RenderFileButton;
 
 public:
+    // do not change the order!
     enum typeEnum {
         TEXT,
         PASSWORD,
+        ISINDEX,
         CHECKBOX,
         RADIO,
         SUBMIT,
@@ -228,8 +230,7 @@ public:
         FILE,
         HIDDEN,
         IMAGE,
-        BUTTON,
-        ISINDEX
+        BUTTON
     };
 
     HTMLInputElementImpl(DocumentPtr *doc, HTMLFormElementImpl *f = 0);

@@ -987,7 +987,16 @@ void HTMLInputElementImpl::init()
     case IMAGE:
         break;
     };
-    m_value = getAttribute(ATTR_VALUE);
+    QString value = getAttribute(ATTR_VALUE).string();
+    if (m_type <= ISINDEX) {
+        // remove newline stuff..
+        QString nvalue;
+        for (int i = 0; i < value.length(); ++i)
+            if (value[i] >= ' ')
+                nvalue += value[i];
+        value = nvalue;
+    }
+    m_value = value;
     m_checked = (getAttribute(ATTR_CHECKED) != 0);
 }
 
