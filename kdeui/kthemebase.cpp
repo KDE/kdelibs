@@ -1044,7 +1044,7 @@ void KThemeBase::readResourceGroup(int i, QString *pixnames, QString *brdnames,
     }
     
     // Scale hint
-    scaleHints[i] = (ScaleHint)prop.readNumEntry("Scale", (int)TileScale);
+    scaleHints[i] = (ScaleHint)prop.readNumEntry("ScaleHint", (int)TileScale);
     gradients[i] = (Gradient)prop.readNumEntry("Gradient", (int)GrNone);
     
     // Blend intensity
