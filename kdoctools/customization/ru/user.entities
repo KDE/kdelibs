@@ -6,7 +6,6 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!ENTITY kde "KDE"><!-- kde -->
 <!ENTITY kcontrol "<application>Центр управления &kde;</application>" ><!-- kde help -->
 <!ENTITY khelpcenter "<application>Центр управлению &kde;</application>" ><!-- khelpcenter -->
 <!ENTITY LMB    "<mousebutton>левая</mousebutton> кнопка мыши">
