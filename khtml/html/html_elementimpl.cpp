@@ -140,7 +140,8 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	    else
 		view->part()->executeScript( Node( this ), script.string() );
 	}
-    }    
+        setMouseInside(inside);
+    }
 }
 
 void HTMLElementImpl::parseAttribute(AttrImpl *attr)
