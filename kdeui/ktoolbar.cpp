@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.76  1998/08/09 17:49:28  radej
+// sven: fixed a bug - uninitialized toolbarHeight/Width - thanks to Harry Porten
+//
 // Revision 1.75  1998/08/09 14:01:17  radej
 // Revision 1.77  1998/08/30 21:04:33  radej
 // sven: Minor improvement for docking in KTM
@@ -1030,7 +1033,7 @@ void KToolBar::mousePressEvent ( QMouseEvent *m )
         oy = rr.y();
         ow = rr.width();
         oh = rr.height();
-        if (Parent->inherits("KTopLevelWidget"))
+        if (Parent->inherits("KTMainWindow"))
         {
           ox += ((KTopLevelWidget *) Parent)->view_left;
           oy += ((KTopLevelWidget *) Parent)->view_top;
