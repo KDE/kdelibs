@@ -80,6 +80,7 @@
 4300        kdvi (kdegraphics)
 4400        kpaint (kdegraphics)
 4500        kghostview (kdegraphics)
+4600        kview (kdegraphics)
 
 # kdenetwork
 5001        caitoo
