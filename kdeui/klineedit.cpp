@@ -55,8 +55,12 @@ public:
         autoSuggest = false;
         disableRestoreSelection = false;
 
-        KConfigGroup config( KGlobal::config(), "General" );
-        backspacePerformsCompletion = config.readBoolEntry( "Backspace performs completion", false );
+        if ( !initialized ) {
+            KConfigGroup config( KGlobal::config(), "General" );
+            backspacePerformsCompletion = config.readBoolEntry( "Backspace performs completion", false );
+
+            initialized = true;
+        }
 
     }
     ~KLineEditPrivate()
@@ -68,14 +72,17 @@ public:
     bool handleURLDrops              : 1;
     bool userSelection               : 1;
     bool autoSuggest                 : 1;
-    bool disableRestoreSelection : 1;
+    bool disableRestoreSelection     : 1;
     static bool backspacePerformsCompletion; // Configuration option
     QColor previousHighlightColor;
     QColor previousHighlightedTextColor;
     KCompletionBox *completionBox;
+
+    static bool initialized;
 };
 
 bool KLineEdit::KLineEditPrivate::backspacePerformsCompletion = false;
+bool KLineEdit::KLineEditPrivate::initialized = false;
 
 
 KLineEdit::KLineEdit( const QString &string, QWidget *parent, const char *name )
