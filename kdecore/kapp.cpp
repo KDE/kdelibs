@@ -20,6 +20,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.84  1998/01/22 16:29:45  jacek
+// Default locale's charset support added
+//
 // Revision 1.83  1998/01/17 07:35:16  kalle
 // Uh-oh...
 //
@@ -266,7 +269,7 @@ void KApplication::init()
 
   // Open the application-specific config file. It will be created if
   // it does not exist yet.
-  
+  bSuccess = aConfigFile.open( IO_ReadWrite ); 
   if( !bSuccess )
 	{
 	  // try to open at least read-only
@@ -313,6 +316,8 @@ void KApplication::init()
   // initialize KKeyConfig
   initKKeyConfig( getConfig() );  
 
+  WM_SAVE_YOURSELF = XInternAtom( display, "WM_SAVE_YOURSELF", False );
+  WM_PROTOCOLS = XInternAtom( display, "WM_PROTOCOLS", False );
   KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
   KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
   KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
@@ -1266,7 +1271,7 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
 
 const char* KApplication::tempSaveName( const char* pFilename )
 {
-      KWM::setWmCommand( topWidget->winId(), argv()[0] );
+  QString aFilename;
 
   if( pFilename[0] != '/' )
 	{
