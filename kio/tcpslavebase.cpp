@@ -213,7 +213,9 @@ unsigned short int TCPSlaveBase::port(unsigned short int _p)
 bool TCPSlaveBase::connectToHost(const QCString &host,
                                  unsigned short int _port)
 {
+#ifdef __GNUC__
 #warning Deprecated
+#endif
     return connectToHost( host, _port, true );
 }
 
@@ -1044,56 +1046,74 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
 
 ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
 {
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return write(data, len);
 }
 
 ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
 {
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return read(data, len);
 }
 
 ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 {
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return readLine(data, len);
 }
 
 unsigned short int TCPSlaveBase::GetPort(unsigned short int i)
 {
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return port(i);
 }
 
 bool TCPSlaveBase::ConnectToHost( const QString &host, unsigned int port,
   bool sendError )
 {
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return connectToHost(host, port, sendError);
 }
 
 void TCPSlaveBase::CloseDescriptor()
 {
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return closeDescriptor();
 }
 
 bool TCPSlaveBase::AtEOF()
 { 
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return atEOF();
 }
 
 bool TCPSlaveBase::InitializeSSL()
 { 
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return initializeSSL();
 }
 
 void TCPSlaveBase::CleanSSL()
 { 
+#ifdef __GNUC__
 #warning Deprecated
+#endif
   return cleanSSL();
 }
 
