@@ -446,7 +446,14 @@ void KOpenWithDlg::slotOK()
   QString serviceName;
   if (!haveApp) {
     if (keepExec.contains('/'))
+    {
       serviceName = keepExec.mid(keepExec.findRev('/') + 1);
+      if (serviceName.isEmpty())
+      { 
+        // Hmm, add a KMessageBox::error here after 2.0
+        return;
+      } 
+    }
     else
       serviceName = keepExec;
   } else
