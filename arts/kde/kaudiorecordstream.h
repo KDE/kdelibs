@@ -2,6 +2,8 @@
 
     Copyright (C) 2001,2002 Matthias Kretz
                             kretz@kde.org
+                  2003      Arnold Krille
+                            arnold@arnoldarts.de
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -90,6 +92,12 @@ class KAudioRecordStream : public QObject
 		 */
 		Arts::StereoEffectStack effectStack() const;
 
+		/**
+		 * @return Wether it is running (recording) or not.
+		 * @since 3.2
+		 */
+		bool running() const;
+
 	public slots:
 		/**
 		 * Detaches the stream from the soundserver but doesn't remove the Synth_AMAN_RECORD
@@ -125,6 +133,12 @@ class KAudioRecordStream : public QObject
 		 * @param data the data from the server
 		 */
 		void data( QByteArray & data );
+
+		/**
+		 * Wether this RecordStream is recording or not.
+		 * @since 3.2
+		 */
+		void running( bool );
 
 	private slots:
 		void slotRestartedServer();

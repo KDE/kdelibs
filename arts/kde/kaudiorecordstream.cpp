@@ -2,6 +2,8 @@
 
     Copyright (C) 2001, 2002 Matthias Kretz
                             kretz@kde.org
+                  2003       Arnold Krille
+                             arnold@arnoldarts.de
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -149,6 +151,11 @@ Arts::StereoEffectStack KAudioRecordStream::effectStack() const
 	return d->effectStack;
 }
 
+bool KAudioRecordStream::running() const
+{
+	return d->attached;
+}
+
 void KAudioRecordStream::stop()
 {
 	kdDebug( 400 ) << k_funcinfo << endl;
@@ -164,12 +171,13 @@ void KAudioRecordStream::stop()
 		Arts::disconnect( d->effectStack, d->convert );
 
 		d->attached = false;
+		emit running( false );
 	}
 }
 
 void KAudioRecordStream::start( int samplingRate, int bits, int channels )
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	kdDebug( 400 ) << k_funcinfo << "samplingRate: " << samplingRate << " bits: " << bits << " channels: " << channels << endl;
 	if( ! d->attached )
 	{
 		assert( d->kserver );
@@ -198,6 +206,7 @@ void KAudioRecordStream::start( int samplingRate, int bits, int channels )
 			//### needed?
 			Arts::Dispatcher::the()->ioManager()->processOneEvent( false );
 			d->attached = true;
+			emit running( true );
 		}
 	}
 }
@@ -212,7 +221,7 @@ void KAudioRecordStream::slotRestartedServer() { }
 
 void KAudioRecordStream::slotData( const char * contents, unsigned int size )
 {
-	kdDebug( 400 ) << k_funcinfo << endl;
+	//kdDebug( 400 ) << k_funcinfo << endl;
 	QByteArray * bytearray = new QByteArray( size );
 	// copy the contents to the bytearray
 	// this has to be deleted later
@@ -224,9 +233,9 @@ void KAudioRecordStream::slotData( const char * contents, unsigned int size )
 	}
 	else
 	{
-		kdDebug( 400 ) << "emit the data\n";
+		//kdDebug( 400 ) << "emit the data\n";
 		emit data( *bytearray );
-		kdDebug( 400 ) << "delete the data\n";
+		//kdDebug( 400 ) << "delete the data\n";
 		delete bytearray;
 	}
 }
@@ -249,7 +258,7 @@ KByteSoundReceiver::~KByteSoundReceiver()
 
 void KByteSoundReceiver::process_indata( Arts::DataPacket<Arts::mcopbyte> * inpacket )
 {
-	kdDebug( 400 ) << k_funcinfo << " size of the packet: " << inpacket->size << endl;
+	//kdDebug( 400 ) << k_funcinfo << " size of the packet: " << inpacket->size << endl;
 	emit data( (char *)inpacket->contents, inpacket->size );
 	inpacket->processed();
 }
