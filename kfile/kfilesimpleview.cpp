@@ -86,6 +86,9 @@ void KFileSimpleView::highlightItem(int row, int col)
 {
     debugC("highlightItem %d %d", row, col);
 
+    if ( row < 0 || col < 0 )
+        return;
+	
     if (col * rowsVisible + row  >= static_cast<int>(count()))
 	return;
 
@@ -207,6 +210,10 @@ void KFileSimpleView::keyPressEvent( QKeyEvent* e )
     int jump     = 0;
     bool oneColOnly = leftCell() == lastColVisible();
 
+
+    // do nothing, when there are no entries
+    if ( count() == 0 )
+        return;
 
     // if user scrolled current item out of view via scrollbar and then
     // tries to scroll via keyboard, make item visible before going on

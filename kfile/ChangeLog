@@ -1,3 +1,8 @@
+Thu Jan  7 23:14:39 1999  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfilesimpleview.cpp (keyPressEvent): fixed segfault on keypress,
+	when there were no files at all in the list
+
 1998-12-19  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialog.cpp: fixing an ugly bug when "." is used as argument
@@ -16,7 +21,7 @@ Wed Dec  2 15:59:13 1998  Carsten Pfeiffer  <pfeiffer@kde.org>
 	perfectly to make items completely visible.
 	Moreover, in resizeEvent() the number of columns was not calculated 
 	correctly in a special case.
-	And the currently selected item is rehighlighted correcly after
+	And the currently selected item is rehighlighted correctly after
 	resizing, now.
 
 1998-10-12  Jochen Küpper  <jochen@uni-duesseldorf.de>
