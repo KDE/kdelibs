@@ -503,9 +503,9 @@ RenderTableCol *RenderTable::colElement( int col ) {
 	    RenderTableCol *colElem = static_cast<RenderTableCol *>(child);
 	    int span = colElem->span();
 	    if ( !colElem->firstChild() ) {
-		if ( cCol >= col )
-		    return colElem;
 		cCol += span;
+		if ( cCol > col )
+		    return colElem;
 	    }
 
 	    RenderObject *next = child->firstChild();
