@@ -174,6 +174,7 @@ QImage KIconEffect::doublePixels(QImage src)
     int w = src.width();
     int h = src.height();
     dst.create(w*2, h*2, src.depth());
+    dst.setAlphaBuffer(src.hasAlphaBuffer());
 
     int x, y;
     if (src.depth() == 32)
