@@ -155,15 +155,13 @@ public:
 
   /**
    * Load the mimetype from a stream.
-   *
-   * @param _parentLoaded Internal (set by the constructor)
    */
-  void load( QDataStream&, bool _parentLoaded = false );
+  virtual void load( QDataStream& );
 
   /**
    * Save the mimetype to a stream.
    */
-  void save( QDataStream& );
+  virtual void save( QDataStream& );
 
   virtual QVariant property( const QString& _name ) const;
   virtual QStringList propertyNames() const;
@@ -220,6 +218,8 @@ public:
   static List allMimeTypes();
 
 protected:
+  void loadInternal( QDataStream& );
+
   /**
    * Signal a missing mime type
    */

@@ -112,12 +112,12 @@ public:
   /**
    * Save ourselves to the data stream.
    */
-  void save( QDataStream& );
+  virtual void save( QDataStream& );
 
   /**
    * Load ourselves from the data stream.
    */
-  void load( QDataStream& );
+  virtual void load( QDataStream& );
 
   /**
    * @return a pointer to the servicetype '_name' or 0L if the

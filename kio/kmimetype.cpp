@@ -265,17 +265,19 @@ KMimeType::KMimeType( KDesktopFile *config ) : KServiceType( config )
 
 KMimeType::KMimeType( QDataStream& _str, int offset ) : KServiceType( _str, offset )
 {
-  load( _str, true ); // load our specific stuff
+  loadInternal( _str ); // load our specific stuff
 }
 
-void KMimeType::load( QDataStream& _str, bool _parentLoaded )
+void KMimeType::load( QDataStream& _str )
 {
-  if ( !_parentLoaded )
-    KServiceType::load( _str );
+  KServiceType::load( _str );
+  loadInternal( _str );
+}
 
+void KMimeType::loadInternal( QDataStream& _str )
+{
   // kdDebug(7009) << "KMimeType::load( QDataStream& ) : loading list of patterns" << endl;
   _str >> m_lstPatterns;
-  // kdDebug(7009) << "KMimeType::load( QDataStream& ) : done" << endl;
 }
 
 void KMimeType::save( QDataStream& _str )
