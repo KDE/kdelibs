@@ -563,6 +563,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 {
 //       kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                     << " _tx=" << _tx << " _ty=" << _ty << endl;
+//kdDebug(6040) << renderName() << "::checkSelectionPoint x=" << xPos() << " y=" << yPos() << " w=" << width() << " h=" << height() << " m_lines.count=" << m_lines.count() << endl;
     InlineTextBox *lastPointAfterInline=0;
 
     for(unsigned int si = 0; si < m_lines.count(); si++)
@@ -579,7 +580,7 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
             //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
             node = element();
             return SelectionPointInside;
-        } else if ( result == SelectionPointBefore || result == SelectionPointBeforeInLine ) {
+        } else if ( result == SelectionPointBefore ) {
             // x,y is before the textrun -> stop here
             if ( si > 0 && lastPointAfterInline ) {
                 offset = lastPointAfterInline->m_start + lastPointAfterInline->m_len;
@@ -592,6 +593,10 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
                 node = element();
                 return SelectionPointBefore;
             }
+        } else if ( result == SelectionPointBeforeInLine ) {
+	    offset = s->m_start;
+	    node = element();
+	    return SelectionPointInside;
         } else if ( result == SelectionPointAfterInLine ) {
 	    lastPointAfterInline = s;
 	}
@@ -1089,6 +1094,7 @@ void RenderText::position(InlineBox* box, int from, int len, bool reverse, int s
         m_lines.resize(m_lines.size()*2+1);
 
     m_lines.insert(m_lines.count(), s);
+    //kdDebug(6040) << this << " " << renderName() << "::position inserted" << endl;
 }
 
 unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLine) const

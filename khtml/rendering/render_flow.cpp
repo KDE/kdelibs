@@ -201,6 +201,12 @@ FindSelectionResult RenderFlow::checkSelectionPoint( int _x, int _y, int _tx, in
     DOM::NodeImpl* nod = node;
     DOM::NodeImpl* lastNode = 0;
     for (RenderObject *child = firstChild(); child; child=child->nextSibling()) {
+        // ignore empty text boxes, they produce totally bogus information
+	// for caret navigation (LS)
+        if (child->isText() && !static_cast<RenderText *>(child)->inlineTextBoxCount())
+	    continue;
+
+        //kdDebug(6040) << "iterating " << (child ? child->renderName() : "") << "@" << child << endl;
         khtml::FindSelectionResult pos = child->checkSelectionPoint(_x, _y, _tx+xPos(), _ty+yPos(), nod, off);
         //kdDebug(6030) << this << " child->findSelectionNode returned result=" << pos << " nod=" << nod << " off=" << off << endl;
         switch(pos) {

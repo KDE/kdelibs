@@ -66,3 +66,13 @@ void RenderBR::caretPos(int offset, bool override, int &_x, int &_y, int &width,
 #endif
 }
 
+FindSelectionResult RenderBR::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset)
+{
+  // Simply take result of previous one
+  RenderText *prev = static_cast<RenderText *>(previousSibling());
+  if (!prev || !prev->isText() || !prev->inlineTextBoxCount() || prev->isBR())
+    prev = this;
+
+  //kdDebug(6040) << "delegated to " << prev->renderName() << "@" << prev << endl;
+  return prev->RenderText::checkSelectionPoint(_x, _y, _tx, _ty, node, offset);
+}

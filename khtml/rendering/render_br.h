@@ -42,7 +42,6 @@ public:
     virtual void paint( QPainter *, int, int, int, int, int, int, PaintAction) {}
     virtual void paintObject( QPainter *, int, int, int, int, int, int, PaintAction) {}
 
-    virtual void position(InlineBox*, int, int, bool, int) {}
     virtual unsigned int width(unsigned int, unsigned int, const Font *) const { return 0; }
     virtual unsigned int width( unsigned int, unsigned int, bool) const { return 0; }
     virtual short width() const { return RenderText::width(); }
@@ -53,6 +52,9 @@ public:
     virtual void calcMinMaxWidth() {}
     virtual short minWidth() const { return 0; }
     virtual short maxWidth() const { return 0; }
+
+    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
+                                                     DOM::NodeImpl*& node, int & offset );
 
     virtual bool isBR() const { return true; }
     virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);

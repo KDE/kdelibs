@@ -4882,6 +4882,7 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
           innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
                                                                event->absX()-innerNode.handle()->renderer()->xPos(),
                                                                event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
+#ifdef KHTML_NO_CARET
           d->m_selectionStart = node;
           d->m_startOffset = offset;
           //if ( node )
@@ -4892,10 +4893,9 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
           d->m_selectionEnd = d->m_selectionStart;
           d->m_endOffset = d->m_startOffset;
           d->m_doc->clearSelection();
-#ifndef KHTML_NO_CARET
-          bool v = d->m_view->placeCaret();
-          emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
-#endif
+#else // KHTML_NO_CARET
+	  d->m_view->moveCaretTo(node, offset, (_mouse->state() & ShiftButton) == 0);
+#endif // KHTML_NO_CARET
       }
       else
       {
@@ -5208,7 +5208,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 #ifndef KHTML_NO_SELECTION
     // selection stuff
     if( d->m_bMousePressed && innerNode.handle() && innerNode.handle()->renderer() &&
-        ( _mouse->state() == LeftButton )) {
+        ( (_mouse->state() & LeftButton) != 0 )) {
       int offset;
       //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y() << endl;
       DOM::NodeImpl* node=0;
@@ -5318,7 +5318,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     d->m_endOffset = 0;
 #endif
     emitSelectionChanged();
-  } else {
+  } else /*if ((_mouse->state() & ShiftButton) == 0)*/ {
     // we have to get to know if end is before start or not...
     DOM::Node n = d->m_selectionStart;
     d->m_startBeforeEnd = false;

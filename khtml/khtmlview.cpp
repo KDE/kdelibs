@@ -3483,9 +3483,21 @@ void LineIterator::nextBlock()
 
   // If we hit a leaf block (which can happen on empty blocks), use this
   // as its containing block
-  if (r->isFlow())
+  if (r->isFlow()) {
     cb = static_cast<RenderFlow *>(r);
-  else {
+    kdDebug(6200) << "r->isFlow is cb. continuation @" << cb->continuation() << endl;
+    // Disregard empty continuations, they get the caret stuck otherwise.
+    // This is because both cont_a and cont_o point to the same
+    // DOM element. When the caret should move to cont_o, findFlowBox finds
+    // cont_a, and the caret will be placed there.
+    RenderFlow *flow = static_cast<RenderFlow *>(cb->element()
+    			? cb->element()->renderer() : 0);
+    if (cb->continuation() || flow && flow->isFlow() && flow != cb
+    		&& flow->continuation()) {
+      nextBlock();
+      return;
+    }/*end if*/
+  } else {
     cb = static_cast<RenderFlow *>(r->containingBlock());
     if (!cb->isFlow()) {
       kdDebug(6200) << "dummy cb created " << cb << endl;
@@ -3530,9 +3542,21 @@ void LineIterator::prevBlock()
 
   // If we hit a leaf block (which can happen on empty blocks), use this
   // as its containing block
-  if (r->isFlow())
+  if (r->isFlow()) {
     cb = static_cast<RenderFlow *>(r);
-  else {
+    kdDebug(6200) << "r->isFlow is cb. continuation @" << cb->continuation() << endl;
+    // Disregard empty continuations, they get the caret stuck otherwise.
+    // This is because both cont_a and cont_o point to the same
+    // DOM element. When the caret should move to cont_o, findFlowBox finds
+    // cont_a, and the caret will be placed there.
+    RenderFlow *flow = static_cast<RenderFlow *>(cb->element()
+    			? cb->element()->renderer() : 0);
+    if (cb->continuation() || flow && flow->isFlow() && flow != cb
+    		&& flow->continuation()) {
+      prevBlock();
+      return;
+    }/*end if*/
+  } else {
     cb = static_cast<RenderFlow *>(r->containingBlock());
     if (!cb->isFlow()) {
       kdDebug(6200) << "dummy cb created " << cb << endl;
@@ -4377,6 +4401,97 @@ bool KHTMLView::placeCaret(InlineBox *hintBox)
   return false;
 }
 
+/** tests whether the given (n1, ofs1) pair is before the second given
+ * (n2, ofs2) pair.
+ *
+ * The difference between isBeforeNode is that this methods also works if
+ * n1 and n2 are equal.
+ */
+inline bool isBeforePosition(NodeImpl *n1, long ofs1, NodeImpl *n2, long ofs2)
+{
+  if (n1 == n2) return ofs1 < ofs2;
+
+  return isBeforeNode(n1, n2);
+}
+
+void KHTMLView::extendSelection(NodeImpl *oldStartSel, long oldStartOfs,
+				NodeImpl *oldEndSel, long oldEndOfs)
+{
+  if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd
+      && m_part->d->m_startOffset == m_part->d->m_endOffset) {
+    if (foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs)) {
+      //m_part->emitSelectionChanged();
+    }/*end if*/
+    m_part->d->m_extendAtEnd = true;
+  } else {
+    // determine start position -- caret position is always at end.
+    NodeImpl *startNode;
+    long startOffset;
+    if (m_part->d->m_extendAtEnd) {
+      startNode = m_part->d->m_selectionStart.handle();
+      startOffset = m_part->d->m_startOffset;
+    } else {
+      startNode = m_part->d->m_selectionEnd.handle();
+      startOffset = m_part->d->m_endOffset;
+      m_part->d->m_selectionEnd = m_part->d->m_selectionStart;
+      m_part->d->m_endOffset = m_part->d->m_startOffset;
+    }/*end if*/
+
+    bool swapNeeded = isBeforePosition(m_part->d->m_selectionEnd.handle(),
+			m_part->d->m_endOffset, startNode, startOffset);
+
+    m_part->d->m_selectionStart = startNode;
+    m_part->d->m_startOffset = startOffset;
+
+    if (swapNeeded) {
+      m_part->xmlDocImpl()->setSelection(m_part->d->m_selectionEnd.handle(),
+		m_part->d->m_endOffset, m_part->d->m_selectionStart.handle(),
+		m_part->d->m_startOffset);
+    } else {
+      m_part->xmlDocImpl()->setSelection(m_part->d->m_selectionStart.handle(),
+		m_part->d->m_startOffset, m_part->d->m_selectionEnd.handle(),
+		m_part->d->m_endOffset);
+    }/*end if*/
+  }/*end if*/
+}
+
+void KHTMLView::updateSelection(NodeImpl *oldStartSel, long oldStartOfs,
+				NodeImpl *oldEndSel, long oldEndOfs)
+{
+  if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd
+      && m_part->d->m_startOffset == m_part->d->m_endOffset) {
+    if (foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs)) {
+      m_part->emitSelectionChanged();
+    }/*end if*/
+    m_part->d->m_extendAtEnd = true;
+  } else {
+    // check if the extending end has passed the immobile end
+    if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd) {
+      if (m_part->d->m_startOffset > m_part->d->m_endOffset) {
+        long tmpOffset = m_part->d->m_startOffset;
+        m_part->d->m_startOffset = m_part->d->m_endOffset;
+        m_part->d->m_endOffset = tmpOffset;
+        m_part->d->m_startBeforeEnd = true;
+        m_part->d->m_extendAtEnd = !m_part->d->m_extendAtEnd;
+      }/*end if*/
+    } else if (isBeforeNode(m_part->d->m_selectionEnd, m_part->d->m_selectionStart)) {
+      DOM::Node tmpNode = m_part->d->m_selectionStart;
+      long tmpOffset = m_part->d->m_startOffset;
+      m_part->d->m_selectionStart = m_part->d->m_selectionEnd;
+      m_part->d->m_startOffset = m_part->d->m_endOffset;
+      m_part->d->m_selectionEnd = tmpNode;
+      m_part->d->m_endOffset = tmpOffset;
+      m_part->d->m_startBeforeEnd = true;
+      m_part->d->m_extendAtEnd = !m_part->d->m_extendAtEnd;
+    }/*end if*/
+
+    m_part->xmlDocImpl()->setSelection(m_part->d->m_selectionStart.handle(),
+		m_part->d->m_startOffset, m_part->d->m_selectionEnd.handle(),
+		m_part->d->m_endOffset);
+    m_part->emitSelectionChanged();
+  }/*end if*/
+}
+
 void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 {
   NodeImpl *oldStartSel = m_part->d->m_selectionStart.handle();
@@ -4442,40 +4557,7 @@ void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
     d->m_caretViewContext->caretMoved = true;
 
     if (_ke->state() & ShiftButton) {	// extend selection
-
-      if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd
-          && m_part->d->m_startOffset == m_part->d->m_endOffset) {
-        if (foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs))
-          m_part->emitSelectionChanged();
-        m_part->d->m_extendAtEnd = true;
-      } else {
-        // check if the extending end has passed the immobile end
-        if (m_part->d->m_selectionStart == m_part->d->m_selectionEnd) {
-	  if (m_part->d->m_startOffset > m_part->d->m_endOffset) {
-            long tmpOffset = m_part->d->m_startOffset;
-            m_part->d->m_startOffset = m_part->d->m_endOffset;
-            m_part->d->m_endOffset = tmpOffset;
-            m_part->d->m_startBeforeEnd = true;
-            m_part->d->m_extendAtEnd = !m_part->d->m_extendAtEnd;
-	  }/*end if*/
-	} else if (isBeforeNode(m_part->d->m_selectionEnd, m_part->d->m_selectionStart)) {
-          DOM::Node tmpNode = m_part->d->m_selectionStart;
-          long tmpOffset = m_part->d->m_startOffset;
-          m_part->d->m_selectionStart = m_part->d->m_selectionEnd;
-          m_part->d->m_startOffset = m_part->d->m_endOffset;
-          m_part->d->m_selectionEnd = tmpNode;
-          m_part->d->m_endOffset = tmpOffset;
-          m_part->d->m_startBeforeEnd = true;
-          m_part->d->m_extendAtEnd = !m_part->d->m_extendAtEnd;
-	}/*end if*/
-        m_part->xmlDocImpl()->setSelection(m_part->d->m_selectionStart.handle(),
-		m_part->d->m_startOffset, m_part->d->m_selectionEnd.handle(),
-		m_part->d->m_endOffset);
-        m_part->emitSelectionChanged();
-      }/*end if*/
-
-      kdDebug(6200) << "extendAtEnd: " << m_part->d->m_extendAtEnd << endl;
-
+      updateSelection(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
     } else {			// clear any selection
       if (foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs))
         m_part->emitSelectionChanged();
@@ -4489,6 +4571,8 @@ void KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
 
 bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
 {
+  if (!node) return false;
+
   sanitizeCaretState(node, offset);
   // need to find out the node's inline box. If there is none, this function
   // will snap to the next node that has one. This is necessary to make the
@@ -4517,11 +4601,17 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
   m_part->d->caretOffset() = offset;
   if (clearSel) {
     folded = foldSelectionToCaret(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
+  } else {
+    //kdDebug(6200) << "moveToCaret: extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd << endl;
+    //kdDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")" << endl;
+    extendSelection(oldStartSel, oldStartOfs, oldEndSel, oldEndOfs);
+    //kdDebug(6200) << "after extendSelection: m_extendAtEnd " << m_part->d->m_extendAtEnd << endl;
+    //kdDebug(6200) << "selection: start(" << m_part->d->m_selectionStart.handle() << "," << m_part->d->m_startOffset << "), end(" << m_part->d->m_selectionEnd.handle() << "," << m_part->d->m_endOffset << "), caret(" << m_part->d->caretNode().handle() << "," << m_part->d->caretOffset() << ")" << endl;
   }/*end if*/
 
-  d->m_caretViewContext->caretMoved = true;
+  d->caretViewContext()->caretMoved = true;
 
-  bool visible_caret = placeCaret();
+  bool visible_caret = placeCaret(box);
 
   // FIXME: if the old position was !visible_caret, and the new position is
   // also, then two caretPositionChanged signals with a null Node are
@@ -4846,6 +4936,7 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
   LinearDocument ld(m_part, caretNode, offset);
 
   EditableCharacterIterator it(&ld);
+  InlineBox *hintBox = it.box();
   while (it.node() && count > 0) {
     count--;
     if (cmv == CaretByCharacter) {
@@ -4859,12 +4950,13 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
   if (it.node()) {
     caretNodeRef = it.node();
     offset = it.offset();
+    hintBox = it.box();
   kdDebug(6200) << "set by valid node. offset: " << offset << endl;
   } else {
     offset = next ? caretNode->maxOffset() : caretNode->minOffset();
   kdDebug(6200) << "set by INvalid node. offset: " << offset << endl;
   }/*end if*/
-  placeCaretOnChar(it.box());
+  placeCaretOnChar(hintBox);
 }
 
 void KHTMLView::placeCaretOnChar(InlineBox *hintBox)

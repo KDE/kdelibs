@@ -329,6 +329,36 @@ private:
      */
     bool placeCaret(khtml::InlineBox *hintBox = 0);
 
+    /** extends the selection up to the current caret position.
+     *
+     * When a selection exists, the function adds/removes pieces from the
+     * beginning/end of the selection up to the current caret position.
+     *
+     * The selection values are *not* normalized, i. e. the resulting end
+     * position may actually precede the starting position.
+     *
+     * No validity checking is done on the parameters. Note that the parameters
+     * refer to the old selection, the current caret may be way off.
+     * @param startNode starting node of selection
+     * @param startOffset offset within the start node.
+     * @param endNode ending node of selection
+     * @param endOffset offset within the end node.
+     */
+     void extendSelection(DOM::NodeImpl *startNode, long startOffset,
+				DOM::NodeImpl *endNode, long endOffset);
+
+    /** updates the selection from the last to the current caret position.
+     *
+     * No validity checking is done on the parameters. Note that the parameters
+     * refer to the old selection, the current caret may be way off.
+     * @param startNode starting node of selection
+     * @param startOffset offset within the start node.
+     * @param endNode ending node of selection
+     * @param endOffset offset within the end node.
+     */
+     void updateSelection(DOM::NodeImpl *startNode, long startOffset,
+			DOM::NodeImpl *endNode, long endOffset);
+
     // -- caret event handler
 
     /**

@@ -258,6 +258,10 @@ public:
      * at which position this render object starts to represent the string.
      */
     void setForcedMinOffset(long ofs) { m_minOfs = (short)ofs; }
+    
+    /** returns the number of inline text boxes
+     */
+    unsigned inlineTextBoxCount() const { return m_lines.count(); }
 
 protected:
     void paintTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);

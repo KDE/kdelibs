@@ -1072,7 +1072,7 @@ void RenderFlow::computePositionsForLine(InlineFlowBox* lineBox, BidiContext* en
     }
     while ( r ) {
 #if BIDI_DEBUG > 1
-        kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop=" << r->stop << " x=" << x << " width=" << r->box->width() << " yPos=" << r->vertical << endl;
+        kdDebug(6040) << "positioning " << r->obj->renderName() << "@" << r->obj << " start=" << r->start << " stop=" << r->stop << " x=" << x << " width=" << r->box->width() << " yPos=" << r->vertical << endl;
 #endif
 	int spaceAdd = 0;
 	if ( numSpaces > 0 ) {
