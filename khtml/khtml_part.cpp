@@ -3913,7 +3913,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
           emit d->m_extension->openURLNotify();
   }
 
-  if ( child->m_serviceType != mimetype )
+  if ( child->m_serviceType != mimetype || !child->m_part )
   {
     // Before attempting to load a part, check if the user wants that.
     // Many don't like getting ZIP files embedded.

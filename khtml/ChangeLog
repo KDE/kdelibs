@@ -1,3 +1,8 @@
+2004-10-04  David Faure  <faure@kde.org>
+
+        * khtml_part.cpp (processObjectRequest): 
+        Fixed showing of iframe hidden with display=none (#84332).
+
 2004-09-11  David Faure  <faure@kde.org>
 
         * khtml_part.cpp (defaultEncoding, encoding, createDecoder): 
