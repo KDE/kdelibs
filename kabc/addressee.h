@@ -66,6 +66,8 @@ struct AddresseeData : public KShared
   QStringList emails;
   QStringList categories;
   QStringList custom;
+
+  bool empty;
 };
 
 /**

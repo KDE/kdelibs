@@ -32,6 +32,7 @@ Addressee::Addressee()
 {
   mData = new AddresseeData;
   mData->uid = KApplication::randomString( 10 );
+  mData->empty = true;
 }
 
 Addressee::~Addressee()
@@ -64,10 +65,7 @@ void Addressee::detach()
 
 bool Addressee::isEmpty() const
 {
-  if ( mData->name.isEmpty() && mData->formattedName.isEmpty() &&
-       mData->emails.isEmpty() ) return true;
-       
-  return false;
+  return mData->empty;
 }
 
 --DEFINITIONS--
@@ -170,6 +168,7 @@ QStringList Addressee::emails() const
 void Addressee::insertPhoneNumber( const PhoneNumber &phoneNumber )
 {
   detach();
+  mData->empty = false;
 
   PhoneNumber::List::Iterator it;
   for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
@@ -257,6 +256,7 @@ void Addressee::dump() const
 void Addressee::insertAddress( const Address &address )
 {
   detach();
+  mData->empty = false;
 
   Address::List::Iterator it;
   for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
@@ -311,6 +311,7 @@ Address Addressee::findAddress( const QString &id ) const
 void Addressee::insertCategory( const QString &c )
 {
   detach();
+  mData->empty = false;
 
   if ( mData->categories.contains( c ) ) return;
 
@@ -335,6 +336,7 @@ bool Addressee::hasCategory( const QString &c ) const
 void Addressee::setCategories( const QStringList &c )
 {
   detach();
+  mData->empty = false;
 
   mData->categories = c;
 }
@@ -350,6 +352,7 @@ void Addressee::insertCustom( const QString &app, const QString &name,
   if ( value.isNull() || name.isEmpty() || app.isEmpty() ) return;
 
   detach();
+  mData->empty = false;
   
   QString qualifiedName = app + "-" + name + ":";
   
@@ -398,6 +401,7 @@ QString Addressee::custom( const QString &app, const QString &name ) const
 void Addressee::setCustoms( const QStringList &l )
 {
   detach();
+  mData->empty = false;
   
   mData->custom = l;
 }

@@ -14,7 +14,8 @@ int main(int argc,char **argv)
   KAboutData aboutData("testkabc",I18N_NOOP("TestKabc"),"0.1");
   KCmdLineArgs::init(argc,argv,&aboutData);
 
-  KApplication app( false, false );
+//  KApplication app( false, false );
+  KApplication app;
   
   AddressBook ab( new VCardFormat );
   
@@ -25,7 +26,13 @@ int main(int argc,char **argv)
   ab.clear();
   
   Addressee a;
+  if ( a.isEmpty() ) kdDebug() << "1: a is empty" << endl;
+  Addressee aa( a );
+  if ( a.isEmpty() ) kdDebug() << "1: aa is empty" << endl;  
   a.setName( "Hans Speck" );
+  if ( a.isEmpty() ) kdDebug() << "2: a is empty" << endl;
+  Addressee aaa( a );
+  if ( a.isEmpty() ) kdDebug() << "2: aaa is empty" << endl;  
   a.insertEmail( "hw@abc.de" );
   a.setBirthday( QDate( 1997, 4, 25 ) );
   ab.insertAddressee( a );

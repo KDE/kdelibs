@@ -32,6 +32,7 @@ Addressee::Addressee()
 {
   mData = new AddresseeData;
   mData->uid = KApplication::randomString( 10 );
+  mData->empty = true;
 }
 
 Addressee::~Addressee()
@@ -64,16 +65,14 @@ void Addressee::detach()
 
 bool Addressee::isEmpty() const
 {
-  if ( mData->name.isEmpty() && mData->formattedName.isEmpty() &&
-       mData->emails.isEmpty() ) return true;
-       
-  return false;
+  return mData->empty;
 }
 
 void Addressee::setUid( const QString &uid )
 {
   if ( uid == mData->uid ) return;
   detach();
+  mData->empty = false;
   mData->uid = uid;
 }
 
@@ -87,6 +86,7 @@ void Addressee::setName( const QString &name )
 {
   if ( name == mData->name ) return;
   detach();
+  mData->empty = false;
   mData->name = name;
 }
 
@@ -100,6 +100,7 @@ void Addressee::setFormattedName( const QString &formattedName )
 {
   if ( formattedName == mData->formattedName ) return;
   detach();
+  mData->empty = false;
   mData->formattedName = formattedName;
 }
 
@@ -113,6 +114,7 @@ void Addressee::setFamilyName( const QString &familyName )
 {
   if ( familyName == mData->familyName ) return;
   detach();
+  mData->empty = false;
   mData->familyName = familyName;
 }
 
@@ -126,6 +128,7 @@ void Addressee::setGivenName( const QString &givenName )
 {
   if ( givenName == mData->givenName ) return;
   detach();
+  mData->empty = false;
   mData->givenName = givenName;
 }
 
@@ -139,6 +142,7 @@ void Addressee::setAdditionalName( const QString &additionalName )
 {
   if ( additionalName == mData->additionalName ) return;
   detach();
+  mData->empty = false;
   mData->additionalName = additionalName;
 }
 
@@ -152,6 +156,7 @@ void Addressee::setPrefix( const QString &prefix )
 {
   if ( prefix == mData->prefix ) return;
   detach();
+  mData->empty = false;
   mData->prefix = prefix;
 }
 
@@ -165,6 +170,7 @@ void Addressee::setSuffix( const QString &suffix )
 {
   if ( suffix == mData->suffix ) return;
   detach();
+  mData->empty = false;
   mData->suffix = suffix;
 }
 
@@ -178,6 +184,7 @@ void Addressee::setNickName( const QString &nickName )
 {
   if ( nickName == mData->nickName ) return;
   detach();
+  mData->empty = false;
   mData->nickName = nickName;
 }
 
@@ -191,6 +198,7 @@ void Addressee::setBirthday( const QDateTime &birthday )
 {
   if ( birthday == mData->birthday ) return;
   detach();
+  mData->empty = false;
   mData->birthday = birthday;
 }
 
@@ -204,6 +212,7 @@ void Addressee::setMailer( const QString &mailer )
 {
   if ( mailer == mData->mailer ) return;
   detach();
+  mData->empty = false;
   mData->mailer = mailer;
 }
 
@@ -217,6 +226,7 @@ void Addressee::setTimeZone( const TimeZone &timeZone )
 {
   if ( timeZone == mData->timeZone ) return;
   detach();
+  mData->empty = false;
   mData->timeZone = timeZone;
 }
 
@@ -230,6 +240,7 @@ void Addressee::setGeo( const Geo &geo )
 {
   if ( geo == mData->geo ) return;
   detach();
+  mData->empty = false;
   mData->geo = geo;
 }
 
@@ -243,6 +254,7 @@ void Addressee::setTitle( const QString &title )
 {
   if ( title == mData->title ) return;
   detach();
+  mData->empty = false;
   mData->title = title;
 }
 
@@ -256,6 +268,7 @@ void Addressee::setRole( const QString &role )
 {
   if ( role == mData->role ) return;
   detach();
+  mData->empty = false;
   mData->role = role;
 }
 
@@ -269,6 +282,7 @@ void Addressee::setOrganization( const QString &organization )
 {
   if ( organization == mData->organization ) return;
   detach();
+  mData->empty = false;
   mData->organization = organization;
 }
 
@@ -282,6 +296,7 @@ void Addressee::setNote( const QString &note )
 {
   if ( note == mData->note ) return;
   detach();
+  mData->empty = false;
   mData->note = note;
 }
 
@@ -295,6 +310,7 @@ void Addressee::setProductId( const QString &productId )
 {
   if ( productId == mData->productId ) return;
   detach();
+  mData->empty = false;
   mData->productId = productId;
 }
 
@@ -308,6 +324,7 @@ void Addressee::setRevision( const QDateTime &revision )
 {
   if ( revision == mData->revision ) return;
   detach();
+  mData->empty = false;
   mData->revision = revision;
 }
 
@@ -321,6 +338,7 @@ void Addressee::setSortString( const QString &sortString )
 {
   if ( sortString == mData->sortString ) return;
   detach();
+  mData->empty = false;
   mData->sortString = sortString;
 }
 
@@ -334,6 +352,7 @@ void Addressee::setUrl( const KURL &url )
 {
   if ( url == mData->url ) return;
   detach();
+  mData->empty = false;
   mData->url = url;
 }
 
@@ -442,6 +461,7 @@ QStringList Addressee::emails() const
 void Addressee::insertPhoneNumber( const PhoneNumber &phoneNumber )
 {
   detach();
+  mData->empty = false;
 
   PhoneNumber::List::Iterator it;
   for( it = mData->phoneNumbers.begin(); it != mData->phoneNumbers.end(); ++it ) {
@@ -549,6 +569,7 @@ void Addressee::dump() const
 void Addressee::insertAddress( const Address &address )
 {
   detach();
+  mData->empty = false;
 
   Address::List::Iterator it;
   for( it = mData->addresses.begin(); it != mData->addresses.end(); ++it ) {
@@ -603,6 +624,7 @@ Address Addressee::findAddress( const QString &id ) const
 void Addressee::insertCategory( const QString &c )
 {
   detach();
+  mData->empty = false;
 
   if ( mData->categories.contains( c ) ) return;
 
@@ -627,6 +649,7 @@ bool Addressee::hasCategory( const QString &c ) const
 void Addressee::setCategories( const QStringList &c )
 {
   detach();
+  mData->empty = false;
 
   mData->categories = c;
 }
@@ -642,6 +665,7 @@ void Addressee::insertCustom( const QString &app, const QString &name,
   if ( value.isNull() || name.isEmpty() || app.isEmpty() ) return;
 
   detach();
+  mData->empty = false;
   
   QString qualifiedName = app + "-" + name + ":";
   
@@ -690,6 +714,7 @@ QString Addressee::custom( const QString &app, const QString &name ) const
 void Addressee::setCustoms( const QStringList &l )
 {
   detach();
+  mData->empty = false;
   
   mData->custom = l;
 }

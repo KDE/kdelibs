@@ -69,7 +69,8 @@ if (!open( CPP_OUT, ">../addressee.cpp" ) ) {
         print CPP_OUT "void Addressee::set" . ucfirst($entryNames[$i]);
         print CPP_OUT "( const $entryTypes[$i] &$entryNames[$i] )\n{\n";        
         print CPP_OUT "  if ( $entryNames[$i] == mData->$entryNames[$i] ) return;\n";
-        print CPP_OUT "  detach();\n  mData->$entryNames[$i] = $entryNames[$i];\n}\n\n";
+        print CPP_OUT "  detach();\n  mData->empty = false;\n";
+        print CPP_OUT "  mData->$entryNames[$i] = $entryNames[$i];\n}\n\n";
         
         print CPP_OUT "$entryTypes[$i] Addressee::$entryNames[$i]() const\n{\n";
         print CPP_OUT "  return mData->$entryNames[$i];\n}\n\n\n";
