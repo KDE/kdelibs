@@ -75,9 +75,11 @@ KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *nam
     connect(button, SIGNAL(clicked()), SLOT(close()));
     d->m_layout->addWidget(button, 3, 1);
 
-    button = new QPushButton(i18n("Cryptography Configuration..."), this);
-    connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
-    d->m_layout->addWidget(button, 3, 2);
+    if (KSSL::doesSSLWork()) {
+      button = new QPushButton(i18n("Cryptography Configuration..."), this);
+      connect(button, SIGNAL(clicked()), SLOT(launchConfig()));
+      d->m_layout->addWidget(button, 3, 2);
+    }
 
     setCaption(i18n("KDE SSL Information"));
 }
