@@ -511,7 +511,7 @@ public:
     KCompletionBase();
 
     /**
-    * Basic destructor.
+    * Destructor.
     */
     virtual ~KCompletionBase();
 
@@ -723,6 +723,19 @@ public:
     * call this method.
     */
     void useGlobalKeyBindings();
+    
+    /*
+    * A pure virtual function that must be implemented by
+    * all inheriting classes.
+    *
+    * This function is intended to allow external completion
+    * implementors to set text completion appropriately.  It
+    * is mostly relevant when completing text in CompletionAuto
+    * and CompletionManual modes.
+    *
+    * @param text the completed text to be set in the widget.
+    */    
+    virtual void setCompletedText( const QString& /* text */ ) = 0;
 
 protected:
 
