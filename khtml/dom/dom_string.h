@@ -117,6 +117,7 @@ bool operator!=( const DOMString &a, const char *b );
 bool operator!=( const DOMString &a, int );
 
 bool strncmp( const DOMString &a, const DOMString &b, unsigned int len );
+int strcmp( const DOMString &a, const DOMString &b );
 
 int strncasecmp( const DOMString &a, const DOMString &b, unsigned int l );
 int strcasecmp( const DOMString &a, const DOMString &b );

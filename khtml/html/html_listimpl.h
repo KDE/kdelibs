@@ -120,6 +120,7 @@ public:
     long start() const;
     void setStart( long );
 
+    virtual void parseAttribute(Attribute *);
     virtual void layout(bool deep = false);
     virtual void calcMinMaxWidth();    
 };

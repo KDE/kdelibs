@@ -310,7 +310,7 @@ void HTMLFontElementImpl::setStyle(CSSStyle *currentStyle)
 	    QFont tryFont( fname.data() );
 	    QFontInfo fi( tryFont );
 	    //printf("trying \"%s\": getting %s\n", tryFont.family().ascii(), fi.family().ascii());
-	    if ( strcmp( tryFont.family(), fi.family() ) == 0 )
+	    if ( ::strcmp( tryFont.family(), fi.family() ) == 0 )
 	    {
 		// we found a matching font
 	      //printf("found mathing face!\n");

@@ -94,8 +94,7 @@ void HTMLUListElementImpl::parseAttribute(Attribute *attr)
 {
     switch(attr->id)
     {
-#if 0 // ### should we still support this????
-    case ID_TYPE:
+    case ATTR_TYPE:
 	if ( strcasecmp( attr->value(), "disc" ) == 0 )
 	    _type = Disc;
 	else if ( strcasecmp( attr->value(), "circle" ) == 0 )
@@ -103,7 +102,6 @@ void HTMLUListElementImpl::parseAttribute(Attribute *attr)
 	else if ( strcasecmp( attr->value(), "square" ) == 0 )
 	    _type = Square;
 	break;
-#endif
     default:
 	HTMLBlockElementImpl::parseAttribute(attr);
     }
@@ -278,6 +276,7 @@ ushort HTMLMenuElementImpl::id() const
 HTMLOListElementImpl::HTMLOListElementImpl(DocumentImpl *doc)
     : HTMLUListElementImpl(doc)
 {
+    _type = Num;
 }
 
 HTMLOListElementImpl::~HTMLOListElementImpl()
@@ -302,6 +301,27 @@ long HTMLOListElementImpl::start() const
 
 void HTMLOListElementImpl::setStart( long )
 {
+}
+
+void HTMLOListElementImpl::parseAttribute(Attribute *attr)
+{
+    switch(attr->id)
+    {
+    case ATTR_TYPE:
+	if ( strcmp( attr->value(), "a" ) == 0 )
+	    _type = LowAlpha;
+	else if ( strcmp( attr->value(), "A" ) == 0 )
+	    _type = UpAlpha;
+	else if ( strcmp( attr->value(), "i" ) == 0 )
+	    _type = LowRoman;
+	else if ( strcmp( attr->value(), "I" ) == 0 )
+	    _type = UpRoman;
+	else if ( strcmp( attr->value(), "1" ) == 0 )
+	    _type = Num;
+	break;
+    default:
+	HTMLBlockElementImpl::parseAttribute(attr);
+    }
 }
 
 void HTMLOListElementImpl::layout(bool deep)
@@ -400,7 +420,7 @@ void HTMLLIElementImpl::printIcon(QPainter *p, int _tx, int _ty)
 
     // ### this should scale with the font size in the body... possible?
     int yp = _ty + 4;
-    int xp = _tx - 10;
+    int xp = _tx - 13;
 
     QColor color( style()->font.color );
     p->setPen( QPen( color ) );
@@ -414,12 +434,16 @@ void HTMLLIElementImpl::printIcon(QPainter *p, int _tx, int _ty)
 	break;	
     case Circle:
 	p->setBrush( QBrush( color ) );
-	p->drawEllipse( xp, yp, 7, 7 );
+	p->drawArc( xp, yp, 7, 7, 0, 16*360 );
 	break;
     case Square:
+    {
 	p->setBrush( QBrush( color ) );
-	p->drawRect( xp, yp, 7, 7 );
+    QCOORD points[] = { xp,yp, xp+7,yp, xp+7,yp+7, xp,yp+7, xp,yp };
+    QPointArray a( 5, points );
+	p->drawPolyline( a );
 	break;
+    }
     default:
     {
 	QString item;
@@ -448,13 +472,7 @@ void HTMLLIElementImpl::printIcon(QPainter *p, int _tx, int _ty)
 	default:
 	    break;
 	}
-	QFont font = p->font();
-	QFont f = *getFont();
-	f.setBold(true);
-	p->setFont(f);
 	p->drawText(_tx-5, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
-	p->setFont(font);
-
     }
     }
 }

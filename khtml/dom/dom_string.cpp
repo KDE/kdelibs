@@ -234,6 +234,13 @@ bool DOM::strncmp( const DOMString &a, const DOMString &b, unsigned int len)
     return false;
 }
 
+int DOM::strcmp( const DOMString &a, const DOMString &b )
+{
+    if( a.length() != b.length() ) return -1;
+    unsigned int l = a.length();
+    return strncmp(a, b, l);
+}
+
 int DOM::strncasecmp( const DOMString &s1, const DOMString &s2, unsigned int l )
 {
     const QChar *a = s1.unicode();

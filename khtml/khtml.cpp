@@ -722,8 +722,8 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
   // Security
   KURL u1( _url );
   KURL u2( m_strURL );
-  if ( strcmp( u1.protocol(), "cgi" ) == 0 &&
-       strcmp( u2.protocol(), "file" ) != 0 && strcmp( u2.protocol(), "cgi" ) != 0 )
+  if ( ::strcmp( u1.protocol(), "cgi" ) == 0 &&
+       ::strcmp( u2.protocol(), "file" ) != 0 && ::strcmp( u2.protocol(), "cgi" ) != 0 )
   {
     KMessageBox::error( 0,
 			i18n( "This page is untrusted\nbut it contains a link to your local file system."),
@@ -752,7 +752,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
   if ( !target.isNull() && !target.isEmpty() && _button == LeftButton )
   {
       printf("searching target frame\n");
-      if ( strcmp( target.latin1(), "_parent" ) == 0 )
+      if ( ::strcmp( target.latin1(), "_parent" ) == 0 )
       {
 	  KHTMLWidget *v = parentView();
 	  if ( !v )
@@ -762,7 +762,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
 	  emit urlClicked( url, target, _button );
 	  return;
       }
-      else if ( strcmp( target.latin1(), "_top" ) == 0 )
+      else if ( ::strcmp( target.latin1(), "_top" ) == 0 )
       {
 	  kdebug(0,1202,"OPENING top %s", url.ascii());
 	  topView()->openURL( url );
@@ -770,12 +770,12 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
 	  kdebug(0,1202,"OPENED top");
 	  return;
       }
-      else if ( strcmp( target.latin1(), "_blank" ) == 0 )
+      else if ( ::strcmp( target.latin1(), "_blank" ) == 0 )
       {
 	  emit newWindow( url );
 	  return;
       }
-      else if ( strcmp( target.latin1(), "_self" ) == 0 )
+      else if ( ::strcmp( target.latin1(), "_self" ) == 0 )
       {
 	  openURL( url );
 	  emit urlClicked( url, target, _button );
@@ -908,7 +908,7 @@ KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
   for( ; it.current(); ++it )
   {
     if ( it.current()->m_pBrowser->frameName() &&
-	 strcmp( it.current()->m_pBrowser->frameName(), _target ) == 0 )
+	 ::strcmp( it.current()->m_pBrowser->frameName(), _target ) == 0 )
       return it.current()->m_pBrowser;
   }
 
