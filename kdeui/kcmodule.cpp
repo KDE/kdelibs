@@ -28,6 +28,7 @@
 
 
 #include <klocale.h>
+#include <kapp.h>
 
 
 #include "kcmodule.h"
@@ -46,8 +47,8 @@ void setVisible(QPushButton *btn, bool vis)
     btn->hide();
 }
   
-KCDialog::KCDialog(KCModule *client, QWidget *parent, const char *name, bool modal, WFlags f)
-  : QDialog(parent, name, modal, f), _client(client)
+KCDialog::KCDialog(KCModule *client, QString &docpath, QWidget *parent, const char *name, bool modal, WFlags f)
+  : QDialog(parent, name, modal, f), _client(client), _docpath(docpath)
 {
   client->reparent(this,0,QPoint(0,0),true);
 
@@ -101,19 +102,22 @@ KCDialog::KCDialog(KCModule *client, QWidget *parent, const char *name, bool mod
 
 void KCDialog::helpClicked()
 {
-  //TODO
+  if(_docpath != QString::null)
+    kapp->invokeHTMLHelp(_docpath, "");
 }
 
 
 void KCDialog::defaultClicked()
 {
   _client->defaults();
+  clientChanged(true);
 }
 
 
 void KCDialog::resetClicked()
 {
   _client->load();
+  clientChanged(false);
 }
 
 
@@ -126,6 +130,7 @@ void KCDialog::cancelClicked()
 void KCDialog::applyClicked()
 {
   _client->save();
+  clientChanged(false);
 }
 
 
@@ -133,4 +138,12 @@ void KCDialog::okClicked()
 {
   _client->save();
   accept();
+}
+
+void KCDialog::clientChanged(bool state)
+{
+  // enable/disable buttons
+  _reset->setEnabled(state);
+  _apply->setEnabled(state);
+  _ok->setEnabled(state);
 }

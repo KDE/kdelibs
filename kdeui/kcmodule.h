@@ -181,7 +181,7 @@ class KCDialog : public QDialog
 
 public:
 
-  KCDialog(KCModule *client, QWidget *parent=0, const char *name=0, bool modal=false, WFlags f=0);
+  KCDialog(KCModule *client, QString &docpath=QString::null, QWidget *parent=0, const char *name=0, bool modal=false, WFlags f=0);
 
 
 protected slots:
@@ -192,6 +192,7 @@ protected slots:
   void cancelClicked();
   void applyClicked();
   void okClicked();
+  void clientChanged(bool state);
 
 
 private:
@@ -204,7 +205,7 @@ private:
   QPushButton *_apply;
   QPushButton *_ok;
   QFrame      *_sep;
-
+  QString     _docpath;
 };
 
 
