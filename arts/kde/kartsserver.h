@@ -38,18 +38,28 @@ class KArtsServer : public QObject
 Q_OBJECT
 
 public:
+	/**
+	 * Create a new KArtsServer. Don't forget to create a KArtsDispatcher
+	 * before using KArtsServer.
+	 */
 	KArtsServer(QObject *parent = 0, const char *name = 0);
 	virtual ~KArtsServer(void);
 
 	/**
 	 * Get a verified reference to the SoundServerV2, (re)starting artsd
 	 * using the kcontrol-specified settings if necessary.
+	 *
+	 * If the soundserver has changed since you called this method the last
+	 * time (meaning artsd was restarted) restartedServer() will be emitted.
 	 */
 	Arts::SoundServerV2 server(void);
 
 signals:
 	/**
-	 * This is emitted whenever KArtsServer has to start artsd
+	 * This is emitted when the soundserver has been restarted (by this
+	 * KArtsServer instance or outside). It is not
+	 * emitted automatically when the soundserver comes up but only after
+	 * your code calls server().
 	 */
 	void restartedServer(void);
 
