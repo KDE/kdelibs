@@ -283,8 +283,9 @@ int main(int argc, char **argv)
     KStandardDirs::makeDir( "/tmp/a+plus" );
     filter( "/tmp/a+plus", "/tmp/a+plus", KURIFilterData::LOCAL_DIR );
 
-    // BR 27788 - note that you need this dir to exist for this test to work.
-    //filter( "$KDEHOME/share/apps/kword/templates/Text oriented", kdehome+"/share/apps/kword/templates/Text oriented", KURIFilterData::LOCAL_DIR );
+    // BR 27788
+    KStandardDirs::makeDir( kdehome+"/share/Dir With Space" );
+    filter( "$KDEHOME/share/Dir With Space", kdehome+"/share/Dir With Space", KURIFilterData::LOCAL_DIR );
 
     filter( "$HOME/$KDEDIR/kdebase/kcontrol/ebrowsing", 0, KURIFilterData::ERROR );
     filter( "$1/$2/$3", "http://www.google.com/search?q=$1/$2/$3&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );  // can be used as bogus or valid test. Currently triggers default search, i.e. google
@@ -295,7 +296,7 @@ int main(int argc, char **argv)
     // itself if the requested environment variable
     // is not already set.
     filter( "$QTDIR", 0, KURIFilterData::LOCAL_DIR, "kshorturifilter" ); //use specific filter.
-    filter( "$HOME", 0, KURIFilterData::LOCAL_DIR, "kshorturifilter" ); //use specific filter.
+    filter( "$HOME", home, KURIFilterData::LOCAL_DIR, "kshorturifilter" ); //use specific filter.
 
     // Search Engine tests
     char delimiter = KCmdLineArgs::parsedArgs()->isSet("s") ? ' ' : ':';
