@@ -39,9 +39,13 @@ public:
 k_dcop:
   /**
    * Signal a new job
+   * @param the DCOP application id of the job's parent application
+   *   (@see KIO::Observer::newJob)
    * @return the job id
    */
-  int newJob( /* param: type of the job ? class name ? */ );
+  int newJob( QCString appId );
+
+  void jobFinished( int id );
 
   void totalSize( int id, unsigned long size );
   void totalFiles( int id, unsigned long files );
@@ -63,6 +67,13 @@ k_dcop:
   void creatingDir( int id, KURL dir );
 
 private:
+
+  // Matt: call this when the user presses cancel
+  // I suggest that the dialog stores both the appid and the
+  // job's progress ID. If that's not possible, then I'll
+  // put some dicts here... Well we need a dict id<->dialog box probably, anyway.
+  void killJob( QCString observerAppId, int progressId );
+
   static int s_jobId;
 };
 

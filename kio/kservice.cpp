@@ -330,6 +330,7 @@ KService::List KService::allServices()
   return KServiceFactory::self()->allServices();
 }
 
+/*
 KService::Ptr KService::service( const QString& _name )
 {
   KService * s = KServiceFactory::self()->findServiceByName( _name );
@@ -341,6 +342,7 @@ KService::Ptr KService::service( const QString& _name )
     
   return KService::Ptr( s );
 }
+*/
 
 KService::Ptr KService::serviceByName( const QString& _name )
 {

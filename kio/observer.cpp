@@ -21,6 +21,7 @@
 #include <kapp.h>
 #include <dcopclient.h>
 #include <kurl.h>
+#include <assert.h>
 
 #include "jobclasses.h"
 #include "observer.h"
@@ -31,8 +32,14 @@ using namespace KIO;
 
 Observer * Observer::s_pObserver = 0L;
 
-Observer::Observer()
+Observer::Observer() : DCOPObject("KIO::Observer")
 {
+    // Register app as able to receive DCOP messages
+    if (kapp && !kapp->dcopClient()->isAttached())
+    {
+        kapp->dcopClient()->attach();
+    }
+
     if ( !kapp->dcopClient()->isApplicationRegistered( "kio_uiserver" ) )
     {
         QCString dcopService;
@@ -48,9 +55,29 @@ Observer::Observer()
     m_uiserver = new UIServer_stub( "kio_uiserver", "UIServer" );
 }
 
-int Observer::newJob( KIO::Job* )
+int Observer::newJob( KIO::Job * job )
 {
-    return m_uiserver->newJob();
+    // Tell the UI Server about this new job, and give it the application id
+    // at the same time
+    int progressId = m_uiserver->newJob( kapp->dcopClient()->appId() );
+
+    // Keep the result in a dict
+    m_dctJobs.insert( progressId, job );
+
+    return progressId;
+}
+
+void Observer::jobFinished( int progressId )
+{
+    m_uiserver->jobFinished( progressId );
+    m_dctJobs.remove( progressId );
+}
+
+void Observer::killJob( int progressId )
+{
+    KIO::Job * job = m_dctJobs[ progressId ];
+    assert(job);
+    job->kill();
 }
 
 void Observer::slotTotalSize( KIO::Job* job, unsigned long size )

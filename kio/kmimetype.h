@@ -123,11 +123,6 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
    * provided instead of a QString for convenience.
    */
   virtual QString comment( const KURL&, bool ) const { return m_strComment; }
-  /**
-   * @deprecated
-   * Use @ref KServiceType::name instead.
-   */
-  virtual QString mimeType() const { return m_strName; }
 
   /**
    * @return the list of patterns associated to the MIME Type

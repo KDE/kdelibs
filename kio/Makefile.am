@@ -65,7 +65,7 @@ libkio_la_SOURCES = \
 	progressbase.cpp defaultprogress.cpp \
 	statusbarprogress.cpp \
 	kurlcompletion.cpp kshellcompletion.cpp \
-	observer.cpp uiserver.stub
+	observer.cpp uiserver.stub observer.skel
 
 #listprogressdlg.cpp
 
@@ -74,7 +74,7 @@ kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
 kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
-kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel
+kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub
 kio_uiserver_la_LIBADD = libkio.la
 kio_uiserver_la_LDFLAGS = $(all_libraries) -module -avoid-version
 

@@ -20,14 +20,17 @@
 #define __kio_observer_h__
 
 #include <qobject.h>
+#include <dcopobject.h>
+#include <qintdict.h>
 
 #include "kio/global.h"
+#include "kio/job.h"
 
 class UIServer_stub;
 class KURL;
 namespace KIO {
-
 class Job;
+};
 
 /**
  * Observer for @ref KIO::Job progress information
@@ -35,21 +38,45 @@ class Job;
  * "observes" what jobs do and forwards this information
  * to the progress-info server.
  *
+ * It is a DCOP object so that the UI server can call the
+ * kill method when the user presses Cancel.
+ *
  * @short Observer for @ref KIO::Job progress information
  * @author David Faure <faure@kde.org>
  */
-class Observer : public QObject {
+class Observer : public QObject, public DCOPObject {
 
+  K_DCOP
   Q_OBJECT
 
 public:
 
+  /**
+   * @return the unique observer object
+   */
   static Observer * self() {
       if (!s_pObserver) s_pObserver = new Observer;
       return s_pObserver;
   }
 
+  /**
+   * Called by the job constructor, to signal its presence to the
+   * UI Server.
+   * @return the progress ID assigned by the UI Server to the Job.
+   */
   int newJob( KIO::Job * job );
+
+  /**
+   * Called by the job destructor, to tell the UI Server that
+   * the job ended
+   */
+  void jobFinished( int progressId );
+
+k_dcop:
+  /**
+   * Called by the UI Server (using DCOP) if the user presses cancel
+   */
+  void killJob( int progressId );
 
 protected:
 
@@ -58,6 +85,8 @@ protected:
   virtual ~Observer() {}
 
   UIServer_stub * m_uiserver;
+
+  QIntDict< KIO::Job > m_dctJobs;
 
 public slots:
 
@@ -78,8 +107,6 @@ public slots:
   virtual void slotCreatingDir( KIO::Job*, const KURL& dir );
 
   virtual void slotCanResume( KIO::Job*, bool can_resume );
-};
-
 };
 
 // -*- mode: c++; c-basic-offset: 2 -*-

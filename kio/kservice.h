@@ -246,20 +246,11 @@ public: // KDoc seems to barf on those typedefs and generates no docs after them
   int startService( const QString &URL, QCString &dcopService, QString &error );
 
   /**
-   * @deprecated Use serviceByXXX instead!
-   * @return a pointer to the requested service or 0 if the service is
-   *         unknown.
-   * VERY IMPORTANT : don't store the result in a KService * !
-   */
-  static Ptr service( const QString& _name );
-
-  /**
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    * VERY IMPORTANT : don't store the result in a KService * !
    */
   static Ptr serviceByName( const QString& _name );
-
 
   /**
    * @return a pointer to the requested service or 0 if the service is
