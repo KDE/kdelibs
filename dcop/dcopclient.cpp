@@ -34,6 +34,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/file.h>
+#include <sys/socket.h>
 
 #include <ctype.h>
 #include <unistd.h>
@@ -352,7 +353,7 @@ void DCOPClient::processPostedMessagesInternal()
  */
 void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QByteArray& dataReceived, bool canPost  )
 {
-    if (!d->accept_calls && (opcode == DCOPFind))
+    if (!d->accept_calls && (opcode == DCOPSend))
         return;
 
     IceConn iceConn = d->iceConn;
@@ -433,8 +434,6 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
     }
 
     if ( !b )	{
-	if (opcode != DCOPFind)
-	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", app.data(), objId.data(), fun.data() );
 	// Call failed. No data send back.
 
 	replyStream << d->appId << fromApp;
@@ -449,6 +448,7 @@ void DCOPProcessInternal( DCOPClientPrivate *d, int opcode, CARD32 key, const QB
 
     // Call successfull. Send back replyType and replyData.
     replyStream << d->appId << fromApp << replyType << replyData.size();
+
 
     // we are calling, so we need to set up reply data
     IceGetHeader( iceConn, d->majorOpcode, DCOPReply,
@@ -897,9 +897,7 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
     if ( localClient  ) {
 	QCString replyType;
 	QByteArray replyData;
-	bool b = localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
-	if ( !b )
-	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
+	(void) localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
 
 	// send() returns TRUE if the data could be send to the DCOPServer,
 	// regardles of receiving the data on the other application.
@@ -1505,8 +1503,6 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 
     if ( localClient ) {
 	bool b = localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
-	if ( !b )
-	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
 	return b;
     }
 
