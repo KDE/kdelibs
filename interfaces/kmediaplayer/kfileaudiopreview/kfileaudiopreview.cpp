@@ -1,6 +1,7 @@
 #include "kfileaudiopreview.h"
 
 #include <qcheckbox.h>
+#include <qhbox.h>
 #include <qlayout.h>
 #include <qvgroupbox.h>
 
@@ -65,10 +66,21 @@ KFileAudioPreview::KFileAudioPreview( QWidget *parent, const char *name )
 
     (void) new QWidget( box ); // spacer
 
-    d = new KFileAudioPreviewPrivate( box );
+    d = new KFileAudioPreviewPrivate( 0L ); // not box -- being reparented anyway
     KMediaPlayer::View *view = d->player->view();
-    view->reparent( box, QPoint(0,0) );
     view->setEnabled( false );
+
+    // if we have access to the video widget, show it above the player
+    // So, reparent first the video widget, then the view.
+    if ( view->videoWidget() )
+    {
+        QHBox *frame = new QHBox( box );
+        frame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+        frame->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
+        view->videoWidget()->reparent( frame, QPoint(0,0) );
+    }
+
+    view->reparent( box, QPoint(0,0) );
 
     m_autoPlay = new QCheckBox( i18n("Play &automatically"), box );
     KConfigGroup config( KGlobal::config(), ConfigGroup );

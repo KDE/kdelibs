@@ -56,6 +56,11 @@ public:
 
 	/** Return which buttons are being displayed. */
 	int buttons(void);
+
+	/** Return the QWidget in which video is displayed.
+		May Return 0L if there is none. */
+	QWidget *videoWidget();
+
 public slots:
 	/** Set which buttons to display. @see Button. */
 	void setButtons(int);
@@ -72,6 +77,13 @@ public slots:
 signals:
 	/** Emitted when the set of displayed buttons changes. */
 	void buttonsChanged(int);
+
+protected:
+	/** The implementing view should set the widget in which
+		the video will be displayed. KMediaPlayer users may 
+		reparent() it to somewhere else, for example.
+	*/
+	void setVideoWidget(QWidget *videoWidget);
 
 private:
 	int currentButtons;

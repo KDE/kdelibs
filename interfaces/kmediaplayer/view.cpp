@@ -23,15 +23,23 @@
 
 #include <kmediaplayer/view.h>
 
+struct KMediaPlayer::View::Data
+{
+	Data() : videoWidget(0L) {}
+
+	QWidget *videoWidget;
+};
+
 KMediaPlayer::View::View(QWidget *parent, const char *name)
 	: QWidget(parent, name)
 	, currentButtons((int)All)
-	, d(0)
+	, d(new Data())
 {
 }
 
 KMediaPlayer::View::~View(void)
 {
+	delete d;
 }
 
 int KMediaPlayer::View::buttons(void)
@@ -66,6 +74,16 @@ void KMediaPlayer::View::hideButton(int b)
 void KMediaPlayer::View::toggleButton(int b)
 {
 	setButtons(currentButtons ^ b);
+}
+
+void KMediaPlayer::View::setVideoWidget(QWidget *videoWidget)
+{
+	d->videoWidget = videoWidget;
+}
+
+QWidget * KMediaPlayer::View::videoWidget()
+{
+	return d->videoWidget;
 }
 
 #include "view.moc"
