@@ -139,6 +139,7 @@ bool KAutoConfig::retrieveSettings(bool trackChanges){
     changedMap.insert( "KComboBox", SIGNAL(activated (int)));
     changedMap.insert( "KFontCombo", SIGNAL(activated (int)));
     changedMap.insert( "KFontRequester", SIGNAL(fontSelected(const QFont &)));
+    changedMap.insert( "KFontChooser",  SIGNAL(fontSelected(const QFont &)));
     changedMap.insert( "KHistoryCombo", SIGNAL(activated (int)));
 
     changedMap.insert( "KColorButton", SIGNAL(changed(const QColor &)));
