@@ -264,6 +264,7 @@ QString Backend::openRCToString(int rc) {
 			return i18n("Error validating wallet integrity. Possibly corrupted.");
 		case -5:
 		case -7:
+		case -9:
 			return i18n("Read error - possibly incorrect password.");
 		case -6:
 			return i18n("Decryption error.");
@@ -404,7 +405,7 @@ int Backend::open(const QByteArray& password) {
 	if (fsize < 0 || fsize > long(encrypted.size()) - blksz - 4) {
 		//kdDebug() << "fsize: " << fsize << " encrypted.size(): " << encrypted.size() << " blksz: " << blksz << endl;
 		encrypted.fill(0);
-		return -7;         // file structure error.
+		return -9;         // file structure error.
 	}
 
 	// compute the hash ourself
