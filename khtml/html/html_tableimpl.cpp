@@ -214,7 +214,7 @@ void HTMLTableElementImpl::deleteCaption(  )
 
 HTMLElementImpl *HTMLTableElementImpl::insertRow( long index )
 {
-    // Note: we now can have both TR and sections (THEAD/TBODY/TFOOT) as children of a TABLE
+    //kdDebug(6030) << k_funcinfo << index << endl;
     // IE treats index=-1 as default value meaning 'append after last'
     // This isn't in the DOM. So, not implemented yet.
     HTMLTableSectionElementImpl* section = 0L;
@@ -224,10 +224,20 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index )
         if ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY )
         {
             section = static_cast<HTMLTableSectionElementImpl *>(node);
+            //kdDebug(6030) << k_funcinfo << "section id=" << node->id() << " rows:" << section->numRows() << endl;
             if ( section->numRows() > index )
                 break;
             else
                 index -= section->numRows();
+        }
+        // Note: we now can have both TR and sections (THEAD/TBODY/TFOOT) as children of a TABLE
+        else if ( node->id() == ID_TR )
+        {
+            section = 0L;
+            //kdDebug(6030) << k_funcinfo << "row" << endl;
+            index--;
+            if (!index)
+                break;
         }
     }
     if (!section) {
@@ -523,7 +533,6 @@ HTMLTableSectionElementImpl::HTMLTableSectionElementImpl(DocumentPtr *doc,
     : HTMLTablePartElementImpl(doc)
 {
     _id = tagid;
-    nrows = 0;
 }
 
 HTMLTableSectionElementImpl::~HTMLTableSectionElementImpl()
@@ -540,8 +549,7 @@ NodeImpl::Id HTMLTableSectionElementImpl::id() const
 // the index... but they aren't used during usual HTML parsing anyway
 HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index )
 {
-    nrows++;
-
+    //kdDebug(6030) << k_funcinfo << index << endl;
     HTMLTableRowElementImpl *r = new HTMLTableRowElementImpl(docPtr());
 
     NodeListImpl *children = childNodes();
@@ -566,11 +574,24 @@ void HTMLTableSectionElementImpl::deleteRow( long index )
     NodeListImpl *children = childNodes();
     if(children && (int)children->length() > index)
     {
-        nrows--;
         int exceptioncode = 0;
         HTMLElementImpl::removeChild(children->item(index), exceptioncode);
     }
     if(children) delete children;
+}
+
+
+int HTMLTableSectionElementImpl::numRows() const
+{
+    int rows = 0;
+    const NodeImpl *n = firstChild();
+    while (n) {
+        if (n->id() == ID_TR)
+            rows++;
+        n = n->nextSibling();
+    }
+
+    return rows;
 }
 
 // -------------------------------------------------------------------------

@@ -145,11 +145,10 @@ public:
     HTMLElementImpl *insertRow ( long index );
     void deleteRow ( long index );
 
-    int numRows() const { return nrows; }
+    int numRows() const;
 
 protected:
     ushort _id;
-    int nrows;
 };
 
 // -------------------------------------------------------------------------
