@@ -273,11 +273,6 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
   if( ( nLevel == KDEBUG_FATAL ) && debug_Config &&
           ( debug_Config->readNumEntry( "AbortFatal", 1 ) ) )
         abort();
-
-#ifdef NDEBUG
-  delete debug_Config;
-  debug_Config = pcd.setObject(0);
-#endif
 }
 
 static void kDebugBackend2( unsigned short nLevel, unsigned short nArea, const char* fmt, va_list arguments )
