@@ -43,9 +43,9 @@ class Ticket
 
     Resource *resource();
 
-  private:    
+  private:
     Ticket( Resource *resource );
-   
+
     Resource *mResource;
 };
 
@@ -60,8 +60,10 @@ class Resource : public KRES::Resource
 
     /**
       @short Resource Iterator
-      
+
       This class provides an iterator for resource entries.
+      By default it points to a QValueList<Addressee>::Iterator,
+      but you can reimplement this class to fit your own needs.
     */
     class Iterator
     {
@@ -86,7 +88,7 @@ class Resource : public KRES::Resource
 
     /**
       @short Resource Const Iterator
-      
+
       This class provides a const iterator for resource entries.
     */
     class ConstIterator
@@ -111,7 +113,10 @@ class Resource : public KRES::Resource
     };
 
     /**
-      Constructor
+      Constructor.
+
+      @param config The config object where the derived classes can
+                    read out their settings.
      */
     Resource( const KConfig *config );
 
@@ -120,16 +125,29 @@ class Resource : public KRES::Resource
      */
     virtual ~Resource();
 
-    virtual Iterator begin();
+    /**
+      Returns an iterator pointing to the first addressee in the resource.
+      This iterator equals end() if the resource is empty.
+     */
     virtual ConstIterator begin() const;
 
-    virtual Iterator end();
+    /**
+      This is an overloaded member function, provided for convenience. It 
+      behaves essentially like the above function.
+     */
+    virtual Iterator begin();
+
+    /**
+      Returns an iterator pointing to the last addressee in the resource.
+      This iterator equals begin() if the resource is empty.
+     */
     virtual ConstIterator end() const;
 
     /**
-      Sets the address book of the resource.
+      This is an overloaded member function, provided for convenience. It 
+      behaves essentially like the above function.
      */
-    void setAddressBook( AddressBook* );
+    virtual Iterator end();
 
     /**
       Returns a pointer to the addressbook.
@@ -142,63 +160,77 @@ class Resource : public KRES::Resource
     virtual void writeConfig( KConfig *config );
 
     /**
-      Open the resource and returns if it was successfully
+      Opens the resource and returns if it was successfully
      */
     virtual bool doOpen() = 0;
 
     /**
-      Close the resource and returns if it was successfully
+      Closes the resource and returns if it was successfully
      */
     virtual void doClose() = 0;
-  
+
     /**
       Request a ticket, you have to pass through save() to
-      allow locking.
+      allow locking. The resource has to create its locks
+      in this function.
     */
     virtual Ticket *requestSaveTicket() = 0;
-  
+
     /**
       Releases the ticket previousely requested with requestSaveTicket().
-      You have to call this function if there is no way to call save()
-      with this ticket. The resource has to remove any locks which are
-      assocciated with this ticket here...
+      The resource has to remove its locks in this function.
      */
     virtual void releaseSaveTicket( Ticket* ) = 0;
 
     /**
-      Loads all addressees.
+      Loads all addressees synchronously.
+
+      @returns Whether the loading was successfully.
      */
     virtual bool load() = 0;
 
     /**
-      Loads asyncronous all addressees. It will return immediatley and
-      emit the loadingFinished() signal when finished loading.
+      Loads all addressees asyncronously. You have to make sure that either
+      the loadingFinished() or loadingError() signal is emitted from within
+      this function.
+
+      @return Whether the synchronous part of loading was successfully.
      */
     virtual bool asyncLoad() = 0;
 
     /**
-      Insert a addressee into the resource.
+      Insert an addressee into the resource.
      */
     virtual void insertAddressee( const Addressee& );
 
     /**
-      Removes a addressee from resource.
+      Removes an addressee from resource.
      */
     virtual void removeAddressee( const Addressee& addr );
 
     /**
-      Save all addressees to the addressbook.
+      Saves all addressees synchronously.
 
-      @param ticket The ticket you get by requestSaveTicket(). It will
-                    be released automatically.
+      @param ticket You have to release the ticket later with 
+                    releaseSaveTicket() explicitely.
+      @return Whether the saving was successfully.
      */
     virtual bool save( Ticket *ticket ) = 0;
 
+    /**
+      Saves all addressees asynchronously. You have to make sure that either
+      the savingFinished() or savingError() signal is emitted from within
+      this function.
+
+      @param ticket You have to release the ticket later with 
+                    releaseSaveTicket() explicitely.
+      @return Whether the saving was successfully.
+     */
     virtual bool asyncSave( Ticket *ticket ) = 0;
 
     /**
       This method is called by an error handler if the application
-      crashed
+      crashed. You should remove all you locks inside this function.
      */
     virtual void cleanUp();
 
@@ -207,11 +239,47 @@ class Resource : public KRES::Resource
      */
     virtual void clear();
 
+    /**
+      @internal
+
+      Sets the address book of the resource.
+     */
+    void setAddressBook( AddressBook* );
+
   signals:
-    void loadingFinished( Resource* );
-    void loadingError( Resource*, const QString& );
-    void savingFinished( Resource* );
-    void savingError( Resource*, const QString& );
+    /**
+      This signal is emitted when the resource has finished the loading of all 
+      addressees from the backend to the internal cache.
+
+      @param resource The pointer to the resource which emitted this signal.
+     */
+    void loadingFinished( Resource *resource );
+
+    /**
+      This signal is emitted when an error occured during loading the 
+      addressees from the backend to the internal cache.
+
+      @param resource The pointer to the resource which emitted this signal.
+      @param msg A translated error message.
+     */
+    void loadingError( Resource *resource, const QString &msg );
+
+    /**
+      This signal is emitted when the resource has finished the saving of all 
+      addressees from the internal cache to the backend.
+
+      @param resource The pointer to the resource which emitted this signal.
+     */
+    void savingFinished( Resource *resource );
+
+    /**
+      This signal is emitted when an error occured during saving the 
+      addressees from the internal cache to the backend.
+
+      @param resource The pointer to the resource which emitted this signal.
+      @param msg A translated error message.
+     */
+    void savingError( Resource *resource, const QString &msg );
 
   protected:
     Ticket *createTicket( Resource * );

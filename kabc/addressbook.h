@@ -37,9 +37,9 @@ class Ticket;
 
 /**
   @short Address Book
-  
+
   This class provides access to a collection of address book entries.
-*/
+ */
 class AddressBook : public QObject
 {
   Q_OBJECT
@@ -51,17 +51,17 @@ class AddressBook : public QObject
   public:
     /**
       @short Address Book Iterator
-      
+
       This class provides an iterator for address book entries.
-    */
+     */
     class Iterator
     {
       public:
         Iterator();
         Iterator( const Iterator & );
-      	~Iterator();
+        ~Iterator();
 
-      	Iterator &operator=( const Iterator & );
+        Iterator &operator=( const Iterator & );
         const Addressee &operator*() const;
         Addressee &operator*();
         Addressee* operator->();
@@ -72,24 +72,24 @@ class AddressBook : public QObject
         bool operator==( const Iterator &it );
         bool operator!=( const Iterator &it );
 
-      	struct IteratorData;
+        struct IteratorData;
         IteratorData *d;
     };
 
     /**
       @short Address Book Const Iterator
-      
+
       This class provides a const iterator for address book entries.
-    */
+     */
     class ConstIterator
     {
       public:
         ConstIterator();
         ConstIterator( const ConstIterator & );
         ConstIterator( const Iterator & );
-      	~ConstIterator();
-      
-      	ConstIterator &operator=( const ConstIterator & );
+        ~ConstIterator();
+
+        ConstIterator &operator=( const ConstIterator & );
         const Addressee &operator*() const;
         const Addressee* operator->() const;
         ConstIterator &operator++();
@@ -99,229 +99,315 @@ class AddressBook : public QObject
         bool operator==( const ConstIterator &it );
         bool operator!=( const ConstIterator &it );
 
-      	struct ConstIteratorData;
+        struct ConstIteratorData;
         ConstIteratorData *d;
     };
-    
+
     /**
-      Constructs a address book object.
-      
-      @param format File format class.
-    */
+      Constructs an address book object.
+      You have to add the resources manually before calling load().
+     */
     AddressBook();
+
+    /**
+      Constructs an address book object.
+      The resources are loaded automatically.
+
+      @param config The config file which contains the resource settings.
+     */
     AddressBook( const QString &config );
+
+    /**
+      Destructor.
+     */
     virtual ~AddressBook();
 
     /**
       Requests a ticket for saving the addressbook. Calling this function locks
-      the addressbook for all other processes. If the address book is already
-      locked the function returns 0. You need the returned Ticket object
+      the addressbook for all other processes. You need the returned ticket object
       for calling the save() function.
-      
-      @see save()
-    */
-    Ticket *requestSaveTicket( Resource *resource=0 );
 
-    void releaseSaveTicket( Ticket *ticket );
-    
+      @param resource A pointer to the resource which shall be locked. If 0, 
+                      the default resource is locked.
+      @return 0 if the resource is already locked or a valid save ticket 
+              otherwise.
+      @see save()
+     */
+    Ticket *requestSaveTicket( Resource *resource = 0 );
+
     /**
-      Load address book from file.
-    */
+      Releases the ticket requested previously with requestSaveTicket().
+      You have to call this function after saving, otherwise the possible
+      locks of the resource won't be removed.
+     */
+    void releaseSaveTicket( Ticket *ticket );
+
+    /**
+      Loads all addressees synchronously.
+
+      @return Whether the loading was successfully.
+     */
     bool load();
 
+    /**
+      Loads all addressees asynchronously. This function returns immediately
+      and emits the addressBookChanged() signal as soon as the loading has 
+      finished.
+
+      @return Whether the synchronous part of loading was successfully.
+     */
     bool asyncLoad();
 
     /**
-      Save address book. The address book is saved to the file, the Ticket
-      object has been requested for by requestSaveTicket().
-     
-      @param ticket a ticket object returned by requestSaveTicket()
-    */
+      Saves all addressees of one resource synchronously.
+
+      @param ticket The ticket returned by requestSaveTicket().
+      @return Whether the saving was successfully.
+     */
     bool save( Ticket *ticket );
 
+    /**
+      Saves all addressees of one resource asynchronously. //FIXME
+
+      @param ticket The ticket returned by requestSaveTicket().
+      @return Whether the synchronous part of saving was successfully.
+     */
     bool asyncSave( Ticket *ticket );
 
     /**
-      Returns a iterator for first entry of address book.
-    */
-    Iterator begin();
-
-    /**
-      Returns a const iterator for first entry of address book.
-    */
+      Returns an iterator pointing to the first addressee of address book.
+      This iterator equals end() if the address book is empty.
+     */
     ConstIterator begin() const;
 
     /**
-      Returns a iterator for first entry of address book.
-    */
-    Iterator end();
+      This is an overloaded member function, provided for convenience. It 
+      behaves essentially like the above function.
+     */
+    Iterator begin();
 
     /**
-      Returns a const iterator for first entry of address book.
-    */
+      Returns an iterator pointing to the last addressee of address book.
+      This iterator equals begin() if the address book is empty.
+     */
     ConstIterator end() const;
 
     /**
-      Removes all entries from address book.
-    */
+      This is an overloaded member function, provided for convenience. It 
+      behaves essentially like the above function.
+     */
+    Iterator end();
+
+
+    /**
+      Removes all addressees from the address book.
+     */
     void clear();
-    
-    /**
-      Insert an Addressee object into address book. If an object with the same
-      unique id already exists in the address book it it replaced by the new
-      one. If not the new object is appended to the address book.
-    */
-    void insertAddressee( const Addressee & );
 
     /**
-      Removes entry from the address book.
-    */
-    void removeAddressee( const Addressee & );
+      Insert an addressee into the address book. If an addressee with the same
+      unique id already exists, it is replaced by the new one, otherwise it is
+      appended.
+
+      @param addr The addressee which shall be insert.
+     */
+    void insertAddressee( const Addressee &addr );
 
     /**
-      This is like removeAddressee() just above, with the difference that
-      the first element is a iterator, returned by begin().
-    */
-    void removeAddressee( const Iterator & );
+      Removes an addressee from the address book.
+
+      @param addr The addressee which shall be removed.
+     */
+    void removeAddressee( const Addressee &addr );
 
     /**
-      Find the specified entry in address book. Returns end(), if the entry
-      couldn't be found.
-    */
-    Iterator find( const Addressee & );
+      This is an overloaded member function, provided for convenience. It 
+      behaves essentially like the above function.
+
+      @param it An iterator pointing to the addressee which shall be removed.
+     */
+    void removeAddressee( const Iterator &it );
 
     /**
-      Find the entry specified by an unique id. Returns an empty Addressee
-      object, if the address book does not contain an entry with this id.
-    */
-    Addressee findByUid( const QString & );
+      Returns an iterator pointing to the specified addressee. It will return
+      end() if no addressee matched.
+
+      @param addr The addresee you are looking for.
+     */
+    Iterator find( const Addressee &addr );
+
+    /**
+      Searches an addressee with the specified unique identifier.
+
+      @param uid The unique identifier you are looking for.
+      @return The addressee with the specified unique identifier or an
+              empty addressee.
+     */
+    Addressee findByUid( const QString &uid );
 
 
     /**
-      Returns a list of all addressees in the address book. This list can
-      be sorted with KABC::AddresseeList for example.
-    */
+      Returns a list of all addressees in the address book.
+     */
     Addressee::List allAddressees();
 
     /**
-      Find all entries with the specified name in the address book. Returns
-      an empty list, if no entries could be found.
-    */
-    Addressee::List findByName( const QString & );
+      Searches all addressees which match the specified name.
+
+      @param name The name you are looking for.
+      @return A list of all matching addressees.
+     */
+    Addressee::List findByName( const QString &name );
 
     /**
-      Find all entries with the specified email address  in the address book.
-      Returns an empty list, if no entries could be found.
-    */
-    Addressee::List findByEmail( const QString & );
+      Searches all addressees which match the specified email address.
+
+      @param email The email address you are looking for.
+      @return A list of all matching addressees.
+     */
+    Addressee::List findByEmail( const QString &email );
 
     /**
-      Find all entries which have the specified category in the address book.
-      Returns an empty list, if no entries could be found.
-    */
-    Addressee::List findByCategory( const QString & );
+      Searches all addressees which belongs to the specified category.
+
+      @param category The category you are looking for.
+      @return A list of all matching addressees.
+     */
+    Addressee::List findByCategory( const QString &category );
 
     /**
-      Return a string identifying this addressbook.
-    */
+      Returns a string identifying this addressbook. The identifier is
+      created by concatenation of the resource identifiers.
+     */
     virtual QString identifier();
 
     /**
-      Used for debug output.
-    */
-    void dump() const;
-
-    void emitAddressBookLocked() { emit addressBookLocked( this ); }
-    void emitAddressBookUnlocked() { emit addressBookUnlocked( this ); }
-    void emitAddressBookChanged() { emit addressBookChanged( this ); }
-
-    /**
-      Return list of all Fields known to the address book which are associated
+      Returns a list of all Fields known to the address book which are associated
       with the given field category.
-    */
+     */
     Field::List fields( int category = Field::All );
 
     /**
       Add custom field to address book.
-      
+
       @param label    User visible label of the field.
       @param category Ored list of field categories.
       @param key      Identifier used as key for reading and writing the field.
       @param app      String used as application key for reading and writing
                       the field.
-    */
+     */
     bool addCustomField( const QString &label, int category = Field::All,
                          const QString &key = QString::null,
                          const QString &app = QString::null );
 
     /**
-      Add address book resource.
-    */
-    bool addResource( Resource * );
+      Adds a resource to the address book.
+
+      @param resource The resource you want to add.
+      @return Whether opening the resource was successfully.
+     */
+    bool addResource( Resource *resource );
 
     /**
-      Remove address book resource.
-    */
-    bool removeResource( Resource * );
+      Removes a resource from the address book.
+
+      @param resource The resource you want to remove.
+      @return Whether closing the resource was successfully.
+     */
+    bool removeResource( Resource *resource );
 
     /**
-      Return pointer list of all resources.
-    */
+      Returns a list of all resources.
+     */
     QPtrList<Resource> resources();
 
     /**
-      Set the @p ErrorHandler, that is used by error() to
+      Sets the @p ErrorHandler, that is used by error() to
       provide GUI independent error messages.
-    */
-    void setErrorHandler( ErrorHandler * );
+
+      @param errorHandler The error handler you want to use.
+     */
+    void setErrorHandler( ErrorHandler *errorHandler );
 
     /**
       Shows GUI independent error messages.
-    */
-    void error( const QString& );
+
+      @param msg The error message that shall be displayed.
+     */
+    void error( const QString &msg );
 
     /**
-      Query all resources to clean up their lock files
+      Querys all resources to clean up their lock files.
+      You should call this method in the crash handler of your
+      application.
      */
     void cleanUp();
 
+    /**
+      Used for debug output. This function prints out the list
+      of all addressees to kdDebug(5700).
+     */
+    void dump() const;
+
+    /**
+      */
+    void emitAddressBookLocked() { emit addressBookLocked( this ); }
+    void emitAddressBookUnlocked() { emit addressBookUnlocked( this ); }
+    void emitAddressBookChanged() { emit addressBookChanged( this ); }
+
   signals:
     /**
-      Emitted, when the address book has changed on disk.
-    */
-    void addressBookChanged( AddressBook * );
+      Emitted when one of the resources discovered a change in its backend
+      or the asynchronous loading of all resources has finished.
+      You should connect to this signal to update the presentation of
+      the contact data in your application.
 
-    /**
-      Emitted, when the address book has been locked for writing.
-    */
-    void addressBookLocked( AddressBook * );
-
-    /**
-      Emitted, when the address book has been unlocked.
-    */
-    void addressBookUnlocked( AddressBook * );
-
-    /**
-      Emitted whenever the loading has finished after calling
-      asyncLoad().
+      @param addressBook The address book which emitted this signal.
      */
-    void loadingFinished( Resource* );
+    void addressBookChanged( AddressBook *addressBook );
 
     /**
-      Emitted whenever the saving has finished after calling
-      asyncSave().
+      Emitted when one of the resources has been locked for writing.
+
+      @param addressBook The address book which emitted this signal.
      */
-    void savingFinished( Resource* );
+    void addressBookLocked( AddressBook *addressBook );
+
+    /**
+      Emitted when one of the resources has been unlocked.
+      You should connect to this signal if you want to save your changes
+      to a resource which is currently locked, and want to get notified when
+      saving is possible again.
+
+      @param addressBook The address book which emitted this signal.
+     */
+    void addressBookUnlocked( AddressBook *addressBook );
+
+    /**
+      Emitted when the asynchronous loading of one resource has finished
+      after calling asyncLoad().
+
+      @param resource The resource which emitted this signal.
+     */
+    void loadingFinished( Resource *resource );
+
+    /**
+      Emitted when the asynchronous saving of one resource has finished
+      after calling asyncSave().
+
+      @param resource The resource which emitted this signal.
+     */
+    void savingFinished( Resource *resource );
 
   protected slots:
     void resourceLoadingFinished( Resource* );
     void resourceSavingFinished( Resource* );
-    void resourceLoadingError( Resource*, const QString &errMsg );
-    void resourceSavingError( Resource*, const QString &errMsg );
+    void resourceLoadingError( Resource*, const QString& );
+    void resourceSavingError( Resource*, const QString& );
 
   protected:
     void deleteRemovedAddressees();
-    void setStandardResource( Resource * );
+    void setStandardResource( Resource* );
     Resource *standardResource();
     KRES::Manager<Resource> *resourceManager();
 
