@@ -1,18 +1,26 @@
+#ifndef INCLUDE_MENUITEM_DEF
+#define INCLUDE_MENUITEM_DEF
+#endif
+
 #include "ksgistyle.h"
 #include <qpainter.h>
 #include <qwidget.h>
 #include <kapp.h>
+#include <kglobal.h>
+#include <kglobalsettings.h>
 #include <qbitmap.h>
 #include <qdrawutil.h>
 #include <qpushbutton.h>
 #include <qscrollbar.h>
+#include <qpopupmenu.h>
+#include <qmenudata.h>
 
 #include <limits.h>
 
 #include <stdio.h>
 
 #define SB_BORDER_WIDTH 0
-#define SLIDER_MIN	16
+#define SLIDER_MIN	22
 
 //--------------------------------------------------------------------
 //
@@ -43,8 +51,8 @@ static const char * check_xpm[] = {
 
 static unsigned char check_mask[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf8, 0x00, 0xfe, 0x10, 0x3f, 
-	0xb8, 0x07, 0xfc, 0x03, 0xfc, 0x01, 0xf0, 0x01, 0xe0, 0x00, 0x40, 0x00, 
-	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+  0xb8, 0x07, 0xfc, 0x03, 0xfc, 0x01, 0xf0, 0x01, 0xe0, 0x00, 0x40, 0x00, 
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 static unsigned char downarrow_bits[] = {
  0xff,0x01,0xff,0x01,0xfe,0x00,0xfe,0x00,0x7c,0x00,0x7c,0x00,0x38,0x00,0x38,
@@ -98,10 +106,10 @@ KSgiStyle::~KSgiStyle()
 void
 KSgiStyle::polish(QWidget *w)
 {
-	if (w->isTopLevel())
+  if (w->isTopLevel())
   	return;
 		
-	if(w->inherits("QButton") || w->inherits("QComboBox")){
+  if(w->inherits("QButton") || w->inherits("QComboBox")){
   	w->installEventFilter(this);
     QPalette pal = w->palette();
     // we use this as a flag since it's otherwise unused.
@@ -120,7 +128,7 @@ KSgiStyle::polish(QWidget *w)
 void 
 KSgiStyle::unPolish(QWidget *w)
 {
-	if (w->isTopLevel()) 
+  if (w->isTopLevel()) 
   	return;
 
   if(w->inherits("QButton") || w->inherits("QComboBox")){
@@ -129,7 +137,7 @@ KSgiStyle::unPolish(QWidget *w)
     pal.setColor(QColorGroup::Shadow,
                      kapp->palette().active().color(QColorGroup::Shadow));
     w->setPalette(pal);
- } 
+  } 
 }
 
 //--------------------------------------------------------------------
@@ -142,30 +150,30 @@ bool
 KSgiStyle::eventFilter(QObject* obj, QEvent* ev)
 {
 
-	static QPalette	palStore;
+  static QPalette	palStore;
 	
-	if(obj->inherits("QButton") || obj->inherits("QComboBox")){
-		if (ev->type() == QEvent::Enter) {
+  if(obj->inherits("QButton") || obj->inherits("QComboBox")){
+	  if (ev->type() == QEvent::Enter) {
     	QWidget *btn = (QWidget *)obj;
-      if (btn->isEnabled()){
+        if (btn->isEnabled()){
      		QPalette pal = btn->palette();
-				palStore = pal;
-        pal.setColor(QColorGroup::Shadow,
+			palStore = pal;
+            pal.setColor(QColorGroup::Shadow,
                      pal.active().color(QColorGroup::Midlight));
-        btn->setPalette(pal);
+            btn->setPalette(pal);
 //        btn->repaint(false);
 
-			}
-		} else if (ev->type() == QEvent::Leave) {
+		}
+    } else if (ev->type() == QEvent::Leave) {
     	QWidget *btn = (QWidget *)obj;
   		QPalette pal = btn->palette();
    		pal.setColor(QColorGroup::Shadow, Qt::white);
    		btn->setPalette(pal);
 //    	btn->repaint(false);
-		}
-	} 
+	}
+  } 
 	
-	return(false);
+  return(false);
 }
 
 
@@ -178,27 +186,27 @@ void
 KSgiStyle::drawButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken, const QBrush* fill)
 {
-	QPen 	oldPen = p->pen();
-	int		x2 = x+w-1;
-	int 	y2 = y+h-1;
+  QPen 	oldPen = p->pen();
+  int	x2 = x+w-1;
+  int 	y2 = y+h-1;
 	
-	//
-	// draw outline
-	//
-	p->setPen (sunken ? g.dark() : Qt::black);
-	p->drawLine(x, y2, x2, y2);
-	p->drawLine(x2, y, x2, y2);
-	p->setPen(sunken ?  Qt::black : g.dark());
-	p->drawLine(x, y, x2, y);
-	p->drawLine(x, y, x, y2);
+  //
+  // draw outline
+  //
+  p->setPen (sunken ? g.dark() : Qt::black);
+  p->drawLine(x, y2, x2, y2);
+  p->drawLine(x2, y, x2, y2);
+  p->setPen(sunken ?  Qt::black : g.dark());
+  p->drawLine(x, y, x2, y);
+  p->drawLine(x, y, x, y2);
 	
-	if (g.shadow() == Qt::white) {
-			drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, sunken, fill);
-	} else {
-			drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, sunken,
-													&g.brush(QColorGroup::Midlight));
-	}	
-	p->setPen(oldPen);
+  if (g.shadow() == Qt::white) {
+	drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, sunken, fill);
+  } else {
+	drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, sunken,
+			            &g.brush(QColorGroup::Midlight));
+  }	
+  p->setPen(oldPen);
 }
 
 //--------------------------------------------------------------------
@@ -210,7 +218,7 @@ void
 KSgiStyle::drawFullShadeButton(QPainter *p, int x, int y, int w, int h,
                     const QColorGroup &g, bool sunken, const QBrush* fill)
 {
-	int	x2 = x+w-1;
+	int x2 = x+w-1;
 	int y2 = y+h-1;
 
 	QPen oldPen = p->pen();
@@ -341,7 +349,7 @@ KSgiStyle::buttonRect(int x, int y, int w, int h)
 QSize
 KSgiStyle::indicatorSize() const
 {
-    return(QSize(18, 16));
+    return(QSize(16, 16));
 }
 
 
@@ -352,43 +360,61 @@ KSgiStyle::indicatorSize() const
 
 void
 KSgiStyle::drawIndicator(QPainter *p, int x, int y, int w, int h,
-                               const QColorGroup &g, int state, bool down, bool)
+                               const QColorGroup &g, int state, bool down, 
+                               bool enabled)
 {
 
-	QPen oldPen = p->pen();
-	int	x2 = x+w-3;
-	int y2 = y+h-1;
+  QPen oldPen = p->pen();
+  int x2 = x+w-1;
+  int y2 = y+h-1;
+  
 	
-	//
-	// shouldn't have to do this, I thought that was what mask was for.
-	// Clear the bg....
-	//
-	p->fillRect( x, y, w, h, g.brush(QColorGroup::Background));
+  
+   if (enabled) {
 	
-	//
-	// draw outline
-	//
-	p->setPen (Qt::black);
-	p->drawLine(x, y2, x2, y2);
-	p->drawLine(x2, y, x2, y2);
-	p->setPen(g.dark());
-	p->drawLine(x, y, x2, y);
-	p->drawLine(x, y, x, y2);
+    //
+    // draw outline
+    //
+    p->setPen (Qt::black);
+    p->drawLine(x, y2, x2, y2);
+    p->drawLine(x2, y, x2, y2);
+    p->setPen(g.dark());
+    p->drawLine(x, y, x2, y);
+    p->drawLine(x, y, x, y2);
+    
+    //
+    // shouldn't have to do this, I thought that was what mask was for.
+    // Clear the bg....
+    //
+    p->fillRect(x+1, y+1, w-2, h-2, g.brush(QColorGroup::Background));
+  
+  
 	
-	if (g.shadow() == Qt::white) {
-		drawPartShadeButton(p, x+1, y+1, w-4, h-2, g, down, &(g.brush(QColorGroup::Background)));
-	} else {
-		drawPartShadeButton(p, x+1, y+1, w-4, h-2, g, down, &(g.brush(QColorGroup::Midlight)));
-	}
+    if (g.shadow() == Qt::white) {
+  	drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, down, &(g.brush(QColorGroup::Background)));
+    } else {
+	drawPartShadeButton(p, x+1, y+1, w-2, h-2, g, down, &(g.brush(QColorGroup::Midlight)));
+    }
 
-	p->setPen(oldPen);
+  } else {
+    //
+    // draw outline
+    //
+    p->setPen(g.dark());
+    p->drawRect(x, y, w, h);
+
+    p->fillRect(x+1, y+1, w-2, h-2, g.mid());
+    
+  }
+  
+  p->setPen(oldPen);
+    
+  //
+  // red check mark
+  //
 	
-	//
-	// red check mark
-	//
-	
-	if (state)
-		drawCheckMark(p, 2, 2, 16, 16, g);
+  if (state)
+    drawCheckMark(p, 0, 2, 16, 16, g);
 }
 
 //--------------------------------------------------------------------
@@ -407,7 +433,7 @@ KSgiStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
 
 	if (state)
 		p->drawPixmap(x, y, checkMask);
-		}
+	}
 
 //--------------------------------------------------------------------
 //
@@ -541,16 +567,16 @@ KSgiStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
                          bool editable, bool,
                          const QBrush*)
 {
-	QPen oldPen = p->pen();
+  QPen oldPen = p->pen();
 	
-	drawButton (p, x, y, w, h, g, 0);
+  drawButton (p, x, y, w, h, g, 0);
 	
-	int midY = (h-3)/2;
-	p->setPen(Qt::black);
-	p->drawLine(w-15, midY+3, w-8, midY+3); 
-	p->drawLine(w-8, midY+3, w-8, midY+1); 
-	p->setPen(g.dark());
-	p->drawRect(w-16, midY, 8, 3);
+  int midY = (h-3)/2;
+  p->setPen(Qt::black);
+  p->drawLine(w-15, midY+3, w-8, midY+3); 
+  p->drawLine(w-8, midY+3, w-8, midY+1); 
+  p->setPen(g.dark());
+  p->drawRect(w-16, midY, 8, 3);
 
   if(editable){
   	int x2 = w-x-18-1;
@@ -558,9 +584,9 @@ KSgiStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
     p->setPen(g.dark());
     p->drawLine(x+3, y+3, x2, y+3);
     p->drawLine(x+3, y+4, x+3, y2);
- 	}
+  }
  	
-	p->setPen(oldPen);
+  p->setPen(oldPen);
 }
 
 //--------------------------------------------------------------------
@@ -571,7 +597,7 @@ KSgiStyle::drawComboButton(QPainter *p, int x, int y, int w, int h,
 int
 KSgiStyle::sliderLength() const
 {
-    return(30);
+  return(30);
 }
 
 //--------------------------------------------------------------------
@@ -584,38 +610,38 @@ KSgiStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, QCOORD,
                                     Orientation)
 {
-	QPen oldPen = p->pen();
-	int	x2 = x+w-1;
-	int y2 = y+h-1;
+  QPen oldPen = p->pen();
+  int x2 = x+w-1;
+  int y2 = y+h-1;
 
-	p->setPen(g.mid());
-	p->drawLine(x, y, x2, y);
-	p->drawLine(x, y, x, y2);
-	p->setPen(g.light());
-	p->drawLine(x2, y, x2, y2);
-	p->drawLine(x, y2, x2, y2);
+  p->setPen(g.mid());
+  p->drawLine(x, y, x2, y);
+  p->drawLine(x, y, x, y2);
+  p->setPen(g.light());
+  p->drawLine(x2, y, x2, y2);
+  p->drawLine(x, y2, x2, y2);
 
-	p->setPen(g.dark());
-	p->drawLine(x+1, y+1, x2-1, y+1);
-	p->drawLine(x+1, y+1, x+1, y2-1);
-	p->setPen(g.midlight());
-	p->drawLine(x2-1, y+1, x2-1, y2-1);
-	p->drawLine(x+1, y2-1, x2-1, y2-1);
+  p->setPen(g.dark());
+  p->drawLine(x+1, y+1, x2-1, y+1);
+  p->drawLine(x+1, y+1, x+1, y2-1);
+  p->setPen(g.midlight());
+  p->drawLine(x2-1, y+1, x2-1, y2-1);
+  p->drawLine(x+1, y2-1, x2-1, y2-1);
 
-	p->setPen(Qt::black);
-	p->drawLine(x+2, y+2, x2-2, y+2);
-	p->drawLine(x+2, y+2, x+2, y2-2);
-	p->drawLine(x2-2, y+2, x2-2, y2-2);
-	p->drawLine(x+2, y2-2, x2-2, y2-2);
+  p->setPen(Qt::black);
+  p->drawLine(x+2, y+2, x2-2, y+2);
+  p->drawLine(x+2, y+2, x+2, y2-2);
+  p->drawLine(x2-2, y+2, x2-2, y2-2);
+  p->drawLine(x+2, y2-2, x2-2, y2-2);
 
-	p->setPen(g.midlight());
-	p->drawLine(x+3, y+3, x2-3, y+3);
-	p->drawLine(x+3, y+3, x+3, y2-3);
-	p->setPen(g.mid());
-	p->drawLine(x2-3, y+3, x2-3, y2-3);
-	p->drawLine(x+3, y2-3, x2-3, y2-3);
+  p->setPen(g.midlight());
+  p->drawLine(x+3, y+3, x2-3, y+3);
+  p->drawLine(x+3, y+3, x+3, y2-3);
+  p->setPen(g.mid());
+  p->drawLine(x2-3, y+3, x2-3, y2-3);
+  p->drawLine(x+3, y2-3, x2-3, y2-3);
 
-	p->setPen(oldPen);
+  p->setPen(oldPen);
 }
 
 //--------------------------------------------------------------------
@@ -628,43 +654,49 @@ KSgiStyle::drawSlider(QPainter *p, int x, int y, int w, int h,
                             const QColorGroup &g, Orientation orient,
                             bool, bool)
 {
-	if (orient == Horizontal) {
-		y += 2;
-		h -= 4;
-	} else {
-		x += 2;
-		w -= 4;
-	}
+//  if (orient == Horizontal) {
+	y += 2;
+	h -= 4;
+//  } else {
+	x += 2;
+	w -= 4;
+//  }
 
-	QPen oldPen = p->pen();
+  QPen oldPen = p->pen();
 	
-	p->fillRect(x+3, y+3, w-6, h-6, g.brush(QColorGroup::Background));
+  p->fillRect(x+3, y+3, w-6, h-6, g.brush(QColorGroup::Background));
 
-	//
-	// draw outline
-	//
-	p->setPen (Qt::black);
-	p->drawRect(x, y, w, h);
+  //
+  // draw outline
+  //
+  p->setPen (Qt::black);
+//  p->drawRect(x, y, w, h);
 	
-	drawPartShadeButton(p, x+1, y+1, w-2, h-2, g);
+  drawPartShadeButton(p, x+1, y+1, w-2, h-2, g);
 	
-	if (orient == Horizontal) {
-			int midX = w/2;
-			
-			p->setPen(g.light());
-			p->drawLine(x+midX-1, y+2, x+midX-1, h-y+1);
-			p->setPen(Qt::black);
-			p->drawLine(x+midX, y+2, x+midX, h-y+1);
-	} else {
-			int midY = h/2;
+  if (orient == Horizontal) {
+	int midX = w/2;
+	
+        //
+        // draw notch in middle
+        //		
+	p->setPen(g.light());
+	p->drawLine(x+midX-1, y+2, x+midX-1, h-y+1);
+	p->setPen(Qt::black);
+	p->drawLine(x+midX, y+2, x+midX, h-y+1);
+  } else {
+	int midY = h/2;
 
-			p->setPen(g.light());
-			p->drawLine(x+2, y+midY-1, w-x+1, y+midY-1);
-			p->setPen(Qt::black);
-			p->drawLine(x+2, y+midY, w-x+1, y+midY);
-	}
+        //
+        // draw notch in middle
+        //		
+	p->setPen(g.light());
+	p->drawLine(x+2, y+midY-1, w-x+1, y+midY-1);
+	p->setPen(Qt::black);
+	p->drawLine(x+2, y+midY, w-x+1, y+midY);
+  }
 		
-		p->setPen(oldPen);
+  p->setPen(oldPen);
 
 }
 
@@ -679,13 +711,13 @@ void
 KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
                                   int sliderStart, uint controls, uint)
 {
-	int 				sliderMin, sliderMax, sliderLength, buttonDim;
-  QRect 			add, sub, addPage, subPage, slider; // rects for buttons & trough
-  int 				addX, addY, subX, subY;		// dimensions for buttons
-  bool 				horizontal = sb->orientation() == QScrollBar::Horizontal;
-  int 				len = (horizontal) ? sb->width() : sb->height();
-  int 				extent = (horizontal) ? sb->height() : sb->width();
-	int					b = SB_BORDER_WIDTH;		// Optional border around scrollbar
+  int	      sliderMin, sliderMax, sliderLength, buttonDim;
+  QRect       add, sub, addPage, subPage, slider; // rects for buttons & trough
+  int 	      addX, addY, subX, subY;		// dimensions for buttons
+  bool 	      horizontal = sb->orientation() == QScrollBar::Horizontal;
+  int 	      len = (horizontal) ? sb->width() : sb->height();
+  int 	      extent = (horizontal) ? sb->height() : sb->width();
+  int		  b = SB_BORDER_WIDTH;		// Optional border around scrollbar
   QColorGroup g = sb->colorGroup();
 		
 	//
@@ -697,7 +729,7 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         sliderStart = sliderMax;
 
   int sliderEnd = sliderStart + sliderLength;
-	int	sliderWidth = extent - b*2;
+  int	sliderWidth = extent - b*2;
 	
 	//
 	// compute bounding areas of individual controls
@@ -722,7 +754,7 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
         slider.setRect(b, sliderStart, sliderWidth, sliderLength);
   }
   
-	sub.setRect(subX, subY, buttonDim, buttonDim);
+  sub.setRect(subX, subY, buttonDim, buttonDim);
   add.setRect(addX, addY, buttonDim, buttonDim);
 	
 	//
@@ -758,34 +790,34 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 	// Draw subtract line button
 	//
 	  
-	if(controls & SubLine){
+  if(controls & SubLine){
   	if(sub.isValid()){
-			int x2 = sub.x() + sub.width()-1;
-			int y2 = sub.y() + sub.height()-1;
+		int x2 = sub.x() + sub.width()-1;
+		int y2 = sub.y() + sub.height()-1;
 	 		
-			//
-			// common outline between horizontal and vertical button
-			//
+		//
+		// common outline between horizontal and vertical button
+		//
 				
-			p->setPen(Qt::black);
-			p->drawLine(sub.x(), sub.y(), x2, sub.y());
-			p->drawLine(sub.x(), sub.y(), sub.x(), y2);
+		p->setPen(Qt::black);
+		p->drawLine(sub.x(), sub.y(), x2, sub.y());
+		p->drawLine(sub.x(), sub.y(), sub.x(), y2);
 			
-			if (horizontal) {	
-				p->drawLine(sub.x(), y2, x2, y2);
-				p->setPen(g.dark());
-				p->drawLine(x2, sub.y()+1, x2, y2-1);
-			} else {
-				p->drawLine(x2, sub.y(), x2, y2);
-				p->setPen(g.dark());
-				p->drawLine(sub.x()+1, y2, x2-1, y2);
- 			}
+		if (horizontal) {	
+			p->drawLine(sub.x(), y2, x2, y2);
+			p->setPen(g.dark());
+			p->drawLine(x2, sub.y()+1, x2, y2-1);
+		} else {
+			p->drawLine(x2, sub.y(), x2, y2);
+			p->setPen(g.dark());
+			p->drawLine(sub.x()+1, y2, x2-1, y2);
+ 		}
 			
-			drawFullShadeButton(p, sub.x()+1, sub.y()+1, sub.width()-2, sub.height()-2, g);
+		drawFullShadeButton(p, sub.x()+1, sub.y()+1, sub.width()-2, sub.height()-2, g);
 	    drawScrollBarArrow(p, (horizontal) ? LeftArrow : UpArrow, sub.x()+4,
                              sub.y()+4, g);
     }
-	}
+  }
  
   if((controls & SubPage) && subPage.isValid()){
 		int x2 = subPage.x()+subPage.width()-1;
@@ -854,49 +886,49 @@ KSgiStyle::drawScrollBarControls(QPainter *p, const QScrollBar *sb,
 	//
 	
 	if(controls & Slider){
-  	if(slider.isValid() && slider.width() > 1 && slider.height() > 1){
+  	  if(slider.isValid() && slider.width() > 1 && slider.height() > 1){
 	   	if(horizontal){
-				int y2 = slider.y() + slider.height()-1;
-				int midX = slider.width()/2 + slider.x()-1;
+			int y2 = slider.y() + slider.height()-1;
+			int midX = slider.width()/2 + slider.x()-1;
 				
-				p->setPen(Qt::black);
+			p->setPen(Qt::black);
   			p->drawRect(slider.x(), slider.y(), slider.width(), slider.height()); 
-       	drawPartShadeButton(p, slider.x()+1, slider.y()+1, slider.width()-2,
+       	    drawPartShadeButton(p, slider.x()+1, slider.y()+1, slider.width()-2,
                            slider.height()-2, g, 0, &(g.brush(QColorGroup::Background)));
 
-				//
-				// draw hash marks on slider
-				//
+			//
+			// draw hash marks on slider
+			//
 				
-				p->setPen(g.light());
-				p->drawLine(midX-4, slider.y()+2, midX-4, y2-2);
-				p->drawLine(midX  , slider.y()+2, midX  , y2-2);
-				p->drawLine(midX+4, slider.y()+2, midX+4, y2-2);
-				p->setPen(Qt::black);
-				p->drawLine(midX-3, slider.y()+2, midX-3, y2-2);
-				p->drawLine(midX+1, slider.y()+2, midX+1, y2-2);
-				p->drawLine(midX+5, slider.y()+2, midX+5, y2-2);
+			p->setPen(g.light());
+			p->drawLine(midX-4, slider.y()+2, midX-4, y2-2);
+			p->drawLine(midX  , slider.y()+2, midX  , y2-2);
+			p->drawLine(midX+4, slider.y()+2, midX+4, y2-2);
+			p->setPen(Qt::black);
+			p->drawLine(midX-3, slider.y()+2, midX-3, y2-2);
+			p->drawLine(midX+1, slider.y()+2, midX+1, y2-2);
+			p->drawLine(midX+5, slider.y()+2, midX+5, y2-2);
       } else {
-				int x2 = slider.x() + slider.width()-1;
-				int midY = slider.height()/2 + slider.y()-1;
+			int x2 = slider.x() + slider.width()-1;
+			int midY = slider.height()/2 + slider.y()-1;
 				
-				p->setPen(Qt::black);
+			p->setPen(Qt::black);
   			p->drawRect(slider.x(), slider.y(), slider.width(), slider.height()); 
-       	drawPartShadeButton(p, slider.x()+1, slider.y()+1, slider.width()-2,
+       	    drawPartShadeButton(p, slider.x()+1, slider.y()+1, slider.width()-2,
                            slider.height()-2, g, 0, &(g.brush(QColorGroup::Background)));
 				
-				//
-				// draw hash marks on slider
-				//
+			//
+			// draw hash marks on slider
+			//
 				
-				p->setPen(g.light());
-				p->drawLine(slider.x()+2, midY-4, x2-2, midY-4);
-				p->drawLine(slider.x()+2, midY,   x2-2, midY);
-				p->drawLine(slider.x()+2, midY+4, x2-2, midY+4);
-				p->setPen(Qt::black);
-				p->drawLine(slider.x()+2, midY-3, x2-2, midY-3);
-				p->drawLine(slider.x()+2, midY+1, x2-2, midY+1);
-				p->drawLine(slider.x()+2, midY+5, x2-2, midY+5);
+			p->setPen(g.light());
+			p->drawLine(slider.x()+2, midY-4, x2-2, midY-4);
+			p->drawLine(slider.x()+2, midY,   x2-2, midY);
+			p->drawLine(slider.x()+2, midY+4, x2-2, midY+4);
+			p->setPen(Qt::black);
+			p->drawLine(slider.x()+2, midY-3, x2-2, midY-3);
+			p->drawLine(slider.x()+2, midY+1, x2-2, midY+1);
+			p->drawLine(slider.x()+2, midY+5, x2-2, midY+5);
       }
  
     }
@@ -914,33 +946,33 @@ KSgiStyle::scrollBarMetrics(const QScrollBar *sb, int &sliderMin,
                                   int &sliderMax, int &sliderLength,
                                   int &buttonDim)
 {
-	int 	maxLength;
+  int 	maxLength;
   bool 	horizontal 	= sb->orientation() == QScrollBar::Horizontal;
-  int 	len 				= (horizontal) ? sb->width() : sb->height();
-  int 	extent 			= (horizontal) ? sb->height() : sb->width();
-	int		b 					= SB_BORDER_WIDTH;	// border around sbar
+  int 	len 		= (horizontal) ? sb->width() : sb->height();
+  int 	extent 		= (horizontal) ? sb->height() : sb->width();
+  int	b 		    = SB_BORDER_WIDTH;	// border around sbar
 		
   if(len > (extent - 1)*2)
-        buttonDim = extent - b*2;
+    buttonDim = extent - b*2;
   else
-        buttonDim = (len - b*2)/2 - 1;
+    buttonDim = (len - b*2)/2 - 1;
 
   sliderMin = buttonDim + b;
-	maxLength = len - b*2 - buttonDim*2;
+  maxLength = len - b*2 - buttonDim*2;
 
-	if ( sb->maxValue() == sb->minValue() ) {
-			sliderLength = maxLength;
+  if ( sb->maxValue() == sb->minValue() ) {
+    sliderLength = maxLength;
   } else {
-			sliderLength = (sb->pageStep()*maxLength)/
-											(sb->maxValue()-sb->minValue()+sb->pageStep());
-			uint range = sb->maxValue()-sb->minValue();
+	sliderLength = (sb->pageStep()*maxLength)/
+				  (sb->maxValue()-sb->minValue()+sb->pageStep());
+	uint range = sb->maxValue()-sb->minValue();
 	if ( sliderLength < SLIDER_MIN || range > INT_MAX/2 )
 	    sliderLength = SLIDER_MIN;
 	if ( sliderLength > maxLength )
 	    sliderLength = maxLength;
   }
   
-	sliderMax = sliderMin + maxLength - sliderLength;
+  sliderMax = sliderMin + maxLength - sliderLength;
 }
 
 
@@ -953,18 +985,18 @@ QStyle::ScrollControl
 KSgiStyle::scrollBarPointOver(const QScrollBar *sb, int sliderStart,
                                                      const QPoint &p)
 {
-	if(!sb->rect().contains(p))
+  if(!sb->rect().contains(p))
   	return(NoScroll);
   
-	int sliderMin, sliderMax, sliderLength, buttonDim;
+  int sliderMin, sliderMax, sliderLength, buttonDim;
   scrollBarMetrics(sb, sliderMin, sliderMax, sliderLength, buttonDim);
 
   if(sb->orientation() == QScrollBar::Horizontal){
   	int x = p.x();
     if(x < buttonDim)
     	return(SubLine);
-		else if (x < sliderStart) 
-			return(SubPage);
+	else if (x < sliderStart) 
+		return(SubPage);
     else if(x < sliderStart+sliderLength)
       return(Slider);
     else if(x <sliderMax+sliderLength)
@@ -975,8 +1007,8 @@ KSgiStyle::scrollBarPointOver(const QScrollBar *sb, int sliderStart,
     int y = p.y();
     if(y < buttonDim)
     	return(SubLine);
-		else if (y < sliderStart) 
-			return(SubPage);
+	else if (y < sliderStart) 
+		return(SubPage);
     else if(y < sliderStart+sliderLength)
       return(Slider);
     else if(y <sliderMax+sliderLength)
@@ -996,7 +1028,7 @@ void
 KSgiStyle::drawScrollBarArrow(QPainter *p, Qt::ArrowType type, int x,
                                   int y, const QColorGroup &g)
 {
-	static QBitmap upArrow(9, 9, uparrow_bits, true);
+  static QBitmap upArrow(9, 9, uparrow_bits, true);
   static QBitmap downArrow(9, 9, downarrow_bits, true);
   static QBitmap leftArrow(9, 9, leftarrow_bits, true);
   static QBitmap rightArrow(9, 9, rightarrow_bits, true);
@@ -1008,7 +1040,7 @@ KSgiStyle::drawScrollBarArrow(QPainter *p, Qt::ArrowType type, int x,
     rightArrow.setMask(rightArrow);
   }
   
-	p->setPen(g.dark());
+  p->setPen(g.dark());
   switch(type){
     case Qt::UpArrow:
         p->drawPixmap(x, y, upArrow);
@@ -1077,12 +1109,298 @@ KSgiStyle::drawPopupPanel(QPainter *p, int x, int y, int w, int h,
 
 void
 KSgiStyle::drawPanel(QPainter *p, int x, int y, int w, int h,
-										 const QColorGroup &g, bool sunken, 
-										 int /*lineWidth*/, const QBrush* fill)
+		const QColorGroup &g, bool sunken, 
+		int /*lineWidth*/, const QBrush* fill)
 {
 //	if (lineWidth <= 2) {
 //		drawPartShadeButton(p, x, y, w, h, g, sunken, fill);
 //	} else {
 		drawFullShadeButton(p, x, y, w, h, g, sunken, fill);
 //	}
+}
+
+//--------------------------------------------------------------------
+//
+//	drawKToolBar
+//
+
+void KSgiStyle::drawKToolBar(QPainter *p, int x, int y, int w, int h,
+                          const QColorGroup &g, KToolBarPos pos,
+                          QBrush *fill)
+{
+   qDrawShadePanel(p, x, y, w, h, g, false, 1,
+                    &g.brush(QColorGroup::Background));
+}
+
+void KSgiStyle::drawKMenuBar(QPainter *p, int x, int y, int w, int h,
+                          const QColorGroup &g, bool, QBrush *fill)
+{
+  qDrawShadePanel(p, x, y, w, h, g, false, 1,
+                        &g.brush(QColorGroup::Background));
+  
+}
+
+
+void 
+KSgiStyle::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
+                                    const QColorGroup &g, bool sunken,
+                                    bool raised, bool enabled, bool popup,
+                                    KToolButtonType icontext,
+                                    const QString& btext, const QPixmap *pixmap,
+                                    QFont *font, QWidget *)
+{
+  int dx, dy;
+
+  QFontMetrics fm(*font);
+
+  if(raised || sunken){
+    p->setPen(Qt::black);
+    p->drawRect(x, y, w, h);
+    drawFullShadeButton(p, x+1, y+1, w-2, h-2, g, sunken);
+        
+  } else {
+    p->fillRect(x, y, w, h, g.brush(QColorGroup::Background));
+  }
+  
+  p->setPen(g.buttonText());
+
+  if (icontext == Icon){ // icon only
+      if (pixmap){
+          dx = ( w - pixmap->width() ) / 2;
+          dy = ( h - pixmap->height() ) / 2;
+          if ( sunken ) {
+                ++dx;
+                ++dy;
+          }
+          p->drawPixmap( x+dx, y+dy, *pixmap );
+      }
+  } else if (icontext == IconTextRight){ // icon and text (if any)
+      if (pixmap){
+          dx = 4;
+          dy = ( h - pixmap->height() ) / 2;
+          if ( sunken ){
+              ++dx;
+              ++dy;
+          }
+          p->drawPixmap( x+dx, y+dy, *pixmap );
+      }
+      
+      if (!btext.isNull()){
+            int tf = AlignVCenter|AlignLeft;
+            if (pixmap)
+                dx= 4 + pixmap->width() + 2;
+            else
+                dx= 4;
+            dy = 0;
+            if ( sunken ){
+                ++dx;
+                ++dy;
+            }
+            if (font)
+                p->setFont(*font);
+            if(raised)
+                p->setPen(KGlobalSettings::toolBarHighlightColor());
+            p->drawText(x+dx, y+dy, w-dx, h, tf, btext);
+        }
+  } else if (icontext == Text){ // only text, even if there is a icon
+        if (!btext.isNull()){
+          int tf = AlignVCenter|AlignLeft;
+          if (!enabled)
+              p->setPen(g.dark());
+          dx= (w - fm.width(btext)) / 2;
+          dy= (h - fm.lineSpacing()) / 2;
+          if ( sunken ){
+              ++dx;
+              ++dy;
+          }
+          if (font)
+              p->setFont(*font);
+          if(raised)
+              p->setPen(KGlobalSettings::toolBarHighlightColor());
+          p->drawText(x+dx, y+dy, fm.width(btext), fm.lineSpacing(), tf, btext);
+      }
+  } else if (icontext == IconTextBottom){
+      if (pixmap){
+          dx = (w - pixmap->width()) / 2;
+          dy = (h - fm.lineSpacing() - pixmap->height()) / 2;
+          if ( sunken ){
+              ++dx;
+              ++dy;
+          }
+          p->drawPixmap( x+dx, y+dy, *pixmap );
+      }
+      if (!btext.isNull()){
+          int tf = AlignBottom|AlignHCenter;
+          dy= pixmap->height();
+          dx = 2;
+          
+          if ( sunken ){
+              ++dx;
+              ++dy;
+          }
+          if (font)
+              p->setFont(*font);
+          if(raised)
+              p->setPen(KGlobalSettings::toolBarHighlightColor());
+          p->drawText(x, y, w, h-3, tf, btext);
+      }
+  }
+  if (popup){
+    if (enabled)
+        qDrawArrow (p, Qt::DownArrow, Qt::WindowsStyle, false, w-5, h-5, 0, 0,
+                      g, true);
+    else
+        qDrawArrow (p, Qt::DownArrow, Qt::WindowsStyle, false, w-5, h-5,
+                      0, 0, g, false);
+  }
+}
+
+
+void 
+KSgiStyle::drawKMenuItem(QPainter *p, int x, int y, int w, int h,
+                            const QColorGroup &g, bool active, QMenuItem *mi,
+                            QBrush *)
+{
+  if ( p->font() == KGlobalSettings::generalFont() )
+    p->setFont( KGlobalSettings::menuFont() );
+
+  if(active){
+    QApplication::style().drawItem(p, x, y, w, h,
+                                   AlignCenter|ShowPrefix|DontClip|SingleLine,
+                                   g, mi->isEnabled(), mi->pixmap(), mi->text(),
+                                  -1, &g.highlight());
+  } else
+    QApplication::style().drawItem(p, x, y, w, h,
+                                       AlignCenter|ShowPrefix|DontClip|SingleLine,
+                                       g, mi->isEnabled(), mi->pixmap(), mi->text(),
+                                       -1, &g.buttonText() );
+}
+
+void KSgiStyle::drawPopupMenuItem( QPainter* p, bool checkable, int maxpmw,
+                                     int tab, QMenuItem* mi,
+                                     const QPalette& pal, bool act,
+                                     bool enabled, int x, int y, int w, int h)
+{
+static const int motifItemFrame         = 2;
+static const int motifItemHMargin       = 3;
+static const int motifItemVMargin       = 2;
+static const int motifArrowHMargin      = 6;
+static const int windowsRightBorder     = 12;
+    maxpmw = QMAX( maxpmw, 20 );
+
+    if ( p->font() == KGlobalSettings::generalFont() )
+      p->setFont( KGlobalSettings::menuFont() );
+
+    if(act){
+        bool dis = !enabled;
+        QColorGroup itemg = dis ? pal.disabled() : pal.active();
+
+        int checkcol = maxpmw;
+
+        int x2 = x+w-1;
+        int y2 = y+h-1;
+        
+        //
+        // draw highlight around current menu item
+        //
+        //if (enabled) {
+          QPen oldPen = p->pen();
+        
+          p->setPen(itemg.dark());
+          p->drawLine(x2, y, x2, y2-1);
+          p->drawLine(x, y2, x2, y2);
+          p->fillRect(x, y, w-1, h-1, itemg.light());
+        
+          p->setPen(oldPen);
+        //}
+        //
+        // draw associated icon
+        //
+        
+        if ( mi->iconSet() ) {
+            QIconSet::Mode mode = dis? QIconSet::Disabled : QIconSet::Normal;
+            if (!dis)
+                mode = QIconSet::Active;
+            QPixmap pixmap = mi->iconSet()->pixmap(QIconSet::Small, mode);
+            int pixw = pixmap.width();
+            int pixh = pixmap.height();
+            QRect cr(x, y, checkcol, h);
+            QRect pmr(0, 0, pixw, pixh);
+            pmr.moveCenter( cr.center() );
+            p->setPen(itemg.highlightedText());
+            p->drawPixmap(pmr.topLeft(), pixmap );
+
+        }
+        else if(checkable) {
+            int mw = checkcol + motifItemFrame;
+            int mh = h - 2*motifItemFrame;
+            if (mi->isChecked()){
+                drawCheckMark( p, x + motifItemFrame,
+                               y+motifItemFrame, mw, mh, itemg, act, dis );
+            }
+        }
+        p->setPen(itemg.buttonText());
+        QColor discol;
+        if (dis) {
+            discol = itemg.buttonText();
+            p->setPen(discol);
+        }
+        int xm = motifItemFrame + checkcol + motifItemHMargin;
+        QString s = mi->text();
+        if (!s.isNull()) {
+            int t = s.find( '\t' );
+            int m = motifItemVMargin;
+            const int text_flags = AlignVCenter|ShowPrefix | DontClip | SingleLine;
+            if (t >= 0) {
+                p->drawText(x+w-tab-windowsRightBorder-motifItemHMargin-motifItemFrame,
+                            y+m, tab, h-2*m, text_flags, s.mid( t+1 ));
+            }
+            p->drawText(x+xm, y+m, w-xm-tab+1, h-2*m, text_flags, s, t);
+        } else if (mi->pixmap()) {
+            QPixmap *pixmap = mi->pixmap();
+            if (pixmap->depth() == 1)
+                p->setBackgroundMode(OpaqueMode);
+            p->drawPixmap( x+xm, y+motifItemFrame, *pixmap);
+            if (pixmap->depth() == 1)
+                p->setBackgroundMode(TransparentMode);
+        }
+        if (mi->popup()) {
+            int dim = (h-2*motifItemFrame) / 2;
+            if (!dis)
+                discol = itemg.buttonText();
+            QColorGroup g2(discol, itemg.highlight(),
+                           white, white,
+                           dis ? discol : white,
+                           discol, white);
+            drawArrow(p, RightArrow, true,
+                      x+w - motifArrowHMargin - motifItemFrame - dim,  y+h/2-dim/2,
+                      dim, dim, itemg, TRUE);
+        }
+    }
+    else
+        KStyle::drawPopupMenuItem(p, checkable, maxpmw, tab, mi, pal, act,
+                                  enabled, x, y, w, h);
+}
+
+int 
+KSgiStyle::popupMenuItemHeight(bool /*checkable*/, QMenuItem *mi,
+                                 const QFontMetrics &fm)
+{
+  if (mi->isSeparator())
+    return 2;
+
+  int h = 0;
+  if (mi->pixmap())
+     h = mi->pixmap()->height();
+
+  if (mi->iconSet())
+     h = QMAX(mi->iconSet()->
+                 pixmap(QIconSet::Small, QIconSet::Normal).height(), h);
+
+  h = QMAX(fm.height() + 4, h);
+
+  // we want a minimum size of 18
+  h = QMAX(h, 18);
+
+  return h;
 }
