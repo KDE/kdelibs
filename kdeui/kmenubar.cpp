@@ -94,6 +94,8 @@ void KMenuBar::setTopLevelMenu(bool top_level)
       reparent( parentWidget(), WType_TopLevel | WStyle_Dialog | WStyle_NoBorderEx, QPoint(0,0), false  );
       KWin::setType( winId(), NET::Menu );
       KWin::setOnAllDesktops( winId(), true );
+      KWin::setState( winId(), NET::StaysOnTop );
+      
       if ( wasVisible )
           show();
   } else {
