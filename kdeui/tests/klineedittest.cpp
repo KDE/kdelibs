@@ -13,13 +13,10 @@ int main ( int argc, char **argv)
     // have KLineEdit automatically handle the completion and
     // rotation signals.
     KLineEdit *l = new KLineEdit( w, "mylineedit" );
-    l->setEnableContextMenu();
     QStringList list;
     list <<i18n("Stone") <<i18n("Tree") <<i18n("Peables") <<i18n("Ocean") <<i18n("Sand") <<i18n("Chips") <<i18n("Computer") <<i18n("Mankind");
     list.sort();
     l->completionObject()->setItems( list );
-    l->setCompletionMode( KGlobalSettings::CompletionAuto );
-    l->setText( "Pe" );
     // Shows of the value of the returnPressed signals with the QString argument.
     // We simply insert the entered items into the completion object.
     QObject::connect( l, SIGNAL( returnPressed( const QString& ) ), l->completionObject(), SLOT( addItem( const QString& ) ) );

@@ -23,7 +23,6 @@ int main ( int argc, char **argv)
     KComboBox *rwc = new KComboBox( true, w, "rwcombobox" );
     QLabel* lblrw = new QLabel( rwc, i18n("&Editable ComboBox"), w, "rwcombolabel" );
     KCompletion* comp = rwc->completionObject();
-    rwc->setEnableContextMenu();
     KComboBox *soc = new KComboBox( w, "socombobox" );
     QLabel* lblso = new QLabel( soc, i18n("&Select-Only ComboBox"), w, "socombolabel" );
     QPushButton * push = new QPushButton( "E&xit", w );
@@ -47,8 +46,6 @@ int main ( int argc, char **argv)
     // Test auto completion on item insert Through
     rwc->completionObject()->setItems( list );
     rwc->insertStringList( list );
-    rwc->setCompletionMode( KGlobalSettings::CompletionAuto );
-    rwc->setEditText( "Pe" );
 
     // Insert the widgets into the layout manager.
     vbox->addWidget( lblrw );
