@@ -749,7 +749,7 @@ static int my_system (const char *command) {
       return -1;
    if (pid == 0) {
       const char* shell = "/bin/sh";
-      execl(shell, shell, "-c", command, 0L);
+      execl(shell, shell, "-c", command, (void *)0);
       ::exit(127);
    }
    do {

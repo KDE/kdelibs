@@ -251,7 +251,7 @@ int PTY::grantpt()
 	// Child: exec konsole_grantpty
 	if (ptyfd != pty_fileno && dup2(ptyfd, pty_fileno) < 0)
 	    _exit(1);
-	execlp("konsole_grantpty", "konsole_grantpty", "--grant", NULL);
+	execlp("konsole_grantpty", "konsole_grantpty", "--grant", (void *)0);
 	kdError(900) << k_lineinfo << "exec(): " << perror << "\n";
 	_exit(1);
     }

@@ -168,7 +168,8 @@ static int kprocess_chownpty(int fd, bool grant)
     /* We pass the master pseudo terminal as file descriptor PTY_FILENO. */
     if (fd != PTY_FILENO && dup2(fd, PTY_FILENO) < 0) exit(1);
     QString path = locate("exe", BASE_CHOWN);
-    execle(path.ascii(), BASE_CHOWN, grant?"--grant":"--revoke", NULL, NULL);
+    execle(path.ascii(), BASE_CHOWN, grant?"--grant":"--revoke", (void *)0, 
+      NULL);
     exit(1); // should not be reached
   }
 
@@ -480,8 +481,13 @@ bool KProcess::start(RunMode runmode, Communication comm)
   // vfork() has unclear semantics and is not standardized.
   pid_ = fork();
 
+<<<<<<< kprocess.cpp
+  if (0 == pid_) {
+        if (fd[0] >= 0)
+=======
   if (pid_ == 0) {
         if (fd[0] >= 0)
+>>>>>>> 1.100
            close(fd[0]);
 
         // reset all signal handlers
