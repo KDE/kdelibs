@@ -369,3 +369,5 @@ ExecState::ExecState(Interpreter *interp, ContextImp *con)
   rep = new ExecStateImp(interp,con);
 }
 
+void Interpreter::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }
