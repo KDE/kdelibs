@@ -213,7 +213,9 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
         } else
             dirCurrent = current.direction();
 
-#ifndef QT_NO_UNICODETABLES
+//#ifndef QT_NO_UNICODETABLES
+// Qt 3 does it on its own
+#if 0
 
 #if BIDI_DEBUG > 1
         kdDebug(6041) << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << status.last << " eor=" << status.eor << " lastStrong=" << status.lastStrong << " embedding=" << (int)context->dir << " level =" << (int)context->level << endl;
