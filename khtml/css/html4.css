@@ -97,19 +97,6 @@ Q:after  {
     /*   content: close-quote;  */
 }
 
-IFRAME {
-	display: block;
-}
-
-      
-OBJECT { 
-	display: block;
-} 
-
-APPLET { 
-	display: block;
-} 
-      
 CENTER { 
 	display: block;
 	/* special centering to be able to emulate the html4/netscape behavior */
