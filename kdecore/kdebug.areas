@@ -24,6 +24,7 @@
 290        kdeui (KPixmapIO)
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
+293	   kdeui (KLineEdit)
 750        kspell (kdelibs)
 800        kabapi (kdelibs)
 900        kdesu (kdelibs)
