@@ -25,6 +25,7 @@
 
 #include "synthschedule.h"
 #include "datapacket.h"
+#include "weakreference.h"
 
 #include <queue>
 
@@ -46,11 +47,13 @@ protected:
 	std::queue<GenericDataPacket *> pqueue;
 	FlowSystemReceiver receiver;
 	long receiveHandlerID;
+	std::string _dest;
 
 public:
-	ASyncNetSend(ASyncPort *ap);
+	ASyncNetSend(ASyncPort *ap, const std::string& dest);
 	~ASyncNetSend();
 	long notifyID();
+	std::string dest();
 
 	/* this overwrites the Object::notify function */
 	void notify(const Notification& notification);
@@ -91,9 +94,10 @@ protected:
 	long notifyID;
 	std::vector<Notification> subscribers;
 	std::list<GenericDataPacket *> sent;
+	std::list<ASyncNetSend *> netSenders;
+	WeakReference<FlowSystemReceiver> netReceiver;
 
 	GenericAsyncStream *stream;
-	FlowSystemSender sender;
 
 	bool pull;
 	Notification pullNotification;
@@ -116,10 +120,12 @@ public:
 	// Network transparency
 	void addSendNet(ASyncNetSend *netsend);			// send
 	void removeSendNet(ASyncNetSend *netsend);
+	void disconnectRemote(const std::string& dest);
 
 	long receiveNetNotifyID();						// receive
 	GenericAsyncStream *receiveNetCreateStream();
 	NotificationClient *receiveNetObject();
+	void setNetReceiver(ASyncNetReceive *receiver);
 };
 
 };

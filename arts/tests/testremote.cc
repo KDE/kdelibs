@@ -126,14 +126,12 @@ struct TestRemote : public TestCase
 		testEquals("transferme", local.value());
 		testEquals("transferme", remote.value());
 
-/* no disconnect yet ...:
 		disconnect(local,"value_changed",remote,"value");
 
 		local.value("notransfer");
 
 		testEquals("notransfer", local.value());
 		testEquals("transferme", remote.value());
- */
 	}
 
 	/* terminate server */

@@ -7,7 +7,6 @@
 - dynamic implementation of classes/attributes
 - recursive scheduling again (with loops & cycles)
 - ensure DynamicCast(<some null object>) == Object::null()
-- implement StdFlowSystem::disconnectObject(...) (in synthschedule.cc)
 - try to fix autoSuspend in conjunction with full duplex
 - obsoleting: use V2 implementations even if user requests a normal
   implementation, since they have a newer version
@@ -37,8 +36,6 @@
 - ARTS_COOKIE, OSS_DEVICE
 - calling artsd -n -u -p12345 repeatedly doesn't clean stale references
   properly
-- fix artscat, gartscontrol (currently complains about remaining objects on
-  exit)
 
 ## KMedia2
 

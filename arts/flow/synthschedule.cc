@@ -885,7 +885,8 @@ void StdFlowSystem::connectObject(Object sourceObject,const string& sourcePort,
 		FlowSystemReceiver receiver;
 		FlowSystem remoteFs;
 
-		ASyncNetSend *netsend = new ASyncNetSend(ap);
+		string dest = destObject.toString() + ":" + destPort;
+		ASyncNetSend *netsend = new ASyncNetSend(ap, dest);
 
 		sender = FlowSystemSender::_from_base(netsend); // don't release netsend
 		remoteFs = destObject._flowSystem();
@@ -914,7 +915,13 @@ void StdFlowSystem::disconnectObject(Object sourceObject,
 		return;
 	}
 
-	assert(false);		// TODO: local-remote connections
+	ASyncPort *ap = port->asyncPort();
+	if(ap)
+	{
+		string dest = destObject.toString() + ":" + destPort;
+		ap->disconnectRemote(dest);
+		arts_debug("disconnected an asyncnetsend");
+	}
 }
 
 AttributeType StdFlowSystem::queryFlags(Object node, const std::string& port)

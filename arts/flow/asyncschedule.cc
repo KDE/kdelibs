@@ -1,7 +1,7 @@
     /*
 
-    Copyright (C) 2000 Stefan Westerfeld
-                       stefan@space.twc.de
+    Copyright (C) 2000,2001 Stefan Westerfeld
+                            stefan@space.twc.de
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -36,8 +36,6 @@ ASyncPort::ASyncPort(std::string name, void *ptr, long flags,
 	stream = (GenericAsyncStream *)ptr;
 	stream->channel = this;
 	stream->_notifyID = notifyID = parent->object()->_mkNotifyID();
-
-	sender = FlowSystemSender::null();
 }
 
 ASyncPort::~ASyncPort()
@@ -54,12 +52,18 @@ ASyncPort::~ASyncPort()
 	}
 
 	/*
-	 * disconnect remote connection (if there was one)
-	 * TODO: remote multicasting doesn't work (probably also not too
-	 * important)
+	 * disconnect remote connections (if present)
 	 */
-	if(!sender.isNull())
-		sender.disconnect();
+
+	// copy list since elements in the original list will be deleted
+	list<ASyncNetSend *> senders = netSenders;
+	list<ASyncNetSend *>::iterator i;
+	for(i = senders.begin(); i != senders.end(); i++)
+		(*i)->disconnect();
+
+	FlowSystemReceiver receiver = netReceiver;
+	if(!receiver.isNull())
+		receiver.disconnect();
 }
 
 //-------------------- GenericDataChannel interface -------------------------
@@ -212,12 +216,13 @@ void ASyncPort::addSendNet(ASyncNetSend *netsend)
 	n.receiver = netsend;
 	n.ID = netsend->notifyID();
 	subscribers.push_back(n);
-	sender = FlowSystemSender::_from_base(netsend->_copy());
+	netSenders.push_back(netsend);
 }
 
 void ASyncPort::removeSendNet(ASyncNetSend *netsend)
 {
 	arts_return_if_fail(netsend != 0);
+	netSenders.remove(netsend);
 
 	vector<Notification>::iterator si;
 	for(si = subscribers.begin(); si != subscribers.end(); si++)
@@ -231,8 +236,32 @@ void ASyncPort::removeSendNet(ASyncNetSend *netsend)
 	arts_warning("Failed to remove ASyncNetSend (%p) from ASyncPort", netsend);
 }
 
-ASyncNetSend::ASyncNetSend(ASyncPort *ap) : ap(ap)
+void ASyncPort::setNetReceiver(ASyncNetReceive *receiver)
 {
+	arts_return_if_fail(receiver != 0);
+
+	FlowSystemReceiver r = FlowSystemReceiver::_from_base(receiver->_copy());
+	netReceiver = r;
+}
+
+void ASyncPort::disconnectRemote(const string& dest)
+{
+	list<ASyncNetSend *>::iterator i;
+
+	for(i = netSenders.begin(); i != netSenders.end(); i++)
+	{
+		if((*i)->dest() == dest)
+		{
+			(*i)->disconnect();
+			return;
+		}
+	}
+	arts_warning("failed to disconnect %s in ASyncPort", dest.c_str());
+}
+
+ASyncNetSend::ASyncNetSend(ASyncPort *ap, const std::string& dest) : ap(ap)
+{
+	_dest = dest;
 	ap->addSendNet(this);
 }
 
@@ -287,6 +316,11 @@ void ASyncNetSend::disconnect()
 	}
 }
 
+string ASyncNetSend::dest()
+{
+	return _dest;
+}
+
 /* dispatching function for custom message */
 
 static void _dispatch_ASyncNetReceive_receive(void *object, Buffer *buffer)
@@ -296,6 +330,7 @@ static void _dispatch_ASyncNetReceive_receive(void *object, Buffer *buffer)
 
 ASyncNetReceive::ASyncNetReceive(ASyncPort *port, FlowSystemSender sender)
 {
+	port->setNetReceiver(this);
 	stream = port->receiveNetCreateStream();
 	stream->channel = this;
 	this->sender = sender;
