@@ -95,26 +95,24 @@ KHTMLFactory::~KHTMLFactory()
         s_parts = 0;
         s_vlinks = 0;
 
-	kdDebug() << "KHTMLFactory::~KHTMLFactory" << endl; 
-	// clean up static data
-	khtml::CSSStyleSelector::clear();
-	DOM::HTMLMapElementImpl::clear();
-	khtml::RenderStyle::cleanup();
-	khtml::Cache::clear();
+        kdDebug() << "KHTMLFactory::~KHTMLFactory" << endl;
+        // clean up static data
+        khtml::CSSStyleSelector::clear();
+        DOM::HTMLMapElementImpl::clear();
+        khtml::RenderStyle::cleanup();
+        khtml::Cache::clear();
     }
     else
         deref();
 }
 
-KParts::Part *KHTMLFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *className, const QStringList & )
+KParts::Part *KHTMLFactory::createPartObject( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *className, const QStringList & )
 {
   KHTMLPart::GUIProfile prof = KHTMLPart::DefaultGUI;
   if ( strcmp( className, "Browser/View" ) == 0 )
     prof = KHTMLPart::BrowserViewGUI;
 
-  KHTMLPart *part = new KHTMLPart( parentWidget, widgetName, parent, name, prof );
-  emit objectCreated( part ) ;
-  return part;
+  return new KHTMLPart( parentWidget, widgetName, parent, name, prof );
 }
 
 void KHTMLFactory::ref()
