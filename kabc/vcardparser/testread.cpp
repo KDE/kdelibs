@@ -42,6 +42,8 @@ static const KCmdLineOptions options[] =
 
 int main( int argc, char **argv )
 {
+  KApplication::disableAutoDcopRegistration();
+
   KAboutData aboutData( "testread", "vCard test reader", "0.1" );
   aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
 

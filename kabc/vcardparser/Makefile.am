@@ -20,7 +20,7 @@ testwrite_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testwrite_LDADD = libvcards.la $(top_builddir)/kabc/libkabc.la
 testwrite_SOURCES = testwrite.cpp
 
-TESTFILES = vcard1.vcf vcard2.vcf vcard3.vcf vcard4.vcf vcard6.vcf
+TESTFILES = vcard1.vcf vcard2.vcf vcard3.vcf vcard4.vcf vcard6.vcf vcard7.vcf
 
 check-local: testread
 	rm -f FAILED; \

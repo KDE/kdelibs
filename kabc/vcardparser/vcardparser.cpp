@@ -28,6 +28,24 @@
 
 using namespace KABC;
 
+static QString backslash( "\\\\" );
+static QString comma( "\\," );
+static QString newline( "\\n" );
+
+static void addEscapes( QString &str )
+{
+  str.replace( '\\', backslash );
+  str.replace( ',', comma );
+  str.replace( '\n', newline );
+}
+
+static void removeEscapes( QString &str )
+{
+  str.replace( newline, "\n" );
+  str.replace( comma, "," );
+  str.replace( backslash, "\\" );
+}
+
 VCardParser::VCardParser()
 {
 }
@@ -106,6 +124,8 @@ VCard::List VCardParser::parseVCards( const QString& text )
           }
         }
 
+        removeEscapes( value );
+
         params = vCardLine.parameterList();
         if ( params.findIndex( "encoding" ) != -1 ) { // have to decode the data
           QByteArray input, output;
@@ -130,7 +150,7 @@ VCard::List VCardParser::parseVCards( const QString& text )
         } else if ( vCardLine.parameter( "charset" ).lower() == "utf-8" ) {
           vCardLine.setValue( QString::fromUtf8( value.ascii() ) );
         } else
-          vCardLine.setValue( value.replace( "\\n", "\n" ) );
+          vCardLine.setValue( value );
 
         currentVCard.addLine( vCardLine );
       }
@@ -223,9 +243,15 @@ QString VCardParser::createVCards( const VCard::List& list )
               input.resize( input.size() - 1 ); // strip \0
               KCodecs::quotedPrintableEncode( input, output, false );
             }
-            textLine.append( ":" + QString( output ) );
-          } else
-            textLine.append( ":" + (*lineIt).value().asString().replace( "\n", "\\n" ) );
+
+            QString value( output );
+            addEscapes( value );
+            textLine.append( ":" + value );
+          } else {
+            QString value( (*lineIt).value().asString() );
+            addEscapes( value );
+            textLine.append( ":" + value );
+          }
 
           if ( textLine.length() > FOLD_WIDTH ) { // we have to fold the line
             for ( uint i = 0; i <= ( textLine.length() / FOLD_WIDTH ); ++i )

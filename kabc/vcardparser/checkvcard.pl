@@ -34,7 +34,7 @@ while( <REF> ) {
 
 close REF;
 
-if ( !open( READ, "./testread $file $options|" ) ) {
+if ( !open( READ, "./testread $file $options 2> /dev/null |" ) ) {
   print STDERR "Unable to open testread\n";
   exit 1;
 }
