@@ -1,5 +1,7 @@
 2003-11-29  Stephan Kulow  <coolo@kde.org>
 
+	* html/html_elementimpl.cpp (addHTMLAlignment): readding floating for input type="image"
+
 	* rendering/render_form.cpp (setStyle): respect text-align style on input elements
 	(#65610)
 

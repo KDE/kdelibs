@@ -1185,6 +1185,8 @@ void HTMLInputElementImpl::attach()
             m_value = nvalue;
         }
         m_checked = (getAttribute(ATTR_CHECKED) != 0);
+        if ( m_type == IMAGE )
+            addHTMLAlignment( getAttribute( ATTR_ALIGN ) );
         m_inited = true;
     }
 
