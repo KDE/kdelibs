@@ -815,7 +815,7 @@ public:
   /**
    * Returns the current group used for addItem() calls. 
    */
-  QString currentGroup()
+  QString currentGroup() // ### KDE 4.0: make const
   {
     return mCurrentGroup;
   }
