@@ -911,7 +911,7 @@ bool HTTPProtocol::http_open()
   }
 
   // check if we need to login
-  if (m_state.passwd || m_state.user) {
+  if (!m_state.passwd.isNull() || !m_state.user.isNull()) {
     if (Authentication == AUTH_Basic) {
       header += create_basic_auth("Authorization", m_state.user, m_state.passwd);
     } else if (Authentication == AUTH_Digest) {
