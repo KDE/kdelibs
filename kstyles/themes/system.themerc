@@ -227,6 +227,7 @@ Name[cs]=Systém
 Name[eo]=Sistemo
 Name[fi]=Järjestelmä
 Name[hu]=Rendszer
+Name[ja]=システム
 Name[sl]=Sistem
 Comment=System themed style
 Comment[cs]=Systémové téma
@@ -234,6 +235,7 @@ Comment[de]=System-Design
 Comment[eo]=Sistema stilo kun temoj
 Comment[fi]=Järjestelmän teemoitetty tyyli
 Comment[hu]=Rendszer téma stílus
+Comment[ja]=システムテーマスタイル
 Comment[no]=System-stil med tema
 Comment[sl]=Sistemski tematski slog
 
