@@ -21,6 +21,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.29.4.5  1999/07/22 21:14:17  porten
+   applied Waba's fix for the fix from HEAD
+
    Revision 1.29.4.4  1999/07/12 10:26:42  porten
    kprocess deadlock fix from Alex Hayward (bug #1002 and #1513)
 
@@ -341,6 +344,7 @@ bool KProcess::closeStdin()
   bool rv;
 
   if (communication & Stdin) {
+    communication = (Communication) (communication & ~Stdin);
     innot->setEnabled(FALSE);
     close(in[1]);
     rv = TRUE;
@@ -553,20 +557,18 @@ void KProcess::commClose()
 
           int max_fd = 0;
           if (b_out) {
-	    fcntl(out[0], F_SETFL, O_NONBLOCK);
             if (out[0] > max_fd)
               max_fd = out[0];
             delete outnot;
           }
           if (b_err) {
-	    fcntl(err[0], F_SETFL, O_NONBLOCK);
             if (err[0] > max_fd)
               max_fd = err[0];
             delete errnot;
           }
            
 
-	  while (1) {
+	  while (b_out || b_err) {
 	    FD_ZERO(&rfds);
             if (b_out) 
 	      FD_SET(out[0], &rfds);
@@ -578,24 +580,24 @@ void KProcess::commClose()
 	    if (fds_ready <= 0) break;
 
 	    if (b_out && FD_ISSET(out[0], &rfds)) {
-	      int ret = 1;
-	      while (ret > 0) ret = childOutput(out[0]);
-	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
+	      int ret = childOutput(out[0]);
+	      if ((ret == -1 && errno != EAGAIN) || ret == 0) 
+		b_out = false;
 	    }
                                
 	    if (b_err && FD_ISSET(err[0], &rfds)) {
-	      int ret = 1;
-	      while (ret > 0) ret = childError(err[0]);
-	      if ((ret == -1 && errno != EAGAIN) || ret == 0) break;
+	      int ret = childError(err[0]);
+	      if ((ret == -1 && errno != EAGAIN) || ret == 0) 
+		b_err = false;
 	    }
 	  }
 	}
 
-	if (b_in)
+	if (communication & Stdin)
 	    close(in[1]);
-	if (b_out)
+	if (communication & Stdout)
 	    close(out[0]);
-	if (b_err)
+	if (communication & Stderr)
 	    close(err[0]);
 	
 	communication = NoCommunication;
