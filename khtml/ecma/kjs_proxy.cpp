@@ -165,8 +165,9 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
     return ret;
   }
 
-  DOM::EventListener* kjs_createHTMLEventHandler(KJScript */*script*/, QString code, KHTMLPart *part)
+  DOM::EventListener* kjs_createHTMLEventHandler(KJScript *script, QString code, KHTMLPart *part)
   {
+    script->init(); // set a valid current interpreter
     KJS::Constructor constr(KJS::Global::current().get("Function").imp());
     KJS::List args;
     args.append(KJS::String("event"));
