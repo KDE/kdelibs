@@ -175,24 +175,6 @@ const ClassInfo KJS::HTMLDocument::info =
 @end
 */
 
-/* Helper function object for determining the number
- * of occurrences of xxxx as in document.xxxx.
- * The order of the TagLength array is the order of preference.
- */
-class NamedTagLengthDeterminer {
-public:
-  struct TagLength {
-    NodeImpl::Id id; unsigned long length; NodeImpl *last;
-  };
-  NamedTagLengthDeterminer(const DOMString& n, TagLength *t, int l)
-    : name(n), tags(t), nrTags(l) {}
-  void operator () (NodeImpl *start);
-private:
-  const DOMString& name;
-  TagLength *tags;
-  int nrTags;
-};
-
 void NamedTagLengthDeterminer::operator () (NodeImpl *start) {
   for(NodeImpl *n = start->firstChild(); n != 0; n = n->nextSibling())
     if ( n->nodeType() == Node::ELEMENT_NODE ) {

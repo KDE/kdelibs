@@ -58,6 +58,7 @@
 #include "khtml_settings.h"
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_docimpl.h"
+#include "misc/htmltags.h"
 #include "html/html_documentimpl.h"
 
 using namespace KJS;
@@ -427,10 +428,15 @@ bool Window::hasProperty(ExecState *exec, const Identifier &p) const
 
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (m_part->document().isHTMLDocument()) { // might be XML
-    DOM::HTMLCollection coll = m_part->htmlDocument().all();
-    DOM::HTMLElement element = coll.namedItem(q);
-    if (!element.isNull())
-      return true;
+    DOM::HTMLDocument doc = m_part->htmlDocument();
+    // Keep in sync with tryGet
+    NamedTagLengthDeterminer::TagLength tags[3] = {
+      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+    };
+    NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
+    for (int i = 0; i < 3; i++)
+      if (tags[i].length > 0)
+        return true;
   }
 
   return false;
@@ -722,10 +728,18 @@ Value Window::get(ExecState *exec, const Identifier &p) const
   // allow shortcuts like 'Image1' instead of document.images.Image1
   if (isSafeScript(exec) &&
       m_part->document().isHTMLDocument()) { // might be XML
-    DOM::HTMLCollection coll = m_part->htmlDocument().all();
-    DOM::HTMLElement element = coll.namedItem(p.string());
-    if (!element.isNull()) {
-      return getDOMNode(exec,element);
+    // This is only for images, forms and applets, see KJS::HTMLDocument::tryGet
+    DOM::HTMLDocument doc = m_part->htmlDocument();
+    NamedTagLengthDeterminer::TagLength tags[3] = {
+      {ID_IMG, 0, 0L}, {ID_FORM, 0, 0L}, {ID_APPLET, 0, 0L}
+    };
+    NamedTagLengthDeterminer(p.string(), tags, 3)(doc.handle());
+    for (int i = 0; i < 3; i++)
+      if (tags[i].length > 0) {
+        if (tags[i].length == 1)
+          return getDOMNode(exec, tags[i].last);
+        // Get all the items with the same name
+        return getDOMNodeList(exec, DOM::NodeList(new DOM::NamedTagNodeListImpl(doc.handle(), tags[i].id, p.string())));
     }
   }
 
