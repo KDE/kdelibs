@@ -39,6 +39,8 @@
 #include <stdlib.h>	//for abs
 #include <dirent.h>
 
+#include <iostream>
+
 
 /*** KIconThemeNode: A node in the icon theme dependancy tree. ***/
 
@@ -592,10 +594,12 @@ QPixmap KIconLoader::loadIcon(const QString& _name, int group, int size,
     // Scale the icon and apply effects if necessary
     if ((iconType == KIcon::Scalable) && (size != img->width()))
     {
+        cout << "FUCK:SCALABLE:SIZE:" << size << "WIDTH" << img->width() << endl;
 	*img = img->smoothScale(size, size);
     }
     if ((iconType == KIcon::Threshold) && (size != img->width()))
     {
+        cout << "FUCK:THRESHOLD:SIZE:" << size << "WIDTH" << img->width() << endl;
 	if ( abs(size-img->width())>iconThreshold )
 	    *img = img->smoothScale(size, size);
     }
