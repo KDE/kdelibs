@@ -145,12 +145,9 @@ void DOMCSSStyleDeclaration::tryPut(const UString &p, const KJSO& v)
 
     if(prop.left(4) == "css-")
       prop = prop.mid(4);
-    if(prop.left(4) == "pos-")
-      prop = prop.mid(4);
 
-    if(prop.left(6) == "pixel-")
-    {
-      prop = prop.mid(6); // cut it away
+    if(prop.startsWith( "pixel-") || prop.startsWith( "pos-" ) ) {
+      prop = prop.mid(prop.find( '-' )+1);
       propvalue += "px";
     }
 #ifdef KJS_VERBOSE
