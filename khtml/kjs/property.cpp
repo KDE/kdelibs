@@ -41,9 +41,7 @@ KJSO *KJSO::get(const UString &p) const
 {
   // hack to allow code like "abc".charAt(0). ECMA compliant ????
   if (isA(String)) {
-    KJSObject *tmp = new KJSObject();
-    tmp->setClass(StringClass);
-    tmp->setPrototype(KJScript::global()->stringProto);
+    KJSObject *tmp = KJSObject::create(StringClass); /* TODO: leak ? */
     return tmp->get(p);
   }
 

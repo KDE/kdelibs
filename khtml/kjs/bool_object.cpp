@@ -33,7 +33,6 @@ BooleanObject::BooleanObject(KJSGlobal *global)
   global->boolProto->setConstructor(ctor);
   setPrototype(global->boolProto);
   
-  //  boolProto->deref();
   ctor->deref();
 
   put("length", zeroRef(new KJSNumber(1)), DontEnum);
@@ -71,12 +70,7 @@ KJSObject* BooleanConstructor::construct(KJSList *args)
   else
     b = new KJSBoolean(false);
 
-  KJSObject *result = new KJSObject();
-  result->setClass(BooleanClass);
-  result->setPrototype(global->boolProto);
-  result->setInternalValue(b);
-
-  return result;
+  return KJSObject::create(BooleanClass, b);
 }
 
 // ECMA 15.6.4

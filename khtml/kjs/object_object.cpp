@@ -75,12 +75,8 @@ ObjectConstructor::ObjectConstructor(KJSGlobal *glob)
 KJSObject* ObjectConstructor::construct(KJSList *args)
 {
   // if no arguments have been passed ...
-  if (args->size() == 0) {
-    KJSObject *result = new KJSObject();
-    result->setClass(ObjectClass);
-    result->setPrototype(global->objProto);
-    return result;
-  }
+  if (args->size() == 0)
+    return KJSObject::create(ObjectClass);
 
   KJSO *arg = args->begin();
   if (arg->isA(Object)) {
@@ -89,34 +85,19 @@ KJSObject* ObjectConstructor::construct(KJSList *args)
     return obj;
   }
 
-  KJSObject *result = new KJSObject();
-
   switch (arg->type()) {
   case String:
-    result->setClass(StringClass);
-    //    result->setPrototype(global->strProto);
-    result->setInternalValue(arg);
-    break;
+    return KJSObject::create(StringClass, arg);
   case Boolean:
-    result->setClass(BooleanClass);
-    result->setPrototype(global->boolProto);
-    result->setInternalValue(arg);
-    break;
+    return KJSObject::create(BooleanClass, arg);
   case Number:
-    result->setClass(NumberClass);
-    //    result->setPrototype(global->numProto);
-    result->setInternalValue(arg);
-    break;
-  case Null:
-  case Undefined:
-    result->setClass(ObjectClass);
-    result->setPrototype(global->objProto);
-    break;
+    return KJSObject::create(NumberClass, arg);
   default:
     assert(!"unhandled switch case in ObjectConstructor");
+  case Null:
+  case Undefined:
+    return KJSObject::create(ObjectClass);
   }
-
-  return result;
 }
 
 ObjectPrototype::ObjectPrototype()

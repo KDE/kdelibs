@@ -61,9 +61,7 @@ ArrayConstructor::ArrayConstructor(KJSGlobal *glob)
 // ECMA 15.6.2
 KJSObject* ArrayConstructor::construct(KJSList *args)
 {
-  KJSObject *result = new KJSObject();
-  result->setClass(ArrayClass);
-  result->setPrototype(global->arrayProto);
+  KJSObject *result = KJSObject::create(ArrayClass);
 
   unsigned int len;
   KJSListIterator it = args->begin();

@@ -321,8 +321,9 @@ public:
   Type type() const { return Object; }
   void setClass(Class c) { cl = c; } 
   Class getClass() const { return cl; }
-  void setInternalValue(KJSO *v) { internVal = v->ref(); }
+  void setInternalValue(KJSO *v) { internVal = v ? v->ref() : 0L; }
   KJSO *internalValue() { return internVal->ref(); }
+  static KJSObject *create(Class c, KJSO *val = 0L);
 private:
   Class cl;
   KJSO* internVal;

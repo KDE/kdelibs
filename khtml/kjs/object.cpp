@@ -133,7 +133,6 @@ KJSO::~KJSO()
     nextObject->prevObject = prevObject;
   if (firstObject == this)
     firstObject = nextObject;
-
   --count;
 #endif
 }
@@ -143,12 +142,8 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSList *args)
 {
   // second part of our hack to allow code like "abc".charAt(0).
   if (thisV->isA(String)) {
-    KJSObject *tmp = new KJSObject();
     Ptr str = new KJSString(thisV->sVal());
-    tmp->setClass(StringClass);
-    tmp->setInternalValue(str);
-    tmp->setPrototype(KJScript::global()->stringProto);
-    thisV = tmp;
+    thisV = KJSObject::create(StringClass, str);
   }
 
   KJSFunction *func = static_cast<KJSFunction*>(this);
@@ -259,6 +254,36 @@ KJSReference::KJSReference(KJSO *b, const UString &s)
 KJSReference::~KJSReference()
 {
   base->deref();
+}
+
+// factory
+KJSObject* KJSObject::create(Class c, KJSO *val)
+{
+  KJSGlobal *global = KJScript::global();
+  KJSObject *obj = new KJSObject();
+  KJSPrototype *prototype;
+  obj->setClass(c);
+  obj->setInternalValue(val);
+  switch (c) {
+  case ObjectClass:
+    prototype = global->objProto;
+    break;
+  case ArrayClass:
+    prototype = global->arrayProto;
+    break;
+  case StringClass:
+    prototype = global->stringProto;
+    break;
+  case BooleanClass:
+    prototype = global->boolProto;
+    break;
+  case UndefClass:
+  case NumberClass:
+    prototype = 0L;
+    break;
+  }
+  obj->setPrototype(prototype);
+  return obj;
 }
 
 // ECMA 10.1.7 (draft April 98, 10.1.6 previously)

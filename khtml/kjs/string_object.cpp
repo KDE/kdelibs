@@ -74,12 +74,7 @@ KJSObject* StringConstructor::construct(KJSList *args)
   else
     s = new KJSString("");
 
-  KJSObject *result = new KJSObject();
-  result->setClass(StringClass);
-  result->setPrototype(global->stringProto);
-  result->setInternalValue(s);
-
-  return result;
+  return KJSObject::create(StringClass, s);
 }
 
 // ECMA 15.8.4
