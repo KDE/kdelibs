@@ -65,3 +65,6 @@ Classes KNotebook and KWizard
 
 Jorge Monteiro <jomo@casema.net>
 KContainerLayout class
+
+Kurt Granroth <granroth@kde.org>
+KURLLabel class
