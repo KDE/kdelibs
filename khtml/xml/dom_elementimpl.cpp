@@ -565,24 +565,8 @@ void ElementImpl::recalcStyle()
     setStyle( ownerDocument()->styleSelector()->styleForElement(this, dynamicState) );
 
     if (oldDisplay != m_style->display()) {
-        if (m_style->display()==NONE)
-        {
-            // ###FIXME hack
-            // removing things from the rendering tree
-            // is not yet reliable and leads to crashes.
-            // disallowed changing to display:none after
-            // the initial construction
-            // fixes #19800
-
-            // other option would be to reconstruct the entire
-            // tree, but thats not realiable yet either
-            m_style->setDisplay(oldDisplay);
-        }
-        else
-        {
-            detach();
-            attach();
-        }
+	detach();
+	attach();
     }
     if( m_render && m_style )
         m_render->setStyle(m_style);
