@@ -815,9 +815,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
 
       KDiskFreeSp * job = new KDiskFreeSp;
-      job->readDF( mountPoint );
       connect( job, SIGNAL( foundMountPoint( const QString &, unsigned long, unsigned long, unsigned long ) ),
                this, SLOT( slotFoundMountPoint( const QString &, unsigned long, unsigned long, unsigned long ) ) );
+      job->readDF( mountPoint );
   }
 
   if (!d->bMultiple && item->isLink()) {
