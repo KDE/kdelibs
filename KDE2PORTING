@@ -1,4 +1,5 @@
 $Id$
+
 This document contains the changes you have to apply to programs written for
 KDE1.1 when you want to port them to KDE2.0.
 
@@ -248,3 +249,13 @@ In case you've been using KClipboard, QClipboard is the way to go now.
 Use QListView, QListViewItem instead. API is almost the same, you only
 need to add a Column (QListView::addColum) before QListView is useable.
 
+QListView has no addChild(), insertItem() and removeItem() calls. Inserting
+a root item is done by constructing a QListViewItem with the QListView 
+passed as the parent widget. adding a child item is done by constructing
+a QListViewItem with the parent item as paremeter. removeItem() should
+be replaced by delete <pointer to item>.
+
+The root items are not shown in a tree fashion by default. to get this,
+use QListView::setDecorativeRoot(true). 
+
+Expanding and collapsing can by done by using QListViewItem::setOpen(bool).
