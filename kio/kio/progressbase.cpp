@@ -146,7 +146,7 @@ void ProgressBase::finished() {
   if ( m_bOnlyClean ) {
     slotClean();
   } else {
-    delete this;
+    deleteLater();
   }
 }
 
