@@ -3288,7 +3288,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   kdDebug( 6000 ) << "urlSelected: complete URL:" << cURL.url() << " target = " << target << endl;
 
-  if ( button == LeftButton && (state & ControlButton) )
+  if ( state & ControlButton )
   {
     args.setNewTab(true);
     emit d->m_extension->createNewWindow( cURL, args );
