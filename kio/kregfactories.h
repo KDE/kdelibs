@@ -80,8 +80,8 @@ public:
    */
   virtual const QStringList & pathList() const { return m_pathList; }
 
-  void addEntryNotify( KRegEntry *entry ) { emit entryAdded( (KServiceTypeEntry *)entry ); } 
-  void removeEntryNotify( KRegEntry *entry ) { emit entryRemoved( (KServiceTypeEntry *)entry ); }
+  void addEntryNotify( KServiceTypeEntry *entry ) { emit entryAdded( entry ); } 
+  void removeEntryNotify( KServiceTypeEntry *entry ) { emit entryRemoved( entry ); }
   
 signals:
   void entryAdded( KServiceTypeEntry *entry );
@@ -139,8 +139,8 @@ public:
    */
   virtual const QStringList & pathList() const { return m_pathList; }
 
-  void addEntryNotify( KRegEntry *entry ) { emit entryAdded( (KServiceEntry *)entry ); } 
-  void removeEntryNotify( KRegEntry *entry ) { emit entryRemoved( (KServiceEntry *)entry ); }
+  void addEntryNotify( KServiceEntry *entry ) { emit entryAdded( entry ); }
+  void removeEntryNotify( KServiceEntry *entry ) { emit entryRemoved( entry ); }
   
 signals:
   void entryAdded( KServiceEntry *entry );
