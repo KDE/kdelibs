@@ -241,10 +241,10 @@ void Ftp::setHost( const QString& _host, int _port, const QString& _user, const 
    m_host = _host;
    m_port = _port;
 
-   if( !_user.isEmpty() ) 
+   if( !_user.isEmpty() )
    {
       m_user = _user;
-      if ( !_pass.isEmpty() ) 
+      if ( !_pass.isEmpty() )
       {
          m_pass = _pass;
       } else {
@@ -1018,7 +1018,7 @@ void Ftp::listDir( const QString & _path )
 
 void Ftp::slave_status()
 {
-  kDebugInfo( 7102, "Got slave_status host = %s [%s]", 
+  kDebugInfo( 7102, "Got slave_status host = %s [%s]",
 	m_host.ascii() ? m_host.ascii() : "[None]",
         m_bLoggedOn ? "Connected" : "Not connected" );
   slaveStatus( m_host, m_bLoggedOn );
@@ -1132,10 +1132,18 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                             de.type = S_IFCHR;
                             break;
                         case 'l':
-                            de.type = S_IFDIR;
-        // links on ftp sites are often links to dirs, and we have no way to check that
-        // let's do like Netscape : assume dirs (David)
-        // we don't set S_IFLNK here.  de.link says it.
+                        {
+                            QCString nam = p_name;
+              // links on ftp sites are often links to dirs, and we have no way to check that
+              // let's do like Netscape : assume dirs generally
+              // But we assume links to files, though, when there is an extension
+              // --> we do better than Netscape :-)
+                            if ( nam.findRev( "." ) != -1 )
+                                de.type = S_IFREG;
+                            else
+                                de.type = S_IFDIR;
+                            // we don't set S_IFLNK here.  de.link says it.
+                        }
                             break;
                         default:
                             break;
@@ -1251,7 +1259,7 @@ void Ftp::get( const QString & path, const QString & /*query*/, bool /*reload*/ 
 {
   if (!m_bLoggedOn)
      openConnection();
- 
+
   // Old code used to start by stat'ing, just to make sure it exists
   // Waste of time, I'd say. (David)
 
