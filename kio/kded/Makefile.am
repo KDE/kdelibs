@@ -16,7 +16,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES= -I$(top_srcdir)/kio $(all_includes)
+INCLUDES= -I$(srcdir)/.. $(all_includes)
 
 bin_PROGRAMS = kded
 kded_LDADD = ../libkio.la

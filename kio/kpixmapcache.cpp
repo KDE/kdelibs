@@ -114,18 +114,11 @@ QPixmap KPixmapCache::pixmap( const char *_pixmap, bool _mini )
 
 QString KPixmapCache::pixmapFile( const char *_pixmap, bool _mini )
 {
-  debug("pixmapFile %s", _pixmap);
-  QString key = _mini ? "mini" : "icon";
-  QString file = hackLocate(key, _pixmap);
-  if (file.isNull())
-    return hackLocate(key, "unknown.xpm");
-  
-  return file;
+  QString path;
+  KGlobal::iconLoader()->
+    loadApplicationIcon(_pixmap,
+			_mini ? KIconLoader::Small : KIconLoader::Medium, &path);
+  return path;
 }
 
-/*
-  QPixmap KPixmapCache::defaultPixmap( bool _mini )
-  {
-  return pixmap( "unknown", _mini );
-  }
-*/
+
