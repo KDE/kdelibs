@@ -75,6 +75,8 @@
 
 #include <qobject.h>
 
+class KPreferencesModule;
+
 /**
  * A Preference Dialog.
  *
