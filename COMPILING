@@ -1,7 +1,7 @@
 THIS DOCUMENT DESCRIBES HOW YOU CAN COMPILE KDE WHEN USING CVS
 
 (If you use source tarballs, you can skip "make -f Makefile.cvs" and
-should use "make clean" instead of "make cvs-clean")
+should use "make distclean" instead of "make cvs-clean")
 
 What you need
 =============
@@ -18,8 +18,8 @@ kdebase (strongly recommended but not strictly necassery)
 It is important that you compile AND INSTALL the above packages in the 
 above order.
 
-Further you will need autoconf 2.13, automake 1.4 and a working C++ compiler 
-(eg. gcc 2.95.2)
+Further you will need GNU make, autoconf 2.13, automake 1.4 and 
+a working C++ compiler (eg. gcc 2.95.2)
 
 Preparations
 ============
