@@ -80,7 +80,7 @@ libkdeui_la_METASOURCES = kbuttonbox.moc kcolorbtn.moc \
 	kurllabel.moc kwizard.moc kapplet.moc kwmmapp.moc kaccelmenu.moc \
 	klineeditdlg.moc kurlcompletion.moc kthemebase.moc \
 	kthemestyle.moc kcharselect.moc kcolordrag.moc knuminput.moc \
-	qxembed.moc kdialog.moc dialogbase.moc kdialogbase.moc \
+	qxembed.moc kdialog.moc kdialogbase.moc \
 	kjanuswidget.moc kaboutdialog.moc kauthicon.moc \
 	kdualcolorbtn.moc ktoolbarradiogroup.moc ktoolbarbutton.moc \
 	ktextbrowser.moc
