@@ -52,7 +52,8 @@ bool KNotifyClient::send()
 
 	QByteArray data;
 	QDataStream ds(data, IO_WriteOnly);
-	ds << levent->message << KApplication::kApplication()->argv()[0] << levent->text << levent->sound << levent->file << levent->present;
+	QString appname = kapp->name();
+	ds << levent->message << appname << levent->text << levent->sound << levent->file << levent->present;
 
 	return client->send("knotify", "Notify", "notify(QString,QString,QString,QString,QString,int)", data);
 }
