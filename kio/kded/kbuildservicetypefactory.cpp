@@ -16,6 +16,10 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include <unistd.h>
+
+#include <qfile.h>
+
 #include "kbuildservicetypefactory.h"
 #include "ksycoca.h"
 #include "ksycocadict.h"
@@ -67,6 +71,10 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 
   if (name.isEmpty())
      return 0;
+
+  // is it readable?
+  if (::access(QFile::encodeName(file), R_OK))
+      return 0;
 
   KDesktopFile desktopFile(file, true, resource);
 
