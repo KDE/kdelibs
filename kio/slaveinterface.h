@@ -175,7 +175,7 @@ signals:
     void connectFinished();
 
     /**
-     * @deprecated.  Use @ref authData instead.
+     * @deprecated.  Use @ref authorizationKey instead.
      *
      * NOTE: Do not connect to both this and @ref authorizationKey.
      * @ref authData at the same time!
@@ -184,33 +184,15 @@ signals:
     void authenticationKey( const QCString &, const QCString & );
 
     /**
-     * @deprecated.  Use @ref authData instead.
-     *
-     * NOTE: Do not connect to both this and @ref authenticationKey or
-     * @ref authData at the same time!
-     */
-     // BC: Remove me in KDE 3.0
-    void authorizationKey( const QCString&, const QCString&, bool );
-
-    /**
-     * @deprecated.  Use @ref delAuthData instead.
-     *
-     * NOTE: Do not connect to both this and @ref delAuthData
-     * at the same time!
-     */
-     // BC: Remove me in KDE 3.0
-    void delAuthorization( const QCString& grpkey );
-
-    /**
      * Emitted whenever login (username/password) information
      * needs to be cached.
      *
-     * NOTE: this signal is also emitted whenever a 
+     * NOTE: this signal is also emitted whenever a
      * @param key     token under which authorization is stored.
      * @param grpkey  group token under which authorization is stored.
      * @param keep    if true, user requested password to be cached for entire KDE session.
      */
-    void authData( const QCString & key, const QCString & grpkey, bool keep );
+    void authorizationKey( const QCString&, const QCString&, bool );
 
     /**
      * Emitted when an io-slave requests cached password to be
@@ -218,15 +200,15 @@ signals:
      *
      * @param grpkey     group token under which authorization is stored.
      */
-    void delAuthData( const QCString& grpkey );
+    void delAuthorization( const QCString& grpkey );
 
     /**
-     * Emitted when
+     * Emitted whenever session based cookie info is received.
      *
-     * @param domain
-     * @param winId
+     * @param host   the host setting session based cookie
+     * @param winId  the id of the application window sending this data.
      */
-    void sessionCookieData( const QString& domain, int winId );
+    void sessionCookieData( const QString& host, int winId );
 
 protected:
     /////////////////

@@ -221,7 +221,6 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
                       << "    keep password: " << keep << endl;
         emit authenticationKey( key, group );
         emit authorizationKey( key, group, keep );
-        emit authData( key, group, keep );
         break;
     }
     case MSG_DEL_AUTH_KEY: {
@@ -229,7 +228,6 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         stream >> key;
         kdDebug(7007) << "Delete auth-key: " << key << endl;
         emit delAuthorization( key );
-        emit delAuthData( key );
     }
     default:
         kdWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave" << endl;

@@ -233,7 +233,7 @@ void KIO::SessionData::slotAuthData( const QCString& key, const QCString& gkey,
     authData->addData( new KIO::SessionData::AuthData(key, gkey, keep) );
 }
 
-void SessionData::slotDeleteAuthData( const QCString& gkey )
+void SessionData::slotDelAuthData( const QCString& gkey )
 {
     authData->removeData( gkey );
 }

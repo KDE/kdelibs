@@ -35,7 +35,7 @@ public:
 
 public slots:
     void slotAuthData( const QCString&, const QCString&, bool );
-    void slotDeleteAuthData( const QCString& );
+    void slotDelAuthData( const QCString& );
     void slotSessionCookieData( const QString&, int );
     void slotDelSessionCookieData( int );
 

@@ -133,7 +133,7 @@ Scheduler::Scheduler()
 Scheduler::~Scheduler()
 {
     //fprintf(stdout, "Destructing KIO::Scheduler...\n");
-
+    
     protInfoDict->setAutoDelete(true);
     delete protInfoDict; protInfoDict = 0;
     delete idleSlaves; idleSlaves = 0;
@@ -141,6 +141,7 @@ Scheduler::~Scheduler()
     slaveList->setAutoDelete(true);
     delete slaveList; slaveList = 0;
     delete extraJobData; extraJobData = 0;
+    delete sessionData; sessionData = 0;
     instance = 0;
 }
 
@@ -460,12 +461,12 @@ Slave *Scheduler::createSlave(ProtocolInfo *protInfo, SimpleJob *job, const KURL
       connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
                 SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
 
-      connect(slave,SIGNAL(authData(const QCString&, const QCString&, bool)),
+      connect(slave,SIGNAL(authorizationKey(const QCString&, const QCString&, bool)),
               sessionData,SLOT(slotAuthData(const QCString&, const QCString&, bool)));
-      connect(slave,SIGNAL(delAuthData(const QCString&, const QCString&, bool)),
-              sessionData,SLOT(slotDelAuthData(const QCString&, const QCString&, bool)));
-      connect(slave,SIGNAL(sessionCookieData(const QCString&, const QCString&, bool)),
-              sessionData,SLOT(slotSessionCookieData(const QCString&, const QCString&, bool)));      
+      connect(slave,SIGNAL(delAuthorization(const QCString&)), sessionData,
+              SLOT(slotDelAuthData(const QCString&)));
+      connect(slave,SIGNAL(sessionCookieData(const QString&, int)),
+              sessionData,SLOT(slotSessionCookieData(const QString&, int)));
    }
    else
    {
@@ -646,7 +647,7 @@ void
 Scheduler::slotScheduleCoSlave()
 {
     Slave *nextSlave;
-    for(Slave *slave = coIdleSlaves->first(); 
+    for(Slave *slave = coIdleSlaves->first();
         slave;
         slave = nextSlave)
     {
@@ -658,8 +659,9 @@ Scheduler::slotScheduleCoSlave()
            SimpleJob *job = list->take(0);
            coIdleSlaves->removeRef(slave);
            kdDebug(7006) << "scheduler: job started " << job << endl;
+
            assert(!coIdleSlaves->contains(slave));
- 
+
            KURL url =job->url();
            QString host = url.host();
            int port = url.port();
@@ -667,7 +669,7 @@ Scheduler::slotScheduleCoSlave()
 #if 0
            QString user = url.user();
            QString passwd = url.pass();
- 
+
            if ((slave->host() != host) ||
                (slave->port() != port) ||
                (slave->user() != user) ||
@@ -680,7 +682,7 @@ Scheduler::slotScheduleCoSlave()
            assert(slave->host() == host);
            assert(slave->port() == port);
            job->start(slave);
-        } 
+        }
     }
 }
 
@@ -712,7 +714,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 {
     kdDebug(7006) << "_assignJobToSlave( " << job << ", " << slave << ")" << endl;
     if ((slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url().protocol() ))
-        ||     
+        ||
         (!newJobs.removeRef(job)))
     {
         kdDebug(7006) << "ERROR, nonmatching or unknown job." << endl;
@@ -736,7 +738,7 @@ Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
     return true;
 }
 
-bool 
+bool
 Scheduler::_disconnectSlave(KIO::Slave *slave)
 {
     kdDebug(7006) << "_disconnectSlave( " << slave << ")" << endl;
