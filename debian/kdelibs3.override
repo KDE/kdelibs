@@ -88,25 +88,6 @@ kdelibs3: ldconfig-symlink-referencing-wrong-file usr/lib/libkssl.so.2 -> libkss
 kdelibs3: ldconfig-symlink-missing-for-shlib usr/lib/kde2/kio_https.so usr/lib/kde2/kio_https-nossl.so kio_https.so
 kdelibs3: shlib-missing-in-control-file libkssl usr/lib/libkssl-nossl.so.2.0.0
 kdelibs3: unused-shlib-entry-in-control-file libkssl-nossl
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/dcopserver.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/dcopidl.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/dcopidl2cpp.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/dcop.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kde-config.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kdesu_stub.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kio_uiserver.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kmailservice.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/klauncher.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kded.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kbuildsycoca.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kcookiejar.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kio_http_cache_cleaner.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/ksendbugmail.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kdb2html.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kdeinit.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/kdeinit_wrapper.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/lnusertemp.1.gz
-kdelibs3: link-to-undocumented-manpage usr/share/man/man1/settheme.1.gz
 kdelibs3: shlib-missing-in-control-file kimg_xview.so usr/lib/kde2/kimg_xview.so
 kdelibs3: shlib-missing-in-control-file kded.so usr/lib/kded.so
 kdelibs3: shlib-missing-in-control-file ksgistyle.so usr/lib/ksgistyle.so

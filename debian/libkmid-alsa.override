@@ -1,3 +1,2 @@
 #
-libkmid-alsa: link-to-undocumented-manpage usr/share/man/man1/knotify.1.gz
 libkmid-alsa: shlib-missing-in-control-file knotify.so usr/lib/knotify.so

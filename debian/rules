@@ -120,9 +120,6 @@ binary-arch:  build
 	cp debian/tmp/etc/kde2/system.kdeglobals debian/tmp/etc/kderc
 	perl -w admin/debianrules cleanup
 	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
-	for i in `find debian/tmp/usr/bin | sed -e 's#^debian/tmp/usr/bin/##'  | grep -v "debian/tmp"`; do \
-	  echo "$$i.1" >> debian/undocumented ; \
-	done
 	for i in `cat debian/undocumented.in | grep -v "#"`; do \
 	  echo "$$i.1" >> debian/undocumented ; \
 	done
