@@ -47,7 +47,7 @@
 using namespace khtml;
 
 RenderFormElement::RenderFormElement(QScrollView *view,
-				     HTMLGenericFormElementImpl *element)
+                                     HTMLGenericFormElementImpl *element)
     : RenderWidget(view)
 {
     m_element = element;
@@ -168,7 +168,7 @@ void RenderCheckBox::slotStateChanged(int state)
 
 
 RenderRadioButton::RenderRadioButton(QScrollView *view,
-				     HTMLInputElementImpl *element)
+                                     HTMLInputElementImpl *element)
     : RenderButton(view, element)
 {
     RadioButtonWidget *b = new RadioButtonWidget(view->viewport());
@@ -188,7 +188,7 @@ void RenderRadioButton::slotClicked()
 {
     m_element->setAttribute(ATTR_CHECKED,"");
     if (m_element->ownerDocument()->isHTMLDocument())
-	static_cast<HTMLDocumentImpl*>(m_element->ownerDocument())->updateRendering();
+        static_cast<HTMLDocumentImpl*>(m_element->ownerDocument())->updateRendering();
 }
 
 void RenderRadioButton::layout()
@@ -222,7 +222,7 @@ void RenderSubmitButton::slotClicked()
     static_cast<HTMLInputElementImpl*>(m_element)->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
     // ### if the above line calls some javascript which deletes us we will probably crash here
     if (m_element->form())
-	m_element->form()->submit();
+        m_element->form()->submit();
 }
 
 void RenderSubmitButton::layout()
@@ -265,7 +265,7 @@ void RenderResetButton::slotClicked()
 {
     static_cast<HTMLInputElementImpl*>(m_element)->mouseEventHandler( 0, DOM::NodeImpl::MouseClick, true );
     if (m_element->form())
-	m_element->form()->reset();
+        m_element->form()->reset();
 }
 
 QString RenderResetButton::defaultLabel() {
@@ -308,7 +308,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
-	edit->setEchoMode( QLineEdit::Password );
+        edit->setEchoMode( QLineEdit::Password );
 
     setQWidget(edit);
 }
@@ -316,7 +316,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 void RenderLineEdit::slotReturnPressed()
 {
     if (m_element->form())
-	m_element->form()->maybeSubmit();
+        m_element->form()->maybeSubmit();
 }
 
 void RenderLineEdit::layout()
@@ -333,9 +333,9 @@ void RenderLineEdit::layout()
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
     if ( edit->frame() ) {
         h += 8;
-	// ### this is not really portable between all styles.
-	// I think one should try to find a generic solution which
-	// works with all possible styles. Lars.
+        // ### this is not really portable between all styles.
+        // I think one should try to find a generic solution which
+        // works with all possible styles. Lars.
         if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
             h = 22;
         s = QSize( w + 8, h );
@@ -348,7 +348,7 @@ void RenderLineEdit::layout()
 
     // ### what if maxlength goes back to 0? can we unset maxlength in the widget?
     if (input->maxLength() > 0)
-	edit->setMaxLength(input->maxLength());
+        edit->setMaxLength(input->maxLength());
     edit->setReadOnly(m_element->readOnly());
 
     m_height = s.height();
@@ -418,9 +418,9 @@ void RenderFileButton::slotClicked()
 {
     QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
     if (!file_name.isNull()) {
-	// ### truncate if > maxLength
-	static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(file_name));
-	m_edit->setText(file_name);
+        // ### truncate if > maxLength
+        static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(file_name));
+        m_edit->setText(file_name);
     }
 }
 
@@ -461,7 +461,7 @@ void RenderFileButton::layout( )
 void RenderFileButton::slotReturnPressed()
 {
     if (m_element->form())
-	m_element->form()->maybeSubmit();
+        m_element->form()->maybeSubmit();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
@@ -472,24 +472,24 @@ void RenderFileButton::slotTextChanged(const QString &string)
 void RenderFileButton::slotBlurred()
 {
     if (sender() != m_edit && sender() != m_button)
-	return;
+        return;
 
     if ((sender() == m_edit && m_button->hasFocus()) ||
- 	(sender() == m_button && m_edit->hasFocus()))
-	m_haveFocus = true;
+        (sender() == m_button && m_edit->hasFocus()))
+        m_haveFocus = true;
     else {
-	m_haveFocus = false;
-	RenderFormElement::slotBlurred();
+        m_haveFocus = false;
+        RenderFormElement::slotBlurred();
     }
 }
 
 void RenderFileButton::slotFocused()
 {
     if (sender() != m_edit && sender() != m_button)
-	return;
+        return;
 
     if (!m_haveFocus)
-	RenderFormElement::slotFocused();
+        RenderFormElement::slotFocused();
     m_haveFocus = true;
 }
 
@@ -571,32 +571,32 @@ void RenderSelect::layout( )
     m_listBox = (m_multiple || m_size > 1);
 
     if (oldMultiple != m_multiple || oldSize != m_size) {
-	if (m_listBox != oldListbox) {
-	    // type of select has changed
-	    delete m_widget;
+        if (m_listBox != oldListbox) {
+            // type of select has changed
+            delete m_widget;
 
-	    if(oldListbox)
-		disconnect(m_widget,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
-	    else
-		disconnect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
+            if(oldListbox)
+                disconnect(m_widget,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
+            else
+                disconnect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
 
-	    if(m_listBox) {
-		ListBoxWidget *w = createListBox();
-		w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
-		setQWidget(w);
-		connect(m_widget,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
-	    }
-	    else {
-		setQWidget(createComboBox());
-		m_size = 1;
-		connect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
-	    }
-	}
+            if(m_listBox) {
+                ListBoxWidget *w = createListBox();
+                w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
+                setQWidget(w);
+                connect(m_widget,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
+            }
+            else {
+                setQWidget(createComboBox());
+                m_size = 1;
+                connect(m_widget,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
+            }
+        }
 
-	if (m_listBox && oldMultiple != m_multiple) {
-	    static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
-	}
-	m_selectionChanged = true;
+        if (m_listBox && oldMultiple != m_multiple) {
+            static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
+        }
+        m_selectionChanged = true;
     }
 
     HTMLSelectElementImpl *select = static_cast<HTMLSelectElementImpl*>(m_element);
@@ -607,48 +607,48 @@ void RenderSelect::layout( )
     int listIndex;
 
     if(m_listBox)
-	static_cast<KListBox*>(m_widget)->clear();
+        static_cast<KListBox*>(m_widget)->clear();
     else
-	static_cast<QComboBox*>(m_widget)->clear();
+        static_cast<QComboBox*>(m_widget)->clear();
 
     for (listIndex = 0; listIndex < int(listItems.size()); listIndex++) {
-	if (listItems[listIndex]->id() == ID_OPTGROUP) {
-	    DOMString text = listItems[listIndex]->getAttribute(ATTR_LABEL);
-	    if (text.isNull())
-		text = "";
+        if (listItems[listIndex]->id() == ID_OPTGROUP) {
+            DOMString text = listItems[listIndex]->getAttribute(ATTR_LABEL);
+            if (text.isNull())
+                text = "";
 
-	    if(m_listBox) {
-		QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
-		static_cast<KListBox*>(m_widget)
-		    ->insertItem(item, listIndex);
-		item->setSelectable(false);
-	    }
-	    else
-		static_cast<QComboBox*>(m_widget)
-		    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
-	}
-	else if (listItems[listIndex]->id() == ID_OPTION) {
-	    DOMString text = static_cast<HTMLOptionElementImpl*>(listItems[listIndex])->text();
-	    if (text.isNull())
-		text = "";
-	    if (listItems[listIndex]->parentNode()->id() == ID_OPTGROUP)
-		text = DOMString("    ")+text;
+            if(m_listBox) {
+                QListBoxText *item = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
+                static_cast<KListBox*>(m_widget)
+                    ->insertItem(item, listIndex);
+                item->setSelectable(false);
+            }
+            else
+                static_cast<QComboBox*>(m_widget)
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+        }
+        else if (listItems[listIndex]->id() == ID_OPTION) {
+            DOMString text = static_cast<HTMLOptionElementImpl*>(listItems[listIndex])->text();
+            if (text.isNull())
+                text = "";
+            if (listItems[listIndex]->parentNode()->id() == ID_OPTGROUP)
+                text = DOMString("    ")+text;
 
-	    if(m_listBox)
-		static_cast<KListBox*>(m_widget)
-		    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
-	    else
-		static_cast<QComboBox*>(m_widget)
-		    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
-	}
-	else
-	    assert(false);
-	m_selectionChanged = true;
+            if(m_listBox)
+                static_cast<KListBox*>(m_widget)
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+            else
+                static_cast<QComboBox*>(m_widget)
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), listIndex);
+        }
+        else
+            assert(false);
+        m_selectionChanged = true;
     }
 
     // update selection
     if (m_selectionChanged)
-	updateSelection();
+        updateSelection();
     m_selectionChanged = false;
 
     if (m_listBox) {
@@ -662,11 +662,11 @@ void RenderSelect::layout( )
     }
     else {
         // and now disable the widget in case there is no <option> given
-	// ### do the same if there is only optgroups
+        // ### do the same if there is only optgroups
         QComboBox* w = static_cast<QComboBox*>(m_widget);
         if(!w->count())
             w->setEnabled(false);
-	// ### select the first option (unless another specified), in case the first item is an optgroup
+        // ### select the first option (unless another specified), in case the first item is an optgroup
     }
 
 //    reset();
@@ -811,26 +811,26 @@ void RenderSelect::restoreState(const QString &state)
 void RenderSelect::slotActivated(int index)
 {
     if (m_ignoreSelectEvents)
-	return;
+        return;
 
     m_ignoreSelectEvents = true;
 
     QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
     if (index < 0 || index >= int(listItems.size()))
-	return;
+        return;
 
     if (listItems[index]->id() == ID_OPTION) {
-	if (m_listBox)
-	    static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(static_cast<KListBox*>(m_widget)->isSelected(index));
-	else
-	    static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(true);
+        if (m_listBox)
+            static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(static_cast<KListBox*>(m_widget)->isSelected(index));
+        else
+            static_cast<HTMLOptionElementImpl*>(listItems[index])->setSelected(true);
     }
     else {
-	// nope, sorry, can't select this
-	if (m_listBox)
-	    static_cast<KListBox*>(m_widget)->setCurrentItem(-1);
-	else {
-	    // ###
+        // nope, sorry, can't select this
+        if (m_listBox)
+            static_cast<KListBox*>(m_widget)->setCurrentItem(-1);
+        else {
+            // ###
         }
     }
 
@@ -840,7 +840,7 @@ void RenderSelect::slotActivated(int index)
 
 }
 
-void RenderSelect::setOptionsChanged(bool _optionsChanged)
+void RenderSelect::setOptionsChanged(bool /*ptionsChanged*/)
 {
     // ###
 //    m_optionsChanged = _optionsChanged;
@@ -867,19 +867,19 @@ void RenderSelect::updateSelection()
     QArray<HTMLGenericFormElementImpl*> listItems = static_cast<HTMLSelectElementImpl*>(m_element)->listItems();
     int i;
     if (m_listBox) {
-	// if multi-select, we select only the new selected index
-	KListBox *listBox = static_cast<KListBox*>(m_widget);
-	for (i = 0; i < int(listItems.size()); i++)
-	    listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
-				static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
+        // if multi-select, we select only the new selected index
+        KListBox *listBox = static_cast<KListBox*>(m_widget);
+        for (i = 0; i < int(listItems.size()); i++)
+            listBox->setSelected(i,listItems[i]->id() == ID_OPTION &&
+                                static_cast<HTMLOptionElementImpl*>(listItems[i])->selected());
     }
     else {
-	for (i = 0; i < int(listItems.size()); i++)
-	    if (listItems[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
-		static_cast<QComboBox*>(m_widget)->setCurrentItem(i);
-		return;
-	    }
-	static_cast<QComboBox*>(m_widget)->setCurrentItem(0); // ### wrong if item 0 is an optgroup
+        for (i = 0; i < int(listItems.size()); i++)
+            if (listItems[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
+                static_cast<QComboBox*>(m_widget)->setCurrentItem(i);
+                return;
+            }
+        static_cast<QComboBox*>(m_widget)->setCurrentItem(0); // ### wrong if item 0 is an optgroup
     }
 }
 
@@ -890,13 +890,13 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     : QMultiLineEdit(parent)
 {
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
-	setWordWrap(QMultiLineEdit::WidgetWidth);
-	clearTableFlags(Tbl_autoScrollBars);
-	setTableFlags(Tbl_vScrollBar);
+        setWordWrap(QMultiLineEdit::WidgetWidth);
+        clearTableFlags(Tbl_autoScrollBars);
+        setTableFlags(Tbl_vScrollBar);
     }
     else {
-	clearTableFlags(Tbl_autoScrollBars);
-	setTableFlags(Tbl_vScrollBar | Tbl_hScrollBar);
+        clearTableFlags(Tbl_autoScrollBars);
+        setTableFlags(Tbl_vScrollBar | Tbl_hScrollBar);
     }
 }
 
@@ -949,7 +949,7 @@ void RenderTextArea::close( )
 
     if(f->firstChild() && f->firstChild()->id() == ID_TEXT) {
         f->setValue(static_cast<TextImpl*>(f->firstChild())->string());
-	f->saveDefaults();
+        f->saveDefaults();
     }
 
     layout();

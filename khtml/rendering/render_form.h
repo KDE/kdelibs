@@ -107,7 +107,7 @@ public:
     virtual const char *renderName() const { return "RenderButton"; }
 
     virtual void layout();
-};	
+};
 
 // -------------------------------------------------------------------------
 
@@ -118,9 +118,9 @@ public:
     PushButtonWidget(QWidget *parent) : QPushButton(parent) {}
     PushButtonWidget(const QString &text, QWidget *parent) : QPushButton(text,parent) {}
     virtual void focusInEvent(QFocusEvent *)
-	{ emit focused(); }
+        { emit focused(); }
     virtual void focusOutEvent(QFocusEvent *)
-	{ emit blurred(); }
+        { emit blurred(); }
 signals:
     void focused();
     void blurred();
@@ -162,9 +162,9 @@ class CheckBoxWidget : public QCheckBox
 public:
     CheckBoxWidget(QWidget *parent) : QCheckBox(parent) {}
     virtual void focusInEvent(QFocusEvent *)
-	{ emit focused(); }
+        { emit focused(); }
     virtual void focusOutEvent(QFocusEvent *)
-	{ emit blurred(); }
+        { emit blurred(); }
 signals:
     void focused();
     void blurred();
@@ -186,7 +186,7 @@ public:
 
     virtual void layout();
 
- public slots:	
+ public slots:
     void slotClicked();
 };
 
@@ -198,9 +198,9 @@ class RadioButtonWidget : public QRadioButton
 public:
     RadioButtonWidget(QWidget *parent) : QRadioButton(parent) {}
     virtual void focusInEvent(QFocusEvent *)
-	{ emit focused(); }
+        { emit focused(); }
     virtual void focusOutEvent(QFocusEvent *)
-	{ emit blurred(); }
+        { emit blurred(); }
 signals:
     void focused();
     void blurred();
@@ -224,7 +224,7 @@ public:
     bool clicked() { return m_clicked; }
     void setClicked(bool _clicked) { m_clicked = _clicked; }
 
-public slots:	
+public slots:
     virtual void slotClicked();
 
 protected:
@@ -242,7 +242,6 @@ public:
     virtual const char *renderName() const { return "RenderImageButton"; }
 
     HTMLInputElementImpl *m_element;
-
 };
 
 
@@ -286,7 +285,7 @@ public:
     virtual const char *renderName() const { return "RenderLineEdit"; }
     void select();
 
-public slots:	
+public slots:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
 };
@@ -300,9 +299,9 @@ public:
     LineEditWidget(QWidget *parent) : QLineEdit(parent) {}
     // grrr... why can't qwidget have built-in signals for this!
     virtual void focusInEvent(QFocusEvent *)
-	{ emit focused(); }
+        { emit focused(); }
     virtual void focusOutEvent(QFocusEvent *)
-	{ emit blurred(); }
+        { emit blurred(); }
 signals:
     void focused();
     void blurred();
@@ -333,7 +332,7 @@ public:
     virtual void layout();
     void select();
 
-public slots:	
+public slots:
     virtual void slotClicked();
     virtual void slotReturnPressed();
     virtual void slotTextChanged(const QString &string);
@@ -379,9 +378,9 @@ class ListBoxWidget : public KListBox
 public:
     ListBoxWidget(QWidget *parent) : KListBox(parent) {}
     virtual void focusInEvent(QFocusEvent *)
-	{ emit focused(); }
+        { emit focused(); }
     virtual void focusOutEvent(QFocusEvent *)
-	{ emit blurred(); }
+        { emit blurred(); }
 signals:
     void focused();
     void blurred();
@@ -396,9 +395,9 @@ class ComboBoxWidget : public QComboBox
 public:
     ComboBoxWidget(QWidget *parent) : QComboBox(parent) {}
     virtual void focusInEvent(QFocusEvent *)
-	{ emit focused(); }
+        { emit focused(); }
     virtual void focusOutEvent(QFocusEvent *)
-	{ emit blurred(); }
+        { emit blurred(); }
 signals:
     virtual void focused();
     virtual void blurred();
@@ -455,9 +454,9 @@ public:
         { return QTableView::horizontalScrollBar(); };
 
     virtual void focusInEvent(QFocusEvent *)
-	{ emit focused(); }
+        { emit focused(); }
     virtual void focusOutEvent(QFocusEvent *)
-	{ emit blurred(); }
+        { emit blurred(); }
     // ### selected???
 
 signals:
