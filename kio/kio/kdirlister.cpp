@@ -471,7 +471,7 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
       // item not in use anymore -> move into cache if complete
       itemsInUse.remove( urlStr );
 
-      // this job is a running update - DF: or a normal listing!
+      // this job is a running update
       if ( killJob( urlStr ) )
       {
         kdDebug(7004) << k_funcinfo << "Killing update job for " << urlStr << endl;
