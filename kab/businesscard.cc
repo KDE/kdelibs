@@ -294,8 +294,8 @@ void BusinessCard::setBackground(const string& path)
   QPixmap pixmap;
   if(!pixmap.load(path.c_str()))
     {
-      QMessageBox::information
-	(this, "Image load failure", "Could not load background image!");
+      //      QMessageBox::information
+      //	(this, "Image load failure", "Could not load background image!");
       return;
     }
   LG(GUARD, "BusinessCard::setBackground: loaded image from file \"%s\".\n", 

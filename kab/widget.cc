@@ -169,7 +169,7 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
 	 "last current key has not been saved.\n");
     }
   // -----
-  /*keys->get("Background", bgFilename);
+  keys->get("Background", bgFilename);
   CHECK(keys->get("Background", bgFilename));
   path=KApplication::getKApplication()->kde_datadir();
   path+=(string)"/kab/pics/"+bgFilename;
@@ -182,7 +182,7 @@ AddressWidget::AddressWidget(QWidget* parent,  const char* name, bool readonly_)
   LG(GUARD, "AddressWidget constructor: loading dialog background "
      "from file \n             \"%s\".\n", path.c_str());
   pixmap.load(path.c_str());
-  DialogBase::setBackgroundTile(&pixmap);*/
+  DialogBase::setBackgroundTile(&pixmap);
   // -----
   timer=new QTimer(this);
   CHECK(timer!=0);
