@@ -722,9 +722,6 @@ public:
    */
   virtual void enableWrite(bool enable);
 
-  QSocketNotifier *readNotifier();
-  QSocketNotifier *writeNotifier();
-
 signals:
   /**
    * This signal is emitted whenever an asynchronous lookup process is done.
@@ -760,6 +757,11 @@ protected slots:
   void dnsResultsReady();
   void startAsyncConnectSlot();
   void connectionEvent();
+
+protected:
+
+  QSocketNotifier *readNotifier();
+  QSocketNotifier *writeNotifier();
 
 private:
 
@@ -853,6 +855,9 @@ protected:
   virtual void virtual_hook( int id, void* data );
 private:
   KExtendedSocketPrivate *d;
+
+  friend class KSocket;
+  friend class KServerSocket;
 };
 
 class KAddressInfo
