@@ -240,6 +240,31 @@ execute arbitrary commands. This raises the question whether such features
 should be disabled as part of the "shell_access" action or whether it should 
 get its own action definition, e.g. "custom .desktop files".
 
+Printing related action restrictions:
+
+print/system
+        - disables the option to select the printing system (backend). It is 
+          recommended to  disable this option once the correct printing 
+          system has been configured.
+
+print/options
+        - disables the button to select additional print options.
+
+print/copies
+        - disables the panel that allows users to make more than one copy.
+
+print/selection
+        - disables the options that allows selecting a (pseudo) printer or 
+          change any of the printer properties. Make sure that a proper
+          default printer has been selected before disabling this option.
+          Disabling this option also disables print/system and print/options.
+
+print/dialog
+        - disables the complete print dialog. Selecting the print option will
+          immediate print the selected document using default settings.
+          Make sure that a system wide default printer has been selected.
+          No application specific settings are honoured.
+
 Other defined actions:
 
 shell_access 
