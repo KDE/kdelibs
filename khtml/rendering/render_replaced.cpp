@@ -158,13 +158,6 @@ static void resizeWidget( QWidget *widget, int w, int h )
     h = QMIN( h, 3072 );
     w = QMIN( w, 2000 );
     widget->resize( w, h );
-    if ( w == 3072 || h == 2000 ) {
-	if ( widget->inherits( "KHTMLView" ) ) {
-	    KHTMLView *sv = static_cast<KHTMLView *>(widget);
-	    if ( w == 2000 ) sv->setHScrollBarMode( QScrollView::Auto );
-	    if ( h == 3072 ) sv->setVScrollBarMode( QScrollView::Auto );
-	}
-    }
 }
 
 void RenderWidget::setQWidget(QWidget *widget)
@@ -192,6 +185,7 @@ void RenderWidget::setQWidget(QWidget *widget)
             else
                 setPos(xPos(), -500000);
         }
+	m_view->addChild( m_widget, -500000, 0 );
     }
 }
 
@@ -242,7 +236,45 @@ void RenderWidget::printObject(QPainter* /*p*/, int, int, int, int, int _tx, int
     if(isRelPositioned())
 	relativePositionOffset(_tx, _ty);
 
-    m_view->addChild(m_widget, _tx+borderLeft()+paddingLeft(), _ty+borderTop()+paddingTop());
+    int xPos = _tx+borderLeft()+paddingLeft();
+    int yPos = _ty+borderTop()+paddingTop();
+    
+    int childw = m_widget->width();
+    int childh = m_widget->height();
+    if ( (childw == 2000 || childh == 3072) && m_widget->inherits( "KHTMLView" ) ) {
+	KHTMLView *vw = static_cast<KHTMLView *>(m_widget);
+	int cx = m_view->contentsX();
+	int cy = m_view->contentsY();
+	int cw = m_view->visibleWidth();
+	int ch = m_view->visibleHeight();
+	
+	
+	int childx = m_view->childX( m_widget );
+	int childy = m_view->childY( m_widget );
+
+	int xNew = xPos;
+	int yNew = childy;
+
+	// 	qDebug("cy=%d, ch=%d, childy=%d, childh=%d", cy, ch, childy, childh );
+	if ( childh == 3072 ) {
+	    if ( cy + ch > childy + childh ) {
+		yNew = cy + ( ch - childh )/2;
+	    } else if ( cy < childy ) {
+		yNew = cy + ( ch - childh )/2;
+	    }
+// 	    qDebug("calculated yNew=%d", yNew);
+	}
+	yNew = QMIN( yNew, yPos + m_height - childh );
+	yNew = QMAX( yNew, yPos );
+	if ( yNew != childy || xNew != childx ) {
+	    if ( vw->contentsHeight() < yNew - yPos + childh )
+		vw->resizeContents( vw->contentsWidth(), yNew - yPos + childh );
+	    vw->setContentsPos( xNew - xPos, yNew - yPos );
+	}
+	xPos = xNew;
+	yPos = yNew;
+    } 
+    m_view->addChild(m_widget, xPos, yPos );
     m_widget->show();
 }
 
