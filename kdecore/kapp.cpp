@@ -609,6 +609,7 @@ void KApplication::iceIOErrorHandler( _IceConn *conn )
     exit( 1 );
 }
 
+#ifndef QT_NO_TRANSLATION
 class KDETranslator : public QTranslator
 {
 public:
@@ -617,6 +618,7 @@ public:
       return KGlobal::locale()->translateQt(context, message);
   }
 };
+#endif
 
 void KApplication::init(bool GUIenabled)
 {
@@ -673,7 +675,9 @@ void KApplication::init(bool GUIenabled)
     }
   }
 
+#ifndef QT_NO_TRANSLATION
   installTranslator(new KDETranslator(this));
+#endif
 
   // install appdata resource type
   KGlobal::dirs()->addResourceType("appdata", KStandardDirs::kde_default("data")
