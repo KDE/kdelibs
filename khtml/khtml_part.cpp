@@ -617,17 +617,7 @@ KJSProxy *KHTMLPart::jScript()
 
 bool KHTMLPart::executeScript( const QString &script )
 {
-  KJSProxy *proxy = jScript();
-
-  if (!proxy)
-    return false;
-
-  //kdDebug() << "executing " << script << endl;
-
-
-  bool ret = proxy->evaluate( script.unicode(), script.length(), Node() );
-  d->m_doc->updateRendering();
-  return ret;
+  return executeScript( DOM::Node(), script );
 }
 
 bool KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
@@ -2008,17 +1998,16 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   if (!checkLinkSecurity(u))
     return;
 
+  KParts::URLArgs args;
+  
   if ( strcmp( action, "get" ) == 0 )
   {
     u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
 
-    KParts::URLArgs args;
     args.frameName = target;
-    emit d->m_extension->openURLRequest( u, args );
   }
   else
   {
-    KParts::URLArgs args;
     args.postData = formData;
     args.frameName = target;
 
@@ -2027,9 +2016,16 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       d->m_userHeaders = "Content-Type: application/x-www-form-urlencoded";
     else // contentType must be "multipart/form-data"
       d->m_userHeaders = "Content-Type: " + contentType + "; boundary=" + boundary;
-
-    emit d->m_extension->openURLRequest( u, args );
   }
+  
+  // ### bail out if a submit() call from JS occured while parsing
+  if ( d->m_bParsing ) {
+    kdWarning( 6070 ) << "Ignoring submit() while parsing" << endl;
+    return;
+  }
+  
+  emit d->m_extension->openURLRequest( u, args );
+
 }
 
 void KHTMLPart::popupMenu( const QString &url )
