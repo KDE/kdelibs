@@ -49,6 +49,13 @@ Boolean DOMNode::toBoolean() const
     return Boolean(!node.isNull());
 }
 
+bool DOMNode::hasProperty(const UString &p, bool) const
+{
+    KJSO n = getDOMNode(node);
+    KJSO r = n.get(p);
+    return !r.isA(UndefinedType);
+}
+
 KJSO DOMNode::tryGet(const UString &p) const
 {
   KJSO result;
