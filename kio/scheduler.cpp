@@ -215,11 +215,11 @@ QCStringList Scheduler::functions()
 }
 
 void Scheduler::_doJob(SimpleJob *job) {
-    newJobs.append(job);
     JobData *jobData = new JobData;
     jobData->protocol = KProtocolManager::slaveProtocol(job->url(), jobData->proxy);
     kdDebug(7006) << "Scheduler::_doJob protocol=" << jobData->protocol << endl;
     extraJobData->replace(job, jobData);
+    newJobs.append(job);
     slaveTimer.start(0, true);
 }
 
