@@ -46,9 +46,6 @@
         *   (<a href="interfaces/html/classes.html">classes</a>)\n
 	*   <i>Defines interfaces for common components so that new implementations
 	*   can be dropped in.</i>
-	* - <a href="kmdi/html/index.html"><b>kmdi</b></a>
-	*   (<a href="kmdi/html/classes.html">classes</a>)\n
-	*   <i>MDI interface library.</i>
 	* - <a href="kabc/html/index.html"><b>kabc</b></a>
         *   (<a href="kabc/html/classes.html">classes</a>)\n
 	*   <i>Access to the KDE address book.</i>
