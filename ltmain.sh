@@ -55,7 +55,7 @@ progname=`$echo "$0" | sed 's%^.*/%%'`
 # Constants.
 PROGRAM=ltmain.sh
 PACKAGE=libtool
-VERSION=1.0e
+VERSION=1.0f
 
 default_mode=
 help="Try \`$progname --help' for more information."
@@ -81,19 +81,10 @@ if test "$LTCONFIG_VERSION" != "$VERSION"; then
   exit 1
 fi
 
-#
 if test "$build_libtool_libs" != yes && test "$build_old_libs" != yes; then
   $echo "$progname: not configured to build any kind of library" 1>&2
   $echo "Fatal configuration error.  See the $PACKAGE docs for more information." 1>&2
   exit 1
-fi
-
-# AIX sometimes has problems with the GCC collect2 program.  For some
-# reason, if we set the COLLECT_NAMES environment variable, the problems
-# vanish in a puff of smoke.
-if test "${COLLECT_NAMES+set}" != set; then
-  COLLECT_NAMES=
-  export COLLECT_NAMES
 fi
 
 # Global variables.
@@ -338,8 +329,10 @@ if test -z "$show_help"; then
 
     # Only build a PIC object if we are building libtool libraries.
     if test "$build_libtool_libs" = yes; then
+      # Without this assignment, base_compile gets emptied.
+      fbsd_hideous_sh_bug=$base_compile
+
       # All platforms use -DPIC, to notify preprocessed assembler code.
-      fbsd_hideous_sh_bug=$base_compile # without this assignment, base_compile gets emptied
       $show "$base_compile$pic_flag -DPIC $srcfile"
       if $run eval "$base_compile\$pic_flag -DPIC \$srcfile"; then :
       else
@@ -423,6 +416,9 @@ if test -z "$show_help"; then
         ;;
       esac
     done
+
+    # See if our shared archives depend on static archives.
+    test -n "$old_archive_from_new_cmds" && build_old_libs=yes
 
     # Go through the arguments, transforming them on the way.
     for arg
@@ -539,7 +535,7 @@ if test -z "$show_help"; then
         ;;
 
       # Some other compiler flag.
-      -*)
+      -* | +*)
 	# Unknown arguments in both finalize_command and compile_command need
 	# to be aesthetically quoted because they are evaled later.
 	arg=`$echo "$arg" | sed "$sed_quote_subst"`
@@ -753,13 +749,14 @@ if test -z "$show_help"; then
             exit 1
           fi
 
+	  # Here we assume that one of hardcode_direct or hardcode_minus_L
+	  # is not unsupported.  This is valid on all known static and
+	  # shared platforms.
 	  if test "$hardcode_direct" != unsupported; then
 	    test -n "$old_library" && linklib="$old_library"
 	    compile_command="$compile_command $dir/$linklib"
 	    finalize_command="$finalize_command $dir/$linklib"
 	  else
-	    # Here we assume that "$hardcode_minus_L" != unsupported.
-	    # This is valid on all known static and shared platforms.
 	    compile_command="$compile_command -L$dir -l$name"
 	    finalize_command="$finalize_command -L$dir -l$name"
 	  fi
@@ -806,7 +803,18 @@ if test -z "$show_help"; then
       ;;
 
     *.la)
-      libname=`$echo "$output" | sed 's/\.la$//'`
+      # Make sure we only generate libraries of the form `libNAME.la'.
+      case "$output" in
+      lib*) ;;
+      *)
+	$echo "$progname: libtool library \`$arg' must begin with \`lib'" 1>&2
+	$echo "$help" 1>&2
+	exit 1
+	;;
+      esac
+
+      name=`$echo "$output" | sed -e 's/\.la$//' -e 's/^lib//'`
+      libname=`eval \\$echo \"$libname_spec\"`
 
       # All the library-specific variables (install_libdir is set above).
       library_names=
@@ -942,11 +950,16 @@ if test -z "$show_help"; then
 
       # Create the output directory, or remove our outputs if we need to.
       if test -d $objdir; then
-        $show "$rm $objdir/$libname.*"
-        $run $rm $objdir/$libname.*
+        $show "$rm $objdir/$output $objdir/$libname.*"
+        $run $rm $objdir/$output $objdir/$libname.*
       else
         $show "$mkdir $objdir"
-        $run $mkdir $objdir || exit $?
+        $run $mkdir $objdir
+	status=$?
+	if test $status -eq 0 || test -d $objdir; then :
+	else
+	  exit $status
+	fi
       fi
 
       # Check to see if the archive will have undefined symbols.
@@ -975,11 +988,10 @@ if test -z "$show_help"; then
         fi
 
         lib="$objdir/$realname"
-        linknames=
-        for link
-        do
-          linknames="$linknames $link"
-        done
+	for link
+	do
+	  linknames="$linknames $link"
+	done
 
         # Use standard objects if they are PIC.
         test -z "$pic_flag" && libobjs=`$echo "$libobjs " | sed -e 's/\.lo /.o /g' -e 's/ $//g'`
@@ -1150,34 +1162,35 @@ if test -z "$show_help"; then
         finalize_command=`$echo "$finalize_command " | sed -e 's/\.lo /.o /g' -e 's/ $//'`
       fi
 
-      if test "$export_dynamic" = yes; then
+      if test "$export_dynamic" = yes && test -n "$NM" && test -n "$global_symbol_pipe"; then
+        dlsyms="${output}S.c"
+      else
+        dlsyms=
+      fi
+
+      if test -n "$dlsyms"; then
         # Add our own program objects to the preloaded list.
         dlprefiles=`$echo "$objs$dlprefiles " | sed -e 's/\.lo /.o /g' -e 's/ $//'`
 
-        # Discover the nlist of each of the dlfiles.
-	if test -n "$NM" && test -n "$global_symbol_pipe"; then
-	  dlsyms="${output}S.c"
-	else
-	  NM=
-	  global_symbol_pipe=
-	  dlsyms=
-	fi
-
+	# Discover the nlist of each of the dlfiles.
         nlist="$objdir/${output}.nm"
 
 	if test -d $objdir; then
-	  $show "rm -f $nlist ${nlist}T"
-	  $run rm -f "$nlist" "${nlist}T"
+	  $show "$rm $nlist ${nlist}T"
+	  $run $rm "$nlist" "${nlist}T"
 	else
 	  $show "$mkdir $objdir"
-	  $run $mkdir $objdir || exit $?
+	  $run $mkdir $objdir
+	  status=$?
+	  if test $status -eq 0 || test -d $objdir; then :
+	  else
+	    exit $status
+	  fi
 	fi
 
         for arg in $dlprefiles; do
-	  if test -n "$NM"; then
-	    $show "extracting global C symbols from \`$arg'"
-	    $run eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
-	  fi
+	  $show "extracting global C symbols from \`$arg'"
+	  $run eval "$NM $arg | $global_symbol_pipe >> '$nlist'"
         done
 
         # Parse the name list into a source file.
@@ -1193,7 +1206,7 @@ if test -z "$show_help"; then
 	    count=`$echo "$wcout" | sed 's/^[ 	]*\([0-9][0-9]*\).*$/\1/'`
 	    (test "$count" -ge 0) 2>/dev/null || count=-1
 	  else
-	    rm -f "$nlist"T
+	    $rm "$nlist"T
 	    count=-1
 	  fi
 
