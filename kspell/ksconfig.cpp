@@ -197,6 +197,14 @@ void
 KSpellConfig::sChangeClient (int i)
 {
   setClient (i);
+
+  // read in new dict list
+  if (dictcombo) {
+    if (iclient == KS_CLIENT_ISPELL)
+      getAvailDictsIspell();
+    else
+      getAvailDictsAspell();
+  }
 }
 
 bool
@@ -205,17 +213,11 @@ KSpellConfig::interpret (QString &fname, QString &lname,
 
 {
 
-  //Truncate aff
-
-  if (fname.length()>4)
-    if ((signed)fname.find(".aff")==(signed)fname.length()-4)
-      fname.remove (fname.length()-4,4);
-
-
   kdDebug(750) << "KSpellConfig::interpret [" << fname << "]" << endl;
 
   //These are mostly the ispell-langpack defaults
-  if (fname=="english") {
+  if (fname=="english" || fname=="american" ||
+      fname=="british" || fname=="canadian") {
     lname="en"; hname=i18n("English");
   }
   else if (fname=="espa~nol" || fname=="espanol") {
@@ -280,67 +282,22 @@ KSpellConfig::fillInDialog ()
   encodingcombo->setCurrentItem (encoding());
   clientcombo->setCurrentItem (client());
 
-  if (langfnames.count()==0) //will only happen once
-    {
-      
-      langfnames.append(""); // Default
-      dictcombo->insertItem (i18n("ISpell Default"));
+  // get list of available dictionaries
+  if (iclient == KS_CLIENT_ISPELL) 
+    getAvailDictsIspell();
+  else 
+    getAvailDictsAspell();
 
-      QFileInfo dir ("/usr/lib/ispell");
-      if (!dir.exists() || !dir.isDir())
-	dir.setFile ("/usr/local/lib");
-      if (!dir.exists() || !dir.isDir())
-	return;
-
-            kdDebug(750) << "KSpellConfig::fillInDialog " << dir.filePath() << " " << dir.dirPath() << endl;
-
-      QDir thedir (dir.filePath(),"*.aff");
-            kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
-
-            kdDebug(750) << "entryList().count()=" << thedir.entryList().count() << endl;
-
-      for (unsigned int i=0;i<thedir.entryList().count();i++)
-	{
-	  QString fname, lname, hname;
-
-	  //	  kdebug (KDEBUG_INFO, 750, "%s/%d %s", __FILE__, __LINE__, (const char *)thedir [i]);
-	  fname = thedir [i];
-
-	  if (interpret (fname, lname, hname))
-	    { // This one is the KDE default language
-	      // so place it first in the lists (overwrite "Default")
-
-	      //	      kdebug (KDEBUG_INFO, 750, "default is [%s][%s]",hname.data(),fname.data());
-	      langfnames.remove ( langfnames.begin() );
-	      langfnames.prepend ( fname );
-
-	      hname=i18n("default spelling dictionary"
-		    ,"Default - %1 [%2]").arg(hname).arg(fname);
-	      
-	      dictcombo->changeItem (hname,0);
-	    }
-	  else
-	    {
-	      langfnames.append (fname);
-	      hname=hname+" ["+fname+"]";
-	      
-	      dictcombo->insertItem (hname);
-	    }
-	}
-
-      
-    }
+  // select the used dictionary in the list
   int whichelement=-1;
-  //  kdebug (KDEBUG_INFO, 750, "dfl=%d",dictFromList());
+
   if (dictFromList())
-    for (unsigned int i=0;i<langfnames.count();i++)
+    for (unsigned int i=0; i<langfnames.count(); i++)
       {
-	//	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames[i], dictionary().data());
 	if (langfnames[i] == dictionary())
 	  whichelement=i;
       }
 
-  //  kdebug (KDEBUG_INFO, 750, "whiche=%d", whichelement);
   dictcombo->setMinimumWidth (dictcombo->sizeHint().width());
 
   if (dictionary().isEmpty() ||  whichelement!=-1)
@@ -357,6 +314,120 @@ KSpellConfig::fillInDialog ()
 
 }
 
+
+void KSpellConfig::getAvailDictsIspell () {
+
+  langfnames.clear();
+  dictcombo->clear();
+  langfnames.append(""); // Default
+  dictcombo->insertItem (i18n("ISpell Default"));
+
+  // dictionary path
+  QFileInfo dir ("/usr/lib/ispell");
+  if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/local/lib/ispell");
+  if (!dir.exists() || !dir.isDir()) return;
+
+  kdDebug(750) << "KSpellConfig::getAvailDictsIspell " 
+	       << dir.filePath() << " " << dir.dirPath() << endl;
+
+  QDir thedir (dir.filePath(),"*.aff");
+
+  kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+  kdDebug(750) << "entryList().count()=" 
+	       << thedir.entryList().count() << endl;
+
+  for (unsigned int i=0;i<thedir.entryList().count();i++)
+    {
+      QString fname, lname, hname;
+      fname = thedir [i];
+
+      // remove .aff
+      if (fname.right(4) == ".aff") fname.remove (fname.length()-4,4);
+
+      if (interpret (fname, lname, hname))
+	{ // This one is the KDE default language
+	  // so place it first in the lists (overwrite "Default")
+
+	  langfnames.remove ( langfnames.begin() );
+	  langfnames.prepend ( fname );
+
+	  hname=i18n("default spelling dictionary"
+		     ,"Default - %1 [%2]").arg(hname).arg(fname);
+	      
+	  dictcombo->changeItem (hname,0);
+	}
+      else
+	{
+	  langfnames.append (fname);
+	  hname=hname+" ["+fname+"]";
+	  
+	  dictcombo->insertItem (hname);
+	}
+    }
+}
+
+void KSpellConfig::getAvailDictsAspell () {
+
+  langfnames.clear();
+  dictcombo->clear();
+
+  langfnames.append(""); // Default
+  dictcombo->insertItem (i18n("ASpell Default"));
+
+  // dictionary path
+  // FIXME: use "aspell dump config" to find out the dict-dir
+  QFileInfo dir ("/usr/lib/aspell");
+  if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/local/lib/aspell");
+  if (!dir.exists() || !dir.isDir()) return;
+
+  kdDebug(750) << "KSpellConfig::getAvailDictsAspell " 
+	       << dir.filePath() << " " << dir.dirPath() << endl;
+
+  QDir thedir (dir.filePath(),"*");
+
+  kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
+  kdDebug(750) << "entryList().count()=" 
+	       << thedir.entryList().count() << endl;
+
+  for (unsigned int i=0; i<thedir.entryList().count(); i++)
+    {
+      QString fname, lname, hname;
+      fname = thedir [i];
+
+      // consider only simple dicts without '-' in the name
+      // FIXME: may be this is wrong an the list should contain
+      // all *.multi files too, to allow using special dictionaries
+      if (fname[0] != '.' &&  fname.find('-') < 0) 
+	{
+
+	  // remove .multi
+	  if (fname.right(6) == ".multi") fname.remove (fname.length()-6,6);
+
+	  if (interpret (fname, lname, hname))
+	    { // This one is the KDE default language
+	      // so place it first in the lists (overwrite "Default")
+	      
+	      langfnames.remove ( langfnames.begin() );
+	      langfnames.prepend ( fname );
+	      
+	      hname=i18n("default spelling dictionary"
+			 ,"Default - %1 [%2]").arg(hname).arg(fname);
+	      
+	      dictcombo->changeItem (hname,0);
+	    }
+	  else
+	    {
+	      langfnames.append (fname);
+	      hname=hname+" ["+fname+"]";
+	      
+	      dictcombo->insertItem (hname);
+	    }
+	}
+    }
+}
+
 /*
  * Options setting routines.
  */
@@ -366,7 +437,7 @@ KSpellConfig::setClient (int c)
 {
   iclient = c;
   
-  if(clientcombo)
+  if (clientcombo)
 	  clientcombo->setCurrentItem(c);
 }
 
@@ -374,7 +445,6 @@ void
 KSpellConfig::setNoRootAffix (bool b)
 {
   bnorootaffix=b;
-
 
   if(cb1)
 	  cb1->setChecked(b);

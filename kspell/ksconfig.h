@@ -224,6 +224,8 @@ class KSpellConfig : public QWidget
   private:
     class KSpellConfigPrivate;
     KSpellConfigPrivate *d;
+    void getAvailDictsIspell();
+    void getAvailDictsAspell();
 };
 
 #endif
