@@ -46,15 +46,15 @@ uint stringToKey( const QString& sKey );
 QString keyToString( uint keyCode, bool i18_n = false );
 
 struct KKeyEntry {
-	uint aCurrentKeyCode, aDefaultKeyCode, aConfigKeyCode;
-	bool bConfigurable;
-	bool bEnabled;
-	int aAccelId;
-	const QObject *receiver;
-	QString member;
-	QString descr;
-        int menuId;
-        QPopupMenu *menu;
+    uint aCurrentKeyCode, aDefaultKeyCode, aConfigKeyCode;
+    bool bConfigurable;
+    bool bEnabled;
+    int aAccelId;
+    const QObject *receiver;
+    const char *member;
+    QString descr;
+    int menuId;
+    QPopupMenu *menu;
 };
 
 /**
@@ -166,7 +166,7 @@ class KAccel
 	 *  enabled immediately
 	 */
 	void connectItem( const QString& action,
-			  const QObject* receiver, const QString& member,
+			  const QObject* receiver, const char *member,
 			  bool activate = TRUE );
 
 
@@ -176,7 +176,7 @@ class KAccel
 	 * automatically.
 	 */
 	void connectItem( StdAccel accel,
-			  const QObject* receiver, const QString& member,
+			  const QObject* receiver, const char *member,
 			  bool activate = TRUE );
 
 	/**
@@ -207,7 +207,7 @@ class KAccel
 	 * Disconnects an accelerator item from a function in another object.
 	 */
 	void disconnectItem( const QString& action,
-							const QObject* receiver, const QString& member );
+			     const QObject* receiver, const char *member );
 	
 	/**
 	 * Returns that identifier of the accelerator item with the keycode key,

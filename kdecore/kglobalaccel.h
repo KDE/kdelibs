@@ -122,7 +122,7 @@ class KGlobalAccel : public QObject
 	 *  enabled immediately
 	 */
 	void connectItem( const QString& action,
-						  const QObject* receiver, const QString& member,
+			  const QObject* receiver, const char *member,
 						  bool activate = TRUE );
 						
 	/**
@@ -147,7 +147,7 @@ class KGlobalAccel : public QObject
 	 * Disconnects an accelerator item from a function in another object.
 	 */
 	void disconnectItem( const QString& action,
-							const QObject* receiver, const QString& member );
+			     const QObject* receiver, const char *member );
 	
 	/**
 	 * Returns that identifier of the accelerator item with the keycode key,

@@ -58,7 +58,7 @@ void KAccel::clear()
 }
 
 void KAccel::connectItem( const QString& action,
-			  const QObject* receiver, const QString& member,
+			  const QObject* receiver, const char *member,
 			  bool activate )
 {
   if (!action)
@@ -84,9 +84,9 @@ void KAccel::connectItem( const QString& action,
 }
 
 void KAccel::connectItem( StdAccel accel,
-			  const QObject* receiver, const QString& member,
+			  const QObject* receiver, const char *member,
 			  bool activate ){
-  if (stdAction(accel) && !aKeyDict[ stdAction(accel) ]){
+  if (!stdAction(accel).isNull() && !aKeyDict[ stdAction(accel) ]){
     insertStdItem(accel);
   }
   connectItem(stdAction(accel), receiver, member, activate);
@@ -127,13 +127,13 @@ uint KAccel::defaultKey( const QString& action )
 }
 
 void  KAccel::disconnectItem( const QString& action,
-			      const QObject* receiver, const QString& member )
+			      const QObject* receiver, const char *member )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
     if ( !pEntry )
 		return;
 	
-	pAccel->disconnectItem( pEntry->aAccelId, receiver, member  );
+	pAccel->disconnectItem( pEntry->aAccelId, receiver, member );
 }
 
 const QString KAccel::findKey( int key ) const
@@ -173,7 +173,7 @@ bool KAccel::insertItem( const QString& descr, const QString& action, uint keyCo
 	pEntry->bConfigurable = configurable;
 	pEntry->aAccelId = 0;
 	pEntry->receiver = 0;
-	pEntry->member = QString::null;
+	pEntry->member = 0;
 	pEntry->descr = descr;
 	pEntry->menuId = id;
 	pEntry->menu = qmenu;
@@ -327,7 +327,7 @@ bool KAccel::insertStdItem( StdAccel id, const QString& descr )
 			return false;
 			break;
 	}
-	return insertItem( descr?descr:name, stdAction(id), key, false );
+	return insertItem( descr.isNull()?name:descr, stdAction(id), key, false );
 }
 
 bool KAccel::isEnabled()
@@ -421,7 +421,7 @@ void KAccel::setItemEnabled( const QString& action, bool activate )
 	if ( !pEntry ) {
 		QString str = i18n("KAccel : cannont enable action %1 "
 				   "which is not in the object dictionary").arg(action);
-		warning( str );
+		warning( str.ascii() );
 		return;
 	}
 

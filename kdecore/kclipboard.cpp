@@ -81,7 +81,7 @@ bool KClipboard::open( int _mode, const QString& _format )
 	 _format != "text/plain" ) 
     {
       m_mimeTypeLen = _format.length() + 1;
-      writeBlock( _format, m_mimeTypeLen );
+      writeBlock( _format.ascii(), m_mimeTypeLen );
     }
     else
       m_mimeTypeLen = 0;
@@ -412,7 +412,7 @@ void KClipboard::setText( const QString& _text )
 {
   open( IO_WriteOnly | IO_Truncate, "text/plain" );  
 
-  writeBlock( _text, _text.length() );
+  writeBlock( _text.ascii(), _text.length() );
   
   close();
 }

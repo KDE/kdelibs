@@ -70,14 +70,14 @@ void KGlobalAccel::clear()
 }
 
 void KGlobalAccel::connectItem( const QString& action,
-				const QObject* receiver, const QString& member,
+				const QObject* receiver, const char *member,
 				bool activate )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
 	if ( !pEntry ) {
 		QString str = i18n("KGlobalAccel : Cannot connect action %1 "
 				   "which is not in the object dictionary").arg(action);
-		warning( str );
+		warning( str.ascii() );
 		return;
 	}
 	
@@ -116,12 +116,12 @@ uint KGlobalAccel::defaultKey( const QString& action )
 }
 
 void KGlobalAccel::disconnectItem( const QString& action,
-				   const QObject* /*receiver*/, const QString& /*member*/ )
+				   const QObject* /*receiver*/, const char */*member*/ )
 {
     KKeyEntry *pEntry = aKeyDict[ action ];
     if ( !pEntry )
-		return;
-	
+	return;
+    
 }
 
 const QString KGlobalAccel::findKey( int key ) const
@@ -217,7 +217,7 @@ bool KGlobalAccel::insertItem(  const QString& descr, const QString& action, uin
 	pEntry->bEnabled = false;
 	pEntry->aAccelId = 0;
 	pEntry->receiver = 0;
-	pEntry->member = QString::null;
+	pEntry->member = 0;
 	pEntry->descr = descr;
 
 	return TRUE;
@@ -338,7 +338,7 @@ void KGlobalAccel::setItemEnabled( const QString& action, bool activate )
 	if ( !pEntry ) {
 	    QString str = i18n("KGlobalAccel : cannont enable action %1 "
 			       "which is not in the object dictionary").arg(action);
-	    warning( str );
+	    warning( str.ascii() );
 	    return;
 	}
 
