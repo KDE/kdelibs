@@ -401,7 +401,9 @@ Completion DateProtoFunc::execute(const List &args)
 #endif
     break;
   case SetTime:
-    result = Undefined();
+    milli = args[0].round();
+    result = Number(milli);
+    thisObj.setInternalValue(result);
     break;
   case SetMilliSeconds:
     ms = args[0].toInt32();
