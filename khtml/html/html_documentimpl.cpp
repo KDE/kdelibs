@@ -141,7 +141,11 @@ void HTMLDocumentImpl::detach()
 
 void HTMLDocumentImpl::slotFinishedParsing()
 {
-    // onload script...
+    // first propagate that we finished parsing
+    DocumentImpl::slotFinishedParsing();
+
+    // and then execute the onload script... as the part
+    // blocks submitting while we're still parsing
     if(m_view && m_view->part()->jScriptEnabled() && body()) {
         DOMString script = body()->getAttribute(ATTR_ONLOAD);
         if(script.length()) {
@@ -151,7 +155,6 @@ void HTMLDocumentImpl::slotFinishedParsing()
     }
     if ( !onloadScript.isEmpty() )
 	m_view->part()->executeScript( Node(this), onloadScript );
-    DocumentImpl::slotFinishedParsing();
 }
 
 bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
