@@ -62,7 +62,7 @@ protected:
     DOMStringImpl *archive;
     int width;
     int height;
-    
+
     KHTMLView *view;
     khtml::VAlign valign;
 };
@@ -86,6 +86,15 @@ public:
 
     long tabIndex() const;
     void setTabIndex( long );
+
+    virtual void parseAttribute(Attribute *token);
+
+    virtual void attach(KHTMLView *w);
+    virtual void detach();
+
+private:
+    QString serviceType;
+    QString url;
 };
 
 // -------------------------------------------------------------------------
@@ -106,9 +115,9 @@ public:
 
     virtual void parseAttribute(Attribute *token);
 
-    const QString name() { return QString(m_name->s, m_name->l); }
-    const QString value() { return QString(m_value->s, m_value->l); }
-    
+    QString name() { return QConstString(m_name->s, m_name->l).string(); }
+    QString value() { return QConstString(m_value->s, m_value->l).string(); }
+
  protected:
     DOMStringImpl *m_name;
     DOMStringImpl *m_value;

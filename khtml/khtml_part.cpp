@@ -73,9 +73,9 @@ namespace khtml
 {
   struct ChildFrame
   {
-    ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; }
+    ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; m_bFrame = true; }
 
-    RenderFrame *m_frame;
+    RenderPart *m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
     QGuardedPtr<KParts::BrowserExtension> m_extension;
     QString m_serviceType;
@@ -86,6 +86,7 @@ namespace khtml
     QGuardedPtr<KHTMLRun> m_run;
     bool m_bPreloaded;
     KURL m_workingURL;
+    bool m_bFrame;
   };
 
 };
@@ -120,6 +121,7 @@ public:
   }
 
   QMap<QString,khtml::ChildFrame> m_frames;
+  QValueList<khtml::ChildFrame> m_objects;
 
   QGuardedPtr<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
@@ -415,6 +417,7 @@ void KHTMLPart::clear()
     }
   */
   d->m_frames.clear();
+  d->m_objects.clear();
 
   d->m_baseURL = KURL();
   d->m_baseTarget = QString::null;
@@ -955,7 +958,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, const QString &_tar
     khtml::ChildFrame *frame = recursiveFrameRequest( u, args, false, false );
     if ( frame )
     {
-      childRequest( frame, u, args );
+      requestObject( frame, u, args );
       return;
     }
   }
@@ -1056,7 +1059,7 @@ void KHTMLPart::updateActions()
   d->m_paSaveBackground->setEnabled( !bgURL.isEmpty() );
 }
 
-void KHTMLPart::childRequest( khtml::RenderFrame *frame, const QString &url, const QString &frameName )
+void KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName )
 {
   qDebug( "childRequest( ..., %s, %s )", debugString( url ), debugString( frameName ) );
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( frameName );
@@ -1071,10 +1074,22 @@ void KHTMLPart::childRequest( khtml::RenderFrame *frame, const QString &url, con
 
   it.data().m_frame = frame;
 
-  childRequest( &it.data(), completeURL( url ) );
+  requestObject( &it.data(), completeURL( url ) );
 }
 
-void KHTMLPart::childRequest( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
+void KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType )
+{
+  khtml::ChildFrame child;
+  QValueList<khtml::ChildFrame>::Iterator it = d->m_objects.append( child );
+  (*it).m_frame = frame;
+  (*it).m_bFrame = false;
+
+  KParts::URLArgs args;
+  args.serviceType = serviceType;
+  requestObject( &(*it), completeURL( url ) );
+}
+
+void KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
 {
   if ( child->m_bPreloaded )
   {
@@ -1098,16 +1113,16 @@ void KHTMLPart::childRequest( khtml::ChildFrame *child, const KURL &url, const K
   if ( args.serviceType.isEmpty() )
     child->m_run = new KHTMLRun( this, child, url );
   else
-    processChildRequest( child, url, args.serviceType );
+    processObjectRequest( child, url, args.serviceType );
 }
 
-void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype )
+void KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype )
 {
   qDebug( "trying to create part for %s", debugString( mimetype ) );
 
   if ( !child->m_services.contains( mimetype ) )
   {
-    KParts::ReadOnlyPart *part = createFrame( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_services );
+    KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_services );
 
     if ( !part )
       return;
@@ -1123,25 +1138,34 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
       delete (KParts::ReadOnlyPart *)child->m_part;
     }
 
-    partManager()->addPart( part );
+    if ( child->m_bFrame )
+      partManager()->addPart( part );
+    
     child->m_part = part;
 
-    connect( part, SIGNAL( started( KIO::Job *) ),
-	     this, SLOT( slotChildStarted( KIO::Job *) ) );
-    connect( part, SIGNAL( completed() ),
-	     this, SLOT( slotChildCompleted() ) );
+    if ( child->m_bFrame )
+    {
+      connect( part, SIGNAL( started( KIO::Job *) ),
+  	       this, SLOT( slotChildStarted( KIO::Job *) ) );
+      connect( part, SIGNAL( completed() ),
+	       this, SLOT( slotChildCompleted() ) );
+    }
 
     child->m_extension = (KParts::BrowserExtension *)part->child( 0L, "KParts::BrowserExtension" );
 
     if ( child->m_extension )
     {
-      connect( child->m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
-	       this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
+      if ( child->m_bFrame )
+      {
+        connect( child->m_extension, SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
+	         this, SLOT( slotChildURLRequest( const KURL &, const KParts::URLArgs & ) ) );
+        connect( child->m_extension, SIGNAL( openURLNotify() ),
+	         d->m_extension, SIGNAL( openURLNotify() ) );
+      }
+      
       connect( child->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ),
 	       d->m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & ) ) );
-      connect( child->m_extension, SIGNAL( openURLNotify() ),
-	       d->m_extension, SIGNAL( openURLNotify() ) );
-      
+
       connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KonqFileItemList & ) ),
 	       d->m_extension, SIGNAL( popupMenu( const QPoint &, const KonqFileItemList & ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KonqFileItemList & ) ),
@@ -1150,7 +1174,7 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
 	       d->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
 	       d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
-      
+
     }
 
     connect( part, SIGNAL( setStatusBarText( const QString & ) ),
@@ -1174,7 +1198,7 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
   child->m_part->openURL( url );
 }
 
-KParts::ReadOnlyPart *KHTMLPart::createFrame( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes )
+KParts::ReadOnlyPart *KHTMLPart::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes )
 {
   KTrader::OfferList offers = KTrader::self()->query( mimetype, "'KParts/ReadOnlyPart' in ServiceTypes" );
 
@@ -1351,7 +1375,7 @@ void KHTMLPart::slotChildURLRequest( const KURL &url, const KParts::URLArgs &arg
     }
   }
 
-  childRequest( child, url, args );
+  requestObject( child, url, args );
 }
 
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
@@ -1394,7 +1418,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
       if ( !res )
         continue;
 
-      childPart->childRequest( res, url, args );
+      childPart->requestObject( res, url, args );
       return 0L;
     }
 
@@ -1403,7 +1427,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
     khtml::ChildFrame *res = parentPart()->recursiveFrameRequest( url, args );
 
     if ( res )
-      parentPart()->childRequest( res, url, args );
+      parentPart()->requestObject( res, url, args );
 
     return 0L;
   }
@@ -1490,7 +1514,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
       {
         child->m_bPreloaded = true;
 	child->m_name = *fNameIt;
-	processChildRequest( child, *fURLIt, *fServiceTypeIt );
+	processObjectRequest( child, *fURLIt, *fServiceTypeIt );
       }
 
       if ( child->m_part )
@@ -1529,7 +1553,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
       FrameIt childFrame = d->m_frames.insert( *fNameIt, newChild );
 
-      processChildRequest( &childFrame.data(), *fURLIt, *fServiceTypeIt );
+      processObjectRequest( &childFrame.data(), *fURLIt, *fServiceTypeIt );
 
       childFrame.data().m_bPreloaded = true;
 

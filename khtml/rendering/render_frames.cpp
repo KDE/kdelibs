@@ -24,9 +24,12 @@
 
 #include "render_frames.h"
 #include "html_baseimpl.h"
+#include "html_objectimpl.h"
+#include "htmltags.h"
 #include "khtmlview.h"
 
 #include <kapp.h>
+#include <kdebug.h>
 
 #include <qlabel.h>
 
@@ -413,10 +416,34 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
   return res;
 }
 
-RenderFrame::RenderFrame( RenderStyle *style, QScrollView *view, DOM::HTMLFrameElementImpl *frame )
+RenderPart::RenderPart( RenderStyle *style, QScrollView *view )
 : RenderWidget( style, view )
 {
   m_view = view;
+}
+
+RenderPart::~RenderPart()
+{
+}
+
+void RenderPart::setWidget( QWidget *widget )
+{
+  m_widget = widget;
+  if ( m_widget )
+    m_widget->show();
+  layout();
+  repaint();
+}
+
+void RenderPart::layout( bool )
+{
+  if ( m_widget )
+    m_widget->resize( m_width, m_height );
+}
+
+RenderFrame::RenderFrame( RenderStyle *style, QScrollView *view, DOM::HTMLFrameElementImpl *frame )
+: RenderPart( style, view )
+{
   m_frame = frame;
 }
 
@@ -424,15 +451,57 @@ RenderFrame::~RenderFrame()
 {
 }
 
-void RenderFrame::setWidget( QWidget *widget )
+RenderPartObject::RenderPartObject( RenderStyle *style, QScrollView *view, DOM::HTMLObjectElementImpl *objElement )
+: RenderPart( style, view )
 {
-  m_widget = widget;
-  layout();
-  repaint();
+  m_obj = objElement; 
 }
 
-void RenderFrame::layout( bool )
+RenderPartObject::~RenderPartObject()
 {
-  if ( m_widget )
-    m_widget->resize( m_width, m_height );
 }
+
+void RenderPartObject::close()
+{
+  NodeImpl *child = m_obj->firstChild();
+  while ( child )
+  {
+    if ( child->id() == ID_PARAM )
+    {
+      HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>( child );
+      
+      if ( p->name() == "width" )
+        m_width = p->value().toInt();
+      else if ( p->name() == "height" )
+        m_height = p->value().toInt();
+    }
+  
+    child = child->nextSibling();
+  }
+  
+  layout();
+
+  RenderPart::close(); 
+} 
+
+void RenderPartObject::setWidget( QWidget *w )
+{
+  if ( w && m_width == 0 && m_height == 0 )
+  {
+    QSize hint = w->sizeHint();
+    m_width = hint.width();
+    m_height = hint.height();
+  }
+
+  RenderPart::setWidget( w ); 
+} 
+
+bool RenderPartObject::isInline()
+{
+  return true;
+}
+
+short RenderPartObject::minWidth()
+{
+  return m_width; 
+} 

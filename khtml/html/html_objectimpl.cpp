@@ -31,11 +31,13 @@
 #include "khtmlview.h"
 #include <qstring.h>
 #include <qmap.h>
+#include <kdebug.h>
 
 #include "xml/dom_docimpl.h"
 #include "css/cssstyleselector.h"
 #include "css/cssproperties.h"
 #include "rendering/render_applet.h"
+#include "rendering/render_frames.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -57,7 +59,7 @@ HTMLAppletElementImpl::~HTMLAppletElementImpl()
     if(codeBase) codeBase->deref();
     if(code) code->deref();
     if(name) name->deref();
-    if(archive) archive->deref();    
+    if(archive) archive->deref();
 }
 
 const DOMString HTMLAppletElementImpl::nodeName() const
@@ -133,15 +135,15 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
   khtml::RenderObject *r = _parent->renderer();
   if(!r)
       return;
-  
+
   m_style = document->styleSelector()->styleForElement(this);
   view = _view;
   RenderWidget *f;
-  
-  if( view->part()->javaEnabled() ) 
+
+  if( view->part()->javaEnabled() )
   {
       QMap<QString, QString> args;
-    
+
       args.insert( "code", QString(code->s, code->l));
       if(codeBase)
           args.insert( "codeBase", QString(codeBase->s, codeBase->l) );
@@ -149,21 +151,21 @@ void HTMLAppletElementImpl::attach(KHTMLView *_view)
           args.insert( "name", QString(name->s, name->l) );
       if(archive)
           args.insert( "archive", QString(archive->s, archive->l) );
-      
+
       args.insert( "width", QString::number(width) );
       args.insert( "height", QString::number(height) );
-      args.insert( "baseURL", view->part()->url().url() ); 
-      
+      args.insert( "baseURL", view->part()->url().url() );
+
       f = new RenderApplet(m_style, view, args, this);
   }
   else
       f = new RenderEmptyApplet(m_style, view, QSize(width, height));
 
-  if(f) 
+  if(f)
   {
       m_render = f;
       m_render->ref();
-      r->addChild(m_render); 
+      r->addChild(m_render);
   }
 }
 
@@ -204,6 +206,52 @@ long HTMLObjectElementImpl::tabIndex() const
 }
 
 void HTMLObjectElementImpl::setTabIndex( long  )
+{
+}
+
+void HTMLObjectElementImpl::parseAttribute(Attribute *attr)
+{
+  kdDebug() << "HTMLObjectElementImpl::parseAttribute" << endl;
+  DOM::DOMStringImpl *stringImpl;
+  switch ( attr->id )
+  {
+    case ATTR_TYPE:
+      stringImpl = attr->val();
+      serviceType = QConstString( stringImpl->s, stringImpl->l ).string();
+      kdDebug() << "parsed servicetype attribute: " << serviceType << endl;
+      break;
+    case ATTR_DATA:
+      stringImpl = attr->val();
+      url = QConstString( stringImpl->s, stringImpl->l ).string();
+      kdDebug() << "parsed url attribute: " << url << endl;
+      break;
+    default:
+      HTMLElementImpl::parseAttribute( attr );
+  }
+}
+
+void HTMLObjectElementImpl::attach(KHTMLView *w)
+{
+  kdDebug() << "HTMLObjectElementImpl::attach" << endl;
+  if ( url.isEmpty() )
+    return; //ooops (-:
+
+  khtml::RenderObject *r = _parent->renderer();
+  if ( !r )
+    return;
+
+  m_style = document->styleSelector()->styleForElement( this );
+
+  RenderPartObject *p = new RenderPartObject( m_style, w, this );
+  m_render = p;
+  m_render->ref();
+  r->addChild( m_render );
+
+  w->part()->requestObject( p, url, serviceType );
+  NodeBaseImpl::attach( w );
+}
+
+void HTMLObjectElementImpl::detach()
 {
 }
 

@@ -42,13 +42,14 @@ namespace DOM
   class HTMLDocumentImpl;
   class HTMLTitleElementImpl;
   class HTMLFrameElementImpl;
+  class HTMLObjectElementImpl;
   class HTMLFormElementImpl;
 };
 
 namespace khtml
 {
   class Settings;
-  class RenderFrame;
+  class RenderPart;
   struct ChildFrame;
 };
 
@@ -111,6 +112,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLView;
   friend class DOM::HTMLTitleElementImpl;
   friend class DOM::HTMLFrameElementImpl;
+  friend class DOM::HTMLObjectElementImpl;
   friend class KHTMLRun;
   friend class DOM::HTMLFormElementImpl;
 public:
@@ -372,17 +374,19 @@ protected:
   virtual void overURL( const QString &url );
   virtual void urlSelected( const QString &url, int button = 0, const QString &_target = QString::null );
 
-  virtual void childRequest( khtml::RenderFrame *frame, const QString &url, const QString &frameName );
+  virtual void requestFrame( khtml::RenderPart *frame, const QString &url, const QString &frameName );
 
-  virtual void childRequest( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+  virtual void requestObject( khtml::RenderPart *frame, const QString &url, const QString &serviceType );
 
-  virtual void processChildRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
+  virtual void requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args = KParts::URLArgs() );
+
+  virtual void processObjectRequest( khtml::ChildFrame *child, const KURL &url, const QString &mimetype );
 
   virtual void submitForm( const char *action, const QString &url, const QCString &formData, const QString &target );
 
   virtual void popupMenu( const QString &url );
 
-  virtual KParts::ReadOnlyPart *createFrame( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes );
+  virtual KParts::ReadOnlyPart *createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes );
 
     virtual bool keyPressHook(QKeyEvent *) { return false; }
     virtual bool keyReleaseHook(QKeyEvent*) { return false; }

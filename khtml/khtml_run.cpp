@@ -33,7 +33,7 @@ KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url )
 
 void KHTMLRun::foundMimeType( const QString &mimetype )
 {
-  m_part->processChildRequest( m_child, m_url, mimetype );
+  m_part->processObjectRequest( m_child, m_url, mimetype );
   m_bFinished = true;
   m_timer.start( 0, true );
 }

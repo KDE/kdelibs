@@ -33,6 +33,7 @@ namespace DOM
 {
   class HTMLFrameSetElementImpl;
   class HTMLFrameElementImpl;
+  class HTMLObjectElementImpl;
 };
 
 namespace khtml
@@ -80,8 +81,22 @@ private:
   KHTMLView *m_view;
 };
 
-// ### rename to generic RenderPart
-class RenderFrame : public RenderWidget
+class RenderPart : public RenderWidget
+{
+public:
+  RenderPart( RenderStyle *style, QScrollView *view );
+  virtual ~RenderPart();
+
+  virtual const char *renderName() const { return "RenderPart"; }
+
+  virtual bool isInline() const { return false; }
+
+  virtual void layout( bool deep = true );
+
+  virtual void setWidget( QWidget *widget );
+};
+
+class RenderFrame : public RenderPart
 {
 public:
   RenderFrame( RenderStyle *style, QScrollView *view, DOM::HTMLFrameElementImpl *frame );
@@ -89,16 +104,31 @@ public:
 
   virtual const char *renderName() const { return "RenderFrame"; }
 
-  virtual bool isInline() const { return false; }
-
-  virtual void layout( bool deep = true );
-
-  void setWidget( QWidget *widget );
-
   DOM::HTMLFrameElementImpl *frameImpl() const { return m_frame; }
 
 private:
   DOM::HTMLFrameElementImpl *m_frame;
+};
+
+// I can hardly call the class RenderObject ;-)
+class RenderPartObject : public RenderPart
+{
+public:
+  RenderPartObject( RenderStyle *style, QScrollView *view, DOM::HTMLObjectElementImpl *objElement );
+  virtual ~RenderPartObject();
+
+  virtual const char *renderName() const { return "RenderPartObject"; }
+
+  virtual void close();
+
+  virtual void setWidget( QWidget *widget );
+
+  virtual short minWidth();
+
+  virtual bool isInline();
+
+private:
+  DOM::HTMLObjectElementImpl *m_obj;
 };
 
 };

@@ -202,7 +202,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
       printf("creating frame name: %s\n",name.string().ascii());
     }
 
-    w->part()->childRequest( renderFrame, url.string(), name.string() );
+    w->part()->requestFrame( renderFrame, url.string(), name.string() );
 
     NodeBaseImpl::attach( w );
     return;
