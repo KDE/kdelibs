@@ -406,9 +406,8 @@ KHTMLPart::~KHTMLPart()
   delete d->m_automaticDetection;
   delete d->m_manualDetection;
 
-  delete d->m_find;
   slotWalletClosed();
-  d->m_find = 0;
+  d->m_find = 0; // deleted by its parent, the view.
 
   if ( d->m_manager )
   {
