@@ -558,7 +558,7 @@ void KListView::contentsDropEvent(QDropEvent* e)
 
 void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
 {
-  QList<QListViewItem> *items, *afterFirsts, *afterNows;
+  QList<QListViewItem> items, afterFirsts, afterNows;
 
   for (QListViewItem *i = firstChild(); i != 0; i = i->itemBelow())
     {
@@ -569,14 +569,14 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
       moveItem(i, parent, afterme);
       emit moved(i, afterFirst, afterme);
       
-      items->append (i);
-      afterFirsts->append (afterFirst);
-      afterNows->append (afterme);
+      items.append (i);
+      afterFirsts.append (afterFirst);
+      afterNows.append (afterme);
       
       afterme = i;
     }
      
-  emit moved(*items,*afterFirsts,*afterNows);
+  emit moved(items,afterFirsts,afterNows);
   
   if (firstChild())
     emit moved();
