@@ -162,6 +162,7 @@
 25002	Kafka (kafkapluginloader)
 25003	Kafka (kafkaplugins)
 25004	Kafka (kafkaobjectmgr)
+25005	Kafka (kafkadom)
 
 # 30001-40000 are for KOffice
 30001	koffice (lib koml)
