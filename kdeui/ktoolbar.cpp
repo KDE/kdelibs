@@ -24,7 +24,7 @@
 */
 
 #include "ktoolbar.h"
-#include "ktmainwindow.h"
+#include "kmainwindow.h"
 
 #include <string.h>
 
@@ -166,7 +166,10 @@ QSizePolicy KToolBarSeparator::sizePolicy() const
 }
 
 KToolBar::KToolBar( QWidget *parent, const char *name, bool b, bool readConfig )
-    : QToolBar( QString( name ), parent && parent->inherits( "QMainWindow" ) ? (QMainWindow*)parent : 0, parent, FALSE, name )
+    : QToolBar( QString( name ), 
+      parent && parent->inherits( "QMainWindow" ) ? (QMainWindow*)parent : 0, 
+      parent, FALSE, 
+      name ? name : "mainToolBar")
 {
     init( readConfig, b );
 }

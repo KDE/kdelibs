@@ -25,6 +25,7 @@
 #include "kmainwindow.h"
 
 /**
+ * @deprecated
  * Compatibility top level widget class
  *
  * This class is intended to make porting of KDE-1.x applications
@@ -57,6 +58,7 @@ public:
      *  <pre> KTMainWindow *ktmw = new KTMainWindow (...</pre>
      **/
     KTMainWindow( const char *name = 0, WFlags f = WDestructiveClose );
+
     /**
      * Destructor.
      *
@@ -84,27 +86,32 @@ public:
      * KTMainWindow as its parent.
      */
     void setView( QWidget *w, bool = FALSE ) { setCentralWidget( w ); }
+
     /**
      * Retrieve the view widget.
      *
      * @see setView()
      **/
     QWidget *view() const { return centralWidget(); }
+
     /**
      * Enable or disable the status bar.
      */
     void enableStatusBar( KStatusBar::BarStatus stat = KStatusBar::Toggle );
+
     /**
      * Enable or disable the toolbar with the specified @id.
      *
      * If no id is specified, the default id of 0 is used.
      */
     void enableToolBar( KToolBar::BarStatus stat = KToolBar::Toggle, int id = 0 );
+
     /**
      * Enable or disable the toolbar with the specified name (as
      * determined by the XML UI framework).
      */
     void setEnableToolBar( KToolBar::BarStatus stat = KToolBar::Toggle, const char * name = "mainToolBar" );
+
     /**
      * Add a toolbar to the widget.
      *
@@ -120,21 +127,46 @@ public:
      * to pass additional arguments to the toolbar's constructor.
      */
     int addToolBar( KToolBar *toolbar, int index = -1 );
+
+    /**
+     * Retrieve a pointer to the toolbar with the specified id.
+     *
+     * If there is no such tool bar yet, it will be generated.
+     **/
+    KToolBar *toolBar( int id = 0 );
+
     /**
      * @deprecated
      */
     void setMenu (KMenuBar * ) {}
+
     /**
      * @deprecated
      */
     void setStatusBar ( KStatusBar * ) {};
     
+    /**
+     * @return @p true if the menubar exists.
+     */
+    bool hasMenuBar();
+    /**
+     * @return @p true if the statusbar exists.
+     */
+    bool hasStatusBar();
+    /**
+     * @return @p true if the specified toolbar exists.
+     */
+    bool hasToolBar( int id = 0 );
+
 
 protected slots:
     /**
      * @deprecated
      */
     virtual void updateRects();
+    
+private:    
+    QMap<int, KToolBar*> idBarMap;
 };
     
 #endif

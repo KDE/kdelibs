@@ -624,27 +624,14 @@ void KMainWindow::childEvent( QChildEvent* e)
     QMainWindow::childEvent( e );
 }
 
-KToolBar *KMainWindow::toolBar( int id )
-{
-    if ( idBarMap.find( id ) == idBarMap.end() ) {
-        bool honor_mode = (id == 0);
-        KToolBar *tb = new KToolBar( this, 0, honor_mode );
-        idBarMap.insert( id, tb );
-        return tb;
-    }
-    return *idBarMap.find( id );
-}
-
 KToolBar *KMainWindow::toolBar( const char * name )
 {
-    if ( nameBarMap.find( name ) == nameBarMap.end() ) {
-        KToolBar *tb = (KToolBar*)child( name, "KToolBar" );
-        if ( tb )
-            return tb;
-        return 0;
-    }
-
-    return *nameBarMap.find( name );
+    if (!name)
+       name = "mainToolBar";
+    KToolBar *tb = (KToolBar*)child( name, "KToolBar" );
+    if ( tb )
+        return tb;
+    return new KToolBar(this, name);
 }
 
 QListIterator<KToolBar> KMainWindow::toolBarIterator()
@@ -660,22 +647,6 @@ QListIterator<KToolBar> KMainWindow::toolBarIterator()
         }
     }
     return QListIterator<KToolBar>( toolbarList );
-}
-
-
-bool KMainWindow::hasMenuBar()
-{
-    return internalMenuBar() != 0;
-}
-
-bool KMainWindow::hasStatusBar()
-{
-    return internalStatusBar() != 0;
-}
-
-bool KMainWindow::hasToolBar( int id )
-{
-    return idBarMap.find( id ) != idBarMap.end();
 }
 
 void KMainWindow::saveToolBars()

@@ -37,6 +37,7 @@
 #include <kstddirs.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <ctype.h>
 
 KTMainWindow::KTMainWindow( const char *name, WFlags f )
@@ -63,6 +64,8 @@ void KTMainWindow::enableStatusBar( KStatusBar::BarStatus stat )
 
 void KTMainWindow::enableToolBar( KToolBar::BarStatus stat, int id )
 {
+    if (idBarMap.find(id) == idBarMap.end())
+        return;
     KToolBar *tb = *idBarMap.find( id );
     if ( !tb )
 	return;
@@ -76,7 +79,7 @@ void KTMainWindow::enableToolBar( KToolBar::BarStatus stat, int id )
 
 void KTMainWindow::setEnableToolBar( KToolBar::BarStatus stat, const char * name )
 {
-    KToolBar *tb = *nameBarMap.find( name );
+    KToolBar *tb = KMainWindow::toolBar(name);
     if ( !tb )
 	return;
     bool mystat = tb->isVisible();
@@ -96,6 +99,32 @@ int KTMainWindow::addToolBar( KToolBar *toolbar, int index )
     else
 	moveToolBar( toolbar, (ToolBarDock)toolbar->barPos(), false, index );
     return id;
+}
+
+bool KTMainWindow::hasMenuBar()
+{
+    return internalMenuBar() != 0;
+}
+
+bool KTMainWindow::hasStatusBar()
+{
+    return internalStatusBar() != 0;
+}
+
+bool KTMainWindow::hasToolBar( int id )
+{
+    return idBarMap.find( id ) != idBarMap.end();
+}
+
+KToolBar *KTMainWindow::toolBar( int id )
+{
+    if ( idBarMap.find( id ) == idBarMap.end() ) {
+        bool honor_mode = (id == 0);
+        KToolBar *tb = new KToolBar( this, 0, honor_mode );
+        idBarMap.insert( id, tb );
+        return tb;
+    }
+    return *idBarMap.find( id );
 }
 
 void KTMainWindow::updateRects()

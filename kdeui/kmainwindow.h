@@ -153,6 +153,7 @@ public:
      */
     QPopupMenu* helpMenu( const QString &aboutAppText = QString::null,
 			  bool showWhatsThis = TRUE );
+
     /**
      * Retrieve the standard help menu which contains entires for the
      * help system (activated by F1), an optional "What's This?" entry
@@ -174,6 +175,7 @@ public:
      * @return A standard help menu.
      */
     QPopupMenu* customHelpMenu( bool showWhatsThis = TRUE );
+
     /**
      * @sect Session Management
      *
@@ -223,6 +225,7 @@ public:
      *
      */
     static bool canBeRestored( int number );
+
     /**
      * Retrieve the @ref className() of the @p number th toplevel window which
      * should be restored.
@@ -231,6 +234,7 @@ public:
      * different kinds of toplevel windows.
      */
     static const QString classNameOfToplevel( int number );
+
     /**
      * Restore the session specified by @p number.
      *
@@ -240,7 +244,9 @@ public:
      * If @p show is true (default), this widget will be show()n automatically.
      */
     bool restore( int number, bool show = TRUE );
+
     virtual KXMLGUIFactory *guiFactory();
+
     /**
      * Create a GUI given a local XML file.  If @ref #xmlfile is NULL,
      * then it will try to construct a local XML filename like
@@ -254,36 +260,18 @@ public:
      *     allocated by the @ref QDomDocument .
      */
     void createGUI( const QString &xmlfile = QString::null, bool _conserveMemory = TRUE );
+
     /**
      * enables the build of a standard help menu when calling createGUI().
      * The default behaviour is to build one, you must call this function
      * to disable it
      */
     void setHelpMenuEnabled(bool showHelpMenu = true);
+
     /**
      * return @p true when the help menu is enabled
      */
     bool isHelpMenuEnabled();
-    /**
-     * @sect Methods you probably don't need.
-     *
-     * You probably do not need this.
-     *
-     *  Anyway, if you are porting code
-     * which had been written for the former @ref KMainWindow you may
-     * find the following three boolean "has" functions useful.
-     *
-     * @return @p true if the menubar exists.
-     */
-    bool hasMenuBar();
-    /**
-     * @return @p true if the statusbar exists.
-     */
-    bool hasStatusBar();
-    /**
-     * @return @p true if the specified toolbar exists.
-     */
-    bool hasToolBar( int id = 0 );
 
     /**
      * Retrieve a pointer to the menu bar.
@@ -291,37 +279,31 @@ public:
      * If there is no menu bar yet on will be created.
      **/
     KMenuBar *menuBar();
+
     /**
-     * Retreieve a pointer to the status bar.
+     * Retrieve a pointer to the status bar.
      *
      *  If there is no
      * status bar yet one will be created.
      */
     KStatusBar *statusBar();
 
-   /**
-    * List of members of KMainWindow class
-    */
+    /**
+     * List of members of KMainWindow class
+     */
     static QList<KMainWindow>* memberList;
 
     /**
-     * Retrieve a pointer to the toolbar with the specified id.
-     *
-     * If there is no such tool bar yet, it will be generated.
-     **/
-    KToolBar *toolBar( int id = 0 );
-    /**
      * Retrieve a pointer to the toolbar with the specified name.
      * This refers to toolbars created dynamically from the XML UI
-     * framework.  If the toolbar does not exist, then 0L will be
-     * returned.
+     * framework.  If the toolbar does not exist one will be created.
      *
-     * @param name The internal name of the toolbar ("mainToolBar",
-     *             for instance)
+     * @param name The internal name of the toolbar. If no name is
+     *             specified "mainToolBar" is assumed.
      *
      * @return A pointer to the toolbar or 0L if it doesn't exist
      **/
-    KToolBar *toolBar( const char *name );
+    KToolBar *toolBar( const char *name=0 );
 
     /**
      * @return An iterator over the list of all toolbars for this window.
@@ -349,6 +331,7 @@ public slots:
      * an additionnal sign in the title bar, usually "**".
      */
     virtual void setCaption( const QString &caption, bool modified );
+
     /**
      * Makes a plain caption without any modifications.
      *
@@ -356,6 +339,7 @@ public slots:
      * displayed in the window title.
      */
     virtual void setPlainCaption( const QString &caption );
+
     /**
      * Opens the help page for the application. The application name is
      * used as a key to determine what to display and the system will attempt
@@ -520,14 +504,14 @@ private slots:
     */
     void shuttingDown();
     void saveToolBars();
+
+private:
     QMenuBar *internalMenuBar();
     QStatusBar *internalStatusBar();
 
 private:
     KHelpMenu *mHelpMenu, *helpMenu2;
     KXMLGUIFactory *factory_;
-    QMap<int, KToolBar*> idBarMap;
-    QMap<QCString, KToolBar*> nameBarMap;
     QList<KToolBar> toolbarList;
     KMainWindowPrivate *d;
 
