@@ -106,7 +106,7 @@ public:
 
 protected:
 	bool eventFilter( QObject* object, QEvent* event );
-	void renderGradient( QPainter* p, const QRect& r, QColor clr, bool horizontal, int px=0, int py=0, int pwidth=-1, int pheight=-1 ) const;
+	void renderGradient( QPainter* p, const QRect& r, QColor clr, bool horizontal, int px=0, int py=0, int pwidth=-1, int pheight=-1, bool reverse = false ) const;
 	
 private:
 	QRect subRect(SubRect r, const QWidget *widget) const;
