@@ -148,7 +148,7 @@ static void testReplaceBlank( int options, int button = 0 )
     test.replace( "a", "", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
-    if ( textLines[ 0 ] != "" ) {
+    if ( !textLines[ 0 ].isEmpty() ) {
         kdError() << "ASSERT FAILED: replaced text is '" << textLines[ 0 ] << "' instead of ''" << endl;
         exit(1);
     }
