@@ -50,7 +50,7 @@
 
 using namespace KJS;
 
-QPtrDict<Window> *window_dict = 0L;
+static QPtrDict<Window> *window_dict = 0L;
 
 // ### put into class Window namespace
 Window *KJS::newWindow(KHTMLPart *p)
@@ -260,7 +260,7 @@ KJSO Window::get(const UString &p) const
     return Number(part->frames().count());
   else if (p == "location") {
     if (isSafeScript())
-      return KJSO(new Location(part));
+      return KJSO(Location::retrieve(part));
     else
       return Undefined();
   }
@@ -756,7 +756,31 @@ KJSO FrameArray::get(const UString &p) const
   return Undefined();
 }
 
+static QPtrDict<Location> *location_dict = 0L;
+
+// private to ensure use of dictionary via retrieve()
 Location::Location(KHTMLPart *p) : part(p) { }
+
+Location::~Location()
+{
+  location_dict->remove(part);
+  if (location_dict->isEmpty()) {
+    delete location_dict;
+    location_dict = 0L;
+  }
+}
+
+Location* Location::retrieve(KHTMLPart *p)
+{
+  Location *loc;
+  if (!location_dict)
+    location_dict = new QPtrDict<Location>;
+  else if ((loc = location_dict->find(p)) != 0L)
+    return loc;
+  loc = new Location(p);
+  location_dict->insert(p, loc);
+  return loc;
+}
 
 KJSO Location::get(const UString &p) const
 {
@@ -795,7 +819,7 @@ KJSO Location::get(const UString &p) const
   else if (p == "reload")
     return Function(new LocationFunc(part, LocationFunc::Reload));
   else
-    return Undefined();
+    return HostImp::get(p);
 
   return String(str);
 }
@@ -810,20 +834,23 @@ void Location::put(const UString &p, const KJSO &v)
   KURL url = part->url();
 
   if (p == "href") url = KURL(url,str);
-  if (p == "hash") url.setRef(str);;
-  if (p == "host") {
+  else if (p == "hash") url.setRef(str);
+  else if (p == "host") {
     // danimo: KURL doesn't have a way to
     // set hostname _and_ port at once, right?
     QString host = str.left(str.find(":"));
     QString port = str.mid(str.find(":")+1);
     url.setHost(host);
     url.setPort(port.toUInt());
-  };
-  if (p == "hostname") url.setHost(str);
-  if (p == "pathname") url.setPath(str);
-  if (p == "port") url.setPort(str.toUInt());
-  if (p == "protocol")  url.setProtocol(str);
-  if (p == "search"){ /* TODO */}
+  } else if (p == "hostname") url.setHost(str);
+  else if (p == "pathname") url.setPath(str);
+  else if (p == "port") url.setPort(str.toUInt());
+  else if (p == "protocol")  url.setProtocol(str);
+  else if (p == "search"){ /* TODO */}
+  else {
+    HostImp::put(p, v);
+    return;
+  }
 
   part->scheduleRedirection(0, url.url().prepend( "target://_self/#" ) );
 
