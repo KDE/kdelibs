@@ -407,6 +407,7 @@ KDatePicker::selectYearClicked()
     } else {
       KNotifyClient::beep();
     }
+  selectYear->setOn( false );
   delete popup;
 }
 
