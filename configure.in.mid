@@ -4,4 +4,4 @@ dnl have been run, but before the Makefiles are created
 all_includes='-I$(top_srcdir)/dcop -I$(top_srcdir)/libltdl -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kssl $(QT_INCLUDES) $(X_INCLUDES) $(KDE_INCLUDES) $(USER_INCLUDES)'
 AC_SUBST(all_includes)
 
-CXXFLAGS="$CXXFLAGS -DQT_NO_TRANSLATION -DQT_CLEAN_NAMESPACE -DQT_NO_ASCII_CAST"
+CXXFLAGS="$CXXFLAGS -DQT_NO_TRANSLATION -DQT_CLEAN_NAMESPACE -DQT_NO_ASCII_CAST -DQT_NO_COMPAT"
