@@ -110,9 +110,9 @@ debianrules
 
    If your KDE based app uses the kde-common stuff you'll have a admin/ 
 subdir which if it's recent will contain a debianrules perl script.  The
-current version of it (sitting in /usr/share/doc/kdelibs-dev) does very little.
-The biggest job it has is to make sure that all the KDE variables are set
-properly for build...this includes a configure line.  
+current version of it (sitting in /usr/share/doc/kdelibs-dev/dh-make) does very
+little. The biggest job it has is to make sure that all the KDE variables are 
+set properly for build...this includes a configure line.  
 
    If you place the debianrules script into your debian/ directory (if it 
 doesn't already exist in admin/ or that one is a older version) you can modify
