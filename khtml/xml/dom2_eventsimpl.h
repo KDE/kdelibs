@@ -136,9 +136,9 @@ protected:
     bool m_propagationStopped;
     bool m_defaultPrevented;
     bool m_defaultHandled;
-    EventId m_id;
+    EventId m_id : 6;
+    unsigned short m_eventPhase : 2;
     NodeImpl *m_currentTarget; // ref > 0 maintained externally
-    unsigned short m_eventPhase;
     NodeImpl *m_target;
     QDateTime m_createTime;
     DOMString m_message;
@@ -347,9 +347,9 @@ public:
 private:
   unsigned long m_keyVal;
   unsigned long m_virtKeyVal;
-  bool m_inputGenerated;
   DOMString m_outputString;
   bool m_numPad;
+  bool m_inputGenerated;
   // bitfield containing state of modifiers. not part of the dom.
   unsigned long    m_modifier;
 };
@@ -395,7 +395,7 @@ protected:
 class RegisteredEventListener {
 public:
     RegisteredEventListener(EventImpl::EventId _id, EventListener *_listener, bool _useCapture)
-        : id(_id), listener(_listener), useCapture(_useCapture) { listener->ref(); }
+        : id(_id), useCapture(_useCapture), listener(_listener) { listener->ref(); }
 
     ~RegisteredEventListener() { listener->deref(); }
 
@@ -403,9 +403,9 @@ public:
     { return id == other.id && listener == other.listener && useCapture == other.useCapture; }
 
 
-    EventImpl::EventId id;
-    EventListener *listener;
+    EventImpl::EventId id : 6;
     bool useCapture;
+    EventListener *listener;
 private:
     RegisteredEventListener( const RegisteredEventListener & );
     RegisteredEventListener & operator=( const RegisteredEventListener & );
