@@ -117,6 +117,25 @@ HTMLAnchor* HTMLClue::findAnchor( const char *_name, QPoint *_p )
     return 0;
 }
 
+bool HTMLClue::getObjectPosition( const HTMLObject *objp, int &xp, int &yp )
+{
+    HTMLObject *obj;
+
+    xp += x;
+    yp += (y - ascent);
+    
+    for ( obj = head; obj != 0; obj = obj->next() )
+    {
+	if ( obj->getObjectPosition( objp, xp, yp ) )
+	    return true;
+    }
+    
+    xp -= x;
+    yp -= (y - ascent);
+
+    return false;
+}
+
 void HTMLClue::getSelected( QStrList &_list )
 {
     HTMLObject *obj;

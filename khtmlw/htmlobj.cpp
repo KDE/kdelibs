@@ -39,6 +39,7 @@
 #include <qimage.h>
 #include <qdrawutil.h>
 #include <qmovie.h>
+#include <qregexp.h>
 
 #include "htmlobj.moc"
 
@@ -202,6 +203,18 @@ int HTMLObject::findPageBreak( int _y )
     return -1;
 }
 
+bool HTMLObject::getObjectPosition( const HTMLObject *obj, int &xp, int &yp )
+{
+    if ( obj == this )
+    {
+	xp += x;
+	yp += y;
+	return true;
+    }
+
+    return false;
+}
+
 //-----------------------------------------------------------------------------
 
 HTMLVSpace::HTMLVSpace( int _vspace, Clear c ) : HTMLObject()
@@ -321,6 +334,21 @@ bool HTMLText::selectText( QPainter *_painter, int _x1, int _y1,
     }
 
     return selectIt;
+}
+
+bool HTMLText::selectText( const QRegExp &exp )
+{
+    int len;
+    int pos = exp.match( text, 0, &len );
+
+    if ( pos >= 0 )
+    {
+	selStart = pos;
+	selEnd = pos + len;
+	setSelected( true );
+    }
+
+    return ( pos != -1 );
 }
 
 // get the index of the character at _xpos.

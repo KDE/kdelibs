@@ -123,6 +123,7 @@ public:
     virtual void getSelectedText( QString & );
 
     virtual void calcAbsolutePos( int _x, int _y );
+    virtual bool getObjectPosition( const HTMLObject *objp, int &xp, int &yp );
 
     virtual ObjectType getObjectType() const
 	    {	return Clue; }
@@ -137,6 +138,18 @@ public:
     virtual void print( QPainter *, int _tx, int _ty );
 
     virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
+
+    int rows() const { return totalRows; }
+    int cols() const { return totalCols; }
+    HTMLTableCell *cell( int r, int c )
+	{ return cells[r][c]; }
+
+    /*
+     * Create an iterator.
+     * The returned iterator must be deleted by the caller.
+     */
+    virtual HTMLIterator *getIterator()
+       { return totalRows ? new HTMLTableIterator( this ) : 0; }
   
 protected:
     enum ColType { Fixed, Percent, Variable };

@@ -49,6 +49,7 @@ class HTMLClueAligned;
 class KHTMLWidget;
 
 #include "htmlfont.h"
+#include "htmliter.h"
 
 class HTMLCell;
 
@@ -157,6 +158,11 @@ public:
     virtual int  getAbsX() { return -1; }
     virtual int  getAbsY() { return -1; }
 
+    /*
+     * returns the postion on the page of the specified object
+     */
+    virtual bool getObjectPosition( const HTMLObject *obj, int &x, int &y );
+
     virtual void reset() { setPrinted( false ); }
 
     /********************************
@@ -246,6 +252,18 @@ public:
 
     virtual void findCells( int, int, QList<HTMLCellInfo> & ) { }
 
+    /*
+     * Create an iterator.
+     * The returned iterator must be deleted by the caller.
+     */
+    virtual HTMLIterator *getIterator() { return 0; }
+
+    /*
+     * Select this object's text if it matches.
+     * returns true if a match was found.
+     */
+    virtual bool selectText( const QRegExp & ) { return false; }
+
 protected:
     int x;
     int y;
@@ -276,6 +294,8 @@ public:
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	    int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *, int _tx, int _ty );
+
+    virtual bool selectText( const QRegExp &exp );
 
 protected:
     int getCharIndex( QPainter *_painter, int _xpos );

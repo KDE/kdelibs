@@ -214,6 +214,8 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 
     if ( !pFontManager )
 	pFontManager = new HTMLFontManager();
+
+    textFindIter = 0;
 }
 
 void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
@@ -669,6 +671,67 @@ void KHTMLWidget::selectText( QPainter * _painter, int _x1, int _y1,
     }
     else
 	bIsTextSelected = clue->selectText( _painter, _x1, _y1, _x2, _y2, tx, ty );
+}
+
+void KHTMLWidget::findTextBegin()
+{
+    if ( clue == 0L )
+	return;
+
+    findTextEnd();
+
+    textFindIter = new HTMLListIterator( clue );
+}
+
+bool KHTMLWidget::findTextNext( const QRegExp &exp )
+{
+    if ( clue == 0L )
+	return false;
+
+    HTMLObject *obj;
+
+    if ( !textFindIter )
+	findTextBegin();
+    
+    selectText( 0, 0, 0, 0, 0 );	// deselect all text
+
+    // loop until we match the regexp, or reach the end of the document.
+    do
+    {
+	obj = textFindIter->current();
+	textFindIter->next();
+    }
+    while ( obj && !obj->selectText( exp ) );
+
+    if ( obj )
+    {
+	// We found a match - highlight
+	int x = 0, y = 0;
+
+	clue->getObjectPosition( obj, x, y );
+	if ( y < y_offset || y > y_offset + height() - obj->getHeight() )
+	{
+	    gotoXY( x_offset, y - 40 );
+	}
+	paintSingleObject( obj );
+    }
+    else
+    {
+	// end of document reached.
+	findTextEnd();
+    }
+
+    return ( obj != 0 );
+}
+
+void KHTMLWidget::findTextEnd()
+{
+    if ( textFindIter )
+    {
+	delete textFindIter;
+	textFindIter = 0;
+	selectText( 0, 0, 0, 0, 0 );	// deselect all text
+    }
 }
 
 void KHTMLWidget::paintEvent( QPaintEvent* _pe )
@@ -1325,6 +1388,8 @@ void KHTMLWidget::parse()
     if ( !bgPixmapURL.isEmpty() )
 	emit cancelFileRequest( bgPixmapURL );
 
+    findTextEnd();
+
     stopParser();
     
     if ( painter )
@@ -1410,8 +1475,6 @@ void KHTMLWidget::parse()
     clue->setHAlign( HTMLClue::Left );
 
     flow = 0;
-
-    debug( "Parsing : %s", getDocumentURL().url().data() );
 
     // this will call timerEvent which in turn calls parseBody
     timerId = startTimer( TIMER_INTERVAL );

@@ -25,7 +25,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1213		// 00.12.13
+#define KHTMLW_VERSION  1300		// 00.13.00
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -48,6 +48,7 @@ class KHTMLWidget;
 #include "htmltoken.h"
 #include "htmlframe.h"
 #include "htmlview.h"
+#include "htmliter.h"
 #include "jscript.h"
 
 // Default borders between widgets frame and displayed text
@@ -229,6 +230,21 @@ public:
      */
     bool isTextSelected() const
 	{	return bIsTextSelected; } 
+
+    /**
+     * Initiate a text search.
+     */
+    void findTextBegin();
+
+    /**
+     * Find the next occurrance of the expression.
+     */
+    bool findTextNext( const QRegExp &exp );
+
+    /**
+     * end a text search.
+     */
+    void findTextEnd();
 
     /**
      * Checks out whether there is a URL under the point and returns a pointer
@@ -1386,16 +1402,14 @@ protected:
      */
     JSEnvironment *jsEnvironment;      
     KCharsetConverter *charsetConverter;
+
+    /*
+     * Iterator used to find text within the document
+     */
+    HTMLIterator *textFindIter;
 };
 
 #endif // HTML
-
-
-
-
-
-
-
 
 
 

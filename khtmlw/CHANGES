@@ -1,6 +1,11 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.0  - 20 Sep 1998 (Martin Jones)
+--------------
+
+Added findText*() function.
+
 Version 0.12.16 - 15 Jun 1998 (Torben Weis)
 ---------------
 

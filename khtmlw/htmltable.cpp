@@ -273,6 +273,37 @@ void HTMLTable::calcAbsolutePos( int _x, int _y )
     }
 }
 
+bool HTMLTable::getObjectPosition( const HTMLObject *objp, int &xp, int &yp )
+{
+    HTMLTableCell *cell;
+
+    xp += x;
+    yp += (y - ascent);
+
+    unsigned int r, c;
+
+    for ( r = 0; r < totalRows; r++ )
+    {
+	for ( c = 0; c < totalCols; c++ )
+	{
+	    if ( ( cell = cells[r][c] ) == 0 )
+		continue;
+	    if ( c < totalCols - 1 && cell == cells[r][c+1] )
+		continue;
+	    if ( r < totalRows - 1 && cells[r+1][c] == cell )
+		continue;
+
+	    if ( cell->getObjectPosition( objp, xp, yp ) )
+		return true;
+	}
+    }
+    
+    xp -= x;
+    yp -= (y - ascent);
+
+    return false;
+}
+
 HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
 {
     HTMLAnchor *ret;

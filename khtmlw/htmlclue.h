@@ -111,6 +111,7 @@ public:
     virtual void getSelectedText( QString & );
 
     virtual void calcAbsolutePos( int _x, int _y );
+    virtual bool getObjectPosition( const HTMLObject *objp, int &xp, int &yp );
     virtual void setIndent( int ) { }
     virtual void reset();
 
@@ -118,6 +119,7 @@ public:
 	    {	return Clue; }
     bool hasChildren() const
 	    {	return (head != 0L); }
+    HTMLObject *children() { return head; }
 
     /************************************************************
      * Make an object a child of this Box.
@@ -163,6 +165,14 @@ public:
     virtual HTMLAnchor* findAnchor( const char *_name, QPoint *_p );
 
     virtual void findCells( int _tx, int _ty, QList<HTMLCellInfo> &_list );
+
+    /*
+     * Create an iterator.
+     * The returned iterator must be deleted by the caller.
+     */
+    virtual HTMLIterator *getIterator()
+       { return head ? new HTMLListIterator( this ) : 0; }
+		        
   
 protected:
     HTMLObject *head;
