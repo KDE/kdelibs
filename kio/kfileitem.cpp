@@ -46,6 +46,7 @@ class KFileItem::KFileItemPrivate
 public:
   KFileItemPrivate() {
     bMimeTypeKnown = false;
+    metaInfo = 0L;
     refresh();
   }
 
@@ -72,6 +73,7 @@ public:
   QString access;
   bool bMimeTypeKnown;
   QMap<const void*, void*> extra;
+  KFileMetaInfo *metaInfo;
 
   enum { Modification = 0, Access = 1, Creation = 2, NumFlags = 3 };
   time_t time[3];
@@ -678,3 +680,14 @@ QString KFileItem::timeString( unsigned int which ) const
     t.setTime_t( time(which) );
     return KGlobal::locale()->formatDateTime( t );
 }
+
+void KFileItem::setMetaInfo( KFileMetaInfo *info )
+{
+    d->metaInfo = info;
+}
+
+KFileMetaInfo * KFileItem::metaInfo() const
+{
+    return d->metaInfo;
+}
+

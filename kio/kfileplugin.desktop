@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=ServiceType
+X-KDE-ServiceType=KFilePlugin
+Name=KFile Meta Data Plugin
+
+[PropertyDef::PreferredItems]
+Type=QStringList

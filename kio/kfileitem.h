@@ -30,6 +30,8 @@
 #include <kmimetype.h>
 #include <kio/global.h>
 
+class KFileMetaInfo;
+
 /**
  * A KFileItem is a generic class to handle a file, local or remote.
  * In particular, it makes it easier to handle the result of KIO::listDir.
@@ -353,6 +355,9 @@ public:
    */
   virtual void removeExtraData( const void *key );
 
+  void setMetaInfo( KFileMetaInfo * info );
+  KFileMetaInfo * metaInfo() const;
+
   /**
    * Somewhat like an assignment operator, but more explicit.
    * Note: extra-data set with @ref setExtraData() is not copied, so be careful
@@ -361,6 +366,7 @@ public:
    * I.e. KDirLister uses it to update existing items from a fresh item.
    */
   void assign( const KFileItem & item );
+
 
   /////////////
 

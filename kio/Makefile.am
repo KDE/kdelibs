@@ -47,7 +47,8 @@ libksycoca_la_SOURCES = \
 	kfileitem.cpp kdirlister.cpp kimageio.cpp \
 	yacc.c lex.c  \
 	chmodjob.cpp kscan.cpp ktar.cpp previewjob.cpp \
-	kdatatool.cpp karchive.cpp kfilefilter.cpp
+	kdatatool.cpp karchive.cpp kfilefilter.cpp \
+	kfilemetainfo.cpp
 
 #This dependency is needed, cause am_edit does not include it automatically
 #(different programs), but nevertheless kmimetype.cpp includes
@@ -57,14 +58,14 @@ $(srcdir)/kautomount.cpp: kdirnotify_stub.h
 $(srcdir)/chmodjob.cpp: kdirnotify_stub.h
 
 include_HEADERS = \
-        kservicetype.h kmimetype.h kmimemagic.h kservice.h \
-        krun.h kdirwatch.h kautomount.h kuserprofile.h \
+	kservicetype.h kmimetype.h kmimemagic.h kservice.h \
+	krun.h kdirwatch.h kautomount.h kuserprofile.h \
 	kshred.h ktar.h ktrader.h kurifilter.h kurlcompletion.h \
 	kshellcompletion.h kfileitem.h kdirlister.h kservicegroup.h\
 	kimageio.h kdirnotify.h kdirnotify_stub.h \
-        kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
+	kurlpixmapprovider.h kprotocolinfo.h kprotocolmanager.h \
 	kfilterbase.h kfilterdev.h kemailsettings.h kscan.h kdatatool.h \
-	karchive.h kfilefilter.h
+	karchive.h kfilefilter.h kfilemetainfo.h
 
 libkio_la_LDFLAGS = -version-info 4:0 -no-undefined $(all_libraries)
 libkio_la_LIBADD = ../kdeui/libkdeui.la ../kdesu/libkdesu.la ../kssl/libkssl.la $(LIBZ) $(LIBFAM) $(LIBVOLMGT)
@@ -120,7 +121,8 @@ noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 
 kde_mime_DATA = magic
 kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop \
-                        kcomprfilter.desktop kscan.desktop kdatatool.desktop
+                        kcomprfilter.desktop kscan.desktop kdatatool.desktop \
+                        kfileplugin.desktop
 kde_services_DATA = kio_uiserver.desktop
 
 parserfiles = yacc.y lex.l
