@@ -47,7 +47,10 @@ bool MyDCOPObject::process(const QCString &fun, const QByteArray &data,
     return true;
   }
   if (fun == "isAliveSlot(int)") {
+    
     qDebug("isAliveSlot(int)");
+    bool connectResult = kapp->dcopClient()->disconnectDCOPSignal("", objId(), "", objId(), "" );
+    qDebug("disconnectDCOPSignal returns %s", connectResult ? "true" : "false");
     return true;
   }
 

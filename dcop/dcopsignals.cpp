@@ -33,8 +33,17 @@ DCOPSignals::DCOPSignals()
  * If "excludeSelf" is true, signal is never send to "conn" itself.
  */
 void
-DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &fun, const QByteArray &data, bool excludeSelf)
+DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &_fun, const QByteArray &data, bool excludeSelf)
 {
+   QCString senderObj;
+   QCString fun = _fun;
+   int i = fun.find('#');
+   if (i > -1)
+   {
+      senderObj = fun.left(i);
+      fun = fun.mid(i+1);
+   }
+
    DCOPSignalConnectionList *list = connections.find(fun);	
    if (!list) return;
    for(DCOPSignalConnection *current = list->first(); current; current = list->next())
@@ -53,6 +62,12 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &fun, const QByteA
       else
       {
          doSend = true;
+      }
+
+      if (!current->senderObj.isEmpty() &&
+          (current->senderObj != senderObj))
+      {
+         doSend = false;
       }
 
       if (excludeSelf && (conn == current->recvConn))
@@ -77,7 +92,8 @@ DCOPSignals::emitSignal( DCOPConnection *conn, const QCString &fun, const QByteA
  * "conn" unregisters.
  */
 bool
-DCOPSignals::connectSignal( const QCString &sender, const QCString &signal,
+DCOPSignals::connectSignal( const QCString &sender, const QCString &senderObj,
+                       const QCString &signal,
                        DCOPConnection *conn, const QCString &receiverObj,
                        const QCString &slot, bool Volatile)
 {
@@ -117,6 +133,7 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &signal,
    }
    DCOPSignalConnection *current = new DCOPSignalConnection;
    current->sender = sender;
+   current->senderObj = senderObj;
    current->senderConn = senderConn;
    current->signal = signal;
    current->recvConn = conn;
@@ -140,12 +157,24 @@ DCOPSignals::connectSignal( const QCString &sender, const QCString &signal,
 /**
  * Disconnects "signal" of the client named "sender" from the "slot" of
  * "receiverObj" in the "conn" client.
+ *
+ * Special case:
+ *   If sender & signal are empty all connections that involve
+ *       conn & receiverObj (either as receiver or as sender)
+ *   are disconnected.
  */
 bool
-DCOPSignals::disconnectSignal( const QCString &sender, const QCString &signal,
+DCOPSignals::disconnectSignal( const QCString &sender, const QCString &senderObj,
+                       const QCString &signal,
                        DCOPConnection *conn, const QCString &receiverObj,
                        const QCString &slot)
 {
+   if (sender.isEmpty() && signal.isEmpty())
+   {
+      removeConnections(conn, receiverObj);
+      return true;
+   }
+
    DCOPSignalConnectionList *list = connections.find(signal);
    if (!list)
       return false; // Not found...
@@ -168,6 +197,10 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &signal,
       else if (current->sender != sender)
 	    continue;
 
+      if (!senderObj.isEmpty() &&
+          (current->senderObj != senderObj))
+         continue;
+
       if (!receiverObj.isEmpty() &&
           (current->recvObj != receiverObj))
          continue;
@@ -187,13 +220,13 @@ DCOPSignals::disconnectSignal( const QCString &sender, const QCString &signal,
 }
 
 /**
- * Removes all connections related to the "conn" client.
+ * Removes all connections related to "obj" in the "conn" client 
  * This means:
- *   All connections for which "conn" is the receiver.
- *   All volatile connections for which "conn" is the sender.
+ *   All connections for which "conn"/"obj" is the receiver.
+ *   All volatile connections for which "conn"/"obj" is the sender.
  */
 void
-DCOPSignals::removeConnections(DCOPConnection *conn)
+DCOPSignals::removeConnections(DCOPConnection *conn, const QCString &obj)
 {
    DCOPSignalConnectionList *list = conn->_signalConnectionList;
    if (!list)
@@ -204,6 +237,15 @@ DCOPSignals::removeConnections(DCOPConnection *conn)
    for(DCOPSignalConnection *current = list->first(); current; current = next)
    {
       next = list->next();
+
+      if (!obj.isEmpty())
+      {
+         if ((current->senderConn == conn) && (current->senderObj != obj))
+            continue;
+
+         if ((current->recvConn == conn) && (current->recvObj != obj))
+            continue;
+      }
 
       if (current->senderConn && (current->senderConn != conn))
          current->senderConn->signalConnectionList()->removeRef(current);

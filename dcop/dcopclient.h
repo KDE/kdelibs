@@ -270,15 +270,22 @@ class DCOPClient : public QObject
 	    QCString &foundApp, QCString &foundObj,
 	    bool useEventLoop=false, bool fast=false);
 
+
   /**
-   * Emit @p signal as DCOP signal with @data as arguments
+   * Emit @p signal as DCOP signal from object @p object with @data as 
+   * arguments
    */
+  void emitDCOPSignal( const QCString &object, const QCString &signal, 
+                       const QByteArray &data);
+
+  /* For backwards compatibility */
   void emitDCOPSignal( const QCString &signal, const QByteArray &data);
 
   /**
    * Connect to a DCOP signal
    * @param sender the name of the client that emits the signal. When empty
    * the signal will be passed from any client.
+   * @param senderObj the name of the sending object that emits the signal.
    * @param signal the name of the signal. The arguments should match with slot.
    * @param receiverObj The name of the object to call
    * @param slot The name of the slot to call. Its arguments should match with signal.
@@ -294,21 +301,38 @@ class DCOPClient : public QObject
    * @li @p Volatile is true and @p sender  does not exist.
    * @li @p signal and @p slot do not have matching arguments.
    */
+  bool connectDCOPSignal( const QCString &sender, const QCString &senderObj, 
+                          const QCString &signal,
+                          const QCString &receiverObj, const QCString &slot,
+                          bool Volatile);
+
+  /* For backwards compatibility */
   bool connectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot,
                           bool Volatile);
 
   /**
-   * Disconnect to a DCOP signal
+   * Disconnect a DCOP signal
    * @param sender the name of the client that emits the signal.
+   * @param senderObj the name of the object that emits the signal.
+   * If empty all objects will be disconnected.
    * @param signal the name of the signal. The arguments should match with slot.
    * @param receiverObj The name of the object the signal is connected to.
    * If empty all objects will be disconnected.
    * @param slot The name of the slot the signal is connected to.
    * If empty all slots will be disconnected.
    *
+   * A special case is when both sender & signal are empty. In this
+   * case all connections related to @param receiverObj in the current client 
+   * are disconnected. (Both connections from as well as to this object!)
+   *
    * @return false if no connection(s) where removed.
    */
+  bool disconnectDCOPSignal( const QCString &sender, const QCString &senderObj,
+                          const QCString &signal,
+                          const QCString &receiverObj, const QCString &slot);
+
+  /* For backwards compatibility */
   bool disconnectDCOPSignal( const QCString &sender, const QCString &signal,
                           const QCString &receiverObj, const QCString &slot);
 

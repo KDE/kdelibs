@@ -37,6 +37,7 @@ class DCOPSignalConnection
 public:
    QCString sender;      // Sender client, empty means any client
    DCOPConnection *senderConn; //Sender client.
+   QCString senderObj;   // Object that sends the signal.
    QCString signal;      // Signal name. Connections are sorted on signal name.
    
    DCOPConnection *recvConn; // Client that wants to receive the signal
@@ -61,6 +62,8 @@ public:
    /**
     * Client "conn" emits the signal "fun" with "data" as arguments.
     *
+    * The emitting object is encoded in "fun".
+    *
     * If "excludeSelf" is true, signal is never send to "conn" itself.
     */
    void emitSignal( DCOPConnection *conn, const QCString &fun, const QByteArray &data, bool excludeSelf);
@@ -79,7 +82,8 @@ public:
     * An attempt to create a Volatile connection to a non-existing client
     * results in a failure.
     */
-   bool connectSignal( const QCString &sender, const QCString &signal, 
+   bool connectSignal( const QCString &sender, const QCString &senderObj,
+                       const QCString &signal, 
                        DCOPConnection *conn, const QCString &receiverObj, 
                        const QCString &slot, bool Volatile);
 
@@ -92,7 +96,8 @@ public:
     *
     * Returns true if successfull, false if no connection was found.
     */
-   bool disconnectSignal( const QCString &sender, const QCString &signal, 
+   bool disconnectSignal( const QCString &sender, const QCString &senderObj,
+                       const QCString &signal, 
                        DCOPConnection *conn, const QCString &receiverObj, 
                        const QCString &slot);
 
@@ -102,7 +107,7 @@ public:
     *   All connections for which "conn" is the receiver.
     *   All volatile connections for which "conn" is the sender.
     */
-   void removeConnections(DCOPConnection *conn);
+   void removeConnections(DCOPConnection *conn, const QCString &obj=0);
 
    
    /*
