@@ -351,28 +351,28 @@ void KRun::init()
   if ( m_strURL.left( 7 ) == "mailto:" )
   {
     emit finished();
- 
+
     QString addr = m_strURL.mid( 7 );
     KURL::decode( addr );
     QString subj;
-    
+
     int subjPos = addr.find( "?subject=" );
     if ( subjPos != -1 )
     {
       subj = addr.mid( subjPos + 9 );
       addr.truncate( subjPos );
     }
-    
+
     kapp->invokeMailer( addr, subj );
-    
+
     if ( m_bAutoDelete )
       delete this;
-    
+
     return;
   }
-  
+
   KURL url( m_strURL );
-  
+
   if ( !m_bIsLocalFile && url.isLocalFile() )
     m_bIsLocalFile = true;
 
@@ -407,15 +407,15 @@ void KRun::init()
     return;
   }
 
-  // Let's see whether it is a directory
   if ( !KProtocolManager::self().supportsListing( url.protocol() ) )
   {
-    kdebug( KDEBUG_INFO, 7010, "##### NOT A DIRECTORY" );
+    kdebug( KDEBUG_INFO, 7010, "##### NO SUPPORT FOR LISTING" );
     // No support for listing => we can scan the file
     scanFile();
     return;
   }
 
+  // Let's see whether it is a directory
   kdebug( KDEBUG_INFO, 7010, "##### TESTING DIRECTORY" );
 
   // It may be a directory
@@ -562,10 +562,11 @@ void KRun::foundMimeType( const char *_type )
 {
   kdebug( KDEBUG_INFO, 7010, "Resulting mime type is %s", _type );
 
-  // Automatically unzip stuff
+  // Automatically unzip/untar stuff
   if ( strcmp( _type, "application/x-gzip" ) == 0 ||
        strcmp( _type, "application/x-bzip" ) == 0 ||
-       strcmp( _type, "application/x-bzip2" ) == 0 )
+       strcmp( _type, "application/x-bzip2" ) == 0 ||
+       strcmp( _type, "application/x-tar" ) == 0 )
   {
     KURL::List lst = KURL::split( m_strURL );
     if ( lst.isEmpty() )
@@ -583,6 +584,8 @@ void KRun::foundMimeType( const char *_type )
       lst.prepend( KURL( "bzip:/decompress" ) );
     else if ( strcmp( _type, "application/x-bzip2" ) == 0 )
       lst.prepend( KURL( "bzip2:/decompress" ) );
+    else if ( strcmp( _type, "application/x-tar" ) == 0 )
+      lst.prepend( KURL( "tar:/" ) );
 
     // Move the HTML style reference to the leftmost URL
     KURL::List::Iterator it = lst.begin();
@@ -597,14 +600,19 @@ void KRun::foundMimeType( const char *_type )
 
     killJob();
 
+    // We don't know if this is a file or a directory. Let's test this first.
+    // (For instance a tar.gz is a directory contained inside a file)
     KIOJob* job = new KIOJob();
-    connect( job, SIGNAL( sigMimeType( int, const char* ) ), this, SLOT( slotMimeType( int, const char* ) ) );
-    connect( job, SIGNAL( sigPreData( int, const char*, int ) ),
-	     this, SLOT( slotPreData( int, const char*, int ) ) );
+    connect( job, SIGNAL( sigIsDirectory( int ) ), this, SLOT( slotIsDirectory( int ) ) );
+    connect( job, SIGNAL( sigIsFile( int ) ), this, SLOT( slotIsFile( int ) ) );
+    connect( job, SIGNAL( sigFinished( int ) ), this, SLOT( slotFinished( int ) ) );
+    connect( job, SIGNAL( sigError( int, int, const char* ) ),
+             this, SLOT( slotError( int, int, const char* ) ) );
+
     job->setAutoDelete( false );
     m_jobId = job->id();
     job->setGUImode( KIOJob::NONE );
-    job->preget( m_strURL.ascii(), 2048 );
+    job->testDir( m_strURL.ascii() );
     return;
   }
 
