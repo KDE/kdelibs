@@ -425,7 +425,7 @@ void KOpenWithDlg::init( const QString& _text, const QString& _value )
 
   topLayout->addWidget(terminal);
 
-  nocloseonexit = new QCheckBox( i18n("Do not &close when command exits"), this );
+  nocloseonexit = new QCheckBox( i18n("&Do not close when command exits"), this );
   nocloseonexit->setChecked( false );
   nocloseonexit->setDisabled( true );
 
