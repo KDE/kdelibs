@@ -693,7 +693,6 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 {
   UDSAtom atom;
   bool foundExecutable = false;
-  bool foundContentType = false;
   bool isDirectory = false;
   uint lockCount = 0;
   uint supportedLockCount = 0;
@@ -788,15 +787,9 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
         }
         else if ( property.text() != "" )
         {
-          atom.m_uds = KIO::UDS_FILE_TYPE;
-          atom.m_long = S_IFREG;
-          entry.append( atom );
-
           atom.m_uds = KIO::UDS_MIME_TYPE;
           atom.m_str = property.text();
           entry.append( atom );
-
-          foundContentType = true;
         }
       }
       else if ( property.tagName() == "executable" )
@@ -867,19 +860,9 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
   setMetaData( "davLockCount", QString("%1").arg(lockCount) );
   setMetaData( "davSupportedLockCount", QString("%1").arg(supportedLockCount) );
 
-  if ( isDirectory )
-  {
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = S_IFDIR;
-    entry.append( atom );
-  }
-  else if ( !foundContentType )
-  {
-    // No type specified for this resource. Assume file.
-    atom.m_uds = KIO::UDS_FILE_TYPE;
-    atom.m_long = S_IFREG;
-    entry.append( atom );
-  }
+  atom.m_uds = KIO::UDS_FILE_TYPE;
+  atom.m_long = isDirectory ? S_IFDIR : S_IFREG;
+  entry.append( atom );
 
   if ( foundExecutable || isDirectory )
   {
