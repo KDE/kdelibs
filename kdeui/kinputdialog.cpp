@@ -25,6 +25,7 @@
 #include <knuminput.h>
 #include <kcombobox.h>
 #include <klistbox.h>
+#include <ktextedit.h>
 
 #include "kinputdialog.h"
 
@@ -39,6 +40,7 @@ class KInputDialogPrivate
     KDoubleSpinBox *m_doubleSpinBox;
     KComboBox *m_comboBox;
     KListBox *m_listBox;
+    KTextEdit *m_textEdit;
 };
 
 KInputDialogPrivate::KInputDialogPrivate()
@@ -82,6 +84,33 @@ KInputDialog::KInputDialog( const QString &caption, const QString &label,
 
   slotEditTextChanged( value );
   setMinimumWidth( 350 );
+}
+
+KInputDialog::KInputDialog( const QString &caption, const QString &label,
+    const QString &value, QWidget *parent, const char *name )
+    : KDialogBase( parent, name, true, caption, Ok|Cancel|User1, Ok, false,
+    KStdGuiItem::clear() ),
+    d( 0L )
+{
+  d = new KInputDialogPrivate();
+
+  QFrame *frame = makeMainWidget();
+  QVBoxLayout *layout = new QVBoxLayout( frame, 0, spacingHint() );
+
+  d->m_label = new QLabel( label, frame );
+  layout->addWidget( d->m_label );
+
+  d->m_textEdit = new KTextEdit( frame );
+  d->m_textEdit->setTextFormat( PlainText );
+  d->m_textEdit->setText( value );
+  layout->addWidget( d->m_textEdit, 10 );
+
+  d->m_textEdit->setFocus();
+  d->m_label->setBuddy( d->m_textEdit );
+
+  connect( this, SIGNAL( user1Clicked() ), d->m_textEdit, SLOT( clear() ) );
+
+  setMinimumWidth( 400 );
 }
 
 KInputDialog::KInputDialog( const QString &caption, const QString &label,
@@ -253,6 +282,25 @@ QString KInputDialog::getText( const QString &caption, const QString &label,
   return result;
 }
 
+QString KInputDialog::getMultiLineText( const QString &caption,
+    const QString &label, const QString &value, bool *ok,
+    QWidget *parent, const char *name )
+{
+  KInputDialog *dlg = new KInputDialog( caption, label, value, parent, name );
+
+  bool _ok = ( dlg->exec() == Accepted );
+
+  if ( ok )
+    *ok = _ok;
+
+  QString result;
+  if ( _ok )
+    result = dlg->textEdit()->text();
+
+  delete dlg;
+  return result;
+}
+
 int KInputDialog::getInteger( const QString &caption, const QString &label,
     int value, int minValue, int maxValue, int step, int base, bool *ok,
     QWidget *parent, const char *name )
@@ -404,6 +452,11 @@ KComboBox *KInputDialog::comboBox() const
 KListBox *KInputDialog::listBox() const
 {
   return d->m_listBox;
+}
+
+KTextEdit *KInputDialog::textEdit() const
+{
+  return d->m_textEdit;
 }
 
 #include "kinputdialog.moc"

@@ -26,6 +26,7 @@ class KLineEdit;
 class KIntSpinBox;
 class KDoubleSpinBox;
 class KComboBox;
+class KTextEdit;
 class KInputDialogPrivate;
 
 #include <kdialogbase.h>
@@ -55,6 +56,8 @@ class KInputDialog : public KDialogBase
     KInputDialog( const QString &caption, const QString &label,
       const QString &value, QWidget *parent, const char *name,
       QValidator *validator, const QString &mask );
+    KInputDialog( const QString &caption, const QString &label,
+      const QString &value, QWidget *parent, const char *name );
     KInputDialog( const QString &caption, const QString &label, int value,
       int minValue, int maxValue, int step, int base, QWidget *parent,
       const char *name );
@@ -75,6 +78,7 @@ class KInputDialog : public KDialogBase
     KDoubleSpinBox *doubleSpinBox() const;
     KComboBox *comboBox() const;
     KListBox *listBox() const;
+    KTextEdit *textEdit() const;
 
   private slots:
 
@@ -88,9 +92,8 @@ class KInputDialog : public KDialogBase
      *
      * caption is the text that is displayed in the title bar. label is the
      * text that appears as a label for the line edit. value is the initial
-     * value of the 
-     * line edit. ok will be set to true if user pressed Ok and false if
-     * user pressed Cancel.
+     * value of the line edit. ok will be set to true if user pressed Ok
+     * and false if user pressed Cancel.
      *
      * If you provide a validator, the Ok button is disabled as long as
      * the validator doesn't return Acceptable. If there is no validator,
@@ -115,6 +118,28 @@ class KInputDialog : public KDialogBase
         const QString &value=QString::null, bool *ok=0, QWidget *parent=0,
         const char *name=0, QValidator *validator=0,
         const QString &mask=QString::null );
+
+    /**
+     * Static convenience function to get a multiline string from the user.
+     *
+     * caption is the text that is displayed in the title bar. label is the
+     * text that appears as a label for the line edit. value is the initial
+     * value of the line edit. ok will be set to true if user pressed Ok
+     * and false if user pressed Cancel.
+     *
+     * @param caption   Caption of the dialog
+     * @param label     Text of the label for the line edit
+     * @param value     Initial value of the line edit
+     * @param ok        This bool would be set to true if user pressed Ok
+     * @param parent    Parent of the dialog widget
+     * @param name      Name of the dialog widget
+     *
+     * @return String user entered if Ok was pressed, else a null string
+     * @since 3.3
+     */
+    static QString getMultiLineText( const QString &caption,
+        const QString &label, const QString &value=QString::null,
+        bool *ok=0, QWidget *parent=0, const char *name=0 );
 
     /**
      * Static convenience function to get an integer from the user.
