@@ -1466,7 +1466,8 @@ AddressBook::baseDir()
   // ###########################################################################
   QString dir;
   // -----
-  dir=KGlobal::dirs()->saveLocation("data", KAB_LOCALDIR, false);
+  // dir=KGlobal::dirs()->saveLocation("data", KAB_LOCALDIR, false);
+  dir=KGlobal::dirs()->saveLocation("data", "kab", true);
   if(dir==QString::null)
     {
       KMessageBox::information(this,
