@@ -542,7 +542,7 @@ void RenderText::calcMinMaxWidth()
             // doesn't hurt as we only do ASCII comparisons.
             c = (*(str->s+i+wordlen)).latin1();
             wordlen++;
-        } while( c != ' ' && c != '-' && c != '\n' && i+wordlen <= len);
+        } while( c != ' ' && c != '\n' && i+wordlen <= len); // && c != '-' 
         wordlen--;
         if (wordlen)
         {
@@ -558,13 +558,13 @@ void RenderText::calcMinMaxWidth()
                 currMinWidth = 0;
                 currMaxWidth += space_width;
             }
-            else if( c == '-')
+            /* else if( c == '-')
             {
                 currMinWidth += minus_width;
                 if(currMinWidth > m_minWidth) m_minWidth = currMinWidth;
                 currMinWidth = 0;
                 currMaxWidth += minus_width;
-            }
+            }*/
             else
             {
                 assert(c == '\n');
