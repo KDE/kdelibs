@@ -30,6 +30,7 @@
 #include <qapplication.h>
 
 #include <kdebug.h>
+#include <kxmlguifactory.h>
 
 using namespace KParts;
 

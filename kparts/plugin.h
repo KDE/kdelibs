@@ -22,7 +22,6 @@
 
 #include <qobject.h>
 #include <kaction.h>
-#include <kxmlgui.h>
 #include <kxmlguiclient.h>
 
 class KInstance;

@@ -30,6 +30,7 @@
 #include <kinstance.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kxmlguifactory.h>
 
 using namespace KParts;
 

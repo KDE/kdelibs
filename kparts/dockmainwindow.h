@@ -26,7 +26,6 @@
 
 #include <kdockwidget.h>
 
-#include <kxmlgui.h>
 #include <kparts/part.h>
 
 class QString;

@@ -27,6 +27,7 @@
 #include <khelpmenu.h>
 #include <kstandarddirs.h>
 #include <qapplication.h>
+#include <kxmlguifactory.h>
 
 #include <kdebug.h>
 
