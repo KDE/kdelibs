@@ -30,18 +30,27 @@ using namespace KJS;
 
 KJScript::KJScript()
 {
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf( stderr, "KJScript::KJScript() creating KJScriptImp with no global\n" );
+#endif
   rep = new KJScriptImp(this);
   rep->init();
 }
 
 KJScript::KJScript(const KJSO &global)
 {
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf( stderr, "KJScript::KJScript() creating KJScriptImp with global=%p\n", global.imp() );
+#endif
   rep = new KJScriptImp(this,global);
   rep->init();
 }
 
 KJScript::~KJScript()
 {
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf( stderr, "KJScript::~KJScript() deleting KJScriptImp %p\n", rep );
+#endif
   delete rep;
 
 #ifdef KJS_DEBUG_MEM
