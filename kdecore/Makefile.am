@@ -32,7 +32,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kcharsets.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kwinmodule.h kwin.h krootprop.h \
-	kshortcut.h kkeynative.h kaccelaction.h kaccel.h kglobalaccel.h \
+	kshortcut.h kkeynative.h kaccel.h kglobalaccel.h \
 	kstdaccel.h kshortcutlist.h \
 	kcatalogue.h \
 	kregexp.h kcompletion.h kstringhandler.h kstringhandler.h \
@@ -51,7 +51,8 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 4:0
 
-noinst_HEADERS = kaccelbase.h kaccelprivate.h kckey.h kcompletion_private.h \
+noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
+	kcompletion_private.h \
 	kextsocklookup.h kglobalaccel_x11.h kkeyserver_x11.h \
 	kregpriv.h ksycocadict.h ksycocafactory.h netsupp.h
 
