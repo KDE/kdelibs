@@ -57,7 +57,7 @@ public:
 
     bool complete() const;
 
-    CachedObject *contentObject() { return image; }
+    CachedObject *contentObject() const { return image; }
     void setContentObject( CachedObject* );
 
     // hook to keep RendeObject::m_inline() up to date
