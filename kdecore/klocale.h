@@ -224,6 +224,16 @@ public:
     QString formatTime(const QTime &pTime, bool includeSecs = false) const;
 
     /**
+     * Return a string containing the name of the month name.
+     */
+    QString MonthName(int i) const;
+
+    /**
+     * Return a string containing the name of the week day.
+     */
+    QString WeekDayName(int i) const;
+
+    /**
      * Return a string formatted to the current locale's conventions
      * regarding both date and time.
      */
@@ -388,9 +398,6 @@ private:
     // Date and time
     QString _timefmt;
     QString _datefmt;
-    QString MonthName(int i) const;
-    QString WeekDayName(int i) const;
-
     // Disallow assignment and copy-construction
     KLocale( const KLocale& );
     KLocale& operator= ( const KLocale& );
