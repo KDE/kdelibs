@@ -251,6 +251,23 @@ interface ByteStreamToAudio : SynthModule {
 };
 
 /**
+ * Audio to Byte stream conversion object
+ *
+ * Converts a synchronous audio stream to an asynchronous byte stream
+ */
+interface AudioToByteStream : SynthModule {
+	attribute long samplingRate;
+	attribute long channels;
+	attribute long bits;
+
+	async out byte stream outdata;
+
+	in audio stream left,right;
+	default left;
+	default right;
+};
+
+/**
  * Base interface for all stereo effects
  */
 interface StereoEffect : SynthModule {

@@ -26,7 +26,7 @@ libartsflow_la_SOURCES =  synth_play_impl.cc \
   bus.cc audiomanager_impl.cc synth_record_impl.cc resample.cc \
   audioio.cc audioiooss.cc audioioalsa.cc audioionull.cc audioiolibaudioio.cc \
   audioiosun.cc audioioaix.cc audioionas.cc cpuinfo.cc \
-  audioioossthreaded.cc audioiosgi.cc
+  audioioossthreaded.cc audiotobytestream_impl.cc audioiosgi.cc
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h audiosubsys.h cache.h \
