@@ -54,7 +54,7 @@ struct NETWinInfoPrivate;
    @see KWin
  **/
 
-class NETRootInfo : public NET {
+class KDECORE_EXPORT NETRootInfo : public NET {
 public:
     /**
         Indexes for the properties array.
@@ -869,7 +869,7 @@ protected:
    @see http://www.freedesktop.org/standards/wm-spec/
  **/
 
-class NETWinInfo : public NET {
+class KDECORE_EXPORT NETWinInfo : public NET {
 public:
     /**
         Indexes for the properties array.

@@ -483,7 +483,7 @@ private:
  * Information about a window.
  * @since 3.2
  */
-class KWin::WindowInfo
+class KDECORE_EXPORT KWin::WindowInfo
 {
 public:
     /**

@@ -50,7 +50,7 @@ class KWinModulePrivate;
  * @author Matthias Ettrich (ettrich@kde.org)
  * @version $Id$
  */
-class KWinModule : public QObject
+class KDECORE_EXPORT KWinModule : public QObject
 {
     Q_OBJECT
 
