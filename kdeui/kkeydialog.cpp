@@ -849,6 +849,8 @@ void KKeyChooser::allDefault( bool useFourModifierKeys )
             }
             at->setText(1, KAccel::keyToString((*it).aConfigKeyCode, true));
     }
+    updateAction( d->wList->currentItem() );
+    toChange( d->wList->currentItem() );
     emit keyChange();
 }
 
