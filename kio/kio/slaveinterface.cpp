@@ -19,6 +19,7 @@
 #include "kio/slaveinterface.h"
 #include "kio/slavebase.h"
 #include "kio/connection.h"
+#include <errno.h>
 #include <assert.h>
 #include <kdebug.h>
 #include <stdlib.h>
@@ -520,9 +521,17 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
 void SlaveInterface::sigpipe_handler(int)
 {
-    kdDebug(7007) << "*** SIGPIPE ***" << endl;
+    int saved_errno = errno;
+    // Using kdDebug from a signal handler is not a good idea.
+#ifndef NDEBUG    
+    char msg[1000];
+    sprintf(msg, "*** SIGPIPE *** (ignored, pid = %ld)\n", (long) getpid());
+    write(2, msg, strlen(msg));
+#endif    
+
     // Do nothing.
     // dispatch will return false and that will trigger ERR_SLAVE_DIED in slave.cpp
+    errno = saved_errno;
 }
 
 void SlaveInterface::virtual_hook( int, void* )
