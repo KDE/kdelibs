@@ -424,17 +424,17 @@ KKeyChooser::KKeyChooser( KKeyEntryMap *aKeyMap, QWidget *parent,
   grid->addLayout( pushLayout, 4, 2 );
 
   d->cShift = new QCheckBox( d->fCArea );
-  d->cShift->setText( QString::fromLatin1("SHIFT") );
+  d->cShift->setText( i18n("Shift") );
   d->cShift->setEnabled( false );
   connect( d->cShift, SIGNAL( clicked() ), SLOT( shiftClicked() ) );
 
   d->cCtrl = new QCheckBox( d->fCArea );
-  d->cCtrl->setText( QString::fromLatin1("CTRL") );
+  d->cCtrl->setText( i18n("Ctrl") );
   d->cCtrl->setEnabled( false );
   connect( d->cCtrl, SIGNAL( clicked() ), SLOT( ctrlClicked() ) );
 
   d->cAlt = new QCheckBox( d->fCArea );
-  d->cAlt->setText( QString::fromLatin1("ALT") );
+  d->cAlt->setText( i18n("Alt") );
   d->cAlt->setEnabled( false );
   connect( d->cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
 
