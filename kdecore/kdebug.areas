@@ -3,3 +3,5 @@
 #please email kde@kde.org with the appropiate descriptions.
 0	generic
 750	kspell
+125	kaccel (kdecore)
+1501	khexedit (kdeutils)
