@@ -27,7 +27,7 @@
 int KDialog::mMarginSize = 6;
 int KDialog::mSpacingSize = 6;
 
-
+template class QList<QLayoutItem>;
 
 KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
   : QDialog(parent, name, modal, f)
