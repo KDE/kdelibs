@@ -339,7 +339,7 @@ bool ReadOnlyPart::openURL( const KURL &url )
     QString extension;
     QString fileName = url.fileName();
     int extensionPos = fileName.findRev( '.' );
-    if ( extensionPos != -1 )
+    if ( extensionPos != -1 && url.query().isNull() ) // not if the URL has a query, e.g. cgi.pl?something
         extension = fileName.mid( extensionPos ); // keep the '.'
     KTempFile tempFile( QString::null, extension );
     m_file = tempFile.name();
