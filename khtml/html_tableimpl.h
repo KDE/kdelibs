@@ -79,9 +79,19 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
     
-    virtual int vSpace() { return 1; }
-    virtual int hSpace() { return 1; }
-
+    virtual int hSpace() { 
+    	if (isFloating() && hspace.isUndefined())
+	    return 2;
+	else
+	    return hspace.minWidth(width);
+    }
+    virtual int vSpace() {  
+    	if (isFloating() && vspace.isUndefined())
+	    return 2;
+	else
+	    return vspace.minWidth(getHeight());
+    }
+    
     virtual tagStatus startTag() { return TABLEStartTag; }
     virtual tagStatus endTag() { return TABLEEndTag; }
 
@@ -219,6 +229,9 @@ protected:
     int border;
     int spacing;
     int padding;
+    
+    Length vspace;
+    Length hspace;
 
     QColor bg;
     Frame frame;

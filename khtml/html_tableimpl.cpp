@@ -367,6 +367,12 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
 	    halign = HCenter;	    
 	break;
     }
+    case ATTR_VSPACE:
+	vspace = attr->val()->toLength();
+	break;
+    case ATTR_HSPACE:
+	hspace = attr->val()->toLength();
+	break;    
     default:
 	HTMLBlockElementImpl::parseAttribute(attr);
     }
