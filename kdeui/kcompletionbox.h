@@ -201,6 +201,7 @@ private slots:
     void slotSetCurrentItem( QListBoxItem *i ) { setCurrentItem( i ); } // grrr
     void slotCurrentChanged();
     void cancelled();
+    void slotItemClicked( QListBoxItem * );
 
 private:
     class KCompletionBoxPrivate;

@@ -60,8 +60,12 @@ KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
 
     connect( this, SIGNAL( doubleClicked( QListBoxItem * )),
              SLOT( slotActivated( QListBoxItem * )) );
+
+    // grmbl, just QListBox workarounds :[ Thanks Volker.
     connect( this, SIGNAL( currentChanged( QListBoxItem * )),
              SLOT( slotCurrentChanged() ));
+    connect( this, SIGNAL( clicked( QListBoxItem * )),
+             SLOT( slotItemClicked( QListBoxItem * )) );
 }
 
 KCompletionBox::~KCompletionBox()
@@ -319,6 +323,14 @@ void KCompletionBox::insertItems( const QStringList& items, int index )
 void KCompletionBox::slotCurrentChanged()
 {
     d->down_workaround = false;
+}
+
+void KCompletionBox::slotItemClicked( QListBoxItem *item )
+{
+    if ( d->down_workaround ) {
+        d->down_workaround = false;
+        emit highlighted( item->text() );
+    }
 }
 
 #include "kcompletionbox.moc"
