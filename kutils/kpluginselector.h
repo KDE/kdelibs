@@ -99,6 +99,14 @@ class KPluginSelector : public QWidget
                 KConfig * config = 0 );
 
         /**
+         * Add a list of KParts plugins. Convenience method for the one above.
+         */
+        void addPlugins( const KInstance * instance,
+                const QString & catname = QString::null,
+                const QString & category = QString::null,
+                KConfig * config = 0 );
+
+        /**
          * Add a list of non-KParts plugins
          *
          * @param plugininfos  A list of @ref KPluginInfo objects containing the

@@ -52,6 +52,7 @@
 #include <qsplitter.h>
 #include <qframe.h>
 #include "kplugininfo.h"
+#include <kinstance.h>
 
 struct KPluginSelectionWidget::KPluginSelectionWidgetPrivate
 {
@@ -469,6 +470,12 @@ void KPluginSelector::addPlugins( const QString & instanceName,
                 catname, category, cfgGroup );
     connect( w, SIGNAL( changed( bool ) ), this, SIGNAL( changed( bool ) ) );
     d->pswidgets += w;
+}
+
+void KPluginSelector::addPlugins( const KInstance * instance, const QString &
+        catname, const QString & category, KConfig * config )
+{
+    addPlugins( instance->instanceName(), catname, category, config );
 }
 
 void KPluginSelector::addPlugins( const QValueList<KPluginInfo*> & plugininfos,
