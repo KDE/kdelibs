@@ -59,7 +59,7 @@ class KInstance
      *  Building a KAboutData on the stack is only ok for usage with
      *  KCmdLineArgs and KApplication (not destroyed until the app exits).
      */
-    KInstance( const KAboutData * aboutData = 0L );
+    KInstance( const KAboutData * aboutData );
 
     /**
      * Destructor.
