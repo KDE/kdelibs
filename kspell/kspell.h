@@ -266,7 +266,13 @@ public:
    * This method does not return until spellchecking is done or canceled.
    * Your application's GUI will still be updated, however.
    */
-  static int modalCheck( QString& text, KSpellConfig * _kcs=0  );
+  static int modalCheck( QString& text ); // marked as deprecated
+  
+  /**
+   * Used local spell config
+   */
+  static int modalCheck( QString& text, KSpellConfig * _kcs  );
+
 
 signals:
 

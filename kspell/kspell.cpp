@@ -1164,6 +1164,12 @@ void KSpell::moveDlg (int x, int y)
 // --------------------------------------------------
 
 int
+KSpell::modalCheck( QString& text )
+{
+  modalCheck( text,0 );
+}
+
+int
 KSpell::modalCheck( QString& text, KSpellConfig* _kcs )
 {
     modalreturn = 0;
