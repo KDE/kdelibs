@@ -256,18 +256,24 @@ QString KFileItem::iconName()
 }
 
 
-// new stuff from KonqFileItem
+// BCI: remove me and add default argument to next function
 QPixmap KFileItem::pixmap( int _size ) const
+{
+  return pixmap( _size, KIcon::DefaultState );
+}
+
+// new stuff from KonqFileItem
+QPixmap KFileItem::pixmap( int _size, int _state ) const
 {
   if ( !m_pMimeType )
   {
     if ( S_ISDIR( m_fileMode ) )
-     return DesktopIcon( "folder", _size );
+     return DesktopIcon( "folder", _size, _state );
 
-    return DesktopIcon( "unknown", _size );
+    return DesktopIcon( "unknown", _size, _state );
   }
 
-  QPixmap p = m_pMimeType->pixmap( m_url, KIcon::Desktop, _size );
+  QPixmap p = m_pMimeType->pixmap( m_url, KIcon::Desktop, _size, _state );
   if (p.isNull())
     warning("Pixmap not found for mimetype %s",m_pMimeType->name().latin1());
   return p;

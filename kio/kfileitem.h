@@ -184,9 +184,15 @@ public:
 
   /**
    * Returns a pixmap representing the file
-   * @param size KDE-size for the pixmap
+   * @param _size Size for the pixmap in pixels. Zero will return the
+   * globally configured default size.
+   * @param _state The state of the icon: KIcon::DefaultState,
+   * KIcon::ActiveState or KIcon::DisabledState.
    * @return the pixmap
    */
+  QPixmap pixmap( int _size, int _state) const;
+
+  // BCI: remove me
   QPixmap pixmap( int _size ) const;
 
   /**
