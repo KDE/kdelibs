@@ -69,7 +69,7 @@
 #include "khtml_part.h"
 
 #include "khtmlview.h"
-#include "rendering/render_object.h"
+#include "rendering/render_replaced.h"
 #include "xml/dom_docimpl.h"
 #include "html/html_baseimpl.h"
 #include "dom/dom_doc.h"
@@ -117,10 +117,8 @@ void PartMonitor::partCompleted()
         m_completed = true;
     else {
 	disconnect(m_part,SIGNAL(completed()),this,SLOT(partCompleted()));
-        if ( visual )
-            QTimer::singleShot( 100, this, SLOT( timeout() ) );
-        else
-            timeout();
+        RenderWidget::flushWidgetResizes();
+        QTimer::singleShot( visual ? 100 : 0, this, SLOT( timeout() ) );
     }
 }
 
