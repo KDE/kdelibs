@@ -69,7 +69,7 @@
 #include "ksslcertificatecache.h"
 #include "ksslcertificate.h"
 #include <qlist.h>
-#include <kconfig.h>
+#include <ksimpleconfig.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -112,7 +112,7 @@ public:
 class KSSLCertificateCache::KSSLCertificateCachePrivate {
   public:
   QList<KSSLCNode> certList;
-  KConfig *cfg;
+  KSimpleConfig *cfg;
   KOSSL *kossl;
 
   KSSLCertificateCachePrivate()  { certList.setAutoDelete(false); 
@@ -125,7 +125,7 @@ class KSSLCertificateCache::KSSLCertificateCachePrivate {
 
 KSSLCertificateCache::KSSLCertificateCache() {
   d = new KSSLCertificateCachePrivate;
-  d->cfg = new KConfig("ksslpolicies", false, false);
+  d->cfg = new KSimpleConfig("ksslpolicies", false);
   if (!KGlobal::dirs()->addResourceType("kssl", "share/apps/kssl")) {
     kdDebug() << "Error adding (kssl, share/apps/kssl)" << endl;
   }
@@ -164,7 +164,7 @@ void KSSLCertificateCache::saveToDisk() {
         QString certEncoded = KCodecs::base64Encode(qba);
         qba.resetRawData(cert, certlen);
 
-        // write the (CN, policy, cert) to KConfig
+        // write the (CN, policy, cert) to KSimpleConfig
         d->cfg->setGroup(node->cert->getSubject());
         d->cfg->writeEntry("Certificate", certEncoded);
         d->cfg->writeEntry("Policy", node->policy);
@@ -184,8 +184,6 @@ void KSSLCertificateCache::saveToDisk() {
 #endif
 }
 
-      // FIXME: how do we implement non-permanent policies?
-      
 
 void KSSLCertificateCache::clearList() {
   KSSLCNode *node;
@@ -197,10 +195,6 @@ void KSSLCertificateCache::clearList() {
 }
 
 
-// FIXME: some certs may expire or be revoked and will need to be replaced!!!
-//   Take this into account please!!  - compare by Cert only??
-//   It's only lookups by CN that are affected here.
-
 void KSSLCertificateCache::loadDefaultPolicies() {
 #ifdef HAVE_SSL
   QStringList groups = d->cfg->groupList();
@@ -210,6 +204,13 @@ void KSSLCertificateCache::loadDefaultPolicies() {
                              ++i) {
     if ((*i).length() == 0) continue;
     d->cfg->setGroup(*i);
+
+    // remove it if it has expired
+    if (d->cfg->readDateTimeEntry("Expires") < QDateTime::currentDateTime()) {
+       d->cfg->deleteGroup(*i);
+       continue;
+    }
+
     QCString encodedCert = d->cfg->readEntry("Certificate").local8Bit();
     if (encodedCert.length() == 0) continue;
     KSSLCNode *n = new KSSLCNode;
@@ -221,6 +222,7 @@ void KSSLCertificateCache::loadDefaultPolicies() {
       delete n;
       continue;
     }
+
     n->cert = new KSSLCertificate;
     n->cert->setCert(x5c);
     n->policy = (KSSLCertificateCache::KSSLCertificatePolicy)
@@ -271,6 +273,7 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCN(
     if (node->cert->getSubject() == cn) {
       if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         d->certList.remove(node);
+        d->cfg->deleteGroup(node->cert->getSubject());
         delete node;
         continue;
       }
@@ -290,6 +293,7 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLCertificateCache::getPolicyByCer
     if (cert == *(node->cert)) {  
       if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         d->certList.remove(node);
+        d->cfg->deleteGroup(node->cert->getSubject());
         delete node;
         continue;
       }
@@ -307,8 +311,9 @@ bool KSSLCertificateCache::seenCN(QString& cn) {
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (node->cert->getSubject() == cn) {
-      if (!node->permanent && node->expires > QDateTime::currentDateTime()) {
+      if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         d->certList.remove(node);
+        d->cfg->deleteGroup(node->cert->getSubject());
         delete node;
         continue;
       }
@@ -326,8 +331,9 @@ bool KSSLCertificateCache::seenCertificate(KSSLCertificate& cert) {
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (cert == *(node->cert)) {
-      if (!node->permanent && node->expires > QDateTime::currentDateTime()) {
+      if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         d->certList.remove(node);
+        d->cfg->deleteGroup(node->cert->getSubject());
         delete node;
         continue;
       }
@@ -345,8 +351,9 @@ bool KSSLCertificateCache::isPermanent(KSSLCertificate& cert) {
 
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (cert == *(node->cert)) {
-      if (!node->permanent && node->expires > QDateTime::currentDateTime()) {
+      if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         d->certList.remove(node);
+        d->cfg->deleteGroup(node->cert->getSubject());
         delete node;
         continue;
       }
@@ -366,8 +373,8 @@ bool KSSLCertificateCache::removeByCN(QString& cn) {
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (node->cert->getSubject() == cn) {
       d->certList.remove(node);
+      d->cfg->deleteGroup(node->cert->getSubject());
       delete node;
- // FIXME: this doesn't remove from the conf file!!! FIX THIS
       saveToDisk();
       gotOne = true;
     }
@@ -382,8 +389,8 @@ bool KSSLCertificateCache::removeByCertificate(KSSLCertificate& cert) {
   for (node = d->certList.first(); node; node = d->certList.next()) {
     if (cert == *(node->cert)) {
       d->certList.remove(node);
+      d->cfg->deleteGroup(node->cert->getSubject());
       delete node;
- // FIXME: this doesn't remove from the conf file!!! FIX THIS
       saveToDisk();
       return true;
     }
