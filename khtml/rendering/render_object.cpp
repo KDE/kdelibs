@@ -53,8 +53,7 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
         o = new RenderListItem(node);
         break;
     case RUN_IN:
-    case COMPACT:
-    case MARKER:
+    case INLINE_BLOCK:
         break;
     case TABLE:
     case INLINE_TABLE:

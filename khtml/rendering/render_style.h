@@ -189,7 +189,6 @@ enum EBorderStyle {
     OUTSET, INSET, GROOVE, RIDGE
 };
 
-
 class BorderValue
 {
 public:
@@ -481,7 +480,7 @@ struct ContentData {
 //------------------------------------------------
 
 enum EDisplay {
-    INLINE, BLOCK, LIST_ITEM, RUN_IN, COMPACT, MARKER,
+    INLINE, BLOCK, LIST_ITEM, RUN_IN, INLINE_BLOCK,
     TABLE, INLINE_TABLE, TABLE_ROW_GROUP,
     TABLE_HEADER_GROUP, TABLE_FOOTER_GROUP, TABLE_ROW,
     TABLE_COLUMN_GROUP, TABLE_COLUMN, TABLE_CELL,
@@ -635,7 +634,6 @@ public:
 
     RenderStyle* getPseudoStyle(PseudoId pi);
     RenderStyle* addPseudoStyle(PseudoId pi);
-    bool hasPseudoStyle() const { return pseudoStyle; }
     void removePseudoStyle(PseudoId pi);
 
     bool hasHover() const { return  noninherited_flags._hasHover; }

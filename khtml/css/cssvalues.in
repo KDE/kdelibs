@@ -166,8 +166,7 @@ inline
 block
 list-item
 run-in
-compact
-marker
+inline-block
 table
 inline-table
 table-row-group

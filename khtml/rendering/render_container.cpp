@@ -72,8 +72,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         case BLOCK:
         case LIST_ITEM:
         case RUN_IN:
-        case COMPACT:
-        case MARKER:
+        case INLINE_BLOCK:
         case TABLE:
         case INLINE_TABLE:
         case TABLE_COLUMN:

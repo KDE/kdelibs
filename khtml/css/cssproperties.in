@@ -54,8 +54,6 @@ empty-cells
 float
 font-family
 font-size
-font-size-adjust
-font-stretch
 font-style
 font-variant
 font-weight
@@ -109,7 +107,6 @@ text-align
 text-decoration
 text-decoration-color
 text-indent
-text-shadow
 text-transform
 top
 unicode-bidi

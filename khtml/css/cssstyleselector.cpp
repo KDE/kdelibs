@@ -443,14 +443,14 @@ unsigned int CSSStyleSelector::addInlineDeclarations(DOM::CSSStyleDeclarationImp
         // give special priority to font-xxx, color properties
         switch(prop->m_id)
         {
-	case CSS_PROP_FONT_STYLE:
+        case CSS_PROP_FONT_STYLE:
         case CSS_PROP_FONT_SIZE:
-	case CSS_PROP_FONT_WEIGHT:
-	case CSS_PROP_FONT_FAMILY:
+        case CSS_PROP_FONT_WEIGHT:
+        case CSS_PROP_FONT_FAMILY:
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
         case CSS_PROP_BACKGROUND_IMAGE:
-	case CSS_PROP_DISPLAY:
+        case CSS_PROP_DISPLAY:
             // these have to be applied first, because other properties use the computed
             // values of these porperties.
 	    first = true;
@@ -540,6 +540,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	    ElementImpl *elem = static_cast<ElementImpl *>(n);
 	    // a selector is invalid if something follows :first-xxx
 	    if ( dynamicPseudo != RenderStyle::NOPSEUDO ) {
+                qDebug("failing, dynamicPseudo: %d", dynamicPseudo);
 		return;
 	    }
 	    if(!checkOneSelector(sel, elem)) return;
@@ -551,7 +552,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
     }
     // disallow *:hover
     if ( single && selectorDynamicState & StyleSelector::Hover )
-	return;
+ 	return;
     usedDynamicStates |= selectorDynamicState;
     if ((selectorDynamicState & dynamicState) != selectorDynamicState)
 	return;
@@ -560,8 +561,8 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	selectors[ selIndex ]->pseudoId = dynamicPseudo;
     } else
 	selectorCache[ selIndex ].state = Applies;
-    //qDebug( "selector %d applies", selIndex );
-    //selectors[ selIndex ]->print();
+//     qDebug( "selector %d applies", selIndex );
+//     selectors[ selIndex ]->print();
     return;
 }
 
@@ -1087,7 +1088,7 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
         case CSS_PROP_FONT:
         case CSS_PROP_COLOR:
         case CSS_PROP_BACKGROUND_IMAGE:
-	case CSS_PROP_DISPLAY:
+        case CSS_PROP_DISPLAY:
             // these have to be applied first, because other properties use the computed
             // values of these porperties.
 	    first = true;
@@ -1336,8 +1337,7 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 	EDisplay d;
 	if ( id == CSS_VAL_NONE) {
 	    d = NONE;
-	} else if ( id == CSS_VAL_RUN_IN || id == CSS_VAL_COMPACT ||
-		    id == CSS_VAL_MARKER ) {
+	} else if ( id == CSS_VAL_RUN_IN || id == CSS_VAL_INLINE_BLOCK ) {
 	    // these are not supported at the moment, so we just ignore them.
 	    return;
 	} else {
@@ -1382,9 +1382,6 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
     }
 
         break;
-    case CSS_PROP_FONT_STRETCH:
-        break;
-
     case CSS_PROP_FONT_STYLE:
     {
         FontDef fontDef = style->htmlFont().fontDef;
@@ -1665,17 +1662,13 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
 
         EWhiteSpace s;
         switch(primitiveValue->getIdent()) {
-        case CSS_VAL_NOWRAP:
-            s = NOWRAP;
-            break;
-        case CSS_VAL_PRE:
-            s = PRE;
-            break;
+        case CSS_VAL_NOWRAP:   s = NOWRAP;      break;
+        case CSS_VAL_PRE:      s = PRE;         break;
         case CSS_VAL_NORMAL:
-        default:
-            s = NORMAL;
-            break;
+        default:               s = NORMAL;      break;
         }
+        qDebug("CSS_PROP_WHITE_SPACE: %d", s);
+
         style->setWhiteSpace(s);
         break;
 
@@ -1735,10 +1728,6 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
         break;
 //    case CSS_PROP_PLAY_DURING:
         // CSS2PlayDuring
-    case CSS_PROP_TEXT_SHADOW:
-        // list of CSS2TextShadow
-        break;
-
 // colors || inherit
     case CSS_PROP_BACKGROUND_COLOR:
     case CSS_PROP_BORDER_TOP_COLOR:

@@ -1167,30 +1167,22 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
   // We are using this so often
   const struct css_value *cssval = findValue(val, len);
   if (cssval && cssval->id == CSS_VAL_INHERIT) {
-    parsedValue = new CSSInheritedValueImpl(); // inherited value
+      parsedValue = new CSSInheritedValueImpl(); // inherited value
   } else {
-    switch(propId)
+      switch(propId)
       {
-	/* The comment to the left defines all valid value of this properties as defined
-     * in CSS 2, Appendix F. Property index
-     */
+          /* The comment to the left defines all valid value of this properties as defined
+           * in CSS 2, Appendix F. Property index
+           */
 
-	/* All the CSS properties are not supported by the renderer at the moment.
-	 * Note that all the CSS2 Aural properties are only checked, if CSS_AURAL is defined
-	 * (see parseAuralValues). As we don't support them at all this seems reasonable.
-	 */
+          /* All the CSS properties are not supported by the renderer at the moment.
+           * Note that all the CSS2 Aural properties are only checked, if CSS_AURAL is defined
+           * (see parseAuralValues). As we don't support them at all this seems reasonable.
+           */
 
       case CSS_PROP_SIZE:                 // <length>{1,2} | auto | portrait | landscape | inherit
       case CSS_PROP_QUOTES:               // [<string> <string>]+ | none | inherit
-      case CSS_PROP_TEXT_SHADOW:          // none | [<color> || <length> <length> <length>? ,]*
-	//    [<color> || <length> <length> <length>?] | inherit
-
       case CSS_PROP_UNICODE_BIDI:         // normal | embed | bidi-override | inherit
-      case CSS_PROP_WHITE_SPACE:          // normal | pre | nowrap | inherit
-      case CSS_PROP_FONT_STRETCH:
-        // normal | wider | narrower | ultra-condensed | extra-condensed | condensed |
-        // semi-condensed |  semi-expanded | expanded | extra-expanded | ultra-expanded |
-        // inherit
       case CSS_PROP_PAGE:                 // <identifier> | auto // ### CHECK
       case CSS_PROP_PAGE_BREAK_AFTER:     // auto | always | avoid | left | right | inherit
       case CSS_PROP_PAGE_BREAK_BEFORE:    // auto | always | avoid | left | right | inherit
@@ -1210,10 +1202,13 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 
       case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
 	// close-quote | no-open-quote | no-close-quote ]+ | inherit
-        {
-            parsedValue = parseContent(curP,endP);
-        }
-
+        parsedValue = parseContent(curP,endP);
+        break;
+      case CSS_PROP_WHITE_SPACE:          // normal | pre | nowrap | inherit
+          if (cssval && ( cssval->id == CSS_VAL_NORMAL || cssval->id == CSS_VAL_PRE ||
+                          cssval->id == CSS_VAL_NOWRAP ) )
+              parsedValue = new CSSPrimitiveValueImpl(cssval->id);
+          break;
       case CSS_PROP_CLIP:                 // <shape> | auto | inherit
       {
 	  int i;
@@ -1301,35 +1296,29 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  break;
 	}
       case CSS_PROP_BORDER_COLLAPSE:      // collapse | separate | inherit
-	{
 	  if (cssval) {
-	    int id = cssval->id;
-	    if ( id == CSS_VAL_COLLAPSE || id == CSS_VAL_SEPARATE ) {
-	      parsedValue = new CSSPrimitiveValueImpl(id);
-	    }
+              int id = cssval->id;
+              if ( id == CSS_VAL_COLLAPSE || id == CSS_VAL_SEPARATE ) {
+                  parsedValue = new CSSPrimitiveValueImpl(id);
+              }
 	  }
 	  break;
-	}
       case CSS_PROP_VISIBILITY:           // visible | hidden | collapse | inherit
-	{
 	  if (cssval) {
-	    int id = cssval->id;
-	    if (id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_COLLAPSE) {
-	      parsedValue = new CSSPrimitiveValueImpl(id);
-	    }
+              int id = cssval->id;
+              if (id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_COLLAPSE) {
+                  parsedValue = new CSSPrimitiveValueImpl(id);
+              }
 	  }
 	  break;
-	}
       case CSS_PROP_OVERFLOW:             // visible | hidden | scroll | auto | inherit
-	{
 	  if (cssval) {
-	    int id = cssval->id;
-	    if ( id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_SCROLL || id == CSS_VAL_AUTO ) {
-	      parsedValue = new CSSPrimitiveValueImpl(id);
-	    }
+              int id = cssval->id;
+              if ( id == CSS_VAL_VISIBLE || id == CSS_VAL_HIDDEN || id == CSS_VAL_SCROLL || id == CSS_VAL_AUTO ) {
+                  parsedValue = new CSSPrimitiveValueImpl(id);
+              }
 	  }
 	  break;
-	}
       case CSS_PROP_LIST_STYLE_POSITION:  // inside | outside | inherit
 	{
 	  if (cssval) {
@@ -1355,7 +1344,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  break;
 	}
       case CSS_PROP_DISPLAY:
-        // inline | block | list-item | run-in | compact | -konq-ruler | marker | table |
+        // inline | block | list-item | run-in | inline-block | -konq-ruler | table |
         // inline-table | table-row-group | table-header-group | table-footer-group | table-row |
         // table-column-group | table-column | table-cell | table-caption | none | inherit
 	{
@@ -1613,7 +1602,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  const QString val2( value.stripWhiteSpace() );
 	  //kdDebug(6080) << "parsing color " << val2 << endl;
 	  QColor c;
-	  khtml::setNamedColor(c, val2, !m_bnonCSSHint);
+               khtml::EColorType ct;
+               khtml::setNamedColor(c, ct, val2, !m_bnonCSSHint);
 	  if(!c.isValid() && (val2 != "transparent" ) && !val2.isEmpty() ) return false;
 	  //kdDebug( 6080 ) << "color is: " << c.red() << ", " << c.green() << ", " << c.blue() << endl;
 	  parsedValue = new CSSPrimitiveValueImpl(c);
@@ -1787,16 +1777,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
             parsedValue = new CSSPrimitiveValueImpl(cssval->id);
 	  } else {
             parsedValue = parseUnit(curP, endP, LENGTH | PERCENT );
-	  }
-	  break;
-	}
-      case CSS_PROP_FONT_SIZE_ADJUST:     // <number> | none | inherit
-	// ### not supported later on
-	{
-	  if (cssval && cssval->id == CSS_VAL_NONE) {
-            parsedValue = new CSSPrimitiveValueImpl(cssval->id);
-	  } else {
-            parsedValue = parseUnit(curP, endP, NUMBER);
 	  }
 	  break;
 	}
