@@ -280,7 +280,7 @@ class KDEUI_EXPORT KInputDialog : public KDialogBase
 
   private:
 
-    KInputDialogPrivate *d;
+    KInputDialogPrivate* const d;
     friend class KInputDialogPrivate;
 };
 
