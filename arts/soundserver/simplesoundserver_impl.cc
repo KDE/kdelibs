@@ -183,9 +183,9 @@ float SimpleSoundServer_impl::serverBufferTime()
 						 * AudioSubSystem::the()->fragmentCount();
 
 	float playSpeed = AudioSubSystem::the()->channels()
-	                * AudioSubSystem::the()->samplingRate();
+	                * AudioSubSystem::the()->samplingRate()
+					* (AudioSubSystem::the()->bits() / 8);
 
-	if(AudioSubSystem::the()->format() != 8) playSpeed *= 2.0;
 	return 1000.0 * hardwareBuffer / playSpeed;
 }
 
