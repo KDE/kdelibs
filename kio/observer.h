@@ -61,29 +61,26 @@ protected:
 
 public slots:
 
-  // ListJob
   virtual void slotTotalEntries( KIO::Job*, unsigned long );
   virtual void slotEntries( KIO::Job*, const KIO::UDSEntryList& );
 
-  // TODO implement them
+  virtual void slotTotalSize( KIO::Job*, unsigned long size );
+  virtual void slotTotalFiles( KIO::Job*, unsigned long files );
+  virtual void slotTotalDirs( KIO::Job*, unsigned long dirs );
 
-  virtual void slotTotalSize( KIO::Job*, unsigned long ) {}
-  virtual void slotTotalFiles( KIO::Job*, unsigned long ) {}
-  virtual void slotTotalDirs( KIO::Job*, unsigned long ) {}
+  virtual void slotProcessedSize( KIO::Job*, unsigned long size );
+  virtual void slotProcessedFiles( KIO::Job*, unsigned long files );
+  virtual void slotProcessedDirs( KIO::Job*, unsigned long dirs );
 
-  virtual void slotProcessedSize( KIO::Job*, unsigned long ) {}
-  virtual void slotProcessedFiles( KIO::Job*, unsigned long ) {}
-  virtual void slotProcessedDirs( KIO::Job*, unsigned long ) {}
+  virtual void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
+  virtual void slotPercent( KIO::Job*, unsigned long percent );
 
-  virtual void slotSpeed( KIO::Job*, unsigned long ) {}
-  virtual void slotPercent( KIO::Job*, unsigned long ) {}
+  virtual void slotCopying( KIO::Job*, const KURL& from, const KURL& to );
+  virtual void slotMoving( KIO::Job*, const KURL& from, const KURL& to );
+  virtual void slotDeleting( KIO::Job*, const KURL& from );
+  virtual void slotCreatingDir( KIO::Job*, const KURL& dir );
 
-  virtual void slotCopying( KIO::Job*, const KURL&, const KURL& ) {}
-  virtual void slotMoving( KIO::Job*, const KURL&, const KURL& ) {}
-  virtual void slotDeleting( KIO::Job*, const KURL& ) {}
-  virtual void slotCreatingDir( KIO::Job*, const KURL& ) {}
-
-  virtual void slotCanResume( KIO::Job*, bool ) {}
+  virtual void slotCanResume( KIO::Job*, bool can_resume );
 };
 
 };

@@ -20,6 +20,7 @@
 #include <kdebug.h>
 #include <kapp.h>
 #include <dcopclient.h>
+#include <kurl.h>
 
 #include "observer.h"
 
@@ -60,5 +61,74 @@ void Observer::slotEntries( KIO::Job* job, const KIO::UDSEntryList& entries )
 {
   kdDebug() << "** Observer::slotEntries " << job << " " << entries.count() << endl;
 }
+
+void Observer::slotTotalSize( KIO::Job* job, unsigned long size )
+{
+  kdDebug() << "** Observer::slotTotalSize " << job << " " << size << endl;
+}
+
+void Observer::slotTotalFiles( KIO::Job* job, unsigned long files )
+{
+  kdDebug() << "** Observer::slotTotalFiles " << job << " " << files << endl;
+}
+
+void Observer::slotTotalDirs( KIO::Job* job, unsigned long dirs )
+{
+  kdDebug() << "** Observer::slotTotalDirs " << job << " " << dirs << endl;
+}
+
+void Observer::slotProcessedSize( KIO::Job* job, unsigned long size )
+{
+  kdDebug() << "** Observer::slotProcessedSize " << job << " " << size << endl;
+}
+
+void Observer::slotProcessedFiles( KIO::Job* job, unsigned long files )
+{
+  kdDebug() << "** Observer::slotProcessedFiles " << job << " " << files << endl;
+}
+
+void Observer::slotProcessedDirs( KIO::Job* job, unsigned long dirs )
+{
+  kdDebug() << "** Observer::slotProcessedDirs " << job << " " << dirs << endl;
+}
+
+void Observer::slotSpeed( KIO::Job* job, unsigned long bytes_per_second )
+{
+  kdDebug() << "** Observer::slotSpeed " << job << " " << bytes_per_second << endl;
+}
+
+void Observer::slotPercent( KIO::Job* job, unsigned long percent )
+{
+  kdDebug() << "** Observer::slotPercent " << job << " " << percent << endl;
+}
+
+void Observer::slotCopying( KIO::Job* job, const KURL& from, const KURL& to )
+{
+  kdDebug() << "** Observer::slotCopying " << job << " " << from.path() << " " << to.path() << endl;
+}
+
+void Observer::slotMoving( KIO::Job* job, const KURL& from, const KURL& to )
+{
+  kdDebug() << "** Observer::slotMoving " << job << " " << from.path() << " " << to.path() << endl;
+}
+
+void Observer::slotDeleting( KIO::Job* job, const KURL& from )
+{
+  kdDebug() << "** Observer::slotDeleting " << job << " " << from.path() << endl;
+}
+
+void Observer::slotCreatingDir( KIO::Job* job, const KURL& dir )
+{
+  kdDebug() << "** Observer::slotCreatingDir " << job << " " << dir.path() << endl;
+}
+
+void Observer::slotCanResume( KIO::Job* job, bool can_resume )
+{
+  kdDebug() << "** Observer::slotCanResume " << job << " " << can_resume << endl;
+}
+
+
+
+
 
 #include "observer.moc"

@@ -77,3 +77,48 @@ void UIServer::entries( int id, unsigned long count )
 {
     kdDebug() << "UIServer::entries " << id << " " << count << endl;
 }
+
+void UIServer::totalSize( int id, unsigned long size )
+{
+    kdDebug() << "UIServer::totalSize " << id << " " << size << endl;
+}
+
+void UIServer::totalFiles( int id, unsigned long files )
+{
+    kdDebug() << "UIServer::totalSize " << id << " " << files << endl;
+}
+
+void UIServer::totalDirs( int id, unsigned long dirs )
+{
+    kdDebug() << "UIServer::totalSize " << id << " " << dirs << endl;
+}
+
+void UIServer::processedSize( int id, unsigned long size )
+{
+    kdDebug() << "UIServer::processedSize " << id << " " << size << endl;
+}
+
+void UIServer::processedFiles( int id, unsigned long files )
+{
+    kdDebug() << "UIServer::processedSize " << id << " " << files << endl;
+}
+
+void UIServer::processedDirs( int id, unsigned long dirs )
+{
+    kdDebug() << "UIServer::processedSize " << id << " " << dirs << endl;
+}
+
+void UIServer::percent( int id, unsigned long ipercent )
+{
+    kdDebug() << "UIServer::processedSize " << id << " " << ipercent << endl;
+}
+
+void UIServer::speed( int id, unsigned long bytes_per_second )
+{
+    kdDebug() << "UIServer::speed " << id << " " << bytes_per_second << endl;
+}
+
+void UIServer::canResume( int id, unsigned int can_resume )
+{
+    kdDebug() << "UIServer::canResume " << id << " " << can_resume << endl;
+}

@@ -48,6 +48,19 @@ k_dcop:
   void totalEntries( int id, unsigned long total );
   void entries( int id, unsigned long count );
 
+  void totalSize( int id, unsigned long size );
+  void totalFiles( int id, unsigned long files );
+  void totalDirs( int id, unsigned long dirs );
+
+  void processedSize( int id, unsigned long bytes );
+  void processedFiles( int id, unsigned long files );
+  void processedDirs( int id, unsigned long dirs );
+
+  void percent( int id, unsigned long ipercent );
+  void speed( int id, unsigned long bytes_per_second );
+
+  void canResume( int id, unsigned int can_resume );
+
 private:
   static int s_jobId;
 };
