@@ -49,6 +49,7 @@
 #include <kimageeffect.h>
 #include <ktoolbar.h>
 #include <qdrawutil.h>
+#include <qpixmapcache.h>
 #include <unistd.h>
 #include <klocale.h>
 #include <kiconloader.h>
@@ -58,7 +59,6 @@
 
 bool TransMenuHandler::eventFilter(QObject *obj, QEvent *ev)
 {
-    static QWidget w(NULL, NULL,  WType_Popup  | WRepaintNoErase);
     QPopupMenu *p = (QPopupMenu *)obj;
     if(ev->type() == QEvent::Show){
         QApplication::syncX();
@@ -176,6 +176,8 @@ void MegaStyle::unPolish(QApplication *app)
 
 void MegaStyle::polish(QPalette &/*oldPal*/)
 {
+    QPixmapCache::clear(); // for radiobutton and checkbox cache
+
     KConfig *config = KGlobal::config();
     QString oldGrp = config->group();
     config->setGroup("B2");
@@ -337,9 +339,6 @@ bool MegaStyle::eventFilter(QObject *obj, QEvent *ev)
                 pal.setBrush(QColorGroup::Background, brush);
                 w->setPalette(pal);*/
             }
-        }
-        else if(ev->type() == QEvent::ApplicationPaletteChange){
-            qWarning("In parent palette change!");
         }
         else if(obj->inherits("KToolBar")){
             if(ev->type() == QEvent::Resize){
@@ -1129,7 +1128,7 @@ void MegaStyle::drawSliderGroove(QPainter *p,
 {
     // I don't think we need to cache this, horiz and vert gradients
     // are very fast to make
-    static KPixmap buffer;
+    KPixmap buffer;
     if(orient == Horizontal){
         y+=(h-10)/2;
         h = 10;
