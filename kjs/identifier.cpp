@@ -47,8 +47,6 @@ IdentifierStatisticsExitLogger::~IdentifierStatisticsExitLogger()
 
 #endif
 
-Identifier Identifier::null;
-
 extern const Identifier argumentsPropertyName("arguments");
 extern const Identifier calleePropertyName("callee");
 extern const Identifier constructorPropertyName("constructor");
@@ -258,7 +256,7 @@ void Identifier::remove(UString::Rep *r)
     _table[i] = 0;
     --_keyCount;
 
-    if (_keyCount * 3 < _tableSize && _tableSize > _minTableSize) {
+    if (_keyCount * 6 < _tableSize && _tableSize > _minTableSize) {
         shrink();
         return;
     }
@@ -298,6 +296,12 @@ void Identifier::rehash(int newTableSize)
             insert(key);
 
     free(oldTable);
+}
+
+const Identifier &Identifier::null()
+{
+    static Identifier null;
+    return null;
 }
 
 } // namespace KJS

@@ -143,7 +143,7 @@ namespace KJS {
   protected:
     LabelStack ls;
   private:
-    Reference evaluateReference(ExecState* /*exec*/) const { return Reference(0,Identifier::null); }
+    Reference evaluateReference(ExecState* /*exec*/) const { return Reference(0,Identifier::null()); }
     int l0, l1;
     SourceCode *sourceCode;
     bool breakPoint;

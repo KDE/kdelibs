@@ -56,14 +56,14 @@ using namespace KJS;
 
 namespace KJS {
 #ifdef WORDS_BIGENDIAN
-  unsigned char NaN_Bytes[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
-  unsigned char Inf_Bytes[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
+  const unsigned char NaN_Bytes[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
+  const unsigned char Inf_Bytes[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
 #elif defined(arm)
-  unsigned char NaN_Bytes[] = { 0, 0, 0xf8, 0x7f, 0, 0, 0, 0 };
-  unsigned char Inf_Bytes[] = { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 };
+  const unsigned char NaN_Bytes[] = { 0, 0, 0xf8, 0x7f, 0, 0, 0, 0 };
+  const unsigned char Inf_Bytes[] = { 0, 0, 0xf0, 0x7f, 0, 0, 0, 0 };
 #else
-  unsigned char NaN_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
-  unsigned char Inf_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
+  const unsigned char NaN_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
+  const unsigned char Inf_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
 #endif
 
   const double NaN = *(const double*) NaN_Bytes;
@@ -380,7 +380,7 @@ ContextImp::ContextImp(Object &glob, InterpreterImp *interpreter, Object &thisV,
   if (func && func->inherits(&DeclaredFunctionImp::info))
     functionName = static_cast<DeclaredFunctionImp*>(func)->name();
   else
-    functionName = Identifier::null;
+    functionName = Identifier::null();
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode) {

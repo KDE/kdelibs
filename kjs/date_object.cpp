@@ -765,6 +765,9 @@ double KJS::KRFCDate_parseDate(const UString &_date)
        while (*dateString && isspace(*dateString))
          ++dateString;
 
+       if (strncasecmp(dateString, "GMT", 3) == 0) {
+         dateString += 3;
+       }
        if ((*dateString == '+') || (*dateString == '-')) {
          offset = strtol(dateString, &newPosStr, 10);
          dateString = newPosStr;
