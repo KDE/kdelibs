@@ -325,22 +325,45 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
     layout->addStretch(1);
 
     if ( d->b1 )
+    {
         layout->addWidget( d->b1 );
+	setTabOrder( d->b1, d->b0 );
+    }
     if( d->b8 )
+    {
         layout->addWidget( d->b8 );
+	setTabOrder( d->b8, d->b0 );
+    }
     if ( d->b2 )
+    {
         layout->addWidget( d->b2 );
+	setTabOrder( d->b2, d->b0 );
+    }
     if ( d->b3 )
+    {
         layout->addWidget( d->b3 );
+	setTabOrder( d->b3, d->b0 );
+    }
     if ( d->b4 )
+    {
         layout->addWidget( d->b4 );
+	setTabOrder( d->b4, d->b0 );
+    }
     if ( d->b5 )
+    {
         layout->addWidget( d->b5 );
+	setTabOrder( d->b5, d->b0 );
+    }
     if ( d->b6 )
+    {
         layout->addWidget( d->b6 );
+	setTabOrder( d->b6, d->b0 );
+    }
     if ( d->b7 )
+    {
         layout->addWidget( d->b7 );
-
+	setTabOrder( d->b7, d->b0 );
+    }
 
     d->b0->setDefault( true );
     layout->addWidget( d->b0 );
