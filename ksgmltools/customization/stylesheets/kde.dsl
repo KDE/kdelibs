@@ -403,7 +403,7 @@
 
 ;(define %generate-legalnotice-link% #t) ;; works only if COPYRIGHT is present as well
 ;(define ($legalnotice-link-file$ legalnotice)
-;  "http://www.kde.org/licence/gpl.html") ; works only if there are no other legal notices around!
+;  "http://www.kde.org/license/gpl.html") ; works only if there are no other legal notices around!
 ; OTHERCREDIT can work, it just hasn't been done properly (see dbttlpg.dsl
 ; under articles): all that needs to be done is treating it as author;
 ; CONTRIB does not work therefore, but that also needs an extension
@@ -455,6 +455,11 @@
        (with-mode searchindex
 	 (process-children))
        (empty-sosofo))))
+
+; Added as a temporary patch - things might get broken by it
+; It would solve the lowbar and the verbar problems and hu
+(declare-characteristic preserve-sdata?
+   "UNREGISTERED::James Clark//Characteristic::preserve-sdata?" #f)
 
     </STYLE-SPECIFICATION-BODY>
   </STYLE-SPECIFICATION>
