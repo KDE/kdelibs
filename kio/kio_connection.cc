@@ -10,7 +10,6 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <string.h>
-#include <assert.h>
 
 #include <iostream>
 
@@ -53,8 +52,6 @@ Connection::~Connection()
 
 int Connection::send( int _cmd, const void *_p, int _len )
 {
-  assert( _len <= 2048 );
-  
   static char buffer[ 100 ];
   sprintf( buffer, "%4x_%2x_", _len, _cmd );
 
