@@ -88,7 +88,7 @@ RenderObject::RenderObject(RenderStyle* style)
     m_layouted = false;
     m_parsing = false;
     m_minMaxKnown = false;
-    
+
     m_parent = 0;
     m_previous = 0;
     m_next = 0;
@@ -312,59 +312,6 @@ void RenderObject::printTree(int indent) const
     }
 }
 
-void RenderObject::printSelection( QPainter *p, int startPos, RenderObject *end, int endPos )
-{
-    int tx = 0;
-    int ty = 0;
-    absolutePosition(tx, ty);
-
-    RenderObject *o = firstChild();
-    while( startPos && o ) {
-	o = o->nextSibling();
-	startPos--;
-    }
-
-    while(o) {
-	if(o->printSelection(p, tx, ty, end, endPos)) return;
-	RenderObject *next;
-	next = o->nextSibling();
-	while(!next) {
-	    o = o->parent();
-	    if(!o) return;
-	    next = o->nextSibling();
-	}
-	if(!next) return;
-	o = next;
-    }
-}
-
-bool RenderObject::printSelection( QPainter *p, int tx, int ty, RenderObject *end, int endPos )
-{
-    if(this != end) {
-	RenderObject *o = firstChild();
-	if(o) {
-	    tx += xPos();
-	    ty += yPos();
-	    while(o) {
-		if(o->printSelection(p, tx, ty, end, endPos)) return true;
-		o = o->nextSibling();
-	    }
-	}
-	return false;
-    }
-    RenderObject *o = firstChild();
-    if(o) {
-	tx += xPos();
-	ty += yPos();
-	while(o && endPos) {
-	    if(o->printSelection(p, tx, ty, end, endPos)) return true;
-	    o = o->nextSibling();
-	    endPos--;
-	}
-    }
-    return true;
-}
-
 void RenderObject::selectionStartEnd(int& spos, int& epos)
 {
     if (parent())
@@ -380,6 +327,6 @@ void RenderObject::styleChanged(RenderStyle *newStyle)
         m_style = newStyle;
     }
     containingBlock()->updateSize();
-        
-        
+
+
 }

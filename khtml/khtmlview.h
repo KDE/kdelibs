@@ -150,10 +150,9 @@ public:
     //    int marginHeight() { return _marginHeight; }
 
     QString selectedText() const;
-    
+
 protected:
     void paintElement( khtml::RenderObject *o, int x, int y );
-    void paintSelection();
     virtual void resizeEvent ( QResizeEvent * event );
     virtual void viewportPaintEvent ( QPaintEvent* pe  );
     virtual bool focusNextPrevChild( bool next );

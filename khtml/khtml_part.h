@@ -354,11 +354,9 @@ public:
 signals:
   void onURL( const QString &url );
     void popupMenu(const QString &url, const QPoint &point);
-    
+
 protected:
   virtual bool openFile();
-
-  DOM::HTMLDocumentImpl *docImpl() const;
 
   virtual void overURL( const QString &url );
   virtual void urlSelected( const QString &url, int button = 0, const QString &_target = QString::null );
@@ -406,6 +404,7 @@ private:
   void clear();
   void checkCompleted();
 
+  DOM::HTMLDocumentImpl *docImpl() const;
   khtml::ChildFrame *frame( const QObject *obj );
 
   KHTMLPart *parentPart();

@@ -32,11 +32,13 @@
 #endif
 
 #include "render_text.h"
-#include "dom_stringimpl.h"
-
 #include "render_style.h"
 
 #include "misc/loader.h"
+
+#include <qfontmetrics.h>
+#include <qfont.h>
+#include <qpainter.h>
 
 using namespace khtml;
 using namespace DOM;
@@ -185,7 +187,7 @@ RenderText::RenderText(RenderStyle *style, DOMStringImpl *_str)
     fm = new QFontMetrics(m_style->font());
     str = _str;
     if(str) str->ref();
-    
+
     m_selectionState = SelectionNone;
 
 #ifdef DEBUG_LAYOUT
@@ -304,13 +306,13 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    s=s->next();
 	}
     }
-    
-    
+
+
     s = m_first;
     if (selectionState() != SelectionNone)
     {
     	int endPos, startPos;
-	if (selectionState()==SelectionInside) 
+	if (selectionState()==SelectionInside)
 	{
 	    startPos=endPos=-1;
 	}
@@ -324,7 +326,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 	    if(s->checkVerticalPoint(y, ty, h))
 	    	s->printSelection(p, tx, ty, endPos);
 	    endPos -= s->len;
-	    s=s->next();	    
+	    s=s->next();	
 	}
     }
 
@@ -517,23 +519,3 @@ unsigned int RenderText::width( int from, int len) const
     return w;
 }
 
-bool RenderText::printSelection( QPainter *p, int tx, int ty, RenderObject *end, int endPos )
-{
-    if(this != end) endPos = -1;
-
-    tx += xPos();
-    ty += yPos();
-
-    TextSlave *s = m_first;
-    p->setFont( m_style->font() );
-    p->setPen( "#000000" );
-    while(s && endPos)
-    {
-	s->printSelection(p, tx, ty, endPos);
-	s=s->next();
-	endPos -= s->len;
-    }
-
-    if(this == end) return true;
-    return false;
-}

@@ -23,19 +23,20 @@
 #ifndef RENDERTEXT_H
 #define RENDERTEXT_H
 
-#include <qpainter.h>
-#include <qfontmetrics.h>
-#include "dom_stringimpl.h"
 #include "dom_string.h"
-#include "render_style.h"
+#include "dom_stringimpl.h"
 #include "render_object.h"
 
 #include <assert.h>
 
+class QPainter;
+class QFontMetrics;
+
 namespace khtml
 {
     class RenderText;
-
+    class RenderStyle;
+    
 class TextSlave
 {
 public:
@@ -138,8 +139,6 @@ public:
     TextSlave *first() { return m_first; }
     TextSlave *last() { return m_last; }
 
-    virtual bool printSelection( QPainter *p, int _tx, int _ty, RenderObject *end, int endPos );
-    
     virtual SelectionState selectionState() const {return m_selectionState;}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
 
@@ -147,13 +146,13 @@ protected:
     short m_minWidth;
     short m_maxWidth;
     short m_contentHeight;
-    
+
     SelectionState m_selectionState : 2 ;
 
     QFontMetrics *fm;
     DOM::DOMStringImpl *str;
     TextSlave *m_first;
-    TextSlave *m_last;   
+    TextSlave *m_last;
 };
 
 

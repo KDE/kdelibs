@@ -252,37 +252,8 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	py += PAINT_BUFFER_HEIGHT;
     }
 
-//    if(d->selectionStart) {
-//	paintSelection();
-//    }
-
     //printf("TIME: print() dt=%d\n",qt.elapsed());
 }
-
-void KHTMLView::paintSelection()
-{
-    printf("painting selection\n");
-
-    if(d->selectionStart == d->selectionEnd && d->startOffset == d->endOffset) return;
-
-    printf("selection from %p/%d to %p/%d\n", d->selectionStart, d->startOffset, d->selectionEnd, d->endOffset);
-
-#if 0
-    int xm, ym;
-    contentsToViewport(0, 0, xm, ym);
-    QPainter* p = new QPainter;
-    p->begin(this);
-    p->translate(-xm, -ym);
-    if(d->startBeforeEnd)
-	d->selectionStart->renderer()->printSelection(p, d->startOffset,
-						      d->selectionEnd->renderer(), d->endOffset);
-    else
-	d->selectionEnd->renderer()->printSelection(p, d->endOffset,
-						    d->selectionStart->renderer(), d->startOffset);
-    delete p;
-#endif
-}
-
 
 void KHTMLView::layout(bool force)
 {
