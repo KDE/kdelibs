@@ -20,6 +20,8 @@
 #ifndef _KDEBUG_H
 #define _KDEBUG_H "$Id$"
 
+#include <qstring.h>
+
 /**
   * kdebug provides and advanced mechanism for displaying debugging
   * information to the user.  kdebug works like printf does but takes two
@@ -94,5 +96,15 @@ enum DebugLevels {
 	KDEBUG_ERROR=	2,
 	KDEBUG_FATAL=	3
 };
+
+/**
+ * use debugString to output a QString in debug messages. This is a convenient function
+ * that does nothing but return "<null>" when NDEBUG is defined.
+ */
+#if defined(NDEBUG)
+#define debugString(x) "<null>"
+#else
+inline const char* debugString(const QString& a) { if (a.isNull()) return "<null>"; else return a.ascii(); }
+#endif
 
 #endif
