@@ -27,6 +27,7 @@
 #include <kurl.h>
 #include <klocale.h>
 #include <kfiledialog.h>
+#include <kapp.h>
 
 #include <qcombobox.h>
 #include <qstack.h>
@@ -68,7 +69,6 @@ void RenderFormElement::layout()
     }
 
 }
-
 
 void RenderFormElement::calcMinMaxWidth()
 {
@@ -423,6 +423,8 @@ void RenderLineEdit::layout()
 
     int size = input->size();
 
+    edit->constPolish();
+
     int h = fm.height();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
     if ( edit->frame() ) {
@@ -430,11 +432,15 @@ void RenderLineEdit::layout()
         // ### this is not really portable between all styles.
         // I think one should try to find a generic solution which
         // works with all possible styles. Lars.
+        // ### well, it is. it's the 1:1 copy of QLineEdit::sizeHint()
+        // the only reason that made me including this thingie is
+        // that I cannot get a sizehint for a specific number of characters
+        // in the lineedit from it. It's not my fault, it's Qt's. Dirk
         if ( m_widget->style().guiStyle() == Qt::WindowsStyle && h < 26 )
             h = 22;
-        s = QSize( w + 8, h );
+        s = QSize( w + 8, h ).expandedTo( QApplication::globalStrut() );
     } else
-        s = QSize( w + 4, h + 4 );
+	s = QSize( w + 4, h + 4 ).expandedTo( QApplication::globalStrut() );
 
     edit->blockSignals(true);
     edit->setText(static_cast<HTMLInputElementImpl*>(m_element)->value().string());
