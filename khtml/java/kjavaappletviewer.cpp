@@ -115,7 +115,7 @@ static KStaticDeleter <KJavaServerMaintainer> serverMaintainerDeleter;
 //-----------------------------------------------------------------------------
 
 AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
-    : KDialogBase (parent, "paramdialog", true, i18n ("Applet Parameters"), 
+    : KDialogBase (parent, "paramdialog", true, i18n ("Applet Parameters"),
                    KDialogBase::Close, KDialogBase::Close, true),
       m_appletWidget (parent) {
     KJavaApplet * applet = parent->applet ();
@@ -268,7 +268,8 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         m_view->resize (width, height);
     applet->setBaseURL (baseurl);
     // check codebase first
-    KURL newURL(baseurl, codebase);
+    KURL kbaseURL( baseurl );
+    KURL newURL(kbaseURL, codebase);
     if (kapp->authorizeURLAction("redirect", KURL(baseurl), newURL))
         applet->setCodeBase (newURL.url());
     applet->setAppletClass (classname);
@@ -460,7 +461,7 @@ void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
 
 //-----------------------------------------------------------------------------
 
-KJavaAppletViewerLiveConnectExtension::KJavaAppletViewerLiveConnectExtension(KJavaAppletViewer * parent) 
+KJavaAppletViewerLiveConnectExtension::KJavaAppletViewerLiveConnectExtension(KJavaAppletViewer * parent)
     : KParts::LiveConnectExtension (parent), m_viewer (parent) {
 }
 
@@ -537,7 +538,7 @@ void KJavaAppletViewerLiveConnectExtension::unregister(const unsigned long objid
         return;
     KJavaApplet * applet = m_viewer->view ()->appletWidget ()->applet ();
     if (!applet || objid == 0) {
-        // typically a gc after a function call on the applet, 
+        // typically a gc after a function call on the applet,
         // no need to send to the jvm
         return;
     }

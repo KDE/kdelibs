@@ -79,7 +79,7 @@ KJavaDownloader::KJavaDownloader( int ID, const QString& url )
     d->loaderID = ID;
     d->url = new KURL( url );
 
-    d->job = KIO::get( url, false, false );
+    d->job = KIO::get( *d->url, false, false );
     d->job->addMetaData("PropagateHttpHeader", "true");
     connect( d->job,  SIGNAL(data( KIO::Job*, const QByteArray& )),
              this,    SLOT(slotData( KIO::Job*, const QByteArray& )) );
