@@ -62,7 +62,7 @@ public:
 	}
 
     virtual HAlign hAlign() { return halign; }
-    virtual void print(QPainter *p, int _x, int _y, int _w, int _h, 
+    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
 		       int _tx, int _ty);
 
     virtual void calcMinMaxWidth();
@@ -73,11 +73,11 @@ public:
     virtual short getMinWidth() const { return minWidth; }
     virtual short getMaxWidth() const { return maxWidth; }
 
-    virtual bool mouseEvent( int x, int y, int button, MouseEventType, 
+    virtual bool mouseEvent( int x, int y, int button, MouseEventType,
 			     int _tx, int _ty, DOMString &url);
     virtual void mouseEventHandler( int button, MouseEventType type );
 
-    virtual void getAbsolutePosition(int &xPos, int &yPos); 
+    virtual void getAbsolutePosition(int &xPos, int &yPos);
     virtual NodeImpl *addChild(NodeImpl *newChild);
 
     void parseAttribute(Attribute *token);
@@ -87,11 +87,11 @@ protected:
      * the style of the current object. Is also used to render inline children
      * ### not sure, if this is the right way in the long term...
      */
-    CSSStyle *_style; 
+    CSSStyle *_style;
 
     HAlign halign;
     /*
-     * the minimum width the element needs, to be able to render 
+     * the minimum width the element needs, to be able to render
      * it's content without clipping
      */
     short minWidth;
@@ -105,7 +105,7 @@ protected:
      * parent
      */
     short availableWidth;
-        
+
 };
 
 class HTMLInlineElementImpl : public HTMLElementImpl
@@ -121,6 +121,8 @@ public:
     // overrides NodeImpl
 
     virtual void setStyle(CSSStyle *style);
+    virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
+		       int _tx, int _ty);
 
 protected:
     ushort _id;
@@ -152,7 +154,7 @@ public:
 
     virtual void updateSize();
 
-    virtual bool mouseEvent( int x, int y, int button, MouseEventType, 
+    virtual bool mouseEvent( int x, int y, int button, MouseEventType,
 			     int _tx, int _ty, DOMString &url);
 
     virtual void getAbsolutePosition(int &xPos, int &yPos);
@@ -189,9 +191,9 @@ public:
 
     // overrides NodeImpl
 
-    virtual void print( QPainter *, int x, int y, int w, int h, 
+    virtual void print( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
-    virtual void printObject( QPainter *, int x, int y, int w, int h, 
+    virtual void printObject( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
 
     virtual void calcMinMaxWidth();
@@ -202,20 +204,20 @@ public:
 protected:
     NodeImpl *calcParagraph(NodeImpl *child, bool pre = false);
     void      calcFloating(NodeImpl *child, int elemY);
-  
+
     NodeImpl *aligned;
     NodeImpl *startPar;
-    
+
     inline int getRightMargin(int y);
     inline int getLeftMargin(int y);
     inline int getWidth(int y);
-    
-    void insertMarginElement(HAlign align, int y, NodeImpl* node);    
-    void clearMargins();    
-    
-    
+
+    void insertMarginElement(HAlign align, int y, NodeImpl* node);
+    void clearMargins();
+
+
 private:
-    
+
     // rendering helpers;
     class HTMLParagraphClose : public HTMLElementImpl {
     public:
@@ -225,17 +227,17 @@ private:
     	}
     };
 
-    static HTMLParagraphClose pElemClose;    
-    
+    static HTMLParagraphClose pElemClose;
+
     struct MarginRange {
     	int startY;
 	int endY;
 	int width;	
 	NodeImpl* node;
     };
-    
-    QList<MarginRange>* leftMargin; 
-    QList<MarginRange>* rightMargin; 
+
+    QList<MarginRange>* leftMargin;
+    QList<MarginRange>* rightMargin;
 
 };
 

@@ -251,7 +251,7 @@ void HTMLElementImpl::updateSize()
 //    printf("element::updateSize()\n");
     setLayouted(false);
     calcMinMaxWidth();
-    if(_parent) 
+    if(_parent)
     	_parent->updateSize();
 }
 
@@ -388,12 +388,47 @@ void HTMLInlineElementImpl::setStyle(CSSStyle *currentStyle)
     case ID_ACRONYM:
 	// ###
 	break;
+    case ID_SUB:
+	currentStyle->font.size -= 1;
+	break;
+    case ID_SUP:
+	currentStyle->font.size -= 1;
+	break;
     case ID_DT:
     default:
 	break;
     }
 
     HTMLElementImpl::setStyle(currentStyle);
+}
+
+void HTMLInlineElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
+				  int _tx, int _ty)
+{
+    switch(_id)
+    {	
+    case ID_SUB:
+    {
+	int h = ((QFont)*getFont()).pixelSize()/2;
+	_ty += h;
+	break;
+    }
+    case ID_SUP:
+    {
+	int h = ((QFont)*getFont()).pixelSize()/2;
+	_ty -= h;
+	break;
+    }
+    default:
+	break;
+    }
+
+    NodeImpl *child = firstChild();
+    while(child != 0)
+    {
+	child->print(p, _x, _y, _w, _h, _tx, _ty);
+	child = child->nextSibling();
+    }
 }
 
 // -------------------------------------------------------------------------
@@ -510,12 +545,12 @@ void HTMLBlockElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 {
     _tx += x;
     _ty += y;
-    
+
 
     // check if we need to do anything at all...
     if((_ty - ascent > _y + _h) || (_ty + descent < _y)) return;
     if(!layouted()) return;
-    
+
 
     // default implementation. Just pass things through to the children
     // and paint paragraphs (groups of inline elements)
@@ -529,6 +564,7 @@ void HTMLBlockElementImpl::print(QPainter *p, int _x, int _y, int _w, int _h,
 	child = child->nextSibling();
     }
 }
+
 void HTMLBlockElementImpl::printObject(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
 {
@@ -559,7 +595,7 @@ void HTMLBlockElementImpl::layout( bool deep )
 
     if(width<=0) return;
     clearMargins();
-    
+
     bool layouted_ = true;
 
     // Block elements usually just have descent.
@@ -603,12 +639,14 @@ void HTMLBlockElementImpl::layout( bool deep )
 	    case HCenter:
 		x = x + (w - child->getWidth())/2;
 		break;
+	    default:
+		break;
 	    }
  	    child->setXPos(x);
 	    descent += child->getDescent();
 	    child = child->nextSibling();
 	}
-    }    
+    }
     setLayouted(layouted_);
 }
 
@@ -1112,7 +1150,9 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		}
 		else
 		{
-		    //printf("%d,%d\n",startPos,endPos);
+#ifdef PAR_DEBUG
+		    printf("%d,%d\n",startPos,endPos);
+#endif
 		    if (endPos==-1)
 		    {
 		    	endPos = text->l;
@@ -1279,6 +1319,8 @@ NodeImpl *HTMLBlockElementImpl::addChild(NodeImpl *newChild)
 	    case HCenter:
 		x = x + (w - child->getWidth())/2;
 		break;
+	    default:
+		break;
 	    }
 	    child->setXPos(x);	
 	    child->layout(false);
@@ -1298,7 +1340,7 @@ void HTMLBlockElementImpl::calcMinMaxWidth()
 
     minWidth = 0;
     maxWidth = 0;
-    
+
     int inlineMax=0;
 
     NodeImpl *child = firstChild();
@@ -1322,11 +1364,11 @@ void HTMLBlockElementImpl::calcMinMaxWidth()
 	    w = child->getMaxWidth();
 	    if(maxWidth < w) maxWidth = w;
 	    if(maxWidth < inlineMax) maxWidth = inlineMax;
-            inlineMax=0;                                    
+            inlineMax=0;
 	}
 	child = child->nextSibling();
     }
-     if(maxWidth < inlineMax) maxWidth = inlineMax; 
+     if(maxWidth < inlineMax) maxWidth = inlineMax;
     if(maxWidth < minWidth) maxWidth = minWidth;
 
 //    if(availableWidth && minWidth > availableWidth)

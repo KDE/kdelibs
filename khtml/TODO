@@ -13,6 +13,7 @@ StyleSheets:
 
 DOM:
 	* lots of functions in the Impl classes
+	* fix the set/retrieve functions, which don't use string values
 
 misc:
 	* mouse handling
@@ -26,7 +27,7 @@ JScript:
 	* still need to add hooks in the tokenizer
 	* return value for events/ event propagation
 
-Java:
+Java:ksy	
 	* support for the object element
 	* Java <--> HTMLWidget communication
 
@@ -149,7 +150,7 @@ still missing...):
 
 URL1.html		ok
 URL2.html		ok
-align.html              ok 
+align.html              ok
 align2.html             ok
 anchor1.html		ok
 anchor2.html		ok
