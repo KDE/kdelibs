@@ -191,75 +191,8 @@ QFont KRootProp::readFontEntry( const QString& rKey,
   if( aValue.isNull() )
     return aDefFont; // Return default font
 
-  // find first part (font family)
-  int nIndex = aValue.find( ',' );
-  if( nIndex == -1 )
-    return aDefFont; // Return default font
-
-  aRetFont.setFamily( aValue.left( nIndex ) );
-	
-  // find second part (point size)
-  int nOldIndex = nIndex;
-  nIndex = aValue.find( ',', nOldIndex+1 );
-  if( nIndex == -1 )
-    return aDefFont; // Return default font
-  aRetFont.setPointSize( aValue.mid( nOldIndex+1,
-                         nIndex-nOldIndex-1 ).toUInt() );
-
-  // find third part (style hint)
-  nOldIndex = nIndex;
-  nIndex = aValue.find( ',', nOldIndex+1 );
-  if( nIndex == -1 )
-    return aDefFont; // Return default font
-  aRetFont.setStyleHint( (QFont::StyleHint)aValue.mid( nOldIndex+1,
-                         nIndex-nOldIndex-1 ).toUInt() );
-
-  // find fourth part (char set)
-  nOldIndex = nIndex;
-  nIndex = aValue.find( ',', nOldIndex+1 );
-
-  if( nIndex == -1 ){
-      if( pDefault )
-	  aRetFont = *pDefault;
-      return aRetFont;
-  }
-
-#if QT_VERSION < 300
-  QString chStr=aValue.mid( nOldIndex+1,
-			    nIndex-nOldIndex-1 );
-  bool chOldEntry;			
-  QFont::CharSet chId=(QFont::CharSet)aValue.mid( nOldIndex+1,
-			  nIndex-nOldIndex-1 ).toUInt(&chOldEntry);
-  if (chOldEntry)
-      aRetFont.setCharSet( chId );
-  else if (kapp) {
-      if (chStr == "default")
-	  if (KGlobal::locale())
-	      chStr = KGlobal::locale()->charset();
-	  else chStr = "iso-8859-1";
-      KGlobal::charsets()->setQFont(aRetFont,chStr);
-  }
-#endif
-  // find fifth part (weight)
-  nOldIndex = nIndex;
-  nIndex = aValue.find( ',', nOldIndex+1 );
-  if( nIndex == -1 )
-    return aDefFont; // Return default font
-
-  aRetFont.setWeight( aValue.mid( nOldIndex+1,
-                      		  nIndex-nOldIndex-1 ).toUInt() );
-  // find sixth part (font bits)
-  uint nFontBits = aValue.right( aValue.length()-nIndex-1 ).toUInt();
-  if( nFontBits & 0x01 )
-    aRetFont.setItalic( true );
-  if( nFontBits & 0x02 )
-    aRetFont.setUnderline( true );
-  if( nFontBits & 0x04 )
-    aRetFont.setStrikeOut( true );
-  if( nFontBits & 0x08 )
-    aRetFont.setFixedPitch( true );
-  if( nFontBits & 0x20 )
-    aRetFont.setRawMode( true );
+  if ( !aRetFont.fromString( aValue ) && pDefault )
+    aRetFont = aDefFont;
 
   return aRetFont;
 }
@@ -331,31 +264,7 @@ QString KRootProp::writeEntry( const QString& rKey, int nValue )
 
 QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
 {
-  QString aValue;
-  Q_UINT8 nFontBits = 0;
-  // this mimics get_font_bits() from qfont.cpp
-  if( rFont.italic() )
-    nFontBits = nFontBits | 0x01;
-  if( rFont.underline() )
-    nFontBits = nFontBits | 0x02;
-  if( rFont.strikeOut() )
-    nFontBits = nFontBits | 0x04;
-  if( rFont.fixedPitch() )
-    nFontBits = nFontBits | 0x08;
-  if( rFont.rawMode() )
-    nFontBits = nFontBits | 0x20;
-
-  QString aCharset = "default";
-#if QT_VERSION < 300
-  if( rFont.charSet() != QFont::AnyCharSet )
-      aCharset.setNum( static_cast<int>(rFont.charSet()) );
-#endif
-  
-  QTextIStream ts( &aValue );
-  ts << rFont.family() << "," << rFont.pointSize() << "," 
-     << static_cast<int>(rFont.styleHint()) << "," << aCharset << "," << rFont.weight() << "," 
-     << static_cast<int>(nFontBits);
-  return writeEntry( rKey, aValue );
+  return writeEntry( rKey, rFont.toString() );
 }
 
 QString KRootProp::writeEntry( const QString& rKey, const QColor& rColor )
