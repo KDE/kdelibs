@@ -148,7 +148,7 @@ KCertPart::KCertPart(QWidget *parentWidget, const char *widgetName,
  //
  grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, _frame), 13, 13, 0, 5);
  _launch = new QPushButton(i18n("&Crypto Manager..."), _frame);
- _import = new QPushButton(i18n("&Import..."), _frame);
+ _import = new QPushButton(i18n("&Import"), _frame);
  _save = new QPushButton(i18n("&Save..."), _frame);
  _done = new QPushButton(i18n("&Done"), _frame);
  grid->addMultiCellWidget(_launch, 14, 14, 0, 1);
