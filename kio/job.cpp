@@ -1633,15 +1633,15 @@ void CopyJob::slotResultCopyingFiles( Job * job )
     QValueList<CopyInfo>::Iterator it = files.begin();
     if ( job->error() )
     {
-        m_conflictError = job->error(); // save for later
-        // Existing dest ?
-        if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
-             || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
+        // Should we skip automatically ?
+        if ( m_bAutoSkip )
+            files.remove( it ); // Move on to next file
+        else
         {
-            // Should we skip automatically ?
-            if ( m_bAutoSkip )
-                files.remove( it ); // Move on to next file
-            else
+            m_conflictError = job->error(); // save for later
+            // Existing dest ?
+            if ( ( m_conflictError == ERR_FILE_ALREADY_EXIST )
+                 || ( m_conflictError == ERR_DIR_ALREADY_EXIST ) )
             {
                 subjobs.remove( job );
                 assert ( subjobs.isEmpty() );
@@ -1653,18 +1653,18 @@ void CopyJob::slotResultCopyingFiles( Job * job )
                 addSubjob(newJob);
                 return; // Don't move to next file yet !
             }
-        }
-        else
-        {
-            if ( m_bCurrentOperationIsLink && job->inherits( "KIO::DeleteJob" ) )
+            else
             {
-                // Very special case, see a few lines below
-                // We are deleting the source of a symlink we successfully moved... ignore error
-                files.remove( it );
-            } else {
-                // Go directly to the conflict resolution, there is nothing to stat
-                slotResultConflictCopyingFiles( job );
-                return;
+                if ( m_bCurrentOperationIsLink && job->inherits( "KIO::DeleteJob" ) )
+                {
+                    // Very special case, see a few lines below
+                    // We are deleting the source of a symlink we successfully moved... ignore error
+                    files.remove( it );
+                } else {
+                    // Go directly to the conflict resolution, there is nothing to stat
+                    slotResultConflictCopyingFiles( job );
+                    return;
+                }
             }
         }
     } else // no error
@@ -1694,7 +1694,7 @@ void CopyJob::slotResultCopyingFiles( Job * job )
         files.remove( it );
     }
 
-    kdDebug(7007) << "" << files.count() << " files remaining" << endl;
+    kdDebug(7007) << files.count() << " files remaining" << endl;
     subjobs.remove( job );
     assert ( subjobs.isEmpty() ); // We should have only one job at a time ...
     copyNextFile();
