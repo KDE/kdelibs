@@ -20,6 +20,7 @@
  <Action name="copyimagelocation" />
  <Action name="viewimage" />
  <Separator weakSeparator="1" />
+ <Action name="viewDocumentSource" />
  <Action name="security" />
  <Action name="setEncoding" />
 </Menu>
