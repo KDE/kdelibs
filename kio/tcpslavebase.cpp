@@ -27,6 +27,7 @@
 #include <config.h>
 #endif
 
+#include <time.h>
 #include <sys/uio.h>
 #include <sys/time.h>
 #include <sys/socket.h>
