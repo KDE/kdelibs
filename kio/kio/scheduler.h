@@ -158,7 +158,7 @@ namespace KIO {
         /**
          * Send the slave that was put on hold back to KLauncher. This
          * allows another process to take over the slave and resume the job
-         * the that was started.
+         * that was started.
          */
         static void publishSlaveOnHold()
         { self()->_publishSlaveOnHold(); }
