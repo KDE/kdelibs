@@ -36,7 +36,7 @@ namespace Arts {
 
 class StdSynthModulePrivate;
 
-class StdSynthModule :virtual public SynthModule_base {
+class StdSynthModule : virtual public SynthModule_base {
 private:
 	StdSynthModulePrivate *d;
 
