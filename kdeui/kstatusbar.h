@@ -61,7 +61,8 @@ public:
   KStatusBarLabel( const QString& text, int ID, QWidget *parent=0L,
                   const char *name=0L );
   ~KStatusBarLabel () {};
-  int w,h;
+  int w;
+  int h;
   
 protected:
   void mousePressEvent(QMouseEvent *);
@@ -262,7 +263,8 @@ protected slots:
 private:
   QList <KStatusBarItem> items;
   InsertOrder insert_order;
-  int fieldheight, borderwidth;
+  int fieldheight;
+  int borderwidth;
   KStatusBarLabel *tempMessage;
   QWidget *tempWidget;
   QTimer *tmpTimer; //for future bugfix

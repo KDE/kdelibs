@@ -148,11 +148,16 @@ private:
   bool         eventFilter(QObject *, QEvent *);
   void         setDividerGeometry(int);
   bool         checkRange(int &);
-  int          u_coord, delta, old_coord;
+  int          u_coord;
+  int          delta;
+  int          old_coord;
   unsigned     u_flags;
-  QWidget      *cw0, *cw1;
+  QWidget      *cw0;
+  QWidget      *cw1;
   QFrame       *divider;
-  int          l_limit, u_limit, pos;
+  int          l_limit;
+  int          u_limit;
+  int          pos;
     
   signals:
   void positionChanged();
@@ -162,6 +167,10 @@ private:
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1997/10/16 11:15:28  torben
+ * Kalle: Copyright headers
+ * kdoctoolbar removed
+ *
  * Revision 1.2  1997/05/02 16:46:41  kalle
  * Kalle: You may now override how KApplication reacts to external changes
  * KButton uses the widget default palette

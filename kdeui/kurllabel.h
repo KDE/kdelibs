@@ -20,6 +20,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  1999/05/10 12:59:09  kulow
+ * applied 90% of Hans's patch and tried to fix other stuff. Some classes
+ * (KAccel is a good example - libkab is even worse) mix string types so
+ * dramacticly, that I bet 70% of the runtime is spent in string conversion ;(
+ *
  * Revision 1.5  1999/03/01 23:35:30  kulow
  * CVS_SILENT ported to Qt 2.0
  *
@@ -54,13 +59,13 @@
 #include <qpainter.h>
 #include <qbitmap.h>
 
-typedef enum
+enum TextAlignment
 {
 	Bottom,
 	Left,
 	Top,
 	Right
-} TextAlignment;
+};
 
 /**
  * A label class that supports displaying hyperlinks

@@ -33,6 +33,10 @@
 
  // $Id$
  // $Log$
+ // Revision 1.8  1999/03/06 18:03:40  ettrich
+ // the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
+ // It has its own menu entry and reacts on simple LMP clicks.
+ //
  // Revision 1.7  1998/11/06 15:45:44  radej
  // sven: added helper for addHotSpot
  //
@@ -292,14 +296,23 @@ protected slots:
   void doResizeInternal();
 
 private:
-  int xp, yp, w, h;
-  int ox, oy, ow, oh;
-  int orig_x, orig_y, orig_w, orig_h;
+  int xp;
+  int yp;
+  int w;
+  int h;
+  int ox;
+  int oy;
+  int ow;
+  int oh;
+  int orig_x;
+  int orig_y;
+  int orig_w;
+  int orig_h;
   bool noLast;
   bool working;
   bool dynamic;
   bool geometryChanged;
-  bool transparent;;
+  bool transparent;
   bool dontmoveres;
   bool deepSpace;
   bool hotspot_static;
@@ -311,8 +324,12 @@ private:
   QList<QRect> hotspots;
   QRect *last_hsp;
 
-  int rx, ry, sx, sy;
-  int offX, offY;
+  int rx;
+  int ry;
+  int sx;
+  int sy;
+  int offX;
+  int offY;
 
   bool xOnly; // flags for only horizontal or...
   bool yOnly; //...only vertical resize

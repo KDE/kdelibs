@@ -737,8 +737,10 @@ protected:
   // Rainer Bawidamann: move window in "rubberband" mode
   bool rubberband_mode;             // true if in "rubberband_mode"
   QPoint rubber_startMouse;         // where the user pressed the MMB
-  int rubber_height, rubber_width,  // the size if the rubberband rect
-	rubber_startX, rubber_startY; // the x/yOffset() when the MMB was pressed
+  int rubber_height;
+  int rubber_width;  // the size if the rubberband rect
+  int rubber_startX;
+  int rubber_startY; // the x/yOffset() when the MMB was pressed
   void draw_rubberband();
   void start_rubberband(const QPoint& where);
   void end_rubberband();

@@ -38,7 +38,9 @@ private:
     bool CompleteDir (QString &dir);
     QString directory;
 
-    bool new_guess, completed_dir, self_update;
+    bool new_guess;
+    bool completed_dir;
+    bool self_update;
     QString the_text;
     QStrList possibilityList;
     QString guess;

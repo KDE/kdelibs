@@ -154,7 +154,10 @@ public:
 	static int configureKeys( KGlobalAccel *keys,  bool save_settings = true );
 	
 private:
-	QPushButton *bDefaults, *bOk, *bCancel, *bHelp;
+	QPushButton *bDefaults;
+	QPushButton *bOk;
+	QPushButton *bCancel;
+	QPushButton *bHelp;
 };
 
 /**
@@ -211,10 +214,14 @@ protected:
 	KKeyEntry *pEntry;
 	QString sEntryKey;
 	KSplitList *wList;
-	QLabel *lInfo, *lNotConfig;
-	QLabel *actLabel, *keyLabel;
+	QLabel *lInfo;
+	QLabel *lNotConfig;
+	QLabel *actLabel;
+	QLabel *keyLabel;
 	KKeyButton *bChange;
-	QCheckBox *cShift, *cCtrl, *cAlt;
+	QCheckBox *cShift;
+	QCheckBox *cCtrl;
+	QCheckBox *cAlt;
 	QGroupBox *fCArea;
 	//QLineEdit *eKey;
 	QButtonGroup *kbGroup;

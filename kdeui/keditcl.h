@@ -66,7 +66,8 @@ public:
 	KIntLineEdit *lineNum;
 
 private:
-	QPushButton *ok, *cancel;
+	QPushButton *ok;
+	QPushButton *cancel;
 	QGroupBox *frame;
 	void resizeEvent(QResizeEvent *);
 	void focusInEvent(QFocusEvent *);
@@ -95,7 +96,8 @@ protected:
 
 private:
 
-    QPushButton *ok, *cancel;
+    QPushButton *ok;
+    QPushButton *cancel;
     QCheckBox *sensitive;
     QCheckBox *direction;
     QGroupBox *frame1;
@@ -137,7 +139,10 @@ protected:
 
 private:
 
-    QPushButton *ok, *cancel, *replace, *replace_all;
+    QPushButton *ok;
+    QPushButton *cancel;
+    QPushButton *replace;
+    QPushButton *replace_all;
     QCheckBox 	*sensitive;
     QCheckBox 	*direction;
     QGroupBox 	*frame1;
@@ -463,7 +468,8 @@ private:
     int 	replace_all_line;
     int 	replace_all_col;
 
-    int 	line_pos, col_pos;
+    int 	line_pos;
+    int     col_pos;
     bool        fill_column_is_set;
     bool        word_wrap_is_set;
     int         fill_column_value;

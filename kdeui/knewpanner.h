@@ -183,10 +183,12 @@ protected:
 
 private:
   // The managed children
-  QWidget *child0, *child1;
+  QWidget *child0;
+  QWidget *child1;
 
   // Labels of the children
-  QLabel *label0, *label1;
+  QLabel *label0;
+  QLabel *label1;
 
   // The height at which the children start
   int startHeight;

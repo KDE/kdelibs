@@ -98,11 +98,13 @@ protected:
 
   QLabel *_label;
   QLineEdit *_edit;
-  QPushButton *_incr,*_decr;	
+  QPushButton *_incr;
+  QPushButton *_decr;	
 
 private:
   bool _editable;
-  QTimer *_incrTimer,*_decrTimer;
+  QTimer *_incrTimer;
+  QTimer *_decrTimer;
   int _align;
 	
 };
@@ -156,7 +158,8 @@ public:
 
 private:
   int _step;
-  int _min,_max;
+  int _min;
+  int _max;
 };
 
 

@@ -107,7 +107,8 @@ protected:
   QSize buttonSizeHint(QPushButton *) const;
 
 protected:
-  int _border, _autoborder;
+  int _border;
+  int _autoborder;
   int orientation;
   bool activated;
   QList<KButtonBoxItem> buttons;

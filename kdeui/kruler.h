@@ -305,10 +305,22 @@ protected:
 private:
 
   direction dir;
-  int tmDist, lmDist, mmDist, bmDist, offset;
-  bool showtm, showlm, showmm, showbm, showem; /* show tiny, little, medium, big, endmarks */
-  int valuelm, valuemm, valuebm; /* value per little, medium, big mark */
-  bool showValuelm, showValuemm, showValuebm;
+  int tmDist;
+  int lmDist;
+  int mmDist;
+  int bmDist;
+  int offset;
+  bool showtm; /* show tiny, little, medium, big, endmarks */
+  bool showlm;
+  bool showmm;
+  bool showbm;
+  bool showem;
+  int valuelm; /* value per little, medium, big mark */
+  int valuemm;
+  int valuebm;
+  bool showValuelm;
+  bool showValuemm;
+  bool showValuebm;
   double ppm; /* pixel per mark */
 
   QString endlabel;

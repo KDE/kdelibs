@@ -144,8 +144,10 @@ protected:
   virtual void drawContents( QPainter * );
 
 protected:
-  QColor color1, color2;
-  QString text1, text2;
+  QColor color1;
+  QColor color2;
+  QString text1;
+  QString text2;
 };
 
 #endif		// __KSELECT_H__

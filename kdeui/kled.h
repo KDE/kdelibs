@@ -205,7 +205,8 @@ private:
   void paintround();
   void paintsunken();
 
-  static const QRgb lightcolor[], darkcolor[];
+  static const QRgb lightcolor[];
+  static const QRgb darkcolor[];
   State led_state;
   Color led_color;
   Look  led_look;

@@ -102,7 +102,8 @@ protected:
   void reconnectSBSignals (void);
 
   QPoint dragStartPos;
-  int dragCol, dragRow;
+  int dragCol;
+  int dragRow;
   int selIdx;
 };
 
@@ -383,7 +384,8 @@ protected:
   // This array contain the row numbers as they are shown.
   int *itemShowList;
   KTabListBoxItem**	itemList;
-  int			maxItems, numColumns;
+  int			maxItems;
+  int           numColumns;
   int			current;
   char			sepChar;
   KTabListBoxDict	pixDict;
@@ -391,8 +393,10 @@ protected:
   int			labelHeight;
   
   QPixmap		dndDefaultPixmap;
-  QPixmap		upPix,downPix;
-  QPixmap		disabledUpPix,disabledDownPix;
+  QPixmap		upPix;
+  QPixmap       downPix;
+  QPixmap		disabledUpPix;
+  QPixmap       disabledDownPix;
   int			columnPadding;
   QColor		highlightColor;
   int			tabPixels;
@@ -489,7 +493,9 @@ protected slots:
   virtual void clearAll(bool leftbutton);
   
 protected:
-  int iwidth, idefwidth, inumber;
+  int iwidth;
+  int idefwidth;
+  int inumber;
   KTabListBox::OrderMode ordmode;
   KTabListBox::OrderType ordtype;
   KTabListBox::ColumnType colType;

@@ -359,11 +359,19 @@ private:
     SButton sbPlacement;
     ArrowStyle arrowStyle;
     ShadeStyle shading;
-    int defaultFrame, btnXShift, btnYShift, sliderLen, splitterWidth;
-    bool smallGroove, roundedButton, roundedCombo, roundedSlider;
+    int defaultFrame;
+    int btnXShift;
+    int btnYShift;
+    int sliderLen;
+    int splitterWidth;
+    bool smallGroove;
+    bool roundedButton;
+    bool roundedCombo;
+    bool roundedSlider;
     KThemeCache *cache;
     KConfig *config;
-    QString localDir, globalDir;
+    QString localDir;
+    QString globalDir;
     int cacheSize;
 
     /**

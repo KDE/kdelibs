@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.12  1999/03/01 23:34:55  kulow
+ * CVS_SILENT ported to Qt 2.0
+ *
  * Revision 1.11.2.1  1999/02/21 20:55:52  kulow
  * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
  *
@@ -252,12 +255,19 @@ private:
 
     enum {B_SPACING = 10, B_WIDTH = 80};
 
-    QLabel      *msg, *picture;
-    QPushButton *b1, *b2, *b3, *b4;
+    QLabel      *msg;
+    QLabel      *picture;
+    QPushButton *b1;
+    QPushButton *b2;
+    QPushButton *b3;
+    QPushButton *b4;
     QFrame      *f1;
 
     int		nr_buttons;
-    int         w, h, h1, text_offset;
+    int         w;
+    int         h;
+    int         h1;
+    int         text_offset;
 
     void        calcOptimalSize();
 
