@@ -89,6 +89,7 @@ artscat.cc: soundserver.h artsversion.h
 artsrec.cc: soundserver.h artsversion.h
 artsd.cc: soundserver.h artsversion.h
 mcopinfo_impl.h: soundserver.h artsversion.h
+mcopinfo_impl.cc: soundserver.h artsversion.h
 artsplay.cc: soundserver.h artsversion.h
 artsshell.cc: soundserver.h artsversion.h
 wavplayobject_impl.cc: soundserver.h artsversion.h
