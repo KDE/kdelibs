@@ -117,10 +117,11 @@ class PushButtonWidget : public QPushButton
 public:
     PushButtonWidget(QWidget *parent) : QPushButton(parent) {}
     PushButtonWidget(const QString &text, QWidget *parent) : QPushButton(text,parent) {}
-    virtual void focusInEvent(QFocusEvent *)
-        { emit focused(); }
-    virtual void focusOutEvent(QFocusEvent *)
-        { emit blurred(); }
+
+protected:
+    virtual void focusInEvent(QFocusEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
+
 signals:
     void focused();
     void blurred();
@@ -161,10 +162,11 @@ class CheckBoxWidget : public QCheckBox
     Q_OBJECT
 public:
     CheckBoxWidget(QWidget *parent) : QCheckBox(parent) {}
-    virtual void focusInEvent(QFocusEvent *)
-        { emit focused(); }
-    virtual void focusOutEvent(QFocusEvent *)
-        { emit blurred(); }
+
+protected:
+    virtual void focusInEvent(QFocusEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
+
 signals:
     void focused();
     void blurred();
@@ -197,10 +199,11 @@ class RadioButtonWidget : public QRadioButton
     Q_OBJECT
 public:
     RadioButtonWidget(QWidget *parent) : QRadioButton(parent) {}
-    virtual void focusInEvent(QFocusEvent *)
-        { emit focused(); }
-    virtual void focusOutEvent(QFocusEvent *)
-        { emit blurred(); }
+
+protected:
+    virtual void focusInEvent(QFocusEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
+
 signals:
     void focused();
     void blurred();
@@ -297,11 +300,10 @@ class LineEditWidget : public QLineEdit
     Q_OBJECT
 public:
     LineEditWidget(QWidget *parent) : QLineEdit(parent) {}
-    // grrr... why can't qwidget have built-in signals for this!
-    virtual void focusInEvent(QFocusEvent *)
-        { emit focused(); }
-    virtual void focusOutEvent(QFocusEvent *)
-        { emit blurred(); }
+
+protected:
+    virtual void focusInEvent(QFocusEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
     virtual bool event( QEvent *e );
 signals:
     void focused();
@@ -378,10 +380,11 @@ class ListBoxWidget : public KListBox
     Q_OBJECT
 public:
     ListBoxWidget(QWidget *parent) : KListBox(parent) {}
-    virtual void focusInEvent(QFocusEvent *)
-        { emit focused(); }
-    virtual void focusOutEvent(QFocusEvent *)
-        { emit blurred(); }
+
+protected:
+    virtual void focusInEvent(QFocusEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
+
 signals:
     void focused();
     void blurred();
@@ -395,10 +398,11 @@ class ComboBoxWidget : public QComboBox
     Q_OBJECT
 public:
     ComboBoxWidget(QWidget *parent) : QComboBox(parent) {}
-    virtual void focusInEvent(QFocusEvent *)
-        { emit focused(); }
-    virtual void focusOutEvent(QFocusEvent *)
-        { emit blurred(); }
+
+protected:
+    virtual void focusInEvent(QFocusEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
+
 signals:
     virtual void focused();
     virtual void blurred();
@@ -454,13 +458,11 @@ public:
     QScrollBar* horizontalScrollBar () const
         { return QTableView::horizontalScrollBar(); };
 
-    virtual void focusInEvent(QFocusEvent *)
-        { emit focused(); }
-    virtual void focusOutEvent(QFocusEvent *)
-        { emit blurred(); }
-    // ### selected???
+protected:
+    virtual void focusInEvent(QFocusEvent *);
+    virtual void focusOutEvent(QFocusEvent *);
     virtual bool event (QEvent *e );
-    
+
 signals:
     void focused();
     void blurred();

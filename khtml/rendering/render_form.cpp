@@ -142,6 +142,20 @@ RenderHiddenButton::RenderHiddenButton(QScrollView *view,
 
 // -------------------------------------------------------------------------------
 
+void CheckBoxWidget::focusInEvent(QFocusEvent* e)
+{
+    QCheckBox::focusInEvent(e);
+    emit focused();
+}
+
+void CheckBoxWidget::focusOutEvent(QFocusEvent* e)
+{
+    QCheckBox::focusOutEvent(e);
+    emit blurred();
+}
+
+// -------------------------------------------------------------------------------
+
 RenderCheckBox::RenderCheckBox(QScrollView *view,
                                HTMLInputElementImpl *element)
     : RenderButton(view, element)
@@ -164,8 +178,22 @@ void RenderCheckBox::slotStateChanged(int state)
     m_element->setAttribute(ATTR_CHECKED,state == 2 ? "" : 0);
 }
 
+
 // -------------------------------------------------------------------------------
 
+void RadioButtonWidget::focusInEvent(QFocusEvent* e)
+{
+    QRadioButton::focusInEvent(e);
+    emit focused();
+}
+
+void RadioButtonWidget::focusOutEvent(QFocusEvent* e)
+{
+    QRadioButton::focusOutEvent(e);
+    emit blurred();
+}
+
+// -------------------------------------------------------------------------------
 
 RenderRadioButton::RenderRadioButton(QScrollView *view,
                                      HTMLInputElementImpl *element)
@@ -195,6 +223,20 @@ void RenderRadioButton::layout()
 {
     static_cast<QRadioButton*>(m_widget)->setChecked(static_cast<HTMLInputElementImpl*>(m_element)->checked());
     RenderButton::layout();
+}
+
+// -------------------------------------------------------------------------------
+
+void PushButtonWidget::focusInEvent(QFocusEvent* e)
+{
+    QPushButton::focusInEvent(e);
+    emit focused();
+}
+
+void PushButtonWidget::focusOutEvent(QFocusEvent* e)
+{
+    QPushButton::focusOutEvent(e);
+    emit blurred();
 }
 
 // -------------------------------------------------------------------------------
@@ -300,25 +342,38 @@ QString RenderPushButton::defaultLabel() {
 bool LineEditWidget::event( QEvent *e )
 {
         if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
-	QKeyEvent* ke = (QKeyEvent*) e;
-	if ( ke->state() & ControlButton ) {
-	    switch ( ke->key() ) {
-		case Key_Left:
-		case Key_Right:
-		case Key_Up:
-		case Key_Down:
-		case Key_Home:
-		case Key_End:
-		    ke->accept();
-		default:
-		break;
-	    }
-	}
+        QKeyEvent* ke = (QKeyEvent*) e;
+        if ( ke->state() & ControlButton ) {
+            switch ( ke->key() ) {
+                case Key_Left:
+                case Key_Right:
+                case Key_Up:
+                case Key_Down:
+                case Key_Home:
+                case Key_End:
+                    ke->accept();
+                default:
+                break;
+            }
+        }
     }
     return QLineEdit::event( e );
 }
 
+void LineEditWidget::focusInEvent(QFocusEvent* e)
+{
+    QLineEdit::focusInEvent(e);
+    emit focused();
+}
 
+void LineEditWidget::focusOutEvent(QFocusEvent* e)
+{
+    QLineEdit::focusOutEvent(e);
+    emit blurred();
+}
+
+
+// -----------------------------------------------------------------------------
 
 RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
     : RenderFormElement(view, element)
@@ -545,6 +600,36 @@ RenderLegend::RenderLegend(QScrollView *view,
 
 RenderLegend::~RenderLegend()
 {
+}
+
+
+// -------------------------------------------------------------------------------
+
+void ListBoxWidget::focusInEvent(QFocusEvent* e)
+{
+    KListBox::focusInEvent(e);
+    emit focused();
+}
+
+void ListBoxWidget::focusOutEvent(QFocusEvent* e)
+{
+    KListBox::focusOutEvent(e);
+    emit blurred();
+}
+
+
+// -------------------------------------------------------------------------------
+
+void ComboBoxWidget::focusInEvent(QFocusEvent* e)
+{
+    QComboBox::focusInEvent(e);
+    emit focused();
+}
+
+void ComboBoxWidget::focusOutEvent(QFocusEvent* e)
+{
+    QComboBox::focusOutEvent(e);
+    emit blurred();
 }
 
 
@@ -922,26 +1007,40 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
     }
 }
 
+void TextAreaWidget::focusInEvent(QFocusEvent* e)
+{
+    QMultiLineEdit::focusInEvent(e);
+    emit focused();
+}
+
+void TextAreaWidget::focusOutEvent(QFocusEvent* e)
+{
+    QMultiLineEdit::focusOutEvent(e);
+    emit blurred();
+}
+
 bool TextAreaWidget::event( QEvent *e )
 {
     if ( e->type() == QEvent::AccelAvailable && isReadOnly() ) {
-	QKeyEvent* ke = (QKeyEvent*) e;
-	if ( ke->state() & ControlButton ) {
-	    switch ( ke->key() ) {
-		case Key_Left:
-		case Key_Right:
-		case Key_Up:
-		case Key_Down:
-		case Key_Home:
-		case Key_End:
-		    ke->accept();
-		default:
-		break;
-	    }
-	}
+        QKeyEvent* ke = (QKeyEvent*) e;
+        if ( ke->state() & ControlButton ) {
+            switch ( ke->key() ) {
+                case Key_Left:
+                case Key_Right:
+                case Key_Up:
+                case Key_Down:
+                case Key_Home:
+                case Key_End:
+                    ke->accept();
+                default:
+                break;
+            }
+        }
     }
     return QMultiLineEdit::event( e );
 }
+
+
 // -------------------------------------------------------------------------
 
 // ### allow contents to be manipulated via DOM - will require updating
