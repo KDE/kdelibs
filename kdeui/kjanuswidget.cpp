@@ -155,7 +155,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     QVBoxLayout *vbox = new QVBoxLayout( page, 0, KDialog::spacingHint() );
 
     mTitleLabel = new QLabel( QString::fromLatin1("Empty page"), page, "KJanusWidgetTitleLabel" );
-    vbox->addWidget( mTitleLabel );
+    vbox->addWidget( mTitleLabel, 0, QApplication::reverseLayout() ? AlignRight : AlignLeft );
 
     QFont titleFont( mTitleLabel->font() );
     titleFont.setBold( true );
