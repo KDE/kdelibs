@@ -208,6 +208,7 @@ static int createKMessageBox(KDialogBase *dialog, QMessageBox::Icon icon,
     {
        listbox=new KListBox( topcontents );
        listbox->insertStringList( strlist );
+       listbox->setSelectionMode( QListBox::NoSelection );
        topcontents->setStretchFactor(listbox, 1);
     }
 
