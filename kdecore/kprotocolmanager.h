@@ -48,7 +48,7 @@ public:
   enum Type { T_STREAM, T_FILESYSTEM, T_NONE, T_ERROR };
 
   /**
-   * @return the library / executable to open for the protocol @p protocol
+   * @returns the library / executable to open for the protocol @p protocol
    * Example : "kio_ftp", meaning either the executable "kio_ftp" or
    * the library "kio_ftp.la" (recommended), whichever is available.
    */
@@ -57,7 +57,7 @@ public:
   Type inputType( const QString& protocol ) const;
   Type outputType( const QString& protocol ) const;
   /**
-   * @return the list of fields this protocol returns when listing
+   * @returns the list of fields this protocol returns when listing
    * The current possibilities are
    * Name, Type, Size, Date, AccessDate, CreationDate, Access, Owner, Group, Link, URL, MimeType
    */
@@ -75,7 +75,12 @@ public:
   bool supportsMoving( const QString& protocol ) const;
 
   /**
-   * @return list of all known protocols
+   * @returns the name of the icon, associated with the specified protocol
+   */
+  QString icon( const QString& protocol ) const;    
+    
+  /**
+   * @returns list of all known protocols
    */
   QString defaultMimetype( const QString& protocol ) const;
 
@@ -86,7 +91,7 @@ public:
    * (i.e. downloading the beginning of the file or asking the server for
    * the mimetype).
    *
-   * @return true if we can trust the mimetype @p mimetype for
+   * @returns true if we can trust the mimetype @p mimetype for
    * the protocol @p protocol. A HTTP URL ending with
    * .pl or .asp may not return that actual type, but anything else.
    * This information is used by KRun to know whether it should trust
@@ -104,7 +109,7 @@ public:
   bool patternFastMode( const QString& protocol, const QString& filename ) const;
 
   /**
-   * @return list of all known protocols
+   * @returns list of all known protocols
    */
   QStringList protocols() const;
 
@@ -140,7 +145,7 @@ public:
   * protocol
   *
   * @param protocol the protocol whose proxy info is needed
-  * @return the proxy server address if one is available
+  * @returns the proxy server address if one is available
   */
   static QString proxyFor( const QString& /* protocol */);
 
@@ -302,6 +307,7 @@ private:
     QString defaultMimetype;
     QStringList mimetypesExcludedFromFastMode;
     QStringList patternsExcludedFromFastMode;
+    QString icon;
   };
 
   typedef QMap<QString,Protocol> Map;

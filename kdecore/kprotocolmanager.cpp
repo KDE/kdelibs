@@ -75,6 +75,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
     p.defaultMimetype = config.readEntry( "defaultMimetype" );
     p.mimetypesExcludedFromFastMode = config.readListEntry( "mimetypesExcludedFromFastMode" );
     p.patternsExcludedFromFastMode = config.readListEntry( "patternsExcludedFromFastMode" );
+    p.icon = config.readEntry( "Icon", "mime_empty" );
     QString tmp = config.readEntry( "input" );
     if ( tmp == "filesystem" )
       p.inputType = T_FILESYSTEM;
@@ -246,6 +247,18 @@ bool KProtocolManager::supportsMoving( const QString& _protocol ) const
   }
 
   return it.data().supportsMoving;
+}
+
+QString KProtocolManager::icon( const QString& _protocol ) const
+{
+  ConstIterator it = m_protocols.find( _protocol );
+  if ( it == m_protocols.end() )
+  {
+    kdError(127) << "Protocol " << _protocol << " not found" << endl;
+    return QString::fromLatin1("mime_empty");
+  }
+
+  return it.data().icon;
 }
 
 QString KProtocolManager::defaultMimetype( const QString& _protocol ) const
