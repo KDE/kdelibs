@@ -51,7 +51,8 @@ long khtml::MouseEvent::offset() const
     absX = absY = 0;
     if (innerNode().handle()->renderer()) {
         innerNode().handle()->renderer()->absolutePosition(absX, absY);
-        innerNode().handle()->renderer()->checkSelectionPoint( x(), y(), absX, absY, tempNode, offset );
+        khtml::RenderObject::SelPointState state;
+        innerNode().handle()->renderer()->checkSelectionPoint( x(), y(), absX, absY, tempNode, offset, state );
     }
     return offset;
 }

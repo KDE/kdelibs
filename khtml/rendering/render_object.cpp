@@ -1133,7 +1133,7 @@ void RenderObject::arenaDelete(RenderArena *arena)
     arenaDelete(arena, dynamic_cast<void *>(this));
 }
 
-FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset )
+FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset, SelPointState &state )
 {
     NodeInfo info(true, false);
     if ( nodeAtPoint( info, _x, _y, _tx, _ty ) && info.innerNode() )
@@ -1146,7 +1146,7 @@ FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, 
                 return SelectionPointInside;
             }
             else
-                return r->checkSelectionPoint( _x, _y, _tx, _ty, node, offset );
+                return r->checkSelectionPoint( _x, _y, _tx, _ty, node, offset, state );
         }
     }
     //kdDebug(6030) << "nodeAtPoint Failed. Fallback - hmm, SelectionPointAfter" << endl;

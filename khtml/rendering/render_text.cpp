@@ -559,12 +559,11 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
     return inside;
 }
 
-FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset)
+FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
 {
 //       kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                     << " _tx=" << _tx << " _ty=" << _ty << endl;
 //kdDebug(6040) << renderName() << "::checkSelectionPoint x=" << xPos() << " y=" << yPos() << " w=" << width() << " h=" << height() << " m_lines.count=" << m_lines.count() << endl;
-    InlineTextBox *lastPointAfterInline=0;
 
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
@@ -582,23 +581,18 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
             return SelectionPointInside;
         } else if ( result == SelectionPointBefore ) {
             // x,y is before the textrun -> stop here
-            if ( si > 0 && lastPointAfterInline ) {
-                offset = lastPointAfterInline->m_start + lastPointAfterInline->m_len;
-                //kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
-                node = element();
-                return SelectionPointInside;
-            } else {
-                offset = 0;
-                //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << "before us -> returning Before" << endl;
-                node = element();
-                return SelectionPointBefore;
-            }
+            offset = 0;
+            //kdDebug(6040) << "RenderText::checkSelectionPoint " << this << "before us -> returning Before" << endl;
+            node = element();
+            return SelectionPointBefore;
         } else if ( result == SelectionPointBeforeInLine ) {
 	    offset = s->m_start;
 	    node = element();
 	    return SelectionPointInside;
         } else if ( result == SelectionPointAfterInLine ) {
-	    lastPointAfterInline = s;
+	    offset = s->m_start + s->m_len;
+	    node = element();
+	    return result;	// propagate to RenderFlow::checkSelectionPoint
 	}
 
     }

@@ -4916,9 +4916,10 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
       if ( !innerNode.isNull()  && innerNode.handle()->renderer()) {
           int offset = 0;
           DOM::NodeImpl* node = 0;
+          khtml::RenderObject::SelPointState state;
           innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
                                                                event->absX()-innerNode.handle()->renderer()->xPos(),
-                                                               event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
+                                                               event->absY()-innerNode.handle()->renderer()->yPos(), node, offset, state );
 #ifdef KHTML_NO_CARET
           d->m_selectionStart = node;
           d->m_startOffset = offset;
@@ -4972,9 +4973,10 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
     if ( !innerNode.isNull() && innerNode.handle()->renderer()) {
       int offset = 0;
       DOM::NodeImpl* node = 0;
+      khtml::RenderObject::SelPointState state;
       innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
                                                            event->absX()-innerNode.handle()->renderer()->xPos(),
-                                                           event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
+                                                           event->absY()-innerNode.handle()->renderer()->yPos(), node, offset, state);
 
       //kdDebug() << k_funcinfo << "checkSelectionPoint returned node=" << node << " offset=" << offset << endl;
 
@@ -5250,9 +5252,10 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       int offset;
       //kdDebug(6000) << "KHTMLPart::khtmlMouseMoveEvent x=" << event->x() << " y=" << event->y() << endl;
       DOM::NodeImpl* node=0;
+      khtml::RenderObject::SelPointState state;
       innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
                                                            event->absX()-innerNode.handle()->renderer()->xPos(),
-                                                           event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
+                                                           event->absY()-innerNode.handle()->renderer()->yPos(), node, offset, state);
       d->m_selectionEnd = node;
       d->m_endOffset = offset;
       //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/" << d->m_endOffset << endl;

@@ -326,7 +326,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_paintDeviceMetrics = 0;
     m_paintDevice = 0;
     m_decoderMibEnum = 0;
-    m_textColor = Qt::black;
+    m_textColor = v ? v->viewport()->colorGroup().text() : Qt::black;
 
     m_view = v;
     m_renderArena = 0;
@@ -356,7 +356,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_implementation->ref();
     pMode = Strict;
     hMode = XHtml;
-    m_textColor = "#000000";
+    //m_textColor = "#000000";
     m_attrNames = new IdNameMapping(getAttrName,getAttrID,ATTR_LAST_ATTR+1,true);
     m_elementNames = new IdNameMapping(getTagName,getTagID,ID_LAST_TAG+1,true);
     m_focusNode = 0;

@@ -367,8 +367,23 @@ public:
         bool m_active;
     };
 
+    /** contains stateful information for a checkSelectionPoint call
+     */
+    struct SelPointState {
+        /** last node that was before the current position */
+        DOM::NodeImpl *m_lastNode;
+	/** offset of last node */
+	long m_lastOffset;
+	/** true when the last node had the result SelectionAfterInLine */
+	bool m_afterInLine;
+
+	SelPointState() : m_lastNode(0), m_lastOffset(0), m_afterInLine(false)
+	{}
+    };
+
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
-                                                     DOM::NodeImpl*&, int & offset );
+                                                     DOM::NodeImpl*&, int & offset,
+						     SelPointState & );
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
     void setHoverAndActive(NodeInfo& info, bool oldinside, bool inside);
 

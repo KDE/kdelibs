@@ -54,7 +54,8 @@ public:
     virtual short maxWidth() const { return 0; }
 
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
-                                                     DOM::NodeImpl*& node, int & offset );
+                                                     DOM::NodeImpl*& node, int & offset,
+						     SelPointState & );
 
     virtual bool isBR() const { return true; }
     virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);

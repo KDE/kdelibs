@@ -64,7 +64,8 @@ public:
     // Return before, after (offset set to max), or inside the replaced element,
     // at @p offset
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
-                                                     DOM::NodeImpl*& node, int & offset );
+                                                     DOM::NodeImpl*& node, int & offset,
+						     SelPointState & );
 
     /** returns the lowest possible value the caret offset may have to
      * still point to a valid position.

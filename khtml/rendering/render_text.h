@@ -180,7 +180,8 @@ public:
 
     // Return before, after (offset set to max), or inside the text, at @p offset
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
-                                                     DOM::NodeImpl*& node, int & offset );
+                                                     DOM::NodeImpl*& node, int & offset,
+						     SelPointState & );
 
     unsigned int length() const { return str->l; }
     QChar *text() const { return str->s; }
