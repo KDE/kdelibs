@@ -286,7 +286,7 @@ public:
    *         whether sub URLs are well-formed, too.
    */
   bool isValid() const  { return !m_bIsMalformed; }
-  /*
+  /**
    * @deprecated
    */
   bool isMalformed() const { return !isValid(); }
