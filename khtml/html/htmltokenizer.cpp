@@ -850,8 +850,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
             while(ll--) {
                 curchar = *src;
-                if(curchar <= '>') {
-                    if(curchar <= ' ' || curchar == '=' || curchar == '>') {
+                if(curchar <= '>' || !ll) {
+                    if(curchar <= ' ' || curchar == '=' || curchar == '>' || !ll) {
                         unsigned int a;
                         cBuffer[cBufferPos] = '\0';
                         a = khtml::getAttrID(cBuffer, cBufferPos);
@@ -873,7 +873,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 cBuffer[cBufferPos++] = (char) curchar | 0x20;
                 ++src;
             }
-            if(cBufferPos == CBUFLEN) tag = SearchEqual;
             break;
         }
         case SearchEqual:
@@ -882,7 +881,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 qDebug("SearchEqual");
 #endif
             while(src.length()) {
-                if(curchar >= '=') {
+                if(curchar >= ' ') {
                     if(curchar == '=') {
 #ifdef TOKEN_DEBUG
                         kdDebug(6036) << "found equal" << endl;
@@ -936,6 +935,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             while(src.length()) {
                 checkBuffer();
 
+                curchar = src->unicode();
                 if(curchar <= '\'') {
                     // ### attributes like '&{blaa....};' are supposed to be treated as jscript.
                     if ( curchar == '&' )
@@ -978,7 +978,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 }
                 *dest++ = src[0];
                 ++src;
-                curchar = src->unicode();
             }
             break;
         }
