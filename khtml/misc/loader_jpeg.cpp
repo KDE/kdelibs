@@ -307,8 +307,19 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
     if(state == Init)
     {
         if(jpeg_read_header(&cinfo, true) != JPEG_SUSPENDED) {
+            // do some simple memory requirements limitations
+            // as long as we use that stupid Qt stuff
+            int s = cinfo.image_width * cinfo.image_height;
+            if ( s > 16384 * 12388 )
+                cinfo.scale_denom = 8;
+            else if ( s > 8192 * 6144 )
+                cinfo.scale_denom = 4;
+            else if ( s > 4096 * 3072 )
+                cinfo.scale_denom = 2;
+
             if ( consumer )
-                consumer->setSize(cinfo.output_width, cinfo.output_height);
+                consumer->setSize(cinfo.image_width/cinfo.scale_denom,
+                                  cinfo.image_height/cinfo.scale_denom);
 
             state = startDecompress;
         }
@@ -325,6 +336,7 @@ int KJPEGFormat::decode(QImage& image, QImageConsumer* consumer, const uchar* bu
             cinfo.buffered_image = true;
         else
             cinfo.buffered_image = false;
+
         // setup image sizes
         jpeg_calc_output_dimensions( &cinfo );
 
