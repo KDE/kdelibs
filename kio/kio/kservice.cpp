@@ -357,7 +357,7 @@ bool KService::hasServiceType( const QString& _servicetype ) const
       // The mimetype inheritance ("is also") works the other way.
       // e.g. if we're looking for a handler for mimePtr==smb-workgroup
       // then a handler for inode/directory is ok.
-      if ( mimePtr->is( *it ) )
+      if ( mimePtr && mimePtr->is( *it ) )
           return true;
   }
   return false;

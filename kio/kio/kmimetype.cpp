@@ -56,6 +56,7 @@
 #include <ksimpleconfig.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
+#include <ksycoca.h>
 
 template class KSharedPtr<KMimeType>;
 template class QValueList<KMimeType::Ptr>;
@@ -142,7 +143,10 @@ KMimeType::Ptr KMimeType::mimeType( const QString& _name )
 
   if ( !mime || !mime->isType( KST_KMimeType ) )
   {
-    delete mime;
+    // When building ksycoca, findServiceTypeByName doesn't create an object
+    // but returns one from a dict.
+    if ( !KSycoca::self()->isBuilding() )
+        delete mime;
     if ( !s_pDefaultType )
       buildDefaultType();
     return s_pDefaultType;
