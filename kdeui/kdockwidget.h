@@ -130,6 +130,10 @@ friend class KDockMainWindow;
 public:
   KDockWidget( KDockManager* dockManager, const char* name,
                const QPixmap &pixmap, QWidget* parent = 0L );
+
+  /**
+   * Destructs a dockwidget.
+   */
   virtual ~KDockWidget();
 
   enum DockPosition
@@ -224,6 +228,10 @@ friend class KDockMainWindow;
 
 public:
   KDockManager( QWidget* mainWindow, const char* name = 0L );
+
+  /**
+   * Destructs a dockmanager.
+   */
   virtual ~KDockManager();
 
   void writeConfig( KConfig* c = 0L, QString group = QString::null );
@@ -302,56 +310,180 @@ class KDockMainWindow : public KTMainWindow
 {
   Q_OBJECT
 public:
+
+  /**
+   * Constructs a dockmainwindow. It calls it base class constructor and does additional things concerning
+   * to the dock stuff:
+   * <UL><LI>information about the dock state of this' children gets initialized</LI>
+   * <LI>a dockmanager is created...</LI>
+   * <LI>...and gets initialized</LI>
+   * <LI>the main dockwidget is set to 0L</LI></UL>
+   *
+   * @param name object name
+   */
   KDockMainWindow( const char *name = 0L );
+
+  /**
+   * Destructs a dockmainwindow.
+   */
   virtual ~KDockMainWindow();
 
+  /**
+   * Returns the dockmanager of this. (@see KDockManager)
+   * @return pointer to the wanted dockmanager
+   */
   KDockManager* manager(){ return dockManager; }
 
+  /**
+   * Sets a new main dockwidget.
+   * Additionally, the toolbar is re-initialized.
+   *
+   * @param _ dockwidget that become the new main dockwidget
+   */
   void setMainDockWidget( KDockWidget* );
+
+  /**
+   * Returns the main dockwidget.
+   *
+   * @return pointer to the main dockwidget
+   */
   KDockWidget* getMainDockWidget(){ return mainDockWidget; }
 
+  /** 
+   * This is one of the most important methods! 
+   * The KDockMainWindow creates a new dockwidget object here that usually should encapsulate the user's widget.
+   * The new dockwidget is automatically taken under control by the dockmanager of the dockmainwindow.
+   *
+   * @param name   dockwidget caption (window title)
+   * @param pixmap window icon (for instance shown when docked as tabwidget entry)
+   * @param parent parent widget for the new dockwidget
+   * @return    a pointer to the new created dockwidget
+   */
   KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L );
 
+  /** 
+   * It writes the current dock state in the given section of KConfig.
+   * 
+   * @param c     KDE class for saving configurations
+   * @param group name of section to write to
+   */
   void writeDockConfig( KConfig* c = 0L, QString group = QString::null );
+  
+  /** 
+   * It reads the current dock state from the given section of KConfig.
+   * 
+   * @param c     KDE class for saving configurations
+   * @param group name of section to read from
+   */
   void readDockConfig ( KConfig* c = 0L, QString group = QString::null );
 
+  /**
+   * It runs through all dockwidgets which are under control of the dockmanager and calls show() for every
+   * encapsulated widget and show() for the dockwidget itself if it is not in tab mode.
+   * Additionally, if the main dockwidget is not a QDialog, it will be shown.
+   */
   void activateDock(){ dockManager->activate(); }
 
+  /**
+   * Returns a popup menu that contains entries for all controlled dockwidgets making hiding and showing
+   * them possible.
+   *
+   * @return the wanted popup menu
+   */
   QPopupMenu* dockHideShowMenu(){ return dockManager->dockHideShowMenu(); }
 
+  /**
+   * This method shows the given dockwidget.
+   * The clue is that it also considers the dockwidget could be a tab page 
+   * and must set to be the activate one.
+   *
+   * @param dock the dockwidget that is to be shown
+   */
   void makeDockVisible( KDockWidget* dock );
 
-  /*! This is an overloaded member function, provided for convenience.
-   *  It differs from the above function only in what argument(s) it accepts. 
+  /**
+   * This is an overloaded member function, provided for convenience.
+   * It differs from the above function only in what argument(s) it accepts. 
    */
   void makeWidgetDockVisible( QWidget* widget );
 
+  /**
+   * This method calls the base class method. 
+   * If the given widget inherits KDockWidget, applyToWidget(this) is called.
+   * 
+   * @param - any widget that should become the main view
+   */
   void setView( QWidget* );
 
 protected slots:
+
+  /**
+   * Updates the dock-toolbar buttons and the internal information about the 4 dockwidgets 
+   * that are directly docked to the main widget.
+   */
   void slotDockChange();
+
+  /**
+   * Inverts the state of the appropriate toggle-toolbutton of the dock-toolbar.
+   *
+   * @param _ index of the toolbutton
+   */
   void slotToggled( int );
+
+  /**
+   * Using the given parameters it updates the information about the 4 dockwidgets
+   * that are directly docked to the main widget.
+   *
+   * @param oldDock new main dockwidget
+   * @param newDock old main dockwidget
+   */
   void slotReplaceDock( KDockWidget* oldDock, KDockWidget* newDock );
 
 protected:
+
+  /**
+   * Used as container for information about one of the 4 dockwidgets that are
+   * directly docked to the main dockwidget.
+   */
   struct DockPosData
   {
+    /** A Pointer to the dockwidget at this position */
     KDockWidget* dock;
     KDockWidget* dropDock;
     KDockWidget::DockPosition pos;
     int sepPos;
   };
 
+  /**
+   * This method docks as given in the position data, if toggled is true.
+   * Otherwise the dockwidget given with the position data will be undocked.
+   *
+   * @param toggled specifies if the dockwidget gets docked or undocked
+   * @param data    reference to the struct containing information about the appropriate dockwidget
+   */ 
   void toolBarManager( bool toggled, DockPosData &data );
 
+  /** A pointer to the main dockwidget (where one can manualDock() to */
   KDockWidget* mainDockWidget;
+
+  /** A pointer to the manager for the dock process */
   KDockManager* dockManager;
 
+  /** Contains information about which dockwidget is docked on the left. */
   DockPosData DockL;
+
+  /** Contains information about which dockwidget is docked on the right. */
   DockPosData DockR;
+
+  /** Contains information about which dockwidget is docked at the top. */
   DockPosData DockT;
+
+  /** Contains information about which dockwidget is docked at the bottom. */
   DockPosData DockB;
 
+  /** A pointer to the dock toolbar
+   * (for showing or hiding the 4 docked dockwidgets that are docked to the main dockwidget).
+   */
   KToolBar* toolbar;
 };
 
