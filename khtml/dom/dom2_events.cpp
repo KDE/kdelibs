@@ -317,7 +317,7 @@ int UIEvent::which() const
     if( impl->isMouseEvent() )
         return static_cast<MouseEventImpl*>( impl )->button() + 1;
     else if( impl->isTextEvent() )
-        return static_cast<TextEventImpl*>( impl )->keyVal();
+        return static_cast<TextEventImpl*>( impl )->keyCode();
 
     return 0;
 }
