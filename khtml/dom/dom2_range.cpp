@@ -633,11 +633,12 @@ short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containe
     Node n = containerA;
     while( n != 0 )
     {
-        if( n == containerB)
-            return -1;      // A is before B
-        Node next = n.firstChild();
-        if( next == 0 )
-            next = n.nextSibling();
+        if( n == containerB)  return -1;       // A is before B
+
+        Node next;
+        if( n == containerA )  next = n.childNodes().item( offsetA );
+        else  next = n.firstChild();
+        if( next == 0 )  next = n.nextSibling();
         while( n != 0 && next == 0 )
         {
             n = n.parentNode();
@@ -645,7 +646,7 @@ short Range::compareBoundaryPoints( Node containerA, long offsetA, Node containe
         }
         n = next;
     }
-    return 1;         // A is after B
+    return 1;                                  // A is after B
 }
 
 bool Range::boundaryPointsValid(  )
