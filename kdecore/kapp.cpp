@@ -1471,35 +1471,21 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         setStyle(pKStyle);
         styleHandle=0;
     }
-    else if(styleStr == "Platinum"){
+    else if(styleStr == "Platinum" || styleStr == "CDE" || styleStr == "Motif"
+         || styleStr == "MotifPlus") {
         pKStyle=0;
         styleHandle=0;
-        setStyle(new QPlatinumStyle);
+        setStyle(QStyleFactory::create(styleStr));
     }
     else if(styleStr == "Windows 95"){
         pKStyle=0;
         styleHandle=0;
-        setStyle(new QWindowsStyle);
-    }
-    else if(styleStr == "CDE"){
-        pKStyle=0;
-        styleHandle=0;
-        setStyle(new QCDEStyle);
-    }
-    else if(styleStr == "Motif"){
-        pKStyle=0;
-        styleHandle=0;
-        setStyle(new QMotifStyle);
-    }
-    else if(styleStr == "MotifPlus"){
-        pKStyle=0;
-        styleHandle=0;
-        setStyle(new QMotifPlusStyle);
+        setStyle(QStyleFactory::create("Windows"));
     }
     else if(styleStr == "Qt SGI"){
         pKStyle=0;
         styleHandle=0;
-        setStyle(new QSGIStyle);
+        setStyle(QStyleFactory::create("SGI"));
     }
     else if(useStyles){
         if(!dlregistered){

@@ -18,7 +18,7 @@
 #ifndef __KSTYLE_H
 #define __KSTYLE_H
 
-#include <qplatinumstyle.h>
+#include <qstyle.h>
 #include <qfont.h>
 #include <qpalette.h>
 #include <qpixmap.h>
@@ -34,13 +34,13 @@ class KStylePrivate;
  *  the GUI elements.
  * @author Daniel M. Duley <mosfet@kde.org>
  */
-class KStyle : public QPlatinumStyle
+class KStyle : public QStyle
 {
     Q_OBJECT
 public:
     enum KToolButtonType{Icon=0, IconTextRight, Text, IconTextBottom};
     enum KToolBarPos{Top=0, Left, Right, Bottom, Floating, Flat};
-    KStyle() : QPlatinumStyle(){;}
+    KStyle() : QStyle(){;}
     /**
      * Draw a toolbar (without buttons, etc.)
      *
