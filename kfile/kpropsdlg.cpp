@@ -1383,8 +1383,8 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   // Now the widgets in the top layout
 
   QLabel* l;
-  l = new QLabel( d->m_frame, "Label_1" );
-  l->setText( i18n("Program Name:") );
+  l = new QLabel( d->m_frame );
+  l->setText( i18n("Command:") );
   mainlayout->addWidget(l, 1);
 
   QHBoxLayout * hlayout;
