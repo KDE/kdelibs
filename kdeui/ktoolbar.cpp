@@ -781,6 +781,11 @@ int KToolBar::itemIndex (int id)
     return w ? widgets.findRef(w) : -1;
 }
 
+int KToolBar::idAt (int index)
+{
+    QWidget *w = widgets.at(index);
+    return widget2id[w];
+}
 
 void KToolBar::setFullSize(bool flag )
 {

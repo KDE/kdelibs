@@ -690,6 +690,13 @@ public:
     int itemIndex (int id);
 
     /**
+   * Returns the id of the item at the given index.
+   *
+   * KDE4: make this const!
+   */
+    int idAt(int index);
+
+    /**
    * Set toolbar to full parent size (default).
    *
    *  In full size mode the bar
