@@ -1,0 +1,6 @@
+[Desktop Entry]
+MimeType=application/x-pw
+Comment=Pathetic Writer
+Icon=unknown
+Type=MimeType
+Patterns=*.pw;*.rtf;*.doc;
