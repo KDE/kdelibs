@@ -322,7 +322,7 @@ KJSO KJSO::getValue()
     return o;
 
 //    UString m = I18N_NOOP("Can't find variable: ") + getPropertyName();
-//    return Error::create(ReferenceError, m.ascii()); 
+//    return Error::create(ReferenceError, m.ascii());
   }
 
   return o.get(getPropertyName());

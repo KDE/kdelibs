@@ -39,6 +39,8 @@ Null::~Null() { }
 
 Boolean::Boolean(bool b) : KJSO(new BooleanImp(b)) { }
 
+Boolean::Boolean(BooleanImp *i) : KJSO(i) { }
+
 Boolean::~Boolean() { }
 
 bool Boolean::value() const
@@ -61,6 +63,9 @@ Number::Number(long int l)
 
 Number::Number(long unsigned int l)
   : KJSO(new NumberImp(static_cast<double>(l))) { }
+
+Number::Number(NumberImp *i)
+  : KJSO(i) { }
 
 Number::~Number() { }
 
@@ -87,6 +92,8 @@ bool Number::isInf() const
 }
 
 String::String(const UString &s) : KJSO(new StringImp(UString(s))) { }
+
+String::String(StringImp *i) : KJSO(i) { }
 
 String::~String() { }
 

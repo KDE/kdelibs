@@ -574,6 +574,7 @@ namespace KJS {
   private:
     Global(void *);
     void init();
+    void clear();
   };
 
   /**

@@ -96,6 +96,13 @@ void Global::init()
   g->init();
 }
 
+void Global::clear()
+{
+//   if (rep && rep->deref())
+//     delete rep;
+//   rep = 0L;
+}
+
 Global Global::current()
 {
   assert(KJScriptImp::current());
