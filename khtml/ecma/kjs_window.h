@@ -97,7 +97,11 @@ namespace KJS {
     Value openWindow(ExecState *exec, const List &args);
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
-    bool isSafeScript(ExecState *exec) const;
+    bool isSafeScript(ExecState *exec) const {
+      KHTMLPart *activePart = static_cast<KJS::ScriptInterpreter *>(  exec->interpreter() )->part();
+      if ( activePart == m_part ) return true;
+      return checkIsSafeScript( activePart );
+    }
     Location *location() const;
     ObjectImp* frames( ExecState* exec ) const;
     JSEventListener *getJSEventListener(const Value &val, bool html = false);
@@ -133,6 +137,8 @@ namespace KJS {
   private:
     struct DelayedAction;
     friend struct DelayedAction;
+
+    bool checkIsSafeScript( KHTMLPart* activePart ) const;
 
     QGuardedPtr<KHTMLPart> m_part;
     Screen *screen;

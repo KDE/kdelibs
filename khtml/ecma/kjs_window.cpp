@@ -267,7 +267,6 @@ IMPLEMENT_PROTOFUNC_DOM(WindowFunc)
 Window::Window(KHTMLPart *p)
   : ObjectImp(/*no proto*/), m_part(p), screen(0), history(0), m_frames(0), loc(0), m_evt(0)
 {
-  jsEventListeners.setAutoDelete(true);
   winq = new WindowQObject(this);
   //kdDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name() << endl;
 }
@@ -353,12 +352,9 @@ void Window::mark()
 
 bool Window::hasProperty(ExecState *exec, const UString &p) const
 {
-  if (p == "closed")
-    return true;
-
   // we don't want any operations on a closed window
   if (m_part.isNull())
-    return false;
+    return ( p == "closed" );
 
   if (ObjectImp::hasProperty(exec, p))
     return true;
@@ -391,12 +387,12 @@ Value Window::get(ExecState *exec, const UString &p) const
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "Window("<<this<<")::get " << p.qstring() << endl;
 #endif
-  if ( p == "closed" )
-    return Boolean(m_part.isNull());
-
   // we don't want any operations on a closed window
-  if (m_part.isNull())
+  if (m_part.isNull()) {
+    if ( p == "closed" )
+      return Boolean( true );
     return Undefined();
+  }
 
   // Look for overrides first
   Value val = ObjectImp::get(exec, p);
@@ -410,6 +406,8 @@ Value Window::get(ExecState *exec, const UString &p) const
   {
     //kdDebug(6070) << "token: " << entry->value << endl;
     switch( entry->value ) {
+    case Closed:
+      return Boolean( false );
     case Crypto:
       return Undefined(); // ###
     case DefaultStatus:
@@ -738,9 +736,9 @@ void Window::put(ExecState* exec, const UString &propertyName, const Value &valu
 {
   // Called by an internal KJS call (e.g. InterpreterImp's constructor) ?
   // If yes, save time and jump directly to ObjectImp.
-  if ( (attr != None && attr != DontDelete)
+  if ( (attr != None && attr != DontDelete) ||
        // Same thing if we have a local override (e.g. "var location")
-       || ( ObjectImp::getDirect(propertyName) && isSafeScript(exec)) )
+       ( isSafeScript( exec ) && ObjectImp::getDirect(propertyName) ) )
   {
     ObjectImp::put( exec, propertyName, value, attr );
     return;
@@ -932,19 +930,18 @@ void Window::afterScriptExecution()
   }
 }
 
-bool Window::isSafeScript(ExecState *exec) const
+bool Window::checkIsSafeScript(KHTMLPart *activePart) const
 {
   if (m_part.isNull()) { // part deleted ? can't grant access
     kdDebug(6070) << "Window::isSafeScript: accessing deleted part !" << endl;
     return false;
   }
-  KHTMLPart *activePart = static_cast<KJS::ScriptInterpreter *>( exec->interpreter() )->part();
   if (!activePart) {
     kdDebug(6070) << "Window::isSafeScript: current interpreter's part is 0L!" << endl;
     return false;
   }
-  if ( activePart == m_part ) // Not calling from another frame, no problem.
-    return true;
+   if ( activePart == m_part ) // Not calling from another frame, no problem.
+     return true;
 
   if ( m_part->document().isNull() )
     return true; // allow to access a window that was just created (e.g. with window.open("about:blank"))
@@ -964,7 +961,7 @@ bool Window::isSafeScript(ExecState *exec) const
   DOM::DOMString thisDomain = thisDocument.domain();
 
   if ( actDomain == thisDomain ) {
-    //kdDebug(6070) << "JavaScript: access granted, domain is '" << actDomain.string() << "'" << endl;
+    kdDebug(6070) << "JavaScript: access granted, domain is '" << actDomain.string() << "'" << endl;
     return true;
   }
 
@@ -1023,8 +1020,6 @@ void Window::clear( ExecState *exec )
   winq = 0L;
   // Get rid of everything, those user vars could hold references to DOM nodes
   deleteAllProperties( exec );
-  jsEventListeners.clear();
-
   // Really delete those properties, so that the DOM nodes get deref'ed
   while(KJS::Interpreter::collect())
       ;
