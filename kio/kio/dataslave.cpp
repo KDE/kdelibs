@@ -35,7 +35,7 @@ using namespace KIO;
 #define KIO_DATA_POLL_INTERVAL 0
 
 DataSlave::DataSlave() :
-	Slave(true, 0, QString::null, QString::null)
+	Slave(true, 0, "data", QString::null)
 {
   _suspended = false;
   timer = new QTimer(this);
