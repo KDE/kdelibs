@@ -196,8 +196,14 @@ void KPassivePopup::positionSelf()
             target = defaultArea();
         }
         else {
-            NETRect r = ni.iconGeometry();
-            target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height );
+                NETRect r = ni.iconGeometry();
+                target.setRect( r.pos.x, r.pos.y, r.size.width, r.size.height);
+                if ( target.isNull() ) { // bogus value, use the exact position
+                    NETRect dummy;
+                    ni.kdeGeometry( dummy, r );
+                    target.setRect( r.pos.x, r.pos.y, 
+                                    r.size.width, r.size.height);
+                }
         }
     }
 
