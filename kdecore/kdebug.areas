@@ -23,6 +23,7 @@
 280        kdeui (KSharedPixmap)
 290        kdeui (KPixmapIO)
 291        kdeui (KAboutDialog)
+292        kdeui (KComboBox)
 750        kspell (kdelibs)
 800        kabapi (kdelibs)
 900        kdesu (kdelibs)

@@ -269,7 +269,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 int len = txt.length();
                 if (!edit->hasMarkedText() && len && cursorPosition() ==len)
                 {
-                    kdDebug() << "Automatic Completion" << endl;
+                    kdDebug(292) << "Automatic Completion" << endl;
                     if ( emitSignals() )
                         emit completion( txt ); // emit when requested...
                     if ( handleSignals() )
@@ -287,7 +287,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
             if ( !e->text().isNull() && key != Key_Escape &&
                  key != Key_Return && key != Key_Enter )
             {
-                kdDebug() << "Popup Completion" << endl;
+                kdDebug(292) << "Popup Completion" << endl;
                 if ( emitSignals() )
                     emit completion( txt ); // emit when requested...
                 if ( handleSignals() )
@@ -308,7 +308,7 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
                 int len = txt.length();
                 if ( edit->cursorPosition() == len && len != 0 )
                 {
-                    kdDebug() << "Shell Completion" << endl;
+                    kdDebug(292) << "Shell Completion" << endl;
                     if ( emitSignals() )
                         emit completion( txt ); // emit when requested...
                     if ( handleSignals() )
