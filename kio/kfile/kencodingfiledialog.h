@@ -28,7 +28,7 @@ class     KEncodingFileDialogPrivate;
 
 /**
  * Provides a user (and developer) friendly way to
- * select files with support for chosing encoding
+ * select files with support for choosing encoding
  *
  *
  * The dialog has been designed to allow applications to customise it
@@ -110,6 +110,7 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
+     * @param encoding The encoding shown in the encoding combo.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
      * provide multiple globs.  See setFilter() for details on
@@ -141,10 +142,11 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
+     * @param encoding The encoding shown in the encoding combo.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
      * provide multiple globs.  See setFilter() for details on
-     * how to do this...
+     * how to do this.
      * @param parent The widget the dialog will be centered on initially.
      * @param caption The name of the dialog widget.
      */
@@ -172,6 +174,7 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
+     * @param encoding The encoding shown in the encoding combo.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
      * provide multiple globs.  See setFilter() for details on
@@ -206,6 +209,7 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
+     * @param encoding The encoding shown in the encoding combo.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
      * provide multiple globs.  See setFilter() for details on
@@ -241,6 +245,7 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
+     * @param encoding The encoding shown in the encoding combo.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
      * provide multiple globs.  See setFilter() for details on
@@ -275,6 +280,7 @@ public:
      *         @li '::&lt;keyword&gt;' to start in the directory last used
      *             by a filedialog in any application that specified the
      *             same keyword.
+     * @param encoding The encoding shown in the encoding combo.
      * @param filter This is a space separated list of shell globs.
      * You can set the text to be displayed for the glob, and
      * provide multiple globs.  See setFilter() for details on
