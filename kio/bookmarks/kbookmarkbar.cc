@@ -89,7 +89,7 @@ void KBookmarkBar::fillBookmarkBar(KBookmarkGroup & parent)
     for (KBookmark bm = parent.first(); !bm.isNull(); bm = parent.next(bm))
     {
 		QString text = bm.text();
-        text.replace( QRegExp( "&" ), "&&" );
+        text.replace( '&', "&&" );
         if (!bm.isGroup())
         {
             if ( bm.isSeparator() )
