@@ -114,7 +114,7 @@ public:
    virtual bool removeBranch( KFileTreeBranch *branch );
 
    /**
-    *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failiure.
+    *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failure.
     *  @param branchno is the name of a branch
     */
    KFileTreeBranch *branch( const QString& searchName );
