@@ -375,17 +375,17 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
 		//
 	    	s=1;
 
-		while (s < partl.count() && intTypes.contains(partl[s]))
+		while (s < (int)partl.count() && intTypes.contains(partl[s]))
 		{
 			s++;
 		}
 
-		if (s<partl.count()-1)
+		if (s<(int)partl.count()-1)
 		{
 			qWarning("The argument `%s' seems syntactically wrong.",
 				lt.latin1());
 		}
-		if (s==partl.count()-1)
+		if (s==(int)partl.count()-1)
 		{
 			partl.remove(partl.at(s));
 		}
