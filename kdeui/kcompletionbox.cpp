@@ -87,10 +87,11 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
     if ( o==m_parent ) {
 
-        if (  e->type() == QEvent::KeyPress ) {
-            QKeyEvent *ev = static_cast<QKeyEvent *>( e );
+        if ( isVisible() ) {
 
-            if ( isVisible() ) {
+            if (  e->type() == QEvent::KeyPress ) {
+
+                QKeyEvent *ev = static_cast<QKeyEvent *>( e );
 
                 switch ( ev->key() ) {
                 case Key_Tab:
@@ -130,20 +131,6 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                     break;
                 }
 
-            } else {
-                switch ( ev->key() ) {
-                case Key_Tab:
-                case Key_Down:
-                case Key_Up:
-                case Key_Prior:
-                case Key_Next:
-                    KNotifyClient::event( "Textcompletion: no match" );
-                    ev->accept();
-                    return true;
-
-                default:
-                    break;
-                }
             }
 
         }
