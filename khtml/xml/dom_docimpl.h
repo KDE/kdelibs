@@ -93,9 +93,6 @@ public:
 
     virtual bool isHTMLDocument() const { return false; }
 
-    virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
-    virtual khtml::RenderStyle *style() { return m_style; }
-
     virtual void applyChanges(bool top=true, bool force=true);
 
     DocumentTypeImpl *doctype() const;
@@ -252,7 +249,6 @@ protected:
     QList<ElementImpl> m_registeredElements;
     QStringList m_state;
 
-    khtml::RenderStyle *m_style;
     khtml::DocLoader *m_docLoader;
     bool visuallyOrdered;
     Tokenizer *tokenizer;

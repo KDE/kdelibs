@@ -93,8 +93,6 @@ void RenderFlow::setStyle(RenderStyle *_style)
         {
             if(child->isAnonymousBox())
             {
-                if (child->style())
-                    delete child->style();
                 RenderStyle* newStyle = new RenderStyle(style());
                 newStyle->setDisplay(BLOCK);
                 child->setStyle(newStyle);
@@ -110,9 +108,6 @@ RenderFlow::~RenderFlow()
 {
     if (specialObjects)
         delete specialObjects;
-    if(isAnonymousBox()) // usually the style object is deleted by the DOM tree, but
-        // since anonymous boxes don't have a corresponding DOM element...
-        delete style();
 }
 
 void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,

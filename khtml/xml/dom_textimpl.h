@@ -90,9 +90,6 @@ public:
     TextImpl(DocumentImpl *impl);
     virtual ~TextImpl();
 
-    virtual void setStyle(khtml::RenderStyle *) {}
-    virtual khtml::RenderStyle *style() { return _parent->style(); }
-
     virtual const DOMString nodeName() const;
     virtual DOMString nodeValue() const;
     virtual unsigned short nodeType() const;
@@ -116,8 +113,6 @@ public:
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual void recalcStyle();
     virtual bool childAllowed( NodeImpl *newChild );
-
-    khtml::RenderStyle *m_style;
 };
 
 // ----------------------------------------------------------------------------

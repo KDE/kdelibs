@@ -137,7 +137,7 @@ void HTMLBRElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLBRElementImpl::attach(KHTMLView *w)
 {
     //kdDebug( 6030 ) << "HTMLBRElementImpl::attach" << endl;
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
@@ -234,7 +234,7 @@ void HTMLFontElementImpl::attach(KHTMLView *w)
     // the font element needs special handling because it has to behave like
     // an inline or block level element depending on context.
 
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     if(_parent && _parent->renderer())
     {
 	if(_parent->style()->display() != INLINE)

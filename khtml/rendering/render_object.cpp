@@ -128,6 +128,9 @@ RenderObject::~RenderObject()
 {
     if(m_bgImage) m_bgImage->deref(this);
 
+    if (m_style)
+	m_style->deref();
+
     if (parent())
         //have parent, take care of the tree integrity
         parent()->removeChild(this);
@@ -622,12 +625,15 @@ void RenderObject::setStyle(RenderStyle *style)
     m_positioned = false;
     m_relPositioned = false;
     m_printSpecial = false;
-    // ### no support for changing the display type dynamically...
+    // no support for changing the display type dynamically... object must be
+    // detached and re-attached as a different type
     //m_inline = true;
     m_visible = true;
 
-    // deletion of styles is handled by the DOM elements
+    if (m_style)
+	m_style->deref();
     m_style = style;
+    m_style->ref();
 
     if( m_bgImage != m_style->backgroundImage() ) {
 	if(m_bgImage) m_bgImage->deref(this);

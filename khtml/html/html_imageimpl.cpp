@@ -175,7 +175,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLImageElementImpl::attach(KHTMLView *w)
 {
     //kdDebug( 6030 ) << "HTMLImageImpl::attach" << endl;
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {

@@ -706,7 +706,7 @@ void HTMLTableCellElementImpl::attach(KHTMLView *_view)
             addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
     }
 
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {

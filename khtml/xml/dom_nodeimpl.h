@@ -266,11 +266,14 @@ public:
 
     virtual void setPreviousSibling(NodeImpl *);
     virtual void setNextSibling(NodeImpl *);
+    virtual khtml::RenderStyle *style() { return m_style; }
+    virtual void setStyle(khtml::RenderStyle *style);
 
 protected:
     NodeImpl *_parent;
     NodeImpl *_previous;
     NodeImpl *_next;
+    khtml::RenderStyle *m_style;
 
     // helper function; throws exception if modifying a readonly node
     bool checkReadOnly();

@@ -26,6 +26,7 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qlist.h>
+#include "dom/dom_misc.h"
 
 #include <khtmllayout.h>
 
@@ -484,7 +485,7 @@ enum EDisplay {
     TABLE_CAPTION, NONE
 };
 
-class RenderStyle
+class RenderStyle : public DOM::DomShared
 {
 public:
     static void cleanup();

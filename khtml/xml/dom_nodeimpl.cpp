@@ -395,6 +395,7 @@ NodeWParentImpl::NodeWParentImpl(DocumentImpl *doc) : NodeImpl(doc)
     _parent = 0;
     _previous = 0;
     _next = 0;
+    m_style = 0;
 }
 
 NodeWParentImpl::~NodeWParentImpl()
@@ -403,6 +404,8 @@ NodeWParentImpl::~NodeWParentImpl()
     // hope this fix is fine...
     if(_previous) _previous->setNextSibling(0);
     if(_next) _next->setPreviousSibling(0);
+    if (m_style)
+	m_style->deref();
 }
 
 NodeImpl *NodeWParentImpl::parentNode() const
@@ -446,6 +449,15 @@ bool NodeWParentImpl::checkReadOnly()
 {
     // ####
     return false;
+}
+
+void NodeWParentImpl::setStyle(khtml::RenderStyle *style)
+{
+    if (m_style)
+	m_style->deref();
+    m_style = style;
+    if (m_style)
+	m_style->ref();
 }
 
 //-------------------------------------------------------------------------
@@ -651,8 +663,8 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
-    if (oldChild->renderer() && oldChild->renderer()->parent())
-	oldChild->renderer()->parent()->removeChild(oldChild->renderer());
+    if (oldChild->attached())
+	oldChild->detach();
 
     setChanged(true);
 

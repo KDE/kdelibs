@@ -127,7 +127,7 @@ void HTMLAppletElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLAppletElementImpl::attach(KHTMLView *_view)
 {
-  m_style = document->styleSelector()->styleForElement(this);
+  setStyle(document->styleSelector()->styleForElement(this));
   if(!code)
       return;
 
@@ -270,7 +270,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLEmbedElementImpl::attach(KHTMLView *w)
 {
-   m_style = document->styleSelector()->styleForElement( this );
+   setStyle(document->styleSelector()->styleForElement( this ));
    khtml::RenderObject *r = _parent->renderer();
    if ( !r )
       return;
@@ -353,7 +353,7 @@ void HTMLObjectElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLObjectElementImpl::attach(KHTMLView *w)
 {
-  m_style = document->styleSelector()->styleForElement( this );
+  setStyle(document->styleSelector()->styleForElement( this ));
 
   khtml::RenderObject *r = _parent->renderer();
   if ( !r )

@@ -125,8 +125,6 @@ public:
 
     virtual void applyChanges(bool = true, bool = true);
 
-    virtual void setStyle(khtml::RenderStyle *style) { m_style = style; }
-    virtual khtml::RenderStyle *style() { return m_style; }
     virtual khtml::RenderStyle *activeStyle();
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     virtual NamedNodeMapImpl *attributes() const;
@@ -173,8 +171,6 @@ protected: // member variables
     // for setting this according to the corresponding element description
     // in the DTD
     virtual khtml::AttributeList *defaultMap() const;
-
-    khtml::RenderStyle *m_style;
 };
 
 

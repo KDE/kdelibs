@@ -924,14 +924,12 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
 
 void KHTMLPart::slotDebugDOMTree()
 {
-    if(d->m_doc && d->m_doc->firstChild())
-        d->m_doc->firstChild()->printTree();
+    d->m_doc->printTree();
 }
 
 void KHTMLPart::slotDebugRenderTree()
 {
-    if(d->m_doc && d->m_doc->firstChild() && d->m_doc->firstChild()->renderer())
-        d->m_doc->firstChild()->renderer()->printTree();
+    d->m_doc->renderer()->printTree();
 }
 
 void KHTMLPart::autoloadImages( bool enable )

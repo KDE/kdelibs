@@ -852,7 +852,7 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLInputElementImpl::attach(KHTMLView *_view)
 {
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     view = _view;
 
     khtml::RenderObject *r = _parent ? _parent->renderer() : 0;
@@ -1315,7 +1315,7 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLSelectElementImpl::attach(KHTMLView *_view)
 {
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     view = _view;
 
     khtml::RenderObject *r = _parent->renderer();
@@ -1701,7 +1701,7 @@ void HTMLTextAreaElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
 {
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     view = _view;
 
     khtml::RenderObject *r = _parent->renderer();

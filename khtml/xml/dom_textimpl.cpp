@@ -214,19 +214,15 @@ bool CommentImpl::childAllowed( NodeImpl */*newChild*/ )
 TextImpl::TextImpl(DocumentImpl *doc, const DOMString &_text)
     : CharacterDataImpl(doc, _text)
 {
-    m_style = 0;
 }
 
 TextImpl::TextImpl(DocumentImpl *doc)
     : CharacterDataImpl(doc)
 {
-    m_style = 0;
 }
 
 TextImpl::~TextImpl()
 {
-    // we don't delete m_style, since it's just a pointer to the parents
-    // style object
 }
 
 TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
@@ -274,7 +270,7 @@ unsigned short TextImpl::nodeType() const
 
 void TextImpl::attach(KHTMLView *w)
 {
-    m_style = parentNode()->style();
+    setStyle(new RenderStyle(parentNode()->style()));
     RenderObject *r = _parent->renderer();
     if(r)
     {
@@ -358,7 +354,7 @@ void TextImpl::recalcStyle()
 {
     if (!parentNode())
 	return;
-    m_style = parentNode()->activeStyle();
+    setStyle(parentNode()->activeStyle());
     if(m_render) m_render->setStyle(m_style);
 }
 

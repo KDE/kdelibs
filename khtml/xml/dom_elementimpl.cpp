@@ -268,7 +268,6 @@ bool AttrImpl::childAllowed( NodeImpl *newChild )
 
 ElementImpl::ElementImpl(DocumentImpl *doc) : NodeBaseImpl(doc)
 {
-    m_style = 0;
     namedAttrMap = new NamedAttrMapImpl(this);
     namedAttrMap->ref();
 }
@@ -277,8 +276,6 @@ ElementImpl::~ElementImpl()
 {
     if (m_render)
         detach();
-
-    delete m_style;
 
     namedAttrMap->detachFromElement();
     namedAttrMap->deref();
@@ -484,7 +481,7 @@ AttributeList *ElementImpl::defaultMap() const
 
 void ElementImpl::attach(KHTMLView *w)
 {
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     if(_parent && _parent->renderer())
     {
 	m_render = khtml::RenderObject::createObject(this);
@@ -540,10 +537,16 @@ void ElementImpl::recalcStyle()
 {
     if(!m_render) return;
     bool faf = m_style->flowAroundFloats();
-    delete m_style;
+    EDisplay oldDisplay = m_style->display();
 
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
+
     m_style->setFlowAroundFloats(faf);
+
+    if (oldDisplay != m_style->display()) {
+	detach();
+	attach(document->view());
+    }
 
     m_render->setStyle(activeStyle());
 

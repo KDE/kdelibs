@@ -85,7 +85,7 @@ void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLBaseElementImpl::attach(KHTMLView *v)
 {
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     if(_href.length())
     {
       v->part()->setBaseURL( KURL( _href.string() ) );
@@ -125,7 +125,7 @@ ushort HTMLLinkElementImpl::id() const
 // other stuff...
 void HTMLLinkElementImpl::attach(KHTMLView *v)
 {
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
 
     QString type = m_type.string().lower();
     QString rel = m_rel.string().lower();
@@ -232,7 +232,7 @@ void HTMLMetaElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLMetaElementImpl::attach(KHTMLView *v)
 {
-    m_style = document->styleSelector()->styleForElement(this);
+    setStyle(document->styleSelector()->styleForElement(this));
     //   kdDebug( 6030 ) << "meta::attach() equiv=" << _equiv.string() << ", content=" << _content.string() << endl;
     if(strcasecmp(_equiv, "refresh") == 0 && !_content.isNull() && v->part()->metaRefreshEnabled())
     {

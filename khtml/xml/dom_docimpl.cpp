@@ -101,7 +101,6 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
     m_view = 0;
-    m_style = 0;
     m_docLoader = new DocLoader();
     visuallyOrdered = false;
     m_loadingSheet = false;
@@ -125,7 +124,6 @@ DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
     m_view = v;
-    m_style = 0;
     m_docLoader = new DocLoader();
     visuallyOrdered = false;
     m_loadingSheet = false;
@@ -149,7 +147,6 @@ DocumentImpl::~DocumentImpl()
 {
     delete m_sheet;
     delete m_styleSelector;
-    delete m_style;
     delete m_docLoader;
     if (m_elemSheet )
 	m_elemSheet->deref();
@@ -577,8 +574,7 @@ void DocumentImpl::recalcStyle()
     QTime qt;
     qt.start();
     if( !m_render ) return;
-    if( m_style ) delete m_style;
-    m_style = new RenderStyle();
+    setStyle(new RenderStyle());
     m_style->setDisplay(BLOCK);
     m_style->setVisuallyOrdered( visuallyOrdered );
     // ### make the font stuff _really_ work!!!!

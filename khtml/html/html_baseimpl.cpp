@@ -149,7 +149,7 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
         addCSSProperty(CSS_PROP_PADDING_BOTTOM, str);
     }
 
-    m_style = document->styleSelector()->styleForElement( this );
+    setStyle(document->styleSelector()->styleForElement( this ));
     khtml::RenderObject *r = _parent->renderer();
 
     if ( !r )
@@ -248,7 +248,7 @@ void HTMLFrameElementImpl::attach(KHTMLView *w)
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
 
-    m_style = document->styleSelector()->styleForElement( this );
+    setStyle(document->styleSelector()->styleForElement( this ));
     khtml::RenderObject *r = _parent->renderer();
 
     if ( !r )
@@ -364,7 +364,7 @@ void HTMLFrameSetElementImpl::attach(KHTMLView *w)
         node = static_cast<HTMLElementImpl*>(node->parentNode());
     }
 
-    m_style = document->styleSelector()->styleForElement( this );
+    setStyle(document->styleSelector()->styleForElement( this ));
     view = w;
     khtml::RenderObject *r = _parent->renderer();
 
@@ -531,7 +531,7 @@ ushort HTMLHeadElementImpl::id() const
 
 void HTMLHtmlElementImpl::attach(KHTMLView *w)
 {
-    m_style = document->styleSelector()->styleForElement( this );
+    setStyle(document->styleSelector()->styleForElement( this ));
     khtml::RenderObject *r = _parent->renderer();
 
     if ( !r )
@@ -606,7 +606,7 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
 
 void HTMLIFrameElementImpl::attach(KHTMLView *w)
 {
-  m_style = document->styleSelector()->styleForElement( this );
+  setStyle(document->styleSelector()->styleForElement( this ));
 
   khtml::RenderObject *r = _parent->renderer();
 

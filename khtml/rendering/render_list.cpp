@@ -206,7 +206,6 @@ RenderListMarker::~RenderListMarker()
 {
     if(listImage)
         listImage->deref(this);
-    delete style();
 }
 
 void RenderListMarker::setStyle(RenderStyle *s)
