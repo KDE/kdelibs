@@ -73,6 +73,9 @@ static QCString printableToString(const char *str, int l)
         }
         switch(*str)
         {
+           case 's':
+              *r++ = ' ';
+              break;
            case 't':
               *r++ = '\t';
               break;
@@ -104,8 +107,17 @@ static QCString stringToPrintable(const QCString& str){
   register char *r = (char *) result.data();
   register char *s = (char *) str.data();
 
-  while(*s)
+  // Escape leading space
+  if (*s == ' ')
   {
+     *r++ = '\\'; *r++ = 's';
+     s++;
+  }
+
+  if (*s)
+  {
+   while(*s)
+   {
     if (*s == '\n')
     {
       *r++ = '\\'; *r++ = 'n';
@@ -127,7 +139,14 @@ static QCString stringToPrintable(const QCString& str){
       *r++ = *s;
     }
     s++;
+   }
+   // Escape trailing space
+   if (*(r-1) == ' ')
+   {
+      *(r-1) = '\\'; *r++ = 's';
+   }
   }
+
   result.truncate(r - result.data());
   return result;
 }
