@@ -53,10 +53,10 @@ public:
    * @return true if point is inside execute area of an item, false in all
    * other cases including the case that it is over the viewport.
    */
-  virtual bool isExecuteArea( const QPoint& point );
+  virtual bool isExecuteArea( const QPoint& point);
 
   QList<QListViewItem> selectedItems() const;
-  void moveItem(QListViewItem *item, QListViewItem *after);
+  void moveItem(QListViewItem *item, QListViewItem *after, bool);
 
 
   QListViewItem *lastItem() const;
