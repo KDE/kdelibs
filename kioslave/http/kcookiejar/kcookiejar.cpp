@@ -289,6 +289,17 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
           if( cookie->isSecure() && !secureRequest )
              continue;
+             
+          // Do not send expired cookies.
+          if ( cookie->isExpired (time(0)) )
+          {
+             // Note there is no need to actually delete the cookie here
+             // since the cookieserver will invoke ::saveCookieJar because
+             // of the state change below. This will then do the job of 
+             // deleting the cookie for us.
+             m_cookiesChanged = true;
+             continue;
+          }
 
           if (windowId && (cookie->windowIds().find(windowId) == cookie->windowIds().end()))
           {
