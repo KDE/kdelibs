@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.42  1998/01/19 12:15:06  ssk
+// Cleaned up some documentation.
+//
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // fixed my new macro. I guess, this way it's better
 //
@@ -379,7 +382,7 @@ public:
   static const QString& kde_htmldir();
 
   /**
-	* Returns the directory where KDE applications store their specific data
+	* Returns the directory where KDE applications store their .kdelnk file
 	* @return the name of the directory
 	*/
   static const QString& kde_appsdir();
@@ -390,9 +393,9 @@ public:
 	*/
   static const QString& kde_icondir();
 
-  /** 
-	* Returns the directory where common data is stored
-	* @return the name of the directory
+  /** 	
+        * Returns the directory where KDE applications store their specific data
+    	* @return the name of the directory
 	*/
   static const QString& kde_datadir();
 
