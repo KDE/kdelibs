@@ -26,7 +26,7 @@ libkfile_la_METASOURCES = AUTO
 include_HEADERS = kfiledialog.h kfileinfo.h kfilebookmark.h  \
 	kremotefile.h kdir.h kdirlistbox.h kfileinfocontents.h \
 	booktoken.h kfiledetaillist.h kcombiview.h kpreview.h kfilepreview.h \
-	kfilesimpleview.h kfilefilter.h
+	kfilesimpleview.h kfilefilter.h krecentdocument.h
 
 noinst_HEADERS = kfiledialogconf.h kfilefilter.h config-kfile.h
 
@@ -35,7 +35,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp kcombiview.cpp \
 	kdir.cpp kfileinfo.cpp kremotefile.cpp kdirlistbox.cpp \
 	kfiledetaillist.cpp kfiledialog.cpp booktoken.cpp \
 	kfileinfocontents.cpp kfilesimpleview.cpp kpreview.cpp \
-	kfilepreview.cpp kfilefilter.cpp
+	kfilepreview.cpp kfilefilter.cpp krecentdocument.cpp
 
 toolbar_DATA = configure.png
 

@@ -1,4 +1,5 @@
 #include "kfileinfocontents.h"
+#include "krecentdocument.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,8 +46,6 @@
 #include <kio_job.h>
 #include <ksimpleconfig.h>
 #include <kglobal.h>
-#include <sys/types.h>
-#include <utime.h>
 
 enum Buttons { BACK_BUTTON= 1000, FORWARD_BUTTON, PARENT_BUTTON,
 	       HOME_BUTTON, RELOAD_BUTTON, HOTLIST_BUTTON,
@@ -111,14 +110,6 @@ KFileBaseDialog::KFileBaseDialog(const QString& dirName, const QString& filter,
 
     backStack.setAutoDelete( true );
     forwardStack.setAutoDelete( true );
-
-    // Recent document
-    KConfig *config = KGlobal::config();
-    QString oldGroup = config->group();
-    config->setGroup("RecentDocuments");
-    useRecent = config->readBoolEntry("UseRecent", true);
-    maxEntries = config->readNumEntry("MaxEntries", 10);
-    config->setGroup(oldGroup);
 }
 
 void KFileBaseDialog::cleanup() {
@@ -572,7 +563,7 @@ QString KFileDialog::getOpenFileName(const QString& dir, const QString& filter,
 
     if (dlg->exec() == QDialog::Accepted){
         filename = dlg->selectedFile();
-        dlg->saveRecentDesktopFile(filename, false);
+        KRecentDocument::add(filename, false);
     }
     delete dlg;
 
@@ -588,8 +579,10 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
 
     QString filename;
 
-    if (dlg->exec() == QDialog::Accepted)
-	filename= dlg->selectedFile();
+    if (dlg->exec() == QDialog::Accepted){
+        filename= dlg->selectedFile();
+        KRecentDocument::add(filename, false);
+    }
 
     delete dlg;
 
@@ -1234,7 +1227,7 @@ QString KFileDialog::getOpenFileURL(const QString& url, const QString& filter,
 
     if (dlg->exec() == QDialog::Accepted){
         retval = dlg->selectedFileURL();
-        dlg->saveRecentDesktopFile(retval, true);
+        KRecentDocument::add(retval, true);
     }
 
     delete dlg;
@@ -1242,72 +1235,6 @@ QString KFileDialog::getOpenFileURL(const QString& url, const QString& filter,
 	debugC("getOpenFileURL: returning %s", retval.ascii());
 
     return retval;
-}
-
-void KFileBaseDialog::saveRecentDesktopFile(const QString &openStr, bool isUrl)
-{
-    if(!useRecent)
-        return;
-
-    // need to change this path, not sure where
-    QString path(KGlobal::dirs()->resourceDirs("data").first() +
-                 "/RecentDocuments/");
-    QDir dir(path);
-    if(!QFile::exists(path)){
-        dir.mkdir(path);
-    }
-
-    QString dStr;
-    QFileInfo fi(openStr);
-    if(!isUrl)
-        dStr = dir.absPath() + "/" + fi.fileName();
-    else
-        dStr = dir.absPath() + "/" + openStr;
-
-    int i;
-    // check for duplicates
-    if(QFile::exists(dStr+".desktop")){
-        // see if it points to the same file and application
-        KSimpleConfig tmp(dStr+".desktop");
-        tmp.setDesktopGroup();
-        if(tmp.readEntry("Exec", "") == QString(kapp->argv()[0]) + " " +
-           openStr){
-            warning("Touching");
-            utime((dStr+".desktop").latin1(), NULL);
-            return;
-        }
-        // if not append a (num) to it
-        for(i=2; i < maxEntries+1 && QFile::exists(dStr + ".desktop"); ++i)
-            dStr.sprintf("%s[%d]", dStr.latin1(), i);
-    }
-    dStr += ".desktop";
-
-    // check for max entries, delete oldest files if exceeded
-    QStringList list = dir.entryList(QDir::Files, QDir::Time | QDir::Reversed);
-    i = list.count();
-    if(i > maxEntries-1){
-        QStringList::Iterator it;
-        it = list.begin();
-        while(i > maxEntries-1){
-            QFile::remove(dir.absPath() +"/"+ (*it));
-            --i, ++it;
-        }
-    }
-
-    // create the applnk
-    QFile dFile(dStr);
-    dFile.open(IO_ReadWrite);
-    QTextStream stream(&dFile);
-    stream << "[Desktop Entry]\n";
-    stream << "Type=Application\n";
-    stream << "Exec=" << kapp->argv()[0] << " " << openStr << "\n";
-    if(!isUrl)
-        stream << "Name=" << fi.fileName() << "\n";
-    else
-        stream << "Name=" << openStr << "\n";
-
-    stream << "Icon=document.png\n";
-    dFile.close();
 }
 
 KDirDialog::KDirDialog(const QString& url, QWidget *parent, const char *name)
@@ -1351,8 +1278,10 @@ QString KFileDialog::getSaveFileURL(const QString& url, const QString& filter,
 
     dlg->setCaption(i18n("Save"));
 
-    if (dlg->exec() == QDialog::Accepted)
-	retval= dlg->selectedFileURL();
+    if (dlg->exec() == QDialog::Accepted){
+        retval= dlg->selectedFileURL();
+        KRecentDocument::add(retval, true);
+    }
 
     delete dlg;
 
@@ -1373,12 +1302,13 @@ QStringList KFileDialog::getOpenFileNames(const QString& dir,
     if (dlg->exec() == QDialog::Accepted){
         filenames = dlg->selectedFiles();
         QStringList::Iterator it;
-        if(filenames.count() > (unsigned int)dlg->maxEntries)
-            it = filenames.at(filenames.count() - dlg->maxEntries -1);
+        int maxEntries = KRecentDocument::maximumItems();
+        if(filenames.count() > (unsigned int)maxEntries)
+            it = filenames.at(filenames.count() - maxEntries -1);
         else
             it = filenames.begin();
         for(;it != filenames.end(); ++it)
-            dlg->saveRecentDesktopFile((*it), false);
+            KRecentDocument::add((*it), false);
     }
 
     delete dlg;
@@ -1467,7 +1397,7 @@ QString KFilePreviewDialog::getOpenFileName(const QString& dir, const QString& f
 
     if (dlg->exec() == QDialog::Accepted){
 	filename = dlg->selectedFile();
-        dlg->saveRecentDesktopFile(filename, false);
+        KRecentDocument::add(filename, false);
     }
     delete dlg;
 
@@ -1483,8 +1413,10 @@ QString KFilePreviewDialog::getSaveFileName(const QString& dir, const QString& f
 
     QString filename;
 
-    if (dlg->exec() == QDialog::Accepted)
-	filename= dlg->selectedFile();
+    if (dlg->exec() == QDialog::Accepted){
+        filename= dlg->selectedFile();
+        KRecentDocument::add(filename, false);
+    }
 
     delete dlg;
 
@@ -1502,7 +1434,7 @@ QString KFilePreviewDialog::getOpenFileURL(const QString& url, const QString& fi
 
     if (dlg->exec() == QDialog::Accepted){
         retval = dlg->selectedFileURL();
-        dlg->saveRecentDesktopFile(retval, true);
+        KRecentDocument::add(retval, true);
     }
 
     delete dlg;
@@ -1521,8 +1453,10 @@ QString KFilePreviewDialog::getSaveFileURL(const QString& url, const QString& fi
 
     dlg->setCaption(i18n("Save"));
 
-    if (dlg->exec() == QDialog::Accepted)
-	retval= dlg->selectedFileURL();
+    if (dlg->exec() == QDialog::Accepted){
+        retval= dlg->selectedFileURL();
+        KRecentDocument::add(retval, true);
+    }
 
     delete dlg;
 
