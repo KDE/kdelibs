@@ -29,6 +29,10 @@ class QStringList;
 template <typename K, typename V> class QMap;
 
 class KURLPrivate;
+
+// Defines that file-urls look like file:///path/file instead of file:/path/file
+#define KURL_TRIPLE_SLASH_FILE_PROT
+
 /**
  * Represents and parses a URL.
  *
@@ -47,19 +51,19 @@ class KURLPrivate;
  * The constructor KURL(const QString&) expects a string properly escaped,
  * or at least non-ambiguous.
  * For instance a local file or directory "/bar/#foo#" would have the URL
- * file:/bar/%23foo%23.
+ * file:///bar/%23foo%23.
  * If you have the absolute path and need the URL-escaping you should create
  * KURL via the default-constructor and then call setPath(const QString&).
  * \code
  *     KURL kurl;
  *     kurl.setPath("/bar/#foo#");
- *     QString url = kurl.url();    // -> "file:/bar/%23foo%23"
+ *     QString url = kurl.url();    // -> "file:///bar/%23foo%23"
  * \endcode
  *
  * If you have the URL of a local file or directory and need the absolute path,
  * you would use path().
  * \code
- *    KURL url( "file:/bar/%23foo%23" ); 
+ *    KURL url( "file:///bar/%23foo%23" ); 
  *    ...
  *    if ( url.isLocalFile() )
  *       QString path = url.path();       // -> "/bar/#foo#"
@@ -77,17 +81,17 @@ class KURLPrivate;
  *
  * Wrong:
  * \code
- *    QString dirUrl = "file:/bar/";
+ *    QString dirUrl = "file:///bar/";
  *    QString fileName = "#foo#";
- *    QString invalidURL = dirUrl + fileName;   // -> "file:/bar/#foo#" won't behave like you would expect. 
+ *    QString invalidURL = dirUrl + fileName;   // -> "file:///bar/#foo#" won't behave like you would expect. 
  * \endcode
  * Instead you should use addPath():
  * Right:
  * \code
- *    KURL url( "file:/bar/" );
+ *    KURL url( "file:///bar/" );
  *    QString fileName = "#foo#";
  *    url.addPath( fileName );
- *    QString validURL = url.url();    // -> "file:/bar/%23foo%23"
+ *    QString validURL = url.url();    // -> "file:///bar/%23foo%23"
  * \endcode
  *
  * Also consider that some URLs contain the password, but this shouldn't be
@@ -655,7 +659,7 @@ public:
    * Returns the filename of the path.
    * @param _ignore_trailing_slash_in_path This tells whether a trailing '/' should
    *        be ignored. This means that the function would return "torben" for
-   *        <tt>file:/hallo/torben/</tt> and <tt>file:/hallo/torben</tt>.
+   *        <tt>file:///hallo/torben/</tt> and <tt>file:///hallo/torben</tt>.
    *        If the flag is set to false, then everything behind the last '/'
    *        is considered to be the filename.
    * @return The filename of the current path. The returned string is decoded. Null
@@ -667,12 +671,12 @@ public:
    * Returns the directory of the path.
    * @param _strip_trailing_slash_from_result tells whether the returned result should end with '/' or not.
    *                                          If the path is empty or just "/" then this flag has no effect.
-   * @param _ignore_trailing_slash_in_path means that <tt>file:/hallo/torben</tt> and
-   *                                       <tt>file:/hallo/torben/"</tt> would both return <tt>/hallo/</tt>
+   * @param _ignore_trailing_slash_in_path means that <tt>file:///hallo/torben</tt> and
+   *                                       <tt>file:///hallo/torben/"</tt> would both return <tt>/hallo/</tt>
    *                                       or <tt>/hallo</tt> depending on the other flag
    * @return The directory part of the current path. Everything between the last and the second last '/'
-   *         is returned. For example <tt>file:/hallo/torben/</tt> would return "/hallo/torben/" while
-   *         <tt>file:/hallo/torben</tt> would return "hallo/". The returned string is decoded. QString::null is returned when there is no path.
+   *         is returned. For example <tt>file:///hallo/torben/</tt> would return "/hallo/torben/" while
+   *         <tt>file:///hallo/torben</tt> would return "hallo/". The returned string is decoded. QString::null is returned when there is no path.
    */
   QString directory( bool _strip_trailing_slash_from_result = true,
 		     bool _ignore_trailing_slash_in_path = true ) const;
@@ -689,8 +693,8 @@ public:
    * current URL will be "protocol://host/dir" otherwise @p _dir will
    * be appended to the path. @p _dir can be ".."
    * This function won't strip protocols. That means that when you are in
-   * file:/dir/dir2/my.tgz#tar:/ and you do cd("..") you will
-   * still be in file:/dir/dir2/my.tgz#tar:/
+   * file:///dir/dir2/my.tgz#tar:/ and you do cd("..") you will
+   * still be in file:///dir/dir2/my.tgz#tar:/
    *
    * @param _dir the directory to change to
    * @return true if successful
@@ -762,8 +766,8 @@ public:
   /**
    * This function is useful to implement the "Up" button in a file manager for example.
    * cd() never strips a sub-protocol. That means that if you are in
-   * file:/home/x.tgz#gzip:/#tar:/ and hit the up button you expect to see
-   * file:/home. The algorithm tries to go up on the right-most URL. If that is not
+   * file:///home/x.tgz#gzip:/#tar:/ and hit the up button you expect to see
+   * file:///home. The algorithm tries to go up on the right-most URL. If that is not
    * possible it strips the right most URL. It continues stripping URLs.
    * @return a URL that is a level higher
    */
@@ -812,7 +816,7 @@ public:
   bool isParentOf( const KURL& u ) const;
 
   /**
-   * Splits nested URLs like file:/home/weis/kde.tgz#gzip:/#tar:/kdebase
+   * Splits nested URLs like file:///home/weis/kde.tgz#gzip:/#tar:/kdebase
    * A URL like http://www.kde.org#tar:/kde/README.hml#ref1 will be split in
    * http://www.kde.org and tar:/kde/README.html#ref1.
    * That means in turn that "#ref1" is an HTML-style reference and not a new sub URL.
@@ -829,7 +833,7 @@ public:
   static List split( const QString& _url );
 
   /**
-   * Splits nested URLs like file:/home/weis/kde.tgz#gzip:/#tar:/kdebase
+   * Splits nested URLs like file:///home/weis/kde.tgz#gzip:/#tar:/kdebase
    * A URL like http://www.kde.org#tar:/kde/README.hml#ref1 will be split in
    * http://www.kde.org and tar:/kde/README.html#ref1.
    * That means in turn that "#ref1" is an HTML-style reference and not a new sub URL.
