@@ -185,7 +185,7 @@ KRandomSequence::getBool()
 
 class KRandomSequenceList : public QGList
 {
-  friend KRandomSequence;
+  friend class KRandomSequence;
 public:
   KRandomSequenceList() : QGList() { }
 };
