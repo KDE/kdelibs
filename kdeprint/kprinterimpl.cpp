@@ -519,7 +519,7 @@ int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool f
 							     "<ul>"
 							     "<li>Go to <i>System Options -> Commands</i> to look through the list of "
 							     "possible filters. Each filter executes an external program.</li>"
-							     "<li> See if the required extermal program is available.on your "
+							     "<li> See if the required external program is available.on your "
 							     "system.</li>"
 							     "</ul>"
 							     "</qt>").arg(mime).arg(primaryMimeType),
