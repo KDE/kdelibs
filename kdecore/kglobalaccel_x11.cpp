@@ -288,14 +288,14 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
 	if( rexPassIndex.search( pAction->methodSlotPtr() ) >= 0 && rexIndex.search( pAction->name() ) >= 0 ) {
 		int n = rexIndex.cap(1).toInt();
 		kdDebug(125) << "Calling " << pAction->methodSlotPtr() << " int = " << n << endl;
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( pAction->methodSlotPtr() + 1, true );
+                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
                 if( slot_id >= 0 ) {
                     QUObject o[2];
                     static_QUType_int.set(o+1,n);
                     const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
                 }
 	} else if( rexPassInfo.search( pAction->methodSlotPtr() ) ) {
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( pAction->methodSlotPtr() + 1, true );
+                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
                 if( slot_id >= 0 ) {
                     QUObject o[4];
                     static_QUType_QString.set(o+1,pAction->name());
@@ -304,11 +304,9 @@ void KGlobalAccelPrivate::activate( KAccelAction* pAction, const KKeySequence& s
                     const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
                 }
 	} else {
-                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( pAction->methodSlotPtr() + 1, true );
-                if( slot_id >= 0 ) {
-                    QUObject o[1];
-                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, o );
-                }
+                int slot_id = pAction->objSlotPtr()->metaObject()->findSlot( normalizeSignalSlot( pAction->methodSlotPtr() ).data() + 1, true );
+                if( slot_id >= 0 )
+                    const_cast< QObject* >( pAction->objSlotPtr())->qt_invoke( slot_id, 0 );
 	}
 }
 
