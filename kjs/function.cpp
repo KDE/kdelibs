@@ -191,6 +191,8 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args, const List *extraSco
 
   // assign user supplied arguments to parameters
   processParameters(args);
+  // add variable declarations (initialized to undefined)
+  processVarDecls();
 
   Completion comp = execute(*args);
 

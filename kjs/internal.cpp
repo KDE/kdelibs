@@ -396,6 +396,11 @@ Object DeclaredFunctionImp::construct(const List &args)
     return v;
 }
 
+void DeclaredFunctionImp::processVarDecls()
+{
+  body->processVarDecls();
+}
+
 Completion AnonymousFunction::execute(const List &)
 {
  /* TODO */

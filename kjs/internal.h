@@ -248,6 +248,7 @@ namespace KJS {
     Object construct(const List &);
     CodeType codeType() const { return FunctionCode; }
     List *scopeChain() const { return scopes; }
+    virtual void processVarDecls();
   private:
     FunctionBodyNode *body;
     List *scopes;

@@ -66,6 +66,7 @@ namespace KJS {
     Parameter *param;
   private:
     void processParameters(const List *);
+    virtual void processVarDecls() {}
     void pushArgs(const KJSO &);
     void popArgs();
     List *argStack;

@@ -836,6 +836,12 @@ Completion BlockNode::execute()
   return statlist->execute();
 }
 
+void BlockNode::processVarDecls()
+{
+  if (statlist)
+    statlist->processVarDecls();
+}
+
 // ECMA 12.1
 Completion StatListNode::execute()
 {
@@ -867,6 +873,14 @@ Completion StatListNode::execute()
   return Completion(e.complType(), v, e.target() );
 }
 
+void StatListNode::processVarDecls()
+{
+  statement->processVarDecls();
+
+  if (list)
+    list->processVarDecls();
+}
+
 // ECMA 12.2
 Completion VarStatementNode::execute()
 {
@@ -875,6 +889,11 @@ Completion VarStatementNode::execute()
   (void) list->evaluate(); // returns 0L
 
   return Completion(Normal);
+}
+
+void VarStatementNode::processVarDecls()
+{
+  list->processVarDecls();
 }
 
 // ECMA 12.2
@@ -897,6 +916,12 @@ KJSO VarDeclNode::evaluate()
   return KJSO();
 }
 
+void VarDeclNode::processVarDecls()
+{
+  KJSO variable = Context::current()->variableObject();
+  variable.put(ident, Undefined(), DontDelete);
+}
+
 // ECMA 12.2
 KJSO VarDeclListNode::evaluate()
 {
@@ -906,6 +931,14 @@ KJSO VarDeclListNode::evaluate()
   (void) var->evaluate();
 
   return KJSO();
+}
+
+void VarDeclListNode::processVarDecls()
+{
+  if (list)
+    list->processVarDecls();
+
+  var->processVarDecls();
 }
 
 // ECMA 12.2
@@ -958,6 +991,15 @@ Completion ForNode::execute()
   }
 }
 
+void ForNode::processVarDecls()
+{
+  if (expr1)
+    expr1->processVarDecls();
+
+  stat->processVarDecls();
+}
+
+
 // ECMA 12.6.4
 Completion ForInNode::execute()
 {
@@ -1007,6 +1049,11 @@ Completion ForInNode::execute()
   return Completion(Normal, retval);
 }
 
+void ForInNode::processVarDecls()
+{
+  stat->processVarDecls();
+}
+
 // ECMA 12.4
 Completion ExprStatementNode::execute()
 {
@@ -1039,6 +1086,14 @@ Completion IfNode::execute()
   return statement2->execute();
 }
 
+void IfNode::processVarDecls()
+{
+  statement1->processVarDecls();
+
+  if (statement2)
+    statement2->processVarDecls();
+}
+
 // ECMA 12.6.1
 Completion DoWhileNode::execute()
 {
@@ -1065,6 +1120,11 @@ Completion DoWhileNode::execute()
   } while (bv.toBoolean().value());
 
   return Completion(Normal, value);
+}
+
+void DoWhileNode::processVarDecls()
+{
+  statement->processVarDecls();
 }
 
 // ECMA 12.6.2
@@ -1100,6 +1160,11 @@ Completion WhileNode::execute()
     if (c.complType() != Normal)
       return c;
   }
+}
+
+void WhileNode::processVarDecls()
+{
+  statement->processVarDecls();
 }
 
 // ECMA 12.7
@@ -1155,6 +1220,11 @@ Completion WithNode::execute()
   return res;
 }
 
+void WithNode::processVarDecls()
+{
+  stat->processVarDecls();
+}
+
 // ECMA 12.11
 ClauseListNode* ClauseListNode::append(CaseClauseNode *c)
 {
@@ -1164,6 +1234,14 @@ ClauseListNode* ClauseListNode::append(CaseClauseNode *c)
   l->nx = new ClauseListNode(c);
 
   return this;
+}
+
+void ClauseListNode::processVarDecls()
+{
+  if (cl)
+    cl->processVarDecls();
+  if (nx)
+    nx->processVarDecls();
 }
 
 // ECMA 12.11
@@ -1179,6 +1257,11 @@ Completion SwitchNode::execute()
     return Completion(Normal, res.value());
   else
     return res;
+}
+
+void SwitchNode::processVarDecls()
+{
+  block->processVarDecls();
 }
 
 // ECMA 12.11
@@ -1240,6 +1323,16 @@ Completion CaseBlockNode::evalBlock(const KJSO& input)
   return Completion(Normal);
 }
 
+void CaseBlockNode::processVarDecls()
+{
+  if (list1)
+    list1->processVarDecls();
+  if (def)
+    def->processVarDecls();
+  if (list2)
+    list2->processVarDecls();
+}
+
 // ECMA 12.11
 KJSO CaseClauseNode::evaluate()
 {
@@ -1258,6 +1351,12 @@ Completion CaseClauseNode::evalStatements()
     return Completion(Normal, Undefined());
 }
 
+void CaseClauseNode::processVarDecls()
+{
+  if (list)
+    list->processVarDecls();
+}
+
 // ECMA 12.12
 Completion LabelNode::execute()
 {
@@ -1274,6 +1373,11 @@ Completion LabelNode::execute()
     return Completion(Normal, e.value());
   else
     return e;
+}
+
+void LabelNode::processVarDecls()
+{
+  stat->processVarDecls();
 }
 
 // ECMA 12.13
@@ -1313,6 +1417,15 @@ Completion TryNode::execute()
   return (c2.complType() == Normal) ? c : c2;
 }
 
+void TryNode::processVarDecls()
+{
+  block->processVarDecls();
+  if (_final)
+    _final->processVarDecls();
+  if (_catch)
+    _catch->processVarDecls();
+}
+
 Completion CatchNode::execute()
 {
   // should never be reached. execute(const KJS &arg) is used instead
@@ -1335,10 +1448,20 @@ Completion CatchNode::execute(const KJSO &arg)
   return c;
 }
 
+void CatchNode::processVarDecls()
+{
+  block->processVarDecls();
+}
+
 // ECMA 12.14
 Completion FinallyNode::execute()
 {
   return block->execute();
+}
+
+void FinallyNode::processVarDecls()
+{
+  block->processVarDecls();
 }
 
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
@@ -1359,6 +1482,11 @@ Completion FunctionBodyNode::execute()
   source->processFuncDecl();
 
   return source->execute();
+}
+
+void FunctionBodyNode::processVarDecls()
+{
+  source->processVarDecls();
 }
 
 // ECMA 13
@@ -1447,6 +1575,14 @@ void SourceElementsNode::processFuncDecl()
   element->processFuncDecl();
 }
 
+void SourceElementsNode::processVarDecls()
+{
+  if (elements)
+    elements->processVarDecls();
+
+  element->processVarDecls();
+}
+
 void SourceElementsNode::deleteStatements()
 {
   element->deleteStatements();
@@ -1469,6 +1605,12 @@ void SourceElementNode::processFuncDecl()
 {
   if (function)
     function->processFuncDecl();
+}
+
+void SourceElementNode::processVarDecls()
+{
+  if (statement)
+    statement->processVarDecls();
 }
 
 void SourceElementNode::deleteStatements()

@@ -70,6 +70,7 @@ namespace KJS {
     Node();
     virtual ~Node();
     virtual KJSO evaluate() = 0;
+    virtual void processVarDecls() {}
     int lineNo() const { return line; }
     static Node *firstNode() { return first; }
     static void setFirstNode(Node *n) { first = n; }
@@ -472,6 +473,7 @@ namespace KJS {
     StatListNode(StatementNode *s) : statement(s), list(0L) { }
     StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l) { }
     Completion execute();
+    virtual void processVarDecls();
   private:
     StatementNode *statement;
     StatListNode *list;
@@ -489,6 +491,7 @@ namespace KJS {
   public:
     VarDeclNode(const UString *id, AssignExprNode *in);
     KJSO evaluate();
+    virtual void processVarDecls();
   private:
     UString ident;
     AssignExprNode *init;
@@ -499,6 +502,7 @@ namespace KJS {
     VarDeclListNode(VarDeclNode *v) : list(0L), var(v) {}
     VarDeclListNode(Node *l, VarDeclNode *v) : list(l), var(v) {}
     KJSO evaluate();
+    virtual void processVarDecls();
   private:
     Node *list;
     VarDeclNode *var;
@@ -508,6 +512,7 @@ namespace KJS {
   public:
     VarStatementNode(VarDeclListNode *l) : list(l) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     VarDeclListNode *list;
   };
@@ -516,6 +521,7 @@ namespace KJS {
   public:
     BlockNode(StatListNode *s) : statlist(s) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     StatListNode *statlist;
   };
@@ -539,6 +545,7 @@ namespace KJS {
     IfNode(Node *e, StatementNode *s1, StatementNode *s2)
       : expr(e), statement1(s1), statement2(s2) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     Node *expr;
     StatementNode *statement1, *statement2;
@@ -548,6 +555,7 @@ namespace KJS {
   public:
     DoWhileNode(StatementNode *s, Node *e) : statement(s), expr(e) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     StatementNode *statement;
     Node *expr;
@@ -557,6 +565,7 @@ namespace KJS {
   public:
     WhileNode(Node *e, StatementNode *s) : expr(e), statement(s) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     Node *expr;
     StatementNode *statement;
@@ -567,6 +576,7 @@ namespace KJS {
     ForNode(Node *e1, Node *e2, Node *e3, StatementNode *s) :
       expr1(e1), expr2(e2), expr3(e3), stat(s) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     Node *expr1, *expr2, *expr3;
     StatementNode *stat;
@@ -579,6 +589,7 @@ namespace KJS {
     ForInNode(const UString *i, AssignExprNode *in, Node *e, StatementNode *s)
       : ident(*i), init(in), lexpr(0L), expr(e), stat(s) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     UString ident;
     AssignExprNode *init;
@@ -616,6 +627,7 @@ namespace KJS {
   public:
     WithNode(Node *e, StatementNode *s) : expr(e), stat(s) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     Node *expr;
     StatementNode *stat;
@@ -626,6 +638,7 @@ namespace KJS {
     CaseClauseNode(Node *e, StatListNode *l) : expr(e), list(l) { }
     KJSO evaluate();
     Completion evalStatements();
+    virtual void processVarDecls();
   private:
     Node *expr;
     StatListNode *list;
@@ -638,6 +651,7 @@ namespace KJS {
     KJSO evaluate() { /* should never be called */ return KJSO(); }
     CaseClauseNode *clause() const { return cl; }
     ClauseListNode *next() const { return nx; }
+    virtual void processVarDecls();
   private:
     CaseClauseNode *cl;
     ClauseListNode *nx;
@@ -649,6 +663,7 @@ namespace KJS {
       : list1(l1), def(d), list2(l2) { }
     KJSO evaluate() { /* should never be called */ return KJSO(); }
     Completion evalBlock(const KJSO& input);
+    virtual void processVarDecls();
   private:
     ClauseListNode *list1;
     CaseClauseNode *def;
@@ -659,6 +674,7 @@ namespace KJS {
   public:
     SwitchNode(Node *e, CaseBlockNode *b) : expr(e), block(b) { }
     Completion execute();
+    virtual void processVarDecls();
   private:
     Node *expr;
     CaseBlockNode *block;
@@ -668,6 +684,7 @@ namespace KJS {
   public:
     LabelNode(const UString *l, StatementNode *s) : label(*l), stat(s) { }
     Completion execute();
+    virtual void processVarDecls();
   private:
     UString label;
     StatementNode *stat;
@@ -686,6 +703,7 @@ namespace KJS {
     CatchNode(UString *i, StatementNode *b) : ident(*i), block(b) {}
     Completion execute();
     Completion execute(const KJSO &arg);
+    virtual void processVarDecls();
   private:
     UString ident;
     StatementNode *block;
@@ -695,6 +713,7 @@ namespace KJS {
   public:
     FinallyNode(StatementNode *b) : block(b) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     StatementNode *block;
   };
@@ -704,6 +723,7 @@ namespace KJS {
     TryNode(StatementNode *b, Node *c = 0L, Node *f = 0L)
       : block(b), _catch((CatchNode*)c), _final((FinallyNode*)f) {}
     Completion execute();
+    virtual void processVarDecls();
   private:
     StatementNode *block;
     CatchNode *_catch;
@@ -727,6 +747,7 @@ namespace KJS {
   public:
       FunctionBodyNode(SourceElementsNode *s);
       Completion execute();
+      virtual void processVarDecls();
   protected:
       SourceElementsNode *source;
   };
@@ -759,6 +780,7 @@ namespace KJS {
     SourceElementNode(FuncDeclNode *f) { function = f; statement = 0L;}
     Completion execute();
     virtual void processFuncDecl();
+    virtual void processVarDecls();
     void deleteStatements();
   private:
     StatementNode *statement;
@@ -772,6 +794,7 @@ namespace KJS {
       { elements = s1; element = s2; }
     Completion execute();
     virtual void processFuncDecl();
+    virtual void processVarDecls();
     void deleteStatements();
   private:
     SourceElementNode *element;
