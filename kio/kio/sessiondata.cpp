@@ -225,7 +225,7 @@ void KIO::SessionData::configDataFor( SlaveConfig* cfg, const QString& proto,
             cfg->setConfigData( proto, host, "Charsets", d->charsets );
         if ( cfg->configData(proto,host)["CacheDir"].isEmpty() )
         {
-            cfg->setConfigData( proto, host, "Charsets", 
+            cfg->setConfigData( proto, host, "CacheDir", 
                                 KGlobal::dirs()->saveLocation("cache", "http"));
         }
         if ( cfg->configData(proto,host)["UserAgent"].isEmpty() )
