@@ -102,7 +102,7 @@ bigwrite_SOURCES = bigwrite.cpp
 
 testdb_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testdb_LDADD = libkabc.la
-testdb_SOURCES = testdb.cpp 
+testdb_SOURCES = testdb.cpp
 
 kabcargl_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 kabcargl_LDADD = libkabc.la
@@ -110,6 +110,9 @@ kabcargl_SOURCES = kabcargl.cpp
 
 autostart_DATA = kab2kabc.desktop
 autostartdir = $(datadir)/autostart
+
+manager_DATA = kabc_manager.desktop
+managerdir = $(kde_servicesdir)/kresources
 
 DOXYGEN_REFERENCES = kdecore kdeui
 
