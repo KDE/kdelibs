@@ -41,6 +41,7 @@ KPMarginPage::KPMarginPage(KPrinter *prt, DrMain *driver, QWidget *parent, const
 {
 	m_printer = prt;
 	setTitle(i18n("Margins"));
+	m_usedriver = true;
 
 	QGroupBox	*box = new QGroupBox(1, Qt::Vertical, i18n("Margins"), this);
 	m_margin = new MarginWidget(box);
@@ -62,7 +63,7 @@ void KPMarginPage::initPageSize(const QString& ps, bool landscape)
 	QSize	sz(-1, -1);
 	unsigned int mt( 36 ), mb( mt ), ml( 24 ), mr( ml );
 	QString	m_currentps(ps);
-	if (driver())
+	if (driver() && m_usedriver )
 	{
 		if (m_currentps.isEmpty())
 		{
@@ -110,9 +111,16 @@ void KPMarginPage::setOptions(const QMap<QString,QString>& opts)
 {
 	QString	orient = opts["orientation-requested"];
 	bool 	land = (orient.isEmpty()? opts["kde-orientation"] == "Landscape" : orient == "4" || orient == "5");
-	QString	ps = opts["PageSize"];
-	if (ps.isEmpty())
-		ps = opts["kde-pagesize"];
+	QString ps = opts[ "kde-printsize" ];
+	if ( ps.isEmpty() )
+	{
+		m_usedriver = true;
+		ps = opts[ "PageSize" ];
+		if (ps.isEmpty())
+			ps = opts["kde-pagesize"];
+	}
+	else
+		m_usedriver = false;
 	initPageSize(ps, land);
 
 	bool	marginset(false);

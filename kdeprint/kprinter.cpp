@@ -277,7 +277,10 @@ void KPrinter::translateQtOptions()
 	d->m_wrapper->setFullPage(fullPage());
 	d->m_wrapper->setColorMode((QPrinter::ColorMode)colorMode());
 	d->m_wrapper->setOrientation((QPrinter::Orientation)orientation());
-	d->m_wrapper->setPageSize((QPrinter::PageSize)pageSize());
+	if ( !option( "kde-printsize" ).isEmpty() )
+		d->m_wrapper->setPageSize( ( QPrinter::PageSize )option( "kde-printsize" ).toInt() );
+	else
+		d->m_wrapper->setPageSize((QPrinter::PageSize)pageSize());
 	d->m_wrapper->setOutputToFile(true);
 	d->m_wrapper->setOutputFileName(d->m_tmpbuffer);
 	d->m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
@@ -517,7 +520,7 @@ void KPrinter::margins( uint *top, uint *left, uint *bottom, uint *right ) const
 
 int KPrinter::metric(int m) const
 {
-	if (!d->m_pagesize.isValid())
+	if (!d->m_pagesize.isValid() || !option( "kde-printsize" ).isEmpty())
 		return d->m_wrapper->qprinterMetric(m);
 
 	int	val(0);
@@ -578,6 +581,7 @@ void KPrinter::setOptions(const QMap<QString,QString>& opts)
 	// remove some problematic options that may not be overwritten (ugly hack).
 	// Default values will be used instead, except if the dialog has set new ones.
 	tmpset.remove("kde-pagesize");
+	tmpset.remove( "kde-printsize" );
 	tmpset.remove("kde-orientation");
 	tmpset.remove("kde-colormode");
 	tmpset.remove("kde-margin-top");

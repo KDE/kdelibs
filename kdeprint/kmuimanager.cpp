@@ -36,6 +36,7 @@
 #include "kpfilterpage.h"
 #include "kpfileselectpage.h"
 #include "kxmlcommand.h"
+#include "kpposterpage.h"
 
 #include <klocale.h>
 #include <kdebug.h>
@@ -158,6 +159,8 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 			dlg->addPage(new KPDriverPage(dlg->printer(),driver,dlg,"DriverPage"));
 
 		dlg->setCaption(i18n("Configuration of %1").arg(dlg->printer()->name()));
+		if ( KXmlCommandManager::self()->checkCommand( "poster", KXmlCommandManager::None, KXmlCommandManager::None ) )
+			dlg->addPage( new KPPosterPage( dlg, "PosterPage" ) );
 		dlg->addPage(new KPFilterPage(dlg,"FilterPage"));
 		dlg->resize(100,100);
 	}

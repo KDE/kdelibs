@@ -47,7 +47,7 @@
 
 void radioCursor(QButtonGroup*);
 
-static struct pagesizestruct
+struct pagesizestruct
 {
 	const char*	text;
 	int 	ID;

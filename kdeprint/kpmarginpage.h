@@ -41,6 +41,7 @@ protected:
 private:
 	MarginWidget	*m_margin;
 	KPrinter	*m_printer;
+	bool m_usedriver;
 };
 
 #endif

@@ -34,10 +34,6 @@ WISHES
   CUPS version, KDEPrint version, printer-make-and-modell, usage
   of foomatic/cupsomatic, ghostscript version etc.).	-kp-
 
-- allow preview with kprinter: may be useful for PS files coming from
-  other apps (GNOME). Ex: use a --with-preview option, and don't not
-  allow to preview non-PS files
-
 - log viewer: page_log, error_log, ... This could be based on XML
   templates and produce printable HTML reports.
 

@@ -597,3 +597,23 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
 
 26/08/2002 Michael Goffioul <goffioul@imec.be>
   * general: added a generic PS driver to (missing for too long)
+
+02/09/2002 Michael Goffioul <goffioul@imec.be>
+  * print dialog: added graphical interface to the poster XML command
+    (still to be commited)
+  * manager: added a condensed toolbar with actions grouped by topics in
+    sub-menus.
+
+03/09/2002 Michael Goffioul <goffioul@imec.be>
+  * print dialog: enabled preview even in standalone mode, either the
+    internal PS viewer or any other registered app will be used, 
+    according to the user preferences.
+
+04/09/2002 Michael Goffioul <goffioul@imec.be>
+  * commands: make unavailability of a command more visual by showing a
+    red text, and disabling the OK button of the current dialog (only
+    if needed).
+
+05/09/2002 Michael Goffioul <goffioul@imec.be>
+  * CUPS: shows all possible URI detected by CUPS when selecting the "Others"
+    printer type in the wizard, like the web interface is doing.
