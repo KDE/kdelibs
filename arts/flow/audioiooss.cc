@@ -393,6 +393,11 @@ int AudioIOOSS::getParam(AudioParam p)
 				return audio_fd;
 			break;
 
+		case autoDetect:
+				/* OSS works reasonable almost everywhere where it compiles */
+				return 10;	
+			break;
+
 		default:
 				return param(p);
 			break;

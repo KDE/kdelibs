@@ -342,6 +342,16 @@ int AudioIOALSA::getParam(AudioParam p)
 				return audio_fd;
 			break;
 
+		case autoDetect:
+				/*
+				 * that the ALSA driver could be compiled doesn't say anything
+				 * about whether it will work (the user might be using an OSS
+				 * kernel driver) so we'll use a value less than the OSS one
+				 * here, because OSS will most certainly work (ALSA's OSS emu)
+				 */
+				return 5;
+			break;
+
 		default:
 				return param(p);
 			break;

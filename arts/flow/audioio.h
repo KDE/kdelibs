@@ -61,6 +61,13 @@ public:
 		canRead = 104,		/* the amount of bytes that can be read */
 		canWrite = 105,		/* the amount of bytes that can be written */
 		selectFD = 106,		/* a filedescriptor to be used with select */
+		autoDetect = 107,	/* 0 = don't use this as default 
+							 * 1 or higher = preference of using this as default
+							 *
+							 * if nothing else is specified, aRts asks all
+							 * available AudioIO classes for the autoDetect
+							 * value and chooses the one which returned the
+							 * highest number */
 
 /* string parameters that have to be supported */
 		lastError = 201,	/* the last error message as human readable text */

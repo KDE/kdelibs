@@ -193,6 +193,16 @@ int AudioIOLibAudioIO::getParam(AudioParam p)
 				return audio_fd;
 			break;
 
+		case autoDetect:
+				/*
+				 * if there is a "native" aRts driver, we'll rather use this
+				 * than the generic libaudioio one, because the native one
+				 * is likely to be better optimized to the needs of aRts than
+				 * a generic driver, so keep the value small
+				 */
+				return 3;
+			break;
+
 		default:
 				return param(p);
 			break;

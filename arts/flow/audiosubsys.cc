@@ -146,9 +146,37 @@ void AudioSubSystem::detachConsumer()
 /* initially creates default AudioIO */
 void AudioSubSystem::initAudioIO()
 {
-	/* put some more auto detect magic here */
+	/* auto detect */
 	if(!d->audioIOInit)
-		audioIO("oss");		/* default to oss style audio I/O */
+	{
+		string bestName;
+		int bestValue = 0;
+
+		arts_debug("autodetecting driver: ");
+		for(int i = 0; i < AudioIO::queryAudioIOCount(); i++)
+		{
+			string name = AudioIO::queryAudioIOParamStr(i, AudioIO::name);
+			AudioIO *aio = AudioIO::createAudioIO(name.c_str());
+			int value = aio->getParam(AudioIO::autoDetect);
+
+			arts_debug(" - %s: %d", name.c_str(), value);
+			if(value > bestValue)
+			{
+				bestName = name;
+				bestValue = value;
+			}
+			delete aio;
+		}
+		if(bestValue)
+		{
+			arts_debug("... which means we'll default to %s", bestName.c_str());
+			audioIO(bestName);
+		}
+		else
+		{
+			arts_debug("... nothing we could use as default found");
+		}
+	}
 }
 
 void AudioSubSystem::audioIO(const string& audioIO)
@@ -298,7 +326,10 @@ bool AudioSubSystem::open(int& fd)
 	initAudioIO();
 	if(!d->audioIO)
 	{
-		_error = "unable to select '" + d->audioIOName + "' style audio I/O";
+		if(d->audioIOName == "")
+			_error = "couldn't auto detect which audio I/O method to use";
+		else	
+			_error = "unable to select '"+d->audioIOName+"' style audio I/O";
 		audio_fd = fd = -1;
 		return false;
 	}
