@@ -81,42 +81,43 @@ int main(int argc, char **argv) {
 }
 
 void test(QDate & date) {
-       
+
         kdDebug() << "(KLocale) readDate" << endl;
 
         kdDebug() << "Created calendar: " << KGlobal::locale()->calendar()->calendarName() << endl;
-	
+
 	kdDebug() << "Day name for first day of week is " << KGlobal::locale()->calendar()->weekDayName(1) << endl;
 	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->weekDayName(1, true) << endl;
-		
+
 	kdDebug() << "Month name for second month is " << KGlobal::locale()->calendar()->monthName(2, KGlobal::locale()->calendar()->year(date)) << endl;
 	kdDebug() << "Short month name for second month is " << KGlobal::locale()->calendar()->monthName(2, true) << endl;
 	kdDebug() << "Month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, KGlobal::locale()->calendar()->year(date)) << endl;
 	kdDebug() << "Short month name possessive for second month is " << KGlobal::locale()->calendar()->monthNamePossessive(2, KGlobal::locale()->calendar()->year(date), true) << endl;
-	
-	
-	
+
+
+
 	kdDebug() << "Day for date " << date.toString() << " is " << KGlobal::locale()->calendar()->day(date) << endl;
 	kdDebug() << "Month for date " << date.toString() << " is " << KGlobal::locale()->calendar()->month(date) << endl;
 	kdDebug() << "Year for date " << date.toString() << " is " << KGlobal::locale()->calendar()->year(date) << endl;
-	
+	kdDebug() << "(Liteal) Year for date " << date.toString() << " is " << KGlobal::locale()->calendar()->yearLiteral(date) << endl;
+
 	kdDebug() << "Day of week for date " << date.toString() << " is number " << KGlobal::locale()->calendar()->dayOfWeek(date) << endl;
 	kdDebug() << "Week name for date " << date.toString() << " is " << KGlobal::locale()->calendar()->weekDayName(date) << endl;
 	kdDebug() << "Short week name for date " << date.toString() << " is " << KGlobal::locale()->calendar()->weekDayName(date, true) << endl;
-		
+
 	kdDebug() << "Month name for date " << date.toString() <<  " is "  << KGlobal::locale()->calendar()->monthName(date) << endl;
 	kdDebug() << "Short month name for date " << date.toString() << " is "  << KGlobal::locale()->calendar()->monthName(date, true) << endl;
 	kdDebug() << "Month name possessive for date " << date.toString() <<  " is "  << KGlobal::locale()->calendar()->monthNamePossessive(date) << endl;
 	kdDebug() << "Short month name possessive for date " << date.toString() << " is "  << KGlobal::locale()->calendar()->monthNamePossessive(date, true) << endl;
-	
+
  	kdDebug() << "It's week number " << KGlobal::locale()->calendar()->weekNumber(date) << endl;
-	
-	
+
+
 	kdDebug() << "(KLocale) Formatted date: " << KGlobal::locale()->formatDate(date) << endl;
 	kdDebug() << "(KLocale) Short formatted date: " << KGlobal::locale()->formatDate(date, true) << endl;
-	
+
 	kdDebug() << "That month have : " << KGlobal::locale()->calendar()->daysInMonth(date) << " days" << endl;
-	
+
 	kdDebug() << "That year has " << KGlobal::locale()->calendar()->monthsInYear(date) << " months" << endl;
 	kdDebug() << "There are " << KGlobal::locale()->calendar()->weeksInYear(KGlobal::locale()->calendar()->year(date)) << " weeks that year" << endl;
 	kdDebug() << "There are " << KGlobal::locale()->calendar()->daysInYear(date) << " days that year" << endl;

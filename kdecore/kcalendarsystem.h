@@ -176,6 +176,25 @@ public:
   virtual int weekNumber(const QDate& date, int * yearNum = 0) const = 0;
 
   /**
+   * Gets specific calendar string representing the number of the year
+   * or, if it exists, the name of the year (eg., chinesse calendar)
+   *
+   * @param year  The year number
+   * @return The name of the year
+   */
+  virtual QString yearLiteral (int year) const = 0;
+
+  /**
+   * Gets specific calendar string representing the number of the year
+   * or, if it exists, the name of the year (eg., chinesse calendar)
+   * for a given gregorian date
+   *
+   * @param date Gregorian date 
+   * @return The name of the year
+   */
+  virtual QString yearLiteral (const QDate & date) const = 0;
+
+  /**
    * Gets specific calendar type month name for a given month number
    * If an invalid month is specified, QString::null is returned.
    *

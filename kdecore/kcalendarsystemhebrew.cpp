@@ -145,7 +145,7 @@ static const int DAY = 24*HOUR;
 static const int WEEK = 7*DAY;
 #define M(h,p) ((h)*HOUR+p)
 #define MONTH (DAY+M(12,793))
-  
+
 /**
  * @internal
  * no. of days in y years
@@ -431,7 +431,7 @@ int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
 int KCalendarSystemHebrew::hndays(int mon, int year) const
 {
   if( mon == 8 /*IYYAR*/ || mon == 10 /*TAMUZ*/ ||
-    mon == 12 /*ELUL*/ || mon == 4 /*TEVET*/ || 
+    mon == 12 /*ELUL*/ || mon == 4 /*TEVET*/ ||
     mon == 14 /*ADAR 2*/||
     ( mon == 13 /*ADAR 1*/ && !is_leap_year(year)) /*!leap*/||
     (mon ==  2 /*CHESHVAN*/ && !long_cheshvan(year)) ||
@@ -559,4 +559,13 @@ bool KCalendarSystemHebrew::isLunisolar() const
 bool KCalendarSystemHebrew::isSolar() const
 {
   return false;
+}
+
+QString KCalendarSystemHebrew::yearLiteral (int year) const
+{
+   return QString::number(year);
+}
+QString KCalendarSystemHebrew::yearLiteral (const QDate & date) const
+{
+   return yearLiteral(year(date));
 }

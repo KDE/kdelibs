@@ -680,3 +680,13 @@ bool KCalendarSystemHijri::isSolar() const
 {
   return false;
 }
+
+QString KCalendarSystemHijri::yearLiteral (int year) const
+{
+   return QString::number(year);
+}
+
+QString KCalendarSystemHijri::yearLiteral (const QDate & date) const
+{
+   return yearLiteral(year(date));
+}
