@@ -27,8 +27,8 @@ kdeinit_SOURCES = kinit.cpp setproctitle.cpp
 # NOTE: We link against all common libraries even if we don't need them ourselves.
 kdeinit_LDFLAGS = $(KDE_MT_LDFLAGS) $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) \
                   $(KDE_RPATH)
-kdeinit_LDADD = $(LIB_KPARTS) $(LIB_KSYCOCA) 
-kdeinit_DEPENDENCIES = $(LIB_KPARTS) $(LIB_KSYCOCA)
+kdeinit_LDADD = $(LIB_KPARTS) 
+kdeinit_DEPENDENCIES = $(LIB_KPARTS)
 
 kioslave_SOURCES = kioslave.cpp
 kioslave_LDFLAGS = $(KDE_MT_LDFLAGS) $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) \
@@ -52,7 +52,7 @@ kwrapper_SOURCES = kwrapper.c
 kwrapper_LDADD = $(LIBSOCKET)
 
 klauncher_la_LDFLAGS = $(all_libraries) -module -avoid-version
-klauncher_la_LIBADD = $(LIB_KSYCOCA)
+klauncher_la_LIBADD = $(LIB_KIO)
 klauncher_la_SOURCES = klauncher.cpp klauncher_main.cpp autostart.cpp
 
 klauncher_LDFLAGS =  $(all_libraries) $(KDE_RPATH)

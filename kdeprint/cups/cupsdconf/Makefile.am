@@ -19,7 +19,7 @@ libcupsdconf_la_SOURCES = cupsdconf.cpp cupsddialog.cpp cupsdoption.cpp cupsdpag
 	  cupsdcomment.cpp mydialogbase.cpp cupsdserverencryptpage.cpp cupsdserverjobpage.cpp
 libcupsdconf_la_METASOURCES = AUTO
 libcupsdconf_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
-libcupsdconf_la_LIBADD = $(LIB_KFILE) $(LIB_CUPS)
+libcupsdconf_la_LIBADD = $(LIB_KIO) $(LIB_CUPS)
 
 noinst_HEADERS = cupsdconf.h cupsdoption.h cupsdpage.h cupsdserverdirpage.h cupsdserverhttppage.h \
 	  cupsdserveridentitypage.h cupsdserverlogpage.h cupsdservermiscpage.h qdirlineedit.h \

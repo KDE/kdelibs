@@ -28,21 +28,12 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
 
 METASOURCES = AUTO
 
-## libkio only
-speed_LDADD = $(top_builddir)/kio/libkio.la
 speed_SOURCES = speed.cpp
-kioslavetest_LDADD = $(top_builddir)/kio/libkio.la
 kioslavetest_SOURCES = kioslavetest.cpp
-kshredtest_LDADD = $(top_builddir)/kio/libkio.la
 kshredtest_SOURCES = kshredtest.cpp
-kdefaultprogresstest_LDADD = $(top_builddir)/kio/libkio.la
 kdefaultprogresstest_SOURCES = kdefaultprogresstest.cpp
-kclipboardtest_LDADD = $(top_builddir)/kio/libkio.la
 kclipboardtest_SOURCES = kclipboardtest.cpp
-kionetrctest_LDADD = $(top_builddir)/kio/libkio.la
 kionetrctest_SOURCES = kionetrctest.cpp
-
-## libksycoca
 kiopassdlgtest_SOURCES = kiopassdlgtest.cpp
 kurifiltertest_SOURCES = kurifiltertest.cpp
 ksycocatest_SOURCES = ksycocatest.cpp
@@ -64,7 +55,7 @@ metatest_SOURCES = metatest.cpp
 # metadata plugin test and "make install".
 #kde_module_LTLIBRARIES = dummymeta.la
 #dummymeta_la_SOURCES = dummymeta.cpp
-#dummymeta_la_LIBADD = $(LIB_KSYCOCA)
+#dummymeta_la_LIBADD = $(LIB_KIO)
 #dummymeta_la_LDFLAGS = $(all_libraries) -module $(KDE_PLUGIN)
 
 #services_DATA = dummymeta.desktop

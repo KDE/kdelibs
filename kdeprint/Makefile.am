@@ -10,7 +10,7 @@ INCLUDES= -I$(top_srcdir)/kdefx -I$(top_srcdir)/kded -I$(top_srcdir) $(all_inclu
 kde_module_LTLIBRARIES = kded_kdeprintd.la
 
 kded_kdeprintd_la_SOURCES = kdeprintd.skel kdeprintd.cpp kprintprocess.cpp
-kded_kdeprintd_la_LIBADD = $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_KIO) $(LIB_KFILE)
+kded_kdeprintd_la_LIBADD = $(LIB_KIO)
 kded_kdeprintd_la_LDFLAGS = $(all_libraries) -module -avoid-version
 #kded_kdeprintd_la_METASOURCES = AUTO
 
@@ -27,8 +27,8 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 util.cpp printerfilter.cpp marginpreview.cpp marginvaluewidget.cpp marginwidget.cpp \
 			 kpmarginpage.cpp
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 4:0 -no-undefined
-libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ) $(LIB_KFILE)
-libkdeprint_la_DEPENDENCIES =  $(LIB_KPARTS) $(LIB_KFILE)
+libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
+libkdeprint_la_DEPENDENCIES =  $(LIB_KPARTS) 
 libkdeprint_la_METASOURCES = AUTO
 
 noinst_HEADERS = kmdbentry.h kmfactory.h \

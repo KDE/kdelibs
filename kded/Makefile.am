@@ -22,13 +22,13 @@ INCLUDES= -I$(srcdir)/.. -I$(top_srcdir) $(all_includes)
 lib_LTLIBRARIES = kded.la kbuildsycoca.la
 
 kded_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kded_la_LIBADD = $(LIB_KSYCOCA)
+kded_la_LIBADD = $(LIB_KIO)
 kded_la_SOURCES = kded.cpp kbuildservicetypefactory.cpp \
 			kbuildservicefactory.cpp \
 			kbuildservicegroupfactory.cpp kdedmodule.cpp
 
 kbuildsycoca_la_LDFLAGS = $(all_libraries) -module -avoid-version
-kbuildsycoca_la_LIBADD = $(LIB_KSYCOCA)
+kbuildsycoca_la_LIBADD = $(LIB_KIO)
 kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 				kbuildservicefactory.cpp \
 				kbuildservicegroupfactory.cpp \
@@ -39,11 +39,11 @@ kbuildsycoca_la_SOURCES = kbuildsycoca.cpp kbuildservicetypefactory.cpp \
 bin_PROGRAMS = kded kbuildsycoca kdontchangethehostname
 
 kded_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kded_LDADD = $(LIB_KSYCOCA) kded.la
+kded_LDADD = kded.la
 kded_SOURCES = dummy.cpp
 
 kbuildsycoca_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-kbuildsycoca_LDADD = $(LIB_KSYCOCA) kbuildsycoca.la
+kbuildsycoca_LDADD = kbuildsycoca.la
 kbuildsycoca_SOURCES = dummy.cpp
 
 kdontchangethehostname_LDFLAGS = $(all_libraries) $(KDE_RPATH)
