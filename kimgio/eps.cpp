@@ -20,43 +20,37 @@
 #define BBOX "%%BoundingBox:"
 #define BBOX_LEN strlen(BBOX)
 
-int bbox ( const char *fileName, int *x1, int *y1, int *x2, int *y2)
+int bbox ( QImageIO *imageio, int *x1, int *y1, int *x2, int *y2)
 {
-	FILE * file;
 	int ret = FALSE;
         char buf[BUFLEN+1];
         char dummy[BUFLEN+1];
 
-	file = fopen (fileName, "r");
-
-	do {
-		if (! fgets (buf, BUFLEN, file)) break;
-
+	while (imageio->ioDevice()->readLine(buf, BUFLEN) != -1)
+        {
 		if (strncmp (buf, BBOX, BBOX_LEN) == 0)
 		{
 			if ( sscanf (buf, "%s %d %d %d %d", dummy,
 				x1, y1, x2, y2) == 5) {
 				ret = TRUE;
 				break;
-			} 
-		}  
-	} while ( true );
+			}
+		}
+	}
 
-	fclose (file);
 	return ret;
-}  
+}
 
 void kimgio_eps_read (QImageIO *image)
 {
-	FILE * ghostfd, * imagefd;
+	FILE * ghostfd;
 	int x1, y1, x2, y2;
-        char buf[BUFLEN+1];
 
 	QString cmdBuf;
 	QString tmp;
 
 	// find bounding box
-	if ( bbox (QFile::encodeName(image->fileName()), &x1, &y1, &x2, &y2) == 0 ) {
+	if ( bbox (image, &x1, &y1, &x2, &y2) == 0 ) {
 	    return;
 	}
 
@@ -93,6 +87,7 @@ void kimgio_eps_read (QImageIO *image)
 		"0 0 0 setrgbcolor - -c showpage quit";
 
 	// run ghostview
+
 	ghostfd = popen (QFile::encodeName(cmdBuf), "w");
 
 	if ( ghostfd == 0 ) {
@@ -103,17 +98,10 @@ void kimgio_eps_read (QImageIO *image)
 
 	// write image to gs
 
-	imagefd = fopen( QFile::encodeName(image->fileName()), "r" );
+        QByteArray buffer = image->ioDevice()->readAll();
+        fwrite(buffer.data(), sizeof(char), buffer.size(), ghostfd);
+        buffer.resize(0);
 
-	if ( imagefd != 0 )
-	{
-		while( fgets (buf, BUFLEN, imagefd) != 0 ) {
-
-			fputs (buf, ghostfd);
-		}
-
-		fclose (imagefd);  
-	}
 	pclose ( ghostfd );
 
 	// load image
@@ -151,48 +139,34 @@ void kimgio_eps_write( QImageIO *imageio )
   // painting the pixmap to the "printer" which is a file
   p.begin( &psOut );
 
-  //	 p.translate( 0, 0 );
-  QPixmap img;
-  img.convertFromImage(imageio->image());
+  p.translate( -36, 820 - imageio->image().height() );
 
-  p.drawPixmap( QPoint( 0, 0 ), img );
+  p.drawImage( QPoint( 0, 0 ), imageio->image() );
   p.end();
 
   // write BoundingBox to File
-  QFile		 inFile(tmpFile.name());
-  QFile		 outFile(imageio->fileName());
-  QString		 szBoxInfo;
+  QFile	inFile(tmpFile.name());
+  QString szBoxInfo;
 
-  szBoxInfo.sprintf("%sBoundingBox: 0 0 %d %d\n%sEndComments\n",
-		    "%%", img.width(),
-		    img.height(), "%%" );
+  szBoxInfo.sprintf("%sBoundingBox: 0 0 %d %d\n", "%%",
+                    imageio->image().width(),
+                    imageio->image().height());
 
   inFile.open( IO_ReadOnly );
-  outFile.open( IO_WriteOnly );
 
   QTextStream in( &inFile );
-  QTextStream out( &outFile );
-  QString		 szInLine;
-  int			 nFilePos;
+  QTextStream out( imageio->ioDevice() );
 
-  do{
-    nFilePos = inFile.at();
-    szInLine = in.readLine();
-    out << szInLine << '\n';
-  }
-  while( szInLine != "%%EndComments" );
+  QString szInLine = in.readLine();
+  out << szInLine << '\n';
+  out << szBoxInfo;
 
-  if( outFile.at( nFilePos ) ){
-    out << szBoxInfo;
-  }
-
-  while( !in.eof() ){
+  while( !in.atEnd() ){
     szInLine = in.readLine();
     out << szInLine << '\n';
   }
 
   inFile.close();
-  outFile.close();
 
   imageio->setStatus(0);
 }
