@@ -949,7 +949,7 @@ KJSO KJS::HTMLElement::tryGet(const UString &p) const
   else if ( p == "innerText")
       return getString(element.innerText());
   else if ( p == "document")
-      return new ElementDocument(element);
+      return getDOMNode(element.ownerDocument());
   // ### what about style? or is this used instead for DOM2 stylesheets?
   else
     return DOMElement::tryGet(p);
@@ -1822,54 +1822,6 @@ void KJS::HTMLSelectCollection::tryPut(const UString &p, const KJSO& v)
   }
   // finally add the new element
   element.add(option, before);
-}
-
-////////////////////// "Element Document" Object ////////////////////////
-
-ElementDocument::~ElementDocument()
-{
-}
-
-KJSO ElementDocument::tryGet(const UString &p) const
-{
-  if (p == "open")
-    return new ElementDocumentFunc(element,ElementDocumentFunc::Open);
-  else if (p == "close")
-    return new ElementDocumentFunc(element,ElementDocumentFunc::Close);
-  else if (p == "write")
-    return new ElementDocumentFunc(element,ElementDocumentFunc::Write);
-  else if (p == "writeln")
-    return new ElementDocumentFunc(element,ElementDocumentFunc::Writeln);
-
-  return DOMObject::tryGet(p);
-}
-
-Completion ElementDocumentFunc::tryExecute(const List &args)
-{
-  KJSO result;
-
-  switch (id) {
-    case Open:
-      // does nothing
-      break;
-    case Close:
-      // does nothing
-      break;
-    case Write: {
-      KJSO v = args[0];
-      DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString().value().string();
-      element.setInnerHTML(element.innerHTML()+str);
-      }
-      break;
-    case Writeln: {
-      KJSO v = args[0];
-      DOM::DOMString str = v.isA(NullType) ? DOM::DOMString(0) : v.toString().value().string();
-      element.setInnerHTML(element.innerHTML()+str+"\n");
-      }
-      break;
-  }
-
-  return Completion(Normal,result);
 }
 
 ////////////////////// Option Object ////////////////////////
