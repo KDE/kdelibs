@@ -19,6 +19,7 @@
 */
 
 #include "kfilereader.h"
+#include <qheader.h>
 #include <qpixmap.h>
 #include "kfiledetailview.h"
 #include "qkeycode.h"
@@ -31,7 +32,10 @@
 KFileDetailView::KFileDetailView(QWidget *parent, const char *name)
     : KListView(parent, name), KFileView()
 {
+    KListView::setSorting( -1 );
     setViewName( i18n("Detailed View") );
+    header()->setClickEnabled( false );
+    myLastItem = 0L;
 
     addColumn( i18n( "Name" ) );
     addColumn( i18n( "Size" ) );
@@ -67,7 +71,6 @@ void KFileDetailView::highlightItem( const KFileViewItem *info )
     if ( !info )
 	return;
 
-
     // we can only hope that this casts works
     KFileListViewItem *item = (KFileListViewItem*)info->viewItem( this );
 
@@ -96,12 +99,14 @@ void KFileDetailView::rightButtonPressed ( QListViewItem *item )
 void KFileDetailView::clearView()
 {
     QListView::clear();
+    myLastItem = 0L;
 }
 
 void KFileDetailView::insertItem( KFileViewItem *i )
 {
-    KFileListViewItem *item = new KFileListViewItem( (QListView*)this, i->name(),
-						     i->pixmap(),  i );
+    KFileListViewItem *item = new KFileListViewItem( (QListView*) this,
+						     i->name(), i->pixmap(), i,
+						     myLastItem );
 
     item->setText( 1, QString::number( i->size() ) );
     item->setText( 2, i->access() );
@@ -109,6 +114,8 @@ void KFileDetailView::insertItem( KFileViewItem *i )
     item->setText( 4, i->owner() );
     item->setText( 5, i->group() );
     i->setViewItem( this, item );
+
+    myLastItem = item;
 }
 
 void KFileDetailView::selected( QListViewItem *item )
@@ -166,9 +173,18 @@ void KFileDetailView::updateView( const KFileViewItem *i )
 {
     if ( !i )
 	return;
+
+    // hack to make it not flicker
+    qApp->processEvents();
+    viewport()->setUpdatesEnabled( false );
+
     KFileListViewItem *item = (KFileListViewItem*) i->viewItem( this );
     item->setPixmap( 0, i->pixmap() );
     item->setText( 2, i->access() );
+
+    qApp->processEvents();
+    viewport()->setUpdatesEnabled( true );
+    item->repaint(); // only repaints if visible
 }
 
 #include "kfiledetailview.moc"

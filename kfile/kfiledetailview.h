@@ -35,6 +35,13 @@ public:
 	: QListViewItem( parent, text ), inf( fi ) {
 	    setPixmap( 0, icon );
     }
+    KFileListViewItem( QListView *parent, const QString &text,
+		       const QPixmap &icon, const KFileViewItem *fi,
+		       QListViewItem *after)
+	: QListViewItem( parent, after ), inf( fi ) {
+	    setPixmap( 0, icon );
+	    setText( 0, text );
+    }
 
     const KFileViewItem *fileInfo() const {
 	return inf;
@@ -70,6 +77,8 @@ public:
 protected:
     virtual void highlightItem(const KFileViewItem *);
     virtual void insertItem( KFileViewItem *i );
+    
+    QListViewItem *myLastItem;
 
 private slots:
     void selected( QListViewItem *item );

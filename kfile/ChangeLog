@@ -1,3 +1,10 @@
+Fri Feb  4 12:42:37 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
+
+	* kfiledetailview.cpp (insertItem): 
+	- don't let QListView sort the items
+	  I disabled clicking at the headers for now, will fix that later
+	- don't flicker on mimetype-pixmap update
+
 Thu Feb  3 12:15:16 2000  Carsten Pfeiffer  <pfeiffer@kde.org>
 
 	* kfileview.h + all views where necessary
