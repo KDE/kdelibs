@@ -10,14 +10,14 @@
 <!ENTITY FDLISTitles "LIST THEIR TITLES" -- keep capitals -->
 <!ENTITY FDLInvariantSections "the Invariant Sections being &FDLISTitles;">
  ]]>
-<!ENTITY FDLInvariantSections "no Invariant Sections">
+<!ENTITY FDLInvariantSections "ohne die invarianten Abschnitte">
 <![%FDLFCT;[
 <!ENTITY FDLFCTTitles "LIST" -- keep capitals -->
 <!ENTITY FDLFrontCoverText "the Front-Cover Texts being &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "no Front-Cover Texts">
+<!ENTITY FDLFrontCoverText "ohne Texte auf der vorderen Umschlagseite">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LIST THEIR TITLES" -- keep capitals -->
 <!ENTITY FDLBackCoverText "the Back-Cover Texts being &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "no Back-Cover Texts">
+<!ENTITY FDLBackCoverText "ohne Texte auf der hinteren Umschlagseite">
