@@ -360,7 +360,7 @@ void KeramikStyle::polish(QWidget* widget)
 
 	if (animateProgressBar && ::qt_cast<QProgressBar*>(widget))
 	{
-		progAnimWidgets[static_cast<QProgressBar*>(widget)] = true;
+		progAnimWidgets[static_cast<QProgressBar*>(widget)] = 0;
 		connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(progressBarDestroyed(QObject*)));
 	}
 
