@@ -123,7 +123,10 @@ protected:
   virtual void dropEvent( QDropEvent *);
 
   QColor *colors;
+  bool inMouse;
+  QPoint mPos;
   int	selected;
+  
 };
 
 /**

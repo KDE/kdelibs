@@ -33,7 +33,8 @@ KColorButton::KColorButton( QWidget *parent, const char *name )
 	: QPushButton( parent, name )
 {
 	connect( this, SIGNAL( clicked() ), SLOT( slotClicked() ) );
-	setAcceptDrops( true);
+        setAcceptDrops( true);
+        inMouse = false;
 }
 
 KColorButton::KColorButton( const QColor &c, QWidget *parent, const char *name )
@@ -41,23 +42,14 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent, const char *name )
 {
 	connect( this, SIGNAL( clicked() ), SLOT( slotClicked() ) );
 	col = c;
-	setAcceptDrops( true);
+        setAcceptDrops( true);
+        inMouse = false;
 }
 
 void KColorButton::setColor( const QColor &c )
 {
 	col = c;
 	repaint( false );
-}
-
-void KColorButton::slotClicked()
-{
-	if ( KColorDialog::getColor( col ) == QDialog::Rejected )
-		return;
-
-	repaint( false );
-
-	emit changed( col );
 }
 
 void KColorButton::drawButtonLabel( QPainter *painter )
@@ -98,15 +90,54 @@ void KColorButton::dropEvent( QDropEvent *event)
         }
 }
 
+void KColorButton::mousePressEvent( QMouseEvent *e)
+{
+    QPushButton::mousePressEvent(e);
+    if(!e->state() && LeftButton)
+        return;
+    dragged = false;
+
+}
+
 void KColorButton::mouseMoveEvent( QMouseEvent *e)
 {
 	// Call parent's handler
         // It seems that this doesn't release the button??
-	QPushButton::mouseMoveEvent( e);
-	// Drag color object
-        if( !(e->state() && LeftButton)) return;
-        KColorDrag *d = KColorDrag::makeDrag( color(), this);
-        d->dragCopy();
+
+        // I moved this around a little (mosfet)
+        // QPushButton::mouseMoveEvent( e);
+
+        if(!inMouse){
+            mPos = e->pos();
+            inMouse = true;
+            return;
+        }
+        if(e->x() > mPos.x()+5 || e->x() < mPos.x()-5 ||
+           e->y() > mPos.y()+5 || e->y() < mPos.y()-5){
+            // Drag color object
+            dragged = true;
+            KColorDrag *d = KColorDrag::makeDrag( color(), this);
+            d->dragCopy();
+            // Fake a release event for QPushButton (mosfet)
+            QMouseEvent evTmp(QEvent::MouseButtonRelease,
+                              e->pos(), e->globalPos(),
+                              QMouseEvent::LeftButton,
+                              QMouseEvent::LeftButton);
+            mouseReleaseEvent(&evTmp);
+        }
+}
+
+void KColorButton::mouseReleaseEvent( QMouseEvent *e )
+{
+    QPushButton::mouseReleaseEvent(e);
+    inMouse = false;
+    if(!dragged){
+        if (KColorDialog::getColor( col ) == QDialog::Rejected )
+            return;
+        repaint( false );
+        emit changed( col );
+    }
+    dragged = false; // no idea why this is needed...
 }
 
 #include "kcolorbtn.moc"

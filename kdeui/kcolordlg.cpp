@@ -185,7 +185,8 @@ KColorCells::KColorCells( QWidget *parent, int rows, int cols )
 		colors[i] = backgroundColor();
 
 	selected = 0;
-
+        inMouse = false;
+        
 	// Drag'n'Drop
 	setAcceptDrops( true);
 }
@@ -221,13 +222,23 @@ void KColorCells::resizeEvent( QResizeEvent * )
 }
 void KColorCells::mouseMoveEvent( QMouseEvent *e )
 {
-        // Drag color object
-        if( !(e->state() && LeftButton)) return;
-	int row = e->pos().y() / cellHeight();
-	int col = e->pos().x() / cellWidth();
-	int cell = row * numCols() + col;
-	KColorDrag *d = KColorDrag::makeDrag( colors[cell], this);
-	d->dragCopy();
+    if( !(e->state() && LeftButton)) return;
+
+    if(!inMouse){
+        inMouse = true;
+        mPos = e->pos();
+    }
+    else{
+        if(e->x() > mPos.x()+3 || e->x() < mPos.x()-3 ||
+           e->y() > mPos.y()+3 || e->y() < mPos.y()-3){
+            // Drag color object
+            int row = e->pos().y() / cellHeight();
+            int col = e->pos().x() / cellWidth();
+            int cell = row * numCols() + col;
+            KColorDrag *d = KColorDrag::makeDrag( colors[cell], this);
+            d->dragCopy();
+        }
+    }
 }
 
 void KColorCells::dragEnterEvent( QDragEnterEvent *event)
@@ -258,8 +269,9 @@ void KColorCells::mouseReleaseEvent( QMouseEvent *e )
 		selected = cell;
 		updateCell( prevSel/numCols(), prevSel%numCols(), FALSE );
 		updateCell( row, col, FALSE );
-	}
+        }
 
+        inMouse = false;
 	emit colorSelected( cell );
 }
 

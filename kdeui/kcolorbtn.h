@@ -69,9 +69,6 @@ signals:
 	void changed( const QColor &newColor );
 
 protected slots:
-	/**
-	*/
-	void slotClicked();
 
 protected:
 	/**
@@ -82,10 +79,14 @@ protected:
 	 * For XDnd
 	 */
 	virtual void dragEnterEvent( QDragEnterEvent *);
-	virtual void dropEvent( QDropEvent *);
-	virtual void mouseMoveEvent( QMouseEvent *e);
+        virtual void dropEvent( QDropEvent *);
+        virtual void mousePressEvent( QMouseEvent *e );
+        virtual void mouseMoveEvent( QMouseEvent *e);
+        virtual void mouseReleaseEvent ( QMouseEvent *e );
 private:
-	QColor col;
+        QColor col;
+        QPoint mPos;
+        bool inMouse, dragged;
 };
 
 #endif
