@@ -85,23 +85,27 @@ void KLineEdit::setCompletionMode( KGlobalSettings::Completion mode )
     KCompletionBase::setCompletionMode( mode );
 }
 
-void KLineEdit::rotateText( KCompletionBase::RotationEvent dir )
+void KLineEdit::rotateText( KCompletionBase::KeyBindingType type )
 {
-    KCompletion* comp = completionObject();
-    if( hasMarkedText() && completionMode() != KGlobalSettings::CompletionShell )
-    {
-        QString str = text();
-        QString input = ( dir == KCompletionBase::UpKeyEvent ) ? comp->previousMatch() : comp->nextMatch();
-        if( input == str ) return; // Skip rotation if same text
-        int pos = str.find( markedText() );
-        int index = input.find( str.remove( pos , markedText().length() ) );
-        if( index == -1 ) return;
-        else if( index == 0 ) str = input;
-        validateAndSet( str, cursorPosition(), pos, str.length() );
+   	KCompletion* comp = completionObject();
+	if( comp &&
+		(type == KCompletionBase::PrevCompletionMatch ||
+		 type == KCompletionBase::NextCompletionMatch ) )
+	{
+		QString input = (type == KCompletionBase::PrevCompletionMatch) ? comp->previousMatch() : comp->nextMatch();
+		// Skip rotation if previous/next match is null or the same text.
+        if( input.isNull() || input == text() ) return;
+        int pos = cursorPosition();
+        if( hasMarkedText() )
+			validateAndSet( input, pos, pos, input.length() );
+		else
+			setText( input );
     }
-    else
+
+/*  else
     {
-        QStringList list = comp->items();
+
+		QStringList list = comp->items();
         int cnt = list.count();
         if( cnt == 0 ) return;
         int index = list.findIndex( text() );
@@ -115,7 +119,7 @@ void KLineEdit::rotateText( KCompletionBase::RotationEvent dir )
         	
         if ( index > -1 && index < cnt )
         	setText( list[index] );
-    }
+    } */
 }
 
 void KLineEdit::makeCompletion( const QString& text )
@@ -125,11 +129,11 @@ void KLineEdit::makeCompletion( const QString& text )
 	KCompletion *comp = completionObject();
    	KGlobalSettings::Completion mode = completionMode();
     	
-   	if( mode == KGlobalSettings::CompletionShell &&
+/*  if( mode == KGlobalSettings::CompletionShell &&
 	   	comp->hasMultipleMatches() && text != comp->lastMatch() )
     	match = comp->nextMatch();
-    else
-    	match = comp->makeCompletion( text );
+    else */
+    match = comp->makeCompletion( text );
     	
     // If no match or the same match, simply return
     // without completing.
@@ -150,20 +154,23 @@ void KLineEdit::connectSignals( bool handle ) const
     if( handle && !handleSignals() )
     {
         connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
-        connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
+        connect( this, SIGNAL( previousMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        connect( this, SIGNAL( nextMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
     }
     else if( !handle && handleSignals() )
     {
         disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
-        disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
+        disconnect( this, SIGNAL( previousMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        disconnect( this, SIGNAL( nextMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
     }
 }
 
 void KLineEdit::selectedItem( int id )
 {
-    if( id == 0 ) id = KGlobalSettings::completionMode();
+    if( id == 0 )
+    {
+    	id = KGlobalSettings::completionMode();
+    }
     setCompletionMode( (KGlobalSettings::Completion)id );
 }
 
@@ -173,7 +180,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
     // returnPressed() and returnPressed( const QString& )
     // as needed if they were relying on this event being
     // propagated up-stream.  This is also consistent with
-    // KLineEdit.
+    // KComboBox.
     if( e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter )
     {
         emit returnPressed( displayText() );
@@ -195,7 +202,8 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
         // Handles completion.
         KCompletion* comp = completionObject();
-        int key = ( completionKey() == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion)	: completionKey();
+        KeyBindingMap keys = getKeyBindings();
+        int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
         if( KStdAccel::isEqual( e, key ) && fireSignals )
         {
             // Emit completion if the completion mode is NOT
@@ -209,18 +217,18 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
                 return;
             }
         }
-        // Handles rotateUp.
-    	key = ( rotateUpKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : rotateUpKey();
+        // Handles previous match
+    	key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
         if( KStdAccel::isEqual( e, key ) && fireSignals )
         {
-            emit rotateUp ();
+            emit previousMatch( KCompletionBase::PrevCompletionMatch );
             return;
         }
-        // Handles rotateDown.
-	    key = ( rotateDownKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : rotateDownKey();
+        // Handles next match
+	    key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
         if( KStdAccel::isEqual( e, key ) && fireSignals)
         {
-            emit rotateDown();
+            emit nextMatch( KCompletionBase::NextCompletionMatch );
             return;
         }
     }

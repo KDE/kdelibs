@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
 
-   Copyright (c) 2000 Dawit Alemayehu <adawit@earthlink.net>
+   Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -67,6 +67,10 @@ KComboBox::~KComboBox()
 
 void KComboBox::init()
 {
+	// Do not put text in the list, but do not loose
+	// it either when rotating up. NOTE: Does not yet work!!
+	m_strCurrentText = QString::null;
+	
     // Permanently set some parameters in the parent object.
     setAutoCompletion( false );
 
@@ -115,12 +119,13 @@ void KComboBox::makeCompletion( const QString& text )
     	int pos = cursorPosition();
 		KCompletion *comp = completionObject();
     	KGlobalSettings::Completion mode = completionMode();
-    	
+/*    	
     	if( mode == KGlobalSettings::CompletionShell &&
     		comp->hasMultipleMatches() && text != comp->lastMatch() )
 	    	match = comp->nextMatch();
 	    else
-   	    	match = comp->makeCompletion( text );
+*/
+		match = comp->makeCompletion( text );
  	
         // If no match or the same text simply return without completing.
         if( match.isNull() || match == text )  return;
@@ -144,7 +149,7 @@ void KComboBox::makeCompletion( const QString& text )
 
 }
 
-void KComboBox::rotateText( KCompletionBase::RotationEvent dir )
+void KComboBox::rotateText( KCompletionBase::KeyBindingType type )
 {
     if( m_pEdit != 0 )
     {
@@ -152,16 +157,18 @@ void KComboBox::rotateText( KCompletionBase::RotationEvent dir )
     	// a person can rotate through all combinations of car, class,
     	// coffee, cookie, club by just pressing the rotation keys.
 		KCompletion* comp = completionObject();
-        if( m_pEdit->hasMarkedText() && completionMode() != KGlobalSettings::CompletionShell )
-        {
-			QString str = m_pEdit->text();
-			QString input = ( dir == KCompletionBase::UpKeyEvent ) ? comp->previousMatch() : comp->nextMatch();
-            if( input == str ) return; // Ignore rotating to the same text
-            int pos = str.find( m_pEdit->markedText() );
-            int index = input.find( str.remove( pos , m_pEdit->markedText().length() ) );
-            if( index == -1 ) return;
-            else if( index == 0 ) str = input;
-            m_pEdit->validateAndSet( str, cursorPosition(), pos, str.length() );
+		if( comp &&
+			( type == KCompletionBase::PrevCompletionMatch ||
+			  type == KCompletionBase::NextCompletionMatch ) )
+		{
+			QString input = ( type == KCompletionBase::PrevCompletionMatch ) ? comp->previousMatch() : comp->nextMatch();
+			// Ignore rotating to the same text			
+            if( input.isNull() || input == m_pEdit->text() ) return;
+            int pos = cursorPosition();
+            if( m_pEdit->hasMarkedText() )
+				m_pEdit->validateAndSet( input, pos, pos, input.length() );
+			else
+				m_pEdit->setText( input );
         }
         else
         {
@@ -176,7 +183,7 @@ void KComboBox::rotateText( KCompletionBase::RotationEvent dir )
 				// Only allow a previous match key press
 				// match since we do not yet have a next
 				// match at this point yet.
-				if( dir == KCompletionBase::UpKeyEvent )
+				if( type == KCompletionBase::RotateUp )
 				{
 					if( policy == QComboBox::AtTop )
 						index = 0;
@@ -190,14 +197,14 @@ void KComboBox::rotateText( KCompletionBase::RotationEvent dir )
 			}
 			else
 			{
-				if( dir == KCompletionBase::UpKeyEvent )
+				if( type == KCompletionBase::RotateUp )
 				{
 					if( policy == QComboBox::AtBottom )
 						index -= 1;
 					else
 						index += 1;
 				}
-				else if( dir == KCompletionBase::DownKeyEvent )
+				else if( type == KCompletionBase::RotateDown )
 				{
 					if( policy == QComboBox::AtBottom )
 						index += 1;
@@ -226,14 +233,18 @@ void KComboBox::connectSignals( bool handle ) const
     if( handle && !handleSignals() )
     {
         connect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        connect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
-        connect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
+        connect( this, SIGNAL( previousMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        connect( this, SIGNAL( nextMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        connect( this, SIGNAL( rotateUp( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        connect( this, SIGNAL( rotateDown( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
     }
     else if( !handle && handleSignals() )
     {
         disconnect( this, SIGNAL( completion( const QString& ) ), this, SLOT( makeCompletion( const QString& ) ) );
-        disconnect( this, SIGNAL( rotateUp() ), this, SLOT( iterateUpInList() ) );
-        disconnect( this, SIGNAL( rotateDown() ), this, SLOT( iterateDownInList() ) );
+        disconnect( this, SIGNAL( previousMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        disconnect( this, SIGNAL( nextMatch( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        disconnect( this, SIGNAL( rotateUp( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
+        disconnect( this, SIGNAL( rotateDown( KeyBindingType ) ), this, SLOT( rotateText( KeyBindingType ) ) );
     }
 }
 
@@ -272,8 +283,9 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
         if( mode != KGlobalSettings::CompletionNone )
         {
             KCompletion* compObj = completionObject();
-            bool fireSignals = emitSignals();
-            int key = ( completionKey() == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : completionKey();
+		    bool fireSignals = emitSignals();
+	        KeyBindingMap keys = getKeyBindings();
+    	    int key = ( keys[TextCompletion] == 0 ) ? KStdAccel::key(KStdAccel::TextCompletion) : keys[TextCompletion];
             if( KStdAccel::isEqual( e, key ) && fireSignals )
             {
                 // Emit completion if the completion mode is NOT
@@ -290,18 +302,34 @@ void KComboBox::keyPressEvent ( QKeyEvent * e )
 
             }
             // Handles rotateUp.
-            key = ( rotateUpKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : rotateUpKey();
+            key = ( keys[RotateUp] == 0 ) ? KStdAccel::key(KStdAccel::RotateUp) : keys[RotateUp];
             if( KStdAccel::isEqual( e, key ) && fireSignals )
             {
-                emit rotateUp ();
+                emit rotateUp( KCompletionBase::RotateUp );
                 e->accept();
                 return;
             }
             // Handles rotateDown.
-            key = ( rotateDownKey() == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : rotateDownKey();
+            key = ( keys[RotateDown] == 0 ) ? KStdAccel::key(KStdAccel::RotateDown) : keys[RotateDown];
             if( KStdAccel::isEqual( e, key ) && fireSignals )
             {
-                emit rotateDown();
+                emit rotateDown( KCompletionBase::RotateDown );
+                e->accept();
+                return;
+            }
+            // Handles rotateUp.
+            key = ( keys[PrevCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::PrevCompletion) : keys[PrevCompletionMatch];
+            if( KStdAccel::isEqual( e, key ) && fireSignals )
+            {
+                emit previousMatch( KCompletionBase::PrevCompletionMatch );
+                e->accept();
+                return;
+            }
+            // Handles rotateDown.
+            key = ( keys[NextCompletionMatch] == 0 ) ? KStdAccel::key(KStdAccel::NextCompletion) : keys[NextCompletionMatch];
+            if( KStdAccel::isEqual( e, key ) && fireSignals )
+            {
+                emit nextMatch( KCompletionBase::NextCompletionMatch );
                 e->accept();
                 return;
             }
