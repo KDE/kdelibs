@@ -124,7 +124,7 @@ bool StringListSelectAndReorderSet::setValues(const QStrList& values)
   lbPossible->insertStrList(&values);
   assert(values.count()==lbPossible->count());
   // -----
-  for(index=0; (unsigned)index<values.count(); index++)
+  for(index=0; (unsigned int)index<values.count(); index++)
     {
       possible.push_back(index);
     }
@@ -183,7 +183,7 @@ bool StringListSelectAndReorderSet::getSelection(list<string>& values)
       for(pos=selected.begin(); pos!=selected.end(); pos++)
 	{
 	  text=original.begin();
-	  assert((unsigned)(*pos)<original.size());
+	  assert((unsigned int)(*pos)<original.size());
 	  advance(text, *pos);
 	  values.push_back(*text);
 	}
@@ -207,7 +207,7 @@ bool StringListSelectAndReorderSet::getSelection(QStrList& values)
       for(pos=selected.begin(); pos!=selected.end(); pos++)
 	{
 	  text=original.begin();
-	  assert((unsigned)(*pos)<original.size());
+	  assert((unsigned int)(*pos)<original.size());
 	  advance(text, *pos);
 	  values.append((*text).c_str());
 	}
@@ -223,7 +223,7 @@ bool StringListSelectAndReorderSet::select(int index)
   list<int>::iterator pos;
   int number=-1;
   // -----
-  if(index<0 || (unsigned)index>=original.size())
+  if(index<0 || (unsigned int)index>=original.size())
     {
       return false; 
     } else {
@@ -284,7 +284,7 @@ bool StringListSelectAndReorderSet::select(const QList<int>& indizes)
   bool error=false;
   int index;
   // -----
-  for(index=0; (unsigned)index<indizes.count(); index++)
+  for(index=0; (unsigned int)index<indizes.count(); index++)
     {
       if(!select(*((QList<int>&)indizes).at(index)))
 	{
@@ -304,8 +304,8 @@ bool StringListSelectAndReorderSet::selectItem(int index)
   list<int>::iterator pos=possible.begin();
   // -----
   assert(lbPossible->count()==possible.size());
-  assert(lbSelected->count()==(unsigned)selected.size());
-  if(index<0 || (unsigned)index>=lbPossible->count())
+  assert(lbSelected->count()==(unsigned int)selected.size());
+  if(index<0 || (unsigned int)index>=lbPossible->count())
     {
       return false;
     }
@@ -334,7 +334,7 @@ bool StringListSelectAndReorderSet::unselectItem(int index)
   // -----
   assert(lbPossible->count()==possible.size());
   assert(lbSelected->count()==selected.size());
-  if(index<0 || (unsigned)index>=lbSelected->count())
+  if(index<0 || (unsigned int)index>=lbSelected->count())
     {
       return false;
     }  
@@ -370,7 +370,7 @@ void StringListSelectAndReorderSet::selectPressed()
       qApp->beep();
       return;
     }
-  assert(index>=0 && (unsigned)index<lbPossible->count());
+  assert(index>=0 && (unsigned int)index<lbPossible->count());
   if(!selectItem(index))
     {
       qApp->beep();
@@ -395,7 +395,7 @@ void StringListSelectAndReorderSet::unselectPressed()
       qApp->beep();
       return;
     }
-  assert(index>=0 && (unsigned)index<lbSelected->count());
+  assert(index>=0 && (unsigned int)index<lbSelected->count());
   if(!unselectItem(index))
     {
       qApp->beep();
@@ -421,7 +421,7 @@ void StringListSelectAndReorderSet::up()
       qApp->beep();
       return;
     }
-  assert(index>=0 && (unsigned)index<lbSelected->count());
+  assert(index>=0 && (unsigned int)index<lbSelected->count());
   if(index==0)
     { //       already first element
       return;
@@ -462,8 +462,8 @@ void StringListSelectAndReorderSet::down()
       qApp->beep();
       return;
     }
-  assert(index>=0 && (unsigned)index<lbSelected->count());
-  if((unsigned)index==lbSelected->count()-1)
+  assert(index>=0 && (unsigned int)index<lbSelected->count());
+  if((unsigned int)index==lbSelected->count()-1)
     { //       already last element
       return;
     }
@@ -507,7 +507,7 @@ void StringListSelectAndReorderSet::enableButtons(int)
     } else {
       buttonUp->setEnabled(true);
     }
-  if((unsigned)lbSelected->currentItem()
+  if((unsigned int)lbSelected->currentItem()
      ==lbSelected->count()-1 || lbSelected->count()<2)
     {
       buttonDown->setEnabled(false);

@@ -846,7 +846,7 @@ string AddressBook::nextAvailEntryKey()
 bool AddressBook::setCurrent(int index)
 {
   // ############################################################################
-  if(entries.size()>(unsigned)index && index>=0)
+  if(entries.size()>(unsigned int)index && index>=0)
     {
       current=entries.begin();
       advance(current, index);

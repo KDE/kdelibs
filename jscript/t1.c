@@ -85,7 +85,7 @@ typedef union
 #define	YYFLAG		-32768
 #define	YYNTBASE	64
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 295 ? yytranslate[x] : 100)
+#define YYTRANSLATE(x) ((unsigned int)(x) <= 295 ? yytranslate[x] : 100)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,    44,

@@ -146,7 +146,7 @@ int KProcIO::readln (char *buffer, int max, bool autoAck)
   kdebug(KDEBUG_INFO, 750, "KPIO::readln\n");
 
   //in case there's no '\n' at the end of the buffer
-  if (len<0 && (unsigned)rbi<recvbuffer.length())
+  if (len<0 && (unsigned int)rbi<recvbuffer.length())
     {
       QString qs=recvbuffer.mid (rbi,recvbuffer.length()-rbi);
       recvbuffer=qs;

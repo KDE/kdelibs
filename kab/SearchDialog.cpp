@@ -100,7 +100,7 @@ SearchDialog::~SearchDialog()
 
 void SearchDialog::keySelected(int index)
 {
-  REQUIRE(index>=0 && (unsigned)index<(sizeof(Keys)/sizeof(Keys[0])));
+  REQUIRE(index>=0 && (unsigned int)index<(sizeof(Keys)/sizeof(Keys[0])));
   // ############################################################################
   L("SearchDialog::keySelected: key %s selected.\n", Keys[index]);
   key=Keys[index];

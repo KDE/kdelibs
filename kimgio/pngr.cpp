@@ -115,7 +115,7 @@ void kimgio_png_read( QImageIO *io )
 
 	// read image
 	for( ; passes; passes-- ) {
-		for( unsigned row = 0; row < png_info->height; row++ ) {
+		for( unsigned int row = 0; row < png_info->height; row++ ) {
 			png_read_row( png_ptr, image.scanLine( row ), NULL );
 		}
 	}
@@ -126,8 +126,8 @@ void kimgio_png_read( QImageIO *io )
 		image.setAlphaBuffer(true);
 	}
 	else {
-		unsigned *pixels = (unsigned *) image.bits();
-		for( unsigned row = 0; row < png_info->height; row++ ) {
+		unsigned int *pixels = (unsigned int *) image.bits();
+		for( unsigned int row = 0; row < png_info->height; row++ ) {
 			for( int i = 0; i < image.width(); i++ ) {
 				*pixels = *pixels >> 8;
 				pixels++;

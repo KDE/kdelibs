@@ -95,7 +95,7 @@ void KButtonBox::layout() {
   // resize all buttons
   QSize bs = bestButtonSize();
 
-  for(unsigned i = 0; i < buttons.count(); i++) {
+  for(unsigned int i = 0; i < buttons.count(); i++) {
     KButtonBoxItem *item = buttons.at(i);
     QPushButton *b = item->button;
     if(b != 0) {
@@ -118,7 +118,7 @@ void KButtonBox::layout() {
 }
 
 void KButtonBox::placeButtons() {
-  unsigned i;
+  unsigned int i;
 
   if(orientation == HORIZONTAL) {
     // calcualte free size and stretches
@@ -193,7 +193,7 @@ void KButtonBox::resizeEvent(QResizeEvent *) {
 
 QSize KButtonBox::bestButtonSize() const {
   QSize s(0, 0);
-  unsigned i;
+  unsigned int i;
 
   // calculate optimal size
   for(i = 0; i < buttons.count(); i++) {
@@ -215,7 +215,7 @@ QSize KButtonBox::bestButtonSize() const {
 }
 
 QSize KButtonBox::sizeHint() const {
-  unsigned i, dw;
+  unsigned int i, dw;
   bool hasMotifDefault = FALSE;
 
   if(buttons.count() == 0)

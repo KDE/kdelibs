@@ -370,7 +370,7 @@ void KSpellConfig::fillInDialog (void)
 
       //      kdebug(KDEBUG_INFO, 750, "entryList().count()=%d", thedir.entryList().count());
 
-      for (unsigned i=0;i<thedir.entryList().count();i++)
+      for (unsigned int i=0;i<thedir.entryList().count();i++)
 	{
 	  QString fname, lname, hname;
 
@@ -406,7 +406,7 @@ void KSpellConfig::fillInDialog (void)
   int whichelement=-1;
   //  kdebug (KDEBUG_INFO, 750, "dfl=%d",dictFromList());
   if (dictFromList())
-    for (unsigned i=0;i<langfnames->count();i++)
+    for (unsigned int i=0;i<langfnames->count();i++)
       {
 	//	kdebug (KDEBUG_INFO, 750, "[%s]==[%s]?", langfnames->at(i), dictionary().data());
 	if (langfnames->at(i) == dictionary())

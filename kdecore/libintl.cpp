@@ -171,7 +171,7 @@ extern int errno;
 #endif
 
 #if UINT_MAX == UINT_MAX_32_BITS
-typedef unsigned nls_uint32;
+typedef unsigned int nls_uint32;
 #else
 # if USHRT_MAX == UINT_MAX_32_BITS
 typedef unsigned short nls_uint32;

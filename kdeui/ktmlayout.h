@@ -155,7 +155,7 @@ public:
 	 * specified limit is reached the remaining bars will extend outside
 	 * the window.
 	 */
-	void setMaximumWraps(unsigned wraps)
+	void setMaximumWraps(unsigned int wraps)
 	{
 		maxWraps = wraps;
 	}

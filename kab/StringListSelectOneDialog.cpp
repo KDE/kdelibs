@@ -100,7 +100,7 @@ bool StringListSelectOneDialog::setValues
     {
       comboStrings->insertItem((*pos).c_str());
     }
-  assert((unsigned)comboStrings->count()==strings.size());
+  assert((unsigned int)comboStrings->count()==strings.size());
   return true;
   // ############################################################################
 }
@@ -112,7 +112,7 @@ bool StringListSelectOneDialog::setValues
   // ############################################################################
   comboStrings->clear();
   comboStrings->insertStrList(&strings, 0);
-  assert((unsigned)comboStrings->count()==strings.count());
+  assert((unsigned int)comboStrings->count()==strings.count());
   return true;
   // ############################################################################
 }
@@ -130,7 +130,7 @@ bool StringListSelectOneDialog::getValues
     {
       strings.push_back(comboStrings->text(index).ascii());
     }
-  assert(strings.size()==(unsigned)comboStrings->count());
+  assert(strings.size()==(unsigned int)comboStrings->count());
   return true;
   // ############################################################################
 }
@@ -147,7 +147,7 @@ bool StringListSelectOneDialog::getValues(QStrList& strings)
     {
       strings.insert(index, comboStrings->text(index));
     }
-  assert(strings.count()==(unsigned)comboStrings->count());
+  assert(strings.count()==(unsigned int)comboStrings->count());
   return true;
   // ############################################################################
 }

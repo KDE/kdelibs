@@ -19,7 +19,7 @@ class KActionMenuBuilder
 private:
 	QPopupMenu *_menu;
 	KUIActions *_act;
-	unsigned _style;
+	unsigned int _style;
 
 public:
 	/**
@@ -40,13 +40,13 @@ public:
 		WhatsThis =	8
 	};
 	
-	void setMenu( QPopupMenu *menu, unsigned style = Text | WhatsThis )	
+	void setMenu( QPopupMenu *menu, unsigned int style = Text | WhatsThis )	
 				{ _menu = menu; _style = style; }
 	QPopupMenu *menu()			{ return _menu; }
 	const QPopupMenu *menu() const		{ return _menu; }
 
-	void setStyle( unsigned style )		{ _style = style;}
-	unsigned style() const			{ return _style; }
+	void setStyle( unsigned int style )	{ _style = style;}
+	unsigned int style() const		{ return _style; }
 
 	virtual int insert( const QString& action, int index = -1 );
 	KActionMenuBuilder& operator<<( const QString& action )

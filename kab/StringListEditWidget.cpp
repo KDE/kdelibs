@@ -146,7 +146,7 @@ void StringListEditWidget::getStrings(list<string>& result)
   // -----
   result.erase(result.begin(), result.end());
   CHECK(result.empty());
-  for(count=0; (unsigned)count<lbStrings->count(); count++)
+  for(count=0; (unsigned int)count<lbStrings->count(); count++)
     {
       result.push_back(lbStrings->text(count).ascii());
     }
@@ -161,7 +161,7 @@ void StringListEditWidget::getStrings(QStrList& result)
   // -----
   result.clear();
   CHECK(result.isEmpty());
-  for(count=0; (unsigned)count<lbStrings->count(); count++)
+  for(count=0; (unsigned int)count<lbStrings->count(); count++)
     {
       result.append(lbStrings->text(count));
     }
@@ -210,7 +210,7 @@ void StringListEditWidget::downPressed()
       LG(GUARD, "StringListDialog::downPressed: nothing selected.\n");
       qApp->beep();
     } else {
-      if((unsigned)index+1!=lbStrings->count())
+      if((unsigned int)index+1!=lbStrings->count())
 	{
 	  text=lbStrings->text(index);
 	  lbStrings->removeItem(index);
@@ -302,7 +302,7 @@ void StringListEditWidget::enableButtons()
   // -----
   index=lbStrings->currentItem();
   buttonUp->setEnabled(index>0);
-  buttonDown->setEnabled((unsigned)index < (lbStrings->count()-1) && index!=-1);
+  buttonDown->setEnabled((unsigned int)index < (lbStrings->count()-1) && index!=-1);
   buttonDelete->setEnabled(index!=-1);
   // ############################################################################
 }

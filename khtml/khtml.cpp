@@ -1091,7 +1091,7 @@ void KHTMLWidget::print()
 	clue->setPos( 0, clue->getAscent() );
 	calcAbsolutePos();
 
-	unsigned numBreaks = 1;
+	unsigned int numBreaks = 1;
 	int pos = 0;
 	QArray<int> breaks( 10 );
 	breaks[0] = 0;
@@ -1110,7 +1110,7 @@ void KHTMLWidget::print()
 	}
 	while ( pos > 0 );
 
-	for ( unsigned b = 0; b < numBreaks; b++ )
+	for ( unsigned int b = 0; b < numBreaks; b++ )
 	{
 	    int printHeight;
 	    if ( b < numBreaks - 1 )

@@ -306,8 +306,8 @@ void kimgio_jpeg_read(QImageIO * iio)
     JSAMPROW buffer[1];
     unsigned int *ui_row;
     unsigned char *uc_row, *uc_row_index;
-    unsigned depth;
-    unsigned col;
+    unsigned int depth;
+    unsigned int col;
 
     // We need to know if the display can handle 32-bit images
 
@@ -349,7 +349,7 @@ void kimgio_jpeg_read(QImageIO * iio)
 
 	// Read colourmap
 
-	for ( col = 0; col < (unsigned)cinfo.actual_number_of_colors; 
+	for ( col = 0; col < (unsigned int)cinfo.actual_number_of_colors; 
 			col++ ) {
 	    image.setColor(col, qRgb(cinfo.colormap[0][col],
 				     cinfo.colormap[1][col],

@@ -76,7 +76,7 @@ void SearchResults::closeClicked()
 void SearchResults::selected(int index)
 {
   REQUIRE(index>=0);
-  CHECK((unsigned)index<listbox->count());
+  CHECK((unsigned int)index<listbox->count());
   // ############################################################################
   list<string>::iterator pos=results.begin();
   advance(pos, index);
