@@ -38,16 +38,10 @@ KStandardDirs *KGlobal::dirs()
 	return _dirs;
 }
 
-KGlobal::ConfigState KGlobal::configState()
-{
-	return _configState;
-}
-
 KConfig	*KGlobal::config()
 {
 	if( _config == 0 ) {
 		_config = kApp()->getConfig();
-		_configState = (KGlobal::ConfigState) kApp()->getConfigState();
 	}
 
 	return _config;
@@ -136,7 +130,6 @@ void KGlobal::freeAll()
 //	delete _config;		
 	_config = 0;
 	delete _instanceConfig;	_instanceConfig = 0;
-	_configState =  APPCONFIG_NONE;
 
 	delete _dirs;		_dirs = 0;
 }
@@ -146,7 +139,6 @@ void KGlobal::freeAll()
 KApplication    *KGlobal::_kapp		= 0;
 KStandardDirs   *KGlobal::_dirs		= 0;
 
-KGlobal::ConfigState KGlobal::_configState	= KGlobal::APPCONFIG_NONE;
 KConfig         *KGlobal::_config	= 0;
 KConfig         *KGlobal::_instanceConfig	= 0;
 KIconLoader     *KGlobal::_iconLoader	= 0;

@@ -32,11 +32,6 @@ public:
 	static KApplication	*kApp();
 	static KStandardDirs	*dirs();
 	
-	enum ConfigState {
-		APPCONFIG_NONE, APPCONFIG_READONLY, APPCONFIG_READWRITE 
-	};
-
-	static ConfigState	configState();
 	static KConfig		*config();
 	static KConfig		*instanceConfig();
 	
@@ -55,7 +50,6 @@ public:
 	static 	KApplication	*_kapp;
 	static 	KStandardDirs	*_dirs;
 
-	static 	ConfigState	_configState;
 	static 	KConfig		*_config;
 	static 	KConfig		*_instanceConfig;
 	static 	KIconLoader	*_iconLoader;
