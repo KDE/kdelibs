@@ -645,6 +645,7 @@ bool KIO::probably_slow_mounted(const QString& filename)
 #ifdef HAVE_GETMNTINFO
 
     struct statfs *mounted;
+    char    realpath_buffer[MAXPATHLEN];
 
     int num_fs = getmntinfo(&mounted, MNT_NOWAIT);
 
