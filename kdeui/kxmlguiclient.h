@@ -38,7 +38,7 @@ public:
 
   QAction* action( const char* name );
   virtual QAction *action( const QDomElement &element );
-  QActionCollection* actionCollection() const;
+  virtual QActionCollection* actionCollection() const;
 
   /**
    * @return The instance (@ref KInstance) for this part.

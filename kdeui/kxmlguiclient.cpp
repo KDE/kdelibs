@@ -146,7 +146,18 @@ void KXMLGUIClient::setXML( const QString &document, bool merge )
     if ( !document.isNull() )
       doc.setContent( document );
 
-    mergeXML(base, doc.documentElement(), actionCollection());
+    // we are instructed to merge... but the xml file itself might
+    // have other plans.  we had better see if it wants no part of a
+    // merge now (note that this is file-wide.. a container specific
+    // nomerge tag is/will be defined elsewhere)
+    if (doc.documentElement().attribute("nomerge") == "1")
+    {
+      d->m_doc.setContent( document );
+      return;
+    }
+    else
+      mergeXML(base, doc.documentElement(), actionCollection());
+
     dump_xml(base.toElement());
 
     // we want some sort of failsafe.. just in case
