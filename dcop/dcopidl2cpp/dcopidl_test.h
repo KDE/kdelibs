@@ -26,6 +26,7 @@ k_dcop:
    void voidReturnType( QString filename, QString url, QString text, QString address, QString icon );
    QString nonVoidReturnType( QString filename, QString text, QString address );
    int intReturnType( QString filename, QString text, QString address );
+   bool boolReturnType( QString filename, QString text, QString address );
 
    ASYNC asyncTest( QString filename, QString text, QString address );
 };
