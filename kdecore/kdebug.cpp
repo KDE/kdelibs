@@ -41,6 +41,7 @@
 #include <qmessagebox.h>
 #include <klocale.h>
 #include <qfile.h>
+#include <qintdict.h>
 #include <qlist.h>
 #include <qstring.h>
 #include <qtextstream.h>
@@ -65,24 +66,20 @@ public:
     QString descr;
 };
 
-static QList<KDebugEntry> *KDebugCache;
-#define MAX_CACHE 20
+static QIntDict<KDebugEntry> *KDebugCache;
 
-static KStaticDeleter< QList<KDebugEntry> > kdd;
+static KStaticDeleter< QIntDict<KDebugEntry> > kdd;
 
 static QString getDescrFromNum(unsigned short _num)
 {
-    if (!KDebugCache) {
-        KDebugCache = kdd.setObject(new QList<KDebugEntry>);
-        KDebugCache->setAutoDelete(true);
-    }
-
-  for ( KDebugEntry *ent = KDebugCache->first();
-		  ent != 0; ent = KDebugCache->next()) {
-	  if (ent->number == _num) {
-		  return ent->descr;
-	  }
+  if (!KDebugCache) {
+    KDebugCache = kdd.setObject(new QIntDict<KDebugEntry>);
+    KDebugCache->setAutoDelete(true);
   }
+
+  KDebugEntry *ent = KDebugCache->find( _num );
+  if ( ent )
+    return ent->descr;
 
   QString data, filename(locate("config","kdebug.areas"));
   QFile file(filename);
@@ -114,21 +111,18 @@ static QString getDescrFromNum(unsigned short _num)
     if (!longOK)
       continue; // The first part wasn't a number
 
-    if (number != _num)
-      continue; // Not the number we're looking for
-
     data.remove(0, space+1);
 
-    if (KDebugCache->count() >= MAX_CACHE)
-      KDebugCache->removeFirst();
-    KDebugCache->append(new KDebugEntry(number,data));
-    delete ts;
-    file.close();
-    return data;
+    KDebugCache->insert(number, new KDebugEntry(number,data));
   }
-
+  
   delete ts;
   file.close();
+
+  ent = KDebugCache->find( _num );
+  if ( ent )
+      return ent->descr;
+  
   return QString::null;
 }
 
