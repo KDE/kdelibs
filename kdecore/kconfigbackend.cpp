@@ -239,14 +239,14 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
    }
    for(;s < eof;s++)
    {
-      while(isspace(*s) && (s < eof) && (*s != '\n'))
+      while((s < eof) && isspace(*s) && (*s != '\n'))
          s++; //skip leading whitespace, shouldn't happen to often
 
 
       //skip empty lines, lines starting with #, and lines starting with =
-      if ((*s == '\n') || (*s == '#') || (*s == '='))
+      if ((s < eof) && ((*s == '\n') || (*s == '#') || (*s == '=')))
       {
-         while ((*s!='\n') && (s<eof))
+         while ((s<eof) && (*s!='\n'))
             s++;
          continue; // Empty or comment or no keyword
       };
