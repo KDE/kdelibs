@@ -22,18 +22,24 @@
 
 #include <qframe.h>
 
-/// Horizontal and vertical lines
 /**
-'kseparator' is a small class to provide a identically look of horizontal or
-vertical lines in all KDE applications.
+ * Standard horizontal or vertical separator.
+ * @author Michael Roth <mroth@wirlweb.de>
+ * @version $Id$
 */
 class KSeparator : public QFrame
 {
    public:
       KSeparator(QWidget* parent=0, const char* name=0, WFlags f=0);
-      KSeparator(int orientation, QWidget* parent=0, const char* name=0, WFlags f=0);
+      KSeparator(int orientation, QWidget* parent=0, const char* name=0, 
+		      WFlags f=0);
       
       int orientation() const;
+
+      /**
+       * Set the orientation of the separator. Possible values are VLine
+       * and HLine.
+       */
       void setOrientation(int);
       
       virtual QSize sizeHint() const;

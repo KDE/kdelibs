@@ -38,12 +38,14 @@
 #include <kseparator.h>
 
 /**
-* KDialog inherits QDialog. So far the only difference is that if the dialog is modeless
-* and has a parent the default keybindings (escape = reject(), enter = accept() etc.) are
-* disabled.
-* @short KDialog
-* @author Thomas Tanghus <tanghus@earthling.net>
-* @version 0.1.1
+ * Dialog with extended modeless support.
+ *
+ * So far the only extended functionality is that if the dialog is
+ * modeless and has a parent the default keybindings (escape = reject(),
+ * enter = accept() etc.) are disabled.
+ *
+ * @author Thomas Tanghus <tanghus@earthling.net>
+ * @version 0.1.1
 */
 class KDialog : public QDialog
 {
@@ -53,7 +55,8 @@ public:
 /**
 * Constructor. Takes the same arguments as QDialog.
 */
-	KDialog(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0);
+	KDialog(QWidget *parent = 0, const char *name = 0, 
+			bool modal = false, WFlags f = 0);
 protected:
 
 /**
@@ -65,7 +68,7 @@ protected:
 struct KWizProtected;
 
 /**
-* KWizardPage holds information about the pages in the wizard. Given as
+ * Information about a single @ref KWizard page.  Passed as
 * argument to @ref KWizard#addPage.
 */
 struct KWizardPage
@@ -77,34 +80,31 @@ struct KWizardPage
 };
 
 /**
-* KWizard is a multi-purpose dialog. It is very useful for:
+* General-purpose multi-page dialog. 
+* 
+* KWizard is very useful for:
 *
-* - Configuration dialogs where the order in which the entries are filled is important.
+* @li Configuration dialogs where the order in which the entries are
+* filled is important.
 *
-* - Tutorials. Just create some HTML-widgets and feed them to a KWizard and your done (almost).
+* @li Tutorials. Just create some HTML-widgets and feed them to a KWizard
+* and your done (almost).
 *
-* - NoteBooks. KWizard is an integrated part of KNoteBook which provides a notebook
-*   dialog similar to the ones in OS/2 Warp 4.
+* @li NoteBooks. KWizard is an integrated part of KNoteBook which provides
+* a notebook dialog similar to the ones in OS/2 Warp 4.
 *
-* - Propably many other things...
+* @li Propably many other things...
 *
 * The dialog contains:
 *
-* - A title at the top of the page.
-*
-* - A separator.
-*
-* - The userprovided page-widget.
-*
-* - A separator.
-*
-* - A label indicating the pagination.
-*
-* - A Previous and a Next button.
-*
-* - Optionally Ok, Cancel and Help buttons.
+* @li A title at the top of the page.
+* @li A separator.
+* @li The userprovided page-liwidget.
+* @li A separator.
+* @li A label indicating the pagination.
+* @li A Previous and a Next button.
+* @li Optional Ok, Cancel and Help buttons.
 * 
-* @short KWizard
 * @author Thomas Tanghus <tanghus@earthling.net>
 * @version 0.2
 */
@@ -142,8 +142,8 @@ public:
 */
         void setPage(int id, QString title);
 /**
-* En/disable a specified page. If a page is disable its content will be grayd out
-* and it will not receive keyboard input.
+* En/disable a specified page. If a page is disable its content will be
+* grayd out and it will not receive keyboard input.
 * @param page The page to en/disable.
 * @param state If 'state' is false the page will be disabled, otherwise it will be enabled.
 * @see KNoteBook#setPageEnabled
@@ -160,8 +160,10 @@ public:
 * Adds a Cancel button to the bottom of the dialog.
 * The text will be a translated version of the string '&Cancel' thereby
 * giving it the shortcut key 'c' if text is null.
-* If any buttons are added a space will be created at the bottom of the dialog
-* to fit the buttons. When clicked the button will emit the @ref cancelclicked signal.
+*
+* If any buttons are added a space will be created at the bottom of the
+* dialog to fit the buttons. When clicked the button will emit the @ref
+* cancelclicked signal.  
 * @param text A user supplied text to write to the button.
 */
         void setCancelButton(const QString &text = QString::null);
@@ -170,27 +172,33 @@ public:
 * Adds a Default button to the bottom of the dialog.
 * The text will be a translated version of the string '&Default' thereby 
 * giving it the shortcut key 'd' if text is null.
-* If any buttons are added a space will be created at the bottom of the dialog
-* to fit the buttons. When clicked the button will emit the @ref defaultclicked signal.
+*
+* If any buttons are added a space will be created at the bottom of the
+* dialog to fit the buttons. When clicked the button will emit the @ref
+* defaultclicked signal.
 * @param text A user supplied text to write to the button.
 */
         void setDefaultButton(const QString& text = QString::null);
 
 /**
-* Adds a Help button to the bottom of the dialog. This button will generate the
-* signal @ref helpclicked where the int is the page to which the help was requested.
-* if text is null, the text will be a translated
-* version of the string '&Help' thereby giving it the shortcut key 'h'.
+* Adds a Help button to the bottom of the dialog. This button will
+* generate the signal @ref helpclicked where the int is the page to
+* which the help was requested.
+*
+* if text is null, the text will be a translated version of the string
+* '&Help' thereby giving it the shortcut key 'h'.
 * @see #getHelpButton
 * @param text A user supplied text to write to the button.
 */
         void setHelpButton(const QString& text = QString::null);
 
 /**
-* Adds an Ok button to the bottom of the dialog. This button will generate the
-* signal @ref okclicked where the int is the page to which the help was requested.
-*  The text will be a translated
-* version of the string '&Ok' thereby giving it the shortcut key 'o' if text is null.
+* Adds an Ok button to the bottom of the dialog. This button will generate
+* the signal @ref okclicked where the int is the page to which the help
+* was requested.
+*
+* The text will be a translated version of the string '&Ok' thereby
+* giving it the shortcut key 'o' if text is null.
 * @see #getOkButton
 * @param text A user supplied text to write to the button.
 */

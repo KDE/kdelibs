@@ -20,52 +20,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1999/04/19 18:28:17  cschlaeg
+ * sizeHint() added; showTab() now also selects the tab; paintEvent updated to
+ * match Qt 2.0 style frame
+ *
  * Revision 1.6  1999/03/01 23:35:19  kulow
  * CVS_SILENT ported to Qt 2.0
- *
- * Revision 1.5.2.2  1999/02/21 20:56:16  kulow
- * more porting to Qt 2.0. It compiles and links. Jucheisassa :)
- *
- * Revision 1.5.2.1  1999/01/30 20:19:20  kulow
- * start porting to Qt2.0 beta
- *
- * Revision 1.5  1998/07/23 08:34:10  garbanzo
- * Repeat after me: private members are bad, private members are bad, private
- * members are the bane of reusable code.
- *
- * Ronald Reagan -- America's favorite placebo.
- *
- * Revision 1.4  1998/06/16 21:23:15  hoss
- * *** empty log message ***
- *
- * Revision 1.3  1997/10/16 11:15:54  torben
- * Kalle: Copyright headers
- * kdoctoolbar removed
- *
- * Revision 1.2  1997/07/24 21:06:08  kalle
- * Kalle:
- * KToolBar upgraded to newtoolbar 0.6
- * KTreeList has rubberbanding now
- * Patches for SGI
- *
- * Revision 1.1.1.1  1997/04/13 14:42:43  cvsuser
- * Source imported
- *
- * Revision 1.1.1.1  1997/04/09 00:28:10  cvsuser
- * Sources imported
- *
- * Revision 1.1  1997/03/15 22:40:57  kalle
- * Initial revision
- *
- * Revision 1.2.2.1  1997/01/07 14:41:57  alex
- * release 0.1
- *
- * Revision 1.2  1997/01/07 13:47:09  alex
- * first working release
- *
- * Revision 1.1.1.1  1997/01/07 13:44:53  alex
- * imported
- *
  */
 
 #ifndef KTABCTL_H
@@ -75,18 +35,21 @@
 #include "qtabbar.h"
 #include "qarray.h"
 
-/// KTabCtl, simple widget for the creation of tabbed window layouts.
-/** KTabCtl is very similar to QTabDialog, with the following differences:
- To avoid confusion, the API is almost identical with QTabDialog.
-  
-  * does not create any button, therefore KTabCtl is not limited to dialog
-	boxes. You can use it whereever you want.
-	 
- * emits the signal tabSelected(int pagenumber) when the user selects one
-   of the tabs. This gives you the chance to update the widget contents
- of a single page. The signal is emitted _before_ the page is shown.
-   Very important, if the contents of some widgets on page <a> depend on
-	 the contents of some other widgets on page <b>.
+/** 
+ * Tabbed dialog with extended features.
+ * KTabCtl is very similar to QTabDialog, with the following differences:
+ * 
+ * @li To avoid confusion, the API is almost identical with QTabDialog.
+ * @li Does not create any buttons, therefore KTabCtl is not limited
+ * to dialog boxes. You can use it whereever you want.
+ * @li emits the signal tabSelected(int pagenumber) when the user
+ * selects one of the tabs. This gives you the chance to update the
+ * widget contents of a single page. The signal is emitted _before_ the
+ * page is shown.  This is very useful if the contents of some widgets
+ * on page A depend on the contents of some other widgets on page B.
+ *
+ * @author Alexander Sanda (alex@darkstar.ping.at)
+ * @version $Id$
 */
 class KTabCtl : public QWidget
 {
