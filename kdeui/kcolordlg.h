@@ -21,9 +21,6 @@
 
 //-----------------------------------------------------------------------------
 
-/**
-* Pushbutton for interactive Hue/Saturation selection.
-*/
 class KHSSelector : public KXYSelector
 {
   Q_OBJECT
@@ -42,9 +39,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-/**
-* Pushbutton for interactive Hue/Saturation selection.
-*/
+
 class KValueSelector : public KSelector
 {
   Q_OBJECT
@@ -77,15 +72,15 @@ public:
 
   void setColor( int colNum, const QColor &col );
   QColor color( int indx )
-	{	return colors[indx]; }
+  {	return colors[indx]; }
   int numCells()
-	{	return numRows() * numCols(); }
+  {	return numRows() * numCols(); }
 	
   int getSelected()
-	{	return selected; }
+  {	return selected; }
 
   signals:
-	void colorSelected( int col );
+  void colorSelected( int col );
 
 protected:
   virtual void paintCell( QPainter *painter, int row, int col );
@@ -119,27 +114,19 @@ private:
 //-----------------------------------------------------------------------------
 
 /// KDE Color Selection dialog
-/** 
-KDE Color Selection dialog.
-
+/** KDE Color Selection dialog
 Features:
 
-<ul>
-<li>Colour selection from a standard system palette.</li>
-<li>Colour selection from a Palette of H vs S and V selectors 
-	(similar to windoze).</li>
-<li>Direct input of HSV or RGB values.</li>
-<li>Saving of custom colors.</li>
-</ul>
+Colour selection from a standard system palette.
+Colour selection from a Palette of H vs S and V selectors (similar to windoze).
+Direct input of HSV or RGB values.
+Saving of custom colors
 
 simplest use:
-
-<pre>
 QColor myColor;
 int result = KColorDialog::getColor( myColor );
-</pre>
 
-*/
+ */
 class KColorDialog : public QDialog
 {
   Q_OBJECT
@@ -158,10 +145,10 @@ public:
   QColor color()	{	return selColor; }
   
   /**
-	 This is probably the function you are looking for.
-	 Just call this to pop up dialog get the selected color.
-	 returns result().
-  */
+	This is probably the function you are looking for.
+	Just call this to pop up dialog get the selected color.
+	returns result().
+	*/
   static int getColor( QColor &theColor );
 
  public slots:
@@ -170,9 +157,9 @@ public:
   signals:
  /// Notify when a color is selected.
  /**
-	connect to this to monitor the color as it as selected if you are
-	not running modal.
- */
+   connect to this to monitor the color as it as selected if you are
+   not running modal.
+   */
  void colorSelected( const QColor &col );
 
  private slots:
@@ -210,27 +197,28 @@ private:
 
 class KColorCombo : public QComboBox
 {
-  Q_OBJECT
+	Q_OBJECT
 public:
-  KColorCombo( QWidget *parent, const char *name = NULL );
+	KColorCombo( QWidget *parent, const char *name = NULL );
 
-  void setColor( const QColor &col );
+	void setColor( const QColor &col );
 
- public slots:
- void slotActivated( int index );
-  void slotHighlighted( int index );
+public slots:
+	void slotActivated( int index );
+	void slotHighlighted( int index );
 
-  signals:
-  void activated( const QColor &col );
-  void highlighted( const QColor &col );
+signals:
+	void activated( const QColor &col );
+	void highlighted( const QColor &col );
 
 protected:
-  virtual void resizeEvent( QResizeEvent *re );
+	virtual void resizeEvent( QResizeEvent *re );
 
 private:
-  void addColors();
-  QColor customColor;
-  QColor color;
+	void addColors();
+	QColor customColor;
+	QColor color;
 };
 
 #endif		// __KCOLORDLG_H__
+
