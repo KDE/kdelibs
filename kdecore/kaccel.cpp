@@ -397,7 +397,7 @@ KAccelAction* KAccel::insert( KStdAccel::StdAccel id,
 		const QObject* pObjSlot, const char* psMethodSlot,
 		bool bConfigurable, bool bEnabled )
 {
-	QString sAction = KStdAccel::action( id );
+	QString sAction = KStdAccel::name( id );
 	if( sAction.isEmpty() )
 		return 0;
 
