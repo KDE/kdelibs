@@ -18,9 +18,11 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <qpopupmenu.h>
+
 #include <kstdaccel.h>
 #include <kcompletion.h>
-
+#include <klocale.h>
 
 KCompletionBase::KCompletionBase()
 {
@@ -30,8 +32,14 @@ KCompletionBase::KCompletionBase()
     // Initialize the pointer to the completion object.
     m_pCompObj = 0;
 
-    // By default do not emit signals.  Should be enabled
-    // through member functions...
+    // Initialize the popup menu
+    m_pCompletionMenu = 0;
+
+    // set completion ID to -1 by default
+    m_iCompletionID = -1;
+
+    // By default do not emit signals.  Should be
+    // enabled through member functions...
     m_bEmitSignals = false;
 
     // By default do not handle rotation & completion
@@ -55,6 +63,8 @@ KCompletionBase::~KCompletionBase()
 {
     if( m_bAutoDelCompObj )
         delete m_pCompObj;
+
+    delete m_pCompletionMenu;
 }
 
 KCompletion* KCompletionBase::completionObject( bool hsig )
@@ -122,4 +132,55 @@ void KCompletionBase::useGlobalSettings()
     m_iCompletionKey = 0;
     m_iRotateUpKey = 0;
     m_iRotateDnKey = 0;
+}
+
+void KCompletionBase::insertCompletionItems( QObject* parent, const char* member )
+{
+    if( parent )
+    {
+        m_pCompletionMenu->clear();
+        m_pCompletionMenu->insertItem( i18n("N&one"), parent, member, 0, KGlobalSettings::CompletionNone );
+        m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionNone, m_iCompletionMode == KGlobalSettings::CompletionNone );
+        m_pCompletionMenu->insertItem( i18n("Ma&nual"), parent, member, 0, KGlobalSettings::CompletionShell );
+        m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionShell, m_iCompletionMode == KGlobalSettings::CompletionShell );
+        m_pCompletionMenu->insertItem( i18n("&Automatic"), parent, member, 0, KGlobalSettings::CompletionAuto );
+        m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionAuto, m_iCompletionMode == KGlobalSettings::CompletionAuto );
+        m_pCompletionMenu->insertItem( i18n("Sem&i-Automatic"), parent, member, 0, KGlobalSettings::CompletionMan );
+        m_pCompletionMenu->setItemChecked( KGlobalSettings::CompletionMan, m_iCompletionMode == KGlobalSettings::CompletionMan );
+        if( m_iCompletionMode != KGlobalSettings::completionMode() )
+        {
+            m_pCompletionMenu->insertSeparator();
+            m_pCompletionMenu->insertItem( i18n("D&efault"), parent, member, 0, 0 );
+        }
+    }
+}
+
+void KCompletionBase::insertCompletionMenu( QObject* receiver, const char* member, QPopupMenu* parent, int index )
+{
+    if( parent != 0 )
+    {
+        parent->insertSeparator( index > 0 ? index - 1 : index );
+        m_iCompletionID = parent->insertItem( i18n("Completion"), m_pCompletionMenu, -1, index );
+        QObject::connect( m_pCompletionMenu, SIGNAL( aboutToShow() ), receiver, member );
+    }
+}
+
+void KCompletionBase::hideModeChanger()
+{
+    if( m_pCompletionMenu != 0 )
+    {
+        delete m_pCompletionMenu;
+        m_pCompletionMenu = 0;
+        m_bShowModeChanger = false;
+        m_iCompletionID = -1;
+    }
+}
+
+void KCompletionBase::showModeChanger()
+{
+    if( m_pCompletionMenu == 0 )
+    {
+        m_pCompletionMenu = new QPopupMenu();
+        m_bShowModeChanger = true;
+    }
 }

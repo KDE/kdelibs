@@ -30,6 +30,7 @@
 #include "kcompletion_private.h"
 
 class KCompletionPrivate;
+class QPopupMenu;
 
 /**
  * This class let's you easily use "auto-completion", "manual-completion" or
@@ -358,10 +359,9 @@ signals:
      */
     void multipleMatches();
 
-    
 protected:
     /**
-     * This method is called after a completion is found and before the 
+     * This method is called after a completion is found and before the
      * matching string is emitted. You can override this method to modify the
      * string that will be emitted.
      * This is necessary e.g. in @ref KURLCompletion, where files with spaces
@@ -373,18 +373,18 @@ protected:
      * @see #postProcessMatches
      */
     virtual void postProcessMatch( QString * /*match*/ ) {}
-    
+
     /**
      * This method is called before a list of all available completions is
      * emitted via @ref matches. You can override this method to modify the
      * list which that will be emitted.
      * Never delete that pointer!
-     * 
+     *
      * Default implementation does nothing.
      * @see #postProcessMatch
      */
     virtual void postProcessMatches( QStringList * /*matches*/ ) {}
-    
+
 private:
     void 		addItemInternal( const QString& );
     QString 		findCompletion( const QString& string );
@@ -698,11 +698,37 @@ public:
     */
     void useGlobalSettings();
 
+    /**
+    * Makes the completion mode changer visible in the context
+    * menu.
+    *
+    * Note that the mode changer item is a sub menu, that allows
+    * the user to select from one of the standard completion modes
+    * described at @ref setCompletionMode. Additionally, if the user
+    * changes the completion mode to something other than the global
+    * setting, a "Default" entry is added at the bottom to allow the
+    * user to revert his/her changes back to the global setting.
+    */
+    void showModeChanger();
+
+    /**
+    * Hides the completion mode changer in the context menu.
+    *
+    */
+    void hideModeChanger();
+
+    /**
+    * Returns true if the mode changer item is visible in
+    * the context menu.
+    *
+    * @return @p true if the mode changer is visible in context menu.
+    */
+    bool isModeChangerVisible() const { return m_bShowModeChanger; }
 
 protected:
 
     /**
-    * Method to be implemented by inheriting objects.
+    * A pure virtual function.
     *
     * This function must provide an implementation for
     * how signals are connected when they are handled
@@ -711,12 +737,56 @@ protected:
     */
     virtual void connectSignals( bool handle ) const = 0;
 
+    /**
+    * Inserts completion mode changers items.
+    *
+    * This is method is implemented as a matter of
+    * convience and for the sake of consistency of in
+    * the appearance of the completion mode changer items.
+    *
+    * Simply invoke this function from your implementation
+    * of the slot supplied to @ref insertCompletionMenu.
+    * See @ref KLineEdit::showCompletionItems or @ref
+    * KComboBox::showCompletionItems for an example of
+    * implementation.
+    *
+    * @param receiver object that receives the activation of completion items.
+    * @param member method invoked when completion items are clicked.
+    */
+    void insertCompletionItems( QObject* receiver, const char* member );
+
+    /**
+    * Adds a completion menu item to the given popup menu.
+    *
+    * This function adds a completion menu item at the
+    * specified index position in the popup menu.  If
+    * index is a negative value, the menu item is inserted
+    * at the end of the parent popup menu.  This function
+    * should simply be invoked before showing your popup
+    * menu.
+    *
+    * See @ref KLineEdit::aboutToShowCompletionItems or @ref
+    * KComboBox::aboutToShowCompletionItems for an example
+    * implementation.
+    *
+    * @param receiver object that receives the activation of completion items.
+    * @param member method invoked when completion sub-menu is about to be shown.
+    * @param parent if not NULL, add the completion option as its sub-menu.
+    * @param index if non-negative, add the compleiton option at the specified position.
+    */
+    void insertCompletionMenu( QObject* receiver, const char* member, QPopupMenu* parent, int index = -1 );
+
+
     // Stores the completion key locally
     int m_iCompletionKey;
     // Stores the Rotate up key locally
     int m_iRotateUpKey;
     // Stores the Rotate down key locally
     int m_iRotateDnKey;
+    // Stores the completion menu id - Use it
+    // to determine whether the completion menu
+    // has already been inserted or not!!
+    int m_iCompletionID;
 
     // Flag that determined whether the completion object
     // should be deleted when this object is destroyed.
@@ -726,12 +796,17 @@ protected:
     bool m_bHandleSignals;
     // Determines whether this widget fires rotation signals
     bool m_bEmitSignals;
+    // Determines if completion mode changer
+    // should be visible.
+    bool m_bShowModeChanger;
 
     // Stores the completion mode locally.
     KGlobalSettings::Completion m_iCompletionMode;
     // Pointer to Completion object.
     KCompletion* m_pCompObj;
-
+    // Pointer to a completion popupmenu.
+    QPopupMenu* m_pCompletionMenu;
+    // Pointer for future binary compatabilty.
     KCompletionPrivate *d;
 };
 
