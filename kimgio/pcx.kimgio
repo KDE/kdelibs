@@ -6,6 +6,7 @@ Name[be]=Малюнак PCX
 Name[es]=Archivo de imagen PCX
 Name[hu]=PCX kép
 Name[sv]=PCX-bildfil
+Name[tr]=PCX Resim Dosyası
 Read=true
 Write=true
 Suffices=pcx,PCX

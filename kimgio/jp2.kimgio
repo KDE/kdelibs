@@ -9,6 +9,7 @@ Name[fa]=تصاویر JPEG 2000
 Name[hu]=JPEG 2000 képek
 Name[pt_BR]=Figuras JPEG 2000
 Name[sv]=Jpeg 2000-bilder
+Name[tr]=JPEG 2000-Resimleri
 Read=true
 Write=false
 Suffices=jp2,JP2
