@@ -102,7 +102,7 @@ public:
     virtual void calcMinMaxWidth();
     virtual short getMinWidth() const { return minWidth; }
     virtual short getMaxWidth() const { return maxWidth; }
-    virtual const HTMLFont *getFont() { return font; }
+    virtual const khtml::Font *getFont() { return font; }
     virtual bool mouseEvent( int x, int y, int button,
 			     DOM::NodeImpl::MouseEventType,
 			     int _tx, int _ty, DOMString &url);
@@ -113,7 +113,7 @@ public:
 protected:
     short minWidth;
     short maxWidth;
-    const HTMLFont *font;
+    const khtml::Font *font;
 };
 
 }; //namespace

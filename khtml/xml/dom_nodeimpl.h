@@ -29,8 +29,11 @@
 
 class QPainter;
 class CSSStyle;
-class HTMLFont;
 class KHTMLWidget;
+
+namespace khtml {
+  class Font;
+};
 
 namespace DOM {
 
@@ -196,13 +199,13 @@ public:
     virtual short getMinWidth() const { return 0; }
     virtual short getMaxWidth() const { return 0; }
 
-    virtual VAlign vAlign() { return VNone; }
-    virtual HAlign hAlign() { return HNone; }
+    virtual khtml::VAlign vAlign() { return khtml::VNone; }
+    virtual khtml::HAlign hAlign() { return khtml::HNone; }
     
     virtual int vSpace() { return 0; }
     virtual int hSpace() { return 0; }
 
-    virtual const HTMLFont *getFont() { return 0; }
+    virtual const khtml::Font *getFont() { return 0; }
 
     enum MouseEventType {
 	MousePress,

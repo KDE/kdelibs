@@ -25,18 +25,20 @@
 // $Id$
 
 #include "khtmlfont.h"
+using namespace khtml;
+
 #include <string.h>
 #include <qstring.h>
 #include <kapp.h>
 #include <klocale.h>
 #include "kglobal.h"
 
-template class QList<HTMLFont>;
+template class QList<khtml::Font>;
 
-HTMLFontManager* pFontManager = 0;
+FontManager* khtml::pFontManager = 0;
 
-HTMLFont::HTMLFont( QString _family, int _size, const int fontSizes[7],
-                    int _weight, bool _italic, QFont::CharSet _charset)
+Font::Font( QString _family, int _size, const int fontSizes[7],
+	    int _weight, bool _italic, QFont::CharSet _charset)
     : font( _family, fontSizes[ _size ], _weight, _italic )
 {
     textCol = Qt::black;
@@ -54,14 +56,14 @@ HTMLFont::HTMLFont( QString _family, int _size, const int fontSizes[7],
     VOffset = 0;
 }
 
-HTMLFontManager::HTMLFontManager()
+FontManager::FontManager()
 {
     list.setAutoDelete( TRUE );
 }
 
-const HTMLFont *HTMLFontManager::getFont( const HTMLFont &f )
+const Font *FontManager::getFont( const Font &f )
 {
-    HTMLFont *cf;
+    Font *cf;
 
     for ( cf = list.first(); cf; cf = list.next() )
     {
@@ -69,7 +71,7 @@ const HTMLFont *HTMLFontManager::getFont( const HTMLFont &f )
 	    return cf;
     }
 
-    cf = new HTMLFont( f );
+    cf = new Font( f );
 
     list.append( cf );
 

@@ -35,6 +35,7 @@
 #include <stdio.h>
 
 using namespace DOM;
+using namespace khtml;
 
 
 CharacterDataImpl::CharacterDataImpl(DocumentImpl *doc) : NodeWParentImpl(doc)

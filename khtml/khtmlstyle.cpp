@@ -116,7 +116,7 @@ CSSStyleSheet::addStyle(CSSStyle */*currentStyle*/, const QChar */*CSSString*/)
 
 
 // ------------------------------------------------------------------------
-const HTMLFont *getFont(CSSStyle *currentStyle)
+const Font *khtml::getFont(CSSStyle *currentStyle)
 {
 
     int fontsize = currentStyle->font.size;
@@ -127,7 +127,7 @@ const HTMLFont *getFont(CSSStyle *currentStyle)
 
     currentStyle->font.size = fontsize;
 
-    HTMLFont f( currentStyle->font.family,
+    khtml::Font f( currentStyle->font.family,
                 fontsize,
                 currentStyle->font.fixed ? pSettings->fixedFontSizes : pSettings->fontSizes,
                 currentStyle->font.weight / 10,
@@ -141,7 +141,7 @@ const HTMLFont *getFont(CSSStyle *currentStyle)
        f.setVOffset( currentStyle->text.valignOffset );
     }
 
-    const HTMLFont *fp = pFontManager->getFont( f );
+    const khtml::Font *fp = khtml::pFontManager->getFont( f );
 
     currentStyle->font.fp = fp;
 

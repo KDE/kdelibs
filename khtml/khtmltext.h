@@ -67,5 +67,4 @@ public:
 };
 
 };
-using namespace khtml;
 #endif

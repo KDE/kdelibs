@@ -22,9 +22,9 @@
  * $Id$
  */
 
+#include "java/kjavaappletwidget.h"
 #include "html_objectimpl.h"
 #include "dom_nodeimpl.h"
-#include "java/kjavaappletwidget.h"
 #include "dom_string.h"
 #include "htmlhashes.h"
 #include "htmlhashes.h"

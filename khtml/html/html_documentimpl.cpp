@@ -65,7 +65,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     height = 0;
 
     if (!pFontManager)
-	pFontManager = new HTMLFontManager();
+	pFontManager = new khtml::FontManager();
     if (!pSettings)
 	pSettings = new khtml::Settings();
 
@@ -87,7 +87,7 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v, KHTMLCache *c)
     bodyElement = 0;
 
     if (!pFontManager)
-	pFontManager = new HTMLFontManager();
+	pFontManager = new khtml::FontManager();
     if (!pSettings)
 	pSettings = new khtml::Settings(*(view->settings()));
 }

@@ -48,9 +48,9 @@ public:
     const QChar &operator [] (int pos)
 	{ return *(s+pos); }
 
-    Length toLength() const;
+    khtml::Length toLength() const;
     int toInt() const;
-    QList<Length> *toLengthList() const;
+    QList<khtml::Length> *toLengthList() const;
     
     uint l;
     QChar *s;

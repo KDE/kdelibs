@@ -38,16 +38,19 @@
 #define MAXFONTSIZES 7
 #endif
 
+namespace khtml
+{
+
 /**
  * @internal
  * This class represents the fonr used during html rendering.
  */
-class HTMLFont
+class Font
 {
 public:
-	HTMLFont( QString _family, int _size, const int fontSizes[MAXFONTSIZES],
+	Font( QString _family, int _size, const int fontSizes[MAXFONTSIZES],
 	          int _weight=QFont::Normal, bool _italic=FALSE, QFont::CharSet charset=QFont::Latin1 );
-	HTMLFont( const HTMLFont &f );
+	Font( const Font &f );
 
 	void setWeight( int w )
 		{	font.setWeight( w ); }
@@ -86,14 +89,14 @@ public:
 	const int size () const
 		{	return fsize; }
 
-	const HTMLFont &operator=( const HTMLFont &f );
-	bool operator==( const HTMLFont &f );
+	const Font &operator=( const Font &f );
+	bool operator==( const Font &f );
 	operator QFont() const {
 	    if(dirty)
 	    {
 		// I hate hacks like this...
 		KGlobal::charsets()->setQFont((QFont &)font, chset);
-		((HTMLFont *)this)->dirty = false;
+		((Font *)this)->dirty = false;
 	    }
 	    return font; 
 	}
@@ -108,7 +111,7 @@ private:
 	int    VOffset;
 };
 
-inline HTMLFont::HTMLFont( const HTMLFont& f ) : font( f.font )
+inline khtml::Font::Font( const khtml::Font& f ) : font( f.font )
 {
 	textCol = f.textCol;
 	fsize = f.fsize;
@@ -117,7 +120,7 @@ inline HTMLFont::HTMLFont( const HTMLFont& f ) : font( f.font )
 	VOffset = f.VOffset;
 }
 
-inline const HTMLFont& HTMLFont::operator=( const HTMLFont& f )
+inline const khtml::Font& Font::operator=( const khtml::Font& f )
 {
 	font = f.font;
 	textCol = f.textCol;
@@ -129,7 +132,7 @@ inline const HTMLFont& HTMLFont::operator=( const HTMLFont& f )
 	return *this;
 }
 
-inline bool HTMLFont::operator==( const HTMLFont& f )
+inline bool khtml::Font::operator==( const khtml::Font& f )
 {
 	return ( font.family() == f.font.family() &&
 		font.weight() == f.font.weight() &&
@@ -151,20 +154,22 @@ inline bool HTMLFont::operator==( const HTMLFont& f )
  * @internal
  * manages a list of already loaded @ref HTMLFont's.
  */
-class HTMLFontManager
+class FontManager
 {
 public:
-	HTMLFontManager();
+	FontManager();
 
-	const HTMLFont *getFont( const HTMLFont& f );
+	const khtml::Font *getFont( const khtml::Font& f );
 
 private:
-	QList<HTMLFont> list;
+	QList<khtml::Font> list;
 };
 
-extern HTMLFontManager* pFontManager;
+extern FontManager* pFontManager;
 
 //-----------------------------------------------------------------------------
+
+}; // namespace
 
 #endif	// __HTMLFONT_H__
 

@@ -105,6 +105,5 @@ namespace khtml
 
 
 };
-using namespace khtml;
 
 #endif

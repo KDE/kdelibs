@@ -54,10 +54,10 @@ class CSSStyleText;
 class CSSStyleBox;
 class CSSStyleList;
 
-const HTMLFont *getFont(CSSStyle *currentStyle);
 
 namespace khtml
 {
+  const khtml::Font *getFont(CSSStyle *currentStyle);
   void setNamedColor(QColor &color, const QString name);
 };
 
@@ -119,7 +119,7 @@ public:
     enum weightEnum { Normal=400, Bold=700 };
     int     weight; // 100 - 900, ( <= 500 : Normal, > 500 : Bold )
     int     size;
-    const HTMLFont *fp;
+    const khtml::Font *fp;
 };
 
 /**

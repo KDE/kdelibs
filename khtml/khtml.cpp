@@ -37,14 +37,17 @@
 #include <kurl.h>
 #include <kapp.h>
 #include <kdebug.h>
-#include "khtml.h"
-#include "khtmldata.h"
-#include "htmlhashes.h"
 
 #include <kmessagebox.h>
 #include <klocale.h>
 #include <kimgio.h>
 #include <kstddirs.h>
+
+#include <X11/Xlib.h>
+
+#include "khtml.h"
+#include "khtmldata.h"
+#include "htmlhashes.h"
 
 #include "decoder.h"
 #include "html_documentimpl.h"
@@ -59,7 +62,6 @@
 
 #include "kjs.h"
 
-#include <X11/Xlib.h>
 
 #define SCROLLBARWIDTH 16
 

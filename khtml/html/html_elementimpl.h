@@ -54,7 +54,7 @@ public:
 
     virtual void setStyle(CSSStyle *style);
     virtual CSSStyle *style() { return _style; };
-    virtual const HTMLFont *getFont() { return ::getFont(_style); }
+    virtual const khtml::Font *getFont() { return khtml::getFont(_style); }
 
     DOMString getAttribute(int attr_id)
 	{
