@@ -53,7 +53,7 @@ void KURL::decodeURL( QString& _url ) {
     int new_length = 0;
 
     // make a copy of the old one
-    char *new_url = new char[ old_length ];
+    char *new_url = new char[ old_length + 1];
         
     for (int i = 0; i < old_length; i++) 
 	{
@@ -114,7 +114,7 @@ void KURL::parse( const char * _url )
 
   if ( _url[0] == '/' ) {
       encodeURL(url);
-      url.sprintf( "file:%s/", url.data() );
+      url.sprintf( "file:%s", url.data() );
   };
   
   // We need a : somewhere to determine the protocol
@@ -215,6 +215,8 @@ void KURL::parse( const char * _url )
     {
       path_part = url.mid( pos2, pos3 - pos2 );
       ref_part = url.mid( pos3 + 1, url.length() );
+      if (path_part.right(1) == "/") // no filename and a reference
+	malformed = true;
     }
   }
   else
