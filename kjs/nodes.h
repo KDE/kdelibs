@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -74,10 +75,6 @@ namespace KJS {
     virtual void processVarDecls(KJScriptImp */*script*/, Context */*context*/) {}
     int lineNo() const { return line; }
     virtual Node *copy() const = 0;
-#ifdef KJS_DEBUGGER
-    static bool setBreakpoint(Node *firstNode, int id, int line, bool set);
-    virtual bool setBreakpoint(int, int, bool) { return false; }
-#endif
   protected:
     KJSO throwError(ErrorType e, const char *msg);
     int line;
@@ -88,19 +85,15 @@ namespace KJS {
 
   class StatementNode : public Node {
   public:
-#ifdef KJS_DEBUGGER
     StatementNode() : l0(-1), l1(-1), sid(-1), breakPoint(false) { }
-    void setLoc(int line0, int line1);
+    StatementNode(const StatementNode &other);
+    void setLoc(int line0, int line1, int sourceId);
     int firstLine() const { return l0; }
     int lastLine() const { return l1; }
     int sourceId() const { return sid; }
-    bool hitStatement();
-    bool abortStatement();
-    virtual bool setBreakpoint(int id, int line, bool set);
-#endif
-    StatementNode() {}
-    StatementNode(const StatementNode &other);
-    virtual Completion execute(KJScriptImp *script, Context *context) = 0;
+    bool hitStatement(KJScriptImp *script, Context *context);
+    bool abortStatement(KJScriptImp *script, Context *context);
+    virtual Completion execute(KJScriptImp *script, Context *context);
     void pushLabel(const UString *id) {
       if (id) ls.push(*id);
     }
@@ -108,11 +101,9 @@ namespace KJS {
     LabelStack ls;
   private:
     KJSO evaluate(KJScriptImp */*script*/, Context */*context*/) { return Undefined(); }
-#ifdef KJS_DEBUGGER
     int l0, l1;
     int sid;
     bool breakPoint;
-#endif
   };
 
   class NullNode : public Node {
@@ -341,10 +332,6 @@ namespace KJS {
     virtual ~FunctionCallNode();
     virtual Node *copy() const;
     KJSO evaluate(KJScriptImp *script, Context *context);
-#ifdef KJS_DEBUGGER
-    void steppingInto(bool in);
-    Debugger::Mode previousMode;
-#endif
   private:
     Node *expr;
     ArgumentsNode *args;

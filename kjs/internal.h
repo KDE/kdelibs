@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -28,6 +29,7 @@
 #include "kjs.h"
 #include "object.h"
 #include "function.h"
+#include "debugger.h"
 
 #define I18N_NOOP(s) s
 
@@ -41,9 +43,7 @@ namespace KJS {
   class Node;
   class FunctionBodyNode;
   class ProgramNode;
-#ifdef KJS_DEBUGGER
   class Debugger;
-#endif
 
   class UndefinedImp : public Imp {
   public:
@@ -220,11 +220,9 @@ namespace KJS {
    */
   class Context {
   public:
-    Context(CodeType type = GlobalCode, Context *callingContext = 0L,
+    Context(CodeType type = GlobalCode, Context *_callingContext = 0L,
 	       FunctionImp *func = 0L, const List *args = 0L, Imp *thisV = 0L);
     virtual ~Context();
-    static Context *current();
-    static void setCurrent(Context *c);
     const List *pScopeChain() const { return scopeChain; }
     void pushScope(const KJSO &s);
     void popScope();
@@ -234,6 +232,7 @@ namespace KJS {
     KJSO thisValue() const { return thisVal; }
     void setThisValue(const KJSO &t) { thisVal = t; }
     LabelStack *seenLabels() { return &ls; }
+    Context *callingContext() { return callingCon; }
   private:
     LabelStack ls;
     KJSO thisVal;
@@ -241,6 +240,7 @@ namespace KJS {
     KJSO variable;
     List *scopeChain;
     CodeType codeType;
+    Context *callingCon;
   };
 
   class DeclaredFunctionImp : public ConstructorImp {
@@ -253,8 +253,10 @@ namespace KJS {
     CodeType codeType() const { return FunctionCode; }
     List *scopeChain() const { return scopes; }
     virtual void processVarDecls();
-  private:
+    virtual const TypeInfo* typeInfo() const { return &info; }
+    static const TypeInfo info;
     FunctionBodyNode *body;
+  private:
     List *scopes;
   };
 
@@ -284,9 +286,23 @@ namespace KJS {
 
   class Parser {
   public:
-    static ProgramNode *parse(const UChar *code, unsigned int length,
+    static ProgramNode *parse(const UChar *code, unsigned int length, int sourceId = -1,
 			      int *errType = 0, int *errLine = 0, UString *errMsg = 0);
     static ProgramNode *progNode;
+    static int sid;
+  };
+
+  class DebuggerImp {
+    friend class Debugger;
+  public:
+    DebuggerImp(Debugger *_dbg);
+    ~DebuggerImp();
+    bool hitStatement(KJScriptImp *script, Context *context, int sid, int line0, int line1);
+
+  protected:
+    int dmode;
+    Debugger *dbg;
+    Context *stepFromContext;
   };
 
   class KJScriptImp {
@@ -299,26 +315,21 @@ namespace KJS {
     KJScriptImp(KJScript *s, KJSO global = KJSO());
     ~KJScriptImp();
     void mark();
+    // ### remove current
     static KJScriptImp *current() { return curr; }
+    static void setCurrent(KJScriptImp *s) { curr = s; }
     static void setException(Imp *e);
     static void setException(const char *msg);
-    static bool hadException();
+    bool hadException() { return (exMsg != 0); }
     static KJSO exception();
     static void clearException();
 
     Context *context() const { return con; }
     void setContext(Context *c) { con = c; }
 
-#ifdef KJS_DEBUGGER
-    /**
-     * Attach debugger d to this engine. If there already was another instance
-     * attached it will be detached.
-     */
-    void attachDebugger(Debugger *d);
     Debugger *debugger() const { return dbg; }
-    int sourceId() const { return sid; }
-    bool setBreakpoint(int id, int line, bool set);
-#endif
+    void setDebugger(Debugger *debugger);
+    static int nextSourceId() { return nextSid++; }
   private:
     /**
      * Initialize global object and context. For internal use only.
@@ -350,6 +361,9 @@ namespace KJS {
 
     KJSO objectPrototype() const;
     KJSO functionPrototype() const;
+    void abortExecution();
+    void setDebuggingEnabled(bool enabled) { debugEnabled = enabled; }
+    bool debuggingEnabled() const { return debugEnabled; }
 
   private:
     static KJScriptImp *curr, *hook;
@@ -361,21 +375,16 @@ namespace KJS {
     KJSO glob;
     int errType, errLine;
     UString errMsg;
-#ifdef KJS_DEBUGGER
     Debugger *dbg;
-    int sid;
-#endif
     const char *exMsg;
     Imp *exVal;
     Imp *retVal;
     int recursion;
-  };
 
-  inline bool KJScriptImp::hadException()
-  {
-    assert(curr);
-    return curr->exMsg;
-  }
+    static int nextSid;
+    bool aborted;
+    bool debugEnabled;
+  };
 
   /**
    * @short Struct used to return the property names of an object

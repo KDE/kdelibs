@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2000 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -72,7 +73,7 @@ FunctionImp::~FunctionImp()
 
 KJSO FunctionImp::thisValue() const
 {
-  return KJSO(Context::current()->thisValue());
+  return KJSO(KJScriptImp::current()->context()->thisValue());
 }
 
 void FunctionImp::addParameter(const UString &n)
@@ -89,10 +90,14 @@ void FunctionImp::setLength(int l)
   put("length", Number(l), ReadOnly|DontDelete|DontEnum);
 }
 
-// ECMA 10.1.3
+// ECMA 10.1.3q
 void FunctionImp::processParameters(const List *args)
 {
-  KJSO variable = Context::current()->variableObject();
+  // ### initialize script & context in parameters
+  KJScriptImp *script = KJScriptImp::current();
+  Context *context = script->context();
+
+  KJSO variable = context->variableObject();
 
   assert(args);
 
@@ -124,19 +129,19 @@ void FunctionImp::processParameters(const List *args)
       printInfo("setting argument", (*args)[i]);
   }
 #endif
-#ifdef KJS_DEBUGGER
-  if (KJScriptImp::current()->debugger()) {
-    UString argStr;
-    for (int i = 0; i < args->size(); i++) {
-      if (i > 0)
-	argStr += ", ";
-      Imp *a = (*args)[i].imp();
-      argStr += a->toString().value() + " : " +	UString(a->typeInfo()->name);
+
+  if (script->debugger()) {
+    int sid = -1;
+    int lineno = -1;
+
+    if (typeInfo()->type == DeclaredFunctionType) {
+      sid = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
+      lineno = static_cast<DeclaredFunctionImp*>(this)->body->firstLine();
     }
-    UString n = name().isEmpty() ? UString( "(internal)" ) : name();
-    KJScriptImp::current()->debugger()->callEvent(n, argStr);
+
+    ExecutionContext ec(context);
+    script->debugger()->callEvent(script->scr,sid,lineno,&ec,this,args);
   }
-#endif
 }
 
 void FunctionImp::pushArgs(const KJSO &args)
@@ -167,17 +172,18 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 
 KJSO FunctionImp::executeCall(Imp *thisV, const List *args, const List *extraScope)
 {
+  KJScriptImp *script = KJScriptImp::current(); // ### get from parameters
+
   bool dummyList = false;
   if (!args) {
     args = new List();
     dummyList = true;
   }
 
-  KJScriptImp *curr = KJScriptImp::current();
-  Context *save = curr->context();
+  Context *save = script->context();
 
   Context *ctx = new Context(codeType(), save, this, args, thisV);
-  curr->setContext(ctx);
+  script->setContext(ctx);
 
   int numScopes = 0;
   if (extraScope) {
@@ -204,7 +210,7 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args, const List *extraSco
     ctx->popScope();
 
   delete ctx;
-  curr->setContext(save);
+  script->setContext(save);
 
 #ifdef KJS_VERBOSE
   if (comp.complType() == Throw)
@@ -214,10 +220,20 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args, const List *extraSco
   else
     fprintf(stderr, "returning: undefined\n");
 #endif
-#ifdef KJS_DEBUGGER
-  if (KJScriptImp::current()->debugger())
-    KJScriptImp::current()->debugger()->returnEvent();
-#endif
+
+  if (script->debugger()) {
+    int sid = -1;
+    int lineno = -1;
+
+    if (typeInfo()->type == DeclaredFunctionType) {
+      sid = static_cast<DeclaredFunctionImp*>(this)->body->sourceId();
+      lineno = static_cast<DeclaredFunctionImp*>(this)->body->lastLine();
+    }
+
+    Context *context = KJScriptImp::current()->context(); // ### get from parameter
+    ExecutionContext ec(context);
+    script->debugger()->returnEvent(script->scr,sid,lineno,&ec,this);
+  }
 
   if (comp.complType() == Throw)
     return comp.value();
@@ -353,7 +369,7 @@ Completion Constructor::execute(const List &)
 
 Object Constructor::construct(const List &args)
 {
-  assert(rep && rep->type() == ConstructorType);
+  assert(rep && (rep->type() == ConstructorType || rep->type() == DeclaredFunctionType));
   return ((ConstructorImp*)rep)->construct(args);
 }
 
@@ -368,5 +384,5 @@ Constructor Constructor::dynamicCast(const KJSO &obj)
 
 KJSO Function::thisValue() const
 {
-  return KJSO(Context::current()->thisValue());
+  return KJSO(KJScriptImp::current()->context()->thisValue());
 }

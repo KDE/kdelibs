@@ -33,9 +33,8 @@ namespace KJS {
   class Imp;
   class List;
   class KJScriptImp;
-#ifdef KJS_DEBUGGER
   class Debugger;
-#endif
+  class ExecutionContext;
 };
 
 /**
@@ -54,6 +53,8 @@ class KJScript {
   friend class KJS::Context;
   friend class KJS::Lexer;
   friend class KJS::Global;
+  friend class KJS::Debugger;
+  friend class KJS::ExecutionContext;
 public:
   /**
    * Create a new ECMAScript interpreter. You can later ask it to interpret
@@ -172,15 +173,28 @@ public:
    * you should provide them with a toString() method that returns a string.
    */
   void enableDebug();
+  /**
+   * Enables debugging. This means that a Debugger object that references
+   * this script will receive notification of execution related events
+   * such as statements and function calls.
+   * Note: this is not the same as @ref enableDebug()
+   *
+   * Debugging adds a certain overhead to execution, so should be avoid when
+   * not needed.
+   *
+   * @param enabled Whether or not debugging should be enabled
+   */
+  void setDebuggingEnabled(bool enabled);
+  /**
+   * Returns true if debugging is enabled, otherwise false
+   */
+  bool debuggingEnabled() const;
+
 private:
   KJS::KJScriptImp *rep;
   // not implemented
   KJScript(const KJScript&);
   KJScript operator=(const KJScript&);
-
-#ifdef KJS_DEBUGGER
-  friend class KJS::Debugger;
-#endif
 };
 
 #endif

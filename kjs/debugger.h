@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,9 +21,11 @@
 #ifndef _KJSDEBUGGER_H_
 #define _KJSDEBUGGER_H_
 
-#include "internal.h"
+class KJScript;
 
 namespace KJS {
+
+  class DebuggerImp;
 
   //
   // NOTE: this interface is not ready, yet. Do not use unless you
@@ -30,21 +33,36 @@ namespace KJS {
   // before the final version is released.
   //
 
-#ifdef KJS_DEBUGGER
+  class Context;
+  class UString;
+  class FunctionImp;
+  class List;
+  class KJSO;
+
+  class ExecutionContext {
+    friend class DebuggerImp;
+    friend class FunctionImp;
+  public:
+    KJSO resolveVar(const UString &varName) const;
+    KJSO executeCall(KJScript *script, KJSO &func, const KJSO &thisV, const List *args) const;
+    KJSO thisValue() const;
+  private:
+    Context *rep;
+    ExecutionContext(Context *c);
+  };
+
   class Debugger {
     friend class KJScriptImp;
     friend class StatementNode;
     friend class DeclaredFunctionImp;
     friend class FunctionImp;
+    friend class DebuggerImp;
+    friend class FunctionObject;
   public:
-    /**
-     * Available modes of the debugger.
-     */
-    enum Mode { Disabled = 0, Next, Step, Continue, Stop };
     /**
      * Construct a debugger and attach it to the scripting engine s.
      */
-    Debugger(KJScript *s);
+    Debugger();
     /**
      * Destruct the debugger and detach from the scripting engine we
      * might have been attached to.
@@ -53,97 +71,124 @@ namespace KJS {
     /**
      * Attaches the debugger to specified scripting engine.
      */
-    void attach(KJScript *e);
+    void attach(KJScript *script);
     /**
-     * Returns the engine the interpreter is currently attached to. Null
-     * if there isn't any.
+     * Detach the debugger from a scripting engine (or all if script == 0)
      */
-    KJScript* engine() const;
-    /**
-     * Detach the debugger from any scripting engine.
-     */
-    void detach();
-    /**
-     * Set debugger into specified mode. This will influence further behaviour
-     * if execution of the programm is started or continued.
-     */
-    virtual void setMode(Mode m);
-    /**
-     * Returns the current operation mode.
-     */
-    Mode mode() const;
-    /**
-     * Returns the line number the debugger currently has stopped at.
-     * -1 if the debugger is not in a break status.
-     */
-    int lineNumber() const { return l; }
-    /**
-     * Returns the source id the debugger currently has stopped at.
-     * -1 if the debugger is not in a break status.
-     */
-    int sourceId() const { return sid; }
-    /**
-     * Sets a breakpoint in the first statement where line lies in between
-     * the statements range. Returns true if sucessfull, false if no
-     * matching statement could be found.
-     */
-    bool setBreakpoint(int id, int line);
-    bool deleteBreakpoint(int id, int line);
-    void clearAllBreakpoints(int id=-1);
+    void detach(KJScript *script);
     /**
      * Returns the value of ident out of the current context in string form
      */
-    UString varInfo(const UString &ident);
+    //    UString varInfo(const UString &ident);
     /**
      * Set variable ident to value. Returns true if successful, false if
      * the specified variable doesn't exist or isn't writable.
      */
-    bool setVar(const UString &ident, const KJSO &value);
-
+    //    bool setVar(const UString &ident, const KJSO &value);
   protected:
     /**
-     * Invoked in case a breakpoint or the next statement is reached in step
-     * mode. The return value decides whether execution will continue. True
-     * denotes continuation, false an abortion, respectively.
+     * Called to notify the debugger that some javascript source code has
+     * been parsed. For calls to KJScript::evaluate(), this will be called
+     * with the supplied source code before any other code is parsed.
+     * Other situations in which this may be called include creation of a
+     * function using the Function() constructor, or the eval() function.
+     *
+     * @param script The interpreter which parsed the script
+     * @param sourceId The ID of the source code (corresponds to the
+     * sourceId supplied in other functions such as atLine()
+     * @param source The source code that was parsed
+     * @param errorLine The line number at which parsing encountered an
+     * error, or -1 if the source code was valid and parsed succesfully
+     * @return true if execution should be continue, false if it should
+     * be aborted
+     */
+    virtual bool sourceParsed(KJScript *script, int sourceId,
+			      const UString &source, int errorLine);
+    /**
+     * Called when all functions/programs associated with a particular
+     * sourceId have been deleted. After this function has been called for
+     * a particular sourceId, that sourceId will not be used again.
+     * @return true if execution should be continue, false if it should
+     * be aborted
+     */
+    virtual bool sourceUnused(KJScript *script, int sourceId);
+    /**
+     * Called when an error occurs during script execution.
+     *
+     * @param script The interpreter which is running the script
+     * @param sourceId The ID of the source code being executed
+     * @param lineno The line at which the error occurred
+     * @param errorType The type of error
+     * @param errorMessage A string containing a description of the error
+     * @return true if execution should be continue, false if it should
+     * be aborted
+     */
+    virtual bool error(KJScript *script, int sourceId, int lineno,
+		       int errorType, const UString &errorMessage);
+    /**
+     * Called when a line of the script is reached (before it is executed)
      *
      * The default implementation does nothing. Overload this method if
-     * you want to process this event.
-     */
-    virtual bool stopEvent();
-    /**
-     * Returns an integer that will be assigned to the code passed
-     * next to one of the KJScript::evaluate() methods. It's basically
-     * a counter to will only be reset to 0 on KJScript::clear().
+     * you want to process this event. After returning, execution of the
+     * script will continue.
      *
-     * This information is useful in case you evaluate multiple blocks of
-     * code containing some function declarations. Keep a map of source id/
-     * code pairs, query sourceId() in case of a stopEvent() and update
-     * your debugger window with the matching source code.
+     * @param script The interpreter which is running the script
+     * @param sourceId The ID of the source code being executed
+     * @param lineno The line that is about to be executed
+     * @param execContext The execution context within which the current
+     * line is being executed
+     * @return true if execution should be continue, false if it should
+     * be aborted
      */
-    int freeSourceId() const;
+    virtual bool atLine(KJScript *script, int sourceId, int lineno,
+			const ExecutionContext *execContext);
     /**
-     * Invoked on each function call. Use together with @ref returnEvent
+     * Called on each function call. Use together with @ref #returnEvent
      * if you want to keep track of the call stack.
+     *
+     * The default implementation does nothing. Overload this method if
+     * you want to process this event. After returning, execution of the
+     * script will continue.
+     *
+     * @param script The interpreter which is running the script
+     * @param sourceId The ID of the source code being executed
+     * @param lineno The line that is about to be executed
+     * @param execContext The execution context within which the current
+     * @param function The function being called
+     * @param args The arguments that were passed to the function
+     * line is being executed
+     * @return true if execution should be continue, false if it should
+     * be aborted
      */
-    virtual void callEvent(const UString &fn = UString::null,
-				    const UString &s = UString::null);
+    virtual bool callEvent(KJScript *script, int sourceId, int lineno,
+			   const ExecutionContext *execContext,
+			   FunctionImp *function, const List *args);
     /**
-     * Invoked on each function exit.
+     * Called on each function exit. The function being returned from is that
+     * which was supplied in the last callEvent().
+     *
+     * The default implementation does nothing. Overload this method if
+     * you want to process this event. After returning, execution of the
+     * script will continue.
+     *
+     * @param script The interpreter which is running the script
+     * @param sourceId The ID of the source code being executed
+     * @param lineno The line that is about to be executed
+     * @param execContext The execution context within which the current
+     * @param function The function being called
+     * line is being executed
+     * @return true if execution should be continue, false if it should
+     * be aborted
      */
-    virtual void returnEvent();
+    virtual bool returnEvent(KJScript *script, int sourceId, int lineno,
+			   const ExecutionContext *execContext,
+			   FunctionImp *function);
 
   private:
-    void reset();
-    bool hit(int line, bool breakPoint);
-    void setSourceId(int i) { sid = i; }
-    UString objInfo(const KJSO &obj) const;
+    //    UString objInfo(const KJSO &obj) const;
 
-    KJScript *eng;
-    Mode dmode;
-    int l;
-    int sid;
+    DebuggerImp *rep;
   };
-#endif
 
 };
 

@@ -37,8 +37,8 @@ int main(int argc, char **argv)
   KJS::KJSO global(new KJS::ObjectImp(KJS::ObjectClass));
 
   // create interpreter
-  KJScript *kjs = new KJScript(global);
-//  KJScript *kjs = new KJScript();
+//  KJScript *kjs = new KJScript(global);
+  KJScript *kjs = new KJScript();
 
   // add debug() function
   kjs->enableDebug();

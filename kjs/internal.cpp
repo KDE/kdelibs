@@ -356,11 +356,12 @@ void LabelStack::clear()
 // ------------------------------ Context --------------------------------------
 
 // ECMA 10.2
-Context::Context(CodeType type, Context *callingContext,
+Context::Context(CodeType type, Context *_callingContext,
 		 FunctionImp *func, const List *args, Imp *thisV)
 {
   KJSO glob = KJScriptImp::current()->globalObject();
   codeType = type;
+  callingCon = _callingContext;
 
   // create and initialize activation object (ECMA 10.1.6)
   if (type == FunctionCode || type == AnonymousCode || type == HostCode) {
@@ -374,10 +375,10 @@ Context::Context(CodeType type, Context *callingContext,
   // ECMA 10.2
   switch(type) {
     case EvalCode:
-      if (callingContext) {
-	scopeChain = callingContext->copyOfChain();
-	variable = callingContext->variableObject();
-	thisVal = callingContext->thisValue();
+      if (callingCon) {
+	scopeChain = callingCon->copyOfChain();
+	variable = callingCon->variableObject();
+	thisVal = callingCon->thisValue();
 	break;
       } // else same as GlobalCode
     case GlobalCode:
@@ -427,16 +428,6 @@ Context::~Context()
   delete scopeChain;
 }
 
-Context *Context::current()
-{
-  return KJScriptImp::curr ? KJScriptImp::curr->con : 0L;
-}
-
-void Context::setCurrent(Context *c)
-{
-  KJScriptImp::current()->con = c;
-}
-
 void Context::pushScope(const KJSO &s)
 {
   scopeChain->prepend(s);
@@ -453,6 +444,9 @@ List* Context::copyOfChain()
 }
 
 // ------------------------------ DeclaredFunctionImp --------------------------
+
+const TypeInfo DeclaredFunctionImp::info = { "Function", DeclaredFunctionType,
+					 &ConstructorImp::info, 0, 0 };
 
 DeclaredFunctionImp::DeclaredFunctionImp(const UString &n,
 					 FunctionBodyNode *b, const List *sc)
@@ -471,23 +465,19 @@ Completion DeclaredFunctionImp::execute(const List &)
 {
  /* TODO */
 
-#ifdef KJS_DEBUGGER
   Debugger *dbg = KJScriptImp::current()->debugger();
-  int oldSourceId = -1;
+  //  int oldSourceId = -1;
   if (dbg) {
-    oldSourceId = dbg->sourceId();
-    dbg->setSourceId(body->sourceId());
+    // ###    oldSourceId = dbg->sourceId();
+    //    dbg->setSourceId(body->sourceId());
   }
-#endif
 
   // ### use correct script & context
-  Completion result = body->execute(KJScriptImp::current(),Context::current());
+  Completion result = body->execute(KJScriptImp::current(),KJScriptImp::current()->context());
 
-#ifdef KJS_DEBUGGER
   if (dbg) {
-    dbg->setSourceId(oldSourceId);
+    // ###    dbg->setSourceId(oldSourceId);
   }
-#endif
 
   if (result.complType() == Throw || result.complType() == ReturnValue)
       return result;
@@ -516,7 +506,7 @@ Object DeclaredFunctionImp::construct(const List &args)
 void DeclaredFunctionImp::processVarDecls()
 {
   // ### use given script & context
-  body->processVarDecls(KJScriptImp::current(),Context::current());
+  body->processVarDecls(KJScriptImp::current(),KJScriptImp::current()->context());
 }
 
 // ------------------------------ AnonymousFunction ----------------------------
@@ -576,17 +566,26 @@ void ActivationImp::cleanup()
 // ------------------------------ Parser ---------------------------------------
 
 ProgramNode *Parser::progNode = 0;
+int Parser::sid = 0;
 
-ProgramNode *Parser::parse(const UChar *code, unsigned int length,
+ProgramNode *Parser::parse(const UChar *code, unsigned int length, int sourceId,
 			   int *errType, int *errLine, UString *errMsg)
 {
+  if (errType)
+    *errType = -1;
+  if (errLine)
+    *errLine = -1;
+  if (errMsg)
+    *errMsg = 0;
 
   assert(Lexer::curr());
   Lexer::curr()->setCode(code, length);
   progNode = 0;
+  sid = sourceId;
   int parseError = kjsyyparse();
   ProgramNode *prog = progNode;
   progNode = 0;
+  sid = -1;
 
   //  Node::setFirstNode(firstNode());
   //  setFirstNode(Node::firstNode());
@@ -611,20 +610,42 @@ ProgramNode *Parser::parse(const UChar *code, unsigned int length,
   return prog;
 }
 
+// ------------------------------ DebuggerImp ----------------------------------
+
+DebuggerImp::DebuggerImp(Debugger *_dbg)
+{
+  //  dmode = Debugger::Disabled;
+  dbg = _dbg;
+}
+
+DebuggerImp::~DebuggerImp()
+{
+}
+
+// called from the scripting engine each time a statement node is hit.
+bool DebuggerImp::hitStatement(KJScriptImp *script, Context *context,
+			       int sid, int line0, int line1)
+{
+  // ### parse second line to debugger
+  ExecutionContext ec(context);
+  dbg->atLine(script->scr,sid,line0,&ec);
+
+  return true;
+}
+
 // ------------------------------ KJScriptImp ----------------------------------
 
 KJScriptImp* KJScriptImp::curr = 0L;
 KJScriptImp* KJScriptImp::hook = 0L;
 int          KJScriptImp::instances = 0;
 int          KJScriptImp::running = 0;
+int          KJScriptImp::nextSid = 1;
 
 KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
   : scr(s),
     initialized(false),
     glob(0L),
-#ifdef KJS_DEBUGGER
     dbg(0L),
-#endif
     retVal(0L)
 {
   instances++;
@@ -635,15 +656,12 @@ KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
   glob = global;
   clearException();
   lex = new Lexer();
+  debugEnabled = false;
 }
 
 KJScriptImp::~KJScriptImp()
 {
   KJScriptImp::curr = this;
-
-#ifdef KJS_DEBUGGER
-  attachDebugger(0L);
-#endif
 
   clear();
 
@@ -714,21 +732,20 @@ void KJScriptImp::init()
       hook = next = prev = this;
     }
 
-    if (!glob.imp())
+    if (!glob.imp()) {
       glob = new GlobalImp();
-    initGlobal(glob.imp());
+      initGlobal(glob.imp());
+      }
     con = new Context();
     recursion = 0;
     errMsg = "";
     initialized = true;
-#ifdef KJS_DEBUGGER
-    sid = -1;
-#endif
   }
 }
 
 void KJScriptImp::clear()
 {
+
   if ( recursion ) {
 #ifndef NDEBUG
       fprintf(stderr, "KJS: ignoring clear() while running\n");
@@ -743,6 +760,7 @@ void KJScriptImp::clear()
     retVal = 0L;
 
     delete con; con = 0L;
+    glob = 0;
 
     Collector::collect();
 
@@ -753,14 +771,12 @@ void KJScriptImp::clear()
     if (hook == this)
       hook = 0L;
 
-#ifdef KJS_DEBUGGER
-    sid = -1;
-#endif
-
     initialized = false;
   }
+
   if (old != this)
       KJScriptImp::curr = old;
+
 }
 
 bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &thisV,
@@ -768,11 +784,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
 {
   init();
 
-#ifdef KJS_DEBUGGER
-  sid++;
-  if (debugger())
-    debugger()->setSourceId(sid);
-#endif
+  //  if (debugger())
+  // ###    debugger()->setSourceId(sid);
   if (recursion > 7) {
     fprintf(stderr, "KJS: breaking out of recursion\n");
     return true;
@@ -782,8 +795,13 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
 #endif
   }
 
+  int sid = nextSourceId();
 
-  ProgramNode *progNode = Parser::parse(code,length,&errType,&errLine,&errMsg);
+  ProgramNode *progNode = Parser::parse(code,length,sid,&errType,&errLine,&errMsg);
+  if (dbg) {
+    UString parsedSource = UString(code,length);
+    dbg->sourceParsed(scr,sid,parsedSource,errLine);
+  }
   if (!progNode)
     return false;
 
@@ -803,7 +821,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
   running++;
   recursion++;
   // ### use correct script & context
-  Completion res = progNode->execute(this,Context::current());
+  Completion res = progNode->execute(this,con);
   recursion--;
   running--;
 
@@ -813,10 +831,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &t
     errLine = err.get("line").toInt32();
     errMsg = err.get("name").toString().value() + ". ";
     errMsg += err.get("message").toString().value();
-#ifdef KJS_DEBUGGER
-    if (dbg)
-      dbg->setSourceId(err.get("sid").toInt32());
-#endif
+    //###    if (dbg)
+    //      dbg->setSourceId(err.get("sid").toInt32());
     clearException();
   } else {
     errType = 0;
@@ -853,7 +869,7 @@ bool KJScriptImp::call(const KJSO &scope, const UString &func, const List &args)
       return false;
   }
   KJSO v = callScope.get(func);
-  if (!v.isA(ConstructorType)) {
+  if (!v.derivedFrom(ConstructorType)) {
 #ifndef NDEBUG
       fprintf(stderr, "KJS: %s is not a function. call() failed.\n", func.ascii());
 #endif
@@ -912,6 +928,11 @@ void KJScriptImp::clearException()
   assert(curr);
   curr->exMsg = 0L;
   curr->exVal = 0L;
+}
+
+void KJScriptImp::setDebugger(Debugger *debugger)
+{
+  dbg = debugger;
 }
 
 void KJScriptImp::initGlobal(Imp *global)
@@ -1001,30 +1022,6 @@ KJSO KJScriptImp::functionPrototype() const
 {
   return glob.get("[[Function.prototype]]");
 }
-
-#ifdef KJS_DEBUGGER
-void KJScriptImp::attachDebugger(Debugger *d)
-{
-  static bool detaching = false;
-  if (detaching) // break circular detaching
-    return;
-
-  if (dbg) {
-    detaching = true;
-    dbg->detach();
-    detaching = false;
-  }
-
-  dbg = d;
-}
-
-bool KJScriptImp::setBreakpoint(int id, int line, bool set)
-{
-  init();
-  return Node::setBreakpoint(firstNode(), id, line, set);
-}
-
-#endif
 
 // ------------------------------ PropList -------------------------------------
 

@@ -201,7 +201,7 @@ Completion GlobalFunc::execute(const List &args)
 	return Completion(ReturnValue, Error::create(SyntaxError));
 
       // ### use correct script & context
-      Completion c = progNode->execute(KJScriptImp::current(),Context::current());
+      Completion c = progNode->execute(KJScriptImp::current(),KJScriptImp::current()->context());
       delete progNode;
       if (c.complType() == ReturnValue)
 	  return c;

@@ -26,17 +26,13 @@
 #include "kjs.h"
 #include "nodes.h"
 #include "lexer.h"
+#include "internal.h"
 
 /* default values for bison */
 #define YYDEBUG 0
 #define YYMAXDEPTH 0
-#ifdef KJS_DEBUGGER
 #define YYERROR_VERBOSE
-#define DBG(l, s, e) { l->setLoc(s.first_line, e.last_line); } // location
-#else
-#undef YYLSP_NEEDED
-#define DBG(l, s, e)
-#endif
+#define DBG(l, s, e) { l->setLoc(s.first_line, e.last_line, Parser::sid); } // location
 
 extern int yylex();
 int yyerror (const char *);
@@ -596,8 +592,10 @@ FormalParameterList:
 ;
 
 FunctionBody:
-    '{' '}'  /* TODO: spec ??? */  { $$ = new FunctionBodyNode(0L); }
-  | '{' SourceElements '}'         { $$ = new FunctionBodyNode($2); }
+    '{' '}'  /* TODO: spec ??? */  { $$ = new FunctionBodyNode(0L);
+	                             DBG($$, @1, @2);}
+  | '{' SourceElements '}'         { $$ = new FunctionBodyNode($2);
+	                             DBG($$, @1, @3);}
 ;
 
 Program:

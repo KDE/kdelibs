@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -35,13 +36,8 @@
 
 using namespace KJS;
 
-#ifdef KJS_DEBUGGER
-#define KJS_BREAKPOINT if (!hitStatement()) return Completion(Normal);
-#define KJS_ABORTPOINT if (abortStatement()) return Completion(Normal);
-#else
-#define KJS_BREAKPOINT
-#define KJS_ABORTPOINT
-#endif
+#define KJS_BREAKPOINT if (!hitStatement(script,context)) return Completion(Normal);
+#define KJS_ABORTPOINT if (abortStatement(script,context)) return Completion(Normal);
 
 // ------------------------------ Node -----------------------------------------
 
@@ -69,71 +65,47 @@ KJSO Node::throwError(ErrorType e, const char *msg)
 
 // ------------------------------ StatementNode --------------------------------
 
-#ifdef KJS_DEBUGGER
-void StatementNode::setLoc(int line0, int line1)
-{
-    l0 = line0;
-    l1 = line1;
-    sid = KJScriptImp::current()->sourceId();
-}
-
-bool StatementNode::hitStatement()
-{
-  if (KJScriptImp::current()->debugger())
-    return KJScriptImp::current()->debugger()->hit(firstLine(), breakPoint);
-  else
-    return true;
-}
-
-// return true if the debugger wants us to stop at this point
-bool StatementNode::abortStatement()
-{
-  if (KJScriptImp::current()->debugger() &&
-      KJScriptImp::current()->debugger()->mode() == Debugger::Stop)
-      return true;
-
-  return false;
-}
-
-bool Node::setBreakpoint(Node *firstNode, int id, int line, bool set)
-{
-  while (firstNode) {
-    if (firstNode->setBreakpoint(id, line, set) && line >= 0) // line<0 for all
-      return true;
-    firstNode = firstNode->next;
-  }
-  return false;
-}
-
-/**
- * Try to set or delete a breakpoint depending on the value of set.
- * The call will return true if successful, i.e. if line is inside
- * of the statement's range. Additionally, a breakpoint had to
- * be set already if you tried to delete with set=false.
- */
-bool StatementNode::setBreakpoint(int id, int line, bool set)
-{
-  // in our source unit and line range ?
-  if (id != sid || ((line < l0 || line > l1) && line >= 0))
-    return false;
-
-  if (!set && !breakPoint)
-    return false;
-
-  breakPoint = set;
-  return true;
-}
-#endif
-
 StatementNode::StatementNode(const StatementNode &other) : Node(other)
 {
   ls = other.ls; // ### write copy-constructor for ls
-#ifdef KJS_DEBUGGER
   l0 = other.l0;
   l1 = other.l1;
   sid = other.sid;
   breakPoint = other.breakPoint;
-#endif
+}
+
+void StatementNode::setLoc(int line0, int line1, int sourceId)
+{
+    l0 = line0;
+    l1 = line1;
+    sid = sourceId;
+}
+
+bool StatementNode::hitStatement(KJScriptImp *script, Context *context)
+{
+  if (script->debugger())
+    return script->debugger()->rep->hitStatement(script,context,sid,l0,l1);
+  else
+    return script;
+}
+
+// return true if the debugger wants us to stop at this point
+bool StatementNode::abortStatement(KJScriptImp *script, Context */*context*/)
+{
+  // ###
+  /*
+  if (script->debugger() &&
+      script->debugger()->mode() == Debugger::Stop)
+      return true;
+  */
+
+  return false;
+}
+
+Completion StatementNode::execute(KJScriptImp */*script*/, Context */*context*/)
+{
+  // subclasses should always override execute9)
+  assert(false);
 }
 
 // ------------------------------ NullNode -------------------------------------
@@ -771,38 +743,12 @@ KJSO FunctionCallNode::evaluate(KJScriptImp *script, Context *context)
   if (o.isA(ActivationType))
     o = Null();
 
-#ifdef KJS_DEBUGGER
-  steppingInto(true);
-#endif
-
   KJSO result = v.executeCall(o, argList);
-
-#ifdef KJS_DEBUGGER
-  steppingInto(false);
-#endif
 
   delete argList;
 
   return result;
 }
-
-#ifdef KJS_DEBUGGER
-void FunctionCallNode::steppingInto(bool in)
-{
-  Debugger *dbg = KJScriptImp::current()->debugger();
-  if (!dbg)
-    return;
-  if (in) {
-    // before entering function. Don't step inside if 'Next' is chosen.
-    previousMode = dbg->mode();
-    if (previousMode == Debugger::Next)
-      dbg->setMode(Debugger::Continue);
-  } else {
-    // restore mode after leaving function
-    dbg->setMode(previousMode);
-  }
-}
-#endif
 
 // ------------------------------ PostfixNode ----------------------------------
 
@@ -1582,7 +1528,7 @@ Completion StatListNode::execute(KJScriptImp *script, Context *context)
   if (!list) {
     Completion c = statement->execute(script,context);
     KJS_ABORTPOINT
-    if (KJScriptImp::hadException()) {
+    if (script->hadException()) {
       KJSO ex = KJScriptImp::exception();
       KJScriptImp::clearException();
       return Completion(Throw, ex);
@@ -1596,7 +1542,7 @@ Completion StatListNode::execute(KJScriptImp *script, Context *context)
     return l;
   Completion e = statement->execute(script,context);
   KJS_ABORTPOINT;
-  if (KJScriptImp::hadException()) {
+  if (script->hadException()) {
     KJSO ex = KJScriptImp::exception();
     KJScriptImp::clearException();
     return Completion(Throw, ex);
@@ -1926,7 +1872,7 @@ Completion DoWhileNode::execute(KJScriptImp *script, Context *context)
 
   do {
     // bail out on error
-    if (KJScriptImp::hadException())
+    if (script->hadException())
       return Completion(Throw, KJScriptImp::exception());
 
     c = statement->execute(script,context);
@@ -1985,7 +1931,7 @@ Completion WhileNode::execute(KJScriptImp *script, Context *context)
     b = bv.toBoolean();
 
     // bail out on error
-    if (KJScriptImp::hadException())
+    if (script->hadException())
       return Completion(Throw, KJScriptImp::exception());
 
     if (!b.value())
@@ -2055,7 +2001,7 @@ Completion ForNode::execute(KJScriptImp *script, Context *context)
 	return Completion(Normal, cval);
     }
     // bail out on error
-    if (KJScriptImp::hadException())
+    if (script->hadException())
       return Completion(Throw, KJScriptImp::exception());
 
     Completion c = stat->execute(script,context);
@@ -2177,7 +2123,7 @@ Node *ContinueNode::copy() const
 }
 
 // ECMA 12.7
-Completion ContinueNode::execute(KJScriptImp */*script*/, Context *context)
+Completion ContinueNode::execute(KJScriptImp *script, Context *context)
 {
   KJS_BREAKPOINT;
 
@@ -2201,7 +2147,7 @@ Node *BreakNode::copy() const
 }
 
 // ECMA 12.8
-Completion BreakNode::execute(KJScriptImp */*script*/, Context *context)
+Completion BreakNode::execute(KJScriptImp *script, Context *context)
 {
   KJS_BREAKPOINT;
 
@@ -2765,9 +2711,7 @@ KJSO ParameterNode::evaluate(KJScriptImp */*script*/, Context */*context*/)
 FunctionBodyNode::FunctionBodyNode(SourceElementsNode *s)
   : source(s)
 {
-#ifdef KJS_DEBUGGER
-  setLoc(-1, -1);
-#endif
+  setLoc(-1, -1, -1);
 }
 
 FunctionBodyNode::FunctionBodyNode(const FunctionBodyNode &other) : StatementNode(other)
@@ -2947,20 +2891,20 @@ Node *SourceElementsNode::copy() const
 // ECMA 14
 Completion SourceElementsNode::execute(KJScriptImp *script, Context *context)
 {
-  if (KJScriptImp::hadException())
+  if (script->hadException())
     return Completion(Throw, KJScriptImp::exception());
 
   if (!elements)
     return element->execute(script,context);
 
   Completion c1 = elements->execute(script,context);
-  if (KJScriptImp::hadException())
+  if (script->hadException())
     return Completion(Throw, KJScriptImp::exception());
   if (c1.complType() != Normal)
     return c1;
 
   Completion c2 = element->execute(script,context);
-  if (KJScriptImp::hadException())
+  if (script->hadException())
     return Completion(Throw, KJScriptImp::exception());
 
   return c2;

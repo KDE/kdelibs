@@ -57,11 +57,9 @@ ErrorObject::ErrorObject(const Object& proto, ErrorType t,
   put("name", String(n));
   put("message", String(m));
   put("line", Number(l));
-#ifdef KJS_DEBUGGER
-  Debugger *dbg = KJScriptImp::current()->debugger();
-  if (dbg)
-    put("sid", Number(dbg->sourceId()));
-#endif
+  //   Debugger *dbg = KJScriptImp::current()->debugger();
+  //  if (dbg)
+  // ###    put("sid", Number(dbg->sourceId()));
 }
 
 // ECMA 15.9.2

@@ -22,6 +22,7 @@
 #include "lexer.h"
 #include "nodes.h"
 #include "error_object.h"
+#include "debugger.h"
 
 using namespace KJS;
 
@@ -55,7 +56,14 @@ Object FunctionObject::construct(const List &args)
     body = args[argsSize-1].toString().value();
   }
 
-  ProgramNode *progNode = Parser::parse(body.data(), body.size());
+  KJScriptImp *script = KJScriptImp::current(); // ### get from parameter
+  int sid = script->nextSourceId();
+  int errType;
+  int errLine;
+  UString errMsg;
+  ProgramNode *progNode = Parser::parse(body.data(),body.size(),sid,&errType,&errLine,&errMsg);
+  if (script->debugger())
+    script->debugger()->sourceParsed(script->scr,sid,body,errLine);
   if (!progNode) {
     return ErrorObject::create(SyntaxError,
 			       I18N_NOOP("Syntax error in function body"), -1);

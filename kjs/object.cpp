@@ -1007,14 +1007,15 @@ const TypeInfo HostImp::info = { "HostObject", HostType, 0, 0, 0 };
 
 Object Error::createObject(ErrorType e, const char *m, int l)
 {
-  Context *context = Context::current();
+  Context *context = KJScriptImp::current()->context();
   if (!context)
     return Object();
 
   Object err = ErrorObject::create(e, m, l);
 
-  if (!KJScriptImp::hadException())
-    KJScriptImp::setException(err.imp());
+  KJScriptImp *script = KJScriptImp::current(); // ###
+  if (!script->hadException())
+    script->setException(err.imp());
 
   const struct ErrorStruct {
       ErrorType e;

@@ -169,3 +169,14 @@ void KJScript::enableDebug()
   rep->init();
   KJScriptImp::current()->globalObject().put("debug", Function(new DebugPrint()));
 }
+
+void KJScript::setDebuggingEnabled(bool enabled)
+{
+  rep->setDebuggingEnabled(enabled);
+}
+
+bool KJScript::debuggingEnabled() const
+{
+  return rep->debuggingEnabled();
+}
+

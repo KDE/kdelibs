@@ -1,6 +1,7 @@
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -17,8 +18,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifdef KJS_DEBUGGER
-
 #include "debugger.h"
 #include "kjs.h"
 #include "internal.h"
@@ -26,105 +25,101 @@
 
 using namespace KJS;
 
-Debugger::Debugger(KJScript *engine)
-  : eng(0L),
-    sid(-1)
+KJSO ExecutionContext::resolveVar(const UString &/*varName*/) const
 {
-  attach(engine);
+  // ###
+  return KJSO();
+}
+
+KJSO ExecutionContext::executeCall(KJScript *script, KJSO &func, const KJSO &thisV, const List *args) const
+{
+  KJScriptImp *oldCurrent = KJScriptImp::current(); // ### hack
+  KJScriptImp::setCurrent(script->rep);
+  Context *oldContext = script->rep->context(); // ### hack
+  script->rep->setContext(rep);
+
+  KJSO ret = func.executeCall(thisV,args);
+
+  script->rep->setContext(oldContext);
+  KJScriptImp::setCurrent(oldCurrent);
+  return ret;
+}
+
+KJSO ExecutionContext::thisValue() const
+{
+  return rep->thisValue();
+}
+
+ExecutionContext::ExecutionContext(Context *c)
+{
+  rep = c;
+}
+
+Debugger::Debugger()
+{
+  rep = new DebuggerImp(this);
 }
 
 Debugger::~Debugger()
 {
-  detach();
+  delete rep;
 }
 
 void Debugger::attach(KJScript *e)
 {
-  dmode = Disabled;
-  if (e) {
-    if (!eng || e->rep != eng->rep) {
-      eng = e;
-      eng->rep->attachDebugger(this);
-    }
-  } else {
-    eng = 0L;
-  }
-  reset();
+  e->rep->setDebugger(this);
 }
 
-KJScript *Debugger::engine() const
+void Debugger::detach(KJScript *script)
 {
-  return eng;
+  // ### take care of script == 0 situation
+  if (script->rep->debugger() == this)
+    script->rep->setDebugger(0);
 }
 
-void Debugger::detach()
-{
-  reset();
-  if (!eng)
-    return;
-  eng->rep->attachDebugger(0L);
-  eng = 0L;
-}
-
-void Debugger::setMode(Mode m)
-{
-  dmode = m;
-}
-
-Debugger::Mode Debugger::mode() const
-{
-  return dmode;
-}
-
-// supposed to be overriden by the user
-bool Debugger::stopEvent()
+bool Debugger::sourceParsed(KJScript */*script*/, int /*sourceId*/,
+			    const UString &/*source*/, int /*errorLine*/)
 {
   return true;
 }
 
-void Debugger::callEvent(const UString &, const UString &)
+bool Debugger::sourceUnused(KJScript */*script*/, int /*sourceId*/)
 {
+  return true;
 }
 
-void Debugger::returnEvent()
+bool Debugger::error(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
+		     int /*errorType*/, const UString &/*errorMessage*/)
 {
+  return true;
 }
 
-void Debugger::reset()
+bool Debugger::atLine(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
+		      const ExecutionContext */*execContext*/)
 {
-  l = -1;
+  return true;
 }
 
-int Debugger::freeSourceId() const
+bool Debugger::callEvent(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
+			 const ExecutionContext */*execContext*/,
+			 FunctionImp */*function*/, const List */*args*/)
 {
-  return eng ? eng->rep->sourceId()+1 : -1;
+  return true;
 }
 
-bool Debugger::setBreakpoint(int id, int line)
+bool Debugger::returnEvent(KJScript */*script*/, int /*sourceId*/, int /*lineno*/,
+			   const ExecutionContext */*execContext*/,
+			   FunctionImp */*function*/)
 {
-  if (!eng)
-    return false;
-  return eng->rep->setBreakpoint(id, line, true);
+  return true;
 }
 
-bool Debugger::deleteBreakpoint(int id, int line)
-{
-  if (!eng)
-    return false;
-  return eng->rep->setBreakpoint(id, line, false);
-}
-
-void Debugger::clearAllBreakpoints(int id)
-{
-  if (!eng)
-    return;
-  eng->rep->setBreakpoint(id, -1, false);
-}
-
+/*
 UString Debugger::varInfo(const UString &ident)
 {
-  if (!eng)
-    return UString();
+  // ###
+  //  if (!eng)
+  //    return UString();
 
   int dot = ident.find('.');
   if (dot < 0)
@@ -133,9 +128,9 @@ UString Debugger::varInfo(const UString &ident)
   KJSO obj;
   // resolve base
   if (sub == "this") {
-      obj = Context::current()->thisValue();
+      obj = KJScriptImp::current()->context()->thisValue();
   } else {
-      const List *chain = Context::current()->pScopeChain();
+      const List *chain = KJScriptImp::current()->context()->pScopeChain();
       ListIterator scope = chain->begin();
       while (scope != chain->end()) {
 	  if (scope->hasProperty(ident)) {
@@ -165,6 +160,7 @@ UString Debugger::varInfo(const UString &ident)
 // called by varInfo() and recursively by itself on each properties
 UString Debugger::objInfo(const KJSO &obj) const
 {
+  // ###
   const char *cnames[] = { "Undefined", "Array", "String", "Boolean",
 			   "Number", "Object", "Date", "RegExp",
 			   "Error", "Function" };
@@ -194,9 +190,10 @@ UString Debugger::objInfo(const KJSO &obj) const
 
 bool Debugger::setVar(const UString &ident, const KJSO &value)
 {
-  if (!eng)
-    return false;
-  const List *chain = Context::current()->pScopeChain();
+  // ###
+  //  if (!eng)
+  //    return false;
+  const List *chain = KJScriptImp::current()->context()->pScopeChain();
   ListIterator scope = chain->begin();
   while (scope != chain->end()) {
     if (scope->hasProperty(ident)) {
@@ -210,20 +207,4 @@ bool Debugger::setVar(const UString &ident, const KJSO &value)
   // didn't find variable
   return false;
 }
-
-// called from the scripting engine each time a statement node is hit.
-bool Debugger::hit(int line, bool breakPoint)
-{
-  l = line;
-  if (!eng)
-    return true;
-
-  if (!breakPoint && ( mode() == Continue || mode() == Disabled ) )
-      return true;
-
-  bool ret = stopEvent();
-  eng->init();	// in case somebody used a different interpreter meanwhile
-  return ret;
-}
-
-#endif
+*/
