@@ -139,12 +139,16 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
   QFontMetrics fm = paint->fontMetrics();
   QPixmap* pix = 0L;
   int beg, end, x;
+  QPen pen, oldPen;
 
   // p->fillRect(0, 0, cellWidth(col), cellHeight(row), bg);
   if (marked)
   {
     paint->fillRect(0, 0, iwidth, parent->cellHeight(row), 
 		     parent->highlightColor);
+    pen.setColor(kapp->selectTextColor);
+    oldPen = paint->pen();
+    paint->setPen(pen);
   }
 
   if (!string.isEmpty()) 
@@ -195,8 +199,11 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
     break;
   }
 
-  if (marked) 
+  if (marked)
+  {
     paint->fillRect(iwidth-6, 0, iwidth, 128, parent->highlightColor);
+    paint->setPen(oldPen);
+  }
   else
     paint->eraseRect(iwidth-6, 0, iwidth, 128);
 }
@@ -239,7 +246,7 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   sepChar   = '\n';
   labelHeight = fm.height() + 4;
   columnPadding = fm.height() / 2;
-  highlightColor = g.mid();
+  highlightColor = kapp->selectColor; //was: g.mid();
   mResizeCol = FALSE;
   mSortCol   = -1;
   numColumns = columns;
