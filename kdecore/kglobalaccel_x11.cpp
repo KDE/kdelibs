@@ -23,6 +23,9 @@ const int XKeyRelease = KeyRelease;
 #undef KeyPress
 #endif
 
+// this is the flag in a keypress event's state variable which indicates mode_switch (AltGr).
+#define MODE_SWITCH 0x2000
+
 static bool g_bGrabFailed;
 
 extern "C" {
@@ -38,9 +41,6 @@ extern "C" {
 // g_keyModMaskXAccel
 //	mask of modifiers which can be used in shortcuts
 //	(meta, alt, ctrl, shift)
-// g_keyModMaskXAlwaysOff
-//	mask of modifiers which should never bo on.  This is the inverse
-//	of those that we know of.
 // g_keyModMaskXOnOrOff
 //	mask of modifiers where we don't care whether they are on or off
 //	(caps lock, num lock, scroll lock)
@@ -160,7 +160,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	if( !g_bGrabFailed ) {
 		CodeMod codemod;
 		codemod.code = keyCodeX;
-		codemod.mod = keyModX;
+		codemod.mod = key.mod() & (g_keyModMaskXAccel | MODE_SWITCH);
 		if( bGrab )
 			m_rgCodeModToAction.insert( codemod, pAction );
 		else
@@ -198,7 +198,7 @@ void KGlobalAccelPrivate::x11MappingNotify()
 
 bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 {
-	 // do not change this line unless you really really know what you do (Matthias)
+	// do not change this line unless you really really know what you are doing (Matthias)
 	if ( !QWidget::keyboardGrabber() && !QApplication::activePopupWidget() )
 	    XUngrabKeyboard( qt_xdisplay(), pEvent->xkey.time );
 
@@ -207,7 +207,7 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 
 	CodeMod codemod;
 	codemod.code = pEvent->xkey.keycode;
-	codemod.mod = pEvent->xkey.state & g_keyModMaskXAccel;
+	codemod.mod = pEvent->xkey.state & (g_keyModMaskXAccel | MODE_SWITCH);
 
 	KKeyNative keyNative( pEvent );
 	KKey key = keyNative;

@@ -433,6 +433,8 @@ QString Sym::toString() const         { return toString( true ); }
 
 uint Sym::getModsRequired() const
 {
+	uint mod = 0;
+
 	// FIXME: This might not be true on all keyboard layouts!
 	if( m_sym == XK_Sys_Req ) return KKey::ALT;
 	if( m_sym == XK_Break ) return KKey::CTRL;
@@ -444,12 +446,22 @@ uint Sym::getModsRequired() const
 	}
 
 	uchar code = XKeysymToKeycode( qt_xdisplay(), m_sym );
-	if( !code
-	    || m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 0 )
-	    || m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 2 ) )
-		return 0;
-	else
-		return KKey::SHIFT;
+	if( code ) {
+		// need to check index 0 before the others, so that a null-mod
+		//  can take precedence over the others, in case the modified
+		//  key produces the same symbol.
+		if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 0 ) )
+			;
+		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 1 ) )
+			mod = KKey::SHIFT;
+		// TODO: document the 0x2000 mask which indicates mode_switch.
+		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 2 ) )
+			mod = 0x2000;
+		else if( m_sym == XKeycodeToKeysym( qt_xdisplay(), code, 3 ) )
+			mod = KKey::SHIFT | 0x2000;
+	}
+
+	return mod;
 }
 
 uint Sym::getSymVariation() const
@@ -564,6 +576,9 @@ bool modToModX( uint mod, uint& modX )
 			modX |= g_rgModInfo[i].modX;
 		}
 	}
+	// TODO: document 0x2000 flag
+	if( mod & 0x2000 )
+	  modX |= 0x2000;
 	return true;
 }
 
