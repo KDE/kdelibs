@@ -141,7 +141,7 @@ protected:
   KProtocolManager();
 
 private:
-  void scanConfig( const QString& _dir, bool _islocal );
+  void scanConfig( const QString& _dir );
 
   struct Protocol
   {

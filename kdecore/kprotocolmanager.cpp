@@ -21,10 +21,10 @@ KProtocolManager::KProtocolManager()
 
   QStringList list = KGlobal::dirs()->findDirs("config", "protocols");
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++)
-    scanConfig( *it , true);
+    scanConfig( *it );
 }
 
-void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
+void KProtocolManager::scanConfig( const QString& _dir )
 {
   QDir dir( _dir );
   if (!dir.exists())
@@ -42,10 +42,10 @@ void KProtocolManager::scanConfig( const QString& _dir, bool _islocal )
   
     Protocol p;
     QString exec = config.readEntry( "exec" );
-//    if ( _islocal )
-//      p.executable = KApplication::localkdedir() + "/" + exec;
-//    else
-      p.executable = locate("exe", exec);
+    if (!exec.isEmpty())
+	p.executable = locate("exe", exec);
+    else 
+	p.executable = "";
     p.isSourceProtocol = config.readBoolEntry( "source", TRUE );
     p.supportsReading = config.readBoolEntry( "reading", FALSE );
     p.supportsWriting = config.readBoolEntry( "writing", FALSE );
