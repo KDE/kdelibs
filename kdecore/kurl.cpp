@@ -39,10 +39,19 @@ void KURL::encodeURL( QString& _url ) {
      
     for (int i = 0; i < old_length; i++) 
     {
-       // 'unsave' and 'reserved' characters
-       // according to RFC 1738,
-       // 2.2. URL Character Encoding Issues (pp. 3-4)
-	if ( strchr("<>#@\"&%$:,;?={}|^~[]\'`\\", _url[i]) ) 
+        static char *safe = "$-._!*(),"; /* RFC 1738 */
+
+        char t = _url[i];
+
+        if ( (( t >= 'A') && ( t <= 'Z')) ||
+             (( t >= 'a') && ( t <= 'z')) ||
+             (( t >= '0') && ( t <= '9')) ||
+             (strchr(safe, t))
+           )
+	{
+	    new_url[ new_length++ ] = _url[i];
+	}
+	else
 	{
 	    new_url[ new_length++ ] = '%';
 
@@ -55,10 +64,6 @@ void KURL::encodeURL( QString& _url ) {
 	    new_url[ new_length++ ] = c;
 	    
 	} 
-	else
-	{
-	    new_url[ new_length++ ] = _url[i];
-	}
     }
 
     new_url[new_length]=0;
