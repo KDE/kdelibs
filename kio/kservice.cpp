@@ -161,7 +161,7 @@ KService::init( KDesktopFile *config )
   entryMap.remove("Path");
   m_strComment = config->readEntry( "Comment" );
   entryMap.remove("Comment");
-  m_mapNotify = config->readBoolEntry( "MapNotify", true );
+  m_mapNotify = config->readBoolEntry( "MapNotify", false );
   entryMap.remove("MapNotify");
   m_lstKeywords = config->readListEntry("Keywords");
   entryMap.remove("Keywords");
