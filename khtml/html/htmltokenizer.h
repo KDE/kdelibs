@@ -130,7 +130,8 @@ protected:
     {
         NoQuote = 0,
         SingleQuote,
-        DoubleQuote
+        DoubleQuote,
+        IgnoreQuote
     } HTMLQuote;
 
     HTMLQuote tquote;

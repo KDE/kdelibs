@@ -536,7 +536,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         // decide if quoted or not....
         if ( curchar == '\"' || curchar == '\'' )
         { // we treat " & ' the same in tags
-            if ( !tquote )
+            if ( tquote == NoQuote )
             {
                 // according to HTML4 DTD, we can simplify
                 // strings like "  my \nstring " to "my string"
@@ -550,22 +550,16 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
             else if ( (( tquote == SingleQuote )&&( curchar == '\'')) ||
                       (( tquote == DoubleQuote )&&( curchar == '\"')) )
             {
-                tquote = NoQuote;
+                tquote = IgnoreQuote;
                 discard = NoneDiscard;
                 pending = NonePending; // remove space at the end of value
 
-#if 0
-                //WABA: This is unreliable. The parser is a state machine.
-                //      You should always assume that src.length() == 1
-                //      and that the next byte is feeded into the
-                //      parser at the next call to parseTag()!
+            }
+            else if (tquote == IgnoreQuote) 
+            {
                 // we remove additional quotes directly following the
                 // end of the quoted section. Helps with bad html as
                 // <tag attr="value"" nextattr="..." ...>
-                while((src.length() > 1) &&
-                      ((src[1] == '\'') || (src[1] == '\"')))
-                    ++src;
-#endif
             }
             else
             {
@@ -582,6 +576,9 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
         }
         else
         {
+            if (tquote == IgnoreQuote)
+                tquote = NoQuote;
+            
             switch(tag) {
             case NoTag:
             {
@@ -813,8 +810,6 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 {
                     tag = Value;
                 }
-                pending = NonePending;
-                discard = SpaceDiscard;
                 break;
             }
             case QuotedValue:
@@ -867,7 +862,10 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                     ++src;
                     tquote = NoQuote;
                 }
-                if ( pending || curchar == '>' )
+                // if discard==NoneDiscard at this point, it means
+                // that we passed an empty "" pair. bit hacky, but...
+                // helps with <tag attr=""otherattr="something">
+                if ( pending || curchar == '>' || discard==NoneDiscard)
                 {
                     // no quotes. Every space means end of value
                     Attribute a;
