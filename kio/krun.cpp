@@ -106,7 +106,7 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
     else
       exec = QString("kdesu -u %1 -- %2").arg(user).arg(exec);
   } else if (_service.terminal())
-     exec = QString("konsole %1 -e /bin/sh -c \"%2\"").arg(_service.terminalOptions()).arg(exec); 
+     exec = QString("konsole %1 -e \"%2\"").arg(_service.terminalOptions()).arg(exec); 
   else
   {
   QString error;
