@@ -54,7 +54,6 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
     setInline(true);   // our object is Inline
 
     m_state = 0;
-    m_button = 0;
     m_isDoubleClick = false;
 }
 
@@ -96,7 +95,7 @@ void RenderFormElement::layout()
 void RenderFormElement::slotClicked()
 {
     ref();
-    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
+    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, 1, m_state);
 
     element()->dispatchMouseEvent(&e2, EventImpl::CLICK_EVENT, m_isDoubleClick + 1);
     m_isDoubleClick = false;
@@ -106,7 +105,7 @@ void RenderFormElement::slotClicked()
 void RenderFormElement::slotPressed()
 {
     ref();
-    QMouseEvent e2( QEvent::MouseButtonPress, m_mousePos, m_button, m_state);
+    QMouseEvent e2( QEvent::MouseButtonPress, m_mousePos, 1, m_state);
     element()->dispatchMouseEvent(&e2, EventImpl::MOUSEDOWN_EVENT, 1);
     deref();
 }
@@ -114,7 +113,7 @@ void RenderFormElement::slotPressed()
 void RenderFormElement::slotReleased()
 {
     ref();
-    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
+    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, 1, m_state);
     element()->dispatchMouseEvent(&e2, EventImpl::MOUSEUP_EVENT, 1);
     deref();
 }
