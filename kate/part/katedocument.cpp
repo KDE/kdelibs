@@ -4352,7 +4352,7 @@ void KateDocument::slotModifiedOnDisk( Kate::View *v )
         case KMessageBox::Yes: // "save file"
           m_modOnHd = false; // trick save() to not ask again
           emit modifiedOnDisc( this, false, 0 );
-          saveAs();
+          saveAs(url());
           m_isasking = 0;
           break;
 
