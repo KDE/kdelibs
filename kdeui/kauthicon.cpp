@@ -4,7 +4,7 @@
  * Copyright (c) 1999 Preston Brown <pbrown@kde.org>
  */
 
-#include <unistd.h>
+#include <unistd.h> // For getuid
 
 #include <qlayout.h>
 #include <qtimer.h>
@@ -12,7 +12,6 @@
 #include <klocale.h>
 
 #include "kauthicon.h"
-#include "kauthicon.moc"
 
 /* XPM */
 static const char * lock_xpm[] = {
@@ -174,3 +173,5 @@ void KWritePermsIcon::updateStatus()
     emit authChanged(newwrite);
   }
 }
+
+#include "kauthicon.moc"

@@ -1,12 +1,16 @@
-#include "kpopmenu.h"
+// $Id$
+
 #include <qpainter.h>
 #include <qdrawutil.h>
+
+#include "kpopmenu.h"
+
+#include <kapp.h>
+#include <kconfig.h>
+#include <kiconloader.h>
 #include <klocale.h>
 #include <kglobal.h>
-#include <kconfig.h>
 #include <kstddirs.h>
-#include <kiconloader.h>
-#include <kapp.h>
 
 KPopupTitle::KPopupTitle(QWidget *parent, const char *name)
     : QWidget(parent, name)

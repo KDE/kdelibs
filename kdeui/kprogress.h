@@ -5,7 +5,7 @@
 *****************************************************************************/
 
 #ifndef _KPROGRES_H
-#define _KPROGRES_H
+#define _KPROGRES_H "$Id"
 
 #include <qframe.h>
 #include <qrangecontrol.h>

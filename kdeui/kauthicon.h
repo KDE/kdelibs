@@ -5,13 +5,13 @@
  */
 
 #ifndef _KAUTHICON_H
-#define _KAUTHICON_H
+#define _KAUTHICON_H "$Id"
 
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpixmap.h>
 #include <qfileinfo.h>
+#include <qlabel.h>
+#include <qpixmap.h>
+#include <qstring.h>
+#include <qwidget.h>
 
 class QPixmap;
 class QHBoxLayout;

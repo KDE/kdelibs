@@ -1,13 +1,17 @@
 /*
  * KProgress -- a progress indicator widget for KDE.
+ *
+ * $Id$
+ *
  * (c) 1996 Martynas Kunigelis
  */
 
+#include <qpainter.h>
+#include <qpixmap.h>
+#include <qstring.h>
+
 #include "kprogress.h"
 
-#include <qpainter.h>
-#include <qstring.h>
-#include <qpixmap.h>
 #include <kapp.h>
 #include <kstyle.h>
 
@@ -331,4 +335,3 @@ KProgress::format() const
 }
 
 #include "kprogress.moc"
-

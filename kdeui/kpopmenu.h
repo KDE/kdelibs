@@ -1,5 +1,5 @@
 #ifndef _KPOPUP_H
-#define _KPOPUP_H
+#define _KPOPUP_H "$Id$"
 
 #define INCLUDE_MENUITEM_DEF
 
