@@ -1,0 +1,23 @@
+This library provides KPlotWidget and KPlotObject classes.
+
+KPlotWidget is a QWidget-derived class that provides a virtual baseclass 
+for easy data-plotting. The idea behind KPlotWidget is that you only have 
+to specify information in "data units"; i.e., the natural units of the 
+data being plotted.  KPlotWidget automatically converts everything 
+to screen pixel units.
+
+KPlotWidget draws X and Y axes with tickmarks and tick labels.  It 
+automatically determines how many tickmarks to use and where they should 
+be, based on the data limits specified for the plot.  You change the limits 
+by calling setLimits( double x1, double x2, double y1, double y2 ), and 
+then calling updateTickmarks() to recompute the positions of tickmarks 
+and ticklabels.
+
+Data to be plotted are stored using the KPlotObject class.  KPlotObject
+consists of a QPtrList of DPoints, each specifying the X,Y coordinates
+of a data point (DPoint is like QPoint, but the X and Y values are doubles 
+instead of ints).  KPlotObject also specifies the "type" of data to be 
+plotted (POINTS or CURVE or POLYGON or LABEL).
+
+Jason Harris
+kstars@30doradus.org
