@@ -162,7 +162,7 @@ void KComboBox::setCompletedText( const QString& text, bool marked )
         if ( marked )
         {
             int curpos = ( d->origCursorPos != -1 ) ?
-                              d->origCursorPos : currentText().length();
+                              d->origCursorPos :  currentText().length();
             m_pEdit->validateAndSet( text, curpos, curpos, text.length() );
         }
         else
@@ -593,7 +593,7 @@ void KComboBox::setCompletedItems( const QStringList& items )
             if ( !d->completionBox )
                 makeCompletionBox();
 
-            d->origCursorPos = cursorPosition();
+            //d->origCursorPos = cursorPosition();
             d->completionBox->setCancelledText( currentText() );
             d->completionBox->clear();
             d->completionBox->insertStringList( items );

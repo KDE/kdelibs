@@ -495,7 +495,7 @@ void KLineEdit::setCompletedItems( const QStringList& items )
             if ( !d->completionBox )
                 makeCompletionBox();
 
-            d->origCursorPos = cursorPosition();
+            //d->origCursorPos = cursorPosition();
             d->completionBox->setCancelledText( text() );
             d->completionBox->clear();
             d->completionBox->insertStringList( items );
