@@ -29,6 +29,7 @@
 #include <qtimer.h>
 #include <qpopupmenu.h>
 #include <qlabel.h>
+#include <qheader.h>
 
 #define KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID 2004
 
@@ -245,12 +246,26 @@ QPopupMenu *KListViewSearchLine::createPopupMenu()
         subMenu->insertSeparator();
     
         bool allColumnsAreSearchColumns = true;
-        for(int i = 0; i < d->listView->columns(); i++) {
-            subMenu->insertItem(d->listView->columnText(i), i);
-            if(d->searchColumns.isEmpty() || d->searchColumns.find(i) != d->searchColumns.end())
-                subMenu->setItemChecked(i, true);
-            else
-                allColumnsAreSearchColumns = false;
+	// TODO Make the entry order match the actual column order
+	QHeader* const header = d->listView->header();
+	int visibleColumns = 0;
+	for(int i = 0; i < d->listView->columns(); i++) {
+	    if(d->listView->columnWidth(i)>0) {
+	        QString columnText = d->listView->columnText(i);
+	        if(columnText.isEmpty()) {
+		    int visiblePosition=1;
+		    for(int j = 0; j < header->mapToIndex(i); j++)
+		        if(d->listView->columnWidth(header->mapToSection(j))>0)
+		            visiblePosition++;
+		    columnText = i18n("Column number %1","Column No. %1").arg(visiblePosition);
+	        }
+                subMenu->insertItem(columnText, visibleColumns);
+	        if(d->searchColumns.isEmpty() || d->searchColumns.find(i) != d->searchColumns.end())
+		    subMenu->setItemChecked(visibleColumns, true);
+                else
+                    allColumnsAreSearchColumns = false;
+	        visibleColumns++;
+	    }
         }
         subMenu->setItemChecked(KLISTVIEWSEARCHLINE_ALLVISIBLECOLUMNS_ID, allColumnsAreSearchColumns);
     
