@@ -379,10 +379,18 @@ body
 	  {
 		$$ = $4;
 	  }
+        | T_CLASS Identifier class_header body T_SEMICOLON body
+          {
+                $$ = $6;
+          }
 	| T_STRUCT Identifier T_SEMICOLON body
 	  {
 		$$ = $4;
 	  }
+        | T_STRUCT Identifier class_header body T_SEMICOLON body
+          {
+                $$ = $6;
+          }
         | T_USING T_IDENTIFIER T_SCOPE T_IDENTIFIER T_SEMICOLON body
           {
                 $$ = $6;
@@ -429,9 +437,6 @@ typedef
 	  {
 		if (dcop_area)
 		  yyerror("scoped template typedefs are not supported in dcop areas!");
-	  }
-	| T_STRUCT Identifier T_LEFT_CURLY_BRACKET main T_RIGHT_CURLY_BRACKET  T_SEMICOLON
-	  {
 	  }
 
 const_qualifier
