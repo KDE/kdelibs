@@ -295,9 +295,15 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
     }
   }
   // Set the new active instance in KGlobal
-  KGlobal::_activeInstance = d->m_activePart ? d->m_activePart->instance() : 0L;
+  setActiveInstance( d->m_activePart ? d->m_activePart->instance() : 0L );
 
   emit activePartChanged( d->m_activePart );
+}
+
+void PartManager::setActiveInstance( KInstance * instance )
+{
+  // It's a separate method to allow redefining this behaviour
+  KGlobal::_activeInstance = instance;
 }
 
 Part *PartManager::activePart() const
