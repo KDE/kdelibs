@@ -26,229 +26,156 @@
 #include <klocale.h>
 #include <kdebug.h>
 
-#include <math.h>
-
 #include "kcalendarsystemhijri.h"
 
-static const int GREGORIAN_CROSSOVER = 2299161;
+/*
+  The following C++ code is translated from the Lisp code
+  in ``Calendrical Calculations'' by Nachum Dershowitz and
+  Edward M. Reingold, Software---Practice & Experience,
+  vol. 20, no. 9 (September, 1990), pp. 899--928.
 
-/* radians per degree (pi/180) */
-static const double RadPerDeg = 0.01745329251994329577;
+  This code is in the public domain, but any use of it
+  should publically acknowledge its source.
 
-/* Synodic Period (mean time between 2 successive
- * new moon: 29d, 12 hr, 44min, 3sec
+  Classes GregorianDate, IslamicDate
  */
-static const double SynPeriod = 29.53058868;
 
-/* Solar days in year/SynPeriod */
-static const double SynMonth = 365.25/29.53058868;
+static int lastDayOfGregorianMonth(int month, int year) {
+// Compute the last date of the month for the Gregorian calendar.
 
-/* Julian day on Jan 1, 1900 */
-static const double jd1900 = 2415020.75933;
+  switch (month) {
+  case 2:
+    if ((((year % 4) == 0) && ((year % 100) != 0))
+        || ((year % 400) == 0))
+      return 29;
+    else
+      return 28;
+  case 4:
+  case 6:
+  case 9:
+  case 11: return 30;
+  default: return 31;
+  }
+}
 
-/* Reference point: March 26, 2001 == 1422 Hijri == 1252
- * Synodial month from 1900
- */
-static const long SynRef = 1252;
+class GregorianDate {
+private:
+  int year;   // 1...
+  int month;  // 1 == January, ..., 12 == December
+  int day;    // 1..lastDayOfGregorianMonth(month, year)
 
-static const long GregRef = 1422;
+public:
+  GregorianDate(int m, int d, int y) { month = m; day = d; year = y; }
 
-/* Local time specific to Saudi Arabia */
-static const double SA_TimeZone = 3.0;
+  GregorianDate(int d) { // Computes the Gregorian date from the absolute date.
 
-static const double EveningPeriod = 6.0;
+    // Search forward year by year from approximate year
+    year = d/366;
+    while (d >= GregorianDate(1,1,year+1))
+      year++;
+    // Search forward month by month from January
+    month = 1;
+    while (d > GregorianDate(month, lastDayOfGregorianMonth(month,year), year))
+      month++;
+    day = d - GregorianDate(month,1,year) + 1;
+  }
 
-static const long LeapYear[] = {
-  2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29
+  operator int() { // Computes the absolute date from the Gregorian date.
+    int N = day;           // days this month
+    for (int m = month - 1;  m > 0; m--) // days in prior months this year
+      N = N + lastDayOfGregorianMonth(m, year);
+    return
+      (N                    // days this year
+       + 365 * (year - 1)   // days in previous years ignoring leap days
+       + (year - 1)/4       // Julian leap days before this year...
+       - (year - 1)/100     // ...minus prior century years...
+       + (year - 1)/400);   // ...plus prior years divisible by 400
+  }
+
+  int getMonth() { return month; }
+  int getDay() { return day; }
+  int getYear() { return year; }
+
 };
 
-typedef struct {
-  int day;
-  int mon;
-  int year;
-} SDATE;
+static int IslamicLeapYear(int year) {
+// True if year is an Islamic leap year
 
-/**
- * @internal
- * This function returns the Julian date/time of the Nth new moon since
- * January 1900.  The synodic month is passed as parameter.
- *
- * Adapted from "Astronomical  Formulae for Calculators" by
- * Jean Meeus, Third Edition, Willmann-Bell, 1985.
- */
-static double newMoon(long n)
-{
-  double jd, t, t2, t3, k, ma, sa, tf, xtra;
-  k = n;
-  t = k/1236.85;	// Time in Julian centuries from 1900 January 0.5
-  t2 = t * t;
-  t3 = t2 * t;
+  if ((((11 * year) + 14) % 30) < 11)
+    return 1;
+  else
+    return 0;
+};
 
-  // Mean time of phase
-  jd =  jd1900
-    + SynPeriod * k
-    - 0.0001178 * t2
-    - 0.000000155 * t3
-    + 0.00033 * sin(RadPerDeg * (166.56 + 132.87 * t - 0.009173 * t2));
+static const int IslamicEpoch = 227014; // Absolute date of start of
+                                        // Islamic calendar
 
-  // Sun's mean anomaly in radian
-  sa =  RadPerDeg * (359.2242
-    + 29.10535608 * k
-    - 0.0000333 * t2
-    - 0.00000347 * t3);
+static int lastDayOfIslamicMonth(int month, int year) {
+// Last day in month during year on the Islamic calendar.
 
-  // Moon's mean anomaly
-    ma =  RadPerDeg * (306.0253
-    + 385.81691806 * k
-    + 0.0107306 * t2
-    + 0.00001236 * t3);
-
-  // Moon's argument of latitude
-    tf = RadPerDeg * 2.0 * (21.2964
-      + 390.67050646 * k
-      - 0.0016528 * t2
-      - 0.00000239 * t3);
-
-  // should reduce to interval between 0 to 1.0 before calculating further
-  // Corrections for New Moon
-  xtra = (0.1734 - 0.000393 * t) * sin(sa)
-    + 0.0021 * sin(sa * 2)
-    - 0.4068 * sin(ma)
-    + 0.0161 * sin(2 * ma)
-    - 0.0004 * sin(3 * ma)
-    + 0.0104 * sin(tf)
-    - 0.0051 * sin(sa + ma)
-    - 0.0074 * sin(sa - ma)
-    + 0.0004 * sin(tf + sa)
-    - 0.0004 * sin(tf - sa)
-    - 0.0006 * sin(tf + ma)
-    + 0.0010 * sin(tf - ma)
-    + 0.0005 * sin(sa + 2 * ma);
-
-  // convert from Ephemeris Time (ET) to (approximate) Universal Time (UT)
-  jd += xtra - (0.41 + 1.2053 * t + 0.4992 * t2)/1440;
-
-  return (jd);
+  if (((month % 2) == 1) || ((month == 12) && IslamicLeapYear(year)))
+    return 30;
+  else
+    return 29;
 }
 
-/*
- * @internal
- * Compute general hijri date structure from gregorian date
- */
-static SDATE * gregorianToHijri(int day, int month, int year)
-{
-  static SDATE h;
+class IslamicDate {
+private:
+  int year;   // 1...
+  int month;  // 1..13 (12 in a common year)
+  int day;    // 1..lastDayOfIslamicMonth(month,year)
 
-  double prevday;
-  // CFM unused double dayfraction;
-  long syndiff;
-  long newsyn;
-  double newjd;
-  double julday;
-  long synmonth;
+public:
+  IslamicDate(int m, int d, int y) { month = m; day = d; year = y; }
 
-  // Get Julian Day from Gregorian
-  julday = QDate::gregorianToJulian(year, month, day);
-
-  /*
-   * obtain approx. of how many Synodic months since the beginning
-   * of the year 1900
-   */
-  synmonth = (long)(0.5 + (julday - jd1900)/SynPeriod);
-
-  newsyn = synmonth;
-  prevday = (long)julday - 0.5;
-
-  do {
-    newjd = newMoon(newsyn);
-
-    // Decrement syndonic months
-    newsyn--;
-  } while (newjd > prevday);
-  newsyn++;
-
-  // difference from reference point
-  syndiff = newsyn - SynRef;
-
-  // Round up the day
-  day = (long)(((long)julday) - newjd + 0.5);
-  month =  (syndiff % 12) + 1;
-
-  // currently not supported
-  //dayOfYear = (sal_Int32)(month * SynPeriod + day);
-  year = GregRef + (long)(syndiff / 12);
-
-  // If month negative, consider it previous year
-  if (syndiff != 0 && month <= 0) {
-    month += 12;
-    (year)--;
+  IslamicDate(int d) { // Computes the Islamic date from the absolute date.
+    if (d <= IslamicEpoch) { // Date is pre-Islamic
+      month = 0;
+      day = 0;
+      year = 0;
+    }
+    else {
+      // Search forward year by year from approximate year
+      year = (d - IslamicEpoch) / 355;
+      while (d >= IslamicDate(1,1,year+1))
+        year++;
+      // Search forward month by month from Muharram
+      month = 1;
+      while (d > IslamicDate(month, lastDayOfIslamicMonth(month,year), year))
+        month++;
+      day = d - IslamicDate(month,1,year) + 1;
+    }
   }
 
-  // If Before Hijri subtract 1
-  if (year <= 0) (year)--;
-
-  h.day = day;
-  h.mon = month;
-  h.year = year;
-
-  return(&h);
-}
-
-/*
- * compute general gregorian date structure from hijri date
- */
-static SDATE *hijriToGregorian(int *day, int *month, int *year)
-{
-  static SDATE h;
-
-  long nmonth;
-  // CFM unused double dayfraction;
-  double jday;
-  // CFM unused long dayint;
-
-  if ( *year < 0 ) (*year)++;
-
-  // Number of month from reference point
-  nmonth = *month + *year * 12 - (GregRef * 12 + 1);
-
-  // Add Synodic Reference point
-  nmonth += SynRef;
-
-  // Get Julian days add time too
-  jday = newMoon(nmonth) + *day;
-
-  // Round-up
-  jday = (double)((long)(jday + 0.5));
-
-  // Use algorithm from "Numerical Recipes in C"
-  QDate::julianToGregorian((unsigned int)jday, *year, *month, *day);
-
-  // Julian -> Gregorian only works for non-negative year
-  if ( *year <= 0 )
-  {
-    *day = -1;
-    *month = -1;
-    *year = -1;
+  operator int() { // Computes the absolute date from the Islamic date.
+    return (day                      // days so far this month
+            + 29 * (month - 1)       // days so far...
+            + month/2                //            ...this year
+            + 354 * (year - 1)       // non-leap days in prior years
+            + (3 + (11 * year)) / 30 // leap days in prior years
+            + IslamicEpoch);                // days before start of calendar
   }
 
-  h.day = (int)*day;
-  h.mon = (int)*month;
-  h.year = (int)*year;
+  int getMonth() { return month; }
+  int getDay() { return day; }
+  int getYear() { return year; }
 
-  return(&h);
-}
+};
 
-static void gregorianToHijri(const QDate & date, int * pYear, int * pMonth, int * pDay)
+static void gregorianToHijri(const QDate & date, int * pYear, int * pMonth,
+   int * pDay)
 {
-  SDATE *sd;
-  sd = gregorianToHijri(date.day(), date.month(), date.year());
+  GregorianDate gregorian(date.month(),date.day(),date.year());
+  int absolute = gregorian;
+
+  IslamicDate islamic(absolute);
 
   if (pYear)
-    *pYear = sd->year;
+    *pYear = islamic.getYear();
   if (pMonth)
-    *pMonth = sd->mon;
+    *pMonth = islamic.getMonth();
   if (pDay)
-    *pDay = sd->day;
+    *pDay = islamic.getDay();
 }
 
 KCalendarSystemHijri::KCalendarSystemHijri(const KLocale * locale)
@@ -291,7 +218,7 @@ int KCalendarSystemHijri::monthsInYear( const QDate & date ) const
 int KCalendarSystemHijri::weeksInYear(int year) const
 {
   QDate temp;
-  setYMD(temp, year, 12, hndays(12, year));
+  setYMD(temp, year, 12, lastDayOfIslamicMonth(12, year));
 
   // If the last day of the year is in the first week, we have to check the
   // week before
@@ -327,7 +254,7 @@ int KCalendarSystemHijri::weekNumber(const QDate& date, int * yearNum) const
   }
 
   // let' check if its last week belongs to next year
-  setYMD(lastDayOfYear, y, 12, hndays(12, y));
+  setYMD(lastDayOfYear, y, 12, lastDayOfIslamicMonth(12, y));
   if ( (dayOfYear(date) >= daysInYear(date) - dayOfWeek(lastDayOfYear) + 1)
        // our date is in last week
        && dayOfWeek(lastDayOfYear) < 4) // 1st week in next year has thursday
@@ -359,8 +286,9 @@ QString KCalendarSystemHijri::monthNamePossessive(const QDate& date,
   return monthNamePossessive(month(date), shortName);
 }
 
-QString KCalendarSystemHijri::monthName(int month, int year, bool shortName) const
-{
+QString KCalendarSystemHijri::monthName(int month, int year, bool shortName)
+  const {
+
   Q_UNUSED(year);
 
   if (shortName)
@@ -497,12 +425,15 @@ bool KCalendarSystemHijri::setYMD(QDate & date, int y, int m, int d) const
   if ( m < 1 || m > 12 )
     return false;
 
-  if ( d < 1 || d > hndays(m, y) )
+  if ( d < 1 || d > lastDayOfIslamicMonth(m, y) )
     return false;
 
-  SDATE * gd = hijriToGregorian( &d, &m, &y );
+  IslamicDate islamic (m, d, y);
+  int absolute = islamic;
+  GregorianDate gregorian(absolute);
 
-  return date.setYMD(gd->year, gd->mon, gd->day);
+  return date.setYMD(gregorian.getYear(), gregorian.getMonth(),
+    gregorian.getDay());
 }
 
 QString KCalendarSystemHijri::weekDayName(int day, bool shortName) const
@@ -568,29 +499,12 @@ int KCalendarSystemHijri::dayOfYear(const QDate & date) const
   return 100;
 }
 
-// From Calendrical
-static bool islamicLeapYear(int year)
-{
-  // True if year is an Islamic leap year
-
-  return ((((11 * year) + 14) % 30) < 11);
-}
-
 int KCalendarSystemHijri::daysInMonth(const QDate& date) const
 {
   int y, m;
   gregorianToHijri(date, &y, &m, 0);
 
-  return hndays(m, y);
-}
-
-int KCalendarSystemHijri::hndays(int month, int year) const
-{
-  if (((month % 2) == 1) || ((month == 12)
-    && islamicLeapYear(year)))
-    return 30;
-  else
-    return 29;
+  return lastDayOfIslamicMonth(m, y);
 }
 
 // Min valid year that may be converted to QDate

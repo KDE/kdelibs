@@ -29,6 +29,7 @@
 #include "kcalendarsystemgregorian.h"
 #include "kcalendarsystemhijri.h"
 #include "kcalendarsystemhebrew.h"
+#include "kcalendarsystemjalali.h"
 
 KCalendarSystemFactory::KCalendarSystemFactory()
 {
@@ -48,6 +49,8 @@ KCalendarSystem *KCalendarSystemFactory::create( const QString &calType,
     return new KCalendarSystemHijri(locale);
   if ( calType == "gregorian" )
     return new KCalendarSystemGregorian(locale);
+  if ( calType == "jalali" )
+    return new KCalendarSystemJalali(locale);
 
   kdDebug(5400) << "Calendar " << calType << " not found, defaulting to gregorian" << endl;
 
@@ -61,6 +64,7 @@ QStringList KCalendarSystemFactory::calendarSystems()
    lst.append("hebrew");
    lst.append("hijri");
    lst.append("gregorian");
+   lst.append("jalali");
 
    return lst;
 }

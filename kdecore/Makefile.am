@@ -74,7 +74,7 @@ noinst_HEADERS = kaccelaction.h kaccelbase.h kaccelprivate.h kckey.h \
 	kextsocklookup.h kglobalaccel_x11.h kkeyserver_x11.h \
 	kregpriv.h kshortcutmenu.h ksycocadict.h ksycocafactory.h netsupp.h \
 	kcheckaccelerators.h kcalendarsystemgregorian.h \
-	kcalendarsystemhijri.h kcalendarsystemhebrew.h
+	kcalendarsystemhijri.h kcalendarsystemhebrew.h kcalendarsystemjalali.h
 
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kautoconfig.cpp \
 	kdebug.cpp netwm.cpp kconfigbase.cpp kconfig.cpp  ksimpleconfig.cpp \
@@ -103,7 +103,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kautoconfig.cpp \
 	kcalendarsystem.cpp kcalendarsystemgregorian.cpp \
 	kcalendarsystemhijri.cpp kcalendarsystemhebrew.cpp \
 	kcalendarsystemfactory.cpp kmacroexpander.cpp kidna.cpp \
-	ktempdir.cpp kshell.cpp kmountpoint.cpp
+	ktempdir.cpp kshell.cpp kmountpoint.cpp kcalendarsystemjalali.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(KDE_RPATH) $(KDE_MT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 6:0:2 -no-undefined
 libkdecore_la_LIBADD = malloc/libklmalloc.la $(SVGICON_LIB) ../dcop/libDCOP.la ../libltdl/libltdlc.la $(LIB_XEXT) $(LIBRESOLV) $(LIBUTIL) $(LIBART_LIBS) ../kdefx/libkdefx.la
