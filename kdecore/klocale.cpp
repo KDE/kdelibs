@@ -68,6 +68,9 @@ char *k_bindtextdomain (const char *__domainname,
 
 #ifdef ENABLE_NLS
 
+static char *_categories[]={"LC_MESSAGES","LC_CTYPE","LC_COLLATE",
+                            "LC_TIME","LC_NUMERIC","LC_MONETARY",0};
+
 KLocale::KLocale( const char *catalogue )
 {
 #ifdef HAVE_SETLOCALE
@@ -125,7 +128,7 @@ KLocale::KLocale( const char *catalogue )
 #endif
     
     if (languages.isEmpty() || (languages == "default")) {
-	if (g_lang)
+	if (g_lang && g_lang[0]!=0) // LANG value is set and is not ""
 	    languages = g_lang;
 	else
 	    languages = "C";
@@ -134,7 +137,9 @@ KLocale::KLocale( const char *catalogue )
 
     QString directory = KApplication::kde_localedir();
     QString ln,ct,chrset;
-    
+   
+    // save languages list requested by user
+    langs=languages;    
     while (1) {
       int f = languages.find(':');
 	if (f > 0) {
@@ -173,16 +178,21 @@ KLocale::KLocale( const char *catalogue )
     chset=chrset;
 #ifdef HAVE_SETLOCALE
     lc_numeric=setlocale(LC_NUMERIC,0);
-    setlocale(LC_NUMERIC,"");          // by default disable LC_NUMERIC
+    setlocale(LC_NUMERIC,"C");          // by default disable LC_NUMERIC
     setlocale(LC_MESSAGES,lang);       
     if (set_locale_vars){
-	putenv( QString("LC_NUMERIC=")  + getLocale(LC_NUMERIC) );
-	putenv( QString("LC_COLLATE=")  + getLocale(LC_COLLATE) );
-	putenv( QString("LC_MONETARY=") + getLocale(LC_MONETARY));
-	putenv( QString("LC_TIME=")     + getLocale(LC_TIME)    );
-	putenv( QString("LC_MESSAGES=") + getLocale(LC_MESSAGES));
-	putenv( QString("LC_CTYPE=")    + getLocale(LC_CTYPE)   );
+        // set environment variables for all categories
+	// maybe we should treat LC_NUMERIC differently (netscape problem)
+        for(int i=0;_categories[i]!=0;i++)
+ 	  putenv( QString(_categories[i])+ "=" + getLocale(_categories[i]) );
     }
+    // we should use LC_CTYPE, not LC_MESSAGES for charset
+    // however in most cases it should be the same for messages
+    // to be readable (there is no i18n messages charset conversion yet)
+    if (getLocale(LC_CTYPE)!="C"){
+      splitLocale(getLocale(LC_CTYPE),ln,ct,chrset);
+      if (!chrset.isEmpty()) chset=chrset;
+    }  
 #else
     lc_numeric="C";
 #endif
@@ -190,7 +200,6 @@ KLocale::KLocale( const char *catalogue )
 
     insertCatalogue( catalogue );
     insertCatalogue( SYSTEM_MESSAGES );
-
 }
 
 void KLocale::insertCatalogue( const char *catalogue )
@@ -228,19 +237,26 @@ void KLocale::aliasLocale( const char* text, long int index)
     aliases.insert(index, translate(text));
 }
 
-const char *KLocale::getLocale(int CATEGORY){
+// Using strings seems to be more portable (for systems without locale.h
+const char *KLocale::getLocale(QString cat){
 
-    if (CATEGORY==LC_NUMERIC) 
-	return lc_numeric;
-    else 
-	return setlocale(CATEGORY,0);
+    cat.upper();
+    if (cat=="LC_NUMERIC") return lc_numeric;
+#ifdef HAVE_SETLOCALE        
+    else if (cat=="LC_MESSAGES") return setlocale(LC_MESSAGES,0);
+    else if (cat=="LC_COLLATE") return setlocale(LC_COLLATE,0);
+    else if (cat=="LC_TIME") return setlocale(LC_TIME,0);
+    else if (cat=="LC_CTYPE") return setlocale(LC_CTYPE,0);
+    else if (cat=="LC_MONETARY") return setlocale(LC_MONETARY,0);
+#endif	
+    else return "C";
 }
 
 void KLocale::splitLocale(const QString& aStr,
 			  QString& lang,
 			  QString& country,
 			  QString &chset) const {
-    
+   
     QString str = aStr.copy();
 
     // just in case, there is another language appended
@@ -320,6 +336,23 @@ bool KLocale::numericLocaleEnabled()const{
     return numeric_enabled;
 }
  
+QStrList KLocale::languageList()const{
+
+// a list to be returned
+    QStrList list;
+// temporary copy of language list
+    QString str=langs.data();
+    
+    while(str.length()>0){
+      int f = str.find(':');
+      if (f >= 0) {
+          list.append(str.right(str.length()-f-1));
+  	  str = str.left(f);
+      }
+    }   
+    return list;
+}
+
 #else /* ENABLE_NLS */
 
 KLocale::KLocale( const char *) 
@@ -367,6 +400,9 @@ bool  KLocale::numericLocaleEnabled()const{
     return false;
 }
  
+QStrList KLocale::languageList()const{
+    return QStrList();
+}
 #endif /* ENABLE_NLS */
 
 

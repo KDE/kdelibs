@@ -96,6 +96,20 @@ public:
     const QString& language() const { return lang; }
 
     /**
+      * Returns the languages selected by user.
+      *
+      * @return String containing locale codes separated by colons
+      */
+    const QString& languages() const { return langs; }
+
+    /**
+      * Returns the languages selected by user.
+      *
+      * @return List of language codes
+      */
+    QStrList languageList()const;
+    
+    /**
       * Returns the charset name used by selected locale.
       * Special file with charset name must be available
       * "us-ascii" is default 
@@ -133,7 +147,7 @@ public:
        LC_TIME         Changes the behavior of the strftime() function.
        LC_ALL          Changes all of the above.
     **/
-    const char *getLocale(int CATEGORY);
+    const char *getLocale(QString CATEGORY);
 
     /** 
      * returns the parts of the parameter str understood as language setting
@@ -169,6 +183,7 @@ private:
     QString chset;
     QString lc_numeric;
     bool numeric_enabled;
+    QString langs;
 };
 
 #endif
