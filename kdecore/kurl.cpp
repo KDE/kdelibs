@@ -91,6 +91,10 @@ QDataStream & operator>> (QDataStream & s, KURL & a)
       >> a.m_strPath >> a.m_strQuery_encoded >> a.m_strRef_encoded
       >> malf >> a.m_iPort;
     a.m_bIsMalformed = (malf != 0);
+    
+    if ( a.m_strQuery_encoded.isEmpty() )
+      a.m_strQuery_encoded = QString::null;
+    
     return s;
 }
 
