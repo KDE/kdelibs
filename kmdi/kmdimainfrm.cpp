@@ -408,9 +408,12 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags)
 //      const QPixmap& wndIcon = pWnd->icon() ? *(pWnd->icon()) : QPixmap();
      
       m_documentTabWidget->addTab(pWnd, pWnd->icon() ? *(pWnd->icon()) : QPixmap(),pWnd->tabCaption());
-	connect(pWnd,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
-		m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
-
+/*    
+    connect(pWnd,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
+        m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
+*/
+    connect( pWnd, SIGNAL(iconUpdated(QWidget*, QPixmap )), m_documentTabWidget, SLOT(updateIconInView(QWidget*, QPixmap )) );
+    connect( pWnd, SIGNAL(captionUpdated(QWidget*, const QString& )), m_documentTabWidget, SLOT(updateCaptionInView(QWidget*, const QString& )) );
 #if 0
       KDockWidget* pCover = createDockWidget( pWnd->name(),
                                               wndIcon,
@@ -1512,9 +1515,13 @@ void KMdiMainFrm::setupTabbedDocumentViewSpace() {
       QPtrListIterator<KMdiChildView> it4( *m_pDocumentViews);
       for( ; it4.current(); ++it4) {
         KMdiChildView* pView = it4.current();
-        m_documentTabWidget->addTab(pView, pView->icon() ? *(pView->icon()) : QPixmap(),pView->tabCaption());	
-	connect(pView,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
-		m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
+        m_documentTabWidget->addTab(pView, pView->icon() ? *(pView->icon()) : QPixmap(),pView->tabCaption());    
+/*    
+    connect(pView,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
+        m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
+*/
+    connect( pView, SIGNAL(iconUpdated(QWidget*, QPixmap )), m_documentTabWidget, SLOT(updateIconInView(QWidget*, QPixmap )) );
+    connect( pView, SIGNAL(captionUpdated(QWidget*, const QString& )), m_documentTabWidget, SLOT(updateCaptionInView(QWidget*, const QString& )) );
 
       }
 
