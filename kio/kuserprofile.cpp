@@ -52,18 +52,27 @@ void KServiceTypeProfile::initStatic()
       continue;
 
     config.setGroup( *aIt );
-
+	
+    QString appDesktopPath = config.readEntry( "Application" );
     QString type = config.readEntry( "ServiceType" );
     int pref = config.readNumEntry( "Preference" );
     bool allow = config.readBoolEntry( "AllowAsDefault" );
 
-    if ( !type.isEmpty() && pref >= 0 )
-    {
-      KServiceTypeProfile* p = KServiceTypeProfile::serviceTypeProfile( type );
-      if ( !p )
-	p = new KServiceTypeProfile( type );
+    KService::Ptr pService = KService::serviceByDesktopPath( appDesktopPath );
+	
+	if ( pService ) {
+		QString application = pService->name();
 
-      p->addService( config.group(), pref, allow );
+    	if ( !type.isEmpty() && pref >= 0 )
+    	{
+    	  KServiceTypeProfile* p = 
+		  	KServiceTypeProfile::serviceTypeProfile( type );
+
+    	  if ( !p )
+			p = new KServiceTypeProfile( type );
+
+    	  p->addService( application, pref, allow );
+		}
     }
   }
 }
@@ -180,11 +189,13 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
 
       if( it2 != m_mapServices.end() )
       {
-	bool allow = (*it)->allowAsDefault();
-	if ( allow )
-	  allow = it2.data().m_bAllowAsDefault;
-	KServiceOffer o( (*it), it2.data().m_iPreference, allow );
-	offers.append( o );
+      	if ( it2.data().m_iPreference > 0 ) {
+			bool allow = (*it)->allowAsDefault();
+			if ( allow )
+			  allow = it2.data().m_bAllowAsDefault;
+			KServiceOffer o( (*it), it2.data().m_iPreference, allow );
+			offers.append( o );
+		}
       }
       else
       {
