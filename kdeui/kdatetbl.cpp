@@ -377,15 +377,16 @@ KDateTable::getDate() const
   return date;
 }
 
+// what are those repaintContents() good for? (pfeiffer)
 void KDateTable::focusInEvent( QFocusEvent *e )
 {
-    repaintContents(false);
+//    repaintContents(false);
     QGridView::focusInEvent( e );
 }
 
 void KDateTable::focusOutEvent( QFocusEvent *e )
 {
-    repaintContents(false);
+//    repaintContents(false);
     QGridView::focusOutEvent( e );
 }
 
