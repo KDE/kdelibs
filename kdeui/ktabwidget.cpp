@@ -360,10 +360,11 @@ void KTabWidget::moveTab( int from, int to )
     emit ( movedTab( from, to ) );
 }
 
-void KTabWidget::removePage ( QWidget * w ) {
+void KTabWidget::removePage( QWidget * w ) {
     if ( automaticResizeTabs() && count() && !d->m_tabNames[0].isEmpty() ) {
 	int i = indexOf( w );
-	d->m_tabNames.remove( d->m_tabNames.at(i) );
+	if ( i>=0 && i<d->m_tabNames.count() )
+	    d->m_tabNames.remove( d->m_tabNames.at(i) );
     }
     QTabWidget::removePage( w );
 }
