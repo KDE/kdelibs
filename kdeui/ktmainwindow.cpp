@@ -86,7 +86,7 @@ KTMainWindow::~KTMainWindow()
         && !QApplication::closingDown())
     {
       delete toolbar;
-      debug ("KTM destructor: deleted toolbar");
+      //debug ("KTM destructor: deleted toolbar");
     }
   }
   // delete the menubar (necessary if floating)
@@ -94,7 +94,7 @@ KTMainWindow::~KTMainWindow()
       && !QApplication::closingDown())
   {
     delete kmenubar;
-    debug ("KTM destructor: deleted menubar");
+    //debug ("KTM destructor: deleted menubar");
   }
 
 
@@ -106,7 +106,10 @@ KTMainWindow::~KTMainWindow()
     else
 	kapp->setTopWidget( 0 );
   }
-  debug ("KTM destructor: end");
+  //debug ("KTM destructor: end");
+  if (memberList->count() == 0)
+    if (queryExit())
+      qApp->quit();
 }
 
 
@@ -121,17 +124,10 @@ void KTMainWindow::deleteAll(){
 }
 
 void KTMainWindow::closeEvent ( QCloseEvent *e){
-  if (memberList->count() > 1){
-      if (queryClose())
-      {
-        e->accept();
-        delete this;
-      }
-  }
-  else if (queryExit()) {
-      e->accept();
-      delete this;
-      qApp->quit();
+  if (queryClose())
+  {
+    e->accept();
+    delete this;
   }
 }
 
@@ -992,7 +988,7 @@ void KTMainWindow::menubarKilled()
 {
   if (localKill)
   {
-    debug ("KTM: ACK mb kill, local kill, NOT zeroed");
+    //debug ("KTM: ACK mb kill, local kill, NOT zeroed");
     return;
   }
 
@@ -1001,12 +997,12 @@ void KTMainWindow::menubarKilled()
   if (dyer)                  // Doe he live still
   {
     kmenubar = 0L;
-    debug ("KTM: ACK mb kill, zeroed");
+    //debug ("KTM: ACK mb kill, zeroed");
   }
-  else
-  {
-   debug ("KTM: ACK mb kill, dyer zero, NOT zeroed");
-  }
+//  else
+//  {
+   //debug ("KTM: ACK mb kill, dyer zero, NOT zeroed");
+//  }
 
 }
 
@@ -1014,7 +1010,7 @@ void KTMainWindow::toolbarKilled()
 {
   if (localKill)
   {
-    debug ("KTM: ACK tb kill, local kill, NOT removed from list");
+    //debug ("KTM: ACK tb kill, local kill, NOT removed from list");
     return;
   }
 
@@ -1023,12 +1019,12 @@ void KTMainWindow::toolbarKilled()
 
   if (dyer)
   {
-    if (toolbars.removeRef((KToolBar *) dyer)) // remove it from the list;
-      debug ("KTM: ACK tb kill, removed from list");
-    else
-      debug ("KTM: ACK tb kill, NOT removed from list");
+    toolbars.removeRef((KToolBar *) dyer); // remove it from the list;
+      //debug ("KTM: ACK tb kill, removed from list");
+    //else
+      //debug ("KTM: ACK tb kill, NOT removed from list");
   }
-  else
-    debug ("KTM: ACK tb kill, dyer zero, NOT removed from list");
+//  else
+    //debug ("KTM: ACK tb kill, dyer zero, NOT removed from list");
 }
 

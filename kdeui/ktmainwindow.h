@@ -330,12 +330,14 @@ protected:
     * achived by overloading the queryExit() method.  The default
     * implementation simply returns TRUE, which means that the
     * application will be quitted. FALSE will cancel the exiting
-    * process. (Matthias) */
+    * process. (Matthias)
+    * Note, if you cancel exiting, your application will live on without
+    * windows (sven)
+    */
     virtual bool queryExit();
 
     /**
-     * Called before window is closed, but only if it is not the last one.
-     * (in that case see @ref #queryExit )
+     * Called before window is closed.
      * Reimplement this function if you want to ignore/accept close event.
      * Default implementation returns true. returning false will ignore
      * closing. (sven)
