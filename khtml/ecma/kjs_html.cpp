@@ -1660,7 +1660,7 @@ Value KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
   // generic properties
   switch (token) {
   case ElementId:
-    return getString(element.id());
+    return String(element.id()); // getString is wrong here. Other browsers return empty string if no id specified.
   case ElementTitle:
     return getString(element.title());
   case ElementLang:
