@@ -1,22 +1,20 @@
-
+#include "kxmlguitest.h"
 #include <kapplication.h>
 #include <kmainwindow.h>
 #include <kxmlguifactory.h>
 #include <kxmlguiclient.h>
 #include <kxmlguibuilder.h>
 #include <kaction.h>
+#include <kdebug.h>
 #include <kstdaction.h>
 #include <kstandarddirs.h>
+#include <qlineedit.h>
 #include <qdir.h>
 
-class Client : public KXMLGUIClient
+void Client::slotSec()
 {
-public:
-    Client() {}
-
-    void setXMLFile( const QString &f, bool merge = true ) { KXMLGUIClient::setXMLFile( f, merge ); }
-    void setInstance( KInstance *inst ) { KXMLGUIClient::setInstance( inst ); }
-};
+    kdDebug() << "Client::slotSec()" << endl;
+}
 
 int main( int argc, char **argv )
 {
@@ -27,6 +25,10 @@ int main( int argc, char **argv )
     KGlobal::dirs()->addResourceDir( "data", QDir::currentDirPath() );
 
     KMainWindow *mainwindow = new KMainWindow;
+
+    QLineEdit* line = new QLineEdit( mainwindow );
+    mainwindow->setCentralWidget( line );
+
     mainwindow->show();
 
     KXMLGUIBuilder *builder = new KXMLGUIBuilder( mainwindow );
@@ -46,7 +48,7 @@ int main( int argc, char **argv )
     Client *part = new Client;
 
     (void)new KAction( "decfont", "viewmag-", 0, 0, 0, part->actionCollection(), "decFontSizes" );
-    (void)new KAction( "sec", "unlock", 0, 0, 0, part->actionCollection(), "security" );
+    (void)new KAction( "sec", "unlock", Qt::ALT + Qt::Key_1, part, SLOT( slotSec() ), part->actionCollection(), "security" );
 
     part->setXMLFile( "./kxmlguitest_part.rc" );
 
@@ -59,3 +61,4 @@ int main( int argc, char **argv )
 
     return app.exec();
 }
+#include "kxmlguitest.moc"
