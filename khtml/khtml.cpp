@@ -119,6 +119,16 @@ void KHTMLWidget::init()
   _width = width()- SCROLLBARWIDTH - 10;
 }
 
+void KHTMLWidget::setFollowsLinks( bool follow )
+{
+    _followLinks = follow;
+}
+
+bool KHTMLWidget::followsLinks() 
+{
+    return _followLinks; 
+}
+
 KHTMLWidget* KHTMLWidget::topView()
 {
   KHTMLWidget *v = this;
@@ -531,6 +541,12 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
 
   QString url = completeURL( _url );
 
+  if(!_followLinks)
+  {
+      emit urlClicked( url, _target, _button );
+      return; 
+  }
+  
   if ( !_target.isNull() && !_target.isEmpty() && _button == LeftButton )
   {
     if ( strcmp( _target, "_parent" ) == 0 )
@@ -539,14 +555,14 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       if ( !v )
 	v = this;
       v->openURL( url );
-      emit urlClicked( url, _target );
+      emit urlClicked( url, _target, _button );
       return;
     }
     else if ( strcmp( _target, "_top" ) == 0 )
     {
       kdebug(0,1202,"OPENING top %s", url.ascii());
       topView()->openURL( url );
-      emit urlClicked( url, _target );
+      emit urlClicked( url, _target, _button );
       kdebug(0,1202,"OPENED top");
       return;
     }
@@ -558,7 +574,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
     else if ( strcmp( _target, "_self" ) == 0 )
     {
       openURL( url );
-      emit urlClicked( url, _target );
+      emit urlClicked( url, _target, _button );
       return;
     }
 
@@ -568,7 +584,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
     if ( v )
     {
       v->openURL( url );
-      emit urlClicked( url, _target );
+      emit urlClicked( url, _target, _button );
       return;
     }
     else
@@ -599,12 +615,11 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       kdebug(0,1202,"Going to anchor %s", anchor.ascii());
       // ###
       //gotoAnchor( anchor );
-      emit urlClicked( url, _target );
+      emit urlClicked( url, _target, _button );
       return;
     }
 
-    openURL( url );
-    emit urlClicked( url, _target );
+    openURL( url );	
   }
 }
 

@@ -72,6 +72,12 @@ public:
 
     virtual void openURL( const QString &_url, bool _reload = false, int _xoffset = 0, int _yoffset = 0, const char* _post_data = 0L );
 
+    /**
+     * should the widget follow links automatically, if you click on them? Default is true
+     */
+    void setFollowsLinks( bool follow );
+    bool followsLinks();
+    
     void enableImages( bool enable );
     bool imagesEnabled() const;
 
@@ -410,7 +416,7 @@ signals:
     void completed();
     void canceled();
 
-    void urlClicked( const QString &url , const QString &target);
+    void urlClicked( const QString &url , const QString &target, int button);
 
     /**
      * Signals that the mouse cursor has moved on or off a URL.
@@ -677,6 +683,7 @@ private:
     bool pressed;
     QString overURL;
     int _width;
+    bool _followLinks;
 };
 
 #endif
