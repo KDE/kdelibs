@@ -706,7 +706,7 @@ const struct HashEntry HTMLImageElementTableEntries[] = {
    { "border", KJS::HTMLElement::ImageBorder, DontDelete, 0, &HTMLImageElementTableEntries[14] },
    { 0, 0, 0, 0, 0 },
    { "hspace", KJS::HTMLElement::ImageHspace, DontDelete, 0, &HTMLImageElementTableEntries[15] },
-   { 0, 0, 0, 0, 0 },
+   { "complete", KJS::HTMLElement::ImageComplete, DontDelete|ReadOnly, 0, 0 },
    { "vspace", KJS::HTMLElement::ImageVspace, DontDelete, 0, 0 },
    { "align", KJS::HTMLElement::ImageAlign, DontDelete, 0, &HTMLImageElementTableEntries[16] },
    { 0, 0, 0, 0, 0 },
