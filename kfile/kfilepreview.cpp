@@ -1,7 +1,8 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-      
+                  2000 Werner Trobin <wtrobin@carinthia.com>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -18,130 +19,96 @@
     Boston, MA 02111-1307, USA.
 */
 
-// $Id$
+#include <kfilepreview.h>
+#include <kfilepreview.moc>
 
-#include "kfilepreview.h"
-#include "kdirlistbox.h"
-#include "kfiledetaillist.h"
-#include "kfileinfo.h"
-#include "kfilesimpleview.h"
-#include "kpreview.h"
-#include "kfilepreview.h"
-#include "config-kfile.h"
+KFilePreview::KFilePreview(QWidget *parent, const char *name) :
+                           QSplitter(parent, name), KFileView(), preview(0L) {
 
-#include <qpainter.h>
-#include <qlistbox.h>
+    // only default stuff for now
+    KFileIconView *files = new KFileIconView((QSplitter*)this, "left");
+    files->KFileView::setViewMode(All);
+    //files->setAlignMode(QIconView::East);
+    left=files;
+    files->setOperator(this);
 
-#include <qdir.h>
-
-#include <kapp.h>
-#include <kconfig.h>
-
-#ifdef Unsorted // the "I hate X.h" modus
-#undef Unsorted
-#endif
-
-KFilePreview::KFilePreview(   
-                         KDir *inDir, bool s, QDir::SortSpec sorting, 
-			 QWidget * parent, const char * name ) 
-    : QSplitter(Qt::Horizontal, parent, name),
-      KFileInfoContents(s,sorting)
-{
-
-    fileList = new KDirListBox(true, s, sorting, this, "_dirs");
-
-    myPreview = new KPreview( inDir, this, "_preview" );
-    
-    int pan = kapp->config()->readNumEntry("PannerPosition", 
-					   DefaultPannerPosition);
-    setRubberband(pan);
-
-    fileList->connectDirSelected(this, SLOT(dirActivated(KFileInfo *)));
-    fileList->connectFileSelected(this, SLOT(fileActivated(KFileInfo *)));
-    fileList->connectFileHighlighted(this, SLOT(fileHighlighted(KFileInfo *)));
+    preview=new QWidget((QSplitter*)this, "preview");
+    QString tmp=i18n("Sorry, no preview available.");
+    QLabel *l=new QLabel(tmp, preview);
+    l->setMinimumSize(l->sizeHint());
+    l->move(10, 5);
+    preview->setMinimumWidth(l->sizeHint().width()+20);
+    setResizeMode(preview, QSplitter::KeepSize);
 }
 
-KFilePreview::~KFilePreview()
-{
-    delete fileList;
-    delete myPreview;
+KFilePreview::~KFilePreview() {
 }
 
-void KFilePreview::registerPreviewModule( const char * format, PreviewHandler readPreview,
-                                          PreviewType inType)
-{
-    myPreview->registerPreviewModule( format, readPreview, inType );
+void KFilePreview::setPreviewWidget(QWidget *w) {
+
+    if(!w)
+        return;
+    if(preview)
+        delete preview;
+
+    preview=w;
+    connect(this, SIGNAL(showPreview(const KURL &)),
+            preview, SLOT(showPreview(const KURL &)));
+    preview->recreate((QSplitter*)this, 0, QPoint(0, 0), true);
 }
 
-
-void KFilePreview::setAutoUpdate(bool f)
-{
-    fileList->setAutoUpdate(f);
+void KFilePreview::insertItem(KFileViewItem *item) {
+    left->insertItem(item);
 }
 
-bool KFilePreview::insertItem(const KFileInfo *i, int) 
-{
-    fileList->addItem(i);
-    return true;
+void KFilePreview::clearView() {
+    left->clearView();
+    if(preview)
+        preview->erase();
 }
 
-void KFilePreview::clearView()
-{
-    fileList->clear();
+void KFilePreview::updateView(bool b) {
+    left->updateView(b);
+    if(preview)
+        preview->repaint(b);
 }
 
-void KFilePreview::highlightItem(unsigned int)
-{
-    warning("KCombiView::highlightItem: does nothing");
+void KFilePreview::updateView(const KFileViewItem *i) {
+    left->updateView(i);
 }
 
-void KFilePreview::setCurrentItem(const QString& item, const KFileInfo *i)
-{
-    if (!item.isNull()) {
-	i = 0;
-	debugC("setCurrentItem %s",item.ascii());
-	for (uint j = 0; j < count(); j++)
-	    if (at(j)->fileName() == item)
-		i = at(j);
-    }
-    
-    if (!i) {
-	warning("setCurrentItem: no match found.");
-	return; 
-    }
-
-    fileList->setCurrentItem(0, i);
-    
+void KFilePreview::clear() {
+    KFileView::clear();
+    left->KFileView::clear();
+    if(preview)
+        preview->erase();
 }
 
-void KFilePreview::repaint(bool f)
-{
-    fileList->repaint(f);
+void KFilePreview::clearSelection() {
+    left->clearSelection();
 }
 
-QString KFilePreview::findCompletion( const char *base, bool )
-{
-    // try files and directories
-    // QString found = fileList->findCompletion(base);
-
-    return found;
+void KFilePreview::setSelectMode(KFileView::SelectionMode sm) {
+    left->setSelectMode( sm );
 }
 
-void KFilePreview::dirActivated(KFileInfo *i) 
-{
-    select(i);
+void KFilePreview::highlightItem(const KFileViewItem *) {
+    // todo?
 }
 
-void KFilePreview::fileActivated(KFileInfo *i)
-{
-    select(i);
+void KFilePreview::selectDir(const KFileViewItem* item) {
+    sig->activateDir(item);
 }
 
-void KFilePreview::fileHighlighted(KFileInfo *i)
-{
-    highlight(i);
-    myPreview->previewFile(i);
+void KFilePreview::highlightFile(const KFileViewItem* item) {
+    sig->highlightFile(item);
 }
 
-#include "kfilepreview.moc"
+void KFilePreview::selectFile(const KFileViewItem* item) {
+    sig->activateFile(item);
+    //emit showPreview();???
+}
 
+void KFilePreview::activatedMenu(const KFileViewItem *item) {
+    sig->activateMenu(item);
+}

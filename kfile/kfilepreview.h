@@ -1,8 +1,9 @@
-// -*- c++ -*-
-/* This file is part of the KDE libraries
+/*  -*- c++ -*-
+    This file is part of the KDE libraries
     Copyright (C) 1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
-      
+                  2000 Werner Trobin <wtrobin@carinthia.com>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -22,53 +23,67 @@
 #ifndef _KFILEPREVIEW_H
 #define _KFILEPREVIEW_H
 
-class KDir;
-#include "kpreview.h"
-#include "kfileinfocontents.h"
+#include <kfileview.h>
+#include <kfileviewitem.h>
+#include <kfilepreview.h>
+#include <kdirlistbox.h>
+#include <kfileiconview.h>
+#include <kfiledetailview.h>
+#include <config-kfile.h>
+
 #include <qsplitter.h>
 
-class KFilePreview: protected QSplitter, public KFileInfoContents
+#include <qstring.h>
+#include <qlabel.h>
+//#include <qpainter.h>
+//#include <qlistbox.h>
+
+//#include <qdir.h>
+
+#include <klocale.h>
+//#include <kconfig.h>
+//#include <kglobal.h>
+
+//#include <qvaluelist.h>
+
+//class QIconViewItem;
+
+class KFilePreview : public QSplitter, public KFileView
 {
     Q_OBJECT
-	
+
 public:
+    KFilePreview(QWidget *parent, const char *name);
+    virtual ~KFilePreview();
 
-    KFilePreview( KDir *inDir, bool s, QDir::SortSpec sorting,
-		QWidget * parent=0, const char * name=0 );
-    ~KFilePreview();
-    
     virtual QWidget *widget() { return this; }
-    virtual void setAutoUpdate(bool);
-    virtual void setCurrentItem(const QString& filename, const KFileInfo *i);
-    virtual void repaint(bool f = true);
+    virtual void clearView();
 
-    // virtual QString findCompletion( const char *base, bool activateFound );
+    virtual void updateView( bool );
+    virtual void updateView(const KFileViewItem*);
 
-    virtual bool acceptsFiles() { return true; }
-    virtual bool acceptsDirs() { return true; }
+    virtual void setSelectMode( KFileView::SelectionMode sm );
 
-    void registerPreviewModule( const char * format, PreviewHandler readPreview,
-                                PreviewType inType);
+    virtual void clear();
+    virtual void clearSelection();
 
-protected slots:
-    
-    void dirActivated(KFileInfo *);
-    void fileActivated(KFileInfo *);
-    void fileHighlighted(KFileInfo *);
+    void setPreviewWidget(QWidget *w);
+
+signals:
+    void showPreview(const KURL &url);
 
 protected:
-    
-    virtual KFileInfoContents *getDirList() { return 0; }
-    virtual KFileInfoContents *getFileList() { return 0; }
+    virtual void insertItem(KFileViewItem *);
+    virtual void highlightItem(const KFileViewItem *);
 
-    virtual void highlightItem(unsigned int item);
-    virtual void clearView();
-    virtual bool insertItem(const KFileInfo *i, int index);
-    
+protected slots:
+    void activatedMenu(const KFileViewItem*);
+    void selectDir(const KFileViewItem*);
+    void highlightFile(const KFileViewItem*);
+    void selectFile(const KFileViewItem*);
+
 private:
-    KFileInfoContents *fileList;
-    KPreview *myPreview;
-
+    KFileView *left;
+    QWidget *preview;
 };
-
 #endif

@@ -69,9 +69,10 @@ class KFileDialog : public KDialogBase
 
 public:
     enum Mode {
-	File,
-	Directory,
-	Files
+	File = 1,
+	Directory = 2,
+	Files = 4,
+    Preview = 8
     };
     /**
       * Construct a KFileDialog

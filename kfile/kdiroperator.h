@@ -40,7 +40,7 @@ class KDirOperator : public QWidget {
 	
  public:
 
-    enum FileView { Default = 0, Simple = 1, Detail = 2};
+    enum FileView { Default = 0, Simple = 1, Detail = 2, Preview = 4, SeparateDirs = 8 };
 
     KDirOperator(const QString& dirName = QString::null,
 		 QWidget *parent = 0, const char* name = 0);
