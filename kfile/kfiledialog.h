@@ -217,6 +217,9 @@ protected:
     KDir *dir;
     
     QLabel *myStatusLine;
+
+    // the last selected filename
+    QString filename_;
     
     // represents the check box. Initialized by "ShowHidden"
     bool showHidden;
@@ -339,7 +342,8 @@ protected slots:
     void slotKfmError(int, const char *);
     void insertNewFiles(const KFileInfoList *newone);
     void completion();
-    void updateStatusLine();
+    virtual void updateStatusLine();
+    virtual void okPressed();
 
     /**
       * You should override this method if you change the user interface of
@@ -359,7 +363,6 @@ private:
     // to make it customable, this can be overriden by 
     // overriding 
     QWidget *wrapper;
-    QString filename_;
     QStrList *filters;
 
     // flag for perfomance hype ;)
@@ -391,6 +394,7 @@ public:
 protected:
     virtual KFileInfoContents *initFileList( QWidget *parent );
     virtual bool getShowFilter() { return false; }
+    virtual void updateStatusLine();
 };
 
 class KFileDialog : public KFileBaseDialog

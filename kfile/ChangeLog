@@ -1,5 +1,9 @@
 1998-03-30  Stephan Kulow  <coolo@kde.org>
 
+	* kfilesimpleview.cpp: fixed highlightning
+
+	* kfiledialog.cpp: some fixes for the dir selection
+
 	* kfiledialog.h: Moved KFileDialog into KFileBaseDialog and made
 	KFileDialog and KDirDialog a derived class of KFileBaseDialog to
 	make this virtual functions work

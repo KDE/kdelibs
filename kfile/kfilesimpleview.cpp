@@ -122,17 +122,17 @@ void KFileSimpleView::paintCell( QPainter *p, int row, int col)
     int y2 = h - 1;
 
     if ( (row == curRow) && (col == curCol) ) { // if we are on current cell,
-	if (kapp->style() == WindowsStyle)
-	    p->fillRect(0, 0, x2, y2, kapp->winStyleHighlightColor());
-	else
-	    p->fillRect(0, 0, x2, y2, kapp->selectColor);
+	p->fillRect(0, 0, x2, y2, kapp->selectColor);
 	
         if ( hasFocus() ) {
             p->setPen( DotLine );               
             p->drawRect( 0, 0, x2, y2 );        
             p->setPen( SolidLine );             
         }
-    }
+	p->setPen( kapp->selectTextColor );
+    } else
+	p->setPen( kapp->windowTextColor );
+
     if (index < count()) {
 	p->drawPixmap(0, 0, *pixmaps.at(index));
 	p->drawText(3 + pixmaps.at(index)->width(), 15, text(index));
@@ -248,7 +248,6 @@ int KFileSimpleView::cellWidth ( int col )
 
 void KFileSimpleView::resizeEvent ( QResizeEvent *e )
 {
-debug("resizeEvent");
     QTableView::resizeEvent(e);
     rowsVisible = lastRowVisible();
     setNumRows(rowsVisible);

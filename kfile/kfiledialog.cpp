@@ -224,7 +224,7 @@ void KFileBaseDialog::init()
 	filterLabel->setMinimumWidth(filterLabel->width());
 	filterLabel->resize(locationLabel->width(), filterLabel->height());
 
-	if (filters->count() == 1) {
+	if (filters->count() <= 1) {
 	    filterEdit = new QLineEdit(wrapper, "filteredit");
 	    filterEdit->adjustSize();
 	    filterEdit->setMinimumSize(100,filterLabel->size().height()+8);
@@ -278,7 +278,7 @@ void KFileBaseDialog::init()
     bOk->adjustSize();
     bOk->setMinimumWidth(bOk->width());
     bOk->setFixedHeight(bOk->height());
-    connect(bOk, SIGNAL(clicked()), SLOT(accept()));
+    connect(bOk, SIGNAL(clicked()), SLOT(okPressed()));
 
     bCancel= new QPushButton(i18n("Cancel"), this, "_cancel");
     bCancel->adjustSize();
@@ -307,6 +307,17 @@ void KFileBaseDialog::init()
 	checkPath(filename_);
 	locationEdit->setText(filename_);
     }
+}
+
+void KFileBaseDialog::okPressed()
+{
+    if (!filename_.isNull())
+	debug("filename %s", filename_.data());
+    else {
+	debug("no filename");
+	filename_ = locationEdit->currentText();
+    }
+    accept();
 }
 
 void KFileBaseDialog::initGUI()
@@ -1061,9 +1072,6 @@ KFileInfoContents *KFileDialog::initFileList( QWidget *parent )
 
 void KFileBaseDialog::completion() // SLOT
 {
-    bool useSingleClick =
-	kapp->getConfig()->readNumEntry("SingleClick",1);
-
     QString base;
     if (acceptUrls)
 	base = dir->url().copy();
@@ -1159,7 +1167,9 @@ KDirDialog::KDirDialog(const char *url, QWidget *parent, const char *name)
     
 KFileInfoContents *KDirDialog::initFileList( QWidget *parent )
 {
-    return new KDirListBox( true, dir->sorting(), parent, "_dirs" );
+    bool useSingleClick =
+	kapp->getConfig()->readNumEntry("SingleClick",1);
+    return new KDirListBox( useSingleClick, dir->sorting(), parent, "_dirs" );
 }
 
 QString KFileBaseDialog::getDirectory(const char *url,
@@ -1235,18 +1245,32 @@ void KFileBaseDialog::setMultiSelection(bool)
 void KFileBaseDialog::updateStatusLine()
 {
     QString lStatusText;
-    QString lFileText("files"), lDirText("directories");
+    QString lFileText, lDirText;
     if ( fileList->numDirs() == 1 )
-        lDirText = "directory";
+        lDirText = i18n("directory");
+    else
+	lDirText = i18n("directories");
     if ( fileList->numFiles() == 1 )
-        lFileText = "file";
+        lFileText = i18n("file");
+    else
+	lFileText = i18n("files");
     
     lStatusText.sprintf(i18n("%d %s and %d %s"),
-			     fileList->numDirs(), lDirText.data(), 
-                             fileList->numFiles(), lFileText.data());
+			fileList->numDirs(), lDirText.data(), 
+			fileList->numFiles(), lFileText.data());
     myStatusLine->setText(lStatusText);
 }
 
+void KDirDialog::updateStatusLine()
+{
+    QString lDirText;
+    if ( fileList->numDirs() == 1 )
+        lDirText = i18n("1 directory");
+    else
+	lDirText.sprintf("%d directories", fileList->numDirs());
+
+    myStatusLine->setText(lDirText);
+}
 
 #include "kfiledialog.moc"
 
