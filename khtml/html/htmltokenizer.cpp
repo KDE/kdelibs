@@ -401,9 +401,9 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 		scriptCodeSize = scriptCodeDest-scriptCode;
 	    }
 	    else {
-                if(!comment && ch == '\"')
+                if( !script && !comment && ch == '\"')
                     quot = (quot == NoQuote) ? DoubleQuote : (quot == SingleQuote) ? SingleQuote : NoQuote;
-                else if(!comment && ch == '\'')
+                else if( !script && !comment && ch == '\'')
                     quot = (quot == NoQuote) ? SingleQuote : (quot == DoubleQuote) ? DoubleQuote : NoQuote;
 		scriptCode[ scriptCodeSize++ ] = src[0];
 		++src;
