@@ -3122,7 +3122,7 @@ void KDesktopPropsPlugin::slotAdvanced()
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry("TerminalApplication",
+  QString preferredTerminal = confGroup.readPathEntry("TerminalApplication",
 						  QString::fromLatin1("konsole"));
 
   bool terminalCloseBool = false;
@@ -3348,7 +3348,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   // check to see if we use konsole if not do not add the nocloseonexit
   // because we don't know how to do this on other terminal applications
   KConfigGroup confGroup( KGlobal::config(), QString::fromLatin1("General") );
-  QString preferredTerminal = confGroup.readEntry("TerminalApplication",
+  QString preferredTerminal = confGroup.readPathEntry("TerminalApplication",
 						  QString::fromLatin1("konsole"));
 
   int posOptions = 1;
