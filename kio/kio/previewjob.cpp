@@ -445,9 +445,9 @@ void PreviewJob::slotThumbData(KIO::Job *, const QByteArray &data)
         thumb.setAlphaBuffer(alpha);
     }
     else
-#else
-        thumb.loadFromData(data);
 #endif
+        thumb.loadFromData(data);
+
     if (save)
     {
         thumb.setText("Thumb::URI", 0, d->origName);
