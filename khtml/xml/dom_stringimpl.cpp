@@ -28,6 +28,7 @@
 #include <kdebug.h>
 
 #include <string.h>
+#include <qstringlist.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -155,16 +156,19 @@ DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
   return new DOMStringImpl(s + pos, len);
 }
 
-static Length parseLength(QChar *s, unsigned int l)
+static Length parseLength(const QChar *s, unsigned int l)
 {
-    const QChar* last = s+l-1;
+
+    const QChar* last = &(s[l-1]);
     if (l && *last == QChar('%')) {
         // CSS allows one decimal after the point, like
         //  42.2%, but not 42.22%
         // we ignore the non-integer part for speed/space reasons
+
         int i = QConstString(s, l).string().findRev('.');
-        if ( i >= 0 && i < (int)l-1 )
+        if ( i >= 0 && i < (int)l-1 ) {
             l = i + 1;
+        }
 
         bool ok;
         i = QConstString(s, l-1).string().toInt(&ok);
@@ -173,11 +177,15 @@ static Length parseLength(QChar *s, unsigned int l)
             return Length(i, Percent);
 
         // in case of weird constructs like 5*%
-        last--;
+        last-=sizeof(QChar);
         l--;
     }
 
-    if ( *last == '*') {
+    if (l == 0) { // if the string passed is just a single % character this prevents accessing invalid memory
+        return Length(0, Variable);
+    }
+
+    if ( *last == QChar('*')) {
         if(last == s)
             return Length(1, Relative);
         else
@@ -188,6 +196,7 @@ static Length parseLength(QChar *s, unsigned int l)
     // CSS says no, all important browsers do so, including Mozilla. sigh.
     bool ok;
     // this ugly construct helps in case someone specifies a length as "100."
+
     int v = (int) QConstString(s, l).string().toFloat(&ok);
 
     if(ok)
@@ -199,8 +208,7 @@ static Length parseLength(QChar *s, unsigned int l)
 khtml::Length* DOMStringImpl::toLengthArray(int& len) const
 {
     QString str(s, l);
-    int pos = 0;
-    int pos2;
+
 
     // web authors are so stupid. This is a workaround
     // to fix lists like "1,2px 3 ,4"
@@ -212,17 +220,21 @@ khtml::Length* DOMStringImpl::toLengthArray(int& len) const
         if ( cc > '9' || ( cc < '0' && cc != '-' && cc != '*' && cc != '%' && cc != '.') )
             str[i] = space;
     }
+
     str = str.simplifyWhiteSpace();
 
-    len = str.contains(' ') + 1;
+    QStringList segments = QStringList::split(QString(" "), str);
+
+    len = segments.size();
     khtml::Length* r = new khtml::Length[len];
+
     int i = 0;
-    while((pos2 = str.find(' ', pos)) != -1)
-    {
-        r[i++] = parseLength((QChar *) str.unicode()+pos, pos2-pos);
-        pos = pos2+1;
+
+    for ( QStringList::Iterator it = segments.begin(); it != segments.end(); ++it, ++i ) {
+        const QChar* const startPtr = (*it).unicode();
+        const unsigned int l = (*it).length();
+        r[i] = parseLength(startPtr, l);
     }
-    r[i] = parseLength((QChar *) str.unicode()+pos, str.length()-pos);
 
     return r;
 }
