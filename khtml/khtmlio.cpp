@@ -47,10 +47,6 @@
 
 #include <kdebug.h>
 
-template class QList<HTMLURLRequester>;
-template class QList<HTMLImageRequester>;
-template class QDict<KHTMLCachedImage>;
-
 using namespace DOM;
 
 HTMLURLRequest::HTMLURLRequest()
