@@ -191,7 +191,8 @@ bool KProcess::setExecutable(const QString& proc)
 
   if (proc.isEmpty())  return false;
 
-  arguments.pop_front();
+  if (!arguments.isEmpty())
+     arguments.remove(arguments.begin());
   arguments.prepend(QFile::encodeName(proc));
 
   return true;
