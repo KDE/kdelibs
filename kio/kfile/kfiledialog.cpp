@@ -1215,7 +1215,7 @@ void KFileDialog::setSelection(const QString& url)
         QString filename = u.url();
         int sep = filename.findRev('/');
         if (sep >= 0) { // there is a / in it
-            if ( KProtocolInfo::supportsListing( u.protocol() ))
+            if ( KProtocolInfo::supportsListing( u ))
                 setURL(filename.left(sep), true);
 
             // filename must be decoded, or "name with space" would become
@@ -2140,7 +2140,7 @@ KURL KFileDialog::getStartURL( const QString& startDir,
         {
             ret = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
             // If we won't be able to list it (e.g. http), then use default
-            if ( !KProtocolInfo::supportsListing( ret.protocol() ) )
+            if ( !KProtocolInfo::supportsListing( ret ) )
                 useDefaultStartDir = true;
         }
     }

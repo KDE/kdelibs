@@ -571,7 +571,7 @@ void KDirOperator::setURL(const KURL& _newurl, bool clearforward)
     newurl.setPath(pathstr);
 
     // already set
-    if ( newurl.cmp( currUrl, true ) )
+    if ( newurl.equals( currUrl, true ) )
         return;
 
     if ( !isReadable( newurl ) ) {

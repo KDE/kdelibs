@@ -252,7 +252,7 @@ QDragObject * KFileTreeView::dragObject()
       pixmap = currentKFileTreeViewItem()->fileItem()->pixmap( 16 );
    hotspot.setX( pixmap.width() / 2 );
    hotspot.setY( pixmap.height() / 2 );
-   QDragObject* dragObject = KURLDrag::newDrag( urls, this );
+   QDragObject* dragObject = new KURLDrag( urls, this );
    if( dragObject )
       dragObject->setPixmap( pixmap, hotspot );
    return dragObject;
@@ -445,7 +445,7 @@ void KFileTreeView::slotNewTreeViewItems( KFileTreeBranch* branch, const KFileTr
       {
 	 KURL url = (*it)->url();
 
-	 if( m_nextUrlToSelect.cmp(url, true ))   // ignore trailing / on dirs
+	 if( m_nextUrlToSelect.equals(url, true ))   // ignore trailing / on dirs
 	 {
 	    setCurrentItem( static_cast<QListViewItem*>(*it) );
 	    m_nextUrlToSelect = KURL();
