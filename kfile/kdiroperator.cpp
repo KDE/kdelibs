@@ -734,15 +734,13 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
     fileView->addItemList( newone );
     emit updateInformation(fileView->numDirs(), fileView->numFiles());
 
-    if ( dir->url().isLocalFile() ) { // look up icons for local items
-	KFileItemListIterator it( newone );
-	while ( it.current() ) {
-	    pendingMimeTypes.append(static_cast<KFileViewItem*>(it.current()));
-	    ++it;
-	}
-	QTimer::singleShot(0, this, SLOT(readNextMimeType()));
-	QTimer::singleShot(200, this, SLOT(resetCursor()));
+    KFileItemListIterator it( newone );
+    while ( it.current() ) {
+	pendingMimeTypes.append(static_cast<KFileViewItem*>(it.current()));
+	++it;
     }
+    QTimer::singleShot(0, this, SLOT(readNextMimeType()));
+    QTimer::singleShot(200, this, SLOT(resetCursor()));
 }
 
 void KDirOperator::selectDir(const KFileViewItem *item)
