@@ -811,8 +811,9 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
    if (service != NULL)
        send_service_startup_info( request,  service,
            startup_id, QValueList< QCString >());
-   else
-       request->startup_id = "0"; // no .desktop file, no startup info
+   else // no .desktop file, no startup info
+       cancel_service_startup_info( request, startup_id, envs );
+
    requestStart(request);
    // We don't care about this request any longer....
    requestDone(request);
@@ -830,6 +831,7 @@ KLauncher::start_service_by_name(const QString &serviceName, const QStringList &
    {
       DCOPresult.result = ENOENT;
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
+      cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
    return start_service(service, urls, envs, startup_id, blind);
@@ -854,6 +856,7 @@ KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStri
    {
       DCOPresult.result = ENOENT;
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
+      cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
    return start_service(service, urls, envs, startup_id, blind);
@@ -870,6 +873,7 @@ KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStri
    {
       DCOPresult.result = ENOENT;
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
+      cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
    return start_service(service, urls, envs, startup_id, blind);
@@ -884,6 +888,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    {
       DCOPresult.result = ENOEXEC;
       DCOPresult.error = i18n("Service '%1' is malformatted.").arg(service->desktopEntryPath());
+      cancel_service_startup_info( NULL, startup_id, envs ); // cancel it if any
       return false;
    }
    KLaunchRequest *request = new KLaunchRequest;
@@ -903,7 +908,10 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
       {
          QStringList singleUrl;
          singleUrl.append(*it);
-         start_service( service, singleUrl, envs, startup_id, true);
+         QCString startup_id2 = startup_id;
+         if( !startup_id2.isEmpty() && startup_id2 != "0" )
+             startup_id2 = "0"; // can't use the same startup_id several times
+         start_service( service, singleUrl, envs, startup_id2, true);
       }
       QString firstURL = *(urls.begin());
       urls.clear();
@@ -917,6 +925,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
       DCOPresult.result = ENOEXEC;
       DCOPresult.error = i18n("Service '%1' is malformatted.").arg(service->desktopEntryPath());
       delete request;
+      cancel_service_startup_info( NULL, startup_id, envs );
       return false;
    }
 
@@ -961,13 +970,19 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
     if( service->property( "X-KDE-StartupNotify" ).isValid())
     {
         if( !service->property( "X-KDE-StartupNotify" ).toBool())
+        {
+            cancel_service_startup_info( request, startup_id, envs );
             return;
+        }
         wmclass = service->property( "X-KDE-WMClass" ).toString().latin1();
     }
     else // non-compliant app ( .desktop file )
     {
         if( service->type() != "Application" )
+        {
+            cancel_service_startup_info( request, startup_id, envs );
             return;
+        }
         else
             wmclass = "0";
     }
@@ -987,7 +1002,10 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
         dpy = XOpenDisplay( dpy_str );
     request->startup_id = id.id();
     if( dpy == NULL )
+    {
+        cancel_service_startup_info( request, startup_id, envs );
         return;
+    }
 
     request->startup_dpy = dpy_str;
 
@@ -1005,6 +1023,39 @@ KLauncher::send_service_startup_info( KLaunchRequest *request, KService::Ptr ser
 #else
     return;
 #endif
+}
+
+void
+KLauncher::cancel_service_startup_info( KLaunchRequest* request, const QCString& startup_id,
+    const QValueList<QCString> &envs )
+{
+#ifdef Q_WS_X11 // KStartup* isn't implemented for Qt/Embedded yet
+    if( request != NULL )
+        request->startup_id = "0";
+    if( !startup_id.isEmpty() && startup_id != "0" )
+    {
+        const char* dpy_str = NULL;
+        for( QValueList<QCString>::ConstIterator it = envs.begin();
+             it != envs.end();
+             ++it )
+            if( strncmp( *it, "DISPLAY=", 8 ) == 0 )
+                dpy_str = static_cast< const char* >( *it ) + 8;
+        Display* dpy = NULL;
+        if( dpy_str != NULL && mCached_dpy != NULL
+            && qstrcmp( dpy_str, XDisplayString( mCached_dpy )) == 0 )
+            dpy = mCached_dpy;
+        if( dpy == NULL )
+            dpy = XOpenDisplay( dpy_str );
+        if( dpy == NULL )
+            return;
+        KStartupInfoId id;
+        id.initId( startup_id );
+        KStartupInfo::sendFinishX( dpy, id );
+        if( mCached_dpy != dpy && mCached_dpy != NULL )
+           XCloseDisplay( mCached_dpy );
+        mCached_dpy = dpy;
+    }
+#endif    
 }
 
 bool

@@ -157,6 +157,8 @@ protected:
    
    void send_service_startup_info( KLaunchRequest *request, KService::Ptr service, const QCString& startup_id,
        const QValueList<QCString> &envs );
+   void cancel_service_startup_info( KLaunchRequest *request, const QCString& startup_id,
+       const QValueList<QCString> &envs );
 
 public slots:
    void slotAutoStart();
