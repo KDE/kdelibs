@@ -63,7 +63,7 @@ KSaveFile::~KSaveFile()
 }
 
 QString 
-KSaveFile::name()
+KSaveFile::name() const
 {
    return mFileName;
 }

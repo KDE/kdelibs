@@ -91,17 +91,17 @@ public:
     * You may check the status after closing the file to verify that
     * the file has indeed been written correctly.
     **/
-   int status();
+   int status() const;
 
    /**
     * The name of the file.
     **/
-   QString name();
+   QString name() const;
    
    /**
     * An integer file descriptor open for writing to the file 
     **/
-   int handle();
+   int handle() const;
    
    /**
     * @return FILE* stream open for writing to the file

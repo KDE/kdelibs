@@ -109,7 +109,7 @@ void KIconEffect::init()
     }
 }
 
-QString KIconEffect::fingerprint(int group, int state)
+QString KIconEffect::fingerprint(int group, int state) const
 {
     QString s, tmp;
     s += tmp.setNum(mEffect[group][state]);
@@ -126,7 +126,7 @@ QString KIconEffect::fingerprint(int group, int state)
     return s;
 }
 
-QImage KIconEffect::apply(QImage image, int group, int state)
+QImage KIconEffect::apply(QImage image, int group, int state) const
 {
     if (state >= KIcon::LastState)
     {
@@ -142,7 +142,7 @@ QImage KIconEffect::apply(QImage image, int group, int state)
 	    mColor[group][state], mTrans[group][state]);
 }
 
-QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, bool trans)
+QImage KIconEffect::apply(QImage image, int effect, float value, const QColor col, bool trans) const
 {
     if (effect >= LastEffect )
     {
@@ -175,7 +175,7 @@ QImage KIconEffect::apply(QImage image, int effect, float value, const QColor co
     return image;
 }
 
-QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state)
+QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state) const
 {
     if (state >= KIcon::LastState)
     {
@@ -192,7 +192,7 @@ QPixmap KIconEffect::apply(QPixmap pixmap, int group, int state)
 }
 
 QPixmap KIconEffect::apply(QPixmap pixmap, int effect, float value,
-	const QColor col, bool trans)
+	const QColor col, bool trans) const
 {
     QPixmap result;
 
@@ -400,7 +400,7 @@ void KIconEffect::semiTransparent(QPixmap &pix)
     pix.setMask(mask);
 }
 
-QImage KIconEffect::doublePixels(QImage src)
+QImage KIconEffect::doublePixels(QImage src) const
 {
     QImage dst;
     if (src.depth() == 1)
@@ -449,7 +449,7 @@ QImage KIconEffect::doublePixels(QImage src)
     return dst;
 }
 
-void KIconEffect::overlay(QImage &src, QImage &overlay)
+void KIconEffect::overlay(QImage &src, QImage &overlay) 
 {
     if (src.depth() != overlay.depth())
     {

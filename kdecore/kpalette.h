@@ -85,7 +85,7 @@ public:
    /**
     * Get the description of the palette.
     **/
-   QString description()
+   QString description() const
    	{ return mDesc; }
 
    /**   	
@@ -97,7 +97,7 @@ public:
    /**
     * Get the name of the palette. 
     **/
-   QString name()
+   QString name() const
    	{ return mName; }
 
    /**
@@ -111,7 +111,7 @@ public:
    /**
     * Returns whether the palette may be edited.
     **/
-   Editable editable()
+   Editable editable() const
    	{ return mEditable; }
 
    /**
@@ -123,7 +123,7 @@ public:
    /**
     * Return the number of colors in the palette.
     **/
-   int nrColors()
+   int nrColors() const
    	{ return (int) mKolorList.count(); }
 
    /**
@@ -137,7 +137,7 @@ public:
     * @return The index of the color in the palette or -1 if the
     * color is not found.
     **/
-   int findColor(const QColor &color);
+   int findColor(const QColor &color) const;
 
    /** 
     * Find colorname by @p index.
@@ -153,7 +153,7 @@ public:
     * Note also that each palette can give the same color
     * a different name.
     **/
-   QString colorName(const QColor &color) 
+   QString colorName(const QColor &color)
    	{ return colorName( findColor(color)); }
    
    /**

@@ -122,19 +122,19 @@ KTempFile::~KTempFile()
 }
 
 int
-KTempFile::status()
+KTempFile::status() const
 {
    return mError;
 }
 
 QString
-KTempFile::name()
+KTempFile::name() const
 {
    return mTmpName;
 }
 
 int
-KTempFile::handle()
+KTempFile::handle() const
 {
    return mFd;
 }

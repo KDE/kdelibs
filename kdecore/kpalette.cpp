@@ -172,7 +172,7 @@ KPalette::operator=( const KPalette &p)
 }
 
 QColor
-KPalette::color(int index)
+KPalette::color(int index) 
 {
   if ((index < 0) || (index >= nrColors()))
 	return QColor();
@@ -185,20 +185,20 @@ KPalette::color(int index)
 }
 
 int
-KPalette::findColor(const QColor &color)
+KPalette::findColor(const QColor &color) const
 {
   int index;
-  kolor *node = mKolorList.first();
-  for(index = 0; node; node = mKolorList.next(), index++)
+  QListIterator<kolor> it( mKolorList );
+  for (index = 0; it.current(); ++it, ++index)
   {
-     if (node->color == color)
+     if (it.current()->color == color)
          return index;
   }
   return -1;
 }
 
 QString
-KPalette::colorName(int index)
+KPalette::colorName(int index) 
 {
   if ((index < 0) || (index >= nrColors()))
 	return QString::null;

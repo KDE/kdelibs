@@ -154,18 +154,18 @@ public:
     /**
      * @return the current size for an icon group.
      */
-    int currentSize(int group);
+    int currentSize(int group) const;
 
     /**
      * Returns a pointer to the current theme. Can be used to query
      * available and default sizes for groups.
      */
-    KIconTheme *theme();
+    KIconTheme *theme() const;
 
     /**
      * Returns a pointer to the KIconEffect object used by the icon loader.
      */
-    KIconEffect *iconEffect();
+    KIconEffect *iconEffect() const;
 
     /**
      * Returns the image associated with a given serialNumber. You should

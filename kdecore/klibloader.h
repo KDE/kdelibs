@@ -174,7 +174,7 @@ public:
      * Looks up a symbol from the library. This is a very low level
      * function that you usually dont want to use.
      */
-    void* symbol( const char* name );
+    void* symbol( const char* name ) const;
 
 private slots:
     void slotObjectCreated( QObject *obj );

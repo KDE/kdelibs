@@ -58,36 +58,36 @@ public:
     * You may check the status after closing the file to verify that
     * the file has indeed been written correctly.
     **/
-   int status()
+   int status() const
    	{ return mTempFile.status(); }
 
    /**
     * The name of the file as passed to the constructor.
     **/
-   QString name();
+   QString name() const;
    
    /**
     * An integer file descriptor open for writing to the file 
     **/
-   int handle()	
+   int handle()	const
    	{ return mTempFile.handle(); }
    
    /**
     * A FILE* stream open for writing to the file
     **/
-   FILE *fstream()
+   FILE *fstream() 
    	{ return mTempFile.fstream(); }
 
    /**
     * A QFile* open for writing to the file
     **/
-   QFile *file()
+   QFile *file() 
    	{ return mTempFile.file(); }
 
    /**
     * A QTextStream* open for writing to the file
     **/
-   QTextStream *textStream() 
+   QTextStream *textStream()
    	{ return mTempFile.textStream(); }
 
    /**

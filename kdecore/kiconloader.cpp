@@ -690,13 +690,13 @@ QStringList KIconLoader::loadAnimated(const QString& name, int group, int size) 
     return lst;
 }
 
-KIconTheme *KIconLoader::theme()
+KIconTheme *KIconLoader::theme() const
 {
     if (d->mpThemeRoot) return d->mpThemeRoot->theme;
     return 0L;
 }
 
-int KIconLoader::currentSize(int group)
+int KIconLoader::currentSize(int group) const
 {
     if (!d->mpGroups) return -1;
 
@@ -780,7 +780,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, int context) const
     return res2;
 }
 
-KIconEffect * KIconLoader::iconEffect()
+KIconEffect * KIconLoader::iconEffect() const
 {
     return &d->mpEffect;
 }

@@ -175,7 +175,7 @@ KLibFactory* KLibrary::factory()
     return m_factory;
 }
 
-void* KLibrary::symbol( const char* symname )
+void* KLibrary::symbol( const char* symname ) const
 {
     void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
     if ( !sym )

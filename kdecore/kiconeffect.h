@@ -44,7 +44,7 @@ public:
      * Returns a fingerprint for the effect selected by 
      * [@p group, @p state]. This is usefull for caching.
      */ 
-     QString fingerprint(int group, int state);
+     QString fingerprint(int group, int state) const;
 
     /**
      * Apply an effect to an image. The effect to apply depends on the
@@ -54,7 +54,7 @@ public:
      * @param state The icon's state.
      * @return An image with the effect applied.
      */
-    QImage apply(QImage src, int group, int state);
+    QImage apply(QImage src, int group, int state) const;
 
     /**
      * Apply an effect to an image.
@@ -65,22 +65,22 @@ public:
      * @param trans Add Transparency if trans = true.                             
      * @return An image with the effect applied.
      */
-    QImage apply(QImage src, int effect, float value, const QColor rgb, bool trans);
+    QImage apply(QImage src, int effect, float value, const QColor rgb, bool trans) const;
 
     /**
      * Apply an effect to a pixmap.
      */
-    QPixmap apply(QPixmap src, int group, int state);
+    QPixmap apply(QPixmap src, int group, int state) const;
 
     /**
      * Apply an effect to a pixmap.
      */
-    QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, bool trans);
+    QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, bool trans) const;
 
     /**
      * Returns an image twice as large, consisting of 2x2 pixels.
      */
-    QImage doublePixels(QImage src);
+    QImage doublePixels(QImage src) const;
 
     /**
      * Provide visual feedback to show activation of an icon on a widget.
