@@ -49,7 +49,7 @@ public:
   KProtocolInfo( const QString & path);
   
   /**
-   * @internal construct a ImageIOFormat from a stream
+   * @internal construct a KProtocolInfo from a stream
    */ 
   KProtocolInfo( QDataStream& _str, int offset);
 
