@@ -555,7 +555,7 @@ bool KImageIO::isSupported( const QString& _mimeType, Mode _mode )
 
 QString KImageIO::mimeType( const QString& _filename )
 {
-  return KMimeType::findByURL( _filename )->name();
+  return KMimeType::findByURL( KURL( _filename ) )->name();
 }
 
 void KImageIOFormat::virtual_hook( int id, void* data )

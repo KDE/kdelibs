@@ -54,7 +54,7 @@ public:
     Data() : mimeTypeInfo( 0L )
     {}
 
-    ~Data() 
+    ~Data()
     {
         if ( this == null ) // only the null item owns its mimeTypeInfo
             delete mimeTypeInfo;
@@ -739,7 +739,7 @@ KFileMetaInfo::Data* KFileMetaInfo::Data::makeNull()
         // We deliberately do not reset "null" after it has been destroyed!
         // Otherwise we will run into problems later in ~KFileMetaInfoItem
         // where the d-pointer is compared against null.
-	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(QString::null, 0) );
+	null = sd_KFileMetaInfoData.setObject( new KFileMetaInfo::Data(KURL(), 0) );
     return null;
 }
 
