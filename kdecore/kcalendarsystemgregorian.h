@@ -29,6 +29,7 @@
 class KCalendarSystemGregorianPrivate;
 
 /**
+ * @internal
  * This is the Gregorian calendar implementation.
  *
  * The Gregorian calender is the most used calendar today. The first year in

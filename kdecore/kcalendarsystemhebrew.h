@@ -29,6 +29,7 @@
 class KCalendarSystemHebrewPrivate;
 
 /**
+ * @internal
  * This is the Hebrew calendar implementation.
  *
  * The Hebrew calendar is the traditional Islamic calendar used in the Midle

@@ -1,6 +1,6 @@
 /*
    Copyright (c) 2002 Carlos Moro <cfmoro@correo.uniovi.es>
-   Copyright (c) 2002 Hans Petter Bieker <bieker@kde.org>
+   Copyright (c) 2002-2003 Hans Petter Bieker <bieker@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,6 +29,7 @@
 class KCalendarSystemHijriPrivate;
 
 /**
+ * @internal
  * This is the Hijri calendar implementation.
  *
  * The Hijri calendar is the traditional Islamic calendar used in the Midle
