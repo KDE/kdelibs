@@ -4829,7 +4829,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 {
 #ifndef NDEBUG
   QString indent = QString().leftJustify( s_saveStateIndentLevel * 4, ' ' );
-  int indentLevel = ++s_saveStateIndentLevel;
+  int indentLevel = s_saveStateIndentLevel++;
   kdDebug( 6050 ) << indent << "saveState this=" << this << " '" << name() << "' saving URL " << m_url.url() << endl;
 #endif
 
