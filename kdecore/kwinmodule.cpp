@@ -165,8 +165,14 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	NETWinInfo ni( qt_xdisplay(), ev->xany.window, qt_xrootwin(), 0 );
         unsigned long dirty[ 2 ];
 	ni.event( ev, dirty, 2 );
-	if ( !dirty[ 0 ] && !dirty[ 1 ] && ev->type ==PropertyNotify && ev->xproperty.atom == XA_WM_HINTS )
-	    dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIcon; // support for old icons
+	if ( !dirty[ 0 ] && !dirty[ 1 ] && ev->type ==PropertyNotify ) {
+            if( ev->xproperty.atom == XA_WM_HINTS )
+	        dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIcon; // support for old icons
+            else if( ev->xproperty.atom == XA_WM_NAME )
+                dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMName; // support for old name
+            else if( ev->xproperty.atom == XA_WM_ICON_NAME )
+                dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIconName; // support for old iconic name
+        }
 	if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 ) {
             removeStrutWindow( ev->xany.window );
             if ( !possibleStrutWindows.contains( ev->xany.window )  )
