@@ -182,7 +182,12 @@ int callFunction( const char* app, const char* obj, const char* func, const QCSt
 	}
 	for ( QCStringList::Iterator it = funcs.begin(); it != funcs.end(); ++it ) {
 	    int l = (*it).find( '(' );
-	    int s = (*it).find( ' ');
+	    int s;
+	    if (l > 0)
+	        s = (*it).findRev( ' ', l);
+	    else
+	        s = (*it).find( ' ' );
+
 	    if ( s < 0 )
 		s = 0;
 	    else
