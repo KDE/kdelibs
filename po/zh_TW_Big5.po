@@ -6,85 +6,90 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: kdelibs\n"
-"POT-Creation-Date: 1998-01-25 13:21+0100\n"
-"PO-Revision-Date: 1998-02-21 04:16+0800\n"
+"POT-Creation-Date: 1998-04-17 23:25+0200\n"
+"PO-Revision-Date: 1998-04-19 13:46+0800\n"
 "Last-Translator: Chou Yeh-Jyi <ycchou@ccca.nctu.edu.tw>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: ENCODING\n"
 
-#: kdecore/kapp.cpp:419
-msgid "&Help..."
-msgstr "求助[&H]..."
+#: kdecore/kapp.cpp:494
+#, fuzzy
+msgid "&Contents"
+msgstr "主題"
 
-#: kdecore/kapp.cpp:424
+#: kdecore/kapp.cpp:500
 msgid "&About"
 msgstr "關於[&A]"
 
-#: kdecore/kapp.cpp:428
+#: kdecore/kapp.cpp:507
 msgid "About &KDE..."
 msgstr "關於 &KDE..."
 
-#: kdecore/kapp.cpp:449
+#: kdecore/kapp.cpp:528
 msgid "About KDE"
 msgstr "關於 KDE"
 
-#: kdecore/kapp.cpp:451
+#: kdecore/kapp.cpp:530
 msgid ""
-"The KDE Desktop Environment was written by the KDE team.\n"
+"\n"
+"The KDE Desktop Environment was written by the KDE Team,\n"
+"a world-wide network of software engineers commited to\n"
+"free software development.\n"
+"\n"
+"Visit http://www.kde.org for more information on the KDE\n"
+"Project. Please consider joining and supporting KDE.\n"
 "\n"
 "Please report bugs at http://buglist.kde.org.\n"
-"\n"
-"\n"
-"KDE was developed with Qt, a cross-platform GUI library.\n"
-"\n"
-"Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n"
-"Qt may be used freely to develop free software on the X Window System.\n"
 msgstr ""
 
-#: kdeui/kcolordlg.cpp:283
+#: kdeui/kcolordlg.cpp:285
 msgid "Select Color"
 msgstr "選擇顏色"
 
-#: kdeui/kcolordlg.cpp:295
+#: kdeui/kcolordlg.cpp:297
 msgid "System Colors"
 msgstr "系統顏色"
 
-#: kdeui/kcolordlg.cpp:326
+#: kdeui/kcolordlg.cpp:328
 msgid "Custom Colors"
 msgstr "自定顏色"
 
-#: kdeui/kcolordlg.cpp:339
+#: kdeui/kcolordlg.cpp:341
 msgid "Add to Custom Colors"
 msgstr "加入自定顏色"
 
-#: kdeui/kcolordlg.cpp:461 kdeui/kfontdialog.cpp:322
-#: kdeui/kiconloaderdialog.cpp:210 po/texts.cpp:37
+#: kdeui/kcolordlg.cpp:463 kdeui/kfontdialog.cpp:337
+#: kdeui/kiconloaderdialog.cpp:210 kfile/kfiledialog.cpp:898 po/texts.cpp:37
 msgid "Ok"
 msgstr "確定"
 
-#: kdeui/kcolordlg.cpp:464 kdeui/kcontrol.cpp:41 kdeui/keditcl1.cpp:397
-#: kdeui/keditcl1.cpp:479 kdeui/keditcl2.cpp:897 kdeui/kfontdialog.cpp:317
-#: kdeui/kiconloaderdialog.cpp:211 kdeui/kmsgbox.cpp:509 po/texts.cpp:40
+#: kdeui/kcolordlg.cpp:466 kdeui/kcontrol.cpp:41 kdeui/keditcl1.cpp:397
+#: kdeui/keditcl1.cpp:479 kdeui/keditcl2.cpp:897 kdeui/kfontdialog.cpp:332
+#: kdeui/kiconloaderdialog.cpp:211 kdeui/kmsgbox.cpp:505
+#: kfile/kfiledialog.cpp:286 kfile/kfiledialog.cpp:903
+#: kfile/kfiledialogconf.cpp:58 po/texts.cpp:40
 msgid "Cancel"
 msgstr "取消"
 
-#: kdeui/kcolordlg.cpp:469 kdeui/kcontrol.cpp:34 po/texts.cpp:45
+#: kdeui/kcolordlg.cpp:471 kdeui/kcontrol.cpp:34 kfile/kfiledialog.cpp:292
+#: po/texts.cpp:45
 msgid "Help"
 msgstr "求助"
 
-#: kdeui/kcolordlg.cpp:786 kdeui/kcolordlg.cpp:838
+#: kdeui/kcolordlg.cpp:788 kdeui/kcolordlg.cpp:840
 msgid "Custom..."
 msgstr "自定..."
 
 #: kdeui/kcontrol.cpp:39 kdeui/keditcl1.cpp:129 kdeui/keditcl1.cpp:143
 #: kdeui/keditcl1.cpp:158 kdeui/keditcl1.cpp:179 kdeui/keditcl1.cpp:192
-#: kdeui/keditcl1.cpp:1473 kdeui/keditcl1.cpp:1630 kdeui/kmsgbox.cpp:477
-#: po/texts.cpp:35
+#: kdeui/keditcl1.cpp:1473 kdeui/keditcl1.cpp:1630 kdeui/kmsgbox.cpp:473
+#: kfile/kfiledialog.cpp:280 kfile/kfiledialog.cpp:513
+#: kfile/kfiledialogconf.cpp:60 po/texts.cpp:35
 msgid "OK"
 msgstr "確定"
 
-#: kdeui/kcontrol.cpp:40 po/texts.cpp:42
+#: kdeui/kcontrol.cpp:40 kfile/kfiledialogconf.cpp:59 po/texts.cpp:42
 msgid "Apply"
 msgstr "套用"
 
@@ -134,7 +139,7 @@ msgstr ""
 #: kdeui/keditcl1.cpp:497 kdeui/keditcl1.cpp:1573 kdeui/keditcl2.cpp:108
 #: kdeui/keditcl2.cpp:125 kdeui/keditcl2.cpp:365 kdeui/keditcl2.cpp:382
 #: kdeui/keditcl2.cpp:428 kdeui/keditcl2.cpp:458 kdeui/keditcl2.cpp:475
-#: kdeui/kmsgbox.cpp:492 kdeui/kmsgbox.cpp:507 po/texts.cpp:27
+#: kdeui/kmsgbox.cpp:488 kdeui/kmsgbox.cpp:503 po/texts.cpp:27
 msgid "Yes"
 msgstr "是"
 
@@ -142,7 +147,7 @@ msgstr "是"
 #: kdeui/keditcl1.cpp:498 kdeui/keditcl1.cpp:1574 kdeui/keditcl2.cpp:109
 #: kdeui/keditcl2.cpp:126 kdeui/keditcl2.cpp:366 kdeui/keditcl2.cpp:383
 #: kdeui/keditcl2.cpp:429 kdeui/keditcl2.cpp:459 kdeui/keditcl2.cpp:476
-#: kdeui/kmsgbox.cpp:490 kdeui/kmsgbox.cpp:505 po/texts.cpp:28
+#: kdeui/kmsgbox.cpp:486 kdeui/kmsgbox.cpp:501 po/texts.cpp:28
 msgid "No"
 msgstr "否"
 
@@ -250,81 +255,81 @@ msgstr "跳至行數"
 msgid "Go"
 msgstr "跳"
 
-#: kdeui/kfontdialog.cpp:132
+#: kdeui/kfontdialog.cpp:145
 msgid "Select Font"
 msgstr "選擇字型"
 
-#: kdeui/kfontdialog.cpp:136
+#: kdeui/kfontdialog.cpp:149
 msgid "Requested Font"
 msgstr "要求的字型"
 
-#: kdeui/kfontdialog.cpp:141
+#: kdeui/kfontdialog.cpp:154
 msgid "Actual Font"
 msgstr "實際的字型"
 
-#: kdeui/kfontdialog.cpp:145 kdeui/kfontdialog.cpp:149
+#: kdeui/kfontdialog.cpp:158 kdeui/kfontdialog.cpp:162
 msgid "Family:"
 msgstr "族類:"
 
-#: kdeui/kfontdialog.cpp:156 kdeui/kfontdialog.cpp:162 po/texts.cpp:26
+#: kdeui/kfontdialog.cpp:169 kdeui/kfontdialog.cpp:175 po/texts.cpp:26
 msgid "Charset:"
 msgstr "字集:"
 
-#: kdeui/kfontdialog.cpp:169 kdeui/kfontdialog.cpp:174
+#: kdeui/kfontdialog.cpp:182 kdeui/kfontdialog.cpp:187 kfile/kpreview.cpp:196
 msgid "Size:"
 msgstr "大小"
 
-#: kdeui/kfontdialog.cpp:183 kdeui/kfontdialog.cpp:188
+#: kdeui/kfontdialog.cpp:195 kdeui/kfontdialog.cpp:200
 msgid "Weight:"
 msgstr "厚度:"
 
-#: kdeui/kfontdialog.cpp:197 kdeui/kfontdialog.cpp:205
+#: kdeui/kfontdialog.cpp:209 kdeui/kfontdialog.cpp:216
 msgid "Style:"
 msgstr "樣式:"
 
-#: kdeui/kfontdialog.cpp:240
+#: kdeui/kfontdialog.cpp:253
 msgid "Charset"
 msgstr "字集"
 
-#: kdeui/kfontdialog.cpp:255
+#: kdeui/kfontdialog.cpp:264 kfile/kfiledetaillist.cpp:38
 msgid "Size"
 msgstr "大小"
 
-#: kdeui/kfontdialog.cpp:294
+#: kdeui/kfontdialog.cpp:305
 msgid "Weight"
 msgstr "厚度"
 
-#: kdeui/kfontdialog.cpp:295 kdeui/kfontdialog.cpp:413
+#: kdeui/kfontdialog.cpp:306 kdeui/kfontdialog.cpp:433
 msgid "normal"
 msgstr "正常"
 
-#: kdeui/kfontdialog.cpp:296 kdeui/kfontdialog.cpp:415
+#: kdeui/kfontdialog.cpp:307 kdeui/kfontdialog.cpp:435
 msgid "bold"
 msgstr "粗體"
 
-#: kdeui/kfontdialog.cpp:305
+#: kdeui/kfontdialog.cpp:318
 msgid "Style"
 msgstr "樣式"
 
-#: kdeui/kfontdialog.cpp:306 kdeui/kfontdialog.cpp:426
-#: kdeui/kfontdialog.cpp:455
+#: kdeui/kfontdialog.cpp:319 kdeui/kfontdialog.cpp:446
+#: kdeui/kfontdialog.cpp:475
 msgid "roman"
 msgstr "正體"
 
-#: kdeui/kfontdialog.cpp:307 kdeui/kfontdialog.cpp:428
-#: kdeui/kfontdialog.cpp:453
+#: kdeui/kfontdialog.cpp:320 kdeui/kfontdialog.cpp:448
+#: kdeui/kfontdialog.cpp:473
 msgid "italic"
 msgstr "斜體"
 
-#: kdeui/kfontdialog.cpp:335
+#: kdeui/kfontdialog.cpp:350
 msgid "Dolor Ipse"
 msgstr ""
 
-#: kdeui/kfontdialog.cpp:448
+#: kdeui/kfontdialog.cpp:468
 msgid "Bold"
 msgstr "粗體"
 
-#: kdeui/kfontdialog.cpp:450
+#: kdeui/kfontdialog.cpp:470
 msgid "Normal"
 msgstr "正常"
 
@@ -336,38 +341,374 @@ msgstr "選擇圖示"
 msgid "Filter:"
 msgstr "過濾:"
 
-#: kdeui/kmenubar.cpp:149 kdeui/ktoolbar.cpp:325
+#: kdeui/kmenubar.cpp:154 kdeui/ktoolbar.cpp:435
 msgid "Top"
 msgstr "頂端"
 
-#: kdeui/kmenubar.cpp:150 kdeui/ktoolbar.cpp:327
+#: kdeui/kmenubar.cpp:155 kdeui/ktoolbar.cpp:437
 msgid "Bottom"
 msgstr "底端"
 
-#: kdeui/kmenubar.cpp:151 kdeui/ktoolbar.cpp:328
+#: kdeui/kmenubar.cpp:156 kdeui/ktoolbar.cpp:438
 msgid "Floating"
 msgstr "漂浮"
 
-#: kdeui/kmenubar.cpp:191 kdeui/kmenubar.cpp:330 kdeui/ktoolbar.cpp:734
-#: kdeui/ktoolbar.cpp:1285
+#: kdeui/kmenubar.cpp:197 kdeui/kmenubar.cpp:337 kdeui/ktoolbar.cpp:1459
 msgid "Float"
 msgstr "漂浮"
 
-#: kdeui/kmenubar.cpp:319 kdeui/ktoolbar.cpp:1267
+#: kdeui/kmenubar.cpp:326 kdeui/ktoolbar.cpp:1441
 msgid "UnFloat"
 msgstr "固定"
 
-#: kdeui/ktoolbar.cpp:120 kdeui/ktoolbar.cpp:185
+#: kdeui/ktoolbar.cpp:153 kdeui/ktoolbar.cpp:277
 msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
 msgstr "KToolBarButton: 空的圖示, 也許\缺少某些檔案"
 
-#: kdeui/ktoolbar.cpp:324
+#: kdeui/ktoolbar.cpp:434
 msgid "Left"
 msgstr "左"
 
-#: kdeui/ktoolbar.cpp:326
+#: kdeui/ktoolbar.cpp:436
 msgid "Right"
 msgstr "右"
+
+#: kfile/bookmark.cpp:246
+msgid "<!-- Do not edit this file -->"
+msgstr "<!-- 請勿編輯此檔 -->"
+
+#: kfile/kcombiview.cpp:80
+#, fuzzy
+msgid "Folders:"
+msgstr "過濾:"
+
+#: kfile/kcombiview.cpp:81
+#, fuzzy
+msgid "Contents:"
+msgstr "主題"
+
+#: kfile/kfiledetaillist.cpp:36
+#, fuzzy
+msgid "Name"
+msgstr "檔名"
+
+#: kfile/kfiledetaillist.cpp:40
+msgid "Permissions"
+msgstr "權限"
+
+#: kfile/kfiledetaillist.cpp:42
+#, fuzzy
+msgid "Date"
+msgstr "日期"
+
+#: kfile/kfiledetaillist.cpp:45
+msgid "Owner"
+msgstr "擁有者"
+
+#: kfile/kfiledetaillist.cpp:47
+msgid "Group"
+msgstr "群組"
+
+#: kfile/kfiledialog.cpp:144 po/texts.cpp:56
+msgid "Back"
+msgstr "往回"
+
+#: kfile/kfiledialog.cpp:147 po/texts.cpp:57
+msgid "Forward"
+msgstr "往前"
+
+#: kfile/kfiledialog.cpp:150
+msgid "Up to parent"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:153
+msgid "Home"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:156 po/texts.cpp:55
+msgid "Reload"
+msgstr "重新載入"
+
+#: kfile/kfiledialog.cpp:172
+msgid "Bookmarks"
+msgstr "書籤"
+
+#: kfile/kfiledialog.cpp:176
+msgid "Create new folder"
+msgstr "建立新資料夾"
+
+#: kfile/kfiledialog.cpp:179
+#, fuzzy
+msgid "Search for a file"
+msgstr "存成檔案"
+
+#: kfile/kfiledialog.cpp:182
+msgid "Configure this dialog [development only]"
+msgstr "設定此對話盒 [發展專用]"
+
+#: kfile/kfiledialog.cpp:190
+msgid "The path"
+msgstr "路徑"
+
+#: kfile/kfiledialog.cpp:215
+msgid "&Location:"
+msgstr "位置[&L]:"
+
+#: kfile/kfiledialog.cpp:227
+#, fuzzy
+msgid "&Filter:"
+msgstr "過濾[&F]:"
+
+#: kfile/kfiledialog.cpp:260
+msgid "Show hidden"
+msgstr "顯示隱藏檔案"
+
+#: kfile/kfiledialog.cpp:508
+msgid "Error: Not local file"
+msgstr "錯誤: 沒有區域的檔案"
+
+#: kfile/kfiledialog.cpp:509
+msgid ""
+"The specified directory is not a local directory\n"
+"But the application accepts just local files."
+msgstr ""
+"指定的目錄並不是區域的目錄\n"
+"但此應用程式只街受區域的檔案."
+
+#: kfile/kfiledialog.cpp:523 kfile/kfiledialog.cpp:623
+msgid "Error: Cannot Open Directory"
+msgstr "錯誤: 無法開啟目錄"
+
+#: kfile/kfiledialog.cpp:524
+#, fuzzy
+msgid ""
+"The specified directory does not exist\n"
+"or was not readable."
+msgstr ""
+"指定的目錄不存在或是不可讀取"
+
+#: kfile/kfiledialog.cpp:526 kfile/kfiledialog.cpp:626
+msgid "Dismiss"
+msgstr "駁回"
+
+#: kfile/kfiledialog.cpp:562 kfile/kfiledialog.cpp:1156
+#: kfile/kfiledialog.cpp:1315 kfile/kfiledialog.cpp:1349 po/texts.cpp:69
+msgid "Open"
+msgstr "開啟"
+
+#: kfile/kfiledialog.cpp:577 kfile/kfiledialog.cpp:1330 po/texts.cpp:80
+msgid "Save As"
+msgstr "另存新檔"
+
+#: kfile/kfiledialog.cpp:599
+msgid "Root Directory"
+msgstr "根目錄"
+
+#: kfile/kfiledialog.cpp:624
+#, fuzzy
+msgid "The specified directory does not exist or was not readable."
+msgstr "指定的目錄不存在或是不可讀取."
+
+#: kfile/kfiledialog.cpp:883
+msgid "Create new directory in: "
+msgstr "建立新目錄: "
+
+#: kfile/kfiledialog.cpp:886
+msgid "New Directory"
+msgstr "新目錄"
+
+#: kfile/kfiledialog.cpp:958
+#, fuzzy
+msgid "Add to bookmarks"
+msgstr "加入書籤"
+
+#: kfile/kfiledialog.cpp:1190
+msgid "Choose Directory"
+msgstr "選擇目錄"
+
+#: kfile/kfiledialog.cpp:1211 kfile/kfiledialog.cpp:1370 po/texts.cpp:78
+msgid "Save"
+msgstr "儲存"
+
+#: kfile/kfiledialog.cpp:1258
+msgid "directory"
+msgstr "目錄"
+
+#: kfile/kfiledialog.cpp:1260
+msgid "directories"
+msgstr "目錄"
+
+#: kfile/kfiledialog.cpp:1262 kfile/kpreview.cpp:326
+#, fuzzy
+msgid "file"
+msgstr "檔案"
+
+#: kfile/kfiledialog.cpp:1264
+#, fuzzy
+msgid "files"
+msgstr "檔案"
+
+#: kfile/kfiledialog.cpp:1266
+#, c-format
+msgid "%d %s and %d %s"
+msgstr ""
+
+#: kfile/kfiledialog.cpp:1276
+msgid "one directory"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:41
+msgid "Look and Feel"
+msgstr "外觀感覺"
+
+#: kfile/kfiledialogconf.cpp:43
+msgid ""
+"KDE File Selector by:\n"
+"\n"
+"Richard Moore <rich@kde.org>\n"
+"Stephan Kulow <coolo@kde.org>\n"
+"and Daniel Grana <grana@ie.iwi.unibe.ch>\n"
+"\n"
+"with contributions by\n"
+"\n"
+"Mario Weilguni <mweilguni@sime.com>\n"
+"and Martin Jones <mjones@kde.org>"
+msgstr ""
+
+#: kfile/kfiledialogconf.cpp:56 po/texts.cpp:32
+msgid "About"
+msgstr "有關"
+
+#: kfile/kfiledialogconf.cpp:70
+msgid "View style"
+msgstr "檢視的風格"
+
+#: kfile/kfiledialogconf.cpp:74
+msgid "Show Short View"
+msgstr "簡短顯示"
+
+#: kfile/kfiledialogconf.cpp:80
+msgid "Show Detail View"
+msgstr "詳細顯示"
+
+#: kfile/kfiledialogconf.cpp:89
+msgid "Misc"
+msgstr "其他"
+
+#: kfile/kfiledialogconf.cpp:95
+#, fuzzy
+msgid "Show Filter"
+msgstr "顯示過濾器"
+
+#: kfile/kfiledialogconf.cpp:101
+msgid "Show List Labels"
+msgstr "顯示名單標籤"
+
+#: kfile/kfiledialogconf.cpp:107
+msgid "Show Hidden"
+msgstr "顯示隱藏檔案"
+
+#: kfile/kfiledialogconf.cpp:113
+msgid "Show Status Line"
+msgstr "顯示狀態列"
+
+#: kfile/kfiledialogconf.cpp:119
+msgid "Use single Click"
+msgstr "使用單敲擊"
+
+#: kfile/kfiledialogconf.cpp:125
+msgid "Mix dirs and files"
+msgstr "混合目錄與檔案"
+
+#: kfile/kfiledialogconf.cpp:131
+msgid "Keep dirs first"
+msgstr "優先排列目錄"
+
+#: kfile/kfileinfo.cpp:95 kfile/kfileinfo.cpp:99
+msgid "unknown"
+msgstr "未知"
+
+#: kfile/kfileinfo.cpp:217
+msgid "Jan"
+msgstr "一月"
+
+#: kfile/kfileinfo.cpp:218
+msgid "Feb"
+msgstr "二月"
+
+#: kfile/kfileinfo.cpp:219
+msgid "Mar"
+msgstr "三月"
+
+#: kfile/kfileinfo.cpp:220
+msgid "Apr"
+msgstr "四月"
+
+#: kfile/kfileinfo.cpp:221
+msgid "May"
+msgstr "五月"
+
+#: kfile/kfileinfo.cpp:222
+msgid "Jun"
+msgstr "六月"
+
+#: kfile/kfileinfo.cpp:223
+msgid "Jul"
+msgstr "七月"
+
+#: kfile/kfileinfo.cpp:224
+msgid "Aug"
+msgstr "八月"
+
+#: kfile/kfileinfo.cpp:225
+msgid "Sep"
+msgstr "九月"
+
+#: kfile/kfileinfo.cpp:226
+msgid "Oct"
+msgstr "十月"
+
+#: kfile/kfileinfo.cpp:227
+#, fuzzy
+msgid "Nov"
+msgstr "十一月"
+
+#: kfile/kfileinfo.cpp:228
+msgid "Dec"
+msgstr "十二月"
+
+#: kfile/kpreview.cpp:187
+#, fuzzy
+msgid "Name:"
+msgstr "檔名:"
+
+#: kfile/kpreview.cpp:205
+msgid "Date:"
+msgstr "日期:"
+
+#: kfile/kpreview.cpp:214
+msgid "Owner:"
+msgstr "擁有者"
+
+#: kfile/kpreview.cpp:223
+msgid "Group:"
+msgstr "群組:"
+
+#: kfile/kpreview.cpp:232
+msgid "Type:"
+msgstr "類型:"
+
+#: kfile/kpreview.cpp:287
+msgid "locked"
+msgstr "鎖住"
+
+#: kfile/kpreview.cpp:311
+msgid "picture"
+msgstr "圖形"
+
+#: kfile/kpreview.cpp:343
+msgid "folder"
+msgstr "資料夾"
 
 #: po/texts.cpp:24
 msgid "Error"
@@ -388,10 +729,6 @@ msgstr "存成檔案"
 #: po/texts.cpp:31
 msgid "Contents"
 msgstr "主題"
-
-#: po/texts.cpp:32
-msgid "About"
-msgstr "有關"
 
 #: po/texts.cpp:33
 msgid "A&bout..."
@@ -457,18 +794,6 @@ msgstr "離開"
 msgid "&Quit"
 msgstr "離開[&Q]"
 
-#: po/texts.cpp:55
-msgid "Reload"
-msgstr "重新載入"
-
-#: po/texts.cpp:56
-msgid "Back"
-msgstr "往回"
-
-#: po/texts.cpp:57
-msgid "Forward"
-msgstr "往前"
-
 #: po/texts.cpp:58
 msgid "Copy"
 msgstr "拷貝"
@@ -513,10 +838,6 @@ msgstr "開始新遊戲"
 msgid "&New Game"
 msgstr "開始遊戲[&N]"
 
-#: po/texts.cpp:69
-msgid "Open"
-msgstr "開啟"
-
 #: po/texts.cpp:70
 msgid "Open a file"
 msgstr "開啟檔案"
@@ -549,17 +870,9 @@ msgstr "前景顏色[&F]"
 msgid "&Background Color"
 msgstr "背景顏色[&B]"
 
-#: po/texts.cpp:78
-msgid "Save"
-msgstr "儲存"
-
 #: po/texts.cpp:79
 msgid "&Save"
 msgstr "儲存[&S]"
-
-#: po/texts.cpp:80
-msgid "Save As"
-msgstr "另存新檔"
 
 #: po/texts.cpp:81
 msgid "Save as..."
@@ -648,3 +961,4 @@ msgstr "瀏覽..."
 #: po/texts.cpp:104
 msgid "(none)"
 msgstr "(無)"
+
