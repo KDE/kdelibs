@@ -5195,10 +5195,9 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
   } while ( selectParagraph || (!ch.isSpace() && !ch.isPunct()) );
 }
 
-// This is not static because it's used in khtmlview.cpp, too
 /** Determines whether @p start_sp appears before @p end_sp in document order
  */
-bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
+static bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
   if ( start_sp.isNull() || end_sp.isNull() ) return true;
 
   bool result = false;
