@@ -1074,36 +1074,34 @@ bool TCPSlaveBase::isConnectionValid()
     struct timeval tv;
     tv.tv_usec = 0;
     tv.tv_sec = 0;
-    int retval = KSocks::self()->select(m_iSock+1, &rdfs, NULL, NULL, &tv);
-    
+    int retval;
+    do {
+       retval = KSocks::self()->select(m_iSock+1, &rdfs, NULL, NULL, &tv);
+    } while ((retval == -1) && (errno == EAGAIN));
+    // retval == -1 ==> Error  
+    // retval ==  0 ==> Connection Idle
+    // retval >=  1 ==> Connection Active
     kdDebug(7029) << "TCPSlaveBase::isConnectionValid: select returned: "
                   << retval << endl;
-                  
-    // A -1 does not necessarily mean error.  We have to check
-    // the value errno and make sure it is not EAGAIN since that
-    // is the expected result for a non-blocking socket.
-    if ( retval == -1 )
-    {
-        if ( !d->block && errno != EAGAIN )
-            return false;
-            
-        kdDebug(7029) << "TCPSlaveBase::isConnectionValid: error = EAGAIN: TRUE" 
-                      << endl;
-    }
-    else if ( retval > -1 )
-    {
-        struct sockaddr addr;
-        ksocklen_t addrlen = sizeof (addr);
-        retval = KSocks::self()->getpeername(m_iSock, &addr, &addrlen);
-        
-        kdDebug(7029) << "TCPSlaveBase::isConnectionValid: getpeername returned: "
-                      << retval << endl;
-                      
-        if ( retval == -1 )
-            return false;
-    }
+
+    if (retval == -1)
+       return false;
     
-    return true;
+    if (retval == 0)
+       return true;
+       
+    // Connection is active, check if it has closed.
+    char buffer[100];
+    do {
+       retval = KSocks::self()->recv(m_iSock, buffer, 80, MSG_PEEK);
+                     
+    } while ((retval == -1) && (errno == EAGAIN));
+   kdDebug(7029) << "TCPSlaveBase::isConnectionValid: recv returned: "
+                     << retval << endl;
+    if (retval <= 0)
+       return false; // Error or connection closed.
+       
+    return true; // Connection still valid.
 }
 
 

@@ -247,6 +247,8 @@ protected:
      * Determines whether or not we are still connected
      * to the remote machine.
      *
+     * This method may fail to detect a closed SSL connection.
+     *
      * return @p true if the socket is still active or
      *           false otherwise.
      */
