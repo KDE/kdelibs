@@ -370,6 +370,15 @@ int KDEsuClient::ping()
     return command("PING\n");
 }
 
+int KDEsuClient::exitCode()
+{
+    QCString result;
+    if (command("EXIT\n", &result) != 0)
+       return -1;
+       
+    return result.toLong();
+}
+
 int KDEsuClient::stopServer()
 {
     return command("STOP\n");

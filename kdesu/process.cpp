@@ -358,25 +358,23 @@ int PtyProcess::enableLocalEcho(bool enable)
 
 int PtyProcess::waitForChild()
 {
-    int ret, state, retval = 1;
-    struct timeval tv;
+    int retval = 1;
 
     fd_set fds;
     FD_ZERO(&fds);
 
     while (1) 
     {
-        tv.tv_sec = 1; tv.tv_usec = 0;
         FD_SET(m_Fd, &fds);
-        ret = select(m_Fd+1, &fds, 0L, 0L, &tv);
+        int ret = select(m_Fd+1, &fds, 0L, 0L, 0L);
         if (ret == -1) 
         {
-            if (errno == EINTR) continue;
-            else 
+            if (errno != EINTR) 
             {
                 kdError(900) << k_lineinfo << "select(): " << perror << "\n";
                 return -1;
             }
+            ret = 0;
         }
 
         if (ret) 
@@ -396,6 +394,7 @@ int PtyProcess::waitForChild()
         }
 
         // Check if the process is still alive
+        int state;
         ret = waitpid(m_Pid, &state, WNOHANG);
         if (ret < 0) 
         {
@@ -412,8 +411,7 @@ int PtyProcess::waitForChild()
             break;
         }
     }
-
-    return -retval;
+    return retval;
 }
    
 /*

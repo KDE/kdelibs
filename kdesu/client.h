@@ -60,6 +60,12 @@ public:
     int exec(const QCString &command, const QCString &user, const QCString &options=0, const QCStringList &env=QCStringList());
 
     /**
+     * Wait for the last command to exit and return the exit code.
+     * @return Exit code of last command, -1 on failure.
+     */
+    int exitCode();
+
+    /**
      * Set root's password, lasts one session.
      *
      * @param pass Root's password.
