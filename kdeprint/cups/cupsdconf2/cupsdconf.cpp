@@ -17,6 +17,7 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
+#include <config.h>
 #include "cupsdconf.h"
 
 #include <qfile.h>
@@ -70,10 +71,10 @@ CupsdConf::CupsdConf()
 	//fontpath_ << (datadir_+"/fonts");
 	requestdir_ = findDir(QStringList("/var/spool/cups")
 			<< "/var/cups");
-	serverbin_ = findDir(QStringList("/usr/lib/cups")
-			<< "/usr/local/lib/cups"
-			<< "/opt/lib/cups"
-			<< "/opt/local/lib/cups");
+	serverbin_ = findDir(QStringList("/usr/lib" KDELIBSUFF "/cups")
+			<< "/usr/local/lib" KDELIBSUFF "/cups"
+			<< "/opt/lib" KDELIBSUFF "/cups"
+			<< "/opt/local/lib" KDELIBSUFF "/cups");
 	serverfiles_ = findDir(QStringList("/etc/cups")
 			<< "/usr/local/etc/cups");
 	tmpfiles_ = requestdir_+"/tmp";

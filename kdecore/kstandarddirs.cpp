@@ -926,11 +926,11 @@ QString KStandardDirs::kde_default(const char *type) {
     if (!strcmp(type, "exe"))
 	return "bin/";
     if (!strcmp(type, "lib"))
-	return "lib/";
+	return "lib" KDELIBSUFF "/";
     if (!strcmp(type, "module"))
-	return "lib/kde3/";
+	return "lib" KDELIBSUFF "/kde3/";
     if (!strcmp(type, "qtplugins"))
-        return "lib/kde3/plugins";
+        return "lib" KDELIBSUFF "/kde3/plugins";
     if (!strcmp(type, "xdgdata-apps"))
         return "applications/";
     if (!strcmp(type, "xdgdata-dirs"))

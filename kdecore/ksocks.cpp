@@ -249,9 +249,13 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(0L), _st(0L) {
       return;
 
    _libPaths << ""
+	     << "/usr/lib" KDELIBSUFF "/"
              << "/usr/lib/"
+	     << "/usr/local/lib" KDELIBSUFF "/"
              << "/usr/local/lib/"
+	     << "/usr/local/socks5/lib" KDELIBSUFF "/"
              << "/usr/local/socks5/lib/"
+	     << "/opt/socks5/lib" KDELIBSUFF "/"
              << "/opt/socks5/lib/";
    _libNames << "libsocks.so"                  // Dante
              << "libdsocksd.so.0"              // Dante 1.1.14-2 on

@@ -280,7 +280,7 @@ KConfig *cfg;
 
 #ifdef __OpenBSD__
    {
-   QString libname = findMostRecentLib("/usr/lib", "crypto");
+   QString libname = findMostRecentLib("/usr/lib" KDELIBSUFF, "crypto");
    if (!libname.isNull())
          _cryptoLib = ll->globalLibrary(libname.latin1());
    }
@@ -289,13 +289,13 @@ KConfig *cfg;
             #ifdef _AIX
             << "/opt/freeware/lib/"
 	    #endif
-	    << "/usr/lib/"
-	    << "/usr/ssl/lib/"
-            << "/usr/local/lib/"
-            << "/usr/local/openssl/lib/"
-            << "/usr/local/ssl/lib/"
-            << "/opt/openssl/lib/"
-            << "/lib/"
+	    << "/usr/lib" KDELIBSUFF "/"
+	    << "/usr/ssl/lib" KDELIBSUFF "/"
+	    << "/usr/local/lib" KDELIBSUFF "/"
+            << "/usr/local/openssl/lib" KDELIBSUFF "/"
+            << "/usr/local/ssl/lib" KDELIBSUFF "/"
+	    << "/opt/openssl/lib" KDELIBSUFF "/"
+	    << "/lib" KDELIBSUFF "/"
             << "";
 
 // FIXME: #define here for the various OS types to optimize
