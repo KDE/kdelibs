@@ -56,7 +56,7 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   int count;
   QString month[12]= {
     i18n("January"), i18n("February"), i18n("March"), i18n("April"),
-    i18n("May"), i18n("June"), i18n("July"), i18n("August"), 
+    i18n("May long", "May"), i18n("June"), i18n("July"), i18n("August"),
     i18n("September"), i18n("October"), i18n("November"), i18n("December")
   };
   // ----- initialize month names:
@@ -143,7 +143,7 @@ KDatePicker::resizeEvent(QResizeEvent*)
   // ----- place the buttons:
   x=0;
   for(count=0; count<NoOfButtons; ++count)
-    {  
+    {
       w=sizes[count].width();
       buttons[count]->setGeometry(x, 0, w, buttonHeight);
       x+=w;
@@ -155,14 +155,14 @@ KDatePicker::resizeEvent(QResizeEvent*)
   table->setGeometry(0, buttonHeight, width(), height()-buttonHeight-sizes[0].height());
 }
 
-void 
+void
 KDatePicker::dateChangedSlot(QDate date)
 {
   kdDebug() << "KDatePicker::dateChangedSlot: date changed (" << date.year() << "/" << date.month() << "/" << date.day() << ")." << endl;
   emit(dateChanged(date));
 }
 
-void 
+void
 KDatePicker::tableClickedSlot()
 {
   kdDebug() << "KDatePicker::tableClickedSlot: table clicked." << endl;
@@ -170,7 +170,7 @@ KDatePicker::tableClickedSlot()
   emit(tableClicked());
 }
 
-const QDate& 
+const QDate&
 KDatePicker::getDate()
 {
   return table->getDate();
@@ -332,8 +332,8 @@ void
 KDatePicker::setEnabled(bool enable)
 {
   QWidget *widgets[]= {
-    yearForward, yearBackward, monthForward, monthBackward, 
-    selectMonth, selectYear, 
+    yearForward, yearBackward, monthForward, monthBackward,
+    selectMonth, selectYear,
     line, table };
   const int Size=sizeof(widgets)/sizeof(widgets[0]);
   int count;
@@ -346,7 +346,7 @@ KDatePicker::setEnabled(bool enable)
 
 void
 KDatePicker::lineEnterPressed()
-{ 
+{
   QDate temp;
   // -----
   if(val->date(line->text(), temp)==QValidator::Acceptable)
@@ -359,7 +359,7 @@ KDatePicker::lineEnterPressed()
     }
 }
 
-QSize 
+QSize
 KDatePicker::sizeHint() const
 {
   QSize tableSize=table->sizeHint();
@@ -371,7 +371,7 @@ KDatePicker::sizeHint() const
     monthForward,
     yearForward };
   const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
-  QSize sizes[NoOfButtons];  
+  QSize sizes[NoOfButtons];
   int cx=0, cy=0, count;
   // ----- store the size hints:
   for(count=0; count<NoOfButtons; ++count)
@@ -401,7 +401,7 @@ KDatePicker::setFontSize(int s)
     selectMonth,
     selectYear,
     // monthForward,
-    // yearForward 
+    // yearForward
   };
   const int NoOfButtons=sizeof(buttons)/sizeof(buttons[0]);
   int count;
