@@ -1568,6 +1568,13 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     return;
   }
 
+   if (url.find( QString::fromLatin1( "javascript:" ),0, false ) != -1 )
+   {
+     emit setStatusBarText(  url.mid(  url.find("javascript:",0,false)  )  );
+     return;
+   }
+
+
   KURL u = completeURL( url );
   QString com;
 
