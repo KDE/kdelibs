@@ -268,9 +268,15 @@ QPalette cspl;
 
    cspl = d->_csl->palette();
    KSSLCertificate::KSSLValidation ksv = x->validate();
-   if (ksv == KSSLCertificate::SelfSigned)
-      if (KSSLSigners().useForSSL(*x))
-         ksv = KSSLCertificate::Ok;
+   if (ksv == KSSLCertificate::SelfSigned) {
+	  if (x->getQDTNotAfter() > QDateTime::currentDateTime() &&
+		  x->getQDTNotBefore() < QDateTime::currentDateTime()) {
+	      if (KSSLSigners().useForSSL(*x))
+    	     ksv = KSSLCertificate::Ok;
+	  } else {
+		  ksv = KSSLCertificate::Expired;
+	  }
+   }
 
    if (ksv != KSSLCertificate::Ok)
       cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
