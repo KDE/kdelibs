@@ -17,33 +17,38 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMCONFIGGENERAL_H
-#define KMCONFIGGENERAL_H
+#ifndef KMCONFIGFONTS_H
+#define KMCONFIGFONTS_H
 
 #include "kmconfigpage.h"
 
-class KIntNumInput;
+class KListView;
 class KURLRequester;
-class QCheckBox;
 class QPushButton;
-class KMConfigGeneral : public KMConfigPage
+class QCheckBox;
+
+class KMConfigFonts : public KMConfigPage
 {
 	Q_OBJECT
 public:
-	KMConfigGeneral(QWidget *parent = 0);
+	KMConfigFonts(QWidget *parent = 0, const char *name = 0);
 
 	void loadConfig(KConfig*);
 	void saveConfig(KConfig*);
 
 protected slots:
-	void slotTestPagePreview();
-        void testPageChanged(const QString & );
-	void setEnabledPreviewButton(bool b);
+	void slotUp();
+	void slotDown();
+	void slotRemove();
+	void slotAdd();
+	void slotSelected();
+	void slotTextChanged(const QString&);
+
 private:
-	KIntNumInput	*m_timer;
-	KURLRequester	*m_testpage;
-	QCheckBox	*m_defaulttestpage;
-	QPushButton	*m_preview;
+	QCheckBox	*m_embedfonts;
+	KListView	*m_fontpath;
+	KURLRequester	*m_addpath;
+	QPushButton	*m_up, *m_down, *m_add, *m_remove;
 };
 
 #endif
