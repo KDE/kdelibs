@@ -65,15 +65,20 @@ public class KJASAppletContext implements AppletContext
         //the applet variables
         String key = new String( "archive" ).toUpperCase();
         if (params.containsKey(key)) {
+            String param_archive = (String)params.get(key);
             if (archives == null) {
                 // There is no 'archive' attribute
                 // but a 'archive' param. fix archive list 
                 // from param value
-                archives = (String)params.get(key);
+                archives = param_archive;
             } else {
                 // there is already an archive attribute.
-                // just add the value of the param to the list
-                archives = (String)params.get(key) + "," + archives;
+                // just add the value of the param to the list.
+                // But ignore bill$ personal archive format called
+                // .cab because java doesn't understand it.
+                if (!param_archive.toLowerCase().endsWith(".cab")) {
+                    archives =  param_archive + "," + archives;
+                }
             }
         } else if (archives != null) {
             // add param if it is not present
@@ -110,7 +115,6 @@ public class KJASAppletContext implements AppletContext
         {
             KJASAppletClassLoader loader =
                 KJASAppletClassLoader.getLoader( docBase, codeBase );
-            loader.setAppletContext(this);
             if( archives != null )
             {
                 StringTokenizer parser = new StringTokenizer( archives, ",", false );

@@ -115,7 +115,7 @@ public final class KJASAppletClassLoader
     private String dbgID;
     private static int globalId = 0;
     private int myId = 0;
-    private KJASAppletContext appletContext = null;
+    private Vector statusListeners = new Vector();
     
     public KJASAppletClassLoader( URL[] urlList, URL _docBaseURL, URL _codeBaseURL)
     {
@@ -127,7 +127,6 @@ public final class KJASAppletClassLoader
         codeBaseURL  = _codeBaseURL;
         archives     = new Vector();
         
-        appletContext   = null;
         dbgID = "CL-" + myId + "(" + codeBaseURL.toString() + "): ";
     }
     
@@ -136,8 +135,18 @@ public final class KJASAppletClassLoader
         super.addURL(url);
     }
     
-    public void setAppletContext(KJASAppletContext context) {
-        appletContext = context;
+    public void addStatusListener(StatusListener lsnr) {
+        statusListeners.add(lsnr);
+    }
+    public void removeStatusListener(StatusListener lsnr) {
+        statusListeners.remove(lsnr);
+    }
+    public void showStatus(String msg) {
+        Enumeration en = statusListeners.elements();
+        while (en.hasMoreElements()) {
+            StatusListener lsnr = (StatusListener)en.nextElement();
+            lsnr.showStatus(msg);
+        }
     }
     
     public void paramsDone() {
@@ -208,16 +217,14 @@ public final class KJASAppletClassLoader
             rval = findSystemClass( name );
         } catch (ClassNotFoundException e )
         {
-            if (appletContext != null) {
-                String displayName = name;
-                // we lie a bit and do not display the inner
-                // classes because their names are ugly
-                int idx = name.indexOf('$');
-                if (idx > 0) {
-                    displayName = name.substring(0, idx);
-                }
-                appletContext.showStatus("Loading: " + displayName + " Java Class ...");
+            String displayName = name;
+            // we lie a bit and do not display the inner
+            // classes because their names are ugly
+            int idx = name.indexOf('$');
+            if (idx > 0) {
+                displayName = name.substring(0, idx);
             }
+            showStatus("Loading Class: " + displayName + "...");
             //check the loaded classes 
             rval = findLoadedClass( name );
             if( rval == null ) {
@@ -266,9 +273,16 @@ public final class KJASAppletClassLoader
     public URL findResource( String name)
     {
         Main.debug( dbgID + "findResource, name = " + name );
-        if (appletContext != null) {
-            appletContext.showStatus("Loading: " + name);
+        String displayName = name;
+        try {
+            URL u = new URL(name);
+            String filename = u.getFile();
+            if (filename != null && filename.length() > 0) {
+                displayName = filename;
+            }
+        } catch (Throwable e) {
         }
+        showStatus("Loading: " + displayName);
         URL url =  super.findResource( name );
         Main.debug("findResource for " + name + " returns " + url);
         return url;

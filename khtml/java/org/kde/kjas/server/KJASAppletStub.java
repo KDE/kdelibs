@@ -4,6 +4,7 @@ import java.applet.*;
 import java.util.*;
 import java.net.*;
 import java.awt.*;
+import java.awt.event.*;
 
 
 /**
@@ -43,7 +44,7 @@ public class KJASAppletStub extends Frame
                            String _windowName, KJASAppletClassLoader _loader )
     {
         super( _windowName );
-        
+               
         context    = _context;
         appletID   = _appletID;
         codeBase   = _codeBase;
@@ -63,6 +64,19 @@ public class KJASAppletStub extends Frame
             
         appletClass = null;
         me = this;
+        
+        // under certain circumstances, it may happen that the
+        // applet is not embedded but shown in a separate window.
+        // think of konqueror running under fvwm or gnome.
+        // than, the user should have the ability to close the window.
+        addWindowListener
+        (
+            new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    me.die();
+                }
+            }
+        );
     }
 
     /*************************************************************************
@@ -73,6 +87,7 @@ public class KJASAppletStub extends Frame
         add( "Center", panel );
         pack();
         setVisible(true);
+        loader.addStatusListener(panel);
         runThread = new Thread
         (
         new Runnable() {
@@ -138,6 +153,8 @@ public class KJASAppletStub extends Frame
                     panel.showFailed();
                     return;
                 }
+                loader.removeStatusListener(panel);
+                panel.hideImage();
                 app.setVisible(true);
                 Main.debug("Applet " + appletName + " id=" + appletID + " initialized.");
                 
@@ -164,7 +181,6 @@ public class KJASAppletStub extends Frame
                 new KJASAppletThread(app, "KJAS-Applet-" + appletID + "-" + appletName).start(); 
                 panel.stopAnimation();
                 Main.debug("Applet " + appletName + " id=" + appletID + " started.");
-                
                 context.showStatus("Applet " + appletName + " started.");
                 //setVisible(true);
             }
@@ -281,19 +297,23 @@ public class KJASAppletStub extends Frame
     /*************************************************************************
      ************************* Layout methods ********************************
      *************************************************************************/
-    class KJASAppletPanel extends Panel
+    class KJASAppletPanel extends javax.swing.JPanel implements StatusListener
     {
         private Dimension size;
         private Image img = null;
+        private Font font;
+        private String msg = "Loading Applet...";
         public KJASAppletPanel( Dimension _size )
         {
             super( new BorderLayout() );
             size = _size;
+            font = new Font("SansSerif", Font.PLAIN, 10);
             URL url = getClass().getClassLoader().getResource("images/animbean.gif");
             img = getToolkit().createImage(url);
+            //setBackground(Color.white);
         }
 
-        public void setAppletSize( Dimension _size )
+        void setAppletSize( Dimension _size )
         {
             size = _size;
         }
@@ -309,24 +329,50 @@ public class KJASAppletStub extends Frame
         }
         
         
-        public void setApplet(Applet applet) {
-            img = null;
+        void setApplet(Applet applet) {
             add("Center", applet);
             validate();  
         }
         
+        public void showStatus(String msg) {
+            this.msg = msg;
+            repaint();
+        }
+        
         public void paint(Graphics g) {
             super.paint(g);
+            int x = getWidth() / 2;
+            int y = getHeight() / 2;
             if (img != null) {
-                int x = (getWidth() - img.getWidth(this))/2;
-                int y = (getHeight() - img.getHeight(this))/2;
-                g.drawImage(img,x,y,this);
+                int w = img.getWidth(this);
+                int h = img.getHeight(this);
+                int imgx = x - w/2;
+                int imgy = y - h/2;
+                //g.setClip(imgx, imgy, w, h);
+                g.drawImage(img, imgx, imgy, this);
+                y += img.getHeight(this)/2;
+            }
+            if (msg != null) {
+                g.setFont(font);
+                FontMetrics m = g.getFontMetrics();
+                int h = m.getHeight();
+                int w = m.stringWidth(msg);
+                int msgx = x - w/2;
+                int msgy = y + h;
+                //g.setClip(0, y, getWidth(), h);
+                g.drawString(msg, msgx, msgy); 
+                        
             }
         }
-        public void showFailed() {
+        void showFailed() {
             URL url = getClass().getClassLoader().getResource("images/brokenbean.gif");
             img = getToolkit().createImage(url);
             repaint();
+        }
+        
+        void hideImage() {
+            img = null;
+            msg = null;
         }
 
         public void stopAnimation() {
@@ -344,5 +390,7 @@ public class KJASAppletStub extends Frame
             app.start();
         }
     }
+    
+    
     
  }
