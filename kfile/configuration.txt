@@ -1,0 +1,11 @@
+All file dialog settings are stored in the 'KFileDialog Settings' group.
+
+HelpCommandPath		Path to kdehelp binary
+HelpFilePath		Path to kfiledialog help
+			(use KConfig i18n features to handle the paths for
+			different languages)
+FindCommandPath		Path to kfind binary
+ShowListLabels		Should the list boxes have labels?
+UseTreeView		Tree/Finder view if tree, list view if false
+			only the list view is currently implemented
+IncludeDirsInContentsList	What it says. (boolean)

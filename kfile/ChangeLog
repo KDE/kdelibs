@@ -1,0 +1,281 @@
+Thu Mar 26 12:47:42 1998  Stephan Kulow  <coolo@kde.org>
+	
+	* kfilesimpleview.cpp: improved scrolling in simple view
+
+	* kfileinfocontents.cpp: add a / after a found dir
+
+	* kfiledialog.cpp: fixed bug for !showFilter
+
+Wed Mar 25 18:39:09 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
+
+	* kfileinfocontents.cpp: completion now working
+        
+        * kcombiview.cpp: changed behaviour for completion, it
+        now highlights completed directory and file                
+        
+Tue Mar 24 16:08:46 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
+
+	* kfileinfocontents.cpp: sorting now fully working
+        
+        * kfiledialog.cpp: modifications for sorting in the on the
+        fly reconfiguration
+        
+        * kfileinfocontents.*: modification to the constructor 
+        to pass along the sorting
+        
+        * kfiledetaillist.*: modification to the constructor 
+        to pass along the sorting
+        
+        * kcombiview.*: modification to the constructor 
+        to pass along the sorting
+
+        * kfilesimpleview.*: modification to the constructor 
+        to pass along the sorting
+
+Tue Mar 24 10:45:15 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
+
+	* kfileinfocontents.cpp: sorting fixed, the feature of keeping 
+        directories grouped is still missing though
+
+Mon Mar 23 22:59:18 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledetaillist.h: added acceptsFiles() and acceptsDirs() to
+	make dirs-only views useful
+	
+	* kfileinfocontents.cpp: OK, completion is back again, but 
+	currently not working, because the code is missing ;-)
+
+Mon Mar 23 00:08:02 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: moved all GM related things into initGUI() to
+	make recreation possible
+
+Sun Mar 22 00:22:46 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: use KShellProcess now
+
+	* kfiledialog.h: added virtual function initFileList to made 
+	KFileDialog customable
+
+	* kfiledialog.cpp: show a combo box, in case more filters are given
+
+	* kfiledialog.cpp: some bug fixes. I can't get the sorting to work
+
+	* Makefile.am: install some toolbar pixmaps
+
+	* kfiledetailview.cpp: added pixmaps to the detail view
+
+	* Kfiledialog.cpp: made KComboView customable through virtual 
+	functions
+
+	* kcombiview.cpp: took out the completion for now, added
+	kcombiview and some little changes in setCurrentItem
+	
+	* kdirlistbox.cpp: fixed the use of single click
+
+	* kdir.h: moved the header files a little bit to remove 
+	some dependencies
+
+	* kdirlistbox.cpp: KDirListBox is now a KFileInfoContents too
+
+	* kfiledialog.cpp: another change in the API. It uses now QSignal.
+	I didn't liked the old way
+
+1998-03-21  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: implemented mixDirsAndFiles. Need some work and currently 
+	only supported by the simple view
+
+Sat Mar 21 01:00:48 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfilesimpleview.cpp: added pixmaps to indicate access on the file
+
+	* kfilesimpleview.cpp: improved keyboard navigation
+
+	* kfilesimpleview.cpp: first almost working simple view
+
+	* kfilesimpleview.cpp: started implementing a simple view. Needs
+	still some work
+	
+
+Fri Mar 20 22:42:31 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfileinfocontents.h: bugfixes
+
+	* kfileinfo.cpp: KFileInfo is no longer a derived class of
+	QFileInfo. This should reduce memory use too
+
+	* kfileinfocontents.h: moved the actual sorting in
+	KFileInfoContents. Derived classes are for viewing only
+
+	* kfiledialog.h: fixed some header files locations
+
+1998-03-20  Stephan Kulow  <coolo@kde.org>
+
+	* kfileinfo.cpp: show lockedfolder.xpm for folders, that are not
+	allowed to enter or read
+
+	* kfiledialog.cpp: bug fixes
+
+Fri Mar 20 13:10:11 1998 Daniel Grana <grana@ie.iwi.unibe.ch>
+	* kfilgdialog.*, remodeled the configuration dialog to reflect the 
+        current possible settings
+        * kfiledetailList.cpp: added the PageUp PageDown navigation 
+
+1998-03-19  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: fixed the forward/back back reported by 
+	Stefan Tafener
+
+1998-03-18  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: set the initial focus to the line edit
+
+	* kfiledialog.cpp: use kapp->invokeHTMLHelp now
+	
+	* kfiledialog.h: removed treeList, since it's not implemented
+
+Wed Mar 18 02:56:32 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledetaillist.cpp: fixed sorting again
+
+1998-03-17  Stephan Kulow  <coolo@kde.org>
+
+	* added a virtual class KInfoListContent to make an abstraction 
+	for the file contents. Currently there is just one implementation
+	KFileDetailList
+
+1998-03-16  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: don't accept the first entry of the combo 
+	box as a file name
+
+	* kfiledialog.cpp: added an accelerator for completion, since 
+	KCombo no longer emits such a thing (currently CTRL-A)
+	
+	* kdir.cpp: disable parent button in /
+
+	* kfiledialog.cpp: fixed layout of mkdir dialog
+
+	* kdir.cpp: use currentDir instead of homeDir as default
+
+	* kfiledialog.cpp: added member acceptOnlyExisting and set it 
+	for now to always false. I guess, we need an extra parameter for this
+	
+	* kfiledialog.cpp: changed dirList and fileList to fix the 
+	focus handling
+	
+	* kfileinfolistwidget.cpp: added focus handling
+
+	* kfileinfolistwidget.cpp: added keyevent handling to handle 
+	cursor and enter 
+
+	* kfiledialog.cpp: changed the filter edit to a QLineEdit, since 
+	we don't need the completion, but the tabing for focus changes
+	
+Mon Mar 16 11:36:07 1998 Daniel Grana <grana@ie.iwi.unibe.ch>
+	* added create directory, pops up a modal dialog, should add
+        a mkdir method to kdir in near future
+
+Mon Mar 16 20:04:00 1998  Martin Jones <mjones@kde.org>
+	* Added booktoken.* to remove dependancy on khtmlw and jscript
+
+Thu Mar 12 09:32:06 1998  Daniel Grana <grana@ie.iwi.unibe.ch>
+	* worked on the dir and file completion, should do both now,
+	text in the location box will be added as much as possible
+	(right now it's the lowest denominator of dir&file&location-text)
+	* added sorting for the detailed list, so far only name and size
+	sorting implemented
+	* added single click selection for directories
+	* added a status line, which shows the number of directories and 
+	files showed
+
+Thu Mar 12 00:36:05 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: made a library out of the file selector
+	* kfiledialog.cpp: added an extra parameter acceptURLs to seperate
+	between getOpenFileName and getOpenFileURL
+
+Sun Feb 15 23:13:47 1998 Richard Moore <rich@kde.org>
+	
+	* More work on the bookmarks - they should work properly now, you
+	must create the directory ~/.kde/share/apps/kdeui to store the
+	bookmarks in.
+	
+	* Regenerated docs
+
+Thu Feb 12 17:27:51 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfileinfo.cpp: added determination of group and other things to 
+	be display the correct values in the kfileinfolistwidget
+
+Thu Feb 12 16:01:44 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: removed the #ifdef code. Now the combo box for
+	the path is the only option
+
+Tue Feb 10 01:09:16 1998  Richard Moore <rich@kde.org>
+
+	* Added details widget - this is currently selected by a config
+	file entry, but it there should be a toolbar button. Many changes
+	to kfiledialog to allow the switch (need an abstract fileview class).
+
+Fri Feb  6 18:08:14 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: replaced the location lineedit with an combo
+	box. Currently configurable with a compiler define. 
+
+Fri Feb  6 17:07:26 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: fixed the en- and decoding of URLs. Now it's
+	possible to move into directories called "sdasd#sdsd" for example
+
+Sat Jan 24 17:18:10 1998  Mario Weilguni  <mweilguni@sime.com>
+
+	* fixed a bug in kdir.cpp/parsePermissions()
+
+	* implemented error handling for KFM URL errors
+
+Tue Jan 20 00:51:55 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: some fixes to make kfm support more robust
+
+Mon Jan 19 01:10:11 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kdir.cpp: re-added ftp support 
+
+	* kfiledialog.cpp: take care of the case, when the user enters a
+	complete filename
+
+	* kdir.cpp: added isReadable() to indicate, that the dir is not
+	correct
+	
+	* kfiledialog.cpp: played a little bit with the geometry managment
+
+
+Sun Jan 18 15:00:06 1998  Stephan Kulow  <coolo@kde.org>
+
+	* kfiledialog.cpp: - back/forward work now as expected
+	  - show the correct filter
+	  - the combo box works now as expected
+
+	* kdir.cpp: check if the directory is correct (for local
+	files). If not, go back to the old value
+
+	* kfiledialog.cpp: - disable parent button, when in root
+	  - treat the case, that the URL ends with "/"
+	  - strip white spaces out of the location text
+
+	* kfileinfo.cpp: don't insert broken links
+
+	* kfiledialog.cpp: just set the dir, if it's different
+	from the already set one
+
+Sun Jan 18 11:53:32 1998  Mario Weilguni  <mweilguni@sime.com>
+
+	* symbolic links to subdirectories are now correctly reported as
+	directories
+
+	* symbolic links are show as italic text
+
+	* The toolbar button "Home" works now as expected
