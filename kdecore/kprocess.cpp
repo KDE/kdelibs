@@ -19,56 +19,6 @@
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
-
-   $Log$
-   Revision 1.30  1999/03/01 23:33:37  kulow
-   CVS_SILENT ported to Qt 2.0
-
-   Revision 1.29.2.2  1999/02/15 15:53:39  kulow
-   some char*s converted to QString and some QString converted to char* :)
-
-   Revision 1.29.2.1  1999/02/14 02:05:59  granroth
-   Converted a lot of 'const char*' to 'QString'.  This compiles... but
-   it's entirely possible that nothing will run linked to it :-P
-
-   Revision 1.29  1999/01/18 10:56:22  kulow
-   .moc files are back in kdelibs. Built fine here using automake 1.3
-
-   Revision 1.28  1999/01/15 09:30:40  kulow
-   it's official - kdelibs builds with srcdir != builddir. For this I
-   automocifized it, the generated rules are easier to maintain than
-   selfwritten rules. I have to fight with some bugs of this tool, but
-   generally it's better than keeping them updated by hand.
-
-   Revision 1.27  1998/10/28 19:00:15  ettrich
-   small fix (thanks to Christian Stoeckl)
-
-   Revision 1.26  1998/10/19 08:09:05  ettrich
-   small pseudo fix to kshellprocess reverted
-
-   Revision 1.25  1998/09/22 18:03:13  ettrich
-   Matthias: small updates to kaccel
-
-   Revision 1.24  1998/09/17 19:22:09  radej
-   sven: made it work with egcs-1.1
-
-   Revision 1.23  1998/09/01 20:21:29  kulow
-   I renamed all old qt header files to the new versions. I think, this looks
-   nicer (and gives the change in configure a sense :)
-
-   Revision 1.22  1998/07/29 10:14:28  kulow
-   porting to a virtual plattform called "tajsandmineansiplatform" :)
-
-   Revision 1.21  1998/07/29 09:07:50  ssk
-   Fixed a whole lot of -Wall -ansi -pedantic warnings.
-
-   Revision 1.20  1998/03/10 18:59:22  mario
-   Mario: fixed a memory leak in KShellProcess (shell not freed)
-
-   Revision 1.19  1998/03/08 17:21:40  wuebben
-   Bernd: Fixed the segfault problem in 'KShellProcess::start()'.
-
-
 */
 
 
@@ -92,21 +42,27 @@
 #define _MAY_INCLUDE_KPROCESSCONTROLLER_
 #include "kprocctrl.h"
 
-#include <qapplication.h>
-
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 #include <sys/socket.h>
+
+#include <errno.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#ifdef HAVE_VFORK_H
+#include <vfork.h>
+#endif
+
+#include <qapplication.h>
 
 /////////////////////////////
 // public member functions //
@@ -220,7 +176,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
     debug("Could not setup Communication!");
 
   runs = TRUE;
-  pid = fork();
+  pid = vfork();
 
   if (0 == pid) {
 	// The child process
@@ -233,7 +189,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
           setpgid(0,0);
 
 	execvp(arglist[0], arglist);
-	exit(-1);
+	_exit(-1);
 
   } else if (-1 == pid) {
 	// forking failed
@@ -619,7 +575,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
     debug("Could not setup Communication!");
 
   runs = TRUE;
-  pid = fork();
+  pid = vfork();
 
   if (0 == pid) {
 	// The child process
@@ -632,7 +588,7 @@ bool KShellProcess::start(RunMode runmode, Communication comm)
           setpgid(0,0);
 
 	execvp(arglist[0], arglist);
-	exit(-1);
+	_exit(-1);
 
   } else if (-1 == pid) {
 	// forking failed
