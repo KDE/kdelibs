@@ -36,6 +36,7 @@
 //
 
 #include <qcstring.h>
+#include <qvaluelist.h>
 
 class QString;
 class QCString;
@@ -100,10 +101,12 @@ public:
 				PathLengthExceeded, InvalidCA, Expired,
 				SelfSigned, ErrorReadingRoot, NoSSL,
 				Revoked, Untrusted, SignatureFailed,
-				Rejected, PrivateKeyFailed };
+				Rejected, PrivateKeyFailed, InvalidHost };
 
 	enum KSSLPurpose {      None=0, SSLServer=1, SSLClient=2, 
 				SMIMESign=3, SMIMEEncrypt=4, Any=5 };
+
+        typedef QValueList<KSSLValidation> KSSLValidationList;
 
 	/**
 	 *  Convert this certificate to a string.
@@ -226,6 +229,13 @@ public:
 	 *  @return the result of the validation
 	 */
 	KSSLValidation validate(KSSLPurpose p);
+
+	/**
+	 *  Check if this is a valid certificate.  Will use cached data.
+	 *  @param p the purpose to validate for
+	 *  @return all problems encountered during validation
+	 */
+	KSSLValidationList validateVerbose(KSSLPurpose p);
 
 	/**
 	 *  Check if this is a valid certificate.  Will NOT use cached data.

@@ -1149,6 +1149,8 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
       if (ncl.count() > 0)
          x->chain().setChain(ncl);
 
+      kdDebug(7024) << "ssl_cert_errors=" << meta["ssl_cert_errors"] << endl;
+      kid->setCertState(meta["ssl_cert_errors"]);
       kid->setup( x,
                   meta["ssl_peer_ip"],
                   url, // the URL

@@ -103,6 +103,12 @@ public:
 	 */
 	void setup( KSSL & ssl, const QString & ip, const QString & url );
 
+        /**
+         *  Set the errors that were encountered while validating the site 
+         *  certificate.
+         */
+        void setCertState(const QString &errorNrs);
+
 	/**
 	 *  Utility function to generate the widget which displays the detailed
 	 *  information about an X.509 certificate.

@@ -532,15 +532,23 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate() {
 	return validate(KSSLCertificate::SSLServer);
 }
 
+KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLPurpose purpose)
+{
+	KSSLValidationList result = validateVerbose(purpose);
+	if (result.isEmpty())
+		return KSSLCertificate::Ok;
+	else
+		return result.first();
+} 
 
 //
 // See apps/verify.c in OpenSSL for the source of most of this logic.
 //
 
 // CRL files?  we don't do that yet
-
-KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLPurpose purpose) {
-
+KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertificate::KSSLPurpose purpose) 
+{
+	KSSLValidationList errors;
 	if (d->_lastPurpose != purpose && d->m_stateCached) {
 		d->m_stateCached = false;
 	}
@@ -549,22 +557,27 @@ KSSLCertificate::KSSLValidation KSSLCertificate::validate(KSSLCertificate::KSSLP
 		d->_lastPurpose = purpose;
 
 #ifdef KSSL_HAVE_SSL
-X509_STORE *certStore;
-X509_LOOKUP *certLookup;
-X509_STORE_CTX *certStoreCTX;
-int rc = 0;
+	X509_STORE *certStore;
+	X509_LOOKUP *certLookup;
+	X509_STORE_CTX *certStoreCTX;
+	int rc = 0;
 
 	if (!d->m_cert)
-		return KSSLCertificate::Unknown;
+	{
+		errors << KSSLCertificate::Unknown;
+		return errors;
+	}
 
 	if (d->m_stateCached) {
-		return d->m_stateCache;
+		errors << d->m_stateCache;
+		return errors;
 	}
 
 	QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
 
 	if (qsl.isEmpty()) {
-		return KSSLCertificate::NoCARoot;
+		errors << KSSLCertificate::NoCARoot;
+		return errors;
 	}
 
 	KSSLCertificate::KSSLValidation ksslv = Unknown;
@@ -576,7 +589,10 @@ int rc = 0;
 
 		certStore = d->kossl->X509_STORE_new();
 		if (!certStore)
-			return KSSLCertificate::Unknown;
+		{
+			errors << KSSLCertificate::Unknown;
+			return errors;
+		}
 
 		X509_STORE_set_verify_cb_func(certStore, X509Callback);
 
@@ -649,11 +665,13 @@ int rc = 0;
 			break;
 		}
 	}
-
-return (d->m_stateCache);
-
+	
+	if (ksslv != KSSLCertificate::Ok)
+		errors << ksslv;
+#else
+	errors << KSSLCertificate::NoSSL;
 #endif
-return NoSSL;
+	return errors;
 }
 
 
@@ -847,6 +865,8 @@ case KSSLCertificate::InvalidPurpose:
 	return i18n("Rejected, possibly due to an invalid purpose.");
 case KSSLCertificate::PrivateKeyFailed:
 	return i18n("Private key test failed.");
+case KSSLCertificate::InvalidHost:
+	return i18n("The certificate has not been issued for this host.");
 default:
 break;
 }
