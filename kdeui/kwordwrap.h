@@ -47,6 +47,7 @@ public:
     /**
      * Use this flag in @ref drawText() if you want to fade out the text if it does
      * not fit into the constraining rectangle.
+     * @since 3.2
      */
      static const int FadeOut;
 
@@ -113,6 +114,7 @@ public:
      * @param maxW the maximum width of the text (including the fade-out
      *             effect)
      * @param t the text to draw
+     * @since 3.2
      */
     static void drawFadeoutText( QPainter *p, int x, int y, int maxW,
                                  const QString &t );
