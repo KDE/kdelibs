@@ -14,7 +14,8 @@ if (!open( ENTRIES, "entrylist" ) ) {
     push @entryRealNames, @entries[1];
     push @entryTypes, @entries[2];
     push @entryNames, @entries[3];
-    push @entryDebug, @entries[4];
+    push @entryCategory, @entries[4];
+    push @entryDebug, @entries[5];
   }
 
 close ENTRIES;
@@ -159,7 +160,11 @@ if (!open( CPP_OUT, ">../field.cpp" ) ) {
     } elsif (/--CREATEFIELDS--/) {
       for( $i=0; $i<@entryNames; ++$i ) {
         if ( $entryCtrl[$i] !~ /F/ ) { next; }
-        print CPP_OUT "    createField( FieldImpl::" . ucfirst($entryNames[$i]) . " );\n";
+        print CPP_OUT "    createField( FieldImpl::" . ucfirst($entryNames[$i]);
+        if ( $entryCategory[$i] ) {
+          print CPP_OUT ", $entryCategory[$i]";
+        }
+        print CPP_OUT " );\n";
       }
     } else {
       print CPP_OUT;

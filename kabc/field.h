@@ -36,7 +36,7 @@ class Field
   public:
     typedef QValueList<Field *> List;
   
-    enum FieldCategory { All = 0xff,
+    enum FieldCategory { All = 0x0,
                          Frequent = 0x01,
                          Address = 0x02,
                          Email = 0x04,
@@ -52,6 +52,11 @@ class Field
       Return ored categories the field belongs to.
     */
     virtual int category();
+
+    /**
+      Return label translated label for field category.
+    */
+    static QString categoryLabel( int category );
 
     /**
       Return a string representation of the value the field has in the given
@@ -75,6 +80,9 @@ class Field
     static Field::List allFields();
     static Field::List defaultFields();
 
+    static Field *createCustomField( const QString &label, int category,
+                                     const QString &key, const QString &app );
+
     static void deleteFields();
 
     static void saveFields( KConfig *, const QString &identifier,
@@ -96,6 +104,7 @@ class Field
 
     static Field::List mAllFields;
     static Field::List mDefaultFields;
+    static Field::List mCustomFields;
 };
 
 }

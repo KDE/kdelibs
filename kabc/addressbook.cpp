@@ -25,6 +25,8 @@
 #include <kapplication.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <kglobal.h>
+#include <kinstance.h>
 
 #include "simpleformat.h"
 #include "vcardformat.h"
@@ -38,6 +40,7 @@ using namespace KABC;
 struct AddressBook::AddressBookData
 {
   Addressee::List mAddressees;
+  Field::List mAllFields;
 };
 
 struct AddressBook::Iterator::IteratorData
@@ -382,4 +385,40 @@ void AddressBook::dump() const
 QString AddressBook::identifier()
 {
   return "NoIdentifier";
+}
+
+Field::List AddressBook::fields( int category )
+{
+  if ( d->mAllFields.isEmpty() ) {
+    d->mAllFields = Field::allFields();
+  }
+  
+  if ( category == Field::All ) return d->mAllFields;
+  
+  Field::List result;
+  Field::List::ConstIterator it;
+  for( it = d->mAllFields.begin(); it != d->mAllFields.end(); ++it ) {
+    if ( (*it)->category() & category ) result.append( *it );
+  }
+  
+  return result;
+}
+
+bool AddressBook::addCustomField( const QString &label, int category,
+                                  const QString &key, const QString &app )
+{
+  if ( d->mAllFields.isEmpty() ) {
+    d->mAllFields = Field::allFields();
+  }
+  
+  QString a = app.isNull() ? KGlobal::instance()->instanceName() : app;
+  QString k = key.isNull() ? label : key;
+
+  Field *field = Field::createCustomField( label, category, k, a );
+
+  if ( !field ) return false;
+
+  d->mAllFields.append( field );
+
+  return true;
 }

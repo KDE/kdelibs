@@ -25,6 +25,7 @@
 #include <qptrlist.h>
 
 #include "addressee.h"
+#include "field.h"
 
 namespace KABC {
 
@@ -204,6 +205,25 @@ class AddressBook : public QObject
     void emitAddressBookLocked() { emit addressBookLocked( this ); }
     void emitAddressBookUnlocked() { emit addressBookUnlocked( this ); }
     void emitAddressBookChanged() { emit addressBookChanged( this ); }
+
+    /**
+      Return list of all Fields known to the address book which are associated
+      with the given field category.
+    */
+    Field::List fields( int category = Field::All );
+
+    /**
+      Add custom field to address book.
+      
+      @param label    User visible label of the field.
+      @param category Ored list of field categories.
+      @param key      Identifier used as key for reading and writing the field.
+      @param app      String used as application key for reading and writing
+                      the field.
+    */
+    bool addCustomField( const QString &label, int category = Field::All,
+                         const QString &key = QString::null,
+                         const QString &app = QString::null );
 
   signals:
     /**

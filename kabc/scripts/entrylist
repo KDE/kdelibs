@@ -1,10 +1,10 @@
 AL,unique identifier,QString,uid
 AL,name,QString,name
 
-ALF,formatted name,QString,formattedName
+ALF,formatted name,QString,formattedName,Frequent
 
-ALF,family name,QString,familyName
-ALF,given name,QString,givenName
+ALF,family name,QString,familyName,Frequent
+ALF,given name,QString,givenName,Frequent
 ALF,additional names,QString,additionalName
 ALF,honorific prefixes,QString,prefix
 ALF,honorific suffixes,QString,suffix
@@ -12,7 +12,7 @@ ALF,honorific suffixes,QString,suffix
 ALF,nick name,QString,nickName
 ,photo,QPixmap,photo
 
-ALF,birthday,QDateTime,birthday,.toString()
+ALF,birthday,QDateTime,birthday,,.toString()
 
 #Address address
 #QString label (part of Address)
@@ -25,12 +25,12 @@ LF,home fax,QString,homeFax
 LF,business fax,QString,businessFax
 
 #emails
-LF,email address,QString,email
+LF,email address,QString,email,Email|Frequent
 
-ALF,mail client,QString,mailer
+ALF,mail client,QString,mailer,Email
 
-AL,time zone,TimeZone,timeZone,.asString()
-AL,geographic position,Geo,geo,.asString()
+AL,time zone,TimeZone,timeZone,,.asString()
+AL,geographic position,Geo,geo,,.asString()
 
 ALF,title,QString,title
 ALF,role,QString,role
@@ -41,7 +41,7 @@ ALF,organization,QString,organization
 AL,note,QString,note
 
 AL,product identifier,QString,productId
-AL,revision date,QDateTime,revision,.toString()
+AL,revision date,QDateTime,revision,,.toString()
 
 AL,sort string,QString,sortString
 
@@ -49,4 +49,4 @@ AL,sort string,QString,sortString
 #class (PUBLIC, PRIVATE, CONFIDENTIAL)
 #key
 
-ALF,URL,KURL,url,.url()
+ALF,URL,KURL,url,,.url()

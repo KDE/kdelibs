@@ -30,11 +30,16 @@ using namespace KABC;
 class Field::FieldImpl
 {
   public:
-    FieldImpl( int fieldId, int category = 0 )
-      : mFieldId( fieldId ), mCategory( category ) {}
+    FieldImpl( int fieldId, int category = 0,
+               const QString &label = QString::null,
+               const QString &key = QString::null,
+               const QString &app = QString::null )
+      : mFieldId( fieldId ), mCategory( category ), mLabel( label ),
+        mKey( key ), mApp( app ) {}
   
     enum FieldId
     {
+      CustomField,
       FormattedName,
       FamilyName,
       GivenName,
@@ -58,15 +63,24 @@ class Field::FieldImpl
 
     int fieldId() { return mFieldId; }
     int category() { return mCategory; }
-
+    
+    QString label() { return mLabel; }
+    QString key() { return mKey; }
+    QString app() { return mApp; }
+    
   private:
     int mFieldId;
     int mCategory;
+
+    QString mLabel;
+    QString mKey;
+    QString mApp;
 };
 
 
 Field::List Field::mAllFields;
 Field::List Field::mDefaultFields;
+Field::List Field::mCustomFields;
 
 
 Field::Field( FieldImpl *impl )
@@ -120,6 +134,8 @@ QString Field::label()
       return Addressee::organizationLabel();
     case FieldImpl::Url:
       return Addressee::urlLabel();
+    case FieldImpl::CustomField:
+      return mImpl->label();
     default:
       return i18n("Unknown Field");
   }
@@ -127,7 +143,29 @@ QString Field::label()
 
 int Field::category()
 {
-  return Field::All;
+  return mImpl->category();
+}
+
+QString Field::categoryLabel( int category )
+{
+  switch ( category ) {
+    case All:
+      return i18n("All");
+    case Frequent:
+      return i18n("Frequent");
+    case Address:
+      return i18n("Address");
+    case Email:
+      return i18n("Email");
+    case Personal:
+      return i18n("Personal");
+    case Organization:
+      return i18n("Organization");
+    case CustomCategory:
+      return i18n("Custom");
+    default:
+      return i18n("Undefined");
+  }
 }
 
 QString Field::value( const KABC::Addressee &a )
@@ -174,6 +212,8 @@ QString Field::value( const KABC::Addressee &a )
       return a.phoneNumber( PhoneNumber::Home | PhoneNumber::Fax ).number();
     case FieldImpl::BusinessFax:
       return a.phoneNumber( PhoneNumber::Work | PhoneNumber::Fax ).number();
+    case FieldImpl::CustomField:
+      return a.custom( mImpl->app(), mImpl->key() );
     default:
       return QString::null;
   }
@@ -215,6 +255,8 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
     case FieldImpl::Organization:
       a.setOrganization( value );
       return true;
+    case FieldImpl::CustomField:
+      a.insertCustom( mImpl->app(), mImpl->key(), value );
     default:
       return false;
   }
@@ -222,15 +264,15 @@ bool Field::setValue( KABC::Addressee &a, const QString &value )
 
 bool Field::isCustom()
 {
-  return false;
+  return mImpl->fieldId() == FieldImpl::CustomField;
 }
 
 Field::List Field::allFields()
 {
   if ( mAllFields.isEmpty() ) {
-    createField( FieldImpl::FormattedName );
-    createField( FieldImpl::FamilyName );
-    createField( FieldImpl::GivenName );
+    createField( FieldImpl::FormattedName, Frequent );
+    createField( FieldImpl::FamilyName, Frequent );
+    createField( FieldImpl::GivenName, Frequent );
     createField( FieldImpl::AdditionalName );
     createField( FieldImpl::Prefix );
     createField( FieldImpl::Suffix );
@@ -241,8 +283,8 @@ Field::List Field::allFields()
     createField( FieldImpl::MobilePhone );
     createField( FieldImpl::HomeFax );
     createField( FieldImpl::BusinessFax );
-    createField( FieldImpl::Email );
-    createField( FieldImpl::Mailer );
+    createField( FieldImpl::Email, Email|Frequent );
+    createField( FieldImpl::Mailer, Email );
     createField( FieldImpl::Title );
     createField( FieldImpl::Role );
     createField( FieldImpl::Organization );
@@ -286,6 +328,11 @@ void Field::deleteFields()
     delete (*it);
   }
   mDefaultFields.clear();
+
+  for( it = mCustomFields.begin(); it != mCustomFields.end(); ++it ) {
+    delete (*it);
+  }
+  mCustomFields.clear();
 }
 
 void Field::saveFields( const QString &identifier,
@@ -302,9 +349,18 @@ void Field::saveFields( KConfig *cfg, const QString &identifier,
 {
   QValueList<int> fieldIds;
   
+  int custom = 0;
   Field::List::ConstIterator it;
   for( it = fields.begin(); it != fields.end(); ++it ) {
     fieldIds.append( (*it)->mImpl->fieldId() );
+    if( (*it)->isCustom() ) {
+      QStringList customEntry;
+      customEntry << (*it)->mImpl->label();
+      customEntry << (*it)->mImpl->key();
+      customEntry << (*it)->mImpl->app();
+      cfg->writeEntry( "KABC_CustomEntry_" + identifier + "_" +
+                       QString::number( custom++ ), customEntry );
+    }
   }
   
   cfg->writeEntry( identifier, fieldIds );
@@ -324,9 +380,20 @@ Field::List Field::restoreFields( KConfig *cfg, const QString &identifier )
 
   Field::List fields;
 
+  int custom = 0;
   QValueList<int>::ConstIterator it;
   for( it = fieldIds.begin(); it != fieldIds.end(); ++it ) {
-    fields.append( new Field( new FieldImpl( *it ) ) );
+    FieldImpl *f = 0;
+    if ( (*it) == FieldImpl::CustomField ) {
+      QStringList customEntry = cfg->readListEntry( "KABC_CustomEntry_" +
+                                                 identifier + "_" +
+                                                 QString::number( custom++ ) );
+      f = new FieldImpl( *it, CustomCategory, customEntry[ 0 ],
+                         customEntry[ 1 ], customEntry[ 2 ] );
+    } else {
+      f = new FieldImpl( *it );
+    }
+    fields.append( new Field( f ) );
   }
   
   return fields;
@@ -334,5 +401,22 @@ Field::List Field::restoreFields( KConfig *cfg, const QString &identifier )
 
 bool Field::equals( Field *field )
 {
-  return mImpl->fieldId() == field->mImpl->fieldId();
+  bool sameId = ( mImpl->fieldId() == field->mImpl->fieldId() );
+
+  if ( !sameId ) return false;
+
+  if ( mImpl->fieldId() != FieldImpl::CustomField ) return true;
+  
+  return mImpl->key() == field->mImpl->key();
+}
+
+Field *Field::createCustomField( const QString &label, int category,
+                                 const QString &key, const QString &app )
+{
+  Field *field = new Field( new FieldImpl( FieldImpl::CustomField,
+                                           category | CustomCategory,
+                                           label, key, app ) );
+  mCustomFields.append( field );
+
+  return field;
 }
