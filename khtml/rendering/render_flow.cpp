@@ -75,7 +75,7 @@ void RenderFlow::setStyle(RenderStyle *_style)
     RenderBox::setStyle(_style);
 
     if(isPositioned())
-        style()->setDisplay(BLOCK);
+        setInline(false);
 
     if(isFloating() || !style()->display() == INLINE)
         setInline(false);

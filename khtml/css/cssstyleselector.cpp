@@ -902,11 +902,8 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         default:
             break;
         }
-        if ((style->position()==ABSOLUTE || style->position()==FIXED)
-                && d!=NONE)
-            style->setDisplay(BLOCK);
-        else
-            style->setDisplay(d);
+
+        style->setDisplay(d);
         //kdDebug( 6080 ) << "setting display to " << d << endl;
         
         break;
@@ -1132,8 +1129,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
         case CSS_VAL_RELATIVE:            
             p = RELATIVE; break;
         case CSS_VAL_ABSOLUTE:
-            if (style->display()!=NONE)
-                style->setDisplay(BLOCK);
             p = ABSOLUTE; break;
         case CSS_VAL_FIXED:
             {
@@ -1141,8 +1136,6 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
                 if(doc && doc->view())
                     doc->view()->useSlowRepaints();
                 p = FIXED; 
-                if (style->display()!=NONE)
-                    style->setDisplay(BLOCK);
                 break;
             }
         default:
