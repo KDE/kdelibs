@@ -81,7 +81,6 @@ public:
     virtual void detach();
 
     void radioClicked( HTMLGenericFormElementImpl *caller );
-    void maybeSubmit();
 
     void registerFormElement(khtml::RenderFormElement *);
     void removeFormElement(khtml::RenderFormElement *);

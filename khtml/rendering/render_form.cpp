@@ -427,7 +427,7 @@ RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
 void RenderLineEdit::slotReturnPressed()
 {
     if (m_element->form())
-        m_element->form()->maybeSubmit();
+        m_element->form()->prepareSubmit();
 }
 
 void RenderLineEdit::layout()
@@ -572,7 +572,7 @@ void RenderFileButton::layout( )
 void RenderFileButton::slotReturnPressed()
 {
     if (m_element->form())
-        m_element->form()->maybeSubmit();
+        m_element->form()->prepareSubmit();
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)
@@ -662,7 +662,7 @@ void ListBoxWidget::focusOutEvent(QFocusEvent* e)
 // -------------------------------------------------------------------------------
 
 ComboBoxWidget::ComboBoxWidget(QWidget *parent)
-    : QComboBox(parent)
+    : QComboBox(false, parent)
 {
     setAutoMask(true);
 }

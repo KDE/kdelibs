@@ -131,17 +131,23 @@ QByteArray HTMLFormElementImpl::formData()
     QCString enc_string = ""; // used for non-multipart data
 
     // find out the QTextcodec to use
-    QStringList charsets = QStringList::split(' ', m_acceptcharset.string());
+    QString str = m_acceptcharset.string();
+    QChar space(' ');
+    for(unsigned int i=0; i < str.length(); i++) if(str[i].latin1() == ',') str[i] = space;
+    QStringList charsets = QStringList::split(' ', str);
     QTextCodec* codec = 0;
     for ( QStringList::Iterator it = charsets.begin(); it != charsets.end(); ++it )
     {
         QString enc = (*it);
+        qDebug("trying: %s", enc.latin1());
         if(enc.contains("UNKNOWN"))
         {
             // use standard document encoding
             enc = "ISO 8859-1";
             if(view && view->part())
                 enc = view->part()->encoding();
+            qDebug("using enc: %s", enc.latin1());
+
         }
         if((codec = QTextCodec::codecForName(enc.latin1())))
             break;
@@ -212,11 +218,10 @@ QByteArray HTMLFormElementImpl::formData()
                 {
                     QCString str(("--" + m_boundary.string() + "\r\n").ascii());
                     str += "Content-Disposition: form-data; ";
-                    str += ("name=\"" + current->name().string() + "\"").ascii();
+                    str += ("name=\"" + current->name().string().stripWhiteSpace() + "\"").ascii();
 
                     // if the current type is FILE, then we also need to
-                    // include the filename *and* the file type
-
+                    // include the filename
                     if (current->nodeType() == Node::ELEMENT_NODE && current->id() == ID_INPUT &&
                         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
                     {
@@ -229,10 +234,18 @@ QByteArray HTMLFormElementImpl::formData()
                             str += "Content-Type: ";
                             KMimeType::Ptr ptr = KMimeType::findByURL(KURL(path));
                             str += ptr->name().ascii();
+                            str += "\r\n";
                         }
                     }
-
-                    str += "\r\n\r\n";
+                    else
+                    {
+                        str += "\r\nContent-Type: text/plain; charset=";
+                        QString chname = codec->name();
+                        for(unsigned int i=0; i < chname.length(); i++) if(chname[i].latin1() == ' ') chname[i] = '-';
+                        str += chname.latin1();
+                        str += "\r\n";
+                    }
+                    str += "\r\n";
 
                     // this is where it gets ugly.. we have to memcpy the
                     // text part to the form.. then memcpy the (possibly
@@ -291,9 +304,6 @@ void HTMLFormElementImpl::submit(  )
     if(!view) return;
 
     QByteArray form_data = formData();
-
-    // formdata is not null-terminated, so this will cause Insure++ to scream
-    // kdDebug( 6030 ) << "formdata = " << form_data.data() << endl << "m_post = " << m_post << endl << "multipart = " << m_multipart << endl;
 
     if(m_post)
     {
@@ -381,34 +391,6 @@ void HTMLFormElementImpl::radioClicked( HTMLGenericFormElementImpl *caller )
         }
     }
 }
-
-void HTMLFormElementImpl::maybeSubmit()
-{
-    if(!view) return;
-
-    int le = 0;
-    int total = 0;
-
-    // count number of LineEdits / total number
-
-    HTMLGenericFormElementImpl *current;
-    for (current = formElements.first(); current; current = formElements.next()) {
-        if (!current->disabled() && !current->readOnly()) {
-            if (current->id() == ID_INPUT &&
-                (static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::TEXT ||
-                 static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::PASSWORD))
-                le++;
-
-            // we're not counting hidden input's here, as they're not enabled (### check this)
-            total++;
-        }
-    }
-
-    // if there's only one lineedit or only one possibly successful one, submit
-    if (le < 2 || total < 2)
-        prepareSubmit();
-}
-
 
 void HTMLFormElementImpl::registerFormElement(HTMLGenericFormElementImpl *e)
 {
@@ -1496,7 +1478,7 @@ NodeImpl *HTMLOptGroupElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *
 NodeImpl *HTMLOptGroupElementImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
     NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild, exceptioncode);
-    if( !exceptioncode ) 
+    if( !exceptioncode )
 	recalcSelectOptions();
     return result;
 }
