@@ -99,6 +99,30 @@ public:
   inline int ianaFamily() const
   { return ianaFamily(family()); }
 
+  /**
+   * Returns true if this equals the other socket
+   * @param other	the other socket
+   */
+  virtual bool isEqual(const KSocketAddress& other) const;
+  bool isEqual(const KSocketAddress* other) const
+  { return isEqual(*other); }
+
+  bool operator==(const KSocketAddress& other) const
+  { return isEqual(other); }
+
+  /**
+   * Some sockets may differ in such things as services or port numbers,
+   * like Internet sockets. This function compares only the core part
+   * of that, if possible.
+   *
+   * If not possible, like the default implementation, this returns
+   * the same as isEqual.
+   * @param other	the other socket
+   */
+  virtual bool isCoreEqual(const KSocketAddress& other) const;
+  bool isCoreEqual(const KSocketAddress* other) const
+  { return isCoreEqual(*other); }
+
 protected:
   sockaddr*	data;
   ksocklen_t	datasize;
@@ -337,6 +361,15 @@ public:
    * Will be either sizeof(sockaddr_in) or sizeof(sockaddr_in6)
    */
   virtual ksocklen_t size() const; // should be socklen_t
+
+  /* comparation */
+
+  /**
+   * This kind of socket supports core comparation. This will
+   * compare the IP part of the sockets only.
+   * @param other	the other socket
+   */
+  virtual bool isCoreEqual(const KSocketAddress& other) const;
 
   /* operators */
 

@@ -154,6 +154,21 @@ KSocketAddress* KSocketAddress::newAddress(struct sockaddr* sa, ksocklen_t size)
   return new KSocketAddress(sa, size);
 }
 
+bool KSocketAddress::isEqual(const KSocketAddress& other) const
+{
+  /* a socket address can only be equal if it's of the size and family */
+  if (other.datasize == datasize && other.data != NULL && data != NULL)
+    return memcmp(data, other.data, datasize) == 0;
+
+  /* not same size, not equal */
+  return false;
+}
+
+bool KSocketAddress::isCoreEqual(const KSocketAddress& other) const
+{
+  return isEqual(other);
+}
+
 int KSocketAddress::ianaFamily(int af)
 {
   switch (af)
@@ -543,6 +558,29 @@ ksocklen_t KInetSocketAddress::size() const
 #endif
   else
     return 0;
+}
+
+bool KInetSocketAddress::isCoreEqual(const KSocketAddress& other) const
+{
+  /* we are going to compare the IPs only here, so the socket given must
+   * be an Internet socket as well */
+  if (d->sockfamily != AF_UNSPEC && other.family() == d->sockfamily)
+    {
+      /* yea, same type */
+
+      KInetSocketAddress *k = (KInetSocketAddress*)&other;
+      if (d->sockfamily == AF_INET)
+	return memcmp(&d->sin, &k->d->sin, sizeof(d->sin)) == 0;
+
+#ifdef AF_INET6
+      else if (d->sockfamily == AF_INET6)
+	return memcmp(&d->sin6, &k->d->sin6, sizeof(d->sin6)) == 0;
+#endif
+
+      kdError() << "KInetSocketAddress has a non-Internet socket\n";
+    }
+
+  return KSocketAddress::isCoreEqual(other);
 }
 
 void KInetSocketAddress::fromV4()
