@@ -791,6 +791,31 @@ public:
                    bool bNLS = false );
 
   /**
+   * Write a filepath.
+   *
+   * It is checked whether the path is located under $HOME. If so the
+   * path is written out with the user's home-directory replaced with
+   * $HOME. The path should be read back with @see readPathEntry()
+   *
+   * @param pKey The key to write.
+   * @param path The path to write.
+   * @param bPersistent If @p bPersistent is false, the entry's dirty
+   * flag will not be set and thus the entry will not be written to
+   * disk at deletion time.
+   * @param bGlobal     If @p bGlobal is true, the pair is not saved to the
+   *  application specific config file, but to the global KDE config file.
+   * @param bNLS        If @p bNLS is true, the locale tag is added to the key
+   *  when writing it back.
+   */
+  void writePathEntry( const QString& pKey, const QString & path,
+                       bool bPersistent = true, bool bGlobal = false,
+                       bool bNLS = false );
+  void writePathEntry( const char *pKey, const QString & path,
+                       bool bPersistent = true, bool bGlobal = false,
+                       bool bNLS = false );
+
+
+  /**
    * Delete the entry specified by @p pKey in the current group.
    *
    * @param pKey The key to delete.

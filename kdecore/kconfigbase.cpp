@@ -31,6 +31,7 @@
 #include "kconfigbase.h"
 #include "kconfigbackend.h"
 #include "kdebug.h"
+#include "kstddirs.h"
 #undef Bool
 
 static bool isUtf8(const char *buf) {
@@ -951,6 +952,28 @@ void KConfigBase::writeEntry( const char *pKey, const QString& value,
   // rewrite the new value
   putData(entryKey, aEntryData);
 }
+
+void KConfigBase::writePathEntry( const QString& pKey, const QString & path,
+                                  bool bPersistent, bool bGlobal,
+                                  bool bNLS)
+{
+   writePathEntry(pKey.utf8().data(), path, bPersistent, bGlobal, bNLS);
+}
+
+void KConfigBase::writePathEntry( const char *pKey, const QString & path,
+                                  bool bPersistent, bool bGlobal,
+                                  bool bNLS)
+{
+   QString value;
+   if (!path.isEmpty())
+   {
+      value = KGlobal::dirs()->relativeLocation("home", path);
+      if (value[0] != '/')
+         value = "$HOME/"+value;
+   }
+   writeEntry(pKey, value, bPersistent, bGlobal, bNLS);
+}
+
 
 void KConfigBase::deleteEntry( const QString& pKey,
                                  bool bNLS,
