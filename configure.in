@@ -43,7 +43,6 @@ AC_BASE_PATH_KDE([don't test]) dnl kdelibs is a special case
 AC_CREATE_KFSSTND(default)
 AC_SUBST_KFSSTND
 AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
-AC_FIND_GIF
 AC_FIND_JPEG
 
 # configure would do this very late. Too late for us!
