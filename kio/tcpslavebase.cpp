@@ -74,13 +74,15 @@ public:
 };
 
 
-TCPSlaveBase::TCPSlaveBase(unsigned short int default_port,
+TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
                            const QCString &protocol,
-                           const QCString &pool_socket,
-                           const QCString &app_socket)
-             :SlaveBase (protocol, pool_socket, app_socket),
-              m_iSock(-1), m_iDefaultPort(default_port),
-              m_sServiceName(protocol), fp(0)
+                           const QCString &poolSocket,
+                           const QCString &appSocket)
+             :SlaveBase (protocol, poolSocket, appSocket),
+              m_iSock(-1),
+              m_iDefaultPort(defaultPort),
+              m_sServiceName(protocol),
+              fp(0)
 {
     // We have to have two constructors, so don't add anything
     // else in here. Put it in doConstructorStuff() instead.
@@ -88,14 +90,17 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int default_port,
         m_bIsSSL = false;
 }
 
-TCPSlaveBase::TCPSlaveBase(unsigned short int default_port,
+TCPSlaveBase::TCPSlaveBase(unsigned short int defaultPort,
                            const QCString &protocol,
-                           const QCString &pool_socket,
-                           const QCString &app_socket,
+                           const QCString &poolSocket,
+                           const QCString &appSocket,
                            bool useSSL)
-             :SlaveBase (protocol, pool_socket, app_socket),
-              m_iSock(-1), m_bIsSSL(useSSL), m_iDefaultPort(default_port),
-              m_sServiceName(protocol), fp(0)
+             :SlaveBase (protocol, poolSocket, appSocket),
+              m_iSock(-1),
+              m_bIsSSL(useSSL),
+              m_iDefaultPort(defaultPort),
+              m_sServiceName(protocol),
+              fp(0)
 {
         doConstructorStuff();
         if (useSSL)
@@ -127,7 +132,7 @@ TCPSlaveBase::~TCPSlaveBase()
     delete d;
 }
 
-ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
+ssize_t TCPSlaveBase::write(const void *data, ssize_t len)
 {
     if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
     {
@@ -138,7 +143,7 @@ ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
     return KSocks::self()->write(m_iSock, data, len);
 }
 
-ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
+ssize_t TCPSlaveBase::read(void *data, ssize_t len)
 {
     if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling )
     {
@@ -149,7 +154,7 @@ ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
     return KSocks::self()->read(m_iSock, data, len);
 }
 
-ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
+ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 {
     // let's not segfault!
     if (!data) return -1;
@@ -176,37 +181,45 @@ ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
     return clen;
 }
 
-unsigned short int TCPSlaveBase::GetPort(unsigned short int _port)
+unsigned short int TCPSlaveBase::port(unsigned short int _p)
 {
-    unsigned short int port = _port;
-    if (_port <= 0) {
-        struct servent *srv=getservbyname(m_sServiceName, "tcp");
-        if (srv) {
-            port=ntohs(srv->s_port);
+    unsigned short int p = _p;
+
+    if (_p <= 0)
+    {
+        struct servent *srv = getservbyname(m_sServiceName, "tcp");
+
+        if (srv)
+        {
+            p = ntohs(srv->s_port);
         }
         else
-            port=m_iDefaultPort;
+        {
+            p = m_iDefaultPort;
+        }
     }
-    return port;
+
+    return p;
 }
 
-  // This function is simply a wrapper to establish the connection
-  // to the server.  It's a bit more complicated than ::connect
-  // because we first have to check to see if the user specified
-  // a port, and if so use it, otherwise we check to see if there
-  // is a port specified in /etc/services, and if so use that
-  // otherwise as a last resort use the supplied default port.
-bool TCPSlaveBase::ConnectToHost(const QCString &host,
+bool TCPSlaveBase::connectToHost(const QCString &host,
                                  unsigned short int _port)
 {
-    return ConnectToHost( host, _port, true );
+#warning Deprecated
+    return connectToHost( host, _port, true );
 }
 
-bool TCPSlaveBase::ConnectToHost( const QString &host,
-                                  unsigned int _port,
+// This function is simply a wrapper to establish the connection
+// to the server.  It's a bit more complicated than ::connect
+// because we first have to check to see if the user specified
+// a port, and if so use it, otherwise we check to see if there
+// is a port specified in /etc/services, and if so use that
+// otherwise as a last resort use the supplied default port.
+bool TCPSlaveBase::connectToHost( const QString &host,
+                                unsigned int _port,
                                   bool sendError )
 {
-    unsigned short int port;
+    unsigned short int p;
     KExtendedSocket ks;
 
    //  - leaving SSL - warn before we even connect
@@ -231,8 +244,8 @@ bool TCPSlaveBase::ConnectToHost( const QString &host,
     d->status = -1;
     d->host = host;
     d->needSSLHandShake = m_bIsSSL;
-    port = GetPort(_port);
-    ks.setAddress(host, port);
+    p = port(_port);
+    ks.setAddress(host, p);
     if ( d->timeout > -1 )
         ks.setTimeout( d->timeout );
 
@@ -255,12 +268,12 @@ bool TCPSlaveBase::ConnectToHost( const QString &host,
     const KSocketAddress *sa = ks.peerAddress();
     d->ip = sa->nodeName();
 
-    ks.release();		// KExtendedSocket no longer applicable
+    ks.release(); // KExtendedSocket no longer applicable
 
     if ( d->block != ks.blockingMode() )
         ks.setBlockingMode( d->block );
 
-    m_iPort=port;
+    m_iPort=p;
 
     if (m_bIsSSL && !d->useSSLTunneling) {
         if ( !doSSLHandShake( sendError ) )
@@ -273,14 +286,14 @@ bool TCPSlaveBase::ConnectToHost( const QString &host,
     // we must fdopen it to get a file pointer,
     // if it fails, close everything up
     if ((fp = fdopen(m_iSock, "w+")) == 0) {
-        CloseDescriptor();
+        closeDescriptor();
         return false;
     }
 
     return true;
 }
 
-void TCPSlaveBase::CloseDescriptor()
+void TCPSlaveBase::closeDescriptor()
 {
     stopTLS();
     if (fp) {
@@ -298,7 +311,7 @@ void TCPSlaveBase::CloseDescriptor()
     d->host = "";
 }
 
-bool TCPSlaveBase::InitializeSSL()
+bool TCPSlaveBase::initializeSSL()
 {
     if (m_bIsSSL) {
         if (KSSL::doesSSLWork()) {
@@ -312,7 +325,7 @@ bool TCPSlaveBase::InitializeSSL()
         return false;
 }
 
-void TCPSlaveBase::CleanSSL()
+void TCPSlaveBase::cleanSSL()
 {
     delete d->cc;
 
@@ -321,7 +334,7 @@ void TCPSlaveBase::CleanSSL()
     }
 }
 
-bool TCPSlaveBase::AtEOF()
+bool TCPSlaveBase::atEOF()
 {
     return feof(fp);
 }
@@ -937,3 +950,59 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     d->needSSLHandShake = false;
     return true;
 }
+
+ssize_t TCPSlaveBase::Write(const void *data, ssize_t len)
+{
+#warning Deprecated
+  return write(data, len);
+}
+
+ssize_t TCPSlaveBase::Read(void *data, ssize_t len)
+{
+#warning Deprecated
+  return read(data, len);
+}
+
+ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
+{
+#warning Deprecated
+  return readLine(data, len);
+}
+
+unsigned short int TCPSlaveBase::GetPort(unsigned short int i)
+{
+#warning Deprecated
+  return port(i);
+}
+
+bool TCPSlaveBase::ConnectToHost( const QString &host, unsigned int port,
+  bool sendError )
+{
+#warning Deprecated
+  return connectToHost(host, port, sendError);
+}
+
+void TCPSlaveBase::CloseDescriptor()
+{
+#warning Deprecated
+  return closeDescriptor();
+}
+
+bool TCPSlaveBase::AtEOF()
+{ 
+#warning Deprecated
+  return atEOF();
+}
+
+bool TCPSlaveBase::InitializeSSL()
+{ 
+#warning Deprecated
+  return initializeSSL();
+}
+
+void TCPSlaveBase::CleanSSL()
+{ 
+#warning Deprecated
+  return cleanSSL();
+}
+

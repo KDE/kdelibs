@@ -500,7 +500,7 @@ ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
   int bytes_sent = 0;
   const char* buf = static_cast<const char*>(_buf);
   while ( nbytes > 0 ) {
-    int n = Write(buf, nbytes);
+    int n = write(buf, nbytes);
 
     if ( n <= 0 ) {
       // remote side closed connection ?
@@ -587,7 +587,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
      return read(b, 1); // Read from buffer
   }
   do {
-     ret = Read( b, nbytes);
+     ret = read( b, nbytes);
      if (ret == 0) m_bEOF = true;
   }
   while (( ret == -1) && ((errno == EAGAIN) || (errno == EINTR)));
@@ -657,7 +657,7 @@ bool HTTPProtocol::http_openConnection()
 
     infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
     setConnectTimeout( m_proxyConnTimeout );
-    if ( !ConnectToHost( proxy_host, proxy_port, false ) )
+    if ( !connectToHost( proxy_host, proxy_port, false ) )
     {
       int result = connectResult();
       if ( result == IO_LookupError)
@@ -675,7 +675,7 @@ bool HTTPProtocol::http_openConnection()
   {
     // apparently we don't want a proxy.  let's just connect directly
     setConnectTimeout(m_remoteConnTimeout);
-    if ( !ConnectToHost(m_state.hostname, m_state.port, false ) )
+    if ( !connectToHost(m_state.hostname, m_state.port, false ) )
     {
       int result = connectResult();
       if ( result == IO_LookupError)
@@ -1950,7 +1950,7 @@ void HTTPProtocol::http_closeConnection()
   kdDebug(7113) << "http_closeConnection: closing (" << getpid()
                 << ")" << endl;
   m_bKeepAlive = false; // Just in case.
-  CloseDescriptor();
+  closeDescriptor();
 }
 
 void HTTPProtocol::slave_status()

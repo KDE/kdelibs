@@ -52,16 +52,21 @@ namespace KIO {
 class TCPSlaveBase : public SlaveBase
 {
 public:
-    TCPSlaveBase(unsigned short int default_port, const QCString &protocol,
-                 const QCString &pool_socket, const QCString &app_socket);
+    TCPSlaveBase(unsigned short int defaultPort, const QCString &protocol,
+                 const QCString &poolSocket, const QCString &appSocket);
 
-    TCPSlaveBase(unsigned short int default_port, const QCString &protocol,
-                 const QCString &pool_socket, const QCString &app_socket,
+    TCPSlaveBase(unsigned short int defaultPort, const QCString &protocol,
+                 const QCString &poolSocket, const QCString &appSocket,
                  bool useSSL);
 
     virtual ~TCPSlaveBase();
 
 protected:
+
+    /**
+     * Deprecated due to inconsistency with KDE naming convention.
+     */
+    ssize_t Write(const void *data, ssize_t len);
 
     /**
      * This function acts like standard write function call
@@ -73,7 +78,12 @@ protected:
      *
      * @return the actual size of the data that was sent
      */
-    ssize_t Write(const void *data, ssize_t len);
+    ssize_t write(const void *data, ssize_t len);
+
+    /**
+     * Deprecated due to inconsistency with KDE naming convention.
+     */
+    ssize_t Read(void *data, ssize_t len);
 
     /**
      * This function acts like standard read function call
@@ -85,12 +95,22 @@ protected:
      *
      * @return the actual size of data that was obtained
      */
-    ssize_t Read(void *data, ssize_t len);
+    ssize_t read(void *data, ssize_t len);
+
+    /**
+     * Deprecated due to inconsistency with KDE naming convention.
+     */
+    ssize_t ReadLine(char *data, ssize_t len);
 
     /**
      * Same as above except it reads data one line at a time.
      */
-    ssize_t ReadLine(char *data, ssize_t len);
+    ssize_t readLine(char *data, ssize_t len);
+
+    /**
+     * Deprecated due to inconsistency with KDE naming convention.
+     */
+    unsigned short int GetPort(unsigned short int);
 
     /**
      * Determines the appropiate port to use.
@@ -99,7 +119,13 @@ protected:
      *
      * @param port
      */
-    unsigned short int GetPort(unsigned short int port);
+    unsigned short int port(unsigned short int);
+
+    /**
+     * Deprecated due to inconsistency with KDE naming convention.
+     */
+    bool ConnectToHost( const QString &host, unsigned int port,
+                        bool sendError );
 
     /**
      * Performs the initial TCP connection stuff and/or
@@ -119,7 +145,7 @@ protected:
      *         on failure, false is returned and an appropriate
      *         error message is send to the application.
      */
-    bool ConnectToHost( const QString &host, unsigned int port,
+    bool connectToHost( const QString &host, unsigned int port,
                         bool sendError );
 
     /**
@@ -127,7 +153,7 @@ protected:
      *
      * FIXME: Remove in KDE 3.0
      */
-    bool ConnectToHost(const QCString &host, unsigned short int port);
+    bool connectToHost(const QCString &host, unsigned short int port);
 
     /**
      * Are we using TLS?
@@ -161,6 +187,12 @@ protected:
      */
     void stopTLS();
 
+
+    /**
+     * Deprecated due to inconsistency with KDE naming convention.
+     */
+    void CloseDescriptor();
+
     /**
      * Closes the current file descriptor.
      *
@@ -168,22 +200,37 @@ protected:
      * since it also takes care to prroperly close the stdio
      * fstream stuff, as well as sets the socket back to -1
      */
-    void CloseDescriptor();
+    void closeDescriptor();
 
     /**
-     * Returns true when end of data is reached
+     * Deprecated due to inconsistency with KDE naming convention.
      */
     bool AtEOF();
 
     /**
-     * Initializs all SSL variables
+     * Returns true when end of data is reached
+     */
+    bool atEOF();
+
+    /**
+     * Deprecated due to inconsistency with KDE naming convention.
      */
     bool InitializeSSL();
 
     /**
-     * Cleans up all SSL settings.
+     * Initializs all SSL variables
+     */
+    bool initializeSSL();
+
+    /**
+     * Deprecated due to inconsistency with KDE naming convention.
      */
     void CleanSSL();
+
+    /**
+     * Cleans up all SSL settings.
+     */
+    void cleanSSL();
 
     /**
      * Determines whether or not we are still connected
