@@ -357,7 +357,14 @@ void KDirWatch::famEventReceived()
 
   FAMEvent fe;
 
-  FAMNextEvent(&(d->fc), &fe);
+  if (FAMNextEvent(&(d->fc), &fe) == -1)
+  {
+    kdWarning(7001) << "FAM connection problem, switching to polling." << endl;
+    d->use_fam = false;
+    delete d->sn; d->sn = 0;
+    startScan(false, false);
+    return;
+  }
 
   int reqNum = FAMREQUEST_GETREQNUM(&(fe.fr));
 
