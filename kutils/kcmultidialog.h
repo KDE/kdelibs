@@ -47,7 +47,7 @@ public:
     /**
      * Constructs a new KCMultiDialog
      *
-     * @param parent The parent Widget
+     * @param parent The parent widget
      * @param name The widget name
      * @param baseGroup The baseGroup, if you want to call a module out of
      *                  kcontrol, just keep "settings"
