@@ -87,7 +87,7 @@ public:
       *
       * Example of usage:
       * <pre>
-      *     KoDocument *document = KParts::Factory::create<KoDocument>( "libkword" );
+      *     KoDocument *document = KParts::Factory::create&lt;KoDocument&gt;("libkword" );
       * </pre>
       */
      template <class T>

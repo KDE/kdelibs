@@ -297,7 +297,7 @@ public:
       *
       * Example of usage:
       * <pre>
-      *     MyPlugin *plugin = KLibFactory::create<MyPlugin>( "libfoobar", parent );
+      *     MyPlugin *plugin = KLibFactory::create&lt;MyPlugin&gt;("libfoobar", parent );
       * </pre>
       */
      template <class T>
