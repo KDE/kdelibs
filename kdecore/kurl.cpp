@@ -299,7 +299,7 @@ static QString cleanpath(const QString &_path, bool cleanDirSeparator, bool deco
 {
   if (_path.isEmpty()) return QString::null;
   
-  if ((_path[0] != '.') && (_path[0] != '/'))
+  if (_path[0] != '/')
      return _path; // Don't mangle mailto-style URLs
   
   QString path = _path;
