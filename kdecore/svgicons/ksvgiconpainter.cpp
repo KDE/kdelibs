@@ -48,6 +48,8 @@
 
 #define ART_END2 10
 
+const double deg2rad = 0.017453292519943295769; // pi/180
+
 class KSVGIconPainterHelper
 {
 public:
@@ -328,6 +330,11 @@ public:
 			double x2n = x2 * m_worldMatrix->m11() + y2 * m_worldMatrix->m21() + m_worldMatrix->dx();
 			double y2n = x2 * m_worldMatrix->m12() + y2 * m_worldMatrix->m22() + m_worldMatrix->dy();
 
+			// Adjust to gradientTransform
+			QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
+			m.map(x1n, y1n, &x1n, &y1n);
+			m.map(x2n, y2n, &x2n, &y2n);
+			
 			double dx = x2n - x1n;
 			double dy = y2n - y1n;
 			double scale = 1.0 / (dx * dx + dy * dy);
@@ -385,11 +392,23 @@ public:
 				radial->fx = (fx - cx) / r;
 				radial->fy = (fy - cy) / r;
 
-				double aff1[6], aff2[6];
+				double aff1[6], aff2[6], gradTransform[6];
+
+				// Respect gradientTransform
+				QWMatrix m = m_painter->parseTransform(element.attribute("gradientTransform"));
+						
+				gradTransform[0] = m.m11();
+				gradTransform[1] = m.m12();
+				gradTransform[2] = m.m21();
+				gradTransform[3] = m.m22();
+				gradTransform[4] = m.dx();
+				gradTransform[5] = m.dy();
+				
 				art_affine_scale(aff1, r, r);
 				art_affine_translate(aff2, cx, cy);
 
 				art_affine_multiply(aff1, aff1, aff2);
+				art_affine_multiply(aff1, aff1, gradTransform);
 				art_affine_multiply(aff1, aff1, radial->affine);
 				art_affine_invert(radial->affine, aff1);
 
@@ -2403,3 +2422,66 @@ void KSVGIconPainter::addRadialGradientElement(ArtGradientRadial *gradient, QDom
 	d->helper->m_radialGradientElementMap.insert(gradient, element);
 }
 
+QWMatrix KSVGIconPainter::parseTransform(const QString &transform)
+{
+	QWMatrix result;
+	
+	// Split string for handling 1 transform statement at a time
+	QStringList subtransforms = QStringList::split(')', transform);
+	QStringList::ConstIterator it = subtransforms.begin();
+	QStringList::ConstIterator end = subtransforms.end();
+	for(; it != end; ++it)
+	{
+		QStringList subtransform = QStringList::split('(', (*it));
+
+		subtransform[0] = subtransform[0].stripWhiteSpace().lower();
+		subtransform[1] = subtransform[1].simplifyWhiteSpace();
+		QRegExp reg("[a-zA-Z,( ]");
+		QStringList params = QStringList::split(reg, subtransform[1]);
+
+		if(subtransform[0].startsWith(";") || subtransform[0].startsWith(","))
+			subtransform[0] = subtransform[0].right(subtransform[0].length() - 1);
+
+		if(subtransform[0] == "rotate")
+		{
+			if(params.count() == 3)
+			{
+				float x = params[1].toFloat();
+				float y = params[2].toFloat();
+
+				result.translate(x, y);
+				result.rotate(params[0].toFloat());
+				result.translate(-x, -y);
+			}
+			else
+				result.rotate(params[0].toFloat());
+		}
+		else if(subtransform[0] == "translate")
+		{
+			if(params.count() == 2)
+				result.translate(params[0].toFloat(), params[1].toFloat());
+			else    // Spec : if only one param given, assume 2nd param to be 0
+				result.translate(params[0].toFloat() , 0);
+		}
+		else if(subtransform[0] == "scale")
+		{
+			if(params.count() == 2)
+				result.scale(params[0].toFloat(), params[1].toFloat());
+			else    // Spec : if only one param given, assume uniform scaling
+				result.scale(params[0].toFloat(), params[0].toFloat());
+		}
+		else if(subtransform[0] == "skewx")
+			result.shear(tan(params[0].toFloat() * deg2rad), 0.0F);
+		else if(subtransform[0] == "skewy")
+			result.shear(tan(params[0].toFloat() * deg2rad), 0.0F);
+		else if(subtransform[0] == "skewy")
+			result.shear(0.0F, tan(params[0].toFloat() * deg2rad));
+		else if(subtransform[0] == "matrix")
+		{
+			if(params.count() >= 6)
+				result.setMatrix(params[0].toFloat(), params[1].toFloat(), params[2].toFloat(), params[3].toFloat(), params[4].toFloat(), params[5].toFloat());
+		}
+	}
+
+	return result;
+}

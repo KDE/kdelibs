@@ -83,6 +83,8 @@ public:
 	QDomElement radialGradientElement(ArtGradientRadial *radial);
 	void addRadialGradientElement(ArtGradientRadial *gradient, QDomElement element);
 
+	QWMatrix parseTransform(const QString &transform);
+
 private:
 	struct Private;
 	Private *d;

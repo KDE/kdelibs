@@ -29,8 +29,6 @@
 #include "ksvgiconpainter.h"
 #include "ksvgiconengine.h"
 
-const double deg2rad = 0.017453292519943295769; // pi/180
-
 class KSVGIconEngineHelper
 {
 public:
@@ -263,60 +261,11 @@ public:
 
 	void parseTransform(const QString &transform)
 	{
-		// Split string for handling 1 transform statement at a time
-		QStringList subtransforms = QStringList::split(')', transform);
-		QStringList::ConstIterator it = subtransforms.begin();
-		QStringList::ConstIterator end = subtransforms.end();
-		for(; it != end; ++it)
-		{
-			QStringList subtransform = QStringList::split('(', (*it));
-
-			subtransform[0] = subtransform[0].stripWhiteSpace().lower();
-			subtransform[1] = subtransform[1].simplifyWhiteSpace();
-			QRegExp reg("[a-zA-Z,( ]");
-			QStringList params = QStringList::split(reg, subtransform[1]);
-
-			if(subtransform[0].startsWith(";") || subtransform[0].startsWith(","))
-				subtransform[0] = subtransform[0].right(subtransform[0].length() - 1);
-
-			if(subtransform[0] == "rotate")
-			{
-				if(params.count() == 3)
-				{
-					float x = params[1].toFloat();
-					float y = params[2].toFloat();
-					
-					m_engine->painter()->worldMatrix()->translate(x, y);
-					m_engine->painter()->worldMatrix()->rotate(params[0].toFloat());
-					m_engine->painter()->worldMatrix()->translate(-x, -y);
-				}
-				else
-					m_engine->painter()->worldMatrix()->rotate(params[0].toFloat());
-			}
-			else if(subtransform[0] == "translate")
-			{
-				if(params.count() == 2)
-					m_engine->painter()->worldMatrix()->translate(params[0].toFloat(), params[1].toFloat());
-				else    // Spec : if only one param given, assume 2nd param to be 0
-					m_engine->painter()->worldMatrix()->translate(params[0].toFloat() , 0);
-			}
-			else if(subtransform[0] == "scale")
-			{
-				if(params.count() == 2)
-					m_engine->painter()->worldMatrix()->scale(params[0].toFloat(), params[1].toFloat());
-				else    // Spec : if only one param given, assume uniform scaling
-					m_engine->painter()->worldMatrix()->scale(params[0].toFloat(), params[0].toFloat());
-			}
-			else if(subtransform[0] == "skewx") 
-				m_engine->painter()->worldMatrix()->shear(tan(params[0].toFloat() * deg2rad), 0.0F);
-			else if(subtransform[0] == "skewy")
-				m_engine->painter()->worldMatrix()->shear(0.0F, tan(params[0].toFloat() * deg2rad));
-			else if(subtransform[0] == "matrix")
-			{
-				if(params.count() >= 6)
-					m_engine->painter()->worldMatrix()->setMatrix(params[0].toFloat(), params[1].toFloat(), params[2].toFloat(), params[3].toFloat(), params[4].toFloat(), params[5].toFloat());
-			}
-		}
+		// Combine new and old matrix
+		QWMatrix matrix = m_engine->painter()->parseTransform(transform);
+		
+		QWMatrix *current = m_engine->painter()->worldMatrix();
+		*current *= matrix;
 	}
 
 	void parseCommonAttributes(QDomNode &node)

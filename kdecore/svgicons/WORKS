@@ -13,7 +13,7 @@ apps/
 	gimp.svg				MP
 	hwinfo.svg				100%
 	kcmpci.svg				MP
-	kcontrol.svg			50%			Too bright, wrong gradients
+	kcontrol.svg			9%			Partly too dark and too brigh
 	kfm_home.svg			100%
 	kmenu.svg				100%
 	kmix.svg				75%			Too bright, wrong gradients
@@ -21,7 +21,7 @@ apps/
 	konqueror2.svg			MP
 	konqueror3.svg			100%														Reference image is konqueror2.png
 	konqueror4.svg			100%														Reference image is konqueror3.png
-	konsole.svg				50%			Wrong gradients		
+	konsole.svg				90%			Partly too dark and too bright
 	linuxconf.svg			SM
 	mozilla.svg				100%
 	netscape.svg			100%
@@ -43,17 +43,17 @@ filesystems/
 	desktop.svg				100%
 	exec.svg				100%
 	favorites.svg			100%
-	files.svg				50%			Wrong gradients
+	files.svg				100%		
 	folder.svg				90%			Not transparent enough
 	folder2.svg				90%			Not transparent enough
-	folder2_cd.svg			20%			Not transparent enough, too bright
+	folder2_cd.svg			90%			Not transparent enough
 	folder2_empty.svg		MP
 	folder3.svg				MP
 	folder_cd.svg			30%			Not transparent enough, disc stroke is too big
 	folder_empty.svg		MP
 	folder_green.svg		90%			Not transparent enough
 	folder_grey.svg			30%			Not transparent enough, wrong gradients
-	folder_home.svg			50%			Wrong gradients
+	folder_home.svg			75%			Wrong gradients
 	folder_red.svg			90%			Not transparent enough
 	folder_violet.svg		90%			Not transparent enough
 	folder_yellow.svg		90%			Not transparent enough
