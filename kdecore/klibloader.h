@@ -66,7 +66,7 @@ class KLibraryPrivate;
  * All objects created by the factory must be derived from @ref QObject, since @ref QObject
  * offers type safe casting.
  *
- * KLibFactory is an abstract class. You have to overloaed the @ref create() method.
+ * KLibFactory is an abstract class. You have to overload the @ref create() method.
  *
  * @author Torben Weis <weis@kde.org>
  */
