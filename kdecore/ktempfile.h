@@ -105,9 +105,9 @@ public:
     * before you use it by name. 
     *
     * In particular, if another process or software part needs to write data 
-    * to the file, the file should be closed before doing so. Otherwise the 
-    * act of closing the file later on may cause the file to get truncated to a 
-    * zero-size, resulting in an unexpected loss of the data.
+    * to the file based on the filename, the file should be closed before doing 
+    * so. Otherwise the act of closing the file later on may cause the file to 
+    * get truncated to a zero-size, resulting in an unexpected loss of the data.
     *
     * In some cases there is only interest in the filename itself but where the
     * actual presence of a file with such name is a problem. In that case the
