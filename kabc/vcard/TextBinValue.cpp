@@ -77,5 +77,6 @@ TextBinValue::_parse()
 	void
 TextBinValue::_assemble()
 {
+  strRep_ = "urltest";
 }
 

@@ -79,21 +79,27 @@ UTCValue::~UTCValue()
 {
 }
 
+  UTCValue *
+UTCValue::clone()
+{
+  return new UTCValue( *this );
+}
+
 	void
 UTCValue::_parse()
 {
   if ( strRep_.isEmpty() )
     return;
 
-	positive_ = (strRep_[0] == '+');
+	positive_ = ( strRep_[0] == '+' );
 	
-	int colon = strRep_.find(':');
+	int colon = strRep_.find( ':' );
 	
-	if (colon == -1) // Not valid.
+	if ( colon == -1 ) // Not valid.
 		return;
 
-	hour_	= strRep_.mid(1, colon).toInt();
-	minute_	= strRep_.right(2).toInt();
+	hour_	= strRep_.mid( 1, 2 ).toInt();
+	minute_	= strRep_.right( 2 ).toInt();
 }
 
 	void

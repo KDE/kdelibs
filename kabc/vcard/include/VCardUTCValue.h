@@ -35,6 +35,8 @@ class UTCValue : public Value
 {
 	
 #include "UTCValue-generated.h"
+
+  UTCValue *clone();
 	
   void setPositive( int p ) { positive_ = p; assembled_ = false; }
   void setHour( int h ) { hour_ = h; assembled_ = false; }

@@ -75,6 +75,12 @@ GeoValue::~GeoValue()
 {
 }
 
+	GeoValue *
+GeoValue::clone()
+{
+	return new GeoValue( *this );
+}
+
 	void
 GeoValue::_parse()
 {

@@ -28,20 +28,23 @@
 
 #include <VCardValue.h>
 
+#include <kdebug.h>
+
 namespace VCARD
 {
 
 class ClassValue : public Value
 {
-  public:
+
+#include "ClassValue-generated.h"
+
 	  enum ClassType {
 		  Public, Private, Confidential, Other
 	  };
-	
-#include "ClassValue-generated.h"
 
-  public:
-    void setType( int type ) { classType_ = type; assembled_ = false; }
+    ClassValue *clone();	
+
+    void setType( int type ) { classType_ = type; assembled_ = false; parsed_ = true; }
     int type() { parse(); return classType_; }
 	
 	private:

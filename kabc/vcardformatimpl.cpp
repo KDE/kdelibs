@@ -434,8 +434,8 @@ void VCardFormatImpl::addUTCValue( VCard *vcard, EntityType type,
   UTCValue *v = new UTCValue;
 
   v->setPositive( tz.offset() >= 0 );
-  v->setHour( tz.offset() / 60 );
-  v->setMinute( tz.offset() % 60 );
+  v->setHour( (tz.offset() / 60) * ( tz.offset() >= 0 ? 1 : -1 ) );
+  v->setMinute( (tz.offset() % 60) * ( tz.offset() >= 0 ? 1 : -1 ) );
 
   cl.setValue( v );
   vcard->add(cl);
@@ -451,15 +451,15 @@ void VCardFormatImpl::addClassValue( VCard *vcard, EntityType type,
   switch ( secrecy.type() ) {
     case Secrecy::Public:
       kdDebug() << "is Pub" << endl;
-      v->setType( ClassValue::Public );
+      v->setType( (int)ClassValue::Public );
       break;
     case Secrecy::Private:
       kdDebug() << "is Prv" << endl;
-      v->setType( ClassValue::Private );
+      v->setType( (int)ClassValue::Private );
       break;
     case Secrecy::Confidential:
       kdDebug() << "is Conf" << endl;
-      v->setType( ClassValue::Confidential );
+      v->setType( (int)ClassValue::Confidential );
       break;
   }
 

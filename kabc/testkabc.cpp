@@ -27,7 +27,7 @@ int main(int argc,char **argv)
     addr.setSecrecy( Secrecy( Secrecy::Confidential ) );
 
     TimeZone zone;
-    zone.setOffset( -188 );
+    zone.setOffset( 188 );
     addr.setTimeZone( zone );
 
     Geo geo;

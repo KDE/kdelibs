@@ -49,7 +49,6 @@ ClassValue::ClassValue(const QCString & s)
 ClassValue::operator = (ClassValue & x)
 {
 	if (*this == x) return *this;
-	
 	x.parse();
 	
 	classType_ = x.classType_;
@@ -69,11 +68,17 @@ ClassValue::operator = (const QCString & s)
 ClassValue::operator == (ClassValue & x)
 {
 	x.parse();
-	return false;
+	return ( classType_ == x.classType_ );
 }
 
 ClassValue::~ClassValue()
 {
+}
+
+  ClassValue *
+ClassValue::clone()
+{
+  return new ClassValue( *this );
 }
 
 	void
@@ -94,7 +99,6 @@ ClassValue::_parse()
 	void
 ClassValue::_assemble()
 {
-  kdDebug() << "Write type (" << classType_ << "to file." << endl;
 	switch (classType_) {
 		
 		case Public:
