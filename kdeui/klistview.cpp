@@ -667,7 +667,7 @@ void KListView::contentsMouseReleaseEvent( QMouseEvent *e )
     d->startDragPos = QPoint();
   }
 
-  if (!drag)
+//  if (!drag)
     QListView::contentsMouseReleaseEvent( e );
 }
 
