@@ -1685,7 +1685,6 @@ static QString get_mount_info(const QString& filename,
         {
             mountPoint = QFile::decodeName( MOUNTPOINT(me) );
             check_mount_point(MOUNTTYPE(me), FSNAME(me), isautofs, isslow);
-kdDebug() << "***** point: " << mountPoint << ", " << FSNAME(me) << ", " << MOUNTPOINT(me) << endl;
             // we don't check if ismanual is Right, if /a/b is manually
             // mounted /a/b/c can't be automounted. At least IMO.
             if (ismanual == Unseen)
@@ -1706,7 +1705,6 @@ kdDebug() << "***** point: " << mountPoint << ", " << FSNAME(me) << ", " << MOUN
                 {
                     if (fsname_me == FSNAME(fe))
                     {
-kdDebug() << "***** found: " << MOUNTPOINT(fe) << ", " << FSNAME(fe) <<endl;
                         found = true;
                         if (HASMNTOPT(fe, "noauto") || 
                             !strcmp(MOUNTTYPE(fe), "supermount"))
