@@ -76,7 +76,7 @@ namespace KParts
  * This class is khtml's main class. It features an almost complete
  * web browser, and html renderer.
  *
- * The easiest way to use this class (if you just want to display a HTML
+ * The easiest way to use this class (if you just want to display a an HTML
  * page at some URL) is the following:
  *
  * <pre>
@@ -87,7 +87,7 @@ namespace KParts
  * w->show();
  * </pre>
  *
- * By default Java and JavaScript support is disabled. You can enable it by
+ * By default Java and JavaScript support are disabled. You can enable them by
  * using the @ref enableJava() and @ref enableJScript() methods.
  *
  * Some apps want to write their HTML code directly into the widget instead of
@@ -102,16 +102,17 @@ namespace KParts
  * w->end();
  * </pre>
  *
- * You can do as many calls to write as you want. But there are two @ref write()
- * methods, one accepting a @ref QString one accepting a char * argument. These
- * should not get mixed, since the method usnig the char * argument does an
- * additional decoding step to convert the written data to Unicode.
+ * You can do as many calls to write as you want. But there are two
+ * @ref write() methods, one accepting a @ref QString one accepting a
+ * @tt char @tt * argument. You should use one or the other 
+ * (but not both) since the method using
+ * the @tt char @tt * argument does an additional decoding step to convert the
+ * written data to Unicode.
  *
  * @short HTML Browser Widget
  * @author Lars Knoll (knoll@kde.org)
  * @version $Id$
- *
- */
+ * */
 class KHTMLPart : public KParts::ReadOnlyPart
 {
   Q_OBJECT
@@ -133,12 +134,16 @@ public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 
   /**
-   * Constructs a new KHTMLPart.
-   * KHTML basically consists of two objects: The KHTMLPart itself, holding the document data
-   * (DOM document), and the KHTMLView, derived from @ref QScrollview, in which the document content is
-   * rendered in. You can specify two different parent objects for a KHTMLPart, one parent for the
-   * KHTMLPart document and on parent for the KHTMLView. If the second @p parent argument is 0L, then
-   * @p parentWidget is used as parent for both objects, the part and the view.
+   * Construct a new @ref KHTMLPart.
+   *
+   * KHTML basically consists of two objects: The @ref KHTMLPart itself,
+   * holding the document data (DOM document), and the @ref KHTMLView,
+   * derived from @ref QScrollview, in which the document content is
+   * rendered in. You can specify two different parent objects for a
+   * @ref KHTMLPart, one parent for the @ref KHTMLPart document and on parent
+   * for the @ref KHTMLView. If the second @p parent argument is 0L, then
+   * @p parentWidget is used as parent for both objects, the part and
+   * the view.  
    */
   KHTMLPart( QWidget *parentWidget = 0, const char *widgetname = 0,
              QObject *parent = 0, const char *name = 0 );
@@ -151,17 +156,19 @@ public:
   KHTMLPart( KHTMLView *view, QObject *parent, const char *name, GUIProfile prof ); // BCI: merge with prof = DefaultGUI
 
   /**
-   * Destructor
+   * Destructor.
    */
   virtual ~KHTMLPart();
 
   /**
-   * Reimplemented from @ref KParts::ReadOnlyPart::openURL . Opens the specified url @p url .
+   * Opens the specified URL @p url.
+   *
+   * Reimplemented from @ref KParts::ReadOnlyPart::openURL .
    */
   virtual bool openURL( const KURL &url );
 
   /**
-   * Stops loading the document and kills all data requests (for images, etc.)
+   * Stop loading the document and kill all data requests (for images, etc.)
    */
   virtual bool closeURL();
 
@@ -176,7 +183,7 @@ public:
   KHTMLPartBrowserExtension *browserExtension() const;
 
   /**
-   * Retrieve a pointer to the html document's view.
+   * Retrieve a pointer to the HTML document's view.
    */
   KHTMLView *view() const;
 
@@ -186,14 +193,16 @@ public:
   void enableJScript( bool enable );
 
   /**
-   * Return if Javascript support is enabled/disabled.
+   * Returns @tt true if Javascript support is enabled or @tt false
+   * otherwise.
    */
   bool jScriptEnabled() const;
 
   /**
    * Execute the specified snippet of JavaScript code.
-   * Returns true if JavaScript was enabled, no error occured
-   * and the code returned true itself. False otherwise.
+   *
+   * Returns @tt true if JavaScript was enabled, no error occured
+   * and the code returned true itself or @tt false otherwise.
    */
   bool executeScript( const QString &script );
 
@@ -211,14 +220,16 @@ public:
   bool javaEnabled() const;
 
   /**
-   * should images be loaded automatically? Default is true.
+   * Should images be loaded automatically? Default is @tt true.
+   *
    * (not implemented at the moment)
    */
   void autoloadImages( bool enable );
   bool autoloadImages() const;
 
   /**
-   * Clears the widget and prepares it for new content.
+   * Clear the widget and prepares it for new content.
+   *
    * If you want @ref url() to return
    * for example "file:/tmp/test.html", you can use the following code:
    * <PRE>
@@ -228,70 +239,87 @@ public:
    * @param url is the url of the document to be displayed.  Even if you
    * are generating the HTML on the fly, it may be useful to specify
    * a directory so that any pixmaps are found.
-   * @param xOffset is the initial horizontal scrollbar value. Usually you don't
-   * want to use this.
-   * @param yOffset is the initial vertical scrollbar value. Usually you don't
-   * want to use this.
    *
-   * All child frames and the old document are removed if you call this method.
-   */	
+   * @param xOffset is the initial horizontal scrollbar value. Usually
+   * you don't want to use this.
+   *
+   * @param yOffset is the initial vertical scrollbar value. Usually
+   * you don't want to use this.
+   *
+   * All child frames and the old document are removed if you call
+   * this method.  
+   */
   virtual void begin( const KURL &url = KURL(), int xOffset = 0, int yOffset = 0 );
 
   /**
-   * Writes another part of the HTML code to the widget. You may call
-   * this function many times in sequence. But remember: The less calls
-   * the faster the widget is.
+   * Write another part of the HTML code to the widget. 
    *
-   * The html code is send through a decoder, which decodes the stream to
-   * unicode.
+   * You may call
+   * this function many times in sequence. But remember: The fewer calls
+   * you make, the faster the widget will be.
    *
-   * The len parameter is needed for streams encoded in utf-16, since these
-   * can have \0 chars in them. In case the encoding you're using isn't
-   * utf-16, you can safely leave out the length parameter.
+   * The HTML code is send through a decoder which decodes the stream to
+   * Unicode.
    *
-   * Attention: Don't mix calls to write( const char *) with calls
-   * to write( const QString & ). The result might not be what you want.
+   * The @p len parameter is needed for streams encoded in utf-16,
+   * since these can have \0 chars in them. In case the encoding
+   * you're using isn't utf-16, you can safely leave out the length
+   * parameter.
+   *
+   * Attention: Don't mix calls to @ref write( const char *) with calls
+   * to @ref write( const QString & ).
+   *
+   * The result might not be what you want.  
    */
   virtual void write( const char *str, int len = -1 );
 
   /**
-   * Writes another part of the HTML code to the widget. You may call
-   * this function many times in sequence. But remember: The less calls
-   * the faster the widget is.
+   * Write another part of the HTML code to the widget. 
+   *
+   * You may call
+   * this function many times in sequence. But remember: The fewer calls
+   * you make, the faster the widget will be.
    */
   virtual void write( const QString &str );
 
   /**
-   * Call this after your last call to @ref #write.
+   * Call this after your last call to @ref write().
    */
   virtual void end();
 
   /*
-   * Print current HTML page layouted for the printer.
+   * Print current HTML page layed out for the printer.
+   *
    * (not implemented at the moment)
    */
   //    void print(QPainter *, int pageHeight, int pageWidth);
 
   /**
-   * Mainly used internally. Sets the document's base URL
+   * Mainly used internally.
+   *
+   * Sets the document's base URL.
    */
   void setBaseURL( const KURL &url );
 
   /**
-   * @return the base URL of this document
+   * Retrieve the base URL of this document
    *
-   * The base url is ususally set by an <base url=...> tag in the document head.
+   * The base URL is ususally set by a <base url=...> 
+   * tag in the document head.
    */
   KURL baseURL() const;
 
   /**
-   * Mainly used internally. Sets the document's base target.
+   * Mainly used internally. 
+   *
+   *Sets the document's base target.
    */
   void setBaseTarget( const QString &target );
 
   /**
-   * @return the base target of this document
-   * The base target is ususally set by an <base target=...>
+   * Retrieve the base target of this document.
+   *
+   * The base target is ususally set by a <base target=...>
    * tag in the document head.
    */
   QString baseTarget() const;
@@ -307,44 +335,52 @@ public:
   void scheduleRedirection( int delay, const QString &url );
 
   /**
-   * sets the charset to use for displaying html pages. If override is true,
+   * Set the charset to use for displaying HTML pages.
+   *
+   * If override is @tt true,
    * it will override charset specifications of the document.
    */
   bool setCharset( const QString &name, bool override = false );
 
   /**
-   * set the encoding the page uses. This can be different form the charset.
+   * Set the encoding the page uses.
+   *
+   * This can be different form the charset.
    */
   bool setEncoding( const QString &name, bool override = false );
 
   /**
-   * set a user defined style sheet to be used on top of the HTML 4 default style
-   * sheet. This gives a wide range of possibilities to change the layout of the
-   * page
+   * Set a user defined style sheet to be used on top of the HTML 4
+   * default style sheet.
+   *
+   * This gives a wide range of possibilities to
+   * change the layout of the page.
    */
   void setUserStyleSheet(const KURL &url);
 
   /**
-   * set a user defined style sheet to be used on top of the HTML 4 default style
-   * sheet. This gives a wide range of possibilities to change the layout of the
-   * page
+   * Set a user defined style sheet to be used on top of the HTML 4
+   * default style sheet.
+   *
+   * This gives a wide range of possibilities to
+   * change the layout of the page.
    */
   void setUserStyleSheet(const QString &styleSheet);
 
   /**
-   * Sets point sizes to be associated with the HTML-sizes used in
+   * Set point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size>
    *
-   * Html-Font-Sizes range from 0 (smallest) to 6 (biggest), but you can specify up to 15 font sizes,
-   * the bigger ones will get used, if <font size=+1> extends over 7, or if a 'font-size: larger' style
-   * declaration gets into this region.
+   * Html-Font-Sizes range from 0 (smallest) to 6 (biggest), but you
+   * can specify up to 15 font sizes, the bigger ones will get used,
+   * if <font size=+1> extends over 7, or if a 'font-size: larger'
+   * style declaration gets into this region.
    *
-   * They are related to the CSS font sizes by 0 == xx-small to 6 == xx-large.
-   */
+   * They are related to the CSS font sizes by 0 == xx-small to 6 == xx-large.  */
   void setFontSizes(const QValueList<int> &newFontSizes );
 
   /**
-   * Gets point sizes to be associated with the HTML-sizes used in
+   * Get point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size>
    *
    * Html-Font-Sizes range from 0 (smallest) to 6 (biggest).
@@ -354,7 +390,7 @@ public:
   QValueList<int> fontSizes() const;
 
   /**
-   * Resets the point sizes to be associated with the HTML-sizes used in
+   * Reset the point sizes to be associated with the HTML-sizes used in
    * <FONT size=Html-Font-Size> to their default.
    *
    * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
@@ -362,34 +398,36 @@ public:
   void resetFontSizes();
 
   /**
-   * Sets the standard font style.
+   * Set the standard font style.
    *
-   * @param name is the font name to use for standard text.
+   * @param name The font name to use for standard text.
    */
   void setStandardFont( const QString &name );
 
   /**
-   * Sets the fixed font style.
+   * Set the fixed font style.
    *
-   * @param name is the font name to use for fixed text, e.g.
+   * @param name The font name to use for fixed text, e.g.
    * the <tt>&lt;pre&gt;</tt> tag.
    */
   void setFixedFont( const QString &name );
 
   /**
-   * Find the anchor named '_name'. If the anchor is found, the widget
-   * scrolls to the closest position. Returns TRUE if the anchor has
+   * Find the anchor named @p name.
+   *
+   * If the anchor is found, the widget
+   * scrolls to the closest position. Returns @tt if the anchor has
    * been found.
    */
   bool gotoAnchor( const QString &name );
 
   /**
-   * Sets the cursor to use when the cursor is on a link.
+   * Set the cursor to use when the cursor is on a link.
    */
   void setURLCursor( const QCursor &c );
 
   /**
-   * Returns the cursor which is used when the cursor is on a link.
+   * Retrieve the cursor which is used when the cursor is on a link.
    */
   const QCursor& urlCursor() const;
 
@@ -414,27 +452,33 @@ public:
   virtual QString selectedText() const;
 
   /**
-   * @returns the selected part of the HTML
+   * Retrieve the selected part of the HTML.
    */
   DOM::Range selection() const;
 
   /**
-   * Has the user selected anything?  Call @ref #selectedText to
+   * Has the user selected anything?
+   *
+   *  Call @ref selectedText() to
    * retrieve the selected text.
    *
-   * @return true if there is text selected.
+   * @return @tt true if there is text selected.
    */
   bool hasSelection() const;
 
   void selectAll();
 
   /**
-   * Convenience method to show the document's view. Equivalent to widget()->show() or view()->show() .
+   * Convenience method to show the document's view.
+   *
+   * Equivalent to widget()->show() or view()->show() .
    */
   void show();
 
   /**
-   * Convenience method to hide the document's view. Equivalent to widget()->hide() or view()->hide() .
+   * Convenience method to hide the document's view.
+   *
+   * Equivalent to widget()->hide() or view()->hide().
    */
   void hide();
 
@@ -444,22 +488,28 @@ public:
   KParts::PartManager *partManager();
 
   /**
-   * Save the KHTMLPart's complete state (including child frame objects) to the provided QDataStream.
+   * Save the @ref KHTMLPart's complete state (including child frame
+   * objects) to the provided @ref QDataStream.
+   *
    * You can use this method to provide history functionality.
    *
-   * This is called from the @ref saveState method of the @ref browserExtension .
+   * This is called from the @ref saveState() method of the
+   *  @ref browserExtension().
    */
   virtual void saveState( QDataStream &stream );
   /**
-   * Restore the KHTMLPart's previously saved state (including child frame objects) from the provided
-   * QDataStream. See @ref saveState.
+   * Restore the @ref KHTMLPart's previously saved state (including
+   * child frame objects) from the provided QDataStream.
    *
-   * This is called from the @ref restoreState method of the @ref browserExtension .
-   */
+   * @see saveState()
+   *
+   * This is called from the @ref restoreState() method of the 
+   * @ref browserExtension() .
+   **/
   virtual void restoreState( QDataStream &stream );
 
   /**
-   * @returns the Node, currently under the mouse
+   * Retrieve the @tt Node currently under the mouse
    */
   DOM::Node nodeUnderMouse() const;
 
@@ -469,8 +519,10 @@ public:
   const KHTMLSettings *settings() const;
 
   /**
-   * Returns a pointer to the parent KHTMLPart if the part is a frame in a html frameset.
-   * (returns 0L otherwise)
+   * Retrieve a pointer to the parent @ref KHTMLPart if the part is a frame
+   * in an HTML frameset.
+   *
+   *  Returns 0L otherwise.
    */
   KHTMLPart *parentPart();
 
@@ -482,12 +534,12 @@ public:
 
 signals:
   /**
-   * This signal is emitted if the cursor is moved over an URL.
+   * Eemitted if the cursor is moved over an URL.
    */
   void onURL( const QString &url );
 
   /**
-   * This signal is emitted when the user clicks the right mouse button on the document.
+   * Emitted when the user clicks the right mouse button on the document.
    */
   void popupMenu(const QString &url, const QPoint &point);
 

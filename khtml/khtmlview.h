@@ -49,6 +49,11 @@ namespace khtml {
 class KHTMLPart;
 class KHTMLViewPrivate;
 
+/**
+ * Render and display HTML in a @ref QScrollView.
+ *
+ * Suitable for use as an application's main view.
+ **/
 class KHTMLView : public QScrollView
 {
     Q_OBJECT
@@ -61,39 +66,62 @@ class KHTMLView : public QScrollView
 
 public:
     /**
-     * Constructs a KHTMLView
+     * Construct a @ref KHTMLView.
      */
     KHTMLView( KHTMLPart *part, QWidget *parent, const char *name=0 );
     virtual ~KHTMLView();
 
+    /**
+     * Retrieve a pointer to the @ref KHTMLPart that is
+     * rendering the page.
+     **/
     KHTMLPart *part() const { return m_part; }
 
     int frameWidth() const { return _width; }
 
-    // implements keyboard traversal. sets the view's position so that the actual link
-    // is visible.
+    /**
+     * Implements keyboard traversal.
+     *
+     * Sets the view's position so that the actual link
+     * is visible.
+     **/
     bool gotoNextLink();
+    /**
+     * Implements keyboard traversal.
+     *
+     * Sets the view's position so that the actual link
+     * is visible.
+     **/
     bool gotoPrevLink();
     void toggleActLink(bool);
 
-    /*
-     * set a margin in x direction
+    /**
+     * Set a margin in x direction.
      */
     void setMarginWidth(int x) { _marginWidth = x; }
+
     /**
-     * @return the margin With. -1 means the default value will be used.
+     * Retrieve the margin width.
+     *
+     * A return value of -1 means the default value will be used.
      */
     int marginWidth() const { return _marginWidth; }
 
     /*
-     * set a margin in y direction
+     * Set a margin in y direction.
      */
     void setMarginHeight(int y) { _marginHeight = y; }
+
     /*
-     * @return the margin height. -1 means the default value will be used.
+     * Retrieve the margin height.
+     *
+     * A return value of -1 means the default value will be used.
      */
     int marginHeight() { return _marginHeight; }
 
+    /**
+     * Print the HTML document.
+     **/
     void print();
 
     void layout(bool force = false);
