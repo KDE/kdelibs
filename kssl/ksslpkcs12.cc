@@ -222,13 +222,16 @@ return false;
 
 
 KSSLCertificate::KSSLValidation KSSLPKCS12::validate() {
+#ifdef HAVE_SSL
 KSSLCertificate::KSSLValidation xx = _cert->validate();
-
    if (1 != kossl->X509_check_private_key(_cert->getCert(), _pkey)) {
       xx = KSSLCertificate::PrivateKeyFailed;
    }
 
 return xx;
+#else
+return KSSLCertificate::NoSSL;
+#endif
 }
 
 
