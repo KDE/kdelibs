@@ -21,7 +21,9 @@
 
 #include <kjs/operations.h>
 #include <dom_string.h>
+#include <dom_xml.h>
 
+#include "kjs_text.h"
 #include "kjs_dom.h"
 
 using namespace KJS;
@@ -52,10 +54,39 @@ KJSO *DOMNode::get(const UString &p)
   //    result = new DOMNamedNodeMap(node.attributes());
   else if (p == "ownerDocument")
     result = new DOMDocument(node.ownerDocument());
+  else if (p == "insertBefore")
+    result = new DOMNodeFunc(node, DOMNodeFunc::InsertBefore);
+  else if (p == "replaceChild")
+    result = new DOMNodeFunc(node, DOMNodeFunc::ReplaceChild);
+  else if (p == "removeChild")
+    result = new DOMNodeFunc(node, DOMNodeFunc::RemoveChild);
+  else if (p == "appendChild")
+    result = new DOMNodeFunc(node, DOMNodeFunc::AppendChild);
+  else if (p == "hasChildNodes")
+    result = new DOMNodeFunc(node, DOMNodeFunc::HasChildNodes);
+  else if (p == "cloneNode")
+    result = new DOMNodeFunc(node, DOMNodeFunc::CloneNode);
   else
     result = newUndefined();
 
   return result;
+}
+
+KJSO *DOMNodeFunc::execute(const List &args)
+{
+  KJSO *result;
+
+  if (id == HasChildNodes)
+    result = newBoolean(node.hasChildNodes());
+  else if (id == CloneNode) {
+    Ptr arg = args[0];
+    Ptr b = toBoolean(arg);
+    result = new DOMNode(node.cloneNode(b->boolVal()));
+  } else {
+    /* TODO: retrieve nodes from args for InsertBefore etc. */
+    result = newUndefined();
+  }
+  return newCompletion(Normal, result);
 }
 
 KJSO *DOMNodeList::get(const UString &p)
@@ -147,6 +178,15 @@ KJSO *DOMDocFunction::execute(const List &args)
   switch(id) {
   case CreateElement:
     result = new DOMElement(doc.createElement(s));
+    break;
+  case CreateTextNode:
+    result = new DOMText(doc.createTextNode(s));
+    break;
+  case CreateComment:
+    result = new DOMText(doc.createComment(s)); /* TODO: okay ? */
+    break;
+  case CreateCDATASection:
+    result = new DOMText(doc.createCDATASection(s));  /* TODO: okay ? */
     break;
   case CreateAttribute:
     result = new DOMAttr(doc.createAttribute(s));

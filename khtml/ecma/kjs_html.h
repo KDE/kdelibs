@@ -38,7 +38,7 @@ namespace KJS {
     virtual KJSO *get(const UString &p);
     KJSO *execute(const List &);
     enum { Images, Applets, Links, Forms, Anchors, Open, Close,
-	   Write, Writeln, ElByID, ElByName };
+	   Write, WriteLn, GetElementById, GetElementsByName };
   private:
     DOM::HTMLDocument doc;
     int id;

@@ -37,6 +37,18 @@ namespace KJS {
     DOM::Node node;
   };
 
+  class DOMNodeFunc : public InternalFunction {
+    friend DOMNode;
+  public:
+    DOMNodeFunc(DOM::Node n, int i) : node(n), id(i) { }
+    KJSO *execute(const List &);
+    enum { InsertBefore, ReplaceChild, RemoveChild, AppendChild,
+	   HasChildNodes, CloneNode };
+  private:
+    DOM::Node node;
+    int id;
+  };
+
   class DOMNodeList : public HostObject {
   public:
     DOMNodeList(DOM::NodeList l) : list(l) { }
@@ -56,7 +68,6 @@ namespace KJS {
   class DOMDocFunction : public InternalFunction {
   public:
     DOMDocFunction(DOM::Document d, int i);
-    //    virtual KJSO *get(const UString &p);
     KJSO *execute(const List &);
     enum { CreateElement, CreateDocumentFragment, CreateTextNode,
 	   CreateComment, CreateCDATASection, CreateProcessingInstruction,

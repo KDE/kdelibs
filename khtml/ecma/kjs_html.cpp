@@ -151,10 +151,31 @@ KJSO *KJS::HTMLDocFunction::execute(const List &args)
   case Anchors:
     coll = doc.anchors();
     break;
+  case Open:
+    doc.open();
+    result = newUndefined();
+    break;
+  case Close:
+    doc.close();
+    result = newUndefined();
+    break;
   case Write:
     n = toString(v);
     doc.write(n->stringVal().string());
     result = newUndefined();
+    break;
+  case WriteLn:
+    n = toString(v);
+    doc.write((n->stringVal() + "\n").string());
+    result = newUndefined();
+    break;
+  case GetElementById:
+    n = toString(v);
+    result = new DOMElement(doc.getElementById(n->stringVal().string()));
+    break;
+  case GetElementsByName:
+    n = toString(v);
+    result = new DOMNodeList(doc.getElementsByName(n->stringVal().string()));
     break;
   default:
     assert((result = 0L));
@@ -195,10 +216,20 @@ KJSO *KJS::HTMLDocument::get(const UString &p)
     result = new HTMLDocFunction(doc, HTMLDocFunction::Forms);
   else if (p == "anchors")
     result = new HTMLDocFunction(doc, HTMLDocFunction::Anchors);
-  else if (p == "write")
-    result = new HTMLDocFunction(doc, HTMLDocFunction::Write);
   else if (p == "cookie")
     result = newString(doc.cookie());
+  else if (p == "open")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Open);
+  else if (p == "close")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Close);
+  else if (p == "write")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::Write);
+  else if (p == "writeln")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::WriteLn);
+  else if (p == "getElementById")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::GetElementById);
+  else if (p == "getElementsByName")
+    result = new HTMLDocFunction(doc, HTMLDocFunction::GetElementsByName);
   else {
     // look in base class (Document)
     Ptr tmp = new DOMDocument(doc);
