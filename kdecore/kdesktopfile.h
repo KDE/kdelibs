@@ -72,43 +72,43 @@ public:
   /**
    * Retrieve the value of the "Type=" entry.
    */
-  QString readType();
+  QString readType() const;
 
   /**
    * Retrieve the value of the "Icon=" entry.
    */
-  QString readIcon();
+  QString readIcon() const;
 
   /**
    * Retrieve the value of the "Name=" entry.
    */
-  QString readName();
+  QString readName() const;
 
   /**
    * Retrieve the value of the "Comment=" entry.
    */
-  QString readComment();
+  QString readComment() const;
 
   /**
    * Retrieve the value of the "Path=" entry.
    * @deprecated
    */
-  QString readPath();
+  QString readPath() const;
 
   /**
    * Retrieve the value of the "Dev=" entry.
    */
-  QString readDevice();
+  QString readDevice() const;
 
   /**
    * Retrieve the value of the "URL=" entry.
    */
-  QString readURL();
+  QString readURL() const;
 
   /**
    * Returns a list of the "Actions=" entries.
    */
-  QStringList readActions();
+  QStringList readActions() const;
 
   /**
    * Sets the desktop action group.
@@ -118,35 +118,35 @@ public:
   /**
    * Returns @p if the action group exists.
    */
-  bool hasActionGroup(const QString &group);
+  bool hasActionGroup(const QString &group) const;
 
   /**
    * Check to see if there is a "Type=Link" entry.
    *
    * The link points to the "URL=" entry.
    */
-  bool hasLinkType();
+  bool hasLinkType() const;
 
   /**
    * Check to see if there is an entry "Type=Application".
    */
-  bool hasApplicationType();
+  bool hasApplicationType() const;
 
   /**
    * Check to see if there is an entry "Type=MimeType".
    */
-  bool hasMimeTypeType(); // funny name :)
+  bool hasMimeTypeType() const; // funny name :)
 
   /**
    * Check to see if there is an entry "Type=FSDev".
    */
-  bool hasDeviceType();
+  bool hasDeviceType() const;
 
   /**
    * Check to see if the TryExec field contains a binary
    * which is found on the local system.
    */
-  bool tryExec();
+  bool tryExec() const;
 
   /**
    * @return The filename as passed to the constructor.
