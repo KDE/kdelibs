@@ -44,6 +44,8 @@ namespace DOM {
     class HTMLScriptElementImpl;
 }
 
+namespace khtml {
+
 class XMLHandler : public QXmlDefaultHandler
 {
 public:
@@ -169,5 +171,7 @@ protected:
     XMLIncrementalSource m_source;
     bool m_noErrors;
 };
+
+} // end namespace
 
 #endif

@@ -45,9 +45,9 @@ class QPaintDevice;
 class QTextCodec;
 class QPaintDeviceMetrics;
 class KHTMLView;
-class Tokenizer;
 
 namespace khtml {
+    class Tokenizer;
     class CSSStyleSelector;
     class DocLoader;
     class CSSStyleSelectorList;
@@ -268,8 +268,8 @@ public:
     QString printStyleSheet() const { return m_printSheet; }
 
     CSSStyleSheetImpl* elementSheet();
-    virtual Tokenizer *createTokenizer();
-    Tokenizer *tokenizer() { return m_tokenizer; }
+    virtual khtml::Tokenizer *createTokenizer();
+    khtml::Tokenizer *tokenizer() { return m_tokenizer; }
 
     QPaintDeviceMetrics *paintDeviceMetrics() { return m_paintDeviceMetrics; }
     QPaintDevice *paintDevice() const { return m_paintDevice; }
@@ -430,7 +430,7 @@ protected:
     QStringList m_state;
 
     khtml::DocLoader *m_docLoader;
-    Tokenizer *m_tokenizer;
+    khtml::Tokenizer *m_tokenizer;
     KURL m_url;
     KURL m_baseURL;
     QString m_baseTarget;

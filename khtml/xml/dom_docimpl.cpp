@@ -1112,9 +1112,9 @@ void DocumentImpl::clearSelection()
         static_cast<RenderCanvas*>(m_render)->clearSelection();
 }
 
-Tokenizer *DocumentImpl::createTokenizer()
+khtml::Tokenizer *DocumentImpl::createTokenizer()
 {
-    return new XMLTokenizer(docPtr(),m_view);
+    return new khtml::XMLTokenizer(docPtr(),m_view);
 }
 
 void DocumentImpl::setPaintDevice( QPaintDevice *dev )
