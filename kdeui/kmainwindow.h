@@ -675,7 +675,6 @@ protected:
        Reimplement this function to prevent the user from losing data.
        Example:
        <pre>
-
            switch ( KMessageBox::warningYesNoCancel( this,
 				   i18n("Save changes to document foo?")) ) {
            case KMessageBox::Yes :
@@ -685,14 +684,19 @@ protected:
              return TRUE;
            default: // cancel
              return FALSE;
+       </pre>
 
-    </pre>
+       Note that you should probably @em not actually close the document from
+       within this method, as it may be called by the session manager before the
+       session is saved. If the document is closed before the session save occurs,
+       its location might not be properly saved. In addition, the session shutdown
+       may be cancelled, in which case the document should remain open.
 
-   @see queryExit()
-   @see KApplication::sessionSaving()
-
+       @see queryExit()
+       @see KApplication::sessionSaving()
     */
     virtual bool queryClose();
+    
     /**
      * Save your instance-specific properties. The function is
      * invoked when the session manager requests your application
