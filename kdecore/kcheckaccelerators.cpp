@@ -88,7 +88,7 @@ KCheckAccelerators::KCheckAccelerators( QObject* parent )
         key = int(cuts.seq(0).qt());
     }
     alwaysShow = KGlobal::config()->readBoolEntry( "AlwaysShowCheckAccelerators", false );
-    autoCheck = KGlobal::config()->readBoolEntry( "AutoCheckAccelerators", false );
+    autoCheck = KGlobal::config()->readBoolEntry( "AutoCheckAccelerators", true );
     connect( &autoCheckTimer, SIGNAL( timeout()), SLOT( autoCheckSlot()));
 }
 
@@ -168,6 +168,10 @@ void KCheckAccelerators::checkAccelerators( bool automatic )
     KAcceleratorManager::manage(actWin);
     QString a, c, r;
     KAcceleratorManager::last_manage(a, c,  r);
+
+    if (!automatic) // for now we only show dialogs on F12 checks
+        return;
+
     if (c.isEmpty() && r.isEmpty() && (automatic || a.isEmpty()))
         return;
 
