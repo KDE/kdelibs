@@ -90,7 +90,7 @@ class KKeyNative
 	static bool keyQtToSym( int keyQt, int& sym );
 	static bool symToKeyQt( int sym, int& keyQt );
 
-	static bool keyToVariations( const KKey& key, Variations& key );
+	static bool keyToVariations( const KKey& key, Variations& vkey );
 	static QString symToStringInternal( int sym );
 	static QString symToString( int sym );
 
