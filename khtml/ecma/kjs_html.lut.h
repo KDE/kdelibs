@@ -15,7 +15,7 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { "dir", HTMLDocument::Dir, DontDelete, 0, 0 },
    { "images", HTMLDocument::Images, DontDelete|Function, 0, 0 },
    { "linkColor", HTMLDocument::LinkColor, DontDelete, 0, 0 },
-   { "domain", HTMLDocument::Domain, DontDelete|ReadOnly, 0, 0 },
+   { "domain", HTMLDocument::Domain, DontDelete, 0, 0 },
    { "height", HTMLDocument::Height, DontDelete|ReadOnly, 0, 0 },
    { "cookie", HTMLDocument::Cookie, DontDelete, 0, 0 },
    { "alinkColor", HTMLDocument::AlinkColor, DontDelete, 0, 0 },

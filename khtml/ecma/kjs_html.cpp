@@ -31,6 +31,7 @@
 
 // ### HACK
 #include <html/html_baseimpl.h>
+#include <html/html_documentimpl.h>
 #include <xml/dom2_eventsimpl.h>
 #include <khtmlview.h>
 
@@ -187,7 +188,7 @@ const ClassInfo KJS::HTMLDocument::info =
 @begin HTMLDocumentTable 31
   title			HTMLDocument::Title		DontDelete
   referrer		HTMLDocument::Referrer		DontDelete|ReadOnly
-  domain		HTMLDocument::Domain		DontDelete|ReadOnly
+  domain		HTMLDocument::Domain		DontDelete
   URL			HTMLDocument::URL		DontDelete|ReadOnly
   body			HTMLDocument::Body		DontDelete
   location		HTMLDocument::Location		DontDelete
@@ -258,7 +259,7 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Referrer:
       return String(doc.referrer());
     case Domain:
-    return String(doc.domain());
+      return String(doc.domain());
     case URL:
       return getString(doc.URL());
     case Body:
@@ -344,6 +345,12 @@ void KJS::HTMLDocument::putValue(ExecState *exec, int token, const Value& value,
   case Body:
     doc.setBody((new DOMNode(exec, KJS::toNode(value)))->toNode());
     break;
+  case Domain: { // not part of the DOM
+    DOM::HTMLDocumentImpl* docimpl = static_cast<DOM::HTMLDocumentImpl*>(doc.handle());
+    if (docimpl)
+      docimpl->setDomain(value.toString(exec).string());
+    break;
+  }
   case Cookie:
     doc.setCookie(value.toString(exec).string());
     break;
