@@ -59,6 +59,7 @@ public:
     bool endOfResponse;
     bool m_bIgnoreUpperWords;
     bool m_bIgnoreTitleCase;
+    bool m_bNoMisspellingsEncountered;
 };
 
 
@@ -93,7 +94,7 @@ KSpell::KSpell (QWidget *_parent, const QString &_caption,
 
   d->m_bIgnoreUpperWords=false;
   d->m_bIgnoreTitleCase=false;
-
+  d->m_bNoMisspellingsEncountered=true;
   autoDelete = false;
   modaldlg = _modal;
   progressbar = _progressbar;
@@ -782,6 +783,7 @@ void KSpell::checkList3a (KProcIO *)
 		}
 	      else
 		{
+                    d->m_bNoMisspellingsEncountered=false;
 		  emit misspelling (word, sugg, lastpos);
  		}
 	    }
@@ -965,6 +967,7 @@ void KSpell::check2 (KProcIO *)
                       dialog (word, sugg, SLOT (check3()));
                   } else {
                       // No dialog, just emit misspelling and continue
+                      d->m_bNoMisspellingsEncountered=false;
                       emit misspelling (word, sugg, lastpos);
                       dlgresult = KS_IGNORE;
                       check3();
@@ -1070,6 +1073,7 @@ void KSpell::dialog(const QString & word, QStringList & sugg, const char *_slot)
   dialogwillprocess=TRUE;
   connect (ksdlg, SIGNAL (command (int)), this, SLOT (dialog2(int)));
   ksdlg->init (word, &sugg);
+  d->m_bNoMisspellingsEncountered=false;
   emit misspelling (word, sugg, lastpos);
 
   emitProgress();
@@ -1161,7 +1165,7 @@ void KSpell::ispellExit (KProcess *)
   if (m_status == Starting)
      m_status = Error;
   else if (m_status == Cleaning)
-     m_status = Finished;
+     m_status = d->m_bNoMisspellingsEncountered ? FinishedNoMisspellingsEncountered : Finished;
   else if (m_status == Running)
      m_status = Crashed;
   else // Error, Finished, Crashed

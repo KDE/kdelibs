@@ -60,7 +60,7 @@ public:
    * @li @p Error -  An error occurred in the @p Starting state.
    * @li @p Crashed - An error occurred in the @p Running state.
    **/
-  enum spellStatus { Starting = 0, Running, Cleaning, Finished, Error, Crashed };
+  enum spellStatus { Starting = 0, Running, Cleaning, Finished, Error, Crashed, FinishedNoMisspellingsEncountered };
 
   /**
    * Starts the spellchecker.
@@ -470,7 +470,7 @@ protected:
   bool dialogsetup;
   bool autoDelete;
 
-  QString caption;
+    QString caption;
   QString orig;
   QString origbuffer;
   QString newbuffer;
