@@ -490,39 +490,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// -------------------------------------------------------------------
 		case PE_HeaderSection:
 		{
-			// Temporary solution for the proper orientation of gradients.
-			bool horizontal = true;
-			if (p && p->device()->devType() == QInternal::Widget)
-			{
-				QHeader* hdr = dynamic_cast<QHeader*>(p->device());
-				if (hdr)
-					horizontal = hdr->orientation() == Horizontal;
-			}
-
-			int x,y,w,h;
-			r.rect(&x, &y, &w, &h);
-			bool sunken = on || down;
-			int x2 = x+w-1;
-			int y2 = y+h-1;
-			QPen oldPen = p->pen();
-
-			// Bevel
-			p->setPen(sunken ? cg.mid() : cg.light());
-			p->drawLine(x, y, x2-1, y);
-			p->drawLine(x, y, x, y2-1);
-			p->setPen(sunken ? cg.light() : cg.mid());
-			p->drawLine(x+1, y2-1, x2-1, y2-1);
-			p->drawLine(x2-1, y+1, x2-1, y2-1);
-			p->setPen(cg.shadow());
-			p->drawLine(x, y2, x2, y2);
-			p->drawLine(x2, y, x2, y2);
-
-			if (sunken)
-				p->fillRect(x+1, y+1, w-3, h-3, cg.button());
-			else
-				renderGradient( p, QRect(x+1, y+1, w-3, h-3),
-						cg.button(), !horizontal );
-			p->setPen( oldPen );
+			Keramik::RectTilePainter( "listview" ).draw( p, r );
 			break;
 		}
 
@@ -834,9 +802,9 @@ void KeramikStyle::drawKStylePrimitive( KStylePrimitive kpe,
 //			int gcenter = (horizontal ? r.height() : r.width()) / 2;
 
 			if ( horizontal )
-				Keramik::RectTilePainter( "slider-hgroove" ).draw(p, x, y + 4, w, h - 8 );
+				Keramik::RectTilePainter( "slider-hgroove" ).draw(p, r );
 			else
-				Keramik::RectTilePainter( "slider-vgroove" ).draw( p, x + 4, y, w - 8, h );
+				Keramik::RectTilePainter( "slider-vgroove" ).draw( p, r );
 
 			break;
 		}
@@ -1337,16 +1305,18 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 			{
 				Keramik::SpinBoxPainter().draw( p, br );
 				if ( active & SC_SpinWidgetUp )
-					Keramik::CenteredPainter( "spinbox-pressed-arrow-up" ).draw( p, br.x(), br.y() + 2, br.width(), br.height() / 2 );
+					Keramik::CenteredPainter( "spinbox-pressed-arrow-up" ).draw( p, br.x(), br.y() + 3, br.width(), br.height() / 2 );
 				else
-					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y() + 2, br.width(), br.height() / 2 );
+					Keramik::CenteredPainter( "spinbox-arrow-up" ).draw( p, br.x(), br.y() + 3, br.width(), br.height() / 2 );
 				if ( active & SC_SpinWidgetDown )
-					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2 , br.width(), br.height() / 2 - 2 );
+					Keramik::CenteredPainter( "spinbox-pressed-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2 , br.width(), br.height() / 2 - 4 );
 				else
-					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 2 );
+					Keramik::CenteredPainter( "spinbox-arrow-down" ).draw( p, br.x(), br.y() + br.height() / 2, br.width(), br.height() / 2 - 4 );
 				p->setPen( cg.light() );
-				p->setBrush( NoBrush );
-				p->drawRect( br );
+				if ( QApplication::reverseLayout() )
+					p->drawLine( br.right(), br.y(), br.right(), br.bottom() );
+				else
+					p->drawLine( br.x(), br.y(), br.x(), br.bottom() );
 			}
 
 			if ( controls & SC_SpinWidgetFrame )
@@ -1410,7 +1380,6 @@ void KeramikStyle::drawComplexControl( ComplexControl control,
 
 			break;
 		}
-
 
 		// TOOLBUTTON
 		// -------------------------------------------------------------------
@@ -1489,8 +1458,14 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 
 		case PM_ButtonDefaultIndicator:
 			return 4;
+
 		case PM_SliderLength:
 			return 8;
+		case PM_SliderControlThickness:
+			return loader.pixmap( "slider" ).height() - 4;
+		case PM_SliderThickness:
+			return loader.pixmap( "slider" ).height();
+
 		// CHECKBOXES / RADIO BUTTONS
 		// -------------------------------------------------------------------
 		case PM_ExclusiveIndicatorWidth:	// Radiobutton size
@@ -1695,6 +1670,54 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 
 				default: break;
 			};
+		}
+		case CC_Slider:
+		{
+			const QSlider* sl = static_cast< const QSlider* >( widget );
+			bool horizontal = sl->orientation() == Horizontal;
+			QSlider::TickSetting ticks = sl->tickmarks();
+			int pos = sl->sliderStart();
+			int size = pixelMetric( PM_SliderControlThickness, widget );
+			int handleSize = pixelMetric( PM_SliderThickness, widget );
+			int len = pixelMetric( PM_SliderLength, widget );
+			switch ( subcontrol )
+			{
+				case SC_SliderGroove:
+					if ( horizontal )
+					{
+						if ( ticks == QSlider::Both )
+							return QRect( 0, ( sl->height() - size ) / 2, sl->width(), size );
+						else if ( ticks == QSlider::Above )
+							return QRect( 0, sl->height() - size - ( handleSize - size ) / 2, sl->width(), size );
+						return QRect( 0, ( handleSize - size ) / 2, sl->width(), size );
+					}
+					else
+					{
+						if ( ticks == QSlider::Both )
+							return QRect( ( sl->width() - size ) / 2, 0, size, sl->height() );
+						else if ( ticks == QSlider::Above )
+							return QRect( sl->width() - size - ( handleSize - size ) / 2, 0, size, sl->height() );
+						return QRect( ( handleSize - size ) / 2, 0, size, sl->height() );
+					}
+				case SC_SliderHandle: 
+					if ( horizontal )
+					{
+						if ( ticks == QSlider::Both )
+							return QRect( pos, ( sl->height() - handleSize ) / 2, len, handleSize );
+						else if ( ticks == QSlider::Above )
+							return QRect( pos, sl->height() - handleSize, len, handleSize );
+						return QRect( pos, 0, len, handleSize );
+					}
+					else
+					{
+						if ( ticks == QSlider::Both )
+							return QRect( ( sl->width() - handleSize ) / 2, pos, handleSize, len );
+						else if ( ticks == QSlider::Above )
+							return QRect( sl->width() - handleSize, pos, handleSize, len );
+						return QRect( 0, pos, handleSize, len );
+					}
+			}
+			break;
 		}
 		default: break;
 	}
