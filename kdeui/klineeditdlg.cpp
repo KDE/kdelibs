@@ -53,6 +53,8 @@ KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 
   connect( this, SIGNAL(user1Clicked()), this, SLOT(slotClear()) );
   edit->setText( _value );
+  if ( _value.isEmpty() )
+      enableButtonOK( false );
   edit->setSelection(0, edit->text().length());
   edit->setFocus();
 }
