@@ -316,7 +316,7 @@ void RenderBox::updateSize()
     setMinMaxKnown(false);
     calcMinMaxWidth();
 
-    if (isInline() && parent() && parent()->isInline())
+    if ((isInline() || isFloating()) && parent() && parent()->isInline())
     {
     	parent()->updateSize();
 	return;
