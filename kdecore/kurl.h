@@ -229,6 +229,8 @@ public:
    */
   void setEncodedPathAndQuery( const QString& _txt, int encoding_hint = 0 );
 
+  void setEncodedPath(const QString& _txt, int encoding_hint = 0 );
+
   /**
    * @return The concatenation if the encoded path , '?' and the encoded query.
    *
@@ -253,7 +255,7 @@ public:
    * A single '?' means an empty query.
    * An empty string means no query.
    */
-  QString query() const { return m_strQuery_encoded; }
+  QString query() const { if (m_strQuery_encoded.isEmpty()) return QString::null; return "?"+m_strQuery_encoded; }
 
   /**
    * The reference is @em never decoded automatically.

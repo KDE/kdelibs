@@ -513,6 +513,7 @@ bool KURL::isEmpty() const
 
 void KURL::parse( const QString& _url, int encoding_hint )
 {
+  //kdDebug(126) << "parse " << _url << endl;
   // Return immediately whenever the given url
   // is empty or null.
   if ( _url.isEmpty() )
@@ -527,6 +528,9 @@ void KURL::parse( const QString& _url, int encoding_hint )
   QChar* buf = new QChar[ len + 1 ];
   QChar* orig = buf;
   memcpy( buf, _url.unicode(), len * sizeof( QChar ) );
+
+  QChar delim;
+  QString tmp;
 
   uint pos = 0;
 
@@ -553,6 +557,7 @@ void KURL::parse( const QString& _url, int encoding_hint )
   else if (buf[pos] == ':' && buf[pos+1] == '/' )
     {
       m_strProtocol = QString( orig, pos ).lower();
+      //kdDebug(126)<<"setting protocol to "<<m_strProtocol<<endl;
       pos++;
       start = pos;
       goto Node9;
@@ -560,8 +565,10 @@ void KURL::parse( const QString& _url, int encoding_hint )
   else if ( buf[pos] == ':' )
     {
       m_strProtocol = QString( orig, pos ).lower();
+      //kdDebug(126)<<"setting protocol to "<<m_strProtocol<<endl;
       pos++;
-      goto Node11;
+      start = pos;
+      goto Node9;
     }
   else
     goto NodeErr;
@@ -694,37 +701,42 @@ void KURL::parse( const QString& _url, int encoding_hint )
     goto NodeOk;
   start = pos++;
 
-  // Node 9: Accept any character and # or terminate
- Node9:
-  while( buf[pos] != '#' && pos < len ) pos++;
+ Node9: // parse path until query or reference reached
+
+  while( buf[pos] != '#' && buf[pos]!='?' && pos < len ) pos++;
+
+  tmp = QString( buf + start, pos - start );
+  //kdDebug(126)<<" setting encoded path&query to:"<<tmp<<endl;
+  setEncodedPathAndQuery( tmp, encoding_hint );
+
   if ( pos == len )
-    {
-      QString tmp( buf + start, len - start );
-      setEncodedPathAndQuery( tmp, encoding_hint );
-      // setEncodedPathAndQuery( QString( buf + start, pos - start ) );
       goto NodeOk;
-    }
-  else if ( buf[pos] != '#' )
-    goto NodeErr;
-  setEncodedPathAndQuery( QString( buf + start, pos - start ), encoding_hint );
-  pos++;
 
-  // Node 10: Accept all the rest
-  m_strRef_encoded = QString( buf + pos, len - pos );
-  goto NodeOk;
+  start = pos + 1;
 
-  // Node 11 We need at least one character
- Node11:
-  start = pos;
-  if ( pos++ == len )
-    goto NodeOk; // Wrong, but since a fix was applied up top it is a non-issue here!!!!
-                 // Just for the record an opaque URL such as "mailto:" is always required
-                 // to have at least one more character other than a '/' following the colon.
-  // Node 12: Accept the res
-  setEncodedPathAndQuery( QString( buf + start, len - start ), encoding_hint );
-  goto NodeOk;
+ Node10: // parse query or reference depending on what comes first
+  delim = (buf[pos++]=='#'?'?':'#');
+
+  while(buf[pos]!=delim && pos < len) pos++;
+
+  tmp = QString(buf + start, pos - start);
+  if (delim=='#')
+      m_strQuery_encoded = tmp;
+  else
+      m_strRef_encoded = tmp;
+
+  if (pos == len)
+      goto NodeOk;
+
+ Node11: // feed the rest into the remaining variable
+  tmp = QString( buf + pos + 1, len - pos - 1);
+  if (delim == '#')
+      m_strRef_encoded = tmp;
+  else
+      m_strQuery_encoded = tmp;
 
  NodeOk:
+  //kdDebug(126)<<"parsing finished. m_strProtocol="<<m_strProtocol<<" m_strHost="<<m_strHost<<" m_strPath="<<m_strPath<<endl;
   delete []orig;
   m_bIsMalformed = false; // Valid URL
   if (m_strProtocol.isEmpty())
@@ -990,9 +1002,21 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encod
   }
 
   // TODO apply encoding_hint to the query
-  tmp += m_strQuery_encoded;
+  if (!m_strQuery_encoded.isNull())
+      tmp += '?' + m_strQuery_encoded;
   return tmp;
 }
+
+void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
+{
+    m_strPath_encoded = _txt;
+
+  bool keepEncoded;
+  m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
+  if (!keepEncoded)
+     m_strPath_encoded = QString::null;
+}
+
 
 void KURL::setEncodedPathAndQuery( const QString& _txt, int encoding_hint )
 {
@@ -1005,7 +1029,7 @@ void KURL::setEncodedPathAndQuery( const QString& _txt, int encoding_hint )
   else
   {
     m_strPath_encoded = _txt.left( pos );
-    m_strQuery_encoded = _txt.right(_txt.length() - pos);
+    m_strQuery_encoded = _txt.right(_txt.length() - pos + 1);
   }
   bool keepEncoded;
   m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
@@ -1133,8 +1157,8 @@ QString KURL::prettyURL( int _trailing ) const
   }
 
   u += trailingSlash( _trailing, lazy_encode( m_strPath ) );
-
-  u += m_strQuery_encoded;
+  if (!m_strQuery_encoded.isNull())
+      u += '?' + m_strQuery_encoded;
 
   if ( hasRef() )
   {
@@ -1468,8 +1492,10 @@ void KURL::setPath( const QString & path )
 
 void KURL::setQuery( const QString &_txt, int )
 {
-   if (_txt.length() && (_txt[0] !='?'))
-      m_strQuery_encoded = "?" + _txt;
+   if (!_txt.length())
+       return;
+   if (_txt[0] =='?')
+      m_strQuery_encoded = _txt.mid(1);
    else
       m_strQuery_encoded = _txt;
 }
