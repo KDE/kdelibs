@@ -19,8 +19,8 @@ export INCLUDE="$KDEWIN\\include;$KDELIBS;$KDELIBS\\kdecore;$KDELIBS\\kdefx;$KDE
 # We're changing this from time to time
 
 export KDE_VER_MAJ=3
-export KDE_VER_MIN=3
-export KDE_VER_PAT=89
+export KDE_VER_MIN=4
+export KDE_VER_PAT=0
 export KDE_VER=$KDE_VER_MAJ$KDE_VER_MIN$KDE_VER_PAT
 
 # Utils
