@@ -443,10 +443,11 @@ QString KLocale::translate(const char* msgid) const
     {
 	text = k_dcgettext( catalogue, msgid, lang.ascii());
 	if ( text != msgid) // we found it
-	    break;
+	    return _codec->toUnicode( text );
     }
 
-    return _codec->toUnicode( text );
+    // Always use UTF-8 if the string was not found
+    return QString::fromUtf8( text );
 }
 
 QString KLocale::decimalSymbol() const {
