@@ -966,6 +966,8 @@ void KDirOperator::setDirLister( KDirLister *lister )
     connect( dir, SIGNAL(redirection( const KURL& )),
 	     SLOT( slotRedirected( const KURL& )));
     connect( dir, SIGNAL( clear() ), SLOT( slotClearView() ));
+    connect( dir, SIGNAL( refreshItems( const KFileItemList& ) ),
+             SLOT( slotRefreshItems( const KFileItemList& ) ) );
 }
 
 void KDirOperator::insertNewFiles(const KFileItemList &newone)
@@ -1511,6 +1513,17 @@ void KDirOperator::togglePreview( bool on )
         setView( (KFile::FileView) (d->restorePreview &
                                     ~(KFile::PreviewContents|KFile::PreviewInfo)) );
 }
+
+void KDirOperator::slotRefreshItems( const KFileItemList& items )
+{
+    if ( !m_fileView )
+        return;
+    
+    KFileItemListIterator it( items );
+    for ( ; it.current(); ++it )
+        m_fileView->updateView( it.current() );
+}
+
 
 void KDirOperator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
