@@ -128,7 +128,7 @@ int KGlobalSettings::contextMenuKey ()
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs (c, "Keys");
 
-    return KAccel::stringToKey (cgs.config()->readEntry ("PopupContextMenu", "Menu"));
+    return KAccel::stringToKey (cgs.config()->readEntry ("PopupMenuContext", "Menu"));
 }
 
 bool KGlobalSettings::honorGnome()
