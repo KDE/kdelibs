@@ -1,4 +1,4 @@
-ClassName=KDNSSD_EXPORT Configuration
+ClassName=Configuration
 File=kcm_kdnssd.kcfg
 GlobalEnums=false
 Inherits=KConfigSkeleton
