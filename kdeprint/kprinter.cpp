@@ -235,8 +235,11 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 			}
 			else
 			{
-				QString	cmd = QString("kjobviewer -d %1").arg(KShellProcess::quote(printerName()));
-				KRun::runCommand(cmd, "kjobviewer", "kjobviewer");
+				if (!outputToFile())
+				{
+					QString	cmd = QString("kjobviewer -d %1").arg(KShellProcess::quote(printerName()));
+					KRun::runCommand(cmd, "kjobviewer", "kjobviewer");
+				}
 			}
 		}
 	}
@@ -665,7 +668,7 @@ void KPrinter::setOutputFileName(const QString& f)
 { setOption("kde-outputfilename",f); setOutputToFile(!f.isEmpty()); }
 
 bool KPrinter::outputToFile() const
-{ return (option("kde-outputtofile") == "1"); }
+{ return (option("kde-outputtofile") == "1" || (option("kde-isspecial") == "1" && option("kde-special-command").isEmpty())); }
 
 void KPrinter::setOutputToFile(bool on)
 {
