@@ -29,6 +29,7 @@ public:
 
 protected:
 	virtual void reload() = 0;
+	virtual void aboutToReload() {}
 };
 
 #endif

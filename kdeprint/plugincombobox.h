@@ -23,7 +23,9 @@
 #include <qcombobox.h>
 #include <qstringlist.h>
 
-class PluginComboBox : public QComboBox
+#include "kpreloadobject.h"
+
+class PluginComboBox : public QComboBox, public KPReloadObject
 {
 	Q_OBJECT
 public:
@@ -34,6 +36,9 @@ signals:
 
 protected slots:
 	void slotActivated(int);
+
+protected:
+	void reload();
 
 private:
 	QStringList	m_pluginlist;

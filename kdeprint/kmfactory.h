@@ -27,6 +27,9 @@
 #include <qstringlist.h>
 #include <qptrlist.h>
 #include <qobject.h>
+#include <dcopobject.h>
+
+#include <sys/types.h>
 
 class KMManager;
 class KMJobManager;
@@ -48,8 +51,11 @@ struct PluginInfo
 	QString		primaryMimeType;
 };
 
-class KMFactory : public QObject
+class KMFactory : public QObject, public DCOPObject
 {
+	Q_OBJECT
+	K_DCOP
+
 public:
 	static KMFactory* self();
 	static void release();
@@ -81,6 +87,9 @@ public:
 		int	pageSize;
 	};
 	Settings* settings() const	{ return m_settings; }
+
+k_dcop:
+	ASYNC pluginChanged(pid_t);
 
 private:
 	void createManager();

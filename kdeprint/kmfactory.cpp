@@ -39,6 +39,10 @@
 #include <klocale.h>
 #include <ksimpleconfig.h>
 #include <kstaticdeleter.h>
+#include <kapplication.h>
+#include <dcopclient.h>
+
+#include <unistd.h>
 
 #define	UNLOAD_OBJECT(x) if (x != 0) { delete x; x = 0; }
 
@@ -91,6 +95,9 @@ KMFactory::KMFactory()
 #endif
 
 	KGlobal::iconLoader()->addAppDir("kdeprint");
+
+	// create DCOP signal connection
+	connectDCOPSignal(0, 0, "pluginChanged(pid_t)", "pluginChanged(pid_t)", false);
 }
 
 KMFactory::~KMFactory()
@@ -234,6 +241,11 @@ void KMFactory::unload()
 
 void KMFactory::reload(const QString& syst, bool saveSyst)
 {
+	// notify all registered objects about the coming reload
+	QPtrListIterator<KPReloadObject>	it(m_objects);
+	for (;it.current();++it)
+		it.current()->aboutToReload();
+
 	// unload all objects from the plugin
 	unload();
 	if (saveSyst)
@@ -242,12 +254,28 @@ void KMFactory::reload(const QString& syst, bool saveSyst)
 		conf->setGroup("General");
 		conf->writeEntry("PrintSystem", syst);
 		conf->sync();
+
+		// notify all other apps using DCOP signal
+		DCOPClient	*client = kapp->dcopClient();
+		if (client)
+		{
+			// init DCOP
+			if (!client->isAttached())
+				client->attach();
+
+			// emit DCOP signal
+			QByteArray	params;
+			QDataStream	stream(params, IO_WriteOnly);
+			stream << getpid();
+			emitDCOPSignal("pluginChanged(pid_t)", params);
+		}
 	}
+
 	// reload the factory
 	loadFactory(syst);
+
 	// notify all registered objects
-	QPtrListIterator<KPReloadObject>	it(m_objects);
-	for (;it.current();++it)
+	for (it.toFirst();it.current();++it)
 		it.current()->reload();
 }
 
@@ -320,3 +348,19 @@ QString KMFactory::autoDetect()
 	}
 	return (pluginIndex == -1 ? QString::fromLatin1("lpdunix") : plugins[pluginIndex].name);
 }
+
+void KMFactory::pluginChanged(pid_t pid)
+{
+	// only do something if the notification comes from another process
+	if (pid != getpid())
+	{
+		// Unload config object
+		UNLOAD_OBJECT(m_printconfig);
+		// Then reload everything and notified registered objects.
+		// Do NOT re-save the new print system.
+		QString	syst = printSystem();
+		reload(syst, false);
+	}
+}
+
+#include "kmfactory.moc"

@@ -47,4 +47,12 @@ void PluginComboBox::slotActivated(int index)
 	}
 }
 
+void PluginComboBox::reload()
+{
+	QString	syst = KMFactory::self()->printSystem();
+	int	index(-1);
+	if ((index=m_pluginlist.findIndex(syst)) != -1)
+		setCurrentItem(index);
+}
+
 #include "plugincombobox.moc"
