@@ -577,8 +577,7 @@ void RenderPart::setWidget( QWidget *widget )
 #ifdef DEBUG_LAYOUT
     kdDebug(6031) << "RenderPart::setWidget()" << endl;
 #endif
-    setQWidget( widget );
-    widget->setFocusPolicy(QWidget::ClickFocus);
+    setQWidget( widget, false );
     if(widget->inherits("KHTMLView"))
         connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
 

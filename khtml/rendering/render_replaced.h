@@ -90,7 +90,7 @@ public slots:
     void slotWidgetDestructed();
 
 protected:
-    void setQWidget(QWidget *widget);
+    void setQWidget(QWidget *widget, bool changeFocusPolicy = true);
     QScrollView *m_view;
 public:
     QWidget *m_widget;
