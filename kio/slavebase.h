@@ -235,6 +235,9 @@ public:
     /**
      * Returns a configuration object to query config/meta-data information
      * from.
+     *
+     * The application provides the slave with all configuration information
+     * relevant for the current protocol and host.
      */
     KConfigBase* config();
 
