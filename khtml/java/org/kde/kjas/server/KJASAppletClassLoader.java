@@ -18,7 +18,8 @@ public class KJASAppletClassLoader
     public static KJASAppletClassLoader getLoader( String docBase, String codeBase )
     {
         String key = docBase + codeBase;
-        Main.debug( "getLoader: key = " + key );
+        Main.debug( "CL: getLoader: key = " + key );
+
         KJASAppletClassLoader loader = (KJASAppletClassLoader) loaders.get( key );
         if( loader == null )
         {
@@ -27,7 +28,7 @@ public class KJASAppletClassLoader
         }
         else
         {
-            Main.debug( "reusing classloader" );
+            Main.debug( "CL: reusing classloader" );
         }
 
         return loader;
@@ -54,7 +55,7 @@ public class KJASAppletClassLoader
         super( new URL[0] );
         key = docBase + codeBase;
         archives = new Vector();
-        Main.debug( "Creating classloader with docBase = " + docBase +
+        Main.debug( "CL: Creating classloader with docBase = " + docBase +
                     " and codeBase = " + codeBase );
 
         try
@@ -135,8 +136,7 @@ public class KJASAppletClassLoader
             Main.debug( "CL: Finally, codeBaseURL = " + codeBaseURL );
         }catch( Exception e )
         {
-            Main.debug( "KJASAppletClassLoader caught an exception: " + e );
-            e.printStackTrace();
+            Main.kjas_err( "CL: excpetion ", e );
         }
     }
 
@@ -164,13 +164,13 @@ public class KJASAppletClassLoader
         }
         catch ( MalformedURLException e )
         {
-            Main.kjas_err( "bad url creation: " + e, e );
+            Main.kjas_err( "CL: bad url creation: " + e, e );
         }
     }
 
     public void addResource( String url, byte[] data )
     {
-        Main.debug( "addResource for url: " + url );
+        Main.debug( "CL: addResource for url: " + url );
     }
 
     public URL getDocBase()
@@ -188,16 +188,6 @@ public class KJASAppletClassLoader
      **************************************************************************/
     public Class loadClass( String name )
     {
-    	if( Main.Debug )
-    	{
-    		Main.debug( "CL: URL's to search are: " );
-    		URL[] urls = getURLs();
-    		for( int i = 0; i < urls.length; i++ )
-    		{
-    			Main.debug( "CL:    " + urls[i] );
-    		}
-    	}
-
         //We need to be able to handle foo.class, so strip off the suffix
         if( name.endsWith( ".class" ) )
         {
@@ -211,12 +201,12 @@ public class KJASAppletClassLoader
         }
         catch( ClassNotFoundException e )
         {
-            Main.kjas_err( "Couldn't load class: " + name, e );
+            Main.kjas_err( "CL: Couldn't load class: " + name, e );
             return null;
         }
         catch( ClassFormatError e )
         {
-            Main.kjas_err( "Class format error for " + name, e );
+            Main.kjas_err( "CL: Class format error for " + name, e );
             return null;
         }
     }
@@ -266,8 +256,6 @@ public class KJASAppletClassLoader
                 }
             );
         }
-
-        //permissions for thread access??
 
         return perms;
     }

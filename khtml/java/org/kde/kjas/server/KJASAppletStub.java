@@ -24,15 +24,12 @@ public class KJASAppletStub extends Frame
     String            windowName;
     String            className;
     Class             appletClass;
-    Thread            classLoadingThread;
-    Thread            setupWindowThread;
-    Thread            runThread;
-    String            appletLabel;
-
 
     KJASAppletClassLoader loader;
     KJASAppletPanel       panel;
     Applet                app;
+    Thread                runThread;
+    KJASAppletStub        me;
 
     /**
      * Create an AppletStub for the specified applet. The stub will be in
@@ -55,50 +52,17 @@ public class KJASAppletStub extends Frame
         className  = _className;
         appletSize = _appletSize;
         params     = _params;
-
         windowName = _windowName;
         loader     = _loader;
 
         appletClass = null;
+        me = this;
     }
 
     /*************************************************************************
      *********************** Runnable Interface ******************************
      *************************************************************************/
-    public void setupWindow()
-    {
-        setupWindowThread = new Thread
-        (
-            new Runnable()
-            {
-                public void run()
-                {
-                    panel = new KJASAppletPanel( appletSize );
-                    add( "Center", panel );
-                    pack();
-                    show();
-                }
-            }
-        );
-        setupWindowThread.start();
-    }
-
-    public void downloadClass()
-    {
-        classLoadingThread = new Thread
-        (
-            new Runnable()
-            {
-                public void run()
-                {
-                    appletClass = loader.loadClass( className );
-                }
-            }
-        );
-        classLoadingThread.start();
-    }
-
-    public void initApplet()
+    public void createApplet()
     {
         runThread = new Thread
         (
@@ -106,67 +70,59 @@ public class KJASAppletStub extends Frame
             {
                 public void run()
                 {
-                    createApplet();
+                    active = true;
+            	    try
+                	{
+
+                        panel = new KJASAppletPanel( appletSize );
+                        add( "Center", panel );
+                        pack();
+                	
+                	    appletClass = loader.loadClass( className );
+                		
+                		if( appletClass != null )
+                		{
+                		    //this order is very important and took a long time
+                		    //to figure out- don't modify it unless there are
+                		    //real bug fixes
+                            app = (Applet) appletClass.newInstance();
+                            app.setStub( me );
+                            app.resize( appletSize );
+                            app.setVisible( false );
+                            panel.add( "Center", app );
+                            panel.validate();
+
+                            initApplet();
+
+                            panel.validate();
+                            app.resize( appletSize );
+                            app.start();  //We're already in a thread, so don't create a new one
+                            panel.validate();
+                            app.setVisible( true );
+                        }
+                        else
+                        {
+                            panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
+                        }
+            		}
+            		catch( InstantiationException e )
+                    {
+                        Main.kjas_err( "Could not instantiate applet", e );
+                        panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
+                    }
+                    catch( IllegalAccessException e )
+                    {
+                        Main.kjas_err( "Could not instantiate applet", e );
+                        panel.add( "Center", new Label( "Applet Failed", Label.CENTER ) );
+                    }
+                    finally
+                    {
+                        show();
+                    }
                 }
             }
         );
         runThread.start();
-    }
-
-    private void createApplet()
-    {
-        while( setupWindowThread.isAlive() || classLoadingThread.isAlive() )
-        {
-            Main.debug( "Applet #" + appletID +
-                             ": waiting for setup threads to finish, going to sleep" );
-            try
-            {
-                Thread.sleep( 500 );
-            } catch( InterruptedException e )
-            {
-                Main.debug( "thread could not sleep" );
-            }
-        }
-
-        try
-        {
-            if( appletClass != null )
-            {
-                active = true;
-
-                //this order is very important and touchy- be careful when
-                //playing around with it...
-                Main.debug( "Applet #" + appletID + ": class is loaded" );
-                app = (Applet) appletClass.newInstance();
-                app.setStub( this );
-                app.resize( appletSize );
-                app.setVisible( false );
-                panel.add( "Center", app );
-                panel.validate();
-
-                app.init();
-                panel.validate();
-
-                app.resize( appletSize );
-                app.start();  //We're already in a thread, so don't create a new one
-                panel.validate();
-                app.setVisible( true );
-            }
-            else
-            {
-                panel.add( "Center", new Label( "Applet Failed" ) );
-            }
-        }
-        catch( InstantiationException e )
-        {
-            Main.kjas_err( "Could not instantiate applet", e );
-            panel.add( "Center", new Label( "Applet Failed" ) );
-        }
-        catch( IllegalAccessException e )
-        {
-            Main.kjas_err( "Could not instantiate applet", e );
-            panel.add( "Center", new Label( "Applet Failed" ) );
-        }
     }
 
     public void startApplet()
@@ -181,14 +137,22 @@ public class KJASAppletStub extends Frame
             app.stop();
     }
 
+    public void initApplet()
+    {
+        if( app != null )
+            app.init();
+    }
+
     public void die()
     {
         if( app != null )
             app.stop();
 
-        dispose();
-        runThread.interrupt();
+         if( runThread.isAlive() )
+            Main.debug( "runThread is active when stub is dying" );
+
         active = false;
+        dispose();
     }
 
     public Applet getApplet()
@@ -219,8 +183,6 @@ public class KJASAppletStub extends Frame
                 panel.setAppletSize( appletSize );
                 pack();
             }
-            else
-                System.err.println( "Applet #" + appletID + ": applet attempted to resize itself to " + width + "," + height );
         }
     }
 

@@ -81,18 +81,16 @@ public class KJASAppletContext implements AppletContext
             }
             loader.paramsDone();
 
-            Dimension size = new Dimension( Integer.parseInt(width),
-                                            Integer.parseInt(height) );
-            KJASAppletStub stub =
-                new KJASAppletStub( this, appletID, loader.getCodeBase(),
-                                    loader.getDocBase(), name, className,
-                                    size, params, windowName, loader );
+            KJASAppletStub stub = new KJASAppletStub
+            (
+                this, appletID, loader.getCodeBase(),
+                loader.getDocBase(), name, className,
+                new Dimension( Integer.parseInt(width), Integer.parseInt(height) ),
+                params, windowName, loader
+            );
             stubs.put( appletID, stub );
 
-            //launch two threads to handle the class downloading and showing
-            //the initial window that gets swallowed
-            stub.setupWindow();
-            stub.downloadClass();
+            stub.createApplet();
         }
         catch ( Exception e )
         {
@@ -124,10 +122,7 @@ public class KJASAppletContext implements AppletContext
         else
         {
             Main.debug( "stopping applet: " + appletID );
-
-            stub.setVisible( false );
-            stub.stopApplet();
-            stub.dispose();
+            stub.die();
 
             stubs.remove( appletID );
         }
@@ -165,9 +160,7 @@ public class KJASAppletContext implements AppletContext
         while ( e.hasMoreElements() )
         {
             KJASAppletStub stub = (KJASAppletStub) e.nextElement();
-            stub.setVisible( false );
-            stub.stopApplet();
-            stub.dispose();
+            stub.die();
         }
 
         stubs.clear();
@@ -190,6 +183,7 @@ public class KJASAppletContext implements AppletContext
                     return stub.getApplet();
             }
         }
+
         return null;
     }
 
@@ -207,13 +201,13 @@ public class KJASAppletContext implements AppletContext
 
             return v.elements();
         }
+
         return null;
     }
 
     public AudioClip getAudioClip( URL url )
     {
-        //needs to be implemented- tie in to the artsd somehow?
-        return null;
+        return new KJASSoundPlayer( url );
     }
 
     public Image getImage( URL url )
@@ -223,6 +217,7 @@ public class KJASAppletContext implements AppletContext
             Toolkit kit = Toolkit.getDefaultToolkit();
             return kit.getImage( url );
         }
+
         return null;
     }
 

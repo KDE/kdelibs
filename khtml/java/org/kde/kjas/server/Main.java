@@ -1,4 +1,4 @@
-package org.kde.kjas.server;
+    package org.kde.kjas.server;
 
 import java.io.*;
 import java.security.*;

@@ -192,17 +192,6 @@ public class KJASProtocolHandler
             if ( context != null )
                 context.stopApplet( appletID );
         } else
-        if( cmd_code_value == InitAppletCode )
-        {
-            String contextID = getArg( command );
-            String appletID  = getArg( command );
-            Main.debug( "InitApplet, context = " + contextID + ", applet = " + appletID );
-
-            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
-            if ( context != null )
-                context.initApplet( appletID );
-        }
-        else
         if( cmd_code_value == ShutdownServerCode )
         {
             Main.debug( "shutDownServer recieved" );

@@ -528,15 +528,6 @@ bool KJavaEmbed::x11Event( XEvent* e)
             }
             break;
 
-    	case LeaveNotify:
-    	    break;
-    	case FocusOut:
-    	    break;
-        case EnterNotify:
-            break;
-        case FocusIn:
-            break;
-
         default:
 	        break;
     }
@@ -567,8 +558,6 @@ QSize KJavaEmbed::sizeHint() const
 */
 QSize KJavaEmbed::minimumSizeHint() const
 {
-    int minw = 0;
-    int minh = 0;
     if ( window )
     {
         kdDebug(6100) << "KJavaEmbed::minimumSizeHint, getting hints from window" << endl;
@@ -578,13 +567,14 @@ QSize KJavaEmbed::minimumSizeHint() const
         if( XGetWMNormalHints( qt_xdisplay(), window, &size, &msize ) &&
             ( size.flags & PMinSize) )
         {
-            minw = size.min_width;
-            minh = size.min_height;
-            kdDebug(6100) << "XGetWMNormalHints succeeded, minw = " << minw << ", minh = " << minh << endl;
+            kdDebug(6100) << "XGetWMNormalHints succeeded, width = " << size.min_width
+                          << ", height = " << size.min_height << endl;
+
+            return QSize( size.min_width, size.min_height );
         }
     }
 
-    return QSize( minw, minh );
+    return QSize( 0, 0 );
 }
 
 // for KDE

@@ -71,7 +71,6 @@ void KJavaAppletWidget::setWindow( WId w )
                     this,  SLOT( setWindow( WId ) ) );
 
         embed( w );
-        m_applet->init();
         setFocus();
     }
 }
