@@ -146,6 +146,8 @@ void KFileTreeBranch::addItems( const KFileItemList& list )
 	 }
       }
       ++it;
+
+      emit( newKFileTreeViewItem( newKFTVI ));
    }
 }
 
@@ -167,6 +169,8 @@ void KFileTreeBranch::slotDeleteItem( KFileItem *it )
       kdDebug(1201) << "Error: kfiletreeviewitem: "<< kfti << endl;
    }
 }
+
+
 
 
 void KFileTreeBranch::slotCanceled()

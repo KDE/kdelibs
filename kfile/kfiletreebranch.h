@@ -89,11 +89,28 @@ public:
    QPixmap& pixmap(){ return(m_rootIcon); }
    
 public slots:
+   /**
+    *  populates a branch. This method must be called after a branch was added
+    *  to  a @ref KFileTreeView using method @ref addBranch.
+    *  @param url is the url of the root item where the branch starts.
+    *  @param currItem is the current parent.
+    */
+   void populate( const KURL &url, KFileTreeViewItem* currItem );
+
    void populate( );
-   void populate( const KURL&, KFileTreeViewItem* );
 
 signals:
+   /**
+    * emitted with the item of a directory which was finished to populate
+    */
    void populateFinished( KFileTreeViewItem * );
+
+   /**
+    * emitted with every new or updated @ref KFileTreeViewItem that was found
+    * in a branch. Note that this signal is emitted very often and may slow
+    * down the performance of the treeview !
+    */
+   void newKFileTreeViewItem( KFileTreeViewItem* );
    
 private slots:
    void addItems( const KFileItemList& );
