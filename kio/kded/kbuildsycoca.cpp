@@ -37,6 +37,9 @@
 #include <kdirwatch.h>
 #include <kstddirs.h>
 #include <ksavefile.h>
+#include <klocale.h>
+#include <kaboutdata.h>
+#include <kcmdlineargs.h>
 #include <unistd.h>
 
 #include <stdlib.h>
@@ -191,11 +194,26 @@ bool KBuildSycoca::process(const QCString &fun, const QByteArray &/*data*/,
     // don't call KSycoca::process - this is for other apps, not k
 }
 
-static const char *appName = "kbuildsycoca";
+static KCmdLineOptions options[] = {
+   { "nosignal", I18N_NOOP("Don't signal applications."), 0 },
+   { 0, 0, 0 }
+};
 
-int main(int, char **)
+static const char *appName = "kbuildsycoca";
+static const char *appVersion = "1.0";
+
+int main(int argc, char **argv)
 {
-   KInstance k("kbuildsycoca");
+   KAboutData d(appName, I18N_NOOP("KBuildSycoca"), appVersion,
+                I18N_NOOP("Rebuilds the system configuration cache."),
+		KAboutData::License_GPL, "(c) 1999,2000 David Faure");
+   d.addAuthor("David Faure", I18N_NOOP("Author"), "faure@kde.org");
+
+   KCmdLineArgs::init(argc, argv, &d);
+   KCmdLineArgs::addCmdLineOptions(options);
+   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+   KInstance k(&d);
 
    DCOPClient *dcopClient = new DCOPClient();
 
@@ -207,9 +225,13 @@ int main(int, char **)
 
    KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
    sycoca->recreate();
-   // Notify ALL applications that have a ksycoca object, using a broadcast
-   QByteArray data;
-   dcopClient->send( "*", "ksycoca", "databaseChanged()", data );
+
+   if (args->isSet("signal")) 
+   {
+     // Notify ALL applications that have a ksycoca object, using a broadcast
+     QByteArray data;
+     dcopClient->send( "*", "ksycoca", "databaseChanged()", data );
+   }
 }
 
 
