@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.127  1999/03/05 18:33:08  ettrich
+// disable qt's X resource manager handling
+//
 // Revision 1.126  1999/03/04 17:49:06  ettrich
 // more fixes for Qt-2.0
 //
@@ -1345,7 +1348,7 @@ void KApplication::kdisplaySetPalette()
 
 void KApplication::kdisplaySetFont()
 {
-  QApplication::setFont( generalFont_, TRUE );
+//     QApplication::setFont( generalFont_, TRUE );
   // setFont() works every time for me !
 
   emit kdisplayFontChanged();
@@ -1371,7 +1374,8 @@ void KApplication::kdisplaySetStyleAndFont()
   //  QApplication::setStyle( applicationStyle );
   // 	setStyle() works pretty well but may not change the style of combo
   //	boxes.
-  QApplication::setFont( generalFont_, TRUE );
+    if ( *font() != generalFont_)
+	QApplication::setFont( generalFont_, TRUE );
   applyGUIStyle(applicationStyle_);
 
   emit kdisplayStyleChanged();
