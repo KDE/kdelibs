@@ -92,7 +92,7 @@ of a kind like midi0, midi1, ..., then only the 0-version is listed here):
 <p>
    You need a more or less modern version of the glibc library, so artsdsp
    will not work reliable on older linux distributions. For instance, on
-   debian/slink it doesn't work, on debian/potatoe (which is glibc 2.1.3
+   debian/slink it doesn't work, on debian/potato (which is glibc 2.1.3
    based), it does.
 <p>
 <b>Are there theoretical limits which apps will never work with artsdsp?</b>
@@ -105,9 +105,11 @@ of a kind like midi0, midi1, ..., then only the 0-version is listed here):
 <p>
 <b>What do I do if an app doesn't work with artsdsp?</b>
 <p>
-   Of course you can wait for artsd to suspend. Other than that, there is
-   currently no peaceful support for pausing artsd. A brutal but working
-   way to get rid of it is
+   You can wait for artsd to suspend or use the <tt>artsshell suspend</tt>
+   command to ask the server to suspend itself. You will only be able to
+   suspend the server if no aRts applications are currently using it, and
+   no aRts applications will be able to run when the server is suspended.
+   If the server is busy a brutal but working way to get rid of it is
 <p>
      killall artsd ; killall artswrapper
 <p>
@@ -115,9 +117,7 @@ of a kind like midi0, midi1, ..., then only the 0-version is listed here):
 <p>
      kcminit arts
 <p>
-   Some aRts apps might crash, though, once you killed the server. Maybe
-   there will be a better way in the future, feel free to write one yourself
-   if you like.
+   Some aRts apps might crash, though, once you kill the server.
 <p>
 <table width="100%"><tr bgcolor="#fafacb"><h2>latency</h2></tr></table>
 <p>
