@@ -128,7 +128,7 @@ KDE_InterceptXMapRequest()
   );
 
   const char * receiver     = "kicker";
-  const char * object       = "AppStarting";
+  const char * object       = "TaskbarApplet";
   const char * function     = "clientMapped(int)";
 
   char  * pos               = 0L;
