@@ -131,6 +131,19 @@ of a kind like midi0, midi1, ..., then only the 0-version is listed here):
 <p>
    The help text (in kcontrol) is irritating.
 <p>
+<b>Is there anything else I can do to prevent pauses?</b>
+<p>
+   For users of IDE drives, you can use hdparm to set your IDE drive to the
+   DMA mode. <b>Warning:</b> this may not work on your computer, which would
+   mean that you have to do a hard reset. Probably you better read the hdparm
+   documentation first. Anyway, I am using the following quite successful:
+
+<pre>hdparm -c1 -d1 -k1 -K1 /dev/hda</pre>
+<p>
+   You need to repeat that after every boot, so you might want to place it
+   in a startup script (where you do it is distribution specific, for debian
+   these are /etc/rc.boot).
+<p>
 <b>Why is artsd taking that much CPU time?</b>
 <p>
    Check your response time settings. On the other hand, the KDE2.0 version
