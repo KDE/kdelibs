@@ -80,11 +80,6 @@
 # endif
 #endif
 
-#if defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
-# include <crt_externs.h>
-# define environ (*_NSGetEnviron())
-#endif
-
 extern char **environ;
 
 extern int lt_dlopen_flag;
@@ -1481,6 +1476,7 @@ int main(int argc, char **argv, char **envp)
    kdeinit_library_path();
    // don't change envvars before kdeinit_initsetproctitle()
    unsetenv("LD_BIND_NOW");
+   unsetenv("DYLD_BIND_AT_LAUNCH");
    if (!suicide)
       setenv("KDE_FULL_SESSION", "true", true);
    KApplication::loadedByKdeinit = true;
