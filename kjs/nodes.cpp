@@ -967,7 +967,7 @@ Completion ForInNode::execute()
 
   e = expr->evaluate();
   v = e.getValue().toObject();
-  curr = lst = v.imp()->getPropList();
+  curr = lst = v.imp()->propList();
 
   while (curr) {
     if (!v.hasProperty(curr->name)) {

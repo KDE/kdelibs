@@ -624,7 +624,7 @@ Object Imp::toObject() const
 }
 
 
-PropList* Imp::getPropList(PropList *first, PropList *last) const
+PropList* Imp::propList(PropList *first, PropList *last, bool recursive) const
 {
   Property *pr = prop;
   while(pr) {
@@ -640,8 +640,8 @@ PropList* Imp::getPropList(PropList *first, PropList *last) const
     }
     pr = pr->next;
   }
-  if (proto)
-    proto->getPropList(first, last);
+  if (proto && recursive)
+    proto->propList(first, last);
 
   return first;
 }

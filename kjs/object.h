@@ -381,6 +381,7 @@ namespace KJS {
     friend class KJSO;
     friend class Collector;
     friend class ForInNode;
+    friend class Debugger;
   public:
     Imp();
   public:
@@ -442,7 +443,8 @@ namespace KJS {
      * @return The (pointer to the) first element of a PropList, to be deleted
      * by the caller, or 0 if there are no enumerable properties
      */
-    PropList *getPropList(PropList *first = 0L, PropList *last = 0L) const;
+    PropList *propList(PropList *first = 0L, PropList *last = 0L,
+		       bool recursive = true) const;
 
   public:
     // reference counting mechanism

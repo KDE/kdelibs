@@ -21,6 +21,7 @@
 
 #include "debugger.h"
 #include "kjs.h"
+#include "internal.h"
 #include "ustring.h"
 
 using namespace KJS;
@@ -150,7 +151,30 @@ UString Debugger::varInfo(const UString &ident)
       break;
   }
 
-  return UString(obj.imp()->typeInfo()->name) + ":" + obj.toString().value();
+  return sub + "=" + objInfo(obj) + ":" + UString(obj.imp()->typeInfo()->name);
+}
+
+// called by varInfo() and recursively by itself on each properties
+UString Debugger::objInfo(const KJSO &obj) const
+{
+  PropList *plist = obj.imp()->propList(0, 0, false);
+  if (!plist)
+    return obj.toString().value();
+  else {
+    UString result = "{";
+    while (1) {
+      result += plist->name + "=";
+      KJSO p = obj.get(plist->name);
+      result += objInfo(p);
+      result += ":" + UString(p.imp()->typeInfo()->name);
+      plist = plist->next;
+      if (!plist)
+	break;
+      result += ",";
+    }
+    result += "}";
+    return result;
+  }
 }
 
 bool Debugger::setVar(const UString &ident, const KJSO &value)

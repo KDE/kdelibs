@@ -125,6 +125,7 @@ namespace KJS {
     void reset();
     bool hit(int line, bool breakPoint);
     void setSourceId(int i) { sid = i; }
+    UString objInfo(const KJSO &obj) const;
 
     KJScript *eng;
     Mode dmode;
