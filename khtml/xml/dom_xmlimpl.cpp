@@ -75,22 +75,6 @@ EntityImpl::~EntityImpl()
         m_name->deref();
 }
 
-const DOMString EntityImpl::nodeName() const
-{
-    return m_name;
-}
-
-unsigned short EntityImpl::nodeType() const
-{
-    return Node::ENTITY_NODE;
-}
-
-DOMString EntityImpl::namespaceURI() const
-{
-    // ###
-    return DOMString();
-}
-
 DOMString EntityImpl::publicId() const
 {
     return m_publicId;
@@ -104,6 +88,31 @@ DOMString EntityImpl::systemId() const
 DOMString EntityImpl::notationName() const
 {
     return m_notationName;
+}
+
+const DOMString EntityImpl::nodeName() const
+{
+    return m_name;
+}
+
+unsigned short EntityImpl::nodeType() const
+{
+    return Node::ENTITY_NODE;
+}
+
+DOMString EntityImpl::namespaceURI() const
+{
+    // ###
+    // ### when implementing this, make sure it is copied properly during a clone
+    return DOMString();
+}
+
+NodeImpl *EntityImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
+{
+    // Spec says cloning Document nodes is "implementation dependent"
+    // so we do not support it...
+    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+    return 0;
 }
 
 // DOM Section 1.1.1
@@ -121,12 +130,6 @@ bool EntityImpl::childTypeAllowed( unsigned short type )
         default:
             return false;
     }
-}
-
-NodeImpl *EntityImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
-{
-    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
-    return 0;
 }
 
 // -------------------------------------------------------------------------
@@ -162,7 +165,18 @@ unsigned short EntityReferenceImpl::nodeType() const
 DOMString EntityReferenceImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
+}
+
+NodeImpl *EntityReferenceImpl::cloneNode ( bool deep, int &exceptioncode )
+{
+    EntityReferenceImpl *clone = new EntityReferenceImpl(docPtr(),m_entityName);
+    // ### make sure children are readonly
+    // ### since we are a reference, should we clone children anyway (even if not deep?)
+    if (deep)
+        cloneChildNodes(clone,exceptioncode);
+    return clone;
 }
 
 // DOM Section 1.1.1
@@ -180,16 +194,6 @@ bool EntityReferenceImpl::childTypeAllowed( unsigned short type )
         default:
             return false;
     }
-}
-
-NodeImpl *EntityReferenceImpl::cloneNode ( bool deep, int &exceptioncode )
-{
-    EntityReferenceImpl *clone = new EntityReferenceImpl(docPtr(),m_entityName);
-    // ### make sure children are readonly
-    // ### since we are a reference, should we clone children anyway (even if not deep?)
-    if (deep)
-        cloneChildNodes(clone,exceptioncode);
-    return clone;
 }
 
 // -------------------------------------------------------------------------
@@ -224,6 +228,16 @@ NotationImpl::~NotationImpl()
         m_systemId->deref();
 }
 
+DOMString NotationImpl::publicId() const
+{
+    return m_publicId;
+}
+
+DOMString NotationImpl::systemId() const
+{
+    return m_systemId;
+}
+
 const DOMString NotationImpl::nodeName() const
 {
     return m_name;
@@ -237,29 +251,22 @@ unsigned short NotationImpl::nodeType() const
 DOMString NotationImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
 }
 
-DOMString NotationImpl::publicId() const
+NodeImpl *NotationImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 {
-    return m_publicId;
-}
-
-DOMString NotationImpl::systemId() const
-{
-    return m_systemId;
+    // Spec says cloning Document nodes is "implementation dependent"
+    // so we do not support it...
+    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
+    return 0;
 }
 
 // DOM Section 1.1.1
 bool NotationImpl::childTypeAllowed( unsigned short /*type*/ )
 {
     return false;
-}
-
-NodeImpl *NotationImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
-{
-    exceptioncode = DOMException::NOT_SUPPORTED_ERR;
-    return 0;
 }
 
 // -------------------------------------------------------------------------
@@ -298,6 +305,31 @@ ProcessingInstructionImpl::~ProcessingInstructionImpl()
 	m_sheet->deref();
 }
 
+DOMString ProcessingInstructionImpl::target() const
+{
+    return m_target;
+}
+
+DOMString ProcessingInstructionImpl::data() const
+{
+    return m_data;
+}
+
+void ProcessingInstructionImpl::setData( const DOMString &_data, int &exceptioncode )
+{
+    // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    if (m_data)
+        m_data->deref();
+    m_data = _data.implementation();
+    if (m_data)
+        m_data->ref();
+}
+
 const DOMString ProcessingInstructionImpl::nodeName() const
 {
     return m_target;
@@ -311,6 +343,7 @@ unsigned short ProcessingInstructionImpl::nodeType() const
 DOMString ProcessingInstructionImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
 }
 
@@ -319,14 +352,16 @@ DOMString ProcessingInstructionImpl::nodeValue() const
     return m_data;
 }
 
-DOMString ProcessingInstructionImpl::target() const
+void ProcessingInstructionImpl::setNodeValue( const DOMString &_nodeValue, int &exceptioncode )
 {
-    return m_target;
+    // NO_MODIFICATION_ALLOWED_ERR: taken care of by setData()
+    setData(_nodeValue, exceptioncode);
 }
 
-DOMString ProcessingInstructionImpl::data() const
+NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exceptioncode*/ )
 {
-    return m_data;
+    // ### copy m_localHref
+    return new ProcessingInstructionImpl(docPtr(),m_target,m_data);
 }
 
 DOMString ProcessingInstructionImpl::localHref() const
@@ -334,24 +369,10 @@ DOMString ProcessingInstructionImpl::localHref() const
     return m_localHref;
 }
 
-void ProcessingInstructionImpl::setData( const DOMString &_data, int &/*exceptioncode*/ )
-{
-    if (m_data)
-        m_data->deref();
-    m_data = _data.implementation();
-    if (m_data)
-        m_data->ref();
-}
-
 // DOM Section 1.1.1
 bool ProcessingInstructionImpl::childTypeAllowed( unsigned short /*type*/ )
 {
     return false;
-}
-
-NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exceptioncode*/ )
-{
-    return new ProcessingInstructionImpl(docPtr(),m_target,m_data);
 }
 
 void ProcessingInstructionImpl::checkStyleSheet()

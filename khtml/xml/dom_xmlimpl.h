@@ -45,15 +45,23 @@ public:
     EntityImpl(DocumentPtr *doc, DOMString _publicId, DOMString _systemId, DOMString _notationName);
     virtual ~EntityImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
+    // DOM methods & attributes for Entity
 
     virtual DOMString publicId() const;
     virtual DOMString systemId() const;
     virtual DOMString notationName() const;
-    virtual bool childTypeAllowed( unsigned short type );
+
+    // DOM methods overridden from  parent classes
+
+    virtual const DOMString nodeName() const;
+    virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+
+    // Other methods (not part of DOM)
+
+    virtual bool childTypeAllowed( unsigned short type );
+
 protected:
     DOMStringImpl *m_publicId;
     DOMStringImpl *m_systemId;
@@ -69,11 +77,17 @@ public:
     EntityReferenceImpl(DocumentPtr *doc, DOMStringImpl *_entityName);
     virtual ~EntityReferenceImpl();
 
+    // DOM methods overridden from  parent classes
+
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
-    virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+
+    // Other methods (not part of DOM)
+
+    virtual bool childTypeAllowed( unsigned short type );
+
 protected:
     DOMStringImpl *m_entityName;
 };
@@ -85,14 +99,21 @@ public:
     NotationImpl(DocumentPtr *doc, DOMString _name, DOMString _publicId, DOMString _systemId);
     virtual ~NotationImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
+    // DOM methods & attributes for Notation
 
     virtual DOMString publicId() const;
     virtual DOMString systemId() const;
-    virtual bool childTypeAllowed( unsigned short type );
+
+    // DOM methods overridden from  parent classes
+
+    virtual const DOMString nodeName() const;
+    virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+
+    // Other methods (not part of DOM)
+
+    virtual bool childTypeAllowed( unsigned short type );
 protected:
     DOMStringImpl *m_name;
     DOMStringImpl *m_publicId;
@@ -107,17 +128,25 @@ public:
     ProcessingInstructionImpl(DocumentPtr *doc, DOMString _target, DOMString _data);
     virtual ~ProcessingInstructionImpl();
 
+    // DOM methods & attributes for Notation
+
+    virtual DOMString target() const;
+    virtual DOMString data() const;
+    virtual void setData( const DOMString &_data, int &exceptioncode );
+
+    // DOM methods overridden from  parent classes
+
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual DOMString nodeValue() const;
-
-    virtual DOMString target() const;
-    virtual DOMString data() const;
-    virtual DOMString localHref() const;
-    virtual void setData( const DOMString &_data, int &exceptioncode );
-    virtual bool childTypeAllowed( unsigned short type );
+    virtual void setNodeValue( const DOMString &_nodeValue, int &exceptioncode );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+
+    // Other methods (not part of DOM)
+
+    virtual DOMString localHref() const;
+    virtual bool childTypeAllowed( unsigned short type );
     StyleSheetImpl *sheet() const;
     void checkStyleSheet();
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);

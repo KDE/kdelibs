@@ -95,20 +95,26 @@ Entity::~Entity()
 
 DOMString Entity::publicId() const
 {
-    if (impl) return ((EntityImpl*)impl)->publicId();
-    return DOMString();
+    if (!impl)
+	return DOMString(); // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return ((EntityImpl*)impl)->publicId();
 }
 
 DOMString Entity::systemId() const
 {
-    if (impl) return ((EntityImpl*)impl)->systemId();
-    return DOMString();
+    if (!impl)
+	return DOMString(); // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return ((EntityImpl*)impl)->systemId();
 }
 
 DOMString Entity::notationName() const
 {
-    if (impl) return ((EntityImpl*)impl)->notationName();
-    return DOMString();
+    if (!impl)
+	return DOMString(); // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return ((EntityImpl*)impl)->notationName();
 }
 
 Entity::Entity(EntityImpl *i) : Node(i)
@@ -183,14 +189,18 @@ Notation::~Notation()
 
 DOMString Notation::publicId() const
 {
-    if (impl) return ((EntityImpl*)impl)->publicId();
-    return DOMString();
+    if (!impl)
+	return DOMString(); // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return ((NotationImpl*)impl)->publicId();
 }
 
 DOMString Notation::systemId() const
 {
-    if (impl) return ((EntityImpl*)impl)->systemId();
-    return DOMString();
+    if (!impl)
+	return DOMString(); // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return ((NotationImpl*)impl)->systemId();
 }
 
 Notation::Notation(NotationImpl *i) : Node(i)
@@ -232,20 +242,24 @@ ProcessingInstruction::~ProcessingInstruction()
 
 DOMString ProcessingInstruction::target() const
 {
-    if (impl) return ((ProcessingInstructionImpl*)impl)->target();
-    return DOMString();
+    if (!impl)
+	return DOMString(); // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return ((ProcessingInstructionImpl*)impl)->target();
 }
 
 DOMString ProcessingInstruction::data() const
 {
-    if (impl) return ((ProcessingInstructionImpl*)impl)->data();
-    return DOMString();
+    if (!impl)
+	return DOMString(); // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return ((ProcessingInstructionImpl*)impl)->data();
 }
 
 void ProcessingInstruction::setData( const DOMString &_data )
 {
     if (!impl)
-        return;
+	return; // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
     ((ProcessingInstructionImpl*)impl)->setData(_data, exceptioncode);

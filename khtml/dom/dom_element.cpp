@@ -89,7 +89,13 @@ DOMString Attr::value() const
 
 void Attr::setValue( const DOMString &newValue )
 {
-  if (impl) ((AttrImpl *)impl)->setValue(newValue);
+  if (!impl)
+    return;
+
+  int exceptioncode = 0;
+  ((AttrImpl *)impl)->setValue(newValue,exceptioncode);
+  if (exceptioncode)
+    throw DOMException(exceptioncode);
 }
 
 // ---------------------------------------------------------------------------

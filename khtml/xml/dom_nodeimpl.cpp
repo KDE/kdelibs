@@ -28,6 +28,7 @@
 
 #include "dom_elementimpl.h"
 #include "dom_docimpl.h"
+#include "dom_textimpl.h"
 #include "dom2_eventsimpl.h"
 
 #include <kdebug.h>
@@ -81,9 +82,15 @@ DOMString NodeImpl::nodeValue() const
   return DOMString();
 }
 
-void NodeImpl::setNodeValue( const DOMString &, int &exceptioncode )
+void NodeImpl::setNodeValue( const DOMString &/*_nodeValue*/, int &exceptioncode )
 {
-  exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+    // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    // be default nodeValue is null, so setting it has no effect
 }
 
 const DOMString NodeImpl::nodeName() const
@@ -173,9 +180,37 @@ bool NodeImpl::hasAttributes(  ) const
   return false;
 }
 
-void NodeImpl::normalize ( int &/*exceptioncode*/ )
+void NodeImpl::normalize ( int &exceptioncode )
 {
-    // ### implement
+    // ### normalize attributes? (when we store attributes using child nodes)
+    exceptioncode = 0;
+    NodeImpl *child = firstChild();
+
+    // Recursively go through the subtree beneath us, normalizing all nodes. In the case
+    // where there are two adjacent text nodes, they are merged together
+    while (child) {
+        NodeImpl *nextChild = child->nextSibling();
+
+        if (nextChild && child->nodeType() == Node::TEXT_NODE && nextChild->nodeType() == Node::TEXT_NODE) {
+            // Current child and the next one are both text nodes... merge them
+            TextImpl *currentText = static_cast<TextImpl*>(child);
+            TextImpl *nextText = static_cast<TextImpl*>(nextChild);
+
+            currentText->appendData(nextText->data(),exceptioncode);
+            if (exceptioncode)
+                return;
+
+            removeChild(nextChild,exceptioncode);
+            if (exceptioncode)
+                return;
+        }
+        else {
+            child->normalize(exceptioncode);
+            if (exceptioncode)
+                return;
+            child = nextChild;
+        }
+    }
 }
 
 bool NodeImpl::isSupported( const DOMString &/*feature*/, const DOMString &/*version*/, int &/*exceptioncode*/ ) const
@@ -778,6 +813,109 @@ RenderObject *NodeImpl::nextRenderer()
     return 0;
 }
 
+void NodeImpl::checkSetPrefix(const DOMString &_prefix, int &exceptioncode)
+{
+    // Perform error checking as required by spec for setting Node.prefix. Used by
+    // ElementImpl::setPrefix() and AttrImpl::setPrefix()
+
+    // INVALID_CHARACTER_ERR: Raised if the specified prefix contains an illegal character.
+    if (!validPrefix(_prefix)) {
+        exceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return;
+    }
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    // NAMESPACE_ERR: - Raised if the specified prefix is malformed
+    // - if the namespaceURI of this node is null,
+    // - if the specified prefix is "xml" and the namespaceURI of this node is different from
+    //   "http://www.w3.org/XML/1998/namespace",
+    // - if this node is an attribute and the specified prefix is "xmlns" and
+    //   the namespaceURI of this node is different from "http://www.w3.org/2000/xmlns/",
+    // - or if this node is an attribute and the qualifiedName of this node is "xmlns" [Namespaces].
+    if (malformedPrefix(_prefix) ||
+        namespaceURI().isNull() ||
+        (_prefix == "xml" && namespaceURI() != "http://www.w3.org/XML/1998/namespace")) {
+        exceptioncode = DOMException::NAMESPACE_ERR;
+        return;
+    }
+}
+
+void NodeImpl::checkAddChild(NodeImpl *newChild, int &exceptioncode)
+{
+    // Perform error checking as required by spec for adding a new child. Used by
+    // appendChild(), replaceChild() and insertBefore()
+
+    // Not mentioned in spec: throw NOT_FOUND_ERR if newChild is null
+    if (!newChild) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
+    }
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    // WRONG_DOCUMENT_ERR: Raised if newChild was created from a different document than the one that
+    // created this node.
+    // We assume that if newChild is a DocumentFragment, all children are created from the same document
+    // as the fragment itself (otherwise they could not have been added as children)
+    if (newChild->getDocument() != getDocument()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    // HIERARCHY_REQUEST_ERR: Raised if this node is of a type that does not allow children of the type of the
+    // newChild node, or if the node to append is one of this node's ancestors.
+
+    // check for ancestor/same node
+    if (isAncestor(newChild)) {
+        exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+        return;
+    }
+
+    // check node allowed
+    if (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE) {
+        // newChild is a DocumentFragment... check all it's children instead of newChild itself
+        NodeImpl *child;
+        for (child = newChild->firstChild(); child; child = child->nextSibling()) {
+            if (!childAllowed(child)) {
+                exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+                return;
+            }
+        }
+    }
+    else {
+        // newChild is not a DocumentFragment... check if it's allowed directly
+        if(!childAllowed(newChild)) {
+            exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+            return;
+        }
+    }
+}
+
+bool NodeImpl::isAncestor( NodeImpl *other )
+{
+    // Return true if other is the same as this node or an ancestor of it, otherwise false
+    NodeImpl *n;
+    for (n = this; n; n = n->parentNode()) {
+        if (n == other)
+            return true;
+    }
+    return false;
+}
+
+bool NodeImpl::childAllowed( NodeImpl *newChild )
+{
+    return childTypeAllowed(newChild->nodeType());
+}
+
 void NodeImpl::dump(QTextStream *stream, QString ind) const
 {
     // ### implement dump() for all appropriate subclasses
@@ -1011,34 +1149,30 @@ NodeImpl *NodeBaseImpl::lastChild() const
 NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (checkReadOnly()) {
-        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+
+    // insertBefore(...,null) is equivalent to appendChild()
+    if(!refChild)
+        return appendChild(newChild, exceptioncode);
+
+    // Make sure adding the new child is ok
+    checkAddChild(newChild, exceptioncode);
+    if (exceptioncode)
         return 0;
-    }
-    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild())) {
+
+    // NOT_FOUND_ERR: Raised if refChild is not a child of this node
+    if (refChild->parentNode() != this) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return 0;
     }
 
-    if(!refChild)
-        return appendChild(newChild, exceptioncode);
-
-    if (newChild == refChild) // ### HIERARCHY_REUEST_ERR ?
-	return 0;
-
-    if( checkSameDocument(newChild, exceptioncode) )
-        return 0;
-    if( checkNoOwner(newChild, exceptioncode) )
-        return 0;
-    if( checkIsChild(refChild, exceptioncode) )
-        return 0;
-
-    if(newChild->parentNode() == this)
-        removeChild(newChild, exceptioncode);
-    if( exceptioncode )
-        return 0;
-
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
+
+    // If newChild is a DocumentFragment with no children.... there's nothing to do.
+    // Just return the document fragment
+    if (isFragment && !newChild->firstChild())
+        return newChild;
+
+    // Now actually add the child(ren)
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
 
@@ -1046,20 +1180,14 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
     while (child) {
         nextChild = isFragment ? child->nextSibling() : 0;
 
-        if( checkNoOwner(child, exceptioncode) )
-            return 0;
-        if(!childAllowed(child)) {
-            exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-            return 0;
-        }
-        // if already in the tree, remove it first!
+        // If child is already present in the tree, first remove it
         NodeImpl *newParent = child->parentNode();
         if(newParent)
             newParent->removeChild( child, exceptioncode );
         if ( exceptioncode )
             return 0;
 
-        // seems ok, lets's insert it.
+        // Add child in the correct position
         if (prev)
             prev->setNextSibling(child);
         else
@@ -1068,9 +1196,13 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
         child->setParent(this);
         child->setPreviousSibling(prev);
         child->setNextSibling(refChild);
+
+        // Add child to the rendering tree
+        // ### should we detach() it first if it's already attached?
         if (attached() && !child->attached() && ownerDocument() )
             child->attach();
 
+        // Dispatch the mutation events
         dispatchChildInsertedEvents(child,exceptioncode);
 
         prev = child;
@@ -1086,70 +1218,57 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
 NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (checkReadOnly()) {
-        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+
+    // Make sure adding the new child is ok
+    checkAddChild(newChild, exceptioncode);
+    if (exceptioncode)
         return 0;
-    }
-    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild())) {
+
+    // NOT_FOUND_ERR: Raised if oldChild is not a child of this node.
+    if (!oldChild || oldChild->parentNode() != this) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return 0;
     }
-    if( checkSameDocument(newChild, exceptioncode) )
-        return 0;
-    if( checkIsChild(oldChild, exceptioncode) )
-        return 0;
-    if( checkNoOwner(newChild, exceptioncode) )
-        return 0;
 
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
 
-    // make sure we will be able to insert the first node before we go removing the old one
-    if( checkNoOwner(isFragment ? newChild->firstChild() : newChild, exceptioncode) )
-        return 0;
-    if(!childAllowed(isFragment ? newChild->firstChild() : newChild)) {
-        exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-        return 0;
-    }
 
+    // Remove the old child
     NodeImpl *prev = oldChild->previousSibling();
     NodeImpl *next = oldChild->nextSibling();
-    oldChild->setPreviousSibling(0);
-    oldChild->setNextSibling(0);
-    oldChild->setParent(0);
-    if(oldChild->attached())
-	oldChild->detach();
 
+    removeChild(oldChild, exceptioncode);
+    if (exceptioncode)
+        return 0;
+
+    // Add the new child(ren)
     while (child) {
         nextChild = isFragment ? child->nextSibling() : 0;
 
-        if( checkNoOwner(child, exceptioncode ) )
-            return 0;
-        if(!childAllowed(child)) {
-            exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-            return 0;
-        }
-
-        // if already in the tree, remove it first!
+        // If child is already present in the tree, first remove it
         NodeImpl *newParent = child->parentNode();
         if(newParent)
             newParent->removeChild( child, exceptioncode );
-        if ( exceptioncode )
+        if (exceptioncode)
             return 0;
 
-        // seems ok, lets's insert it.
+        // Add child in the correct position
         if (prev) prev->setNextSibling(child);
         if (next) next->setPreviousSibling(child);
         if(!prev) _first = child;
         if(!next) _last = child;
-
         child->setParent(this);
         child->setPreviousSibling(prev);
         child->setNextSibling(next);
+
+        // Add child to the rendering tree
+        // ### should we detach() it first if it's already attached?
         if (attached() && !child->attached() && ownerDocument() )
             child->attach();
 
+        // Dispatch the mutation events
         dispatchChildInsertedEvents(child,exceptioncode);
 
         prev = child;
@@ -1165,11 +1284,20 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 {
     exceptioncode = 0;
-    if( checkReadOnly() )
-        return 0;
-    if( checkIsChild(oldChild, exceptioncode) )
-        return 0;
 
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return 0;
+    }
+
+    // NOT_FOUND_ERR: Raised if oldChild is not a child of this node.
+    if (!oldChild || oldChild->parentNode() != this) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return 0;
+    }
+
+    // Dispatch pre-removal mutation events
     getDocument()->notifyBeforeNodeRemoval(oldChild); // ### use events instead
     if (getDocument()->hasListenerType(DocumentImpl::DOMNODEREMOVED_LISTENER)) {
 	oldChild->dispatchEvent(new MutationEventImpl(EventImpl::DOMNODEREMOVED_EVENT,
@@ -1194,6 +1322,7 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
 	}
     }
 
+    // Remove the child
     NodeImpl *prev, *next;
     prev = oldChild->previousSibling();
     next = oldChild->nextSibling();
@@ -1206,10 +1335,14 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
+
+    // Remove from rendering tree
     if (oldChild->attached())
         oldChild->detach();
 
     setChanged(true);
+
+    // Dispatch post-removal mutation events
     dispatchSubtreeModifiedEvent();
     return oldChild;
 }
@@ -1236,44 +1369,36 @@ void NodeBaseImpl::removeChildren()
 
 NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 {
-//    kdDebug(6010) << "NodeBaseImpl::appendChild( " << newChild << " );" <<endl;
-    checkReadOnly();
-    if (!newChild || (newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE && !newChild->firstChild())) {
-        exceptioncode = DOMException::NOT_FOUND_ERR;
-        return 0;
-    }
-    if( checkSameDocument(newChild, exceptioncode) )
-        return 0;
-    if( checkNoOwner(newChild, exceptioncode) )
-        return 0;
+    exceptioncode = 0;
 
-    if(newChild->parentNode() == this)
-        removeChild(newChild, exceptioncode);
-    if ( exceptioncode )
+    // Make sure adding the new child is ok
+    checkAddChild(newChild, exceptioncode);
+    if (exceptioncode)
         return 0;
 
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
+
+    // If newChild is a DocumentFragment with no children.... there's nothing to do.
+    // Just return the document fragment
+    if (isFragment && !newChild->firstChild())
+        return newChild;
+
+    // Now actually add the child(ren)
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
 
     while (child) {
         nextChild = isFragment ? child->nextSibling() : 0;
 
-        if (checkNoOwner(child, exceptioncode) )
-            return 0;
-        if(!childAllowed(child)) {
-            exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
-            return 0;
+        // If child is already present in the tree, first remove it
+        NodeImpl *oldParent = child->parentNode();
+        if(oldParent) {
+            oldParent->removeChild( child, exceptioncode );
+            if (exceptioncode)
+                return 0;
         }
 
-        // if already in the tree, remove it first!
-        NodeImpl *oldParent = child->parentNode();
-        if(oldParent)
-            oldParent->removeChild( child, exceptioncode );
-        if ( exceptioncode )
-            return 0;
-
-        // lets append it
+        // Append child to the end of the list
         child->setParent(this);
 
         if(_last)
@@ -1286,9 +1411,13 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
         {
             _first = _last = child;
         }
+
+        // Add child to the rendering tree
+        // ### should we detach() it first if it's already attached?
         if (attached() && !child->attached() && ownerDocument() )
             child->attach();
 
+        // Dispatch the mutation events
         dispatchChildInsertedEvents(child,exceptioncode);
 
         child = nextChild;
@@ -1331,6 +1460,7 @@ bool NodeBaseImpl::checkSameDocument( NodeImpl *newChild, int &exceptioncode )
 }
 
 // check for being (grand-..)father:
+// ### remove in favor or isAncestor()
 bool NodeBaseImpl::checkNoOwner( NodeImpl *newChild, int &exceptioncode )
 {
   //check if newChild is parent of this...
@@ -1351,11 +1481,6 @@ bool NodeBaseImpl::checkIsChild( NodeImpl *oldChild, int &exceptioncode )
         return true;
     }
     return false;
-}
-
-bool NodeBaseImpl::childAllowed( NodeImpl *newChild )
-{
-    return childTypeAllowed(newChild->nodeType());
 }
 
 NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
@@ -1487,8 +1612,8 @@ void NodeBaseImpl::detach()
 
 void NodeBaseImpl::cloneChildNodes(NodeImpl *clone, int &exceptioncode)
 {
+    exceptioncode = 0;
     NodeImpl *n;
-//    for(n = firstChild(); n != lastChild() && !exceptioncode; n = n->nextSibling())
     for(n = firstChild(); n && !exceptioncode; n = n->nextSibling())
     {
         clone->appendChild(n->cloneNode(true,exceptioncode),exceptioncode);
@@ -1859,6 +1984,7 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItem ( const DOMString &name, int &
 Node GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
     exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return 0;
 }
@@ -1866,6 +1992,7 @@ Node GenericRONamedNodeMapImpl::setNamedItem ( const Node &/*arg*/, int &excepti
 Node GenericRONamedNodeMapImpl::removeNamedItem ( const DOMString &/*name*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
     exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return 0;
 }
@@ -1900,6 +2027,7 @@ NodeImpl *GenericRONamedNodeMapImpl::getNamedItemNS( const DOMString &namespaceU
 NodeImpl *GenericRONamedNodeMapImpl::setNamedItemNS( NodeImpl */*arg*/, int &exceptioncode )
 {
     // can't modify this list through standard DOM functions
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this map is readonly
     exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
     return 0;
 }

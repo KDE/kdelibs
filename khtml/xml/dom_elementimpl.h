@@ -43,6 +43,8 @@ public:
     AttrImpl();
     AttrImpl(DocumentPtr *doc, const DOMString &name);
     AttrImpl(DocumentPtr *doc, int id);
+    AttrImpl(DocumentPtr *doc, const DOMString &namespaceURI,
+             const DOMString &qualifiedName );
     AttrImpl(const AttrImpl &other);
 
     AttrImpl &operator = (const AttrImpl &other);
@@ -53,7 +55,7 @@ public:
     bool specified() const { return m_specified; }
     Element ownerElement() const;
     virtual DOMString value() const;
-    virtual void setValue( const DOMString &v );
+    virtual void setValue( const DOMString &v, int &exceptioncode );
 
     // DOM methods overridden from  parent classes
     virtual const DOMString nodeName() const;
@@ -106,45 +108,29 @@ public:
     // DOM methods & attributes for Element
 
     virtual DOMString tagName() const = 0;
-
     virtual DOMString getAttribute ( const DOMString &name, int &exceptioncode ) const;
-
     virtual void setAttribute ( const DOMString &name, const DOMString &value, int &exceptioncode );
-
     virtual void removeAttribute ( const DOMString &name, int &exceptioncode );
-
     virtual AttrImpl *getAttributeNode ( const DOMString &name, int &exceptioncode );
-
     virtual Attr setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
-
     virtual Attr removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
-
     virtual NodeListImpl *getElementsByTagName ( const DOMString &name, int &exceptioncode );
-
     virtual DOMString getAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                        int &exceptioncode );
-
     virtual void setAttributeNS ( const DOMString &namespaceURI, const DOMString &qualifiedName, 
                                   const DOMString &value, int &exceptioncode );
-
     virtual void removeAttributeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                      int &exceptioncode );
-
     virtual AttrImpl *getAttributeNodeNS ( const DOMString &namespaceURI, const DOMString &localName,
                                            int &exceptioncode );
-
     virtual AttrImpl *setAttributeNodeNS ( AttrImpl *newAttr, int &exceptioncode );
-
     virtual NodeListImpl *getElementsByTagNameNS ( const DOMString &namespaceURI, const DOMString &localName,
                                                    int &exceptioncode );
-
     virtual bool hasAttribute ( const DOMString &name, int &exceptioncode ) const;
-
     virtual bool hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
                                  int &exceptioncode );
 
     // DOM methods overridden from  parent classes
-    virtual void normalize ( int &exceptioncode );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     virtual const DOMString nodeName() const;
     virtual DOMString prefix() const;
@@ -231,10 +217,16 @@ public:
     XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, DOMStringImpl *_namespaceURI);
     ~XMLElementImpl();
 
+    // DOM methods overridden from  parent classes
+
     DOMString tagName() const;
     virtual const DOMString nodeName() const;
     virtual DOMString namespaceURI() const;
     virtual DOMString localName() const;
+    virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
+
+    // Other methods (not part of DOM)
+
     virtual unsigned short id() const { return m_id; };
     virtual bool isXMLElementNode() const;
 
@@ -300,8 +292,8 @@ protected:
 
     AttrImpl *getItem ( int id, const DOMString &name, const DOMString &namespaceURI,
                         AttrCompare compareType, int &exceptioncode ) const;
-    Node setItem ( const Node &arg, AttrCompare compareType, int &exceptioncode );
-    Node removeItem ( int id, const DOMString &name, const DOMString &namespaceURI,
+    Attr setItem ( const Node &arg, AttrCompare compareType, int &exceptioncode );
+    Attr removeItem ( int id, const DOMString &name, const DOMString &namespaceURI,
                       AttrCompare compareType, int &exceptioncode );
     int findAttr ( int id, const DOMString &name, const DOMString &namespaceURI,
                    AttrCompare compareType ) const;

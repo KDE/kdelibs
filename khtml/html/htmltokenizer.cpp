@@ -888,7 +888,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                             a = new AttrImpl(parser->docPtr(), attrName);
 
                         if ( a ) {
-                            a->setValue("");
+                            int exceptioncode = 0;
+                            a->setValue("",exceptioncode);
                             currToken.insertAttr(a);
                         }
 
@@ -955,7 +956,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                             // some <input type=hidden> rely on trailing spaces. argh
                             while(dest > buffer+1 && (*(dest-1) == '\n' || *(dest-1) == '\r'))
                                 dest--; // remove trailing newlines
-                            a->setValue(DOMString(buffer+1, dest-buffer-1));
+                            int exceptioncode;
+                            a->setValue(DOMString(buffer+1, dest-buffer-1),exceptioncode);
                             currToken.insertAttr(a);
                         }
                         else {
@@ -1003,7 +1005,8 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         else
                             a = new AttrImpl(parser->docPtr(), DOMString(attrName));
 
-                        a->setValue(DOMString(buffer+1, dest-buffer-1));
+                        int exceptioncode;
+                        a->setValue(DOMString(buffer+1, dest-buffer-1),exceptioncode);
                         currToken.insertAttr(a);
 
                         dest = buffer;

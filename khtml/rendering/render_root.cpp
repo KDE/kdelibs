@@ -51,10 +51,10 @@ RenderRoot::RenderRoot(KHTMLView *view)
 
     m_printingMode = false;
 
-    selectionStart = 0;
-    selectionEnd = 0;
-    selectionStartPos = -1;
-    selectionEndPos = -1;
+    m_selectionStart = 0;
+    m_selectionEnd = 0;
+    m_selectionStartPos = -1;
+    m_selectionEndPos = -1;
     oldLayoutTime = 0;
     timeout = 800;
     setParsing();
@@ -342,11 +342,23 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     while (e->lastChild())
         e = e->lastChild();
 
-    selectionStart = s;
-    selectionEnd = e;
-    selectionStartPos = sp;
-    selectionEndPos = ep;
+    // set selection start
+    if (m_selectionStart)
+        m_selectionStart->setIsSelectionStart(false);
+    m_selectionStart = s;
+    if (m_selectionStart)
+        m_selectionStart->setIsSelectionStart(true);
+    m_selectionStartPos = sp;
 
+    // set selection end
+    if (m_selectionEnd)
+        m_selectionEnd->setIsSelectionEnd(false);
+    m_selectionEnd = e;
+    if (m_selectionEnd)
+        m_selectionEnd->setIsSelectionEnd(true);
+    m_selectionEndPos = ep;
+
+    // update selection status of all objects between m_selectionStart and m_selectionEnd
     RenderObject* o = s;
     while (o && o!=e)
     {
@@ -376,8 +388,9 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 
 void RenderRoot::clearSelection()
 {
-    RenderObject* o = selectionStart;
-    while (o && o!=selectionEnd)
+    // update selection status of all objects between m_selectionStart and m_selectionEnd
+    RenderObject* o = m_selectionStart;
+    while (o && o!=m_selectionEnd)
     {
         if (o->selectionState()!=SelectionNone)
             o->repaint();
@@ -394,18 +407,28 @@ void RenderRoot::clearSelection()
             }
         o=no;
     }
-    if (selectionEnd)
+    if (m_selectionEnd)
     {
-        selectionEnd->setSelectionState(SelectionNone);
-        selectionEnd->repaint();
+        m_selectionEnd->setSelectionState(SelectionNone);
+        m_selectionEnd->repaint();
     }
 
+    // set selection start & end to 0
+    if (m_selectionStart)
+        m_selectionStart->setIsSelectionStart(false);
+    m_selectionStart = 0;
+    m_selectionStartPos = -1;
+
+    if (m_selectionEnd)
+        m_selectionEnd->setIsSelectionEnd(false);
+    m_selectionEnd = false;
+    m_selectionEndPos = -1;
 }
 
 void RenderRoot::selectionStartEnd(int& spos, int& epos)
 {
-    spos = selectionStartPos;
-    epos = selectionEndPos;
+    spos = m_selectionStartPos;
+    epos = m_selectionEndPos;
 }
 
 QRect RenderRoot::viewRect() const

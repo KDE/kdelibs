@@ -100,6 +100,10 @@ bool XMLHandler::startElement( const QString& namespaceURI, const QString& /*loc
         delete newElement;
         return false;
     }
+
+    // ### DOM spec states: "f there is no markup inside an element's content, the text is contained in a
+    // single object implementing the Text interface that is the only child of the element."... do we
+    // need to ensure that empty elements always have an empty text child?
 }
 
 
@@ -157,11 +161,17 @@ bool XMLHandler::characters( const QString& ch )
         if (parentId == ID_SCRIPT || parentId == ID_STYLE || parentId == ID_XMP || parentId == ID_TEXTAREA) {
             // ### hack.. preserve whitespace for script, style, xmp and textarea... is this the correct
             // way of doing this?
-            static_cast<TextImpl*>(m_currentNode)->appendData(ch);
+            int exceptioncode = 0;
+            static_cast<TextImpl*>(m_currentNode)->appendData(ch,exceptioncode);
+            if (exceptioncode)
+                return false;
         }
         else {
             // for all others, simplify the whitespace
-            static_cast<TextImpl*>(m_currentNode)->appendData(ch.simplifyWhiteSpace());
+            int exceptioncode = 0;
+            static_cast<TextImpl*>(m_currentNode)->appendData(ch.simplifyWhiteSpace(),exceptioncode);
+            if (exceptioncode)
+                return false;
         }
         return true;
     }

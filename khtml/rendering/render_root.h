@@ -64,6 +64,8 @@ public:
 
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();
+    virtual RenderObject *selectionStart() const { return m_selectionStart; }
+    virtual RenderObject *selectionEnd() const { return m_selectionEnd; }
 
     void setPrintingMode(bool print) { m_printingMode = print; }
     bool printingMode() const { return m_printingMode; }
@@ -81,10 +83,10 @@ protected:
 
     QTime updateTimer;
 
-    RenderObject* selectionStart;
-    RenderObject* selectionEnd;
-    int selectionStartPos;
-    int selectionEndPos;
+    RenderObject* m_selectionStart;
+    RenderObject* m_selectionEnd;
+    int m_selectionStartPos;
+    int m_selectionEndPos;
 
     int m_rootWidth;
     int m_rootHeight;

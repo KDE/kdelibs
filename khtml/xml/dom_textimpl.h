@@ -42,30 +42,33 @@ public:
     CharacterDataImpl(DocumentPtr *doc);
     virtual ~CharacterDataImpl();
 
-    DOMString data() const;
+    // DOM methods & attributes for CharacterData
 
-    void setData( const DOMString & );
+    virtual DOMString data() const;
+    virtual void setData( const DOMString &_data, int &exceptioncode );
+    virtual unsigned long length (  ) const;
+    virtual DOMString substringData ( const unsigned long offset, const unsigned long count, int &exceptioncode );
+    virtual void appendData ( const DOMString &arg, int &exceptioncode );
+    virtual void insertData ( const unsigned long offset, const DOMString &arg, int &exceptioncode );
+    virtual void deleteData ( const unsigned long offset, const unsigned long count, int &exceptioncode );
+    virtual void replaceData ( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode );
 
-    unsigned long length() const;
+    // DOM methods overridden from  parent classes
 
-    DOMString substringData ( const unsigned long offset, const unsigned long count, int &exceptioncode );
+    virtual DOMString nodeValue() const;
+    virtual void setNodeValue( const DOMString &_nodeValue, int &exceptioncode );
 
-    void appendData ( const DOMString &arg );
-
-    void insertData ( const unsigned long offset, const DOMString &arg, int &exceptioncode );
-
-    void deleteData ( const unsigned long offset, const unsigned long count, int &exceptioncode );
-
-    void replaceData ( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode );
+    // Other methods (not part of DOM)
 
     DOMStringImpl *string() { return str; }
-
+    virtual void checkCharDataOperation( const unsigned long offset, int &exceptioncode );
     virtual void dump(QTextStream *stream, QString ind = "") const;
 
 protected:
     // note: since DOMStrings are shared, str should always be copied when making
     // a change or returning a string
     DOMStringImpl *str;
+
     void dispatchModifiedEvent(DOMStringImpl *prevValue);
 };
 
@@ -78,12 +81,16 @@ public:
     CommentImpl(DocumentPtr *doc);
     virtual ~CommentImpl();
 
+    // DOM methods overridden from  parent classes
+
     virtual const DOMString nodeName() const;
-    virtual DOMString nodeValue() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
-    virtual ushort id() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
+
+    // Other methods (not part of DOM)
+
+    virtual ushort id() const;
     virtual bool childTypeAllowed( unsigned short type );
 };
 
@@ -96,28 +103,27 @@ public:
     TextImpl(DocumentPtr *impl);
     virtual ~TextImpl();
 
-    virtual const DOMString nodeName() const;
-    virtual DOMString nodeValue() const;
-    virtual void setNodeValue( const DOMString &, int &exceptioncode );
-
-    virtual unsigned short nodeType() const;
-    virtual DOMString namespaceURI() const;
-    virtual bool isTextNode() const { return true; }
+    // DOM methods & attributes for CharacterData
 
     TextImpl *splitText ( const unsigned long offset, int &exceptioncode );
 
+    // DOM methods overridden from  parent classes
+
+    virtual const DOMString nodeName() const;
+    virtual unsigned short nodeType() const;
+    virtual DOMString namespaceURI() const;
+    virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
+
+    // Other methods (not part of DOM)
+
+    virtual bool isTextNode() const { return true; }
     virtual ushort id() const;
-
     virtual khtml::RenderStyle *style() const;
-
     virtual void attach();
     virtual void detach();
     virtual void applyChanges(bool top=true, bool force=true);
-
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );
-
-    virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual void recalcStyle();
     virtual bool childTypeAllowed( unsigned short type );
 
@@ -134,10 +140,16 @@ public:
     CDATASectionImpl(DocumentPtr *impl, const DOMString &_text);
     CDATASectionImpl(DocumentPtr *impl);
     virtual ~CDATASectionImpl();
+
+    // DOM methods overridden from  parent classes
+
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
+
+    // Other methods (not part of DOM)
+
     virtual bool childTypeAllowed( unsigned short type );
 
 protected:

@@ -126,6 +126,8 @@ RenderObject::RenderObject()
     m_containsOverhangingFloats = false;
     m_hasFirstLine = false;
     m_verticalPosition = PositionUndefined;
+    m_isSelectionStart = false;
+    m_isSelectionEnd = false;
 }
 
 RenderObject::~RenderObject()

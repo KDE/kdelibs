@@ -63,11 +63,17 @@ DOMString CharacterDataImpl::data() const
     return str;
 }
 
-void CharacterDataImpl::setData( const DOMString &newStr )
+void CharacterDataImpl::setData( const DOMString &_data, int &exceptioncode )
 {
-    if(str == newStr.impl) return; // ### fire DOMCharacterDataModified if modified?
+    // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    if(str == _data.impl) return; // ### fire DOMCharacterDataModified if modified?
     DOMStringImpl *oldStr = str;
-    str = newStr.impl;
+    str = _data.impl;
     if(str) str->ref();
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
@@ -85,15 +91,23 @@ unsigned long CharacterDataImpl::length() const
 DOMString CharacterDataImpl::substringData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (offset > str->l ) {
-        exceptioncode = DOMException::INDEX_SIZE_ERR;
+    checkCharDataOperation(offset, exceptioncode);
+    if (exceptioncode)
         return DOMString();
-    }
+
     return str->substring(offset,count);
 }
 
-void CharacterDataImpl::appendData( const DOMString &arg )
+void CharacterDataImpl::appendData( const DOMString &arg, int &exceptioncode )
 {
+    exceptioncode = 0;
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
     DOMStringImpl *oldStr = str;
     str = str->copy();
     str->ref();
@@ -109,10 +123,10 @@ void CharacterDataImpl::appendData( const DOMString &arg )
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (offset > str->l) {
-        exceptioncode = DOMException::INDEX_SIZE_ERR;
+    checkCharDataOperation(offset, exceptioncode);
+    if (exceptioncode)
         return;
-    }
+
     DOMStringImpl *oldStr = str;
     str = str->copy();
     str->ref();
@@ -128,10 +142,9 @@ void CharacterDataImpl::insertData( const unsigned long offset, const DOMString 
 void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (offset > str->l) {
-        exceptioncode = DOMException::INDEX_SIZE_ERR;
+    checkCharDataOperation(offset, exceptioncode);
+    if (exceptioncode)
         return;
-    }
 
     DOMStringImpl *oldStr = str;
     str = str->copy();
@@ -148,10 +161,9 @@ void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned l
 void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode )
 {
     exceptioncode = 0;
-    if (offset > str->l) {
-        exceptioncode = DOMException::INDEX_SIZE_ERR;
+    checkCharDataOperation(offset, exceptioncode);
+    if (exceptioncode)
         return;
-    }
 
     unsigned long realCount;
     if (offset + count > str->l)
@@ -172,6 +184,17 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
     oldStr->deref();
 }
 
+DOMString CharacterDataImpl::nodeValue() const
+{
+    return str;
+}
+
+void CharacterDataImpl::setNodeValue( const DOMString &_nodeValue, int &exceptioncode )
+{
+    // NO_MODIFICATION_ALLOWED_ERR: taken care of by setData()
+    setData(_nodeValue, exceptioncode);
+}
+
 void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 {
     // ### fixme (?) - hack so STYLE elements reparse their stylesheet when text changes
@@ -187,6 +210,24 @@ void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 		  true,false,0,prevValue,newValue,DOMString(),0),exceptioncode);
     newValue->deref();
     dispatchSubtreeModifiedEvent();
+}
+
+void CharacterDataImpl::checkCharDataOperation( const unsigned long offset, int &exceptioncode )
+{
+    exceptioncode = 0;
+
+    // INDEX_SIZE_ERR: Raised if the specified offset is negative or greater than the number of 16-bit
+    // units in data.
+    if (offset > str->l) {
+        exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return;
+    }
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
 }
 
 void CharacterDataImpl::dump(QTextStream *stream, QString ind) const
@@ -217,11 +258,6 @@ const DOMString CommentImpl::nodeName() const
     return "#comment";
 }
 
-DOMString CommentImpl::nodeValue() const
-{
-    return str;
-}
-
 unsigned short CommentImpl::nodeType() const
 {
     return Node::COMMENT_NODE;
@@ -230,17 +266,18 @@ unsigned short CommentImpl::nodeType() const
 DOMString CommentImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
-}
-
-ushort CommentImpl::id() const
-{
-    return ID_COMMENT;
 }
 
 NodeImpl *CommentImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
 {
     return ownerDocument()->createComment( str );
+}
+
+ushort CommentImpl::id() const
+{
+    return ID_COMMENT;
 }
 
 // DOM Section 1.1.1
@@ -270,8 +307,21 @@ TextImpl::~TextImpl()
 TextImpl *TextImpl::splitText( const unsigned long offset, int &exceptioncode )
 {
     exceptioncode = 0;
+
+    // INDEX_SIZE_ERR: Raised if the specified offset is negative or greater than
+    // the number of 16-bit units in data.
+
+    // ### we explicitly check for a negative long that has been cast to an unsigned long
+    // ... this can happen if JS code passes in -1 - we need to catch this earlier! (in the
+    // kjs bindings)
     if (offset > str->l || (long)offset < 0) {
         exceptioncode = DOMException::INDEX_SIZE_ERR;
+        return 0;
+    }
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
         return 0;
     }
 
@@ -300,24 +350,6 @@ const DOMString TextImpl::nodeName() const
   return "#text";
 }
 
-DOMString TextImpl::nodeValue() const
-{
-    return str;
-}
-
-void TextImpl::setNodeValue( const DOMString & newstr, int &exceptioncode )
-{
-  exceptioncode = 0;
-
-  if (DOMString(str) != newstr) {
-      if (str) str->deref();
-      str = newstr.implementation();
-      if (str) str->ref();
-      setChanged(true);
-  }
-}
-
-
 unsigned short TextImpl::nodeType() const
 {
     return Node::TEXT_NODE;
@@ -326,7 +358,13 @@ unsigned short TextImpl::nodeType() const
 DOMString TextImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
+}
+
+NodeImpl *TextImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
+{
+    return ownerDocument()->createTextNode(str);
 }
 
 void TextImpl::attach()
@@ -391,11 +429,6 @@ ushort TextImpl::id() const
     return ID_TEXT;
 }
 
-NodeImpl *TextImpl::cloneNode(bool /*deep*/, int &/*exceptioncode*/)
-{
-    return ownerDocument()->createTextNode(str);
-}
-
 void TextImpl::recalcStyle()
 {
     if (!parentNode())
@@ -441,6 +474,7 @@ unsigned short CDATASectionImpl::nodeType() const
 DOMString CDATASectionImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
 }
 

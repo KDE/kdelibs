@@ -86,6 +86,18 @@ AttrImpl::AttrImpl(DocumentPtr *doc, int id)
 {
 }
 
+AttrImpl::AttrImpl(DocumentPtr *doc, const DOMString &namespaceURI,
+                   const DOMString &qualifiedName)
+    : NodeImpl(doc),
+      _name(0),
+      _value(0),
+      _namespaceURI(0),
+      _element(0),
+      attrId(0)
+{
+    // ### implement properly!
+}
+
 AttrImpl::AttrImpl(const AttrImpl &other) : NodeImpl(other.docPtr())
 {
     m_specified = other.specified();
@@ -137,6 +149,7 @@ unsigned short AttrImpl::nodeType() const
 
 DOMString AttrImpl::namespaceURI() const
 {
+    // ### make sure it is copied properly during a clone
     return _namespaceURI;
 }
 
@@ -146,8 +159,12 @@ DOMString AttrImpl::prefix() const
     return DOMString();
 }
 
-void AttrImpl::setPrefix(const DOMString &/*_prefix*/, int &/*exceptioncode*/ )
+void AttrImpl::setPrefix(const DOMString &_prefix, int &exceptioncode )
 {
+    checkSetPrefix(_prefix, exceptioncode);
+    if (exceptioncode)
+        return;
+
     // ### implement
 }
 
@@ -190,15 +207,20 @@ DOMString AttrImpl::value() const {
     return _value;
 }
 
-void AttrImpl::setValue( const DOMString &v )
+void AttrImpl::setValue( const DOMString &v, int &exceptioncode )
 {
+    exceptioncode = 0;
+
     // according to the DOM docs, we should create an unparsed Text child
     // node here; we decided this was not necessary for HTML
 
-    // ### TODO: parse value string, interprete entities (not sure if we are supposed to do this)
 
-    if (_element)
-        _element->checkReadOnly();
+    // NO_MODIFICATION_ALLOWED_ERR: Raised when the node is readonly
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+    // ### TODO: parse value string, interprete entities (not sure if we are supposed to do this)
 
     DOMStringImpl *prevValue = _value;
     _value = v.implementation();
@@ -220,7 +242,8 @@ void AttrImpl::setValue( const DOMString &v )
 void AttrImpl::setNodeValue( const DOMString &v, int &exceptioncode )
 {
     exceptioncode = 0;
-    setValue(v);
+    // NO_MODIFICATION_ALLOWED_ERR: taken care of by setValue()
+    setValue(v, exceptioncode);
 }
 
 AttrImpl::AttrImpl(const DOMString &name, const DOMString &value, DocumentPtr *doc)
@@ -355,6 +378,7 @@ void ElementImpl::setAttribute( const DOMString &name, const DOMString &value, i
         return;
     }
 
+    // If we don't already have an attribute map, create one
     if(!namedAttrMap) {
         namedAttrMap = new NamedAttrMapImpl(this);
         namedAttrMap->ref();
@@ -366,7 +390,7 @@ void ElementImpl::setAttribute( const DOMString &name, const DOMString &value, i
     else {
         AttrImpl *a = static_cast<AttrImpl*>(namedAttrMap->getNamedItem(name,exceptioncode));
         if (a)
-            a->setValue(value);
+            a->setValue(value,exceptioncode);
         else
             namedAttrMap->setNamedItem(new AttrImpl(name,value,docPtr()),exceptioncode);
     }
@@ -396,14 +420,28 @@ AttrImpl *ElementImpl::getAttributeNode( const DOMString &name, int &exceptionco
 Attr ElementImpl::setAttributeNode( AttrImpl *newAttr, int &exceptioncode )
 {
     exceptioncode = 0;
+
+    // Note mentioned in spec: throw NOT_FOUND_ERR is null node passed in
     if (!newAttr) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
         return 0;
     }
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return 0;
+    }
+
+    // WRONG_DOCUMENT_ERROR and NO_MODIFICATION_ALLOWED_ERR will be handled by namedAttrMap
+
+    // If we don't already have an attribute map, create one
     if(!namedAttrMap) {
         namedAttrMap = new NamedAttrMapImpl(this);
         namedAttrMap->ref();
     }
+
+    // Set the value in the map
     if (newAttr->attrId)
         return namedAttrMap->setIdItem(newAttr, exceptioncode);
     else
@@ -423,36 +461,108 @@ NodeListImpl *ElementImpl::getElementsByTagName( const DOMString &name, int &/*e
     return new TagNodeListImpl( this, name );
 }
 
-DOMString ElementImpl::getAttributeNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
-                                       int &/*exceptioncode*/ )
+DOMString ElementImpl::getAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
+                                       int &exceptioncode )
 {
-    // ### implement
-    return DOMString();
+    if (!namedAttrMap)
+        return "";
+
+    // Retrieve the attribute from the map. If there is no such attribute, we return the empty
+    // string. Otherwise, return the attribute's value
+    NodeImpl *attr = namedAttrMap->getNamedItemNS(namespaceURI, localName, exceptioncode);
+    if (attr)
+        return attr->nodeValue();
+    else
+        return "";
 }
 
-void ElementImpl::setAttributeNS( const DOMString &/*namespaceURI*/, const DOMString &/*qualifiedName*/, 
-                                  const DOMString &/*value*/, int &/*exceptioncode*/ )
+void ElementImpl::setAttributeNS( const DOMString &namespaceURI, const DOMString &qualifiedName, 
+                                  const DOMString &value, int &exceptioncode )
 {
-    // ### implement
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    // WRONG_DOCUMENT_ERROR and NO_MODIFICATION_ALLOWED_ERR will be handled by namedAttrMap
+
+    // If we don't already have an attribute map, create one
+    if(!namedAttrMap) {
+        namedAttrMap = new NamedAttrMapImpl(this);
+        namedAttrMap->ref();
+    }
+
+    // Create the attribute and add it to the map. We keep a refcount while we're adding, so if
+    // for some reason the attribute does not get added to the map (e.g. because of an exception),
+    // it will be deleted afterwards
+    AttrImpl *attr = new AttrImpl(docPtr(), namespaceURI, qualifiedName);
+    attr->setValue(value,exceptioncode);
+    if (exceptioncode) {
+        delete attr;
+        return;
+    }
+    attr->ref();
+    namedAttrMap->setNamedItemNS(attr,exceptioncode);
+    attr->deref();
 }
 
-void ElementImpl::removeAttributeNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
-                                     int &/*exceptioncode*/ )
+void ElementImpl::removeAttributeNS( const DOMString &namespaceURI, const DOMString &localName,
+                                     int &exceptioncode )
 {
-    // ### implement
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return;
+    }
+
+    // NOT_FOUND_ERR: Raised if oldAttr is not an attribute of the element.
+    // removeNamedItemNS() will take care of throwing an exception where we have a map but the
+    // attribute doesn't exist in it
+    if (!namedAttrMap) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return;
+    }
+
+    // Remove the attribute from the map
+    namedAttrMap->removeNamedItemNS(namespaceURI,localName,exceptioncode);
 }
 
-AttrImpl *ElementImpl::getAttributeNodeNS ( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
-                                            int &/*exceptioncode*/ )
+AttrImpl *ElementImpl::getAttributeNodeNS ( const DOMString &namespaceURI, const DOMString &localName,
+                                            int &exceptioncode )
 {
-    // ### implement
-    return 0;
+    if (!namedAttrMap)
+        return 0;
+
+    return static_cast<AttrImpl*>(namedAttrMap->getNamedItemNS(namespaceURI,localName,exceptioncode));
 }
 
-AttrImpl *ElementImpl::setAttributeNodeNS ( AttrImpl */*newAttr*/, int &/*exceptioncode*/ )
+AttrImpl *ElementImpl::setAttributeNodeNS ( AttrImpl *newAttr, int &exceptioncode )
 {
-    // ### implement
-    return 0;
+    exceptioncode = 0;
+
+    // Note mentioned in spec: throw NOT_FOUND_ERR is null node passed in
+    if (!newAttr) {
+        exceptioncode = DOMException::NOT_FOUND_ERR;
+        return 0;
+    }
+
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
+    if (isReadOnly()) {
+        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+        return 0;
+    }
+
+    // WRONG_DOCUMENT_ERROR and NO_MODIFICATION_ALLOWED_ERR will be handled by namedAttrMap
+
+    // If we don't already have an attribute map, create one
+    if(!namedAttrMap) {
+        namedAttrMap = new NamedAttrMapImpl(this);
+        namedAttrMap->ref();
+    }
+
+    // Set the value in the map
+    return static_cast<AttrImpl*>(namedAttrMap->setNamedItemNS(newAttr, exceptioncode));
 }
 
 NodeListImpl *ElementImpl::getElementsByTagNameNS ( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
@@ -480,10 +590,9 @@ bool ElementImpl::hasAttribute( const DOMString &name, int &exceptioncode ) cons
 }
 
 
-bool ElementImpl::hasAttributeNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/, int &/*exceptioncode*/ )
+bool ElementImpl::hasAttributeNS( const DOMString &namespaceURI, const DOMString &localName, int &exceptioncode )
 {
-    // ### implement
-    return false;
+    return (getAttributeNS(namespaceURI, localName, exceptioncode) != 0);
 }
 
 DOMString ElementImpl::getAttribute ( const DOMString &name ) const
@@ -543,9 +652,9 @@ void ElementImpl::setAttribute( int id, const DOMString &value )
         int exceptioncode = 0;
         AttrImpl* a = static_cast<AttrImpl*>(namedAttrMap->getIdItem(id));
         if(a)
-            a->setValue(value);
+            a->setValue(value,exceptioncode);
         else
-            namedAttrMap->setIdItem(new AttrImpl(id,value,docPtr() ), exceptioncode );
+            namedAttrMap->setIdItem(new AttrImpl(id,value,docPtr()),exceptioncode);
     }
 }
 
@@ -574,17 +683,21 @@ void ElementImpl::setAttributeMap( NamedAttrMapImpl* list )
 
 NodeImpl *ElementImpl::cloneNode ( bool deep, int &exceptioncode )
 {
-    ElementImpl *newImpl = ownerDocument()->createElement(tagName());
-    if (!newImpl)
+    exceptioncode = 0;
+    ElementImpl *clone = ownerDocument()->createElement(tagName()); // ### pass exceptioncode
+    if (!clone)
       return 0;
+
+    if (exceptioncode)
+        return 0;
 
     // clone attributes
     if(namedAttrMap)
-        *(static_cast<NamedAttrMapImpl*>(newImpl->attributes())) = *namedAttrMap;
+        *(static_cast<NamedAttrMapImpl*>(clone->attributes())) = *namedAttrMap;
 
     if (deep)
-        cloneChildNodes(newImpl,exceptioncode);
-    return newImpl;
+        cloneChildNodes(clone,exceptioncode);
+    return clone;
 }
 
 const DOMString ElementImpl::nodeName() const
@@ -600,33 +713,11 @@ DOMString ElementImpl::prefix() const
     return m_prefix;
 }
 
-void ElementImpl::setPrefix(const DOMString &_prefix, int &exceptioncode )
+void ElementImpl::setPrefix( const DOMString &_prefix, int &exceptioncode )
 {
-    // INVALID_CHARACTER_ERR: Raised if the specified prefix contains an illegal character.
-    if (!validPrefix(_prefix)) {
-        exceptioncode = DOMException::INVALID_CHARACTER_ERR;
+    checkSetPrefix(_prefix, exceptioncode);
+    if (exceptioncode)
         return;
-    }
-
-    // NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
-    if (isReadOnly()) {
-        exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
-        return;
-    }
-
-    // NAMESPACE_ERR: - Raised if the specified prefix is malformed
-    // - if the namespaceURI of this node is null,
-    // - if the specified prefix is "xml" and the namespaceURI of this node is different from
-    //   "http://www.w3.org/XML/1998/namespace",
-    // - if this node is an attribute and the specified prefix is "xmlns" and
-    //   the namespaceURI of this node is different from "http://www.w3.org/2000/xmlns/",
-    // - or if this node is an attribute and the qualifiedName of this node is "xmlns" [Namespaces].
-    if (malformedPrefix(_prefix) ||
-        namespaceURI().isNull() ||
-        (_prefix == "xml" && namespaceURI() != "http://www.w3.org/XML/1998/namespace")) {
-        exceptioncode = DOMException::NAMESPACE_ERR;
-        return;
-    }
 
     if (m_prefix)
         m_prefix->deref();
@@ -666,31 +757,6 @@ void ElementImpl::setTabIndex( short _tabindex )
 {
   m_hasTabindex=true;
   m_tabindex=_tabindex;
-}
-
-void ElementImpl::normalize( int &exceptioncode )
-{
-    // In DOM level 2, this gets moved to Node
-    // ### normalize attributes? (when we store attributes using child nodes)
-    exceptioncode = 0;
-    NodeImpl *child = _first;
-    while (child) {
-        NodeImpl *nextChild = child->nextSibling();
-        if (child->nodeType() == Node::ELEMENT_NODE) {
-            static_cast<ElementImpl*>(child)->normalize(exceptioncode);
-            if (exceptioncode)
-                return;
-            child = nextChild;
-        }
-        else if (nextChild && child->nodeType() == Node::TEXT_NODE && nextChild->nodeType() == Node::TEXT_NODE) {
-            static_cast<TextImpl*>(child)->appendData(static_cast<TextImpl*>(nextChild)->data());
-            removeChild(nextChild,exceptioncode);
-            if (exceptioncode)
-                return;
-        }
-        else
-            child = nextChild;
-    }
 }
 
 NamedAttrMapImpl* ElementImpl::defaultMap() const
@@ -996,12 +1062,34 @@ const DOMString XMLElementImpl::nodeName() const
 
 DOMString XMLElementImpl::namespaceURI() const
 {
+    // ### make sure it is copied properly during a clone
     return m_namespaceURI;
 }
 
 DOMString XMLElementImpl::localName() const
 {
     return m_localName;
+}
+
+NodeImpl *XMLElementImpl::cloneNode ( bool deep, int &exceptioncode )
+{
+    XMLElementImpl *clone = new XMLElementImpl(docPtr(),m_tagName);
+
+    clone->m_namespaceURI = m_namespaceURI;
+    if (clone->m_namespaceURI)
+        clone->m_namespaceURI->ref();
+    clone->m_localName = m_localName;
+    if (clone->m_localName)
+        clone->m_localName->ref();
+
+    // clone attributes
+    if(namedAttrMap)
+        *(static_cast<NamedAttrMapImpl*>(clone->attributes())) = *namedAttrMap;
+
+    if (deep)
+        cloneChildNodes(clone,exceptioncode);
+
+    return clone;
 }
 
 bool XMLElementImpl::isXMLElementNode() const
@@ -1163,7 +1251,7 @@ AttrImpl *NamedAttrMapImpl::getItem ( int id, const DOMString &name, const DOMSt
         return 0;
 }
 
-Node NamedAttrMapImpl::setItem ( const Node &arg, AttrCompare compareType, int &exceptioncode )
+Attr NamedAttrMapImpl::setItem ( const Node &arg, AttrCompare compareType, int &exceptioncode )
 {
     if (!element) {
         exceptioncode = DOMException::NOT_FOUND_ERR;
@@ -1208,7 +1296,7 @@ Node NamedAttrMapImpl::setItem ( const Node &arg, AttrCompare compareType, int &
     }
 }
 
-Node NamedAttrMapImpl::removeItem ( int id, const DOMString &name, const DOMString &namespaceURI,
+Attr NamedAttrMapImpl::removeItem ( int id, const DOMString &name, const DOMString &namespaceURI,
                                     AttrCompare compareType, int &exceptioncode )
 {
     // ### replace with default attribute (if any)

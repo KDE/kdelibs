@@ -79,16 +79,15 @@ public:
     DOMImplementationImpl();
     ~DOMImplementationImpl();
 
-    // DOM methods
+    // DOM methods & attributes for DOMImplementation
     bool hasFeature ( const DOMString &feature, const DOMString &version );
-
     DocumentTypeImpl *createDocumentType( const DOMString &qualifiedName, const DOMString &publicId, 
                                           const DOMString &systemId, int &exceptioncode );
-
     DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName, 
                                   const DocumentType &doctype, int &exceptioncode );
 
-    CSSStyleSheetImpl *createCSSStyleSheet(DOMStringImpl *title, DOMStringImpl *media);
+    // From the DOMImplementationCSS interface
+    CSSStyleSheetImpl *createCSSStyleSheet(DOMStringImpl *title, DOMStringImpl *media, int &exceptioncode);
 
     // Other methods (not part of DOM)
 
@@ -115,40 +114,24 @@ public:
     DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v=0);
     ~DocumentImpl();
 
-    // DOM methods & attributes for Element
+    // DOM methods & attributes for Document
 
     DocumentTypeImpl *doctype() const;
-
     DOMImplementationImpl *implementation() const;
-
     ElementImpl *documentElement() const;
-
     virtual ElementImpl *createElement ( const DOMString &tagName );
-
     DocumentFragmentImpl *createDocumentFragment ();
-
     TextImpl *createTextNode ( const DOMString &data );
-
     CommentImpl *createComment ( const DOMString &data );
-
     CDATASectionImpl *createCDATASection ( const DOMString &data );
-
     ProcessingInstructionImpl *createProcessingInstruction ( const DOMString &target, const DOMString &data );
-
     AttrImpl *createAttribute ( const DOMString &name );
-
     EntityReferenceImpl *createEntityReference ( const DOMString &name );
-
     NodeListImpl *getElementsByTagName ( const DOMString &tagname );
-
     NodeImpl *importNode( NodeImpl *importedNode, bool deep, int &exceptioncode );
-
     virtual ElementImpl *createElementNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
-
     AttrImpl *createAttributeNS ( const DOMString &_namespaceURI, const DOMString &_qualifiedName );
-
     NodeListImpl *getElementsByTagNameNS( const DOMString &namespaceURI, const DOMString &localName, int &exceptioncode );
-
     ElementImpl *getElementById ( const DOMString &elementId ) const;
 
     // DOM methods overridden from  parent classes
@@ -378,12 +361,13 @@ public:
     DocumentFragmentImpl(DocumentPtr *doc);
     DocumentFragmentImpl(const DocumentFragmentImpl &other);
 
+    // DOM methods overridden from  parent classes
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
-protected:
+    // Other methods (not part of DOM)
     virtual bool childTypeAllowed( unsigned short type );
 };
 
@@ -398,15 +382,10 @@ public:
 
     // DOM methods & attributes for DocumentType
     virtual const DOMString name() const;
-
     virtual NamedNodeMapImpl *entities() const;
-
     virtual NamedNodeMapImpl *notations() const;
-
     virtual DOMString publicId() const;
-
     virtual DOMString systemId() const;
-
     virtual DOMString internalSubset() const;
 
     // DOM methods overridden from  parent classes

@@ -94,6 +94,7 @@ DOMImplementationImpl::~DOMImplementationImpl()
 
 bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMString &version )
 {
+    // ### update when we (fully) support the relevant features
     QString lower = feature.string().lower();
     if ((lower == "html" || lower == "xml") &&
         (version == "1.0" || version == "" || version.isNull()))
@@ -190,7 +191,8 @@ DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceU
     return doc;
 }
 
-CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl */*media*/)
+CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl */*media*/,
+                                                              int &/*exceptioncode*/)
 {
     // ### implement
     return 0;
@@ -340,7 +342,8 @@ ProcessingInstructionImpl *DocumentImpl::createProcessingInstruction ( const DOM
 AttrImpl *DocumentImpl::createAttribute( const DOMString &name )
 {
     AttrImpl *attr = new AttrImpl( docPtr(), name );
-    attr->setValue("");
+    int exceptioncode = 0; // ### propagate
+    attr->setValue("", exceptioncode);
     return attr;
 }
 
@@ -377,10 +380,12 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
     return e;
 }
 
-AttrImpl *DocumentImpl::createAttributeNS( const DOMString &/*_namespaceURI*/, const DOMString &/*_qualifiedName*/ )
+AttrImpl *DocumentImpl::createAttributeNS( const DOMString &_namespaceURI, const DOMString &_qualifiedName )
 {
-    // ### implement
-    return 0;
+    AttrImpl *attr = new AttrImpl( docPtr(), _namespaceURI, _qualifiedName );
+    int exceptioncode = 0; // ### propagate
+    attr->setValue("", exceptioncode);
+    return attr;
 }
 
 NodeListImpl *DocumentImpl::getElementsByTagNameNS( const DOMString &/*namespaceURI*/, const DOMString &/*localName*/,
@@ -441,6 +446,7 @@ unsigned short DocumentImpl::nodeType() const
 DOMString DocumentImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
 }
 
@@ -1035,7 +1041,7 @@ CSSStyleSheetImpl* DocumentImpl::elementSheet()
     return m_elemSheet;
 }
 
-void DocumentImpl::determineParseMode( const QString &str )
+void DocumentImpl::determineParseMode( const QString &/*str*/ )
 {
     // For xML documents, use string parse mode
     pMode = Strict;
@@ -1295,9 +1301,10 @@ bool DocumentImpl::childTypeAllowed( unsigned short type )
     }
 }
 
-
 NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 {
+    // Spec says cloning Document nodes is "implementation dependent"
+    // so we do not support it...
     exceptioncode = DOMException::NOT_SUPPORTED_ERR;
     return 0;
 }
@@ -1557,6 +1564,7 @@ unsigned short DocumentFragmentImpl::nodeType() const
 DOMString DocumentFragmentImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
 }
 
@@ -1670,6 +1678,7 @@ unsigned short DocumentTypeImpl::nodeType() const
 DOMString DocumentTypeImpl::namespaceURI() const
 {
     // ###
+    // ### when implementing this, make sure it is copied properly during a clone
     return DOMString();
 }
 
@@ -1701,6 +1710,8 @@ bool DocumentTypeImpl::childTypeAllowed( unsigned short /*type*/ )
 
 NodeImpl *DocumentTypeImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 {
+    // Spec says cloning Document nodes is "implementation dependent"
+    // so we do not support it...
     exceptioncode = DOMException::NOT_SUPPORTED_ERR;
     return 0;
 }

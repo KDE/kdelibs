@@ -25,9 +25,9 @@
 
 #include "render_container.h"
 #include "render_table.h"
-
 #include "render_text.h"
 #include "render_image.h"
+#include "render_root.h"
 
 #include <kdebug.h>
 #include <assert.h>
@@ -132,6 +132,26 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
 RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 {
     assert(oldChild->parent() == this);
+
+    // if oldChild is the start or end of the selection, then clear the selection to
+    // avoid problems of invalid pointers
+
+    // ### This is not the "proper" solution... ideally the selection should be maintained
+    // based on DOM Nodes and a Range, which gets adjusted appropriately when nodes are
+    // deleted/inserted near etc. But this at least prevents crashes caused when the start
+    // or end of the selection is deleted and then accessed when the user next selects
+    // something.
+
+    if (oldChild->isSelectionStart() || oldChild->isSelectionEnd()) {
+        RenderObject *root = oldChild;
+        while (root && root->parent())
+            root = root->parent();
+        if (root->isRoot()) {
+            static_cast<RenderRoot*>(root)->clearSelection();
+        }
+    }
+
+    // remove the child
     if (oldChild->previousSibling())
         oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
     if (oldChild->nextSibling())

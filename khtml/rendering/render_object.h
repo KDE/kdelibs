@@ -130,6 +130,8 @@ public:
     bool containsPositioned() const { return m_containsPositioned; }
     bool containsWidget() const { return m_containsWidget; }
     bool hasFirstLine() const { return m_hasFirstLine; }
+    bool isSelectionStart() const { return m_isSelectionStart; }
+    bool isSelectionEnd() const { return m_isSelectionEnd; }
     RenderRoot* root() const;
     
     /**
@@ -151,6 +153,8 @@ public:
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
     void setContainsWidget(bool b=true) { m_containsWidget = b; }
+    void setIsSelectionStart(bool b=true) { m_isSelectionStart = b; }
+    void setIsSelectionEnd(bool b=true) { m_isSelectionEnd = b; }
 
     // for discussion of lineHeight see CSS2 spec
     virtual int lineHeight( bool firstLine ) const;
@@ -346,23 +350,25 @@ private:
     
     short m_verticalPosition;
 
-    bool m_layouted       : 1;
-    bool m_parsing        : 1;
-    bool m_minMaxKnown    : 1;
-    bool m_floating       : 1;
+    bool m_layouted                  : 1;
+    bool m_parsing                   : 1;
+    bool m_minMaxKnown               : 1;
+    bool m_floating                  : 1;
 
-    bool m_positioned     : 1;
-    bool m_containsPositioned     : 1;
-    bool m_relPositioned  : 1;
-    bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
-    bool m_isAnonymous    : 1;
-    bool m_visible        : 1;
-    bool m_isText         : 1;
-    bool m_inline         : 1;
-    bool m_replaced       : 1;
-    bool m_containsWidget : 1;
+    bool m_positioned                : 1;
+    bool m_containsPositioned        : 1;
+    bool m_relPositioned             : 1;
+    bool m_printSpecial              : 1; // if the box has something special to print (background, border, etc)
+    bool m_isAnonymous               : 1;
+    bool m_visible                   : 1;
+    bool m_isText                    : 1;
+    bool m_inline                    : 1;
+    bool m_replaced                  : 1;
+    bool m_containsWidget            : 1;
     bool m_containsOverhangingFloats : 1;
-    bool m_hasFirstLine   : 1;
+    bool m_hasFirstLine              : 1;
+    bool m_isSelectionStart          : 1;
+    bool m_isSelectionEnd            : 1;
 
     friend class RenderContainer;
     friend class RenderRoot;

@@ -89,54 +89,29 @@ public:
 
     // DOM methods & attributes for Node
     virtual const DOMString nodeName() const;
-
     virtual DOMString nodeValue() const;
-
-    virtual void setNodeValue( const DOMString &, int& exceptioncode );
-
+    virtual void setNodeValue( const DOMString &_nodeValue, int &exceptioncode );
     virtual unsigned short nodeType() const;
-
     virtual NodeImpl *parentNode() const;
-
     virtual NodeListImpl *childNodes();
-
     virtual NodeImpl *firstChild() const;
-
     virtual NodeImpl *lastChild() const;
-
     virtual NodeImpl *previousSibling() const;
-
     virtual NodeImpl *nextSibling() const;
-
     virtual NamedNodeMapImpl *attributes();
-
-    virtual DocumentImpl *ownerDocument() const
-        { return document->document(); }
-
+    virtual DocumentImpl *ownerDocument() const { return document->document(); }
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
-
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
-
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
-
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
-
     virtual bool hasChildNodes (  ) const;
-
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode ) = 0;
-
     virtual void normalize ( int &exceptioncode );
-
     virtual bool isSupported( const DOMString &feature, const DOMString &version, int &exceptioncode ) const;
-
     virtual DOMString namespaceURI() const = 0;
-
     virtual DOMString prefix() const;
-
     virtual void setPrefix(const DOMString &_prefix, int &exceptioncode );
-
     virtual DOMString localName() const;
-
     virtual bool hasAttributes (  ) const;
 
     // Other methods (not part of DOM)
@@ -315,6 +290,11 @@ public:
 
     virtual khtml::RenderObject *nextRenderer();
 
+    void checkSetPrefix(const DOMString &_prefix, int &exceptioncode);
+    void checkAddChild(NodeImpl *newChild, int &exceptioncode);
+    bool isAncestor( NodeImpl *other );
+    virtual bool childAllowed( NodeImpl *newChild );
+
     static bool validAttrName(const DOMString &/*name*/) { return true; }
     static bool validPrefix(const DOMString &/*prefix*/) { return true; }
     static bool vaildQualifiedName(const DOMString &/*qualifiedName*/) { return true; }
@@ -355,10 +335,9 @@ public:
 
     virtual ~NodeWParentImpl();
 
+    // DOM methods overridden from  parent classes
     virtual NodeImpl *parentNode() const;
-
     virtual NodeImpl *previousSibling() const;
-
     virtual NodeImpl *nextSibling() const;
 
     // helper functions not being part of the DOM
@@ -389,24 +368,18 @@ class NodeBaseImpl : public NodeWParentImpl
 {
 public:
     NodeBaseImpl(DocumentPtr *doc);
-
     virtual ~NodeBaseImpl();
 
+    // DOM methods overridden from  parent classes
     virtual NodeImpl *firstChild() const;
-
     virtual NodeImpl *lastChild() const;
-
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
-
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, int &exceptioncode );
-
     virtual NodeImpl *removeChild ( NodeImpl *oldChild, int &exceptioncode );
-
     virtual NodeImpl *appendChild ( NodeImpl *newChild, int &exceptioncode );
-
     virtual bool hasChildNodes (  ) const;
 
-    // not part of the DOM
+    // Other methods (not part of DOM)
     void removeChildren();
     virtual void setFirstChild(NodeImpl *child);
     virtual void setLastChild(NodeImpl *child);
@@ -447,7 +420,6 @@ protected:
     // check for being child:
     bool checkIsChild( NodeImpl *oldchild, int &exceptioncode );
     // find out if a node is allowed to be our child
-    virtual bool childAllowed( NodeImpl *newChild );
     void dispatchChildInsertedEvents( NodeImpl *child, int &exceptioncode );
 };
 
@@ -458,16 +430,17 @@ class NodeImpl;
 class NodeListImpl : public DomShared
 {
 public:
-    virtual unsigned long length() const;
 
+    // DOM methods & attributes for NodeList
+    virtual unsigned long length() const;
     virtual NodeImpl *item ( unsigned long index ) const;
+
+    // Other methods (not part of DOM)
 
 protected:
     // helper functions for searching all ElementImpls in a tree
     unsigned long recursiveLength(NodeImpl *start) const;
-
     NodeImpl *recursiveItem ( NodeImpl *start, unsigned long &offset ) const;
-
     virtual bool nodeMatches( NodeImpl *testNode ) const;
 };
 
@@ -475,11 +448,11 @@ class ChildNodeListImpl : public NodeListImpl
 {
 public:
     ChildNodeListImpl( NodeImpl *n);
-
     virtual ~ChildNodeListImpl();
 
-    virtual unsigned long length() const;
+    // DOM methods overridden from  parent classes
 
+    virtual unsigned long length() const;
     virtual NodeImpl *item ( unsigned long index ) const;
 
 protected:
@@ -494,12 +467,14 @@ class TagNodeListImpl : public NodeListImpl
 {
 public:
     TagNodeListImpl( NodeImpl *n, const DOMString &t );
-
     virtual ~TagNodeListImpl();
 
-    virtual unsigned long length() const;
+    // DOM methods overridden from  parent classes
 
+    virtual unsigned long length() const;
     virtual NodeImpl *item ( unsigned long index ) const;
+
+    // Other methods (not part of DOM)
 
 protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
@@ -517,12 +492,14 @@ class NameNodeListImpl : public NodeListImpl
 {
 public:
     NameNodeListImpl( NodeImpl *doc, const DOMString &t );
-
     virtual ~NameNodeListImpl();
 
-    virtual unsigned long length() const;
+    // DOM methods overridden from  parent classes
 
+    virtual unsigned long length() const;
     virtual NodeImpl *item ( unsigned long index ) const;
+
+    // Other methods (not part of DOM)
 
 protected:
     virtual bool nodeMatches( NodeImpl *testNode ) const;
@@ -544,20 +521,13 @@ public:
     // DOM methods & attributes for NamedNodeMap
 
     virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const = 0;
-
     virtual Node setNamedItem ( const Node &arg, int &exceptioncode ) = 0;
-
     virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode ) = 0;
-
     virtual NodeImpl *item ( unsigned long index ) const = 0;
-
     virtual unsigned long length(  ) const = 0;
-
     virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                       int &exceptioncode ) const = 0;
-
     virtual NodeImpl *setNamedItemNS( NodeImpl *arg, int &exceptioncode ) = 0;
-
     virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                          int &exceptioncode ) = 0;
 
@@ -578,20 +548,13 @@ public:
     // DOM methods & attributes for NamedNodeMap
 
     virtual NodeImpl *getNamedItem ( const DOMString &name, int &exceptioncode ) const;
-
     virtual Node setNamedItem ( const Node &arg, int &exceptioncode );
-
     virtual Node removeNamedItem ( const DOMString &name, int &exceptioncode );
-
     virtual NodeImpl *item ( unsigned long index ) const;
-
     virtual unsigned long length(  ) const;
-
     virtual NodeImpl *getNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                       int &exceptioncode ) const;
-
     virtual NodeImpl *setNamedItemNS( NodeImpl *arg, int &exceptioncode );
-
     virtual NodeImpl *removeNamedItemNS( const DOMString &namespaceURI, const DOMString &localName,
                                          int &exceptioncode );
 

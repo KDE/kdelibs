@@ -621,13 +621,17 @@ NodeList::~NodeList()
 
 Node NodeList::item( unsigned long index ) const
 {
-    if(!impl) return 0;
+    if (!impl)
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
+
     return impl->item(index);
 }
 
 unsigned long NodeList::length() const
 {
-    if(!impl) return 0;
+    if (!impl)
+	return 0; // ### enable	throw DOMException(DOMException::NOT_FOUND_ERR);
+
     return impl->length();
 }
 

@@ -74,8 +74,10 @@ DOMImplementation::~DOMImplementation()
 
 bool DOMImplementation::hasFeature( const DOMString &feature, const DOMString &version )
 {
-    if (impl) return impl->hasFeature(feature,version);
-    return false;
+    if (!impl)
+	return false; // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return impl->hasFeature(feature,version);
 }
 
 DocumentType DOMImplementation::createDocumentType ( const DOMString &qualifiedName,
@@ -108,10 +110,16 @@ Document DOMImplementation::createDocument ( const DOMString &namespaceURI,
 
 CSSStyleSheet DOMImplementation::createCSSStyleSheet(const DOMString &title, const DOMString &media)
 {
-    if (impl) return impl->createCSSStyleSheet(title.implementation(),media.implementation());
-    return 0;
-}
+    if (!impl)
+        throw DOMException(DOMException::NOT_FOUND_ERR);
 
+    int exceptioncode = 0;
+    CSSStyleSheetImpl *r = impl->createCSSStyleSheet(title.implementation(), media.implementation(),
+                                                     exceptioncode);
+    if ( exceptioncode )
+        throw DOMException( exceptioncode );
+    return r;
+}
 
 DOMImplementationImpl *DOMImplementation::handle() const
 {
@@ -446,23 +454,26 @@ DocumentType::~DocumentType()
 
 DOMString DocumentType::name() const
 {
-    if (impl)
-	return static_cast<DocumentTypeImpl*>(impl)->name();
-    return DOMString();
+    if (!impl)
+	return DOMString(); // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return static_cast<DocumentTypeImpl*>(impl)->name();
 }
 
 NamedNodeMap DocumentType::entities() const
 {
-    if (impl)
-	return static_cast<DocumentTypeImpl*>(impl)->entities();
-    return 0;
+    if (!impl)
+	return 0; // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return static_cast<DocumentTypeImpl*>(impl)->entities();
 }
 
 NamedNodeMap DocumentType::notations() const
 {
-    if (impl)
-	return static_cast<DocumentTypeImpl*>(impl)->notations();
-    return 0;
+    if (!impl)
+	return 0; // ### enable throw DOMException(DOMException::NOT_FOUND_ERR);
+
+    return static_cast<DocumentTypeImpl*>(impl)->notations();
 }
 
 DOMString DocumentType::publicId() const
