@@ -21,19 +21,23 @@
     or to Antonio Larrosa, Rio Arnoya, 10 5B, 29006 Malaga, Spain
 
 ***************************************************************************/
+
+// $Id$
+
 #include "midfile.h"
 #include "midiout.h"
 #include "track.h"
 #include "player.h"
+
 #include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#if !defined(__FreeBSD__) && !defined(_UNIXWARE)
-// Note: getopt_long seems not to be defined on FreeBSD and UnixWare systems
+#include <unistd.h> // Has the getopt() prototype for OpenBSD/NetBSD
+#include <stdlib.h> // Has the getopt() prototype for FreeBSD
+#ifdef linux
+// Note: getopt_long is Linux centric
 #include <getopt.h>
 #endif
 #include <limits.h>
-#include <g++/iostream.h>
+#include <iostream.h>
 #include "midispec.h"
 #include "sndcard.h"
 #include "songlist.h"
@@ -110,7 +114,7 @@ int main(int argc, char **argv)
         strcpy(map_path,DEFAULT_MAP);
     };
     int c;
-#if !defined(__FreeBSD__) && !defined(_UNIXWARE)
+#ifdef linux
     struct option long_options[]=
     {
         {"device",1,NULL,'d'},
@@ -172,7 +176,7 @@ int main(int argc, char **argv)
             error=1;
             break;
         }
-#if !defined(__FreeBSD__) && !defined(_UNIXWARE)
+#ifdef linux
         c=getopt_long( argc, argv, "d:lm:v:f:3iqh" , long_options, &option_index);
 #else
         c=getopt( argc, argv, "d:lm:v:f:3iqh");
