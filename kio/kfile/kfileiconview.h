@@ -155,6 +155,8 @@ protected:
     // ### workaround for Qt3 bug (see #35080)
     virtual void showEvent( QShowEvent * );
 
+    virtual bool eventFilter( QObject *o, QEvent *e );
+    
 private slots:
     void selected( QIconViewItem *item );
     void highlighted( QIconViewItem *item );
