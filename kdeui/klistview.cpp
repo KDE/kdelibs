@@ -1077,7 +1077,15 @@ void KListView::keyPressEvent (QKeyEvent* e)
 
 void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 {
-    if ((e->state()==ShiftButton) && (e->key()!=Key_Shift) &&
+   //this happens if the listing of files in konqy is finished, aleXXX
+   if (e->text()=="MajorHack")
+   {
+      d->selectedBySimpleMove=true;
+      if (currentItem()!=0) currentItem()->setSelected(true);
+      return;
+   };
+
+   if ((e->state()==ShiftButton) && (e->key()!=Key_Shift) &&
         (e->key()!=Key_Control) && (e->key()!=Key_Meta) &&
         (e->key()!=Key_Alt) && (!d->wasShiftEvent))
         selectAll(FALSE);
@@ -1275,10 +1283,14 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
             break;
         default:
 
+           if (d->selectedBySimpleMove)
+              item->setSelected(false);
             //this is mainly for the "goto filename beginning with pressed char" feature (aleXXX)
             setSelectionMode (QListView::Multi);
             QListView::keyPressEvent (e);
             setSelectionMode (QListView::Extended);
+            if (d->selectedBySimpleMove)
+               currentItem()->setSelected(true);
             break;
     }
 }
