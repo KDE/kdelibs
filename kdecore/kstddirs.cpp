@@ -56,8 +56,7 @@ template class QDict<QStringList>;
 static const char* types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
 			      "servicetypes", "config", "exe",
-			      "wallpaper", "lib", "pixmap", "templates", 
-                              "tmp", "socket", 0};
+			      "wallpaper", "lib", "pixmap", "templates", 0 };
 
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
@@ -617,20 +616,6 @@ QString KStandardDirs::kde_default(const char *type) {
 	return "bin/";
     if (!strcmp(type, "lib"))
 	return "lib/";
-    if (!strcmp(type, "tmp"))
-    {
-        char hostname[256];
-        hostname[0] = 0;
-        gethostname(hostname, 255);
-	return QString("tmp-%1/").arg(hostname);
-    }
-    if (!strcmp(type, "socket"))
-    {
-        char hostname[256];
-        hostname[0] = 0;
-        gethostname(hostname, 255);
-	return QString("socket-%1/").arg(hostname);
-    }
     qFatal("unknown resource type %s", type);
     return QString::null;
 }
@@ -639,31 +624,33 @@ QString KStandardDirs::saveLocation(const char *type,
 				    const QString& suffix,
 				    bool create) const
 {
+    QString fullPath;
+
     QStringList *dirs = relatives.find(type);
-    if (!dirs)
-	qFatal("there are no relative suffixes for type %s registered", type);
-
+    if (dirs)
+    {
+       // Check for existance of typed directory + suffix
+       fullPath = localkdedir() + dirs->last() + suffix;
+    }
+    else {
+       dirs = absolutes.find(type);
+       if (!dirs)
+          qFatal("KStandardDirs: The resource type %s is not registered", type);
+       fullPath = dirs->last() + suffix;
+    }
     struct stat st;
-    QString local = localkdedir();
-
-    // Check for existance of typed directory + suffix
-    QString fullPath = local + dirs->last() + suffix;
     if (stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
 	    kdDebug() << "save location " << fullPath << " doesn't exist" << endl;
-	    return local;
+	    return localkdedir()+suffix;
 	}
 	if(!makeDir(fullPath, 0700)) {
 	    kdDebug() << "failed to create " << fullPath << endl;
-	    return local;
+	    return localkdedir()+suffix;
 	}
         dircache.remove(type);
     }
     return fullPath;
-
-    // I can't think of a case where this happens
-    kdDebug() << "couldn't find save location for type " << type << endl;
-    return local;
 }
 
 bool KStandardDirs::makeDir(const QString& dir, int mode)
@@ -763,6 +750,26 @@ void KStandardDirs::addKDEDefaults()
 	addResourceType(types[index], kde_default(types[index]));
 	index++;
     }
+
+    char hostname[256];
+    hostname[0] = 0;
+    gethostname(hostname, 255);
+    QString dir = QString("%1tmp-%2/").arg(localKdeDir).arg(hostname);
+    addResourceDir("tmp", dir);
+
+    dir = QString("%1socket-%2").arg(localKdeDir).arg(hostname);
+    char link[1024];
+    link[1023] = 0;
+    int result = readlink(QFile::encodeName(dir).data(), link, 1023);
+    if (result > 0)
+    {
+       link[result] = 0;
+       if (link[0] == '/')
+          dir = QFile::decodeName(link);
+       else
+          dir = QDir::cleanDirPath(dir+QFile::decodeName(link));
+    }
+    addResourceDir("socket", dir+'/');
 }
 
 bool KStandardDirs::addCustomized(KConfig *config)
