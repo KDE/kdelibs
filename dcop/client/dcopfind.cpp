@@ -75,8 +75,8 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
 	    if ( s > 0 )
 	    {
 		QStringList partl = QStringList::split(' ' , lt);
-		
-		// The zero'th part is -- at the very least -- a 
+
+		// The zero'th part is -- at the very least -- a
 		// type part. Any trailing parts *might* be extra
 		// int-type keywords, or at most one may be the
 		// parameter name.
@@ -126,7 +126,7 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
     QByteArray data;
     QDataStream arg(data, IO_WriteOnly);
 
-    int i = 0;
+    uint i = 0;
     for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
         marshall(arg, args, i, *it);
     }
@@ -137,7 +137,7 @@ bool findObject( const char* app, const char* obj, const char* func, QCStringLis
 
     QCString foundApp;
     QCString foundObj;
-    if ( dcop->findObject( app, obj, f.latin1(),  data, foundApp, foundObj) ) 
+    if ( dcop->findObject( app, obj, f.latin1(),  data, foundApp, foundObj) )
     {
        if (bAppIdOnly)
           puts(foundApp.data());
@@ -157,18 +157,18 @@ bool launchApp(QString app)
        l--;
     if (!l) return false;
     app.truncate(l);
-    
+
     QStringList URLs;
     QByteArray data, replyData;
     QCString replyType;
     QDataStream arg(data, IO_WriteOnly);
     arg << app << URLs;
 
-    if ( !dcop->call( "klauncher", "klauncher", "start_service_by_desktop_name(QString,QStringList)",  
+    if ( !dcop->call( "klauncher", "klauncher", "start_service_by_desktop_name(QString,QStringList)",
                       data, replyType, replyData) ) {
 	qWarning( "call to klauncher failed.");
         return false;
-    } 
+    }
     QDataStream reply(replyData, IO_ReadOnly);
 
     if ( replyType != "serviceResult" )
