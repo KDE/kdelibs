@@ -340,7 +340,7 @@ void RenderResetButton::slotClicked()
     // don't call RenderSubmitButton:: here!
     RenderButton::slotClicked();
     if (m_element->form())
-        m_element->form()->reset();
+        m_element->form()->prepareReset();
 }
 
 QString RenderResetButton::defaultLabel() {
@@ -823,9 +823,6 @@ void RenderSelect::layout( )
         // ### select the first option (unless another specified), in case the first item is an optgroup
     }
 
-//    reset();
-
-
     // calculate size
 
     if(m_listBox) {
@@ -1144,37 +1141,22 @@ QString RenderTextArea::text()
 
 void RenderTextArea::slotTextChanged()
 {
-    static_cast<HTMLTextAreaElementImpl*>(m_element)->setValue(static_cast<TextAreaWidget *>(m_widget)->text());
+    QString txt;
+    HTMLTextAreaElementImpl* e = static_cast<HTMLTextAreaElementImpl*>(m_element);
+    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
+    if(e->wrap() == DOM::HTMLTextAreaElementImpl::ta_Physical) {
+        for(int i=0; i < w->numLines(); i++)
+            txt += w->textLine(i) + QString::fromLatin1("\n");
+    }
+    else
+        txt = w->text();
+
+    e->setValue(txt);
 }
 
 void RenderTextArea::select()
 {
     static_cast<TextAreaWidget *>(m_widget)->selectAll();
-}
-
-// ---------------------------------------------------------------------------
-
-RenderHtml4Button::RenderHtml4Button(QScrollView*/*view*/, HTMLGenericFormElementImpl */*element*/)
-    : RenderFlow()
-{
-}
-
-void RenderHtml4Button::printObject( QPainter *p, int /*x*/, int /*y*/,
-                        int /*w*/, int /*h*/, int _tx, int _ty)
-{
-    // add offset for relative positioning
-    if(isRelPositioned())
-        relativePositionOffset(_tx, _ty);
-
-    QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
-                          Qt::black, Qt::white );
-    qDrawShadePanel( p, _tx, _ty, contentWidth(), contentHeight(), colorGrp, true, 1 );
-}
-
-
-void RenderHtml4Button::layout()
-{
-    RenderFlow::layout();
 }
 
 // ---------------------------------------------------------------------------

@@ -28,8 +28,9 @@
 #include "html_elementimpl.h"
 #include "html_element.h"
 
-#include <qlist.h>
 #include <qvaluelist.h>
+#include <qlist.h>
+#include <qcstring.h>
 #include <qarray.h>
 
 class KHTMLView;
@@ -41,7 +42,7 @@ namespace khtml
     class RenderTextArea;
     class RenderSelect;
 
-    typedef QValueList<QByteArray> encodingList;
+    typedef QValueList<QCString> encodingList;
 }
 
 namespace DOM {
@@ -65,7 +66,7 @@ public:
 
     long length() const;
     void prepareSubmit();
-    void reset (  );
+    void prepareReset();
 
     QByteArray formData( );
 
@@ -94,10 +95,8 @@ public:
     virtual QString state() { return QString::null; }
     virtual void restoreState(const QString &) { };
 
-protected:
-    static QCString encodeByteArray( const QByteArray& e );
-
     void submit (  );
+    void reset();
 
     friend class HTMLFormElement;
     friend class HTMLFormCollectionImpl;
@@ -124,7 +123,7 @@ public:
     HTMLGenericFormElementImpl(DocumentImpl *doc, HTMLFormElementImpl *f);
     virtual ~HTMLGenericFormElementImpl();
 
-    HTMLFormElementImpl *form() { return _form; }
+    HTMLFormElementImpl *form() { return m_form; }
 
     virtual void parseAttribute(AttrImpl *attr);
 
@@ -146,14 +145,14 @@ public:
     void setReadOnly(bool _readOnly) { m_readOnly = _readOnly; }
 
     const DOMString &name() const { return _name; }
-    void setForm(HTMLFormElementImpl *f) { _form = f; }
+    void setForm(HTMLFormElementImpl *f) { m_form = f; }
 
     /*
      * override in derived classes to get the encoded name=value pair
      * for submitting
      * return true for a successful control (see 17.13.2)
      */
-    virtual bool encoding(const QTextCodec*, khtml::encodingList&) { return false; }
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool) { return false; }
 
     virtual void blur();
     virtual void focus();
@@ -162,7 +161,7 @@ protected:
     HTMLFormElementImpl *getForm() const;
 
     DOMString _name;
-    HTMLFormElementImpl *_form;
+    HTMLFormElementImpl *m_form;
     KHTMLView *view;
     bool m_disabled, m_readOnly;
 };
@@ -198,11 +197,11 @@ public:
     virtual void mouseEventHandler( int button, MouseEventType type, bool inside);
 
 protected:
-    DOMString _value;
-    QString currValue;
-    typeEnum _type;
-    bool dirty;
-    bool _clicked;
+    DOMString m_value;
+    QString   m_currValue;
+    typeEnum  m_type : 2;
+    bool      m_dirty : 1;
+    bool      m_clicked : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -251,9 +250,9 @@ public:
     virtual tagStatus endTag() { return INPUTEndTag; }
 
     bool checked() { return m_checked; }
-    void setChecked(bool _checked);
-    long maxLength() const { return _maxLen; }
-    int size() const { return _size; }
+    void setChecked(bool);
+    long maxLength() const { return m_maxLen; }
+    int size() const { return m_size; }
     DOMString type() const;
 
     DOMString value() const;
@@ -274,8 +273,8 @@ public:
 
     virtual void attach(KHTMLView *w);
 
-    virtual bool encoding(const QTextCodec*, khtml::encodingList&);
-    typeEnum inputType() { return _type; }
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
+    typeEnum inputType() { return m_type; }
     virtual void reset();
 
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
@@ -291,16 +290,18 @@ protected:
 
     DOMString m_value;
     DOMString m_filename;
-    DOMString _src;
-    DOMString _defaultValue;
-    typeEnum _type;
-    int _maxLen;
-    int _size;
-    int xPos, yPos;
-    bool _clicked;
-    bool _defaultChecked;
-    bool m_checked;
-    bool m_haveType;
+    DOMString m_src;
+    DOMString m_defaultValue;
+    int       xPos;
+    short     m_maxLen;
+    short     m_size;
+    short     yPos;
+
+    typeEnum m_type : 4;
+    bool m_clicked : 1 ;
+    bool m_defaultChecked : 1;
+    bool m_checked : 1;
+    bool m_haveType : 1;
 };
 
 // -------------------------------------------------------------------------
@@ -376,7 +377,7 @@ public:
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach(KHTMLView *w);
-    virtual bool encoding(const QTextCodec*, khtml::encodingList&);
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
 
     // get the actual listbox index of the optionIndexth option
     int optionToListIndex(int optionIndex) const;
@@ -389,8 +390,8 @@ public:
 
 protected:
     QArray<HTMLGenericFormElementImpl*> m_listItems;
-    int m_size;
-    bool m_multiple;
+    short m_size : 15;
+    bool m_multiple : 1;
 };
 
 
@@ -486,7 +487,7 @@ public:
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);
-    virtual bool encoding(const QTextCodec*, khtml::encodingList&);
+    virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);
     virtual void reset();
     DOMString value();
     void setValue(DOMString _value);

@@ -25,14 +25,6 @@
 #ifndef RENDER_FORM_H
 #define RENDER_FORM_H
 
-// TODO:
-//
-// ### we need a generic event handling mechanism for elements replaced by widgets
-// ### this is just a hack and does only work for onclick :-(
-//
-// ### tabbing order
-// ### return == submit in some cases
-
 #include "render_replaced.h"
 #include "render_image.h"
 #include "render_flow.h"
@@ -106,20 +98,6 @@ public:
 
     virtual const char *renderName() const { return "RenderButton"; }
 
-    virtual void layout();
-};
-
-// -------------------------------------------------------------------------
-
-class RenderHtml4Button : public RenderFlow
-{
-public:
-    RenderHtml4Button(QScrollView* view, HTMLGenericFormElementImpl *element);
-
-    virtual const char* renderName() const { return "RenderHtml4Button"; }
-
-    virtual void printObject( QPainter *p, int /*x*/, int /*y*/,
-                              int /*w*/, int /*h*/, int tx, int ty);
     virtual void layout();
 };
 
