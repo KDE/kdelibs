@@ -343,8 +343,26 @@ int KDEsuClient::stopServer()
     return command("STOP\n");
 }
 
+static QString findDaemon()
+{
+    QString daemon = locate("bin", "kdesud");
+    if (daemon.isEmpty()) // if not in KDEDIRS, rely on PATH
+	daemon = KStandardDirs::findExe("kdesud");
+
+    if (daemon.isEmpty())
+    {
+	kdWarning(900) << k_lineinfo << "daemon not found\n";
+    }
+    return daemon;
+}
+
 bool KDEsuClient::isServerSGID()
 {
+    if (d->daemon.isEmpty())
+       d->daemon = findDaemon();
+    if (d->daemon.isEmpty())
+       return false;
+   
     struct stat sbuf;
     if (stat(QFile::encodeName(d->daemon), &sbuf) < 0)
     {
@@ -356,15 +374,10 @@ bool KDEsuClient::isServerSGID()
 
 int KDEsuClient::startServer()
 {
-    d->daemon = locate("bin", "kdesud");
-    if (d->daemon.isNull()) // if not in KDEDIRS, rely on PATH
-	d->daemon = KStandardDirs::findExe("kdesud");
-
     if (d->daemon.isEmpty())
-    {
-	kdWarning(900) << k_lineinfo << "daemon not found\n";
-	return -1;
-    }
+       d->daemon = findDaemon();
+    if (d->daemon.isEmpty())
+       return -1;
 
     if (!isServerSGID()) {
 	kdWarning(900) << k_lineinfo << "kdesud not setgid!\n";
