@@ -265,9 +265,12 @@ Completion GlobalFunc::execute(const List &args)
       Completion c = KJScriptImp::current()->progNode->execute();
       if (c.complType() == ReturnValue)
 	  return c;
-      else if (c.complType() == Normal)
-	  return Completion(ReturnValue, Undefined());
-      else
+      else if (c.complType() == Normal) {
+	  if (c.isValueCompletion())
+	      return Completion(ReturnValue, c.value());
+	  else
+	      return Completion(ReturnValue, Undefined());
+      } else
 	  return c;
 
       //      if (KJS::Node::progNode())
