@@ -30,7 +30,13 @@ class KHTMLPageCachePrivate;
 /**
  * Singleton Object that handles a binary cache on top of
  * the http cache management of kio.
- * introduced because: <please complete>
+ *
+ * A limited number of HTML pages are stored in this cache. This
+ * cache is used for the history and operations like "view source".
+ * These operations always want to use the original document and 
+ * don't want to fetch the data from the network again.
+ *
+ * It operates completely independent from the kio_http cache.
  */
 class KHTMLPageCache : public QObject
 {
