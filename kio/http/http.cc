@@ -1941,7 +1941,9 @@ void HTTPProtocol::special( const QByteArray &data)
       break;
     }
     default:
-      assert(0);
+      // Some command we don't understand.
+      // Just ignore it, it may come from some future version of KDE.
+      break;
   }
 
 }
