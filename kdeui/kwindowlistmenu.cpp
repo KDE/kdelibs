@@ -185,7 +185,9 @@ void KWindowListMenu::init()
         for (KWin::WindowInfo* info = list.first(); info!=0; info = list.next(), i++)
         {
             QString title = info->visibleNameWithState();
-	    NET::WindowType windowType = info->windowType( NET::NormalMask );
+            NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
+                | NET::DockMask | NET::ToolbarMask | NET::MenuMask | NET::DialogMask
+                | NET::OverrideMask | NET::TopMenuMask | NET::UtilityMask | NET::SplashMask );
             if ( windowType == NET::Normal || windowType == NET::Unknown ) {
                 QPixmap pm = KWin::icon(info->win(), 16, 16, true );
                 items++;
