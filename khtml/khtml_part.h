@@ -185,6 +185,9 @@ public:
 
   KParts::PartManager *partManager();
 
+  virtual void saveState( QDataStream &stream );
+  virtual void restoreState( QDataStream &stream );
+
 signals:
   void onURL( const QString &url );
 

@@ -60,7 +60,7 @@ namespace khtml
 {
   struct ChildFrame
   {
-    ChildFrame() { m_bCompleted = false; m_frame = 0L; }
+    ChildFrame() { m_bCompleted = false; m_frame = 0L; m_bPreloaded = false; }
 
     RenderFrame *m_frame;
     QGuardedPtr<KParts::ReadOnlyPart> m_part;
@@ -71,8 +71,13 @@ namespace khtml
     QString m_name;
     KParts::URLArgs m_args;
     QGuardedPtr<KHTMLRun> m_run;
+    bool m_bPreloaded;
+    KURL m_workingURL;
   };
 };
+
+typedef QMap<QString,khtml::ChildFrame>::ConstIterator ConstFrameIt;
+typedef QMap<QString,khtml::ChildFrame>::Iterator FrameIt;
 
 class KHTMLPartPrivate
 {
@@ -451,7 +456,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   d->m_doc = new HTMLDocumentImpl( d->m_widget );
   d->m_doc->ref();
   d->m_doc->attach( d->m_widget );
-  d->m_doc->setURL( m_url.url() ); //### Lars, why not make the DOM stuff use KURL? :-) (Simon)
+  d->m_doc->setURL( m_url.url() );
   d->m_doc->open();
   // clear widget
   d->m_widget->resizeContents( 0, 0 );
@@ -899,13 +904,15 @@ void KHTMLPart::updateActions()
 
 void KHTMLPart::childRequest( khtml::RenderFrame *frame, const QString &url, const QString &frameName )
 {
+  qDebug( "childRequest( ..., %s, %s )", debugString( url ), debugString( frameName ) ); 
   QMap<QString,khtml::ChildFrame>::Iterator it = d->m_frames.find( frameName );
 
   if ( it == d->m_frames.end() )
   {
+    qDebug( "inserting new frame into frame map" );
     khtml::ChildFrame child;
-    child.m_frame = frame;
     child.m_name = frameName;
+    child.m_frame = frame;
     it = d->m_frames.insert( frameName, child );
   }
 
@@ -914,6 +921,7 @@ void KHTMLPart::childRequest( khtml::RenderFrame *frame, const QString &url, con
 
 void KHTMLPart::childRequest( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &args )
 {
+  qDebug( "childRequest2" ); 
   child->m_args = args;
 
   if ( child->m_run )
@@ -935,9 +943,10 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
 
     if ( !part )
       return;
-    
+
     child->m_serviceType = mimetype;
-    child->m_frame->setWidget( part->widget() );
+    if ( child->m_frame )
+      child->m_frame->setWidget( part->widget() );
 
     //CRITICAL STUFF
     if ( child->m_part )
@@ -968,10 +977,17 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
 	     this, SIGNAL( setStatusBarText( const QString & ) ) );
   }
 
+  if ( child->m_bPreloaded )
+  {
+    child->m_bPreloaded = false;
+    return;
+  }
+  
   child->m_bCompleted = false;
   if ( child->m_extension )
     child->m_extension->setURLArgs( child->m_args );
 
+  qDebug( "opening %s in frame", debugString( url.url() ) );
   child->m_part->openURL( url );
 }
 
@@ -980,26 +996,26 @@ KParts::ReadOnlyPart *KHTMLPart::createFrame( QWidget *parentWidget, const char 
   KTrader::OfferList offers = KTrader::self()->query( mimetype, "'KParts/ReadOnlyPart' in ServiceTypes" );
 
   assert( offers.count() >= 1 );
-  
+
   KService::Ptr service = *offers.begin();
-  
+
   KLibFactory *factory = KLibLoader::self()->factory( service->library() );
-  
+
   if ( !factory )
     return 0L;
-  
+
   KParts::ReadOnlyPart *res = 0L;
-  
+
   if ( factory->inherits( "KParts::Factory" ) )
     res = static_cast<KParts::ReadOnlyPart *>(static_cast<KParts::Factory *>( factory )->createPart( parentWidget, widgetName, parent, name, "KParts::ReadOnlyPart" ));
   else
   res = static_cast<KParts::ReadOnlyPart *>(factory->create( parentWidget, widgetName, "KParts::ReadOnlyPart" ));
-  
+
   if ( !res )
     return res;
-  
+
   serviceTypes = service->serviceTypes();
-  
+
   return res;
 }
 
@@ -1206,6 +1222,130 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
   return 0L;
 }
 
+void KHTMLPart::saveState( QDataStream &stream )
+{
+  stream << m_url << (Q_INT32)d->m_widget->contentsX() << (Q_INT32)d->m_widget->contentsY();
+  
+  stream << (Q_INT32)d->m_frames.count();
+
+  QStringList frameNameLst, frameServiceTypeLst;
+  KURL::List frameURLLst;
+  QValueList<QByteArray> frameStateBufferLst;
+  
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
+  for (; it != end; ++it )
+  {
+    frameNameLst << (*it).m_name;
+    frameServiceTypeLst << (*it).m_serviceType;
+    if ( (*it).m_part )
+      frameURLLst << (*it).m_part->url();
+    else
+      frameURLLst << KURL();
+    
+    QByteArray state;
+    QDataStream frameStream( state, IO_WriteOnly );
+    
+    if ( (*it).m_part && (*it).m_extension )
+      (*it).m_extension->saveState( frameStream );
+    
+    frameStateBufferLst << state;
+  }
+  
+  stream << frameNameLst << frameServiceTypeLst << frameURLLst << frameStateBufferLst;
+}
+
+void KHTMLPart::restoreState( QDataStream &stream )
+{
+  KURL u;
+  Q_INT32 xOffset; int yOffset;
+  Q_UINT32 frameCount;
+  QStringList frameNames, frameServiceTypes;
+  KURL::List frameURLs;
+  QValueList<QByteArray> frameStateBuffers;
+  
+  stream >> u >> xOffset >> yOffset >> frameCount >> frameNames >> frameServiceTypes >> frameURLs
+         >> frameStateBuffers;
+  
+  d->m_bComplete = false;
+  
+  if ( u == m_url && frameCount >= 1 && frameCount == d->m_frames.count() )
+  {
+    FrameIt fIt = d->m_frames.begin();
+    FrameIt fEnd = d->m_frames.end();
+    
+    QStringList::ConstIterator fNameIt = frameNames.begin();
+    QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
+    KURL::List::ConstIterator fURLIt = frameURLs.begin();
+    QValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
+    
+    for (; fIt != fEnd; ++fIt, ++fNameIt, ++fServiceTypeIt, ++fURLIt, ++fBufferIt )
+    {
+      khtml::ChildFrame *child = &(*fIt);
+      
+      if ( child->m_name != *fNameIt || child->m_serviceType != *fServiceTypeIt )
+      {
+        child->m_bPreloaded = true;
+	child->m_name = *fNameIt;
+	processChildRequest( child, *fURLIt, *fServiceTypeIt );
+      }
+      
+      if ( child->m_part )
+      {
+        if ( child->m_extension )
+	{
+	  QDataStream frameStream( *fBufferIt, IO_ReadOnly );
+	  child->m_extension->restoreState( frameStream );
+	}
+	else
+	  child->m_part->openURL( *fURLIt );
+      }
+    }
+  }
+  else
+  {
+    clear();
+    
+    QStringList::ConstIterator fNameIt = frameNames.begin();
+    QStringList::ConstIterator fNameEnd = frameNames.end();
+    
+    QStringList::ConstIterator fServiceTypeIt = frameServiceTypes.begin();
+    KURL::List::ConstIterator fURLIt = frameURLs.begin();
+    QValueList<QByteArray>::ConstIterator fBufferIt = frameStateBuffers.begin();
+    
+    for (; fNameIt != fNameEnd; ++fNameIt, ++fServiceTypeIt, ++fURLIt, ++fBufferIt )
+    {
+      khtml::ChildFrame newChild;
+      newChild.m_bPreloaded = true;
+      newChild.m_name = *fNameIt;
+      
+      FrameIt childFrame = d->m_frames.insert( *fNameIt, newChild );
+      
+      processChildRequest( &childFrame.data(), *fURLIt, *fServiceTypeIt );
+      
+      childFrame.data().m_bPreloaded = true;
+      
+      if ( childFrame.data().m_part )
+      {
+        if ( childFrame.data().m_extension )
+	{
+	  QDataStream frameStream( *fBufferIt, IO_ReadOnly );
+	  childFrame.data().m_extension->restoreState( frameStream );
+	}
+	else
+	  childFrame.data().m_part->openURL( *fURLIt );
+      }
+    }
+    
+    KParts::URLArgs args( d->m_extension->urlArgs() );
+    args.xOffset = xOffset;
+    args.yOffset = yOffset;
+    d->m_extension->setURLArgs( args );
+    openURL( u );
+  }
+  
+}
+
 KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name )
 : KParts::BrowserExtension( parent, name )
 {
@@ -1225,12 +1365,12 @@ int KHTMLPartBrowserExtension::yOffset()
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 {
   qDebug( "saveState!" );
-  KParts::BrowserExtension::saveState( stream );
+  m_part->saveState( stream );
 }
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
   qDebug( "restoreState!" );
-  KParts::BrowserExtension::restoreState( stream );
+  m_part->restoreState( stream );  
 }
 
