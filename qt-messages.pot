@@ -1,103 +1,36 @@
-#: sql/qsqlmanager_p.cpp:883
-msgid "Delete this record?"
+#: attic/qtmultilineedit.cpp:2130
+msgid "Undo"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:884 sql/qsqlmanager_p.cpp:890
-#: sql/qsqlmanager_p.cpp:926
-msgid "Yes"
+#: attic/qtmultilineedit.cpp:2131
+msgid "Redo"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:885 sql/qsqlmanager_p.cpp:891
-#: sql/qsqlmanager_p.cpp:927
-msgid "No"
+#: attic/qtmultilineedit.cpp:2134
+msgid "Cut"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:889
-msgid "Save edits?"
+#: attic/qtmultilineedit.cpp:2135
+msgid "Copy"
 msgstr ""
 
-#: dialogs/qfontdialog.cpp:300 dialogs/qinputdialog.cpp:157
-#: dialogs/qprogressdialog.cpp:250 dialogs/qtabdialog.cpp:847
-#: sql/qsqlmanager_p.cpp:892
-msgid "Cancel"
+#: attic/qtmultilineedit.cpp:2136
+msgid "Paste"
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:924
-msgid "Confirm"
+#: attic/qtmultilineedit.cpp:2138
+msgid "Paste special..."
 msgstr ""
 
-#: sql/qsqlmanager_p.cpp:925
-msgid "Cancel your edits?"
+#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2153
+#: widgets/qtextedit.cpp:4148
+msgid "Clear"
 msgstr ""
 
-#: sql/qdatatable.cpp:262
-msgid "True"
-msgstr ""
-
-#: sql/qdatatable.cpp:263
-msgid "False"
-msgstr ""
-
-#: sql/qdatatable.cpp:709
-msgid "Insert"
-msgstr ""
-
-#: sql/qdatatable.cpp:710
-msgid "Update"
-msgstr ""
-
-#: sql/qdatatable.cpp:711
-msgid "Delete"
-msgstr ""
-
-#: dialogs/qmessagebox.cpp:550
-#, ycp-format
-msgid ""
-"<h3>About Qt</h3><p>This program uses Qt version %1.</p><p>Qt is a C++ "
-"toolkit for cross-platform GUI &amp; application development.</p><p>Qt "
-"provides single-source portability across Windows 95/98/NT4/ME/2000, "
-"Mac&nbsp;OS&nbsp;X, Linux, Solaris, HP-UX and many other versions of Unix "
-"with X11.<br>Qt is also available for embedded devices.</p><p>Qt is a "
-"Trolltech product. See <tt>http://www.trolltech.com/qt/</tt> for more "
-"information.</p>"
-msgstr ""
-
-#: dialogs/qfontdialog.cpp:289 dialogs/qinputdialog.cpp:155
-#: dialogs/qmessagebox.cpp:1385 dialogs/qtabdialog.cpp:194
-#: dialogs/qtabdialog.cpp:1063
-msgid "OK"
-msgstr ""
-
-#: dialogs/qwizard.cpp:183
-msgid "&Cancel"
-msgstr ""
-
-#: dialogs/qwizard.cpp:184
-msgid "< &Back"
-msgstr ""
-
-#: dialogs/qwizard.cpp:185
-msgid "&Next >"
-msgstr ""
-
-#: dialogs/qwizard.cpp:186
-msgid "&Finish"
-msgstr ""
-
-#: dialogs/qwizard.cpp:187
-msgid "&Help"
-msgstr ""
-
-#: dialogs/qfontdialog.cpp:289 dialogs/qtabdialog.cpp:703
-msgid "Apply"
-msgstr ""
-
-#: dialogs/qtabdialog.cpp:748
-msgid "Help"
-msgstr ""
-
-#: dialogs/qtabdialog.cpp:795
-msgid "Defaults"
+#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2156
+#: widgets/qlineedit.cpp:2158 widgets/qtextedit.cpp:4152
+#: widgets/qtextedit.cpp:4154
+msgid "Select All"
 msgstr ""
 
 #: dialogs/qdialog.cpp:428
@@ -141,6 +74,22 @@ msgstr ""
 msgid "Scr&ipt"
 msgstr ""
 
+#: dialogs/qfontdialog.cpp:289 dialogs/qinputdialog.cpp:155
+#: dialogs/qmessagebox.cpp:1385 dialogs/qtabdialog.cpp:194
+#: dialogs/qtabdialog.cpp:1063
+msgid "OK"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:289 dialogs/qtabdialog.cpp:703
+msgid "Apply"
+msgstr ""
+
+#: dialogs/qfontdialog.cpp:300 dialogs/qinputdialog.cpp:157
+#: dialogs/qprogressdialog.cpp:250 dialogs/qtabdialog.cpp:847
+#: sql/qsqlmanager_p.cpp:892
+msgid "Cancel"
+msgstr ""
+
 #: dialogs/qfontdialog.cpp:300 widgets/qtitlebar.cpp:113
 #: workspace/qworkspace.cpp:1076
 msgid "Close"
@@ -150,39 +99,184 @@ msgstr ""
 msgid "Select Font"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2130
-msgid "Undo"
+#: dialogs/qmessagebox.cpp:550
+msgid ""
+"<h3>About Qt</h3><p>This program uses Qt version %1.</p><p>Qt is a C++ "
+"toolkit for cross-platform GUI &amp; application development.</p><p>Qt "
+"provides single-source portability across Windows 95/98/NT4/ME/2000, "
+"Mac&nbsp;OS&nbsp;X, Linux, Solaris, HP-UX and many other versions of Unix "
+"with X11.<br>Qt is also available for embedded devices.</p><p>Qt is a "
+"Trolltech product. See <tt>http://www.trolltech.com/qt/</tt> for more "
+"information.</p>"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2131
-msgid "Redo"
+#: dialogs/qtabdialog.cpp:748
+msgid "Help"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2134
-msgid "Cut"
+#: dialogs/qtabdialog.cpp:795
+msgid "Defaults"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2135
-msgid "Copy"
+#: dialogs/qwizard.cpp:183
+msgid "&Cancel"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2136
-msgid "Paste"
+#: dialogs/qwizard.cpp:184
+msgid "< &Back"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2138
-msgid "Paste special..."
+#: dialogs/qwizard.cpp:185
+msgid "&Next >"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2141 widgets/qlineedit.cpp:2153
-#: widgets/qtextedit.cpp:4148
-msgid "Clear"
+#: dialogs/qwizard.cpp:186
+msgid "&Finish"
 msgstr ""
 
-#: attic/qtmultilineedit.cpp:2143 widgets/qlineedit.cpp:2156
-#: widgets/qlineedit.cpp:2158 widgets/qtextedit.cpp:4152
-#: widgets/qtextedit.cpp:4154
-msgid "Select All"
+#: dialogs/qwizard.cpp:187
+msgid "&Help"
+msgstr ""
+
+#: kernel/qapplication.cpp:2358
+msgid ""
+"_: QT_LAYOUT_DIRECTION\n"
+"Translate this string to the string 'LTR' in left-to-right languages or to "
+"'RTL' in right-to-left languages (such as Hebrew and Arabic) to get proper "
+"widget layout."
+msgstr ""
+
+#: kernel/qkeysequence.cpp:191 kernel/qkeysequence.cpp:260
+msgid "Ctrl"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:198 kernel/qkeysequence.cpp:270
+msgid "Alt"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:201 kernel/qkeysequence.cpp:280
+msgid "Shift"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:269 kernel/qkeysequence.cpp:279
+#: kernel/qkeysequence.cpp:306
+msgid "+"
+msgstr ""
+
+#: kernel/qkeysequence.cpp:287
+#, c-format
+msgid "F%1"
+msgstr ""
+
+#: kernel/qnetworkprotocol.cpp:888
+msgid "Operation stopped by the user"
+msgstr ""
+
+#: sql/qdatatable.cpp:262
+msgid "True"
+msgstr ""
+
+#: sql/qdatatable.cpp:263
+msgid "False"
+msgstr ""
+
+#: sql/qdatatable.cpp:709
+msgid "Insert"
+msgstr ""
+
+#: sql/qdatatable.cpp:710
+msgid "Update"
+msgstr ""
+
+#: sql/qdatatable.cpp:711
+msgid "Delete"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:883
+msgid "Delete this record?"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:884 sql/qsqlmanager_p.cpp:890
+#: sql/qsqlmanager_p.cpp:926
+msgid "Yes"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:885 sql/qsqlmanager_p.cpp:891
+#: sql/qsqlmanager_p.cpp:927
+msgid "No"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:889
+msgid "Save edits?"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:924
+msgid "Confirm"
+msgstr ""
+
+#: sql/qsqlmanager_p.cpp:925
+msgid "Cancel your edits?"
+msgstr ""
+
+#: widgets/qheader.cpp:1374 widgets/qheader.cpp:1376
+#, c-format
+msgid "%1"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2145 widgets/qtextedit.cpp:4136
+msgid "&Undo"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2146 widgets/qtextedit.cpp:4137
+msgid "&Redo"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2149 widgets/qtextedit.cpp:4142
+msgid "Cu&t"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2150 widgets/qtextedit.cpp:4143
+msgid "&Copy"
+msgstr ""
+
+#: widgets/qlineedit.cpp:2151 widgets/qtextedit.cpp:4145
+msgid "&Paste"
+msgstr ""
+
+#: widgets/qmainwindow.cpp:2119
+msgid "Line up"
+msgstr ""
+
+#: widgets/qmainwindow.cpp:2121
+msgid "Customize..."
+msgstr ""
+
+#: widgets/qtitlebar.cpp:83
+msgid "System Menu"
+msgstr ""
+
+#: widgets/qtitlebar.cpp:88
+msgid "Shade"
+msgstr ""
+
+#: widgets/qtitlebar.cpp:93
+msgid "Unshade"
+msgstr ""
+
+#: widgets/qtitlebar.cpp:100
+msgid "Normalize"
+msgstr ""
+
+#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1052
+msgid "Minimize"
+msgstr ""
+
+#: widgets/qtitlebar.cpp:108
+msgid "Maximize"
+msgstr ""
+
+#: widgets/qwhatsthis.cpp:443
+msgid "What's this?"
 msgstr ""
 
 #: workspace/qworkspace.cpp:253
@@ -214,12 +308,7 @@ msgid "Sh&ade"
 msgstr ""
 
 #: workspace/qworkspace.cpp:844 workspace/qworkspace.cpp:996
-#, ycp-format
 msgid "%1 - [%2]"
-msgstr ""
-
-#: widgets/qtitlebar.cpp:102 workspace/qworkspace.cpp:1052
-msgid "Minimize"
 msgstr ""
 
 #: workspace/qworkspace.cpp:1064
@@ -228,91 +317,4 @@ msgstr ""
 
 #: workspace/qworkspace.cpp:1241
 msgid "&Unshade"
-msgstr ""
-
-#: kernel/qnetworkprotocol.cpp:888
-msgid "Operation stopped by the user"
-msgstr ""
-
-#: kernel/qkeysequence.cpp:191 kernel/qkeysequence.cpp:260
-msgid "Ctrl"
-msgstr ""
-
-#: kernel/qkeysequence.cpp:198 kernel/qkeysequence.cpp:270
-msgid "Alt"
-msgstr ""
-
-#: kernel/qkeysequence.cpp:201 kernel/qkeysequence.cpp:280
-msgid "Shift"
-msgstr ""
-
-#: kernel/qkeysequence.cpp:269 kernel/qkeysequence.cpp:279
-#: kernel/qkeysequence.cpp:306
-msgid "+"
-msgstr ""
-
-#: kernel/qkeysequence.cpp:287
-#, c-format, ycp-format
-msgid "F%1"
-msgstr ""
-
-#: kernel/qapplication.cpp:2357
-msgid "QT_LAYOUT_DIRECTION"
-msgstr ""
-
-#: widgets/qheader.cpp:1374 widgets/qheader.cpp:1376
-#, c-format, ycp-format
-msgid "%1"
-msgstr ""
-
-#: widgets/qmainwindow.cpp:2119
-msgid "Line up"
-msgstr ""
-
-#: widgets/qmainwindow.cpp:2121
-msgid "Customize..."
-msgstr ""
-
-#: widgets/qtitlebar.cpp:83
-msgid "System Menu"
-msgstr ""
-
-#: widgets/qtitlebar.cpp:88
-msgid "Shade"
-msgstr ""
-
-#: widgets/qtitlebar.cpp:93
-msgid "Unshade"
-msgstr ""
-
-#: widgets/qtitlebar.cpp:100
-msgid "Normalize"
-msgstr ""
-
-#: widgets/qtitlebar.cpp:108
-msgid "Maximize"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2145 widgets/qtextedit.cpp:4136
-msgid "&Undo"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2146 widgets/qtextedit.cpp:4137
-msgid "&Redo"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2149 widgets/qtextedit.cpp:4142
-msgid "Cu&t"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2150 widgets/qtextedit.cpp:4143
-msgid "&Copy"
-msgstr ""
-
-#: widgets/qlineedit.cpp:2151 widgets/qtextedit.cpp:4145
-msgid "&Paste"
-msgstr ""
-
-#: widgets/qwhatsthis.cpp:443
-msgid "What's this?"
 msgstr ""
