@@ -8,20 +8,28 @@ Parser:
 	* handle adding of elements better
 
 StyleSheets:
-	* provide a cache for sheets
-	* make them really CSS2 compliant
+	* rewrite them. Some ideas:
+	* make one StyleSheet class for every styleSheet downloaded.
+	* add a cache for them and a default styleSheet
+	* every element get's a pointer to a StyleSheetElement, providing
+	  the element with the needed functions setPainter(), restorePainter(),
+	  and probably some hints for layouting()
+	* Style sheets shouldn't affect performance.
+	* each StyleSheetElement should use as few memory as possible.
+	  One could make a generic class for them, and derive a couple of 
+          specific styleSheetElements for specific tasks.
 
 DOM:
 	* lots of functions in the Impl classes
-	* fix the set/retrieve functions, which don't use string values
+	* fix the set/retrieve functions, which use boolean values
 
 misc:
 	* mouse handling
-	  --> partly done (clicking works), selection/DND still missing
 	* selection
 
 Frames:
-	* frameset should be a QSplitter
+	* mostly done. One should make the resizing of frames look as in
+	  konqueror
 
 JScript:
 	* still need to add hooks in the tokenizer
@@ -39,13 +47,12 @@ Attributes:
 
 Rendering:
 	* remove the currentStyle from the elements
+	  --> see thoughts about styleSheets
 
 Memory usage:
        * high at the moment. IMO the biggest reason is the immense
          usage by the style sheet objects
-	 Still thinking about a better solution. Perhaps one
-	 stylesheet object would do, and the element get their
-	 information from there (something like document->styleSheet()->XXX()).
+	 See thoughts about style sheets above. After KRASH.
 
 Elements:
 some are still missing. Here comes a list.
@@ -55,35 +62,35 @@ abbr
 acronym
 address		done
 applet		mostly done
-area
+area		done
 b		done
 base
 basefont
 bdo
 big		done
 blockquote	done (attrs missing)
-body		partly
+body		mostly
 br		done
-button
+button		partly
 caption		mostly
 center		done
 cite		done
 code		done
-col
-colgroup
-dd
+col		mostly
+colgroup	mostly
+dd		done
 del
 dfn
 dir		see ul
 div		should work
-dl
-dt
+dl		done
+dt		done
 em		done
 fieldset
-font
+font		partly done
 form		partly done
-frame		mostly done
-frameset	mostly done
+frame		done
+frameset	done (except for nice looking resizing... :)
 h1		done
 h2		done
 h3		done
@@ -107,8 +114,8 @@ link
 listing
 map 	    	non local and server side maps missing
 menu		see ul
-meta
-noframes
+meta		charset partly done
+noframes	not needed
 noscript
 object
 ol		see ul
@@ -128,8 +135,8 @@ span
 strike		done
 strong		done
 style
-sub
-sup
+sub		done
+sup		done
 table		mostly
 tbody		partly
 td		done
