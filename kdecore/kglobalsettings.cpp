@@ -484,7 +484,7 @@ void KGlobalSettings::initStatic() // should be called initPaths(). Don't put an
       s_autostartPath->append('/');
 
     // Document Path
-    *s_documentPath = config->readPathEntry( "Documents" );
+    *s_documentPath = config->readPathEntry( "Documents", QDir::homeDirPath() );
     *s_documentPath = QDir::cleanDirPath( *s_documentPath );
     if ( !s_documentPath->endsWith("/"))
       s_documentPath->append('/');
