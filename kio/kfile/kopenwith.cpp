@@ -694,7 +694,7 @@ void KOpenWithDlg::slotOK()
   // rebuild the database
   QStringList args;
   args.append("--incremental");
-  KApplication::kdeinitExecWait( "kbuildsycoca", args ); /// ### what if it's already running?
+  KApplication::kdeinitExecWait( "kbuildsycoca", args );
 
   // get the new service pointer
   kdDebug(250) << "kbuildsycoca finished, looking for service " << pathName << endl;
