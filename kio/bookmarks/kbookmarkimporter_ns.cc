@@ -201,7 +201,7 @@ const QString KNSBookmarkExporterImpl::folderAsString(KBookmarkGroup parent) {
          continue;
       }
 
-      QString text = QStyleSheet::escape(bk.text());
+      QString text = QStyleSheet::escape(bk.fullText());
 
       if (bk.isGroup() ) {
          fstream << "<DT><H3 " 
