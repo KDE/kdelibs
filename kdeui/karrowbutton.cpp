@@ -111,7 +111,7 @@ void KArrowButton::drawButton(QPainter *p)
 	int flags = QStyle::Style_Enabled;
 	if ( isDown() )
 		flags |= QStyle::Style_Down;
-	style().drawPrimitive( e, p, QRect( x, y, arrowSize, arrowSize ),
+	style().drawPrimitive( e, p, QRect( QPoint( x, y ), QSize( arrowSize, arrowSize ) ),
 			       colorGroup(), flags );
 #endif
 }

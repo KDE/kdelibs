@@ -894,7 +894,7 @@ KDockTabBar::KDockTabBar( QWidget * parent, const char * name )
   style().drawArrow(&paint, LeftArrow, false, 0 , 0 ,16, 16, colorGroup(), true);
 #else
   style().drawPrimitive( QStyle::PE_ArrowLeft, &paint,
-		         QRect( 0, 0, 16, 16 ), colorGroup(), QStyle::Style_Enabled );
+		         QRect( QPoint( 0, 0 ), QSize( 16, 16 ) ), colorGroup(), QStyle::Style_Enabled );
 
 #endif
   paint.end();
