@@ -1816,6 +1816,7 @@ short RenderTableCell::baselinePosition() const
 	o = o->firstChild();
     }
     offset += o->baselinePosition();
+    return offset;
 }
 
 
