@@ -34,6 +34,7 @@ Author: Ralph Mor, X Consortium
 #include <KDE-ICE/ICEutil.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <string.h>
 
 #if defined(X_NOT_STDC_ENV) && !defined(__EMX__)
 extern int errno;
