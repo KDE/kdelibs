@@ -1,6 +1,7 @@
 #include <kurl.h>
 #include <stdio.h>
-
+#include <kprotocolmanager.h>
+#include <kapp.h>
 bool check(QString txt, QString a, QString b)
 {
   printf("%s : checking '%s' against expected value '%s'... ",
@@ -13,8 +14,9 @@ bool check(QString txt, QString a, QString b)
   }
 }
 
-int main() 
+int main(int argc, char *argv[]) 
 {
+  KApplication app(argc,argv,"kurltest");
   KURL::List lst;
 
 //  char * u1 = "file:/home/dfaure/my tar file.tgz#gzip:/decompress#tar:/";
@@ -35,8 +37,6 @@ int main()
     printf("---> %s\n",u->url().data());
 */
 
-  KURL url2("file://atlas/dfaure");
-  check("KURL::host()", url2.host(), "atlas"); // says Coolo
 
   KURL udir("/home/dfaure/file.txt");
   printf("\n* URL is %s\n",udir.url().data());
@@ -113,7 +113,36 @@ int main()
      KURL waba2( waba1, "relative.html#with_reference");
      check("http: Relative URL, with reference", waba2.url(), "http://www.website.com/directory/relative.html#with_reference");  
   }
- 
+
+  // UNC like names
+  KURL unc1("FILE://localhost/home/root");
+  check("UNC, with localhost", unc1.path(), "/home/root");
+  check("UNC, with localhost", unc1.url(), "file:/home/root");
+  KURL unc2("file:///home/root");
+  check("UNC, with empty host", unc2.path(), "/home/root");
+  check("UNC, with empty host", unc2.url(), "file:/home/root");
+
+  QString remoteProtocol( KProtocolManager::self().remoteFileProtocol() );
+  if (remoteProtocol.isEmpty())
+  {
+     KURL unc3("FILE://remotehost/home/root");
+     check("UNC, with remote host", unc3.path(), "//remotehost/home/root");
+     check("UNC, with remote host", unc3.url(), "file://remotehost/home/root");
+     KURL url2("file://atlas/dfaure");
+     check("KURL::host()", url2.path(), "//atlas/dfaure"); // says Waba
+     KURL url3("file:////atlas/dfaure");
+     check("KURL::host()", url3.path(), "//atlas/dfaure"); // says Waba
+  }
+  else
+  {
+     KURL unc3("FILE://remotehost/home/root");
+     check("UNC, with remote host", unc3.path(), "/home/root");
+     check("UNC, with remote host", unc3.url(), remoteProtocol+"://remotehost/home/root");
+     KURL url2("file://atlas/dfaure");
+     check("KURL::host()", url2.path(), "/dfaure");
+     check("KURL::url()", url2.path(), remoteProtocol+"://atlas/dfaure");
+  }
+
   KURL umail1 ( "mailto:faure@kde.org" );
   check("mailto: URL, general form", umail1.protocol(), "mailto");
   check("mailto: URL, general form", umail1.path(), "faure@kde.org");
