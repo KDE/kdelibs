@@ -23,7 +23,7 @@
 
 #include "kmedia2.h"
 #include <qobject.h>
-#include <soundserver.h>
+#include "soundserver.h"
 
 /**
  * KArtsServer is a wrapper to conveniently get a reference to a SoundServer,
