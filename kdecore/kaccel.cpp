@@ -148,6 +148,13 @@ const char * KAccel::findKey( int key ) const
 bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
 			 bool configurable )
 {
+	return insertItem( descr, action,  keyCode,
+			 0, 0, configurable);
+}
+
+bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
+			 int id, QPopupMenu *qmenu, bool configurable)
+{
 	KKeyEntry *pEntry = aKeyDict[ action ];
 	
 	if ( pEntry )
@@ -164,9 +171,13 @@ bool KAccel::insertItem( const char* descr, const char * action, uint keyCode,
 	pEntry->receiver = 0;
 	pEntry->member = 0;
 	pEntry->descr = descr;
-	
+	pEntry->menuId = id;
+	pEntry->menu = qmenu;
+
 	return TRUE;
 }
+
+	
 
 bool KAccel::insertItem( const char* descr, const char * action,
 					   const char * keyCode, bool configurable )
@@ -175,11 +186,24 @@ bool KAccel::insertItem( const char* descr, const char * action,
 	return insertItem( descr, action, iKeyCode, configurable );
 }
 
+bool KAccel::insertItem( const char* descr, const char * action,
+					   const char * keyCode, int id,
+			                   QPopupMenu *qmenu, bool configurable)
+{
+	uint iKeyCode = stringToKey( keyCode );
+	return insertItem( descr, action, iKeyCode, id, qmenu, configurable);
+}
 
 bool KAccel::insertItem( const char * action, uint keyCode,
 			 bool configurable )
 {
     return insertItem(action, action, keyCode, configurable);
+}
+
+bool KAccel::insertItem( const char * action, uint keyCode,
+			 int id, QPopupMenu *qmenu, bool configurable)
+{
+    return insertItem(action, action, keyCode, id, qmenu, configurable);
 }
 
 
@@ -345,6 +369,9 @@ void KAccel::readSettings(KConfig* config)
 			pAccel->connectItem( pE->aAccelId, pE->receiver,
 					     pE->member);
 		}
+		if ( pE->menu ) {
+		        changeMenuAccel(pE->menu, pE->menuId, aKeyIt.currentKey());
+		}
 		++aKeyIt;
 	}
 #undef pE
@@ -440,11 +467,17 @@ bool KAccel::setKeyDict( QDict<KKeyEntry> nKeyDict )
 		pEntry->receiver = pE->receiver;
 		pEntry->member = pE->member;
 		pEntry->descr = pE->descr; // tanghus
+		pEntry->menuId = pE->menuId;
+		pEntry->menu = pE->menu; 
 		
 		if ( pEntry->aAccelId && pEntry->aCurrentKeyCode ) {
 			pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
 			pAccel->connectItem( pEntry->aAccelId, pEntry->receiver,
 					     pEntry->member);
+		}
+		if ( pEntry->menu ) {
+		  changeMenuAccel(pEntry->menu, pEntry->menuId,
+				  aKeyIt->currentKey());
 		}
 		++*aKeyIt;
 	}
@@ -554,11 +587,81 @@ void KAccel::writeSettings(KConfig* config)
 			 else
 				pConfig->writeEntry( aKeyIt.currentKey(),
 					keyToString( aKeyIt.current()->aCurrentKeyCode ));
+
 		}
 		++aKeyIt;
 	}
 	pConfig->sync();
 }
+
+ bool KAccel::configurable( const char * action )
+{
+  KKeyEntry *pEntry = aKeyDict[ action ];
+
+  if ( !pEntry )
+    return FALSE;
+  else
+    return pEntry->bConfigurable;
+}
+
+
+ void KAccel::clearItem(const char *action)
+{
+  if (action) {
+    KKeyEntry *pEntry = aKeyDict[ action ];
+    if (pEntry) {
+      if ( pEntry->aAccelId  && pEntry->bConfigurable) {
+	pAccel->disconnectItem( pEntry->aAccelId, pEntry->receiver,
+				pEntry->member);
+	pAccel->removeItem( pEntry->aAccelId );
+	pEntry->aAccelId = 0;
+	pEntry->aCurrentKeyCode = 0;
+	if ( pEntry->menu ) {
+	  changeMenuAccel(pEntry->menu, pEntry->menuId, action);
+	}
+      }
+    }
+  }
+}
+
+ bool KAccel::updateItem( const char * action, uint keyCode)
+{
+  KKeyEntry *pEntry = aKeyDict[ action ];
+  if (pEntry) {
+    pEntry->aCurrentKeyCode = keyCode;
+    if ( pEntry->aAccelId ) {
+      pAccel->disconnectItem( pEntry->aAccelId, pEntry->receiver,
+			      pEntry->member);
+      pAccel->removeItem( pEntry->aAccelId );
+    } else {
+      pEntry->aAccelId = aAvailableId;
+      aAvailableId++;
+    }
+
+    pEntry->aCurrentKeyCode = keyCode;
+    pAccel->insertItem( pEntry->aCurrentKeyCode, pEntry->aAccelId );
+    pAccel->connectItem( pEntry->aAccelId, pEntry->receiver, pEntry->member );
+    return TRUE;
+  } else
+    return FALSE;
+}
+
+void KAccel::removeDeletedMenu(QPopupMenu *menu)
+{
+	QDictIterator<KKeyEntry> aKeyIt( aKeyDict );
+	aKeyIt.toFirst();
+
+#define pE aKeyIt.current()
+	while ( pE ) {
+		if ( pE->menu == menu )
+		  pE->menu = 0;
+
+		++aKeyIt;
+	}
+#undef pE
+}
+
+
 
 /*****************************************************************************/
 
@@ -676,3 +779,4 @@ uint stringToKey(const char * key )
 	
 	return keyCode;
 }
+

@@ -51,7 +51,9 @@ struct KKeyEntry {
 	int aAccelId;
 	const QObject *receiver;
 	QString member;
-	QString descr;	
+	QString descr;
+        int menuId;
+        QPopupMenu *menu;
 };
 
 /**
@@ -233,6 +235,8 @@ class KAccel
 	 */
 	bool insertItem( const char* descr, const char * action, uint defaultKeyCode,
 				 bool configurable = TRUE );
+	bool insertItem( const char* descr, const char * action, uint defaultKeyCode,
+				 int id, QPopupMenu *qmenu, bool configurable = TRUE );
 	
 	 /**
 	 * Inserts an accelerator item and returns -1 if the key code
@@ -258,6 +262,8 @@ class KAccel
 	 */
 	bool insertItem( const char* descr, const char * action, const char * defaultKeyCode,
 				 bool configurable = TRUE );
+	bool insertItem( const char* descr, const char * action, const char * defaultKeyCode,
+				 int id, QPopupMenu *qmenu, bool configurable = TRUE );
 				
 	/**
 	 *	Inserts a standard accelerator item if id equal to Open,
@@ -280,6 +286,8 @@ class KAccel
 	 */
 	bool insertItem( const char * action, uint defaultKeyCode,
 				 bool configurable = TRUE );
+	bool insertItem( const char * action, uint defaultKeyCode,
+				 int id, QPopupMenu *qmenu, bool configurable = TRUE );
 
 
 	/**
@@ -365,6 +373,26 @@ class KAccel
 	 */	
 	void writeSettings(KConfig* config = 0);
 	
+       /**
+        * Returns TRUE if keyentry can be modified
+        */
+       bool configurable( const char * action );
+
+       /**
+        *  Change the keycode for an accelerator
+        */
+         bool updateItem( const char * action, uint keyCode);
+
+       /**
+        *  remove the keycode for an accelerator
+	**/
+         void clearItem(const char *action);
+
+       /**
+        *  clear any pointers to a menu
+        **/
+        void removeDeletedMenu(QPopupMenu *menu);
+
 protected:
  	QAccel *pAccel;
 	int aAvailableId;
@@ -372,8 +400,6 @@ protected:
 	bool bEnabled;
 	bool bGlobal;
 	QString aGroup;
-	
-
 };
 	
 #endif
