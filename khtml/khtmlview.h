@@ -183,6 +183,7 @@ protected:
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
 
     virtual void viewportMousePressEvent( QMouseEvent * );
+    virtual void focusOutEvent( QFocusEvent * );
 
     /**
      * This function emits the @ref doubleClick() signal when the user
