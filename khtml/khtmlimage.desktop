@@ -105,4 +105,4 @@ Name[zh_TW]=可嵌入的影像查看器
 Name[zu]=Ohlanganisekayo Umbonisi Womfanekiso
 ServiceTypes=KParts/ReadOnlyPart
 InitialPreference=4
-X-KDE-Library=libkhtmlimage
+X-KDE-Library=khtmlimagepart
