@@ -60,10 +60,7 @@ KIconViewSearchLine::KIconViewSearchLine( QWidget *parent,
   KLineEdit( parent, name )
 {
   d = NULL;
-  if( iconView )
-    init( iconView );
-  else
-    init( NULL );
+  init( iconView );
 }
 
 KIconViewSearchLine::KIconViewSearchLine( QWidget *parent, const char *name ) :
