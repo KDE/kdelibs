@@ -50,7 +50,7 @@ libkdecore_la_SOURCES = libintl.cpp kdebug.cpp kstddirs.cpp \
 	kpixmap.cpp kckey.cpp kaccel.cpp kcrash.cpp\
 	kprotocolmanager.cpp kurl.cpp kregexp.cpp \
 	kglobal.cpp kglobalsettings.cpp dmalloc.cpp  \
-	kallocator.cpp vsnprintf.c \
+	kallocator.cpp vsnprintf.c kmimesourcefactory.cpp \
 	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp ktempfile.cpp \
 	ksavefile.cpp krandomsequence.cpp kstringhandler.cpp kcompletion.cpp \
 	kcmdlineargs.cpp kaboutdata.cpp kcompletionbase.cpp knotifyclient.cpp \

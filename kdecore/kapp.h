@@ -32,6 +32,7 @@
 class KConfig;
 class KCharsets;
 class KStyle;
+class KMimeSourceFactory;
 class QTDispatcher;
 class DCOPClient;
 class DCOPObject;
@@ -227,6 +228,12 @@ public:
      */
   void saveState( QSessionManager& sm );
 
+  /**
+   * @return the KMimeSourceFactory set as default for this application.
+   *
+   * Mainly added for API completeness and future extensibility.
+   */
+  KMimeSourceFactory* mimeSourceFactory () const;
 
   /**
    * Retrieve a pointer to a @ref DCOPClient for the application.
@@ -748,6 +755,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.163  2000/06/14 09:43:01  faure
+// Bumped version-string's date, for Chris and for bug reports.
+//
 // Revision 1.162  2000/06/13 04:13:01  waba
 // WABA: Keep track of whether we are a DSO loaded by kdeinit or not.
 //

@@ -53,6 +53,7 @@
 #include <kcrash.h>
 #include <kdatastream.h>
 #include <klibloader.h>
+#include <kmimesourcefactory.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -132,12 +133,18 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 class KApplicationPrivate
 {
 public:
-    KApplicationPrivate()
-    {
-    }
-    ~KApplicationPrivate()
-    {
-    }
+  KApplicationPrivate()
+	: mimeSourceFactory (new KMimeSourceFactory())
+  {
+	QMimeSourceFactory::setDefaultFactory (mimeSourceFactory);
+  }
+
+  ~KApplicationPrivate()
+  {
+	delete mimeSourceFactory;
+  }
+
+  KMimeSourceFactory* mimeSourceFactory;
 };
 
 
@@ -540,6 +547,12 @@ void KApplication::saveState( QSessionManager& sm )
 
     if ( cancelled )
 	sm.cancel();
+}
+
+
+KMimeSourceFactory* KApplication::mimeSourceFactory () const
+{
+  return pAppData->mimeSourceFactory;
 }
 
 #if 0
