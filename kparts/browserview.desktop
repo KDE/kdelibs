@@ -88,3 +88,5 @@ Type=QString
 [PropertyDef::X-KDE-BrowserView-ToggableView-NoHeader]
 Type=bool
 
+[PropertyDef::X-KDE-BrowserView-FollowActive]
+Type=bool
