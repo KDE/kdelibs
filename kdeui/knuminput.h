@@ -511,10 +511,9 @@ protected:
 
 private:
     void init(double value);
-    QString  m_units, m_specialvalue, m_prefix, m_suffix;
+    QString  m_specialvalue, m_prefix, m_suffix;
     char     *m_format;
     double   m_value;
-    int      m_sliderstep; // currently unused
 
     class KDoubleNumInputPrivate;
     KDoubleNumInputPrivate *d;
