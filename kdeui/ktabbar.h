@@ -75,15 +75,16 @@ protected slots:
     virtual void closeButtonClicked();
     virtual void onLayoutChange();
     virtual void enableCloseButton();
+    virtual void activateDragSwitchTab();
 
 private:
     QPoint mDragStart;
     int mReorderStartTab;
     int mReorderPreviousTab;
     QMap<int, QColor> mTabColors;
-    QTab *mHoverCloseButtonTab;
+    QTab *mHoverCloseButtonTab, *mDragSwitchTab;
     QPushButton *mHoverCloseButton;
-    QTimer* mEnableCloseButtonTimer;
+    QTimer *mEnableCloseButtonTimer, *mActivateDragSwitchTabTimer;
 
     bool mHoverCloseButtonEnabled;
     bool mTabReorderingEnabled;

@@ -32,7 +32,7 @@
 
 KTabBar::KTabBar( QWidget *parent, const char *name )
     : QTabBar( parent, name ), mReorderStartTab( -1 ), mReorderPreviousTab( -1 ),
-      mHoverCloseButtonTab( 0 ), mHoverCloseButton( 0 ),
+      mHoverCloseButtonTab( 0 ), mDragSwitchTab( 0 ), mHoverCloseButton( 0 ),
       mHoverCloseButtonEnabled( false ), mTabReorderingEnabled( false )
 {
     setAcceptDrops( true );
@@ -40,6 +40,9 @@ KTabBar::KTabBar( QWidget *parent, const char *name )
 
     mEnableCloseButtonTimer = new QTimer( this );
     connect( mEnableCloseButtonTimer, SIGNAL( timeout() ), SLOT( enableCloseButton() ) );
+
+    mActivateDragSwitchTabTimer = new QTimer( this );
+    connect( mActivateDragSwitchTabTimer, SIGNAL( timeout() ), SLOT( activateDragSwitchTab() ) );
 
 #if QT_VERSION >= 0x030200
     connect(this, SIGNAL(layoutChanged()), SLOT(onLayoutChange()));
@@ -105,12 +108,17 @@ void KTabBar::mousePressEvent( QMouseEvent *e )
 void KTabBar::mouseMoveEvent( QMouseEvent *e )
 {
     if ( e->state() == LeftButton ) {
+        QTab *tab = selectTab( e->pos() );
+        if ( mDragSwitchTab && tab != mDragSwitchTab ) {
+          mActivateDragSwitchTabTimer->stop();
+          mDragSwitchTab = 0;
+        }
+
         int delay = KGlobalSettings::dndEventDelay();
         QPoint newPos = e->pos();
         if( newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
             newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
          {
-            QTab *tab = selectTab( e->pos() );
             if( tab!= 0L ) {
                 emit( initiateDrag( indexOf( tab->identifier() ) ) );
                 return;
@@ -204,6 +212,12 @@ void KTabBar::enableCloseButton()
     mHoverCloseButton->setEnabled(true);
 }
 
+void KTabBar::activateDragSwitchTab()
+{
+    setCurrentTab( mDragSwitchTab );
+    mDragSwitchTab = 0;
+}
+
 void KTabBar::mouseReleaseEvent( QMouseEvent *e )
 {
     if( e->button() == MidButton ) {
@@ -232,6 +246,10 @@ void KTabBar::dragMoveEvent( QDragMoveEvent *e )
         // The receivers of the testCanDecode() signal has to adjust
         // 'accept' accordingly.
         emit testCanDecode( e, accept);
+        if ( accept && tab != QTabBar::tab( currentTab() ) ) {
+          mDragSwitchTab = tab;
+          mActivateDragSwitchTabTimer->start( QApplication::doubleClickInterval()*2, true );
+        }
         e->accept( accept );
         return;
     }
@@ -243,6 +261,8 @@ void KTabBar::dropEvent( QDropEvent *e )
 {
     QTab *tab = selectTab( e->pos() );
     if( tab!= 0L ) {
+        mActivateDragSwitchTabTimer->stop();
+        mDragSwitchTab = 0;
         emit( receivedDropEvent( indexOf( tab->identifier() ) , e ) );
         return;
     }
@@ -346,6 +366,8 @@ void KTabBar::onLayoutChange()
     delete mHoverCloseButton;
     mHoverCloseButton = 0;
     mHoverCloseButtonTab = 0;
+    mActivateDragSwitchTabTimer->stop();
+    mDragSwitchTab = 0;
 }
 
 #include "ktabbar.moc"
