@@ -1,5 +1,5 @@
 [General]
 Orientation=1
 ViewType=1
-ViewToolBar=true
+ViewToolBar=false
 ViewPrinterInfos=true

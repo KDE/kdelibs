@@ -37,6 +37,8 @@
 #include "kiconselectaction.h"
 #include "messagewindow.h"
 
+#include <qdockarea.h>
+#include <kmenubar.h>
 #include <qtimer.h>
 #include <qcombobox.h>
 #include <qlabel.h>
@@ -47,6 +49,7 @@
 #include <klocale.h>
 #include <kconfig.h>
 #include <ktoolbar.h>
+#include <ktoolbarbutton.h>
 #include <kdebug.h>
 #include <kpopupmenu.h>
 #include <klibloader.h>
@@ -97,12 +100,19 @@ KMMainView::KMMainView(QWidget *parent, const char *name, KActionCollection *col
 	m_pop = new QPopupMenu(this);
 	m_toolbar = new KToolBar(this, "ToolBar");
 	m_toolbar->setMovingEnabled(false);
-	//static_cast<QWidget*>(m_toolbar)->layout()->setMargin(1);
 	m_plugin = new PluginComboBox(this, "Plugin");
+	/*
+	m_menubar = new KMenuBar( this );
+	static_cast<KMenuBar*>( m_menubar )->setTopLevelMenu( false );
+	*/
+	m_menubar = new KToolBar( this, "MenuBar", false, false );
+	m_menubar->setIconText( KToolBar::IconTextRight );
+	m_menubar->setMovingEnabled( false );
 
 	// layout
 	QVBoxLayout	*m_layout = new QVBoxLayout(this, 0, 0);
 	m_layout->addWidget(m_toolbar);
+	m_layout->addWidget( m_menubar );
 	m_boxlayout = new QBoxLayout(QBoxLayout::TopToBottom, 0, 0);
 	m_layout->addLayout(m_boxlayout);
 	m_boxlayout->addWidget(m_printerview);
@@ -152,9 +162,12 @@ void KMMainView::restoreSettings()
 	conf->setGroup("General");
 	setViewType((KMPrinterView::ViewType)conf->readNumEntry("ViewType",KMPrinterView::Icons));
 	setOrientation(conf->readNumEntry("Orientation", Qt::Vertical));
-	bool 	view = conf->readBoolEntry("ViewToolBar",true);
+	bool 	view = conf->readBoolEntry("ViewToolBar",false);
 	slotToggleToolBar(view);
 	((KToggleAction*)m_actions->action("view_toolbar"))->setChecked(view);
+	view = conf->readBoolEntry( "ViewMenuBar", true );
+	slotToggleMenuBar( view );
+	static_cast<KToggleAction*>( m_actions->action( "view_menubar" ) )->setChecked( view );
 	view = conf->readBoolEntry("ViewPrinterInfos",true);
 	slotShowPrinterInfos(view);
 	((KToggleAction*)m_actions->action("view_printerinfos"))->setChecked(view);
@@ -167,6 +180,7 @@ void KMMainView::saveSettings()
 	conf->writeEntry("ViewType",(int)m_printerview->viewType());
 	conf->writeEntry("Orientation",(int)orientation());
 	conf->writeEntry("ViewToolBar",((KToggleAction*)m_actions->action("view_toolbar"))->isChecked());
+	conf->writeEntry("ViewMenuBar",static_cast<KToggleAction*>( m_actions->action("view_menubar") )->isChecked());
 	conf->writeEntry("ViewPrinterInfos",((KToggleAction*)m_actions->action("view_printerinfos"))->isChecked());
 	conf->sync();
 }
@@ -212,6 +226,8 @@ void KMMainView::initActions()
 
 	KToggleAction	*tact = new KToggleAction(i18n("View &Toolbar"),0,m_actions,"view_toolbar");
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
+	tact = new KToggleAction( i18n( "View Me&nu Toolbar" ), 0, m_actions, "view_menubar" );
+	connect( tact, SIGNAL( toggled( bool ) ), SLOT( slotToggleMenuBar( bool ) ) );
 	tact = new KToggleAction(i18n("Show/Hide Pr&inter Details"),"kdeprint_printer_infos", 0,m_actions,"view_printerinfos");
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
@@ -258,6 +274,53 @@ void KMMainView::initActions()
 	m_actions->action("view_change")->plug(m_toolbar);
 	m_actions->action("orientation_change")->plug(m_toolbar);
 	m_actions->action("view_pfilter")->plug(m_toolbar);
+
+	// add actions to the menu bar
+	QPopupMenu *menu = new QPopupMenu( this );
+	m_actions->action( "printer_add" )->plug( menu );
+	m_actions->action( "printer_add_special" )->plug( menu );
+	//m_menubar->insertItem( i18n( "Add" ), menu );
+	m_menubar->insertButton( "wizard", 0, true, i18n( "Add" ) );
+	m_menubar->getButton( 0 )->setPopup( menu, true );
+	menu = new QPopupMenu( this );
+	m_actions->action("printer_state_change")->plug( menu );
+	m_actions->action("printer_spool_change")->plug( menu );
+	menu->insertSeparator();
+	m_actions->action("printer_hard_default")->plug( menu );
+	m_actions->action("printer_soft_default")->plug( menu );
+	m_actions->action("printer_remove")->plug( menu );
+	menu->insertSeparator();
+	m_actions->action("printer_configure")->plug( menu );
+	m_actions->action("printer_test")->plug( menu );
+	m_actions->action("printer_tool")->plug( menu );
+	menu->insertSeparator();
+	//m_menubar->insertItem( i18n( "Printer" ), menu );
+	m_menubar->insertButton( "printer2", 1, true, i18n( "Printer" ) );
+	m_menubar->getButton( 1 )->setPopup( menu, true );
+	menu = new QPopupMenu( this );
+	m_actions->action("server_restart")->plug( menu );
+	m_actions->action("server_configure")->plug( menu );
+	//m_menubar->insertItem( i18n( "Server" ), menu );
+	m_menubar->insertButton( "misc", 2, true, i18n( "Print Server" ) );
+	m_menubar->getButton( 2 )->setPopup( menu, true );
+	menu = new QPopupMenu( this );
+	m_actions->action("manager_configure")->plug( menu );
+	m_actions->action("view_refresh")->plug( menu );
+	//m_menubar->insertItem( i18n( "Manager" ), menu );
+	m_menubar->insertButton( "konsole3", 3, true, i18n( "Print Manager" ) );
+	m_menubar->getButton( 3 )->setPopup( menu, true );
+	menu = new QPopupMenu( this );
+	m_actions->action("view_printerinfos")->plug( menu );
+	m_actions->action("view_change")->plug( menu );
+	m_actions->action("orientation_change")->plug( menu );
+	m_actions->action( "view_toolbar" )->plug ( menu );
+	m_actions->action( "view_menubar" )->plug ( menu );
+	menu->insertSeparator();
+	m_actions->action("view_pfilter")->plug( menu );
+	//m_menubar->insertItem( i18n( "View" ), menu );
+	m_menubar->insertButton( "view_remove", 4, true, i18n( "View" ) );
+	m_menubar->getButton( 4 )->setPopup( menu, true );
+	//m_menubar->setMinimumHeight( m_menubar->heightForWidth( 1000 ) );
 
 	loadPluginActions();
 	slotPrinterSelected(QString::null);
@@ -397,6 +460,8 @@ void KMMainView::slotRightButtonClicked(const QString& prname, const QPoint& p)
 	m_actions->action("view_change")->plug(m_pop);
 	m_actions->action("orientation_change")->plug(m_pop);
 	m_actions->action("view_toolbar")->plug(m_pop);
+	m_actions->action("view_menubar")->plug(m_pop);
+	m_pop->insertSeparator();
 	m_actions->action("view_pfilter")->plug(m_pop);
 
 	// pop the menu
@@ -610,6 +675,14 @@ void KMMainView::slotToggleToolBar(bool on)
 	else m_toolbar->hide();
 }
 
+void KMMainView::slotToggleMenuBar( bool on )
+{
+	if ( on )
+		m_menubar->show();
+	else
+		m_menubar->hide();
+}
+
 void KMMainView::slotManagerConfigure()
 {
 	KMTimer::self()->hold();
@@ -698,9 +771,12 @@ void KMMainView::loadPluginActions()
 	KMFactory::self()->manager()->createPluginActions(m_actions);
 	QValueList<KAction*>	pactions = m_actions->actions("plugin");
 	int	index = m_pactionsindex;
+	//QPopupMenu *menu = m_menubar->findItem( m_menubar->idAt( 1 ) )->popup();
+	QPopupMenu *menu = m_menubar->getButton( 1 )->popup();
 	for (QValueList<KAction*>::Iterator it=pactions.begin(); it!=pactions.end(); ++it)
 	{
 		(*it)->plug(m_toolbar, index++);
+		( *it )->plug( menu );
 	}
 }
 

@@ -39,6 +39,7 @@ class KAction;
 class PluginComboBox;
 class QBoxLayout;
 class MessageWindow;
+class QMenuBar;
 
 class KMMainView : public QWidget, public KPReloadObject
 {
@@ -78,6 +79,7 @@ protected slots:
 	void slotPrinterSelected(const QString&);
 	void slotRightButtonClicked(const QString&, const QPoint&);
 	void slotToggleToolBar(bool);
+	void slotToggleMenuBar(bool);
 	void slotChangeView(int);
 	void slotChangeDirection(int);
 	void slotUpdatePossible( bool );
@@ -110,6 +112,7 @@ private:
 	bool		m_first;
 	QBoxLayout	*m_boxlayout;
 	MessageWindow *m_msgwindow;
+	KToolBar *m_menubar;
 };
 
 #endif

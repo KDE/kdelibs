@@ -1,0 +1,6 @@
+Id=kde-3.1-toolbar
+File=kdeprintrc
+Group=General
+Options=copy
+Key=ViewToolBar,ViewMenuBar
+RemoveKey=ViewToolBar

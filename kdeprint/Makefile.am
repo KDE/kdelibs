@@ -26,6 +26,7 @@ libkdeprint_la_SOURCES = kmfactory.cpp kmjob.cpp kmjobmanager.cpp kmmanager.cpp 
 			 kprintaction.cpp kpfileselectpage.cpp treecombobox.cpp kmfactory.skel kxmlcommand.cpp \
 			 util.cpp printerfilter.cpp marginpreview.cpp marginvaluewidget.cpp marginwidget.cpp \
 			 kpmarginpage.cpp messagewindow.cpp
+
 libkdeprint_la_LDFLAGS = $(all_libraries) -version-info 5:0:1 -no-undefined
 libkdeprint_la_LIBADD = $(LIB_KPARTS) $(LIBZ)
 libkdeprint_la_DEPENDENCIES =  $(LIB_KPARTS) 
@@ -83,3 +84,6 @@ kdeprint:
 # convenience static library
 noinst_LIBRARIES = libdriverparse.a
 libdriverparse_a_SOURCES = driverparse.c
+
+update_DATA = kdeprintrc.upd
+updatedir = $(kde_datadir)/kconf_update
