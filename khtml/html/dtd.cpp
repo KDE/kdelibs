@@ -498,10 +498,11 @@ bool DOM::checkChild(ushort tagID, ushort childID)
 	    return true;
 	return check_array(childID, tag_list_11);
     case ID_HTML:
-	// HTML: ( HEAD , ( BODY | ( FRAMESET & NOFRAMES ? ) ) )
+	// HTML: ( HEAD , COMMENT, ( BODY | ( FRAMESET & NOFRAMES ? ) ) )
 	switch(childID)
 	{
 	case ID_HEAD:
+	case ID_COMMENT:
 	case ID_BODY:
 	case ID_FRAMESET:
 	case ID_NOFRAMES:
