@@ -100,24 +100,36 @@ public slots:
     void message( const QString &text, const QPixmap &pix, int timeout ); 
 
     /**
+     * Shows the specified text in the window title with no timeout.
+     */
+    void permanent( const QString &text ); 
+
+    /**
+     * Shows the specified text and icon in the window title with no timeout.
+     */
+    void permanent( const QString &text, const QPixmap &pix );
+
+protected:
+    /**
      * Displays the message in the titlebar/icon.
      */
-    void display( const QString &text, const QPixmap &pix );
+    virtual void display( const QString &text, const QPixmap &pix );
 
     /**
      * Saves the window title and icon.
      */
-    void save();
+    virtual void save();
 
     /**
      * Resets the window title and icon to the saved values. If
      * auto-delete is enabled then the object is deleted.
      */
-    void restore();
+    virtual void restore();
 
 private:
     QWidget *win;
     QPixmap oldIcon;
+    QPixmap oldMiniIcon;
     QString oldText;
     bool autoDel;
 

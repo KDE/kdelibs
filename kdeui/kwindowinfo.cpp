@@ -3,10 +3,12 @@
  *   email                : rich@kde.org
  */
 
+#include <qobjectlist.h>
 #include <qpixmap.h>
 #include <qtimer.h>
 #include <qtooltip.h>
 #include <ksystemtray.h>
+#include <kwin.h>
 
 #include "kwindowinfo.h"
 #include "kwindowinfo.moc"
@@ -56,14 +58,43 @@ void KWindowInfo::message( const QString &text, int timeout )
 
 void KWindowInfo::message( const QString &text, const QPixmap &pix, int timeout )
 {
-    save();
+    if ( timeout != 0 )
+	save();
+
     display( text, pix );
 
     if ( timeout < 0 )
 	timeout = DEFAULT_MESSAGE_TIMEOUT;
-    if ( timeout == 0 )
-	return;
-    QTimer::singleShot( timeout, this, SLOT( restore() ) );
+    if ( timeout != 0 )
+	QTimer::singleShot( timeout, this, SLOT( restore() ) );
+}
+
+void KWindowInfo::permanent( const QString &text )
+{
+    oldMiniIcon = KWin::icon( win->winId(), 16, 16, true );
+    oldIcon = KWin::icon( win->winId(), 34, 34, false );
+    if ( oldIcon.isNull() )
+	oldIcon = KWin::icon( win->winId(), 32, 32, true );
+
+    permanent( text, oldIcon );
+}
+
+void KWindowInfo::permanent( const QString &text, const QPixmap &pix )
+{
+    if ( !oldText.isNull() ) {
+	QObjectList *l = queryList( "QTimer" );
+	QObjectListIt it( *l );
+	QObject *obj;
+
+	while ( (obj = it.current()) != 0 ) {
+	    ++it;
+	    delete obj;
+	}
+	delete l;
+    }
+
+    oldText = QString::null;
+    display( text, pix );
 }
 
 void KWindowInfo::display( const QString &text, const QPixmap &pix )
@@ -83,10 +114,14 @@ void KWindowInfo::display( const QString &text, const QPixmap &pix )
 
     win->setCaption( text );
     win->setIcon( icon );
+    KWin::setIcons( win->winId(), icon, icon );
 }
 
 void KWindowInfo::save()
 {
+    if ( !oldText.isNull() )
+	return;
+
     if ( win->inherits( "KSystemTray" ) ) {
 	KSystemTray *tray = static_cast<KSystemTray *>( win );
 	oldIcon = *(tray->pixmap());
@@ -95,12 +130,18 @@ void KWindowInfo::save()
     }
 
     oldText = win->caption();
+    oldMiniIcon = KWin::icon( win->winId(), 16, 16, true );
+    oldIcon = KWin::icon( win->winId(), 34, 34, false );
+    if ( oldIcon.isNull() )
+	oldIcon = KWin::icon( win->winId(), 32, 32, true );
 
-    const QPixmap *px = win->icon();
-    if ( px )
-	oldIcon = *px;
-    else
-	oldIcon.resize( 0, 0 );
+    if ( oldIcon.isNull() ) {
+	const QPixmap *px = win->icon();
+	if ( px )
+	    oldIcon = *px;
+	else
+	    oldIcon.resize( 0, 0 );
+    }
 }
 
 void KWindowInfo::restore()
@@ -109,11 +150,14 @@ void KWindowInfo::restore()
 	KSystemTray *tray = static_cast<KSystemTray *>( win );
 	tray->setPixmap( oldIcon );
 	QToolTip::add( tray, oldText );
+	oldText = QString::null;
 	return;
     }
 
-    win->setCaption( oldText );
     win->setIcon( oldIcon );
+    KWin::setIcons( win->winId(), oldIcon, oldMiniIcon );
+    win->setCaption( oldText );
+    oldText = QString::null;
 
     if ( autoDel )
 	delete this;
