@@ -36,8 +36,10 @@
 
 #define PACKAGE kdelibs
 
+/* defines if having libgif (always 1) */
 #undef HAVE_LIBGIF
 
+/* defines if having libjpeg (always 1) */
 #undef HAVE_LIBJPEG
 
 /* Define if you have the socket function.  */

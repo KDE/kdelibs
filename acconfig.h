@@ -5,6 +5,8 @@
 
 #define PACKAGE kdelibs
 
-#define HAVE_GIFLIB 1
+/* defines if having libgif (always 1) */
+#undef HAVE_LIBGIF
 
-#define HAVE_JPEGLIB 1
+/* defines if having libjpeg (always 1) */
+#undef HAVE_LIBJPEG
