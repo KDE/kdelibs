@@ -58,11 +58,6 @@ start_launcher(int socket)
    signal( SIGPIPE, sig_handler);
    signal( SIGTERM, sig_handler);
 
-#ifdef __USE_GNU
-#warning Temporary hack to get KLocale initialised
-#endif
-   (void)launcher->config();
-
    launcher->exec();
    return 0;
 }

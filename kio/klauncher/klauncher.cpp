@@ -39,8 +39,8 @@
 #include "klauncher.h"
 #include "klauncher_cmds.h"
 
-// Dispose slaves after being idle for SLAVE_MAX_IDLE minutes
-#define SLAVE_MAX_IDLE	10
+// Dispose slaves after being idle for SLAVE_MAX_IDLE seconds
+#define SLAVE_MAX_IDLE	30
 
 using namespace KIO;
 
@@ -911,7 +911,7 @@ KLauncher::acceptSlave(KSocket *slaveSocket)
     connect(slave, SIGNAL(destroyed()), this, SLOT(slotSlaveGone()));
     if (!mTimer.isActive())
     {
-       mTimer.start(1000*60);
+       mTimer.start(1000*10);
     }
 }
 
@@ -933,7 +933,7 @@ KLauncher::idleTimeout()
     IdleSlave *slave;
     for(slave = mSlaveList.first(); slave; slave = mSlaveList.next())
     {
-        if (slave->age(now) > 60*SLAVE_MAX_IDLE)
+        if (slave->age(now) > SLAVE_MAX_IDLE)
         {
            // killing idle slave
            delete slave;
