@@ -21,3 +21,4 @@
 	added kcalc and kpaint
 	KConfig reads and writes colors and fonts
 	added to the search path of jpeg/giflib KDEDIR/lib
+	updated khtmlw to 0.5.3
