@@ -145,9 +145,10 @@ unsigned short DocumentImpl::nodeType() const
 
 ElementImpl *DocumentImpl::documentElement() const
 {
-    if(!firstChild() || firstChild()->nodeType() != Node::ELEMENT_NODE)
-       return 0;
-    return (ElementImpl *)firstChild();
+    NodeImpl *n = firstChild();
+    while (n && n->nodeType() != Node::ELEMENT_NODE)
+      n = n->nextSibling();
+    return static_cast<ElementImpl*>(n);
 }
 
 ElementImpl *DocumentImpl::createElement( const DOMString &name )
