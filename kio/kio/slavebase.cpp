@@ -1077,8 +1077,8 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     return true;
 }
 
-bool SlaveBase::storeAuthInfo( const QCString& key, const QCString& group,
-                               const AuthInfo& info )
+bool SlaveBase::storeAuthInfo( const QCString&, const QCString&,
+                               const AuthInfo& )
 {
     // Obsolete
     return false;
