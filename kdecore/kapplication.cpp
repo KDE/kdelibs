@@ -608,6 +608,7 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _insta
     installSigpipeHandler();
     parseCommandLine( );
     init(GUIenabled);
+    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
 #ifdef Q_WS_X11
@@ -1702,8 +1703,14 @@ void KApplication::updateUserTimestamp( unsigned long time )
         time = ev.xproperty.time;
         XDestroyWindow( qt_xdisplay(), w );
     }
-    qt_x_user_time = time;
+    if( time - qt_x_user_time < 1000000000U ) // check time > qt_x_user_time, handle wrapping
+        qt_x_user_time = time;
 #endif
+}
+
+unsigned long KApplication::userTimestamp() const
+{
+    return qt_x_user_time;
 }
 
 void KApplication::invokeEditSlot( const char *slot )
