@@ -69,7 +69,7 @@ int findUnit(int& period)
 	return unit;
 }
 
-char* unitKeyword(int i)
+const char* unitKeyword(int i)
 { return time_keywords[i]; }
 
 KMWQuota::KMWQuota(QWidget *parent, const char *name)
