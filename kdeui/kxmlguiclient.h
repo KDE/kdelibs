@@ -229,7 +229,7 @@ public:
   void plugActionList( const QString &name, const QPtrList<KAction> &actionList );
 
   /**
-   * The complement of \ref plugActionList() ...
+   * The complement of plugActionList() ...
    */
   void unplugActionList( const QString &name );
 

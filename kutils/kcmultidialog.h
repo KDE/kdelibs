@@ -91,7 +91,7 @@ public:
     /**
      * Add a module.
      *
-     * @param moduleinfo Pass a @ref KCModuleInfo object which will be
+     * @param moduleinfo Pass a KCModuleInfo object which will be
      *                   used for creating the module. It will be added
      *                   to the list of modules the dialog will show.
      *

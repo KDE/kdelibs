@@ -90,7 +90,7 @@ public:
   QStringList moduleNames() const;
 
   /**
-   * @return a @ref KSharedPtr to @ref KService created from the modules .desktop file
+   * @return a KSharedPtr to KService created from the modules .desktop file
    */
   KService::Ptr service() const { return _service; };
 

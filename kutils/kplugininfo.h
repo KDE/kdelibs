@@ -65,7 +65,7 @@ class KPluginInfo
          * present. The Type is always "Plugin".
          *
          * In the "X-KDE Plugin Info" section you may add further entries which
-         * will be available using @ref property(). The Website,Category,Require
+         * will be available using property(). The Website,Category,Require
          * keys are optional.
          * For EnabledByDefault look at setPluginEnabledByDefault and/or
          * pluginEnabledByDefault.
@@ -157,7 +157,7 @@ class KPluginInfo
         { return m_propertymap[ key ]; }
 
         /**
-         * This is the same as @ref property(). It is provided for convenience.
+         * This is the same as property(). It is provided for convenience.
          *
          * @return The string associated with the @p key.
          *
@@ -241,7 +241,7 @@ class KPluginInfo
 
         /**
          * @return A list of Service pointers if the plugin installs one or more
-         *         @ref KCModule
+         *         KCModule
          */
         const QValueList<KService::Ptr> & services() const;
 

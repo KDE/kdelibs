@@ -263,7 +263,7 @@ private:
      * the internal structures, and calculates the caret's coordinates ready
      * for display.
      *
-     * To "deinitialize" the caret, call @ref caretOff
+     * To "deinitialize" the caret, call caretOff
      */
     void initCaret();
     /** returns whether the text under the caret will be overridden.

@@ -52,7 +52,7 @@ public:
      * @p url will be used as tooltip, unless you set a different tip with
      * setToolTip().
      * @p persistent specifies whether this item is a persistent item or a
-     * dynamic item, that is not saved with @ref KURLBar::writeConfig().
+     * dynamic item, that is not saved with KURLBar::writeConfig().
      */
     KURLBarItem( KURLBar *parent, const KURL& url, bool persistent,
                  const QString& description = QString::null,
@@ -69,7 +69,7 @@ public:
      * @p url will be used as tooltip, unless you set a different tip with
      * setToolTip().
      * @p persistent specifies whether this item is a persistent item or a
-     * dynamic item, that is not saved with @ref KURLBar::writeConfig().
+     * dynamic item, that is not saved with KURLBar::writeConfig().
      */
     KURLBarItem( KURLBar *parent, const KURL& url,
                  const QString& description = QString::null,
@@ -166,8 +166,8 @@ public:
     bool applicationLocal() const               { return m_appLocal; }
 
     /**
-     * returns whether this item is persistent (via @ref KURLBar::writeConfig()
-     * and @ref KURLBar::readConfig()) or not.
+     * returns whether this item is persistent (via KURLBar::writeConfig()
+     * and KURLBar::readConfig()) or not.
      */
     bool isPersistent() const;
 

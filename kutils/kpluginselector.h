@@ -46,7 +46,7 @@ class KConfig;
  *
  * Often a program has more than one kind of plugin. In that case you want to
  * make a visible distinction between those plugins. All you have to do is to
- * create a @ref KPluginSelectionWidget for every category and then add them all
+ * create a KPluginSelectionWidget for every category and then add them all
  * to the KPluginSelector.
  *
  * @author Matthias Kretz <kretz@kde.org>
@@ -109,7 +109,7 @@ class KPluginSelector : public QWidget
         /**
          * Add a list of non-KParts plugins
          *
-         * @param plugininfos  A list of @ref KPluginInfo objects containing the
+         * @param plugininfos  A list of KPluginInfo objects containing the
          *                     necessary information for the plugins you want to
          *                     add to the list.
          * @param catname      The translated name of the category. This is the

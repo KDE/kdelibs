@@ -256,7 +256,7 @@ public:
   bool hasUser() const { return !m_strUser.isEmpty(); }
 
   /**
-   * Returns the decoded password (corresponding to \ref user()) included in the URL.
+   * Returns the decoded password (corresponding to user()) included in the URL.
    * @return the password or QString::null if it does not exist
    **/
   QString pass() const { return m_strPass; }
