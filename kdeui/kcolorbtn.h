@@ -77,8 +77,13 @@ protected:
 	/**
 	*/
 	virtual void drawButtonLabel( QPainter *p );
+
+	/**
+	 * For XDnd
+	 */
 	virtual void dragEnterEvent( QDragEnterEvent *);
 	virtual void dropEvent( QDropEvent *);
+	virtual void mouseMoveEvent( QMouseEvent *e);
 private:
 	QColor col;
 };

@@ -1,4 +1,4 @@
-/* This file is part of the KDE libraries
+/*  This file is part of the KDE libraries
     Copyright (C) 1997 Martin Jones (mjones@kde.org)
 
     This library is free software; you can redistribute it and/or
@@ -86,7 +86,7 @@ void KColorButton::drawButtonLabel( QPainter *painter )
 
 void KColorButton::dragEnterEvent( QDragEnterEvent *event)
 {
-        event->accept( KColorDrag::canDecode( event));
+        event->accept( KColorDrag::canDecode( event) && isEnabled());
 }
 
 void KColorButton::dropEvent( QDropEvent *event)
@@ -96,6 +96,17 @@ void KColorButton::dropEvent( QDropEvent *event)
             setColor(c);
 	    emit changed( c);
         }
+}
+
+void KColorButton::mouseMoveEvent( QMouseEvent *e)
+{
+	// Call parent's handler
+        // It seems that this doesn't release the button??
+	QPushButton::mouseMoveEvent( e);
+	// Drag color object
+        if( !(e->state() && LeftButton)) return;
+        KColorDrag *d = KColorDrag::makeDrag( color(), this);
+        d->dragCopy();
 }
 
 #include "kcolorbtn.moc"
