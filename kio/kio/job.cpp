@@ -853,8 +853,7 @@ void TransferJob::slotFinished()
             case CMD_SPECIAL: {
                 int specialcmd;
                 istream >> specialcmd;
-                //assert(specialcmd == 1); // you have to switch() here if other cmds are added
-                if (specialcmd == 1) // Assume HTTP POST
+                if (specialcmd == 1) // HTTP POST
                 {
                    addMetaData("cache","reload");
                    m_packedArgs.truncate(0);
@@ -3700,7 +3699,7 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
 
 MultiGetJob *KIO::multi_get(long id, const KURL &url, const MetaData &metaData)
 {
-    MultiGetJob * job = new MultiGetJob( url, false );
+	MultiGetJob * job = new MultiGetJob( url, false );
     job->get(id, url, metaData);
     return job;
 }
