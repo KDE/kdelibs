@@ -96,7 +96,7 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   // expected value in all cases.
   // See smart window.open policy for where this is used.
   bool inlineCode = filename.isNull();
-  kdDebug() << "KJSProxyImpl::evaluate inlineCode=" << inlineCode << endl;
+  //kdDebug(6070) << "KJSProxyImpl::evaluate inlineCode=" << inlineCode << endl;
 
 #ifdef KJS_DEBUGGER
   // ###    KJSDebugWin::instance()->attach(m_script);
