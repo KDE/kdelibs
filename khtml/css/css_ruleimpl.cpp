@@ -142,6 +142,7 @@ void CSSImportRuleImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMS
     CSSStyleSheetImpl *parent = parentStyleSheet();
     m_styleSheet->parseString( sheet, parent ? parent->useStrictParsing() : true );
     m_loading = false;
+    m_done = true;
 
     checkLoaded();
 }
@@ -155,6 +156,7 @@ void CSSImportRuleImpl::error(int /*err*/, const QString &/*text*/)
     m_styleSheet = 0;
 
     m_loading = false;
+    m_done = true;
 
     checkLoaded();
 }
@@ -167,6 +169,7 @@ bool CSSImportRuleImpl::isLoading()
 void CSSImportRuleImpl::init()
 {
     m_loading = 0;
+    m_done = false;
     khtml::DocLoader *docLoader = 0;
     StyleBaseImpl *root = this;
     StyleBaseImpl *parent;
@@ -199,8 +202,10 @@ void CSSImportRuleImpl::init()
       // and the sheet even gets parsed (via parseString).  In this case we have
       // loaded (even if our subresources haven't), so if we have stylesheet after
       // checking the cache, then we've clearly loaded. -dwh
-      if (!m_styleSheet)
-      m_loading = true;
+      // This can also happen when error() is called from within ref(). In either case,
+      // m_done is set to true.
+      if (!m_done)
+	m_loading = true;
     }
 }
 

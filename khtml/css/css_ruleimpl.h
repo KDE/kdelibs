@@ -125,6 +125,7 @@ protected:
     CSSStyleSheetImpl *m_styleSheet;
     khtml::CachedCSSStyleSheet *m_cachedSheet;
     bool m_loading;
+    bool m_done;
 };
 
 class MediaList;
