@@ -5057,34 +5057,49 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
 #ifndef QT_NO_DRAGANDDROP
   if( d->m_bDnd && d->m_bMousePressed &&
       (!d->m_strSelectedURL.isEmpty() || (!d->m_mousePressNode.isNull() && d->m_mousePressNode.elementId() == ID_IMG) ) ) {
-      if ( ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() <= KGlobalSettings::dndEventDelay() )
-        return;
-      QPixmap p;
-      QDragObject *drag = 0;
-      if( !d->m_strSelectedURL.isEmpty() ) {
-          KURL u( completeURL( d->m_strSelectedURL) );
-          KURLDrag* urlDrag = KURLDrag::newDrag( u, d->m_view->viewport() );
-          if ( !d->m_referrer.isEmpty() )
-            urlDrag->metaData()["referrer"] = d->m_referrer;
-          drag = urlDrag;
-          p = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
-      } else {
-          HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(d->m_mousePressNode.handle());
-          if( i ) {
-            KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
-            mdrag->addDragObject( new QImageDrag( i->currentImage(), 0L ) );
-            KURL u( completeURL( khtml::parseURL(i->getAttribute(ATTR_SRC)).string() ) );
-            KURLDrag* urlDrag = KURLDrag::newDrag( u, 0L );
-            if ( !d->m_referrer.isEmpty() )
-              urlDrag->metaData()["referrer"] = d->m_referrer;
-            mdrag->addDragObject( urlDrag );
-            drag = mdrag;
-            p = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
-          }
-      }
+    if ( ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() <= KGlobalSettings::dndEventDelay() )
+      return;
 
-    if ( !p.isNull() )
-      drag->setPixmap(p);
+    QPixmap pix;
+    HTMLImageElementImpl *img = 0L;
+    QDragObject *drag = 0;
+    KURL u;
+    if ( d->m_mousePressNode.handle() && d->m_mousePressNode.handle()->id() == ID_IMG )
+    {
+      // Normal image
+      img = static_cast<HTMLImageElementImpl *>(d->m_mousePressNode.handle());
+      u = KURL( completeURL( khtml::parseURL(img->getAttribute(ATTR_SRC)).string() ) );
+      pix = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
+    }
+    else if ( event->innerNode().handle() && event->innerNode().handle()->id() == ID_IMG )
+    {
+      // Image inside a link?
+      img = static_cast<HTMLImageElementImpl *>(event->innerNode().handle());
+      u = completeURL( d->m_strSelectedURL );
+      pix = KMimeType::mimeType("image/png")->pixmap(KIcon::Desktop);
+    }
+    else
+    {
+      // Text link
+      u = completeURL( d->m_strSelectedURL );
+      pix = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
+    }
+
+    KURLDrag* urlDrag = KURLDrag::newDrag( u, d->m_view->viewport() );
+    if ( !d->m_referrer.isEmpty() )
+      urlDrag->metaData()["referrer"] = d->m_referrer;
+
+    if( img ) {
+      KMultipleDrag *mdrag = new KMultipleDrag( d->m_view->viewport() );
+      mdrag->addDragObject( new QImageDrag( img->currentImage(), 0L ) );
+      mdrag->addDragObject( urlDrag );
+      drag = mdrag;
+    }
+    else
+      drag = urlDrag;
+
+    if ( !pix.isNull() )
+      drag->setPixmap( pix );
 
     stopAutoScroll();
     if(drag)
