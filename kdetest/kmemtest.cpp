@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
      while(true)
      {
         buf[0] = 0;
-        gets(buf);
+        fgets(buf, sizeof(buf), stdin);
         if (!strlen(buf))
         {
            printf("%s total = %0.1fKb (%d bytes)\n", argv[2], total/1024.0, total);
