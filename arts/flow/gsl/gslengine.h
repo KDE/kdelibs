@@ -73,9 +73,9 @@ struct _GslModule
 {
   const GslClass *klass;
   gpointer	  user_data;
-  GslIStream	 *istreams;
-  GslJStream	 *jstreams;
-  GslOStream	 *ostreams;
+  GslIStream	 *istreams;	/* input streams */
+  GslJStream	 *jstreams;	/* joint (multiconnect) input streams */
+  GslOStream	 *ostreams;	/* output streams */
 };
 /* streams, constructed by engine */
 struct _GslJStream
@@ -163,15 +163,15 @@ void	      gsl_engine_wait_on_trans	(void);
 /* --- debugging --- */
 typedef enum
 {
-  OP_DEBUG_NONE         = 0,
-  OP_DEBUG_ENGINE       = (1 << 0),
-  OP_DEBUG_JOBS         = (1 << 1),
-  OP_DEBUG_SCHED        = (1 << 2),
-  OP_DEBUG_MASTER       = (1 << 3),
-  OP_DEBUG_SLAVE        = (1 << 4)
-} OpDebugLevel;
-void op_debug_enable  (OpDebugLevel level);
-void op_debug_disable (OpDebugLevel level);
+  GSL_ENGINE_DEBUG_NONE         = 0,
+  GSL_ENGINE_DEBUG_ENGINE       = (1 << 0),
+  GSL_ENGINE_DEBUG_JOBS         = (1 << 1),
+  GSL_ENGINE_DEBUG_SCHED        = (1 << 2),
+  GSL_ENGINE_DEBUG_MASTER       = (1 << 3),
+  GSL_ENGINE_DEBUG_SLAVE        = (1 << 4)
+} GslEngineDebugLevel;
+void gsl_engine_debug_enable  (GslEngineDebugLevel level);
+void gsl_engine_debug_disable (GslEngineDebugLevel level);
 
 
 /*< private >*/

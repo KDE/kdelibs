@@ -181,7 +181,8 @@ parse_wave_chunk_dsc (GScanner        *scanner,
       case GSL_WAVE_TOKEN_MIDI_NOTE:
 	parse_or_return (scanner, '=');
 	parse_or_return (scanner, G_TOKEN_INT);
-	chunk->osc_freq = gsl_temp_freq (440., scanner->value.v_int - gsl_get_config ()->midi_kammer_note);	/* FIXME */
+	chunk->osc_freq = gsl_temp_freq (gsl_get_config ()->kammer_freq,
+					 scanner->value.v_int - gsl_get_config ()->midi_kammer_note);
 	break;
       case GSL_WAVE_TOKEN_BOFFSET:
 	parse_or_return (scanner, '=');
@@ -386,9 +387,9 @@ gsl_wave_dsc_read (const gchar *file_name)
   scanner->input_name = file_name;
   g_scanner_input_file (scanner, fd);
   for (i = GSL_WAVE_TOKEN_WAVE; i < GSL_WAVE_TOKEN_LAST_FIELD; i++)
-    g_scanner_add_symbol (scanner, gsl_wave_token (i), GUINT_TO_POINTER (i));
+    g_scanner_scope_add_symbol (scanner, 0, gsl_wave_token (i), GUINT_TO_POINTER (i));
   for (i = GSL_WAVE_TOKEN_BIG_ENDIAN; i < GSL_WAVE_TOKEN_LAST_DATA; i++)
-    g_scanner_add_symbol (scanner, gsl_wave_token (i), GUINT_TO_POINTER (i));
+    g_scanner_scope_add_symbol (scanner, 0, gsl_wave_token (i), GUINT_TO_POINTER (i));
  continue_scanning:
   wave = gsl_new_struct0 (GslWaveDsc, 1);
   wave->name = NULL;
@@ -457,8 +458,8 @@ gsl_wave_file_scan (const gchar *file_name)
       gboolean in_wave = FALSE, abort = FALSE;
 
       scanner->config->symbol_2_token = TRUE;
-      g_scanner_add_symbol (scanner, "wave", GUINT_TO_POINTER (GSL_WAVE_TOKEN_WAVE));
-      g_scanner_add_symbol (scanner, "name", GUINT_TO_POINTER (GSL_WAVE_TOKEN_NAME));
+      g_scanner_scope_add_symbol (scanner, 0, "wave", GUINT_TO_POINTER (GSL_WAVE_TOKEN_WAVE));
+      g_scanner_scope_add_symbol (scanner, 0, "name", GUINT_TO_POINTER (GSL_WAVE_TOKEN_NAME));
       g_scanner_input_file (scanner, fd);
       while (!abort)
 	{

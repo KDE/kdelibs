@@ -19,6 +19,8 @@
 #ifndef __GSL_GLIB_H__
 #define __GSL_GLIB_H__
 
+#include <limits.h>
+#include <float.h>
 #include <stddef.h>
 #include <stdarg.h>
 
@@ -51,11 +53,11 @@ typedef guint		guint32;
 typedef gint		gboolean;
 typedef gint32		GTime;
 #ifdef __alpha
-typedef long		gint64;
-typedef unsigned long	guint64;
+typedef long int		gint64;
+typedef unsigned long int	guint64;
 #else
-typedef long long	gint64;
-typedef unsigned long long  guint64;
+typedef long long int	gint64;
+typedef unsigned long long int  guint64;
 #endif
 typedef struct _GString GString;
 
@@ -85,6 +87,19 @@ typedef struct _GString GString;
 
 
 /* --- glib macros --- */
+#define G_MINFLOAT      FLT_MIN
+#define G_MAXFLOAT      FLT_MAX
+#define G_MINDOUBLE     DBL_MIN
+#define G_MAXDOUBLE     DBL_MAX
+#define G_MINSHORT      SHRT_MIN
+#define G_MAXSHORT      SHRT_MAX
+#define G_MAXUSHORT     USHRT_MAX
+#define G_MININT        INT_MIN
+#define G_MAXINT        INT_MAX
+#define G_MAXUINT       UINT_MAX
+#define G_MINLONG       LONG_MIN
+#define G_MAXLONG       LONG_MAX
+#define G_MAXULONG      ULONG_MAX
 #define	G_USEC_PER_SEC	1000000
 #define G_LITTLE_ENDIAN 1234
 #define G_BIG_ENDIAN    4321
@@ -158,8 +173,7 @@ char *alloca ();
 #endif /* !__GNUC__ && !GLIB_HAVE_ALLOCA_H */
 
 #define g_alloca(size) alloca (size)
-
-/* --- inline functions --- */
+#define g_newa(struct_type, n_structs)  ((struct_type*) g_alloca (sizeof (struct_type) * (gsize) (n_structs)))
 
 /* needs inline configure check */
 #if defined(__GNUC__)
@@ -168,6 +182,8 @@ char *alloca ();
 #define inline /* no inline */
 #endif
 
+
+/* --- inline functions --- */
 void
 gsl_g_log (const gchar*msg,const char *format, va_list ap);
 static inline void
@@ -370,7 +386,6 @@ gchar * g_stpcpy (gchar       *dest, 	  const gchar *src);
 
 /* --- configure stuff!!! --- */
 #define	G_BYTE_ORDER G_LITTLE_ENDIAN
-#define G_MAXINT 2147483647
 /* #define	GLIB_HAVE_STPCPY	1 */
 /* Define G_VA_COPY() to do the right thing for copying va_list variables.
  * glibconfig.h may have already defined G_VA_COPY as va_copy or __va_copy.
@@ -384,6 +399,9 @@ gchar * g_stpcpy (gchar       *dest, 	  const gchar *src);
 #    define G_VA_COPY(ap1, ap2)   ((ap1) = (ap2))
 #  endif /* va_list is a pointer */
 #endif /* !G_VA_COPY */
+
+
+
 
 /* subtract from biased_exponent to form base2 exponent (normal numbers) */
 typedef union  _GDoubleIEEE754  GDoubleIEEE754;

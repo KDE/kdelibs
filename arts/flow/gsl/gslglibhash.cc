@@ -65,7 +65,7 @@ void        g_hash_table_insert            (GHashTable     *hash_table,
     {
       if (hash_table->equalFunc(i->first, key))
       	{
-	  if (value)
+	  if (value || TRUE)
 	    {
 	      i->second = value; /* overwrite old hash value */
 	      return;

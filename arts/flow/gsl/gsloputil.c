@@ -28,6 +28,17 @@
 #include <math.h>
 
 
+/* some systems don't have ERESTART (which is what linux returns for system
+ * calls on pipes which are being interrupted). most propably just use EINTR,
+ * and maybe some can return both. so we check for both in the below code,
+ * and alias ERESTART to EINTR if it's not present. compilers are supposed
+ * to catch and optimize the doubled check arising from this.
+ */
+#ifndef ERESTART
+#define ERESTART        EINTR
+#endif
+
+
 /* --- UserThread --- */
 static void
 op_free_node (OpNode *node)
@@ -38,6 +49,8 @@ op_free_node (OpNode *node)
   g_return_if_fail (node->sched_tag == FALSE);
   g_return_if_fail (node->sched_router_tag == FALSE);
   
+  if (node->module.klass->free)
+    node->module.klass->free (node->module.user_data, node->module.klass);
   gsl_rec_mutex_destroy (&node->rec_mutex);
   if (OP_NODE_N_OSTREAMS (node))
     gsl_delete_struct (GslOStream, OP_NODE_N_OSTREAMS (node), node->module.ostreams); /* FIXME: free ostream buffers */
@@ -47,10 +60,6 @@ op_free_node (OpNode *node)
     gsl_delete_struct (OpInput, OP_NODE_N_ISTREAMS (node), node->inputs);
   if (node->outputs)
     gsl_delete_struct (OpOutput, OP_NODE_N_OSTREAMS (node), node->outputs);
-
-  if (node->module.klass->free)
-    node->module.klass->free (node->module.user_data, node->module.klass);
-
   gsl_delete_struct (OpNode, 1, node);
 }
 
@@ -569,7 +578,7 @@ wakeup_pipe_write (gint wakeup_pipe[2])
       
       do
 	r = write (wakeup_pipe[1], &data, 1);
-      while (r < 0 && errno == EINTR);
+      while (r < 0 && (errno == EINTR || errno == ERESTART));
     }
 }
 
@@ -583,7 +592,7 @@ wakeup_pipe_read_all (gint wakeup_pipe[2])
       
       do
 	r = read (wakeup_pipe[0], data, sizeof (data));
-      while ((r < 0 && errno == EINTR) || r == sizeof (data));
+      while ((r < 0 && (errno == EINTR || errno == ERESTART)) || r == sizeof (data));
     }
 }
 

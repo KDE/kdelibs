@@ -55,7 +55,14 @@ const GslConfig*	gsl_get_config	(void) G_GNUC_CONST;
 /* --- memory allocation --- */
 #define gsl_new_struct(type, n)		((type*) gsl_alloc_memblock (sizeof (type) * (n)))
 #define gsl_new_struct0(type, n)	((type*) gsl_alloc_memblock0 (sizeof (type) * (n)))
-#define gsl_delete_struct(type, n, mem)	(gsl_free_memblock (sizeof (type) * (n), (mem)))
+#ifndef	__GNUC__
+#  define gsl_delete_struct(type, n, mem)	(gsl_free_memblock (sizeof (type) * (n), (mem)))
+#else					/* provide typesafety if possible */
+#  define gsl_delete_struct(type, n, mem)	({ \
+  type *__typed_pointer = (mem); \
+  gsl_free_memblock (sizeof (type) * (n), __typed_pointer); \
+})
+#endif
 
 
 /* --- ring (circular-list) --- */

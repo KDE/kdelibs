@@ -27,7 +27,7 @@ extern "C" {
 
 
 /* --- macros --- */
-#define	GSL_DATA_CACHE_NODE_SIZE(dcache)	(GSL_DATA_CACHE (dcache)->node_size)
+#define	GSL_DATA_CACHE_NODE_SIZE(dcache)	(((GslDataCache*) (dcache))->node_size)
 
 
 /* --- typedefs & structures --- */

@@ -16,8 +16,7 @@
  * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#include "gslglib.h"
-#include "gslglibhash.cc"
+#include "gsldefs.h"
 #include <string.h>
 
 /* cause hashvalue collisions for the test */
@@ -43,6 +42,7 @@ void fail_func (gpointer key, gpointer value, gpointer user_data) {
 
 
 void count_func (gpointer key, gpointer value, gpointer user_data) {
+  g_assert (value != NULL && key != NULL);
 	for(int i=0;i<50;i++)
 	{
 		if(strcmp((char *)key, test[i].key) == 0)
@@ -98,7 +98,7 @@ int main()
 	for(int i=0;i<50;i+=2)
 	{
 		/* remove even valued keys */
-		g_hash_table_insert (t, test[i].key, 0);
+		g_hash_table_remove (t, test[i].key);
 	}
 
 	g_assert (g_hash_table_lookup (t, "key-24") == 0);

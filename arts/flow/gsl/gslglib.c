@@ -1,4 +1,5 @@
-#include "gslglib.h"
+#include "gsl/gslglib.h"
+#include "gsl/gsldefs.h"
 
 #include <locale.h>
 #include <string.h>
@@ -6,19 +7,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-#ifndef __DECC__
-#include <inttypes.h>
-#else
-typedef long           int64_t;
-#endif
 
+#define	GLIB_SIZEOF_INTMAX	GSL_SIZEOF_INTMAX
 
 gpointer g_malloc         (gulong        n_bytes) { void*p = malloc(n_bytes); GSL_ASSERT(p!=0); return p; }
 gpointer g_malloc0        (gulong        n_bytes) { return memset(g_malloc(n_bytes),0,n_bytes); }
 gpointer g_realloc        (gpointer      mem,
 			   gulong        n_bytes) { void*p = realloc(mem,n_bytes); GSL_ASSERT(p!=0); return p; }
 void     g_free           (gpointer      mem) { if (mem) free(mem); }
-void g_usleep(unsigned long usec) { usleep(usec); }
+void g_usleep (unsigned long usec) { usleep (usec); }
 char* g_strerror(int e) { return strerror (e); }
 
 
@@ -2035,7 +2032,7 @@ printf_string_upper_bound (const gchar *format,
 		    }
 		  break;
 		case 'j':
-		  if (sizeof(int64_t) > 4)
+		  if (GLIB_SIZEOF_INTMAX > 4)
 		    {
 		      spec.mod_long = TRUE;
 		      spec.mod_extra_long = TRUE;

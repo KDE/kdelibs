@@ -130,9 +130,9 @@ struct _OpNode
 
 
 #if defined(__GNUC__) || defined(__DECC__)
-#define OP_DEBUG(lvl, args...)	_op_debug (OP_DEBUG_ ## lvl, args)
-void _op_debug         (OpDebugLevel lvl,
-		       const gchar *format,
+#define OP_DEBUG	_gsl_op_debug
+void _gsl_op_debug    (GslEngineDebugLevel lvl,
+		       const gchar        *format,
 		       ...) G_GNUC_PRINTF (2,3);
 #endif
 

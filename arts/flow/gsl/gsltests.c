@@ -65,6 +65,9 @@ main (int   argc,
   
   shift_argc = argc;
   shift_argv = argv;
+
+  g_thread_init (NULL);
+  gsl_init (NULL);
   
   arg = shift ();
   if (!arg)
@@ -86,15 +89,13 @@ main (int   argc,
   else if (strcmp (arg, "file-test") == 0)
     {
       gchar *file = pshift ();
-
+      
       g_print ("file test for \"%s\":\n", file);
-#if 0      
       g_print ("  is_regular: %u\n", g_file_test (file, G_FILE_TEST_IS_REGULAR));
       g_print ("  is_symlink: %u\n", g_file_test (file, G_FILE_TEST_IS_SYMLINK));
       g_print ("  is_dir    : %u\n", g_file_test (file, G_FILE_TEST_IS_DIR));
       g_print ("  is_exec   : %u\n", g_file_test (file, G_FILE_TEST_IS_EXECUTABLE));
       g_print ("  exists    : %u\n", g_file_test (file, G_FILE_TEST_EXISTS));
-#endif
     }
   else if (strcmp (arg, "rf") == 0)
     {
@@ -250,13 +251,23 @@ main (int   argc,
 	       gsl_complex_str (phi),
 	       gsl_complex_str (gsl_complex_tanh (phi)));
     }
+  else if (strcmp (arg, "midi2freq") == 0)
+    {
+      gint note;
+      note = atol (pshift ());
+      note = CLAMP (note, 0, 128);
+      g_print ("midi2freq(%u) = %f\n",
+	       note,
+	       gsl_temp_freq (gsl_get_config ()->kammer_freq,
+			      note - gsl_get_config ()->midi_kammer_note));
+    }
   else if (strcmp (arg, "butter") == 0)
     {
       guint order;
       double f, e;
       order = atoi (pshift ()); order = MAX (order, 1);
       f = atof (pshift ());
-      e = atof(pshift ());
+      e = atof (pshift ());
       f *= GSL_PI / 2.;
       e = gsl_trans_zepsilon2ss (e);
       {
@@ -380,6 +391,7 @@ usage (void)
   g_print ("  sinh <phi.re> <phi.im>    complex hyperbolic sine\n");
   g_print ("  cosh <phi.re> <phi.im>    complex hyperbolic cosine\n");
   g_print ("  tanh <phi.re> <phi.im>    complex hyperbolic tangent\n");
+  g_print ("  midi2freq <midinote>      convert midinote into oscilaltor frequency\n");
   g_print ("  snc <u.re> <u.im> <emmc.re> <emmc.im>     sn() for complex numbers\n");
   g_print ("  asnc <y.re> <y.im> <emmc.re> <emmc.im>    asn() for complex numbers\n");
   g_print ("  sci_sn <u> <k2>                           scilab version of sn()\n");

@@ -19,6 +19,7 @@
 #include "gsldatahandle.h"
 
 #include "gslcommon.h"
+#include "gsldatacache.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -36,6 +37,21 @@ typedef struct {
   GslLong	    cut_offset;
   GslLong	    n_cut_values;
 } CutHandle;
+typedef struct {
+  GslDataHandle     dhandle;
+  GslDataHandle	   *src_handle;
+} ReversedHandle;
+typedef struct {
+  GslDataHandle     dhandle;
+  GslDataHandle	   *src_handle;
+  GslLong	    loop_start;
+  GslLong	    loop_width;
+} LoopHandle;
+typedef struct {
+  GslDataHandle     dhandle;
+  GslDataCache	   *dcache;
+  guint		    node_size;
+} DCacheHandle;
 typedef struct {
   GslDataHandle     dhandle;
   GslWaveFormatType format;
@@ -103,16 +119,16 @@ gsl_data_handle_unref (GslDataHandle *dhandle)
     dhandle->vtable->destroy (dhandle);
 }
 
-GslErrorType
+gint	/* errno return */
 gsl_data_handle_open (GslDataHandle *dhandle)
 {
-  g_return_val_if_fail (dhandle != NULL, GSL_ERROR_INTERNAL);
-  g_return_val_if_fail (dhandle->ref_count > 0, GSL_ERROR_INTERNAL);
+  g_return_val_if_fail (dhandle != NULL, EINVAL);
+  g_return_val_if_fail (dhandle->ref_count > 0, EINVAL);
 
   GSL_SPIN_LOCK (&dhandle->mutex);
   if (dhandle->open_count == 0)
     {
-      GslErrorType error = dhandle->vtable->open (dhandle);
+      gint error = dhandle->vtable->open (dhandle);
 
       if (error)
 	{
@@ -126,7 +142,7 @@ gsl_data_handle_open (GslDataHandle *dhandle)
     dhandle->open_count++;
   GSL_SPIN_UNLOCK (&dhandle->mutex);
 
-  return GSL_ERROR_NONE;
+  return 0;
 }
 
 void
@@ -163,8 +179,9 @@ gsl_data_handle_read (GslDataHandle *dhandle,
   if (n_values < 1)
     return 0;
   g_return_val_if_fail (values != NULL, -1);
-  g_return_val_if_fail (value_offset + n_values <= dhandle->n_values, -1);
-  
+  g_return_val_if_fail (value_offset < dhandle->n_values, -1);
+
+  n_values = MIN (n_values, dhandle->n_values - value_offset);
   GSL_SPIN_LOCK (&dhandle->mutex);
   l = dhandle->vtable->read (dhandle, value_offset, n_values, values);
   GSL_SPIN_UNLOCK (&dhandle->mutex);
@@ -174,12 +191,14 @@ gsl_data_handle_read (GslDataHandle *dhandle,
 
 gboolean
 gsl_data_handle_common_init (GslDataHandle *dhandle,
-			     const gchar   *file_name)
+			     const gchar   *file_name,
+			     guint          bit_depth)
 {
   g_return_val_if_fail (dhandle != NULL, FALSE);
   g_return_val_if_fail (dhandle->vtable == NULL, FALSE);
   g_return_val_if_fail (dhandle->name == NULL, FALSE);
   g_return_val_if_fail (dhandle->ref_count == 0, FALSE);
+  g_return_val_if_fail (bit_depth > 0, FALSE);
 
   if (file_name)
     {
@@ -198,6 +217,7 @@ gsl_data_handle_common_init (GslDataHandle *dhandle,
       dhandle->mtime = time (NULL);
       dhandle->n_values = 0;
     }
+  dhandle->bit_depth = bit_depth;
   gsl_mutex_init (&dhandle->mutex);
   dhandle->ref_count = 1;
   dhandle->open_count = 0;
@@ -218,7 +238,7 @@ cut_handle_destroy (GslDataHandle *data_handle)
   gsl_delete_struct (CutHandle, 1, chandle);
 }
 
-static GslErrorType
+static gint
 cut_handle_open (GslDataHandle *data_handle)
 {
   CutHandle *chandle = (CutHandle*) data_handle;
@@ -272,15 +292,15 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
   g_return_val_if_fail (cut_offset + n_cut_values + tail_cut < src_handle->n_values, NULL);
 
   chandle = gsl_new_struct0 (CutHandle, 1);
-  success = gsl_data_handle_common_init (&chandle->dhandle, NULL);
+  success = gsl_data_handle_common_init (&chandle->dhandle, NULL, src_handle->bit_depth);
   if (success)
     {
-      chandle->dhandle.name = g_strconcat (src_handle->name, "/ #translate /", NULL);
+      chandle->dhandle.name = g_strconcat (src_handle->name, "// #translate /", NULL);
       chandle->dhandle.vtable = &cut_handle_vtable;
+      chandle->dhandle.n_values = src_handle->n_values - n_cut_values - tail_cut;
       chandle->src_handle = gsl_data_handle_ref (src_handle);
       chandle->cut_offset = cut_offset;
       chandle->n_cut_values = n_cut_values;
-      chandle->dhandle.n_values = src_handle->n_values - n_cut_values - tail_cut;
     }
   if (!success)
     {
@@ -291,26 +311,299 @@ gsl_data_handle_new_translate (GslDataHandle *src_handle,
 }
 
 
+/* --- reversed handle --- */
+static void
+reversed_handle_destroy (GslDataHandle *data_handle)
+{
+  ReversedHandle *rhandle = (ReversedHandle*) data_handle;
+
+  gsl_data_handle_unref (rhandle->src_handle);
+
+  gsl_data_handle_common_free (data_handle);
+  gsl_delete_struct (ReversedHandle, 1, rhandle);
+}
+
+static gint
+reversed_handle_open (GslDataHandle *data_handle)
+{
+  ReversedHandle *rhandle = (ReversedHandle*) data_handle;
+
+  return gsl_data_handle_open (rhandle->src_handle);
+}
+
+static void
+reversed_handle_close (GslDataHandle *data_handle)
+{
+  ReversedHandle *rhandle = (ReversedHandle*) data_handle;
+
+  gsl_data_handle_close (rhandle->src_handle);
+}
+
+static GslLong
+reversed_handle_read (GslDataHandle *data_handle,
+		      GslLong        voffset,
+		      GslLong        n_values,
+		      gfloat        *values)
+{
+  ReversedHandle *rhandle = (ReversedHandle*) data_handle;
+  GslLong left, new_offset = data_handle->n_values - (voffset + n_values);
+  gfloat *t, *p = values;
+  
+  g_assert (new_offset >= 0);
+
+  left = n_values;
+  do
+    {
+      GslLong l = gsl_data_handle_read (rhandle->src_handle, new_offset, left, p);
+
+      if (l < 0)
+	return l;	/* pass on errors */
+      g_assert (l <= left);
+
+      new_offset += l;
+      left -= l;
+      p += l;
+    }
+  while (left > 0);
+
+  p = values;
+  t = values + n_values - 1;
+  while (p < t)
+    {
+      gfloat v = *t;
+
+      *t-- = *p;
+      *p++ = v;
+    }
+  return n_values;
+}
+
+GslDataHandle*
+gsl_data_handle_new_reversed (GslDataHandle *src_handle)
+{
+  static GslDataHandleFuncs reversed_handle_vtable = {
+    reversed_handle_open,
+    reversed_handle_read,
+    reversed_handle_close,
+    reversed_handle_destroy,
+  };
+  ReversedHandle *rhandle;
+  gboolean success;
+
+  g_return_val_if_fail (src_handle != NULL, NULL);
+
+  rhandle = gsl_new_struct0 (ReversedHandle, 1);
+  success = gsl_data_handle_common_init (&rhandle->dhandle, NULL, src_handle->bit_depth);
+  if (success)
+    {
+      rhandle->dhandle.name = g_strconcat (src_handle->name, "// #reversed /", NULL);
+      rhandle->dhandle.vtable = &reversed_handle_vtable;
+      rhandle->dhandle.n_values = src_handle->n_values;
+      rhandle->src_handle = gsl_data_handle_ref (src_handle);
+    }
+  if (!success)
+    {
+      gsl_delete_struct (ReversedHandle, 1, rhandle);
+      return NULL;
+    }
+  return &rhandle->dhandle;
+}
+
+
+/* --- loop handle --- */
+static void
+loop_handle_destroy (GslDataHandle *data_handle)
+{
+  LoopHandle *lhandle = (LoopHandle*) data_handle;
+
+  gsl_data_handle_unref (lhandle->src_handle);
+
+  gsl_data_handle_common_free (data_handle);
+  gsl_delete_struct (LoopHandle, 1, lhandle);
+}
+
+static gint
+loop_handle_open (GslDataHandle *data_handle)
+{
+  LoopHandle *lhandle = (LoopHandle*) data_handle;
+
+  return gsl_data_handle_open (lhandle->src_handle);
+}
+
+static void
+loop_handle_close (GslDataHandle *data_handle)
+{
+  LoopHandle *lhandle = (LoopHandle*) data_handle;
+
+  gsl_data_handle_close (lhandle->src_handle);
+}
+
+static GslLong
+loop_handle_read (GslDataHandle *data_handle,
+		  GslLong        voffset,
+		  GslLong        n_values,
+		  gfloat        *values)
+{
+  LoopHandle *lhandle = (LoopHandle*) data_handle;
+
+  if (voffset < lhandle->loop_start)
+    return gsl_data_handle_read (lhandle->src_handle, voffset,
+				 MIN (lhandle->loop_start - voffset, n_values),
+				 values);
+  else
+    {
+      GslLong noffset = voffset - lhandle->loop_start;
+
+      noffset %= lhandle->loop_width;
+
+      return gsl_data_handle_read (lhandle->src_handle,
+				   lhandle->loop_start + noffset,
+				   MIN (lhandle->loop_width - noffset, n_values),
+				   values);
+    }
+}
+
+GslDataHandle*
+gsl_data_handle_new_looped (GslDataHandle *src_handle,
+			    GslLong        loop_start,
+			    GslLong        loop_end)
+{
+  static GslDataHandleFuncs loop_handle_vtable = {
+    loop_handle_open,
+    loop_handle_read,
+    loop_handle_close,
+    loop_handle_destroy,
+  };
+  LoopHandle *lhandle;
+  gboolean success;
+
+  g_return_val_if_fail (src_handle != NULL, NULL);
+  g_return_val_if_fail (loop_start >= 0, NULL);
+  g_return_val_if_fail (loop_start <= loop_end, NULL);
+  g_return_val_if_fail (loop_end < src_handle->n_values, NULL);
+
+  lhandle = gsl_new_struct0 (LoopHandle, 1);
+  success = gsl_data_handle_common_init (&lhandle->dhandle, NULL, src_handle->bit_depth);
+  if (success)
+    {
+      lhandle->dhandle.name = g_strdup_printf ("%s// #loop(0x%lx:0x%lx) /", src_handle->name, loop_start, loop_end);
+      lhandle->dhandle.vtable = &loop_handle_vtable;
+      lhandle->dhandle.n_values = GSL_MAXLONG;
+      lhandle->src_handle = gsl_data_handle_ref (src_handle);
+      lhandle->loop_start = loop_start;
+      lhandle->loop_width = loop_end - loop_start + 1;
+    }
+  if (!success)
+    {
+      gsl_delete_struct (LoopHandle, 1, lhandle);
+      return NULL;
+    }
+  return &lhandle->dhandle;
+}
+
+
+/* --- dcache handle --- */
+static void
+dcache_handle_destroy (GslDataHandle *data_handle)
+{
+  DCacheHandle *dhandle = (DCacheHandle*) data_handle;
+
+  gsl_data_cache_unref (dhandle->dcache);
+
+  gsl_data_handle_common_free (data_handle);
+  gsl_delete_struct (DCacheHandle, 1, dhandle);
+}
+
+static gint
+dcache_handle_open (GslDataHandle *data_handle)
+{
+  DCacheHandle *dhandle = (DCacheHandle*) data_handle;
+
+  gsl_data_cache_open (dhandle->dcache);
+
+  return 0;	/* FIXME: should catch messages here and return error */
+}
+
+static void
+dcache_handle_close (GslDataHandle *data_handle)
+{
+  DCacheHandle *dhandle = (DCacheHandle*) data_handle;
+
+  gsl_data_cache_close (dhandle->dcache);
+}
+
+static GslLong
+dcache_handle_read (GslDataHandle *data_handle,
+		    GslLong        voffset,
+		    GslLong        n_values,
+		    gfloat        *values)
+{
+  DCacheHandle *dhandle = (DCacheHandle*) data_handle;
+  GslDataCacheNode *node;
+
+  node = gsl_data_cache_ref_node (dhandle->dcache, voffset, TRUE);
+  voffset -= node->offset;
+  n_values = MIN (n_values, dhandle->node_size - voffset);
+  memcpy (values, node->data + voffset, sizeof (values[0]) * n_values);
+
+  return n_values;
+}
+
+GslDataHandle*
+gsl_data_handle_new_dcached (GslDataCache *dcache)
+{
+  static GslDataHandleFuncs dcache_handle_vtable = {
+    dcache_handle_open,
+    dcache_handle_read,
+    dcache_handle_close,
+    dcache_handle_destroy,
+  };
+  DCacheHandle *dhandle;
+  gboolean success;
+
+  g_return_val_if_fail (dcache != NULL, NULL);
+
+  dhandle = gsl_new_struct0 (DCacheHandle, 1);
+  success = gsl_data_handle_common_init (&dhandle->dhandle, NULL, dcache->handle->bit_depth);
+  if (success)
+    {
+      dhandle->dhandle.name = g_strdup_printf ("%s// #dcache /", dcache->handle->name);
+      dhandle->dhandle.vtable = &dcache_handle_vtable;
+      dhandle->dhandle.n_values = dcache->handle->n_values;
+      dhandle->dcache = gsl_data_cache_ref (dcache);
+      dhandle->node_size = GSL_DATA_CACHE_NODE_SIZE (dcache);
+    }
+  if (!success)
+    {
+      gsl_delete_struct (DCacheHandle, 1, dhandle);
+      return NULL;
+    }
+  return &dhandle->dhandle;
+}
+
+
 /* --- wave handle --- */
-static guint
-wave_format_width (GslWaveFormatType format)
+static inline const guint G_GNUC_CONST
+wave_format_bit_depth (const GslWaveFormatType format)
 {
   switch (format)
     {
     case GSL_WAVE_FORMAT_UNSIGNED_8:
     case GSL_WAVE_FORMAT_SIGNED_8:
-      return 1;
+      return 8;
     case GSL_WAVE_FORMAT_UNSIGNED_12:
     case GSL_WAVE_FORMAT_SIGNED_12:
+      return 12;
     case GSL_WAVE_FORMAT_UNSIGNED_16:
     case GSL_WAVE_FORMAT_SIGNED_16:
-      return 2;
+      return 16;
     case GSL_WAVE_FORMAT_FLOAT:
-      return 4;
+      return 32;
     default:
       return 0;
     }
 }
+#define	wave_format_byte_width(f)	((wave_format_bit_depth (f) + 7) / 8)
 
 static void
 wave_handle_destroy (GslDataHandle *data_handle)
@@ -325,7 +618,7 @@ wave_handle_destroy (GslDataHandle *data_handle)
   gsl_delete_struct (WaveHandle, 1, whandle);
 }
 
-static GslErrorType
+static gint
 wave_handle_open (GslDataHandle *data_handle)
 {
   WaveHandle *whandle = (WaveHandle*) data_handle;
@@ -333,9 +626,9 @@ wave_handle_open (GslDataHandle *data_handle)
   whandle->fd = open (whandle->dhandle.name, O_RDONLY);
 
   if (whandle->fd < 0)
-    return GSL_ERROR_IO;
+    return errno ? errno : EIO;
 
-  return GSL_ERROR_NONE;
+  return 0;
 }
 
 static void
@@ -357,8 +650,8 @@ wave_handle_read (GslDataHandle *data_handle,
   gpointer buffer = values;
   GslLong l, i = 0;
 
-  i = voffset * wave_format_width (whandle->format);	/* float offset into bytes */
-  i += whandle->boffset_reminder;			/* remaining byte offset */
+  i = voffset * wave_format_byte_width (whandle->format);	/* float offset into bytes */
+  i += whandle->boffset_reminder;				/* remaining byte offset */
   l = lseek (whandle->fd, i, SEEK_SET);
   if (l < 0 && errno != EINVAL)
     return -1;
@@ -399,13 +692,13 @@ wave_handle_read (GslDataHandle *data_handle,
       switch (whandle->format)
 	{
 	case GSL_WAVE_FORMAT_UNSIGNED_16:
-	  if (whandle->byte_order != GSL_BYTE_ORDER)
+	  if (whandle->byte_order != G_BYTE_ORDER)
 	    for (i = 0; i < l; i++)
 	      {
 		int v = GUINT16_SWAP_LE_BE (u16[i]); v -= 32768;
 		values[i] = v * (1. / 32768.);
 	      }
-	  else /* whandle->byte_order == GSL_BYTE_ORDER */
+	  else /* whandle->byte_order == G_BYTE_ORDER */
 	    for (i = 0; i < l; i++)
 	      {
 		int v = u16[i]; v -= 32768;
@@ -413,13 +706,13 @@ wave_handle_read (GslDataHandle *data_handle,
 	      }
 	  break;
 	case GSL_WAVE_FORMAT_UNSIGNED_12:
-	  if (whandle->byte_order != GSL_BYTE_ORDER)
+	  if (whandle->byte_order != G_BYTE_ORDER)
 	    for (i = 0; i < l; i++)
 	      {
 		int v = GUINT16_SWAP_LE_BE (u16[i]); v &= 0x0fff; v -= 4096;
 		values[i] = v * (1. / 4096.);
 	      }
-	  else /* whandle->byte_order == GSL_BYTE_ORDER */
+	  else /* whandle->byte_order == G_BYTE_ORDER */
 	    for (i = 0; i < l; i++)
 	      {
 		int v = u16[i]; v &= 0x0fff; v -= 4096;
@@ -427,13 +720,13 @@ wave_handle_read (GslDataHandle *data_handle,
 	      }
 	  break;
 	case GSL_WAVE_FORMAT_SIGNED_16:
-	  if (whandle->byte_order != GSL_BYTE_ORDER)
+	  if (whandle->byte_order != G_BYTE_ORDER)
 	    for (i = 0; i < l; i++)
 	      {
 		gint16 v = GUINT16_SWAP_LE_BE (u16[i]);
 		values[i] = v * (1. / 32768.);
 	      }
-	  else /* whandle->byte_order == GSL_BYTE_ORDER */
+	  else /* whandle->byte_order == G_BYTE_ORDER */
 	    for (i = 0; i < l; i++)
 	      {
 		gint16 v = u16[i];
@@ -441,13 +734,13 @@ wave_handle_read (GslDataHandle *data_handle,
 	      }
 	  break;
 	case GSL_WAVE_FORMAT_SIGNED_12:
-	  if (whandle->byte_order != GSL_BYTE_ORDER)
+	  if (whandle->byte_order != G_BYTE_ORDER)
 	    for (i = 0; i < l; i++)
 	      {
 		gint16 v = GUINT16_SWAP_LE_BE (u16[i]);
 		values[i] = CLAMP (v, -4096, 4096) * (1. / 4096.);
 	      }
-	  else /* whandle->byte_order == GSL_BYTE_ORDER */
+	  else /* whandle->byte_order == G_BYTE_ORDER */
 	    for (i = 0; i < l; i++)
 	      {
 		gint16 v = u16[i];
@@ -464,7 +757,7 @@ wave_handle_read (GslDataHandle *data_handle,
       if (l < 4)
 	return l < 0 ? l : 0;
       l >>= 2;
-      if (whandle->byte_order != GSL_BYTE_ORDER)
+      if (whandle->byte_order != G_BYTE_ORDER)
 	for (i = 0; i < l; i++)
 	  u32[i] = GUINT32_SWAP_LE_BE (u32[i]);
       break;
@@ -495,7 +788,7 @@ gsl_wave_handle_new_cached (const gchar      *file_name,
   g_return_val_if_fail (file_name != NULL, NULL);
   g_return_val_if_fail (format > GSL_WAVE_FORMAT_NONE && format < GSL_WAVE_FORMAT_LAST, NULL);
   g_return_val_if_fail (byte_order == G_LITTLE_ENDIAN || byte_order == G_BIG_ENDIAN, NULL);
-  g_return_val_if_fail (boffset_reminder < wave_format_width (format), NULL);
+  g_return_val_if_fail (boffset_reminder < wave_format_byte_width (format), NULL);
 
   if (mtime == 0)	/* don't need mtime match */
     {
@@ -524,7 +817,7 @@ gsl_wave_handle_new_cached (const gchar      *file_name,
   GSL_SPIN_UNLOCK (&dhandle_global);
 
   whandle = gsl_new_struct0 (WaveHandle, 1);
-  success = gsl_data_handle_common_init (&whandle->dhandle, file_name);
+  success = gsl_data_handle_common_init (&whandle->dhandle, file_name, wave_format_bit_depth (format));
   if (success)
     {
       GslLong l;
@@ -540,7 +833,7 @@ gsl_wave_handle_new_cached (const gchar      *file_name,
       if (l > whandle->boffset_reminder)
 	{
 	  l -= whandle->boffset_reminder;
-	  l /= wave_format_width (format);
+	  l /= wave_format_byte_width (format);
 	  if (l > 0)
 	    whandle->dhandle.n_values = l;
 	  else
@@ -579,7 +872,7 @@ gsl_wave_handle_new (const gchar      *file_name,
   g_return_val_if_fail (byte_offset >= 0, NULL);
   g_return_val_if_fail (n_values >= 1 || n_values == -1, NULL);
 
-  fwidth = wave_format_width (format);
+  fwidth = wave_format_byte_width (format);
   boffset_reminder = byte_offset % fwidth;
   whandle = gsl_wave_handle_new_cached (file_name, mtime, format, byte_order, boffset_reminder);
   if (!whandle)
