@@ -5,8 +5,8 @@
  * This file is part of the KDE project, module kdecore.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
  *
- * This is free software; it comes under the GNU Library General 
- * Public License, version 2. See the file "COPYING.LIB" for the 
+ * This is free software; it comes under the GNU Library General
+ * Public License, version 2. See the file "COPYING.LIB" for the
  * exact licensing terms.
  *
  * kicontheme.cpp: Lowlevel icon theme handling.
@@ -95,11 +95,11 @@ KIconTheme::KIconTheme(QString name, QString appName)
     mInherits = cfg->readListEntry("Inherits");
     d->example = cfg->readEntry("Example");
     d->screenshot = cfg->readEntry("ScreenShot");
-    
+
     if (isApp)
     {
 	// We just read the global theme description file. This is intended
-	// for app specific themes too. 
+	// for app specific themes too.
 	icnlibs = KGlobal::dirs()->resourceDirs("data");
 	for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
 	{
@@ -203,7 +203,7 @@ QStringList KIconTheme::queryIcons(int size, int context)
 	    continue;
 	if ((dir->type() == KIcon::Fixed) && (dir->size() == size))
 	    return dir->iconList();
-	if ((dir->type() == KIcon::Scalable) && 
+	if ((dir->type() == KIcon::Scalable) &&
 		(size >= dir->minSize()) && (size <= dir->maxSize()))
 	    return dir->iconList();
     }
@@ -229,22 +229,24 @@ KIcon KIconTheme::iconPath(QString name, int size, int match)
 {
     KIcon icon;
     QString path;
-    int delta = 1000, dw;
+    int delta = 1000;
     KIconThemeDir *dir;
     for (dir=mDirs.first(); dir!=0L; dir=mDirs.next())
     {
-	if (match == KIcon::MatchExact) 
+	if (match == KIcon::MatchExact)
 	{
 	    if ((dir->type() == KIcon::Fixed) && (dir->size() != size))
 		continue;
-	    if ((dir->type() == KIcon::Scalable) && 
+	    if ((dir->type() == KIcon::Scalable) &&
 		    ((size < dir->minSize()) || (size > dir->maxSize())))
 		continue;
 	} else
 	{
-	    dw = dir->size() - size;
+	    int dw = dir->size() - size;
 	    if ((dw > 6) || (abs(dw) >= abs(delta)))
 		continue;
+
+            delta = dw;
 	}
 
 	path = dir->iconPath(name);
@@ -254,11 +256,6 @@ KIcon KIconTheme::iconPath(QString name, int size, int match)
 	icon.size = dir->size();
 	icon.type = dir->type();
 	icon.context = dir->context();
-
-	if (match == KIcon::MatchExact)
-	    break;
-	else
-	    delta = dw;
     }
     return icon;
 }
@@ -303,7 +300,7 @@ QStringList KIconTheme::list()
             if (!result.contains(*it2))
 		result += *it2;
         }
-    }     
+    }
     return result;
 }
 

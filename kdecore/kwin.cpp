@@ -22,7 +22,7 @@
 
 #include "kwin.h"
 #include "kapp.h"
-#include <dcopclient.h>   //   
+#include <dcopclient.h>   //
 #include <qcstring.h>     //  > for DCOP
 #include <qdatastream.h>  //
 #include <qrect.h>        // for clientArea() and edgeClientArea()
@@ -242,12 +242,12 @@ bool KWin::isDockWindow( WId dockWin, WId *forWin )
     bool netDocking =  XGetWindowProperty( qt_xdisplay(), dockWin, net_kde_docking_window_for, 0, 1,
 					   FALSE, XA_WINDOW, &type, &format,
 					   &length, &after, &data ) == Success;
-     
+
     if ( netDocking ) {
 	if ( data ) {
 	    result = TRUE;
 	    if ( forWin && netDocking )
-	       *forWin = ( (WId*)data)[0];  
+	       *forWin = ( (WId*)data)[0];
 	    XFree( data );
 	}
     }
@@ -351,7 +351,7 @@ void KWin::avoid(WId win, AnchorEdge edge)
 
   XTextProperty avoidProp;
 
-  char * anchorEdge;
+  const char* anchorEdge;
 
   switch (edge) {
     case Top:     anchorEdge = "N"; break;
@@ -360,10 +360,11 @@ void KWin::avoid(WId win, AnchorEdge edge)
     case Left:    anchorEdge = "W"; break;
     default:      anchorEdge = "0"; break;
   }
-  
+
 //  qDebug("KWin::avoid - anchor edge == '%s'", anchorEdge);
 
-  Status status = XStringListToTextProperty(&anchorEdge, 1, &avoidProp);
+  Status status = XStringListToTextProperty(&const_cast<char*>(anchorEdge),
+                                            1, &avoidProp);
 
   if (0 != status)
     XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
@@ -380,9 +381,10 @@ void KWin::stopAvoiding(WId win)
 
   XTextProperty avoidProp;
 
-  char * anchorEdge = "0";
+  const char * anchorEdge = "0";
 
-  Status status = XStringListToTextProperty(&anchorEdge, 1, &avoidProp);
+  Status status = XStringListToTextProperty(&const_cast<char*>(anchorEdge),
+                                            1, &avoidProp);
 
   if (0 != status)
     XSetTextProperty(qt_xdisplay(), win, &avoidProp, avoidAtom);
@@ -429,7 +431,7 @@ QRect KWin::clientArea()
 
   return retval;
 }
-    
+
 QRect KWin::edgeClientArea()
 {
   QRect retval;

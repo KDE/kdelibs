@@ -35,7 +35,7 @@
 
 DCOPClient *KUniqueApplication::s_DCOPClient = 0;
 
-static KCmdLineOptions kunique_options[] = 
+static KCmdLineOptions kunique_options[] =
 {
   { "nofork", "Don't run in the background.", 0 },
   { 0, 0, 0 }
@@ -48,7 +48,7 @@ KUniqueApplication::dcopClient()
   return s_DCOPClient;
 }
 
-void 
+void
 KUniqueApplication::addCmdLineOptions()
 {
   KCmdLineArgs::addCmdLineOptions(kunique_options, 0, "kuniqueapp", "kde" );
@@ -69,7 +69,7 @@ KUniqueApplication::start(int& argc, char** argv,
      s_DCOPClient = new DCOPClient();
      s_DCOPClient->registerAs(rAppName, false);
      return true;
-  }     
+  }
   DCOPClient *dc;
   int fd[2];
   char result;
@@ -97,7 +97,7 @@ KUniqueApplication::start(int& argc, char** argv,
            ::write(fd[1], &result, 1);
            ::exit(255);
         }
-        if (regName != rAppName) 
+        if (regName != rAppName)
         {
            // Already running. Ok.
            result = 0;
@@ -107,7 +107,7 @@ KUniqueApplication::start(int& argc, char** argv,
            return false;
         }
      }
-     
+
      s_DCOPClient = dc;
      result = 0;
      ::write(fd[1], &result, 1);
@@ -163,7 +163,7 @@ KUniqueApplication::start(int& argc, char** argv,
      }
      if (replyType != "int")
      {
-        qDebug("KUniqueApplication: DCOP communication error!"); 
+        qDebug("KUniqueApplication: DCOP communication error!");
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
@@ -174,6 +174,8 @@ KUniqueApplication::start(int& argc, char** argv,
      ::exit(exitCode);
      break;
   }
+
+  return true;
 }
 
 bool
@@ -191,7 +193,7 @@ KUniqueApplication::start()
      s_DCOPClient = new DCOPClient();
      s_DCOPClient->registerAs(appName, false);
      return true;
-  }     
+  }
   DCOPClient *dc;
   int fd[2];
   char result;
@@ -219,7 +221,7 @@ KUniqueApplication::start()
            ::write(fd[1], &result, 1);
            ::exit(255);
         }
-        if (regName != appName) 
+        if (regName != appName)
         {
            // Already running. Ok.
            result = 0;
@@ -229,7 +231,7 @@ KUniqueApplication::start()
            return false;
         }
      }
-     
+
      s_DCOPClient = dc;
      result = 0;
      ::write(fd[1], &result, 1);
@@ -283,7 +285,7 @@ KUniqueApplication::start()
      }
      if (replyType != "int")
      {
-        qDebug("KUniqueApplication: DCOP communication error!"); 
+        qDebug("KUniqueApplication: DCOP communication error!");
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }
@@ -298,7 +300,7 @@ KUniqueApplication::start()
 
 
 KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled)
-  : KApplication(allowStyles, GUIenabled), 
+  : KApplication(allowStyles, GUIenabled),
     DCOPObject(KCmdLineArgs::about->appName())
 {
   if (!s_DCOPClient)

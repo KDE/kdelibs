@@ -788,7 +788,7 @@ void KApplication::parseCommandLine( )
         KCrash::setCrashHandler(KCrash::defaultCrashHandler);
         KCrash::setEmergencySaveFunction(NULL);
 
-// WABA: What's the use of a path if you can't guarantee that 
+// WABA: What's the use of a path if you can't guarantee that
 // it is the right one?
 // KCrash::setApplicationPath(KStandardDirs::findExe(QCString(args->appName()),NULL,0));
 
@@ -1103,13 +1103,13 @@ QString KApplication::makeStdCaption( const QString &userCaption,
     if( captionLayout == CaptionAppLast )
     {
       if( modified == true )
-      { 
+      {
 	// userCaption must be last arg!!!
 	return( QString("%1 %3 - %2").arg(modString).
 		arg(caption()).arg(userCaption)); // useCaption last!!!
       }
       else {
- 
+
 	// userCaption must be last arg!!!	
 	return( QString("%2 - %1").arg(caption()).arg(userCaption));
       }
@@ -1118,7 +1118,7 @@ QString KApplication::makeStdCaption( const QString &userCaption,
     {
       if( modified == true )
       {
- 
+
 	// userCaption must be last!!!
 	return( QString("%1: %2 %3").arg(caption()).arg(modString).
 		arg(userCaption) );
@@ -1197,7 +1197,7 @@ void KApplication::kdisplaySetPalette()
     disabledgrp.setColor(QColorGroup::Midlight, background.light(110));
 
     QPalette newPal(colgrp, disabledgrp, colgrp);
-/* 
+/*
     if(QPixmap::defaultDepth() > 8){
         QColorGroup iGrp(colgrp);
         iGrp.setColor(QColorGroup::Button, colgrp.button().light(115));
@@ -1211,7 +1211,7 @@ void KApplication::kdisplaySetPalette()
     }
 */
     setPalette(newPal, true);
-    
+
     // GJ: The cursor blink rate doesn't belong here. It should get it's own
     // change message but it doesn't really matter because it isn't set.
     int num = config->readNumEntry("cursorBlinkRate", cursorFlashTime());
@@ -1272,12 +1272,12 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
 }
 
 
-void KApplication::invokeMailer(const QString &address,const QString &subject )
+void KApplication::invokeMailer(const QString &address,const QString &/*subject*/ )
 {
    QString error;
 
    QString mailClient( "kmail");
-   //TODO: subject needs to be passed as well!! 
+   //TODO: subject needs to be passed as well!!
    if (startServiceByDesktopName(mailClient, address, &error))
    {
       warning("Could not launch mail client:\n%s\n", error.local8Bit().data());
