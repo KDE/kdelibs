@@ -35,13 +35,13 @@
 
 /**
  * Represents a service, i.e. an application bound to one or several mimetypes
- * as written in its desktop entry file.
+ * as written in its desktop entry file. A service may be a libary, too.
  *
- * To use the public static methods of this class, you must do 
+ * To use the public static methods of this class, you must do
  * the following registry initialisation (in main() for instance)
  * <pre>
  * #include <kregistry.h>
- * #include <kregfactories.h> 
+ * #include <kregfactories.h>
  *
  * KRegistry::self()->addFactory( new KServiceTypeFactory );
  * KRegistry::self()->addFactory( new KServiceFactory );
@@ -51,12 +51,14 @@
  * The ServiceTypeFactory is more or less mandatory, but if you don't want to
  * keep all the services in your application's memory (and you probably don't),
  * see KTraderServiceProvider in corba/kded/ktrader.h
+ *
+ * @author Torben Weis <weis@kde.org>
  */
 class KService : public KShared
 {
   K_TYPECODE( TC_KService )
 
-public:  
+public:
   typedef KSharedPtr<KService> Ptr;
   typedef const QSharedPtr<QVariant> PropertyPtr;
 
@@ -68,48 +70,92 @@ public:
    *        services. But sometimes you may just want to create
    *        a service object for internal purposes.
    */
-  KService( const QString& _name, const QString& _exec, const QString &_corbaexec, 
-            const QString& _icon, const QStringList& _lstServiceTypes, 
-	    const QString& _comment = QString::null, bool _allow_as_default = true, 
-	    const QString& _path = QString::null, const QString& _terminal = QString::null, 
-	    const QString& _file = QString::null, const QString& _act_mode = QString::null, 
-	    const QStringList& _repoids = QStringList(), bool _put_in_list = true );
+  KService( const QString& _name, const QString& _exec, const QString &_corbaexec,
+            const QString& _icon, const QStringList& _lstServiceTypes,
+	    const QString& _comment = QString::null, bool _allow_as_default = true,
+	    const QString& _path = QString::null, const QString& _terminal = QString::null,
+	    const QString& _file = QString::null, const QString& _act_mode = QString::null,
+	    const QStringList& _repoids = QStringList(),
+	    const QString& _lib = QString::null, int _minor = 0, int _major = 0, const QStringList& _deps = QStringList(),
+	    bool _put_in_list = TRUE );
+  /**
+   * Create an invalid service. This is only usefull in combination
+   * with the streaming operators if you want to load a service from
+   * a stream like done by the @ref #KRegistry.
+   *
+   * @see #isValid.
+   */
   KService( bool _put_in_list = true );
+  /**
+   * Construct a service and take all informations from a @ref KSimpleConfig object.
+   */
   KService( KSimpleConfig& _cfg, bool _put_in_list = true );
+  /**
+   * Construct a service from a stream. That feature is used when dumping the complete
+   * @ref KRegistry in a single file and reading it afterwards.
+   */
   KService( QDataStream& _str, bool _put_in_list = true );
 
-  virtual ~KService();
-  
   /**
-   * @return the name of the service. 
+   * Destroys the service and automatically removes it from the
+   * list of known services.
+   */
+  virtual ~KService();
+
+  /**
+   * @return the name of the service.
    */
   QString name() const { return m_strName; }
-  /** 
-   * @return the command that the service executes. 
+  /**
+   * @return the command that the service executes.
    */
   QString exec() const { return m_strExec; }
-  /** 
+  /**
    * @return the command that the CORBA based service executes.
    *         (usually something like "myapp --server" )
    */
   QString CORBAExec() const { return m_strCORBAExec; }
   /**
-   * @return the icon associated with the service. 
+   * @return the name of the library that contains the services
+   *         implementation.
+   */
+  QString library() const { return m_strLibrary; }
+  /**
+   * @return the major number of the library.
+   *
+   * @see #library
+   * @see #libraryMinor
+   */
+  int libraryMajor() const { return m_libraryMajor; }
+  /**
+   * @return the minor number of the library.
+   *
+   * @see #library
+   * @see #libraryMajor
+   */
+  int libraryMinor() const { return m_libraryMinor; }
+  /**
+   * @return the libraries on which this service depends. That is
+   *         only of interest if the service itelf is a library.
+   */
+  QStringList libraryDependencies() const { return m_lstLibraryDeps; }
+  /**
+   * @return the icon associated with the service.
    */
   QString icon() const { return m_strIcon; }
-  /** 
+  /**
    * @return any options associated with the terminal the service
    * runs in, if it requires a terminal.  The service must be a
    * tty-oriented program).
    */
   QString terminalOptions() const { return m_strTerminalOptions; }
-  /** 
-   * @return the path to the location where the service desktop entry 
-   * is stored. 
+  /**
+   * @return the path to the location where the service desktop entry
+   * is stored.
    */
   QString path() const { return m_strPath; }
   /**
-   * @return the descriptive comment for the service, if there is one. 
+   * @return the descriptive comment for the service, if there is one.
    */
   QString comment() const { return m_strComment; }
   /**
@@ -128,10 +174,10 @@ public:
    */
   // QString file() const { return m_strFile; };
   QStringList serviceTypes() const { return m_lstServiceTypes; }
-  /** 
+  /**
    * @param _service is the name of the service type you are
    *        interested in determining whether this services supports.
-   *        
+   *
    * @return TRUE if the service you specified is supported,
    *        otherwise FALSE.  */
   bool hasServiceType( const QString& _service ) const;
@@ -143,20 +189,44 @@ public:
    */
   bool allowAsDefault() const { return m_bAllowAsDefault; }
 
+  /**
+   * @return the requested properties. Some often used properties
+   *         have convenience access functions like @ref #exec,
+   *         @ref #serviceTypes etc.
+   *
+   *         It depends upon the @ref #serviceTypes of this service which
+   *         properties a service can have.
+   *
+   * @see KServiceType
+   */
   virtual PropertyPtr property( const QString& _name ) const;
+  /**
+   * @return the list of all properties that this service can have.
+   *         That means, that some properties may be empty.
+   */
   virtual QStringList propertyNames() const;
 
   bool isValid() const { return m_bValid; }
 
+  /**
+   * Internal function.
+   *
+   * Load the service from a stream. Use the streaming operators instead.
+   */
   virtual void load( QDataStream& );
+  /**
+   * Internal function.
+   *
+   * Save the service to a stream. Use the streaming operators instead.
+   */
   virtual void save( QDataStream& ) const;
-  
+
   /**
    * @return a pointer to the requested service or 0 if the service is
    *         unknown.
    */
   static KService* service( const QString& _name );
-  
+
   /**
    * @return the whole list of services. Useful to display them.
    */
@@ -183,12 +253,15 @@ private:
   QString m_strComment;
   QString m_strActivationMode;
   QStringList m_lstRepoIds;
-  // QString m_strFile;
+  QString m_strLibrary;
+  int m_libraryMajor;
+  int m_libraryMinor;
+  QStringList m_lstLibraryDeps;
   QStringList m_lstServiceTypes;
   bool m_bAllowAsDefault;
   QMap<QString,QVariant> m_mapProps;
   bool m_bValid;
-  
+
   static QList<KService>* s_lstServices;
 };
 

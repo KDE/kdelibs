@@ -117,6 +117,7 @@ KRegEntry* KServiceTypeFactory::create( KRegistry* _reg, const QString& _file, K
     return 0;
   }
 */
+  
   KServiceType* e;
 
   if ( mime == "inode/directory" )

@@ -1,5 +1,5 @@
 #include <kregistry.h>
-#include <kregfactories.h> 
+#include <kregfactories.h>
 #include "kservices.h"
 #include "kservicetype.h"
 #include "kuserprofile.h"
@@ -47,7 +47,8 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
 		    const QString& _comment, bool _allow_as_default,
 		    const QString& _path, const QString& _terminal,
 		    const QString&, const QString& _act_mode,
-		    const QStringList& _repo_ids, bool _put_in_list )
+		    const QStringList& _repo_ids,
+		    const QString& _lib, int _minor, int _major, const QStringList& deps, bool _put_in_list )
 {
   initStatic();
   m_bValid = true;
@@ -63,10 +64,13 @@ KService::KService( const QString& _name, const QString& _exec, const QString &_
   m_lstServiceTypes = _lstServiceTypes;
   m_strPath = _path;
   m_strTerminalOptions = _terminal;
-  // m_strFile = _file;
   m_bAllowAsDefault = _allow_as_default;
   m_strActivationMode = _act_mode;
   m_lstRepoIds = _repo_ids;
+  m_strLibrary = _lib;
+  m_libraryMajor = _major;
+  m_libraryMinor = _minor;
+  m_lstLibraryDeps = deps;
 }
 
 KService::KService( bool _put_in_list )
@@ -102,6 +106,10 @@ KService::KService( KSimpleConfig& config, bool _put_in_list )
   m_strComment = config.readEntry( "Comment" );
   m_strActivationMode = config.readEntry( "X-KDE-ActivationMode", "UNIX" );
   m_lstRepoIds = config.readListEntry( "X-KDE-RepoIds" );
+  m_strLibrary = config.readEntry( "X-KDE-Library" );
+  m_libraryMajor = config.readNumEntry( "X-KDE-LibraryMajor", 0 );
+  m_libraryMinor = config.readNumEntry( "X-KDE-LibraryMinor", 0 );
+  m_lstLibraryDeps = config.readListEntry( "X-KDE-LibraryDependencies" );
   m_lstServiceTypes = config.readListEntry( "ServiceTypes" );
   // For compatibility with KDE 1.x
   m_lstServiceTypes += config.readListEntry( "MimeType", ';' );
@@ -147,7 +155,7 @@ void KService::load( QDataStream& s )
 
   s >> m_strName >> m_strExec >> m_strCORBAExec >> m_strIcon >> m_strTerminalOptions
     >> m_strPath >> m_strComment >> m_lstServiceTypes >> b >> m_mapProps
-    >> m_strActivationMode >> m_lstRepoIds;
+    >> m_strActivationMode >> m_strLibrary >> m_libraryMajor >> m_libraryMinor >> m_lstRepoIds;
   m_bAllowAsDefault = b;
 
   m_bValid = true;
@@ -156,10 +164,10 @@ void KService::load( QDataStream& s )
 void KService::save( QDataStream& s ) const
 {
   Q_INT8 b = m_bAllowAsDefault;
-    
+
   s << m_strName << m_strExec << m_strCORBAExec << m_strIcon << m_strTerminalOptions
     << m_strPath << m_strComment << m_lstServiceTypes << b << m_mapProps
-    << m_strActivationMode << m_lstRepoIds;
+    << m_strActivationMode << m_strLibrary << m_libraryMajor << m_libraryMinor << m_lstRepoIds;
 }
 
 bool KService::hasServiceType( const QString& _servicetype ) const
@@ -182,29 +190,35 @@ KService::PropertyPtr KService::property( const QString& _name ) const
 
   if ( _name == "Name" )
     p = new QVariant( m_strName );
-  if ( _name == "Exec" )
+  else if ( _name == "Exec" )
     p = new QVariant( m_strExec );
-  if ( _name == "CORBAExec" )
+  else if ( _name == "CORBAExec" )
     p = new QVariant( m_strCORBAExec );
-  if ( _name == "Icon" )
+  else if ( _name == "Icon" )
     p = new QVariant( m_strIcon );
-  if ( _name == "TerminalOptions" )
+  else if ( _name == "TerminalOptions" )
     p = new QVariant( m_strTerminalOptions );
-  if ( _name == "Path" )
+  else if ( _name == "Path" )
     p = new QVariant( m_strPath );
-  if ( _name == "Comment" )
+  else if ( _name == "Comment" )
     p = new QVariant( m_strComment );
-  if ( _name == "ActivationMode" )
+  else if ( _name == "ActivationMode" )
     p = new QVariant( m_strActivationMode );
-  if ( _name == "RepoIds" )
+  else if ( _name == "RepoIds" )
     p = new QVariant( m_lstRepoIds );
-  //  if ( _name == "File" )
-  //    p = new QVariant( m_strFile );
-  if ( _name == "ServiceTypes" )
+  else if ( _name == "ServiceTypes" )
     p = new QVariant( m_lstServiceTypes );
-  if ( _name == "AllowAsDefault" )
+  else if ( _name == "AllowAsDefault" )
     p = new QVariant( m_bAllowAsDefault );
-
+  else if ( _name == "Library" )
+    p = new QVariant( m_strLibrary );
+  else if ( _name == "LibraryMajor" )
+    p = new QVariant( m_libraryMajor );
+  else if ( _name == "LibraryMinor" )
+    p = new QVariant( m_libraryMinor );
+  else if ( _name == "LibraryDependencies" )
+    p = new QVariant( m_lstLibraryDeps );
+		      
   if ( p )
     return KService::PropertyPtr( p );
 
@@ -238,7 +252,11 @@ QStringList KService::propertyNames() const
   res.append( "AllowAsDefault" );
   res.append( "RepoIds" );
   res.append( "ActivationMode" );
-
+  res.append( "Library" );
+  res.append( "LibraryMajor" );
+  res.append( "LibraryMinor" );
+  res.append( "LibraryDependencies" );
+  
   return res;
 }
 
@@ -262,5 +280,5 @@ const QList<KService>& KService::services()
     KRegistry::self()->addFactory( new KServiceFactory );
     KRegistry::self()->load();
   }
-  return *s_lstServices; 
+  return *s_lstServices;
 }
