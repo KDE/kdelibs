@@ -948,6 +948,8 @@ void KKeyChooser::_warning( const KKeySequence& cut, QString sAction, QString sT
 
 bool KKeyChooser::promptForReassign( const KKeySequence& cut, const QString& sAction, ActionType type, QWidget* parent )
 {
+        if(cut.isNull())
+            return true;
         QString sTitle;
         QString s;
         if( type == Standard ) {
