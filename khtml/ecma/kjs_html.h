@@ -56,7 +56,7 @@ namespace KJS {
     static const ClassInfo info;
     enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
            Images, Applets, Links, Forms, Anchors, All, Open, Close,
-           Write, WriteLn, GetElementById, GetElementsByName,
+           Write, WriteLn, GetElementsByName,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified, Height, Width, Dir };
   };
 

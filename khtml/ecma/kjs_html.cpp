@@ -140,8 +140,6 @@ Value KJS::HTMLDocFunction::tryCall(ExecState *exec, Object &, const List &args)
     doc.write(str.string());
     return Undefined();
   }
-  case HTMLDocument::GetElementById:
-    return getDOMNode(exec,doc.getElementById(v.toString(exec).string()));
   case HTMLDocument::GetElementsByName:
     return getDOMNodeList(exec,doc.getElementsByName(v.toString(exec).string()));
   }
@@ -204,7 +202,6 @@ const ClassInfo KJS::HTMLDocument::info =
   close			HTMLDocument::Close		DontDelete|Function 0
   write			HTMLDocument::Write		DontDelete|Function 1
   writeln		HTMLDocument::WriteLn		DontDelete|Function 1
-  getElementById	HTMLDocument::GetElementById	DontDelete|Function 1
   getElementsByName	HTMLDocument::GetElementsByName	DontDelete|Function 1
   bgColor		HTMLDocument::BgColor		DontDelete
   fgColor		HTMLDocument::FgColor		DontDelete
@@ -280,7 +277,6 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
     case Close:
     case Write:
     case WriteLn:
-    case GetElementById:
     case GetElementsByName:
       //return lookupOrCreateFunction<HTMLDocFunction,HTMLDocument>( exec, propertyName, this, entry );
       // Modified copy of lookupOrCreateFunction because the ctor needs 'doc'

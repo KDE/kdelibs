@@ -6,7 +6,7 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { "open", HTMLDocument::Open, DontDelete|Function, 0, 0 },
    { 0, 0, 0, 0, 0 },
    { 0, 0, 0, 0, 0 },
-   { "all", HTMLDocument::All, DontDelete|Function, 0, &HTMLDocumentTableEntries[33] },
+   { "all", HTMLDocument::All, DontDelete|Function, 0, &HTMLDocumentTableEntries[32] },
    { 0, 0, 0, 0, 0 },
    { "vlinkColor", HTMLDocument::VlinkColor, DontDelete, 0, 0 },
    { "anchors", HTMLDocument::Anchors, DontDelete|Function, 0, 0 },
@@ -20,7 +20,7 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { "cookie", HTMLDocument::Cookie, DontDelete, 0, 0 },
    { "alinkColor", HTMLDocument::AlinkColor, DontDelete, 0, 0 },
    { "getElementsByName", HTMLDocument::GetElementsByName, DontDelete|Function, 1, 0 },
-   { "applets", HTMLDocument::Applets, DontDelete|Function, 0, &HTMLDocumentTableEntries[35] },
+   { "applets", HTMLDocument::Applets, DontDelete|Function, 0, &HTMLDocumentTableEntries[34] },
    { "links", HTMLDocument::Links, DontDelete|Function, 0, 0 },
    { "title", HTMLDocument::Title, DontDelete, 0, 0 },
    { "location", HTMLDocument::Location, DontDelete, 0, 0 },
@@ -31,17 +31,16 @@ const struct HashEntry HTMLDocumentTableEntries[] = {
    { 0, 0, 0, 0, 0 },
    { "URL", HTMLDocument::URL, DontDelete|ReadOnly, 0, 0 },
    { "body", HTMLDocument::Body, DontDelete, 0, 0 },
-   { "write", HTMLDocument::Write, DontDelete|Function, 1, &HTMLDocumentTableEntries[34] },
+   { "write", HTMLDocument::Write, DontDelete|Function, 1, &HTMLDocumentTableEntries[33] },
    { "writeln", HTMLDocument::WriteLn, DontDelete|Function, 1, 0 },
-   { "getElementById", HTMLDocument::GetElementById, DontDelete|Function, 1, &HTMLDocumentTableEntries[32] },
-   { "forms", HTMLDocument::Forms, DontDelete|Function, 0, 0 },
    { "bgColor", HTMLDocument::BgColor, DontDelete, 0, 0 },
+   { "forms", HTMLDocument::Forms, DontDelete|Function, 0, 0 },
    { "fgColor", HTMLDocument::FgColor, DontDelete, 0, 0 },
    { "lastModified", HTMLDocument::LastModified, DontDelete|ReadOnly, 0, 0 },
    { "width", HTMLDocument::Width, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable HTMLDocumentTable = { 2, 36, HTMLDocumentTableEntries, 31 };
+const struct HashTable HTMLDocumentTable = { 2, 35, HTMLDocumentTableEntries, 31 };
 
 }; // namespace
 
