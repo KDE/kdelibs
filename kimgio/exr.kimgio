@@ -3,6 +3,7 @@ Type=EXR
 Header=^\x76\x2f\x31\01
 Name=ILM EXR Image Kimgio
 Name[da]=ILM EXR billede Kimgio
+Name[el]=Εικόνα ILM EXR Kimgio
 Name[hr]=ILM EXR Kimgio slika
 Name[pt_BR]=Imagem ILM EXR do Kimgio 
 Name[sv]=ILM EXR-bild Kimgio
