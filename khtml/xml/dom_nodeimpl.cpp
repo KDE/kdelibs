@@ -65,8 +65,7 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
 
 NodeImpl::~NodeImpl()
 {
-  if (document)
-    document->changedNodes.remove(this);
+    setOwnerDocument(0);
 }
 
 DOMString NodeImpl::nodeValue() const
@@ -131,6 +130,15 @@ void NodeImpl::setPreviousSibling(NodeImpl *)
 void NodeImpl::setNextSibling(NodeImpl *)
 {
 }
+
+void NodeImpl::setOwnerDocument(DocumentImpl *_document)
+{
+    if (document)
+	document->changedNodes.remove(this);
+
+    document = _document;
+}
+
 
 NodeImpl *NodeImpl::insertBefore( NodeImpl *, NodeImpl * )
 {
@@ -423,7 +431,10 @@ NodeBaseImpl::~NodeBaseImpl()
         n->setPreviousSibling(0);
         n->setNextSibling(0);
 	n->setParent(0);
-	if(n->deleteMe()) delete n;
+	if(n->deleteMe())
+	    delete n;
+	else
+	    n->setOwnerDocument(0);
     }
 }
 
@@ -749,6 +760,14 @@ void NodeBaseImpl::detach()
 
     delete m_render;
     m_render = 0;
+}
+
+void NodeBaseImpl::setOwnerDocument(DocumentImpl *_document)
+{
+    NodeImpl *n;
+    for(n = _first; n != 0; n = n->nextSibling())
+	n->setOwnerDocument(_document);
+    NodeWParentImpl::setOwnerDocument(_document);
 }
 
 // ---------------------------------------------------------------------------

@@ -93,6 +93,8 @@ public:
     DocumentImpl *ownerDocument() const
 	{ return document; }
 
+    virtual void setOwnerDocument(DocumentImpl *_document);
+
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
 
     virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
@@ -285,6 +287,7 @@ public:
     virtual NodeImpl *addChild(NodeImpl *newChild);
     virtual void attach(KHTMLView *w);
     virtual void detach();
+    virtual void setOwnerDocument(DocumentImpl *_document);
 
 protected:
     NodeImpl *_first;

@@ -620,7 +620,6 @@ HTMLInputElementImpl::HTMLInputElementImpl(DocumentImpl *doc, HTMLFormElementImp
 
 HTMLInputElementImpl::~HTMLInputElementImpl()
 {
-    ownerDocument()->removeElement(this);
 }
 
 const DOMString HTMLInputElementImpl::nodeName() const
@@ -1024,6 +1023,13 @@ bool HTMLInputElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
         return true;
     }
     return ret;
+}
+
+void HTMLInputElementImpl::setOwnerDocument(DocumentImpl *_document)
+{
+    if (ownerDocument())
+	ownerDocument()->removeElement(this);
+    HTMLGenericFormElementImpl::setOwnerDocument(_document);
 }
 
 // -------------------------------------------------------------------------

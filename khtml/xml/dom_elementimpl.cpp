@@ -511,6 +511,15 @@ void ElementImpl::recalcStyle()
 	n->recalcStyle();
 }
 
+void ElementImpl::setOwnerDocument(DocumentImpl *_document)
+{
+    // also set for all our attributes
+    uint i;
+    for (i = 0; i < namedAttrMap->length(); i++)
+	namedAttrMap->item(i)->setOwnerDocument(_document);
+    NodeBaseImpl::setOwnerDocument(_document);
+}
+
 // -------------------------------------------------------------------------
 
 NamedAttrMapImpl::NamedAttrMapImpl(ElementImpl *e) : element(e)

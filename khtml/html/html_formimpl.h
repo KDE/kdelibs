@@ -284,6 +284,8 @@ public:
                              int _tx, int _ty, DOMString &url,
                              NodeImpl *&innerNode, long &offset );
 
+    virtual void setOwnerDocument(DocumentImpl *_document);
+
 protected:
     typeEnum _type;
     bool m_haveType;
