@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.9.1
+ Port version 0.9.2
 
  Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -94,9 +94,10 @@ static const int rightBorder = 12;
 
 /*
 BUGS:
-Vertical sliders flash a bit -- anything else?
-Blank areas in menu backgrounds..
+Spin widget for system++
 Masking of radio buttons?
+
+Vertical sliders flash a bit -- anything else?
 Possibly some bugs unpolishing menus..
 
 TODO:
@@ -124,9 +125,12 @@ public:
 		QStringList keys;
 		bool ok;
 
-		keys = cfg.readListEntry("/kthemestyle/themes",&ok);
-		if (!ok)
-			qWarning("KThemeStyle cache seems corrupt!\n");//Too bad one can't i18n this :-(
+        if (QPixmap::defaultDepth() > 8)
+        {
+            keys = cfg.readListEntry("/kthemestyle/themes",&ok);
+            if (!ok)
+                qWarning("KThemeStyle cache seems corrupt!\n");//Too bad one can't i18n this :-(
+   		}
 
         return keys;
     }
@@ -456,7 +460,7 @@ void KThemeStyle::polish( QWidget *w )
     {
         w->setBackgroundMode( QWidget::NoBackground );
     }
-    else if ( w->inherits( "KToolBarSeparator" ) )
+    else if ( w->inherits( "KToolBarSeparator" ) || w->inherits( "QToolBarSeparator" ) )
     {
         w->setBackgroundMode( QWidget::PaletteBackground );
     }
@@ -880,17 +884,6 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
             {
                 drawBaseButton( p, x, y, w, h, g, ( sunken || on || down ), roundButton(), ( sunken || on || down ) ?
                                 PushButtonDown : PushButton );
-                handled = true;
-                break;
-            }
-        case PE_DockWindowHandle:
-            {
-                if ( w > h )
-                    drawBaseButton( p, x, y, w, h, *colorGroup( g, HBarHandle ), false, false,
-                                    HBarHandle );
-                else
-                    drawBaseButton( p, x, y, w, h, *colorGroup( g, VBarHandle ), false, false,
-                                    VBarHandle );
                 handled = true;
                 break;
             }
@@ -1879,6 +1872,21 @@ void KThemeStyle::drawKStylePrimitive( KStylePrimitive kpe,
                 handled = true;
                 break;
             }
+        //case KPE_DockWindowHandle:
+        case KPE_ToolBarHandle:
+        case KPE_GeneralHandle:
+        	{
+                if ( w > h )
+                    drawBaseButton( p, x, y, w, h, *colorGroup( cg, HBarHandle ), false, false,
+                                    HBarHandle );
+                else
+                    drawBaseButton( p, x, y, w, h, *colorGroup( cg, VBarHandle ), false, false,
+                                    VBarHandle );
+
+            	handled = true;
+                break;
+            }
+
     }
 
     if ( !handled )
