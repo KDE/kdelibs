@@ -72,7 +72,7 @@ class AddresseeDialog : public KDialogBase {
 
       @param parent parent widget
     */
-    AddresseeDialog( QWidget *parent, bool multiple=false );
+    AddresseeDialog( QWidget *parent=0, bool multiple=false );
     virtual ~AddresseeDialog();
 
     /**
