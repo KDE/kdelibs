@@ -400,6 +400,7 @@ bool KHTMLPart::openURL( const KURL &url )
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE" : "FALSE" );
   args.metaData().insert("ssl_activate_warnings", "TRUE" );
   d->m_bReloading = args.reload;
+  d->m_bFirstSubmit = true;
 
   if ( args.doPost() && (url.protocol().startsWith("http")) )
   {
@@ -2774,6 +2775,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
    */
 
   // This causes crashes... needs to be fixed.
+  if (d->m_bFirstSubmit) {
+     d->m_bFirstSubmit = false;
   if (u.protocol() != "https") {
 	if (d->m_ssl_in_use) {    // Going from SSL -> nonSSL
 		int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
@@ -2807,6 +2810,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       	}
     }
   }
+  }  // if m_bFirstSubmit
 
   // End form security checks
   //

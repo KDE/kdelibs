@@ -296,14 +296,16 @@ public:
   DOM::Node m_selectionEnd;
   long m_endOffset;
   QString m_overURL;
+
   bool m_startBeforeEnd:1;
   bool m_bDnd:1;
   bool m_bFirstData:1;
   bool m_bClearing:1;
   bool m_bCleared:1;
   bool m_bSecurityInQuestion:1;
-
+  bool m_bFirstSubmit:1;
   bool m_focusNodeRestored:1;
+
   int m_focusNodeNumber;
 
   QPoint m_dragStartPos;
