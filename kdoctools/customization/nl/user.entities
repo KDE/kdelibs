@@ -34,4 +34,4 @@
 <!ENTITY bijv "bijvoorbeeld">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
-<!ENTITY kcontrolcenter "<application>Configuratiecentrum</application>">
+<!ENTITY kcontrolcenter "<application>KDE Configuratiecentrum</application>">
