@@ -106,6 +106,8 @@ QVariant KJSProxyImpl::evaluate(QString filename, int baseLine,
   if (KJSDebugWin::instance())
     KJSDebugWin::instance()->setNextSourceInfo(filename,baseLine);
   //    KJSDebugWin::instance()->setMode(KJS::Debugger::Step);
+#else
+  Q_UNUSED(baseLine);
 #endif
 
   m_script->setInlineCode(inlineCode);
@@ -156,6 +158,8 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
 #ifdef KJS_DEBUGGER
   if (KJSDebugWin::instance())
     KJSDebugWin::instance()->setNextSourceInfo(sourceUrl,m_handlerLineno);
+#else
+  Q_UNUSED(sourceUrl);
 #endif
 
   initScript();
@@ -201,6 +205,8 @@ void KJSProxyImpl::setDebugEnabled(bool enabled)
     initScript();
     KJSDebugWin::instance()->attach(m_script);
   }
+#else
+  Q_UNUSED(enabled);
 #endif
 }
 
@@ -218,7 +224,11 @@ void KJSProxyImpl::setSourceFile(QString url, QString code)
 #ifdef KJS_DEBUGGER
   if (KJSDebugWin::instance())
     KJSDebugWin::instance()->setSourceFile(url,code);
+#else
+  Q_UNUSED(url);
+  Q_UNUSED(code);
 #endif
+
 }
 
 void KJSProxyImpl::appendSourceFile(QString url, QString code)
@@ -226,6 +236,9 @@ void KJSProxyImpl::appendSourceFile(QString url, QString code)
 #ifdef KJS_DEBUGGER
   if (KJSDebugWin::instance())
     KJSDebugWin::instance()->appendSourceFile(url,code);
+#else
+  Q_UNUSED(url);
+  Q_UNUSED(code);
 #endif
 }
 
