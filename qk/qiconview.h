@@ -327,9 +327,10 @@ public:
 
     QIconViewItem *findItem( const QPoint &pos ) const;
     QIconViewItem *findItem( const QString &text ) const;
-    void selectAll( bool select );
-    void clearSelection();
-
+    virtual void selectAll( bool select );
+    virtual void clearSelection();
+    virtual void invertSelection();
+    
     virtual void repaintItem( QIconViewItem *item );
 
     void ensureItemVisible( QIconViewItem *item );

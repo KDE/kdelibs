@@ -140,7 +140,7 @@ struct QIconViewPrivate
     QBrush itemTextBrush;
     bool drawAllBack;
     QRegion clipRegion;
-    
+
     struct SingleClickConfig {
 	SingleClickConfig()
 	    : normalText( 0 ), normalTextCol( 0 ),
@@ -2079,7 +2079,7 @@ QIconView::QIconView( QWidget *parent, const char *name, WFlags f )
     d->resizeEvents = 0;
     d->itemTextBrush = Qt::NoBrush;
     d->drawAllBack = TRUE;
-    
+
     connect( d->adjustTimer, SIGNAL( timeout() ),
 	     this, SLOT( adjustItems() ) );
     connect( d->updateTimer, SIGNAL( timeout() ),
@@ -2488,7 +2488,7 @@ void QIconView::doAutoScroll()
 
     QRect rr;
     QRegion region( 0, 0, visibleWidth(), visibleHeight() );
-    
+
     blockSignals( TRUE );
     QIconViewItem *item = d->firstItem;
     viewport()->setUpdatesEnabled( FALSE );
@@ -2508,7 +2508,7 @@ void QIconView::doAutoScroll()
 		region = region.subtract( QRect( contentsToViewport( item->pos() ),
 						 item->size() ) );
 	    }
-	    
+	
 	    ++selected;
 	    minx = QMIN( minx, item->x() - 1 );
 	    miny = QMIN( miny, item->y() - 1 );
@@ -2591,7 +2591,7 @@ void QIconView::drawContents( QPainter *p, int cx, int cy, int cw, int ch )
     }
     drawBackground( p, r );
     p->restore();
-    
+
     if ( !d->firstItem )
 	return;
 
@@ -2951,6 +2951,25 @@ void QIconView::selectAll( bool select )
     if ( changed ) {
 	emitSelectionChanged();
     }
+}
+
+/*!
+  Inverts the selection. Works only in Multi and Extended selection mode.
+*/
+
+void QIconView::invertSelection()
+{
+    if ( d->selectionMode == Single ||
+	 d->selectionMode == NoSelection )
+	return;
+    
+    bool b = signalsBlocked();
+    blockSignals( TRUE );
+    QIconViewItem *item = d->firstItem;
+    for ( ; item; item = item->next )
+	item->setSelected( !item->isSelected(), TRUE );
+    blockSignals( b );
+    emitSelectionChanged();
 }
 
 /*!
