@@ -115,6 +115,7 @@ void KFileReader::init()
 
 KFileReader::~KFileReader()
 {
+    delete d->dirWatch;
     delete d;
 }
 
