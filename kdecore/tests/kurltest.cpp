@@ -23,7 +23,9 @@ bool check(QString txt, QString a, QString b)
   return true;
 }
 
+#if QT_VERSION < 300
 extern void qt_set_locale_codec( QTextCodec *codec );
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -384,14 +386,22 @@ int main(int argc, char *argv[])
   KURL ulong("https://swww.gad.de:443/servlet/CookieAccepted?MAIL=s@gad.de&VER=25901");
   check("host",ulong.host(),"swww.gad.de");
 
+#if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "iso-8859-1" ) );
+#else
+  QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "iso-8859-1" ) );
+#endif
   // UTF8 tests
   KURL uloc("/home/dfaure/konqtests/Matériel");
   check("locale8bit",uloc.url(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
   check("pretty",uloc.prettyURL(),"file:/home/dfaure/konqtests/Matériel"); // escaping the letter would be correct too
   check("UTF8",uloc.url(0, QFont::Unicode),"file:/home/dfaure/konqtests/Mat%C3%A9riel");
 
+#if QT_VERSION < 300
   qt_set_locale_codec( KGlobal::charsets()->codecForName( "koi8-r" ) );
+#else
+  QTextCodec::setCodecForLocale( KGlobal::charsets()->codecForName( "koi8-r" ) );
+#endif
   baseURL = "file:/home/coolo";
   KURL russian = baseURL.directory(false, true) + QString::fromLocal8Bit( "ÆÇÎ7" );
   check( "russian", russian.url(), "file:/home/%C6%C7%CE7" );
