@@ -162,6 +162,7 @@ public:
 	 * files of this type.
 	 * @param relativename Specifies a directory relative to the root
 	 * of the KFSSTND.
+	 * @return true if successful, false otherwise.
 	 */
 	bool addResourceType( const char *type,
 			      const QString& relativename );
@@ -179,7 +180,7 @@ public:
 	 * of this type.
 	 * @param absdir Points to directory where to look for this specific
 	 * type. Non-existant directories may be saved but pruned.
-	 *
+	 * @return true if successful, false otherwise.
 	 */
 	bool addResourceDir( const char *type,
 			     const QString& absdir);
@@ -269,6 +270,8 @@ public:
 	 * path of the subdir libkdecore.la is found first in
 	 * (e.g. /opt/kde/lib/)
 	 *
+	 * @param type The type of the wanted resource
+	 * @param filename A relative filename of the resource.
 	 * @return The directory where the file specified in the second
 	 *         argument is located, or QString::null if the type
 	 *         of resource specified is unknown or the resource
@@ -287,7 +290,8 @@ public:
 	 * @param type The type of resource to locate directories for.
 	 * @param filter Only accept filenames that fit to filter. The filter
 	 *        may consist of an optional directory and a @ref QRegExp
-	 *        wildcard expression. E.g. "images\*.jpg"
+	 *        wildcard expression. E.g. "images\*.jpg". Use QString::null
+	 *        if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
 	 * @param uniq If specified,  only return items which have
@@ -311,7 +315,8 @@ public:
 	 * @param type The type of resource to locate directories for.
 	 * @param filter Only accept filenames that fit to filter. The filter
 	 *        may consist of an optional directory and a @ref QRegExp
-	 *        wildcard expression. E.g. "images\*.jpg"
+	 *        wildcard expression. E.g. "images\*.jpg". Use QString::null
+	 *        if you do not want a filter.
 	 * @param recursive Specifies if the function should decend
 	 *        into subdirectories.
 	 * @param uniq If specified,  only return items which have
@@ -335,7 +340,6 @@ public:
 	 * A valid executable must
 	 * be a file and have its executable bit set.
 	 *
-	 * @see findAllExe()
 	 * @param appname The name of the executable file for which to search.
 	 * @param pathstr The path which will be searched. If this is
 	 * 		null (default), the $PATH environment variable will
@@ -345,6 +349,7 @@ public:
 	 *
 	 * @return The path of the executable. If it was not found,
 	 *         it will return QString::null.
+	 * @see findAllExe()
 	 */
 	static QString findExe( const QString& appname,
 				const QString& pathstr=QString::null,
@@ -352,8 +357,6 @@ public:
 
 	/**
 	 * Finds all occurences of an executable in the system path.
-	 *
-	 * @see	findExe()
 	 *
 	 * @param list	Will be filled with the pathnames of all the
 	 *		executables found. Will be empty if the executable
@@ -367,6 +370,8 @@ public:
 	 *			even if its executable bit is not set.
 	 *
 	 * @return The number of executables found, 0 if none were found.
+	 *
+	 * @see	findExe()
 	 */
 	static int findAllExe( QStringList& list, const QString& appname,
 			       const QString& pathstr=QString::null,
@@ -398,6 +403,7 @@ public:
 	 * This function is used internally by almost all other function as
 	 * it serves and fills the directories cache.
          *
+	 * @param type The type of resource
 	 * @return The list of possible directories for the specified @p type.
 	 * The function updates the cache if possible.  If the resource
 	 * type specified is unknown, it will return an empty list.
@@ -460,6 +466,7 @@ public:
 	 *
 	 * @param dir Absolute path of the directory to be made.
 	 * @param mode Directory permissions.
+	 * @return true if successful, false otherwise
 	 */
 	static bool makeDir(const QString& dir, int mode = 0755);
 
@@ -498,16 +505,18 @@ public:
 	QString kfsstnd_prefixes();
 
 	/**
-	 * @returns the toplevel directory in which KStandardDirs
+	 * Returns the toplevel directory in which KStandardDirs
 	 * will store things. Most likely $HOME/.kde
-	 *
 	 * Don't use this function if you can use locateLocal
+	 * @return the toplevel directory
 	 */
 	QString localkdedir() const;
 
 	/**
-	 * checks for existence and accessability
-	 * faster than creating a QFileInfo first
+	 * Checks for existence and accessability.
+	 * Faster than creating a QFileInfo first.
+	 * @param fullPath the path to check
+	 * @return true if the directory exists
 	 */
 	static bool exists(const QString &fullPath);
 
