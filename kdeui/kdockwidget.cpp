@@ -248,7 +248,6 @@ KDockWidgetHeader::KDockWidgetHeader( KDockWidget* parent, const char* name )
   d->toDesktopButton->setPixmap( const_cast< const char** >(todesktop_xpm));
   d->toDesktopButton->setFixedSize(closeButton->pixmap()->width(),closeButton->pixmap()->height());
   connect( d->toDesktopButton, SIGNAL(clicked()), parent, SLOT(toDesktop()));
-
   stayButton->hide();
 
   layout->addWidget( drag );
@@ -357,6 +356,7 @@ bool KDockWidgetHeader::dragEnabled() const
 
 void KDockWidgetHeader::showUndockButton(bool show)
 {
+  kdDebug()<<"KDockWidgetHeader::showUndockButton("<<show<<")"<<endl;
   if( d->showToDesktopButton == show )
     return;
 
@@ -449,6 +449,9 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   manager->childDock->append( this );
   installEventFilter( manager );
 
+  eDocking = DockFullDocking;
+  sDocking = DockFullSite;
+
   header = 0L;
   setHeader( new KDockWidgetHeader( this, "AutoCreatedDockHeader" ) );
 
@@ -462,8 +465,6 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   else
     setTabPageLabel( strTabPageLabel);
 
-  eDocking = DockFullDocking;
-  sDocking = DockFullSite;
 
   isGroup = false;
   isTabGroup = false;
@@ -697,6 +698,8 @@ void KDockWidget::setHeader( KDockWidgetAbstractHeader* h )
     header = h;
     layout->addWidget( header );
   }
+  kdDebug()<<caption()<<": KDockWidget::setHeader"<<endl;
+  setEnableDocking(eDocking);  
 }
 
 void KDockWidget::setEnableDocking( int pos )
@@ -2802,6 +2805,7 @@ void KDockContainer::activateOverlapMode(int nonOverlapSize) {
 }
 
 void KDockContainer::deactivateOverlapMode() {
+	if (!m_overlapMode) return;
 	m_overlapMode=false;
 	if (parentDockWidget()) {
 		if (parentDockWidget()->parent()) {
