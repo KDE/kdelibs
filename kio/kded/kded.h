@@ -25,6 +25,7 @@
 #include <qobject.h>
 #include <qstring.h>
 #include <qtimer.h>
+#include <qasciidict.h>
 
 #include <dcopclient.h>
 #include <dcopobject.h>
@@ -32,6 +33,7 @@
 #include <ksycoca.h>
 #include <ksycocatype.h>
 #include <kdedmodule.h>
+#include <klibloader.h>
 
 class KDirWatch;
 
@@ -59,6 +61,9 @@ public:
 
    virtual QCStringList functions();
 
+   KDEDModule *loadModule(const QCString &obj);
+   bool unloadModule(const QCString &obj);
+
 public slots:
 
    /**
@@ -79,7 +84,7 @@ public slots:
    /**
     * A KDEDModule is about to get destroyed.
     */
-   void slotKDEDModuleRemoved();
+   void slotKDEDModuleRemoved(KDEDModule *);
 
 protected slots:
 
@@ -99,6 +104,7 @@ protected slots:
    void installCrashHandler();
 
 protected:
+
 
    /**
     * Scans dir for new files and new subdirectories.
@@ -131,7 +137,8 @@ protected:
    QTimer* m_pTimer;
    
    QValueList<DCOPClientTransaction *> m_requests;
-   QPtrList<KDEDModule> m_modules;
+   QAsciiDict<KDEDModule> m_modules;
+   QAsciiDict<KLibrary> m_libs;
 };
 
 class KUpdateD : public QObject

@@ -46,7 +46,7 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstandarddirs.h>
-#include <klibloader.h>
+#include <kdatastream.h>
 #include <kio/global.h>
 
 static bool checkStamps = true;
@@ -129,6 +129,18 @@ bool Kded::process(const QCString &obj, const QCString &fun,
 {
   if (obj == "ksycoca") return false; // Ignore this one.
 
+  KDEDModule *module = loadModule(obj);
+  if (module)
+     return false; 
+
+  return module->process(fun, data, replyType, replyData);
+}
+
+KDEDModule *Kded::loadModule(const QCString &obj)
+{
+  KDEDModule *module = m_modules.find(obj);
+  if (module)
+     return module;
   KService::Ptr s = KService::serviceByDesktopPath("kded/"+obj+".desktop");
   if (s && !s->library().isEmpty())
   {
@@ -155,17 +167,31 @@ bool Kded::process(const QCString &obj, const QCString &fun,
         // create the module
         KDEDModule* (*func)(const QCString &); 
         func = (KDEDModule* (*)(const QCString &)) create;
-        KDEDModule *module = func(obj);
+        module = func(obj);
         if (module)
         {
-          m_modules.append(module);
-          connect(module, SIGNAL(destroyed()), SLOT(slotKDEDModuleRemoved()));
-          return module->process(fun, data, replyType, replyData);
+          m_modules.insert(obj, module);
+          m_libs.insert(obj, lib);
+          connect(module, SIGNAL(moduleDeleted(KDEDModule *)), SLOT(slotKDEDModuleRemoved(KDEDModule *)));
+          kdDebug(7020) << "Successfully loaded module '" << obj << "'\n";
+          return module;
         }
       }
+      loader->unloadLibrary(QFile::encodeName(libname));
     }
   }
-  return false;
+  kdDebug(7020) << "Could not load module '" << obj << "'\n";
+  return 0;
+}
+
+bool Kded::unloadModule(const QCString &obj)
+{
+  KDEDModule *module = m_modules.take(obj);
+  if (!module)
+     return false;
+  kdDebug(7020) << "Unloading module '" << obj << "'\n";
+  delete module;
+  return true;
 }
 
 QCStringList Kded::functions()
@@ -175,18 +201,19 @@ QCStringList Kded::functions()
     return res;
 }
 
-void Kded::slotKDEDModuleRemoved()
+void Kded::slotKDEDModuleRemoved(KDEDModule *module)
 {
-  KDEDModule *module = (KDEDModule *) sender();
-  m_modules.removeRef(module);
+  m_modules.remove(module->objId());
+  KLibrary *lib = m_libs.take(module->objId());
+  if (lib)
+     KLibLoader::self()->unloadLibrary(lib->name().latin1());
 }
 
 void Kded::slotApplicationRemoved(const QCString &appId)
 {
-  for(KDEDModule *module = m_modules.first();
-      module; module = m_modules.next())
+  for(QAsciiDictIterator<KDEDModule> it(m_modules); it.current(); ++it)
   {
-     module->removeAll(appId);
+     it.current()->removeAll(appId);
   }
 }
 
@@ -458,7 +485,7 @@ static KCmdLineOptions options[] =
 class KDEDApplication : public KUniqueApplication
 {
 public:
-  KDEDApplication() : KUniqueApplication( ) 
+  KDEDApplication(Kded *kded) : KUniqueApplication( ), m_kded(kded)
     { startup = true; }
 
   int newInstance()
@@ -469,6 +496,42 @@ public:
           runBuildSycoca();
        return 0;
     }
+
+  QCStringList functions()
+    {
+       QCStringList res = KUniqueApplication::functions();
+       res += "bool loadModule(QCString)";
+       res += "bool unloadModule(QCString)";
+       return res;
+    }
+
+  bool process(const QCString &fun, const QByteArray &data,
+               QCString &replyType, QByteArray &replyData)
+  {
+    if (fun == "loadModule(QCString)") {
+      QCString module;
+      QDataStream arg( data, IO_ReadOnly );
+      arg >> module;
+      bool result = (m_kded->loadModule(module) != 0);
+      replyType = "bool";
+      QDataStream _replyStream( replyData, IO_WriteOnly );
+      _replyStream << result;
+      return true;
+    } 
+    else if (fun == "unloadModule(QCString)") {
+      QCString module;
+      QDataStream arg( data, IO_ReadOnly );
+      arg >> module;
+      bool result = m_kded->unloadModule(module);
+      replyType = "bool";
+      QDataStream _replyStream( replyData, IO_WriteOnly );
+      _replyStream << result;
+      return true;
+    }
+    return KUniqueApplication::process(fun, data, replyType, replyData);
+  }
+
+  Kded *m_kded;
   bool startup;
 };
 
@@ -535,7 +598,7 @@ int main(int argc, char *argv[])
      kded->recreate();
 
      signal(SIGTERM, sighandler);
-     KDEDApplication k;
+     KDEDApplication k(kded);
 
      if (bCheckUpdates)
         (void) new KUpdateD(PollInterval, NFSPollInterval); // Watch for updates

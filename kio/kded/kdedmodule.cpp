@@ -45,6 +45,7 @@ KDEDModule::KDEDModule(const QCString &name) : QObject(), DCOPObject(name)
   
 KDEDModule::~KDEDModule()
 {
+   emit moduleDeleted(this);
    delete d; d = 0;
 }
   

@@ -116,6 +116,9 @@ public slots:
    */
   virtual void idle() { };
 
+signals:
+  void moduleDeleted(KDEDModule *);
+
 private:
   KDEDModulePrivate *d;
 };
