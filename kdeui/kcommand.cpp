@@ -164,6 +164,7 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
 void KCommandHistory::undo() {
 
     d->m_present->unexecute();
+    emit commandExecuted();
     m_redo->setEnabled(true);
     m_redo->setText(i18n("Re&do: %1").arg(d->m_present->name()));
     int index;
@@ -183,7 +184,6 @@ void KCommandHistory::undo() {
         m_first=true;
     }
     clipCommands(); // only needed here and in addCommand, NOT in redo
-    emit commandExecuted();
 }
 
 void KCommandHistory::redo() {
@@ -191,6 +191,7 @@ void KCommandHistory::redo() {
     int index;
     if(m_first) {
         d->m_present->execute();
+        emit commandExecuted();
         m_first=false;
         m_commands.first();
         if(d->m_savedAt==0)
@@ -199,6 +200,7 @@ void KCommandHistory::redo() {
     else if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.next()!=0) {
         d->m_present=m_commands.current();
         d->m_present->execute();
+        emit commandExecuted();
         ++index;
         if(index==d->m_savedAt)
             emit documentRestored();
@@ -217,7 +219,6 @@ void KCommandHistory::redo() {
             m_redo->setText(i18n("Nothing to Redo"));
         }
     }
-    emit commandExecuted();
 }
 
 void KCommandHistory::documentSaved() {
