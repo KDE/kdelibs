@@ -604,7 +604,7 @@ QString KLocale::formatDate(const QDate &pDate) const
                 rst.replace(i, 2, QString().sprintf("%2d", pDate.day() ));
 		continue;
 	case 'j':
-                rst.replace(i, 2, QString().sprintf("03d", pDate.dayOfYear()) );
+                rst.replace(i, 2, QString().sprintf("%03d", pDate.dayOfYear()) );
 		continue;
 	case 'a':
                 rst.replace(i, 2, WeekDayName( pDate.dayOfWeek() ).left(3) );
