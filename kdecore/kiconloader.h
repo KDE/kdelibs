@@ -20,6 +20,12 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.28  1999/05/26 08:14:05  dfaure
+   Docu improvements. Moved more to the top comment (like the search path) ;
+   Added a line about "large/", explain that both constructors keep the default
+   search path,  and some more fixes.
+   BTW : reloadIcon calls flush which is deprecated...
+
    Revision 1.27  1999/05/25 16:17:24  kulow
    two changes:
      kde_icondir() has been removed. Use locate("icon", pixmap) instead
@@ -215,6 +221,8 @@ public:
 
 
   QStringList getDirList() const { return pixmap_dirs; }
+
+  QStringList getIconList() const;
 
   /** 
 	Get the complete path for an icon name.

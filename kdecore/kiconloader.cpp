@@ -20,6 +20,13 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.40  1999/05/25 16:17:24  kulow
+   two changes:
+     kde_icondir() has been removed. Use locate("icon", pixmap) instead
+     KIconLoader::loadMiniIcon has been removed. It does the same as
+     loadApplicationMiniIcon and the later is less confusing in what it
+     does (loading icons out of share/icons/mini)
+
    Revision 1.39  1999/05/23 21:59:06  pbrown
    new kconfig system is in.  External API remains the same, but the in-memory
    and on-disk formats have been abstracted.  KConfigBase now is an ADT with
@@ -164,6 +171,11 @@ KIconLoader::KIconLoader()
 
 }
 
+QStringList KIconLoader::getIconList() const
+{
+  return KGlobal::dirs()->findAllResources("toolbar");
+}
+
 QPixmap KIconLoader::loadIcon ( const QString& name, int w, 
 		int h, bool canReturnNull ) {
 	QPixmap result = loadInternal(name, w, h);
@@ -193,7 +205,7 @@ QPixmap KIconLoader::reloadIcon ( const QString& name, int w, int h )
 
 QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 {
-        QPixmap result = loadIcon(locate("icon", name), w, h);
+        QPixmap result = loadInternal(locate("icon", name), w, h);
 	return result;
 }
 
@@ -201,13 +213,10 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name, int w, int h )
 QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name, 
 	int w, int h )
 {
-
-        QPixmap result;
-	if (name[0] != '/')
-	    result = loadInternal(locate("icon", "mini/" + name), w, h);
+        QPixmap result = loadInternal(locate("mini", name), w, h);
 		
 	if (result.isNull())
-	    result = loadInternal(locate("icon", name), w, h);
+	  result = loadInternal(locate("icon", name), w, h);
 
 	return result;
 }
