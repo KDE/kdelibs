@@ -135,7 +135,7 @@ void KConfigBase::setLocale()
   if (KGlobal::locale())
     aLocaleString = KGlobal::locale()->language().utf8();
   else
-    aLocaleString = "C";
+    aLocaleString = KLocale::defaultLanguage().utf8();
   if (backEnd)
      backEnd->setLocaleString(aLocaleString);
 }
