@@ -29,6 +29,8 @@
 //----------------------------------------------------------------------------
 #include "config.h"
 
+#include <assert.h>
+
 #include <qcursor.h>
 #include <qclipboard.h>
 #include <qobjectlist.h>
@@ -1429,6 +1431,7 @@ void KMdiMainFrm::switchToTabPageMode()
 
    m_pTaskBar->switchOn(false);
 
+   assert(m_pClose);
    QObject::connect( m_pClose, SIGNAL(clicked()), this, SLOT(closeViewButtonPressed()) );
    if (m_pDocumentViews->count() > 0) {
       m_pClose->show();
@@ -1558,6 +1561,7 @@ void KMdiMainFrm::switchToIDEAlMode()
 
    m_pTaskBar->switchOn(false);
 
+   assert(m_pClose);
    QObject::connect( m_pClose, SIGNAL(clicked()), this, SLOT(closeViewButtonPressed()) );
    if (m_pDocumentViews->count() > 0) {
       m_pClose->show();
@@ -1709,6 +1713,7 @@ void KMdiMainFrm::finishIDEAlMode(bool full)
 {
    // if tabified, release all views from their docking covers
    if (m_mdiMode == KMdi::IDEAlMode) {
+      assert(m_pClose);
       m_pClose->hide();
       QObject::disconnect( m_pClose, SIGNAL(clicked()), this, SLOT(closeViewButtonPressed()) );
 
@@ -2086,6 +2091,7 @@ void KMdiMainFrm::setEnableMaximizedChildFrmMode(bool bEnable)
       }
       else {
          m_pMainMenuBar->insertItem( *pCurrentChild->icon(), pCurrentChild->systemMenu(), -1, 0);
+         assert(m_pClose);
          QObject::connect( m_pClose, SIGNAL(clicked()), pCurrentChild, SLOT(closePressed()) );
          m_pClose->show();
       }
@@ -2118,6 +2124,7 @@ void KMdiMainFrm::switchOffMaximizeModeForMenu(KMdiChildFrm* oldChild)
    m_pMainMenuBar->removeItem( m_pMainMenuBar->idAt(0));
 
    if( oldChild) {
+      assert(m_pClose);
       QObject::disconnect( m_pUndock, SIGNAL(clicked()), oldChild, SLOT(undockPressed()) );
       QObject::disconnect( m_pMinimize, SIGNAL(clicked()), oldChild, SLOT(minimizePressed()) );
       QObject::disconnect( m_pRestore, SIGNAL(clicked()), oldChild, SLOT(maximizePressed()) );
@@ -2149,12 +2156,14 @@ void KMdiMainFrm::updateSysButtonConnections( KMdiChildFrm* oldChild, KMdiChildF
       m_pMainMenuBar->removeItem( m_pMainMenuBar->idAt(1));
    }
    if (oldChild) {
+      assert(m_pClose);
       QObject::disconnect( m_pUndock, SIGNAL(clicked()), oldChild, SLOT(undockPressed()) );
       QObject::disconnect( m_pMinimize, SIGNAL(clicked()), oldChild, SLOT(minimizePressed()) );
       QObject::disconnect( m_pRestore, SIGNAL(clicked()), oldChild, SLOT(maximizePressed()) );
       QObject::disconnect( m_pClose, SIGNAL(clicked()), oldChild, SLOT(closePressed()) );
    }
    if (newChild) {
+      assert(m_pClose);
       QObject::connect( m_pUndock, SIGNAL(clicked()), newChild, SLOT(undockPressed()) );
       QObject::connect( m_pMinimize, SIGNAL(clicked()), newChild, SLOT(minimizePressed()) );
       QObject::connect( m_pRestore, SIGNAL(clicked()), newChild, SLOT(maximizePressed()) );
