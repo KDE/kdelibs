@@ -49,7 +49,7 @@ public:
      * This pointer will be reset to 0 after deletion of the object.
      * @param isArray tells the destructor to delete an array instead of an object
      **/
-    void setObject( type* & globalRef, type *obj, bool isArray = false) {
+    type *setObject( type* & globalRef, type *obj, bool isArray = false) {
         globalReference = &globalRef;
         deleteit = obj;
 	array = isArray;
@@ -58,6 +58,7 @@ public:
 	else
 	    KGlobal::unregisterStaticDeleter(this);
         globalRef = obj;
+	return obj;
     }
     virtual void destructObject() {
 	if (array)
