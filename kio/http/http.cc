@@ -1350,7 +1350,6 @@ bool HTTPProtocol::readHeader()
   char buffer[4097];
   bool unauthorized = false;
   bool cont = false;
-  bool noRedirect = false; // No automatic redirection
   bool cacheValidated = false; // Revalidation was successfull
   bool mayCache = true;
 
@@ -1835,7 +1834,7 @@ bool HTTPProtocol::readHeader()
     return result;
   }
   // We need to do a redirect
-  else if (!locationStr.isEmpty() && !noRedirect)
+  else if (!locationStr.isEmpty())
   {
     kdDebug(7113) << "request.url: " << m_request.url.url() << endl
                   << "LocationStr: " << locationStr.data() << endl;
