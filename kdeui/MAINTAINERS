@@ -21,10 +21,10 @@ kcolorbutton.cpp
 kcolorcombo.cpp
 kcolordialog.cpp	Waldo Bastian <bastian@kde.org>
 kcolordrag.cpp
-kcombobox.cpp   	Dawit Alemayehu <adawit@kde.org>
+kcombobox.cpp   	Dawit Alemayehu <adawit@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
 kcommand.cpp		Werner Trobin <trobin@kde.org>
-kcompletionbox.cpp
-kcursor.cpp
+kcompletionbox.cpp	Carsten Pfeiffer <pfeiffer@kde.org>
+kcursor.cpp			Carsten Pfeiffer <pfeiffer@kde.org>
 kdatepicker.cpp
 kdatetbl.cpp
 kdatewidget.cpp		Waldo Bastian <bastian@kde.org>
@@ -47,7 +47,7 @@ kjanuswidget.cpp
 kkeybutton.cpp
 kkeydialog.cpp
 kled.cpp
-klineedit.cpp   	Dawit Alemayehu <adawit@kde.org>
+klineedit.cpp   	Dawit Alemayehu <adawit@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
 klineeditdlg.cpp
 klistbox.cpp
 klistview.cpp
@@ -65,7 +65,7 @@ kpassdlg.cpp		Waldo Bastian <bastian@kde.org>
 kpixmapio.cpp
 kpopupmenu.cpp
 kprogress.cpp
-kpushbutton.cpp
+kpushbutton.cpp		Carsten Pfeiffer <pfeiffer@kde.org>
 krestrictedline.cpp
 krootpixmap.cpp
 kruler.cpp
