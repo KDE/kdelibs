@@ -182,7 +182,7 @@ protected:
   virtual QDragObject *dragObject()
   {
     ToolbarItem *item = dynamic_cast<ToolbarItem*>(selectedItem());
-    if ( item != 0 ) {
+    if ( item ) {
       ToolbarItemDrag *obj = new ToolbarItemDrag(item,
                                  this, "ToolbarAction drag item");
       const QPixmap *pm = item->pixmap(0);
@@ -600,7 +600,7 @@ bool KEditToolbarWidget::save()
   for ( ; it != d->m_xmlFiles.end(); ++it)
   {
     // let's not save non-modified files
-    if ( (*it).m_isModified == false )
+    if ( !((*it).m_isModified) )
       continue;
 
     // let's also skip (non-existent) merged files
@@ -1010,10 +1010,10 @@ void KEditToolbarWidget::slotInactiveSelected(QListViewItem *item)
 void KEditToolbarWidget::slotActiveSelected(QListViewItem *item)
 {
   ToolbarItem* toolitem = static_cast<ToolbarItem *>(item);
-  m_removeAction->setEnabled( item != 0 );
+  m_removeAction->setEnabled( item );
 
   static const QString &tagAction = KGlobal::staticQString( "Action" );
-  d->m_changeIcon->setEnabled( item != 0 &&
+  d->m_changeIcon->setEnabled( item &&
                                d->m_hasKDialog &&
                                toolitem->internalTag() == tagAction );
 
@@ -1342,7 +1342,7 @@ void KEditToolbarWidget::slotProcessExited( KProcess* )
 
   QString icon;
   if ( !d->m_kdialogProcess->normalExit() ||
-       d->m_kdialogProcess->exitStatus() != 0 ||
+       d->m_kdialogProcess->exitStatus() ||
        d->m_kdialogProcess->readln(icon, true) <= 0 ) {
     delete d->m_kdialogProcess;
     d->m_kdialogProcess = 0;

@@ -251,7 +251,7 @@ void KComboBox::wheelEvent( QWheelEvent *ev )
 void KComboBox::setLineEdit( QLineEdit *edit )
 {
     if ( !editable() && edit &&
-         qstrcmp( edit->className(), "QLineEdit" ) == 0 )
+         !qstrcmp( edit->className(), "QLineEdit" ) )
     {
         // uic generates code that creates a read-only KComboBox and then
         // calls combo->setEditable( true ), which causes QComboBox to set up

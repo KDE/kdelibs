@@ -735,7 +735,7 @@ void QXEmbed::sendDelete( void )
 //        The default is XEMBED.  
 void QXEmbed::setProtocol( Protocol proto )
 {
-    if (window == 0) {
+    if (!window) {
         d->xplain = false;
         if (proto == XPLAIN)
             d->xplain = true;
@@ -754,14 +754,14 @@ QXEmbed::Protocol QXEmbed::protocol()
 // L1200: QXEmbed widget size changes: resize embedded window.
 void QXEmbed::resizeEvent(QResizeEvent*)
 {
-    if (window != 0)
+    if (window)
         XResizeWindow(qt_xdisplay(), window, width(), height());
 }
 
 // L1250: QXEmbed widget is shown: make sure embedded window is visible.
 void QXEmbed::showEvent(QShowEvent*)
 {
-    if (window != 0)
+    if (window)
         XMapRaised(qt_xdisplay(), window);
 }
 
@@ -1209,7 +1209,7 @@ bool QXEmbed::processClientCmdline( QWidget* client, int& argc, char ** argv )
             continue;
         }
         QCString arg = argv[i];
-        if ( strcmp(arg,"-embed") == 0 && i < myargc-1 ) {
+        if ( !strcmp(arg,"-embed") && i < myargc-1 ) {
             QCString s = argv[++i];
             window = s.toInt();
         } else
@@ -1217,7 +1217,7 @@ bool QXEmbed::processClientCmdline( QWidget* client, int& argc, char ** argv )
     }
     argc = j;
 
-    if ( window != 0 ) {
+    if ( window ) {
         embedClientIntoWindow( client, window );
         return true;
     }
@@ -1347,7 +1347,7 @@ void QXEmbed::reparent( QWidget * parent, WFlags f, const QPoint & p, bool showI
     // creates a new one, thus QXEmbed after reparenting is no longer the
     // parent of the embedded window.  I think reparenting of QXEmbed can be
     // done only by a mistake, so just complain.
-    Q_ASSERT( window == 0 );
+    Q_ASSERT( !window );
     QWidget::reparent( parent, f, p, showIt );
 }
 

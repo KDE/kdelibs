@@ -722,7 +722,7 @@ protected:
     /**
      * @returns if we can modify the completion object or not.
      */
-    bool useCompletion() const { return compObj() != 0L; }
+    bool useCompletion() const { return compObj(); }
 
 private slots:
     /**

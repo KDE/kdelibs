@@ -166,7 +166,7 @@ void KColorCombo::showEmptyList()
 
 void KColorCombo::slotActivated( int index )
 {
-	if ( index == 0 )
+	if ( !index )
 	{
 	    if ( KColorDialog::getColor( customColor, this ) == QDialog::Accepted )
 		{
@@ -201,7 +201,7 @@ void KColorCombo::slotActivated( int index )
 
 void KColorCombo::slotHighlighted( int index )
 {
-	if ( index == 0 )
+	if ( !index )
 		internalcolor = customColor;
 	else
 		internalcolor = standardPalette[ index - 1 ];

@@ -244,7 +244,7 @@ KSpell::startIspell()
   else       // hspell doesn't need all the rest of the options
     *proc << "-a";
 
-  if (trystart==0) //don't connect these multiple times
+  if (!trystart) //don't connect these multiple times
   {
     connect( proc, SIGNAL(receivedStderr(KProcess *, char *, int)),
              this, SLOT(ispellErrors(KProcess *, char *, int)) );
@@ -255,7 +255,7 @@ KSpell::startIspell()
     OUTPUT(KSpell2);
   }
 
-  if ( proc->start() == false )
+  if ( !proc->start() )
   {
     m_status = Error;
     QTimer::singleShot( 0, this, SLOT(emitDeath()));
@@ -293,7 +293,7 @@ void KSpell::KSpell2( KProcIO * )
   }
 
   //We want to recognize KDE in any text!
-  if ( ignore("kde") == false)
+  if ( !ignore("kde") )
   {
      kdDebug(750) << "@KDE was false" << endl;
      QTimer::singleShot( 0, this, SLOT(emitDeath()) );
@@ -301,7 +301,7 @@ void KSpell::KSpell2( KProcIO * )
   }
 
   //We want to recognize linux in any text!
-  if ( ignore("linux") == false )
+  if ( !ignore("linux") )
   {
      kdDebug(750) << "@Linux was false" << endl;
      QTimer::singleShot( 0, this, SLOT(emitDeath()) );
@@ -602,7 +602,7 @@ QString KSpell::funnyWord( const QString & word )
 
       i = j-1;
 
-      if ( ( k = qs.findRev(shorty) ) == 0 || k != -1 )
+      if ( !( k = qs.findRev(shorty) ) || k != -1 )
         qs.remove( k, shorty.length() );
       else
       {
@@ -725,7 +725,7 @@ bool KSpell::checkList (QStringList *_wordlist, bool _usedialog)
   // prepare check of string list
 {
   wordlist=_wordlist;
-  if ((totalpos=wordlist->count())==0)
+  if (!(totalpos=wordlist->count()))
     return false;
   wlIt = wordlist->begin();
   usedialog=_usedialog;
@@ -803,7 +803,7 @@ void KSpell::checkList3a (KProcIO *)
     //kdDebug(750) << "checkList3a: read bytes [" << tempe << "]" << endl;
 
 
-    if ( tempe == 0 ) {
+    if ( !tempe ) {
       d->endOfResponse = true;
       //kdDebug(750) << "checkList3a: end of resp" << endl;
     } else if ( tempe>0 ) {
@@ -926,7 +926,7 @@ bool KSpell::check( const QString &_buffer, bool _usedialog )
 
   kdDebug(750) << "KS: check" << endl;
   origbuffer = _buffer;
-  if ( ( totalpos = origbuffer.length() ) == 0 )
+  if ( !( totalpos = origbuffer.length() ) )
   {
     emit done( origbuffer );
     return false;
@@ -1408,7 +1408,7 @@ void KSpell::initialize( QWidget *_parent, const QString &_caption,
   lastpos  = 0;
 
   //won't be using the dialog in ksconfig, just the option values
-  if ( _ksc != 0 )
+  if ( _ksc )
     ksconfig = new KSpellConfig( *_ksc );
   else
     ksconfig = new KSpellConfig;

@@ -496,7 +496,7 @@ void KDockSplitter::updateName()
   ((KDockWidget*)parentWidget())->splitterOrientation = m_orientation;
 
   QWidget* p = parentWidget()->parentWidget();
-  if ( p != 0L && p->inherits("KDockSplitter" ) )
+  if ( p && p->inherits("KDockSplitter" ) )
     ((KDockSplitter*)p)->updateName();
 }
 

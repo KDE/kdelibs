@@ -288,9 +288,9 @@ void KMainWindow::parseGeometry(bool parsewidth)
     if (parsewidth) {
         QSize minSize = minimumSize();
         QSize maxSize = maximumSize();
-        if ( (m & WidthValue) == 0 )
+        if ( !(m & WidthValue) )
             w = width();
-        if ( (m & HeightValue) == 0 )
+        if ( !(m & HeightValue) )
             h = height();
          w = QMIN(w,maxSize.width());
          h = QMIN(h,maxSize.height());
@@ -298,9 +298,9 @@ void KMainWindow::parseGeometry(bool parsewidth)
          h = QMAX(h,minSize.height());
          resize(w, h);
     } else {
-        if ( parsewidth && (m & XValue) == 0 )
+        if ( parsewidth && !(m & XValue) )
             x = geometry().x();
-        if ( parsewidth && (m & YValue) == 0 )
+        if ( parsewidth && !(m & YValue) )
             y = geometry().y();
         if ( (m & XNegative) )
             x = KApplication::desktop()->width()  + x - w;
@@ -323,13 +323,13 @@ KMainWindow::~KMainWindow()
 
 KPopupMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
 {
-    if( mHelpMenu == 0 ) {
+    if( !mHelpMenu ) {
         if ( aboutAppText.isEmpty() )
             mHelpMenu = new KHelpMenu( this, instance()->aboutData(), showWhatsThis);
         else
             mHelpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
 
-        if ( mHelpMenu == 0 )
+        if ( !mHelpMenu )
             return 0;
         connect( mHelpMenu, SIGNAL( showAboutApplication() ),
                  this, SLOT( showAboutApplication() ) );
@@ -340,7 +340,7 @@ KPopupMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsTh
 
 KPopupMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
 {
-    if( mHelpMenu == 0 ) {
+    if( !mHelpMenu ) {
         mHelpMenu = new KHelpMenu( this, QString::null, showWhatsThis );
         connect( mHelpMenu, SIGNAL( showAboutApplication() ),
                  this, SLOT( showAboutApplication() ) );
@@ -495,7 +495,7 @@ void KMainWindow::createGUI( const QString &xmlfile, bool _conserveMemory )
     // don't build a help menu unless the user ask for it
     if (d->showHelpMenu) {
         // we always want a help menu
-        if (helpMenu2 == 0)
+        if (!helpMenu2)
             helpMenu2 = new KHelpMenu(this, instance()->aboutData(), true,
                                       actionCollection());
     }
@@ -585,9 +585,9 @@ void KMainWindow::setPlainCaption( const QString &caption )
 
 void KMainWindow::appHelpActivated( void )
 {
-    if( mHelpMenu == 0 ) {
+    if( !mHelpMenu ) {
         mHelpMenu = new KHelpMenu( this );
-        if ( mHelpMenu == 0 )
+        if ( !mHelpMenu )
             return;
     }
     mHelpMenu->appHelpActivated();
@@ -776,7 +776,7 @@ void KMainWindow::setStandardToolBarMenuEnabled( bool enable )
 
 bool KMainWindow::isStandardToolBarMenuEnabled() const
 {
-    return ( d->toolBarHandler != 0 );
+    return ( d->toolBarHandler );
 }
 
 void KMainWindow::createStandardStatusBarAction(){

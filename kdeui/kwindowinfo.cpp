@@ -31,7 +31,7 @@ void KWindowInfo::showMessage( QWidget *window, const QString &text, int timeout
     KWindowInfo *info = new KWindowInfo( window );
     info->autoDel = true;
     info->message( text, timeout );
-    if ( timeout == 0 )
+    if ( !timeout )
 	delete info;
 }
 
@@ -59,14 +59,14 @@ void KWindowInfo::message( const QString &text, int timeout )
 
 void KWindowInfo::message( const QString &text, const QPixmap &pix, int timeout )
 {
-    if ( timeout != 0 )
+    if ( timeout )
 	save();
 
     display( text, pix );
 
     if ( timeout < 0 )
 	timeout = DEFAULT_MESSAGE_TIMEOUT;
-    if ( timeout != 0 )
+    if ( timeout )
 	QTimer::singleShot( timeout, this, SLOT( restore() ) );
 }
 
@@ -89,7 +89,7 @@ void KWindowInfo::permanent( const QString &text, const QPixmap &pix )
 	QObjectListIt it( *l );
 	QObject *obj;
 
-	while ( (obj = it.current()) != 0 ) {
+	while ( (obj = it.current()) ) {
 	    ++it;
 	    delete obj;
 	}

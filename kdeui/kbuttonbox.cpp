@@ -78,7 +78,7 @@ KButtonBox::KButtonBox(QWidget *parent, Orientation _orientation,
   :  QWidget(parent)
 {
   data = new KButtonBoxPrivate;
-  assert(data != 0);
+  assert(data);
 
   data->orientation = _orientation;
   data->border = border;
@@ -165,7 +165,7 @@ void KButtonBox::layout() {
   for(unsigned int i = 0; i < data->buttons.count(); i++) {
     Item *item = data->buttons.at(i);
     QPushButton *b = item->button;
-    if(b != 0) {
+    if(b) {
       if(item->noexpand)
 	b->setFixedSize(buttonSizeHint(b));
       else
@@ -185,7 +185,7 @@ void KButtonBox::placeButtons() {
     int stretch = 0;
     for(i = 0; i < data->buttons.count(); i++) {
       Item *item = data->buttons.at(i);
-      if(item->button != 0) {
+      if(item->button) {
 	fs -= item->button->width();
 
 	// Last button?
@@ -199,7 +199,7 @@ void KButtonBox::placeButtons() {
     int x_pos = data->border;
     for(i = 0; i < data->buttons.count(); i++) {
       Item *item = data->buttons.at(i);
-      if(item->button != 0) {
+      if(item->button) {
 	QPushButton *b = item->button;
 	b->move(x_pos, (height() - b->height()) / 2);
 
@@ -213,7 +213,7 @@ void KButtonBox::placeButtons() {
     int stretch = 0;
     for(i = 0; i < data->buttons.count(); i++) {
       Item *item = data->buttons.at(i);
-      if(item->button != 0)
+      if(item->button)
 	fs -= item->button->height() + data->autoborder;
       else
 	stretch +=item->stretch;
@@ -223,7 +223,7 @@ void KButtonBox::placeButtons() {
     int y_pos = data->border;
     for(i = 0; i < data->buttons.count(); i++) {
       Item *item = data->buttons.at(i);
-      if(item->button != 0) {
+      if(item->button) {
 	QPushButton *b = item->button;
 	b->move((width() - b->width()) / 2, y_pos);
 
@@ -248,7 +248,7 @@ QSize KButtonBox::bestButtonSize() const {
     Item *item = that->data->buttons.at(i);
     QPushButton *b = item->button;
 
-    if(b != 0 && !item->noexpand) {
+    if(b && !item->noexpand) {
       QSize bs = buttonSizeHint(b);
 
       if(bs.width() > s.width())
@@ -264,7 +264,7 @@ QSize KButtonBox::bestButtonSize() const {
 QSize KButtonBox::sizeHint() const {
   unsigned int i, dw;
 
-  if(data->buttons.count() == 0)
+  if(!data->buttons.count())
     return QSize(0, 0);
   else {
     dw = 2 * data->border;
@@ -274,7 +274,7 @@ QSize KButtonBox::sizeHint() const {
       KButtonBox *that = (KButtonBox*)this;
       Item *item = that->data->buttons.at(i);
       QPushButton *b = item->button;
-      if(b != 0) {
+      if(b) {
 	QSize s;
 	if(item->noexpand)
 	  s = that->buttonSizeHint(b);

@@ -161,7 +161,7 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
      * Parent is 0L when TipDialog is used as a mainWidget. This should
      * be the case only in ktip, so let's use the ktip layout.
      */
-    bool isTipDialog = (parent != 0);
+    bool isTipDialog = (parent);
 
     QImage img;
     int h,s,v;

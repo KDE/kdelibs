@@ -61,7 +61,7 @@ const char *KColorDrag::format(int i) const
 
 QByteArray KColorDrag::encodedData ( const char * m ) const
 {
-     if (qstrcmp(m, text_mime_string) == 0)
+     if (!qstrcmp(m, text_mime_string) )
      {
         QColor color;
         QColorDrag::decode(const_cast<KColorDrag *>(this), color);

@@ -237,7 +237,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
 void KCompletionBox::popup()
 {
-    if ( count() == 0 )
+    if ( !count() )
         hide();
     else {
         ensureCurrentVisible();
@@ -370,7 +370,7 @@ void KCompletionBox::down()
 {
     int i = currentItem();
 
-    if ( i == 0 && d->down_workaround ) {
+    if ( !i && d->down_workaround ) {
         d->down_workaround = false;
         setCurrentItem( 0 );
         setSelected( 0, true );

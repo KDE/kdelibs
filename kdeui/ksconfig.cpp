@@ -80,7 +80,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   d = new KSpellConfigPrivate;
   kc = KGlobal::config();
 
-  if( _ksc == 0 )
+  if( !_ksc )
   {
     readGlobalSettings();
   }
@@ -153,7 +153,7 @@ KSpellConfig::KSpellConfig( QWidget *parent, const char *name,
   tmpQLabel = new QLabel( clientcombo, i18n("&Client:"), this );
   glay->addWidget( tmpQLabel, 4, 0 );
 
-  if( addHelpButton == true )
+  if( addHelpButton )
   {
     QPushButton *pushButton = new KPushButton( KStdGuiItem::help(), this );
     connect( pushButton, SIGNAL(clicked()), this, SLOT(sHelp()) );

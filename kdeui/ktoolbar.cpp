@@ -842,7 +842,7 @@ void KToolBar::setIconText(IconText icontext, bool update)
         //kdDebug(220) << name() << "  icontext hasn't changed, doUpdate=false" << endl;
     }
 
-    if (update == false)
+    if (!update)
         return;
 
     if (doUpdate)
@@ -879,7 +879,7 @@ void KToolBar::setIconSize(int size, bool update)
             doUpdate=true;
     }
 
-    if (update == false)
+    if (!update)
         return;
 
     if (doUpdate)
@@ -1265,7 +1265,7 @@ void KToolBar::childEvent( QChildEvent *e )
 {
     if ( e->child()->isWidgetType() ) {
         QWidget * w = dynamic_cast<QWidget *>(e->child());
-        if (!w || (::qstrcmp( "qt_dockwidget_internal", w->name()) == 0))
+        if (!w || !(::qstrcmp( "qt_dockwidget_internal", w->name())))
         {
            QToolBar::childEvent( e );
            return;
@@ -2167,7 +2167,7 @@ void KToolBar::slotContextAboutToHide()
 
   QPtrListIterator<QWidget> it( widgets );
   QWidget *wdg;
-  while ( ( wdg = it.current() ) != 0 ) {
+  while ( ( wdg = it.current() ) ) {
     if ( wdg->inherits( "QToolButton" ) )
       static_cast<QToolButton*>( wdg )->setDown( false );
     ++it;

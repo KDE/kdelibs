@@ -54,7 +54,7 @@ KDialog::KDialog(QWidget *parent, const char *name, bool modal, WFlags f)
 //
 void KDialog::keyPressEvent(QKeyEvent *e)
 {
-  if ( e->state() == 0 )
+  if ( !e->state() )
   {
     switch ( e->key() )
     {
@@ -161,7 +161,7 @@ void KDialog::resizeLayout( QLayoutItem *lay, int margin, int spacing )
     resizeLayout( child, margin, spacing );
     ++it;
   }
-  if( lay->layout() != 0 )
+  if( lay->layout() )
   {
     lay->layout()->setMargin( margin );
     lay->layout()->setSpacing( spacing );

@@ -82,13 +82,13 @@ void KPanelExtension::setSize( Size size, int customSize )
 
 void KPanelExtension::action( Action a )
 {
-  if ( (a & About) != 0 )
+  if ( (a & About) )
     about();
-  if ( (a & Help) != 0 )
+  if ( (a & Help) )
     help();
-  if ( (a & Preferences) != 0 )
+  if ( (a & Preferences) )
     preferences();
-  if ( (a & ReportBug) != 0 )
+  if ( (a & ReportBug) )
     reportBug();
 }
 

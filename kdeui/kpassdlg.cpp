@@ -519,8 +519,8 @@ void KPasswordDialog::virtual_hook( int id, void* data )
 void KPasswordDialog::enableOkBtn()
 {
     if (m_Type == NewPassword) {
-      const bool match = ((strcmp(m_pEdit->password(), m_pEdit2->password()))==0)
-                         && (strcmp(m_pEdit->password(), "") != 0);
+      const bool match = (!(strcmp(m_pEdit->password(), m_pEdit2->password())))
+                         && (strcmp(m_pEdit->password(), ""));
       enableButtonOK( match );
       d->m_MatchLabel->setText( match? i18n("Passwords match")
                                       :i18n("Passwords do not match") );

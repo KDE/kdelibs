@@ -621,7 +621,7 @@ static const char * const *namedColorFilePath( void )
 void
 KPaletteTable::readNamedColor( void )
 {
-  if( mNamedColorList->count() != 0 )
+  if( mNamedColorList->count() )
   {
     return; // Strings already present
   }
@@ -633,10 +633,10 @@ KPaletteTable::readNamedColor( void )
   //
 
   const char * const *path = namedColorFilePath();
-  for( int i=0; path[i] != 0; i++ )
+  for( int i=0; path[i]; ++i )
   {
     QFile paletteFile( path[i] );
-    if( paletteFile.open( IO_ReadOnly ) == false )
+    if( !paletteFile.open( IO_ReadOnly ) )
     {
       continue;
     }
@@ -655,7 +655,7 @@ KPaletteTable::readNamedColor( void )
 	// that start with "gray".
 	//
 	QString name = line.mid(pos).stripWhiteSpace();
-	if( name.isNull() == true || name.find(' ') != -1 ||
+	if( name.isNull() || name.find(' ') != -1 ||
 	    name.find( "gray" ) != -1 ||  name.find( "grey" ) != -1 )
 	{
 	  continue;
@@ -676,7 +676,7 @@ KPaletteTable::readNamedColor( void )
     break;
   }
 
-  if( mNamedColorList->count() == 0 )
+  if( !mNamedColorList->count() )
   {
     //
     // Give the error dialog box a chance to center above the
@@ -693,14 +693,14 @@ KPaletteTable::readNamedColor( void )
 void
 KPaletteTable::slotShowNamedColorReadError( void )
 {
-  if( mNamedColorList->count() == 0 )
+  if( !mNamedColorList->count()  )
   {
     QString msg = i18n(""
       "Unable to read X11 RGB color strings. The following "
       "file location(s) were examined:\n");
 
     const char * const *path = namedColorFilePath();
-    for( int i=0; path[i] != 0; i++ )
+    for( int i=0; path[i]; i++ )
     {
       msg += path[i];
       msg += "\n";
@@ -724,7 +724,7 @@ void
 KPaletteTable::slotSetPalette( const QString &_paletteName )
 {
   setPalette( _paletteName );
-  if( mNamedColorList->isVisible() == true )
+  if( mNamedColorList->isVisible() )
   {
     int item = mNamedColorList->currentItem();
     mNamedColorList->setCurrentItem( item < 0 ? 0 : item );
@@ -777,7 +777,7 @@ KPaletteTable::setPalette( const QString &_paletteName )
   // "locate()". The colors used in "i18n_namedColors" mode comes from the
   // X11 diretory and is not writable. I don't think this fit in KPalette.
   //
-  if( mPalette == 0 || mPalette->name() != paletteName )
+  if( !mPalette || mPalette->name() != paletteName )
   {
     if( paletteName == i18n_namedColors )
     {
@@ -863,7 +863,7 @@ KPaletteTable::addToRecentColors( const QColor &color)
   // The 'mPalette' is always 0 when current mode is i18n_namedColors
   //
   bool recentIsSelected = false;
-  if ( mPalette != 0 && mPalette->name() == recentColors)
+  if ( mPalette && mPalette->name() == recentColors)
   {
      delete mPalette;
      mPalette = 0;

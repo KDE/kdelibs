@@ -55,14 +55,14 @@ bool KTextBrowser::isNotifyClick() const
 
 void KTextBrowser::setSource( const QString& name )
 {
-  if( name.isNull() == true )
+  if( name.isNull() )
   {
     return;
   }
 
   if( name.find('@') > -1 )
   {
-    if( mNotifyClick == false )
+    if( !mNotifyClick )
     {
       kapp->invokeMailer( KURL( name ) );
     }
@@ -73,7 +73,7 @@ void KTextBrowser::setSource( const QString& name )
   }
   else
   {
-    if( mNotifyClick == false )
+    if( !mNotifyClick )
     {
       kapp->invokeBrowser( name );
     }

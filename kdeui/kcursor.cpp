@@ -44,7 +44,7 @@ QCursor KCursor::handCursor()
 {
         static QCursor *hand_cursor = 0;
 
-        if (hand_cursor == 0)
+        if (!hand_cursor)
         {
                 KConfig *config = KGlobal::config();
                 KConfigGroupSaver saver( config, "General" );
@@ -126,7 +126,7 @@ QCursor KCursor::workingCursor()
 {
         static QCursor *working_cursor = 0;
 
-        if (working_cursor == 0)
+        if (!working_cursor)
         {
             QPixmap pm( const_cast< const char** >( working_cursor_xpm ));
             working_cursor = new QCursor( pm, 1, 1 );

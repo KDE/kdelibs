@@ -50,12 +50,12 @@
 
 void KEdit::search(){
 
-  if( replace_dialog != 0 && replace_dialog->isVisible() == true )
+  if( replace_dialog && replace_dialog->isVisible() )
   {
     replace_dialog->hide();
   }
 
-  if( srchdialog == 0 )
+  if( !srchdialog )
   {
     srchdialog = new KEdFind( this, "searchdialog", false);
     connect(srchdialog,SIGNAL(search()),this,SLOT(search_slot()));
@@ -97,7 +97,7 @@ again:
   int  result = doSearch(to_find_string, srchdialog->case_sensitive(),
 			 false, (!srchdialog->get_direction()),line,col);
 
-  if(result == 0){
+  if(!result){
     if(!srchdialog->get_direction()){ // forward search
 
       int query = KMessageBox::questionYesNo(
@@ -246,12 +246,12 @@ bool KEdit::repeatSearch() {
 
 void KEdit::replace()
 {
-  if( srchdialog != 0 && srchdialog->isVisible() == true)
+  if( srchdialog && srchdialog->isVisible() )
   {
     srchdialog->hide();
   }
 
-  if( replace_dialog == 0 )
+  if( !replace_dialog )
   {
     replace_dialog = new KEdReplace( this, "replace_dialog", false );
     connect(replace_dialog,SIGNAL(find()),this,SLOT(replace_search_slot()));
@@ -446,7 +446,7 @@ again:
   int  result = doReplace(to_find_string, replace_dialog->case_sensitive(),
 			 false, (!replace_dialog->get_direction()), line, col, false );
 
-  if(result == 0){
+  if(!result){
     if(!replace_dialog->get_direction()){ // forward search
 
      int query = KMessageBox::questionYesNo(

@@ -190,7 +190,7 @@ void KRootPixmap::desktopChanged(int desktop)
 void KRootPixmap::desktopChanged( WId window, unsigned int properties )
 {
 #ifdef Q_WS_X11
-    if( (properties & NET::WMDesktop) == 0 ||
+    if( !(properties & NET::WMDesktop) ||
 	(window != m_pWidget->topLevelWidget()->winId()))
 	return;
 #endif

@@ -189,7 +189,7 @@ void KPassivePopup::positionSelf()
     QRect target;
 
 #ifdef Q_WS_X11
-    if ( window == 0L ) {
+    if ( !window ) {
         target = defaultArea();
     }
 

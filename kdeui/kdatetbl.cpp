@@ -188,7 +188,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
   QFont font=KGlobalSettings::generalFont();
   // -----
 
-  if(row==0)
+  if(!row)
     { // we are drawing the headline
       font.setBold(true);
       painter->setFont(font);
@@ -883,7 +883,7 @@ void
 KPopupFrame::setMainWidget(QWidget* m)
 {
   main=m;
-  if(main!=0)
+  if(main)
     {
       resize(main->width()+2*frameWidth(), main->height()+2*frameWidth());
     }
@@ -892,7 +892,7 @@ KPopupFrame::setMainWidget(QWidget* m)
 void
 KPopupFrame::resizeEvent(QResizeEvent*)
 {
-  if(main!=0)
+  if(main)
     {
       main->setGeometry(frameWidth(), frameWidth(),
           width()-2*frameWidth(), height()-2*frameWidth());

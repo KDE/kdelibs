@@ -524,7 +524,7 @@ KDatePicker::setCloseButton( bool enable )
 
 bool KDatePicker::hasCloseButton() const
 {
-    return (d->closeButton != 0L);
+    return (d->closeButton);
 }
 
 void KDatePicker::virtual_hook( int /*id*/, void* /*data*/ )

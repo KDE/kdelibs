@@ -214,7 +214,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
        }
     }
     KActiveLabel *label2 = new KActiveLabel( qt_text, contents );
-    if ((options & KMessageBox::AllowLink) == 0)
+    if (!(options & KMessageBox::AllowLink))
     {
        QObject::disconnect(label2, SIGNAL(linkClicked(const QString &)),
                   label2, SLOT(openLink(const QString &)));
@@ -250,7 +250,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
          KActiveLabel *label3 = new KActiveLabel(qrichtextify(details),
                                                  detailsGroup);
          label3->setMinimumSize(label3->sizeHint());
-         if ((options & KMessageBox::AllowLink) == 0)
+         if (!(options & KMessageBox::AllowLink))
          {
            QObject::disconnect(label3, SIGNAL(linkClicked(const QString &)),
                                label3, SLOT(openLink(const QString &)));
@@ -289,7 +289,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
 	    if( btn->isDefault())
 		btn->setFocus();
 
-    if ( (options & KMessageBox::Notify) != 0 )
+    if ( (options & KMessageBox::Notify) )
         sendNotification( text, strlist, notifyType, dialog->topLevelWidget()->winId());
 
     if (KMessageBox_queue)
@@ -298,7 +298,7 @@ int KMessageBox::createKMessageBox(KDialogBase *dialog, QPixmap icon,
        return KMessageBox::Cancel; // We have to return something.
     }
 
-    if ( (options & KMessageBox::NoExec) != 0 )
+    if ( (options & KMessageBox::NoExec) )
     {
        return KMessageBox::Cancel; // We have to return something.
     }
@@ -435,7 +435,7 @@ KMessageBox::questionYesNoListWId(WId parent_id, const QString &text,
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -486,7 +486,7 @@ KMessageBox::questionYesNoCancelWId(WId parent_id,
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -568,7 +568,7 @@ KMessageBox::warningYesNoListWId(WId parent_id, const QString &text,
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -640,7 +640,7 @@ KMessageBox::warningContinueCancelListWId(WId parent_id, const QString &text,
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -716,7 +716,7 @@ KMessageBox::warningYesNoCancelListWId(WId parent_id, const QString &text,
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -767,7 +767,7 @@ KMessageBox::errorListWId(WId parent_id,  const QString &text, const QStringList
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -797,7 +797,7 @@ KMessageBox::detailedErrorWId(WId parent_id,  const QString &text,
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -844,7 +844,7 @@ KMessageBox::sorryWId(WId parent_id, const QString &text,
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -874,7 +874,7 @@ KMessageBox::detailedSorryWId(WId parent_id, const QString &text,
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 
@@ -920,7 +920,7 @@ KMessageBox::informationListWId(WId parent_id,const QString &text, const QString
     if( options & PlainCaption )
         dialog->setPlainCaption( caption );
 #ifdef Q_WS_X11
-    if( parent == NULL && parent_id != 0 )
+    if( parent == NULL && parent_id )
         XSetTransientForHint( qt_xdisplay(), dialog->winId(), parent_id );
 #endif
 

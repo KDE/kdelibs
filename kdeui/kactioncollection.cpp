@@ -315,7 +315,7 @@ void KActionCollection::_insert( KAction* action )
 {
   char unnamed_name[100];
   const char *name = action->name();
-  if( qstrcmp( name, "unnamed" ) == 0 )
+  if( !qstrcmp( name, "unnamed" ) )
   {
      sprintf(unnamed_name, "unnamed-%p", (void *)action);
      name = unnamed_name;
@@ -338,7 +338,7 @@ KAction* KActionCollection::_take( KAction* action )
 {
   char unnamed_name[100];
   const char *name = action->name();
-  if( qstrcmp( name, "unnamed" ) == 0 )
+  if( !qstrcmp( name, "unnamed" ) )
   {
      sprintf(unnamed_name, "unnamed-%p", (void *) action);
      name = unnamed_name;
@@ -381,8 +381,8 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
     QAsciiDictIterator<KAction> it( d->m_actionDict );
     for( ; it.current(); ++it )
     {
-      if ( ( !name || strcmp( it.current()->name(), name ) == 0 ) &&
-          ( !classname || strcmp( it.current()->className(), classname ) == 0 ) ) {
+      if ( ( !name || !strcmp( it.current()->name(), name ) ) &&
+          ( !classname || !strcmp( it.current()->className(), classname ) ) ) {
         pAction = it.current();
         break;
       }
@@ -535,7 +535,7 @@ void KActionCollection::disconnectHighlight( QWidget *container, KAction *action
 
   actionList->removeRef( action );
 
-  if ( actionList->count() == 0 )
+  if ( !actionList->count() )
     d->m_dctHighlightContainers.remove( container );
 }
 

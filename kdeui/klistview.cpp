@@ -202,7 +202,7 @@ void KListViewLineEdit::load(QListViewItem *i, int c)
         for ( int index = 0; index < pos; index++ )
             fieldX += p->columnWidth( p->header()->mapToSection( index ));
 
-        if ( col == 0 ) {
+        if ( !col ) {
             int d = i->depth() + (p->rootIsDecorated() ? 1 : 0);
             d *= p->treeStepSize();
             fieldX += d;
@@ -685,7 +685,7 @@ void KListView::focusInEvent( QFocusEvent *fe )
       && (d->selectionMode == FileManager)
       && (fe->reason()!=QFocusEvent::Popup)
       && (fe->reason()!=QFocusEvent::ActiveWindow)
-      && (currentItem()!=0))
+      && (currentItem()))
   {
       currentItem()->setSelected(true);
       currentItem()->repaint();
@@ -704,7 +704,7 @@ void KListView::focusOutEvent( QFocusEvent *fe )
       && (d->selectionMode == FileManager)
       && (fe->reason()!=QFocusEvent::Popup)
       && (fe->reason()!=QFocusEvent::ActiveWindow)
-      && (currentItem()!=0)
+      && (currentItem())
       && (!d->editor->isVisible()))
   {
       currentItem()->setSelected(false);
@@ -745,7 +745,7 @@ void KListView::contentsMousePressEvent( QMouseEvent *e )
   {
      d->selectedBySimpleMove=false;
      d->selectedUsingMouse=true;
-     if (currentItem()!=0)
+     if (currentItem())
      {
         currentItem()->setSelected(false);
         currentItem()->repaint();
@@ -910,7 +910,7 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
   QPtrList<QListViewItem> items, afterFirsts, afterNows;
   QListViewItem *current=currentItem();
   bool hasMoved=false;
-  for (QListViewItem *i = firstChild(), *iNext=0; i != 0; i = iNext)
+  for (QListViewItem *i = firstChild(), *iNext=0; i; i = iNext)
   {
     iNext=i->itemBelow();
     if (!i->isSelected())
@@ -944,7 +944,7 @@ void KListView::movableDropEvent (QListViewItem* parent, QListViewItem* afterme)
     afterme = i;
   }
   clearSelection();
-  for (QListViewItem *i=items.first(); i != 0; i=items.next() )
+  for (QListViewItem *i=items.first(); i; i=items.next() )
     i->setSelected(true);
   if (current)
     setCurrentItem(current);
@@ -1079,7 +1079,7 @@ void KListView::findDrop(const QPoint &pos, QListViewItem *&parent, QListViewIte
       {
           // We are allowed to become a sibling of "betterAbove" only if we are
           // after its last child
-          if ( last->nextSibling() == 0 )
+          if ( !last->nextSibling() )
           {
               if (p.x() < depthToPixels ( betterAbove->depth() + 1 ))
                   above = betterAbove; // store this one, but don't stop yet, there may be a better one
@@ -1454,7 +1454,7 @@ void KListView::activateAutomaticSelection()
 {
    d->selectedBySimpleMove=true;
    d->selectedUsingMouse=false;
-   if (currentItem()!=0)
+   if (currentItem())
    {
       currentItem()->setSelected(true);
       currentItem()->repaint();
@@ -1492,7 +1492,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 
 
     QListViewItem* item = currentItem();
-    if (item==0) return;
+    if (!item) return;
 
     QListViewItem* repaintItem1 = item;
     QListViewItem* repaintItem2 = 0L;
@@ -1503,10 +1503,10 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 
     bool shiftOrCtrl((e_state==ControlButton) || (e_state==ShiftButton));
     int selectedItems(0);
-    for (QListViewItem *tmpItem=firstChild(); tmpItem!=0; tmpItem=tmpItem->nextSibling())
+    for (QListViewItem *tmpItem=firstChild(); tmpItem; tmpItem=tmpItem->nextSibling())
        if (tmpItem->isSelected()) selectedItems++;
 
-    if (((selectedItems==0) || ((selectedItems==1) && (d->selectedUsingMouse)))
+    if (((!selectedItems) || ((selectedItems==1) && (d->selectedUsingMouse)))
         && (e_state==NoButton)
         && ((e->key()==Key_Down)
         || (e->key()==Key_Up)
@@ -1552,7 +1552,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
 
        nextItem=item->itemBelow();
 
-       if (nextItem!=0)
+       if (nextItem)
        {
           repaintItem2=nextItem;
           visItem=nextItem;
@@ -1579,13 +1579,13 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
              };
           };
        }
-       else if ((d->selectedBySimpleMove) && (nextItem!=0))
+       else if ((d->selectedBySimpleMove) && (nextItem))
        {
           item->setSelected(false);
           emitSelectionChanged=true;
        };
 
-       if (nextItem!=0)
+       if (nextItem)
        {
           if (d->selectedBySimpleMove)
              nextItem->setSelected(true);
@@ -1614,13 +1614,13 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
              };
           }
        }
-       else if ((d->selectedBySimpleMove) && (nextItem!=0))
+       else if ((d->selectedBySimpleMove) && (nextItem))
        {
           item->setSelected(false);
           emitSelectionChanged=true;
        };
 
-       if (nextItem!=0)
+       if (nextItem)
        {
           if (d->selectedBySimpleMove)
              nextItem->setSelected(true);
@@ -1638,11 +1638,11 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
        if (shiftOrCtrl)
           d->selectedBySimpleMove=false;
 
-       while(nextItem!=0)
+       while(nextItem)
        {
           if (shiftOrCtrl)
              nextItem->setSelected(!nextItem->isSelected());
-          if (nextItem->itemBelow()==0)
+          if (!nextItem->itemBelow())
           {
              if (d->selectedBySimpleMove)
                 nextItem->setSelected(true);
@@ -1693,7 +1693,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
           if (shiftOrCtrl)
              nextItem->setSelected(!nextItem->isSelected());
           //the end
-          if ((i==items-1) || (nextItem->itemBelow()==0))
+          if ((i==items-1) || (!nextItem->itemBelow()))
 
           {
              if (shiftOrCtrl)
@@ -1729,7 +1729,7 @@ void KListView::fileManagerKeyPressEvent (QKeyEvent* e)
           if ((nextItem!=item) &&(shiftOrCtrl))
              nextItem->setSelected(!nextItem->isSelected());
           //the end
-          if ((i==items-1) || (nextItem->itemAbove()==0))
+          if ((i==items-1) || (!nextItem->itemAbove()))
 
           {
              if (d->selectedBySimpleMove)

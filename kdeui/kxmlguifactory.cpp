@@ -240,7 +240,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     d->guiClient = client;
 
     // add this client to our client list
-    if ( d->m_clients.containsRef( client ) == 0 )
+    if ( !d->m_clients.containsRef( client ) )
         d->m_clients.append( client );
     else
         kdDebug(129) << "XMLGUI client already added " << client << endl;
@@ -555,7 +555,7 @@ int KXMLGUIFactory::configureShortcuts(bool bAllowLetterShortcuts , bool bSaveSe
 	KKeyDialog dlg( bAllowLetterShortcuts, dynamic_cast<QWidget*>(parent()) );
 	QPtrListIterator<KXMLGUIClient> it( d->m_clients );
 	KXMLGUIClient *client;
-	while( (client=it.current()) !=0 )
+	while( (client=it.current())  )
 	{
 		++it;
 		if(!client->xmlFile().isEmpty())

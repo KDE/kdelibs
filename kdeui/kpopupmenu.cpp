@@ -363,14 +363,14 @@ void KPopupMenu::keyPressEvent(QKeyEvent* e)
             thisText = text(j);
 
         // if there is an accelerator present, remove it
-        if ((int)accel(j) != 0)
+        if ((int)accel(j) )
             thisText = thisText.replace("&", QString::null);
 
         // chop text to the search length
         thisText = thisText.left(seqLen);
 
         // do the search
-        if (thisText.find(d->keySeq, 0, false) == 0) {
+        if (!thisText.find(d->keySeq, 0, false)) {
 
             if (firstpass) {
                 // match
@@ -587,7 +587,7 @@ void KPopupMenu::ctxMenuHideShowingMenu()
 
 void KPopupMenu::ctxMenuHiding()
 {
-    if (KPopupMenuPrivate::s_highlightedItem != 0)
+    if (KPopupMenuPrivate::s_highlightedItem)
     {
         QPopupMenu* subMenu = findItem(KPopupMenuPrivate::s_highlightedItem)->popup();
         if (subMenu)

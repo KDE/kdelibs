@@ -105,7 +105,7 @@ KHelpMenu::~KHelpMenu()
 
 KPopupMenu* KHelpMenu::menu()
 {
-  if( mMenu == 0 )
+  if( !mMenu )
   {
     //
     // 1999-12-02 Espen Sand:
@@ -128,7 +128,7 @@ KPopupMenu* KHelpMenu::menu()
       need_separator = true;
     }
 
-    if( (mShowWhatsThis == true) && kapp->authorizeKAction("help_whats_this") )
+    if( mShowWhatsThis && kapp->authorizeKAction("help_whats_this") )
     {
       QToolButton* wtb = QWhatsThis::whatsThisButton(0);
       mMenu->insertItem( wtb->iconSet(),i18n( "What's &This" ), menuWhatsThis);
@@ -179,7 +179,7 @@ void KHelpMenu::aboutApplication()
 {
   if (d->mAboutData)
   {
-    if( mAboutApp == 0 )
+    if( !mAboutApp )
     {
       mAboutApp = new KAboutApplication( d->mAboutData, mParent, "about", false );
       connect( mAboutApp, SIGNAL(finished()), this, SLOT( dialogFinished()) );
@@ -192,7 +192,7 @@ void KHelpMenu::aboutApplication()
   }
   else
   {
-    if( mAboutApp == 0 )
+    if( !mAboutApp )
     {
       mAboutApp = new KDialogBase( QString::null, // Caption is defined below
 				   KDialogBase::Yes, KDialogBase::Yes,
@@ -221,7 +221,7 @@ void KHelpMenu::aboutApplication()
 
 void KHelpMenu::aboutKDE()
 {
-  if( mAboutKDE == 0 )
+  if( !mAboutKDE )
   {
     mAboutKDE = new KAboutKDE( mParent, "aboutkde", false );
     connect( mAboutKDE, SIGNAL(finished()), this, SLOT( dialogFinished()) );
@@ -232,7 +232,7 @@ void KHelpMenu::aboutKDE()
 
 void KHelpMenu::reportBug()
 {
-  if( mBugReport == 0 )
+  if( !mBugReport )
   {
     mBugReport = new KBugReport( mParent, false, d->mAboutData );
     connect( mBugReport, SIGNAL(finished()),this,SLOT( dialogFinished()) );
@@ -249,17 +249,17 @@ void KHelpMenu::dialogFinished()
 
 void KHelpMenu::timerExpired()
 {
-  if( mAboutKDE != 0 && mAboutKDE->isVisible() == false )
+  if( mAboutKDE && !mAboutKDE->isVisible() )
   {
     delete mAboutKDE; mAboutKDE = 0;
   }
 
-  if( mBugReport != 0 && mBugReport->isVisible() == false )
+  if( mBugReport && !mBugReport->isVisible() )
   {
     delete mBugReport; mBugReport = 0;
   }
 
-  if( mAboutApp != 0 && mAboutApp->isVisible() == false )
+  if( mAboutApp && !mAboutApp->isVisible() )
   {
     delete mAboutApp; mAboutApp = 0;
   }

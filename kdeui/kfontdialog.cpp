@@ -68,7 +68,7 @@ static int minimumListWidth( const QListBox *list )
     int itemWidth = list->item(i)->width(list);
     w = QMAX(w,itemWidth);
   }
-  if( w == 0 ) { w = 40; }
+  if( !w ) { w = 40; }
   w += list->frameWidth() * 2;
   w += list->verticalScrollBar()->sizeHint().width();
   return w;
@@ -112,7 +112,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QWidget *page;
   QGridLayout *gridLayout;
   int row = 0;
-  if( makeFrame == true )
+  if( makeFrame )
   {
     page = new QGroupBox( i18n("Requested Font"), this );
     topLayout->addWidget(page);
@@ -205,7 +205,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
   QWhatsThis::add(diff?(QWidget *) familyCheckbox:(QWidget *) familyLabel, fontFamilyWhatsThisText );
   connect(familyListBox, SIGNAL(highlighted(const QString &)),
 	  SLOT(family_chosen_slot(const QString &)));
-  if(fontList.count() != 0)
+  if(fontList.count())
   {
     familyListBox->insertStringList(fontList);
   }
@@ -308,7 +308,7 @@ KFontChooser::KFontChooser(QWidget *parent, const char *name,
 	  SLOT(displaySample(const QFont &)));
 
   QVBoxLayout *vbox;
-  if( makeFrame == true )
+  if( makeFrame )
   {
     page = new QGroupBox( i18n("Actual Font"), this );
     topLayout->addWidget(page);
@@ -356,7 +356,7 @@ void KFontChooser::fillSizeList() {
     28, 32, 48, 64,
     0
   };
-  for(int i = 0; c[i] != 0; i++)
+  for(int i = 0; c[i]; ++i)
   {
     sizeListBox->insertItem(QString::number(c[i]));
   }
@@ -478,12 +478,12 @@ void KFontChooser::family_chosen_slot(const QString& family)
         if(pos >=0) style = style.replace(pos,6,i18n("Regular"));
         pos = style.find("Oblique");
         if(pos >=0) style = style.replace(pos,7,i18n("Italic"));
-        if(styleListBox->findItem(style) ==0) {
+        if(!styleListBox->findItem(style)) {
             styleListBox->insertItem(i18n(style.utf8()));
             currentStyles.insert(i18n(style.utf8()), *it);
         }
     }
-    if(styleListBox->count()==0) {
+    if(!styleListBox->count()) {
         styleListBox->insertItem(i18n("Regular"));
         currentStyles.insert(i18n("Regular"), "Normal");
     }
@@ -662,7 +662,7 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
     if((fontListCriteria & FixedWidthFonts) > 0) {
         // Fallback.. if there are no fixed fonts found, it's probably a
         // bug in the font server or Qt.  In this case, just use 'fixed'
-        if (lstFonts.count() == 0)
+        if (!lstFonts.count())
           lstFonts.append("fixed");
     }
 
@@ -712,7 +712,7 @@ void KFontChooser::fillFamilyListBox(bool onlyFixedFonts)
 
 void KFontChooser::showXLFDArea(bool show)
 {
-  if( show == true )
+  if( show )
   {
     xlfdEdit->parentWidget()->show();
   }

@@ -143,7 +143,7 @@ public:
 
   /** Returns the number of actions in the collection */
   virtual uint count() const;
-  bool isEmpty() const { return count() == 0; }
+  bool isEmpty() const { return !count(); }
   /**
    * Return the KAction* at position "index" in the action collection.
    * @see count()

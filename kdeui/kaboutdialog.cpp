@@ -72,7 +72,7 @@ KAboutContributor::KAboutContributor( QWidget *_parent, const char *wname,
 				      bool showBold )
   : QFrame( _parent, wname ), mShowHeader(showHeader), mShowBold(showBold), d(0)
 {
-  if( showFrame == true )
+  if( showFrame )
   {
     setFrameStyle(QFrame::Panel | QFrame::Raised);
   }
@@ -115,7 +115,7 @@ void KAboutContributor::setName( const QString &_text, const QString &_header,
 {
   mLabel[0]->setText(_header);
   mText[0]->setText(_text);
-  if( _update == true ) { updateLayout(); }
+  if( _update ) { updateLayout(); }
 }
 
 
@@ -126,7 +126,7 @@ void KAboutContributor::setEmail( const QString &_text, const QString &_header,
   KURLLabel* const kurl = static_cast<KURLLabel *>(mText[1]);
   kurl->setText(_text);
   kurl->setURL(_text);
-  if( _update == true ) { updateLayout(); }
+  if( _update ) { updateLayout(); }
 }
 
 
@@ -137,7 +137,7 @@ void KAboutContributor::setURL( const QString &_text, const QString &_header,
   KURLLabel* const kurl = static_cast<KURLLabel *>(mText[2]);
   kurl->setText(_text);
   kurl->setURL(_text);
-  if( _update == true ) { updateLayout(); }
+  if( _update ) { updateLayout(); }
 }
 
 
@@ -146,7 +146,7 @@ void KAboutContributor::setWork( const QString &_text, const QString &_header,
 {
   mLabel[3]->setText(_header);
   mText[3]->setText(_text);
-  if( _update == true ) { updateLayout(); }
+  if( _update ) { updateLayout(); }
 }
 
 
@@ -177,7 +177,7 @@ QString KAboutContributor::getWork( void ) const
 
 void KAboutContributor::updateLayout( void )
 {
-  if( layout() != 0 )
+  if( layout() )
   {
     delete layout();
   }
@@ -190,7 +190,7 @@ void KAboutContributor::updateLayout( void )
 
 
   QGridLayout *gbox;
-  if( row == 0 )
+  if( !row  )
   {
     gbox = new QGridLayout( this, 1, 1, 0 );
     for( int i=0; i<4; ++i )
@@ -262,7 +262,7 @@ void KAboutContributor::updateLayout( void )
 
 void KAboutContributor::fontChange( const QFont &/*oldFont*/ )
 {
-  if( mShowBold == true )
+  if( mShowBold )
   {
     QFont f( font() );
     f.setBold( true );
@@ -370,7 +370,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
   if( layoutType & AbtTabbed )
   {
     mPageTab = new KAboutTabWidget( this );
-    if( mPageTab == 0 ) { return; }
+    if( !mPageTab ) { return; }
     hbox->addWidget( mPageTab, 10 );
   }
   else if( layoutType & AbtImageOnly )
@@ -394,7 +394,7 @@ KAboutContainerBase::KAboutContainerBase( int layoutType, QWidget *_parent,
   else
   {
     mPlainSpace = new QFrame( this );
-    if( mPlainSpace == 0 ) { return; }
+    if( !mPlainSpace ) { return; }
     hbox->addWidget( mPlainSpace, 10 );
   }
 
@@ -434,7 +434,7 @@ QSize KAboutContainerBase::sizeHint( void ) const
 
 void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
 {
-  if( mTitleLabel != 0 )
+  if( mTitleLabel )
   {
     QFont f( KGlobalSettings::generalFont() );
     f.setBold( true );
@@ -445,7 +445,7 @@ void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
     mTitleLabel->setFont(f);
   }
 
-  if( mVersionLabel != 0 )
+  if( mVersionLabel )
   {
     QFont f( KGlobalSettings::generalFont() );
     f.setBold( true );
@@ -467,7 +467,7 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
 
   QVBoxLayout* const vbox = new QVBoxLayout( page, KDialog::spacingHint() );
 
-  if( richText == true )
+  if( richText )
   {
     KTextBrowser* const browser = new KTextBrowser( page, "browser" );
     browser->setHScrollBarMode( QScrollView::AlwaysOff );
@@ -667,7 +667,7 @@ void KAboutContainerBase::setProgramLogo( const QPixmap &pixmap )
 
 void KAboutContainerBase::setImageBackgroundColor( const QColor &color )
 {
-  if( mImageFrame != 0 )
+  if( mImageFrame )
   {
     mImageFrame->setBackgroundColor( color );
   }
@@ -676,9 +676,9 @@ void KAboutContainerBase::setImageBackgroundColor( const QColor &color )
 
 void KAboutContainerBase::setImageFrame( bool state )
 {
-  if( mImageFrame != 0 )
+  if( mImageFrame )
   {
-    if( state == true )
+    if( state )
     {
       mImageFrame->setFrameStyle( QFrame::Panel | QFrame::Sunken );
       mImageFrame->setLineWidth(1);
@@ -697,7 +697,7 @@ void KAboutContainerBase::setProduct( const QString &appName,
 				      const QString &author,
 				      const QString &year )
 {
-  if( mIconLabel == 0 )
+  if( !mIconLabel )
   {
     kdDebug(291) << "setProduct: " << "Invalid layout" << endl;
     return;

@@ -84,7 +84,7 @@ KWindowListMenu::~KWindowListMenu()
 static bool standaloneDialog( const KWin::WindowInfo* info, const NameSortedInfoList& list )
 {
     WId group = info->groupLeader();
-    if( group == 0 )
+    if( !group )
     {
         return info->transientFor() == qt_xrootwin();
     }
@@ -146,7 +146,7 @@ void KWindowListMenu::init()
             }
         }
 
-        for (KWin::WindowInfo* info = list.first(); info!=0; info = list.next(), i++)
+        for (KWin::WindowInfo* info = list.first(); info; info = list.next(), ++i)
         {
             QString itemText = KStringHandler::cEmSqueeze(info->visibleNameWithState(), fontMetrics(), 40);
             NET::WindowType windowType = info->windowType( NET::NormalMask | NET::DesktopMask
@@ -184,7 +184,7 @@ void KWindowListMenu::init()
     }
 
     // no windows?
-    if (i == 0)
+    if (!i)
     {
         if (nd > 1)
         {

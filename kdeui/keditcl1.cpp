@@ -414,7 +414,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
         killbufferstring += '\n';
       }
 
-      if( (killstring.length() == 0) && !killtrue){
+      if( !killstring.length() && !killtrue){
         killbufferstring += '\n';
         lastwasanewline = true;
       }
@@ -471,7 +471,7 @@ void KEdit::keyPressEvent ( QKeyEvent *e)
   else if ( isReadOnly() )
     QMultiLineEdit::keyPressEvent( e );
   // If this is an unmodified printable key, send it directly to QMultiLineEdit.
-  else if ( (key.keyCodeQt() & (CTRL | ALT)) == 0 && !e->text().isEmpty() && e->text().unicode()->isPrint() )
+  else if ( !(key.keyCodeQt() & (CTRL | ALT)) && !e->text().isEmpty() && e->text().unicode()->isPrint() )
     QMultiLineEdit::keyPressEvent( e );
   else if ( KStdAccel::paste().contains( key ) ) {
     paste();

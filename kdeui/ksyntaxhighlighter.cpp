@@ -282,7 +282,7 @@ KDictSpellingHighlighter::KDictSpellingHighlighter( QTextEdit *textEdit,
     d = new KDictSpellingHighlighterPrivate();
 
     d->mSpellConfig = spellConfig;
-    d->globalConfig = ( spellConfig == 0 );
+    d->globalConfig = ( !spellConfig );
     d->automatic = autoEnable;
     d->active = spellCheckingActive;
     d->checksRequested = 0;
@@ -389,7 +389,7 @@ bool KDictSpellingHighlighter::isMisspelled( const QString &word )
 	return false;
     }
 
-    if ((dict->isEmpty() || ((*dict)[word] == 0)) && d->spell ) {
+    if ((dict->isEmpty() || !((*dict)[word])) && d->spell ) {
 	int para, index;
 	textEdit()->getCursorPosition( &para, &index );
 	++d->wordCount;

@@ -268,9 +268,9 @@ void KListViewSearchLine::queueSearch(const QString &search)
 
 void KListViewSearchLine::activateSearch()
 {
-    d->queuedSearches--;
+    --(d->queuedSearches);
 
-    if(d->queuedSearches == 0)
+    if(!d->queuedSearches)
         updateSearch(d->search);
 }
 

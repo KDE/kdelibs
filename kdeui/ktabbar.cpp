@@ -91,7 +91,7 @@ void KTabBar::mouseDoubleClickEvent( QMouseEvent *e )
         return;
 
     QTab *tab = selectTab( e->pos() );
-    if( tab!= 0L ) {
+    if( tab ) {
         emit( mouseDoubleClick( indexOf( tab->identifier() ) ) );
         return;
     }
@@ -106,7 +106,7 @@ void KTabBar::mousePressEvent( QMouseEvent *e )
     }
     else if( e->button() == RightButton ) {
         QTab *tab = selectTab( e->pos() );
-        if( tab!= 0L ) {
+        if( tab ) {
             emit( contextMenu( indexOf( tab->identifier() ), mapToGlobal( e->pos() ) ) );
             return;
         }
@@ -128,7 +128,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
         if( newPos.x() > mDragStart.x()+delay || newPos.x() < mDragStart.x()-delay ||
             newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
          {
-            if( tab!= 0L ) {
+            if( tab ) {
                 emit( initiateDrag( indexOf( tab->identifier() ) ) );
                 return;
            }
@@ -142,7 +142,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
                 newPos.y() > mDragStart.y()+delay || newPos.y() < mDragStart.y()-delay )
             {
                 QTab *tab = selectTab( e->pos() );
-                if( tab!= 0L && mTabReorderingEnabled ) {
+                if( tab && mTabReorderingEnabled ) {
                     mReorderStartTab = indexOf( tab->identifier() );
                     grabMouse( sizeAllCursor );
                     return;
@@ -151,7 +151,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *e )
         }
         else {
             QTab *tab = selectTab( e->pos() );
-            if( tab!= 0L ) {
+            if( tab ) {
                 int reorderStopTab = indexOf( tab->identifier() );
                 if ( mReorderStartTab!=reorderStopTab && mReorderPreviousTab!=reorderStopTab ) {
                     emit( moveTab( mReorderStartTab, reorderStopTab ) );
@@ -222,7 +222,7 @@ void KTabBar::enableCloseButton()
 void KTabBar::activateDragSwitchTab()
 {
     QTab *tab = selectTab( mapFromGlobal( QCursor::pos() ) );
-    if ( tab!= 0L && mDragSwitchTab == tab )
+    if ( tab && mDragSwitchTab == tab )
     setCurrentTab( mDragSwitchTab );
     mDragSwitchTab = 0;
 }
@@ -232,7 +232,7 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *e )
     if( e->button() == MidButton ) {
         if ( mReorderStartTab==-1 ) {
             QTab *tab = selectTab( e->pos() );
-            if( tab!= 0L ) {
+            if( tab ) {
                 emit( mouseMiddleClick( indexOf( tab->identifier() ) ) );
                 return;
             }
@@ -250,7 +250,7 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *e )
 void KTabBar::dragMoveEvent( QDragMoveEvent *e )
 {
     QTab *tab = selectTab( e->pos() );
-    if( tab!= 0L ) {
+    if( tab ) {
         bool accept = false;
         // The receivers of the testCanDecode() signal has to adjust
         // 'accept' accordingly.
@@ -269,7 +269,7 @@ void KTabBar::dragMoveEvent( QDragMoveEvent *e )
 void KTabBar::dropEvent( QDropEvent *e )
 {
     QTab *tab = selectTab( e->pos() );
-    if( tab!= 0L ) {
+    if( tab ) {
         mActivateDragSwitchTabTimer->stop();
         mDragSwitchTab = 0;
         emit( receivedDropEvent( indexOf( tab->identifier() ) , e ) );
@@ -345,8 +345,8 @@ void KTabBar::paintLabel( QPainter *p, const QRect& br,
 
         int right = t->text().isEmpty() ? br.right() - pixw : br.left() + 2;
 
-        p->drawPixmap( right + ((selected == true) ? 0 : inactiveXShift),
-                       br.center().y() - pixh / 2 + ((selected == true) ? 0 : inactiveYShift),
+        p->drawPixmap( right + (selected ? 0 : inactiveXShift),
+                       br.center().y() - pixh / 2 + (selected ? 0 : inactiveYShift),
                        pixmap );
     }
 

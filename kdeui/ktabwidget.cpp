@@ -241,7 +241,7 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
         if ( tabPosition()==Bottom )
             point.setY( point.y()-( height()-size.height() ) );
         QTab *tab = tabBar()->selectTab( point);
-        if( tab== 0L )
+        if( !tab )
             return true;
     }
     return false;

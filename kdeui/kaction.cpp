@@ -251,7 +251,7 @@ void KAction::initPrivate( const QString& text, const KShortcut& cut,
     if ( receiver && slot )
         connect( this, SIGNAL( activated() ), receiver, slot );
 
-    if( !cut.isNull() && qstrcmp( name(), "unnamed" ) == 0 )
+    if( !cut.isNull() && !qstrcmp( name(), "unnamed" ) )
         kdWarning(129) << "KAction::initPrivate(): trying to assign a shortcut (" << cut.toStringInternal() << ") to an unnamed action." << endl;
     d->setText( text );
     initShortcut( cut );
@@ -366,7 +366,7 @@ bool KAction::initShortcut( const KShortcut& cut )
     d->m_cut = cut;
 
     // Only insert action into KAccel if it has a valid name,
-    if( qstrcmp( name(), "unnamed" ) != 0 &&
+    if( qstrcmp( name(), "unnamed" ) &&
         m_parentCollection &&
         m_parentCollection->isAutoConnectShortcuts() &&
         m_parentCollection->kaccel() )
@@ -383,7 +383,7 @@ void KAction::plugShortcut()
   KAccel* kaccel = kaccelCurrent();
 
   //kdDebug(129) << "KAction::plugShortcut(): this = " << this << " kaccel() = " << (m_parentCollection ? m_parentCollection->kaccel() : 0) << endl;
-  if( kaccel && qstrcmp( name(), "unnamed" ) != 0 ) {
+  if( kaccel && qstrcmp( name(), "unnamed" ) ) {
     // Check if already plugged into current KAccel object
     for( uint i = 0; i < d->m_kaccelList.count(); i++ ) {
       if( d->m_kaccelList[i] == kaccel )
@@ -599,7 +599,7 @@ QString KAction::toolTip() const
 int KAction::plug( QWidget *w, int index )
 {
   //kdDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl;
-  if (w == 0) {
+  if (!w ) {
 	kdWarning(129) << "KAction::plug called with 0 argument\n";
  	return -1;
   }
@@ -607,7 +607,7 @@ int KAction::plug( QWidget *w, int index )
 #ifndef NDEBUG
   KAccel* kaccel = kaccelCurrent();
   // If there is a shortcut, but no KAccel available
-  if( !d->m_cut.isNull() && kaccel == 0 ) {
+  if( !d->m_cut.isNull() && !kaccel ) {
     kdWarning(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
     kdDebug(129) << kdBacktrace() << endl;
   }
@@ -1157,7 +1157,7 @@ KActionCollection *KAction::parentCollection() const
 
 void KAction::unplugAll()
 {
-  while ( containerCount() != 0 )
+  while ( containerCount() )
     unplug( container( 0 ) );
 }
 

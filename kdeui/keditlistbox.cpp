@@ -82,11 +82,11 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
     d->buttons = buttons;
 
     int lostButtons = 0;
-    if ( (buttons & Add) == 0 )
-        lostButtons++;
-    if ( (buttons & Remove) == 0 )
-        lostButtons++;
-    if ( (buttons & UpDown) == 0 )
+    if ( !(buttons & Add) )
+        ++lostButtons;
+    if ( !(buttons & Remove) )
+        ++lostButtons;
+    if ( !(buttons & UpDown) )
         lostButtons += 2;
 
 
@@ -184,7 +184,7 @@ void KEditListBox::typedSomething(const QString& text)
         else
         {
             StringComparisonMode mode = (StringComparisonMode) (ExactMatch | CaseSensitive );
-            bool enable = (m_listBox->findItem( text, mode ) == 0L);
+            bool enable = (!m_listBox->findItem( text, mode ));
             servNewButton->setEnabled( enable );
         }
     }
@@ -199,7 +199,7 @@ void KEditListBox::moveItemUp()
     }
 
     unsigned int selIndex = m_listBox->currentItem();
-    if (selIndex == 0)
+    if (!selIndex)
     {
         KNotifyClient::beep();
         return;
@@ -255,7 +255,7 @@ void KEditListBox::addItem()
         else
         {
             StringComparisonMode mode = (StringComparisonMode) (ExactMatch | CaseSensitive );
-            alreadyInList =(m_listBox->findItem(currentTextLE, mode) != 0);
+            alreadyInList =(m_listBox->findItem(currentTextLE, mode) );
         }
     }
 
@@ -327,7 +327,7 @@ void KEditListBox::enableMoveButtons(int index)
             servUpButton->setEnabled(true);
             servDownButton->setEnabled(false);
         }
-        else if (index == 0)
+        else if (!index)
         {
             servUpButton->setEnabled(false);
             servDownButton->setEnabled(true);

@@ -115,11 +115,11 @@ KCommandHistory::~KCommandHistory() {
 }
 
 void KCommandHistory::clear() {
-    if (m_undo != 0) {
+    if (m_undo) {
         m_undo->setEnabled(false);
         m_undo->setText(i18n("&Undo"));
     }
-    if (m_redo != 0) {
+    if (m_redo) {
         m_redo->setEnabled(false);
         m_redo->setText(i18n("&Redo"));
     }
@@ -129,11 +129,11 @@ void KCommandHistory::clear() {
 
 void KCommandHistory::addCommand(KCommand *command, bool execute) {
 
-    if(command==0L)
+    if(!command)
         return;
 
     int index;
-    if(d->m_present!=0L && (index=m_commands.findRef(d->m_present))!=-1) {
+    if(d->m_present && (index=m_commands.findRef(d->m_present))!=-1) {
         if (m_first)
             --index;
         m_commands.insert(index+1, command);
@@ -146,11 +146,11 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
             d->m_savedAt=-1;
         d->m_present=command;
         m_first=false;
-        if (m_undo != 0) {
+        if (m_undo) {
             m_undo->setEnabled(true);
             m_undo->setText(i18n("&Undo: %1").arg(d->m_present->name()));
         }
-        if((m_redo != 0) && m_redo->isEnabled()) {
+        if((m_redo) && m_redo->isEnabled()) {
             m_redo->setEnabled(false);
             m_redo->setText(i18n("&Redo"));
         }
@@ -161,11 +161,11 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
         m_commands.clear();
         m_commands.append(command);
         d->m_present=command;
-        if (m_undo != 0) {
+        if (m_undo) {
             m_undo->setEnabled(true);
             m_undo->setText(i18n("&Undo: %1").arg(d->m_present->name()));
         }
-        if (m_redo != 0) {
+        if (m_redo) {
             m_redo->setEnabled(false);
             m_redo->setText(i18n("&Redo"));
         }
@@ -180,19 +180,19 @@ void KCommandHistory::addCommand(KCommand *command, bool execute) {
 
 void KCommandHistory::undo() {
 
-    if (m_first || (d->m_present == 0L))
+    if (m_first || !d->m_present)
         return;
 
     d->m_present->unexecute();
     emit commandExecuted();
-    if (m_redo != 0) {
+    if (m_redo) {
         m_redo->setEnabled(true);
         m_redo->setText(i18n("&Redo: %1").arg(d->m_present->name()));
     }
     int index;
-    if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.prev()!=0) {
+    if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.prev()) {
         d->m_present=m_commands.current();
-        if (m_undo != 0) {
+        if (m_undo) {
             m_undo->setEnabled(true);
             m_undo->setText(i18n("&Undo: %1").arg(d->m_present->name()));
         }
@@ -201,7 +201,7 @@ void KCommandHistory::undo() {
             emit documentRestored();
     }
     else {
-        if (m_undo != 0) {
+        if (m_undo) {
             m_undo->setEnabled(false);
             m_undo->setText(i18n("&Undo"));
         }
@@ -220,10 +220,10 @@ void KCommandHistory::redo() {
         emit commandExecuted();
         m_first=false;
         m_commands.first();
-        if(d->m_savedAt==0)
+        if(!d->m_savedAt)
             emit documentRestored();
     }
-    else if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.next()!=0) {
+    else if((index=m_commands.findRef(d->m_present))!=-1 && m_commands.next()) {
         d->m_present=m_commands.current();
         d->m_present->execute();
         emit commandExecuted();
@@ -232,19 +232,19 @@ void KCommandHistory::redo() {
             emit documentRestored();
     }
 
-    if (m_undo != 0) {
+    if (m_undo) {
         m_undo->setEnabled(true);
         m_undo->setText(i18n("&Undo: %1").arg(d->m_present->name()));
     }
 
-    if(m_commands.next()!=0) {
-        if (m_redo != 0) {
+    if(m_commands.next()) {
+        if (m_redo) {
             m_redo->setEnabled(true);
             m_redo->setText(i18n("&Redo: %1").arg(m_commands.current()->name()));
         }
     }
     else {
-        if((m_redo != 0) && m_redo->isEnabled()) {
+        if((m_redo) && m_redo->isEnabled()) {
             m_redo->setEnabled(false);
             m_redo->setText(i18n("&Redo"));
         }
@@ -252,9 +252,9 @@ void KCommandHistory::redo() {
 }
 
 void KCommandHistory::documentSaved() {
-    if(d->m_present!=0 && !m_first)
+    if(d->m_present && !m_first)
         d->m_savedAt=m_commands.findRef(d->m_present);
-    else if(d->m_present==0 && !m_first)
+    else if(!d->m_present && !m_first)
         d->m_savedAt=-42;  // this value signals that the document has
                         // been saved with an empty history.
     else if(m_first)
@@ -355,8 +355,8 @@ void KCommandHistory::updateActions()
 {
     if ( m_undo && m_redo )
     {
-        m_undo->setEnabled( !m_first && ( d->m_present != 0L ) );
-        m_redo->setEnabled(m_first || (m_commands.findRef(d->m_present)!=-1 && m_commands.next()!=0));
+        m_undo->setEnabled( !m_first && ( d->m_present ) );
+        m_redo->setEnabled(m_first || (m_commands.findRef(d->m_present)!=-1 && m_commands.next()));
     }
 }
 

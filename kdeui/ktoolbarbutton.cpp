@@ -191,7 +191,7 @@ void KToolBarButton::modeChange()
 
   // we'll start with the size of our pixmap
   int pix_width  = d->m_iconSize;
-  if ( d->m_iconSize == 0 ) {
+  if ( !d->m_iconSize ) {
       if (d->m_parent && !strcmp(d->m_parent->name(), "mainToolBar"))
           pix_width = IconSize( KIcon::MainToolbar );
       else
@@ -650,7 +650,7 @@ void KToolBarButton::setRadio (bool f)
 
 void KToolBarButton::on(bool flag)
 {
-  if(isToggleButton() == true)
+  if(isToggleButton())
     setOn(flag);
   else
   {
@@ -669,7 +669,7 @@ void KToolBarButton::toggle()
 void KToolBarButton::setToggle(bool flag)
 {
   setToggleButton(flag);
-  if (flag == true)
+  if (flag)
     connect(this, SIGNAL(toggled(bool)), this, SLOT(slotToggled()));
   else
     disconnect(this, SIGNAL(toggled(bool)), this, SLOT(slotToggled()));

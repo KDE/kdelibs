@@ -53,7 +53,7 @@ KAboutApplication::KAboutApplication( const KAboutData *aboutData, QWidget *pare
 
 void KAboutApplication::buildDialog( const KAboutData *aboutData )
 {
-  if( aboutData == 0 )
+  if( !aboutData )
   {
     //
     // Recovery

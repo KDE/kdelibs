@@ -318,7 +318,7 @@ void KIconView::contentsDragEnterEvent( QDragEnterEvent *e )
     if ( d->dragHoldItem != item)
     {
         d->dragHoldItem = item;
-        if( item != 0L )
+        if( item  )
         {
             d->dragHoldTimer.start( 1000, true );
         }
@@ -338,7 +338,7 @@ void KIconView::contentsDragMoveEvent( QDragMoveEvent *e )
     if ( d->dragHoldItem != item)
     {
         d->dragHoldItem = item;
-        if( item != 0L )
+        if( item  )
         {
             d->dragHoldTimer.start( 1000, true );
         }

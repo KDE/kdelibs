@@ -126,7 +126,7 @@ QString KGuiItem::plainText() const
 {
     int len = d->m_text.length();
 
-    if (len == 0)
+    if (!len)
         return d->m_text;
 
     //Can assume len >= 1 from now on.
