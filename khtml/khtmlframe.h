@@ -128,7 +128,8 @@ protected:
     /**
      * Store rows and cols for later use
      */
-    QString rows, cols;
+    QString rows;
+    QString cols;
 
     /**
      * Amount of frames as mentioned in the COLS or ROWS tag.
