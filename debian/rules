@@ -88,7 +88,7 @@ indep-stamp:
 	#cp doc/api/HTML/* `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)                                                                                          
 	dh_installdocs -i
 	dh_installchangelogs -pkdelibs3-doc 
-	dh_compress -i -X.docbook -X.css -X-license -X.dcl
+	dh_compress -i -X.docbook -X.css -X-license -X.dcl -X.bz2
 	dh_fixperms -i
 	dh_installdeb -i
 	dh_gencontrol -i
