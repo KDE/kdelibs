@@ -357,41 +357,42 @@ private:
  * MD5 algorithm.
  *
  * The default constructor is designed to provide much the same
- * functionality as the most commonly used C-implementation while
+ * functionality as the most commonly used C-implementation, while
  * the other three constructors are meant to further simplify the
- * message digest calculations by calculating the result in one
+ * process of obtaining a digest by calculating the result in a
  * single step.
+ *
  * KMD5 is state-based, that means you can add new contents with
  * update() as long as you didn't request the digest value yet.
  * After the digest value was requested, the object is "finalized"
  * and you have to call reset() to be able to do another calculation
- * with it.
- * The reason for this behaviour is that upon requesting the message
- * digest KMD5 has to pad the received contents up to a 64 byte
- * boundary to calculate its value. After this operation it is
- * not possible to resume consuming data.
+ * with it.  The reason for this behaviour is that upon requesting
+ * the message digest KMD5 has to pad the received contents up to a
+ * 64 byte boundary to calculate its value. After this operation it
+ * is not possible to resume consuming data.
  *
  * @sect Usage:
  *
  * A common usage of this class:
  *
  * <PRE>
+ *  const char* test1;
  *  KMD5::Digest rawResult;
- *  const char* test1 = "This is a simple test.";
  *
- *  KMD5 context( test1 );
- *  printf ( "Hex Digest output: %s", context.hexDigest().data() );
+ *  test1 = "This is a simple test.";
+ *  KMD5 context (test1);
+ *  cout << "Hex Digest output: " << context.hexDigest().data() << endl;
  * </PRE>
  *
- * To cut down on the unnecessary overhead of creating multiple KMD5 objects,
- * you can simply invoke @ref reset() to reuse the same object in making another
- * calculation:
+ * To cut down on the unnecessary overhead of creating multiple KMD5
+ * objects, you can simply invoke @ref reset() to reuse the same object
+ * in making another calculation:
  *
  * <PRE>
- *  context.reset();
- *  context.update( "TWO" );
- *  context.update( "THREE" );
- *  printf ( "Hex Digest output: %s", context.hexDigest().data() );
+ *  context.reset ();
+ *  context.update ("TWO");
+ *  context.update ("THREE");
+ *  cout << "Hex Digest output: " << context.hexDigest().data() << endl;
  * </PRE>
  *
  * @short An adapted C++ implementation of RSA Data Securities MD5 algorithm.
