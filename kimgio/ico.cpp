@@ -179,8 +179,8 @@ namespace
                     break;
                 case 4:
                     for ( unsigned x = 0; x < rec.width; ++x )
-                        if ( x & 1 ) *p++ = colorTable[ pixel[ x / 2 ] >> 4 ];
-                        else *p++ = colorTable[ pixel[ x / 2 ] & 0x0f ];
+                        if ( x & 1 ) *p++ = colorTable[ pixel[ x / 2 ] & 0x0f ];
+                        else *p++ = colorTable[ pixel[ x / 2 ] >> 4 ];
                     break;
                 case 8:
                     for ( unsigned x = 0; x < rec.width; ++x )
