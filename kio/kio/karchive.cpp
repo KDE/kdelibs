@@ -376,7 +376,7 @@ KArchiveDirectory * KArchive::rootDir()
 KArchiveDirectory * KArchive::findOrCreate( const QString & path )
 {
     //kdDebug() << "KArchive::findOrCreate " << path << endl;
-    if ( path == "" || path == "/" || path == "." ) // root dir => found
+    if ( path.isEmpty() || path == "/" || path == "." ) // root dir => found
     {
         //kdDebug() << "KArchive::findOrCreate returning rootdir" << endl;
         return rootDir();

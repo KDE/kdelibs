@@ -381,7 +381,7 @@ void RenameDlg::b0Pressed()
 // Rename
 void RenameDlg::b1Pressed()
 {
-  if ( d->m_pLineEdit->text()  == "" )
+  if ( d->m_pLineEdit->text().isEmpty() )
     return;
 
   KURL u = newDestURL();
