@@ -312,23 +312,17 @@ bool KCalendarSystemHebrew::setYMD(QDate & date, int y, int m, int d) const
   return date.setYMD(gd->hd_year, gd->hd_mon, gd->hd_day);
 }
 
-
 QString KCalendarSystemHebrew::weekDayName(int day, bool shortName) const
 {
-  if(shortName)
+  if ( day == 6 )
   {
-     if (day != 6)
-        return QString("%1").arg(day);
-     else
-        return locale()->translate("Sab");
+    if (shortName)
+      return locale()->translate("Hebrew Calendar WeekDay 6 Short", "Sab");
+    else
+      return locale()->translate("Hebrew Calendar WeekDay 6 Long", "Sabbath");
   }
-  else
-  {
-     if (day != 6)
-        return QString("day  %1").arg(day);
-     else
-        return locale()->translate("Sabbath");
-  }
+
+  return locale()->weekDayName(day, shortName);
 }
 
 // Ok
