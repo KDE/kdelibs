@@ -60,7 +60,6 @@ static inline int collapseMargins(int a, int b)
 RenderFlow::RenderFlow()
     : RenderBox()
 {
-    setInline(true);
     m_childrenInline = true;
     m_haveAnonymous = false;
 
