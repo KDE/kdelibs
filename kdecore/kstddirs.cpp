@@ -375,7 +375,7 @@ QString KStandardDirs::getSaveLocation(const QString& type,
 	    debug("save location %s doesn't exist", fullPath.ascii());
 	    return local;
 	}
-	if(!makeDir(fullPath)) {
+	if(!makeDir(fullPath, 0600)) {
 	    debug("failed to create %s", fullPath.ascii());
 	    return local;
 	}
