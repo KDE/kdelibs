@@ -82,7 +82,7 @@ void HTMLBaseElementImpl::attach(KHTMLView *v)
     setStyle(document->styleSelector()->styleForElement(this));
     if(_href.length())
     {
-      v->part()->setBaseURL( KURL( _href.string() ) );
+      v->part()->setBaseURL( KURL( v->part()->url(), _href.string() ) );
     }
     if(_target.length())
     {
@@ -137,7 +137,7 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
                 m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL());
             else
                 m_cachedSheet = Cache::requestStyleSheet(m_url, doc->baseURL());
-            m_cachedSheet->ref(this);
+            if(m_cachedSheet) m_cachedSheet->ref(this);
         }
     }
     NodeBaseImpl::attach( v );
