@@ -186,9 +186,8 @@ PlastikStyle::PlastikStyle() : KStyle( AllowMenuTransparency, ThreeButtonScrollB
 
     if ( _animateProgressBar )
     {
-        QTimer* timer = new QTimer( this );
-        timer->start( 50, false );
-        connect( timer, SIGNAL(timeout()), this, SLOT(updateProgressPos()) );
+        animationTimer = new QTimer( this );
+        connect( animationTimer, SIGNAL(timeout()), this, SLOT(updateProgressPos()) );
     }
 }
 
@@ -198,10 +197,11 @@ void PlastikStyle::updateProgressPos()
     QProgressBar* pb;
     //Update the registered progressbars.
     QMap<QWidget*, int>::iterator iter;
+    bool visible = false;
     for (iter = progAnimWidgets.begin(); iter != progAnimWidgets.end(); iter++)
     {   
-        if ( !::qt_cast<QProgressBar*>(iter.key()) ) 
-            continue; 
+        if ( !::qt_cast<QProgressBar*>(iter.key()) )
+            continue;
         
         pb = dynamic_cast<QProgressBar*>(iter.key());
         if ( iter.key() -> isEnabled() && 
@@ -211,7 +211,11 @@ void PlastikStyle::updateProgressPos()
             iter.data() = (iter.data() + 1) % 20;
             iter.key()->update();
         }
+        if (iter.key()->isVisible())
+            visible = true;
     }
+    if (!visible)
+        animationTimer->stop();
 }
 
 
@@ -261,6 +265,7 @@ void PlastikStyle::polish(QWidget* widget)
 
     if( _animateProgressBar && ::qt_cast<QProgressBar*>(widget) )
     {
+        widget->installEventFilter(this);
         progAnimWidgets[widget] = 0;
         connect(widget, SIGNAL(destroyed(QObject*)), this, SLOT(progressBarDestroyed(QObject*)));
     }
@@ -3571,6 +3576,14 @@ bool PlastikStyle::eventFilter(QObject *obj, QEvent *ev)
             tabbar->repaint(false);
         }
         return false;
+    }
+    // Track show events for progress bars
+    if ( _animateProgressBar && ::qt_cast<QProgressBar*>(obj) )
+    {
+        if ((ev->type() == QEvent::Show) && !animationTimer->isActive())
+        {
+            animationTimer->start( 50, false );
+        }
     }
     if ( !qstrcmp(obj->name(), "kde toolbar widget") )
     {

@@ -52,6 +52,7 @@
 
 class QSettings;
 class QTab;
+class QTimer;
 
 class PlastikStyle : public KStyle
 {
@@ -356,7 +357,7 @@ private:
         }
     };
     QIntCache<CacheEntry> *pixmapCache;
-
+    
     // For renderFocusRect
     mutable QBitmap *verticalDots;
     mutable QBitmap *horizontalDots;
@@ -364,6 +365,9 @@ private:
     // For KPE_ListViewBranch
     mutable QBitmap *verticalLine;
     mutable QBitmap *horizontalLine;
+    
+    // For progress bar animation
+    QTimer *animationTimer;
 };
 
 #endif // __PLASTIK_H
