@@ -95,7 +95,7 @@ class AddressBook : public QObject
     */
     class Ticket
     {
-        friend AddressBook;
+        friend class AddressBook;
     
         Ticket( const QString &_fileName ) : fileName( _fileName ) {}
         
