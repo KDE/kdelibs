@@ -114,7 +114,13 @@ bool HTMLAnchorElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTy
     {
 	// set the url
 	if(_url != 0) printf("Error in Anchor::mouseEvent, nested url's!\n");
-	_url = href;
+	if(target && href)
+	{
+	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
+	    _url = s;
+	}
+	else
+	    _url = href;
 
 	// dynamic HTML...
 	mouseEventHandler(button, type);

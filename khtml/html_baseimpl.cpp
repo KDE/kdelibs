@@ -204,7 +204,7 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
     parentWidget = w;
     if(w)
     {	
-	view = w->createFrame(w->viewport(), name.string().ascii());
+	view = w->createFrame(w->viewport(), name.string());
 	view->setIsFrame(true);
     }
     if(url != 0)
@@ -238,7 +238,6 @@ void HTMLFrameElementImpl::attach(KHTMLWidget *w)
 
 void HTMLFrameElementImpl::detach()
 {
-    parentWidget->removeChild(view);
     delete view;
     parentWidget = 0;
 }
@@ -519,10 +518,6 @@ void HTMLFrameSetElementImpl::attach(KHTMLWidget *w)
     // ensure the htmlwidget knows we have a frameset, and adjusts the width accordingly
     w->layout();
     view = w;
-}
-
-void HTMLFrameSetElementImpl::detach()
-{
 }
 
 NodeImpl *HTMLFrameSetElementImpl::addChild(NodeImpl *child)

@@ -370,7 +370,7 @@ void HTMLImageElementImpl::layout(bool)
 	descent = imgHeight/2;
 	break;
     default:
-	break; 
+	break;
     }
 
     if(border)
@@ -506,11 +506,13 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
 {
     coords=0L;
     href = 0;
+    target = 0;
 }
 
 HTMLAreaElementImpl::~HTMLAreaElementImpl()
 {
     if( href ) href->deref();
+    if( target ) target->deref();
     if (coords)
     	delete coords;
 }
@@ -570,6 +572,10 @@ void HTMLAreaElementImpl::parseAttribute(Attribute *attr)
     	href = attr->val();
 	href->ref();
 	break;	
+    case ATTR_TARGET:
+    	target = attr->val();
+	target->ref();
+	break;	
     case ATTR_ALT:
 	break;
     case ATTR_TABINDEX:
@@ -596,7 +602,13 @@ HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     {
     	cout << "region hit, url " << QConstString(href->s, href->l).string() << endl;
     	inside = true;
-    	url_ = href;
+	if(target && href)
+	{
+	    DOMString s = DOMString("target://") + DOMString(target) + DOMString("/#") + DOMString(href);
+	    url_ = s;
+	}
+	else
+	    url_ = href;
     }
     return inside;
 }	

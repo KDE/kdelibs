@@ -57,6 +57,9 @@ using namespace DOM;
 KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     : QScrollView( parent, name)
 {
+    _parent = 0;
+    m_strFrameName       = QString::null;
+
     // initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
@@ -69,12 +72,13 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     init();
 }
 
-KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, const char *name )
-    : QScrollView( parent, name)
+KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString name )
+    : QScrollView( parent, name.latin1())
 {
     _parent     = _parent_browser;
     m_strFrameName       = name;
 
+    printf("new frame, name=%s\n", name.latin1());
   // Initialize QScrollview
     enableClipper(true);
     viewport()->setMouseTracking(true);
@@ -101,9 +105,6 @@ KHTMLWidget::~KHTMLWidget()
 
 void KHTMLWidget::init()
 {
-    _parent     = 0;
-  m_strFrameName       = QString::null;
-
   m_bStartedRubberBand = false;
   m_pRubberBandPainter = 0L;
   m_bRubberBandVisible = false;
@@ -626,11 +627,12 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
   if ( _url.isNull() )
     return;
 
-  QString url = completeURL( _url );
   QString target = _target;
   if(target.isEmpty()) target = _baseTarget;
 
-  printf("urlSelected: url=%s\n", url.latin1());
+  QString url = completeURL( _url, target );
+
+  printf("urlSelected: url=%s target=%s\n", url.latin1(), target.latin1());
 
   if(!_followLinks)
   {
@@ -640,49 +642,53 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
 
   if ( !target.isNull() && !target.isEmpty() && _button == LeftButton )
   {
-    if ( strcmp( target, "_parent" ) == 0 )
-    {
-      KHTMLWidget *v = parentView();
-      if ( !v )
-	v = this;
-      v->openURL( url );
-      emit urlClicked( url, target, _button );
-      return;
-    }
-    else if ( strcmp( target, "_top" ) == 0 )
-    {
-      kdebug(0,1202,"OPENING top %s", url.ascii());
-      topView()->openURL( url );
-      emit urlClicked( url, target, _button );
-      kdebug(0,1202,"OPENED top");
-      return;
-    }
-    else if ( strcmp( target, "_blank" ) == 0 )
-    {
-      emit newWindow( url );
-      return;
-    }
-    else if ( strcmp( target, "_self" ) == 0 )
-    {
-      openURL( url );
-      emit urlClicked( url, target, _button );
-      return;
-    }
+      printf("searching target frame\n");
+      if ( strcmp( target.latin1(), "_parent" ) == 0 )
+      {
+	  KHTMLWidget *v = parentView();
+	  if ( !v )
+	      v = this;
+	  v->openURL( url );
 
-    KHTMLWidget *v = topView()->findChildView( target );
-    if ( !v )
-      v = findView( target );
-    if ( v )
-    {
-      v->openURL( url );
-      emit urlClicked( url, target, _button );
-      return;
-    }
-    else
-    {
-      emit newWindow( url );
-      return;
-    }
+	  emit urlClicked( url, target, _button );
+	  return;
+      }
+      else if ( strcmp( target.latin1(), "_top" ) == 0 )
+      {
+	  kdebug(0,1202,"OPENING top %s", url.ascii());
+	  topView()->openURL( url );
+	  emit urlClicked( url, target, _button );
+	  kdebug(0,1202,"OPENED top");
+	  return;
+      }
+      else if ( strcmp( target.latin1(), "_blank" ) == 0 )
+      {
+	  emit newWindow( url );
+	  return;
+      }
+      else if ( strcmp( target.latin1(), "_self" ) == 0 )
+      {
+	  openURL( url );
+	  emit urlClicked( url, target, _button );
+	  return;
+      }
+
+      printf("searching...\n");
+      KHTMLWidget *v = topView()->findChildView( target );
+      if ( !v )
+	  v = findView( target );
+      if ( v )
+      {
+	  v->openURL( url );
+	  emit urlClicked( url, target, _button );
+	  return;
+      }
+      else
+      {
+	  printf("couldn't find target!\n");
+	  emit newWindow( url );
+	  return;
+      }
   }
   else if ( _button == MidButton )
   {
@@ -691,15 +697,15 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
   }
   else if ( _button == LeftButton )
   {
-    // Test whether both URLs differ in the Reference only.
-    KURL u1( url );
-    if ( u1.isMalformed() )
-    {
-      kioErrorDialog( KIO::ERR_MALFORMED_URL, url );
-      return;
-    }
+      // Test whether both URLs differ in the Reference only.
+      KURL u1( url );
+      if ( u1.isMalformed() )
+      {
+	  kioErrorDialog( KIO::ERR_MALFORMED_URL, url );
+	  return;
+      }
 
-    openURL( url );	
+      openURL( url );	
   }
 }
 
@@ -743,7 +749,7 @@ void KHTMLWidget::slotFormSubmitted( const QString &_method, const QString &_url
 void KHTMLWidget::setDefaultTextColors( const QColor& _textc, const QColor& _linkc, const QColor& _vlinkc )
 {
     printf("setting default text colors\n");
-    
+
     defaultSettings->fontBaseColor = _textc;
     defaultSettings->linkColor = _linkc;
     defaultSettings->vLinkColor = _vlinkc;
@@ -762,18 +768,27 @@ void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
 	c->m_pBrowser->setDefaultBGColor( bgcolor );
 }
 
-QString KHTMLWidget::completeURL( const QString &_url )
+QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
 {
-  if(_baseURL.isEmpty())
-  {
-      KURL orig( m_strURL );
-      KURL u( orig, _url );
-      return u.url();
-  }
-  KURL orig( _baseURL );
-  KURL u( orig, _url );
-  return u.url();
-  
+    if(_url[0] == '#' && !target.isEmpty())
+    {
+	KHTMLWidget *v = findView(target);
+	if(v)
+	{
+	    KURL orig(v->url());
+	    KURL u( orig, _url);
+	    return u.url();
+	}
+    }
+    if(_baseURL.isEmpty())
+    {
+	KURL orig( m_strURL );
+	KURL u( orig, _url );
+	return u.url();
+    }
+    KURL orig( _baseURL );
+    KURL u( orig, _url );
+    return u.url();
 }
 
 KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
@@ -1250,9 +1265,15 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     if ( _mouse->button() != RightButton )
     {
-	printf("m_strSelectedURL='%s'\n",m_strSelectedURL.data());
-	// ### FIXME
+	KURL u(m_strSelectedURL);
 	QString pressedTarget;
+	if(u.protocol() == "target")
+	{
+	    m_strSelectedURL = u.ref();
+	    pressedTarget = u.host();
+	}	
+	printf("m_strSelectedURL='%s' target=%s\n",m_strSelectedURL.data(), pressedTarget.latin1());
+
 	urlSelected( m_strSelectedURL.data(), _mouse->button(), pressedTarget.data() );
     }
 }
@@ -1441,7 +1462,7 @@ HTMLSettings *KHTMLWidget::settings()
 {
     // ### check all settings stuff in khtml.cpp for memory leaks...
     if(!_settings) _settings = new HTMLSettings(*defaultSettings);
-    return _settings; 
+    return _settings;
 }
 
 const QString &KHTMLWidget::baseUrl()

@@ -71,7 +71,7 @@ class KHTMLWidget : public QScrollView
 
 public:
     KHTMLWidget( QWidget *parent=0, const char *name=0 );
-    KHTMLWidget( QWidget *parent, KHTMLWidget *parentWidget, const char *name);
+    KHTMLWidget( QWidget *parent, KHTMLWidget *parentWidget, QString name);
     virtual ~KHTMLWidget();
 
 protected:
@@ -607,7 +607,7 @@ protected:
      */
     virtual bool mousePressedHook( const QString &/* _url*/, const QString & /*_target*/, QMouseEvent *, bool /*_isselected*/) { return false; }
 
-    virtual QString completeURL( const QString & _url );
+    virtual QString completeURL( const QString & _url, const QString &target = QString::null );
 
     virtual KHTMLWidget* findChildView( const QString & _target );
 

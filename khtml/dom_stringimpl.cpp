@@ -42,6 +42,7 @@ void DOMStringImpl::append(DOMStringImpl *str)
 	memcpy(c+l, str->s, str->l*sizeof(QChar));
 	if(s) delete [] s;
 	s = c;
+	l = newlen;
     }
 }
 

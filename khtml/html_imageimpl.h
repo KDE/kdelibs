@@ -169,7 +169,8 @@ protected:
     Shape shape;
     QList<Length>* coords;
     DOMStringImpl *href;
-
+    DOMStringImpl *target;
+    
     QRegion region;
 
     int lastw, lasth;

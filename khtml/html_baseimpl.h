@@ -122,7 +122,6 @@ public:
     NodeImpl *addChild(NodeImpl *child);
     void close();
     virtual void attach(KHTMLWidget *w);
-    virtual void detach();
 
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
 		     int _tx, int _ty, DOMString &url);
@@ -133,7 +132,7 @@ public:
 protected:
     void positionFrames(bool);
 
-    
+
     QList<Length> *rows;
     QList<Length> *cols;
     int *rowHeight;

@@ -60,7 +60,7 @@ void HTMLBaseElementImpl::parseAttribute(Attribute *attr)
     case ATTR_HREF:
       _href = attr->value();
       break;
-    case ATTR_BACKGROUND:
+    case ATTR_TARGET:
       _target = attr->value();
       break;
     default:
