@@ -357,10 +357,11 @@ void RenderBox::updateHeight()
     kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
 #endif
 
+    RenderObject* cb = containingBlock();
     if (parsing())
     {
         setLayouted(false);
-        containingBlock()->updateHeight();
+        if(cb != this) cb->updateHeight();
         return;
     }
 
@@ -369,19 +370,17 @@ void RenderBox::updateHeight()
         int oldHeight = m_height;
         setLayouted(false);
 
-        if (hasOverhangingFloats()) {
-            if(containingBlock() != this) containingBlock()->updateHeight();
-        }
+        if (hasOverhangingFloats())
+            if(cb != this) cb->updateHeight();
 
         layout();
 
         if(m_height != oldHeight) {
-            if(containingBlock() != this) containingBlock()->updateHeight();
+            if(cb != this) cb->updateHeight();
         } else {
-            containingBlock()->repaint();
+            cb->repaint();
         }
     }
-
 }
 
 void RenderBox::position(int x, int y, int, int, int, bool, bool)
