@@ -21,7 +21,7 @@ ScriptInfo::ScriptInfo()
 	scriptFile = "";
 	scriptMethod = "";
 }
-KScriptManager::KScriptManager(QObject *parent, char *name) :
+KScriptManager::KScriptManager(QObject *parent, const char *name) :
 	QObject(parent,name), KScriptClientInterface()
 {
 

@@ -42,7 +42,7 @@ class ScriptInfo;
 		/**
 		*	Create a new instance of the script engine.
 		*/
-		KScriptManager(QObject *parent, char *name);
+		KScriptManager(QObject *parent, const char *name);
 		/**
 		*	Destroy the current script engine.
 		*/
