@@ -224,6 +224,16 @@ public:
    *
    **/
   KProcess &operator<<(const QString& arg);
+  /**
+   * Similar to previous method, takes a char *, supposed to be in locale 8 bit already.
+   */
+  KProcess &operator<<(const char * arg);
+
+  /**
+   * Sets the executable and the command line argument list for this process,
+   * in a single method call, or add a list of arguments.
+   **/
+  KProcess &operator<<(const QStringList& args);
 
   /**
    * Clear a command line argument list that has been set by using

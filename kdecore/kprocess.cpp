@@ -198,6 +198,19 @@ bool KProcess::setExecutable(const QString& proc)
   return true;
 }
 
+KProcess &KProcess::operator<<(const QStringList& args)
+{
+  QStringList::ConstIterator it = args.begin();
+  for ( ; it != args.end() ; ++it )
+      arguments.append(QFile::encodeName(*it));
+  return *this;
+}
+
+KProcess &KProcess::operator<<(const char* arg)
+{
+  arguments.append(arg);
+  return *this;
+}
 
 KProcess &KProcess::operator<<(const QString& arg)
 {
