@@ -436,6 +436,9 @@ QXEmbed::~QXEmbed()
 {
 
     if ( window != 0 ) {
+	if ( autoDelete() )
+	    XUnmapWindow( qt_xdisplay(), window );
+	
  	XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
 	XFlush( qt_xdisplay() );
 
@@ -449,6 +452,7 @@ QXEmbed::~QXEmbed()
 	    ev.xclient.data.s[0] = qt_wm_delete_window;
 	    XSendEvent(qt_xdisplay(), window, FALSE, NoEventMask, &ev);
 	}
+	XFlush( qt_xdisplay() );
      }
     window = 0;
 	
