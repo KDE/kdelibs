@@ -116,8 +116,8 @@
 #define DBG(l, s, e) { l->setLoc(s.first_line, e.last_line, Parser::sid); } // location
 
 extern int yylex();
-int yyerror (const char *);
-bool automatic();
+static int yyerror (const char *);
+static bool automatic();
 
 using namespace KJS;
 

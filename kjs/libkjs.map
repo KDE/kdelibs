@@ -2,6 +2,8 @@
   local:
    extern "C++"
    {
+        kjsyy*;
+	yylloc;
 	KJS::*Node*::*; 
 	vtable?for?KJS::*Node*;
 	typeinfo*KJS::*Node*;
