@@ -596,10 +596,12 @@ bool KAccel::qtSupportsMetaKey()
 
 struct ModKeyXQt
 {
+	static bool	bInitialized;
 	const char	*keyName;
 	uint		keyModMaskQt;
 	uint		keyModMaskX;
 };
+bool ModKeyXQt::bInitialized = false;
 
 struct TransKey {
 	uint keySymQt;
@@ -1081,6 +1083,11 @@ uint KAccel::keyModXScrollLock()	{ return g_aModKeys[ModScrollLockIndex].keyModM
 uint KAccel::accelModMaskQt()		{ return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1); }
 uint KAccel::accelModMaskX()		{ return ShiftMask | ControlMask | keyModXAlt() | keyModXMeta(); }
 
-bool KAccel::keyboardHasMetaKey()	{ return keyModXMeta() != 0; }
+bool KAccel::keyboardHasMetaKey()
+{
+	if( !ModKeyXQt::bInitialized )
+		KAccel::readModifierMapping();
+	return keyModXMeta() != 0;
+}
 
 #include "kaccel.moc"
