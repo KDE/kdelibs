@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.45  1997/10/05 21:32:32  ettrich
+// Matthias: set the default icon/miniicon for the mainwidget
+//
 // Revision 1.44  1997/10/05 19:01:37  kalle
 // Default color scheme is now KDE Default
 //
@@ -1089,7 +1092,7 @@ void KApplication::kdisplaySetPalette()
 	  if( filename.isEmpty() )
 		filename = aAppName + '/' + aAppName + ".html";
       QString path = KApplication::kdedir();
-      path.append("/share/doc/HTML/");
+      path.append("/share/doc/HTML/default/");
       path.append(filename);
 						backgroundColor.dark(), 
 	  if( !topic.isEmpty() )

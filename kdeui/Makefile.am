@@ -148,5 +148,5 @@ kwmmapp.moc: kwmmapp.h
 	$(MOC) kwmmapp.h -o kwmmapp.moc
 
 data_DATA = error.xpm exclamation.xpm info.xpm stopsign.xpm
-datadir = $(prefix)/share/apps/kde/pics
+datadir = $(kde_datadir)/kde/pics
 

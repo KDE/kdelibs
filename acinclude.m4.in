@@ -48,6 +48,35 @@ AC_PATH_PROG(MOC, moc, /usr/bin/moc,
  $PATH:/usr/bin:/usr/X11R6/bin:$QTDIR/bin:/usr/lib/qt/bin:/usr/local/qt/bin)
 ])
 
+
+AC_DEFUN(AC_CREATE_KFSSTND,
+[
+
+kde_htmldir="\$(prefix)/share/doc/HTML"
+AC_SUBST(kde_htmldir)
+kde_appsdir="\$(prefix)/share/applnk"
+AC_SUBST(kde_appsdir)
+kde_icondir="\$(prefix)/share/icons"
+AC_SUBST(kde_icondir)
+kde_minidir="\$(prefix)/share/icons/mini"
+AC_SUBST(kde_minidir)
+kde_datadir="\$(prefix)/share/apps"
+AC_SUBST(kde_datadir)
+kde_locale="\$(prefix)/share/locale"
+AC_SUBST(kde_locale)
+kde_cgidir="\$(prefix)/cgi-bin"
+AC_SUBST(kde_cgidir)
+kde_confdir="\$(prefix)/share/config"
+AC_SUBST(kde_confdir)
+kde_mimedir="\$(prefix)/share/mimelnk"
+AC_SUBST(kde_mimedir)
+kde_toolbardir="\$(prefix)/share/toolbar"
+AC_SUBST(kde_toolbardir)
+kde_wallpaperdir="\$(prefix)/share/wallpaper"
+AC_SUBST(kde_wallpaperdir)
+
+])
+
 ## ------------------------------------------------------------------------
 ## Find the header files and libraries for X-Windows. Extended the 
 ## macro AC_PATH_X
@@ -323,7 +352,7 @@ AC_SUBST(KDE_LDFLAGS)
 AC_SUBST(KDE_INCLUDES)
 AC_SUBST(all_includes)
 AC_SUBST(all_libraries)
-
+AC_CREATE_KFSSTND
 ])
 
 dnl slightly changed version of AC_CHECK_FUNC(setenv)

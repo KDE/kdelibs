@@ -7,4 +7,4 @@ data_DATA = x-dvi.kdelnk x-tex-gf.kdelnk gzip.kdelnk \
 	x-shellscript.kdelnk x-kdelnk.kdelnk \
 	x-executable.kdelnk
 
-datadir = $(prefix)/share/mimelnk/application
+datadir = $(kde_mimedir)/application

@@ -15,7 +15,7 @@ include_HEADERS = jscript.h html.h htmlobj.h htmlfont.h formats.h htmlform.h amp
 libkhtmlw_la_LDFLAGS = -version-info 0:10 #  -rpath $(libdir)
 
 data_DATA = khtmlw_dnd.xpm
-datadir = $(prefix)/share/apps/khtmlw/pics
+datadir = $(kde_datadir)/khtmlw/pics
 
 MOC = @MOC@
 INCLUDES = -I../kdecore -I../kdeui -I../jscript @all_includes@ 

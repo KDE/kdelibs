@@ -1,3 +1,7 @@
+
 data_DATA = kdebug.html
 
-datadir = $(prefix)/share/doc/HTML/kdelibs
+datadir = $(kde_htmldir)/en/kdelibs
+
+install-data-local:
+	$(LN_S) en $(kde_htmldir)/default

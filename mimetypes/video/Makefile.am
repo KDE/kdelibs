@@ -1,3 +1,4 @@
 data_DATA = 	mpeg.kdelnk
 
-datadir = $(prefix)/share/mimelnk/video
+datadir = $(kde_mimedir)/video
+
