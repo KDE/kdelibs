@@ -1,16 +1,16 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2001 Michael Häckel <Michael@Haeckel.Net>
    $Id$
- 
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
- 
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
- 
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -99,17 +99,15 @@ QByteArray KDESasl::getCramMd5Response(const QByteArray &aChallenge)
   KMD5 md5;
   md5.update(XorIpad);
   md5.update(aChallenge);
-  md5.finalize();
   KMD5 md5a;
   md5a.update(XorOpad);
   md5a.update(md5.rawDigest(), 16);
-  md5a.finalize();
   QByteArray result = mUser.utf8();
   len = mUser.utf8().length();
   result.resize(len + 33);
   result[len] = ' ';
-  char *ch = md5a.hexDigest();
-  for (i = 0; i < 32; i++) result[i+len+1] = *(ch + i);
+  QCString ch = md5a.hexDigest();
+  for (i = 0; i < 32; i++) result[i+len+1] = *(ch.data() + i);
   return result;
 }
 
@@ -156,21 +154,20 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
      Copyright (C) 2000,2001 Waldo Bastian <bastian@kde.org>
      Copyright (C) 2000,2001 George Staikos <staikos@kde.org> */
   KMD5 md, md2;
-  HASHHEX HA1, HA2;
+  QCString HA1, HA2;
   QCString cnonce;
   cnonce.setNum((1 + static_cast<int>(100000.0*rand()/(RAND_MAX+1.0))));
   cnonce = KCodecs::base64Encode( cnonce );
- 
+
   // Calculate H(A1)
   QCString authStr = (utf8) ? mUser.utf8() : QCString(mUser.latin1());
   authStr += ':';
   authStr += realm;
   authStr += ':';
   authStr += (utf8) ? mPass.utf8() : QCString(mPass.latin1());
- 
+
   md.update( authStr );
-  md.finalize();
-  authStr = "";    
+  authStr = "";
   if ( algorithm == "md5-sess" )
   {
     authStr += ':';
@@ -183,9 +180,8 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
      hexDigest() */
   md2.update(md.rawDigest(), 16);
   md2.update( authStr );
-  md2.finalize();
   md2.hexDigest( HA1 );
- 
+
   // Calcualte H(A2)
   authStr = "AUTHENTICATE:";
   authStr += digestUri;
@@ -195,9 +191,8 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
   }
   md.reset();
   md.update( authStr );
-  md.finalize();
   md.hexDigest( HA2 );
- 
+
   // Calcualte the response.
   authStr = HA1;
   authStr += ':';
@@ -215,7 +210,6 @@ QByteArray KDESasl::getDigestMd5Response(const QByteArray &aChallenge)
   authStr += HA2;
   md.reset();
   md.update( authStr );
-  md.finalize();
   QCString response = md.hexDigest();
   /* End of response calculation */
 
@@ -248,7 +242,7 @@ QByteArray KDESasl::getBinaryResponse(const QByteArray &aChallenge, bool aBase64
   if (qstricmp(mMethod, "LOGIN") == 0) return getLoginResponse();
   if (qstricmp(mMethod, "CRAM-MD5") == 0)
     return getCramMd5Response(aChallenge);
-  if (qstricmp(mMethod, "DIGEST-MD5") == 0) 
+  if (qstricmp(mMethod, "DIGEST-MD5") == 0)
     return getDigestMd5Response(aChallenge);
 //    return getDigestMd5Response(QCString("realm=\"elwood.innosoft.com\",nonce=\"OA6MG9tEQGm2hh\",qop=\"auth\",algorithm=md5-sess,charset=utf-8"));
   return QByteArray();

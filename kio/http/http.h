@@ -172,9 +172,9 @@ protected:
   ssize_t read (void *b, size_t nbytes);
 
   char *gets (char *str, int size);
-  
+
   void ungets(char *str, int size);
-  
+
   /**
     * Add an encoding on to the appropiate stack this
     * is nececesary because transfer encodings and
@@ -293,7 +293,7 @@ protected:
   /**
    * Calcualtes the message digest response based on RFC 2617.
    */
-  void calculateResponse( DigestAuthInfo& info, HASHHEX Response );
+  void calculateResponse( DigestAuthInfo& info, QCString& Response );
 
   /**
    * Prompts the user for authorization retry.

@@ -137,7 +137,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool,
   m_protocol = protocol;
   m_bKeepAlive = false;
   m_bUseCache = true;
-  m_bBusy = false; 
+  m_bBusy = false;
   m_maxCacheAge = 0;
   m_fcache = 0;
   m_iSize = -1;
@@ -496,7 +496,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
   kdDebug(7113) << "HTTPProtcool::multiGet n = " << n << endl;
 
 //  m_requestQueue.clear();
-  for(int i = 0; i < n; i++)
+  for(unsigned i = 0; i < n; i++)
   {
      KURL url;
      stream >> url >> mIncomingMetaData;
@@ -2170,6 +2170,7 @@ void HTTPProtocol::decodeGzip()
   signed long len;
   int fd;
 
+  kdDebug(7103) << "decode gzip" << endl;
 
   // Siince I can't figure out how to do the mem to mem
   // gunzipping, this should suffice.  It just writes out
@@ -2563,10 +2564,11 @@ bool HTTPProtocol::readBody()
 
   if ( useMD5 )
   {
-    HASH digest;
-    context.finalize();
+    KMD5::Digest digest;
     context.rawDigest(digest);
-    QString calculatedMD5 = KCodecs::base64Encode( QCString(digest) );
+    QByteArray dba(16);
+    dba.setRawData(reinterpret_cast<const char*>(&digest), 16);
+    QString calculatedMD5 = KCodecs::base64Encode(dba);
     if ( m_sContentMD5 == calculatedMD5 )
       kdDebug(7103) << "MD5 checksum present and is match!!" << endl;
     else
@@ -3347,10 +3349,11 @@ QString HTTPProtocol::createBasicAuth( bool isForProxy )
   return auth;
 }
 
-void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
+void HTTPProtocol::calculateResponse( DigestAuthInfo& info, QCString& Response )
 {
   KMD5 md;
-  HASHHEX HA1, HA2;
+  QCString HA1;
+  QCString HA2;
 
   // Calculate H(A1)
   QCString authStr = info.username;
@@ -3360,7 +3363,6 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
   authStr += info.password;
 
   md.update( authStr );
-  md.finalize();
   if ( info.algorithm == "md5-sess" )
   {
     authStr = md.hexDigest();
@@ -3370,10 +3372,9 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
     authStr += info.cnonce;
     md.reset();
     md.update( authStr );
-    md.finalize();
   }
 //  kdDebug(7113) << "A1 => " << authStr << endl;
-  md.hexDigest( HA1 );
+  HA1 = md.hexDigest();
 
   // Calcualte H(A2)
   authStr = info.method;
@@ -3387,8 +3388,7 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
 //  kdDebug(7113) << "A2 => " << authStr << endl;
   md.reset();
   md.update( authStr );
-  md.finalize();
-  md.hexDigest( HA2 );
+  HA2 = md.hexDigest();
 
   // Calcualte the response.
   authStr = HA1;
@@ -3409,15 +3409,14 @@ void HTTPProtocol::calculateResponse( DigestAuthInfo& info, HASHHEX Response )
 //  kdDebug(7113) << "response:" << authStr << endl;
   md.reset();
   md.update( authStr );
-  md.finalize();
-  md.hexDigest( Response );
+  Response = md.hexDigest();
 }
 
 QString HTTPProtocol::createDigestAuth ( bool isForProxy )
 {
   QString auth;
   const char *p;
-  HASHHEX Response;
+  QCString Response;
   QCString opaque = "";
   DigestAuthInfo info;
 

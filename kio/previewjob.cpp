@@ -262,13 +262,12 @@ void PreviewJob::determineNextFile()
             // different path, determine cache dir
             if (oldURL != newURL)
             {
-                HASHHEX hash;
                 KMD5 md5(QFile::encodeName(newURL.url()));
-                md5.hexDigest(hash);
+                QCString hash = md5.hexDigest();
                 d->thumbPath = locateLocal("thumbnails",
-                    QString::fromLatin1( hash, 4 ) + "/" +
-                    QString::fromLatin1( &hash[4], 4 ) + "/" +
-                    QString::fromLatin1( &hash[8] ) + "/" +
+                    QString::fromLatin1( hash.data(), 4 ) + "/" +
+                    QString::fromLatin1( hash.data()+4, 4 ) + "/" +
+                    QString::fromLatin1( hash.data()+8 ) + "/" +
                     d->sizeName + "/");
             }
         }
