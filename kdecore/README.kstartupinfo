@@ -12,6 +12,9 @@ after this thing stabilizes a bit, I'll put a real description here
 grrr, NET::Dock windows don't have _NET_WM_PID ... ah, Qt-2.3.0 actually happily ignores
 the existence of the NET_WM spec :(
 
+id == "" - means create new one
+id == "0" - means no startup notify
+
 empty KDE_STARTUP_ID property means ignore
 
 new:
@@ -25,7 +28,6 @@ compliant   - has ID
 ----
 
 ID          - unique id
-            - int32
 COMPLIANT   - is app compliant
             - 1/0
             - is only _NET_WM_PID ok ? // CHECKME

@@ -48,10 +48,10 @@ class KStartupInfo
         KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0, const char* name = 0 );
         virtual ~KStartupInfo();
         static bool sendStartup( const KStartupInfoId& id, const KStartupInfoData& data );
-        static bool sendStartupX( Display* dpy, const KStartupInfoId& id_P,
-            const KStartupInfoData& data_P );
+        static bool sendStartupX( Display* dpy, const KStartupInfoId& id,
+            const KStartupInfoData& data );
         static bool sendFinish( const KStartupInfoId& id );
-        static bool sendFinishX( Display* dpy, const KStartupInfoId& id_P );
+        static bool sendFinishX( Display* dpy, const KStartupInfoId& id );
         static KStartupInfoId currentStartupIdEnv();
         static void resetStartupEnv();
         enum startup_t { NoMatch, Match, CantDetect };
@@ -60,6 +60,8 @@ class KStartupInfo
         startup_t checkStartup( WId w, KStartupInfoData& data );
         startup_t checkStartup( WId w, KStartupInfoId& id, KStartupInfoData& data );
         void setTimeout( unsigned int secs );
+        static void setWindowStartupId( WId window, const QCString& id );
+        static QCString windowStartupId( WId w );
         class Data; // internal
     signals:
         void gotNewStartup( const KStartupInfoId& id, const KStartupInfoData& data );
@@ -76,17 +78,17 @@ class KStartupInfo
         void got_remove_startup_info( const QString& msg_P );
         void new_startup_info_internal( const KStartupInfoId& id_P, Data& data_P );
         void remove_startup_info_internal( const KStartupInfoId& id_P );
-        void remove_startup_pids( const QValueList< pid_t >& pids, const QString& hostname );
+        void remove_startup_pids( const QValueList< pid_t >& pids, const QCString& hostname );
         startup_t check_startup_internal( WId w, KStartupInfoId* id, KStartupInfoData* data,
             bool remove );
-        bool find_id( const KStartupInfoId& id_P, KStartupInfoId* id_O,
+        bool find_id( const QCString& id_P, KStartupInfoId* id_O,
             KStartupInfoData* data_O, bool remove );
-        bool find_pid( pid_t pid_P, const QString& hostname, KStartupInfoId* id_O,
+        bool find_pid( pid_t pid_P, const QCString& hostname, KStartupInfoId* id_O,
             KStartupInfoData* data_O, bool remove );
         bool find_wclass( const QString& res_name_P, const QString& res_class_P,
             KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove );
-        static QString get_window_startup_id( WId w_P );
-        static QString get_window_hostname( WId w_P );
+        static QCString get_window_startup_id( WId w_P );
+        static QCString get_window_hostname( WId w_P );
         void startups_cleanup_internal( bool age_P );
         void clean_all_noncompliant();
         bool clean_on_cantdetect;
@@ -101,8 +103,9 @@ class KStartupInfoId
     public:
         bool operator==( const KStartupInfoId& id ) const;
         bool operator!=( const KStartupInfoId& id ) const;
-        bool valid() const;
-        void initId();
+        bool none() const;
+        void initId( const QCString& id = "" );
+        const QCString& id() const;
         bool setupStartupEnv() const;
         KStartupInfoId();
         KStartupInfoId( const KStartupInfoId& data );
@@ -112,7 +115,6 @@ class KStartupInfoId
     private:
         KStartupInfoId( const QString& txt );
         QString to_text() const;
-        const QString& id() const;
         friend class KStartupInfo;
         KStartupInfoIdPrivate* d;
     };
@@ -136,8 +138,8 @@ class KStartupInfoData
         void addPid( pid_t pid );
         QValueList< pid_t > pids() const;
         bool is_pid( pid_t pid ) const;
-        void setHostname( const QString& hostname = QString::null ); // adds current if null
-        const QString& hostname() const;
+        void setHostname( const QCString& hostname = QCString()); // adds current if null
+        const QCString& hostname() const;
         KStartupInfoData();
         KStartupInfoData( const KStartupInfoData& data );
         ~KStartupInfoData();

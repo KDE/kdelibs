@@ -334,6 +334,8 @@ public:
    * E.g. "Web Browser"
    *
    * @param URL - if not empty this URL is passed to the service
+   * @param startup_id - for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    *
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
@@ -342,6 +344,11 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
+  static int startServiceByName( const QString& _name, const QString &URL,
+                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
+  static int startServiceByName( const QString& _name, const QStringList &URLs,
+                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
+  // BCI merge with the above
   static int startServiceByName( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid=0 );
   static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
@@ -352,6 +359,8 @@ public:
    * E.g. "Applications/konqueror.desktop" or "/home/user/bla/myfile.desktop"
    *
    * @param URL - if not empty this URL is passed to the service
+   * @param startup_id - for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    *
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
@@ -360,6 +369,11 @@ public:
    * @return On failure, 'error' contains a description of the error
    *         that occured.
    */
+  static int startServiceByDesktopPath( const QString& _name, const QString &URL,
+                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
+  static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs,
+                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
+  // BCI merge with the above
   static int startServiceByDesktopPath( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid = 0 );
   static int startServiceByDesktopPath( const QString& _name, const QStringList &URLs=QStringList(),
@@ -370,6 +384,8 @@ public:
    * E.g. "konqueror"
    *
    * @param URL - if not empty this URL is passed to the service
+   * @param startup_id - for app startup notification, "0" for none,
+   *           "" ( empty string ) is the default
    *
    * @return an error code indicating success (== 0) or failure (> 0).
    * @return On success, 'dcopService' contains the DCOP name under which
@@ -380,12 +396,19 @@ public:
    *         that occured.
    */
   static int startServiceByDesktopName( const QString& _name, const QString &URL,
+                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
+  static int startServiceByDesktopName( const QString& _name, const QStringList &URLs,
+                QString *error, QCString *dcopService, int *pid, const QCString& startup_id );
+  // BCI merge with the above
+  static int startServiceByDesktopName( const QString& _name, const QString &URL,
                 QString *error=0, QCString *dcopService=0, int *pid = 0 );
   static int startServiceByDesktopName( const QString& _name, const QStringList &URLs=QStringList(),
                 QString *error=0, QCString *dcopService=0, int *pid = 0 );
 
   /**
    * Start a program via kdeinit.
+   * There will be no application startup notification, so you should
+   * use it only for starting internal processes. 
    *
    * program name and arguments are converted to according to the
    * local encoding and passed as is to kdeinit.
@@ -539,6 +562,11 @@ public:
   static KDesktopWidget *desktop();
 #endif
 
+  /**
+   * Returns the app startup notification identifier for this running application.
+   */
+  const QCString startupId() const;
+
 public slots:
   /**
    * Tell KApplication about one more operation that should be finished
@@ -597,6 +625,8 @@ private:
   void init( bool GUIenabled );
 
   void parseCommandLine( ); // Handle KDE arguments (Using KCmdLineArgs)
+  
+  void read_app_startup_id();
 
 public:
   /**
@@ -806,6 +836,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.218  2001/05/31 09:36:46  mueller
+// Xinerama support, based on patch by  Balaji Ramani <balaji@spinnakernet.com>
+//
 // Revision 1.217  2001/05/17 20:08:40  waba
 // KDE 2.2alpha2
 //

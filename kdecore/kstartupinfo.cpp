@@ -51,12 +51,13 @@ DEALINGS IN THE SOFTWARE.
 #endif
 
 static const char* const KDE_STARTUP_INFO = "KDE_STARTUP_INFO";
-// KDE_STARTUP_ID is used also in kinit/kinit.cpp
 static const char* const KDE_STARTUP_ID = "KDE_STARTUP_ID";
+// KDE_STARTUP_ENV is used also in kinit/wrapper.c
 static const char* const KDE_STARTUP_ENV = "KDE_STARTUP_ENV";
 
 static int get_num( const QString& item_P );
 static QString get_str( const QString& item_P );
+static QCString get_cstr( const QString& item_P );
 static QStringList get_fields( const QString& txt_P );
 
 class KStartupInfo::Data
@@ -66,7 +67,7 @@ class KStartupInfo::Data
         Data() {}; // just because it's in a QMap
         Data( const QString& txt_P )
             : KStartupInfoData( txt_P ), age( 0 ) {};
-        int age;
+        unsigned int age;
     };
         
 struct KStartupInfoPrivate
@@ -129,7 +130,7 @@ void KStartupInfo::window_added( WId w_P )
 void KStartupInfo::got_new_startup_info( const QString& msg_P )
     {
     KStartupInfoId id( msg_P );
-    if( !id.valid())
+    if( id.none())
         return;
     KStartupInfo::Data data( msg_P );
     new_startup_info_internal( id, data );
@@ -137,7 +138,7 @@ void KStartupInfo::got_new_startup_info( const QString& msg_P )
 
 void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P, Data& data_P )
     {
-    if( !id_P.valid())
+    if( id_P.none())
         return;
     if( d->startups.contains( id_P ))
         { // already reported, update
@@ -156,7 +157,7 @@ void KStartupInfo::new_startup_info_internal( const KStartupInfoId& id_P, Data& 
 void KStartupInfo::got_remove_startup_info( const QString& msg_P )
     {
     KStartupInfoId id( msg_P );
-    if( !id.valid())
+    if( id.none())
         {
         KStartupInfoData data( msg_P );
         if( data.pids().count() > 0 && !data.hostname().isEmpty())
@@ -177,7 +178,7 @@ void KStartupInfo::remove_startup_info_internal( const KStartupInfoId& id_P )
     }
 
 void KStartupInfo::remove_startup_pids( const QValueList< pid_t >& pids_P,
-    const QString& hostname_P )
+    const QCString& hostname_P )
     {
     kdFatal( pids_P.count() == 0, 172 );
     for( QMap< KStartupInfoId, Data >::Iterator it = d->startups.begin();
@@ -200,7 +201,7 @@ void KStartupInfo::remove_startup_pids( const QValueList< pid_t >& pids_P,
 
 bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoData& data_P )
     {
-    if( !id_P.valid())
+    if( id_P.none())
         return false;
     KXMessages msgs;
     QString msg = QString::fromLatin1( "new: %1 %2" ).arg( id_P.to_text()).arg( data_P.to_text());
@@ -212,7 +213,7 @@ bool KStartupInfo::sendStartup( const KStartupInfoId& id_P, const KStartupInfoDa
 bool KStartupInfo::sendStartupX( Display* disp_P, const KStartupInfoId& id_P,
     const KStartupInfoData& data_P )
     {
-    if( !id_P.valid())
+    if( id_P.none())
         return false;
     QString msg = QString::fromLatin1( "new: %1 %2" ).arg( id_P.to_text()).arg( data_P.to_text());
     kdDebug( 172 ) << "sending " << msg << endl;
@@ -221,8 +222,8 @@ bool KStartupInfo::sendStartupX( Display* disp_P, const KStartupInfoId& id_P,
 
 bool KStartupInfo::sendFinish( const KStartupInfoId& id_P )
     {
-    if( !id_P.valid())
-        return false;
+//    if( id_P.none())  CHECKME in case the id is not known, only the pid ?!
+//        return false;
     KXMessages msgs;
     QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.to_text());
     kdDebug( 172 ) << "sending " << msg << endl;
@@ -232,8 +233,8 @@ bool KStartupInfo::sendFinish( const KStartupInfoId& id_P )
 
 bool KStartupInfo::sendFinishX( Display* disp_P, const KStartupInfoId& id_P )
     {
-    if( !id_P.valid())
-        return false;
+//    if( id_P.none())
+//        return false;
     QString msg = QString::fromLatin1( "remove: %1" ).arg( id_P.to_text());
     kdDebug( 172 ) << "sending " << msg << endl;
     return KXMessages::broadcastMessageX( disp_P, KDE_STARTUP_INFO, msg );
@@ -297,11 +298,10 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     //           - Yes - test for pid match
     //           - No - test for WM_CLASS match
     kdDebug( 172 ) << "check_startup" << endl;
-//    QString id = info.startupId();
-    QString id = get_window_startup_id( w_P );
+    QCString id = windowStartupId( w_P );
     if( !id.isNull())
         {
-        if( id.isEmpty()) // empty window property means ignore this window
+        if( id.isEmpty() || id == "0" ) // means ignore this window
             {
             kdDebug( 172 ) << "ignore" << endl;
             return NoMatch;
@@ -312,7 +312,7 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     pid_t pid = info.pid();
     if( pid > 0 )
         {
-        QString hostname = get_window_hostname( w_P );
+        QCString hostname = get_window_hostname( w_P );
         if( !hostname.isEmpty())
             return find_pid( pid, hostname, id_O, data_O, remove_P ) ? Match : NoMatch;
         }
@@ -328,25 +328,27 @@ KStartupInfo::startup_t KStartupInfo::check_startup_internal( WId w_P, KStartupI
     return CantDetect;
     }
 
-bool KStartupInfo::find_id( const KStartupInfoId& id_P, KStartupInfoId* id_O,
+bool KStartupInfo::find_id( const QCString& id_P, KStartupInfoId* id_O,
     KStartupInfoData* data_O, bool remove_P )
     {
-    kdDebug( 172 ) << "find_id:" << id_P.id() << endl;
-    if( d->startups.contains( id_P ))
+    kdDebug( 172 ) << "find_id:" << id_P << endl;
+    KStartupInfoId id;
+    id.initId( id_P );
+    if( d->startups.contains( id ))
         {
         if( id_O != NULL )
-            *id_O = id_P;
+            *id_O = id;
         if( data_O != NULL )
-            *data_O = d->startups[ id_P ];
+            *data_O = d->startups[ id ];
         if( remove_P )
-            d->startups.remove( id_P );
+            d->startups.remove( id );
         kdDebug( 172 ) << "check_startup_id:match" << endl;
         return true;
         }
     return false;
     }
     
-bool KStartupInfo::find_pid( pid_t pid_P, const QString& hostname_P, 
+bool KStartupInfo::find_pid( pid_t pid_P, const QCString& hostname_P, 
     KStartupInfoId* id_O, KStartupInfoData* data_O, bool remove_P )
     {
     kdDebug( 172 ) << "find_pid:" << pid_P << endl;
@@ -395,13 +397,14 @@ bool KStartupInfo::find_wclass( const QString& res_name_P, const QString& res_cl
     return false;
     }
 
-QString KStartupInfo::get_window_startup_id( WId w_P )
+static Atom kde_startup_atom = None;
+
+QCString KStartupInfo::windowStartupId( WId w_P )
     {
-    static Atom kde_startup_atom = None;
     if( kde_startup_atom == None )
         kde_startup_atom = XInternAtom( qt_xdisplay(), KDE_STARTUP_ID, False );
     unsigned char *name_ret;
-    QString ret;
+    QCString ret;
     Atom type_ret;
     int format_ret;
     unsigned long nitems_ret = 0, after_ret = 0;
@@ -410,14 +413,24 @@ QString KStartupInfo::get_window_startup_id( WId w_P )
 	    == Success )
         {
 	if( type_ret == XA_STRING && format_ret == 8 && name_ret != NULL )
-	    ret = QString::fromLatin1( reinterpret_cast< char* >( name_ret ));
+	    ret = reinterpret_cast< char* >( name_ret );
         if ( name_ret != NULL )
             XFree( name_ret );
         }
     return ret;
     }
 
-QString KStartupInfo::get_window_hostname( WId w_P )
+void KStartupInfo::setWindowStartupId( WId w_P, const QCString& id_P )
+    {
+    if( id_P.isNull())
+        return;
+    if( kde_startup_atom == None )
+        kde_startup_atom = XInternAtom( qt_xdisplay(), KDE_STARTUP_ID, False );
+    XChangeProperty( qt_xdisplay(), w_P, kde_startup_atom, XA_STRING, 8,
+        PropModeReplace, reinterpret_cast< unsigned char* >( id_P.data()), id_P.length());
+    }
+
+QCString KStartupInfo::get_window_hostname( WId w_P )
     {
     XTextProperty tp;
     char** hh;
@@ -427,14 +440,14 @@ QString KStartupInfo::get_window_hostname( WId w_P )
         {
         if( cnt == 1 )
             {
-            QString hostname = QString::fromLatin1( hh[ 0 ] );
+            QCString hostname = hh[ 0 ];
             XFreeStringList( hh );
             return hostname;
             }
         XFreeStringList( hh );
         }
     // no hostname
-    return QString::null;
+    return QCString();
     }
     
 void KStartupInfo::setTimeout( unsigned int secs_P )
@@ -500,10 +513,10 @@ void KStartupInfo::clean_all_noncompliant()
 struct KStartupInfoIdPrivate
     {
     KStartupInfoIdPrivate() : id( "" ) {};
-    QString id; // id
+    QCString id; // id
     };
 
-const QString& KStartupInfoId::id() const
+const QCString& KStartupInfoId::id() const
     {
     return d->id;
     }
@@ -524,16 +537,22 @@ KStartupInfoId::KStartupInfoId( const QString& txt_P )
          ++it )
         {
         if( ( *it ).startsWith( id_str ))
-            d->id = get_str( *it );
+            d->id = get_cstr( *it );
         }
     }
 
-void KStartupInfoId::initId()
+void KStartupInfoId::initId( const QCString& id_P )
     {
+    if( !id_P.isEmpty())
+        {
+        d->id = id_P;
+        kdDebug( 172 ) << "using: " << d->id << endl;
+        return;
+        }
     const char* startup_env = getenv( KDE_STARTUP_ENV );
     if( startup_env != NULL && *startup_env != '\0' )
         { // already has id
-        d->id = QString::fromLatin1( startup_env );
+        d->id = startup_env;
         kdDebug( 172 ) << "reusing: " << d->id << endl;
         return;
         }
@@ -545,16 +564,19 @@ void KStartupInfoId::initId()
     char hostname[ 256 ];
     hostname[ 0 ] = '\0';
     gethostname( hostname, 255 );
-    d->id = QString::fromLatin1( "%1;%2;%3;%4" ).arg( hostname ).arg( tm.tv_sec )
-        .arg( tm.tv_usec ).arg( getpid());
+    d->id = QString( "%1;%2;%3;%4" ).arg( hostname ).arg( tm.tv_sec )
+        .arg( tm.tv_usec ).arg( getpid()).latin1();
     kdDebug( 172 ) << "creating: " << d->id << endl;
     }
 
 bool KStartupInfoId::setupStartupEnv() const
     {
     if( id().isEmpty())
+        {
+        unsetenv( KDE_STARTUP_ENV );
         return false;
-    return setenv( KDE_STARTUP_ENV, id().latin1(), true ) == 0;
+        }
+    return setenv( KDE_STARTUP_ENV, id(), true ) == 0;
     }
 
 KStartupInfoId KStartupInfo::currentStartupIdEnv()
@@ -562,7 +584,9 @@ KStartupInfoId KStartupInfo::currentStartupIdEnv()
     const char* startup_env = getenv( KDE_STARTUP_ENV );
     KStartupInfoId id;
     if( startup_env != NULL && *startup_env != '\0' )
-        id.d->id = QString::fromLatin1( startup_env );
+        id.d->id = startup_env;
+    else
+        id.d->id = "0";
     return id;
     }
     
@@ -604,16 +628,16 @@ bool KStartupInfoId::operator!=( const KStartupInfoId& id_P ) const
     {
     return !(*this == id_P );
     }
-    
+
 // needed for QMap
 bool KStartupInfoId::operator<( const KStartupInfoId& id_P ) const
     {
     return id() < id_P.id();
     }
     
-bool KStartupInfoId::valid() const
+bool KStartupInfoId::none() const
     {
-    return !d->id.isEmpty();
+    return d->id.isEmpty() || d->id == "0";
     }
     
 struct KStartupInfoDataPrivate
@@ -625,7 +649,7 @@ struct KStartupInfoDataPrivate
     int desktop;
     bool compliant;
     QValueList< pid_t > pids;
-    QString hostname;
+    QCString hostname;
     };
     
 QString KStartupInfoData::to_text() const
@@ -675,7 +699,7 @@ KStartupInfoData::KStartupInfoData( const QString& txt_P )
         else if( ( *it ).startsWith( compliant_str ))
             d->compliant = ( get_num( *it ) != 0 );
         else if( ( *it ).startsWith( hostname_str ))
-            d->hostname = get_str( *it );
+            d->hostname = get_cstr( *it );
         else if( ( *it ).startsWith( pid_str ))
             addPid( get_num( *it ));
         }
@@ -703,7 +727,7 @@ void KStartupInfoData::update( const KStartupInfoData& data_P )
         d->name = data_P.d->name;
     if( !data_P.d->icon.isEmpty())
         d->icon = data_P.d->icon;
-    if( data_P.d->desktop != 0 )
+    if( data_P.d->desktop != 0 && d->desktop == 0 ) // CHECKME don't update desktop
         d->desktop = data_P.d->desktop;
     if( data_P.d->compliant == false )
         d->compliant = data_P.d->compliant;
@@ -789,7 +813,7 @@ bool KStartupInfoData::compliant() const
     return d->compliant;
     }
     
-void KStartupInfoData::setHostname( const QString& hostname_P )
+void KStartupInfoData::setHostname( const QCString& hostname_P )
     {
     if( !hostname_P.isNull())
         d->hostname = hostname_P;
@@ -798,11 +822,11 @@ void KStartupInfoData::setHostname( const QString& hostname_P )
         char tmp[ 256 ];
         tmp[ 0 ] = '\0';
         gethostname( tmp, 255 );
-        d->hostname = QString::fromLatin1( tmp );
+        d->hostname = tmp;
         }
     }
 
-const QString& KStartupInfoData::hostname() const
+const QCString& KStartupInfoData::hostname() const
     {
     return d->hostname;
     }
@@ -847,6 +871,12 @@ QString get_str( const QString& item_P )
         return item_P.mid( pos + 2, pos2 - 2 - pos );  // A="C"
         }
     return item_P.mid( pos + 1 );  
+    }
+
+static
+QCString get_cstr( const QString& item_P )
+    {
+    return get_str( item_P ).latin1(); // CHECKME
     }
     
 static

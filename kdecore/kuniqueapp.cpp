@@ -176,8 +176,12 @@ KUniqueApplication::start()
            ::write(fd[1], &result, 1);
            ::close(fd[1]);
            // say we're up and running ( probably no new window will appear )
-           KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
-           if( id.valid())
+           KStartupInfoId id;
+           if( kapp != NULL ) // KApplication constructor unsets the env. variable
+               id.initId( kapp->startupId());
+           else
+               id = KStartupInfo::currentStartupIdEnv();
+           if( !id.none())
            {
                Display* disp = XOpenDisplay( NULL );
                if( disp != NULL ) // use extra X connection
@@ -191,8 +195,12 @@ KUniqueApplication::start()
      }
 
      {
-         KStartupInfoId id = KStartupInfo::currentStartupIdEnv();
-         if( id.valid())
+         KStartupInfoId id;
+         if( kapp != NULL ) // KApplication constructor unsets the env. variable
+             id.initId( kapp->startupId());
+         else
+             id = KStartupInfo::currentStartupIdEnv();
+         if( !id.none())
          { // notice about pid change
             Display* disp = XOpenDisplay( NULL );
             if( disp != NULL ) // use extra X connection
