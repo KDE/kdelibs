@@ -3085,7 +3085,9 @@ void KDesktopPropsPlugin::slotBrowseExec()
     return;
   }
 
-  w->commandEdit->setText( f.path() );
+  QString path = f.path();
+  KRun::shellQuote( path );
+  w->commandEdit->setText( path );
 }
 
 void KDesktopPropsPlugin::slotAdvanced()
@@ -3539,7 +3541,9 @@ void KExecPropsPlugin::slotBrowseExec()
         return;
     }
 
-    execEdit->setText( f.path() );
+    QString path = f.path();
+    KRun::shellQuote( path );
+    execEdit->setText( path );
 }
 
 class KApplicationPropsPlugin::KApplicationPropsPluginPrivate
