@@ -237,10 +237,6 @@ void KMMainView::initActions()
 	m_toolbar->insertLineSeparator();
 	m_actions->action("printer_state_change")->plug(m_toolbar);
 	m_actions->action("printer_spool_change")->plug(m_toolbar);
-	/*
-	m_actions->action("printer_down")->plug(m_toolbar);
-	m_actions->action("printer_up")->plug(m_toolbar);
-	*/
 	m_toolbar->insertSeparator();
 	m_actions->action("printer_hard_default")->plug(m_toolbar);
 	m_actions->action("printer_soft_default")->plug(m_toolbar);
