@@ -853,6 +853,8 @@ Completion StatListNode::execute()
 // ECMA 12.2
 Completion VarStatementNode::execute()
 {
+  KJS_BREAKPOINT;
+
   (void) list->evaluate(); // returns 0L
 
   return Completion(Normal);

@@ -396,11 +396,15 @@ StatementList:
 ;
 
 VariableStatement:
-    VAR VariableDeclarationList ';' { $$ = new VarStatementNode($2); }
-  | VAR VariableDeclarationList error { if (automatic())
+    VAR VariableDeclarationList ';' { $$ = new VarStatementNode($2);
+                                      DBG($$, @1, @3); }
+  | VAR VariableDeclarationList error { if (automatic()) {
                                           $$ = new VarStatementNode($2);
-                                        else
-					  YYABORT; }
+					  DBG($$, @1, @2);
+                                        } else {
+					  YYABORT;
+					}
+                                      }
 ;
 
 VariableDeclarationList:

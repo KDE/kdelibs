@@ -156,7 +156,7 @@ String InternalFunctionImp::toString() const
   if (name().isNull())
     return UString("(Internal function)");
   else
-    return "function " + name() + "()";
+    return UString("function " + name() + "()");
 }
 
 Completion InternalFunctionImp::execute(const List &)
