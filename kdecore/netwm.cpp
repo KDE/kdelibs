@@ -264,13 +264,17 @@ static void readIcon(NETWinInfoPrivate *p) {
 	return;
     }
 
-    // allocate space after_ret (bytes remaining in property) + 3*sizeof(long)
+    // allocate space after_ret (bytes remaining in property) + 3*sizeof(CARD32)
     // (the 3 32bit quantities we just read)
-    unsigned long proplen = after_ret + (3 * sizeof(long));
+    unsigned long proplen = after_ret + (3 * sizeof(CARD32));
+    proplen *= sizeof(long) / sizeof(CARD32);
+
+    // allocate buffers
     unsigned char *buffer = new unsigned char[proplen];
     unsigned long offset = 0, buffer_offset = 0;
 
-    while (after_ret >0) {
+    // read data
+    while (after_ret > 0) {
 	XGetWindowProperty(p->display, p->window, net_wm_icon, offset,
 			   (long) BUFSIZE, False, XA_CARDINAL, &type_ret,
 			   &format_ret, &nitems_ret, &after_ret, &data_ret);
@@ -280,34 +284,35 @@ static void readIcon(NETWinInfoPrivate *p) {
 	XFree(data_ret);
     }
 
-    unsigned long i, j;
-    // CARD32 *d = (CARD32 *) buffer;
+    CARD32 *data32;
+    unsigned long i, j, k, sz, s;
     unsigned long *d = (unsigned long *) buffer;
-    for (i = 0, j = 0; i < proplen - 3; i++) {
+    for (i = 0, j = 0; i < proplen; i++) {
 	p->icons[j].size.width = *d++;
 	i += sizeof(long);
 	p->icons[j].size.height = *d++;
 	i += sizeof(long);
 
-	unsigned long s = (p->icons[j].size.width *
-			   p->icons[j].size.height * sizeof(long));
+	sz = p->icons[j].size.width * p->icons[j].size.height;
+	s = sz * sizeof(long);
 
 	if ( i + s - 1 > proplen ) {
 	    break;
 	}
 
 	if (p->icons[j].data) delete [] p->icons[j].data;
-	CARD32 *data = new CARD32[s / (sizeof(long))];
-	p->icons[j].data = (unsigned char *) data; // new CARD32[ s/4 ];
-	memcpy(p->icons[j].data, d, s);
-	i += s;
-	d += s / (sizeof(long));
+	data32 = new CARD32[sz];
+	p->icons[j].data = (unsigned char *) data32;
+	for (k = 0; k < sz; k++, i += sizeof(long)) {
+	    *data32++ = (CARD32) *d++;
+	}
 	j++;
     }
 
 #ifdef    NETWMDEBUG
     fprintf(stderr, "NET: readIcon got %d icons\n", p->icons.size());
 #endif
+
     delete [] buffer;
 }
 
@@ -1724,8 +1729,10 @@ NETWinInfo::~NETWinInfo() {
 void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
     if (role != Client) return;
 
+    int proplen, i, sz, j;
+
     if (replace) {
-	int i;
+
 	for (i = 0; i < p->icons.size(); i++) {
 	    if (p->icons[i].data) delete [] p->icons[i].data;
 	    p->icons[i].data = 0;
@@ -1736,32 +1743,35 @@ void NETWinInfo::setIcon(NETIcon icon, Bool replace) {
 	p->icon_count = 0;
     }
 
+    // assign icon
     p->icons[p->icon_count] = icon;
     p->icon_count++;
 
     // do a deep copy, we want to own the data
-    NETIcon& ni = p->icons[ p->icon_count - 1 ];
-    // CARD32 *d = new CARD32[ ni.size.width * ni.size.height ];
-    long *d = new long[ni.size.width * ni.size.height];
-    ni.data = (unsigned char *) d;
-    (void) memcpy( ni.data, icon.data, ni.size.width * ni.size.height * sizeof(long) );
+    // NETIcon &ni = p->icons[p->icon_count - 1];
+    // sz = ni.size.width * ni.size.height;
+    // long *d = new long[sz];
+    // ni.data = (unsigned char *) d;
+    // for (i = 0; i < sz; i++) *d++ = *id++;
+    // memcpy(d, icon.data, sz * sizeof(long));
 
-    int proplen, i;
+    // compute property length
     for (i = 0, proplen = 0; i < p->icon_count; i++) {
 	proplen += 2 + (p->icons[i].size.width *
 			p->icons[i].size.height);
     }
 
-    // CARD32 *prop = new CARD32[proplen], *pprop = prop;
+    CARD32 *d32;
     long *prop = new long[proplen], *pprop = prop;
-    int sz;
     for (i = 0; i < p->icon_count; i++) {
+	// copy size into property
        	*pprop++ = p->icons[i].size.width;
 	*pprop++ = p->icons[i].size.height;
-	sz = (p->icons[i].size.width *
-	      p->icons[i].size.height * sizeof(long));
-	(void) memcpy(pprop, p->icons[i].data, sz);
-	pprop += sz / sizeof(long);
+
+	// copy data into property
+	sz = (p->icons[i].size.width * p->icons[i].size.height);
+	d32 = (CARD32 *) p->icons[i].data;
+	for (j = 0; j < sz; j++) *pprop++ = *d32++;
     }
 
     XChangeProperty(p->display, p->window, net_wm_icon, XA_CARDINAL, 32,
