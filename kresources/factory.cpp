@@ -58,7 +58,7 @@ ResourceFactory::ResourceFactory( const QString& resourceFamily ) :
   mResourceList.setAutoDelete( true );
 
   QStringList list = KGlobal::dirs()->findAllResources( "data", 
-      "resources/" + mResourceFamily + "/*.desktop", true, true );
+      "kresources/" + mResourceFamily + "/*.desktop", true, true );
   // kdDebug() << "Resource list: " << list.toString() << endl;
   for ( QStringList::iterator it = list.begin(); it != list.end(); ++it ) {
     KSimpleConfig config( *it, true );
