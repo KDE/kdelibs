@@ -148,7 +148,7 @@ void KClipboard::slotClipboardChanged()
     if ( s_implicitSelection || s_sync )
     {
         bool oldMode = clip->selectionModeEnabled();
-        clip->setSelectionMode( true );
+        clip->setSelectionMode( false );
 
         setClipboard( new MimeSource( clip->data() ), Selection );
 
