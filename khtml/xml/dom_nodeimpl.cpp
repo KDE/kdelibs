@@ -937,13 +937,13 @@ void NodeImpl::createRendererIfNeeded()
     if (!getDocument()->shouldCreateRenderers())
         return;
 #endif
-        
+
     assert(!attached());
     assert(!m_render);
-    
-    NodeImpl *parent = parentNode();    
+
+    NodeImpl *parent = parentNode();
     assert(parent);
-    
+
     RenderObject *parentRenderer = parent->renderer();
     if (parentRenderer && parentRenderer->childAllowed()) {
         RenderStyle *style = styleForRenderer(parentRenderer);
@@ -967,7 +967,7 @@ bool NodeImpl::rendererIsNeeded(RenderStyle *style)
     return (getDocument()->documentElement() == this) || (style->display() != NONE);
 }
 
-RenderObject *NodeImpl::createRenderer(RenderArena *arena, RenderStyle *style)
+RenderObject *NodeImpl::createRenderer(RenderArena* /*arena*/, RenderStyle* /*style*/)
 {
     assert(false);
     return 0;
