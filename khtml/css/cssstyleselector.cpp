@@ -2,7 +2,8 @@
  * This file is part of the CSS implementation for KDE.
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
- * Copyright (C) 2003 Apple Computer, Inc.
+ *           (C) 2003 Apple Computer, Inc.
+ *           (C) 2004 Allan Sandfeld Jensen (kde@carewolf.com)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -810,13 +811,26 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
         }
         case CSSSelector::Sibling:
         {
-		subject = false;
+            subject = false;
             n = n->previousSibling();
-	    while( n && !n->isElementNode() )
-		n = n->previousSibling();
+            while( n && !n->isElementNode() )
+                n = n->previousSibling();
             if( !n ) return;
             ElementImpl *elem = static_cast<ElementImpl *>(n);
             if(!checkOneSelector(sel, elem)) return;
+            break;
+        }
+        case CSSSelector::Cousin:
+        {
+            subject = false;
+            ElementImpl *elem = 0;
+            do {
+                n = n->previousSibling();
+                while( n && !n->isElementNode() )
+                    n = n->previousSibling();
+                if( !n ) return;
+                elem = static_cast<ElementImpl *>(n);
+            } while (!checkOneSelector(sel, elem));
             break;
         }
         case CSSSelector::SubSelector:
@@ -861,7 +875,7 @@ void CSSStyleSelector::checkSelector(int selIndex, DOM::ElementImpl *e)
 	selectorCache[ selIndex ].state = Applies;
     //qDebug( "selector %d applies", selIndex );
     //selectors[ selIndex ]->print();
- 	return;
+    return;
 }
 
 bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e)
@@ -1007,42 +1021,42 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    break;
 	case CSSSelector::PseudoFirstChild: {
 	    // first-child matches the first child that is an element!
-                if (e->parentNode() && e->parentNode()->isElementNode()) {
-                    DOM::NodeImpl* n = e->previousSibling();
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                DOM::NodeImpl* n = e->previousSibling();
+                while ( n && !n->isElementNode() )
+                    n = n->previousSibling();
+                if ( !n )
+                    return true;
+            }
+            break;
+        }
+        case CSSSelector::PseudoLastChild: {
+            // last-child matches the last child that is an element!
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                DOM::NodeImpl* n = e->nextSibling();
+                while ( n && !n->isElementNode() )
+                    n = n->nextSibling();
+                if ( !n )
+                    return true;
+            }
+            break;
+        }
+        case CSSSelector::PseudoOnlyChild: {
+            // If both first-child and last-child apply, then only-child applies.
+            if (e->parentNode() && e->parentNode()->isElementNode()) {
+                DOM::NodeImpl* n = e->previousSibling();
+                while ( n && !n->isElementNode() )
+                    n = n->previousSibling();
+                if ( !n ) {
+                    n = e->nextSibling();
                     while ( n && !n->isElementNode() )
-                        n = n->previousSibling();
+                        n = n->nextSibling();
                     if ( !n )
                         return true;
-                }
-                break;
+	        }
             }
-            case CSSSelector::PseudoLastChild: {
-                // last-child matches the last child that is an element!
-                if (e->parentNode() && e->parentNode()->isElementNode()) {
-                    DOM::NodeImpl* n = e->nextSibling();
-                    while ( n && !n->isElementNode() )
-		n = n->nextSibling();
-                    if ( !n )
-                        return true;
-                }
-                break;
-            }
-            case CSSSelector::PseudoOnlyChild: {
-                // If both first-child and last-child apply, then only-child applies.
-                if (e->parentNode() && e->parentNode()->isElementNode()) {
-                    DOM::NodeImpl* n = e->previousSibling();
-                    while ( n && !n->isElementNode() )
-                        n = n->previousSibling();
-                    if ( !n ) {
-                        n = e->nextSibling();
-                        while ( n && !n->isElementNode() )
-                            n = n->nextSibling();
-                        if ( !n )
-		return true;
-	}
-                }
 	    break;
-            }
+        }
 	case CSSSelector::PseudoFirstLine:
 	    if ( subject ) {
 		dynamicPseudo=RenderStyle::FIRST_LINE;
@@ -1055,7 +1069,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		return true;
 	    }
 	    break;
-            case CSSSelector::PseudoTarget:
+        case CSSSelector::PseudoTarget:
 #ifdef APPLE_CHANGES
                 if (!e->getDocument()->getCSSTarget() && // :target matches the root when no CSS target exists
                      e == e->getDocument()->documentElement())
@@ -1076,7 +1090,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	    if ( pseudoState == PseudoVisited )
 		return true;
 	    break;
-            case CSSSelector::PseudoHover: {
+        case CSSSelector::PseudoHover: {
 	    // If we're in quirks mode, then hover should never match anchors with no
 	    // href.  This is important for sites like wsj.com.
 	    if (strictParsing || e->id() != ID_A || e->hasAnchor()) {
@@ -1108,23 +1122,23 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 		    return true;
 	    }
 	    break;
-            case CSSSelector::PseudoRoot:
-                if (e == e->getDocument()->documentElement())
+        case CSSSelector::PseudoRoot:
+            if (e == e->getDocument()->documentElement())
+                return true;
+            break;
+        case CSSSelector::PseudoNot: {
+            // check the simple selector
+            for (CSSSelector* subSel = sel->simpleSelector; subSel;
+                 subSel = subSel->tagHistory) {
+                // :not cannot nest.  I don't really know why this is a restriction in CSS3,
+                // but it is, so let's honor it.
+                if (subSel->simpleSelector)
+                    break;
+                if (!checkOneSelector(subSel, e))
                     return true;
-                break;
-            case CSSSelector::PseudoNot: {
-                // check the simple selector
-                for (CSSSelector* subSel = sel->simpleSelector; subSel;
-                     subSel = subSel->tagHistory) {
-                    // :not cannot nest.  I don't really know why this is a restriction in CSS3,
-                    // but it is, so let's honor it.
-                    if (subSel->simpleSelector)
-                        break;
-                    if (!checkOneSelector(subSel, e))
-                        return true;
-                }
-                break;
             }
+            break;
+        }
 	case CSSSelector::PseudoSelection:
 	    dynamicPseudo = RenderStyle::SELECTION;
 	    return true;
@@ -1138,7 +1152,7 @@ bool CSSStyleSelector::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl 
 	case CSSSelector::PseudoNotParsed:
 	    assert(false);
 	    break;
-            case CSSSelector::PseudoLang:
+        case CSSSelector::PseudoLang:
 	    /* not supported for now */
 	case CSSSelector::PseudoOther:
 	    break;
@@ -2198,9 +2212,12 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         style->setBackgroundYPosition(l);
         break;
     }
-    case CSS_PROP_BORDER_SPACING:
-        assert( false );
-
+    case CSS_PROP_BORDER_SPACING: {
+        if(value->cssValueType() != CSSValue::CSS_INHERIT || !parentNode) return;
+        style->setBorderHorizontalSpacing(parentStyle->borderHorizontalSpacing());
+        style->setBorderVerticalSpacing(parentStyle->borderVerticalSpacing());
+        break;
+    }
     case CSS_PROP__KHTML_BORDER_HORIZONTAL_SPACING: {
         HANDLE_INHERIT_AND_INITIAL(borderHorizontalSpacing, BorderHorizontalSpacing)
         if (!primitiveValue) break;
@@ -2776,7 +2793,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         return;
     }
 
-    /*
     case CSS_PROP_WIDOWS:
     {
         HANDLE_INHERIT_AND_INITIAL(widows, Widows)
@@ -2794,7 +2810,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         style->setOrphans((int)primitiveValue->floatValue(CSSPrimitiveValue::CSS_NUMBER));
         break;
     }
-    */
 
 // length, percent, number
     case CSS_PROP_LINE_HEIGHT:

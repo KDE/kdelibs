@@ -99,7 +99,8 @@ namespace DOM {
 	    Descendant = 0,
 	    Child,
 	    Sibling,
-	    SubSelector
+            Cousin,
+            SubSelector
 	};
 
 	enum PseudoType
@@ -138,7 +139,7 @@ namespace DOM {
         DOM::NodeImpl::Id attr;
         DOM::NodeImpl::Id tag;
 
-	Relation relation     : 2;
+	Relation relation     : 3;
 	Match 	 match         : 4;
 	bool	nonCSSHint : 1;
 	unsigned int pseudoId : 3;

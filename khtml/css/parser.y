@@ -483,6 +483,7 @@ font_face:
 
 combinator:
   '+' maybe_space { $$ = CSSSelector::Sibling; }
+  | '~' maybe_space { $$ = CSSSelector::Cousin; }
   | '>' maybe_space { $$ = CSSSelector::Child; }
   | /* empty */ { $$ = CSSSelector::Descendant; }
   ;
