@@ -1244,7 +1244,7 @@ KCmdLineArgs::addArgument(const char *argument)
 
 static const KCmdLineOptions kde_tempfile_option[] =
 {
-   { "tempfile",       I18N_NOOP("The files/urls opened by the application will be deleted after use"), 0},
+   { "tempfile",       I18N_NOOP("The files/URLs opened by the application will be deleted after use"), 0},
    KCmdLineLastOption
 };
 

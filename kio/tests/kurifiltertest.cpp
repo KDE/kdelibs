@@ -129,7 +129,7 @@ static const char version[] = "1.5";
 
 static const KCmdLineOptions options[] =
 {
-   { "s", I18N_NOOP("Use space as keyword delimeter for web shortcuts."), 0},
+   { "s", I18N_NOOP("Use space as keyword delimeter for web shortcuts"), 0},
    KCmdLineLastOption
 };
 

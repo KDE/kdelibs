@@ -2591,7 +2591,7 @@ void KMdiMainFrm::fillWindowMenu()
 		m_pPlacingMenu->insertItem( i18n( "Cascade &Maximized" ), m_pMdi, SLOT( cascadeMaximized() ) );
 		m_pPlacingMenu->insertItem( i18n( "Expand &Vertically" ), m_pMdi, SLOT( expandVertical() ) );
 		m_pPlacingMenu->insertItem( i18n( "Expand &Horizontally" ), m_pMdi, SLOT( expandHorizontal() ) );
-		m_pPlacingMenu->insertItem( i18n( "Tile &Non-overlapped" ), m_pMdi, SLOT( tileAnodine() ) );
+		m_pPlacingMenu->insertItem( i18n( "Tile &Non-Overlapped" ), m_pMdi, SLOT( tileAnodine() ) );
 		m_pPlacingMenu->insertItem( i18n( "Tile Overla&pped" ), m_pMdi, SLOT( tilePragma() ) );
 		m_pPlacingMenu->insertItem( i18n( "Tile V&ertically" ), m_pMdi, SLOT( tileVertically() ) );
 		if ( m_mdiMode == KMdi::ToplevelMode )

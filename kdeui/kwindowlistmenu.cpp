@@ -196,7 +196,7 @@ void KWindowListMenu::init()
             insertSeparator();
         }
 
-        setItemEnabled(insertItem(i18n("No windows")), false);
+        setItemEnabled(insertItem(i18n("No Windows")), false);
     }
 }
 
