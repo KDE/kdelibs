@@ -4133,7 +4133,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
         int rc = KMessageBox::warningContinueCancel(NULL, i18n("Warning:  This is a secure form but it is attempting to send your data back unencrypted."
                                                                "\nA third party may be able to intercept and view this information."
                                                                "\nAre you sure you wish to continue?"),
-                                                    i18n("SSL"));
+                                                    i18n("Network Transmission"),KGuiItem(i18n("&Send Unencrypted")));
         if (rc == KMessageBox::Cancel)
           return;
       } else {                  // Going from nonSSL -> nonSSL
@@ -4142,8 +4142,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
           int rc = KMessageBox::warningContinueCancel(NULL,
                                                       i18n("Warning: Your data is about to be transmitted across the network unencrypted."
                                                            "\nAre you sure you wish to continue?"),
-                                                      i18n("KDE"),
-                                                      QString::null,
+                                                      i18n("Network Transmission"),
+                                                      KGuiItem(i18n("&Send Unencrypted")),
                                                       "WarnOnUnencryptedForm");
           // Move this setting into KSSL instead
           KConfig *config = kapp->config();
@@ -4166,8 +4166,8 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
       int rc = KMessageBox::warningContinueCancel(NULL,
                                                   i18n("This site is attempting to submit form data via email.\n"
                                                        "Do you want to continue?"),
-                                                  i18n("KDE"),
-                                                  QString::null,
+                                                  i18n("Network Transmission"),
+                                                  KGuiItem(i18n("&Send Email")),
                                                   "WarnTriedEmailSubmit");
 
       if (rc == KMessageBox::Cancel) {

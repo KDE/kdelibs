@@ -780,7 +780,7 @@ void KNotifyWidget::resetDefaults( bool ask )
                                    i18n("This will cause the notifications "
                                         "to be reset to their defaults."),
                                                 i18n("Are You Sure?"),
-                                                i18n("Continue"))
+                                                i18n("&Reset"))
              != KMessageBox::Continue)
             return;
     }
