@@ -64,6 +64,7 @@
 7106	kio_smb
 7107    kio_man
 7108    kio_info
+7109	kio_tar
 
 # old stuff
 8000	corba
