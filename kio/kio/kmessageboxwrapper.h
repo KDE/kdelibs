@@ -34,7 +34,7 @@ public:
                     const QString &text, 
                     const QString &caption = QString::null)
     {
-	if (kapp) {
+	if (KApplication::guiEnabled()) {
      	  kapp->enableStyles();
       	  KMessageBox::error( parent, text, caption );
 	} else 
@@ -45,7 +45,7 @@ public:
                     const QString &text,
                     const QString &caption = QString::null)
     {
-      if (kapp) {
+      if (KApplication::guiEnabled()) {
 	 kapp->enableStyles();
          KMessageBox::sorry( parent, text, caption );
       } else
