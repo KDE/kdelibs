@@ -9,12 +9,24 @@ int main( int argc, char **argv )
 	KApplication app( argc, argv, "klistviewtest" );
 	KDialogBase dialog;
 	KListView *view = new KListView( dialog.makeVBoxMainWidget() );
+	view->setSelectionModeExt( KListView::FileManager );
+	view->setDragEnabled( true );
+	view->setItemsMovable( false );
+	view->setAcceptDrops( true );
 	view->addColumn("Column 1");
 	view->addColumn("Column 2");
 	view->addColumn("Column 3");
 
 	new QListViewItem( view, "Item 1");
-	new QListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );	
+	new QListViewItem( view, "Item 1");
+	new QListViewItem( view, "Item 1");
+	new QListViewItem( view, "Item 1");
+	new QListViewItem( view, "Item 1");
+	new QListViewItem( view, "Item 1");
+	new QListViewItem( view, "Item 1");
+	new QListViewItem( view, "Item 1");
+	new QListViewItem( view, "Item 1");
+	new QListViewItem( view, "Item 2", "Some more", "Hi Mom :)" );
 
 	view->restoreLayout( KGlobal::config(), "ListView" );
 
