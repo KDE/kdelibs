@@ -187,6 +187,9 @@ bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const cha
       // is it enough ?  Should we check also the control connection ?
       if ( ftpOpenDataConnection() )
 	return true;
+      else
+	m_bLoggedOn = false;
+
     } else
       assert( !m_bLoggedOn );
     
