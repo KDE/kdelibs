@@ -3983,7 +3983,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     QClipboard *cb = QApplication::clipboard();
     cb->setSelectionMode( true );
     QCString plain("plain");
-    QString url = cb->text(plain);
+    QString url = cb->text(plain).stripWhiteSpace();
     KURL u(url);
     if ( u.isMalformed() ) {
       // some half-baked guesses for incomplete urls
