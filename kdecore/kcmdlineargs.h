@@ -192,6 +192,18 @@ public:
                    const KAboutData *about, bool noKApp = false);
 
   /**
+   * Initialize Class
+   *
+   * This function should be called as the very first thing in
+   *  your application.
+   * This method is exactly the same as calling
+   * @ref init(0,0, const KAboutData *about, true)
+   * This method will rarely be used
+   *
+   */
+  static void init(const KAboutData *about);
+  
+  /**
    * Add options to your application.
    *
    * You must make sure that all possible options have been added before

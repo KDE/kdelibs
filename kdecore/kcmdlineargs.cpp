@@ -118,6 +118,13 @@ KCmdLineArgs::init(int _argc, char **_argv, const char *_appname,
 }
 
 void
+KCmdLineArgs::init(const KAboutData* ab)
+{
+   init(0,0,ab, true);
+}
+
+
+void
 KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, bool noKApp)
 {
    assert( argsList == 0 );	// Don't call init twice.
