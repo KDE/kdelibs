@@ -2279,6 +2279,8 @@ bool HTTPProtocol::readHeader()
 
   kdDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
 
+  bool noHeader = true;
+
   do
   {
     // strip off \r and \n if we have them
@@ -2294,7 +2296,15 @@ bool HTTPProtocol::readHeader()
       continue;
     }
 
+    // We have a response header.  This flag is a work around for
+    // servers that append a "\r\n" before the beginning of the HEADER
+    // response!!!  It only catches x number of \r\n being placed at the
+    // top of the reponse...
+    noHeader = false;
+
     kdDebug(7103) << "(" << m_pid << ") \"" << buffer << "\"" << endl;
+
+
 
     // Save broken servers from damnation!!
     char* buf = buffer;
@@ -2720,7 +2730,8 @@ bool HTTPProtocol::readHeader()
 
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
-  } while (len && (gets(buffer, sizeof(buffer)-1)));
+
+  } while ((len || noHeader) && (gets(buffer, sizeof(buffer)-1)));
 
   // Send the reponse if requested...
   if (!responseHeader.isEmpty())
