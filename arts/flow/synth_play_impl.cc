@@ -44,6 +44,21 @@ class Synth_PLAY_impl :	virtual public Synth_PLAY_skel,
 protected:
 	AudioSubSystem *as;
 	bool haveSubSys;
+	/*
+	 * these are to prevent the following situation
+	 * 1) audio subsystem needs more data
+	 * 2) calculation is started
+	 * 3) somehow, some module makes a synchronous invocation to the outside
+	 *    world and waits for the result
+	 * 4) since the audio subsystem still needs data, and since we are in an
+	 *    idle state now, another calculation will be started, which will of
+	 *    course fail due to reentrancy
+	 * 5) repeat 4) until result is there => lots of wasted CPU cycles (when
+	 *    running with realtime priority: system freeze)
+	 */
+	bool inProgress;		// we are just doing some calculations
+	bool restartIOHandling;	// I/O handlers removed upon reaching 4: restart
+
 	int audiofd;
 
 	typedef unsigned char uchar;
@@ -66,6 +81,7 @@ public:
 		channels = 2;
 		maxsamples = 0;
 		outblock = 0;
+		inProgress = false;
 
 		as = AudioSubSystem::the();
 
@@ -160,7 +176,22 @@ public:
 					break;
 			default: assert(false);
 		}
+		if(inProgress)
+		{
+			if(!restartIOHandling)
+			{
+				// prevent lots of retries - we just can't do calculations
+				// now, so we need to wait until the situation has resolved
+				Dispatcher::the()->ioManager()->remove(this,IOType::all);
+				restartIOHandling = true;
+			}
+			return;
+		}
+		restartIOHandling = false;
+		inProgress = true;
 		as->handleIO(type);
+		inProgress = false;
+		if(restartIOHandling) start();
 	}
 
 	/**
