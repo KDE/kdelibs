@@ -61,11 +61,13 @@ struct URLArgsPrivate
     URLArgsPrivate() {
       doPost = false;
       lockHistory = false;
+      newTab = false;
     }
     QString contentType; // for POST
     QMap<QString, QString> metaData;
     bool doPost;
     bool lockHistory;
+    bool newTab;
 };
 
 };
@@ -162,6 +164,18 @@ void URLArgs::setLockHistory( bool lock )
 bool URLArgs::lockHistory() const
 {
     return d ? d->lockHistory : false;
+}
+
+void URLArgs::setNewTab( bool newTab )
+{
+  if (!d)
+     d = new URLArgsPrivate;
+  d->newTab = newTab;
+}
+
+bool URLArgs::newTab() const
+{
+    return d ? d->newTab : false;
 }
 
 namespace KParts

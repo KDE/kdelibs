@@ -2266,6 +2266,14 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     emit d->m_extension->createNewWindow( cURL, args, winArgs, newPart );
     return;
   }
+
+  if ( button == LeftButton && (state & ControlButton) )
+  {
+    args.setNewTab(true);
+    emit d->m_extension->createNewWindow( cURL, args );
+    return;
+  }
+
   emit d->m_extension->openURLRequest( cURL, args );
 }
 

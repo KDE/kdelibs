@@ -119,6 +119,12 @@ struct URLArgs
   bool lockHistory() const;
 
   /**
+   * Whether the URL should be opened in a new tab instead in a new window.
+   */
+  void setNewTab( bool newTab );
+  bool newTab() const;
+
+  /**
    * Meta-data to associate with the next KIO operation
    * @see KIO::TransferJob etc.
    */
