@@ -55,7 +55,6 @@ class KHTMLImageSource : public QDataSource
   uchar *buffer;
   QIODevice* iod;
   bool rew;
-  bool sendReady;
   bool eof;
   int pos;
 

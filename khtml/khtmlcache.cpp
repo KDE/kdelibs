@@ -46,7 +46,6 @@ KHTMLImageSource::KHTMLImageSource(QIODevice* device, int buffer_size) :
     buffer(new uchar[buf_size]),
     iod(device),
     rew(FALSE),
-    sendReady(TRUE),
     eof(FALSE),
     pos(0)
 {
@@ -85,18 +84,8 @@ int KHTMLImageSource::readyToSend()
 
   int n = QMIN((uint)buf_size, iod->size() - pos);
   
-  // FIXME
-  // workaround for qt bug:
-  // the timer in QDataPump should be restarted even if we
-  // return 0 !
   if ( !n && eof )
     return -1;
-
-  if ( !n && !eof )
-    {
-      sendReady = false;
-      n = 1;
-    }
 
   return n;
 }
@@ -136,23 +125,14 @@ void KHTMLImageSource::rewind()
 */
 void KHTMLImageSource::sendTo(QDataSink* sink, int n)
 {
-  // FIXME
-  // workaround for qt bug:
-  // in readyToSend we return minimal 1
-  // so test if there is really something to send
-  if ( sendReady )
-    {
-      int oldPos = iod->at(); // save old position
-      
-      iod->at( pos );
-      iod->readBlock((char*)buffer, n);
-      sink->receive(buffer, n);
-      iod->at( oldPos ); // restore old position
-      
-      pos += n;
-    }
-  else
-    sendReady = true;
+  int oldPos = iod->at(); // save old position
+  
+  iod->at( pos );
+  iod->readBlock((char*)buffer, n);
+  sink->receive(buffer, n);
+  iod->at( oldPos ); // restore old position
+  
+  pos += n;
 }
 
 KHTMLCachedImage::KHTMLCachedImage()
@@ -320,8 +300,10 @@ KHTMLCachedImage::data ( QBuffer & _buffer, bool eof )
 	
 	if ( length )
 	  {
+	    m->pause();
 	    incBuffer->at(bufSize);
 	    incBuffer->writeBlock( &_buffer.buffer().at(bufSize), length);
+	    m->unpause();
 	  }
       }
     
