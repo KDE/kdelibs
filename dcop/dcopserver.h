@@ -77,6 +77,7 @@ private:
     QList<DCOPListener> listener;
     QDict<DCOPConnection> appIds;
     QPtrDict<DCOPConnection> clients;
+    QList<_IceConn> busy;
 
     class DCOPServerPrivate;
     DCOPServerPrivate *d;

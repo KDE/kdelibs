@@ -680,15 +680,13 @@ void DCOPServer::ioError( IceConn iceConn )
 
 void DCOPServer::processData( int /*socket*/ )
 {
-    (void ) IceProcessMessages( ((DCOPConnection*)sender())->iceConn, 0, 0 );
 
-    /* // do not use this instead of ioError. Leaks now.
     IceConn iceConn = static_cast<const DCOPConnection*>(sender())->iceConn;
     IceProcessMessagesStatus status = IceProcessMessages( iceConn, 0, 0 );
     if ( status == IceProcessMessagesIOError ) {
-	(void) IceCloseConnection( iceConn );
+	if ( !busy.contains( iceConn ) )
+	    (void) IceCloseConnection( iceConn );
     }
-    */
 }
 
 void DCOPServer::newClient( int /*socket*/ )
@@ -697,6 +695,7 @@ void DCOPServer::newClient( int /*socket*/ )
     IceConn iceConn = IceAcceptConnection( static_cast<const  DCOPListener*>(sender())->listenObj, &status);
     IceSetShutdownNegotiation( iceConn, False );
 
+    busy.append( iceConn );
     IceConnectStatus cstatus;
     while ((cstatus = IceConnectionStatus (iceConn))==IceConnectPending) {
 	qApp->processOneEvent();
@@ -708,6 +707,7 @@ void DCOPServer::newClient( int /*socket*/ )
 	    qWarning ("ICE Connection rejected!\n");
 	IceCloseConnection (iceConn);
     }
+    busy.remove( iceConn );
 }
 
 void* DCOPServer::watchConnection( IceConn iceConn )
