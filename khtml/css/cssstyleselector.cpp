@@ -1755,6 +1755,10 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
         ECaptionSide c = RenderStyle::initialCaptionSide();
         switch(primitiveValue->getIdent())
         {
+        case CSS_VAL_LEFT:
+            c = CAPLEFT; break;
+        case CSS_VAL_RIGHT:
+            c = CAPRIGHT; break;
         case CSS_VAL_TOP:
             c = CAPTOP; break;
         case CSS_VAL_BOTTOM:
@@ -2074,9 +2078,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 
         if(!primitiveValue) break;
         switch( primitiveValue->getIdent() ) {
+        case CSS_VAL_HIDE:
         case CSS_VAL_HIDDEN:
             style->setVisibility( HIDDEN );
             break;
+        case CSS_VAL_SHOW:
         case CSS_VAL_VISIBLE:
             style->setVisibility( VISIBLE );
             break;
