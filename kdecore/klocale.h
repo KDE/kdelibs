@@ -42,6 +42,11 @@ class KCatalogue;
  *  a string. You just wrap around every user visible string a i18n
  *  call to get a QString with the string in the user's prefered
  *  language.
+ *
+ *  The argument must be an UTF-8 encoded string (If you only use 
+ *  characters that are not in US-ASCII you're on the safe side. But 
+ *  for e.g. german umlauts or french accents should be recoded to
+ *  UTF-8)
  **/
 QString i18n(const char *text);
 
@@ -125,6 +130,11 @@ public:
    * in the catalogue given to the constructor, it will search
    * in the system catalog. This makes it possible to override
    * some phrases for your needs.
+   *
+   *  The argument must be an UTF-8 encoded string (If you only use 
+   *  characters that are not in US-ASCII you're on the safe side. But 
+   *  for e.g. german umlauts or french accents should be recoded to
+   *  UTF-8)
    *
    * @param index The lookup text and default text, if not found.
    */
