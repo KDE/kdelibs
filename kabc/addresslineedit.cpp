@@ -486,10 +486,7 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
 	addAddress( *it );
     if( hasFocus() || completionBox()->hasFocus())
     {
-        // avoid ShellCompletion too, as it would set the first
-        // match as the edited text, not only offer it
-        if( completionMode() != KGlobalSettings::CompletionShell
-            && completionMode() != KGlobalSettings::CompletionNone )
+        if( completionMode() != KGlobalSettings::CompletionNone )
         {
             doCompletion( false );
         }
