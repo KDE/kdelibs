@@ -899,7 +899,7 @@ bool KDoubleNumInput::eventFilter( QObject* obj, QEvent* ev )
     bool revalue = false;
     double old_value = m_value;
 
-    if (ev->type() == QEvent::FocusOut || ev->type() == QEvent::Leave) {
+    if (ev->type() == QEvent::FocusOut || ev->type() == QEvent::Leave || ev->type() == QEvent::Hide) {
         edit->interpretText();
         revalue = false;
     } else if ( ev->type() == QEvent::KeyPress ) {
