@@ -5,10 +5,9 @@
 #export DH_VERBOSE=1
  
 # This is the debhelper compatability version to use.
-export DH_COMPAT=2
+export DH_COMPAT=3
 
 SHELL=/bin/sh
-
 BUILDDIR = $(shell pwd)
 QTDOCDIR  = usr/share/doc/qt-doc/doc/html
 KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
@@ -86,10 +85,12 @@ binary-arch:  build
 	dh_testdir
 	dh_testroot
 	dh_clean -a
-	-rm -rf debian/kdelibs3
-	install -d debian/kdelibs3
+	-install -d debian/kdelibs3
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
+	
+	# Now go build alsa and cups versions
+
 	$(MAKE) -C arts/ clean
 	$(MAKE) -C libkmid/ clean
 	./configure $(configkde) --with-alsa --without-ssl --enable-cups \
@@ -114,10 +115,9 @@ binary-arch:  build
 	  mv debian/kdelibs3/usr/share/lintian/overrides/$$i debian/kdelibs3/usr/share/lintian/overrides/`echo $$i | sed -e 's#.override##'`; \
 	done
 	-rm -f debian/kdelibs3/usr/share/lintian/overrides/*alsa
-	for i in `find debian/ -type l -name "common"`; do \
-		rm $$i; \
-		ln -s ../common $$i ;\
-	done
+
+	# now back to normal bits
+
 	debianrc=debian/kdelibs3/etc/kde2/system.kdeglobals ;\
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/etc/kde2" >> $$debianrc ;\
@@ -129,6 +129,7 @@ binary-arch:  build
 	-cp debian/dh-make/* debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	-cp admin/debianrules debian/kdelibs3/usr/share/doc/kdelibs-dev/dh-make/
 	dh_undocumented
+	dh_installman
 	dh_installmenu -a
 	dh_movefiles -a --sourcedir=debian/kdelibs3
 	-rm -rf debian/kdelibs3/usr/share/apps/kssl
@@ -158,8 +159,6 @@ binary-arch:  build
 	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
 	echo ", libasound1 (>= 0.5.5)" >> debian/libkmid-alsa.substvars
 	dh_gencontrol 
-	cd debian/kdelibs3 && find ./etc -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
-	chmod 644 debian/kdelibs3/DEBIAN/conffiles
 	dh_md5sums 
 	dh_builddeb -a
 

@@ -6,7 +6,6 @@
 set -e
 case "$1" in
     configure)
-      /sbin/ldconfig
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
