@@ -70,7 +70,6 @@ public class KJASAppletStub extends Frame
      *************************************************************************/
     public void createApplet() {
         panel = new KJASAppletPanel( appletSize );
-        panel.setMessage("Loading...");
         add( "Center", panel );
         pack();
         setVisible(true);
@@ -98,7 +97,8 @@ public class KJASAppletStub extends Frame
                 //}
                 if( appletClass == null ) {
                     Main.info( "Could not load applet class " + className);
-                    panel.setMessage("Applet Failed");
+                    panel.showFailed();
+                    // panel.setMessage("Applet Failed");
                     return;
                 }                
                 try {
@@ -111,27 +111,33 @@ public class KJASAppletStub extends Frame
                 }
                 catch( InstantiationException e ) {
                     Main.kjas_err( "Could not instantiate applet", e );
-                    panel.setMessage("Applet Failed");
+                    panel.showFailed();
                     return;
                 }
                 catch( IllegalAccessException e ) {
                     Main.kjas_err( "Could not instantiate applet", e );
-                    panel.setMessage("Applet Failed");
+                    panel.showFailed();
                     return;
                 }
                 
                 app.setVisible(false);
                 Main.debug("panel.add( \"Center\", app );");                
                 panel.setApplet( app );
-                //++Main.debug("app.validate();");                
-                //++app.validate();
+                
                 Main.debug("app.setSize(appletSize);");
                 app.setSize(appletSize);
                                 
                 context.showStatus("Initializing Applet " + appletName + " ...");
                 
                 Main.debug("Applet " + appletName + " id=" + appletID + " initializing...");
-                app.init();
+                try {
+                    app.init();
+                } catch (Error e) {
+                    Main.info("Error " + e.toString() + " during applet initialization"); 
+                    e.printStackTrace();
+                    panel.showFailed();
+                    return;
+                }
                 app.setVisible(true);
                 Main.debug("Applet " + appletName + " id=" + appletID + " initialized.");
                 
@@ -156,6 +162,7 @@ public class KJASAppletStub extends Frame
                 
                 Main.debug("Applet " + appletName + " id=" + appletID + " starting...");
                 new KJASAppletThread(app, "KJAS-Applet-" + appletID + "-" + appletName).start(); 
+                panel.stopAnimation();
                 Main.debug("Applet " + appletName + " id=" + appletID + " started.");
                 
                 context.showStatus("Applet " + appletName + " started.");
@@ -270,18 +277,20 @@ public class KJASAppletStub extends Frame
     {
         return active;
     }
-
+    
     /*************************************************************************
      ************************* Layout methods ********************************
      *************************************************************************/
     class KJASAppletPanel extends Panel
     {
         private Dimension size;
-        private Label msgLabel = null;
+        private Image img = null;
         public KJASAppletPanel( Dimension _size )
         {
             super( new BorderLayout() );
             size = _size;
+            URL url = getClass().getClassLoader().getResource("images/animbean.gif");
+            img = getToolkit().createImage(url);
         }
 
         public void setAppletSize( Dimension _size )
@@ -299,25 +308,29 @@ public class KJASAppletStub extends Frame
             return size;
         }
         
-        public void paint(Graphics g) {
-            Main.debug("panel paint");
-            super.paint(g);
-        }
         
         public void setApplet(Applet applet) {
-            if (msgLabel != null) {
-                remove(msgLabel);
-            }
+            img = null;
             add("Center", applet);
             validate();  
         }
-        public void setMessage(String msg) {
-            if (msgLabel != null) {
-                remove(msgLabel);
+        
+        public void paint(Graphics g) {
+            super.paint(g);
+            if (img != null) {
+                int x = (getWidth() - img.getWidth(this))/2;
+                int y = (getHeight() - img.getHeight(this))/2;
+                g.drawImage(img,x,y,this);
             }
-            msgLabel = new Label(msg, Label.CENTER);
-            add("Center", msgLabel);
-            validate();
+        }
+        public void showFailed() {
+            URL url = getClass().getClassLoader().getResource("images/brokenbean.gif");
+            img = getToolkit().createImage(url);
+            repaint();
+        }
+
+        public void stopAnimation() {
+            img = null;
         }
     }
     
