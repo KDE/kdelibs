@@ -448,7 +448,7 @@ void KSpellConfig::setRunTogether(bool b)
 
 void KSpellConfig::setDictionary (const char *s)
 {
-  qsdict=s.copy();
+  qsdict=s; //.copy();
 
   if (qsdict.length()>4)
     if ((signed)qsdict.find(".aff")==(signed)qsdict.length()-4)
