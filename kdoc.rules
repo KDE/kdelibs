@@ -11,7 +11,7 @@ kde_MODULES = dcop kdecore kdeui kio kfile kparts khtml kjs kdejava kspell kab l
 dcop_FILES = *.h
 dcop_LIBS = -lqt
 
-kdecore_FILES = k*.h
+kdecore_FILES = k*.h net*.h
 kdecore_LIBS = -ldcop -lqt
 
 kdeui_FILES = *.h
