@@ -21,7 +21,7 @@
 #include <kconfig.h>
 #include <kapplication.h>
 #include <kdialog.h>
-#include <kwhatsthis.h>
+#include <kwhatsthismanager_p.h>
 #include <kdebug.h>
 #include <kstaticdeleter.h>
 

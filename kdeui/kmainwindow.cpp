@@ -26,7 +26,7 @@
 #include "kmainwindow.h"
 #include "kmainwindowiface.h"
 #include "ktoolbarhandler.h"
-#include "kwhatsthis.h"
+#include "kwhatsthismanager_p.h"
 #include <qsessionmanager.h>
 #include <qobjectlist.h>
 #include <qstyle.h>

@@ -70,7 +70,6 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		ktabbar.h ktabwidget.h ksplashscreen.h kconfigdialog.h \
 		kactionselector.h klanguagebutton.h klistviewsearchline.h \
 		kpixmapregionselectorwidget.h kpixmapregionselectordialog.h \
-		kwhatsthis.h
 
 # the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
@@ -119,12 +118,12 @@ libkdeui_la_SOURCES = \
 		ksplashscreen.cpp kspellui.ui kconfigdialog.cpp \
 		kactionselector.cpp klanguagebutton.cpp klistviewsearchline.cpp \
 		kpixmapregionselectorwidget.cpp kpixmapregionselectordialog.cpp \
-		kwhatsthis.cpp
+		kwhatsthismanager.cpp
 
 noinst_HEADERS = kdockwidget_private.h kdockwidget_p.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
 		kdepackages.h kshortcutdialog.h kxmlguifactory_p.h \
-		kstdaction_p.h
+		kstdaction_p.h kwhatsthismanager_p.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)

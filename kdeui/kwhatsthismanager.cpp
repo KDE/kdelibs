@@ -1,4 +1,4 @@
-#include "kwhatsthis.h"
+#include "kwhatsthismanager_p.h"
 #include "qwhatsthis.h"
 #include <qvariant.h>
 #include <kdebug.h>

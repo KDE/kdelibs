@@ -1,5 +1,5 @@
-#ifndef KWHATSTHIS_H
-#define KWHATSTHIS_H
+#ifndef KWHATSTHISMANAGER_P_H
+#define KWHATSTHISMANAGER_P_H
 
 #include <qwhatsthis.h>
 #include <kdialogbase.h>
@@ -36,4 +36,4 @@ class KWhatsThisManager : public QObject
         KWhatsThisManager ();
 };
 
-#endif // KWHATHSTHIS_H
+#endif
