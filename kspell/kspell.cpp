@@ -368,7 +368,8 @@ KSpell::setUpDialog (bool reallyuseprogressbar)
   connect (this, SIGNAL ( progress (unsigned int) ),
 	   ksdlg, SLOT ( slotProgress (unsigned int) ));
   KWin::setIcons (ksdlg->winId(), kapp->icon(), kapp->miniIcon());
-
+  if ( modaldlg )
+      ksdlg->setFocus();
   dialogsetup = TRUE;
 }
 
