@@ -61,10 +61,15 @@ extern "C" {
 
     KJSO window(new KJS::Window(khtml->view()));
     KJSO document = getDOMNode(khtml->htmlDocument());
+    KJSO parent = khtml->parentPart() ?
+      KJSO(new Frame(khtml->parentPart())) : window;
+    KJSO top = parent; /* TODO */
 
     window.put("document", document);
     global.put("window", window);
     global.put("self", window);
+    global.put("parent", parent);
+    global.put("top", top);
     global.put("document", document);
     global.put("navigator", KJSO(new Navigator()));
     global.put("location", KJSO(new Location(khtml)));

@@ -19,6 +19,7 @@
 
 #include <qtimer.h>
 #include <qinputdialog.h>
+#include <qstringlist.h>
 #include <dom_string.h>
 #include <kurl.h>
 #include <kmessagebox.h>
@@ -194,6 +195,54 @@ void WindowQObject::clearTimeout(int /* timerId */)
 void WindowQObject::timeout()
 {
   parent->widget->part()->executeScript(timeoutHandler.qstring());
+}
+
+class FrameArray : public HostImp {
+public:
+  FrameArray(KHTMLPart *p) : part(p) { }
+  KJSO get(const UString &p) const;
+private:
+  KHTMLPart *part;
+};
+
+KJSO FrameArray::get(const UString &p) const
+{
+  unsigned int i = (unsigned int)p.toDouble();
+
+  QList<KParts::ReadOnlyPart> frames = part->frames();
+  if (i < frames.count()) {
+    const KParts::ReadOnlyPart *frame = frames.at(i);
+    if (frame->inherits("KHTMLPart")) {
+      const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
+      return KJSO(new Window(khtml->view()));
+    }
+  }
+
+  return Undefined();
+}
+
+KJSO Frame::tryGet(const UString &p) const
+{
+  if (p == "frames")
+    return new FrameArray(part);
+
+  // we are looking for a frame by name here.
+  // essentially a hack relying on the assumption that the ordering of
+  // frameNames() is identical to frames()
+  // TODO: http://www.w3.org/TR/html4/appendix/notes.html#notes-frames
+  QStringList list = part->frameNames();
+  int i = list.findIndex(p.qstring());
+  if (i >= 0) {
+    QList<KParts::ReadOnlyPart> frames = part->frames();
+    const KParts::ReadOnlyPart *frame = frames.at(i);
+    assert(frame->inherits("KHTMLPart"));
+    const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
+    return KJSO(new Window(khtml->view()));
+  }
+  
+  // search window properties
+  KJSO window(new Window(part->view()));
+  return window.get(p);
 }
 
 KJSO Location::get(const UString &p) const

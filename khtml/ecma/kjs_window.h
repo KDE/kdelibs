@@ -76,6 +76,14 @@ namespace KJS {
     UString timeoutHandler;
   };
 
+  class Frame : public DOMObject {
+  public:
+    Frame(KHTMLPart *p) : part(p) { }
+    virtual KJSO tryGet(const UString &p) const;
+  private:
+    KHTMLPart *part;
+  };
+
   class Location : public HostImp {
   public:
     Location(KHTMLPart *p) : part(p) { }
