@@ -25,12 +25,12 @@
 
     Refer to this DTD as
 
-      "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.1//EN"
+      "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN"
 
     For instance
 
       <!ENTITY % rdbpool PUBLIC
-       "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.1//EN">
+       "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN">
 
     Set to IGNORE:                      to revert from KDE customisation for:
     kde.remove.unused.elements          some elements unlikely to be used
@@ -60,15 +60,17 @@
      The compulsory part is either a language tag from ISO 639 (ISO
      639-1 (2 character tag) if there is a tag, ISO 639-2/T (three
      character tag) otherwise, "i" (for IANA) or "x" (for private use,
-     e.g. languages that are not in ISO 639).
+     e.g. languages that are not in ISO 639, like x-wa for Walloon).
      The optional part may consist of any value.  However, if the
      first repetition consists of two letters, it must be an ISO
      3166a2 country tag (so Nynorsk cannot be indicated by no-NY or
      no-ny).
      Official site for ISO 639-2: http://lcweb.loc.gov/standards/iso639-2/
-     For ISO 639-1, only the latest version (currently Feb 2000) counts!
+     For ISO 639-1, only the latest version (Feb 2000) counts!
 
      Countries are currently only needed when the language is different.
+     Only rarely adding the country code is a necessity (Chinese is
+     only done for encoding reasons afaik).
  -->
 <!ENTITY % lang.attrib
         "lang           (af|ar|az|be|bg|bn|bo|br|bs|ca|cs|cy|da|de|el|en|en-GB
@@ -201,5 +203,7 @@ zu	Zulu
 		%local.bibliocomponent.mix;">
 <!-- End of compulsory ReleaseInfo -->]]>
 
-<!-- KDE uses a more specific list of attributes -->
 <!ENTITY % olink.attlist "IGNORE">
+
+<!-- Temporary lifting of restriction (action to be added too?)-->
+<!ENTITY % local.smallcptr.char.mix "|envar">

@@ -25,11 +25,11 @@
 
     Refer to this DTD as
 
-      "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+      "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"
 
     For instance:
 
-      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.0//EN"
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"
                      "customization/dtd/kdex.dtd">
 
     and use catalog as the catalogue file.
@@ -68,7 +68,7 @@
  -->
 <!ENTITY % rdbhier2	    PUBLIC
   "-//KDE//ELEMENTS DocBook XML Hierarchy Redeclarations 2 V1.0//EN"     
-  "rdbhier2.elements"                                                >
+  "../dtd/rdbhier2.elements"                                         >
 <!ENTITY % dbhier.redecl2.module "INCLUDE"			     >
 
 <!-- For Java-style refentries	   
@@ -101,7 +101,7 @@
 
 <!ENTITY % kde.modifications PUBLIC
   "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
-  "modifications.elements"                                           >
+  "../dtd/modifications.elements"                                    >
 %kde.modifications;
 
 
@@ -111,8 +111,8 @@
 <!-- Is empty, except for what could go in dbgenent.mod            -->
 
 <!ENTITY % kde.general.entities	PUBLIC
-  "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.0//EN"    
-  "general.entities"                                                 >
+  "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.1//EN"    
+  "general.entities"                                     >
 %kde.general.entities;
 
 <!ENTITY % kde.i18n.entities PUBLIC

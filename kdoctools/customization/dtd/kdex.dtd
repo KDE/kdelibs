@@ -1,7 +1,7 @@
 <!--
     Document Type Definition for DocBook XML as used in the KDE documentation
     
-    Copyright (C) 2001 Frederik Fouvry
+    Copyright (C) 2002 Frederik Fouvry
      
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -17,22 +17,22 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     
-    Send suggestions, comments, etc. to Frederik Fouvry
-    <fouvry@coli.uni-sb.de>.
+    Send suggestions, comments, etc. to the KDE docbook list 
+    <kde-docbook@kde.org>.
 
 
     USAGE
 
     Refer to this DTD as
 
-      "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"
+      "-//KDE//DTD DocBook XML V4.2-Based Variant V1.0//EN"
 
     For instance:
 
-      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.1.2-Based Variant V1.1//EN"
+      <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.0//EN"
                      "customization/dtd/kdex.dtd">
 
-    and use catalog as the catalogue file.
+    and use catalog.xml or docbook.cat as the catalogue file.
     Note: the system identifier is interpreted relative to the place
     where it is defined, unless otherwise defined by the application you use.
     If you have permanent internet access, you can use any URLs (and
@@ -58,7 +58,7 @@
      NEEDS TO BE CHECKED ON CHANGES
  -->
 <!ENTITY % rdbpool	    PUBLIC
-  "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.0//EN"	     
+  "-//KDE//ELEMENTS DocBook XML Pool Redeclarations V1.1//EN"	     
   "rdbpool.elements"                                                 >
 <!ENTITY % dbpool.redecl.module "INCLUDE"			     >
 
@@ -88,8 +88,8 @@
 <!-- ============================================================= -->
 
 <!ENTITY % DocBookDTD	    PUBLIC
-  "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "../../docbook/xml-dtd-4.1.2/docbookx.dtd"         > 
+  "-//OASIS//DTD DocBook XML V4.2//EN"
+  "../../docbook/xml-dtd-4.2/docbookx.dtd"         > 
 %DocBookDTD;
 
 
@@ -111,7 +111,7 @@
 <!-- Is empty, except for what could go in dbgenent.mod            -->
 
 <!ENTITY % kde.general.entities	PUBLIC
-  "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.1//EN"    
+  "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.2//EN"    
   "../entities/general.entities"                                     >
 %kde.general.entities;
 

@@ -25,7 +25,7 @@
 
     Refer to this file as
 
-      "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.1//EN"
+      "-//KDE//ENTITIES DocBook XML General Entity Declarations V1.2//EN"
 
     This file contains what dbgenent.mod should contain and is read
     after all other files just like dbgenent.mod should be.
@@ -40,10 +40,6 @@
 <!-- Legal texts we put in a specific place
      so that we don't need to cut'n'paste them to every doc
  -->
-<!ENTITY GPL-html	    PUBLIC
-  "-//GNU//DOCUMENT GNU General Public License V2 (HTML)//EN"
-  "http://www.gnu.org/copyleft/gpl.html"
-  NDATA SGML		                                             >
 <!ENTITY GPL     	    PUBLIC
   "-//GNU//DOCUMENT GNU General Public License V2//EN"
   "http://www.gnu.org/copyleft/gpl.html"
@@ -51,10 +47,6 @@
 <!ENTITY GPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU General Public License Notice//EN"
   "../en/entities/gpl-notice.docbook"><!-- meant for inclusion, so no [CN]DATA SGML (why?) -->
-<!ENTITY LGPL-html	    PUBLIC
-  "-//GNU//DOCUMENT GNU Lesser General Public License V2.1 (HTML)//EN"
-  "http://www.gnu.org/copyleft/lesser.html"
-  NDATA SGML		                                             >
 <!ENTITY LGPL		    PUBLIC
   "-//GNU//DOCUMENT GNU Lesser General Public License V2.1//EN"
   "http://www.gnu.org/copyleft/lesser.html"
@@ -62,15 +54,18 @@
 <!ENTITY LGPLNotice	    PUBLIC
   "-//KDE//DOCUMENT GNU Lesser General Public License Notice//EN"
   "../en/entities/lgpl-notice.docbook"><!-- meant for inclusion, so no [CN]DATA SGML -->
-<!ENTITY FDL-html           PUBLIC
-  "-//GNU//DOCUMENT GNU Free Documentation License V1.1 (HTML)//EN"
-  "http://www.gnu.org/copyleft/fdl.html"
-  NDATA SGML                                                         >
 <!ENTITY FDL                PUBLIC
   "-//GNU//DOCUMENT GNU Free Documentation License V1.1//EN"
   "http://www.gnu.org/copyleft/fdl.html"
   NDATA linespecific                                                 >
 <!-- FDLNotice is defined in lang.entities (why?) -->
+
+<!-- add docbook versions of licenses -->
+
+<!ENTITY % kde.writer.entities	PUBLIC
+  "-//KDE//ENTITIES DocBook XML General Entity Declarations: Contributors V1.0//EN"    
+  "../entities/contributor.entities"                                 >
+%kde.writer.entities;
 
 <!-- KDE index generation
      Set addindex to IGNORE to stop index generation
@@ -369,14 +364,3 @@
 <!ENTITY XHTML	"<trademark>XHTML</trademark>">
 <!ENTITY XML	"<trademark>XML</trademark>">
 <!ENTITY XSL	"<trademark>XSL</trademark>">
-
-<!-- Obsolete entities -->
-<!-- Put them here; they will be removed at some stage -->
-<!ENTITY artsbuilder	"<application>aRts-builder</application>">
-<!ENTITY kdf	"<application>KDiskFree</application>">
-<!ENTITY klaptopdaemon	"<application>KLaptop</application>">
-<!ENTITY klines	"<application>Kolor Lines</application>">
-<!ENTITY kmoon	"<application>Moon Phase</application>">
-<!ENTITY kodo	"<application>KOdometer</application>">
-<!ENTITY kpat	"<application>KPatience</application>">
-<!ENTITY kwin4	"<application>K Four Wins</application>">
