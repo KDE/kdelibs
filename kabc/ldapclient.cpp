@@ -30,6 +30,8 @@
 #include <kconfig.h>
 #include <kapplication.h>
 
+#include <kdebug.h>
+
 #include "ldapclient.h"
 
 using namespace KABC;
@@ -122,7 +124,7 @@ void LdapClient::startQuery( const QString& filter )
     query = QString("ldap://%1/%2?%3?%4?(%5)").arg( host ).arg( _base )
       .arg( _attrs.join(",") ).arg( _scope ).arg( filter );
   }
-  //qDebug("Doing query \"%s\"", query.latin1());
+  kdDebug(5700) << "Doing query" << query.latin1() << endl;
   startParseLDIF();
   _active = true;
   _job = KIO::get( KURL(query), false, false );
@@ -145,8 +147,8 @@ void LdapClient::cancelQuery()
 
 void LdapClient::slotData( KIO::Job*, const QByteArray& data )
 {
-  //QString str(data);
-  //qDebug( "Got \"%s\"", str.latin1());
+  QString str(data);
+  kdDebug(5700) << "Got" << str.latin1() << endl;
   parseLDIF( data );
 }
 
@@ -267,10 +269,10 @@ void LdapClient::parseLDIF( const QByteArray& data )
 
 
 LdapSearch::LdapSearch()
-    : activeClients( 0 ), noLDAPLookup( false )
+    : _activeClients( 0 ), _noLDAPLookup( false )
 {
   if( !KProtocolInfo::isKnownProtocol( KURL("ldap://localhost") )) {
-      noLDAPLookup = true;
+      _noLDAPLookup = true;
       return;
   }
 
@@ -279,7 +281,7 @@ LdapSearch::LdapSearch()
   config.setGroup("LDAP");
   int numHosts = config.readUnsignedNumEntry( "NumSelectedHosts"); 
   if (!numHosts) {
-      noLDAPLookup = true;
+      _noLDAPLookup = true;
       return;
   } else {
     for ( int j = 0; j < numHosts; j++ ) {
@@ -309,44 +311,44 @@ LdapSearch::LdapSearch()
       connect( ldapClient, SIGNAL( error( const QString& ) ),
 	       this, SLOT( slotLDAPError( const QString& ) ) );
 
-      clients.append( ldapClient );     
+      _clients.append( ldapClient );     
     }
   }
   
-  connect( &dataTimer, SIGNAL( timeout()), SLOT( slotDataTimer()));
+  connect( &_dataTimer, SIGNAL( timeout()), SLOT( slotDataTimer()));
 }
 
 void LdapSearch::startSearch( const QString& txt )
 {
-    if( noLDAPLookup )
+    if( _noLDAPLookup )
 	return;
     cancelSearch();
-    searchText = txt;
+    _searchText = txt;
     QString filter = QString( "|(cn=%1*)(mail=%2*)(givenName=%3*)(sn=%4*)" )
 	.arg( txt ).arg( txt ).arg( txt ).arg( txt );
-    for( QValueList< LdapClient* >::Iterator it = clients.begin();
-	 it != clients.end();
+    for( QValueList< LdapClient* >::Iterator it = _clients.begin();
+	 it != _clients.end();
 	 ++it ) {
 	(*it)->startQuery( filter );
-	++activeClients;
+	++_activeClients;
     }
 }
 
 void LdapSearch::cancelSearch()
 {
-    for( QValueList< LdapClient* >::Iterator it = clients.begin();
-	 it != clients.end();
+    for( QValueList< LdapClient* >::Iterator it = _clients.begin();
+	 it != _clients.end();
 	 ++it )
 	(*it)->cancelQuery();
-    activeClients = 0;
-    results.clear();
+    _activeClients = 0;
+    _results.clear();
 }
 
 void LdapSearch::slotLDAPResult( const KABC::LdapObject& obj )
 {
-    results.append( obj );
-    if( !dataTimer.isActive())
-	dataTimer.start( 500, true );
+    _results.append( obj );
+    if( !_dataTimer.isActive())
+	_dataTimer.start( 500, true );
 }
 
 void LdapSearch::slotLDAPError( const QString& )
@@ -356,7 +358,7 @@ void LdapSearch::slotLDAPError( const QString& )
 
 void LdapSearch::slotLDAPDone()
 {
-    if( --activeClients > 0 )
+    if( --_activeClients > 0 )
 	return;
     finish();
 }
@@ -368,7 +370,7 @@ void LdapSearch::slotDataTimer()
 
 void LdapSearch::finish()
 {
-    dataTimer.stop();
+    _dataTimer.stop();
     emit searchData( makeSearchData());
     emit searchDone();
 }
@@ -376,9 +378,9 @@ void LdapSearch::finish()
 QStringList LdapSearch::makeSearchData()
 {
     QStringList ret;
-    QString search_text_upper = searchText.upper();
-    for( QValueList< KABC::LdapObject >::ConstIterator it1 = results.begin();
-	 it1 != results.end();
+    QString search_text_upper = _searchText.upper();
+    for( QValueList< KABC::LdapObject >::ConstIterator it1 = _results.begin();
+	 it1 != _results.end();
 	 ++it1 ) {
 	QString name, mail, givenname, sn;
 	for( LdapAttrMap::ConstIterator it2 = (*it1).attrs.begin();
@@ -403,13 +405,13 @@ QStringList LdapSearch::makeSearchData()
     	        ret.append( QString( "$$%1$\"%2\" <%3>" ).arg( sn ).arg( name ).arg( mail ));
 	}
     }
-    results.clear();
+    _results.clear();
     return ret;
 }
 
 bool LdapSearch::isAvailable() const
 {
-    return !noLDAPLookup;
+    return !_noLDAPLookup;
 }
 
 #include "ldapclient.moc"

@@ -195,12 +195,12 @@ private slots:
 private:
   void finish();
   QStringList makeSearchData();
-  QValueList< LdapClient* > clients;
-  QString searchText;
-  QTimer dataTimer;
-  int activeClients;
-  bool noLDAPLookup;
-  QValueList< LdapObject > results;
+  QValueList< LdapClient* > _clients;
+  QString _searchText;
+  QTimer _dataTimer;
+  int _activeClients;
+  bool _noLDAPLookup;
+  QValueList< LdapObject > _results;
 private:
   class LdapSearchPrivate* d;
 };

@@ -40,6 +40,8 @@
 #include <kurldrag.h>
 #include "ldapclient.h"
 
+#include <kdebug.h>
+
 //=============================================================================
 //
 //   Class  AddressLineEdit
@@ -306,7 +308,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
           match = s_completion->makeCompletion( "$$" + s );
     }
 
-    // kdDebug() << "** completion for: " << s << " : " << match << endl;
+    kdDebug() << "** completion for: " << s << " : " << match << endl;
 
     if ( ctrlT )
     {
