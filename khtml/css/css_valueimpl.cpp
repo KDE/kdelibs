@@ -111,7 +111,7 @@ bool CSSStyleDeclarationImpl::removeProperty( int propertyID, bool onlyNonCSSHin
 	if (m_node)
 	    m_node->setChanged(true);
     }
-    return false;
+    return true;
 }    
     
 
