@@ -15,7 +15,7 @@ they have been included before by kapp.h for example. There is a script
 in kdesdk/scripts called fixheaders that takes care of most of these
 cases. Just call "make -k 2>&1 | perl .../fixheaders" and it will try
 to look after the error messages and add includes as it recognize the
-errors
+errors.
 
 
 //////////////////////////////////////////////////////////////////////
@@ -431,3 +431,65 @@ namespace. Finally you should not longer include userpaths.h, it has been
 renamed to kuserpaths.h, the old include will work for a while, but you
 will get a warning message. If you have any questions about the changes
 then mail me (rich@kde.org).
+
+////////////////////////////////////////////////////////////////////////
+// * kstring.h / KString
+
+The KString class is obsolete and has, actually, no more been defined in
+kstring.h anymore, the header file only existed for compatability. 
+The file has been removed completly, use QString instead, it provides 
+anything that is needed. (mirko@kde.org)
+
+////////////////////////////////////////////////////////////////////////
+// * ktopwidget.h / KTopWidget
+
+KTMainWindow replaces this class completly. In most cases, it should be
+enough to simply replace the declaration of your former KTopWidget to be
+a KTMainWindow, as it is source compatible. ktopwidget.h does no more 
+exist in KDE 2. (mirko@kde.org)
+
+////////////////////////////////////////////////////////////////////////
+// * kbutton.h / KButton
+
+Since Qt 2.0, the class QToolButton provides the functionality of 
+buttons that raise when the mouse is moved over it, so there is no 
+reason to have a class providing the same in the KDE libs. All 
+occurences of KButton in the KDE CVS have been replaced by QToolButtons,
+but for applications not in the CVS it has to be done by the respective 
+developer. (mirko@kde.org)
+
+////////////////////////////////////////////////////////////////////////
+// * kcolorgroup.h / KColorGroup
+
+KColorGroup was at first not used in sources in the KDE CVS,  second its
+flibkdecore_la_METASOURCESunctionality is provided by Qt. It has been 
+removed. (mirko@kde.org)
+
+////////////////////////////////////////////////////////////////////////
+// * kcharsets.h / KCharsets
+
+This functionality is removed from the KDE core and used from Qt, so it
+has been removed. Use QStrings (unicode) for this 
+purposes. (mirko@kde.org)
+
+////////////////////////////////////////////////////////////////////////
+// * Methods for getting the value of a member object named
+//   getXy*() are renamed to xy*()
+
+If your code does not compile and complains about missing member 
+functions, you should check for methods that started with get...().
+This methods have been renamed to xy*().
+
+////////////////////////////////////////////////////////////////////////
+// * kled.h, kledlamp.h / KLed, KLedLamp
+
+There where two different classes for showing an LED lamp. Both are
+merged to the KLed class, but THE USER INTERFACE IS DIFFERENT, as both 
+where more or less broken.
+Please adjust your code to it.
+
+
+
+
+
+
