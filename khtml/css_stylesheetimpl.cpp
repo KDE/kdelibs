@@ -30,6 +30,9 @@
 
 #include "dom_string.h"
 #include "dom_exception.h"
+
+#include <stdio.h>
+
 using namespace DOM;
 
 // --------------------------------------------------------------------------------

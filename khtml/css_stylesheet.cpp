@@ -26,6 +26,9 @@
 
 #include "dom_node.h"
 #include "dom_string.h"
+
+#include <stdio.h>
+
 using namespace DOM;
 
 
