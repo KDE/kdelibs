@@ -481,7 +481,7 @@ void RenderBox::calcWidth()
 
             return;
         }
-        else if (w.type == Variable)
+        else if (w.isVariable())
         {
 //          kdDebug( 6040 ) << "variable" << endl;
             m_marginLeft = ml.minWidth(cw);
@@ -529,20 +529,19 @@ void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw
     }
     else
     {
-        if ( (ml.type == Variable && mr.type == Variable) ||
-             (!(ml.type == Variable) &&
-                containingBlock()->style()->textAlign() == KONQ_CENTER) )
+        if ( (ml.isVariable() && mr.isVariable()) ||
+             (!ml.isVariable() && containingBlock()->style()->textAlign() == KONQ_CENTER ) )
         {
             m_marginLeft = (cw - m_width)/2;
             if (m_marginLeft<0) m_marginLeft=0;
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if (mr.type == Variable)
+        else if (mr.isVariable())
         {
             m_marginLeft = ml.width(cw);
             m_marginRight = cw - m_width - m_marginLeft;
         }
-        else if (ml.type == Variable)
+        else if (ml.isVariable())
         {
             m_marginRight = mr.width(cw);
             m_marginLeft = cw - m_width - m_marginRight;
@@ -586,11 +585,11 @@ void RenderBox::calcHeight()
         {
             int fh=-1;
             if (h.isFixed())
-                fh = h.value + borderTop() + paddingTop() + borderBottom() + paddingBottom();
+                fh = h.value() + borderTop() + paddingTop() + borderBottom() + paddingBottom();
             else if (h.isPercent()) {
                 Length ch = containingBlock()->style()->height();
                 if (ch.isFixed())
-                    fh = h.width(ch.value) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
+                    fh = h.width(ch.value()) + borderTop() + paddingTop() + borderBottom() + paddingBottom();
             }
             if (fh!=-1)
             {
@@ -607,9 +606,9 @@ short RenderBox::calcReplacedWidth() const
 {
     Length w = style()->width();
 
-    switch( w.type ) {
+    switch( w.type() ) {
     case Fixed:
-        return w.value;
+        return w.value();
     case Percent:
     {
         const int cw = containingBlockWidth();
@@ -625,11 +624,11 @@ short RenderBox::calcReplacedWidth() const
 int RenderBox::calcReplacedHeight() const
 {
     const Length& h = style()->height();
-    switch( h.type ) {
+    switch( h.type() ) {
     case Percent:
         return availableHeight();
     case Fixed:
-        return h.value;
+        return h.value();
     default:
         return intrinsicHeight();
     };
@@ -640,7 +639,7 @@ int RenderBox::availableHeight() const
     Length h = style()->height();
 
     if (h.isFixed())
-        return h.value;
+        return h.value();
 
     if (isRoot())
         return static_cast<const RenderRoot*>(this)->viewportHeight();
@@ -834,7 +833,7 @@ void RenderBox::calcAbsoluteVertical()
 
     Length hl = cb->style()->height();
     if (hl.isFixed())
-        ch = hl.value + cb->paddingTop() + cb->paddingBottom()
+        ch = hl.value() + cb->paddingTop() + cb->paddingBottom()
 	     + cb->borderTop() + cb->borderBottom();
     else if (cb->isHtml())
         ch = cb->availableHeight();

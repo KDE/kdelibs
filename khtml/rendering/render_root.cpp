@@ -76,13 +76,13 @@ void RenderRoot::calcWidth()
 
     // exception: m_width is already known and set in layout()
 
-    if (style()->marginLeft().type==Fixed)
-        m_marginLeft = style()->marginLeft().value;
+    if (style()->marginLeft().isFixed())
+        m_marginLeft = style()->marginLeft().value();
     else
         m_marginLeft = 0;
 
-    if (style()->marginRight().type==Fixed)
-        m_marginRight = style()->marginRight().value;
+    if (style()->marginRight().isFixed())
+        m_marginRight = style()->marginRight().value();
     else
         m_marginRight = 0;
 }

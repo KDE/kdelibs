@@ -107,9 +107,9 @@ int RenderBody::availableHeight() const
     int h = RenderFlow::availableHeight();
 
     if( style()->marginTop().isFixed() )
-        h  -= style()->marginTop().value;
+        h  -= style()->marginTop().value();
     if( style()->marginBottom().isFixed() )
-        h -= style()->marginBottom().value;
+        h -= style()->marginBottom().value();
 
     return kMax(0, h);
 }

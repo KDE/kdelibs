@@ -184,8 +184,8 @@ void RenderTable::calcWidth()
     RenderObject *cb = containingBlock();
     int availableWidth = cb->contentWidth();
 
-    LengthType widthType = style()->width().type;
-    if(widthType > Relative && style()->width().value > 0) {
+    LengthType widthType = style()->width().type();
+    if(widthType > Relative && style()->width().value() > 0) {
 	// Percent or fixed table
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
@@ -197,7 +197,7 @@ void RenderTable::calcWidth()
     // restrict width to what we really have in case we flow around floats
     if ( style()->flowAroundFloats() && cb->isFlow() ) {
 	availableWidth = static_cast<RenderFlow *>(cb)->lineWidth( m_y );
-	m_width = QMIN( availableWidth, m_width );
+	m_width = KMIN( short( availableWidth ), m_width );
     }
 
     m_width = KMAX (m_width, m_minWidth);
@@ -260,11 +260,11 @@ void RenderTable::layout()
     Length h = style()->height();
     int th=0;
     if (h.isFixed())
-        th = h.value;
+        th = h.value();
     else if (h.isPercent()) {
         Length ch = containingBlock()->style()->height();
         if (ch.isFixed())
-            th = h.width(ch.value);
+            th = h.width(ch.value());
         else {
             // check we or not inside a table
             RenderObject* ro = parent();
@@ -703,7 +703,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 
     if (!beforeChild) {
         grid[cRow].height = child->style()->height();
-        if ( grid[cRow].height.type == Relative )
+        if ( grid[cRow].height.isRelative() )
             grid[cRow].height = Length();
     }
 
@@ -769,17 +769,17 @@ void RenderTableSection::addCell( RenderTableCell *cell )
     if ( rSpan == 1 ) {
 	// we ignore height settings on rowspan cells
 	Length height = cell->style()->height();
-	if ( height.value > 0 || (height.type == Relative && height.value >= 0) ) {
+	if ( height.value() > 0 || (height.isRelative() && height.value() >= 0) ) {
 	    Length cRowHeight = grid[cRow].height;
-	    switch( height.type ) {
+	    switch( height.type() ) {
 	    case Percent:
-		if ( !(cRowHeight.type == Percent) ||
-		     ( cRowHeight.type == Percent && cRowHeight.value < height.value ) )
+		if ( !cRowHeight.isPercent() ||
+		     (cRowHeight.isPercent() && cRowHeight.value() < height.value() ) )
 		    grid[cRow].height = height;
 		     break;
 	    case Fixed:
-		if ( cRowHeight.type < Percent ||
-		     ( cRowHeight.type == Fixed && cRowHeight.value < height.value ) )
+		if ( cRowHeight.type() < Percent ||
+		     ( cRowHeight.isFixed() && cRowHeight.value() < height.value() ) )
 		    grid[cRow].height = height;
 		break;
 	    case Relative:
@@ -962,10 +962,10 @@ int RenderTableSection::layoutRows( int toAdd )
 	int totalPercent = 0;
 	int numVariable = 0;
 	for ( int r = 0; r < totalRows; r++ ) {
-	    if ( grid[r].height.type == Variable )
+	    if ( grid[r].height.isVariable() )
 		numVariable++;
-	    else if ( grid[r].height.type == Percent )
-		totalPercent += grid[r].height.value;
+	    else if ( grid[r].height.isPercent() )
+		totalPercent += grid[r].height.value();
 	}
 	if ( totalPercent ) {
 // 	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
@@ -975,11 +975,11 @@ int RenderTableSection::layoutRows( int toAdd )
 		totalPercent = 100;
 	    int rh = rowPos[1]-rowPos[0];
 	    for ( int r = 0; r < totalRows; r++ ) {
-		if ( totalPercent > 0 && grid[r].height.type == Percent ) {
-		    int toAdd = QMIN( dh, (totalHeight * grid[r].height.value / 100)-rh );
+		if ( totalPercent > 0 && grid[r].height.isPercent() ) {
+		    int toAdd = QMIN( dh, (totalHeight * grid[r].height.value() / 100)-rh );
 		    add += toAdd;
 		    dh -= toAdd;
-		    totalPercent -= grid[r].height.value;
+		    totalPercent -= grid[r].height.value();
 // 		    qDebug( "adding %d to row %d", toAdd, r );
 		}
 		if ( r < totalRows-1 )
@@ -992,7 +992,7 @@ int RenderTableSection::layoutRows( int toAdd )
 // 	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
 	    int add = 0;
 	    for ( int r = 0; r < totalRows; r++ ) {
-		if ( numVariable > 0 && grid[r].height.type == Variable ) {
+		if ( numVariable > 0 && grid[r].height.isVariable() ) {
 		    int toAdd = dh/numVariable;
 		    add += toAdd;
 		    dh -= toAdd;

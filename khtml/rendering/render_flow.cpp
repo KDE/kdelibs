@@ -1183,12 +1183,12 @@ void RenderFlow::calcMinMaxWidth()
             if( !child->isBR() ) {
                 RenderStyle* cstyle = child->style();
                 int margins = 0;
-		LengthType type = cstyle->marginLeft().type;
+		LengthType type = cstyle->marginLeft().type();
                 if ( type != Variable )
-                    margins += (type == Fixed ? cstyle->marginLeft().value : child->marginLeft());
-		type = cstyle->marginRight().type;
+                    margins += (type == Fixed ? cstyle->marginLeft().value() : child->marginLeft());
+		type = cstyle->marginRight().type();
                 if ( type != Variable )
-                    margins += (type == Fixed ? cstyle->marginRight().value : child->marginRight());
+                    margins += (type == Fixed ? cstyle->marginRight().value() : child->marginRight());
                 int childMin = child->minWidth() + margins;
                 int childMax = child->maxWidth() + margins;
 // 		qDebug("child min=%d, max=%d, currentMin=%d, inlineMin=%d",  childMin,  childMax, currentMin, inlineMin );
@@ -1258,14 +1258,14 @@ void RenderFlow::calcMinMaxWidth()
 
             if (style()->textAlign() == KONQ_CENTER)
             {
-                if (ml.type==Fixed) margin+=ml.value;
-                if (mr.type==Fixed) margin+=mr.value;
+                if (ml.isFixed()) margin+=ml.value();
+                if (mr.isFixed()) margin+=mr.value();
             }
             else
             {
-                if (!(ml.type==Variable) && !(mr.type==Variable))
+                if (!ml.isVariable() && !mr.isVariable())
                 {
-                    if (!(child->style()->width().type==Variable))
+                    if (!(child->style()->width().isVariable()))
                     {
                         if (child->style()->direction()==LTR)
                             margin = child->marginLeft();
@@ -1276,9 +1276,9 @@ void RenderFlow::calcMinMaxWidth()
                         margin = child->marginLeft()+child->marginRight();
 
                 }
-                else if (!(ml.type == Variable))
+                else if (!ml.isVariable())
                     margin = child->marginLeft();
-                else if (!(mr.type == Variable))
+                else if (!mr.isVariable())
                     margin = child->marginRight();
             }
 
@@ -1296,8 +1296,8 @@ void RenderFlow::calcMinMaxWidth()
     }
     if(m_maxWidth < m_minWidth) m_maxWidth = m_minWidth;
 
-    if (style()->width().isFixed() && style()->width().value > 0)
-        m_maxWidth = KMAX(m_minWidth,short(style()->width().value));
+    if (style()->width().isFixed() && style()->width().value() > 0)
+        m_maxWidth = KMAX(m_minWidth,short(style()->width().value()));
 
     int toAdd = 0;
     toAdd = borderLeft() + borderRight() + paddingLeft() + paddingRight();

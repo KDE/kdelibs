@@ -118,8 +118,8 @@ void RenderHtml::layout()
     //kdDebug(0) << renderName() << " height = " << m_height << endl;
     int lp = lowestPosition();
     // margins of Html element can only be fixed, right?
-    int margins  = style()->marginTop().isFixed() ? style()->marginTop().value : 0;
-        margins += style()->marginBottom().isFixed() ? style()->marginBottom().value : 0;
+    int margins  = style()->marginTop().isFixed() ? style()->marginTop().value() : 0;
+        margins += style()->marginBottom().isFixed() ? style()->marginBottom().value() : 0;
 
     if( m_height + margins < lp )
 	m_height = lp - margins;
