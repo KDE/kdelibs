@@ -158,12 +158,12 @@ void RenderReplaced::calcMinMaxWidth()
     }
 }
 
-int RenderReplaced::lineHeight() const
+int RenderReplaced::lineHeight( bool ) const
 {
     return height();
 }
 
-short RenderReplaced::baselinePosition() const
+short RenderReplaced::baselinePosition( bool ) const
 {
     return height();
 }

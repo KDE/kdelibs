@@ -43,8 +43,8 @@ public:
     short calcReplacedWidth(bool* ieHack=0) const;
     int   calcReplacedHeight() const;
 
-    virtual int lineHeight() const;
-    virtual short baselinePosition() const;
+    virtual int lineHeight( bool firstLine) const;
+    virtual short baselinePosition( bool firstLine ) const;
 
     virtual void calcMinMaxWidth();
 

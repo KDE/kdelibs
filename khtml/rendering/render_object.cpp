@@ -123,6 +123,7 @@ RenderObject::RenderObject()
     m_visible = true;
     m_containsWidget = false;
     m_containsOverhangingFloats = false;
+    m_hasFirstLine = false;
 }
 
 RenderObject::~RenderObject()
@@ -549,6 +550,8 @@ void RenderObject::setStyle(RenderStyle *style)
     if( m_style->visiblity() == HIDDEN || m_style->visiblity() == COLLAPSE )
 	m_visible = false;
 
+    m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
+
     setMinMaxKnown(false);
     setLayouted(false);
 }
@@ -689,7 +692,7 @@ bool RenderObject::containsPoint(int _x, int _y, int _tx, int _ty)
 	    (_x >= _tx) && (_x < _tx + width()));
 }
 
-short RenderObject::verticalPositionHint() const
+short RenderObject::verticalPositionHint( bool firstLine ) const
 {
     // vertical align for table cells has a different meaning
     if ( isTableCell() )
@@ -702,45 +705,55 @@ short RenderObject::verticalPositionHint() const
 	return PositionBottom;
 
     if ( va == LENGTH ) {
-	return -style()->verticalAlignLength().width( lineHeight() );
+	return -style()->verticalAlignLength().width( lineHeight( firstLine ) );
     }
     if ( !parent() || !parent()->childrenInline() )
 	return 0;
 
-    int vpos = parent()->verticalPositionHint();
+    int vpos = parent()->verticalPositionHint( firstLine );
     // don't allow elements nested inside text-top to have a different valignment.
     if ( va == BASELINE || vpos == PositionTop || vpos == PositionBottom )
 	return vpos;
 
-    QFont f = parent()->style()->font();
+    QFont f = parent()->font( firstLine );
     if ( va == SUB )
 	vpos += f.pixelSize()/5 + 1;
     else if ( va == SUPER )
 	vpos -= f.pixelSize()/3 + 1;
     else if ( va == TEXT_TOP ) {
-	vpos += -QFontMetrics(f).ascent() + baselinePosition();
+	vpos += -QFontMetrics(f).ascent() + baselinePosition( firstLine );
     } else if ( va == MIDDLE ) {
 	QRect b = QFontMetrics(f).boundingRect('x');
-	vpos += -b.height()/2 - lineHeight()/2 + baselinePosition();
+	vpos += -b.height()/2 - lineHeight( firstLine )/2 + baselinePosition( firstLine );
     } else if ( va == TEXT_BOTTOM ) {
 	vpos += QFontMetrics(f).descent();
-	vpos += -lineHeight() + baselinePosition();
+	vpos += -lineHeight( firstLine ) + baselinePosition( firstLine );
     } else if ( va == BASELINE_MIDDLE )
-	vpos += - lineHeight()/2 + baselinePosition();
+	vpos += - lineHeight( firstLine )/2 + baselinePosition( firstLine );
     return vpos;
 }
 
 
-int RenderObject::lineHeight() const
+int RenderObject::lineHeight( bool firstLine ) const
 {
     // is this method ever called?
     //assert( 0 );
 
     // ### optimise and don't ignore :first-line
-    return style()->lineHeight().width(QFontMetrics(style()->font()).height());
+    return style()->lineHeight().width( QFontMetrics( font( firstLine ) ).height() );
 }
 
-short RenderObject::baselinePosition() const
+short RenderObject::baselinePosition( bool ) const
 {
     return contentHeight();
+}
+
+QFont RenderObject::font(bool firstLine) const
+{
+    if( firstLine && hasFirstLine() ) {
+	RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
+	if ( pseudoStyle )
+	    return pseudoStyle->font();
+    }
+    return style()->font();
 }

@@ -52,7 +52,7 @@ namespace khtml
         virtual void layout( );
         virtual void calcMinMaxWidth();
 
-        virtual short verticalPositionHint() const;
+        virtual short verticalPositionHint( bool firstLine ) const;
 
         virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
 

@@ -400,7 +400,7 @@ void RenderBox::position(int x, int y, int, int, int, bool, bool)
     //m_width = width;
 }
 
-int RenderBox::lineHeight() const
+int RenderBox::lineHeight( bool ) const
 {
     return contentHeight();
 }

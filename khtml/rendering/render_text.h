@@ -152,8 +152,8 @@ public:
     virtual int height() const;
 
     // height of the contents (without paddings, margins and borders)
-    virtual int lineHeight() const;
-    virtual short baselinePosition() const;
+    virtual int lineHeight( bool firstLine ) const;
+    virtual short baselinePosition( bool firstLine ) const;
 
     // overrides
     virtual void calcMinMaxWidth();
@@ -167,12 +167,10 @@ public:
     virtual int xPos() const;
     virtual int yPos() const;
 
-    bool firstLine() const { return hasFirstLine; }
     bool hasReturn() const { return m_hasReturn; }
 
     virtual const QFont &font();
-    QFontMetrics metrics(bool firstLine = false) const;
-    virtual short verticalPositionHint() const;
+    virtual short verticalPositionHint( bool firstLine ) const;
 
     bool isFixedWidthFont() const;
 
@@ -190,6 +188,7 @@ public:
     virtual void repaint();
     
     bool hasBreakableChar() const { return m_hasBreakableChar; }
+    QFontMetrics metrics(bool firstLine) const;
     
 protected:
     TextSlave * findTextSlave( int offset, int &pos );
@@ -202,7 +201,6 @@ protected:
     short m_maxWidth;
 
     SelectionState m_selectionState : 3 ;
-    bool hasFirstLine : 1;
     bool m_hasReturn : 1;
     bool m_hasBreakableChar : 1;
 };

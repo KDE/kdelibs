@@ -59,7 +59,7 @@ void RenderBR::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
         _x += absx;
         _y += absy;
     }
-    height = RenderText::verticalPositionHint();
+    height = RenderText::verticalPositionHint( false );
 
 }
 

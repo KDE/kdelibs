@@ -285,7 +285,6 @@ RenderText::RenderText(DOMStringImpl *_str)
     assert(!str || !str->l || str->s);
 
     m_selectionState = SelectionNone;
-    hasFirstLine = false;
     m_hasReturn = true;
     fm = 0;
 
@@ -299,15 +298,14 @@ void RenderText::setStyle(RenderStyle *_style)
 {
     bool fontchanged = ( !style() || style()->font() != _style->font() );
     RenderObject::setStyle(_style);
-    hasFirstLine = (style()->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
     if ( !fm || fontchanged ) {
         delete fm;
         fm = new QFontMetrics( style()->font() );
     }
-    m_lineHeight = style()->lineHeight().width(metrics().height());
+    m_lineHeight = style()->lineHeight().width(metrics( false ).height());
 
     if(m_lineHeight<=0)
-        m_lineHeight = metrics().height();
+        m_lineHeight = metrics( false ).height();
 
     if ( style()->fontVariant() == SMALL_CAPS ) {
 	setText( str->upper() );
@@ -393,8 +391,8 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
         if ( s->m_reversed )
             return SelectionPointBefore; // abort if RTL (TODO)
         int result;
-	if ( khtml::printpainter ) {
-	    QFontMetrics _fm = metrics();
+	if ( khtml::printpainter || hasFirstLine() ) {
+	    QFontMetrics _fm = metrics( ( si == 0) );
 	    result = s->checkSelectionPoint(_x, _y, _tx, _ty, &_fm, offset, m_lineHeight);
 	} else {
 	    result = s->checkSelectionPoint(_x, _y, _tx, _ty, fm, offset, m_lineHeight);
@@ -441,7 +439,7 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   _y = s->m_y;
   height = m_lineHeight; // ### firstLine!!! s->m_height;
 
-  QFontMetrics fm = metrics();
+  QFontMetrics fm = metrics( false ); // #### wrong for first-line!
   QString tekst(s->m_text, s->m_len);
   _x = s->m_x + (fm.boundingRect(tekst, pos)).right();
   if(pos)
@@ -651,7 +649,8 @@ void RenderText::calcMinMaxWidth()
     m_hasReturn = false;
     m_hasBreakableChar = false;
 
-    QFontMetrics _fm = khtml::printpainter ? metrics() : *fm;
+    // ### not 100% correct for first-line
+    QFontMetrics _fm = khtml::printpainter ? metrics( false ) : *fm;
     int len = str->l;
     if ( len == 1 && str->s->latin1() == '\n' )
 	m_hasReturn = true;
@@ -759,21 +758,24 @@ void RenderText::setText(DOMStringImpl *text)
 
 int RenderText::height() const
 {
-    int retval = metrics().height() + paddingTop() + paddingBottom() + borderTop() + borderBottom();
+    // ### does this make sense??
+    int retval = metrics( false ).height() + paddingTop() + paddingBottom() + borderTop() + borderBottom();
     if (m_lines.count())
 	retval += m_lineHeight;
     return retval;
 }
 
-int RenderText::lineHeight() const
+int RenderText::lineHeight( bool firstLine ) const
 {
+    if ( firstLine ) 
+	return RenderObject::lineHeight( firstLine );
     return m_lineHeight;
 }
 
 // #### fix for printpainter and :first-line needed
-short RenderText::baselinePosition() const
+short RenderText::baselinePosition( bool firstLine ) const
 {
-    return metrics().ascent();
+    return metrics( firstLine ).ascent();
 }
 
 void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine)
@@ -823,7 +825,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 #endif
 
     TextSlave *s = new TextSlave(x, y, ch, len,
-                                 baselinePosition(),
+                                 baselinePosition( firstLine ),
                                  width, reverse, firstLine);
 
     if(m_lines.count() == m_lines.size())
@@ -838,7 +840,7 @@ unsigned int RenderText::width(unsigned int from, unsigned int len, bool firstLi
 
     if ( from + len > str->l ) len = str->l - from;
 
-    if ( khtml::printpainter || ( firstLine && hasFirstLine ) ) {
+    if ( khtml::printpainter || ( firstLine && hasFirstLine() ) ) {
 	QFontMetrics _fm = metrics( firstLine );
 	return width( from, len, &_fm );
     }
@@ -913,22 +915,21 @@ bool RenderText::isFixedWidthFont() const
     return QFontInfo(style()->font()).fixedPitch();
 }
 
+short RenderText::verticalPositionHint( bool firstLine ) const
+{
+    return parent()->verticalPositionHint( firstLine );
+}
+
 QFontMetrics RenderText::metrics(bool firstLine) const
 {
-    if( firstLine && hasFirstLine ) {
+    if( firstLine && hasFirstLine() ) {
 	RenderStyle *pseudoStyle  = style()->getPseudoStyle(RenderStyle::FIRST_LINE);
 	if ( pseudoStyle )
-	    return fontMetrics ( pseudoStyle->font() );
+	    return fontMetrics( pseudoStyle->font() );
     }
     if ( khtml::printpainter )
 	return fontMetrics(style()->font());
     return *fm;
 }
-
-short RenderText::verticalPositionHint() const
-{
-    return parent()->verticalPositionHint();
-}
-
 
 #undef BIDI_DEBUG

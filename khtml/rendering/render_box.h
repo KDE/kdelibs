@@ -74,7 +74,7 @@ public:
     virtual void setWidth( int width ) { m_width = width; }
     virtual void setHeight( int height ) { m_height = height; }
 
-    virtual int lineHeight() const;
+    virtual int lineHeight( bool ) const;
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
     virtual unsigned int width( int, int) const { return width(); }

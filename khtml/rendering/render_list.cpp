@@ -419,7 +419,7 @@ void RenderListMarker::calcMinMaxWidth()
     m_maxWidth = m_width;
 }
 
-short RenderListMarker::verticalPositionHint() const
+short RenderListMarker::verticalPositionHint( bool ) const
 {
     return 0;
 }

@@ -126,6 +126,7 @@ public:
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
     bool containsWidget() const { return m_containsWidget; }
+    bool hasFirstLine() const { return m_hasFirstLine; }
     RenderRoot* root() const;
     
     /**
@@ -149,12 +150,12 @@ public:
     void setContainsWidget(bool b=true) { m_containsWidget = b; }
 
     // for discussion of lineHeight see CSS2 spec
-    virtual int lineHeight() const;
+    virtual int lineHeight( bool firstLine ) const;
     // for the vertical-align property of inline elements
     // the difference between this objects baseline position and the lines baseline position.
-    virtual short verticalPositionHint() const;
+    virtual short verticalPositionHint( bool firstLine ) const;
     // the offset of baseline from the top of the object.
-    virtual short baselinePosition() const;
+    virtual short baselinePosition( bool firstLine ) const;
     
     /*
      * Print the object and it's children, clipped by (x|y|w|h).
@@ -313,7 +314,9 @@ public:
     virtual void detach();
 
     virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
-    
+
+    QFont font(bool firstLine) const;
+
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
@@ -351,7 +354,7 @@ private:
     bool m_replaced       : 1;
     bool m_containsWidget : 1;
     bool m_containsOverhangingFloats : 1;
-    
+    bool m_hasFirstLine : 1;
     
     friend class RenderContainer;
     friend class RenderRoot;
