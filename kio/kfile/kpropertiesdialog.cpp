@@ -429,7 +429,8 @@ void KPropertiesDialog::insertPages()
     insertPlugin (p);
   }
 
-  if ( KFileSharePropsPlugin::supports( m_items ) )
+  if ( kapp->authorizeKAction("sharefile") && 
+       KFileSharePropsPlugin::supports( m_items ) )
   {
     KPropsDlgPlugin *p = new KFileSharePropsPlugin( this );
     insertPlugin (p);
