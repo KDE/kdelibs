@@ -20,6 +20,8 @@
 
 // $Id$
 
+#include <assert.h>
+
 #include "kfileviewitem.h"
 #include "kcombiview.h"
 #include "kfileiconview.h"
