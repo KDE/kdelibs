@@ -1,6 +1,7 @@
 kdelibs (4:2.0-19990303-1) unstable; urgency=low
 
   * version from CVS
+  * install it into /opt/kde2pre for now (unstripped)
 
  -- Stephan Kulow <coolo@kde.org>  Wed,  3 Mar 1999 22:25:37 +0100
 
