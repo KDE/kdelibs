@@ -130,6 +130,7 @@ return res;
 }
 
 
+// KDE 4: Make it const QString &
 KCardReader* KPCSC::getReader(QString x) {
   long rc;
   KCardReader *cr = NULL;
@@ -150,6 +151,7 @@ KCardReader* KPCSC::getReader(QString x) {
 }
 
 
+// KDE 4: Make it const QString &
 KCardCommand KPCSC::encodeCommand(const QString command) {
 KCardCommand x(0);
 

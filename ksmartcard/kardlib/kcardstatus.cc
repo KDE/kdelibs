@@ -36,6 +36,7 @@ KCardStatus::KCardStatus(const KCardStatus& x) {
 }
 
 
+// KDE 4: Make it const QString & reader
 KCardStatus::KCardStatus(long ctx, QString reader, unsigned long oldState) {
 	_state.dwCurrentState = oldState;
 	_name = reader;

@@ -73,6 +73,7 @@ int KCardReader::resetCard() {
 // }
 
 
+// KDE 4: Make it const QString & name
 void KCardReader::setCard(unsigned long ctx, QString name,SCARDHANDLE card, unsigned long protocol) {
    _ctx = ctx;
    _name = name;
