@@ -40,14 +40,14 @@ KServiceFactory::KServiceFactory()
       // Read Header
       Q_INT32 i;
       (*m_str) >> i;
-      m_nameDictOffset = i; 
+      m_nameDictOffset = i;
       (*m_str) >> i;
-      m_relNameDictOffset = i; 
+      m_relNameDictOffset = i;
       (*m_str) >> i;
-      m_offerListOffset = i; 
+      m_offerListOffset = i;
       (*m_str) >> i;
-      m_initListOffset = i; 
-  
+      m_initListOffset = i;
+
       int saveOffset = m_str->device()->at();
       // Init index tables
       m_nameDict = new KSycocaDict(m_str, m_nameDictOffset);
@@ -71,24 +71,15 @@ KServiceFactory::~KServiceFactory()
    delete m_relNameDict;
 }
 
-template<class type> class KStaticDeleter {
-	public:
-		type *deleteit;
-	KStaticDeleter() { deleteit = 0; }
-	~KStaticDeleter() { 
-		delete deleteit;
-	}
-};
-
 static KStaticDeleter<KServiceFactory> ksd;
 
 KServiceFactory * KServiceFactory::self()
 {
-  if (!_self) {
-    _self = new KServiceFactory();
-    ksd.deleteit = _self;
-  }
-  return _self;
+    if (!_self) {
+        _self = new KServiceFactory();
+        ksd.deleteit = _self;
+    }
+    return _self;
 }
 
 KService * KServiceFactory::findServiceByName(const QString &_name)
@@ -163,14 +154,14 @@ KService * KServiceFactory::findServiceByDesktopPath(const QString &_name)
 KService* KServiceFactory::createEntry(int offset)
 {
    KService * newEntry = 0L;
-   KSycocaType type; 
+   KSycocaType type;
    QDataStream *str = KSycoca::self()->findEntry(offset, type);
    switch(type)
    {
      case KST_KService:
         newEntry = new KService(*str, offset);
         break;
-        
+
      default:
         kdError(7011) << QString("KServiceFactory: unexpected object entry in KSycoca database (type = %1)").arg((int)type) << endl;
         return 0;
@@ -180,7 +171,7 @@ KService* KServiceFactory::createEntry(int offset)
       kdError(7011) << "KServiceFactory: corrupt object in KSycoca database!\n" << endl;
       delete newEntry;
       newEntry = 0;
-   }   
+   }
    return newEntry;
 }
 
@@ -235,7 +226,7 @@ KService::List KServiceFactory::offers( int serviceTypeOffset )
    QDataStream *str = m_str;
    // Jump to the offer list
    str->device()->at( m_offerListOffset );
-   
+
    Q_INT32 aServiceTypeOffset;
    Q_INT32 aServiceOffset;
    // We might want to do a binary search instead of a linear search
