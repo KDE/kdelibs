@@ -706,6 +706,13 @@ void KAction::addContainer( QWidget* c, QWidget* w )
   d->m_containers.append( p );
 }
 
+void KAction::activate()
+{
+  emit activated();
+  // Yes, your eyes are correct, this is just the same as slotActivated.
+  // But it's public, has a nicer name, and isn't overloaded. :/
+}
+
 void KAction::slotActivated()
 {
   emit activated();

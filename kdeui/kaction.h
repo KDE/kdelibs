@@ -417,6 +417,12 @@ public:
      */
     static int getToolButtonID();
 
+    /**
+     * Emulate user's interaction programmatically, by activating the action.
+     * The implementation simply emits activated().
+     */
+    void activate();
+
 public slots:
     virtual void setEnabled(bool enable);
 
