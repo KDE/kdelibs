@@ -1716,6 +1716,14 @@ void DocumentImpl::recalcStyleSelector()
         else if (n->id() == ID_LINK || n->id() == ID_STYLE) {
             ElementImpl *e = static_cast<ElementImpl *>(n);
             QString title = e->getAttribute( ATTR_TITLE ).string();
+            if (n->id() == ID_LINK) {
+                // <LINK> element
+                HTMLLinkElementImpl* l = static_cast<HTMLLinkElementImpl*>(n);
+                // awful hack to ensure that we ignore the title attribute for non-stylesheets
+                // ### make that nicer!
+                if (!l->sheet() || l->isLoading())
+                    title = QString::null;
+            }
             QString sheetUsed = view()->part()->d->m_sheetUsed;
             if ( !title.isEmpty() ) {
                 if ( sheetUsed.isEmpty() )
@@ -1724,7 +1732,6 @@ void DocumentImpl::recalcStyleSelector()
                     m_availableSheets.append( title );
             }
             if ( n->id() == ID_LINK ) {
-                // <LINK> element
                 if (title.isEmpty() || title == sheetUsed)
                     sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
             }
@@ -1737,7 +1744,6 @@ void DocumentImpl::recalcStyleSelector()
             // are treated as style declarations)
 	    sheet = static_cast<HTMLBodyElementImpl*>(n)->sheet();
         }
-
         if (sheet) {
             sheet->ref();
             m_styleSheets->styleSheets.append(sheet);
