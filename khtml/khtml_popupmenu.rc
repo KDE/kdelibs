@@ -1,4 +1,4 @@
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="4">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd"><kpartgui name="khtmlpart_popupmenu" version="5">
 <Menu name="popupmenu">
  <Action name="reloadframe" group="reload" />
  <Separator weakSeparator="1" />
