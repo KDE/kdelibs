@@ -65,14 +65,16 @@ QValidator::State
 KDateValidator::date(const QString& text, QDate& d) const
 {
   QDate tmp = KGlobal::locale()->readDate(text);
-  if (!tmp.isNull()) {
+  if (!tmp.isNull()) 
+    {
       d = tmp;
       return Acceptable;
-  } else
+    } else
       return Valid;
 }
 
-void KDateValidator::fixup( QString& ) const
+void 
+KDateValidator::fixup( QString& ) const
 {
 
 }
@@ -115,26 +117,28 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       painter->setFont(font);
       bool normalday = true;
       QString daystr;
-      if (KGlobal::locale()->weekStartsMonday()) {
-        daystr = KGlobal::locale()->weekDayName(col+1, true);
-	if (col == 5 || col == 6)
-	  normalday = false;
-      } else {
-        daystr = KGlobal::locale()->weekDayName(col==0? 7 : col, true);
-	if (col == 0 || col == 6)
-	  normalday = false;
-      }
-      if (!normalday) {
-	  painter->setPen(lightGray);
-	  painter->setBrush(brushLightblue);
-	  painter->drawRect(0, 0, w, h);
-	  painter->setPen(blue);
-      } else {
-	  painter->setPen(blue);
-	  painter->setBrush(brushBlue);
-	  painter->drawRect(0, 0, w, h);
-	  painter->setPen(white);
-      }
+      if (KGlobal::locale()->weekStartsMonday()) 
+        {
+          daystr = KGlobal::locale()->weekDayName(col+1, true);
+          if (col == 5 || col == 6)
+              normalday = false;
+        } else {
+          daystr = KGlobal::locale()->weekDayName(col==0? 7 : col, true);
+          if (col == 0 || col == 6)
+              normalday = false;
+        }
+      if (!normalday) 
+        {
+          painter->setPen(lightGray);
+          painter->setBrush(brushLightblue);
+          painter->drawRect(0, 0, w, h);
+          painter->setPen(blue);
+        } else {
+          painter->setPen(blue);
+          painter->setBrush(brushBlue);
+          painter->drawRect(0, 0, w, h);
+          painter->setPen(white);
+        }
       painter->drawText(0, 0, w, h-1, AlignCenter,
                         daystr, -1, &rect);
       painter->setPen(black);
@@ -145,39 +149,39 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       painter->setFont(font);
       pos=7*(row-1)+col;
       if (KGlobal::locale()->weekStartsMonday())
-	pos++;
+          pos++;
       if(pos<firstday || (firstday+numdays<=pos))
-	{ // we are either
-	  // ° painting a day of the previous month or
-	  // ° painting a day of the following month
-	  if(pos<firstday)
-	    { // previous month
-	      text.setNum(numDaysPrevMonth+pos-firstday+1);
-	    } else { // following month
-	      text.setNum(pos-firstday-numdays+1);
-	    }
-	  painter->setPen(gray);
-	} else { // paint a day of the current month
-	  text.setNum(pos-firstday+1);
-	  painter->setPen(black);
-	}
+        { // we are either
+          // ° painting a day of the previous month or
+          // ° painting a day of the following month
+          if(pos<firstday)
+            { // previous month
+              text.setNum(numDaysPrevMonth+pos-firstday+1);
+            } else { // following month
+              text.setNum(pos-firstday-numdays+1);
+            }
+          painter->setPen(gray);
+        } else { // paint a day of the current month
+          text.setNum(pos-firstday+1);
+          painter->setPen(black);
+        }
       pen=painter->pen();
       if(firstday+date.day()-1==pos)
-	{
-	  if(hasSelection)
-	    { // draw the currently selected date
-	      painter->setPen(red);
-	      painter->setBrush(darkRed);
-	      pen=white;
-	    } else {
-	      painter->setPen(darkGray);
-	      painter->setBrush(darkGray);
-	      pen=white;
-	    }
-	} else {
-	  painter->setBrush(lightGray);
-	  painter->setPen(lightGray);
-	}
+        {
+          if(hasSelection)
+            { // draw the currently selected date
+              painter->setPen(red);
+              painter->setBrush(darkRed);
+              pen=white;
+            } else {
+              painter->setPen(darkGray);
+              painter->setBrush(darkGray);
+              pen=white;
+            }
+        } else {
+          painter->setBrush(lightGray);
+          painter->setPen(lightGray);
+        }
       painter->drawRect(0, 0, w, h);
       painter->setPen(pen);
       painter->drawText(0, 0, w, h, AlignCenter, text, -1, &rect);
@@ -314,7 +318,7 @@ KDateTable::sizeHint() const
   if(maxCell.height()>0 && maxCell.width()>0)
     {
       return QSize(maxCell.width()*numCols()+2*frameWidth(),
-		   (maxCell.height()+2)*numRows()+2*frameWidth());
+             (maxCell.height()+2)*numRows()+2*frameWidth());
     } else {
       kdDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
       return QSize(-1, -1);
@@ -355,7 +359,7 @@ QSize
 KDateInternalMonthPicker::sizeHint() const
 {
   return QSize((max.width()+6)*numCols()+2*frameWidth(),
-	       (max.height()+6)*numRows()+2*frameWidth());
+         (max.height()+6)*numRows()+2*frameWidth());
 }
 
 int
@@ -408,48 +412,52 @@ KDateInternalMonthPicker::mousePressEvent(QMouseEvent *e)
 
   if(row<0 || col<0)
     { // the user clicked on the frame of the table
-	activeCol = -1;
-	activeRow = -1;
-    }
-  else {
+      activeCol = -1;
+      activeRow = -1;
+    } else {
       activeCol = col;
       activeRow = row;
       updateCell( row, col, false );
   }
 }
 
-void KDateInternalMonthPicker::mouseMoveEvent(QMouseEvent *e)
+void 
+KDateInternalMonthPicker::mouseMoveEvent(QMouseEvent *e)
 {
-    if (e->state() & LeftButton) {
-	int row, col;
-	QPoint mouseCoord;
-	// -----
-	mouseCoord = e->pos();
-	row=findRow(mouseCoord.y());
-	col=findCol(mouseCoord.x());
-	int tmpRow = -1, tmpCol = -1;
-	if(row<0 || col<0) { // the user clicked on the frame of the table
-	    if ( activeCol > -1 ) {
-		tmpRow = activeRow;
-		tmpCol = activeCol;
-	    }
-	    activeCol = -1;
-	    activeRow = -1;
-	}
-	else {
-	    bool differentCell = (activeRow != row || activeCol != col);
-	    if ( activeCol > -1 && differentCell) {
-		tmpRow = activeRow;
-		tmpCol = activeCol;
-	    }
-	    if ( differentCell) {
-		activeRow = row;
-		activeCol = col;
-		updateCell( row, col, false ); // mark the new active cell
-	    }
-	}
-	if ( tmpRow > -1 ) // repaint the former active cell
-	    updateCell( tmpRow, tmpCol, true );
+  if (e->state() & LeftButton) 
+    {
+      int row, col;
+      QPoint mouseCoord;
+      // -----
+      mouseCoord = e->pos();
+      row=findRow(mouseCoord.y());
+      col=findCol(mouseCoord.x());
+      int tmpRow = -1, tmpCol = -1;
+      if(row<0 || col<0) 
+        { // the user clicked on the frame of the table
+          if ( activeCol > -1 ) 
+            {
+              tmpRow = activeRow;
+              tmpCol = activeCol;
+            }
+          activeCol = -1;
+          activeRow = -1;
+        } else {
+          bool differentCell = (activeRow != row || activeCol != col);
+          if ( activeCol > -1 && differentCell) 
+            {
+              tmpRow = activeRow;
+              tmpCol = activeCol;
+            }
+          if ( differentCell) 
+            {
+              activeRow = row;
+              activeCol = col;
+              updateCell( row, col, false ); // mark the new active cell
+            }
+        }
+      if ( tmpRow > -1 ) // repaint the former active cell
+          updateCell( tmpRow, tmpCol, true );
     }
 }
 
@@ -574,13 +582,13 @@ KPopupFrame::resizeEvent(QResizeEvent*)
 {
   if(main!=0)
     {
-      main->setGeometry
-	(frameWidth(), frameWidth(),
-	 width()-2*frameWidth(), height()-2*frameWidth());
+      main->setGeometry(frameWidth(), frameWidth(),
+          width()-2*frameWidth(), height()-2*frameWidth());
     }
 }
 
-void KPopupFrame::popup(const QPoint &pos)
+void 
+KPopupFrame::popup(const QPoint &pos)
 {
   // Make sure the whole popup is visible.
   QWidget* desktop = QApplication::desktop();
