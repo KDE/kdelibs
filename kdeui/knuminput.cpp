@@ -123,12 +123,14 @@ QSize KIntNumInput::minimumSize() const
 
     if(slider) {
         w = QMAX((spin_s.width()*(100-spin_frac))/100, main_label->width());
-        h = QMAX(slider->sizeHint().height(), spin_s.height()) + 5 + main_label->height();
+        h = QMAX(slider->sizeHint().height(), spin_s.height());;
     }
     else {
         w = QMAX(spin_s.width(), main_label->width());
-        h = spin_s.height() + 5 + main_label->height();
+        h = spin_s.height();
     }
+
+    h += (main_label->text().isEmpty() ? 0 : main_label->height() + 5);
     
     qs.setWidth(w);
     qs.setHeight(h);
@@ -142,6 +144,7 @@ QSize KIntNumInput::minimumSize() const
 void KIntNumInput::resizeEvent(QResizeEvent* e)
 {
     int left_frac = (width()*spin_frac)/100;
+    int label_height = (main_label->text().isEmpty() ? 0 : main_label->height() + 5);
     
     // label gets placed according to alignment and label_frac
     int lx = 0;
@@ -164,16 +167,12 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
     main_label->move(lx, ly);
 
     // spinbox stays always the same
-    spin->move(0, main_label->height() + 5);
+    spin->move(0, label_height);
   
     // slider gets stretched horizontally to fill remainder
     if(slider) {
-        int sw = width() - left_frac - 10;
-        int sh = slider->height(); // keep height
-        int sx = left_frac + 10;
-        int sy = main_label->height() + 5;
-        
-        slider->setGeometry(sx, sy, sw, sh);
+        slider->setGeometry(left_frac + 10, label_height,
+                            width() - left_frac - 10, slider->height());
         spin->resize(left_frac, spin->sizeHint().height());
     }
     else
