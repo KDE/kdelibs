@@ -292,7 +292,7 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
   while( zstr.avail_in )
   {
      char buf[8192];
-     zstr.next_out = buf;
+     zstr.next_out = (Bytef *) buf;
      zstr.avail_out = 8192;
      int result = inflate( &zstr, Z_NO_FLUSH );
      if ((result != Z_OK) && (result != Z_STREAM_END))
