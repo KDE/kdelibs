@@ -20,7 +20,7 @@
 #define _GNU_SOURCE   /* Needed for getpt, ptsname in glibc 2.1.x systems */
 #endif
 
-#ifndef _XOPEN_SOURCE
+#if !defined(_XOPEN_SOURCE) && !defined(__osf__)
 #define _XOPEN_SOURCE /* Needed for grantpt, unlockpt in glibc 2.1.x      */
 #endif
 
