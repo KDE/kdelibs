@@ -484,6 +484,9 @@
 0	string		From:		message/rfc822
 0	string		Article 	message/news
 
+# TNEF files...
+0	lelong		0x223E9F78	application/ms-tnef
+
 #------------------------------------------------------------------------------
 # mswrite
 
