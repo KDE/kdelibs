@@ -195,6 +195,8 @@ KJSO *KJS::toString(KJSO *obj)
       return obj->ref();
     case ObjectType:
     case HostType:
+    case ConstructorType:
+    case InternalFunctionType:
       if (obj->hasProperty("toString")) {
 	tmp = obj->get("toString");
 	// TODO: check for implementsCall() ?

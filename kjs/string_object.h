@@ -28,8 +28,14 @@ namespace KJS {
   class StringObject : public Constructor {
   public:
     StringObject(Object *proto) : Constructor(proto, 1) { }
+    KJSO *get(const UString &p);
     KJSO* execute(const List &);
     Object* construct(const List &);
+  };
+
+  class StringObjectFunc : public InternalFunction {
+  public:
+    KJSO *execute(const List &);
   };
 
   class StringPrototype : public Object {

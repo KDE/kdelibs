@@ -146,10 +146,14 @@ UString::UString(const char *c)
   operator=(c);
 }
 
-UString::UString(const UChar *c, int length)
+UString::UString(const UChar *c, int length, bool copy)
 {
-  UChar *d = new UChar[length];
-  memcpy(d, c, length * sizeof(UChar));
+  UChar *d;
+  if (copy) {
+    d = new UChar[length];
+    memcpy(d, c, length * sizeof(UChar));
+  } else
+    d = c;
   rep = new UStringData(d, length);
 }
 

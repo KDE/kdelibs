@@ -50,8 +50,7 @@ int main(int argc, char **argv)
   KJScript *kjs = new KJScript();
 
   // add debug() function
-  kjs->setCurrent(kjs);
-  KJScript::global()->put("debug", zeroRef(new KJS::DebugPrint()));
+  kjs->global()->put("debug", zeroRef(new KJS::DebugPrint()));
 
   // run
   kjs->evaluate(code);

@@ -38,6 +38,7 @@ namespace KJS {
   struct UChar {
     UChar() : hi(0), lo(0) { }
     UChar(unsigned char h , unsigned char l) : hi(h), lo(l) { }
+    UChar(unsigned short u) : hi(u & 0xff00), lo(u & 0x00ff) { }
     unsigned short unicode() const { return hi << 8 | lo; }
     unsigned char hi;
     unsigned char lo;
@@ -101,7 +102,7 @@ namespace KJS {
     UString(char c);
     UString(int i);
     UString(const char *c);
-    UString(const UChar *c, int length);
+    UString(const UChar *c, int length, bool copy = true);
     UString(const UString &);
     UString(const UString *);
     UString(const DOM::DOMString &);

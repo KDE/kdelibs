@@ -23,7 +23,13 @@
 
 using namespace KJS;
 
-/* TODO: fromCharCode() */
+KJSO *StringObject::get(const UString &p)
+{
+  if (p == "fromCharCode")
+    return new StringObjectFunc();
+  else
+    return KJSO::get(p);
+}
 
 // ECMA 15.8.1
 KJSO* StringObject::execute(const List &args)
@@ -50,6 +56,26 @@ Object* StringObject::construct(const List &args)
     s = newString("");
 
   return Object::create(StringClass, s);
+}
+
+// ECMA 15.5.3.2 fromCharCode()
+KJSO *StringObjectFunc::execute(const List &args)
+{
+  UString s;
+  if (args.size()) {
+    UChar *buf = new UChar(args.size());
+    UChar *p = buf;
+    ListIterator it = args.begin();
+    while (it != args.end()) {
+      unsigned short u = toUInt16(it);
+      *p++ = UChar(u);
+      it++;
+    }
+    s = UString(buf, args.size(), false);
+  } else
+    s = "";
+  
+  return newCompletion(Normal, zeroRef(newString(s)));
 }
 
 // ECMA 15.8.4

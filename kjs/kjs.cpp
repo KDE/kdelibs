@@ -39,7 +39,7 @@ KJScript* KJScript::curr = 0L;
 class KJScriptLock {
   friend KJScript;
   KJScriptLock(KJScript *s) { s->setCurrent(s); }
-  ~KJScriptLock() { KJScript::current()->setCurrent(0L); }
+  ~KJScriptLock() { /* KJScript::current()->setCurrent(0L); */ }
 };
 
 KJScript::KJScript()
