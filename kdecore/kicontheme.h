@@ -77,7 +77,7 @@ public:
     // if you add a group here, make sure to change the config reading in
     // KIconLoader too
     /**
-     * The group an an icon.
+     * The group of the icon.
      */
     enum Group { NoGroup=-1, Desktop=0, FirstGroup=0, Toolbar,
         MainToolbar, Small, Panel, LastGroup, User };
