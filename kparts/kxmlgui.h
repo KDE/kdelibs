@@ -14,10 +14,10 @@ class KXMLGUIBuilder;
 class KXMLGUIServant
 {
  public:
-  
+
   virtual QAction *action( const QDomElement &element ) = 0;
 
-  virtual QString xml() = 0;
+  virtual QDomDocument document() = 0;
 
 };
 
@@ -31,7 +31,7 @@ class KNullGUIServant : public KXMLGUIServant
   KNullGUIServant() {}
 
   virtual QAction *action( const QDomElement & ) { return 0L; }
-  virtual QString xml() { return QString::null; }
+  virtual QDomDocument document() { return QDomDocument(); }
 };
 
 /**

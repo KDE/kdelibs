@@ -257,9 +257,11 @@ QAction *KPartGUIServant::action( const QDomElement &element )
   return m_part->action( name );
 }
 
-QString KPartGUIServant::xml()
+QDomDocument KPartGUIServant::document()
 {
-  return m_part->config();
+  QDomDocument doc;
+  doc.setContent( m_part->config() );
+  return doc;
 }
 
 #include "kpart.moc"

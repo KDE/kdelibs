@@ -27,21 +27,13 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename )
 void KXMLGUIFactory::createGUI( KXMLGUIServant *shell, KXMLGUIServant *part, KXMLGUIBuilder *builder )
 {
 
-  QDomDocument shellXML;
-  shellXML.setContent( shell->xml() );
-  QDomElement shellDoc = shellXML.documentElement();
-
-  QDomDocument partXML;
-  partXML.setContent( part->xml() );
-  QDomElement partDoc = partXML.documentElement();
-
 #ifdef DEBUG_BUILDER
   qDebug( "starting recursive build" );
 #endif
 
   KXMLGUIFactory factory( shell, part, builder );
 
-  factory.buildRecursive( shellDoc, partDoc );
+  factory.buildRecursive( shell->document().documentElement(), part->document().documentElement() );
 }
 
 KXMLGUIFactory::KXMLGUIFactory( KXMLGUIServant *shellServant, KXMLGUIServant *partServant, KXMLGUIBuilder *builder )

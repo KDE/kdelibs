@@ -194,7 +194,7 @@ class KPartGUIServant : public QObject, public KXMLGUIServant
 
   virtual QAction *action( const QDomElement &element );
 
-  virtual QString xml();
+  virtual QDomDocument document();
 
  private:
   KPart *m_part;
