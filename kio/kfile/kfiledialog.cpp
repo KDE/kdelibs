@@ -512,6 +512,13 @@ void KFileDialog::slotOk()
             return;
     }
 
+    if (!kapp->authorizeURLAction("open", KURL(), d->url))
+    {
+        QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyURL());
+        KMessageBox::error( d->mainWidget, msg);
+        return;
+    }
+
     KIO::StatJob *job = 0L;
     d->statJobs.clear();
     d->filenames = locationEdit->currentText();
@@ -520,8 +527,19 @@ void KFileDialog::slotOk()
          !locationEdit->currentText().contains( '/' )) {
         kdDebug(kfile_area) << "Files\n";
         KURL::List list = parseSelectedURLs();
-        KURL::List::ConstIterator it = list.begin();
-        for ( ; it != list.end(); ++it ) {
+        for ( KURL::List::ConstIterator it = list.begin();
+              it != list.end(); ++it ) 
+        {
+            if (!kapp->authorizeURLAction("open", KURL(), *it))
+            {
+                QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, (*it).prettyURL());
+                KMessageBox::error( d->mainWidget, msg);
+                return;
+            }
+        }
+        for ( KURL::List::ConstIterator it = list.begin();
+              it != list.end(); ++it ) 
+        {
             job = KIO::stat( *it, !(*it).isLocalFile() );
             KIO::Scheduler::scheduleJob( job );
             d->statJobs.append( job );
