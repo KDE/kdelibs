@@ -79,11 +79,17 @@ static Atom context_help = 0;
 class QXEmbedData
 {
 public:
-    QXEmbedData(){ autoDelete = TRUE; }
+    QXEmbedData(){ 
+        autoDelete = TRUE;
+        lastPos = QPoint(0,0);
+    }
     ~QXEmbedData(){};
 
+    
     bool autoDelete;
     QWidget* focusProxy;
+    QPoint lastPos;
+    
 };
 
 class QXEmbedAppFilter : public QObject
@@ -501,10 +507,19 @@ bool QXEmbed::eventFilter( QObject *o, QEvent * e)
         if ( o == topLevelWidget() )
             send_xembed_message( window, XEMBED_WINDOW_DEACTIVATE );
         break;
+    case QEvent::Move:
+        {
+            QPoint globalPos = mapToGlobal(QPoint(0,0));
+            if (globalPos != d->lastPos) {
+                d->lastPos = globalPos;
+                sendSyntheticConfigureNotifyEvent();
+            }
+        }                    
+        break;
     default:
         break;
-    }
-    return FALSE;
+   }
+   return FALSE;
 }
 
 
@@ -695,6 +710,12 @@ bool QXEmbed::x11Event( XEvent* e)
         }
 	break;
 
+    case ConfigureRequest:
+        if (e->xconfigurerequest.window == window) 
+        {
+             sendSyntheticConfigureNotifyEvent();
+        }
+        break;
     case MotionNotify: 
 	// fall through, workaround for Qt 3.0 < 3.0.3
     case EnterNotify:
@@ -849,6 +870,29 @@ bool QXEmbed::autoDelete() const
 bool QXEmbed::customWhatsThis() const
 {
     return TRUE;
+}
+
+void QXEmbed::sendSyntheticConfigureNotifyEvent() {
+    QPoint globalPos = mapToGlobal(QPoint(0,0));
+    if (window) {
+        // kdDebug(6100) << "*************** sendSyntheticConfigureNotify ******************" << endl;
+        XConfigureEvent c;
+        memset(&c, 0, sizeof(c));
+        c.type = ConfigureNotify;
+        c.display = qt_xdisplay();
+        c.send_event = True;
+        c.event = window;
+        c.window = winId();
+        c.x = globalPos.x();
+        c.y = globalPos.y();
+        c.width = width();
+        c.height = height();
+        c.border_width = 0;
+        c.above = None;
+        c.override_redirect = 0;
+        XSendEvent( qt_xdisplay(), c.event, TRUE, StructureNotifyMask, (XEvent*)&c );
+        //kdDebug(6100) << "SENT " << KXEventUtil::getX11EventInfo((XEvent*)&c) << endl;
+    }
 }
 
 // for KDE
