@@ -463,6 +463,7 @@ Object Object::create(Class c, const KJSO& val)
     break;
   case StringClass:
     p += "String";
+    obj.put("length", val.toString().value().size());
     break;
   case BooleanClass:
     p += "Boolean";
