@@ -3234,22 +3234,22 @@ void KHTMLPart::slotFind()
     part = static_cast<KHTMLPart *>( partManager()->activePart() );
 
   assert( part->inherits( "KHTMLPart" ) );
-  assert( d->m_findDialog == 0 );
 
   // use the part's (possibly frame) widget as parent widget, so that it gets
   // properly destroyed when the (possible) frame dies
-  KHTMLFind *findDlg = new KHTMLFind( part, part->widget(), "khtmlfind" );
-  findDlg->setText( part->d->m_lastFindState.text );
-  findDlg->setCaseSensitive( part->d->m_lastFindState.caseSensitive );
-  findDlg->setDirection( part->d->m_lastFindState.direction );
+  if ( !d->m_findDialog ) {
+      d->m_findDialog = new KHTMLFind( part, part->widget(), "khtmlfind" );
+      connect( d->m_findDialog, SIGNAL( done() ),
+	       this, SLOT( slotFindDone() ) );
+      connect( d->m_findDialog, SIGNAL( destroyed() ),
+	       this, SLOT( slotFindDialogDestroyed() ) );
+  }
+  
+  d->m_findDialog->setText( part->d->m_lastFindState.text );
+  d->m_findDialog->setCaseSensitive( part->d->m_lastFindState.caseSensitive );
+  d->m_findDialog->setDirection( part->d->m_lastFindState.direction );
 
-  findDlg->show();
-  connect( findDlg, SIGNAL( done() ),
-           this, SLOT( slotFindDone() ) );
-  connect( findDlg, SIGNAL( destroyed() ),
-           this, SLOT( slotFindDialogDestroyed() ) );
-
-  d->m_findDialog = findDlg;
+  d->m_findDialog->show();
 
   d->m_paFind->setEnabled( false );
 }
@@ -3268,8 +3268,7 @@ void KHTMLPart::slotFindDone()
     part->d->m_lastFindState.caseSensitive = d->m_findDialog->case_sensitive();
     part->d->m_lastFindState.direction = d->m_findDialog->get_direction();
 
-    // will trigger the method below
-    delete d->m_findDialog;
+    d->m_paFind->setEnabled( true );
 }
 
 void KHTMLPart::slotFindDialogDestroyed()
