@@ -91,6 +91,11 @@ namespace KMdi
       IDEAlMode      = 4
    };
 
+   enum TabWidgetVisibility {
+      AlwaysShowTabs         = 0,
+      ShowWhenMoreThanOneTab = 1,
+      NeverShowTabs          = 2
+   };
 } //namespace
 
 #endif //_KMDIDEFINES_H_

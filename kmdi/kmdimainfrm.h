@@ -630,6 +630,19 @@ protected:
    QStringList prepareIdealToTabs(KDockWidget* container);
    void idealToolViewsToStandardTabs(QStringList widgetNames,KDockWidget::DockPosition pos,int sizee);
 
+   /**
+   * Get tabwidget visibility
+   */
+   KMdi::TabWidgetVisibility tabWidgetVisibility();
+   /**
+   * Set tabwidget visibility
+   */
+   void setTabWidgetVisibility( KMdi::TabWidgetVisibility );
+   /**
+   * Returns the tabwidget used in IDEAl and Tabbed modes. Returns 0 in other modes.
+   */
+   class KTabWidget * tabWidget() const;
+
 
 protected slots: // Protected slots
    /**

@@ -68,7 +68,7 @@
 #include "kmditoolviewaccessor_p.h"
 #include "kmdifocuslist.h"
 #include "kmdidocumentviewtabwidget.h"
-# include "kmdiguiclient.h"
+#include "kmdiguiclient.h"
 
 #include "win_undockbutton.xpm"
 #include "win_minbutton.xpm"
@@ -2530,6 +2530,25 @@ void KMdiMainFrm::nextToolViewInDock() {
     KMdiDockContainer* td=d->activeDockPriority[0];
     if (!td) return;
     td->nextToolView();
+}
+
+KMdi::TabWidgetVisibility KMdiMainFrm::tabWidgetVisibility()
+{
+    if ( m_documentTabWidget )
+      return m_documentTabWidget->tabWidgetVisibility();
+    
+    return KMdi::NeverShowTabs;
+}
+
+void KMdiMainFrm::setTabWidgetVisibility( KMdi::TabWidgetVisibility visibility )
+{
+    if ( m_documentTabWidget )
+      m_documentTabWidget->setTabWidgetVisibility( visibility );
+}
+
+KTabWidget * KMdiMainFrm::tabWidget() const
+{
+    return m_documentTabWidget;
 }
 
 #include "kmdimainfrm.moc"
