@@ -73,6 +73,14 @@
     }
 
     /**
+     * Set config file group.
+     */
+    void setGroup( const QString &group )
+    {
+      mGroup = group;
+    }
+
+    /**
      * Return config file group.
      */
     QString group() const
@@ -80,6 +88,14 @@
       return mGroup;
     }
 
+    /**
+     * Set config file key.
+     */
+    void setKey( const QString &key )
+    {
+      mKey = key;
+    }
+    
     /**
      * Return config file key.
      */
