@@ -55,7 +55,7 @@ class KGlobalAccel : public QObject
 	 *  using @ref KKeyChooser to reconfigure the shortcuts.
 	 * @param sWhatsThis An extended description of the action.
 	 * @param cutDef3 The default 3 modifier scheme shortcut.
-	 * @param cutDef3 The default 4 modifier scheme shortcut.
+	 * @param cutDef4 The default 4 modifier scheme shortcut.
 	 * @param pObjSlot Pointer to the slot object.
 	 * @param psMethodSlot Pointer to the slot method.
 	 * @param bConfigurable Allow the user to change this shortcut if set to 'true'.
