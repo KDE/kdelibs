@@ -423,6 +423,9 @@ void KHTMLSettings::init( KConfig * config, bool reset )
       }
     }/*next i*/
 
+    if (reset)
+      d->domainPolicy.clear();
+
     QString js_group_save = config->group();
     for ( QMap<QString,int>::ConstIterator it = domainList.begin();
                 it != domainList.end(); ++it)
