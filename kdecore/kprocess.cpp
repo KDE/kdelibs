@@ -63,8 +63,7 @@
 #include <sys/select.h>
 #endif
 #ifdef HAVE_INITGROUPS
-#warning WABA: Including grp.h
-#  include <grp.h>
+#include <grp.h>
 #endif
 #include <pwd.h>
 
