@@ -86,12 +86,12 @@ void HTMLBodyElementImpl::parseAttribute(Attribute *attr)
 	break;
     }
     case ATTR_MARGINWIDTH:
-        addCSSProperty(CSS_PROP_MARGIN_LEFT, attr->value(), false);
-        addCSSProperty(CSS_PROP_MARGIN_RIGHT, attr->value(), false);
+        addCSSProperty(CSS_PROP_PADDING_LEFT, attr->value(), false);
+        addCSSProperty(CSS_PROP_PADDING_RIGHT, attr->value(), false);
 	break;
     case ATTR_MARGINHEIGHT:
-        addCSSProperty(CSS_PROP_MARGIN_TOP, attr->value(), false);
-        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, attr->value(), false);
+        addCSSProperty(CSS_PROP_PADDING_TOP, attr->value(), false);
+        addCSSProperty(CSS_PROP_PADDING_BOTTOM, attr->value(), false);
 	break;
     case ATTR_BGCOLOR:
 	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false);
