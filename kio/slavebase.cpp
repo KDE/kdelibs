@@ -96,7 +96,7 @@ return false; }
      QString value = slave->metaData(key.c_key);
      if (!value.isNull())
         entry.mValue = value.utf8(); 
-     return entry; 
+     return entry;
    }
 protected:
    SlaveBase *slave;
@@ -265,23 +265,27 @@ KConfigBase *SlaveBase::config()
 void SlaveBase::sendMetaData()
 {
    KIO_DATA << mOutgoingMetaData;
-
    m_pConnection->send( INF_META_DATA, data );
-   mOutgoingMetaData.clear(); // Clear
 }
-
 
 void SlaveBase::data( const QByteArray &data )
 {
     if (!mOutgoingMetaData.isEmpty())
+    {
        sendMetaData();
+       mOutgoingMetaData.clear();
+    }
     m_pConnection->send( MSG_DATA, data );
 }
 
 void SlaveBase::dataReq( )
 {
     if (!mOutgoingMetaData.isEmpty())
+    {
        sendMetaData();
+       mOutgoingMetaData.clear();
+    }
+
     if (d->needSendCanResume)
         canResume(0);
     m_pConnection->send( MSG_DATA_REQ );
@@ -305,7 +309,10 @@ void SlaveBase::finished()
 {
     mIncomingMetaData.clear(); // Clear meta data
     if (!mOutgoingMetaData.isEmpty())
+    {
        sendMetaData();
+       mOutgoingMetaData.clear();
+    }
     m_pConnection->send( MSG_FINISHED );
 }
 
@@ -394,7 +401,7 @@ void SlaveBase::mimeType( const QString &_type)
     }
   }
   while (cmd != CMD_NONE);
-  mOutgoingMetaData.clear();
+
 // WABA: cmd can be "CMD_NONE" or "CMD_GET" (in which case the slave
 // had been put on hold.) [or special, for http posts].
 // Something else is basically an error
@@ -578,7 +585,7 @@ bool SlaveBase::dispatch()
     int cmd;
     QByteArray data;
     if ( m_pConnection->read( &cmd, data ) == -1 )
-	return false;
+        return false;
 
     dispatch( cmd, data );
     return true;
@@ -705,66 +712,67 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_HOST: {
         QString passwd;
         QString host, user;
-	stream >> host >> i >> user >> passwd;
-	setHost( host, i, user, passwd );
+        stream >> host >> i >> user >> passwd;
+        setHost( host, i, user, passwd );
     }
     break;
     case CMD_CONNECT:
-	openConnection( );
-	break;
+        openConnection( );
+        break;
     case CMD_DISCONNECT:
-	closeConnection( );
-	break;
+        closeConnection( );
+        break;
     case CMD_SLAVE_STATUS:
         slave_status();
         break;
     case CMD_REPARSECONFIGURATION:
         KProtocolManager::reparseConfiguration();
         reparseConfiguration();
-	break;
+        break;
     case CMD_CONFIG:
         stream >> d->configData;
-	break;
+        break;
     case CMD_GET: {
         stream >> url;
-	get( url );
+        get( url );
     }
     break;
     case CMD_PUT: {
-	int permissions;
-	Q_INT8 iOverwrite, iResume;
+        int permissions;
+        Q_INT8 iOverwrite, iResume;
+        stream >> url >> iOverwrite >> iResume >> permissions;
 
-	stream >> url >> iOverwrite >> iResume >> permissions;
-
-	bool overwrite = ( iOverwrite != 0 );
-	bool resume = ( iResume != 0 );
+        bool overwrite = ( iOverwrite != 0 );
+        bool resume = ( iResume != 0 );
 
         // Remember that we need to send canResume(), TransferJob is expecting
         // it. Well, in theory this shouldn't be done if resume is true.
         //   (the resume bool is currently unused)
         d->needSendCanResume = true   /* !resume */;
 
-	put( url, permissions, overwrite, resume);
+        put( url, permissions, overwrite, resume);
     }
     break;
     case CMD_STAT:
-	stream >> url;
-	stat( url );
-	break;
+        stream >> url;
+        stat( url );
+        mOutgoingMetaData.clear();
+        break;
     case CMD_MIMETYPE:
-	stream >> url;
-	mimetype( url );
-	break;
+        stream >> url;
+        mimetype( url );
+        mOutgoingMetaData.clear();
+        break;
     case CMD_LISTDIR:
-	stream >> url;
-	listDir( url );
-	break;
+        stream >> url;
+        listDir( url );
+        break;
     case CMD_MKDIR:
-	stream >> url >> i;
-	mkdir( url, i );
-	break;
+        stream >> url >> i;
+        mkdir( url, i );
+        break;
     case CMD_RENAME: {
-	Q_INT8 iOverwrite;
+        Q_INT8 iOverwrite;
         KURL url2;
         stream >> url >> url2 >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
@@ -772,7 +780,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     }
     break;
     case CMD_SYMLINK: {
-	Q_INT8 iOverwrite;
+        Q_INT8 iOverwrite;
         QString target;
         stream >> target >> url >> iOverwrite;
         bool overwrite = (iOverwrite != 0);
@@ -791,28 +799,28 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
     case CMD_DEL: {
         Q_INT8 isFile;
         stream >> url >> isFile;
-	del( url, isFile != 0);
+        del( url, isFile != 0);
     }
     break;
     case CMD_CHMOD:
         stream >> url >> i;
-	chmod( url, i);
-	break;
+        chmod( url, i);
+        break;
     case CMD_SPECIAL:
-	special( data );
-	break;
+        special( data );
+        break;
     case CMD_META_DATA:
         stream >> mIncomingMetaData;
-	break;
+        break;
     case CMD_SUBURL:
         stream >> url;
         setSubURL(url);
         break;
     case CMD_NONE:
-	fprintf(stderr, "Got unexpected CMD_NONE!\n");
-	break;
+        fprintf(stderr, "Got unexpected CMD_NONE!\n");
+        break;
     default:
-	assert( 0 );
+        assert( 0 );
     }
 }
 
