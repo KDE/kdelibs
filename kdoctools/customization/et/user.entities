@@ -20,5 +20,4 @@
 <!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
 <!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
 
-<!-- PLEASE VERIFY THAT IT IS CORRECT BELOW -->  
-<!ENTITY nt     "<abbrev>n.t.</abbrev>">		<!-- English: &eg; -->
+<!ENTITY nt     "<abbrev>nt.</abbrev>">		<!-- English: &eg; -->
