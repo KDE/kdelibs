@@ -117,6 +117,14 @@ interface PlayObject : PlayObject_private {
     void halt();
 };
 
+interface VideoPlayObject {
+	attribute boolean fullscreen;
+	 /**
+	  * returns the X11 Window Id
+	  */
+	long x11WindowId();
+};
+
 /**
  * use this to create new PlayObjects for media
  */
