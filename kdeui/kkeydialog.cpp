@@ -804,7 +804,7 @@ void KKeyChooser::listSync()
 
         item = item->nextSibling();
     }
-
+    updateAction( d->wList->currentItem() );
 }
 
 void KKeyChooser::ctrlClicked()
