@@ -169,7 +169,7 @@ void KMenuBar::showEvent( QShowEvent* )
 {
     if ( d->topLevel ) {
         QRect area = QApplication::desktop()->screenGeometry();
-        setGeometry(area.left(), area.top(), area.width(), heightForWidth( area.width() ) );
+        setGeometry(area.left(), area.top()-frameWidth()-2, area.width(), heightForWidth( area.width() ) );
 #ifndef Q_WS_QWS //FIXME
         KWin::setStrut( winId(), 0, 0, height(), 0 );
 #endif
