@@ -34,6 +34,9 @@
 // We mean it.
 //
 
+#ifndef KGENERICFACTORY_TCC
+#define KGENERICFACTORY_TCC
+
 #include <qmetaobject.h>
 
 namespace KParts
@@ -260,6 +263,8 @@ namespace KDEPrivate
         }
     };
 };
+
+#endif
 
 /*
  * vim: et sw=4
