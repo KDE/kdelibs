@@ -704,7 +704,7 @@ void RenderPartObject::updateWidget()
               }
           }
       }
-      if (url.isEmpty() || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
+      if ((url.isEmpty() && element()->id() != ID_EMBED) || !document()->isURLAllowed(url) || !part->requestObject( this, url, serviceType, params ))
           objbase->renderAlternative();
       else
           objbase->setLiveConnect(part->liveConnectExtension(this));
