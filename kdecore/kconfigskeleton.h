@@ -662,15 +662,16 @@ public:
    * Register an item of type QString.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file 
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemString(const QString & name,
-                     const QString & key, QString & reference,
-                     const QString & defaultValue = "");
+  ItemString *addItemString(const QString & name, QString & reference,
+                            const QString & defaultValue = "",
+                            const QString & key = QString::null);
 
   /**
    * Register a password item of type QString. The string value is written 
@@ -678,15 +679,16 @@ public:
    * is very weak.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemPassword(const QString & name,
-                       const QString & key, QString & reference,
-                       const QString & defaultValue = "");
+  ItemString *addItemPassword(const QString & name, QString & reference,
+                              const QString & defaultValue = "",
+                              const QString & key = QString::null);
 
   /**
    * Register a path item of type QString. The string value is interpreted
@@ -694,15 +696,16 @@ public:
    * that e.g. $HOME gets expanded. 
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemPath(const QString & name,
-                   const QString & key, QString & reference,
-                   const QString & defaultValue = "");
+  ItemString *addItemPath(const QString & name, QString & reference,
+                          const QString & defaultValue = "",
+                          const QString & key = QString::null);
 
   /**
    * Register a property item of type QVariant. Note that only the following
@@ -710,239 +713,256 @@ public:
    * Color, Int, UInt, Bool, Double, DateTime and Date.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemProperty(const QString & name,
-                       const QString & key, QVariant & reference,
-                       const QVariant & defaultValue = QVariant());
-
+  ItemProperty *addItemProperty(const QString & name, QVariant & reference,
+                                const QVariant & defaultValue = QVariant(),
+                                const QString & key = QString::null);
   /**
    * Register an item of type bool.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemBool(const QString & name,
-                   const QString & key, bool & reference,
-                   bool defaultValue = false);
+  ItemBool *addItemBool(const QString & name, bool & reference,
+                        bool defaultValue = false,
+                        const QString & key = QString::null);
 
   /**
    * Register an item of type int.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemInt(const QString & name,
-                  const QString & key, int &reference, int defaultValue = 0);
+  ItemInt *addItemInt(const QString & name, int &reference, int defaultValue = 0,
+                      const QString & key = QString::null);
 
   /**
    * Register an item of type unsigned int.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemUInt(const QString & name,
-                   const QString & key, unsigned int &reference,
-                   unsigned int defaultValue = 0);
+  ItemUInt *addItemUInt(const QString & name, unsigned int &reference,
+                        unsigned int defaultValue = 0,
+                        const QString & key = QString::null);
 
   /**
    * Register an item of type long.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemLong(const QString & name,
-                   const QString & key, long &reference,
-                   long defaultValue = 0);
+  ItemLong *addItemLong(const QString & name, long &reference,
+                        long defaultValue = 0,
+                        const QString & key = QString::null);
 
   /**
    * Register an item of type unsigned long.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemULong(const QString & name,
-                    const QString & key, unsigned long &reference,
-                    unsigned long defaultValue = 0);
+  ItemULong *addItemULong(const QString & name, unsigned long &reference,
+                          unsigned long defaultValue = 0,
+                          const QString & key = QString::null);
 
   /**
    * Register an item of type Q_INT64.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemInt64(const QString & name,
-                  const QString & key, Q_INT64 &reference, Q_INT64 defaultValue = 0);
+  ItemInt64 *addItemInt64(const QString & name, Q_INT64 &reference,
+                          Q_INT64 defaultValue = 0,
+                          const QString & key = QString::null);
 
   /**
    * Register an item of type Q_UINT64
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemUInt64(const QString & name,
-                   const QString & key, Q_UINT64 &reference,
-                   Q_UINT64 defaultValue = 0);
+  ItemUInt64 *addItemUInt64(const QString & name, Q_UINT64 &reference,
+                            Q_UINT64 defaultValue = 0,
+                            const QString & key = QString::null);
 
   /**
    * Register an item of type double.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemDouble(const QString & name,
-                     const QString & key, double &reference,
-                     double defaultValue = 0.0);
+  ItemDouble *addItemDouble(const QString & name, double &reference,
+                            double defaultValue = 0.0,
+                            const QString & key = QString::null);
 
   /**
    * Register an item of type QColor.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemColor(const QString & name,
-                    const QString & key, QColor & reference,
-                    const QColor & defaultValue = QColor(128, 128, 128));
+  ItemColor *addItemColor(const QString & name, QColor & reference,
+                          const QColor & defaultValue = QColor(128, 128, 128),
+                          const QString & key = QString::null);
 
   /**
    * Register an item of type QFont.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemFont(const QString & name,
-                   const QString & key, QFont & reference,
-                   const QFont & defaultValue =
-                   KGlobalSettings::generalFont());
+  ItemFont *addItemFont(const QString & name, QFont & reference,
+                        const QFont & defaultValue =
+                        KGlobalSettings::generalFont(),
+                        const QString & key = QString::null);
 
   /**
    * Register an item of type QRect.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemRect(const QString & name,
-                   const QString & key, QRect & reference,
-                   const QRect & defaultValue = QRect());
+  ItemRect *addItemRect(const QString & name, QRect & reference,
+                        const QRect & defaultValue = QRect(),
+                        const QString & key = QString::null);
 
   /**
    * Register an item of type QPoint.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemPoint(const QString & name,
-                    const QString & key, QPoint & reference,
-                    const QPoint & defaultValue = QPoint());
+  ItemPoint *addItemPoint(const QString & name, QPoint & reference,
+                          const QPoint & defaultValue = QPoint(),
+                          const QString & key = QString::null);
 
   /**
    * Register an item of type QSize.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemSize(const QString & name,
-                   const QString & key, QSize & reference,
-                   const QSize & defaultValue = QSize());
+  ItemSize *addItemSize(const QString & name, QSize & reference,
+                        const QSize & defaultValue = QSize(),
+                        const QString & key = QString::null);
 
   /**
    * Register an item of type QDateTime.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemDateTime(const QString & name,
-                       const QString & key, QDateTime & reference,
-                       const QDateTime & defaultValue = QDateTime());
+  ItemDateTime *addItemDateTime(const QString & name, QDateTime & reference,
+                                const QDateTime & defaultValue = QDateTime(),
+                                const QString & key = QString::null);
 
   /**
    * Register an item of type QStringList.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemStringList(const QString & name,
-                         const QString & key, QStringList & reference,
-                         const QStringList & defaultValue = QStringList());
+  ItemStringList *addItemStringList(const QString & name, QStringList & reference,
+                                    const QStringList & defaultValue = QStringList(),
+                                    const QString & key = QString::null);
 
   /**
    * Register an item of type QValueList<int>.
    * 
    * @param name Name used to indentify this setting
-   * @param key Key used in config file.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
    * does not yet contain the key of this item.
+   * @param key Key used in config file. If key is null, name is used as key.
+   * @return The created item
    */
-  void addItemIntList(const QString & name,
-                      const QString & key, QValueList < int >&reference,
-                      const QValueList < int >&defaultValue =
-                      QValueList < int >());
+  ItemIntList *addItemIntList(const QString & name, QValueList < int >&reference,
+                              const QValueList < int >&defaultValue =
+                              QValueList < int >(),
+                              const QString & key = QString::null);
 
   /**
    * Return the @ref KConfig object used for reading and writing the settings.

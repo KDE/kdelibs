@@ -10,8 +10,8 @@ Test1::Test1(  const QString &transport, const QString &folder )
 {
   setCurrentGroup( QString("General-%1").arg( mParamfolder ) );
 
-  addItemBool( "OneOption", "OneOption", mOneOption, true );
-  addItemInt( "AnotherOption", "Another Option", mAnotherOption, 5 );
+  addItemBool( "OneOption", mOneOption, true );
+  addItemInt( "AnotherOption", mAnotherOption, 5, "Another Option" );
   QStringList valuesListOption;
   valuesListOption.append( "One" );
   valuesListOption.append( "Two" );
@@ -21,20 +21,20 @@ Test1::Test1(  const QString &transport, const QString &folder )
 
   setCurrentGroup( "MyOptions" );
 
-  addItemString( "MyString", "MyString", mMyString, "Default String" );
-  addItemPath( "MyPath", "MyPath", mMyPath, QDir::homeDirPath()+".hidden_file" );
-  addItemInt( "AnotherOption2", "Another Option", mAnotherOption2, 10 );
+  addItemString( "MyString", mMyString, "Default String" );
+  addItemPath( "MyPath", mMyPath, QDir::homeDirPath()+".hidden_file" );
+  addItemInt( "AnotherOption2", mAnotherOption2, 10, "Another Option" );
   QStringList defaultMyStringList;
   defaultMyStringList.append( "up" );
   defaultMyStringList.append( "down" );
 
-  addItemStringList( "MyStringList", "MyStringList", mMyStringList, defaultMyStringList );
+  addItemStringList( "MyStringList", mMyStringList, defaultMyStringList );
   QStringList defaultMyStringListHidden;
   defaultMyStringListHidden.append( "up" );
   defaultMyStringListHidden.append( "down" );
 
-  addItemStringList( "MyStringListHidden", "MyStringListHidden", mMyStringListHidden, defaultMyStringListHidden );
-  addItemInt( "MyNumber", QString("List-%1-%2").arg( mParamtransport ).arg( mParamfolder ), mMyNumber, 1 );
+  addItemStringList( "MyStringListHidden", mMyStringListHidden, defaultMyStringListHidden );
+  addItemInt( "MyNumber", mMyNumber, 1, QString("List-%1-%2").arg( mParamtransport ).arg( mParamfolder ) );
 }
 
 Test1::~Test1()

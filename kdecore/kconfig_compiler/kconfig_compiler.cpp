@@ -517,6 +517,31 @@ QString cppType( const QString &type )
     }
 }
 
+QString defaultValue( const QString &type )
+{
+    if ( type == "String" )           return "QString::null";
+    else if ( type == "StringList" )  return "QStringList()";
+    else if ( type == "Font" )        return "KGlobalSettings::generalFont()";
+    else if ( type == "Rect" )        return "QRect()";
+    else if ( type == "Size" )        return "QSize()";
+    else if ( type == "Color" )       return "QColor(128, 128, 128)";
+    else if ( type == "Point" )       return "QPoint()";
+    else if ( type == "Int" )         return "0";
+    else if ( type == "UInt" )        return "0";
+    else if ( type == "Bool" )        return "false";
+    else if ( type == "Double" )      return "0.0";
+    else if ( type == "DateTime" )    return "QDateTime()";
+    else if ( type == "Int64" )       return "0";
+    else if ( type == "UInt64" )      return "0";
+    else if ( type == "IntList" )     return "QValueList<int>()";
+    else if ( type == "Enum" )        return "0";
+    else if ( type == "Path" )        return "QString::null";
+    else {
+        kdWarning()<<"Error, kconfig_compiler doesn't support the \""<< type <<"\" type!"<<endl;
+        return "QString"; //For now, but an assert would be better
+    }
+}
+
 QString itemType( const QString &type )
 {
   QString t;
@@ -1096,10 +1121,18 @@ int main( int argc, char **argv )
           if ( setUserTexts ) cpp << userTextsFunctions( e );
         } else {
           // Normal case
-          cpp << "  " << addFunction( e->type() ) << "( \"" << e->name() << "\", " << key << ", "
+          cpp << "  " << addFunction( e->type() ) << "( \"" << e->name() << "\", "
               << varName(e->name());
-          if ( !e->defaultValue().isEmpty() )
-            cpp << ", " << e->defaultValue();
+          if ( !e->defaultValue().isEmpty() || !key.isEmpty() ) {
+            if ( e->defaultValue().isEmpty() )
+              cpp << ", " << defaultValue( e->type() );
+            else
+              cpp << ", " << e->defaultValue();
+            QString quotedName = e->name();
+            addQuotes( quotedName );
+            if ( !key.isEmpty() && key != quotedName )
+              cpp << ", " << key;
+          }
           cpp << " );" << endl;
         }
       }
