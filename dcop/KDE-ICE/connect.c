@@ -33,6 +33,7 @@ Author: Ralph Mor, X Consortium
 #include "KDE-ICE/ICElibint.h"
 #include "KDE-ICE/Xtrans.h"
 #include "globals.h"
+#include <string.h>
 
 static XtransConnInfo ConnectToPeer(char *networkIdsList, char **actualConnectionRet);
 
