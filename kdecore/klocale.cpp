@@ -57,6 +57,7 @@ public:
   bool formatInited;
   int /*QPrinter::PageSize*/ pageSize;
   KLocale::MeasureSystem measureSystem;
+  QStringList langTwoAlpha;
 };
 
 KLocale::KLocale( const QString & catalogue, KConfig * config )
@@ -372,6 +373,7 @@ bool KLocale::setLanguage(const QStringList & languages)
     setLanguage(defaultLanguage());
 
   d->languageList = languageList;
+  d->langTwoAlpha.clear(); // Flush cache
 
   return bRes;
 }
@@ -1750,7 +1752,10 @@ bool KLocale::setEncoding(int mibEnum)
 
 QStringList KLocale::languagesTwoAlpha() const
 {
-  const QStringList origList = languageList();
+  if (d->langTwoAlpha.count())
+     return d->langTwoAlpha;
+     
+  const QStringList &origList = languageList();
 
   QStringList result;
 
@@ -1761,7 +1766,17 @@ QStringList KLocale::languagesTwoAlpha() const
 	it != origList.end();
 	++it )
     {
-      const QStringList langLst = config.readListEntry( *it );
+      QString lang = *it;
+      QStringList langLst;
+      if (config.hasKey( lang ))
+         langLst = config.readListEntry( lang );
+      else
+      {
+         int i = lang.find('_');
+         if (i >= 0)
+            lang.truncate(i);
+         langLst << lang;
+      }
 
       for ( QStringList::ConstIterator langIt = langLst.begin();
 	    langIt != langLst.end();
@@ -1771,7 +1786,7 @@ QStringList KLocale::languagesTwoAlpha() const
 	    result += *langIt;
 	}
     }
-
+  d->langTwoAlpha = result;
   return result;
 }
 

@@ -86,7 +86,7 @@ libkdecore_la_METASOURCES = AUTO
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 
 kdebugdir = $(kde_confdir)
-kdebug_DATA = kdebug.areas kdebugrc
+kdebug_DATA = kdebug.areas kdebugrc language.codes
 
 kckey_h : $(srcdir)/generate_keys.sh $(QNAMESPACE_H)
 	(cd $(srcdir) && ./generate_keys.sh $(QNAMESPACE_H))
