@@ -94,12 +94,12 @@ public:
    KURL url;
 
    /**
-    * This setting is @em required for caching.
+    * This is @em required for caching.
     */
    QString username;
 
    /**
-    * This setting is @em required for caching.
+    * This is @em required for caching.
     */
    QString password;
 
@@ -230,10 +230,11 @@ QDataStream& operator>> (QDataStream& s, AuthInfo& a);
 
 /**
  * A Singleton class that provides access to passwords
- * stored in .netrc and kionetrc for automatic login
- * purposes.
+ * stored in .netrc files for automatic login purposes.
+ * This is only meant to address backward compatability
+ * with old automated ftp client style logins...
  *
- * @short An interface to kionetrc and the ftp .netrc files
+ * @short An interface to the ftp .netrc files
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 class NetRC
@@ -286,7 +287,8 @@ public:
    *        will be taken
    * @param mode the LookUpMode flags (ORed) for the query
    */
-  bool lookup( const KURL& url, AutoLogin& login, bool userealnetrc = false,
+  bool lookup( const KURL& url, AutoLogin& login,
+               bool userealnetrc = false,
                QString type = QString::null,
                int mode = (exactOnly|defaultOnly) );
   /**
@@ -297,7 +299,7 @@ public:
 protected:
   QString extract( const char*, const char*, int& );
   int openf( const QString& );
-  void parse( int );
+  bool parse( int );
 
 private:
   NetRC();
