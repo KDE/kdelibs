@@ -1463,8 +1463,7 @@ KExecPropsPlugin::KExecPropsPlugin( KPropertiesDialog *_props )
   if ( !termOptionsStr.isNull() )
     terminalEdit->setText( termOptionsStr );
 
-  if ( !termOptionsStr.isNull() )
-    terminalCheck->setChecked( termBool );
+  terminalCheck->setChecked( termBool );
   enableCheckedEdit();
 
   suidCheck->setChecked( suidBool );
