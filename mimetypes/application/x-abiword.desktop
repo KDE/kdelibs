@@ -76,4 +76,4 @@ Comment[zh_CN]=AbiWord 文档
 Comment[zh_TW]=AbiWord 文件
 Comment[zu]=Uhlu lwamafayela e-AbiWord
 Icon=wordprocessing
-Patterns=*.abw;*.ABW;*.abw.gz;*.zabw;*.abw.bz2;*.bzabw
+Patterns=*.abw;*.ABW;*.abw.gz;*.zabw;*.abw.bz2;*.bzabw;*.awt
