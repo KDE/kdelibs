@@ -19,7 +19,6 @@
 */
 #ifndef KABC_ADDRESSEEDIALOG_H
 #define KABC_ADDRESSEEDIALOG_H
-// $Id$
 
 #include <qdict.h>
 

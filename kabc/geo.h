@@ -19,7 +19,6 @@
 */
 #ifndef KABC_GEO_H
 #define KABC_GEO_H
-//$Id$
 
 #include <qstring.h>
 

@@ -28,15 +28,19 @@
 #include <kdebug.h>
 #include <klocale.h>
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "addressbook.h"
 #include "binaryformat.h"
 #include "vcardformat.h"
 
 static const KCmdLineOptions options[] =
 {
-  { "+input <file>", I18N_NOOP("Name of input addressbook."), 0 },
-  { "+output <directory>", I18N_NOOP("Name of output directory."), 0 },
-  { "+format <format>", I18N_NOOP("Format of the input addressbook (vcard or binary)."), 0 },
+  { "input <file>", I18N_NOOP("Name of input addressbook."), 0 },
+  { "output <directory>", I18N_NOOP("Name of output directory."), 0 },
+  { "format <format>", I18N_NOOP("Format of the input addressbook (vcard or binary)."), 0 },
   { 0, 0, 0 }
 };
 
@@ -89,6 +93,21 @@ int main(int argc,char **argv)
   if ( args->isSet( "format" ) )
     formatName = args->getOption( "format" );
 
+  if ( srcName.isEmpty() ) {
+    kdError() << "Missing name of input file" << endl;
+    return -1;
+  }
+
+  if ( destName.isEmpty() ) {
+    kdError() << "Missing name of output directory" << endl;
+    return -1;
+  }
+  
+  if ( formatName.isEmpty() ) {
+    kdError() << "Missing format type" << endl;
+    return -1;
+  }
+
   KABC::Format *format;
   if ( formatName == "vcard" ) {
     format = new KABC::VCardFormat;
@@ -102,15 +121,16 @@ int main(int argc,char **argv)
   QFile file( srcName );
   if ( !file.open( IO_ReadOnly ) ) {
     kdError() << "Can't open '" << srcName << "'" << endl;
-    return -2;
+    return -1;
   }
 
   QDir dir( destName );
-  if ( !dir.exists() )
-    if ( !dir.mkdir( dir.path() ) ) {
+  if ( !dir.exists() ) {
+    if ( mkdir( QFile::encodeName( dir.path() ), 0777 ) != 0 ) {
       kdError() << "Can't create '" << destName << "'" << endl;
-      return -3;
+      return -1;
     }
+  }
 
   KABC::AddressBook ab;
 
@@ -123,7 +143,7 @@ int main(int argc,char **argv)
 
   if ( !ok ) {
     kdError() << "Can't load addressees from '" << srcName << "'" << endl;
-    return -4;
+    return -1;
   }
 
   KABC::AddressBook::Iterator it;

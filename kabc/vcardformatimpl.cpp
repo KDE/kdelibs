@@ -175,9 +175,6 @@ bool VCardFormatImpl::load( AddressBook *addressBook, Resource *resource, QFile 
   
     a.setResource( resource );
     addressBook->insertAddressee( a );
-
-    Addressee& lastAddr = addressBook->lastAddressee();
-    lastAddr.setChanged( false );
   }
 
   

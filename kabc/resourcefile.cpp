@@ -97,8 +97,13 @@ bool ResourceFile::open()
     return true;
 
   QFile file( mPath + "/" + testName );
-  if ( !file.open( IO_ReadWrite ) )
+  if ( !file.open( IO_ReadWrite ) ) {
+    addressBook()->error( i18n( "Can't create file '%1'." ).arg( file.name() ) );
     return false;
+  }
+
+  if ( file.size() == 0 )
+    return true;
 
   bool ok = mFormat->checkFormat( &file );
   file.close();
@@ -123,7 +128,7 @@ bool ResourceFile::load()
     QFile file( mPath + "/" + (*it) );
 
     if ( !file.open( IO_ReadOnly ) ) {
-      addressBook()->error( QString( i18n( "Unable to open file '%1' for reading" ) ).arg( file.name() ) );
+      addressBook()->error( i18n( "Unable to open file '%1' for reading" ).arg( file.name() ) );
       ok = false;
       continue;
     }
@@ -150,7 +155,7 @@ bool ResourceFile::save( Ticket *ticket )
 
     QFile file( mPath + "/" + (*it).uid() );
     if ( !file.open( IO_ReadWrite ) ) {
-      addressBook()->error( QString( i18n( "Unable to open file '%1' for writing" ) ).arg( file.name() ) );
+      addressBook()->error( i18n( "Unable to open file '%1' for writing" ).arg( file.name() ) );
       continue;
     }
 
@@ -160,7 +165,7 @@ bool ResourceFile::save( Ticket *ticket )
       ok = false;
       file.close();
       QFile::remove( file.name() );
-      addressBook()->error( QString( i18n( "Unable to save file '%1'." ) ).arg( file.name() ) );
+      addressBook()->error( i18n( "Unable to save file '%1'." ).arg( file.name() ) );
       continue;
     }
 

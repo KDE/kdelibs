@@ -19,7 +19,6 @@
 */
 #ifndef KABC_STDADDRESSBOOK_H
 #define KABC_STDADDRESSBOOK_H
-// $Id$
 
 #include "addressbook.h"
 

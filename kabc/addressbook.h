@@ -19,7 +19,6 @@
 */
 #ifndef KABC_ADDRESSBOOK_H
 #define KABC_ADDRESSBOOK_H
-// $Id$
 
 #include <qobject.h>
 #include <qptrlist.h>

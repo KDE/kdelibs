@@ -215,6 +215,11 @@ bool AddressBook::load()
       ok = false;
     }
 
+  // mark all addressees as unchanged
+  Addressee::List::Iterator it;
+  for ( it = d->mAddressees.begin(); it != d->mAddressees.end(); ++it )
+    (*it).setChanged( false );
+
   return ok;
 }
 
@@ -529,10 +534,13 @@ void AddressBook::setErrorHandler( ErrorHandler *handler )
 
 void AddressBook::error( const QString& msg )
 {
-    if ( d->mErrorHandler )
-        d->mErrorHandler->error( msg );
-    else
-        kdError(5700) << "no error handler defined" << endl;
+  if ( !d->mErrorHandler ) // create default error handler
+    d->mErrorHandler = new ConsoleErrorHandler;
+
+  if ( d->mErrorHandler )
+    d->mErrorHandler->error( msg );
+  else
+    kdError(5700) << "no error handler defined" << endl;
 }
 
 void AddressBook::deleteRemovedAddressees()

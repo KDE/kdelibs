@@ -29,7 +29,8 @@ using namespace KABC;
 void
 ConsoleErrorHandler::error( const QString& msg )
 {
-    kdError(5700) << msg << endl;
+    // no debug area is ok here
+    kdError() << msg << endl;
 }
 
 void

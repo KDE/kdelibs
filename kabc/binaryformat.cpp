@@ -57,9 +57,6 @@ bool BinaryFormat::load( AddressBook *addressBook, Resource *resource, QFile *fi
   addressee.setResource( resource );
   addressBook->insertAddressee( addressee );
 
-  Addressee& lastAddr = addressBook->lastAddressee();
-  lastAddr.setChanged( false );
-
   return true;
 }
 

@@ -19,7 +19,6 @@
 */
 #ifndef KABC_TIMEZONE_H
 #define KABC_TIMEZONE_H
-// $Id$
 
 #include <qstring.h>
 

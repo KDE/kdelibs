@@ -33,6 +33,8 @@ class Addressee;
   @short Base class for address book formats.
 
   This class provides an abstract interface for address book file formats.
+
+  @internal
 */
 class Format {
   public:
