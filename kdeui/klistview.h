@@ -366,6 +366,11 @@ public:
    */
   bool ascendingSort(void) const;
 
+  /**
+   * Reimplemented for internal reasons.
+   */
+  virtual void takeItem(QListViewItem *i);
+
 signals:
 
   /**

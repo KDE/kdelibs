@@ -182,6 +182,11 @@ KListViewLineEdit::~KListViewLineEdit()
 {
 }
 
+QListViewItem *KListViewLineEdit::currentItem() const
+{
+	return item;
+}
+
 void KListViewLineEdit::load(QListViewItem *i, int c)
 {
         item=i;
@@ -1983,7 +1988,13 @@ bool KListView::ascendingSort(void) const
   return d->sortAscending;
 }
 
+void KListView::takeItem(QListViewItem *item)
+{
+  if(item && item == d->editor->currentItem())
+    d->editor->terminate();
 
+  QListView::takeItem(item);
+}
 
 
 

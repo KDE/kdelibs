@@ -32,6 +32,8 @@ public:
 	KListViewLineEdit(KListView *parent);
 	~KListViewLineEdit();
 
+	QListViewItem *currentItem() const;
+
 signals:
 	void done(QListViewItem*, int);
 
