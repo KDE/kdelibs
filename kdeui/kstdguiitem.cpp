@@ -58,7 +58,7 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
 
 KGuiItem KStdGuiItem::ok()
 {
-  return KGuiItem(i18n("&OK"), QIconSet(), "ok", i18n("Acceot settings"),
+  return KGuiItem(i18n("&OK"), QIconSet(), "ok", i18n("Accept settings"),
           i18n(""  "If you press the <b>OK<b> button, all changes\n"
                     "you made will be used to proceed ") );
 }
