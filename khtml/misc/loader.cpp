@@ -51,6 +51,7 @@
 #include "khtml_part.h"
 
 #include "css/css_stylesheetimpl.h"
+#include "xml/dom_docimpl.h"
 
 using namespace khtml;
 using namespace DOM;
@@ -744,13 +745,14 @@ Request::~Request()
 
 // ------------------------------------------------------------------------------------------
 
-DocLoader::DocLoader(KHTMLPart* part)
+DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
 {
     m_reloading = false;
     m_expireDate = 0;
     m_bautoloadImages = true;
     m_showAnimations = true;
     m_part = part;
+    m_doc = doc;
 
     Cache::docloader->append( this );
 }
@@ -767,7 +769,7 @@ void DocLoader::setExpireDate(int _expireDate)
 
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url)
 {
-    KURL fullURL = m_part->completeURL( url.string() );
+    KURL fullURL = m_doc->completeURL( url.string() );
     if ( m_part && m_part->onlyLocalReferences() && fullURL.protocol() != "file") return 0;
 
     if (m_reloading) {
@@ -909,8 +911,13 @@ void Loader::servePendingRequests()
 
   if (!req->object->accept().isEmpty())
       job->addMetaData("accept", req->object->accept());
-  if ( req->m_docLoader )
-      job->addMetaData("referrer", req->m_docLoader->part()->url().url());
+  if ( req->m_docLoader )  {
+      KURL r = req->m_docLoader->doc()->url();
+      if ( r.protocol().startsWith( "http" ) && r.path().isEmpty() )
+          r.setPath( "/" );
+
+      job->addMetaData("referrer", r.url());
+  }
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
@@ -1092,7 +1099,7 @@ CachedImage *Cache::requestImage( DocLoader* dl, const DOMString & url, bool rel
     // this brings the _url to a standard form...
     KURL kurl;
     if ( dl )
-        kurl = dl->m_part->completeURL( url.string() );
+        kurl = dl->m_doc->completeURL( url.string() );
     else
         kurl = url.string();
 
@@ -1150,7 +1157,7 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( DocLoader* dl, const DOMString & 
     // this brings the _url to a standard form...
     KURL kurl;
     if ( dl )
-        kurl = dl->m_part->completeURL( url.string() );
+        kurl = dl->m_doc->completeURL( url.string() );
     else
         kurl = url.string();
 
@@ -1203,7 +1210,7 @@ CachedScript *Cache::requestScript( DocLoader* dl, const DOM::DOMString &url, bo
     // this brings the _url to a standard form...
     KURL kurl;
     if ( dl )
-        kurl = dl->part()->completeURL( url.string() );
+        kurl = dl->m_doc->completeURL( url.string() );
     else
         kurl = url.string();
 

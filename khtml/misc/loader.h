@@ -302,7 +302,7 @@ namespace khtml
     class DocLoader 
     {
     public:
- 	DocLoader(KHTMLPart*);
+ 	DocLoader(KHTMLPart*, DOM::DocumentImpl*);
  	~DocLoader();
 
 	CachedImage *requestImage( const DOM::DOMString &url);
@@ -313,6 +313,7 @@ namespace khtml
         bool reloading() const { return m_reloading; }
         int expireDate() const { return m_expireDate; }
         KHTMLPart* part() const { return m_part; }
+        DOM::DocumentImpl* doc() const { return m_doc; }
 
         void setExpireDate( int );
         void setAutoloadImages( bool );
@@ -331,6 +332,7 @@ namespace khtml
         bool m_bautoloadImages;
         bool m_showAnimations;
         KHTMLPart* m_part;
+        DOM::DocumentImpl* m_doc;
     };
 
     /**

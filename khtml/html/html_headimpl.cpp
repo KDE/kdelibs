@@ -81,16 +81,14 @@ void HTMLBaseElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLBaseElementImpl::attach()
 {
-    KHTMLView* v = ownerDocument()->view();
     setStyle(ownerDocument()->styleSelector()->styleForElement(this));
-    if(_href.length())
-    {
-      v->part()->setBaseURL( KURL( v->part()->url(), _href.string() ) );
-    }
-    if(_target.length())
-    {
-      v->part()->setBaseTarget(_target.string());
-    }
+
+    if(!_href.isEmpty())
+        ownerDocument()->setBaseURL( KURL( ownerDocument()->view()->part()->url(), _href.string() ).url() );
+
+    if(!_target.isEmpty())
+        ownerDocument()->setBaseTarget( _target.string() );
+
     HTMLElementImpl::attach();
 }
 
@@ -160,15 +158,20 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
     switch (attr->attrId)
     {
     case ATTR_REL:
-        m_rel = attr->value(); break;
+        m_rel = attr->value();
+        break;
     case ATTR_HREF:
-        m_url = khtml::parseURL(attr->value()); break;
+        m_url = getDocument()->completeURL( khtml::parseURL(attr->value()).string() );
+        break;
     case ATTR_TYPE:
-        m_type = attr->value(); break;
+        m_type = attr->value();
+        break;
     case ATTR_MEDIA:
-        m_media = attr->value().string().lower(); break;
+        m_media = attr->value().string().lower();
+        break;
     case ATTR_DISABLED:
         // ###
+        break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -290,7 +293,7 @@ void HTMLMetaElementImpl::attach()
             if ( str.length() && str[0] == '=' ) str = str.mid( 1 ).stripWhiteSpace();
             str = parseURL( DOMString(str) ).string();
             if ( ok )
-                v->part()->scheduleRedirection(delay, v->part()->completeURL( str ).url());
+                v->part()->scheduleRedirection(delay, ownerDocument()->completeURL( str ));
         }
     }
     else if(strcasecmp(_equiv, "expires") == 0 && !_content.isNull())

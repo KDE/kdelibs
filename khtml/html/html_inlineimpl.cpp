@@ -90,55 +90,63 @@ bool HTMLAnchorElementImpl::prepareMouseEvent( int _x, int _y,
 
 void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
 {
-    // ### KHTML_CLICK_EVENT??? why that?
-    // port to DOMACTIVATE
-    if (evt->id() == EventImpl::KHTML_CLICK_EVENT && evt->isMouseEvent() && href) {
-        MouseEventImpl* e = static_cast<MouseEventImpl*>( evt );
+    if ( ( evt->id() == EventImpl::KHTML_CLICK_EVENT ||
+           evt->id() == EventImpl::DOMACTIVATE_EVENT ) && href ) {
+
+        MouseEventImpl* e = 0;
+        if ( evt->id() == EventImpl::KHTML_CLICK_EVENT )
+            e = static_cast<MouseEventImpl*>( evt );
+
         QString utarget;
         QString url;
 
-        if ( e->button() == 2 ) return;
+        if ( e && e->button() == 2 ) return;
 
         url = QConstString( href->s, href->l ).string();
 
         if ( target )
             utarget = QConstString( target->s, target->l ).string();
 
-        if ( e->button() == 1 )
+        if ( e && e->button() == 1 )
             utarget = "_blank";
 
-        if ( e->target()->id() == ID_IMG ) {
-            HTMLImageElementImpl* img = static_cast<HTMLImageElementImpl*>( e->target() );
+        if ( evt->target()->id() == ID_IMG ) {
+            HTMLImageElementImpl* img = static_cast<HTMLImageElementImpl*>( evt->target() );
             if ( img && img->isServerMap() )
             {
                 khtml::RenderImage *r = static_cast<khtml::RenderImage *>(img->renderer());
-                if(r)
+                if(r && e)
                 {
                     int absx, absy;
                     r->absolutePosition(absx, absy);
                     int x(e->clientX() - absx), y(e->clientY() - absy);
                     url += QString("?%1,%2").arg( x ).arg( y );
                 }
+                else {
+                    evt->setDefaultHandled();
+                    return;
+                }
             }
         }
         if ( !evt->defaultPrevented() ) {
             int state = 0;
-
-            if ( e->ctrlKey() )
-                state |= Qt::ControlButton;
-            if ( e->shiftKey() )
-                state |= Qt::ShiftButton;
-            if ( e->altKey() )
-                state |= Qt::AltButton;
-
             int button = 0;
 
-            if ( e->button() == 0 )
-                button = Qt::LeftButton;
-            else if ( e->button() == 1 )
-                button = Qt::MidButton;
-            else if ( e->button() == 2 )
-                button = Qt::RightButton;
+            if ( e ) {
+                if ( e->ctrlKey() )
+                    state |= Qt::ControlButton;
+                if ( e->shiftKey() )
+                    state |= Qt::ShiftButton;
+                if ( e->altKey() )
+                    state |= Qt::AltButton;
+
+                if ( e->button() == 0 )
+                    button = Qt::LeftButton;
+                else if ( e->button() == 1 )
+                    button = Qt::MidButton;
+                else if ( e->button() == 2 )
+                    button = Qt::RightButton;
+            }
 
             ownerDocument()->view()->part()->
                 urlSelected( url, button, state, utarget );

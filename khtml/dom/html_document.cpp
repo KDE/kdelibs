@@ -116,6 +116,12 @@ DOMString HTMLDocument::referrer() const
     return ((HTMLDocumentImpl *)impl)->referrer();
 }
 
+DOMString HTMLDocument::completeURL(const DOMString& str) const
+{
+    if(!impl) return str;
+    return ((HTMLDocumentImpl *)impl)->completeURL(str.string());
+}
+
 DOMString HTMLDocument::domain() const
 {
     if(!impl) return DOMString();
@@ -125,7 +131,7 @@ DOMString HTMLDocument::domain() const
 DOMString HTMLDocument::URL() const
 {
     if(!impl) return DOMString();
-    return ((HTMLDocumentImpl *)impl)->URL();
+    return ((HTMLDocumentImpl *)impl)->url();
 }
 
 HTMLElement HTMLDocument::body() const

@@ -314,9 +314,8 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
         if (!attr->value().isEmpty()) {
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
             QString url = khtml::parseURL( attr->value() ).string();
-            if ( doc->view() )
-                url = doc->view()->part()->completeURL( url ).url();
-            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
+            url = doc->completeURL( url );
+            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url );
         }
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
@@ -401,7 +400,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
             removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
         break;
     case ATTR_NOSAVE:
-	break;	
+	break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -427,11 +426,8 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BACKGROUND:
     {
         if (attr->val()) {
-            HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(ownerDocument());
-            QString url = khtml::parseURL( attr->value() ).string();
-            if ( doc->view() )
-                url = doc->view()->part()->completeURL( url ).url();
-            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
+            addCSSProperty(CSS_PROP_BACKGROUND_IMAGE,
+                           ownerDocument()->completeURL( khtml::parseURL( attr->value() ).string() ) );
         }
         else
             removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
@@ -457,7 +453,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
         break;
     }
     case ATTR_NOSAVE:
-	break;	
+	break;
     default:
         HTMLElementImpl::parseAttribute(attr);
     }
@@ -680,7 +676,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
             removeCSSProperty(CSS_PROP_HEIGHT);
         break;
     case ATTR_NOSAVE:
-	break;	
+	break;
     default:
         HTMLTablePartElementImpl::parseAttribute(attr);
     }

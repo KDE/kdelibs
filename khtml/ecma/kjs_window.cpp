@@ -384,11 +384,13 @@ KJSO Window::get(const UString &p) const
   else if (p == "frames")
     return KJSO(frames ? frames :
 		(const_cast<Window*>(this)->frames = new FrameArray(m_part)));
-  else if (p == "history")
+  else if (p == "history") {
     return KJSO(history ? history :
 		(const_cast<Window*>(this)->history = new History(m_part)));
  // else if (p == "event")
 //    return getDOMEvent(static_cast<DOM::Event>(m_part->view()->lastDOMMouseEvent()));
+  }
+
   else if (p == "innerHeight")
     return Number(m_part->view()->visibleHeight());
   else if (p == "innerWidth")
@@ -667,8 +669,10 @@ void Window::put(const UString &p, const KJSO &v)
   }
   else if (p == "location") {
     QString str = v.toString().value().qstring();
-    m_part->scheduleRedirection(0, Window::retrieveActive()->m_part->
-                              completeURL(str).url().prepend( "target://_self/#" ));
+    KHTMLPart* p = Window::retrieveActive()->m_part;
+    if ( p )
+      m_part->scheduleRedirection(0, p->htmlDocument().
+                                  completeURL(str).string().prepend( "target://_self/#" ));
   }
   else if (p == "onabort") {
     if (isSafeScript())
@@ -959,13 +963,8 @@ Completion WindowFunc::tryExecute(const List &args)
       }
 
         // prepare arguments
-        KURL url;
-        if (!str.isEmpty()) {
-	    if (part->baseURL().isEmpty())
-    	    url = KURL(part->url(), str);
-	    else
-	        url = KURL(part->baseURL(), str);
-        }
+        KURL url = part->htmlDocument().completeURL(str).string();
+
         KParts::URLArgs uargs;
         uargs.frameName = args[1].isDefined() ?
 			  args[1].toString().value().qstring()
@@ -1071,7 +1070,7 @@ Completion WindowFunc::tryExecute(const List &args)
     (const_cast<Window*>(window))->clearTimeout(v.toInt32());
     break;
   case Focus:
-    if (widget) 
+    if (widget)
       widget->setActiveWindow();
     result = Undefined();
     break;
@@ -1260,8 +1259,13 @@ void Location::put(const UString &p, const KJSO &v)
   QString str = v.toString().value().qstring();
   KURL url;
 
-  if (p == "href")
-       url = Window::retrieveActive()->part()->completeURL(str);
+  if (p == "href") {
+    KHTMLPart* p = Window::retrieveActive()->part();
+    if ( p )
+      url = p->htmlDocument().completeURL( str ).string();
+    else
+      url = str;
+  }
   else {
     url = m_part->url();
     if (p == "hash") url.setRef(str);
@@ -1376,7 +1380,7 @@ Completion HistoryFunc::tryExecute(const List &args)
   KParts::BrowserInterface *iface = ext->browserInterface();
 
   if ( !iface )
-      return Completion(Normal);
+    return Completion(Normal);
 
   switch (id) {
   case Back:

@@ -32,6 +32,8 @@
 #include <qdict.h>
 #include <qmap.h>
 
+#include <kurl.h>
+
 class QPaintDevice;
 class QPaintDeviceMetrics;
 class KHTMLView;
@@ -176,8 +178,17 @@ public:
     void clear();
     // moved from HTMLDocument in DOM2
     ElementImpl *getElementById ( const DOMString &elementId );
-    DOMString URL() const { return url; }
-    void setURL(DOMString _url) { url = _url; }
+    
+    QString url() const { return m_url; }
+    void setURL(QString url) { m_url = url; }
+
+    QString baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }
+    void setBaseURL(const QString& baseURL) { m_baseURL = baseURL; }
+
+    QString baseTarget() const { return m_baseTarget; }
+    void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
+    
+    QString completeURL(const QString& url) { return KURL(baseURL(),url).url(); };
 
     // from cachedObjectClient
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr);
@@ -287,7 +298,10 @@ protected:
     khtml::DocLoader *m_docLoader;
     bool visuallyOrdered;
     Tokenizer *m_tokenizer;
-    DOMString url;
+    QString m_url;
+    QString m_baseURL;
+    QString m_baseTarget;
+    
     DocumentTypeImpl *m_doctype;
     DOMImplementationImpl *m_implementation;
 

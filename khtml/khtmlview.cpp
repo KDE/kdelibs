@@ -652,35 +652,6 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     _ke->accept();
 }
 
-void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
-{
-    switch(_ke->key())
-    {
-    case Key_Enter:
-    case Key_Return:
-	// ### FIXME:
-	// move this code to HTMLAnchorElementImpl::setPressed(false),
-	// or even better to HTMLAnchorElementImpl::event()
-	if (m_part->xmlDocImpl())
-	{
-	    ElementImpl *e = m_part->xmlDocImpl()->focusNode();
-	    if (e && e==d->originalNode && (e->id()==ID_A || e->id()==ID_AREA))
-	    {
-		HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(e);
-		emit m_part->urlSelected( a->areaHref().string(),
-					  LeftButton, 0,
-					  a->targetRef().string() );
-	    }
-            if (e)
-	        e->setActive(false);
-	}
-        return;
-      break;
-    }
-    //    if(m_part->keyReleaseHook(_ke)) return;
-    QScrollView::keyReleaseEvent( _ke);
-}
-
 bool KHTMLView::focusNextPrevChild( bool next )
 {
     if (focusWidget()!=this)
@@ -849,12 +820,6 @@ bool KHTMLView::gotoLink(bool forward)
     return true;
 }
 
-bool KHTMLView::gotoNextLink()
-{ return gotoLink(true); }
-
-bool KHTMLView::gotoPrevLink()
-{ return gotoLink(false); }
-
 void KHTMLView::print()
 {
     if(!m_part->xmlDocImpl()) return;
@@ -867,7 +832,7 @@ void KHTMLView::print()
         // set up KPrinter
         printer->setFullPage(false);
         printer->setCreator("KDE 2.1 HTML Library");
-        QString docname = m_part->xmlDocImpl()->URL().string();
+        QString docname = m_part->xmlDocImpl()->url();
         if ( !docname.isEmpty() )
 	    printer->setDocName(docname);
 
@@ -1034,23 +999,6 @@ void KHTMLView::restoreScrollBar ( )
     d->prevScrollbarVisible = verticalScrollBar()->isVisible();
 }
 
-void KHTMLView::toggleActLink(bool pressed)
-{
-    ElementImpl *e = m_part->xmlDocImpl()->focusNode();
-    // ### FIXME:
-    // move this code to HTMLAnchorElementImpl::setPressed(false),
-    // or even better to HTMLAnchorElementImpl::event()
-    if (!pressed && e && e==d->originalNode && (e->id()==ID_A || e->id()==ID_AREA))
-    {
-	HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(e);
-	emit m_part->urlSelected( a->areaHref().string(),
-				  LeftButton, 0,
-				  a->targetRef().string() );
-    }
-    if (e)
-	e->setActive(pressed);
-}
-
 QStringList KHTMLView::formCompletionItems(const QString &name) const
 {
     if (!m_part->settings()->isFormCompletionEnabled())
@@ -1120,22 +1068,6 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool altKey = (_mouse->state() & AltButton);
     bool shiftKey = (_mouse->state() & ShiftButton);
     bool metaKey = false; // ### qt support?
-
-    // Also send the DOMFOCUSIN_EVENT when clicking on a node (Niko)
-    // usually done in setFocusNode()
-    // Allow LMB, MMB and RMB (correct?)
-//     if(button != -1 && targetNode)
-//     {
-// 	UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
-// 				          true,false,m_part->xmlDocImpl()->defaultView(),
-// 					  0);
-
-// 	ue->ref();
-// 	targetNode->dispatchEvent(ue,exceptioncode);
-// 	ue->deref();
-//     }
-
-
 
     // mouseout/mouseover
     if (setUnder && (d->prevMouseX != clientX || d->prevMouseY != clientY)) {

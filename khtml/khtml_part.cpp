@@ -279,8 +279,6 @@ public:
   bool m_onlyLocalReferences :1;
 
   KURL m_workingURL;
-  KURL m_baseURL;
-  QString m_baseTarget;
 
   QTimer m_redirectionTimer;
 #ifdef SPEED_DEBUG
@@ -703,11 +701,12 @@ bool KHTMLPart::openURL( const KURL &url )
 
   // initializing m_url to the new url breaks relative links when opening such a link after this call and _before_ begin() is called (when the first
   // data arrives) (Simon)
-  // That has been fixed by calling setBaseURL() in begin(). (Waldo)
   m_url = url;
   if(m_url.protocol().startsWith( "http" ) && !m_url.host().isEmpty() &&
-     m_url.path().isEmpty())
+     m_url.path().isEmpty()) {
     m_url.setPath("/");
+    emit d->m_extension->setLocationBarURL( m_url.prettyURL() );
+  }
 
   kdDebug( 6050 ) << "KHTMLPart::openURL now (before started) m_url = " << m_url.url() << endl;
 
@@ -796,11 +795,6 @@ KHTMLView *KHTMLPart::view() const
   return d->m_view;
 }
 
-void KHTMLPart::enableJScript( bool enable )
-{
-    setJScriptEnabled( enable );
-}
-
 void KHTMLPart::setJScriptEnabled( bool enable )
 {
   d->m_bJScriptForce = enable;
@@ -814,7 +808,7 @@ bool KHTMLPart::jScriptEnabled() const
   return d->m_bJScriptEnabled;
 }
 
-void KHTMLPart::enableMetaRefresh( bool enable )
+void KHTMLPart::setMetaRefreshEnabled( bool enable )
 {
   d->m_metaRefreshEnabled = enable;
 }
@@ -860,6 +854,8 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   //kdDebug(6050) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
   KJSProxy *proxy = jScript();
 
+  qDebug( "executeScript: %s", script.latin1() );
+
   if (!proxy)
     return QVariant();
   d->m_runningScripts++;
@@ -898,12 +894,6 @@ QVariant KHTMLPart::executeScheduledScript()
   return ret;
 }
 
-
-void KHTMLPart::enableJava( bool enable )
-{
-  setJavaEnabled( enable );
-}
-
 void KHTMLPart::setJavaEnabled( bool enable )
 {
   d->m_bJavaForce = enable;
@@ -933,11 +923,6 @@ KJavaAppletContext *KHTMLPart::createJavaContext()
   }
 
   return d->m_javaContext;
-}
-
-void KHTMLPart::enablePlugins( bool enable )
-{
-    setPluginsEnabled( enable );
 }
 
 void KHTMLPart::setPluginsEnabled( bool enable )
@@ -1022,11 +1007,6 @@ void KHTMLPart::slotDebugRenderTree()
 {
   if ( d->m_doc )
     d->m_doc->renderer()->printTree();
-}
-
-void KHTMLPart::autoloadImages( bool enable )
-{
-  setAutoloadImages( enable );
 }
 
 void KHTMLPart::setAutoloadImages( bool enable )
@@ -1141,8 +1121,6 @@ void KHTMLPart::clear()
   delete d->m_javaContext;
   d->m_javaContext = 0;
 
-  d->m_baseURL = KURL();
-  d->m_baseTarget = QString::null;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
   d->m_bHTTPRefresh = false;
@@ -1278,8 +1256,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
                 end_pos = index;
           }
         }
-        qData = KURL( d->m_baseURL, qData.mid(pos, end_pos) ).url();
-        scheduleRedirection( delay, qData );
+        scheduleRedirection( delay, d->m_doc->completeURL( qData.mid( pos, end_pos ) ) );
       }
       d->m_bHTTPRefresh = true;
     }
@@ -1367,17 +1344,13 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   d->m_referrer = url.url();
   m_url = url;
+  KURL baseurl;
 
   if ( !m_url.isEmpty() )
   {
     KURL::List lst = KURL::split( m_url );
-    KURL baseurl;
     if ( !lst.isEmpty() )
       baseurl = *lst.begin();
-    // Use this for relative links.
-    // We prefer m_baseURL over m_url because m_url changes when we are
-    // about to load a new page.
-    setBaseURL(baseurl);
 
     KURL title( baseurl );
     title.setRef( QString::null );
@@ -1393,11 +1366,12 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   else
     d->m_doc = new HTMLDocumentImpl( d->m_view );
 
-
-
   d->m_doc->ref();
   d->m_doc->attach( d->m_view );
   d->m_doc->setURL( m_url.url() );
+  // We prefer m_baseURL over m_url because m_url changes when we are
+  // about to load a new page.
+  d->m_doc->setBaseURL( baseurl.url() );
 
   setAutoloadImages( KHTMLFactory::defaultHTMLSettings()->autoLoadImages() );
 
@@ -1565,8 +1539,6 @@ void KHTMLPart::slotProgressUpdate()
 
 void KHTMLPart::slotJobSpeed( KIO::Job* /*job*/, unsigned long speed )
 {
-  qDebug( "slotJobSpeed: %d", speed );
-
   emit d->m_extension->speedProgress( speed );
 }
 
@@ -1633,24 +1605,21 @@ void KHTMLPart::checkCompleted()
   // check for a <link rel="SHORTCUT ICON" href="url to icon">,
   // IE extension to set an icon for this page to use in
   // bookmarks and the locationbar
-  if (!parentPart() && d->m_doc && d->m_doc->isHTMLDocument())
-  {
-      DOM::TagNodeListImpl links(d->m_doc, "LINK");
-      for (unsigned long i = 0; i < links.length(); ++i)
-          if (links.item(i)->isElementNode())
-          {
-              DOM::ElementImpl *link = static_cast<DOM::ElementImpl *>(links.item(i));
-              kdDebug(6005) << "Checking..." << endl;
-              if (link->getAttribute("REL").string().upper() == "SHORTCUT ICON")
-              {
-                  KURL iconURL(d->m_baseURL, link->getAttribute("HREF").string());
-                  if (!iconURL.isEmpty())
-                  {
-                      emit d->m_extension->setIconURL(iconURL);
-                      break;
-                  }
-              }
+  if (!parentPart() && d->m_doc && d->m_doc->isHTMLDocument()) {
+    DOM::TagNodeListImpl links(d->m_doc, "LINK");
+    for (unsigned long i = 0; i < links.length(); ++i)
+      if (links.item(i)->isElementNode()) {
+        DOM::ElementImpl *link = static_cast<DOM::ElementImpl *>(links.item(i));
+        if (link->getAttribute("REL").string().upper() == "SHORTCUT ICON") {
+
+          QString href = link->getAttribute( "HREF" ).string();
+          if ( !href.isEmpty() && d->m_doc ) {
+            href = d->m_doc->completeURL( href );
+            emit d->m_extension->setIconURL( KURL( href ) );
+            break;
           }
+        }
+      }
   }
 
   if ( m_url.encodedHtmlRef().isEmpty() && d->m_view->contentsY() == 0 ) // check that the view has not been moved by the user
@@ -1713,35 +1682,28 @@ const KHTMLSettings *KHTMLPart::settings() const
   return d->m_settings;
 }
 
-void KHTMLPart::setBaseURL( const KURL &url )
-{
-  d->m_baseURL = url;
-  if ( d->m_baseURL.protocol().startsWith( "http" ) && !d->m_baseURL.host().isEmpty() &&
-       d->m_baseURL.path().isEmpty() )
-    d->m_baseURL.setPath( "/" );
-}
-
+#ifndef KDE_NO_COMPAT
 KURL KHTMLPart::baseURL() const
 {
-    if ( d->m_baseURL.isEmpty() )
-        return m_url;
-  return d->m_baseURL;
-}
+  if ( !d->m_doc ) return KURL();
 
-void KHTMLPart::setBaseTarget( const QString &target )
-{
-  d->m_baseTarget = target;
+  return d->m_doc->baseURL();
 }
 
 QString KHTMLPart::baseTarget() const
 {
-  return d->m_baseTarget;
+  if ( !d->m_doc ) return QString::null;
+
+  return d->m_doc->baseTarget();
 }
 
-KURL KHTMLPart::completeURL( const QString &url, const QString &/*target*/ )
+KURL KHTMLPart::completeURL( const QString &url )
 {
-  return KURL( d->m_baseURL.isEmpty() ? m_url : d->m_baseURL, url );
+  if ( !d->m_doc ) return url;
+
+  return KURL( d->m_doc->completeURL( url ) );
 }
+#endif
 
 void KHTMLPart::scheduleRedirection( int delay, const QString &url )
 {
@@ -1765,7 +1727,9 @@ void KHTMLPart::slotRedirect()
   QString target;
   u = splitUrlTarget( u, &target );
   KParts::URLArgs args;
-  args.reload = true;
+  if ( urlcmp( u, m_url.url(), true, true ) )
+    args.reload = true;
+
   args.setLockHistory( true );
   urlSelected( u, 0, 0, target, args );
 }
@@ -1890,7 +1854,7 @@ void KHTMLPart::setURLCursor( const QCursor &c )
   d->m_linkCursor = c;
 }
 
-const QCursor &KHTMLPart::urlCursor() const
+QCursor KHTMLPart::urlCursor() const
 {
   return d->m_linkCursor;
 }
@@ -2141,23 +2105,15 @@ void KHTMLPart::setSelection( const DOM::Range &r )
                            d->m_selectionEnd.handle(),d->m_endOffset);
 }
 
-// TODO merge with other overURL (BCI)
 void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPressed )
 {
-  if( d->m_kjsStatusBarText.isEmpty() || shiftPressed )
-  {
-    overURL( url, target );
-  }
-  else
-  {
+  if ( !d->m_kjsStatusBarText.isEmpty() && !shiftPressed ) {
     emit onURL( url );
     emit setStatusBarText( d->m_kjsStatusBarText );
     d->m_kjsStatusBarText = QString::null;
+    return;
   }
-}
 
-void KHTMLPart::overURL( const QString &url, const QString &target )
-{
   emit onURL( url );
 
   if ( url.isEmpty() )
@@ -2172,7 +2128,8 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
     return;
   }
 
-  KURL u = completeURL( url );
+  KURL u = d->m_doc ? d->m_doc->completeURL( url ) : url;
+
   // special case for <a href="">
   if ( url.isEmpty() )
     u.setFileName( url );
@@ -2305,19 +2262,14 @@ void KHTMLPart::overURL( const QString &url, const QString &target )
   }
 }
 
-void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target )
-{
-    urlSelected( url, button, state, _target, KParts::URLArgs() );
-}
-
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target,
                              KParts::URLArgs args )
 {
   bool hasTarget = false;
 
   QString target = _target;
-  if ( target.isEmpty() )
-    target = d->m_baseTarget;
+  if ( target.isEmpty() && d->m_doc )
+    target = d->m_doc->baseTarget();
   if ( !target.isEmpty() )
       hasTarget = true;
 
@@ -2328,7 +2280,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   }
 
 
-  KURL cURL = completeURL( url, target );
+  KURL cURL = d->m_doc ? d->m_doc->completeURL( url ) : url;
   // special case for <a href="">
   if ( url.isEmpty() )
     cURL.setFileName( url );
@@ -2612,7 +2564,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
       }
       return false;
   }
-  return requestObject( &(*it), completeURL( url ) );
+  return requestObject( &(*it), d->m_doc ? d->m_doc->completeURL( url ) : url );
 }
 
 QString KHTMLPart::requestFrameName()
@@ -2633,7 +2585,7 @@ bool KHTMLPart::requestObject( khtml::RenderPart *frame, const QString &url, con
 
   KParts::URLArgs args;
   args.serviceType = serviceType;
-  return requestObject( &(*it), completeURL( url ), args );
+  return requestObject( &(*it), d->m_doc ? d->m_doc->completeURL( url ) : url, args );
 }
 
 bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KURL &url, const KParts::URLArgs &_args )
@@ -2704,11 +2656,6 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
       child->m_bNotify = false;
       if ( !child->m_args.lockHistory() )
           emit d->m_extension->openURLNotify();
-      // why change the locationbar URL here? Other browsers don't do it
-      // either for framesets and it's actually confusing IMHO, as it
-      // makes the user think he's visiting that new URL while he actually
-      // isn't. Not to mention that it breaks bookmark'ing framed sites (Simon)
-//      emit d->m_extension->setLocationBarURL( url.prettyURL() );
   }
 
   if ( !child->m_services.contains( mimetype ) )
@@ -2899,11 +2846,7 @@ void KHTMLPart::submitFormAgain()
 
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
 {
-  QString target = _target;
-  if ( target.isEmpty() )
-    target = d->m_baseTarget;
-
-  KURL u = completeURL( url, target );
+  KURL u = d->m_doc ? d->m_doc->completeURL( url ) : url;
 
   if ( !u.isValid() )
   {
@@ -2933,18 +2876,14 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
                          parentPart() == 0 ? "TRUE":"FALSE");
   args.metaData().insert("ssl_was_in_use", d->m_ssl_in_use ? "TRUE":"FALSE");
   args.metaData().insert("ssl_activate_warnings", "TRUE");
+  args.frameName = _target.isEmpty() ? d->m_doc->baseTarget() : _target ;
 
-  if ( strcmp( action, "get" ) == 0 )
-  {
+  if ( strcmp( action, "get" ) == 0 ) {
     u.setQuery( QString::fromLatin1( formData.data(), formData.size() ) );
-
-    args.frameName = target;
     args.setDoPost( false );
   }
-  else
-  {
+  else {
     args.postData = formData;
-    args.frameName = target;
     args.setDoPost( true );
 
     // construct some user headers if necessary
@@ -2973,7 +2912,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
 void KHTMLPart::popupMenu( const QString &url )
 {
-  KURL completedURL( completeURL( url ) );
+  KURL completedURL( d->m_doc ? d->m_doc->completeURL( url ) : url );
   KURL popupURL;
   if ( !url.isEmpty() )
     popupURL = completedURL;
@@ -3583,7 +3522,7 @@ void KHTMLPart::reparseConfiguration()
   settings->setCharset(d->m_settings->charset());
   settings->setScript(d->m_settings->script());
 
-  autoloadImages( settings->autoLoadImages() );
+  setAutoloadImages( settings->autoLoadImages() );
 
   // PENDING(lars) Pass hostname to the following two methods.
   d->m_bJScriptEnabled = settings->isJavaScriptEnabled();
@@ -3609,7 +3548,7 @@ QStringList KHTMLPart::frameNames() const
   return res;
 }
 
-const QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
+QList<KParts::ReadOnlyPart> KHTMLPart::frames() const
 {
   QList<KParts::ReadOnlyPart> res;
 
@@ -3768,7 +3707,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       QPixmap p;
       QDragObject *drag = 0;
       if( !d->m_strSelectedURL.isEmpty() ) {
-          KURL u( completeURL( splitUrlTarget(d->m_strSelectedURL)) );
+          KURL u( d->m_doc->completeURL( splitUrlTarget(d->m_strSelectedURL)) );
           KURL::List uris;
           uris.append(u);
           drag = KURLDrag::newDrag( uris, d->m_view->viewport() );

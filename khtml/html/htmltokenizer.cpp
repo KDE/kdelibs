@@ -388,8 +388,6 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
         else if ( searchCount > 0 )
         {
             const QChar& cmp = *src;
-              kdDebug(6050) << "KHTMLPart::checkEmitLoadEvent " << this << endl;
-
             if (!escaped && !src.escaped() &&
                 ( cmp <= ' ' || cmp == '>' ) && searchFor[ searchCount ] == ' ') {
                 searchBuffer[ searchCount++] = cmp;
@@ -1079,7 +1077,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 scriptSrc = scriptSrcCharset = "";
                 if ( currToken.attrs && !parser->doc()->view()->part()->onlyLocalReferences()) {
                     if ( ( a = currToken.attrs->getIdItem( ATTR_SRC ) ) )
-                        scriptSrc = parser->doc()->view()->part()->completeURL(khtml::parseURL( a->value() ).string() ).url();
+                        scriptSrc = parser->doc()->completeURL(khtml::parseURL( a->value() ).string() );
                     if ( ( a = currToken.attrs->getIdItem( ATTR_CHARSET ) ) )
                         scriptSrcCharset = a->value().string().stripWhiteSpace();
                     a = currToken.attrs->getIdItem( ATTR_LANGUAGE );

@@ -105,8 +105,7 @@ DOMString HTMLDocumentImpl::referrer() const
 DOMString HTMLDocumentImpl::domain() const
 {
     // ### do they want the host or the domain????
-    KURL u(url.string());
-    return u.host();
+    return KURL( url() ).host();
 }
 
 HTMLElementImpl *HTMLDocumentImpl::body()

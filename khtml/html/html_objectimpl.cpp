@@ -135,11 +135,7 @@ void HTMLAppletElementImpl::attach()
           if(archive)
               args.insert( "archive", QString(archive->s, archive->l) );
 
-          if(!view->part()->baseURL().isEmpty())
-              args.insert( "baseURL", view->part()->baseURL().url() );
-          else
-              args.insert( "baseURL", view->part()->url().url() );
-
+          args.insert( "baseURL", ownerDocument()->baseURL() );
           f = new RenderApplet(view, args, this);
       }
       else

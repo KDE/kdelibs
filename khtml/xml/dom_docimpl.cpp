@@ -117,11 +117,11 @@ DocumentImpl::DocumentImpl(KHTMLView *v)
     m_view = v;
 
     if ( v ) {
-        m_docLoader = new DocLoader(v->part());
+        m_docLoader = new DocLoader(v->part(), this );
         setPaintDevice( m_view );
     }
     else
-        m_docLoader = new DocLoader( 0 );
+        m_docLoader = new DocLoader( 0, this );
 
     visuallyOrdered = false;
     m_loadingSheet = false;
@@ -521,6 +521,8 @@ TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*wh
 
 void DocumentImpl::applyChanges(bool,bool force)
 {
+    if ( !m_render && attached() ) return;
+
     // ### move the following two lines to createSelector????
     delete m_styleSelector;
     m_styleSelector = 0;
@@ -665,7 +667,7 @@ NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
 void DocumentImpl::updateRendering()
 {
     int o=changedNodes.count();
-    if (!o) return;        
+    if (!o) return;
 //    kdDebug() << "UPDATERENDERING "<<o<<endl;
 
     int a=0;
@@ -680,7 +682,7 @@ void DocumentImpl::updateRendering()
                 n=t;
             t=t->parentNode();
         }
-            
+
 //        kdDebug() << n->nodeName().string() << ": applyChanges opt=" << (n!=it.current()) << endl;
 	n->applyChanges( true, true );
         a++;
@@ -705,12 +707,16 @@ void DocumentImpl::attach(KHTMLView *w)
 
 void DocumentImpl::detach()
 {
+    RenderObject* render = m_render;
+
+    // indicate destruction mode,  i.e. attached() but m_render == 0
+    m_render = 0;
+
     NodeBaseImpl::detach();
 
-    if ( m_render )
-        m_render->detach();
+    if ( render )
+        render->detach();
 
-    m_render = 0;
     m_view = 0;
 }
 
@@ -848,11 +854,7 @@ void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString
 CSSStyleSheetImpl* DocumentImpl::elementSheet()
 {
     if (!m_elemSheet) {
-        if ( view() && !view()->part()->baseURL().isEmpty() )
-            m_elemSheet = new CSSStyleSheetImpl(this, view()->part()->baseURL().url());
-        else
-            m_elemSheet = new CSSStyleSheetImpl(this, url );
-
+        m_elemSheet = new CSSStyleSheetImpl(this, baseURL() );
         m_elemSheet->ref();
     }
     return m_elemSheet;
@@ -1285,6 +1287,8 @@ StyleSheetListImpl* DocumentImpl::styleSheets()
 
 void DocumentImpl::createSelector()
 {
+    if ( !m_render && attached() ) return;
+
     QList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;
     m_styleSheets->styleSheets.clear();
     NodeImpl *n;
@@ -1306,7 +1310,7 @@ void DocumentImpl::createSelector()
                 }
             }
 
-        }     
+        }
     	else if (n->id() == ID_LINK)
 	    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
     	else if (n->id() == ID_STYLE)
@@ -1325,7 +1329,6 @@ void DocumentImpl::createSelector()
     for (; it.current(); ++it)
 	it.current()->deref();
     applyChanges(true,true);
-
 }
 
 void DocumentImpl::setFocusNode(ElementImpl *n)

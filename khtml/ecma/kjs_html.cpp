@@ -251,7 +251,7 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "bgColor")
     return String(body.bgColor());
   else if (p == "fgColor")
-    return String(body.text()); 
+    return String(body.text());
   else if (p == "alinkColor")
     return String(body.aLink());
   else if (p == "linkColor")
@@ -260,9 +260,9 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
     return String(body.vLink());
 // potentially obsolete properties
 //  else if (p == "embeds")
-//    return Undefined(); 
+//    return Undefined();
 //  else if (p == "ids")
-//    return Undefined(); 
+//    return Undefined();
 //  else if (p == "lastModified")
 //    return Undefined();
   else if (p == "height")
@@ -1197,7 +1197,7 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       if (p == "name")                 { form.setName(str); return; }
       else if (p == "acceptCharset")   { form.setAcceptCharset(str); return; }
       else if (p == "action") {
-        form.setAction(Window::retrieveActive()->part()->completeURL( str.string() ).url());
+        form.setAction(str.string());
         return;
       }
       else if (p == "enctype")         { form.setEnctype(str); return; }

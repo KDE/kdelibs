@@ -151,10 +151,7 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
         if ( attr->value()[0] == '#' )
             usemap = attr->value();
         else {
-            QString url = khtml::parseURL( attr->value() ).string();
-            if ( ownerDocument() && ownerDocument()->view() )
-                url = ownerDocument()->view()->part()->completeURL( url ).url();
-
+            QString url = getDocument()->completeURL( khtml::parseURL( attr->value() ).string() );
             // ### we remove the part before the anchor and hope
             // the map is on the same html page....
             usemap = url;

@@ -65,9 +65,9 @@ int main(int argc, char *argv[])
 		      dummy, SLOT( slotOpenURL( const KURL&, const KParts::URLArgs & ) ) );
 
     doc->openURL( args->url(0) );
-    DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
-    dtv->show();
-    dtv->setGeometry(0, 0, 360, 800);
+    //DOMTreeView * dtv = new DOMTreeView(0, doc, "DomTreeView");
+    //dtv->show();
+    //dtv->setGeometry(0, 0, 360, 800);
 
     toplevel->setCentralWidget( doc->widget() );
     toplevel->resize( 640, 800);
@@ -89,8 +89,8 @@ int main(int argc, char *argv[])
 
     toplevel->guiFactory()->addClient( doc );
 
-    doc->enableJScript(true);
-    doc->enableJava(true);
+    doc->setJScriptEnabled(true);
+    doc->setJavaEnabled(true);
     doc->setURLCursor(QCursor(PointingHandCursor));
     a.setTopWidget(doc->widget());
     QWidget::connect(doc, SIGNAL(setWindowCaption(const QString &)),

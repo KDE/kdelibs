@@ -79,8 +79,7 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_BACKGROUND:
     {
         QString url = khtml::parseURL( attr->value() ).string();
-        if ( ownerDocument() && ownerDocument()->view() )
-            url = ownerDocument()->view()->part()->completeURL( url ).url();
+        url = getDocument()->completeURL( url );
         addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, "url('"+url+"')" );
         m_bgSet = !attr->value().isNull();
         break;

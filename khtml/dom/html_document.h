@@ -283,6 +283,15 @@ public:
      *
      */
     NodeList getElementsByName ( const DOMString &elementName );
+
+    /**
+     * not part of the DOM
+     *
+     * converts the given (potentially relative) URL in a
+     * full-qualified one, using the baseURL / document URL for
+     * the missing parts. 
+     */
+    DOMString completeURL( const DOMString& url) const;
 };
 
 }; //namespace
