@@ -614,6 +614,9 @@ time_t KJS::KRFCDate_parseDate(const UString &_date)
      while(*dateString && isspace(*dateString))
      	dateString++;
 
+     if (*dateString == ',')
+       dateString++;
+
      if ( month == -1 ) // not found yet
      {
         for(int i=0; i < 3;i++)
