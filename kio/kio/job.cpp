@@ -1498,9 +1498,7 @@ void FileCopyJob::slotStart()
     {
        if (m_move)
        {
-          m_moveJob = KIO::rename( m_src, m_dest, m_overwrite );
-          addSubjob( m_moveJob );
-          connectSubjob( m_moveJob );
+          startRenameJob(m_src);
        }
        else
        {
@@ -1520,6 +1518,18 @@ void FileCopyJob::slotStart()
           )
        {
           startCopyJob(m_src);
+       }
+       else if (m_move &&
+           (m_src.isLocalFile() && KProtocolInfo::canRenameFromFile(m_dest))
+          )
+       {
+          startRenameJob(m_dest);
+       }
+       else if (m_move &&
+           (m_dest.isLocalFile() && KProtocolInfo::canRenameFromFile(m_src))
+          )
+       {
+          startRenameJob(m_src);
        }
        else
        {
@@ -1559,6 +1569,14 @@ void FileCopyJob::startCopyJob(const KURL &slave_url)
     connectSubjob( m_copyJob );
     connect( m_copyJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
              SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
+}
+
+void FileCopyJob::startRenameJob(const KURL &slave_url)
+{
+    KIO_ARGS << m_src << m_dest << (Q_INT8) m_overwrite;
+    m_moveJob = new SimpleJob(slave_url, CMD_RENAME, packedArgs, false);
+    addSubjob( m_moveJob );
+    connectSubjob( m_moveJob );
 }
 
 void FileCopyJob::connectSubjob( SimpleJob * job )

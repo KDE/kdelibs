@@ -34,6 +34,8 @@ public:
   QString protClass;
   KProtocolInfo::ExtraFieldList extraFields;
   bool showPreviews;
+  bool canRenameFromFile;
+  bool canRenameToFile;
   KURL::URIMode uriMode;
   QStringList capabilities;
   QString proxyProtocol;
@@ -63,6 +65,8 @@ KProtocolInfo::KProtocolInfo(const QString &path)
   m_supportsMoving = config.readBoolEntry( "moving", false );
   m_canCopyFromFile = config.readBoolEntry( "copyFromFile", false );
   m_canCopyToFile = config.readBoolEntry( "copyToFile", false );
+  d->canRenameFromFile = config.readBoolEntry( "renameFromFile", false );
+  d->canRenameToFile = config.readBoolEntry( "renameToFile", false );
   m_listing = config.readListEntry( "listing" );
   // Many .protocol files say "Listing=false" when they really mean "Listing=" (i.e. unsupported)
   if ( m_listing.count() == 1 && m_listing.first() == "false" )
@@ -134,6 +138,8 @@ KProtocolInfo::~KProtocolInfo()
 void
 KProtocolInfo::load( QDataStream& _str)
 {
+   // You may add new fields at the end. Make sure to update the version
+   // number in ksycoca.h
    Q_INT32 i_inputType, i_outputType;
    Q_INT8 i_isSourceProtocol, i_isHelperProtocol,
           i_supportsListing, i_supportsReading,
@@ -141,8 +147,8 @@ KProtocolInfo::load( QDataStream& _str)
           i_supportsDeleting, i_supportsLinking,
           i_supportsMoving, i_determineMimetypeFromExtension,
           i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
-          i_uriMode;
-          
+          i_uriMode, i_canRenameFromFile, i_canRenameToFile;
+
    _str >> m_name >> m_exec >> m_listing >> m_defaultMimetype
         >> i_determineMimetypeFromExtension
         >> m_icon
@@ -155,8 +161,9 @@ KProtocolInfo::load( QDataStream& _str)
         >> i_canCopyFromFile >> i_canCopyToFile
         >> m_config >> m_maxSlaves >> d->docPath >> d->protClass
         >> d->extraFields >> i_showPreviews >> i_uriMode
-        >> d->capabilities >> d->proxyProtocol;
-        
+        >> d->capabilities >> d->proxyProtocol
+        >> i_canRenameFromFile >> i_canRenameToFile;
+
    m_inputType = (Type) i_inputType;
    m_outputType = (Type) i_outputType;
    m_isSourceProtocol = (i_isSourceProtocol != 0);
@@ -170,6 +177,8 @@ KProtocolInfo::load( QDataStream& _str)
    m_supportsMoving = (i_supportsMoving != 0);
    m_canCopyFromFile = (i_canCopyFromFile != 0);
    m_canCopyToFile = (i_canCopyToFile != 0);
+   d->canRenameFromFile = (i_canRenameFromFile != 0);
+   d->canRenameToFile = (i_canRenameToFile != 0);
    m_determineMimetypeFromExtension = (i_determineMimetypeFromExtension != 0);
    d->showPreviews = (i_showPreviews != 0);
    d->uriMode = (KURL::URIMode) i_uriMode;
@@ -180,6 +189,8 @@ KProtocolInfo::save( QDataStream& _str)
 {
    KSycocaEntry::save( _str );
 
+   // You may add new fields at the end. Make sure to update the version
+   // number in ksycoca.h
    Q_INT32 i_inputType, i_outputType;
    Q_INT8 i_isSourceProtocol, i_isHelperProtocol,
           i_supportsListing, i_supportsReading,
@@ -187,7 +198,7 @@ KProtocolInfo::save( QDataStream& _str)
           i_supportsDeleting, i_supportsLinking,
           i_supportsMoving, i_determineMimetypeFromExtension,
           i_canCopyFromFile, i_canCopyToFile, i_showPreviews,
-          i_uriMode;
+          i_uriMode, i_canRenameFromFile, i_canRenameToFile;
 
    i_inputType = (Q_INT32) m_inputType;
    i_outputType = (Q_INT32) m_outputType;
@@ -202,6 +213,8 @@ KProtocolInfo::save( QDataStream& _str)
    i_supportsMoving = m_supportsMoving ? 1 : 0;
    i_canCopyFromFile = m_canCopyFromFile ? 1 : 0;
    i_canCopyToFile = m_canCopyToFile ? 1 : 0;
+   i_canRenameFromFile = d->canRenameFromFile ? 1 : 0;
+   i_canRenameToFile = d->canRenameToFile ? 1 : 0;
    i_determineMimetypeFromExtension = m_determineMimetypeFromExtension ? 1 : 0;
    i_showPreviews = d->showPreviews ? 1 : 0;
    i_uriMode = d->uriMode;
@@ -218,7 +231,8 @@ KProtocolInfo::save( QDataStream& _str)
         << i_canCopyFromFile << i_canCopyToFile
         << m_config << m_maxSlaves << d->docPath << d->protClass
         << d->extraFields << i_showPreviews << i_uriMode
-        << d->capabilities << d->proxyProtocol;
+        << d->capabilities << d->proxyProtocol
+        << i_canRenameFromFile << i_canRenameToFile;
 }
 
 
@@ -488,6 +502,16 @@ QString KProtocolInfo::proxiedBy( const QString& _protocol )
     return QString::null;
 
   return prot->d->proxyProtocol;
+}
+
+bool KProtocolInfo::canRenameFromFile() const
+{
+  return d->canRenameFromFile;
+}
+
+bool KProtocolInfo::canRenameToFile() const
+{
+  return d->canRenameToFile;
 }
 
 QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field )  {

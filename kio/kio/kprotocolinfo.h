@@ -54,7 +54,8 @@ public:
    * Read a protocol description file
    * @param path the path of the description file
    */
-  KProtocolInfo( const QString & path);
+  KProtocolInfo( const QString & path); // KDE4: make private and add friend class KProtocolInfoBuildFactory
+                                        // Then we can get rid of the d pointer
 
   /**
    * Returns whether the protocol description file is valid.
@@ -351,6 +352,34 @@ public:
   static bool canCopyToFile( const KURL &url );
 
   /**
+   * Returns whether the protocol can rename (i.e. move fast) files/objects
+   * directly from the filesystem itself. If not, the application will read
+   * files from the filesystem using the file-protocol and pass the data on
+   * to the destination protocol.
+   *
+   * This corresponds to the "renameFromFile=" field in the protocol description file.
+   * Valid values for this field are "true" or "false" (default).
+   *
+   * @param url the url to check
+   * @return true if the protocol can rename/move files from the local file system
+   */
+  static bool canRenameFromFile( const KURL &url );
+
+  /**
+   * Returns whether the protocol can rename (i.e. move fast) files/objects
+   * directly to the filesystem itself. If not, the application will receive
+   * the data from the source protocol and store it in the filesystem using the
+   * file-protocol.
+   *
+   * This corresponds to the "renameToFile=" field in the protocol description file.
+   * Valid values for this field are "true" or "false" (default).
+   *
+   * @param url the url to check
+   * @return true if the protocol can rename files to the local file system
+   */
+  static bool canRenameToFile( const KURL &url );
+
+  /**
    * Returns default mimetype for this URL based on the protocol.
    *
    * This corresponds to the "defaultMimetype=" field in the protocol description file.
@@ -497,7 +526,7 @@ public:
    * support is commonly handled by the http protocol.
    *
    * This corresponds to the "ProxiedBy=" in the protocol description file.
-   * 
+   *
    * @since 3.3
    */
   static QString proxiedBy( const QString& protocol );
@@ -583,6 +612,11 @@ protected:
   bool m_canCopyToFile;
   QString m_config;
   int m_maxSlaves;
+
+  bool canRenameFromFile() const; // for kprotocolinfo_kdecore
+  bool canRenameToFile() const; // for kprotocolinfo_kdecore
+  static KProtocolInfo* findProtocol(const KURL &url); // for kprotocolinfo_kdecore
+
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

@@ -25,16 +25,16 @@
 // This file only contains a few static class-functions that depend on
 // KProtocolManager
 
-static KProtocolInfo* findProtocol(const KURL &url)
+KProtocolInfo* KProtocolInfo::findProtocol(const KURL &url)
 {
    QString protocol = url.protocol();
-   
+
    if ( !KProtocolInfo::proxiedBy( protocol ).isEmpty() )
    {
-   QString dummy;
+      QString dummy;
       protocol = KProtocolManager::slaveProtocol(url, dummy);
    }
-       
+
    return KProtocolInfoFactory::self()->findProtocol(protocol);
 }
 
@@ -198,6 +198,25 @@ bool KProtocolInfo::canCopyToFile( const KURL &url )
     return false;
 
   return prot->m_canCopyToFile;
+}
+
+bool KProtocolInfo::canRenameFromFile( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->canRenameFromFile();
+}
+
+
+bool KProtocolInfo::canRenameToFile( const KURL &url )
+{
+  KProtocolInfo::Ptr prot = findProtocol(url);
+  if ( !prot )
+    return false;
+
+  return prot->canRenameToFile();
 }
 
 QString KProtocolInfo::defaultMimetype( const KURL &url )
