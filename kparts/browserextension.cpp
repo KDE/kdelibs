@@ -568,7 +568,7 @@ bool BrowserHostExtension::openURLInFrame( const KURL &, const KParts::URLArgs &
 
 BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
 {
-    if ( !obj || !obj->children )
+    if ( !obj || !obj->children() )
         return 0L;
 
     // we try to do it on our own, in hope that we are faster than
