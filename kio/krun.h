@@ -92,6 +92,13 @@ public:
   static bool runOldApplication( const QString& _exec, const KURL::List& _urls,
 				 bool _allow_multiple );
 
+  /**
+   * Open the given URL. This function is used after the mime type
+   * is found out. It will search for all services which can handle
+   * the mime type and call @ref #run afterwards.
+   */
+  static bool runURL( const KURL& _url, const QString& _mimetype );
+
 signals:
   void finished();
   void error();
@@ -139,13 +146,6 @@ protected:
   mode_t m_mode;
 
   /**
-   * Open the given URL. This function is used after the mime type
-   * is found out. It will search for all services which can handle
-   * the mime type and call @ref #run afterwards.
-   */
-  static bool runURL( const KURL& _url, const QString& _mimetype );
-
-  /**
    * Runs a shell command.
    *
    * @ref _cmd must be a quoted shell command. You must not append "&"
@@ -180,38 +180,6 @@ private:
   static QString libmapnotify();
   static QString libkmapnotify;
 
-};
-
-
-/**
- * This class handles the openFileManagerWindow call
- * The default implementation is to launch kfmclient,
- * but this behaviour has to be overriden by kfmclient (obviously !)
- * and by konqueror (which can open a window by itself)
- */
-class KFileManager
-{
-public:
-  KFileManager() { pFileManager = this; }
-  virtual ~KFileManager() { pFileManager = 0; }
-
-  /**
-   * Opens a file manager window for _url
-   * @returns true if the operation succeeded
-   */
-  virtual bool openFileManagerWindow( const KURL& _url );
-
-  /**
-   * Call this to get the (only) instance of KFileManager
-   */
-  static KFileManager * getFileManager() {
-    if (!pFileManager)
-      pFileManager = new KFileManager;
-    return pFileManager;
-  }
-
-private:
-  static KFileManager * pFileManager;
 };
 
 /**

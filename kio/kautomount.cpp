@@ -49,7 +49,8 @@ void KAutoMount::slotResult( KIO::Job * job )
     QString mp = KIO::findDeviceMountPoint( m_strDevice );
 
     if ( m_bShowFilemanagerWindow )
-      KFileManager::getFileManager()->openFileManagerWindow( mp );
+      KRun::runURL( mp, "inode/directory" );
+    //      KFileManager::getFileManager()->openFileManagerWindow( mp );
 
     // Update of window which contains the desktop entry which is used for mount/unmount
     kdDebug(7015) << " mount finished : updating " << m_desktopFile << endl;

@@ -533,7 +533,8 @@ bool KDEDesktopMimeType::runFSDevice( const KURL& _url, const KSimpleConfig &cfg
     QString mp2 = "file:";
     mp2 += mp;
     // Open a new window
-    KFileManager::getFileManager()->openFileManagerWindow( mp2 );
+    //    KFileManager::getFileManager()->openFileManagerWindow( mp2 );
+    KRun::runURL( mp2, "inode/directory" );
   }
   else
   {

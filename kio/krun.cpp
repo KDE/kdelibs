@@ -42,18 +42,12 @@
 #include <qtextstream.h>
 
 
-KFileManager * KFileManager::pFileManager = 0L;
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
 
 bool KRun::runURL( const KURL& u, const QString& _mimetype )
 {
 
-  if ( _mimetype == "inode/directory" )
-  {
-    KFileManager::getFileManager()->openFileManagerWindow( u );
-    return true;
-  }
-  else if ( _mimetype == "inode/directory-locked" )
+  if ( _mimetype == "inode/directory-locked" )
   {
     KMessageBoxWrapper::error( 0L,
             i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>").arg(u.url()) );
@@ -760,20 +754,6 @@ void KRun::clientStarted(
     "clientStarted(QString,QString,int)",
     params
   );
-}
-
-/****************/
-bool KFileManager::openFileManagerWindow( const KURL& _url )
-{
-  QString cmd = "kfmclient openURL ";
-  QString urlStr = _url.url();
-
-  urlStr.replace(QRegExp("'"), "'\"'\"'");
-  urlStr.prepend("'");
-  urlStr.append("'");
-  cmd += urlStr;
-  system( cmd );
-  return true; // assume kfmclient succeeded
 }
 
 /****************/
