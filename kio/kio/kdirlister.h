@@ -188,7 +188,7 @@ public:
    * Returns true if no io operation is currently in progress.
    */
   bool isFinished() const;
-  
+
   /**
    * @return the file item for url() itself (".")
    */
@@ -394,23 +394,23 @@ signals:
    * Examples of message are "Resolving host", "Connecting to host...", etc.
    */
   void infoMessage( const QString& msg );
-          
+
   /**
    * Progress signal showing the overall progress of the KDirLister.
    * This allows using a progress bar very easily. (see @ref KProgress)
    */
   void percent( int percent );
-  
+
   /**
    * Emitted when we know the size of the jobs.
    */
   void totalSize( KIO::filesize_t size );
-                                           
+
   /**
-   * Regularly emitted to show the progress of this KDirLister. 
+   * Regularly emitted to show the progress of this KDirLister.
    */
   void processedSize( KIO::filesize_t size );
-  
+
   /**
    * Emitted to display information about the speed of the jobs.
    */
@@ -444,6 +444,9 @@ protected:
    */
   virtual bool doNameFilter( const QString& name, const QPtrList<QRegExp>& filters ) const;
   virtual bool doMimeFilter( const QString& mime, const QStringList& filters ) const;
+  /**
+   * @internal
+   */
   bool doMimeExcludeFilter( const QString& mimeExclude, const QStringList& filters ) const;
 
   /**
