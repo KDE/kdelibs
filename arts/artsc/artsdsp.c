@@ -98,6 +98,7 @@ typedef void* (*orig_mmap_ptr)(void *start, size_t length, int prot,
                                  int flags, int fd, off_t offset);
 typedef int (*orig_munmap_ptr)(void *start, size_t length);
 typedef FILE* (*orig_fopen_ptr)(const char *path, const char *mode);
+typedef int (*orig_access_ptr)(const char *pathname, int mode);   
 
 static orig_open_ptr orig_open;
 static orig_close_ptr orig_close;
@@ -106,6 +107,7 @@ static orig_write_ptr orig_write;
 static orig_mmap_ptr orig_mmap;
 static orig_munmap_ptr orig_munmap;
 static orig_fopen_ptr orig_fopen;
+static orig_access_ptr orig_access;
 
 static int artsdsp_debug = 0;
 static int artsdsp_init = 0;
@@ -141,6 +143,7 @@ static void artsdsp_doinit()
 	orig_mmap = (orig_mmap_ptr)dlsym(RTLD_NEXT,"mmap");
 	orig_munmap = (orig_munmap_ptr)dlsym(RTLD_NEXT,"munmap");
 	orig_fopen = (orig_fopen_ptr)dlsym(RTLD_NEXT,"fopen");
+	orig_access = (orig_access_ptr)dlsym(RTLD_NEXT,"access");
 }
 
 static void artsdspdebug(const char *fmt,...)
@@ -527,6 +530,17 @@ int close(int fd)
       orig_close(sndfd);
       sndfd = -1;
     }
+  return 0;
+}
+
+int access(const char *pathname, int mode)
+{
+  CHECK_INIT();
+
+  if (!is_sound_device(pathname))    /* original open for anything but sound */
+    return orig_access (pathname, mode);
+  else
+    artsdspdebug ("aRts: /dev/dsp access...\n");
   return 0;
 }
 
