@@ -28,6 +28,8 @@
 #include <qpixmap.h>
 
 #undef WithdrawnState
+#undef NormalState
+#undef IconicState
 
 /**
    The class KWin allows applications to get or modify window
