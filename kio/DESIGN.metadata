@@ -87,6 +87,7 @@ ssl_parent_ip	string		Set in TCPSlaveBase and in the caller.  If this is the par
 
 ssl_parent_cert	string		Set in TCPSlaveBase and in the caller.  As above, this must be passed to child frames by the caller so that it can compare against the certificate presented in the child frames.  It is a base64 encoding of the X.509 presented.
 
+main_frame_request	bool	Actually for SSL, this is set in the caller to tell TCPSlaveBase if this is the request for the main frame of an html page. (dfault: true)
 
 
 ** NOTE: Anything in quotes ("") under Value(s) indicates literal value.
