@@ -693,6 +693,12 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 				 &(d->majorVersion), &(d->minorVersion),
 				 &(d->vendor), &(d->release), 1024, errBuf);
 
+    if (d->vendor) 
+	free(d->vendor);
+    d->vendor = 0;
+    if (d->release)
+	free(d->release);
+    d->release = 0;
 
     if (setupstat == IceProtocolSetupFailure ||
 	setupstat == IceProtocolSetupIOError) {
