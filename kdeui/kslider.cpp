@@ -101,7 +101,7 @@ void KSlider::drawFocusBar(QPainter *painter, const QRect & )
 }
 
 
-void KSlider::paintSlider(QPainter *painter, const QRect &re )
+void KSlider::paintSlider(QPainter *painter, const QColorGroup &, const QRect &re )
 {
   QPoint pos;
 
@@ -288,7 +288,7 @@ void KSlider::paintEvent( QPaintEvent *qpe )
 
   painter.fillRect(qpe->rect().x(),qpe->rect().y(),qpe->rect().width(),qpe->rect().height(), colorGroup().background() );
   // painter.eraseRect(qpe->rect().x(),qpe->rect().y(),qpe->rect().width(),qpe->rect().height());
-  paintSlider(&painter, rect);
+  paintSlider(&painter, colorGroup(), rect);
 
   if ( orientation() == QSlider::Vertical ) {
     QRect TickRect(ARROW_LENGTH+1,0,width(),height());
@@ -349,7 +349,7 @@ void KSlider::focusInEvent( QFocusEvent * )
   QRect rect(x(),y(),width(),height());
   painter.begin( this );
   isFocussed = true;
-  paintSlider(&painter,rect);
+  paintSlider(&painter, colorGroup(), rect);
   painter.end();
 }
 
@@ -359,7 +359,7 @@ void KSlider::focusOutEvent( QFocusEvent * )
   QRect rect(x(),y(),width(),height());
   painter.begin( this );
   isFocussed = false;
-  paintSlider(&painter,rect);
+  paintSlider(&painter, colorGroup(), rect);
   painter.end();
 }
 #include "kslider.moc"

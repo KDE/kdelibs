@@ -65,7 +65,7 @@ protected:
   virtual void valueChange();
   virtual void rangeChange();
   virtual void paletteChange(const QPalette &);
-  virtual void paintSlider(QPainter *painter, const QRect &rect );
+  virtual void paintSlider(QPainter *painter, const QColorGroup & g, const QRect &rect );
   virtual void backgroundColorChange(const QPalette &);
   virtual void focusInEvent( QFocusEvent * );
   virtual void focusOutEvent( QFocusEvent * );
