@@ -38,6 +38,9 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <grp.h>
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 
 /* Misc helper functions: */
 static int my_seteuid( uid_t euid)

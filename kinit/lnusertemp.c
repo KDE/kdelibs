@@ -33,8 +33,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <pwd.h>
-
-
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 
 int check_tmp_dir(const char *tmp_dir)
 {
