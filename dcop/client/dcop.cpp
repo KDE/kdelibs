@@ -316,12 +316,20 @@ void showHelp( int exitCode = 0 )
 	 << "  --help          Show help about options" << endl
 	 << "" << endl
 	 << "Options:" << endl
-	 << "  --pipe          Call DCOP for each line read from stdin" << endl
-	 << "                  This is roughly equivalent to calling" << endl
-	 << "                      'while read line ; do dcop $line ; done'" << endl
-	 << "                  but because no new dcop instance has to be started for" << endl
-	 << "                  each line this is generally much faster, especially" << endl
-	 << "                  for the slower GNU dynamic linkers." << endl
+	 << "  --pipe          Call DCOP for each line read from stdin. The string '%1'" << endl
+	 << "                  will be used in the argument list as a placeholder for" << endl
+	 << "                  the substituted line." << endl
+	 << "                  For example," << endl
+	 << "                      dcop --pipe konqueror html-widget1 evalJS %1" << endl
+	 << "                  is equivalent to calling" << endl
+	 << "                      while read line ; do" << endl
+	 << "                          dcop konqueror html-widget1 evalJS \"$line\"" << endl
+	 << "                      done" << endl
+	 << "                  in bash, but because no new dcop instance has to be started" << endl
+	 << "                  for each line this is generally much faster, especially for" << endl
+	 << "                  the slower GNU dynamic linkers." << endl
+	 << "                  The '%1' placeholder cannot be used to replace e.g. the" << endl
+	 << "                  program, object or method name." << endl
 	 << "  --user <user>   Connect to the given user's DCOP server. This option will" << endl
 	 << "                  ignore the values of the environment vars $DCOPSERVER and" << endl
 	 << "                  $ICEAUTHORITY, even if they are set." << endl
