@@ -15,8 +15,6 @@
 #include <qintdict.h> 
 #include <qpopupmenu.h>
 
-class KQuickHelpWindow;
-
 //////////////////////////////////////////////////////////////////////////////
 /**
  * This class simplifies the use of KAccel and KKeyDialog with menus.
@@ -125,10 +123,6 @@ protected:
   QIntDict<char> actions;
   // if the quote character has been typed
   bool quote;
-  // information window
-  KQuickHelpWindow *kq;
-  // trap "hide" calls
-  void hide();
 
 protected slots:
   // called when selected menu item changes

@@ -8,10 +8,10 @@
 
 #include <qmessagebox.h>
 #include <qregexp.h>
+#include <qwhatsthis.h>
 
 #include <kaccel.h>
 #include <klocale.h>
-#include <kquickhelp.h>
 
 #include "kaccelmenu.h"
 
@@ -21,7 +21,6 @@ KAccelMenu::KAccelMenu(KAccel *k, QWidget * parent, const char * name ):
 {
   keys = k;
   quote = FALSE;
-  kq = 0;
   connect(this,SIGNAL(highlighted (int)),SLOT(highl(int)));
   connect(this,SIGNAL( aboutToShow()),SLOT(aboutTS()));
 }
@@ -109,9 +108,6 @@ void KAccelMenu::popMsg () {
   int idx, yp;
   QString msg;
 
-  if (!kq)
-    kq = new KQuickHelpWindow();
-
   idx = indexOf(cid);
 
   yp = 0;
@@ -122,11 +118,12 @@ void KAccelMenu::popMsg () {
     if (keys->configurable(actions[cid])) {
       msg = i18n("Change shortcut for: ");
       msg += keys->description(actions[cid]);
-      kq->popup(msg, pos().x() + width()
-		,pos().y() + yp + itemHeight(idx));
+      QWhatsThis::add(this, msg);
+      QWhatsThis::enterWhatsThisMode();
+      QWhatsThis::remove(this);
     } else {
       msg = i18n("Global Key: cannot change shortcut");
-      QMessageBox::warning(this, "Kpackage", msg, i18n("OK"));
+      QMessageBox::warning(this, "KAccelMenu Warning", msg, i18n("OK"));
     }
   }
 }
@@ -173,9 +170,6 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
     }
 
     if ( /* !needQuote ||*/  quote || deleteKey) {
-      if (kq) {
-	kq->hide();
-      }
       if (actions[cid]) {
 	if (keys->configurable(actions[cid])) {
 	  if (deleteKey && !quote) {
@@ -208,21 +202,12 @@ void KAccelMenu::keyPressEvent ( QKeyEvent * e)
 void KAccelMenu::highl(int id) {
   cid = id;
   quote = FALSE;
-  if (kq)
-    kq->hide();
 }
 
 void KAccelMenu::aboutTS() {
   cid = idAt(1);
   quote = FALSE;
-  if (kq)
-    kq->hide();
 }
 
-void KAccelMenu::hide() {
-    if (kq)
-    kq->hide();
-    QPopupMenu::hide();
-}
 //////////////////////////////////////////////////////////////////////////////
 #include <kaccelmenu.moc>
