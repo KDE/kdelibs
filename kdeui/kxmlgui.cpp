@@ -57,6 +57,7 @@ struct KXMLGUIContainerClient
   QList<QAction> m_actions;
   bool m_mergedClient;
   QValueList<int> m_separators;
+  QString m_groupName; //is empty if no group client
 };
 
 template class QList<KXMLGUIContainerClient>;
@@ -73,7 +74,7 @@ template class QList<KXMLGUIContainerNode>;
  */
 struct KXMLGUIContainerNode
 {
-  KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent = 0L, KXMLGUIServant *_servant = 0L, KXMLGUIBuilder *_builder = 0L, bool _merged = false, int id = -1 );
+  KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent = 0L, KXMLGUIServant *_servant = 0L, KXMLGUIBuilder *_builder = 0L, bool _merged = false, int id = -1, const QString &groupName = QString::null );
 
   KXMLGUIContainerNode *parent;
   KXMLGUIServant *servant;
@@ -83,6 +84,8 @@ struct KXMLGUIContainerNode
 
   QString tagName;
   QString name;
+
+  QString groupName; //is empty if the container is in no group
 
   QList<KXMLGUIContainerClient> clients;
   QList<KXMLGUIContainerNode> children;
@@ -204,7 +207,7 @@ KXMLGUIBuilder *KXMLGUIServant::servantBuilder() const
   return d->m_builder;
 }
 
-KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent, KXMLGUIServant *_servant, KXMLGUIBuilder *_builder, bool _merged, int id )
+KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent, KXMLGUIServant *_servant, KXMLGUIBuilder *_builder, bool _merged, int id, const QString &_groupName )
 {
   container = _container;
   containerId = id;
@@ -213,6 +216,7 @@ KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &
   builder = _builder;
   tagName = _tagName;
   name = _name;
+  groupName = _groupName;
   children.setAutoDelete( true );
   clients.setAutoDelete( true );
   index = 0;
@@ -328,7 +332,9 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
   static QString tagAction = QString::fromLatin1( "action" );
   static QString tagMerge = QString::fromLatin1( "merge" );
   static QString tagSeparator = QString::fromLatin1( "separator" );
+  static QString tagDefineGroup = QString::fromLatin1( "definegroup" );
   static QString attrName = QString::fromLatin1( "name" );
+  static QString attrGroup = QString::fromLatin1( "group" );
 
   /*
    * This list contains references to all the containers we created on the current level.
@@ -338,7 +344,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
   QList<QWidget> containerList;
 
   KXMLGUIContainerClient *containerClient = 0L;
-
+  
   /*
    * When we encounter the "Merge" tag, then have to make sure to ingore it for the actions on the
    * current level. Example:
@@ -362,17 +368,27 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
      * The "Merge" tag specifies that all containers and actions from *other* servants should be
      * inserted/plugged in at the current index, and not at the "end" .
      */
-    if ( tag == tagMerge )
+    if ( tag == tagMerge || tag == tagDefineGroup )
     {
       QString mergingName = e.attribute( attrName );
       if ( mergingName.isEmpty() )
+      {
+        if ( tag == tagDefineGroup )
+	{
+          kDebugError( 1000, "cannot define group without name!");
+	  continue;
+	}
         mergingName = d->m_defaultMergingName;
+      }
 
-      QMap<QString,int>::Iterator mergingIt = parentNode->mergingIndices.find( mergingName );
-      if ( mergingIt == parentNode->mergingIndices.end() )
-        parentNode->mergingIndices.insert( mergingName, parentNode->index );
-      else
-        mergingIt.data() = parentNode->index;
+      if ( tag == tagDefineGroup )
+        mergingName.prepend( attrGroup ); //avoid possible name clashes by prepending "group" to group
+                                          //definitions
+      
+      if ( parentNode->mergingIndices.contains( mergingName ) )
+        continue; //do not allow the redefinition of merging indices!
+      
+      parentNode->mergingIndices.insert( mergingName, parentNode->index );
 
       ignoreMergingIndex = true;
     }
@@ -382,15 +398,24 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
         continue;
 
       QMap<QString,int>::Iterator it;
-	
+      
+      QString group = e.attribute( attrGroup );
+      if ( !group.isEmpty() )
+        group.prepend( attrGroup );
+      
       int idx = parentNode->index;
-      bool merge = calcMergingIndex( parentNode, it );
+      bool merge = calcMergingIndex( parentNode, group, it );
 	
       if ( merge && !ignoreMergingIndex )
 	idx = it.data();
       else
 	it = parentNode->mergingIndices.end();
 
+      containerClient = findClient( parentNode, group );
+      
+      containerClient->m_mergedClient = merge;
+      
+      /*      
       if ( !containerClient )
       {
 	containerClient = new KXMLGUIContainerClient;
@@ -398,7 +423,8 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	containerClient->m_mergedClient = merge;
 	parentNode->clients.append( containerClient );
       }
-
+      */
+      
       if ( tag == tagAction )
       {
         QAction *action = m_servant->action( e );
@@ -437,9 +463,13 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
       else
       {	
 	QMap<QString,int>::Iterator it;
+
+	QString group = e.attribute( attrGroup );
+        if ( !group.isEmpty() )
+          group.prepend( attrGroup );
 	
         int idx = parentNode->index;
-	bool merge = calcMergingIndex( parentNode, it );
+	bool merge = calcMergingIndex( parentNode, group, it );
 
 	if ( merge && !ignoreMergingIndex )
 	  idx = it.data();
@@ -472,7 +502,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	{
   	  containerList.append( container );
 	
-          containerNode = new KXMLGUIContainerNode( container, e.tagName(), e.attribute( attrName ), parentNode, m_servant, builder, merge, id );
+          containerNode = new KXMLGUIContainerNode( container, e.tagName(), e.attribute( attrName ), parentNode, m_servant, builder, merge, id, group );
 	}
 	
         buildRecursive( e, containerNode );
@@ -492,9 +522,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
     else
       ++childIt;
 
-  QMap<QString,int>::Iterator mergingIt;
-
-  calcMergingIndex( node, mergingIt );
+  QMap<QString,int>::Iterator mergingIt = node->mergingIndices.end();
 
   QListIterator<KXMLGUIContainerClient> clientIt( node->clients );
 
@@ -518,8 +546,8 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
           actionIt.current()->unplug( (QWidget *)node->container );
         }
 	
-	//now we have to adjust/correct the index. We do it the fast'n'dirty way by just substracting
-	//the amount of actions we just unplugged ;-)
+        calcMergingIndex( node, clientIt.current()->m_groupName, mergingIt );
+	
 	int idx = node->index;
 
 	if ( clientIt.current()->m_mergedClient )
@@ -530,9 +558,6 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
 	adjustMergingIndices( node, idx, - ( clientIt.current()->m_actions.count() + clientIt.current()->m_separators.count() ), mergingIt );
 	
 	node->clients.removeRef( clientIt.current() );
-	
-	//hmmm, actually we should be able to exit the loop here, because one servant can only have one client
-	//per container
       }
       else
         ++clientIt;
@@ -553,7 +578,7 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
 
       KXMLGUIContainerNode *p = node->parent;
 
-      calcMergingIndex( p, mergingIt );
+      calcMergingIndex( p, node->groupName, mergingIt );
 
       int idx = p->index;
 
@@ -592,10 +617,16 @@ bool KXMLGUIFactory::removeRecursive( KXMLGUIContainerNode *node )
   return false;
 }
 
-bool KXMLGUIFactory::calcMergingIndex( KXMLGUIContainerNode *node, QMap<QString,int>::Iterator &it )
+bool KXMLGUIFactory::calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName, QMap<QString,int>::Iterator &it )
 {
   QMap<QString,int>::Iterator defaultMergingIt = node->mergingIndices.find( d->m_defaultMergingName );
-  QMap<QString,int>::Iterator mergingIt = node->mergingIndices.find( d->m_servantName );
+  QMap<QString,int>::Iterator mergingIt;
+  
+  if ( !mergingName.isEmpty() )
+    mergingIt = node->mergingIndices.find( mergingName );
+  else
+    mergingIt = node->mergingIndices.find( d->m_servantName );
+  
   QMap<QString,int>::Iterator mergingEnd = node->mergingIndices.end();
   it = mergingEnd;
 
@@ -705,3 +736,26 @@ QWidget *KXMLGUIFactory::createContainer( QWidget *parent, int index, const QDom
 
   return res;
 }
+
+KXMLGUIContainerClient *KXMLGUIFactory::findClient( KXMLGUIContainerNode *node, const QString &groupName )
+{
+  QListIterator<KXMLGUIContainerClient> clientIt( node->clients );
+  
+  for (; clientIt.current(); ++clientIt )
+    if ( clientIt.current()->m_servant == m_servant )
+    {
+      if ( groupName.isEmpty() )
+        return clientIt.current();
+      
+      if ( groupName == clientIt.current()->m_groupName )
+        return clientIt.current();
+    }
+  
+  KXMLGUIContainerClient *client = new KXMLGUIContainerClient;
+  client->m_servant = m_servant;
+  client->m_groupName = groupName;
+  
+  node->clients.append( client );
+  
+  return client;
+} 

@@ -124,6 +124,7 @@ class KXMLGUIServant
 };
 
 class KXMLGUIContainerNode;
+class KXMLGUIContainerClient;
 
 /**
  * @internal
@@ -161,7 +162,7 @@ class KXMLGUIFactory
   void buildRecursive( const QDomElement &element, KXMLGUIContainerNode *parentNode );
   bool removeRecursive( KXMLGUIContainerNode *node );
 
-  bool calcMergingIndex( KXMLGUIContainerNode *node, QMap<QString,int>::Iterator &it );
+  bool calcMergingIndex( KXMLGUIContainerNode *node, const QString &mergingName, QMap<QString,int>::Iterator &it );
   void adjustMergingIndices( KXMLGUIContainerNode *node, int idx, int val, const QMap<QString,int>::Iterator &it );
 
   void pruneContainers( KXMLGUIContainerNode *node );
@@ -173,6 +174,8 @@ class KXMLGUIFactory
   QWidget *findRecursive( KXMLGUIContainerNode *node );
 
   QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id, KXMLGUIBuilder **builder );
+
+  KXMLGUIContainerClient *findClient( KXMLGUIContainerNode *node, const QString &groupName );
 
   KXMLGUIServant *m_servant;
   KXMLGUIBuilder *m_builder;
