@@ -401,7 +401,7 @@ void KPGeneralPage::getOptions(QMap<QString,QString>& opts, bool incldef)
 			{
 				case DUPLEX_NONE_ID: value = "None"; break;
 				case DUPLEX_LONG_ID: value = "DuplexNoTumble"; break;
-				case DUPLEX_SHORT_ID: value = "DuplexNoTumble"; break;
+				case DUPLEX_SHORT_ID: value = "DuplexTumble"; break;
 			}
 			if (incldef || value != opt->get("default")) opts["Duplex"] = value;
 		}
