@@ -30,7 +30,7 @@ uint KStdAccel::key(StdAccel id)
     QString a = action(id);
     if (!saver.config()->hasKey(a))
        return defaultKey(id);
-    
+
     QString s = saver.config()->readEntry(a);
     return KAccel::stringToKey(s);
 }
@@ -76,6 +76,8 @@ QString KStdAccel::action(StdAccel id)
      case Cut:              return "Cut";
      case Copy:             return "Copy";
      case Paste:            return "Paste";
+     case DeleteWordBack:   return "DeleteWordBack";
+     case DeleteWordForward:return "DeleteWordForward";
      case Undo:             return "Undo";
      case Redo:             return "Redo";
      case Find:             return "Find";
@@ -122,6 +124,8 @@ uint KStdAccel::defaultKey(StdAccel id)
      case Cut:              return Qt::CTRL + Qt::Key_X;
      case Copy:             return Qt::CTRL + Qt::Key_C;
      case Paste:            return Qt::CTRL + Qt::Key_V;
+     case DeleteWordBack:   return Qt::CTRL + Qt::Key_Backspace;
+     case DeleteWordForward:return Qt::CTRL + Qt::Key_Delete;
      case Undo:             return Qt::CTRL + Qt::Key_Z;
      case Redo:             return Qt::SHIFT + Qt::CTRL + Qt::Key_Z;
      case Find:             return Qt::CTRL + Qt::Key_F;
@@ -150,10 +154,10 @@ uint KStdAccel::defaultKey(StdAccel id)
      case Up:               return Qt::ALT + Qt::Key_Up;
      case Back:             return Qt::ALT + Qt::Key_Left;
      case Forward:          return Qt::ALT + Qt::Key_Right;
-	case ShowMenubar:      return Qt::CTRL + Qt::Key_M;
+     case ShowMenubar:      return Qt::CTRL + Qt::Key_M;
      case NB_STD_ACCELS:    return 0;
     }
-    
+
     return 0;
 }
 
@@ -169,6 +173,8 @@ QString KStdAccel::description(StdAccel id)
      case Cut:              return i18n("Cut");
      case Copy:             return i18n("Copy");
      case Paste:            return i18n("Paste");
+     case DeleteWordBack:   return i18n("Delete Word Backwards");
+     case DeleteWordForward:return i18n("Delete Word Forward");
      case Undo:             return i18n("Undo");
      case Redo:             return i18n("Redo");
      case Find:             return i18n("Find");
@@ -246,6 +252,16 @@ uint KStdAccel::copy()
 uint KStdAccel::paste()
 {
   return key(Paste);
+}
+
+uint KStdAccel::deleteWordBack()
+{
+  return key(DeleteWordBack);
+}
+
+uint KStdAccel::deleteWordForward()
+{
+  return key(DeleteWordForward);
 }
 
 uint KStdAccel::undo()

@@ -43,7 +43,7 @@ public:
     Find, Replace, Insert, Home, End, Prior, Next, Help, FindNext, FindPrev,
     ZoomIn, ZoomOut, AddBookmark, TextCompletion, PrevCompletion, NextCompletion,
     RotateUp, RotateDown, PopupMenuContext, WhatThis, Reload, SelectAll, Up, Back,
-    Forward, ShowMenubar, GotoLine, NB_STD_ACCELS
+    Forward, ShowMenubar, GotoLine, DeleteWordBack, DeleteWordForward, NB_STD_ACCELS
   };
 
   /** Open file. Default: Ctrl-o */
@@ -72,6 +72,12 @@ public:
 
   /** Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v */
   static uint paste();
+
+  /** Delete a word back from mouse/cursor position. Default: Ctrl-Backspace */
+  static uint deleteWordBack();
+
+  /** Delete a word forward from mouse/cursor position. Default: Ctrl-Delete */
+  static uint deleteWordForward();
 
   /** Undo last operation. Default: Ctrl-z */
   static uint undo();
