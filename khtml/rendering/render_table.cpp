@@ -1278,11 +1278,11 @@ void RenderTable::calcRowHeight(int r)
 
 void RenderTable::layout()
 {
-    recalcCells();
-//kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
+    assert( !layouted() );
 
-    if (layouted() && !containsPositioned() && _lastParentWidth == containingBlockWidth() && !isPositioned())
-        return;
+//     kdDebug( 6040 ) << renderName() << "(Table)"<< this << " ::layout0() width=" << width() << ", layouted=" << layouted() << endl;
+    
+    recalcCells();
 
     _lastParentWidth = containingBlockWidth();
 
@@ -1295,12 +1295,6 @@ void RenderTable::layout()
     if ( isPositioned() )
         calcWidth();
 
-    FOR_EACH_CELL( r, c, cell)
-    {
-        cell->calcMinMaxWidth();
-    }
-    END_FOR_EACH
-
     calcColWidth();
 
     setCellWidths();
@@ -1309,12 +1303,20 @@ void RenderTable::layout()
     if(tCaption && tCaption->style()->captionSide() != CAPBOTTOM)
     {
         tCaption->setPos(m_height, tCaption->marginLeft());
-        tCaption->layout();
+	if ( !tCaption->layouted() )
+	    tCaption->layout();
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
+    // layout child objects
+    RenderObject *child = firstChild();
+    while( child ) {
+	if ( child != tCaption && !child->layouted() )
+	    child->layout();
+	child = child->nextSibling();
+    }
+    
     // layout rows
-
     layoutRows(m_height);
 
     m_height += rowHeights[totalRows];
@@ -1323,7 +1325,8 @@ void RenderTable::layout()
     if(tCaption && tCaption->style()->captionSide()==CAPBOTTOM)
     {
         tCaption->setPos(tCaption->marginLeft(), m_height);
-        tCaption->layout();
+	if ( !tCaption->layouted() )
+	    tCaption->layout();
         m_height += tCaption->height() + tCaption->marginTop() + tCaption->marginBottom();
     }
 
@@ -1346,24 +1349,7 @@ void RenderTable::layoutRows(int yoff)
     int rHeight;
     int indx, rindx;
 
-    for ( unsigned int r = 0; r < totalRows; r++ )
-    {
-        for ( unsigned int c = 0; c < totalCols; c++ )
-        {
-            RenderTableCell *cell = cells[r][c];
-            if (!cell)
-                continue;
-            if ( c < totalCols - 1 && cell == cells[r][c+1] )
-                continue;
-            if ( r < (int)totalRows - 1 && cell == cells[r+1][c] )
-                continue;
-
-    	    cell->calcVerticalMargins();
-            cell->layout();
-            cell->setCellTopExtra(0);
-            cell->setCellBottomExtra(0);
-        }
-
+    for ( unsigned int r = 0; r < totalRows; r++ ) {
         calcRowHeight(r);
     }
 
@@ -1499,9 +1485,10 @@ void RenderTable::setCellWidths()
 #ifdef TABLE_DEBUG
             kdDebug( 6040 ) << "0x" << this << ": setting width " << r << "/" << indx << "-" << c << " (0x" << cell << "): " << w << " " << endl;
 #endif
-            if (cell->width() != w)
-                cell->setLayouted(false);
+	    int oldWidth = cell->width();
             cell->setWidth( w );
+            if ( w != oldWidth )
+                cell->setLayouted(false);
         }
     END_FOR_EACH
 
@@ -1555,12 +1542,16 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
 void RenderTable::calcMinMaxWidth()
 {
+    assert( !minMaxKnown() );
+    
     recalcCells();
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
 
     calcColMinMax();
+    
+    setMinMaxKnown();
 }
 
 void RenderTable::close()
@@ -1568,17 +1559,7 @@ void RenderTable::close()
 //    kdDebug( 6040 ) << "RenderTable::close()" << endl;
     setParsing(false);
     setLayouted(false);
-    updateSize();
-}
-
-void RenderTable::updateSize()
-{
-//    kdDebug( 6040 ) << "RenderTable::updateSize()" << endl;
-
-//    setMinMaxKnown(false);
-//    setLayouted(false);
-//    parent()->updateSize();
-     RenderFlow::updateSize();
+    setMinMaxKnown(false);
 }
 
 int RenderTable::borderTopExtra()
@@ -1858,6 +1839,25 @@ void RenderTableRow::dump(QTextStream *stream, QString ind) const
     RenderContainer::dump(stream,ind);
 }
 
+void RenderTableRow::layout()
+{
+    assert( !layouted() );
+    
+    RenderObject *child = firstChild();
+    while( child ) {
+	assert( child->isTableCell() );
+	if ( !child->layouted() ) {
+	    RenderTableCell *cell = static_cast<RenderTableCell *>(child);
+	    cell->calcVerticalMargins();
+	    cell->layout();
+	    cell->setCellTopExtra(0);
+	    cell->setCellBottomExtra(0);
+	}
+	child = child->nextSibling();
+    }
+    setLayouted();
+}
+
 // -------------------------------------------------------------------------
 
 RenderTableCell::RenderTableCell()
@@ -1884,6 +1884,7 @@ RenderTableCell::~RenderTableCell()
 
 void RenderTableCell::calcMinMaxWidth()
 {
+    assert( !minMaxKnown() );
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
@@ -1900,48 +1901,29 @@ void RenderTableCell::calcMinMaxWidth()
 
     if (m_minWidth!=oldMin || m_maxWidth!=oldMax)
         m_table->addColInfo(this);
-
+    
+    setMinMaxKnown();
 }
 
 void RenderTableCell::calcWidth()
 {
 }
 
+void RenderTableCell::setWidth( int width )
+{
+    if ( width != m_width ) {
+	m_width = width;
+	m_widthChanged = true;
+    }
+}
+
 void RenderTableCell::close()
 {
-    //kdDebug( 6040 ) << "renderFlow::close()" << endl;
-    setParsing(false);
-    if(lastChild() && lastChild()->isAnonymousBox())
-    {
-        lastChild()->close();
-        //kdDebug( 6040 ) << "RenderFlow::close(): closing anonymous box" << endl;
-    }
-
-    //if(lastChild())
-    //    m_height += lastChild()->height() + lastChild()->marginBottom();
-    if(style()->hasBorder())
-        m_height += borderBottom();
-    if(style()->hasPadding())
-        m_height += paddingBottom();
-
-    setMinMaxKnown(false);
-    calcMinMaxWidth();
-    setLayouted(false);
-
-    m_table->updateSize();
+    RenderFlow::close();
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderTableCell)::close() total height =" << m_height << endl;
 #endif
-}
-
-
-void RenderTableCell::updateSize()
-{
-//    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::updateSize()" << endl;
-
-    RenderFlow::updateSize();
-
 }
 
 
@@ -2067,6 +2049,7 @@ void RenderTableCell::dump(QTextStream *stream, QString ind) const
 
     RenderFlow::dump(stream,ind);
 }
+
 
 // -------------------------------------------------------------------------
 

@@ -401,7 +401,8 @@ void ElementImpl::recalcStyle( StyleChange change )
 	    if ( !m_render->layouted() ) {
 		if ( m_render->isInline() )
 		    r = m_render->containingBlock();
-		r->updateSize();
+		r->setMinMaxKnown( false );
+		r->setLayouted( false );
 	    }
 	    r->repaint();
 	}

@@ -27,6 +27,7 @@
 using namespace khtml;
 
 //#define BOX_DEBUG
+#define SPEED_DEBUG
 
 RenderRoot::RenderRoot(KHTMLView *view)
     : RenderFlow()
@@ -89,9 +90,13 @@ void RenderRoot::calcWidth()
 
 void RenderRoot::calcMinMaxWidth()
 {
+    assert( !minMaxKnown() );
+    
     RenderFlow::calcMinMaxWidth();
 
     m_maxWidth = m_minWidth;
+    
+    setMinMaxKnown();
 }
 
 //#define SPEED_DEBUG
@@ -106,7 +111,8 @@ void RenderRoot::layout()
     QTime qt;
     qt.start();
 #endif
-    calcMinMaxWidth();
+    if ( recalcMinMax() )
+	recalcMinMaxWidths();
 #ifdef SPEED_DEBUG
     kdDebug() << "RenderRoot::calcMinMax time used=" << qt.elapsed() << endl;
     // this fixes frameset resizing
@@ -236,86 +242,13 @@ void RenderRoot::repaint()
     if (m_view && !m_printingMode) m_view->updateContents(0, 0, docWidth(), docHeight());
 }
 
-void RenderRoot::updateSize()
-{
-    //kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateSize()" << endl;
-    setMinMaxKnown(false);
-    calcMinMaxWidth();
-
-    updateHeight();
-}
-
-
-void RenderRoot::updateHeight()
-{
-
-    if (!m_view) return;
-
-    //kdDebug( 6040 ) << renderName() << "(RenderRoot)::updateHeight() timer=" << updateTimer.elapsed() << endl;
-    //int oldMin = m_minWidth;
-    setLayouted(false);
-
-    if (parsing())
-    {
-        if (!updateTimer.isNull() && updateTimer.elapsed() < timeout)
-            return;
-        else
-            updateTimer.start();
-    }
-
-    int oldHeight = docHeight();
-
-    m_view->layout(true);
-
-    //kdDebug(0) << "root layout, time used=" << updateTimer.elapsed() << endl;
-
-    int h = docHeight();
-    int w = docWidth();
-    if(h != oldHeight || h < m_view->visibleHeight())
-    {
-        if( h < m_view->visibleHeight() )
-            h = m_view->visibleHeight();
-        m_view->resizeContents(w, h);
-    }
-    m_view->repaintContents( 0, 0, w, h, FALSE );       //sync repaint!
-
-    if(parsing()) {
-        // This gets slower over time. Yes, its intended.
-        oldLayoutTime = updateTimer.elapsed();
-        timeout += oldLayoutTime / 2;
-        if ( 2*docHeight() > 3*m_view->visibleHeight() )
-            timeout = QMAX( 2000, timeout );
-
-        timeout = QMIN( 2000+8*oldLayoutTime, timeout );
-
-        updateTimer.start();
-    }
-    else
-        oldLayoutTime = 0;
-}
-
 void RenderRoot::close()
 {
-    RenderObject* o = this;
-    while (o)
-    {
-        if (!o->parsing())
-            break;
-        o->setParsing(false);
-        RenderObject* no;
-        if ( !(no = o->firstChild()) )
-            if ( !(no = o->nextSibling()) )
-            {
-                no = o->parent();
-                while (no && !no->nextSibling())
-                    no = no->parent();
-                if (no)
-                    no = no->nextSibling();
-            }
-        o=no;
+    setLayouted( false );
+    if (m_view) {
+	m_view->layout(true);
+	m_view->repaintContents( 0, 0, m_view->visibleWidth(), m_view->visibleHeight(), FALSE );       //sync repaint!
     }
-    updateSize();
-    if (m_view) m_view->layout(true);
     //printTree();
 }
 

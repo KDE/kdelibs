@@ -105,7 +105,7 @@ void RenderHR::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int _
 
 void RenderHR::layout()
 {
-    if ( layouted() ) return;
+    assert( !layouted() );
 
     calcWidth();
     calcHeight();
@@ -114,12 +114,12 @@ void RenderHR::layout()
 //         " maxWidth: " << m_maxWidth << " width: " << m_width <<
 //         " height: " << m_height << endl;
 
-    //  setLayouted();
+    setLayouted();
 }
 
 void RenderHR::calcMinMaxWidth()
 {
-    if ( minMaxKnown() ) return;
+    assert( !minMaxKnown() );
 
     // contentWidth
     Length w = style()->width();

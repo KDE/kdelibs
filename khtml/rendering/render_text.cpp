@@ -643,7 +643,7 @@ void RenderText::print( QPainter *p, int x, int y, int w, int h,
 void RenderText::calcMinMaxWidth()
 {
     //kdDebug( 6040 ) << "Text::calcMinMaxWidth(): known=" << minMaxKnown() << endl;
-    if(minMaxKnown()) return;
+    assert( !minMaxKnown() );
 
     // ### calc Min and Max width...
     m_minWidth = 0;
@@ -753,12 +753,6 @@ void RenderText::setText(DOMStringImpl *text)
     assert(!str->l || str->s);
 
     setLayouted(false);
-    RenderObject* cb = containingBlock();
-    if ( cb != this )
-    {
-        cb->setLayouted(false);
-        cb->layout();
-    }
 #ifdef BIDI_DEBUG
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText::setText( " << cstr.string().length() << " ) '" << cstr.string() << "'" << endl;

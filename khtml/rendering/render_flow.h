@@ -95,7 +95,7 @@ protected:
 
     virtual void newLine();
 
-    void layoutBlockChildren();
+    void layoutBlockChildren( bool relayoutChildren );
     void layoutInlineChildren();
     void layoutSpecialObjects();
 

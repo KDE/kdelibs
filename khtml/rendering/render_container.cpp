@@ -258,3 +258,15 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
 }
 
 
+void RenderContainer::layout()
+{
+    assert( !layouted() );
+    
+    RenderObject *child = firstChild();
+    while( child ) {
+	if( !child->layouted() )
+	    child->layout();
+	child = child->nextSibling();
+    }
+    setLayouted();
+}

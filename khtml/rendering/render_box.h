@@ -47,8 +47,6 @@ public:
     virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
                        int _tx, int _ty);
 
-    virtual void updateSize();
-    virtual void updateHeight();
     virtual void close();
 
     virtual short minWidth() const { return m_minWidth; }

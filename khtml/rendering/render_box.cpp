@@ -316,15 +316,8 @@ void RenderBox::calcClip(QPainter* p, int tx, int ty, const QRegion& old)
 void RenderBox::close()
 {
     setParsing(false);
-    calcWidth();
-    calcHeight();
-    calcMinMaxWidth();
-    if(containingBlockWidth() < m_minWidth && parent())
-        containingBlock()->updateSize();
-    else if(!isInline() || isReplaced())
-    {
-        layout();
-    }
+    setMinMaxKnown(false);
+    setLayouted( false );
 }
 
 short RenderBox::containingBlockWidth() const
@@ -354,82 +347,6 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
     {
         xPos = yPos = 0;
         return false;
-    }
-}
-
-void RenderBox::updateSize()
-{
-
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateSize()" << endl;
-#endif
-
-
-    int oldMin = m_minWidth;
-    int oldMax = m_maxWidth;
-    setMinMaxKnown(false);
-    calcMinMaxWidth();
-
-    if ((isInline() || isFloating() || containsSpecial()) && parent())
-    {
-        if (!isInline())
-            setLayouted(false);
-        parent()->updateSize();
-        return;
-    }
-
-    if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin ||
-        m_maxWidth != oldMax || isReplaced())
-    {
-        setLayouted(false);
-        if(containingBlock() != this) containingBlock()->updateSize();
-    }
-    else
-        updateHeight();
-}
-
-void RenderBox::updateHeight()
-{
-
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderBox) " << this << " ::updateHeight()" << endl;
-#endif
-
-    RenderObject* cb = containingBlock();
-    if (parsing())
-    {
-        if (layouted())
-        {
-            setLayouted(false);
-            if(cb != this) cb->updateHeight();
-        } else {
-            RenderRoot *rt = root();
-            if( rt )
-              rt->updateHeight();
-	}
-        return;
-    }
-
-    if(!isInline() || isReplaced())
-    {
-        int oldHeight = m_height;
-        setLayouted(false);
-
-	bool overhanging = hasOverhangingFloats();
-
-        layout();
-
-	overhanging |= hasOverhangingFloats();
-
-	if ( overhanging ) {
-	    if ( nextSibling() )
-		nextSibling()->setLayouted( false );
-	    if(cb != this) cb->updateHeight();
-	} else if(m_height != oldHeight) {
-	    if(cb != this) cb->updateHeight();
-	} else {
-	    cb->repaint();
-	}
     }
 }
 
@@ -539,7 +456,6 @@ void RenderBox::calcWidth()
 //              m_marginLeft <<"," <<  m_marginRight << endl;
 
             if (isFloating()) {
-                calcMinMaxWidth();
                 if(m_width < m_minWidth) m_width = m_minWidth;
                 if(m_width > m_maxWidth) m_width = m_maxWidth;
             }

@@ -31,6 +31,7 @@
 #include "xml/dom_nodeimpl.h"
 #include <kdebug.h>
 #include <qpainter.h>
+#include "khtmlview.h"
 
 #include <assert.h>
 using namespace DOM;
@@ -524,20 +525,26 @@ void RenderObject::printTree(int indent) const
     for(RenderObject* c = firstChild(); c; c = c->nextSibling())
         childcount++;
 
+    if ( !isInline() )
     kdDebug()    << ind << renderName()
                  << (childcount ?
                      (QString::fromLatin1("[") + QString::number(childcount) + QString::fromLatin1("]"))
                      : QString::null)
                  << "(" << (style() ? style()->refCount() : 0) << ")"
                  << ": " << (void*)this
-                 << " il=" << (int)isInline() << " ci=" << (int) childrenInline()
-                 << " fl=" << (int)isFloating() << " rp=" << (int)isReplaced()
-                 << " an=" << (int)isAnonymousBox()
-                 << " ps=" << (int)isPositioned()
-                 << " cp=" << (int)containsPositioned()
+//                  << " il=" << (int)isInline() 
+// 		 << " ci=" << (int) childrenInline()
+//                  << " fl=" << (int)isFloating() 
+// 		 << " rp=" << (int)isReplaced()
+//                  << " an=" << (int)isAnonymousBox()
+//                  << " ps=" << (int)isPositioned()
+//                  << " cp=" << (int)containsPositioned()
                  << " lt=" << (int)layouted()
-                 << " pa=" << (int)parsing()
-                 << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
+                 << " mmk=" << (int)minMaxKnown()
+                 << " rmm=" << (int)m_recalcMinMax
+//                  << " pa=" << (int)parsing()
+//                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" 
+		 << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
     {
@@ -577,11 +584,6 @@ void RenderObject::selectionStartEnd(int& spos, int& epos)
 {
     if (parent())
         parent()->selectionStartEnd(spos, epos);
-}
-
-void RenderObject::updateSize()
-{
-    containingBlock()->updateSize();
 }
 
 void RenderObject::setStyle(RenderStyle *style)
@@ -633,7 +635,7 @@ void RenderObject::setStyle(RenderStyle *style)
 
     m_hasFirstLine = (style->getPseudoStyle(RenderStyle::FIRST_LINE) != 0);
 
-    if ( d >= RenderStyle::Position ) {
+    if ( d >= RenderStyle::Position && m_parent ) {
 	setMinMaxKnown(false);
 	setLayouted(false);
     }
@@ -893,3 +895,44 @@ void RenderObject::invalidateVerticalPositions()
     }
 }
 
+void RenderObject::recalcMinMaxWidths()
+{
+    assert( m_recalcMinMax );
+    
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << renderName() << " recalcMinMaxWidths()" <<endl;
+#endif
+
+    RenderObject *child = firstChild();
+    while( child ) {
+	int cmin, cmax;
+	bool test = false;
+	if ( m_minMaxKnown && child->m_recalcMinMax || !child->m_minMaxKnown ) {
+	    cmin = child->minWidth();
+	    cmax = child->maxWidth();
+	    test = true;
+	}
+	if ( child->m_recalcMinMax )
+	    child->recalcMinMaxWidths();
+	else if ( !child->m_minMaxKnown )
+	    child->calcMinMaxWidth();
+	if ( m_minMaxKnown && test && (cmin != child->minWidth() || cmax != child->maxWidth()) )
+	    m_minMaxKnown = false;
+	child = child->nextSibling();
+    }
+    if ( !m_minMaxKnown )
+	calcMinMaxWidth();
+    m_recalcMinMax = false;
+}
+
+void RenderObject::scheduleRelayout()
+{
+//     qDebug("scheduling relayout, isRoot=%d", isRoot() );
+    if ( !isRoot() ) {
+// 	qDebug("foo");
+	return;
+    }
+    KHTMLView *view = static_cast<RenderRoot *>(this)->view();
+    if ( view )
+	view->scheduleRelayout();
+}

@@ -32,7 +32,7 @@
 
 #include "render_flow.h"
 #include "render_text.h"
-
+#include "render_table.h"
 
 
 #include <kdebug.h>
@@ -223,20 +223,26 @@ void RenderFlow::layout()
 //    kdDebug( 6040 ) << renderName() << " " << this << "::layout() start" << endl;
 //     QTime t;
 //     t.start();
+    
+    assert( !layouted() );
 
-     assert(!isInline());
+    assert(!isInline());
 
     int oldWidth = m_width;
 
     calcWidth();
+    
+    bool relayoutChildren = false;
+    if ( oldWidth != m_width )
+	relayoutChildren = true;
+    
+    // need a small hack here, as tables are done a bit differently
+    if ( isTableCell() && static_cast<RenderTableCell *>(this)->widthChanged() )
+	relayoutChildren = true;
 
 //     kdDebug( 6040 ) << specialObjects << "," << oldWidth << ","
 //                     << m_width << ","<< layouted() << "," << isAnonymousBox() << ","
 //                     << containsPositioned() << "," << isPositioned() << endl;
-
-
-    if ( !containsSpecial() && oldWidth == m_width && layouted() && !isAnonymousBox()
-         && !containsPositioned() && !isPositioned()) return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout() width=" << m_width << ", layouted=" << layouted() << endl;
@@ -262,13 +268,13 @@ void RenderFlow::layout()
             layoutInlineChildren();
     }
     else
-        layoutBlockChildren();
+        layoutBlockChildren( relayoutChildren );
 
+    int oldHeight = m_height;
     calcHeight();
+    if ( oldHeight != m_height )
+	relayoutChildren = true;
 
-//    int lp = 0;
-//     if ( firstChild() && isTableCell() && ( lp = lowestPosition() ) > m_height ) {
-// 	m_height = lp;
     if ( isTableCell() && lastChild() && lastChild()->hasOverhangingFloats() ) {
         m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
 	m_height += borderBottom() + paddingBottom();
@@ -278,15 +284,12 @@ void RenderFlow::layout()
 	m_height += borderBottom() + paddingBottom();
     }
 
-    layoutSpecialObjects();
+    if ( relayoutChildren )
+	layoutSpecialObjects();
 
     //kdDebug() << renderName() << " layout width=" << m_width << " height=" << m_height << endl;
 
-    // ### REMOVE ME! (see above)
-     if(childrenInline() && parsing())
-         setLayouted(false);
-     else
-        setLayouted();
+    setLayouted();
 }
 
 void RenderFlow::layoutSpecialObjects()
@@ -297,20 +300,23 @@ void RenderFlow::layoutSpecialObjects()
         QPtrListIterator<SpecialObject> it(*specialObjects);
         for ( ; (r = it.current()); ++it ) {
             //kdDebug(6040) << "   have a positioned object" << endl;
-            if (r->type == SpecialObject::Positioned)
-                r->node->layout();
+            if (r->type == SpecialObject::Positioned) {
+		kdDebug(6040) << renderName() << " relayouting positioned object" << endl;
+		r->node->setLayouted( false );
+// 		if ( !r->node->layouted() )
+		    r->node->layout();
+	    }
         }
         specialObjects->sort();
     }
 }
 
-void RenderFlow::layoutBlockChildren()
+void RenderFlow::layoutBlockChildren( bool relayoutChildren )
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << " layoutBlockChildren( " << this <<" )" << endl;
+    kdDebug( 6040 ) << renderName() << " layoutBlockChildren( " << this <<" ), relayoutChildren="<< relayoutChildren << endl;
 #endif
 
-    bool _layouted = true;
     int xPos = 0;
     int toAdd = 0;
 
@@ -359,19 +365,24 @@ void RenderFlow::layoutBlockChildren()
 
     while( child != 0 )
     {
+
+	// make sure we relayout children if we need it.
+	if ( relayoutChildren )
+	    child->setLayouted( false );
+	
 //         kdDebug( 6040 ) << "   " << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 //         kdDebug( 6040 ) << t.elapsed() << endl;
         // ### might be some layouts are done two times... FIX that.
 
         if (child->isPositioned())
         {
-            // child->layout();
             static_cast<RenderFlow*>(child->containingBlock())->insertSpecialObject(child);
 	    //kdDebug() << "RenderFlow::layoutBlockChildren inserting positioned into " << child->containingBlock()->renderName() << endl;
             child = child->nextSibling();
             continue;
         } else if ( child->isReplaced() ) {
-            child->layout();
+	    if ( !child->layouted() )
+		child->layout();
 	} else if ( child->isFloating() ) {
 	    // margins of floats and other objects do not collapse. The hack below assures this.
 	    if ( prevMargin != TABLECELLMARGIN )
@@ -407,7 +418,8 @@ void RenderFlow::layoutBlockChildren()
         }
 
         child->setPos(child->xPos(), m_height);
-        child->layout();
+	if ( !child->layouted() )
+	    child->layout();
 
         int chPos = xPos + child->marginLeft();
 
@@ -442,7 +454,7 @@ void RenderFlow::layoutBlockChildren()
 	m_height += prevMargin;
     m_height += toAdd;
 
-    setLayouted(_layouted);
+    setLayouted();
 
     // kdDebug( 6040 ) << "layouted = " << layouted_ << endl;
 }
@@ -498,7 +510,8 @@ void RenderFlow::insertSpecialObject(RenderObject *o)
     }
     else if (o->isFloating()) {
 	// floating object
-	o->layout();
+	if ( !o->layouted() )
+	    o->layout();
 
 	if(o->style()->floating() == FLEFT)
 	    newObj = new SpecialObject(SpecialObject::FloatLeft);
@@ -967,6 +980,8 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 
 void RenderFlow::calcMinMaxWidth()
 {
+    assert( !minMaxKnown() );
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderBox)::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
@@ -976,9 +991,6 @@ void RenderFlow::calcMinMaxWidth()
 
     if (isInline())
         return;
-
-//    if(minMaxKnown())
-//        return;
 
     int cw = containingBlock()->contentWidth();
 
@@ -1014,8 +1026,6 @@ void RenderFlow::calcMinMaxWidth()
                     childMin+=ti;
                     childMax+=ti;
 
-                    if(!child->minMaxKnown())
-                        child->calcMinMaxWidth();
                     bool hasNbsp=false;
                     RenderText* t = static_cast<RenderText *>(child);
                     if (t->data()[0] == nbsp) //inline starts with nbsp
@@ -1082,9 +1092,6 @@ void RenderFlow::calcMinMaxWidth()
     {
         while(child != 0)
         {
-//            if(!child->minMaxKnown())
-//                child->calcMinMaxWidth();
-
             // positioned children don't affect the minmaxwidth
             if (child->isPositioned())
             {
@@ -1153,7 +1160,7 @@ void RenderFlow::calcMinMaxWidth()
 //    seems to work but I'm not sure so I better leave it out
 //    maybe checking minMaxKnown() for each child and only set it if
 //    all childs have minMaxKnown() set ? this should be save? (Dirk)
-    if(childrenInline())
+//     if(childrenInline())
         setMinMaxKnown();
 
     // ### compare with min/max width set in style sheet...
@@ -1161,32 +1168,11 @@ void RenderFlow::calcMinMaxWidth()
 
 void RenderFlow::close()
 {
-//    kdDebug( 6040 ) << (void*)this<< " renderFlow::close()" << endl;
-    if(lastChild() && lastChild()->isAnonymousBox())
-    {
+    if(lastChild() && lastChild()->isAnonymousBox()) {
         lastChild()->close();
-        //kdDebug( 6040 ) << "RenderFlow::close(): closing anonymous box" << endl;
     }
 
-    calcWidth();
-    calcHeight();
-
-    calcMinMaxWidth();
-
-    setParsing(false);
-
-    if ( isInline() )
-	return;
-
-    if(containingBlockWidth() < m_minWidth && parent())
-        containingBlock()->updateSize();
-    else
-        containingBlock()->updateHeight();
-
-
-#ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderFlow)::close() total height =" << m_height << endl;
-#endif
+    RenderBox::close();
 }
 
 void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
@@ -1196,6 +1182,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
                        ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
     kdDebug( 6040 ) << "current height = " << m_height << endl;
 #endif
+    setLayouted( false );
 
     RenderStyle* pseudoStyle=0;
     if ( ( !firstChild() || firstChild() == beforeChild )
@@ -1328,7 +1315,6 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             newBox->addChild(newChild);
             newBox->setPos(newBox->xPos(), -100000);
 
-            setLayouted(false);
             return;
         }
         else {
@@ -1337,7 +1323,6 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             // ### get rid of the closing thing altogether this will only work during initial parsing
             if (lastChild() && lastChild()->isAnonymousBox()) {
                 lastChild()->close();
-                lastChild()->layout();
             }
         }
     }
@@ -1356,7 +1341,6 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
         }
     }
 
-    setLayouted(false);
     RenderBox::addChild(newChild,beforeChild);
     // ### care about aligned stuff
 

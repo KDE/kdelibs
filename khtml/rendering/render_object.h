@@ -129,6 +129,7 @@ public:
     bool containsPositioned() const { return m_containsPositioned; }
     bool hasFirstLine() const { return m_hasFirstLine; }
     bool isSelectionBorder() const { return m_isSelectionBorder; }
+    bool recalcMinMax() const { return m_recalcMinMax; }
     RenderRoot* root() const;
 
     /**
@@ -138,9 +139,30 @@ public:
     RenderObject *container() const;
 
     void setContainsPositioned(bool p);
-    void setLayouted(bool b=true) { m_layouted = b; }
+    void setLayouted(bool b=true) { 
+	m_layouted = b;
+	if(!b) {
+	    RenderObject *o = m_parent;
+	    RenderObject *root = this;
+	    while( o ) { // ### && o->m_layouted ) {
+		o->m_layouted = false;
+		root = o;
+		o = o->m_parent;
+	    }
+	    root->scheduleRelayout();
+	}
+    }
     void setParsing(bool b=true) { m_parsing = b; }
-    void setMinMaxKnown(bool b=true) { m_minMaxKnown = b; }
+    void setMinMaxKnown(bool b=true) { 
+	m_minMaxKnown = b; 
+	if ( !b ) {
+	    RenderObject *o = m_parent;
+	    while( o ) { // ### && !o->m_recalcMinMax ) {
+		o->m_recalcMinMax = true;
+		o = o->m_parent;
+	    }
+	}	    
+    }
     void setPositioned(bool b=true)  { m_positioned = b;  }
     void setRelPositioned(bool b=true) { m_relPositioned = b; }
     void setFloating(bool b=true) { m_floating = b; }
@@ -151,6 +173,8 @@ public:
     void setReplaced(bool b=true) { m_replaced = b; }
     void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
 
+    void scheduleRelayout();
+    
     // for discussion of lineHeight see CSS2 spec
     virtual int lineHeight( bool firstLine ) const;
     // for the vertical-align property of inline elements
@@ -182,9 +206,14 @@ public:
      * set to the same value. This has the special meaning that m_width,
      * contains the actual value.
      *
-     * ### assumes calcMinMaxWidth has already been called for all children.
+     * assumes calcMinMaxWidth has already been called for all children.
      */
     virtual void calcMinMaxWidth() { }
+    
+    /*
+     * Does the min max width recalculations after changes.
+     */
+    void recalcMinMaxWidths();
 
     /*
      * Calculates the actual width of the object (only for non inline
@@ -203,10 +232,6 @@ public:
      * again.
      */
     virtual void layout() = 0;
-
-    // propagates size changes upwards in the tree
-    virtual void updateSize();
-    virtual void updateHeight() {}
 
     // used for element state updates that can not be fixed with a
     // repaint and do not need a relayout
@@ -364,12 +389,16 @@ private:
     bool m_visible                   : 1;
     bool m_isText                    : 1;
     bool m_inline                    : 1;
+
     bool m_replaced                  : 1;
     bool m_containsOverhangingFloats : 1;
     bool m_hasFirstLine              : 1;
     bool m_isSelectionBorder          : 1;
 
     // note: do not add unnecessary bitflags, we have 32 bit already!
+    // ### fixme and remove some other flag
+    bool m_recalcMinMax 	     : 1;
+    
     friend class RenderContainer;
     friend class RenderRoot;
 };

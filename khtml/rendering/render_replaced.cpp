@@ -87,7 +87,7 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 
 void RenderReplaced::calcMinMaxWidth()
 {
-    if(minMaxKnown()) return;
+    assert( !minMaxKnown());
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown() << endl;
@@ -102,8 +102,8 @@ void RenderReplaced::calcMinMaxWidth()
     }
     else {
         m_minWidth = m_maxWidth = width;
-        setMinMaxKnown();
     }
+    setMinMaxKnown();
 }
 
 int RenderReplaced::lineHeight( bool ) const

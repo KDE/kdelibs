@@ -47,8 +47,6 @@ public:
     virtual void calcWidth();
     virtual void calcMinMaxWidth();
     virtual bool absolutePosition(int &xPos, int&yPos, bool f = false);
-    virtual void updateSize();
-    virtual void updateHeight();
     virtual void close();
 
     int docHeight() const;
@@ -61,7 +59,7 @@ public:
     virtual void print( QPainter *, int x, int y, int w, int h, int tx, int ty);
     void printObject(QPainter *p, int _x, int _y,
                      int _w, int _h, int _tx, int _ty);
-
+    
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();
     virtual RenderObject *selectionStart() const { return m_selectionStart; }

@@ -828,7 +828,8 @@ void RenderFlow::layoutInlineChildren()
         while ( o ) {
             if(o->isReplaced() || o->isFloating() || o->isPositioned()) {
                 //kdDebug(6041) << "layouting replaced or floating child" << endl;
-                o->layout();
+                if( !o->layouted() )
+		    o->layout();
                 if(o->isPositioned())
                     static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
             }

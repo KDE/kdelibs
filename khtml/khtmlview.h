@@ -168,6 +168,8 @@ public:
     QString mediaType() const;
 
     void resetCursor();
+    
+    void scheduleRelayout();
 
 signals:
     void cleared();
@@ -196,6 +198,8 @@ protected:
     void contentsContextMenuEvent ( QContextMenuEvent *_ce );
     void doAutoScroll();
 
+    void timerEvent ( QTimerEvent * );
+    
 protected slots:
     void slotPaletteChanged();
     void slotScrollBarMoved();

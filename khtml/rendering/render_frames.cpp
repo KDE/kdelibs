@@ -100,6 +100,8 @@ RenderFrameSet::~RenderFrameSet()
 
 void RenderFrameSet::layout( )
 {
+    assert( !layouted() );
+    
     if ( !parent()->isFrameSet() ) {
         m_width = m_view->visibleWidth();
         m_height = m_view->visibleHeight();
@@ -407,7 +409,8 @@ void RenderFrameSet::positionFrames()
       child->setWidth( m_colWidth[c] );
       child->setHeight( m_rowHeight[r] );
       child->setVisible( true );
-      child->layout( );
+      if ( !child->layouted() )
+	  child->layout( );
 
       xPos += m_colWidth[c] + m_element->border();
       child = child->nextSibling();
@@ -602,8 +605,6 @@ void RenderPart::setWidget( QWidget *widget )
     setLayouted( false );
     setMinMaxKnown( false );
 
-    updateSize();
-
     // make sure the scrollbars are set correctly for restore
     // ### find better fix
     slotViewCleared();
@@ -611,8 +612,10 @@ void RenderPart::setWidget( QWidget *widget )
 
 void RenderPart::layout( )
 {
+    assert( !layouted() );
     if ( m_widget )
         m_widget->resize( QMIN( m_width, 2000 ), QMIN( m_height, 3860 ) );
+    setLayouted();
 }
 
 bool RenderPart::partLoadingErrorNotify(khtml::ChildFrame *, const KURL& , const QString& )
@@ -914,7 +917,7 @@ void RenderPartObject::slotPartLoadingErrorNotify()
 
 void RenderPartObject::layout( )
 {
-    if ( layouted() ) return;
+    assert( !layouted() );
 
     // minimum height
     m_height = 0;
@@ -922,10 +925,9 @@ void RenderPartObject::layout( )
     calcWidth();
     calcHeight();
 
-    if ( !style()->width().isPercent() )
-        setLayouted();
-
-    RenderPart::layout();
+    if ( style()->width().isPercent() )
+	RenderPart::layout();
+    setLayouted();
 }
 
 void RenderPartObject::slotViewCleared()

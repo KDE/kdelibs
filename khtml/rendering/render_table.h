@@ -113,8 +113,6 @@ public:
     virtual void calcMinMaxWidth();
     virtual void close();
 
-    virtual void updateSize();
-
     virtual void setCellWidths( );
 
     int getBaseline(int row) {return rowBaselines[row];}
@@ -272,7 +270,6 @@ public:
     virtual unsigned int width(int, int) const { return 0;}
     virtual int lineHeight(bool) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
-    virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
 
@@ -308,11 +305,12 @@ public:
     virtual unsigned int width(int, int) const { return 0;}
     virtual int lineHeight( bool ) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
-    virtual void layout() {}
 
     virtual void close();
 
     virtual void repaint();
+    
+    virtual void layout();
 
     virtual void setTable(RenderTable *t) { table = t; }
 
@@ -360,6 +358,7 @@ public:
     // overrides
     virtual void calcMinMaxWidth();
     virtual void calcWidth();
+    virtual void setWidth( int width );
     virtual void setStyle( RenderStyle *style );
     virtual void repaint();
 
@@ -376,7 +375,6 @@ public:
     virtual void print( QPainter* p, int x, int y,
                         int w, int h, int tx, int ty);
 
-    virtual void updateSize();
     virtual void close();
 
     // lie position to outside observers
@@ -388,6 +386,12 @@ public:
     virtual short baselinePosition( bool = false ) const;
 
     virtual void dump(QTextStream *stream, QString ind = "") const;
+    
+    bool widthChanged() {
+	bool retval = m_widthChanged;
+	m_widthChanged = false;
+	return retval;
+    }
 
 protected:
     RenderTable *m_table;
@@ -403,8 +407,9 @@ protected:
     int rowHeight;
     int _topExtra;
     int _bottomExtra;
-    bool nWrap;
-
+    bool nWrap : 1;
+    bool m_widthChanged : 1;
+    
     virtual int borderTopExtra() { return _topExtra; }
     virtual int borderBottomExtra() { return _bottomExtra; }
 

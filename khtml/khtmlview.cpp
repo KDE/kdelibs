@@ -66,6 +66,7 @@ public:
         paintBuffer=0;
         formCompletions=0;
         prevScrollbarVisible = true;
+	timerId = 0;
     }
     ~KHTMLViewPrivate()
     {
@@ -103,6 +104,7 @@ public:
 	clickCount = 0;
 	isDoubleClick = false;
 	scrollingSelf = false;
+	timerId = 0;
     }
 
     QPainter *tp;
@@ -132,6 +134,7 @@ public:
 
     int prevMouseX, prevMouseY;
     bool scrollingSelf;
+    int timerId;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -237,6 +240,7 @@ void KHTMLView::clear()
         setStaticBackground(false);
 
     d->reset();
+    killTimers();
     emit cleared();
 
     QScrollView::setHScrollBarMode(d->hmode);
@@ -974,7 +978,9 @@ void KHTMLView::print()
         m_part->setFontSizes(fontSizes);
         m_part->xmlDocImpl()->recalcStyle( NodeImpl::Force );
 
-        root->updateSize();
+        root->setLayouted( false );
+	root->setMinMaxKnown( false );
+	root->layout();
 
         // ok. now print the pages.
         kdDebug(6000) << "printing: html page width = " << root->docWidth()
@@ -1312,4 +1318,18 @@ void KHTMLView::slotScrollBarMoved()
 {
     if (!d->scrollingSelf)
         d->scrollBarMoved = true;
+}
+
+void KHTMLView::timerEvent ( QTimerEvent *e )
+{
+    killTimers();
+    layout();
+    repaintContents( 0, 0, visibleWidth(), visibleHeight(), FALSE ); 
+    d->timerId = 0;
+}
+
+void KHTMLView::scheduleRelayout()
+{
+    if ( d->timerId ) return;
+    d->timerId = startTimer( 0 );
 }

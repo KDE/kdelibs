@@ -92,7 +92,7 @@ void RenderApplet::layout()
 {
     //kdDebug(6100) << "RenderApplet::layout" << endl;
 
-    if(layouted()) return;
+    assert( !layouted() );
 
     calcWidth();
     calcHeight();
@@ -164,8 +164,7 @@ int RenderEmptyApplet::intrinsicHeight() const
 
 void RenderEmptyApplet::layout()
 {
-    if(layouted())
-        return;
+    assert( !layouted() );
 
     calcWidth();
     calcHeight();

@@ -176,13 +176,15 @@ void RenderListItem::calcListValue()
 
 void RenderListItem::layout( )
 {
+    assert( !layouted() );
+    
     if ( !checkChildren() ) {
         m_height = 0;
         //kdDebug(0) << "empty item" << endl;
         return;
     }
     calcListValue();
-    if ( m_marker )
+    if ( m_marker && !m_marker->layouted() )
 	m_marker->layout();
     RenderFlow::layout();
 }
@@ -348,10 +350,7 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 
 void RenderListMarker::layout()
 {
-    if ( layouted() ) return;
-
-    calcMinMaxWidth();
-
+    assert( !layouted() );
     setLayouted();
 }
 
@@ -362,22 +361,20 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
         return;
     }
 
+#if 0
     if (manualUpdate && *manualUpdate) {
-        updateSize();
+	setLayouted( false );
+	setMinMaxKnown( false );
         return;
     }
-
+#endif
+    
     if(m_width != m_listImage->pixmap_size().width() || m_height != m_listImage->pixmap_size().height())
     {
         setLayouted(false);
         setMinMaxKnown(false);
-        layout();
-        // the updateSize() call should trigger a repaint too
         if (manualUpdate) {
             *manualUpdate = true;
-        }
-        else {
-            updateSize();
         }
     }
     else
@@ -386,6 +383,8 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
 
 void RenderListMarker::calcMinMaxWidth()
 {
+    assert( !minMaxKnown() );
+    
     m_width = 0;
 
     if(m_listImage) {
@@ -461,6 +460,8 @@ end:
 
     m_minWidth = m_width;
     m_maxWidth = m_width;
+    
+    setMinMaxKnown();
 }
 
 short RenderListMarker::verticalPositionHint( bool ) const

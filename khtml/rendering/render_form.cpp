@@ -156,7 +156,7 @@ void RenderFormElement::updateFromElement()
 
 void RenderFormElement::layout()
 {
-    if ( layouted() ) return;
+    assert( !layouted() );
 
     // minimum height
     m_height = 0;
@@ -216,7 +216,7 @@ RenderCheckBox::RenderCheckBox(KHTMLView *view,
 
 void RenderCheckBox::calcMinMaxWidth()
 {
-    if ( minMaxKnown() ) return;
+    assert( !minMaxKnown() );
 
     QCheckBox *cb = static_cast<QCheckBox *>( m_widget );
     QSize s( cb->style().pixelMetric( QStyle::PM_IndicatorWidth ),
@@ -276,7 +276,7 @@ void RenderRadioButton::slotClicked()
 
 void RenderRadioButton::calcMinMaxWidth()
 {
-    if ( minMaxKnown() ) return;
+    assert( !minMaxKnown() );
 
     QRadioButton *rb = static_cast<QRadioButton *>( m_widget );
     QSize s( rb->style().pixelMetric( QStyle::PM_ExclusiveIndicatorWidth ),
@@ -301,7 +301,7 @@ RenderSubmitButton::RenderSubmitButton(KHTMLView *view, HTMLInputElementImpl *el
 
 void RenderSubmitButton::calcMinMaxWidth()
 {
-    if ( minMaxKnown() ) return;
+    assert( !minMaxKnown() );
 
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isEmpty() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
@@ -458,7 +458,7 @@ void RenderLineEdit::handleFocusOut()
 
 void RenderLineEdit::calcMinMaxWidth()
 {
-    if ( minMaxKnown() ) return;
+    assert( !minMaxKnown() );
 
     QFontMetrics fm = fontMetrics( style()->font() );
     QSize s;
@@ -493,7 +493,7 @@ void RenderLineEdit::calcMinMaxWidth()
 
 void RenderLineEdit::layout()
 {
-    if ( layouted() ) return;
+    assert( !layouted() );
 
     KLineEdit *edit = static_cast<KLineEdit*>(m_widget);
     HTMLInputElementImpl *input = static_cast<HTMLInputElementImpl*>(m_element);
@@ -557,7 +557,7 @@ RenderFileButton::RenderFileButton(KHTMLView *view, HTMLInputElementImpl *elemen
 
 void RenderFileButton::calcMinMaxWidth()
 {
-    if ( minMaxKnown() ) return;
+    assert( !minMaxKnown() );
 
     QFontMetrics fm = fontMetrics( style()->font() );
     QSize s;
@@ -726,10 +726,11 @@ RenderSelect::RenderSelect(KHTMLView *view, HTMLSelectElementImpl *element)
 
 void RenderSelect::calcMinMaxWidth()
 {
+    assert( !minMaxKnown() );
+    
     // ### ugly HACK FIXME!!!
     if ( !layouted() )
         layout();
-
     setLayouted( false );
 
     RenderFormElement::calcMinMaxWidth();
@@ -880,7 +881,6 @@ void RenderSelect::layout( )
 
 void RenderSelect::close()
 {
-    setLayouted(false);
     static_cast<HTMLSelectElementImpl*>(m_element)->recalcListItems();
 
     RenderFormElement::close();
@@ -1085,6 +1085,8 @@ void RenderTextArea::handleFocusOut()
 
 void RenderTextArea::calcMinMaxWidth()
 {
+    assert( !minMaxKnown() );
+    
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
     QFontMetrics m = fontMetrics(style()->font());
@@ -1103,19 +1105,19 @@ void RenderTextArea::calcMinMaxWidth()
 
 void RenderTextArea::layout( )
 {
+    assert( !layouted() );
+    
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     HTMLTextAreaElementImpl* f = static_cast<HTMLTextAreaElementImpl*>(m_element);
 
-    if (!layouted()) {
-	w->setReadOnly(m_element->readOnly());
-	w->blockSignals(true);
-	int line, col;
-	w->getCursorPosition( &line, &col );
-	w->setText(f->value().string());
-	w->setCursorPosition( line, col );
-	w->blockSignals(false);
-        w->setEdited(false);
-    }
+    w->setReadOnly(m_element->readOnly());
+    w->blockSignals(true);
+    int line, col;
+    w->getCursorPosition( &line, &col );
+    w->setText(f->value().string());
+    w->setCursorPosition( line, col );
+    w->blockSignals(false);
+    w->setEdited(false);
 
     RenderFormElement::layout();
 }

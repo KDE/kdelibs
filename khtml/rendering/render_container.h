@@ -48,6 +48,8 @@ public:
     virtual void appendChildNode(RenderObject* child);
     virtual void insertChildNode(RenderObject* child, RenderObject* before);
 
+    virtual void layout();
+    virtual void calcMinMaxWidth() { setMinMaxKnown( true ); }
     
 private:       
         
