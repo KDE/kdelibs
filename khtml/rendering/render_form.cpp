@@ -94,28 +94,28 @@ void RenderFormElement::layout()
 
 void RenderFormElement::slotClicked()
 {
-    ref();
+    RenderArena *arena = ref();
     QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, 1, m_state);
 
     element()->dispatchMouseEvent(&e2, EventImpl::CLICK_EVENT, m_isDoubleClick + 1);
     m_isDoubleClick = false;
-    deref();
+    deref(arena);
 }
 
 void RenderFormElement::slotPressed()
 {
-    ref();
+    RenderArena *arena = ref();
     QMouseEvent e2( QEvent::MouseButtonPress, m_mousePos, 1, m_state);
     element()->dispatchMouseEvent(&e2, EventImpl::MOUSEDOWN_EVENT, 1);
-    deref();
+    deref(arena);
 }
 
 void RenderFormElement::slotReleased()
 {
-    ref();
+    RenderArena *arena = ref();
     QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, 1, m_state);
     element()->dispatchMouseEvent(&e2, EventImpl::MOUSEUP_EVENT, 1);
-    deref();
+    deref(arena);
 }
 
 // -------------------------------------------------------------------------
@@ -1068,9 +1068,9 @@ void RenderSelect::slotSelected(int index) // emitted by the combobox only
             // shouldn't emit onChange. Hence this bool, the if above doesn't do it.
             if ( changed )
             {
-                ref();
+		RenderArena *arena = ref();
                 element()->onChange();
-                deref();
+                deref(arena);
             }
         }
     }
@@ -1091,9 +1091,9 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
             static_cast<HTMLOptionElementImpl*>( listItems[i] )
                 ->m_selected = static_cast<KListBox*>( m_widget )->isSelected( i );
 
-    ref();
+    RenderArena *arena = ref();
     element()->onChange();
-    deref();
+    deref(arena);
 }
 
 void RenderSelect::setOptionsChanged(bool _optionsChanged)

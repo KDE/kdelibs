@@ -24,6 +24,8 @@
 #include "render_replaced.h"
 #include "render_root.h"
 
+#include "render_arena.h"
+
 #include <assert.h>
 #include <qwidget.h>
 #include <qpainter.h>
@@ -136,21 +138,22 @@ RenderWidget::RenderWidget(DOM::NodeImpl* node)
     ref();
 }
 
-void RenderWidget::detach()
+void RenderWidget::detach(RenderArena* renderArena)
 {
+    qDebug("RenderWidget::detach( %p )",  this );
     remove();
 
     if ( m_widget ) {
         if ( m_view ) {
             m_view->setWidgetVisible(this, false);
             m_view->removeChild( m_widget );
-            m_view = 0;
         }
 
         m_widget->removeEventFilter( this );
         m_widget->setMouseTracking( false );
     }
-    deref();
+
+    deref(renderArena);
 }
 
 RenderWidget::~RenderWidget()
@@ -180,11 +183,11 @@ void  RenderWidget::resizeWidget( int w, int h )
     w = QMIN( w, 2000 );
 
     if (m_widget->width() != w || m_widget->height() != h) {
-        ref();
+        RenderArena *arena = ref();
         element()->ref();
 	QApplication::postEvent( this, new QWidgetResizeEvent( w, h ) );
         element()->deref();
-        deref();
+        deref( arena );
     }
 }
 
@@ -389,7 +392,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 {
     if ( !element() ) return true;
 
-    ref();
+    RenderArena *arena = ref();
     element()->ref();
 
     bool filtered = false;
@@ -449,9 +452,17 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     // stop processing if the widget gets deleted, but continue in all other cases
     if (hasOneRef())
         filtered = true;
-    deref();
+    deref( arena );
 
     return filtered;
+}
+
+void RenderWidget::deref(RenderArena *arena)
+{
+    if (_ref) _ref--;
+    qDebug( "deref(%p): width get count is %d", this, _ref);
+    if (!_ref)
+        arenaDelete(arena);
 }
 
 

@@ -204,7 +204,7 @@ void HTMLBRElementImpl::attach()
         RenderStyle* style = getDocument()->styleSelector()->styleForElement( this );
         style->ref();
         if( style->display() != NONE ) {
-          m_render = new RenderBR(this);
+          m_render = new (getDocument()->renderArena()) RenderBR(this);
           m_render->setStyle(style);
           parentNode()->renderer()->addChild(m_render, nextRenderer());
         }

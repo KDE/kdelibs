@@ -154,11 +154,13 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 		if ( beforeChild && !beforeChild->isTableSection() )
 		    beforeChild = 0;
   		//kdDebug( 6040 ) << this <<" creating anonymous table section beforeChild="<< beforeChild << endl;
-		o = new RenderTableSection(0 /* anonymous */);
+		o = new (renderArena()) RenderTableSection(0 /* anonymous */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
                 newStyle->setDisplay(TABLE_ROW_GROUP);
+		o->setParent( this ); // so it finds the arena
 		o->setStyle(newStyle);
+		o->setParent( 0 );
 		o->setIsAnonymousBox(true);
 		addChild(o, beforeChild);
 	    }
@@ -645,14 +647,14 @@ RenderTableSection::~RenderTableSection()
     clearGrid();
 }
 
-void RenderTableSection::detach()
+void RenderTableSection::detach( RenderArena *arena )
 {
     // recalc cell info because RenderTable has unguarded pointers
     // stored that point to this RenderTableSection.
     if (table())
         table()->setNeedSectionRecalc();
 
-    RenderBox::detach();
+    RenderBox::detach( arena );
 }
 
 void RenderTableSection::setStyle(RenderStyle* _style)
@@ -690,11 +692,13 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 		return;
 	    } else {
 		//kdDebug( 6040 ) << "creating anonymous table row" << endl;
-		row = new RenderTableRow(0 /* anonymous table */);
+		row = new (renderArena()) RenderTableRow(0 /* anonymous table */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
 		newStyle->setDisplay( TABLE_ROW );
+		row->setParent( this ); // so it finds the arena
 		row->setStyle(newStyle);
+		row->setParent( 0 );
 		row->setIsAnonymousBox(true);
 		addChild(row, beforeChild);
 	    }
@@ -1217,11 +1221,11 @@ RenderTableRow::RenderTableRow(DOM::NodeImpl* node)
     setInline(false);   // our object is not Inline
 }
 
-void RenderTableRow::detach()
+void RenderTableRow::detach( RenderArena *arena )
 {
     section()->setNeedCellRecalc();
 
-    RenderContainer::detach();
+    RenderContainer::detach( arena );
 }
 
 void RenderTableRow::setStyle(RenderStyle* style)
@@ -1246,11 +1250,13 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
         if( last && last->isAnonymousBox() && last->isTableCell() )
             cell = static_cast<RenderTableCell *>(last);
         else {
-	    cell = new RenderTableCell(0 /* anonymous object */);
+	    cell = new (renderArena()) RenderTableCell(0 /* anonymous object */);
 	    RenderStyle *newStyle = new RenderStyle();
 	    newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE_CELL );
+	    cell->setParent( this ); // so it finds the arena
 	    cell->setStyle(newStyle);
+	    cell->setParent( 0 );
 	    cell->setIsAnonymousBox(true);
 	    addChild(cell, beforeChild);
         }
@@ -1316,12 +1322,12 @@ RenderTableCell::RenderTableCell(DOM::NodeImpl* _node)
   _bottomExtra = 0;
 }
 
-void RenderTableCell::detach()
+void RenderTableCell::detach( RenderArena *arena )
 {
     if (parent() && section())
         section()->setNeedCellRecalc();
 
-    RenderFlow::detach();
+    RenderFlow::detach( arena );
 }
 
 void RenderTableCell::updateFromElement()

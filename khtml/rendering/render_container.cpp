@@ -43,18 +43,19 @@ RenderContainer::RenderContainer(DOM::NodeImpl* node)
     m_last = 0;
 }
 
-
-RenderContainer::~RenderContainer()
+void RenderContainer::detach(RenderArena* renderArena)
 {
     RenderObject* next;
     for(RenderObject* n = m_first; n; n = next ) {
 	n->removeFromSpecialObjects();
         n->setParent(0);
         next = n->nextSibling();
-        n->detach();
+        n->detach(renderArena);
     }
     m_first = 0;
     m_last = 0;
+
+    RenderObject::detach(renderArena);
 }
 
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
@@ -98,7 +99,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
                 needsTable = true;
             break;
         case NONE:
-            // RenderHtml and some others can have display:none        
+            // RenderHtml and some others can have display:none
             // KHTMLAssert(false);
             break;
         }
@@ -111,12 +112,14 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             table = static_cast<RenderTable *>(last);
         } else {
 	    //kdDebug( 6040 ) << "creating anonymous table, before=" << beforeChild << endl;
-            table = new RenderTable(0 /* is anonymous */);
+            table = new (renderArena()) RenderTable(0 /* is anonymous */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());
 	    newStyle->setDisplay( TABLE );
 	    newStyle->setFlowAroundFloats( true );
+	    table->setParent( this ); // so it finds the arena
             table->setStyle(newStyle);
+	    table->setParent( 0 );
             table->setIsAnonymousBox(true);
             addChild(table, beforeChild);
         }
@@ -171,7 +174,7 @@ RenderObject* RenderContainer::removeChildNode(RenderObject* oldChild)
 
     if ( isAnonymousBox() && !firstChild() ) {
 	// we are an empty anonymous box. There is no reason for us to continue living.
-	detach();
+	detach( renderArena() );
     }
 
     return oldChild;
@@ -189,25 +192,30 @@ void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject
     {
         if (pseudo->contentType()==CONTENT_TEXT)
         {
-            RenderObject* po = new RenderFlow(0 /* anonymous box */);
+            RenderObject* po = new (renderArena()) RenderFlow(0 /* anonymous box */);
+	    po->setParent(this); // Set the parent now, so setStyle will be able to find a renderArena.
             po->setStyle(pseudo);
+            po->setParent(0); // Unset the parent to avoid asserting in addChild.
 
             addChild(po, beforeChild);
 
-            RenderText* t = new RenderText(0 /*anonymous object */, pseudo->contentText());
+            RenderText* t = new (renderArena()) RenderText(0 /*anonymous object */, pseudo->contentText());
+	    t->setParent(po); // Set the parent now, so setStyle will be able to find a renderArena.
             t->setStyle(pseudo);
+            t->setParent(0); // Unset the parent to avoid asserting in addChild.
+            po->addChild(t);
 
 //            kdDebug() << DOM::DOMString(pseudo->contentText()).string() << endl;
-
-            po->addChild(t);
 
             t->close();
             po->close();
         }
         else if (pseudo->contentType()==CONTENT_OBJECT)
         {
-            RenderObject* po = new RenderImage(0);
+            RenderObject* po = new (renderArena()) RenderImage(0);
+            po->setParent(this); // Set the parent now, so setStyle will be able to find a renderArena.
             po->setStyle(pseudo);
+            po->setParent(0); // Unset the parent to avoid asserting in addChild.
             addChild(po, beforeChild);
             po->close();
         }
@@ -320,7 +328,7 @@ void RenderContainer::removeLeftoverAnonymousBoxes()
 		c->m_first = 0;
 		c->m_next = 0;
 	    }
-	    delete child;
+	    child->detach( renderArena() );
 	}
 	child = next;
     }

@@ -849,7 +849,7 @@ void HTMLFieldSetElementImpl::attach()
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new RenderFieldset(this);
+        m_render = new (getDocument()->renderArena()) RenderFieldset(this);
         m_render->setStyle(_style);
     }
     HTMLGenericFormElementImpl::attach();
@@ -1123,14 +1123,14 @@ void HTMLInputElementImpl::attach()
         {
         case TEXT:
         case PASSWORD:
-        case ISINDEX:      m_render = new RenderLineEdit(this);   break;
-        case CHECKBOX:  m_render = new RenderCheckBox(this); break;
-        case RADIO:        m_render = new RenderRadioButton(this); break;
-        case SUBMIT:      m_render = new RenderSubmitButton(this); break;
-        case IMAGE:       m_render =  new RenderImageButton(this); break;
-        case RESET:      m_render = new RenderResetButton(this);   break;
-        case FILE:         m_render =  new RenderFileButton(this);    break;
-        case BUTTON:  m_render = new RenderPushButton(this);
+        case ISINDEX:      m_render = new (getDocument()->renderArena()) RenderLineEdit(this);   break;
+        case CHECKBOX:  m_render = new (getDocument()->renderArena()) RenderCheckBox(this); break;
+        case RADIO:        m_render = new (getDocument()->renderArena()) RenderRadioButton(this); break;
+        case SUBMIT:      m_render = new (getDocument()->renderArena()) RenderSubmitButton(this); break;
+        case IMAGE:       m_render =  new (getDocument()->renderArena()) RenderImageButton(this); break;
+        case RESET:      m_render = new (getDocument()->renderArena()) RenderResetButton(this);   break;
+        case FILE:         m_render =  new (getDocument()->renderArena()) RenderFileButton(this);    break;
+        case BUTTON:  m_render = new (getDocument()->renderArena()) RenderPushButton(this);
         case HIDDEN:   break;
         }
     }
@@ -1443,7 +1443,7 @@ void HTMLLegendElementImpl::attach()
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new RenderLegend(this);
+        m_render = new (getDocument()->renderArena()) RenderLegend(this);
         m_render->setStyle(_style);
     }
     HTMLGenericFormElementImpl::attach();
@@ -1707,7 +1707,7 @@ void HTMLSelectElementImpl::attach()
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new RenderSelect(this);
+        m_render = new (getDocument()->renderArena()) RenderSelect(this);
         m_render->setStyle(_style);
     }
 
@@ -2128,7 +2128,7 @@ void HTMLTextAreaElementImpl::attach()
     RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
     _style->ref();
     if (parentNode()->renderer() && _style->display() != NONE) {
-        m_render = new RenderTextArea(this);
+        m_render = new (getDocument()->renderArena()) RenderTextArea(this);
         m_render->setStyle(_style);
     }
 

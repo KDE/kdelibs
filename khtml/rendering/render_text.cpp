@@ -28,6 +28,7 @@
 #include "rendering/render_text.h"
 #include "rendering/render_root.h"
 #include "rendering/break_lines.h"
+#include "rendering/render_arena.h"
 #include "xml/dom_nodeimpl.h"
 
 #include "misc/loader.h"
@@ -38,6 +39,38 @@
 
 using namespace khtml;
 using namespace DOM;
+
+#ifndef NDEBUG
+static bool inTextSlaveDetach;
+#endif
+
+void TextSlave::detach(RenderArena* renderArena)
+{
+#ifndef NDEBUG
+    inTextSlaveDetach = true;
+#endif
+    delete this;
+#ifndef NDEBUG
+    inTextSlaveDetach = false;
+#endif
+
+    // Recover the size left there for us by operator delete and free the memory.
+    renderArena->free(*(size_t *)this, this);
+}
+
+void* TextSlave::operator new(size_t sz, RenderArena* renderArena) throw()
+{
+    return renderArena->allocate(sz);
+}
+
+void TextSlave::operator delete(void* ptr, size_t sz)
+{
+    assert(inTextSlaveDetach);
+
+    // Stash size where detach can find it.
+    *(size_t *)ptr = sz;
+}
+
 
 void TextSlave::paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
@@ -176,7 +209,7 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
 
 TextSlaveArray::TextSlaveArray()
 {
-    setAutoDelete(true);
+    setAutoDelete(false);
 }
 
 int TextSlaveArray::compareItems( Item d1, Item d2 )
@@ -263,19 +296,34 @@ void RenderText::setStyle(RenderStyle *_style)
 
 RenderText::~RenderText()
 {
-    deleteSlaves();
+    deleteSlaves( renderArena() );
     if(str) str->deref();
 }
 
-void RenderText::deleteSlaves()
+
+void RenderText::detach(RenderArena* renderArena)
+{
+    deleteSlaves(renderArena);
+    RenderObject::detach(renderArena);
+}
+
+void RenderText::deleteSlaves(RenderArena *arena)
 {
     // this is a slight variant of QArray::clear().
     // We don't delete the array itself here because its
     // likely to be used in the same size later again, saves
     // us resize() calls
     unsigned int len = m_lines.size();
-    for(unsigned int i=0; i < len; i++)
+    if (len) {
+        if (!arena)
+            arena = renderArena();
+        for(unsigned int i=0; i < len; i++) {
+            TextSlave* s = m_lines.at(i);
+            if (s)
+                s->detach(arena);
         m_lines.remove(i);
+        }
+    }
 
     KHTMLAssert(m_lines.count() == 0);
 }
@@ -813,7 +861,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
     QConstString cstr(ch, len);
 #endif
 
-    TextSlave *s = new TextSlave(x, y, from, len,
+    TextSlave *s = new (renderArena()) TextSlave(x, y, from, len,
                                  baselinePosition( firstLine ),
                                  width, reverse, spaceAdd, firstLine);
 

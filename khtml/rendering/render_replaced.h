@@ -75,7 +75,7 @@ public:
 
     virtual bool isWidget() const { return true; };
 
-    virtual void detach();
+    virtual void detach( RenderArena * );
     virtual void layout( );
 
     virtual void updateFromElement();
@@ -83,6 +83,8 @@ public:
     QWidget *widget() const { return m_widget; }
     KHTMLView* view() const { return m_view; }
 
+    RenderArena *ref() { _ref++; qDebug( "ref(%p): width get count is %d", this, _ref); return renderArena(); }
+    void deref(RenderArena *arena);
 
 public slots:
     void slotWidgetDestructed();

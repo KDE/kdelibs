@@ -57,6 +57,22 @@ public:
         m_firstLine = firstLine;
         m_toAdd = toAdd;
     }
+
+    void detach(RenderArena* renderArena);
+
+    // Overloaded new operator.  Derived classes must override operator new
+    // in order to allocate out of the RenderArena.
+    void* operator new(size_t sz, RenderArena* renderArena) throw();
+
+    // Overridden to prevent the normal delete from being called.
+    void operator delete(void* ptr, size_t sz);
+
+private:
+    // The normal operator new is disallowed.
+    void* operator new(size_t sz) throw();
+
+public:
+
     void paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
     void paintBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
@@ -123,7 +139,8 @@ public:
     virtual void paintObject( QPainter *, int x, int y, int w, int h,
                         int tx, int ty);
 
-    void deleteSlaves();
+    void deleteSlaves( RenderArena * );
+    void detach( RenderArena * );
 
     DOM::DOMString data() const { return str; }
     DOM::DOMStringImpl *string() const { return str; }

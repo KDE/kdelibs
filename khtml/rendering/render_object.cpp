@@ -27,18 +27,39 @@
 #include "rendering/render_list.h"
 #include "rendering/render_root.h"
 #include "xml/dom_elementimpl.h"
+#include "xml/dom_docimpl.h"
 #include "misc/htmlhashes.h"
 #include <kdebug.h>
 #include <qpainter.h>
 #include "khtmlview.h"
+#include "render_arena.h"
 
 #include <assert.h>
 using namespace DOM;
 using namespace khtml;
 
+
+#ifndef NDEBUG
+static void *baseOfRenderObjectBeingDeleted;
+#endif
+
+void* RenderObject::operator new(size_t sz, RenderArena* renderArena) throw()
+{
+    return renderArena->allocate(sz);
+}
+
+void RenderObject::operator delete(void* ptr, size_t sz)
+{
+    assert(baseOfRenderObjectBeingDeleted == ptr);
+
+    // Stash size where detach can find it.
+    *(size_t *)ptr = sz;
+}
+
 RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* style)
 {
     RenderObject *o = 0;
+    khtml::RenderArena* arena = node->getDocument()->renderArena();
     switch(style->display())
     {
     case NONE:
@@ -46,10 +67,10 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
     case INLINE:
     case BLOCK:
     case TABLE_CAPTION:
-        o = new RenderFlow(node);
+        o = new (arena) RenderFlow(node);
         break;
     case LIST_ITEM:
-        o = new RenderListItem(node);
+        o = new (arena) RenderListItem(node);
         break;
     case RUN_IN:
     case INLINE_BLOCK:
@@ -57,22 +78,22 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
     case TABLE:
     case INLINE_TABLE:
         style->setFlowAroundFloats(true);
-        o = new RenderTable(node);
+        o = new (arena) RenderTable(node);
         break;
     case TABLE_ROW_GROUP:
     case TABLE_HEADER_GROUP:
     case TABLE_FOOTER_GROUP:
-        o = new RenderTableSection(node);
+        o = new (arena) RenderTableSection(node);
         break;
     case TABLE_ROW:
-        o = new RenderTableRow(node);
+        o = new (arena) RenderTableRow(node);
         break;
     case TABLE_COLUMN_GROUP:
     case TABLE_COLUMN:
-        o = new RenderTableCol(node);
+        o = new (arena) RenderTableCol(node);
         break;
     case TABLE_CELL:
-        o = new RenderTableCell(node);
+        o = new (arena) RenderTableCell(node);
         break;
     }
     if(o) o->setStyle(style);
@@ -896,11 +917,46 @@ void RenderObject::removeFromSpecialObjects()
     }
 }
 
-void RenderObject::detach()
+RenderArena* RenderObject::renderArena() const {
+    DOM::NodeImpl* elt = element();
+    RenderObject* current = parent();
+    while (!elt && current) {
+        elt = current->element();
+        current = current->parent();
+    }
+    if (!elt)
+        return 0;
+    return elt->getDocument()->renderArena();
+}
+
+void RenderObject::detach( RenderArena *renderArena )
 {
     remove();
+
     // by default no refcounting
+    arenaDelete(renderArena, this);
+}
+
+void RenderObject::arenaDelete(RenderArena *arena, void *base)
+{
+#ifndef NDEBUG
+    void *savedBase = baseOfRenderObjectBeingDeleted;
+    baseOfRenderObjectBeingDeleted = base;
+#endif
     delete this;
+#ifndef NDEBUG
+    baseOfRenderObjectBeingDeleted = savedBase;
+#endif
+
+    // Recover the size left there for us by operator delete and free the memory.
+    arena->free(*(size_t *)base, base);
+}
+
+void RenderObject::arenaDelete(RenderArena *arena)
+{
+    // static_cast unfortunately doesn't work, since we multiple inherit
+    // in eg. RenderWidget.
+    arenaDelete(arena, dynamic_cast<void *>(this));
 }
 
 FindSelectionResult RenderObject::checkSelectionPoint( int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int & offset )

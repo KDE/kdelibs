@@ -24,6 +24,7 @@
 #include "break_lines.h"
 #include "render_flow.h"
 #include "render_text.h"
+#include "render_arena.h"
 using namespace khtml;
 
 #include "kdebug.h"
@@ -69,6 +70,37 @@ static int numSpaces;
 
 static void embed( QChar::Direction d );
 static void appendRun();
+
+#ifndef NDEBUG
+static bool inBidiIteratorDetach;
+#endif
+
+void BidiIterator::detach(RenderArena* renderArena)
+{
+#ifndef NDEBUG
+    inBidiIteratorDetach = true;
+#endif
+    delete this;
+#ifndef NDEBUG
+    inBidiIteratorDetach = false;
+#endif
+
+    // Recover the size left there for us by operator delete and free the memory.
+    renderArena->free(*(size_t *)this, this);
+}
+
+void* BidiIterator::operator new(size_t sz, RenderArena* renderArena) throw()
+{
+    return renderArena->allocate(sz);
+}
+
+void BidiIterator::operator delete(void* ptr, size_t sz)
+{
+    assert(inBidiIteratorDetach);
+
+    // Stash size where detach can find it.
+    *(size_t*)ptr = sz;
+}
 
 // ---------------------------------------------------------------------
 
@@ -1007,7 +1039,7 @@ void RenderFlow::layoutInlineChildren( bool relayoutChildren )
                     static_cast<RenderFlow*>(o->containingBlock())->insertSpecialObject(o);
             }
             else if(o->isText())
-                static_cast<RenderText *>(o)->deleteSlaves();
+                static_cast<RenderText *>(o)->deleteSlaves( renderArena() );
             o = Bidinext( this, o );
         }
 

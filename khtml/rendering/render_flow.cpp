@@ -1305,7 +1305,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 	    //kdDebug( 6040 ) << "first letter" << endl;
 
-	    RenderFlow* firstLetter = new RenderFlow(0 /* anonymous box */);
+	    RenderFlow* firstLetter = new (renderArena()) RenderFlow(0 /* anonymous box */);
 	    pseudoStyle->setDisplay( INLINE );
 	    firstLetter->setStyle(pseudoStyle);
             firstLetter->setIsAnonymousBox(true);
@@ -1320,7 +1320,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
 			( (oldText->s+length)->isSpace() || (oldText->s+length)->isPunct() ) )
 		    length++;
 		length++;
-		RenderText* letter = new RenderText(0 /* anonymous object */, oldText->substring(0,length));
+		RenderText* letter = new (renderArena()) RenderText(0 /* anonymous object */, oldText->substring(0,length));
 		RenderStyle* newStyle = new RenderStyle();
 		newStyle->inheritFrom(pseudoStyle);
 		letter->setStyle(newStyle);
@@ -1374,7 +1374,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             }
             anonBox->setIsAnonymousBox(true);
             removeChildNode(anonBox);
-            anonBox->detach(); // does necessary cleanup & deletes anonBox
+            anonBox->detach( renderArena() ); // does necessary cleanup & deletes anonBox
             KHTMLAssert(beforeChild->parent() == this);
 
         }
@@ -1436,7 +1436,7 @@ void RenderFlow::addChild(RenderObject *newChild, RenderObject *beforeChild)
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
 
-            RenderFlow *newBox = new RenderFlow(0 /* anonymous box */);
+            RenderFlow *newBox = new (renderArena()) RenderFlow(0 /* anonymous box */);
             newBox->setStyle(newStyle);
             newBox->setIsAnonymousBox(true);
 
@@ -1512,7 +1512,7 @@ void RenderFlow::makeChildrenNonInline(RenderObject *box2Start)
             newStyle->inheritFrom(style());
             newStyle->setDisplay(BLOCK);
 
-            RenderFlow *box = new RenderFlow(0 /* anonymous box */);
+            RenderFlow *box = new (renderArena()) RenderFlow(0 /* anonymous box */);
             box->setStyle(newStyle);
             box->setIsAnonymousBox(true);
             // ### the children have a wrong style!!!

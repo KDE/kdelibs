@@ -28,6 +28,7 @@
 namespace khtml {
     class RenderFlow;
     class RenderObject;
+    class RenderArena;
 
     class BidiContext {
     public:
@@ -104,6 +105,21 @@ namespace khtml {
 
 	const QChar &current() const;
 	QChar::Direction direction() const;
+
+	void detach(khtml::RenderArena* renderArena);
+
+	// Overloaded new operator.  Derived classes must override operator new
+	// in order to allocate out of the RenderArena.
+	void* operator new(size_t sz, khtml::RenderArena* renderArena) throw();
+
+	// Overridden to prevent the normal delete from being called.
+	void operator delete(void* ptr, size_t sz);
+
+    private:
+	// The normal operator new is disallowed.
+	void* operator new(size_t sz) throw();
+
+    public:
 
 	RenderFlow *par;
 	RenderObject *obj;

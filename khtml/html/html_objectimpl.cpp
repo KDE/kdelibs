@@ -215,7 +215,7 @@ void HTMLAppletElementImpl::attach()
 	    args.insert( "archive", archive.string() );
 
 	args.insert( "baseURL", getDocument()->baseURL() );
-        m_render = new RenderApplet(this, args);
+        m_render = new (getDocument()->renderArena()) RenderApplet(this, args);
         setLiveConnect(applet()->getLiveConnectExtension());
 
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
@@ -316,7 +316,7 @@ void HTMLEmbedElementImpl::attach()
 
         if (w->part()->pluginsEnabled() && getDocument()->isURLAllowed( url ) &&
             parentNode()->id() != ID_OBJECT && _style->display() != NONE ) {
-            m_render = new RenderPartObject(this);
+            m_render = new (getDocument()->renderArena()) RenderPartObject(this);
             m_render->setStyle(_style );
             parentNode()->renderer()->addChild(m_render, nextRenderer());
             static_cast<RenderPartObject*>(m_render)->updateWidget();
@@ -423,9 +423,9 @@ void HTMLObjectElementImpl::attach()
         needWidgetUpdate=false;
         bool imagelike = serviceType.startsWith("image/");
         if (imagelike)
-            m_render = new RenderImage(this);
+            m_render = new (getDocument()->renderArena()) RenderImage(this);
         else
-            m_render = new RenderPartObject(this);
+            m_render = new (getDocument()->renderArena()) RenderPartObject(this);
 
         m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());

@@ -162,7 +162,7 @@ public:
     virtual ElementImpl *createHTMLElement ( const DOMString &tagName );
 
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
-    
+
      /**
      * Updates the pending sheet count and then calls updateStyleSelector.
      */
@@ -221,6 +221,8 @@ public:
 
     virtual void attach();
     virtual void detach();
+
+    khtml::RenderArena* renderArena() { return m_renderArena; }
 
     // to get visually ordered hebrew and arabic pages right
     void setVisuallyOrdered();
@@ -418,7 +420,7 @@ protected:
     QString m_usersheet;
     QString m_printSheet;
     QStringList m_availableSheets;
-    
+
     // Track the number of currently loading top-level stylesheets.  Sheets
     // loaded using the @import directive are not included in this count.
     // We use this count of pending sheets to detect when we can begin attaching
@@ -470,6 +472,8 @@ protected:
     DOMString m_preferredStylesheetSet;
 
     int m_decoderMibEnum;
+
+    khtml::RenderArena* m_renderArena;
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl

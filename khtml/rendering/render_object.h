@@ -68,6 +68,7 @@ namespace khtml {
     class RenderRoot;
     class RenderText;
     class RenderFrameSet;
+    class RenderArena;
 
 /**
  * Base Class for all rendering tree objects.
@@ -107,6 +108,8 @@ private:
     // Helper functions. Dangerous to use!
     void setPreviousSibling(RenderObject *previous) { m_previous = previous; }
     void setNextSibling(RenderObject *next) { m_next = next; }
+public:
+    /* use with care!!!! */
     void setParent(RenderObject *parent) { m_parent = parent; }
     //////////////////////////////////////////
 
@@ -119,6 +122,20 @@ public:
 #endif
 
     static RenderObject *createObject(DOM::NodeImpl* node, RenderStyle* style);
+
+    // Overloaded new operator.  Derived classes must override operator new
+    // in order to allocate out of the RenderArena.
+    void* operator new(size_t sz, RenderArena* renderArena);
+
+    // Overridden to prevent the normal delete from being called.
+    void operator delete(void* ptr, size_t sz);
+
+private:
+    // The normal operator new is disallowed on all render objects.
+    void* operator new(size_t sz);
+
+public:
+    RenderArena* renderArena() const;
 
     // some helper functions...
     virtual bool childrenInline() const { return false; }
@@ -435,7 +452,7 @@ public:
     virtual void calcVerticalMargins() {}
     void removeFromSpecialObjects();
 
-    virtual void detach();
+    virtual void detach( RenderArena * );
 
     const QFont &font(bool firstLine) const {
 	return style( firstLine )->font();
@@ -463,6 +480,8 @@ protected:
     short getVerticalPosition( bool firstLine ) const;
 
     virtual void removeLeftoverAnonymousBoxes();
+
+    void arenaDelete(RenderArena *arena);
 
 private:
     RenderStyle* m_style;
@@ -492,8 +511,11 @@ private:
     bool m_mouseInside : 1;
     bool m_hasFirstLine              : 1;
     bool m_isSelectionBorder          : 1;
-
     // note: do not add unnecessary bitflags, we have 32 bit already!
+
+
+    void arenaDelete(RenderArena *arena, void *objectBase);
+
     friend class RenderListItem;
     friend class RenderContainer;
     friend class RenderRoot;

@@ -201,7 +201,7 @@ void HTMLBodyElementImpl::attach()
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     style->ref();
     if (parentNode()->renderer() && style->display() != NONE) {
-        m_render = new RenderBody(this);
+        m_render = new (getDocument()->renderArena()) RenderBody(this);
         m_render->setStyle(style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
@@ -320,7 +320,7 @@ void HTMLFrameElementImpl::attach()
     KHTMLView* w = getDocument()->view();
 
     if (parentNode()->renderer() && getDocument()->isURLAllowed(url.string()))  {
-        m_render = new RenderFrame(this);
+        m_render = new (getDocument()->renderArena()) RenderFrame(this);
         m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
@@ -489,7 +489,7 @@ void HTMLFrameSetElementImpl::attach()
     }
 
     // ignore display: none
-    m_render = new RenderFrameSet(this);
+    m_render = new (getDocument()->renderArena()) RenderFrameSet(this);
     m_render->setStyle(getDocument()->styleSelector()->styleForElement(this));
     parentNode()->renderer()->addChild(m_render, nextRenderer());
 
@@ -540,7 +540,7 @@ void HTMLHtmlElementImpl::attach()
 
     RenderStyle* style = getDocument()->styleSelector()->styleForElement(this);
     // ignore display: none
-    m_render = new RenderHtml(this);
+    m_render = new (getDocument()->renderArena()) RenderHtml(this);
     m_render->setStyle(style);
     parentNode()->renderer()->addChild(m_render, nextRenderer());
     NodeBaseImpl::attach();
@@ -602,7 +602,7 @@ void HTMLIFrameElementImpl::attach()
     style->ref();
     if (getDocument()->isURLAllowed(url.string()) &&
         parentNode()->renderer() && style->display() != NONE) {
-        m_render = new RenderPartObject(this);
+        m_render = new (getDocument()->renderArena()) RenderPartObject(this);
         m_render->setStyle(style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }

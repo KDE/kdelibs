@@ -102,6 +102,30 @@ Needs other stuff before it can be applied:
 # rendering
 ===========================================================================
 
+done so far:
+- RenderArena support. Usage of the arena is disabled for now. Needs testing before
+  I'll enable it.
+
+- renamed print methods to paint
+
+- added render_layer, but don't use up to now.
+
+changes that need to be merged:
+
+- bidi.h/cpp: lot's of changes to white space handling and others.
+   probably needs the merge of the tokenizer.
+
+- font.cpp/h: some apple specific changes. Addition of a genericFamily enum,
+  IMO to speed up style stuff. Should IMO be separated out into a font_mac.cpp
+  and font_x11.cpp
+
+- render_applet.cpp: small #ifdef APPLE changes
+
+....
+
+general API changes:
+- repaint has gotten a bool immediate.
+
 ===========================================================================
 # xml
 ===========================================================================

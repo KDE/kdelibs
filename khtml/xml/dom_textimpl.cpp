@@ -324,7 +324,7 @@ void TextImpl::attach()
     ElementImpl* element = static_cast<ElementImpl*>(parentNode());
     if (!m_render && element->renderer()) {
         khtml::RenderStyle* _style = element->renderer()->style();
-        m_render = new RenderText(this, str);
+        m_render = new (getDocument()->renderArena()) RenderText(this, str);
         m_render->setStyle(_style);
         parentNode()->renderer()->addChild(m_render, nextRenderer());
     }

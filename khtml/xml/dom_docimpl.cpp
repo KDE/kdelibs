@@ -236,6 +236,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_textColor = Qt::black;
 
     m_view = v;
+    m_renderArena = 0;
 
     if ( v ) {
         m_docLoader = new DocLoader(v->part(), this );
@@ -326,6 +327,11 @@ DocumentImpl::~DocumentImpl()
     m_styleSheets->deref();
     if (m_focusNode)
         m_focusNode->deref();
+
+    if (m_renderArena){
+	delete m_renderArena;
+	m_renderArena = 0;
+    }
 }
 
 
@@ -970,11 +976,14 @@ void DocumentImpl::attach()
     if ( m_view )
         setPaintDevice( m_view );
 
+    if (!m_renderArena)
+	m_renderArena = new RenderArena();
+
     // Create the rendering tree
     assert(!m_styleSelector);
     m_styleSelector = new CSSStyleSelector( this, m_usersheet, m_styleSheets, m_url,
                                             pMode == Strict );
-    m_render = new RenderRoot(this, m_view);
+    m_render = new (m_renderArena) RenderRoot(this, m_view);
     m_styleSelector->computeFontSizes(paintDeviceMetrics(), m_view ? m_view->part()->zoomFactor() : 100);
     recalcStyle( Force );
 
@@ -998,9 +1007,14 @@ void DocumentImpl::detach()
     NodeBaseImpl::detach();
 
     if ( render )
-        render->detach();
+        render->detach(m_renderArena);
 
     m_view = 0;
+
+    if ( m_renderArena ) {
+	delete m_renderArena;
+	m_renderArena = 0;
+    }
 }
 
 void DocumentImpl::setVisuallyOrdered()
@@ -1760,13 +1774,13 @@ void DocumentImpl::stylesheetLoaded()
   assert(m_pendingStylesheets > 0);
 
   m_pendingStylesheets--;
-  updateStyleSelector();    
+  updateStyleSelector();
 }
 
-void DocumentImpl::addPendingSheet() 
-{ 
+void DocumentImpl::addPendingSheet()
+{
 m_pendingStylesheets++;
-//kdDebug()<<"ADDED SHEET pending="<<m_pendingStylesheets<<endl; 
+//kdDebug()<<"ADDED SHEET pending="<<m_pendingStylesheets<<endl;
 }
 
 
@@ -1789,11 +1803,11 @@ void DocumentImpl::setSelectedStylesheetSet(const DOMString& s)
 void DocumentImpl::updateStyleSelector()
 {
 //    kdDebug() << "PENDING " << m_pendingStylesheets << endl;
-		    
+
     // Don't bother updating, since we haven't loaded all our style info yet.
     if (m_pendingStylesheets > 0)
         return;
-	
+
     recalcStyleSelector();
     recalcStyle(Force);
 #if 0
@@ -1813,9 +1827,9 @@ QStringList DocumentImpl::availableStyleSheets() const
 }
 
 void DocumentImpl::recalcStyleSelector()
-{    
+{
     if ( !m_render || !attached() ) return;
-    
+
     assert(m_pendingStylesheets==0);
 
     QPtrList<StyleSheetImpl> oldStyleSheets = m_styleSheets->styleSheets;

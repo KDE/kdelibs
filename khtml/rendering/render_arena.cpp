@@ -40,6 +40,14 @@
 
 using namespace khtml;
 
+namespace khtml {
+
+
+// ### for now don't use the arena allocator!
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+
 #ifndef NDEBUG
 
 const int signature = 0xDBA00AEA;
@@ -59,12 +67,18 @@ RenderArena::RenderArena(unsigned int arenaSize)
 
     // Zero out the recyclers array
     memset(m_recyclers, 0, sizeof(m_recyclers));
+#ifndef NDEBUG
+    signature = ::signature;
+#endif
 }
 
 RenderArena::~RenderArena()
 {
     // Free the arena in the pool and finish using it
     FreeArenaPool(&m_pool);
+#ifndef NDEBUG
+    signature = 0;
+#endif
 }
 
 void* RenderArena::allocate(size_t size)
@@ -112,6 +126,7 @@ void RenderArena::free(size_t size, void* ptr)
     assert(header->signature == signature);
     assert(header->size == size);
     assert(header->arena == this);
+    assert(signature == ::signature);
     ::free(header);
 #else
     // Ensure we have correct alignment for pointers.  Important for Tru64
@@ -125,4 +140,6 @@ void RenderArena::free(size_t size, void* ptr)
         *((void**)ptr) = currentTop;
     }
 #endif
+}
+
 }
