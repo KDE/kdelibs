@@ -28,7 +28,12 @@ class KProtocolManager
 public:
   enum Type { T_STREAM, T_FILESYSTEM, T_NONE, T_ERROR };
 
-  QString executable( const QString& _protocol ) const;
+  /**
+   * @return the library to open for the protocol *p _protocol
+   * Example : "kio_ftp.la"
+   */
+  QString library( const QString& _protocol ) const;
+
   Type inputType( const QString& _protocol ) const;
   Type outputType( const QString& _protocol ) const;
   QStringList listing( const QString& _protocol ) const;
@@ -170,7 +175,7 @@ private:
 
   struct Protocol
   {
-    QString executable;
+    QString library;
     Type inputType;
     Type outputType;
     QStringList listing;

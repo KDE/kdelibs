@@ -43,11 +43,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
     config.setGroup( "Protocol" );
 
     Protocol p;
-    QString exec = config.readEntry( "exec" );
-    if (!exec.isEmpty())
-	p.executable = locate("exe", exec);
-    else
-	p.executable = "";
+    p.library = config.readEntry( "lib" );
     p.isSourceProtocol = config.readBoolEntry( "source", true );
     p.supportsReading = config.readBoolEntry( "reading", false );
     p.supportsWriting = config.readBoolEntry( "writing", false );
@@ -219,7 +215,7 @@ QStringList KProtocolManager::protocols() const
   return res;
 }
 
-QString KProtocolManager::executable( const QString& _protocol ) const
+QString KProtocolManager::library( const QString& _protocol ) const
 {
   ConstIterator it = m_protocols.find( _protocol );
   if ( it == m_protocols.end() )
@@ -228,7 +224,7 @@ QString KProtocolManager::executable( const QString& _protocol ) const
     return QString::null;
   }
 
-  return it.data().executable;
+  return it.data().library;
 }
 
 KProtocolManager::Type KProtocolManager::inputType( const QString& _protocol ) const
