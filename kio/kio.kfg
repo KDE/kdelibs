@@ -4,6 +4,7 @@ kioslave 'common'
 	markPartial<bool> = true;
 	automaticResume<bool> = false;
 	minimumKeepSize<long> = 5000;
+	persistentConnections<bool> = true;
 };
 
 kioslave 'file' 
