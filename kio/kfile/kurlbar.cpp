@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2001 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
 
     library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -222,6 +222,7 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
     : QFrame( parent, name, f ),
       m_activeItem( 0L ),
       m_useGlobal( useGlobalItems ),
+      m_isModified( false ),
       m_listBox( 0L ),
       m_iconSize( KIcon::SizeMedium )
 {
@@ -434,6 +435,9 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
     KConfigGroupSaver cs1( config, itemGroup );
     config->writeEntry( "Speedbar IconSize", m_iconSize );
 
+    if ( !m_isModified )
+        return;
+
     int i = 0;
     int numLocal = 0;
     KURLBarItem *item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
@@ -468,6 +472,8 @@ void KURLBar::writeConfig( KConfig *config, const QString& itemGroup )
         }
         config->writeEntry("Number of Entries", numGlobals, true, true);
     }
+
+    m_isModified = false;
 }
 
 void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
@@ -494,7 +500,6 @@ void KURLBar::slotDropped( QDropEvent *e )
         QString description;
         QString icon;
         bool appLocal = false;
-        KURLBarItem *item = 0L;
 
         KURL::List::Iterator it = urls.begin();
         for ( ; it != urls.end(); ++it ) {
@@ -502,7 +507,8 @@ void KURLBar::slotDropped( QDropEvent *e )
             if ( KURLBarItemDialog::getInformation( m_useGlobal,
                                                     url, description, icon,
                                                     appLocal, this ) ) {
-                item = insertItem( url, description, appLocal, icon );
+                (void) insertItem( url, description, appLocal, icon );
+                m_isModified = true;
             }
         }
     }
@@ -548,6 +554,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
             break;
         case RemoveItem:
             delete item;
+            m_isModified = true;
             break;
         default: // abort
             break;
@@ -585,6 +592,7 @@ bool KURLBar::editItem( KURLBarItem *item )
         item->setIcon( icon );
         item->setApplicationLocal( appLocal );
         m_listBox->triggerUpdate( true );
+        m_isModified = true;
         return true;
     }
 

@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-    Copyright (C) 2001 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
 
     library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -47,7 +47,7 @@ public:
      * to insert the item into the listbox manually, if you don't use
      * KURLBar::insertItem().
      *
-     * If description is empty, it will try to use the filename/directory 
+     * If description is empty, it will try to use the filename/directory
      * of @p url, which will be shown as text of the item.
      * @p url will be used as tooltip, unless you set a different tip with
      * @ref setToolTip()
@@ -62,7 +62,7 @@ public:
     ~KURLBarItem();
 
     /**
-     * Sets @p url for this item. Also updates the visible text to the 
+     * Sets @p url for this item. Also updates the visible text to the
      * filename/directory of the url, if no description is set.
      * @see #url
      */
@@ -117,7 +117,7 @@ public:
      * returns the icon-group of this item (determines icon-effects).
      * @see #setIcon
      */
-    KIcon::Group iconGroup() const                       { return m_group; }
+    KIcon::Group iconGroup() const              { return m_group; }
     /**
      * returns the pixmap  of this item.
      */
@@ -173,7 +173,7 @@ class KURLBarListBox;
  * KURLBar offers the methods @ref readConfig() and @ref writeConfig() to
  * read and write the configuration of all the entries. It can differentiate
  * between global and local entries -- global entries will be saved in the
- * global configuration (kdeglobals), while local entries will be saved in 
+ * global configuration (kdeglobals), while local entries will be saved in
  * your application's KConfig object.
  *
  * Due to the configurability, you usually only insert some default entries
@@ -192,7 +192,7 @@ class KURLBar : public QFrame
 
 public:
     /**
-     * Constructs a KURLBar. Set @p useGlobalItems to true if you want to 
+     * Constructs a KURLBar. Set @p useGlobalItems to true if you want to
      * allow global/local item separation.
      */
     KURLBar( bool useGlobalItems,
@@ -203,7 +203,7 @@ public:
     ~KURLBar();
 
     /**
-     * Inserts a new item into the KURLBar and returns the created 
+     * Inserts a new item into the KURLBar and returns the created
      * @ref KURLBarItem.
      *
      * @p url the url of the item
@@ -230,8 +230,8 @@ public:
     Orientation orientation() const;
 
     /**
-     * Allows to set a custom KURLBarListBox. 
-     * Note: The previous listbox will be deleted. Items of the previous 
+     * Allows to set a custom KURLBarListBox.
+     * Note: The previous listbox will be deleted. Items of the previous
      * listbox will not be moved to the new box.
      * @see #listBox
      */
@@ -243,7 +243,7 @@ public:
     KURLBarListBox *listBox() const { return m_listBox; }
 
     /**
-     * Sets the default iconsize to be used for items inserted with 
+     * Sets the default iconsize to be used for items inserted with
      * @ref insertItem. By default KIcon::SizeMedium.
      * @see #iconsize
      */
@@ -310,7 +310,14 @@ public:
      * @see #setCurrentItem
      */
     KURL currentURL() const;
-    
+
+    /**
+     * @returns true when the urlbar was modified by the user (e.g. by
+     * editing/adding/removing one or more entries). Will be reset to false
+     * after calling @ref writeConfig().
+     */
+    bool isModified() const             { return m_isModified; }
+
 public slots:
     /**
      * Makes the item with the url @p url the current item. Does nothing
@@ -322,7 +329,7 @@ public slots:
 
 signals:
     /**
-     * This signal is emitted when the user activated an item, e.g by 
+     * This signal is emitted when the user activated an item, e.g by
      * clicking on it.
      */
     void activated( const KURL& url );
@@ -338,7 +345,7 @@ protected:
      * Pops up a @ref KURLBarItemDialog to let the user edit the properties
      * of @p item. Invoked e.g. by @ref addNewItem(), when the user drops
      * a url  onto the bar or from the contextmenu.
-     * @returns false if the user aborted the dialog and @p item is not 
+     * @returns false if the user aborted the dialog and @p item is not
      * changed.
      */
     virtual bool editItem( KURLBarItem *item );
@@ -358,7 +365,13 @@ protected:
     /**
      * Whether we support global entries or just local ones.
      */
-    bool m_useGlobal :1;
+    bool m_useGlobal  :1;
+
+    /**
+     * Whether the urlbar was modified by the user (e.g. by
+     * editing/adding/removing an item).
+     */
+    bool m_isModified :1;
 
 protected slots:
     /**
@@ -372,7 +385,7 @@ protected slots:
      */
     virtual void slotSelected( QListBoxItem * );
     /**
-     * Called when a url was dropped onto the bar to show a 
+     * Called when a url was dropped onto the bar to show a
      * @ref KURLBarItemDialog.
      */
     virtual void slotDropped( QDropEvent * );
@@ -397,7 +410,7 @@ class KURLBarToolTip;
 /**
  * This is the listbox used in KURLBar. It is a subclass of KListBox to support
  * drag & drop and to set up the row / column mode.
- * 
+ *
  * The widget has just one row or one column, depending on @ref orientation().
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
@@ -481,8 +494,8 @@ class KURLBarItemDialog : public KDialogBase
 
 public:
     /**
-     * A convenience method to show up the dialog and retrieve all the 
-     * properties via the given parameters. The parameters are used to 
+     * A convenience method to show up the dialog and retrieve all the
+     * properties via the given parameters. The parameters are used to
      * initialize the dialog and then return the user-configured values.
      *
      * See the @ref KURLBarItem constructor for the parameter description.
@@ -492,10 +505,10 @@ public:
                                 bool& appLocal, QWidget *parent = 0 );
 
     /**
-     * Constructs a KURLBarItemDialog. 
+     * Constructs a KURLBarItemDialog.
      *
      * @p allowGlobal if you set this to true, the dialog will have a checkbox
-     *                for the user to decide if he wants the entry to be 
+     *                for the user to decide if he wants the entry to be
      *                available globally or just for the current application.
      * @p url the url of the item
      * @p description a short, translated description of the item
@@ -520,12 +533,12 @@ public:
      * @returns the configured url
      */
     KURL url() const;
-    
+
     /**
      * @returns the configured description
      */
     QString description() const;
-    
+
     /**
      * @returns the configured icon
      */

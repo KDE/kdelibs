@@ -135,7 +135,7 @@ struct KFileDialogPrivate
     // setting it again and again, we have this nice little boolean :)
     bool hasView :1;
 
-    // do we show the speedbar for the fist time?
+    // do we show the speedbar for the first time?
     bool initializeSpeedbar :1;
 
     // an indicator that we're currently in a completion operation
@@ -403,16 +403,23 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     readConfig( config, ConfigGroup );
     d->completionLock = false;
 
+    // need to set the current url of the urlbar manually (not via urlEntered()
+    // here, because the initial url of KDirOperator might be the same as the
+    // one that will be set later (and then urlEntered() won't be emitted).
+    // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor is gone).
+    if ( d->urlBar )
+        d->urlBar->setCurrentItem( d->url );
     setSelection(d->url.url()); // ### move that into show() as well?
 }
+
 
 KFileDialog::~KFileDialog()
 {
     hide();
 
     KConfig *config = KGlobal::config();
-    
-    if ( d->initializeSpeedbar ) {
+
+    if ( d->initializeSpeedbar && d->urlBar->isModified() ) {
         QString oldGroup = config->group();
         config->setGroup( ConfigGroup );
         // write to kdeglobals
@@ -638,7 +645,7 @@ void KFileDialog::slotOk()
     // d->url is a correct URL now
 
     if ( (mode() & KFile::Directory) == KFile::Directory ) {
-        kdDebug(kfile_area) << "Directory\n";
+        kdDebug(kfile_area) << "Directory" << endl;
 	bool done = true;
         if ( d->url.isLocalFile() ) {
 	    if ( locationEdit->currentText().stripWhiteSpace().isEmpty() ) {
@@ -1144,7 +1151,7 @@ void KFileDialog::bookmarkMenuActivated( int choice )
 
 void KFileDialog::setSelection(const QString& url)
 {
-    kdDebug(kfile_area) << "setSelection " << url << endl;
+    kdDebug() << "setSelection " << url << endl;
 
     if (url.isEmpty()) {
         d->selection = QString::null;

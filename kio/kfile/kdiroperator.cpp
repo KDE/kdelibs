@@ -112,6 +112,8 @@ KDirOperator::KDirOperator(const KURL& _url,
         currUrl = _url;
         if ( currUrl.protocol().isEmpty() )
             currUrl.setProtocol(QString::fromLatin1("file"));
+
+        currUrl.addPath("/"); // make sure we have a trailing slash!
     }
 
     setDirLister( new KDirLister( true ) );
@@ -1402,7 +1404,7 @@ void KDirOperator::slotIOFinished()
         fileView->listingCompleted();
 }
 
-KProgress * KDirOperator::progressBar() const 
+KProgress * KDirOperator::progressBar() const
 {
     return progress;
 }
