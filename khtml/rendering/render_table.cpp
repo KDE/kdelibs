@@ -1965,8 +1965,7 @@ void RenderTableRow::layout()
 
     RenderObject *child = firstChild();
     while( child ) {
-	KHTMLAssert( child->isTableCell() );
-	if ( !child->layouted() ) {
+	if ( child->isTableCell() && !child->layouted() ) {
 	    RenderTableCell *cell = static_cast<RenderTableCell *>(child);
 	    cell->calcVerticalMargins();
 	    cell->layout();
