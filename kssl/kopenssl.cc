@@ -90,6 +90,7 @@ static void (*K_EVP_PKEY_free) (EVP_PKEY *) = NULL;
 static int (*K_SSL_CTX_use_PrivateKey) (SSL_CTX*, EVP_PKEY*) = NULL;
 static int (*K_SSL_CTX_use_certificate) (SSL_CTX*, X509*) = NULL;
 static int (*K_SSL_get_error) (SSL*, int) = NULL;
+static STACK_OF(X509)* (*K_SSL_get_peer_cert_chain) (SSL*) = NULL;
 #endif    
 };
 
@@ -243,6 +244,7 @@ KConfig *cfg;
       K_SSL_CTX_use_PrivateKey = (int (*)(SSL_CTX*, EVP_PKEY*)) _sslLib->symbol("SSL_CTX_use_PrivateKey");
       K_SSL_CTX_use_certificate = (int (*)(SSL_CTX*, X509*)) _sslLib->symbol("SSL_CTX_use_certificate");
       K_SSL_get_error = (int (*)(SSL*, int)) _sslLib->symbol("SSL_get_error");
+      K_SSL_get_peer_cert_chain = (STACK_OF(X509)* (*)(SSL*)) _sslLib->symbol("SSL_get_peer_cert_chain");
 #endif
 
 
@@ -637,6 +639,12 @@ int KOpenSSLProxy::SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x) {
 int KOpenSSLProxy::SSL_get_error(SSL *ssl, int rc) {
    if (K_SSL_get_error) return (K_SSL_get_error)(ssl,rc);
    else return -1;
+}
+
+
+STACK_OF(X509) *KOpenSSLProxy::SSL_get_peer_cert_chain(SSL *s) {
+   if (K_SSL_get_peer_cert_chain) return (K_SSL_get_peer_cert_chain)(s);
+   else return NULL;
 }
 
 #endif

@@ -194,6 +194,11 @@ public:
 
 
    /*
+    *   SSL_get_peer_cert_chain - get the peer's certificate chain
+    */
+   STACK_OF(X509) *SSL_get_peer_cert_chain(SSL *s);
+
+   /*
     *   SSL_CIPHER_get_bits - get the number of bits in this cipher
     */
    int SSL_CIPHER_get_bits(SSL_CIPHER *c,int *alg_bits);
