@@ -76,6 +76,7 @@ void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, 
     }
     _len -= startPos;
 
+    //kdDebug(6040) << "TextSlave::printSelection startPos (relative)=" << startPos << " len (of selection)=" << _len << "  (m_len=" << m_len << ")" << endl;
     QConstString s(m_text+startPos , _len);
 
     if (_len != m_len)
@@ -427,15 +428,19 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         while(si > 0 && m_lines[si-1]->checkVerticalPoint(y, ty, h))
             si--;
 
-        //kdDebug(6040) << "\nRenderText::printObject y=" << y << " ty=" << ty << " first line is " << si << endl;
+        //kdDebug(6040) << endl;
+        //kdDebug(6040) << this << " RenderText::printObject y=" << y << " ty=" << ty << " h=" << h << " first line is " << si << endl;
         int firstSi = si;
 
-        // Now calculate startPos and endPos, for printing selection
+        // Now calculate startPos and endPos, for printing selection.
+        // endPos works this way: 0, no selection. -1, no end to the selection
+        // anything else, works like startPos (can be positive or negative)
         int endPos, startPos;
         if (selectionState() != SelectionNone)
         {
             if (selectionState() == SelectionInside)
             {
+                //kdDebug(6040) << this << " SelectionInside -> 0 to -1" << endl;
                 startPos = 0;
                 endPos = -1;
             }
@@ -443,10 +448,13 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             {
                 selectionStartEnd(startPos, endPos);
                 if(selectionState() == SelectionStart) {
+                    //kdDebug(6040) << this << " SelectionStart -> " << startPos << " to -1 " << endl;
                     endPos = -1;
                 }
-                else if(selectionState() == SelectionEnd)
+                else if(selectionState() == SelectionEnd) {
+                    //kdDebug(6040) << this << " SelectionEnd -> 0 to " << endPos << endl;
                     startPos = 0;
+                }
             }
 
             // Eat the lines we don't print (startPos and endPos are from line 0!)
@@ -458,12 +466,15 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 {
                     // ## Only valid for visuallyOrdered
                     int len = m_lines[si]->m_text - m_lines[0]->m_text;
-                    //kdDebug(6040) << "RenderText::printObject adjustement si=" << si << " len=" << len << endl;
+                    //kdDebug(6040) << this << " RenderText::printObject adjustement si=" << si << " len=" << len << endl;
                     ASSERT( len > 0 );
                     startPos -= len;
-                    endPos -= len;
-                    if ( endPos < 0 )
-                        endPos = 0; // finished
+                    if ( endPos != -1 )
+                    {
+                        endPos -= len;
+                        if ( endPos < 0 )
+                            endPos = 0; // finished
+                    }
                 }
             }
         }
@@ -497,7 +508,7 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 
             if (selectionState() != SelectionNone && endPos != 0)
             {
-                //kdDebug(6040) << "printSelection with startPos=" << startPos << " endPos=" << endPos << endl;
+                //kdDebug(6040) << this << " printSelection with startPos=" << startPos << " endPos=" << endPos << endl;
                 s->printSelection(p, style, tx, ty, startPos, endPos);
 
                 int diff;
@@ -505,18 +516,21 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 {
                     // ### only for visuallyOrdered ! (we disabled endPos for RTL, so we can't go here in RTL mode)
                     diff = m_lines[si+1]->m_text - s->m_text;
-                    //kdDebug(6040) << "RenderText::printSelection eating the line si=" << si << " diff=" << diff << endl;
+                    //kdDebug(6040) << this << " RenderText::printSelection eating the line si=" << si << " diff=" << diff << endl;
                 }
                 else
                 {
                     diff = s->m_len;
-                    //kdDebug(6040) << "RenderText::printSelection eating the last line m_len=diff=" << diff << endl;
+                    //kdDebug(6040) << this << " RenderText::printSelection eating the last line m_len=diff=" << diff << endl;
                 }
-                endPos -= diff;
-                if ( endPos < 0 )
-                    endPos = 0; // finished
+                if ( endPos != -1 )
+                {
+                    endPos -= diff;
+                    if ( endPos < 0 )
+                        endPos = 0; // finished
+                }
                 startPos -= diff;
-                //kdDebug(6040) << "startPos now " << startPos << ", endPos now " << endPos << endl;
+                //kdDebug(6040) << this << " startPos now " << startPos << ", endPos now " << endPos << endl;
             }
         } while (++si < (int)m_lines.count() && m_lines[si]->checkVerticalPoint(y, ty, h));
 
