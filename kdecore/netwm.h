@@ -388,19 +388,19 @@ protected:
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
-       when it wants to know when a Client made a request to change the current
+       when it wants to know when a Client made a request to change the specified
        desktop geometry.
     **/
-    // virtual void changeDesktopGeometry(const NETSize &geom) { }
-    virtual void changeDesktopGeometry(const NETSize &) { }
+    // virtual void changeDesktopGeometry(int desktop, const NETSize &geom) { }
+    virtual void changeDesktopGeometry(int, const NETSize &) { }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
-       when it wants to know when a Client made a request to change the current
+       when it wants to know when a Client made a request to change the specified
        desktop viewport.
     **/
-    // virtual void changeDesktopViewport(const NETPoint &viewport) { }
-    virtual void changeDesktopViewport(const NETPoint &) { }
+    // virtual void changeDesktopViewport(int desktop, const NETPoint &viewport) { }
+    virtual void changeDesktopViewport(int, const NETPoint &) { }
 
     /**
        A Window Manager should subclass NETRootInfo and reimplement this function
