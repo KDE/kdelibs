@@ -68,7 +68,7 @@ void KEdit::search(){
   string = srchdialog->getText();
   srchdialog->setText(string.isEmpty() ? pattern : string);
 
-  this->deselect();
+  deselect();
   last_search = NONE;
 
   srchdialog->show();
@@ -264,7 +264,7 @@ void KEdit::replace()
   replace_dialog->setText(string.isEmpty() ? pattern : string);
 
 
-  this->deselect();
+  deselect();
   last_replace = NONE;
 
   replace_dialog->show();
@@ -319,13 +319,38 @@ void KEdit::replace_all_slot(){
     return;
 
   QString to_find_string = replace_dialog->getText();
-  getCursorPosition(&replace_all_line,&replace_all_col);
 
-  deselect();
+  int lineFrom, lineTo, colFrom, colTo;
+  getSelection(&lineFrom, &colFrom, &lineTo, &colTo);
 
   // replace_dialog->get_direction() is true if searching backward
-  if (last_replace != NONE && replace_dialog->get_direction())
-    replace_all_col--;
+  if (replace_dialog->get_direction())
+  {
+    if (colTo != -1)
+    {
+      replace_all_col = colTo - to_find_string.length();
+      replace_all_line = lineTo;
+    }
+    else
+    {
+      getCursorPosition(&replace_all_line,&replace_all_col);
+      replace_all_col--;
+    }
+  }
+  else
+  {
+    if (colFrom != -1)
+    {
+      replace_all_col = colFrom;
+      replace_all_line = lineFrom;
+    }
+    else
+    {
+      getCursorPosition(&replace_all_line,&replace_all_col);
+    }
+  }
+
+  deselect();
 
 again:
 
@@ -385,11 +410,36 @@ void KEdit::replace_search_slot(){
     return;
 
   QString to_find_string = replace_dialog->getText();
-  getCursorPosition(&line,&col);
+
+  int lineFrom, lineTo, colFrom, colTo;
+  getSelection(&lineFrom, &colFrom, &lineTo, &colTo);
 
   // replace_dialog->get_direction() is true if searching backward
-  if (last_replace != NONE && replace_dialog->get_direction())
-    col--;
+  if (replace_dialog->get_direction())
+  {
+    if (colFrom != -1)
+    {
+      col = colFrom - to_find_string.length();
+      line = lineFrom;
+    }
+    else
+    {
+      getCursorPosition(&line,&col);
+      col--;
+    }
+  }
+  else
+  {
+    if (colTo != -1)
+    {
+      col = colTo;
+      line = lineTo;
+    }
+    else
+    {
+      getCursorPosition(&line,&col);
+    }
+  }
 
 again:
 
