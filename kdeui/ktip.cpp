@@ -275,17 +275,20 @@ void KTipDialog::showTip(const QString &tipFile, bool force)
     showTip(kapp->mainWidget(), tipFile, force);
 }
 
-void KTipDialog::showTip(QWidget *parent,const QString &tipFile, bool force)
+void KTipDialog::showTip(QWidget *parent, const QString &tipFile, bool force)
 {
-    if (!force)
-    {
-	KConfigGroup config(kapp->config(), "TipOfDay");
-	if (!config.readBoolEntry("RunOnStart", true))
+    const bool runOnStart = KConfigGroup(kapp->config(), "TipOfDay")
+                                        .readBoolEntry("RunOnStart", true);
+
+    if (!force && !runOnStart)
 	    return;
-    }
 
     if (!_instance)
 	_instance = new KTipDialog(new KTipDatabase(tipFile), parent);
+    else
+	// The application might have changed the RunOnStart option in its own
+	// configuration dialog, so we should update the checkbox.
+	_instance->_tipOnStart->setChecked(runOnStart);
 
     _instance->nextTip();
     _instance->show();
