@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+                  2000-2002 Stephan Kulow (coolo@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -45,6 +46,8 @@ class kdbgstream {
       area(_area), level(_level),  print(_print) { }
     kdbgstream(const char * initialString, unsigned int _area, unsigned int _level, bool _print = true) :
       output(QString::fromLatin1(initialString)), area(_area), level(_level),  print(_print) { }
+    kdbgstream(kdbgstream &str) : 
+      output(str.output), area(str.area), level(str.level), print(str.print) { str.output.truncate(0); }
     ~kdbgstream();
     kdbgstream &operator<<(bool i)  {
 	if (!print) return *this;

@@ -3,6 +3,7 @@
 #include <kinstance.h>
 #include <iostream.h>
 #include <qapplication.h>
+#include <kdebugclasses.h>
 
 class TestWidget : public QWidget
 {
@@ -30,6 +31,14 @@ public:
     kdError() << "Error with no area" << endl;
     
     kdDebug() << "Printing a null QWidget pointer: " << (QWidget*)0 << endl;
+
+    QPoint p(0,9);
+    kdDebug() << p << endl;
+
+    QStringList sl;
+    sl << "hi" << "this" << "list" << "is" << "short";
+    kdDebug() << sl << endl;
+
   }
   void resizeEvent(QResizeEvent*)
   {
