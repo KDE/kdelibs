@@ -559,7 +559,7 @@ bool KMimeType::is( const QString& mimeTypeName ) const
 
 int KMimeType::patternsAccuracy() const {
   QVariant v = property("X-KDE-PatternsAccuracy");
-  if (v.isValid()) return 100;
+  if (!v.isValid()) return 100;
   else
       return v.toInt();
 }
