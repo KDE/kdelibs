@@ -46,7 +46,7 @@ QByteArray KMultipleDrag::encodedData( const char *mime ) const
     {
         for ( int i = 0; it.current()->format( i ); ++i )
         {
-            if ( strcmp( it.current()->format( i ), mime ) == 0 )
+            if ( ::qstrcmp( it.current()->format( i ), mime ) == 0 )
                 return it.current()->encodedData( mime );
         }
     }
