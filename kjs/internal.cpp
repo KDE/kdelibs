@@ -349,9 +349,14 @@ AnonymousFunction::AnonymousFunction()
 }
 
 DeclaredFunctionImp::DeclaredFunctionImp(const UString &n, StatementNode *b,
-					 List *sc)
-  : ConstructorImp(n), block(b), scopes(sc)
+					 const List *sc)
+  : ConstructorImp(n), block(b), scopes(sc->copy())
 {
+}
+
+DeclaredFunctionImp::~DeclaredFunctionImp()
+{
+  delete scopes;
 }
 
 Completion DeclaredFunctionImp::execute(const List &)

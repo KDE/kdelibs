@@ -1322,7 +1322,7 @@ Completion FinallyNode::execute()
 void FuncDeclNode::processFuncDecl()
 {
   const List *sc = Context::current()->pScopeChain();
-  FunctionImp *fimp = new DeclaredFunctionImp(ident, block, sc->copy());
+  FunctionImp *fimp = new DeclaredFunctionImp(ident, block, sc);
 					      
 
   for(ParameterNode *p = param; p != 0L; p = p->nextParam())
