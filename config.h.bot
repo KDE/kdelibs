@@ -84,6 +84,7 @@ int seteuid(INT32_BASETYPE euid); /* defined in fakes.c */
 #if !defined(__STDC__) || !__STDC__
 #define __STDC__  1
 #endif
+#define SOL_TCP 6
 typedef unsigned int   u_int32_t;
 typedef unsigned char  uint8_t;
 typedef unsigned short uint16_t;
