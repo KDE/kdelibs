@@ -525,7 +525,9 @@ Completion WindowFunc::tryExecute(const List &args)
   switch (id) {
   case Alert:
     part->xmlDocImpl()->updateRendering();
-    KMessageBox::error(widget, str, "JavaScript");
+    // avoid reentrancy problems. confirm and prompt need some thought.
+    KMessageBox::queuedMessageBox(widget, KMessageBox::Error,
+				  str, "JavaScript");
     result = Undefined();
     break;
   case Confirm:
