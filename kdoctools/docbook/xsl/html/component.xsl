@@ -35,7 +35,7 @@
                         |$node/prefaceinfo/subtitle
                         |$node/chapterinfo/subtitle
                         |$node/appendixinfo/subtitle
-                        |subtitle)[1]"/>
+                        |$node/subtitle)[1]"/>
 
   <xsl:if test="$subtitle">
     <h3 class="subtitle">
@@ -135,7 +135,7 @@
     <xsl:call-template name="object.id"/>
   </xsl:variable>
 
-  <div id="{$id}" class="{name(.)}">
+  <div class="{name(.)}">
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="chapter.titlepage"/>
     <xsl:if test="$generate.chapter.toc != '0'">
@@ -170,7 +170,7 @@
     <xsl:call-template name="object.id"/>
   </xsl:variable>
 
-  <div id="{$id}" class="{name(.)}">
+  <div class="{name(.)}">
     <xsl:call-template name="component.separator"/>
     <xsl:call-template name="appendix.titlepage"/>
     <xsl:if test="$generate.appendix.toc != '0'">
@@ -178,6 +178,21 @@
     </xsl:if>
     <xsl:apply-templates/>
     <xsl:call-template name="process.footnotes"/>
+  </div>
+</xsl:template>
+
+<xsl:template match="article/appendix">
+  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
+
+  <div class="{name(.)}">
+    <xsl:call-template name="section.heading">
+      <xsl:with-param name="level" select="2"/>
+      <xsl:with-param name="title">
+        <xsl:apply-templates select="." mode="object.title.markup"/>
+      </xsl:with-param>
+    </xsl:call-template>
+
+    <xsl:apply-templates/>
   </div>
 </xsl:template>
 
@@ -270,7 +285,7 @@
 
 <xsl:template match="article">
   <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
-  <div id="{$id}" class="{name(.)}">
+  <div class="{name(.)}">
     <xsl:call-template name="article.titlepage"/>
     <xsl:if test="$generate.article.toc != '0'">
       <xsl:call-template name="component.toc"/>
@@ -296,25 +311,6 @@
 <xsl:template match="article/title"></xsl:template>
 <xsl:template match="article/titleabbrev"></xsl:template>
 <xsl:template match="article/subtitle"></xsl:template>
-
-<xsl:template match="article/appendix">
-  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
-
-  <div id="{$id}" class="{name(.)}">
-    <xsl:call-template name="section.heading">
-      <xsl:with-param name="level" select="2"/>
-      <xsl:with-param name="title">
-        <xsl:apply-templates select="." mode="title.markup"/>
-      </xsl:with-param>
-    </xsl:call-template>
-
-    <xsl:apply-templates/>
-
-    <xsl:if test="not(ancestor::article)">
-      <xsl:call-template name="process.footnotes"/>
-    </xsl:if>
-  </div>
-</xsl:template>
 
 <!-- ==================================================================== -->
 

@@ -7,8 +7,8 @@
 
    <gentext key="Abstract" text="&#52488;&#47197;"/>
    <gentext key="abstract" text="&#52488;&#47197;"/>
-   <gentext key="Answer" text="&#45813;&#48320;:"/>
-   <gentext key="answer" text="&#45813;&#48320;:"/>
+   <gentext key="Answer" text="&#45813;&#48320;"/>
+   <gentext key="answer" text="&#45813;&#48320;"/>
    <gentext key="Appendix" text="&#48512;&#47197;"/>
    <gentext key="Article" text="&#47928;&#49436;"/>
    <gentext key="article" text="&#47928;&#49436;"/>
@@ -16,19 +16,17 @@
    <gentext key="bibliography" text="&#49436;&#51648;&#49324;&#54637;"/>
    <gentext key="Book" text="&#52293;"/>
    <gentext key="book" text="&#52293;"/>
-   <gentext key="CAUTION" text="&#44221;&#44256;!"/>
-   <gentext key="caution" text="&#44221;&#44256;!"/>
+   <gentext key="CAUTION" text="[&#44221;&#44256;]"/>
    <gentext key="Caution" text="&#44221;&#44256;"/>
-   <gentext key="caution" text="&#44221;&#44256;"/>
-   <gentext key="Chapter" text=""/>
+   <gentext key="Chapter" text="&#51109;"/>
    <gentext key="Colophon" text="&#54032;&#44428;"/>
    <gentext key="colophon" text="&#54032;&#44428;"/>
-   <gentext key="Copyright" text="Copyright"/>
-   <gentext key="copyright" text="Copyright"/>
+   <gentext key="Copyright" text="&#51200;&#51089;&#44428;"/>
+   <gentext key="copyright" text="&#51200;&#51089;&#44428;"/>
    <gentext key="Dedication" text="&#48148;&#52824;&#45716; &#44544;"/>
    <gentext key="dedication" text="&#48148;&#52824;&#45716; &#44544;"/>
-   <gentext key="Edition" text="&#44060;&#51221;&#54032;"/>
-   <gentext key="edition" text="&#44060;&#51221;&#54032;"/>
+   <gentext key="Edition" text="&#50670;&#51020;"/>
+   <gentext key="edition" text="&#50670;&#51020;"/>
    <gentext key="Equation" text="&#49688;&#49885;"/>
    <gentext key="equation" text="&#49688;&#49885;"/>
    <gentext key="Example" text="&#50696;"/>
@@ -51,26 +49,26 @@
    <gentext key="index" text="&#49353;&#51064;"/>
    <gentext key="LegalNotice" text="&#48277;&#51201; &#44277;&#51648;"/>
    <gentext key="legalnotice" text="&#48277;&#51201; &#44277;&#51648;"/>
-   <gentext key="MsgAud" text="&#46307;&#44592;"/>
-   <gentext key="msgaud" text="&#46307;&#44592;"/>
-   <gentext key="MsgLevel" text="&#47112;&#48296;"/>
-   <gentext key="msglevel" text="&#47112;&#48296;"/>
-   <gentext key="MsgOrig" text="&#50896;&#52380;"/>
-   <gentext key="msgorig" text="&#50896;&#52380;"/>
+   <gentext key="MsgAud" text="&#48155;&#45716; &#51060;"/>
+   <gentext key="msgaud" text="&#48155;&#45716; &#51060;"/>
+   <gentext key="MsgLevel" text="&#51473;&#50836;&#46020;"/>
+   <gentext key="msglevel" text="&#51473;&#50836;&#46020;"/>
+   <gentext key="MsgOrig" text="&#48372;&#45236;&#45716; &#51060;"/>
+   <gentext key="msgorig" text="&#48372;&#45236;&#45716; &#51060;"/>
    <gentext key="NOTE" text="[&#52280;&#44256;]"/>
    <gentext key="note" text="[&#52280;&#44256;]"/>
    <gentext key="Note" text="&#52280;&#44256;"/>
    <gentext key="note" text="&#52280;&#44256;"/>
-   <gentext key="Part" text="&#48512;&#48516;"/>
-   <gentext key="part" text="&#48512;&#48516;"/>
+   <gentext key="Part" text="&#48512;"/>
+   <gentext key="part" text="&#48512;"/>
    <gentext key="Preface" text="&#49436;&#47928;"/>
    <gentext key="preface" text="&#49436;&#47928;"/>
-   <gentext key="Procedure" text="&#49692;&#49436;"/>
-   <gentext key="procedure" text="&#49692;&#49436;"/>
-   <gentext key="Published" text="&#52636;&#54032;"/>
-   <gentext key="published" text="&#52636;&#54032;"/>
-   <gentext key="Question" text="&#45813;&#48320;:"/>
-   <gentext key="question" text="&#45813;&#48320;:"/>
+   <gentext key="Procedure" text="&#51208;&#52264;"/>
+   <gentext key="procedure" text="&#51208;&#52264;"/>
+   <gentext key="Published" text="&#54196;&#45252;"/>
+   <gentext key="published" text="&#54196;&#45252;"/>
+   <gentext key="Question" text="&#51656;&#47928;"/>
+   <gentext key="question" text="&#51656;&#47928;"/>
    <gentext key="RefEntry" text=""/>
    <gentext key="refentry" text=""/>
    <gentext key="Reference" text="&#52280;&#44256;&#47928;&#54732;"/>
@@ -81,11 +79,11 @@
    <gentext key="refsection" text=""/>
    <gentext key="RefSynopsisDiv" text="&#50836;&#50557;"/>
    <gentext key="refsynopsisdiv" text="&#50836;&#50557;"/>
-   <gentext key="Revision" text="&#44368;&#51221;"/>
-   <gentext key="revision" text="&#44368;&#51221;"/>
-   <gentext key="RevHistory" text="&#44368;&#51221; &#44284;&#51221;"/>
-   <gentext key="revhistory" text="&#44368;&#51221; &#44284;&#51221;"/>
-   <gentext key="Section" text=""/>
+   <gentext key="Revision" text="&#44256;&#52840;"/>
+   <gentext key="revision" text="&#44256;&#52840;"/>
+   <gentext key="RevHistory" text="&#44256;&#52828; &#44284;&#51221;"/>
+   <gentext key="revhistory" text="&#44256;&#52828; &#44284;&#51221;"/>
+   <gentext key="Section" text="&#51208;"/>
    <gentext key="See" text="&#49332;&#54196;&#48380; &#45236;&#50857;"/>
    <gentext key="see" text="&#49332;&#54196;&#48380; &#45236;&#50857;"/>
    <gentext key="SeeAlso" text="[&#49332;&#54196;&#48380; &#45796;&#47480; &#45236;&#50857;]"/>
@@ -116,11 +114,11 @@
    <gentext key="TableofContents" text="&#52264;&#47168;"/>
    <gentext key="tableofcontents" text="&#52264;&#47168;"/>
    <gentext key="in" text="-"/>
-   <gentext key="by" text="&#44544;&#50420;&#51060; : "/>
-   <gentext key="Edited" text="&#54200;&#51665;"/>
-   <gentext key="edited" text="&#54200;&#51665;"/>
-   <gentext key="Editedby" text="&#54200;&#51665; : "/>
-   <gentext key="editedby" text="&#54200;&#51665; : "/>
+   <gentext key="by" text="&#51648;&#51008;&#51060;"/>
+   <gentext key="Edited" text="&#50670;&#51020;"/>
+   <gentext key="edited" text="&#50670;&#51020;"/>
+   <gentext key="Editedby" text="&#50670;&#51008;&#51060;"/>
+   <gentext key="editedby" text="&#50670;&#51008;&#51060;"/>
    <gentext key="and" text="&#44536;&#47532;&#44256;"/>
    <gentext key="Notes" text="&#51452;&#49437;"/>
    <gentext key="notes" text="&#51452;&#49437;"/>
@@ -132,8 +130,8 @@
    <gentext key="unsupported" text="&#51648;&#50896;&#46104;&#51648; &#50506;&#49845;&#45768;&#45796;"/>
    <gentext key="xrefto" text="&#51060; &#44275;&#51012; &#52280;&#51312;&#54616;&#49464;&#50836; : "/>
    <gentext key="unexpectedelementname" text="&#50508; &#49688; &#50630;&#45716; &#44592;&#52488;&#50836;&#49548; &#51060;&#47492;&#51077;&#45768;&#45796;"/>
-   <gentext key="Revisedby" text="&#44368;&#51221; : "/>
-   <gentext key="revisedby" text="&#44368;&#51221; : "/>
+   <gentext key="Revisedby" text="&#44256;&#52828;&#51060; "/>
+   <gentext key="revisedby" text="&#44256;&#52828;&#51060; "/>
    <gentext key="ListofTables" text="&#54364; &#47785;&#47197;"/>
    <gentext key="listoftables" text="&#54364; &#47785;&#47197;"/>
    <gentext key="ListofExamples" text="&#50696; &#47785;&#47197;"/>
@@ -144,12 +142,12 @@
    <gentext key="listofequations" text="&#49688;&#49885; &#47785;&#47197;"/>
    <gentext key="ListofUnknown" text="&#44592;&#53440; &#47785;&#47197;"/>
    <gentext key="listofunknown" text="&#44592;&#53440; &#47785;&#47197;"/>
-   <gentext key="nav-prev" text="Prev"/>
-   <gentext key="nav-prev-sibling" text="Fast Backward"/>
-   <gentext key="nav-next-sibling" text="Fast Forward"/>
-   <gentext key="nav-next" text="Next"/>
-   <gentext key="nav-up" text="Up"/>
-   <gentext key="nav-home" text="Home"/>
+   <gentext key="nav-prev" text="&#51060;&#51204;"/>
+   <gentext key="nav-prev-sibling" text="&#51060;&#51204;&#51004;&#47196; &#44148;&#45320;&#46848;"/>
+   <gentext key="nav-next-sibling" text="&#45796;&#51020;&#51004;&#47196; &#44148;&#45320;&#46848;"/>
+   <gentext key="nav-next" text="&#45796;&#51020;"/>
+   <gentext key="nav-up" text="&#50948;&#47196;"/>
+   <gentext key="nav-home" text="&#52376;&#51020;&#51004;&#47196;"/>
    <dingbat key="startquote" text="&#8220;"/>
    <dingbat key="endquote" text="&#8221;"/>
    <dingbat key="nestedstartquote" text="&#8216;"/>
@@ -171,7 +169,7 @@
       <template name="book" text="%t"/>
       <template name="calloutlist" text="%t"/>
       <template name="caution" text="%t"/>
-      <template name="chapter" text=" %n. %t"/>
+      <template name="chapter" text="%n&#51109;. %t"/>
       <template name="colophon" text="%t"/>
       <template name="dedication" text="%t"/>
       <template name="equation" text="&#49688;&#49885; %n. %t"/>
@@ -194,7 +192,7 @@
       <template name="msgsub" text="%t"/>
       <template name="note" text="%t"/>
       <template name="orderedlist" text="%t"/>
-      <template name="part" text="&#48512;&#48516; %n. %t"/>
+      <template name="part" text="%n&#48512;. %t"/>
       <template name="partintro" text="%t"/>
       <template name="preface" text="%t"/>
       <template name="procedure" text="%t"/>
@@ -283,14 +281,14 @@
       <template name="article" text="%t"/>
       <template name="bibliography" text="%t"/>
       <template name="book" text="%t"/>
-      <template name="chapter" text=" %n. %t"/>
+      <template name="chapter" text="%n&#51109;. %t"/>
       <template name="colophon" text="%t"/>
       <template name="dedication" text="%t"/>
       <template name="example" text="&#50696; %n. %t"/>
       <template name="figure" text="&#44536;&#47548; %n. %t"/>
       <template name="glossary" text="%t"/>
       <template name="index" text="%t"/>
-      <template name="part" text="&#48512;&#48516; %n. %t"/>
+      <template name="part" text="%n&#48512;. %t"/>
       <template name="preface" text="%t"/>
       <template name="reference" text="%t"/>
       <template name="set" text="%t"/>
@@ -309,12 +307,12 @@
    </context>
 
    <context name="section-xref-numbered">
-      <template name="sect1" text=" %n"/>
-      <template name="sect2" text=" %n"/>
-      <template name="sect3" text=" %n"/>
-      <template name="sect4" text=" %n"/>
-      <template name="sect5" text=" %n"/>
-      <template name="section" text=" %n"/>
+      <template name="sect1" text="%n&#51208;"/>
+      <template name="sect2" text="%n&#51208;"/>
+      <template name="sect3" text="%n&#51208;"/>
+      <template name="sect4" text="%n&#51208;"/>
+      <template name="sect5" text="%n&#51208;"/>
+      <template name="section" text="%n&#51208;"/>
       <template name="simplesect" text="&#8220;%t&#8221;"/>
    </context>
 
@@ -330,8 +328,8 @@
    </context>
 
    <context name="msgset">
-      <template name="MsgLevel" text="&#47112;&#48296;: "/>
-      <template name="MsgOrig" text="&#50896;&#52380;: "/>
-      <template name="MsgAud" text="&#46307;&#44592;: "/>
+      <template name="MsgLevel" text="&#51473;&#50836;&#46020;: "/>
+      <template name="MsgOrig" text="&#48372;&#45236;&#45716; &#51060;: "/>
+      <template name="MsgAud" text="&#48155;&#45716; &#51060;: "/>
    </context>
 </localization>

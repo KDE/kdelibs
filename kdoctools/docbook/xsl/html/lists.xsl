@@ -22,7 +22,7 @@
     <ul>
       <xsl:if test="@spacing='compact'">
         <xsl:attribute name="compact">
-          <xsl:value-of select="compact"/>
+          <xsl:value-of select="@spacing"/>
         </xsl:attribute>
       </xsl:if>
       <xsl:apply-templates select="listitem"/>
@@ -404,11 +404,16 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="procedure">
+  <xsl:variable name="id">
+    <xsl:call-template name="object.id"/>
+  </xsl:variable>
   <div class="{name(.)}">
+    <a name="{$id}"/>
     <xsl:if test="title">
       <xsl:apply-templates select="title" mode="procedure.title.mode"/>
     </xsl:if>
-    <ol><xsl:apply-templates/></ol>
+    <xsl:apply-templates select="*[local-name()!='step']"/>     
+    <ol><xsl:apply-templates select="step"/></ol>              
   </div>
 </xsl:template>
 
@@ -424,11 +429,32 @@
 </xsl:template>
 
 <xsl:template match="substeps">
-  <ol><xsl:apply-templates/></ol>
+  <xsl:variable name="depth" select="count(ancestor::substeps)"/>
+  <xsl:variable name="type" select="$depth mod 5"/>
+  <xsl:variable name="numeration">
+    <xsl:choose>
+      <xsl:when test="$type = 0">a</xsl:when>
+      <xsl:when test="$type = 1">i</xsl:when>
+      <xsl:when test="$type = 2">A</xsl:when>
+      <xsl:when test="$type = 3">I</xsl:when>
+      <xsl:when test="$type = 4">1</xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+
+  <ol type="{$numeration}">
+    <xsl:apply-templates/>
+  </ol>
 </xsl:template>
 
 <xsl:template match="step">
-  <li><xsl:apply-templates/></li>
+  <xsl:variable name="id">
+    <xsl:call-template name="object.id"/>
+  </xsl:variable>
+
+  <li>
+    <a name="{$id}"/>
+    <xsl:apply-templates/>
+  </li>
 </xsl:template>
 
 <xsl:template match="step/title">

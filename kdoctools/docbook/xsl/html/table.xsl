@@ -53,11 +53,14 @@
       <xsl:attribute name="width">100%</xsl:attribute>
     </xsl:if>
 
+<!-- this is wrong, align on tgroup gives the default alignment for table
+     cells, not the alignment for the table itself...
     <xsl:if test="@align">
       <xsl:attribute name="align">
         <xsl:value-of select="@align"/>
       </xsl:attribute>
     </xsl:if>
+-->
 
     <xsl:choose>
       <xsl:when test="../@frame='none'">
@@ -162,7 +165,9 @@
       </xsl:otherwise>
     </xsl:choose>
 
-    <xsl:apply-templates/>
+    <xsl:apply-templates select="thead"/>
+    <xsl:apply-templates select="tbody"/>
+    <xsl:apply-templates select="tfoot"/>
 
     <xsl:if test=".//footnote">
       <tr>
@@ -533,11 +538,21 @@ or nothing (the empty string)</para>
                 <xsl:value-of select="$colspec/@colwidth"/>
               </xsl:attribute>
             </xsl:if>
-            <xsl:if test="$colspec/@align">
-              <xsl:attribute name="align">
-                <xsl:value-of select="$colspec/@align"/>
-              </xsl:attribute>
-            </xsl:if>
+
+            <xsl:choose>
+              <xsl:when test="$colspec/@align">
+                <xsl:attribute name="align">
+                  <xsl:value-of select="$colspec/@align"/>
+                </xsl:attribute>
+              </xsl:when>
+              <!-- Suggested by Pavel ZAMPACH <zampach@nemcb.cz> -->
+              <xsl:when test="$colspecs/ancestor::tgroup/@align">
+                <xsl:attribute name="align">
+                  <xsl:value-of select="$colspecs/ancestor::tgroup/@align"/>
+                </xsl:attribute>
+              </xsl:when>
+            </xsl:choose>
+
             <xsl:if test="$colspec/@char">
               <xsl:attribute name="char">
                 <xsl:value-of select="$colspec/@char"/>

@@ -445,6 +445,12 @@
   </p>
 </xsl:template>
 
+<xsl:template match="publisher" mode="titlepage.mode">
+  <p class="{name(.)}">
+    <xsl:apply-templates mode="titlepage.mode"/>
+  </p>
+</xsl:template>
+
 <xsl:template match="publishername" mode="titlepage.mode">
   <span class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>
@@ -614,12 +620,9 @@
 </xsl:template>
 
 <xsl:template match="titleabbrev" mode="titlepage.mode">
-  <span class="{name(.)}">
-    <xsl:apply-templates mode="titlepage.mode"/>
-    <br/>
-  </span>
+  <!-- nop; title abbreviations don't belong on the title page! -->
 </xsl:template>
-  
+
 <xsl:template match="volumenum" mode="titlepage.mode">
   <span class="{name(.)}">
     <xsl:apply-templates mode="titlepage.mode"/>

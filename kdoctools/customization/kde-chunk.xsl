@@ -1,10 +1,13 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 		version="1.0">
 
+<xsl:import href="../docbook/xsl/html/docbook.xsl"/>
 <xsl:import href="../docbook/xsl/html/chunk-common.xsl"/>
 <xsl:include href="kde-navig.xsl"/>
 <xsl:include href="kde-ttlpg.xsl"/>
 <xsl:include href="kde-style.xsl"/>
+
+<xsl:variable name="KDE_VERSION">1.07</xsl:variable> 
 
 <xsl:template name="make-relative-filename">
   <xsl:param name="base.dir" select="'./'"/>
@@ -49,9 +52,12 @@
 </xsl:choose>
 </xsl:template>
 
+<xsl:template name="dbhtml-dir">
+</xsl:template>
+
 <xsl:template name="user.head.content">
    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
-   <meta name="GENERATOR" content="KDE XSL Stylesheet 1.06 using libxslt"/>
+   <meta name="GENERATOR" content="KDE XSL Stylesheet V{$KDE_VERSION} using libxslt"/>
 </xsl:template>
 
 <!-- libxslt has problems with customizing this one, so 
@@ -90,7 +96,6 @@
     </body>
   </html>
 </xsl:template>
-
 -->
 
 <!-- try with olinks: it nearly works --><!--
@@ -130,4 +135,7 @@
     </a>
   </xsl:template>
 -->
+
 </xsl:stylesheet>
+
+

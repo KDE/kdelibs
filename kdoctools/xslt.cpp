@@ -309,12 +309,13 @@ bool saveToCache( const QString &contents, const QString &filename )
 static bool readCache( const QString &filename,
                        const QString &cache, QString &output)
 {
-    kdDebug() << "verifyCache " << filename << " " << cache << endl;
+    kdDebug( 7119 ) << "verifyCache " << filename << " " << cache << endl;
     if ( !compareTimeStamps( filename, cache ) )
         return false;
     if ( !compareTimeStamps( locate( "dtd", "customization/kde-chunk.xsl"), cache ) )
         return false;
 
+    kdDebug( 7119 ) << "create filter" << endl;
     QFile raw(cache);
     KFilterBase *f = ::findFilterByFileName(cache);
     QIODevice *fd= KFilterDev::createFilterDevice(f, &raw);
@@ -326,19 +327,22 @@ static bool readCache( const QString &filename,
        return false;
     }
 
-    char buffer[1025];
+    kdDebug( 7119 ) << "reading" << endl;
+
+    char buffer[32000];
     int n;
     QCString text;
-    while ( ( n = fd->readBlock(buffer, 1024) ) )
+    while ( ( n = fd->readBlock(buffer, 31900) ) )
     {
         buffer[n] = 0;
         text += buffer;
     }
-    kdDebug() << "read " << text.length() << endl;
+    kdDebug( 7119 ) << "read " << text.length() << endl;
     fd->close();
 
     output = QString::fromUtf8( text );
     delete fd;
+    kdDebug( 7119 ) << "finished " << endl;
 
     return true;
 }

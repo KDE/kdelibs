@@ -18,8 +18,6 @@ element label.</para>
 </refdescription>
 </doc:mode>
 
-<xsl:param name="label.from.part" select="'1'"/>
-
 <xsl:template match="*" mode="intralabel.punctuation">
   <xsl:text>.</xsl:text>
 </xsl:template>
@@ -55,7 +53,7 @@ element label.</para>
     </xsl:when>
     <xsl:when test="$preface.autolabel != 0">
       <xsl:choose>
-        <xsl:when test="$label.from.part != 0">
+        <xsl:when test="$label.from.part != 0 and ancestor::part">
           <xsl:number from="part" count="preface" format="1" level="any"/>
         </xsl:when>
         <xsl:otherwise>
@@ -73,7 +71,7 @@ element label.</para>
     </xsl:when>
     <xsl:when test="$chapter.autolabel != 0">
       <xsl:choose>
-        <xsl:when test="$label.from.part != 0">
+        <xsl:when test="$label.from.part != 0 and ancestor::part">
           <xsl:number from="part" count="chapter" format="1" level="any"/>
         </xsl:when>
         <xsl:otherwise>
@@ -91,11 +89,12 @@ element label.</para>
     </xsl:when>
     <xsl:when test="$appendix.autolabel != 0">
       <xsl:choose>
-        <xsl:when test="$label.from.part != 0">
+        <xsl:when test="$label.from.part != 0 and ancestor::part">
           <xsl:number from="part" count="appendix" format="A" level="any"/>
         </xsl:when>
         <xsl:otherwise>
-          <xsl:number from="book" count="appendix" format="A" level="any"/>
+          <xsl:number from="book|article"
+                      count="appendix" format="A" level="any"/>
         </xsl:otherwise>
       </xsl:choose>
     </xsl:when>
@@ -157,7 +156,8 @@ element label.</para>
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:if test="$section.label.includes.component.label != 0
+  <xsl:if test="($section.label.includes.component.label != 0
+                or /article)
                 and $parent.is.component != 0">
     <xsl:variable name="parent.label">
       <xsl:apply-templates select=".." mode="label.markup"/>

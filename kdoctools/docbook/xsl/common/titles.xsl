@@ -78,6 +78,15 @@ title of the element. This does not include the label.
 
 <xsl:template match="preface|chapter|appendix" mode="title.markup">
   <xsl:param name="allow-anchors" select="'0'"/>
+
+<!--
+  <xsl:message>
+    <xsl:value-of select="name(.)"/>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="$allow-anchors"/>
+  </xsl:message>
+-->
+
   <xsl:variable name="title" select="(docinfo/title
                                       |prefaceinfo/title
                                       |chapterinfo/title
@@ -298,6 +307,26 @@ title of the element. This does not include the label.
 
 <xsl:template match="anchor" mode="no.anchor.mode">
   <!-- nop, suppressed -->
+</xsl:template>
+
+<xsl:template match="ulink" mode="no.anchor.mode">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="link" mode="no.anchor.mode">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="olink" mode="no.anchor.mode">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="indexterm" mode="no.anchor.mode">
+  <!-- nop, suppressed -->
+</xsl:template>
+
+<xsl:template match="xref" mode="no.anchor.mode">
+  <!-- FIXME: this should generate the text without the link... -->
 </xsl:template>
 
 <!-- ============================================================ -->

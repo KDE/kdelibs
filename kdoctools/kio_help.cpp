@@ -59,7 +59,8 @@ QString HelpProtocol::langLookup(QString fname)
     for (int id=localDoc.count()-1; id >= 0; --id)
     {
         QStringList langs = KGlobal::locale()->languageList();
-        langs.append("en");
+        langs.append( "en" );
+        langs.remove( "C" );
         QStringList::ConstIterator lang;
         for (lang = langs.begin(); lang != langs.end(); ++lang)
             search.append(QString("%1%2/%3").arg(localDoc[id]).arg(*lang).arg(fname));
@@ -69,14 +70,14 @@ QString HelpProtocol::langLookup(QString fname)
     QStringList::Iterator it;
     for (it = search.begin(); it != search.end(); ++it)
     {
-        kdDebug() << "Looking for help in: " << *it << endl;
+        kdDebug( 7119 ) << "Looking for help in: " << *it << endl;
 
         QFileInfo info(*it);
         if (info.exists() && info.isFile() && info.isReadable())
             return *it;
 
         QString file = (*it).left((*it).findRev('/')) + "/index.docbook";
-        kdDebug() << "Looking for help in: " << file << endl;
+        kdDebug( 7119 ) << "Looking for help in: " << file << endl;
         info.setFile(file);
         if (info.exists() && info.isFile() && info.isReadable())
             return *it;
@@ -105,7 +106,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             red.setPath( path + "/index.html" );
             red.setQuery( query );
             redirection(red);
-            kdDebug() << "redirect to " << red.url() << endl;
+            kdDebug( 7119 ) << "redirect to " << red.url() << endl;
             redirect = true;
 	}
         else
@@ -122,7 +123,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             return QString::null;
 	}
     } else
-        kdDebug() << "result " << result << endl;
+        kdDebug( 7119 ) << "result " << result << endl;
 
     return result;
 }
@@ -145,7 +146,7 @@ HelpProtocol::HelpProtocol( const QCString &pool, const QCString &app )
 
 void HelpProtocol::get( const KURL& url )
 {
-    kdDebug() << "get: path=" << url.path()
+    kdDebug( 7119 ) << "get: path=" << url.path()
               << " query=" << url.query() << endl;
 
     bool redirect;
@@ -175,7 +176,7 @@ void HelpProtocol::get( const KURL& url )
     if (url.hasHTMLRef())
         target.setHTMLRef(url.htmlRef());
 
-    kdDebug() << "target " << target.url() << endl;
+    kdDebug( 7119 ) << "target " << target.url() << endl;
 
     QString file = target.path();
     QString docbook_file = file.left(file.findRev('/')) + "/index.docbook";
@@ -186,10 +187,8 @@ void HelpProtocol::get( const KURL& url )
         if (fi.isDir()) {
             file = file + "/index.docbook";
         } else {
-            if ( !compareTimeStamps( file, docbook_file ) ) {
-                kdDebug() << "emitFile redirection " << target.url() << endl;
-                redirection(target);
-                finished();
+            if ( file.right( 5 ) != ".html" || !compareTimeStamps( file, docbook_file ) ) {
+                get_file( target );
                 return;
             } else
                 file = docbook_file;
@@ -198,11 +197,11 @@ void HelpProtocol::get( const KURL& url )
 
     infoMessage(i18n("Preparing document"));
 
-    kdDebug() << "look for cache for " << file << endl;
+    kdDebug( 7119 ) << "look for cache for " << file << endl;
 
     parsed = lookForCache( file );
 
-    kdDebug() << "cached parsed " << parsed.length() << endl;
+    kdDebug( 7119 ) << "cached parsed " << parsed.length() << endl;
 
     if ( parsed.isEmpty() ) {
         parsed = transform(file, locate("dtd", "customization/kde-chunk.xsl"));
@@ -215,7 +214,7 @@ void HelpProtocol::get( const KURL& url )
         }
     } else infoMessage( i18n( "Using cached version" ) );
 
-    kdDebug() << "parsed " << parsed.length() << endl;
+    kdDebug( 7119 ) << "parsed " << parsed.length() << endl;
 
     if (parsed.isEmpty()) {
         data(QTextCodec::codecForLocale()->fromUnicode( QString(
@@ -232,7 +231,7 @@ void HelpProtocol::get( const KURL& url )
         if (anchor.isEmpty() && url.hasHTMLRef())
 	    anchor = url.htmlRef();
 
-        kdDebug() << "anchor: " << anchor << endl;
+        kdDebug( 7119 ) << "anchor: " << anchor << endl;
 
         if ( !anchor.isEmpty() )
         {
@@ -240,7 +239,7 @@ void HelpProtocol::get( const KURL& url )
             while ( true ) {
                 index = parsed.find( QRegExp( "<a name=" ), index);
                 if ( index == -1 ) {
-                    kdDebug() << "no anchor\n";
+                    kdDebug( 7119 ) << "no anchor\n";
                     break; // use whatever is the target, most likely index.html
                 }
 
@@ -253,7 +252,7 @@ void HelpProtocol::get( const KURL& url )
                     filename = filename.left( filename.find( '\"' ) );
                     QString path = target.path();
                     path = path.left( path.findRev( '/' ) + 1) + filename;
-                    kdDebug() << "anchor found in " << path <<endl;
+                    kdDebug( 7119 ) << "anchor found in " << path <<endl;
                     target.setPath( path );
                     break;
                 }
@@ -294,5 +293,86 @@ void HelpProtocol::emitFile( const KURL& url )
 void HelpProtocol::mimetype( const KURL &)
 {
     mimeType("text/html");
+    finished();
+}
+
+// Copied from kio_file to avoid redirects
+
+#define MAX_IPC_SIZE (1024*32)
+
+void HelpProtocol::get_file( const KURL& url )
+{
+    kdDebug( 7119 ) << "get_file " << url.url() << endl;
+
+    QCString _path( QFile::encodeName(url.path()));
+    struct stat buff;
+    if ( ::stat( _path.data(), &buff ) == -1 ) {
+        if ( errno == EACCES )
+           error( KIO::ERR_ACCESS_DENIED, url.path() );
+        else
+           error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+	return;
+    }
+
+    if ( S_ISDIR( buff.st_mode ) ) {
+	error( KIO::ERR_IS_DIRECTORY, url.path() );
+	return;
+    }
+    if ( S_ISFIFO( buff.st_mode ) || S_ISSOCK ( buff.st_mode ) ) {
+	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+	return;
+    }
+
+    int fd = open( _path.data(), O_RDONLY);
+    if ( fd < 0 ) {
+	error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
+	return;
+    }
+
+    totalSize( buff.st_size );
+    int processed_size = 0;
+    time_t t_start = time( 0L );
+    time_t t_last = t_start;
+
+    char buffer[ MAX_IPC_SIZE ];
+    QByteArray array;
+
+    while( 1 )
+    {
+       int n = ::read( fd, buffer, MAX_IPC_SIZE );
+       if (n == -1)
+       {
+          if (errno == EINTR)
+              continue;
+          error( KIO::ERR_COULD_NOT_READ, url.path());
+          close(fd);
+          return;
+       }
+       if (n == 0)
+          break; // Finished
+
+       array.setRawData(buffer, n);
+       data( array );
+       array.resetRawData(buffer, n);
+
+       processed_size += n;
+       time_t t = time( 0L );
+       if ( t - t_last >= 1 )
+       {
+          processedSize( processed_size );
+          speed( processed_size / ( t - t_start ) );
+          t_last = t;
+       }
+    }
+
+    data( QByteArray() );
+
+    close( fd );
+
+    processedSize( buff.st_size );
+    time_t t = time( 0L );
+    if ( t - t_start >= 1 )
+	speed( processed_size / ( t - t_start ) );
+
     finished();
 }
