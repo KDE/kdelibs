@@ -1,3 +1,11 @@
+# This files includes the default behaviour for some specific debug areas
+# This allows to leave the kDebug* calls in the code, but still have them
+# disabled for most users.
+
+# KSpell debug info off
+[750]
+InfoOutput=4
+
 # KRun debug info off
 [7010]
 InfoOutput=4
