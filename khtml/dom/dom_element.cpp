@@ -366,7 +366,8 @@ bool Element::khtmlValidAttrName(const DOMString &name)
 
 bool Element::khtmlValidPrefix(const DOMString &name)
 {
-    return khtmlValidAttrName(name);
+    // Null prefix is ok. If not null, reuse code from khtmlValidAttrName
+    return !name.implementation() || khtmlValidAttrName(name);
 }
 
 bool Element::khtmlValidQualifiedName(const DOMString &name)
