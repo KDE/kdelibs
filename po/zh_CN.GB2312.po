@@ -1,39 +1,39 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: kcmkpanel\n"
-"POT-Creation-Date: 1999-02-06 01:01+0100\n"
-"PO-Revision-Date: 1998-02-21 05:04+0800\n"
+"Project-Id-Version: kdelib\n"
+"POT-Creation-Date: 1999-03-30 01:01+0200\n"
+"PO-Revision-Date: 1999-04-01 19:30+0800\n"
 "Last-Translator: Wang Jian <lark@linux.ustc.edu.cn>\n"
 "Language-Team: zh_CN ( gb2312 )\n"
+"Translator: Wang Jian <larkw@263.net>\n"
 
 #: kab/AssertDialog.cpp:29
-#, fuzzy
 msgid "(unknown file)"
-msgstr "未知"
+msgstr "(未知文件)"
 
 #: kab/AssertDialog.cpp:30
 msgid "(unknown line number)"
-msgstr ""
+msgstr "(未知行号)"
 
 #: kab/AssertDialog.cpp:31
 msgid "(unknown condition)"
-msgstr ""
+msgstr "(未知条件)"
 
 #: kab/AssertDialog.cpp:39
 msgid "You have found a bug in "
-msgstr ""
+msgstr "你发现了一个bug在 "
 
 #: kab/AssertDialog.cpp:45
 msgid "Ignore the error, possibly causing much more damage"
-msgstr ""
+msgstr "忽略错误,可能会造成更大的损失"
 
 #: kab/AssertDialog.cpp:47
 msgid "Kill the application, loosing all data"
-msgstr ""
+msgstr "杀死这个程序,这会丢失所有数据"
 
 #: kab/AssertDialog.cpp:49
 msgid "Send an email to the application maintainer"
-msgstr ""
+msgstr "发给这个程序的维护者一个email"
 
 #: kab/AssertDialog.cpp:51 kab/datepickerdialog.cc:25 kab/kabapi.cc:34
 #: kdeui/kcolordlg.cpp:467 kdeui/kcontrol.cpp:46 kdeui/kcontrol.cpp:51
@@ -42,42 +42,42 @@ msgstr ""
 #: kdeui/keditcl1.cpp:1718 kdeui/kfontdialog.cpp:400
 #: kdeui/kiconloaderdialog.cpp:264 kdeui/kmsgbox.cpp:286
 #: kfile/kfiledialog.cpp:252 kfile/kfiledialog.cpp:509
-#: kfile/kfiledialog.cpp:901 kfile/kfiledialogconf.cpp:61 kfmlib/kfm.cpp:407
+#: kfile/kfiledialog.cpp:901 kfile/kfiledialogconf.cpp:61 kfmlib/kfm.cpp:411
 #: po/texts.cpp:35
 msgid "OK"
 msgstr "确定"
 
 #: kab/AssertDialog.cpp:140
 msgid "The following condition failed:\n"
-msgstr ""
+msgstr "不满足以下的条件:\n"
 
 #: kab/AssertDialog.cpp:141
-#, fuzzy
 msgid "In file "
-msgstr "文件"
+msgstr "在文件 "
 
 #: kab/AssertDialog.cpp:141
 msgid ", line "
-msgstr ""
+msgstr ", 行 "
 
 #: kab/AssertDialog.cpp:212 kab/AssertDialog.cpp:217
 msgid "Error handling error"
-msgstr ""
+msgstr "错误处理错误"
 
 #: kab/AssertDialog.cpp:213
-#, fuzzy
 msgid "Could not send message."
-msgstr "无法保存这份文件.\n"
+msgstr "无法发出消息."
 
 #: kab/AssertDialog.cpp:218
 msgid "The author did not publish an email address."
-msgstr ""
+msgstr "作者没有公布email地址"
 
 #: kab/DialogBase.cpp:36
 msgid ""
 "If you press the OK button, all changes\n"
 "you made will be used to proceed."
 msgstr ""
+"如果你按下[确定]按钮,你所做的所有\n"
+"修改将会生效."
 
 #: kab/DialogBase.cpp:39
 msgid ""
@@ -85,6 +85,9 @@ msgid ""
 "handed over to the program, but the dialog\n"
 "will not be closed.Use this to try different settings."
 msgstr ""
+"当点击[应用]后,设置会被程序\n"
+"使用,但是对话框不会关闭.\n"
+"可以使用[应用]来试验不同设置."
 
 #: kab/DialogBase.cpp:44
 msgid ""
@@ -94,156 +97,158 @@ msgid ""
 "The program will be in the state before\n"
 "opening the dialog."
 msgstr ""
+"如果你按下[取消]按钮,你所做\n"
+"的修改会被放弃,对话框也会\n"
+"关闭.\n"
+"程序会保持在使用对话框以前的\n"
+"状态."
+
 
 #: kab/DialogBase.cpp:57 kdeui/kkeydialog.cpp:242 kdeui/knotebook.cpp:247
 #: kdeui/kwizard.cpp:228 po/texts.cpp:36
 msgid "&OK"
-msgstr "确定[&O]"
+msgstr "确定(&O)"
 
 #: kab/DialogBase.cpp:58
-#, fuzzy
 msgid "&Apply"
-msgstr "应用"
+msgstr "应用(&A)"
 
 #: kab/DialogBase.cpp:59 kdeui/kkeydialog.cpp:245 kdeui/knotebook.cpp:178
 #: kdeui/kwizard.cpp:159 po/texts.cpp:40
 msgid "&Cancel"
-msgstr "取消[&C]"
+msgstr "取消(&C)"
 
 #: kab/PrintDialog.cpp:26
 msgid "Headline text:"
-msgstr ""
+msgstr "大字标题文字:"
 
 #: kab/PrintDialog.cpp:27
 msgid "Right footer text:"
-msgstr ""
+msgstr "右页脚文字:"
 
 #: kab/PrintDialog.cpp:28
 msgid "Left footer text:"
-msgstr ""
+msgstr "左页脚文字:"
 
 #: kab/SearchDialog.cpp:47
 msgid "The title"
-msgstr ""
+msgstr "标题"
 
 #: kab/SearchDialog.cpp:48
 msgid "The first name"
-msgstr ""
+msgstr "姓"
 
 #: kab/SearchDialog.cpp:49
 msgid "The additional name"
-msgstr ""
+msgstr "名"
 
 #: kab/SearchDialog.cpp:50
 msgid "The name prefix"
-msgstr ""
+msgstr "名字前缀"
 
 #: kab/SearchDialog.cpp:51
-#, fuzzy
 msgid "The name"
 msgstr "路径"
 
 #: kab/SearchDialog.cpp:52
 msgid "The formatted name"
-msgstr ""
+msgstr "全名"
 
 #: kab/SearchDialog.cpp:53
 msgid "The address"
-msgstr ""
+msgstr "地址"
 
 #: kab/SearchDialog.cpp:54
-#, fuzzy
 msgid "The town"
-msgstr "路径"
+msgstr "城市"
 
 #: kab/SearchDialog.cpp:55
 msgid "The organization"
-msgstr ""
+msgstr "组织"
 
 #: kab/SearchDialog.cpp:56
 msgid "The role"
-msgstr ""
+msgstr "职位"
 
 #: kab/SearchDialog.cpp:57
 msgid "The org unit"
-msgstr ""
+msgstr "组织单位"
 
 #: kab/SearchDialog.cpp:58
 msgid "The org subunit"
-msgstr ""
+msgstr "分支单位"
 
 #: kab/SearchDialog.cpp:59
 msgid "The email address"
-msgstr ""
+msgstr "Email地址"
 
 #: kab/SearchDialog.cpp:60
 msgid "The second email address"
-msgstr ""
+msgstr "第二个Email地址"
 
 #: kab/SearchDialog.cpp:61
 msgid "The third email address"
-msgstr ""
+msgstr "第三个Email地址"
 
 #: kab/SearchDialog.cpp:62
 msgid "The telephone number"
-msgstr ""
+msgstr "电话号码"
 
 #: kab/SearchDialog.cpp:63
 msgid "The fax number"
-msgstr ""
+msgstr "传真号码"
 
 #: kab/SearchDialog.cpp:64
 msgid "The modem number"
-msgstr ""
+msgstr "modem号码"
 
 #: kab/SearchDialog.cpp:65
 msgid "The homepage URL"
-msgstr ""
+msgstr "主页URL"
 
 #: kab/SearchDialog.cpp:66
 msgid "The comment"
-msgstr ""
+msgstr "备注"
 
 #: kab/SearchDialog.cpp:74
-#, fuzzy
 msgid "kab: Search entries"
-msgstr "搜寻文件"
+msgstr "kab: 查找项目"
 
 #: kab/SearchDialogMainWidget.cpp:22
 msgid "matches"
-msgstr ""
+msgstr "匹配项"
 
 #: kab/SearchDialogMainWidget.cpp:23
 msgid "Use shell wildcard patterns here"
-msgstr ""
+msgstr "使用shell通配符"
 
 #: kab/SearchDialogMainWidget.cpp:24
 msgid "Select field to match the pattern"
-msgstr ""
+msgstr "选择要匹配的域"
 
 #: kab/StringListEditWidget.cpp:30
 msgid "Add a new string"
-msgstr ""
+msgstr "添加新的字符串"
 
 #: kab/StringListEditWidget.cpp:31
 msgid "Move this string up"
-msgstr ""
+msgstr "向上移动字符串"
 
 #: kab/StringListEditWidget.cpp:32
 msgid "Move this string down"
-msgstr ""
+msgstr "向下移动字符串"
 
 #: kab/StringListEditWidget.cpp:33
 msgid "Delete this string"
-msgstr ""
+msgstr "删除字符串"
 
 #: kab/StringListSelectAndReorderSet.cpp:34
 msgid "Possible values:"
-msgstr ""
+msgstr "可能的值:"
 
 #: kab/StringListSelectAndReorderSet.cpp:35
 msgid "Selected values:"
-msgstr ""
+msgstr "选中的值:"
 
 #: kdecore/kaccel.cpp:223 kfile/kfiledialog.cpp:558 kfile/kfiledialog.cpp:1217
 #: kfile/kfiledialog.cpp:1377 kfile/kfiledialog.cpp:1411 po/texts.cpp:65
@@ -252,7 +257,7 @@ msgstr "打开"
 
 #: kdecore/kaccel.cpp:227
 msgid "New"
-msgstr "新的"
+msgstr "新建"
 
 #: kab/searchresults.cc:30 kdecore/kaccel.cpp:231 po/texts.cpp:80
 msgid "Close"
@@ -269,7 +274,7 @@ msgstr "打印"
 
 #: kdecore/kaccel.cpp:243 po/texts.cpp:52
 msgid "Quit"
-msgstr "离开"
+msgstr "退出"
 
 #: kdecore/kaccel.cpp:247 po/texts.cpp:69
 msgid "Cut"
@@ -291,7 +296,7 @@ msgstr "还原"
 #: kdeui/keditcl2.cpp:360 kdeui/keditcl2.cpp:377 kdeui/keditcl2.cpp:676
 #: kdeui/keditcl2.cpp:685 kdeui/keditcl2.cpp:786
 msgid "Find"
-msgstr "寻找"
+msgstr "查找"
 
 #: kdecore/kaccel.cpp:267 kdeui/keditcl2.cpp:423 kdeui/keditcl2.cpp:453
 #: kdeui/keditcl2.cpp:470 kdeui/keditcl2.cpp:789 kspell/kspelldlg.cpp:110
@@ -300,27 +305,24 @@ msgid "Replace"
 msgstr "替换"
 
 #: kdecore/kaccel.cpp:271 po/texts.cpp:134
-#, fuzzy
 msgid "Insert"
-msgstr "插入[&I]"
+msgstr "插入"
 
 #: kdecore/kaccel.cpp:275 kfile/kfiledialog.cpp:131
 msgid "Home"
-msgstr "回到起点"
+msgstr "到起点"
 
 #: kdecore/kaccel.cpp:279
 msgid "End"
-msgstr ""
+msgstr "到结束"
 
 #: kdecore/kaccel.cpp:283
-#, fuzzy
 msgid "Prior"
-msgstr "错误"
+msgstr "上一页"
 
 #: kdecore/kaccel.cpp:287
-#, fuzzy
 msgid "Next"
-msgstr "下一页[&N]"
+msgstr "下一页"
 
 #: kdecore/kaccel.cpp:291 kdetest/klocaletest.cpp:102 kdeui/kcolordlg.cpp:463
 #: kdeui/kcontrol.cpp:35 kfile/kfiledialog.cpp:246 kspell/ksconfig.cpp:212
@@ -330,34 +332,33 @@ msgstr "帮助"
 
 #: kdecore/kaccel.cpp:589 kdecore/kaccel.cpp:653
 msgid "SHIFT"
-msgstr ""
+msgstr "SHIFT"
 
 #: kdecore/kaccel.cpp:593 kdecore/kaccel.cpp:655
 msgid "CTRL"
-msgstr ""
+msgstr "CTRL"
 
 #: kdecore/kaccel.cpp:597 kdecore/kaccel.cpp:657
 msgid "ALT"
-msgstr ""
+msgstr "ALT"
 
 #: kdecore/kapp.cpp:608 po/texts.cpp:137
 msgid "&Contents"
-msgstr "内容[&C]"
+msgstr "内容(&C)"
 
 #: kdecore/kapp.cpp:614
 msgid "&About"
-msgstr "有关[&A]"
+msgstr "关于(&A)"
 
 #: kdecore/kapp.cpp:621
 msgid "About &KDE..."
-msgstr "关于 &KDE..."
+msgstr "关于&KDE..."
 
 #: kdecore/kapp.cpp:642
 msgid "About KDE"
-msgstr "关于 KDE"
+msgstr "关于KDE"
 
 #: kdecore/kapp.cpp:644
-#, fuzzy
 msgid ""
 "\n"
 "The KDE Desktop Environment was written by the KDE Team,\n"
@@ -367,23 +368,24 @@ msgid ""
 "Visit http://www.kde.org for more information on the KDE\n"
 "Project. Please consider joining and supporting KDE.\n"
 "\n"
-"Please report bugs at http://buglist.kde.org.\n"
+"Please report bugs at http://bugs.kde.org.\n"
 msgstr ""
 "\n"
-"KDE 桌面环境由 KDE 小组开发. KDE 小组是由世界范围内的\n"
-"进行免费软件开发的软件工程师组成的 .\n"
+"KDE桌面环境由KDE小组开发. KDE小组是由\n"
+"世界范围内的进行免费软件开发的软件工程师\n"
+"组成的.\n"
 "\n"
-"访问 http://www.kde.org , 可以获得更多的有关 KDE 工程\n"
-"的信息 . 请考虑加入和支持 KDE.\n"
+"访问http://www.kde.org,可以获得更多的有关KDE\n"
+"的信息.请考虑加入和支持KDE.\n"
 "\n"
-"请向 http://buglist.kde.org 报告 KDE 的缺陷.\n"
+"请向http://bugs.kde.org报告KDE的缺陷.\n"
 
 #: kdetest/klocaletest.cpp:100 kdeui/keditcl1.cpp:412 kdeui/keditcl1.cpp:433
 #: kdeui/keditcl1.cpp:494 kdeui/keditcl1.cpp:514 kdeui/keditcl1.cpp:1661
 #: kdeui/keditcl2.cpp:106 kdeui/keditcl2.cpp:123 kdeui/keditcl2.cpp:363
 #: kdeui/keditcl2.cpp:380 kdeui/keditcl2.cpp:426 kdeui/keditcl2.cpp:456
 #: kdeui/keditcl2.cpp:473 kdeui/kmsgbox.cpp:303 kdeui/kmsgbox.cpp:319
-#: kio/kio_paste.cc:98 po/texts.cpp:27
+#: po/texts.cpp:27
 msgid "Yes"
 msgstr "是"
 
@@ -392,20 +394,18 @@ msgstr "是"
 #: kdeui/keditcl2.cpp:107 kdeui/keditcl2.cpp:124 kdeui/keditcl2.cpp:364
 #: kdeui/keditcl2.cpp:381 kdeui/keditcl2.cpp:427 kdeui/keditcl2.cpp:457
 #: kdeui/keditcl2.cpp:474 kdeui/kmsgbox.cpp:301 kdeui/kmsgbox.cpp:317
-#: kio/kio_paste.cc:98 po/texts.cpp:28
+#: po/texts.cpp:28
 msgid "No"
 msgstr "否"
 
-#: kab/datepickerdialog.cc:26 kab/kabapi.cc:37 kab/widget.cc:1384
-#: kab/widget.cc:1426 kdetest/klocaletest.cpp:103 kdeui/kcolordlg.cpp:470
+#: kab/datepickerdialog.cc:26 kab/kabapi.cc:37 kab/widget.cc:1390
+#: kab/widget.cc:1432 kdetest/klocaletest.cpp:103 kdeui/kcolordlg.cpp:470
 #: kdeui/kcontrol.cpp:48 kdeui/kcontrol.cpp:55 kdeui/keditcl1.cpp:414
 #: kdeui/keditcl1.cpp:496 kdeui/keditcl2.cpp:895 kdeui/kfontdialog.cpp:403
 #: kdeui/kiconloaderdialog.cpp:265 kdeui/kmsgbox.cpp:321
 #: kfile/kfiledialog.cpp:258 kfile/kfiledialog.cpp:906
-#: kfile/kfiledialogconf.cpp:59 kfmlib/kfm.cpp:411 kio/kio_job.cc:773
-#: kio/kio_linedit_dlg.cc:50 kio/kio_openwith.cc:272 kio/kio_pass_dlg.cc:78
-#: kio/kio_progress_dlg.cc:64 kio/kio_rename_dlg.cc:30 kio/kio_skip_dlg.cc:20
-#: kspell/kspelldlg.cpp:143 po/texts.cpp:39
+#: kfile/kfiledialogconf.cpp:59 kfmlib/kfm.cpp:415 kspell/kspelldlg.cpp:143
+#: po/texts.cpp:39
 msgid "Cancel"
 msgstr "取消"
 
@@ -423,7 +423,7 @@ msgstr "自定义颜色"
 
 #: kdeui/kcolordlg.cpp:341
 msgid "Add to Custom Colors"
-msgstr "加在自定义颜色中"
+msgstr "添加到自定义颜色中"
 
 #: kdeui/kcolordlg.cpp:789 kdeui/kcolordlg.cpp:841
 msgid "Custom..."
@@ -447,12 +447,10 @@ msgstr "一月"
 msgid "February"
 msgstr "二月"
 
-#
 #: kdeui/kdatepik.cpp:103
 msgid "March"
 msgstr "三月"
 
-#
 #: kdeui/kdatepik.cpp:103
 msgid "April"
 msgstr "四月"
@@ -461,17 +459,14 @@ msgstr "四月"
 msgid "May"
 msgstr "五月"
 
-#
 #: kdeui/kdatepik.cpp:104
 msgid "June"
 msgstr "六月"
 
-#
 #: kdeui/kdatepik.cpp:105
 msgid "July"
 msgstr "七月"
 
-#
 #: kdeui/kdatepik.cpp:105
 msgid "August"
 msgstr "八月"
@@ -480,12 +475,10 @@ msgstr "八月"
 msgid "September"
 msgstr "九月"
 
-#
 #: kdeui/kdatepik.cpp:106
 msgid "October"
 msgstr "十月"
 
-#
 #: kdeui/kdatepik.cpp:107
 msgid "November"
 msgstr "十一月"
@@ -498,7 +491,6 @@ msgstr "十二月"
 msgid "(invalid)"
 msgstr "(无效的)"
 
-#
 #: kdeui/kdatetbl.cpp:49
 msgid "Sun"
 msgstr "星期天"
@@ -531,11 +523,11 @@ msgstr "星期五"
 msgid "Sat"
 msgstr "星期六"
 
-#: kab/kabapi.cc:138 kab/widget.cc:832 kab/widget.cc:852 kab/widget.cc:1916
+#: kab/kabapi.cc:138 kab/widget.cc:832 kab/widget.cc:852 kab/widget.cc:1952
 #: kdeui/keditcl1.cpp:139 kdeui/keditcl1.cpp:168 kdeui/keditcl1.cpp:189
 #: kdeui/keditcl1.cpp:202 kdeui/keditcl1.cpp:1559 po/texts.cpp:83
 msgid "Sorry"
-msgstr "抱歉"
+msgstr "对不起"
 
 #: kdeui/keditcl1.cpp:140
 msgid "The specified File does not exist"
@@ -544,7 +536,7 @@ msgstr "指定的文件不存在"
 #: kdeui/keditcl1.cpp:153 kdeui/keditcl1.cpp:430 kdeui/keditcl1.cpp:511
 #: kdeui/keditcl1.cpp:1715
 msgid "Sorry:"
-msgstr "抱歉:"
+msgstr "对不起:"
 
 #: kdeui/keditcl1.cpp:154
 msgid "You have specificated a directory"
@@ -594,7 +586,8 @@ msgstr ""
 "不能保存这份文件.\n"
 "直接建立一份新文件吗?"
 
-#: kdeui/keditcl1.cpp:547 kdeui/kpopmenu.cpp:10 po/texts.cpp:34
+#: kdeui/keditcl1.cpp:547 kdeui/keditcl1.cpp:1700 kdeui/kpopmenu.cpp:10
+#: po/texts.cpp:34
 msgid "Untitled"
 msgstr "Untitled"
 
@@ -604,7 +597,7 @@ msgstr "无法保存这份文件.\n"
 
 #: kdeui/keditcl1.cpp:1630
 msgid "Save Document As"
-msgstr "另存新文件"
+msgstr "文档另存为"
 
 #: kdeui/keditcl1.cpp:1659
 msgid ""
@@ -623,7 +616,7 @@ msgid ""
 "End of document reached.\n"
 "Continue from the beginning?"
 msgstr ""
-"至文件结尾.\n"
+"已到文件结尾.\n"
 "由开头继续?"
 
 #: kdeui/keditcl2.cpp:121 kdeui/keditcl2.cpp:378 kdeui/keditcl2.cpp:424
@@ -637,11 +630,11 @@ msgstr ""
 
 #: kdeui/keditcl2.cpp:682 kdeui/keditcl2.cpp:780
 msgid "Case Sensitive"
-msgstr "区分大小写"
+msgstr "大小写敏感"
 
 #: kdeui/keditcl2.cpp:683 kdeui/keditcl2.cpp:783
 msgid "Find Backwards"
-msgstr "向后寻找"
+msgstr "反向查找"
 
 #: kdeui/keditcl2.cpp:688 kdeui/keditcl2.cpp:795
 msgid "Done"
@@ -649,7 +642,7 @@ msgstr "完成"
 
 #: kdeui/keditcl2.cpp:768
 msgid "Find:"
-msgstr "寻找:"
+msgstr "查找:"
 
 #: kdeui/keditcl2.cpp:778
 msgid "Replace with:"
@@ -661,11 +654,11 @@ msgstr "全部替换"
 
 #: kdeui/keditcl2.cpp:889
 msgid "Goto Line"
-msgstr "跳至行数"
+msgstr "跳至行"
 
 #: kdeui/keditcl2.cpp:894
 msgid "Go"
-msgstr "跳"
+msgstr "开始"
 
 #: kdeui/kfontdialog.cpp:177
 msgid "Select Font"
@@ -681,7 +674,7 @@ msgstr "实际字体"
 
 #: kdeui/kfontdialog.cpp:202 kdeui/kfontdialog.cpp:207
 msgid "Family:"
-msgstr "族类:"
+msgstr "族:"
 
 #: kdeui/kfontdialog.cpp:214 kdeui/kfontdialog.cpp:219 po/texts.cpp:26
 msgid "Charset:"
@@ -693,7 +686,7 @@ msgstr "大小"
 
 #: kdeui/kfontdialog.cpp:239 kdeui/kfontdialog.cpp:244
 msgid "Weight:"
-msgstr "厚度:"
+msgstr "笔划轻重:"
 
 #: kdeui/kfontdialog.cpp:251 kdeui/kfontdialog.cpp:256
 msgid "Style:"
@@ -756,82 +749,76 @@ msgstr "过滤:"
 
 #: kdeui/kkeydialog.cpp:219
 msgid "Configure key bindings"
-msgstr ""
+msgstr "配置键关联"
 
 #: kdeui/kkeydialog.cpp:232 kdeui/knotebook.cpp:224 kdeui/kwizard.cpp:205
 #: po/texts.cpp:45
 msgid "&Help"
-msgstr "帮助[&H]"
+msgstr "帮助(&H)"
 
-#
 #: kdeui/kkeydialog.cpp:236 po/texts.cpp:136
-#, fuzzy
 msgid "&Defaults"
-msgstr "默认[&D]"
+msgstr "默认值(&D)"
 
 #: kdeui/kkeydialog.cpp:320
 msgid "Current key"
-msgstr ""
+msgstr "当前键"
 
 #: kdeui/kkeydialog.cpp:332
-#, fuzzy
 msgid "&Action"
-msgstr "位置[&L]"
+msgstr "动作(&A)"
 
 #: kdeui/kkeydialog.cpp:366
 msgid "Choose a key for the selected action"
-msgstr ""
+msgstr "给选中的动作选择一个键"
 
 #: kdeui/kkeydialog.cpp:393
 msgid "&No key"
-msgstr ""
+msgstr "没有键(&N)"
 
-#
 #: kdeui/kkeydialog.cpp:401
-#, fuzzy
 msgid "&Default key"
-msgstr "默认[&D]"
+msgstr "默认键(&D)"
 
 #: kdeui/kkeydialog.cpp:409
-#, fuzzy
 msgid "&Custom key"
-msgstr "自定义..."
+msgstr "自定义键(&C)..."
 
 #: kdeui/kkeydialog.cpp:472
 msgid "No keys defined"
-msgstr ""
+msgstr "没有定义键"
 
 #: kdeui/kkeydialog.cpp:474
 msgid "Not configurable"
-msgstr ""
+msgstr "不是可配置的"
 
 #: kdeui/kkeydialog.cpp:530
 msgid "Global Keys"
-msgstr ""
+msgstr "全局键"
 
 #: kdeui/kkeydialog.cpp:562
 msgid "Keys"
-msgstr ""
+msgstr "键"
 
 #: kdeui/kkeydialog.cpp:637 kdeui/kkeydialog.cpp:976
 msgid "Attention : key already used"
-msgstr ""
+msgstr "注意: 键已经使用"
 
 #: kdeui/kkeydialog.cpp:926
 msgid "Press the wanted key"
-msgstr ""
+msgstr "请按想用的键"
 
 #: kdeui/kkeydialog.cpp:949
 msgid "Undefined key"
-msgstr ""
+msgstr "没有定义的键"
 
 #: kdeui/kkeydialog.cpp:999
 msgid "Return to end edition"
-msgstr ""
+msgstr "按[RETURN]结束编辑"
 
 #: kdeui/kkeydialog.cpp:1009
 msgid "Incorrect key"
-msgstr ""
+msgstr "不正确的键"
 
 #: kdeui/kkeydialog.cpp:1035
 #, c-format
@@ -841,10 +828,14 @@ msgid ""
 "\n"
 "Please choose a unique key combination."
 msgstr ""
+"复合键%已经被用作全局的\n"
+"%s动作.\n"
+"\n"
+"请选择一个唯一的复合键."
 
 #: kdeui/kkeydialog.cpp:1039
 msgid "Global key conflict"
-msgstr ""
+msgstr "全局键定义冲突"
 
 #: kdeui/kkeydialog.cpp:1062
 #, c-format
@@ -854,10 +845,14 @@ msgid ""
 "\n"
 "Please choose a unique key combination."
 msgstr ""
+"复合键%s已经被用作标准的\n"
+"%s动作.\n"
+"\n"
+"请选择一个唯一的复合键."
 
 #: kdeui/kkeydialog.cpp:1066
 msgid "Standard key conflict"
-msgstr ""
+msgstr "标准键定义冲突"
 
 #: kdeui/kkeydialog.cpp:1086
 #, c-format
@@ -867,57 +862,59 @@ msgid ""
 "\n"
 "Please choose a unique key combination."
 msgstr ""
+"复合键%s已经被用作\n"
+"%s动作.\n"
+"\n"
+"请选择一个唯一的复合键."
 
 #: kdeui/kkeydialog.cpp:1090
 msgid "Key conflict"
-msgstr ""
+msgstr "键定义冲突"
 
-#: kdeui/kmenubar.cpp:281 kdeui/ktoolbar.cpp:856
+#: kdeui/kmenubar.cpp:306 kdeui/ktoolbar.cpp:860
 msgid "Top"
-msgstr "顶端"
+msgstr "顶部"
 
-#: kdeui/kmenubar.cpp:282 kdeui/ktoolbar.cpp:858
+#: kdeui/kmenubar.cpp:307 kdeui/ktoolbar.cpp:862
 msgid "Bottom"
-msgstr "底端"
+msgstr "底部"
 
-#: kdeui/kmenubar.cpp:283 kdeui/ktoolbar.cpp:859
+#: kdeui/kmenubar.cpp:308 kdeui/ktoolbar.cpp:863
 msgid "Floating"
 msgstr "浮动"
 
-#: kdeui/kmenubar.cpp:432 kdeui/kmenubar.cpp:774 kdeui/ktoolbar.cpp:2170
+#: kdeui/kmenubar.cpp:457 kdeui/kmenubar.cpp:809 kdeui/ktoolbar.cpp:2090
 msgid "Float"
 msgstr "浮动"
 
-#: kdeui/kmenubar.cpp:726 kdeui/ktoolbar.cpp:2151
+#: kdeui/kmenubar.cpp:761 kdeui/ktoolbar.cpp:2071
 msgid "UnFloat"
 msgstr "固定"
 
 #: kdeui/knotebook.cpp:145
 msgid "Trying to add page when no KWizards are added!"
-msgstr "试图在没有 KWizards 的情况下添加页 !"
+msgstr "试图在没有KWizards的情况下添加页 !"
 
-#
 #: kdeui/knotebook.cpp:201 kdeui/kwizard.cpp:182
 msgid "&Default"
-msgstr "默认[&D]"
+msgstr "默认(&D)"
 
 #: kdeui/kquickhelp.cpp:203
 msgid "Quickhelp"
-msgstr ""
+msgstr "快速帮助"
 
-#: kdeui/ktoolbar.cpp:284 kdeui/ktoolbar.cpp:336
+#: kdeui/ktoolbar.cpp:288 kdeui/ktoolbar.cpp:340
 msgid "KToolBarButton: pixmap is empty, perhaps some missing file"
 msgstr "KToolBarButton: 空的图标, 也许缺少某些文件"
 
-#: kdeui/ktoolbar.cpp:855
+#: kdeui/ktoolbar.cpp:859
 msgid "Left"
 msgstr "左"
 
-#: kdeui/ktoolbar.cpp:857
+#: kdeui/ktoolbar.cpp:861
 msgid "Right"
 msgstr "右"
 
-#
 #: kdeui/kwizard.cpp:531 kdeui/kwizard.cpp:678
 #, c-format
 msgid "Page %d of %d"
@@ -928,7 +925,6 @@ msgstr "第%页,共%d页"
 msgid "Folders:"
 msgstr "文件夹:"
 
-#
 #: kfile/kcombiview.cpp:82
 msgid "Contents:"
 msgstr "内容:"
@@ -937,7 +933,7 @@ msgstr "内容:"
 msgid "<!-- Do not edit this file -->"
 msgstr "<!-- 请勿编辑此文件 -->"
 
-#: kab/addressbook.cc:1055 kfile/kfiledetaillist.cpp:36
+#: kab/addressbook.cc:1112 kfile/kfiledetaillist.cpp:36
 msgid "Name"
 msgstr "名称"
 
@@ -967,14 +963,13 @@ msgstr "返回"
 msgid "Forward"
 msgstr "往前"
 
-#
 #: kfile/kfiledialog.cpp:128
 msgid "Up to parent"
 msgstr "到父目录"
 
 #: kfile/kfiledialog.cpp:134 po/texts.cpp:54
 msgid "Reload"
-msgstr "重新载入"
+msgstr "刷新"
 
 #: kfile/kfiledialog.cpp:156
 msgid "Bookmarks"
@@ -986,7 +981,7 @@ msgstr "建立新的文件夹"
 
 #: kfile/kfiledialog.cpp:163
 msgid "Search for a file"
-msgstr "搜寻文件"
+msgstr "查找文件"
 
 #: kfile/kfiledialog.cpp:166
 msgid "Configure this dialog [development only]"
@@ -998,11 +993,11 @@ msgstr "路径"
 
 #: kfile/kfiledialog.cpp:199
 msgid "&Location:"
-msgstr "位置[&L]"
+msgstr "位置(&L)"
 
 #: kfile/kfiledialog.cpp:212
 msgid "&Filter:"
-msgstr "过滤[&F]"
+msgstr "过滤(&F)"
 
 #: kfile/kfiledialog.cpp:226
 msgid "Show hidden"
@@ -1036,7 +1031,7 @@ msgstr "取消"
 
 #: kfile/kfiledialog.cpp:573 kfile/kfiledialog.cpp:1392 po/texts.cpp:77
 msgid "Save As"
-msgstr "另存新文件"
+msgstr "另存为"
 
 #: kfile/kfiledialog.cpp:596
 msgid "Root Directory"
@@ -1089,13 +1084,13 @@ msgid "one directory"
 msgstr "一个目录"
 
 #: kfile/kfiledialog.cpp:1339
-#, fuzzy, c-format
+#, c-format
 msgid "%d directories"
-msgstr "目录"
+msgstr "%d 目录"
 
 #: kfile/kfiledialogconf.cpp:42
 msgid "Look and Feel"
-msgstr "观感"
+msgstr "外观"
 
 #: kfile/kfiledialogconf.cpp:44
 msgid ""
@@ -1131,11 +1126,11 @@ msgstr "视图风格"
 
 #: kfile/kfiledialogconf.cpp:75
 msgid "Show Short View"
-msgstr "简洁方式"
+msgstr "简洁"
 
 #: kfile/kfiledialogconf.cpp:81
 msgid "Show Detail View"
-msgstr "详细方式"
+msgstr "详细"
 
 #: kfile/kfiledialogconf.cpp:90
 msgid "Misc"
@@ -1170,9 +1165,8 @@ msgid "Keep dirs first"
 msgstr "先显示目录"
 
 #: kfile/kfilefilter.cpp:35
-#, fuzzy
 msgid "*|All Files"
-msgstr "文件"
+msgstr "*|所有文件"
 
 #: kfile/kfileinfo.cpp:97 kfile/kfileinfo.cpp:101
 msgid "unknown"
@@ -1193,6 +1187,10 @@ msgstr "三月"
 #: kfile/kfileinfo.cpp:224
 msgid "Apr"
 msgstr "四月"
+
+#: kfile/kfileinfo.cpp:225
+msgid "May"
+msgstr "五月"
 
 #: kfile/kfileinfo.cpp:226
 msgid "Jun"
@@ -1265,11 +1263,9 @@ msgstr ""
 "无法进行授权"
 
 #
-#: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210 kio/kmimetypes.cc:62
-#: kio/kmimetypes.cc:89 kio/kmimetypes.cc:135 kio/kregfactories.cc:75
-#: kio/krun.cc:105 kio/kservices.cc:114
+#: kfmlib/kfm.cpp:200 kfmlib/kfm.cpp:210
 msgid "KFM Error"
-msgstr "KFM 错误"
+msgstr "KFM错误"
 
 # , c-format
 #: kfmlib/kfm.cpp:208
@@ -1283,103 +1279,92 @@ msgstr ""
 
 #: kspell/ksconfig.cpp:66
 msgid "Create Root/Affix combinations not in the dictionary"
-msgstr ""
+msgstr "建立字典中没有的词根/词缀复合词"
 
 #: kspell/ksconfig.cpp:75
 msgid "Consider run-together words as spelling errors"
-msgstr ""
+msgstr "把连在一起的词作为拼写错误"
 
 #: kspell/ksconfig.cpp:92
-#, fuzzy
 msgid "Dictionary"
-msgstr "目录"
+msgstr "字典"
 
 #: kspell/ksconfig.cpp:140
 msgid "Encoding:"
-msgstr ""
+msgstr "编码:"
 
 #: kspell/ksconfig.cpp:147
-#, fuzzy
 msgid "Latin1"
-msgstr "位置[&L]"
+msgstr "Latin1"
 
 #: kspell/ksconfig.cpp:148
 msgid "7-Bit/ASCII"
-msgstr ""
+msgstr "7位/ASCII"
 
 #: kspell/ksconfig.cpp:292
 msgid "English"
-msgstr ""
+msgstr "英语"
 
 #: kspell/ksconfig.cpp:298
 msgid "Spanish"
-msgstr ""
+msgstr "西班牙语"
 
 #: kspell/ksconfig.cpp:304
-#, fuzzy
 msgid "German"
-msgstr "正体"
+msgstr "德语"
 
 #: kspell/ksconfig.cpp:311
 msgid "Brazilian Portuguese"
-msgstr ""
+msgstr "巴西葡萄牙语"
 
-#: kio/kio_cache.cc:422 kspell/ksconfig.cpp:317
-#, fuzzy
+#: kspell/ksconfig.cpp:317
 msgid "Unknown"
 msgstr "未知"
 
 #
 #: kspell/ksconfig.cpp:348
-#, fuzzy
 msgid "ISpell Default"
-msgstr "默认"
+msgstr "ISpell默认"
 
 #: kspell/kspelldlg.cpp:58
 msgid "Misspelled Word:"
-msgstr ""
+msgstr "错误拼写的词:"
 
 #: kspell/kspelldlg.cpp:68
-#, fuzzy
 msgid "Replacement:"
-msgstr "替换"
+msgstr "替换为:"
 
 #: kspell/kspelldlg.cpp:77
 msgid "Suggestions:"
-msgstr ""
+msgstr "建议:"
 
 #: kspell/kspelldlg.cpp:88
 msgid "Ignore"
-msgstr ""
+msgstr "忽略"
 
 #: kspell/kspelldlg.cpp:99
 msgid "Ignore All"
-msgstr ""
+msgstr "全部忽略"
 
 #: kspell/kspelldlg.cpp:120 po/texts.cpp:86
 msgid "Add"
-msgstr "加入"
+msgstr "添加"
 
 #: kspell/kspelldlg.cpp:166 po/texts.cpp:100
 msgid "Stop"
 msgstr "停止"
 
 #: kab/widget.cc:162 kab/widget.cc:1164 kab/widget.cc:1222 kab/widget.cc:1233
-#: kab/widget.cc:1936 kab/widget.cc:2028 kab/widget.cc:2112 kab/widget.cc:2157
-#: kab/widget.cc:2168 kio/kio_error.cc:118 kio/kio_paste.cc:48
-#: kio/kio_paste.cc:60 kio/kio_paste.cc:75 kio/kio_paste.cc:87
-#: kio/kio_rename_dlg.cc:217 kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:488
-#: kio/kmimetypes.cc:506 kio/kmimetypes.cc:520 kio/kmimetypes.cc:567
-#: kio/kmimetypes.cc:600 kio/kmimetypes.cc:660 kio/kmimetypes.cc:692
-#: kio/krun.cc:40 kio/krun.cc:512 po/texts.cpp:24
+#: kab/widget.cc:1972 kab/widget.cc:2064 kab/widget.cc:2148 kab/widget.cc:2194
+#: kab/widget.cc:2205 po/texts.cpp:24
 msgid "Error"
 msgstr "错误"
 
-#: kio/krun.cc:102 kio/krun.cc:509 po/texts.cpp:25
+#: po/texts.cpp:25
 msgid "Malformed URL"
-msgstr "不正确的 URL"
+msgstr "不正确的URL"
 
-#: kio/kio_paste.cc:98 po/texts.cpp:29
+#: po/texts.cpp:29
 msgid "Warning"
 msgstr "警告"
 
@@ -1393,7 +1378,7 @@ msgstr "内容"
 
 #: po/texts.cpp:33
 msgid "A&bout..."
-msgstr "关于[&A]..."
+msgstr "关于(&A)..."
 
 #
 #: po/texts.cpp:37
@@ -1402,7 +1387,7 @@ msgstr "打开"
 
 #: po/texts.cpp:38
 msgid "Off"
-msgstr "关上"
+msgstr "关闭"
 
 #: po/texts.cpp:42
 msgid "File"
@@ -1410,7 +1395,7 @@ msgstr "文件"
 
 #: po/texts.cpp:43
 msgid "&File"
-msgstr "文件[&F]"
+msgstr "文件(&F)"
 
 #: po/texts.cpp:46
 msgid "Edit"
@@ -1418,47 +1403,47 @@ msgstr "编辑"
 
 #: po/texts.cpp:47
 msgid "&Edit"
-msgstr "编辑[&E]"
+msgstr "编辑(&E)"
 
 #: po/texts.cpp:48
 msgid "&Options"
-msgstr "选项[&O]"
+msgstr "选项(&O)"
 
 #: po/texts.cpp:49
 msgid "View"
-msgstr "视图"
+msgstr "查看"
 
 #: po/texts.cpp:50
 msgid "&View"
-msgstr "视图[&V]"
+msgstr "查看(&V)"
 
 #: po/texts.cpp:51
 msgid "E&xit"
-msgstr "退出[&X]"
+msgstr "退出(&X)"
 
 #: po/texts.cpp:53
 msgid "&Quit"
-msgstr "离开[&Q]"
+msgstr "离开(&Q)"
 
 #: po/texts.cpp:57
 msgid "&Copy"
-msgstr "拷贝[&C]"
+msgstr "复制(&C)"
 
 #: po/texts.cpp:59
 msgid "&Paste"
-msgstr "粘贴[&P]"
+msgstr "粘贴(&P)"
 
 #: po/texts.cpp:60
 msgid "&New Window..."
-msgstr "新窗口[&N]..."
+msgstr "新建窗口(&N)..."
 
 #: po/texts.cpp:61
 msgid "New &Window..."
-msgstr "新窗口[&W]..."
+msgstr "新建窗口(&W)..."
 
 #: po/texts.cpp:62
 msgid "&New Window"
-msgstr "新窗口[&N]"
+msgstr "新建窗口(&N)"
 
 #: po/texts.cpp:63
 msgid "New Game"
@@ -1466,7 +1451,7 @@ msgstr "开始新游戏"
 
 #: po/texts.cpp:64
 msgid "&New Game"
-msgstr "开始新游戏[&N]"
+msgstr "开始新游戏(&N)"
 
 #: po/texts.cpp:66
 msgid "Open a file"
@@ -1478,15 +1463,15 @@ msgstr "打开..."
 
 #: po/texts.cpp:68
 msgid "&Open..."
-msgstr "打开[&O]..."
+msgstr "打开(&O)..."
 
 #: po/texts.cpp:70
 msgid "&Cut"
-msgstr "剪切[&C]"
+msgstr "剪切(&C)"
 
 #: po/texts.cpp:71
 msgid "C&ut"
-msgstr "剪下[&C]"
+msgstr "剪切(&U)"
 
 #: po/texts.cpp:72
 msgid "Font"
@@ -1494,31 +1479,31 @@ msgstr "字体"
 
 #: po/texts.cpp:73
 msgid "&Foreground Color"
-msgstr "前景颜色[&F]"
+msgstr "前景颜色(&F)"
 
 #: po/texts.cpp:74
 msgid "&Background Color"
-msgstr "背景颜色[&B]"
+msgstr "背景颜色(&B)"
 
 #: po/texts.cpp:76
 msgid "&Save"
-msgstr "保存[&S]"
+msgstr "保存(&S)"
 
 #: po/texts.cpp:78
 msgid "Save as..."
-msgstr "另存新文件..."
+msgstr "另存为..."
 
 #: po/texts.cpp:79
 msgid "S&ave as..."
-msgstr "另存新文件[&A]..."
+msgstr "另存为(&A)..."
 
 #: po/texts.cpp:81
 msgid "&Close"
-msgstr "关闭[&C]"
+msgstr "关闭(&C)"
 
 #: po/texts.cpp:82
 msgid "&Print..."
-msgstr "打印[&P]..."
+msgstr "打印(&P)..."
 
 #: po/texts.cpp:84
 msgid "Options"
@@ -1526,11 +1511,11 @@ msgstr "选项"
 
 #: po/texts.cpp:85
 msgid "Remove"
-msgstr "去除"
+msgstr "去掉"
 
 #: po/texts.cpp:87
 msgid "Change"
-msgstr "改变"
+msgstr "修改"
 
 #: po/texts.cpp:88
 msgid "Delete"
@@ -1538,9 +1523,9 @@ msgstr "删除"
 
 #: po/texts.cpp:89
 msgid "&Delete"
-msgstr "删除[&D]"
+msgstr "删除(&D)"
 
-#: kio/kio_linedit_dlg.cc:46 kio/kio_openwith.cc:268 po/texts.cpp:90
+#: po/texts.cpp:90
 msgid "Clear"
 msgstr "清除"
 
@@ -1554,7 +1539,7 @@ msgstr "正体"
 
 #: po/texts.cpp:94
 msgid "&Undo"
-msgstr "还原[&U]"
+msgstr "还原(&U)"
 
 #: po/texts.cpp:95
 msgid "Redo"
@@ -1562,13 +1547,13 @@ msgstr "重复操作"
 
 #: po/texts.cpp:96
 msgid "&Redo"
-msgstr "重复操作[R]"
+msgstr "重复操作(&R)"
 
 #: po/texts.cpp:97
 msgid "&Game"
-msgstr "游戏[&G]"
+msgstr "游戏(&G)"
 
-#: kio/kio_rename_dlg.cc:28 kio/kio_skip_dlg.cc:18 po/texts.cpp:98
+#: po/texts.cpp:98
 msgid "Information"
 msgstr "信息"
 
@@ -1578,12 +1563,12 @@ msgstr "浏览..."
 
 #: po/texts.cpp:101
 msgid "&Remove"
-msgstr "去掉[&R]"
+msgstr "去掉(&R)"
 
 #
 #: po/texts.cpp:102
 msgid "&Properties..."
-msgstr "特性[&P]..."
+msgstr "特性(&P)..."
 
 #: po/texts.cpp:103
 msgid "Properties"
@@ -1591,12 +1576,11 @@ msgstr "特性"
 
 #: po/texts.cpp:104
 msgid "&Start"
-msgstr "开始[&S]"
+msgstr "开始(&S)"
 
-#
 #: po/texts.cpp:105
 msgid "St&op"
-msgstr "停止[&O]"
+msgstr "停止(&O)"
 
 #: po/texts.cpp:106
 msgid "Miscellaneous"
@@ -1612,17 +1596,17 @@ msgstr "字体"
 
 #: po/texts.cpp:109
 msgid "&Fonts"
-msgstr "字体[&F]"
+msgstr "字体(&F)"
 
 #: po/texts.cpp:110
 msgid "&Reload"
-msgstr "重新载入[&R]"
+msgstr "重新载入(&R)"
 
 #: po/texts.cpp:111
 msgid "Files"
 msgstr "文件"
 
-#: kab/widget.cc:1384 kab/widget.cc:1426 po/texts.cpp:112
+#: kab/widget.cc:1390 kab/widget.cc:1432 po/texts.cpp:112
 msgid "Continue"
 msgstr "继续"
 
@@ -1634,7 +1618,6 @@ msgstr "恢复"
 msgid "Appearance"
 msgstr "外观"
 
-#
 #: po/texts.cpp:116
 msgid "Monday"
 msgstr "星期一"
@@ -1666,12 +1649,10 @@ msgstr "星期六"
 msgid "Sunday"
 msgstr "星期天"
 
-#
 #: po/texts.cpp:123
 msgid "&Update"
-msgstr "更新[&U]"
+msgstr "更新(&U)"
 
-#
 #: po/texts.cpp:124
 msgid "Layout"
 msgstr "布局"
@@ -1683,26 +1664,25 @@ msgstr "高分"
 #
 #: po/texts.cpp:126
 msgid "&New View"
-msgstr "新视图[&N]"
+msgstr "新视图(&N)"
 
 #: po/texts.cpp:127
 msgid "&Insert"
-msgstr "插入[&I]"
+msgstr "插入(&I)"
 
 #
 #: po/texts.cpp:130
 msgid "&Next >>"
-msgstr "下一页[&N] >>"
+msgstr "下一页(&N) >>"
 
 #
 #: po/texts.cpp:131
 msgid "<< &Previous"
-msgstr "<< 前一页[&P]"
+msgstr "<< 前一页(&P)"
 
 #: po/texts.cpp:138
-#, fuzzy
 msgid "&About..."
-msgstr "关于[&A]..."
+msgstr "关于(&A)..."
 
 #: kab/addressbook.cc:90
 msgid ""
@@ -1711,10 +1691,14 @@ msgid ""
 "The program will try to create\n"
 "         "
 msgstr ""
+"保存地址簿程序的特定用户数据的\n"
+"目录不存在.\n"
+"程序会尝试建立\n"
+"         "
 
 #: kab/addressbook.cc:94
 msgid "and store all local files in this directory."
-msgstr ""
+msgstr "并在这个目录中保存所有的本地文件."
 
 #: kab/addressbook.cc:98
 msgid ""
@@ -1724,334 +1708,323 @@ msgid ""
 "in your home directory. Run the KDE filemanager\n"
 "kfm once to automatically create it."
 msgstr ""
+"不能建立目录.\n"
+"也许你以前没有用过KDE,所以\n"
+"在你的主目录下没有一个\n"
+"\".kde\"目录.运行KDE文件\n"
+"管理器kfm会自动建立这个目录."
 
 #: kab/addressbook.cc:106
 msgid "The directory has been created.\n"
-msgstr ""
+msgstr "目录建立.\n"
 
 #: kab/addressbook.cc:140
 msgid "No addressbook database file, creating new one."
-msgstr ""
+msgstr "没有地址簿数据库文件,建立新的数据文件."
 
 #: kab/addressbook.cc:159
 msgid "Tried to load database for creating backup, but failed"
-msgstr ""
+msgstr "尝试装载数据库以建立备份,但是失败了"
 
 #: kab/addressbook.cc:194
 msgid "Unable to save to backup file."
-msgstr ""
+msgstr "不能保存到备份文件中."
 
 #: kab/addressbook.cc:200
 msgid "Unable to reset filename after creating backup."
-msgstr ""
+msgstr "在建立备份后不能重置文件名."
 
 #: kab/addressbook.cc:205
 msgid "Unable to create backup file"
-msgstr ""
+msgstr "不能建立备份文件"
 
 #: kab/addressbook.cc:263
 msgid "Unable to insert \""
-msgstr ""
+msgstr "不能插入\""
 
 #: kab/addressbook.cc:264
 msgid "\" into configuration section (ignored)."
-msgstr ""
+msgstr "\" 到配置节中(忽略)."
 
 #: kab/addressbook.cc:666
 msgid "Unable to add a new entry with available key."
-msgstr ""
+msgstr "不能用可用的关键字添加新项."
 
 #: kab/addressbook.cc:672
 msgid "Cannot find previously created section."
-msgstr ""
+msgstr "找不到以前建立的节"
 
 #: kab/addressbook.cc:703
 msgid "Unable to create key-value-map for entry."
-msgstr ""
+msgstr "不能给项目建立[关键字-值]对应."
 
-#: kab/addressbook.cc:932
+#: kab/addressbook.cc:989
 msgid "entry without name"
-msgstr ""
+msgstr "没有名称的项"
 
-#: kab/addressbook.cc:950
+#: kab/addressbook.cc:1007
 msgid ""
 "Unable to create new database file (probably permission denied), exiting."
 msgstr ""
+"不能建立新的数据库文件(可能是没有权限),退出."
 
-#: kab/addressbook.cc:956
+#: kab/addressbook.cc:1013
 msgid "Cannot create configuration section, exiting."
-msgstr ""
+msgstr "不能建立配置节,退出."
 
-#: kab/addressbook.cc:961
+#: kab/addressbook.cc:1018
 msgid "Cannot create entries section, exiting."
-msgstr ""
+msgstr "不能建立项目节,退出."
 
-#: kab/addressbook.cc:966
+#: kab/addressbook.cc:1023
 msgid "Unable to find previously created section, exiting."
-msgstr ""
+msgstr "找不到以前建立的节,退出."
 
-#: kab/addressbook.cc:974
+#: kab/addressbook.cc:1031
 msgid "Cannot save newly created database."
-msgstr ""
+msgstr "不能保存新建的数据库."
 
-#: kab/addressbook.cc:980
+#: kab/addressbook.cc:1037
 msgid "Cannot erase database contents."
-msgstr ""
+msgstr "不能清除数据库内容."
 
-#: kab/addressbook.cc:1059
+#: kab/addressbook.cc:1116
 msgid "First name"
-msgstr ""
+msgstr "姓"
 
-#: kab/addressbook.cc:1063
+#: kab/addressbook.cc:1120
 msgid "Additional name"
-msgstr ""
+msgstr "名"
 
-#: kab/addressbook.cc:1067
+#: kab/addressbook.cc:1124
 msgid "Name prefix"
-msgstr ""
+msgstr "名字前缀"
 
-#: kab/addressbook.cc:1071
+#: kab/addressbook.cc:1128
 msgid "Formatted name"
-msgstr ""
+msgstr "全名"
 
-#: kab/addressbook.cc:1075
-#, fuzzy
+#: kab/addressbook.cc:1132
 msgid "Comment"
-msgstr "内容"
+msgstr "备注"
 
-#: kab/addressbook.cc:1079
+#: kab/addressbook.cc:1136
 msgid "Organization"
-msgstr ""
+msgstr "组织"
 
-#: kab/addressbook.cc:1083
-#, fuzzy
+#: kab/addressbook.cc:1140
 msgid "Unit"
-msgstr "Untitled"
+msgstr "单位"
 
 #
-#: kab/addressbook.cc:1087
-#, fuzzy
+#: kab/addressbook.cc:1144
 msgid "Subunit"
-msgstr "星期天"
+msgstr "分支单位"
 
-#: kab/addressbook.cc:1091
-#, fuzzy
+#: kab/addressbook.cc:1148
 msgid "Title"
-msgstr "文件"
+msgstr "头衔"
 
-#: kab/addressbook.cc:1095
-#, fuzzy
+#: kab/addressbook.cc:1152
 msgid "Role"
-msgstr "文件夹"
+msgstr "职位"
 
-#: kab/addressbook.cc:1099
+#: kab/addressbook.cc:1156
 msgid "Birthday"
-msgstr ""
+msgstr "生日"
 
-#: kab/addressbook.cc:1103
+#: kab/addressbook.cc:1160
 msgid "Talk addresses"
-msgstr ""
+msgstr "Talk地址"
 
-#: kab/addressbook.cc:1107
+#: kab/addressbook.cc:1164
 msgid "Delivery label"
-msgstr ""
+msgstr "邮递地址"
 
-#: kab/addressbook.cc:1111
+#: kab/addressbook.cc:1168
 msgid "Email address"
-msgstr ""
+msgstr "Email地址"
 
-#: kab/addressbook.cc:1115
+#: kab/addressbook.cc:1172
 msgid "Second email address"
-msgstr ""
+msgstr "第二个Email地址"
 
-#: kab/addressbook.cc:1119
+#: kab/addressbook.cc:1176
 msgid "Third email address"
-msgstr ""
+msgstr "第三个Email地址"
 
-#: kab/addressbook.cc:1123
+#: kab/addressbook.cc:1180
 msgid "Email addresses"
-msgstr ""
+msgstr "Email地址"
 
-#: kab/addressbook.cc:1127
-#, fuzzy
+#: kab/addressbook.cc:1184
 msgid "Address"
-msgstr "加入"
+msgstr "地址"
 
-#: kab/addressbook.cc:1131
+#: kab/addressbook.cc:1188
 msgid "City/Town"
-msgstr ""
+msgstr "城市/镇"
 
-#: kab/addressbook.cc:1135
+#: kab/addressbook.cc:1192
 msgid "Telephone"
-msgstr ""
+msgstr "电话"
 
-#: kab/addressbook.cc:1139
+#: kab/addressbook.cc:1196
 msgid "Fax number"
-msgstr ""
+msgstr "传真"
 
 #
-#: kab/addressbook.cc:1143
-#, fuzzy
+#: kab/addressbook.cc:1200
 msgid "Modem number"
-msgstr "十一月"
+msgstr "Modem号码"
 
-#: kab/addressbook.cc:1147
+#: kab/addressbook.cc:1204
 msgid "Homepage URL"
-msgstr ""
+msgstr "主页URL"
 
-#: kab/addressbook.cc:1151
+#: kab/addressbook.cc:1208
 msgid "Zip/postal code"
-msgstr ""
+msgstr "邮政编码"
 
-#: kab/addressbook.cc:1155
+#: kab/addressbook.cc:1212
 msgid "State/province"
-msgstr ""
+msgstr "州/省"
 
-#: kab/addressbook.cc:1159
-#, fuzzy
+#: kab/addressbook.cc:1216
 msgid "Country"
-msgstr "剪下"
+msgstr "国家"
 
-#: kab/addressbook.cc:1326
+#: kab/addressbook.cc:1383
 msgid "(unnamed entry)"
-msgstr ""
+msgstr "(未命名的项)"
 
 #: kab/datepickerdialog.cc:34
-#, fuzzy
 msgid "Select birthday"
-msgstr "选择字体"
+msgstr "选择生日"
 
 #: kab/editentry.cc:38
 msgid "Edit the current entry"
-msgstr ""
+msgstr "编辑当前的项"
 
 #: kab/editentry.cc:61
-#, fuzzy
 msgid "Title:"
-msgstr "风格:"
+msgstr "头衔:"
 
 #: kab/editentry.cc:62
 msgid "First name:"
-msgstr ""
+msgstr "姓:"
 
 #: kab/editentry.cc:63
 msgid "Additional Name:"
-msgstr ""
+msgstr "名:"
 
 #: kab/editentry.cc:65
 msgid "Formatted Name:"
-msgstr ""
+msgstr "全名:"
 
 #: kab/editentry.cc:88
-#, fuzzy
 msgid "&Name"
-msgstr "名称"
+msgstr "名称(&N)"
 
 #: kab/editentry.cc:103
 msgid "Address:"
-msgstr ""
+msgstr "地址:"
 
 #: kab/editentry.cc:104
 msgid "Town/City:"
-msgstr ""
+msgstr "镇/城市:"
 
 #: kab/editentry.cc:105
-#, fuzzy
 msgid "State:"
-msgstr "日期:"
+msgstr "州:"
 
 #: kab/editentry.cc:106
 msgid "Zip/Postal Code:"
-msgstr ""
+msgstr "邮政编码:"
 
 #: kab/editentry.cc:107
 msgid "Country:"
-msgstr ""
+msgstr "国家:"
 
 #: kab/editentry.cc:130
 msgid "&Address"
-msgstr ""
+msgstr "地址(&A)"
 
 #: kab/editentry.cc:145
 msgid "Organization:"
-msgstr ""
+msgstr "组织:"
 
 #: kab/editentry.cc:146
-#, fuzzy
 msgid "Department:"
-msgstr "替换"
+msgstr "部门:"
 
 #: kab/editentry.cc:147
 msgid "Sub-Department:"
-msgstr ""
+msgstr "分支部门:"
 
-#
 #: kab/editentry.cc:148
-#, fuzzy
 msgid "Job/Role:"
-msgstr "文件夹:"
+msgstr "职位:"
 
 #: kab/editentry.cc:169
 msgid "&Organization"
-msgstr ""
+msgstr "组织(&O)"
 
 #: kab/editentry.cc:184
 msgid "Telephone:"
-msgstr ""
+msgstr "电话:"
 
 #: kab/editentry.cc:185
 msgid "Fax:"
-msgstr ""
+msgstr "传真:"
 
 #: kab/editentry.cc:186
-#, fuzzy
 msgid "Modem:"
-msgstr "移动"
+msgstr "Modem:"
 
 #: kab/editentry.cc:187
 msgid "Homepage (URL):"
-msgstr ""
+msgstr "主页(URL):"
 
 #: kab/editentry.cc:200 kab/editentry.cc:418
 msgid "Edit email addresses"
-msgstr ""
+msgstr "编辑Email地址"
 
 #: kab/editentry.cc:206 kab/editentry.cc:400
 msgid "Edit talk addresses"
-msgstr ""
+msgstr "编辑talk地址"
 
 #: kab/editentry.cc:218
-#, fuzzy
 msgid "&Contact"
-msgstr "内容[&C]"
+msgstr "联系(&C)"
 
 #: kab/editentry.cc:239
 msgid "Additional Comment:"
-msgstr ""
+msgstr "其他备注:"
 
 #: kab/editentry.cc:246
 msgid "Birthday:"
-msgstr ""
+msgstr "生日:"
 
 #: kab/editentry.cc:249
 msgid "Double click to set date"
-msgstr ""
+msgstr "双击设置日期"
 
 #: kab/editentry.cc:256
 msgid "O&thers"
-msgstr ""
+msgstr "其他(&T)"
 
 #: kab/kabapi.cc:138
 msgid "Your new entry could not be added."
-msgstr ""
+msgstr "不能添加这个新的项."
 
 #: kab/searchresults.cc:33
 msgid "search results"
-msgstr ""
+msgstr "查找结果"
 
 #: kab/widget.cc:144
 msgid "Conversion problem"
-msgstr ""
+msgstr "转化问题"
 
 #: kab/widget.cc:145
 msgid ""
@@ -2060,16 +2033,22 @@ msgid ""
 "You can use it, but not all features will be\n"
 "supported."
 msgstr ""
+"Kab不能把你的数据库转化为\n"
+"现在采用的文件格式.\n"
+"你可用继续使用它,但是不是\n"
+"所有的特性都支持."
 
 #: kab/widget.cc:163
 msgid ""
 "The application saved the last current entry,\n"
 "but this entry does not exist anymore."
 msgstr ""
+"程序保存了当前最后的项,\n"
+"但是它现在不存在了."
 
 #: kab/widget.cc:229
 msgid "kab: Removed bug warning"
-msgstr ""
+msgstr "kab: 消除bug警告"
 
 #: kab/widget.cc:230
 msgid ""
@@ -2080,18 +2059,24 @@ msgid ""
 "All configuration values have been reset to\n"
 "its default settings."
 msgstr ""
+"你以前所使用的版本的kab在升级\n"
+"到新版本的数据库时有一个错误.\n"
+"这个错误已经被消除了,不会有\n"
+"遗留的影响.\n"
+"所有的配置值都被了设为它的\n"
+"默认值."
 
-#: kab/widget.cc:248 kab/widget.cc:312 kab/widget.cc:320
+#: kab/widget.cc:248 kab/widget.cc:314 kab/widget.cc:322
 msgid "File handling error"
-msgstr ""
+msgstr "文件处理错误"
 
 #: kab/widget.cc:249
 msgid "Unable to open database file r/w."
-msgstr ""
+msgstr "不能打开数据库文件读写."
 
 #: kab/widget.cc:257
 msgid "Email storage conversion"
-msgstr ""
+msgstr "Email储存格式转换"
 
 #: kab/widget.cc:258
 msgid ""
@@ -2099,10 +2084,13 @@ msgid ""
 "the new style supporting unlimited numbers\n"
 "of email addresses per entry."
 msgstr ""
+"Kab将把你的所有Email地址转到新\n"
+"的格式,它可以在一个项目里支持\n"
+"无限制个数的Email地址."
 
 #: kab/widget.cc:291
 msgid "kab database update"
-msgstr ""
+msgstr "kab数据库更新"
 
 #: kab/widget.cc:292
 msgid ""
@@ -2115,102 +2103,104 @@ msgid ""
 "You will probably need to edit some of your\n"
 "entries to make use of it."
 msgstr ""
+"请注意,现在kab在地址中支持\n"
+"一些新的域,这写新添加的域\n"
+"是:\n"
+"  州(省),\n"
+"  国家,\n"
+"  邮政代码.\n"
+"你可能需要编辑一些项目来\n"
+"使用这些新的域."
 
-#: kab/widget.cc:313
-#, fuzzy
+#: kab/widget.cc:315
 msgid "Could not save database after update."
-msgstr "无法保存这份文件.\n"
+msgstr "在更新后无法保存数据库文件."
 
-#: kab/widget.cc:321
+#: kab/widget.cc:323
 msgid "Unable to reopen database file r/o."
-msgstr ""
+msgstr "不能以只读方式重新打开数据库文件."
 
 #: kab/widget.cc:482
-#, fuzzy
 msgid "first entry"
-msgstr "目录"
+msgstr "第一项"
 
 #: kab/widget.cc:483
-#, fuzzy
 msgid "previous entry"
-msgstr "前一页[&P]"
+msgstr "上一项"
 
 #: kab/widget.cc:484
-#, fuzzy
 msgid "next entry"
-msgstr "一个目录"
+msgstr "下一项"
 
 #: kab/widget.cc:485
 msgid "last entry"
-msgstr ""
+msgstr "最后一项"
 
 #: kab/widget.cc:486
 msgid "search entries"
-msgstr ""
+msgstr "查找项目"
 
 #: kab/widget.cc:487
 msgid "add a new entry"
-msgstr ""
+msgstr "添加新的项"
 
 #: kab/widget.cc:488
 msgid "change this entry"
-msgstr ""
+msgstr "改变这个项"
 
 #: kab/widget.cc:489
 msgid "remove this entry"
-msgstr ""
+msgstr "删除这个项"
 
 #: kab/widget.cc:528
 msgid "Switched to first entry."
-msgstr ""
+msgstr "切换到第一项."
 
 #: kab/widget.cc:560
 msgid "Switched to last entry."
-msgstr ""
+msgstr "切换到最后一项."
 
 #: kab/widget.cc:621 kab/widget.cc:678 kab/widget.cc:860 kab/widget.cc:922
 msgid "Sorry, file changed."
-msgstr ""
+msgstr "对不起,文件被修改了."
 
 #
 #: kab/widget.cc:625 kab/widget.cc:682 kab/widget.cc:926
-#, fuzzy
 msgid "Permission denied."
-msgstr "权限"
+msgstr "没有权限"
 
 #: kab/widget.cc:636
-#, fuzzy
 msgid "Remove entry?"
-msgstr "去除"
+msgstr "删除项?"
 
 #: kab/widget.cc:637
 msgid "Really remove this entry?"
-msgstr ""
+msgstr "真的删除这个项?"
 
 #: kab/widget.cc:655
 msgid "Entry deleted."
-msgstr ""
+msgstr "项目删除了."
 
 #: kab/widget.cc:694
 msgid "Added a new entry."
-msgstr ""
+msgstr "添加新项."
 
 #: kab/widget.cc:821
 msgid "Opened browser window."
-msgstr ""
+msgstr "打开浏览器窗口."
 
 #: kab/widget.cc:824
 msgid "No URL."
-msgstr ""
+msgstr "没有URL."
 
-#: kab/widget.cc:828 kab/widget.cc:997 kab/widget.cc:1176 kab/widget.cc:1789
-#: kab/widget.cc:1967 kab/widget.cc:2051
+#: kab/widget.cc:828 kab/widget.cc:997 kab/widget.cc:1176 kab/widget.cc:1813
+#: kab/widget.cc:2003 kab/widget.cc:2087
 msgid "No entries."
-msgstr ""
+msgstr "没有项."
 
 #: kab/widget.cc:833
 msgid "The filemanager is busy, please try again."
-msgstr ""
+msgstr "文件管理器正忙,请重试."
 
 #: kab/widget.cc:853
 msgid ""
@@ -2218,787 +2208,349 @@ msgid ""
 "locked by another application.\n"
 "kab cannot save it."
 msgstr ""
+"地址簿文件正被另外\n"
+"一个程序锁住.\n"
+"kab不能保存它."
 
 #: kab/widget.cc:870
 msgid "Database saved successfully."
-msgstr ""
+msgstr "数据成功保存."
 
 #: kab/widget.cc:875
 msgid "kab: File error"
-msgstr ""
+msgstr "kab: 文件错误"
 
 #: kab/widget.cc:875
-#, fuzzy
 msgid "Could not save database."
-msgstr "无法保存这份文件.\n"
+msgstr "无法保存数据库."
 
 #: kab/widget.cc:876
-#, fuzzy
 msgid "&Retry"
-msgstr "恢复"
+msgstr "重试(&R)"
 
 #: kab/widget.cc:876
 msgid "&Ignore"
-msgstr ""
+msgstr "忽略(&I)"
 
 #: kab/widget.cc:879
-#, fuzzy
 msgid "Saving cancelled.\n"
-msgstr "取消"
+msgstr "取消保存.\n"
 
 #: kab/widget.cc:945
 msgid "Entry changed."
-msgstr ""
+msgstr "项目被修改了."
 
 #: kab/widget.cc:1041
 msgid "Results"
-msgstr ""
+msgstr "结果."
 
 #: kab/widget.cc:1041
 msgid "No entry matches this."
-msgstr ""
+msgstr "没有匹配的项."
 
-#: kab/widget.cc:1050 kab/widget.cc:1696 kab/widget.cc:1831 kab/widget.cc:1996
-#: kab/widget.cc:2019 kab/widget.cc:2076
+#: kab/widget.cc:1050 kab/widget.cc:1720 kab/widget.cc:1855 kab/widget.cc:2032
+#: kab/widget.cc:2055 kab/widget.cc:2112
 msgid "Rejected."
-msgstr ""
+msgstr "拒绝."
 
 #: kab/widget.cc:1066
 msgid "Search results window closed."
-msgstr ""
+msgstr "查找结果窗口关闭."
 
 #: kab/widget.cc:1165
 msgid "The talk command must be configured before!"
-msgstr ""
+msgstr "talk命令必须已经配置好!"
 
 #: kab/widget.cc:1170
 msgid "Talk configuration"
-msgstr ""
+msgstr "Talk配置"
 
 #: kab/widget.cc:1171
 msgid "Please configure the parameters for the talk command."
-msgstr ""
+msgstr "请配置Talk命令的参数."
 
 #: kab/widget.cc:1184
 msgid "No talk address."
-msgstr ""
+msgstr "没有talk地址."
 
 #: kab/widget.cc:1192
 msgid "kab: Talk addresses"
-msgstr ""
+msgstr "kab: Talk地址"
 
 #: kab/widget.cc:1193
 msgid "Available talk addresses:"
-msgstr ""
+msgstr "可用的talk地址:"
 
-#: kab/widget.cc:1199 kab/widget.cc:1927
-#, fuzzy
+#: kab/widget.cc:1199 kab/widget.cc:1963
 msgid "Cancelled."
-msgstr "取消"
+msgstr "已取消."
 
 #: kab/widget.cc:1222
 msgid "The talk command parameters are wrong."
-msgstr ""
+msgstr "Talk命令的参数是错误的."
 
 #: kab/widget.cc:1234
 msgid ""
 "Talk command failed.\n"
 "Make sure you did setup your talk command and parameter!"
 msgstr ""
+"Talk命令失败了.\n"
+"确定你已经配置好talk命令和参数!"
 
 #: kab/widget.cc:1237
 msgid "Talk program started."
-msgstr ""
+msgstr "Talk程序起动了."
 
 #: kab/widget.cc:1285
 msgid "Attention: printing is still experimental!"
-msgstr ""
+msgstr "注意: 打印还是试验的特性!"
 
-#: kab/widget.cc:1381 kab/widget.cc:1423
+#: kab/widget.cc:1387 kab/widget.cc:1429
 msgid "Page size problem"
-msgstr ""
+msgstr "页大小问题"
 
-#: kab/widget.cc:1382 kab/widget.cc:1424
+#: kab/widget.cc:1388 kab/widget.cc:1430
 msgid ""
 "The fields you requested to print do\n"
 "not fit into the page width."
 msgstr ""
+"你要打印的域不能\n"
+"匹配页的宽度."
 
-#: kab/widget.cc:1601 kab/widget.cc:2030
+#: kab/widget.cc:1624 kab/widget.cc:2066
 msgid "Printing finished successfully."
-msgstr ""
+msgstr "打印完成."
 
-#: kab/widget.cc:1627
+#: kab/widget.cc:1651
 msgid "kab: Email addresses"
-msgstr ""
+msgstr "kab: Email地址"
 
-#: kab/widget.cc:1628
+#: kab/widget.cc:1652
 msgid "Available email addresses:"
-msgstr ""
+msgstr "可用的Email地址:"
 
-#: kab/widget.cc:1693
+#: kab/widget.cc:1717
 msgid "kab: Select fields to copy"
-msgstr ""
+msgstr "kab: 选择要复制的域"
 
-#: kab/widget.cc:1703
+#: kab/widget.cc:1727
 msgid "Nothing selected."
-msgstr ""
+msgstr "没有选中任何域."
 
-#: kab/widget.cc:1761 kab/widget.cc:2013
+#: kab/widget.cc:1785 kab/widget.cc:2049
 msgid "KDE addressbook overview"
-msgstr ""
+msgstr "KDE地址簿简介"
 
-#: kab/widget.cc:1805
+#: kab/widget.cc:1829
 msgid "Name-Email-Link (!!)"
-msgstr ""
+msgstr "名字-Email-链接(!!)"
 
-#: kab/widget.cc:1807
-#, fuzzy
+#: kab/widget.cc:1831
 msgid "Select table columns"
-msgstr "选择图标"
+msgstr "选择表列"
 
-#: kab/widget.cc:1812
+#: kab/widget.cc:1836
 msgid "Nothing to export."
-msgstr ""
+msgstr "没有要导出的域."
 
-#: kab/widget.cc:1841
+#: kab/widget.cc:1865
 msgid "Email link"
-msgstr ""
+msgstr "Email链接"
 
-#: kab/widget.cc:1916
+#: kab/widget.cc:1952
 msgid "Could not find the users home directory."
-msgstr ""
+msgstr "不能找到用户的主目录."
 
-#: kab/widget.cc:1917
+#: kab/widget.cc:1953
 msgid "Intern error!"
-msgstr ""
-
-#: kab/widget.cc:1937
-msgid "Could not open the file to create the HTML table."
-msgstr ""
+msgstr "内部错误!"
 
 #: kab/widget.cc:1973
+msgid "Could not open the file to create the HTML table."
+msgstr "不能打开文件建立HTML表格."
+
+#: kab/widget.cc:2009
 msgid "Printing cancelled."
-msgstr ""
+msgstr "打印取消了."
 
-#: kab/widget.cc:1989
+#: kab/widget.cc:2025
 msgid "kab: Select columns for printing"
-msgstr ""
+msgstr "kab: 选择要打印的列"
 
-#: kab/widget.cc:2002
+#: kab/widget.cc:2038
 msgid "Nothing to print."
-msgstr ""
+msgstr "没有要打印的列."
 
-#: kab/widget.cc:2014
+#: kab/widget.cc:2050
 msgid "Page <p>"
-msgstr ""
+msgstr "页 <p>"
 
-#: kab/widget.cc:2015
+#: kab/widget.cc:2051
 msgid "KDE - the professionals choice."
-msgstr ""
+msgstr "KDE - 专业人员的选择."
 
-#: kab/widget.cc:2028
+#: kab/widget.cc:2064
 msgid "Printing failed!"
-msgstr ""
+msgstr "打印失败!"
 
-#: kab/widget.cc:2059
+#: kab/widget.cc:2095
 msgid "Empty email address."
-msgstr ""
+msgstr "空的Email地址."
 
-#: kab/widget.cc:2078
+#: kab/widget.cc:2114
 msgid "No email address."
-msgstr ""
+msgstr "没有Email地址."
 
-#: kab/widget.cc:2088
-#, fuzzy
+#: kab/widget.cc:2124
 msgid "Error calling mailer."
-msgstr "错误: 不是本地文件"
+msgstr "调用邮件程序时错误."
 
-#: kab/widget.cc:2090
+#: kab/widget.cc:2126
 msgid "Mailer called."
-msgstr ""
+msgstr "调用了邮件程序."
 
-#: kab/widget.cc:2113
+#: kab/widget.cc:2149
 msgid "The mail command must be configured before!"
-msgstr ""
+msgstr "Mail命令必须配置过!"
 
-#: kab/widget.cc:2118
+#: kab/widget.cc:2155
 msgid "Mail configuration"
-msgstr ""
+msgstr "Mail配置"
 
-#: kab/widget.cc:2119
+#: kab/widget.cc:2156
 msgid "Please configure the parameters for the email command."
-msgstr ""
+msgstr "请配置email命令的参数."
 
-#: kab/widget.cc:2157
+#: kab/widget.cc:2194
 msgid "The email command parameters are wrong."
-msgstr ""
+msgstr "Email命令的参数是错误的."
 
-#: kab/widget.cc:2169
+#: kab/widget.cc:2206
 msgid ""
 "Email command failed.\n"
 "Make sure you did setup your email command and parameter!"
 msgstr ""
+"Email命令失败.\n"
+"确定你已经配置好email命令和参数!"
 
-#: kab/widget.cc:2173
+#: kab/widget.cc:2210
 msgid "Mail program started."
-msgstr ""
-
-#: kio/kio_cache.cc:345
-msgid "KIO Cache"
-msgstr ""
-
-#: kio/kio_cache.cc:347
-msgid "Contents of the cache"
-msgstr ""
-
-#: kio/kio_cache.cc:352
-msgid ""
-"Use the icons for drag and drop actions, since they refer to the cache files "
-"on your hard disk, while you should use the textual links for browsing"
-msgstr ""
-
-#: kio/kio_cache.cc:355
-msgid "Creation Date"
-msgstr ""
-
-#: kio/kio_cache.cc:357
-msgid "Expiration Date"
-msgstr ""
+msgstr "Mail程序起动了."
 
 #
-#: kio/kio_cache.cc:428
 #, fuzzy
-msgid "Never"
-msgstr "十一月"
+#~ msgid "Never"
+#~ msgstr "十一月"
 
-#: kio/kio_error.cc:16
-#, c-format
-msgid ""
-"Could not read\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:19
-#, fuzzy, c-format
-msgid ""
-"Could not write to\n"
-"%s"
-msgstr "无法保存这份文件.\n"
-
-#: kio/kio_error.cc:22
-#, fuzzy, c-format
-msgid ""
-"Could not start process\n"
-"%s"
-msgstr "无法保存这份文件.\n"
-
-#: kio/kio_error.cc:25
-#, c-format
-msgid ""
-"Internal Error\n"
-"Please send a full bugreport to kde-bugs@kde.org\n"
-"\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:28
-#, fuzzy, c-format
-msgid ""
-"Malformed URL\n"
-"%s"
-msgstr "不正确的 URL"
-
-#: kio/kio_error.cc:31
-#, c-format
-msgid ""
-"The protocol %s\n"
-" is not supported"
-msgstr ""
-
-#: kio/kio_error.cc:34
-#, c-format
-msgid ""
-"The protocol %s\n"
-"is only a filter protocol.\n"
-msgstr ""
-
-#: kio/kio_error.cc:37
-#, c-format
-msgid ""
-"Unsupported action\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:40
-#, fuzzy, c-format
-msgid ""
-"The file or directory\n"
-"%s\n"
-"does not exist"
-msgstr "指定的文件不存在"
-
-#: kio/kio_error.cc:43
-#, c-format
-msgid ""
-"%s\n"
-" is a directory,\n"
-"but a file was expected"
-msgstr ""
-
-#: kio/kio_error.cc:46
-#, fuzzy, c-format
-msgid ""
-"Could not make directory\n"
-"%s"
-msgstr "一个目录"
-
-#: kio/kio_error.cc:49
-#, c-format
-msgid ""
-"The file or directory\n"
-"%s\n"
-"does already exist"
-msgstr ""
-
-#: kio/kio_error.cc:52
-#, c-format
-msgid ""
-"%s\n"
-"Access denied"
-msgstr ""
-
-#: kio/kio_error.cc:55
-#, fuzzy, c-format
-msgid ""
-"Could not enter directory\n"
-"%s"
-msgstr "无法保存这份文件.\n"
-
-#: kio/kio_error.cc:58
-#, c-format
-msgid ""
-"The protocol %s\n"
-"does not implement a directory service"
-msgstr ""
-
-#: kio/kio_error.cc:61
-#, c-format
-msgid ""
-"Found a cyclic link in\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:64
-#, fuzzy, c-format
-msgid ""
-"Could not change permissions for\n"
-"%s"
-msgstr "没有权限写入这个文件\n"
-
-#: kio/kio_error.cc:67
-#, c-format
-msgid ""
-"Access denied\n"
-"Could not write to\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:70
-msgid ""
-"Action has been\n"
-"canceled by the user"
-msgstr ""
-
-#: kio/kio_error.cc:73
-#, c-format
-msgid ""
-"Found a cyclic link while copying\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:76
-#, c-format
-msgid ""
-"Could not create socket for accessing\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:79
-#, fuzzy, c-format
-msgid ""
-"Could not connect to host\n"
-"%s"
-msgstr "无法保存这份文件.\n"
-
-#: kio/kio_error.cc:82
-#, c-format
-msgid ""
-"Unknown host\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:85
-#, c-format
-msgid ""
-"Connection to host\n"
-"%s\n"
-"is broken"
-msgstr ""
-
-#: kio/kio_error.cc:88
-#, c-format
-msgid ""
-"The protocol %s\n"
-"is not a filter protocol"
-msgstr ""
-
-#: kio/kio_error.cc:91
-#, c-format
-msgid ""
-"%s\n"
-"is a file,\n"
-"but a directory was expected"
-msgstr ""
-
-#: kio/kio_error.cc:94
-#, c-format
-msgid ""
-"Could not mount device.\n"
-"The reported error was:\n"
-"\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:97
-#, c-format
-msgid ""
-"Could not unmount device.\n"
-"The reported error was:\n"
-"\n"
-"%s"
-msgstr ""
-
-#: kio/kio_error.cc:100
-#, c-format
-msgid ""
-"The process for the\n"
-"%s protocol\n"
-"died unexpectedly"
-msgstr ""
-
-#: kio/kio_error.cc:103
-#, fuzzy, c-format
-msgid ""
-"Could not access\n"
-"%s"
-msgstr "无法保存这份文件.\n"
-
-#: kio/kio_error.cc:106
-#, c-format
-msgid ""
-"Unknown error code %i\n"
-"%s\n"
-"\n"
-"Please send a full bugreport to kde-bugs@kde.org"
-msgstr ""
-
-#: kio/kio_error.cc:118 kio/kio_linedit_dlg.cc:42 kio/kio_openwith.cc:260
-#: kio/kio_pass_dlg.cc:75 kio/kio_paste.cc:48 kio/kio_paste.cc:60
-#: kio/kio_paste.cc:76 kio/kio_paste.cc:87 kio/kio_rename_dlg.cc:217
-#: kio/kio_rename_dlg.cc:224 kio/kmimetypes.cc:62 kio/kmimetypes.cc:89
-#: kio/kmimetypes.cc:135 kio/kmimetypes.cc:488 kio/kmimetypes.cc:506
-#: kio/kmimetypes.cc:520 kio/kmimetypes.cc:567 kio/kmimetypes.cc:600
-#: kio/kmimetypes.cc:660 kio/kmimetypes.cc:692 kio/kregfactories.cc:75
-#: kio/krun.cc:40 kio/krun.cc:105 kio/krun.cc:512 kio/kservices.cc:114
-msgid "Ok"
-msgstr "确定"
-
-#: kio/kio_job.cc:184
-#, c-format
-msgid "Mounting %s ..."
-msgstr ""
-
-#: kio/kio_job.cc:204
-#, c-format
-msgid "Unmounting %s ..."
-msgstr ""
-
-#: kio/kio_openwith.cc:133
-msgid "This group is empty!"
-msgstr ""
-
-#: kio/kio_openwith.cc:264
 #, fuzzy
-msgid "&Browser"
-msgstr "浏览..."
+#~ msgid ""
+#~ "Could not write to\n"
+#~ "%s"
+#~ msgstr "无法保存这份文件.\n"
 
-#: kio/kio_pass_dlg.cc:33
-msgid "User"
-msgstr ""
-
-#: kio/kio_pass_dlg.cc:44 kio/kio_pass_dlg.cc:88
-msgid "Password"
-msgstr ""
-
-#: kio/kio_paste.cc:48 kio/kio_paste.cc:60
-msgid "The clipboard is empty"
-msgstr ""
-
-#: kio/kio_paste.cc:75
-msgid ""
-"Pasting clipboard data is only supported on the local hard disk currently"
-msgstr ""
-
-#: kio/kio_paste.cc:80
-msgid "Filename for clipboard content:"
-msgstr ""
-
-#: kio/kio_paste.cc:87
-msgid "You did not enter a filename"
-msgstr ""
-
-#: kio/kio_paste.cc:97
-#, fuzzy, c-format
-msgid "The file %s does already exist. Do you really want to overwrite it ?"
-msgstr ""
-"存在相同名字的文件\n"
-"要覆盖吗 ?"
-
-#: kio/kio_progress_dlg.cc:108 kio/kio_progress_dlg.cc:124
-msgid "Bytes"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:113 kio/kio_progress_dlg.cc:129
-msgid "Kb"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:118 kio/kio_progress_dlg.cc:134
-msgid "Mb"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:139 kio/kio_progress_dlg.cc:146
-msgid "of"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:171 kio/kio_progress_dlg.cc:197
 #, fuzzy
-msgid "Stalled"
-msgstr "风格"
+#~ msgid ""
+#~ "Could not start process\n"
+#~ "%s"
+#~ msgstr "无法保存这份文件.\n"
 
-#: kio/kio_progress_dlg.cc:179
-msgid " Bytes/s"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:184
-msgid " Kb/s"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:189
-msgid " Mb/s"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:204
-#, c-format
-msgid "%i seconds"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:210
-#, c-format
-msgid "%i:%i"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:217
-#, c-format
-msgid "%i:%i:%i"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:221
-#, c-format
-msgid "%i%s  Remaining time: %s"
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:227
 #, fuzzy
-msgid "Scanning "
-msgstr "警告"
+#~ msgid ""
+#~ "Malformed URL\n"
+#~ "%s"
+#~ msgstr "不正确的 URL"
 
-#: kio/kio_progress_dlg.cc:234
-msgid "From : "
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:238
-msgid "To: "
-msgstr ""
-
-#: kio/kio_progress_dlg.cc:245
 #, fuzzy
-msgid "Creating dir "
-msgstr "建立新的文件夹"
+#~ msgid ""
+#~ "The file or directory\n"
+#~ "%s\n"
+#~ "does not exist"
+#~ msgstr "指定的文件不存在"
 
-#: kio/kio_progress_dlg.cc:252
-msgid "Fetching file"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:33
 #, fuzzy
-msgid "Rename"
-msgstr "去除"
+#~ msgid ""
+#~ "Could not make directory\n"
+#~ "%s"
+#~ msgstr "一个目录"
 
-#: kio/kio_rename_dlg.cc:38 kio/kio_skip_dlg.cc:23
-msgid "Skip"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:41 kio/kio_skip_dlg.cc:28
-msgid "Auto Skip"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:47
-msgid "Overwrite"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:52
-msgid "Overwrite All"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:59
 #, fuzzy
-msgid "Resume"
-msgstr "去除"
+#~ msgid ""
+#~ "Could not enter directory\n"
+#~ "%s"
+#~ msgstr "无法保存这份文件.\n"
 
-#: kio/kio_rename_dlg.cc:64
 #, fuzzy
-msgid "Resume All"
-msgstr "全部替换"
+#~ msgid ""
+#~ "Could not change permissions for\n"
+#~ "%s"
+#~ msgstr "没有权限写入这个文件\n"
 
-#: kio/kio_rename_dlg.cc:75
-msgid "You try to overwrite"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:96
-msgid "already exists. Overwrite with"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:108
-msgid "Or rename to"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:119
-msgid "already exists."
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:124
-msgid "Do you want to rename it ?"
-msgstr ""
-
-#: kio/kio_rename_dlg.cc:215
 #, fuzzy
-msgid "Malformed URL\n"
-msgstr "不正确的 URL"
+#~ msgid ""
+#~ "Could not connect to host\n"
+#~ "%s"
+#~ msgstr "无法保存这份文件.\n"
 
-#: kio/kio_rename_dlg.cc:224
-msgid "You must not change the protocol"
-msgstr ""
-
-#: kio/kio_skip_dlg.cc:35
 #, fuzzy
-msgid "Can not write"
-msgstr "无法保存这份文件.\n"
+#~ msgid ""
+#~ "Could not access\n"
+#~ "%s"
+#~ msgstr "无法保存这份文件.\n"
+
+#~ msgid "Ok"
+#~ msgstr "确定"
+
+#, fuzzy
+#~ msgid "&Browser"
+#~ msgstr "浏览..."
+
+#, fuzzy
+#~ msgid "The file %s does already exist. Do you really want to overwrite it ?"
+#~ msgstr ""
+#~ "存在相同名字的文件\n"
+#~ "要覆盖吗 ?"
+
+#, fuzzy
+#~ msgid "Stalled"
+#~ msgstr "风格"
+
+#, fuzzy
+#~ msgid "Scanning "
+#~ msgstr "警告"
+
+#, fuzzy
+#~ msgid "Creating dir "
+#~ msgstr "建立新的文件夹"
+
+#, fuzzy
+#~ msgid "Rename"
+#~ msgstr "去除"
+
+#, fuzzy
+#~ msgid "Resume"
+#~ msgstr "去除"
+
+#, fuzzy
+#~ msgid "Resume All"
+#~ msgstr "全部替换"
+
+#, fuzzy
+#~ msgid "Malformed URL\n"
+#~ msgstr "不正确的 URL"
+
+#, fuzzy
+#~ msgid "Can not write"
+#~ msgstr "无法保存这份文件.\n"
 
 #
-#: kio/kio_skip_dlg.cc:46
 #, fuzzy
-msgid "Permission denied!"
-msgstr "权限"
-
-#: kio/kmimetypes.cc:62
-msgid "No mime types installed!"
-msgstr ""
-
-#: kio/kmimetypes.cc:86
-msgid "Could not find mime type\n"
-msgstr ""
-
-#: kio/kmimetypes.cc:132
-msgid "The mime type config file "
-msgstr ""
-
-#: kio/kmimetypes.cc:134 kio/kregfactories.cc:74
-msgid "does not conatain a MimeType=... entry"
-msgstr ""
-
-#: kio/kmimetypes.cc:487
-#, c-format
-msgid ""
-"The kdelnk file\n"
-"%s\n"
-"has no Type=... entry"
-msgstr ""
-
-#: kio/kmimetypes.cc:505
-#, c-format
-msgid ""
-"The kdelnk type\n"
-"%s\n"
-"is unknown"
-msgstr ""
-
-#: kio/kmimetypes.cc:519 kio/kmimetypes.cc:599 kio/kmimetypes.cc:691
-#, c-format
-msgid ""
-"The kdelnk file\n"
-"%s\n"
-"is of type FSDevice but has no Dev=... entry"
-msgstr ""
-
-#: kio/kmimetypes.cc:566
-#, c-format
-msgid ""
-"The kdelnk file\n"
-"%s\n"
-"is of type Link but has no URL=... entry"
-msgstr ""
+#~ msgid "Permission denied!"
+#~ msgstr "权限"
 
 #
-#: kio/kmimetypes.cc:609
 #, fuzzy
-msgid "Mount"
-msgstr "星期一"
-
-#: kio/kmimetypes.cc:616
-msgid "Unmount"
-msgstr ""
-
-#: kio/kmimetypes.cc:659
-#, c-format
-msgid ""
-"The kdelnk file\n"
-"%s\n"
-" has an invalid menu entry\n"
-"%s"
-msgstr ""
-
-#: kio/kregfactories.cc:72
-msgid "The mime type _cfg file "
-msgstr ""
-
-#: kio/krun.cc:39
-#, c-format
-msgid ""
-"Can not enter\n"
-"%s\n"
-"Access denied"
-msgstr ""
-
-#: kio/kservices.cc:111
-msgid "The application config file\n"
-msgstr ""
-
-#: kio/kservices.cc:113
-msgid ""
-"\n"
-"does not conatain a Name=... entry"
-msgstr ""
+#~ msgid "Mount"
+#~ msgstr "星期一"
 
 #
 #, fuzzy
@@ -3015,19 +2567,19 @@ msgstr ""
 #~ msgstr "内容"
 
 #~ msgid "&New"
-#~ msgstr "新建[&N]"
+#~ msgstr "新建(&N)"
 
 #~ msgid "&New..."
-#~ msgstr "新的[&N]..."
+#~ msgstr "新的(&N)..."
 
 #~ msgid "Move"
 #~ msgstr "移动"
 
 #~ msgid "&Previous"
-#~ msgstr "前一页[&P]"
+#~ msgstr "前一页(&P)"
 
 #~ msgid "&Next"
-#~ msgstr "下一页[&N]"
+#~ msgstr "下一页(&N)"
 
 #~ msgid "Small"
 #~ msgstr "小型"
@@ -3046,4 +2598,4 @@ msgstr ""
 
 #
 #~ msgid "&Ok"
-#~ msgstr "确定[&O]"
+#~ msgstr "确定(&O)"
