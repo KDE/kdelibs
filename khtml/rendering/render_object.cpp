@@ -57,6 +57,8 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
     case MARKER:
         break;
     case TABLE:
+        style->setFlowAroundFloats(true);
+        // fall through
     case INLINE_TABLE:
         // ### set inline/block right
         //kdDebug( 6040 ) << "creating RenderTable" << endl;
