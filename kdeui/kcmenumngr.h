@@ -23,11 +23,10 @@
 
 class QWidget;
 class QPopupMenu;
-class I_really_like_this_class;
 class KContextMenuManagerPrivate;
 #include <qobject.h>
 #include <qptrdict.h>
-
+#include <qkeysequence.h>
 
 /**
 @short Convenience class to mangage context menus
@@ -38,7 +37,7 @@ KContextMenuManager manages configurable context popup menus.  Instead
 of reimplementing @ref QWidget::mousePressEvent() or
 @ref QWidget::mouseReleaseEvent() and/or @ref QWidget::keyPressEvent(), simply
 create the popup menu and insert it into the context menu manager with
-the static function @ref #insert(). 
+the static function @ref #insert().
 
 Example:
 <pre>
@@ -79,17 +78,17 @@ class KContextMenuManager : public QObject
 {
     Q_OBJECT
 public:
-    
+
     /**
        Makes @p popup a context popup menu for widget @p widget.
-       
+
        Ownership of the popup menu is not transferred to the context
        menu manager.
     */
     static void insert( QWidget* widget, QPopupMenu* popup );
 
     /**
-     * Use this method to get information about when a popup menu 
+     * Use this method to get information about when a popup menu
      * should be activated. This can be useful if the popup menu is
      * to be activated from a listview.
      *
@@ -97,7 +96,7 @@ public:
      *         or false after a button press-release sequence.
      */
      static bool showOnButtonPress( void );
-    
+
 private slots:
     void widgetDestroyed();
 private:
