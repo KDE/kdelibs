@@ -630,6 +630,8 @@ void KHTMLView::layout()
         root->setMinMaxKnown(false);
         root->setLayouted(false);
         root->layout();
+
+        emit finishedLayout();
 #if 0
     ElementImpl *listitem = m_part->xmlDocImpl()->getElementById("__test_element__");
     if (listitem) kdDebug(6000) << "after layout, before repaint" << endl;
@@ -655,8 +657,6 @@ void KHTMLView::layout()
     killTimer(d->layoutTimerId);
     d->layoutTimerId = 0;
     d->layoutSchedulingEnabled=true;
-    
-    emit finishedLayout();
 }
 
 void KHTMLView::closeChildDialogs()

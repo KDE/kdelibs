@@ -1419,7 +1419,10 @@ private slots:
    */
   void jsErrorDialogContextMenu();
 
-
+  /**
+   * @internal
+   */
+  void restoreScrollPosition();
 
 private:
 

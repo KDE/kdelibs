@@ -568,6 +568,15 @@ bool KHTMLPart::openURL( const KURL &url )
     }
   }
 
+  // Save offset of viewport when page is reloaded to be compliant
+  // to every other capable browser out there.
+  if (args.reload) {
+    args.xOffset = d->m_view->contentsX();
+    args.yOffset = d->m_view->contentsY();
+    d->m_extension->setURLArgs(args);
+    connect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+  }
+
   if (!d->m_restored)
     closeURL();
 
@@ -6324,6 +6333,25 @@ khtml::Decoder *KHTMLPart::createDecoder()
 
 void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
   emit caretPositionChanged(node, offset);
+}
+
+void KHTMLPart::restoreScrollPosition()
+{
+  KParts::URLArgs args = d->m_extension->urlArgs();
+  if (!args.reload) {
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+    return;	// should not happen
+  }
+
+  // Check whether the viewport has become large enough to encompass the stored
+  // offsets. If the document has been fully loaded, force the new coordinates,
+  // even if the canvas is too short (can happen when user resizes the window
+  // during loading).
+  if (d->m_view->contentsHeight() - d->m_view->visibleHeight() >= args.yOffset
+      || d->m_bComplete) {
+    d->m_view->setContentsPos(args.xOffset, args.yOffset);
+    disconnect(d->m_view, SIGNAL(finishedLayout()), this, SLOT(restoreScrollPosition()));
+  }
 }
 
 KWallet::Wallet* KHTMLPart::wallet()
