@@ -19,4 +19,8 @@
  * You can add actions to an existing KParts app from "outside", defining
  * the code for those actions in a shared library. This mechanism is
  * obviously called plugins, and implemented by @ref KParts::Plugin.
+ *
+ * For a complete, and very simple, example of how to use KParts to display
+ * any kind of file (i.e. making a generic viewer), see the docu for
+ * @ref KParts::ComponentFactory::createPartInstanceFromQuery
  */

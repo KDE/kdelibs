@@ -315,6 +315,34 @@ namespace KParts
                                                   parent, name, args, error );
         }
 
+        /**
+         * This method creates and returns a KParts part from a serviceType (e.g. a mimetype).
+         *
+         * You can use this method to create a generic viewer - that can display any
+         * kind of file, provided that there is a ReadOnlyPart installed for it - in 5 lines:
+         * <pre>
+         *     // Given the following: KURL url, QWidget* parentWidget and QObject* parentObject.
+         *     QString mimetype = KMimeType::findByURL( url )->name();
+         *     KParts::ReadOnlyPart* part = KParts::ComponentFactory::createPartInstanceFromQuery<KParts::ReadOnlyPart>( mimetype, QString::null, parentWidget, 0, parentObject, 0 );
+         *     if ( part ) {
+         *         part->openURL( url );
+         *         part->widget()->show();  // also insert the widget into a layout, or simply use a QVBox as parentWidget
+         *     }
+         * </pre>
+         *
+         * @param serviceType the type of service for which to find a part, e.g. a mimetype
+         * @param constraint an optionnal constraint to pass to the trader (see KTrader)
+         * @param parentWidget the parent widget, will be set as the parent of the part's widget
+         * @param widgetName the name that will be given to the part's widget
+         * @param parent the parent object for the part itself
+         * @param name the name that will be given to the part
+         * @param args A list of string arguments, passed to the factory and possibly
+         *             to the component (see KLibFactory)
+         * @param error The int passed here will receive an error code in case of errors.
+         *              (See enum ComponentLoadingError)
+         * @return A pointer to the newly created object or a null pointer if the
+         *         factory was unable to create an object of the given type.
+         */
         template <class T>
         static T *createPartInstanceFromQuery( const QString &serviceType,
                                                const QString &constraint,
