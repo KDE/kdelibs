@@ -1394,10 +1394,12 @@ void KeramikStyle::drawControl( ControlElement element,
 
 				if (!button->text().isEmpty())
 				{
+					const int TextToIconMargin = 6;
 					//Center text + icon w/margin in between..
 					
 					//Calculate length of both.
-					int length = icon.width() + 4 + p->fontMetrics().size(ShowPrefix, button->text()).width();
+					int length = icon.width() + TextToIconMargin
+					              + p->fontMetrics().size(ShowPrefix, button->text()).width();
 					
 					//Calculate offset.
 					int offset = (w - length)/2;
@@ -1406,8 +1408,8 @@ void KeramikStyle::drawControl( ControlElement element,
 					p->drawPixmap( x + offset, y + h / 2 - icon.height() / 2, icon );
 					
 					//new bounding rect for the text
-					x += offset + icon.width() + 4;
-					w =  length - icon.width() - 4;
+					x += offset + icon.width() + TextToIconMargin;
+					w =  length - icon.width() - TextToIconMargin;
 				}
 				else
 				{
