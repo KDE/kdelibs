@@ -1,22 +1,27 @@
 TODO-List for the KFileDialog and associated classes (in order of importance)
 
 - Multi-selection
-- fix ordering of items in detailed view (QListView orders itself)
 - save all properties of KFileDialog in kdeglobals and restore
 - use KComboBox
 - fix file:/ prefix missing by default
 - make use of KAction for Toolbar-actions and Popupmenu
+  (hmm, I already have this on my hdd, dunno if this is the Right Way(TM) tho)
 - make popupmenu extensible (via KAction)
+  (yup, already on my hdd)
 - make popupmenu off-switchable
+  (yup, dirOperator->actionMenu->setEnabled( false ) should do it (on my hdd))
 - history of last files/dirs
+- separate KDirOperator, location-combo, filter-combo etc. from KFileDialog
+  to another widget (everything besides OK/Cancel buttons).
 - add ~/Desktop to default-dir combo
+  (partly have that on my hdd, but that has to be completely reorganized)
 - show icons in combos
 - implement in-place editing in all views
 - make a simple fileview based on QListBox
 - drag&drop support for the views (somehow into baseclass KFileView?)
 - make use of KRemoteFile?
 
-- test, fix, implement KURLEdit (and give it a better name ;)
+- test, fix, implement KURLEdit (and give it a better name (KFileRequester?)
 
 If anyone wants to implement some of those, please do. In case of questions,
 don't hesitate to ask me.
