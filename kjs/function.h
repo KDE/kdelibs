@@ -61,8 +61,6 @@ namespace KJS {
     int sourceId() const { return sid; }
 
     void setName(UString name) { ident = name; }
-    void setFirstLine(int firstLine) { line0 = firstLine; }
-    void setLastLine(int lastLine) { line1 = lastLine; }
 
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
