@@ -81,7 +81,7 @@ class ResourceExample : public KRES::ResourceExample
 {
 public:
   ResourceExample( const KConfig * );
-  ~ResourceCalendarExchange();
+  ~ResourceExample();
   void writeConfig( KConfig *config );
 private:
   QString mLocation;
