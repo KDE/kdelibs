@@ -71,9 +71,13 @@ void KIconLoaderCanvas::slotLoadDir()
    	d.setNameFilter(filter);
     
     if( d.exists() ) {
+	int i = 0;
+	QApplication::setOverrideCursor( waitCursor );
 	QStringList file_list = d.entryList( QDir::Files | QDir::Readable, QDir::Name );
 	QStringList::Iterator it = file_list.begin();
-	for ( ; it != file_list.end(); ++it ) {
+	emit startLoading( file_list.count() );
+	for ( ; it != file_list.end(); ++it, ++i ) {
+	    emit progress( i );
 	    kapp->processEvents();
 	    KPixmap new_xpm;
 	    new_xpm.load( dir_name + '/' + *it, 0, KPixmap::LowColor );
@@ -88,11 +92,7 @@ void KIconLoaderCanvas::slotLoadDir()
 		else
 		    scale = 60 / (float) new_xpm.height();
 		m.scale( scale, scale );
-		QPixmap tmp_xpm = new_xpm.xForm(m);
-		new_xpm.resize( tmp_xpm.width(), tmp_xpm.height() );
-		bitBlt( &new_xpm, 0, 0, &tmp_xpm );
-		if ( tmp_xpm.mask() )
-		    new_xpm.setMask( *tmp_xpm.mask() );
+		new_xpm = new_xpm.xForm(m);
 	    }
 	    
 	    QIconViewItem *item = new QIconViewItem( this, *it, QIconSet( new_xpm, QIconSet::Large ) ); 
@@ -100,6 +100,8 @@ void KIconLoaderCanvas::slotLoadDir()
 	    item->setDragEnabled( FALSE );
 	    item->setDropEnabled( FALSE );
 	}
+	QApplication::restoreOverrideCursor();
+	emit finished();
     }
 }
 
@@ -128,8 +130,17 @@ void KIconLoaderDialog::init()
     //---
     ok = new QPushButton( i18n("OK"), this );
     cancel = new QPushButton( i18n("Cancel"), this );
-    ok->setGeometry(65, 200, 80, 30);
-    cancel->setGeometry(325, 200, 80, 30);
+    int w = QMAX( ok->sizeHint().width(), cancel->sizeHint().width() );
+    ok->resize( w, ok->sizeHint().height() );
+    cancel->resize( w, cancel->sizeHint().height() );
+    
+    cancel->move( width() - cancel->width() - 10, canvas->y() + canvas->height() + 10 );
+    ok->move( width() - cancel->width() -  ok->width() - 15, cancel->y() );
+
+    progressBar = new QProgressBar( this );
+    progressBar->move( 10, cancel->y() );
+    progressBar->resize( width() - 20 - ok->x(), progressBar->sizeHint().height() );
+    
     connect( ok, SIGNAL(clicked()), this, SLOT(accept()) );
     connect( cancel, SIGNAL(clicked()), this, SLOT(reject()) );
     connect( canvas, SIGNAL(nameChanged(const QString&)), l_name, SLOT(setText(const QString&)) );
@@ -138,7 +149,13 @@ void KIconLoaderDialog::init()
     connect( i_filter, SIGNAL(returnPressed()), this, SLOT(filterChanged()) );
     connect( cb_dirs, SIGNAL(activated(const QString&)), this, SLOT(dirChanged(const QString&)) );
     changeDirs(KGlobal::dirs()->resourceDirs("toolbar"));
-
+    connect( canvas, SIGNAL( startLoading( int ) ),
+	     this, SLOT( initProgressBar( int ) ) );
+    connect( canvas, SIGNAL( progress( int ) ),
+	     this, SLOT( progress( int ) ) );
+    connect( canvas, SIGNAL( finished () ),
+	     this, SLOT( hideProgressBar() ) );
+    
     resize( 470, 350 );
     setMinimumSize( 470, 250 );
 }
@@ -191,14 +208,16 @@ void KIconLoaderDialog::resizeEvent( QResizeEvent * )
 {
     int w = width();
     int h = height();
-    canvas->resize( w - 20, h - 106 );
+    canvas->resize( w - 20, h - i_filter->height() - ok->height() - 30 );
     l_name->resize( canvas->width(), 24 );
     l_name->move( 10, 38 + canvas->height() );
     i_filter->move( w - 160, 8 );
     l_filter->move( w - 200, 8 );
     cb_dirs->resize( canvas->width() - i_filter->width() - l_filter->width() - 18, 24 );
-    ok->move( 65, h - 40  );
-    cancel->move( w - 145, h - 40 );
+    cancel->move( width() - cancel->width() - 10, canvas->y() + canvas->height() + 10 );
+    ok->move( width() - cancel->width() -  ok->width() - 15, cancel->y() );
+    progressBar->move( 10, cancel->y() );
+    progressBar->resize( width() - 20 - ( width() - ok->x() ), progressBar->sizeHint().height() );
 }
 
 void KIconLoaderDialog::filterChanged()

@@ -38,6 +38,7 @@
 #include <qpushbutton.h>
 #include <qcombobox.h>
 #include <qtimer.h>
+#include <qprogressbar.h>
 #include <qiconview.h>
 
 #include <kapp.h>
@@ -57,7 +58,7 @@ class KIconLoaderCanvas : public QIconView
 public:
     KIconLoaderCanvas (QWidget *parent=0, const char* name=0);
     virtual ~KIconLoaderCanvas();
-    
+
     void loadDir(QString dirname, QString filter);
     QString getCurrent() { if ( !currentItem() ) return QString::null; return currentItem()->text(); }
     QString currentDir() { return dir_name; }
@@ -66,6 +67,9 @@ signals:
     void nameChanged( const QString& );
     void doubleClicked();
     void interrupted();
+    void startLoading( int steps );
+    void progress( int p );
+    void finished();
     
 private slots:
     void slotLoadDir();
@@ -75,11 +79,11 @@ private slots:
 	else
 	    emit nameChanged( QString::null );
     }
-    
+
 private:
     QString dir_name, filter;
     QTimer *loadTimer;
-    
+
 };
 
 /**
@@ -145,7 +149,18 @@ protected slots:
     void dirChanged(const QString&);
     void reject();
     void needReload();
-
+    void initProgressBar( int steps ) {
+	progressBar->setTotalSteps( steps );
+	progressBar->reset();
+	progressBar->show();
+    }
+    void progress( int p ) {
+	progressBar->setProgress( p );
+    }
+    void hideProgressBar() {
+	progressBar->hide();
+    }
+    
 protected:
     void init();
     virtual void resizeEvent( QResizeEvent *e );
@@ -159,6 +174,7 @@ protected:
     QLabel	      *text;
     QComboBox	      *cb_dirs;
     KIconLoader	      *icon_loader;
+    QProgressBar *progressBar;
 };
 
 /**
