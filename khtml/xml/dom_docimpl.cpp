@@ -613,14 +613,14 @@ void DocumentImpl::recalcStyle()
         QValueList<int> fs = settings->fontSizes();
         float dpiY = 72.; // fallback
         if ( !khtml::printpainter )
-            dpiY = QPaintDevice::x11AppDpiY();
+            dpiY = paintDeviceMetrics()->logicalDpiY();
         if ( !khtml::printpainter && dpiY < 96 )
             dpiY = 96.;
         float size = fs[3] * dpiY / 72.;
         if(size < settings->minFontSize())
             size = settings->minFontSize();
 
-        khtml::setFontSize( f,  size,  settings );
+        khtml::setFontSize( f,  size,  settings, paintDeviceMetrics() );
         KGlobal::charsets()->setQFont(f, settings->charset());
     }
 
