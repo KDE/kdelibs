@@ -108,27 +108,25 @@ static QString getDescrFromNum(unsigned int _num)
   QCString line(1024);
   while (file.readLine(line.data(),line.size()-1) > 0) {
     lineNumber++;
-    if ( !line[0] || line[0]=='#' || line[0]=='\n')
-      continue; // We have an eof, a comment or an empty line
-    const int len=line.length();
+    char ch=line[0];
+    if (ch=='#' || ch=='\n')
+      continue; // We have a comment or an empty line
     int i=0;
-    while (i < len && line[i] <= ' ')
-      i++;
-    if ( i >= len)
-      continue; // Line with spaces or control characters only
-    char ch=line[i];
+    while (ch > 0 && ch <= ' ')
+      ch=line[++i];
+    if (!ch) // End of line
+      continue; // Line with only control characters
     if (ch < '0' && ch > '9') {
       qWarning("Syntax error: no number (line %u)",lineNumber);
       continue;
     }
     const int numStart=i;
-    do {
-      i++;
-      if (i > len)
-        break;
-      ch=line[i];
-    } while ( ch >= '0' && ch <= '9');
-    if (i > len) {
+    do
+    {
+        ch=line[++i];
+    }
+    while ( ch >= '0' && ch <= '9');
+    if ( !ch ) { // End of line
       qWarning("Syntax error: number at end of line (line %u)",lineNumber);
       continue;
     }
@@ -138,8 +136,14 @@ static QString getDescrFromNum(unsigned int _num)
       qWarning("Syntax error: wrong number (line %u)",lineNumber);
       continue;
     }
-    // Using QString::stripWhiteSpace seems to be a little faster than QCString's
-    const QString description(QString::fromLatin1(line.mid(i)).stripWhiteSpace());
+    while (ch > 0 && ch <= ' ')
+      ch=line[++i];
+    if ( !ch ) { // End of line
+      qWarning("Syntax error: no description (line %u)",lineNumber);
+      continue;
+    }
+    // Using QString::stripWhiteSpace seems to be a little faster than using QCString's
+    const QString description(QString::fromLatin1(line.data()+i).stripWhiteSpace());
     KDebugCache->insert(number, new KDebugEntry(number,description));
   }
 
