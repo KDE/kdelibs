@@ -110,7 +110,7 @@ void KFindDialog::init(bool forReplace, const QStringList &findStrings, bool has
     m_find = new KHistoryCombo(true, m_findGrp);
     m_find->setMaxCount(10);
     m_find->setDuplicatesEnabled(false);
-    m_regExp = new QCheckBox(i18n("&Regular expression"), m_findGrp);
+    m_regExp = new QCheckBox(i18n("Regular e&xpression"), m_findGrp);
     m_regExpItem = new QPushButton(i18n("&Edit..."), m_findGrp);
     m_regExpItem->setEnabled(false);
 
