@@ -401,7 +401,9 @@ KMacroMapExpander<QString,VT>::expandEscapedMacro( const QString &str, uint pos,
     uint sl, rsl, rpos;
     if (str[pos + 1] == '{') {
         rpos = pos + 2;
-        for (sl = 0; str[rpos + sl] != '}'; sl++);
+        for (sl = 0; str[rpos + sl] != '}'; sl++)
+            if (rpos + sl >= str.length())
+                return 0;
         rsl = sl + 3;
     } else {
         rpos = pos + 1;
