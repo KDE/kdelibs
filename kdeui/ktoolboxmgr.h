@@ -33,6 +33,9 @@
 
  // $Id$
  // $Log$
+ // Revision 1.1  1998/04/28 09:16:41  radej
+ // Initial checkin
+ //
 
  /**
   * KToolBoxManager is a class for self management of small windows.
@@ -43,10 +46,9 @@
   *
   * You will call (after constructing KToolBoxManager instance) doMove or
   * doResize when mouse presses some handle point of your widget. Then,
-  * KToolBoxManager will grab the mouse and move (or resize) hollow rectangle
-  * on the screen. On mouse release event or on stop() call it will actually
-  * resize/move your widget unless your widget is a child widget.
-  * if your widget is a child widget you will have to do the moving.<br>
+  * KToolBoxManager will move (or resize) hollow rectangle (or actual widget)
+  * on the screen. Moving/resizing is finished on mouse release event or
+  * by calling stop() function.
   * Provided that your widget is top-level, the simplest use is like this:
   * <pre>
   * mousePressevent(QMouseEvent *)
@@ -55,13 +57,21 @@
   *  doMove();
   * }
   * </pre>
-  * For now, moving/resizing is always transparent. Word "resizer" refers to
-  * hollow rectangle which is actually resized or moved.
+  * Moving/resizing can be transparent or opaque. In transparent mode, word
+  * "resizer" refers to hollow rectangle which is actually resized or moved.
+  * In opaque mode it refers to actual widget.
+  *
+  * Moving child widgets in opaque mode will move the widget only inside your
+  * parent widget. You can drag it outside, but you won't see it, neither
+  * during drag nor after. You should reparent it in that case.
   *
   * Functions doMove and doResize do not return untill mouse is released or
   * stop() function is called. However, this is QTimer driven so you will
   * receive signals, and Qt-engine will operate normally. Halting does not
   * hog CPU (it's not an empty for(;;) loop).
+  *
+  * You will receive mouseRelease event when mouse is released. You don't
+  * have to do anything (but you can, if you want).
   *
   * @short Class for own window management.
   * @author Sven Radej <sven@lisa.exp.univie.ac.at>
@@ -75,17 +85,17 @@ public:
   /**
    * Constructor. widget is the widget to be managed. It can be any custom
    * widget with QWidget as a base class.
-   * blockme is internal thing and changing it has no efect.
+   * If transparent is true (default) moving and resizing is transparent.
    * @ref #doMove or @ref #doResize won't return till mouseRelease, or
    * @ref #stop . Qt will run normaly, because this thing is QTimer driven.
-   * You can get position and size calling @ref #x , @ref #y , @ref width and
+   * You can get position and size calling @ref #x , @ref #y , @ref #width and
    * @ref #height
    */
-  KToolBoxManager (QWidget *widget, bool blockme=true);
+  KToolBoxManager (QWidget *widget, bool transparent=true);
 
   /**
-   * Destructor. If resizer is working, it will stop working, release mouse,
-   * and move/resize the widget (i.e. will call @ref #stop) before death.
+   * Destructor. If resizer is working, it will stop working,
+   * and move/resize the widget (i.e. will call @ref #stop) before it's death.
    */
   ~KToolBoxManager ();
 
@@ -93,19 +103,17 @@ public:
    * Starts moving. If dynamic is true signal @ref #posChanged
    * will be emitted whenever position changes. If dynamic is false no signals
    * are emitted except @ref #onHotSpot when resizer enters a hot spot area.
-   * Function will grab the mouse and will not return till end of drag. You
+   * Function will not return till end of drag. You
    * can call @ref #setGeometry and resizer will adapt to it whenever you want.
    * If dontmove is false, widget is moved to resizer's position when dragging
-   * If dontmove is false, no move is done you have to do it. But if widget is
-   * a child widget it will not be moved, regardless of parameter dontmove.
+   * If dontmove is false, no move is done you have to do it. Beware, moving
+   * of child widgets often isn't what you want. Still it is possible.
    * If KToolBoxManager already moves or resizes widget when you
    * call this function, it will return and do nothing.<br>
    * When dynamic is true, signal @ref #posChanged is emitted when resizer
    * changes position.<br>
-   * When in_hotspot_static is true, resizer is not moved while in hotspot - only
-   * mouse. Also @ref #posChanged is not emitted.
-   * changes position.<br>
-   
+   * When in_hotspot_static is true, resizer is not moved while in hotspot;
+   * only mouse moves, and  @ref #posChanged is not emitted.
    * Hint: Call this function with dynamic=false and define hot spots.
    * @see #x
    * @see #y
@@ -117,15 +125,15 @@ public:
   /**
    * Starts resizing. If dynamic is true (default) signal @ref #sizeChanged
    * will be emitted whenever size changes. If dynamic is false, no signals
-   * are emitted. Function will grab the mouse and will not return until
+   * are emitted. Function will not return until
    * button mouse is released or @ref #stop function is called. You can call
    * @ref #setGeometry and resizer will adapt to it whenever you want.
    * If dontresize is false, widget is resized to resizer's size on the end.
-   * If dontresize is true, widget is not resized, you have to do it. Widget
-   * will not be resized if it is child widget. If KToolBoxManager already
+   * If dontresize is true, widget is not resized, you have to do it. If
+   * KToolBoxManager already
    * moves or resizes widget when you  call this function, it will return
    * and do nothing.  When dynamic is true, signal @ref #sizeChanged is
-   * emitted only when resizers changes size. You can resize the resize
+   * emitted only when resizers changes size. You can resize the resizer
    * with @ref #setGeometry or @ref #resize .
    * @see #x
    * @see #y
@@ -248,12 +256,12 @@ protected slots:
 private:
   int xp, yp, w, h;
   int ox, oy, ow, oh;
-  int orig_w, orig_h;
+  int orig_x, orig_y, orig_w, orig_h;
   bool noLast;
   bool working;
   bool dynamic;
   bool geometryChanged;
-  bool blockme;
+  bool transparent;;
   bool dontmoveres;
   bool deepSpace;
   bool hotspot_static;
@@ -274,7 +282,8 @@ private:
   GC rootgc;
   int scr;
   XEvent ev;
-
+  unsigned int active_button;
+  
 signals:
     
     /**
