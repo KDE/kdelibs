@@ -61,7 +61,7 @@
 #include "kimagefilepreview.h"
 
 
-template class QStack<KURL>;
+template class QPtrStack<KURL>;
 template class QDict<KFileViewItem>;
 
 KURL *KDirOperator::lastDirectory = 0; // to set the start path
@@ -774,7 +774,7 @@ bool KDirOperator::checkPreviewInternal() const
                 QStringList::Iterator it2 = supported.begin();
                 for ( ; it2 != supported.end(); ++it2 ) {
                     r.setPattern( *it2 );
-                    if ( r.match( mime ) != -1 ) {
+                    if ( r.search( mime ) != -1 ) {
                         return true;
                     }
                 }

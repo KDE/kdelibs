@@ -22,7 +22,7 @@
 #define KDIROPERATOR_H_
 
 #include <qwidget.h>
-#include <qstack.h>
+#include <qptrstack.h>
 
 #include <kaction.h>
 #include <kcompletion.h>
@@ -51,11 +51,11 @@ namespace KIO {
  * browse through directories, highlight and select files, delete or rename
  * files.
  *
- * It supports different views, e.g. a detailed view (see @KFileDetailView),
- * a simple icon view (see @KFileIconView), a combination of two views,
- * separating directories and files (@see KCombiView).
+ * It supports different views, e.g. a detailed view (see @ref KFileDetailView),
+ * a simple icon view (see @ref KFileIconView), a combination of two views,
+ * separating directories and files (@ref KCombiView).
  *
- * Additionally, a preview view is available (see @KFilePreview), which can
+ * Additionally, a preview view is available (see @ref KFilePreview), which can
  * show either a simple or detailed view and additionally a preview widget
  * (see @ref setPreviewWidget()). @ref KImageFilePreview is one implementation
  * of a preview widget, that displays previews for all supported filetypes
@@ -670,12 +670,12 @@ private:
     /**
      * Contains all URLs you can reach with the back button.
      */
-    QStack<KURL> backStack;
+    QPtrStack<KURL> backStack;
 
     /**
      * Contains all URLs you can reach with the forward button.
      */
-    QStack<KURL> forwardStack;
+    QPtrStack<KURL> forwardStack;
 
     static KURL *lastDirectory;
 

@@ -544,7 +544,7 @@ bool KFileIconView::canPreview( const KFileViewItem *item ) const
         // the "mimetype" can be "image/*"
         if ( type.at( type.length() - 1 ) == '*' ) {
             r.setPattern( type );
-            if ( r.match( item->mimetype() ) != -1 )
+            if ( r.search( item->mimetype() ) != -1 )
                 return true;
         }
         else
