@@ -1,5 +1,5 @@
 /**
- * This file is part of the DOM implementation for KDE.
+ * This file is part of the html renderer for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
@@ -283,6 +283,7 @@ void RenderFlow::layout( bool deep )
 	specialObjects->sort();
     }
 
+    //kdDebug(6040) << "renderFlow::height=" << m_height << endl;
 
     setLayouted();
     //kdDebug( 6040 ) << renderName() << " " << this << "::layout() elapsed" << t.elapsed() << endl;

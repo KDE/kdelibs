@@ -1,3 +1,25 @@
+/**
+ * This file is part of the html renderer for KDE.
+ *
+ * Copyright (C) 2000 Lars Knoll (knoll@kde.org)
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * $Id$
+ */
 #include "bidi.h"
 #include "render_flow.h"
 #include "render_text.h"
@@ -160,20 +182,20 @@ inline bool operator < ( const BidiIterator &it1, const BidiIterator &it2 )
 void RenderFlow::appendRun(QList<BidiRun> &runs, const BidiIterator &sor, const BidiIterator &eor,
 			   BidiContext *context, QChar::Direction dir)
 {
-    kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
+    //kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
 
     int start = sor.pos;
     RenderObject *obj = sor.obj;
     while( obj != eor.obj ) {
 	if(!obj->isHidden()) {
-	    kdDebug(6041) << "appendRun: "<< start << "/" << obj->length() <<endl;
+	    //kdDebug(6041) << "appendRun: "<< start << "/" << obj->length() <<endl;
 	    runs.append( new BidiRun(start, obj->length(), obj, context, dir) );
 	}
 	start = 0;
 	obj = next(obj);
     }
     if( obj ) {
-	kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
+	//kdDebug(6041) << "appendRun: "<< start << "/" << eor.pos <<endl;
 	runs.append( new BidiRun(start, eor.pos, obj, context, dir) );
     }
 }
@@ -183,7 +205,7 @@ void RenderFlow::appendRun(QList<BidiRun> &runs, const BidiIterator &sor, const 
 BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed)
 {
 
-    kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
+    //kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
 
     QList<BidiRun> runs;
     runs.setAutoDelete(true);
@@ -589,9 +611,9 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 #ifdef BIDI_DEBUG
     kdDebug(6041) << "reached end of paragraph current=" << current.pos << ", eor=" << eor.pos << endl;
 #endif
-    eor = current;
-
-    appendRun(runs, sor, eor, context, dir);
+    eor = last;
+    if(!(last < sor))
+       appendRun(runs, sor, eor, context, dir);
 
     BidiContext *endEmbed = context;
     // both commands below together give a noop...
@@ -675,7 +697,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     while ( r ) {
 	int height = r->obj->bidiHeight();
 	int offset = r->obj->verticalPositionHint();
-	kdDebug(6041) << "object="<< r->obj << " height="<<height<<" offset="<<offset<<endl;
+	//kdDebug(6041) << "object="<< r->obj << " height="<<height<<" offset="<<offset<<endl;
 	r->yOffset = -offset;
 	if(offset < 0) {
 	    if(maxHeight < height) maxHeight = height;
@@ -698,7 +720,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	    r->yOffset += maxAscent + m_height;
 	r = runs.next();
     }
-    kdDebug(6041) << "yPos of line=" << m_height << "  lineHeight=" << maxHeight << endl;
+    //kdDebug(6040) << "yPos of line=" << m_height << "  lineHeight=" << maxHeight << endl;
 
     // now construct the reordered string out of the runs...
 
@@ -709,7 +731,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	    r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start);
 	else
 	    r->width = r->obj->width();
-	kdDebug(6041) << "positioning " << r->obj << " start=" << r->start << " stop" << r->stop << " yPos=" << r->yOffset << endl;
+	//kdDebug(6040) << "positioning " << r->obj << " start=" << r->start << " stop" << r->stop << " yPos=" << r->yOffset << endl;
 	r->obj->position(x, r->yOffset, r->start, r->stop - r->start, r->width, r->level%2);
 	x += r->width;
 	r = runs.next();
@@ -744,7 +766,7 @@ void RenderFlow::layoutInlineChildren()
 	RenderObject *o = first();
 	while ( o ) {
 	    if(o->isReplaced() || o->isFloating() || o->isPositioned()) {
-		kdDebug(6041) << "layouting replaced or floating child" << endl;
+		//kdDebug(6041) << "layouting replaced or floating child" << endl;
 		o->layout();
 	    }
 	    else if(o->isText())
@@ -781,12 +803,14 @@ void RenderFlow::layoutInlineChildren()
 	}
     }
     m_height += toAdd;
+    
+    //kdDebug(6040) << "height = " << m_height <<endl;
 }
 
 
 BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 {
-    kdDebug(6041) << "findnextLineBreak" << endl;
+    //kdDebug(6041) << "findnextLineBreak" << endl;
     BidiIterator lBreak = start;
     BidiIterator current = start;
 
@@ -797,7 +821,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	RenderObject *o = current.obj;
 	if(!o) {
 	    lBreak = current;
-	    kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+	    //kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 	    return current;
 	}
 	if( o->isSpecial() ) {
@@ -809,7 +833,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    w += tmpW;
 	    tmpW = 0;
 	} else if( current.current() == QChar('\n') ) {
-	    kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+	    //kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 	    return current;
 	}
 	if( o->isText() )
@@ -823,7 +847,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
     }
     if(w == 0)
 	lBreak = current;
-    kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
+    //kdDebug(6041) << "sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 
 
     return lBreak;
