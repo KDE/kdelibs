@@ -244,11 +244,13 @@ bool KNotify::notifyBySound( const QString &sound )
 
         return true;
 
-    } else { // use an external player to play the sound
+    } else if(!d->externalPlayer.isEmpty()) {
+        // use an external player to play the sound
         system( QFile::encodeName( d->externalPlayer ) + " " +
                 QFile::encodeName( soundFile ));
         return true;
     }
+    return false;
 }
 
 
