@@ -850,7 +850,7 @@ DOMString RangeImpl::toHTML(  )
     return DOMString();
 }
 
-DocumentFragmentImpl *RangeImpl::createContextualFragment ( DOMString &html, int &exceptioncode )
+DocumentFragmentImpl *RangeImpl::createContextualFragment ( const DOMString &html, int &exceptioncode )
 {
    if (m_detached) {
         exceptioncode = DOMException::INVALID_STATE_ERR;
