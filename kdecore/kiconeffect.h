@@ -54,7 +54,9 @@ public:
      * @li DeSaturate: Reduce the saturation of the icon
      * @li ToMonochrome: Produces a monochrome icon
      */
-    enum Effects { NoEffect, ToGray, Colorize, ToGamma, DeSaturate, ToMonochrome, LastEffect };
+    enum Effects { NoEffect, ToGray, Colorize, ToGamma, DeSaturate,
+                   ToMonochrome,   ///< @since 3.4
+		   LastEffect };
 
     /**
      * Rereads configuration.
@@ -103,6 +105,9 @@ public:
      */
     // KDE4: make them references
     QImage apply(QImage src, int effect, float value, const QColor rgb, bool trans) const;
+    /**
+     * @since 3.4
+     */
     QImage apply(QImage src, int effect, float value, const QColor rgb, const QColor rgb2, bool trans) const;
 
     /**
@@ -124,6 +129,9 @@ public:
      * @return A pixmap with the effect applied.
      */
     QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, bool trans) const;
+    /**
+     * @since 3.4
+     */
     QPixmap apply(QPixmap src, int effect, float value, const QColor rgb, const QColor rgb2, bool trans) const;
 
     /**
@@ -171,6 +179,7 @@ public:
      * @param white The color with which the white parts of @p image are painted
      * @param black The color with which the black parts of @p image are painted
      * @param value Strength of the effect. 0 <= @p value <= 1
+     * @since 3.4
      */
     static void toMonochrome(QImage &image, const QColor &black, const QColor &white, float value);
 

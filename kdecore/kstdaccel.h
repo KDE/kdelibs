@@ -63,17 +63,20 @@ namespace KStdAccel
     TextCompletion, PrevCompletion, NextCompletion, SubstringCompletion,
     RotateUp, RotateDown,
 
-    // Tabular navigation since 3.2
-    TabNext, TabPrev,
+    // Tabular navigation
+    TabNext,           ///< @since 3.2
+    TabPrev,           ///< @since 3.2
 
-    // Full screen mode since 3.2
-    FullScreen,
+    // Full screen mode
+    FullScreen,        ///< @since 3.2
 
-    // Text Navigation since 3.3
-    BackwardWord, ForwardWord, BeginningOfLine, EndOfLine,
+    // Text Navigation
+    BackwardWord,      ///< @since 3.3
+    ForwardWord,       ///< @since 3.3
+    BeginningOfLine,   ///< @since 3.3
+    EndOfLine,         ///< @since 3.3
 
-    // since 3.4
-    PasteSelection
+    PasteSelection     ///< @since 3.4
 
 #ifndef KDE_NO_COMPAT
     , WhatThis = WhatsThis

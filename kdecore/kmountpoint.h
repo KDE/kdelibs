@@ -1,16 +1,16 @@
 /*
    This file is part of the KDE libraries
    Copyright (c) 2003 Waldo Bastian <bastian@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License version 2 as published by the Free Software Foundation.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-   
+
    You should have received a copy of the GNU Library General Public License
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
@@ -43,14 +43,14 @@ public:
 
    /**
     * This function gives a list of all possible mountpoints. (fstab)
-    * @param infoNeeded Flags that specify which additional information 
+    * @param infoNeeded Flags that specify which additional information
     * should be fetched.
     */
    static KMountPoint::List possibleMountPoints(int infoNeeded=0);
 
    /**
     * This function gives a list of all currently used mountpoints. (mtab)
-    * @param infoNeeded Flags that specify which additional information 
+    * @param infoNeeded Flags that specify which additional information
     * should be fetched.
     */
    static KMountPoint::List currentMountPoints(int infoNeeded=0);
@@ -72,12 +72,12 @@ public:
     * Path where the filesystem is mounted or can be mounted.
     */
    QString mountPoint() const { return m_mountPoint; }
-   
+
    /**
     * Type of filesystem
     */
    QString mountType() const { return m_mountType; }
-   
+
    /**
     * Options used to mount the filesystem.
     * Only available when the NeedMountOptions flag was set.
@@ -87,6 +87,7 @@ public:
    /**
     * When using supermount, the device name is in the options field
     * as dev=/my/device
+    * @since 3.4
     */
    static QString devNameFromOptions(const QStringList &options);
 
