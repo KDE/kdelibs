@@ -406,17 +406,17 @@ void KNotifyWidget::updatePixmaps( ListViewItem *item )
     QPixmap emptyPix;
     Event &event = item->event();
 
-    item->setPixmap( COL_EXECUTE,
-                     (event.presentation & KNotifyClient::Execute) ?
-                     d->pixmaps[COL_EXECUTE] : emptyPix );
+    bool doIt = (event.presentation & KNotifyClient::Execute) &&
+                !event.commandline.isEmpty();
+    item->setPixmap( COL_EXECUTE, doIt ? d->pixmaps[COL_EXECUTE] : emptyPix );
 
-    item->setPixmap( COL_SOUND,
-                     (event.presentation & KNotifyClient::Sound) ?
-                     d->pixmaps[COL_SOUND] : emptyPix );
+    doIt = (event.presentation & KNotifyClient::Sound) && 
+           !event.soundfile.isEmpty();
+    item->setPixmap( COL_SOUND, doIt ? d->pixmaps[COL_SOUND] : emptyPix );
 
-    item->setPixmap( COL_LOGFILE,
-                     (event.presentation & KNotifyClient::Logfile) ?
-                     d->pixmaps[COL_LOGFILE] : emptyPix );
+    doIt = (event.presentation & KNotifyClient::Logfile) &&
+           !event.logfile.isEmpty();
+    item->setPixmap( COL_LOGFILE, doIt ? d->pixmaps[COL_LOGFILE] : emptyPix );
 
     item->setPixmap( COL_MESSAGE,
                      (event.presentation &
@@ -454,11 +454,14 @@ void KNotifyWidget::addToView( const EventList& events )
         Event *event = it.current();
         item = new ListViewItem( m_listview, event );
 
-        if ( event->presentation & KNotifyClient::Execute )
+        if ( (event->presentation & KNotifyClient::Execute) &&
+             !event->commandline.isEmpty() )
             item->setPixmap( COL_EXECUTE, d->pixmaps[COL_EXECUTE] );
-        if ( event->presentation & KNotifyClient::Sound )
+        if ( (event->presentation & KNotifyClient::Sound) &&
+             !event->soundfile.isEmpty() )
             item->setPixmap( COL_SOUND, d->pixmaps[COL_SOUND] );
-        if ( event->presentation & KNotifyClient::Logfile )
+        if ( (event->presentation & KNotifyClient::Logfile) &&
+             !event->logfile.isEmpty() )
             item->setPixmap( COL_LOGFILE, d->pixmaps[COL_LOGFILE] );
         if ( event->presentation & (KNotifyClient::Messagebox|KNotifyClient::PassivePopup) )
             item->setPixmap( COL_MESSAGE, d->pixmaps[COL_MESSAGE] );
@@ -494,7 +497,8 @@ void KNotifyWidget::soundToggled( bool on )
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
-    item->setPixmap( COL_SOUND, on ? d->pixmaps[COL_SOUND] : QPixmap() );
+    bool doIcon = on && !m_soundPath->url().isEmpty();
+    item->setPixmap( COL_SOUND, doIcon ? d->pixmaps[COL_SOUND] : QPixmap() );
     widgetChanged( item, KNotifyClient::Sound, on, m_soundPath );
 }
 
@@ -503,7 +507,8 @@ void KNotifyWidget::loggingToggled( bool on )
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
-    item->setPixmap( COL_LOGFILE, on ? d->pixmaps[COL_LOGFILE] : QPixmap() );
+    bool doIcon = on && !m_logfilePath->url().isEmpty();
+    item->setPixmap(COL_LOGFILE, doIcon ? d->pixmaps[COL_LOGFILE] : QPixmap());
     widgetChanged( item, KNotifyClient::Logfile, on, m_logfilePath );
 }
 
@@ -512,7 +517,8 @@ void KNotifyWidget::executeToggled( bool on )
     QListViewItem *item = m_listview->currentItem();
     if ( !item )
         return;
-    item->setPixmap( COL_EXECUTE, on ? d->pixmaps[COL_EXECUTE] : QPixmap() );
+    bool doIcon = on && !m_executePath->url().isEmpty();
+    item->setPixmap(COL_EXECUTE, doIcon ? d->pixmaps[COL_EXECUTE] : QPixmap());
     widgetChanged( item, KNotifyClient::Execute, on, m_executePath );
 }
 
@@ -564,8 +570,16 @@ void KNotifyWidget::soundFileChanged( const QString& text )
     if ( signalsBlocked() )
         return;
 
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+
     m_playButton->setEnabled( !text.isEmpty() );
+
     currentEvent()->soundfile = text;
+    bool ok = !text.isEmpty() && m_playSound->isChecked();
+    item->setPixmap( COL_SOUND, ok ? d->pixmaps[COL_SOUND] : QPixmap() );
+
     emit changed( true );
 }
 
@@ -574,7 +588,14 @@ void KNotifyWidget::logfileChanged( const QString& text )
     if ( signalsBlocked() )
         return;
 
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+
     currentEvent()->logfile = text;
+    bool ok = !text.isEmpty() && m_logToFile->isChecked();
+    item->setPixmap( COL_LOGFILE, ok ? d->pixmaps[COL_LOGFILE] : QPixmap() );
+    
     emit changed( true );
 }
 
@@ -583,7 +604,14 @@ void KNotifyWidget::commandlineChanged( const QString& text )
     if ( signalsBlocked() )
         return;
 
+    QListViewItem *item = m_listview->currentItem();
+    if ( !item )
+        return;
+
     currentEvent()->commandline = text;
+    bool ok = !text.isEmpty() && m_execute->isChecked();
+    item->setPixmap( COL_EXECUTE, ok ? d->pixmaps[COL_EXECUTE] : QPixmap() );
+
     emit changed( true );
 }
 
@@ -764,7 +792,7 @@ void KNotifyWidget::enableAll( int what, bool enable )
         return;
 
     bool affectAll = m_affectAllApps->isChecked(); // multi-apps mode
-    
+
     ApplicationListIterator appIt( affectAll ? m_allApps : m_visibleApps );
     for ( ; appIt.current(); ++appIt )
     {
@@ -791,7 +819,7 @@ void KNotifyWidget::enableAll( int what, bool enable )
     if ( !item )
         item = m_listview->firstChild();
     selectItem( item );
-    
+
     emit changed( true );
 }
 
