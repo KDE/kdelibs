@@ -1209,10 +1209,7 @@ void HTMLTableElementImpl::calcRowHeights()
 	rowHeights[r+1] = 0;
 	
 	int baseline=0;
-	int highestBlCellBaseline=0;
-	int secVdelta=0;	
 	int bdesc=0;
-	HTMLTableCellElementImpl *highestBlCell=0;
 
 	for ( c = 0; c < totalCols; c++ )
 	{
@@ -1252,14 +1249,13 @@ void HTMLTableElementImpl::calcRowHeights()
 			baseline=b;
 		    	    	
 		    int td = cell->getHeight() - (b-rowHeights[ indx ]);
-
 		    if (td>bdesc)
 			bdesc = td;
 		}
 	    }	    		
 	}
 	
-	//do we have baseline elements?
+	//do we have baseline aligned elements?
 	if (baseline)
 	{
 	    // increase rowheight if baseline requires
@@ -2037,7 +2033,7 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 	    current = nodeStack.pop();
 	    current = current->nextSibling();
 	    continue;
-	}
+	}	
 	if (current->isTextNode())
     	{
 	    TextSlave* sl = static_cast<TextImpl*>(current)->first;
@@ -2049,7 +2045,14 @@ void HTMLTableCellElementImpl::calcVerticalAlignment(int baseline)
 	}
 	else
 	    current->setYPos(current->getYPos()+vdelta);
-	NodeImpl *child = current->firstChild();
+	    
+	if (current->id()==ID_TABLE)
+	{
+	    current = current->nextSibling();
+	    continue;
+	}
+	
+	NodeImpl *child = current->firstChild();	
 	if(child)
 	{	    
 	    nodeStack.push(current);
