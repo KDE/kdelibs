@@ -22,6 +22,7 @@
 #include <qlayout.h>
 #include <qpainter.h>
 #include <qobjectlist.h>
+#include <kwin.h>
 
 #ifndef NO_KDE2
  #include <kapp.h>
@@ -391,8 +392,8 @@ void KDockWidget::applyToWidget( QWidget* s, const QPoint& p )
 
   if ( !s ){
     move(p);
+    KWin::setType( winId(), NET::Tool );
   }
-
   updateHeader();
 }
 
