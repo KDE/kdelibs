@@ -652,23 +652,7 @@ void KOpenWithDlg::slotOK()
   if (!pathName.endsWith(".desktop"))
     pathName += QString::fromLatin1(".desktop");
     
-  QString path;
-  if (!pathName.startsWith("/"))
-  {
-    path = locateLocal("apps", pathName); // Relative to apps
-  }
-  else
-  {
-    // XDG Desktop menu items come with absolute paths, we need to 
-    // extract their relative path and then build a local path.
-    path = KGlobal::dirs()->relativeLocation("xdgdata-apps", pathName);
-    if (path.startsWith("/"))
-    {
-      // What now? Use filename only and hope for the best.
-      path = pathName.mid(pathName.findRev('/')+1);
-    }
-    path = locateLocal("xdgdata-apps", path);
-  }
+  QString path = KDesktopFile::locateLocal(pathName);
   
   int maxPreference = 1;
   if (!qServiceType.isEmpty())
