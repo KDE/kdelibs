@@ -112,9 +112,13 @@ public:
   /**
    * Shows the dialog.  This should be called after all of the pages
    * have been added.
+   * @param track - Track all of the widgets for any changes. If false all
+   * buttons are enabled.  This can be set to false as a temporary measure,
+   * but applications in general should leave it on.  This paramater only
+   * matters the first time this function is called.
    * @ref hide()
    */ 
-  virtual void show();
+  virtual void show(bool track=true);
   
   /**
    * Hides the dialog.  A program shouldn't normally need to use this function.
@@ -136,9 +140,10 @@ protected:
   KDialogBase *kdialogbase;
   
 private:
-  bool shown; 
-  KDialogBase::DialogType type;
   static QAsciiDict<QObject> openDialogs;
+  
+  class KAutoConfigDialogPrivate;
+  KAutoConfigDialogPrivate *d;
 };
 
 #endif //KAUTOCONFIGDIALOG_H

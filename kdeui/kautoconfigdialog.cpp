@@ -8,9 +8,18 @@
 
 QAsciiDict<QObject> KAutoConfigDialog::openDialogs;
 
+class KAutoConfigDialog::KAutoConfigDialogPrivate {
+
+public:
+  KAutoConfigDialogPrivate(KDialogBase::DialogType t) : shown(false), type(t){ }
+ 
+  bool shown; 
+  KDialogBase::DialogType type;
+};
+
 KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
 		KDialogBase::DialogType dialogType, bool modal) :
-		QObject(parent, name), shown(false), type(dialogType) {
+		QObject(parent, name), d(new KAutoConfigDialogPrivate(dialogType)) {
 
   openDialogs.insert(name, this);
   kdialogbase = new KDialogBase( dialogType, i18n("Configure"), parent, name, modal,
@@ -38,11 +47,11 @@ void KAutoConfigDialog::addPage(QWidget *page,
 				  const QString &groupName,
 		                  const QString &pixmapName,
 				  const QString &header){
-  if(shown){
+  if(d->shown){
     kdDebug() << "KAutoConfigDialog::addPage, can not a page after the dialog has been shown.";
     return;
   }
-  switch(type){
+  switch(d->type){
     case KDialogBase::TreeList:
     case KDialogBase::IconList:
     case KDialogBase::Tabbed: {
@@ -93,10 +102,14 @@ void KAutoConfigDialog::settingModified(){
 }
 
 
-void KAutoConfigDialog::show(){
-  if(!shown){
-    kdialogbase->enableButton(KDialogBase::Default, kautoconfig->retrieveSettings(true));
-    shown = true;
+void KAutoConfigDialog::show(bool track){
+  if(!d->shown){
+    kdialogbase->enableButton(KDialogBase::Default, kautoconfig->retrieveSettings(track));
+    d->shown = true;
+    if(track){
+      kdialogbase->enableButton(KDialogBase::Apply, true);
+      kdialogbase->enableButton(KDialogBase::Default, true);
+    }
   }
   kdialogbase->show();
 }
