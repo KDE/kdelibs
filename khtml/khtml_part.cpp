@@ -3665,12 +3665,14 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
                d->m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ),
                d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
+      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags ) ),
+               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ),
                d->m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
       connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
                d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
-      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, mode_t ) ),
-               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, mode_t ) ) );
+      connect( child->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ),
+               d->m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t ) ) );
 
       connect( child->m_extension, SIGNAL( infoMessage( const QString & ) ),
                d->m_extension, SIGNAL( infoMessage( const QString & ) ) );
@@ -4008,6 +4010,8 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   KURL popupURL;
   KURL linkKURL;
   QString referrer;
+  KParts::BrowserExtension::PopupFlags itemflags=KParts::BrowserExtension::ShowBookmark | KParts::BrowserExtension::ShowReload;
+  
   if ( linkUrl.isEmpty() ) { // click on background
     KHTMLPart* khtmlPart = this;
     while ( khtmlPart->parentPart() )
@@ -4016,6 +4020,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     }
     popupURL = khtmlPart->url();
     referrer = khtmlPart->pageReferrer();
+    itemflags |= KParts::BrowserExtension::ShowNavigationItems;
   } else {               // click on link
     popupURL = completeURL( linkUrl );
     linkKURL = popupURL;
@@ -4028,7 +4033,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
   args.serviceType = QString::fromLatin1( "text/html" );
   args.metaData()["referrer"] = referrer;
 
-  emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL, args, S_IFREG /*always a file*/);
+  emit d->m_extension->popupMenu( client, QCursor::pos(), popupURL, args, itemflags, S_IFREG /*always a file*/);
 
   delete client;
 

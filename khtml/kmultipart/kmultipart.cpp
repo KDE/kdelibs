@@ -303,14 +303,24 @@ void KMultiPart::setPart( const QString& mimeType )
         connect( childExtension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs &, const KParts::WindowArgs &, KParts::ReadOnlyPart *& ) ),
                  m_extension, SIGNAL( createNewWindow( const KURL &, const KParts::URLArgs & , const KParts::WindowArgs &, KParts::ReadOnlyPart *&) ) );
 
+        // Keep in sync with khtml_part.cpp
         connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ),
                  m_extension, SIGNAL( popupMenu( const QPoint &, const KFileItemList & ) ) );
         connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ),
                  m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList & ) ) );
+        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::Pop
+upFlags ) ),
+                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KFileItemList &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFl
+ags ) ) );
         connect( childExtension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ),
                  m_extension, SIGNAL( popupMenu( const QPoint &, const KURL &, const QString &, mode_t ) ) );
         connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ),
                  m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const QString &, mode_t ) ) );
+        connect( childExtension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags,
+mode_t ) ),
+                 m_extension, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &, const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode
+_t ) ) );
+
 
         connect( childExtension, SIGNAL( infoMessage( const QString & ) ),
                  m_extension, SIGNAL( infoMessage( const QString & ) ) );

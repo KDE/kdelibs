@@ -96,7 +96,7 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
     }
 
     connect( m_khtml->browserExtension(), SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
-             const KParts::URLArgs &, mode_t) ), m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
+             const KParts::URLArgs &, KParts::BrowserExtension::PopupFlags, mode_t) ), m_ext, SIGNAL( popupMenu( KXMLGUIClient *, const QPoint &, const KURL &,
              const KParts::URLArgs &, mode_t) ) );
 
     connect( m_khtml->browserExtension(), SIGNAL( enableAction( const char *, bool ) ),
