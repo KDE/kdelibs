@@ -24,6 +24,7 @@
 #include <qobject.h>
 #include <dnssd/servicebase.h>
 
+class QDataStream;
 namespace DNSSD
 {
 class RemoteServicePrivate;
@@ -92,6 +93,10 @@ private:
 	void resolved(const char *host, unsigned short port, unsigned short txtlen,
 		const char* txtRecord);
 	RemoteServicePrivate *d;
+
+	friend KDNSSD_EXPORT QDataStream & operator<< (QDataStream & s, const RemoteService & a);
+	friend KDNSSD_EXPORT QDataStream & operator>> (QDataStream & s, RemoteService & a);
+
 };
 
 }

@@ -95,4 +95,18 @@ const QMap<QString,QString>& ServiceBase::textData() const
 	return m_textData;
 }
 
+QDataStream & operator<< (QDataStream & s, const ServiceBase & a)
+{
+	s << a.m_serviceName << a.m_type << a.m_domain << a.m_hostName << Q_INT16(a.m_port) << a.m_textData;
+	return s;
+}
+
+QDataStream & operator>> (QDataStream & s, ServiceBase & a)
+{
+	Q_INT16 port;
+	s >> a.m_serviceName >> a.m_type >> a.m_domain >> a.m_hostName >> port >> a.m_textData;
+	a.m_port = port;	
+	return s;
+}
+
 }

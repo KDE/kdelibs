@@ -25,6 +25,7 @@
 #include <ksharedptr.h>
 
 class QString;
+class QDataStream;
 namespace DNSSD
 {
 
@@ -101,6 +102,10 @@ protected:
 	handles special cases - metaservices and domains.
 	 */
 	void decode(const QString& name);
+
+	friend KDNSSD_EXPORT QDataStream & operator<< (QDataStream & s, const ServiceBase & a);
+	friend KDNSSD_EXPORT QDataStream & operator>> (QDataStream & s, ServiceBase & a);
+
 };
 
 }
