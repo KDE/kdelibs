@@ -129,12 +129,12 @@ class KJanusWidget : public QWidget
     int face( void ) const;
 
     /**
-     * Returns the minimum size that must be made avaiable for the widget
+     * Returns the minimum size that must be made available for the widget
      * so that uis can be displayed properly
      *
      * @return the minimum size.
      */
-    virtual QSize minimumSizeHint( void );
+    virtual QSize minimumSizeHint( void ) const;
 
     /**
      * Returns the empty widget that is available in Plain mode.

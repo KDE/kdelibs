@@ -17,7 +17,6 @@
  *  Boston, MA 02111-1307, USA.
  */
 
-#include <iostream.h>
 
 #include <qheader.h>
 #include <qlabel.h>
@@ -167,7 +166,7 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header )
 {
   if( mValid == false )
   {
-    cout << "addPage:" << "Invalid object" << endl;
+    qDebug("addPage: Invalid object");
     return( 0 );
   }
 
@@ -231,7 +230,7 @@ QFrame *KJanusWidget::addPage( const QString &itemName, const QString &header )
     return( page );
   }
 
-  cout << "addPage:" << "Illegal shape" << endl;
+  qDebug( "addPage: Illegal shape" );
   return( 0 );
 }
 
@@ -412,7 +411,7 @@ void KJanusWidget::setFocus( void )
 }
 
 
-QSize KJanusWidget::minimumSizeHint( void )
+QSize KJanusWidget::minimumSizeHint( void ) const
 {
   if( mFace == TreeList )
   {
@@ -435,7 +434,7 @@ QSize KJanusWidget::minimumSizeHint( void )
   {
     return( mSwallowPage->minimumSize() );
   }
-  else if( mFace == Plain )
+  else /*if( mFace == Plain )*/
   {
     return( mPlainPage->sizeHint() );
   }
