@@ -1,5 +1,6 @@
 #include "kautoconfig.h"
 
+#include <kglobal.h>
 #include <qsqlpropertymap.h>
 #include <qobjectlist.h> 
 #ifndef NDEBUG

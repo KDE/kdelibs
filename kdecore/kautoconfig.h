@@ -2,7 +2,6 @@
 #define KAUTOCONFIG_H
 
 #include <qobject.h>
-#include <kglobal.h>
 #include <qptrlist.h>
 
 class KConfig;
@@ -12,89 +11,73 @@ class QWidget;
  * @author Benjamin C Meyer <ben-devel at meyerhome.net>
  * 
  * The KAutoConfig class provides a means of automaticly retrieving,
- * saving and reseting basic settings.
+ * saving and reseting basic settings.  It also can emit signals when
+ * settings have been changed (settings were saved) or modified (the
+ * user changes a checkbox from on to off).
  *
- * When told to retrieve settings KAutoConfig will traverse the specified
- * widgets building a list of all known widgets that haven't been marked to
- * be ignore.  If a setting is immutible the value is loaded and it is disabled.
+ * When told to retrieve settings (@ref retrieveSettings()) KAutoConfig 
+ * will traverse the specified widgets building a list of all known widgets
+ * that haven't been marked to be ignored.  If a setting is marked immutible
+ * the value is loaded and the widget is disabled.
+ *
+ * The name of the widget determines the name of the setting.  The initial
+ * value of the widget also is the default value when the widget is reset.
+ *
+ * When @ref saveSettings() or @ref resetSettings() is called KAutoConfig
+ * goes through the list of known widgets and performs the operation on each
+ * of them.
+ *
+ * If one of the widgets needs special treatment it can be specified to be
+ * ignored using the @ref ignoreSubWidget() function.  
+ *
+ * <hr>
  * 
- * When save or reset is called KAutoConfig goes through the list of known
- * widgets and performs the operation on each of them.
- *
  * KAutoConfig uses the @ref QSqlPropertyMap class to determine if it can do
- * anything with a widget.  New widgets can be added using  
+ * anything to a widget.  Note that KAutoConfig doesn't  require a database,
+ * it simply uses the functionality that is built into the QSqlPropertyMap
+ * class.  New widgets can be added to the map using  
  * @ref QSqlPropertyMap::installDefaultMap(). 
- *
- * For example (note that KColorButton is already known and you don't need to
- * do this if you have a KColorButton):
+ * 
+ * For example (note that KColorButton is already added and it doesn't need to  
+ * manually added):
  * 
  * <pre>
  * QSqlPropertyMap *map = QSqlPropertyMap::defaultMap();
  * map.insert("KColorButton", "color");
  * QSqlPropertyMap::installDefaultMap(map);
  * </pre>
- * 
- * If one of the widgets needs special treatment it can be specified to be
- * ignored using @ref ignoreSubWidget().  
- * 
- * The name of the widget determines the name of the setting.  The initial
- * value of the widget also is the default when asked to reset.
  *
- * <hr>
- * 
- * This class was created to further follow the DRY principle.
- * DRY - Don't Repeat Yourself
+ * If you add a new widget to the QSqlPropertyMap and wish to be notified when
+ * it is modified you should add its signal using @ref addWidgetChangedSignal().
  *
- *   Every Piece of knowledge must have a single, unambiguous, authoritative
- *   representation within a system.
- * 
- * The majority of settings files are ui files wrapped in a KDialogBase.  
- * They may have a little logic, but a lot of the code is adding the save, 
- * retrieve, and reset functions.  With every new widget many lines of code 
- * need to be added.  This leads to errors and bugs.  From simple bugs like
- * saving two objects to the same setting, to the time spent coding it this 
- * task can and should be automated.
- *   Some areas of duplication include: 
- * - Having the ui files specify default values, a function to
- *  set all the default values and readEntry specify a default value.  
- * - Naming the objects in the ui file the same as the settings.
- * - Simply coding everything over and over for every new application.
- *  
- * In KControl, when objects exit they often asks the user if they want to apply
- * the settings that the user has changed.  To add this functionality by hand,
- * code must be written comparing the old and new values.  One simpler
- * way that some have done is simply to watch for changed() signal's, but
- * this isn't always correct for a user may change a value, but then change
- * it back before hitting OK.  With KAutoConfig @ref saveSettings() returns a bool
- * value if anything has changed and emits a signal.
- *
+ * @see KAutoConfigDialog
  * @since 3.2
  **/ 
-
 class KAutoConfig : public QObject {
 
 Q_OBJECT
 
 signals:
   /**
-   * One or more of the settings have been permanently changed.
-   * Such as if the user clicked on the Apply button.
-   * Is only emited by @ref saveSettings if one or more setting were changed.
+   * One or more of the settings have been saved (such as when the user
+   * clicks on the Apply button).  This is only emited by @ref saveSettings()
+   * whenever one or more setting were changed and consequently saved.
    */ 
   void settingsChanged();
 
   /**
    * One or more of the settings have been changed.
-   * @param - Widget the widget group (pass in via @ref addWidget) that contains
-   * one or more modified setting.
+   * @param widget - The widget group (pass in via @ref addWidget()) that
+   * contains the one or more modified setting.
+   * @see settingsChanged()
    */
   void settingsChanged(QWidget *widget);
 	
   /**
    * If @ref retreiveSettings was told to track changes
    * then if any known setting was changed this signal will be emited.  Note
-   * that a settings can be modified several times and then back to the 
-   * original state.  @ref hasChanged() will tell you if anything has
+   * that a settings can be modified several times and might go back to the 
+   * original saved state.  @ref hasChanged() will tell you if anything has
    * actually changed from the saved values.
    */
   void widgetModified();
@@ -102,18 +85,17 @@ signals:
 public:
   /**
    * Constructor.
-   * @param kconfig - Config to use when retrieving/saving all of the widgets
-   *        that KAutoConfig knows about.
+   * @param kconfig - KConfig to use when retrieving/saving the widgets
+   * that KAutoConfig knows about.
    * @param parent - Parent object.
    * @param name - Object name.
    */ 
-  KAutoConfig(KConfig *kconfig = KGlobal::config(),
-		 QObject *parent=0, const char *name=0);	
+  KAutoConfig(KConfig *kconfig, QObject *parent=0, const char *name=0);	
  
   /**
    * Constructor.
-   * Uses KGlobal::config() when retrieving/saving all of the widgets
-   *        that KAutoConfig knows about.
+   * Uses KGlobal::config() when retrieving/saving the widgets that
+   * KAutoConfig knows about.
    * @param parent - Parent object.
    * @param name - Object name.
    */ 
@@ -126,7 +108,8 @@ public:
   
   /**
    * Adds a widget to the list of widgets that should be parsed for any 
-   * children that KAutoConfig might know.
+   * children that KAutoConfig might know when @ref retrieveSettings() is
+   * called.
    * @param widget - Pointer to the widget to add.
    * @param group - Name of the group from which all of the settings for this
    * widget will be located.  If a child of 'widget' needs to be in a separate
@@ -137,7 +120,7 @@ public:
 
   /**
    * Ignore the specified child widget when performing an action.  Doesn't
-   * effect widgets that were added with addWidget only their children.
+   * effect widgets that were added with @ref addWidget() only their children.
    * @param widget - Pointer to the widget that should be ignored.  
    **/ 
   void ignoreSubWidget(QWidget *widget);
@@ -145,7 +128,7 @@ public:
   /**
    * Traverse the specified widgets to see if anything is different then the
    * current settings.  @ref retrieveSettings() must be called before this 
-   * function to build the list of known widgets and defaultValues.
+   * function to build the list of known widgets and default values.
    * @return bool - True if any settings are different then the stored values.
    */
   bool hasChanged() const;
@@ -153,7 +136,7 @@ public:
   /**
    * Traverse the specified widgets to see if anything is different then the
    * default.  @ref retrieveSettings() must be called before this function to
-   * build the list of known widgets and defaultValues.
+   * build the list of known widgets and default values.
    * @return bool - True if all of the settings are their default values.
    */
   bool isDefault() const;
@@ -164,24 +147,26 @@ public:
    * how to connect its signal that it has changed to KAutoConfig's signal
    * widgetModifed().  This function should be called before 
    *
-   * Example: <pre>
-   * addWidgetChangedSignal("QCheckbox", SIGNAL(stateChanged(int)));
+   * Example:
+   * <pre>
+   * addWidgetChangedSignal( "QCheckbox", SIGNAL(stateChanged(int)) );
    * </pre>
    *
-   * This is generally used in conjunction with the addition of the class
+   * This is generally used in conjunction with the addition of a class
    * to QSqlPropertyMap so KAutoConfig can get/set its values.
    *
    * @param widgetName - The class name of the widget (className()).
    * @param signal - The signal (with "SIGNAL()" wrapper) that should be called.
    */ 
-  inline void addWidgetChangedSignal(const QString &widgetName, const char *signal){
+  inline void addWidgetChangedSignal(const QString &widgetName,
+		  const char *signal){
     changedMap.insert(widgetName, signal);
   }
 
 public slots:
   /**
-   * Traverse the specified widgets, retrieve the settings for all known
-   * widgets that aren't being ignored.
+   * Traverse the specified widgets, retrieving the settings for all known
+   * widgets that aren't being ignored and storing the default values.
    * @param trackChanges - If any changes by the widgets should be tracked
    * set true.  This causes the emiting the @ref modified() signal when
    * something changes.
@@ -192,22 +177,23 @@ public slots:
   /**
    * Traverse the specified widgets, saving the settings for all known
    * widgets that aren't being ignored.  @ref retrieveSettings() must be called
-   * before this function to build the list of known widgets and defaultValues.
+   * before this function to build the list of known widgets and default values.
    * @return bool - True if any settings were changed.
    */ 
   bool saveSettings();
 
   /**
-   * Traverse the specified widgets, reseting the settings for all known
-   * widgets that aren't being ignored.  @ref retrieveSettings() must be called
-   * before this function to build the list of known widgets and defaultValues.
+   * Traverse the specified widgets, reseting the settings to their default
+   * values for all known widgets that aren't being ignored.
+   * @ref retrieveSettings() must be called before this function to build
+   * the list of known widgets and default values.
    */
   void resetSettings(); 
 
 protected:
-  // KConfig used to get/save values
+  // KConfig object used to get/save values.
   KConfig *config;
-  // Map of the classes and the singnals that they emit when changed. 
+  // Map of the classes and the signals that they emit when changed. 
   QMap<QString, const char *> changedMap;
 
   /**
@@ -220,11 +206,13 @@ protected:
    * @param trackChanges - If true then tracks any changes to the children of
    * widget that are known.
    * @return bool - If a widget was set to semething other then its default.
+   * @see retrieveSettings()
    */ 
   bool parseChildren(const QWidget *widget,
 		  QPtrList<QWidget>&currentGroup, bool trackChanges);
  
 private:
+  // KAutoConfig Private class.
   class KAutoConfigPrivate;
   KAutoConfigPrivate *d;
 
