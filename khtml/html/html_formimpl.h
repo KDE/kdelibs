@@ -29,7 +29,7 @@
 #include "html_elementimpl.h"
 #include "khtmlview.h"
 
-class KHTMLWidget;
+class KHTMLView;
 class QWidget;
 class QMultiLineEdit;
 #include <qpixmap.h>
@@ -66,7 +66,7 @@ public:
 
     virtual void parseAttribute(Attribute *attr);
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     virtual void detach();
 
     void radioClicked( khtml::RenderFormElement *caller );
@@ -79,7 +79,7 @@ protected:
     DOMString url;
     DOMString target;
     bool post;
-    KHTMLWidget *view;
+    KHTMLView *view;
     QList<khtml::RenderFormElement> formElements;
 };
 
@@ -100,7 +100,7 @@ public:
 
     virtual void parseAttribute(Attribute *attr);
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     virtual void detach();
 
     virtual void reset() {}
@@ -111,7 +111,7 @@ protected:
 
     DOMString _name;
     HTMLFormElementImpl *_form;
-    KHTMLWidget *view;
+    KHTMLView *view;
     bool m_disabled, m_readonly;
 };
 
@@ -144,7 +144,7 @@ public:
 
     void parseAttribute(Attribute *attr);
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
 
     virtual NodeImpl *addChild(NodeImpl *newChild) { return HTMLElementImpl::addChild(newChild); }
 
@@ -220,7 +220,7 @@ public:
 
     virtual void parseAttribute(Attribute *attr);
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     virtual void detach();
 
 protected:
@@ -301,7 +301,7 @@ public:
 
     virtual void parseAttribute(Attribute *attr);
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
 
 protected:
     int m_size;
@@ -393,7 +393,7 @@ public:
     void select (  );
 
     virtual void parseAttribute(Attribute *attr);
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
 
 protected:
     int m_rows;

@@ -32,7 +32,7 @@
 #include "qscrollview.h"
 #include "misc/loader.h"
 
-class KHTMLWidget;
+class KHTMLView;
 
 namespace DOM {
 
@@ -59,7 +59,7 @@ public:
 
 class HTMLFrameElementImpl : public HTMLElementImpl
 {
-    friend class KHTMLWidget;
+    friend class KHTMLView;
 public:
     HTMLFrameElementImpl(DocumentImpl *doc);
 
@@ -72,7 +72,7 @@ public:
     virtual tagStatus endTag() { return FRAMEEndTag; }
 
     virtual void parseAttribute(Attribute *);
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     virtual void detach();
 
     bool noResize() { return noresize; }
@@ -80,8 +80,8 @@ public:
 protected:
     DOMString url;
     DOMString name;
-    KHTMLWidget *view;
-    KHTMLWidget *parentWidget;
+    KHTMLView *view;
+    KHTMLView *parentWidget;
 
     bool frameBorder;
     int marginWidth;
@@ -94,7 +94,7 @@ protected:
 
 class HTMLFrameSetElementImpl : public HTMLElementImpl
 {
-    friend class KHTMLWidget;
+    friend class KHTMLView;
 public:
     HTMLFrameSetElementImpl(DocumentImpl *doc);
 
@@ -108,7 +108,7 @@ public:
 
     virtual void parseAttribute(Attribute *);
     virtual NodeImpl *addChild(NodeImpl *child);
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
 
     virtual bool mouseEvent( int _x, int _y, int button, MouseEventType type,
 		     int _tx, int _ty, DOMString &url,
@@ -135,7 +135,7 @@ protected:
 
     bool m_resizing;  // is the user resizing currently
 
-    KHTMLWidget *view;
+    KHTMLView *view;
 };
 
 // -------------------------------------------------------------------------

@@ -27,7 +27,7 @@
 #include "dtd.h"
 #include "html_elementimpl.h"
 
-class KHTMLWidget;
+class KHTMLView;
 
 #include "misc/loader.h"
 
@@ -51,7 +51,7 @@ public:
     virtual tagStatus endTag() { return BASEEndTag; }
 
     virtual void parseAttribute(Attribute *attr);
-    virtual void attach(KHTMLWidget *);
+    virtual void attach(KHTMLView *);
 
 protected:
     DOMString _href;
@@ -96,7 +96,7 @@ public:
     void setDisabled( bool );
 
     // overload from HTMLElementImpl
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     virtual void parseAttribute(Attribute *attr);
 
     // from CachedObjectClient
@@ -130,7 +130,7 @@ public:
     virtual tagStatus endTag() { return METAEndTag; }
 
     virtual void parseAttribute(Attribute *attr);
-    virtual void attach(KHTMLWidget *);
+    virtual void attach(KHTMLView *);
 
 protected:
     DOMString _equiv;

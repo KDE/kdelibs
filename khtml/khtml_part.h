@@ -33,7 +33,7 @@
 class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;
 class KJSProxy;
-class KHTMLWidget;
+class KHTMLView;
 
 namespace DOM
 {
@@ -59,7 +59,7 @@ namespace KParts
 class KHTMLPart : public KParts::ReadOnlyPart
 {
   Q_OBJECT
-  friend class KHTMLWidget;
+  friend class KHTMLView;
   friend class DOM::HTMLTitleElementImpl;
   friend class DOM::HTMLFrameElementImpl;
   friend class KHTMLRun;
@@ -74,7 +74,7 @@ public:
 
   DOM::HTMLDocument htmlDocument() const;
   KHTMLPartBrowserExtension *browserExtension() const;
-  KHTMLWidget *htmlWidget() const;
+  KHTMLView *htmlView() const;
 
   void enableJScript( bool enable );
   bool jScriptEnabled() const;
@@ -286,7 +286,7 @@ class KHTMLPartBrowserExtension : public KParts::BrowserExtension
 {
   Q_OBJECT
   friend class KHTMLPart;
-  friend class KHTMLWidget;
+  friend class KHTMLView;
 public:
   KHTMLPartBrowserExtension( KHTMLPart *parent, const char *name = 0L );
 

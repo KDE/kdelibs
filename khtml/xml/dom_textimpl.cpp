@@ -134,7 +134,7 @@ unsigned short TextImpl::nodeType() const
     return Node::TEXT_NODE;
 }
 
-void TextImpl::attach(KHTMLWidget *)
+void TextImpl::attach(KHTMLView *)
 {
     m_style = parentNode()->style();
     RenderObject *r = _parent->renderer();

@@ -145,7 +145,7 @@ void HTMLFormElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLFormElementImpl::attach(KHTMLWidget *_view)
+void HTMLFormElementImpl::attach(KHTMLView *_view)
 {
     view = _view;
     HTMLElementImpl::attach(_view);
@@ -265,7 +265,7 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
 }
 
 
-void HTMLGenericFormElementImpl::attach(KHTMLWidget *_view)
+void HTMLGenericFormElementImpl::attach(KHTMLView *_view)
 {
     view = _view;
     HTMLElementImpl::attach(_view);
@@ -356,7 +356,7 @@ void HTMLButtonElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLButtonElementImpl::attach(KHTMLWidget *_view)
+void HTMLButtonElementImpl::attach(KHTMLView *_view)
 {
     view = _view;
     HTMLElementImpl::attach(_view);
@@ -532,7 +532,7 @@ void HTMLInputElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLInputElementImpl::attach(KHTMLWidget *_view)
+void HTMLInputElementImpl::attach(KHTMLView *_view)
 {
     m_style = document->styleSelector()->styleForElement(this);
     view = _view;
@@ -771,7 +771,7 @@ void HTMLSelectElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLSelectElementImpl::attach(KHTMLWidget *_view)
+void HTMLSelectElementImpl::attach(KHTMLView *_view)
 {
     m_style = document->styleSelector()->styleForElement(this);
     view = _view;
@@ -944,7 +944,7 @@ void HTMLTextAreaElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLTextAreaElementImpl::attach(KHTMLWidget *_view)
+void HTMLTextAreaElementImpl::attach(KHTMLView *_view)
 {
     m_style = document->styleSelector()->styleForElement(this);
     view = _view;

@@ -33,7 +33,7 @@
 
 #include "dom/dom_string.h"
 
-class KHTMLWidget;
+class KHTMLView;
 class Token;
 class HTMLStackElem;
 
@@ -54,7 +54,7 @@ typedef void (KHTMLParser::*blockFunc)(HTMLStackElem *stackElem);
 class KHTMLParser
 {
 public:
-    KHTMLParser( KHTMLWidget *w, DOM::HTMLDocumentImpl *i );
+    KHTMLParser( KHTMLView *w, DOM::HTMLDocumentImpl *i );
     virtual ~KHTMLParser();
 
     /**
@@ -75,7 +75,7 @@ public:
 protected:
     void processOneToken(Token *t);
 
-    KHTMLWidget *HTMLWidget;
+    KHTMLView *HTMLWidget;
     DOM::HTMLDocumentImpl *document;
 
     /*

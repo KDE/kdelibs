@@ -40,7 +40,7 @@
 class QPainter;
 class QPixmap;
 class CSSStyle;
-class KHTMLWidget;
+class KHTMLView;
 
 namespace DOM {
     class DOMString;

@@ -71,7 +71,7 @@ class KHTMLPart;
  *
  * <pre>
  * QString url = "http://www.kde.org";
- * KHTMLWidget *w = new KHTMLWidget();
+ * KHTMLView *w = new KHTMLView();
  * w->openURL(url);
  * w->resize(500, 400);
  * w->show();
@@ -83,7 +83,7 @@ class KHTMLPart;
  * don't want the widget to open the site in this window in case someone
  * clicks on an embedded link. In this case just use
  * @ref setFollowsLinks(false). You will then get a Signal @ref urlClicked()
- * instead of KHTMLWidget following the links directly.
+ * instead of KHTMLView following the links directly.
  *
  * By default Java and JavaScript support is disabled. You can enable it by
  * using the @ref enableJava() and @ref enableJScript() methods.
@@ -93,7 +93,7 @@ class KHTMLPart;
  *
  * <pre>
  * QString myHTMLCode = ...;
- * KHTMLWidget *w = new KHTMLWidget();
+ * KHTMLView *w = new KHTMLView();
  * w->begin();
  * w->write(myHTMLCode);
  * ...
@@ -105,14 +105,14 @@ class KHTMLPart;
  * should not get mixed, since the method usnig the char * argument does an
  * additional decoding step to convert the written data to Unicode.
  *
- * If you derive from KHTMLWidget you must overload the method @ref #createFrame
+ * If you derive from KHTMLView you must overload the method @ref #createFrame
  *
  * @short HTML Browser Widget
  * @author Lars Knoll (knoll@kde.org)
  * @version $Id$
  *
  */
-class KHTMLWidget : public QScrollView
+class KHTMLView : public QScrollView
 {
     Q_OBJECT
 
@@ -125,15 +125,15 @@ class KHTMLWidget : public QScrollView
 public:
 
     /**
-     * Constructs a KHTMLWidget
+     * Constructs a KHTMLView
      */
-    KHTMLWidget( KHTMLPart *part, QWidget *parent, const char *name=0 );
+    KHTMLView( KHTMLPart *part, QWidget *parent, const char *name=0 );
 
     /**
      * This constructor is used internally to realize Frames
      */
-    //    KHTMLWidget( QWidget *parent, KHTMLWidget *parentWidget, QString name);
-    virtual ~KHTMLWidget();
+    //    KHTMLView( QWidget *parent, KHTMLView *parentWidget, QString name);
+    virtual ~KHTMLView();
 
     KHTMLPart *part() const { return m_part; }
 
@@ -183,24 +183,24 @@ public:
     //    bool jScriptEnabled() const;
 
     /**
-     * @return the parent KHTMLWidget of this one or 0L is this is the top level
+     * @return the parent KHTMLView of this one or 0L is this is the top level
      * browser. Used for frames.
      */
-    //    KHTMLWidget* parentFrame() { return _parent; }
+    //    KHTMLView* parentFrame() { return _parent; }
 
     /**
      * Returns the top level frame. Never returns 0L.
      */
-    //    KHTMLWidget* topFrame();
+    //    KHTMLView* topFrame();
 
     /**
-     * Searches for a KHTMLWidget with a specific name as mentioned in the
+     * Searches for a KHTMLView with a specific name as mentioned in the
      * constructor.
      *
      * @see #setName
      * @see #name
      */
-    //    KHTMLWidget* findFrame( const QString &_name );
+    //    KHTMLView* findFrame( const QString &_name );
 
     /**
      * @return the name of this frame.
@@ -213,17 +213,17 @@ public:
 
     /**
      * This function is used by @ref #newView. Its only purpose is to create
-     * a new instance of this class. If you derived from KHTMLWidget you must
+     * a new instance of this class. If you derived from KHTMLView you must
      * overload this function to make shure that all frames are of the same
      * derived class.
      */
-    //    virtual KHTMLWidget* createFrame( QWidget *_parent, QString _name );
+    //    virtual KHTMLView* createFrame( QWidget *_parent, QString _name );
 
     /**
      * This function is mainly used internally. It gets the frame with name _name,
      *  if it exists and is a child of this widget, otherwise return 0.
      */
-    //    KHTMLWidget *getFrame( QString _name);
+    //    KHTMLView *getFrame( QString _name);
 
     /**
      * Clears the widget and prepares it for new content.
@@ -405,7 +405,7 @@ public:
     //    bool isFrame() { return _isFrame; }
 
     //    bool frameIsSelected() { return _isSelected; }
-    //    void setFrameSelected(KHTMLWidget *w = 0);
+    //    void setFrameSelected(KHTMLView *w = 0);
 
     /**
      * @return a pointer to the currently selected frame if
@@ -413,7 +413,7 @@ public:
      * selected one then @ref htmlView is returned. Otherwise all
      * @ref HTMLFrameSet instances are asked.
      */
-    //    KHTMLWidget* selectedFrame();
+    //    KHTMLView* selectedFrame();
 
     /**
      * Sets point sizes to be associated with the HTML-sizes used in
@@ -634,7 +634,7 @@ signals:
 //    void formSubmitted( const QString &_method, const QString &_url,
 //			const char *_data, const QString &_target );
 
-//    void frameInserted( KHTMLWidget *frame );
+//    void frameInserted( KHTMLView *frame );
 
 //    void textSelected( bool );
 
@@ -652,7 +652,7 @@ protected slots:
 
     //virtual void slotURLRequest( const QString & _url );
     //virtual void slotCancelURLRequest( const QString & _url );
-    //virtual void slotDocumentFinished( KHTMLWidget* _browser );
+    //virtual void slotDocumentFinished( KHTMLView* _browser );
 
     /*
      * INTERNAL
@@ -686,16 +686,16 @@ protected:
     //    void urlSelected( const QString &_url, int _button, const QString & _target );
 
     /**
-     * @return the parent KHTMLWidget of this one or 0L is this is the top level
+     * @return the parent KHTMLView of this one or 0L is this is the top level
      * browser.
      *
      */
-    //    KHTMLWidget* parentView() { return _parent; }
+    //    KHTMLView* parentView() { return _parent; }
 
     /**
      * Never returns 0L.
      */
-    //    KHTMLWidget* topView();
+    //    KHTMLView* topView();
 
     virtual void viewportMousePressEvent( QMouseEvent * );
 
@@ -734,24 +734,24 @@ public:
     //    virtual QString completeURL( const QString & _url, const QString &target = QString::null );
 protected:
     /*
-    virtual KHTMLWidget* findChildView( const QString & _target );
+    virtual KHTMLView* findChildView( const QString & _target );
 
     struct Child
     {
-	Child( KHTMLWidget *_b, bool _r ) { m_pBrowser = _b; m_bReady = _r; }
+	Child( KHTMLView *_b, bool _r ) { m_pBrowser = _b; m_bReady = _r; }
 
-	KHTMLWidget* m_pBrowser;
+	KHTMLView* m_pBrowser;
 	bool m_bReady;
     };
 
-    virtual void childCompleted( KHTMLWidget* _browser );
+    virtual void childCompleted( KHTMLView* _browser );
 
     // checks if loading is done and emits the completed() signal if true
     void checkCompleted();
     */
     // ------------------------------------- member variables ------------------------------------
     /*
-    KHTMLWidget* _parent;
+    KHTMLView* _parent;
     QString m_strFrameName;
     DOM::HTMLDocumentImpl *document;
     */
@@ -767,7 +767,7 @@ protected:
     /*
      * List of all open browsers.
      */
-    static QList<KHTMLWidget> *lstViews;
+    static QList<KHTMLView> *lstViews;
 
     /**
      * This flag is TRUE if we are in the middle of a selection using a

@@ -121,7 +121,7 @@ void HTMLAppletElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLAppletElementImpl::attach(KHTMLWidget *_view)
+void HTMLAppletElementImpl::attach(KHTMLView *_view)
 {
     m_style = document->styleSelector()->styleForElement(this);
     if(!code) return;

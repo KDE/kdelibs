@@ -78,7 +78,7 @@ public:
     virtual tagStatus startTag() { return BRStartTag; }
     virtual tagStatus endTag() { return BREndTag; }
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
 };
 
 // -------------------------------------------------------------------------

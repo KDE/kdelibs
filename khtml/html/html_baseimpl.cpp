@@ -172,7 +172,7 @@ void HTMLFrameElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLFrameElementImpl::attach(KHTMLWidget *w)
+void HTMLFrameElementImpl::attach(KHTMLView *w)
 {
     m_style = document->styleSelector()->styleForElement( this );
 
@@ -360,7 +360,7 @@ void HTMLFrameSetElementImpl::positionFrames(bool deep)
     }
 }
 */
-void HTMLFrameSetElementImpl::attach(KHTMLWidget *w)
+void HTMLFrameSetElementImpl::attach(KHTMLView *w)
 {
     m_style = document->styleSelector()->styleForElement( this );
     view = w;

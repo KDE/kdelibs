@@ -87,15 +87,15 @@
 
 #define PAINT_BUFFER_HEIGHT 150
 
-template class QList<KHTMLWidget>;
+template class QList<KHTMLView>;
 
-QList<KHTMLWidget> *KHTMLWidget::lstViews = 0L;
+QList<KHTMLView> *KHTMLView::lstViews = 0L;
 
 using namespace DOM;
 
-QPixmap* KHTMLWidget::paintBuffer = 0L;
+QPixmap* KHTMLView::paintBuffer = 0L;
 
-KHTMLWidget::KHTMLWidget( KHTMLPart *part, QWidget *parent, const char *name)
+KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     : QScrollView( parent, name)
 {
 //    _parent = 0;
@@ -123,7 +123,7 @@ KHTMLWidget::KHTMLWidget( KHTMLPart *part, QWidget *parent, const char *name)
 
 }
 /*
-KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString name )
+KHTMLView::KHTMLView( QWidget *parent, KHTMLView *_parent_browser, QString name )
     : QScrollView( parent, name.latin1())
 {
     _parent     = _parent_browser;
@@ -150,7 +150,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString
     init();
 }
 */
-KHTMLWidget::~KHTMLWidget()
+KHTMLView::~KHTMLView()
 {
 //  slotStop();
   lstViews->removeRef( this );
@@ -167,7 +167,7 @@ KHTMLWidget::~KHTMLWidget()
   //  if(defaultSettings) delete defaultSettings;
 }
 
-void KHTMLWidget::init()
+void KHTMLView::init()
 {
 /*
   m_bStartedRubberBand = false;
@@ -184,7 +184,7 @@ void KHTMLWidget::init()
   _jscript = 0;
 */
     if ( lstViews == 0L )
-	lstViews = new QList<KHTMLWidget>;
+	lstViews = new QList<KHTMLView>;
     lstViews->setAutoDelete( FALSE );
     lstViews->append( this );
 
@@ -212,7 +212,7 @@ void KHTMLWidget::init()
   khtml::Cache::init();
 }
 
-void KHTMLWidget::clear()
+void KHTMLView::clear()
 {
 /*
     if(document)
@@ -254,56 +254,56 @@ void KHTMLWidget::clear()
 
 }
 /*
-void KHTMLWidget::setFollowsLinks( bool follow )
+void KHTMLView::setFollowsLinks( bool follow )
 {
     _followLinks = follow;
 }
 
-bool KHTMLWidget::followsLinks()
+bool KHTMLView::followsLinks()
 {
     return _followLinks;
 }
 
-void KHTMLWidget::enableImages( bool enable )
+void KHTMLView::enableImages( bool enable )
 {
     m_bEnableImages = enable;
 }
 
-bool KHTMLWidget::imagesEnabled() const
+bool KHTMLView::imagesEnabled() const
 {
     return m_bEnableImages;
 }
 
-void KHTMLWidget::enableJava( bool enable )
+void KHTMLView::enableJava( bool enable )
 {
     _javaEnabled = enable;
 }
 
-bool KHTMLWidget::javaEnabled() const
+bool KHTMLView::javaEnabled() const
 {
     return _javaEnabled;
 }
 
-void KHTMLWidget::enableJScript( bool enable )
+void KHTMLView::enableJScript( bool enable )
 {
     _jScriptEnabled = enable;
 }
 
-bool KHTMLWidget::jScriptEnabled() const
+bool KHTMLView::jScriptEnabled() const
 {
     return _jScriptEnabled;
 }
 
-void KHTMLWidget::executeScript(const QString &c)
+void KHTMLView::executeScript(const QString &c)
 {
     if(!_jScriptEnabled) return;
     jScript()->evaluate(c.unicode(), c.length());
 }
 
 
-KHTMLWidget* KHTMLWidget::topView()
+KHTMLView* KHTMLView::topView()
 {
-  KHTMLWidget *v = this;
+  KHTMLView *v = this;
 
   while( v->parentView() )
     v = v->parentView();
@@ -311,9 +311,9 @@ KHTMLWidget* KHTMLWidget::topView()
   return v;
 }
 
-KHTMLWidget* KHTMLWidget::findFrame( const QString &_name )
+KHTMLView* KHTMLView::findFrame( const QString &_name )
 {
-    KHTMLWidget *v;
+    KHTMLView *v;
 
     if ( _name == "_top" || _name == "_TOP" )
     {
@@ -353,15 +353,15 @@ KHTMLWidget* KHTMLWidget::findFrame( const QString &_name )
     return 0;
 }
 
-KHTMLWidget* KHTMLWidget::createFrame( QWidget *_parent, QString _name )
+KHTMLView* KHTMLView::createFrame( QWidget *_parent, QString _name )
 {
-    KHTMLWidget *child = new KHTMLWidget( _parent, this, _name );
+    KHTMLView *child = new KHTMLView( _parent, this, _name );
     Child *c = new Child(child, false);
     m_lstChildren.append(c);
     return child;
 }
 
-KHTMLWidget* KHTMLWidget::getFrame( QString _name )
+KHTMLView* KHTMLView::getFrame( QString _name )
 {
     Child *c = m_lstChildren.first();
     while(c)
@@ -373,9 +373,9 @@ KHTMLWidget* KHTMLWidget::getFrame( QString _name )
 }
 
 
-void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
+void KHTMLView::begin( const QString &_url, int _x_offset, int _y_offset )
 {
-    debug("KHTMLWidget::begin(....)");
+    debug("KHTMLView::begin(....)");
 
     clear();
 
@@ -423,9 +423,9 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
     m_bParsing = true;
 }
 
-void KHTMLWidget::slotStop()
+void KHTMLView::slotStop()
 {
-  printf("----> KHTMLWidget::slotStop()\n");
+  printf("----> KHTMLView::slotStop()\n");
 
   if ( m_jobId )
   {
@@ -455,14 +455,14 @@ void KHTMLWidget::slotStop()
   m_bComplete = true;
 
 }
-void KHTMLWidget::slotReload()
+void KHTMLView::slotReload()
 {
   // Reloads everything including the framesets
   if ( !m_strURL.isEmpty() )
     openURL( m_strURL, true );
 }
 
-void KHTMLWidget::slotReloadFrames()
+void KHTMLView::slotReloadFrames()
 {
   // Does not reload framesets but all frames
   if ( isFrame() )
@@ -479,7 +479,7 @@ void KHTMLWidget::slotReloadFrames()
 }
 
 // ### fix after krash: post_data -> QCString
-void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int _yoffset, const char* _post_data )
+void KHTMLView::openURL( const QString &_url, bool _reload, int _xoffset, int _yoffset, const char* _post_data )
 {
 
     printf("======================>>>>>>>> openURL this=%p, url=%s\n", this, debugString(_url));
@@ -555,7 +555,7 @@ void KHTMLWidget::openURL( const QString &_url, bool _reload, int _xoffset, int 
   emit started( m_strWorkingURL );
 }
 
-void KHTMLWidget::slotPost( int id )
+void KHTMLView::slotPost( int id )
 {
     KIOJob* job = KIOJob::find( id );
 #ifdef AFTER_KRASH_API
@@ -565,7 +565,7 @@ void KHTMLWidget::slotPost( int id )
 #endif
 }
 
-void KHTMLWidget::slotFinished( int /*_id */ /* )
+void KHTMLView::slotFinished( int /*_id */ /* )
 {
   kDebugInfo(1202,"SLOT_FINISHED 1");
 
@@ -582,14 +582,14 @@ void KHTMLWidget::slotFinished( int /*_id */ /* )
   m_bComplete = true;
 }
 
-void KHTMLWidget::slotRedirection( int /*_id*/ /*, const char *_url )
+void KHTMLView::slotRedirection( int /*_id*/ /*, const char *_url )
 {
   // We get this only !before! we receive the first data
   assert( !m_strWorkingURL.isEmpty() );
   m_strWorkingURL = _url;
 }
 
-void KHTMLWidget::slotData( int /*_id*/ /*, const char *_p, int _len )
+void KHTMLView::slotData( int /*_id*/ /*, const char *_p, int _len )
 {
     //if(_id != m_jobId) return; // the data is still from the previous page.
 
@@ -614,7 +614,7 @@ void KHTMLWidget::slotData( int /*_id*/ /*, const char *_p, int _len )
 }
 
 
-void KHTMLWidget::slotError( int /*_id*/ /*, int _err, const char *_text )
+void KHTMLView::slotError( int /*_id*/ /*, int _err, const char *_text )
 {
   if ( _err == KIO::ERR_WARNING )
     return; //let's ignore warnings for now
@@ -633,7 +633,7 @@ void KHTMLWidget::slotError( int /*_id*/ /*, int _err, const char *_text )
   emit canceled();
 }
 
-void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &_target )
+void KHTMLView::urlSelected( const QString &_url, int _button, const QString &_target )
 {
     if ( !m_bComplete )
 	slotStop();
@@ -673,7 +673,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
       printf("searching target frame\n");
       if ( ::strcmp( target.latin1(), "_parent" ) == 0 )
       {
-	  KHTMLWidget *v = parentView();
+	  KHTMLView *v = parentView();
 	  if ( !v )
 	      v = this;
 	  v->openURL( url );
@@ -702,7 +702,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
 	  return;
       }
 
-      KHTMLWidget *v = topView()->findChildView( target );
+      KHTMLView *v = topView()->findChildView( target );
       if ( !v )
 	  v = findFrame( target );
       if ( v )
@@ -739,7 +739,7 @@ void KHTMLWidget::urlSelected( const QString &_url, int _button, const QString &
   }
 }
 
-void KHTMLWidget::slotFormSubmitted( const QString &_method, const QString &_url,
+void KHTMLView::slotFormSubmitted( const QString &_method, const QString &_url,
 				     const char *_data, const QString &_target )
 {
   QString target = _target;
@@ -776,7 +776,7 @@ void KHTMLWidget::slotFormSubmitted( const QString &_method, const QString &_url
   }
 }
 
-void KHTMLWidget::setDefaultTextColors( const QColor& _textc, const QColor& _linkc, const QColor& _vlinkc )
+void KHTMLView::setDefaultTextColors( const QColor& _textc, const QColor& _linkc, const QColor& _vlinkc )
 {
     printf("setting default text colors\n");
 
@@ -789,7 +789,7 @@ void KHTMLWidget::setDefaultTextColors( const QColor& _textc, const QColor& _lin
 	c->m_pBrowser->setDefaultTextColors( _textc, _linkc, _vlinkc );
 }
 
-void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
+void KHTMLView::setDefaultBGColor( const QColor& bgcolor )
 {
   printf("setting default bgColor\n");
     defaultSettings->bgColor = bgcolor;
@@ -799,7 +799,7 @@ void KHTMLWidget::setDefaultBGColor( const QColor& bgcolor )
 	c->m_pBrowser->setDefaultBGColor( bgcolor );
 }
 
-QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
+QString KHTMLView::completeURL( const QString &_url, const QString &target )
 {
     KURL orig;
     if(_url[0] == '#' && !target.isEmpty() && findFrame(target))
@@ -821,7 +821,7 @@ QString KHTMLWidget::completeURL( const QString &_url, const QString &target )
     return orig.url();
 }
 
-KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
+KHTMLView* KHTMLView::findChildView( const QString &_target )
 {
   QListIterator<Child> it( m_lstChildren );
   for( ; it.current(); ++it )
@@ -834,7 +834,7 @@ KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
   QListIterator<Child> it2( m_lstChildren );
   for( ; it2.current(); ++it2 )
   {
-    KHTMLWidget *b = it2.current()->m_pBrowser->findChildView( _target );
+    KHTMLView *b = it2.current()->m_pBrowser->findChildView( _target );
     if ( b )
       return b;
   }
@@ -842,7 +842,7 @@ KHTMLWidget* KHTMLWidget::findChildView( const QString &_target )
   return 0L;
 }
 
-void KHTMLWidget::childCompleted( KHTMLWidget *_browser )
+void KHTMLView::childCompleted( KHTMLView *_browser )
 {
   /** DEBUG **/ /*
   kDebugInfo(1202,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
@@ -861,7 +861,7 @@ void KHTMLWidget::childCompleted( KHTMLWidget *_browser )
   kDebugInfo(1202,"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 }
 
-void KHTMLWidget::write( const char *_str, int _len)
+void KHTMLView::write( const char *_str, int _len)
 {
     if(!decoder) decoder = new KHTMLDecoder();
 
@@ -874,7 +874,7 @@ void KHTMLWidget::write( const char *_str, int _len)
     document->write( decoded );
 }
 
-void KHTMLWidget::write( const QString &_str)
+void KHTMLView::write( const QString &_str)
 {
     if ( _str == QString::null )
 	return;
@@ -883,7 +883,7 @@ void KHTMLWidget::write( const QString &_str)
 
 }
 
-void KHTMLWidget::end()
+void KHTMLView::end()
 {
   /** DEBUG **/ /*
   if ( !_parent )
@@ -915,7 +915,7 @@ void KHTMLWidget::end()
   checkCompleted();
 }
 
-void KHTMLWidget::checkCompleted()
+void KHTMLView::checkCompleted()
 {
     if(m_bParsing) return;
 
@@ -933,7 +933,7 @@ void KHTMLWidget::checkCompleted()
 	_parent->childCompleted( this );
 }
 */
-void KHTMLWidget::resizeEvent ( QResizeEvent * event )
+void KHTMLView::resizeEvent ( QResizeEvent * event )
 {
 
 //    printf("resizeEvent\n");
@@ -954,8 +954,8 @@ void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 
 
 
-void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
-{    
+void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
+{
     QRect r = pe->rect();
 
     NodeImpl *body = 0;
@@ -1019,7 +1019,7 @@ void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
     //printf("TIME: print() dt=%d\n",qt.elapsed());
 }
 
-void KHTMLWidget::layout()
+void KHTMLView::layout()
 {
     //### take care of frmaes (hide scrollbars,...)
 
@@ -1065,7 +1065,7 @@ void KHTMLWidget::layout()
     }
 }
 
-void KHTMLWidget::paintElement( khtml::RenderObject *o, int xPos, int yPos )
+void KHTMLView::paintElement( khtml::RenderObject *o, int xPos, int yPos )
 {
     int yOff = contentsY();
     if(yOff > yPos + o->height() ||
@@ -1087,7 +1087,7 @@ void KHTMLWidget::paintElement( khtml::RenderObject *o, int xPos, int yPos )
 //
 /////////////////
 
-void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
+void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
     if(!m_part->docImpl()) return;
 
@@ -1149,7 +1149,7 @@ void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
 
 }
 
-void KHTMLWidget::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
+void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 {
     if(!m_part->docImpl()) return;
 
@@ -1168,7 +1168,7 @@ void KHTMLWidget::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     //emit doubleClick( url.string(), _mouse->button() );
 }
 
-void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
+void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
     if(!m_part->docImpl()) return;
 
@@ -1226,7 +1226,7 @@ void KHTMLWidget::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
 }
 
-void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
+void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 {
     if ( !m_part->docImpl() ) return;
 
@@ -1271,7 +1271,7 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
    }
 }
 
-void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
+void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     switch ( _ke->key() )
@@ -1314,50 +1314,50 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 // ---------------------------------- selection ------------------------------------------------
 
 /*
-QString KHTMLWidget::selectedText()
+QString KHTMLView::selectedText()
 {
     // ###
     return QString::null;
 }
 
 void
-KHTMLWidget::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
+KHTMLView::setFontSizes(const int *newFontSizes, const int *newFixedFontSizes)
 {
     defaultSettings->setFontSizes(newFontSizes, newFixedFontSizes);
 }
 
 void
-KHTMLWidget::fontSizes(int *newFontSizes, int *newFixedFontSizes)
+KHTMLView::fontSizes(int *newFontSizes, int *newFixedFontSizes)
 {
     defaultSettings->getFontSizes(newFontSizes, newFixedFontSizes);
 }
 
 void
-KHTMLWidget::resetFontSizes(void)
+KHTMLView::resetFontSizes(void)
 {
     defaultSettings->resetFontSizes();
 }
 
 void
-KHTMLWidget::setStandardFont( const QString &name )
+KHTMLView::setStandardFont( const QString &name )
 {	
     defaultSettings->fontBaseFace = name;
 }
 
 void
-KHTMLWidget::setFixedFont( const QString &name )
+KHTMLView::setFixedFont( const QString &name )
 {	
     defaultSettings->fixedFontFace = name;
 }
 
 void
-KHTMLWidget::setUnderlineLinks( bool ul )
+KHTMLView::setUnderlineLinks( bool ul )
 {
     defaultSettings->underlineLinks = ul;
 }
 
 bool
-KHTMLWidget::gotoAnchor( const QString &_name )
+KHTMLView::gotoAnchor( const QString &_name )
 {
     printf("gotoAnchor(%s)\n", _name.latin1());
     HTMLCollectionImpl *anchors =
@@ -1383,13 +1383,13 @@ KHTMLWidget::gotoAnchor( const QString &_name )
     return true;
 }
 
-void KHTMLWidget::findTextBegin()
+void KHTMLView::findTextBegin()
 {
     findPos = -1;
     findNode = 0;
 }
 
-bool KHTMLWidget::findTextNext( const QRegExp &exp )
+bool KHTMLView::findTextNext( const QRegExp &exp )
 {
     if(!findNode) findNode = document->body();
 
@@ -1424,7 +1424,7 @@ bool KHTMLWidget::findTextNext( const QRegExp &exp )
 #define INFO_FRAME (int)2
 #define INFO_FORM (int)3
 
-void KHTMLWidget::saveState( QDataStream &stream )
+void KHTMLView::saveState( QDataStream &stream )
 {
     if( (m_strURL.isEmpty() || m_strURL.isNull()) && !m_strWorkingURL.isEmpty())
 	stream << m_strWorkingURL;
@@ -1489,10 +1489,10 @@ void KHTMLWidget::saveState( QDataStream &stream )
 	stream << INFO_NONE;
     }
     else
-	printf("error in KHTMLWidget::saveState()\n");
+	printf("error in KHTMLView::saveState()\n");
 }
 
-void KHTMLWidget::restoreState( QDataStream &stream )
+void KHTMLView::restoreState( QDataStream &stream )
 {
     int x, y, info;
     QString u;
@@ -1519,7 +1519,7 @@ void KHTMLWidget::restoreState( QDataStream &stream )
 	    QString name;
 	    stream >> name;
 
-	    KHTMLWidget *w = getFrame(name);
+	    KHTMLView *w = getFrame(name);
 	    if(!w)
 	    {
 		printf("have to vreate the frame!!!\n");
@@ -1536,7 +1536,7 @@ void KHTMLWidget::restoreState( QDataStream &stream )
     layout();
 }
 
-bool KHTMLWidget::isFrameSet()
+bool KHTMLView::isFrameSet()
 {
     if(!document || !document->body()) return false;
 
@@ -1544,24 +1544,24 @@ bool KHTMLWidget::isFrameSet()
     return false;
 }
 
-khtml::Settings *KHTMLWidget::settings()
+khtml::Settings *KHTMLView::settings()
 {
     // ### check all settings stuff in khtml.cpp for memory leaks...
     if(!_settings) _settings = new khtml::Settings(*defaultSettings);
     return _settings;
 }
 
-const QString &KHTMLWidget::baseUrl()
+const QString &KHTMLView::baseUrl()
 {
   return _baseURL;
 }
 
-void KHTMLWidget::setBaseUrl(const QString &base)
+void KHTMLView::setBaseUrl(const QString &base)
 {
   _baseURL = base;
 }
 
-KJSProxy *KHTMLWidget::jScript()
+KJSProxy *KHTMLView::jScript()
 {
     if(!_jScriptEnabled) return 0;
     if(!_jscript)
@@ -1602,7 +1602,7 @@ KJSProxy *KHTMLWidget::jScript()
 }
 
 
-void KHTMLWidget::setFrameSelected(KHTMLWidget *w)
+void KHTMLView::setFrameSelected(KHTMLView *w)
 {
     if(w == this)
     {
@@ -1620,14 +1620,14 @@ void KHTMLWidget::setFrameSelected(KHTMLWidget *w)
     }
 }
 
-KHTMLWidget *KHTMLWidget::selectedFrame()
+KHTMLView *KHTMLView::selectedFrame()
 {
     if(_isSelected) return this;
 
     Child *c = m_lstChildren.first();
     while(c)
     {	
-	KHTMLWidget *w = c->m_pBrowser->selectedFrame();
+	KHTMLView *w = c->m_pBrowser->selectedFrame();
 	if(w) return w;
 	c = m_lstChildren.next();
     }
@@ -1635,7 +1635,7 @@ KHTMLWidget *KHTMLWidget::selectedFrame()
 }
 
 // ####
-bool KHTMLWidget::setCharset(const QString &name, bool /*override*/ /*)
+bool KHTMLView::setCharset(const QString &name, bool /*override*/ /*)
 {
     // ### hack: FIXME
     KCharsets *c = KGlobal::charsets();
@@ -1655,13 +1655,13 @@ bool KHTMLWidget::setCharset(const QString &name, bool /*override*/ /*)
     return true;
 }
 
-void KHTMLWidget::scheduleRedirection(int delay, const QString & url)
+void KHTMLView::scheduleRedirection(int delay, const QString & url)
 {
     m_delayRedirect = delay;
     m_strRedirectUrl = url;
 }
 
-void KHTMLWidget::slotRedirect()
+void KHTMLView::slotRedirect()
 {
     urlSelected(m_strRedirectUrl, LeftButton, QString::null);
     m_strRedirectUrl == QString::null;

@@ -235,7 +235,7 @@ void HTMLBRElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLBRElementImpl::attach(KHTMLWidget *)
+void HTMLBRElementImpl::attach(KHTMLView *)
 {
     printf("HTMLBRElementImpl::attach\n");
     m_style = document->styleSelector()->styleForElement(this);

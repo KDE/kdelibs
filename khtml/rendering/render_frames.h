@@ -27,7 +27,7 @@
 #include "render_replaced.h"
 #include "xml/dom_nodeimpl.h"
 
-class KHTMLWidget;
+class KHTMLView;
 
 namespace DOM
 {
@@ -41,7 +41,7 @@ namespace khtml
 class RenderFrameSet : public RenderBox
 {
 public:
-  RenderFrameSet( RenderStyle *style, DOM::HTMLFrameSetElementImpl *frameSet, KHTMLWidget *view,
+  RenderFrameSet( RenderStyle *style, DOM::HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
 		  QList<khtml::Length> *rows, QList<khtml::Length> *cols );
 
   virtual ~RenderFrameSet();
@@ -77,7 +77,7 @@ private:
 
   bool m_resizing;
 
-  KHTMLWidget *m_view;
+  KHTMLView *m_view;
 };
 
 // ### rename to generic RenderPart

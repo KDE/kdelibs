@@ -68,7 +68,7 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
     bodyElement = 0;
 }
 
-HTMLDocumentImpl::HTMLDocumentImpl(KHTMLWidget *v)
+HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
     : DocumentImpl(v)
 {
     printf("HTMLDocumentImpl constructor2 this = %p\n",this);
@@ -286,7 +286,7 @@ bool HTMLDocumentImpl::mouseEvent( int _x, int _y, int button, MouseEventType ty
     return false;
 }
 
-void HTMLDocumentImpl::attach(KHTMLWidget *w)
+void HTMLDocumentImpl::attach(KHTMLView *w)
 {
     view = w;
     if(!m_styleSelector) createSelector();

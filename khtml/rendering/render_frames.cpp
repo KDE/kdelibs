@@ -34,7 +34,7 @@
 
 using namespace khtml;
 
-RenderFrameSet::RenderFrameSet( RenderStyle *style, HTMLFrameSetElementImpl *frameSet, KHTMLWidget *view,
+RenderFrameSet::RenderFrameSet( RenderStyle *style, HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
 			        QList<khtml::Length> *rows, QList<khtml::Length> *cols )
 : RenderBox( style )
 {
@@ -380,7 +380,7 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
       m_hSplitPos = _y;
     }
     else
-      static_cast<KHTMLWidget *>(m_view)->setCursor(cursor);
+      static_cast<KHTMLView *>(m_view)->setCursor(cursor);
 
   }
 

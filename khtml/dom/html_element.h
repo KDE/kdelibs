@@ -24,7 +24,7 @@
 #define HTML_ELEMENT_H
 
 #include <dom/dom_element.h>
-class KHTMLWidget;
+class KHTMLView;
 
 namespace DOM {
 
@@ -59,7 +59,7 @@ class DOMString;
 class HTMLElement : public Element
 {
     friend class HTMLDocument;
-    friend class KHTMLWidget;
+    friend class KHTMLView;
     friend class HTMLTableElement;
     friend class HTMLTableRowElement;
     friend class HTMLTableSectionElement;

@@ -27,7 +27,7 @@
 #include "dom_node.h"
 #include "dom_string.h"
 class HTMLImageRequester;
-class KHTMLWidget;
+class KHTMLView;
 
 namespace khtml {
     class CSSStyleSelector;
@@ -50,7 +50,7 @@ class DocumentImpl : public NodeBaseImpl
 {
 public:
     DocumentImpl();
-    DocumentImpl(KHTMLWidget *v);
+    DocumentImpl(KHTMLView *v);
     ~DocumentImpl();
 
     virtual const DOMString nodeName() const;
@@ -91,11 +91,11 @@ public:
     khtml::CSSStyleSelector *styleSelector() { return m_styleSelector; }
     virtual void createSelector();
 
-    KHTMLWidget *HTMLWidget() { return view; }
+    KHTMLView *HTMLWidget() { return view; }
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
-    KHTMLWidget *view;
+    KHTMLView *view;
 };
 
 class DocumentFragmentImpl : public NodeImpl

@@ -37,7 +37,7 @@ namespace KJS {
  * @short ECMAScript interpreter
  *
  * This library implements ECMAScript. Currently its main aim is to add
- * JavaScript support to KHTMLWidget.
+ * JavaScript support to KHTMLView.
  */
 class KJScript {
   friend KJScriptLock;
@@ -45,7 +45,7 @@ public:
   /**
    * Create a new ECMAScript interpreter. You can later ask it to interprete
    * code by pass it via @ref #evaluate.
-   * @param w is pointing to the KHTMLWidget you wish the script to operate on.
+   * @param w is pointing to the KHTMLView you wish the script to operate on.
    */
   KJScript();
   /**

@@ -352,7 +352,7 @@ void HTMLTableElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLTableElementImpl::attach(KHTMLWidget *w)
+void HTMLTableElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
 }	
@@ -383,7 +383,7 @@ void HTMLTablePartElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLTablePartElementImpl::attach(KHTMLWidget *w)
+void HTMLTablePartElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
 }
@@ -605,7 +605,7 @@ void HTMLTableCellElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLTableCellElementImpl::attach(KHTMLWidget *_view)
+void HTMLTableCellElementImpl::attach(KHTMLView *_view)
 {
     m_style = document->styleSelector()->styleForElement(this);
     khtml::RenderObject *r = _parent->renderer();

@@ -32,7 +32,7 @@
 
 class KHTMLParser;
 class HTMLTokenizer;
-class KHTMLWidget;
+class KHTMLView;
 class HTMLImageRequester;
 
 namespace DOM {
@@ -50,7 +50,7 @@ class HTMLDocumentImpl : public DocumentImpl
 {
 public:
     HTMLDocumentImpl();
-    HTMLDocumentImpl(KHTMLWidget *v);
+    HTMLDocumentImpl(KHTMLView *v);
 
     ~HTMLDocumentImpl();
 
@@ -83,7 +83,7 @@ public:
 			     int _tx, int _ty, DOMString &url,
                              NodeImpl *& innerNode, long &offset);
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     virtual void detach();
 
     virtual void createSelector();

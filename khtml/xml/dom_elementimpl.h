@@ -132,7 +132,7 @@ public:
     void setAttribute ( int id, const DOMString &value );
     void setAttribute ( AttributeList list );
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
 
 protected: // member variables
 

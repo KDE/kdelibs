@@ -56,7 +56,7 @@ static const QChar listingEnd [] = { '<','/','l','i','s','t','i','n','g','>' };
 
 // ----------------------------------------------------------------------------
 
-HTMLTokenizer::HTMLTokenizer(KHTMLParser *p, KHTMLWidget *_view)
+HTMLTokenizer::HTMLTokenizer(KHTMLParser *p, KHTMLView *_view)
 {
     view = _view;
     buffer = 0;
@@ -223,7 +223,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    if (script)
 	    {
 	        /* Parse scriptCode containing <script> info */
-		// ### use KHTMLWidget::executeScript...
+		// ### use KHTMLView::executeScript...
 	    	KJSProxy *jscript = view->part()->jScript();
 		//printf("scriptcode is: %s\n", QString(scriptCode, scriptCodeSize).ascii());
 	  	if(jscript) jscript->evaluate(scriptCode, scriptCodeSize);

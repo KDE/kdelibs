@@ -25,7 +25,7 @@
 #include "khtmlview.h"
 using namespace khtml;
 
-RenderRoot::RenderRoot(RenderStyle *style, KHTMLWidget *view)
+RenderRoot::RenderRoot(RenderStyle *style, KHTMLView *view)
     : RenderFlow(style)
 {
     m_view = view;

@@ -473,7 +473,7 @@ NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
     return this;
 }
 
-void NodeBaseImpl::attach(KHTMLWidget *w)
+void NodeBaseImpl::attach(KHTMLView *w)
 {
     NodeImpl *child = _first;
     while(child != 0)

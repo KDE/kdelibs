@@ -56,7 +56,7 @@ public:
                              int _tx, int _ty, DOMString &url,
                              NodeImpl *&innerNode, long &offset );
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     
 protected:
     bool ismap;

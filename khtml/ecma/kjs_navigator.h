@@ -23,7 +23,7 @@
 #include "global.h"
 #include "object.h"
 
-class KHTMLWidget;
+class KHTMLView;
 
 namespace KJS {
 

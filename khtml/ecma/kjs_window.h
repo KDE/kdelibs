@@ -23,26 +23,26 @@
 #include "global.h"
 #include "object.h"
 
-class KHTMLWidget;
+class KHTMLView;
 
 namespace KJS {
 
   class Window : public HostObject {
   public:
-    Window(KHTMLWidget *w) : widget(w) { }
+    Window(KHTMLView *w) : widget(w) { }
     virtual KJSO *get(const CString &p) const;
     virtual void put(const CString &p, KJSO *v, int);
   private:
-    KHTMLWidget *widget;
+    KHTMLView *widget;
   };
 
   class WindowFunc : public KJSInternalFunction {
   public:
-    WindowFunc(KHTMLWidget *w, int i) : widget(w), id(i) { };
+    WindowFunc(KHTMLView *w, int i) : widget(w), id(i) { };
     KJSO *execute(KJSContext *);
     enum { Alert, Confirm };
   private:
-    KHTMLWidget *widget;
+    KHTMLView *widget;
     int id;
   };
 

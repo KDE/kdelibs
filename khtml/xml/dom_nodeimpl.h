@@ -28,7 +28,7 @@
 #include "khtmllayout.h"
 
 class QPainter;
-class KHTMLWidget;
+class KHTMLView;
 
 namespace khtml {
     class RenderStyle;
@@ -192,10 +192,10 @@ public:
 	{ b ? flags|=MouseInside : flags&=~MouseInside; }
 
     /**
-     * attach to a KHTMLWidget. Additional info (like style information,
+     * attach to a KHTMLView. Additional info (like style information,
      * frames, etc...) will only get loaded, when attached to a widget.
      */
-    virtual void attach(KHTMLWidget *) {}
+    virtual void attach(KHTMLView *) {}
     /**
      * detach from a HTMLWidget
      */
@@ -272,7 +272,7 @@ public:
     virtual void setFirstChild(NodeImpl *child);
     virtual void setLastChild(NodeImpl *child);
     virtual NodeImpl *addChild(NodeImpl *newChild);
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     virtual void detach();
 
 protected:

@@ -141,7 +141,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 {
     if(!hasEvents()) return;
 
-    KHTMLWidget *htmlwidget = (KHTMLWidget *) static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
+    KHTMLView *htmlwidget = (KHTMLView *) static_cast<HTMLDocumentImpl *>(document)->HTMLWidget();
     if(!htmlwidget) return;
 
     int id;

@@ -80,7 +80,7 @@ void HTMLBaseElementImpl::parseAttribute(Attribute *attr)
 }
 
 
-void HTMLBaseElementImpl::attach(KHTMLWidget *v)
+void HTMLBaseElementImpl::attach(KHTMLView *v)
 {
     m_style = document->styleSelector()->styleForElement(this);
     if(_href.length())
@@ -155,7 +155,7 @@ void HTMLLinkElementImpl::setDisabled( bool )
 }
 
 // other stuff...
-void HTMLLinkElementImpl::attach(KHTMLWidget *)
+void HTMLLinkElementImpl::attach(KHTMLView *)
 {
     m_style = document->styleSelector()->styleForElement(this);
 
@@ -238,7 +238,7 @@ void HTMLMetaElementImpl::parseAttribute(Attribute *attr)
 }
 
 
-void HTMLMetaElementImpl::attach(KHTMLWidget *v)
+void HTMLMetaElementImpl::attach(KHTMLView *v)
 {
     m_style = document->styleSelector()->styleForElement(this);
     printf("meta::attach() equiv=%s, content=%s\n", _equiv.string().ascii(), _content.string().ascii());

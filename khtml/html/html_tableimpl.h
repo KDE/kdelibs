@@ -111,7 +111,7 @@ public:
     virtual NodeImpl *addChild(NodeImpl *child);
     virtual void parseAttribute(Attribute *attr);
 
-    virtual void attach(KHTMLWidget *);
+    virtual void attach(KHTMLView *);
     virtual void detach();
 
 protected:
@@ -138,7 +138,7 @@ public:
 
     virtual void parseAttribute(Attribute *attr);
 
-    void attach(KHTMLWidget *);
+    void attach(KHTMLView *);
     void detach();
 };
 
@@ -235,7 +235,7 @@ public:
 
     // overrides
     virtual void parseAttribute(Attribute *attr);
-    virtual void attach(KHTMLWidget *);
+    virtual void attach(KHTMLView *);
 
 protected:
     int _row;

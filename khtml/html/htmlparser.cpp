@@ -236,7 +236,7 @@ public:
  *    element or ignore the tag.
  *
  */
-KHTMLParser::KHTMLParser( KHTMLWidget *_parent,
+KHTMLParser::KHTMLParser( KHTMLView *_parent,
 			  HTMLDocumentImpl *doc)
 {
     printf("parser constructor\n");

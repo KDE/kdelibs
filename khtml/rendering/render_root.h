@@ -25,7 +25,7 @@
 
 #include "render_flow.h"
 
-class KHTMLWidget;
+class KHTMLView;
 class QScrollView;
 
 namespace khtml {
@@ -33,7 +33,7 @@ namespace khtml {
 class RenderRoot : public RenderFlow
 {
 public:
-    RenderRoot(RenderStyle *style, KHTMLWidget *view);
+    RenderRoot(RenderStyle *style, KHTMLView *view);
     virtual ~RenderRoot() {}
 
     virtual const char *renderName() const { return "RenderRoot"; }
@@ -53,7 +53,7 @@ public:
     virtual void repaintObject(RenderObject *o, int x, int y);
 
 protected:
-    KHTMLWidget *m_view;
+    KHTMLView *m_view;
 };
 
 };

@@ -51,7 +51,7 @@ class HTMLTokenizer;
 #include "htmlparser.h"
 
 class KHTMLParser;
-class KHTMLWidget;
+class KHTMLView;
 
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
@@ -66,7 +66,7 @@ class KHTMLWidget;
 class HTMLTokenizer
 {
 public:
-    HTMLTokenizer(KHTMLParser *, KHTMLWidget * = 0);
+    HTMLTokenizer(KHTMLParser *, KHTMLView * = 0);
     ~HTMLTokenizer();
 
     void begin();
@@ -223,7 +223,7 @@ protected:
     KCharsets *charsets;
     KHTMLParser *parser;
 
-    KHTMLWidget *view;
+    KHTMLView *view;
 };
 
 #endif // HTMLTOKENIZER

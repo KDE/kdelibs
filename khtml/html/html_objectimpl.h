@@ -27,7 +27,7 @@
 #include "html_elementimpl.h"
 #include "misc/khtmllayout.h"
 
-class KHTMLWidget;
+class KHTMLView;
 class KJavaAppletWidget;
 class DOM::DOMStringImpl;
 using namespace DOM;
@@ -52,7 +52,7 @@ public:
 
     virtual void parseAttribute(Attribute *token);
 
-    virtual void attach(KHTMLWidget *w);
+    virtual void attach(KHTMLView *w);
     virtual void detach();
 
     virtual khtml::VAlign vAlign() { return valign; }
@@ -63,7 +63,7 @@ protected:
     DOMStringImpl *code;
 
     KJavaAppletWidget *applet;
-    KHTMLWidget *view;
+    KHTMLView *view;
     khtml::VAlign valign;
 };
 

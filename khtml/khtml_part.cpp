@@ -97,7 +97,7 @@ public:
   }
   ~KHTMLPartPrivate()
   {
-    //no need to delete m_widget here! kparts does it for us (: (Simon)
+    //no need to delete m_view here! kparts does it for us (: (Simon)
     if ( m_extension )
       delete m_extension;
     delete m_settings;
@@ -105,7 +105,7 @@ public:
 
   QMap<QString,khtml::ChildFrame> m_frames;
 
-  QGuardedPtr<KHTMLWidget> m_widget;
+  QGuardedPtr<KHTMLView> m_view;
   KHTMLPartBrowserExtension *m_extension;
   DOM::HTMLDocumentImpl *m_doc;
   KHTMLDecoder *m_decoder;
@@ -148,8 +148,8 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   d = new KHTMLPartPrivate;
 
-  d->m_widget = new KHTMLWidget( this, parentWidget, widgetname );
-  setWidget( d->m_widget );
+  d->m_view = new KHTMLView( this, parentWidget, widgetname );
+  setWidget( d->m_view );
 
   d->m_extension = new KHTMLPartBrowserExtension( this );
 
@@ -171,10 +171,10 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
 KHTMLPart::~KHTMLPart()
 {
-  if ( d->m_widget )
+  if ( d->m_view )
   {
-    d->m_widget->hide();
-    d->m_widget->viewport()->hide();
+    d->m_view->hide();
+    d->m_view->viewport()->hide();
   }
   closeURL();
 
@@ -195,7 +195,7 @@ bool KHTMLPart::openURL( const KURL &url )
     if ( !url.htmlRef().isEmpty() )
       gotoAnchor( url.htmlRef() );
     else
-      d->m_widget->setContentsPos( 0, 0 );
+      d->m_view->setContentsPos( 0, 0 );
 
     d->m_bComplete = true;
     d->m_bParsing = false;
@@ -266,9 +266,9 @@ KHTMLPartBrowserExtension *KHTMLPart::browserExtension() const
   return d->m_extension;
 }
 
-KHTMLWidget *KHTMLPart::htmlWidget() const
+KHTMLView *KHTMLPart::htmlView() const
 {
-  return d->m_widget;
+  return d->m_view;
 }
 
 void KHTMLPart::enableJScript( bool enable )
@@ -365,8 +365,8 @@ void KHTMLPart::clear()
 
   d->m_jscript = 0;
 
-  if ( d->m_widget )
-    d->m_widget->clear();
+  if ( d->m_view )
+    d->m_view->clear();
   /*
   QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
   QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
@@ -467,13 +467,13 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
   else
     emit setWindowCaption( i18n( "* Unknown *" ) );
 
-  d->m_doc = new HTMLDocumentImpl( d->m_widget );
+  d->m_doc = new HTMLDocumentImpl( d->m_view );
   d->m_doc->ref();
-  d->m_doc->attach( d->m_widget );
+  d->m_doc->attach( d->m_view );
   d->m_doc->setURL( m_url.url() );
   d->m_doc->open();
   // clear widget
-  d->m_widget->resizeContents( 0, 0 );
+  d->m_view->resizeContents( 0, 0 );
 
   d->m_bParsing = true;
 }
@@ -509,7 +509,7 @@ void KHTMLPart::end()
   if ( !m_url.htmlRef().isEmpty() )
     gotoAnchor( m_url.htmlRef() );
   else
-    d->m_widget->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
+    d->m_view->setContentsPos( d->m_extension->urlArgs().xOffset, d->m_extension->urlArgs().yOffset );
 
   if ( !d->m_redirectURL.isEmpty() )
   {
@@ -659,7 +659,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(n);
   a->getAnchorPosition(x, y);
   printf("going to %d/%d\n", x, y);
-  d->m_widget->setContentsPos(x-50, y-50);
+  d->m_view->setContentsPos(x-50, y-50);
   return true;
 }
 
@@ -690,12 +690,12 @@ void KHTMLPart::setFixedFont( const QString &name )
 
 void KHTMLPart::setURLCursor( const QCursor &c )
 {
-  d->m_widget->setURLCursor( c );
+  d->m_view->setURLCursor( c );
 }
 
 const QCursor &KHTMLPart::urlCursor()
 {
-  return d->m_widget->urlCursor();
+  return d->m_view->urlCursor();
 }
 
 void KHTMLPart::findTextBegin()
@@ -902,7 +902,7 @@ void KHTMLPart::slotSaveBackground()
   KURL backgroundURL( m_url, relURL );
 
   KFileDialog *dlg = new KFileDialog( QString::null, "*",
-					d->m_widget , "filedialog", true );
+					d->m_view , "filedialog", true );
   dlg->setCaption(i18n("Save background image as"));
 
   dlg->setSelection( backgroundURL.filename() );
@@ -929,7 +929,7 @@ void KHTMLPart::slotSaveDocument()
     srcURL.setFileName( "index.html" );
 
   KFileDialog *dlg = new KFileDialog( QString::null, i18n("HTML files|* *.html *.htm"),
-				      d->m_widget , "filedialog", true );
+				      d->m_view , "filedialog", true );
   dlg->setCaption(i18n("Save as"));
 
   dlg->setSelection( srcURL.filename() );
@@ -1013,7 +1013,7 @@ void KHTMLPart::processChildRequest( khtml::ChildFrame *child, const KURL &url, 
 
   if ( !child->m_services.contains( mimetype ) )
   {
-    KParts::ReadOnlyPart *part = createFrame( d->m_widget->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_services );
+    KParts::ReadOnlyPart *part = createFrame( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_services );
 
     if ( !part )
       return;
@@ -1100,7 +1100,7 @@ KParts::PartManager *KHTMLPart::partManager()
 {
   if ( !d->m_manager )
   {
-    d->m_manager = new KParts::PartManager( d->m_widget );
+    d->m_manager = new KParts::PartManager( d->m_view );
     connect( d->m_manager, SIGNAL( activePartChanged( KParts::Part * ) ),
 	     this, SLOT( updateActions() ) );
   }
@@ -1302,7 +1302,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( const KURL &url, const KPar
 
 void KHTMLPart::saveState( QDataStream &stream )
 {
-  stream << m_url << (Q_INT32)d->m_widget->contentsX() << (Q_INT32)d->m_widget->contentsY();
+  stream << m_url << (Q_INT32)d->m_view->contentsX() << (Q_INT32)d->m_view->contentsY();
 
   stream << (Q_UINT32)d->m_frames.count();
 
@@ -1444,12 +1444,12 @@ KHTMLPartBrowserExtension::KHTMLPartBrowserExtension( KHTMLPart *parent, const c
 
 int KHTMLPartBrowserExtension::xOffset()
 {
-  return m_part->htmlWidget()->contentsX();
+  return m_part->htmlView()->contentsX();
 }
 
 int KHTMLPartBrowserExtension::yOffset()
 {
-  return m_part->htmlWidget()->contentsY();
+  return m_part->htmlView()->contentsY();
 }
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )

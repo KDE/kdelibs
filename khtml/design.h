@@ -38,8 +38,8 @@
  * If you want to add to your application a widget that oly needs simple text
  * browsing, you can also use the @ref KTextBrowser widget in kdeui.
  *
- * @ref KHTMLWidget :
- *   The main widget for using khtml.
+ * @ref KHTMLPart :
+ *   The main part/widget for using khtml.
  *
  * @ref DOM :
  *   The dom implementation used in khtml.
@@ -47,8 +47,8 @@
  */
 
 /**
- * 
- * The Document Object Model (DOM) is divided into two parts, the 
+ *
+ * The Document Object Model (DOM) is divided into two parts, the
  * @ref COREDOM core
  * DOM, specifying some core functionality, and the @ref HTMLDOM HTML DOM,
  * which deals with the extensions needed for HTML.

@@ -163,7 +163,7 @@ void HTMLImageElementImpl::parseAttribute(Attribute *attr)
     }
 }
 
-void HTMLImageElementImpl::attach(KHTMLWidget *)
+void HTMLImageElementImpl::attach(KHTMLView *)
 {
     printf("HTMLImageImpl::attach\n");
     m_style = document->styleSelector()->styleForElement(this);

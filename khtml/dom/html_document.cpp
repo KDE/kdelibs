@@ -43,7 +43,7 @@ HTMLDocument::HTMLDocument() : Document(false) // create the impl here
 
 }
 
-HTMLDocument::HTMLDocument(KHTMLWidget *parent)
+HTMLDocument::HTMLDocument(KHTMLView *parent)
     : Document(false) // create the impl here
 {
     impl = new HTMLDocumentImpl( parent);

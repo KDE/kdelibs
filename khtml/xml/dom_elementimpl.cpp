@@ -320,7 +320,7 @@ AttributeList *ElementImpl::defaultMap() const
     return 0;
 }
 
-void ElementImpl::attach(KHTMLWidget *w)
+void ElementImpl::attach(KHTMLView *w)
 {
     m_style = document->styleSelector()->styleForElement(this);
     khtml::RenderObject *r = _parent->renderer();

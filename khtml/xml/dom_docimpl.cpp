@@ -37,7 +37,7 @@ DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
     view = 0;
 }
 
-DocumentImpl::DocumentImpl(KHTMLWidget *v) : NodeBaseImpl(0)
+DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
 {
     m_styleSelector = 0;
     view = v;
