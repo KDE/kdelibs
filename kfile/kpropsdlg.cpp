@@ -88,8 +88,6 @@
 
 template class QList<KFileItem>;
 
-#define ROUND(x) ((int)(0.5 + (x)))
-
 mode_t KFilePermissionsPropsPage::fperm[3][4] = {
         {S_IRUSR, S_IWUSR, S_IXUSR, S_ISUID},
         {S_IRGRP, S_IWGRP, S_IXGRP, S_ISGID},
@@ -619,7 +617,7 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
     grid->addWidget(sizeLabel, curRow++, 2);
     if (S_ISREG(item->mode()))
     {
-        displaySize( item->size() );
+        sizeLabel->setText(KIO::convertSize(item->size()));
     }
     else
     {
@@ -681,25 +679,8 @@ void KFilePropsPage::slotDirSizeFinished( KIO::Job * job )
   if (job->error())
     job->showErrorDialog( properties->dialog() );
   else
-    displaySize( static_cast<KDirSize*>(job)->totalSize() );
+    sizeLabel->setText(KIO::convertSize(static_cast<KDirSize*>(job)->totalSize() ) );
   d->dirSizeJob = 0L;
-}
-
-void KFilePropsPage::displaySize( unsigned long size )
-{
-    QString tempstr;
-    // Should we use KIO::convertSize ? Seems less accurate...
-    if (size > 1024*1024) {
-      tempstr = i18n("%1MB ").arg(KGlobal::locale()->formatNumber(ROUND(size/(1024*1024.0)), 0));
-      tempstr += i18n("(%1 bytes)").arg(KGlobal::locale()->formatNumber(size, 0));
-
-    } else if (size > 1024) {
-      tempstr = i18n("%1KB ").arg(KGlobal::locale()->formatNumber(ROUND(size/1024.0), 2));
-      tempstr += i18n("(%1 bytes)").arg(KGlobal::locale()->formatNumber(size, 0));
-    } else
-      tempstr = i18n("%1 bytes").arg(KGlobal::locale()->formatNumber(size, 0));
-
-    sizeLabel->setText( tempstr );
 }
 
 KFilePropsPage::~KFilePropsPage()
