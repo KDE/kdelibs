@@ -42,7 +42,7 @@ QString displayName()
     return d;
 }
 
-KFM::KFM()
+KFM::KFM(bool silent)
 {
     flag = 0;
     ok = FALSE;
@@ -50,7 +50,7 @@ KFM::KFM()
     allowRestart = FALSE;
     modal_hack_widget = 0;
 
-    init();
+    init(silent);
 }
 
 KFM::~KFM()
@@ -110,7 +110,7 @@ bool KFM::downloadInternal(const QString & src, QString & target){
 }
 
 
-void KFM::init()
+void KFM::init(bool silent)
 {
     QString file = KApplication::localkdedir() + "/share/apps/kfm/pid";
     file += displayName();
@@ -127,11 +127,11 @@ void KFM::init()
 	    // dont try twice
 	    flag = 1;
 	    sleep( 10 );
-	    init();
+	    init(silent);
 	    return;
 	}
 	
-	warning("ERROR: KFM is not running");
+	if (!silent) warning("ERROR: KFM is not running");
 	return;
     }
     
@@ -142,7 +142,7 @@ void KFM::init()
     int pid = atoi( buffer );
     if ( pid <= 0 )
     {
-	warning("ERROR: Invalid PID");
+	if (!silent) warning("ERROR: Invalid PID");
 	fclose( f );
 	return;
     }
@@ -158,11 +158,11 @@ void KFM::init()
 	    system( "kfm -d &" );
 	    sleep( 10 );
 	    fclose( f );
-	    init();
+	    init(silent);
 	    return;
 	}
 
-	warning("ERROR: KFM crashed");
+	if (!silent) warning("ERROR: KFM crashed");
 	fclose( f );
 	return;
     }
@@ -174,7 +174,7 @@ void KFM::init()
     char * slot = strdup( buffer );
     if ( slot == (void *) 0 )
     {
-	warning("ERROR: Invalid Slot");
+	if (!silent) warning("ERROR: Invalid Slot");
 	return;
     }
     
@@ -352,7 +352,7 @@ bool KFM::test()
 	ok = FALSE;
 
 	warning( "KFM recovery" );
-	init();
+	init(false);
 	warning( "KFM recovery done" );
     }
 

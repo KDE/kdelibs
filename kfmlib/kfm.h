@@ -49,8 +49,10 @@ public:
      * You have to call @ref #allowKFMRestart before
      * calling any other function. This will allow to
      * restart KFM on demand.
+     * @arg silent set to true if you don't want error messages on stderr
+     *      (useful e.g. to simply test if KFM is running or not)
      */
-    KFM();
+    KFM(bool silent = false);
     ~KFM();
 
 
@@ -133,7 +135,7 @@ public slots:
 		      const char* _group, const char* _date, int _size);
     
 protected:
-    void init();
+    void init(bool silent);
     bool test();
     
     char flag;
