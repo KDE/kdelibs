@@ -695,7 +695,11 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
         return;
 
     Event ev = evt;
-    for (QPtrListIterator<RegisteredEventListener> it(*m_regdListeners); it.current();) {
+    // removeEventListener (e.g. called from a JS event listener) might invalidate the current iterator
+    // (and make it point to the QPtrList::current() item - which is difficult to set correctly).
+    // So we make a copy of the list.
+    QPtrList<RegisteredEventListener> listeners = *m_regdListeners;
+    for (QPtrListIterator<RegisteredEventListener> it(listeners); it.current();) {
         RegisteredEventListener* current = it();
         if (current->id == evt->id() && current->useCapture == useCapture)
             current->listener->handleEvent(ev);

@@ -1,3 +1,8 @@
+2003-10-14  David Faure  <faure@kde.org>
+
+	* xml/dom_nodeimpl.cpp (handleLocalEvents): Fixed infinite loop in
+	NodeImpl::handleLocalEvents due to braindead QPtrList behavior. #61623.
+
 2003-10-10  Harri Porten  <porten@kde.org>
 
 	* ecma/kjs_html.cpp: title and alt attributes should never be null
