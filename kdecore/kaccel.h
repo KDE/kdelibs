@@ -177,7 +177,7 @@ class KAccel : public QAccel
 	/** Enable or disable the action named by @p sAction. */
 	bool setEnabled( const QString& sAction, bool bEnabled );
 
-	const QString& configGroup();
+	const QString& configGroup() const;
 	void setConfigGroup( const QString& );
 
 	/**
