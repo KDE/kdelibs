@@ -158,6 +158,12 @@ DIV.mediaobject { /* float: right; */
                                   position _images_ */
                   }
 
+.caption { margin: 0em 2em 3em 2em; }
+
+.inlinemediaobject { vertical-align: baseline; 
+		     padding-right: 1em;
+		     padding-left: 1em;		}
+
 /* An idea that could be nice: a search engine looking for specific
 classes could display them in some conspicuous colour.  All that is
 needed is an on the fly generated style element/style sheet. */
