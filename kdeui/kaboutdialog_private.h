@@ -96,6 +96,8 @@ class KAboutContainerBase : public QWidget
 
     QFrame *addTextPage( const QString &title, const QString &text,
 			 bool richText=false, int numLines=10 );
+    QFrame *addLicensePage( const QString &title, const QString &text,
+			 int numLines=10 );
     KAboutContainer *addContainerPage( const QString &title,
       int childAlignment = AlignCenter, int innerAlignment = AlignCenter );
     KAboutContainer *addScrolledContainerPage( const QString &title,

@@ -454,11 +454,6 @@ void KAboutContainerBase::fontChange( const QFont &/*oldFont*/ )
   update();
 }
 
-
-
-
-
-
 QFrame *KAboutContainerBase::addTextPage( const QString &title,
 					  const QString &text,
 					  bool richText, int numLines )
@@ -491,6 +486,26 @@ QFrame *KAboutContainerBase::addTextPage( const QString &title,
     lineEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
     vbox->addWidget( lineEdit );
   }
+
+  return( page );
+}
+
+QFrame *KAboutContainerBase::addLicensePage( const QString &title,
+					  const QString &text, int numLines)
+{
+  QFrame *page = addEmptyPage( title );
+  if( page == 0 ) { return(0); }
+  if( numLines <= 0 ) { numLines = 10; }
+
+  QVBoxLayout *vbox = new QVBoxLayout( page, KDialog::spacingHint() );
+
+  QMultiLineEdit *lineEdit = new QMultiLineEdit( page, "license" );
+  lineEdit->setFont( KGlobalSettings::fixedFont());
+  lineEdit->setReadOnly( true );
+  lineEdit->setText( text );
+//  lineEdit->setMinimumWidth( lineEdit->maxLineWidth() + 20 );
+  lineEdit->setMinimumHeight( fontMetrics().lineSpacing()*numLines );
+  vbox->addWidget( lineEdit );
 
   return( page );
 }
@@ -1623,6 +1638,13 @@ QFrame *KAboutDialog::addTextPage( const QString &title, const QString &text,
 {
   if( mContainerBase == 0 ) { return( 0 ); }
   return( mContainerBase->addTextPage( title, text, richText, numLines ) );
+}
+
+QFrame *KAboutDialog::addLicensePage( const QString &title, const QString &text,
+				   int numLines )
+{
+  if( mContainerBase == 0 ) { return( 0 ); }
+  return( mContainerBase->addLicensePage( title, text, numLines ) );
 }
 
 

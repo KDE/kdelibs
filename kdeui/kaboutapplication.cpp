@@ -102,7 +102,7 @@ KAboutApplication::KAboutApplication( QWidget *parent, const char *name,
 
   if (!aboutData->license().isEmpty() )
   {
-    addTextPage( i18n("&License agreement"), aboutData->license() );
+    addLicensePage( i18n("&License agreement"), aboutData->license() );
   }
 
   //

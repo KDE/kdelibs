@@ -351,6 +351,19 @@ class KAboutDialog : public KDialogBase
 
   /**
    * (Constructor II only)
+   * Add a license page to a tab box. 
+   *
+   * @param title Tab name.
+   * @param text The text to display.
+   * @param numLines The text area height will be adjusted so that this
+   *        is the minimum number of lines of text that are visible.
+   * @return The frame that contains the page.
+   */
+  QFrame *addLicensePage( const QString &title, const QString &text,
+                          int numLines=10 );
+
+  /**
+   * (Constructor II only)
    * Adds a container to a tab box. You can add text and images to a
    * container.
    *
