@@ -205,8 +205,6 @@ protected:
     bool hasSelection;
     /** Save the size of the largest used cell content. */
     QRect maxCell;
-    /** The day names. */
-    QString Days[7];
 signals:
     /** The selected date changed. */
     void dateChanged(QDate);

@@ -90,14 +90,15 @@ public:
    * Set the font size of the widgets elements. 
    **/
   void setFontSize(int);
+  /**
+   * Font size of the widget elements.
+   */
+  int fontSize() const
+    { return fontsize; }
 
-  /// the month names
-  static QString *Month[12];
 protected:
   /// the resize event
   void resizeEvent(QResizeEvent*);
-  /// the font size for the widget
-  int fontsize;
   /// the year forward button
   QToolButton *yearForward;
   /// the year backward button
@@ -117,9 +118,7 @@ protected:
   /// the date table 
   KDateTable *table;
   /// the size calculated during resize events
-  QSize sizehint;
-  /// KDatePicker reference counter
-  static int KDatePickers;
+    //  QSize sizehint;
   /// the widest month string in pixels:
   QSize maxMonthRect;
 protected slots:
@@ -154,6 +153,9 @@ signals:
   void tableClicked();
 
 private:
+  /// the font size for the widget
+  int fontsize;
+
   class KDatePickerPrivate;
   KDatePickerPrivate *d;
 };

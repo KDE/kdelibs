@@ -92,14 +92,6 @@ KDateTable::KDateTable(QWidget *parent, QDate date_, const char* name, WFlags f)
   // setTableFlags(Tbl_clipCellPainting); // enable to find drawing failures
   setBackgroundColor(lightGray);
   setDate(date_); // this initializes firstday, numdays, numDaysPrevMonth
-  int dayoff = KGlobal::locale()->weekStartsMonday() ? 0 : 1;
-  Days[0+dayoff]=i18n("Monday", "Mon");
-  Days[1+dayoff]=i18n("Tuesday", "Tue");
-  Days[2+dayoff]=i18n("Wednesday", "Wed");
-  Days[3+dayoff]=i18n("Thursday", "Thu");
-  Days[4+dayoff]=i18n("Friday", "Fri");
-  Days[5+dayoff]=i18n("Saturday", "Sat");
-  Days[dayoff ? 0 : 6]=i18n("Sunday", "Sun");
 }
 
 void
@@ -121,28 +113,29 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       font.setBold(true);
       painter->setFont(font);
       bool normalday = true;
+      QString daystr;
       if (KGlobal::locale()->weekStartsMonday()) {
+        daystr = KGlobal::locale()->weekDayName(col+1, true);
 	if (col == 5 || col == 6)
 	  normalday = false;
       } else {
+        daystr = KGlobal::locale()->weekDayName(col==0? 7 : col, true);
 	if (col == 0 || col == 6)
 	  normalday = false;
       }
       if (!normalday) {
 	  painter->setPen(lightGray);
 	  painter->setBrush(brushLightblue);
-	  painter->drawRect(0, 0, cellWidth(), cellHeight());
+	  painter->drawRect(0, 0, w, h);
 	  painter->setPen(blue);
-	  painter->drawText(0, 0, w, h-1, AlignCenter,
-			    Days[col], -1, &rect);
       } else {
 	  painter->setPen(blue);
 	  painter->setBrush(brushBlue);
 	  painter->drawRect(0, 0, w, h);
 	  painter->setPen(white);
-	  painter->drawText(0, 0, w, h-1, AlignCenter,
-			    Days[col], -1, &rect);
       }
+      painter->drawText(0, 0, w, h-1, AlignCenter,
+                        daystr, -1, &rect);
       painter->setPen(black);
       painter->moveTo(0, h-1);
       painter->lineTo(w-1, h-1);
@@ -214,7 +207,7 @@ KDateTable::setFontSize(int size)
   maxCell.setHeight(0);
   for(count=0; count<7; ++count)
     {
-      rect=metrics.boundingRect(Days[count]);
+      rect=metrics.boundingRect(KGlobal::locale()->weekDayName(count+1, true));
       maxCell.setWidth(QMAX(maxCell.width(), rect.width()));
       maxCell.setHeight(QMAX(maxCell.height(), rect.height()));
     }
@@ -332,7 +325,6 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   : QTableView(parent, name),
     result(0) // invalid
 {
-  int temp;
   QRect rect;
   QFont font;
   // -----
@@ -349,9 +341,9 @@ KDateInternalMonthPicker::KDateInternalMonthPicker
   // ----- find the preferred size
   //       (this is slow, possibly, but unfortunatly it is needed here):
   QFontMetrics metrics(font);
-  for(temp=1; temp<13; ++temp)
+  for(int i=1; i <= 12; ++i)
     {
-      rect=metrics.boundingRect(*(KDatePicker::Month[temp-1]));
+      rect=metrics.boundingRect(KGlobal::locale()->monthName(i, false));
       if(max.width()<rect.width()) max.setWidth(rect.width());
       if(max.height()<rect.height()) max.setHeight(rect.height());
     }
@@ -391,7 +383,7 @@ KDateInternalMonthPicker::paintCell(QPainter* painter, int row, int col)
   QString text;
   // ----- find the number of the cell:
   index=3*row+col+1;
-  text=*(KDatePicker::Month[index-1]);
+  text=KGlobal::locale()->monthName(index, false);
   painter->drawText(0, 0, cellWidth(), cellHeight(), AlignCenter, text);
   if ( activeCol == col && activeRow == row )
       painter->drawRect( 0, 0, cellWidth(), cellHeight() );

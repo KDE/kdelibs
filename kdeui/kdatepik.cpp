@@ -35,14 +35,9 @@
 #include "kdatetbl.h"
 #include "kdatepik.moc"
 
-// unfortunatly, some compilers break on creating static C++ objects,
-// so the strings are created dynamically
-QString *KDatePicker::Month[12];
-int KDatePicker::KDatePickers;
 
 KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
   : QFrame(parent,name),
-    fontsize(10),
     yearForward(new QToolButton(this)),
     yearBackward(new QToolButton(this)),
     monthForward(new QToolButton(this)),
@@ -51,24 +46,9 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
     selectYear(new QToolButton(this)),
     line(new QLineEdit(this)),
     val(new KDateValidator(this)),
-    table(new KDateTable(this))
+    table(new KDateTable(this)),
+    fontsize(10)
 {
-  int count;
-  QString month[12]= {
-    i18n("January"), i18n("February"), i18n("March"), i18n("April"),
-    i18n("May long", "May"), i18n("June"), i18n("July"), i18n("August"),
-    i18n("September"), i18n("October"), i18n("November"), i18n("December")
-  };
-  // ----- initialize month names:
-  if(KDatePickers==0) // first instance
-    {
-      kdDebug() << "KDatePicker::KDatePicker: first instance." << endl;
-      for(count=0; count<12; ++count)
-	{
-	  Month[count]=new QString(month[count]);
-	}
-    }
-  ++KDatePickers;
   // -----
   setFontSize(10);
   line->setValidator(val);
@@ -90,17 +70,6 @@ KDatePicker::KDatePicker(QWidget *parent, QDate dt, const char *name)
 
 KDatePicker::~KDatePicker()
 {
-  int count;
-  // -----
-  if(KDatePickers==1)
-    {
-      kdDebug() << "KDatePicker::~KDatePicker: last instance, cleaning up." << endl;
-      for(count=0; count<12; ++count)
-	{
-	  delete Month[count];
-	}
-    }
-  --KDatePickers;
 }
 
 void
@@ -183,7 +152,7 @@ KDatePicker::setDate(const QDate& date)
 	QString temp;
 	// -----
 	table->setDate(date);
-	selectMonth->setText(*Month[date.month()-1]);
+	selectMonth->setText(KGlobal::locale()->monthName(date.month(), false));
 	temp.setNum(date.year());
 	selectYear->setText(temp);
 	line->setText(KGlobal::locale()->formatDate(date, true));
@@ -415,9 +384,9 @@ KDatePicker::setFontSize(int s)
       buttons[count]->setFont(font);
     }
   QFontMetrics metrics(selectMonth->fontMetrics());
-  for(count=0; count<12; ++count)
+  for(int i=1; i <= 12; ++i)
     { // maxMonthRect is used by sizeHint()
-      r=metrics.boundingRect(*Month[count]);
+      r=metrics.boundingRect(KGlobal::locale()->monthName(i, false));
       maxMonthRect.setWidth(QMAX(r.width(), maxMonthRect.width()));
       maxMonthRect.setHeight(QMAX(r.height(),  maxMonthRect.height()));
     }

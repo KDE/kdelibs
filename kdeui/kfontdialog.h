@@ -160,7 +160,7 @@ signals:
    */
   void fontSelected( const QFont &font );
 
-protected:
+private:
   void fillFamilyListBox(bool onlyFixedFonts = false);
   void fillCharsetsCombo();
   void getFontList( QStringList &list, bool fixed );

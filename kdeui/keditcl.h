@@ -272,7 +272,7 @@ signals:
      */
     void 	toggle_overwrite_signal();
 
-public slots:
+private slots:
       /**
        * @internal
        **/
@@ -322,8 +322,6 @@ public slots:
 
 
 protected:
-    QTimer* repaintTimer;
-
     int 	doSearch(QString s_pattern, bool case_sensitive,
 			 bool regex, bool forward,int line, int col);
 
@@ -348,6 +346,8 @@ protected:
     void        dropEvent(QDropEvent* e);
 
 private:
+    QTimer* repaintTimer;
+
     QString	killbufferstring;
     QWidget     *parent;
     KEdFind 	*srchdialog;
