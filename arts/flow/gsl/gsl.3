@@ -1,4 +1,4 @@
-.TH GSL-Functions 3 "15 Jan 2002" "GSL (BSE-0.4.0)" 
+.TH GSL-Functions 3 "11 Feb 2002" "GSL (BSE-0.4.0)" 
 .SH NAME
 GSL-Functions \- GSL Function Reference
 .SH SYNOPSIS
@@ -63,6 +63,10 @@ GSL-Functions \- GSL Function Reference
 \fBgsl_power2_fftar\fP (\fIn_values\fP, \fIr_values_in\fP, \fIri_values_out\fP);
 .br
 \fBgsl_power2_fftsr\fP (\fIn_values\fP, \fIri_values_in\fP, \fIr_values_out\fP);
+.br
+\fBgsl_filter_tscheb2_steepness_db\fP (\fIiorder\fP, \fIc_freq\fP, \fIepsilon\fP, \fIstopband_db\fP);
+.br
+\fBgsl_filter_tscheb2_steepness\fP (\fIiorder\fP, \fIc_freq\fP, \fIepsilon\fP, \fIresidue\fP);
 .br
 \fBgsl_filter_butter_lp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
 .br
@@ -430,6 +434,34 @@ Real sample values [0..n_values-1]
 .PD 1
 .PP
 Real valued variant of \fBgsl_power2_fftsc()\fP, counterpart to \fBgsl_power2_fftar()\fP, using the same frequency storage format. A real valued data set transformed into the frequency domain with \fBgsl_power2_fftar()\fP can be reconstructed using this function. Note that the transformation is performed out of place, the input array is not modified, and may not overlap with the output array.  
+.PD
+.SS \fBgsl_filter_tscheb2_steepness_db\fP (\fIiorder\fP, \fIc_freq\fP, \fIepsilon\fP, \fIstopband_db\fP);
+.PD 0
+.IP \fIunsigned\ int\ \ iorder\fP 27
+filter order
+.IP \fIdouble\ \ \ \ \ \ \ \ c_freq\fP 27
+passband cutoff frequency (0..pi)
+.IP \fIdouble\ \ \ \ \ \ \ \ epsilon\fP 27
+fall off at passband frequency (0..1)
+.IP \fIdouble\ \ \ \ \ \ \ \ stopband_db\fP 27
+reduction in stopband in dB (>= 0)
+.PD 1
+.PP
+Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter, based on the ripple residue in the stop band.  
+.PD
+.SS \fBgsl_filter_tscheb2_steepness\fP (\fIiorder\fP, \fIc_freq\fP, \fIepsilon\fP, \fIresidue\fP);
+.PD 0
+.IP \fIunsigned\ int\ \ iorder\fP 23
+filter order
+.IP \fIdouble\ \ \ \ \ \ \ \ c_freq\fP 23
+passband cutoff frequency (0..pi)
+.IP \fIdouble\ \ \ \ \ \ \ \ epsilon\fP 23
+fall off at passband frequency (0..1)
+.IP \fIdouble\ \ \ \ \ \ \ \ residue\fP 23
+maximum of transfer function in stopband (0..1)
+.PD 1
+.PP
+Calculates the steepness parameter for Tschebyscheff type 2 lowpass filter, based on ripple residue in the stop band.  
 .PD
 .SS \fBgsl_filter_butter_lp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
 .PD 0

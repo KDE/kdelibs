@@ -77,7 +77,87 @@ g_stpcpy (gchar       *dest,
 #endif
 }
 
+gchar *
+g_strescape (const gchar *source,
+	     const gchar *exceptions)
+{
+  const guchar *p;
+  gchar *dest;
+  gchar *q;
+  guchar excmap[256];
+  
+  g_return_val_if_fail (source != NULL, NULL);
 
+  p = (guchar *) source;
+  /* Each source byte needs maximally four destination chars (\777) */
+  q = dest = g_malloc (strlen (source) * 4 + 1);
+
+  memset (excmap, 0, 256);
+  if (exceptions)
+    {
+      guchar *e = (guchar *) exceptions;
+
+      while (*e)
+	{
+	  excmap[*e] = 1;
+	  e++;
+	}
+    }
+
+  while (*p)
+    {
+      if (excmap[*p])
+	*q++ = *p;
+      else
+	{
+	  switch (*p)
+	    {
+	    case '\b':
+	      *q++ = '\\';
+	      *q++ = 'b';
+	      break;
+	    case '\f':
+	      *q++ = '\\';
+	      *q++ = 'f';
+	      break;
+	    case '\n':
+	      *q++ = '\\';
+	      *q++ = 'n';
+	      break;
+	    case '\r':
+	      *q++ = '\\';
+	      *q++ = 'r';
+	      break;
+	    case '\t':
+	      *q++ = '\\';
+	      *q++ = 't';
+	      break;
+	    case '\\':
+	      *q++ = '\\';
+	      *q++ = '\\';
+	      break;
+	    case '"':
+	      *q++ = '\\';
+	      *q++ = '"';
+	      break;
+	    default:
+	      if ((*p < ' ') || (*p >= 0177))
+		{
+		  *q++ = '\\';
+		  *q++ = '0' + (((*p) >> 6) & 07);
+		  *q++ = '0' + (((*p) >> 3) & 07);
+		  *q++ = '0' + ((*p) & 07);
+		}
+	      else
+		*q++ = *p;
+	      break;
+	    }
+	}
+      p++;
+    }
+  *q = 0;
+  return dest;
+}
 
 
 
@@ -2220,88 +2300,72 @@ g_printf_string_upper_bound (const gchar *format,
   return printf_string_upper_bound (format, TRUE, args);
 }
 
-
-gchar *
-g_strescape (const gchar *source,
-	     const gchar *exceptions)
+gchar*
+g_get_current_dir (void)
 {
-  const guchar *p;
-  gchar *dest;
-  gchar *q;
-  guchar excmap[256];
+  gchar *buffer = NULL;
+  gchar *dir = NULL;
+  static gulong max_len = 0;
+
+  if (max_len == 0) 
+    max_len = (G_PATH_LENGTH == -1) ? 2048 : G_PATH_LENGTH;
   
-  g_return_val_if_fail (source != NULL, NULL);
-
-  p = (guchar *) source;
-  /* Each source byte needs maximally four destination chars (\777) */
-  q = dest = g_malloc (strlen (source) * 4 + 1);
-
-  memset (excmap, 0, 256);
-  if (exceptions)
+  /* We don't use getcwd(3) on SUNOS, because, it does a popen("pwd")
+   * and, if that wasn't bad enough, hangs in doing so.
+   */
+#if	(defined (sun) && !defined (__SVR4)) || !defined(HAVE_GETCWD)
+  buffer = g_new (gchar, max_len + 1);
+  *buffer = 0;
+  dir = getwd (buffer);
+#else	/* !sun || !HAVE_GETCWD */
+  while (max_len < G_MAXULONG / 2)
     {
-      guchar *e = (guchar *) exceptions;
+      buffer = g_new (gchar, max_len + 1);
+      *buffer = 0;
+      dir = getcwd (buffer, max_len);
 
-      while (*e)
-	{
-	  excmap[*e] = 1;
-	  e++;
-	}
+      if (dir || errno != ERANGE)
+	break;
+
+      g_free (buffer);
+      max_len *= 2;
+    }
+#endif	/* !sun || !HAVE_GETCWD */
+  
+  if (!dir || !*buffer)
+    {
+      /* hm, should we g_error() out here?
+       * this can happen if e.g. "./" has mode \0000
+       */
+      buffer[0] = G_DIR_SEPARATOR;
+      buffer[1] = 0;
     }
 
-  while (*p)
-    {
-      if (excmap[*p])
-	*q++ = *p;
-      else
-	{
-	  switch (*p)
-	    {
-	    case '\b':
-	      *q++ = '\\';
-	      *q++ = 'b';
-	      break;
-	    case '\f':
-	      *q++ = '\\';
-	      *q++ = 'f';
-	      break;
-	    case '\n':
-	      *q++ = '\\';
-	      *q++ = 'n';
-	      break;
-	    case '\r':
-	      *q++ = '\\';
-	      *q++ = 'r';
-	      break;
-	    case '\t':
-	      *q++ = '\\';
-	      *q++ = 't';
-	      break;
-	    case '\\':
-	      *q++ = '\\';
-	      *q++ = '\\';
-	      break;
-	    case '"':
-	      *q++ = '\\';
-	      *q++ = '"';
-	      break;
-	    default:
-	      if ((*p < ' ') || (*p >= 0177))
-		{
-		  *q++ = '\\';
-		  *q++ = '0' + (((*p) >> 6) & 07);
-		  *q++ = '0' + (((*p) >> 3) & 07);
-		  *q++ = '0' + ((*p) & 07);
-		}
-	      else
-		*q++ = *p;
-	      break;
-	    }
-	}
-      p++;
-    }
-  *q = 0;
-  return dest;
+  dir = g_strdup (buffer);
+  g_free (buffer);
+  
+  return dir;
 }
 
+gboolean
+g_path_is_absolute (const gchar *file_name)
+{
+  g_return_val_if_fail (file_name != NULL, FALSE);
+  
+  if (file_name[0] == G_DIR_SEPARATOR
+#ifdef G_OS_WIN32
+      || file_name[0] == '/'
+#endif
+				     )
+    return TRUE;
+
+#ifdef G_OS_WIN32
+  /* Recognize drive letter on native Windows */
+  if (g_ascii_isalpha (file_name[0]) && file_name[1] == ':' && (file_name[2] == G_DIR_SEPARATOR || file_name[2] == '/'))
+    return TRUE;
+#endif /* G_OS_WIN32 */
+
+  return FALSE;
+}
 
 /* vim:set ts=8 sw=2 sts=2: */

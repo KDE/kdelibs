@@ -33,6 +33,11 @@
 #include <config.h>
 #endif
 
+/* for -ansi -pedantic */
+#ifdef __GNUC__
+#define asm __asm__
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -112,11 +117,20 @@ typedef struct _GString GString;
 #define	G_USEC_PER_SEC	1000000
 #define G_LITTLE_ENDIAN 1234
 #define G_BIG_ENDIAN    4321
+
+#define G_DIR_SEPARATOR '/'
+#ifdef	MAXPATHLEN
+#define	G_PATH_LENGTH	MAXPATHLEN
+#elif	defined (PATH_MAX)
+#define	G_PATH_LENGTH	PATH_MAX
+#elif   defined (_PC_PATH_MAX)
+#define	G_PATH_LENGTH	sysconf(_PC_PATH_MAX)
+#else	
+#define G_PATH_LENGTH   2048
+#endif
+
 #define G_STRINGIFY(macro_or_string)    G_STRINGIFY_ARG (macro_or_string)
 #define G_STRINGIFY_ARG(contents)       #contents
-#ifndef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "gsl"
-#endif
 #if  defined __GNUC__ && !defined __cplusplus
 #  define G_STRLOC      __FILE__ ":" G_STRINGIFY (__LINE__) ":" __PRETTY_FUNCTION__ "()"
 #else
@@ -167,11 +181,12 @@ typedef struct _GString GString;
 #define GUINT32_TO_BE(val) GUINT32_SWAP_LE_BE(val)
 #endif
 
-#define GUINT16_FROM_LE(val)	(GUINT16_TO_LE (val))
-#define GUINT16_FROM_BE(val)	(GUINT16_TO_BE (val))
-#define GUINT32_FROM_LE(val)	(GUINT32_TO_LE (val))
-#define GUINT32_FROM_BE(val)	(GUINT32_TO_BE (val))
-
+#define GUINT16_FROM_LE(val)    (GUINT16_TO_LE (val))
+#define GUINT16_FROM_BE(val)    (GUINT16_TO_BE (val))
+#define GUINT32_FROM_LE(val)    (GUINT32_TO_LE (val))
+#define GUINT32_FROM_BE(val)    (GUINT32_TO_BE (val))
+       
+       
 #define g_memmove memmove
 #define g_assert  GSL_ASSERT
 #define g_assert_not_reached()	g_assert(!G_STRLOC": should not be reached")
@@ -216,10 +231,6 @@ char *alloca ();
 #define inline /* no inline */
 #endif
 
-/* for -ansi -pedantic */
-#ifdef __GNUC__
-#define asm __asm__
-#endif
 
 /* --- inline functions --- */
 void
@@ -385,14 +396,17 @@ typedef struct { int fd; short events, revents; } GPollFD;
 #define	g_usleep		gsl_g_usleep
 #define	g_strerror		gsl_g_strerror
 #define	g_convert		gsl_g_convert
-#define g_direct_hash 	gsl_g_direct_hash 
-#define g_direct_equal 	gsl_g_direct_equal 
-#define g_str_equal 	gsl_g_str_equal 
-#define g_str_hash 	gsl_g_str_hash 
-#define g_strtod	gsl_g_strtod
-#define g_stpcpy	gsl_g_stpcpy
+#define g_direct_hash	 	gsl_g_direct_hash 
+#define g_direct_equal 		gsl_g_direct_equal 
+#define g_str_equal 		gsl_g_str_equal 
+#define g_str_hash 		gsl_g_str_hash 
+#define g_strtod		gsl_g_strtod
+#define g_stpcpy		gsl_g_stpcpy
+#define	g_strescape		gsl_g_strescape
+#define g_get_current_dir       gsl_g_get_current_dir
+#define g_path_is_absolute      gsl_g_path_is_absolute
 #define g_printf_string_upper_bound gsl_g_printf_string_upper_bound
-#define g_strescape gsl_g_strescape
+
 gpointer g_malloc         (gulong        n_bytes);
 gpointer g_malloc0        (gulong        n_bytes);
 gpointer g_realloc        (gpointer      mem,
@@ -428,7 +442,9 @@ gdouble	g_strtod (const gchar *nptr, 	  gchar **endptr);
 gsize g_printf_string_upper_bound (const gchar *format,  va_list      args);
 gchar * g_stpcpy (gchar       *dest, 	  const gchar *src);
 gchar * g_strescape (const gchar *source, const gchar *exceptions);
- 
+gchar * g_get_current_dir (void);
+gboolean g_path_is_absolute (const gchar *file_name);
+
 
 
 /* --- function defines --- */

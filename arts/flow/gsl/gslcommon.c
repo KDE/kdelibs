@@ -418,6 +418,8 @@ thread_data_from_gsl_thread (GslThread *thread)
 {
   GThread *gthread = (GThread*) thread;
 
+  /* if gthread->data==NULL, we assume this is the main thread */
+
   return gthread->data ? gthread->data : main_thread_tdata;
 }
 
@@ -539,13 +541,7 @@ gsl_thread_self (void)
   gpointer gthread = g_thread_self ();
 
   if (!gthread)
-    {
-      static GThread main_dummy = { 0, };
-
-      /* probably main thread, outside GLib... */
-      main_dummy.data = NULL;
-      gthread = &main_dummy;
-    }
+    g_error ("gsl_thread_self() failed");
 
   return gthread;
 }
@@ -1207,9 +1203,14 @@ gsl_check_file (const gchar *file_name,
     {
       struct stat st;
       
-      if (stat (file_name, &st) < 0)
+      if (check_link)
+	{
+	  if (lstat (file_name, &st) < 0)
+	    goto have_errno;
+	}
+      else if (stat (file_name, &st) < 0)
 	goto have_errno;
-      
+
       if ((check_file && !S_ISREG (st.st_mode)) ||
 	  (check_dir && !S_ISDIR (st.st_mode)) ||
 	  (check_link && !S_ISLNK (st.st_mode)))

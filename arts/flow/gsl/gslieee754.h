@@ -19,11 +19,12 @@
 #ifndef __GSL_IEEE754_H__
 #define __GSL_IEEE754_H__
 
-#include <gsl/gsldefs.h>
+#include	<gsl/gsldefs.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
 
 /* IEEE 754 single precision floating point layout:
  *        31 30           23 22            0
