@@ -319,6 +319,14 @@ public:
     void addBaseThemes(KIconThemeNode *node, const QString &appname);
 
     /**
+     * Adds all the default themes from other desktops at the end of
+     * the list of icon themes.
+     * @internal
+     * @since 3.1
+     */
+    void addExtraDesktopThemes();
+
+    /**
      * @internal
      * return the path for the unknown icon in that size
      * @since 3.1

@@ -39,6 +39,7 @@
 
 #include <sys/types.h>
 #include <stdlib.h>	//for abs
+#include <unistd.h>     //for readlink
 #include <dirent.h>
 #include <config.h>
 
@@ -130,6 +131,7 @@ struct KIconLoaderPrivate
     int lastIconType; // see KIcon::type
     int lastIconThreshold; // see KIcon::threshold
     QPtrList<KIconThemeNode> links;
+    bool extraDesktopIconsLoaded;
 };
 
 /*** KIconLoader: the icon loader ***/
@@ -150,6 +152,7 @@ void KIconLoader::init( const QString& _appname, KStandardDirs *_dirs )
     d = new KIconLoaderPrivate;
     d->imgDict.setAutoDelete( true );
     d->links.setAutoDelete(true);
+    d->extraDesktopIconsLoaded=false;
 
     if (_dirs)
 	d->mpDirs = _dirs;
@@ -290,6 +293,55 @@ void KIconLoader::addBaseThemes(KIconThemeNode *node, const QString &appname)
 	addBaseThemes(n, appname);
 	d->links.append(n);
     }
+}
+
+void KIconLoader::addExtraDesktopThemes()
+{
+    QStringList list;
+    QStringList icnlibs = KGlobal::dirs()->resourceDirs("icon");
+    QStringList::ConstIterator it;
+    char buf[1000];
+    int r;
+    for (it=icnlibs.begin(); it!=icnlibs.end(); it++)
+    {
+	QDir dir(*it);
+	if (!dir.exists())
+	    continue;
+	QStringList lst = dir.entryList("default.*", QDir::Dirs);
+	QStringList::ConstIterator it2;
+	for (it2=lst.begin(); it2!=lst.end(); it2++)
+	{
+	    if (!KStandardDirs::exists(*it + *it2 + "/index.desktop")
+		&& !KStandardDirs::exists(*it + *it2 + "/index.theme"))
+		continue;
+	    r=readlink( QFile::encodeName(*it + *it2) , buf, sizeof(buf)-1);
+	    if ( r>0 )
+	    {
+	      buf[r]=0;
+	      QDir dir2( buf );
+	      QString themeName=dir2.dirName();
+	      
+	      if (!list.contains(themeName))
+		list.append(themeName);
+	    }	
+	}
+    }
+
+    for (it=list.begin(); it!=list.end(); it++)
+    {
+	if ( d->mThemesInTree.contains(*it) )
+		continue;
+	if ( *it == QString("default.kde") ) continue;
+			    
+	KIconTheme *def = new KIconTheme( *it, "" );
+	KIconThemeNode* node = new KIconThemeNode(def);
+	d->mThemesInTree.append(*it);
+	d->links.append(node);
+	addBaseThemes(node, "" );
+    }
+
+    d->extraDesktopIconsLoaded=true;
+   
 }
 
 QString KIconLoader::removeIconExtension(const QString &name) const
@@ -453,13 +505,22 @@ QString KIconLoader::iconPath(const QString& _name, int group_or_size,
 
     KIcon icon = findMatchingIcon(name, size);
 
+    if ( !d->extraDesktopIconsLoaded && !icon.isValid() &&
+	( group_or_size == KIcon::Desktop || group_or_size == KIcon::Small ||
+	    group_or_size == KIcon::Panel ) &&
+	     name != QString(KGlobal::instance()->instanceName()) ) 
+    {     
+	const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
+        icon = findMatchingIcon(name, size);
+    }    
+
     if (!icon.isValid())
     {
 	// Try "User" group too.
 	path = iconPath(name, KIcon::User, true);
 	if (!path.isEmpty() || canReturnNull)
 	    return path;
-
+	    
 	if (canReturnNull)
 	    return QString::null;
         else
@@ -604,6 +665,15 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
             if (!name.isEmpty())
                 icon = findMatchingIcon(favIconOverlay ? QString("www") : name, size);
 
+	    if ( !d->extraDesktopIconsLoaded && !icon.isValid() &&
+		    ( group == KIcon::Desktop || group == KIcon::Small ||
+		      group == KIcon::Panel ) &&
+		    name != QString(KGlobal::instance()->instanceName()) ) 
+	    {     
+		const_cast<KIconLoader *>(this)->addExtraDesktopThemes();
+		icon = findMatchingIcon(name, size);
+	    }    
+    
             if (!icon.isValid())
             {
                 // Try "User" icon too. Some apps expect this.
