@@ -422,7 +422,7 @@ KAction *KStdAction::openNew(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::open(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("&Open..."), "fileopen",
                        KStdAccel::key(KStdAccel::Open), recvr, slot, parent,
@@ -438,7 +438,7 @@ KRecentFilesAction *KStdAction::openRecent(const QObject *recvr,
 }
 
 KAction *KStdAction::save(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("&Save"), "filesave",
                        KStdAccel::key(KStdAccel::Save), recvr, slot, parent,
@@ -446,21 +446,21 @@ KAction *KStdAction::save(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::saveAs(const QObject *recvr, const char *slot,
-							QObject *parent, const char *name )
+                                                        QObject *parent, const char *name )
 {
     return new KAction(i18n("Save &As..."), 0, recvr, slot, parent,
                        name ? name : stdName(SaveAs));
 }
 
 KAction *KStdAction::revert(const QObject *recvr, const char *slot,
-							QObject *parent, const char *name )
+                                                        QObject *parent, const char *name )
 {
     return new KAction(i18n("Re&vert"), "reload", 0, recvr, slot, parent,
                        name ? name : stdName(Revert));
 }
 
 KAction *KStdAction::print(const QObject *recvr, const char *slot,
-						   QObject *parent, const char *name )
+                                                   QObject *parent, const char *name )
 {
     return new KAction(i18n("&Print..."), "fileprint",
                        KStdAccel::key(KStdAccel::Print), recvr, slot, parent,
@@ -476,7 +476,7 @@ KAction *KStdAction::printPreview(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::close(const QObject *recvr, const char *slot,
-						   QObject *parent, const char *name )
+                                                   QObject *parent, const char *name )
 {
     return new KAction(i18n("&Close"), "fileclose",
                        KStdAccel::key(KStdAccel::Close), recvr, slot, parent,
@@ -484,14 +484,14 @@ KAction *KStdAction::close(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::mail(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("&Mail..."), "send", 0,
                        recvr, slot, parent, name ? name : stdName(Mail));
 }
 
 KAction *KStdAction::quit(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("&Quit"), "exit",
                        KStdAccel::key(KStdAccel::Quit), recvr, slot, parent,
@@ -499,7 +499,7 @@ KAction *KStdAction::quit(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::undo(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("Und&o"), "undo",
                        KStdAccel::key(KStdAccel::Undo), recvr, slot, parent,
@@ -507,7 +507,7 @@ KAction *KStdAction::undo(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::redo(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("Re&do"), "redo",
                        KStdAccel::key(KStdAccel::Redo), recvr, slot, parent,
@@ -515,7 +515,7 @@ KAction *KStdAction::redo(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::cut(const QObject *recvr, const char *slot,
-						 QObject *parent, const char *name )
+                                                 QObject *parent, const char *name )
 {
     return new KAction(i18n("C&ut"), "editcut",
                        KStdAccel::key(KStdAccel::Cut), recvr, slot, parent,
@@ -523,7 +523,7 @@ KAction *KStdAction::cut(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::copy(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("&Copy"), "editcopy",
                        KStdAccel::key(KStdAccel::Copy), recvr, slot, parent,
@@ -531,7 +531,7 @@ KAction *KStdAction::copy(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::paste(const QObject *recvr, const char *slot,
-						   QObject *parent, const char *name )
+                                                   QObject *parent, const char *name )
 {
     return new KAction(i18n("&Paste"), "editpaste",
                        KStdAccel::key(KStdAccel::Paste), recvr, slot, parent,
@@ -546,7 +546,7 @@ KAction *KStdAction::selectAll(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::find(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("&Find..."), "find",
                        KStdAccel::key(KStdAccel::Find), recvr, slot, parent,
@@ -571,11 +571,11 @@ KAction *KStdAction::findPrev(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::replace(const QObject *recvr, const char *slot,
-							 QObject *parent, const char *name )
+                                                         QObject *parent, const char *name )
 {
     return new KAction(i18n("&Replace..."), KStdAccel::key(KStdAccel::Replace),
                        recvr, slot, parent,
-					   name ? name : stdName(Replace));
+                                           name ? name : stdName(Replace));
 }
 
 KAction *KStdAction::actualSize(const QObject *recvr, const char *slot,
@@ -607,7 +607,7 @@ KAction *KStdAction::fitToHeight(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::zoomIn(const QObject *recvr, const char *slot,
-							QObject *parent, const char *name )
+                                                        QObject *parent, const char *name )
 {
     return new KAction(i18n("Zoom &In"), "viewmag+",
                        KStdAccel::key(KStdAccel::ZoomIn), recvr, slot, parent,
@@ -616,7 +616,7 @@ KAction *KStdAction::zoomIn(const QObject *recvr, const char *slot,
 
 
 KAction *KStdAction::zoomOut(const QObject *recvr, const char *slot,
-							 QObject *parent, const char *name )
+                                                         QObject *parent, const char *name )
 {
     return new KAction(i18n("Zoom &Out"), "viewmag-",
                        KStdAccel::key(KStdAccel::ZoomOut), recvr, slot, parent,
@@ -624,7 +624,7 @@ KAction *KStdAction::zoomOut(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::zoom(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("&Zoom..."), "viewzoom", 0,
                        recvr, slot, parent, name ? name :
@@ -635,19 +635,19 @@ KAction *KStdAction::redisplay(const QObject *recvr, const char *slot,
                                QObject *parent, const char *name )
 {
     return new KAction(i18n("&Redisplay"), "reload", 0,
-	                   recvr, slot, parent, name ? name :
+                           recvr, slot, parent, name ? name :
                        stdName(Redisplay));
 }
 
 KAction *KStdAction::up(const QObject *recvr, const char *slot,
-						QObject *parent, const char *name )
+                                                QObject *parent, const char *name )
 {
     return new KAction(i18n("&Up"), "up", 0, recvr, slot,
                        parent, name ? name : stdName(Up));
 }
 
 KAction *KStdAction::back(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("go back", "&Back"), "back", 0,
                        recvr, slot, parent, name ? name :
@@ -655,7 +655,7 @@ KAction *KStdAction::back(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::forward(const QObject *recvr, const char *slot,
-							 QObject *parent, const char *name )
+                                                         QObject *parent, const char *name )
 {
     return new KAction(i18n("go forward", "&Forward"), "forward", 0,
                        recvr, slot, parent, name ? name :
@@ -663,15 +663,15 @@ KAction *KStdAction::forward(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::home(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("beginning (of line)", "&Home"), "gohome",
-					   KStdAccel::key(KStdAccel::Home), recvr, slot, parent,
-					   name ? name : stdName(Home));
+                                           KStdAccel::key(KStdAccel::Home), recvr, slot, parent,
+                                           name ? name : stdName(Home));
 }
 
 KAction *KStdAction::prior(const QObject *recvr, const char *slot,
-						   QObject *parent, const char *name )
+                                                   QObject *parent, const char *name )
 {
     return new KAction(i18n("&Previous Page"), "previous",
                        KStdAccel::key(KStdAccel::Prior), recvr, slot, parent,
@@ -679,7 +679,7 @@ KAction *KStdAction::prior(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::next(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+                                                  QObject *parent, const char *name )
 {
     return new KAction(i18n("&Next Page"), "next",
                        KStdAccel::key(KStdAccel::Next), recvr, slot, parent,
@@ -729,7 +729,7 @@ KAction *KStdAction::addBookmark(const QObject *recvr, const char *slot,
     return new KAction(i18n("&Add Bookmark"), "bookmark_add",
                        KStdAccel::key(KStdAccel::AddBookmark),
                        recvr, slot, parent,
-					   name ? name : stdName(AddBookmark));
+                                           name ? name : stdName(AddBookmark));
 }
 
 KAction *KStdAction::editBookmarks(const QObject *recvr, const char *slot,
@@ -740,7 +740,7 @@ KAction *KStdAction::editBookmarks(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::spelling(const QObject *recvr, const char *slot,
-				              QObject *parent, const char *name )
+                                              QObject *parent, const char *name )
 {
     return new KAction(i18n("&Spelling..."), "spellcheck",
                              0, recvr, slot, parent,
@@ -748,7 +748,7 @@ KAction *KStdAction::spelling(const QObject *recvr, const char *slot,
 }
 
 KToggleAction *KStdAction::showMenubar(const QObject *recvr, const char *slot,
-				       QObject *parent, const char *name )
+                                       QObject *parent, const char *name )
 {
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show &Menubar"), 0, recvr, slot, parent,
@@ -758,7 +758,7 @@ KToggleAction *KStdAction::showMenubar(const QObject *recvr, const char *slot,
 }
 
 KToggleAction *KStdAction::showToolbar(const QObject *recvr, const char *slot,
-				       QObject *parent, const char *name )
+                                       QObject *parent, const char *name )
 {
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent,
@@ -769,7 +769,7 @@ KToggleAction *KStdAction::showToolbar(const QObject *recvr, const char *slot,
 }
 
 KToggleAction *KStdAction::showStatusbar(const QObject *recvr, const char *slot,
-					 QObject *parent, const char *name )
+                                         QObject *parent, const char *name )
 {
     KToggleAction *ret;
     ret = new KToggleAction(i18n("Show St&atusbar"), 0, recvr, slot, parent,
@@ -795,7 +795,7 @@ KAction *KStdAction::keyBindings(const QObject *recvr, const char *slot,
 KAction *KStdAction::preferences(const QObject *recvr, const char *slot,
                                  QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Preferences..."), "options",
+    return new KAction(i18n("&Preferences..."), "configure",
                        0, recvr, slot, parent,
                        name ? name : stdName(Preferences));
 }
@@ -816,7 +816,7 @@ KAction *KStdAction::help(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::helpContents(const QObject *recvr, const char *slot,
-						          QObject *parent, const char *name )
+                                                          QObject *parent, const char *name )
 {
     return new KAction(i18n("&Contents"), "contents",
                        KStdAccel::key(KStdAccel::Help), recvr, slot, parent,
@@ -824,7 +824,7 @@ KAction *KStdAction::helpContents(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::whatsThis(const QObject *recvr, const char *slot,
-						       QObject *parent, const char *name )
+                                                       QObject *parent, const char *name )
 {
     return new KAction(i18n("What's &This?"), "contexthelp",
                        KStdAccel::key(KStdAccel::WhatThis), recvr, slot,
@@ -832,14 +832,14 @@ KAction *KStdAction::whatsThis(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::reportBug(const QObject *recvr, const char *slot,
-						       QObject *parent, const char *name )
+                                                       QObject *parent, const char *name )
 {
     return new KAction(i18n("&Report Bug..."), 0, recvr, slot,
                        parent, name ? name : stdName(ReportBug));
 }
 
 KAction *KStdAction::aboutApp(const QObject *recvr, const char *slot,
-						      QObject *parent, const char *name )
+                                                      QObject *parent, const char *name )
 {
     const KAboutData *aboutData = KGlobal::instance()->aboutData();
     QString appName = (aboutData)? aboutData->programName() : QString::fromLatin1(kapp->name());
@@ -849,7 +849,7 @@ KAction *KStdAction::aboutApp(const QObject *recvr, const char *slot,
 }
 
 KAction *KStdAction::aboutKDE(const QObject *recvr, const char *slot,
-						      QObject *parent, const char *name )
+                                                      QObject *parent, const char *name )
 {
     return new KAction(i18n("About &KDE..."), 0, recvr, slot,
                        parent, name ? name : stdName(AboutKDE));
