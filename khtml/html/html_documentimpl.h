@@ -143,12 +143,14 @@ protected:
 
     StyleSheetImpl *m_sheet;
     bool m_loadingSheet;
-
+    bool visuallyOrdered;
+    
     CSSStyleSheetImpl *m_elemSheet;
     khtml::DocLoader *m_docLoader;
 
     QString onloadScript;
     QString onUnloadScript;
+
 };
 
 }; //namespace

@@ -68,6 +68,8 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 
     m_elemSheet=0;
     m_docLoader = new DocLoader();
+
+    visuallyOrdered = false;
 }
 
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
@@ -86,6 +88,8 @@ HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
 
     m_elemSheet=0;
     m_docLoader = new DocLoader();
+
+    visuallyOrdered = false;
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -406,6 +410,7 @@ void HTMLDocumentImpl::detach()
 
 void HTMLDocumentImpl::setVisuallyOrdered()
 {
+    visuallyOrdered = true;
     if(!m_style) return;
     m_style->setVisuallyOrdered(true);
 }
@@ -450,6 +455,7 @@ void HTMLDocumentImpl::recalcStyle()
     if( m_style ) delete m_style;
     m_style = new RenderStyle();
     m_style->setDisplay(BLOCK);
+    m_style->setVisuallyOrdered( visuallyOrdered );
     // ### make the font stuff _really_ work!!!!
     const KHTMLSettings *settings = m_view->part()->settings();
     QValueList<int> fs = settings->fontSizes();
