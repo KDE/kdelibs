@@ -156,8 +156,11 @@ KWizard::~KWizard()
 
 void KWizard::setCancelButton(const QString& name)
 {
-    if (name.isNull())
-	setCancelButton(i18n("&Cancel"));
+  if (name.isNull())
+  {
+    setCancelButton(i18n("&Cancel"));
+    return;
+  }
 
   if(!pwiz->cancel)
   {
@@ -177,8 +180,11 @@ QButton *KWizard::getCancelButton()
 
 void KWizard::setDefaultButton(const QString& name)
 {
-    if (name.isNull())
-	setDefaultButton(i18n("&Default"));
+  if (name.isNull())
+  {
+    setDefaultButton(i18n("&Default"));
+    return;
+  }
 
   if(!pwiz->def)
   {
@@ -198,8 +204,11 @@ QButton *KWizard::getDefaultButton()
 
 void KWizard::setHelpButton(const QString& name)
 {
-    if (name.isNull())
-	setHelpButton(i18n("&Help"));
+  if (name.isNull())
+  {
+    setHelpButton(i18n("&Help"));
+    return;
+  }
 
   if(!pwiz->help)
   {
@@ -219,8 +228,11 @@ QButton *KWizard::getHelpButton()
 
 void KWizard::setOkButton(const QString& name)
 {
-    if (name.isNull())
-	setOkButton(i18n("&OK"));
+  if (name.isNull())
+  {
+    setOkButton(i18n("&OK"));
+    return;
+  }
 
   if(!pwiz->ok)
   {
