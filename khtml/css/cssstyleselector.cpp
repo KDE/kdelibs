@@ -315,9 +315,9 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
         case CSSSelector::List:
         {
             //kdDebug( 6080 ) << "checking for list match" << endl;
-            QString str = value.string().lower();
-            QString selStr = sel->value.string().lower();
-            int pos = str.find(selStr);
+            QString str = value.string();
+            QString selStr = sel->value.string();
+            int pos = str.find(selStr, 0, false);
             if(pos == -1) return false;
             if(pos && str[pos-1] != ' ') return false;
             pos += selStr.length();
@@ -328,8 +328,8 @@ bool CSSOrderedRule::checkOneSelector(DOM::CSSSelector *sel, DOM::ElementImpl *e
         {
             // ### still doesn't work. FIXME
             //kdDebug( 6080 ) << "checking for hyphen match" << endl;
-            QString str = value.string().lower();
-            if(str.find(sel->value.string().lower()) != 0) return false;
+            QString str = value.string();
+            if(str.find(sel->value.string(), 0, false) != 0) return false;
             // ### could be "bla , sdfdsf" too. Parse out spaces
             int pos = sel->value.length() + 1;
             while(pos < (int)str.length() && sel->value[pos] == ' ') pos++;
