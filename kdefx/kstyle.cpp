@@ -879,7 +879,8 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 			// in which case we need to adjust the height for font size
 			if (widget && (parent = widget->parentWidget() )
 				&& !parent->inherits("QToolBar")
-				&& !parent->inherits("QMainWindow") )
+				&& !parent->inherits("QMainWindow") 
+				&& widget->inherits("QDockWindowHandle") )
 					return widget->fontMetrics().lineSpacing();
 			else
 				return QCommonStyle::pixelMetric(m, widget);
