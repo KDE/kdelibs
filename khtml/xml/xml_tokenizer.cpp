@@ -384,14 +384,13 @@ void XMLTokenizer::addScripts(NodeImpl *n)
 
 void XMLTokenizer::executeScripts()
 {
-    bool setLoading = false;
-    while (m_scriptsIt->current() && !setLoading) {
+    while (m_scriptsIt->current()) {
 	DOMString scriptSrc = m_scriptsIt->current()->getAttribute("src");
 	if (scriptSrc != "") {
 	    m_cachedScript = m_doc->docLoader()->requestScript(scriptSrc, m_doc->baseURL());
 	    ++(*m_scriptsIt);
 	    m_cachedScript->ref(this); // will call executeScripts() again if already cached
-	    setLoading = true;
+	    return;
 	}
 	else {
 	    QString scriptCode = "";
