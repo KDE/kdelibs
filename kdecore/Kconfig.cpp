@@ -1,6 +1,18 @@
 // $Id$
 //
 /* $Log$
+ * Revision 1.14  1997/08/04 15:16:51  ettrich
+ * Matthias: trivial fix for sync(): Now this works as _real_ sync, that
+ *  means it also reparses the configuration files.
+ *
+ *  This is needed for applications with separate configuration tools like
+ *  kwm.
+ *
+ *  A new method "reparse()" may be an alternative, but why make it
+ *  even more complicate?
+ *
+ *  Hope it is ok like that (Kalle?)
+ *
  * Revision 1.13  1997/07/31 19:53:14  kalle
  * Bug with defaults in readEntry() (reported and fixed by Stephan Kulow)
  *
@@ -688,6 +700,7 @@ void KConfig::sync()
 	    break;
 	  }
       }
+    pData->bDirty = false;
   }
 
   // re-parse all config files
