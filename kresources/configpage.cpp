@@ -115,6 +115,7 @@ ConfigPage::ConfigPage( QWidget *parent, const char *name )
 
   mListView = new KListView( groupBox );
   mListView->setAllColumnsShowFocus( true );
+  mListView->setFullWidth( true );
   mListView->addColumn( i18n( "Name" ) );
   mListView->addColumn( i18n( "Type" ) );
   mListView->addColumn( i18n( "Standard" ) );
