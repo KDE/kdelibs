@@ -607,8 +607,9 @@ bool Ftp::ftpSendCmd( const QCString& cmd, char expresp, int maxretries )
   }
 
   char rsp = readresp();
-  if (!rsp || ( rsp == '4' && rspbuf[1] == '2' ))
+  if (!rsp || ( rsp == '4' && rspbuf[1] == '2' && rspbuf[2] == '1' ))
   {
+      kdDebug() << "got 421 -> timeout" << endl;
     // 421 is "421 No Transfer Timeout (300 seconds): closing control connection"
     if ( cmd=="list" && maxretries > 0 ) // Only retry for "list". retr/stor/... need to redo the whole thing
     {
