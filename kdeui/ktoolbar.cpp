@@ -1648,7 +1648,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     QToolTip::add( combo, tooltiptext );
   connect ( combo, signal, receiver, slot );
   combo->setAutoResize(false);
-  item->resize(size, 20);
+  item->resize(size, 22);
   item->setEnabled(enabled);
   if (d->m_position != Flat)
     item->show();
