@@ -1377,8 +1377,7 @@ void KHTMLParser::startBody()
 {
     if(inBody) return;
 
-    if(n->id() == ID_BODY)
-	document->createSelector();
+    document->createSelector();
     inBody = true;
 
     if( isindex ) {
