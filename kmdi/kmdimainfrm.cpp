@@ -806,6 +806,7 @@ void KMdiMainFrm::closeWindow(KMdiChildView *pWnd, bool layoutTaskBar)
       }
       delete pDockW;
 #endif
+      delete pWnd;
       if (m_pDocumentViews->count() == 1) {
          m_pDocumentViews->last()->activate(); // all other views are activated by tab switch
       }
