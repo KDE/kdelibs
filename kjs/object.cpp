@@ -648,8 +648,11 @@ PropList* Imp::propList(PropList *first, PropList *last, bool recursive) const
     }
     pr = pr->next;
   }
-  if (proto && recursive)
-    proto->propList(first, last);
+  if (proto && recursive) {
+    PropList *pfirst = proto->propList(first, last);
+    if (!first)
+      first = pfirst;
+  }
 
   return first;
 }
@@ -701,6 +704,7 @@ void Imp::put(const UString &p, const KJSO& v, int attr)
   }
 
   Property *pr;
+  Property *last = 0;
 
   if (prop) {
     pr = prop;
@@ -711,6 +715,7 @@ void Imp::put(const UString &p, const KJSO& v, int attr)
 	pr->attribute = attr;
 	return;
       }
+      last = pr;
       pr = pr->next;
     }
   }
@@ -720,8 +725,11 @@ void Imp::put(const UString &p, const KJSO& v, int attr)
   pr->name = p;
   pr->object = v.imp();
   pr->attribute = attr;
-  pr->next = prop;
-  prop = pr;
+  pr->next = 0;
+  if (last)
+    last->next = pr;
+  else
+    prop = pr;
 }
 
 // ECMA 8.6.2.3
