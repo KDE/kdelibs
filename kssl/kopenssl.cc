@@ -95,6 +95,8 @@ KConfig *cfg;
    if (upath.length() > 0)
       libpaths << upath;
 
+   delete cfg;
+
    libpaths << "/usr/lib/"
             << "/usr/local/lib/"
             << "/usr/local/openssl/lib/"
