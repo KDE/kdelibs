@@ -295,7 +295,7 @@ namespace KJS {
      * Returns a deep copy of the list. Ownership is passed to the user
      * who is responsible for deleting the list then.
      */
-    List *copy();
+    List *copy() const;
     /**
      * @return A @ref KJS::ListIterator pointing to the first element.
      */

@@ -227,7 +227,7 @@ void List::clear()
   hook->prev = hook;
 }
 
-List *List::copy()
+List *List::copy() const
 {
   List *newList = new List();
   ListIterator e = end();
