@@ -2150,5 +2150,5 @@ bool AddressWidget::sendEmail(const string& address, const string& subject)
 
 // #############################################################################
 // MOC OUTPUT FILES:
-#include "widget.moc"
+#include "kab.moc"
 // #############################################################################
