@@ -432,7 +432,7 @@ void KHistoryCombo::addContextMenuItems( QPopupMenu* menu )
     if ( menu )
     {
         menu->insertSeparator();
-        int id = menu->insertItem( SmallIcon("history_clear"), i18n("Clear &History"), this, SLOT( slotClear()));
+        int id = menu->insertItem( SmallIconSet("history_clear"), i18n("Clear &History"), this, SLOT( slotClear()));
         if (!count())
            menu->setItemEnabled(id, false);
     }
