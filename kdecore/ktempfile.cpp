@@ -115,12 +115,11 @@ KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 #else
    // The following is not guranteed to work correctly on NFS
    // In that case we depend on a good random number
-   srand( QTime::currentTime().msecsTo(QTime()));
    int maxTries = 3;
    int tries = 0;
    do {
       tries++;
-      mTmpName = filePrefix+QString(".%1").arg(rand())+fileExtension;
+      mTmpName = filePrefix+QString(".%1").arg(kapp->random())+fileExtension;
 
       if (checkAccess(mTmpName, W_OK))
       {
