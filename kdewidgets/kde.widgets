@@ -24,8 +24,14 @@ IsContainer=true
 
 [KDateWidget]
 
+[KDialog]
+IsContainer=true
+
 [KDialogBase]
 IsContainer=true
+
+[KEditListBox]
+ToolTip=Fullfeatured edit box with buttons (KDE)
 
 [KFontCombo]
 
@@ -59,6 +65,9 @@ WhatsThis=An improved progress bar for KDE that uses QFrame and QRangeControl
 [KPushButton]
 ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings
+
+[KRestrictedLine]
+ToolTip=Line Edit for restricted input (KDE)
 
 [KRuler]
 ToolTip=Measuring Ruler Widget (KDE)
