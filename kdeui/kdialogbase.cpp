@@ -109,7 +109,7 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
   setCaption( caption );
 
   makeRelay();
-  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+  connect( this, SIGNAL(layoutHintChanged()), SLOT(updateGeometry()) );
 
   enableButtonSeparator( separator );
   makeButtonBox( buttonMask, defaultButton, user1, user2, user3 );
@@ -132,7 +132,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
   setCaption( caption );
 
   makeRelay();
-  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+  connect( this, SIGNAL(layoutHintChanged()), SLOT(updateGeometry()) );
 
   mJanus = new KJanusWidget( this, "janus", dialogFace );
   connect(mJanus, SIGNAL(aboutToShowPage(QWidget *)),
@@ -161,7 +161,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
   setCaption( caption );
 
   makeRelay();
-  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+  connect( this, SIGNAL(layoutHintChanged()), SLOT(updateGeometry()) );
 
   mJanus = new KJanusWidget( this, "janus", dialogFace );
   connect(mJanus, SIGNAL(aboutToShowPage(QWidget *)),
@@ -191,7 +191,7 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
   setCaption( caption );
 
   makeRelay();
-  connect( this, SIGNAL(layoutHintChanged()), this, SLOT(updateGeometry()) );
+  connect( this, SIGNAL(layoutHintChanged()), SLOT(updateGeometry()) );
 
   enableButtonSeparator( separator );
 
@@ -373,14 +373,14 @@ void KDialogBase::makeRelay()
 {
   if( mTile != 0 )
   {
-    connect( mTile, SIGNAL(pixmapChanged()), this, SLOT(updateBackground()) );
+    connect( mTile, SIGNAL(pixmapChanged()), SLOT(updateBackground()) );
     return;
   }
 
   mTile = new KDialogBaseTile;
   if( mTile != 0 )
   {
-    connect( mTile, SIGNAL(pixmapChanged()), this, SLOT(updateBackground()) );
+    connect( mTile, SIGNAL(pixmapChanged()), SLOT(updateBackground()) );
     connect( qApp, SIGNAL(aboutToQuit()), mTile, SLOT(cleanup()) );
   }
 }
@@ -574,31 +574,31 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   {
     KPushButton *pb = d->mButton.append( Help, KStdGuiItem::help() );
 
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotHelp()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotHelp()) );
   }
   if( d->mButton.mask & Default )
   {
     KPushButton *pb = d->mButton.append( Default, KStdGuiItem::defaults() );
 
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotDefault()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotDefault()) );
   }
   if( d->mButton.mask & Details )
   {
     KPushButton *pb = d->mButton.append( Details, QString::null );
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotDetails()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotDetails()) );
     setDetails(false);
   }
   if( d->mButton.mask & User3 )
   {
     KPushButton *pb = d->mButton.append( User3, user3 );
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotUser3()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotUser3()) );
   }
   if( d->mButton.mask & User2 )
   {
     KPushButton *pb = d->mButton.append( User2, user2 );
     if( mMessageBoxMode == true )
     {
-      connect( pb, SIGNAL(clicked()), this, SLOT(slotYes()) );
+      connect( pb, SIGNAL(clicked()), SLOT(slotYes()) );
     }
     else
     {
@@ -614,35 +614,35 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
     }
     else
     {
-      connect( pb, SIGNAL(clicked()), this, SLOT(slotUser1()) );
+      connect( pb, SIGNAL(clicked()), SLOT(slotUser1()) );
     }
   }
   if( d->mButton.mask & Ok )
   {
     KPushButton *pb = d->mButton.append( Ok, KStdGuiItem::ok() );
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotOk()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotOk()) );
   }
   if( d->mButton.mask & Apply )
   {
     KPushButton *pb = d->mButton.append( Apply, KStdGuiItem::apply() );
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotApply()) );
-    connect( pb, SIGNAL(clicked()), this, SLOT(applyPressed()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotApply()) );
+    connect( pb, SIGNAL(clicked()), SLOT(applyPressed()) );
   }
   if( d->mButton.mask & Try )
   {
     KPushButton *pb = d->mButton.append( Try,
                           KGuiItem( i18n( "&Try" ), "try" ) );
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotTry()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotTry()) );
   }
   if( d->mButton.mask & Cancel )
   {
     KPushButton *pb = d->mButton.append( Cancel, KStdGuiItem::cancel() );
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotCancel()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotCancel()) );
   }
   if( d->mButton.mask & Close )
   {
     KPushButton *pb = d->mButton.append( Close, KStdGuiItem::close() );
-    connect( pb, SIGNAL(clicked()), this, SLOT(slotClose()) );
+    connect( pb, SIGNAL(clicked()), SLOT(slotClose()) );
   }
 
   QPushButton *pb = actionButton( defaultButton );
