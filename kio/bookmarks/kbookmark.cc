@@ -329,22 +329,24 @@ KBookmark KBookmark::standaloneBookmark( const QString & text, const KURL & url,
 
 static QDomNode cd_or_create(QDomNode node, QString name)
 {
-   QDomNode subnode = node.namedItem(name);
-   if (subnode.isNull()) {
-      subnode = node.ownerDocument().createElement(name);
-      node.appendChild(subnode);
-   }
-   return subnode;
+    QDomNode subnode = node.namedItem(name);
+    if (subnode.isNull()) 
+    {
+        subnode = node.ownerDocument().createElement(name);
+        node.appendChild(subnode);
+    }
+    return subnode;
 }
 
 static QDomText get_or_create_text(QDomNode node)
 {
-   QDomNode subnode = node.firstChild();
-   if (subnode.isNull()) {
-      subnode = node.ownerDocument().createTextNode("");
-      node.appendChild(subnode);
-   }
-   return subnode.toText();
+    QDomNode subnode = node.firstChild();
+    if (subnode.isNull()) 
+    {
+        subnode = node.ownerDocument().createTextNode("");
+        node.appendChild(subnode);
+    }
+    return subnode.toText();
 }
 
 void KBookmark::updateAccessMetadata()
@@ -365,6 +367,6 @@ void KBookmark::updateAccessMetadata()
     domtext = get_or_create_text(item);
     domtext.setData(QString::number(timet));
 
-    // todo - wtf is time_modified???
+    // still to do - time_modified
 }
 
