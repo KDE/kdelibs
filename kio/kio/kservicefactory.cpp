@@ -36,6 +36,7 @@ KServiceFactory::KServiceFactory()
    m_offerListOffset = 0;
    m_nameDictOffset = 0;
    m_relNameDictOffset = 0;
+   m_menuIdDictOffset = 0;
    if (m_str)
    {
       // Read Header
@@ -48,12 +49,16 @@ KServiceFactory::KServiceFactory()
       m_offerListOffset = i;
       (*m_str) >> i;
       m_initListOffset = i;
+      (*m_str) >> i;
+      m_menuIdDictOffset = i;
 
       int saveOffset = m_str->device()->at();
       // Init index tables
       m_nameDict = new KSycocaDict(m_str, m_nameDictOffset);
       // Init index tables
       m_relNameDict = new KSycocaDict(m_str, m_relNameDictOffset);
+      // Init index tables
+      m_menuIdDict = new KSycocaDict(m_str, m_menuIdDictOffset);
       saveOffset = m_str->device()->at(saveOffset);
    }
    else
@@ -61,6 +66,7 @@ KServiceFactory::KServiceFactory()
       // Build new database
       m_nameDict = new KSycocaDict();
       m_relNameDict = new KSycocaDict();
+      m_menuIdDict = new KSycocaDict();
    }
    _self = this;
 }
@@ -70,6 +76,7 @@ KServiceFactory::~KServiceFactory()
    _self = 0L;
    delete m_nameDict;
    delete m_relNameDict;
+   delete m_menuIdDict;
 }
 
 KServiceFactory * KServiceFactory::self()
@@ -141,6 +148,29 @@ KService * KServiceFactory::findServiceByDesktopPath(const QString &_name)
 
    // Check whether the dictionary was right.
    if (newService && (newService->desktopEntryPath() != _name))
+   {
+      // No it wasn't...
+      delete newService;
+      newService = 0; // Not found
+   }
+   return newService;
+}
+
+KService * KServiceFactory::findServiceByMenuId(const QString &_menuId)
+{
+   if (!m_menuIdDict) return 0; // Error!
+
+   // Warning : this assumes we're NOT building a database
+   // But since findServiceByMenuId isn't called in that case...
+   // [ see KServiceTypeFactory for how to do it if needed ]
+
+   int offset = m_menuIdDict->find_string( _menuId );
+   if (!offset) return 0; // Not found
+
+   KService * newService = createEntry(offset);
+
+   // Check whether the dictionary was right.
+   if (newService && (newService->menuId() != _menuId))
    {
       // No it wasn't...
       delete newService;

@@ -41,6 +41,7 @@
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kconfigbase.h>
+#include <kstandarddirs.h>
 #include <dcopclient.h>
 
 #include "kservicefactory.h"
@@ -541,6 +542,12 @@ KService::Ptr KService::serviceByDesktopName( const QString& _name )
   return KService::Ptr( s );
 }
 
+KService::Ptr KService::serviceByMenuId( const QString& _name )
+{
+  KService * s = KServiceFactory::self()->findServiceByMenuId( _name );
+  return KService::Ptr( s );
+}
+
 KService::List KService::allInitServices()
 {
   return KServiceFactory::self()->allInitServices();
@@ -621,6 +628,81 @@ void KService::setMenuId(const QString &menuId)
 {
   d->menuId = menuId;
 }
+
+  /** 
+   * Returns a path that can be used to create a new KService based
+   * on @p suggestedName.
+   * @param showInMenu true, if the service should be shown in the KDE menu
+   *        false, if the service should be hidden from the menu
+   * @param suggestedName name to base the file on, if a service with such 
+   *        name already exists, a prefix will be added to make it unique.
+   * @param menuId If provided, menuId will be set to the menu id to use for
+   *        the KService
+   * @param reservedMenuIds If provided, the path and menu id will be chosen
+   *        in such a way that the new menu id does not conflict with any
+   *        of the reservedMenuIds
+   * @return The path to use for the new KService.
+   */
+
+QString KService::locateLocal()
+{
+  if (d->menuId.isEmpty() || desktopEntryPath().startsWith(".hidden"))
+     return KDesktopFile::locateLocal(desktopEntryPath());
+     
+  return ::locateLocal("xdgdata-apps", d->menuId);
+}
+
+QString KService::newServicePath(bool showInMenu, const QString &suggestedName,
+                                QString *menuId, const QStringList *reservedMenuIds)
+{
+   QString base = suggestedName;
+   if (!showInMenu)
+     base.prepend("kde-");
+   
+   QString result;
+   for(int i = 1; true; i++)
+   {
+      if (i == 1)
+         result = base + ".desktop";
+      else
+         result = base + QString("-%1.desktop").arg(i);
+      
+      if (reservedMenuIds && reservedMenuIds->contains(result))
+         continue;
+
+      // Lookup service by menu-id
+      KService::Ptr s = serviceByMenuId(result);
+      if (s)
+         continue;
+      
+      if (showInMenu)
+      {
+         if (!locate("xdgdata-apps", result).isEmpty())
+            continue;
+      }
+      else
+      {
+         QString file = result.mid(4); // Strip "kde-"
+         if (!locate("apps", ".hidden/"+file).isEmpty())
+            continue;
+      }
+         
+      break;
+   }
+   if (menuId)
+      *menuId = result;
+      
+   if (showInMenu)
+   {
+       return ::locateLocal("xdgdata-apps", result);
+   }
+   else
+   {
+       QString file = result.mid(4); // Strip "kde-"
+       return ::locateLocal("apps", ".hidden/"+file);
+   }
+}
+
 
 void KService::virtual_hook( int id, void* data )
 { KSycocaEntry::virtual_hook( id, data ); }

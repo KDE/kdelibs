@@ -566,7 +566,6 @@ void KOpenWithDlg::slotOK()
   QString fullExec(edit->url());
 
   QString serviceName;
-  QString pathName;
   QString initialServiceName;
   QString preferredTerminal;
   if (!m_pService) {
@@ -609,19 +608,12 @@ void KOpenWithDlg::slotOK()
         }
     }
     while (!ok);
-    if ( !m_pService )
-    {
-        // Let's hide it to avoid cluttering the K menu.
-        pathName = ".hidden/";
-        pathName += serviceName;
-    }
   }
   if ( m_pService )
   {
     // Existing service selected
     serviceName = m_pService->name();
     initialServiceName = serviceName;
-    pathName = m_pService->desktopEntryPath();
   }
 
   if (terminal->isChecked())
@@ -639,7 +631,22 @@ void KOpenWithDlg::slotOK()
   if ( m_pService && terminal->isChecked() != m_pService->terminal() )
       m_pService = 0L; // It's not exactly this service we're running
 
-  if ( m_pService && ( !remember || !remember->isChecked() ) ) {
+  if ( !remember || !remember->isChecked() ) {
+    if (m_pService)
+    {
+      accept();
+      return;
+    }
+    
+    // Create temp service
+    m_pService = new KService(initialServiceName, fullExec, QString::null);
+    if (terminal->isChecked())
+    {
+      m_pService->setTerminal(true);
+      // only add --noclose when we are sure it is konsole we're using
+      if (preferredTerminal == "konsole" && nocloseonexit->isChecked())
+         m_pService->setTerminalOptions("--noclose");
+  }
     accept();
     return;
   }
@@ -648,11 +655,21 @@ void KOpenWithDlg::slotOK()
   // wanted.  The other possibility is that they have asked for the
   // association to be remembered.  Create/update service.
 
-  kdDebug(250) << "service pathName=" << pathName << endl;
-  if (!pathName.endsWith(".desktop"))
-    pathName += QString::fromLatin1(".desktop");
-    
-  QString path = KDesktopFile::locateLocal(pathName);
+  QString newPath;
+  QString oldPath;
+  QString menuId;
+  if (m_pService)
+  {
+    oldPath = m_pService->desktopEntryPath();
+    newPath = m_pService->locateLocal();
+    menuId = m_pService->menuId();
+    kdDebug(250) << "Updating exitsing service " << m_pService->desktopEntryPath() << " ( " << newPath << " ) " << endl;
+  }
+  else
+  {
+    newPath = KService::newServicePath(false /* hidden */, serviceName, &menuId);
+    kdDebug(250) << "Creating new service " << serviceName << " ( " << newPath << " ) " << endl;
+  }
   
   int maxPreference = 1;
   if (!qServiceType.isEmpty())
@@ -663,14 +680,14 @@ void KOpenWithDlg::slotOK()
   }
 
   KConfig *desktop = 0;
-  if (pathName != path)
+  if (!oldPath.isEmpty() && (oldPath != newPath))
   {
-     KConfig orig(pathName, true, false, "apps");
-     desktop = orig.copyTo(path);
+     KConfig orig(oldPath, true, false, "apps");
+     desktop = orig.copyTo(newPath);
   }
   else
   {
-     desktop = new KConfig(pathName, false, false, "apps");
+     desktop = new KConfig(newPath, false, false, "apps");
   }
   desktop->setDesktopGroup();
   desktop->writeEntry("Type", QString::fromLatin1("Application"));
@@ -691,9 +708,7 @@ void KOpenWithDlg::slotOK()
 
   if (remember)
     if (remember->isChecked()) {
-      QStringList mimeList;
-      KDesktopFile oldDesktop(locate("apps", pathName), true);
-      mimeList = oldDesktop.readListEntry("MimeType", ';');
+      QStringList mimeList = desktop->readListEntry("MimeType", ';');
       if (!qServiceType.isEmpty() && !mimeList.contains(qServiceType))
         mimeList.append(qServiceType);
       desktop->writeEntry("MimeType", mimeList, ';');
@@ -715,12 +730,26 @@ void KOpenWithDlg::slotOK()
   QApplication::setOverrideCursor( waitCursor );
 
   // rebuild the database
-  QStringList args;
-  args.append("--incremental");
-  KApplication::kdeinitExecWait( "kbuildsycoca", args );
+  {
+    // Ask kded to rebuild ksycoca. kded will most likely trigger 
+    // a rebuild automatically anyway, so by asking kded it
+    // happens only once
+    QCString replyType;
+    QByteArray params;
+    QByteArray reply;
+
+    if (!kapp->dcopClient()->call( "kded", "kbuildsycoca", "recreate()",
+                               params, replyType, reply ) )
+    {
+       kdWarning(250) << "Can't communicate with kded!" << endl;
+       KApplication::kdeinitExecWait( "kbuildsycoca" );
+    }
+  }
+
+
 
   // get the new service pointer
-  kdDebug(250) << "kbuildsycoca finished, looking for service " << pathName << endl;
+  kdDebug(250) << "kbuildsycoca finished, looking for service " << menuId << endl;
   // We need to read in the new database. It seems the databaseChanged()
   // signal hasn't been processed in this process yet, since we haven't been
   // to the event loop yet.
@@ -728,7 +757,7 @@ void KOpenWithDlg::slotOK()
   lst << QString::fromLatin1("apps");
   KSycoca::self()->notifyDatabaseChanged( lst );
 
-  m_pService = KService::serviceByDesktopPath( pathName );
+  m_pService = KService::serviceByMenuId( menuId );
   QApplication::restoreOverrideCursor();
 
   Q_ASSERT( m_pService );

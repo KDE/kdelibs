@@ -67,6 +67,11 @@ public:
   KService * findServiceByDesktopPath( const QString &_name );
 
   /**
+   * Find a service ( by menu id, e.g. "kde-konsole.desktop")
+   */
+  KService * findServiceByMenuId( const QString &_menuId );
+
+  /**
    * @return the services supporting the given service type
    */
   KService::List offers( int serviceTypeOffset );
@@ -94,6 +99,8 @@ protected:
   int m_nameDictOffset;
   KSycocaDict *m_relNameDict;
   int m_relNameDictOffset;
+  KSycocaDict *m_menuIdDict;
+  int m_menuIdDictOffset;
 
 private:
   static KServiceFactory *_self;

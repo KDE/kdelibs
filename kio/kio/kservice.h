@@ -339,6 +339,14 @@ public:
   bool isValid() const { return m_bValid; }
 
   /**
+   * Returns a path that can be used for saving changes to this
+   * service
+   * @return path that can be used for saving changes to this service
+   * @since 3.2
+   */
+  QString locateLocal();
+
+  /**
    * @internal
    * Load the service from a stream.
    */
@@ -353,6 +361,16 @@ public:
    * Set the menu id
    */
   void setMenuId(const QString &menuId);
+  /**
+   * @internal
+   * Sets whether to use a terminal or not
+   */
+  void setTerminal(bool b) { m_bTerminal = b; }
+  /**
+   * @internal
+   * Sets the terminal options to use
+   */
+  void setTerminalOptions(const QString &options) { m_strTerminalOptions = options; }
 
   /**
    * Find a service by name, i.e. the translated Name field. You should
@@ -395,6 +413,16 @@ public:
   static Ptr serviceByDesktopName( const QString& _name );
 
   /**
+   * Find a service by its menu-id
+   *
+   * @param _menuId the menu id of the service
+   * @return a pointer to the requested service or 0 if the service is
+   *         unknown.
+   * @em Very @em important: Don't store the result in a KService* !
+   */
+  static Ptr serviceByMenuId( const QString& _menuId );
+
+  /**
    * Returns the whole list of services.
    *
    *  Useful for being able to
@@ -412,6 +440,25 @@ public:
    * @return the list of all services that need to be initialized
    */
   static List allInitServices();
+
+  /** 
+   * Returns a path that can be used to create a new KService based
+   * on @p suggestedName.
+   * @param showInMenu true, if the service should be shown in the KDE menu
+   *        false, if the service should be hidden from the menu
+   * @param suggestedName name to base the file on, if a service with such 
+   *        name already exists, a prefix will be added to make it unique.
+   * @param menuId If provided, menuId will be set to the menu id to use for
+   *        the KService
+   * @param reservedMenuIds If provided, the path and menu id will be chosen
+   *        in such a way that the new menu id does not conflict with any
+   *        of the reservedMenuIds
+   * @return The path to use for the new KService.
+   * @since 3.2
+   */
+  static QString newServicePath(bool showInMenu, const QString &suggestedName,
+                                QString *menuId = 0,
+                                const QStringList *reservedMenuIds = 0);
 
 protected:
 
