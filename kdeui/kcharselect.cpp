@@ -30,12 +30,19 @@
 #include <qlabel.h>
 #include <qhbox.h>
 #include <qkeycode.h>
+#include <qfontdatabase.h>
 
 #include <klocale.h>
 #include <kdialog.h>
 #include <kapp.h>
 
-#include <X11/Xlib.h>
+static QFontDatabase *fontDataBase = 0;
+
+static void cleanupFontDatabase()
+{
+    delete fontDataBase;
+    fontDataBase = 0;
+}
 
 /******************************************************************/
 /* Class: KCharSelectTable					  */
@@ -108,24 +115,20 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
     c += row * numCols();
     c += col;
 
-    if ( c == vChr.unicode() )
-    {
+    if ( c == vChr.unicode() ) {
 	p->setBrush( QBrush( colorGroup().highlight() ) );
 	p->setPen( NoPen );
 	p->drawRect( 0, 0, w, h );
 	p->setPen( colorGroup().highlightedText() );
 	vPos = QPoint( col, row );
-    }
-    else
-    {
+    } else {
 	p->setBrush( QBrush( colorGroup().base() ) );
 	p->setPen( NoPen );
 	p->drawRect( 0, 0, w, h );
 	p->setPen( colorGroup().text() );
     }
 
-    if ( c == focusItem.unicode() && hasFocus() )
-    {
+    if ( c == focusItem.unicode() && hasFocus() ) {
 	style().drawFocusRect( p, QRect( 2, 2, w - 4, h - 4 ), colorGroup() );
 	focusPos = QPoint( col, row );
     }
@@ -148,8 +151,7 @@ void KCharSelectTable::paintCell( class QPainter* p, int row, int col )
 //==================================================================
 void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 {
-    if ( findRow( e->y() ) != -1 && findCol( e->x() ) != -1 )
-    {
+    if ( findRow( e->y() ) != -1 && findCol( e->x() ) != -1 ) {
 	QPoint oldPos = vPos;
 
 	vPos.setX( findCol( e->x() ) );
@@ -177,8 +179,7 @@ void KCharSelectTable::mouseMoveEvent( QMouseEvent *e )
 //==================================================================
 void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 {
-    switch ( e->key() )
-    {
+    switch ( e->key() ) {
     case Key_Left:
 	gotoLeft();
 	break;
@@ -197,8 +198,7 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
     case Key_Prior:
 	emit tableUp();
 	break;
-    case Key_Space: case Key_Enter: case Key_Return:
-    {
+    case Key_Space: case Key_Enter: case Key_Return: {
 	QPoint oldPos = vPos;
 
 	vPos = focusPos;
@@ -218,8 +218,7 @@ void KCharSelectTable::keyPressEvent( QKeyEvent *e )
 //==================================================================
 void KCharSelectTable::gotoLeft()
 {
-    if ( focusPos.x() > 0 )
-    {
+    if ( focusPos.x() > 0 ) {
 	QPoint oldPos = focusPos;
 
 	focusPos.setX( focusPos.x() - 1 );
@@ -237,8 +236,7 @@ void KCharSelectTable::gotoLeft()
 //==================================================================
 void KCharSelectTable::gotoRight()
 {
-    if ( focusPos.x() < 31 )
-    {
+    if ( focusPos.x() < 31 ) {
 	QPoint oldPos = focusPos;
 
 	focusPos.setX( focusPos.x() + 1 );
@@ -256,8 +254,7 @@ void KCharSelectTable::gotoRight()
 //==================================================================
 void KCharSelectTable::gotoUp()
 {
-    if ( focusPos.y() > 0 )
-    {
+    if ( focusPos.y() > 0 ) {
 	QPoint oldPos = focusPos;
 
 	focusPos.setY( focusPos.y() - 1 );
@@ -275,8 +272,7 @@ void KCharSelectTable::gotoUp()
 //==================================================================
 void KCharSelectTable::gotoDown()
 {
-    if ( focusPos.y() < 7 )
-    {
+    if ( focusPos.y() < 7 ) {
 	QPoint oldPos = focusPos;
 
 	focusPos.setY( focusPos.y() + 1 );
@@ -358,8 +354,7 @@ void KCharSelect::setFont( const QString &_font )
 {
     QValueList<QString>::Iterator it = fontList.find( _font );
 
-    if ( it != fontList.end() )
-    {
+    if ( it != fontList.end() ) {
 	QValueList<QString>::Iterator it2 = fontList.begin();
 	int pos = 0;
 	for ( ; it != it2; ++it2, ++pos);
@@ -386,66 +381,11 @@ void KCharSelect::setTableNum( int _tableNum )
 //==================================================================
 void KCharSelect::fillFontCombo()
 {
-    int numFonts;
-    Display *kde_display;
-    char** fontNames;
-    char** fontNames_copy;
-    QString qfontname;
-
-    bool have_installed = kapp->kdeFonts( fontList );
-
-    if ( !have_installed )
-    {
-	kde_display = kapp->getDisplay();
-
-	fontNames = XListFonts( kde_display, "*", 32767, &numFonts );
-	fontNames_copy = fontNames;
-
-	for( int i = 0; i < numFonts; i++ )
-	{
-	    if ( **fontNames != '-' )
-	    {
-		fontNames++;
-		continue;
-	    };
-
-	    qfontname = "";
-	    qfontname = *fontNames;
-	    int dash = qfontname.find ( '-', 1, true );
-
-	    if ( dash == -1 )
-	    {
-		fontNames++;
-		continue;
-	    }
-
-	    int dash_two = qfontname.find ( '-', dash + 1 , true );
-
-	    if ( dash == -1 )
-	    {
-		fontNames++;
-		continue;
-	    }
-
-	    qfontname = qfontname.mid( dash +1, dash_two - dash -1 );
-
-	    if ( !qfontname.contains( QString::fromLatin1("open look"), true ) )
-	    {
-		if ( qfontname != QString::fromLatin1("nil") )
-		{
-		    if ( !fontList.contains( qfontname ) )
-			fontList.append( qfontname );
-		}
-	    }
-
-	    fontNames++;
-	}
-
-	XFreeFontNames( fontNames_copy );
+    if ( !fontDataBase ) {
+	fontDataBase = new QFontDatabase();
+	qAddPostRoutine( cleanupFontDatabase );
     }
-
-    fontList.sort();
-    fontCombo->insertStringList( fontList );
+    fontCombo->insertStringList( fontDataBase->families() );
 }
 
 //==================================================================

@@ -32,8 +32,6 @@
 #include <qtl.h>
 #include <qfontdatabase.h>
 
-#include <X11/Xlib.h>
-
 #include <kiconloader.h>
 
 static QFontDatabase *fontDataBase = 0;
