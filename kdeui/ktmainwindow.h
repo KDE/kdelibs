@@ -377,7 +377,7 @@ public:
     QListIterator<KToolBar> toolBarIterator();
 
     void setFrameBorderWidth( int ) {}
-    
+
 public slots:
     /**
      * Makes a KDE compliant caption.
@@ -426,6 +426,7 @@ public slots:
     void appHelpActivated( void );
 
 protected:
+    void paintEvent( QPaintEvent *e );
     void childEvent( QChildEvent* e);
     /**
      * Reimplemented to call the queryClose() and queryExit() handlers.
@@ -534,7 +535,7 @@ protected:
     virtual void readGlobalProperties( KConfig* sessionConfig );
     void savePropertiesInternal( KConfig*, int );
     bool readPropertiesInternal( KConfig*, int );
-    
+
 protected slots:
 #if defined(KDE_COMPAT)
     virtual void updateRects();
@@ -578,7 +579,7 @@ private:
     QMap<int, KToolBar*> idBarMap;
     QMap<QCString, KToolBar*> nameBarMap;
     QList<KToolBar> toolbarList;
-    
+
 };
 
 #define RESTORE(type) { int n = 1;\
