@@ -1090,7 +1090,7 @@ void KApplication::kdisplaySetStyleAndFont()
   //  QApplication::setStyle( applicationStyle );
   // 	setStyle() works pretty well but may not change the style of combo
   //	boxes.
-    if ( *font() != generalFont_)
+    if ( font() != generalFont_)
 	QApplication::setFont( generalFont_, TRUE );
   applyGUIStyle(applicationStyle_);
 
