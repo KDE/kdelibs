@@ -858,9 +858,9 @@ void DocumentImpl::updateRendering()
 {
     if (!hasChangedChild()) return;
 
-    QTime time;
-    time.start();
-    kdDebug() << "UPDATERENDERING: "<<endl;
+//     QTime time;
+//     time.start();
+//     kdDebug() << "UPDATERENDERING: "<<endl;
 
     StyleChange change = NoChange;
 #if 0
@@ -871,7 +871,7 @@ void DocumentImpl::updateRendering()
 #endif
     recalcStyle( change );
 
-    kdDebug() << "UPDATERENDERING time used="<<time.elapsed()<<endl;
+//    kdDebug() << "UPDATERENDERING time used="<<time.elapsed()<<endl;
 }
 
 void DocumentImpl::updateDocumentsRendering()
