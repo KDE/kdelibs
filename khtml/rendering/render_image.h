@@ -57,6 +57,7 @@ public:
     DOM::HTMLElementImpl* element() const
     { return static_cast<DOM::HTMLElementImpl*>(RenderObject::element()); }
 
+    bool complete() const { return loadEventSent; }
 
     // hook to keep RendeObject::m_inline() up to date
     virtual void setStyle(RenderStyle *style);
