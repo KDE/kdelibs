@@ -284,7 +284,8 @@ void SlaveBase::mimeType( const QString &_type)
            kdDebug(7019) << "SlaveBase: mimetype: read error" << endl;
            ::exit(255);
        }
-       if ( (cmd == CMD_META_DATA) ||
+       if ( (cmd == CMD_REPARSECONFIGURATION) ||
+            (cmd == CMD_META_DATA) ||
             (cmd == CMD_SUBURL) )
        {
           dispatch( cmd, data );
