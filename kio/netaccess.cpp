@@ -48,11 +48,10 @@ bool NetAccess::download(const KURL& u, QString & target)
   if (target.isEmpty())
   {
       target = tmpnam(0);  // Generate a temp file name
+      if (!tmpfiles)
+	  tmpfiles = new QStringList;
+      tmpfiles->append(target);
   }
-
-  if (!tmpfiles)
-    tmpfiles = new QStringList;
-  tmpfiles->append(target);
 
   NetAccess kioNet;
   KURL dest;
