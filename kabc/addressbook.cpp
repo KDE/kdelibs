@@ -504,6 +504,16 @@ Ticket *AddressBook::requestSaveTicket( Resource *resource )
   return 0;
 }
 
+void AddressBook::releaseSaveTicket( Ticket *ticket )
+{
+  if ( !ticket )
+    return;
+
+  if ( ticket->resource() ) {
+    ticket->resource()->releaseSaveTicket( ticket );
+  }
+}
+
 void AddressBook::insertAddressee( const Addressee &a )
 {
   Resource *resource = a.resource();

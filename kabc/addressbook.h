@@ -121,6 +121,8 @@ class AddressBook : public QObject
       @see save()
     */
     Ticket *requestSaveTicket( Resource *resource=0 );
+
+    void releaseSaveTicket( Ticket *ticket );
     
     /**
       Load address book from file.

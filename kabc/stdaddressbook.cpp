@@ -148,6 +148,8 @@ bool StdAddressBook::save()
 
       if ( !ab->save( ticket ) )
         ok = false;
+
+      ab->releaseSaveTicket( ticket );
     }
   }
 
