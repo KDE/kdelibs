@@ -81,7 +81,7 @@ KURL::KURL( const KURL& _u, const char *_rel_url )
   else
   {
     *this = _u;
-    QString tmp;
+    QString tmp = _rel_url;
     decode( tmp );
     setFileName( tmp.data() );
   }
