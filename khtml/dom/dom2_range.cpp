@@ -32,7 +32,6 @@
 #include "dom_exception.h"
 #include "dom_docimpl.h"
 #include "dom2_rangeimpl.h"
-//#include <qstring.h>
 
 using namespace DOM;
 
@@ -243,7 +242,7 @@ short Range::compareBoundaryPoints( CompareHow how, const Range &sourceRange )
 {
     if (!impl)
 	throw DOMException(DOMException::INVALID_STATE_ERR);
-
+	
     int exceptioncode = 0;
     short r = impl->compareBoundaryPoints(how,sourceRange.handle(),exceptioncode);
     throwException(exceptioncode);

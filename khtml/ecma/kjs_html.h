@@ -17,8 +17,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _HTML_OBJECT_H_
-#define _HTML_OBJECT_H_
+#ifndef _KJS_HTML_H_
+#define _KJS_HTML_H_
 
 #include <html_document.h>
 #include <html_base.h>

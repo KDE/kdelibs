@@ -164,12 +164,3 @@ bool KJS::originCheck(const QString & url1, const QString & url2)
     return false;
 }
 
-
-DOM::Range KJS::toRange(const KJSO& obj)
-{
-  if (!obj.derivedFrom("Range"))
-    return DOM::Range();
-
-  const DOMRange *dobj = static_cast<const DOMRange*>(obj.imp());
-  return dobj->toRange();
-}

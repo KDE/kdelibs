@@ -51,13 +51,13 @@ public:
     void setStart ( NodeImpl *refNode, long offset, int &exceptioncode );
     void setEnd ( NodeImpl *refNode, long offset, int &exceptioncode );
     void collapse ( bool toStart, int &exceptioncode );
-    short compareBoundaryPoints ( Range::CompareHow how, const RangeImpl *sourceRange, int &exceptioncode );
+    short compareBoundaryPoints ( Range::CompareHow how, RangeImpl *sourceRange, int &exceptioncode );
     short compareBoundaryPoints ( NodeImpl *containerA, long offsetA, NodeImpl *containerB, long offsetB );
     bool boundaryPointsValid (  );
     void deleteContents ( int &exceptioncode );
     DocumentFragmentImpl *extractContents ( int &exceptioncode );
     DocumentFragmentImpl *cloneContents ( int &exceptioncode );
-    void insertNode( const NodeImpl *newNode, int &exceptioncode );
+    void insertNode( NodeImpl *newNode, int &exceptioncode );
     DOMString toString ( int &exceptioncode );
     DOMString toHTML (  );
     void detach ( int &exceptioncode );
@@ -70,7 +70,7 @@ public:
     void setEndAfter( const NodeImpl *refNode, int &exceptioncode );
     void selectNode( const NodeImpl *refNode, int &exceptioncode );
     void selectNodeContents( const NodeImpl *refNode, int &exceptioncode );
-    void surroundContents( const NodeImpl *newParent, int &exceptioncode );
+    void surroundContents( NodeImpl *newParent, int &exceptioncode );
     void setStartBefore( const NodeImpl *refNode, int &exceptioncode );
 
 protected:
@@ -83,7 +83,7 @@ protected:
 
 private:
     void checkNode( const NodeImpl *n, int &exceptioncode ) const;
-    void checkNodeWOffset( const NodeImpl *n, int offset, int &exceptioncode) const;
+    void checkNodeWOffset( NodeImpl *n, int offset, int &exceptioncode) const;
     void checkNodeBA( const NodeImpl *n, int &exceptioncode ) const;
     void checkCommon(int &exceptioncode) const;
 };

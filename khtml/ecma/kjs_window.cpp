@@ -38,6 +38,8 @@
 #include "kjs_navigator.h"
 #include "kjs_html.h"
 #include "kjs_dom.h"
+#include "kjs_range.h"
+#include "kjs_traversal.h"
 
 #include <qevent.h>
 #include "khtmlview.h"
@@ -155,6 +157,8 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       p == "defaultStatus" ||
       p == "document" ||
       p == "Node" ||
+      p == "Range" ||
+      p == "NodeFilter" ||
       p == "frames" ||
       p == "history" ||
       p == "innerHeight" ||
@@ -237,6 +241,10 @@ KJSO Window::get(const UString &p) const
   }
   else if (p == "Node")
     return getNodePrototype();
+  else if (p == "Range")
+    return getRangePrototype();
+  else if (p == "NodeFilter")
+    return getNodeFilterPrototype();
   else if (p == "frames")
     return new FrameArray(part);
   else if (p == "history")

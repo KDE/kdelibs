@@ -17,14 +17,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _DOM_CORE_H_
-#define _DOM_CORE_H_
+#ifndef _KJS_DOM_H_
+#define _KJS_DOM_H_
 
 #include <dom_node.h>
 #include <dom_doc.h>
 #include <dom_element.h>
 #include <dom_xml.h>
-#include <dom2_range.h>
 
 #include <kjs/object.h>
 #include <kjs/function.h>
@@ -104,7 +103,7 @@ namespace KJS {
 	   CreateComment, CreateCDATASection, CreateProcessingInstruction,
 	   CreateAttribute, CreateEntityReference, GetElementsByTagName,
 	   ImportNode, CreateElementNS, CreateAttributeNS, GetElementsByTagNameNS, GetElementById,
-	   CreateRange };
+	   CreateRange, CreateNodeIterator, CreateTreeWalker };
   private:
     DOM::Document doc;
     int id;
@@ -235,41 +234,11 @@ namespace KJS {
     static const TypeInfo info;
   };
 
-  class DOMRange : public DOMObject {
-  public:
-    DOMRange(DOM::Range r) : range(r) {}
-    ~DOMRange();
-    virtual KJSO tryGet(const UString &p) const;
-    // no put - all read-only
-    virtual const TypeInfo* typeInfo() const { return &info; }
-    static const TypeInfo info;
-    virtual DOM::Range toRange() const { return range; }
-//    virtual String toString() const;
-  protected:
-    DOM::Range range;
-  };
-
-  class DOMRangeFunc : public DOMFunction {
-    friend class DOMNode;
-  public:
-    DOMRangeFunc(DOM::Range r, int i) : range(r), id(i) { }
-    Completion tryExecute(const List &);
-    enum { SetStart, SetEnd, SetStartBefore, SetStartAfter, SetEndBefore,
-           SetEndAfter, Collapse, SelectNode, SelectNodeContents,
-           CompareBoundaryPoints, DeleteContents, ExtractContents,
-           CloneContents, InsertNode, SurroundContents, CloneRange, ToString,
-           Detach };
-  private:
-    DOM::Range range;
-    int id;
-  };
-
   KJSO getDOMNode(DOM::Node n);
   KJSO getDOMNamedNodeMap(DOM::NamedNodeMap m);
   KJSO getDOMNodeList(DOM::NodeList l);
   KJSO getDOMDOMImplementation(DOM::DOMImplementation i);
   KJSO getNodePrototype();
-  KJSO getDOMRange(DOM::Range r);
 
 }; // namespace
 

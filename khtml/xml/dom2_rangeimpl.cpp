@@ -34,6 +34,7 @@
 #include "dom2_rangeimpl.h"
 #include "dom2_traversalimpl.h"
 #include "dom_textimpl.h"
+#include "dom_xmlimpl.h"
 #include <qstring.h>
 
 using namespace DOM;
@@ -122,10 +123,12 @@ NodeImpl *RangeImpl::commonAncestorContainer(int &exceptioncode)
         parentEnd = m_endContainer;
     }
 
-    if(parentStart == parentEnd)
-        return parentStart;
-    else
+    if (!parentStart || !parentEnd || parentStart != parentEnd) {
+	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
+    }
+    else
+	return parentStart;
 }
 
 bool RangeImpl::collapsed(int &exceptioncode) const
@@ -197,15 +200,24 @@ void RangeImpl::collapse( bool toStart, int &exceptioncode )
     }
 }
 
-short RangeImpl::compareBoundaryPoints( Range::CompareHow how, const RangeImpl *sourceRange, int &exceptioncode )
+short RangeImpl::compareBoundaryPoints( Range::CompareHow how, RangeImpl *sourceRange, int &exceptioncode )
 {
     if (m_detached) {
 	exceptioncode = DOMException::INVALID_STATE_ERR;
 	return 0;
     }
 
-    RangeImpl *noConstSourceRange = (RangeImpl*)sourceRange; // ### remove hack
-    if( commonAncestorContainer(exceptioncode)->ownerDocument() != noConstSourceRange->commonAncestorContainer(exceptioncode)->ownerDocument() ) {
+    if (!sourceRange) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
+	return 0;
+    }
+
+    NodeImpl *thisCont = commonAncestorContainer(exceptioncode);
+    NodeImpl *sourceCont = sourceRange->commonAncestorContainer(exceptioncode);
+    if (exceptioncode)
+	return 0;
+
+    if (thisCont->ownerDocument() != sourceCont->ownerDocument()) { // ### what about if in separate DocumentFragments?
         exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
         return 0;
     }
@@ -236,12 +248,6 @@ short RangeImpl::compareBoundaryPoints( Range::CompareHow how, const RangeImpl *
 
 short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, NodeImpl *containerB, long offsetB )
 {
-    if( offsetA < 0 || offsetB < 0 )
-    {
-//        printf( "Function compareBoundaryPoints: No negative offsets allowed\n" );
-        return 2;     // ### undocumented - should throw an exception here
-    }
-
     if( containerA == containerB )
     {
         if( offsetA == offsetB )  return 0;    // A is equal to B
@@ -249,9 +255,24 @@ short RangeImpl::compareBoundaryPoints( NodeImpl *containerA, long offsetA, Node
         else  return 1;                        // A is after B
     }
 
-    NodeImpl *n = containerA->childNodes()->item(offsetA);
-    while (n) {
+    NodeImpl *n;
+    if (offsetA >= (long)containerA->childNodes()->length()) {
+	// find the next node
+	if (containerA->lastChild())
+	    n = containerA->lastChild();
+	else
+	    n = containerA;
 
+	while (n && !n->nextSibling())
+	    n = n->parentNode();
+	if (n)
+	    n = n->nextSibling();
+    }
+    else
+	n = containerA->childNodes()->item(offsetA);
+	
+    while (n) {
+	// traverse forwards and see if we find B
         if( n == containerB)  return -1;       // A is before B
 
         if (n->firstChild())
@@ -461,7 +482,7 @@ DocumentFragmentImpl *RangeImpl::cloneContents( int &exceptioncode  )
     return masterTraverse( false, exceptioncode );
 }
 
-void RangeImpl::insertNode( const NodeImpl *newNode, int &exceptioncode )
+void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
 {
     if (m_detached) {
 	exceptioncode = DOMException::INVALID_STATE_ERR;
@@ -490,12 +511,10 @@ void RangeImpl::insertNode( const NodeImpl *newNode, int &exceptioncode )
         newText = textNode->splitText(m_startOffset,exceptioncode);
         if (exceptioncode)
 	    return;
-	// ### we break a const here
-        newParent->insertBefore( ((NodeImpl*)newNode), newText, exceptioncode );
+        newParent->insertBefore( newNode, newText, exceptioncode );
     }
     else {
-	// ### we break a const here
-        m_startContainer->insertBefore( ((NodeImpl*)newNode), m_startContainer->childNodes()->item( m_startOffset ), exceptioncode );
+        m_startContainer->insertBefore( newNode, m_startContainer->childNodes()->item( m_startOffset ), exceptioncode );
     }
 }
 
@@ -533,7 +552,7 @@ DOMString RangeImpl::toString( int &exceptioncode )
         _node = iterator.nextNode();
     }
     return _string;*/
-    return 0;
+    return DOMString("");
 }
 
 DOMString RangeImpl::toHTML(  )
@@ -892,7 +911,7 @@ void RangeImpl::checkNode( const NodeImpl *n, int &exceptioncode ) const
     }
 }
 
-void RangeImpl::checkNodeWOffset( const NodeImpl *n, int offset, int &exceptioncode) const
+void RangeImpl::checkNodeWOffset( NodeImpl *n, int offset, int &exceptioncode) const
 {
     checkNode( n, exceptioncode );
     if (exceptioncode)
@@ -902,16 +921,22 @@ void RangeImpl::checkNodeWOffset( const NodeImpl *n, int offset, int &exceptionc
         exceptioncode = DOMException::INDEX_SIZE_ERR;
     }
 
-    if( n->nodeType() != Node::TEXT_NODE )
-    {
-	// ### we break a const here
-	if( (unsigned int)offset > ((NodeImpl*)n)->childNodes()->length() )
-            exceptioncode = DOMException::INDEX_SIZE_ERR;
-    }
-    else
-    {
-        if( !n || (unsigned)offset > ((TextImpl*)n)->length() )
-            exceptioncode = DOMException::INDEX_SIZE_ERR;
+    switch (n->nodeType()) {
+	case Node::TEXT_NODE:
+	case Node::COMMENT_NODE:
+	case Node::CDATA_SECTION_NODE:
+	    if ( (unsigned long)offset > static_cast<CharacterDataImpl*>(n)->length() )
+		exceptioncode = DOMException::INDEX_SIZE_ERR;
+	    break;
+	case Node::PROCESSING_INSTRUCTION_NODE:
+	    // ### are we supposed to check with just data or the whole contents?
+	    if ( (unsigned long)offset > static_cast<ProcessingInstructionImpl*>(n)->data().length() )
+		exceptioncode = DOMException::INDEX_SIZE_ERR;
+	    break;
+	default:
+	    if ( (unsigned long)offset > n->childNodes()->length() )
+		exceptioncode = DOMException::INDEX_SIZE_ERR;
+	    break;
     }
 }
 
@@ -1018,7 +1043,7 @@ void RangeImpl::selectNodeContents( const NodeImpl *refNode, int &exceptioncode 
     setEndAfter( refNode->lastChild(), exceptioncode );
 }
 
-void RangeImpl::surroundContents( const NodeImpl *newParent, int &exceptioncode )
+void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
 {
     if (m_detached) {
 	exceptioncode = DOMException::INVALID_STATE_ERR;
