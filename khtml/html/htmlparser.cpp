@@ -1,9 +1,10 @@
 /*
     This file is part of the KDE libraries
 
-   Copyright (C) 1997 Martin Jones (mjones@kde.org)
+    Copyright (C) 1997 Martin Jones (mjones@kde.org)
               (C) 1997 Torben Weis (weis@kde.org)
-              (C) 1999 Lars Knoll (knoll@kde.org)
+              (C) 1999,2001 Lars Knoll (knoll@kde.org)
+              (C) 2000,2001 Dirk Mueller (mueller@kde.org)
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -129,6 +130,7 @@ const unsigned short tagPriority[] = {
     1, // ID_INS
     0, // ID_ISINDEX
     1, // ID_KBD
+    5, // ID__KONQBLOCK
     1, // ID_LABEL
     1, // ID_LAYER
     1, // ID_LEGEND
@@ -433,48 +435,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         HTMLElementImpl *e;
         bool handled = false;
 
-
-        // things that appear in tables before <tr> or <td> must be
-        // moved before the table. lets test this first...
-        if(current->id() == ID_TABLE)
-        {
-            // scripts, styles, etc are handled later, for now...
-            if(id!=ID_TD && id!=ID_TR && id!=ID_TH && id!=ID_SCRIPT &&
-                    id!=ID_STYLE && id!=ID_MAP && id!=ID_FORM)
-            {
-                NodeImpl *node = current;
-                NodeImpl *parent = node->parentNode();
-
-                if (id == ID_TABLE) // <table><table> switches order, but
-                                    // but also closes the first table. weird...
-                {
-                    popBlock(ID_TABLE);
-                }
-
-                int exceptioncode = 0;
-                parent->insertBefore(n, node, exceptioncode );
-                if ( exceptioncode ) {
-#ifdef PARSER_DEBUG
-                    kdDebug( 6035 ) << "adding element before table failed!!!!" << endl;
-#endif
-                    return false;
-                }
-
-                if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
-                    pushBlock(id, tagPriority[id]);
-                    current = n;
-                }
-#if SPEED_DEBUG < 2
-                if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
-#endif
-#if SPEED_DEBUG < 1
-                if(tagPriority[id] == 0 && n->renderer())
-                    n->renderer()->close();
-#endif
-                return true;
-            }
-        }
-
         // switch according to the element to insert
         switch(id)
         {
@@ -577,52 +537,17 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 break;
             // Fall through!
         }
-        case ID_MAP:
-        case ID_FORM:
-        case ID_SCRIPT:
-        {
-#ifdef PARSER_DEBUG
-            kdDebug( 6035 ) << "--> badly placed element!!!" << endl;
-#endif
-            NodeImpl *node = current;
-            // in case the form is opened inside the table (<table><form ...><tr> or similar)
-            // we need to move it outside the table.
-            if(node->id() == ID_TR)
-                node = node->parentNode();
-            if(node->id() == ID_THEAD)
-                node = node->parentNode();
-            else if(node->id() == ID_TBODY)
-                node = node->parentNode();
-            else if(node->id() == ID_TFOOT)
-                node = node->parentNode();
-
-            if(node->id() == ID_TABLE)
+        case ID_TEXT:
+            // ignore text inside the following elements.
+            switch(current->id())
             {
-                NodeImpl *parent = node->parentNode();
-                //kdDebug( 6035 ) << "trying to add form to " << parent->id() <<", " << parent->nodeName().string() <<  endl;
-                int exceptioncode = 0;
-                parent->insertBefore(n, node, exceptioncode );
-                if ( exceptioncode ) {
-#ifdef PARSER_DEBUG
-                    kdDebug( 6035 ) << "adding form before of table failed!!!!" << endl;
-#endif
-                    return false;
-                }
-                if(tagPriority[id] != 0 && id != ID_FORM && id != ID_INPUT ) {
-                    pushBlock(id, tagPriority[id]);
-                    current = n;
-                }
-#if SPEED_DEBUG < 2
-                if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
-#endif
-#if SPEED_DEBUG < 1
-                if(tagPriority[id] == 0 && n->renderer())
-                    n->renderer()->close();
-#endif
-                return true;
-            }
+            case ID_SELECT:
+                return false;
+            default:
+                ;
+                // fall through!!
+            };
             break;
-        }
         case ID_DD:
         case ID_DT:
             e = new HTMLDListElementImpl(document);
@@ -645,16 +570,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 return false;
             return true;
         }
-        case ID_TEXT:
-            // ignore text inside the following elements.
-            switch(current->id())
-            {
-            case ID_SELECT:
-                return false;
-            default:
-                break;
-           }
-           break;
         default:
             break;
         }
@@ -665,7 +580,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         case ID_HTML:
             switch(id)
             {
-                // ### check, there's only one HTML and one BODY tag!
             case ID_SCRIPT:
             case ID_STYLE:
             case ID_META:
@@ -675,7 +589,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             case ID_TITLE:
             case ID_ISINDEX:
             case ID_BASE:
-                // ### what about <script> tags between head and body????
                 if(!head) {
                     head = new HTMLHeadElementImpl(document);
                     e = head;
@@ -716,68 +629,36 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             }
             break;
         case ID_BODY:
-
             break;
-        case ID_TABLE:
-            switch(id)
-            {
-            case ID_COL:
-            case ID_COLGROUP:
-            case ID_P:
-                break;
-            case ID_TEXT:
-            {
-                TextImpl *t = static_cast<TextImpl *>(n);
-                DOMStringImpl *i = t->string();
-                unsigned int pos = 0;
-                while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
-                                      *(i->s+pos) == QChar(0xa0))) pos++;
-                if(pos == i->l)
-                {
-                    break;
-                }
-            }
-            case ID_COMMENT:
-                break;
-            // Fall through!
-            default:
-                e = new HTMLTableSectionElementImpl(document, ID_TBODY);
-                insertNode(e);
+        case ID__KONQBLOCK:
+            switch( id ) {
+            case ID_THEAD:
+            case ID_TFOOT:
+            case ID_TBODY:
+            case ID_TR:
+            case ID_TD:
+            case ID_TH:
+                // now the actual table contents starts
+                // lets close our anonymous block before the table
+                // and go ahead!
+                popBlock( ID__KONQBLOCK );
                 handled = true;
                 break;
+            default:
+                break;
             }
             break;
+        case ID_TABLE:
         case ID_THEAD:
         case ID_TFOOT:
         case ID_TBODY:
+        case ID_TR:
             switch(id)
             {
-            case ID_COMMENT:
-                case ID_FONT:
-            case ID_COL:
-            case ID_COLGROUP:
-            case ID_P:
-                break;
             case ID_TABLE:
                 popBlock(ID_TABLE); // end the table
                 handled = true;      // ...and start a new one
                 break;
-            default:
-                e = new HTMLTableRowElementImpl(document);
-                insertNode(e);
-                handled = true;
-                break;
-            }
-            break;
-        case ID_TR:
-            switch(id)
-            {
-            case ID_COMMENT:
-            case ID_FONT:
-            case ID_COL:
-            case ID_COLGROUP:
-            case ID_P:
-                break;
             case ID_TEXT:
             {
                 TextImpl *t = static_cast<TextImpl *>(n);
@@ -786,22 +667,54 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 while(pos < i->l && ( *(i->s+pos) == QChar(' ') ||
                                       *(i->s+pos) == QChar(0xa0))) pos++;
                 if(pos == i->l)
+                    break;
+            }
+            default:
+            {
+                NodeImpl *node = current;
+                NodeImpl *parent = node->parentNode();
+                NodeImpl *parentparent = parent->parentNode();
+
+                if(node->id() == ID_TR &&
+                   ( parent->id() == ID_THEAD ||
+                     parent->id() == ID_TBODY ||
+                     parent->id() == ID_TFOOT ) && parentparent->id() == ID_TABLE )
                 {
+                    node = parentparent;
+                    NodeImpl *parent = node->parentNode();
+                    int exceptioncode = 0;
+                    NodeImpl *container = new HTMLGenericElementImpl( document, ID__KONQBLOCK );
+                    parent->insertBefore( container, node, exceptioncode );
+                    if ( exceptioncode ) {
+#ifdef PARSER_DEBUG
+                        kdDebug( 6035 ) << "adding anonymous container before table failed!" << endl;
+#endif
+                        break;
+                    }
+                    if ( HTMLWidget ) container->attach( HTMLWidget );
+                    pushBlock( ID__KONQBLOCK, tagPriority[ID__KONQBLOCK] );
+                    current = container;
+                    handled = true;
                     break;
                 }
-            }
-            // Fall through!
-            default:
-                e = new HTMLTableCellElementImpl(document, ID_TD);
+
+                if ( current->id() == ID_TR )
+                    e = new HTMLTableCellElementImpl(document, ID_TD);
+                else if ( current->id() == ID_TABLE )
+                    e = new HTMLTableSectionElementImpl( document, ID_TBODY );
+                else
+                    e = new HTMLTableRowElementImpl( document );
+
                 insertNode(e);
                 handled = true;
                 break;
-            }
+            } // end default
+            } // end switch
             break;
-            case ID_OBJECT:
-                discard_until = id + ID_CLOSE_TAG;
-                return false;
-            case ID_UL:
+        case ID_OBJECT:
+            discard_until = id + ID_CLOSE_TAG;
+            return false;
+        case ID_UL:
         case ID_OL:
         case ID_DIR:
         case ID_MENU:

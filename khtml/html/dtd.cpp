@@ -141,6 +141,7 @@ static const ushort tag_list_1[] = {
     ID_COMMENT,
     ID_LI,
     ID_LISTING,
+    ID__KONQBLOCK,
     0
 };
 
@@ -341,7 +342,6 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_SUP:
     case ID_SPAN:
     case ID_BDO:
-//    case ID_FONT:
     case ID_P:
     case ID_H1:
     case ID_H2:
@@ -377,12 +377,9 @@ bool DOM::checkChild(ushort tagID, ushort childID)
         // ADDRESS: ( _0 | P ) *
         if( check_array(childID, tag_list_0) ) return true;
         return (childID == ID_P);
-  // it is not this simple -ak
-  // or maybe it is -ak
     case ID_FONT:
         // special handling for FONT: (_0 | 3)
-        return check_array(childID, tag_list_3) ||
-            check_array(childID, tag_list_0);
+        return check_array(childID, tag_list_3) || check_array(childID, tag_list_0);
 
     case ID_LI:
     case ID_DT:
@@ -399,6 +396,7 @@ bool DOM::checkChild(ushort tagID, ushort childID)
     case ID_NOFRAMES:
     case ID_NOSCRIPT:
     case ID_CAPTION:
+    case ID__KONQBLOCK:
         // DIV: _1 *
         return check_array(childID, tag_list_1);
     case ID_A:
