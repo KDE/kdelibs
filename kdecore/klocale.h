@@ -71,11 +71,9 @@ public:
       * The constructor looks for an entry Locale/Language in the
       * configuration file.
       * If nothing is set there, it looks for the environment variable
-      * $LANG. The format for LANG is de:fr:.., if de
-      * (german) is your prefered language and fr (french) is your
-      * second prefered language. You can add as many languages as
-      * you want. If none of them can be find, the default (C) will
-      * be used.
+      * $LANG. The format for LANG is de, if de (german) is your 
+      * prefered language. If none of them can be find, the default (C)
+      * will be used.
       *
       * @param catalogue The name of the language file
       */
