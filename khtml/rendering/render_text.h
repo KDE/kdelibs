@@ -187,6 +187,9 @@ public:
     virtual short marginRight() const { return style()->marginRight().minWidth(0); }
 
     virtual void repaint();
+    
+    bool hasBreakableChar() const { return m_hasBreakableChar; }
+    
 protected:
     TextSlave * findTextSlave( int offset, int &pos );
     TextSlaveArray m_lines;
@@ -200,6 +203,7 @@ protected:
     SelectionState m_selectionState : 3 ;
     bool hasFirstLine : 1;
     bool m_hasReturn : 1;
+    bool m_hasBreakableChar : 1;
 };
 
 

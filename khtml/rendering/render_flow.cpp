@@ -1013,7 +1013,7 @@ void RenderFlow::calcMinMaxWidth()
                         inlineMax += childMax;
                         hasNbsp = true;
                     }
-                    if (hasNbsp && t->data()[t->length()-1]==nbsp)
+                    if (hasNbsp && t->data()[t->length()-1]==nbsp )
                     {                           //inline starts and ends with nbsp
                         noBreak=true;
                     }
@@ -1024,6 +1024,8 @@ void RenderFlow::calcMinMaxWidth()
                         noBreak = true;
                         hasNbsp = true;
                     }
+		    if ( t->hasBreakableChar() )
+			noBreak = false;
 		    prevWasText = true;
                     if (hasNbsp)
                     {

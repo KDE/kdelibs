@@ -646,7 +646,8 @@ void RenderText::calcMinMaxWidth()
     int currMinWidth = 0;
     int currMaxWidth = 0;
     m_hasReturn = false;
-
+    m_hasBreakableChar = false;
+    
     QFontMetrics _fm = khtml::printpainter ? metrics() : *fm;
     int len = str->l;
     if ( len == 1 && str->s->latin1() == '\n' )
@@ -665,6 +666,7 @@ void RenderText::calcMinMaxWidth()
         }
         if(i+wordlen < len)
         {
+	    m_hasBreakableChar = true;
             if ( (*(str->s+i+wordlen)).latin1() == '\n' )
             {
 		m_hasReturn = true;
