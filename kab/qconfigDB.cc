@@ -2247,19 +2247,18 @@ void
 QConfigDB::watch(bool state)
 {
   // ############################################################################
-  if(timer==0)
-    {
-      if(state==true)
+  if(state)
+    { // start timer
+      if(timer==0)
 	{
 	  timer=new QTimer(this);
 	  connect(timer, SIGNAL(timeout()), SLOT(checkFileChanged()));
-	  timer->start(1000);
 	}
-    } else {
-      if(state==false)
+      timer->start(1000);
+    } else { // stop timer
+      if(timer!=0)
 	{
-	  delete timer;
-	  timer=0;
+	  timer->stop();
 	}
     }
   // ############################################################################
