@@ -113,8 +113,21 @@ public:
          */
         QStringList availableEncodingNames();
 
+    /**
+     * Lists the available encoding names together with a more descriptive language.
+     */
+    QStringList descriptiveEncodingNames();
+
+    /**
+     * returns the language the encoding is used for. 
+     */
     QString languageForEncoding( const QString &encoding );
-    
+
+    /**
+     * returns the encoding for a string obtained with descriptiveEncodingNames()
+     */
+    QString encodingForName( const QString &descriptiveName );
+	    
     /**
      * @returns a QFont, which can print the character given, and is closest
      * to the font given. if no mathing font could be found, the returned font

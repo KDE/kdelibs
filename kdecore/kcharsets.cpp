@@ -371,6 +371,26 @@ QString KCharsets::languageForEncoding( const QString &encoding )
     return i18n( languages[lang] );
 }
 
+QString KCharsets::encodingForName( const QString &descriptiveName )
+{
+    QString enc = descriptiveName;
+    enc = enc.replace( QRegExp( "*( ", false, true ), "");
+    return enc.replace( QRegExp( " )*", false, true ), "");
+   
+}
+
+QStringList KCharsets::descriptiveEncodingNames()
+{
+  QStringList encodings = availableEncodingNames();
+  QStringList::Iterator it;
+  for( it = encodings.begin(); it != encodings.end(); ++it ) {
+      QString lang = KGlobal::charsets()->languageForEncoding( *it );
+      *it = lang + " ( " + *it + " )";
+  }
+  encodings.sort();
+  return encodings;
+}
+
 QFont KCharsets::fontForChar( const QChar &c, const QFont &_f ) const
 {
     QFontInfo fi(_f);
