@@ -1511,8 +1511,6 @@ void KHTMLPart::slotFinishedParsing()
 
 void KHTMLPart::slotLoaderRequestDone( const DOM::DOMString &baseURL, khtml::CachedObject *obj )
 {
-  if ( baseURL != m_url.url() )
-    return;
 
   if ( obj && obj->type() == khtml::CachedObject::Image )
   {
