@@ -55,7 +55,10 @@ namespace khtml
   {
       enum Type { Frame, IFrame, Object };
 
-      ChildFrame() { m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false; }
+      ChildFrame() {
+          m_bCompleted = false; m_bPreloaded = false; m_type = Frame; m_bNotify = false;
+          m_bPendingRedirection = false;
+      }
 
       ~ChildFrame() { if (m_run) m_run->abort(); }
 
@@ -74,6 +77,7 @@ namespace khtml
     Type m_type;
     QStringList m_params;
     bool m_bNotify;
+    bool m_bPendingRedirection;
   };
 
 };
@@ -144,8 +148,6 @@ public:
     m_bFirstData = true;
     m_submitForm = 0;
     m_delayRedirect = 0;
-
-    m_bPendingChildRedirection = false;
 
     // inherit settings from parent
     if(parent && parent->inherits("KHTMLPart"))
@@ -388,8 +390,6 @@ public:
   QGuardedPtr<KHTMLPart> m_opener;
   bool m_openedByJS;
   bool m_newJSInterpreterExists; // set to 1 by setOpenedByJS, for window.open
-
-  bool m_bPendingChildRedirection;
 };
 
 #endif

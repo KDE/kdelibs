@@ -33,6 +33,8 @@ KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
                           false, false ),
   m_child( child ), m_bHideErrorDialog( hideErrorDialog )
 {
+    // get the wheel to start spinning
+    part->started(0L);
 }
 
 //KHTMLPart *KHTMLRun::htmlPart() const
@@ -40,6 +42,7 @@ KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KURL &url,
 
 void KHTMLRun::foundMimeType( const QString &_type )
 {
+    Q_ASSERT(!m_bFinished);
     QString mimeType = _type; // this ref comes from the job, we lose it when using KIO again
     if ( static_cast<KHTMLPart *>(m_part)->processObjectRequest( m_child, m_strURL, mimeType ) )
         m_bFinished = true;

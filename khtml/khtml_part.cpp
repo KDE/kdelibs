@@ -526,10 +526,12 @@ bool KHTMLPart::closeURL()
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
   for (; it != end; ++it )
+  {
+    if ( (*it).m_run )
+      (*it).m_run->abort();
     if ( !( *it ).m_part.isNull() )
       ( *it ).m_part->closeURL();
-
-  d->m_bPendingChildRedirection = false;
+  }
 
   // Stop any started redirections as well!! (DA)
   if ( d && d->m_redirectionTimer.isActive() )
@@ -1546,12 +1548,17 @@ void KHTMLPart::checkCompleted()
       d->m_focusNodeRestored = true;
   }
 
+  bool bPendingChildRedirection = false;
   // Any frame that hasn't completed yet ?
   ConstFrameIt it = d->m_frames.begin();
   ConstFrameIt end = d->m_frames.end();
-  for (; it != end; ++it )
+  for (; it != end; ++it ) {
     if ( !(*it).m_bCompleted )
       return;
+    // Check for frames with pending redirections
+    if ( (*it).m_bPendingRedirection )
+      bPendingChildRedirection = true;
+  }
 
   // Are we still parsing - or have we done the completed stuff already ?
   if ( d->m_bComplete || (d->m_doc && d->m_doc->parsing()) )
@@ -1597,8 +1604,8 @@ void KHTMLPart::checkCompleted()
   }
   else
   {
-    if ( d->m_bPendingChildRedirection )
-      emit completed ( true );
+    if ( bPendingChildRedirection )
+      emit completed( true );
     else
       emit completed();
   }
@@ -3452,17 +3459,15 @@ void KHTMLPart::slotChildCompleted()
   slotChildCompleted( false );
 }
 
-void KHTMLPart::slotChildCompleted( bool complete )
+void KHTMLPart::slotChildCompleted( bool pendingAction )
 {
   khtml::ChildFrame *child = frame( sender() );
 
   assert( child );
 
   child->m_bCompleted = true;
+  child->m_bPendingRedirection = pendingAction;
   child->m_args = KParts::URLArgs();
-
-  if ( parentPart() == 0 )
-    d->m_bPendingChildRedirection = (d->m_bPendingChildRedirection || complete);
 
   checkCompleted();
 }
