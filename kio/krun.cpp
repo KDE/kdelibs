@@ -44,6 +44,7 @@
 #include <qdatetime.h>
 #include <kwin.h>
 #include <kdesktopfile.h>
+#include <kstartupinfo.h>
 
 KOpenWithHandler * KOpenWithHandler::pOpenWithHandler = 0L;
 
@@ -137,23 +138,6 @@ pid_t KRun::run( const KService& _service, const KURL::List& _urls )
     if (i == 0)
     {
       kdDebug(7010) << "startServiceByDesktopPath worked fine" << endl;
-
-      // App-starting notification
-      bool compliant = _service.mapNotify();
-
-      // get screen number from the DISPLAY environment variable
-      int screen_number = 0;
-      QCString displayname = getenv("DISPLAY");
-      if (! displayname.isNull()) {
-	  int dotpos = displayname.findRev('.');
-	  if (dotpos != -1) {
-	      displayname.remove(0, dotpos + 1);
-	      screen_number = displayname.toInt();
-	  }
-      }
-
-      clientStarted(_service.name(), miniicon, pid, binaryName(_service.exec()), compliant, screen_number);
-
       return pid;
 
     } else {
@@ -351,30 +335,42 @@ pid_t KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _
 
 pid_t KRun::runCommand( QString cmd )
 {
-  return KRun::runCommand( cmd, binaryName( cmd, false /*keep path*/ ), QString::null /*unused*/);
+  return KRun::runCommand( cmd, binaryName( cmd, false /*keep path*/ ), QString::null );
 }
 
-pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString &/*iconName*/ )
+pid_t KRun::runCommand( const QString& cmd, const QString &execName, const QString & iconName )
 {
   kdDebug(7010) << "runCommand " << cmd << "," << execName << endl;
   KShellProcess * proc = new KShellProcess;
   *proc << cmd;
-  return KProcessRunner::run( proc, execName );
+  KStartupInfoId id;
+  id.initId();
+  id.setupStartupEnv();
+  pid_t pid = KProcessRunner::run( proc, execName, id );
+  KStartupInfoData data;
+  data.addPid( pid );
+  data.setHostname();
+  data.setBin( binaryName( execName, true ));
+  data.setName( cmd );
+  if( !iconName.isEmpty())
+      data.setIcon( iconName );
+  data.setDesktop( KWin::currentDesktop());
+  KStartupInfo::sendStartup( id, data );
+  KStartupInfo::resetStartupEnv();
+  return pid;
 }
 
 pid_t KRun::run( const QString& _cmd )
 {
   kdDebug(7010) << "Running " << _cmd << endl;
 
-  // FIXME: Replace the KDE_INITIAL_DESKTOP stuff that was here with kapp
-  // argument.
-
   KShellProcess * proc = new KShellProcess;
   *proc << _cmd;
-
+  // CHECKME I think it's better without app-start notification here
   // This version can't check whether the binary exists
   return KProcessRunner::run(proc, QString::null);
 }
+
 
 pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool _allow_multiple )
 {
@@ -398,7 +394,19 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
     for( ; it != _urls.end(); ++it )
         *proc << (*it).url();
 
-    return KProcessRunner::run(proc, QString::null);
+    KStartupInfoId id;
+    id.initId();
+    id.setupStartupEnv();
+    pid_t pid = KProcessRunner::run(proc, QString::null, id);
+    KStartupInfoData data;
+    data.addPid( pid );
+    data.setHostname();
+    data.setBin( binaryName( app, true ));
+    data.setName( app );
+    data.setDesktop( KWin::currentDesktop());
+    KStartupInfo::sendStartup( id, data );
+    KStartupInfo::resetStartupEnv();
+    return pid;
   }
   else
   {
@@ -412,7 +420,18 @@ pid_t KRun::runOldApplication( const QString& app, const KURL::List& _urls, bool
         *proc << app;
         *proc << (*it).url();
 
-        retval = KProcessRunner::run(proc, QString::null);
+        KStartupInfoId id;
+        id.initId();
+        id.setupStartupEnv();
+        retval = KProcessRunner::run(proc, QString::null, id);
+        KStartupInfoData data;
+        data.addPid( retval );
+        data.setHostname();
+        data.setBin( binaryName( app, true ));
+        data.setName( app );
+        data.setDesktop( KWin::currentDesktop());
+        KStartupInfo::sendStartup( id, data );
+        KStartupInfo::resetStartupEnv();
     }
 
     return retval;
@@ -751,22 +770,17 @@ void KRun::killJob()
   }
 }
 
+// obsolete
 void KRun::clientStarted(
-  const QString & name,
-  const QString & iconName,
-  pid_t pid,
-  const QString & binaryName,
-  bool compliant,
-  int screen_number
+  const QString &,
+  const QString &,
+  pid_t,
+  const QString &,
+  bool,
+  int
 )
 {
-  kdDebug(7010) << "clientStarted pid=" << (int)pid << " binaryName=" << binaryName <<
-      " screen_number=" << screen_number << endl;
-
-  QByteArray params;
-  QDataStream stream(params, IO_WriteOnly);
-  stream << name << iconName << (int)pid << binaryName << compliant << screen_number;
-  kapp->dcopClient()->emitDCOPSignal("clientStarted(QString,QString,pid_t,QString,bool,int)", params );
+  kdDebug(7010) << "obsolete clientStarted called" << endl;
 }
 
 /****************/
@@ -777,16 +791,35 @@ bool KOpenWithHandler::displayOpenWithDialog( const KURL::List& )
     return 0;
 }
 
-  pid_t
+pid_t
 KProcessRunner::run(KProcess * p, const QString & binName)
 {
   return (new KProcessRunner(p, binName))->pid();
+}
+
+pid_t
+KProcessRunner::run(KProcess * p, const QString & binName, const KStartupInfoId& id )
+{
+  return (new KProcessRunner(p, binName, id))->pid();
 }
 
 KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName )
   : QObject(),
     process_(p),
     binName( _binName )
+{
+  QObject::connect(
+      process_, SIGNAL(processExited(KProcess *)),
+      this,     SLOT(slotProcessExited(KProcess *)));
+
+  process_->start();
+}
+
+KProcessRunner::KProcessRunner(KProcess * p, const QString & _binName, const KStartupInfoId& id )
+  : QObject(),
+    process_(p),
+    binName( _binName ),
+    id_( id )
 {
   QObject::connect(
       process_, SIGNAL(processExited(KProcess *)),
@@ -827,12 +860,7 @@ KProcessRunner::slotProcessExited(KProcess * p)
       kapp->deref();
     }
   }
-
-  QByteArray params;
-  QDataStream stream(params, IO_WriteOnly);
-  stream << process_->pid();
-  kapp->dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
-
+  KStartupInfo::sendFinish( id_ );
   delete this;
 }
 

@@ -440,10 +440,6 @@ KLauncher::processDied(pid_t pid, long /* exitStatus */)
          return;
       }
    }
-   QByteArray params;
-   QDataStream stream(params, IO_WriteOnly);
-   stream << pid;
-   kapp->dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
 }
 
 void
@@ -559,7 +555,7 @@ KLauncher::requestStart(KLaunchRequest *request)
       p += strlen(p) + 1;
    }
 
-   request_header.cmd = LAUNCHER_EXEC;
+   request_header.cmd = request->start_notify ? LAUNCHER_EXT_EXEC : LAUNCHER_EXEC;
    request_header.arg_length = length;
    write(kdeinitSocket, &request_header, sizeof(request_header));
    write(kdeinitSocket, requestData.data(), request_header.arg_length);
@@ -584,6 +580,7 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
    request->pid = 0;
    request->status = KLaunchRequest::Launching;
    request->transaction = 0; // No confirmation is send
+   request->start_notify = true;
    requestStart(request);
    // We don't care about this request any longer....
    requestDone(request);
@@ -700,6 +697,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls, bool b
 
    request->pid = 0;
    request->transaction = 0;
+   request->start_notify = service->mapNotify();
 
    // Request will be handled later.
    if (!blind && !autoStart)
@@ -732,6 +730,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args, bool wait)
       request->dcop_service_type = KService::DCOP_None;
    request->dcop_name = 0;
    request->pid = 0;
+   request->start_notify = false;
    request->transaction = dcopClient()->beginTransaction();
    queueRequest(request);
    return true;
@@ -1013,6 +1012,7 @@ KLauncher::requestSlave(const QString &protocol,
     request->dcop_name = 0;
     request->dcop_service_type = KService::DCOP_None;
     request->pid = 0;
+    request->start_notify = false;
     request->status = KLaunchRequest::Launching;
     request->transaction = 0; // No confirmation is send
     requestStart(request);

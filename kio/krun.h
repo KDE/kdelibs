@@ -27,6 +27,7 @@
 #include <qtimer.h>
 #include <qstring.h>
 #include <kurl.h>
+#include <kstartupinfo.h>
 
 class KProcess;
 class KService;
@@ -153,9 +154,9 @@ public:
   /**
    * Same as the other runCommand, but it also takes the name of the
    * binary, to display an error message in case it couldn't find it.
-   * The last argument is now unused but kept for binary compatibility.
+   * @param icon icon for app starting notification
    */
-  static pid_t runCommand( const QString& cmd, const QString & execName, const QString & );
+  static pid_t runCommand( const QString& cmd, const QString & execName, const QString & icon );
 
   /**
    * Quotes a string for the shell
@@ -234,45 +235,8 @@ protected:
   static pid_t run( const QString& _cmd );
 
   /**
-   * Send a DCOP signal to indicate that an application has been started.
-   *
-   * If the translated name of the application is unavailable, the binary
-   * name may be used for the `name' parameter.
-   *
-   * If the name of the mini icon used for the application is unknown,
-   * QString::null may be passed for the `iconName' parameter.
-   *
-   * If the application does not comply with the NET_WM protocol (it does
-   * not set NET_WM_PID on a window at startup,) but you do know that it
-   * will set a specific string in WM_CLASS.res_name, then you may pass
-   * that name in the `resName' parameter.
-   *
-   * If the application is known to comply with the NET_WM protocol, pass
-   * true for the `compliant' parameter.
-   *
-   * Applications that are NET_WM compliant work perfectly with app-starting
-   * notification.
-   *
-   * Applications that are not NET_WM compliant but do set WM_CLASS.res_name
-   * will work almost correctly. The only side-effect of non-compliance is
-   * that in some uncommon cases the app-starting indication may end
-   * prematurely for this app, plus others starting in parallel which have
-   * specified the same WM_CLASS.res_name.
-   *
-   * Applications that are neither NET_WM compliant nor set WM_CLASS.res_name
-   * will still have app-starting notification. The side-effect is that
-   * for this app and any other non-compliant apps starting in parallel
-   * with this (which also do not set WM_CLASS.res_name), the app-start
-   * indication may end prematurely.
-   *
-   * @param name      Translated name of the app.
-   * @param iconName  Name of the app's mini icon.
-   * @param pid       PID of the running process.
-   * @param resName   Name that will be set in WM_CLASS.res_name on startup.
-   * @param compliant Application complies with the NET_WM protocol.
-   * @param screen    On multihead displays, this is the screen that the application was
-   *                  run on.
-   *
+   * @deprecated
+   * Use @ref KStartupInfo instead.
    */
   static void clientStarted(
     const QString & name,
@@ -345,6 +309,7 @@ class KProcessRunner : public QObject
   public:
 
     static pid_t run(KProcess *, const QString & binName);
+    static pid_t run(KProcess *, const QString & binName, const KStartupInfoId& id );
 
     virtual ~KProcessRunner();
 
@@ -357,10 +322,12 @@ class KProcessRunner : public QObject
   private:
 
     KProcessRunner(KProcess *, const QString & binName);
+    KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id );
     KProcessRunner();
 
     KProcess * process_;
     QString binName;
+    KStartupInfoId id_;
 };
 
 #endif

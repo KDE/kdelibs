@@ -36,6 +36,9 @@ typedef struct
  *
  * long argc: number of arguments
  * char *args: arguments, argument 0 is the program to start.
+ * int avoid_loops : ( added, read only if present ) avoid using the first
+ *    path in $PATH where this process binary is found in order to avoid
+ *    infinite loop by binary->kdeinit_wrapper link in $PATH
  */
 
 
@@ -77,18 +80,21 @@ typedef struct
  * char *error msg (utf8)
  */
 
-#define LAUNCHER_EXT_EXEC	6
+#define LAUNCHER_SHELL	6
 /*
- * LAUNCHER_EXT_EXEC
+ * LAUNCHER_SHELL
  *
- * Start a new process and adjust enviroment. (Not yet implemented)
+ * Start a new process and adjust enviroment.
+ * Starts app-startup notification.
  *
  * long argc: number of arguments
  * char *args: arguments, argument 0 is the program to start.
  * char *cwd: Working directory.
  * long envc: number of environment vars
  * char *envs: environment strings.
- * char *tty: tty to redirect stdout/stderr to.
+ * int avoid_loops : ( added, read only if present ) avoid using the first
+ *    path in $PATH where this process binary is found in order to avoid
+ *    infinite loop by binary->kdeinit_wrapper link in $PATH
  */
 
 #define LAUNCHER_TERMINATE_KDE 7
@@ -110,6 +116,37 @@ typedef struct
  * (Used for debugging io-slaves)
  */
 
-#define LAUNCHER_KWRAPPER	10
+#define LAUNCHER_EXT_EXEC	10
+/*
+ * LAUNCHER_EXT_EXEC
+ *
+ * Start a new process.
+ * Starts app-startup notification.
+ *
+ * long argc: number of arguments
+ * char *args: arguments, argument 0 is the program to start.
+ * int avoid_loops : ( added, read only if present ) avoid using the first
+ *    path in $PATH where this process binary is found in order to avoid
+ *    infinite loop by binary->kdeinit_wrapper link in $PATH
+ */
+
+
+#define LAUNCHER_KWRAPPER	11
+/*
+ * LAUNCHER_KWRAPPER
+ *
+ * Start a new process, adjust enviroment, pass signals and output.
+ * Starts app-startup notification.
+ *
+ * long argc: number of arguments
+ * char *args: arguments, argument 0 is the program to start.
+ * char *cwd: Working directory.
+ * long envc: number of environment vars
+ * char *envs: environment strings.
+ * char *tty: tty to redirect stdout/stderr to.
+ * int avoid_loops : ( added, read only if present ) avoid using the first
+ *    path in $PATH where this process binary is found in order to avoid
+ *    infinite loop by binary->kdeinit_wrapper link in $PATH
+ */
 
 #endif

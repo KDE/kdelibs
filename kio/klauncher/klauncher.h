@@ -74,6 +74,7 @@ public:
    KService::DCOPServiceType_t dcop_service_type;
    bool autoStart;
    QString errorMsg;
+   bool start_notify;
 };
 
 struct serviceResult
