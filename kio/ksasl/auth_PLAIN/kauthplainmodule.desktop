@@ -2,6 +2,12 @@
 Icon=
 InitialPreference=5
 Name=PlainAuth
+Name[cs]=Prostá autorizace
+Name[eo]=Plena Aŭtentigo
+Name[it]=AutSemplice
+Name[ro]=Autentificare simplă
+Name[sl]=NavadnaOver
+Name[sv]=Enkel autentisering
 ServiceTypes=KSASL/Module
 Type=Service
 X-KDE-Library=ksasl_auth_plain
