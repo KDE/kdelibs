@@ -213,9 +213,32 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect( d->m_file, SIGNAL( openFileDialog( KURLRequester* ) ), SLOT( slotOpenFileDialog() ) );
 	connect( KMFactory::self()->manager(), SIGNAL( updatePossible( bool ) ), SLOT( slotUpdatePossible( bool ) ) );
 
-	KConfig	*config = KGlobal::config();
-	config->setGroup("KPrinter Settings");
-	expandDialog(!config->readBoolEntry("DialogReduced", (KMFactory::self()->settings()->application != KPrinter::StandAlone)));
+	if (!kapp->authorize("print/system"))
+	{
+		d->m_plugin->hide();
+	}
+
+	if (!kapp->authorize("print/options"))
+	{
+		d->m_options->hide();
+	}
+
+	if (!kapp->authorize("print/selection"))
+	{
+		d->m_plugin->hide();
+		d->m_options->hide();
+
+		d->m_extbtn->hide();
+		m_pbox->hide();
+		
+		expandDialog(true);
+	}
+	else
+	{
+		KConfig	*config = KGlobal::config();
+		config->setGroup("KPrinter Settings");
+		expandDialog(!config->readBoolEntry("DialogReduced", (KMFactory::self()->settings()->application != KPrinter::StandAlone)));
+	}
 }
 
 KPrintDialog::~KPrintDialog()
