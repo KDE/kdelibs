@@ -19,7 +19,7 @@
 #    Boston, MA 02111-1307, USA.
 
 
-INCLUDES= $(all_includes)
+INCLUDES= -I$(top_srcdir)/kdecore/qk $(all_includes)
 EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker
 
 CXXFLAGS += @NOREPO@
@@ -48,7 +48,7 @@ include_HEADERS = kledlamp.h kprogress.h kcolordlg.h kselect.h \
 		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
 		kauthicon.h kmessagebox.h \
 		kdualcolorbtn.h kpalette.h ktoolbarbutton.h \
-		ktoolbarradiogroup.h ktextbrowser.h
+		ktoolbarradiogroup.h ktextbrowser.h kaction.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -70,7 +70,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \
 		kauthicon.cpp kmessagebox.cpp kdualcolorbtn.cpp kpalette.cpp \
 		ktoolbarradiogroup.cpp ktoolbarbutton.cpp ktoolbaritem.cpp \
-		ktextbrowser.cpp
+		ktextbrowser.cpp kaction.cpp
 
 libkdeui_la_METASOURCES = kbuttonbox.moc kcolorbtn.moc \
 	kcolordlg.moc kcontainer.moc kcontrol.moc kdatepik.moc kdatetbl.moc \
@@ -85,6 +85,6 @@ libkdeui_la_METASOURCES = kbuttonbox.moc kcolorbtn.moc \
 	qxembed.moc kdialog.moc kdialogbase.moc \
 	kjanuswidget.moc kaboutdialog.moc kauthicon.moc \
 	kdualcolorbtn.moc ktoolbarradiogroup.moc ktoolbarbutton.moc \
-	ktextbrowser.moc
+	ktextbrowser.moc kaction.moc
 
 
