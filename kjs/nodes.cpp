@@ -1323,7 +1323,7 @@ Completion FinallyNode::execute()
 }
 
 // ECMA 13 + 14 for ProgramNode
-KJSO FunctionBodyNode::evaluate()
+Completion FunctionBodyNode::execute()
 {
   /* TODO: workaround for empty body which I don't see covered by the spec */
   if (!source)
@@ -1331,7 +1331,7 @@ KJSO FunctionBodyNode::evaluate()
 
   source->processFuncDecl();
 
-  return source->evaluate();
+  return source->execute();
 }
 
 // ECMA 13
@@ -1388,31 +1388,25 @@ void ProgramNode::deleteStatements()
 }
 
 // ECMA 14
-KJSO SourceElementsNode::evaluate()
+Completion SourceElementsNode::execute()
 {
   if (KJScriptImp::hadException())
     return Completion(Throw, KJScriptImp::exception());
 
   if (!elements)
-    return element->evaluate();
+    return element->execute();
 
-  KJSO res1 = elements->evaluate();
+  Completion c1 = elements->execute();
   if (KJScriptImp::hadException())
     return Completion(Throw, KJScriptImp::exception());
-  if (res1.isA(CompletionType)) {
-      Completion *com = static_cast<Completion*>(&res1);
-      if (com->complType() != Normal)
-	  return res1;
-  }
+  if (c1.complType() != Normal)
+    return c1;
 
-  KJSO res2 = element->evaluate();
+  Completion c2 = element->execute();
   if (KJScriptImp::hadException())
     return Completion(Throw, KJScriptImp::exception());
 
-  if (res2.isA(CompletionType))
-    return res2;
-
-  return res1;
+  return c2;
 }
 
 // ECMA 14
@@ -1433,7 +1427,7 @@ void SourceElementsNode::deleteStatements()
 }
 
 // ECMA 14
-KJSO SourceElementNode::evaluate()
+Completion SourceElementNode::execute()
 {
   if (statement)
     return statement->execute();

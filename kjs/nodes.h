@@ -720,10 +720,10 @@ namespace KJS {
   };
 
   // inherited by ProgramNode
-  class FunctionBodyNode : public Node {
+  class FunctionBodyNode : public StatementNode {
   public:
       FunctionBodyNode(SourceElementsNode *s) : source(s) { }
-      KJSO evaluate();
+      Completion execute();
   protected:
       SourceElementsNode *source;
   };
@@ -750,11 +750,11 @@ namespace KJS {
     FunctionBodyNode *body;
   };
 
-  class SourceElementNode : public Node {
+  class SourceElementNode : public StatementNode {
   public:
     SourceElementNode(StatementNode *s) { statement = s; function = 0L; }
     SourceElementNode(FuncDeclNode *f) { function = f; statement = 0L;}
-    KJSO evaluate();
+    Completion execute();
     virtual void processFuncDecl();
     void deleteStatements();
   private:
@@ -762,12 +762,12 @@ namespace KJS {
     FuncDeclNode *function;
   };
 
-  class SourceElementsNode : public Node {
+  class SourceElementsNode : public StatementNode {
   public:
     SourceElementsNode(SourceElementNode *s1) { element = s1; elements = 0L; }
     SourceElementsNode(SourceElementsNode *s1, SourceElementNode *s2)
       { elements = s1; element = s2; }
-    KJSO evaluate();
+    Completion execute();
     virtual void processFuncDecl();
     void deleteStatements();
   private:

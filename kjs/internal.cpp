@@ -365,7 +365,7 @@ Completion DeclaredFunctionImp::execute(const List &)
   }
 #endif
 
-  KJSO result = body->evaluate(); // completion ??
+  Completion result = body->execute();
 
 #ifdef KJS_DEBUGGER
   if (dbg) {
@@ -373,10 +373,9 @@ Completion DeclaredFunctionImp::execute(const List &)
   }
 #endif
 
-  if (result.isA(CompletionType))
-    return Completion(result.imp());
-
-  return Completion(Normal, result);
+  if (result.complType() == Throw || result.complType() == ReturnValue)
+      return result;
+  return Completion(Normal, Undefined()); /* TODO: or ReturnValue ? */
 }
 
 // ECMA 13.2.2
@@ -595,7 +594,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 
   recursion++;
   assert(progNode);
-  KJSO res = progNode->evaluate();
+  Completion res = progNode->execute();
   recursion--;
 
   if (hadException()) {
@@ -616,11 +615,8 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 
     // catch return value
     retVal = 0L;
-    if (res.isA(CompletionType)) {
-      Completion *com = static_cast<Completion*>(&res);
-      if (com->complType() == ReturnValue || thisV)
-	retVal = com->value().imp();
-    }
+    if (res.complType() == ReturnValue || thisV)
+	retVal = res.value().imp();
   }
 
   if (thisV) {

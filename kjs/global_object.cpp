@@ -252,7 +252,7 @@ Completion GlobalFunc::execute(const List &args)
   if (id == Eval) { // eval()
     KJSO x = args[0];
     if (x.type() != StringType)
-      res = x;
+      return Completion(ReturnValue, x);
     else {
       String s = x.toString();
       Lexer::curr()->setCode(s.value().data(), s.value().size());
@@ -262,20 +262,13 @@ Completion GlobalFunc::execute(const List &args)
 	return Completion(ReturnValue, Error::create(SyntaxError));
       }
 
-      res = KJScriptImp::current()->progNode->evaluate();
-      if (!res.isA(CompletionType))
-	res = Undefined();
-      else {
-	Completion c(res.imp());
-	if (c.complType() == Normal) {
-	  if (c.isValueCompletion())
-	    res = c.value();
-	  else
-	    res = Undefined();
-	} else {
+      Completion c = KJScriptImp::current()->progNode->execute();
+      if (c.complType() == ReturnValue)
 	  return c;
-	}
-      }
+      else if (c.complType() == Normal)
+	  return Completion(ReturnValue, Undefined());
+      else
+	  return c;
 
       //      if (KJS::Node::progNode())
       //	KJS::Node::progNode()->deleteStatements();
