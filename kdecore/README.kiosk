@@ -113,7 +113,7 @@ Two new methods will be added to KApplication:
 
 - bool authorize(QString action); // Generic actions
 - bool authorizeKAction(QString action); // For KActions exclusively
-- bool authorizeURLAction(QString, referringURL, destinationURL)
+- bool authorizeURLAction(QString, referringURL, destinationURL) // Not yet implemented
 
 .desktop files can have an additional field "X-KDE-AuthorizeAction". If this
 field is present the .desktop file is only considered if the action(s) 
@@ -262,6 +262,14 @@ The following applications currently have support for this:
 will be "locked down" and it will no longer be possible to select
 "Configure Desktop" from its menus.
 
+
+IMPORTANT NOTE:
+Changing restrictions may influence the data that is cached in the ksycoca
+database. Since changes to .../share/config/kdeglobals do not trigger an
+automatic ksycoca update you need to force an update manually.
+To force an update of the ksycoca database touch the file 
+.../share/services/update_ksycoca. This will force a user's sycoca database
+to be rebuild the next time the user logs in.
 
 
 Expansion of environment variables in KDE config files.
