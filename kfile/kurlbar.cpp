@@ -679,7 +679,7 @@ KURLBarItemDialog::KURLBarItemDialog( bool allowGlobal, const KURL& url,
                                       QString icon, bool appLocal,
                                       QWidget *parent, const char *name )
     : KDialogBase( parent, name, true,
-                   i18n("Edit Quick Access entry"), Ok | Cancel, Ok, true )
+                   i18n("Edit Quick Access Entry"), Ok | Cancel, Ok, true )
 {
     QVBox *box = new QVBox( this );
     QString text = i18n("<qt><b>Please set url, icon and a description.</b></br></qt>");
