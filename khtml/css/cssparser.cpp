@@ -1313,7 +1313,7 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
     inParseShortHand = true;
 
     bool found = false;
-    bool oldPropIndex = numParsedProperties;
+    int oldPropIndex = numParsedProperties;
     bool fnd[6]; //Trust me ;)
     for( int i = 0; i < numProperties; i++ )
             fnd[i] = false;
