@@ -205,10 +205,8 @@ void KEditToolbar::init()
 
     setMainWidget(m_widget);
 
-    connect(m_widget, SIGNAL(enableOk(bool)),
-            this,     SLOT(acceptOK(bool)));
-    connect(m_widget, SIGNAL(enableOk(bool)),
-            this,     SLOT(enableButtonApply(bool)));
+    connect(m_widget, SIGNAL(enableOk(bool)), SLOT(acceptOK(bool)));
+    connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
     enableButtonApply(false);
 
     setMinimumSize(sizeHint());
@@ -472,7 +470,7 @@ void KEditToolbarWidget::setupLayout()
   d->m_helpArea->setAlignment( Qt::WordBreak );
 
   // now start with our layouts
-  QVBoxLayout *top_layout = new QVBoxLayout(this, KDialog::marginHint(), KDialog::spacingHint());
+  QVBoxLayout *top_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
 
   QVBoxLayout *name_layout = new QVBoxLayout(KDialog::spacingHint());
   QHBoxLayout *list_layout = new QHBoxLayout(KDialog::spacingHint());
