@@ -1,4 +1,11 @@
-kdelibs (4:3.0.9-1) unstable; urgency=low
+kdelibs (4:3.0.9-3) unstable; urgency=high
+
+  * Added patch to give libkjava, libkjs, and libktexteditor different
+    versions than those found in kde2
+
+ -- Kurt Granroth <granroth@kde.org>  Wed,  5 Jun 2002 20:00:00 -0700
+
+kdelibs (4:3.0.9-2) unstable; urgency=low
 
   * Moved 'cups' bits into their own package
   * Updated files to reflect new files in KDE 3.1
