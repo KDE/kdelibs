@@ -207,24 +207,38 @@ QString Decoder::decode(const char *data, int len)
 {
     // Check for UTF-16 or UTF-8 BOM mark at the beginning, which is a sure sign of a Unicode encoding.
     int bufferLength = buffer.length();
-    const int maximumBOMLength = 3;
+    const int maximumBOMLength = 10;
     if (beginning && bufferLength + len >= maximumBOMLength) {
-        if (m_type != UserChosenEncoding) {
+        // If the user has chosen utf16 we still need to auto-detect the endianness
+        if ((m_type != UserChosenEncoding) || (m_codec->mibEnum() == 1000)) {
             // Extract the first three bytes.
             // Handle the case where some of bytes are already in the buffer.
-            // The last byte is always guaranteed to not be in the buffer.
             const uchar *udata = (const uchar *)data;
             uchar c1 = bufferLength >= 1 ? (uchar)buffer[0] : *udata++;
             uchar c2 = bufferLength >= 2 ? (uchar)buffer[1] : *udata++;
-            assert(bufferLength < 3);
-            uchar c3 = *udata;
+            uchar c3 = bufferLength >= 3 ? (uchar)buffer[2] : *udata++;
 
-            // Check for the BOM.
+            // Check for the BOM
             const char *autoDetectedEncoding;
             if ((c1 == 0xFE && c2 == 0xFF) || (c1 == 0xFF && c2 == 0xFE)) {
                 autoDetectedEncoding = "ISO-10646-UCS-2";
             } else if (c1 == 0xEF && c2 == 0xBB && c3 == 0xBF) {
                 autoDetectedEncoding = "UTF-8";
+            } else if (c1 == 0x00 || c2 == 0x00) {
+                uchar c4 = bufferLength >= 4 ? (uchar)buffer[3] : *udata++;
+                uchar c5 = bufferLength >= 5 ? (uchar)buffer[4] : *udata++;
+                uchar c6 = bufferLength >= 6 ? (uchar)buffer[5] : *udata++;
+                uchar c7 = bufferLength >= 7 ? (uchar)buffer[6] : *udata++;
+                uchar c8 = bufferLength >= 8 ? (uchar)buffer[7] : *udata++;
+                uchar c9 = bufferLength >= 9 ? (uchar)buffer[8] : *udata++;
+                uchar c10 = bufferLength >= 10 ? (uchar)buffer[9] : *udata++;
+                int nul_count_even = (c2 != 0) + (c4 != 0) + (c6 != 0) + (c8 != 0) + (c10 != 0);
+                int nul_count_odd = (c1 != 0) + (c3 != 0) + (c5 != 0) + (c7 != 0) + (c9 != 0);
+                if ((nul_count_even == 0 && nul_count_odd == 5) ||
+                    (nul_count_even == 5 && nul_count_odd == 0))
+                    autoDetectedEncoding = "ISO-10646-UCS-2";
+                else
+                    autoDetectedEncoding = 0;
             } else {
                 autoDetectedEncoding = 0;
             }
@@ -237,6 +251,12 @@ QString Decoder::decode(const char *data, int len)
                 enc = m_codec->name();
                 delete m_decoder;
                 m_decoder = m_codec->makeDecoder();
+                if (m_codec->mibEnum() == 1000 && c2 == 0x00)
+                {
+                  // utf16LE, we need to put the decoder in LE mode
+                  char reverseUtf16[3] = {0xFF, 0xFE, 0x00};
+                  m_decoder->toUnicode(reverseUtf16, 2);
+                }
             }
         }
         beginning = false;
