@@ -1,8 +1,10 @@
+// -*- c-basic-offset: 4; -*-
 /**
  * This file is part of the DOM implementation for KDE.
  *
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
+ *           (C) 2003 Dirk Mueller (mueller@kde.org)
  * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
@@ -437,11 +439,11 @@ DOMString HTMLElementImpl::innerText() const
     return text;
 }
 
-DocumentFragmentImpl *HTMLElementImpl::createContextualFragment( const DOMString &html )
+DocumentFragment HTMLElementImpl::createContextualFragment( const DOMString &html )
 {
     // the following is in accordance with the definition as used by IE
     if( endTag[id()] == FORBIDDEN )
-        return NULL;
+        return DocumentFragment();
     // IE disallows innerHTML on inline elements.
     // I don't see why we should have this restriction, as our
     // dhtml engine can cope with it. Lars
@@ -457,14 +459,15 @@ DocumentFragmentImpl *HTMLElementImpl::createContextualFragment( const DOMString
         case ID_TFOOT:
         case ID_THEAD:
         case ID_TITLE:
-            return NULL;
+            return DocumentFragment();
         default:
             break;
     }
     if ( !getDocument()->isHTMLDocument() )
-        return NULL;
+        return DocumentFragment();
 
-    DocumentFragmentImpl *fragment = new DocumentFragmentImpl( docPtr() );
+    DocumentFragmentImpl* fragment = new DocumentFragmentImpl( docPtr() );
+    DocumentFragment f( fragment );
     {
         HTMLTokenizer tok( docPtr(), fragment );
         tok.begin();
@@ -478,52 +481,46 @@ DocumentFragmentImpl *HTMLElementImpl::createContextualFragment( const DOMString
     // we need to pop <html> and <body> elements and remove <head> to
     // accomadate folks passing complete HTML documents to make the
     // child of an element.
+    Node n;
 
-    NodeImpl *node = fragment->firstChild();
-    while (node != NULL) {
-	if (node->id() == ID_HTML || node->id() == ID_BODY) {
-	    NodeImpl *firstChild = node->firstChild();
-	    NodeImpl *child = firstChild;
-	    while (child != NULL) {
-		NodeImpl *nextChild = child->nextSibling();
-		fragment->insertBefore(child, node, ignoredExceptionCode);
-                // FIXME: Does node leak here?
-		child = nextChild;
-	    }
-	    if (firstChild == NULL) {
-		NodeImpl *nextNode = node->nextSibling();
-		fragment->removeChild(node, ignoredExceptionCode);
-                // FIXME: Does node leak here?
+    for ( NodeImpl* node = fragment->firstChild(); node; ) {
+        if (node->id() == ID_HTML || node->id() == ID_BODY) {
+            NodeImpl* firstChild = node->firstChild();
+            NodeImpl* child = firstChild;
+            while ( child ) {
+                NodeImpl *nextChild = child->nextSibling();
+                n = fragment->insertBefore(child, node, ignoredExceptionCode);
+                child = nextChild;
+            }
+            if ( !firstChild ) {
+                NodeImpl *nextNode = node->nextSibling();
+                n = fragment->removeChild(node, ignoredExceptionCode);
                 node = nextNode;
-	    } else {
-		fragment->removeChild(node, ignoredExceptionCode);
-                // FIXME: Does node leak here?
-		node = firstChild;
-	    }
-	} else if (node->id() == ID_HEAD) {
-	    NodeImpl *nextNode = node->nextSibling();
-	    fragment->removeChild(node, ignoredExceptionCode);
-            // FIXME: Does node leak here?
-	    node = nextNode;
-	} else {
-	    node = node->nextSibling();
-	}
+            } else {
+                n = fragment->removeChild(node, ignoredExceptionCode);
+                node = firstChild;
+            }
+        } else if (node->id() == ID_HEAD) {
+            NodeImpl *nextNode = node->nextSibling();
+            n = fragment->removeChild(node, ignoredExceptionCode);
+            node = nextNode;
+        } else {
+            node = node->nextSibling();
+        }
     }
 
-    return fragment;
+    return f;
 }
 
 bool HTMLElementImpl::setInnerHTML( const DOMString &html )
 {
-    DocumentFragmentImpl *fragment = createContextualFragment( html );
-    if (fragment == NULL) {
-	return false;
-    }
+    DocumentFragment fragment = createContextualFragment( html );
+    if ( fragment.isNull() )
+        return false;
 
     removeChildren();
     int ec = 0;
-    appendChild( fragment, ec );
-    delete fragment;
+    appendChild( fragment.handle(), ec );
     return !ec;
 }
 

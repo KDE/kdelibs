@@ -24,9 +24,8 @@
  * Copyright © World Wide Web Consortium , (Massachusetts Institute of
  * Technology , Institut National de Recherche en Informatique et en
  * Automatique , Keio University ). All Rights Reserved.
- *
- * $Id$
  */
+
 #ifndef _DOM_Document_h_
 #define _DOM_Document_h_
 
@@ -61,6 +60,7 @@ class Event;
 class AbstractView;
 class CSSStyleDeclaration;
 class HTMLFrameElement;
+class HTMLElementImpl;
 class HTMLIFrameElement;
 class HTMLObjectElement;
 class HTMLDocument;
@@ -870,7 +870,7 @@ public:
      * otherwise false.
      */
     void loadXML( const DOMString &source );
-    
+
     /**
      * not part of the official DOM
      *
@@ -881,7 +881,7 @@ public:
      * @since 3.2
      */
     bool designMode() const;
-    
+
     /**
      * not part of the official DOM
      *
@@ -959,6 +959,7 @@ class DocumentFragmentImpl;
 class DocumentFragment : public Node
 {
     friend class Document;
+    friend class HTMLElementImpl;
     friend class Range;
 
 public:

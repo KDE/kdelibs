@@ -355,7 +355,7 @@ DocumentFragment Range::createContextualFragment( const DOMString &html )
         throw DOMException(DOMException::INVALID_STATE_ERR);
 
     int exceptioncode = 0;
-    DocumentFragmentImpl *r = impl->createContextualFragment(html, exceptioncode);
+    DocumentFragment r = impl->createContextualFragment(html, exceptioncode);
     throwException(exceptioncode);
     return r;
 }

@@ -850,23 +850,23 @@ DOMString RangeImpl::toHTML(  )
     return DOMString();
 }
 
-DocumentFragmentImpl *RangeImpl::createContextualFragment ( const DOMString &html, int &exceptioncode )
+DocumentFragment RangeImpl::createContextualFragment ( const DOMString &html, int &exceptioncode )
 {
    if (m_detached) {
         exceptioncode = DOMException::INVALID_STATE_ERR;
-        return NULL;
+        return DocumentFragment();
     }
 
     if (! m_startContainer->isHTMLElement()) {
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
-	return NULL;
+	return DocumentFragment();
     }
 
     HTMLElementImpl *e = static_cast<HTMLElementImpl *>(m_startContainer);
-    DocumentFragmentImpl *fragment = e->createContextualFragment(html);
-    if (!fragment) {
+    DocumentFragment fragment = e->createContextualFragment(html);
+    if (fragment.isNull()) {
 	exceptioncode = DOMException::NOT_SUPPORTED_ERR;
-	return NULL;
+	return DocumentFragment();
     }
 
     return fragment;
