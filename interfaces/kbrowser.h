@@ -122,7 +122,7 @@ signals:
    * optionnally setting the x and y offsets.
    * The @serviceType allows to ...
    */
-  void openURLRequest( const QString &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
+  void openURLRequest( const KURL &url, bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
 
   void setStatusBarText( const QString &text );
 
@@ -130,7 +130,7 @@ signals:
    * Update the URL shown in the browser's location bar to @p url
    */
   void setLocationBarURL( const QString &url );
-  void createNewWindow( const QString &url );
+  void createNewWindow( const KURL &url );
   void loadingProgress( int percent );
   void speedProgress( int bytesPerSecond );
   void popupMenu( const QPoint &_global, const KFileItemList &_items );
