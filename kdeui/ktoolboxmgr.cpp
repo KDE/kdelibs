@@ -32,6 +32,10 @@
 
  // $Id$
  // $Log$
+ // Revision 1.3  1998/05/03 10:56:23  radej
+ // Fixing the locked server bug; all grab ungrab is in one function now.
+ // Screen is not locked any more across different QTimer steps
+ //
  // Revision 1.2  1998/05/02 18:30:13  radej
  // Switched to KWM::geometry instead x() and y()
  //
@@ -40,7 +44,7 @@
  //
 
 
-KToolBoxManager::KToolBoxManager (QWidget *_widget, bool) : QObject ()
+KToolBoxManager::KToolBoxManager (QWidget *_widget, bool _transparent) : QObject ()
 {
   XGCValues gv;
 
@@ -48,10 +52,9 @@ KToolBoxManager::KToolBoxManager (QWidget *_widget, bool) : QObject ()
   noLast=true;
   widget = _widget;
   geometryChanged = false;
-  blockme = true;
   mode = Nothing;
   
-  //transparent = true; //unused
+  transparent = _transparent;
   scr = qt_xscreen();
   root = qt_xrootwin();
 
@@ -66,8 +69,6 @@ KToolBoxManager::KToolBoxManager (QWidget *_widget, bool) : QObject ()
   
   //driver for mover and resizer
   timer = new QTimer(this);
-  
-  
 }
 
 KToolBoxManager::~KToolBoxManager ()
@@ -92,6 +93,9 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   if (working)
     return;
 
+  Window wroot, wchild;
+  int trash;
+  
   debug("Doing move...");
 
   working=true;
@@ -100,13 +104,8 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   dontmoveres=dontmove;
   hotspot_static = hot_static;
   
-  //QPoint p(widget->x(), widget->y());
-  
   QRect rr = KWM::geometry(widget->winId(), true);
   QPoint p(rr.topLeft());
-
-  //if (widget->parentWidget() != 0)
-    //p=widget->parentWidget()->mapToGlobal(p);
 
   offX = QCursor::pos().x() - p.x();
   offY = QCursor::pos().y() - p.y();
@@ -116,122 +115,106 @@ void KToolBoxManager::doMove (bool hot_static, bool _dynamic, bool dontmove)
   w = rr.width();
   h = rr.height();
 
+  orig_x = p.x();
+  orig_y = p.y();
   orig_w = w;
   orig_h = h;
-  /*
-  XChangeActivePointerGrab( qt_xdisplay(), 
-			    ButtonPressMask | ButtonReleaseMask |
-			    PointerMotionMask ,
-                            sizeAllCursor.handle(), 0);
-  */
-  rx = sx = QCursor::pos().x();
-  ry = sy = QCursor::pos().y();
-  
-  //XGrabServer(qt_xdisplay());
 
+  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
+                 &sx, &sy, &trash, &trash, &active_button);
+  
+  rx = sx;
+  ry = sy;
+  
   xp=sx-offX;
   yp=sy-offY;
 
+  QApplication::setOverrideCursor(QCursor(sizeAllCursor));
+  
   connect (timer, SIGNAL(timeout()), this, SLOT (doMoveInternal()));
-  drawRectangle(xp, yp, w, h);
+  if (transparent)
+    drawRectangle(xp, yp, w, h);
+  
   timer->start(0);
-  if (blockme)
-    qApp->enter_loop();
+  qApp->enter_loop();
 }
 
 void KToolBoxManager::doMoveInternal()
 {
   bool onspot=false;
   bool changed=false;
+  Window wroot, wchild;
+  int trash;
+  unsigned int buttons;
 
-  XChangeActivePointerGrab( qt_xdisplay(), 
-			    ButtonPressMask | ButtonReleaseMask |
-			    PointerMotionMask ,
-                            sizeAllCursor.handle(), 0);
-  XGrabServer(qt_xdisplay());
+  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
+                 &rx, &ry, &trash, &trash, &buttons );
   
-  XMaskEvent(qt_xdisplay(),
-             ButtonPressMask|ButtonReleaseMask|PointerMotionMask, &ev);
+  if (buttons != active_button)
+  {
+    stop();
+    return;
+  }
+  
+  if (rx == sx && ry == sy)
+    return;
+  /*
+  if (geometryChanged)
+  {
+    offX = rx - xp;
+    offY = ry - yp;
+    geometryChanged = false;
+  }
+  */
+  sx=rx;
+  sy=ry;
 
-    if (ev.type == MotionNotify)
-    {
-      rx = ev.xmotion.x_root;
-      ry = ev.xmotion.y_root;
-    }
-    else
-    {
-      XUngrabServer(qt_xdisplay());
-      XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
-      XSync(qt_xdisplay(), False);
-      stop();
-      return;
-    }
+  xp=rx-offX;
+  yp=ry-offY;
 
-    if (rx == sx && ry == sy)
+  for (QRect *hsp = hotspots.first(); hsp; hsp = hotspots.next())
+  {
+    if (hsp->contains(QPoint(rx,ry)))
     {
-      XUngrabServer(qt_xdisplay());
-      XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
-      XSync(qt_xdisplay(), False);
-      return;
-    }
-
-    if (geometryChanged)
-    {
-      offX = rx - xp;
-      offY = ry - yp;
-      geometryChanged = false;
-    }
-    
-    sx=rx;
-    sy=ry;
-
-    xp=rx-offX;
-    yp=ry-offY;
-    
-    for (QRect *hsp = hotspots.first(); hsp; hsp = hotspots.next())
-    {
-      if (hsp->contains(QPoint(rx,ry)))
+      if (hsp != last_hsp)
       {
-        if (hsp != last_hsp)
-        {
-          last_hsp = hsp;
-          emit onHotSpot (hotspots.at());
-          changed=true;
-        }
-        onspot=true;
-        deepSpace=false;
-        break;
+        last_hsp = hsp;
+        emit onHotSpot (hotspots.at());
+        changed=true;
       }
+      onspot=true;
+      deepSpace=false;
+      break;
     }
-    // we re out of all hotspots;
-    if (!deepSpace && !onspot)
-    {
-      emit onHotSpot (-1);
-      deepSpace = true;
-      last_hsp=0;
-    }
+  }
+  // we re out of all hotspots;
+  if (!deepSpace && !onspot)
+  {
+    emit onHotSpot (-1);
+    deepSpace = true;
+    last_hsp=0;
+  }
 
-    if (onspot && !changed && hotspot_static)
-    {
-      geometryChanged = true;
-      {
-        XUngrabServer(qt_xdisplay());
-        XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
-        XSync(qt_xdisplay(), False);
-        return;
-      }
-    }
+  if (onspot && !changed && hotspot_static)
+  {
+    geometryChanged = true;
+    return;
+  }
 
+  if (transparent)
+  {
     deleteLastRectangle();
     drawRectangle(xp, yp, w, h);
+
     XFlush(qt_xdisplay());
-    if (dynamic)
-      emit posChanged(xp, yp);
+  }
+  else
+    XMoveWindow(qt_xdisplay(), widget->winId(), xp, yp);
 
-    XUngrabServer(qt_xdisplay());
-    XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
-    XSync(qt_xdisplay(), False);
+  XSync(qt_xdisplay(), False);
 
+  if (dynamic)
+    emit posChanged(xp, yp);
 }
 
 void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
@@ -239,6 +222,9 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
   if (working)
     return;
 
+  Window wroot, wchild;
+  int trash;
+  
   debug("Doing resize...");
 
   working=true;
@@ -246,14 +232,8 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
   dontmoveres=dontresize;
   mode = Resizing;
   
-  //QPoint p(widget->x(), widget->y());
   QRect rr = KWM::geometry(widget->winId(), true);
   QPoint p(rr.topLeft());
-
-
-  
-  //if (widget->parentWidget() != 0)
-    //p=widget->parentWidget()->mapToGlobal(p);
 
   offX = QCursor::pos().x() - p.x();
   offY = QCursor::pos().y() - p.y();
@@ -263,57 +243,63 @@ void KToolBoxManager::doResize (bool dontresize, bool _dynamic)
   w = rr.width();
   h = rr.height();
 
+  orig_x = p.x();
+  orig_y = p.y();
   orig_w = w;
   orig_h = h;
   
-  XChangeActivePointerGrab( qt_xdisplay(), 
-			    ButtonPressMask | ButtonReleaseMask |
-			    PointerMotionMask ,
-                            sizeAllCursor.handle(), 0);
-
-  rx = sx = QCursor::pos().x();
-  ry = sy = QCursor::pos().y();
+  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
+                 &sx, &sy, &trash, &trash, &active_button);
   
-  XGrabServer(qt_xdisplay());
+  rx = sx;
+  ry = sy;
 
+  QApplication::setOverrideCursor(QCursor(sizeFDiagCursor));
+  
   connect (timer, SIGNAL(timeout()), this, SLOT (doResizeInternal()));
+
+  if (transparent)
+    drawRectangle(xp, yp, w, h);
   
-  drawRectangle(xp, yp, w, h);
   timer->start(0);
-  if (blockme)
-    qApp->enter_loop();
+  qApp->enter_loop();
 }
 
 void KToolBoxManager::doResizeInternal ()
 {
-  
-  XMaskEvent(qt_xdisplay(),
-             ButtonPressMask|ButtonReleaseMask|PointerMotionMask, &ev);
+  Window wroot, wchild;
+  int trash;
+  unsigned int buttons;
 
-  if (ev.type == MotionNotify)
-  {
-    rx = ev.xmotion.x_root;
-    ry = ev.xmotion.y_root;
-  }
-  else
+  XQueryPointer( qt_xdisplay(), qt_xrootwin(), &wroot, &wchild,
+                 &rx, &ry, &trash, &trash, &buttons );
+  
+  if (buttons != active_button)
   {
     stop();
     return;
   }
-
+  
   if (rx == sx && ry == sy)
     return;
-
   
   w += rx-sx;
   h += ry-sy;
 
   sx=rx;
   sy=ry;
-  
-  deleteLastRectangle();
-  drawRectangle(xp, yp, w, h);
-  XFlush(qt_xdisplay());
+
+  if (transparent)
+  {
+    deleteLastRectangle();
+    drawRectangle(xp, yp, w, h);
+    XFlush(qt_xdisplay());
+  }
+  else
+    XResizeWindow (qt_xdisplay(), widget->winId(), w, h);
+
+  XSync(qt_xdisplay(), False);
+
   if (dynamic)
     emit sizeChanged(w, h);
 }
@@ -326,25 +312,34 @@ void KToolBoxManager::stop ()
   
   timer->stop();
   disconnect (timer, SIGNAL(timeout()));
-  
-  deleteLastRectangle();
-  XFlush(qt_xdisplay());
-  /*
-  XUngrabServer(qt_xdisplay());
-  XAllowEvents(qt_xdisplay(), AsyncPointer, CurrentTime);
-  XSync(qt_xdisplay(), False);
-  */
-  if (widget->parentWidget() == 0)
-    if (!dontmoveres)
+
+  QApplication::restoreOverrideCursor();
+
+  if (transparent)
+  {
+    deleteLastRectangle();
+    XFlush(qt_xdisplay());
+  }
+
+  if (dontmoveres)
+  {
+    if (!transparent)
+      XMoveResizeWindow(qt_xdisplay(), widget->winId(),
+                        orig_x, orig_y, orig_w, orig_h);
+  }
+  else // do move or resize, even children
+  {
+    if (transparent) // else if opaque: already moved/sized
       if (mode==Moving)
         widget->move(xp, yp);
       else if (mode == Resizing)
         widget->resize(w, h);
+  }
   
   working = false;
   mode=Nothing;
-  if (blockme)
-    qApp->exit_loop();
+
+  qApp->exit_loop();
   debug ("stopped");
 }
 
@@ -366,7 +361,8 @@ void KToolBoxManager::setGeometry (int _x, int _y, int _w, int _h)
   yp=_y;
   w=_w;
   h=_h;
-  deleteLastRectangle();
+  if (transparent)
+    deleteLastRectangle();
   geometryChanged=true;
 }
 
