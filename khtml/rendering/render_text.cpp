@@ -285,7 +285,6 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
   _x = 0;
   TextSlave *s = m_first;
   int off = s->len;
-  int y = s->y;
 
   while(offset > off && s->next())
   {

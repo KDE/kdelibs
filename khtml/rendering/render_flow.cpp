@@ -613,7 +613,7 @@ void RenderFlow::newLine()
 {
     positionNewFloats();
     // set y position
-    unsigned int newY = 0;
+    int newY = 0;
     switch(m_clearStatus)
     {
     case CLEFT:
@@ -803,7 +803,6 @@ RenderFlow::clearFloats()
 	    prev = prev->previousSibling();
 
     int offset = m_y;
-    int offsetX = 0;//m_x;
     if(prev ) {
 	if(prev->isTableCell()) return;
 	// ### FIXME
