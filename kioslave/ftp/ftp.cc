@@ -60,8 +60,10 @@
 #include <kio/ioslave_defaults.h>
 #include <kio/slaveconfig.h>
 
-#define FTP_LOGIN QString::fromLatin1("anonymous")
-#define FTP_PASSWD QString::fromLatin1("anonymous@")
+#define FTP_LOGIN   QString::fromLatin1("anonymous")
+#define FTP_PASSWD  QString::fromLatin1("anonymous@")
+
+
 size_t Ftp::UnknownSize = (size_t)-1;
 
 using namespace KIO;
@@ -433,16 +435,17 @@ bool Ftp::ftpLogin()
       {
         QString errorMsg;
         kdDebug(7102) << "Prompt the user for password..." << endl;
+
         // Ask user if we should retry after when login fails!
         if( failedAuth > 0 )
         {
-          errorMsg = i18n("Message sent:\nLogin using username: %1 and "
-                          "password: [hidden]\n\nServer replied:\n%2\n\n"
+          errorMsg = i18n("Message sent:\nLogin using username=%1 and "
+                          "password=[hidden]\n\nServer replied:\n%2\n\n"
                           ).arg(user).arg(rspbuf);
         }
 
-        if ( user != FTP_LOGIN && pass != FTP_PASSWD )
-          info.username = m_user;
+        if ( user != FTP_LOGIN )
+          info.username = user;
 
         kdDebug(7102) << "Is FTP URL valid? " << info.url.isValid() << endl;
         kdDebug(7102) << "Username: " << info.username << endl;
@@ -451,7 +454,7 @@ bool Ftp::ftpLogin()
         info.commentLabel = i18n( "Site:" );
         info.comment = i18n("<b>%1</b>").arg( m_host );
         info.keepPassword = true; // Prompt the user for persistence as well.
-        info.readOnly = !info.username.isEmpty();
+        info.readOnly = (!m_user.isEmpty() && m_user != FTP_LOGIN);
 
         bool disablePassDlg = config()->readBoolEntry( "DisablePassDlg", false );
         if ( disablePassDlg || !openPassDlg( info, errorMsg ) )
@@ -704,7 +707,7 @@ bool Ftp::ftpOpenPASVDataConnection()
   ks.setAddress(host, port);
   ks.setSocketFlags(KExtendedSocket::noResolve);
   ks.setTimeout (connectTimeout());
-  
+
   if (ks.connect() < 0)
     {
       kdError(7102) << "PASV: ks.connect failed. host=" << host << " port=" << port << endl;
@@ -1729,10 +1732,10 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
                     }
                     else
                       de.link = QString::null;
-                      
+
                     if (strchr(p_name, '/'))
                        return 0L; // Don't trick us!
-                    
+
                     de.access = 0;
                     de.type = S_IFREG;
                     switch ( p_access[0] ) {
