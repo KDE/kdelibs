@@ -62,6 +62,7 @@ class Lock : public QObject
     QString lockFileName() const;
 
     static bool readLockFile( const QString &filename, int &pid, QString &app );
+    static bool writeLockFile( const QString &filename );
 
     static QString locksDir();
 

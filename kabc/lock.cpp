@@ -56,9 +56,19 @@ bool Lock::readLockFile( const QString &filename, int &pid, QString &app )
   QFile file( filename );
   if ( !file.open( IO_ReadOnly ) ) return false;
   
-  QDataStream t( &file );
+  QTextStream t( &file );
   t >> pid >> app;
   
+  return true;
+}
+
+bool Lock::writeLockFile( const QString &filename )
+{
+  QFile file( filename );
+  if ( !file.open( IO_WriteOnly ) ) return false;
+  QTextStream t( &file );
+  t << ::getpid() << endl << QString( KGlobal::instance()->instanceName() );
+
   return true;
 }
 
@@ -101,11 +111,7 @@ bool Lock::lock()
   kdDebug(5700) << "-- lock unique name: " << mLockUniqueName << endl;
 
   // Create unique file
-  QFile file( mLockUniqueName );
-  file.open( IO_WriteOnly );
-  QDataStream t( &file );
-  t << ::getpid() << QString( KGlobal::instance()->instanceName() );
-  file.close();
+  writeLockFile( mLockUniqueName );
 
   // Create lock file
   int result = ::link( QFile::encodeName( mLockUniqueName ),
