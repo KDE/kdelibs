@@ -25,9 +25,30 @@
 
 #include <qfile.h>
 #include <qvariant.h>
+#include <qstring.h>
+#include <qstringlist.h>
 #include <klibloader.h>
 #include <kservicetype.h>
 
+
+
+KCardFactory::KCardFactory() {
+	loadModules();
+}
+
+
+KCardFactory::~KCardFactory() {
+}
+
+
+KCardFactory *KCardFactory::_self = NULL;
+
+
+KCardFactory *KCardFactory::self() {
+	if (!_self)
+		_self = new KCardFactory;
+	return _self;
+}
 
 
 KCardImplementation * KCardFactory::getCard (KCardReader * selReader, 
@@ -55,11 +76,9 @@ return NULL;
 }
 
 
-int KCardFactory::loadModule(KService::Ptr svc) {
-KCardImplementation *x = NULL;
-
+void *KCardFactory::loadModule(KService::Ptr svc) {
 	if (!svc || svc->library().isEmpty())
-		return -1;
+		return NULL;
 
 	QCString obj = svc->desktopEntryName().latin1();
 
@@ -79,18 +98,11 @@ KCardImplementation *x = NULL;
 		void *create = lib->symbol(QFile::encodeName(factory));
 		if (!create) {
 			loader->unloadLibrary(QFile::encodeName(factory));
-			return -3;
+			return NULL;
 		}
-		
-		x = ((KCardImplementation* (*)(const QCString &))create)(obj);
-		if (x) {
-			return 0;
-		} else {
-			loader->unloadLibrary(QFile::encodeName(factory));
-			return -4;
-		}
+		return create;
 	} else {
-		return -2;
+		return NULL;
 	}
 }
 
@@ -104,7 +116,9 @@ int KCardFactory::loadModules() {
 		QString _type = service->property("X-KDE-Smartcard-Type").toString();
 		QString _subType = service->property("X-KDE-Smartcard-SubType").toString();
 		QString _subSubType = service->property("X-KDE-Smartcard-SubSubType").toString();
-		loadModule(service);
+		void *f = loadModule(service);
+
+		_modules[_type][_subType][_subSubType] = f;
 	}
 	return 0;
 }

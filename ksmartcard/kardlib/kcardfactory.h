@@ -26,28 +26,37 @@
 #include "kcardstatus.h"
 
 #include <kservice.h>
+#include <qmap.h>
 
 class KCardReader;
 class KCardImplementation;
+class QStringList;
 
 
 // FIXME: Change this to use the strings instead.  Makes it easier to extend
 // later.
 typedef  enum {KCardGSMType, KCardProcessorType} KCardType;
 
-class KCardFactory{
+class KCardFactory {
 
  public:
 
   static KCardImplementation * getCard ( KCardReader *, KCardType, KCardATR );
 
-
+  static KCardFactory *self();
 
  private:
 
+  KCardFactory();
+  ~KCardFactory();
   int loadModules();
-  int loadModule(KService::Ptr svc);
+  void *loadModule(KService::Ptr svc);
 
+
+  static KCardFactory *_self;
+ 
+  QMap< QString, QMap< QString, QMap< QString,void*> > > _modules;
+  
   class KCardFactoryPrivate;
   KCardFactoryPrivate *d;
 
