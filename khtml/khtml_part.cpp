@@ -147,6 +147,40 @@ namespace khtml {
     };
 }
 
+void khtml::ChildFrame::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args)
+{
+    if (!m_part || !m_frame || !m_liveconnect)
+        // hmmm
+        return;
+
+    QString script;
+    script.sprintf("%s(", event.latin1());
+    KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
+    for ( ; i != args.end(); i++) {
+        if (i != args.begin())
+            script += ",";
+        if ((*i).first == KParts::LiveConnectExtension::TypeString) {
+            script += "\"";
+            script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
+            script += "\"";
+        } else
+            script += (*i).second;
+    }
+    script += ")";
+    kdDebug(6050) << "khtml::ChildFrame::liveConnectEvent " << script << endl;
+
+    KHTMLPart * part = ::qt_cast<KHTMLPart *>(m_part->parent());
+    if (!part)
+        return;
+    if (!m_jscript)
+        part->framejScript(m_part);
+    if (m_jscript) {
+        // we have a jscript => a part in an iframe
+        KJS::Completion cmp;
+        m_jscript->evaluate(QString::null, 1, script, 0L, &cmp);
+    } else
+        part->executeScript(m_frame->element(), script);
+}
 
 KHTMLFrameList::Iterator KHTMLFrameList::find( const QString &name )
 {
@@ -3952,27 +3986,19 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 
         checkEmitLoadEvent();
         return false;
-    } else if (::qt_cast<KHTMLPart*>(part)) {
-        static_cast<KHTMLPart*>(part)->d->m_frame = child;
-    } else if (child->m_frame) {
-        child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
-        DOM::NodeImpl* elm = child->m_frame->element();
-        if (elm)
-            switch (child->m_frame->element()->id()) {
-                case ID_APPLET:
-                case ID_EMBED:
-                case ID_OBJECT:
-                    static_cast<HTMLObjectBaseElementImpl*>(elm)->setLiveConnect(child->m_liveconnect);
-                default:
-                    break;
-            }
     }
 
     //CRITICAL STUFF
     if ( child->m_part )
     {
+      if (!::qt_cast<KHTMLPart*>(child->m_part) && child->m_jscript)
+          child->m_jscript->clear();
       partManager()->removePart( (KParts::ReadOnlyPart *)child->m_part );
       delete (KParts::ReadOnlyPart *)child->m_part;
+      if (child->m_liveconnect) {
+        disconnect(child->m_liveconnect, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), child, SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
+        child->m_liveconnect = 0L;
+      }
     }
 
     child->m_serviceType = mimetype;
@@ -3985,7 +4011,14 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
 //      kdDebug(6005) << "AH! NO FRAME!!!!!" << endl;
 
     child->m_part = part;
-    assert( ((void*) child->m_part) != 0);
+
+    if (::qt_cast<KHTMLPart*>(part)) {
+      static_cast<KHTMLPart*>(part)->d->m_frame = child;
+    } else if (child->m_frame) {
+      child->m_liveconnect = KParts::LiveConnectExtension::childObject(part);
+      if (child->m_liveconnect)
+        connect(child->m_liveconnect, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), child, SLOT(liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
+    }
 
     connect( part, SIGNAL( started( KIO::Job *) ),
              this, SLOT( slotChildStarted( KIO::Job *) ) );
@@ -6575,3 +6608,4 @@ void KHTMLPart::setDebugScript( bool enable )
 
 using namespace KParts;
 #include "khtml_part.moc"
+#include "khtmlpart_p.moc"

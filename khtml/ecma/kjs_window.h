@@ -227,13 +227,13 @@ namespace KJS {
     virtual UString toString(ExecState *exec) const;
     enum { Hash, Href, Hostname, Host, Pathname, Port, Protocol, Search, EqualEqual,
            Assign, Replace, Reload, ToString };
-    KParts::ReadOnlyPart *part() const { return m_part; }
+    KParts::ReadOnlyPart *part() const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
   private:
     friend class Window;
-    Location(KParts::ReadOnlyPart *p);
-    QGuardedPtr<KParts::ReadOnlyPart> m_part;
+    Location(khtml::ChildFrame *f);
+    QGuardedPtr<khtml::ChildFrame> m_frame;
   };
 
 #ifdef Q_WS_QWS

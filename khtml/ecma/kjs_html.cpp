@@ -34,7 +34,6 @@
 #include "html/html_baseimpl.h"
 #include "html/html_documentimpl.h"
 #include "html/html_imageimpl.h"
-#include "html/html_objectimpl.h"
 #include "html/html_miscimpl.h"
 #include "xml/dom2_eventsimpl.h"
 
@@ -53,6 +52,7 @@
 #include "misc/htmlattrs.h"
 #include "rendering/render_object.h"
 #include "rendering/render_canvas.h"
+#include "rendering/render_frames.h"
 
 #include "kmessagebox.h"
 #include <kstringhandler.h>
@@ -1089,92 +1089,14 @@ const ClassInfo* KJS::HTMLElement::classInfo() const
 @end
 */
 
-class EmbedLiveConnect : public ObjectImp {
-public:
-    EmbedLiveConnect(const DOM::HTMLElement& elm, UString n, KParts::LiveConnectExtension::Type t, int id)
-        : element (elm), name(n), objtype(t), objid(id) {}
-    ~EmbedLiveConnect() {
-        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-        if (elm)
-            elm->unregister(objid);
-    }
-    static Value getValue(const DOM::HTMLElement& elm, const QString & name,
-                          const KParts::LiveConnectExtension::Type t,
-                          const QString & value, int id)
-    {
-        switch(t) {
-            case KParts::LiveConnectExtension::TypeBool: {
-                bool ok;
-                int i = value.toInt(&ok);
-                if (ok)
-                    return Boolean(i);
-                return Boolean(!strcasecmp(value.latin1(), "true"));
-            }
-            case KParts::LiveConnectExtension::TypeFunction:
-                return Value(new EmbedLiveConnect(elm, name, t, id));
-            case KParts::LiveConnectExtension::TypeNumber: {
-                bool ok;
-                int i = value.toInt(&ok);
-                if (ok)
-                    return Number(i);
-                else
-                    return Number(value.toDouble(&ok));
-            }
-            case KParts::LiveConnectExtension::TypeObject:
-                return Value(new EmbedLiveConnect(elm, name, t, id));
-            case KParts::LiveConnectExtension::TypeString:
-                return String(value);
-            case KParts::LiveConnectExtension::TypeVoid:
-            default:
-                return Undefined();
-        }
-    }
-    virtual Value get(ExecState *, const Identifier & prop) const {
-        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-        KParts::LiveConnectExtension::Type rettype;
-        QString retvalue;
-        unsigned long retobjid;
-        if (elm && elm->get(objid, prop.qstring(), rettype, retobjid, retvalue))
-            return getValue(element, prop.qstring(), rettype, retvalue, retobjid);
-        return Undefined();
-    }
-    virtual void put(ExecState * exec, const Identifier &prop, const Value & value, int=None) {
-        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-        if (elm)
-            elm->put(objid, prop.qstring(), value.toString(exec).qstring());
-    }
-    virtual bool implementsCall() const {
-        return objtype == KParts::LiveConnectExtension::TypeFunction;
-    }
-    virtual Value call(ExecState * exec, Object &, const List &args) {
-        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-        QStringList qargs;
-        for (ListIterator i = args.begin(); i != args.end(); i++)
-            qargs.append((*i).toString(exec).qstring());
-        KParts::LiveConnectExtension::Type rettype;
-        QString retvalue;
-        unsigned long retobjid;
-        if (elm && elm->call(objid, name.qstring(), qargs, rettype, retobjid, retvalue))
-            return getValue(element, name.qstring(), rettype, retvalue, retobjid);
-        return Undefined();
-    }
-    virtual bool toBoolean(ExecState *) const { return true; }
-    virtual Value toPrimitive(ExecState *exec, Type) const {
-        return String(toString(exec));
-    }
-    virtual UString toString(ExecState *) const {
-        QString str;
-        const char *type = objtype == KParts::LiveConnectExtension::TypeFunction ? "Function" : "Object";
-        str.sprintf("[object %s ref=%d]", type, (int) objid);
-        return UString(str);
-    }
-private:
-    EmbedLiveConnect(const EmbedLiveConnect &);
-    DOM::HTMLElement element;
-    UString name;
-    KParts::LiveConnectExtension::Type objtype;
-    unsigned long objid;
-};
+static KParts::LiveConnectExtension *getLiveConnectExtension(const DOM::HTMLElement & element)
+{
+  DOM::HTMLDocument doc = element.ownerDocument();
+  KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+  if (view && element.handle())
+    return view->part()->liveConnectExtension(static_cast<khtml::RenderPart*>(element.handle()->renderer()));
+  return 0L;
+}
 
 Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) const
 {
@@ -1206,15 +1128,15 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) 
         return getDOMNode(exec,select.options().item(u)); // not specified by DOM(?) but supported in netscape/IE
     }
       break;
-  case ID_APPLET:
-  case ID_OBJECT:
-  case ID_EMBED: {
-      DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-      QString retvalue;
-      KParts::LiveConnectExtension::Type rettype;
-      unsigned long retobjid;
-      if (elm && elm->get(0, propertyName.qstring(), rettype, retobjid, retvalue))
-          return EmbedLiveConnect::getValue(element, propertyName.qstring(), rettype, retvalue, retobjid);
+    case ID_APPLET:
+    case ID_OBJECT:
+    case ID_EMBED: {
+      KParts::LiveConnectExtension *lc = getLiveConnectExtension(element);
+      QString rvalue;
+      KParts::LiveConnectExtension::Type rtype;
+      unsigned long robjid;
+      if (lc && lc->get(0, propertyName.qstring(), rtype, robjid, rvalue))
+        return getLiveConnectValue(lc, propertyName.qstring(), rtype, rvalue, robjid);
       break;
   }
   default:
@@ -1984,14 +1906,14 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
   if (node.elementId() == ID_A)
     return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
   else if (node.elementId() == ID_APPLET) {
-    DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(node.handle());
+    KParts::LiveConnectExtension *lc = getLiveConnectExtension(node);
     QStringList qargs;
     QString retvalue;
     KParts::LiveConnectExtension::Type rettype;
     unsigned long retobjid;
-    if (elm && elm->call(0, "hashCode", qargs, rettype, retobjid, retvalue)) {
-        QString str("[object APPLET ref=");
-        return UString(str + retvalue + QString("]"));
+    if (lc && lc->call(0, "hashCode", qargs, rettype, retobjid, retvalue)) {
+      QString str("[object APPLET ref=");
+      return UString(str + retvalue + QString("]"));
     }
   } else if (node.elementId() == ID_IMG) {
     DOM::HTMLImageElement image(node);
@@ -2314,10 +2236,9 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, c
     case ID_APPLET:
     case ID_OBJECT:
     case ID_EMBED: {
-      DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
-      if (elm && elm->put(0, propertyName.qstring(),
-                          value.toString(exec).qstring()))
-          return;
+      KParts::LiveConnectExtension *lc = getLiveConnectExtension(element);
+      if (lc && lc->put(0, propertyName.qstring(), value.toString(exec).qstring()))
+        return;
       break;
     }
     default:

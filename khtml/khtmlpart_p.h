@@ -32,6 +32,7 @@
 #include <kaction.h>
 #include <kparts/partmanager.h>
 #include <kparts/statusbarextension.h>
+#include <kparts/browserextension.h>
 #include <kwallet.h>
 #include <qtimer.h>
 
@@ -64,8 +65,10 @@ namespace KParts
 
 namespace khtml
 {
-  struct ChildFrame : public QObject
+  class ChildFrame : public QObject
   {
+      Q_OBJECT
+  public:
       enum Type { Frame, IFrame, Object };
 
       ChildFrame() : QObject (0L, "khtml_child_frame") {
@@ -100,6 +103,8 @@ namespace khtml
     QStringList m_params;
     bool m_bNotify;
     bool m_bPendingRedirection;
+  protected slots:
+    void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
   };
 
 }

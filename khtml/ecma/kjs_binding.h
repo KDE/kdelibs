@@ -33,6 +33,7 @@
 
 namespace KParts {
   class ReadOnlyPart;
+  class LiveConnectExtension;
 }
 
 namespace khtml {
@@ -249,6 +250,8 @@ namespace KJS {
     int id; \
   }; \
   }
+
+  Value getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString & name, const int type, const QString & value, int id);
 
 } // namespace
 

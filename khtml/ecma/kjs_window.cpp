@@ -386,7 +386,7 @@ Value Window::retrieve(KParts::ReadOnlyPart *p)
 Location *Window::location() const
 {
   if (!loc)
-    const_cast<Window*>(this)->loc = new Location(m_frame->m_part);
+    const_cast<Window*>(this)->loc = new Location(m_frame);
   return loc;
 }
 
@@ -498,10 +498,13 @@ Value Window::get(ExecState *exec, const Identifier &p) const
     switch(entry->value) {
     case Closed:
       return Boolean( false );
-      case _Location:
+    case _Location:
         // No isSafeScript test here, we must be able to _set_ location.href (#49819)
-        return Value(location());
-      default:
+      return Value(location());
+    case _Window:
+    case Self:
+      return retrieve(m_frame->m_part);
+    default:
         break;
     }
     if (!part)
@@ -517,9 +520,6 @@ Value Window::get(ExecState *exec, const Identifier &p) const
         return retrieve(part->opener());
     case Parent:
       return retrieve(part->parentPart() ? part->parentPart() : (KHTMLPart*)part);
-    case _Window:
-    case Self:
-      return retrieve(part);
     case Top: {
       KHTMLPart *p = part;
       while (p->parentPart())
@@ -935,8 +935,12 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
     default:
       break;
     }
+    }
   }
-  }
+  if (m_frame->m_liveconnect &&
+      isSafeScript(exec) &&
+      m_frame->m_liveconnect->put(0, propertyName.qstring(), value.toString(exec).qstring()))
+    return;
   if (isSafeScript(exec)) {
     //kdDebug(6070) << "Window("<<this<<")::put storing " << propertyName.qstring() << endl;
     ObjectImp::put(exec, propertyName, value, attr);
@@ -1984,7 +1988,7 @@ const ClassInfo Location::info = { "Location", 0, &LocationTable, 0 };
 @end
 */
 IMPLEMENT_PROTOFUNC_DOM(LocationFunc)
-Location::Location(KParts::ReadOnlyPart *p) : m_part(p)
+Location::Location(khtml::ChildFrame *f) : m_frame(f)
 {
   //kdDebug(6070) << "Location::Location " << this << " m_part=" << (void*)m_part << endl;
 }
@@ -1994,13 +1998,17 @@ Location::~Location()
   //kdDebug(6070) << "Location::~Location " << this << " m_part=" << (void*)m_part << endl;
 }
 
+KParts::ReadOnlyPart *Location::part() const {
+  return m_frame ? m_frame->m_part:0L;
+}
+
 Value Location::get(ExecState *exec, const Identifier &p) const
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "Location::get " << p.qstring() << " m_part=" << (void*)m_part << endl;
+  kdDebug(6070) << "Location::get " << p.qstring() << " m_part=" << (void*)m_frame->m_part << endl;
 #endif
 
-  if (m_part.isNull())
+  if (m_frame.isNull() || m_frame->m_part.isNull())
     return Undefined();
 
   const HashEntry *entry = Lookup::findEntry(&LocationTable, p);
@@ -2010,11 +2018,11 @@ Value Location::get(ExecState *exec, const Identifier &p) const
       return lookupOrCreateFunction<LocationFunc>(exec,p,this,entry->value,entry->params,entry->attr);
 
   // XSS check
-  const Window* window = Window::retrieveWindow( m_part );
+  const Window* window = Window::retrieveWindow( m_frame->m_part );
   if ( !window || !window->isSafeScript(exec) )
     return Undefined();
 
-  KURL url = m_part->url();
+  KURL url = m_frame->m_part->url();
   if (entry)
     switch (entry->value) {
     case Hash:
@@ -2061,18 +2069,18 @@ Value Location::get(ExecState *exec, const Identifier &p) const
 void Location::put(ExecState *exec, const Identifier &p, const Value &v, int attr)
 {
 #ifdef KJS_VERBOSE
-  kdDebug(6070) << "Location::put " << p.qstring() << " m_part=" << (void*)m_part << endl;
+  kdDebug(6070) << "Location::put " << p.qstring() << " m_part=" << (void*)m_frame->m_part << endl;
 #endif
-  if (m_part.isNull())
+  if (m_frame.isNull() || m_frame->m_part.isNull())
     return;
 
   // XSS check
-  const Window* window = Window::retrieveWindow( m_part );
+  const Window* window = Window::retrieveWindow( m_frame->m_part );
   if ( !window || !window->isSafeScript(exec) )
     return;
 
   QString str = v.toString(exec).qstring();
-  KURL url = m_part->url();
+  KURL url = m_frame->m_part->url();
   const HashEntry *entry = Lookup::findEntry(&LocationTable, p);
   if (entry)
     switch (entry->value) {
@@ -2117,26 +2125,30 @@ void Location::put(ExecState *exec, const Identifier &p, const Value &v, int att
     return;
   }
 
-  Window::retrieveWindow(m_part)->goURL(exec, url.url(), false /* don't lock history*/ );
+  Window::retrieveWindow(m_frame->m_part)->goURL(exec, url.url(), false /* don't lock history*/ );
 }
 
 Value Location::toPrimitive(ExecState *exec, Type) const
 {
-  Window* window = Window::retrieveWindow( m_part );
-  if ( window && window->isSafeScript(exec) )
-    return String(toString(exec));
+  if (m_frame) {
+    Window* window = Window::retrieveWindow( m_frame->m_part );
+    if ( window && window->isSafeScript(exec) )
+      return String(toString(exec));
+  }
   return Undefined();
 }
 
 UString Location::toString(ExecState *exec) const
 {
-  Window* window = Window::retrieveWindow( m_part );
-  if ( window && window->isSafeScript(exec) )
-  {
-    if (!m_part->url().hasPath())
-      return m_part->url().prettyURL()+"/";
-    else
-      return m_part->url().prettyURL();
+  if (m_frame) {
+    Window* window = Window::retrieveWindow( m_frame->m_part );
+    if ( window && window->isSafeScript(exec) )
+    {
+      if (!m_frame->m_part->url().hasPath())
+        return m_frame->m_part->url().prettyURL()+"/";
+      else
+        return m_frame->m_part->url().prettyURL();
+    }
   }
   return "";
 }

@@ -49,7 +49,7 @@ using namespace khtml;
 
 // -------------------------------------------------------------------------
 HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
-    : HTMLElementImpl(doc), liveconnect(0L)
+    : HTMLElementImpl(doc)
 {
     needWidgetUpdate = false;
     m_renderAlternative = false;
@@ -119,63 +119,6 @@ void HTMLObjectBaseElementImpl::slotRenderAlternative()
     attach();
 }
 
-bool HTMLObjectBaseElementImpl::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
-    if (!liveconnect)
-        return false;
-    return liveconnect->get(objid, field, type, retobjid, value);
-}
-
-bool HTMLObjectBaseElementImpl::put(const unsigned long objid, const QString & field, const QString & value) {
-    if (!liveconnect)
-        return false;
-    return liveconnect->put(objid, field, value);
-}
-
-bool HTMLObjectBaseElementImpl::call(const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
-    if (!liveconnect)
-        return false;
-    return liveconnect->call(objid, func, args, type, retobjid, value);
-}
-
-void HTMLObjectBaseElementImpl::unregister(const unsigned long objid) {
-    if (!liveconnect)
-        return;
-    liveconnect->unregister(objid);
-}
-
-void HTMLObjectBaseElementImpl::setLiveConnect(KParts::LiveConnectExtension * lc) {
-    liveconnect = lc;
-    if (lc)
-        connect(lc, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), static_cast<HTMLObjectBaseElementImpl*>(this), SLOT(liveConnectEvent( const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
-}
-
-void HTMLObjectBaseElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args)
-{
-    if (!liveconnect)
-        // not attached
-        return;
-
-    QString script;
-    script.sprintf("%s(", event.latin1());
-    KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
-    for ( ; i != args.end(); i++) {
-        if (i != args.begin())
-            script += ",";
-        if ((*i).first == KParts::LiveConnectExtension::TypeString) {
-            script += "\"";
-            script += QString((*i).second).replace('\\', "\\\\").replace('"', "\\\"");
-            script += "\"";
-        } else
-            script += (*i).second;
-    }
-    script += ")";
-
-    kdDebug(6036) << "HTMLObjectBaseElementImpl::liveConnectEvent " << script << endl;
-    KHTMLView* w = getDocument()->view();
-    if (w)
-	w->part()->executeScript(this, script);
-}
-
 void HTMLObjectBaseElementImpl::attach() {
     assert(!attached());
     assert(!m_render);
@@ -222,7 +165,6 @@ void HTMLObjectBaseElementImpl::attach() {
 }
 
 void HTMLObjectBaseElementImpl::detach() {
-    setLiveConnect(0L);
 
     if (attached())
         // ### do this when we are actualy removed from document instead
