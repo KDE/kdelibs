@@ -102,9 +102,7 @@ bool open_PassDlg( const QString& _head, QString& _user, QString& _pass )
 {
   if ( kapp == 0L )
   {
-    const char* a[2] = { "dummy", 0L };
-    int b = 1;
-    (void)new KApplication( b, const_cast<char**>(a), "pass_dlg" );
+    (void)new KApplication( );
   }
   
   KIOPassDlg dlg( 0L, 0L, true, 0, _head, _user, _pass );

@@ -112,9 +112,7 @@ SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi, QString _error_text
 {
   if ( kapp == 0L )
   {
-    const char* a[2] = { "dummy", 0L };
-    int b = 1;
-    (void)new KApplication( b, const_cast<char**>(a), "skip_dlg" );
+    (void)new KApplication( );
   }
   
   QString tmps = _error_text;
