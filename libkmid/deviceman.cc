@@ -20,6 +20,8 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 
+    $Id$
+
     Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
 ***************************************************************************/
@@ -297,10 +299,9 @@ int DeviceManager::initManager(void)
   }
   else
   {  // We are using ALSA
-    int  client;
-    int  port;
 
 #ifdef HAVE_ALSA_SUPPORT
+    int  client, port;
 #ifdef HAVE_LIBASOUND2
     snd_seq_t *handle=0;
     snd_seq_client_info_t *clienti;
@@ -406,7 +407,7 @@ void DeviceManager::openDev(void)
     seqfd = open("/dev/sequencer", O_WRONLY | O_NONBLOCK, 0);
     if (seqfd==-1)
     {
-      fprintf(stderr,"Couldn't open the /dev/sequencer device\n");
+      fprintf(stderr,"Couldn't open the MIDI sequencer device (/dev/sequencer)\n");
       _ok=0;
       return;
     }

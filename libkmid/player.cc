@@ -20,6 +20,8 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 
+    $Id$
+
     Send comments and bug fixes to Antonio Larrosa <larrosa@kde.org>
 
 ***************************************************************************/
@@ -162,7 +164,7 @@ void MidiPlayer::generateBeats(void)
 	  nextbeatms=lastbeatms+T2MS(ticksleft);
 	  // printf("Change at %lu to %d\n",ev->absmilliseconds,ev->tempo);
 	  // beatstep=((double)tempo*4/(den*1000));
-	  beatstep=T2MS((((double)info->ticksPerCuarterNote*4)/den));
+	  beatstep=T2MS(((static_cast<double>(info->ticksPerCuarterNote)*4)/den));
 	};break;
       case (6): // Change number of beats per measure
 	{
@@ -181,14 +183,18 @@ void MidiPlayer::generateBeats(void)
       //printf("Adding %d,%d\n",num,tot);
       //printf("beat at %g , %d/%d\n",nextbeatms,i,num);
       //printf("  %ld %d\n",nextev->absmilliseconds,nextev->type);
-      if (i==1) measurems=nextbeatms;
-      insertBeat(ev,nextbeatms,i++,num);
-      if (i>num) i=1;
+      if (i == 1) {
+          measurems=nextbeatms;
+      }
+      insertBeat(ev, static_cast<unsigned long>(nextbeatms), i++, num);
+      if (i > num) {
+          i=1;
+      }
       lastbeatms=nextbeatms;
       nextbeatms+=beatstep;
-      //            nextbeatms=measurems+beatstep*i;
+      // nextbeatms=measurems+beatstep*i;
 
-      ticksleft=(((double)info->ticksPerCuarterNote*4)/den);
+      ticksleft = ( (static_cast<double>(info->ticksPerCuarterNote)*4) / den);
 
     }
 
@@ -213,7 +219,7 @@ void MidiPlayer::generateBeats(void)
     {
       //            printf("beat2 at %g , %d/%d\n",nextbeatms,i,num);
       if (i==1) measurems=nextbeatms;
-      insertBeat(ev,nextbeatms,i++,num);
+      insertBeat(ev, static_cast<unsigned long>(nextbeatms), i++, num);
       if (i>num) i=1;
       nextbeatms+=beatstep;
       ev=ev->next;
