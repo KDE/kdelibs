@@ -48,7 +48,7 @@ bool BinaryFormat::load( AddressBook *addressBook, Resource *resource, QFile *fi
   }
 
   if ( version != BINARY_FORMAT_VERSION ) {
-    addressBook->error( QString( i18n("File '%1' is wrong version.") ).arg( file->name() ) );
+    addressBook->error( QString( i18n("File '%1' is the wrong version.") ).arg( file->name() ) );
     return false;
   }
 

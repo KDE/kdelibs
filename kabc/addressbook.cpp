@@ -211,7 +211,7 @@ bool AddressBook::load()
   bool ok = true;
   for( r = d->mResources.first(); r; r = d->mResources.next() )
     if ( !r->load() ) {
-      error( QString( i18n("Can't load resource '%1'") ).arg( r->name() ) );
+      error( QString( i18n("Unable to load resource '%1'") ).arg( r->name() ) );
       ok = false;
     }
 
@@ -493,7 +493,7 @@ bool AddressBook::saveAll()
     if ( !resource->readOnly() ) {
       Ticket *ticket = requestSaveTicket( resource );
       if ( !ticket ) {
-        error( i18n( "Can't save to standard addressbook. It's locked." ) );
+        error( i18n( "Unable to save to standard addressbook. It is locked." ) );
         return false;
       }
 

@@ -123,7 +123,7 @@ bool ResourceFile::load()
     QFile file( mPath + "/" + (*it) );
 
     if ( !file.open( IO_ReadOnly ) ) {
-      addressBook()->error( QString( i18n( "Can't load file '%1' for reading" ) ).arg( file.name() ) );
+      addressBook()->error( QString( i18n( "Unable to open file '%1' for reading" ) ).arg( file.name() ) );
       ok = false;
       continue;
     }
@@ -150,7 +150,7 @@ bool ResourceFile::save( Ticket *ticket )
 
     QFile file( mPath + "/" + (*it).uid() );
     if ( !file.open( IO_ReadWrite ) ) {
-      addressBook()->error( QString( i18n( "Can't load file '%1' for saving." ) ).arg( file.name() ) );
+      addressBook()->error( QString( i18n( "Unable to open file '%1' for writing" ) ).arg( file.name() ) );
       continue;
     }
 
@@ -160,7 +160,7 @@ bool ResourceFile::save( Ticket *ticket )
       ok = false;
       file.close();
       QFile::remove( file.name() );
-      addressBook()->error( QString( i18n( "Can't save file '%1'." ) ).arg( file.name() ) );
+      addressBook()->error( QString( i18n( "Unable to save file '%1'." ) ).arg( file.name() ) );
       continue;
     }
 
