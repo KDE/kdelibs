@@ -4,7 +4,7 @@
 #
 # -Taj (Apr 1999)
 
-kde_MODULES = kdecore kdeui kimgio kio kfile jscript khtml kformula kspell kab kom kpartsui kparts
+kde_MODULES = kdecore kdeui kimgio kio kfile jscript khtml kformula kspell kab kom kpartsui kparts kded
 
 kdecore_FILES = *.h
 kdecore_LIBS = -lqt
@@ -36,18 +36,22 @@ kimgio_LIBS = -lqt
 kformula_FILES = *.h
 kformula_LIBS = -lkdecore -lkdeui -lqt
 
-kom_FILES = *.idl *.h
+kom_FILES = *.h
+#kom_FILES = *.idl *.h
 kom_PATH = corba/kom
 kom_LIBS = -lkdecore -lqt
 
-kpartsui_FILES = *.idl *.h
+kpartsui_FILES = *.h
+#kpartsui_FILES = *.idl *.h
 kpartsui_PATH = corba/partsui
 kpartsui_LIBS = -lkom -lkdecore -lqt
 
-kparts_FILES = *.idl *.h
+kparts_FILES = *.h
+#kparts_FILES = *.idl *.h
 kparts_PATH = corba/parts
 kparts_LIBS = -lkom -lkdecore -lqt
 
-kded_FILES = *.idl *.h
+kded_FILES = *.h
+#kded_FILES = *.idl *.h
 kded_PATH = corba/kded
 kded_LIBS = -lkom -lkdecore
