@@ -422,4 +422,4 @@ int KUniqueApplication::newInstance(QValueList<QCString>)
   return 0;
 }
 
-#include "kuniqueapp.moc"
+#include "kuniqueapplication.moc"

@@ -2180,4 +2180,4 @@ QString KApplication::randomString(int length)
    return str;
 }
 
-#include "kapp.moc"
+#include "kapplication.moc"
