@@ -22,9 +22,10 @@
 #include <sys/time.h>
 #endif
 
-#include "ksocks.h"
+#include <qfile.h>
 #include <qstring.h>
 #include <qmap.h>
+
 #include <klocale.h>
 #include <kdebug.h>
 #include "klibloader.h"
@@ -37,6 +38,7 @@
 
 #include <unistd.h>
 
+#include "ksocks.h"
 
 // DO NOT RE-ORDER THESE.
 enum SymbolKeys {
@@ -287,7 +289,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
          _useSocks = true;
          _hasSocks = true;
       } else if (_socksLib) {
-         ll->unloadLibrary(_socksLib->name().latin1());
+         ll->unloadLibrary(QFile::encodeName(_socksLib->name()));
          _socksLib = NULL;
       }
    } else              // leave this here   "else for {}"
@@ -314,7 +316,7 @@ KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
             _hasSocks = true;
             break;
          } else {
-           ll->unloadLibrary(_socksLib->name().latin1());
+           ll->unloadLibrary(QFile::encodeName(_socksLib->name()));
            _socksLib = NULL;
          }
       }
@@ -422,7 +424,7 @@ void KSocks::stopSocks() {
           _useSocks = false;
           _hasSocks = false;
           if (_socksLib)
-            KLibLoader::self()->unloadLibrary(_socksLib->name().latin1());
+            _socksLib->unload();
           _socksLib = NULL;
           delete _st;
           _st = NULL;
