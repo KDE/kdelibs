@@ -38,6 +38,7 @@
 #include <kdiroperator.h>
 #include <kfile.h>
 #include <kdebug.h>
+#include <kicondialog.h>
 
 int main(int argc, char **argv)
 {
@@ -89,7 +90,11 @@ int main(int argc, char **argv)
 //          QString::null, 0L);
         name1 = u.url();
     }
-    else{
+    else if (argv1 == QString::fromLatin1("icon")) {
+    	KIconDialog dlg;
+	QString icon = dlg.selectIcon();
+	kdDebug() << icon << endl;
+    } else {
 	KFileDialog dlg(QString::null,
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
