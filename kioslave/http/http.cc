@@ -407,7 +407,12 @@ void HTTPProtocol::setHost( const QString& host, int port,
   else
     {
       m_request.hostname = host;
-      m_request.encoded_hostname = '[' + host + ']';
+      int pos = host.find('%');
+      if (pos == -1)
+	m_request.encoded_hostname = '[' + host + ']';
+      else
+	// don't send the scope-id in IPv6 addresses to the server
+	m_request.encoded_hostname = '[' + host.left(pos) + ']';
     }
   m_request.port = (port == 0) ? m_iDefaultPort : port;
   m_request.user = user;
