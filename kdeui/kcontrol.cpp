@@ -103,9 +103,6 @@ KControlApplication::KControlApplication(int &argc, char **argv, const char *nam
 
   // set the default size
   dialog->resize(480, 480);
-  
-  // show the dialog
-  dialog->show();
 }
 
 
@@ -136,7 +133,7 @@ void KControlApplication::addPage(QWidget *page, const QString &name, const QStr
 
 void KControlApplication::help()
 {
-  QString name("index");
+  QString name("index.html");
   
   if (dialog)
     name = helpNames.at(dialog->tabBar()->currentTab());

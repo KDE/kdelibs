@@ -190,9 +190,6 @@ protected:
   KControlDialog *dialog;
   QStrList       *pages;
   QStrList       helpNames;
-
-private:
-
   bool     justInit;
   
 };
