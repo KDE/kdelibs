@@ -408,6 +408,7 @@ namespace KJS {
      * @internal Reserved for mark & sweep garbage collection
      */
     virtual void mark(Imp *imp = 0L);
+    bool marked();
 
     Type type() const { return typeInfo()->type; }
     /**
@@ -459,11 +460,16 @@ namespace KJS {
     Imp *proto;
     static const TypeInfo info;
 
-    // reserved for memory managment
+    // reserved for memory managment - currently used as flags for garbage collection
+    // (prev != 0) = marked, (next != 0) = gc allowed
     Imp *prev, *next;
     // for future extensions
     class ImpInternal;
     ImpInternal *internal;
+
+    void setMarked(bool _marked);
+    void setGcAllowed(bool _gcAllowed);
+    bool gcAllowed();
   };
 
   /**

@@ -202,17 +202,14 @@ Location *Window::location() const
 void Window::mark(Imp *)
 {
   HostImp::mark();
-  if (screen && !screen->refcount)
+  if (screen && !screen->marked())
     screen->mark();
-  if (history && !history->refcount)
+  if (history && !history->marked())
     history->mark();
-  if (frames && !frames->refcount)
+  if (frames && !frames->marked())
     frames->mark();
-  if (loc && !loc->refcount)
+  if (loc && !loc->marked())
     loc->mark();
-  QListIterator<JSEventListener> it(jsEventListeners);
-  for (; it.current(); ++it)
-    it.current()->listenerObj().imp()->mark();
 
 #if 0
   // Mark all Window objects from the map. Necessary to keep
@@ -842,7 +839,7 @@ JSEventListener *Window::getJSEventListener(const KJSO &obj, bool html)
     if (it.current()->listenerObj().imp() == obj.imp())
       return it.current();
 
-  JSEventListener *listener = new JSEventListener(obj,this,html);
+  JSEventListener *listener = new JSEventListener(obj,KJSO(this),html);
 //  jsEventListeners.append(listener);
   return listener;
 }

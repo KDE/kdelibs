@@ -82,7 +82,7 @@ bool KJScript::evaluate(const UString &code)
 bool KJScript::evaluate(const KJSO &thisV,
 			const QChar *code, unsigned int length)
 {
-  return rep->evaluate((UChar*)code, length, thisV.imp());
+  return rep->evaluate((UChar*)code, length, thisV);
 }
 
 bool KJScript::call(const KJS::UString &func, const List &args)

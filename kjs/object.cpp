@@ -63,7 +63,7 @@ const TypeInfo Imp::info = { "Imp", AbstractType, 0, 0, 0 };
 namespace KJS {
   struct Property {
     UString name;
-    KJSO object;
+    Imp *object;
     int attribute;
     Property *next;
   };
@@ -83,10 +83,11 @@ KJSO::KJSO(Imp *d)
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
-#ifdef KJS_REFCOUNT
-  if (rep)
+
+  if (rep) {
     rep->ref();
-#endif
+    rep->setGcAllowed(true);
+  }
 }
 
 KJSO::KJSO(const KJSO &o)
@@ -94,22 +95,23 @@ KJSO::KJSO(const KJSO &o)
 #ifdef KJS_DEBUG_MEM
   count++;
 #endif
-#ifdef KJS_REFCOUNT
-  rep = o.rep ? o.rep->ref() : 0L;
-#else
+
   rep = o.rep;
-#endif
+  if (rep) {
+    rep->ref();
+    rep->setGcAllowed(true);
+  }
 }
 
 KJSO& KJSO::operator=(const KJSO &o)
 {
-#ifdef KJS_REFCOUNT
-  if (o.rep)
-    o.rep->ref();
-  if (rep && rep->deref())
-    delete rep;
-#endif
+  if (rep)
+    rep->deref();
   rep = o.rep;
+  if (rep) {
+    rep->ref();
+    rep->setGcAllowed(true);
+  }
 
   return *this;
 }
@@ -119,10 +121,9 @@ KJSO::~KJSO()
 #ifdef KJS_DEBUG_MEM
   count--;
 #endif
-#ifdef KJS_REFCOUNT
-  if (rep && rep->deref())
-    delete rep;
-#endif
+
+  if (rep)
+    rep->deref();
 }
 
 bool KJSO::isDefined() const
@@ -574,9 +575,7 @@ Imp::Imp()
 Imp::~Imp()
 {
 #ifdef KJS_DEBUG_MEM
-#ifndef KJS_REFCOUNT
   assert(Collector::collecting);
-#endif
   count--;
 #endif
 
@@ -681,7 +680,7 @@ void Imp::put(const UString &p, const KJSO& v, int attr)
     while (pr) {
       if (pr->name == p) {
 	// replace old value
-	pr->object = v;
+	pr->object = v.imp();
 	pr->attribute = attr;
 	return;
       }
@@ -692,7 +691,7 @@ void Imp::put(const UString &p, const KJSO& v, int attr)
   // add new property
   pr = new Property;
   pr->name = p;
-  pr->object = v;
+  pr->object = v.imp();
   pr->attribute = attr;
   pr->next = prop;
   prop = pr;
@@ -837,26 +836,31 @@ KJSO Imp::defaultValue(Type hint) const
 
 void Imp::mark(Imp*)
 {
-  ref();
+  setMarked(true);
 
-  if (proto && proto->refcount == 0)
+  if (proto && !proto->marked())
     proto->mark();
 
   struct Property *p = prop;
   while (p) {
-    if (p->object.imp() && p->object.imp()->refcount == 0)
-      p->object.imp()->mark();
+    if (p->object && !p->object->marked())
+      p->object->mark();
     p = p->next;
   }
 }
 
+bool Imp::marked()
+{
+  return prev;
+}
+
 void Imp::setPrototype(const KJSO& p)
 {
-#ifdef KJS_REFCOUNT
-  proto = p.imp() ? p.imp()->ref() : 0L;
-#else
+  if (proto)
+    proto->deref();
   proto = p.imp();
-#endif
+  if (proto)
+    proto->ref();
 }
 
 void Imp::setPrototypeProperty(const KJSO &p)
@@ -869,7 +873,6 @@ void Imp::setConstructor(const KJSO& c)
   put("constructor", c, DontEnum | DontDelete | ReadOnly);
 }
 
-#ifndef KJS_REFCOUNT
 void* Imp::operator new(size_t s)
 {
   return Collector::allocate(s);
@@ -884,7 +887,27 @@ void Imp::operator delete(void*)
 {
   // Do nothing. So far.
 }
-#endif
+
+void Imp::setMarked(bool _marked)
+{
+  if (_marked)
+    prev = this;
+  else
+    prev = 0;
+}
+
+void Imp::setGcAllowed(bool _gcAllowed)
+{
+  if (_gcAllowed)
+    next = this;
+  else
+    next = 0;
+}
+
+bool Imp::gcAllowed()
+{
+    return next;
+}
 
 ObjectImp::ObjectImp(Class c) : cl(c), val(0L) { }
 
@@ -944,7 +967,7 @@ void ObjectImp::mark(Imp*)
   Imp::mark();
 
   // mark internal value, if any and it has not been visited yet
-  if (val && val->refcount == 0)
+  if (val && !val->marked())
     val->mark();
 }
 

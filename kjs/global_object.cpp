@@ -78,6 +78,7 @@ private:
 Global::Global()
   : Object(0L)
 {
+  rep = 0;
   init();
 }
 
@@ -92,8 +93,11 @@ Global::~Global()
 
 void Global::init()
 {
+  if (rep)
+    rep->deref();
   GlobalImp *g = new GlobalImp();
   rep = g;
+  rep->ref();
   g->init();
 }
 
@@ -218,7 +222,7 @@ void GlobalImp::mark(Imp*)
 {
   ObjectImp::mark();
   /* TODO: remove in next version */
-  if (filter && filter->refcount == 0)
+  if (filter && !filter->marked())
     filter->mark();
 }
 

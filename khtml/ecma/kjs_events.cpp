@@ -36,23 +36,23 @@ QPtrDict<DOMEvent> events;
 
 // -------------------------------------------------------------------------
 
-JSEventListener::JSEventListener(KJSO _listener, Window *_win, bool _html)
+JSEventListener::JSEventListener(KJSO _listener, const KJSO &_win, bool _html)
 {
     listener = _listener;
     html = _html;
     win = _win;
-    win->jsEventListeners.append(this);
+    static_cast<Window*>(win.imp())->jsEventListeners.append(this);
 }
 
 JSEventListener::~JSEventListener()
 {
-    win->jsEventListeners.removeRef(this);
+    static_cast<Window*>(win.imp())->jsEventListeners.removeRef(this);
 }
 
 void JSEventListener::handleEvent(DOM::Event &evt)
 {
-  if (listener.implementsCall() && win->part() ) {
-    KJScript *scr = win->part()->jScript()->jScript();
+  if (listener.implementsCall() && static_cast<Window*>(win.imp())->part() ) {
+    KJScript *scr = static_cast<Window*>(win.imp())->part()->jScript()->jScript();
     List args;
     args.append(getDOMEvent(evt));
 
@@ -61,7 +61,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     List *scope = 0;
     if (thisVal.type() != NullType)
       scope = static_cast<DOMNode*>(thisVal.imp())->eventHandlerScope();
-    Global::current().setExtra(win->part());
+    Global::current().setExtra(static_cast<Window*>(win.imp())->part());
     scr->call(listener, thisVal, args, *scope);
     QVariant ret = KJSOToVariant(scr->returnValue());
     if (scope)

@@ -20,13 +20,22 @@
 #ifndef _KJSCOLLECTOR_H_
 #define _KJSCOLLECTOR_H_
 
+// KJS_MEM_LIMIT and KJS_MEM_INCREMENT can be tweaked to adjust how the
+// garbage collector allocates memory. KJS_MEM_LIMIT is the largest # of objects
+// the collector will allow to be present in memory. Once this limit is reached,
+// a running script will get an "out of memory" exception.
 //
-// Define this > 0 if you want to limit the number of objects that can
-// be allocated. -1 otherwise. If this number is reached an "Out of memory" error
-// will be thrown. Execution is not guaranteed to stop immediately but
-// on one of the next statements.
+// KJS_MEM_INCREMENT specifies the amount by which the "soft limit" on memory is
+// increased when the memory gets filled up. The soft limit is the amount after
+// which the GC will run and delete unused objects.
 //
+// If you are debugging seemingly random crashes where an object has been deleted,
+// try setting KJS_MEM_INCREMENT to something small, e.g. 300, to force garbage
+// collection to happen more often, and disable the softLimit increase &
+// out-of-memory testing code in Collector::allocate()
+
 #define KJS_MEM_LIMIT 500000
+#define KJS_MEM_INCREMENT 1000
 
 #include <stdlib.h>
 
@@ -72,7 +81,8 @@ namespace KJS {
   private:
     static CollectorBlock* root;
     static CollectorBlock* currentBlock;
-    static int filled;
+    static unsigned long filled;
+    static unsigned long softLimit;
     enum { BlockSize = 100 };
   };
 

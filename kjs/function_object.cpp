@@ -74,6 +74,7 @@ Object FunctionObject::construct(const List &args)
   FunctionBodyNode *bodyNode = progNode;
   FunctionImp *fimp = new DeclaredFunctionImp(UString::null, bodyNode,
 					      &scopeChain);
+  Object ret(fimp); // protect from GC
 
   // parse parameter list. throw syntax error on illegal identifiers
   int len = p.size();
@@ -111,7 +112,7 @@ Object FunctionObject::construct(const List &args)
 
   fimp->setLength(params);
   fimp->setPrototypeProperty(Global::current().functionPrototype());
-  return Object(fimp);
+  return ret;
 }
 
 FunctionPrototype::FunctionPrototype(const Object &p)

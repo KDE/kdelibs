@@ -208,7 +208,7 @@ void ReferenceImp::mark(Imp*)
 {
   Imp::mark();
   Imp *im = base.imp();
-  if (im && im->refcount == 0)
+  if (im && !im->marked())
     im->mark();
 }
 
@@ -221,7 +221,7 @@ void CompletionImp::mark(Imp*)
 {
   Imp::mark();
   Imp *im = val.imp();
-  if (im && im->refcount == 0)
+  if (im && !im->marked())
     im->mark();
 }
 
@@ -302,17 +302,6 @@ Context::Context(CodeType type, Context *callingContext,
 Context::~Context()
 {
   delete scopeChain;
-}
-
-void Context::mark()
-{
-  if (thisVal.imp()->refcount == 0)
-    thisVal.imp()->mark();
-  if (activation.imp() && activation.imp()->refcount == 0)
-    activation.imp()->mark();
-  if (variable.imp() && variable.imp()->refcount == 0)
-    variable.imp()->mark();
-  /* TODO: scopeChain ? */
 }
 
 Context *Context::current()
@@ -434,7 +423,7 @@ const TypeInfo ActivationImp::info = { "Activation", ActivationType, 0, 0, 0 };
 // ECMA 10.1.6
 ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 {
-  ArgumentsObject *aobj = new ArgumentsObject(f, args);
+  KJSO aobj(new ArgumentsObject(f, args));
   put("arguments", aobj, DontDelete);
   /* TODO: this is here to get myFunc.arguments and myFunc.a1 going.
      I can't see this described in the spec but it's possible in browsers. */
@@ -513,29 +502,33 @@ KJScriptImp::~KJScriptImp()
 void KJScriptImp::globalInit()
 {
   UndefinedImp::staticUndefined = new UndefinedImp();
+  UndefinedImp::staticUndefined->ref();
   NullImp::staticNull = new NullImp();
+  NullImp::staticNull->ref();
   BooleanImp::staticTrue = new BooleanImp(true);
+  BooleanImp::staticTrue->ref();
   BooleanImp::staticFalse = new BooleanImp(false);
+  BooleanImp::staticFalse->ref();
 }
 
 void KJScriptImp::globalClear()
 {
+  UndefinedImp::staticUndefined->deref();
   UndefinedImp::staticUndefined = 0L;
+  NullImp::staticNull->deref();
   NullImp::staticNull = 0L;
+  BooleanImp::staticTrue->deref();
   BooleanImp::staticTrue = 0L;
+  BooleanImp::staticFalse->deref();
   BooleanImp::staticFalse = 0L;
 }
 
 void KJScriptImp::mark()
 {
-  assert(glob.imp());
-  glob.imp()->mark();
-  if (exVal && exVal->refcount == 0)
+  if (exVal && !exVal->marked())
     exVal->mark();
-  if (retVal && retVal->refcount == 0)
+  if (retVal && !retVal->marked())
     retVal->mark();
-  if (con)
-    con->mark();
   UndefinedImp::staticUndefined->mark();
   NullImp::staticNull->mark();
   BooleanImp::staticTrue->mark();
@@ -616,7 +609,7 @@ void KJScriptImp::clear()
       KJScriptImp::curr = old;
 }
 
-bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
+bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &thisV,
 			   bool onlyCheckSyntax)
 {
   init();
@@ -661,7 +654,7 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
   clearException();
 
   KJSO oldVar;
-  if (thisV) {
+  if (!thisV.isNull()) {
     context()->setThisValue(thisV);
     context()->pushScope(thisV);
     oldVar = context()->variableObject();
@@ -693,11 +686,11 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
 
     // catch return value
     retVal = 0L;
-    if (res.complType() == ReturnValue || thisV)
+    if (res.complType() == ReturnValue || !thisV.isNull())
 	retVal = res.value().imp();
   }
 
-  if (thisV) {
+  if (!thisV.isNull()) {
     context()->popScope();
     context()->setVariableObject(oldVar);
   }
@@ -723,29 +716,29 @@ void KJScriptImp::popStack()
     assert(stack);
 }
 
-bool KJScriptImp::call(Imp *scope, const UString &func, const List &args)
+bool KJScriptImp::call(const KJSO &scope, const UString &func, const List &args)
 {
   init();
-  if (!scope)
-    scope = Global::current().imp();
-  if (!scope->hasProperty(func)) {
+  KJSO callScope(scope);
+  if (callScope.isNull())
+    callScope = Global::current().imp();
+  if (!callScope.hasProperty(func)) {
 #ifndef NDEBUG
       fprintf(stderr, "couldn't resolve function name %s. call() failed\n",
 	      func.ascii());
 #endif
       return false;
   }
-  KJSO v = scope->get(func);
+  KJSO v = callScope.get(func);
   if (!v.isA(ConstructorType)) {
 #ifndef NDEBUG
       fprintf(stderr, "%s is not a function. call() failed.\n", func.ascii());
 #endif
       return false;
   }
-  ConstructorImp *ctor = static_cast<ConstructorImp*>(v.imp());
   running++;
   recursion++;
-  ctor->executeCall(scope, &args);
+  static_cast<ConstructorImp*>(v.imp())->executeCall(scope.imp(), &args);
   recursion--;
   running--;
   return !hadException();

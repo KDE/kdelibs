@@ -929,7 +929,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     case ID_SELECT: {
       DOM::HTMLSelectElement select = element;
       if (id == Add) {
-        select.add((new DOMNode(KJS::toNode(args[0])))->toNode(),(new DOMNode(KJS::toNode(args[1])))->toNode());
+        select.add(KJS::toNode(args[0]),KJS::toNode(args[1]));
         result = Undefined();
       }
       else if (id == Remove) {

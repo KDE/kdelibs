@@ -310,6 +310,7 @@ Constructor::Constructor(Imp *d)
     assert(Global::current().hasProperty("[[Function.prototype]]"));
     setPrototype(Global::current().get("[[Function.prototype]]"));
     put("constructor", *this);
+    KJSO tmp(d); // protect from GC
     ((FunctionImp*)d)->setLength(1);
   }
 }

@@ -30,7 +30,7 @@ namespace KJS {
 
   class JSEventListener : public DOM::EventListener {
   public:
-    JSEventListener(KJSO _listener, Window *_win, bool _html = false);
+    JSEventListener(KJSO _listener, const KJSO &_win, bool _html = false);
     virtual ~JSEventListener();
     virtual void handleEvent(DOM::Event &evt);
     virtual DOM::DOMString eventListenerType();
@@ -38,7 +38,7 @@ namespace KJS {
   protected:
     KJSO listener;
     bool html;
-    Window *win;
+    KJSO win;
   };
 
   KJSO getNodeEventListener(DOM::Node n, int eventId);

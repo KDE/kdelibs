@@ -182,7 +182,7 @@ KJSO RegExpNode::evaluate()
 // ECMA 11.1.1
 KJSO ThisNode::evaluate()
 {
-  return KJSO(const_cast<Imp*>(Context::current()->thisValue()));
+  return Context::current()->thisValue();
 }
 
 // ECMA 11.1.2 & 10.1.4
@@ -1364,6 +1364,7 @@ void FuncDeclNode::processFuncDecl()
   const List *sc = Context::current()->pScopeChain();
   /* TODO: let this be an object with [[Class]] property "Function" */
   FunctionImp *fimp = new DeclaredFunctionImp(ident, body, sc);
+  Function func(fimp); // protect from GC
   fimp->put("prototype", Object::create(ObjectClass), DontDelete);
 
   int plen = 0;
@@ -1371,9 +1372,8 @@ void FuncDeclNode::processFuncDecl()
     fimp->addParameter(p->ident());
 
   fimp->setLength(plen);
-  Function f(fimp);
 
-  Context::current()->variableObject().put(ident, f);
+  Context::current()->variableObject().put(ident, func);
 }
 
 // ECMA 13
@@ -1381,13 +1381,14 @@ KJSO FuncExprNode::evaluate()
 {
   const List *sc = Context::current()->pScopeChain();
   FunctionImp *fimp = new DeclaredFunctionImp(UString::null, body, sc->copy());
+  Function ret(fimp);
 
   int plen = 0;
   for(ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
     fimp->addParameter(p->ident());
   fimp->setLength(plen);
 
-  return Function(fimp);
+  return ret;
 }
 
 ParameterNode* ParameterNode::append(const UString *i)

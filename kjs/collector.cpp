@@ -59,7 +59,8 @@ CollectorBlock::~CollectorBlock()
 
 CollectorBlock* Collector::root = 0L;
 CollectorBlock* Collector::currentBlock = 0L;
-int Collector::filled = 0;
+unsigned long Collector::filled = 0;
+unsigned long Collector::softLimit = KJS_MEM_INCREMENT;
 #ifdef KJS_DEBUG_MEM
 bool Collector::collecting = false;
 #endif
@@ -69,7 +70,18 @@ void* Collector::allocate(size_t s)
   if (s == 0)
     return 0L;
 
+  if (filled >= softLimit) {
+    collect();
+    if (filled >= softLimit && softLimit < KJS_MEM_LIMIT) // we are actually using all this memory
+      softLimit *= 2;
+  }
+
   void *m = malloc(s);
+
+  // hack to ensure obj is protected from GC before any constructors are run
+  // (prev = marked, next = gcallowed)
+  static_cast<Imp*>(m)->prev = 0;
+  static_cast<Imp*>(m)->next = 0;
 
   if (!root) {
     root = new CollectorBlock(BlockSize);
@@ -102,11 +114,9 @@ void* Collector::allocate(size_t s)
   filled++;
   block->filled++;
 
-#if KJS_MEM_LIMIT != -1
-  if (filled >= KJS_MEM_LIMIT) {
+  if (softLimit >= KJS_MEM_LIMIT) {
       KJScriptImp::setException("Out of memory");
   }
-#endif
 
   return m;
 }
@@ -116,10 +126,6 @@ void* Collector::allocate(size_t s)
  */
 void Collector::collect()
 {
-  if (KJScriptImp::running) {
-    printf("Refusing garbage collection while other interpreter runs.\n");    
-    return;
-  }
 #ifdef KJS_DEBUG_MEM
   printf("collecting %d objects total\n", Imp::count);
   collecting = true;
@@ -134,10 +140,12 @@ void Collector::collect()
     Imp **r = (Imp**)block->mem;
     assert(r);
     for (int i = 0; i < block->size; i++, r++)
-      if (*r)
-	(*r)->refcount = 0;
+      if (*r) {
+        (*r)->setMarked(false);
+      }
     block = block->next;
   }
+
   // ... increase counter for all referenced objects recursively
   // starting out from the set of root objects
   if (KJScriptImp::hook) {
@@ -148,13 +156,24 @@ void Collector::collect()
     } while (scr != KJScriptImp::hook);
   }
 
+  // mark any other objects that we wouldn't delete anyway
+  block = root;
+  while (block) {
+    Imp **r = (Imp**)block->mem;
+    assert(r);
+    for (int i = 0; i < block->size; i++, r++)
+      if (*r && ((*r)->refcount || !(*r)->gcAllowed()) && !(*r)->marked())
+        (*r)->mark();
+    block = block->next;
+  }
+
   // SWEEP: delete everything with a zero refcount (garbage)
   block = root;
   while (block) {
     Imp **r = (Imp**)block->mem;
     int del = 0;
     for (int i = 0; i < block->size; i++, r++) {
-      if (*r && ((*r)->refcount == 0)) {
+      if (*r && ((*r)->refcount == 0) && !(*r)->marked() && (*r)->gcAllowed()) {
 	// emulate 'operator delete()'
 	(*r)->~Imp();
 	free(*r);

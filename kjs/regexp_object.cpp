@@ -50,6 +50,7 @@ Object RegExpObject::construct(const List &args)
   UString flags = f.value();
 
   RegExpImp *dat = new RegExpImp();
+  Object obj(dat); // protect from GC
 
   bool global = (flags.find("g") >= 0);
   bool ignoreCase = (flags.find("i") >= 0);
@@ -64,7 +65,6 @@ Object RegExpObject::construct(const List &args)
   dat->put("lastIndex", 0, DontDelete | DontEnum);
 
   dat->setRegExp(new RegExp(p.value() /* TODO flags */));
-  Object obj(dat);
   obj.setClass(RegExpClass);
   obj.setPrototype(Global::current().get("[[RegExp.prototype]]"));
 

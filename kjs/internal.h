@@ -219,7 +219,6 @@ namespace KJS {
     Context(CodeType type = GlobalCode, Context *callingContext = 0L,
 	       FunctionImp *func = 0L, const List *args = 0L, Imp *thisV = 0L);
     virtual ~Context();
-    void mark();
     static Context *current();
     static void setCurrent(Context *c);
     const List *pScopeChain() const { return scopeChain; }
@@ -228,8 +227,8 @@ namespace KJS {
     List *copyOfChain();
     KJSO variableObject() const { return variable; }
     void setVariableObject( const KJSO &obj ) { variable = obj; }
-    Imp* thisValue() const { return thisVal.imp(); }
-    void setThisValue(Imp *t) { thisVal = t; }
+    KJSO thisValue() const { return thisVal; }
+    void setThisValue(const KJSO &t) { thisVal = t; }
     LabelStack *seenLabels() { return &ls; }
   private:
     LabelStack ls;
@@ -265,8 +264,6 @@ namespace KJS {
     ActivationImp(FunctionImp *f, const List *args);
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
-  private:
-    FunctionImp *func;
   };
 
   class ExecutionStack {
@@ -327,9 +324,9 @@ namespace KJS {
      * globally allocated memory.
      */
     void globalClear();
-    bool evaluate(const UChar *code, unsigned int length, Imp *thisV = 0,
+    bool evaluate(const UChar *code, unsigned int length, const KJSO &thisV = KJSO(),
 		  bool onlyCheckSyntax = false);
-    bool call(Imp *scope, const UString &func, const List &args);
+    bool call(const KJSO &scope, const UString &func, const List &args);
     bool call(const KJSO &func, const KJSO &thisV,
 	      const List &args, const List &extraScope);
 
