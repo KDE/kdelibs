@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2002 Apple Computer, Inc.
+ * Copyright (C) 2003 Dirk Mueller (mueller@kde.org)
  *
  * Portions are Copyright (C) 1998 Netscape Communications Corporation.
  *
@@ -36,10 +37,13 @@
 #define RENDERARENA_H
 
 #include "misc/arena.h"
+
 #include <stdlib.h>
 
-static const size_t gMaxRecycledSize = 400;
-#define ROUNDUP(x,y) ((((x)+((y)-1))/(y))*(y))
+namespace khtml {
+
+#define KHTML_MAX_RECYCLED_SIZE 400
+#define KHTML_ROUNDUP(x,y) ((((x)+((y)-1))/(y))*(y))
 
 class RenderArena {
 public:
@@ -56,8 +60,12 @@ private:
 
   // The recycler array is sparse with the indices being multiples of 4,
   // i.e., 0, 4, 8, 12, 16, 20, ...
-  void*       m_recyclers[gMaxRecycledSize >> 2];
+  void* m_recyclers[KHTML_MAX_RECYCLED_SIZE >> 2];
 };
+
+
+}; // namespace
+
 
 #endif
 
