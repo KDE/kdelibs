@@ -305,6 +305,7 @@ namespace KJS {
     KJScriptImp *next, *prev;
   private:
     static KJScriptImp *curr, *hook;
+    static int running;	// total number running
     bool initialized;
     Lexer *lex;
     Context *con;

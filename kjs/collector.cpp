@@ -116,6 +116,10 @@ void* Collector::allocate(size_t s)
  */
 void Collector::collect()
 {
+  if (KJScriptImp::running) {
+    printf("Refusing garbage collection while other interpreter runs.\n");    
+    return;
+  }
 #ifdef KJS_DEBUG_MEM
   printf("collecting %d objects total\n", Imp::count);
   collecting = true;

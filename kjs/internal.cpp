@@ -432,6 +432,7 @@ ActivationImp::ActivationImp(FunctionImp *f, const List *args)
 
 KJScriptImp* KJScriptImp::curr = 0L;
 KJScriptImp* KJScriptImp::hook = 0L;
+int          KJScriptImp::running = 0;
 
 KJScriptImp::KJScriptImp()
   : initialized(false),
@@ -582,10 +583,12 @@ bool KJScriptImp::evaluate(const UChar *code, unsigned int length, Imp *thisV,
     context->setVariableObject(thisV);
   }
 
+  running++;
   recursion++;
   assert(progNode);
   Completion res = progNode->execute();
   recursion--;
+  running--;
 
   if (hadException()) {
     KJSO err = exception();
