@@ -131,6 +131,23 @@ const ClassInfo EventConstructor::info = { "EventConstructor", 0, &EventConstruc
   CAPTURING_PHASE	DOM::Event::CAPTURING_PHASE	DontDelete|ReadOnly
   AT_TARGET		DOM::Event::AT_TARGET		DontDelete|ReadOnly
   BUBBLING_PHASE	DOM::Event::BUBBLING_PHASE	DontDelete|ReadOnly
+# Reverse-engineered from Netscape
+  MOUSEDOWN		1				DontDelete|ReadOnly
+  MOUSEUP		2				DontDelete|ReadOnly
+  MOUSEOVER		4				DontDelete|ReadOnly
+  MOUSEOUT		8				DontDelete|ReadOnly
+  MOUSEMOVE		16				DontDelete|ReadOnly
+  MOUSEDRAG		32				DontDelete|ReadOnly
+  CLICK			64				DontDelete|ReadOnly
+  DBLCLICK		128				DontDelete|ReadOnly
+  KEYDOWN		256				DontDelete|ReadOnly
+  KEYUP			512				DontDelete|ReadOnly
+  KEYPRESS		1024				DontDelete|ReadOnly
+  DRAGDROP		2048				DontDelete|ReadOnly
+  FOCUS			4096				DontDelete|ReadOnly
+  BLUR			8192				DontDelete|ReadOnly
+  SELECT		16384				DontDelete|ReadOnly
+  CHANGE		32768				DontDelete|ReadOnly
 @end
 */
 

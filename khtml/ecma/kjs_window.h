@@ -102,14 +102,14 @@ namespace KJS {
     QPtrList<JSEventListener> jsEventListeners;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Closed, Crypto, DefaultStatus, Status, Document, Node, Range,
+    enum { Closed, Crypto, DefaultStatus, Status, Document, Node, EventCtor, Range,
            NodeFilter, DOMException, Frames, _History, Event, InnerHeight,
            InnerWidth, Length, _Location, Name, _Navigator, _Konqueror,
            OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
            ScrollTo, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
            Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
-           Focus, Blur, Close, SetInterval, ClearInterval, Onabort, Onblur,
+           Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, Onabort, Onblur,
            Onchange, Onclick, Ondblclick, Ondragdrop, Onerror, Onfocus,
            Onkeydown, Onkeypress, Onkeyup, Onload, Onmousedown, Onmousemove,
            Onmouseout, Onmouseover, Onmouseup, Onmove, Onreset, Onresize,

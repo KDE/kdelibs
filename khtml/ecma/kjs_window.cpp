@@ -159,6 +159,7 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   status	Window::Status		DontDelete
   document	Window::Document	DontDelete|ReadOnly
   Node		Window::Node		DontDelete
+  Event		Window::EventCtor	DontDelete
   Range		Window::Range		DontDelete
   NodeFilter	Window::NodeFilter	DontDelete
   DOMException	Window::DOMException	DontDelete
@@ -207,6 +208,8 @@ const ClassInfo Window::info = { "Window", 0, &WindowTable, 0 };
   close		Window::Close		DontDelete|Function 0
   setInterval	Window::SetInterval	DontDelete|Function 2
   clearInterval	Window::ClearInterval	DontDelete|Function 1
+  captureEvents	Window::CaptureEvents	DontDelete|Function 0
+# Warning, when adding a function to this object you need to add a case in Window::get
   onabort	Window::Onabort		DontDelete
   onblur	Window::Onblur		DontDelete
   onchange	Window::Onchange	DontDelete
@@ -374,6 +377,8 @@ Value Window::get(ExecState *exec, const UString &p) const
       return getNodeFilterConstructor(exec);
     case DOMException:
       return getDOMExceptionConstructor(exec);
+    case EventCtor:
+      return getEventConstructor(exec);
     case Frames:
       return Value(frames ? frames :
                    (const_cast<Window*>(this)->frames = new FrameArray(m_part)));
@@ -469,6 +474,7 @@ Value Window::get(ExecState *exec, const UString &p) const
     case MoveTo:
     case ResizeBy:
     case ResizeTo:
+    case CaptureEvents:
       return lookupOrCreateFunction<WindowFunc>(exec,p,this,entry->value,entry->params,entry->attr);
     case SetTimeout:
     case ClearTimeout:
@@ -1201,6 +1207,9 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
       (const_cast<Window*>(window))->scheduleClose();
     }
     return Undefined();
+  case Window::CaptureEvents:
+    // Do nothing. This is a NS-specific call that isn't needed in Konqueror.
+    break;
   }
   return Undefined();
 }

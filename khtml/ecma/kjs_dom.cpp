@@ -1401,6 +1401,8 @@ Object KJS::getDOMExceptionConstructor(ExecState *exec)
   return cacheGlobalObject<DOMExceptionConstructor>(exec, "[[DOMException.constructor]]");
 }
 
+// -------------------------------------------------------------------------
+
 // Such a collection is usually very short-lived, it only exists
 // for constructs like document.forms.<name>[1],
 // so it shouldn't be a problem that it's storing all the nodes (with the same name). (David)
