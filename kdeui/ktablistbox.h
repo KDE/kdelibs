@@ -47,6 +47,8 @@ typedef QDict<QPixmap> KTabListBoxDict;
 /**
 * Provides a different type of Check button.
 * 
+* @internal
+* @deprecated
 */
 class KNumCheckButton : public QWidget
 {
@@ -79,6 +81,11 @@ protected:
 
 //--------------------------------------------------
 #define KTabListBoxTableInherited QTableView
+
+/**
+ * @internal
+ * @deprecated
+ */
 class KTabListBoxTable: public QTableView
 {
   Q_OBJECT
@@ -120,6 +127,7 @@ protected:
  *  - Configurable vertical column divisor lines. 
  *  - Save all setting to config file.
  *  - fix flickering into column headers.
+ *  @deprecated
  */
 class KTabListBox : public QWidget
 {
@@ -427,6 +435,10 @@ private:
 
 
 //--------------------------------------------------
+/**
+ * @internal
+ * @deprecated
+ */
 class KTabListBoxItem
 {
 public:
@@ -457,6 +469,11 @@ typedef KTabListBoxItem* KTabListBoxItemPtr;
 
 
 //--------------------------------------------------
+
+/**
+ * @internal
+ * @deprecated
+ */
 class KTabListBoxColumn: public QObject
 {
   Q_OBJECT

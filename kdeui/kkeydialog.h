@@ -163,6 +163,9 @@ protected:
  *	      ...
  * }
  * </pre>
+ * @short Dialog for configuration of @ref KAccel and @ref KGlobalAccel.
+ * @version $Id$
+ * @author Nicolas Hadacek <hadacek@via.ecp.fr>
  */
 class KKeyDialog : public KDialogBase
 {
@@ -194,6 +197,11 @@ private:
  * The class takes care of all aspects of configuration, including handling key
  * conflicts internally. Connect to the allDefault slot if you want to set all
  * configurable keybindings to their default values.
+ * @short Widget for configuration of @ref KAccel and @ref KGlobalAccel.
+ * @see KKeyDialog
+ * @version $Id$
+ * @author Nicolas Hadacek <hadacek@via.ecp.fr>
+
  */
 class KKeyChooser : public QWidget
 {

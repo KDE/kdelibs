@@ -18,8 +18,9 @@
  * needs to be deleted manually ( it is basically a just a KTMainWindow( "name", 0 ); )
  *
  *
+ * @deprecated
  * @see KTMainWindow
- * @short Old KDE top level window
+ * @short Old KDE top level window, use @ref KTMainWindow instead.
  * @author Stephan Kulow (coolo@kde.org), was maintained by Sven Radej (radej@kde.org)
  */
 

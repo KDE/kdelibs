@@ -20,6 +20,10 @@
 
 //$Id$
 //$Log$
+//Revision 1.29  1999/10/29 14:28:03  mosfet
+//Fix for KStyle menubar active items to work correctly with the latest Qt CVS.
+//Should be fine with older ones too ;-)
+//
 //Revision 1.28  1999/10/10 08:18:57  bero
 //Code cleanup ((void) stuff)
 //
@@ -76,8 +80,15 @@
 
 class KToolBoxManager;
 
-// Internal menubar class with a reimplemented drawContents for KStyle, since
-// QMenubar is not included in QStyle (mosfet).
+/**
+ * Internal Style-able menubar.
+ *
+ * This is required since @ref QMenuBar is currently not handled by 
+ * @ref QStyle.
+ * @internal
+ * @author Daniel "Mosfet" Duley.
+ * @version $Id$
+*/
 class KStyleMenuBarInternal : public QMenuBar
 {
 public:

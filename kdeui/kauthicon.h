@@ -74,9 +74,8 @@ protected:
   QString openLockText;
 };
 
-/* 
- * KRootPermsIcon tells whether or not root permissions are in effect.
- *
+/**
+ * Icon to show whether or not a user has root permissions.
  * @see KAuthIcon
  * @author Preston Brown <pbrown@kde.org>
  */
@@ -100,9 +99,8 @@ protected:
   bool root;
 };
 
-/* 
- * KWritePermsIcon tells whether or not write permissions are in effect
- * for a particular file or directory.
+/** 
+ * Auth icon for write permission display.
  *
  * @see KAuthIcon
  * @author Preston Brown <pbrown@kde.org>
