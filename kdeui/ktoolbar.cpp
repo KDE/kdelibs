@@ -44,7 +44,7 @@
 #include <kwm.h>
 #include <ktoolboxmgr.h>
 #include <kstyle.h>
-#include <kpopmenu.h>
+#include <kpopupmenu.h>
 #include <kanimwidget.h>
 #include <kipc.h>
 

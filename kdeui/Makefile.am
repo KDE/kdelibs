@@ -35,7 +35,7 @@ picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png keys.png
 
 include_HEADERS = kprogress.h kcolordlg.h kselect.h \
-		kdatepik.h kdatetbl.h kfontdialog.h kpopmenu.h \
+		kdatepik.h kdatetbl.h kfontdialog.h kpopupmenu.h \
 		ktabctl.h kstatusbar.h kimageeffect.h \
 		ktmainwindow.h ktmlayout.h ktoolbar.h kmenubar.h \
 		knuminput.h kseparator.h klineedit.h \
@@ -63,7 +63,7 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		ktoolbar.cpp klineedit.cpp kprogress.cpp kimageeffect.cpp \
 		kcolordlg.cpp kselect.cpp kdatepik.cpp kdatetbl.cpp \
-		kfontdialog.cpp kpopmenu.cpp ktabctl.cpp \
+		kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
 		kstatusbar.cpp ktmainwindow.cpp \
 		ktmlayout.cpp kmenubar.cpp \
 		kseparator.cpp krestrictedline.cpp  \

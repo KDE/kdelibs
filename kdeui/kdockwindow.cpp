@@ -18,7 +18,7 @@
     Boston, MA 02111-1307, USA.
 */
 #include "kdockwindow.h"
-#include "kpopmenu.h"
+#include "kpopupmenu.h"
 #include "kapp.h"
 #include "klocale.h"
 #include <kwin.h>
