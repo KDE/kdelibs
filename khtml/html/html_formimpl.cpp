@@ -1655,10 +1655,7 @@ bool HTMLSelectElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
             HTMLOptionElementImpl *option = static_cast<HTMLOptionElementImpl*>(m_listItems[i]);
             if (option->selected()) {
                 encoded_values += enc_name;
-                if (option->value().isNull())
-                    encoded_values += fixUpfromUnicode(codec, option->text().string().stripWhiteSpace());
-                else
-                    encoded_values += fixUpfromUnicode(codec, option->value().string());
+                encoded_values += fixUpfromUnicode(codec, option->value().string());
                 successful = true;
             }
         }
@@ -1880,7 +1877,7 @@ ushort HTMLOptionElementImpl::id() const
     return ID_OPTION;
 }
 
-DOMString HTMLOptionElementImpl::text()
+DOMString HTMLOptionElementImpl::text() const
 {
     DOMString label = getAttribute(ATTR_LABEL);
     if (label.isEmpty() && firstChild() && firstChild()->nodeType() == Node::TEXT_NODE) {
@@ -1925,6 +1922,14 @@ void HTMLOptionElementImpl::parseAttribute(AttrImpl *attr)
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
     }
+}
+
+DOMString HTMLOptionElementImpl::value() const
+{
+    if ( !m_value.isEmpty() )
+        return m_value;
+    // Use the text if the value wasn't set.
+    return text().string().stripWhiteSpace();
 }
 
 void HTMLOptionElementImpl::setSelected(bool _selected)

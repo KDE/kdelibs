@@ -451,12 +451,12 @@ public:
     virtual const DOMString nodeName() const;
     virtual ushort id() const;
 
-    DOMString text();
+    DOMString text() const;
 
     long index() const;
     void setIndex( long );
     virtual void parseAttribute(AttrImpl *attr);
-    DOMString value() const { return m_value; }
+    DOMString value() const;
 
     bool selected() const { return m_selected; }
     void setSelected(bool _selected);
