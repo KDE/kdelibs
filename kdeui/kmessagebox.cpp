@@ -101,9 +101,11 @@ static void sendNotification( QString message,
         case QMessageBox::Critical:
             messageType = "messageCritical";
             break;
+#if QT_VERSION >= 0x030200
         case QMessageBox::Question:
             messageType = "messageQuestion";
             break;
+#endif
         default:
             messageType = "messageInformation";
             break;
