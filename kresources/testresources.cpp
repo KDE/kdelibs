@@ -49,7 +49,7 @@ int main( int argc, char **argv )
   manager.add( resource3 );
 
   kdDebug() << "LIST ALL:" << endl;
-  ResourceManager<TestResource>::Iterator it;
+  Manager<TestResource>::Iterator it;
   for( it = manager.begin(); it != manager.end(); ++it ) {
     (*it)->dump();
   }
@@ -58,7 +58,7 @@ int main( int argc, char **argv )
   resource3->setActive( true );
   
   kdDebug() << "LIST ACTIVE" << endl;
-  ResourceManager<TestResource>::ActiveIterator it2;
+  Manager<TestResource>::ActiveIterator it2;
   for( it2 = manager.activeBegin(); it2 != manager.activeEnd(); ++it2 ) {
     (*it2)->dump();
   }

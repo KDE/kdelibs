@@ -31,7 +31,7 @@ kresinclude_HEADERS = resource.h \
 check_PROGRAMS = testresources
 
 testresources_LDFLAGS = $(all_libraries) $(KDE_RPATH)
-testresources_LDADD   = libkderesources.la
+testresources_LDADD   = libkresources.la
 testresources_SOURCES = testresources.cpp
 
 servicetypedir = $(kde_servicetypesdir)
