@@ -609,7 +609,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	++current;
     }
 
-#ifdef BIDI_DEBUG
+#if BIDI_DEBUG > 0
     kdDebug(6041) << "reached end of paragraph current=" << current.pos << ", eor=" << eor.pos << endl;
 #endif
     eor = current;
@@ -643,7 +643,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
     // reversing is only done up to the lowest odd level
     if(!levelLow%2) levelLow++;
 
-#ifdef BIDI_DEBUG
+#if BIDI_DEBUG > 0
     kdDebug(6041) << "reorderLine: lineLow = " << (uint)levelLow << ", lineHigh = " << (uint)levelHigh << endl;
     kdDebug(6041) << "logical order is:" << endl;
     QListIterator<BidiRun> it2(runs);
@@ -681,7 +681,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
 	levelHigh--;
     }
 
-#ifdef BIDI_DEBUG
+#if BIDI_DEBUG > 0
     kdDebug(6041) << "visual order is:" << endl;
     QListIterator<BidiRun> it3(runs);
     BidiRun *r3;
@@ -843,7 +843,7 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    return current;
 	} else if( o->isText() )
 	    tmpW += static_cast<RenderText *>(o)->width(current.pos, 1);
-	if( !o->isSpecial() ) 
+	if( !o->isSpecial() )
 	    tmpW += o->width();
 	if( w + tmpW > width ) {
 	    // if we have floats, try to get below them.
@@ -851,10 +851,11 @@ BidiIterator RenderFlow::findNextLineBreak(const BidiIterator &start)
 	    if(!w && m_height < fb) {
 		m_height = fb;
 		width = lineWidth(m_height);
-	    } else if( current != start ) {
+	    } else if( !w && current != start ) {
 		//kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
 		return last;
-	    }
+	    } else
+		return lBreak;
 	}
 	last = current;
 	++current;

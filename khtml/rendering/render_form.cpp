@@ -310,7 +310,7 @@ RenderImageButton::~RenderImageButton()
 
 void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
-    kdDebug( 0 ) << "RenderImageButton::setImageURL" << endl;
+    //kdDebug( 0 ) << "RenderImageButton::setImageURL" << endl;
     if(image) image->deref(this);
     image = docLoader->requestImage(url, baseUrl);
     image->ref(this);
@@ -318,7 +318,7 @@ void RenderImageButton::setImageUrl(DOMString url, DOMString baseUrl, DocLoader 
 
 void RenderImageButton::setPixmap( const QPixmap &p, CachedObject *, bool *manualUpdate )
 {
-    kdDebug( 0 ) << "RenderImageButton::setPixmap" << endl;
+    //kdDebug( 0 ) << "RenderImageButton::setPixmap" << endl;
     static_cast<QPushButton *>(m_widget)->setPixmap(p);
     // Image dimensions have been changed, recalculate layout
 
