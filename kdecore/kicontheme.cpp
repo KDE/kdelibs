@@ -165,10 +165,11 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
     groups += "Toolbar";
     groups += "MainToolbar";
     groups += "Small";
+    int defDefSizes[] = { 32, 22, 22, 16 };
     cfg.setGroup("KDE Icon Theme");
     for (it=groups.begin(), i=0; it!=groups.end(); it++, i++)
     {
-        mDefSize[i] = cfg.readNumEntry(*it + "Default", 32);
+        mDefSize[i] = cfg.readNumEntry(*it + "Default", defDefSizes[i]);
         QValueList<int> lst = cfg.readIntListEntry(*it + "Sizes"), exp;
         QValueList<int>::ConstIterator it2;
         for (it2=lst.begin(); it2!=lst.end(); it2++)
