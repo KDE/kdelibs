@@ -20,7 +20,7 @@
 
 INCLUDES = -I../kdeui -I../kdecore $(QT_INCLUDES) $(X_INCLUDES)
 
-LDADD = ../kdecore/libkdecore.la ../kdeui/libkdeui.la $(QT_LDFLAGS) -lqt $(X_LDFLAGS) -lXext -lX11
+LDADD = -lkdeui -L$(topdir)/kdecore/.libs -lkdecore -L$(topdir)/kdeui/.libs $(QT_LDFLAGS) -lqt $(X_LDFLAGS) -lXext -lX11
 
 DISTCLEANFILES = $(BUILT_SOURCES)
 
