@@ -51,7 +51,7 @@ KStatusBarLabel::KStatusBarLabel( const QString& text, int _id,
   // StyledPanel|Something you get QFrame to call QStyle::drawPanel().
   
   setLineWidth  (0);
-  setFrameStyle (QFrame::NoFrame | QFrame::Plain );
+  setFrameStyle (QFrame::NoFrame);
   
   setAlignment( AlignHCenter | AlignVCenter );
 
