@@ -50,11 +50,11 @@
 
 (define (kde-gentext-logo-alt)
   (case ($lang$)
-    <!-- <![%kde-l10n-ca[ (("ca") %kde-gentext-ca-logo-alt%) ]]> -->
-    <!-- <![%kde-l10n-cs[ (("cs") %kde-gentext-cs-logo-alt%) ]]> -->
+    <![%kde-l10n-ca[ (("ca") %kde-gentext-ca-logo-alt%) ]]>
+    <![%kde-l10n-cs[ (("cs") %kde-gentext-cs-logo-alt%) ]]>
     <![%kde-l10n-da[ (("da") %kde-gentext-da-logo-alt%) ]]>
     <![%kde-l10n-de[ (("de") %kde-gentext-de-logo-alt%) ]]>
-    <!-- <![%kde-l10n-el[ (("el") %kde-gentext-el-logo-alt%) ]]> -->
+    <![%kde-l10n-el[ (("el") %kde-gentext-el-logo-alt%) ]]>
     <![%kde-l10n-en[ (("en") %kde-gentext-en-logo-alt%) ]]>
     <![%kde-l10n-es[ (("es") %kde-gentext-es-logo-alt%) ]]>
     <![%kde-l10n-et[ (("et") %kde-gentext-et-logo-alt%) ]]>
@@ -70,9 +70,9 @@
     <![%kde-l10n-ptbr[ (("pt_br") %kde-gentext-ptbr-logo-alt%) ]]>
     <![%kde-l10n-ro[ (("ro") %kde-gentext-ro-logo-alt%) ]]>
     <![%kde-l10n-ru[ (("ru") %kde-gentext-ru-logo-alt%) ]]>
-    <!-- <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-logo-alt%) ]]> -->
+    <![%kde-l10n-sk[ (("sk") %kde-gentext-sk-logo-alt%) ]]>
     <![%kde-l10n-sl[ (("sl") %kde-gentext-sl-logo-alt%) ]]>
-    <!-- <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-logo-alt%) ]]> -->
+    <![%kde-l10n-sr[ (("sr") %kde-gentext-sr-logo-alt%) ]]>
     <![%kde-l10n-sv[ (("sv") %kde-gentext-sv-logo-alt%) ]]>
     <![%kde-l10n-zhcn[ (("zh-cn") %kde-gentext-zhcn-logo-alt%) ]]>
     (else (error "L10N ERROR: kde-gentext-logo-alt: no localised version"))))
