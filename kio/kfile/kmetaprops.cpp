@@ -162,14 +162,21 @@ void KFileMetaPropsPlugin::createLayout()
         QString valClass;
         bool editable = file_info.isWritable() && item.isEditable();
         
-        switch (item.value().type())
+        if (!editable)
         {
-            // if you change something here, you need to also change also
-            // slotAdd() and applyChanges()        
-            case QVariant::Bool : w = makeBoolWidget  (item, d->m_frame, editable); break;
-            case QVariant::Int  : w = makeIntWidget   (item, d->m_frame, valClass, editable); break;
-            case QVariant::DateTime  : w = makeDateTimeWidget (item, d->m_frame, valClass, editable); break;
-            default             : w = makeStringWidget(item, d->m_frame, valClass, editable); break;
+            w = new QLabel(item.string(), d->m_frame);
+        }
+        else
+        {
+            switch (item.value().type())
+            {
+                // if you change something here, you need to also change also
+                // slotAdd() and applyChanges()        
+                case QVariant::Bool : w = makeBoolWidget  (item, d->m_frame); break;
+                case QVariant::Int  : w = makeIntWidget   (item, d->m_frame, valClass); break;
+                case QVariant::DateTime  : w = makeDateTimeWidget (item, d->m_frame, valClass); break;
+                default             : w = makeStringWidget(item, d->m_frame, valClass); break;
+            }
         }
       
         if (w)
@@ -261,11 +268,8 @@ void KFileMetaPropsPlugin::createLayout()
 }*/
 
 QWidget* KFileMetaPropsPlugin::makeBoolWidget(const KFileMetaInfoItem& item,
-                                              QWidget* parent, bool editable)
+                                              QWidget* parent)
 {
-  if (!editable)
-    return new QLabel(item.value().toBool() ? i18n("Yes") : i18n("No"), parent);
-
   QCheckBox* c = new QCheckBox(parent);
   c->setChecked(item.value().toBool());
   connect(c, SIGNAL(toggled(bool)), this, SIGNAL(changed()));
@@ -273,10 +277,8 @@ QWidget* KFileMetaPropsPlugin::makeBoolWidget(const KFileMetaInfoItem& item,
 }
 
 QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item, 
-                                             QWidget* parent, QString& valClass, bool editable)
+                                             QWidget* parent, QString& valClass)
 {
-  if (!editable) return new QLabel(item.prefix() + item.value().toString() + item.suffix(), parent);
-  
   QSpinBox* sb = new QSpinBox(parent);
   sb->setValue(item.value().toInt());
 
@@ -305,22 +307,14 @@ QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item,
 }            
 
 QWidget* KFileMetaPropsPlugin::makeDateTimeWidget(const KFileMetaInfoItem& item, 
-                                             QWidget* parent, QString& /*valClass*/, bool editable)
+                                             QWidget* parent, QString& /*valClass*/)
 {
-  QDateTime datetime = item.value().toDateTime();
-  
-  if (!editable) return new QLabel(item.prefix() + 
-                                   KGlobal::locale()->formatDateTime( datetime, true, true ) +
-                                   item.suffix(), parent);
-  
-  return new QDateTimeEdit(datetime, parent);
+  return new QDateTimeEdit(item.value().toDateTime(), parent);
 }
 
 QWidget* KFileMetaPropsPlugin::makeStringWidget(const KFileMetaInfoItem& item, 
-                                              QWidget* parent, QString& valClass, bool editable)
+                                              QWidget* parent, QString& valClass)
 {
-  if (!editable) return new QLabel(item.prefix() + item.value().toString() + item.suffix(), parent);
-
   QValidator* validator = d->m_info.createValidator(item.key(), 0, 0);
   valClass = validator->className();
   
