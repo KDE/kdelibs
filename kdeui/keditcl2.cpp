@@ -28,6 +28,7 @@
 #include <qvbuttongroup.h>
 #include <qcheckbox.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 #include <qhbox.h>
 
 #include <kapplication.h>
