@@ -32,17 +32,6 @@
 #include <kicontheme.h>
 #include "kiconeffect.h"
 
-// Added 10/2000 George Staikos <staikos@kde.org>
-//    - Please obey the autoconf settings!!  We need this for Sol 2.5.1
-
-// This is obtained from fakes.cpp
-#ifndef HAVE_USLEEP
-  extern "C" {
-    void usleep(unsigned int usec);
-  }
-#endif
-
-
 KIconEffect::KIconEffect()
 {
     init();
