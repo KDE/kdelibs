@@ -40,19 +40,19 @@ foreach $cert (sort(keys(%CERT))) {
     print BDL "x509=$pem\n";
     #
     $_ = $purpose;
-    if ( /server CA : Yes/ || /client CA : Yes/) {
+    if ( /server CA : Yes\n/ || /client CA : Yes\n/ || (/Any Purpose CA : Yes\n/ && (/client : Yes\n/ || /server : Yes\n/ ))) {
        print BDL "site=true\n";
     } else {
        print BDL "site=false\n";
     }
     #
-    if ( /MIME signing CA : Yes/ || /MIME encryption CA : Yes/) {
+    if ( /MIME signing CA : Yes\n/ || /MIME encryption CA : Yes\n/ ) {
        print BDL "email=true\n";
     } else {
        print BDL "email=false\n";
     }
     #
-    if ( /Any Purpose CA : Yes/ && $codeSubj == 1) {
+    if ( /Any Purpose CA : Yes\n/ && $codeSubj == 1) {
        print BDL "code=true\n";
     } else {
        print BDL "code=false\n";
