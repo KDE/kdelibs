@@ -854,20 +854,40 @@ void RegressionTest::doFailureReport( const QSize& baseSize, const QSize& outSiz
                   "pics[0].src = '%1';\n"
                   "pics[1]=new Image();\n"
                   "pics[1].src = '%2';\n"
+                  "var doflicker = 1;\n"
                   "var t = 1;\n"
+                  "var lastb=0;\n"
+                  "function show() { document.getElementById('image').src = pics[t].src; }\n"
                   "function runSlideShow(){\n"
-                  "   document.getElementById('image').src = pics[t].src;\n"
-                  "   t = 1 - t;\n"
+                  "   show()\n"
+                  "   if (doflicker)\n"
+                  "       t = 1 - t;\n"
                   "   setTimeout('runSlideShow()', 200);\n"
                   "}\n"
+                  "function m(b) { document.getElementById('b'+b).className='buttondown';\n"
+                  "                var e = document.getElementById('b'+lastb);"
+                  "                 if(e) e.className='button';"
+                  "                 lastb = b;"
+                  "}"
                   "</script>\n")
          .arg( relpath+"/baseline/"+test+"-dump.png" )
          .arg( relpath+"/output/"+test+"-dump.png" );
+    cl += QString ("<style>\n"
+                   ".buttondown { cursor: pointer; padding: 0px 20px; color: white; background-color: blue; border: inset blue 2px;}\n"
+                   ".button { padding: 0px 20px; color: black; background-color: white; border: outset blue 2px;}\n"
 
-    cl += QString( "<body onload=\"runSlideShow();\" text=black bgcolor=gray>"
-                       "<img width='%3' height='%4' src=\"%1\" id='image'></html>" )
+                   "</style>\n" );
+
+    cl += QString( "<body onload=\"m(1); runSlideShow();\" text=black bgcolor=gray>"
+                   "<span id=b1 class=buttondown onclick=doflicker=1;show();m(1)>FLICKER</span>&nbsp;"
+                   "<span id=b2 class=button onclick=doflicker=0;t=0;show();m(2)>BASE</span>&nbsp;"
+                   "<span id=b3 class=button onclick=doflicker=0;t=1;show();m(3)>OUT</span>&nbsp;"
+                   "<a class=button href=\"%5\">HTML</a>&nbsp;"
+                   "<hr>"
+                   "<img width='%3' height='%4' src=\"%1\" id='image'></html>" )
          .arg( relpath+"/baseline/"+test+"-dump.png" )
-         .arg( baseSize.width() ).arg( baseSize.height() );
+         .arg( baseSize.width() ).arg( baseSize.height() )
+         .arg( relpath+"/tests/"+test );
 
     compare.writeBlock( cl.latin1(), cl.length() );
     compare.close();
