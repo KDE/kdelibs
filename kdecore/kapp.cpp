@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.113  1998/10/12 00:17:09  ettrich
+// Matthias: automatic removal of session management temp-files
+//
 // Revision 1.112  1998/09/28 07:54:23  garbanzo
 // Remove some unneeded/unused kdebug gunk.
 //
@@ -750,6 +753,11 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		  if( bSuccess ){
 			aConfigFile.close();
 			pSessionConfig = new KConfig(0L, aSessionConfigName);
+			
+			// do not write back. the application will get
+			// a new one if demanded.
+			pSessionConfig->rollback(); 
+			
 			if (pSessionConfig){
 			  bIsRestored = True;
 			}
@@ -831,7 +839,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 				bIsRestored = false;
 			    }
 				
-			    
+			
 			  if (!topWidget() ||
 			      cme->window != topWidget()->winId()){
 			    KWM::setWmCommand(cme->window, "");
