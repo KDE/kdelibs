@@ -30,8 +30,11 @@
 #include <qfile.h>
 #include <qtimer.h>
 
+#include <dcopclient.h>
+
 #include <kuniqueapp.h>
 #include <kcmdlineargs.h>
+#include <kaboutdata.h>
 #include <klocale.h>
 #include <kglobal.h>
 #include <kdebug.h>
@@ -188,21 +191,29 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char *argv[])
 {
-     KCmdLineArgs::init(argc, argv, "kded", 
+     KAboutData aboutData( "kded", 
         I18N_NOOP("KDE Daemon - triggers Sycoca database updates when needed."),
         "$Id$");
 
+     KCmdLineArgs::init(argc, argv, &aboutData);
+
+     KUniqueApplication::addCmdLineOptions();
+
      KCmdLineArgs::addCmdLineOptions( options );
 
-     if (!KUniqueApplication::start())
-     {
-        fprintf(stderr, "KDED already running!\n");
-        exit(0);
-     }
-     KUniqueApplication k( false, false ); // No styles, no GUI
+     new KInstance(&aboutData);
 
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
      bool check = args->isSet("check");
+
+     if (!check)
+     {
+        if (!KUniqueApplication::start())
+        {
+           fprintf(stderr, "KDE Daemon (kded) already running.\n");
+           exit(0);
+        }
+     }
 
      Kded *kded = new Kded(false); // Build data base
 
@@ -211,10 +222,9 @@ int main(int argc, char *argv[])
         kded->recreate();
 
      if (check)
-     {
-        k.processEvents();
         return 0;
-     }
+
+     KUniqueApplication k( false, false ); // No styles, no GUI
 
      return k.exec(); // keep running
 }
