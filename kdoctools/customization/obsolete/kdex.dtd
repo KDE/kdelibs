@@ -101,7 +101,7 @@
 
 <!ENTITY % kde.modifications PUBLIC
   "-//KDE//ELEMENTS DocBook XML Modifications V1.0//EN"
-  "../dtd/modifications.elements"                                    >
+  "modifications.elements"                                    >
 %kde.modifications;
 
 

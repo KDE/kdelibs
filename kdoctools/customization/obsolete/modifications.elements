@@ -1,0 +1,46 @@
+<!-- ONLY to supply declarations that were switched off earlier 
+     Take care to make it only _more_ restrictive.  -->
+
+<!-- One modification: BookInfo is compulsory, because
+     it contains ReleaseInfo, which is compulsory -->
+<!ELEMENT book ((%div.title.content;)?, bookinfo,
+ 		(dedication | toc | lot
+ 		| glossary | bibliography | preface
+		| %chapter.class; | reference | part
+		| %article.class;
+ 		| %appendix.class;
+		| %index.class;
+		| colophon)*)>
+
+<!-- Modification: ReleaseInfo, Date, Abstract and Keywordset are
+     compulsory.  Not all orders that could be valid are allowed (the
+     number increases factorial).  The current restrictions are quite
+     strict, and it is foreseen that they will be relaxed.  Date and 
+     ReleaseInfo must come together, as must Abstract and Keywordset.
+     Abstract and Keywordset must follow Date and ReleaseInfo when they
+     are used the first time.
+-->
+<!ELEMENT bookinfo ((graphic | mediaobject | legalnotice
+		        | modespec | subjectset | itermset
+		        | %kde.bibliocomponent.mix; )*,
+		        ((date, releaseinfo) | (releaseinfo, date)),
+                        (graphic | mediaobject | legalnotice
+			| modespec | subjectset
+			| itermset | %kde.bibliocomponent.mix;
+			)*,
+                        ((abstract, keywordset) | (keywordset, abstract)),
+		       (graphic | mediaobject | legalnotice | modespec 
+		       | subjectset | itermset
+		       | %bibliocomponent.mix; | keywordset)*)>
+
+<!-- value of Type changed from IMPLIED CDATA
+     default value of LinkMode set from #IMPLIED to kdems-default -->
+<!ATTLIST olink
+		targetdocent	ENTITY 		#IMPLIED
+		linkmode	IDREF		"kdems-default"
+		localinfo 	CDATA		#IMPLIED
+		type		(href|other)	"href"
+		%common.attrib;
+		%olink.role.attrib;
+		%local.olink.attrib;
+>
