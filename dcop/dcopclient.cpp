@@ -386,7 +386,7 @@ static void DCOPProcessMessage(IceConn iceConn, IcePointer clientObject,
             Q_INT32 id;
 
             ds >> calledApp >> app >> id;
-            if (replyStruct && (id == replyStruct->transactionId) && (calledApp = replyStruct->calledApp))
+            if (replyStruct && (id == replyStruct->transactionId) && (calledApp == replyStruct->calledApp))
             {
                 *replyWaitRet = True;
             }
