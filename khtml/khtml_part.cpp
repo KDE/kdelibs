@@ -237,6 +237,7 @@ namespace khtml {
     };
 };
 
+
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name )
 : KParts::ReadOnlyPart( parent ? parent : parentWidget, name ? name : widgetname )
 {
@@ -512,6 +513,18 @@ void KHTMLPart::clear()
   d->m_bCleared = true;
 
   d->m_bClearing = true;
+
+  {
+    QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
+    QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+    for(; it != end; ++it )
+    {
+      // Stop HTMLRun jobs.
+      if ( it.data().m_run )
+        delete it.data().m_run;
+    }
+  }
+
   if ( d->m_doc )
   {
     kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing the document" << endl;
@@ -530,16 +543,20 @@ void KHTMLPart::clear()
 
   if ( d->m_view )
     d->m_view->clear();
-  /*
-  QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
-  QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
-  for(; it != end; ++it )
-    if ( it.data().m_part )
+
+  {
+    QMap<QString,khtml::ChildFrame>::ConstIterator it = d->m_frames.begin();
+    QMap<QString,khtml::ChildFrame>::ConstIterator end = d->m_frames.end();
+    for(; it != end; ++it )
     {
-      partManager()->removePart( it.data().m_part );
-      delete (KParts::ReadOnlyPart *)it.data().m_part;
+      if ( it.data().m_part )
+      {
+        partManager()->removePart( it.data().m_part );
+        delete (KParts::ReadOnlyPart *)it.data().m_part;
+      }
     }
-  */
+  }
+
   d->m_frames.clear();
   d->m_objects.clear();
 
@@ -1246,6 +1263,8 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
       hasTarget = true;
 
   KURL cURL = completeURL( url );
+
+  kdDebug( 6000 ) << "complete URL:" << cURL.url() << " target = " << target << endl;
 
   if ( button == LeftButton && ( state & ShiftButton ) && !cURL.isMalformed() )
   {
