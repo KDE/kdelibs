@@ -418,22 +418,26 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
 
 /*
 @begin DOMMouseEventTable 2
-  screenX	DOMMouseEvent::ScreenX	DontDelete|ReadOnly
-  screenY	DOMMouseEvent::ScreenY	DontDelete|ReadOnly
+  altKey	DOMMouseEvent::AltKey	DontDelete|ReadOnly
+  button	DOMMouseEvent::Button	DontDelete|ReadOnly
   clientX	DOMMouseEvent::ClientX	DontDelete|ReadOnly
-  x		DOMMouseEvent::X	DontDelete|ReadOnly
   clientY	DOMMouseEvent::ClientY	DontDelete|ReadOnly
-  y		DOMMouseEvent::Y	DontDelete|ReadOnly
+  ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
+  fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
+  layerX        DOMMouseEvent::LayerX   DontDelete|ReadOnly
+  layerY        DOMMouseEvent::LayerY   DontDelete|ReadOnly
+  metaKey	DOMMouseEvent::MetaKey	DontDelete|ReadOnly
   offsetX	DOMMouseEvent::OffsetX	DontDelete|ReadOnly
   offsetY	DOMMouseEvent::OffsetY	DontDelete|ReadOnly
-  ctrlKey	DOMMouseEvent::CtrlKey	DontDelete|ReadOnly
-  shiftKey	DOMMouseEvent::ShiftKey	DontDelete|ReadOnly
-  altKey	DOMMouseEvent::AltKey	DontDelete|ReadOnly
-  metaKey	DOMMouseEvent::MetaKey	DontDelete|ReadOnly
-  button	DOMMouseEvent::Button	DontDelete|ReadOnly
+  pageX         DOMMouseEvent::PageX    DontDelete|ReadOnly
+  pageY         DOMMouseEvent::PageY    DontDelete|ReadOnly
   relatedTarget	DOMMouseEvent::RelatedTarget DontDelete|ReadOnly
-  fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
+  screenX	DOMMouseEvent::ScreenX	DontDelete|ReadOnly
+  screenY	DOMMouseEvent::ScreenY	DontDelete|ReadOnly
+  shiftKey	DOMMouseEvent::ShiftKey	DontDelete|ReadOnly
   toElement	DOMMouseEvent::ToElement	DontDelete|ReadOnly
+  x		DOMMouseEvent::X	DontDelete|ReadOnly
+  y		DOMMouseEvent::Y	DontDelete|ReadOnly
 @end
 @begin DOMMouseEventProtoTable 1
   initMouseEvent	DOMMouseEvent::InitMouseEvent	DontDelete|Function 15
@@ -459,13 +463,17 @@ Value DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
 {
   switch (token) {
   case ScreenX:
+  case PageX:
     return Number(static_cast<DOM::MouseEvent>(event).screenX());
   case ScreenY:
+  case PageY:
     return Number(static_cast<DOM::MouseEvent>(event).screenY());
   case ClientX:
+  case LayerX:
   case X:
     return Number(static_cast<DOM::MouseEvent>(event).clientX());
   case ClientY:
+  case LayerY:
   case Y:
     return Number(static_cast<DOM::MouseEvent>(event).clientY());
   case OffsetX:

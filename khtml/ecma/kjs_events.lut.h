@@ -112,25 +112,29 @@ using namespace KJS;
 namespace KJS {
 
 const struct HashEntry DOMMouseEventTableEntries[] = {
-   { "screenX", DOMMouseEvent::ScreenX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[3] },
-   { "screenY", DOMMouseEvent::ScreenY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[2] },
-   { "clientX", DOMMouseEvent::ClientX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[5] },
-   { "x", DOMMouseEvent::X, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[4] },
-   { "clientY", DOMMouseEvent::ClientY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[7] },
-   { "y", DOMMouseEvent::Y, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[6] },
-   { "offsetX", DOMMouseEvent::OffsetX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[9] },
-   { "offsetY", DOMMouseEvent::OffsetY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[8] },
-   { "ctrlKey", DOMMouseEvent::CtrlKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[10] },
-   { "shiftKey", DOMMouseEvent::ShiftKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[15] },
-   { "altKey", DOMMouseEvent::AltKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[11] },
-   { "metaKey", DOMMouseEvent::MetaKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[12] },
-   { "button", DOMMouseEvent::Button, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[13] },
+   { "altKey", DOMMouseEvent::AltKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[2] },
+   { "clientX", DOMMouseEvent::ClientX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[6] },
+   { "button", DOMMouseEvent::Button, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[3] },
+   { "clientY", DOMMouseEvent::ClientY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[4] },
+   { "ctrlKey", DOMMouseEvent::CtrlKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[5] },
+   { "fromElement", DOMMouseEvent::FromElement, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[7] },
+   { "layerX", DOMMouseEvent::LayerX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[9] },
+   { "layerY", DOMMouseEvent::LayerY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[8] },
+   { "metaKey", DOMMouseEvent::MetaKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[10] },
+   { "offsetX", DOMMouseEvent::OffsetX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[11] },
+   { "offsetY", DOMMouseEvent::OffsetY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[12] },
+   { "pageX", DOMMouseEvent::PageX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[15] },
+   { "pageY", DOMMouseEvent::PageY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[13] },
    { "relatedTarget", DOMMouseEvent::RelatedTarget, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[14] },
-   { "fromElement", DOMMouseEvent::FromElement, DontDelete|ReadOnly, 0, 0 },
-   { "toElement", DOMMouseEvent::ToElement, DontDelete|ReadOnly, 0, 0 }
+   { "screenX", DOMMouseEvent::ScreenX, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[18] },
+   { "screenY", DOMMouseEvent::ScreenY, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[16] },
+   { "shiftKey", DOMMouseEvent::ShiftKey, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[17] },
+   { "toElement", DOMMouseEvent::ToElement, DontDelete|ReadOnly, 0, &DOMMouseEventTableEntries[19] },
+   { "x", DOMMouseEvent::X, DontDelete|ReadOnly, 0, 0 },
+   { "y", DOMMouseEvent::Y, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMMouseEventTable = { 2, 16, DOMMouseEventTableEntries, 2 };
+const struct HashTable DOMMouseEventTable = { 2, 20, DOMMouseEventTableEntries, 2 };
 
 }; // namespace
 

@@ -129,7 +129,8 @@ namespace KJS {
     enum { ScreenX, ScreenY, ClientX, X, ClientY, Y, OffsetX, OffsetY,
            CtrlKey, ShiftKey, AltKey,
            MetaKey, Button, RelatedTarget, FromElement, ToElement,
-           InitMouseEvent };
+           PageX, PageY, LayerX, LayerY, InitMouseEvent
+    };
     DOM::MouseEvent toMouseEvent() const { return static_cast<DOM::MouseEvent>(event); }
   };
 
