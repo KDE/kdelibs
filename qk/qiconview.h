@@ -5,7 +5,7 @@
 **
 ** Created : 990707
 **
-** Copyright (C) 1992-1999 Troll Tech AS.  All rights reserved.
+** Copyright (C) 1992-2000 Troll Tech AS.  All rights reserved.
 **
 ** This file is part of the Qt GUI Toolkit.
 **
@@ -52,10 +52,12 @@ class QKeyEvent;
 class QFocusEvent;
 class QShowEvent;
 
-struct QIconViewPrivate;
+class QIconViewPrivate;
 struct QIconViewItemPrivate;
 class QIconViewItem;
 class QIconViewItemLineEdit;
+
+class QStringList;
 
 /*****************************************************************************
  *
@@ -67,26 +69,18 @@ class Q_EXPORT QIconDragItem
 {
 public:
     QIconDragItem();
-    QIconDragItem( const QRect &ir, const QRect &tr );
     virtual ~QIconDragItem();
+    virtual QByteArray data() const;
+    virtual void setData( const QByteArray &d );
+#if defined(Q_FULL_TEMPLATE_INSTANTIATION)
+    bool operator== ( const QIconDragItem& ) const;
+#endif
 
-    virtual bool operator<( const QIconDragItem &icon )  const;
-    virtual bool operator==( const QIconDragItem &icon ) const;
-
-    virtual QRect pixmapRect() const;
-    virtual QRect textRect() const;
-    virtual QString key() const;
-
-    virtual void setPixmapRect( const QRect &r );
-    virtual void setTextRect( const QRect &r );
-
-protected:
-    virtual void makeKey();
-
-    QRect iconRect_, textRect_;
-    QString key_;
+private:
+    QByteArray ba;
 
 };
+
 
 /*****************************************************************************
  *
@@ -94,37 +88,58 @@ protected:
  *
  *****************************************************************************/
 
-#if defined(Q_TEMPLATEDLL)
-// MOC_SKIP_BEGIN
-template class Q_EXPORT QValueList<QIconDragItem>;
-// MOC_SKIP_END
-#endif
-
-typedef QValueList<QIconDragItem> QIconList;
-
 class Q_EXPORT QIconDrag : public QDragObject
 {
     Q_OBJECT
+    friend class QIconView;
+    friend class QIconViewPrivate;
+
+private:
+    struct IconDragItem
+    {
+	IconDragItem();
+	IconDragItem( const QRect &ir, const QRect &tr );
+
+	QRect pixmapRect() const;
+	QRect textRect() const;
+
+	void setPixmapRect( const QRect &r );
+	void setTextRect( const QRect &r );
+
+    	QRect iconRect_, textRect_;
+	QString key_;
+
+    };
+
+    struct Item
+    {
+	Item() {}
+	Item( const QIconDragItem &i1, const IconDragItem &i2 ) : data( i1 ), item( i2 ) {}
+	QIconDragItem data;
+	IconDragItem item;
+#if defined(Q_FULL_TEMPLATE_INSTANTIATION)
+	bool operator== ( const QIconDrag::Item& ) const;
+#endif
+    };
 
 public:
-    QIconDrag( const QIconList &icons_, QWidget * dragSource, const char* name = 0 );
     QIconDrag( QWidget * dragSource, const char* name = 0 );
     virtual ~QIconDrag();
 
-    void setIcons( const QIconList &list_ );
-    void append( const QIconDragItem &icon_ );
+    void append( const QIconDragItem &item, const QRect &pr, const QRect &tr );
 
     virtual const char* format( int i ) const;
+    static bool canDecode( QMimeSource* e );
     virtual QByteArray encodedData( const char* mime ) const;
 
-    static bool canDecode( QMimeSource* e );
+private:
+    static bool decode( QMimeSource* e, QValueList<Item> &lst );
 
-    static bool decode( QMimeSource* e, QIconList &list_ );
-
-protected:
-    QIconList icons;
+    QValueList<Item> items;
+    QChar endMark;
 
 };
+
 
 /*****************************************************************************
  *
@@ -132,12 +147,13 @@ protected:
  *
  *****************************************************************************/
 
-class Q_EXPORT QIconViewItem : public QObject
+class QIconViewToolTip;
+
+class Q_EXPORT QIconViewItem
 {
     friend class QIconView;
+    friend class QIconViewToolTip;
     friend class QIconViewItemLineEdit;
-
-    Q_OBJECT
 
 public:
     QIconViewItem( QIconView *parent );
@@ -166,7 +182,8 @@ public:
 
     int index() const;
 
-    virtual void setSelected( bool s, bool cb = FALSE );
+    virtual void setSelected( bool s, bool cb );
+    virtual void setSelected( bool s );
     virtual void setSelectable( bool s );
 
     bool isSelected() const;
@@ -197,27 +214,18 @@ public:
 
     virtual int compare( QIconViewItem *i ) const;
 
-signals:
-    void renamed( const QString &text );
-    void renamed();
-
-public slots:
     virtual void setText( const QString &text );
     virtual void setPixmap( const QPixmap &icon );
     virtual void setText( const QString &text, bool recalc, bool redraw = TRUE );
     virtual void setPixmap( const QPixmap &icon, bool recalc, bool redraw = TRUE );
     virtual void setKey( const QString &k );
 
-protected slots:
-    virtual void renameItem();
-    virtual void cancelRenameItem();
-
 protected:
     virtual void removeRenameBox();
     virtual void calcRect( const QString &text_ = QString::null );
-    virtual void paintItem( QPainter *p, const QColorGroup &cg, const QFont &font );
+    virtual void paintItem( QPainter *p, const QColorGroup &cg );
     virtual void paintFocus( QPainter *p, const QColorGroup &cg );
-    virtual void dropped( QDropEvent *e );
+    virtual void dropped( QDropEvent *e, const QValueList<QIconDragItem> &lst );
     virtual void dragEntered();
     virtual void dragLeft();
     virtual void init( QIconViewItem *after = 0 );
@@ -228,6 +236,9 @@ protected:
     void calcTmpText();
 
 private:
+    void renameItem();
+    void cancelRenameItem();
+
     QIconView *view;
     QString itemText, itemKey;
     QString tmpText;
@@ -255,9 +266,29 @@ private:
 class Q_EXPORT QIconView : public QScrollView
 {
     friend class QIconViewItem;
-    friend struct QIconViewPrivate;
+    friend class QIconViewPrivate;
+    friend class QIconViewToolTip;
 
     Q_OBJECT
+    // #### sorting and soring direction dont work
+    Q_ENUMS( SelectionMode ItemTextPos Arrangement ResizeMode )
+    Q_PROPERTY( bool sorting READ sorting )
+    Q_PROPERTY( bool sortDirection READ sortDirection )
+    Q_PROPERTY( SelectionMode selectionMode READ selectionMode WRITE setSelectionMode )
+    Q_PROPERTY( int gridX READ gridX WRITE setGridX )
+    Q_PROPERTY( int gridY READ gridY WRITE setGridY )
+    Q_PROPERTY( int spacing READ spacing WRITE setSpacing )
+    Q_PROPERTY( ItemTextPos itemTextPos READ itemTextPos WRITE setItemTextPos )
+    Q_PROPERTY( QBrush itemTextBackground READ itemTextBackground WRITE setItemTextBackground )
+    Q_PROPERTY( Arrangement arrangement READ arrangement WRITE setArrangement )
+    Q_PROPERTY( ResizeMode resizeMode READ resizeMode WRITE setResizeMode )
+    Q_PROPERTY( int maxItemWidth READ maxItemWidth WRITE setMaxItemWidth )
+    Q_PROPERTY( int maxItemTextLength READ maxItemTextLength WRITE setMaxItemTextLength )
+    Q_PROPERTY( bool autoArrange READ autoArrange WRITE setAutoArrange )
+    Q_PROPERTY( bool itemsMovable READ itemsMovable WRITE setItemsMovable )
+    Q_PROPERTY( bool wordWrapIconText READ wordWrapIconText WRITE setWordWrapIconText )
+    Q_PROPERTY( bool showToolTips READ showToolTips WRITE setShowToolTips )
+    Q_PROPERTY( uint count READ count )
 
 public:
     enum SelectionMode {
@@ -293,7 +324,7 @@ public:
     virtual void setCurrentItem( QIconViewItem *item );
     virtual void setSelected( QIconViewItem *item, bool s, bool cb = FALSE );
 
-    unsigned int count() const;
+    uint count() const;
 
 public:
     virtual void showEvent( QShowEvent * );
@@ -333,15 +364,17 @@ public:
     int maxItemWidth() const;
     virtual void setMaxItemTextLength( int w );
     int maxItemTextLength() const;
-    void setAutoArrange( bool b );
+    virtual void setAutoArrange( bool b );
     bool autoArrange() const;
+    virtual void setShowToolTips( bool b );
+    bool showToolTips() const;
 
     void setSorting( bool sort, bool ascending = TRUE );
     bool sorting() const;
     bool sortDirection() const;
 
-    virtual void setEnableMoveItems( bool b );
-    bool enableMoveItems() const;
+    virtual void setItemsMovable( bool b );
+    bool itemsMovable() const;
     virtual void setWordWrapIconText( bool b );
     bool wordWrapIconText() const;
 
@@ -379,7 +412,7 @@ signals:
     void mouseButtonPressed( int button, QIconViewItem* item, const QPoint& pos );
     void mouseButtonClicked( int button, QIconViewItem* item, const QPoint& pos );
 
-    void dropped( QDropEvent *e );
+    void dropped( QDropEvent *e, const QValueList<QIconDragItem> &lst );
     void moved();
     void onItem( QIconViewItem *item );
     void onViewport();
@@ -415,21 +448,20 @@ protected:
     virtual QDragObject *dragObject();
     virtual void startDrag();
     virtual void insertInGrid( QIconViewItem *item );
-    virtual void drawDragShapes( const QPoint &pnt );
-    virtual void initDragEnter( QDropEvent *e );
     virtual void drawBackground( QPainter *p, const QRect &r );
 
     void emitSelectionChanged( QIconViewItem * i = 0 );
     void emitRenamed( QIconViewItem *item );
 
-    void setDragObjectIsKnown( QDropEvent *e );
-    void setNumDragItems( int num );
     QIconViewItem *makeRowLayout( QIconViewItem *begin, int &y );
 
     void styleChange( QStyle& );
 
 private:
+    virtual void drawDragShapes( const QPoint &pnt );
+    virtual void initDragEnter( QDropEvent *e );
     void findItemByName( const QString &text );
+
     int calcGridNum( int w, int x ) const;
     QIconViewItem *rowBegin( QIconViewItem *item ) const;
     void updateItemContainer( QIconViewItem *item );
