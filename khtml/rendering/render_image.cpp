@@ -396,6 +396,8 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
         oimage = 0;
         repaint();
     }
+
+    RenderReplaced::notifyFinished(finishedObj);
 }
 
 bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, HitTestAction hitTestAction, bool inside)
