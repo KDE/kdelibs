@@ -1189,6 +1189,16 @@ void HighColorStyle::drawControl( ControlElement element,
 		}
 
 
+#if (QT_VERSION-0 >= 0x030100)
+		// MENUBAR BACKGROUND
+		// -------------------------------------------------------------------
+		case CE_MenuBarBackground:
+		{
+			renderGradient(p, r, cg.button(), false);
+			break;
+		}
+#endif
+
 		// MENUBAR ITEM (sunken panel on mouse over)
 		// -------------------------------------------------------------------
 		case CE_MenuBarItem:
