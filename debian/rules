@@ -20,7 +20,7 @@ $(BUILDDIR)/build-stamp:
 	fi
 	test -d $(BUILDDIR) || mkdir $(BUILDDIR) ;\
 	cd $(BUILDDIR) ;\
-	$$PWD/../configure $(configkde) \
+	$$PWD/../configure $(configkde) --with-distribution=deb \
 	--libdir=$(kde_libdir) --includedir=$(kde_includedir) 
 
 	make -C $(BUILDDIR)
