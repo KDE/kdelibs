@@ -484,9 +484,9 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
   case UnEscape: {
     UString s, str = args[0].toString(exec);
     int k = 0, len = str.size();
+    UChar u;
     while (k < len) {
       const UChar *c = str.data() + k;
-      UChar u;
       if (*c == UChar('%') && k <= len - 6 && *(c+1) == UChar('u')) {
 	u = Lexer::convertUnicode((c+2)->unicode(), (c+3)->unicode(),
 				  (c+4)->unicode(), (c+5)->unicode());
