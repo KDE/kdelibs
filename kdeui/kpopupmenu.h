@@ -84,12 +84,12 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *ev);
 
-    QString titleStr;
-    QPixmap miniicon;
-    
     // Remove in KDE4
     KPixmapEffect::GradientType grType;
+    QString titleStr;
+    // Remove in KDE4
     KPixmap fill;
+    QPixmap miniicon;
     QColor fgColor, bgColor, grHigh, grLow;
     bool useGradient;
 
