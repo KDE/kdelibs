@@ -1422,6 +1422,8 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         QString str = content.string().stripWhiteSpace();
         time_t expire_date = KRFCDate::parseDate(str);
         if (!expire_date)
+            expire_date = str.toULong();
+        if (!expire_date)
             expire_date = 1; // expire now
         if (m_docLoader)
             m_docLoader->setExpireDate(expire_date);
