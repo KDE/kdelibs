@@ -14,6 +14,21 @@ import java.security.*;
 public class KJASAppletClassLoader
     extends URLClassLoader
 {
+    static Hashtable loaders = new Hashtable();
+    synchronized static KJASAppletClassLoader getLoader( String docBase, String codeBase )
+    {
+        String key = docBase + codeBase;
+        KJASAppletClassLoader loader = (KJASAppletClassLoader) loaders.get( key );
+        if( loader == null )
+        {
+            loader = new KJASAppletClassLoader( docBase, codeBase );
+            loaders.put( key, loader );
+        }
+
+        return loader;
+    }
+
+
     private URL docBaseURL  = null;
     private URL codeBaseURL = null;
 

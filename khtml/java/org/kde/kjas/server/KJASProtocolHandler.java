@@ -28,7 +28,7 @@ public class KJASProtocolHandler
     private Hashtable contexts;
 
     private PushbackInputStream commands;    //Stream for reading in commands
-    private PrintStream                  signals;          //Stream for writing out callbacks
+    private PrintStream         signals;     //Stream for writing out callbacks
 
     //used for parsing each command as it comes in
     private int cmd_index;
@@ -115,17 +115,17 @@ public class KJASProtocolHandler
         if( cmd_code_value == CreateAppletCode )
         {
             //9 arguments- this order is important...
-            String contextID = getArg( command );
-            String appletID = getArg( command );
+            String contextID  = getArg( command );
+            String appletID   = getArg( command );
             String appletName = getArg( command );
-            String className = getArg( command );
-            String baseURL = getArg( command );
-            String codeBase = getArg( command );
-            String archives = getArg( command );
+            String className  = getArg( command );
+            String baseURL    = getArg( command );
+            String codeBase   = getArg( command );
+            String archives   = getArg( command );
+            String width      = getArg( command );
+            String height     = getArg( command );
+            String title      = getArg( command );
 
-            String width = getArg( command );
-            String height = getArg( command );
-            String title = getArg( command );
             //get the number of parameter pairs...
             String str_params = getArg( command );
             int num_params = Integer.parseInt( str_params.trim() );
@@ -140,14 +140,15 @@ public class KJASProtocolHandler
                 if( value == null )
                     value = new String();
                 Main.kjas_debug( "parameter, name = " + name + ", value = " + value );
+                params.put( name, value );
 
+                //these are necessary kludges to work around some dumb html
+                //which work in the appletviewer
                 if( name.equalsIgnoreCase( "archive" ) && archives == null )
                     archives = value;
                 else
                 if( name.equalsIgnoreCase( "codebase" ) && codeBase == null )
                     codeBase = value;
-                else
-                    params.put( name, value );
             }
 
             Main.kjas_debug( "createApplet, context = " + contextID + ", applet = " + appletID );
@@ -166,7 +167,7 @@ public class KJASProtocolHandler
         {
             //2 arguments
             String contextID = getArg( command );
-            String appletID = getArg( command );
+            String appletID  = getArg( command );
             Main.kjas_debug( "destroyApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
@@ -177,7 +178,7 @@ public class KJASProtocolHandler
         {
             //2 arguments
             String contextID = getArg( command );
-            String appletID = getArg( command );
+            String appletID  = getArg( command );
             Main.kjas_debug( "startApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
@@ -188,7 +189,7 @@ public class KJASProtocolHandler
         {
             //2 arguments
             String contextID = getArg( command );
-            String appletID = getArg( command );
+            String appletID  = getArg( command );
             Main.kjas_debug( "stopApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
@@ -198,7 +199,7 @@ public class KJASProtocolHandler
         if( cmd_code_value == InitAppletCode )
         {
             String contextID = getArg( command );
-            String appletID = getArg( command );
+            String appletID  = getArg( command );
             Main.kjas_debug( "InitApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
@@ -208,7 +209,7 @@ public class KJASProtocolHandler
         else
         if( cmd_code_value == ShutdownServerCode )
         {
-            Main.kjas_debug( "shutDownServer" );
+            Main.kjas_debug( "shutDownServer recieved" );
             System.exit( 1 );
         }
         else
@@ -217,35 +218,9 @@ public class KJASProtocolHandler
         }
     }
 
-    private String getArg( char[] command )
-    {
-        Vector arg_chars = new Vector();
-
-        char curr = command[cmd_index++];
-        while( 0 != (int) curr )
-        {
-            arg_chars.add( new Character(curr) );
-            curr = command[cmd_index++];
-        }
-
-        if( arg_chars.size() > 0 )
-        {
-            char[] char_bytes = new char[arg_chars.size()];
-
-            for( int i = 0; i < arg_chars.size(); i++ )
-            {
-                Character ch = (Character) arg_chars.elementAt( i );
-
-                char_bytes[i] = ch.charValue();
-            }
-            return new String( char_bytes );
-        }
-        else
-        {
-            return null;
-        }
-    }
-
+    /**************************************************************
+     *****  Methods for talking to the applet server **************
+     **************************************************************/
     public void sendShowDocumentCmd( String contextID, String url )
     {
         Main.kjas_debug( "sendShowDocumentCmd, contextID, url" );
@@ -399,6 +374,38 @@ public class KJASProtocolHandler
         chars[index++] = sep;
 
         signals.print( chars );
+    }
+
+    /**************************************************************
+     *****  Utility functions for parsing commands ****************
+     **************************************************************/
+    private String getArg( char[] command )
+    {
+        Vector arg_chars = new Vector();
+
+        char curr = command[cmd_index++];
+        while( 0 != (int) curr )
+        {
+            arg_chars.add( new Character(curr) );
+            curr = command[cmd_index++];
+        }
+
+        if( arg_chars.size() > 0 )
+        {
+            char[] char_bytes = new char[arg_chars.size()];
+
+            for( int i = 0; i < arg_chars.size(); i++ )
+            {
+                Character ch = (Character) arg_chars.elementAt( i );
+
+                char_bytes[i] = ch.charValue();
+            }
+            return new String( char_bytes );
+        }
+        else
+        {
+            return null;
+        }
     }
 
     private char[] getPaddedLength( int length )

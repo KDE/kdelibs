@@ -9,7 +9,6 @@ import java.io.*;
 
 /**
  * The context in which applets live.
- *
  */
 public class KJASAppletContext implements AppletContext
 {
@@ -17,8 +16,6 @@ public class KJASAppletContext implements AppletContext
     private Hashtable appletNames;
     private Hashtable appletIDs;
     private Hashtable stubs;
-    private Hashtable runThreads;
-    private Hashtable appletClasses;
 
     private String myID;
     private KJASAppletClassLoader loader;
@@ -30,8 +27,6 @@ public class KJASAppletContext implements AppletContext
     {
         appletNames   = new Hashtable();
         appletIDs     = new Hashtable();
-        appletClasses = new Hashtable();
-        runThreads    = new Hashtable();
         stubs         = new Hashtable();
         myID          = _contextID;
     }
@@ -49,8 +44,8 @@ public class KJASAppletContext implements AppletContext
     {
         try
         {
-            KJASAppletClassLoader loader = new KJASAppletClassLoader( docBase,
-                                                                      codeBase );
+            KJASAppletClassLoader loader =
+                KJASAppletClassLoader.getLoader( docBase, codeBase );
             if( archives != null )
             {
                 StringTokenizer parser = new StringTokenizer( archives, ",", false );
@@ -60,24 +55,14 @@ public class KJASAppletContext implements AppletContext
                     loader.addJar( jar );
                 }
             }
-            Class appletClass = loader.loadClass( className );
-            appletClasses.put( appletID, appletClass );
 
-            KJASAppletStub stub = new KJASAppletStub( this, appletID,
-                                                      loader.getCodeBase(),
-                                                      loader.getDocBase(),
-                                                      name, params, size );
-            stub.setSize( size );
+            KJASAppletStub stub =
+                new KJASAppletStub( this, appletID, loader.getCodeBase(),
+                                    loader.getDocBase(), name, className,
+                                    size, params, windowName, loader );
+            stub.show();
+            new Thread( stub ).start();
             stubs.put( appletID, stub );
-
-            Frame f = new Frame( windowName );
-            f.add( "Center", stub );
-            f.pack();
-            f.setVisible( true );
-        }
-        catch( ClassNotFoundException e )
-        {
-            Main.kjas_err( "Could not find the needed class " + e, e );
         }
         catch ( Exception e )
         {
@@ -87,162 +72,101 @@ public class KJASAppletContext implements AppletContext
 
     public void initApplet( String appletID )
     {
-        KJASAppletStub stub     = (KJASAppletStub) stubs.get( appletID );
-        Class          theClass = (Class) appletClasses.get( appletID );
-        if( stub == null || theClass == null )
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if( stub == null )
         {
             Main.kjas_debug( "could not init and show applet: " + appletID );
         }
         else
         {
-            try
-            {
-                Main.kjas_debug( "theClass = " + theClass );
-
-                Applet app = (Applet) theClass.newInstance();
-                app.setStub( stub );
-                appletNames.put( stub.getAppletName(), app );
-                appletIDs.put( appletID, app );
-                app.resize( stub.getPreferredSize() );
-                stub.add( "Center", app );
-
-                app.init();
-                Main.kjas_debug( "applet done with init, applet = " + app );
-
-                stub.validate();
-                Main.kjas_debug( "added applet to panel, applet = " + app );
-
-                runApplet( appletID, app );
-                Main.kjas_debug( "applet is running, = " + app );
-            }
-            catch( InstantiationException e )
-            {
-                Main.kjas_err( "Could not instantiate applet: " + e, e );
-            }
-            catch( IllegalAccessException e )
-            {
-                Main.kjas_err( "Could not Access applet class: " + e, e );
-            }
+            stub.initApplet();
         }
-    }
-
-    private Thread runApplet( final String appletID, final Applet app )
-    {
-        if( app != null )
-        {
-            Thread t = new Thread
-            (
-                new Runnable()
-                {
-                    public void run()
-                    {
-                        app.start();
-                    }
-                }
-            );
-            if( t != null )
-            {
-                t.start();
-                runThreads.put( appletID, t );
-            }
-            return t;
-        }
-
-        return null;
-    }
-
-    public void destroy()
-    {
-        Enumeration e = appletNames.elements();
-        while ( e.hasMoreElements() )
-        {
-            Applet app = (Applet) e.nextElement();
-            app.stop();
-        }
-
-        e = runThreads.elements();
-        while( e.hasMoreElements() )
-        {
-            Thread t = (Thread) e.nextElement();
-            t.destroy();
-        }
-
-        appletNames.clear();
-        appletIDs.clear();
-        appletClasses.clear();
-        runThreads.clear();
-        stubs.clear();
-
-        System.gc();
     }
 
     public void destroyApplet( String appletID )
     {
-        Applet         app  = (Applet) appletIDs.get( appletID );
         KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
 
-        if( app == null || stub == null )
+        if( stub == null )
         {
             Main.kjas_debug( "could not destroy applet: " + appletID );
         }
         else
         {
             Main.kjas_debug( "stopping applet: " + appletID );
-            app.stop();
-            Thread t = (Thread) runThreads.get( appletID );
-            t.destroy();
-
-            runThreads.remove( appletID );
-            appletIDs.remove( appletID );
-            appletNames.remove( stub.getAppletName() );
-            appletClasses.remove( appletID );
+            stub.die();
             stubs.remove( appletID );
-
             System.gc();
         }
     }
 
     public void startApplet( String appletID )
     {
-        Applet app = (Applet) appletIDs.get( appletID );
-
-        if( app == null )
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if( stub == null )
         {
             Main.kjas_debug( "could not start applet: " + appletID );
         }
         else
         {
-            app.start();
+            stub.startApplet();
         }
     }
 
     public void stopApplet( String appletID )
     {
-        Applet app = (Applet) appletIDs.get( appletID );
-        if( app == null )
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if( stub == null )
         {
             Main.kjas_debug( "could not stop applet: " + appletID );
         }
         else
         {
-            app.stop();
+            stub.stopApplet();
         }
     }
 
+    public void destroy()
+    {
+        Enumeration e = stubs.elements();
+        while ( e.hasMoreElements() )
+        {
+            KJASAppletStub stub = (KJASAppletStub) e.nextElement();
+            stub.die();
+        }
+        stubs.clear();
 
+        System.gc();
+    }
 
     /***************************************************************************
     **** AppletContext interface
     ***************************************************************************/
-    public Applet getApplet( String appletID )
+    public Applet getApplet( String appletName )
     {
-        return (Applet) appletIDs.get( appletID );
+        Enumeration e = stubs.elements();
+        while( e.hasMoreElements() )
+        {
+            KJASAppletStub stub = (KJASAppletStub) e.nextElement();
+
+            if( stub.getAppletName().equals( appletName ) )
+                return stub.getApplet();
+        }
+
+        return null;
     }
 
     public Enumeration getApplets()
     {
-        Enumeration e = appletNames.elements();
-        return e;
+        Vector v = new Vector();
+        Enumeration e = stubs.elements();
+        while( e.hasMoreElements() )
+        {
+            KJASAppletStub stub = (KJASAppletStub) e.nextElement();
+            v.add( stub );
+        }
+
+        return v.elements();
     }
 
     public AudioClip getAudioClip( URL url )
