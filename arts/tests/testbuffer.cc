@@ -21,11 +21,10 @@
     */
 
 #include "buffer.h"
-#include <stdio.h>
-#include <list>
 #include "test.h"
 
 using namespace Arts;
+using namespace std;
 
 struct TestBuffer : public TestCase
 {
@@ -48,12 +47,39 @@ struct TestBuffer : public TestCase
 	TEST(writeByte) {
 		buffer->writeByte(0x42);
 
-		testEquals("42",buffer->toString(""))
+		testEquals("42",buffer->toString(""));
+		testEquals(0x42,buffer->readByte());
 	}
 	TEST(writeLong) {
 		buffer->writeLong(10001025);
 
 		testEquals("00989a81",buffer->toString(""));
+		testEquals(10001025, buffer->readLong());
+	}
+	TEST(writeString) {
+		buffer->writeString("hello");
+
+		/*          __size__  h e l l o \0		*/
+		testEquals("00000006""68656c6c6f00",buffer->toString(""));
+
+		string s;
+		buffer->readString(s);
+		testEquals("hello", s);
+	}
+	TEST(writeBool) {
+		buffer->writeBool(true);
+		buffer->writeBool(false);
+
+		testEquals("0100",buffer->toString(""));
+		testEquals(true, buffer->readBool());
+		testEquals(false, buffer->readBool());
+	}
+	TEST(writeFloat) {
+		float f = 2.15;
+		buffer->writeFloat(f);
+
+		testEquals("4009999a",buffer->toString(""));
+		testEquals(f,buffer->readFloat());
 	}
 	TEST(write) {
 		vector<mcopbyte> b;
@@ -83,6 +109,30 @@ struct TestBuffer : public TestCase
 		buffer1234->rewind();
 		buffer1234->read(bytes,3);
 		testEquals(3, bytes.size());
+	}
+	TEST(errorHandling)
+	{
+		testEquals(false, buffer1234->readError());
+		testEquals(4, buffer1234->size());
+		testEquals(4, buffer1234->remaining());
+		buffer1234->readLong();
+		testEquals(4, buffer1234->size());
+		testEquals(0, buffer1234->remaining());
+		testEquals(false, buffer1234->readError());
+		buffer1234->readByte();
+		testEquals(4, buffer1234->size());
+		testEquals(0, buffer1234->remaining());
+		testEquals(true, buffer1234->readError());
+
+		testEquals(false, buffer->readError());
+		buffer->writeLong(0xdddddddd);
+		buffer->writeLong(0x12345678);
+
+		// check that it terminates properly upon reading broken data
+		string s;
+		testEquals(false,buffer->readError());
+		buffer->readString(s);
+		testEquals(true, buffer->readError());
 	}
 };
 

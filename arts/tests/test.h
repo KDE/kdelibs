@@ -22,6 +22,8 @@
 
 #include <string>
 #include <list>
+#include <iostream>
+#include <stdio.h>
 
 const char *noTest = "noTest";
 const char *noClass = "noClass";
@@ -39,15 +41,18 @@ const char *currentTest = noTest;
 		exit(1); \
 	 }
 
-#define testEquals(expr, expr2) \
-	if(!((expr) == (expr2)))										\
-	{																\
-	 	testCaption();												\
-	 	fprintf (stderr,"   => test assertion failed: (%s == %s)\n",	\
-													#expr, #expr2); \
-	 	cerr << "   => expected '" << (expr) << "'" << " got "		\
-			 << "'" << (expr2) << "'." << endl;						\
-		exit(1);													\
+#define testEquals(expr, expr2) 										\
+	{																	\
+		typeof(expr2) val1 = expr, val2 = expr2;						\
+		if(!(val1 == val2))												\
+		{																\
+	 		testCaption();												\
+	 		fprintf (stderr,"   => test assertion failed: (%s == %s)\n",\
+														#expr, #expr2); \
+	 		cerr << "   => expected '" << (val1) << "'" << " got "		\
+			 	 << "'" << (val2) << "'." << endl;						\
+			exit(1);													\
+		}																\
 	}
 
 #define TEST(func)													\
