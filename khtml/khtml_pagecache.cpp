@@ -129,6 +129,8 @@ KHTMLPageCache::KHTMLPageCache()
 
 KHTMLPageCache::~KHTMLPageCache()
 {
+  d->delivery.setAutoDelete(true);
+  d->dict.setAutoDelete(true);
   delete d;
 }
 
