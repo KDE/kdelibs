@@ -349,6 +349,13 @@ KURL::KURL( const KURL& _u, const QString& _rel_url, int encoding_hint )
        if (pos >= 0)
           m_strPath.truncate(pos);
        m_strPath += '/';
+       if (!m_strPath_encoded.isEmpty())
+       {
+          pos = m_strPath_encoded.findRev( '/' );
+          if (pos >= 0)
+             m_strPath_encoded.truncate(pos);
+          m_strPath_encoded += '/';
+       }
     }
     KURL tmp( url() + rUrl, encoding_hint);
     *this = tmp;
