@@ -775,6 +775,8 @@ void RenderBox::calcAbsoluteHorizontal()
         mr = style()->marginRight().width(cw);
 
 
+//    printf("h1: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
+
     // css2 spec 10.3.7 & 10.3.8
     // 1
     RenderObject* o=parent();
@@ -782,7 +784,7 @@ void RenderBox::calcAbsoluteHorizontal()
     if (style()->direction()==LTR && l==AUTO )
     {
         if ((h = nextSibling())) l = h->xPos();
-        else if ((h = previousSibling())) l = h->xPos()+h->contentWidth();
+        else if ((h = previousSibling())) l = h->xPos();
         else l=0;
         while (o && o!=containingBlock()) { l+=o->xPos(); o=o->parent(); }
     }
@@ -791,14 +793,14 @@ void RenderBox::calcAbsoluteHorizontal()
     else if (style()->direction()==RTL && r==AUTO )
     {
         if ((h = previousSibling())) r = (h->xPos() + h->contentWidth());
-        else if ((h = nextSibling())) r = h->xPos();
-        else r=0;
+        else if ((h = nextSibling())) r = h->xPos() + h->contentWidth();
+        else r=o->width();
         r += cw -
             (o->width()-o->borderLeft()-o->borderRight()-o->paddingLeft()-o->paddingRight());
         while (o && o!=containingBlock()) { r-=o->xPos(); o=o->parent(); }
     }
 
-//    printf("h12: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
+//    printf("h2: w=%d, l=%d, r=%d, ml=%d, mr=%d\n",w,l,r,ml,mr);
 
     // 3
     if (w==AUTO)
