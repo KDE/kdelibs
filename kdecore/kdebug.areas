@@ -105,6 +105,7 @@
 6080        khtml (css)
 6090        khtml (memory)
 6100        kjas
+
 # libkio
 7001        kio (KDirWatch)
 7002        kio (Slave)
@@ -129,6 +130,8 @@
 7023        kurifilter (plugins)
 7024        kio (UIServer)
 7025        kpac
+7026        kio (KShred)
+7028        kio (Observer)
 
 # 71xx        are for kioslaves
 7101        kio_file
