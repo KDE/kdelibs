@@ -189,7 +189,7 @@ void KBookmarkMenu::addEditBookmarks()
 
 void KBookmarkMenu::addNewFolder()
 {
-  QString title = i18n( "&New Folder..." );
+  QString title = i18n( "&New Bookmark Folder..." );
   int p;
   while ( ( p = title.find( '&' ) ) >= 0 )
     title.remove( p, 1 );
