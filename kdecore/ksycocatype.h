@@ -39,7 +39,7 @@ public: \
  virtual KSycocaType sycocaType() const { return type; } \
 private:
 
-/*
+/**
  * \relates KSycocaFactory
  * A KSycocaFactoryId is a code (out of the KSycocaFactoryId enum) 
  * assigned to each class type derived from KSycocaFactory.
