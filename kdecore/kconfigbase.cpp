@@ -53,9 +53,9 @@ void KConfigBase::setLocale()
   backEnd->setLocaleString(aLocaleString);
 }
 
-QString KConfigBase::locale() const 
-{ 
-  return QString::fromUtf8(aLocaleString); 
+QString KConfigBase::locale() const
+{
+  return QString::fromUtf8(aLocaleString);
 }
 
 void KConfigBase::setGroup( const QString& pGroup )
@@ -79,8 +79,8 @@ void KConfigBase::setGroup( const QCString &pGroup )
     mGroup = pGroup;
 }
 
-QString KConfigBase::group() const { 
-  return QString::fromUtf8(mGroup); 
+QString KConfigBase::group() const {
+  return QString::fromUtf8(mGroup);
 }
 
 void KConfigBase::setDesktopGroup()
@@ -118,7 +118,7 @@ QString KConfigBase::readEntry( const char *pKey,
   aEntryData = lookupData(entryKey);
   if (!aEntryData.mValue.isNull()) {
     aValue = QString::fromUtf8(aEntryData.mValue.data());
-    // Ok this sucks. QString::fromUtf8("").isNull() is true, 
+    // Ok this sucks. QString::fromUtf8("").isNull() is true,
     // but QString::fromLatin1("").isNull() returns false.
     if (aValue.isNull())
     {
@@ -151,10 +151,9 @@ QString KConfigBase::readEntry( const char *pKey,
         if( (aValue)[nDollarPos+1] != '$' ) {
           uint nEndPos = nDollarPos;
           // the next character is no $
-          do {
-            nEndPos++;
-          } while ( aValue[nEndPos].isNumber()
-                    || aValue[nEndPos].isLetter() || nEndPos > aValue.length() );
+          while ( nEndPos <= aValue.length() && (aValue[nEndPos].isNumber()
+                    || aValue[nEndPos].isLetter() || aValue[nEndPos]=='_' )  )
+              nEndPos++;
           QString aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
           const char* pEnv = 0;
           if (!aVarName.isEmpty())
@@ -1177,7 +1176,7 @@ void KConfigBase::writeEntry( const QString& pKey, const QRect& rRect,
                               bool bPersistent, bool bGlobal,
                               bool bNLS )
 {
-  writeEntry(pKey.utf8().data(), rRect, bPersistent, bGlobal, bNLS);   
+  writeEntry(pKey.utf8().data(), rRect, bPersistent, bGlobal, bNLS);
 }
 
 void KConfigBase::writeEntry( const char *pKey, const QRect& rRect,
