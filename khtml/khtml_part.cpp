@@ -543,6 +543,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
 KHTMLPart::~KHTMLPart()
 {
+  //kdDebug(6050) << "KHTMLPart::~KHTMLPart " << this << endl;
   if ( d->m_findDialog )
       disconnect( d->m_findDialog, SIGNAL( destroyed() ),
                   this, SLOT( slotFindDialogDestroyed() ) );
@@ -1103,9 +1104,8 @@ void KHTMLPart::clear()
 
   if ( d->m_doc )
   {
-    kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing the document" << endl;
+    kdDebug( 6090 ) << "KHTMLPart::clear(): detaching the document " << d->m_doc << endl;
     d->m_doc->detach();
-    kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing done.." << endl;
   }
 
   // Moving past doc so that onUnload works.
@@ -1118,7 +1118,10 @@ void KHTMLPart::clear()
   // do not dereference the document before the jscript and view are cleared, as some destructors
   // might still try to access the document.
   if ( d->m_doc )
+  {
+    kdDebug( 6090 ) << "KHTMLPart::clear(): dereferencing the document " << d->m_doc << endl;
     d->m_doc->deref();
+  }
   d->m_doc = 0;
 
   delete d->m_decoder;
@@ -1776,6 +1779,16 @@ void KHTMLPart::slotRedirect()
   d->m_redirectURL = QString::null;
   QString target;
   u = splitUrlTarget( u, &target );
+  if ( u.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 )
+  {
+    QVariant res = executeScript( u.right( u.length() - 11 ) );
+    if ( res.type() == QVariant::String ) {
+      begin( url() );
+      write( res.asString() );
+      end();
+    }
+    return;
+  }
   KParts::URLArgs args;
   if ( urlcmp( u, m_url.url(), true, true ) )
     args.reload = true;
@@ -2552,6 +2565,7 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
   (*it).m_frame = frame;
   (*it).m_params = params;
 
+  // Support for <frame src="javascript:string">
   if ( url.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 && !isIFrame )
   {
       // static cast is safe as of isIFrame being false.
@@ -2565,6 +2579,8 @@ bool KHTMLPart::requestFrame( khtml::RenderPart *frame, const QString &url, cons
         myurl.setPath(res.asString());
         return processObjectRequest(&(*it), myurl, QString("text/html") );
       }
+      // Error running the script
+      (*it).m_bCompleted = true;
       return false;
   }
   return requestObject( &(*it), completeURL( url ));
