@@ -25,7 +25,7 @@ int main( int argc, char** argv )
 
     qDebug("Server process started...");
 
-    KIDLTest* t = new KIDLTest( "Hello" );
+    (void) new KIDLTest( "Hello" );
 
     qDebug("Server listening ...");
 
