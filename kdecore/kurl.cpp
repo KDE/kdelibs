@@ -194,6 +194,8 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
          // Valid %xx sequence
          character = a * 16 + b; // Replace with value of %dd
          i += 2; // Skip dd
+         if (!character)
+            break; // Stop at %00
          if (character > 127)
             isLocal = true;
       }
