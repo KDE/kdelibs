@@ -2,6 +2,7 @@
 #include <kfilemetainfo.h>
 #include <qstringlist.h>
 #include <kdebug.h>
+#include <qlabel.h>
 
 int main( int argc, char **argv )
 {
@@ -25,10 +26,25 @@ int main( int argc, char **argv )
     for (it = l.begin(); it!=l.end(); ++it)
     {
         KFileMetaInfoItem item = info.item(*it);
-        if ( item.isValid() ) {
+        if ( item.isValid() && item.value().canCast(QVariant::String)) {
             kdDebug() << item.translatedKey() << " -> " << item.prefix()
-                      << item.value().toString() << item.postfix() << endl;
+                      << item.value().toString() << item.suffix() << endl;
         }
+    }
+    
+    KFileMetaInfoItem item = info.item("Thumbnail");
+    
+    if (!item.isValid()) kdDebug() << "no thumbnail\n";
+    else
+        kdDebug() << "type of thumbnail is " << item.value().typeName() << endl;
+    
+    if (item.isValid() && item.value().canCast(QVariant::Pixmap))
+    {
+        QLabel* label = new QLabel(0);
+        app.setMainWidget(label);
+        label->setPixmap(item.value().toPixmap());
+        label->show();
+        app.exec();
     }
 
     return 0;
