@@ -69,7 +69,7 @@
 #include <krecentdocument.h>
 #include <kfiledialogconf.h>
 #include <kfiledialog.h>
-#include <kfilefilter.h>
+#include <kfilefiltercombo.h>
 #include <kfilebookmark.h>
 #include <kdiroperator.h>
 #include <kimagefilepreview.h>
@@ -135,7 +135,7 @@ struct KFileDialogPrivate
 
     // do we show the speedbar for the fist time?
     bool initializeSpeedbar :1;
-    
+
     // an indicator that we're currently in a completion operation
     // we need to lock some slots for this
     bool completionLock :1;
@@ -175,7 +175,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     KConfig *config = KGlobal::config();
     KConfigGroupSaver cs( config, ConfigGroup );
-    d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults", 
+    d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
                                                    true );
     if ( d->initializeSpeedbar ) {
         KURL u;
@@ -386,7 +386,8 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
                                   d->mainWidget);
 
-    filterWidget = new KFileFilter(d->mainWidget, "KFileDialog::filterwidget");
+    filterWidget = new KFileFilterCombo(d->mainWidget, 
+                                        "KFileDialog::filterwidget");
     setFilter(filter);
     d->filterLabel->setBuddy(filterWidget);
     connect(filterWidget, SIGNAL(filterChanged()), SLOT(slotFilterChanged()));
@@ -424,7 +425,7 @@ KFileDialog::~KFileDialog()
         c.setGroup( ConfigGroup );
         c.writeEntry( "Set speedbar defaults", false );
     }
-    
+
     d->urlBar->writeConfig( KGlobal::config(), "KFileDialog Speedbar" );
     KGlobal::config()->sync();
 

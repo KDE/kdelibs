@@ -22,12 +22,12 @@
 #include <kstaticdeleter.h>
 #include <config-kfile.h>
 
-#include "kfilefilter.h"
+#include "kfilefiltercombo.h"
 
-class KFileFilter::KFileFilterPrivate
+class KFileFilterCombo::KFileFilterComboPrivate
 {
 public:
-    KFileFilterPrivate() {
+    KFileFilterComboPrivate() {
         hasAllSupportedFiles = false;
     }
 
@@ -36,12 +36,12 @@ public:
     // instead we show "All supported files". We have to translate
     // that back to the list of mimefilters in currentFilter() tho.
     bool hasAllSupportedFiles;
-    
+
     QString lastFilter;
 };
 
-KFileFilter::KFileFilter( QWidget *parent, const char *name)
-    : KComboBox(true, parent, name), d( new KFileFilterPrivate )
+KFileFilterCombo::KFileFilterCombo( QWidget *parent, const char *name)
+    : KComboBox(true, parent, name), d( new KFileFilterComboPrivate )
 {
     setTrapReturnKey( true );
     setInsertionPolicy(NoInsertion);
@@ -51,12 +51,12 @@ KFileFilter::KFileFilter( QWidget *parent, const char *name)
     m_allTypes = false;
 }
 
-KFileFilter::~KFileFilter()
+KFileFilterCombo::~KFileFilterCombo()
 {
     delete d;
 }
 
-void KFileFilter::setFilter(const QString& filter)
+void KFileFilterCombo::setFilter(const QString& filter)
 {
     clear();
     filters.clear();
@@ -80,11 +80,11 @@ void KFileFilter::setFilter(const QString& filter)
 	insertItem((tab < 0) ? *it :
 		   (*it).mid(tab + 1));
     }
-    
+
     d->lastFilter = currentText();
 }
 
-QString KFileFilter::currentFilter() const
+QString KFileFilterCombo::currentFilter() const
 {
     QString f = currentText();
     if (f == text(currentItem())) { // user didn't edit the text
@@ -102,7 +102,7 @@ QString KFileFilter::currentFilter() const
 	return f.left(tab);
 }
 
-void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaultType )
+void KFileFilterCombo::setMimeFilter( const QStringList& types, const QString& defaultType )
 {
     clear();
     filters.clear();
@@ -144,23 +144,23 @@ void KFileFilter::setMimeFilter( const QStringList& types, const QString& defaul
 
         filters.prepend( allTypes );
     }
-    
+
     d->lastFilter = currentText();
 }
 
-void KFileFilter::slotFilterChanged()
+void KFileFilterCombo::slotFilterChanged()
 {
     d->lastFilter = currentText();
 }
 
-bool KFileFilter::eventFilter( QObject *o, QEvent *e )
+bool KFileFilterCombo::eventFilter( QObject *o, QEvent *e )
 {
     if ( o == lineEdit() && e->type() == QEvent::FocusOut ) {
         if ( currentText() != d->lastFilter )
             emit filterChanged();
     }
-    
+
     return KComboBox::eventFilter( o, e );
 }
-    
-#include "kfilefilter.moc"
+
+#include "kfilefiltercombo.moc"

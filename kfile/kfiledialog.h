@@ -45,7 +45,7 @@ class KDirOperator;
 class KFileBookmark;
 class KFileBookmarkManager;
 class KURLComboBox;
-class KFileFilter;
+class KFileFilterCombo;
 class KFileView;
 class KFileItem;
 class KToolBar;
@@ -664,7 +664,7 @@ protected:
     QPopupMenu *bookmarksMenu;
     KURLComboBox *locationEdit;
 
-    KFileFilter *filterWidget;
+    KFileFilterCombo *filterWidget;
 
     KFileBookmarkManager *bookmarks;
     QStringList history; // FIXME: remove it, this is not used at all

@@ -17,8 +17,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef KFILEFILTER_H
-#define KFILEFILTER_H
+#ifndef KFILEFILTERCOMBO_H
+#define KFILEFILTERCOMBO_H
 
 #include <qstringlist.h>
 #include <qptrdict.h>
@@ -26,15 +26,15 @@
 #include <kcombobox.h>
 #include <kmimetype.h>
 
-class KFileFilterPrivate;
+class KFileFilterComboPrivate;
 
-class KFileFilter : public KComboBox
+class KFileFilterCombo : public KComboBox
 {
     Q_OBJECT
 
  public:
-    KFileFilter(QWidget *parent= 0, const char *name= 0);
-    ~KFileFilter();
+    KFileFilterCombo(QWidget *parent= 0, const char *name= 0);
+    ~KFileFilterCombo();
 
     void setFilter(const QString& filter);
 
@@ -70,8 +70,8 @@ private slots:
     void slotFilterChanged();
 
 private:
-    class KFileFilterPrivate;
-    KFileFilterPrivate *d;
+    class KFileFilterComboPrivate;
+    KFileFilterComboPrivate *d;
 };
 
 #endif
