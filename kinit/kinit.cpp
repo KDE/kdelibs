@@ -536,19 +536,23 @@ static pid_t launch(int argc, const char *_name, const char *args,
         exit(255);
      }
 
-     d.sym = lt_dlsym( d.handle, "kdemain");
+     d.sym = lt_dlsym( d.handle, "kdeinitmain");
      if (!d.sym )
      {
+        d.sym = lt_dlsym( d.handle, "kdemain" );
+        if ( !d.sym ) 
+        { 
 #if ! KDE_IS_VERSION( 3, 90, 0 )
-        d.sym = lt_dlsym( d.handle, "main");
+           d.sym = lt_dlsym( d.handle, "main");
 #endif
-        if (!d.sym )
-        {
-           const char * ltdlError = lt_dlerror();
-           fprintf(stderr, "Could not find kdemain: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
-           QString errorMsg = i18n("Could not find 'kdemain' in '%1'.\n%2").arg(libpath)
-		.arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
-           exitWithErrorMsg(errorMsg);
+           if (!d.sym )
+           {
+              const char * ltdlError = lt_dlerror();
+              fprintf(stderr, "Could not find kdemain: %s\n", ltdlError != 0 ? ltdlError : "(null)" );
+              QString errorMsg = i18n("Could not find 'kdemain' in '%1'.\n%2").arg(libpath)
+                 .arg(ltdlError ? QFile::decodeName(ltdlError) : i18n("Unknown error"));
+              exitWithErrorMsg(errorMsg);
+           }
         }
      }
 
