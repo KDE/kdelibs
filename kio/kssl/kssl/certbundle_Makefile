@@ -19,7 +19,7 @@ extract: cert_extract
 	./cert_bundle cert7.db cert.index ca-cert-bundle.pem
 
 cert_extract.o: cert_extract.c
-	$(CC) $(CFLAGS) -I$(SSLEAY_INC) -ocert_extract.o -c cert_extract.c
+	$(CC) $(CFLAGS) -I$(SSLEAY_INC) -o cert_extract.o -c cert_extract.c
 
 cert_extract: cert_extract.o
 	$(CC) $(LDFLAGS) -ocert_extract cert_extract.o -L$(SSLEAY_LIB) -lcrypto -ldb1
