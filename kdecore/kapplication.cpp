@@ -2270,7 +2270,8 @@ void KApplication::invokeMailer(const QString &to, const QString &cc, const QStr
    // TODO this should check if cmd has a .desktop file, and use data from it, together
    // with sending more ASN data
    if (kdeinitExec(cmd, cmdTokens, &error, NULL, startup_id ))
-      kdWarning() << "Could not launch mail client:\n" << error << endl;
+     QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Mail Client"),
+           i18n("Could not launch the mail client:\n\n%1").arg(error), i18n("&OK"));
 }
 
 
@@ -2283,9 +2284,12 @@ void KApplication::invokeBrowser( const QString &url, const QCString& startup_id
 {
    QString error;
 
-   if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, true))
+   if (startServiceByDesktopName("kfmclient", url, &error, 0, 0, startup_id, false))
    {
-      kdWarning() << "Could not launch browser:\n" << error << endl;
+      QMessageBox::critical(kapp->mainWidget(), i18n("Could not Launch Browser"),
+           i18n("Could not launch the browser.\n\n"
+                "Please ensure that you have the kdebase\n"
+                "package installed correctly!"), i18n("&OK"));
       return;
    }
 }
