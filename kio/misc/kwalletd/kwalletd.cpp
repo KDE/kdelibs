@@ -654,6 +654,10 @@ bool KWalletD::isOpen(const QString& wallet) const {
 
 
 bool KWalletD::isOpen(int handle) {
+	if (handle == 0) {
+		return false;
+	}
+
 	KWallet::Backend *rc = _wallets.find(handle);
 
 	if (rc == 0 && ++_failed > 5) {
@@ -959,6 +963,10 @@ void KWalletD::invalidateHandle(int handle) {
 
 
 KWallet::Backend *KWalletD::getWallet(const QCString& appid, int handle) {
+	if (handle == 0) {
+		return 0L;
+	}
+
 	KWallet::Backend *w = _wallets.find(handle);
 
 	if (w) { // the handle is valid
