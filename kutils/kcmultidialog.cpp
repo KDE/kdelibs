@@ -24,6 +24,7 @@
 #include <qcursor.h>
 #include <qhbox.h>
 #include <qlayout.h>
+#include <qpushbutton.h>
 
 #include <kaboutdata.h>
 #include <kapplication.h>
@@ -158,6 +159,9 @@ void KCMultiDialog::apply()
 
 void KCMultiDialog::slotApply()
 {
+    QPushButton *button = actionButton(Apply);
+    if (button)
+        button->setFocus();
     emit applyClicked();
     apply();
 }
@@ -165,6 +169,9 @@ void KCMultiDialog::slotApply()
 
 void KCMultiDialog::slotOk()
 {
+    QPushButton *button = actionButton(Ok);
+    if (button)
+        button->setFocus();
     emit okClicked();
     apply();
     accept();
