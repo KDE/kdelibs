@@ -113,9 +113,7 @@ RenderObject::RenderObject()
     m_containsOverhangingFloats = false;
     m_hasFirstLine = false;
     m_verticalPosition = PositionUndefined;
-    m_isSelectionStart = false;
-    m_isSelectionEnd = false;
-    m_isMousePressed = false;
+    m_isSelectionBorder = false;
 }
 
 RenderObject::~RenderObject()
@@ -564,7 +562,6 @@ void RenderObject::dump(QTextStream *stream, QString ind) const
     if (minMaxKnown()) { *stream << " minMaxKnown"; }
     if (containsPositioned()) { *stream << " containsPositioned"; }
     if (hasFirstLine()) { *stream << " hasFirstLine"; }
-    if (isMousePressed()) { *stream << " isMousePressed"; }
     *stream << endl;
 
     RenderObject *child = firstChild();

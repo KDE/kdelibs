@@ -128,9 +128,7 @@ public:
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
     bool hasFirstLine() const { return m_hasFirstLine; }
-    bool isSelectionStart() const { return m_isSelectionStart; }
-    bool isSelectionEnd() const { return m_isSelectionEnd; }
-    bool isMousePressed() const { return m_isMousePressed; }
+    bool isSelectionBorder() const { return m_isSelectionBorder; }
     RenderRoot* root() const;
 
     /**
@@ -151,9 +149,7 @@ public:
     void setVisible(bool b=true) { m_visible = b; }
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
-    void setIsSelectionStart(bool b=true) { m_isSelectionStart = b; }
-    void setIsSelectionEnd(bool b=true) { m_isSelectionEnd = b; }
-    void setIsMousePressed(bool b=true) { m_isMousePressed = b; }
+    void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
 
     // for discussion of lineHeight see CSS2 spec
     virtual int lineHeight( bool firstLine ) const;
@@ -355,11 +351,11 @@ private:
     bool m_parsing                   : 1;
     bool m_minMaxKnown               : 1;
     bool m_floating                  : 1;
-
     bool m_positioned                : 1;
     bool m_containsPositioned        : 1;
     bool m_relPositioned             : 1;
     bool m_printSpecial              : 1; // if the box has something special to print (background, border, etc)
+
     bool m_isAnonymous               : 1;
     bool m_visible                   : 1;
     bool m_isText                    : 1;
@@ -367,10 +363,9 @@ private:
     bool m_replaced                  : 1;
     bool m_containsOverhangingFloats : 1;
     bool m_hasFirstLine              : 1;
-    bool m_isSelectionStart          : 1;
-    bool m_isSelectionEnd            : 1;
-    bool m_isMousePressed            : 1;
+    bool m_isSelectionBorder          : 1;
 
+    // note: do not add unnecessary bitflags, we have 32 bit already!
     friend class RenderContainer;
     friend class RenderRoot;
 };

@@ -195,11 +195,7 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
     if(specialObjects)
     {
         SpecialObject* r;
-#if QT_VERSION < 300
-        QListIterator<SpecialObject> it(*specialObjects);
-#else
         QPtrListIterator<SpecialObject> it(*specialObjects);
-#endif
         for ( ; (r = it.current()); ++it )
         {
             if (r->node->containingBlock()==this)
@@ -342,18 +338,18 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 
     // set selection start
     if (m_selectionStart)
-        m_selectionStart->setIsSelectionStart(false);
+        m_selectionStart->setIsSelectionBorder(false);
     m_selectionStart = s;
     if (m_selectionStart)
-        m_selectionStart->setIsSelectionStart(true);
+        m_selectionStart->setIsSelectionBorder(true);
     m_selectionStartPos = sp;
 
     // set selection end
     if (m_selectionEnd)
-        m_selectionEnd->setIsSelectionEnd(false);
+        m_selectionEnd->setIsSelectionBorder(false);
     m_selectionEnd = e;
     if (m_selectionEnd)
-        m_selectionEnd->setIsSelectionEnd(true);
+        m_selectionEnd->setIsSelectionBorder(true);
     m_selectionEndPos = ep;
 
     // update selection status of all objects between m_selectionStart and m_selectionEnd
@@ -413,12 +409,12 @@ void RenderRoot::clearSelection()
 
     // set selection start & end to 0
     if (m_selectionStart)
-        m_selectionStart->setIsSelectionStart(false);
+        m_selectionStart->setIsSelectionBorder(false);
     m_selectionStart = 0;
     m_selectionStartPos = -1;
 
     if (m_selectionEnd)
-        m_selectionEnd->setIsSelectionEnd(false);
+        m_selectionEnd->setIsSelectionBorder(false);
     m_selectionEnd = 0;
     m_selectionEndPos = -1;
 }

@@ -278,12 +278,6 @@ void RenderWidget::handleDOMEvent(EventImpl *evt)
     if (evt->isMouseEvent()) {
 	MouseEventImpl *mev = static_cast<MouseEventImpl*>(evt);
 
-	// Keep track of whether or not the mouse is pressed inside this element
-	if (mev->id() == EventImpl::MOUSEDOWN_EVENT)
-	    setIsMousePressed(true);
-	else if (mev->id() == EventImpl::MOUSEUP_EVENT)
-	    setIsMousePressed(false);
-
 	// Work out event type
 	QEvent::Type qtype = QEvent::None;
 	if (mev->id() == EventImpl::MOUSEDOWN_EVENT)
