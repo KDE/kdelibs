@@ -23,8 +23,8 @@
 // KDE HTML Widget -- decoder for input stream
 // $Id$
 
-//#define DECODE_DEBUG
 #undef DECODE_DEBUG
+//#define DECODE_DEBUG
 
 #include "decoder.h"
 using namespace khtml;
@@ -170,32 +170,34 @@ QString Decoder::decode(const char *data, int len)
                         int pos = 0;
                         //if( (pos = str.find("http-equiv", pos)) == -1) break;
                         //if( (pos = str.find("content-type", pos)) == -1) break;
-			bool endFlag = false;
-			while( !endFlag ) {
+			while( pos < ( int ) str.length() ) {
 			    if( (pos = str.find("charset", pos)) == -1) break;
 			    pos += 7;
-			    while(  pos < (int)str.length() &&
-                                    (str[pos] == ' ' || str[pos] == '=' ||
-                                     str[pos] == '"' || str[pos] == '\'') )
+                            // skip whitespace..
+			    while(  pos < (int)str.length() && str[pos] <= ' ' ) pos++;
+                            if ( pos == ( int )str.length()) break;
+                            if ( str[pos++] != '=' ) continue;
+                            while ( pos < ( int )str.length() &&
+                                    ( str[pos] <= ' ' ) || str[pos] == '=' || str[pos] == '"' || str[pos] == '\'')
 				pos++;
 
+                            // end ?
+                            if ( pos == ( int )str.length() ) break;
 			    uint endpos = pos;
 			    while( endpos < str.length() &&
                                    (str[endpos] != ' ' && str[endpos] != '"' && str[endpos] != '\''
                                     && str[endpos] != ';' && str[endpos] != '>') )
 				endpos++;
-			    if ( endpos >= str.length() || str[endpos] == '>' )
-				endFlag = true;
 			    enc = str.mid(pos, endpos-pos);
 #ifdef DECODE_DEBUG
 			    kdDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
 #endif
 			    setEncoding(enc, true);
-			    if( haveEncoding )
-				goto found;
+			    if( haveEncoding ) goto found;
+
+                            if ( endpos >= str.length() || str[endpos] == '/' || str[endpos] == '>' ) break;
+
 			    pos = endpos + 1;
-			    if ( endpos >= str.length() )
-				break;
 			}
 		    }
                     case ID_SCRIPT:
