@@ -315,7 +315,7 @@ ActivationImp::ActivationImp(ExecState *exec, FunctionImp *f, const List &args)
 {
   Value protect(this);
   arguments = new ArgumentsImp(exec,f, args);
-  put(exec,"arguments", arguments, DontDelete);
+  put(exec,"arguments", arguments, Internal|DontDelete);
 }
 
 ActivationImp::~ActivationImp()

@@ -47,7 +47,7 @@ ArrayInstanceImp::ArrayInstanceImp(const Object &proto)
 // Special implementation of [[Put]] - see ECMA 15.4.5.1
 void ArrayInstanceImp::put(ExecState *exec, const UString &propertyName, const Value &value, int attr)
 {
-  if (attr == None && !canPut(exec,propertyName))
+  if ((attr == None || attr == DontDelete) && !canPut(exec,propertyName))
     return;
 
   if (hasProperty(exec,propertyName)) {

@@ -318,7 +318,7 @@ void ObjectImp::put(ExecState *exec, const UString &propertyName,
   // putValue() is used for JS assignemnts. It passes no attribute.
   // Assume that a C++ implementation knows what it is doing
   // and let it override the canPut() check.
-  if (attr == None && !canPut(exec,propertyName)) {
+  if ((attr == None || attr == DontDelete) && !canPut(exec,propertyName)) {
 #ifdef KJS_VERBOSE
     fprintf( stderr, "canPut %s said NO\n", propertyName.ascii() );
 #endif

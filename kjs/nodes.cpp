@@ -2976,7 +2976,7 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
   List empty;
   //  Value proto = exec->interpreter()->builtinObject().construct(exec,List::empty());
   Value proto = exec->interpreter()->builtinObject().construct(exec,empty);
-  func.put(exec, "prototype", proto, DontDelete);
+  func.put(exec, "prototype", proto, Internal|DontDelete);
 
   int plen = 0;
   for(ParameterNode *p = param; p != 0L; p = p->nextParam(), plen++)
