@@ -35,7 +35,7 @@ class Handler;
 class Table;
 class Field;
 class Query; 
-
+class ConnectorPrivate;
 /**
  * @short base interaction class for plugins.
  *
@@ -237,6 +237,7 @@ class Connector : public Object {
 
     bool _connected;
 
+    ConnectorPrivate *d;
 };
 
 };

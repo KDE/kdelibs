@@ -33,6 +33,8 @@ namespace KDB {
 
 class Connector;
 class Connection;
+class ConnectionPrivate;
+ 
 typedef QList<Connection>         ConnectionList;
 typedef QListIterator<Connection> ConnectionIterator;
 
@@ -214,6 +216,9 @@ class Connection : public Object {
     bool m_saveStatus;
     
     Connection(const QString &pluginName, const QString &host, int port, QObject *parent = 0);
+
+    ConnectionPrivate *d;
+
 };
 
 }

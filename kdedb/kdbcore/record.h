@@ -35,7 +35,8 @@ class Recordset;
 class Record;
 class Connector;
 class Handler;
-
+class RecordPrivate;
+ 
 typedef KSharedPtr<Record> RecordPtr;
 
 /**
@@ -89,6 +90,8 @@ class Record : public DataObject {
     FieldList m_fields ;
     bool m_new;
     KDB_ULONG m_absPos;
+
+    RecordPrivate *d;
 };
  
 }

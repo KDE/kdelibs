@@ -34,6 +34,8 @@ class Capability;
 class Connector;
 
 class Plugin;
+class PluginPrivate;
+
 typedef QList<Plugin>         PluginList;
 typedef QListIterator<Plugin> PluginIterator;
 
@@ -155,6 +157,7 @@ public:
  private:
 
     ConnectionList m_connections;
+    PluginPrivate *d;
 };
 
 };

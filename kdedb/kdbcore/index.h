@@ -29,6 +29,8 @@
 namespace KDB {
 
 class Index;
+class IndexPrivate;
+
 typedef QList<Index>         IndexList;
 typedef QListIterator<Index> IndexIterator;
 	
@@ -48,6 +50,9 @@ public:
     Index(QObject *parent = 0L, const char *name = 0L);
 
     virtual ~Index();
+
+private:
+    IndexPrivate *d;
 
 };
 

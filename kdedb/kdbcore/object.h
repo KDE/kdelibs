@@ -30,6 +30,8 @@ class QObject;
 
 namespace KDB {
 
+class ObjectPrivate;
+    
 /**
  * Base class for all KDB objects.
  *
@@ -66,6 +68,8 @@ class Object: public QObject {
     
     static QQueue<Exception> m_errors;
 
+    ObjectPrivate *d;
+    
 #if 0
     static QPtrDict<char> d;
     static int allocs;

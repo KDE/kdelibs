@@ -38,6 +38,8 @@ namespace KDB {
 class Connector;
 
 class Database;
+class DatabasePrivate;
+ 
 typedef QList<Database>         DatabaseList;
 typedef QListIterator<Database> DatabaseIterator;
 
@@ -173,6 +175,8 @@ class Database : public Object{
 
     void createQueryTable();
 
+    DatabasePrivate *d;
+    
 };
 
 }

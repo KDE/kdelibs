@@ -30,7 +30,7 @@
 namespace KDB {
 
 class Recordset;
-
+class RecordsetIteratorPrivate;
 /**
  * This is an iterator over a recordset.
  *
@@ -81,6 +81,8 @@ class RecordsetIterator: public Object {
     Recordset *m_rset;
     KDB_ULONG m_pos;
     bool m_bof;
+
+    RecordsetIteratorPrivate *d;
     
 };
  

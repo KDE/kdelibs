@@ -30,6 +30,8 @@ class QTime;
 class QDateTime;
 
 class Value;
+class ValuePrivate; // not sure it is useful at all, but who knows...
+
 /**
  * Representation of a value object.
  *
@@ -127,6 +129,7 @@ class Value :public QVariant {
     
     Type t;
     void *ptr;
+    ValuePrivate *d;
 };
  
 

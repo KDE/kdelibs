@@ -34,6 +34,8 @@ namespace KDB {
 
 
 class Field;
+class FieldPrivate;
+ 
 typedef QList<Field>         FieldList;
 typedef QListIterator<Field> FieldIterator;
 
@@ -138,6 +140,9 @@ class Field :public Object {
     bool m_acceptNull;
     QString m_comment;
     bool m_changed;
+
+    FieldPrivate *d;
+    
 };
  
 }

@@ -31,7 +31,8 @@
 namespace KDB {
 
 class Table;
-
+class TablePrivate;
+ 
 typedef KSharedPtr<Table> TablePtr;
 typedef QValueList<TablePtr> TableList;
 typedef QValueListIterator<TablePtr> TableIterator;
@@ -156,6 +157,7 @@ public:
 
     bool m_design;
 
+    TablePrivate *d;
 };
 
 }

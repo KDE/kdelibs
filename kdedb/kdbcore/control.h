@@ -28,6 +28,9 @@ class QWidget;
 
 namespace KDB {
 
+
+class ControlPrivate;
+
 /**
  * Base class to extend the control dialog. All plugins that need a specific
  * configuration dialog in the KControl module must provide a subclass of
@@ -53,6 +56,10 @@ class Control : public Capability {
      * save its data on the provided config object
      */
     virtual bool showDialog(KConfigBase *conf = 0L, QWidget *parent = 0L, const char * name = 0L) = 0;
+
+ private:
+
+    ControlPrivate *d;
 };
 
 }

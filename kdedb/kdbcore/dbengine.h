@@ -35,7 +35,8 @@ class KConfigBase;
 namespace KDB {
 
 class Database;
-
+class DBEnginePrivate;
+ 
 /**
  * Entry point for the library.
  *
@@ -188,6 +189,8 @@ class DBEngine : public Object{
 
     ConnectionList m_connections;
     KConfigBase *m_config;
+
+    DBEnginePrivate *d;
 };
 
 }
