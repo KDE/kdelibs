@@ -398,8 +398,9 @@ int Lexer::lex()
   if (state == Number) {
     dval = strtod(buffer8, 0L);
   } else if (state == Hex) { // scan hex numbers
-    int i;
-    sscanf(buffer8, "%i", &i);
+    // TODO: support long unsigned int
+    unsigned int i;
+    sscanf(buffer8, "%x", &i);
     dval = i;
     state = Number;
   } else if (state == Octal) {   // scan octal number
