@@ -149,6 +149,9 @@ struct KFileDialogPrivate
     // The file class used for KRecentDirs
     QString fileClass;
 
+    // full path to the bookmarksFile
+    QString bookmarksFile;
+    
 };
 
 KURL *KFileDialog::lastDirectory; // to set the start path
@@ -180,6 +183,8 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
     KConfigGroupSaver cs( config, ConfigGroup );
     d->initializeSpeedbar = config->readBoolEntry( "Set speedbar defaults",
                                                    true );
+    d->urlBar->readConfig( config, "KFileDialog Speedbar" );
+
     if ( d->initializeSpeedbar ) {
         KURL u;
         u.setPath( KGlobalSettings::desktopPath() );
@@ -199,7 +204,6 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
             d->urlBar->insertItem( u, i18n("Network"), false, "network_local" );
     }
 
-    d->urlBar->readConfig( config, "KFileDialog Speedbar" );
     d->urlBar->setFixedWidth( d->urlBar->sizeHint().width() );
 
     d->completionLock = false;
@@ -295,12 +299,11 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
 
     bookmarks = new KFileBookmarkManager();
     Q_CHECK_PTR( bookmarks );
-    connect( bookmarks, SIGNAL( changed() ),
-             this, SLOT( bookmarksChanged() ) );
+    connect( bookmarks, SIGNAL( changed() ), this, SLOT( bookmarksChanged() ));
 
-    QString bmFile = locate("data", QString::fromLatin1("kfile/bookmarks.html"));
-    if (!bmFile.isNull())
-        bookmarks->read(bmFile);
+    d->bookmarksFile = locate("data", "kfile/bookmarks.xml");
+    if (!d->bookmarksFile.isNull())
+        bookmarks->read(d->bookmarksFile);
 
     bookmarksMenu = new QPopupMenu( this );
     toolbar->insertButton(QString::fromLatin1("bookmark"),
@@ -1140,6 +1143,9 @@ void KFileDialog::bookmarkMenuActivated( int choice )
     if (choice == 0) { // add current to bookmarks
         addToBookmarks();
     }
+//     else if (choice == 1) { // edit bookmarks
+//         KApplication::startServiceByDesktopName( "keditbookmarks", "
+//     }
     else if (choice > 0) {
         // Select a bookmark (this will not work if there are submenus)
         int i = 1;

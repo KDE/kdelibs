@@ -788,6 +788,7 @@ private slots:
     void slotProgress( int );
     void slotShowProgress();
     void slotIOFinished();
+    void slotCanceled();
     void slotRedirected( const KURL& );
 
     void slotViewActionAdded( KAction * );

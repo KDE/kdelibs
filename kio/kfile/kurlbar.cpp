@@ -343,7 +343,10 @@ QSize KURLBar::sizeHint() const
 
 QSize KURLBar::minimumSizeHint() const
 {
-    return sizeHint();
+    QSize s = sizeHint(); // ###
+    int w = s.width()  + m_listBox->verticalScrollBar()->width();
+    int h = s.height() + m_listBox->horizontalScrollBar()->height();
+    return QSize( w, h );
 }
 
 void KURLBar::slotSelected( QListBoxItem *item )

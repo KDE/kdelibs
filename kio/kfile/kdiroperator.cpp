@@ -945,7 +945,7 @@ void KDirOperator::setDirLister( KDirLister *lister )
     connect( dir, SIGNAL(newItems(const KFileItemList &)),
              SLOT(insertNewFiles(const KFileItemList &)));
     connect( dir, SIGNAL(completed()), SLOT(slotIOFinished()));
-    connect( dir, SIGNAL(canceled()), SLOT(resetCursor()));
+    connect( dir, SIGNAL(canceled()), SLOT(slotCanceled()));
     connect( dir, SIGNAL(deleteItem(KFileItem *)),
              SLOT(itemDeleted(KFileItem *)));
     connect( dir, SIGNAL(redirection( const KURL& )),
@@ -1400,6 +1400,15 @@ void KDirOperator::slotIOFinished()
     emit finishedLoading();
     resetCursor();
 
+    if ( fileView )
+        fileView->listingCompleted();
+}
+
+void KDirOperator::slotCanceled()
+{
+    emit finishedLoading();
+    resetCursor();
+    
     if ( fileView )
         fileView->listingCompleted();
 }
