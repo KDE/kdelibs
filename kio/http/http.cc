@@ -3082,7 +3082,10 @@ HTTPProtocol::checkCacheEntry( bool readWrite)
    {
       date = (time_t) strtoul(buffer, 0, 10);
       if (m_maxCacheAge && (difftime(currentDate, date) > m_maxCacheAge))
-         ok = false; // Expired
+      {
+         m_bMustRevalidate = true;
+         m_expireDate = currentDate;
+      }
    }
 
    // Expiration Date
