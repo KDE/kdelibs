@@ -218,9 +218,13 @@ void KFileItem::init( bool _determineMimeTypeOnDemand )
   if (!m_pMimeType && !m_url.isEmpty())
   {
       bool accurate = false;
-      m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL,
+      bool isLocalURL;
+      KURL url = mostLocalURL(isLocalURL);
+      
+      m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL,
                                           // use fast mode if not mimetype on demand
                                           _determineMimeTypeOnDemand, &accurate );
+      //kdDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
       // if we didn't use fast mode, or if we got a result, then this is the mimetype
       // otherwise, determineMimeType will be able to do better.
       m_bMimeTypeKnown = (!_determineMimeTypeOnDemand) || accurate;
@@ -419,8 +423,11 @@ KMimeType::Ptr KFileItem::determineMimeType()
 {
   if ( !m_pMimeType || !m_bMimeTypeKnown )
   {
-    m_pMimeType = KMimeType::findByURL( m_url, m_fileMode, m_bIsLocalURL );
-    //kdDebug() << "finding mimetype for " << m_url.url() << " : " << m_pMimeType->name() << endl;
+    bool isLocalURL;
+    KURL url = mostLocalURL(isLocalURL);
+    
+    m_pMimeType = KMimeType::findByURL( url, m_fileMode, isLocalURL );
+    //kdDebug() << "finding mimetype for " << url.url() << " : " << m_pMimeType->name() << endl;
     m_bMimeTypeKnown = true;
   }
 
@@ -438,7 +445,12 @@ bool KFileItem::isMimeTypeKnown() const
 QString KFileItem::mimeComment()
 {
  KMimeType::Ptr mType = determineMimeType();
- QString comment = mType->comment( m_url, m_bIsLocalURL );
+
+ bool isLocalURL;
+ KURL url = mostLocalURL(isLocalURL);
+ 
+ QString comment = mType->comment( url, isLocalURL );
+ //kdDebug() << "finding comment for " << url.url() << " : " << m_pMimeType->name() << endl;
   if (!comment.isEmpty())
     return comment;
   else
@@ -448,7 +460,12 @@ QString KFileItem::mimeComment()
 QString KFileItem::iconName()
 {
   if (d && (!d->iconName.isEmpty())) return d->iconName;
-  return determineMimeType()->icon(m_url, m_bIsLocalURL);
+
+  bool isLocalURL;
+  KURL url = mostLocalURL(isLocalURL);
+
+  //kdDebug() << "finding icon for " << url.url() << " : " << m_pMimeType->name() << endl;
+  return determineMimeType()->icon(url, isLocalURL);
 }
 
 int KFileItem::overlays() const
@@ -514,7 +531,11 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
       mime = KMimeType::findByURL( sf, 0, m_bIsLocalURL );
   }
 
-  QPixmap p = mime->pixmap( m_url, KIcon::Desktop, _size, _state );
+  bool isLocalURL;
+  KURL url = mostLocalURL(isLocalURL);
+  
+  QPixmap p = mime->pixmap( url, KIcon::Desktop, _size, _state );
+  //kdDebug() << "finding pixmap for " << url.url() << " : " << mime->name() << endl;
   if (p.isNull())
       kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
 
@@ -870,6 +891,24 @@ const KFileMetaInfo & KFileItem::metaInfo(bool autoget, int) const
     }
 
     return m_metaInfo;
+}
+
+KURL KFileItem::mostLocalURL(bool &local) const
+{
+    QString local_path = localPath();
+
+    if ( !local_path.isEmpty() )
+    {
+        local = true;
+        KURL url;
+        url.setPath(local_path);
+        return url;
+    }
+    else
+    {
+        local = m_bIsLocalURL;
+        return m_url;
+    }
 }
 
 void KFileItem::virtual_hook( int, void* )
