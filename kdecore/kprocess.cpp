@@ -231,6 +231,7 @@ public:
    int ptyMasterFd;
    int ptySlaveFd;
    struct winsize ptySize;
+   KUnixProcess *proc;  // could replace "runs" and "pid" in kde4
    
    QMap<QString,QString> env;
    QString wd;
@@ -259,10 +260,10 @@ KProcess::KProcess( QObject* parent, const char *name )
     input_sent(0),
     input_total(0)
 {
+  KProcessController::ref();
+
   d = new KProcessPrivate;
 
-  KProcessController::create();
-  KProcessController::theKProcessController->addKProcess(this);
   out[0] = out[1] = -1;
   in[0] = in[1] = -1;
   err[0] = err[1] = -1;
@@ -283,10 +284,10 @@ KProcess::KProcess()
     input_sent(0),
     input_total(0)
 {
+  KProcessController::ref();
+
   d = new KProcessPrivate;
 
-  KProcessController::create();
-  KProcessController::theKProcessController->addKProcess(this);
   out[0] = out[1] = -1;
   in[0] = in[1] = -1;
   err[0] = err[1] = -1;
@@ -334,38 +335,25 @@ KProcess::runPrivileged() const
 
 KProcess::~KProcess()
 {
-  // destroying the KProcess instance sends a SIGKILL to the
-  // child process (if it is running) after removing it from the
-  // list of valid processes (if the process is not started as
-  // "DontCare")
+  kill(SIGKILL);
+  detach();
 
-  KProcessController::theKProcessController->removeKProcess(this);
-  // this must happen before we kill the child
-  // TODO: block the signal while removing the current process from the process list
-
-  if (runs && (run_mode != DontCare))
-    kill(SIGKILL);
-
-  // Clean up open fd's and socket notifiers.
-  closeStdin();
-  closeStdout();
-  closeStderr();
-
-  // TODO: restore SIGCHLD and SIGPIPE handler if this is the last KProcess
   delete d;
+
+  KProcessController::deref();
 }
 
 void KProcess::detach()
 {
-  KProcessController::theKProcessController->removeKProcess(this);
-
-  runs = false;
-  pid_ = 0;
-
-  // Clean up open fd's and socket notifiers.
-  closeStdin();
-  closeStdout();
-  closeStderr();
+  if (runs) {
+    d->proc->kproc = 0; // make KProcessController forget about us
+    runs = false;
+    pid_ = 0; // deny that the process has ever run
+    // Clean up open fd's and socket notifiers.
+    closeStdin();
+    closeStdout();
+    closeStderr();
+  }
 }
 
 void KProcess::setBinaryExecutable(const char *filename)
@@ -475,8 +463,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
   if (pipe(fd))
      fd[0] = fd[1] = -1; // Pipe failed.. continue
 
-  runs = true;
-
   QApplication::flushX();
 
   // we don't use vfork() because
@@ -529,14 +515,12 @@ bool KProcess::start(RunMode runmode, Communication comm)
 
         // commAbort();
         pid_ = 0;
-        runs = false;
         free(arglist);
         return false;
   }
   // the parent continues here
   free(arglist);
 
-  input_data = 0; // Discard any data for stdin that might still be there
   if (!commSetupDoneP())
     kdDebug(175) << "Could not finish comm setup in parent!" << endl;
 
@@ -549,7 +533,6 @@ bool KProcess::start(RunMode runmode, Communication comm)
      if (n == 1)
      {
          // exec() failed
-         runs = false;
          close(fd[0]);
          waitpid(pid_, 0, 0);
          pid_ = 0;
@@ -565,18 +548,24 @@ bool KProcess::start(RunMode runmode, Communication comm)
   }
   close(fd[0]);
 
-  if (run_mode == Block) {
+  switch (runmode)
+  {
+  case Block:
+    runs = true; // for commClose
     commClose();
-
-    // The SIGCHLD handler of the process controller will catch
-    // the exit and set the status
-    while(runs)
-    {
-       KProcessController::theKProcessController->
-            waitForProcessExit(10);
-    }
-    runs = FALSE;
-    emit processExited(this);
+    waitpid(pid_, &status, 0);
+    processHasExited(status);
+    break;
+  case DontCare:
+    KProcessController::theKProcessController->registerProcess(pid_, 0);
+    pid_ = 0; // deny that the process has ever run
+    commClose();
+    break;
+  default: // NotifyOnExit
+    d->proc = KProcessController::theKProcessController->registerProcess(pid_, this);
+    input_data = 0; // Discard any data for stdin that might still be there
+    runs = true;
+    break;
   }
 
   return true;
@@ -790,19 +779,14 @@ QString KProcess::quote(const QString &arg)
 
 void KProcess::processHasExited(int state)
 {
-  if (runs)
-  {
-    runs = false;
+    // only successfully run NotifyOnExit and Block processes ever get here
+
     status = state;
+    runs = false; // do this before commClose, so it knows we're dead
 
     commClose(); // cleanup communication sockets
 
-    // also emit a signal if the process was run Blocking
-    if (DontCare != run_mode)
-    {
-      emit processExited(this);
-    }
-  }
+    emit processExited(this);
 }
 
 

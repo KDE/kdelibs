@@ -33,18 +33,23 @@
 
 #include <qsocketnotifier.h>
 
-KProcessController *KProcessController::theKProcessController = 0;
+KProcessController *KProcessController::theKProcessController;
+int KProcessController::refCount;
 
-void KProcessController::create()
+void KProcessController::ref()
 {
-  if ( !theKProcessController )
+  if( !refCount )
     theKProcessController = new KProcessController;
+  refCount++;
 }
 
-void KProcessController::destroy()
+void KProcessController::deref()
 {
-  delete theKProcessController;
-  theKProcessController = 0;
+  refCount--;
+  if( !refCount ) {
+    delete theKProcessController;
+    theKProcessController = 0;
+  }
 }
 
 KProcessController::KProcessController()
@@ -55,16 +60,15 @@ KProcessController::KProcessController()
     abort();
   }
 
-  fcntl(fd[0], F_SETFL, O_NONBLOCK);
-  fcntl(fd[0], F_SETFD, FD_CLOEXEC);
-  fcntl(fd[1], F_SETFD, FD_CLOEXEC);
+  fcntl( fd[0], F_SETFL, O_NONBLOCK ); // in case slotDoHousekeeping is called without polling first
+  fcntl( fd[1], F_SETFL, O_NONBLOCK ); // in case it fills up
+  fcntl( fd[0], F_SETFD, FD_CLOEXEC );
+  fcntl( fd[1], F_SETFD, FD_CLOEXEC );
 
-  notifier = new QSocketNotifier(fd[0], QSocketNotifier::Read);
-  notifier->setEnabled(true);
-  QObject::connect(notifier, SIGNAL(activated(int)),
-				   this, SLOT(slotDoHousekeeping(int)));
-  connect( &delayedChildrenCleanupTimer, SIGNAL( timeout()),
-      SLOT( delayedChildrenCleanup()));
+  notifier = new QSocketNotifier( fd[0], QSocketNotifier::Read );
+  notifier->setEnabled( true );
+  QObject::connect( notifier, SIGNAL(activated(int)),
+                    SLOT(slotDoHousekeeping()));
 
   setupHandlers();
 }
@@ -75,8 +79,8 @@ KProcessController::~KProcessController()
 
   delete notifier;
 
-  close(fd[0]);
-  close(fd[1]);
+  close( fd[0] );
+  close( fd[1] );
 }
 
 
@@ -120,192 +124,81 @@ void KProcessController::resetHandlers()
   // there should be no problem with SIGPIPE staying SIG_IGN
 }
 
-// block SIGCHLD handler, because it accesses processList
-void KProcessController::addKProcess( KProcess* p )
+// the pipe is needed to sync the child reaping with our event processing,
+// as otherwise there are race conditions, locking requirements, and things
+// generally get harder
+void KProcessController::theSigCHLDHandler( int arg )
 {
-  sigset_t newset, oldset;
-  sigemptyset( &newset );
-  sigaddset( &newset, SIGCHLD );
-  sigprocmask( SIG_BLOCK, &newset, &oldset );
-  processList.append( p );
-  sigprocmask( SIG_SETMASK, &oldset, 0 );
-}
+  int saved_errno = errno;
 
-void KProcessController::removeKProcess( KProcess* p )
-{
-  sigset_t newset, oldset;
-  sigemptyset( &newset );
-  sigaddset( &newset, SIGCHLD );
-  sigprocmask( SIG_BLOCK, &newset, &oldset );
-  processList.remove( p );
-  sigprocmask( SIG_SETMASK, &oldset, 0 );
-}
+  char dummy = 0;
+  ::write( theKProcessController->fd[1], &dummy, 1 );
 
-//using a struct which contains both the pid and the status makes it easier to write
-//and read the data into the pipe
-//especially this solves a problem which appeared on my box where slotDoHouseKeeping() received
-//only 4 bytes (with some debug output around the write()'s it received all 8 bytes)
-//don't know why this happened, but when writing all 8 bytes at once it works here, aleXXX
-struct waitdata
-{
-  pid_t pid;
-  int status;
-};
-
-void KProcessController::theSigCHLDHandler(int arg)
-{
-  struct waitdata wd;
-//  int status;
-//  pid_t this_pid;
-  int saved_errno;
-
-  saved_errno = errno;
-  // since waitpid and write change errno, we have to save it and restore it
-  // (Richard Stevens, Advanced programming in the Unix Environment)
-
-  bool found = false;
-  if( theKProcessController != 0 ) {
-      // iterating the list doesn't perform any system call
-      for( QValueList<KProcess*>::ConstIterator it = theKProcessController->processList.begin();
-           it != theKProcessController->processList.end();
-           ++it )
-      {
-        if( !(*it)->isRunning())
-            continue;
-        wd.pid = waitpid( (*it)->pid(), &wd.status, WNOHANG );
-        if ( wd.pid > 0 ) {
-          ::write(theKProcessController->fd[1], &wd, sizeof(wd));
-          found = true;
-        }
-      }
-  }
-  if( !found && oldChildHandlerData.sa_handler != SIG_IGN
-          && oldChildHandlerData.sa_handler != SIG_DFL )
-        oldChildHandlerData.sa_handler( arg ); // call the old handler
-  // handle the rest
-  if( theKProcessController != 0 ) {
-     static const struct waitdata dwd = { 0, 0 }; // delayed waitpid()
-     ::write(theKProcessController->fd[1], &dwd, sizeof(dwd));
-  } else {
-      int dummy;
-      while( waitpid( -1, &dummy, WNOHANG ) > 0 )
-          ;
-  }
+  if( oldChildHandlerData.sa_handler != SIG_IGN &&
+      oldChildHandlerData.sa_handler != SIG_DFL )
+     oldChildHandlerData.sa_handler( arg ); // call the old handler
 
   errno = saved_errno;
 }
 
-
-
-void KProcessController::slotDoHousekeeping(int )
+void KProcessController::slotDoHousekeeping()
 {
-  // NOTE: It can happen that QSocketNotifier fires while
-  // we have already read from the socket. Deal with it.
-  int bytes_read = 0;
-  // read pid and status from the pipe.
-  struct waitdata wd;
-  do {
-    bytes_read = ::read(fd[0], ((char *)&wd), sizeof(wd));
-    if ((bytes_read == -1) && (errno == EAGAIN)) return;
-    if ((bytes_read == -1) && (errno != EINTR))
-    {
-	fprintf(stderr,
-	       "Error: pipe read returned errno=%d "
-               "in KProcessController::slotDoHousekeeping\n", errno);
-	return;           // it makes no sense to continue here!
-    }
-  } while (bytes_read <= 0);
-  
-  if (bytes_read != sizeof(wd)) {
-	fprintf(stderr,
-	       "Error: Could not read info from signal handler %d <> %d!\n",
-	       bytes_read, sizeof(wd));
-	return;           // it makes no sense to continue here!
-  }
-  if (wd.pid==0) { // special case, see delayedChildrenCleanup()
-      delayedChildrenCleanupTimer.start( 100, true );
-      return;
-  }
+  char dummy[16]; // in case several are queued up
+  ::read( fd[0], dummy, sizeof(dummy) );
 
-  for( QValueList<KProcess*>::ConstIterator it = processList.begin();
-       it != processList.end();
-       ++it ) {
-        KProcess* proc = *it;
-	if (proc->pid() == wd.pid) {
-	  // process has exited, so do emit the respective events
-	  if (proc->run_mode == KProcess::Block) {
-	    // If the reads are done blocking then set the status in proc
-	    // but do nothing else because KProcess will perform the other
-	    // actions of processHasExited.
-	    proc->status = wd.status;
-            proc->runs = false;
-	  } else {
-	    proc->processHasExited(wd.status);
-	  }
-        return;
-	}
-  }
-}
-
-// this is needed e.g. for popen(), which calls waitpid() checking
-// for its forked child, if we did waitpid() directly in the SIGCHLD
-// handler, popen()'s waitpid() call would fail
-void KProcessController::delayedChildrenCleanup()
-{
-  struct waitdata wd;
-  while(( wd.pid = waitpid( -1, &wd.status, WNOHANG ) ) > 0 ) {
-      for( QValueList<KProcess*>::ConstIterator it = processList.begin();
-           it != processList.end();
-           ++it )
-      {
-        if( !(*it)->isRunning() || (*it)->pid() != wd.pid )
-            continue;
-        // it's KProcess, handle it
-        ::write(fd[1], &wd, sizeof(wd));
-        break;
-      }
-  }
-}
-
-bool
-KProcessController::waitForProcessExit(int timeout)
-{
-  // Due to a race condition the signal handler may have
-  // failed to detect that a pid belonged to a KProcess
-  // and defered handling to delayedChildrenCleanup()
-  // Make sure to handle that first.
-  if (delayedChildrenCleanupTimer.isActive())
+  int status;
+  QValueList<KUnixProcess*>::Iterator it = processList.begin();
+  QValueList<KUnixProcess*>::Iterator eit = processList.end(); // so we don't crash even if processList was deleted by deref()
+  while( it != eit )
   {
-     delayedChildrenCleanupTimer.stop();
-     KProcessController::delayedChildrenCleanup();
+    KUnixProcess *prc = *it;
+    if( waitpid( prc->pid, &status, WNOHANG ) > 0 )
+    {
+      if( prc->kproc )
+        prc->kproc->processHasExited( status );
+      delete prc;
+      it = processList.remove( it );
+      deref(); // antipode to registerKProcess
+    } else
+      ++it;
   }
-  do 
+}
+
+bool KProcessController::waitForProcessExit( int timeout )
+{
+  for(;;)
   {
     struct timeval tv;
     tv.tv_sec = timeout;
     tv.tv_usec = 0;
+
     fd_set fds;
-    FD_ZERO(&fds);
-    FD_SET(fd[0], &fds);
-    int result = select(fd[0]+1, &fds, 0, 0, &tv);
-    if (result == 0)
+    FD_ZERO( &fds );
+    FD_SET( fd[0], &fds );
+
+    switch( select( fd[0]+1, &fds, 0, 0, &tv ) )
     {
-       return false;
+    case -1:
+      if( errno == EINTR )
+        continue;
+      // fall through; should never happen
+    case 0:
+      return false;
+    default:
+      slotDoHousekeeping();
+      return true;
     }
-    else if (result < 0)
-    {
-       int error = errno;
-       if ((error == ECHILD) || (error == EINTR))
-         continue;
-       return false;
-    }
-    else 
-    {
-       slotDoHousekeeping(fd[0]);
-       break;
-    }
-  } while (true);
-  return true;
+  }
+}
+
+KUnixProcess *KProcessController::registerProcess( int pid, KProcess* p )
+{
+  KUnixProcess *proc = new KUnixProcess;
+  proc->pid = pid;
+  proc->kproc = p;
+  processList.append( proc );
+  ref(); // we already exist, obviously. make sure we still do when the kprocess detaches
+  return proc;
 }
 
 #include "kprocctrl.moc"

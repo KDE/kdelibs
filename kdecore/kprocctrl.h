@@ -21,9 +21,13 @@
 #define __KPROCCTRL_H__
 
 #include <qvaluelist.h>
-#include <qtimer.h>
 
 #include "kprocess.h"
+
+struct KUnixProcess {
+  int pid;
+  KProcess *kproc;
+};
 
 class QSocketNotifier;
 
@@ -46,19 +50,19 @@ public:
    * Create an instance if none exists yet.
    * Called by @see KApplication::KApplication()
    */
-  static void create();
+  static void ref();
 
   /**
-   * Destroy the instance if one exists.
+   * Destroy the instance if one exists and it is not referenced any more.
    * Called by @see KApplication::~KApplication()
    */
-  static void destroy();
+  static void deref();
 
   /**
    * Only a single instance of this class is allowed at a time,
    * and this static variable is used to track the one instance.
    */
-  static KProcessController *theKProcessController;
+  static KProcessController *theKProcessController; // kde4: rename: instance
 
   /**
    * Automatically called upon SIGCHLD. Never call it directly.
@@ -68,14 +72,6 @@ public:
    * @internal
    */
   static void theSigCHLDHandler(int signal); // KDE4: private
-  /**
-   * @internal
-  */
-  void addKProcess( KProcess* );
-  /**
-   * @internal
-  */
-  void removeKProcess( KProcess* );
 
   /**
    * Wait for any process to exit and handle their exit without
@@ -89,27 +85,28 @@ public:
    */
   bool waitForProcessExit(int timeout);
 
-public slots:
   /**
+   * Used by @see KProcess to register a newly started process.
    * @internal
    */
- void slotDoHousekeeping(int socket);
+  KUnixProcess *registerProcess( int pid, KProcess* prc );
 
 private slots:
- void delayedChildrenCleanup();
+  void slotDoHousekeeping();
 
 private:
   friend class I_just_love_gcc;
 
   int fd[2];
   QSocketNotifier *notifier;
+  QValueList<KUnixProcess*> processList;
 
   static void setupHandlers();
   static void resetHandlers();
   static struct sigaction oldChildHandlerData;
   static bool handlerSet;
-  QValueList<KProcess*> processList;
-  QTimer delayedChildrenCleanupTimer;
+
+  static int refCount;
 
   // Disallow instantiation
   KProcessController();

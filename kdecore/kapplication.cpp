@@ -617,7 +617,7 @@ void KApplication::init(bool GUIenabled)
      ::exit(127);
   }
 
-  KProcessController::create();
+  KProcessController::ref();
 
   (void) KClipboardSynchronizer::self();
 
@@ -1366,7 +1366,7 @@ KApplication::~KApplication()
   delete s_DCOPClient;
   s_DCOPClient = 0L;
 
-  KProcessController::destroy();
+  KProcessController::deref();
 
   if ( d->oldIceIOErrorHandler != NULL )
       IceSetIOErrorHandler( d->oldIceIOErrorHandler );
