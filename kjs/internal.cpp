@@ -650,6 +650,9 @@ KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
 {
   instances++;
   KJScriptImp::curr = this;
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf(stderr,"KJScriptImp::KJScriptImp this=curr=%p\n", this);
+#endif
   // are we the first interpreter instance ? Initialize some stuff
   if (instances == 1)
     globalInit();
@@ -661,6 +664,9 @@ KJScriptImp::KJScriptImp(KJScript *s, KJSO global)
 
 KJScriptImp::~KJScriptImp()
 {
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf(stderr,"KJScriptImp::~KJScriptImp this=curr=%p\n", this);
+#endif
   KJScriptImp::curr = this;
 
   clear();
@@ -669,6 +675,9 @@ KJScriptImp::~KJScriptImp()
   lex = 0L;
 
   KJScriptImp::curr = 0L;
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf(stderr,"KJScriptImp::~KJScriptImp (this=%p. Setting curr to 0L)\n", this);
+#endif
   // are we the last of our kind ? Free global stuff.
   if (instances == 1)
     globalClear();
@@ -715,6 +724,9 @@ void KJScriptImp::mark()
 
 void KJScriptImp::init()
 {
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf(stderr,"KJScriptImp::init() this=curr=%p\n", this);
+#endif
   KJScriptImp::curr = this;
 
   clearException();
@@ -754,6 +766,9 @@ void KJScriptImp::clear()
   KJScriptImp *old = curr;
   if (initialized) {
     KJScriptImp::curr = this;
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf(stderr,"KJScriptImp::clear() this=%p, curr temporarily set\n", this);
+#endif
 
     clearException();
     retVal = 0L;
@@ -774,7 +789,12 @@ void KJScriptImp::clear()
 
   if (old != this)
       KJScriptImp::curr = old;
+  else
+      KJScriptImp::curr = 0L;
 
+#ifdef KJS_DEBUG_GLOBAL
+  fprintf(stderr,"KJScriptImp::clear() this=%p, curr is now %p\n", this, curr);
+#endif
 }
 
 bool KJScriptImp::evaluate(const UChar *code, unsigned int length, const KJSO &thisV,
