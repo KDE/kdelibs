@@ -202,8 +202,8 @@ void KApplication::init()
   KDEChangeBackground = XInternAtom( display, "KDEChangeBackground", false);
 
   readSettings(false);
-  kdisplaySetPalette();
   kdisplaySetStyleAndFont();
+  kdisplaySetPalette();
 
   installTranslator(new KDETranslator(this));
 
@@ -635,8 +635,9 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
     // stuff for reconfiguring
     if ( cme->message_type == KDEChangeStyle ) {
-	applyGUIStyle(WindowsStyle); // arg doesn't matter
-	return true;
+        readSettings(true);
+        kdisplaySetStyle(); // arg doesn't matter
+        return true;
     }
 
     if ( cme->message_type == KDEChangePalette )
@@ -650,9 +651,9 @@ bool KApplication::x11EventFilter( XEvent *_event )
     if ( cme->message_type == KDEChangeGeneral )
       {
 	readSettings(true);
+        kdisplaySetStyleAndFont();
 	kdisplaySetPalette();
-	kdisplaySetStyleAndFont();
-	
+
 	return true;
       }
 
@@ -694,15 +695,8 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
     pConfig.setGroup("KDE");
     QString styleStr = pConfig.readEntry("widgetStyle", "Platinum");
 
-    warning("In KApplication::applyGUIStyle");
+    void *oldHandle = styleHandle;
     
-    if(styleHandle){
-        warning("KApplication: Unloading previous style plugin.");
-        lt_dlclose((lt_dlhandle*)styleHandle);
-        styleHandle = 0;
-        warning("KApplication: Style plugin unloaded.");
-    }
-
     if(styleStr == "Platinum"){
         pKStyle=0;
         styleHandle=0;
@@ -724,7 +718,6 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         setStyle(new QMotifStyle);
     }
     else if(useStyles){
-        warning("KApplication: Checking plugin styles.");
         if(!dlregistered){
             dlregistered = true;
             lt_dlinit();
@@ -733,7 +726,6 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         if(!locate("lib", styleStr).isNull()) {
             styleStr = locate("lib", styleStr);
             styleHandle = lt_dlopen(styleStr.ascii());
-            warning("KApplication: Found and dlopened style.");
         }
         else {
             warning("KApp: Unable to find style plugin %s.", styleStr.ascii());
@@ -763,13 +755,11 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
                 setStyle(new QPlatinumStyle);
             }
             else{
-                warning("KApplication: Resolved allocate function.");
                 KStyle* (*alloc_ptr)();
                 alloc_ptr = (KStyle* (*)())alloc_func;
                 pKStyle = alloc_ptr();
                 if(pKStyle){
                     setStyle(pKStyle);
-                    warning("KApplication: Applied plugin style.");
                 }
                 else{
                     warning("KApp: Style plugin unable to allocate style.");
@@ -786,6 +776,10 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
         styleHandle=0;
         setStyle(new QPlatinumStyle);
     }
+    if(oldHandle){
+        lt_dlclose((lt_dlhandle*)oldHandle);
+    }
+
 }
 
 
@@ -963,9 +957,11 @@ void KApplication::kdisplaySetPalette()
   disabledgrp.setColor( QColorGroup::Button, button);
   disabledgrp.setColor( QColorGroup::ButtonText, buttonText);
 
-  setPalette( QPalette( colgrp, disabledgrp, colgrp), true );
+  QPalette newPal(colgrp, disabledgrp, colgrp);
+  setPalette(newPal, true );
 
-  applyGUIStyle( WindowsStyle ); // to fix the palette again
+  //applyGUIStyle( WindowsStyle ); // to fix the palette again
+  style().polish(newPal);
   emit kdisplayPaletteChanged();
   emit appearanceChanged();
 }
@@ -984,7 +980,6 @@ void KApplication::kdisplaySetFont()
 void KApplication::kdisplaySetStyle()
 {
   applyGUIStyle( WindowsStyle );
-
   emit kdisplayStyleChanged();
   emit appearanceChanged();
   resizeAll();
@@ -994,7 +989,8 @@ void KApplication::kdisplaySetStyle()
 void KApplication::kdisplaySetStyleAndFont()
 {
     QApplication::setFont( KGlobal::generalFont(), true );
-    kdisplaySetPalette(); // does both palette and style
+    kdisplaySetPalette();
+    kdisplaySetStyle();
     emit kdisplayFontChanged();
 
     resizeAll();
