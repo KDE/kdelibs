@@ -188,6 +188,9 @@ class KRandomSequenceList : public QGList
   friend class KRandomSequence;
 public:
   KRandomSequenceList() : QGList() { }
+#if QT_VERSION >= 300
+  virtual void deleteItem( QPtrCollection::Item ) {}
+#endif
 };
 
 void
