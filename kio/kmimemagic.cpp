@@ -200,29 +200,28 @@ static long from_oct(int, char *);
 
 /* these types are used calculate index to 'types': keep em in sync! */
 /* HTML inserted in first because this is a web server module now */
+/* ENG removed because stupid */
 #define L_HTML   0x001          /* HTML */
 #define L_C      0x002          /* first and foremost on UNIX */
 #define L_MAKE   0x004          /* Makefiles */
 #define L_PLI    0x008          /* PL/1 */
 #define L_MACH   0x010          /* some kinda assembler */
-#define L_ENG    0x020          /* English */
-#define L_PAS    0x040          /* Pascal */
-#define L_JAVA   0x080          /* Java source */
-#define L_CPP    0x100          /* C++ */
-#define L_MAIL   0x200          /* Electronic mail */
-#define L_NEWS   0x400          /* Usenet Netnews */
+#define L_PAS    0x020          /* Pascal */
+#define L_JAVA   0x040          /* Java source */
+#define L_CPP    0x080          /* C++ */
+#define L_MAIL   0x100          /* Electronic mail */
+#define L_NEWS   0x200          /* Usenet Netnews */
 
 #define P_HTML   0          /* HTML */
 #define P_C      1          /* first and foremost on UNIX */
 #define P_MAKE   2          /* Makefiles */
 #define P_PLI    3          /* PL/1 */
 #define P_MACH   4          /* some kinda assembler */
-#define P_ENG    5          /* English */
-#define P_PAS    6          /* Pascal */
-#define P_JAVA   7          /* Java source */
-#define P_CPP    8          /* C++ */
-#define P_MAIL   9          /* Electronic mail */
-#define P_NEWS  10          /* Usenet Netnews */
+#define P_PAS    5          /* Pascal */
+#define P_JAVA   6          /* Java source */
+#define P_CPP    7          /* C++ */
+#define P_MAIL   8          /* Electronic mail */
+#define P_NEWS   9          /* Usenet Netnews */
 
 typedef struct asc_type {
 	const char *type;
@@ -236,7 +235,6 @@ static asc_type types[] = {
 	{ "text/x-makefile",    4, 1.9 },
 	{ "text/x-pli",         1, 3 },
 	{ "text/x-assembler",   6, 2.1 },
-	{ "text/english",       2, 0.2 },
 	{ "text/x-pascal",      1, 1 },
 	{ "text/x-java",       14, 1 },
 	{ "text/x-c++",        14, 1 },
@@ -291,21 +289,6 @@ static struct names {
 	},
 	{
 		"char", L_C|L_CPP|L_JAVA
-	},
-	{
-		"The", L_ENG
-	},
-	{
-		"the", L_ENG
-	},
-	{
-		"of", L_ENG
-	},
-	{
-		"from", L_ENG
-	},
-	{
-		"in", L_ENG
 	},
 	{
 		"double", L_C|L_CPP|L_JAVA
