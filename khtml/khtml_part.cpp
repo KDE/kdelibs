@@ -283,9 +283,9 @@ bool KHTMLPart::openURL( const KURL &url )
     return false;
 
   if ( args.postData.size() > 0 && url.protocol() == http_protocol )
-      d->m_job = KIO::http_post( url, args.postData );
+      d->m_job = KIO::http_post( url, args.postData, false );
   else
-      d->m_job = KIO::get( url, args.reload );
+      d->m_job = KIO::get( url, args.reload, false );
 
   connect( d->m_job, SIGNAL( result( KIO::Job * ) ),
            SLOT( slotFinished( KIO::Job * ) ) );

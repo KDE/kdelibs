@@ -459,8 +459,7 @@ void Loader::servePendingRequests()
 
   kdDebug(300) << "starting Loader url=" << req->object->url().string() << endl;
 
-  KIO::Job* job = KIO::get( req->object->url().string(), false);
-  //job->setGUImode( KIOJob::NONE );
+  KIO::Job* job = KIO::get( req->object->url().string(), false, false /*no GUI*/);
 
   connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
   connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
