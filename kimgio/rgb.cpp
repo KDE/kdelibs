@@ -31,7 +31,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-void kimgio_rgb_read(QImageIO *io)
+KDE_EXPORT void kimgio_rgb_read(QImageIO *io)
 {
 	SGIImage sgi(io);
 	QImage img;
@@ -47,7 +47,7 @@ void kimgio_rgb_read(QImageIO *io)
 }
 
 
-void kimgio_rgb_write(QImageIO *io)
+KDE_EXPORT void kimgio_rgb_write(QImageIO *io)
 {
 	SGIImage sgi(io);
 	QImage img = io->image();

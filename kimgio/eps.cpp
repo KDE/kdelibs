@@ -121,7 +121,7 @@ static bool bbox ( QIODevice *io, int *x1, int *y1, int *x2, int *y2)
         return ret;
 }
 
-void kimgio_eps_read (QImageIO *image)
+KDE_EXPORT void kimgio_eps_read (QImageIO *image)
 {
         kdDebug(399) << "kimgio EPS: starting..." << endl;
 
@@ -245,7 +245,7 @@ void kimgio_eps_read (QImageIO *image)
 }
 
 // Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)
-void kimgio_eps_write( QImageIO *imageio )
+KDE_EXPORT void kimgio_eps_write( QImageIO *imageio )
 {
   QPrinter psOut(QPrinter::PrinterResolution);
   QPainter p;

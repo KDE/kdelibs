@@ -300,7 +300,7 @@ namespace {
 } // namespace
 
 
-void
+KDE_EXPORT void
 kimgio_jp2_read( QImageIO* io )
 {
 	if( jas_init() ) return;
@@ -399,7 +399,7 @@ namespace { // _write helpers
 #endif
 } // namespace
 
-void
+KDE_EXPORT void
 kimgio_jp2_write( QImageIO* io )
 {
 #ifdef JAS_IMAGE_CS_RGB

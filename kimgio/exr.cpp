@@ -116,7 +116,7 @@ QRgb RgbaToQrgba(struct Rgba imagePixel)
 				  char (Imath::clamp ( a * 84.66f, 0.f, 255.f ) ) );
 }
 
-void kimgio_exr_read( QImageIO *io )
+KDE_EXPORT void kimgio_exr_read( QImageIO *io )
 {
     try
     {
@@ -156,7 +156,7 @@ void kimgio_exr_read( QImageIO *io )
 }
 
 
-void kimgio_exr_write(QImageIO *)
+KDE_EXPORT void kimgio_exr_write(QImageIO *)
 {
 	// TODO: stub
 }

@@ -257,7 +257,7 @@ static void readImage24( QDataStream &s )
   }
 }
 
-void kimgio_pcx_read( QImageIO *io )
+KDE_EXPORT void kimgio_pcx_read( QImageIO *io )
 {
   QDataStream s( io->ioDevice() );
   s.setByteOrder( QDataStream::LittleEndian );
@@ -479,7 +479,7 @@ static void writeImage24( QDataStream &s )
   }
 }
 
-void kimgio_pcx_write( QImageIO *io )
+KDE_EXPORT void kimgio_pcx_write( QImageIO *io )
 {
   QDataStream s( io->ioDevice() );
   s.setByteOrder( QDataStream::LittleEndian );

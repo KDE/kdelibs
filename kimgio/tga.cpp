@@ -310,7 +310,7 @@ namespace {	// Private.
 } // namespace
 
 
-void kimgio_tga_read( QImageIO *io )
+KDE_EXPORT void kimgio_tga_read( QImageIO *io )
 {
 	//kdDebug(399) << "Loading TGA file!" << endl;
 	
@@ -356,7 +356,7 @@ void kimgio_tga_read( QImageIO *io )
 }
 
 
-void kimgio_tga_write( QImageIO *io )
+KDE_EXPORT void kimgio_tga_write( QImageIO *io )
 {
     QDataStream s( io->ioDevice() );
     s.setByteOrder( QDataStream::LittleEndian );

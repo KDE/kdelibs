@@ -13,7 +13,7 @@
 
 #define BUFSIZE 1024
 
-void kimgio_xv_read( QImageIO *_imageio )
+KDE_EXPORT void kimgio_xv_read( QImageIO *_imageio )
 {      
 	int x=-1;
 	int y=-1;
@@ -106,7 +106,7 @@ void kimgio_xv_read( QImageIO *_imageio )
 	return;
 }
 
-void kimgio_xv_write( QImageIO *imageio )
+KDE_EXPORT void kimgio_xv_write( QImageIO *imageio )
 {
 	QIODevice& f = *( imageio->ioDevice() );
 

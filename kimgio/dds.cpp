@@ -890,7 +890,7 @@ namespace {	// Private.
 }
 
 
-void kimgio_dds_read( QImageIO *io )
+KDE_EXPORT void kimgio_dds_read( QImageIO *io )
 {
 	QDataStream s( io->ioDevice() );
 	s.setByteOrder( QDataStream::LittleEndian );
@@ -948,7 +948,7 @@ void kimgio_dds_read( QImageIO *io )
 }
 
 
-void kimgio_dds_write( QImageIO * )
+KDE_EXPORT void kimgio_dds_write( QImageIO * )
 {
 	// TODO Stub!
 }

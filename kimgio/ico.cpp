@@ -222,7 +222,7 @@ namespace
     }
 }
 
-extern "C" void kimgio_ico_read( QImageIO* io )
+extern "C" KDE_EXPORT void kimgio_ico_read( QImageIO* io )
 {
     QIODevice::Offset offset = io->ioDevice()->at();
 

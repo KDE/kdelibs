@@ -59,7 +59,7 @@ static void tiff_unmap( thandle_t, tdata_t, toff_t )
 {
 }
 
-void kimgio_tiff_read( QImageIO *io )
+KDE_EXPORT void kimgio_tiff_read( QImageIO *io )
 {
 	TIFF *tiff;
 	uint32 width, height;
@@ -138,7 +138,7 @@ void kimgio_tiff_read( QImageIO *io )
 	io->setStatus ( 0 );
 }
 
-void kimgio_tiff_write( QImageIO * )
+KDE_EXPORT void kimgio_tiff_write( QImageIO * )
 {
 	// TODO: stub
 }
