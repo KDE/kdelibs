@@ -6,12 +6,12 @@
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
 <guimenu>Hjælp</guimenu>
-<guimenuitem>Indhold...</guimenuitem>
-</menuchoice>
-</term>
+<guimenuitem>&kappname;-håndbogen</guimenuitem>
 <listitem><para><action>Starter KDE's Hjælpesystem</action> startende med
 hjælpesiderne for &kappname; (dette dokument).</para></listitem>
 </varlistentry>
+</menuchoice>
+</term>
 
 <varlistentry>
 <term><menuchoice>
@@ -27,7 +27,6 @@ spørgsmålstegn.</action>  Klik på punkter indenfor &kappname; vil åbne et
 hjælpevindue (hvis der findes et for dette punkt) der forklarer punktets
 funktion.</para></listitem>
 </varlistentry>
-
 
 <varlistentry>
 <term><menuchoice>
@@ -56,3 +55,4 @@ forfatterinformation.</action></para></listitem>
 information.</action></para></listitem>
 </varlistentry>
 </variablelist>
+

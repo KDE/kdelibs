@@ -8,5 +8,5 @@ skrive følgende i basismappen for distributionen for &kappname; :</para>
 
 <para>Idet &kappname; bruger <command>autoconf</command> og
 <command>automake</command> skulle du ikke få problemer med at kompilere den.
-Hvis du skulle løbe ind i problemer så rapportér dem til &kde; e-post listerne.</para>
+Hvis du skulle løbe ind i problemer så rapportér dem til &kde;'s e-post-lister.</para>
 
