@@ -32,6 +32,7 @@ void kdebug( ushort nLevel, ushort nArea,
   
   /* The QBitArrays should rather be application-static, but since
 	 some stupid platforms do not support that... */
+#ifdef KALLE_DOES_NOT_WHY_THIS_CRASHES
   if( !bAreaCalculated )
 	{
 	  // check to see if we need to create the bit arrays first
@@ -82,7 +83,7 @@ void kdebug( ushort nLevel, ushort nArea,
 	  if( !pErrorArray->testBit( nArea ) )
 		return;
 	};
-
+#endif
   va_list arguments; /* Handle variable arguments */
 
   /* Determine output */
