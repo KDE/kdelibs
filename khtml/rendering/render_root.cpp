@@ -133,7 +133,7 @@ void RenderRoot::updateHeight()
 
     if (parsing())
     {
-	if (!updateTimer.isNull() && updateTimer.elapsed()<300)
+	if (!updateTimer.isNull() && updateTimer.elapsed()<1000)
 	{
 	    return;
 	}

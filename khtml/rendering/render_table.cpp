@@ -1615,6 +1615,25 @@ void RenderTableCell::updateSize()
 }
 
 
+void RenderTableCell::repaintRectangle(int x, int y, int w, int h)
+{
+    y += _topExtra;
+    RenderFlow::repaintRectangle(x, y, w, h);
+}
+
+void RenderTableCell::repaintObject(RenderObject *o, int x, int y)
+{
+    y += _topExtra;
+    RenderFlow::repaintObject(o, x, y);
+}
+
+void RenderTableCell::absolutePosition(int &xPos, int &yPos)
+{
+    yPos += _topExtra;
+    RenderFlow::absolutePosition(xPos, yPos);
+}
+
+
 
 void RenderTableCell::print(QPainter *p, int _x, int _y,
 				       int _w, int _h, int _tx, int _ty)
