@@ -19,13 +19,13 @@
 <!ENTITY ie     "<abbrev>i.e.</abbrev>">
 <!ENTITY infocenter	"<application>Info Center</application>">
 <!ENTITY kcontrolcenter	"<application>&kde; Control Center</application>">
-<!ENTITY kicon	'<guiicon>
+<!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
  <objectinfo><title>&kde;'s K-icon</title></objectinfo>
- <imageobject><imagedata fileref="common/kmenu.png" format="PNG"/></imageobject>
+ <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
-</guiicon>'><!-- if image is localised, then entityref should be used instead
+</guiicon>"><!-- if image is localised, then entityref should be used instead
                  of fileref -->
 <!ENTITY kmenu  "<guimenu>K</guimenu> menu">
 <!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button">
