@@ -1,5 +1,7 @@
 /*
    Copyright (c) 2003 Hans Petter Bieker <bieker@kde.org>
+       Calendar conversion routines based on Hdate v6, by Amos
+       Shapir 1978 (rev. 1985, 1992)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
