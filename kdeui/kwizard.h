@@ -281,9 +281,8 @@ signals:
 /**
 * This signal is emitted when the user clicks on the Help button.
 * The int is the page which was showing when help was requested.
-* @see #setHelpButton
-* <BR>
-* @see #getHelpButton
+*
+* @see #setHelpButton, #getHelpButton
 */
         void helpclicked(int);
 /**
