@@ -82,6 +82,7 @@ KFileTreeView::KFileTreeView( QWidget *parent, const char *name )
     connect( this, SIGNAL(itemRenamed(QListViewItem*, const QString &, int)),
              this, SLOT(slotItemRenamed(QListViewItem*, const QString &, int)));
 
+	     
     m_bDrag = false;
     m_branches.setAutoDelete( true );
 }
@@ -388,6 +389,10 @@ KFileTreeBranch* KFileTreeView::addBranch( const KURL &path, const QString& name
    connect( newBranch, SIGNAL(populateFinished( KFileTreeViewItem* )),
 	    this, SLOT( slotPopulateFinished( KFileTreeViewItem* )));
 
+   connect( newBranch, SIGNAL( newKFileTreeViewItem( KFileTreeViewItem* )),
+	    this, SLOT( slotNewTreeViewItem( KFileTreeViewItem * )) );
+	    
+
    m_branches.append( newBranch );
    return( newBranch );
 }
@@ -438,6 +443,29 @@ void KFileTreeView::populateBranch( KFileTreeBranch *brnch )
 void KFileTreeView::slotPopulateFinished( KFileTreeViewItem *it )
 {
     stopAnimation( it );
+}
+
+void KFileTreeView::slotNewTreeViewItem( KFileTreeViewItem *it )
+{
+   kdDebug(1201) << "Hitting slotNewTreeViewItem" << endl;
+   if( ! it ) return;
+
+   /* Sometimes it happens that new items should become selected, i.e. if the user
+    * creates a new dir, he probably wants it to be selected. This can not be done
+    * right after creating the directory or file, because it takes some time until
+    * the item appears here in the treeview. Thus, the creation code sets the member
+    * m_nextUrlToSelect to the required url. If this url appears here, the item becomes
+    * selected and the member nextUrlToSelect will be cleared.
+    */
+   if( ! m_nextUrlToSelect.isEmpty() )
+   {
+      KURL url = it->url();
+      if( m_nextUrlToSelect == url )
+      {
+	 setCurrentItem( static_cast<QListViewItem*>(it) );
+	 m_nextUrlToSelect = KURL();
+      }
+   }
 }
 
 void KFileTreeView::slotResult( )
