@@ -304,7 +304,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   if ( prof == BrowserViewGUI ) {
       d->m_paIncZoomFactor = new KHTMLZoomFactorAction( this, true, i18n(
-                  "Increase Font Sizes" ), "viewmag+", CTRL + Key_Plus, this,
+                  "Increase Font Sizes" ), "viewmag+", "CTRL++;CTRL+=", this,
               SLOT( slotIncZoom() ), actionCollection(), "incFontSizes" );
       d->m_paIncZoomFactor->setWhatsThis( i18n( "Increase Font Size<p>"
                                                 "Make the font in this window bigger. "
