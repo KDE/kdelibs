@@ -681,10 +681,10 @@ QList<CSSProperty> *StyleBaseImpl::parseProperties(const QChar *curP, const QCha
 bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId, bool important,
                                         QList<CSSProperty> *propList)
 {
-    //kdDebug( 6080 ) << "parseValue!" << endl;
     QString value(curP, endP - curP);
     value = value.lower();
     const char *val = value.ascii();
+    //kdDebug() << "parseValue: '" << value << "'" << endl;
 
     CSSValueImpl *parsedValue = 0;
 
@@ -1225,7 +1225,12 @@ bool StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, int propId,
     }
 
     case CSS_PROP_CUE:
+	break;
     case CSS_PROP_FONT:
+    {
+	QString fontStr = QString( curP, endP - curP );
+	return parseFont( curP, endP, important, propList );
+    }
     case CSS_PROP_LIST_STYLE:
     case CSS_PROP_OUTLINE:
     case CSS_PROP_PAUSE:
@@ -1471,6 +1476,265 @@ StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits
 
     return 0;
 }
+
+
+// ------------------- begin font property ---------------------
+/*
+  Parser for the font property of CSS.  See
+  http://www.w3.org/TR/REC-CSS2/fonts.html#propdef-font for details.
+
+  Written by Jasmin Blanchette (jasmin@trolltech.com) on 2000-08-16.
+*/
+
+#include <qstring.h>
+#include <qstringlist.h>
+
+enum { Tok_Eoi, Tok_Slash, Tok_Comma, Tok_String, Tok_Symbol };
+
+static QChar EOS = '\0';
+static QChar yyCh;
+static QString yyIn;
+static int yyPos;
+
+int getChar()
+{
+    return ( yyPos == yyIn.length() ) ? EOS : yyIn[yyPos++];
+}
+
+void startTokenizer( const QString& str )
+{
+    yyIn = str.simplifyWhiteSpace();
+    yyPos = 0;
+    yyCh = getChar();
+}
+
+static QString yyStr;
+
+int getToken()
+{
+    static QString nonword = QString::fromLatin1( " /," );
+
+    yyStr = QString::null;
+
+    if ( yyCh == EOS )
+	return Tok_Eoi;
+    if ( yyCh == QChar(' ') )
+	yyCh = getChar();
+
+    if ( yyCh == QChar('/') ) {
+	yyCh = getChar();
+	return Tok_Slash;
+    } else if ( yyCh == QChar(',') ) {
+	yyCh = getChar();
+	return Tok_Comma;
+    } else if ( yyCh == QChar('"') ) {
+	yyCh = getChar();
+	while ( yyCh != QChar('"') && yyCh != EOS ) {
+	    yyStr += yyCh;
+	    yyCh = getChar();
+	}
+	yyCh = getChar();
+	return Tok_String;
+    } else {
+	while ( nonword.find(yyCh) == -1 && yyCh != EOS ) {
+	    yyStr += yyCh;
+	    yyCh = getChar();
+	}
+	return Tok_Symbol;
+    }
+}
+
+static int yyTok;
+
+bool match( int tok )
+{
+    bool matched = ( yyTok == tok );
+    if ( matched )
+	yyTok = getToken();
+    return matched;
+}
+
+bool matchFontStyle( QString *fstyle )
+{
+    bool matched = ( yyTok == Tok_Symbol &&
+		     (yyStr == "normal" || yyStr == "italic" ||
+		      yyStr == "oblique" || yyStr == "inherit") );
+    if ( matched ) {
+	*fstyle = yyStr;
+	yyTok = getToken();
+    }
+    return matched;
+}
+
+bool matchFontVariant( QString *fvariant )
+{
+    bool matched = ( yyTok == Tok_Symbol &&
+		     (yyStr == "normal" || yyStr == "small-caps"
+		      || yyStr == "inherit") );
+    if ( matched ) {
+	*fvariant = yyStr;
+	yyTok = getToken();
+    }
+    return matched;
+}
+
+bool matchFontWeight( QString *fweight )
+{
+    bool matched = ( yyTok == Tok_Symbol );
+    if ( matched ) {
+	if ( yyStr.length() == 3 ) {
+	    matched = ( yyStr[0].unicode() >= '1' &&
+			yyStr[0].unicode() <= '9' &&
+			yyStr.right(2) == QString::fromLatin1("00") );
+	} else {
+	    matched = ( yyStr == "normal" || yyStr == "bold" ||
+			yyStr == "bolder" || yyStr == "lighter" ||
+			yyStr == "inherit" );
+	}
+    }
+    if ( matched ) {
+	*fweight = yyStr;
+	yyTok = getToken();
+    }
+    return matched;
+}
+
+bool matchFontSize( QString *fsize )
+{
+    bool matched = ( yyTok == Tok_Symbol );
+    if ( matched ) {
+	*fsize = yyStr;
+	yyTok = getToken();
+    }
+    return matched;
+}
+
+bool matchLineHeight( QString *lheight )
+{
+    bool matched = ( yyTok == Tok_Symbol );
+    if ( matched ) {
+	*lheight = yyStr;
+	yyTok = getToken();
+    }
+    return matched;
+}
+
+bool matchNameFamily( QString *ffamily )
+{
+    bool matched = ( yyTok == Tok_String || yyTok == Tok_Symbol );
+    if ( matched ) {
+	*ffamily = yyStr;
+	yyTok = getToken();
+    }
+    return matched;
+}
+
+bool matchFontFamily( QString *ffamily )
+{
+    QStringList t;
+
+#if 0 
+    // ###
+    if ( yyTok == Tok_String && yyStr == "inherit" ) {
+	t.clear();
+	yyTok = getToken();
+	return TRUE;
+    }
+#endif
+    
+    QString name;
+    do {
+	if ( !matchNameFamily(&name) )
+	    return FALSE;
+	t.append( name );
+    } while ( match(Tok_Comma) );
+
+    *ffamily = t.join(", ");
+    return TRUE;
+}
+
+bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
+		    QString *fsize, QString *lheight, QString *ffamily )
+{
+    bool metFstyle = matchFontStyle( fstyle );
+    bool metFvariant = matchFontVariant( fvariant );
+    matchFontWeight( fweight );
+    if ( !metFstyle )
+	metFstyle = matchFontStyle( fstyle );
+    if ( !metFvariant )
+	matchFontVariant( fvariant );
+    if ( !metFstyle )
+	matchFontStyle( fstyle );
+
+    if ( !matchFontSize(fsize) )
+	return FALSE;
+    if ( match(Tok_Slash) ) {
+	if ( !matchLineHeight(lheight) )
+	    return FALSE;
+    }
+    if ( !matchFontFamily(ffamily) )
+	return FALSE;
+    return true;
+}
+
+bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP,
+			      bool important, QList<CSSProperty> *propList)
+{
+    QString str( curP, endP - curP );
+    QString fstyle;
+    QString fvariant;
+    QString fweight;
+    QString fsize;
+    QString lheight;
+    QString ffamily;
+
+    startTokenizer( str );
+
+    qDebug( "%s", str.latin1() );
+
+    if ( yyIn == "caption" || yyIn == "icon" || yyIn == "menu" ||
+	 yyIn == "message-box" || yyIn == "small-caption" ||
+	 yyIn == "status-bar" || yyIn == "inherit" ) {
+	kdDebug() << "system font requested..." << endl;
+    } else {
+	yyTok = getToken();
+	if ( matchRealFont(&fstyle, &fvariant, &fweight, &fsize, &lheight,
+			   &ffamily) ) {
+	    qDebug( "  %s %s %s %s / %s", fstyle.latin1(),
+		    fvariant.latin1(), fweight.latin1(), fsize.latin1(),
+		    lheight.latin1() );
+	    if(!fstyle.isNull())
+		parseValue(fstyle.unicode(), fstyle.unicode()+fstyle.length(), 
+			   CSS_PROP_FONT_STYLE,
+			   important, propList);
+	    if(!fvariant.isNull())
+		parseValue(fvariant.unicode(), fvariant.unicode()+fvariant.length(), 
+			   CSS_PROP_FONT_VARIANT,
+			   important, propList);
+	    if(!fweight.isNull())
+		parseValue(fweight.unicode(), fweight.unicode()+fweight.length(), 
+			   CSS_PROP_FONT_WEIGHT,
+			   important, propList);
+	    if(!fsize.isNull())
+		parseValue(fsize.unicode(), fsize.unicode()+fsize.length(), 
+			   CSS_PROP_FONT_SIZE,
+			   important, propList);
+	    if(!lheight.isNull())
+		parseValue(lheight.unicode(), lheight.unicode()+lheight.length(), 
+			   CSS_PROP_LINE_HEIGHT,
+			   important, propList);
+	    if(!ffamily.isNull())
+		parseValue(ffamily.unicode(), ffamily.unicode()+ffamily.length(), 
+			   CSS_PROP_FONT_FAMILY,
+			   important, propList);
+	    
+	    return true;
+	}
+    }
+    return false;
+}
+
+// ---------------- end font property --------------------------
 
 CSSStyleRuleImpl *
 StyleBaseImpl::parseStyleRule(const QChar *&curP, const QChar *endP)

@@ -43,6 +43,7 @@ using namespace DOM;
 #include "html/html_headimpl.h"
 #include "khtmlview.h"
 #include "khtml_part.h"
+#include "khtml_settings.h"
 
 #include <kstddirs.h>
 #include <kcharsets.h>
@@ -69,7 +70,7 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * /*doc*/)
 
 CSSStyleSelector::CSSStyleSelector(HTMLDocumentImpl *doc)
 {
-    if(!defaultStyle) loadDefaultStyle();
+    if(!defaultStyle) loadDefaultStyle(doc->view()->part()->settings());
 
     authorStyle = new CSSStyleSelectorList();
     // ### go through DOM tree for style elements
@@ -138,7 +139,7 @@ void CSSStyleSelector::setUserStyle(StyleSheetImpl *sheet)
     userStyle->append(sheet);
 }
 
-void CSSStyleSelector::loadDefaultStyle()
+void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
 {
     if(defaultStyle) return;
 
@@ -147,6 +148,10 @@ void CSSStyleSelector::loadDefaultStyle()
 
     QTextStream t( &f );
     QString style = t.read();
+    if(s) {
+	kdDebug() << "adding to style sheet: " << s->settingsToCSS() << endl;
+	style += s->settingsToCSS();
+    }
     DOMString str(style);
 
     // ### memory leak!

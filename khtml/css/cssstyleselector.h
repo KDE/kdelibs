@@ -25,6 +25,8 @@
 
 #include <qlist.h>
 
+class KHTMLSettings;
+
 namespace DOM {
     class ElementImpl;
     class DocumentImpl;
@@ -91,7 +93,7 @@ namespace khtml
 	
 	void addSheet(DOM::StyleSheetImpl *sheet);
 	
-	static void loadDefaultStyle();
+	static void loadDefaultStyle(const KHTMLSettings *s = 0);
 	static void setUserStyle(DOM::StyleSheetImpl *sheet);
 
 	virtual RenderStyle *styleForElement(DOM::ElementImpl *e);

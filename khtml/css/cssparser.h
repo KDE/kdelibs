@@ -96,6 +96,8 @@ namespace DOM {
 			QList<CSSProperty> *propList);
 	bool parse4Values(const QChar *curP, const QChar *endP, const int *properties,
 			  bool important, QList<CSSProperty> *propList);
+	bool parseFont(const QChar *curP, const QChar *endP,
+		       bool important, QList<CSSProperty> *propList);
 
 	// defines units allowed for a certain property, used in parseUnit
 	enum Units

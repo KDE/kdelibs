@@ -1,161 +1,484 @@
-/* This is the default style sheet to be used by browsers as defined
- * in the CSS2 specs of the w3c.
+/* 
+ * The default style sheet used by khtml to render HTML pages
+ * (C) Lars Knoll (knoll@kde.org) 2000
  *
  * Konqueror/khtml relies on the existance of this style sheet for
  * rendering. Do not remove or modify this file unless you know
  * what you are doing.
  */
 
-      ADDRESS,
-      BLOCKQUOTE,
-      BODY, DD, DIV,
-      DL, DT,
-      FIELDSET, FORM,
-      FRAME, FRAMESET,
-      H1, H2, H3, H4,
-      H5, H6, HTML, IFRAME,
-      NOFRAMES,
-      OBJECT, OL, P,
-      UL, APPLET,
-      CENTER, DIR,
-      HR, MENU, PRE, MAP   { display: block }
-      LI              { display: list-item }
-      HEAD            { display: none }
-      SCRIPT         { display: none }
-      TABLE           { display: table;
-      	    	    	border-collapse: separate;
-			vertical-align: middle;
-                        text-align: justify;
-			border-spacing: 2px;
-			border-left-color: #eeeeee;
-			border-top-color: #eeeeee;
-			border-bottom-color: #666666;
-			border-right-color: #666666;
-			border-style: solid;
-			border-width: 0px;
-                        padding: 1px;
-		      }
-      TR              { display: table-row;
-      	    	    	    vertical-align: inherit; border: inherit;
-			    padding: inherit; }
-      THEAD           { display: table-header-group; border: inherit;}
-      TBODY           { display: table-row-group;
-      	    	    	    vertical-align: inherit; border: inherit;
-			    padding: inherit; }
-      TFOOT           { display: table-footer-group; border: inherit; }
-      COL             { display: table-column; }
-      COLGROUP        { display: table-column-group; }
-      TD, TH          { display: table-cell;
-      	    	    	    vertical-align: inherit;
-			    padding: inherit;
-			    border-width: inherit;			
-			    border-style: inherit;
-			    border-left-color: #666666;
-			    border-top-color: #666666;
-			    border-bottom-color: #eeeeee;
-			    border-right-color: #eeeeee;
-			 }
-      TABLE[align="center"] { margin-left: auto; margin-right: auto }
-	/* don't use "TD[align=...] > *". This sould give problems with
-	    constructs as <td align=left><ul><li>.... 
-	    Hope the next ones cover all relevant cases. Lars */ 
-      TD[align="center"] > TABLE { margin-left: auto; margin-right: auto; text-align: justify; }
-      TD[align="right"] > TABLE { margin-left: auto; margin-right: 0px; text-align: right; }
-      TD[align="left"] > TABLE { margin-left: 0px; margin-right: auto; text-align: left; }
-      TD[align="center"] > DIV { margin-left: auto; margin-right: auto; text-align: justify; }
-      TD[align="right"] > DIV { margin-left: auto; margin-right: 0px; text-align: right; }
-      TD[align="left"] > DIV { margin-left: 0px; margin-right: auto; text-align: left; }
-      TD[align="center"] > P { margin-left: auto; margin-right: auto; text-align: justify; }
-      TD[align="right"] > P { margin-left: auto; margin-right: 0px; text-align: right; }
-      TD[align="left"] > P { margin-left: 0px; margin-right: auto; text-align: left; }
-      CAPTION         { display: table-caption;  }
-      TH              { font-weight: bolder; text-align: center }
-      CAPTION         { text-align: center }
-      BODY            { padding: 5px; line-height: 1.05 }
-      H1              { font-size: 2em; margin: .67em auto }
-      H2              { font-size: 1.5em; margin: .83em auto }
-      H3              { font-size: 1.17em; margin: 1em auto }
-      H4, P,
-      BLOCKQUOTE, UL,
-      FIELDSET, FORM,
-      OL, DL, DIR,
-      MENU            { margin: 1.0em auto }
-      H5              { font-size: .83em; line-height: 1.17em; margin: 1.67em auto }
-      H6              { font-size: .67em; margin: 2.33em auto }
-      H1, H2, H3, H4,
-      H5, H6, B,
-      STRONG          { font-weight: bolder }
-      BLOCKQUOTE      { margin-left: 40px; margin-right: 40px }
-      I, CITE, EM,
-      VAR, ADDRESS    { font-style: italic }
-      PRE, TT, CODE,
-      KBD, SAMP       { font-family: monospace }
-      PRE             { white-space: pre }
-      BIG             { font-size: large }
-      SMALL, SUB, SUP { font-size: small }
-/*      SUB             { vertical-align: sub }
-      SUP             { vertical-align: super }*/
-/* ### hack... should get removed once we support the two lines above */
-      SUB             { position: relative; top: 0.5em; }
-      SUP             { position: relative; top: -0.5em; }
+html {
+	display: block;
+} 
 
-      S, STRIKE, DEL  { text-decoration: line-through }
-      HR              { margin-top: 5px; margin-bottom: 5px; text-align: konq-center; }
+/*
+ * head and it's children all have display=none
+ */
 
-      OL, UL, DIR,
-      MENU, DD        { margin-left: 40px }	
-	/* for right to left */
-      *[dir="rtl"] UL, 
-      *[dir="rtl"] OL,  *[dir="rtl"] DIR, 
-      *[dir="rtl"] MENU, *[dir="rtl"] DD { margin-right:40px; margin-left: auto }
-      OL              { list-style-type: decimal }
-      UL              { list-style-type: disc }
-      UL UL           { list-style-type: circle }
-      UL UL UL        { list-style-type: square }
-      OL UL, UL OL,
-      UL UL, OL OL    { margin-top: auto; margin-bottom: auto }
-      LI > P          { margin-top: auto; margin-bottom: auto }
-      LI > DIV        { margin-top: auto; margin-bottom: auto }
-      U, INS          { text-decoration: underline }
+head { 
+	display: none;
+}
+     
+head { 
+	display: none;
+}
+
+meta {
+	display: none;
+}
+
+title {
+	display: none;
+}
+
+link {
+	display: none;
+}
+
+style {
+	display: none;
+}
+
+/*
+ * generic block level elements
+ */
+
+body {
+	display: block;
+	padding: 5px; 
+	line-height: 1.05;
+} 
+
+p {
+	display: block;
+	margin: 1.0em auto;
+}
+
+div {
+	display: block;
+}
+
+address {
+	display: block;
+}
+      
+blockquote {
+	display: block;
+	margin-left: 40px; 
+	margin-right: 40px;
+}
+
+IFRAME {
+	display: block;
+}
+
+      
+OBJECT { 
+	display: block;
+} 
+
+APPLET { 
+	display: block;
+} 
+      
+CENTER { 
+	display: block;
 	/* special centering to be able to emulate the html4/netscape behaviour */
-      CENTER          { text-align: konq-center;}
+	text-align: konq-center;
+}  
+      
+HR  { 
+	display: block;
+	margin-top: 5px; 
+	margin-bottom: 5px; 
+	text-align: konq-center;
+} 
+ 
+PRE { 
+	display: block;
+}
+  
+MAP { 
+	display: block;
+} 
 
-      /* ### :before is not supported at the moment */
-      BR:before       { content: "\n" }
+
+/* 
+ * heading elements 
+ */
+      
+H1 { 
+	display: block;
+	font-size: 2em; 
+	margin: .67em auto;
+	font-weight: bolder;
+}
+      
+H2 { 
+	display: block;
+	font-size: 1.5em; 
+	margin: .83em auto;
+	font-weight: bolder;
+}
+      
+H3 { 
+	display: block;
+	font-size: 1.17em; 
+	margin: 1em auto;
+	font-weight: bolder;
+}
+      
+H4 {
+	display: block;
+	margin: 1.0em auto;
+	font-weight: bolder;
+}
+
+H5 { 
+	display: block;
+	font-size: .83em; 
+	line-height: 1.17em; 
+	margin: 1.67em auto;
+	font-weight: bolder;
+}
+
+H6 { 
+	display: block;
+	font-size: .67em; 
+	margin: 2.33em auto;
+	font-weight: bolder;
+}
+
+/* 
+ * tables
+ */
+
+TABLE { 
+	display: table;
+	border-collapse: separate;
+	vertical-align: middle;
+	text-align: justify;
+	border-spacing: 2px;
+	border-left-color: #eeeeee;
+	border-top-color: #eeeeee;
+	border-bottom-color: #666666;
+	border-right-color: #666666;
+	border-style: solid;
+	border-width: 0px;
+	padding: 1px;
+}
+      
+TABLE[align="center"] { 
+	margin-left: auto; 
+	margin-right: auto;
+}
+
+THEAD { 
+	display: table-header-group; 
+	border: inherit;
+}
+      
+TBODY { 
+	display: table-row-group;
+	vertical-align: inherit; border: inherit;
+	padding: inherit; 
+}
+      
+TFOOT { 
+	display: table-footer-group; 
+	border: inherit; 
+}
+
+COL { 
+	display: table-column; 
+}
+      
+COLGROUP { 
+	display: table-column-group; 
+}
+
+TR { 
+	display: table-row;
+	vertical-align: inherit; 
+	border: inherit;
+	padding: inherit; 
+}
+      
+      
+TD, TH { 
+	display: table-cell;
+	vertical-align: inherit;
+	padding: inherit;
+	border-width: inherit;			
+	border-style: inherit;
+	border-left-color: #666666;
+	border-top-color: #666666;
+	border-bottom-color: #eeeeee;
+	border-right-color: #eeeeee;
+}
+      
+TH { 
+	font-weight: bolder; 
+	text-align: center;
+}
+
+CAPTION { 
+	display: table-caption;  
+	text-align: konq-center; 
+}
+
+/* don't use "TD[align=...] > *". This sould give problems with
+ * constructs as <td align=left><ul><li>...
+ * Hope the next ones cover all relevant cases. Lars 
+ */ 
+TD[align="center"] > TABLE { margin-left: auto; margin-right: auto; text-align: justify; }
+TD[align="right"] > TABLE { margin-left: auto; margin-right: 0px; text-align: right; }
+TD[align="left"] > TABLE { margin-left: 0px; margin-right: auto; text-align: left; }
+TD[align="center"] > DIV { margin-left: auto; margin-right: auto; text-align: justify; }
+TD[align="right"] > DIV { margin-left: auto; margin-right: 0px; text-align: right; }
+TD[align="left"] > DIV { margin-left: 0px; margin-right: auto; text-align: left; }
+TD[align="center"] > P { margin-left: auto; margin-right: auto; text-align: justify; }
+TD[align="right"] > P { margin-left: auto; margin-right: 0px; text-align: right; }
+TD[align="left"] > P { margin-left: 0px; margin-right: auto; text-align: left; }
+
+/*
+ * Lists
+ */
+
+OL {
+	display: block;
+	margin-left: 40px;
+	list-style-type: decimal;
+}
+      
+UL {
+	display: block;
+	margin-left: 40px;
+	list-style-type: disc;
+} 
+
+UL UL { 
+	list-style-type: circle;
+}
+UL UL UL { 
+	list-style-type: square;
+}
+      
+LI { 
+	display: list-item;
+}
+
+DD {
+	display: block;
+}
+
+DL {
+	display: block;
+	margin-left: 40px;
+} 
+
+DT {
+	display: block;
+}
+
+DIR  { 
+	display: block;
+	margin-left: 40px;
+} 
+
+MENU { 
+	display: block;
+	margin-left: 40px;
+}
+  
+/* for right to left */
+      
+*[dir="rtl"] UL, 
+*[dir="rtl"] OL,  
+*[dir="rtl"] DIR, 
+*[dir="rtl"] MENU, 
+*[dir="rtl"] DD { 
+	margin-right:40px; 
+	margin-left: auto;
+}
+      
+OL UL, 
+UL OL,
+UL UL, 
+OL OL { 
+	margin-top: auto; 
+	margin-bottom: auto; 
+}
+
+LI > P { 
+	margin-top: auto; 
+	margin-bottom: auto;
+}
+      
+LI > DIV { 
+	margin-top: auto; 
+	margin-bottom: auto;
+}
+
+/*
+ * form elements
+ */
+
+FORM {
+	display: block;
+}
+
+FIELDSET {
+	display: block;
+	margin: 1.0em auto;
+} 
 
 /* we want a fixed font for form elements (input & textarea) */
-      INPUT[type="text"],
-      INPUT[type="password"],
-      TEXTAREA { font-family: monospace }
-      INPUT[type="hidden"] {display: none }
-      OPTION, OPTGROUP, AREA  { display: none }
+      
+INPUT[type="text"],
+INPUT[type="password"],
+TEXTAREA { 
+	font-family: monospace;
+}
+      
+INPUT[type="hidden"] {
+	display: none; 
+}
+      
+OPTION, 
+OPTGROUP, 
+AREA  { 
+	display: none; 
+}
 
-      /* An example of style for HTML 4.0's ABBR/ACRONYM elements */
 
-      ABBR, ACRONYM   { font-variant: small-caps; letter-spacing: 0.1em }
-      A[href]         { color: blue; text-decoration: underline;
-/* ### remove this and add default colors for visited/unvisted
-			color: blue*/
-			 }
+/*
+ * inline elements
+ */      
+      
+U, 
+INS { 
+	text-decoration: underline;
+}
+      
+STRONG,
+B { 
+	font-weight: bolder; 
+}
+      
+I, 
+CITE, 
+EM,
+VAR, 
+ADDRESS { 
+	font-style: italic; 
+}
+      
+TT, 
+CODE,
+KBD, 
+SAMP { 
+	font-family: monospace; 
+}
+      
+PRE { 
+	font-family: monospace; 
+	white-space: pre; 
+}
+      
+BIG { 
+	font-size: large; 
+}
+      
+SMALL { 
+	font-size: small; 
+}
+
+S, 
+STRIKE, 
+DEL  { 
+	text-decoration: line-through; 
+}
+
+
+/*
+SUB { 
+	vertical-align: sub 
+}
+SUP { 
+	vertical-align: super 
+}
+*/
+/* ### hack... should get removed once we support the two lines above */
+SUB { 
+	position: relative; 
+	top: 0.5em; 
+	font-size: small; 
+}
+SUP { 
+	position: relative; 
+	top: -0.5em; 
+	font-size: small;
+}
+
+/* ### not supported at the moment
+ABBR, ACRONYM { 
+	font-variant: small-caps; 
+	letter-spacing: 0.1em 
+}
+*/
+abbr, 
+acronym {
+	font-style: italic;
+}
+
+/* ### 
       :focus          { outline: thin dotted invert }
+*/
+
+/* ### :before is not supported at the moment
+      BR:before       { content: "\n" }
+*/
 
 
-      /* Begin bidirectionality settings (do not change) */
-      BDO[DIR="ltr"]  { direction: ltr; unicode-bidi: bidi-override }
-      BDO[DIR="rtl"]  { direction: rtl; unicode-bidi: bidi-override }
+/* Bidirectionality settings (do not change) */
+
+BDO[DIR="ltr"]  { 
+	direction: ltr; 
+	unicode-bidi: bidi-override; 
+}
+
+BDO[DIR="rtl"]  { 
+	direction: rtl; 
+	unicode-bidi: bidi-override;
+}
 
 /* ### this selector seems to be still broken ...
       *[DIR="ltr"]    { direction: ltr; unicode-bidi: embed }
       *[DIR="rtl"]    { direction: rtl; unicode-bidi: embed }
 */
-      /* Elements that are block-level in HTML4 */
+      
+/* Elements that are block-level in HTML4 */
+/* ### don't support unicode-bidi at the moment
       ADDRESS, BLOCKQUOTE, BODY, DD, DIV, DL, DT, FIELDSET,
       FORM, FRAME, FRAMESET, H1, H2, H3, H4, H5, H6, IFRAME,
       NOSCRIPT, NOFRAMES, OBJECT, OL, P, UL, APPLET, CENTER,
       DIR, HR, MENU, PRE, LI, TABLE, TR, THEAD, TBODY, TFOOT,
       COL, COLGROUP, TD, TH, CAPTION
                       { unicode-bidi: embed }
-      /* End bidi settings */
+*/
+      
+/* End bidi settings */
+
+/*
+ * other elements
+ */
+
+noframes {
+	display: none;
+}
+
+/* noscript is handled internally, as it depends on the html settings */
 
 /* media rules are commented out for the moment. We'll have to add
  * them later. Lars, 23.12.99
@@ -169,30 +492,6 @@
         BLOCKQUOTE,
         PRE           { page-break-inside: avoid }
         UL, OL, DL    { page-break-before: avoid }
-      }
-
-      @media speech {
-        H1, H2, H3,
-        H4, H5, H6    { voice-family: paul, male; stress: 20; richness: 90 }
-        H1            { pitch: x-low; pitch-range: 90 }
-        H2            { pitch: x-low; pitch-range: 80 }
-        H3            { pitch: low; pitch-range: 70 }
-        H4            { pitch: medium; pitch-range: 60 }
-        H5            { pitch: medium; pitch-range: 50 }
-        H6            { pitch: medium; pitch-range: 40 }
-        LI, DT, DD    { pitch: medium; richness: 60 }
-        DT            { stress: 80 }
-        PRE, CODE, TT { pitch: medium; pitch-range: 0; stress: 0; richness: 80 }
-        EM            { pitch: medium; pitch-range: 60; stress: 60; richness: 50 }
-        STRONG        { pitch: medium; pitch-range: 60; stress: 90; richness: 90 }
-        DFN           { pitch: high; pitch-range: 60; stress: 60 }
-        S, STRIKE     { richness: 0 }
-        I             { pitch: medium; pitch-range: 60; stress: 60; richness: 50 }
-        B             { pitch: medium; pitch-range: 60; stress: 90; richness: 90 }
-        U             { richness: 0 }
-        A:link        { voice-family: harry, male }
-        A:visited     { voice-family: betty, female }
-        A:active      { voice-family: betty, female; pitch-range: 80; pitch: x-high }
       }
 
 */
