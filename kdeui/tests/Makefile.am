@@ -36,7 +36,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kunbalancedgrdtest kwindowtest kwizardtest \
 	itemcontainertest kpanelmenutest kedittest \
 	kxmlguitest kaccelgentest ksystemtraytest klistviewtest \
-	ktextedittest kmainwindowtest kmainwindowrestoretest kactiontest
+	ktextedittest kmainwindowtest kmainwindowrestoretest kactiontest kdatetimewidgettest ktimewidgettest
 
 METASOURCES = AUTO
 
@@ -52,6 +52,7 @@ kcolortest_SOURCES = kcolortest.cpp
 kcomboboxtest_SOURCES = kcomboboxtest.cpp
 kcompletiontest_SOURCES = kcompletiontest.cpp
 kdatepicktest_SOURCES = kdatepicktest.cpp
+kdatetimewidgettest_SOURCES = kdatetimewidgettest.cpp
 kdatewidgettest_SOURCES = kdatewidgettest.cpp
 kdialogbasetest_SOURCES = kdialogbasetest.cpp
 kdualcolortest_SOURCES = kdualcolortest.cpp
@@ -72,6 +73,7 @@ krulertest_SOURCES = krulertest.cpp
 kseparatortest_SOURCES = kseparatortest.cpp
 kstatusbartest_SOURCES = kstatusbartest.cpp
 ktabctltest_SOURCES = ktabctltest.cpp
+ktimewidgettest_SOURCES = ktimewidgettest.cpp
 kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp

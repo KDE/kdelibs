@@ -59,7 +59,8 @@ include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
 		kcommand.h kwindowlistmenu.h kfontcombo.h kaccelgen.h ktip.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
 		kstringvalidator.h kaccelmanager.h kwindowinfo.h \
-		ktextedit.h kpassivepopup.h kdockwidget_p.h
+		ktextedit.h kpassivepopup.h kdockwidget_p.h \
+		kdatetimewidget.h ktimewidget.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -100,7 +101,7 @@ libkdeui_la_SOURCES = \
                 kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp \
 		kstringvalidator.cpp kactivelabel.cpp kaccelmanager.cpp \
 		kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
-		ktoolbarhandler.cpp
+		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
