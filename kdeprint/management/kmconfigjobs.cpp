@@ -37,7 +37,7 @@ KMConfigJobs::KMConfigJobs(QWidget *parent, const char *name)
 	m_limit = new KIntNumInput(box);
 	m_limit->setRange(0, 9999, 1, true);
 	m_limit->setSpecialValueText(i18n("Unlimited"));
-	m_limit->setLabel(i18n("Maximum number of jobs shown"));
+	m_limit->setLabel(i18n("Maximum number of jobs shown:"));
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
 	l0->addWidget(box, 0);
