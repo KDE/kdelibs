@@ -32,6 +32,8 @@
 #include <sys/un.h>
 #include <errno.h>
 
+#undef DEBUG_CONNECTION_DATA
+
 using namespace Arts;
 
 /*
@@ -93,18 +95,44 @@ void SocketConnection::qSendBuffer(Buffer *buffer)
 	pending.push_back(buffer);
 }
 
+static void connection_hex_dump(unsigned char *buffer, long len)
+{
+	int i = 0;
+	printf("Connection: received %ld bytes:\n\n");
+	while (i < len)
+	{
+		unsigned int j, n, d[16];
+
+		for (n = 0; n < 16; n++)
+			if (i < len)
+		    	d[n] = buffer[i++];
+		    else
+		    	break;
+		printf (" ");
+
+		for (j = 0; j < n; j++) printf ("%s %02x", j == 8 ? "  " : "", d[j]);
+		for (; j < 16; j++)		printf ("%s   ",   j == 8 ? "  " : "");
+		printf ("    ");
+
+		for (j = 0; j < n; j++)
+			printf ("%c", d[j] >= 32 ? d[j] : '.');
+		printf ("\n");
+	}
+}
+
 void SocketConnection::notifyIO(int fd, int types)
 {
 	assert(fd == this->fd);
 
 	if(types & IOType::read)
 	{
-		//printf("processing read notification\n");
 		unsigned char buffer[MCOP_MAX_READ_SIZE];
-
 		long n = read(fd,buffer,MCOP_MAX_READ_SIZE);
-		//printf("ok, got %ld bytes\n",n);
 
+#ifdef DEBUG_CONNECTION_DATA
+		connection_hex_dump(buffer,n);
+#endif
+	
 		if(n > 0)
 		{
 			receive(buffer,n);
