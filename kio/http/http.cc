@@ -430,9 +430,19 @@ int HTTPProtocol::openStream() {
                   << "| Issuer: " << m_ssl.peerInfo().getPeerCertificate().getIssuer() << endl
                   << "+-----------------------------------------------"
                   << endl;
+    setMetaData("ssl_in_use", "TRUE");
+    setMetaData("ssl_peer_cert_subject", m_ssl.peerInfo().getPeerCertificate().getSubject());
+    setMetaData("ssl_peer_cert_issuer", m_ssl.peerInfo().getPeerCertificate().getIssuer());
+    // do we already have this info?
+    // FIXME setMetaData("ssl_peer_ip", );
+    // FIXME setMetaData("ssl_peer_url", );
+    setMetaData("ssl_cipher", m_ssl.connectionInfo().getCipher());
+    setMetaData("ssl_cipher_desc", m_ssl.connectionInfo().getCipherDescription());
+    setMetaData("ssl_cipher_version", m_ssl.connectionInfo().getCipherVersion());
     return true;
   }
 #endif
+  setMetaData("ssl_in_use", "FALSE");
   m_fsocket = fdopen( m_sock, "r+" );
   if( !m_fsocket ) {
     return false;
