@@ -24,8 +24,6 @@
 
 #include "kcalendarsystemhebrew.h"
 
-static int jflg = 0; // ### HPB Remove this!?!?
-
 static int hebrewDaysInYear(int y);
 static QString num2heb(int num, bool includeMillenium);
 
@@ -51,6 +49,12 @@ static class h_date * hebrewToGregorian(int y, int m, int d)
   s = hebrewDaysInYear(y);
   d += s;
   s = hebrewDaysInYear(y + 1) - s;    /* length of year */
+
+  if (s > 365 && m > 6 )
+  {
+    --m;
+    d += 30;
+  }
   d += (59 * (m - 1) + 1) / 2;  /* regular months */
   /* special cases */
   if (s % 10 > 4 && m > 2)  /* long Heshvan */
@@ -58,17 +62,14 @@ static class h_date * hebrewToGregorian(int y, int m, int d)
   if (s % 10 < 4 && m > 3)  /* short Kislev */
     d--;
   // ### HPB: Broken in leap years
-  if (s > 365 && m > 6)  /* leap year */
-    d += 30;
+  //if (s > 365 && m > 6)  /* leap year */
+  //  d += 30;
   d -= 6002;
-  if (!jflg) {  /* compute century */
-    y = (d + 36525) * 4 / 146097 - 1;
-    d -= y / 4 * 146097 + (y % 4) * 36524;
-    y *= 100;
-  } else {
-    d += 2;
-    y = 0;
-  }
+
+  y = (d + 36525) * 4 / 146097 - 1;
+  d -= y / 4 * 146097 + (y % 4) * 36524;
+  y *= 100;
+
   /* compute year */
   s = (d + 366)*4/1461-1;
   d -= s/4*1461 + (s % 4)*365;
@@ -101,8 +102,7 @@ static class h_date * gregorianToHebrew(int y, int m, int d)
   /* no. of days, Julian calendar */
   d += 365*y + y/4 + 367*m/12 + 5968;
   /* Gregorian calendar */
-  if (!jflg)
-    d -= y/100-y/400-2;
+  d -= y/100-y/400-2;
   h.hd_dw = (d + 1) % 7;
 
   /* compute the year */
@@ -478,9 +478,17 @@ int KCalendarSystemHebrew::daysInMonth(const QDate& date) const
   return hndays(sd->hd_mon, sd->hd_year);
 }
 
-// Ok
+// ### HPB: This is incorrect
 int KCalendarSystemHebrew::hndays(int mon, int year) const
 {
+  if ( is_leap_year(year) )
+    if ( mon == 6 )
+      mon = 13;
+    else if ( mon == 7 )
+      mon = 14;
+    else
+      --mon;
+
   if( mon == 8 /*IYYAR*/ || mon == 10 /*TAMUZ*/ ||
     mon == 12 /*ELUL*/ || mon == 4 /*TEVET*/ ||
     mon == 14 /*ADAR 2*/||
