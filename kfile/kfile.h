@@ -22,7 +22,9 @@
 #include <qdir.h>
 
 /**
- * Just a namespace for some enums
+ * KFile is a class which provides a namespace for some enumerated
+ * values associated with the kfile library.  You will never need to
+ * construct a KFile object itself.
  */
 
 class KFile
