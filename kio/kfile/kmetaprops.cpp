@@ -108,13 +108,12 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
 
 void KFileMetaPropsPlugin::createLayout()
 {
-    QStringList l;
     QFileInfo file_info(properties->item()->url().path());
 
     kdDebug(250) << "KFileMetaPropsPlugin::createLayout" << endl;
 
     // is there any valid and non-empty info at all?
-    if ( !d->m_info.isValid() || (l = d->m_info.preferredKeys()) .isEmpty() )
+    if ( !d->m_info.isValid() || (d->m_info.preferredKeys()).isEmpty() )
         return;
 
     // let the dialog create the page frame
@@ -135,6 +134,7 @@ void KFileMetaPropsPlugin::createLayout()
     // now get a list of groups
     KFileMetaInfoProvider* prov = KFileMetaInfoProvider::self();
     QStringList groupList = d->m_info.preferredGroups();
+
     const KFileMimeTypeInfo* mtinfo = prov->mimeTypeInfo(d->m_info.mimeType());
     if (!mtinfo) kdDebug(7034) << "no mimetype info there\n";
 
@@ -150,7 +150,6 @@ void KFileMetaPropsPlugin::createLayout()
 
         toplayout->addWidget(groupBox);
 
-        // first create all widgets and add them to the lists
         QValueList<KFileMetaInfoItem> readItems;
         QValueList<KFileMetaInfoItem> editItems;
 
@@ -159,7 +158,6 @@ void KFileMetaPropsPlugin::createLayout()
             KFileMetaInfoItem item = d->m_info[*git][*iit];
             if ( !item.isValid() ) continue;
 
-            QString valClass;
             bool editable = file_info.isWritable() && item.isEditable();
 
             if (editable)
