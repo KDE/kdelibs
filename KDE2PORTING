@@ -1,3 +1,4 @@
+$Id:$
 This document contains the changes you have to apply to programs written for
 KDE1.1 when you want to port them to KDE2.0.
 
@@ -22,9 +23,11 @@ khtmlw has been replaced with khtml.
 // * KIntegerLine, KIntLineEdit
 
   KIntegerLine has been renamed to KIntLineEdit. The new header file
-  is called kintlineedit.h. If you were using the former KIntLineEdit
-  from keditcl.h no changes should be necessary at all. It is
-  recommended to switch to the new include file, though.
+  is called knumlineedit.h, because it contains one additional class
+  KFloatLineEdit. If you were using the former KIntLineEdit
+  from keditcl.h, kintegerline.h or kintlineedit.h, no changes should
+  be necessary at all, althouth the (QWidget *parent) paramater is now required.
+  It is recommended to switch to the new include file, though.
 
 //////////////////////////////////////////////////////////////////////
 // * KLocale
