@@ -696,7 +696,11 @@ class KDEDApplication : public KUniqueApplication
 {
 public:
   KDEDApplication() : KUniqueApplication( )
-    { startup = true; }
+    {
+       startup = true;
+       dcopClient()->connectDCOPSignal( "DCOPServer", "", "terminateKDE()",
+                                        objId(), "quit()", false );
+    }
 
   int newInstance()
     {
