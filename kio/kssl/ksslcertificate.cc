@@ -625,12 +625,13 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 
 	for (QStringList::Iterator j = qsl.begin(); j != qsl.end(); ++j) {
 		struct stat sb;
-		QString _j = (*j)+"ca-bundle.crt";
-		if (-1 == stat(_j.ascii(), &sb)) continue;
+		QString _j = (*j) + "ca-bundle.crt";
+		if (-1 == stat(_j.ascii(), &sb)) {
+			continue;
+		}
 
 		certStore = d->kossl->X509_STORE_new();
-		if (!certStore)
-		{
+		if (!certStore) {
 			errors << KSSLCertificate::Unknown;
 			return errors;
 		}
@@ -665,8 +666,9 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		}
 
 		d->kossl->X509_STORE_CTX_init(certStoreCTX, certStore, d->m_cert, NULL);
-		if (d->_chain.isValid())
+		if (d->_chain.isValid()) {
 			d->kossl->X509_STORE_CTX_set_chain(certStoreCTX, (STACK_OF(X509)*)d->_chain.rawChain());
+		}
 
 		//kdDebug(7029) << "KSSL setting CRL.............." << endl;
 		// int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x);
@@ -679,12 +681,9 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		certStoreCTX->error = X509_V_OK;
 		rc = d->kossl->X509_verify_cert(certStoreCTX);
 		int errcode = certStoreCTX->error;
-		if (ca && !KSSL_X509CallBack_ca_found)
-		{
+		if (ca && !KSSL_X509CallBack_ca_found) {
 			ksslv = KSSLCertificate::Irrelevant;
-		}
-		else
-		{
+		} else {
 			ksslv = processError(errcode);
 		}
 		// For servers, we can try NS_SSL_SERVER too
@@ -714,8 +713,8 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 		if (ksslv != NoCARoot && ksslv != InvalidCA) {
 			d->m_stateCached = true;
 			d->m_stateCache = ksslv;
-			break;
 		}
+		break;
 	}
 	
 	if (ksslv != KSSLCertificate::Ok)
