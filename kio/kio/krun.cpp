@@ -286,7 +286,7 @@ KRunMX2::expandEscapedMacro( const QString &str, uint pos, QStringList &ret )
          if (!ignFile)
             kdWarning() << "KRun::processDesktopExec: No URLs supplied to single-URL service " << str << endl;
       } else if( urls.count() > 1 )
-         kdWarning() << "KRun::processDesktopExec: Multiple URLs supplied to single-URL service " << str << endl;
+          kdWarning() << "KRun::processDesktopExec: " << urls.count() << " URLs supplied to single-URL service " << str << endl;
       else
          subst( option, urls.first(), ret );
       break;
@@ -339,13 +339,6 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
 
   if( !mx1.expandMacrosShellQuote( exec ) )
     goto synerr; // error in shell syntax
-  // Did the user forget to append something like '%f'?
-  // If so, then assume that '%f' is the right choice => the application
-  // accepts only local files.
-  if( !mx1.hasSpec ) {
-    exec += " %f";
-    mx2.ignFile = true;
-  }
 
   // FIXME: the current way of invoking kioexec disables term and su use
 
@@ -369,6 +362,14 @@ QStringList KRun::processDesktopExec(const KService &_service, const KURL::List&
           result = KShell::joinArgs( result );
         return result;
       }
+  }
+
+  // Did the user forget to append something like '%f'?
+  // If so, then assume that '%f' is the right choice => the application
+  // accepts only local files.
+  if( !mx1.hasSpec ) {
+    exec += " %f";
+    mx2.ignFile = true;
   }
 
   mx2.expandMacrosShellQuote( exec ); // syntax was already checked, so don't check return value
@@ -781,7 +782,7 @@ void KRun::init()
   connect( job, SIGNAL( result( KIO::Job * ) ),
            this, SLOT( slotStatResult( KIO::Job * ) ) );
   m_job = job;
-  kdDebug() << " Job " << job << " is about stating " << m_strURL.url() << endl;
+  kdDebug(7010) << " Job " << job << " is about stating " << m_strURL.url() << endl;
 }
 
 KRun::~KRun()
@@ -832,7 +833,7 @@ void KRun::scanFile()
   connect(job, SIGNAL( mimetype(KIO::Job *, const QString &)),
           this, SLOT( slotScanMimeType(KIO::Job *, const QString &)));
   m_job = job;
-  kdDebug() << " Job " << job << " is about getting from " << m_strURL.url() << endl;
+  kdDebug(7010) << " Job " << job << " is about getting from " << m_strURL.url() << endl;
 }
 
 void KRun::slotTimeout()
@@ -1049,7 +1050,7 @@ void KRun::killJob()
 
 void KRun::abort()
 {
-  kdDebug() << "KRun::abort " << this << " m_showingError=" << d->m_showingError << endl;
+  kdDebug(7010) << "KRun::abort " << this << " m_showingError=" << d->m_showingError << endl;
   killJob();
   // If we're showing an error message box, the rest will be done
   // after closing the msgbox -> don't autodelete nor emit signals now.
