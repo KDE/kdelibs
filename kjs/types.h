@@ -222,12 +222,12 @@ namespace KJS {
      */
     Value at(int i) const;
     /**
-     * Equivalent to @ref at.
+     * Equivalent to @ref #at.
      */
     Value operator[](int i) const;
     /**
      * Returns a pointer to a static instance of an empty list. Useful if a
-     * function has a @ref KJS::List parameter.
+     * function has a @ref List parameter.
      */
     static const List empty();
 #ifdef KJS_DEBUG_MEM

@@ -603,7 +603,7 @@ namespace KJS {
                          int sourceId = -1);
 
     /**
-     * Array of error names corresponding to @ref ErrorType
+     * Array of error names corresponding to @ref #ErrorType
      */
     static const char * const * const errorNames;
   };
