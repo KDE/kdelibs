@@ -473,9 +473,7 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
                      it != dirs->end(); ++it) {
                     QString path = realPath(*pit + *it);
                     testdir.setPath(path);
-                    if (local && !testdir.exists())
-                        makeDir(path, 0700);
-                    if (testdir.exists() && !candidates->contains(path))
+                    if ((local || testdir.exists()) && !candidates->contains(path))
                         candidates->append(path);
                 }
                 local = false;
