@@ -61,7 +61,7 @@
 <!ENTITY Nick.Betcher '<personname><firstname>Nick</firstname><surname>Betcher</surname></personname>'>
 <!ENTITY Nick.Betcher.mail '<email>nbetcher@usewest.net</email>'>
 <!ENTITY Stephan.Binner '<personname><firstname>Stephan</firstname><surname>Binner</surname></personname>'>
-<!ENTITY Stephan.Binner.mail '<email>Stephan.Binner@gmx.de</email>'>
+<!ENTITY Stephan.Binner.mail '<email>binner@kde.org</email>'>
 <!ENTITY Eric.Bischoff '<personname><firstname>Éric</firstname><surname>Bischoff</surname></personname>'>
 <!ENTITY Eric.Bischoff.mail '<email>e.bischoff@noos.fr</email>'>
 <!ENTITY Michael.Brade '<personname><firstname>Michael</firstname><surname>Brade</surname></personname>'>
