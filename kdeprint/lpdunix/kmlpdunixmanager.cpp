@@ -263,18 +263,20 @@ void KMLpdUnixManager::parseSpoolInterface()
 KMLpdUnixManager::KMLpdUnixManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
+	m_loaded = false;
 }
 
 void KMLpdUnixManager::listPrinters()
 {
 	// load only once, if already loaded, just keep them (remove discard flag)
-	if (m_printers.count() == 0)
+	if (!m_loaded)
 	{
 		parseEtcPrintcap();
 		parseEtcPrintersConf();
 		parseEtcLpPrinters();
 		parseEtcLpMember();
 		parseSpoolInterface();
+		m_loaded = true;
 	}
 	else
 		discardAllPrinters(false);

@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -117,6 +117,9 @@ KMListView::KMListView(QWidget *parent, const char *name)
 	m_printers = new KMListViewItem(m_root,i18n("Printers"));
 	m_printers->setPixmap(0,SmallIcon("package"));
 	m_printers->setOpen(true);
+	m_specials = new KMListViewItem(m_root,i18n("Specials"));
+	m_specials->setPixmap(0,SmallIcon("package"));
+	m_specials->setOpen(true);
 
 	sort();
 }
@@ -172,7 +175,7 @@ void KMListView::setPrinterList(QList<KMPrinter> *list)
 			item = findItem(it.current());
 			if (!item)
 			{
-				item = new KMListViewItem((it.current()->isClass(false) ? m_classes : m_printers),it.current());
+				item = new KMListViewItem((it.current()->isSpecial() ? m_specials : (it.current()->isClass(false) ? m_classes : m_printers)),it.current());
 				m_items.append(item);
 				changed = true;
 			}

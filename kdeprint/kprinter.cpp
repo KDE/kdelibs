@@ -37,6 +37,7 @@
 #include <knotifyclient.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kprocess.h>
 
 void dumpOptions(const QMap<QString,QString>& opts);
 void reportError(KPrinter*);
@@ -195,7 +196,7 @@ void KPrinter::translateQtOptions()
 	m_wrapper->setOrientation((QPrinter::Orientation)orientation());
 	m_wrapper->setPageSize((QPrinter::PageSize)pageSize());
 	m_wrapper->setOutputToFile(true);
-	m_wrapper->setOutputFileName((outputToFile() ? outputFileName() : m_tmpbuffer));
+	m_wrapper->setOutputFileName(m_tmpbuffer);
 	m_wrapper->setNumCopies(option("kde-qtcopies").isEmpty() ? 1 : option("kde-qtcopies").toInt());
 }
 
@@ -217,7 +218,7 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 	}
 
 	// Continue if status is OK (filtering succeeded) and no output-to-file
-	if (status && !outputToFile())
+	if (status)
 	{
 		// Show preview if needed (only possible for a single file !), and stop
 		// if the user requested it.
@@ -234,7 +235,8 @@ bool KPrinter::printFiles(const QStringList& l, bool flag)
 			}
 			else
 			{
-				QString	cmd = QString("kjobviewer -d %1").arg(printerName());
+				QString	cmd = QString("kjobviewer -d %1").arg(KShellProcess::quote(printerName()));
+qDebug("jobview command: %s",cmd.latin1());
 				KRun::runCommand(cmd);
 			}
 		}
@@ -256,7 +258,7 @@ void KPrinter::preparePrinting()
 	setRealPageSize(QSize(-1,-1));
 
 	// print-system-specific setup, only if not printing to file
-	if (m_impl && !outputToFile())
+	if (m_impl && option("kde-isspecial") != "1")
 		m_impl->preparePrinting(this);
 
 	// standard Qt settings
@@ -667,7 +669,14 @@ bool KPrinter::outputToFile() const
 { return (option("kde-outputtofile") == "1"); }
 
 void KPrinter::setOutputToFile(bool on)
-{ setOption("kde-outputtofile",(on ? "1" : "0")); }
+{
+	setOption("kde-outputtofile",(on ? "1" : "0"));
+	if (on)
+	{
+		setOption("kde-special-command",QString::null);
+		setOption("kde-isspecial",QString::null);
+	}
+}
 
 bool KPrinter::abort()
 { return m_wrapper->abort(); }

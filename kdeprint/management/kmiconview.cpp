@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -74,7 +74,7 @@ void KMIconViewItem::updatePrinter(KMPrinter *p)
 		update = (oldstate != m_state);
 		if (p->name() != text() || oldstate != m_state)
 			setText(p->name());
-		setKey(QString::fromLatin1("%1_%2").arg((p->isClass(false) ? "class" : "printer")).arg(p->name()));
+		setKey(QString::fromLatin1("%1_%2").arg((p->isSpecial() ? "special" : (p->isClass(false) ? "class" : "printer"))).arg(p->name()));
 	}
 	else
 		setKey(QString::fromLatin1("aaa"));

@@ -24,6 +24,7 @@
 #include "kmdbentry.h"
 #include "kmfactory.h"
 #include "kmvirtualmanager.h"
+#include "kmspecialmanager.h"
 
 #include <zlib.h>
 #include <qfile.h>
@@ -41,6 +42,9 @@ KMManager::KMManager(QObject *parent, const char *name)
 	m_hasmanagement = false;
 	m_printeroperationmask = 0;
 	m_serveroperationmask = 0;
+
+	m_specialmgr = new KMSpecialManager(this);
+	CHECK_PTR(m_specialmgr);
 }
 
 KMManager::~KMManager()
@@ -164,6 +168,7 @@ QList<KMPrinter>* KMManager::printerList(bool reload)
 		listPrinters();
                 // list virtual printers (and undiscard virtual printers if necessary)
                 KMFactory::self()->virtualManager()->refresh();
+		m_specialmgr->refresh();
 
 		// remove discarded printers
 		for (uint i=0; i<m_printers.count(); i++)
@@ -321,7 +326,8 @@ void KMManager::discardAllPrinters(bool on)
 {
 	QListIterator<KMPrinter>	it(m_printers);
 	for (;it.current();++it)
-		it.current()->setDiscarded(on);
+		if (!on || !it.current()->isSpecial())
+			it.current()->setDiscarded(on);
 }
 
 bool KMManager::validateDbDriver(KMDBEntry*)

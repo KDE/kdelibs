@@ -35,6 +35,7 @@ class QWidget;
 class KMManager : public QObject
 {
 friend class KMVirtualManager;
+friend class KMSpecialManager;
 
 public:
 	enum PrinterOperations {
@@ -128,6 +129,7 @@ protected:
 	bool 			m_hasmanagement;
 	int			m_printeroperationmask;
 	int 			m_serveroperationmask;
+	KMSpecialManager	*m_specialmgr;
 };
 
 #endif

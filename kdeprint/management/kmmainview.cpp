@@ -210,13 +210,14 @@ void KMMainView::slotPrinterSelected(KMPrinter *p)
 	if (m_toolbar->isEnabled())
 	{
 		int 	mask = m_manager->printerOperationMask();
-		m_actions->action("printer_remove")->setEnabled((mask & KMManager::PrinterRemoval) && (p != NULL));
-		m_actions->action("printer_configure")->setEnabled(((mask & KMManager::PrinterConfigure) && p && !p->isClass(true) && p->isLocal()));
-		m_actions->action("printer_hard_default")->setEnabled(((mask & KMManager::PrinterDefault) && p && !p->isClass(true) && !p->isHardDefault() && p->isLocal()));
-		m_actions->action("printer_soft_default")->setEnabled((p && !p->isSoftDefault()));
-		m_actions->action("printer_test")->setEnabled(((mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
-		m_actions->action("printer_enable")->setEnabled(((mask & KMManager::PrinterEnabling) && p && p->state() == KMPrinter::Stopped));
-		m_actions->action("printer_disable")->setEnabled(((mask & KMManager::PrinterEnabling) && p && p->state() != KMPrinter::Stopped));
+		bool	sp = !(p && p->isSpecial());
+		m_actions->action("printer_remove")->setEnabled((sp && (mask & KMManager::PrinterRemoval) && p));
+		m_actions->action("printer_configure")->setEnabled(!sp || ((mask & KMManager::PrinterConfigure) && p && !p->isClass(true) && p->isLocal()));
+		m_actions->action("printer_hard_default")->setEnabled((sp && (mask & KMManager::PrinterDefault) && p && !p->isClass(true) && !p->isHardDefault() && p->isLocal()));
+		m_actions->action("printer_soft_default")->setEnabled((sp && p && !p->isSoftDefault()));
+		m_actions->action("printer_test")->setEnabled((sp && (mask & KMManager::PrinterTesting) && p && !p->isClass(true)));
+		m_actions->action("printer_enable")->setEnabled((sp && (mask & KMManager::PrinterEnabling) && p && p->state() == KMPrinter::Stopped));
+		m_actions->action("printer_disable")->setEnabled((sp && (mask & KMManager::PrinterEnabling) && p && p->state() != KMPrinter::Stopped));
 	}
 }
 
@@ -335,19 +336,26 @@ void KMMainView::slotConfigure()
 	if (m_current)
 	{
 		KMTimer::blockTimer();
-		DrMain	*driver = m_manager->loadPrinterDriver(m_current, true);
-		if (driver)
+		if (m_current->isSpecial())
 		{
-			KMDriverDialog	dlg(this);
-			dlg.setCaption(i18n("Configure %1").arg(m_current->printerName()));
-			dlg.setDriver(driver);
-			if (dlg.exec())
-				if (!m_manager->savePrinterDriver(m_current,driver))
-					showErrorMsg(i18n("Unable to modify settings of printer <b>%1</b>.").arg(m_current->printerName()));
-			delete driver;
+			showErrorMsg(i18n("Not implemented yet."),false);
 		}
 		else
-			showErrorMsg(i18n("Unable to load a valid driver for printer <b>%1</b>.").arg(m_current->printerName()));
+		{
+			DrMain	*driver = m_manager->loadPrinterDriver(m_current, true);
+			if (driver)
+			{
+				KMDriverDialog	dlg(this);
+				dlg.setCaption(i18n("Configure %1").arg(m_current->printerName()));
+				dlg.setDriver(driver);
+				if (dlg.exec())
+					if (!m_manager->savePrinterDriver(m_current,driver))
+						showErrorMsg(i18n("Unable to modify settings of printer <b>%1</b>.").arg(m_current->printerName()));
+				delete driver;
+			}
+			else
+				showErrorMsg(i18n("Unable to load a valid driver for printer <b>%1</b>.").arg(m_current->printerName()));
+		}
 		KMTimer::releaseTimer(false);
 	}
 }

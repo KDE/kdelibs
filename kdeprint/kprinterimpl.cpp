@@ -51,18 +51,10 @@ void initEditPrinter(KMPrinter *p)
 KPrinterImpl::KPrinterImpl(QObject *parent, const char *name)
 : QObject(parent,name)
 {
-	// initialize file printer
-	m_fileprinter = new KMPrinter();
-	m_fileprinter->setPrinterName(QString::fromLatin1("File"));
-	m_fileprinter->setName("__kdeprint_file");
-	m_fileprinter->setDefaultOption("kde-orientation","Portrait");
-	m_fileprinter->setDefaultOption("kde-colormode","Color");
-	m_fileprinter->setDefaultOption("kde-pagesize",QString::number((int)KPrinter::A4));
 }
 
 KPrinterImpl::~KPrinterImpl()
 {
-	delete m_fileprinter;
 }
 
 void KPrinterImpl::preparePrinting(KPrinter*)
@@ -77,10 +69,28 @@ bool KPrinterImpl::setupCommand(QString&, KPrinter*)
 bool KPrinterImpl::printFiles(KPrinter *p, const QStringList& f, bool flag)
 {
 	QString	cmd;
-	if (!setupCommand(cmd,p))
+	if (p->option("kde-isspecial") == "1")
+	{
+		if (p->option("kde-special-command").isEmpty() && p->outputToFile())
+		{
+			if (f.count() > 1)
+			{
+				p->setErrorMessage(i18n("Cannot copy multiple files into one file."));
+				return false;
+			}
+			else if (system(QString::fromLatin1("%1 %2 %3").arg((flag?"mv":"cp")).arg(f[0]).arg(p->outputFileName()).latin1()) != 0)
+			{
+				p->setErrorMessage(i18n("Cannot save print file. Check that you have write access to it."));
+				return false;
+			}
+			return true;
+		}
+		if (!setupSpecialCommand(cmd,p,f))
+			return false;
+	}
+	else if (!setupCommand(cmd,p))
 		return false;
-	else
-		return startPrinting(cmd,p,f,flag);
+	return startPrinting(cmd,p,f,flag);
 }
 
 void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
@@ -96,10 +106,6 @@ void KPrinterImpl::broadcastOption(const QString& key, const QString& value)
 			it.current()->setEditedOption(key,value);
 		}
 	}
-
-	// update also "file" printer
-	initEditPrinter(m_fileprinter);
-	m_fileprinter->setEditedOption(key,value);
 }
 
 int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool removeflag)
@@ -130,18 +136,19 @@ int KPrinterImpl::dcopPrint(const QString& cmd, const QStringList& files, bool r
 
 bool KPrinterImpl::startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool flag)
 {
-	bool	canPrint(false);
 	QString	command(cmd);
+	QStringList	printfiles;
+	if (command.find("%in") == -1) command.append(" %in");
+
 	for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 		if (QFile::exists(*it))
-		{
-			command.append(" ").append(*it);
-			canPrint = true;
-		}
+			printfiles.append(*it);
 		else
 			qDebug("File not found: %s",(*it).latin1());
-	if (canPrint)
+
+	if (printfiles.count() > 0)
 	{
+		command.replace(QRegExp("%in"),printfiles.join(" "));
 		int pid = dcopPrint(command,files,flag);
 		if (pid > 0)
 		{
@@ -213,20 +220,23 @@ qDebug("command: %s",filtercmd.latin1());
 			printer->setErrorMessage(i18n("Error while filtering. Command was: <b>%1</b>.").arg(filtercmd));
 			return false;
 		}
-		if (printer->outputToFile())
-		{
-			if (system(QString::fromLatin1("mv %1 %2").arg(tmpfile).arg(*it).latin1()) != 0)
-			{
-				printer->setErrorMessage(i18n("Unable to open output file for writing."));
-				return false;
-			}
-		}
-		else
-		{
-			if (flag) QFile::remove(*it);
-			*it = tmpfile;
-		}
+		if (flag) QFile::remove(*it);
+		*it = tmpfile;
 	}
+	return true;
+}
+
+bool KPrinterImpl::setupSpecialCommand(QString& cmd, KPrinter *p, const QStringList& files)
+{
+	QString	s(p->option("kde-special-command"));
+	if (s.isEmpty())
+	{
+		p->setErrorMessage("Empty command.");
+		return false;
+	}
+	s.replace(QRegExp("%out"),p->outputFileName());
+	s.replace(QRegExp("%psl"),QString::fromLatin1(pageSizeToPageName(p->pageSize())).lower());
+	cmd = s;
 	return true;
 }
 #include "kprinterimpl.moc"

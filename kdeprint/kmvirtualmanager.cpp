@@ -271,6 +271,7 @@ void KMVirtualManager::saveFile(const QString& filename)
 		QListIterator<KMPrinter>	it(m_manager->m_printers);
 		for (;it.current();++it)
 		{
+			if (it.current()->isSpecial()) continue;
 			t << (it.current()->isSoftDefault() ? "Default " : "Dest ") << it.current()->name();
 			QMap<QString,QString>	opts = it.current()->defaultOptions();
 			for (QMap<QString,QString>::ConstIterator oit=opts.begin(); oit!=opts.end(); ++oit)

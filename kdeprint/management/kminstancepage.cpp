@@ -85,7 +85,8 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 
 	m_view->clear();
 	m_printer = p;
-	if (p)
+	bool	ok = (p && !p->isSpecial());
+	if (ok)
 	{
 		QList<KMPrinter>	list;
 		KMFactory::self()->virtualManager()->virtualList(list,p->name());
@@ -100,7 +101,7 @@ void KMInstancePage::setPrinter(KMPrinter *p)
 
 	QValueList<KAction*>	acts = m_actions->actions();
 	for (QValueList<KAction*>::ConstIterator it=acts.begin(); it!=acts.end(); ++it)
-		(*it)->setEnabled((p != NULL));
+		(*it)->setEnabled(ok);
 
 	if (!oldText.isEmpty())
 	{

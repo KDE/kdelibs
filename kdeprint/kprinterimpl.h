@@ -43,7 +43,6 @@ public:
 
 	bool printFiles(KPrinter*, const QStringList&, bool removeflag = false);
 	bool filterFiles(KPrinter*, QStringList&, bool removeflag = false);
-	KMPrinter* filePrinter()				{ return m_fileprinter; }
 	void saveOptions(const QMap<QString,QString>& opts)	{ m_options = opts; }
 	const QMap<QString,QString>& loadOptions() const 	{ return m_options; }
 	QString tempFile();
@@ -51,9 +50,9 @@ public:
 protected:
 	bool startPrinting(const QString& cmd, KPrinter *printer, const QStringList& files, bool removeflag = false);
 	int dcopPrint(const QString& cmd, const QStringList& files, bool removeflag = false);
+	bool setupSpecialCommand(QString&, KPrinter*, const QStringList&);
 
 protected:
-	KMPrinter		*m_fileprinter;
 	QMap<QString,QString>	m_options;	// use to save current options
 };
 

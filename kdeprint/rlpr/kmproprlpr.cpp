@@ -55,7 +55,7 @@ KMPropRlpr::~KMPropRlpr()
 
 void KMPropRlpr::setPrinter(KMPrinter *p)
 {
-	if (p)
+	if (p && !p->isSpecial())
 	{
 		m_host->setText(p->option("host"));
 		m_queue->setText(p->option("queue"));

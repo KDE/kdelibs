@@ -89,7 +89,7 @@ void KMUiManager::setupPrintDialog(KPrintDialog *dlg)
 	// dialog flags
 	int	f = m_printdialogflags;
 	if (applicationType() == KPrinter::StandAlone)
-		f &= ~(KMUiManager::Preview|KMUiManager::OutputToFile);
+		f &= ~(KMUiManager::Preview);
 	dlg->setFlags(f);
 
 	// dialog pages
@@ -106,11 +106,9 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 {
 	if (dlg->printer())
 	{
-		if (dlg->printer()->name() == "__kdeprint_file")
-		{ // special case of "print to file"
+		if (dlg->printer()->isSpecial())
+		{ // special case
 			dlg->addPage(new KPQtPage(dlg,"QtPage"));
-			dlg->setCaption(i18n("Configuration of file printing"));
-			// hide "save" button
 			dlg->setDefaultButton(QString::null);
 		}
 		else
@@ -126,8 +124,8 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 			if (driver)
 				dlg->addPage(new KPDriverPage(dlg->printer(),driver,dlg,"DriverPage"));
 
-			dlg->setCaption(i18n("Configuration of %1").arg(dlg->printer()->name()));
 		}
+		dlg->setCaption(i18n("Configuration of %1").arg(dlg->printer()->name()));
 		dlg->addPage(new KPFilterPage(dlg,"FilterPage"));
 		dlg->resize(100,100);
 	}

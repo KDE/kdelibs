@@ -73,7 +73,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_ok->setDefault(true);
 	QPushButton	*m_cancel = new QPushButton(i18n("Cancel"), this);
 	m_preview = new QCheckBox(i18n("Preview"), m_pbox);
-	m_printtofile = new QCheckBox(i18n("Print to file"), m_pbox);
+	m_filelabel = new QLabel(i18n("Output file:"), m_pbox);
 	m_file = new QLineEdit(m_pbox);
 	m_file->setEnabled(false);
 	m_file->setText(QDir::homeDirPath()+"/print.ps");
@@ -113,7 +113,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l5->addWidget(m_preview,0);
 	l5->addStretch(1);
 	//***
-	l3->addWidget(m_printtofile,1,0);
+	l3->addWidget(m_filelabel,1,0);
 	l3->addWidget(m_file,1,1);
 	l3->addWidget(m_filebrowse,1,2);
 	//***
@@ -128,23 +128,6 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(m_filebrowse,SIGNAL(clicked()),SLOT(slotBrowse()));
 	connect(m_printers,SIGNAL(activated(int)),SLOT(slotPrinterSelected(int)));
 	connect(m_options,SIGNAL(clicked()),SLOT(slotOptions()));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_default,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_printers,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_preview,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_type,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_state,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_comment,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_location,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_typelabel,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_printerlabel,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_commentlabel,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_statelabel,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_locationlabel,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_filebrowse,SLOT(setEnabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_file,SLOT(setEnabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),this,SLOT(slotFilePrintToggled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_cmd,SLOT(setDisabled(bool)));
-	connect(m_printtofile,SIGNAL(toggled(bool)),m_cmdlabel,SLOT(setDisabled(bool)));
 }
 
 KPrintDialog::~KPrintDialog()
@@ -159,7 +142,7 @@ void KPrintDialog::setFlags(int f)
 	if (!(f & KMUiManager::Options)) m_options->hide();
 	if (!(f & KMUiManager::OutputToFile))
 	{
-		m_printtofile->hide();
+		m_filelabel->hide();
 		m_file->hide();
 		m_filebrowse->hide();
 	}
@@ -218,8 +201,14 @@ void KPrintDialog::initialize(KPrinter *printer)
 		m_printers->clear();
 		QListIterator<KMPrinter>	it(*plist);
 		int 	defindex(-1);
+		bool	sep(false);
 		for (;it.current();++it)
 		{
+			if (!sep && it.current()->isSpecial())
+			{
+				sep = true;
+				m_printers->insertItem(QString::fromLatin1("--------"));
+			}
 			m_printers->insertItem(SmallIcon(it.current()->pixmap()),it.current()->name());
 			if ((it.current()->isSoftDefault() && defindex == -1) || it.current()->name() == printer->searchName())
 				defindex = m_printers->count()-1;
@@ -229,12 +218,9 @@ void KPrintDialog::initialize(KPrinter *printer)
 		slotPrinterSelected(defindex);
 	}
 
-	// check output to file
-	if (m_printer->outputToFile())
-	{
-		m_printtofile->setChecked(true);
+	// Initialize output filename
+	if (!m_printer->outputFileName().isEmpty())
 		m_file->setText(m_printer->outputFileName());
-	}
 
 	// update with KPrinter options
 	if (m_printer->option("kde-preview") == "1")
@@ -258,7 +244,7 @@ void KPrintDialog::slotPrinterSelected(int index)
 		KMPrinter	*p = mgr->findPrinter(m_printers->text(index));
 		if (p)
 		{
-			mgr->completePrinterShort(p);
+			if (!p->isSpecial()) mgr->completePrinterShort(p);
 			m_location->setText(p->location());
 			m_comment->setText(p->driverInfo());
 			m_type->setText(p->description());
@@ -278,6 +264,8 @@ void KPrintDialog::slotPrinterSelected(int index)
 					break;
 			}
 			ok = p->isValid();
+			enableSpecial(p->isSpecial());
+			enableOutputFile(p->option("kde-special-file") == "1");
 		}
 	}
 	m_properties->setEnabled(ok);
@@ -295,9 +283,7 @@ void KPrintDialog::slotProperties()
 {
 	if (!m_printer) return;
 
-	KMPrinter	*prt(0);
-	if (m_printtofile->isChecked()) prt = m_printer->implementation()->filePrinter();
-	else prt = KMFactory::self()->manager()->findPrinter(m_printers->currentText());
+	KMPrinter	*prt = KMFactory::self()->manager()->findPrinter(m_printers->currentText());
 	if (prt)
 		KPrinterPropertyDialog::setupPrinter(prt, this);
 }
@@ -322,23 +308,22 @@ void KPrintDialog::done(int result)
 			it.current()->getOptions(opts);
 
 		// add options from the dialog itself
-		if (m_printtofile->isChecked())
+		// TODO: ADD PRINTER CHECK MECHANISM !!!
+		prt = KMFactory::self()->manager()->findPrinter(m_printers->currentText());
+		if (prt->isSpecial() && prt->option("kde-special-file") == "1")
 		{
 			if (!checkOutputFile()) return;
 			m_printer->setOutputToFile(true);
 			m_printer->setOutputFileName(m_file->text());
-			prt = m_printer->implementation()->filePrinter();
 		}
 		else
-		{
-			// TODO: ADD PRINTER CHECK MECHANISM !!!
-			prt = KMFactory::self()->manager()->findPrinter(m_printers->currentText());
-			m_printer->setPrinterName(prt->printerName());
-			m_printer->setSearchName(prt->name());
 			m_printer->setOutputToFile(false);
-			opts["kde-printcommand"] = m_cmd->text();
-		}
+		m_printer->setPrinterName(prt->printerName());
+		m_printer->setSearchName(prt->name());
+		opts["kde-printcommand"] = m_cmd->text();
 		opts["kde-preview"] = (m_preview->isChecked() ? "1" : "0");
+		opts["kde-isspecial"] = (prt->isSpecial() ? "1" : "0");
+		opts["kde-special-command"] = prt->option("kde-special-command");
 
 		// merge options with KMPrinter object options
 		QMap<QString,QString>	popts = (prt->isEdited() ? prt->editedOptions() : prt->defaultOptions());
@@ -381,23 +366,26 @@ bool KPrintDialog::checkOutputFile()
 	return value;
 }
 
-void KPrintDialog::slotFilePrintToggled(bool on)
-{
-	KPrintDialogPage	*copypage = (KPrintDialogPage*)child("CopiesPage","KPrintDialogPage");
-	if (copypage && m_printer && m_printer->pageSelection() == KPrinter::SystemSide)
-		copypage->setEnabled(!on);
-	if (on)
-	{
-		m_ok->setEnabled(true);
-		m_properties->setEnabled(true);
-	}
-	else
-		slotPrinterSelected(m_printers->currentItem());
-}
-
 void KPrintDialog::slotOptions()
 {
 	if (KMFactory::self()->manager()->configure(this))
 		initialize(m_printer);
+}
+
+void KPrintDialog::enableOutputFile(bool on)
+{
+	m_filelabel->setEnabled(on);
+	m_file->setEnabled(on);
+	m_filebrowse->setEnabled(on);
+}
+
+void KPrintDialog::enableSpecial(bool on)
+{
+	m_default->setDisabled(on);
+	m_cmdlabel->setDisabled(on);
+	m_cmd->setDisabled(on);
+	KPrintDialogPage	*copypage = (KPrintDialogPage*)child("CopiesPage","KPrintDialogPage");
+	if (copypage && m_printer && m_printer->pageSelection() == KPrinter::SystemSide)
+		copypage->setDisabled(on);
 }
 #include "kprintdialog.moc"

@@ -145,7 +145,7 @@ bool KMCupsJobManager::listJobs()
 
 			attr = attr->next;
 		}
-		return true;
+		return KMJobManager::listJobs();
 	}
 	else
 		return false;

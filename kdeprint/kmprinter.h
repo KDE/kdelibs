@@ -41,7 +41,8 @@ public:
 		Implicit = 0x04,
 		Virtual  = 0x08,
 		Remote   = 0x10,
-		Invalid  = 0x20
+		Invalid  = 0x20,
+		Special  = 0x40
 	};
 	enum PrinterState {
 		Idle       = 0x01,
@@ -95,11 +96,13 @@ public:
 	bool isLocal() const				{ return !isRemote(); }
 	bool isVirtual() const				{ return (m_type & KMPrinter::Virtual); }
 	bool isValid() const				{ return !(m_type & KMPrinter::Invalid); }
+	bool isSpecial() const				{ return (m_type & KMPrinter::Special); }
 
 	// misc
 	KMDBEntry* dbEntry() const	{ return m_dbentry; }
 	void setDbEntry(KMDBEntry *e)	{ m_dbentry = e; }
 	QString pixmap();
+	void setPixmap(const QString& s)	{ m_pixmap = s; }
 	bool isHardDefault() const	{ return m_harddefault; }
 	void setHardDefault(bool on)	{ m_harddefault = on; }
 	bool isSoftDefault() const	{ return m_softdefault; }
@@ -155,6 +158,7 @@ protected:
 	// DB driver entry (used when creating a printer). Internal use only !!!
 	KMDBEntry	*m_dbentry;
 	DrMain		*m_driver;
+	QString		m_pixmap;
 
 	// default flags
 	bool		m_harddefault;

@@ -26,6 +26,7 @@ KMExtManager::KMExtManager(QObject *parent, const char *name)
 : KMManager(parent,name)
 {
 	setHasManagement(false);
+	m_psprinter = 0;
 }
 
 KMExtManager::~KMExtManager()
@@ -34,15 +35,15 @@ KMExtManager::~KMExtManager()
 
 void KMExtManager::listPrinters()
 {
-	if (m_printers.count() == 0)
+	if (!m_psprinter)
 	{
-		KMPrinter	*psprinter = new KMPrinter;
-		psprinter->setName(i18n("PS_printer"));
-		psprinter->setPrinterName(psprinter->name());
-		psprinter->setDescription(i18n("PostScript file generator"));
-		psprinter->setState(KMPrinter::Idle);
-		addPrinter(psprinter);
+		m_psprinter = new KMPrinter;
+		m_psprinter->setName(i18n("PS_printer"));
+		m_psprinter->setPrinterName(m_psprinter->name());
+		m_psprinter->setDescription(i18n("PostScript file generator"));
+		m_psprinter->setState(KMPrinter::Idle);
+		addPrinter(m_psprinter);
 	}
 	else
-		m_printers.first()->setDiscarded(false);
+		m_psprinter->setDiscarded(false);
 }

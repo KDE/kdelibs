@@ -32,6 +32,9 @@ public:
 
 protected:
 	void listPrinters();
+
+private:
+	KMPrinter	*m_psprinter;
 };
 
 #endif

@@ -54,15 +54,16 @@ protected slots:
 	void slotSetDefault();
 	void slotOptions();
 	virtual void done(int);
-	void slotFilePrintToggled(bool);
 
 protected:
 	bool checkOutputFile();
+	void enableSpecial(bool on);
+	void enableOutputFile(bool on);
 
 protected:
-	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel;
+	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
 	QPushButton	*m_properties, *m_default, *m_options, *m_filebrowse, *m_ok;
-	QCheckBox	*m_preview, *m_printtofile;
+	QCheckBox	*m_preview;
 	QLineEdit	*m_file, *m_cmd;
 	QComboBox	*m_printers;
 

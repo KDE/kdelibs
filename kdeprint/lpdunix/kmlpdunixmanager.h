@@ -36,6 +36,9 @@ protected:
 	void parseEtcLpPrinters();
 	void parseEtcLpMember();
 	void parseSpoolInterface();
+
+private:
+	bool	m_loaded;
 };
 
 #endif

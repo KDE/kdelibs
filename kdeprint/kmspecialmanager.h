@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License version 2 as published by the Free Software Foundation.
@@ -19,42 +17,26 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#ifndef KMLISTVIEW_H
-#define KMLISTVIEW_H
+#ifndef KMSPECIALMANAGER_H
+#define KMSPECIALMANAGER_H
 
-#include <qlistview.h>
-#include <qlist.h>
+#include <qobject.h>
 
-class KMListViewItem;
 class KMPrinter;
+class KMManager;
 
-class KMListView : public QListView
+class KMSpecialManager : public QObject
 {
-	Q_OBJECT
 public:
-	KMListView(QWidget *parent = 0, const char *name = 0);
-	~KMListView();
+	KMSpecialManager(KMManager *parent, const char *name = 0);
 
-	void setPrinterList(QList<KMPrinter> *list);
-	void setPrinter(KMPrinter*);
-
-signals:
-	void rightButtonClicked(KMPrinter*, const QPoint&);
-	void printerSelected(KMPrinter*);
-
-protected slots:
-	void slotRightButtonClicked(QListViewItem*, const QPoint&, int);
-	void slotSelectionChanged();
-	void slotOnItem(QListViewItem*);
-	void slotOnViewport();
-
-protected:
-	void resizeEvent(QResizeEvent*);
-	KMListViewItem* findItem(KMPrinter*);
+	bool loadPrinters();
+	bool savePrinters();
+	void refresh();
 
 private:
-	QList<KMListViewItem>	m_items;
-	KMListViewItem		*m_root, *m_classes, *m_printers, *m_specials;
+	KMManager	*m_mgr;
+	bool		m_loaded;
 };
 
 #endif

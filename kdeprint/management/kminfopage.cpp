@@ -120,6 +120,8 @@ void KMInfoPage::setPrinter(KMPrinter *p)
 		else if (p->isPrinter())
 			if (p->isRemote()) m_type->setText(i18n("Remote printer"));
 			else m_type->setText(i18n("Local printer"));
+		else if (p->isSpecial())
+			m_type->setText(i18n("Special (pseudo) printer"));
 		else m_type->setText(i18n("Unknown"));
 		switch (p->state())
 		{

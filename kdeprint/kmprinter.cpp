@@ -62,6 +62,7 @@ void KMPrinter::copy(const KMPrinter& p)
 	m_uri = p.m_uri;
 	m_driverinfo = p.m_driverinfo;
 	m_dbentry = p.m_dbentry;
+	m_pixmap = p.m_pixmap;
 	//m_harddefault = p.m_harddefault;
 	//m_softdefault = p.m_softdefault;
 	m_options = p.m_options;
@@ -83,6 +84,8 @@ DrMain* KMPrinter::takeDriver()
 
 QString KMPrinter::pixmap()
 {
+	if (!m_pixmap.isEmpty()) return m_pixmap;
+
 	QString	str("kdeprint_printer");
 	if (!isValid()) str.append("_defect");
 	else
@@ -109,10 +112,17 @@ int KMPrinter::compare(KMPrinter *p1, KMPrinter *p2)
 {
 	if (p1 && p2)
 	{
-		bool	c1(p1->isClass(false)), c2(p2->isClass(false));
-		if (c1 == c2) return QString::compare(p1->name(),p2->name());
-		else if (c1 && !c2) return -1;
-		else if (!c1 && c2) return 1;
+		bool	s1(p1->isSpecial()), s2(p2->isSpecial());
+		if (s1 && s2) return QString::compare(p1->name(),p2->name());
+		else if (s1) return 1;
+		else if (s2) return -1;
+		else
+		{
+			bool	c1(p1->isClass(false)), c2(p2->isClass(false));
+			if (c1 == c2) return QString::compare(p1->name(),p2->name());
+			else if (c1 && !c2) return -1;
+			else if (!c1 && c2) return 1;
+		}
 	}
 	return 0;
 }
