@@ -50,6 +50,12 @@ public:
     KListViewSearchLine(QWidget *parent = 0, KListView *listView = 0, const char *name = 0);
 
     /**
+     * Constructs a KListViewSearchLine without any KListView to filter. The
+     * KListView object has to be set later with setListView(). 
+     */
+    KListViewSearchLine(QWidget *parent, const char *name);
+
+    /**
      * Destroys the KListViewSearchLine.
      */
     virtual ~KListViewSearchLine();
