@@ -1,5 +1,7 @@
 debian/tmp/usr/bin/artsmessage
 debian/tmp/usr/bin/checkXML
+debian/tmp/usr/bin/cupsdconf
+debian/tmp/usr/bin/cupsdoprint
 debian/tmp/usr/bin/dcop
 debian/tmp/usr/bin/dcopclient
 debian/tmp/usr/bin/dcopfind
@@ -38,6 +40,7 @@ debian/tmp/usr/bin/ksvgtopng
 debian/tmp/usr/bin/ktelnetservice
 debian/tmp/usr/bin/kwrapper
 debian/tmp/usr/bin/lnusertemp
+debian/tmp/usr/bin/make_driver_db_cups
 debian/tmp/usr/bin/make_driver_db_lpr
 debian/tmp/usr/bin/preparetips
 debian/tmp/usr/bin/xml2man

@@ -1,50 +1,47 @@
 Source: kdelibs
+Section: libs
 Priority: optional
 Maintainer: Christopher L Cheney <ccheney@debian.org>
-Build-Depends: debhelper (>> 4.0.0), automake1.5, gawk, gettext, libart-2.0-dev, libarts1-dev, libasound2-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libpcre3-dev, libqt3-mt-dev, libssl-dev, libtiff3g-dev, libxml2-dev, libxslt1-dev, texinfo, xlibmesa3, xlibs-dev, zlib1g-dev
+Build-Depends: debhelper (>> 4.0.0), automake1.5, gawk, gettext, libart-2.0-dev, libarts1-dev, libasound2-dev, libbz2-dev, libcupsys2-dev, libfam-dev, libldap2-dev, libmad0-dev, libpcre3-dev, libqt3-mt-dev, libsasl-dev, libssl-dev, libtiff3g-dev, libvorbis-dev, libxml2-dev, libxslt1-dev, texinfo, xlibmesa3, xlibs-dev, zlib1g-dev
 Build-Depends-Indep: doxygen
 Standards-Version: 3.5.6.0
 
 Package: kdelibs
 Section: libs
 Architecture: all
-Depends: kdelibs4 (= ${Source-Version}), kdelibs4-bin (= ${Source-Version}), kdelibs4-data (= ${Source-Version})
+Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
 Description: KDE core libraries metapackage
  KDE core libraries metapackage.
 
-Package: kdelibs4
+Package: kdelibs-bin
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
-Provides: kdelibs
-Description: KDE core libraries
- KDE core libraries.
- You need these libraries to run kde applications.
-
-Package: kdelibs4-bin
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, kdelibs4-data (= ${Source-Version}), python
-Provides: kdelibs-bin
-Conflicts: kdelibs-bin
-Replaces: kdelibs-bin
+Depends: ${shlibs:Depends}, python
 Description: KDE core binaries
  KDE core binaries.
  You need these binaries to run kde applications.
 
-Package: kdelibs4-data
+Package: kdelibs-data
 Section: libs
 Architecture: all
-Provides: kdelibs-data
-Replaces: kdelibs-data
 Description: KDE core shared data
  KDE core shared data
  You need these data files to run kde applications.
 
+Package: kdelibs4
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, kdelibs-bin (= ${Source-Version}), kdelibs-data (= ${Source-Version})
+Conflicts: kdelibs3
+Replaces: kdelibs3
+Description: KDE core libraries
+ KDE core libraries.
+ You need these libraries to run kde applications.
+
 Package: kdelibs4-dev
 Section: devel
 Architecture: any
-Depends: kdelibs4 (= ${Source-Version}), kdelibs4-bin (= ${Source-Version}), libc6-dev
+Depends: kdelibs4 (= ${Source-Version}), kdelibs-bin (= ${Source-Version}), libc6-dev
 Provides: kdelibs-dev
 Conflicts: kdelibs-dev
 Replaces: kdelibs-dev
@@ -61,12 +58,3 @@ Replaces: kdelibs-doc
 Description: KDE core library documentation
  KDE core library documentation.
  You need this documentation to develop KDE applications.
-
-Package: kdelibs4-cups
-Architecture: any
-Section: libs
-Depends: ${shlibs:Depends}
-Suggests: cupsomatic-ppd
-Replaces: kdelibs3-cups
-Description: KDE print system (CUPS support)
- This package contains the KDE printer bits which use CUPS.

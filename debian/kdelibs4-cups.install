@@ -1,7 +1,0 @@
-debian/tmp/usr/lib/kde3/kdeprint_cups.la
-debian/tmp/usr/lib/kde3/kdeprint_cups.so
-debian/tmp/usr/lib/libcupsdconf.la
-debian/tmp/usr/lib/libcupsdconf.so
-debian/tmp/usr/bin/cupsdconf
-debian/tmp/usr/bin/cupsdoprint
-debian/tmp/usr/bin/make_driver_db_cups

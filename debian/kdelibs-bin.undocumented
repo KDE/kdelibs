@@ -1,5 +1,7 @@
 artsmessage.1
 checkXML.1
+cupsdconf.1
+cupsdoprint.1
 dcop.1
 dcopclient.1
 dcopfind.1
@@ -22,6 +24,7 @@ kdeinit_shutdown.1
 kdeinit_wrapper.1
 kdesu_stub.1
 kdontchangethehostname.1
+kfile.1
 kimage_concat.1
 kinstalltheme.1
 kio_http_cache_cleaner.1
@@ -33,9 +36,11 @@ knotify.1
 kpac_dhcp_helper.1
 ksendbugmail.1
 kshell.1
+ksvgtopng.1
 ktelnetservice.1
 kwrapper.1
 lnusertemp.1
+make_driver_db_cups.1
 make_driver_db_lpr.1
 preparetips.1
 xml2man.1

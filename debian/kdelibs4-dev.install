@@ -10,7 +10,6 @@ debian/tmp/usr/lib/libartskde.la
 debian/tmp/usr/lib/libartskde.so
 debian/tmp/usr/lib/libkabc.la
 debian/tmp/usr/lib/libkabc.so
-debian/tmp/usr/lib/libkatepartinterfaces.la
 debian/tmp/usr/lib/libkatepartinterfaces.so
 debian/tmp/usr/lib/libkdecore.la
 debian/tmp/usr/lib/libkdecore.so
@@ -18,9 +17,7 @@ debian/tmp/usr/lib/libkdefakes.la
 debian/tmp/usr/lib/libkdefakes.so
 debian/tmp/usr/lib/libkdefx.la
 debian/tmp/usr/lib/libkdefx.so
-debian/tmp/usr/lib/libkdeprint.la
 debian/tmp/usr/lib/libkdeprint.so
-debian/tmp/usr/lib/libkdeprint_management.la
 debian/tmp/usr/lib/libkdeprint_management.so
 debian/tmp/usr/lib/libkdesasl.la
 debian/tmp/usr/lib/libkdesasl.so
@@ -28,7 +25,6 @@ debian/tmp/usr/lib/libkdesu.la
 debian/tmp/usr/lib/libkdesu.so
 debian/tmp/usr/lib/libkdeui.la
 debian/tmp/usr/lib/libkdeui.so
-debian/tmp/usr/lib/libkhtml.la
 debian/tmp/usr/lib/libkhtml.so
 debian/tmp/usr/lib/libkio.la
 debian/tmp/usr/lib/libkio.so
@@ -36,7 +32,6 @@ debian/tmp/usr/lib/libkjava.la
 debian/tmp/usr/lib/libkjava.so
 debian/tmp/usr/lib/libkjs.la
 debian/tmp/usr/lib/libkjs.so
-debian/tmp/usr/lib/libkmediaplayer.la
 debian/tmp/usr/lib/libkmediaplayer.so
 debian/tmp/usr/lib/libkmid.la
 debian/tmp/usr/lib/libkmid.so
@@ -48,8 +43,9 @@ debian/tmp/usr/lib/libkscript.la
 debian/tmp/usr/lib/libkscript.so
 debian/tmp/usr/lib/libkspell.la
 debian/tmp/usr/lib/libkspell.so
-debian/tmp/usr/lib/libktexteditor.la
 debian/tmp/usr/lib/libktexteditor.so
+debian/tmp/usr/lib/libkutils.la
+debian/tmp/usr/lib/libkutils.so
 debian/tmp/usr/lib/libshellscript.la
 debian/tmp/usr/lib/libshellscript.so
 debian/tmp/usr/lib/libvcard.la

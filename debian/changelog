@@ -1,25 +1,15 @@
-kdelibs (4:3.0.9-3) unstable; urgency=high
+kdelibs (4:3.0.5-1) unstable; urgency=low
 
-  * Added patch to give libkjava, libkjs, and libktexteditor different
-    versions than those found in kde2
+  * New Upstream.
 
- -- Kurt Granroth <granroth@kde.org>  Wed,  5 Jun 2002 20:00:00 -0700
+ -- Christopher L Cheney <ccheney@debian.org>  Wed, 26 Jun 2002 21:00:00 -0500
 
-kdelibs (4:3.0.9-2) unstable; urgency=low
-
-  * Moved 'cups' bits into their own package
-  * Updated files to reflect new files in KDE 3.1
-  * Add libart-2.0-dev to 'Build-Depend'
-  * Slight tweaks to allow KDE2 and KDE3 kdelibs to install at the same time
-
- -- Kurt Granroth <granroth@kde.org>  Wed,  5 Jun 2002 18:00:00 -0700
-
-kdelibs (4:3.0.9-1) unstable; urgency=low
+kdelibs (4:3.0.2-1) unstable; urgency=low
 
   * New upstream.
   * rebuilt debian dir.
 
- -- Christopher L Cheney <ccheney@debian.org>  Sat, 18 May 2002 01:00:00 -0500
+ -- Christopher L Cheney <ccheney@debian.org>  Mon, 17 Jun 2002 23:00:00 -0500
 
 kdelibs (4:2.2.2-13) unstable; urgency=high
 

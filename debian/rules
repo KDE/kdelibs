@@ -72,7 +72,7 @@ configure-stamp:
 	cd $(objdir) && \
 	../configure $(configkde) \
 	--with-distribution="$$version (`cat /etc/debian_version`)" \
-	--enable-mitshm --with-alsa --with-ipv6-lookup=yes \
+	--enable-dnotify --enable-mitshm --with-alsa --with-ipv6-lookup=yes \
 	$(FAST_MALLOC) $(XINERAMA)
 
 	touch configure-stamp
@@ -158,7 +158,7 @@ binary-common:
 #	dh_installdebconf
 #	dh_installlogrotate
 #	dh_installemacsen
-	dh_installpam
+#	dh_installpam
 #	dh_installmime
 #	dh_installinit
 #	dh_installcron
@@ -172,7 +172,7 @@ binary-common:
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_perl
-	dh_shlibdeps -ldebian/kdelibs4/usr/lib:debian/kdelibs4-bin/usr/lib
+	dh_shlibdeps -ldebian/kdelibs-bin/usr/lib:debian/kdelibs4/usr/lib
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
