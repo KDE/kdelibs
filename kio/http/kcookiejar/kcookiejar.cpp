@@ -765,6 +765,34 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     QStringList domains;
     extractDomains(cookiePtr->host(), domains);
 
+    // If the cookie specifies a domain, check whether it is valid and
+    // correct otherwise.
+    if (!cookiePtr->domain().isEmpty())
+    {
+       bool valid = false;
+
+       // This checks whether the cookie is valid based on
+       // what ::extractDomains returns
+       if (!valid)
+       {
+          if (domains.contains(cookiePtr->domain()))
+             valid = true;
+       }
+
+       if (!valid)
+       {
+          // Maybe the domain doesn't start with a "."
+          QString domain = "."+cookiePtr->domain();
+          if (domains.contains(domain))
+             valid = true;
+       }
+
+       if (!valid)
+       {
+          cookiePtr->fixDomain(QString::null);
+       }
+    }
+
     KCookieAdvice advice = KCookieDunno;
 
     QStringList::Iterator it = domains.fromLast(); // Start with FQDN which is last in the list.
