@@ -6,6 +6,7 @@ Exec=kcmshell crypto
 DocPath=kcontrol/crypto/index.html
 X-KDE-ModuleType=Library
 X-KDE-Library=crypto
+X-KDE-ParentApp=kcontrol
 
 Name=Crypto
 Name[af]=kripto
@@ -13,7 +14,6 @@ Name[ar]=التشفير
 Name[az]=Şifrləmə
 Name[be]=Крыптаграфія
 Name[bg]=Криптиране
-Name[bs]=Kriptografija
 Name[cs]=Kryptografie
 Name[da]=Krypto
 Name[de]=Verschlüsselung
