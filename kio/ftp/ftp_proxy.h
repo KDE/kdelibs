@@ -3,33 +3,33 @@
 #ifndef _ftp_proxy_h
 #define _ftp_proxy_h
 
-#include "http.h"
+#include "../http/http.h" // HACK
 
-class KProtocolProxyFTP :public KProtocolHTTP
+class ProxyFtp :public HTTPProtocol
 {
-    Q_OBJECT
- protected:
-    int secondtry;
-    virtual int OpenProxy(KURL *url, int mode, bool reload);
-
  public:
-    KProtocolProxyFTP();
-    ~KProtocolProxyFTP();
+    ProxyFtp( const QCString &protocol, const QCString &pool, const QCString & app);
+    virtual ~ProxyFtp();
 
-    
-    virtual int OpenDir(KURL *url);    
-    virtual int Open(KURL *url, int mode);
-    virtual int ReOpen(KURL *url, int mode);
-    virtual int ProcessHeader();
+    // Slave interface ... is the same as HTTPProtocol's
+
+    //virtual void get( const QString& path, const QString& query, bool reload );
+
+    // Overloaded from HTTPProtocol (need to create it there)
+    virtual QString proxyProtocol();
+
+protected:
+    int secondtry;
+    //virtual int OpenProxy(KURL *url, int mode, bool reload);
+
+/*
     virtual bool isHTML(){
 	    if ( strcmp(url.right(1),"/") == 0 )
 		return 1;
 	    else
 		return 0;
 	};
-	
-    // EmitData liest die Antwort vom Proxy
-    virtual void EmitData( KIOSlaveIPC* );
+*/
 };
 
 #endif

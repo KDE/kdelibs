@@ -1,37 +1,30 @@
 // File: ftp_proxy.cpp by Martin Zumkley (uc2n@rzstud1.rz.uni-karlsruhe.de)
 //
 // additions to work with KFM Proxy Manager by Lars Hoss ( Lars.Hoss@munich.netsurf.de )
+// Ported to KDE-2's KIO architecture by David Faure <faure@kde.org>
 
 #include "ftp_proxy.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <qstring.h>
 #include <unistd.h>
-#include "kio_errors.h"
-#include <qmsgbox.h>
 #include <ksimpleconfig.h>
-#include <kapp.h>
-
-extern char * base64_encode_line(const char*);
-extern char *create_www_auth(const char*, const char*);
-extern int revmatch(const char*, const char*);
-extern char *create_generic_auth(const char *prefix, const char *user, const char *passwd);
 
 /*****************************************************************************/
 
-KProtocolProxyFTP::KProtocolProxyFTP () {
+ProxyFtp::ProxyFtp ( const QCString &protocol, const QCString &pool, const QCString & app) : HTTPProtocol( protocol, pool, app ) {
 
-    use_proxy = 0;
-    int port = 80;
+//    use_proxy = 0;
 
+    mDefaultPort = 21;
+
+/*
     QString proxyStr;
     QString tmp;
     KURL proxyURL;
     
     // All right. Now read the proxy settings
-    // KSimpleConfig prxcnf(KApplication::localconfigdir() + "/kfmrc");
-    // Read Only
-    KSimpleConfig prxcnf(KApplication::localconfigdir() + "/kfmrc", true );
+    KSimpleConfig prxcnf("kfmrc", true );
     prxcnf.setGroup("Browser Settings/Proxy");
 
     noProxyForStr = prxcnf.readEntry("NoProxyFor");
@@ -51,16 +44,17 @@ KProtocolProxyFTP::KProtocolProxyFTP () {
 	init_sockaddr(&proxy_name, proxyURL.host(), port);
 	use_proxy = 1;
     }
+*/
 }
 
-KProtocolProxyFTP::~KProtocolProxyFTP() {}
+ProxyFtp::~ProxyFtp() {}
 
 /* EmitData is called when the retrieved Data is of mimetype HTML
    Normaly it's after a Directory request
 */
-void KProtocolProxyFTP::EmitData( KIOSlaveIPC *_ipc )
+/*
+void ProxyFtp::emitData()
 {
-
     char buffer[ 1024 ];
     while ( fgets( buffer, 1024, fsocket ) )
     {
@@ -68,63 +62,52 @@ void KProtocolProxyFTP::EmitData( KIOSlaveIPC *_ipc )
 	if ( n > 0 )
 	{
 	    buffer[n] = 0;
-	    _ipc->data( IPCMemory( buffer, n ) );
+	    data( QByteArray( buffer, n ) );
 	}
     }
 }
-
+*/
 /* We don't now if the clicked URL is a Directory or not
    so every URL is first assumed to be a directory.
-   If the request fails, the Merthod Process Headers sets tghe
-   VAR "secondtry" to 1 und calls open again without the trailing "/"
+   If the request fails, the Method Process Headers sets the
+   VAR "secondtry" to 1 and calls open again without the trailing "/"
    in the URL.
 */
-int KProtocolProxyFTP::OpenDir(KURL *_url)
+#if 0
+void ProxyFtp::listDir( const QString & path )
 {
   secondtry = 0;
-  return Open(_url, KProtocol::READ);
+  openProxy(path,false);
 }
 
-
-int KProtocolProxyFTP::Open(KURL *_url, int mode){
-  return OpenProxy(_url,mode,false);
-}
-
-int KProtocolProxyFTP::ReOpen(KURL *_url, int mode){
-  return OpenProxy(_url,mode,false);
-}
-
-int KProtocolProxyFTP::OpenProxy(KURL *_url, int mode, bool _reload)
+void ProxyFtp::get( const QString& path, const QString& /*query*/, bool reload )
 {
-  url = _url->url().data();
+  openProxy(path,reload);
+}
 
+void ProxyFtp::openProxy( const QString& path, bool reload )
+{
   bytesRead = 0;
   startTime.start();
   currentTime.start();
   
     // Save the parameter, we could need it if we get HTTP redirection
     // See ::ProcessHeader
-    currentMode = mode;
+  //  currentMode = mode;
     
-	if(mode != READ) return(Error(KIO_ERROR_NotImplemented,
-				              "FTP Proxy currently only supports reading",0));
 	if (connected) Close();
 
 	sock = ::socket(PF_INET,SOCK_STREAM,0);
 
 	if (sock < 0)
 	{
-	    Error(KIO_ERROR_CouldNotCreateSocket,"Could not create socket",errno);
-	    return(FAIL);
+	    error( ERR_COULD_NOT_CREATE_SOCKET, "" );
+	    return;
 	}
 
 	int do_proxy = use_proxy;
 	if (do_proxy)
 	{
-//            char *p;
-//	    if ( ( p = getenv("no_proxy") ) ) {
-//	         do_proxy = !revmatch(_url->host(), p);
-//	    }
        	    if ( ! noProxyForStr.isEmpty() ) 
 	    {
 	      // printf( "host: %s\n", _url->host() );
@@ -138,11 +121,11 @@ int KProtocolProxyFTP::OpenProxy(KURL *_url, int mode, bool _reload)
 	  // printf("FTP::Open: connecting to proxy %s:%d\n",
 	  // inet_ntoa(proxy_name.sin_addr),
 	  // ntohs(proxy_name.sin_port));
-		if(::connect(sock,(struct sockaddr*)(&proxy_name),sizeof(proxy_name)))
-		{
-	    	Error(KIO_ERROR_CouldNotConnect,"Could not connect to proxy",errno);
-	    	return(FAIL);
-		}
+	  if(::connect(sock,(struct sockaddr*)(&proxy_name),sizeof(proxy_name)))
+	  {
+            error( ERR_COULD_NOT_CONNECT, "..." );
+	    return;
+	  }
 	}
 	else
 	{
@@ -231,7 +214,7 @@ int KProtocolProxyFTP::OpenProxy(KURL *_url, int mode, bool _reload)
 	return(ProcessHeader());
 }
 
-int KProtocolProxyFTP::ProcessHeader()
+int ProxyFtp::ProcessHeader()
 {
   char buffer[1024];
   int len = 1;
@@ -292,5 +275,10 @@ int KProtocolProxyFTP::ProcessHeader()
   bytesleft = size;
   return(SUCCESS);
 }
+#endif
 
-#include "ftp_proxy.moc"
+QString ProxyFtp::proxyProtocol()
+{
+    return QString::fromLatin1("ftp://");
+}
+
