@@ -97,11 +97,9 @@ void KSeparator::drawFrame(QPainter *p)
 #if QT_VERSION < 300
    style().drawSeparator( p, p1.x(), p1.y(), p2.x(), p2.y(), g, true, 1, midLineWidth() );
 #else
-#if defined(Q_CC_GNU)
-#warning ### QStyle api does not allow to specify lineWidth and midLineWidth!!
-#endif
+   QStyleOption opt( lineWidth(), midLineWidth() );
    style().drawPrimitive( QStyle::PE_Separator, p, QRect( p1, p2 ), g,
-		          QStyle::Style_Sunken );
+		          QStyle::Style_Sunken, opt );
 #endif
 }
 
