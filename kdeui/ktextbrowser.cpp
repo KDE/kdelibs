@@ -26,10 +26,12 @@
 */
 
 
+#include <kapp.h>
 #include <ktextbrowser.h>
 
-KTextBrowser::KTextBrowser( QWidget *parent, const char *name )
-  : QTextBrowser( parent, name )
+KTextBrowser::KTextBrowser( QWidget *parent, const char *name, 
+			    bool notifyClick )
+  : QTextBrowser( parent, name ), mNotifyClick(notifyClick)
 {
   connect( this, SIGNAL(highlighted(const QString &)),
 	   this, SLOT(refChanged(const QString &)));
@@ -37,6 +39,12 @@ KTextBrowser::KTextBrowser( QWidget *parent, const char *name )
 
 KTextBrowser::~KTextBrowser( void )
 {
+}
+
+
+void KTextBrowser::setNotifyClick( bool notifyClick )
+{
+  mNotifyClick = notifyClick;
 }
 
 
@@ -55,11 +63,25 @@ void KTextBrowser::viewportMouseReleaseEvent( QMouseEvent * )
 
   if( mActiveRef.contains('@') == true )
   {
-    emit mailClick( QString::null, mActiveRef );
+    if( mNotifyClick == false )
+    {
+      kapp->invokeMailer( mActiveRef, QString::null );
+    }
+    else
+    {
+      emit mailClick( QString::null, mActiveRef );
+    }
   }
   else
   {
-    emit urlClick( mActiveRef );
+    if( mNotifyClick == false )
+    {
+      kapp->invokeBrowser( mActiveRef );
+    }
+    else
+    {
+      emit urlClick( mActiveRef );
+    }
   }
 }
 
