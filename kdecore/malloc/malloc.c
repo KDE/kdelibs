@@ -1972,7 +1972,7 @@ nextchunk-> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 /* 
    Check if a request is so large that it would wrap around zero when
    padded and aligned. To simplify some other code, the bound is made
-   low enough so that adding MINSIZE will also not wrap around sero.
+   low enough so that adding MINSIZE will also not wrap around zero.
 */
 
 #define REQUEST_OUT_OF_RANGE(req)                                 \
