@@ -93,7 +93,7 @@ class Manager : private ManagerNotifier
         bool operator==( const Iterator &it ) { return mIt == it.mIt; }
         bool operator!=( const Iterator &it ) { return mIt != it.mIt; }
 
-      private:       
+      private:
         Resource::List::Iterator mIt;
     };
 
@@ -106,7 +106,7 @@ class Manager : private ManagerNotifier
       it.mIt = mImpl->resourceList()->begin();
       return it;
     }
-  
+
     /**
       Return Iterator indicating end of resource list.
     */
@@ -204,7 +204,7 @@ class Manager : private ManagerNotifier
     /**
       Create manager for given resource family. The family argument is used as
       identifier for loading and saving resource configurations.
-    */  
+    */
     Manager( const QString &family )
     {
       mFactory = Factory::self( family );
@@ -215,7 +215,7 @@ class Manager : private ManagerNotifier
     }
 
     virtual ~Manager()
-    { 
+    {
       delete mImpl;
     }
 
@@ -260,7 +260,7 @@ class Manager : private ManagerNotifier
     */
     void change( T *resource )
     {
-      mImpl->change( resource ); 
+      mImpl->change( resource );
     }
 
     /**
@@ -288,7 +288,7 @@ class Manager : private ManagerNotifier
     }
 
     /**
-      Returns a list of the names of the reources managed by the
+      Returns a list of the names of the resources managed by the
       Manager for this family.
     */
     QStringList resourceNames() const
@@ -297,13 +297,13 @@ class Manager : private ManagerNotifier
     }
 
     /**
-      Creates a new resource of type @param type, with default 
-      settings. The resource is 
+      Creates a new resource of type @param type, with default
+      settings. The resource is
       not added to the manager, the application has to do that.
       Returns a pointer to a resource object or a null pointer
       if resource type doesn't exist.
-     
-      @param type   The type of the resource, one of those returned 
+
+      @param type   The type of the resource, one of those returned
                     by resourceTypeNames()
     */
     T *createResource( const QString& type )
@@ -388,7 +388,7 @@ class Manager : private ManagerNotifier
           observer->resourceModified( resource );
       }
     }
-    
+
     /**
       Implementation of the ManagerNotifier interface.
     */
