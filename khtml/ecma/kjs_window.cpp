@@ -776,7 +776,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, const Value &v
   }
 
   const HashEntry* entry = Lookup::findEntry(&WindowTable, propertyName);
-  if (entry)
+  if (entry && !m_part.isNull())
   {
 #ifdef KJS_VERBOSE
     kdDebug(6070) << "Window("<<this<<")::put " << propertyName.qstring() << endl;
