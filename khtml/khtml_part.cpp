@@ -1380,17 +1380,8 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   if ( url.isEmpty() )
     return;
 
-  // Security check on the link.
-  // KURL u( url ); Wrong!! Relative URL could be mis-interpreted!!! (DA)
-  if ( !cURL.protocol().isNull() && !m_url.protocol().isNull() &&
-       ( cURL.protocol().lower() == "cgi" || cURL.protocol().lower() == "file" ) &&
-       m_url.protocol().lower() != "file" && m_url.protocol().lower() != "cgi" )
-  {
-    KMessageBox::error( 0,
-			i18n( "This page is untrusted\nbut it contains a link to your local file system."),
-			i18n( "Security Alert" ));
+  if (!checkLinkSecurity(cURL))
     return;
-  }
 
   KParts::URLArgs args;
   args.frameName = target;
@@ -1749,6 +1740,9 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     // ### ERROR HANDLING!
     return;
   }
+
+  if (!checkLinkSecurity(u))
+    return;
 
   if ( strcmp( action, "get" ) == 0 )
   {
@@ -2672,5 +2666,20 @@ void KHTMLPart::selectAll()
   emitSelectionChanged();
 }
 
+bool KHTMLPart::checkLinkSecurity(KURL linkURL)
+{
+  // Security check on the link.
+  // KURL u( url ); Wrong!! Relative URL could be mis-interpreted!!! (DA)
+  if ( !linkURL.protocol().isNull() && !m_url.protocol().isNull() &&
+       ( linkURL.protocol().lower() == "cgi" || linkURL.protocol().lower() == "file" ) &&
+       m_url.protocol().lower() != "file" && m_url.protocol().lower() != "cgi" )
+  {
+    KMessageBox::error( 0,
+			i18n( "This page is untrusted\nbut it contains a link to your local file system."),
+			i18n( "Security Alert" ));
+    return false;
+  }
+  return true;
+}
 
 #include "khtml_part.moc"

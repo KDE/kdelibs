@@ -725,6 +725,11 @@ private:
   /**
    * @internal
    */
+  bool checkLinkSecurity(KURL linkURL);
+
+  /**
+   * @internal
+   */
   KJSProxy *jScript();
 
   KHTMLPartPrivate *d;
