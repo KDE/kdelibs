@@ -385,8 +385,9 @@ void KBugReport::slotUrlClicked(const QString &urlText)
     kapp->invokeBrowser( urlText );
 
   // When using the web form, a click can also close the window, as there's
-	// not much to do. It also gives the user a direct response to his click:
-  KDialogBase::slotCancel();
+  // not much to do. It also gives the user a direct response to his click:
+  if ( d->webFormLabel )
+      KDialogBase::slotCancel();
 }
 
 
