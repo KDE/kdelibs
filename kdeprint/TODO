@@ -34,3 +34,20 @@ WISHES
 
 - move the execution of kjobviewer to kdeprintd, and start it only
   if the print process has terminated successfully
+
+- CUPS: you can tag any job when printing with an option like 
+  "-o job-billing=#123abc" and the "#123abc" gets into 
+  /var/log/cups/page_log for later accounting.
+  * make this an option in the kprinter dialog
+  * make the "job-billing" tag visible on the "Jobs" tab of the
+    printmanager and in kjobviewer
+  This would make a cool feature for professional and enterprise
+  printing with KDEPrint				 -kp-
+
+- CUPS: you can tag any job when printing with the option 
+  "-o page-label=my_printjob". Then the string "my_printjob" gets
+  printed onto top and bottom of every page. (This is overridden
+  when on the server a "Classification" level is set...) This
+  works on text and image files. It is not clear to me, if it 
+  is also supposed to work for other kinds of input files.
+  * make this an option in the kprinter dialog		 -kp-
