@@ -80,9 +80,12 @@ protected:
   gpointer result;
 
 public:
+  GThread gthread;
+
   GslArtsThread(gpointer (*func)(gpointer data), gpointer data)
     : func(func), data(data)
   {
+    gthread.data = 0;
   }
   void run()
   {
@@ -113,22 +116,25 @@ extern "C" {
 typedef gpointer (*t_func)(gpointer data2);
 }
 
-gpointer
-gsl_arts_thread_create (t_func func,
-			gpointer data,
-			gboolean joinable,
-			gpointer junk)
+GThread* gsl_arts_thread_create_full(gpointer (*func)(gpointer data),
+                                  gpointer               data,
+                                  gulong                 stack_size,
+                                  gboolean               joinable,
+                                  gboolean               bound,
+                                  GThreadPriority        priority,
+                                  GError               **error)
 {
-  return new GslArtsThread(func, data);
+  GslArtsThread *thread = new GslArtsThread(func, data);
+  return &thread->gthread;
 }
 
 gpointer
 gsl_arts_thread_self ()
 {
-  pthread_t id;
+  GslArtsThread *current = static_cast<GslArtsThread *>(Arts::SystemThreads::the()->getCurrentThread());
+  g_return_if_fail (current != 0);
 
-  Arts::SystemThreads::the()->getCurrentThread(&id);
-  return (gpointer)id; /* assuming this -can- be casted */
+  return &current->gthread;
 }
 
 void 

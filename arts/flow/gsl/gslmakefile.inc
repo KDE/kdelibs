@@ -1,23 +1,25 @@
 # GSL targets
-GSL_H_SRC =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h gslwavechunk.h \
-		gslwavedsc.h gslmath.h gslengine.h gslfilter.h gsldatautils.h \
-		gslconvert.h gslfft.h
-GSL_PRIVATE_H_SRC = gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h
-GSL_C_SRC = gsldatacache.c gsldatahandle.c gslwavechunk.c gslwavedsc.c \
-		gslmath.c gslengine.c gsloputil.c gslopmaster.c \
-		gslopschedule.c gslfilter.c gslcommon.c gsldatautils.c \
-		gslconvert.c gslfft.c
+GSL_H_SOURCES =	gslcommon.h gsldatacache.h gsldatahandle.h gsldefs.h gslwavechunk.h \
+		gslwavedsc.h gslmath.h gslfilter.h gsldatautils.h \
+		gslconvert.h gslfft.h gslieee754.h gslsignal.h \
+		gslengine.h gslwaveosc.h
+GSL_PRIVATE_H_SOURCES = gsloputil.h gslopmaster.h gslopnode.h gslopschedule.h
+GSL_C_SOURCES = gsldatacache.c gsldatahandle.c gslwavechunk.c gslwavedsc.c \
+		gslmath.c gslfilter.c gslcommon.c gsldatautils.c \
+		gslconvert.c gslfft.c gslsignal.c gslwaveosc.c \
+		gslengine.c gsloputil.c gslopmaster.c gslopschedule.c
+EXTRA_DIST += gslwaveosc-aux.c
 GSL_NOINST_PROGS = gslwchunk gslloader gsltests gslglibhashtest gslffttest
 gslwchunk_SOURCES = gslwchunk.c
-gslwchunk_LDADD = libgsl.la
+gslwchunk_LDADD = $(progs_ldadd)
 gslloader_SOURCES = gslloader.c
-gslloader_LDADD = libgsl.la
+gslloader_LDADD = $(progs_ldadd)
 gsltests_SOURCES = gsltests.c
-gsltests_LDADD = libgsl.la
+gsltests_LDADD = $(progs_ldadd)
 gslffttest_SOURCES = gslffttest.c
-gslffttest_LDADD = libgsl.la
+gslffttest_LDADD = $(progs_ldadd)
 gslglibhashtest_SOURCES = gslglibhashtest.cc
-gslglibhashtest_LDADD = libgsl.la
+gslglibhashtest_LDADD = $(progs_ldadd)
 EXTRA_DIST += gsl.gnuplot gsl-mplan.txt gslarrows gslglibhash.cc
 EXTRA_DIST += gslwave.header gsl/gslglib.c gsl/gslglib.h gsl-fftgen.pl
 

@@ -1,7 +1,25 @@
-.TH GSL-Functions 3 "11 Dec 2001" "GSL (BSE-0.4.0)" 
+.TH GSL-Functions 3 "15 Jan 2002" "GSL (BSE-0.4.0)" 
 .SH NAME
 GSL-Functions \- GSL Function Reference
 .SH SYNOPSIS
+\fBgsl_thread_wakeup\fP (\fIthread\fP);
+.br
+\fBgsl_thread_abort\fP (\fIthread\fP);
+.br
+\fBgsl_thread_queue_abort\fP (\fIthread\fP);
+.br
+\fBgsl_thread_aborted\fP ();
+.br
+\fBgsl_thread_sleep\fP (\fImax_msec\fP);
+.br
+\fBgsl_thread_awake_after\fP (\fItick_stamp\fP);
+.br
+\fBgsl_thread_awake_before\fP (\fItick_stamp\fP);
+.br
+\fBgsl_tick_stamp\fP ();
+.br
+\fBgsl_module_tick_stamp\fP (\fImodule\fP);
+.br
 \fBgsl_job_integrate\fP (\fImodule\fP);
 .br
 \fBgsl_job_discard\fP (\fImodule\fP);
@@ -13,6 +31,8 @@ GSL-Functions \- GSL Function Reference
 \fBGslAccessFunc\fP (\fImodule\fP, \fIdata\fP);
 .br
 \fBgsl_job_access\fP (\fImodule\fP, \fIaccess_func\fP, \fIdata\fP, \fIfree_func\fP);
+.br
+\fBgsl_flow_job_access\fP (\fImodule\fP, \fItick_stamp\fP, \fIaccess_func\fP, \fIdata\fP, \fIfree_func\fP);
 .br
 \fBGslPollFunc\fP (\fIdata\fP, \fIn_values\fP, \fItimeout_p\fP, \fIn_fds\fP, \fIfds\fP, \fIrevents_filled\fP);
 .br
@@ -33,6 +53,8 @@ GSL-Functions \- GSL Function Reference
 \fBgsl_transact\fP (\fIjob\fP, \fI...\fP);
 .br
 \fBgsl_engine_init\fP (\fIrun_threaded\fP, \fIblock_size\fP, \fIsample_freq\fP);
+.br
+\fBgsl_engine_wait_on_trans\fP ();
 .br
 \fBgsl_power2_fftac\fP (\fIn_values\fP, \fIri_values_in\fP, \fIri_values_out\fP);
 .br
@@ -66,7 +88,89 @@ GSL-Functions \- GSL Function Reference
 .br
 \fBgsl_filter_tscheb2_bs\fP (\fIiorder\fP, \fIfreq1\fP, \fIfreq2\fP, \fIsteepness\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
 .br
+\fBgsl_filter_fir_approx\fP (\fIiorder\fP, \fIfreq\fP, \fIvalue\fP);
+.br
+\fBgsl_engine_garbage_collect\fP ();
+.br
+\fBgsl_signal_exp2\fP ();
+.br
 .SH DESCRIPTION
+.SS \fBgsl_thread_wakeup\fP (\fIthread\fP);
+.PD 0
+.IP \fIGslThread*\ thread\fP 19
+thread to wake up
+.PD 1
+.PP
+Wake up a currently sleeping thread. In practice, this function simply causes the next call to \fBgsl_thread_sleep()\fP within \fIthread\fP to last for 0 seconds.  
+.PD
+.SS \fBgsl_thread_abort\fP (\fIthread\fP);
+.PD 0
+.IP \fIGslThread*\ thread\fP 19
+thread to abort
+.PD 1
+.PP
+Abort a currently running thread. This function does not return until the thread in question terminated execution. Note that the thread handle gets invalidated with invocation of \fBgsl_thread_abort()\fP or \fBgsl_thread_queue_abort()\fP.  
+.PD
+.SS \fBgsl_thread_queue_abort\fP (\fIthread\fP);
+.PD 0
+.IP \fIGslThread*\ thread\fP 19
+thread to abort
+.PD 1
+.PP
+Same as \fBgsl_thread_abort()\fP, but returns as soon as possible, even if thread hasn't stopped execution yet. Note that the thread handle gets invalidated with invocation of \fBgsl_thread_abort()\fP or \fBgsl_thread_queue_abort()\fP.  
+.PD
+.SS \fBgsl_thread_aborted\fP ();
+.PD 0
+.IP \fIRETURNS:\fP 11
+\fITRUE\fP if the thread should abort execution
+.PD 1
+.PP
+Find out if the currently running thread should be aborted (the thread is supposed to return from its main thread function).  
+.PD
+.SS \fBgsl_thread_sleep\fP (\fImax_msec\fP);
+.PD 0
+.IP \fIglong\ \ max_msec\fP 17
+maximum amount of milli seconds to sleep (-1 for infinite time)
+.IP \fIRETURNS:\fP 17
+\fITRUE\fP if the thread should continue execution
+.PD 1
+.PP
+Sleep for the amount of time given. This function may get interrupted by wakeup or abort requests, it returns whether the thread is supposed to continue execution after waking up.  
+.PD
+.SS \fBgsl_thread_awake_after\fP (\fItick_stamp\fP);
+.PD 0
+.IP \fIguint64\ \ tick_stamp\fP 21
+tick stamp update to trigger wakeup
+.PD 1
+.PP
+Wakeup the currently running thread after the global tick stamp (see \fBgsl_tick_stamp()\fP) has been updated to \fItick_stamp\fP. (If the moment of wakeup has already passed by, the thread is woken up at the next global tick stamp update.)  
+.PD
+.SS \fBgsl_thread_awake_before\fP (\fItick_stamp\fP);
+.PD 0
+.IP \fIguint64\ \ tick_stamp\fP 21
+tick stamp update to trigger wakeup
+.PD 1
+.PP
+Wakeup the currently running thread upon the last global tick stamp update (see \fBgsl_tick_stamp()\fP) that happens prior to updating the global tick stamp to \fItick_stamp\fP. (If the moment of wakeup has already passed by, the thread is woken up at the next global tick stamp update.)  
+.PD
+.SS \fBgsl_tick_stamp\fP ();
+.PD 0
+.IP \fIRETURNS:\fP 11
+GSL's execution tick stamp as unsigned 64bit integer
+.PD 1
+.PP
+Retrive the GSL global tick stamp. GSL increments its global tick stamp at certain intervals, by specific amounts (refer to \fBgsl_engine_init()\fP for further details). The tick stamp is a non-wrapping, unsigned 64bit integer greater than 0. Threads can schedule sleep interruptions at certain tick stamps with \fBgsl_thread_awake_after()\fP and \fBgsl_thread_awake_before()\fP. Tick stamp updating occours at GSL engine block processing boundaries, so code that can guarantee to not run across those boundaries (for instance \fBGslProcessFunc()\fP functions) may use the macro \fIGSL_TICK_STAMP\fP to retrive the current tick in a faster manner (not involving mutex locking). See also \fBgsl_module_tick_stamp()\fP.  
+.PD
+.SS \fBgsl_module_tick_stamp\fP (\fImodule\fP);
+.PD 0
+.IP \fIGslModule*\ module\fP 19
+a GSL engine module
+.IP \fIRETURNS:\fP 19
+the module's tick stamp, indicating its process status
+.PD 1
+.PP
+Any thread may call this function on a valid engine module. The module specific tick stamp is updated to \fBgsl_tick_stamp()\fP + \fIn_values\fP every time its \fBGslProcessFunc()\fP function was called. See also \fBgsl_tick_stamp()\fP.  
+.PD
 .SS \fBgsl_job_integrate\fP (\fImodule\fP);
 .PD 0
 .IP \fIGslModule*\ module\fP 19
@@ -141,6 +245,22 @@ New job suitable for \fBgsl_trans_add()\fP
 .PP
 Create a new transaction job which will invoke \fIaccess_func\fP on \fImodule\fP with \fIdata\fP when the transaction queue is processed to modify the module's state.  
 .PD
+.SS \fBgsl_flow_job_access\fP (\fImodule\fP, \fItick_stamp\fP, \fIaccess_func\fP, \fIdata\fP, \fIfree_func\fP);
+.PD 0
+.IP \fIGslModule*\ \ \ \ \ module\fP 28
+
+.IP \fIguint64\ \ \ \ \ \ \ \ tick_stamp\fP 28
+
+.IP \fIGslAccessFunc\ \ access_func\fP 28
+
+.IP \fIgpointer\ \ \ \ \ \ \ data\fP 28
+
+.IP \fIGslFreeFunc\ \ \ \ free_func\fP 28
+
+.PD 1
+.PP
+
+.PD
 .SS \fBGslPollFunc\fP (\fIdata\fP, \fIn_values\fP, \fItimeout_p\fP, \fIn_fds\fP, \fIfds\fP, \fIrevents_filled\fP);
 .PD 0
 .IP \fI\ data\fP 17
@@ -207,7 +327,7 @@ Create a new transaction job which issues \fIdebug\fP message when the job is ex
 Newly opened empty transaction
 .PD 1
 .PP
-Open up a new transaction to commit jobs to the GSL engine.  
+Open up a new transaction to commit jobs to the GSL engine. This function may cause garbage collection (see \fBgsl_engine_garbage_collect()\fP).  
 .PD
 .SS \fBgsl_trans_add\fP (\fItrans\fP, \fIjob\fP);
 .PD 0
@@ -233,7 +353,7 @@ Close the transaction and commit it to the engine. The engine will execute the j
 Opened transaction
 .PD 1
 .PP
-Close and discard the transaction, destroy all jobs currently contained in it and do not execute them.  
+Close and discard the transaction, destroy all jobs currently contained in it and do not execute them. This function may cause garbage collection (see \fBgsl_engine_garbage_collect()\fP).  
 .PD
 .SS \fBgsl_transact\fP (\fIjob\fP, \fI...\fP);
 .PD 0
@@ -250,12 +370,18 @@ Convenience function which openes up a new transaction, collects the \fINULL\fP 
 .IP \fIgboolean\ \ run_threaded\fP 24
 
 .IP \fIguint\ \ \ \ \ block_size\fP 24
-
+number of values to process block wise
 .IP \fIguint\ \ \ \ \ sample_freq\fP 24
 
 .PD 1
 .PP
-Initialize the GSL engine, this function must be called prior to any other engine related function and can only be invoked once.  
+Initialize the GSL engine, this function must be called prior to any other engine related function and can only be invoked once. The \fIblock_size\fP determines the amount by which the global tick stamp (see \fBgsl_tick_stamp()\fP) is updated everytime the whole module network completed processing \fIblock_size\fP values.  
+.PD
+.SS \fBgsl_engine_wait_on_trans\fP ();
+.PD 0
+.PD 1
+.PP
+Wait until all pending transactions have been processed by the GSL Engine. This function may cause garbage collection (see \fBgsl_engine_garbage_collect()\fP).  
 .PD
 .SS \fBgsl_power2_fftac\fP (\fIn_values\fP, \fIri_values_in\fP, \fIri_values_out\fP);
 .PD 0
@@ -344,7 +470,7 @@ filter order
 .IP \fI\ freq\fP 12
 passband cutoff frequency (0..pi)
 .IP \fI\ steepness\fP 12
-frequency steepness (c_freq * (1 + steepness) < pi)
+frequency steepness (c_freq * steepness < pi)
 .IP \fI\ epsilon\fP 12
 fall off at passband frequency (0..1)
 .IP \fI\ a\fP 12
@@ -353,7 +479,7 @@ root polynomial coefficients a[0..iorder]
 pole polynomial coefficients b[0..iorder]
 .PD 1
 .PP
-Tschebyscheff type 2 lowpass filter.  
+Tschebyscheff type 2 lowpass filter. To gain a transition band between freq1 and freq2, pass arguements \fIfreq\fP=freq1 and \fIsteepness\fP=freq2/freq1. To specify the transition band width in fractions of octaves, pass \fIsteepness\fP=2^octave_fraction.  
 .PD
 .SS \fBgsl_filter_butter_hp\fP (\fIiorder\fP, \fIfreq\fP, \fIepsilon\fP, \fIa\fP, \fIb\fP);
 .PD 0
@@ -516,5 +642,29 @@ pole polynomial coefficients b[0..iorder]
 .PD 1
 .PP
 Tschebyscheff type 2 bandstop filter.  
+.PD
+.SS \fBgsl_filter_fir_approx\fP (\fIiorder\fP, \fIfreq\fP, \fIvalue\fP);
+.PD 0
+.IP \fI\ iorder\fP 9
+order of the filter (must be odd, >= 3)
+.IP \fI\ freq\fP 9
+the frequencies of the transfer function
+.IP \fI\ value\fP 9
+the desired value of the transfer function
+.PD 1
+.PP
+Approximates a given transfer function with an iorder-coefficient FIR filter. It is recommended to provide enough frequency values, so that \fIn_points\fP >= \fIiorder\fP.  
+.PD
+.SS \fBgsl_engine_garbage_collect\fP ();
+.PD 0
+.PD 1
+.PP
+GSL Engine user thread function. Collects processed jobs and transactions from the engine and frees them, this involves callback invocation of \fBGslFreeFunc()\fP functions, e.g. from \fBgsl_job_access()\fP or \fBgsl_flow_job_access()\fP jobs. This function may only be called from the user thread, as \fBGslFreeFunc()\fP functions are guranteed to be executed in the user thread.  
+.PD
+.SS \fBgsl_signal_exp2\fP ();
+.PD 0
+.PD 1
+.PP
+Fast conversion of linear frequency modulation factor to exponential frequency modulation factor. This is essentially an approximation of \fBexp2f()\fP. It can be much faster than the glibc function though, by taking advantage of a limited input range and smaller precision requirements.  
 .PD
 

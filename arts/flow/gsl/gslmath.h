@@ -19,10 +19,9 @@
 #ifndef __GSL_MATH_H__
 #define __GSL_MATH_H__
 
-/* #define _GNU_SOURCE */     /* for ISO-C99 math: signbit(), nan, etc... */
-#include <math.h>
-
+#include <gsl/gslieee754.h>
 #include <gsl/gsldefs.h>
+#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,6 +37,8 @@ extern "C" {
            1.009673533228510944326217213529162108898162841796875)
 #define	GSL_PI		\
           (3.1415926535897932384626433832795029)
+#define	GSL_LN2		\
+          (0.6931471805599453094172321214581766)
 
 
 /* --- structures --- */
@@ -160,7 +161,7 @@ double			 gsl_temp_freq		(double		kammer_freq,
 
 
 /* --- miscellaneous --- */
-gfloat			gsl_bit_depth_epsilon	(guint		n_bits); /* 1..32 */
+double			gsl_bit_depth_epsilon	(guint		n_bits); /* 1..32 */
 
 
 /* --- ellipses --- */

@@ -271,7 +271,6 @@ main (int   argc,
       f = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
         double a[order + 1], b[order + 1];
         gsl_filter_butter_lp (order, f, e, a, b);
@@ -291,7 +290,6 @@ main (int   argc,
       f = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
         double a[order + 1], b[order + 1];
         gsl_filter_butter_hp (order, f, e, a, b);
@@ -313,7 +311,6 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= GSL_PI / 2.;
       f2 *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
         double a[order + 1], b[order + 1];
         gsl_filter_butter_bp (order, f1, f2, e, a, b);
@@ -335,7 +332,6 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= GSL_PI / 2.;
       f2 *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
         double a[order + 1], b[order + 1];
         gsl_filter_butter_bs (order, f1, f2, e, a, b);
@@ -355,7 +351,6 @@ main (int   argc,
       f = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	gsl_filter_tscheb1_lp (order, f, e, a, b);
@@ -375,7 +370,6 @@ main (int   argc,
       f = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	gsl_filter_tscheb1_hp (order, f, e, a, b);
@@ -397,7 +391,6 @@ main (int   argc,
       e = atof (pshift ());
       fc *= GSL_PI / 2.;
       fr *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	gsl_filter_tscheb1_bs (order, fc, fr, e, a, b);
@@ -419,7 +412,6 @@ main (int   argc,
       e = atof (pshift ());
       fc *= GSL_PI / 2.;
       fr *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	gsl_filter_tscheb1_bp (order, fc, fr, e, a, b);
@@ -440,7 +432,6 @@ main (int   argc,
       st = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	gsl_filter_tscheb2_lp (order, f, st, e, a, b);
@@ -461,7 +452,6 @@ main (int   argc,
       st = atof (pshift ());
       e = atof (pshift ());
       f *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	g_print ("# Highpass Tschebyscheff Type2 order=%u freq=%f steepness=%f (%f, %f) epsilon(s^2)=%f norm=%f:\n",
@@ -484,7 +474,6 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= GSL_PI / 2.;
       f2 *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	g_print ("# Bandpass Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",
@@ -507,7 +496,6 @@ main (int   argc,
       e = atof (pshift ());
       f1 *= GSL_PI / 2.;
       f2 *= GSL_PI / 2.;
-      e = gsl_trans_zepsilon2ss (e);
       {
 	double a[order + 1], b[order + 1];
 	g_print ("# Bandstop Tschebyscheff Type2 order=%u freq1=%f freq2=%f steepness=%f epsilon(s^2)=%f norm=%f:\n",

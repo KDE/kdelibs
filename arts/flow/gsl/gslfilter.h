@@ -126,13 +126,16 @@ void	gsl_filter_tscheb2_bs	(unsigned int iorder,
 				 double      *a,      /* [0..iorder] */
 				 double      *b);
 
-/* --- fir filters --- */
 
-void    gsl_filter_fir_approx	(unsigned int iorder,
-				 double      *a,      /* [0..iorder-1] */
-				 double      *freq,
-				 double      *value,
-				 unsigned int n_points);
+/* --- fir filters --- */
+void	gsl_filter_fir_approx	(unsigned int  iorder,
+				 double       *a,	/* [0..iorder] */
+				 unsigned int  n_points,
+				 const double *freq,
+				 const double *value);
+
+
+
 
 
 #ifdef __cplusplus
