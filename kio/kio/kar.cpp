@@ -91,22 +91,19 @@ bool KAr::openArchive( int mode )
 
     char *ar_longnames = 0;
     while (! dev->atEnd()) {
-        char ar_header_raw[61];
-        ar_header_raw[60] = '\0';
-
+        QCString ar_header;
+        ar_header.resize(61);
         QCString name;
         int date, uid, gid, mode, size;
 
         dev->at( dev->at() + (2 - (dev->at() % 2)) % 2 ); // Ar headers are padded to byte boundry
 
-        if ( dev->readBlock (ar_header_raw, 60) != 60 ) { // Read ar header
+        if ( dev->readBlock (ar_header.data(), 60) != 60 ) { // Read ar header
             kdDebug() << "Couldn't read header" << endl;
             if (ar_longnames) delete[] ar_longnames;
             //return false;
             return true; // Probably EOF / trailing junk
         }
-
-        QCString ar_header(ar_header_raw); // Convert header to QCString for easier handling
 
         if (ar_header.right(2) != "`\n") { // Check header magic
             kdDebug() << "Invalid magic" << endl;
