@@ -122,7 +122,6 @@ void KLocale::initCatalogue(const QString & catalogue)
 
   // always include kdelibs's mo files
   d->catalogues.append( KCatalogue( SYSTEM_MESSAGES ) );
-  d->catalogues.append( KCatalogue( "kdeprint" ) );
   d->catalogues.append( KCatalogue( "kio" ) );
 }
 
