@@ -148,7 +148,8 @@ KDatePicker::resizeEvent(QResizeEvent*)
     // ----- calculate size of the month button:
     for(count=0; count<NoOfButtons; ++count) {
 	if(buttons[count]==selectMonth) {
-	    sizes[count].setWidth(maxMonthRect.width()+2*QApplication::style().pixelMetric(QStyle::PM_ButtonMargin));
+	    QSize metricBound = style().sizeFromContents(QStyle::CT_ToolButton, selectMonth, maxMonthRect);
+	    sizes[count].setWidth(QMAX(metricBound.width(), maxMonthRect.width()+2*QApplication::style().pixelMetric(QStyle::PM_ButtonMargin)));
 	}
     }
     // ----- place the buttons:
@@ -399,7 +400,8 @@ KDatePicker::sizeHint() const
 
       if(buttons[count]==selectMonth)
 	{
-	  cx+=maxMonthRect.width()+2*QApplication::style().pixelMetric(QStyle::PM_ButtonMargin);
+	  QSize metricBound = style().sizeFromContents(QStyle::CT_ToolButton, selectMonth, maxMonthRect);
+	  cx+=QMAX(metricBound.width(), maxMonthRect.width()+2*QApplication::style().pixelMetric(QStyle::PM_ButtonMargin));
 	} else {
 	  cx+=sizes[count].width();
 	}
