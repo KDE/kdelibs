@@ -580,6 +580,10 @@ void KFontChooser::setupDisplay()
     }
   }
 
+  // Fall back in case nothing matched. Otherwise, diff doesn't work
+  if ( i == numEntries )
+    familyListBox->setCurrentItem( 0 );
+
   styleListBox->setCurrentItem(style);
 
   numEntries = sizeListBox->count();
