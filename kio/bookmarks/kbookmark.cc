@@ -90,7 +90,9 @@ KBookmarkGroup KBookmarkGroup::createNewFolder( KBookmarkManager* mgr, const QSt
     if ( text.isEmpty() )
     {
         KLineEditDlg l( i18n("New folder:"), "", 0L );
-        l.setCaption( i18n("Create New Bookmark Folder in %1").arg( parentGroup().text() ) );
+        l.setCaption( parentGroup().text().isEmpty() ?
+                      i18n("Create New Bookmark Folder") :
+                      i18n("Create New Bookmark Folder in %1").arg( parentGroup().text() ) );
         //text is empty so disable ok button.
         l.enableButtonOK( false );
         if ( l.exec() )
