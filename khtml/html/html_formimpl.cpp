@@ -1262,11 +1262,13 @@ void HTMLInputElementImpl::setChecked(bool _checked)
 
 DOMString HTMLInputElementImpl::value() const
 {
+    // Readonly support for type=file
+    if ( m_type == FILE )
+        return m_filename;
+
     if(m_value.isNull())
         return DOMString(""); // some JS sites obviously need this
-
-    // Readonly support for type=file
-    return m_type == FILE ? m_filename : m_value;
+    return m_value;
 }
 
 
