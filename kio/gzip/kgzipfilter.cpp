@@ -17,6 +17,7 @@
 */
 
 #include "kgzipfilter.h"
+#include <time.h>
 #include <zlib.h>
 #include <kdebug.h>
 #include <klibloader.h>
@@ -196,7 +197,7 @@ bool KGzipFilter::writeHeader( const QCString & fileName )
     *p++ = 0x8b;
     *p++ = Z_DEFLATED;
     *p++ = ORIG_NAME;
-    put_long(0); // Modification time (in unix format)
+    put_long( time( 0L ) ); // Modification time (in unix format)
     *p++ = 0; // Extra flags (2=max compress, 4=fastest compress)
     *p++ = 3; // Unix
 
