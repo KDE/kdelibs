@@ -1,21 +1,22 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1997 Torben Weis (weis@kde.org)
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
+/*
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 1997 Torben Weis (weis@kde.org)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ */
 
 /*
  * The KDE Socket Classes.
@@ -44,6 +45,12 @@
 #include <sys/un.h>
 #include <netinet/in.h>
 class QSocketNotifier;
+
+#ifdef INET6
+typedef sockaddr_in6 ksockaddr_in;
+#else
+typedef sockaddr_in ksockaddr_in;
+#endif
 
 /** 
  * A TCP/IP client socket. You can connect this socket to any internet address. 
@@ -95,7 +102,7 @@ public:
     /**
       *  A small wrapper around gethostbyname and such
       */
-    static bool initSockaddr(struct sockaddr_in *server_name, const char *hostname, unsigned short int port);
+    static bool initSockaddr(struct ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
     
     /** 
      * Returns a file descriptor for this socket.
@@ -163,7 +170,7 @@ protected:
   
     bool init_sockaddr( const QString& hostname, unsigned short int port );
     
-    struct sockaddr_in server_name;
+    struct ksockaddr_in server_name;
     struct sockaddr_un unix_addr;
 
     /******************************************************
@@ -271,5 +278,3 @@ private:
 };
 
 #endif
-
-

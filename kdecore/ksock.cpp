@@ -1,52 +1,32 @@
-/* This file is part of the KDE libraries
-    Copyright (C) 1997 Torben Weis (weis@kde.org)
-
-    This library is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Library General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Library General Public License for more details.
-
-    You should have received a copy of the GNU Library General Public License
-    along with this library; see the file COPYING.LIB.  If not, write to
-    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-    Boston, MA 02111-1307, USA.
-*/
-
 /*
- * $Log$
- * Revision 1.32  1999/06/21 15:31:15  welk
- * continued the int -> unsigned short int change for port address what Alex
- * started (Yeah, konqueror shows html-pages again :-)
+ *  This file is part of the KDE libraries
+ *  Copyright (C) 1997 Torben Weis (weis@kde.org)
  *
- * Revision 1.31  1999/05/07 16:45:21  kulow
- * adding more explicit calls to ascii()
+ *  $Id$
  *
- * Revision 1.30  1999/04/19 15:49:47  kulow
- * cleaning up yet some more header files (fixheaders is your friend).
- * Adding copy constructor to KPixmap to avoid casting while assingment.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
  *
- * The rest of the fixes in kdelibs and kdebase I will commit silently
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
  *
- * Revision 1.29  1999/04/18 19:55:43  kulow
- * CVS_SILENT some more fixes
- *
- * Revision 1.28  1999/04/11 00:00:46  garbanzo
- * Introduce the new static member, initsockaddr
- *
- */
-
-#include "ksock.h"
-
-#include <qapplication.h>
+ *  You should have received a copy of the GNU Library General Public License
+ *  along with this library; see the file COPYING.LIB.  If not, write to
+ *  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ *  Boston, MA 02111-1307, USA.
+ **/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+
+#include "ksock.h"
+
+#include <qapplication.h>
 
 #include <stdio.h>
 #include <errno.h>
@@ -99,20 +79,33 @@
 #define UNIX_PATH_MAX 108 // this is the value, I found under Linux
 #endif
 
+#ifdef INET6
+#define get_sin_addr(x) x.sin6_addr
+#define get_sin_family(x) x.sin6_family
+#else
+#define get_sin_addr(x) x.sin_addr
+#define get_sin_family(x) x.sin_family
+#endif
+
 KSocket::KSocket( const char *_host, unsigned short int _port, int _timeout ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
     timeOut = _timeout;
+#ifdef INET6
+    // Setup the resolver to use IPv6 addresses
+    res_init();
+    _res.options |= RES_USE_INET6;
+    domain = PF_INET6;
+#else
     domain = PF_INET;
+#endif
     connect( _host, _port );
 }
 
 KSocket::KSocket( const char *_host, unsigned short int _port ) :
   sock( -1 ), readNotifier( 0L ), writeNotifier( 0L )
 {
-    timeOut = 30;
-    domain = PF_INET;
-    connect( _host, _port );
+  KSocket(_host, _port, 30);
 }
 
 KSocket::KSocket( const char *_path ) :
@@ -178,20 +171,23 @@ void KSocket::slotWrite( int )
  */
 bool KSocket::init_sockaddr( const QString& hostname, unsigned short int port )
 {
+#ifdef INET6
+  if ( (domain != PF_INET)  && (domain != PF_INET6) )
+#else
   if ( domain != PF_INET )
+#endif
     return false;
   
   struct hostent *hostinfo;
-  server_name.sin_family = AF_INET;
-  server_name.sin_port = htons( port );
   hostinfo = gethostbyname( hostname.ascii() );
   
-  if ( !hostinfo )
-    {
+  if ( !hostinfo ) {
 	  warning("Unknown host %s.\n", hostname.ascii());
 	  return false;	
     }
-  server_name.sin_addr = *(struct in_addr*) hostinfo->h_addr;    
+  get_sin_family(server_name) = hostinfo->h_addrtype;
+  server_name.sin_port = htons( port );
+  memcpy(&get_sin_addr(server_name), hostinfo->h_addr_list[0], hostinfo->h_length);
   
   return true;
 }
@@ -233,30 +229,33 @@ bool KSocket::connect( const char *_path )
  */
 bool KSocket::connect( const QString& _host, unsigned short int _port )
 {
+#ifdef INET6
+  if ( (domain != PF_INET6) && (domain != PF_INET) )
+#else
   if ( domain != PF_INET )
+#endif
     fatal( "Connecting a PF_UNIX domain socket to a PF_INET domain socket\n");
 
-  sock = ::socket(PF_INET,SOCK_STREAM,0);
+  sock = ::socket(domain, SOCK_STREAM, 0);
   if (sock < 0)
 	return false;
   
-  if ( !init_sockaddr( _host, _port) )
-	{
+  if ( !init_sockaddr( _host, _port) ) {
 	  ::close( sock );
 	  sock = -1;
 	  return false;
-	}
+  }
 
-  fcntl(sock,F_SETFL,(fcntl(sock,F_GETFL)|O_NDELAY));
+  fcntl(sock, F_SETFL, ( fcntl(sock,F_GETFL)|O_NDELAY) );
 
   errno = 0;
   if (::connect(sock, (struct sockaddr*)(&server_name), sizeof(server_name))){
-      if(errno != EINPROGRESS && errno != EWOULDBLOCK){
+      if(errno != EINPROGRESS && errno != EWOULDBLOCK) {
           ::close( sock );
           sock = -1;
           return false;
       }
-  }else
+  } else
       return true;
 
   fd_set rd, wr;
@@ -305,23 +304,41 @@ unsigned long KSocket::getAddr()
   if ( domain != PF_INET )
     return 0;
   
-  struct sockaddr_in name; ksize_t len = sizeof(name);
+  struct ksockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
   return ntohl(name.sin_addr.s_addr);
 }
 
-bool KSocket::initSockaddr (struct sockaddr_in *server_name, const char *hostname, unsigned short int port)
+bool KSocket::initSockaddr (struct ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain)
 {
   struct hostent *hostinfo;
-  server_name->sin_family = AF_INET;
-  server_name->sin_port = htons( port );
+#ifdef INET6
+  if (domain == PF_INET6) {
+    server_name->sin6_family = domain;
+    server_name->sin6_port = htons( port );
+  } else
+#endif
+  {
+    server_name->sin_family = domain;
+    server_name->sin_port = htons( port );
+  }
 
   hostinfo = gethostbyname( hostname );
 
   if ( hostinfo == 0L )
     return false;
 
-  server_name->sin_addr = *(struct in_addr*) hostinfo->h_addr;
+#ifdef INET6
+  if (domain == PF_INET6) {
+    server_name->sin6_family = hostinfo->h_addrtype;
+    memcpy(&server_name->sin6_addr, hostinfo->h_addr_list[0], hostinfo->h_length);
+  } else
+#endif
+  {
+    server_name->sin_family = hostinfo->h_addrtype;
+    memcpy(&server_name->sin_addr, hostinfo->h_addr_list[0], hostinfo->h_length);
+  }
+
   return true;
 }
 
@@ -425,7 +442,7 @@ bool KServerSocket::init( unsigned short int _port )
   if ( domain != PF_INET )
     return false;
   
-  struct sockaddr_in name;
+  struct ksockaddr_in name;
     
   sock = ::socket( PF_INET, SOCK_STREAM, 0 );
   if (sock < 0)
@@ -462,7 +479,7 @@ unsigned short int KServerSocket::getPort()
   if ( domain != PF_INET )
     return false;
 
-  struct sockaddr_in name; ksize_t len = sizeof(name);
+  struct ksockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
   return ntohs(name.sin_port);
 }
@@ -472,7 +489,7 @@ unsigned long KServerSocket::getAddr()
   if ( domain != PF_INET )
     return false;
 
-  struct sockaddr_in name; ksize_t len = sizeof(name);
+  struct ksockaddr_in name; ksize_t len = sizeof(name);
   getsockname(sock, (struct sockaddr *) &name, &len);
   return ntohl(name.sin_addr.s_addr);
 }
@@ -481,7 +498,7 @@ void KServerSocket::slotAccept( int )
 {
   if ( domain == PF_INET )
   {      
-    struct sockaddr_in clientname;
+    struct ksockaddr_in clientname;
     int new_sock;
     
     ksize_t size = sizeof(clientname);
