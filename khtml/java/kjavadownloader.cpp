@@ -63,3 +63,6 @@ void KJavaDownloader::slotFinished()
 
     delete this;
 }
+
+#include "kjavadownloader.moc"
+
