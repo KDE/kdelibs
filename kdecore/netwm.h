@@ -967,7 +967,9 @@ public:
 
     /**
        Set the state for the application window (see the NET base class documentation
-       for a description of window state).
+       for a description of window state). Note that the constructor needs to be
+       passed NET::WMState in properties even if it's only used for setting the state
+       without reading it.
 
        @param state the name state
 
