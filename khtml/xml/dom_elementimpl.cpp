@@ -567,7 +567,7 @@ void ElementImpl::recalcStyle()
     }
 
     m_style->setFlowAroundFloats(faf);
-    if( m_render && m_style ) 
+    if( m_render && m_style )
 	m_render->setStyle(activeStyle());
     NodeImpl *n;
     for (n = _first; n; n = n->nextSibling())
@@ -605,9 +605,9 @@ bool ElementImpl::mouseEvent( int _x, int _y,
     }
 
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating() )
-    {       
+    {
         bool known = m_render->absolutePosition(_tx, _ty);
-         
+
 	inside = true;
 	if( !known || (_y < _ty ) || (_y >= _ty + m_render->height() ) ||
 	    (_x < _tx ) || (_x >= _tx + m_render->width() ) )
@@ -669,7 +669,7 @@ void ElementImpl::setPressed(bool down)
 	return;
     if (down)
 	m_render->setKeyboardFocus(DOM::ActivationActive);
-    else 
+    else
 	m_render->setKeyboardFocus(DOM::ActivationOff);
 
     RenderObject *cb = m_render->containingBlock();
@@ -680,8 +680,8 @@ void ElementImpl::setPressed(bool down)
 
 int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )
 {
-    kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
-               << " _tx=" << _tx << " _ty=" << _ty << endl;
+    //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " _x=" << _x << " _y=" << _y
+    //           << " _tx=" << _tx << " _ty=" << _ty << endl;
 
     // ######### Duplicated code from mouseEvent
     // TODO put the code above (getting _tx,_ty) in a common place and call it from here
@@ -709,12 +709,12 @@ int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node 
     while(child != 0)
     {
 	int pos = child->findSelectionNode(_x, _y, _tx, _ty, nod, off);
-        kdDebug(6030) << this << " child->findSelectionNode returned " << pos << endl;
+        //kdDebug(6030) << this << " child->findSelectionNode returned " << pos << endl;
         if ( pos == 0 ) // perfect match
         {
             node = nod;
             offset = off;
-            kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " match offset=" << offset << endl;
+            //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " match offset=" << offset << endl;
             return 0;
         } else if ( pos == -2 )
         {
@@ -722,10 +722,10 @@ int ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node 
             if ( !lastNode.isNull() ) {
                 node = lastNode;
                 offset = lastOffset;
-                kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before this child -> returning 0, offset=" << offset << endl;
+                //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before this child -> returning 0, offset=" << offset << endl;
                 return 0;
             } else {
-                kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before us -> returning -2" << endl;
+                //kdDebug(6030) << "ElementImpl::findSelectionNode " << this << " before us -> returning -2" << endl;
                 return -2;
             }
         }
@@ -760,7 +760,7 @@ bool ElementImpl::childAllowed( NodeImpl *newChild )
 	    // ### check xml element allowedness according to DTD
 	    if (id() && newChild->id()) // if one if these is 0 then it is an xml element and we allow it anyway
 		return checkChild(id(), newChild->id());
-	    else	
+	    else
 		return true;
 	    break;
 	default:
