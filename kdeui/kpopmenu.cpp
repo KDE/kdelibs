@@ -111,16 +111,16 @@ void KPopupTitle::paintEvent(QPaintEvent *)
 
     if(useGradient){
 
-        if(fill.width() != r.width()-2 || fill.height() != r.height()-2){
-            fill.resize(r.width()-2, r.height()-2);
+        if(fill.width() != r.width()-4 || fill.height() != r.height()-4){
+            fill.resize(r.width()-4, r.height()-4);
             KPixmapEffect::gradient(fill, grHigh, grLow, grType);
         }
-        p.drawPixmap(1, 1, fill);
+        p.drawPixmap(2, 2, fill);
     }
     else if(!fill.isNull())
-        p.drawTiledPixmap(1, 1, r.width()-2, r.height()-2, fill);
+        p.drawTiledPixmap(2, 2, r.width()-4, r.height()-4, fill);
     else{
-        p.fillRect(1, 1, r.width()-2, r.height()-2, QBrush(bgColor));
+        p.fillRect(2, 2, r.width()-4, r.height()-4, QBrush(bgColor));
     }
 
     if(!miniicon.isNull())
