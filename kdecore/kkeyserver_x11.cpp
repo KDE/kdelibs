@@ -291,10 +291,21 @@ bool initializeMods()
 
 	g_rgModInfo[3].modX = g_modXNumLock = g_modXScrollLock = 0;
 
+        int min_keycode, max_keycode;
+        int keysyms_per_keycode = 0;
+        XDisplayKeycodes( qt_xdisplay(), &min_keycode, &max_keycode );
+        XFree( XGetKeyboardMapping( qt_xdisplay(), min_keycode, 1, &keysyms_per_keycode ));
 	// Qt assumes that Alt is always Mod1Mask, so start at Mod2Mask.
 	for( int i = Mod2MapIndex; i < 8; i++ ) {
 		uint mask = (1 << i);
-		uint keySymX = XKeycodeToKeysym( qt_xdisplay(), xmk->modifiermap[xmk->max_keypermod * i], 0 );
+		uint keySymX = NoSymbol;
+                // This used to be only XKeycodeToKeysym( ... , 0 ), but that fails with XFree4.3.99
+                // and X.org R6.7 , where for some reason only ( ... , 1 ) works. I have absolutely no
+                // idea what the problem is, but searching all posibilities until something valid is
+                // found fixes the problem.
+                for( int j = 0; j < xmk->max_keypermod && keySymX == NoSymbol; ++j )
+                    for( int k = 0; k < keysyms_per_keycode && keySymX == NoSymbol; ++k )
+                        keySymX = XKeycodeToKeysym( qt_xdisplay(), xmk->modifiermap[xmk->max_keypermod * i + j], k );
 		switch( keySymX ) {
 			case XK_Num_Lock:    g_modXNumLock = mask; break;     // Normally Mod2Mask
 			case XK_Super_L:
