@@ -1,4 +1,4 @@
-AC_CHECK_HEADER(sys/acl.h, [ACL_H="1"], [ACL_H=""])
+AC_CHECK_HEADERS(sys/acl.h, [ACL_H="1"], [ACL_H=""])
 AC_CHECK_FUNC(acl_get_fd, [ACL_FUNC=1], [
 		AC_CHECK_LIB(posix1e, acl_get_fd, [
 			ACL_FUNC="1"
@@ -9,11 +9,5 @@ AC_CHECK_FUNC(acl_get_fd, [ACL_FUNC=1], [
 		])
 	])
 AC_SUBST(LIBPOSIX1E)
+AM_CONDITIONAL(USE_POSIX_ACL, [test -n "$ACL_H" -a "$ACL_FUNC"])
 
-if test -n "$ACL_H" && test -n "$ACL_FUNC"; then
-   KFILE_ACL_MODULE=libkacl_prop_page.la
-fi
-AC_SUBST(KFILE_ACL_MODULE)
-
->>>>>>>><<<<<<<<< PLEASE FIX THIS, IT'S NOW NOT WILLING TO INSTALL, 
-CONDITIONALS ARE GOOD
