@@ -1847,10 +1847,12 @@ void KURL::addQueryItem( const QString& _item, const QString& _value, int encodi
   m_strQuery_encoded += item + value;
 }
 
+#ifndef KDE_QT_ONLY
 QString KURL::prettyHost() const 
 { 
    return KIDNA::toUnicode(m_strHost);
 }
+#endif
 
 
 // static
