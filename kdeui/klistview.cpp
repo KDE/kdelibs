@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 2000 Reginald Stadlbauer <reggie@kde.org>
+   Copyright (C) 2000 Charles Samuels <charles@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -30,9 +31,30 @@
 
 #include <X11/Xlib.h>
 
+class KListViewPrivate // mostly DnD stuff
+{
+public:
+	QListViewItem *startDragItem;
+	
+	bool mousePressed;
+
+
+};
+
+
+
+
+
 KListView::KListView( QWidget *parent, const char *name )
     : QListView( parent, name ), invalidateRect(0), pressPos(0)
 {
+/*	{
+		d=new KListViewPrivate;
+		d->startDragItem=0;
+		d->mousePressed=false;
+	}
+*/
+	
     setDragAutoScroll(true);
     oldCursor = viewport()->cursor();
     connect( this, SIGNAL( onViewport() ),
@@ -291,6 +313,33 @@ void KListView::contentsMouseMoveEvent( QMouseEvent *e )
 
   QListView::contentsMouseMoveEvent( e );
 
+/*
+
+	if (d->mousePressed && e->state() == NoButton)
+		d->mousePressed = true;
+
+	if (d->startDragItem) item = d->startDragItem;
+	
+	if (d->mousePressed && item && item == currentItem() &&
+	   (item->isSelected() || selectionMode() == NoSelection) && dragEnabled())
+	{
+		if ( !d->startDragItem )
+		{
+			d->currentItem->setSelected( TRUE, TRUE );
+			d->startDragItem = item;
+		}
+		if ( ( d->dragStartPos - e->pos() ).manhattanLength() > QApplication::startDragDistance() )
+		{
+			d->mousePressed = FALSE;
+			d->cleared = FALSE;
+			startDrag();
+			if ( d->tmpCurrentItem )
+				repaintItem( d->tmpCurrentItem );
+		}
+	}
+*/
+
+
   /** new stuff, has to be merged somehow
   if ( pressPos && ( *pressPos - e->pos() ).manhattanLength() > QApplication::startDragDistance() )
       {
@@ -443,7 +492,25 @@ QListViewItem *KListView::lastItem() const
 
 void KListView::startDrag()
 {
+//	if ( !d->startDragItem )
+//		return;
+/*
+	QPoint orig = d->dragStartPos;
+	d->dragStart = QPoint( orig.x() - d->startDragItem->x(),
+		orig.y() - d->startDragItem->y() );
+    d->startDragItem = 0;
+    d->mousePressed = FALSE;
+    d->pressedItem = 0;
+    d->pressedSelected = 0;
 
+    QDragObject *drag = dragObject();
+    if ( !drag )
+	return;
+
+    if ( drag->drag() )
+	if ( drag->target() != viewport() )
+	    emit moved();
+*/
 }
 
 QDragObject *KListView::dragObject() const
@@ -472,3 +539,12 @@ bool KListView::itemsRenameable() const
 }
 
 
+void KListView::setDragEnabled(bool)
+{
+
+}
+
+bool KListView::dragEnabled() const
+{
+	return false;
+}

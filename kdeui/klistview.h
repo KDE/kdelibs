@@ -64,6 +64,8 @@ public:
   virtual void setItemsRenameable(bool b);
   bool itemsRenameable() const;
 
+  virtual void setDragEnabled(bool b);
+  bool dragEnabled() const;
 
 
 signals:
