@@ -121,7 +121,7 @@ public:
 
     class GroupInfo
     {
-      
+
     friend class KFilePlugin;
     friend class KFileMimeTypeInfo;
     public:
@@ -230,6 +230,11 @@ public:
             return m_key;
         }
 
+        bool isVariableItem() const
+        {
+            return key().isNull();
+        }
+
         /**
          * @return a translation of the key for displaying to the user. If the
          * plugin provides translation to the key, it's also in the user's
@@ -256,7 +261,7 @@ public:
         }
 
     private:
-        
+
         ItemInfo(const QString& key, const QString& translatedKey,
                  QVariant::Type type)
             : m_key(key), m_translatedKey(translatedKey),
@@ -264,8 +269,8 @@ public:
               m_attr(0), m_unit(NoUnit), m_hint(NoHint),
               m_prefix(QString::null), m_suffix(QString::null)
         {
-        }        
-        
+        }
+
         QString           m_key;
         QString           m_translatedKey;
         QVariant::Type    m_type;
@@ -695,21 +700,22 @@ public:
     QStringList preferredGroups() const;
 
     QStringList preferredKeys() const;
-    
+
     QStringList supportedKeys() const;
 
 
    /**
     * @return the list of groups that you can add or remove from the file.
     */
-    const QStringList& editableGroups() const;
+    QStringList editableGroups() const;
 
     // I'd like to keep those for lookup without group, at least the hint
     // version
     KFileMetaInfoItem item(const QString& key) const;
     KFileMetaInfoItem item(KFileMetaInfoItem::Hint hint) const;
-    KFileMetaInfoItem saveItem( const QString& key, 
-                                const QString& preferredGroup = QString::null);
+    KFileMetaInfoItem saveItem( const QString& key,
+                                const QString& preferredGroup = QString::null,
+                                bool createGroup = true );
 
     KFileMetaInfoGroup group(const QString& key) const;
 
@@ -772,7 +778,7 @@ public:
     friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& );
     friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfo& );
     friend class KFilePlugin;
-    
+
 protected:
     KFileMetaInfoGroup appendGroup(const QString& name);
 
@@ -786,9 +792,9 @@ protected:
     void deref();
 
     Data* d;
-    
+
 private:
-    KFileMetaInfoItem findEditableItem( const KFileMetaInfoGroup& group,
+    KFileMetaInfoItem findEditableItem( KFileMetaInfoGroup& group,
                                         const QString& key, bool& valid );
 };
 
@@ -862,7 +868,7 @@ protected:
     void addVariableInfo(KFileMimeTypeInfo::GroupInfo* gi, QVariant::Type type,
                          uint attr) const;
     KFileMimeTypeInfo::ItemInfo* addItemInfo(KFileMimeTypeInfo::GroupInfo* gi,
-                                             const QString& key, 
+                                             const QString& key,
                                              const QString& translatedKey,
                                              QVariant::Type type);
     void setAttributes(KFileMimeTypeInfo::ItemInfo* item, uint attr);
@@ -872,7 +878,7 @@ protected:
     void setSuffix(KFileMimeTypeInfo::ItemInfo* item, const QString& suffix);
     KFileMetaInfoGroup appendGroup(KFileMetaInfo& info, const QString& key);
     void appendItem(KFileMetaInfoGroup& group, const QString& key, QVariant value);
-    
+
     /**
      * Call this in your constructor
      */
