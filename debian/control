@@ -1,5 +1,5 @@
 Source: kdelibs-cvs
-Build-Depends: automake, debhelper, libjpeg62-dev, mico-2.3.1-dev, libqt2.1-dev, libpng2-dev, libc6-dev, libstdc++2.10-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libaudiofile-dev, kdoc, qt2.1-doc, kde-qt-addon-dev-cvs, jade, docboook
+Build-Depends: automake, debhelper, libjpeg62-dev, mico-2.3.1-dev, libqt2.1-dev, libpng2-dev, libc6-dev, libstdc++2.10-dev, libtiff3g-dev, zlib1g-dev, xlib6g-dev, libasound0.4-dev, libaudiofile-dev, kdoc, qt2.1-doc, kde-qt-addon-dev-cvs, jade, docboook, libssl09-dev
 Section: libs
 Priority: optional
 Maintainer: Stephan Kulow <coolo@kde.org>

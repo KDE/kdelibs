@@ -1,10 +1,10 @@
-kdelibs-cvs (4:2.0-20000520-1.0) experimental; urgency=low
+kdelibs-cvs (4:2.0-20000521-1.0) experimental; urgency=low
  
   * More CVS updates
   * Fixing some issues with khelpcenter and other config probs
   * Adding in a bit to automatically build the undocumented file
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Sat, 20 May 2000 04:15:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 21 May 2000 02:15:00 -0700
 
 kdelibs-cvs (4:2.0-20000517-1.0) experimental; urgency=low
  
