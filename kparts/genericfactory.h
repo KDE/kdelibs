@@ -55,7 +55,7 @@ namespace KParts
      *
      * The template argument has to inherit from KParts::Part and has to implement two methods:
      *  1) There needs to be a public constructor with the following signature:
-     *         MyPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name )
+     *         MyPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QStringList& args )
      *
      *  2) It needs to provide one static method to create a @ref KAboutData object per
      *     request, holding information about the component's name, its authors, license, etc.
@@ -65,12 +65,19 @@ namespace KParts
      * The template will take care of memory management of the KInstance and the KAboutData object.
      *
      * For advanced use you can also inherit from the template and re-implement additionally the
-     * virtual KInstance *createInstance() method, for example in case you want to extend the 
+     * virtual KInstance *createInstance() method, for example in case you want to extend the
      * paths of your instance's KStandardDirs object.
      *
      * If a KParts::ReadOnlyPart is requested through this factory and the template argument
      * implements a KParts::ReadWritePart then setReadWrite( false ) will automatically be
      * called in createPartObject.
+     *
+     * Use the factory through the K_EXPORT_COMPONENT_FACTORY macro, like that:
+     * <pre>
+     * typedef KParts::GenericFactory&lt;YourKPart&gt; YourKPartFactory;
+     * K_EXPORT_COMPONENT_FACTORY( yourlibrary, YourKPartFactory );
+     * </pre>
+     * yourlibrary is the library name that you compiled your KPart into.
      */
     template <class T>
     class GenericFactory : public GenericFactoryBase<T>
@@ -83,10 +90,10 @@ namespace KParts
                                                 const char *className,
                                                 const QStringList &args )
         {
-            T *part = KDEPrivate::ConcreteFactory<T>::create( parentWidget, 
+            T *part = KDEPrivate::ConcreteFactory<T>::create( parentWidget,
                                                               widgetName,
-                                                              parent, 
-                                                              name, 
+                                                              parent,
+                                                              name,
                                                               className,
                                                               args );
 
@@ -96,7 +103,7 @@ namespace KParts
                 if ( rwp )
                     rwp->setReadWrite( false );
             }
-            return part;    
+            return part;
         }
     };
 
@@ -111,9 +118,9 @@ namespace KParts
                                                 const char *className,
                                                 const QStringList &args )
         {
-            QObject *object = KDEPrivate::MultiFactory< KTypeList<T1, T2> >( parentWidget, 
+            QObject *object = KDEPrivate::MultiFactory< KTypeList<T1, T2> >( parentWidget,
                                                                              widgetName,
-                                                                             parent, name, 
+                                                                             parent, name,
                                                                              className,
                                                                              args );
 
@@ -126,7 +133,7 @@ namespace KParts
                 if ( rwp )
                     rwp->setReadWrite( false );
             }
-            return part;    
+            return part;
         }
     };
 
