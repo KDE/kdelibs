@@ -3,7 +3,7 @@
 <!-- author: Giancarlo Niccolai (giancarlo@niccolai.ws) -->
 <!-- This file is released under GPL license 2.0 or any later version at your choice. -->
 <!--  $Id  -->
-<language name="xHarbour" version="1.0" kateversion="2.1" section="Sources" extensions="*.prg;*.ch" mimetype="text/x-xharbour-src">
+<language name="xHarbour" version="1.01" kateversion="2.1" section="Sources" extensions="*.prg;*.ch" mimetype="text/x-xharbour-src">
 <highlighting>
 
    <list name="keywords">
