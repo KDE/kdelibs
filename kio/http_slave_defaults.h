@@ -20,12 +20,19 @@
 #define _KIO_HTTP_SLAVE_DEFAULTS_H
 
 // CACHE SETTINGS
-#define DEFAULT_MAX_CACHE_SIZE          5120          //  5 MB
-#define DEFAULT_MAX_CACHE_AGE           60*60*24*14   // 14 DAYS
-#define DEFAULT_EXPIRE_TIME             1*60          //  1 MIN
-#define DEFAULT_CACHE_CONTROL		KIO::CC_Verify     // Verify with remote
+#define DEFAULT_MAX_CACHE_SIZE          5120            //  5 MB
+#define DEFAULT_MAX_CACHE_AGE           60*60*24*14     // 14 DAYS
+#define DEFAULT_CACHE_EXPIRE            10              // 10 SECS
+#define DEFAULT_CLEAN_CACHE_INTERVAL    30*60           // 30 MINS
+#define DEFAULT_CACHE_CONTROL           KIO::CC_Verify  // Verify with remote
 
 // USER AGENT
 #define DEFAULT_USER_AGENT_KEYS		"o"	// Show OS
+
+// IPC_SIZE
+#define MAX_IPC_SIZE (1024*8)
+
+#define DEFAULT_MIME_TYPE               "text/html"
+#define DEFAULT_ACCEPT_HEADER           "text/*, image/jpeg, image/png, image/*, */*"
 
 #endif

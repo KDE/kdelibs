@@ -19,17 +19,20 @@
 #ifndef _KIO_IOSLAVE_DEFAULTS_H
 #define _KIO_IOSLAVE_DEFAULTS_H
 
-// DEFAULT TIMEOUT VALUE FOR REMOTE AND PROXY CONNECTION
-// AND RESPONSE WAIT PERIOD.  NOTE: CHANGING THESE VALUES
-// ALSO CHANGES THE DEFAULT ESTABLISHED INITIALLY.
-#define DEFAULT_RESPONSE_TIMEOUT         60		//  1 MIN
-#define DEFAULT_CONNECT_TIMEOUT          20		// 20 SEC
-#define DEFAULT_READ_TIMEOUT             15		// 15 SEC
-#define DEFAULT_PROXY_CONNECT_TIMEOUT    10		// 10 SEC
+// TIMEOUT VALUES
+#define DEFAULT_RESPONSE_TIMEOUT         60     //  1 min.
+#define DEFAULT_CONNECT_TIMEOUT          20     // 20 secs.
+#define DEFAULT_READ_TIMEOUT             15     // 15 secs.
+#define DEFAULT_PROXY_CONNECT_TIMEOUT    10     // 10 secs.
+#define MIN_TIMEOUT_VALUE                 2     //  2 secs.
 
-// MINIMUM TIMEOUT VALUE ALLOWED
-#define MIN_TIMEOUT_VALUE                 2		//  2 SEC
+#define DEFAULT_MINIMUM_KEEP_SIZE         5000  //  5 Kbs
 
-#define DEFAULT_MINIMUM_KEEP_SIZE	5000		// 5000 bytes
+// PORT SETTINGS
+#define DEFAULT_PROXY_PORT             8080
+#define DEFAULT_FTP_PORT                 21
+#define DEFAULT_HTTP_PORT                80
+#define DEFAULT_HTTPS_PORT              443
+#define MAX_PORT_VALUE                65536
 
 #endif
