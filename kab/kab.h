@@ -22,6 +22,8 @@ class QComboBox;
 class QTimer;
 
 #include <qprinter.h>
+#include <qevent.h>
+#include <qwidget.h>
 #include "addressbook.h"
 class BusinessCard;
 class SearchResults;
