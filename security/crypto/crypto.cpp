@@ -867,12 +867,12 @@ void KCryptoConfig::load()
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setURL(config->readEntry("EGDPath", QString::null));
+  mEGDPath->setURL(config->readPathEntry("EGDPath"));
 
 
 #ifdef HAVE_SSL
   config->setGroup("OpenSSL");
-  oPath->setURL(config->readEntry("Path", QString::null));
+  oPath->setURL(config->readPathEntry("Path"));
 #endif
 
   config->setGroup("SSLv2");
@@ -917,8 +917,8 @@ void KCryptoConfig::load()
     if ((*i).isEmpty() || *i == "<default>") continue;
     pcerts->setGroup(*i);
     YourCertItem *j = new YourCertItem(yourSSLBox,
-                     pcerts->readEntry("PKCS12Base64", QString::null),
-                     pcerts->readEntry("Password", QString::null),
+                     pcerts->readEntry("PKCS12Base64"),
+                     pcerts->readEntry("Password"),
                      *i, this );
     j->setPassCache(QString::null);
   }
@@ -934,7 +934,7 @@ void KCryptoConfig::load()
   else
     defCertBG->setButton(defCertBG->id(defDont));
 
-  QString whichCert = config->readEntry("DefaultCert", QString::null);
+  QString whichCert = config->readEntry("DefaultCert");
   defCertBox->setCurrentItem(0);
   for (int i = 0; i < defCertBox->count(); i++) {
      if (defCertBox->text(i) == whichCert) {
@@ -956,7 +956,7 @@ void KCryptoConfig::load()
        aa = KSSLCertificateHome::AuthPrompt;
     HostAuthItem *j = new HostAuthItem(hostAuthList,
                                        *i,
-                                       authcfg->readEntry("certificate", QString::null),
+                                       authcfg->readEntry("certificate"),
                                        this );
     j->setAction(aa);
     j->setOriginalName(*i);
@@ -974,7 +974,7 @@ void KCryptoConfig::load()
     if (!sigcfg.hasKey("x509")) continue;
                 new CAItem(caList,
                      (*i),
-                     sigcfg.readEntry("x509", QString::null),
+                     sigcfg.readEntry("x509"),
                      sigcfg.readBoolEntry("site", false),
                      sigcfg.readBoolEntry("email", false),
                      sigcfg.readBoolEntry("code", false),
@@ -1017,7 +1017,7 @@ void KCryptoConfig::save()
   config->setGroup("EGD");
   config->writeEntry("UseEGD", mUseEGD->isChecked());
   config->writeEntry("UseEFile", mUseEFile->isChecked());
-  config->writeEntry("EGDPath", mEGDPath->url());
+  config->writePathEntry("EGDPath", mEGDPath->url());
 
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
@@ -1030,7 +1030,7 @@ void KCryptoConfig::save()
 
 #ifdef HAVE_SSL
   config->setGroup("OpenSSL");
-  config->writeEntry("Path", oPath->url());
+  config->writePathEntry("Path", oPath->url());
 #endif
 
   int ciphercount = 0;
