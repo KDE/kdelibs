@@ -165,7 +165,7 @@ SlaveBase::SlaveBase( const QCString &protocol,
    globalSlave=this;
 
     appconn = new Connection();
-    listEntryCurrentSize = 0;
+    listEntryCurrentSize = 100;
     struct timeval tp;
     gettimeofday(&tp, 0);
     listEntry_sec = tp.tv_sec;
@@ -472,7 +472,7 @@ void SlaveBase::statEntry( const UDSEntry& entry )
 void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 {
     static struct timeval tp;
-    static const int maximum_updatetime = 800;
+    static const int maximum_updatetime = 300;
     static const int minimum_updatetime = (maximum_updatetime * 3) / 4;
 
     if (!_ready) {
