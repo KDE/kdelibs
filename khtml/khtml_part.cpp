@@ -871,7 +871,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
   //kdDebug(6050) << "KHTMLPart::executeScript n=" << n.nodeName().string().latin1() << "(" << n.nodeType() << ") " << script << endl;
   KJSProxy *proxy = jScript();
 
-  qDebug( "executeScript: %s", script.latin1() );
+  kdDebug(6070) << "executeScript: " << script.latin1() << endl;
 
   if (!proxy)
     return QVariant();
