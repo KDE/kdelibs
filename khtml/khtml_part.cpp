@@ -3813,7 +3813,8 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
           if ( !d->m_referrer.isEmpty() )
             urlDrag->metaData()["referrer"] = d->m_referrer;
           drag = urlDrag;
-          p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
+//          p = KMimeType::pixmapForURL(u, 0, KIcon::SizeMedium);
+          p = KMimeType::pixmapForURL(u, 0, KIcon::Desktop, KIcon::SizeMedium);
       } else {
           HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
           if( i ) {
