@@ -69,6 +69,9 @@ int main( int argc, char** argv )
  " ./kziptest list /path/to/existing_file.zip       tests listing an existing zip\n"
  " ./kziptest readwrite newfile.zip                 will create the zip, then close and reopen it.\n"
  " ./kziptest maxlength newfile.zip                 tests the maximum filename length allowed.\n"
+ " ./kziptest print file.zip                        prints contents of all files.\n"
+ " ./kziptest print2 file.zip filename              prints contents of one file.\n"
+ " ./kziptest transfer file.zip newfile.zip         complete transfer.\n"
  " ./kziptest iodevice /path/to/existing_file.zip   tests KArchiveFile::device()\n");
     return 1;
   }
@@ -143,9 +146,21 @@ int main( int argc, char** argv )
     const KArchiveFile* f = (KArchiveFile*)e;
 
     QByteArray arr( f->data() );
+    Q_ASSERT( arr.size() == 13 );
     printf("SIZE=%i\n",arr.size() );
     QString str( arr );
+    Q_ASSERT( str == "Noch so einer" );
     printf("DATA=%s\n", str.latin1());
+
+    e = dir->entry( "mediumfile" );
+    Q_ASSERT( e && e->isFile() );
+    f = (KArchiveFile*)e;
+    Q_ASSERT( f->data().size() == SIZE1 );
+
+    e = dir->entry( "hugefile" );
+    Q_ASSERT( e && e->isFile() );
+    f = (KArchiveFile*)e;
+    Q_ASSERT( f->data().size() == 20000 );
 
     zip.close();
 
@@ -185,7 +200,7 @@ int main( int argc, char** argv )
     const KArchiveEntry* entry = dir->entry( "my/dir/test3" );
     if ( entry && entry->isFile() )
     {
-        QIODevice *dev = static_cast<const KArchiveFile *>(entry)->device();
+        QIODevice *dev = static_cast<const KZipFileEntry *>(entry)->device();
         QByteArray contents = dev->readAll();
         printf("contents='%s'\n", QCString(contents).data());
     } else
@@ -240,7 +255,7 @@ int main( int argc, char** argv )
     const KArchiveFile* f = (KArchiveFile*)e;
 
     QByteArray arr( f->data() );
-//    printf("SIZE=%i\n",arr.size() );
+    printf("SIZE=%i\n",arr.size() );
     QString str( arr );
 //    printf("DATA=%s\n", str.latin1());
     printf("%s", str.latin1());
@@ -253,7 +268,7 @@ int main( int argc, char** argv )
   {
     if (argc != 4)
     {
-        printf("usage: kziptest.cpp print2 sourcefile destfile");
+        printf("usage: kziptest.cpp transfer sourcefile destfile");
 	return 1;
     }
     KZip zip1( argv[2] );
