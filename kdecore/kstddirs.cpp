@@ -65,6 +65,7 @@ KStandardDirs::KStandardDirs( ) : addedCustoms(false)
     dircache.setAutoDelete(true);
     relatives.setAutoDelete(true);
     absolutes.setAutoDelete(true);
+    addKDEDefaults();
 }
 
 KStandardDirs::~KStandardDirs()
@@ -132,6 +133,7 @@ bool KStandardDirs::addResourceDir( const char *type,
     QString copy = absdir;
     if (copy.at(copy.length() - 1) != '/')
       copy += '/';
+
     if (!paths->contains(copy)) {
 	paths->append(copy);
 	dircache.remove(type); // clean the cache
@@ -166,6 +168,8 @@ QStringList KStandardDirs::findDirs( const char *type,
                                      const QString& reldir ) const
 {
     QStringList list;
+
+    checkConfig();
 
     QStringList candidates = resourceDirs(type);
     QDir testdir;
@@ -388,8 +392,9 @@ KStandardDirs::findAllResources( const char *type,
        }
     }
 
-    QStringList candidates = resourceDirs(type);
+    checkConfig();
 
+    QStringList candidates = resourceDirs(type);
     if (filterFile.isEmpty())
 	filterFile = "*";
 
@@ -418,8 +423,8 @@ KStandardDirs::findAllResources( const char *type,
 				 bool recursive,
 			         bool uniq) const
 {
-   QStringList relList;
-   return findAllResources(type, filter, recursive, uniq, relList);
+    QStringList relList;
+    return findAllResources(type, filter, recursive, uniq, relList);
 }
 
 static QString realPath(const QString &dirname)
@@ -475,19 +480,8 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
         QDir testdir;
 
         candidates = new QStringList();
-        QStringList *dirs = absolutes.find(type);
-        if (dirs)
-            for (QStringList::ConstIterator it = dirs->begin();
-                 it != dirs->end(); ++it)
-            {
-                testdir.setPath(*it);
-                if (testdir.exists())
-                {
-                    QString filename = realPath(*it);
-                    if (!candidates->contains(filename))
-                        candidates->append(filename);
-                }
-            }
+        QStringList *dirs;
+
         dirs = relatives.find(type);
         if (dirs)
         {
@@ -506,6 +500,19 @@ QStringList KStandardDirs::resourceDirs(const char *type) const
                 local = false;
             }
         }
+        dirs = absolutes.find(type);
+        if (dirs)
+            for (QStringList::ConstIterator it = dirs->begin();
+                 it != dirs->end(); ++it)
+            {
+                testdir.setPath(*it);
+                if (testdir.exists())
+                {
+                    QString filename = realPath(*it);
+                    if (!candidates->contains(filename))
+                        candidates->append(filename);
+                }
+            }
         dircache.insert(type, candidates);
     }
 
@@ -688,6 +695,8 @@ QString KStandardDirs::saveLocation(const char *type,
 {
     QString fullPath;
 
+    checkConfig();
+
     QStringList *dirs = relatives.find(type);
     if (!dirs && (strcmp(type, "socket") == 0))
     {
@@ -826,6 +835,12 @@ void KStandardDirs::addKDEDefaults()
 
 }
 
+void KStandardDirs::checkConfig() const
+{
+    if (!addedCustoms && KGlobal::_instance && KGlobal::_instance->_config)
+        const_cast<KStandardDirs*>(this)->addCustomized(KGlobal::_instance->_config);
+}
+
 bool KStandardDirs::addCustomized(KConfig *config)
 {
     if (addedCustoms) // there are already customized entries
@@ -848,6 +863,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
     // iterating over all entries in the group Directories
     // to find entries that start with dir_$type
     QMap<QString, QString> entries = config->entryMap("Directories");
+
     QMap<QString, QString>::ConstIterator it2;
     for (it2 = entries.begin(); it2 != entries.end(); it2++)
     {

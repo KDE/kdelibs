@@ -41,6 +41,8 @@ class KMimeSourceFactory;
  */
 class KInstance
 {
+    friend class KStandardDirs;
+
  public:
     /**
      *  Constructor
@@ -65,29 +67,29 @@ class KInstance
      * Destructor.
      */
     virtual ~KInstance();
-    
+
     /**
      *  Retrieve the application standard dirs object.
      */
     KStandardDirs	*dirs() const;
-    
+
     /**
      *  Retrieve the general config object.
      */
-    KConfig *config() const;
-    
+    KConfig            *config() const;
+
     /**
      *  Retrieve an iconloader object.
      */
-    KIconLoader	*iconLoader() const;
+    KIconLoader	       *iconLoader() const;
 
     /**
      * Re-allocate the global iconloader.
      */
     void newIconLoader() const;
-    
+
     KCharsets	     *charsets() const;
-    
+
     /**
      *  @return the about data of this instance
      *  Warning, can be 0L
@@ -111,10 +113,10 @@ protected:
      *  Copy Constructor is not allowed
      */
     KInstance( const KInstance& );
-    
+
 private:
     mutable KStandardDirs       *_dirs;
-    
+
     mutable KConfig             *_config;
     mutable KIconLoader         *_iconLoader;
 
@@ -124,5 +126,5 @@ private:
     KInstancePrivate *d;
 };
 
-#endif 
+#endif
 

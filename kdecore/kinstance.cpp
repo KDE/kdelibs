@@ -108,7 +108,9 @@ KStandardDirs *KInstance::dirs() const
 {
     if( _dirs == 0 ) {
 	_dirs = new KStandardDirs( );
-	_dirs->addKDEDefaults();
+        if (_config)
+            if (_dirs->addCustomized(_config))
+                _config->reparseConfiguration();
     }
 
     return _dirs;
@@ -121,6 +123,9 @@ KConfig	*KInstance::config() const
 	    _config = new KConfig( _name + "rc");
 	else
 	    _config = new KConfig();
+        if (_dirs)
+            if (_dirs->addCustomized(_config))
+                _config->reparseConfiguration();
     }
 
     return _config;

@@ -8,7 +8,6 @@ int main(int argc, char **argv)
 {
   KApplication a(argc, argv, "whatever", false);
   KStandardDirs t;
-  t.addKDEDefaults();	
   KConfig config; // to add custom entries - a bit tricky :/
 
   QString s = t.findResource("icon", "xv.xpm");
@@ -24,9 +23,9 @@ int main(int argc, char **argv)
     kdDebug() << "config " << (*it).ascii() << endl;
   }
 
-  list = t.findAllResources("apps", "S*/*.desktop", true);
+  list = t.findAllResources("html", "en/*/index.html", true);
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
-    kdDebug() << "setting " << (*it).ascii() << endl;
+    kdDebug() << "docs " << (*it).ascii() << endl;
   }
 
   list = t.findDirs("data", "kwin");

@@ -75,7 +75,7 @@ KConfig::KConfig( const QString& fileName,
   // Since this makes only sense for config directories, addCustomized
   // returns true only if new config directories appeared.
   if (KGlobal::dirs()->addCustomized(this))
-    reparseConfiguration();
+      reparseConfiguration();
 
   // cache flushing setup
   //  cacheTimer = new QTimer(this, "cacheTimer");
