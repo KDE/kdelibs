@@ -1117,7 +1117,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       errorName = i18n( "Could Not Rename Temporary File" );
       description = i18n( "The requested operation required the creation of "
         "a temporary file <strong>%1</strong>, however it could not be "
-        "renamed." ).arg( errorText );
+        "created." ).arg( errorText );
       causes << cAccess;
       solutions << sAccess;
       break;

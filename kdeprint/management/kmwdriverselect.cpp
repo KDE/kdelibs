@@ -81,7 +81,7 @@ void KMWDriverSelect::initPrinter(KMPrinter *p)
 			if (it.current()->recommanded)
 			{
 				recomm = m_list->count();
-				s.append(i18n(" [recommanded]"));
+				s.append(i18n(" [recommended]"));
 			}
 			m_list->insertItem(s);
 		}
