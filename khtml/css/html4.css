@@ -362,6 +362,10 @@ INPUT[type="password"],
 TEXTAREA { 
 	font-family: monospace;
 }
+
+INPUT {
+	vertical-align: middle;
+}
       
 INPUT[type="hidden"] {
 	display: none; 
