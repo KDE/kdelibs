@@ -56,6 +56,17 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *vi
 
   m_rows = rows;
   m_cols = cols;
+
+  // another one for bad html
+  // handle <frameset cols="*" rows="100, ...">
+  if ( m_rows && m_cols ) {
+      // lets see if one of them is relative
+      if ( m_rows->count() == 1 && m_rows->at( 0 )->isRelative() )
+            m_rows = 0;
+      if ( m_cols->count() == 1 && m_cols->at( 0 )->isRelative() )
+          m_cols = 0;
+  }
+
   m_rowHeight = 0;
   m_colWidth = 0;
 
