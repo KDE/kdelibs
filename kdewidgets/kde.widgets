@@ -142,3 +142,9 @@ Group=Display (KDE)
 ToolTip=URL Requester (KDE)
 WhatsThis=A widget holding a lineedit and a pushbutton. A "file open" dialog opened when clicking on the pushbutton
 Group=Input (KDE)
+
+[KIntNumInput]
+ToolTip=Integer Input Widget (KDE)
+WhatsThis=An input widget for integer numbers, consisting of a spinbox and a slider.
+Include=knuminput.h
+
