@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/x-7z
+Icon=tgz
+Patterns=*.7z;*.7Z;
+Comment=7-Zip Archive
