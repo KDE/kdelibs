@@ -88,11 +88,9 @@ binary-arch:  build
 	dh_undocumented
 	dh_strip
 	for i in `find debian/ -type l -name "common"`; do \
-		rm $i; \
-		ln -s ../common $i ;\
+		rm $$i; \
+		ln -s ../common $$i ;\
 	done
-	#-rm debian/tmp/usr/share/doc/kde/HTML/en/kspell/common/ 
-	#cd debian/tmp/usr/share/doc/kde/HTML/en/kspell && ln -s ../common common
 	dh_perl
 	dh_link
 	dh_compress 
