@@ -511,7 +511,6 @@ Completion WindowFunc::tryExecute(const List &args)
 
     if ( config->readBoolEntry("DisableWindowOpen") ) {
       result = Undefined();
-      break;
     } else {
         KParts::WindowArgs winargs;
 
