@@ -170,8 +170,8 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         if ( (type == QEvent::MouseButtonPress && o->parent() != this) ||
              (type == QEvent::Move && d->m_parent &&
               o == d->m_parent->topLevelWidget() ))
-            // hide();                    // allow presses on the scrollbar
-            cancelled();
+            hide();                    // allow presses on the scrollbar
+            // cancelled();
     }
 
     return KListBox::eventFilter( o, e );
