@@ -769,7 +769,7 @@ KFilePlugin::KFilePlugin( QObject *parent, const char *name,
 
 KFilePlugin::~KFilePlugin()
 {
-    kdDebug(7033) << "unloaded a plugin for " << name() << endl;
+//    kdDebug(7033) << "unloaded a plugin for " << name() << endl;
 }
 
 KFileMimeTypeInfo * KFilePlugin::addMimeTypeInfo( const QString& mimeType )
@@ -905,6 +905,7 @@ KFileMetaInfoProvider::KFileMetaInfoProvider()
 
 KFileMetaInfoProvider::~KFileMetaInfoProvider()
 {
+    m_plugins.clear();
     sd.setObject( 0 );
 }
 
@@ -956,13 +957,15 @@ KFilePlugin* KFileMetaInfoProvider::loadAndRegisterPlugin( const QString& mimeTy
         Q_ASSERT( m_pendingMimetypeInfos.count() == 1 );
         KFileMimeTypeInfo* info = m_pendingMimetypeInfos[ protocol ];
         Q_ASSERT( info );
-        m_plugins.insert( protocol, new CachedPluginInfo( plugin, info ) );
+        m_plugins.insert( protocol, new CachedPluginInfo( plugin, info, true ) );
     } else {
         // Mimetype-metainfo: the plugin can register itself for multiple mimetypes, remember them all
+        bool first = true;
         QDictIterator<KFileMimeTypeInfo> it( m_pendingMimetypeInfos );
         for( ; it.current(); ++it ) {
             KFileMimeTypeInfo* info = it.current();
-            m_plugins.insert( it.currentKey(), new CachedPluginInfo( plugin, info ) );
+            m_plugins.insert( it.currentKey(), new CachedPluginInfo( plugin, info, first ) );
+            first = false;
         }
         // Hopefully the above includes the mimetype we asked for!
         if ( m_pendingMimetypeInfos.find( mimeType ) == 0 )

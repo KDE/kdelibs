@@ -1354,15 +1354,22 @@ private:
     // The {} struct is CachedPluginInfo
     struct CachedPluginInfo
     {
-        CachedPluginInfo() : plugin( 0 ), mimeTypeInfo( 0 ) {}
-        CachedPluginInfo( KFilePlugin* p, KFileMimeTypeInfo* i )
-            : plugin( p ), mimeTypeInfo( i ) {}
+        CachedPluginInfo() : plugin( 0 ), mimeTypeInfo( 0 ), ownsPlugin( false ) {}
+        CachedPluginInfo( KFilePlugin* p, KFileMimeTypeInfo* i, bool owns )
+            : plugin( p ), mimeTypeInfo( i ), ownsPlugin( owns ) {}
         // auto-delete behavior
-        ~CachedPluginInfo() { delete plugin; delete mimeTypeInfo; }
+        ~CachedPluginInfo() {
+            if ( ownsPlugin ) delete plugin;
+            delete mimeTypeInfo;
+        }
 
         // If plugin and mimeTypeInfo are 0, means that no plugin is available.
         KFilePlugin* plugin;
         KFileMimeTypeInfo* mimeTypeInfo;
+        // The problem here is that plugin can be shared in multiple instances,
+        // so the memory management isn't easy. KDE4 solution: use KSharedPtr?
+        // For now we flag one copy of the KFilePlugin pointer as being "owned".
+        bool ownsPlugin;
     };
 
     // The key is either a mimetype or a protocol. Those things don't look the same
