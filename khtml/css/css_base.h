@@ -27,7 +27,9 @@
 
 #include "dom/dom_string.h"
 #include "dom/dom_misc.h"
+#include "xml/dom_nodeimpl.h"
 #include "misc/shared.h"
+#include <kglobal.h>
 #include <qdatetime.h>
 #include <qptrlist.h>
 
@@ -132,10 +134,10 @@ namespace DOM {
 	    }
 
 	mutable DOM::DOMString value;
-	CSSSelector *tagHistory;
         CSSSelector* simpleSelector; // Used for :not.
-	unsigned int attr;
-	unsigned int tag;
+	CSSSelector *tagHistory;
+        DOM::NodeImpl::Id attr;
+        DOM::NodeImpl::Id tag;
 
 	Relation relation     : 2;
 	Match 	 match         : 4;
@@ -220,7 +222,7 @@ namespace DOM {
 	QPtrList<StyleBaseImpl> *m_lstChildren;
     };
 
-    int getPropertyID(const char *tagStr, int len);
+    KDE_NO_EXPORT int getPropertyID(const char *tagStr, int len);
 
 }
 
