@@ -17,7 +17,8 @@
  *
  */
 
-
+#ifndef __KSEPARATOR_H__
+#define __KSEPARATOR_H__
 
 #include <qframe.h>
 
@@ -39,4 +40,4 @@ class KSeparator : public QFrame
 };
 
 
-
+#endif // __KSEPARATOR_H__
