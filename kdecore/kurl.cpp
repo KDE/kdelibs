@@ -1310,18 +1310,18 @@ bool KURL::isLocalFile() const
 {
   if ( (m_strProtocol != fileProt ) || hasSubURL() )
      return false;
-     
+
   if (m_strHost.isEmpty() || (m_strHost == "localhost"))
      return true;
-     
+
   char hostname[ 256 ];
   hostname[ 0 ] = '\0';
   if (!gethostname( hostname, 255 ))
      hostname[sizeof(hostname)-1] = '\0';
-     
+
   for(char *p = hostname; *p; p++)
      *p = tolower(*p);
-     
+
   return (m_strHost == hostname);
 }
 
@@ -1878,6 +1878,8 @@ KURL::setPass( const QString& _txt )
 void
 KURL::setHost( const QString& _txt )
 {
+  if ( m_iUriMode == Auto )
+    m_iUriMode = URL;
   switch ( m_iUriMode )
   {
   case URL:
