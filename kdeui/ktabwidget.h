@@ -52,6 +52,9 @@ public:
       Set the tab of the given widget to \a color.
     */
     void setTabColor( QWidget *, const QColor& color );
+    /*!
+      Returns the tab color for the given widget.
+    */
     QColor tabColor( QWidget * ) const;
 
     /*!
@@ -94,7 +97,7 @@ public:
     void setTabBarHidden( bool hide );
 
     /*!
-      Return true if the tabbar is hidden.
+      Returns true if the tabbar is hidden.
       @since 3.4
     */
     bool isTabBarHidden() const;
