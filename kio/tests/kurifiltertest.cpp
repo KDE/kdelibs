@@ -110,6 +110,7 @@ int main(int argc, char **argv) {
     filter( "~/.kderc", QDir::homeDirPath().local8Bit()+"/.kderc", KURIFilterData::LOCAL_FILE, "kshorturifilter" );
     filter( "~", QDir::homeDirPath().local8Bit(), KURIFilterData::LOCAL_DIR, "kshorturifilter", "/tmp" );
     filter( "~foobar", 0, KURIFilterData::ERROR, "kshorturifilter" );
+    filter( "user@host", "mailto:user@host", KURIFilterData::NET_PROTOCOL ); // new in KDE-3.2
 
     // SMB share test with a specific filter chosen
     // #### Those fail - I see no specific code for them in kshorturifilter !?
@@ -171,6 +172,7 @@ int main(int argc, char **argv) {
     // Search Engine tests
     filter( "gg:foo bar", "http://www.google.com/search?q=foo%20bar&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "bug:55798", "http://bugs.kde.org/show_bug.cgi?id=55798", KURIFilterData::NET_PROTOCOL );
+
     // BR ...
     filter( "gg:C++", "http://www.google.com/search?q=C%2B%2B&ie=UTF-8&oe=UTF-8", KURIFilterData::NET_PROTOCOL );
     filter( "ya:foo bar was here", 0, -1 ); // this triggers default search, i.e. google
