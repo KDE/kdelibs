@@ -62,9 +62,10 @@ ksimpleconfig.cpp: ksimpleconfig.moc
 kglobalaccel.cpp: kglobalaccel.moc 
 kclipboard.cpp: kclipboard.moc
 
-install-data-local: charsets.config
+install-data-local: charsets.config kdebug.areas
 	$(mkinstalldirs) $(kde_confdir)
 	$(INSTALL_DATA) charsets.config $(kde_confdir)/charsets
+	$(INSTALL_DATA) kdebug.areas $(kde_confdir)
 
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
