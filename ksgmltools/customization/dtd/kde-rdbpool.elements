@@ -44,10 +44,11 @@
  -->
 <!ENTITY % kde.remove.unused.elements "INCLUDE">
 <![ %kde.remove.unused.elements; [
-<!ENTITY % graphic.module "IGNORE">
-<!ENTITY % inlinegraphic.module "IGNORE">
 <!ENTITY % confgroup.content.module "IGNORE">
+<!ENTITY % graphic.module "IGNORE">
 <!ENTITY % graphicco.module "IGNORE">
+<!ENTITY % inlinegraphic.module "IGNORE">
+<!ENTITY % interfacedefinition.module "IGNORE">
 <!-- end of kde.remove.unused.elements -->]]>
 
 <!-- KDE Languages
