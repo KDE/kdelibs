@@ -10,6 +10,10 @@ BUGS
   ppdfile=/etc/foomatic/<queue_name>.ppd to the printcap entry (for
   use with gpr)
 
+- when changing only the config file, instances seem to be lost
+  (probably discarded because they are not related to an existing
+  printer, then not reloaded)
+
 
 WISHES
 ------
