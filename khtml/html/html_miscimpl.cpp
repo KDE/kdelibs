@@ -377,7 +377,36 @@ NodeImpl* HTMLFormCollectionImpl::getNamedItem(NodeImpl*, int attr_id, const DOM
                 if(element->isEnumeratable() && element->getAttribute(attr_id) == name)
                     return element;
         }
+        NodeImpl* retval = getNamedImgItem( base->firstChild(), attr_id, name );
+        if ( retval )
+            return retval;
     }
+    return 0;
+}
 
+NodeImpl* HTMLFormCollectionImpl::getNamedImgItem(NodeImpl* current, int attr_id, const DOMString& name) const
+{
+    // strange case. IE and NS allow to get hold of <img> tags,
+    // but they don't include them in the elements() collection.
+    while ( current )
+    {
+        if(current->nodeType() == Node::ELEMENT_NODE)
+        {
+            HTMLElementImpl *currelem = static_cast<HTMLElementImpl *>(current);
+            if(currelem->id() == ID_IMG && currelem->getAttribute(attr_id) == name)
+                return current;
+            if(current->firstChild())
+            {
+                // The recursion here is the reason why this is a separate method
+                NodeImpl *retval = getNamedImgItem(current->firstChild(), attr_id, name);
+                if(retval)
+                {
+                    //kdDebug( 6030 ) << "got a return value " << retval << endl;
+                    return retval;
+                }
+            }
+        }
+        current = current->nextSibling();
+    } // while
     return 0;
 }

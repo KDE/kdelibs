@@ -107,6 +107,8 @@ protected:
     virtual unsigned long calcLength(NodeImpl* current) const;
     virtual NodeImpl* getItem(NodeImpl *current, int index, int& pos) const;
     virtual NodeImpl* getNamedItem(NodeImpl* current, int attr_id, const DOMString& name) const;
+private:
+    NodeImpl* getNamedImgItem(NodeImpl* current, int attr_id, const DOMString& name) const;
 };
 
 
