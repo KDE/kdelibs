@@ -41,5 +41,12 @@ int main()
   printf("\n* URL is %s\n",u3);
   check("KURL::hasSubProtocol()", KURL(u3).hasSubProtocol() ? "yes" : "no", "no");
 
+  KURL umail1 ( "mailto:faure@kde.org" );
+  check("mailto: URL, small form", umail1.protocol(), "mailto");
+  check("mailto: URL, small form", umail1.path(), "faure@kde.org");
+  KURL umail2 ( "mailto:Faure David <faure@kde.org>" );
+  check("mailto: URL, general form", umail2.protocol(), "mailto");
+  check("mailto: URL, general form", umail2.path(), "Faure David <faure@kde.org>");
+
   printf("\nTest OK !\n");
 }
