@@ -466,14 +466,12 @@ void BrowserExtension::createActionSlotMap()
 
 BrowserExtension *BrowserExtension::childObject( QObject *obj )
 {
-    if ( !obj )
+    if ( !obj || !obj->children() )
         return 0L;
 
     // we try to do it on our own, in hope that we are faster than
     // queryList, which looks kind of big :-)
     const QObjectList *children = obj->children();
-    if ( !children )
-        return 0L;
     QObjectListIt it( *children );
     for (; it.current(); ++it )
         if ( it.current()->inherits( "KParts::BrowserExtension" ) )
