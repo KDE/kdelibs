@@ -19,7 +19,19 @@
 #include "khtmldata.h"
 #include "khtmlfont.h"
 #include "khtmlio.h"
+#include "kjs.h"
 #include <qcursor.h>
+
+#ifdef BROWSER
+class TestBrowser : public KBrowser {
+public:
+  TestBrowser() { kjs = new KJSWorld(this); }
+  ~TestBrowser() { delete kjs; }
+  virtual void executeScript(const QString &c) { kjs->evaluate(c); }
+private:
+  KJSWorld *kjs;
+};
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -28,7 +40,7 @@ int main(int argc, char *argv[])
     KApplication a(argc, argv);
 
 #ifdef BROWSER
-    KBrowser *doc = new KBrowser;
+    TestBrowser *doc = new TestBrowser;
     doc->resize(800,500);
 
     a.setTopWidget(doc);
