@@ -81,6 +81,7 @@ multiple, ATTR_MULTIPLE
 name, ATTR_NAME
 nohref, ATTR_NOHREF
 noresize, ATTR_NORESIZE
+nosave, ATTR_NOSAVE
 noshade, ATTR_NOSHADE
 nowrap, ATTR_NOWRAP
 object, ATTR_OBJECT
