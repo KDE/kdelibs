@@ -114,7 +114,12 @@ void KSystemTray::showEvent( QShowEvent * )
         }
 
         action = d->actionCollection->action(KStdAction::name(KStdAction::Quit));
-        action->plug(menu);
+
+        if (action)
+        {
+            action->plug(menu);
+        }
+
 	hasQuit = 1;
     }
 }
