@@ -32,14 +32,22 @@ K_DCOP
 public:
 	KNotify();
 //	~KNotify();
-
-	enum Presentation { None=0, Sound=1, Messagebox=2, Logwindow=4, Logfile=8, Stderr=16};
-  
-	// !!! TODO  bool setLogfile(QCString& logfile);
+	enum Presentation
+	{
+		Default=-1,
+		None=0,
+		Sound=1,
+		Messagebox=2,
+		Logwindow=4,
+		Logfile=8,
+		Stderr=16
+	};
 
 protected:
-	void processNotification(const QString &event, const QString &fromApp, const QString &text);
-	
+	void processNotification(const QString &event, const QString &fromApp,
+	                         const QString &text, QString sound,
+	                         Presentation present);
+
 	bool notifyBySound(const QString &sound);
 	bool notifyByMessagebox(const QString &text);
 	bool notifyByLogwindow(const QString &text);

@@ -39,7 +39,7 @@
 #include "soundserver.h"
 
 KApplication *app;
-SimpleSoundServer *server;
+SimpleSoundServer_base *server;
 
 int main(int argc, char **argv)
 {
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 
 	// obtain an object reference to the soundserver
 	// comented
-//	server = SimpleSoundServer::_fromString("global:Arts_SimpleSoundServer");
+	server = SimpleSoundServer_base::_fromString("global:Arts_SimpleSoundServer");
 	if(!server)
 		cerr << "artsd is not running, there will be no sound notifications.\n";
 
@@ -84,14 +84,16 @@ KNotify::KNotify() : QObject(), DCOPObject("Notify")
 bool KNotify::process(const QCString &fun, const QByteArray &data,
                       QCString& /*replyType*/, QByteArray& /*replyData*/ )
 {
-	if (fun == "notify(QString,QString,QString)")
+	if (fun == "notify(QString,QString,QString,QString,Presentation)")
 	{
 		QDataStream dataStream( data, IO_ReadOnly );
-    	QString event;
-    	QString fromApp;
-    	QString text;
-    	dataStream >> event>>fromApp >> text;
-    	processNotification(event, fromApp, text);
+		QString event;
+		QString fromApp;
+		QString text;
+		QString sound;
+	 	int present;
+		dataStream >> event >>fromApp >> text >> sound >> present;
+		processNotification(event, fromApp, text, sound, (Presentation)present);
  
 		return true;
 	}
@@ -99,15 +101,20 @@ bool KNotify::process(const QCString &fun, const QByteArray &data,
 }
 
 void KNotify::processNotification(const QString &event, const QString &fromApp,
-                                  const QString &text)
+                                  const QString &text, QString sound,
+                                  Presentation present)
 {
 	static bool eventRunning=true;
 	
-	KConfig eventsfile(locate("data", fromApp+"/eventsrc"));
-	eventsfile.setGroup(event);
+	if (event.length())
+	{
+		KConfig eventsfile(locate("data", fromApp+"/eventsrc"));
+		eventsfile.setGroup(event);
 	
-	Presentation present=(Presentation)eventsfile.readNumEntry("presentation");
-	QString sound=eventsfile.readEntry("sound", "");
+		if (present==-1)
+			present=(Presentation)eventsfile.readNumEntry("presentation");
+		sound=eventsfile.readEntry("sound", "");
+	}
 	
 	eventRunning=true;
 	if ((present & Sound) && (QFile(sound).exists()))
