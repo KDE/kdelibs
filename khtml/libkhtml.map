@@ -9,6 +9,11 @@
     DOM::tagPriority;
     DOM::*Impl::*;
     KJS::*;
+    Q*KJS::*;
+    typeinfo*KJS::*;
+    vtable*KJS::*;
+    KJSProxy*;
+    KJSCPUGuard*;
     khtml::*
   };
 };
