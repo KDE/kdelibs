@@ -21,9 +21,29 @@
 
 #include "ftp.h"
 
-#include <errno.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/socket.h>
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#endif
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
+
+#include <netinet/in.h>
+
 #include <assert.h>
+#include <ctype.h>
+#include <errno.h>
+#include <netdb.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+
+#if TIME_WITH_SYS_TIME
+#include <time.h>
+#endif
 
 #include <qdir.h>
 #include <kprotocolmanager.h>
@@ -33,23 +53,6 @@
 #include <kinstance.h>
 #include <kmimemagic.h>
 #include <ksock.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-#include <ctype.h>
-#include <netdb.h>
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-#if TIME_WITH_SYS_TIME
-#include <time.h>
-#endif
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
 
 #define FTP_LOGIN "anonymous"
 #define FTP_PASSWD "kde-user@kde.org"
@@ -98,6 +101,9 @@ Ftp::~Ftp()
 /* memccpy appeared first in BSD4.4 */
 void *mymemccpy(void *dest, const void *src, int c, size_t n)
 {
+#ifdef HAVE_MEMCCPY
+    return memccpy(dest, src, c, n);
+#else
     char *d = (char*)dest;
     const char *s = (const char*)src;
 
@@ -106,6 +112,7 @@ void *mymemccpy(void *dest, const void *src, int c, size_t n)
       return d;
 
   return NULL;
+#endif
 }
 
 /*
@@ -1683,4 +1690,3 @@ size_t Ftp::ftpWrite(void *buffer, long len)
 {
   return( ::write( sData, buffer, len ) );
 }
-
