@@ -4,7 +4,7 @@
 #
 # -Taj (Apr 1999)
 
-kde_MODULES = dcop kdecore kdeui kimgio kio kfile khtml kformula kspell kab kparts
+kde_MODULES = dcop kdecore kdeui kimgio kio kfile khtml kjs kformula kspell kab kparts
 
 dcop_FILES = *.h
 dcop_LIBS = -lqt
@@ -25,7 +25,11 @@ kspell_FILES = kspell.h
 kspell_LIBS = -lkdecore -lkdeui -lqt
 
 khtml_FILES = *.h
-khtml_LIBS = -ljscript -lkdecore -lkdeui -lkimgio -lqt
+khtml_LIBS = -lkdecore -lkdeui -lkimgio -lqt
+
+kjs_FILES = *.h
+kjs_PATH = khtml/kjs
+kjs_LIBS = -lkdecore -lkdeui -lkimgio -lqt
 
 kio_FILES = *.h
 kio_LIBS = -lkdecore -lkdeui -lqt
