@@ -790,7 +790,8 @@ HTMLTextInput::HTMLTextInput( QWidget *parent, const char *n, const char *v,
 	if ( ml > 0 )
 	    ((QLineEdit *)w)->setMaxLength( ml );
 
-	QSize size( s * 8, 25 );
+	QFontMetrics m = widget->fontMetrics();
+	QSize size( s * m.maxWidth() + 2, m.height() + 6);
 	w->resize( size );
 
 	descent = 5;
