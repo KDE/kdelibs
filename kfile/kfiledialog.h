@@ -233,7 +233,8 @@ protected:
     KFileInfoContents *fileList;
     
     QStrIList *visitedDirs;  // to fill the combo box
-   
+    static QString *lastDirectory;
+
     QPopupMenu *bookmarksMenu; 
     QCheckBox *hiddenToggle;
     KCombo *locationEdit;

@@ -48,7 +48,7 @@ enum SortItem { BY_NAME = 1000, BY_SIZE, BY_DATE, BY_OWNER, BY_GROUP };
 
 const int idStart = 1;
 
-static QString kfile_lastDirectory; // to set the start path
+QString *KFileBaseDialog::lastDirectory; // to set the start path
 
 KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
 			 QWidget *parent, const char *name, bool modal,
@@ -65,10 +65,10 @@ KFileBaseDialog::KFileBaseDialog(const char *dirName, const char *filter,
     bookmarksMenu= 0;
     acceptUrls = acceptURLs;
 
-    if (kfile_lastDirectory.isNull())
-	kfile_lastDirectory = QDir::currentDirPath();
+    if (!lastDirectory)
+	lastDirectory = new QString(QDir::currentDirPath());
 
-    dir = new KDir(kfile_lastDirectory);
+    dir = new KDir(lastDirectory->data());
     visitedDirs = new QStrIList();
     
     // we remember the selected name for init()
@@ -598,9 +598,9 @@ void KFileBaseDialog::pathChanged()
     // when kfm emits finished, the slot will restore the cursor
     QApplication::setOverrideCursor( waitCursor );
 
-    // kfile_lastDirectory is used to set the start path next time
+    // lastDirectory is used to set the start path next time
     // we select a file
-    kfile_lastDirectory = dir->url();
+    *lastDirectory = dir->url();
 
     const KFileInfoList *il = dir->entryInfoList(filter, 
 						 QDir::Name | QDir::IgnoreCase);
