@@ -44,6 +44,10 @@ int setenv(const char *name, const char *value, int overwrite) {
 # endif
 #endif
 
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
+#endif
+
 void usleep(int usec) {
         struct timeval _usleep_tv;
         _usleep_tv.tv_sec = usec/1000000;
