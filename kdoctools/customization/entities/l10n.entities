@@ -104,7 +104,7 @@
 
 <!ENTITY % British-English "IGNORE">
 <![%British-English;[
-<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES English Documentation V1.0//ENGB"
+<!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES British English Documentation V1.0//ENGB"
            "../en-GB/lang.entities">
 %kde.l10n.ents;
 <!ENTITY % kde.i-default "IGNORE">
