@@ -18,7 +18,7 @@
  **/
 
 #ifndef __kurl_h__
-#define __kurl_h__ "$Id$"
+#define __kurl_h__
 
 #include <qstring.h>
 #include <qvaluelist.h>
