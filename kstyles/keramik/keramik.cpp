@@ -1630,7 +1630,7 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				else if (onToolbar)
 				{
 					QToolBar* parent = (QToolBar*)widget->parent();
-					QRect pr = parent->rect();
+					//QRect pr = parent->rect();
 
 					//TODO: Subrect, px, etc.?
 					Keramik::GradientPainter::renderGradient( p, QRect(r.x(), 0, r.width(), r.height()), cg.button(), parent->orientation() == Qt::Horizontal );
