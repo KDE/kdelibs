@@ -901,16 +901,18 @@ void KHTMLView::print()
 	// if the width is too large to fit on the paper we just scale
 	// the whole thing.
 	int pageHeight = metrics.height();
+	int pageWidth = metrics.width();
 	if(root->width() > metrics.width()) {
-	    double scale = ((double) root->width())/((double) metrics.width());
-	    p->scale(1./scale, 1./scale);
-	    pageHeight = (int) (pageHeight*scale);
+	    double scale = ((double) metrics.width())/((double) root->width());
+	    p->scale(scale, scale);
+	    pageHeight = (int) (pageHeight/scale);
+	    pageWidth = (int) (pageWidth/scale);
 	}	    
 	int top = 0;
 	while(top < root->height()) {
 	    if(top > 0) printer->newPage();
-	    root->print(p, 0, top, metrics.width(), metrics.height(), 0, 0);
-	    p->translate(0,-metrics.height());
+	    root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
+	    p->translate(0,-pageHeight);
 	    top += pageHeight;
 	}
 
