@@ -16,15 +16,14 @@
 #include <sys/wait.h>
 
 #include <assert.h>
-//////// FIXME: Need to replace it with QString/QStringList
 #include <list.h>
-#include <string>
-//////////////////////////////////////// (dmuell) 
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+
+#include <string>
 
 #ifdef DO_SSL
 #define MD5_CTX SSLeay_MD5_CTX
@@ -45,12 +44,12 @@
 
 #include "http.h"
 
-#include <kurl.h>
-#include <kprotocolmanager.h>
 #include <kio_rename_dlg.h>
 #include <kio_skip_dlg.h>
 #include <klocale.h>
+#include <kprotocolmanager.h>
 #include <ksock.h>
+#include <kurl.h>
 
 bool open_CriticalDlg( const char *_titel, const char *_message, const char *_but1, const char *_but2 = 0L );
 bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
@@ -58,10 +57,8 @@ bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
 extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
   char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str);
-  void sigsegv_handler(int);
-  void sigchld_handler(int);
-  void sigalrm_handler(int);
   char *trimLead(char *);
+  void sigalrm_handler(int);
 #ifdef DO_SSL
   int verify_callback();
 #endif
@@ -69,8 +66,8 @@ extern "C" {
 
 int main( int, char ** )
 {
-  signal(SIGCHLD, sigchld_handler);
-  signal(SIGSEGV, sigsegv_handler);
+  signal(SIGCHLD, IOProtocol::sigchld_handler);
+  signal(SIGSEGV, IOProtocol::sigsegv_handler);
 
   Connection parent( 0, 1 );
 
@@ -85,30 +82,6 @@ char * trimLead (char *orig_string) {
   while ( (*(orig_string+i) == ' ') || (*(orig_string+i) == ' ') )
     i++;
   return orig_string+i;
-}
-
-void sigsegv_handler(int )
-{
-  // Debug and printf should be avoided because they might
-  // call malloc.. and get in a nice recursive malloc loop
-  write(2, "kio_http : ###############SEG FAULT#############\n", 51);
-  exit(1);
-}
-
-void sigchld_handler(int )
-{
-  int pid, status;
-
-  while(true) {
-    pid = waitpid(-1, &status, WNOHANG);
-    if ( pid <= 0 ) {
-      // Reinstall signal handler, since Linux resets to default after
-      // the signal occured ( BSD handles it different, but it should do
-      // no harm ).
-      signal(SIGCHLD, sigchld_handler);
-      return;
-    }
-  }
 }
 
 /*
