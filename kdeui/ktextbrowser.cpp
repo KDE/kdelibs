@@ -18,11 +18,13 @@
  */
 
 
+#include <qpopupmenu.h>
 #include <kapplication.h>
 #include <kglobalsettings.h>
 #include <ktextbrowser.h>
 #include <kcursor.h>
 #include <kurl.h>
+#include <kiconloader.h>
 
 KTextBrowser::KTextBrowser( QWidget *parent, const char *name,
 			    bool notifyClick )
@@ -114,6 +116,27 @@ void KTextBrowser::contentsWheelEvent( QWheelEvent *e )
         QTextBrowser::contentsWheelEvent( e );
     else // thanks, we don't want to zoom, so skip QTextEdit's impl.
         QScrollView::contentsWheelEvent( e );
+}
+
+QPopupMenu *KTextBrowser::createPopupMenu( const QPoint & pos )
+{
+    enum { IdUndo, IdRedo, IdSep1, IdCut, IdCopy, IdPaste, IdClear, IdSep2, IdSelectAll };
+
+    QPopupMenu *popup = QTextBrowser::createPopupMenu( pos );
+
+    if ( isReadOnly() )
+      popup->changeItem( popup->idAt(0), SmallIconSet("editcopy"), popup->text( popup->idAt(0) ) );
+    else {
+      int id = popup->idAt(0);
+      popup->changeItem( id - IdUndo, SmallIconSet("undo"), popup->text( id - IdUndo) );
+      popup->changeItem( id - IdRedo, SmallIconSet("redo"), popup->text( id - IdRedo) );
+      popup->changeItem( id - IdCut, SmallIconSet("editcut"), popup->text( id - IdCut) );
+      popup->changeItem( id - IdCopy, SmallIconSet("editcopy"), popup->text( id - IdCopy) );
+      popup->changeItem( id - IdPaste, SmallIconSet("editpaste"), popup->text( id - IdPaste) );
+      popup->changeItem( id - IdClear, SmallIconSet("editclear"), popup->text( id - IdClear) );
+    }
+
+    return popup;
 }
 
 void KTextBrowser::virtual_hook( int, void* )

@@ -823,13 +823,17 @@ QPopupMenu *KLineEdit::createPopupMenu()
 
     QPopupMenu *popup = QLineEdit::createPopupMenu();
 
-    int id = popup->idAt(0);
-    popup->changeItem( id - IdUndo, SmallIcon("undo"), popup->text( id - IdUndo) );
-    popup->changeItem( id - IdRedo, SmallIcon("redo"), popup->text( id - IdRedo) );
-    popup->changeItem( id - IdCut, SmallIcon("editcut"), popup->text( id - IdCut) );
-    popup->changeItem( id - IdCopy, SmallIcon("editcopy"), popup->text( id - IdCopy) );
-    popup->changeItem( id - IdPaste, SmallIcon("editpaste"), popup->text( id - IdPaste) );
-    popup->changeItem( id - IdClear, SmallIcon("editclear"), popup->text( id - IdClear) );
+    if ( isReadOnly() )
+      popup->changeItem( popup->idAt(0), SmallIconSet("editcopy"), popup->text( popup->idAt(0) ) );
+    else {
+      int id = popup->idAt(0);
+      popup->changeItem( id - IdUndo, SmallIcon("undo"), popup->text( id - IdUndo) );
+      popup->changeItem( id - IdRedo, SmallIcon("redo"), popup->text( id - IdRedo) );
+      popup->changeItem( id - IdCut, SmallIcon("editcut"), popup->text( id - IdCut) );
+      popup->changeItem( id - IdCopy, SmallIcon("editcopy"), popup->text( id - IdCopy) );
+      popup->changeItem( id - IdPaste, SmallIcon("editpaste"), popup->text( id - IdPaste) );
+      popup->changeItem( id - IdClear, SmallIcon("editclear"), popup->text( id - IdClear) );
+    }
 
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion

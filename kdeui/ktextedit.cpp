@@ -155,13 +155,17 @@ QPopupMenu *KTextEdit::createPopupMenu( const QPoint &pos )
 
     QPopupMenu *menu = QTextEdit::createPopupMenu( pos );
 
-    int id = menu->idAt(0);
-    menu->changeItem( id - IdUndo, SmallIcon("undo"), menu->text( id - IdUndo) );
-    menu->changeItem( id - IdRedo, SmallIcon("redo"), menu->text( id - IdRedo) );
-    menu->changeItem( id - IdCut, SmallIcon("editcut"), menu->text( id - IdCut) );
-    menu->changeItem( id - IdCopy, SmallIcon("editcopy"), menu->text( id - IdCopy) );
-    menu->changeItem( id - IdPaste, SmallIcon("editpaste"), menu->text( id - IdPaste) );
-    menu->changeItem( id - IdClear, SmallIcon("editclear"), menu->text( id - IdClear) );
+    if ( isReadOnly() )
+      menu->changeItem( menu->idAt(0), SmallIconSet("editcopy"), menu->text( menu->idAt(0) ) );
+    else {
+      int id = menu->idAt(0);
+      menu->changeItem( id - IdUndo, SmallIcon("undo"), menu->text( id - IdUndo) );
+      menu->changeItem( id - IdRedo, SmallIcon("redo"), menu->text( id - IdRedo) );
+      menu->changeItem( id - IdCut, SmallIcon("editcut"), menu->text( id - IdCut) );
+      menu->changeItem( id - IdCopy, SmallIcon("editcopy"), menu->text( id - IdCopy) );
+      menu->changeItem( id - IdPaste, SmallIcon("editpaste"), menu->text( id - IdPaste) );
+      menu->changeItem( id - IdClear, SmallIcon("editclear"), menu->text( id - IdClear) );
+    }
 
     if ( checkSpellingEnabled() && !isReadOnly() ) {
 

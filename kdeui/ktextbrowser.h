@@ -93,6 +93,13 @@ class KTextBrowser : public QTextBrowser
      */
     virtual void contentsWheelEvent( QWheelEvent *e );
     
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
+    * See QLineEdit::createPopupMenu().
+    */
+    virtual QPopupMenu *createPopupMenu( const QPoint &pos );
+  
   signals:
     /**
      * Emitted when a mail link has been activated and the widget has
