@@ -35,6 +35,7 @@
 #define MAXCACHEABLE 40*1024
 // default cache size
 #define DEFCACHESIZE 4096*1024
+#define MAX_JOB_COUNT 50
 
 #include <qasyncio.h>
 #include <qasyncimageio.h>
@@ -1083,6 +1084,7 @@ Loader::Loader() : QObject()
 {
     m_requestsPending.setAutoDelete( true );
     m_requestsLoading.setAutoDelete( true );
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT( servePendingRequests() ) );
 }
 
 void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
@@ -1091,50 +1093,51 @@ void Loader::load(DocLoader* dl, CachedObject *object, bool incremental)
     m_requestsPending.append(req);
 
     emit requestStarted( req->m_docLoader, req->object );
-
-    QTimer::singleShot( 0, this, SLOT( servePendingRequests() ) );
+    
+    m_timer.start(0, true);
 }
 
 void Loader::servePendingRequests()
 {
-  if ( m_requestsPending.count() == 0 )
-      return;
-
-  // get the first pending request
-  Request *req = m_requestsPending.take(0);
+    while ( (m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT) )
+    {
+        // get the first pending request
+        Request *req = m_requestsPending.take(0);
 
 #ifdef CACHE_DEBUG
   kdDebug( 6060 ) << "starting Loader url=" << req->object->url().string() << endl;
 #endif
 
-  KURL u(req->object->url().string());
-  KIO::TransferJob* job = KIO::get( u, false, false /*no GUI*/);
+        KURL u(req->object->url().string());
+        KIO::TransferJob* job = KIO::get( u, false, false /*no GUI*/);
 
-  job->addMetaData("cache", KIO::getCacheControlString(req->object->cachePolicy()));
-  if (!req->object->accept().isEmpty())
-      job->addMetaData("accept", req->object->accept());
-  if ( req->m_docLoader )  {
-      KURL r = req->m_docLoader->doc()->URL();
-      job->addMetaData("referrer", r.url());
-      QString domain = r.host();
-      if (req->m_docLoader->doc()->isHTMLDocument())
-         domain = static_cast<HTMLDocumentImpl*>(req->m_docLoader->doc())->domain().string();
-      if (crossDomain(u.host(), domain))
-         job->addMetaData("cross-domain", "true");
+        job->addMetaData("cache", KIO::getCacheControlString(req->object->cachePolicy()));
+        if (!req->object->accept().isEmpty())
+            job->addMetaData("accept", req->object->accept());
+        if ( req->m_docLoader )
+        {
+            KURL r = req->m_docLoader->doc()->URL();
+            job->addMetaData("referrer", r.url());
+            QString domain = r.host();
+            if (req->m_docLoader->doc()->isHTMLDocument())
+                domain = static_cast<HTMLDocumentImpl*>(req->m_docLoader->doc())->domain().string();
+            if (crossDomain(u.host(), domain))
+                job->addMetaData("cross-domain", "true");
 
-      KHTMLPart *part = req->m_docLoader->part();
-      if (part && part->widget() && part->widget()->topLevelWidget())
-        job->setWindow (part->widget()->topLevelWidget());
-  }
+            KHTMLPart *part = req->m_docLoader->part();
+            if (part && part->widget() && part->widget()->topLevelWidget())
+                job->setWindow (part->widget()->topLevelWidget());
+        }
 
-  connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
-  connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
-           SLOT( slotData( KIO::Job*, const QByteArray &)));
+        connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotFinished( KIO::Job * ) ) );
+        connect( job, SIGNAL( data( KIO::Job*, const QByteArray &)),
+                 SLOT( slotData( KIO::Job*, const QByteArray &)));
 
-  if ( req->object->schedule() )
-      KIO::Scheduler::scheduleJob( job );
+        if ( req->object->schedule() )
+            KIO::Scheduler::scheduleJob( job );
 
-  m_requestsLoading.insert(job, req);
+        m_requestsLoading.insert(job, req);
+    }
 }
 
 void Loader::slotFinished( KIO::Job* job )
@@ -1171,7 +1174,9 @@ void Loader::slotFinished( KIO::Job* job )
 #endif
 
   delete r;
-  QTimer::singleShot( 0, this, SLOT( servePendingRequests() ) );
+
+  if ( (m_requestsPending.count() != 0) && (m_requestsLoading.count() < MAX_JOB_COUNT / 2) )
+      m_timer.start(0, true);
 }
 
 void Loader::slotData( KIO::Job*job, const QByteArray &data )

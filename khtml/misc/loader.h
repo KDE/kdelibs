@@ -46,6 +46,7 @@
 #include <qbuffer.h>
 #include <qstringlist.h>
 #include <qtextcodec.h>
+#include <qtimer.h>
 
 #include <kurl.h>
 #include <kio/global.h>
@@ -413,6 +414,7 @@ namespace khtml
 #ifdef HAVE_LIBJPEG
         KJPEGFormatType m_jpegloader;
 #endif
+        QTimer m_timer;
     };
 
         /**
