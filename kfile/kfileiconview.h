@@ -140,6 +140,9 @@ protected:
      * Reimplemented to remove an eventual tooltip
      */
     virtual void hideEvent( QHideEvent * );
+    
+    // ### workaround for Qt3 bug (see #35080)
+    virtual void showEvent( QShowEvent * );
 
 private slots:
     void selected( QIconViewItem *item );

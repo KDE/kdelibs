@@ -613,4 +613,12 @@ void KFileIconView::setSorting( QDir::SortSpec spec )
     sort( !isReversed() );
 }
 
+
+// ### workaround for Qt3 Bug
+void KFileIconView::showEvent( QShowEvent *e )
+{
+    KIconView::showEvent( e );
+    sort( !isReversed() );
+}
+
 #include "kfileiconview.moc"

@@ -1539,7 +1539,7 @@ QString KFileDialog::getSaveFileName(const QString& dir, const QString& filter,
     bool specialDir = dir.at(0) == ':';
     KFileDialog dlg( specialDir ? dir : QString::null, filter, parent, "filedialog", true);
     if ( !specialDir )
-    dlg.setSelection( dir ); // may also be a filename
+        dlg.setSelection( dir ); // may also be a filename
 
     dlg.setOperationMode( Saving );
     dlg.setCaption(caption.isNull() ? i18n("Save As") : caption);
