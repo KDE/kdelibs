@@ -1815,6 +1815,8 @@ void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
                 }
             }
         }
+
+        updateRendering();
     }
 }
 
