@@ -90,8 +90,6 @@ class KMdiDockContainer: public QWidget, public KDockContainer
     bool m_vertical;
     bool m_block;
     bool m_tabSwitching;
-    int m_width; ///< Last known width, for session restore
-    int m_height; ///< Last known height, for session restore
 
   signals:
         void activated(KMdiDockContainer*);
