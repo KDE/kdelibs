@@ -752,10 +752,10 @@ AddressBook::getIndex(const KabKey& key, int& index)
   index=0;
   for(pos=entries->begin(); pos!=entries->end(); ++pos)
     {
-	kdDebug() << (*pos).second.getKey().data() << " <--> " <<
-	    key.getKey().data() << endl;
-	if((*pos).second==key) break;
-	++index;
+      // kdDebug() << (*pos).second.getKey().data() << " <--> " <<
+      // key.getKey().data() << endl;
+      if((*pos).second==key) break;
+      ++index;
     }
   kdDebug(pos==entries->end(), KAB_KDEBUG_AREA) <<
       "AddressBook::getIndex: no such key." << endl;
