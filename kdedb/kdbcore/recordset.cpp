@@ -83,6 +83,10 @@ void
 Recordset::requery()
 {
     m_handle = connector->query(m_sql);
+
+    if (!m_handle)
+        return;
+    
     m_fields.clear();
 
     // load fields

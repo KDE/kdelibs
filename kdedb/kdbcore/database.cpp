@@ -220,7 +220,11 @@ Database::removeQuery(const QString &name)
 RecordsetPtr
 Database::openRecordset(const QString &SQL)
 {
-    return new Recordset(connector, SQL, this);
+    RecordsetPtr p = new Recordset(connector, SQL, this);
+    if (!error())
+        return p;
+    else
+        return 0L;
 }
 
 
