@@ -39,8 +39,6 @@
 #include <netaccess.h>
 #include <qfile.h>
 
-#include <iostream.h>
-
 using namespace DOM;
 using namespace khtml;
 
@@ -821,6 +819,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 //		i->setImageUrl(_src, static_cast<HTMLDocumentImpl *>(document)->URL(),
 //	                   static_cast<HTMLDocumentImpl *>(document)->docLoader());
 		m_render = i;
+		setHasEvents();
 		break;
 	    }
 	    case RESET:
@@ -866,7 +865,6 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 
 QCString HTMLInputElementImpl::encoding()
 {
-    cerr << "HTMLInputElementImpl::encoding()\n";
     QCString encoding = "";
     if (_name.isEmpty()) return encoding;
     switch (_type) {
@@ -948,7 +946,6 @@ QCString HTMLInputElementImpl::encoding()
 	default:
 	break;
     }
-    cerr << "HTMLInputElementImpl::encoding(): returning \"" << encoding << "\"\n";
     return encoding;
 }
 
@@ -960,7 +957,6 @@ void HTMLInputElementImpl::saveDefaults()
 
 void HTMLInputElementImpl::reset()
 {
-    cerr << "HTMLInputElementImpl::reset()\n";
     setAttribute(ATTR_VALUE,_defaultValue);
     setAttribute(ATTR_CHECKED,_defaultChecked);
     if ((_type == SUBMIT || _type == RESET || _type == BUTTON || _type == IMAGE) && m_render)
@@ -996,13 +992,14 @@ bool HTMLInputElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
                              NodeImpl *&innerNode, long &offset )
 {
     bool wasPressed = pressed();
-    HTMLGenericFormElementImpl::mouseEvent(_x,_y,button,type,_tx,_ty,url,innerNode,offset);
-    if (type == MouseClick || (type == MouseRelease && wasPressed)) {
+    bool ret = HTMLGenericFormElementImpl::mouseEvent(_x,_y,button,type,_tx,_ty,url,innerNode,offset);
+    if (_type == IMAGE && (type == MouseClick || ((type == MouseRelease) && wasPressed))) {
 	// ### if the above mouse event called a javascript which deleted us, then
 	// we will probably crash here
 	_form->submit();
+	return true;
     }
-    return true;
+    return ret;
 }
 
 // -------------------------------------------------------------------------
