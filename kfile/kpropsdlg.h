@@ -414,8 +414,8 @@ protected:
     QString swallowExecStr;
     QString swallowTitleStr;
     QString termStr;
-    QString termOptionsStr;
-    QString suidStr;
+    bool termBool;
+    bool suidBool;
     QString suidUserStr;
 };
 

@@ -434,9 +434,9 @@ void KOpenWithDlg::slotOK()
 	mimeList.append(qServiceType);
       desktop.writeEntry(QString::fromLatin1("MimeType"), mimeList, ';');
       if (terminal->isChecked())
-	desktop.writeEntry(QString::fromLatin1("Terminal"), 1);
+	desktop.writeEntry(QString::fromLatin1("Terminal"), true);
       else
-	desktop.writeEntry(QString::fromLatin1("Terminal"), 0);
+	desktop.writeEntry(QString::fromLatin1("Terminal"), false);
     }
 
 

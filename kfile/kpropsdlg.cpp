@@ -600,11 +600,8 @@ void FilePropsPage::slotRenameFinished( KIO::Job * job )
     qApp->exit_loop();
     if ( job->error() )
     {
-      /*KMessageBox::sorry(this,
-        i18n("Could not rename file or directory to\n%1\n")
-        .arg(properties->kurl().url()));*/
-      job->showErrorDialog(this);
-      return;
+	job->showErrorDialog(this);
+	return;
     }
   }
 
@@ -641,7 +638,7 @@ void FilePropsPage::slotRenameFinished( KIO::Job * job )
     kdDebug(1202) << "**" << path << "**" << endl;
     QFile f( path );
     if ( !f.open( IO_ReadWrite ) ) {
-      KMessageBox::sorry( 0, i18n("Could not save properties\nYou most likely do not have access to write to %1.").arg(path));
+	KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
       return;
     }
     f.close();
@@ -961,7 +958,7 @@ void FilePermissionsPropsPage::applyChanges()
     }
     QString path = properties->kurl().path();
     if ( chown( QFile::encodeName(path), pw->pw_uid, g->gr_gid ) != 0 )
-      KMessageBox::sorry( 0, i18n( "Could not change owner/group\nPerhaps access denied." ));
+      KMessageBox::sorry( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>.You have insufficient access to the file to perform the change.</qt>" ).arg(path));
   }
 
   kdDebug(1203) << "old permissions : " << permissions << endl;
@@ -1104,9 +1101,9 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
   execStr = config.readEntry( QString::fromLatin1("Exec") );
   swallowExecStr = config.readEntry( QString::fromLatin1("SwallowExec") );
   swallowTitleStr = config.readEntry( QString::fromLatin1("SwallowTitle") );
-  termStr = config.readEntry( QString::fromLatin1("Terminal") );
+  termBool = config.readBoolEntry( QString::fromLatin1("Terminal") );
   termOptionsStr = config.readEntry( QString::fromLatin1("TerminalOptions") );
-  suidStr = config.readEntry( QString::fromLatin1("X-KDE-SubstituteUID") );
+  suidBool = config.readBoolEntry( QString::fromLatin1("X-KDE-SubstituteUID") );
   suidUserStr = config.readEntry( QString::fromLatin1("X-KDE-Username") );
 
   if ( !swallowExecStr.isNull() )
@@ -1120,10 +1117,10 @@ ExecPropsPage::ExecPropsPage( PropertiesDialog *_props )
     terminalEdit->setText( termOptionsStr );
 
   if ( !termStr.isNull() )
-    terminalCheck->setChecked( termStr == QString::fromLatin1("1") );
+    terminalCheck->setChecked( termBool );
   enableCheckedEdit();
 
-  suidCheck->setChecked( suidStr == QString::fromLatin1("1") );
+  suidCheck->setChecked( suidBool );
   suidEdit->setText( suidUserStr );
   enableSuidEdit();
 
@@ -1181,7 +1178,7 @@ void ExecPropsPage::applyChanges()
   QFile f( path );
 
   if ( !f.open( IO_ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("Could not save properties\nYou most likely do not have access to write to %1.").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
@@ -1192,9 +1189,9 @@ void ExecPropsPage::applyChanges()
   config.writeEntry( QString::fromLatin1("Exec"), execEdit->text() );
   config.writeEntry( QString::fromLatin1("SwallowExec"), swallowExecEdit->text() );
   config.writeEntry( QString::fromLatin1("SwallowTitle"), swallowTitleEdit->text() );
-  config.writeEntry( QString::fromLatin1("Terminal"), QString::fromLatin1(terminalCheck->isChecked() ? "1" : "0") );
+  config.writeEntry( QString::fromLatin1("Terminal"), terrminalCheck->isChecked() );
   config.writeEntry( QString::fromLatin1("TerminalOptions"), terminalEdit->text() );
-  config.writeEntry( QString::fromLatin1("X-KDE-SubstituteUID"), QString::fromLatin1( suidCheck->isChecked() ? "1" : "0") );
+  config.writeEntry( QString::fromLatin1("X-KDE-SubstituteUID"), QString::fromLatin1( suidCheck->isChecked() );
   config.writeEntry( QString::fromLatin1("X-KDE-Username"), suidEdit->text() );
 }
 
@@ -1262,7 +1259,7 @@ void URLPropsPage::applyChanges()
 
   QFile f( path );
   if ( !f.open( IO_ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("Could not save properties\nYou most likely do not have access to write to %1.").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
@@ -1391,7 +1388,7 @@ void ApplicationPropsPage::applyChanges()
   QFile f( path );
 
   if ( !f.open( IO_ReadWrite ) ) {
-    KMessageBox::sorry( 0, i18n("Could not save properties\nYou most likely do not have access to write to %1.").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
@@ -1533,7 +1530,7 @@ void BindingPropsPage::applyChanges()
 
   if ( !f.open( IO_ReadWrite ) )
   {
-    KMessageBox::sorry( 0, i18n("Could not save properties\nYou most likely do not have access to write to %1.").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
@@ -1736,7 +1733,7 @@ void DevicePropsPage::applyChanges()
   QFile f( path );
   if ( !f.open( IO_ReadWrite ) )
   {
-    KMessageBox::sorry( 0, i18n("Could not save properties\nYou most likely do not have access to write to %1.").arg(path));
+    KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have sufficient access to write to <b>%1</b>.</qt>").arg(path));
     return;
   }
   f.close();
