@@ -2299,6 +2299,7 @@ void LineIterator::nextBlock()
 
   // If this is a caret line box representing an inline flow box, then
   // switch to outside of block.
+#if 0
   /*
   if (!cb_outside) {
 #if DEBUG_CARETMODE > 1
@@ -2313,7 +2314,9 @@ void LineIterator::nextBlock()
 #endif
 
   // Outside caret box line -> advance to next render object
-  } else /*if (cb_outside_end)*/ {
+  } else if (cb_outside_end)*/ 
+#endif
+  {
     RenderObject *r = cbl->enclosingObject();
   /*  if (advpol == LeafsOnly) {
       RenderObject *n = r->lastChild();
@@ -2514,7 +2517,7 @@ void LineIterator::prevBlock()
 #endif
 
   // Outside caret box line -> advance to next render object
-  } else /*if (cb_outside_end)*/ {
+  } else if (cb_outside_end)*/ {
     RenderObject *r = cbl->enclosingObject();
     if (r->isAnonymous() && !cb_outside)
       cb_outside = true, cb_outside_end = false;
@@ -2999,8 +3002,9 @@ kdDebug(6200) << "++_it" << endl;
 #if DEBUG_CARETMODE > 3
 kdDebug(6200) << "box " << box << " b " << b << " isText " << box->isInlineTextBox() << endl;
 #endif
-	  RenderObject *_r = box->object();
+
 #if DEBUG_CARETMODE > 3
+	  RenderObject *_r = box->object();
 kdDebug(6200) << "_r " << _r << ":" << _r->element()->nodeName().string() << endl;
 #endif
 	  _offset = box->minOffset();
@@ -3144,8 +3148,8 @@ kdDebug(6200) << "box " << box << " b " << box->inlineBox() << " isText " << box
 #if DEBUG_CARETMODE > 0
     kdDebug(6200) << "(*ebit)->obj " << (*ebit)->object()->renderName() << "[" << (*ebit)->object() << "]" << " minOffset: " << (*ebit)->minOffset() << " maxOffset: " << (*ebit)->maxOffset() << endl;
 #endif
-    RenderObject *_r = (*ebit)->object();
 #if DEBUG_CARETMODE > 3
+    RenderObject *_r = (*ebit)->object();
 kdDebug(6200) << "_r " << _r << ":" << _r->element()->nodeName().string() << endl;
 #endif
     _offset = (*ebit)->maxOffset();
