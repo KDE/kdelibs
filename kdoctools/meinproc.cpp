@@ -27,6 +27,7 @@
 #include <kprocess.h>
 
 extern int xmlLoadExtDtdDefaultValue;
+extern QString *SRCDIR;
 
 class MyPair {
 public:
