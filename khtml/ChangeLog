@@ -1,5 +1,8 @@
 2003-10-20  Dirk Mueller  <dmuell@gmx.net>
 
+	* ecma/kjs_dom.cpp (getValueProperty): add bindings to clientWidth/Height,
+	scrollWidth/height,offsetTop/left,offsetWidth/Height,offsetParent.
+
 	* split up borderSpacing into a horizontal and vertical border spacing so that
 	tables can have assymmetric spacing.
 

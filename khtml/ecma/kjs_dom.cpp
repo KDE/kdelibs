@@ -278,70 +278,30 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
 
     switch (token) {
     case OffsetLeft:
-      if ( rend )
-        return Number(rend->xPos()); // TODO offsetLeft()
-      else
-        return Undefined();
+      return rend ? static_cast<Value>( Number( rend->offsetLeft() ) ) : Undefined();
     case OffsetTop:
-      if ( rend )
-        return Number(rend->yPos()); // TODO offsetTop()
-      else
-        return Undefined();
+      return rend ? static_cast<Value>(  Number( rend->offsetTop() ) ) : Undefined();
     case OffsetWidth:
-      if ( rend )
-        return Number(rend->width());
-      else
-        return Undefined();
+      return rend ? static_cast<Value>(  Number( rend->offsetWidth() ) ) : Undefined();
     case OffsetHeight:
-      if ( rend )
-        return Number(rend->height());
-      else
-        return Undefined();
-    case OffsetParent: {
-      khtml::RenderObject* par = rend ? rend->parent() : 0; // TODO offsetParent
-      if ( par )
-        return getDOMNode(exec, par->element() );
-      else
-        return Undefined();
+      return rend ? static_cast<Value>(  Number( rend->offsetHeight() ) ) : Undefined();
+    case OffsetParent:
+    {
+      khtml::RenderObject* par = rend ? rend->offsetParent() : 0;
+      return getDOMNode( exec, par ? par->element() : 0 );
     }
     case ClientWidth:
-      if (!rend)
-        return Undefined();
-      // "Width of the object including padding, but not including margin, border, or scroll bar."
-      return Number(rend->clientWidth() );
+      return rend ? static_cast<Value>( Number( rend->clientWidth() ) ) : Undefined();
     case ClientHeight:
-      if (!rend)
-        return Undefined();
-      // "Height of the object including padding, but not including margin, border, or scroll bar."
-      return Number(rend->clientHeight() );
+      return rend ? static_cast<Value>( Number( rend->clientHeight() ) ) : Undefined();
     case ScrollWidth:
-        return rend ? static_cast<Value>(Number(rend->scrollWidth()) ) : Value(Undefined());
+      return rend ? static_cast<Value>( Number(rend->scrollWidth()) ) : Undefined();
     case ScrollHeight:
-        return rend ? static_cast<Value>(Number(rend->scrollHeight()) ) : Value(Undefined());
-    case ScrollLeft: {
-      // #### unify for canvas and layers.
-      if (rend && rend->isCanvas()) {
-	int x, y;
-	if ( rend && v && rend->absolutePosition( x, y ) )
-	  return Number(-x + v->contentsX());
-	else
-	  return Undefined();
-      } else {
-	return Number(rend && rend->layer() ? rend->layer()->scrollXOffset() : 0);
-     }
-    }
-    case ScrollTop: {
-      // #### unify for canvas and layers.
-      if (rend && rend->isCanvas()) {
-	int x, y;
-	if ( rend && v && rend->absolutePosition( x, y ) )
-	  return Number(-y + v->contentsY());
-	else
-	  return Undefined();
-      } else {
-	return Number(rend && rend->layer() ? rend->layer()->scrollYOffset() : 0);
-      }
-    }
+      return rend ? static_cast<Value>( Number(rend->scrollHeight()) ) : Undefined();
+    case ScrollLeft:
+      return Number( rend && rend->layer() ? rend->layer()->scrollXOffset() : 0 );
+    case ScrollTop:
+      return Number( rend && rend->layer() ? rend->layer()->scrollYOffset() : 0 );
     }
   }
   case SourceIndex: {
