@@ -258,7 +258,7 @@ bool KRun::run( const QString& _cmd )
   return true;
 }
 
-bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_multiple )
+bool KRun::runOldApplication( const QString& app , QStringList& _urls, bool _allow_multiple )
 {
   char **argv = 0L;
 
@@ -268,12 +268,13 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
   if ( _allow_multiple )
   {
     argv = new char*[ _urls.count() + 3 ];
-    argv[ 0 ] = (char*)kfmexec.data();
+    argv[ 0 ] = (char *)kfmexec.ascii();
 
     int i = 1;
+    argv[ i++ ] = (char *)app.ascii();
     QStringList::Iterator it = _urls.begin();
     for( ; it != _urls.end(); ++it )
-      argv[ i++ ] = (char*)(*it).ascii();
+      argv[ i++ ] = (char *)(*it).ascii();
     argv[ i ] = 0;
 	
     QApplication::flushX();
@@ -290,9 +291,10 @@ bool KRun::runOldApplication( const QString& , QStringList& _urls, bool _allow_m
     for( ; it != _urls.end(); ++it )
     {
       argv = new char*[ 3 ];
-      argv[ 0 ] = (char*)kfmexec.data();
-      argv[ 1 ] = (char*)(*it).ascii();
-      argv[ 2 ] = 0;
+      argv[ 0 ] = (char *)kfmexec.data();
+      argv[ 1 ] = (char *)app.ascii();
+      argv[ 2 ] = (char *)(*it).ascii();
+      argv[ 3 ] = 0;
 
       QApplication::flushX();
       int pid;
