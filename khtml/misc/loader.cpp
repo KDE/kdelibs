@@ -565,6 +565,9 @@ void CachedImage::movieUpdated( const QRect& r )
 
 void CachedImage::movieStatus(int status)
 {
+#ifdef CACHE_DEBUG
+    qDebug("movieStatus(%d)", status);
+#endif
     if((status == QMovie::EndOfFrame) || (status == QMovie::EndOfMovie))
     {
 #ifdef CACHE_DEBUG
@@ -592,7 +595,7 @@ void CachedImage::clear()
 void CachedImage::data ( QBuffer &_buffer, bool eof )
 {
 #ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "in CachedImage::data(), buffersize " << _buffer.buffer().size() << endl;
+    kdDebug( 6060 ) << "in CachedImage::data(buffersize " << _buffer.buffer().size() <<", eof=" << eof << endl;
 #endif
     if ( !typeChecked )
     {
@@ -624,6 +627,9 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
         // picture and display it then all at once.
         if(typeChecked && !formatType)
         {
+#ifdef CACHE_DEBUG
+            kdDebug(6060) << "CachedImage::data(): reloading as pixmap:" << endl;
+#endif
             p = new QPixmap();
             p->loadFromData( _buffer.buffer() );
             // set size of image.
@@ -633,8 +639,6 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
                 do_notify(*p, p->rect());
             }
         }
-        else
-            m->restart();
 
         computeStatus();
     }
