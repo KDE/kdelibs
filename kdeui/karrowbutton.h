@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001 Frerich Raabe <raabe@kde.org>
+   Copyright (C) 2001, 2002 Frerich Raabe <raabe@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -69,16 +69,6 @@ class KArrowButton : public QPushButton
 		 * Reimplemented from @ref QPushButton.
 		 */
 		virtual void drawButton(QPainter *);
-
-		/**
-		 * @Internal
-		 */
-		void setArrow(Qt::ArrowType a);
-
-		/**
-		 * @Internal
-		 */
-		Qt::ArrowType arrow() const;
 
 	private:
 		class Private;

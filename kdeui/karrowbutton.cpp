@@ -24,8 +24,6 @@
 class KArrowButton::Private
 {
 	public:
-		Private() {}
-
 		Qt::ArrowType arrow;
 };
 
@@ -34,7 +32,7 @@ KArrowButton::KArrowButton(QWidget *parent, Qt::ArrowType arrow,
 	: QPushButton(parent, name)
 {
 	d = new Private();
-	setArrowType(arrow);
+	d->arrow = arrow;
 }
 
 KArrowButton::~KArrowButton()
@@ -49,8 +47,8 @@ QSize KArrowButton::sizeHint() const
 
 void KArrowButton::setArrowType(Qt::ArrowType a)
 {
-	if (arrow() != a) {
-		setArrow(a);
+	if (d->arrow != a) {
+		d->arrow = a;
 		repaint();
 	}
 }
@@ -76,13 +74,13 @@ void KArrowButton::drawButton(QPainter *p)
 		return; // don't draw arrows if we are too small
 
 	unsigned int x = 0, y = 0;
-	if (arrow() == DownArrow) {
+	if (d->arrow == DownArrow) {
 		x = (width() - arrowSize) / 2;
 		y = height() - (arrowSize + margin);
-	} else if (arrow() == UpArrow) {
+	} else if (d->arrow == UpArrow) {
 		x = (width() - arrowSize) / 2;
 		y = margin;
-	} else if (arrow() == RightArrow) {
+	} else if (d->arrow == RightArrow) {
 		x = width() - (arrowSize + margin);
 		y = (height() - arrowSize) / 2;
 	} else { // arrowType == LeftArrow
@@ -96,11 +94,11 @@ void KArrowButton::drawButton(QPainter *p)
 	}
 
 #if QT_VERSION < 300
-	style().drawArrow(p, arrow(), isDown(), x, y, arrowSize, arrowSize,
+	style().drawArrow(p, d->arrow, isDown(), x, y, arrowSize, arrowSize,
 			colorGroup(), true);
 #else
 	QStyle::PrimitiveElement e = QStyle::PE_ArrowLeft;
-	switch( arrow() )
+	switch (d->arrow)
 	{
 		case Qt::LeftArrow: e = QStyle::PE_ArrowLeft; break;
 		case Qt::RightArrow: e = QStyle::PE_ArrowRight; break;
@@ -113,16 +111,6 @@ void KArrowButton::drawButton(QPainter *p)
 	style().drawPrimitive( e, p, QRect( QPoint( x, y ), QSize( arrowSize, arrowSize ) ),
 			       colorGroup(), flags );
 #endif
-}
-
-void KArrowButton::setArrow(Qt::ArrowType a)
-{
-	d->arrow = a;
-}
-
-Qt::ArrowType KArrowButton::arrow() const
-{
-	return d->arrow;
 }
 
 #include "karrowbutton.moc"
