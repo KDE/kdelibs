@@ -182,19 +182,19 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
   switch( errorCode )
     {
     case  KIO::ERR_CANNOT_OPEN_FOR_READING:
-      result = i18n( "Could not read %1" ).arg( errorText );
+      result = i18n( "Could not read %1." ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_OPEN_FOR_WRITING:
-      result = i18n( "Could not write to %1" ).arg( errorText );
+      result = i18n( "Could not write to %1." ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_LAUNCH_PROCESS:
-      result = i18n( "Could not start process %1" ).arg( errorText );
+      result = i18n( "Could not start process %1." ).arg( errorText );
       break;
     case  KIO::ERR_INTERNAL:
       result = i18n( "Internal Error\nPlease send a full bug report at http://bugs.kde.org\n%1" ).arg( errorText );
       break;
     case  KIO::ERR_MALFORMED_URL:
-      result = i18n( "Malformed URL %1" ).arg( errorText );
+      result = i18n( "Malformed URL %1." ).arg( errorText );
       break;
     case  KIO::ERR_UNSUPPORTED_PROTOCOL:
       result = i18n( "The protocol %1 is not supported." ).arg( errorText );
@@ -225,37 +225,37 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
       result = errorText.isEmpty() ? i18n( "No hostname specified." ) : i18n( "Unknown host %1" ).arg( errorText );
       break;
     case  KIO::ERR_ACCESS_DENIED:
-      result = i18n( "Access denied to %1" ).arg( errorText );
+      result = i18n( "Access denied to %1." ).arg( errorText );
       break;
     case  KIO::ERR_WRITE_ACCESS_DENIED:
-      result = i18n( "Access denied\nCould not write to %1" ).arg( errorText );
+      result = i18n( "Access denied.\nCould not write to %1." ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_ENTER_DIRECTORY:
-      result = i18n( "Could not enter folder %1" ).arg( errorText );
+      result = i18n( "Could not enter folder %1." ).arg( errorText );
       break;
     case  KIO::ERR_PROTOCOL_IS_NOT_A_FILESYSTEM:
       result = i18n( "The protocol %1 does not implement a folder service." ).arg( errorText );
       break;
     case  KIO::ERR_CYCLIC_LINK:
-      result = i18n( "Found a cyclic link in %1" ).arg( errorText );
+      result = i18n( "Found a cyclic link in %1." ).arg( errorText );
       break;
     case  KIO::ERR_USER_CANCELED:
       // Do nothing in this case. The user doesn't need to be told what he just did.
       break;
     case  KIO::ERR_CYCLIC_COPY:
-      result = i18n( "Found a cyclic link while copying %1" ).arg( errorText );
+      result = i18n( "Found a cyclic link while copying %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_CREATE_SOCKET:
-      result = i18n( "Could not create socket for accessing %1" ).arg( errorText );
+      result = i18n( "Could not create socket for accessing %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_CONNECT:
-      result = i18n( "Could not connect to host %1" ).arg( errorText.isEmpty() ? QString::fromLatin1("localhost") : errorText );
+      result = i18n( "Could not connect to host %1." ).arg( errorText.isEmpty() ? QString::fromLatin1("localhost") : errorText );
       break;
     case  KIO::ERR_CONNECTION_BROKEN:
-      result = i18n( "Connection to host %1 is broken" ).arg( errorText );
+      result = i18n( "Connection to host %1 is broken." ).arg( errorText );
       break;
     case  KIO::ERR_NOT_FILTER_PROTOCOL:
-      result = i18n( "The protocol %1 is not a filter protocol" ).arg( errorText );
+      result = i18n( "The protocol %1 is not a filter protocol." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_MOUNT:
       result = i18n( "Could not mount device.\nThe reported error was:\n%1" ).arg( errorText );
@@ -264,52 +264,52 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
       result = i18n( "Could not unmount device.\nThe reported error was:\n%1" ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_READ:
-      result = i18n( "Could not read file %1" ).arg( errorText );
+      result = i18n( "Could not read file %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_WRITE:
-      result = i18n( "Could not write to file %1" ).arg( errorText );
+      result = i18n( "Could not write to file %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_BIND:
-      result = i18n( "Could not bind %1" ).arg( errorText );
+      result = i18n( "Could not bind %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_LISTEN:
-      result = i18n( "Could not listen %1" ).arg( errorText );
+      result = i18n( "Could not listen %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_ACCEPT:
-      result = i18n( "Could not accept %1" ).arg( errorText );
+      result = i18n( "Could not accept %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_LOGIN:
       result = errorText;
       break;
     case  KIO::ERR_COULD_NOT_STAT:
-      result = i18n( "Could not access %1" ).arg( errorText );
+      result = i18n( "Could not access %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_CLOSEDIR:
-      result = i18n( "Could not terminate listing %1" ).arg( errorText );
+      result = i18n( "Could not terminate listing %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_MKDIR:
-      result = i18n( "Could not make folder %1" ).arg( errorText );
+      result = i18n( "Could not make folder %1." ).arg( errorText );
       break;
     case  KIO::ERR_COULD_NOT_RMDIR:
-      result = i18n( "Could not remove folder %1" ).arg( errorText );
+      result = i18n( "Could not remove folder %1." ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_RESUME:
-      result = i18n( "Could not resume file %1" ).arg( errorText );
+      result = i18n( "Could not resume file %1." ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_RENAME:
-      result = i18n( "Could not rename file %1" ).arg( errorText );
+      result = i18n( "Could not rename file %1." ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_CHMOD:
-      result = i18n( "Could not change permissions for %1" ).arg( errorText );
+      result = i18n( "Could not change permissions for %1." ).arg( errorText );
       break;
     case  KIO::ERR_CANNOT_DELETE:
-      result = i18n( "Could not delete file %1" ).arg( errorText );
+      result = i18n( "Could not delete file %1." ).arg( errorText );
       break;
     case  KIO::ERR_SLAVE_DIED:
       result = i18n( "The process for the %1 protocol died unexpectedly." ).arg( errorText );
       break;
     case  KIO::ERR_OUT_OF_MEMORY:
-      result = i18n( "Error. Out of Memory.\n%1" ).arg( errorText );
+      result = i18n( "Error. Out of memory.\n%1" ).arg( errorText );
       break;
     case  KIO::ERR_UNKNOWN_PROXY_HOST:
       result = i18n( "Unknown proxy host\n%1" ).arg( errorText );
@@ -370,7 +370,7 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
     case KIO::ERR_UPGRADE_REQUIRED:
       result = i18n( "%1 is required by the server, but is not available." ).arg(errorText);
     case KIO::ERR_POST_DENIED:
-      result = i18n( "Access to restricted port in POST denied");
+      result = i18n( "Access to restricted port in POST denied.");
       break;
     default:
       result = i18n( "Unknown error code %1\n%2\nPlease send a full bug report at http://bugs.kde.org." ).arg( errorCode ).arg( errorText );
@@ -383,39 +383,39 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
 QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
   switch (cmd) {
     case CMD_CONNECT:
-      return i18n("Opening connections is not supported with the protocol %1" ).arg(protocol);
+      return i18n("Opening connections is not supported with the protocol %1." ).arg(protocol);
     case CMD_DISCONNECT:
-      return i18n("Closing connections is not supported with the protocol %1" ).arg(protocol);
+      return i18n("Closing connections is not supported with the protocol %1." ).arg(protocol);
     case CMD_STAT:
-      return i18n("Accessing files is not supported with the protocol %1").arg(protocol);
+      return i18n("Accessing files is not supported with the protocol %1.").arg(protocol);
     case CMD_PUT:
-      return i18n("Writing to %1 is not supported").arg(protocol);
+      return i18n("Writing to %1 is not supported.").arg(protocol);
     case CMD_SPECIAL:
-      return i18n("There are no special actions available for protocol %1").arg(protocol);
+      return i18n("There are no special actions available for protocol %1.").arg(protocol);
     case CMD_LISTDIR:
-      return i18n("Listing folders is not supported for protocol %1").arg(protocol);
+      return i18n("Listing folders is not supported for protocol %1.").arg(protocol);
     case CMD_GET:
-      return i18n("Retrieving data from %1 is not supported").arg(protocol);
+      return i18n("Retrieving data from %1 is not supported.").arg(protocol);
     case CMD_MIMETYPE:
-      return i18n("Retrieving mime type information from %1 is not supported").arg(protocol);
+      return i18n("Retrieving mime type information from %1 is not supported.").arg(protocol);
     case CMD_RENAME:
-      return i18n("Renaming or moving files within %1 is not supported").arg(protocol);
+      return i18n("Renaming or moving files within %1 is not supported.").arg(protocol);
     case CMD_SYMLINK:
-      return i18n("Creating symlinks is not supported with protocol %1").arg(protocol);
+      return i18n("Creating symlinks is not supported with protocol %1.").arg(protocol);
     case CMD_COPY:
-      return i18n("Copying files within %1 is not supported").arg(protocol);
+      return i18n("Copying files within %1 is not supported.").arg(protocol);
     case CMD_DEL:
-      return i18n("Deleting files from %1 is not supported").arg(protocol);
+      return i18n("Deleting files from %1 is not supported.").arg(protocol);
     case CMD_MKDIR:
-      return i18n("Creating folders is not supported with protocol %1").arg(protocol);
+      return i18n("Creating folders is not supported with protocol %1.").arg(protocol);
     case CMD_CHMOD:
-      return i18n("Changing the attributes of files is not supported with protocol %1").arg(protocol);
+      return i18n("Changing the attributes of files is not supported with protocol %1.").arg(protocol);
     case CMD_SUBURL:
-      return i18n("Using sub-URLs with %1 is not supported").arg(protocol);
+      return i18n("Using sub-URLs with %1 is not supported.").arg(protocol);
     case CMD_MULTI_GET:
-      return i18n("Multiple get is not supported with protocol %1").arg(protocol);
+      return i18n("Multiple get is not supported with protocol %1.").arg(protocol);
     default:
-      return i18n("Protocol %1 does not support action %2").arg(protocol).arg(cmd);
+      return i18n("Protocol %1 does not support action %2.").arg(protocol).arg(cmd);
   }/*end switch*/
 }
 
