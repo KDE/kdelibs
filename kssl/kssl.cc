@@ -363,7 +363,10 @@ void KSSL::setPeerInfo(int sock) {
 
 
 bool KSSL::pending() {
-
+#ifdef HAVE_SSL
+  if (d->kossl->SSL_pending(d->m_ssl) > 0) return true;
+#endif
+  return false;
 }
 
 
