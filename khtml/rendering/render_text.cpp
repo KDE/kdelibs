@@ -411,7 +411,7 @@ int InlineTextBox::width(int pos) const
       if (current >= pos) break;
 
       // seek next space
-      while (current < pos && !t->str->s[m_start + current].category() == QChar::Separator_Space)
+      while (current < pos && t->str->s[m_start + current].category() != QChar::Separator_Space)
         current++;
 
       // check run without spaces
