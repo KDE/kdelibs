@@ -689,12 +689,28 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      day = strtol(dateString, &newPosStr, 10);
      dateString = newPosStr;
 
-     if ((day < 1) || (day > 31))
-     	return invalidDate;
      if (!*dateString)
      	return invalidDate;
 
-     if (*dateString == '/' && day <= 12 && month == -1)
+     if (day < 1)
+       return invalidDate;
+     if (day > 31) {
+       // ### where is the boundary and what happens below?
+       if (*dateString == '/' && day >= 1000) {
+         // looks like a YYYY/MM/DD date
+         if (!*++dateString)
+           return invalidDate;
+         year = day;
+         month = strtol(dateString, &newPosStr, 10) - 1;
+         dateString = newPosStr;
+         if (*dateString++ != '/' || !*dateString)
+           return invalidDate;
+         day = strtol(dateString, &newPosStr, 10);
+         dateString = newPosStr;
+       } else {
+         return invalidDate;
+       }
+     } else if (*dateString == '/' && day <= 12 && month == -1)
      {
      	dateString++;
         // This looks like a MM/DD/YYYY date, not an RFC date.....
@@ -755,7 +771,8 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      }
 
      // '99 23:12:40 GMT'
-     year = strtol(dateString, &newPosStr, 10);
+     if (year <= 0 && *dateString)
+       year = strtol(dateString, &newPosStr, 10);
 
      // Don't fail if the time is missing.
      if (*newPosStr)
@@ -886,7 +903,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
          t.tm_min = minute;
          t.tm_hour = hour;
        }
-	    
+
        return mktime(&t);
      }
 
