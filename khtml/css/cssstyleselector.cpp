@@ -1662,6 +1662,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    if(!val->primitiveType() == CSSPrimitiveValue::CSS_STRING) return;
 	    DOMStringImpl *str = val->getStringValue();
 	    QString face(str->s, str->l);
+	    face = face.lower();
 	    const KHTMLSettings *s = e->ownerDocument()->view()->part()->settings();
 	    if(face == "serif")
 		face = s->serifFontName();
