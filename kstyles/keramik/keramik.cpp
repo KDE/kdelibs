@@ -1774,6 +1774,7 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 							return QRect( sl->width() - handleSize, pos, handleSize, len );
 						return QRect( 0, pos, handleSize, len );
 					}
+				default: break;
 			}
 			break;
 		}
