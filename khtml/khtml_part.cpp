@@ -73,7 +73,6 @@ using namespace DOM;
 #include <kparts/partmanager.h>
 #include <kxmlgui.h>
 #include <kcursor.h>
-#include <kiconeffect.h>
 #include <kdatastream.h>
 #include <ktempfile.h>
 #include <kglobalsettings.h>
@@ -1748,6 +1747,9 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   HTMLElementImpl *a = static_cast<HTMLElementImpl *>(n);
   a->getUpperLeftCorner(x, y);
   d->m_view->setContentsPos(x-50, y-50);
+  // get rid of activation highlight
+  // ### fix me
+  d->m_view->viewport()->repaint();
   return true;
 }
 
@@ -3656,15 +3658,22 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 //     kdDebug( 6000 ) << "m_strSelectedURL='" << url << "' target=" << target << endl;
 
      // Visual action effect, over text links
-     if ( !innerNode.isNull() && innerNode.nodeType() == DOM::Node::TEXT_NODE )
+     if ( !innerNode.isNull() &&
+          (innerNode.nodeType() == DOM::Node::TEXT_NODE || innerNode.nodeType() == DOM::Node::ELEMENT_NODE))
      {
-       khtml::RenderText * renderText = static_cast<khtml::RenderText *>(innerNode.handle()->renderer());
-       int x, y;
-       renderText->absolutePosition( x, y );
-       int vx, vy;
-       view()->contentsToViewport( x, y, vx, vy );
-       QRect r (vx, vy, renderText->width(), renderText->height());
-       KIconEffect::visualActivate( view()->viewport(), r );
+       khtml::RenderObject* o = static_cast<khtml::RenderObject*>(innerNode.handle()->renderer());
+       if(o) {
+           int x, y;
+           o->absolutePosition( x, y );
+           int vx, vy;
+           view()->contentsToViewport( x, y, vx, vy );
+           // ### fix pseudostyle :active !
+           if(o->style()) {
+               QPainter p(view()->viewport());
+               p.setPen( QPen(o->style()->color(), 0, DotLine));
+               p.drawRect(vx-1,vy-1, o->width()+2,o->height()+2);
+           }
+       }
      }
      else if ( !innerNode.isNull() && innerNode.elementId() == ID_IMG ) {
        HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
