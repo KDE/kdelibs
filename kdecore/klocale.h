@@ -727,6 +727,7 @@ public:
    * @li %e with the day of the month (e.g. "1" on the first of march)
    * @li %d with the day of the month with two digits(e.g. "01" on the first of march)
    * @li %b with the short form of the month (e.g. "Jan" for January)
+   * @li %B with the long form of the month (e.g. "January")
    * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
    * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
    * Everything else in the format string will be taken as is.
@@ -748,6 +749,7 @@ public:
    * @li %e with the day of the month (e.g. "1" on the first of march)
    * @li %d with the day of the month with two digits(e.g. "01" on the first of march)
    * @li %b with the short form of the month (e.g. "Jan" for January)
+   * @li %B with the long form of the month (e.g. "January")
    * @li %a with the short form of the weekday (e.g. "Wed" for Wednesday)
    * @li %A with the long form of the weekday (e.g. "Wednesday" for Wednesday)
    * Everything else in the format string will be taken as is.

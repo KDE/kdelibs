@@ -1367,7 +1367,7 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
   uint strpos = 0;
   uint fmtpos = 0;
 
-  int iLength; // Temperary variable used when reading input
+  int iLength; // Temporary variable used when reading input
 
   bool error = false;
 
@@ -1459,16 +1459,6 @@ QDate KLocale::readDate(const QString &intstr, const QString &fmt, bool* ok) con
 	  strpos += iLength;
 
 	  error = iLength <= 0;
-
-	  // ### HPB: This should be moved to the implemtnation classes of KCalendarSystem
-	  // Qt treats a year in the range 0-100 as 1900-1999.
-	  // It is nicer for the user if we treat 0-68 as 2000-2068
-	  //if (c == 'y' && year < 69)
-	    // eg. gregorian += 2000
-	  //  year += (calendar()->year(QDate::currentDate()) / 100) * 100;
-	  //else if (c == 'y' && year < 100)
-	    // eg. gregorian += 1900
-	  //  year += (calendar()->year(QDate::currentDate()) / 100) * 100 - 100;
 	  break;
       }
     }
