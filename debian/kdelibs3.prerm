@@ -13,6 +13,7 @@ case "$1" in
           /usr/sbin/update-alternatives --remove libkssl.so.2.0.2 /usr/lib/libkssl-nossl.so.2.0.2
           /usr/sbin/update-alternatives --remove libkssl.la /usr/lib/libkssl-nossl.la
         fi
+	rm -f /usr/share/doc/kde/HTML/default
         ;;
     *)
         echo "prerm called with unknown argument \`$1'" >&2
