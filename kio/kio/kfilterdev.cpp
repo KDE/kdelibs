@@ -253,8 +253,16 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
                                                     d->buffer.size() );
             if ( size )
                 filter->setInBuffer( d->buffer.data(), size );
-            else
+            else {
                 readEverything = true;
+                if ( filter->inBufferEmpty() && filter->outBufferAvailable() != 0 )
+                {
+                    // We decoded everything there was to decode. So -> done.
+                    //kdDebug(7005) << "Seems we're done. dataReceived=" << dataReceived << endl;
+                    d->result = KFilterBase::END;
+                    break;
+                }
+            }
             //kdDebug(7005) << "KFilterDev::readBlock got " << size << " bytes from device" << endl;
         }
         if (d->bNeedHeader)

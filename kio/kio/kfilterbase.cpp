@@ -53,7 +53,7 @@ KFilterBase * KFilterBase::findFilterByMimeType( const QString & mimeType )
     KTrader::OfferList::ConstIterator it = offers.begin();
     KTrader::OfferList::ConstIterator end = offers.end();
 
-    kdDebug(7005) << "KFilterBase::findFilterByMimeType got " << offers.count() << " offers" << endl;
+    kdDebug(7005) << "KFilterBase::findFilterByMimeType(" << mimeType << ") got " << offers.count() << " offers" << endl;
     for (; it != end; ++it )
     {
         if ((*it)->library().isEmpty()) { continue; }
