@@ -422,7 +422,7 @@ DocumentFragmentImpl *RangeImpl::processContents ( ActionType action, int &excep
 	while (partialStart->parentNode() != cmnRoot)
 	    partialStart = partialStart->parentNode();
     }
-	
+
     // what is the highest node that partially selects the end of the range?
     NodeImpl *partialEnd = 0;
     if (m_endContainer != cmnRoot) {
@@ -762,7 +762,7 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
 	checkAgainst = m_startContainer->parentNode();
     else
 	checkAgainst = m_startContainer;
-	
+
     if (newNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE) {
 	// check each child node, not the DocumentFragment itself
     	NodeImpl *c;
@@ -813,7 +813,7 @@ DOMString RangeImpl::toString( int &exceptioncode )
 {
     if (m_detached) {
         exceptioncode = DOMException::INVALID_STATE_ERR;
-        return 0;
+        return DOMString();
     }
 
     DOMString text = "";
@@ -850,10 +850,7 @@ DOMString RangeImpl::toString( int &exceptioncode )
 DOMString RangeImpl::toHTML(  )
 {
     // ### implement me!!!!
-
-    // this is just to avoid compiler warnings
-    DOMString d;
-    return d;
+    return DOMString();
 }
 
 void RangeImpl::detach( int &exceptioncode )
@@ -1253,7 +1250,7 @@ void RangeImpl::checkDeleteExtract(int &exceptioncode) {
 	m_startContainer->nodeType() != Node::CDATA_SECTION_NODE &&
 	m_startContainer->nodeType() != Node::COMMENT_NODE &&
 	m_startContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
-	
+
 	start = m_startContainer->childNode(m_startOffset);
 	if (!start) {
 	    if (m_startContainer->lastChild())
@@ -1270,7 +1267,7 @@ void RangeImpl::checkDeleteExtract(int &exceptioncode) {
 	m_endContainer->nodeType() != Node::CDATA_SECTION_NODE &&
 	m_endContainer->nodeType() != Node::COMMENT_NODE &&
 	m_endContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
-	
+
 	end = m_endContainer->childNode(m_endOffset);
 	if (!end) {
 	    if (m_endContainer->lastChild())
