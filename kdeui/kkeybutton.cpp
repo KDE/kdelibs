@@ -229,4 +229,21 @@ void KKeyButton::drawButton( QPainter *painter )
 
 }
 
+//----------------------------------------------------
+// KShortcutDialog
+//----------------------------------------------------
+
+(o) Primary   | Win+Escape |			[OK]
+( ) Alternate | Alt+F4     | Multi-Key [x]	[Cancel]
+{
+	QGridLayout* pLayout = new QGridLayout( this, 6, 3, KDialog::marginHint(), KDialog::spacingHint() );
+
+	prb = new QRadioButton( i18n("Primary"), this );
+	m_peditPrimary = new QLineEdit( this );
+
+	prb = new QRadioButton( i18n("Alternate"), this );
+	m_peditAlternate = new QLineEdit( this );
+
+}
+
 #include "kkeybutton.moc"

@@ -103,6 +103,12 @@ setEncoding(int) instead.
 <li>formatNumber(const QString &) has been removed.
 <li>languages() has been removed. Use languageList() instead.
 
+<H4>Accelerators Keys</H4>
+<li>KStdAccel::Insert and the corresponding KStdAccel::insert() have been removed.
+(Nobody on the list knew what its function was supposed to be.)  Calls to
+KStdAccel::insert() and the equivalent KStdAccel::key(KStdAccel::Insert) can
+be replaced with the former default of Qt::CTRL+Qt::Key_Insert.
+
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="kdeui">Changes in kdeui</A></H3>
