@@ -4,9 +4,6 @@
 
 - Possibility to specify a different input slot for first page???
 
-- make a backup of the CUPS config file before overwriting it
-  -> use GET/PUT methods to handle CUPS config files
-
 - change DCOP call of kdeprintd so that the command is a QStrList to
   avoid quoting problems.
 
@@ -14,9 +11,6 @@
 	- default paper size
 	- default margins
 	- preview program
-
-- avoid special characters and spaces in printer name, or at least
-  warn the user and propose to strip all these chars.
 
 - backport LPR plugin problem with aliases to 2.2 branch
 
@@ -30,3 +24,5 @@
   dialog: should use then default printer with default settings.
 
 - add the possibility to view a printjob file (if possible)
+
+- implement the missing pages in kprinter (text, image, HPGL-2)

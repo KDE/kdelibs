@@ -63,3 +63,8 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
     page size (used for example for pseudo printers and classes)
   * Wizard: fix buffer overflow when adding a remote LPD queue having
     a lot of jobs waiting
+
+03/10/2001 Michael Goffioul <goffioul@imec.be>
+  * CUPS plugin: make use of GET/PUT request to handle configuration
+    file. Possibility to admin a remote CUPS server (if allowed)
+  * CUPS plugin: added "/jobs" in the available resources list
