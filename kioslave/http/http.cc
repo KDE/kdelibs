@@ -640,7 +640,7 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
 
             isDirectory = true;
           }
-        } 
+        }
         else if ( property.text() != "" )
         {
           atom.m_uds = KIO::UDS_FILE_TYPE;
@@ -767,7 +767,7 @@ void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
     QDomElement lockOwner = activeLock.namedItem( "owner" ).toElement();
     QDomElement lockTimeout = activeLock.namedItem( "timeout" ).toElement();
     QDomElement lockToken = activeLock.namedItem( "locktoken" ).toElement();
-    
+
     if ( !lockScope.isNull() && !lockType.isNull() && !lockDepth.isNull() )
     {
       // lock was properly specified
@@ -798,26 +798,26 @@ void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
 
 long HTTPProtocol::parseDateTime( const QString& input, const QString& type )
 {
-  if ( type == "dateTime.tz" ) 
+  if ( type == "dateTime.tz" )
   {
     return KRFCDate::parseDateISO8601( input );
-  } 
+  }
   else if ( type == "dateTime.rfc1123" )
   {
     return KRFCDate::parseDate( input );
   }
-  
+
   // format not advertised... try to parse anyway
   time_t time = KRFCDate::parseDate( input );
   if ( time != 0 )
     return time;
-  
+
   return KRFCDate::parseDateISO8601( input );
 }
 
 QString HTTPProtocol::davProcessLocks()
 {
-  if ( hasMetaData( "davLockCount" ) ) 
+  if ( hasMetaData( "davLockCount" ) )
   {
     QString response("If:");
     int numLocks;
@@ -825,11 +825,11 @@ QString HTTPProtocol::davProcessLocks()
     bool bracketsOpen = false;
     for ( int i = 0; i < numLocks; i++ )
     {
-      if ( hasMetaData( QString("davLockToken%1").arg(i) ) ) 
+      if ( hasMetaData( QString("davLockToken%1").arg(i) ) )
       {
-        if ( hasMetaData( QString("davLockURL%1").arg(i) ) ) 
+        if ( hasMetaData( QString("davLockURL%1").arg(i) ) )
         {
-          if ( bracketsOpen ) 
+          if ( bracketsOpen )
           {
             response += ")";
             bracketsOpen = false;
@@ -960,7 +960,7 @@ void HTTPProtocol::get( const KURL& url )
   m_request.method = HTTP_GET;
   m_request.path = url.path();
   m_request.query = url.query();
-  
+
   QString tmp = metaData("cache");
   if (!tmp.isEmpty())
     m_request.cache = parseCacheControl(tmp);
@@ -1241,7 +1241,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
   errorString = i18n("An unexpected error (%1) occurred while attempting to %2.")
                       .arg( code ).arg( action );
 
-  switch ( code ) 
+  switch ( code )
   {
     case -2:
       // internal error: OPTIONS request did not specify DAV compliance
@@ -1253,7 +1253,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, QString url )
     {
       // our error info is in the returned XML document.
       // retrieve the XML document
-      
+
       // there was an error retrieving the XML document.
       // ironic, eh?
       if ( !readBody( true ) && m_bError )
@@ -1499,7 +1499,7 @@ void HTTPProtocol::ungets(char *str, int size)
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 {
   ssize_t ret = 0;
-  
+
   if (m_lineCountUnget > 0)
   {
     ret = ( nbytes < m_lineCountUnget ? nbytes : m_lineCountUnget );
@@ -1515,7 +1515,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
 
     return ret;
   }
-  
+
   if (m_lineCount > 0)
   {
     ret = ( nbytes < m_lineCount ? nbytes : m_lineCount );
@@ -1524,7 +1524,7 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     m_linePtr += ret;
     return ret;
   }
-  
+
   if (nbytes == 1)
   {
     ret = read(m_lineBuf, 1024); // Read into buffer
@@ -1618,7 +1618,7 @@ bool HTTPProtocol::httpOpenConnection()
     kdDebug(7113) << "(" << getpid() << ") Connecting to proxy server: "
                   << proxy_host << ", port: " << proxy_port << endl;
 
-    infoMessage( i18n("Connecting to <b>%1</b>...").arg(m_state.hostname) );
+    infoMessage( i18n("Connecting to %1...").arg(m_state.hostname) );
 
     setConnectTimeout( m_proxyConnTimeout );
 
@@ -2152,7 +2152,7 @@ bool HTTPProtocol::httpOpen()
   if ( moreData || davData )
     res = sendBody();
 
-  infoMessage( i18n( "<b>%1</b> contacted. "
+  infoMessage( i18n( "%1 contacted. "
                      "Waiting for reply..." ).arg( m_request.hostname ) );
   return res;
 }
@@ -3190,7 +3190,7 @@ bool HTTPProtocol::sendBody()
   sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
   kdDebug( 7113 ) << "(" << m_pid << ")" << c_buffer << endl;
 
-  infoMessage( i18n( "Sending data to <b>%1</b>" ).arg( m_request.hostname ) );
+  infoMessage( i18n( "Sending data to %1" ).arg( m_request.hostname ) );
 
   // Send the content length...
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
@@ -3600,11 +3600,17 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
   // it is compressed, or when the data is to be handled
   // internally (webDAV).  If compressed we have to wait
   // until we uncompress to find out the actual data size
-  if ( !decode && !dataInternal )
-    totalSize( (m_iSize > -1) ? m_iSize : 0 );
-
-  infoMessage( i18n( "Retrieving data from "
-                     "<b>%1</b>" ).arg( m_request.hostname ) );
+  if ( !decode && !dataInternal ) {
+    if ( m_iSize > 0 ) {
+       totalSize(m_iSize);
+       infoMessage( i18n( "Retrieving %1 from %2...").arg(KIO::convertSize(m_iSize))
+         .arg( m_request.hostname ) );
+    }
+    else
+       totalSize ( 0 );
+  }
+  else
+    infoMessage( i18n( "Reading from %1 ..." ).arg( m_request.hostname ) );
 
   if (m_bCachedRead)
   {
@@ -3843,13 +3849,13 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
 
         array.resetRawData( m_bufEncodedData.data()+sz, bytesToSend);
         sz += bytesToSend;
-        
+
         if ( !dataInternal )
           processedSize( sz );
-        
+
         if ( sz >= bytesReceived )
           break;
-        
+
         if ( bytesReceived-sz < bytesToSend )
           bytesToSend = bytesReceived-sz;
       }
@@ -3857,11 +3863,11 @@ bool HTTPProtocol::readBody( bool dataInternal /* = false */ )
     else
     {
       sz = bytesReceived;
-      if ( !dataInternal ) 
+      if ( !dataInternal )
       {
         data( m_bufEncodedData );
         processedSize( bytesReceived );
-      } 
+      }
       else
       {
         m_intData += m_bufEncodedData;
@@ -3903,7 +3909,7 @@ void HTTPProtocol::error( int _err, const QString &_text )
 {
   m_bKeepAlive = false;
   httpClose();
-  
+
   if (!m_request.id.isEmpty())
   {
     forwardHttpResponseHeader();
