@@ -58,6 +58,53 @@ There are two kinds:
 - forwarding: if M in our example would choose to do nothing at all, it could
   simply forward its input to its output
 
+
+The interface for the user:
+
+MCOP will show the virtualize function to the user, which the user can use
+to delegate the services of a port to another module onto another port.
+
+- masquerading: in our case, for instance the user could call
+
+    m._node()->virtualize("inputport",a,"inputport");
+
+  which would forward all input m gets on "inputport" to a's "inputport"
+
+- forwarding: in the same way, the user could call
+
+    m._node()->virtualize("inputport",m,"outputport");
+
+  which would make m forward its input directly to its output
+
+The implementation:
+
+Virtualization is implemented here, inside the flow system, using a fairly
+complex forwarding strategy, which will have a graph which contains
+
+- "user-made" connections (made with connect())
+- "virtualize-made" connections, which can be either forwarding
+  (input to output port) or masquerading (input to input or output to output)
+ 
+Out of all these, the algorithm builds "real" connections, which are
+then really performed inside the flow system. If you change the "user-made"
+or "virtualize-made" connections, the "real" connections are recalculated.
+
+The "real" connections are created by the expandHelper function. They are
+called vcTransport here.
+
+The strategy expandHelper uses is to go back to a port which is only output
+port (non forwarded, non masqueraded), and then follow the graph recursively
+over vcMasquerade and vcForward edges until it reaches a port which is only
+input. Then it creates a real connection.
+
+Some tweaks are there which allow that not on any change at the graph, all
+real connections will be removed, but only these that could possibly be
+affected by this change, and then not all real connections are created new,
+but only those that could possibly be created by this virtual connection.
+
+Every VPort contains a pointer to the "real" port, to let the flow system
+know where the "real" connections where real data will flow must be made.
+
 */
 
 VPortConnection::VPortConnection(VPort *source, VPort *dest, Style style)
