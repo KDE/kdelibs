@@ -26,6 +26,16 @@
 #include <qdrawutil.h>
 #include <qradiobutton.h>
 
+
+#include <qlabel.h>
+#include <qcheckbox.h>
+#include <qlineedit.h>
+#include <qbuttongroup.h>
+#include <qpopupmenu.h>
+#include <qgroupbox.h>
+
+
+
 #include <kbuttonbox.h>
 #include <kckey.h>
 #include <kconfig.h>
@@ -68,10 +78,10 @@ void KSplitListItem::setWidth( int newWidth )
 
 void KSplitListItem::paint( QPainter *p )
 {
-    QFontMetrics fm = p->fontMetrics();
-    int yPos;                       // vertical text position
-    yPos = fm.ascent() + fm.leading()/2;
-    p->drawText( 5, yPos, actionName );
+        QFontMetrics fm = p->fontMetrics();
+        int yPos;                       // vertical text position
+        yPos = fm.ascent() + fm.leading()/2;
+        p->drawText( 5, yPos, actionName );
 	p->drawText( 5 + halfWidth, yPos, keyName );
 }
 
@@ -85,56 +95,64 @@ int KSplitListItem::width(const QListBox *lb ) const
     return lb->fontMetrics().width( text() ) + 6;
 }
 
-/*****************************************************************************/
-/* KSplitList                                                                 */
-/*                                                                           */
-/* Added by Mark Donohoe <donohoe@kde.org>                                   */
-/*                                                                           */
-/*****************************************************************************/
-
+/***********************************************************************/
+/* KSplitList                                                          */
+/*                                                                     */
+/* Added by Mark Donohoe <donohoe@kde.org>                             */
+/*                                                                     */
+/***********************************************************************/
 KSplitList::KSplitList( QWidget *parent , const char *name )
-	: QListBox( parent, name )
+  : QListBox( parent, name )
 {
-	setFocusPolicy( QWidget::StrongFocus );
-	if( style() == MotifStyle )
-		setFrameStyle( QFrame::Panel | QFrame::Sunken );
-	else
-		setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
-
+  setFocusPolicy( QWidget::StrongFocus );
+  if( style() == MotifStyle )
+    setFrameStyle( QFrame::Panel | QFrame::Sunken );
+  else
+    setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
 }
 
 void KSplitList::resizeEvent( QResizeEvent *e )
 {
-	emit newWidth( width() );
-	QListBox::resizeEvent( e );
+  emit newWidth( width() );
+  QListBox::resizeEvent( e );
 }
 
 void KSplitList::styleChange( GUIStyle )
 {
-	if( style() == MotifStyle )
-		setFrameStyle( QFrame::Panel | QFrame::Sunken );
-	else
-		setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
+  if( style() == MotifStyle )
+    setFrameStyle( QFrame::Panel | QFrame::Sunken );
+  else
+    setFrameStyle( QFrame::WinPanel | QFrame::Sunken );
 }
 
 void KSplitList::paletteChange ( const QPalette & oldPalette )
 {
-    QListBox::paletteChange( oldPalette );
-	
+  QListBox::paletteChange( oldPalette );
 }
 
-/*****************************************************************************/
-/* KKeyButton                                                                 */
-/*                                                                           */
-/* Added by Mark Donohoe <donohoe@kde.org>                                   */
-/*                                                                           */
-/*****************************************************************************/
 
-KKeyButton::KKeyButton( const char* name, QWidget *parent)
-	: QPushButton( parent, name )
+void KSplitList::setVisibleItems( int numItem )
 {
-    setFocusPolicy( QWidget::StrongFocus );
-	editing = FALSE;
+  int h = fontMetrics().lineSpacing()+1;
+  setMinimumHeight( h * QMAX(1,numItem) + lineWidth() * 2 );
+}
+
+
+
+
+
+
+/***********************************************************************/
+/* KKeyButton                                                          */
+/*                                                                     */
+/* Added by Mark Donohoe <donohoe@kde.org>                             */
+/*                                                                     */
+/***********************************************************************/
+KKeyButton::KKeyButton( const char* name, QWidget *parent)
+  : QPushButton( parent, name )
+{
+  setFocusPolicy( QWidget::StrongFocus );
+  editing = FALSE;
 }
 
 KKeyButton::~KKeyButton ()
@@ -143,355 +161,328 @@ KKeyButton::~KKeyButton ()
 
 void KKeyButton::setText( const QString& text )
 {
-	QPushButton::setText( text );
-	setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
+  QPushButton::setText( text );
+  setFixedSize( sizeHint().width()+12, sizeHint().height()+8 );
 }
 
 void KKeyButton::setEdit( bool edit )
 {
-	editing = edit;
-	repaint();
+  editing = edit;
+  repaint();
 }
 
 void KKeyButton::paint( QPainter *painter )
 {
-	QPointArray a( 4 );
-	a.setPoint( 0, 0, 0) ;
-	a.setPoint( 1, width(), 0 );
-	a.setPoint( 2, 0, height() );
-	a.setPoint( 3, 0, 0 );
+  QPointArray a( 4 );
+  a.setPoint( 0, 0, 0) ;
+  a.setPoint( 1, width(), 0 );
+  a.setPoint( 2, 0, height() );
+  a.setPoint( 3, 0, 0 );
 
-	QRegion r1( a );
-	painter->setClipRegion( r1 );
-	painter->setBrush( backgroundColor().light() );
-	painter->drawRoundRect( 0, 0, width(), height(), 20, 20);
+  QRegion r1( a );
+  painter->setClipRegion( r1 );
+  painter->setBrush( backgroundColor().light() );
+  painter->drawRoundRect( 0, 0, width(), height(), 20, 20);
 
-	a.setPoint( 0, width(), height() );
-	a.setPoint( 1, width(), 0 );
-	a.setPoint( 2, 0, height() );
-	a.setPoint( 3, width(), height() );
+  a.setPoint( 0, width(), height() );
+  a.setPoint( 1, width(), 0 );
+  a.setPoint( 2, 0, height() );
+  a.setPoint( 3, width(), height() );
 
-	QRegion r2( a );
-	painter->setClipRegion( r2 );
-	painter->setBrush( backgroundColor().dark() );
-	painter->drawRoundRect( 0, 0, width(), height(), 20, 20 );
-
-	painter->setClipping( FALSE );
-	if( width() > 12 && height() > 8 )
-	qDrawShadePanel( painter, 6, 4, width() - 12, height() - 8,
-								colorGroup(), TRUE, 1, 0L );
-	if ( editing ) {
-		painter->setPen( colorGroup().base() );
-		painter->setBrush( colorGroup().base() );
-	} else {
-		painter->setPen( backgroundColor() );
-		painter->setBrush( backgroundColor() );
-	}
-	if( width() > 14 && height() > 10 )
-	painter->drawRect( 7, 5, width() - 14, height() - 10 );
-
-	drawButtonLabel( painter );
+  QRegion r2( a );
+  painter->setClipRegion( r2 );
+  painter->setBrush( backgroundColor().dark() );
+  painter->drawRoundRect( 0, 0, width(), height(), 20, 20 );
+  
+  painter->setClipping( FALSE );
+  if( width() > 12 && height() > 8 )
+    qDrawShadePanel( painter, 6, 4, width() - 12, height() - 8,
+		     colorGroup(), TRUE, 1, 0L );
+  if ( editing ) 
+  {
+    painter->setPen( colorGroup().base() );
+    painter->setBrush( colorGroup().base() );
+  } 
+  else 
+  {
+    painter->setPen( backgroundColor() );
+    painter->setBrush( backgroundColor() );
+  }
+  if( width() > 14 && height() > 10 )
+    painter->drawRect( 7, 5, width() - 14, height() - 10 );
+  
+  drawButtonLabel( painter );
 	
-	painter->setPen( colorGroup().text() );
-	painter->setBrush( NoBrush );
-	if( hasFocus() || editing ) {
-		if( width() > 16 && height() > 12 )
-		painter->drawRect( 8, 6, width() - 16, height() - 12 );
-	}	
+  painter->setPen( colorGroup().text() );
+  painter->setBrush( NoBrush );
+  if( hasFocus() || editing ) 
+  {
+    if( width() > 16 && height() > 12 )
+      painter->drawRect( 8, 6, width() - 16, height() - 12 );
+  }
+	
 }
 
-/*****************************************************************************/
-/* KKeyDialog                                                     */
-/*                                                                           */
-/* Originally by Nicolas Hadacek <hadacek@via.ecp.fr>                        */
-/*                                                                           */
-/* Substantially revised by Mark Donohoe <donohoe@kde.org>                   */
-/*                                                                           */
-/*****************************************************************************/
-
+/************************************************************************/
+/* KKeyDialog                                                           */
+/*                                                                      */
+/* Originally by Nicolas Hadacek <hadacek@via.ecp.fr>                   */
+/*                                                                      */
+/* Substantially revised by Mark Donohoe <donohoe@kde.org>              */
+/*                                                                      */
+/* And by Espen Sand <espen@kde.org> 1999-10-19                         */
+/* (by using KDialogBase there is almost no code left ;)                */
+/*                                                                      */
+/************************************************************************/
 KKeyDialog::KKeyDialog( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 			bool check_against_std_keys)
-    : QDialog( parent, 0, TRUE )
+  : KDialogBase( parent, 0, TRUE, i18n("Configure key bindings"), 
+		 Help|Default|Ok|Cancel, Ok )
 {
-	setCaption( i18n("Configure key bindings") );
-	setFocusPolicy( QWidget::StrongFocus );
-	
-	QBoxLayout *topLayout = new QVBoxLayout( this, 10 );
-	
-	KKeyChooser *kc =  new KKeyChooser( aKeyDict, this, check_against_std_keys );
-	
-	topLayout->addWidget( kc, 10 );
-	
-	// CREATE BUTTONS
-	
-	KButtonBox *bbox = new KButtonBox( this );
-	
-	bHelp = bbox->addButton( i18n("&Help") );
-	//connect( bHelp, SIGNAL(clicked()), SLOT(help()) );
-	bHelp->setEnabled( false );
-	
-	bDefaults = bbox->addButton( i18n("&Defaults") );
-	connect( bDefaults, SIGNAL(clicked()), kc, SLOT(allDefault()) );
-	//bDefaults->setEnabled( false );
-	
-	bbox->addStretch( 10 );
-		
-	bOk = bbox->addButton( i18n("&OK") );
-	connect( bOk, SIGNAL(clicked()), SLOT(accept()) );
-	
-	bCancel = bbox->addButton( i18n("&Cancel") );
-	connect( bCancel, SIGNAL(clicked()), SLOT(reject()) );
-		
-	bbox->layout();
-	topLayout->addWidget( bbox );
-	
-	resize( 400, 350 );
+  KKeyChooser *kc =  new KKeyChooser( aKeyDict, this, check_against_std_keys );
+  setMainWidget(kc);
+  connect( this, SIGNAL(defaultClicked()), kc, SLOT(allDefault()) );
+  enableButton ( Help, false );
 }
 
-int KKeyDialog::configureKeys( KAccel *keys, bool save_settings )
+
+
+int KKeyDialog::configureKeys( KAccel *keys, bool save_settings, 
+			       QWidget *parent )
 {
-	QDict<KKeyEntry> dict = keys->keyDict();
+  QDict<KKeyEntry> dict = keys->keyDict();
+  KKeyDialog *kd = new KKeyDialog( &dict, parent );
+  CHECK_PTR( kd );
+  int retcode = kd->exec();
+  delete kd;
 
-    KKeyDialog *kd = new KKeyDialog( &dict );
-    CHECK_PTR( kd );
-	int retcode = kd->exec();
-    delete kd;
-
-	if( retcode ) {
-		keys->setKeyDict( dict );
-		if (save_settings)
-		  keys->writeSettings();
-	}
-    return retcode;
+  if( retcode == Accepted ) 
+  {
+    keys->setKeyDict( dict );
+    if (save_settings)
+      keys->writeSettings();
+  }
+  return retcode;
 }
 
-int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings )
+int KKeyDialog::configureKeys( KGlobalAccel *keys, bool save_settings, 
+			       QWidget *parent )
 {
-	QDict<KKeyEntry> dict = keys->keyDict();
+  QDict<KKeyEntry> dict = keys->keyDict();
 
-    KKeyDialog *kd = new KKeyDialog( &dict );
-    CHECK_PTR( kd );
-	int retcode = kd->exec();
-    delete kd;
+  KKeyDialog *kd = new KKeyDialog( &dict, parent );
+  CHECK_PTR( kd );
+  int retcode = kd->exec();
+  delete kd;
 
-	if( retcode ) {
-		keys->setKeyDict( dict );
-		if (save_settings)
-		  keys->writeSettings();
-	}
-    return retcode;
+  if( retcode == Accepted ) 
+  {
+    keys->setKeyDict( dict );
+    if (save_settings)
+      keys->writeSettings();
+  }
+  return retcode;
 }
 
-KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent ,
+
+
+
+KKeyChooser::KKeyChooser( QDict<KKeyEntry> *aKeyDict, QWidget *parent,
 			  bool check_against_std_keys)
-    : QWidget( parent )
+  : QWidget( parent )
 {
 	
-	bKeyIntercept = FALSE;
-	kbMode = NoKey;
+  bKeyIntercept = FALSE;
+  kbMode = NoKey;
 	
-	aKeyIt = new QDictIterator<KKeyEntry> ( *aKeyDict );
-	
-	// TOP LAYOUT MANAGER
-	
-	// The following layout is used for the dialog
-	// 		LIST LABELS LAYOUT
-	//		SPLIT LIST BOX WIDGET
-	//		CHOOSE KEY GROUP BOX WIDGET
-	//		BUTTONS LAYOUT
-	// Items are added to topLayout as they are created.
-	
-	QBoxLayout *topLayout = new QVBoxLayout( this, 0, 10 );
-	
-	// CREATE LIST LABELS
-	
-	QGridLayout *stackLayout = new QGridLayout( 2, 2, 2);
-	topLayout->addLayout( stackLayout, 50 );
-	
-	stackLayout->setRowStretch(1,10);
+  aKeyIt = new QDictIterator<KKeyEntry> ( *aKeyDict );
 
-	keyLabel = new QLabel(this);
-	stackLayout->addWidget(keyLabel, 0, 1);
-	keyLabel->setText( i18n("Current key") );
-	keyLabel->setFixedHeight( keyLabel->sizeHint().height() );
-	
-	// CREATE SPLIT LIST BOX
-	
-	// Copy all currentKeyCodes to configKeyCodes
-	// and fill up the split list box with the action/key pairs.
-	
-	wList = new KSplitList( this );
-	wList->setMinimumHeight(80);
-	stackLayout->addMultiCellWidget( wList, 1, 1, 0, 1 );
-	
-	actLabel = new QLabel( wList, i18n("&Action"), this );
-	stackLayout->addWidget( actLabel, 0, 0 );
-	actLabel->setFixedHeight( actLabel->sizeHint().height() );
-	
-	wList->setAutoUpdate(FALSE);
-	wList->setFocus();
-	
-	aIt = aKeyIt;
-	aIt->toFirst();
-	int id = 0;
-	while ( aIt->current() ) {
-		aIt->current()->aConfigKeyCode = aIt->current()->aCurrentKeyCode;
+  //
+  // TOP LAYOUT MANAGER
+  //
+  // The following layout is used for the dialog
+  // 		LIST LABELS LAYOUT
+  //		SPLIT LIST BOX WIDGET
+  //		CHOOSE KEY GROUP BOX WIDGET
+  //		BUTTONS LAYOUT
+  // Items are added to topLayout as they are created.
+  //
+
+  QBoxLayout *topLayout = new QVBoxLayout( this, 0, KDialog::spacingHint() );
+
+  QGridLayout *stackLayout = new QGridLayout(2, 2, 2);
+  topLayout->addLayout( stackLayout, 10 );
+  stackLayout->setRowStretch( 1, 10 ); // Only list will stretch
+
+  //
+  // CREATE SPLIT LIST BOX
+  //
+  // Copy all currentKeyCodes to configKeyCodes
+  // and fill up the split list box with the action/key pairs.
+  //
+  wList = new KSplitList( this );
+  wList->setVisibleItems( 5 );
+  wList->setAutoUpdate(FALSE);
+  wList->setFocus();
+  stackLayout->addMultiCellWidget( wList, 1, 1, 0, 1 );
+
+  //
+  // CREATE LIST LABELS
+  //
+  actLabel = new QLabel( wList, i18n("&Action"), this );
+  stackLayout->addWidget(actLabel, 0, 0);
+
+  keyLabel = new QLabel( i18n("Current key"), this );
+  stackLayout->addWidget(keyLabel, 0, 1);
+
+  //
+  // Add all "keys" to the list
+  //
+  aIt = aKeyIt;
+  aIt->toFirst();
+  int id = 0;
+  while ( aIt->current() ) 
+  {
+    aIt->current()->aConfigKeyCode = aIt->current()->aCurrentKeyCode;
 		
-		KSplitListItem *sli = new KSplitListItem(
-		 	item( aIt->current()->aConfigKeyCode, aIt->current()->descr ),
-			id);
+    KSplitListItem *sli = new KSplitListItem(
+      item( aIt->current()->aConfigKeyCode, aIt->current()->descr ), id);
 		
-		connect( wList, SIGNAL( newWidth( int ) ),
-				 sli, SLOT( setWidth( int ) ) );
-		wList->inSort( sli );
+    connect( wList, SIGNAL( newWidth( int ) ),sli, SLOT( setWidth( int ) ) );
+    wList->inSort( sli );
 		
-		++ ( *aIt );
-		++id;
-	}
+    ++ ( *aIt );
+    ++id;
+  }
 
-	if ( wList->count() == 0 ) wList->setEnabled( FALSE );
-	//connect( wList, SIGNAL( selected( int ) ), SLOT( toChange( int ) ) );
-	connect( wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
-	
-	// CREATE CHOOSE KEY GROUP
-	
-	fCArea = new QGroupBox( this );
-	topLayout->addWidget( fCArea, 1 );
-	
-	fCArea->setTitle( i18n("Choose a key for the selected action") );
-	fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
-	
-	// CHOOSE KEY GROUP LAYOUT MANAGER
-	
-	QGridLayout *grid = new QGridLayout( fCArea, 6, 4, 5 );
-	
-	grid->setRowStretch(0,10);
-	grid->setRowStretch(1,10);
-	grid->setRowStretch(2,10);
-	grid->setRowStretch(3,10);
-	grid->setRowStretch(4,10);
-	grid->setRowStretch(5,10);
+  //
+  // Make sure there is no horizontal scrollbar on startup
+  //
+  wList->setMinimumWidth( wList->sizeHint().width() +
+			  wList->verticalScrollBar()->sizeHint().width() +
+			  wList->lineWidth() * 2 );
 
-	grid->setColStretch(0,0);
-	grid->setColStretch(1,10);
-	grid->setColStretch(2,90);
-	grid->setColStretch(3,0);
-	
-	grid->addRowSpacing(0,15);
-	grid->addRowSpacing(5,1);
-	
-	
-	kbGroup = new QButtonGroup( fCArea );
-    kbGroup->hide();
-    kbGroup->setExclusive( true );
-	
-	QRadioButton *rb = new QRadioButton( i18n("&No key"), fCArea );
-    rb->adjustSize();
-    rb->setFixedHeight( rb->height() );
-    rb->setMinimumWidth( rb->width() );
-    kbGroup->insert( rb, NoKey );
-	
-	grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
-	
-	rb = new QRadioButton( i18n("&Default key"), fCArea );
-    rb->adjustSize();
-    rb->setFixedHeight( rb->height() );
-    rb->setMinimumWidth( rb->width() );
-    kbGroup->insert( rb, DefaultKey );
-	
-	grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
-	
-	rb = new QRadioButton( i18n("&Custom key"), fCArea );
-    rb->adjustSize();
-    rb->setFixedHeight( rb->height() );
-    rb->setMinimumWidth( rb->width() );
-    kbGroup->insert( rb, CustomKey );
-	
-	connect( kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
-	
-	grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
-	
-	QBoxLayout *pushLayout = new QHBoxLayout( 2 );
-	grid->addLayout( pushLayout, 4, 2 );
-	
-	cShift = new QCheckBox( fCArea );
-	cShift->setText( "SHIFT" );
-	cShift->setEnabled( FALSE );
-	connect( cShift, SIGNAL( clicked() ), SLOT( shiftClicked() ) );
-	
-	cCtrl = new QCheckBox( fCArea );
-	cCtrl->setText( "CTRL" );
-	cCtrl->setEnabled( FALSE );
-	connect( cCtrl, SIGNAL( clicked() ), SLOT( ctrlClicked() ) );
-	
-	cAlt = new QCheckBox( fCArea );
-	cAlt->setText( "ALT" );
-	cAlt->setEnabled( FALSE );
-	connect( cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
-	
-	bChange = new KKeyButton("key", fCArea);
-	bChange->setEnabled( FALSE );
-	connect( bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
-	
-	// Set height of checkboxes to basic key button height.
-	// Basic key button height = push button height.
-	cAlt->adjustSize();
-	cAlt->setFixedHeight( bChange->sizeHint().height() );
-	cAlt->setMinimumWidth( cAlt->width() );
-	cShift->adjustSize();
-	cShift->setFixedHeight( bChange->sizeHint().height() );
-	cShift->setMinimumWidth( cShift->width() );
-	cCtrl->adjustSize();
-	cCtrl->setFixedHeight( bChange->sizeHint().height() );
-	cCtrl->setMinimumWidth( cCtrl->width() );
-	fCArea->setMinimumHeight( bChange->sizeHint().height() + 20 +
-		3*rb->height() + 4*10);
-	
-	// Add widgets to the geometry manager
-	
-	pushLayout->addWidget( cShift );
-	pushLayout->addSpacing( 8 );
-	pushLayout->addWidget( cCtrl );
-	pushLayout->addSpacing( 8 );
-	pushLayout->addWidget( cAlt );
-	pushLayout->addSpacing( 18 );
-	pushLayout->addWidget( bChange );
-	pushLayout->addStretch( 10 );
-	
-	lNotConfig = new QLabel(fCArea);
-	lNotConfig->resize(0,0);
-	QFont f = KGlobal::generalFont();
-	f.setPointSize(f.pointSize()+2);
-	f.setBold(true);
-	lNotConfig->setFont( f );
-	lNotConfig->setAlignment( AlignCenter );
-	lNotConfig->setFrameStyle( QFrame::Panel | QFrame::Sunken );
-	if ( wList->count()==0 )
-		lNotConfig->setText( i18n("No keys defined") );
-	else {
-		lNotConfig->setText( i18n("Not configurable") );
-		lNotConfig->hide();
-	}
-	lNotConfig->hide();
 
-	lInfo = new QLabel(fCArea);
-	resize(0,0);
-	lInfo->setAlignment( AlignCenter );
-	lInfo->setEnabled( FALSE );
-	lInfo->hide();
+  if ( wList->count() == 0 ) wList->setEnabled( FALSE );
+  //connect( wList, SIGNAL( selected( int ) ), SLOT( toChange( int ) ) );
+  connect( wList, SIGNAL( highlighted( int ) ), SLOT( updateAction( int ) ) );
+
+  //
+  // CREATE CHOOSE KEY GROUP
+  //
+  fCArea = new QGroupBox( this );
+  topLayout->addWidget( fCArea, 1 );
+
+  fCArea->setTitle( i18n("Choose a key for the selected action") );
+  fCArea->setFrameStyle( QFrame::Box | QFrame::Sunken );
+
+  //
+  // CHOOSE KEY GROUP LAYOUT MANAGER	
+  //
+  QGridLayout *grid = new QGridLayout( fCArea, 6, 4, KDialog::spacingHint() );
+  grid->setRowStretch(0,10);
+  grid->setRowStretch(1,10);
+  grid->setRowStretch(2,10);
+  grid->setRowStretch(3,10);
+  grid->setRowStretch(4,10);
+  grid->setRowStretch(5,10);
+
+  grid->setColStretch(0,0);
+  grid->setColStretch(1,10);
+  grid->setColStretch(2,90);
+  grid->setColStretch(3,0);
 	
-	wList->setAutoUpdate(TRUE);
-	wList->update();
+  grid->addRowSpacing(0,15);
+  grid->addRowSpacing(5,1);
 	
-	globalDict = new QDict<int> ( 100, false );
-	globalDict->setAutoDelete( true );
-	readGlobalKeys();
-	stdDict = new QDict<int> ( 100, false );
-	stdDict->setAutoDelete( true );
-	if (check_against_std_keys)
-	  readStdKeys();
-	wList->setCurrentItem( 0 );
+	
+  kbGroup = new QButtonGroup( fCArea );
+  kbGroup->hide();
+  kbGroup->setExclusive( true );
+	
+  QRadioButton *rb = new QRadioButton( i18n("&No key"), fCArea );
+  kbGroup->insert( rb, NoKey );
+  grid->addMultiCellWidget( rb, 1, 1, 1, 2 );
+	
+  rb = new QRadioButton( i18n("&Default key"), fCArea );
+  kbGroup->insert( rb, DefaultKey );
+  grid->addMultiCellWidget( rb, 2, 2, 1, 2 );
+	
+  rb = new QRadioButton( i18n("&Custom key"), fCArea );
+  kbGroup->insert( rb, CustomKey );
+  connect( kbGroup, SIGNAL( clicked( int ) ), SLOT( keyMode( int ) ) );
+  grid->addMultiCellWidget( rb, 3, 3, 1, 2 );
+
+  QBoxLayout *pushLayout = new QHBoxLayout( KDialog::spacingHint() );
+  grid->addLayout( pushLayout, 4, 2 );
+	
+  cShift = new QCheckBox( fCArea );
+  cShift->setText( "SHIFT" );
+  cShift->setEnabled( FALSE );
+  connect( cShift, SIGNAL( clicked() ), SLOT( shiftClicked() ) );
+	
+  cCtrl = new QCheckBox( fCArea );
+  cCtrl->setText( "CTRL" );
+  cCtrl->setEnabled( FALSE );
+  connect( cCtrl, SIGNAL( clicked() ), SLOT( ctrlClicked() ) );
+	
+  cAlt = new QCheckBox( fCArea );
+  cAlt->setText( "ALT" );
+  cAlt->setEnabled( FALSE );
+  connect( cAlt, SIGNAL( clicked() ), SLOT( altClicked() ) );
+  
+  bChange = new KKeyButton("key", fCArea);
+  bChange->setEnabled( FALSE );
+  connect( bChange, SIGNAL( clicked() ), SLOT( changeKey() ) );
+	
+  //
+  // Add widgets to the geometry manager
+  //
+  pushLayout->addWidget( cShift );
+  pushLayout->addWidget( cCtrl );
+  pushLayout->addWidget( cAlt );
+  pushLayout->addSpacing( KDialog::spacingHint()*2 );
+  pushLayout->addWidget( bChange );
+  pushLayout->addStretch( 10 );
+
+
+  lNotConfig = new QLabel(fCArea);
+  lNotConfig->resize(0,0);
+  QFont f = KGlobal::generalFont();
+  f.setPointSize(f.pointSize()+2);
+  f.setBold(true);
+  lNotConfig->setFont( f );
+  lNotConfig->setAlignment( AlignCenter );
+  lNotConfig->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+  if ( wList->count()==0 )
+    lNotConfig->setText( i18n("No keys defined") );
+  else 
+  {
+    lNotConfig->setText( i18n("Not configurable") );
+    lNotConfig->hide();
+  }
+  lNotConfig->hide();
+  
+  lInfo = new QLabel(fCArea);
+  resize(0,0);
+  lInfo->setAlignment( AlignCenter );
+  lInfo->setEnabled( FALSE );
+  lInfo->hide();
+	
+  wList->setAutoUpdate(TRUE);
+  wList->update();
+	
+  globalDict = new QDict<int> ( 100, false );
+  globalDict->setAutoDelete( true );
+  readGlobalKeys();
+  stdDict = new QDict<int> ( 100, false );
+  stdDict->setAutoDelete( true );
+  if (check_against_std_keys)
+    readStdKeys();
+  wList->setCurrentItem( 0 );
 }
+
+
 
 KKeyChooser::~KKeyChooser()
 {
@@ -924,25 +915,30 @@ void KKeyChooser::changeKey()
 
 void KKeyChooser::keyPressEvent( QKeyEvent *e )
 {
-	/* the keys are processed if the change button was pressed */
-	if ( !bKeyIntercept )
-		return;
+  /* the keys are processed if the change button was pressed */
+  if( !bKeyIntercept )
+  {
+    e->ignore();
+    return;
+  }
 	
-	uint kCode = e->key() & ~(SHIFT | CTRL | ALT);
-	/* check the given key :
-	   if it is a non existent key (=0) : keep the old value and say
-	   what happened. */
-	if ( KAccel::keyToString(kCode).isNull() ) {
-		lInfo->setText( i18n("Undefined key") );
-		return;
-	}
+  uint kCode = e->key() & ~(SHIFT | CTRL | ALT);
+  /* check the given key :
+     if it is a non existent key (=0) : keep the old value and say
+     what happened. 
+  */
+  if ( KAccel::keyToString(kCode).isNull() ) 
+  {
+    lInfo->setText( i18n("Undefined key") );
+    return;
+  }
 	
-	bKeyIntercept = FALSE;
-	//eKey->hide();
-	//eKey->setEnabled(FALSE);
-	bChange->setEdit(FALSE);
-	bChange->setFocus();
-	setKey(kCode);
+  bKeyIntercept = FALSE;
+  //eKey->hide();
+  //eKey->setEnabled(FALSE);
+  bChange->setEdit(FALSE);
+  bChange->setFocus();
+  setKey(kCode);
 }
 
 void KKeyChooser::setKey( uint kCode)

@@ -21,21 +21,32 @@
 #include <qdict.h>
 #include <qaccel.h>
 
-#include <qdialog.h>
 #include <qlistbox.h>
-#include <qlabel.h>
+
+//#include <qlabel.h>
+
 #include <qpushbutton.h>
-#include <qcheckbox.h>
-#include <qlineedit.h>
-#include <qbuttongroup.h>
-#include <qtableview.h>
-#include <qstrlist.h>
-#include <qpopupmenu.h>
-#include <qgroupbox.h>
+
+//#include <qcheckbox.h>
+//#include <qlineedit.h>
+//#include <qbuttongroup.h>
+//#include <qtableview.h>
+//#include <qstrlist.h>
+//#include <qpopupmenu.h>
+//#include <qgroupbox.h>
+
 #include <qobject.h>
 
-#include <kapp.h>
+
+class QButtonGroup;
+class QCheckBox;
+class QGroupBox;
+class QLabel;
+class QLineEdit;
+
 #include "kaccel.h"
+#include <kapp.h>
+#include <kdialogbase.h>
 #include "kglobalaccel.h"
 
 /**
@@ -87,7 +98,7 @@ public:
   KSplitList( QWidget *parent = 0, const char *name = 0 );
   ~KSplitList() { }
   int getId(int index) { return ( (KSplitListItem*) ( item( index ) ) )->getId(); }
-
+  void setVisibleItems( int numItem );
 signals:
 
   void newWidth( int newWidth );
@@ -122,47 +133,51 @@ protected:
 };
 
 /**
- *  The KKeyDialog class is used for configuring dictionaries of key/action
- *  associations for KAccel and KGlobalAccel. It uses the KKeyChooser widget and
- *  offers buttons to set all keys to defaults and invoke on-line help.
+ * The KKeyDialog class is used for configuring dictionaries of key/action
+ * associations for KAccel and KGlobalAccel. It uses the KKeyChooser widget 
+ * and offers buttons to set all keys to defaults and invoke on-line help.
  *
- *  Two static methods are supplied which provide the most convienient interface
- *  to the dialog. For example you could use KAccel and KKeyDialog like this
+ * Two static methods are supplied which provide the most convienient interface
+ * to the dialog. For example you could use KAccel and KKeyDialog like this
  *
- *  <pre>
- *  KAccel keys;
+ * <pre>
+ * KAccel keys;
  *
- *  keys.insertItem( i18n( "Zoom in" ), "Zoom in", "+" );
- *  keys.connectItem( "Zoom in", myWindow, SLOT( zoomIn() ) );
+ * keys.insertItem( i18n( "Zoom in" ), "Zoom in", "+" );
+ * keys.connectItem( "Zoom in", myWindow, SLOT( zoomIn() ) );
  *
- *  keys.connectItem( KAccel::Print, myWindow, SLOT( print() ) );
+ * keys.connectItem( KAccel::Print, myWindow, SLOT( print() ) );
  *
- *  keys.readSettings();
+ * keys.readSettings();
  *
- *  if( KKeyDialog::configureKeys( &keys ) ) {
- *		...
- *  }
- *  </pre>
+ * if( KKeyDialog::configureKeys( &keys ) ) {
+ *	      ...
+ * }
+ * </pre>
  *
- *  This will also implicitely save the settings. If you don't want this, you can call
+ * This will also implicitely save the settings. If you don't want this, 
+ * you can call
  *
- *  <pre>
- *  if( KKeyDialog::configureKeys( &keys, false ) ) { // do not save settings
- *		...
- *  }
- *  </pre>
+ * <pre>
+ * if( KKeyDialog::configureKeys( &keys, false ) ) { // do not save settings
+ *	      ...
+ * }
+ * </pre>
  */
-class KKeyDialog : public QDialog
+class KKeyDialog : public KDialogBase
 {
   Q_OBJECT
 	
 public:
 
-  KKeyDialog( QDict<KKeyEntry>* aKeyDict, QWidget* parent = 0, bool check_against_std_keys = false);
+  KKeyDialog( QDict<KKeyEntry>* aKeyDict, QWidget *parent = 0, 
+	      bool check_against_std_keys = false );
   ~KKeyDialog() {};
 
-  static int configureKeys( KAccel *keys, bool save_settings = true  );
-  static int configureKeys( KGlobalAccel *keys,  bool save_settings = true );
+  static int configureKeys( KAccel *keys, bool save_settings = true, 
+			    QWidget *parent = 0  );
+  static int configureKeys( KGlobalAccel *keys,  bool save_settings = true,
+			    QWidget *parent = 0 );
 	
 private:
 
@@ -173,12 +188,12 @@ private:
 };
 
 /**
- *  The KKeyChooser widget is used for configuring dictionaries of key/action
- *  associations for KAccel and KGlobalAccel.
+ * The KKeyChooser widget is used for configuring dictionaries of key/action
+ * associations for KAccel and KGlobalAccel.
  *
- *  The class takes care of all aspects of configuration, including handling key
- *  conflicts internally. Connect to the allDefault slot if you want to set all
- *  configurable keybindings to their default values.
+ * The class takes care of all aspects of configuration, including handling key
+ * conflicts internally. Connect to the allDefault slot if you want to set all
+ * configurable keybindings to their default values.
  */
 class KKeyChooser : public QWidget
 {
@@ -188,7 +203,8 @@ public:
 
   enum { NoKey = 1, DefaultKey, CustomKey };
 	
-  KKeyChooser( QDict<KKeyEntry>* aKeyDict, QWidget* parent = 0, bool check_against_std_keys = false );
+  KKeyChooser( QDict<KKeyEntry>* aKeyDict, QWidget* parent = 0,
+	       bool check_against_std_keys = false );
   ~KKeyChooser();
 	
   QDictIterator<KKeyEntry>* aIt;
