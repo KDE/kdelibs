@@ -217,8 +217,8 @@ void KEMailSettings::setDefault(const QString &s)
 
 void KEMailSettings::setProfile (const QString &s)
 {
-	QCString groupname="PROFILE_";
-	groupname.append(s.latin1());
+	QString groupname="PROFILE_";
+	groupname.append(s);
 	p->m_sCurrentProfile=s;
 	if (!p->m_pConfig->hasGroup(groupname)) { // Create a group if it doesn't exist
 		p->m_pConfig->setGroup(groupname);
@@ -252,10 +252,10 @@ KEMailSettings::KEMailSettings()
 	}
 
 	p->m_pConfig->setGroup("Defaults");
-	p->m_sDefaultProfile=p->m_pConfig->readEntry("Profile", QString::null);
+	p->m_sDefaultProfile=p->m_pConfig->readEntry("Profile", i18n("Default"));
 	if (p->m_sDefaultProfile != QString::null) {
 		if (!p->m_pConfig->hasGroup(QString("PROFILE_")+p->m_sDefaultProfile))
-			setDefault("Default");
+			setDefault(i18n("Default"));
 		else
 			setDefault(p->m_sDefaultProfile);
 	} else {
@@ -263,7 +263,7 @@ KEMailSettings::KEMailSettings()
 				kdDebug() << "WE ALREADY HAVE PROFILES DAMNIT" << endl;
 				setDefault(p->profiles[0]);
 			} else
-				setDefault("Default");
+				setDefault(i18n("Default"));
 	}
 	setProfile(defaultProfileName());
 }
