@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.33  1997/09/28 09:03:15  kulow
+// disabled the "contras=" message, since this breaks kdisplay
+//
 // Revision 1.32  1997/09/26 07:01:12  kalle
 // Here are the promised dummies for session management:
 //
@@ -221,6 +224,7 @@
 // delete theKProcessController in the destructor
 #endif
 
+//
 // Revision 1.67  1997/10/30 13:30:15  ettrich
 // Matthias: fix for setWmCommand: now setWmCommand can also be used for
 //   PseudoSessionManagement (this is the default when session management
@@ -374,6 +378,8 @@ void KApplication::init()
   mkdir (configPath.data(), 0755); // make it public(?)
   configPath += "/share";
   mkdir (configPath.data(), 0755); // make it public
+  configPath += "/config";
+  mkdir (configPath.data(), 0700); // make it private    
 
   // try to read a global application file
   QString aGlobalAppConfigName = kdedir() + "/share/config/" + aAppName + "rc";
@@ -473,22 +479,6 @@ void KApplication::aboutQt()
 KLocale* KApplication::getLocale()
 {
   if( !pLocale )
-void KApplication::restoreTopLevelGeometry() const
-{
-  QWidget* mw = kapp->mainWidget();
-  if( !mw )
-	return;
-  
-  pConfig->setGroup( "Geometry" );
-
-  int x = pConfig->readNumEntry( "TopLevelGeometry-x", mw->x() );
-  int y = pConfig->readNumEntry( "TopLevelGeometry-y", mw->y() );
-  int w = pConfig->readNumEntry( "TopLevelGeometry-w", mw->width() );
-  int h = pConfig->readNumEntry( "TopLevelGeometry-h", mw->height() );
-  mw->setGeometry( x, y, mw->width(), mw->height() );
-  mw->resize( w, h );
-}
- 
     pLocale = new KLocale();
 
   return pLocale;
@@ -513,19 +503,6 @@ void KApplication::restoreTopLevelGeometry() const
       else
         aIconPixmap = getIconLoader()->loadApplicationIcon( argv[i+1] );
       if (aMiniIconPixmap.isNull()){
-
-  /* If there is a main level widget, save its position and size */
-  QWidget* w = kapp->mainWidget();
-  if( !w )
-	debug( "No main widget when running destructor\n" );
-  if( w )
-	{
-	  pConfig->setGroup( "Geometry" );
-	  pConfig->writeEntry( "TopLevelGeometry-x", w->frameGeometry().x() );
-	  pConfig->writeEntry( "TopLevelGeometry-y", w->frameGeometry().y() );
-	  pConfig->writeEntry( "TopLevelGeometry-w", w->frameGeometry().width() );
-	  pConfig->writeEntry( "TopLevelGeometry-h", w->frameGeometry().height() );
-	}
 
 		  aMiniIconPixmap = aIconPixmap;
 		else
@@ -552,6 +529,23 @@ void KApplication::restoreTopLevelGeometry() const
 		aSessionName = argv[i+1];
 		QString aSessionConfigName;
 		if (argv[i+1][0] == '/')
+
+		  aSessionConfigName = argv[i+1];
+		else {
+		  char* pHome;
+		  if( (pHome = getenv( "HOME" )) )
+			aSessionConfigName = pHome;
+			  // WM asks us to save ourselves
+			  KDEBUG( KDEBUG_INFO, 102, "Save yourself message from WM" );
+		  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
+		  if( bSuccess ){
+			  KWM::setUnsavedDataHint( mainWidget()->winId(),
+									   bUnsavedData );
+			  // FIXME: Richtigen Befehl einsetzen
+			  KWM::setWmCommand( mainWidget()->winId(), argv()[0] );
+    
+  if( pLocale )
+    delete pLocale;
 
   delete pCharsets;
 						 aCommand);
@@ -1134,6 +1128,13 @@ QString KApplication::localconfigdir()
   KDEBUG( KDEBUG_WARN, 101, "Sorry not implemented: KApplication::checkRecoverFile" );
   bRecover = false;
   return pFilename;
+}
+
+
+void KApplication::setUnsavedData( bool bUnsaved )
+{
+  bUnsavedData = bUnsaved;
+  KWM::setUnsavedDataHint( mainWidget()->winId(), bUnsavedData );
   if( !aAutosaveDir.exists() )
 	{
 	  if( !aAutosaveDir.mkdir( aAutosaveDir.absPath() ) )

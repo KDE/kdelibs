@@ -35,7 +35,7 @@ void kdebug( ushort nLevel, ushort nArea,
   if( !bAreaCalculated )
 	{
 	  // check to see if we need to create the bit arrays first
-	  static uint size = (uint)rint( pow( 2, sizeof( ushort ) * 8 ) );
+	  static uint size = (uint)rint( pow( 2, (int)(sizeof( ushort ) * 8 )  ) );
 	  if( !pInfoArray ) 
 		pInfoArray = new QBitArray( size );
 	  if( !pWarnArray ) 

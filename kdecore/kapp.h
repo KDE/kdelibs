@@ -1,6 +1,15 @@
 // $Id$
 // Revision 1.41  1998/01/06 22:54:29  kulow
 // $Log$
+// Kalle: Copyright headers
+// kdoctoolbar removed
+//
+// Revision 1.31  1997/10/12 14:37:22  kalle
+// Documentation correction
+//
+// Revision 1.29  1997/10/11 22:39:30  ettrich
+// Matthias: BINARY INCOMPATIBLE CHANGES
+//     - removed senseless method setUnsavedData
 //
 // Revision 1.28  1997/10/11 13:32:14  kalle
 // pAppData in KApplication
@@ -222,13 +231,6 @@ class KCharsets;
 * created that contains an application-specific config file whose
 * name is "~/." + rAppName + "rc". The state of the application-specific 
 * config file may be queried afterwards with getConfigState(). 
-/** Restore previous main window geometry. 
-*
-* If there is no previous size (e.g. first app start or deleted config 
-* file), nothing is done. 
-*/ 
-  void restoreTopLevelGeometry() const;
-
 */
 */ 
 class KApplication : public QApplication
@@ -366,6 +368,13 @@ class KApplication : public QApplication
 	* @return The full path of the file to open.
 	*  @return true on success.
 	*/
+  bool getKDEFonts(QStrList *fontlist);
+  /**
+	* Tells KApplication that there is (is not) unsaved data.
+	* KApplication passes this information on to the window manager.
+	* @param bUnsaved true, if there if data should be saved before exiting
+	*/
+  void setUnsavedData( bool bUnsaved );
 	*/
   const char* getCaption() const;
 
@@ -429,26 +438,21 @@ class KApplication : public QApplication
 	*/
 /**
 * The DropZone which receives root drop events.
-/**
-* An X11 atom used for IPC
-*/
-  /**
-/**
-* An X11 atom used for IPC
-*/
-	* List of all DropZones.
-/**
-* An X11 atom used for IPC
 */
 	*/
+  virtual void removeDropZone( KDNDDropZone *_z ) { dropZones.remove( _z ); }
 /**
-* An X11 atom used for IPC
+* Used to catch X11 events
 */
-  QList<KDNDDropZone> dropZones;
-/**
-* An X11 atom used for IPC
-*/
+  virtual void setRootDropZone( KDNDDropZone *_z ) { rootDropZone = _z; }
 
+protected:
+  /**
+	* List of all DropZones.
+	*/
+  QList<KDNDDropZone> dropZones;
+
+  /** 
 	* The last drop zone the mouse was over.
 	*
 	* If we get a DndLeaveProtocol we must inform 'lastEnteredDropZone'
@@ -474,7 +478,11 @@ private slots:
 
   /**
 	* The X11 display
-  
+  QString aDummyString1; // do not touch
+  Display *display;
+
+  Atom KDEChangePalette;
+  bool bUnsavedData; // there is data to be saved before the app should exit
 
  void appHelpActivated();
   void aboutKDE();
