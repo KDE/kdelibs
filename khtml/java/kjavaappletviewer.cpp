@@ -157,7 +157,6 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     }
     m_view = new KJavaAppletViewerWidget (serverMaintainer->getContext (parent),
                                     wparent);
-    kdDebug(6100) << "KJavaAppletViewer::KJavaAppletViewer ()" << endl;
     QString classname, classid, codebase, baseurl; 
     KJavaApplet * applet = m_view->applet ();
     insertChild (applet->getLiveConnectExtension ()); // hack
@@ -176,9 +175,11 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
                 if (name == "__KHTML__PLUGINBASEURL")
                     baseurl = value;
                 else if (name == "__KHTML__CODEBASE" ||
-                         name.lower()==QString::fromLatin1("java_codebase"))
-                    codebase = value;
-                else if (name == "__KHTML__CLASSID")
+                         name.lower()==QString::fromLatin1("codebase") ||
+                         name.lower()==QString::fromLatin1("java_codebase")) {
+                    if (!value.isEmpty ())
+                        codebase = value;
+                } else if (name == "__KHTML__CLASSID")
                 //else if (name.lower()==QString::fromLatin1("classid"))
                     classid = value;
                 else if (name.lower()==QString::fromLatin1("code") ||
@@ -210,6 +211,8 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
     applet->setAppletClass (classname);
     setInstance (KJavaAppletViewerFactory::instance ());
     KParts::Part::setWidget (m_view);
+    connect (applet->getContext(), SIGNAL(appletLoaded()), this, SLOT(appletLoaded()));
+    connect (applet->getContext(), SIGNAL(showStatus(const QString &)), this, SLOT(infoMessage(const QString &)));
 }
 
 KJavaAppletViewer::~KJavaAppletViewer () {
@@ -234,6 +237,7 @@ bool KJavaAppletViewer::openURL (const KURL & url) {
         applet->setSize (m_view->sizeHint());
         m_view->showApplet ();
     }
+    emit started (0L);
     return url.isValid ();
 }
 
@@ -241,11 +245,18 @@ bool KJavaAppletViewer::openFile () {
     return false;
 }
 
-void KJavaAppletViewer::timerEvent (QTimerEvent *) {
+void KJavaAppletViewer::appletLoaded () {
+    KJavaApplet * applet = m_view->applet ();
+    if (applet->isAlive() || applet->failed())
+        emit completed();
+}
+
+void KJavaAppletViewer::infoMessage (const QString & msg) {
+    m_browserextension->infoMessage(msg);
 }
 
 KAboutData* KJavaAppletViewer::createAboutData () {
-    return 0;
+    return new KAboutData("KJavaAppletViewer", I18N_NOOP("KDE Java Applet Plugin"), "1.0");
 }
 
 //---------------------------------------------------------------------
@@ -301,6 +312,7 @@ void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
 }
 
 //-----------------------------------------------------------------------------
+// TODO move this to kjavaappletwidget
 
 KJavaAppletViewerWidget::KJavaAppletViewerWidget(KJavaAppletContext* context,
         QWidget* parent, const char* name)

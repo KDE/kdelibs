@@ -75,9 +75,10 @@ public:
         { return m_browserextension; }
 public slots:
     virtual bool openURL (const KURL & url);
+    void appletLoaded ();
+    void infoMessage (const QString &);
 protected:
     bool openFile();
-    void timerEvent (QTimerEvent *);
 private:
     KJavaAppletWidget * m_view;
     KConfig * m_config;
