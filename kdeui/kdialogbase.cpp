@@ -51,6 +51,18 @@ int KDialogBaseButton::id()
 
 template class QList<KDialogBaseButton>;
 
+class KDialogBase::KDialogBasePrivate {
+public:
+    KDialogBasePrivate() : bDetails(false), bFixed(false), bSettingDetails(false), detailsWidget(0) { }
+
+    bool bDetails;
+    bool bFixed;
+    bool bSettingDetails;
+    QWidget *detailsWidget;
+    QSize incSize;
+    QSize minSize;
+};
+
 KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
 			  const QString &caption, int buttonMask,
 			  ButtonCode defaultButton, bool separator,
@@ -61,6 +73,7 @@ KDialogBase::KDialogBase( QWidget *parent, const char *name, bool modal,
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
    mButtonOrientation(Horizontal)
 {
+  d = new KDialogBasePrivate;
   setCaption( caption );
 
   makeRelay();
@@ -84,6 +97,7 @@ KDialogBase::KDialogBase( int dialogFace, const QString &caption,
    mIsActivated(false), mShowTile(false), mMessageBoxMode(false),
    mButtonOrientation(Horizontal)
 {
+  d = new KDialogBasePrivate;
   setCaption( caption );
 
   makeRelay();
@@ -110,6 +124,7 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
    mIsActivated(false), mShowTile(false), mMessageBoxMode(true),
    mButtonOrientation(Horizontal),mEscapeButton(escapeButton)
 {
+  d = new KDialogBasePrivate;
   if (yes.isEmpty())
      yes = i18n("&Yes");
   if (no.isEmpty())
@@ -124,7 +139,7 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 
   enableButtonSeparator( separator );
 
-  buttonMask &= Yes|No|Cancel;
+  buttonMask &= Details|Yes|No|Cancel;
 
   makeButtonBox( buttonMask, defaultButton, no, yes, QString::null );
   setButtonCancelText( cancel );
@@ -137,6 +152,7 @@ KDialogBase::KDialogBase( const QString &caption, int buttonMask,
 
 KDialogBase::~KDialogBase()
 {
+  delete d;
 }
 
 QPushButton *KDialogBase::SButton::append( int key, const QString &text )
@@ -248,6 +264,11 @@ void KDialogBase::setupLayout()
     mTopLayout->addWidget( mMainWidget, 10 );
   }
 
+  if ( d->detailsWidget )
+  {
+    mTopLayout->addWidget( d->detailsWidget );
+  }
+
   if( mActionSep != 0 )
   {
     mTopLayout->addWidget( mActionSep );
@@ -345,6 +366,21 @@ QFrame *KDialogBase::plainPage()
 
 void KDialogBase::adjustSize()
 {
+//  if (layout())
+//     layout()->activate();
+  if( d->bFixed )
+    setFixedSize( sizeHint() );
+  else
+    resize( sizeHint() );
+}
+
+QSize KDialogBase::sizeHint() const
+{
+   return d->minSize.expandedTo( minimumSizeHint() ) + d->incSize;
+}
+
+QSize KDialogBase::minimumSizeHint() const
+{
   int m = marginHint();
   int s = spacingHint();
 
@@ -385,6 +421,15 @@ void KDialogBase::adjustSize()
   s1.rwidth()  = QMAX( s1.rwidth(), s2.rwidth() );
   s1.rheight() += s2.rheight();
 
+  if (d->detailsWidget && d->bDetails)
+  {
+    s2 = d->detailsWidget->sizeHint() + QSize( 0, s );
+    s2 = s2.expandedTo( d->detailsWidget->minimumSize() );
+    s2 = s2.expandedTo( d->detailsWidget->minimumSizeHint() );
+    s1.rwidth()  = QMAX( s1.rwidth(), s2.rwidth() );
+    s1.rheight() += s2.rheight();
+  }
+
   //
   // Button separator
   //
@@ -417,42 +462,29 @@ void KDialogBase::adjustSize()
   s1.rheight() += 2*m;
   s1.rwidth()  += 2*m;
 
-  resize( s1 );
+  return s1;
 }
 
 
 void KDialogBase::disableResize()
 {
-  adjustSize();
   setFixedSize( sizeHint() );
 }
 
 
 void KDialogBase::setInitialSize( const QSize &s, bool noResize )
 {
+  d->minSize = s;
+  d->bFixed = noResize;
   adjustSize();
-  if( noResize == true )
-  {
-    setFixedSize( s.expandedTo( sizeHint() ) );
-  }
-  else
-  {
-    resize( s.expandedTo( sizeHint() ) );
-  }
 }
 
 
 void KDialogBase::incInitialSize( const QSize &s, bool noResize )
 {
+  d->incSize = s;
+  d->bFixed = noResize;
   adjustSize();
-  if( noResize == true )
-  {
-    setFixedSize( s.expandedTo(QSize(0,0))+sizeHint() );
-  }
-  else
-  {
-    resize( s.expandedTo(QSize(0,0))+sizeHint() );
-  }
 }
 
 
@@ -468,6 +500,7 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
 
   if( buttonMask & Cancel ) { buttonMask &= ~Close; }
   if( buttonMask & Apply ) { buttonMask &= ~Try; }
+  if( buttonMask & Details ) { buttonMask &= ~Default; }
 
   if( mMessageBoxMode == false )
   {
@@ -486,6 +519,12 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
   {
     QPushButton *pb = mButton.append( Default, i18n("&Default") );
     connect( pb, SIGNAL(clicked()), this, SLOT(slotDefault()) );
+  }
+  if( mButton.mask & Details )
+  {
+    QPushButton *pb = mButton.append( Details, QString::null );
+    connect( pb, SIGNAL(clicked()), this, SLOT(slotDetails()) );
+    setDetails(false);
   }
   if( mButton.mask & User3 )
   {
@@ -567,29 +606,45 @@ void KDialogBase::setButtonStyle( int style )
   mButton.style = style;
 
   const int *layout;
-  if( mButtonOrientation == Horizontal )
+  int layoutMax = 0;
+  if (mMessageBoxMode)
   {
-    static int layoutRule[5][8] =
+    static int layoutRule[5][6] =
     {
-      {Help,Default|Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
-      {Help,Default|Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
-      {Help,Default|Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
-      {Ok,Apply|Try,Cancel|Close,User3,User2,User1|Stretch,Default,Help},
-      {Ok,Cancel|Close,Apply|Try,User3,User2,User1|Stretch,Default,Help},
+      {Details,Stretch,User2|Stretch,User1|Stretch,Cancel|Stretch, Details|Filler},
+      {Details,Stretch,User2|Stretch,User1|Stretch,Cancel|Stretch, Details|Filler},
+      {Details,Stretch,User2|Stretch,User1|Stretch,Cancel|Stretch, Details|Filler},
+      {Details|Filler,Stretch,Cancel|Stretch,User2|Stretch,User1|Stretch,Details},
+      {Details|Filler,Stretch,Cancel|Stretch,User2|Stretch,User1|Stretch,Details}
     };
+    layoutMax = 6;
+    layout = layoutRule[ mButton.style ];
+  }
+  else if (mButtonOrientation == Horizontal)
+  {
+    static int layoutRule[5][9] =
+    {
+      {Help,Default,Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
+      {Help,Default,Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
+      {Help,Default,Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
+      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,Stretch,Default,Help},
+      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,Stretch,Default,Help}
+    };
+    layoutMax = 9;
     layout = layoutRule[ mButton.style ];
   }
   else
   {
-    static int layoutRule[5][8] =
+    static int layoutRule[5][9] =
     {
-      {Ok,Apply|Try,User1,User2,User3|Stretch,Default,Cancel|Close,Help},
-      //{Ok,Apply|Try,Cancel|Close,User1,User2,User3,Default|Stretch,Help},
-      {Help,Default|Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
-      {Help,Default|Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
-      {Ok,Apply|Try,Cancel|Close,User3,User2,User1|Stretch,Default,Help},
-      {Ok,Cancel|Close,Apply|Try,User3,User2,User1|Stretch,Default,Help},
+      {Ok,Apply|Try,User1,User2,User3,Stretch,Default,Cancel|Close,Help},
+      //{Ok,Apply|Try,Cancel|Close,User1,User2,User3,Stretch, Default,Help},
+      {Help,Default,Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
+      {Help,Default,Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
+      {Ok,Apply|Try,Cancel|Close,User3,User2,User1,Stretch,Default,Help},
+      {Ok,Cancel|Close,Apply|Try,User3,User2,User1,Stretch,Default,Help}
     };
+    layoutMax = 9;
     layout = layoutRule[ mButton.style ];
   }
 
@@ -610,23 +665,28 @@ void KDialogBase::setButtonStyle( int style )
 			  spacingHint());
   }
 
-  if( mMessageBoxMode == true )
-  {
-    lay->addStretch(1);
-  }
-
   int numButton = 0;
   QPushButton *prevButton = 0;
   QPushButton *newButton;
 
-  for( uint i=0; i<8; i++ )
+  for( int i=0; i<layoutMax; i++ )
   {
-    if( i>0 && (layout[i-1]&Stretch) && mMessageBoxMode == false )
+    if(layout[i] == Stretch) // Unconditional Stretch
     {
       lay->addStretch(1);
+      continue;
+    } 
+    else if (layout[i] & Filler) // Conditional space
+    {
+      if (mButton.mask & layout[i])
+      {
+        newButton = actionButton( (ButtonCode) (layout[i] & ~(Stretch | Filler)));
+        if (newButton)
+           lay->addSpacing(newButton->sizeHint().width());
+      }
+      continue;
     }
-
-    if( mButton.mask & Help & layout[i] )
+    else if( mButton.mask & Help & layout[i] )
     {
       newButton = actionButton( Help );
       lay->addWidget( newButton ); numButton++;
@@ -676,22 +736,27 @@ void KDialogBase::setButtonStyle( int style )
       newButton = actionButton( Close );
       lay->addWidget( newButton ); numButton++;
     }
+    else if( mButton.mask & Details & layout[i] )
+    {
+      newButton = actionButton( Details );
+      lay->addWidget( newButton ); numButton++;
+    }
     else
     {
       continue;
     }
+
+    // Add conditional stretch (Only added if a button was added)
+    if(layout[i] & Stretch)
+    {
+      lay->addStretch(1);
+    } 
 
     if( prevButton != 0 )
     {
       setTabOrder( prevButton, newButton );
     }
     prevButton = newButton;
-
-    if( mMessageBoxMode == true )
-    {
-      lay->addStretch(1);
-    }
-
   }
 
   mButton.resize( false, 0, spacingHint(), mButtonOrientation );
@@ -910,6 +975,60 @@ void KDialogBase::slotDefault()
   emit defaultClicked();
 }
 
+void KDialogBase::slotDetails()
+{
+  setDetails(!d->bDetails);
+}
+
+void KDialogBase::setDetailsWidget(QWidget *detailsWidget)
+{
+  delete d->detailsWidget;
+  d->detailsWidget = detailsWidget;
+  if (d->detailsWidget->parentWidget() != this)
+     d->detailsWidget->reparent(this, QPoint(0,0));
+  d->detailsWidget->hide();
+  if( mIsActivated == true )
+  {
+    setupLayout();
+  }
+  if (!d->bSettingDetails)
+    setDetails(d->bDetails);
+}
+
+void KDialogBase::setDetails(bool showDetails)
+{
+  d->bDetails = showDetails;
+  d->bSettingDetails = true;
+  emit aboutToShowDetails();
+  d->bSettingDetails = false;
+  if (d->bDetails)
+  {
+     setButtonText(Details, i18n("Details <<"));
+     if (d->detailsWidget)
+     {
+        if (layout())
+           layout()->setEnabled(false);
+        adjustSize();
+        d->detailsWidget->show();
+        if (layout())
+        {
+           layout()->activate();
+           layout()->setEnabled(true);
+        }
+     }
+  }
+  else
+  {
+     setButtonText(Details, i18n("Details >>"));
+     if (d->detailsWidget)
+     {
+        d->detailsWidget->hide();
+     }
+     if (layout())
+        layout()->activate();
+     adjustSize();
+  }
+}
 
 void KDialogBase::slotOk()
 {

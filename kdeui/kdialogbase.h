@@ -210,6 +210,7 @@ class KDialogBase : public KDialog
     /**
      *  @li @p Help -    Show Help-button.
      *  @li @p Default - Show Default-button.
+     *  @li @p Details - Show Details-button.
      *  @li @p Ok -      Show Ok-button.
      *  @li @p Apply -   Show Apply-button.
      *  @li @p Try -     Show Try-button.
@@ -221,6 +222,7 @@ class KDialogBase : public KDialog
      *  @li @p No -      Show No-button.
      *  @li @p Yes -     Show Yes-button.
      *  @li @p Stretch - Used internally. Ignored when used in a constructor.
+     *  @li @p Filler  - Used internally. Ignored when used in a constructor.
      */
     enum ButtonCode
     {
@@ -236,6 +238,8 @@ class KDialogBase : public KDialog
       User3   = 0x00000200,
       No      = 0x00000080,
       Yes     = 0x00000100,
+      Details = 0x00000400,
+      Filler  = 0x40000000,
       Stretch = 0x80000000
     };
 
@@ -441,7 +445,8 @@ class KDialogBase : public KDialog
      * resized before showing it.
      **/
     virtual void adjustSize();
-
+    virtual QSize sizeHint() const;
+    virtual QSize minimumSizeHint() const;
 
     /**
      * Retrieve the empty page when the predefined layout is used in @p Plain
@@ -1136,6 +1141,19 @@ class KDialogBase : public KDialog
      */
     void helpClickedSlot( const QString & );
 
+    /**
+     * Set the status of the Details button.
+     */
+    void setDetails(bool showDetails); 
+
+    /**
+     * Set the widget that gets shown when "Details" is enabled.
+     *
+     * The dialog takes over ownership of the widget.
+     * Any previously set widget gets deleted.
+     */
+    void setDetailsWidget(QWidget *detailsWidget); 
+
     /** 
      * This method is called automatically whenever the background has 
      * changed. You do not need to use this method.
@@ -1154,6 +1172,7 @@ class KDialogBase : public KDialog
      * @ref slotDefault() is not replaced.
      */
     void defaultClicked();
+
     
     /** 
      * The User3 button was pressed. This signal is only emitted if
@@ -1251,6 +1270,12 @@ class KDialogBase : public KDialog
      */
     void finished();
 
+    /** 
+     * The detailsWidget is about to get shown. This is your last chance
+     * to call setDetailsWidget if you haven't done so yet.
+     */
+    void aboutToShowDetails();
+
   protected:
     /**
      * Maps some keys to the actions buttons. F1 is mapped to the Help
@@ -1284,6 +1309,14 @@ class KDialogBase : public KDialog
      * Activated when the Default button has been clicked.
      */
     virtual void slotDefault();
+
+    /**
+     * Activated when the Details button has been clicked.
+     * @see detailsClicked(bool)
+     * (This function is not virtual to maintain BC)
+     * KDE3.0: Make virtual for consistency with the other functions.
+     */
+    void slotDetails();
 
     /**
      * Activated when the User3 button has been clicked.
