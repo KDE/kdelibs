@@ -21,6 +21,7 @@
 
 #include <dcopobject.h>
 #include <dcopref.h>
+#include <kdelibs_export.h>
 
 class KActionCollection;
 class KAction;
@@ -35,7 +36,7 @@ class KAction;
  * This class can generate DCOP object ids for given action objects, which it automatically
  * processes, as being a DCOPObjectProxy .
  */
-class KDCOPActionProxy : public DCOPObjectProxy
+class KDEUI_EXPORT KDCOPActionProxy : public DCOPObjectProxy
 {
 public:
   /**
