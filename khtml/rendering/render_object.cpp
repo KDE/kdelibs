@@ -1305,7 +1305,7 @@ bool RenderObject::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty,
         overhangingContents() || inOverflowRect || isInline() || isCanvas() ||
         isTableRow() || isTableSection() || inside || mouseInside() ||
         (childrenInline() && firstChild() && firstChild()->style()->display() == COMPACT )) {
-        if ( hitTestAction == HitTestChildrenOnly )
+        if ( hitTestAction == HitTestChildrenOnly && firstChild() )
             inside = false;
         if ( style()->hidesOverflow() && layer() )
             layer()->subtractScrollOffset(tx, ty);
