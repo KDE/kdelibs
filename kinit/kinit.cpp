@@ -50,6 +50,7 @@
 #include <qtextstream.h>
 #include <kinstance.h>
 #include <kstddirs.h>
+#include <klibloader.h>
 #include <kapp.h>
 
 #include "ltdl.h"
@@ -197,14 +198,17 @@ static pid_t launch(int argc, const char *_name, const char *args)
      d.handle = 0;
      if (lib.right(3) == ".la")
      {
-        d.handle = lt_dlopen( lib.data() );
+        QString libpath = KLibLoader::findLibrary( lib );
+        if ( !libpath.isEmpty())
+        {
+           d.handle = lt_dlopen( libpath.latin1() );
            if (!d.handle )
            {
               const char * ltdlError = lt_dlerror();
-            if ( ltdlError && strcmp(ltdlError,"file not found") )
               fprintf(stderr, "Could not dlopen library %s: %s\n", lib.data(), ltdlError != 0 ? ltdlError : "(null)" );
            }
         }
+     }
      if (!d.handle )
      {
         d.result = 2; // Try execing
@@ -769,8 +773,7 @@ static void kdeinit_library_path()
 {
    QCString ltdl_library_path = getenv("LTDL_LIBRARY_PATH");
    QCString ld_library_path = getenv("LD_LIBRARY_PATH");
-   KInstance instance( "kdeinit" );
-   QStringList candidates = instance.dirs()->resourceDirs("lib");
+   QStringList candidates = KGlobal::dirs()->resourceDirs("lib");
    for (QStringList::ConstIterator it = candidates.begin();
         it != candidates.end();
         it++)
@@ -792,6 +795,9 @@ static void kdeinit_library_path()
    }
    setenv("LTDL_LIBRARY_PATH", ltdl_library_path.data(), 1);
    setenv("LD_LIBRARY_PATH", ld_library_path.data(), 1);
+#ifndef NDEBUG
+   qDebug("LD_LIBRARY_PATH=%s", ld_library_path.data());
+#endif
    if (lt_dlinit())
    {
       const char * ltdlError = lt_dlerror();
@@ -916,6 +922,9 @@ int main(int argc, char **argv, char **envp)
    /** Make process group leader (for shutting down children later) **/
    if(keep_running)
       setsid();
+
+   /** Needed for the locate and findLibrary calls */
+   KInstance instance( "kdeinit" );
 
    /** Prepare to change process name **/
    kdeinit_initsetproctitle(argc, argv, envp);
