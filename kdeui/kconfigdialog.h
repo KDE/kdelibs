@@ -65,6 +65,11 @@ Q_OBJECT
 
 signals:
   /**
+   * A widget in the dialog was modified.
+   */
+  void widgetModified();
+
+  /**
    * One or more of the settings have been permanently changed such as if
    * the user clicked on the Apply or Ok button.
    */

@@ -146,8 +146,13 @@ bool KConfigDialog::showDialog(const char* name)
 
 void KConfigDialog::updateButtons()
 {
+  static bool only_once = false;
+  if (only_once) return;
+  only_once = true;
   enableButton(KDialogBase::Apply, d->mgr->hasChanged() || hasChanged());
   enableButton(KDialogBase::Default, !(d->mgr->isDefault() && isDefault()));
+  emit widgetModified();
+  only_once = false;
 }
 
 void KConfigDialog::settingsChangedSlot()
