@@ -121,6 +121,17 @@ public:
 		     bool canReturnNull=false) const;
 
     /**
+     * Creates an icon set, that will do on-demand loading of the icon.
+     * Loading itself is done by calling @ref loadIcon .
+     *
+     * @param name The name of the icon, without extension.
+     * @param group The icon group. This will specify the size of and effects to
+     * be applied to the icon.
+     * @param size If nonzero, this overrides the size specified by @p group.
+     */
+    QIconSet loadIconSet(const QString& name, int group, int size=0);
+
+    /**
      * Returns the path of an icon.
      * @param name The name of the icon, without extension.
      * @param group_or_size If positive, search icons whose size is
