@@ -227,23 +227,31 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
               :QGroupBox( parent, name )
 {
     setTitle( i18n("Cookie details") );
-    QGridLayout* grid = new QGridLayout( this, 8, 2,
+    QGridLayout* grid = new QGridLayout( this, 9, 2,
                                          KDialog::spacingHint(),
                                          KDialog::marginHint() );
     grid->addRowSpacing( 0, fontMetrics().lineSpacing() );
     grid->setColStretch( 1, 3 );
 
-    //Add the value
-    QLabel* label = new QLabel( i18n("Value:"), this );
+    QLabel* label = new QLabel( i18n("Name:"), this );
     grid->addWidget( label, 1, 0 );
+    m_name = new QLineEdit( this );
+    m_name->setReadOnly( true );
+    m_name->setText( cookie->name() );
+    m_name->setMaximumWidth( fontMetrics().width('W') * 25 );
+    grid->addWidget( m_name, 1 ,1 );
+
+    //Add the value
+    label = new QLabel( i18n("Value:"), this );
+    grid->addWidget( label, 2, 0 );
     m_value = new QLineEdit( this );
     m_value->setReadOnly( true );
     m_value->setText( cookie->value() );
     m_value->setMaximumWidth( fontMetrics().width('W') * 25 );
-    grid->addWidget( m_value, 1, 1);
+    grid->addWidget( m_value, 2, 1);
 
     label = new QLabel( i18n("Expires:"), this );
-    grid->addWidget( label, 2, 0 );
+    grid->addWidget( label, 3, 0 );
     m_expires = new QLineEdit( this );
     m_expires->setReadOnly( true );
     QDateTime cookiedate;
@@ -253,47 +261,47 @@ KCookieDetail::KCookieDetail( KHttpCookie* cookie, int cookieCount,
     else
       m_expires->setText( i18n("Not specified") );
     m_expires->setMaximumWidth(fontMetrics().width('W') * 25 );
-    grid->addWidget( m_expires, 2, 1);
+    grid->addWidget( m_expires, 3, 1);
 
     label = new QLabel( i18n("Path:"), this );
-    grid->addWidget( label, 3, 0 );
+    grid->addWidget( label, 4, 0 );
     m_path = new QLineEdit( this );
     m_path->setReadOnly( true );
     m_path->setText( cookie->path() );
     m_path->setMaximumWidth( fontMetrics().width('W') * 25 );
-    grid->addWidget( m_path, 3, 1);
+    grid->addWidget( m_path, 4, 1);
 
     label = new QLabel( i18n("Domain:"), this );
-    grid->addWidget( label, 4, 0 );
+    grid->addWidget( label, 5, 0 );
     m_domain = new QLineEdit( this );
     m_domain->setReadOnly( true );
     QString val = cookie->domain();
     m_domain->setText( val.isEmpty()?i18n("Not specified"):val );
     m_domain->setMaximumWidth( fontMetrics().width('W') * 25 );
-    grid->addWidget( m_domain, 4, 1);
+    grid->addWidget( m_domain, 5, 1);
 
     label = new QLabel( i18n("Is Secure:"), this );
-    grid->addWidget( label, 5, 0 );
+    grid->addWidget( label, 6, 0 );
     m_secure = new QLineEdit( this );
     m_secure->setReadOnly( true );
     m_secure->setText( cookie->isSecure() ? i18n("True"):i18n("False") );
     m_secure->setMaximumWidth( fontMetrics().width('W') * 25 );
-    grid->addWidget( m_secure, 5, 1 );
+    grid->addWidget( m_secure, 6, 1 );
 
     label = new QLabel( i18n("Version:"), this );
-    grid->addWidget( label, 6, 0 );
+    grid->addWidget( label, 7, 0 );
     m_protocol = new QLineEdit( this );
     m_protocol->setReadOnly( true );
     m_protocol->setText( QString::number(cookie->protocolVersion()) );
     m_protocol->setMaximumWidth( fontMetrics().width('W') * 25 );
-    grid->addWidget( m_protocol, 6, 1 );
+    grid->addWidget( m_protocol, 7, 1 );
 
     if ( cookieCount > 1 )
     {
         QPushButton* btnNext = new QPushButton( i18n("&Next >>"), this );
         btnNext->setFlat( true );
         btnNext->setFixedSize( btnNext->sizeHint() );
-        grid->addMultiCellWidget( btnNext, 7, 7, 0, 1 );
+        grid->addMultiCellWidget( btnNext, 8, 8, 0, 1 );
         connect( btnNext, SIGNAL(clicked()), SLOT(slotNextCookie()) );
 #ifndef QT_NO_TOOLTIP
         QToolTip::add( btnNext, i18n("Show details of the next cookie") );
@@ -315,6 +323,7 @@ void KCookieDetail::slotNextCookie()
 
     if ( m_cookie )
     {
+        m_name->setText( m_cookie->name() );
         m_value->setText( ( m_cookie->value() ) );
         if ( m_cookie->domain().isEmpty() )
           m_domain->setText( i18n("Not specified") );

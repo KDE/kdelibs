@@ -47,6 +47,7 @@ public :
     ~KCookieDetail();
 
 private :
+    QLineEdit*   m_name;
     QLineEdit*   m_value;
     QLineEdit*   m_expires;
     QLineEdit*   m_domain;
