@@ -86,11 +86,6 @@ documentation, theme modules, and regression tests. Here is a list:
     This is work-in-progress and not (yet) part of kdelibs. Basically we
     have kioslaves for databases as well as database aware dialog widgets.
 
-* kprint
-    This is work-in-progress and not (yet) part of kdelibs. Basically we
-    have a wrapper around sysAPS so that we will be able to print via
-    LPR and CUPS.    
-
 * libtldl
     System independed dlopen() handler.
 
