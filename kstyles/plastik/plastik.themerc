@@ -1,12 +1,16 @@
 [Misc]
 Name=Plastik
+Name[mk]=Пластик
+Name[ta]=ப்ளாஸ்டிக்
 ConfigPage=kstyle_plastik_config
 Comment=A simple and clean style
 Comment[br]=Un arloadig panell eeun
 Comment[cy]=Arddull syml a glan
 Comment[da]=En simpel og ren stil
 Comment[fr]=Un style simple et propre
+Comment[mk]=Едноставен и чист стил
 Comment[sv]=En enkel och ren stil
+Comment[ta]=ஒரு சுலபமானதும் தெளிவானதுமான பாணி
 Comment[tr]=Basit ve temiz stil
 [KDE]
 WidgetStyle=Plastik
