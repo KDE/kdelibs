@@ -23,6 +23,10 @@
 
 #include <kaction.h>
 
+#include <kapp.h>
+#include <qwhatsthis.h>
+#include <qtoolbutton.h>
+
 KStdAction::KStdAction()
 {
 }
@@ -179,8 +183,20 @@ QAction *KStdAction::action(StdAction act_enum, const QObject *recvr,
         act = preferences(recvr, slot, parent, name);
         break;
 
-    case Help:
-        act = help(recvr, slot, parent, name);
+    case HelpContents:
+        act = helpContents(recvr, slot, parent, name);
+        break;
+    case WhatsThis:
+        act = whatsThis(recvr, slot, parent, name);
+        break;
+    case ReportBug:
+        act = reportBug(recvr, slot, parent, name);
+        break;
+    case AboutApp:
+        act = aboutApp(recvr, slot, parent, name);
+        break;
+    case AboutKDE:
+        act = aboutKDE(recvr, slot, parent, name);
         break;
 
     default:
@@ -337,8 +353,20 @@ const char* KStdAction::stdName(StdAction act_enum)
         ret = "options_configure";
         break;
 
-    case Help:
-        ret = "help";
+    case HelpContents:
+        ret = "help_contents";
+        break;
+    case WhatsThis:
+        ret = "help_whats_this";
+        break;
+    case ReportBug:
+        ret = "help_report_bug";
+        break;
+    case AboutApp:
+        ret = "help_about_app";
+        break;
+    case AboutKDE:
+        ret = "help_about_kde";
         break;
 
     default:
@@ -691,10 +719,41 @@ KAction *KStdAction::preferences(const QObject *recvr, const char *slot,
                        name ? name : stdName(Preferences));
 }
 
-KAction *KStdAction::help(const QObject *recvr, const char *slot,
-						  QObject *parent, const char *name )
+KAction *KStdAction::helpContents(const QObject *recvr, const char *slot,
+						          QObject *parent, const char *name )
 {
-    return new KAction(i18n("&Help"), QIconSet(BarIcon("help")),
+    return new KAction(i18n("&Contents"), QIconSet(BarIcon("contents")),
                        KStdAccel::key(KStdAccel::Help), recvr, slot, parent,
-                       name ? name : stdName(Help));
+                       name ? name : stdName(HelpContents));
+}
+
+KAction *KStdAction::whatsThis(const QObject *recvr, const char *slot,
+						       QObject *parent, const char *name )
+{
+    return new KAction(i18n("What's &This?"),
+                       QWhatsThis::whatsThisButton(0)->iconSet(),
+                       KStdAccel::key(KStdAccel::WhatThis), recvr, slot,
+                       parent, name ? name : stdName(WhatsThis));
+}
+
+KAction *KStdAction::reportBug(const QObject *recvr, const char *slot,
+						       QObject *parent, const char *name )
+{
+    return new KAction(i18n("&Report Bug..."), 0, recvr, slot,
+                       parent, name ? name : stdName(ReportBug));
+}
+
+KAction *KStdAction::aboutApp(const QObject *recvr, const char *slot,
+						      QObject *parent, const char *name )
+{
+    return new KAction(i18n("&About") + ' ' + QString::fromLatin1(kapp->name())
+        + QString::fromLatin1("..."), QIconSet(kapp->miniIcon()), 0, recvr,
+        slot, parent, name ? name : stdName(AboutApp));
+}
+
+KAction *KStdAction::aboutKDE(const QObject *recvr, const char *slot,
+						      QObject *parent, const char *name )
+{
+    return new KAction(i18n("About &KDE..."), 0, recvr, slot,
+                       parent, name ? name : stdName(AboutKDE));
 }

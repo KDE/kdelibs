@@ -64,7 +64,7 @@ public:
         ShowMenubar, ShowToolbar, ShowStatusbar, KeyBindings, Preferences,
 
         // Help Menu
-        Help
+        HelpContents, WhatsThis, ReportBug, AboutApp, AboutKDE
     };
 
     /**
@@ -361,10 +361,35 @@ public:
                                 QObject *parent = 0, const char *name = 0L );
 
     /**
-     * Display the help menu.
+     * Display the help contents.
      */
-    static KAction *help(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0, const char *name = 0L );
+    static KAction *helpContents(const QObject *recvr = 0, const char *slot = 0,
+                                 QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * Trigger the What's This cursor
+     */
+    static KAction *whatsThis(const QObject *recvr = 0, const char *slot = 0,
+                              QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * Open up the Report Bug dialog
+     */
+    static KAction *reportBug(const QObject *recvr = 0, const char *slot = 0,
+                              QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * Display the About app box
+     */
+    static KAction *aboutApp(const QObject *recvr = 0, const char *slot = 0,
+                             QObject *parent = 0, const char *name = 0L );
+
+    /**
+     * Display the About KDE dialog
+     */
+    static KAction *aboutKDE(const QObject *recvr = 0, const char *slot = 0,
+                             QObject *parent = 0, const char *name = 0L );
+
 };
 
 #endif // KSTDACTION_H
