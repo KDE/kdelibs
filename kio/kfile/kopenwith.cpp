@@ -337,7 +337,6 @@ KOpenWithDlg::KOpenWithDlg( const QString &serviceType, const QString& value,
 KOpenWithDlg::KOpenWithDlg( QWidget *parent)
              :QDialog( parent, 0L, true )
 {
-    d = new KOpenWithDlgPrivate();
   setCaption(i18n("Choose Application"));
   QString text = i18n("<qt>Select a program. "
                       "If the program is not listed, enter the name or click "
