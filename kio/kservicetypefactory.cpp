@@ -50,7 +50,7 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
 {
    if (!m_sycocaDict) return 0L; // Error!
    assert (!KSycoca::self()->isBuilding());
-   kdebug( KDEBUG_INFO, 7011, QString("findServiceTypeByName(%1)").arg(_name) );
+   //kdebug( KDEBUG_INFO, 7011, QString("findServiceTypeByName(%1)").arg(_name) );
    int offset = m_sycocaDict->find_string( _name );
    if (!offset) return 0; // Not found
    KServiceType * newServiceType = createServiceType(offset);
