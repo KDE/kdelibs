@@ -64,7 +64,9 @@ KMenuBar::KMenuBar(QWidget *parent, const char *name)
     d->frameStyle = frameStyle();
 
     if ( kapp )
-        connect( kapp, SIGNAL(appearanceChanged()), this, SLOT(slotReadConfig()));
+        // toolbarAppearanceChanged(int) is sent when changing macstyle
+        connect( kapp, SIGNAL(toolbarAppearanceChanged(int)),
+            this, SLOT(slotReadConfig()));
 
     slotReadConfig();
 }
