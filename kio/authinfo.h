@@ -117,13 +117,21 @@ public:
    bool verifyPath;
 
    /**
-    * Flag, if set, that forces the username field to be read-only.
+    * Flag which if set forces the username field to be read-only.
     * This is set to false by default. [optional]
     */
    bool readOnly;
 
    /**
     * Flag to indicate the persistence of the given password.
+    *
+    * This is a two-way flag when set before calling openPassDlg
+    * makes the "keep Password" check box will visible to the user.
+    * In return the flag will indicate the state of the check box.
+    * By default if the flag is checked the password will be cached
+    * for the entire life of the current KDE session otherwise the
+    * cached password is deleted right after the application using
+    * it has been closed.
     *
     */
     bool keepPassword;
