@@ -55,7 +55,6 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_regdListeners( 0 ),
       m_tabIndex( 0 ),
       m_hasId( false ),
-      m_hasClass( false ),
       m_hasStyle( false ),
       m_pressed( false ),
       m_attached(false),
@@ -881,7 +880,6 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
     // ### implement dump() for all appropriate subclasses
 
     if (m_hasId) { *stream << " hasId"; }
-    if (m_hasClass) { *stream << " hasClass"; }
     if (m_hasStyle) { *stream << " hasStyle"; }
     if (m_specified) { *stream << " specified"; }
     if (m_focused) { *stream << " focused"; }
