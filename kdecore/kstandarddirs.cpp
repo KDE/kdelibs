@@ -348,8 +348,8 @@ static void lookupDirectory(const QString& path, const QString &relPart,
 
       QString pathfn = path + fn;
       if ( stat( QFile::encodeName(pathfn), &buff ) != 0 ) {
-	kdDebug() << "Error stat'ing " << pathfn << perror << endl;
-	continue; // Couldn't stat (Why not?)
+	kdDebug() << "Error stat'ing " << pathfn << " : " << perror << endl;
+	continue; // Couldn't stat (e.g. no read permissions)
       }
       if ( recursive ) {
 	if ( S_ISDIR( buff.st_mode )) {
@@ -443,8 +443,8 @@ static void lookupPrefix(const QString& prefix, const QString& relpath,
 		QString rfn = relPart+fn;
 		fn = prefix + fn;
 		if ( stat( QFile::encodeName(fn), &buff ) != 0 ) {
-		    kdDebug() << "Error statting " << fn << perror << endl;
-		    continue; // Couldn't stat (Why not?)
+		    kdDebug() << "Error statting " << fn << " : " << perror << endl;
+		    continue; // Couldn't stat (e.g. no permissions)
 		}
 		if ( S_ISDIR( buff.st_mode ))
 		    lookupPrefix(fn + '/', rest, rfn + '/', regexp, list, relList, recursive, uniq);
