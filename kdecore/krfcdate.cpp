@@ -20,10 +20,13 @@
  *  Boston, MA 02111-1307, USA.
  **/
 
-#include <krfcdate.h>
+#include <sys/param.h>
 
 #include <ctype.h>
 #include <stdlib.h>
+
+#include <krfcdate.h>
+
 
 static const char haystack[37]="janfebmaraprmayjunjulaugsepoctnovdec";
 
