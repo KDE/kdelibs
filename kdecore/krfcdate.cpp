@@ -225,6 +225,33 @@ KRFCDate::parseDate(const QString &_date)
            }
         }
      }
+     if (sizeof(time_t) == 4)
+     {
+         if ((time_t)-1 < 0)
+         {
+            if (year >= 2038)
+            {
+               year = 2038;
+               month = 0;
+               day = 1;
+               hour = 0;
+               minute = 0;
+               second = 0;
+            }
+         }
+         else
+         {
+            if (year >= 2115)
+            {
+               year = 2115;
+               month = 0;
+               day = 1;
+               hour = 0;
+               minute = 0;
+               second = 0;
+            }
+         }
+     }
 
      result = ymdhms_to_seconds(year, month+1, day, hour, minute, second);
 
