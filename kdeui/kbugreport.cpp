@@ -323,7 +323,7 @@ void KBugReport::appChanged(int i)
     if (d->appname == d->appcombo->text(i) && m_aboutData)
         m_strVersion = m_aboutData->version();
     else
-        m_strVersion = i18n("unknown");
+        m_strVersion = i18n("unknown program name", "unknown");
 
     m_strVersion += d->kde_version;
     m_version->setText(m_strVersion);

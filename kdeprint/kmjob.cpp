@@ -91,7 +91,7 @@ QString KMJob::stateString()
 			str = i18n("Error");
 			break;
 		default:
-			str = i18n("Unknown");
+			str = i18n("Unknown State", "Unknown");
 			break;
 	}
 	return str;

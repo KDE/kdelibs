@@ -84,9 +84,9 @@ bool KMLpdManager::completePrinterShort(KMPrinter *printer)
 	if (entry)
 	{
 		QString	type(entry->comment(2)), driver(entry->comment(7)), lp(entry->arg("lp"));
-		printer->setDescription(i18n("Local printer queue (%1)").arg(type.isEmpty() ? i18n("Unknown") : type));
+		printer->setDescription(i18n("Local printer queue (%1)").arg(type.isEmpty() ? i18n("Unknown Type of local printer queue", Unknown") : type));
 		printer->setLocation(i18n("<Not available>"));
-		printer->setDriverInfo(driver.isEmpty() ? i18n("Unknown") : driver);
+		printer->setDriverInfo(driver.isEmpty() ? i18n("Unknown Driver", "Unknown") : driver);
 		// device
 		KURL	url;
 		if (!entry->arg("rm").isEmpty())

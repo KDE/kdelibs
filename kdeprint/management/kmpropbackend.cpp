@@ -70,7 +70,7 @@ void KMPropBackend::setPrinter(KMPrinter *p)
 		else if (prot == "lpd") m_type->setText(i18n("Remote LPD queue"));
 		else if (prot == "file") m_type->setText(i18n("File printer"));
 		else if (prot == "fax") m_type->setText(i18n("Serial Fax/Modem printer"));
-		else m_type->setText(i18n("Unknown"));
+		else m_type->setText(i18n("Unknown Protocol", "Unknown"));
 		emit enable(true);
 		emit enableChange(p->isLocal());
 	}

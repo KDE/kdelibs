@@ -138,7 +138,7 @@ void KMWIppPrinter::slotScan()
 		{
 			QString	name;
 			if (it.current()->Name.isEmpty())
-				name = i18n("<Unknown> (%1)").arg(it.current()->IP);
+				name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(it.current()->IP);
 			else
 				name = it.current()->Name;
 			QListViewItem	*item = new QListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));
@@ -190,7 +190,7 @@ void KMWIppPrinter::slotPrinterSelected(QListViewItem *item)
 				case IPP_PRINTER_IDLE: value = i18n("Idle"); break;
 				case IPP_PRINTER_STOPPED: value = i18n("Stopped"); break;
 				case IPP_PRINTER_PROCESSING: value = i18n("Processing..."); break;
-				default: value = i18n("Unknown"); break;
+				default: value = i18n("Unknown State", "Unknown"); break;
 			}
 			txt.append(i18n("<b>State</b>: %1<br>").arg(value));
 		}

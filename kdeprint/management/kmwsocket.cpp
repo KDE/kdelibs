@@ -149,7 +149,7 @@ void KMWSocket::slotScan()
 		{
 			QString	name;
 			if (it.current()->Name.isEmpty())
-				name = i18n("<Unknown> (%1)").arg(it.current()->IP);
+				name = i18n("Unknown host - 1 is the IP", "<Unknown> (%1)").arg(it.current()->IP);
 			else
 				name = it.current()->Name;
 			QListViewItem	*item = new QListViewItem(m_list,name,it.current()->IP,QString::number(it.current()->Port));

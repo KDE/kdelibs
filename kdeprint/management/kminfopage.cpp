@@ -120,7 +120,7 @@ void KMInfoPage::setPrinter(KMPrinter *p)
 			else m_type->setText(i18n("Local printer"));
 		else if (p->isSpecial())
 			m_type->setText(i18n("Special (pseudo) printer"));
-		else m_type->setText(i18n("Unknown"));
+		else m_type->setText(i18n("Unknown class of printer", "Unknown"));
 		m_state->setText(p->stateString());
 		m_location->setText(p->location());
 		m_description->setText(p->description());

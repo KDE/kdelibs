@@ -1337,7 +1337,7 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     emit setWindowCaption( title.url() );
   }
   else
-    emit setWindowCaption( i18n( "* Unknown *" ) );
+    emit setWindowCaption( i18n( "no title", "* Unknown *" ) );
 
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
   if (args.serviceType == "text/xml")
