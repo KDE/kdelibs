@@ -1,3 +1,9 @@
+// Oliver Eiden <o.eiden@pop.ruhr.de>
+// 23.3.99
+// changed the mapping from 3-3-2 decoded pixels to 8-8-8 decoded true-colour pixels
+// now it uses the same mapping as xv, this leads to better visual results
+// Patch merged in HEAD by Chris Spiegel <matrix@xirtam.org>
+
 #include <stdio.h>
 #include <string.h>
 #include <qiodevice.h>
@@ -63,10 +69,29 @@ void kimgio_xv_read( QImageIO *_imageio )
 
 	for ( int j = 0; j < 256; j++ )
 	{
-		r =  ((int) ((j >> 5) & 0x07)) << 5;      
-		g =  ((int) ((j >> 2) & 0x07)) << 5;   
-		b =  ((int) ((j >> 0) & 0x03)) << 6;
+// ----------- OLIVER EIDEN
+// 	That is the old-code !
+/*		r =  ((int) ((j >> 5) & 0x07)) << 5;
+		g =  ((int) ((j >> 2) & 0x07)) << 5;
+		b =  ((int) ((j >> 0) & 0x03)) << 6;*/
 
+
+// 	That is the code-how xv, decode 3-3-2 pixmaps, it is slighly different,
+//	but yields much better visuals results
+/*		r =  (((int) ((j >> 5) & 0x07)) *255) / 7;
+		g =  (((int) ((j >> 2) & 0x07)) *255) / 7;
+		b =  (((int) ((j >> 0) & 0x03)) *255) / 3;*/
+
+//	This is the same as xv, with multiplications/divisions replaced by indexing
+
+//      Look-up table to avoid multiplications and divisons
+	static int b_255_3[]= {0,85,170,255},  // index*255/3
+		   rg_255_7[]={0,36,72,109,145,182,218,255}; // index *255/7
+
+		r =  rg_255_7[((j >> 5) & 0x07)];
+		g =  rg_255_7[((j >> 2) & 0x07)];
+		b =  b_255_3[((j >> 0) & 0x03)];
+// ---------------
 		image.setColor( j, qRgb( r, g, b ) );
 	}
 
