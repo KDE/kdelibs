@@ -78,12 +78,6 @@ int DOM::getPropertyID(const char *tagStr, int len)
 
 // ------------------------------------------------------------------------------------------------------
 
-bool StyleBaseImpl::deleteMe()
-{
-    if(!m_parent && _ref <= 0) return true;
-    return false;
-}
-
 void StyleBaseImpl::checkLoaded()
 {
     if(m_parent) m_parent->checkLoaded();
@@ -96,7 +90,7 @@ DOMString StyleBaseImpl::baseURL()
     // try to find out about their url
     StyleBaseImpl *b = this;
     while(b && !b->isStyleSheet())
-        b = b->parent();
+        b = b->m_parent;
 
     if(!b) return DOMString();
 
@@ -186,7 +180,7 @@ StyleBaseImpl::parseToChar(const QChar *curP, const QChar *endP, QChar c, bool c
             sq = !sq;
         else if (!sq && !dq && *curP == c)
             return(curP);
-        else if (!sq && !dq && chkws && curP->isSpace()) //isspace(*curP))
+        else if (!sq && !dq && chkws && curP->isSpace())
             return(curP);
         else if(!sq && !dq ) {
             if (*curP == '{') {
@@ -849,8 +843,8 @@ public:
     int m_yyTok;
     bool strictParsing;
 
-    int getChar() {
-      return ( m_yyPos == m_yyIn.length() ) ? QChar('\0') : QChar(m_yyIn[m_yyPos++]);
+    QChar getChar() {
+      return ( m_yyPos == m_yyIn.length() ) ? QChar('\0') : m_yyIn.unicode()[m_yyPos++];
     }
 
     void startTokenizer( const QString& str, bool _strictParsing ) {
@@ -864,45 +858,7 @@ public:
       m_yyTok = TOK_NONE;
     }
 
-    int getToken()
-    {
-      m_yyStr = QString::null;
-
-      if ( m_yyChar == '\0' )
-	return TOK_EOI;
-      if ( m_yyChar == QChar(' ') )
-	m_yyChar = getChar();
-
-      if ( m_yyChar == QChar('/') ) {
-	m_yyChar = getChar();
-	return TOK_SLASH;
-      } else if ( m_yyChar == QChar(',') ) {
-	m_yyChar = getChar();
-	return TOK_COMMA;
-      } else if ( m_yyChar == QChar('"') ) {
-	m_yyChar = getChar();
-	while ( m_yyChar != QChar('"') && m_yyChar != '\0' ) {
-	  m_yyStr += m_yyChar;
-	  m_yyChar = getChar();
-	}
-	m_yyChar = getChar();
-	return TOK_STRING;
-      } else if ( m_yyChar == QChar('\'') ) {
-	m_yyChar = getChar();
-	while ( m_yyChar != QChar('\'') && m_yyChar != '\0' ) {
-	  m_yyStr += m_yyChar;
-	  m_yyChar = getChar();
-	}
-	m_yyChar = getChar();
-	return TOK_STRING;
-      } else {
-	while ( m_yyChar != '/' && m_yyChar != ',' && m_yyChar != '\0' && m_yyChar != ' ') {
-	  m_yyStr += m_yyChar;
-	  m_yyChar = getChar();
-	}
-	return TOK_SYMBOL;
-      }
-    }
+    int getToken();
 
     bool match( int tok )
     {
@@ -1021,8 +977,54 @@ public:
       return TRUE;
     }
 
-    bool matchFontFamily ( QStringList *ffamily )
-    {
+    bool matchFontFamily ( QStringList *ffamily );
+    bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
+			QString *fsize, QString *lheight, QString *ffamily );
+};
+
+int FontParser::getToken()
+{
+    m_yyStr = QString::null;
+
+    if ( m_yyChar == '\0' )
+	return TOK_EOI;
+    if ( m_yyChar == ' ' )
+	m_yyChar = getChar();
+
+    if ( m_yyChar == '/' ) {
+	m_yyChar = getChar();
+	return TOK_SLASH;
+    } else if ( m_yyChar == ',' ) {
+	m_yyChar = getChar();
+	return TOK_COMMA;
+    } else if ( m_yyChar == '"' ) {
+	m_yyChar = getChar();
+	while ( m_yyChar != '"' && m_yyChar != '\0' ) {
+	    m_yyStr += m_yyChar;
+	    m_yyChar = getChar();
+	}
+	m_yyChar = getChar();
+	return TOK_STRING;
+    } else if ( m_yyChar == '\'' ) {
+	m_yyChar = getChar();
+	while ( m_yyChar != '\'' && m_yyChar != '\0' ) {
+	    m_yyStr += m_yyChar;
+	    m_yyChar = getChar();
+	}
+	m_yyChar = getChar();
+	return TOK_STRING;
+    } else {
+	while ( m_yyChar != '/' && m_yyChar != ',' && m_yyChar != '\0' && m_yyChar != ' ') {
+	    m_yyStr += m_yyChar;
+	    m_yyChar = getChar();
+	}
+	return TOK_SYMBOL;
+    }
+}
+
+
+bool FontParser::matchFontFamily ( QStringList *ffamily )
+{
       if ( m_yyTok == TOK_NONE )
 	m_yyTok = getToken();
 #if 0
@@ -1042,11 +1044,11 @@ public:
       } while ( match(TOK_COMMA) );
 
       return true;
-    }
+}
 
-    bool matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
+bool FontParser::matchRealFont( QString *fstyle, QString *fvariant, QString *fweight,
 			QString *fsize, QString *lheight, QString *ffamily )
-    {
+{
       bool metFstyle = matchFontStyle( fstyle );
       bool metFvariant = matchFontVariant( fvariant );
       matchFontWeight( fweight );
@@ -1066,8 +1068,7 @@ public:
       if ( !matchFontFamily(ffamily) )
 	return FALSE;
       return true;
-    }
-};
+}
 
 bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
 {
@@ -1108,7 +1109,7 @@ bool StyleBaseImpl::parseFont(const QChar *curP, const QChar *endP)
     } else {
       fweight = "normal";
     }
-    fsize.sprintf("%dpx", sysFont.pixelSize());
+    fsize = QString::number( sysFont.pixelSize() ) + "px";
     ffamily = sysFont.family();
 
   } else {
@@ -1221,7 +1222,14 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	      // only shape in CSS2 is rect( top right bottom left )
 	      QString str = QConstString( const_cast<QChar*>( curP ), endP - curP ).string();
 	      // the CSS specs are not really clear if there should be commas in here or not. We accept both spaces and commas.
-	      str.replace( QRegExp( "," ), " " );
+	      QChar *uc = (QChar *)str.unicode();
+	      int len = str.length();
+	      while( len ) {
+		  if ( *uc == ',' )
+		      *uc = ' ';
+		  uc++;
+		  len--;
+	      }
 	      str = str.simplifyWhiteSpace();
 	      if ( str.find( "rect", 0, false ) != 0 )
 		  break;
@@ -2935,7 +2943,7 @@ StyleListImpl::~StyleListImpl()
     for( n = m_lstChildren->first(); n != 0; n = m_lstChildren->next() )
     {
         n->setParent(0);
-        if(n->deleteMe()) delete n;
+        if( !n->refCount() ) delete n;
     }
     delete m_lstChildren;
 }

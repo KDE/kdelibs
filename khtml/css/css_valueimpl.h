@@ -27,6 +27,7 @@
 #include "dom/dom_string.h"
 #include "css/cssparser.h"
 #include "misc/loader_client.h"
+#include "misc/shared.h"
 
 #include <qintdict.h>
 
@@ -222,7 +223,7 @@ protected:
     } m_value;
 };
 
-class CounterImpl : public DomShared {
+class CounterImpl : public khtml::Shared<CounterImpl> {
 public:
     CounterImpl() { }
     DOMString identifier() const { return m_identifier; }
@@ -234,7 +235,7 @@ public:
     DOMString m_separator;
 };
 
-class RectImpl : public DomShared {
+class RectImpl : public khtml::Shared<RectImpl> {
 public:
     RectImpl();
     ~RectImpl();
