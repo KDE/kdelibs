@@ -375,7 +375,7 @@ QPopupMenu *KLineEdit::createPopupMenu()
 
         subMenu->insertItem( i18n("None"), NoCompletion );
         subMenu->insertItem( i18n("Manual"), ShellCompletion );
-        subMenu->insertItem( i18n("Popup"), PopupCompletion );
+        subMenu->insertItem( i18n("Drop-down List"), PopupCompletion );
         subMenu->insertItem( i18n("Automatic"), AutoCompletion );
         subMenu->insertItem( i18n("Short Automatic"), SemiAutoCompletion );
 
@@ -548,7 +548,7 @@ void KLineEdit::makeCompletionBox()
                  SLOT(setText( const QString& )) );
         connect( d->completionBox, SIGNAL(userCancelled( const QString& )),
                  SLOT(setText( const QString& )) );
-        
+
         // Nice lil' hacklet ;) KComboBox doesn't know when the completionbox
         // is created (childEvent() is even more hacky, IMHO), so we simply
         // forward the completionbox' activated signal from here.
