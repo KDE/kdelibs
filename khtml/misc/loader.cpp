@@ -673,13 +673,13 @@ const QPixmap &CachedImage::pixmap( ) const
 
 QSize CachedImage::pixmap_size() const
 {
-    return (m ? m->framePixmap().size() : ( p ? p->size() : QSize()));
+    return (m_hadError ? Cache::brokenPixmap->size() : m ? m->framePixmap().size() : ( p ? p->size() : QSize()));
 }
 
 
 QRect CachedImage::valid_rect() const
 {
-    return m ? m->getValidRect() : ( p ? p->rect() : QRect());
+    return (m_hadError ? Cache::brokenPixmap->rect() : m ? m->getValidRect() : ( p ? p->rect() : QRect()) );
 }
 
 

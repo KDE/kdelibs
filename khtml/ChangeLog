@@ -1,3 +1,8 @@
+2003-10-22  Dirk Mueller  <mueller@kde.org>
+
+	* misc/loader.cpp (pixmap_size/valid_rect): return useful values for the error image
+	to avoid that its shown as null pixmap (#42233).
+
 2003-10-21  Dirk Mueller  <mueller@kde.org>
 
 	* rendering/render_list.cpp (calcListValue): skip anonymous block while searching
