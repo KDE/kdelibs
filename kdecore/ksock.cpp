@@ -238,9 +238,7 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   // This function is now IPv4 only
   // if you want something better, you should use KExtendedSocket::lookup yourself
 
-  kdWarning() << "deprecated KSocket::initSockaddr called" << endl;
-
-  memset(server_name, 0, sizeof(*server_name));
+  kdWarning(170) << "deprecated KSocket::initSockaddr called" << endl;
 
   if (domain != PF_INET)
     return false;
@@ -248,6 +246,11 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   QList<KAddressInfo> list = KExtendedSocket::lookup(hostname, QString::number(port),
 						     KExtendedSocket::ipv4Socket);
   list.setAutoDelete(true);
+
+  if (list.isEmpty())
+    return false;
+
+  memset(server_name, 0, sizeof(*server_name));
 
   // We are sure that only KInetSocketAddress objects are in the list
   KInetSocketAddress *sin = (KInetSocketAddress*)list.getFirst()->address();
@@ -355,7 +358,7 @@ bool KServerSocket::bindAndListen()
   int ret = d->ks->listen( SOMAXCONN );
   if (ret < 0)
     {
-        kdWarning() << "Error listening on socket: " << ret << "\n";
+        kdWarning(170) << "Error listening on socket: " << ret << "\n";
 	delete d->ks;
 	d->ks = NULL;
 	sock = -1;
@@ -429,7 +432,7 @@ void KServerSocket::slotAccept( int )
   KExtendedSocket *s;
   if (d->ks->accept(s) < 0)
     {
-        kdWarning() << "Error accepting\n";
+        kdWarning(170) << "Error accepting\n";
         return;
     }
   
