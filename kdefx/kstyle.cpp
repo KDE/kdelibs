@@ -108,7 +108,7 @@ namespace
 
 	const double shadow_strip[4] =
 		{ 0.565, 0.675, 0.835, 0.945 };
-};
+}
 
 
 struct KStylePrivate
@@ -1787,11 +1787,11 @@ TransparencyHandler::TransparencyHandler( KStyle* style,
 	opacity = menuOpacity;
 	dropShadow = useDropShadow;
 	pix.setOptimization(QPixmap::BestOptim);
-};
+}
 
 TransparencyHandler::~TransparencyHandler()
 {
-};
+}
 
 // This is meant to be ugly but fast.
 void TransparencyHandler::rightShadow(QImage& dst)
