@@ -44,6 +44,7 @@ public:
 
   void ref() { _ref++; }
   void deref() { if(_ref) _ref--; if(!_ref && deleteMe()) delete this; } 
+  bool hasOneRef() { return _ref==1; }
 
 protected:
     // the number of DOMObjects referencing this Node
