@@ -101,7 +101,7 @@ AC_CHECK_BOOL
 dnl AC_CHECK_GNU_EXTENSIONS
 
 dnl Checks for library functions. 
-AC_CHECK_FUNCS(socket vsnprintf seteuid setegid)
+AC_CHECK_FUNCS(socket vsnprintf seteuid setegid random)
 AC_CHECK_USLEEP
 AC_CHECK_SETENV
 AC_CHECK_GETDOMAINNAME

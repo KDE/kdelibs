@@ -44,6 +44,9 @@
 /* Define if you have usleep */
 #undef HAVE_USLEEP
 
+/* Define if you have random */
+#undef HAVE_RANDOM
+
 /* This is the prefix of the below paths. This may change in the future */
 #undef KDEDIR
 
