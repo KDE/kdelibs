@@ -82,6 +82,8 @@ namespace KJS {
      * Returns the value represented by this node. Always dereferenced.
      */
     virtual Value value(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
+
     UString toCode() const;
     virtual void streamTo(SourceStream &s) const = 0;
     virtual void processVarDecls(ExecState */*exec*/) {}
@@ -142,6 +144,7 @@ namespace KJS {
   public:
     NullNode() {}
     Value value(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   };
 
@@ -149,6 +152,7 @@ namespace KJS {
   public:
     BooleanNode(bool v) : val(v) {}
     Value value(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     bool val;
@@ -158,6 +162,7 @@ namespace KJS {
   public:
     NumberNode(double v) : val(v) { }
     virtual Value value(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     double val;
@@ -167,6 +172,7 @@ namespace KJS {
   public:
     StringNode(const UString *v) : val(*v) { }
     Value value(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     UString val;
@@ -177,6 +183,7 @@ namespace KJS {
     RegExpNode(const UString &p, const UString &f)
       : pattern(p), flags(f) { }
     virtual Value value(ExecState *exec) const;
+    virtual bool toBoolean(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     UString pattern, flags;

@@ -116,6 +116,12 @@ Value Node::value(ExecState *exec) const
   return evaluate(exec).getValue(exec);
 }
 
+bool Node::toBoolean(ExecState *exec) const
+{
+//   fprintf(stderr, "Node(%s)::toBoolean()\n", typeid(*this).name());
+  return value(exec).toBoolean(exec);
+}
+
 #ifdef KJS_DEBUG_MEM
 void Node::finalCheck()
 {
@@ -182,11 +188,21 @@ Value NullNode::value(ExecState *) const
   return Null();
 }
 
+bool NullNode::toBoolean(ExecState *) const
+{
+  return false;
+}
+
 // ----------------------------- BooleanNode ----------------------------------
 
 Value BooleanNode::value(ExecState *) const
 {
   return Boolean(val);
+}
+
+bool BooleanNode::toBoolean(ExecState *) const
+{
+  return val;
 }
 
 // ----------------------------- NumberNode -----------------------------------
@@ -196,11 +212,21 @@ Value NumberNode::value(ExecState *) const
   return Number(val);
 }
 
+bool NumberNode::toBoolean(ExecState *) const
+{
+  return !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
+}
+
 // ----------------------------- StringNode -----------------------------------
 
 Value StringNode::value(ExecState *) const
 {
   return String(val);
+}
+
+bool StringNode::toBoolean(ExecState *) const
+{
+  return !val.isEmpty();
 }
 
 // ----------------------------- RegExpNode -----------------------------------
@@ -215,6 +241,11 @@ Value RegExpNode::value(ExecState *exec) const
 
   Object reg = exec->interpreter()->imp()->builtinRegExp();
   return reg.construct(exec,list);
+}
+
+bool RegExpNode::toBoolean(ExecState *) const
+{
+  return true;
 }
 
 // ----------------------------- ThisNode -------------------------------------
@@ -1123,9 +1154,8 @@ bool LogicalNotNode::deref()
 // ECMA 11.4.9
 Value LogicalNotNode::value(ExecState *exec) const
 {
-  Value v = expr->value(exec);
+  bool b = expr->toBoolean(exec);
   KJS_CHECKEXCEPTIONVALUE
-  bool b = v.toBoolean(exec);
 
   return Boolean(!b);
 }
@@ -1445,7 +1475,7 @@ bool BinaryLogicalNode::deref()
 Value BinaryLogicalNode::value(ExecState *exec) const
 {
   Value v1 = expr1->value(exec);
-  KJS_CHECKEXCEPTIONVALUE
+  KJS_CHECKEXCEPTIONVALUE;
   bool b1 = v1.toBoolean(exec);
   if ((!b1 && oper == OpAnd) || (b1 && oper == OpOr))
     return v1;
@@ -1487,10 +1517,10 @@ bool ConditionalNode::deref()
 // ECMA 11.12
 Value ConditionalNode::value(ExecState *exec) const
 {
-  Value v = logical->value(exec);
+  bool b = logical->toBoolean(exec);
   KJS_CHECKEXCEPTIONVALUE
-  bool b = v.toBoolean(exec);
 
+  Value v;
   if (b)
     v = expr1->value(exec);
   else
@@ -1967,9 +1997,8 @@ Completion IfNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  Value v = expr->value(exec);
+  bool b = expr->toBoolean(exec);
   KJS_CHECKEXCEPTION
-  bool b = v.toBoolean(exec);
 
   // if ... then
   if (b)
@@ -2020,9 +2049,9 @@ Completion DoWhileNode::execute(ExecState *exec)
 {
   KJS_BREAKPOINT;
 
-  Value bv;
   Completion c;
   Value value;
+  bool b;
 
   do {
     // bail out on error
@@ -2035,9 +2064,9 @@ Completion DoWhileNode::execute(ExecState *exec)
       if (c.complType() != Normal)
         return c;
     }
-    bv = expr->value(exec);
+    b = expr->toBoolean(exec);
     KJS_CHECKEXCEPTION
-  } while (bv.toBoolean(exec));
+  } while (b);
 
   return Completion(Normal, value);
 }
@@ -2080,9 +2109,8 @@ Completion WhileNode::execute(ExecState *exec)
   Value value;
 
   while (1) {
-    Value bv = expr->value(exec);
+    bool b = expr->toBoolean(exec);
     KJS_CHECKEXCEPTION
-    bool b = bv.toBoolean(exec);
 
     // bail out on error
     KJS_CHECKEXCEPTION
@@ -2149,11 +2177,11 @@ Completion ForNode::execute(ExecState *exec)
     v = expr1->value(exec);
     KJS_CHECKEXCEPTION
   }
-  while (1) {
+  for (;;) {
     if (expr2) {
-      v = expr2->value(exec);
+      bool b = expr2->toBoolean(exec);
       KJS_CHECKEXCEPTION
-      if (!v.toBoolean(exec))
+      if (!b)
 	return Completion(Normal, cval);
     }
     // bail out on error
