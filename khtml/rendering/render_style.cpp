@@ -21,10 +21,10 @@
  * $Id$
  */
 
-#include "render_style.h"
-
 #include "xml/dom_stringimpl.h"
 #include "misc/loader.h"
+
+#include "render_style.h"
 
 #include "kdebug.h"
 
@@ -317,7 +317,7 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 {
     
-    if (_styleType!=NOPSEUDO)
+    if (!(_styleType==NOPSEUDO))
         return 0;
     
     RenderStyle *ps = pseudoStyle;
