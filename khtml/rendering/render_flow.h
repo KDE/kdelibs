@@ -74,7 +74,7 @@ public:
 
     virtual void addChild(RenderObject *newChild, RenderObject *beforeChild = 0);
 
-    virtual unsigned short lineWidth(int y) const;
+    virtual short lineWidth(int y) const;
 
     virtual int lowestPosition() const;
     virtual int rightmostPosition() const;
@@ -179,7 +179,7 @@ private:
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
 };
 
-    
+
 }; //namespace
 
 #endif

@@ -754,7 +754,7 @@ RenderFlow::rightRelOffset(int y, int fixedOffset, int *heightRemaining ) const
     return right;
 }
 
-unsigned short
+short
 RenderFlow::lineWidth(int y) const
 {
     //kdDebug( 6040 ) << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y) << endl;
@@ -997,8 +997,6 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 		special->startY = r->startY - offset;
 		special->endY = r->endY - offset;
 		special->left = r->left - xoff;
-		if (flow != parent())
-		    special->left += flow->marginLeft();
 		if ( !child ) {
 		    special->left -= marginLeft();
 		    special->noPaint = true;
@@ -1559,7 +1557,7 @@ void RenderFlow::printTree(int indent) const
             kdDebug() << s << renderName() << ":  " <<
                 (r->type == SpecialObject::FloatLeft ? "FloatLeft" : (r->type == SpecialObject::FloatRight ? "FloatRight" : "Positioned"))  <<
                 "[" << r->node->renderName() << ": " << (void*)r->node << "] (" << r->startY << " - " << r->endY << ")" <<
-                (r->noPaint ? "noPaint " : " ") << "width: " << r->width <<
+                (r->noPaint ? " noPaint " : " ") << "left: " << r->left << " width: " << r->width <<
                 endl;
         }
     }
