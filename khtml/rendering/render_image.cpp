@@ -55,13 +55,13 @@ RenderImage::~RenderImage()
 void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
 {
     if(o != image) {
-	RenderReplaced::setPixmap(p, r, o);
-	return;
+        RenderReplaced::setPixmap(p, r, o);
+        return;
     }
 
     if (manualUpdate && *manualUpdate)
     {
-        updateSize();	
+        updateSize();
         return;
     }
 
@@ -69,28 +69,28 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
 //    kdDebug( 6040 ) << "Image: setPixmap" << endl;
 
     if(o->pixmap_size() !=  pixSize)
-    {	
-    	kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
-	pix = p;
+    {
+        kdDebug( 6040 ) << "Image: newSize " << p.width() << "/" << p.height() << endl;
+        pix = p;
         pixSize = o->pixmap_size();
         kdDebug( 6040 ) << "Image size is now " << pixSize.width() << " " << pixSize.height() << endl;
-	setLayouted(false);
-	setMinMaxKnown(false);
+        setLayouted(false);
+        setMinMaxKnown(false);
         kdDebug( 6040 ) << "m_width: : " << m_width << " height: " << m_height << endl;
-    	kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
-	// the updateSize() call should trigger a repaint too
+        kdDebug( 6040 ) << "Image: size " << m_width << "/" << m_height << endl;
+        // the updateSize() call should trigger a repaint too
         if (manualUpdate) {
            *manualUpdate = true;
         }
         else
         {
-	    updateSize();	
+            updateSize();
         }
     }
     else
     {
-    	pix = p;
-	repaintRectangle(r.x(), r.y(), r.width(), r.height());
+        pix = p;
+        repaintRectangle(r.x(), r.y(), r.width(), r.height());
     }
 }
 
@@ -98,7 +98,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
 {
     // add offset for relative positioning
     if(isRelPositioned())
-	relativePositionOffset(_tx, _ty);
+        relativePositionOffset(_tx, _ty);
 
     int cWidth = contentWidth();
     int cHeight = contentHeight();
@@ -108,63 +108,67 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
     if ( pix.isNull() )
     {
-	QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
-			      Qt::black, Qt::white );
+        QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
+                              Qt::black, Qt::white );
         //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
-	qDrawShadePanel( p, _tx + leftBorder, _ty + topBorder, cWidth, cHeight,
-			 colorGrp, true, 1 );
-	if(!alt.isEmpty())
-	{
-	    QString text = alt.string();
-	    p->setFont(style()->font());
-	    p->setPen( style()->color() );
-	    int ax = _tx + leftBorder + 5;
-	    int ay = _ty + topBorder + 5;
-	    int ah = cHeight - 10;
-	    int aw = cWidth - 10;
-	    QFontMetrics fm(style()->font());
-	    if (aw>15 && ah>fm.height())
-    	    	p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
-	}
+        qDrawShadePanel( p, _tx + leftBorder, _ty + topBorder, cWidth, cHeight,
+                         colorGrp, true, 1 );
+        if(!alt.isEmpty())
+        {
+            QString text = alt.string();
+            p->setFont(style()->font());
+            p->setPen( style()->color() );
+            int ax = _tx + leftBorder + 5;
+            int ay = _ty + topBorder + 5;
+            int ah = cHeight - 10;
+            int aw = cWidth - 10;
+            QFontMetrics fm(style()->font());
+            if (aw>15 && ah>fm.height())
+                p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
+        }
     }
     else
     {
-	if ( (cWidth != image->pixmap_size().width() ||  cHeight != image->pixmap_size().height() ) &&
-             pix.width() && pix.height())
-	{
+        if ( (cWidth != image->pixmap_size().width() ||  cHeight != image->pixmap_size().height() ) &&
+             pix.width() && pix.height() && image->valid_rect().isValid())
+        {
 //            kdDebug( 6040 ) << "have to scale: " << endl;
 //            kdDebug( 6040 ) << "cWidth " << cWidth << " cHeight " << cHeight
 //                            << " pw: " << image->pixmap_size().width()
 //                             << " ph: " << image->pixmap_size().height() << endl;
 
             QRect scaledrect(image->valid_rect());
-	    if (resizeCache.isNull() || image->valid_rect().size() != resizeCache.size())
-	    {
-		QWMatrix matrix;
-		matrix.scale( (float)(cWidth)/pix.width(),
-			(float)(cHeight)/pix.height() );
-		resizeCache = pix.xForm( matrix );
+            if (resizeCache.isNull() || image->valid_rect().size() != resizeCache.size())
+            {
+                QWMatrix matrix;
+                matrix.scale( (float)(cWidth)/pix.width(),
+                        (float)(cHeight)/pix.height() );
+                resizeCache = pix.xForm( matrix );
                 scaledrect = matrix.map(scaledrect);
-	    }
-//            qDebug("scaled paint rect %d/%d/%d/%d", scaledrect.x(), scaledrect.y(), scaledrect.width(), scaledrect.height());
-	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, scaledrect );
-	
-	}
-	else
+            }
+            //qDebug("scaled paint rect %d/%d/%d/%d", scaledrect.x(), scaledrect.y(), scaledrect.width(), scaledrect.height());
+            p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, scaledrect );
+
+        }
+        else
         {
-            QRect rect(image->valid_rect()) ;
-            //          qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
-	    p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pix, image->valid_rect() );
+            // we might be just about switching images
+            // so pix contains the old one (we want to paint), but image->valid_rect is still invalid
+            // so use pixSize instead.
+            // ### maybe no progressive loading for the second image ?
+            QRect rect(image->valid_rect().isValid() ? image->valid_rect() : QRect(0, 0, pixSize.width(), pixSize.height())) ;
+            //qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
+            p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pix, rect );
         }
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
       {
-	if (hasKeyboardFocus==DOM::ActivationPassive)
-	  p->setPen(QColor("green"));
-	else
-	  p->setPen(QColor("blue"));
-	p->drawRect( _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
-	p->drawRect( _tx + leftBorder+1, _ty + topBorder+1, cWidth-2, cHeight-2);
+        if (hasKeyboardFocus==DOM::ActivationPassive)
+          p->setPen(QColor("green"));
+        else
+          p->setPen(QColor("blue"));
+        p->drawRect( _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
+        p->drawRect( _tx + leftBorder+1, _ty + topBorder+1, cWidth-2, cHeight-2);
       }
 }
 
@@ -178,7 +182,7 @@ void RenderImage::calcMinMaxWidth()
     calcWidth();
 
     if (oldwidth != m_width)
-    	resizeCache.resize(0,0);		
+        resizeCache.resize(0,0);
 
     m_maxWidth = m_minWidth = m_width;
     setMinMaxKnown();
@@ -220,15 +224,15 @@ short RenderImage::baselineOffset() const
     case SUB:
     case SUPER:
     case BOTTOM:
-	return contentHeight();
+        return contentHeight();
     case TOP:
-	return 0;
+        return 0;
     case TEXT_TOP:
-	return QFontMetrics(m_style->font()).ascent();
+        return QFontMetrics(m_style->font()).ascent();
     case MIDDLE:
-	return contentHeight()/2;
+        return contentHeight()/2;
     case TEXT_BOTTOM:
-	return contentHeight()-QFontMetrics(m_style->font()).descent();
+        return contentHeight()-QFontMetrics(m_style->font()).descent();
     }
     return 0;
 }

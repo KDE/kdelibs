@@ -68,7 +68,7 @@ public:
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
 
-protected:
+private:
     /*
      * Pointer to the image
      * If this pointer is 0L, that means that the picture could not be loaded

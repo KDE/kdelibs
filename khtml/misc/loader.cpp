@@ -60,18 +60,18 @@ void CachedObject::computeStatus()
 {
     if( m_size > MAXCACHEABLE || m_size > Cache::size()/MAXPERCENT )
     {
-	m_status = Uncacheable;
-	m_size = 0;
+        m_status = Uncacheable;
+        m_size = 0;
     }
    else
-	m_status = Cached;
+        m_status = Cached;
 }
 
 void CachedObject::setRequest(Request *_request)
 {
     m_request = _request;
     if (canDelete() && m_free)
-	delete this;
+        delete this;
 }
 
 bool CachedObject::canDelete()
@@ -93,9 +93,6 @@ CachedCSSStyleSheet::CachedCSSStyleSheet(const DOMString &url, const DOMString &
 
 CachedCSSStyleSheet::~CachedCSSStyleSheet()
 {
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "CachedCSSStyleSheet::~CachedCSSStyleSheet() " << url().string() << endl;
-#endif
 }
 
 void CachedCSSStyleSheet::ref(CachedObjectClient *c)
@@ -138,7 +135,7 @@ void CachedCSSStyleSheet::checkNotify()
 
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-	c->setStyleSheet( m_url, m_sheet );
+        c->setStyleSheet( m_url, m_sheet );
 }
 
 
@@ -192,7 +189,7 @@ void CachedScript::data( QBuffer &buffer, bool eof )
     loading = false;
 
     checkNotify();
-}	
+}
 
 void CachedScript::checkNotify()
 {
@@ -200,7 +197,7 @@ void CachedScript::checkNotify()
 
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() )
-	c->notifyFinished(this);
+        c->notifyFinished(this);
 }
 
 
@@ -221,23 +218,23 @@ namespace khtml
     class ImageSource : public QDataSource
     {
     public:
-	ImageSource(QByteArray buf);
+        ImageSource(QByteArray buf);
 
-	/**
-	 * Overload QDataSource::readyToSend() and returns the number
-	 * of bytes ready to send if not eof instead of returning -1.
-	 */
-	int readyToSend();
+        /**
+         * Overload QDataSource::readyToSend() and returns the number
+         * of bytes ready to send if not eof instead of returning -1.
+         */
+        int readyToSend();
 
-	/*!
-	  Reads and sends a block of data.
-	*/
-	void sendTo(QDataSink*, int count);
+        /*!
+          Reads and sends a block of data.
+        */
+        void sendTo(QDataSink*, int count);
 
-	/**
-	 * Sets the EOF state.
-	 */
-	void setEOF( bool state );
+        /**
+         * Sets the EOF state.
+         */
+        void setEOF( bool state );
 
         /*!
           KHTMLImageSource's is rewindable.
@@ -255,10 +252,10 @@ namespace khtml
         void rewind();
 
     private:
-	QByteArray buffer;
-	bool rew;
-	int pos;
-	bool eof;
+        QByteArray buffer;
+        bool rew;
+        int pos;
+        bool eof;
     };
 }
 
@@ -366,10 +363,6 @@ CachedImage::~CachedImage()
     delete m;
     delete bg;
     delete pixPart;
-
-#ifdef CACHE_DEBUG
-    kdDebug( 6060 ) << "CachedImage::~CachedImage() " << url().string() << endl;
-#endif
 }
 
 void CachedImage::ref( CachedObjectClient *c )
@@ -382,8 +375,8 @@ void CachedImage::ref( CachedObjectClient *c )
     m_clients.append(c);
 
     // for mouseovers, dynamic changes
-    if( m_status != Pending)
-	do_notify( pixmap(), valid_rect() );
+    if( m_status != Pending && !valid_rect().isNull())
+        do_notify( pixmap(), valid_rect() );
 
     if( m && m->paused())
         m->unpause();
@@ -396,7 +389,7 @@ void CachedImage::deref( CachedObjectClient *c )
 #endif
     m_clients.remove( c );
     if(m && m_clients.isEmpty() && m->running())
-	m->pause();
+        m->pause();
 
     if ( canDelete() && m_free )
         delete this;
@@ -405,8 +398,8 @@ void CachedImage::deref( CachedObjectClient *c )
 static bool
 fixBackground(QPixmap &bgPixmap, const QSize& pixmap_size)
 {
-#define BGMINWIDTH	50
-#define BGMINHEIGHT	25
+#define BGMINWIDTH      50
+#define BGMINHEIGHT     25
    if (bgPixmap.isNull())
        return false;
    int w = pixmap_size.width();
@@ -525,14 +518,14 @@ QRect CachedImage::valid_rect() const
 
 void CachedImage::do_notify(const QPixmap& p, const QRect& r)
 {
-    // do not chang the hack with the update list unless you know what you are doing. 
+    // do not chang the hack with the update list unless you know what you are doing.
     // When removing this hack, directory listings as eg produced by apache will
     // get *really* slow
     QList<CachedObjectClient> updateList;
     CachedObjectClient *c;
     for ( c = m_clients.first(); c != 0; c = m_clients.next() ) {
 #ifdef CACHE_DEBUG
-        qDebug("found a client to update...");
+        kdDebug( 6060 ) << "found a client to update..." << endl;
 #endif
         bool manualUpdate = false; // set the pixmap, dont update yet.
         c->setPixmap( p, r, this, &manualUpdate );
@@ -586,17 +579,17 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
 #endif
     if ( !typeChecked )
     {
-	clear();
-	formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
-	typeChecked = true;
+        clear();
+        formatType = QImageDecoder::formatName( (const uchar*)_buffer.buffer().data(), _buffer.size());
+        typeChecked = true;
 
-	if ( formatType )  // movie format exists
-	{
-	    imgSource = new ImageSource( _buffer.buffer());
-	    m = new QMovie( imgSource, 2048 );
- 	    m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
+        if ( formatType )  // movie format exists
+        {
+            imgSource = new ImageSource( _buffer.buffer());
+            m = new QMovie( imgSource, 1024);
+            m->connectUpdate( this, SLOT( movieUpdated( const QRect &) ));
             m->connectStatus( this, SLOT( movieStatus(int)));
-	}
+        }
     }
 
     if ( imgSource )
@@ -623,6 +616,7 @@ void CachedImage::data ( QBuffer &_buffer, bool eof )
                 do_notify(*p, p->rect());
             }
         }
+
         computeStatus();
     }
 }
@@ -671,13 +665,13 @@ DocLoader::~DocLoader()
 CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMString &baseUrl)
 {
     if (reloading) {
-	QString fullURL = Cache::completeURL( url, baseUrl ).url();
-	if (!reloadedURLs.contains(fullURL)) {
-	    CachedObject *existing = Cache::cache->find(fullURL);
-	    if (existing)
-		Cache::removeCacheEntry(existing);
-	    return Cache::requestImage(url,baseUrl,true);
-	}
+        QString fullURL = Cache::completeURL( url, baseUrl ).url();
+        if (!reloadedURLs.contains(fullURL)) {
+            CachedObject *existing = Cache::cache->find(fullURL);
+            if (existing)
+                Cache::removeCacheEntry(existing);
+            return Cache::requestImage(url,baseUrl,true);
+        }
     }
 
     return Cache::requestImage(url,baseUrl,false);
@@ -686,13 +680,13 @@ CachedImage *DocLoader::requestImage( const DOM::DOMString &url, const DOM::DOMS
 CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, const DOM::DOMString &baseUrl)
 {
     if (reloading) {
-	QString fullURL = Cache::completeURL( url, baseUrl ).url();
-	if (!reloadedURLs.contains(fullURL)) {
-	    CachedObject *existing = Cache::cache->find(fullURL);
-	    if (existing)
-		Cache::removeCacheEntry(existing);
-	    return Cache::requestStyleSheet(url,baseUrl,true);
-	}
+        QString fullURL = Cache::completeURL( url, baseUrl ).url();
+        if (!reloadedURLs.contains(fullURL)) {
+            CachedObject *existing = Cache::cache->find(fullURL);
+            if (existing)
+                Cache::removeCacheEntry(existing);
+            return Cache::requestStyleSheet(url,baseUrl,true);
+        }
     }
 
     return Cache::requestStyleSheet(url,baseUrl,false);
@@ -701,13 +695,13 @@ CachedCSSStyleSheet *DocLoader::requestStyleSheet( const DOM::DOMString &url, co
 CachedScript *DocLoader::requestScript( const DOM::DOMString &url, const DOM::DOMString &baseUrl)
 {
     if (reloading) {
-	QString fullURL = Cache::completeURL( url, baseUrl ).url();
-	if (!reloadedURLs.contains(fullURL)) {
-	    CachedObject *existing = Cache::cache->find(fullURL);
-	    if (existing)
-		Cache::removeCacheEntry(existing);
-	    return Cache::requestScript(url,baseUrl,true);
-	}
+        QString fullURL = Cache::completeURL( url, baseUrl ).url();
+        if (!reloadedURLs.contains(fullURL)) {
+            CachedObject *existing = Cache::cache->find(fullURL);
+            if (existing)
+                Cache::removeCacheEntry(existing);
+            return Cache::requestScript(url,baseUrl,true);
+        }
     }
 
     return Cache::requestScript(url,baseUrl,false);
@@ -722,11 +716,11 @@ Loader::Loader() : QObject()
 
 Loader::~Loader()
 {
-  m_requestsPending.setAutoDelete( true );
-  m_requestsLoading.setAutoDelete( true );
+    m_requestsPending.setAutoDelete( true );
+    m_requestsLoading.setAutoDelete( true );
 
-  m_requestsPending.clear();
-  m_requestsLoading.clear();
+    m_requestsPending.clear();
+    m_requestsLoading.clear();
 }
 
 void Loader::load(CachedObject *object, const DOMString &baseURL, bool incremental)
@@ -778,25 +772,29 @@ void Loader::slotFinished( KIO::Job* job )
 #ifdef CACHE_DEBUG
     kdDebug( 6060 ) << "Loader:: JOB FINISHED " << r->object->url().string() << endl;
 #endif
-
-    servePendingRequests();
   }
 
+  r->m_buffer.close();
   emit requestDone( r->m_baseURL, r->object );
-
   delete r;
+
+  servePendingRequests();
 }
 
 void Loader::slotData( KIO::Job*job, const QByteArray &data )
 {
     Request *r = m_requestsLoading[job];
-    if(!r) return;
+    if(!r) {
+        qDebug("got data for unknown request!");
+        return;
+    }
+
     if ( !r->m_buffer.isOpen() )
-	r->m_buffer.open( IO_WriteOnly );
+        r->m_buffer.open( IO_WriteOnly );
     r->m_buffer.writeBlock( data.data(), data.size() );
 
     if(r->incremental)
-	r->object->data( r->m_buffer, false );
+        r->object->data( r->m_buffer, false );
 }
 
 int Loader::numRequests( const DOMString &baseURL )
@@ -844,7 +842,7 @@ void Loader::cancelRequests( const DOMString &baseURL )
   {
     if ( pIt.current()->m_baseURL == baseURL )
     {
-	//kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
+        //kdDebug( 6060 ) << "cancelling pending request for " << pIt.current()->object->url().string() << endl;
 
       Cache::removeCacheEntry( pIt.current()->object );
 
@@ -861,7 +859,7 @@ void Loader::cancelRequests( const DOMString &baseURL )
   {
     if ( lIt.current()->m_baseURL == baseURL )
     {
-	//kdDebug( 6060 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
+        //kdDebug( 6060 ) << "cancelling loading request for " << lIt.current()->object->url().string() << endl;
 
       KIO::Job *job = static_cast<KIO::Job *>( lIt.currentKey() );
 
@@ -908,18 +906,18 @@ void Cache::init()
 {
     if(!cache)
     {
-	cache = new QDict<CachedObject>(401, true);
-	cache->setAutoDelete(true);
+        cache = new QDict<CachedObject>(401, true);
+        cache->setAutoDelete(true);
     }
     if(!lru)
     {
-	lru = new LRUList;
+        lru = new LRUList;
     }
     if(!nullPixmap)
-	nullPixmap = new QPixmap;
+        nullPixmap = new QPixmap;
 
     if(!m_loader)
-	m_loader = new Loader();
+        m_loader = new Loader();
 }
 
 void Cache::clear()
@@ -944,31 +942,31 @@ CachedImage *Cache::requestImage( const DOMString & url, const DOMString &baseUr
 
     CachedObject *o = 0;
     if (!reload)
-	o = cache->find(kurl.url());
+        o = cache->find(kurl.url());
     if(!o)
     {
 #ifdef CACHE_DEBUG
-	kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-	CachedImage *im = new CachedImage(kurl.url(), baseUrl, reload );
-	cache->insert( kurl.url(), im );
-	lru->append( kurl.url() );
-	return im;
+        CachedImage *im = new CachedImage(kurl.url(), baseUrl, reload );
+        cache->insert( kurl.url(), im );
+        lru->append( kurl.url() );
+        return im;
     }
 
     if(!o->type() == CachedObject::Image)
     {
 #ifdef CACHE_DEBUG
-	kdDebug( 6060 ) << "Cache::Internal Error in requestImage url=" << kurl.url() << "!" << endl;
+        kdDebug( 6060 ) << "Cache::Internal Error in requestImage url=" << kurl.url() << "!" << endl;
 #endif
-	return 0;
+        return 0;
     }
 
 #ifdef CACHE_DEBUG
     if( o->status() == CachedObject::Pending )
-	kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
     else
-	kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << ", status " << o->status() << endl;
 #endif
 
     lru->touch( kurl.url() );
@@ -989,27 +987,27 @@ CachedCSSStyleSheet *Cache::requestStyleSheet( const DOMString & url, const DOMS
     if(!o)
     {
 #ifdef CACHE_DEBUG
-	kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-	CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url(), baseUrl, reload);
-	cache->insert( kurl.url(), sheet );
-	lru->append( kurl.url() );
-	return sheet;
+        CachedCSSStyleSheet *sheet = new CachedCSSStyleSheet(kurl.url(), baseUrl, reload);
+        cache->insert( kurl.url(), sheet );
+        lru->append( kurl.url() );
+        return sheet;
     }
 
     if(!o->type() == CachedObject::CSSStyleSheet)
     {
 #ifdef CACHE_DEBUG
-	kdDebug( 6060 ) << "Cache::Internal Error in requestStyleSheet url=" << kurl.url() << "!" << endl;
+        kdDebug( 6060 ) << "Cache::Internal Error in requestStyleSheet url=" << kurl.url() << "!" << endl;
 #endif
-	return 0;
+        return 0;
     }
 
 #ifdef CACHE_DEBUG
     if( o->status() == CachedObject::Pending )
-	kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
     else
-	kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << endl;
 #endif
 
     lru->touch( kurl.url() );
@@ -1030,27 +1028,27 @@ CachedScript *Cache::requestScript( const DOM::DOMString &url, const DOM::DOMStr
     if(!o)
     {
 #ifdef CACHE_DEBUG
-	kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: new: " << kurl.url() << endl;
 #endif
-	CachedScript *script = new CachedScript(kurl.url(), baseUrl, reload);
-	cache->insert( kurl.url(), script );
-	lru->append( kurl.url() );
-	return script;
+        CachedScript *script = new CachedScript(kurl.url(), baseUrl, reload);
+        cache->insert( kurl.url(), script );
+        lru->append( kurl.url() );
+        return script;
     }
 
     if(!o->type() == CachedObject::Script)
     {
 #ifdef CACHE_DEBUG
-	kdDebug( 6060 ) << "Cache::Internal Error in requestScript url=" << kurl.url() << "!" << endl;
+        kdDebug( 6060 ) << "Cache::Internal Error in requestScript url=" << kurl.url() << "!" << endl;
 #endif
-	return 0;
+        return 0;
     }
 
 #ifdef CACHE_DEBUG
     if( o->status() == CachedObject::Pending )
-	kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: loading in progress: " << kurl.url() << endl;
     else
-	kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << endl;
+        kdDebug( 6060 ) << "Cache: using cached: " << kurl.url() << endl;
 #endif
 
     lru->touch( kurl.url() );
@@ -1072,17 +1070,17 @@ void Cache::flush()
 
     for ( QStringList::Iterator it = lru->begin(); it != lru->end(); ++it )
     {
-	o = cache->find( *it );
-	if( !o->canDelete() || o->status() == CachedObject::Persistent )
-	    continue; // image is still used or cached permanently
+        o = cache->find( *it );
+        if( !o->canDelete() || o->status() == CachedObject::Persistent )
+            continue; // image is still used or cached permanently
 
 #ifdef CACHE_DEBUG
-	kdDebug( 6060 ) << "Cache: removing " << url << endl;
+        kdDebug( 6060 ) << "Cache: removing " << url << endl;
 #endif
-	actSize -= o->size();
-	lru->remove( url );
-	cache->remove( url );
-	if( actSize < maxSize ) break;
+        actSize -= o->size();
+        lru->remove( url );
+        cache->remove( url );
+        if( actSize < maxSize ) break;
     }
 
 #ifdef CACHE_DEBUG
@@ -1111,22 +1109,22 @@ void Cache::statistics()
     for(it.toFirst(); it.current(); ++it)
     {
         o = it.current();
-	if(o->type() == CachedObject::Image)
-	{
-	    CachedImage *im = static_cast<CachedImage *>(o);
-	    if(im->m != 0)
-	    {
-		movie++;
-		msize += im->size();
-	    }
-	}
-	else
-	{
-	    if(o->type() == CachedObject::CSSStyleSheet)
-		stylesheets++;
-	
-	    size += o->size();
-	}
+        if(o->type() == CachedObject::Image)
+        {
+            CachedImage *im = static_cast<CachedImage *>(o);
+            if(im->m != 0)
+            {
+                movie++;
+                msize += im->size();
+            }
+        }
+        else
+        {
+            if(o->type() == CachedObject::CSSStyleSheet)
+                stylesheets++;
+
+            size += o->size();
+        }
     }
     size /= 1024;
 
@@ -1149,8 +1147,8 @@ KURL Cache::completeURL( const DOMString &_url, const DOMString &_baseUrl )
     KURL orig(baseUrl);
     if(_url[(unsigned int)0] != '/')
     {
-	KURL u( orig, url );
-	return u;
+        KURL u( orig, url );
+        return u;
     }
     orig.setEncodedPathAndQuery(url);
     return orig;
@@ -1209,9 +1207,9 @@ void Cache::autoloadImages( bool enable )
 
       CachedObject::Status status = img->status();
       if ( status != CachedObject::Unknown ||
-	   status == CachedObject::Cached ||
-	   status == CachedObject::Uncacheable ||
-	   status == CachedObject::Pending )
+           status == CachedObject::Cached ||
+           status == CachedObject::Uncacheable ||
+           status == CachedObject::Pending )
         continue;
 
       img->load();
