@@ -98,6 +98,13 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers( const QString& _serv
     OfferList offers;
     kdDebug(7010) << "KServiceTypeProfile::offers( " << _servicetype << "," << _genericServiceType << " )" << endl;
 
+    /// ### TODO
+    // It's not enough to return the profile. The user might have installed
+    // something new since the last time he saved the profile.
+    // We should append to the offers, anything that can serve the servicetype,
+    // but that isn't yet in the offers, and that hasn't been disabled by the
+    // profile.
+
     if ( _genericServiceType.isEmpty() )
     {
         initStatic();
