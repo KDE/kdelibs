@@ -795,7 +795,9 @@ QString KStandardDirs::saveLocation(const char *type,
     struct stat st;
     if (stat(QFile::encodeName(fullPath), &st) != 0 || !(S_ISDIR(st.st_mode))) {
 	if(!create) {
-	    qWarning("save location %s doesn't exist", fullPath.latin1());
+#ifndef NDEBUG
+	    qDebug("save location %s doesn't exist", fullPath.latin1());
+#endif
 	    return localkdedir()+suffix;
 	}
 	if(!makeDir(fullPath, 0700)) {
@@ -861,6 +863,7 @@ bool KStandardDirs::makeDir(const QString& dir, int mode)
 
 	  if ( mkdir(baseEncoded, (mode_t) mode) != 0) {
 	    perror("trying to create local folder");
+  	    abort();
 	    return false; // Couldn't create it :-(
 	  }
         }
