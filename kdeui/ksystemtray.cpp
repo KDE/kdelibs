@@ -62,13 +62,7 @@ KPopupMenu* KSystemTray::contextMenu()
 }
 
 
-void KSystemTray::mousePressEvent( QMouseEvent * )
-{
-}
-
-
-
-void KSystemTray::mouseReleaseEvent( QMouseEvent * e)
+void KSystemTray::mousePressEvent( QMouseEvent *e )
 {
     if ( !rect().contains( e->pos() ) )
 	return;
@@ -101,6 +95,12 @@ void KSystemTray::mouseReleaseEvent( QMouseEvent * e)
 	// nothing
 	break;
     }
+}
+
+
+
+void KSystemTray::mouseReleaseEvent( QMouseEvent * )
+{
 }
 
 
