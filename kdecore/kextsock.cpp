@@ -1701,8 +1701,6 @@ Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
   cleanError();
   if (d->status < connected || d->flags & passiveSocket)
     return -2;
-  if (sockfd == -1)
-    return -2;
 
   int retval;
 
@@ -1711,6 +1709,8 @@ Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
       // we aren't buffering this socket, so just pass along
       // the call to the real read method
 
+      if (sockfd == -1)
+	return -2;
       if (data)
 	retval = KSocks::self()->read(sockfd, data, maxlen);
       else
@@ -1729,6 +1729,8 @@ Q_LONG KExtendedSocket::readBlock(char *data, Q_ULONG maxlen)
 	{
 	  // consumeReadBuffer returns 0 only if the buffer is
 	  // empty
+	  if (sockfd == -1)
+	    return 0;		// buffer is clear now, indicate EOF
 	  setError(IO_ReadError, EWOULDBLOCK);
 	  retval = -1;
 	}
