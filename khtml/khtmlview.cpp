@@ -395,6 +395,7 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
       KURL u( m_part->url(), m_strSelectedURL );
       if ( !u.isMalformed() )
         emit m_part->browserExtension()->createNewWindow( u );
+      m_strSelectedURL = QString::null; //reset it, in order to avoid opening the url in the current window! (in mouseReleaseEvent) (Simon)
     }
 }
 
