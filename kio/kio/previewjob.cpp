@@ -229,8 +229,10 @@ void PreviewJob::determineNextFile()
     {
         if (!d->succeeded)
             emitFailed();
-        if (d->deleteItems)
+        if (d->deleteItems) {
             delete d->currentItem.item;
+            d->currentItem.item = 0L;
+        }
     }
     // No more items ?
     if ( d->items.isEmpty() )
