@@ -97,12 +97,15 @@ toyprof_stampinit (void)
 #define toyprof_stampinit()	/* nothing */
 #define	toyprof_stamp(st)	gettimeofday (&(st), 0)
 #define	toyprof_stamp_ticks()	(1000000)
-#define	toyprof_elapsed(fstamp, lstamp)	({							\
-  unsigned long long int first = (fstamp).tv_sec * toyprof_stamp_ticks () + (fstamp).tv_usec;	\
-  unsigned long long int last  = (lstamp).tv_sec * toyprof_stamp_ticks () + (lstamp).tv_usec;	\
-  last -= first;										\
-  last;												\
-})
+static inline unsigned long long int
+toyprof_elapsed(ToyprofStamp fstamp, ToyprofStamp lstamp)
+{
+  unsigned long long int first = fstamp.tv_sec * toyprof_stamp_ticks ()
+                               + fstamp.tv_usec;
+  unsigned long long int last  = lstamp.tv_sec * toyprof_stamp_ticks ()
+                               + lstamp.tv_usec;
+  return last - first;
+}
 #endif  /* !(GCC && PENTIUM) */
 
 
@@ -676,3 +679,5 @@ _gsl_master_thread (gpointer data)
       run = gsl_thread_sleep (0);
     }
 }
+
+/* vim:set ts=8 sts=2 sw=2: */
