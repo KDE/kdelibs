@@ -2,16 +2,10 @@ This library is severely functionally challenged.
 
 This TODO happens to cover SSL in all of KDE though.
 
-- The CA root is not done.  We have to find a standard way of handling the
-  directory in the user's .kde path.  The initial path is in the cvs but
-  it has to be copied to /usr/share/.....  for installation as a new user
-  runs KDE for the first time  We have to find a standard way of handling the
-  directory in the user's .kde path.  The initial path is in the cvs but
-  it has to be copied to /usr/share/.....  for installation as a new user
-  runs KDE for the first time.
-
 - We have to find a way to create the hashes in the CA root directory or
   certificate validation will not work by any means.
+
+- make install should chmod 400 the .pem and .crl files I think....
 
 - The ASN1 date conversion code doesn't take international issues into
   account by any means.
@@ -59,5 +53,16 @@ This TODO happens to cover SSL in all of KDE though.
 
 - The certificate home is not done.  It will manage the user's certificates.
 
+- Should "Supports SSL/HTTPS" be on in all cases if we're linked with OpenSSL?
 
+- Document libkssl interface
+
+- Make a tamper proof certificate repository of some sort
+
+- Wizard buttons for autoconfiguring the cipher selection
+
+- Is it possible to provide warning if a particular attack is detected?
+  (OpenSSL looks for these if it knows about them)
+
+- Use libkssl in kcmcrypto - libkssl needs lots of work first.
 

@@ -37,3 +37,4 @@ libkssl_la_LIBADD = $(LIBSSL) $(LIB_KDECORE) $(LIB_KDEUI) $(LIB_QT)
 
 libkssl_la_METASOURCES = AUTO
 
+SUBDIRS = kssl
