@@ -556,13 +556,13 @@ public:
 	 * @internal
 	 * Returns the default toplevel directory where KDE is installed.
 	 */
-	QString kfsstnd_defaultprefix();
+	static QString kfsstnd_defaultprefix();
 
 	/**
 	 * @internal
 	 * Returns the default bin directory in which KDE executables are stored.
 	 */
-	QString kfsstnd_defaultbindir();
+	static QString kfsstnd_defaultbindir();
 
 	/**
 	 * @return $XDG_DATA_HOME

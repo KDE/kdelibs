@@ -52,6 +52,7 @@
 #include "kshell.h"
 #include "ksimpleconfig.h"
 #include "kuser.h"
+#include "kstaticdeleter.h"
 #include <sys/param.h>
 #include <unistd.h>
 
@@ -70,9 +71,26 @@ public:
    QAsciiDict<bool> restrictions;
    QStringList xdgdata_prefixes;
    QStringList xdgconf_prefixes;
+};
+
+// Singleton, with data shared by all kstandarddirs instances.
+// Used in static methods like findExe()
+class KStandardDirsSingleton
+{
+public:
    QString defaultprefix;
    QString defaultbindir;
+   static KStandardDirsSingleton* self();
+private:
+   static KStandardDirsSingleton* s_self;
 };
+static KStaticDeleter<KStandardDirsSingleton> kstds_sd;
+KStandardDirsSingleton* KStandardDirsSingleton::s_self = 0;
+KStandardDirsSingleton* KStandardDirsSingleton::self() {
+    if ( !s_self )
+        kstds_sd.setObject( s_self, new KStandardDirsSingleton );
+    return s_self;
+}
 
 static const char* const types[] = {"html", "icon", "apps", "sound",
 			      "data", "locale", "services", "mime",
@@ -910,7 +928,7 @@ QString KStandardDirs::findExe( const QString& appname,
         return QString::null;
     }
 
-    QString p = QString("%1/%2").arg(KGlobal::dirs()->kfsstnd_defaultbindir()).arg(real_appname);
+    QString p = QString("%1/%2").arg(kfsstnd_defaultbindir()).arg(real_appname);
     info.setFile( p );
     if( info.exists() && ( ignore || info.isExecutable() )
          && ( info.isFile() || info.isSymLink() )  ) {
@@ -1209,36 +1227,38 @@ static QString executablePrefix()
 
 QString KStandardDirs::kfsstnd_defaultprefix()
 {
-   if (!d->defaultprefix.isEmpty())
-      return d->defaultprefix;
+   KStandardDirsSingleton* s = KStandardDirsSingleton::self();
+   if (!s->defaultprefix.isEmpty())
+      return s->defaultprefix;
 #ifdef Q_WS_WIN
-   d->defaultprefix = readEnvPath("KDEDIR");
-   if (d->defaultprefix.isEmpty()) {
-      d->defaultprefix = QFile::decodeName("c:\\kde");
+   s->defaultprefix = readEnvPath("KDEDIR");
+   if (s->defaultprefix.isEmpty()) {
+      s->defaultprefix = QFile::decodeName("c:\\kde");
       //TODO: find other location (the Registry?)
    }
 #else //UNIX
-   d->defaultprefix = KDEDIR;
+   s->defaultprefix = KDEDIR;
 #endif
-   if (d->defaultprefix.isEmpty())
+   if (s->defaultprefix.isEmpty())
       kdWarning() << "KStandardDirs::kfsstnd_defaultprefix(): default KDE prefix not found!" << endl;
-   return d->defaultprefix;
+   return s->defaultprefix;
 }
 
 QString KStandardDirs::kfsstnd_defaultbindir()
 {
-   if (!d->defaultbindir.isEmpty())
-      return d->defaultbindir;
+   KStandardDirsSingleton* s = KStandardDirsSingleton::self();
+   if (!s->defaultbindir.isEmpty())
+      return s->defaultbindir;
 #ifdef Q_WS_WIN
-   d->defaultbindir = kfsstnd_defaultprefix() + QString::fromLatin1("/bin");
+   s->defaultbindir = kfsstnd_defaultprefix() + QString::fromLatin1("/bin");
 #else //UNIX
-   d->defaultbindir = __KDE_BINDIR;
-   if (d->defaultbindir.isEmpty())
-      d->defaultbindir = kfsstnd_defaultprefix() + QString::fromLatin1("/bin");
+   s->defaultbindir = __KDE_BINDIR;
+   if (s->defaultbindir.isEmpty())
+      s->defaultbindir = kfsstnd_defaultprefix() + QString::fromLatin1("/bin");
 #endif
-   if (d->defaultbindir.isEmpty())
+   if (s->defaultbindir.isEmpty())
       kdWarning() << "KStandardDirs::kfsstnd_defaultbindir(): default binary KDE dir not found!" << endl;
-  return d->defaultbindir;
+  return s->defaultbindir;
 }
 
 void KStandardDirs::addKDEDefaults()
