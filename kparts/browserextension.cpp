@@ -81,6 +81,7 @@ URLArgs &URLArgs::operator=(const URLArgs &args)
   serviceType = args.serviceType;
   postData = args.postData;
   frameName = args.frameName;
+  docState = args.docState;
   /*
   if ( args.d )
   {
