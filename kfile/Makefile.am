@@ -43,9 +43,7 @@ libkfile_la_SOURCES = kfilebookmark.cpp kfiledialogconf.cpp \
 	kfilepreview.cpp kurlcombobox.cpp kurlrequesterdlg.cpp \
 	kopenwith.cpp kpropsdlg.cpp kicondialog.cpp kdirsize.cpp
 
-#kde_toolbar_DATA = configure.png
-
-EXTRA_DIST = configure.png KFile.kdoc NOTES
+EXTRA_DIST = KFile.kdoc NOTES
 
 libkfile_la_LDFLAGS = -no-undefined -version-info 3:0
 libkfile_la_LIBADD =  $(top_builddir)/kio/libksycoca.la
