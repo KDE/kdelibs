@@ -45,6 +45,7 @@ class KAppTreeListItem : public QListViewItem
     QString exec;
 
 protected:
+	int compare(QListViewItem *i, int col, bool ascending ) const;
     QString key(int column, bool ascending) const;
 
     void init(const QPixmap& pixmap, bool parse, bool dir, const QString &_path, const QString &exec);
@@ -84,6 +85,7 @@ public:
 protected:
     void resizeEvent( QResizeEvent *_ev );
     KAppTreeListItem* currentitem;
+	void cleanupTree();
 
 public slots:
     void slotItemHighlighted(QListViewItem* i);
