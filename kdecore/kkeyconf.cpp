@@ -1189,7 +1189,7 @@ void KKeyConfigure::keyPressEvent( QKeyEvent *e )
 
 void KKeyConfigure::setKey( uint kCode)
 {
-	uint kOldCode = pEntry->aConfigKeyCode;
+	// uint kOldCode = pEntry->aConfigKeyCode;
 	
 	/* add the current modifier to the key */
 	if ( kCode!=Key_Shift ) kCode |= (pEntry->aConfigKeyCode & SHIFT);

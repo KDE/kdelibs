@@ -38,10 +38,12 @@ bool bAreaCalculated = false;
 QBitArray *pInfoArray = 0L, *pWarnArray = 0L,
   *pErrorArray = 0L, *pFatalArray = 0L;
 
+#ifdef KALLE_DOES_NOT_UNDERSTAND_WHY_THIS_CRASHES      
 static void recalculateAreaBits( QBitArray*, QString* );
 static void evalToken( QBitArray*, QString* );
+#endif
 
-void kdebug( ushort nLevel, ushort nArea, 
+void kdebug( ushort nLevel, ushort, 
 			 const char* pFormat, ... )
 {
   // Save old group
@@ -402,6 +404,7 @@ void KDebugDialog::showHelp()
   kapp->invokeHTMLHelp( "kdelib/kdebug.html", "" );
 }
 
+#ifdef KALLE_DOES_NOT_UNDERSTAND_WHY_THIS_CRASHES      
 void recalculateAreaBits( QBitArray* pArray, QString* pString )
 {
   // string could be empty
@@ -428,7 +431,6 @@ void recalculateAreaBits( QBitArray* pArray, QString* pString )
 	}
 }
 
-
 void evalToken( QBitArray* pArray, QString* pString )
 {
   int dashpos = 0;
@@ -448,3 +450,4 @@ void evalToken( QBitArray* pArray, QString* pString )
 	  pArray->setBit( pString->toUInt() );
 	}
 }
+#endif
