@@ -81,6 +81,20 @@ HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, KHTMLView *_view)
     reset();
 }
 
+HTMLTokenizer::HTMLTokenizer(DOM::HTMLDocumentImpl *_doc, DOM::DocumentFragmentImpl *i)
+{
+    view = 0;
+    buffer = 0;
+    scriptCode = 0;
+    charsets = KGlobal::charsets();
+    parser = new KHTMLParser( i, _doc );
+    currToken = 0;
+    cachedScript = 0;
+    executingScript = false;
+
+    reset();
+}
+
 void HTMLTokenizer::reset()
 {
     assert(executingScript == false);
@@ -310,7 +324,7 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
                     src = DOMStringIt();
                 }
             }
-            else if (doScriptExec && javascript) {
+            else if (view && doScriptExec && javascript) {
                 executingScript = true;
                 view->part()->executeScript(QString(scriptCode, scriptCodeSize));
                 executingScript = false;
@@ -1594,7 +1608,7 @@ void HTMLTokenizer::enlargeBuffer()
 
 void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
 {
-    if (finishedObj == cachedScript) {
+    if (view && finishedObj == cachedScript) {
 #ifdef TOKEN_DEBUG
         kdDebug( 6036 ) << "Finished loading an external script" << endl;
 #endif

@@ -41,6 +41,7 @@ namespace DOM {
     class HTMLFormElementImpl;
     class HTMLMapElementImpl;
     class HTMLHeadElementImpl;
+    class DocumentFragmentImpl;
 }
 
 namespace khtml {
@@ -57,6 +58,7 @@ class KHTMLParser
 {
 public:
     KHTMLParser( KHTMLView *w, DOM::HTMLDocumentImpl *i );
+    KHTMLParser( DOM::DocumentFragmentImpl *frag, DOM::HTMLDocumentImpl *doc );
     virtual ~KHTMLParser();
 
     /**

@@ -319,9 +319,9 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MousePress );
     m_part->xmlDocImpl()->mouseEvent( xm, ym, 0, 0, &mev );
 
-    d->underMouse = mev.innerNode;
+    d->underMouse = mev.innerNode.handle();
 
-    khtml::MousePressEvent event( _mouse, xm, ym, mev.url, Node(mev.innerNode) );
+    khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );
 }
@@ -338,7 +338,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseDblClick );
     m_part->xmlDocImpl()->mouseEvent( xm, ym, 0, 0, &mev );
 
-    khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, Node(mev.innerNode) );
+    khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );
 
@@ -360,11 +360,11 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     // execute the scheduled script. This is to make sure the mouseover events come after the mouseout events
     m_part->executeScheduledScript();
 
-    d->underMouse = mev.innerNode;
+    d->underMouse = mev.innerNode.handle();
 
     QCursor c = KCursor::arrowCursor();
-    if ( mev.innerNode ) {
-        switch( mev.innerNode->style()->cursor() ) {
+    if ( !mev.innerNode.isNull() && mev.innerNode.handle()->style() ) {
+        switch( mev.innerNode.handle()->style()->cursor() ) {
         case CURSOR_AUTO:
             if ( mev.url.length() && const_cast<KHTMLSettings *>(m_part->settings())->changeCursor() )
                 c = m_part->urlCursor();
@@ -408,7 +408,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     setCursor( c );
 
 
-    khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, Node(mev.innerNode) );
+    khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );
 }
@@ -425,7 +425,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->mouseEvent( xm, ym, 0, 0, &mev );
 
-    khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, Node(mev.innerNode) );
+    khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setURLHandlingEnabled( mev.urlHandling );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
     QApplication::sendEvent( m_part, &event );

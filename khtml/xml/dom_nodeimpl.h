@@ -146,7 +146,7 @@ public:
         int button;
         MouseEventType type;
         DOMString url; // url under mouse or empty
-        NodeImpl *innerNode;
+        Node innerNode;
         bool urlHandling; // specify whether the part should handle the url or not
         int nodeAbsX, nodeAbsY; // temporary hack for selection stuff
     };

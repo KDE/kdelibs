@@ -29,6 +29,7 @@
 #include "html_elementimpl.h"
 
 #include "html_documentimpl.h"
+#include "htmltokenizer.h"
 
 #include "htmlhashes.h"
 #include "khtmlview.h"
@@ -419,17 +420,70 @@ DOMString HTMLElementImpl::innerText() const
 
 bool HTMLElementImpl::setInnerHTML( const DOMString &html )
 {
+    // the following is in accordance with the definition as used by IE
     if( endTag() == FORBIDDEN )
 	return false;
+    // IE disallows innerHTML on inline elements. I don't see why we should have this restriction, as our
+    // dhtml engine can cope with it. Lars
+    //if ( isInline() ) return false;
+    switch( id() ) {
+	case ID_COL:
+	case ID_COLGROUP:
+	case ID_FRAMESET:
+	case ID_HEAD:
+	case ID_HTML: 
+	case ID_STYLE:
+	case ID_TABLE:
+	case ID_TBODY:
+	case ID_TFOOT:
+	case ID_THEAD:
+	case ID_TITLE:
+	case ID_TR:
+	    return false;
+	default:
+	    break;
+    }
+    if ( !ownerDocument()->isHTMLDocument() )
+	return false;
     
-    kdDebug() << "HTMLElementImpl::setInnerHTML " << html.string() << endl; 
-    return true;
+    DocumentFragmentImpl *fragment = new DocumentFragmentImpl( ownerDocument() );
+    HTMLTokenizer *tok = new HTMLTokenizer( static_cast<HTMLDocumentImpl *>(ownerDocument()), fragment );
+    tok->begin();
+    tok->write( html.string() );
+    tok->end();
+    delete tok;
+    
+    removeChildren();
+    int ec = 0;
+    appendChild( fragment, ec );
+    if ( !ec )
+	return true;
+    return false;
 }
 
 bool HTMLElementImpl::setInnerText( const DOMString &text )
 {
+    // following the IE specs.
     if( endTag() == FORBIDDEN )
 	return false;
+    // IE disallows innerHTML on inline elements. I don't see why we should have this restriction, as our
+    // dhtml engine can cope with it. Lars
+    //if ( isInline() ) return false;
+    switch( id() ) {
+	case ID_COL:
+	case ID_COLGROUP:
+	case ID_FRAMESET:
+	case ID_HEAD:
+	case ID_HTML: 
+	case ID_TABLE:
+	case ID_TBODY:
+	case ID_TFOOT:
+	case ID_THEAD:
+	case ID_TR:
+	    return false;
+	default:
+	    break;
+    }
     
     removeChildren();
     

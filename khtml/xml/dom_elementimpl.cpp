@@ -594,7 +594,7 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 	    inside = false;
 	else
         {
-	    ev->innerNode = this;
+	    ev->innerNode = Node(this);
             ev->nodeAbsX = _tx;
             ev->nodeAbsY = _ty;
         }

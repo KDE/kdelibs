@@ -226,8 +226,7 @@ public:
  *    element or ignore the tag.
  *
  */
-KHTMLParser::KHTMLParser( KHTMLView *_parent,
-                          HTMLDocumentImpl *doc)
+KHTMLParser::KHTMLParser( KHTMLView *_parent, HTMLDocumentImpl *doc)
 {
     //kdDebug( 6035 ) << "parser constructor" << endl;
 
@@ -240,6 +239,19 @@ KHTMLParser::KHTMLParser( KHTMLView *_parent,
     forbiddenTag = new ushort[ID_CLOSE_TAG+1];
 
     reset();
+}
+
+KHTMLParser::KHTMLParser( DOM::DocumentFragmentImpl *i, HTMLDocumentImpl *doc )
+{
+    HTMLWidget = 0;
+    document = doc;
+    forbiddenTag = new ushort[ID_CLOSE_TAG+1];
+
+    blockStack = 0;
+
+    reset();
+    current = i;
+    inBody = true;
 }
 
 KHTMLParser::~KHTMLParser()
@@ -373,14 +385,14 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         {
             pushBlock(id, tagPriority[id]);
             current = newNode;
-            if(!n->attached())  n->attach(HTMLWidget);
+            if(!n->attached() && HTMLWidget )  n->attach(HTMLWidget);
             // ### HACK!!!
             if(n->id() == ID_BODY)
                 document->createSelector();
             if(current->isInline()) _inline = true;
         }
         else
-            if(!n->attached())  n->attach(HTMLWidget);
+            if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
 
         if(tagPriority[id] == 0 && n->renderer()) {
             n->renderer()->calcMinMaxWidth();
@@ -426,7 +438,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     pushBlock(id, tagPriority[id]);
                     current = n;
                 }
-                if(!n->attached())  n->attach(HTMLWidget);
+                if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
                 if(tagPriority[id] == 0 && n->renderer())
                     n->renderer()->close();
                 return true;
@@ -451,7 +463,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 createHead();
             if( head ) {
                 head->addChild(n);
-                if(!n->attached())
+                if(!n->attached() && HTMLWidget)
                     n->attach(HTMLWidget);
                 return true;
             }
@@ -470,7 +482,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 if ( newNode ) {
                     pushBlock(id, tagPriority[id]);
                     current = newNode;
-                    if(!n->attached())
+                    if(!n->attached() && HTMLWidget)
                         n->attach(HTMLWidget);
                 } else {
 #ifdef PARSER_DEBUG
@@ -559,7 +571,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     pushBlock(id, tagPriority[id]);
                     current = n;
                 }
-                if(!n->attached())  n->attach(HTMLWidget);
+                if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
                 if(tagPriority[id] == 0 && n->renderer())
                     n->renderer()->close();
                 return true;
@@ -578,7 +590,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if(map)
             {
                 map->addChild(n);
-                if(!n->attached())  n->attach(HTMLWidget);
+                if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
                 handled = true;
             }
             else
@@ -1106,7 +1118,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         discard_until = ID_NOFRAMES + ID_CLOSE_TAG;
         return 0;
     case ID_NOSCRIPT:
-        if(HTMLWidget->part()->jScriptEnabled())
+        if(HTMLWidget && HTMLWidget->part()->jScriptEnabled())
             discard_until = ID_NOSCRIPT + ID_CLOSE_TAG;
         return 0;
         // Waldo's plaintext stuff

@@ -683,6 +683,8 @@ void NodeBaseImpl::removeChildren()
 	n->setParent(0);
 	if (n->renderer() && n->renderer()->parent())
 	    n->renderer()->parent()->removeChild(n->renderer());
+	n->setRenderer( 0 );
+	n->setStyle( 0 );
 	if(n->deleteMe())
 	    delete n;
 	else
