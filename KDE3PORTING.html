@@ -135,6 +135,19 @@ setEncoding(int) instead.
 <li>languages() has been removed. Use languageList() instead.
 
 <H4>Accelerators Keys</H4>
+<h5>KAccel</h5>
+<ul>
+	<li> KAccel::changeMenuAccel() has been depricated, because it was
+	never used in cvs.  If you've used it in your application, the following
+	can replace it.  Note, however, that this would be handled automatically
+	by using KAction instead.
+<pre>
+	- kaccel->changeMenuAccel( menu, id, "file_open" );
+	+ menu->setAccel( kaccel->shortcut( "file_open" ).keyCodeQt(), id );
+</pre>
+	</li>
+</ul>
+
 <h5>KGlobalAccel</h5>
 <ul>
 	<li>Call <i>updateConnections()</i> after all <i>insertAction()</i> or
