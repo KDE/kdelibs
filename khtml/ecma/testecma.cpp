@@ -32,10 +32,12 @@
  */
 
 #include <stdio.h>
-#include <kjs/kjs.h>
+#include <kjs/object.h>
+#include <kjs/interpreter.h>
 #include "dom/dom_doc.h"
 #include "dom/dom_string.h"
 #include "ecma/kjs_dom.h"
+
 
 using namespace KJS;
 

@@ -49,5 +49,5 @@ hashtables:
 
 # interactive test program
 #check_PROGRAMS = testecma
-#testecma_SOURCES = testecma.cpp $(kjs_html_la_SOURCES)
+#testecma_SOURCES = testecma.cpp
 #testecma_LDADD = ../libkhtml.la $(top_builddir)/kjs/libkjs.la 
