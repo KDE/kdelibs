@@ -35,6 +35,7 @@
 
 namespace KABC {
 
+class LdapClient;
 typedef QValueList<QByteArray> LdapAttrValue;
 typedef QMap<QString,LdapAttrValue > LdapAttrMap;
 
@@ -49,8 +50,8 @@ class LdapObject
 {
   public:
     LdapObject()
-      : dn( QString::null ) {};
-    explicit LdapObject( QString _dn ) : dn( _dn ) {};
+      : dn( QString::null ), client( 0 ) {}
+    explicit LdapObject( const QString& _dn, LdapClient* _cl ) : dn( _dn ), client( _cl ) {}
     LdapObject( const LdapObject& that ) { assign( that ); }
 
     LdapObject& operator=( const LdapObject& that )
@@ -65,12 +66,13 @@ class LdapObject
 
     QString dn;
     LdapAttrMap attrs;
+    LdapClient* client;
 
   protected:
     void assign( const LdapObject& that );
 
   private:
-    class LdapObjectPrivate* d;
+    //class LdapObjectPrivate* d;
 };
 
 /**
@@ -184,6 +186,16 @@ class LdapClient : public QObject
     LdapClientPrivate* d;
 };
 
+/**
+ * Structure describing one result returned by a LDAP query
+ */
+struct LdapResult {
+  QString name;     ///< full name
+  QString email;    ///< email
+  int clientNumber; ///< for sorting
+};
+typedef QValueList<LdapResult> LdapResultList;
+
 
 /**
   * This class is internal. Binary compatibiliy might be broken any time
@@ -204,7 +216,12 @@ class LdapSearch : public QObject
     bool isAvailable() const;
 
   signals:
+    /// Results, assembled as "Full Name <email>"
+    /// (This signal can be emitted many times)
     void searchData( const QStringList& );
+    /// Another form for the results, with separate fields
+    /// (This signal can be emitted many times)
+    void searchData( const KABC::LdapResultList& );
     void searchDone();
 
   private slots:
@@ -215,7 +232,7 @@ class LdapSearch : public QObject
 
   private:
     void finish();
-    QStringList makeSearchData();
+    void makeSearchData( QStringList& ret, LdapResultList& resList );
     QValueList< LdapClient* > mClients;
     QString mSearchText;
     QTimer mDataTimer;

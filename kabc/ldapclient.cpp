@@ -72,6 +72,7 @@ void LdapObject::assign( const LdapObject& that )
   if ( &that != this ) {
     dn = that.dn;
     attrs = that.attrs;
+    client = that.client;
   }
 }
 
@@ -121,7 +122,7 @@ void LdapClient::startQuery( const QString& filter )
 {
   cancelQuery();
   LDAPUrl url;
-  
+
   url.setProtocol( "ldap" );
   url.setUser( d->bindDN );
   url.setPass( d->pwdBindDN );
@@ -131,7 +132,7 @@ void LdapClient::startQuery( const QString& filter )
   url.setAttributes( mAttrs );
   url.setScope( mScope == "one" ? LDAPUrl::One : LDAPUrl::Sub );
   url.setFilter( "("+filter+")" );
-  
+
   kdDebug(5700) << "Doing query: " << url.prettyURL() << endl;
 
   startParseLDIF();
@@ -158,8 +159,8 @@ void LdapClient::cancelQuery()
 void LdapClient::slotData( KIO::Job*, const QByteArray& data )
 {
 #ifndef NDEBUG // don't create the QString
-  QString str( data );
-  kdDebug(5700) << "Got \"" << str.latin1() << "\"\n";
+//  QString str( data );
+//  kdDebug(5700) << "LdapClient: Got \"" << str << "\"\n";
 #endif
   parseLDIF( data );
 }
@@ -223,6 +224,7 @@ void LdapClient::parseLDIF( const QByteArray& data )
         break;
      case LDIF::EndEntry:
         mCurrentObject.dn = d->ldif.dn();
+        mCurrentObject.client = this;
         emit result( mCurrentObject );
         mCurrentObject.clear();
         break;
@@ -360,20 +362,25 @@ void LdapSearch::slotLDAPDone()
 
 void LdapSearch::slotDataTimer()
 {
-  emit searchData( makeSearchData() );
+  QStringList lst;
+  LdapResultList reslist;
+  makeSearchData( lst, reslist );
+  if ( !lst.isEmpty() )
+    emit searchData( lst );
+  if ( !reslist.isEmpty() )
+    emit searchData( reslist );
 }
 
 void LdapSearch::finish()
 {
   mDataTimer.stop();
 
-  emit searchData( makeSearchData() );
+  slotDataTimer(); // emit final bunch of data
   emit searchDone();
 }
 
-QStringList LdapSearch::makeSearchData()
+void LdapSearch::makeSearchData( QStringList& ret, LdapResultList& resList )
 {
-  QStringList ret;
   QString search_text_upper = mSearchText.upper();
 
   QValueList< KABC::LdapObject >::ConstIterator it1;
@@ -394,25 +401,22 @@ QStringList LdapSearch::makeSearchData()
     }
 
     if( mail.isEmpty())
-        ; // nothing, bad entry
+      continue; // nothing, bad entry
     else if ( name.isEmpty() )
       ret.append( mail );
     else {
-        kdDebug(5700) << "<" << name << "><" << mail << ">" << endl;
+      kdDebug(5700) << "<" << name << "><" << mail << ">" << endl;
       ret.append( QString( "%1 <%2>" ).arg( name ).arg( mail ) );
-#if 0
-      // this sucks
-      if ( givenname.upper().startsWith( search_text_upper ) )
-        ret.append( QString( "$$%1$%2 <%3>" ).arg( givenname ).arg( name ).arg( mail ) );
-      if ( sn.upper().startsWith( search_text_upper ) )
-        ret.append( QString( "$$%1$%2 <%3>" ).arg( sn ).arg( name ).arg( mail ) );
-#endif
     }
+
+    LdapResult sr;
+    sr.clientNumber = mClients.findIndex( (*it1).client );
+    sr.name = name;
+    sr.email = mail;
+    resList.append( sr );
   }
 
   mResults.clear();
-
-  return ret;
 }
 
 bool LdapSearch::isAvailable() const
