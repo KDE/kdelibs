@@ -70,6 +70,11 @@ white; color: black;}
 /* A little bit of padding makes the tables for keybindings etc much easier to read */
 
 TABLE { padding: 5px; } 
+DT { margin-top: 1em; }
+DIV.SCREENSHOT { margin-bottom: 1em;
+      margin-top: 1em; }
+DIV.INFORMALEXAMPLE { border-style: dotted; 
+	              padding: 10px; }
 
 /* But no padding for navigation elements */
 
