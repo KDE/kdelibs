@@ -537,7 +537,7 @@ KHTMLPart::~KHTMLPart()
     // No need to, I would say. We specify "this" as parent qobject
     // in ::partManager() (Simon)
   }
-
+  kdDebug() << "KHTMLPart::~KHTMLPart " << this <<endl; 
   stopAutoScroll();
   d->m_redirectionTimer.stop();
 
@@ -830,9 +830,9 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 
   if (!proxy)
     return QVariant();
-
   QVariant ret = proxy->evaluate( script.unicode(), script.length(), n );
-  d->m_doc->updateRendering();
+  if ( d->m_doc )
+    d->m_doc->updateRendering();
 
   //kdDebug(6050) << "KHTMLPart::executeScript - done" << endl;
   return ret;
