@@ -77,7 +77,7 @@ KMMainView::KMMainView(QWidget *parent, const char *name)
 	// check if management supported
 	if (!m_manager->hasManagement())
 	{
-		m_printerpages->setEnabled(false);
+		m_printerpages->setManagement(false);
 		m_toolbar->setEnabled(false);
 	}
 

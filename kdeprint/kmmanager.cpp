@@ -108,7 +108,8 @@ bool KMManager::disablePrinter(const QString& name)
 
 bool KMManager::completePrinter(KMPrinter*)
 {
-	return notImplemented();
+	notImplemented();
+	return true;	// not false to allow instance config/creation
 }
 
 bool KMManager::completePrinterShort(KMPrinter *p)

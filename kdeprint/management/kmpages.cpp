@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -44,6 +44,12 @@ void KMPages::setPrinter(KMPrinter *p)
 	QListIterator<KMPrinterPage>	it(m_pages);
 	for (;it.current();++it)
 		it.current()->setPrinter(p);
+}
+
+void KMPages::setManagement(bool on)
+{
+	((QWidget*)child("JobViewer","QWidget"))->setEnabled(on);
+	((QWidget*)child("Property","QWidget"))->setEnabled(on);
 }
 
 void KMPages::initialize()

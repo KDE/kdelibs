@@ -2,7 +2,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (c) 2001 Michael Goffioul <goffioul@imec.be>
  *
- *  $Id:  $
+ *  $Id$
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -35,6 +35,7 @@ public:
 	~KMPages();
 
 	void setPrinter(KMPrinter *p);
+	void setManagement(bool on = true);
 
 protected:
 	void initialize();
