@@ -42,6 +42,8 @@ static const KCmdLineOptions options[] =
 };
 
 
+bool globalEnums;
+
 class CfgEntry
 {
   public:
@@ -78,6 +80,9 @@ class CfgEntry
     void setParam( const QString &d ) { mParam = d; }
     QString param() const { return mParam; }
 
+    void setParamName( const QString &d ) { mParamName = d; }
+    QString paramName() const { return mParamName; }
+
     void setParamType( const QString &d ) { mParamType = d; }
     QString paramType() const { return mParamType; }
 
@@ -86,6 +91,12 @@ class CfgEntry
 
     void setParamValues( const QStringList &d ) { mParamValues = d; }
     QStringList paramValues() const { return mParamValues; }
+
+    void setParamDefaultValues( const QStringList &d ) { mParamDefaultValues = d; }
+    QString paramDefaultValue(int i) const { return mParamDefaultValues[i]; }
+
+    void setParamMax( int d ) { mParamMax = d; }
+    int paramMax() const { return mParamMax; }
 
     bool hidden() const { return mHidden; }
 
@@ -114,9 +125,12 @@ class CfgEntry
     QString mCode;
     QString mDefaultValue;
     QString mParam;
+    QString mParamName;
     QString mParamType;
     QStringList mValues;
     QStringList mParamValues;
+    QStringList mParamDefaultValues;
+    int mParamMax;
     bool mHidden;
 };
 
@@ -176,8 +190,58 @@ static QString filenameOnly(QString path)
    return path;
 }
 
-CfgEntry *parseEntry( const QString &group, const QDomElement &element,
-                      bool globalEnums )
+static void preProcessDefault(QString &defaultValue, const QString &name, const QString &type, const QStringList &values, QString &code)
+{
+    if ( type == "QString" && !defaultValue.isEmpty() ) {
+      addQuotes( defaultValue );
+
+    } else if ( type == "Path" && !defaultValue.isEmpty() ) {
+      addQuotes( defaultValue );
+
+    } else if ( type == "QStringList" && !defaultValue.isEmpty() ) {
+      QTextStream cpp( &code, IO_WriteOnly | IO_Append );
+      if (!code.isEmpty())
+         cpp << endl;
+
+      cpp << "  QStringList default" << name << ";" << endl;
+      QStringList defaults = QStringList::split( ",", defaultValue );
+      QStringList::ConstIterator it;
+      for( it = defaults.begin(); it != defaults.end(); ++it ) {
+        cpp << "  default" << name << ".append( \"" << *it << "\" );"
+            << endl;
+      }
+      defaultValue = "default" + name;
+
+    } else if ( type == "QColor" ) {
+      if (!defaultValue.isEmpty())
+      {
+        addQuotes( defaultValue );
+        defaultValue = "QColor( " + defaultValue + " )";
+      }
+
+    } else if ( type == "Enum" ) {
+      if ( !globalEnums && values.contains(defaultValue) ) {
+        defaultValue.prepend( enumName(name) + "::");
+      }
+
+    } else if ( type == "IntList" ) {
+      QTextStream cpp( &code, IO_WriteOnly | IO_Append );
+      if (!code.isEmpty())
+         cpp << endl;
+   
+      cpp << "  QValueList<int> default" << name << ";" << endl;
+      QStringList defaults = QStringList::split( ",", defaultValue );
+      QStringList::ConstIterator it;
+      for( it = defaults.begin(); it != defaults.end(); ++it ) {
+        cpp << "  default" << name << ".append( " << *it << " );"
+            << endl;
+      }
+      defaultValue = "default" + name;
+    }
+}    
+
+
+CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 {
   bool defaultCode = false;
   QString type = element.attribute( "type" );
@@ -188,11 +252,12 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element,
   QString defaultValue;
   QString code;
   QString param;
+  QString paramName;
   QString paramType;
   QStringList values;
   QStringList paramValues;
-  int paramMin;
-  int paramMax;
+  QStringList paramDefaultValues;
+  int paramMax = 0;
 
   QDomNode n;
   for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
@@ -215,22 +280,11 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element,
       if ((paramType == "int") || (paramType == "uint"))
       {
          bool ok;
-         paramMin = e.attribute("min").toInt(&ok);
-         if (!ok)
-         {
-           kdError() << "Integer parameter must have a minimum (e.g. min=\"0\"): " << dumpNode(e) << endl;
-           return 0;
-         }
          paramMax = e.attribute("max").toInt(&ok);
          if (!ok)
          {
            kdError() << "Integer parameter must have a maximum (e.g. max=\"0\"): " << dumpNode(e) << endl;
            return 0;
-         }
-         paramValues.clear();
-         for(int i = paramMin; i < paramMax; i++)
-         {
-            paramValues.append(QString("%1").arg(i));
          }
       }
       else if (paramType == "Enum")
@@ -256,6 +310,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element,
            kdError() << "No values specified for parameter '" << param << "'." << endl;
            return 0;
          }
+         paramMax = paramValues.count()-1;
       }
       else
       {
@@ -287,11 +342,6 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element,
     kdError() << "Entry must have a name or a key: " << dumpNode(element) << endl;
     return 0;
   }
-  if (name.contains("$(") && param.isEmpty())
-  {
-    kdError() << "Name may not be parameterized: " << name << endl;
-    return 0;
-  }
 
   if ( key.isEmpty() ) {
     key = name;
@@ -302,56 +352,81 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element,
     name.replace( " ", "" );
   }
 
+  if (name.contains("$("))
+  {
+    if (param.isEmpty())
+    {
+      kdError() << "Name may not be parameterized: " << name << endl;
+      return 0;
+    }
+  }
+  else
+  {
+    if (!param.isEmpty())
+    {
+      kdError() << "Name must contain '$(" << param << ")': " << name << endl;
+      return 0;
+    }
+  }
+
   if ( label.isEmpty() ) {
     label = key;
   }
 
   if ( type.isEmpty() ) type = "QString";
 
+  if (!param.isEmpty())
+  {
+    // Adjust name
+    paramName = name;
+    name.replace("$("+param+")", QString::null);
+    // Lookup defaults for indexed entries
+    for(int i = 0; i <= paramMax; i++)
+    {
+      paramDefaultValues.append(QString::null);
+    }
+    
+    QDomNode n;
+    for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
+      QDomElement e = n.toElement();
+      QString tag = e.tagName();    
+      if ( tag == "default" ) 
+      {
+        QString index = e.attribute("param");
+        if (index.isEmpty())
+           continue;
+           
+        bool ok;
+        int i = index.toInt(&ok);
+        if (!ok)
+        {
+          i = paramValues.findIndex(index);
+          if (i == -1)
+          {
+            kdError() << "Index '" << index << "' for default value is unknown." << endl;
+            return 0;
+          }
+        }
+        
+        if ((i < 0) || (i > paramMax))
+        {
+          kdError() << "Index '" << i << "' for default value is out of range [0, "<< paramMax<<"]." << endl;
+          return 0;
+        }
+
+        QString tmpDefaultValue = e.text();
+
+        if (e.attribute( "code" ) != "true")
+           preProcessDefault(tmpDefaultValue, name, type, values, code);
+        
+        paramDefaultValues[i] = tmpDefaultValue;
+      }
+    }
+  }
+
   if (!defaultCode)
   {
-    if ( type == "QString" && !defaultValue.isEmpty() ) {
-      addQuotes( defaultValue );
-
-    } else if ( type == "Path" && !defaultValue.isEmpty() ) {
-      addQuotes( defaultValue );
-
-    } else if ( type == "QStringList" && !defaultValue.isEmpty() ) {
-      QTextStream cpp( &code, IO_WriteOnly | IO_Append );
-      if (!code.isEmpty())
-         cpp << endl;
-
-      cpp << "  QStringList default" << name << ";" << endl;
-      QStringList defaults = QStringList::split( ",", defaultValue );
-      QStringList::ConstIterator it;
-      for( it = defaults.begin(); it != defaults.end(); ++it ) {
-        cpp << "  default" << name << ".append( \"" << *it << "\" );"
-            << endl;
-      }
-      defaultValue = "default" + name;
-
-    } else if ( type == "QColor" ) {
-      defaultValue = "QColor( \"" + defaultValue + "\" )";
-
-    } else if ( type == "Enum" && !globalEnums ) {
-      if ( values.contains(defaultValue) ) {
-        defaultValue.prepend( enumName(name) + "::");
-      }
-
-    } else if ( type == "IntList" ) {
-      QTextStream cpp( &code, IO_WriteOnly | IO_Append );
-      if (!code.isEmpty())
-         cpp << endl;
-
-      cpp << "  QValueList<int> default" << name << ";" << endl;
-      QStringList defaults = QStringList::split( ",", defaultValue );
-      QStringList::ConstIterator it;
-      for( it = defaults.begin(); it != defaults.end(); ++it ) {
-        cpp << "  default" << name << ".append( " << *it << " );"
-            << endl;
-      }
-      defaultValue = "default" + name;
-    }
+    preProcessDefault(defaultValue, name, type, values, code);
   }
 
   CfgEntry *result = new CfgEntry( group, type, key, name, label, code, defaultValue, values,
@@ -359,7 +434,11 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element,
   if (!param.isEmpty())
   {
     result->setParam(param);
+    result->setParamName(paramName);
     result->setParamType(paramType);
+    result->setParamValues(paramValues);
+    result->setParamDefaultValues(paramDefaultValues);
+    result->setParamMax(paramMax);
   }
   return result;
 }
@@ -408,6 +487,27 @@ QString addFunction( const QString &type )
   f += t;
 
   return f;
+}
+
+QString paramString(const QString &s, const CfgEntry *e, int i)
+{
+  QString result = s;
+  QString needle = "$("+e->param()+")";
+  if (result.contains(needle))
+  {
+    QString tmp;
+    if (e->paramType() == "Enum")
+    {
+      tmp = e->paramValues()[i];
+    }
+    else
+    {
+      tmp = QString("%1").arg(i);
+    }
+    
+    result.replace(needle, tmp);
+  }
+  return result;
 }
 
 QString paramString(const QString &group, const QStringList &parameters)
@@ -476,7 +576,8 @@ int main( int argc, char **argv )
   QString memberVariables = codegenConfig.readEntry("MemberVariables");
   QStringList includes = codegenConfig.readListEntry("IncludeFiles");
   bool mutators = codegenConfig.readBoolEntry("Mutators");
-  bool globalEnums = codegenConfig.readBoolEntry( "GlobalEnums", false );
+  
+  globalEnums = codegenConfig.readBoolEntry( "GlobalEnums", false );
 
   QFile input( inputFilename );
 
@@ -533,7 +634,7 @@ int main( int argc, char **argv )
       QDomNode n2;
       for( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
         QDomElement e2 = n2.toElement();
-        CfgEntry *entry = parseEntry( group, e2, globalEnums );
+        CfgEntry *entry = parseEntry( group, e2 );
         if ( entry ) entries.append( entry );
         else {
           kdError() << "Can't parse entry." << endl;
@@ -609,7 +710,7 @@ int main( int argc, char **argv )
         h << "    class " << enumName(e->name()) << endl;
         h << "    {" << endl;
         h << "      public:" << endl;
-        h << "      enum { " << values.join( ", " ) << " };" << endl;
+        h << "      enum { " << values.join( ", " ) << ", COUNT };" << endl;
         h << "    };" << endl;
       }
     }
@@ -618,7 +719,7 @@ int main( int argc, char **argv )
       h << "    class " << enumName(e->param()) << endl;
       h << "    {" << endl;
       h << "      public:" << endl;
-      h << "      enum { " << values.join( ", " ) << " };" << endl;
+      h << "      enum { " << values.join( ", " ) << ", COUNT };" << endl;
       h << "    };" << endl;
     }
   }
@@ -662,10 +763,16 @@ int main( int argc, char **argv )
       h << "    */" << endl;
       if (staticAccessors)
         h << "    static" << endl;
-      h << "    void " << setFunction(n) << "( " << param( t ) << " v )" << endl;
+      h << "    void " << setFunction(n) << "( ";
+      if (!e->param().isEmpty())
+        h << cppType(e->paramType()) << " i, ";
+      h << param( t ) << " v )" << endl;
       h << "    {" << endl;
       h << "      if (!" << This << "isImmutable( \"" << n << "\" ))" << endl;
-      h << "        " << This << varName(n) << " = v;" << endl;
+      h << "        " << This << varName(n);
+      if (!e->param().isEmpty())
+        h << "[i]";
+      h << " = v;" << endl;
       h << "    }" << endl << endl;
     }
 
@@ -675,9 +782,15 @@ int main( int argc, char **argv )
     h << "    */" << endl;
     if (staticAccessors)
       h << "    static" << endl;
-    h << "    " << cppType(t) << " " << getFunction(n) << "()" << Const << endl;
+    h << "    " << cppType(t) << " " << getFunction(n) << "(";
+    if (!e->param().isEmpty())
+      h << " " << cppType(e->paramType()) <<" i ";
+    h << ")" << Const << endl;
     h << "    {" << endl;
-    h << "      return " << This << varName(n) << ";" << endl;
+    h << "      return " << This << varName(n);
+    if (!e->param().isEmpty())
+      h << "[i]";
+    h << ";" << endl;
     h << "    }" << endl;
 
     h << endl;
@@ -719,7 +832,12 @@ int main( int argc, char **argv )
       h << endl;
       h << "    // " << group << endl;
     }
-    h << "    " << cppType(e->type()) << " " << varName(e->name()) << ";" << endl;
+    h << "    " << cppType(e->type()) << " " << varName(e->name());
+    if (!e->param().isEmpty())
+    {
+      h << QString("[%1]").arg(e->paramMax()+1);
+    }
+    h << ";" << endl;
   }
 
   if (customAddons)
@@ -813,19 +931,61 @@ int main( int argc, char **argv )
       for( it =  values.begin(); it != values.end(); ++it ) {
         cpp << "  values" << e->name() << ".append( \"" << *it << "\" );" << endl;
       }
-      cpp << "  KConfigSkeleton::ItemEnum *item" << e->name()
-          << " = new KConfigSkeleton::ItemEnum( currentGroup(), "
-          << key << ", " << varName(e->name()) << ", values" << e->name();
-      if ( !e->defaultValue().isEmpty() )
-        cpp << ", " << e->defaultValue();
-      cpp << " );" << endl;
-      cpp << "  addItem( \"" << e->name() << "\", item" << e->name() << " );" << endl;
+      if (e->param().isEmpty())
+      {
+        // Normal case
+        cpp << "  KConfigSkeleton::ItemEnum *item" << e->name() 
+            << " = new KConfigSkeleton::ItemEnum( currentGroup(), " 
+            << key << ", " << varName(e->name()) << ", values" << e->name();
+        if ( !e->defaultValue().isEmpty() )
+          cpp << ", " << e->defaultValue();
+        cpp << " );" << endl;
+        cpp << "  addItem( \"" << e->name() << "\", item" << e->name() << " );" << endl;
+      }
+      else
+      {
+        cpp << "  KConfigSkeleton::ItemEnum *item" << e->name() << ";" << endl;
+        // Indexed
+        for(int i = 0; i <= e->paramMax(); i++)
+        {
+          cpp << "  item" << e->name()
+              << " = new KConfigSkeleton::ItemEnum( currentGroup(), " 
+              << paramString(key, e, i) << ", " << varName(e->name()) 
+              << QString("[%1], values").arg(i) << e->name();
+        if ( !e->paramDefaultValue(i).isEmpty() )
+          cpp << ", " << e->paramDefaultValue(i);
+        else if ( !e->defaultValue().isEmpty() )
+          cpp << ", " << e->defaultValue();
+        cpp << " );" << endl;
+          cpp << "  addItem( \"" << paramString(e->paramName(), e, i) << "\", item" << e->name() << " );" << endl;
+        }
+      }
     } else {
-      cpp << "  " << addFunction( e->type() ) << "( \"" << e->name() << "\", " << key << ", "
-          << varName(e->name());
-      if ( !e->defaultValue().isEmpty() )
-        cpp << ", " << e->defaultValue();
-      cpp << " );" << endl;
+      if (e->param().isEmpty())
+      {
+        // Normal case
+        cpp << "  " << addFunction( e->type() ) << "( \"" << e->name() << "\", " << key << ", "
+            << varName(e->name());
+        if ( !e->defaultValue().isEmpty() )
+          cpp << ", " << e->defaultValue();
+        cpp << " );" << endl;
+      }
+      else
+      {
+        // Indexed
+        for(int i = 0; i <= e->paramMax(); i++)
+        {
+          cpp << "  " << addFunction( e->type() ) << "( \"" 
+              << paramString(e->paramName(), e, i) << "\", " 
+              << paramString(key, e, i) << ", "
+              << varName(e->name()) << QString("[%1]").arg(i);
+          if ( !e->paramDefaultValue(i).isEmpty() )
+            cpp << ", " << e->paramDefaultValue(i);
+          else if ( !e->defaultValue().isEmpty() )
+            cpp << ", " << e->defaultValue();
+          cpp << " );" << endl;
+        }
+      }
     }
   }
 
