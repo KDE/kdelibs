@@ -777,7 +777,8 @@ void KHTMLPart::checkCompleted()
 
   d->m_bComplete = true;
 
-  emit setStatusBarText(i18n("Done."));
+  if (!parentPart())
+    emit setStatusBarText(i18n("Done."));
 
   emit completed();
 }
