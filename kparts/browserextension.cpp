@@ -24,6 +24,7 @@
 #include <qtimer.h>
 #include <qobjectlist.h>
 #include <qmetaobject.h>
+#include <qregexp.h>
 #include <qstrlist.h>
 #include <qstylesheet.h>
 
@@ -429,6 +430,8 @@ void BrowserExtension::pasteRequest()
 {
     QCString plain("plain");
     QString url = QApplication::clipboard()->text(plain, QClipboard::Selection).stripWhiteSpace();
+    // Remove linefeeds and any whitespace surrounding it.
+    url.replace(QRegExp("[\\ ]*\\n+[\\ ]*"),"");
 
     // Check if it's a URL
     QStringList filters = KURIFilter::self()->pluginNames();
