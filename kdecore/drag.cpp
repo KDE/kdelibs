@@ -3,6 +3,10 @@
  * 
  * $Log$
  *
+ * Revision 1.10  1997/09/18 12:16:03  kulow
+ * corrected some header dependencies. Removed most of them in drag.h and put
+ * them in drag.cpp. Now it should compile even under SunOS 4.4.1 ;)
+ *
  * Revision 1.9  1997/08/31 08:03:47  kdecvs
  * Heureka: Fritz fixed the dragging of icons on the root window (Kalle)
  *
@@ -391,6 +395,11 @@ void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
 
   // Switch to "friendly" error handler.
   if (oldErrorHandler == 0L)
+      oldErrorHandler = XSetErrorHandler(myErrorHandler);
+  XQueryTree( kapp->getDisplay(), root, &root, &parent, &children, &cchildren );
+    
+  for ( uint i = 0; i < cchildren; i++ )
+  {
       if ( children[i] == debugWin )
 	  printf("******************** root id = %ld *********************\n",children[i] );
       else
