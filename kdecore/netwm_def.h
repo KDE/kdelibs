@@ -27,11 +27,13 @@
 
 
 struct NETPoint {
+    NETPoint():x(0),y(0){}
     Q_UINT32 x, y;
 };
 
 
 struct NETSize {
+    NETSize():width(0),height(0){}
     Q_UINT32 width, height;
 };
 
@@ -43,12 +45,13 @@ struct NETRect {
 
 
 struct NETIcon {
+    NETIcon():data(0){}
     NETSize size;
     Q_UINT32 *data;
 };
 
-
 struct NETStrut {
+    NETStrut():left(0),right(0),top(0),bottom(0){}
     Q_UINT32 left, right, top, bottom;
 };
 

@@ -1252,7 +1252,6 @@ NETWinInfo::NETWinInfo(Display *d, Window win, Window rwin,
     p->name = (char *) 0;
     p->visible_name = (char *) 0;
     p->desktop = p->pid = p->handled_icons = 0;
-    p->strut.left = p->strut.right = p->strut.top = p->strut.bottom = 0;
     p->kde_dockwin_for = 0;
 
     p->properties = pr;
