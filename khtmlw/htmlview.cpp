@@ -20,7 +20,7 @@ KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView
     scrolling = -1;
     frameBorder = -1;
     
-    debugT("Constructed KHTML View\n");
+    // debugT("Constructed KHTML View\n");
     
     if ( viewList == NULL )
 	viewList = new QList<KHTMLView>;
@@ -39,7 +39,7 @@ KHTMLView::~KHTMLView()
 {
     viewList->removeRef( this );
     
-    debugT("Deleted View\n");
+    // debugT("Deleted View\n");
 }
 
 KHTMLView* KHTMLView::newView( QWidget *_parent, const char *_name, int _flags )
@@ -72,7 +72,7 @@ KHTMLView* KHTMLView::findView( const char *_name )
     {
 	if ( v->getFrameName() )
 	{
-	    debugT("Comparing '%s' '%s'\n", _name, v->getFrameName() );
+	    // debugT("Comparing '%s' '%s'\n", _name, v->getFrameName() );
 	    if ( strcmp( v->getFrameName(), _name ) == 0 )
 		return v;
 	}
@@ -187,7 +187,7 @@ void KHTMLView::resizeEvent( QResizeEvent * )
     
 void KHTMLView::closeEvent( QCloseEvent *e )
 {
-    debugT("Closing\n");
+    // debugT("Closing\n");
     e->accept();
 
     delete this;
@@ -207,13 +207,6 @@ void KHTMLView::slotDocumentChanged()
 {    
     if ( url.isNull() )
 	return;
-    
-    debugT("################## SLOTDOCUMENTCHANGED ## %s ## %x\n", url.data(),
-	(int)this);
-    debugT("(%i %i) %i %i %i %i\n",view->x(), view->y(), view->width(),
-	view->height(),view->docWidth(),view->docHeight());
-    debugT("Scrollers: H=%c V=%c\n",'0'+displayHScroll,'0'+displayVScroll);
-    debugT("IsFrameSet %c\n",'0'+isFrameSet());
 
     bool oldh = displayHScroll;
 
@@ -261,7 +254,7 @@ void KHTMLView::calcScrollBars()
     else
     {
 	bottom = 16;
-	debugT("Showing HScrollBar\n");
+	// debugT("Showing HScrollBar\n");
 	horz->setGeometry( 0, height() - 16, width() - right, 16 );
 	horz->show();
 	horz->raise();
@@ -274,7 +267,7 @@ void KHTMLView::calcScrollBars()
     }
     else
     {
-	debugT("Showing VScrollBar\n");
+	// debugT("Showing VScrollBar\n");
 	vert->setGeometry( width() - 16, 0, 16, height() - bottom );
 	vert->show();
 	vert->raise();
@@ -319,26 +312,26 @@ void KHTMLView::slotSetTitle( const char *_text )
 void KHTMLView::slotURLSelected( KHTMLView *_view, const char *_url,
     int _button, const char *_target )
 {
-    debugT("URL selected '%s'\n",_url );
+    // debugT("URL selected '%s'\n",_url );
     emit URLSelected( _view, _url, _button, _target );
 }
 
 void KHTMLView::slotURLSelected( const char *_url, int _button,
     const char *_target )
 {
-    debugT("URL 2 selected '%s'\n",_url );
+    // debugT("URL 2 selected '%s'\n",_url );
     emit URLSelected( this, _url, _button, _target );
 }
 
 void KHTMLView::slotOnURL( KHTMLView *_view, const char *_url )
 {
-    debugT("On URL '%s'\n",_url );
+    // debugT("On URL '%s'\n",_url );
     emit onURL( _view, _url );
 }
 
 void KHTMLView::slotOnURL( const char *_url )
 {
-    debugT("On URL 2 '%s'\n",_url);
+    // debugT("On URL 2 '%s'\n",_url);
     emit onURL( this, _url );
 }
 
@@ -393,7 +386,7 @@ void KHTMLView::slotFormSubmitted( KHTMLView *_view, const char *_method, const 
 
 void KHTMLView::slotFormSubmitted( const char *_method, const char *_url )
 {
-    debugT("Form submitted '%s'\n",_url);
+    // debugT("Form submitted '%s'\n",_url);
     
     emit formSubmitted( this, _url, _method );
 }
@@ -446,7 +439,7 @@ bool KHTMLView::isFrame()
 
 void KHTMLView::setIsFrame( bool _frame )
 {
-    debugT(">>>>>>>>>>>>>>>> I am a frame %x <<<<<<<<<<<<<<<<<<\n",(int)this);
+    // debugT(">>>>>>>>>>>>>>>> I am a frame %x <<<<<<<<<<<<<<<<<<\n",(int)this);
   
     /*  if ( _frame )
     {
@@ -471,15 +464,15 @@ bool KHTMLView::isSelected()
 
 KHTMLView* KHTMLView::getSelectedView()
 {
-    debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 1 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+    // debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 1 <<<<<<<<<<<<<<<<<<<<<<<<\n");
     if ( isFrame() && isSelected() )
 	return this;
 
-    debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 2 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+    // debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 2 <<<<<<<<<<<<<<<<<<<<<<<<\n");
     if ( isFrameSet() )
 	return view->getSelectedFrame();
 
-    debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 3 <<<<<<<<<<<<<<<<<<<<<<<<\n");
+    // debugT(">>>>>>>>>>>>>>>>>>>>>>>>>> HTMLView 3 <<<<<<<<<<<<<<<<<<<<<<<<\n");
     return 0L;
 }
 

@@ -253,10 +253,7 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 {
     if ( clue == 0L )
 	return;
- 
-    debugT("Mouse Press Event %i %i %x\n", (int)bIsFrame, (int)bIsSelected,
-	(int)this);
-    
+     
     if ( bIsFrame && !bIsSelected )
 	htmlView->setSelected( TRUE );
     
@@ -302,7 +299,7 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 		}
 	
 		// Save data. Perhaps the user wants to start a drag.
-		debugT(">>>>>>>>>>>>>> preparing for drag <<<<<<<<<<<<<<<<<\n");
+		// debugT(">>>>>>>>>>>>>> preparing for drag <<<<<<<<<<<<<<<<<\n");
 		pressedURL = obj->getURL();
 		pressedURL.detach();
 		pressedTarget = obj->getTarget();
@@ -375,7 +372,7 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 	return;
     }
 
-    debugT(">>>>>>>>>>>>>>>>>>> Move detected <<<<<<<<<<<<<<<<<<<\n");
+    // debugT(">>>>>>>>>>>>>>>>>>> Move detected <<<<<<<<<<<<<<<<<<<\n");
     
     // Does the parent want to process the event now ?
     if ( htmlView )
@@ -384,9 +381,6 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 	    return;
     }
 
-    debugT("Mouse move not handled %i %i %i\n",(int)_mouse->button(),
-	(int)LeftButton,(int)RightButton );
-    
     // text selection
     if ( pressed )
     {
@@ -433,19 +427,19 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
     // if ( _mouse->button() != LeftButton )
     // return;
       
-    debugT("Testing pressedURL.isEmpty()\n");
+    // debugT("Testing pressedURL.isEmpty()\n");
     if ( pressedURL.isEmpty() )
 	return;
     
     int x = _mouse->pos().x();
     int y = _mouse->pos().y();
 
-    debugT("Testing Drag\n");
+    // debugT("Testing Drag\n");
     
     // Did the user start a drag?
     if ( abs( x - press_x ) > Dnd_X_Precision || abs( y - press_y ) > Dnd_Y_Precision && !drag )
     {
-        debugT(">>>>>>>>>>>>>>>> Starting DND <<<<<<<<<<<<<<<<<<<<<<<<\n");
+        // debugT(">>>>>>>>>>>>>>>> Starting DND <<<<<<<<<<<<<<<<<<<<<<<<\n");
 	QPoint p = mapToGlobal( _mouse->pos() );
 
 	// Does the parent want to process the event now ?
@@ -565,7 +559,7 @@ void KHTMLWidget::select( QPainter * _painter, QRect &_rect )
     {
 	if ( painter == 0 )
 	{
-	    debugT("New Painter for painting\n");
+	    // debugT("New Painter for painting\n");
 	    painter = new QPainter();
 	    painter->begin( this );
 	    newPainter = TRUE;
@@ -2018,7 +2012,7 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	    {
 		if ( selectedFrame )
 		    selectedFrame->setSelected( TRUE );
-		debugT("Showing First frame\n");
+		// debugT("Showing First frame\n");
 		framesetStack.getFirst()->parse();
 		frameSet = framesetStack.getFirst();
 		frameSet->setGeometry( 0, 0, width(), height() );

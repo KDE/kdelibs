@@ -86,11 +86,11 @@ public:
     virtual void select( bool );
     virtual void getSelected( QStrList & );
     virtual bool selectText( QPainter *_painter, int _x1, int _y1,
-	    int _x2, int _y2, int _tx, int _ty );
+			     int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & );
 
     virtual void calcAbsolutePos( int _x, int _y );
-	virtual void setIndent( int ) { }
+    virtual void setIndent( int ) { }
     virtual void reset();
 
     virtual ObjectType getObjectType() const
@@ -117,9 +117,9 @@ public:
     virtual void appendLeftAligned( HTMLClueAligned * ) { }
     virtual void appendRightAligned( HTMLClueAligned * ) { }
     virtual int  getLeftMargin( int )
-	{	return 0; }
+        { return 0; }
     virtual int  getRightMargin( int )
-	{	return max_width; }
+	{ return max_width; }
     
     void setVAlign( VAlign _v ) { valign = _v; }
     void setHAlign( HAlign _h ) { halign = _h; }
