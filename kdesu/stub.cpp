@@ -171,3 +171,6 @@ void StubProcess::notifyTaskbar(const QString &suffix)
     client->send( "kicker", "TaskbarApplet",
 	          "clientStarted(QString,QString,pid_t)", params );
 }
+
+void StubProcess::virtual_hook( int id, void* data )
+{ PtyProcess::virtual_hook( id, data ); }

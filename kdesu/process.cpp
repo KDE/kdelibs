@@ -473,3 +473,5 @@ int PtyProcess::SetupTTY(int fd)
     return 0;
 }
 
+void PtyProcess::virtual_hook( int, void* )
+{ /*BASE::virtual_hook( id, data );*/ }

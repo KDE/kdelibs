@@ -70,6 +70,9 @@ private:
     QCString m_Error;
     QCString m_Stub;
 
+protected:
+    virtual void virtual_hook( int id, void* data );
+private:
     class SshProcessPrivate;
     SshProcessPrivate *d;
 };

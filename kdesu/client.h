@@ -175,15 +175,14 @@ public:
 private:
     int connect();
 
-    class KDEsuClientPrivate;
-    KDEsuClientPrivate *d;
-
     int sockfd;
     QCString sock;
 
     int command(const QCString &cmd, QCString *result=0L);
     QCString escape(const QCString &str);
 
+    class KDEsuClientPrivate;
+    KDEsuClientPrivate *d;
 };
 
 #endif
