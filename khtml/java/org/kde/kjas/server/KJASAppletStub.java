@@ -128,7 +128,7 @@ public class KJASAppletStub extends Frame
                         panel.showFailed();
                         return;
                     }
-                }
+                } // synchronized
                 app.setVisible(false);
                 Main.debug("panel.add( \"Center\", app );");                
                 panel.setApplet( app );
@@ -164,14 +164,15 @@ public class KJASAppletStub extends Frame
                 //repaint(1L);
                 //panel.repaint(1L);
                 //--Main.debug("app.repaint(1L);");                
-                //--app.repaint(1L);
+                app.repaint(0L);
  
                 context.showStatus("Starting Applet " + appletName + " ...");
                 // create a new thread, so we know, when the applet was started
                 
                 Main.debug("Applet " + appletName + " id=" + appletID + " starting...");
-                new KJASAppletThread(app, "KJAS-Applet-" + appletID + "-" + appletName).start(); 
+                Thread appletThread = new KJASAppletThread(app, "KJAS-Applet-" + appletID + "-" + appletName); 
                 panel.stopAnimation();
+                appletThread.start();
                 Main.debug("Applet " + appletName + " id=" + appletID + " started.");
                 context.showStatus("Applet " + appletName + " started.");
                 //setVisible(true);
@@ -214,9 +215,9 @@ public class KJASAppletStub extends Frame
 
     public Applet getApplet()
     {
-        synchronized ( this ) {
+        //synchronized ( this ) {
             return app;
-        }
+        //}
     }
 
     public Dimension getAppletSize()
@@ -295,6 +296,7 @@ public class KJASAppletStub extends Frame
     {
         private Dimension size;
         private Image img = null;
+        private boolean showStatusFlag = true;
         private Font font;
         private String msg = "Loading Applet...";
         public KJASAppletPanel( Dimension _size )
@@ -333,29 +335,35 @@ public class KJASAppletStub extends Frame
             repaint();
         }
         
-        public synchronized void paint(Graphics g) {
+        public void paint(Graphics g) {
             super.paint(g);
-            int x = getWidth() / 2;
-            int y = getHeight() / 2;
-            if (img != null) {
-                int w = img.getWidth(this);
-                int h = img.getHeight(this);
-                int imgx = x - w/2;
-                int imgy = y - h/2;
-                //g.setClip(imgx, imgy, w, h);
-                g.drawImage(img, imgx, imgy, this);
-                y += img.getHeight(this)/2;
-            }
-            if (msg != null) {
-                g.setFont(font);
-                FontMetrics m = g.getFontMetrics();
-                int h = m.getHeight();
-                int w = m.stringWidth(msg);
-                int msgx = x - w/2;
-                int msgy = y + h;
-                //g.setClip(0, y, getWidth(), h);
-                g.drawString(msg, msgx, msgy); 
-                        
+            if (showStatusFlag) {
+                int x = getWidth() / 2;
+                int y = getHeight() / 2;
+                if (img != null) {
+                    //synchronized (img) {
+                        int w = img.getWidth(this);
+                        int h = img.getHeight(this);
+                        int imgx = x - w/2;
+                        int imgy = y - h/2;
+                        //g.setClip(imgx, imgy, w, h);
+                        g.drawImage(img, imgx, imgy, this);
+                        y += img.getHeight(this)/2;
+                    //}
+                }
+                if (msg != null) {
+                    //synchronized(msg) {
+                        g.setFont(font);
+                        FontMetrics m = g.getFontMetrics();
+                        int h = m.getHeight();
+                        int w = m.stringWidth(msg);
+                        int msgx = x - w/2;
+                        int msgy = y + h;
+                        //g.setClip(0, y, getWidth(), h);
+                        g.drawString(msg, msgx, msgy); 
+
+                    //}
+                }
             }
         }
         void showFailed() {
@@ -371,8 +379,7 @@ public class KJASAppletStub extends Frame
         }
         
         public void stopAnimation() {
-            img = null;
-            msg = null;
+            showStatusFlag = false;
         }
     }
     
