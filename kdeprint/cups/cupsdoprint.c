@@ -57,7 +57,8 @@ static char * shell_quote(const char *s)
 {
    char *result;
    char *p;
-   p = result = malloc(strlen(s)*5+1);
+   p = result = malloc(strlen(s)*5+3);
+   *p++ = '\'';
    while(*s)
    {
      if (*s == '\'')
@@ -73,6 +74,7 @@ static char * shell_quote(const char *s)
         *p++ = *s++;
      }
    }
+   *p++ = '\'';
    *p = '\0';
    return result;
 }
