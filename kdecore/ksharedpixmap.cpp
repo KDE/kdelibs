@@ -1,5 +1,7 @@
 /* vi: ts=8 sts=4 sw=4
  *
+ * $Id$
+ *
  * This file is part of the KDE libraries.
  * Copyright (C) 1999 Geert Jansen <g.t.jansen@stud.tue.nl>
  *
@@ -9,11 +11,21 @@
  * version 2 of the License, or (at your option) any later version.
  *
  *
- * Shared pixmaps for KDE.
+ * Shared pixmap client for KDE.
  *
- * $Id$
+ * 5 Dec 99 Geert Jansen:   
+ * 
+ *	MAJOR change: KSharedPixmap is client-only and asynchronous now. It 
+ *	uses the new selection mechanism to transfer the pixmap handle. This
+ *	has the advantage that shared pixmaps can be deleted and/or changed 
+ *	now, and that the very ugly XSetCloseDownMode() is not necessary
+ *	anymore. 
+ *	The server is implemented in KPixmapServer, see the file
+ *	kdebase/kdesktop/pixmapserver.cpp.
  *
- * 1 Oct 99 Geert Jansen:      Initial implementation.
+ * 1 Oct 99 Geert Jansen:   
+ *
+ *	Initial implementation.
  */
 
 #include <qrect.h>
@@ -21,69 +33,13 @@
 #include <qstring.h>
 #include <qpixmap.h>
 #include <qwindowdefs.h>
+#include <qwidget.h>
 
+#include <kapp.h>
 #include <krootprop.h>
 #include <ksharedpixmap.h>
 
 #include <X11/Xlib.h>
-
-/**
- * A utility class to read/store pixmap descriptions.
- * Shoud not be exported.
- */
-class KSharedPixmapData
-{
-public:
-    KSharedPixmapData(QString desc);
-    KSharedPixmapData(QPixmap *pm);
-
-    int handle() { return mHandle; }
-    int height() { return mHeight; }
-    int width() { return mWidth; }
-    bool ok() { return mbOK; }
-
-    QString desc() { return mDesc; }
-
-private:
-    bool mbOK;
-    int mHandle, mHeight, mWidth;
-    QString mDesc;
-};
-
-KSharedPixmapData::KSharedPixmapData(QPixmap *pm)
-{
-    mHandle = pm->handle();
-    mWidth = pm->width();
-    mHeight = pm->height();
-    mDesc.sprintf("%d,%d,%d", mHandle, mWidth, mHeight);
-    mbOK = true;
-}
-
-KSharedPixmapData::KSharedPixmapData(QString desc)
-{    
-    mbOK = false;
-
-    int c1, c2;
-    c1 = desc.find(',');
-    if (c1 == -1)
-	return;
-    c2 = desc.find(',', c1+1);
-    if (c2 == -1)
-	return;
-
-    bool ok;
-    mHandle = desc.left(c1).toInt(&ok);
-    if (!ok)
-	return;
-    mWidth = desc.mid(c1+1, c2-c1-1).toInt(&ok);
-    if (!ok)
-	return;
-    mHeight = desc.mid(c2+1).toInt(&ok);
-    if (!ok)
-	return;
-
-    mbOK = true;
-}
 
 
 /**
@@ -91,170 +47,129 @@ KSharedPixmapData::KSharedPixmapData(QString desc)
  */
 
 KSharedPixmap::KSharedPixmap()
+    : QWidget(0L, "shpixmap comm window")
 {
     init();
-}
-
-
-KSharedPixmap::KSharedPixmap(QString id, QRect rect, QString prop)
-{
-    mProp = prop;
-    init();
-    if (!id.isEmpty())
-	copy(id, rect);
-}
-    
-
-KSharedPixmap::KSharedPixmap(const QPixmap &pm)
-{
-    init();
-    *((QPixmap *) this) = pm;
 }
 
 
 KSharedPixmap::~KSharedPixmap()
 {
-    if (mRefs.isEmpty())
-	return;
-    unpublish();
 }
 
 
-/* private */
 void KSharedPixmap::init()
 {
-    if (mProp.isEmpty())
-	mProp = "KDE_SHARED_PIXMAPS";
+    pixmap = XInternAtom(qt_xdisplay(), "PIXMAP", false);
+    target = XInternAtom(qt_xdisplay(), "target prop", false);
+    m_Selection = None;
 }
 
 
-void KSharedPixmap::setProp(QString prop)
+bool KSharedPixmap::isAvailable(QString name)
 {
-    mProp = prop;
+    QString str = QString("KDESHPIXMAP:%1").arg(name);
+    Atom sel = XInternAtom(qt_xdisplay(), str.latin1(), true);
+    if (sel == None)
+	return false;
+    return XGetSelectionOwner(qt_xdisplay(), sel) != None;
 }
+    
 
-
-bool KSharedPixmap::publish(QString id, bool overwrite)
+bool KSharedPixmap::loadFromShared(QString name, QRect rect)
 {
-    if (id.isEmpty() || isNull())
+    if (m_Selection != None)
+	// already active
 	return false;
 
-    // Keep a list of published id's
-    if (mRefs.contains(id))
-	return true;
-    mRefs.append(id);
+    m_Rect = rect;
+    QPixmap::resize(0, 0); // invalidate
 
-    KRootProp prop(mProp);
-    QString val = prop.readEntry(id);
-    if (!val.isNull() && !overwrite)
+    QString str = QString("KDESHPIXMAP:%1").arg(name);
+    m_Selection = XInternAtom(qt_xdisplay(), str.latin1(), true);
+    if (m_Selection == None)
 	return false;
-    KSharedPixmapData pmd(this);
-    prop.writeEntry(id, pmd.desc());
+    if (XGetSelectionOwner(qt_xdisplay(), m_Selection) == None) {
+	m_Selection = None;
+	return false;
+    }
 
+    XConvertSelection(qt_xdisplay(), m_Selection, pixmap, target, 
+	    winId(), CurrentTime);
     return true;
 }
 
 
-bool KSharedPixmap::unpublish(QString id)
+bool KSharedPixmap::x11Event(XEvent *event)
 {
-    KRootProp prop(mProp);
-    if (id.isEmpty()) {
-	QStringList::Iterator it;
-	bool ok = true;
-	for (it=mRefs.begin(); it!=mRefs.end(); it++)
-	    if (prop.removeEntry(*it).isNull())
-		ok = false;
-	return ok;
-    } 
-    if (mRefs.contains(id))
-	return !prop.removeEntry(id).isNull();
-    return false;
-}
-
-
-bool KSharedPixmap::loadFromShared(QString id, QRect rect)
-{
-    if (!id.isEmpty())
-	return copy(id, rect);
-    return false;
-}
-
-
-/* private */
-bool KSharedPixmap::copy(QString id, QRect rect)
-{
-    KRootProp prop(mProp);
-    QString desc = prop.readEntry(id);
-    if (desc.isEmpty())
+    if (event->type != SelectionNotify)
 	return false;
-    KSharedPixmapData pmd(desc);
-    if (!pmd.ok())
+	
+    XSelectionEvent *ev = &event->xselection;
+    if (ev->selection != m_Selection)
 	return false;
 
-    if (rect.isEmpty()) {
-	XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
-		0, 0, pmd.width(), pmd.height(), 0, 0);
+    if ((ev->target != pixmap) || (ev->property == None)) {
+	m_Selection = None;
+	emit done(false);
+	return true;
+    }
+
+    // Read pixmap handle from ev->property
+
+    int dummy, format; 
+    unsigned long nitems, ldummy;
+    Drawable *pixmap_id; 
+    Atom type;
+
+    XGetWindowProperty(qt_xdisplay(), winId(), ev->property, 0, 1, false, 
+	    pixmap, &type, &format, &nitems, &ldummy, 
+	    (unsigned char **) &pixmap_id);
+
+    if (nitems != 1) {
+	emit done(false);
+	return true;
+    }
+
+    Window root;
+    unsigned int width, height, udummy;
+    XGetGeometry(qt_xdisplay(), *pixmap_id, &root, &dummy, &dummy, &width,
+	    &height, &udummy, &udummy);
+
+    if (m_Rect.isEmpty()) {
+	QPixmap::resize(width, height);
+	XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
+		0, 0, width, height, 0, 0);
+	XDeleteProperty(qt_xdisplay(), winId(), ev->property);
+	m_Selection = None;
+	emit done(true);
 	return true;
     }
 
     // Do some more processing here: Generate a tile that can be used as a
     // background tile for the rectangle "rect".
 	
-    int sw = pmd.width(), sh = pmd.height();
-    int w = rect.width(), h = rect.height();
-    int tw = QMIN(sw, w), th = QMIN(sh, h);
-    int xa = rect.x() % sw, ya = rect.y() % sh;
-    int t1w = QMIN(sw-xa,tw), t1h = QMIN(sh-ya,th);
+    unsigned w = m_Rect.width(), h = m_Rect.height();
+    unsigned tw = QMIN(width, w), th = QMIN(height, h);
+    unsigned xa = m_Rect.x() % width, ya = m_Rect.y() % height;
+    unsigned t1w = QMIN(width-xa,tw), t1h = QMIN(height-ya,th);
 
-    detach(); 
-    resize(tw, th);
+    QPixmap::resize(tw, th);
 
-    XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
+    XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
 	    xa, ya, t1w, t1h, 0, 0);
-    XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
+    XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
 	    0, ya, tw-t1w, t1h, t1w, 0);
-    XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
+    XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
 	    xa, 0, t1w, th-t1h, 0, t1h);
-    XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
+    XCopyArea(qt_xdisplay(), *pixmap_id, QPixmap::handle(), qt_xget_temp_gc(),
 	    0, 0, tw-t1w, th-t1h, t1w, t1h);
-    
+
+    m_Selection = None;
+    XDeleteProperty(qt_xdisplay(), winId(), ev->property);
+    emit done(true);
     return true;
 }
 
 
-void KSharedPixmap::setKeepResources(bool keep)
-{
-    XSetCloseDownMode(qt_xdisplay(), keep ? RetainTemporary : DestroyAll);
-}
-
-
-/* static */
-QSize KSharedPixmap::query(QString id, QString property)
-{
-    if (id.isEmpty())
-	return QSize();
-    if (property.isEmpty())
-	property = "KDE_SHARED_PIXMAPS";
-
-    KRootProp prop(property);
-    QString data = prop.readEntry(id, QString());
-    if (data.isEmpty())
-	return QSize();
-
-    KSharedPixmapData pmd(data);
-    if (!pmd.ok())
-	return QSize();
-
-    return QSize(pmd.width(), pmd.height());
-}
-
-
-/* static */
-QStringList KSharedPixmap::list(QString property)
-{
-    if (property.isEmpty())
-	property = "KDE_SHARED_PIXMAPS";
-
-    KRootProp prop(property);
-    return prop.listEntries();
-}
+#include "ksharedpixmap.moc"
