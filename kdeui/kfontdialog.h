@@ -27,10 +27,10 @@
 #define _K_FONT_DIALOG_H_
 
 #include <qlineedit.h>
-#include <qcheckbox.h>
 #include <kdialogbase.h>
 
 class QComboBox;
+class QCheckBox;
 class QFont;
 class QGroupBox;
 class QLabel;
@@ -60,6 +60,11 @@ public:
   enum FontColumn { FamilyList=0x01, StyleList=0x02, SizeList=0x04,
     CharsetList=0x08 };
 
+  /**
+   *  @li @p FontDiffFamily - Identifies a requested change in the font family.
+   *  @li @p FontDiffStyle -  Identifies a requested change in the font style.
+   *  @li @p FontDiffSize -   Identifies a requested change in the font size.
+   */
   enum FontDiff { FontDiffFamily=0x01, FontDiffStyle=0x02, FontDiffSize=0x04 };
 
   /**
@@ -108,6 +113,10 @@ public:
    */
   void setFont( const QFont &font, bool onlyFixed = false );
 
+  /**
+   * @return The bitmask corresponding to the attributes the user 
+   *         wishes to change.
+   */
   int fontDiffFlags();
 
   /**
@@ -279,6 +288,7 @@ public:
    *        If that has not been created, X is queried, and all fonts
    *        available on the system are displayed.
    * @param makeFrame Draws a frame with titles around the contents.
+   * @param diff Display the difference version dialog. See getFontDiff().
    *
    */
   KFontDialog( QWidget *parent = 0L, const char *name = 0,
@@ -330,6 +340,23 @@ public:
   static int getFont( QFont &theFont, bool onlyFixed = false,
 		      QWidget *parent = 0L, bool makeFrame = true );
 
+  /**
+   * Creates a modal font difference dialog, lets the user choose a selection
+   * of changes that should be made to a set of fonts, and returns when the
+   * dialog is closed. Useful for choosing slight adjustments to the font set
+   * when the user would otherwise have to manually edit a number of fonts.
+   *
+   * @param theFont a reference to the font to write the chosen font
+   *        into.
+   * @param onlyFixed if true, only select from fixed-width fonts.
+   * @param parent Parent widget of the dialog. Specifying a widget different
+   *        from 0 (Null) improves centering (looks better).
+   * @param makeFrame Draws a frame with titles around the contents.
+   * @param diffFlags a reference to the int into which the chosen
+   *        difference selection bitmask should be written.
+   *
+   * @returns @ref QDialog::result().
+   */
   static int getFontDiff( QFont &theFont, int &diffFlags, bool onlyFixed = false,
 		      QWidget *parent = 0L, bool makeFrame = true );
 
