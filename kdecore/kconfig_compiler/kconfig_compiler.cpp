@@ -75,8 +75,17 @@ class CfgEntry
     void setCode( const QString &d ) { mCode = d; }
     QString code() const { return mCode; }
 
+    void setParam( const QString &d ) { mParam = d; }
+    QString param() const { return mParam; }
+
+    void setParamType( const QString &d ) { mParamType = d; }
+    QString paramType() const { return mParamType; }
+
     void setValues( const QStringList &d ) { mValues = d; }
     QStringList values() const { return mValues; }
+
+    void setParamValues( const QStringList &d ) { mParamValues = d; }
+    QStringList paramValues() const { return mParamValues; }
 
     void dump() const
     {
@@ -88,6 +97,7 @@ class CfgEntry
       kdDebug() << "  label: " << mLabel << endl;
       kdDebug() << "  code: " << mCode << endl;
       kdDebug() << "  values: " << mValues.join(":") << endl;
+      kdDebug() << "  paramvalues: " << mParamValues.join(":") << endl;
       kdDebug() << "  default: " << mDefaultValue << endl;
       kdDebug() << "</entry>" << endl;
     }
@@ -100,13 +110,23 @@ class CfgEntry
     QString mLabel;
     QString mCode;
     QString mDefaultValue;
+    QString mParam;
+    QString mParamType;
     QStringList mValues;
+    QStringList mParamValues;
 };
 
 static QString varName(const QString &n)
 {
   QString result = "m"+n;
   result[1] = result[1].upper();
+  return result;
+}
+
+static QString enumName(const QString &n)
+{
+  QString result = "Enum"+n;
+  result[4] = result[4].upper();
   return result;
 }
 
@@ -161,7 +181,12 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
   QString label;
   QString defaultValue;
   QString code;
+  QString param;
+  QString paramType;
   QStringList values;
+  QStringList paramValues;
+  int paramMin;
+  int paramMax;
 
   QDomNode n;
   for ( n = element.firstChild(); !n.isNull(); n = n.nextSibling() ) {
@@ -169,11 +194,77 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     QString tag = e.tagName();    
     if ( tag == "label" ) label = e.text();
     else if ( tag == "code" ) code = e.text();
+    else if ( tag == "parameter" ) 
+    {
+      param = e.attribute( "name" );
+      paramType = e.attribute( "type" );
+      if ( param.isEmpty() ) {
+        kdError() << "Parameter must have a name: " << dumpNode(e) << endl;
+        return 0;
+      }
+      if ( paramType.isEmpty() ) {
+        kdError() << "Parameter must have a type: " << dumpNode(e) << endl;
+        return 0;
+      }
+      if ((paramType == "int") || (paramType == "uint"))
+      {
+         bool ok;
+         paramMin = e.attribute("min").toInt(&ok);
+         if (!ok)
+         {
+           kdError() << "Integer parameter must have a minimum (e.g. min=\"0\"): " << dumpNode(e) << endl;
+           return 0;
+         }
+         paramMax = e.attribute("max").toInt(&ok);
+         if (!ok)
+         {
+           kdError() << "Integer parameter must have a maximum (e.g. max=\"0\"): " << dumpNode(e) << endl;
+           return 0;
+         }
+         paramValues.clear();
+         for(int i = paramMin; i < paramMax; i++)
+         {
+            paramValues.append(QString("%1").arg(i));
+         }
+      }
+      else if (paramType == "Enum")
+      {
+         QDomNode n2;
+         for ( n2 = e.firstChild(); !n2.isNull(); n2 = n2.nextSibling() ) {
+           QDomElement e2 = n2.toElement();
+           if (e2.tagName() == "values")
+           {
+             QDomNode n3;
+             for ( n3 = e2.firstChild(); !n3.isNull(); n3 = n3.nextSibling() ) {
+               QDomElement e3 = n3.toElement();
+               if (e3.tagName() == "value")
+               {
+                  paramValues.append( e3.text() );
+               }
+             }
+             break;
+           }
+         }
+         if (paramValues.isEmpty())
+         {
+           kdError() << "No values specified for parameter '" << param << "'." << endl;
+           return 0;
+         }
+      }
+      else
+      {
+        kdError() << "Parameter '" << param << "' has type " << paramType << " but must be of type int, uint or Enum." << endl;
+        return 0;
+      }
+    }
     else if ( tag == "default" ) 
     {
-      defaultValue = e.text();
-      if (e.attribute( "code" ) == "true")
-        defaultCode = true;
+      if (e.attribute("param").isEmpty())
+      {
+        defaultValue = e.text();
+        if (e.attribute( "code" ) == "true")
+          defaultCode = true;
+      }
     }
     else if ( tag == "values" ) {
       QDomNode n2;
@@ -190,7 +281,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
     kdError() << "Entry must have a name: " << dumpNode(element) << endl;
     return 0;
   }
-  if (name.contains("$("))
+  if (name.contains("$(") && param.isEmpty())
   {
     kdError() << "Name may not be parameterized: " << name << endl;
     return 0;
@@ -233,7 +324,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
 
     } else if ( type == "Enum" ) {
       if ( values.contains(defaultValue) ) {
-        defaultValue.prepend("Enum" + name + "::");
+        defaultValue.prepend( enumName(name) + "::");
       }
 
     } else if ( type == "IntList" ) {
@@ -251,8 +342,14 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element )
       defaultValue = "default" + name;
     }
   }
-    
-  return new CfgEntry( group, type, key, name, label, code, defaultValue, values );
+  
+  CfgEntry *result = new CfgEntry( group, type, key, name, label, code, defaultValue, values );
+  if (!param.isEmpty())
+  {
+    result->setParam(param);
+    result->setParamType(paramType);
+  }
+  return result;
 }
 
 /**
@@ -354,7 +451,8 @@ int main( int argc, char **argv )
     kdError() << "Codegen options file must have extension .kcfg-codegen" << endl;
     return 1;
   }
-  QString baseName = codegenFilename.left(codegenFilename.length() - 13);
+  QString baseName = args->url( 1 ).fileName();
+  baseName = baseName.left(baseName.length() - 13);
 
   kdDebug() << "Codegen options: " << codegenFilename << endl;
   
@@ -496,7 +594,15 @@ int main( int argc, char **argv )
   for( e = entries.first(); e; e = entries.next() ) {
     QStringList values = e->values();
     if ( !values.isEmpty() ) {
-      h << "    class Enum" << e->name() << endl;
+      h << "    class " << enumName(e->name()) << endl;
+      h << "    {" << endl;
+      h << "      public:" << endl;
+      h << "      enum { " << values.join( ", " ) << " };" << endl;
+      h << "    };" << endl;
+    }
+    values = e->paramValues();
+    if ( !values.isEmpty() ) {
+      h << "    class " << enumName(e->param()) << endl;
       h << "    {" << endl;
       h << "      public:" << endl;
       h << "      enum { " << values.join( ", " ) << " };" << endl;
@@ -629,7 +735,7 @@ int main( int argc, char **argv )
   cpp << "// This file is generated by kconfig_compiler from " << args->url(0).fileName() << "." << endl;
   cpp << "// All changes you do to this file will be lost." << endl << endl;
 
-  cpp << "#include \"" << filenameOnly(headerFileName) << "\"" << endl << endl;
+  cpp << "#include \"" << headerFileName << "\"" << endl << endl;
 
   // Static class pointer for singleton
   if ( singleton ) {
