@@ -104,14 +104,17 @@ public:
    * @param xmlfile The application's local resource file
    * @param global If true, then the global resource file will also
    *               be parsed
+   * @param parent The parent of the dialog.
+   * @param name An internal name.
    */
   KEditToolbar(KActionCollection *collection,
-               const QString& xmlfile = QString::null, bool global = true);
+               const QString& xmlfile = QString::null, bool global = true,
+			   QWidget* parent = 0, const char* name = 0);
 
   /**
    * Constructor for KParts based apps.
    *
-   * The one and only parameter, @ref #factory, is a pointer to the
+   * The main parameter, @ref #factory, is a pointer to the
    * XML GUI factory object for your application.  It contains a list
    * of all of the GUI clients (along with the action collections and
    * xml files) and the toolbar editor uses that.
@@ -124,8 +127,10 @@ public:
    * </pre>
    *
    * @param factory Your application's factory object
+   * @param parent The usual parent for the dialog.
+   * @param name An internal name.
    */
-  KEditToolbar(KXMLGUIFactory* factory);
+  KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0, const char* name = 0);
 
 protected slots:
   /**

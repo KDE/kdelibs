@@ -193,8 +193,8 @@ public:
 };
 
 KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
-                           bool global)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel),
+                           bool global, QWidget* parent, const char* name)
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel, parent, name),
       m_widget(new KEditToolbarWidget(collection, file, global, this))
 {
     setMainWidget(m_widget);
@@ -204,8 +204,8 @@ KEditToolbar::KEditToolbar(KActionCollection *collection, const QString& file,
     enableButtonOK(false);
 }
 
-KEditToolbar::KEditToolbar(KXMLGUIFactory* factory)
-    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel),
+KEditToolbar::KEditToolbar(KXMLGUIFactory* factory, QWidget* parent, const char* name)
+    : KDialogBase(Swallow, i18n("Configure Toolbars"), Ok|Cancel, Cancel, parent, name),
       m_widget(new KEditToolbarWidget(factory, this))
 {
     setMainWidget(m_widget);
