@@ -246,26 +246,20 @@ void RenderFlow::layout()
         layoutBlockChildren();
 
     calcHeight();
-
-    if(isFloating() || isTableCell()) {
-	int lp = floatBottom();
-	if ( !m_childrenInline ) {
-	    RenderObject *last = lastChild();
-	    while( last && (last->isPositioned() || last->isFloating()) )
-		last = last->previousSibling();
-	    if( last && last->isFlow() ) {
-		int h = yPos() + static_cast<RenderFlow *>(last)->floatBottom();
-		if( h > lp ) lp = h;
-	    }
-	}
-	if ( lp > m_height )
-	    m_height = lp;
-	m_height += borderBottom() + paddingBottom();
-    } else if( hasOverhangingFloats() && m_next ) {
-	assert(!m_next->isInline());
-	m_next->setLayouted(false);
-    }
     
+    if(hasOverhangingFloats())
+    {
+        if(isFloating() || isTableCell())
+        {
+            m_height = floatBottom();
+            m_height += borderBottom() + paddingBottom();
+        }
+        else if( m_next)
+        {
+            assert(!m_next->isInline());
+            m_next->setLayouted(false);
+        }
+    }
     
     layoutSpecialObjects();
 
