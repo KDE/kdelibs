@@ -1067,6 +1067,8 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   if (!progNode) {
     Object err = Error::create(globExec,SyntaxError,errMsg.ascii(),errLine);
     err.put(globExec,"sid",Number(sid));
+    globExec->setException(err); // required to notify the debugger
+    globExec->clearException();
     return Completion(Throw,err);
   }
 
@@ -1127,6 +1129,11 @@ Completion InterpreterImp::evaluate(const UString &code, const Value &thisV)
   if (progNode->deref())
     delete progNode;
   recursion--;
+
+  if (globExec->hadException()) {
+    res = Completion(Throw,globExec->exception());
+    globExec->clearException();
+  }
 
   return res;
 }
