@@ -396,22 +396,36 @@ void KMenuBar::checkSize( int& w, int& h )
 {
     if( !d->topLevel || d->fallback_mode )
 	return;
-    if( parentWidget() && parentWidget()->width() == w )
-    { // Menubar is possibly being attempted to be resized to match
-      // mainwindow size. Resize to sizeHint() instead. Since
-      // sizeHint() may indirectly call resize(), avoid infinite
-      // recursion.
-	++block_resize;
-	QSize s = sizeHint();
-	w = s.width();
-	h = s.height();
-	--block_resize;
-    }
+    QSize s = sizeHint();
+    w = s.width();
+    h = s.height();
     // This is not done as setMinimumSize(), because that would set the minimum
     // size in WM_NORMAL_HINTS, and KWin would not allow changing to smaller size
     // anymore
     w = KMAX( w, d->min_size.width());
     h = KMAX( h, d->min_size.height());
+}
+
+// QMenuBar's sizeHint() gives wrong size (insufficient width), which causes wrapping in the kicker applet
+QSize KMenuBar::sizeHint() const
+{
+    if( !d->topLevel || block_resize > 0 )
+        return QMenuBar::sizeHint();
+    // Since QMenuBar::sizeHint() may indirectly call resize(),
+    // avoid infinite recursion.
+    ++block_resize;
+    // find the minimum useful height, and enlarge the width until the menu fits in that height (one row)
+    int h = heightForWidth( 1000000 );
+    int w = QMenuBar::sizeHint().width();
+    // optimization - don't call heightForWidth() too many times
+    while( heightForWidth( w + 12 ) > h )
+        w += 12;
+    while( heightForWidth( w + 4 ) > h )
+        w += 4;
+    while( heightForWidth( w ) > h )
+        ++w;
+    --block_resize;
+    return QSize( w, h );
 }
 
 #ifdef Q_WS_X11
