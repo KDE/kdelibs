@@ -2363,6 +2363,7 @@ void exit_usage(char *name)
 	fprintf(stderr,"\nOptions:\n");
 	fprintf(stderr,"  -I <directory>     search in <directory> for includes\n");
 	fprintf(stderr,"  -e <name>          exclude a struct/interface/enum from code generation\n");
+	fprintf(stderr,"  -t                 create .mcoptype/.mcopclass files with type information\n");
 	exit(1);
 }
 extern void mcopidlParse(const char *code);
