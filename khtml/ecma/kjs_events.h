@@ -66,8 +66,8 @@ namespace KJS {
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-    enum { Type, Target, CurrentTarget, ToElement, EventPhase, Bubbles,
-           Cancelable, TimeStamp,
+    enum { Type, Target, CurrentTarget, EventPhase, Bubbles,
+           Cancelable, TimeStamp, SrcElement,
            StopPropagation, PreventDefault, InitEvent };
     DOM::Event toEvent() const { return event; }
   protected:
@@ -117,7 +117,7 @@ namespace KJS {
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     enum { ScreenX, ScreenY, ClientX, X, ClientY, Y, CtrlKey, ShiftKey, AltKey,
-           MetaKey, Button, RelatedTarget, FromElement,
+           MetaKey, Button, RelatedTarget, FromElement, ToElement,
            InitMouseEvent };
     DOM::MouseEvent toMouseEvent() const { return static_cast<DOM::MouseEvent>(event); }
   };

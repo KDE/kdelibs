@@ -153,7 +153,7 @@ const ClassInfo DOMEvent::info = { "Event", 0, &DOMEventTable, 0 };
   type		DOMEvent::Type		DontDelete|ReadOnly
   target	DOMEvent::Target	DontDelete|ReadOnly
   currentTarget	DOMEvent::CurrentTarget	DontDelete|ReadOnly
-  toElement	DOMEvent::ToElement	DontDelete|ReadOnly
+  srcElement	DOMEvent::SrcElement	DontDelete|ReadOnly
   eventPhase	DOMEvent::EventPhase	DontDelete|ReadOnly
   bubbles	DOMEvent::Bubbles	DontDelete|ReadOnly
   cancelable	DOMEvent::Cancelable	DontDelete|ReadOnly
@@ -191,9 +191,9 @@ Value DOMEvent::getValue(ExecState *exec, int token) const
   case Type:
     return String(event.type());
   case Target:
+  case SrcElement: /*MSIE extension - "the object that fired the event"*/
     return getDOMNode(exec,event.target());
   case CurrentTarget:
-  case ToElement: /*MSIE extension*/
     return getDOMNode(exec,event.currentTarget());
   case EventPhase:
     return Number((unsigned int)event.eventPhase());
@@ -366,6 +366,7 @@ const ClassInfo DOMMouseEvent::info = { "MouseEvent", &DOMUIEvent::info, &DOMMou
   button	DOMMouseEvent::Button	DontDelete|ReadOnly
   relatedTarget	DOMMouseEvent::RelatedTarget DontDelete|ReadOnly
   fromElement	DOMMouseEvent::FromElement DontDelete|ReadOnly
+  toElement	DOMMouseEvent::ToElement	DontDelete|ReadOnly
 @end
 @begin DOMMouseEventProtoTable 1
   initMouseEvent	DOMMouseEvent::InitMouseEvent	DontDelete|Function 15
@@ -417,8 +418,14 @@ Value DOMMouseEvent::getValue(ExecState *exec, int token) const
     return Number( (unsigned int)button );
   }
   case RelatedTarget:
-  case FromElement: /*MSIE extension*/
     return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
+  case FromElement:
+    // MSIE extension - "object from which activation or the mouse pointer is exiting during the event" (huh??)
+    // ### TODO: meaning of currentTarget differs between mouseover and mouseout, need to pick the right one
+    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).relatedTarget());
+  case ToElement:
+    // MSIE extension - "the object toward which the user is moving the mouse pointer"
+    return getDOMNode(exec,static_cast<DOM::MouseEvent>(event).currentTarget());
   default:
     kdWarning() << "Unhandled token in DOMMouseEvent::getValue : " << token << endl;
     return Value();
