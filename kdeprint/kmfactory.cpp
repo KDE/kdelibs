@@ -31,6 +31,8 @@
 #include <kstddirs.h>
 #include <kiconloader.h>
 #include <kdebug.h>
+#include <kmessagebox.h>
+#include <klocale.h>
 
 KMFactory* KMFactory::m_self = 0;
 
@@ -153,7 +155,11 @@ void KMFactory::loadFactory()
 		QString	libname = QString::fromLatin1("libkdeprint_%1").arg(sys);
 		m_factory = KLibLoader::self()->factory(libname.latin1());
 		if (!m_factory)
-			kdWarning() << QString::fromLatin1("Unable to locate library '%1'.").arg(libname) << endl;
+		{
+			KMessageBox::error(0,
+                           i18n("There was an error loading %1.\nThe diagnostic is:\n%2")
+                           .arg(libname).arg(KLibLoader::self()->lastErrorMessage()));
+		}
 	}
 }
 
