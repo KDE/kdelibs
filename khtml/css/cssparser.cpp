@@ -816,24 +816,22 @@ static const QChar *getNext( const QChar *curP, const QChar *endP, bool &last )
     last = false;
     const QChar *nextP = curP;
     bool ignoreSpace = false;
-    while(nextP <= endP) {
+    while(nextP < endP) {
 	if ( *nextP == '(' ) {
 	    ignoreSpace = true;
 	} else if ( *nextP == ')' ) {
 	    ignoreSpace = false;
 	}
 	if ( *nextP == ' ' && !ignoreSpace ) {
-	    if (nextP == endP) {
-		last = true;
-	    }
 	    break;
 	}
-	if ( *nextP == ';' || nextP == endP ) {
+	if ( *nextP == ';' ) {
 	    last = true;
 	    break;
 	}
 	nextP++;
     }
+    last = true;
     return nextP;
 }
 // ------------------- begin font property ---------------------
