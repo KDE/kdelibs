@@ -53,7 +53,6 @@ RenderRoot::~RenderRoot()
 
 void RenderRoot::calcWidth()
 {
-
     // the width gets set by KHTMLView::print when printing to a printer.
     if(printingMode) return;
 
@@ -81,6 +80,10 @@ void RenderRoot::calcMinMaxWidth()
 void RenderRoot::layout()
 {
     //kdDebug(6040) << "RenderRoot::layout()" << endl;
+    if (printingMode)
+    {
+       m_minWidth = m_width;
+    }
 
     calcMinMaxWidth();
     calcWidth();
@@ -94,9 +97,11 @@ void RenderRoot::layout()
     // have to do that before layoutSpecialObjects() to get fixed positioned objects at the right place
     m_view->resizeContents(docWidth(), docHeight());
 
-    m_height = m_view->visibleHeight();
-    m_width = m_view->visibleWidth();
-    //kdDebug(0) << "visibleHeight = " << contentsHeight << endl;
+    if (!printingMode)
+    {
+       m_height = m_view->visibleHeight();
+       m_width = m_view->visibleWidth();
+    }
 
     layoutSpecialObjects();
 
@@ -321,7 +326,9 @@ void RenderRoot::selectionStartEnd(int& spos, int& epos)
 
 QRect RenderRoot::viewRect() const
 {
-    if (m_view)
+    if (printingMode)
+        return QRect(0,0, m_width, m_height);
+    else if (m_view)
     	return QRect(m_view->contentsX(),
 	    m_view->contentsY(),
 	    m_view->visibleWidth(),
@@ -331,7 +338,12 @@ QRect RenderRoot::viewRect() const
 
 int RenderRoot::docHeight() const
 {
-    int h = m_view->visibleHeight();
+    int h;
+    if (printingMode)
+        h = m_width;
+    else
+        h = m_view->visibleHeight();
+
     if(m_first) {
 	int dh = m_first->height() + m_first->marginTop() + m_first->marginBottom();
         if( m_first->lowestPosition() > dh )
@@ -344,7 +356,12 @@ int RenderRoot::docHeight() const
 
 int RenderRoot::docWidth() const
 {
-    int w = m_view->visibleWidth();
+    int w;
+    if (printingMode)
+        w = m_width;
+    else
+        w = m_view->visibleWidth();
+
     if(m_first) {
 	int dw = m_first->width() + m_first->marginLeft() + m_first->marginRight();
 	if( dw > w )
