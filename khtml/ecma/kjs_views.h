@@ -1,3 +1,4 @@
+// -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
@@ -28,30 +29,19 @@ namespace KJS {
 
   class DOMAbstractView : public DOMObject {
   public:
-    DOMAbstractView(DOM::AbstractView av) : abstractView(av) {}
+    DOMAbstractView(ExecState *, DOM::AbstractView av) : abstractView(av) {}
     ~DOMAbstractView();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     virtual DOM::AbstractView toAbstractView() const { return abstractView; }
+    enum { Document, GetComputedStyle };
   protected:
     DOM::AbstractView abstractView;
   };
 
-  class DOMAbstractViewFunc : public DOMFunction {
-    friend class DOMNode;
-  public:
-    DOMAbstractViewFunc(DOM::AbstractView av, int i)
-        : DOMFunction(), abstractView(av), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { GetComputedStyle };
-  private:
-    DOM::AbstractView abstractView;
-    int id;
-  };
-
-  Value getDOMAbstractView(DOM::AbstractView av);
+  Value getDOMAbstractView(ExecState *exec, DOM::AbstractView av);
 
   /**
    * Convert an object to an AbstractView. Returns a null Node if not possible.

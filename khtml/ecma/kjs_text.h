@@ -30,45 +30,30 @@ namespace KJS {
 
   class DOMCharacterData : public DOMNode {
   public:
-    DOMCharacterData(ExecState *exec, DOM::CharacterData d) : DOMNode(exec, d) { }
+    // Build a DOMCharacterData
+    DOMCharacterData(ExecState *exec, DOM::CharacterData d);
+    // Constructor for inherited classes
+    DOMCharacterData(Object proto, DOM::CharacterData d);
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    Value getValue(ExecState *, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    DOM::CharacterData toData() const { return static_cast<DOM::CharacterData>(node); }
+    enum { Data, Length,
+           SubstringData, AppendData, InsertData, DeleteData, ReplaceData };
   };
-
-
-  class DOMCharacterDataFunction : public DOMFunction {
-  public:
-    DOMCharacterDataFunction(DOM::CharacterData d, int i)
-      : DOMFunction(), data(d), id(i) {}
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { SubstringData, AppendData, InsertData, DeleteData, ReplaceData };
-  private:
-    DOM::CharacterData data;
-    int id;
-  };
-
 
   class DOMText : public DOMCharacterData {
   public:
-    DOMText(ExecState *exec, DOM::Text t) : DOMCharacterData(exec, t) { }
+    DOMText(ExecState *exec, DOM::Text t);
     virtual Value tryGet(ExecState *exec,const UString &propertyName) const;
+    Value getValue(ExecState *, int token) const;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
-  };
-
-  class DOMTextFunction : public DOMFunction {
-  public:
-    DOMTextFunction(DOM::Text t, int i)
-      : DOMFunction(), text(t), id(i) {}
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
+    DOM::Text toText() const { return static_cast<DOM::Text>(node); }
     enum { SplitText };
-  private:
-    DOM::Text text;
-    int id;
   };
-
 
 }; // namespace
 

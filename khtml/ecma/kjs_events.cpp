@@ -135,7 +135,7 @@ Value EventConstructor::getValue(ExecState *, int token) const
 
 Value KJS::getEventConstructor(ExecState *exec)
 {
-  return cacheGlobalObject<EventConstructor>(exec, "[[event.prototype]]");
+  return cacheGlobalObject<EventConstructor>(exec, "[[event.constructor]]");
 }
 
 // -------------------------------------------------------------------------
@@ -272,7 +272,7 @@ Value EventExceptionConstructor::getValue(ExecState *, int token) const
 
 Value KJS::getEventExceptionConstructor(ExecState *exec)
 {
-  return cacheGlobalObject<EventExceptionConstructor>(exec, "[[eventException.prototype]]");
+  return cacheGlobalObject<EventExceptionConstructor>(exec, "[[eventException.constructor]]");
 }
 
 // -------------------------------------------------------------------------
@@ -300,11 +300,11 @@ Value DOMUIEvent::tryGet(ExecState *exec, const UString &p) const
   return DOMObjectLookupGetValue<DOMUIEvent,DOMEvent>(exec,p,&DOMUIEventTable,this);
 }
 
-Value DOMUIEvent::getValue(ExecState *, int token) const
+Value DOMUIEvent::getValue(ExecState *exec, int token) const
 {
   switch (token) {
   case View:
-    return getDOMAbstractView(static_cast<DOM::UIEvent>(event).view());
+    return getDOMAbstractView(exec,static_cast<DOM::UIEvent>(event).view());
   case Detail:
     return Number(static_cast<DOM::UIEvent>(event).detail());
   default:
@@ -456,7 +456,7 @@ Value MutationEventConstructor::getValue(ExecState *, int token) const
 
 Value KJS::getMutationEventConstructor(ExecState *exec)
 {
-  return cacheGlobalObject<MutationEventConstructor>(exec, "[[mutationEvent.prototype]]");
+  return cacheGlobalObject<MutationEventConstructor>(exec, "[[mutationEvent.constructor]]");
 }
 
 // -------------------------------------------------------------------------

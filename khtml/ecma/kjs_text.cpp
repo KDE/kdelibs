@@ -19,42 +19,58 @@
  */
 
 #include "kjs_text.h"
+#include "kjs_text.lut.h"
 #include "kjs_dom.h"
 
 #include <dom_string.h>
 #include <dom_exception.h>
 
-#ifdef KJS_VERBOSE
 #include <kdebug.h>
-#endif
 
 using namespace KJS;
 
 const ClassInfo DOMCharacterData::info = { "CharacterImp",
-					  &DOMNode::info, 0, 0 };
+					  &DOMNode::info, &DOMCharacterDataTable, 0 };
+/*
+@begin DOMCharacterDataTable 2
+  data		DOMCharacterData::Data		DontDelete
+  length	DOMCharacterData::Length	DontDelete|ReadOnly
+@end
+@begin DOMCharacterDataProtoTable 7
+  substringData	DOMCharacterData::SubstringData	DontDelete|Function 2
+  appendData	DOMCharacterData::AppendData	DontDelete|Function 1
+  insertData	DOMCharacterData::InsertData	DontDelete|Function 2
+  deleteData	DOMCharacterData::DeleteData	DontDelete|Function 2
+  replaceData	DOMCharacterData::ReplaceData	DontDelete|Function 2
+@end
+*/
+DEFINE_PROTOTYPE("DOMCharacterData",DOMCharacterDataProto)
+IMPLEMENT_PROTOFUNC(DOMCharacterDataProtoFunc)
+IMPLEMENT_PROTOTYPE(DOMCharacterDataProto,DOMCharacterDataProtoFunc)
+
+DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterData d)
+ : DOMNode(DOMCharacterDataProto::self(exec), d) {}
 
 Value DOMCharacterData::tryGet(ExecState *exec, const UString &p) const
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070)<<"DOMCharacterData::tryGet "<<p.string().string()<<endl;
 #endif
+  return DOMObjectLookupGetValue<DOMCharacterData,DOMNode>(exec,p,&DOMCharacterDataTable,this);
+}
+
+Value DOMCharacterData::getValue(ExecState *, int token) const
+{
   DOM::CharacterData data = static_cast<DOM::CharacterData>(node);
-  if (p == "data")
+  switch (token) {
+  case Data:
     return String(data.data());
-  else if (p == "length")
+  case Length:
     return Number(data.length());
-  else if (p == "substringData")
-    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::SubstringData);
-  else if (p == "appendData")
-    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::AppendData);
-  else if (p == "insertData")
-    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::InsertData);
-  else if (p == "deleteData")
-    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::DeleteData);
-  else if (p == "replaceData")
-    return new DOMCharacterDataFunction(data, DOMCharacterDataFunction::ReplaceData);
-  else
-    return DOMNode::tryGet(exec, p);
+ default:
+   kdWarning() << "Unhandled token in DOMCharacterData::getValue : " << token << endl;
+   return Value();
+  }
 }
 
 void DOMCharacterData::tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr)
@@ -65,64 +81,66 @@ void DOMCharacterData::tryPut(ExecState *exec, const UString &propertyName, cons
     DOMNode::tryPut(exec, propertyName,value,attr);
 }
 
-Value DOMCharacterDataFunction::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
+Value DOMCharacterDataProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value result;
-
+  DOM::CharacterData data = static_cast<DOMCharacterData *>(thisObj.imp())->toData();
   switch(id) {
-    case SubstringData:
-      result = getString(data.substringData(args[0].toInteger(exec),args[1].toInteger(exec)));
-      break;
-    case AppendData:
+    case DOMCharacterData::SubstringData:
+      return getString(data.substringData(args[0].toInteger(exec),args[1].toInteger(exec)));
+    case DOMCharacterData::AppendData:
       data.appendData(args[0].toString(exec).string());
-      result = Undefined();
+      return Undefined();
       break;
-    case InsertData:
+    case DOMCharacterData::InsertData:
       data.insertData(args[0].toInteger(exec),args[1].toString(exec).string());
-      result = Undefined();
+      return  Undefined();
       break;
-    case DeleteData:
+    case DOMCharacterData::DeleteData:
       data.deleteData(args[0].toInteger(exec),args[1].toInteger(exec));
-      result = Undefined();
+      return  Undefined();
       break;
-    case ReplaceData:
+    case DOMCharacterData::ReplaceData:
       data.replaceData(args[0].toInteger(exec),args[1].toInteger(exec),args[2].toString(exec).string());
-      result = Undefined();
+      return Undefined();
       break;
     default:
-      result = Undefined();
+      return Undefined();
   }
-
-  return result;
 }
 
 // -------------------------------------------------------------------------
 
 const ClassInfo DOMText::info = { "Text",
 				 &DOMCharacterData::info, 0, 0 };
+/*
+@begin DOMTextProtoTable 1
+  splitText	DOMText::SplitText	DontDelete|Function 1
+@end
+*/
+DEFINE_PROTOTYPE("DOMText",DOMTextProto)
+IMPLEMENT_PROTOFUNC(DOMTextProtoFunc)
+IMPLEMENT_PROTOTYPE_WITH_PARENT(DOMTextProto,DOMTextProtoFunc,DOMCharacterDataProto)
+
+DOMText::DOMText(ExecState *exec, DOM::Text t)
+  : DOMCharacterData(DOMTextProto::self(exec), t) { }
 
 Value DOMText::tryGet(ExecState *exec, const UString &p) const
 {
   if (p == "")
     return Undefined(); // ### TODO
-  else if (p == "splitText")
-    return new DOMTextFunction(static_cast<DOM::Text>(node), DOMTextFunction::SplitText);
   else
     return DOMCharacterData::tryGet(exec, p);
 }
 
-Value DOMTextFunction::tryCall(ExecState *exec, Object & /*thisObj*/, const List &args)
+Value DOMTextProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 {
-  Value result;
-
+  DOM::Text text = static_cast<DOMText *>(thisObj.imp())->toText();
   switch(id) {
-    case SplitText:
-      result = getDOMNode(exec,text.splitText(args[0].toInteger(exec)));
+    case DOMText::SplitText:
+      return getDOMNode(exec,text.splitText(args[0].toInteger(exec)));
       break;
     default:
-      result = Undefined();
+      return Undefined();
   }
-
-  return result;
 }
 

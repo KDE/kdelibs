@@ -270,9 +270,11 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return val;
     }
   }
-  // I'm told order is very important, so let's keep the original order at all cost ;)
-  if (DOMDocument::hasProperty(exec, propertyName, true))	// expands override functions
-    return DOMDocument::tryGet(exec, propertyName);
+  // Look for overrides
+  ValueImp * val = ObjectImp::getDirect(propertyName);
+  if (val)
+    return Value(val);
+
   if (entry) {
     switch (entry->value) {
     case BgColor:
@@ -293,6 +295,9 @@ Value KJS::HTMLDocument::tryGet(ExecState *exec, const UString &propertyName) co
       return Number(part->view() ? part->view()->visibleWidth() : 0);
     }
   }
+  if (DOMDocument::hasProperty(exec, propertyName, true))
+    return DOMDocument::tryGet(exec, propertyName);
+
   //kdDebug() << "KJS::HTMLDocument::tryGet " << propertyName.qstring() << " not found, returning element" << endl;
   if(!element.isNull())
     return getDOMNode(exec,element);

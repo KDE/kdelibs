@@ -722,7 +722,9 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
   case DOMDocument::CreateNodeIterator:
     if (args[2].isA(NullType)) {
         DOM::NodeFilter filter;
-	result = getDOMNodeIterator(doc.createNodeIterator(toNode(args[0]),(long unsigned int)(args[1].toNumber(exec)),
+	result = getDOMNodeIterator(exec,
+                                    doc.createNodeIterator(toNode(args[0]),
+                                                           (long unsigned int)(args[1].toNumber(exec)),
 				    filter,args[3].toBoolean(exec)));
     }
     else {
@@ -731,7 +733,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
       {
 	DOM::CustomNodeFilter *customFilter = new JSNodeFilter(obj);
 	DOM::NodeFilter filter = DOM::NodeFilter::createCustom(customFilter);
-	result = getDOMNodeIterator(
+	result = getDOMNodeIterator(exec,
           doc.createNodeIterator(
             toNode(args[0]),(long unsigned int)(args[1].toNumber(exec)),
             filter,args[3].toBoolean(exec)));
@@ -739,7 +741,7 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     }
     break;
   case DOMDocument::CreateTreeWalker:
-    result = getDOMTreeWalker(doc.createTreeWalker(toNode(args[0]),(long unsigned int)(args[1].toNumber(exec)),
+    result = getDOMTreeWalker(exec,doc.createTreeWalker(toNode(args[0]),(long unsigned int)(args[1].toNumber(exec)),
              toNodeFilter(args[2]),args[3].toBoolean(exec)));
     break;
   case DOMDocument::CreateEvent:

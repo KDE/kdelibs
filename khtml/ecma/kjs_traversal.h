@@ -28,33 +28,26 @@ namespace KJS {
 
   class DOMNodeIterator : public DOMObject {
   public:
-    DOMNodeIterator(DOM::NodeIterator ni) : nodeIterator(ni) {}
+    DOMNodeIterator(ExecState *exec, DOM::NodeIterator ni);
     ~DOMNodeIterator();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Filter, Root, WhatToShow, ExpandEntityReferences,
+           NextNode, PreviousNode, Detach };
+    DOM::NodeIterator toNodeIterator() const { return nodeIterator; }
   protected:
     DOM::NodeIterator nodeIterator;
   };
 
-  class DOMNodeIteratorFunc : public DOMFunction {
-    friend class DOMNode;
+  // Constructor object NodeFilter
+  class NodeFilterConstructor : public DOMObject {
   public:
-    DOMNodeIteratorFunc(DOM::NodeIterator ni, int i)
-        : DOMFunction(), nodeIterator(ni), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { NextNode, PreviousNode, Detach };
-  private:
-    DOM::NodeIterator nodeIterator;
-    int id;
-  };
-
-  // Prototype object NodeFilter
-  class NodeFilterPrototype : public DOMObject {
-  public:
-    NodeFilterPrototype() { }
+    NodeFilterConstructor(ExecState *) { }
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *exec, int token) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -62,61 +55,39 @@ namespace KJS {
 
   class DOMNodeFilter : public DOMObject {
   public:
-    DOMNodeFilter(DOM::NodeFilter nf) : nodeFilter(nf) {}
+    DOMNodeFilter(ExecState *exec, DOM::NodeFilter nf);
     ~DOMNodeFilter();
-    virtual Value tryGet(ExecState *exec,const UString &p) const;
     // no put - all read-only
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
     virtual DOM::NodeFilter toNodeFilter() const { return nodeFilter; }
+    enum { AcceptNode };
   protected:
     DOM::NodeFilter nodeFilter;
   };
 
-  class DOMNodeFilterFunc : public DOMFunction {
-    friend class DOMNode;
-  public:
-    DOMNodeFilterFunc(DOM::NodeFilter nf, int i)
-        : DOMFunction(), nodeFilter(nf), id(i) {}
-
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { AcceptNode };
-  private:
-    DOM::NodeFilter nodeFilter;
-    int id;
-  };
-
-
   class DOMTreeWalker : public DOMObject {
   public:
-    DOMTreeWalker(DOM::TreeWalker tw) : treeWalker(tw) {}
+    DOMTreeWalker(ExecState *exec, DOM::TreeWalker tw);
     ~DOMTreeWalker();
     virtual Value tryGet(ExecState *exec,const UString &p) const;
+    Value getValue(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName,
                         const Value& value, int attr = None);
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Root, WhatToShow, Filter, ExpandEntityReferences, CurrentNode,
+           ParentNode, FirstChild, LastChild, PreviousSibling, NextSibling,
+           PreviousNode, NextNode };
+    DOM::TreeWalker toTreeWalker() const { return treeWalker; }
   protected:
     DOM::TreeWalker treeWalker;
   };
 
-  class DOMTreewalkerFunc : public DOMFunction {
-    friend class DOMNode;
-  public:
-    DOMTreewalkerFunc(DOM::TreeWalker tw, int i)
-        : DOMFunction(), treeWalker(tw), id(i) { }
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { ParentNode, FirstChild, LastChild, PreviousSibling, NextSibling,
-           PreviousNode, NextNode };
-  private:
-    DOM::TreeWalker treeWalker;
-    int id;
-  };
-
-  Value getDOMNodeIterator(DOM::NodeIterator ni);
-  Value getNodeFilterPrototype(ExecState *exec);
-  Value getDOMNodeFilter(DOM::NodeFilter nf);
-  Value getDOMTreeWalker(DOM::TreeWalker tw);
+  Value getDOMNodeIterator(ExecState *exec, DOM::NodeIterator ni);
+  Value getNodeFilterConstructor(ExecState *exec);
+  Value getDOMNodeFilter(ExecState *exec, DOM::NodeFilter nf);
+  Value getDOMTreeWalker(ExecState *exec, DOM::TreeWalker tw);
 
   /**
    * Convert an object to a NodeFilter. Returns a null Node if not possible.

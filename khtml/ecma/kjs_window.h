@@ -44,11 +44,11 @@ namespace KJS {
   class Screen : public ObjectImp {
   public:
     enum {
-      height, width, colorDepth, pixelDepth, availLeft, availTop, availHeight,
-      availWidth
+      Height, Width, ColorDepth, PixelDepth, AvailLeft, AvailTop, AvailHeight,
+      AvailWidth
     };
-
     virtual Value get(ExecState *exec, const UString &propertyName) const;
+    Value getValue(ExecState *exec, int token) const;
   private:
     KHTMLView *view;
     virtual const ClassInfo* classInfo() const { return &info; }
@@ -101,6 +101,18 @@ namespace KJS {
     QList<JSEventListener> jsEventListeners;
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
+    enum { Closed, Crypto, DefaultStatus, Status, Document, Node, Range,
+           NodeFilter, DOMException, Frames, _History, Event, InnerHeight,
+           InnerWidth, Length, _Location, Name, _Navigator, Konqueror,
+           OffscreenBuffering, Opener, OuterHeight, OuterWidth, PageXOffset, PageYOffset,
+           Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
+           ScrollTo, MoveBy, MoveTo, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
+           Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
+           Focus, Blur, Close, SetInterval, ClearInterval, Onabort, Onblur,
+           Onchange, Onclick, Ondblclick, Ondragdrop, Onerror, Onfocus,
+           Onkeydown, Onkeypress, Onkeyup, Onload, Onmousedown, Onmousemove,
+           Onmouseout, Onmouseover, Onmouseup, Onmove, Onreset, Onresize,
+           Onselect, Onsubmit, Onunload };
   protected:
     Value getListener(ExecState *exec, int eventId) const;
     void setListener(ExecState *exec, int eventId, Value func);
@@ -112,19 +124,6 @@ namespace KJS {
     Location *loc;
     WindowQObject *winq;
     DOM::Event *m_evt;
-  };
-
-  class WindowFunc : public DOMFunction {
-  public:
-    WindowFunc(const Window *w, int i) : DOMFunction(), window(w), id(i) { };
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout, Focus, Blur, Close,
-          MoveBy, MoveTo, ResizeBy, ResizeTo, ScrollBy, ScrollTo, SetInterval, ClearInterval,
-          ToString };
-
-  private:
-    const Window *window;
-    int id;
   };
 
   /**
@@ -173,11 +172,15 @@ namespace KJS {
     virtual void put(ExecState *exec, const UString &propertyName, const Value &value, int attr = None);
     virtual Value toPrimitive(ExecState *exec, Type preferred) const;
     virtual UString toString(ExecState *exec) const;
+    enum { Hash, Href, Hostname, Host, Pathname, Port, Protocol, Search, EqualEqual,
+           Replace, Reload, ToString };
     KHTMLPart *part() const { return m_part; }
   private:
     friend class Window;
     Location(KHTMLPart *p);
     QGuardedPtr<KHTMLPart> m_part;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   };
 
 #ifdef Q_WS_QWS
@@ -188,21 +191,12 @@ namespace KJS {
     virtual Value get(ExecState *exec, const UString &propertyName) const;
     virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
     virtual String toString(ExecState *exec) const;
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
   private:
     KHTMLPart *part;
   };
 #endif
-
-  class LocationFunc : public DOMFunction {
-  public:
-    LocationFunc(const Location *loc, int i)
-      : DOMFunction(), location(loc), id(i) {}
-    virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args);
-    enum { Replace, Reload, ToString };
-  private:
-    const Location *location;
-    int id;
-  };
 
 }; // namespace
 

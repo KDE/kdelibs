@@ -725,7 +725,7 @@ Value CSSRuleConstructor::getValue(ExecState *, int token) const
 
 Value KJS::getCSSRuleConstructor(ExecState *exec)
 {
-  return cacheGlobalObject<CSSRuleConstructor>( exec, "[[cssRule.prototype]]" );
+  return cacheGlobalObject<CSSRuleConstructor>( exec, "[[cssRule.constructor]]" );
 }
 
 // -------------------------------------------------------------------------
@@ -812,7 +812,7 @@ Value CSSValueConstructor::getValue(ExecState *, int token) const
 
 Value KJS::getCSSValueConstructor(ExecState *exec)
 {
-  return cacheGlobalObject<CSSValueConstructor>( exec, "[[cssValue.prototype]]" );
+  return cacheGlobalObject<CSSValueConstructor>( exec, "[[cssValue.constructor]]" );
 }
 
 // -------------------------------------------------------------------------

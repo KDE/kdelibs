@@ -45,7 +45,11 @@ hashtables:
 	../../kjs/create_hash_table kjs_css.cpp > kjs_css.lut.h; \
 	../../kjs/create_hash_table kjs_events.cpp > kjs_events.lut.h; \
 	../../kjs/create_hash_table kjs_navigator.cpp > kjs_navigator.lut.h; \
-	../../kjs/create_hash_table kjs_range.cpp > kjs_range.lut.h
+	../../kjs/create_hash_table kjs_range.cpp > kjs_range.lut.h; \
+	../../kjs/create_hash_table kjs_text.cpp > kjs_text.lut.h; \
+	../../kjs/create_hash_table kjs_traversal.cpp > kjs_traversal.lut.h; \
+	../../kjs/create_hash_table kjs_views.cpp > kjs_views.lut.h; \
+	../../kjs/create_hash_table kjs_window.cpp > kjs_window.lut.h
 
 # interactive test program
 #check_PROGRAMS = testecma
