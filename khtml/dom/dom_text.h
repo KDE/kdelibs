@@ -107,7 +107,7 @@ public:
      * not fit into a <code> DOMString </code> .
      *
      */
-    DOMString substringData ( const unsigned long &offset, const unsigned long &count );
+    DOMString substringData ( const unsigned long offset, const unsigned long count );
 
     /**
      * Append the string to the end of the character data of the node.
@@ -141,7 +141,7 @@ public:
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
      *
      */
-    void insertData ( const unsigned long &offset, const DOMString &arg );
+    void insertData ( const unsigned long offset, const DOMString &arg );
 
     /**
      * Remove a range of characters from the node. Upon success,
@@ -165,7 +165,7 @@ public:
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
      *
      */
-    void deleteData ( const unsigned long &offset, const unsigned long &count );
+    void deleteData ( const unsigned long offset, const unsigned long count );
 
     /**
      * Replace the characters starting at the specified character
@@ -193,7 +193,7 @@ public:
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
      *
      */
-    void replaceData ( const unsigned long &offset, const unsigned long &count, const DOMString &arg );
+    void replaceData ( const unsigned long offset, const unsigned long count, const DOMString &arg );
 
 protected:
     CharacterData(CharacterDataImpl *i);
@@ -278,7 +278,7 @@ public:
      *  NO_MODIFICATION_ALLOWED_ERR: Raised if this node is readonly.
      *
      */
-    Text splitText ( const unsigned long &offset );
+    Text splitText ( const unsigned long offset );
 
 protected:
     Text(TextImpl *i);

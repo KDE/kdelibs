@@ -39,13 +39,13 @@ CharacterData::CharacterData(const CharacterData &other) : Node(other)
 
 CharacterData &CharacterData::operator = (const Node &other)
 {
-    if( other.nodeType() != CDATA_SECTION_NODE && 
+    if( other.nodeType() != CDATA_SECTION_NODE &&
 	other.nodeType() != TEXT_NODE &&
 	other.nodeType() != COMMENT_NODE )
     {
 	impl = 0;
 	return *this;
-    }    
+    }
     Node::operator =(other);
     return *this;
 }
@@ -76,7 +76,7 @@ unsigned long CharacterData::length() const
     return ((CharacterDataImpl *)impl)->length();
 }
 
-DOMString CharacterData::substringData( const unsigned long &offset, const unsigned long &count )
+DOMString CharacterData::substringData( const unsigned long offset, const unsigned long count )
 {
     return ((CharacterDataImpl *)impl)->substringData(offset, count);
 }
@@ -86,17 +86,17 @@ void CharacterData::appendData( const DOMString &arg )
     ((CharacterDataImpl *)impl)->appendData(arg);
 }
 
-void CharacterData::insertData( const unsigned long &offset, const DOMString &arg )
+void CharacterData::insertData( const unsigned long offset, const DOMString &arg )
 {
     ((CharacterDataImpl *)impl)->insertData(offset, arg);
 }
 
-void CharacterData::deleteData( const unsigned long &offset, const unsigned long &count )
+void CharacterData::deleteData( const unsigned long offset, const unsigned long count )
 {
     ((CharacterDataImpl *)impl)->deleteData(offset, count);
 }
 
-void CharacterData::replaceData( const unsigned long &offset, const unsigned long &count, const DOMString &arg )
+void CharacterData::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg )
 {
     ((CharacterDataImpl *)impl)->replaceData(offset, count, arg);
 }
@@ -121,7 +121,7 @@ Comment &Comment::operator = (const Node &other)
     {
 	impl = 0;
 	return *this;
-    }    
+    }
     Node::operator =(other);
     return *this;
 }
@@ -153,7 +153,7 @@ Text &Text::operator = (const Node &other)
     {
 	impl = 0;
 	return *this;
-    }    
+    }
     Node::operator =(other);
     return *this;
 }
@@ -168,7 +168,7 @@ Text::~Text()
 {
 }
 
-Text Text::splitText( const unsigned long &offset )
+Text Text::splitText( const unsigned long offset )
 {
     return ((TextImpl *)impl)->splitText(offset);
 }

@@ -761,7 +761,7 @@ void KHTMLPart::setURLCursor( const QCursor &c )
   d->m_view->setURLCursor( c );
 }
 
-const QCursor &KHTMLPart::urlCursor()
+const QCursor &KHTMLPart::urlCursor() const
 {
   return d->m_view->urlCursor();
 }

@@ -68,19 +68,19 @@ bool CSS2Azimuth::behind() const
     return ((CSS2AzimuthImpl *)impl)->behind();
 }
 
-void CSS2Azimuth::setAngleValue( const unsigned short &unitType, const float &floatValue )
+void CSS2Azimuth::setAngleValue( const unsigned short unitType, const float floatValue )
 {
     if(impl)
         ((CSS2AzimuthImpl *)impl)->setAngleValue( unitType, floatValue );
 }
 
-float CSS2Azimuth::getAngleValue( const unsigned short &unitType )
+float CSS2Azimuth::getAngleValue( const unsigned short unitType )
 {
     if(!impl) return 0;
     return ((CSS2AzimuthImpl *)impl)->getAngleValue( unitType );
 }
 
-void CSS2Azimuth::setIdentifier( const DOMString &identifier, const bool &behind )
+void CSS2Azimuth::setIdentifier( const DOMString &identifier, const bool behind )
 {
     if(impl)
         ((CSS2AzimuthImpl *)impl)->setIdentifier( identifier, behind );
@@ -134,25 +134,25 @@ DOMString CSS2BackgroundPosition::verticalIdentifier() const
     return ((CSS2BackgroundPositionImpl *)impl)->verticalIdentifier();
 }
 
-float CSS2BackgroundPosition::getHorizontalPosition( const float &horizontalType )
+float CSS2BackgroundPosition::getHorizontalPosition( const float horizontalType )
 {
     if(!impl) return 0;
     return ((CSS2BackgroundPositionImpl *)impl)->getHorizontalPosition( horizontalType );
 }
 
-float CSS2BackgroundPosition::getVerticalPosition( const float &verticalType )
+float CSS2BackgroundPosition::getVerticalPosition( const float verticalType )
 {
     if(!impl) return 0;
     return ((CSS2BackgroundPositionImpl *)impl)->getVerticalPosition( verticalType );
 }
 
-void CSS2BackgroundPosition::setHorizontalPosition( const unsigned short &horizontalType, const float &value )
+void CSS2BackgroundPosition::setHorizontalPosition( const unsigned short horizontalType, const float value )
 {
     if(impl)
         ((CSS2BackgroundPositionImpl *)impl)->setHorizontalPosition( horizontalType, value );
 }
 
-void CSS2BackgroundPosition::setVerticalPosition( const unsigned short &verticalType, const float &value )
+void CSS2BackgroundPosition::setVerticalPosition( const unsigned short verticalType, const float value )
 {
     if(impl)
         ((CSS2BackgroundPositionImpl *)impl)->setVerticalPosition( verticalType, value );
@@ -200,25 +200,25 @@ unsigned short CSS2BorderSpacing::verticalType() const
     return ((CSS2BorderSpacingImpl *)impl)->verticalType();
 }
 
-float CSS2BorderSpacing::getHorizontalSpacing( const float &horizontalType )
+float CSS2BorderSpacing::getHorizontalSpacing( const float horizontalType )
 {
     if(!impl) return 0;
     return ((CSS2BorderSpacingImpl *)impl)->getHorizontalSpacing( horizontalType );
 }
 
-float CSS2BorderSpacing::getVerticalSpacing( const float &verticalType )
+float CSS2BorderSpacing::getVerticalSpacing( const float verticalType )
 {
     if(!impl) return 0;
     return ((CSS2BorderSpacingImpl *)impl)->getVerticalSpacing( verticalType );
 }
 
-void CSS2BorderSpacing::setHorizontalSpacing( const unsigned short &horizontalType, const float &value )
+void CSS2BorderSpacing::setHorizontalSpacing( const unsigned short horizontalType, const float value )
 {
     if(impl)
         ((CSS2BorderSpacingImpl *)impl)->setHorizontalSpacing( horizontalType, value );
 }
 
-void CSS2BorderSpacing::setVerticalSpacing( const unsigned short &verticalType, const float &value )
+void CSS2BorderSpacing::setVerticalSpacing( const unsigned short verticalType, const float value )
 {
     if(impl)
         ((CSS2BorderSpacingImpl *)impl)->setVerticalSpacing( verticalType, value );
@@ -271,7 +271,7 @@ short CSS2CounterIncrement::increment() const
     return ((CSS2CounterIncrementImpl *)impl)->increment();
 }
 
-void CSS2CounterIncrement::setIncrement( const short &_increment )
+void CSS2CounterIncrement::setIncrement( const short _increment )
 {
 
     if(impl)
@@ -320,7 +320,7 @@ short CSS2CounterReset::reset() const
     return ((CSS2CounterResetImpl *)impl)->reset();
 }
 
-void CSS2CounterReset::setReset( const short &_reset )
+void CSS2CounterReset::setReset( const short _reset )
 {
 
     if(impl)
@@ -358,7 +358,7 @@ unsigned short CSS2Cursor::cursorType() const
     return ((CSS2CursorImpl *)impl)->cursorType();
 }
 
-void CSS2Cursor::setCursorType( const unsigned short &_cursorType )
+void CSS2Cursor::setCursorType( const unsigned short _cursorType )
 {
 
     if(impl)
@@ -518,25 +518,25 @@ DOMString CSS2PageSize::identifier() const
     return ((CSS2PageSizeImpl *)impl)->identifier();
 }
 
-float CSS2PageSize::getWidth( const float &widthType )
+float CSS2PageSize::getWidth( const float widthType )
 {
     if(!impl) return 0;
     return ((CSS2PageSizeImpl *)impl)->getWidth( widthType );
 }
 
-float CSS2PageSize::getHeightSize( const float &heightType )
+float CSS2PageSize::getHeightSize( const float heightType )
 {
     if(!impl) return 0;
     return ((CSS2PageSizeImpl *)impl)->getHeightSize( heightType );
 }
 
-void CSS2PageSize::setWidthSize( const unsigned short &widthType, const float &value )
+void CSS2PageSize::setWidthSize( const unsigned short widthType, const float value )
 {
     if(impl)
         ((CSS2PageSizeImpl *)impl)->setWidthSize( widthType, value );
 }
 
-void CSS2PageSize::setHeightSize( const unsigned short &heightType, const float &value )
+void CSS2PageSize::setHeightSize( const unsigned short heightType, const float value )
 {
     if(impl)
         ((CSS2PageSizeImpl *)impl)->setHeightSize( heightType, value );
@@ -606,7 +606,7 @@ bool CSS2PlayDuring::mix() const
     return ((CSS2PlayDuringImpl *)impl)->mix();
 }
 
-void CSS2PlayDuring::setMix( const bool &_mix )
+void CSS2PlayDuring::setMix( const bool _mix )
 {
 
     if(impl)
@@ -619,7 +619,7 @@ bool CSS2PlayDuring::repeat() const
     return ((CSS2PlayDuringImpl *)impl)->repeat();
 }
 
-void CSS2PlayDuring::setRepeat( const bool &_repeat )
+void CSS2PlayDuring::setRepeat( const bool _repeat )
 {
 
     if(impl)

@@ -90,7 +90,7 @@ public:
      * readonly.
      *
      */
-    void setAngleValue ( const unsigned short &unitType, const float &floatValue );
+    void setAngleValue ( const unsigned short unitType, const float floatValue );
 
     /**
      * Used to retrieved the float value of the azimuth property.
@@ -105,7 +105,7 @@ public:
      * INVALID_ACCESS_ERR: Raised if the unit type is invalid.
      *
      */
-    float getAngleValue ( const unsigned short &unitType );
+    float getAngleValue ( const unsigned short unitType );
 
     /**
      * Setting the identifier for the azimuth property will unset any
@@ -126,7 +126,7 @@ public:
      * readonly.
      *
      */
-    void setIdentifier ( const DOM::DOMString &identifier, const bool &behind );
+    void setIdentifier ( const DOM::DOMString &identifier, const bool behind );
 };
 
 
@@ -216,7 +216,7 @@ public:
      * float or the value can't be converted.
      *
      */
-    float getHorizontalPosition ( const float &horizontalType );
+    float getHorizontalPosition ( const float horizontalType );
 
     /**
      * This method is used to get the float value in a specified unit
@@ -235,7 +235,7 @@ public:
      * float or the value can't be converted.
      *
      */
-    float getVerticalPosition ( const float &verticalType );
+    float getVerticalPosition ( const float verticalType );
 
     /**
      * This method is used to set the horizontal position with a
@@ -256,7 +256,7 @@ public:
      * readonly.
      *
      */
-    void setHorizontalPosition ( const unsigned short &horizontalType, const float &value );
+    void setHorizontalPosition ( const unsigned short horizontalType, const float value );
 
     /**
      * This method is used to set the vertical position with a
@@ -277,7 +277,7 @@ public:
      * readonly.
      *
      */
-    void setVerticalPosition ( const unsigned short &verticalType, const float &value );
+    void setVerticalPosition ( const unsigned short verticalType, const float value );
 
     /**
      * Sets the identifiers. If the second identifier is the empty
@@ -361,7 +361,7 @@ public:
      * float or the value can't be converted.
      *
      */
-    float getHorizontalSpacing ( const float &horizontalType );
+    float getHorizontalSpacing ( const float horizontalType );
 
     /**
      * This method is used to get the float value in a specified unit
@@ -380,7 +380,7 @@ public:
      * float or the value can't be converted.
      *
      */
-    float getVerticalSpacing ( const float &verticalType );
+    float getVerticalSpacing ( const float verticalType );
 
     /**
      * This method is used to set the horizontal spacing with a
@@ -400,7 +400,7 @@ public:
      * readonly.
      *
      */
-    void setHorizontalSpacing ( const unsigned short &horizontalType, const float &value );
+    void setHorizontalSpacing ( const unsigned short horizontalType, const float value );
 
     /**
      * This method is used to set the vertical spacing with a
@@ -420,7 +420,7 @@ public:
      * readonly.
      *
      */
-    void setVerticalSpacing ( const unsigned short &verticalType, const float &value );
+    void setVerticalSpacing ( const unsigned short verticalType, const float value );
 
     /**
      * Set this property as inherit. <code> horizontalType </code> and
@@ -484,7 +484,7 @@ public:
      * readonly.
      *
      */
-    void setIncrement( const short & );
+    void setIncrement( const short  );
 };
 
 
@@ -540,7 +540,7 @@ public:
      * readonly.
      *
      */
-    void setReset( const short & );
+    void setReset( const short  );
 };
 
 
@@ -580,7 +580,7 @@ public:
     /**
      * see @ref cursorType
      */
-    void setCursorType( const unsigned short & );
+    void setCursorType( const unsigned short  );
 
     /**
      * <code> uris </code> represents the list of URIs ( <code>
@@ -795,7 +795,7 @@ public:
      * float or the value can't be converted.
      *
      */
-    float getWidth ( const float &widthType );
+    float getWidth ( const float widthType );
 
     /**
      * This method is used to get the float value in a specified unit
@@ -814,7 +814,7 @@ public:
      * float or the value can't be converted.
      *
      */
-    float getHeightSize ( const float &heightType );
+    float getHeightSize ( const float heightType );
 
     /**
      * This method is used to set the width position with a specified
@@ -834,7 +834,7 @@ public:
      * readonly.
      *
      */
-    void setWidthSize ( const unsigned short &widthType, const float &value );
+    void setWidthSize ( const unsigned short widthType, const float value );
 
     /**
      * This method is used to set the height position with a specified
@@ -854,7 +854,7 @@ public:
      * readonly.
      *
      */
-    void setHeightSize ( const unsigned short &heightType, const float &value );
+    void setHeightSize ( const unsigned short heightType, const float value );
 
     /**
      * Sets the identifier.
@@ -960,7 +960,7 @@ public:
      * readonly.
      *
      */
-    void setMix( const bool & );
+    void setMix( const bool  );
 
     /**
      * <code> true </code> if the sound should be repeated. It will be
@@ -976,7 +976,7 @@ public:
      * readonly.
      *
      */
-    void setRepeat( const bool & );
+    void setRepeat( const bool );
 };
 
 

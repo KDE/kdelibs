@@ -197,8 +197,6 @@ public:
      */
     //    void print(QPainter *, int pageHeight, int pageWidth);
 
-    const khtml::Settings *settings() const;
-
     /**
      * Mainly used internally. Sets the document's base URL
      */
@@ -313,7 +311,7 @@ public:
    * Returns the cursor which is used when the cursor is on a link.
    * (convenience function, just cals htmlWidget->urlCursor() )
    */
-  const QCursor& urlCursor();
+  const QCursor& urlCursor() const;
 
   /**
    * Initiate a text search.
@@ -351,7 +349,18 @@ public:
   virtual void saveState( QDataStream &stream );
   virtual void restoreState( QDataStream &stream );
 
+
+    /**
+     * @returns the Node, currently under the mouse
+     */
     DOM::Node nodeUnderMouse() const;
+
+    /**
+     * @internal
+     */
+    const khtml::Settings *settings() const;
+
+
 
 signals:
   void onURL( const QString &url );
@@ -376,7 +385,7 @@ protected:
   virtual KParts::ReadOnlyPart *createFrame( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const QString &mimetype, QStringList &serviceTypes );
 
     virtual bool keyPressHook(QKeyEvent *) { return false; }
-    virtual bool keyReleaseHook(QKeyEvent*) {return false; }
+    virtual bool keyReleaseHook(QKeyEvent*) { return false; }
 
     virtual bool mousePressHook( QMouseEvent *, int, int,DOM::DOMString, DOM::Node, long ){ return false; }
     virtual bool mouseDoubleClickHook( QMouseEvent *, int, int, DOM::DOMString, DOM::Node, long ){ return false; }

@@ -73,7 +73,7 @@ protected:
     void clear();
 public:
 
-    int frameWidth() { return _width; }
+    int frameWidth() const { return _width; }
 
 
     /**
@@ -130,7 +130,7 @@ public:
     /**
      * Returns the cursor which is used when the cursor is on a link.
      */
-    const QCursor& urlCursor() { return linkCursor; }
+    const QCursor& urlCursor() const { return linkCursor; }
 
     /**
      * set a margin in x direction
@@ -139,7 +139,7 @@ public:
     /**
      * @return the margin With
      */
-     int marginWidth() { return _marginWidth; }
+     int marginWidth() const { return _marginWidth; }
 
     /**
      * set a margin in y direction
