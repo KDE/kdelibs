@@ -646,7 +646,7 @@ public slots:
     /**
      * @internal
      */
-    void slotPost( int );
+    //void slotPost( int );
 
 signals:
     /**
