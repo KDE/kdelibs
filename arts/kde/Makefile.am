@@ -15,7 +15,8 @@ libartskde_la_COMPILE_FIRST = artskde.h
 
 artskdeincludedir = $(includedir)/arts
 artskdeinclude_HEADERS = kplayobject.h kplayobjectfactory.h kartsfloatwatch.h \
-                         artskde.h kartsdispatcher.h kaudiorecordstream.h \
+                         artskde.h kartsdispatcher.h \
+                         kaudiorecordstream.h kaudioplaystream.h \
                          kartsserver.h kvideowidget.h kaudiomanagerplay.h
 noinst_HEADERS = kplayobjectcreator.h kplayobjectfactory_p.h
 
