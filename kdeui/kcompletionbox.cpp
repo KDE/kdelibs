@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
 
-   Copyright (c) 2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
+   Copyright (c) 2000,2001,2002 Carsten Pfeiffer <pfeiffer@kde.org>
    Copyright (c) 2000 Stefan Schimanski <1Stein@gmx.de>
    Copyright (c) 2000,2001 Dawit Alemayehu <adawit@kde.org>
 
@@ -143,6 +143,20 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                             return true;
                         }
                         break;
+                    case Key_End:
+                        if ( ev->state() & ControlButton )
+                        {
+                            end();
+                            ev->accept();
+                            return true;
+                        }
+                    case Key_Home:
+                        if ( ev->state() & ControlButton )
+                        {
+                            home();
+                            ev->accept();
+                            return true;
+                        }
                     default:
                         break;
                 }
@@ -164,6 +178,15 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
                       ev->accept();
                       return true;
                       break;
+
+                    case Key_Home:
+                    case Key_End:
+                        if ( ev->state() & ControlButton )
+                        {
+                            ev->accept();
+                            return true;
+                        }
+                        break;
                     default:
                         break;
                 }
@@ -393,7 +416,7 @@ void KCompletionBox::slotItemClicked( QListBoxItem *item )
             d->down_workaround = false;
             emit highlighted( item->text() );
         }
-    
+
         hide();
         emit activated( item->text() );
     }

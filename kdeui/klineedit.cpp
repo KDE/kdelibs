@@ -331,7 +331,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
               mode == KGlobalSettings::CompletionMan) && noModifier )
         {
             QString keycode = e->text();
-            if ( !keycode.isNull() && keycode.unicode()->isPrint() )
+            if ( !keycode.isEmpty() && keycode.unicode()->isPrint() )
             {
                 QLineEdit::keyPressEvent ( e );
                 QString txt = text();
@@ -349,7 +349,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         }
 
         else if ( mode == KGlobalSettings::CompletionPopup && noModifier &&
-            (e->text().length() > 0) )
+            !e->text().isEmpty() )
         {
             QString old_txt = text();
             QLineEdit::keyPressEvent ( e );
@@ -359,7 +359,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
 
 
             if ( txt != old_txt && len && cursorPosition() == len &&
-                 ( (!keycode.isNull() && keycode.unicode()->isPrint()) ||
+                 ( (!keycode.isEmpty() && keycode.unicode()->isPrint()) ||
                    e->key() == Key_Backspace ) )
             {
                 if ( emitSignals() )
@@ -617,24 +617,24 @@ void KLineEdit::completionMenuActivated( int id )
     switch ( id )
     {
         case Default:
-           setCompletionMode( KGlobalSettings::completionMode() ); 
+           setCompletionMode( KGlobalSettings::completionMode() );
            break;
         case NoCompletion:
-           setCompletionMode( KGlobalSettings::CompletionNone ); 
+           setCompletionMode( KGlobalSettings::CompletionNone );
            break;
         case AutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionAuto ); 
+            setCompletionMode( KGlobalSettings::CompletionAuto );
             break;
         case SemiAutoCompletion:
-            setCompletionMode( KGlobalSettings::CompletionMan ); 
+            setCompletionMode( KGlobalSettings::CompletionMan );
             break;
         case ShellCompletion:
-            setCompletionMode( KGlobalSettings::CompletionShell ); 
+            setCompletionMode( KGlobalSettings::CompletionShell );
             break;
         case PopupCompletion:
-            setCompletionMode( KGlobalSettings::CompletionPopup ); 
+            setCompletionMode( KGlobalSettings::CompletionPopup );
             break;
-        default: 
+        default:
             return;
     }
 
@@ -704,7 +704,7 @@ bool KLineEdit::eventFilter( QObject* o, QEvent* ev )
                 // Eat the event if the user asked for it, or if a completionbox was visible
                 return d->grabReturnKeyEvents || trap;
             }
-        }
+        }       
     }
     return QLineEdit::eventFilter( o, ev );
 }
