@@ -55,7 +55,6 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
   m_position = position;
   m_previousTab=-1;
 
-
   kdDebug()<<"KMdiDockContainer created"<<endl;
 
   QBoxLayout *l;
@@ -448,7 +447,7 @@ void KMdiDockContainer::load(QDomElement& dockEl)
 void KMdiDockContainer::save(KConfig* cfg,const QString& group_or_prefix)
 {
   QString grp=cfg->group();
-  cfg->deleteGroup(group_or_prefix+QString("%1").arg(parent()->name()));
+  cfg->deleteGroup(group_or_prefix+QString("::%1").arg(parent()->name()));
   cfg->setGroup(group_or_prefix+QString("::%1").arg(parent()->name()));
 
   if (isOverlapMode()) cfg->writeEntry("overlapMode","true");
