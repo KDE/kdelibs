@@ -210,7 +210,7 @@ QString KFileMetaInfoItem::string( bool mangle ) const
             break;
 
         case QVariant::DateTime :
-            s = KGlobal::locale()->formatDateTime( d->value.toDate(),
+            s = KGlobal::locale()->formatDateTime( d->value.toDateTime(),
                                                    true, true );
             break;
 
@@ -1236,9 +1236,15 @@ KFileMetaInfoItem KFileMetaInfoGroup::appendItem(const QString& key,
                                                  const QVariant& value)
 {
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
+    if ( !ginfo ) {
+        kdWarning() << "Trying to append a Metadata item for a non-existant group:" << d->name << endl;
+        return KFileMetaInfoItem();
+    }
     const KFileMimeTypeInfo::ItemInfo* info = ginfo->itemInfo(key);
-
-    Q_ASSERT(info);
+    if ( !info ) {
+        kdWarning() << "Trying to append a Metadata item for an unknown key (no ItemInfo): " << key << endl;
+        return KFileMetaInfoItem();
+    }
 
     KFileMetaInfoItem item;
 
