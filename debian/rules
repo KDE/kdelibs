@@ -20,7 +20,7 @@ build:
 		kde_bindir=/usr/X11R6/bin \
 		kde_partsdir=/usr/lib/parts \
 		CFLAGS="-O2 -Wall -g" \
-		CXXFLAGS="-O2 -Wall -g" \
+		CXXFLAGS="-Wall -g" \
 		 ./configure --prefix=/usr --enable-debug \
 		  	     --disable-rpath \
 		             --includedir="\$$(prefix)/include/kde" \
@@ -77,7 +77,7 @@ binary-arch:  build
 	dh_compress
 	dh_fixperms
 	dh_suidregister
-	dh_makeshlibs -V "kdelibs0g (>= 2:980419)" -m0
+	dh_makeshlibs -V "kdelibs0g (>= 2:980710)" -m1
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
