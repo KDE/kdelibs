@@ -181,6 +181,10 @@ void KPrinter::loadSettings()
 
 	// latest used print command
 	setOption("kde-printcommand",conf->readEntry("PrintCommand"));
+
+	// latest used document directory
+	setDocDirectory( conf->readEntry( "DocDirectory" ) );
+	setDocFileName( "print" );
 }
 
 void KPrinter::saveSettings()
@@ -197,6 +201,16 @@ void KPrinter::saveSettings()
 	conf->writeEntry("Printer",searchName());
 	// latest used print command
 	conf->writeEntry("PrintCommand",option("kde-printcommand"));
+
+	// latest used document directory
+	if ( d->m_docdirectory.isEmpty() )
+	{
+		KURL url( outputFileName() );
+		if ( url.isValid() )
+			conf->writeEntry( "DocDirectory", url.directory() );
+	}
+	else
+		conf->writeEntry( "DocDirectory", d->m_docdirectory );
 }
 
 bool KPrinter::setup(QWidget *parent, const QString& caption, bool forceExpand)
