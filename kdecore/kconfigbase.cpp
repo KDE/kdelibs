@@ -23,11 +23,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <qfile.h>
+#include <qtextstream.h>
+
 #include <kapplication.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kcharsets.h>
-#include <qtextstream.h>
 
 #include "kconfigbase.h"
 #include "kconfigbackend.h"
@@ -337,13 +339,41 @@ QString KConfigBase::readEntry( const char *pKey,
 
       while( nDollarPos != -1 && nDollarPos+1 < static_cast<int>(aValue.length())) {
         // there is at least one $
-        if( (aValue)[nDollarPos+1] != '$' ) {
+        if( (aValue)[nDollarPos+1] == '(' ) {
           uint nEndPos = nDollarPos+1;
           // the next character is no $
-          while ( nEndPos <= aValue.length() && (aValue[nEndPos].isNumber()
-                    || aValue[nEndPos].isLetter() || aValue[nEndPos]=='_' )  )
+          while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!=')') )
               nEndPos++;
-          QString aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
+          nEndPos++;
+          QString cmd = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
+
+          QString result;
+          FILE *fs = popen(QFile::encodeName(cmd).data(), "r");
+          if (fs)
+          {
+             QTextStream ts(fs, IO_ReadOnly);
+             result = ts.read().stripWhiteSpace();
+             pclose(fs);
+          }
+          aValue.replace( nDollarPos, nEndPos-nDollarPos, result );
+        } else if( (aValue)[nDollarPos+1] != '$' ) {
+          uint nEndPos = nDollarPos+1;
+          // the next character is no $
+          QString aVarName;
+          if (aValue[nEndPos]=='{')
+          {
+            while ( (nEndPos <= aValue.length()) && (aValue[nEndPos]!='}') )
+                nEndPos++;
+            nEndPos++;
+            aVarName = aValue.mid( nDollarPos+2, nEndPos-nDollarPos-3 );
+          }
+          else
+          {
+            while ( nEndPos <= aValue.length() && (aValue[nEndPos].isNumber()
+                    || aValue[nEndPos].isLetter() || aValue[nEndPos]=='_' )  )
+                nEndPos++;
+            aVarName = aValue.mid( nDollarPos+1, nEndPos-nDollarPos-1 );
+          }
           const char* pEnv = 0;
           if (!aVarName.isEmpty())
                pEnv = getenv( aVarName.ascii() );
