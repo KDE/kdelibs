@@ -1094,6 +1094,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 
             switch( tagID ) {
             case ID_PRE:
+                discard = LFDiscard;
                 prePos = 0;
                 break;
             case ID_SCRIPT:

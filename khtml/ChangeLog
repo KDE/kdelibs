@@ -1,3 +1,7 @@
+2004-01-16  Stephan Kulow  <coolo@kde.org>
+
+	* html/htmltokenizer.cpp: fixing <pre> parsing (#58584)
+
 2004-01-15  Dirk Mueller  <mueller@kde.org>
 
 	* misc/loader.cpp (ref): ok, there are cases where an image
