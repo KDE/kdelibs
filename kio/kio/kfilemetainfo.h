@@ -67,10 +67,11 @@ public:
         Addable     =  1, ///< The item or group can be added by a user
         Removable   =  2, ///< It can be removed
         Modifiable  =  4, ///< The value can be edited (no meaning for a group)
-        Cummulative =  8, /**< If an application wants to display information
+        Cumulative =  8,  /**< If an application wants to display information
                                for more than one file, it may add up the values
                                for this item (e.g. play time of an mp3 file) */
-        Averaged    = 16, /**< Similar to Cummulative, but the average should
+        Cummulative = Cumulative, ///< @deprecated Use @ref Cumulative instead
+        Averaged    = 16, /**< Similar to Cumulative, but the average should
                                be calculated instead of the sum */
         MultiLine   = 32, /**< This attribute says that a string item is likely
                                to be more than one line long, so for editing, a
@@ -91,9 +92,9 @@ public:
         Name        = 1, ///< The name or title of the document
         Author      = 2, ///< The one who created the contents of it
         Description = 3, ///< Description Some information about the document
-        Width       = 4, ///< A width in pixels
-        Height      = 5, ///< A height in pixels
-        Size        = 6, ///< A size in pixels (width and height)
+        Width       = 4, ///< The width in pixels
+        Height      = 5, ///< The height in pixels
+        Size        = 6, ///< The size in pixels (width and height)
         Bitrate     = 7, ///< For media files
         Length      = 8, ///< The length of the file, also for media files
         Hidden      = 9, ///< The item is usually not shown to the user
