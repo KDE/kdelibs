@@ -457,4 +457,3 @@ KDockWidgetPrivate::~KDockWidgetPrivate()
 {
 }
 
-#include "kdockwidget_private.moc"

@@ -41,7 +41,12 @@
 #include <qpoint.h>
 #include <qlist.h>
 #include <qframe.h>
-#include <kmainwindow.h>
+
+#ifndef NO_KDE2
+ #include <kmainwindow.h>
+#else
+ #include <qmainwindow.h>
+#endif
 
 #include "kdocktabctl.h"
 
@@ -57,8 +62,12 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QPixmap;
 
+#ifndef NO_KDE2
 class KToolBar;
 class KConfig;
+#else
+class QToolBar;
+#endif
 
 typedef QList<QWidget> WidgetList;
 
@@ -91,11 +100,13 @@ public:
   /** Provides things concerning to switching to toplevel mode. Must be overridden by an inheriting class. */
   virtual void setTopLevel( bool ){};
 
+#ifndef NO_KDE2
   /** Provides saving the current configuration. Must be overridden by an inheriting class. */
   virtual void saveConfig( KConfig* ){};
 
   /** Provides loading the current configuration.  Must be overridden by an inheriting class */
   virtual void loadConfig( KConfig* ){};
+#endif
 
 private:
   class KDockWidgetAbstractHeaderPrivate;
@@ -216,6 +227,7 @@ public:
    */
   virtual void setTopLevel( bool t);
 
+#ifndef NO_KDE2
   /**
    * Saves the current button state to a KDE config container object.
    *
@@ -229,6 +241,7 @@ public:
    * @param c the configuration safe
    */
   virtual void loadConfig( KConfig* );
+#endif
 
 protected slots:
   /**
@@ -695,6 +708,7 @@ public:
    */
   virtual ~KDockManager();
 
+#ifndef NO_KDE2
   /**
    * Saves the current state of the dockmanager and of all controlled widgets.
    * State means here to save the geometry, visibility, parents, internal object names, orientation,
@@ -723,6 +737,7 @@ public:
    * @param group the name of the section in KConfig
    */
   void readConfig ( KConfig* c = 0L, QString group = QString::null );
+#endif
 
   /**
    * Shows all encapsulated widgets of all controlled dockwidgets and shows all dockwidgets which are
@@ -984,9 +999,14 @@ private:
  * @author Max Judin (documentation: Falk Brettschneider).
  * @version $Id$
  */
-class KDockMainWindow : public KMainWindow
+#ifndef NO_KDE2
+ #define QMainWindow KMainWindow
+#endif
+class KDockMainWindow : public QMainWindow
 {
   Q_OBJECT
+#undef QMainWindow
+
 public:
 
   /**
@@ -1041,7 +1061,8 @@ public:
    */
   KDockWidget* createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = 0L, const QString& strTabPageLabel = " ");
 
-  /** 
+#ifndef NO_KDE2
+  /**
    * It writes the current dock state in the given section of KConfig.
    * 
    * @param c     KDE class for saving configurations
@@ -1056,6 +1077,7 @@ public:
    * @param group name of section to read from
    */
   void readDockConfig ( KConfig* c = 0L, QString group = QString::null );
+#endif
 
   /**
    * It runs through all dockwidgets which are under control of the dockmanager and calls show() for every

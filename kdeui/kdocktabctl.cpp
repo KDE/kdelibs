@@ -24,7 +24,10 @@
 #include <qapp.h>
 #include <qwmatrix.h>
 #include <qtooltip.h>
-#include <kdebug.h>
+
+#ifndef NO_KDE2
+ #include <kdebug.h>
+#endif
 
 //-----------------------------------------------------------------------------
 // private classes and struct declarations
@@ -713,7 +716,11 @@ void KDockTabCtl::removePage( QWidget* widget )
       tabs->hide();
     }
   } else {
+#ifndef NO_KDE2
     kdDebug() << "Try delete notexists page " << widget->name() << endl;
+#else
+    qDebug(QString("Try delete notexists page ") + widget->name() + "\n");
+#endif
   }
 }
 
@@ -1226,7 +1233,11 @@ void KDockTabBar::keyPressEvent( QKeyEvent* e )
       if ( fid != -1 )
         setCurrentTab(fid);
       setFocus();
+#ifndef NO_KDE2
       kdDebug() << "Left" << endl;
+#else
+      qDebug("Left");
+#endif
       break;
     case Key_Right:
       id++;
@@ -1244,7 +1255,11 @@ void KDockTabBar::keyPressEvent( QKeyEvent* e )
       if ( fid != -1 )
         setCurrentTab(fid);
       setFocus();
+#ifndef NO_KDE2
       kdDebug() << "Right" << endl;
+#else
+      qDebug("Right");
+#endif
       break;
     default:
       break;
@@ -1414,4 +1429,3 @@ const QColor& KDockTabBar::textColor( int id )
   return Qt::black;
 }
 
-#include "kdocktabctl.moc"

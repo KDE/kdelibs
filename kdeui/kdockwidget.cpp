@@ -19,14 +19,20 @@
 #include "kdockwidget_private.h"
 #include <kdocktabctl.h>
 
-#include <kpopupmenu.h>
 #include <qlayout.h>
 #include <qpainter.h>
 #include <qobjcoll.h>
 
-#include <kapp.h>
-#include <kconfig.h>
-#include <ktoolbar.h>
+#ifndef NO_KDE2
+ #include <kapp.h>
+ #include <kconfig.h>
+ #include <ktoolbar.h>
+ #include <kpopupmenu.h>
+#else
+ #include <qapp.h>
+ #include <qtoolbar.h>
+ #include <qpopupmenu.h>
+#endif
 
 #define DOCK_CONFIG_VERSION "0.0.5"
 
@@ -71,7 +77,11 @@ static const char*not_close_xpm[]={
  * @version $Id$
 */
 KDockMainWindow::KDockMainWindow( QWidget* parent, const char *name, WFlags f)
+#ifndef NO_KDE2
 :KMainWindow( parent, name, f )
+#else
+:QMainWindow( parent, name, f )
+#endif
 {
   QString new_name = QString(name) + QString("_DockManager");
   dockManager = new KDockManager( this, new_name.latin1() );
@@ -94,7 +104,11 @@ void KDockMainWindow::setView( QWidget *view )
     if ( view->parent() != this ) ((KDockWidget*)view)->applyToWidget( this );
   }
 
+#ifndef NO_KDE2
   KMainWindow::setCentralWidget(view);
+#else
+  QMainWindow::setCentralWidget(view);
+#endif
 }
 
 KDockWidget* KDockMainWindow::createDockWidget( const QString& name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel)
@@ -119,6 +133,7 @@ void KDockMainWindow::makeWidgetDockVisible( QWidget* widget )
   makeDockVisible( dockManager->findWidgetParentDock(widget) );
 }
 
+#ifndef NO_KDE2
 void KDockMainWindow::writeDockConfig( KConfig* c, QString group )
 {
   dockManager->writeConfig( c, group );
@@ -128,7 +143,7 @@ void KDockMainWindow::readDockConfig( KConfig* c, QString group )
 {
   dockManager->readConfig( c, group );
 }
-
+#endif
 
 /*************************************************************************/
 KDockWidgetAbstractHeaderDrag::KDockWidgetAbstractHeaderDrag( KDockWidgetAbstractHeader* parent, KDockWidget* dock, const char* name )
@@ -238,6 +253,7 @@ void KDockWidgetHeader::slotStayClicked()
   drag->setEnabled( !stayButton->isOn() );
 }
 
+#ifndef NO_KDE2
 void KDockWidgetHeader::saveConfig( KConfig* c )
 {
   c->writeEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), stayButton->isOn() );
@@ -248,6 +264,8 @@ void KDockWidgetHeader::loadConfig( KConfig* c )
   stayButton->setOn( c->readBoolEntry( QString("%1%2").arg(parent()->name()).arg(":stayButton"), false ) );
   slotStayClicked();
 }
+#endif
+
 /*************************************************************************/
 KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel, WFlags f)
 : QWidget( parent, name, f )
@@ -864,7 +882,11 @@ KDockManager::KDockManager( QWidget* mainWindow , const char* name )
   menuData->setAutoDelete( true );
   menuData->setAutoDelete( true );
 
+#ifndef NO_KDE2
   menu = new KPopupMenu();
+#else
+  menu = new QPopupMenu();
+#endif
 
   connect( menu, SIGNAL(aboutToShow()), SLOT(slotMenuPopup()) );
   connect( menu, SIGNAL(activated(int)), SLOT(slotMenuActivated(int)) );
@@ -1167,6 +1189,7 @@ void KDockManager::drop()
   }
 }
 
+#ifndef NO_KDE2
 void KDockManager::writeConfig( KConfig* c, QString group )
 {
   //debug("BEGIN Write Config");
@@ -1423,6 +1446,7 @@ void KDockManager::readConfig( KConfig* c, QString group )
   main->setGeometry(mr);
   if ( isMainVisible ) main->show();
 }
+#endif
 
 KDockWidget* KDockManager::getDockWidgetFromName( const QString& dockName )
 {
@@ -1483,5 +1507,3 @@ KDockWidget* KDockManager::findWidgetParentDock( QWidget* w )
   }
   return found;
 }
-
-#include "kdockwidget.moc"
