@@ -290,7 +290,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     m_domain->setMaximumWidth( fontMetrics().width('W') * 25 );
     grid->addWidget( m_domain, 5, 1);
 
-    label = new QLabel( i18n("Is Secure:"), this );
+    label = new QLabel( i18n("Is secure:"), this );
     grid->addWidget( label, 6, 0 );
     m_secure = new KLineEdit( this );
     m_secure->setReadOnly( true );
