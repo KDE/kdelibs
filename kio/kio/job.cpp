@@ -2385,6 +2385,8 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     time_t destmtime = (time_t)-1;
     time_t destctime = (time_t)-1;
     KIO::filesize_t destsize = 0;
+    QString linkDest;
+    
     UDSEntry entry = ((KIO::StatJob*)job)->statResult();
     KIO::UDSEntry::ConstIterator it2 = entry.begin();
     for( ; it2 != entry.end(); it2++ ) {
@@ -2398,6 +2400,9 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
             case UDS_SIZE:
                 destsize = (*it2).m_long;
                 break;
+            case UDS_LINK_DEST:
+                linkDest = (*it2).m_str;
+                break;
         }
     }
     subjobs.remove( job );
@@ -2407,7 +2412,14 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     RenameDlg_Mode mode = (RenameDlg_Mode)( M_MULTI | M_SKIP );
     // Overwrite only if the existing thing is a dir (no chance with a file)
     if ( m_conflictError == ERR_DIR_ALREADY_EXIST )
-        mode = (RenameDlg_Mode)( mode | (((*it).uSource == (*it).uDest) ? M_OVERWRITE_ITSELF : M_OVERWRITE ));
+    {
+        if( (*it).uSource == (*it).uDest ||
+            ((*it).uSource.protocol() == (*it).uDest.protocol() &&
+            (*it).uSource.path(-1) == linkDest) )
+          mode = (RenameDlg_Mode)( mode | M_OVERWRITE_ITSELF);
+        else
+          mode = (RenameDlg_Mode)( mode | M_OVERWRITE );          
+    }
 
     QString existingDest = (*it).uDest.path();
     QString newPath;
@@ -2653,6 +2665,7 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
         time_t destmtime = (time_t)-1;
         time_t destctime = (time_t)-1;
         KIO::filesize_t destsize = 0;
+        QString linkDest;
         UDSEntry entry = ((KIO::StatJob*)job)->statResult();
         KIO::UDSEntry::ConstIterator it2 = entry.begin();
         for( ; it2 != entry.end(); it2++ ) {
@@ -2666,18 +2679,33 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
                 case UDS_SIZE:
                     destsize = (*it2).m_long;
                     break;
+                case UDS_LINK_DEST:
+                    linkDest = (*it2).m_str;
+                    break;
             }
         }
 
         // Offer overwrite only if the existing thing is a file
         // If src==dest, use "overwrite-itself"
-        RenameDlg_Mode mode = (RenameDlg_Mode)
-            ( ( m_conflictError == ERR_DIR_ALREADY_EXIST ? 0 :
-             ( (*it).uSource == (*it).uDest ) ? M_OVERWRITE_ITSELF : M_OVERWRITE ) );
+        RenameDlg_Mode mode;
+        
+        if( m_conflictError == ERR_DIR_ALREADY_EXIST )
+            mode = (RenameDlg_Mode) 0;
+        else 
+        {        
+            if ( (*it).uSource == (*it).uDest  ||
+                 ((*it).uSource.protocol() == (*it).uDest.protocol() &&
+                 (*it).uSource.path(-1) == linkDest) )
+                mode = M_OVERWRITE_ITSELF;
+            else
+                mode = M_OVERWRITE;
+        }
+        
         if ( files.count() > 1 ) // Not last one
             mode = (RenameDlg_Mode) ( mode | M_MULTI | M_SKIP );
         else
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
+        
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
                                 i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                 (*it).uSource.prettyURL(0, KURL::StripFileProtocol),
