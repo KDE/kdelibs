@@ -367,9 +367,12 @@ void LineEditWidget::spellCheckerMisspelling( const QString &_text, const QStrin
 
 void LineEditWidget::spellCheckerCorrected( const QString &old, const QString &corr, unsigned int pos )
 {
-    setSelection ( pos, old.length() );
-    insert( corr );
-    setSelection ( pos, corr.length() );
+    if( old!= corr )
+    {
+        setSelection ( pos, old.length() );
+        insert( corr );
+        setSelection ( pos, corr.length() );
+    }
 }
 
 void LineEditWidget::spellCheckerFinished()
