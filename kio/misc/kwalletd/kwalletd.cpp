@@ -362,7 +362,7 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 		}
 		emitDCOPSignal("walletOpened(QString)", data);
 		if (_wallets.count() == 1 && _launchManager) {
-			KApplication::startServiceByDesktopName("kwalletmanager");
+			KApplication::startServiceByDesktopName("kwalletmanager-kwalletd");
 		}
 	} else {
 		int response = KMessageBox::Yes;
