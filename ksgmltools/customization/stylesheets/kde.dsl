@@ -471,7 +471,8 @@
 
 ;; Thanks to David Mason (Gnome Documentation Project) for pointing out this variable
 ;; Origin: html/dbttlpg.dsl
-;; How:    Added values we want in KDE: authorblurb, releaseinfo, date/pubdate,
+;; How:    Added values we want in KDE: authorblurb, releaseinfo, date/pubdate, 
+;;         othercredit
 ;;         no revhistory
 ;;         Not prepended because we want to keep %titlepage-in-info-order% #f
 ;; Why:    to get author non-institutional e-mail address (in authorblurb)
@@ -492,7 +493,8 @@
    (normalize "authorgroup")
    (normalize "author")
    (normalize "authorblurb") ; does not seem to work ... :-( - may not even need to be mentioned here, as it is part of whatever is in the author/editor section
-   (normalize "editor")
+   (normalize "othercredit")
+   ;(normalize "editor")
    (normalize "copyright")
    (normalize "legalnotice")
    (normalize "abstract")
