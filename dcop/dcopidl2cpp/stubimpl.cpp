@@ -58,7 +58,7 @@ int isIntType( const QString& t)
 /**
  * Writes the stub implementation
  */
-void generateStubImpl( const QString& idl, const QString& header, const QString& headerBase, const QString& filename, QDomElement de )
+void generateStubImpl( const QString& idl, const QString& header, const QString& /*headerBase*/, const QString& filename, QDomElement de )
 {
     QFile impl( filename );
     if ( !impl.open( IO_WriteOnly ) )
