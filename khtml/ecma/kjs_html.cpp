@@ -1493,7 +1493,19 @@ KJSO KJS::HTMLCollection::tryGet(const UString &p) const
     result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::Item);
   else if (p == "namedItem")
     result = new HTMLCollectionFunc(collection, HTMLCollectionFunc::NamedItem);
-  else {
+  else if (p == "selectedIndex" &&
+	   collection.item(0).elementId() == ID_OPTION) {
+    // NON-STANDARD options.selectedIndex
+    DOM::Node node = collection.item(0).parentNode();
+    while(!node.isNull()) {
+      if(node.elementId() == ID_SELECT) {
+	DOM::HTMLSelectElement sel = static_cast<DOM::HTMLSelectElement>(node);
+	return Number(sel.selectedIndex());
+      }
+      node = node.parentNode();
+    }
+    result = Undefined();
+  } else {
     DOM::Node node;
     DOM::HTMLElement element;
 
