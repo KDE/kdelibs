@@ -1688,13 +1688,13 @@ bool StyleBaseImpl::parseBackground(const QChar *curP, const QChar *endP, bool i
 	}
       }
     }
-    //#ifdef CSS_DEBUG
+#ifdef CSS_DEBUG
     kdDebug(6080) << "parsing \"" << QString(curP, nextP - curP) << "\"" << endl;
-    //#endif
+#endif
     if(!found && !fnd[2]) {
       found = parseValue(curP, nextP, CSS_PROP_BACKGROUND_COLOR, important, propList);
       if( found ) {
-	kdDebug() << "color!!!" << endl;
+	  //kdDebug() << "color!!!" << endl;
 	fnd[2] = true;
       }
     }
