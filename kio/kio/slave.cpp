@@ -44,6 +44,7 @@
 #include <kprocess.h>
 #include <klibloader.h>
 
+#include "kio/dataprotocol.h"
 #include "kio/slave.h"
 #include "kio/kservice.h"
 #include <kio/global.h>
@@ -71,6 +72,20 @@ using namespace KIO;
 #else
 #define SLAVE_CONNECTION_TIMEOUT_MAX    3600
 #endif
+
+namespace KIO {
+
+  /**
+   * @internal
+   */
+  class SlavePrivate {
+  public:
+    bool derived;	// true if this instance of Slave is actually an
+    			// instance of a derived class.
+
+    SlavePrivate(bool derived) : derived(derived) {}
+  };
+}
 
 void Slave::accept(KSocket *socket)
 {
@@ -122,7 +137,8 @@ void Slave::timeout()
 }
 
 Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &socketname)
-  : SlaveInterface(&slaveconn), serv(socket), contacted(false)
+  : SlaveInterface(&slaveconn), serv(socket), contacted(false),
+  	d(new SlavePrivate(false))
 {
     m_refCount = 1;
     m_protocol = protocol;
@@ -137,6 +153,27 @@ Slave::Slave(KServerSocket *socket, const QString &protocol, const QString &sock
 	    SLOT(accept(KSocket*) ) );
 }
 
+Slave::Slave(bool /*derived*/, KServerSocket *socket, const QString &protocol,
+	const QString &socketname)
+  : SlaveInterface(&slaveconn), serv(socket), contacted(false),
+  	d(new SlavePrivate(true))
+{
+    // FIXME: hmm, duplicating code here from public ctor, no good (LS)
+    m_refCount = 1;
+    m_protocol = protocol;
+    m_slaveProtocol = protocol;
+    m_socket = socketname;
+    dead = false;
+    contact_started = time(0);
+    idle_since = contact_started;
+    m_pid = 0;
+    m_port = 0;
+    if (serv != 0) {
+      connect(serv, SIGNAL(accepted( KSocket* )),
+	    SLOT(accept(KSocket*) ) );
+    }
+}
+
 Slave::~Slave()
 {
     // kdDebug(7002) << "destructing slave object pid = " << m_pid << endl;
@@ -146,6 +183,8 @@ Slave::~Slave()
     }
     unlinkSocket();
     m_pid = 99999;
+    delete d;
+    d = 0;
 }
 
 void Slave::setProtocol(const QString & protocol)
@@ -170,6 +209,13 @@ void Slave::setPID(pid_t pid)
 
 void Slave::hold(const KURL &url)
 {
+   if (d->derived) {		// TODO: clean up before KDE 4
+     HoldParams params;
+     params.url = &url;
+     virtual_hook(VIRTUAL_HOLD, &params);
+     return;
+   }/*end if*/
+
    ref();
    {
       QByteArray data;
@@ -201,19 +247,46 @@ void Slave::hold(const KURL &url)
 
 void Slave::suspend()
 {
+   if (d->derived) {		// TODO: clean up before KDE 4
+     virtual_hook(VIRTUAL_SUSPEND, 0);
+     return;
+   }/*end if*/
+
    slaveconn.suspend();
 }
 
 void Slave::resume()
 {
+   if (d->derived) {		// TODO: clean up before KDE 4
+     virtual_hook(VIRTUAL_RESUME, 0);
+     return;
+   }/*end if*/
+
    slaveconn.resume();
 }
 
 bool Slave::suspended()
 {
+   if (d->derived) {		// TODO: clean up before KDE 4
+     SuspendedParams params;
+     virtual_hook(VIRTUAL_SUSPENDED, &params);
+     return params.retval;
+   }/*end if*/
+
    return slaveconn.suspended();
 }
 
+void Slave::send(int cmd, const QByteArray &arr) {
+   if (d->derived) {		// TODO: clean up before KDE 4
+     SendParams params;
+     params.cmd = cmd;
+     params.arr = &arr;
+     virtual_hook(VIRTUAL_SEND, &params);
+     return;
+   }/*end if*/
+
+   slaveconn.send(cmd, arr);
+}
 
 void Slave::gotInput()
 {
@@ -276,6 +349,9 @@ void Slave::setConfig(const MetaData &config)
 Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error, QString& error_text )
 {
     //kdDebug(7002) << "createSlave '" << protocol << "' for " << url.prettyURL() << endl;
+    // Firstly take into account all special slaves
+    if (protocol == "data")
+        return new DataProtocol();
 
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
@@ -293,9 +369,9 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 
     Slave *slave = new Slave(kss, protocol, socketfile.name());
 
-    // WABA: if the dcopserver is running under another uid we don't ask 
-    // klauncher for a slave, because the slave might have that other uid 
-    // as well, which might either be a) undesired or b) make it impossible 
+    // WABA: if the dcopserver is running under another uid we don't ask
+    // klauncher for a slave, because the slave might have that other uid
+    // as well, which might either be a) undesired or b) make it impossible
     // for the slave to connect to the application.
     // In such case we start the slave via KProcess.
     if (!client->isAttached() || client->isAttachedToForeignServer())
@@ -317,7 +393,7 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
        }
 
        KProcess proc;
-       
+
        proc << "kioslave" << lib_path << protocol << "" << socketfile.name();
        kdDebug(7002) << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString::null << ", " << socketfile.name() << endl;
 
@@ -362,6 +438,9 @@ Slave* Slave::createSlave( const QString &protocol, const KURL& url, int& error,
 Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
 {
     //kdDebug(7002) << "holdSlave '" << protocol << "' for " << url.prettyURL() << endl;
+    // Firstly take into account all special slaves
+    if (protocol == "data")	// simply return a new one for data protocol
+        return new DataProtocol();
 
     DCOPClient *client = kapp->dcopClient();
     if (!client->isAttached())
@@ -401,7 +480,8 @@ Slave* Slave::holdSlave( const QString &protocol, const KURL& url )
     return slave;
 }
 
-void Slave::virtual_hook( int id, void* data )
-{ KIO::SlaveInterface::virtual_hook( id, data ); }
+void Slave::virtual_hook( int id, void* data ) {
+  KIO::SlaveInterface::virtual_hook( id, data );
+}
 
 #include "slave.moc"

@@ -183,7 +183,7 @@ bool Scheduler::process(const QCString &fun, const QByteArray &data, QCString &r
     for (; slave; slave = slaveList->next() )
     if ( slave->slaveProtocol() == proto || proto.isEmpty() )
     {
-      slave->connection()->send( CMD_REPARSECONFIGURATION );
+      slave->send( CMD_REPARSECONFIGURATION );
       slave->resetHost();
     }
     return true;
@@ -590,7 +590,7 @@ if (!jobData)
           idleSlaves->append(slave);
           slave->setIdle();
           _scheduleCleanup();
-//          slave->connection()->send( CMD_SLAVE_STATUS );
+//          slave->send( CMD_SLAVE_STATUS );
        }
     }
     if (protInfo->joblist.count())
@@ -703,7 +703,7 @@ Scheduler::_getConnectedSlave(const KURL &url, const KIO::MetaData &config )
 
     setupSlave(slave, url, protocol, proxy, true, &config);
 
-    slave->connection()->send( CMD_CONNECT );
+    slave->send( CMD_CONNECT );
     connect(slave, SIGNAL(connected()),
                 SLOT(slotSlaveConnected()));
     connect(slave, SIGNAL(error(int, const QString &)),
@@ -835,7 +835,7 @@ Scheduler::_disconnectSlave(KIO::Slave *slave)
     if (slave->isAlive())
     {
        idleSlaves->append(slave);
-       slave->connection()->send( CMD_DISCONNECT );
+       slave->send( CMD_DISCONNECT );
        slave->setIdle();
        slave->setConnected(false);
        _scheduleCleanup();

@@ -39,9 +39,22 @@ class KSocket;
 
 namespace KIO {
 
+    // Attention developers: If you change the implementation of KIO::Slave,
+    // do *not* use connection() or slaveconn but the respective KIO::Slave
+    // accessor methods. Otherwise classes derived from Slave might break. (LS)
     class Slave : public KIO::SlaveInterface
     {
 	Q_OBJECT
+
+    protected:
+	/**
+	 * Use this constructor if you derive your own class from Slave
+	 * @p derived must be true in any case
+	 * @internal
+	 * @since 3.2
+	 */
+	Slave(bool derived, KServerSocket *unixdomain, const QString &protocol,
+		const QString &socketname);	// TODO(BIC): Remove in KDE 4
 
     public:
 	Slave(KServerSocket *unixdomain,
@@ -59,7 +72,7 @@ namespace KIO {
 	void kill();
 
         /**
-         * @return true if the slave survided the last mission.
+         * @return true if the slave survived the last mission.
          */
         bool isAlive() { return !dead; }
 
@@ -71,7 +84,7 @@ namespace KIO {
          * @param passwd to login with
          */
         void setHost( const QString &host, int port,
-                      const QString &user, const QString &passwd);
+                      const QString &user, const QString &passwd); // TODO(BIC): make virtual
 
         /**
          * Clear host info.
@@ -80,27 +93,27 @@ namespace KIO {
 
         /**
          * Configure slave
-         */                      
-        void setConfig(const MetaData &config);
+         */
+        void setConfig(const MetaData &config);	// TODO(BIC): make virtual
 
         /**
 	 * The protocol this slave handles.
-	 * 
+	 *
          * @return name of protocol handled by this slave, as seen by the user
          */
         QString protocol() { return m_protocol; }
-        
+
         void setProtocol(const QString & protocol);
         /**
 	 * The actual protocol used to handle the request.
-	 * 
+	 *
 	 * This method will return a different protocol than
-	 * the one obtained by using @ref protocol() if a 
+	 * the one obtained by using @ref protocol() if a
 	 * proxy-server is used for the given protocol.  This
 	 * usually means that this method will return "http"
 	 * when the actuall request was to retrieve a resource
 	 * from an "ftp" server by going through a proxy server.
-	 * 
+	 *
          * @return the actual protocol (io-slave) that handled the request
          */
         QString slaveProtocol() { return m_slaveProtocol; }
@@ -137,11 +150,37 @@ namespace KIO {
 
         static Slave* holdSlave( const QString &protocol, const KURL& url );
 
-        void suspend();
-        void resume();
-        void hold(const KURL &url);
+	// == communication with connected kioslave ==
+	// whenever possible prefer these methods over the respective
+	// methods in connection()
+	/**
+	 * Suspends the operation of the attached kioslave.
+	 * @since 3.1?
+	 */
+        void suspend();		// TODO(BIC): make virtual
+	/**
+	 * Resumes the operation of the attached kioslave.
+	 * @since 3.1?
+	 */
+        void resume();		// TODO(BIC): make virtual
+	/**
+	 * Tells wether the kioslave is suspended.
+	 * @return true if the kioslave is suspended.
+	 */
+        bool suspended();	// TODO(BIC): make virtual
+	/**
+	 * Sends the given command to the kioslave.
+	 * @param cmd command id
+	 * @param data byte array containing data
+	 * @since 3.2
+	 */
+        void send(int cmd, const QByteArray &arr = QByteArray());// TODO(BIC): make virtual
+	// == end communication with connected kioslave ==
 
-        bool suspended();
+	/**
+	 * Puts the kioslave associated with @p url at halt.
+	 */
+	void hold(const KURL &url);	// TODO(BIC): make virtual
 
 	/**
 	 * @return The time this slave has been idle.
@@ -154,14 +193,18 @@ namespace KIO {
 	void setIdle();
 
         /*
-         * @returns Whether the slave is connencted 
+         * @returns Whether the slave is connected
          * (Connection oriented slaves only)
          */
         bool isConnected() { return contacted; }
         void setConnected(bool c) { contacted = c; }
 
-        Connection *connection() { return &slaveconn; }
-        
+	/** @obsolete This method is obsolete, use the accessor methods
+	  * within KIO::Slave instead. Old code directly accessing connection()
+	  * will not be able to access special protocols.
+	  */
+        Connection *connection() { return &slaveconn; }	// TODO(BIC): remove before KDE 4
+
         void ref() { m_refCount++; }
         void deref() { m_refCount--; if (!m_refCount) delete this; }
 
@@ -193,6 +236,29 @@ namespace KIO {
 	int m_refCount;
     protected:
 	virtual void virtual_hook( int id, void* data );
+	// grant SlaveInterface all IDs < 0x200
+	enum { VIRTUAL_SUSPEND = 0x200, VIRTUAL_RESUME, VIRTUAL_SEND,
+		VIRTUAL_HOLD, VIRTUAL_SUSPENDED,
+		VIRTUAL_SET_HOST, VIRTUAL_SET_CONFIG };
+	struct SendParams {
+	  int cmd;
+	  const QByteArray *arr;
+	};
+	struct HoldParams {
+	  const KURL *url;
+	};
+	struct SuspendedParams {
+	  bool retval;
+	};
+	struct SetHostParams {
+	  const QString *host;
+	  int port;
+	  const QString *user;
+	  const QString *passwd;
+	};
+	struct SetConfigParams {
+	  const MetaData *config;
+	};
     private:
 	class SlavePrivate* d;
     };

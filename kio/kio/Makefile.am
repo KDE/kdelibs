@@ -40,7 +40,8 @@ libksycoca_la_SOURCES = \
 	yacc.c lex.c  \
 	chmodjob.cpp kscan.cpp kar.cpp ktar.cpp kzip.cpp previewjob.cpp metainfojob.cpp davjob.cpp \
 	kdatatool.cpp karchive.cpp kfilefilter.cpp \
-	kfilemetainfo.cpp kdcopservicestarter.cpp
+	kfilemetainfo.cpp kdcopservicestarter.cpp \
+	dataslave.cpp dataprotocol.cpp
 
 #This dependency is needed, cause am_edit does not include it automatically
 #(different programs), but nevertheless kmimetype.cpp includes
@@ -108,7 +109,7 @@ noinst_HEADERS = kservicetypefactory.h kservicefactory.h \
 	kimageiofactory.h kdirwatch_p.h kdirlister_p.h \
 	kimageiofactory.h kdirwatch_p.h \
 	kprotocolinfofactory.h \
-	renamedlg.h skipdlg.h
+	renamedlg.h skipdlg.h dataslave.h dataprotocol.h
 
 
 parserfiles = yacc.y lex.l

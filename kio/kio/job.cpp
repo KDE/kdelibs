@@ -412,7 +412,9 @@ SimpleJob::~SimpleJob()
 
 void SimpleJob::start(Slave *slave)
 {
+//    kdDebug(7007) << "1a m_slave: " << m_slave << endl;
     m_slave = slave;
+//    kdDebug(7007) << "1e m_slave: " << m_slave << endl;
 
     connect( m_slave, SIGNAL( error( int , const QString & ) ),
              SLOT( slotError( int , const QString & ) ) );
@@ -446,23 +448,31 @@ void SimpleJob::start(Slave *slave)
 
     if (m_window)
     {
+//       kdDebug(7007) << "2a m_slave: " << m_slave << endl;
        QString id;
        addMetaData("window-id", id.setNum(m_window->winId()));
+//       kdDebug(7007) << "2e m_slave: " << m_slave << endl;
     }
 
     if (!m_outgoingMetaData.isEmpty())
     {
+//       kdDebug(7007) << "3a m_slave: " << m_slave << endl;
        KIO_ARGS << m_outgoingMetaData;
-       slave->connection()->send( CMD_META_DATA, packedArgs );
+       slave->send( CMD_META_DATA, packedArgs );
+//       kdDebug(7007) << "3e m_slave: " << m_slave << endl;
     }
 
     if (!m_subUrl.isEmpty())
     {
+//       kdDebug(7007) << "4a m_slave: " << m_slave << endl;
        KIO_ARGS << m_subUrl;
-       m_slave->connection()->send( CMD_SUBURL, packedArgs );
+       m_slave->send( CMD_SUBURL, packedArgs );
+//       kdDebug(7007) << "4b m_slave: " << m_slave << endl;
     }
 
-    m_slave->connection()->send( m_command, m_packedArgs );
+//    kdDebug(7007) << "5a m_slave: " << m_slave << endl;
+    m_slave->send( m_command, m_packedArgs );
+//    kdDebug(7007) << "5b m_slave: " << m_slave << endl;
 }
 
 void SimpleJob::slaveDone()
@@ -856,7 +866,7 @@ void TransferJob::slotDataReq()
         dataForSlave.truncate(max_size);
     }
 
-    m_slave->connection()->send( MSG_DATA, dataForSlave );
+    m_slave->send( MSG_DATA, dataForSlave );
     if (m_subJob)
     {
        // Bitburger protocol in action
@@ -876,14 +886,14 @@ void TransferJob::suspend()
 {
     m_suspended = true;
     if (m_slave)
-       m_slave->connection()->suspend();
+       m_slave->suspend();
 }
 
 void TransferJob::resume()
 {
     m_suspended = false;
     if (m_slave)
-       m_slave->connection()->resume();
+       m_slave->resume();
 }
 
 void TransferJob::start(Slave *slave)
@@ -919,7 +929,7 @@ void TransferJob::start(Slave *slave)
 
     SimpleJob::start(slave);
     if (m_suspended)
-       slave->connection()->suspend();
+       slave->suspend();
 }
 
 void TransferJob::slotNeedSubURLData()
@@ -3569,7 +3579,7 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
      {
         while(!newQueue.isEmpty())
            m_activeQueue.append(newQueue.take(0));
-        m_slave->connection()->send( m_command, m_packedArgs );
+        m_slave->send( m_command, m_packedArgs );
      }
   }
   if (!findCurrentEntry()) return; // Error, unknown request!
