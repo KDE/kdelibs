@@ -264,7 +264,7 @@ static int skipData(int fd, unsigned len)
 // calls the correct deallocation routine
 // also uses by-reference parameter to simplify caller routines, because
 // we set the parameter to NULL after deallocation
-void local_freeaddrinfo(kde_addrinfo *&p)
+static void local_freeaddrinfo(kde_addrinfo *&p)
 {
   if (p == NULL)
     return;
