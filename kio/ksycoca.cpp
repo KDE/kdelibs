@@ -117,7 +117,7 @@ fprintf(stderr, "KSycoca: Error, KSycocaFactory (id = %d) not found!\n", id);
    return 0;
 }
 
-QDataStream * KSycoca::findOfferList()
+QDataStream * KSycoca::findHeader()
 {
    str->device()->at(0);
    Q_INT32 aId;
@@ -131,10 +131,7 @@ QDataStream * KSycoca::findOfferList()
       else
         break; // just read 0
    }
-   (*str) >> aOffset; // Service type index offset
-   kdebug(KDEBUG_INFO, 7011, QString("servicetypeIndexOffset : %1").
-          arg(aOffset,8,16));
-   str->device()->at( aOffset );
+   // We now point to the header
    return str;
 }
 

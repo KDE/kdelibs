@@ -135,10 +135,7 @@ KService::List KServiceFactory::allServices()
    {
       newService = createService(offset);
       if (newService)
-      {
          list.append( KService::Ptr( newService ) );
-         //list.append( newService );
-      }
       offset = str->device()->at();
    }
    return list;
@@ -146,37 +143,45 @@ KService::List KServiceFactory::allServices()
 
 KService::List KServiceFactory::offers( int serviceTypeOffset )
 {
-  kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers ( %1 )").arg(serviceTypeOffset,8,16));
-  KService::List list;
-  // Jump to offer list
-  QDataStream *str = KSycoca::self()->findOfferList();
-  Q_INT32 aServiceTypeOffset;
-  Q_INT32 aServiceOffset;
-  // We might want to do a binary search instead of a linear search
-  // since servicetype offsets are sorted. Bah.
-  while (true)
-  {
+   //kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers ( %1 )")
+   //                          .arg(serviceTypeOffset,8,16));
+   KService::List list;
+   // Get stream to the header
+   QDataStream *str = KSycoca::self()->findHeader();
+   Q_INT32 offerListOffset;
+   (*str) >> offerListOffset;
+   //kdebug(KDEBUG_INFO, 7011, QString("offerListOffset : %1").
+   //       arg(offerListOffset,8,16));
+   // Jump to the offer list
+   str->device()->at( offerListOffset );
+   
+   Q_INT32 aServiceTypeOffset;
+   Q_INT32 aServiceOffset;
+   // We might want to do a binary search instead of a linear search
+   // since servicetype offsets are sorted. Bah.
+   while (true)
+   {
       (*str) >> aServiceTypeOffset;
       if ( aServiceTypeOffset )
       {
-        (*str) >> aServiceOffset;
-        if ( aServiceTypeOffset == serviceTypeOffset )
-        {
-           kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers : Found !"));
-           // Save stream position !
-           int savedPos = str->device()->at();
-           // Create Service
-           KService * serv = createService( aServiceOffset );
-           list.append( KService::Ptr( serv ) );
-           // Restore position
-           str->device()->at( savedPos );
-        } else if ( aServiceTypeOffset > (Q_INT32)serviceTypeOffset )
-           break; // too far
+         (*str) >> aServiceOffset;
+         if ( aServiceTypeOffset == serviceTypeOffset )
+         {
+            //kdebug(KDEBUG_INFO, 7011, QString("KServiceFactory::offers : Found !"));
+            // Save stream position !
+            int savedPos = str->device()->at();
+            // Create Service
+            KService * serv = createService( aServiceOffset );
+            list.append( KService::Ptr( serv ) );
+            // Restore position
+            str->device()->at( savedPos );
+         } else if ( aServiceTypeOffset > (Q_INT32)serviceTypeOffset )
+            break; // too far
       }
       else
-        break; // 0 => end of list
-  }
-  return list;
+         break; // 0 => end of list
+   }
+   return list;
 }
 
 KServiceFactory *KServiceFactory::_self = 0;

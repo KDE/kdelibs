@@ -213,8 +213,8 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
      return;
    }
    // Store each patterns in one of the 2 string lists (for sorting)
-   QStringList fastPatterns;  // for *a to *abcde (a can be '.' of course)
-   QStringList otherPatterns; // for the rest (core.*, *.tar.bz2) ...
+   QStringList fastPatterns;  // for *.a to *.abcd
+   QStringList otherPatterns; // for the rest (core.*, *.tar.bz2, *~) ...
    QDict<KMimeType> dict;
    // For each mimetype in servicetypeFactory
    for(QDictIterator<KSycocaEntry> it ( *(servicetypeFactory->entryDict()) );
@@ -227,19 +227,23 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
         QStringList::ConstIterator patit = pat.begin();
         for ( ; patit != pat.end() ; ++patit )
         {
-          if ( (*patit)[0] == '*' && (*patit).length() <= 6 ) // *a to *abcde patterns
-            fastPatterns.append( (*patit) );
-          else if (!(*patit).isEmpty()) // some stupid mimetype files have "Patterns=;"
-            otherPatterns.append( (*patit) );
-          // Assumption : there is only one mimetype for that pattern
-          // It doesn't really make sense otherwise, anyway.
-          dict.replace( (*patit), (KMimeType *) it.current() );
+           if ( (*patit).findRev('*') == 0 
+                && (*patit).findRev('.') == 1 
+                && (*patit).length() <= 6 )
+              // it starts with "*.", has no other '*' and no other '.', and is max 6 chars
+              // => fast patttern
+              fastPatterns.append( (*patit) );
+           else if (!(*patit).isEmpty()) // some stupid mimetype files have "Patterns=;"
+              otherPatterns.append( (*patit) );
+           // Assumption : there is only one mimetype for that pattern
+           // It doesn't really make sense otherwise, anyway.
+           dict.replace( (*patit), (KMimeType *) it.current() );
         }
       }
    }
    // Sort the list - the fast one, useless for the other one
    fastPatterns.sort();
-
+   
    entrySize = 0;
 
    // For each fast pattern
@@ -249,8 +253,8 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
      int start = str->device()->at();
      // Justify to 6 chars with spaces, so that the size remains constant
      // in the database file.
-     QString paddedPattern = (*it).leftJustify(6);
-     kdebug(KDEBUG_INFO, 7011, QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()));
+     QString paddedPattern = (*it).leftJustify(6).right(4); // remove leading "*."
+     //kdebug(KDEBUG_INFO, 7011, QString("FAST : '%1' '%2'").arg(paddedPattern).arg(dict[(*it)]->name()));
      (*str) << paddedPattern;
      (*str) << dict[(*it)]->offset();
      // Check size remains constant
@@ -262,12 +266,12 @@ void KBuildSycoca::saveMimeTypePattern( KSycocaFactory * servicetypeFactory,
    it = otherPatterns.begin();
    for ( ; it != otherPatterns.end() ; ++it )
    {
-     kdebug(KDEBUG_INFO, 7011, QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()));
+     //kdebug(KDEBUG_INFO, 7011, QString("OTHER : '%1' '%2'").arg(*it).arg(dict[(*it)]->name()));
      (*str) << (*it);
      (*str) << dict[(*it)]->offset();
    }
    
-   (*str) << (Q_INT32) 0;               // End of list marker (0)
+   (*str) << QString(""); // end of list marker (has to be a string !)
 }
 
 void KBuildSycoca::save()

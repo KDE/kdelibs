@@ -98,17 +98,6 @@ public:
    */
   virtual const QStringList& patterns() const { return m_lstPatterns; }
   
-  /** 
-   * Looks whether the given filename matches this mimetypes
-   * extension patterns.
-   *
-   * @param _filename is the real decoded filename or the decoded path
-   *        without trailing '/'.
-   *
-   * @see #m_lstPatterns 
-   */
-  virtual bool matchFilename( const QString&_filename ) const;
-
   /**
    * Load the mimetype from a stream. 
    * @param _parentLoaded internal (set by the constructor)

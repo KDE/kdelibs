@@ -64,9 +64,9 @@ public:
     */
    QDataStream *registerFactory( KSycocaFactoryId id);
    /**
-    * @internal - returns stream to the offers index
+    * @internal - returns stream to the header (see DESIGN)
     */
-   QDataStream *findOfferList();
+   QDataStream *findHeader();
     
    /**
     * @internal

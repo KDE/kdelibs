@@ -124,6 +124,127 @@ KServiceType * KServiceTypeFactory::findServiceTypeByName(const QString &_name)
    return newServiceType;
 }
 
+// We can't use Qt's usctrcmp, declared 'static' in qstring.cpp :((
+// Submitted to qt-bugs@troll.no
+int ucstrcmp( const QString &as, const QString &bs )
+{
+    const QChar *a = as.unicode();
+    const QChar *b = bs.unicode();
+    if ( a == b )
+        return 0;
+    if ( a == 0 )
+        return 1;
+    if ( b == 0 )
+        return -1;
+    int l=QMIN(as.length(),bs.length());
+    while ( l-- && *a == *b )
+        a++,b++;
+    if ( l==-1 )
+        return ( as.length()-bs.length() );
+    return a->unicode() - b->unicode();
+}   
+
+bool KServiceTypeFactory::matchFilename( const QString& _filename, const QString& _pattern  ) const
+{
+  //kdebug(KDEBUG_INFO, 7011, QString("matchFilename filename='%1' pattern='%2'")
+  //                          .arg(_filename).arg(_pattern));
+  int len = _filename.length();
+  const char* s = _pattern.ascii();
+  int pattern_len = _pattern.length();
+  if (!pattern_len)
+     return false;
+  
+  // Patterns like "Makefile*"
+  if ( s[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
+     if ( strncasecmp( _filename.ascii(), s, pattern_len - 1 ) == 0 )
+	return true;
+  
+  // Patterns like "*~", "*.extension"
+  if ( s[ 0 ] == '*' && len + 1 >= pattern_len )
+  {
+     if ( strncasecmp( _filename.ascii() + len - pattern_len + 1, s + 1, pattern_len - 1 ) == 0 )
+	return true;
+     // TODO : Patterns like "*.*pk"
+  }
+
+  // Patterns like "Makefile"
+  return (strcasecmp( _filename.ascii(), s ) == 0);
+}
+
+KMimeType * KServiceTypeFactory::findFromPattern(const QString &_filename)
+{
+   // Assume we're NOT building a database
+   // Get stream to the header
+   QDataStream *str = KSycoca::self()->findHeader();
+   Q_INT32 offerListOffset;
+   (*str) >> offerListOffset;
+   Q_INT32 fastOffset;
+   (*str) >> fastOffset;
+   Q_INT32 otherOffset;
+   (*str) >> otherOffset;
+   Q_INT32 entrySize;
+   (*str) >> entrySize;
+
+   //kdebug(KDEBUG_INFO, 7011, QString("fastOffset : %1").arg(fastOffset,8,16));
+   //kdebug(KDEBUG_INFO, 7011, QString("otherOffset : %1").arg(otherOffset,8,16));
+   //kdebug(KDEBUG_INFO, 7011, QString("entrySize : %1").arg(entrySize));
+
+   QString pattern;
+   Q_INT32 mimetypeOffset;
+
+   // Let's go for a binary search in the "fast" pattern index
+   Q_INT32 left = 0;
+   Q_INT32 right = (otherOffset-fastOffset) / entrySize - 1;
+   Q_INT32 middle;
+   // Extract extension
+   int lastDot = _filename.findRev('.');
+   if (lastDot != -1) // if no '.', skip the extension lookup
+   {
+      QString extension = _filename.right( _filename.length() - _filename.findRev('.') - 1 );
+      extension = extension.leftJustify(4);
+      //kdebug(KDEBUG_INFO, 7011, QString("extension is '%1'").arg(extension));
+      
+      while (left <= right) {
+         middle = (left + right) / 2;
+         //kdebug(KDEBUG_INFO, 7011, QString("the situation is left=%1 middle=%2 right=%3")
+         //       .arg(left).arg(middle).arg(right));
+         // read pattern at position "middle"
+         str->device()->at( middle * entrySize + fastOffset );
+         (*str) >> pattern;
+         //kdebug(KDEBUG_INFO, 7011, QString("testing extension '%1'").arg(pattern));
+         int cmp = ucstrcmp( pattern, extension );
+         if (cmp < 0)
+            left = middle + 1;
+         else if (cmp == 0) // found
+         {
+            (*str) >> mimetypeOffset;
+            KServiceType * newServiceType = createServiceType(mimetypeOffset);
+            assert (newServiceType && newServiceType->isType( KST_KMimeType ));
+            return (KMimeType *) newServiceType;
+         }
+         else
+            right = middle - 1;
+      }
+   }
+      
+   // Not found or no extension, try the "other" offset
+   str->device()->at( otherOffset );
+
+   while (true)
+   {
+      (*str) >> pattern;
+      if (pattern.isEmpty()) // end of list
+         return 0L;
+      (*str) >> mimetypeOffset;
+      if ( matchFilename( _filename, pattern ) )
+      {
+         KServiceType * newServiceType = createServiceType(mimetypeOffset);
+         assert (newServiceType && newServiceType->isType( KST_KMimeType ));
+         return (KMimeType *) newServiceType;
+      }
+   }
+}
+
 KMimeType::List KServiceTypeFactory::allMimeTypes()
 {
    kdebug(KDEBUG_INFO, 7011, "KServiceTypeFactory::allMimeTypes()");

@@ -7,6 +7,8 @@ List of factories
  | * Factory id, Factory offset
  | * ...
  | * 0
+
+Header
  | * Offer-list offset
  | * Mimetype-patterns index offset (fast patterns)
  | * Mimetype-patterns index offset (other)
@@ -45,13 +47,13 @@ implemented in KServiceTypeProfile.
 
 Mimetype patterns
 | Fast patterns (fixed size)
-| * Pattern (padded to 6 chars), mimetype offset
-| * Pattern (padded to 6 chars), mimetype offset
-| * Pattern (padded to 6 chars), mimetype offset
+| * Extension (padded to 4 chars), mimetype offset
+| * Extension (padded to 4 chars), mimetype offset
+| * Extension (padded to 4 chars), mimetype offset
 | Other patterns (variable size)
-| * Pattern, mimetype offset
-| * Pattern, mimetype offset
-| * 0
+| * Pattern (ex : *.*gf), mimetype offset
+| * Pattern (ex : Makefile*), mimetype offset
+| * ""
 
 The first one is designed for a binary search, since entries have a fixed size
 and are sorted by extension.

@@ -169,28 +169,21 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
   if ( !_is_local_file && S_ISREG( _mode ) && ( _mode & ( S_IXUSR | S_IXGRP | S_IXOTH ) ) )
     return mimeType( "application/x-executable" );
 
-  QString path ( _url.path( 0 ) );
+  QString fileName ( _url.filename() );
 
-  if ( ! path.isNull() )
+  if ( ! fileName.isNull() )
     {
       // Try to find it out by looking at the filename
-
-#warning FIXME Create another index, for file mask matching, with (mask, mimetype offset)
-      //
-      //The current solution works but is slow and memory eating
-      //
-      KMimeType::List list = allMimeTypes();
-      QValueListIterator<KMimeType::Ptr> it = list.begin();
-      for( ; it != list.end(); ++it )
-	if ( (*it)->matchFilename( path.data() ) )
-	  return (*it);
+      KMimeType * mime = KServiceTypeFactory::self()->findFromPattern( fileName );
+      if ( mime )
+         return KMimeType::Ptr( mime );
       
       // Another filename binding, hardcoded, is .desktop:
-      if ( path.right(8) == ".desktop" )
+      if ( fileName.right(8) == ".desktop" )
 	return mimeType( "application/x-desktop" );
       // Another filename binding, hardcoded, is .kdelnk;
       // this is preserved for backwards compatibility
-      if ( path.right(7) == ".kdelnk" )
+      if ( fileName.right(7) == ".kdelnk" )
 	return mimeType( "application/x-desktop" );
     }
 
@@ -206,7 +199,8 @@ KMimeType::Ptr KMimeType::findByURL( const KURL& _url, mode_t _mode,
     return mimeType( "application/octet-stream" );
 
   // Do some magic for local files
-  kdebug( KDEBUG_INFO, 7009, "Mime Type finding for '%s'", path.data() );
+  QString path = _url.path( 0 );
+  kdebug( KDEBUG_INFO, 7009, QString("Mime Type finding for '%1'").arg(path) );
   KMimeMagicResult* result = KMimeMagic::self()->findFileType( path.ascii() );
 
   // If we still did not find it, we must assume the default mime type
@@ -281,32 +275,6 @@ QStringList KMimeType::propertyNames() const
 
 KMimeType::~KMimeType()
 {
-}
-
-bool KMimeType::matchFilename( const QString& _filename ) const
-{
-  int len = _filename.length();
-
-  QStringList::ConstIterator it = m_lstPatterns.begin();
-  for( ; it != m_lstPatterns.end(); ++it )
-  {
-    const char* s = (*it).ascii();
-    int pattern_len = (*it).length();
-    if (!pattern_len)
-      continue;
-
-    if ( s[ pattern_len - 1 ] == '*' && len + 1 >= pattern_len )
-      if ( strncasecmp( _filename.ascii(), s, pattern_len - 1 ) == 0 )
-	return true;
-
-    if ( s[ 0 ] == '*' && len + 1 >= pattern_len )
-      if ( strncasecmp( _filename.ascii() + len - pattern_len + 1, s + 1, pattern_len - 1 ) == 0 )
-	return true;
-    if ( strcasecmp( _filename.ascii(), s ) == 0 )
-      return true;
-  }
-
-  return false;
 }
 
 /*******************************************************

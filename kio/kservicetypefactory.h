@@ -60,12 +60,17 @@ public:
   /**
    * Find a service type in the database file (allocates it)
    */
-  KServiceType * findServiceTypeByName( const QString &_name);
+  KServiceType * findServiceTypeByName(const QString &_name);
 
   /**
    * Find a service type in memory (returns a pointer to it)
    */
   KServiceType * findServiceTypeRef(const QString &_name);
+
+  /**
+   * Find a mimetype from a filename (using the pattern list)
+   */
+  KMimeType * findFromPattern(const QString &_filename);
 
   /**
    * @return all mimetypes
@@ -92,6 +97,13 @@ public:
 
 protected:
   KServiceType *createServiceType(int offset);
+
+  /** 
+   * Looks whether the given filename matches the given pattern
+   * @param _filename is the real decoded filename (or dirname
+   *        without trailing '/').
+   */
+  bool matchFilename( const QString& _filename, const QString& _pattern ) const;
 
 private:
   static KServiceTypeFactory *_self;

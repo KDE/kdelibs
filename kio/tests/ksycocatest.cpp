@@ -63,16 +63,25 @@ main(int argc, char *argv[])
    }
 
 
-   debug("Trying findByURL for $KDEDIR/bin/kdesktop");
+   //
+   debug("\nTrying findByURL for $KDEDIR/bin/kdesktop");
    KMimeType::Ptr mf  = KMimeType::findByURL( KStandardDirs::findExe( "kdesktop" ), 0,
 				 true, false );
    assert( mf );
    debug(QString("Name is %1").arg(mf->name()));
    debug(QString("Comment is %1").arg(mf->comment("",false)));
 
-   debug("Trying findByURL for home.png");
+   //
+   debug("\nTrying findByURL for home.png");
    mf  = KMimeType::findByURL( locate( "toolbar", "home.png" ), 0,
 				 true, false );
+   assert( mf );
+   debug(QString("Name is %1").arg(mf->name()));
+   debug(QString("Comment is %1").arg(mf->comment("",false)));
+
+   //
+   debug("\nTrying findByURL for Makefile.am");
+   mf  = KMimeType::findByURL( KURL("/tmp/Makefile.am"), 0, true, false );
    assert( mf );
    debug(QString("Name is %1").arg(mf->name()));
    debug(QString("Comment is %1").arg(mf->comment("",false)));
