@@ -177,6 +177,9 @@ class KAccel : public QAccel
 	/** Enable or disable the action named by @p sAction. */
 	bool setEnabled( const QString& sAction, bool bEnabled );
 
+	const QString& configGroup();
+	void setConfigGroup( const QString& );
+
 	/**
 	 * Read all shortcuts from @p pConfig, or (if @p pConfig
 	 * is zero) from the application's configuration file
@@ -192,7 +195,6 @@ class KAccel : public QAccel
 	 * configuration file.
 	 */
 	bool writeSettings( KConfigBase* pConfig = 0 ) const;
-	void setConfigGroup( const QString& );
 
 	void emitKeycodeChanged();
 

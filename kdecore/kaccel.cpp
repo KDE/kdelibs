@@ -283,26 +283,26 @@ void KAccel::emitKeycodeChanged()
 
 bool KAccel::insertItem( const QString& sLabel, const QString& sAction,
 		const char* cutsDef,
-		int nIDMenu, QPopupMenu *, bool bConfigurable )
+		int /*nIDMenu*/, QPopupMenu *, bool bConfigurable )
 {
 	KShortcut cut( cutsDef );
 	bool b = d->insert( sAction, sLabel, QString::null,
 		cut, cut,
 		0, 0,
-		nIDMenu, bConfigurable ) != 0;
+		bConfigurable ) != 0;
 	return b;
 }
 
 bool KAccel::insertItem( const QString& sLabel, const QString& sAction,
 		int key,
-		int nIDMenu, QPopupMenu*, bool bConfigurable )
+		int /*nIDMenu*/, QPopupMenu*, bool bConfigurable )
 {
 	KShortcut cut;
 	cut.init( QKeySequence(key) );
 	KAccelAction* pAction = d->insert( sAction, sLabel, QString::null,
 		cut, cut,
 		0, 0,
-		nIDMenu, bConfigurable );
+		bConfigurable );
 	return pAction != 0;
 }
 
@@ -323,10 +323,7 @@ bool KAccel::connectItem( const QString& sAction, const QObject* pObjSlot, const
 	kdDebug(125) << "KAccel::connectItem( " << sAction << ", " << pObjSlot << ", " << psMethodSlot << " )" << endl;
 	if( bActivate == false )
 		d->setActionEnabled( sAction, false );
-	bool bAutoUpdate = d->getAutoUpdate();
-	d->setAutoUpdateTemp( true );
 	bool b = setSlot( sAction, pObjSlot, psMethodSlot );
-	d->setAutoUpdateTemp( bAutoUpdate );
 	if( bActivate == true )
 		d->setActionEnabled( sAction, true );
 	return b;
@@ -347,7 +344,7 @@ void KAccel::changeMenuAccel( QPopupMenu *menu, int id, const QString& action )
 
 	int i = s.find( '\t' );
 
-	QString k = pAction->seq(0).toString();
+	QString k = pAction->shortcut().seq(0).toString();
 	if( k.isEmpty() )
 		return;
 
