@@ -53,6 +53,15 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 {
   id = -1;
 
+  if ( element.tagName().lower() == "mainwindow" )
+  {
+    KTMainWindow *mainwindow = 0;
+    if ( d->m_widget->inherits( "KTMainWindow" ) )
+      mainwindow = static_cast<KTMainWindow *>(d->m_widget);
+
+    return mainwindow;
+  }
+
   if ( element.tagName().lower() == "menubar" )
   {
     KMenuBar *bar;
