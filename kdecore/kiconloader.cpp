@@ -20,6 +20,15 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.47  1999/06/16 21:01:23  kulow
+   kiconloader doesn't use it's own directories, but use KStandardDirs from now
+   on - for this I removed insertDirectory and appendDirectory from it's API.
+   Afaik only koffice used it.
+   And I also added KStandardDirs::kde_data_relative() which just returns
+   /share/apps to add a central place to define such paths. I think about
+   adding more of these static functions to make the whole thing as configurable
+   as it used to be.
+
    Revision 1.46  1999/06/14 10:42:43  kulow
    some more correct const char*ness
 
@@ -126,16 +135,28 @@ void KIconLoader::initPath()
     // set the key depending on the current application
     // FIXME: This is not a very nice hack at all. The app should be
     // able to specify its own key. (Taj)
+
+  if (config) {
+    config->setGroup(appname);
+    QStringList list = config->readListEntry( varname, ':' );
     
-    QString key = "KDE";
-    if (kapp->name() == "kpanel")
-	key = "kpanel";
-    if (kapp->name() == "kfm")
-	key = "kfm";
+    QStringList::Iterator it = list.begin();
+    
+    for ( ; it != list.end(); ++it ) {
+      addPath( *it );
+    }
+  }
+  
+  
+  QString key = "KDE";
+  if (appname == "kpanel")
+    key = "kpanel";
+  if (appname == "kfm")
+    key = "kfm";
     KConfig config; // with no filenames given, it will read only global config 
     config.setGroup("KDE");
     QString setting = config.readEntry( key + "IconStyle", "Normal" );
-    //debug("App is %s - setting is %s", kapp->name(), setting.data());
+    //debug("App is %s - setting is %s", appname, setting.data());
     // DF
     
     // order is important! -- Bernd
@@ -148,55 +169,31 @@ void KIconLoader::initPath()
     
     KGlobal::dirs()->addResourceType("toolbar", 
 				     KStandardDirs::kde_data_relative() + 
-				     kapp->name() + "/toolbar/");
+				     appname + "/toolbar/");
     
     if ( large )
 	KGlobal::dirs()->addResourceType("toolbar", 
-					 KStandardDirs::kde_data_relative() + kapp->name() + "/pics/large");
+					 KStandardDirs::kde_data_relative() + appname + "/pics/large");
     KGlobal::dirs()->addResourceType("toolbar", 
 				     KStandardDirs::kde_data_relative() + "/pics/");
     
 }
 
 KIconLoader::KIconLoader( KConfig *conf,
-			  const QString &app_name, const QString &var_name )
+			  const QString &app_name, const QString &var_name ) : 
+  config(conf), appname(app_name), varname(var_name)
 {
-
-	config = conf;
-	config->setGroup(app_name);
-	QStringList list = config->readListEntry( var_name, ':' );
-
-	QStringList::Iterator it = list.begin();
-
-	for ( ; it != list.end(); ++it ) {
-		addPath( *it );
-	}
-
-	initPath();
-
+  initPath();
 }
 
-KIconLoader::KIconLoader()
+KIconLoader::KIconLoader() : varname("IconPath")
 {
-	config = KApplication::getKApplication()->getConfig();
-	config->setGroup("KDE Setup");
-	QStringList list = config->readListEntry( "IconPath", ':' );
+  config = KApplication::getKApplication()->getConfig();
+  config->setGroup("KDE Setup");
+	
+  appname = KApplication::getKApplication()->name();
 
-	QStringList::Iterator it = list.begin();
-
-	for ( ; it != list.end(); ++it ) {
-		addPath( *it );
-	}
-
-	initPath();
-
-
-	/*
-	   for(char* c = pixmap_dirs.first(); c ; c = pixmap_dirs.next()){
-	   printf("()in path:%s\n",c);
-	   }
-	 */
-
+  initPath();
 }
 
 QPixmap KIconLoader::loadIcon ( const QString& name, int w,
@@ -211,7 +208,7 @@ QPixmap KIconLoader::loadIcon ( const QString& name, int w,
 	 */
 	if (result.isNull() && !canReturnNull) {
 	    warning("%s : ERROR: couldn't find icon: %s",
-		    kapp->name(), name.ascii() );
+		    appname.ascii(), name.ascii() );
 	    result = loadInternal("unknown.xpm", w, h);
 	}
 

@@ -20,6 +20,15 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.33  1999/06/16 21:01:24  kulow
+   kiconloader doesn't use it's own directories, but use KStandardDirs from now
+   on - for this I removed insertDirectory and appendDirectory from it's API.
+   Afaik only koffice used it.
+   And I also added KStandardDirs::kde_data_relative() which just returns
+   /share/apps to add a central place to define such paths. I think about
+   adding more of these static functions to make the whole thing as configurable
+   as it used to be.
+
    Revision 1.32  1999/06/05 01:15:11  dmuell
    global configuration will now be searched in the following paths:
 
@@ -179,7 +188,7 @@ public:
 
   */
   KIconLoader ( KConfig *conf, const QString &app_name, 
-		  const QString &var_name );
+		const QString &var_name = "PixmapPath");
 
   /** Destructor. */
   ~KIconLoader () {}
@@ -266,6 +275,9 @@ protected:
   */
   QPixmap loadInternal( const QString& name, int w = 0, int h = 0,
 			bool honourcache = true );
+
+  QString appname;
+  QString varname;
 
 private:
   void initPath();
