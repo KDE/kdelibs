@@ -4,12 +4,8 @@
 <xsl:import href="../docbook/xsl/html/autoidx.xsl"/>
 <xsl:import href="../docbook/xsl/html/chunk.xsl"/>
 <xsl:include href="kde-navig-online.xsl"/>
-<xsl:include href="kde-ttlpg.xsl"/>
+<xsl:include href="kde-ttlpg-online.xsl"/>
 <xsl:include href="kde-style.xsl"/>
-
-<!-- note: don't use method="xml", it will destroy the layout at least 
-for MSIE 5.0 and 5.5 -->
-<xsl:output method="html" encoding="utf-8" indent="yes" saxon:indent-spaces="2" />
 
 <xsl:variable name="KDE_VERSION">1.13</xsl:variable> 
 
