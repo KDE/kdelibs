@@ -123,7 +123,7 @@ class ProgressConfigDialog:public KDialogBase
 };
 
 ProgressConfigDialog::ProgressConfigDialog(QWidget *parent)
-:KDialogBase(KDialogBase::Plain,i18n("Configure the network operation window"),KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel,
+:KDialogBase(KDialogBase::Plain,i18n("Configure Network Operation Window"),KDialogBase::Ok|KDialogBase::Apply|KDialogBase::Cancel,
              KDialogBase::Ok, parent, "configprog", false)
 {
    QVBoxLayout *layout=new QVBoxLayout(plainPage(),spacingHint());
@@ -575,7 +575,7 @@ UIServer::UIServer()
                           SLOT(slotCancelCurrent()), FALSE, i18n("Cancel"));
   toolBar()->insertButton("configure", TOOL_CONFIGURE,
                           SIGNAL(clicked()), this,
-                          SLOT(slotConfigure()), true, i18n("Settings"));
+                          SLOT(slotConfigure()), true, i18n("Settings..."));
 
   toolBar()->setBarPos( KToolBar::Left );
 
@@ -651,7 +651,7 @@ void UIServer::slotShowContextMenu(KListView*, QListViewItem* /*item*/, const QP
    if (m_contextMenu==0)
    {
       m_contextMenu=new QPopupMenu(this);
-      m_contextMenu->insertItem(i18n("Cancel job"), this, SLOT(slotCancelCurrent()));
+      m_contextMenu->insertItem(i18n("Cancel Job"), this, SLOT(slotCancelCurrent()));
 //      m_contextMenu->insertItem(i18n("Toggle progress"), this, SLOT(slotToggleDefaultProgress()));
       m_contextMenu->insertSeparator();
       m_contextMenu->insertItem(i18n("Settings..."), this, SLOT(slotConfigure()));
