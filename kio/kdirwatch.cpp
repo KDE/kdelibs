@@ -43,6 +43,7 @@
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
+#include <signal.h>
 #include <fcntl.h>
 // appeared in 2.4.0, but we need the #defines here in case
 // code is compiled on an older kernel and later run on a newer
@@ -197,9 +198,7 @@ static void dnotify_handler(int, siginfo_t *si, void *)
 
   if(!e || e->dn_fd != si->si_fd) {
     qDebug("fatal error in KDirWatch");
-    abort();
-  }
-  if(e->m_ctime != NO_NOTIFY)
+  } else if(e->m_ctime != NO_NOTIFY)
     e->dn_dirty = true;
 }
 #endif
