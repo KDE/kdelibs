@@ -620,7 +620,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
         .arg( protocol );
       causes << i18n( "This error is very much dependent on the KDE program. The "
         "additional information should give you more information than is available "
-        "to the KDE input / output architecture." );
+        "to the KDE input/output architecture." );
       solutions << i18n( "Attempt to find another way to accomplish the same "
         "outcome." );
       break;
