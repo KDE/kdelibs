@@ -144,6 +144,10 @@ class kdbgstream {
       *this << string.data();
       return *this;
     }
+    kdbgstream& operator<<(void * p) {
+	form("%p", p);
+	return *this;
+    }
     kdbgstream& operator<<(KDBGFUNC f) {
 	if (!print) return *this;
 	return (*f)(*this);
