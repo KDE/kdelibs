@@ -26,6 +26,8 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <klocale.h>
+#include <kmessagebox.h>
+#include <qregexp.h>
 
 KMWName::KMWName(QWidget *parent, const char *name)
 : KMWInfoBase(3,parent,name)
@@ -47,6 +49,28 @@ bool KMWName::isValid(QString& msg)
 	{
 		msg = i18n("You must supply at least a name !");
 		return false;
+	}
+	else if (text(0).find(QRegExp("\\s")) != -1)
+	{
+		QString	conv = text(0);
+		conv.replace(QRegExp("\\s"), "");
+		int result = KMessageBox::warningYesNoCancel(this,
+					i18n("<p>This is usually not a good idea to include spaces "
+					     "in printer name. This may prevent your printer from "
+					     "working correctly. The wizard can strip all spaces "
+					     "from the string you entered, resulting in <b>%1</b>. "
+					     "What do you want to do?").arg(conv),
+					QString::null,
+					i18n("Strip"), i18n("Keep"));
+		switch (result)
+		{
+			case KMessageBox::Yes:
+				setText(0, conv);
+			case KMessageBox::No:
+				return true;
+			default:
+				return false;
+		}
 	}
 	return true;
 }
