@@ -52,7 +52,7 @@ libkdefakes_la_SOURCES = fakes.c vsnprintf.c
 libkdefakes_la_LDFLAGS = -version-info 4:0
 
 noinst_HEADERS = kaccelbase.h kaccelprivate.h kckey.h kcompletion_private.h \
-	kextsocklookup.h kglobalaccel_x11.h kkey_x11.h kkeysequenceold.h \
+	kextsocklookup.h kglobalaccel_x11.h kkeyserver_x11.h \
 	kregpriv.h ksycocadict.h ksycocafactory.h netsupp.h
 
 libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
@@ -61,8 +61,7 @@ libkdecore_la_SOURCES = libintl.cpp kapplication.cpp kdebug.cpp netwm.cpp  \
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
-	kckey.cpp kshortcut.cpp kkey_x11.cpp kkeynative_x11.cpp \
-	kkeysequenceold.cpp kkeysequence_emb.cpp \
+	kckey.cpp kshortcut.cpp kkeynative_x11.cpp kkeyserver_x11.cpp \
 	kaccelaction.cpp kaccelbase.cpp kaccel.cpp kglobalaccel_x11.cpp \
 	kglobalaccel.cpp kstdaccel.cpp \
 	kcrash.cpp kurl.cpp kregexp.cpp \
