@@ -166,12 +166,12 @@ RenameDlg::RenameDlg(QWidget *parent, const QString & _caption,
       }
       KLibFactory *factory = lib->factory();
       if(!factory){
-	delete lib;
+	lib->unload();
 	continue;
       }
       QObject *obj = factory->create( this, (*it)->name().latin1() );
       if(!obj) {
-	delete lib;
+	lib->unload();
 	continue;
       }
       RenameDlgPlugin *plugin = static_cast<RenameDlgPlugin *>(obj);
