@@ -26,6 +26,7 @@
 
 #include <qtextcodec.h>
 #include <qfile.h>
+#include <qprinter.h>
 #include <qdatetime.h>
 #include <qfileinfo.h>
 #include <qregexp.h>
@@ -54,6 +55,8 @@ public:
   QTextCodec * codecForEncoding;
   KConfig * config;
   bool formatInited;
+  int /*QPrinter::PageSize*/ pageSize;
+  KLocale::MeasureSystem measureSystem;
 };
 
 #if QT_VERSION < 300
@@ -240,83 +243,55 @@ void KLocale::initFormat()
   entry.setGroup("KCM Locale");
 
   // Numeric
-  m_decimalSymbol = config->readEntry("DecimalSymbol");
-  if (m_decimalSymbol.isNull())
-    m_decimalSymbol = entry.readEntry("DecimalSymbol",
-				     QString::fromLatin1("."));
+#define readConfigEntry(key, default, save) \
+  save = entry.readEntry(key, QString::fromLatin1(default)); \
+  save = config->readEntry(key, save);
 
-  m_thousandsSeparator = config->readEntry("ThousandsSeparator");
-  if (m_thousandsSeparator.isNull())
-    m_thousandsSeparator = entry.readEntry("ThousandsSeparator",
-					   QString::fromLatin1(","));
-  m_thousandsSeparator.replace( QRegExp(QString::fromLatin1("$0")),
-				QString::fromLatin1("") );
+#define readConfigNumEntry(key, default, save, type) \
+  save = (type)entry.readNumEntry(key, default); \
+  save = (type)config->readNumEntry(key, save);
+
+#define readConfigBoolEntry(key, default, save) \
+  save = entry.readBoolEntry(key, default); \
+  save = config->readBoolEntry(key, save);
+
+  readConfigEntry("DecimalSymbol", ".", m_decimalSymbol);
+  readConfigEntry("ThousandsSeparator", ",", m_thousandsSeparator);
+  m_thousandsSeparator.replace( QRegExp(QString::fromLatin1("\\$0")),
+				QString::null );
   //kdDebug(173) << "m_thousandsSeparator=" << m_thousandsSeparator << endl;
 
-  m_positiveSign = config->readEntry("PositiveSign");
-  if (m_positiveSign.isNull())
-    m_positiveSign = entry.readEntry("PositiveSign");
-
-  m_negativeSign = config->readEntry("NegativeSign");
-  if (m_negativeSign.isNull())
-    m_negativeSign = entry.readEntry("NegativeSign",
-				     QString::fromLatin1("-"));
+  readConfigEntry("PositiveSign", "", m_positiveSign);
+  readConfigEntry("NegativeSign", "-", m_negativeSign);
 
   // Monetary
-  m_currencySymbol = config->readEntry("CurrencySymbol");
-  if (m_currencySymbol.isNull())
-    m_currencySymbol = entry.readEntry("CurrencySymbol",
-				       QString::fromLatin1("$"));
-
-  m_monetaryDecimalSymbol = config->readEntry("MonetaryDecimalSymbol");
-  if (m_monetaryDecimalSymbol.isNull())
-    m_monetaryDecimalSymbol = entry.readEntry("MonetaryDecimalSymbol",
-					      QString::fromLatin1("."));
-
-  m_monetaryThousandsSeparator = config->readEntry("MonetaryThousendSeparator");
-  if (m_monetaryThousandsSeparator.isNull())
-    m_monetaryThousandsSeparator = entry.readEntry("MonetaryThousandsSeparator",
-						   QString::fromLatin1(","));
-  m_monetaryThousandsSeparator.replace(QRegExp(QString::fromLatin1("$0")),
+  readConfigEntry("CurrencySymbol", "$", m_currencySymbol);
+  readConfigEntry("MonetaryDecimalSymbol", ".", m_monetaryDecimalSymbol);
+  readConfigEntry("MonetaryThousandsSeparator", ",",
+		  m_monetaryThousandsSeparator);
+  m_monetaryThousandsSeparator.replace(QRegExp(QString::fromLatin1("\\$0")),
 				       QString::null);
 
-  m_fracDigits = config->readNumEntry("FracDigits", -1);
-  if (m_fracDigits == -1)
-    m_fracDigits = entry.readNumEntry("FracDigits", 2);
-
-  m_positivePrefixCurrencySymbol = entry.readBoolEntry("PositivePrefixCurrencySymbol", true);
-  m_positivePrefixCurrencySymbol = config->readNumEntry("PositivePrefixCurrencySymbol", m_positivePrefixCurrencySymbol);
-
-  m_negativePrefixCurrencySymbol = entry.readBoolEntry("NegativePrefixCurrencySymbol", true);
-  m_negativePrefixCurrencySymbol = config->readNumEntry("NegativePrefixCurrencySymbol", m_negativePrefixCurrencySymbol);
-
-  m_positiveMonetarySignPosition = (SignPosition)config->readNumEntry("PositiveMonetarySignPosition", -1);
-  if (m_positiveMonetarySignPosition == -1)
-    m_positiveMonetarySignPosition = (SignPosition)entry.readNumEntry("PositiveMonetarySignPosition", BeforeQuantityMoney);
-
-  m_negativeMonetarySignPosition = (SignPosition)config->readNumEntry("NegativeMonetarySignPosition", -1);
-  if (m_negativeMonetarySignPosition == -1)
-    m_negativeMonetarySignPosition = (SignPosition)entry.readNumEntry("NegativeMonetarySignPosition", ParensAround);
+  readConfigNumEntry("FracDigits", 2, m_fracDigits, int);
+  readConfigBoolEntry("PositivePrefixCurrencySymbol", true,
+		      m_positivePrefixCurrencySymbol);
+  readConfigBoolEntry("NegativePrefixCurrencySymbol", true,
+		      m_negativePrefixCurrencySymbol);
+  readConfigNumEntry("PositiveMonetarySignPosition", (int)BeforeQuantityMoney,
+		     m_positiveMonetarySignPosition, SignPosition);
+  readConfigNumEntry("NegativeMonetarySignPosition", (int)ParensAround,
+		     m_negativeMonetarySignPosition, SignPosition);
 
   // Date and time
-  m_timeFormat = config->readEntry("TimeFormat");
-  if (m_timeFormat.isNull())
-    m_timeFormat = entry.readEntry("TimeFormat",
-				   QString::fromLatin1("%H:%M:%S"));
+  readConfigEntry("TimeFormat", "%H:%M:%S", m_timeFormat);
+  readConfigEntry("DateFormat", "%A %d %B %Y", m_dateFormat);
+  readConfigEntry("DateFormatShort", "%Y-%m-%d", m_dateFormatShort);
+  readConfigBoolEntry("WeekStartsMonday", true, m_weekStartsMonday);
 
-  m_dateFormat = config->readEntry("DateFormat");
-  if (m_dateFormat.isNull())
-    m_dateFormat = entry.readEntry("DateFormat",
-				   QString::fromLatin1("%A %d %B %Y"));
-
-  m_dateFormatShort = config->readEntry("DateFormatShort");
-  if (m_dateFormatShort.isNull())
-    m_dateFormatShort = entry.readEntry("DateFormatShort",
-				    QString::fromLatin1("%Y-%m-%d"));
-
-  m_weekStartsMonday = entry.readBoolEntry("WeekStartsMonday", true);
-  m_weekStartsMonday = config->readBoolEntry("WeekStartsMonday",
-					     m_weekStartsMonday);
+  // other
+  readConfigNumEntry("PageSize", (int)QPrinter::A4, d->pageSize, int);
+  readConfigNumEntry("MeasureSystem", (int)Metric, d->measureSystem,
+		     MeasureSystem);
 
   // end of hack
   KGlobal::_locale = lsave;
@@ -910,7 +885,7 @@ QString KLocale::formatNumber(double num, int precision) const
   else res.replace(pos, 1, decimalSymbol());
 
   while (0 < (pos -= 3))
-    res.insert(pos, thousandsSeparator()); // thousend sep
+    res.insert(pos, thousandsSeparator()); // thousand sep
 
   // How can we know where we should put the sign?
   res.prepend(neg?negativeSign():positiveSign());
@@ -1484,7 +1459,7 @@ void KLocale::initInstance()
 
   KInstance *app = KGlobal::instance();
   if (app) {
-    KGlobal::_locale = new KLocale(app->instanceName());
+    KGlobal::_locale = new KLocale(QString::fromLatin1(app->instanceName()));
 
     // only do this for the global instance
 #if QT_VERSION < 300
@@ -1719,6 +1694,31 @@ void KLocale::setCurrencySymbol(const QString & symbol)
   m_currencySymbol = symbol.stripWhiteSpace();
 }
 
+int KLocale::pageSize() const
+{
+  doFormatInit();
+  return d->pageSize;
+}
+
+void KLocale::setPageSize(int pageSize)
+{
+  // #### check if it's in range??
+  doFormatInit();
+  d->pageSize = pageSize;
+}
+
+KLocale::MeasureSystem KLocale::measureSystem() const
+{
+  doFormatInit();
+  return d->measureSystem;
+}
+
+void KLocale::setMeasureSystem(MeasureSystem value)
+{
+  doFormatInit();
+  d->measureSystem = value;
+}
+
 QString KLocale::defaultLanguage()
 {
   return QString::fromLatin1("en_US");
@@ -1751,6 +1751,33 @@ bool KLocale::setEncoding(int mibEnum)
     d->codecForEncoding = codec;
 
   return codec != 0;
+}
+
+QStringList KLocale::languagesTwoAlpha() const
+{
+  const QStringList origList = languageList();
+
+  QStringList result;
+
+  KConfig config(QString::fromLatin1("language.codes"), false, true);
+  config.setGroup("TwoLetterCodes");
+
+  for ( QStringList::ConstIterator it = origList.begin();
+	it != origList.end();
+	++it )
+    {
+      const QStringList langLst = config.readListEntry( *it );
+
+      for ( QStringList::ConstIterator langIt = langLst.begin();
+	    langIt != langLst.end();
+	    ++langIt )
+	{
+	  if ( !result.contains( *langIt ) )
+	    result += *langIt;
+	}
+    }
+
+  return result;
 }
 
 KLocale::KLocale(const KLocale & rhs)
