@@ -25,6 +25,10 @@
 *
  * HISTORY
  *
+ * 03/08/2000 Mario Weilguni <mweilguni@kde.org>
+ * Removed all those long outdated Motif stuff
+ * Improved and clarified some if conditions (easier to understand)
+ *
  * 11/13/98 Reginald Stadlbauer <reggie@kde.org>
  * Now in Qt 1.4x motif default buttons have no extra width/height anymore.
  * So the KButtonBox doesn't add this width/height to default buttons anymore
@@ -41,43 +45,54 @@
  *
  */
 
-#include "kbuttonbox.h"
+#include "kbuttonbox.moc"
+#include <qlist.h>
+#include <assert.h>
 
-template class QList<KButtonBox::KButtonBoxItem>;
+#define minButtonWidth 50
 
-// taken from Qt source
-// Reggie: In Qt 1.4x we don't have additional width/height!
-const int extraMotifWidth = 0;
-const int extraMotifHeight = 0;
+class KButtonBox::Item {
+public:
+  QPushButton *button;
+  bool noexpand;
+  unsigned short stretch;
+  unsigned short actual_size;
+};
 
-const int minButtonWidth = 50;
+template class QList<KButtonBox::Item>;
+
+class KButtonBox::PrivateData {
+public:
+  unsigned short border;
+  unsigned short autoborder;
+  unsigned short orientation;
+  bool activated;
+  QList<KButtonBox::Item> buttons;
+};
 
 KButtonBox::KButtonBox(QWidget *parent, int _orientation, 
 		       int border, int autoborder) 
   :  QWidget(parent) 
 {
-  orientation = _orientation;
-  _border = border;
-  if(autoborder < 0)
-    _autoborder = border;
-  else
-    _autoborder = autoborder;
+  data = new PrivateData;
+  assert(data != 0);
 
-  buttons.setAutoDelete(TRUE);
+  data->orientation = _orientation;
+  data->border = border;
+  data->autoborder = autoborder < 0 ? border : autoborder;
+  data->buttons.setAutoDelete(TRUE);
 }
 
 KButtonBox::~KButtonBox() {
-  // an empty destructor is needed for g++ if a class uses
-  // a qlist, qarray or similar, otherwise it will not
-  // compile
+  delete data;
 }
 
 QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
-  KButtonBoxItem *item = new KButtonBoxItem;
+  Item *item = new Item;
 
   item->button = new QPushButton(text, this);
   item->noexpand  = noexpand;
-  buttons.append(item);
+  data->buttons.append(item);
   item->button->adjustSize();
   
   return item->button;
@@ -85,11 +100,11 @@ QPushButton *KButtonBox::addButton(const QString& text, bool noexpand) {
 
 void KButtonBox::addStretch(int scale) {
   if(scale > 0) {
-    KButtonBoxItem *item = new KButtonBoxItem;
+    Item *item = new Item;
     item->button = 0;
     item->noexpand  = FALSE;
     item->stretch = scale;  
-    buttons.append(item);
+    data->buttons.append(item);
   }
 }
 
@@ -97,22 +112,14 @@ void KButtonBox::layout() {
   // resize all buttons
   QSize bs = bestButtonSize();
 
-  for(unsigned int i = 0; i < buttons.count(); i++) {
-    KButtonBoxItem *item = buttons.at(i);
+  for(unsigned int i = 0; i < data->buttons.count(); i++) {
+    Item *item = data->buttons.at(i);
     QPushButton *b = item->button;
     if(b != 0) {
-      if(!item->noexpand) {
-	if(b->style() == MotifStyle && b->isDefault()) {
-	  QSize s = bs;
-	  s.setWidth(bs.width() + extraMotifWidth);
-	  s.setHeight(bs.height() + extraMotifHeight);
-	  b->setFixedSize(s);
-	  b->setDefault(TRUE);
-	} else {
-	  b->setFixedSize(bs);
-	}
-      } else
+      if(item->noexpand)
 	b->setFixedSize(buttonSizeHint(b));
+      else
+	b->setFixedSize(bs);	
     }
   }  
 
@@ -122,67 +129,55 @@ void KButtonBox::layout() {
 void KButtonBox::placeButtons() {
   unsigned int i;
 
-  if(orientation == HORIZONTAL) {
-    // calcualte free size and stretches
-    int fs = width() - 2 * _border;
+  if(data->orientation == HORIZONTAL) {
+    // calculate free size and stretches
+    int fs = width() - 2 * data->border;
     int stretch = 0;
-    for(i = 0; i < buttons.count(); i++) {
-      KButtonBoxItem *item = buttons.at(i);
+    for(i = 0; i < data->buttons.count(); i++) {
+      Item *item = data->buttons.at(i);
       if(item->button != 0) {
-	if(i == buttons.count() - 1)
-	  fs -= item->button->width();
-	else
-	  fs -= item->button->width() + _autoborder;
+	fs -= item->button->width();
+
+	// Last button?
+	if(i != data->buttons.count() - 1)
+	  fs -= data->autoborder;
       } else
 	stretch +=item->stretch;
     }
 
     // distribute buttons
-    int x_pos = _border;
-    for(i = 0; i < buttons.count(); i++) {
-      KButtonBoxItem *item = buttons.at(i);
+    int x_pos = data->border;
+    for(i = 0; i < data->buttons.count(); i++) {
+      Item *item = data->buttons.at(i);
       if(item->button != 0) {
 	QPushButton *b = item->button;
-	if(b->style() == MotifStyle && b->isDefault()) {
-	  b->move(x_pos + extraMotifWidth/2, 
-		  (height() - b->height()) / 2 + extraMotifHeight/2);
-	  if(_autoborder < extraMotifWidth/2)
-	    x_pos += extraMotifWidth;
-	} else
-	  b->move(x_pos, (height() - b->height()) / 2);
+	b->move(x_pos, (height() - b->height()) / 2);
       
-	x_pos += b->width() + _autoborder;
+	x_pos += b->width() + data->autoborder;
       } else
 	x_pos += (int)((((double)fs) * item->stretch) / stretch);
     }
   } else { // VERTICAL
     // calcualte free size and stretches
-    int fs = height() - 2 * _border;
+    int fs = height() - 2 * data->border;
     int stretch = 0;
-    for(i = 0; i < buttons.count(); i++) {
-      KButtonBoxItem *item = buttons.at(i);
+    for(i = 0; i < data->buttons.count(); i++) {
+      Item *item = data->buttons.at(i);
       if(item->button != 0) 
-	fs -= item->button->height() + _autoborder;
+	fs -= item->button->height() + data->autoborder;
       else
 	stretch +=item->stretch;
     }
 
     // distribute buttons
-    int y_pos = _border;
-    for(i = 0; i < buttons.count(); i++) {
-      KButtonBoxItem *item = buttons.at(i);
+    int y_pos = data->border;
+    for(i = 0; i < data->buttons.count(); i++) {
+      Item *item = data->buttons.at(i);
       if(item->button != 0) {
 	QPushButton *b = item->button;
-	if(b->style() == MotifStyle && b->isDefault()) {
-	  b->move((width() - b->width()) / 2 + extraMotifWidth/2,
-		  y_pos + extraMotifHeight/2);
-	  if(_autoborder < extraMotifHeight/2)
-	    y_pos += extraMotifHeight;
-	} else
-	  b->move((width() - b->width()) / 2,
-		  y_pos);
+	b->move((width() - b->width()) / 2, y_pos);
       
-	y_pos += b->height() + _autoborder;
+	y_pos += b->height() + data->autoborder;
       } else
 	y_pos += (int)((((double)fs) * item->stretch) / stretch);
     }
@@ -198,9 +193,9 @@ QSize KButtonBox::bestButtonSize() const {
   unsigned int i;
 
   // calculate optimal size
-  for(i = 0; i < buttons.count(); i++) {
+  for(i = 0; i < data->buttons.count(); i++) {
     KButtonBox *that = (KButtonBox*)this; // to remove the const ;(
-    KButtonBoxItem *item = that->buttons.at(i);
+    Item *item = that->data->buttons.at(i);
     QPushButton *b = item->button;
  
     if(b != 0 && !item->noexpand) {      
@@ -218,50 +213,38 @@ QSize KButtonBox::bestButtonSize() const {
 
 QSize KButtonBox::sizeHint() const {
   unsigned int i, dw;
-  bool hasMotifDefault = FALSE;
 
-  if(buttons.count() == 0)
+  if(data->buttons.count() == 0)
     return QSize(0, 0);
   else {
-    dw = 2 * _border;
+    dw = 2 * data->border;
 
     QSize bs = bestButtonSize();
-    for(i = 0; i < buttons.count(); i++) {
+    for(i = 0; i < data->buttons.count(); i++) {
       KButtonBox *that = (KButtonBox*)this;
-      KButtonBoxItem *item = that->buttons.at(i);
+      Item *item = that->data->buttons.at(i);
       QPushButton *b = item->button;
       if(b != 0) {
-	hasMotifDefault |= (style() == MotifStyle) && (b->isDefault());
-
 	QSize s;
 	if(item->noexpand)
 	  s = that->buttonSizeHint(b);
 	else
 	  s = bs;
 	
-	if(orientation == HORIZONTAL)
+	if(data->orientation == HORIZONTAL)
 	  dw += s.width();
 	else
 	  dw += s.height();
 
-	if( i != buttons.count() - 1 )
-	  dw += _autoborder;
+	if( i != data->buttons.count() - 1 )
+	  dw += data->autoborder;
       }
     }
 
-    if(orientation == HORIZONTAL) {
-      if(style() == MotifStyle && hasMotifDefault) 	
-	return QSize(dw + extraMotifWidth, 
-		     bs.height() + 2 * _border + extraMotifHeight);
-      else
-	return QSize(dw, bs.height() + 2 * _border);
-    } else {
-      if(style() == MotifStyle)
-	return QSize(bs.width() + 2 * _border + extraMotifWidth, 
-		     dw + extraMotifHeight);
-      else
-	return QSize(bs.width() + 2 * _border, dw);
-    }
+    if(data->orientation == HORIZONTAL)
+	return QSize(dw, bs.height() + 2 * data->border);
+    else
+	return QSize(bs.width() + 2 * data->border, dw);
   }  
 }
 
@@ -285,4 +268,3 @@ QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
   return s;
 }
 
-#include "kbuttonbox.moc"

@@ -16,12 +16,12 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+
 #ifndef __KBUTTONBOX__H__
 #define __KBUTTONBOX__H__
 
 #include <qwidget.h>
 #include <qpushbutton.h>
-#include <qlist.h>
 
 /**
  * Container widget for buttons. 
@@ -34,8 +34,8 @@
  * @author Mario Weilguni <mweilguni@sime.com>
  * @version $Id$
  **/
-class KButtonBox : public QWidget {
 
+class KButtonBox : public QWidget {
   Q_OBJECT
 public:
   /**
@@ -55,10 +55,7 @@ public:
 	     int border = 0, int _autoborder = 6);
 
   /**
-    * The destructor is needed, otherwise gcc 2.7.2.1 may report an 
-    * internal compiler error.
-    *
-    * It does nothing.
+    * Free private data field
     */
   ~KButtonBox();
 
@@ -104,14 +101,8 @@ public:
   void layout();
 
 protected:
-
-  class KButtonBoxItem {
-  public:
-	  QPushButton *button;
-	  bool noexpand;
-	  int stretch;
-	  int actual_size;
-  };
+  class Item;
+  class PrivateData;  
 
   /**
     * @return the best size for a button. Checks all buttons and takes
@@ -120,13 +111,8 @@ protected:
   QSize bestButtonSize() const;
   void  placeButtons();
   QSize buttonSizeHint(QPushButton *) const;
-
-protected:
-  int _border;
-  int _autoborder;
-  int orientation;
-  bool activated;
-  QList<KButtonBoxItem> buttons;
+  
+  PrivateData *data;
 };
 
 #endif
