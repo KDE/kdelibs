@@ -13,6 +13,7 @@ Comment[pt_BR]=Arquivo TeX DVI
 Comment[it]=File TeX DVI 
 Comment[sk]=TeX DVI -- sЗbor nezАvislЩ na zariadenМ
 Comment[ro]=Fi╨ier de tip TeX - DVI
+Comment[ru]=Независимый от устройства файл TeX'а
 Icon=dvi.xpm
 Type=MimeType
 MimeType=application/x-dvi

@@ -13,6 +13,7 @@ Comment[pt]=Executavel
 Comment[pt_BR]=Executável
 Comment[sk]=Spustiteµnı súbor
 Comment[ro]=Fiºier Executabil
+Comment[ru]=ğÒÉÌÏÖÅÎÉÅ
 Icon=exec.xpm
 Type=MimeType
 MimeType=application/x-executable

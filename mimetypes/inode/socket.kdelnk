@@ -12,6 +12,7 @@ Comment[pt_BR]=Socket
 Comment[it]=Socket
 Comment[sk]=Socket (kanál pre komunikáciu)
 Comment[ro]=Canal de comunicaşie de tip SOCKET
+Comment[ru]=Socket (ËÁÎÁÌ ÄÌÑ ËÏÍÍÕÎÉËÁÃÉÉ)
 Icon=socket.xpm
 Type=MimeType
 MimeType=inode/socket

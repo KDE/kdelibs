@@ -13,6 +13,7 @@ Comment[sk]=ZdrojovЩ kСd v jazyku Java
 Comment[pt]=Programa Java
 Comment[pt_BR]=Programa Java
 Comment[ro]=SursЦ Java
+Comment[ru]=Программа на языке Java
 Icon=java_src.xpm
 Type=MimeType
 MimeType=text/x-java

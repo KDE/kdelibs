@@ -13,6 +13,7 @@ Comment[sk]=Tcl sЗbor
 Comment[pt]=Programa TCL
 Comment[pt_BR]=Programa TCL
 Comment[ro]=Fi╨ier de program TCL
+Comment[ru]=Программа на языке TCL
 Icon=unknown.xpm
 Type=MimeType
 MimeType=text/x-tcl

@@ -12,6 +12,7 @@ Comment[pt_BR]=Diretório
 Comment[it]=Cartella (Directory)
 Comment[sk]=Prieèinok
 Comment[ro]=Director
+Comment[ru]=ëÁÔÁÌÏÇ
 Icon=folder.xpm
 Type=MimeType
 MimeType=inode/directory

@@ -14,6 +14,7 @@ Comment[sk]=JednoduchЩ text
 Comment[pt]=Texto Plano
 Comment[pt_BR]=Texto Plano
 Comment[ro]=Text simplu
+Comment[ru]=Простой текст
 DefaultApp=Kedit
 Icon=txt.xpm
 Type=MimeType

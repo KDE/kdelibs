@@ -13,6 +13,7 @@ Comment[sk]=Dokument s·dzacieho systÈmu TeX
 Comment[pt]=Documento TeX
 Comment[pt_BR]=Documento TeX
 Comment[ro]=Document Ón format TeX
+Comment[ru]=‰œÀ’Õ≈Œ‘ TeX
 Icon=tex.xpm
 Type=MimeType
 MimeType=text/x-tex
