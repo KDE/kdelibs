@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
 
     a.setTopWidget(doc);
     doc->setURLCursor(QCursor(PointingHandCursor));
-    doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
-			      QColor(Qt::green));
+    //doc->setDefaultTextColors(QColor(Qt::black), QColor(Qt::red),
+    //			      QColor(Qt::green));
     doc->openURL(argv[1]);
     a.setTopWidget(doc);
     QWidget::connect(doc, SIGNAL(setTitle(const QString &)),

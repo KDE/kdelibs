@@ -50,7 +50,10 @@ libkhtml_la_SOURCES = dtd.cpp\
 	html_head.cpp html_headimpl.cpp html_image.cpp \
 	html_imageimpl.cpp html_inline.cpp html_inlineimpl.cpp html_list.cpp \
 	html_listimpl.cpp html_misc.cpp html_miscimpl.cpp html_table.cpp \
-	html_tableimpl.cpp html_object.cpp html_objectimpl.cpp
+	html_tableimpl.cpp html_object.cpp html_objectimpl.cpp 
+#	css_stylesheet.cpp css_stylesheetimpl.cpp css_rule.cpp css_ruleimpl.cpp \
+#	css_value.cpp css_valueimpl.cpp css_extensions.cpp css_extensionsimpl.cpp
+
 
 libkhtml_la_METASOURCES = AUTO
 
@@ -78,7 +81,7 @@ data_DATA = khtml_dnd.png
 datadir = $(kde_datadir)/khtml/pics
 
 INCLUDES = -I$(srcdir)/kjs -I$(top_srcdir)/kimgio -I$(top_srcdir)/kio \
-	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes) 
+	-I$(srcdir)/java -I$(top_srcdir)/dcop  $(all_includes)
 
 SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/khtml
 
@@ -104,5 +107,5 @@ parser:
 check_PROGRAMS 	= testkhtml
 #testkhtml_SOURCES = testkhtml.cpp $(libkhtml_la_SOURCES)
 #testkhtml_LDADD = $(LIB_KDEUI) -ldmalloc $(libkhtml_la_LIBADD)
-testkhtml_SOURCES = testkhtml.cpp 
+testkhtml_SOURCES = testkhtml.cpp
 testkhtml_LDADD = $(LIB_KDEUI) $(LIB_KHTML) $(libkhtml_la_LIBADD)

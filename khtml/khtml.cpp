@@ -81,7 +81,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name)
     setCursor(arrowCursor);
     _isFrame = false;
     _isSelected = false;
-    
+
     paintBuffer = new QPixmap();
 
     init();
@@ -105,7 +105,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, KHTMLWidget *_parent_browser, QString
     setCursor(arrowCursor);
     _isFrame = true;
     _isSelected = false;
-    
+
     paintBuffer = new QPixmap();
 
     if(_parent) setURLCursor(_parent->urlCursor());
@@ -992,13 +992,13 @@ void KHTMLWidget::resizeEvent ( QResizeEvent * event )
 
 
 void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
-
 {
     QRect r = pe->rect();
 
-    if(!document) return;
-    NodeImpl *body = document->body();
-    if(!body) return;
+    NodeImpl *body = 0;
+
+    if(document)
+	body = document->body();
 
     QRect rr(
 	-viewport()->x(), -viewport()->y(),
@@ -1006,17 +1006,27 @@ void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
     );
     r &= rr;
     int ex = r.x() + viewport()->x() + contentsX();;
-    int ey = r.y() + viewport()->y() + contentsY();;  
+    int ey = r.y() + viewport()->y() + contentsY();;
     int ew = r.width();
-    int eh = r.height();  
-    
-    //printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);    
-        
+    int eh = r.height();
+
+    if(!body)
+    {
+	QPainter p(viewport());
+
+	if(defaultSettings) 
+	    p.fillRect(r.x(), r.y(), ew, eh, defaultSettings->bgColor);
+	else
+	    p.fillRect(r.x(), r.y(), ew, eh, Qt::white);
+	return;
+    }
+    //printf("viewportPaintEvent x=%d,y=%d,w=%d,h=%d\n",ex,ey,ew,eh);
+
     if ( paintBuffer->width() < width() )
     {
         paintBuffer->resize(width(),PAINT_BUFFER_HEIGHT);
     }
-    
+
     QTime qt;
     qt.start();
 
@@ -1036,7 +1046,7 @@ void KHTMLWidget::viewportPaintEvent ( QPaintEvent* pe  )
 	tp->end();
 	delete tp;
 
-//    	printf("bitBlt x=%d,y=%d,sw=%d,sh=%d\n",ex,ey+py,ew,ph); 
+//    	printf("bitBlt x=%d,y=%d,sw=%d,sh=%d\n",ex,ey+py,ew,ph);
 	bitBlt(viewport(),r.x(),r.y()+py,paintBuffer,0,0,ew,ph,Qt::CopyROP);
 	
 	py += PAINT_BUFFER_HEIGHT;
