@@ -46,6 +46,8 @@
 
 #include "kjs.h"
 
+#include <X11/Xlib.h>
+
 #define SCROLLBARWIDTH 16
 
 QList<KHTMLWidget> *KHTMLWidget::lstViews = 0L;
@@ -1205,6 +1207,57 @@ void KHTMLWidget::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	urlSelected( m_strSelectedURL.data(), _mouse->button(), pressedTarget.data() );
     }
 }
+
+void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
+{
+    switch ( _ke->key() )
+    {
+    case Key_Down:
+	scrollBy( 0, 10 );
+	flushKeys();
+	break;
+    
+    case Key_Next:
+	scrollBy( 0, viewport()->height()*8/10 );
+	flushKeys();
+	break;
+    
+    case Key_Up:
+	scrollBy( 0, -10 );
+	flushKeys();
+	break;
+    
+    case Key_Prior:
+	scrollBy( 0, -viewport()->height()*8/10 );
+	flushKeys();
+	break;
+    
+    case Key_Right:
+	scrollBy( 10, 0 );
+	flushKeys();
+	break;	
+
+    case Key_Left:
+	scrollBy( -10, 0 );
+	flushKeys();
+	break;
+
+    default:
+	QWidget::keyPressEvent( _ke );
+    }
+}
+
+// Little routine from Alessandro Russo to flush extra keypresses from
+// the event queue
+void KHTMLWidget::flushKeys()
+{
+    XEvent ev_return;
+    Display *dpy = qt_xdisplay();
+    while ( XCheckTypedEvent( dpy, KeyPress, &ev_return ) );
+}
+
+// ---------------------------------- selection ------------------------------------------------
+
 
 QString KHTMLWidget::selectedText()
 {

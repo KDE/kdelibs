@@ -407,7 +407,7 @@ public:
      * filled with the write() method are not saveable
      */
     virtual void saveState( QDataStream &stream );
-  
+
     /**
      * restore a page previously saved with @ref saveYourself()
      */
@@ -567,6 +567,9 @@ protected:
      * this function is called when the user releases a mouse button.
      */
     virtual void viewportMouseReleaseEvent(QMouseEvent *);
+
+    void keyPressEvent( QKeyEvent *_ke );
+    void flushKeys();
 
     /**
      * This function is hooked into the event processing of the widget.
