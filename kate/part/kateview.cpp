@@ -568,7 +568,7 @@ void KateView::setupEditActions()
   else
     slotLostFocus();
 
-  m_editActions->readShortcutSettings();
+  m_editActions->readShortcutSettings( "Katepart Shortcuts" );
 }
 
 void KateView::setupCodeFolding()
@@ -1094,7 +1094,7 @@ void KateView::updateConfig ()
   if (m_startingUp)
     return;
 
-  m_editActions->readShortcutSettings();
+  m_editActions->readShortcutSettings( "Katepart Shortcuts" );
 
   // dyn. word wrap & markers
   if (m_hasWrap != config()->dynWordWrap()) {
