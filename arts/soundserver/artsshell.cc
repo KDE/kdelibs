@@ -128,10 +128,10 @@ Commands:\n\
   terminate           - terminate sound server (might confuse/kill apps using it)\n\
   autosuspend <secs>  - set autosuspend time\n\
   networkbuffers <n>  - increase network buffers by a factor of <n>\n\
-  volume <volume>     - set the volume of the soundserver\n\
+  volume [<volume>]   - display/set the volume of the soundserver\n\
   stereoeffect insert [top|bottom] <name>  - insert stereo effect\n\
   stereoefect remove <id>  - remove stereo effect\n\
-  stereoeffect list        - list available effects\
+  stereoeffect list   - list available effects\
 " << endl;
 	exit(0);
 }
@@ -291,9 +291,15 @@ void networkBuffers(Arts::SoundServerV2 server, int n)
 		server.bufferSizeMultiplier(n);
 }
 // set the output volume
-void volume(Arts::SoundServerV2 server, float volume)
+void setVolume(Arts::SoundServerV2 server, float volume)
 {
 	server.outVolume().scaleFactor(volume);
+}
+
+// return the output volume
+float getVolume(Arts::SoundServerV2 server)
+{
+	return server.outVolume().scaleFactor();
 }
 
 // stereoeffect command
@@ -423,7 +429,11 @@ int main(int argc, char *argv[])
 	}
 
 	if(!strcmp(argv[optind], "volume") && ((argc - optind) == 2)) {
-		volume(server,atof(argv[optind+1]));
+		setVolume(server,atof(argv[optind+1]));
+		return 0;
+	}
+	if(!strcmp(argv[optind], "volume") && ((argc - optind) == 1)) {
+		cout << getVolume(server) << endl;;
 		return 0;
 	}
 
