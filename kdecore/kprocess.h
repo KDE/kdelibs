@@ -16,15 +16,6 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-//
-//  KPROCESS -- A class for handling child processes in KDE without
-//  having to take care of Un*x specific implementation details
-//
-//  version 0.3.1, Jan 8th 1998
-//
-//  (C) Christian Czezatke
-//  e9025461@student.tuwien.ac.at
-//
 
 #ifndef __kprocess_h__
 #define __kprocess_h__
@@ -109,20 +100,20 @@ class KProcessPrivate;
  *have a look at the documentation of each function):
  *
  *@li bool @ref writeStdin(char  *buffer, int  buflen);
- *@li  -- Transmit data to the child process's stdin.
+ *@li  -- Transmit data to the child process' stdin.
  *
  *@li bool @ref closeStdin();
- *@li -- Closes the child process's stdin (which causes it to see an  feof(stdin)).
+ *@li -- Closes the child process' stdin (which causes it to see an  feof(stdin)).
  *Returns false if you try to close stdin for a process that has been started
  *without a communication channel to stdin.
  *
  *@li bool @ref closeStdout();
- *@li -- Closes the child process's stdout.
+ *@li -- Closes the child process' stdout.
  *Returns false if you try to close stdout for a process that has been started
  *without a communication channel to stdout.
  *
  *@li bool @ref closeStderr();
- *@li -- Closes the child process's stderr.
+ *@li -- Closes the child process' stderr.
  *Returns false if you try to close stderr for a process that has been started
  *without a communication channel to stderr.
  *
@@ -132,14 +123,14 @@ class KProcessPrivate;
  *@li void @ref receivedStdout(KProcess  *proc, char  *buffer, int  buflen);
  *@li  void @ref receivedStderr(KProcess  *proc, char  *buffer, int  buflen);
  *@li  -- Indicates that new data has arrived from either the
- *child process's stdout or stderr.
+ *child process' stdout or stderr.
  *
  *@li  void @ref wroteStdin(KProcess  *proc);
  *@li  -- Indicates that all data that has been sent to the child process
  *by a prior call to @ref writeStdin() has actually been transmitted to the
  *client .
  *
- *@author Christian Czezakte e9025461@student.tuwien.ac.at
+ *@author Christian Czezatke e9025461@student.tuwien.ac.at
  *
  *
  **/
@@ -349,7 +340,7 @@ public:
 
 
   /**
-   *	 Transmit data to the child process's stdin.
+   *	 Transmit data to the child process' stdin.
    *
    * KProcess::writeStdin may return false in the following cases:
    *
@@ -369,10 +360,10 @@ public:
    *
    * Please note that you must not free "buffer" or call @ref writeStdin()
    * again until either a @ref wroteStdin() signal indicates that the
-   * data has been sent or a @ref processHasExited() signal shows that
+   * data has been sent or a @ref processExited() signal shows that
    * the child process is no longer alive...
    * @param buffer the buffer to write. Do not free or modify it until
-   * you got a @ref wroteStdin() or @ref processHasExited() signal
+   * you got a @ref wroteStdin() or @ref processExited() signal
    * @return false if an error has occurred
    **/
   bool writeStdin(const char *buffer, int buflen);
@@ -381,7 +372,7 @@ public:
    * This causes the stdin file descriptor of the child process to be
    * closed indicating an "EOF" to the child.
    *
-   * @return false if no communication to the process's stdin
+   * @return false if no communication to the process' stdin
    *  had been specified in the call to @ref start().
   */
   bool closeStdin();
@@ -390,7 +381,7 @@ public:
    * This causes the stdout file descriptor of the child process to be
    * closed.
    *
-   * @return false if no communication to the process's stdout
+   * @return false if no communication to the process' stdout
    *  had been specified in the call to @ref start().
   */
   bool closeStdout();
@@ -399,7 +390,7 @@ public:
    * This causes the stderr file descriptor of the child process to be
    * closed.
    *
-   * @return false if no communication to the process's stderr
+   * @return false if no communication to the process' stderr
    *  had been specified in the call to @ref start().
   */
   bool closeStderr();
@@ -412,7 +403,9 @@ public:
 
   /**
    * Controls whether the started process should drop any
-   * setuid/segid privileges or whether it should keep them
+   * setuid/setgid privileges or whether it should keep them.
+   * Note that this function is mostly a dummy, as KDE libraries
+   * currently refuse to run with setuid/setgid privileges.
    *
    * The default is false : drop privileges
    * @param true to keep the privileges
@@ -421,13 +414,13 @@ public:
 
   /**
    * Returns whether the started process will drop any
-   * setuid/segid privileges or whether it will keep them
+   * setuid/setgid privileges or whether it will keep them.
    * @return true if the process runs privileged
    */
   bool runPrivileged() const;
 
   /**
-   * Modifies the environment of the process to be started.
+   * Adds the variable @p name to the process' environment.
    * This function must be called before starting the process.
    * @param name the name of the environment variable
    * @param value the new value for the environment variable
@@ -555,8 +548,7 @@ signals:
    * Emitted, when output from the child process has
    * been received on stdout.
    *
-   *  To actually get
-   * these signals, the respective communication link (stdout/stderr)
+   * To actually get this signal, the Stdout communication link
    * has to be turned on in @ref start().
    *
    * @param proc a pointer to the process that has received the output
@@ -574,12 +566,12 @@ signals:
    * Emitted when output from the child process has
    * been received on stdout.
    *
-   * To actually get these signals, the respective communications link
-   * (stdout/stderr) has to be turned on in @ref start() and the
-   * @p NoRead flag should have been passed.
+   * To actually get this signal, the Stdout communication link
+   * has to be turned on in @ref start() and the
+   * NoRead flag should have been passed.
    *
    * You will need to explicitly call resume() after your call to start()
-   * to begin processing data from the child process's stdout.  This is
+   * to begin processing data from the child process' stdout.  This is
    * to ensure that this signal is not emitted when no one is connected
    * to it, otherwise this signal will not be emitted.
    *
@@ -593,8 +585,8 @@ signals:
   /**
    * Emitted, when output from the child process has
    * been received on stderr.
-   * To actually get
-   * these signals, the respective communication link (stdout/stderr)
+   *
+   * To actually get this signal, the Stderr communication link
    * has to be turned on in @ref start().
    *
    * You should copy the information contained in @p buffer to your private
@@ -635,9 +627,6 @@ protected slots:
   * @param the file descriptor for the output
   */
   void slotChildError(int fdno);
-  /*
-	Slot functions for capturing stdout and stderr of the child
-  */
 
   /**
    * Called when another bulk of data can be sent to the child's
@@ -675,9 +664,9 @@ protected:
   bool runs;
 
   /**
-   * The PID of the currently running process (see "getPid()").
+   * The PID of the currently running process ( @see pid() ).
    * You should not modify this data member in derived classes.
-   * Please use "getPid()" instead of directly accessing this
+   * Please use pid() instead of directly accessing this
    * member function since it will probably be made private in
    * later versions of KProcess.
    */
@@ -717,7 +706,7 @@ protected:
    * the "comm" parameter this function has to initialize the "in", "out" and
    * "err" data member of KProcess.
    *
-   * This function should return 0 if setting the needed communication channels
+   * This function should return 1 if setting the needed communication channels
    * was successful.
    *
    * The default implementation is to create UNIX STREAM sockets for the communication,
@@ -809,14 +798,14 @@ protected:
 
   /**
    * Called by "slotChildOutput" this function copies data arriving from the
-   * child process's stdout to the respective buffer and emits the signal
+   * child process' stdout to the respective buffer and emits the signal
    * "@ref receivedStderr".
    */
   int childOutput(int fdno);
 
   /**
    * Called by "slotChildOutput" this function copies data arriving from the
-   * child process's stdout to the respective buffer and emits the signal
+   * child process' stdout to the respective buffer and emits the signal
    * "@ref receivedStderr"
    */
   int childError(int fdno);
