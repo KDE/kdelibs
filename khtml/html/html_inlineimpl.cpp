@@ -116,7 +116,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                     r->absolutePosition(absx, absy);
                     ownerDocument()->view()->contentsToViewport( absx, absy, vx, vy );
 
-                    int x(e->clientX()), y(e->clientY());
+                    int x(e->clientX() - vx), y(e->clientY() - vy);
                     url += QString("?%1,%2").arg( x ).arg( y );
                 }
             }
@@ -132,7 +132,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 state |= Qt::AltButton;
 
             int button = 0;
-           
+
             if ( e->button() == 0 )
                 button = Qt::LeftButton;
             else if ( e->button() == 1 )
