@@ -658,7 +658,7 @@ NodeImpl *TreeWalkerImpl::getNextSibling(NodeImpl *n)
     }
     else
     {
-        _tempCurrent = _tempCurrent->parentNode();
+        _tempCurrent = n->parentNode();
         if( !_tempCurrent || _tempCurrent == m_rootNode)
             return 0;
         _result = isAccepted( _tempCurrent );
