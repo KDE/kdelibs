@@ -158,6 +158,7 @@ void KHTMLView::init()
 
     setFocusPolicy(QWidget::StrongFocus);
     viewport()->setFocusPolicy( QWidget::WheelFocus );
+    viewport()->setFocusProxy(this);
 
   _marginWidth = -1; // undefined
   _marginHeight = -1;
@@ -534,11 +535,7 @@ bool KHTMLView::focusNextPrevChild( bool next )
 	return m_part->parentPart()->view()->focusNextPrevChild(next);
     m_part->overURL(QString(), 0);
 
-    if (!QWidget::focusNextPrevChild( next ))
-	return false;
-    if (focusWidget()==viewport())
-	return QWidget::focusNextPrevChild( next );
-    return true;
+    return QWidget::focusNextPrevChild(next);
 }
 
 void KHTMLView::doAutoScroll()
