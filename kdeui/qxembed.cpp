@@ -668,11 +668,14 @@ QXEmbed::~QXEmbed()
     if ( window && ( autoDelete() || !d->xplain ))
         {
             // L1021: Hide the window and safely reparent it into the root,
-            // otherwise it would be destroyed by X11 together with this QXEmbed's window.
+            //        otherwise it would be destroyed by X11 together 
+            //        with this QXEmbed's window.
             XUnmapWindow( qt_xdisplay(), window );
             XReparentWindow(qt_xdisplay(), window, qt_xrootwin(), 0, 0);
+            if( !d->xplain )
+                XRemoveFromSaveSet( qt_xdisplay(), window );
             XSync(qt_xdisplay(), false);
-            // L1022: Send the WM_DELETE_WINDOW message (close button)
+            // L1022: Send the WM_DELETE_WINDOW message
             if( autoDelete() /*&& d->xplain*/ ) 
                 // This sendDelete should only apply to XPLAIN.
                 // XEMBED apps are supposed to detect when the embedding ends.
@@ -1022,11 +1025,14 @@ bool QXEmbed::x11Event( XEvent* e)
             break; // ignore proxy
         if ( window && e->xreparent.window == window &&
              e->xreparent.parent != winId() ) {
-            if( !d->xplain )
-                XRemoveFromSaveSet( qt_xdisplay(), window );
             // L2010: We lost the window
             window = 0;
             windowChanged( window );
+            // L2011: Remove window from save set
+            //        ??? [not sure it is good to touch this window since
+            //             someone else has taken control of it already.]
+            if( !d->xplain )
+                XRemoveFromSaveSet( qt_xdisplay(), window );
         } else if ( e->xreparent.parent == winId()){
             // L2020: We got a window. Complete the embedding process.
             window = e->xreparent.window;
