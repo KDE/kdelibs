@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <kdebug2.h>
 
 using namespace KIO;
 
@@ -266,7 +267,7 @@ bool SlaveBase::dispatch()
 
 bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass )
 {
-    kDebugInfo(7007, "openPassDlg %s", head.ascii());
+    kdDebug(7007) << "openPassDlg " << head << endl;
     KIO_DATA << head << user << pass;
     m_pConnection->send( INF_NEED_PASSWD, data );
     int cmd;

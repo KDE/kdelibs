@@ -2,6 +2,7 @@
 #include <ksock.h>
 #include <time.h>
 #include <kdebug.h>
+#include <kdebug2.h>
 #include <klocale.h>
 #include <dcopclient.h>
 #include <kio/global.h>
@@ -64,12 +65,14 @@ void Slave::gotAnswer( int )
     if (slaveconn.read( &cmd, data ) == -1)
 	ok = false;
 
-    if (ok && (cmd != MSG_CONNECTED))
-        ok = false;
+    kdDebug() << "got answer " << cmd << endl;
 
     if (ok)
     {
-	emit connected();
+	if (cmd == MSG_CONNECTED)
+	    emit connected();
+	else
+	    dispatch(cmd, data);
         slaveconn.connect(this, SLOT(gotInput(int)));
     }
     else

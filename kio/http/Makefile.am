@@ -3,7 +3,7 @@
 
 SUBDIRS = kcookiejar
 
-INCLUDES=	-I $(srcdir)/.. -I $(srcdir)/../.. $(SSL_INCLUDES) $(all_includes) 
+INCLUDES=	-I $(srcdir)/.. -I $(srcdir)/../.. $(SSL_INCLUDES) $(all_includes)
 LDFLAGS =       $(all_libraries) $(SSL_LDFLAGS)
 
 ####### Files
@@ -12,7 +12,7 @@ bin_PROGRAMS = kio_http_cache_cleaner
 lib_LTLIBRARIES = kio_http.la libkio_http_cache_cleaner.la
 
 kio_http_la_SOURCES = http.cc extern_md5.c
-kio_http_la_LIBADD = ../libkio.la $(LIBZ) $(LIBSSL)
+kio_http_la_LIBADD = ../libksycoca.la $(LIBZ) $(LIBSSL)
 kio_http_la_LDFLAGS = -module -avoid-version
 
 check_PROGRAMS = linktest
@@ -37,4 +37,3 @@ kioconfigdir = $(kde_confdir)/protocols
 
 kdelnkdir = $(kde_servicesdir)
 kdelnk_DATA = http_cache_cleaner.desktop
-

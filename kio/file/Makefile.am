@@ -1,6 +1,6 @@
 ## Makefile.am of kdebase/kioslave/file
 
-INCLUDES=	-I$(srcdir)/.. -I$(srcdir)/../.. $(all_includes)
+INCLUDES = -I$(srcdir)/.. -I$(srcdir)/../.. $(all_includes)
 
 ####### Files
 

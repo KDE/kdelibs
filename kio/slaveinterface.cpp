@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <kio/passdlg.h>
+#include <kdebug2.h>
 
 using namespace KIO;
 
@@ -32,6 +33,8 @@ bool SlaveInterface::dispatch()
 
 void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 {
+    kdDebug(7007) << "dispatch " << _cmd << endl;
+
     QDataStream stream( rawdata, IO_ReadOnly );
 
     QString str1;
@@ -168,11 +171,12 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	emit warning( str1 );
 	break;
     case INF_NEED_PASSWD: {
-      QString user, pass;
-      stream >> str1 >> user >> pass;
-      openPassDlg(str1, user, pass);
+	kdDebug(7007) << "needs passwd\n";
+	QString user, pass;
+	stream >> str1 >> user >> pass;
+	openPassDlg(str1, user, pass);
+	break;
     }
-    break;
     default:
 	assert( 0 );
     }
@@ -180,6 +184,8 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass )
 {
+    kdDebug(7007) << "openPassDlg " << head << endl;
+
     PassDlg dlg( 0L, 0L, true, 0, head, user, pass );
     QByteArray packedArgs;
 

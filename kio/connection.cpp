@@ -22,6 +22,7 @@
 #include "kio/connection.h"
 
 #include <kdebug.h>
+#include <kdebug2.h>
 
 using namespace KIO;
 
@@ -178,6 +179,8 @@ bool Connection::sendnow( int _cmd, const QByteArray &data )
 
 int Connection::read( int* _cmd, QByteArray &data )
 {
+    kdDebug(7017) << "read\n";
+
     if (!fd_in) {
 	kDebugInfo(7017, "read: not yet inited");
 	return -1;
@@ -210,6 +213,7 @@ int Connection::read( int* _cmd, QByteArray &data )
     p = buffer + 7;
     while( *p == ' ' ) p++;
     long int cmd = strtol( p, 0L, 16 );
+    kdDebug(7017) << "read cmd " << cmd << endl;
 
     data.resize( len );
 
@@ -236,6 +240,7 @@ int Connection::read( int* _cmd, QByteArray &data )
     }
 
     *_cmd = cmd;
+    kdDebug(7017) << "finished reading cmd " << cmd << endl;
 
     return len;
 }
