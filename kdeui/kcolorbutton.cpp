@@ -39,9 +39,9 @@ public:
 KColorButton::KColorButton( QWidget *parent, const char *name )
   : QPushButton( parent, name )
 {
-    d = new KColorButtonPrivate;
-    d->m_bdefaultColor = false;
-    d->m_defaultColor = QColor();
+  d = new KColorButtonPrivate;
+  d->m_bdefaultColor = false;
+  d->m_defaultColor = QColor();
   setAcceptDrops( true);
 
   // 2000-10-15 (putzer): fixes broken keyboard usage
@@ -52,10 +52,10 @@ KColorButton::KColorButton( const QColor &c, QWidget *parent,
 			    const char *name )
   : QPushButton( parent, name ), col(c)
 {
-    d = new KColorButtonPrivate;
-    d->m_bdefaultColor = false;
-    d->m_defaultColor = QColor();
-    setAcceptDrops( true);
+  d = new KColorButtonPrivate;
+  d->m_bdefaultColor = false;
+  d->m_defaultColor = QColor();
+  setAcceptDrops( true);
 
   // 2000-10-15 (putzer): fixes broken keyboard usage
   connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
@@ -65,10 +65,10 @@ KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget
 			    const char *name )
   : QPushButton( parent, name ), col(c)
 {
-    d = new KColorButtonPrivate;
-    d->m_bdefaultColor = true;
-    d->m_defaultColor = defaultColor;
-    setAcceptDrops( true);
+  d = new KColorButtonPrivate;
+  d->m_bdefaultColor = true;
+  d->m_defaultColor = defaultColor;
+  setAcceptDrops( true);
 
   // 2000-10-15 (putzer): fixes broken keyboard usage
   connect (this, SIGNAL(clicked()), this, SLOT(chooseColor()));
@@ -76,7 +76,7 @@ KColorButton::KColorButton( const QColor &c, const QColor &defaultColor, QWidget
 
 KColorButton::~KColorButton()
 {
-    delete d;
+  delete d;
 }
 
 void KColorButton::setColor( const QColor &c )
@@ -90,26 +90,34 @@ void KColorButton::setColor( const QColor &c )
 
 void KColorButton::drawButtonLabel( QPainter *painter )
 {
+  int x, y, w, h;
   QRect r = style().subRect( QStyle::SR_PushButtonContents, this );
-  int l = r.x();
-  int t = r.y();
-  int w = r.width();
-  int h = r.height();
-  int b = 5;
+  r.rect(&x, &y, &w, &h);
+
+  int margin = style().pixelMetric( QStyle::PM_ButtonMargin, this );
+  x += margin;
+  y += margin;
+  w -= 2*margin;
+  h -= 2*margin;
+
+  if (isOn() || isDown()) {
+    x += style().pixelMetric( QStyle::PM_ButtonShiftHorizontal, this );
+    y += style().pixelMetric( QStyle::PM_ButtonShiftVertical, this );
+  }
 
   QColor fillCol = isEnabled() ? col : backgroundColor();
+  qDrawShadePanel( painter, x, y, w, h, colorGroup(), true, 1, NULL);
+  if ( fillCol.isValid() )
+    painter->fillRect( x+1, y+1, w-2, h-2, fillCol );
+}
 
-  if ( isDown() ) {
-    qDrawShadePanel( painter, l+b+1, t+b+1, w-b*2, h-b*2, colorGroup(), 1, 1, 0 );
-    b++;
-    if ( fillCol.isValid() )
-      painter->fillRect( l+b+1, t+b+1, w-b*2, h-b*2, fillCol );
-  } else {
-    qDrawShadePanel( painter, l+b, t+b, w-b*2, h-b*2, colorGroup(), 1, 1, 0 );
-    b++;
-    if ( fillCol.isValid() )
-      painter->fillRect( l+b, t+b, w-b*2, h-b*2, fillCol );
-  }
+/*!
+    \reimp
+ */
+QSize KColorButton::sizeHint() const
+{
+  return style().sizeFromContents(QStyle::CT_PushButton, this, QSize(40, 15)).
+	  	expandedTo(QApplication::globalStrut());
 }
 
 void KColorButton::dragEnterEvent( QDragEnterEvent *event)

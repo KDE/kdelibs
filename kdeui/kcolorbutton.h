@@ -64,6 +64,8 @@ public:
 	 */
 	void setColor( const QColor &c );
 
+	QSize sizeHint() const;
+
 signals:
 	/**
 	 * Emitted when the color of the widget
