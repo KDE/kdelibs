@@ -272,7 +272,8 @@ KServiceTypeProfile::OfferList KServiceTypeProfile::offers() const
       else
       {
         //kdDebug(7014) << "not found in mapServices. Appending." << endl;
-        KServiceOffer o( (*it), 1, (*it)->allowAsDefault() );
+        // We use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
+        KServiceOffer o( (*it), 0, (*it)->allowAsDefault() );
         offers.append( o );
       }
     }/* else
