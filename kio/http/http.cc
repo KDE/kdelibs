@@ -1479,31 +1479,35 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buf, "Content-Disposition:", 20) == 0)
     {
       char* dispositionBuf = trimLead(buffer + 20);
-      while ( dispositionBuf )
+      while ( *dispositionBuf )
       {
         if ( strncasecmp( dispositionBuf, "filename", 8 ) == 0 )
         {
           dispositionBuf += 8;
-          while ( dispositionBuf && (dispositionBuf[0] == ' ' ||
-                  dispositionBuf[0] == '=') ) 
+          while ( (dispositionBuf[0] == ' ') || 
+                  (dispositionBuf[0] == '=') )
             dispositionBuf++;
           
           char* bufStart = dispositionBuf;
-          while ( dispositionBuf && dispositionBuf[0] != ';' )
+          while ( dispositionBuf[0] && (dispositionBuf[0] != ';') )
             dispositionBuf++;
           if ( dispositionBuf > bufStart )
           {
-            disposition = QString::fromLatin1( trimLead(bufStart),
-                                               dispositionBuf-bufStart );
+            disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart );
             break;
           }
         }
         else
         {
-          while ( dispositionBuf && dispositionBuf[0] != ';' )
+          char *bufStart = dispositionBuf;
+          while ( dispositionBuf[0] && (dispositionBuf[0] != ';') )
             dispositionBuf++;
-          while ( dispositionBuf && (dispositionBuf[0] == ';' ||
-                  dispositionBuf[0] == ' ') )
+          if ( dispositionBuf > bufStart )
+          {
+            // Sometimes "filename=" is missing. 
+            disposition = QString::fromLatin1( bufStart, dispositionBuf-bufStart ).stripWhiteSpace();
+          }
+          while ( (dispositionBuf[0] == ';') || (dispositionBuf[0] == ' ') )
             dispositionBuf++;
         }
       }
