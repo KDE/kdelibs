@@ -3,7 +3,7 @@
      Translate everything between quotes, except names of general 
      entities (&...;). -->
 
-<!ENTITY kappname "esta aplicación">
+<!ENTITY kappname "esta aplicaciÃ³n">
 <!-- Entities to fill in slots in docbook version of FDL notice.
      The default values of the parameter entities is IGNORE. -->
 <![%FDLIS;[
@@ -15,9 +15,9 @@
 <!ENTITY FDLFCTTitles "LISTADOS"><!-- keep capitals -->
 <!ENTITY FDLFrontCoverText "los textos de la portada estando &FDLFCTTitles;">
  ]]>
-<!ENTITY FDLFrontCoverText "textos que no estén en la cubierta">
+<!ENTITY FDLFrontCoverText "textos que no estÃ©n en la cubierta">
 <![%FDLBCT;[
 <!ENTITY FDLBCTTitles "LISTADOS SUS TITULOS"><!-- keep capitals -->
 <!ENTITY FDLBackCoverText "los textos en la contraportada estando &FDLBCTTitles;">
  ]]>
-<!ENTITY FDLBackCoverText "textos que no estén en la contraportada">
+<!ENTITY FDLBackCoverText "textos que no estÃ©n en la contraportada">
