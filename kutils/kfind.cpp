@@ -27,7 +27,7 @@
 #include <qregexp.h>
 #include <kdebug.h>
 
-#define DEBUG_FIND
+//#define DEBUG_FIND
 
 #define INDEX_NOMATCH -1
 
