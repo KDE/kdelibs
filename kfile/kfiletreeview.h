@@ -30,8 +30,8 @@
 #include <kdirnotify.h>
 #include <kio/job.h>
 #include <kfiletreeviewitem.h>
+#include <kfiletreebranch.h>
 
-class KFileTreeBranch;
 class QTimer;
 
 
@@ -100,6 +100,12 @@ public:
     *  @param branchno is the name of a branch
     */
    KFileTreeBranch *branch( const QString& searchName );
+
+
+   /**
+    *  @returns a list of pointers to all existing branches in the treeview.
+    **/
+   KFileTreeBranchList& branches();
    
    /**
     *  set the directory mode for branches. If true is passed, only directories will be loaded.
@@ -206,7 +212,7 @@ private:
 
 
    /* List that holds the branches */
-    QPtrList<KFileTreeBranch> m_branches;
+    KFileTreeBranchList m_branches;
 
 
     struct AnimationInfo
