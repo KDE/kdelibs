@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.52  1999/06/18 18:14:59  kulow
+   CVS_SILENT small fix
+
    Revision 1.51  1999/06/18 18:06:19  kulow
    - KStandardDirs::kde_data_relative() + "/pics/");
    + KStandardDirs::kde_data_relative() + appName + "/pics/");
@@ -171,30 +174,33 @@ void KIconLoader::initPath()
     key = "kpanel";
   if (appname == "kfm")
     key = "kfm";
-    KConfig config; // with no filenames given, it will read only global config 
-    config.setGroup("KDE");
-    QString setting = config.readEntry( key + "IconStyle", "Normal" );
-    //debug("App is %s - setting is %s", appname, setting.data());
-    // DF
-    
-    // order is important! -- Bernd
-    // higher priority at the end
-    
-    bool large = (setting == "Large" );
-    
-    if ( large )
-	KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
-    
+  
+  KConfig config; // with no filenames given, it will read only global config 
+  config.setGroup("KDE");
+  QString setting = config.readEntry( key + "IconStyle", "Normal" );
+  //debug("App is %s - setting is %s", appname, setting.data());
+  // DF
+  
+  // order is important! -- Bernd
+  // higher priority at the end
+  
+  bool large = (setting == "Large" );
+  
+  if ( large )
+    KGlobal::dirs()->addResourceType("icon", "/share/icons/large");
+  
+  KGlobal::dirs()->addResourceType("toolbar", 
+                                   KStandardDirs::kde_data_relative() + 
+                                   appname + "/toolbar/");
+  
+  if ( large )
     KGlobal::dirs()->addResourceType("toolbar", 
-				     KStandardDirs::kde_data_relative() + 
-				     appname + "/toolbar/");
-    
-    if ( large )
-	KGlobal::dirs()->addResourceType("toolbar", 
-					 KStandardDirs::kde_data_relative() + appname + "/pics/large");
-    KGlobal::dirs()->addResourceType("toolbar", 
-				     KStandardDirs::kde_data_relative() + appname + "/pics/");
-    
+                                     KStandardDirs::kde_data_relative() +
+                                     appname + "/pics/large");
+  
+  KGlobal::dirs()->addResourceType("toolbar", 
+                                   KStandardDirs::kde_data_relative() +
+                                   appname + "/pics/");
 }
 
 KIconLoader::KIconLoader( KConfig *conf,
