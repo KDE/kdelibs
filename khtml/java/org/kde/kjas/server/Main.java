@@ -21,6 +21,7 @@ public class Main
     public  static final boolean             Debug;
     public  static final boolean             log;
     static final boolean                     cacheImages;
+    static float                             java_version = (float) 0.0;
     public static String                     proxyHost = null;
     public static int                        proxyPort = 0;
     private static boolean                   good_jdk = true;
@@ -56,7 +57,7 @@ public class Main
         }
         //Main.debug( "JVM numerical version = " + version );
         try {
-            float java_version = Float.parseFloat( version );
+            java_version = Float.parseFloat( version );
             if( java_version < 1.2 )
                 good_jdk = false;
         } catch( NumberFormatException e ) {

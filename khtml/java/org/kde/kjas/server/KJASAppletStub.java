@@ -159,7 +159,8 @@ public final class KJASAppletStub
             }
         );
         frame.getContentPane().add( panel, BorderLayout.CENTER );
-        frame.setUndecorated(true);
+        if (Main.java_version > 1.399)
+            frame.setUndecorated(true);
         frame.setLocation( 0, 0 );
         frame.pack();
         frame.setVisible(true);

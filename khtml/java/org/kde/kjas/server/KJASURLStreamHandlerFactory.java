@@ -304,7 +304,7 @@ class KIOConnection
             throw new ConnectException("connection failed (not found)");
         }
         Main.debug ("KIO connect timeout " + url);
-        throw new SocketTimeoutException("connection failed (timeout)");
+        throw new IOException("connection failed (timeout)");
     }
     synchronized void disconnect() {
         if (connect_status == NOT_CONNECTED)
