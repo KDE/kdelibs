@@ -537,7 +537,11 @@ void KOpenWithDlg::slotOK()
       }
     }
     else
-      serviceName = keepExec;
+    {
+      // Creating a new one. Let's hide it to avoid cluttering the K menu.
+      serviceName = ".hidden/";
+      serviceName += keepExec;
+    }
   } else
     serviceName = m_pService->desktopEntryPath();
 
