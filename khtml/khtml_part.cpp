@@ -1919,7 +1919,8 @@ void KHTMLPart::end()
 
 bool KHTMLPart::doOpenStream( const QString& mimeType )
 {
-    if ( mimeType == "text/html" || mimeType == "text/xml" || mimeType == "application/xhtml+xml" )
+    KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
+    if ( mime->is( "text/html" ) || mime->is( "text/xml" ) )
     {
         begin( url() );
         return true;
