@@ -253,7 +253,7 @@ int main(int argc, char **argv)
       {
          QCString filename = QFile::encodeName( strCacheDir + "/" + fileInfo->name);
          int result = unlink(filename.data());
-         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
+//         kdDebug () << appName << ": Cache too big, deleting '" << filename.data() << "' (" << result<< ")" << endl;
       }
       else
       {
@@ -261,7 +261,7 @@ int main(int argc, char **argv)
 // fprintf(stderr, "Keep in cache: %s %d %d total = %d\n", fileInfo->name.ascii(), fileInfo->size, fileInfo->age, totalSize);
       }
    }
-   kdDebug () << appName << ": Cache size = " << totalSize << " kB." << endl;
+   kdDebug () << appName << ": Current size of cache = " << totalSize << " kB." << endl;
    return 0;
 }
 
