@@ -34,6 +34,7 @@
 #include "kpcopiespage.h"
 
 #include <klocale.h>
+#include <kdebug.h>
 #include <kurl.h>
 
 KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name)
@@ -64,6 +65,14 @@ bool KMCupsJobManager::sendCommandSystemJob(const QPtrList<KMJob>& jobs, int act
 
 		req.addURI(IPP_TAG_OPERATION,"job-uri",it.current()->uri());
 		req.addName(IPP_TAG_OPERATION,"requesting-user-name",CupsInfos::self()->realLogin());
+		QString	jobHost;
+		if (!it.current()->uri().isEmpty())
+		{
+			KURL	url(it.current()->uri());
+			req.setHost(url.host());
+			req.setPort(url.port());
+			jobHost = url.host();
+		}
 
 		switch (action)
 		{
@@ -286,7 +295,7 @@ void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QPtr
 	{
 		flag = (flag && it.current()->type() == KMJob::System
 		        && (it.current()->state() == KMJob::Queued || it.current()->state() == KMJob::Held)
-			&& !it.current()->isRemote());
+			/*&& !it.current()->isRemote()*/);
 	}
 	flag = (flag && joblist.count() > 0);
 	coll->action("plugin_ipp")->setEnabled(joblist.count() == 1);
@@ -306,6 +315,12 @@ bool KMCupsJobManager::changePriority(const QPtrList<KMJob>& jobs, bool up)
 		else value = QMAX(value-10, 1);
 
 		IppRequest	req;
+		if (!it.current()->uri().isEmpty())
+		{
+			KURL	url(it.current()->uri());
+			req.setHost(url.host());
+			req.setPort(url.port());
+		}
 		req.setOperation(IPP_SET_JOB_ATTRIBUTES);
 		req.addURI(IPP_TAG_OPERATION, "job-uri", it.current()->uri());
 		req.addName(IPP_TAG_OPERATION, "requesting-user-name", CupsInfos::self()->realLogin());

@@ -363,9 +363,9 @@ void KMJobViewer::slotSelectionChanged()
 	if (thread != 2)
 		joblist.clear();
 
-	actionCollection()->action("job_remove")->setEnabled((thread == 1) || (!remote && !completed && (state >= 0) && (acts & KMJob::Remove)));
-	actionCollection()->action("job_hold")->setEnabled(!remote && !completed && (thread == 2) && (state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
-	actionCollection()->action("job_resume")->setEnabled(!remote && !completed && (thread == 2) && (state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
+	actionCollection()->action("job_remove")->setEnabled((thread == 1) || (/*!remote &&*/ !completed && (state >= 0) && (acts & KMJob::Remove)));
+	actionCollection()->action("job_hold")->setEnabled(/*!remote &&*/ !completed && (thread == 2) && (state > 0) && (state != KMJob::Held) && (acts & KMJob::Hold));
+	actionCollection()->action("job_resume")->setEnabled(/*!remote &&*/ !completed && (thread == 2) && (state > 0) && (state == KMJob::Held) && (acts & KMJob::Resume));
 	actionCollection()->action("job_move")->setEnabled(!remote && !completed && (thread == 2) && (state >= 0) && (acts & KMJob::Move));
 	actionCollection()->action("job_restart")->setEnabled(!remote && (thread == 2) && (state >= 0) && (completed) && (acts & KMJob::Restart));
 
