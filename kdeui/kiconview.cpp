@@ -5,8 +5,10 @@
 KIconView::KIconView( QWidget *parent, const char *name, WFlags f )
     : QIconView( parent, name, f )
 {
+    // set it to the wrong value so that checkClickMode does something
     useDouble = !KGlobal::useDoubleClicks();
     oldCursor = viewport()->cursor();
+    changeCursorSet = false;
     connect( this, SIGNAL( onViewport() ),
 	     this, SLOT( slotOnViewport() ) );
     connect( this, SIGNAL( onItem( QIconViewItem * ) ),
@@ -28,22 +30,27 @@ void KIconView::checkClickMode()
 		 this, SIGNAL( doubleClicked( QIconViewItem * ) ) );
     else
 	viewport()->setCursor( oldCursor );
+    if (!changeCursorSet)
+        changeCursorOverItem = !useDouble; // default : change cursor in single-click mode
+}
+
+void KIconView::setChangeCursor( bool c )
+{
+    changeCursorSet = true;
+    changeCursorOverItem = c;
 }
 
 void KIconView::slotOnItem( QIconViewItem *item )
 {
     checkClickMode();
-    if ( useDouble )
-	return;
-    if ( !item )
-	return;
-    viewport()->setCursor( KCursor().handCursor() );
+    if ( item && changeCursorOverItem )
+        viewport()->setCursor( KCursor().handCursor() );
+    // TODO : Auto-select
 }
 
 void KIconView::slotOnViewport()
 {
     checkClickMode();
-    if ( useDouble )
-	return;
-    viewport()->setCursor( oldCursor );
+    if ( changeCursorOverItem )
+        viewport()->setCursor( oldCursor );
 }
