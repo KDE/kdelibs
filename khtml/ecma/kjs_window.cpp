@@ -68,6 +68,8 @@ KJSO Window::get(const UString &p) const
     return KJSO(new Frame(part->parentPart() ? part->parentPart() : part));
   else if (p == "top") /* TODO */
     return KJSO(new Frame(part->parentPart() ? part->parentPart() : part));
+  else if (p == "name")
+    return String(part->name());
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current()));
   else if (p == "alert")
@@ -233,21 +235,26 @@ private:
 
 KJSO FrameArray::get(const UString &p) const
 {
-  unsigned int i = (unsigned int)p.toDouble();
-
   QList<KParts::ReadOnlyPart> frames = part->frames();
   int len = frames.count();
   if (p == "length")
     return Number(len);
   
-  if (i < len) {
-    const KParts::ReadOnlyPart *frame = frames.at(i);
-    if (frame && frame->inherits("KHTMLPart")) {
-      const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
-      return KJSO(new Window(const_cast<KHTMLPart*>(khtml)));
-    }
-  }
+  const KParts::ReadOnlyPart *frame = 0L;
 
+  // check for the name or number
+  QStringList list = part->frameNames();
+  int i = list.findIndex(p.qstring());
+  if (i < 0)
+    i = (int)p.toDouble();
+  if (i >= 0 && i < len)
+    frame = frames.at(i);
+
+  if (frame && frame->inherits("KHTMLPart")) {
+    const KHTMLPart *khtml = static_cast<const KHTMLPart*>(frame);
+    return KJSO(new Window(const_cast<KHTMLPart*>(khtml)));
+  }
+  
   return Undefined();
 }
 
