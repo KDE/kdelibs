@@ -1,18 +1,25 @@
 {
   local:
-	_Z*KJS*Node*;
-	_Z*KJS5Lexer*;
-	_Z*KJS7ListImp*;
-	_Z*KJS13CompletionImp*;
-	_Z*KJS15StringObjectImp*;
-	_Z*KJS16BooleanObjectImp*;
-	_Z*KJS17FunctionObjectImp*;
-	_Z*KJS13DateObjectImp*;
-	_Z*KJS13MathObjectImp*;
-	_Z*KJS14ArrayObjectImp*;
-	_Z*KJS15NumberObjectImp*;
-	_Z*KJS15RegExpObjectImp*;	
-	_Z*KJS14ErrorObjectImp*;
-	_Z*KJS15ObjectObjectImp*;
-	_Z*KJS*ProtoFuncIm*;
+   extern "C++"
+   {
+	KJS::*Node*::*; 
+	vtable?for?KJS::*Node*;
+	typeinfo*KJS::*Node*;
+	# vtable and typeinfo symbols not matched below
+	KJS::Lexer::*;
+	KJS::Parser::*;
+	KJS::ListImp*;
+        KJS::CompletionImp*;
+        KJS::StringObjectImp*;
+        KJS::BooleanObjectImp*;
+        KJS::FunctionObjectImp*;
+        KJS::DateObjectImp*;
+        KJS::MathObjectImp*;
+        KJS::ArrayObjectImp*;
+        KJS::NumberObjectImp*;
+        KJS::RegExpObjectImp*;
+        KJS::ErrorObjectImp*;
+        KJS::ObjectObjectImp*;
+        KJS::ProtoFuncIm*
+   };
 };
