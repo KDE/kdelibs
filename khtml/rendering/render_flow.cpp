@@ -1037,7 +1037,7 @@ void RenderFlow::calcMinMaxWidth()
                         child->calcMinMaxWidth();
                     bool hasNbsp=false;
                     RenderText* t = static_cast<RenderText *>(child);
-                    if (t->data()[0] == nbsp && prevWasText) //inline starts with nbsp
+                    if (t->data()[0] == nbsp) //inline starts with nbsp
                     {
                         currentMin += childMin;
                         inlineMax += childMax;
@@ -1058,8 +1058,8 @@ void RenderFlow::calcMinMaxWidth()
                     if (hasNbsp)
                     {
                         if(inlineMin < currentMin) inlineMin = currentMin;
-                        child = next(child);
-	                prevchild = child;
+                        prevchild = child;
+                        child = next(child);	                
                         hasNbsp = false;
                         continue;
                     }
