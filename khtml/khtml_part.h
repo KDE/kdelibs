@@ -819,6 +819,24 @@ public:
    */
   bool restored() const;
 
+  // ### KDE4 remove me
+  enum FormNotification { NoNotification = 0, Before, Only, Unused=255 };
+  /**
+   * Determine if signal should be emitted before, instead or never when a
+   * submitForm() happens.
+   * @since 3.2
+   * ### KDE4 remove me
+   */
+  void setFormNotification(FormNotification fn);
+
+  /**
+   * Determine if signal should be emitted before, instead or never when a
+   * submitForm() happens.
+   * ### KDE4 remove me
+   * @since 3.2
+   */
+  FormNotification formNotification() const;
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.
@@ -860,6 +878,18 @@ signals:
    * @since 3.2
    */
   void caretPositionChanged(const DOM::Node &node, long offset);
+
+
+  /**
+   * If form notification is on, this will be emitted either for a form
+   * submit or before the form submit according to the setting.
+   * @since 3.2
+   * ### KDE4 remove me
+   */
+  void formSubmitNotification(const char *action, const QString& url,
+                  const QByteArray& formData, const QString& target,
+                  const QString& contentType, const QString& boundary);
+
 
 protected:
 
@@ -1005,6 +1035,16 @@ public slots:
    * @since 3.2
    */
   void setCaretVisible(bool show);
+
+  // ### KDE4 FIXME:
+  //          Remove this and make the one below protected+virtual slot.
+  //          Warning: this is effectively "internal".  Be careful.
+  // @since 3.2
+  void submitFormProxy( const char *action, const QString &url,
+                        const QByteArray &formData,
+                        const QString &target,
+                        const QString& contentType = QString::null,
+                        const QString& boundary = QString::null );
 
 private slots:
 

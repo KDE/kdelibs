@@ -924,9 +924,11 @@ void KHTMLPart::removeJSErrorExtension() {
     parentPart()->removeJSErrorExtension();
     return;
   }
-  d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarJSErrorLabel );
-  delete d->m_statusBarJSErrorLabel;
-  d->m_statusBarJSErrorLabel = 0;
+  if (d->m_statusBarJSErrorLabel != 0) {
+    d->m_statusBarExtension->removeStatusBarItem( d->m_statusBarJSErrorLabel );
+    delete d->m_statusBarJSErrorLabel;
+    d->m_statusBarJSErrorLabel = 0;
+  }
   delete d->m_jsedlg;
   d->m_jsedlg = 0;
 }
@@ -3902,9 +3904,21 @@ void KHTMLPart::submitFormAgain()
   disconnect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
 }
 
+void KHTMLPart::submitFormProxy( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
+{
+  submitForm(action, url, formData, _target, contentType, boundary); 
+}
+
 void KHTMLPart::submitForm( const char *action, const QString &url, const QByteArray &formData, const QString &_target, const QString& contentType, const QString& boundary )
 {
   kdDebug(6000) << this << ": KHTMLPart::submitForm target=" << _target << " url=" << url << endl;
+  if (d->m_formNotification == KHTMLPart::Only) {
+    emit formSubmitNotification(action, url, formData, _target, contentType, boundary);
+    return;
+  } else if (d->m_formNotification == KHTMLPart::Before) {
+    emit formSubmitNotification(action, url, formData, _target, contentType, boundary);
+  }
+
   KURL u = completeURL( url );
 
   if ( !u.isValid() )
@@ -6027,6 +6041,14 @@ void KHTMLPart::walletMenu()
 void KHTMLPart::slotToggleCaretMode()
 {
   setCaretMode(d->m_paToggleCaretMode->isChecked());
+}
+
+void KHTMLPart::setFormNotification(KHTMLPart::FormNotification fn) {
+  d->m_formNotification = fn;
+}
+
+KHTMLPart::FormNotification KHTMLPart::formNotification() const {
+  return d->m_formNotification;
 }
 
 using namespace KParts;

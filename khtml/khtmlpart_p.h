@@ -140,6 +140,7 @@ public:
     m_findDialog = 0;
     m_ssl_in_use = false;
     m_jsedlg = 0;
+    m_formNotification = KHTMLPart::NoNotification;
 
 #ifndef Q_WS_QWS
     m_javaContext = 0;
@@ -394,6 +395,7 @@ public:
   unsigned long m_totalObjectCount;
   unsigned int m_jobPercent;
 
+  KHTMLPart::FormNotification m_formNotification;
   QTimer m_progressUpdateTimer;
 
   QStringList m_pluginPageQuestionAsked;
