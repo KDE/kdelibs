@@ -951,7 +951,7 @@ QString KLocale::formatNumber(const QString &numStr) const
 QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 {
   QString buf;
-  buf.sprintf("%.2d/%.2d/%.2d", pDate.month(), pDate.day(), pDate.year());
+  buf.sprintf("%.2d/%.2d/%.2d", pDate.month(), pDate.day(), pDate.year() % 100);
   return buf;
 }
 
