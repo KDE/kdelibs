@@ -204,17 +204,14 @@ void Window::mark(Imp *)
     frames->mark();
   if (loc && !loc->refcount)
     loc->mark();
-  if (!opener.isNull()) {
-    Window *op = retrieve(opener);
-    if (!op->refcount)
-      op->mark();
-  }
 
+  // Mark all Window objects from the dict. Necessary to keep
+  // existing window properties, such as 'opener'.
   if (window_dict)
   {
      QPtrDictIterator<Window> it( *window_dict );
      for ( ; it.current() ; ++it )
-       if (!it.current()->refcount)
+       if (it.current() != this && !it.current()->refcount)
          it.current()->mark();
   }
 }
