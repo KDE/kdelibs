@@ -25,14 +25,13 @@ SUBDIRS = KDE-ICE . dcopidl dcopidl2cpp client
 KDE_OPTIONS = qtonly
 
 INCLUDES=  $(all_includes)
-LDFLAGS = $(all_libraries)
 
 bin_PROGRAMS = dcopserver dcopserver_shutdown
 check_PROGRAMS = testdcop testdcopc
 
 lib_LTLIBRARIES  = libDCOP.la dcopserver.la
 libDCOP_la_LIBADD = KDE-ICE/libkICE.la $(LIB_QT)
-libDCOP_la_LDFLAGS = -version-info 4:0 -no-undefined
+libDCOP_la_LDFLAGS = -version-info 4:0 -no-undefined $(all_libraries)
 
 include_HEADERS = dcopclient.h dcopobject.h dcopstub.h dcopref.h kdatastream.h
 noinst_HEADERS = version.h dcopglobal.h dcopserver.h dcop-doc.h testdcop.h dcopsignals.h
@@ -44,17 +43,17 @@ METASOURCES = dcopclient.moc dcopserver.moc testdcop.moc
 # dcopstub needs to go first for --enable-final to work
 libDCOP_la_SOURCES = dcopstub.cpp dcopclient.cpp dcopobject.cpp dcopref.cpp
 
-dcopserver_la_LDFLAGS = -module -avoid-version
+dcopserver_la_LDFLAGS = -module -avoid-version $(all_libraries)
 dcopserver_la_SOURCES = dcopserver.cpp dcopsignals.cpp
 dcopserver_la_LIBADD   = libDCOP.la
 
-dcopserver_LDFLAGS = $(KDE_RPATH)
+dcopserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 dcopserver_SOURCES = dummy.cpp
 dcopserver_LDADD   = dcopserver.la
 
 dcopserver_shutdown_SOURCES = dcopserver_shutdown.c
 
-testdcop_LDFLAGS = $(KDE_RPATH)
+testdcop_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 testdcop_SOURCES = testdcop.cpp
 testdcop_LDADD = ../kdecore/libkdecore.la
 
