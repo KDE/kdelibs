@@ -501,17 +501,19 @@ void KTabListBox::setNumCols(int aCols)
   {
     for (i=0; i<numColumns; i++)
       delete colList[i];
-    // FIXME this shouldn't be   delete [] colList ???
-    delete colList;
-    delete colShowList;
+    delete [] colList;
+    delete [] colShowList;
   }
   if (itemList)
   {
     for (i=0; i<maxItems; i++)
       delete itemList[i];
-    delete itemList;
-    delete itemShowList;
+
+    delete [] itemList;
   }
+  if (itemShowList)
+    delete [] itemShowList;
+
   colList  = 0L;
   colShowList=0L;
   itemList = 0L;
@@ -784,7 +786,7 @@ void KTabListBox::setCItem(int idx)
 {
   int i;
 
-  if (idx>numRows() || idx<0) return;
+  if (idx >= numRows() || idx < 0) return;
 
   if (idx != current)
   {
@@ -1119,9 +1121,10 @@ void KTabListBox::resizeList(int newNumItems)
   }
   if (newNumItems > oldNum)
   {
-    for (i = oldNum; i < newNumItems; i++)
+    for (i = oldNum; i < newNumItems; i++) {
       newItemList[i] = new KTabListBoxItem(nc);
       newItemShowList[i] = 0;
+    }
   }
   else
   {
