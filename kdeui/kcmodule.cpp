@@ -24,6 +24,7 @@
 #include <kinstance.h>
 #include <kglobal.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 class KCModulePrivate
 {
@@ -37,6 +38,7 @@ public:
 KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
 	: QWidget(parent, name), _btn(Help|Default|Apply)
 {
+    kdDebug() << "KCModule " << name << endl;
     d = new KCModulePrivate;
     d->_useRootOnlyMsg = true;
     d->_instance = new KInstance(name);
@@ -52,9 +54,11 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
 KCModule::KCModule(KInstance *instance, QWidget *parent, const QStringList & )
     : QWidget(parent, instance ? instance->instanceName().data() : 0), _btn(Help|Default|Apply)
 {
+    kdDebug() << "KCModule instance " << (instance ? instance->instanceName().data() : "none") << endl;
     d = new KCModulePrivate;
     d->_useRootOnlyMsg = true;
     d->_instance = instance;
+    KGlobal::locale()->insertCatalogue(instance->instanceName());
     d->_hasOwnInstance = false;
     KGlobal::setActiveInstance(this->instance());
 }
