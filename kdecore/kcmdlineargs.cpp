@@ -789,7 +789,7 @@ KCmdLineArgs::usage(const char *id)
                if (!args->name)
                   printQ(i18n("\nOptions:\n"));
                else if (args->name)
-                  printQ(optionHeaderString.arg(QString::fromLatin1(args->name)+" options"));
+                  printQ(optionHeaderString.arg(i18n("%1 options").arg(QString::fromLatin1(args->name))));
                hasOptions = true;
             }
 
