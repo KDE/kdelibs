@@ -1252,7 +1252,7 @@ void KApplication::invokeHTMLHelp( QString filename, QString topic ) const
     }
 }
 
-		  "Value is reseted now, but please report this error!\n"
+QString KApplication::kdedir()
 {
   static QString kdedir;
 
