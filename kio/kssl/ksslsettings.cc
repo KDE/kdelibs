@@ -65,7 +65,7 @@
 class KSSLSettingsPrivate {
 public:
   KSSLSettingsPrivate() {
-    kossl = KOSSL::self();
+    kossl = NULL;   // try to delay this as long as possible
   }
   ~KSSLSettingsPrivate() {
 
@@ -131,6 +131,9 @@ QString clist = "";
     QSortedList<CipherNode> cipherSort;
                             cipherSort.setAutoDelete(true);
 
+
+    if (!d->kossl)
+	    d->kossl = KOSSL::self();
 
     if (m_bUseSSLv2 && m_bUseSSLv3)
       meth = d->kossl->SSLv23_client_method();
