@@ -31,13 +31,13 @@ Form1::Form1( QWidget* parent,  const char* name )
     if ( !name )
 	setName( "Form1" );
     resize( 559, 465 );
-    setCaption( i18n( "Form1"  ) );
+    setCaption(  "Form1" );
     Form1Layout = new QVBoxLayout( this );
     Form1Layout->setSpacing( 6 );
     Form1Layout->setMargin( 11 );
 
     GroupBox1 = new QGroupBox( this, "GroupBox1" );
-    GroupBox1->setTitle( i18n( "Completion Test"  ) );
+    GroupBox1->setTitle( "Completion Test" );
     GroupBox1->setColumnLayout(0, Qt::Vertical );
     GroupBox1->layout()->setSpacing( 0 );
     GroupBox1->layout()->setMargin( 0 );
@@ -55,7 +55,7 @@ Form1::Form1( QWidget* parent,  const char* name )
     Layout1->setMargin( 0 );
 
     TextLabel1 = new QLabel( GroupBox1, "TextLabel1" );
-    TextLabel1->setText( i18n( "Completion"  ) );
+    TextLabel1->setText(  "Completion"  );
     Layout1->addWidget( TextLabel1 );
 
     edit = new KLineEdit( GroupBox1, "edit" );
@@ -82,7 +82,7 @@ Form1::Form1( QWidget* parent,  const char* name )
     Layout2->addWidget( LineEdit1 );
 
     PushButton1 = new QPushButton( GroupBox1, "PushButton1" );
-    PushButton1->setText( i18n( "Add"  ) );
+    PushButton1->setText( "Add" );
     connect( PushButton1, SIGNAL( clicked() ), SLOT( slotAdd() ));
     Layout2->addWidget( PushButton1 );
     Layout9->addLayout( Layout2 );
@@ -94,7 +94,7 @@ Form1::Form1( QWidget* parent,  const char* name )
     Layout3->addItem( spacer );
 
     PushButton1_4 = new QPushButton( GroupBox1, "PushButton1_4" );
-    PushButton1_4->setText( i18n( "Remove"  ) );
+    PushButton1_4->setText( "Remove" );
     connect( PushButton1_4, SIGNAL( clicked() ), SLOT( slotRemove() ));
     Layout3->addWidget( PushButton1_4 );
     Layout9->addLayout( Layout3 );
@@ -114,12 +114,12 @@ Form1::Form1( QWidget* parent,  const char* name )
     Layout7->setMargin( 0 );
 
     PushButton1_3 = new QPushButton( GroupBox1, "PushButton1_3" );
-    PushButton1_3->setText( i18n( "Completion items"  ) );
+    PushButton1_3->setText( "Completion items" );
     connect( PushButton1_3, SIGNAL( clicked() ), SLOT( slotList() ));
     Layout7->addWidget( PushButton1_3 );
 
     PushButton1_2 = new QPushButton( GroupBox1, "PushButton1_2" );
-    PushButton1_2->setText( i18n( "Clear"  ) );
+    PushButton1_2->setText( "Clear" );
     connect( PushButton1_2, SIGNAL( clicked() ),
 	     edit->completionObject(), SLOT( clear() ));
     Layout7->addWidget( PushButton1_2 );

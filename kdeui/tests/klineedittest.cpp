@@ -27,13 +27,13 @@ KLineEditTest::KLineEditTest (QWidget* widget, const char* name )
     lineedit->setFixedSize(500,30);
     lineedit->setFocus();
 
-    button = new QPushButton( i18n("E&xit"), this );
+    button = new QPushButton( "E&xit", this );
     button->setFixedSize(100,30);
     QObject::connect( button, SIGNAL( clicked() ), SLOT( quitApp() ) );
 
     layout->addWidget( lineedit );
     layout->addWidget( button );
-    setCaption( i18n("KLineEdit Unit Test" ) );
+    setCaption( "KLineEdit Unit Test" );
 }
 
 void KLineEditTest::quitApp()
