@@ -2627,6 +2627,15 @@ protected:
     kdDebug(6200) << result << endl;
     return result;
   }
+
+  /** finds out if the given box is a :first-letter pseudo-element.
+   *
+   * Furthermore, in case it is a :first-letter, this method will create
+   * a copy of the given box, and make it the current.
+   * @param b given inline box
+   * @return @p true if :first-letter.
+   */
+  bool isFirstLetter(InlineBox *b);
 };
 
 /**
@@ -3005,7 +3014,13 @@ public:
    * If it's 0, then there are no more nodes.
    */
   DOM::NodeImpl *node() const { return _node; }
-
+  /** returns the current inline box.
+   *
+   * May be 0 if the current element has none, or if the end has been reached.
+   * Therefore, do *not* use this to test for the end condition, use node()
+   * instead.
+   */
+  InlineBox *box() const { return *ebit; }
   /** moves to the next editable character.
    */
   EditableCharacterIterator &operator ++();
@@ -3155,7 +3170,9 @@ static InlineFlowBox* findFlowBox(DOM::NodeImpl *node, long offset,
   if (r->isFlow() && !static_cast<RenderFlow *>(r)->firstLineBox()) {
     cb = static_cast<RenderFlow *>(r);
   kdDebug(6200) << "=================== end findFlowBox (dummy)" << endl;
-    return generateDummyFlowBox(arena, cb);
+    InlineFlowBox *fb = generateDummyFlowBox(arena, cb);
+    if (ibox) *ibox = fb;
+    return fb;
   }/*end if*/
 
   // There are two strategies to find the correct line box.
@@ -3545,6 +3562,14 @@ LineIterator &LineIterator::operator -=(int summand)
   return *this;
 }
 
+// == class EditableInlineBoxIterator implementation
+
+bool EditableInlineBoxIterator::isFirstLetter(InlineBox *b)
+{
+  // ### find way to discriminate a :first-letter node against a :before
+  // node or other stuff
+}
+
 // == class EditableCharacterIterator implementation
 
 void EditableCharacterIterator::initFirstChar()
@@ -3586,9 +3611,9 @@ kdDebug(6200) << "++_it" << endl;
         if (_it != ld->end()) {
 	  ebit = _it;
           b = *ebit;
-kdDebug(6200) << "b " << b << endl;
+kdDebug(6200) << "b " << b << " isText " << b->isInlineTextBox() << endl;
 	  _node = b->object()->element();
-kdDebug(6200) << "_node " << _node << endl;
+kdDebug(6200) << "_node " << _node << ":" << _node->nodeName().string() << endl;
 	  _offset = b->minOffset();
 kdDebug(6200) << "_offset " << _offset << endl;
 	} else {
@@ -4188,7 +4213,7 @@ void KHTMLView::ensureNodeHasFocus(NodeImpl *node)
   emit m_part->nodeActivated(Node(firstAncestor));
 }
 
-void KHTMLView::recalcAndStoreCaretPos()
+void KHTMLView::recalcAndStoreCaretPos(InlineBox *hintBox)
 {
     if (!m_part || m_part->d->caretNode().isNull()) return;
     d->caretViewContext();
@@ -4199,6 +4224,23 @@ void KHTMLView::recalcAndStoreCaretPos()
     		d->m_caretViewContext->x, d->m_caretViewContext->y,
 		d->m_caretViewContext->width,
 		d->m_caretViewContext->height);
+
+    if (hintBox && d->m_caretViewContext->x == -1) {
+        kdDebug(6200) << "using hint inline box coordinates" << endl;
+	RenderObject *r = caretNode->renderer();
+	const QFontMetrics &fm = r->style()->fontMetrics();
+        int absx, absy;
+	r->containingBlock()->absolutePosition(absx, absy,
+						false);	// ### what about fixed?
+	d->m_caretViewContext->x = absx + hintBox->xPos();
+	d->m_caretViewContext->y = absy + hintBox->yPos()
+				+ hintBox->baseline() - fm.ascent();
+	d->m_caretViewContext->width = 1;
+	// ### firstline not regarded. But I think it can be savely neglected
+	// as hint boxes are only used for empty lines.
+	d->m_caretViewContext->height = fm.height();
+    }/*end if*/
+
 //    kdDebug(6200) << "freqTimerId: "<<d->m_caretViewContext->freqTimerId<<endl;
     kdDebug(6200) << "caret: ofs="<<m_part->d->caretOffset()<<" "
     	<<" x="<<d->m_caretViewContext->x<<" y="<<d->m_caretViewContext->y
@@ -4283,11 +4325,11 @@ void KHTMLView::hideCaret()
     }/*end if*/
 }
 
-bool KHTMLView::placeCaret()
+bool KHTMLView::placeCaret(InlineBox *hintBox)
 {
   CaretViewContext *cv = d->caretViewContext();
   caretOff();
-  recalcAndStoreCaretPos();
+  recalcAndStoreCaretPos(hintBox);
 
   cv->origX = cv->x;
 
@@ -4565,8 +4607,9 @@ void KHTMLView::placeCaretOnLine(InlineBox *caretBox, int x, int absx, int absy)
 {
   // paranoia sanity check
   if (!caretBox) return;
-
-  NodeImpl *caretNode = caretBox->object()->element();
+                                             
+  RenderObject *caretRender = caretBox->object();
+  NodeImpl *caretNode = caretRender->element();
 
   kdDebug(6200) << "got valid caretBox " << caretBox << endl;
   kdDebug(6200) << "xPos: " << caretBox->xPos() << " yPos: " << caretBox->yPos()
@@ -4575,10 +4618,13 @@ void KHTMLView::placeCaretOnLine(InlineBox *caretBox, int x, int absx, int absy)
   // inquire height of caret
   int caretHeight = caretBox->height();
   bool isText = caretBox->isInlineTextBox();
+  int yOfs = 0;		// y-offset for text nodes
   if (isText) {
     // text boxes need extrawurst
-    RenderText *t = static_cast<RenderText *>(caretBox->object());
-    caretHeight = t->metrics(caretBox->m_firstLine).height();
+    RenderText *t = static_cast<RenderText *>(caretRender);
+    const QFontMetrics &fm = t->metrics(caretBox->m_firstLine);
+    caretHeight = fm.height();
+    yOfs = caretBox->baseline() - fm.ascent();
   }/*end if*/
 
   caretOff();
@@ -4588,7 +4634,7 @@ void KHTMLView::placeCaretOnLine(InlineBox *caretBox, int x, int absx, int absy)
   long &offset = m_part->d->caretOffset();
 
   // set all variables not needing special treatment
-  d->m_caretViewContext->y = caretBox->yPos();
+  d->m_caretViewContext->y = caretBox->yPos() + yOfs;
   d->m_caretViewContext->height = caretHeight;
   d->m_caretViewContext->width = 1; // FIXME: regard override
 
@@ -4786,13 +4832,13 @@ void KHTMLView::moveCaretBy(bool next, CaretMovement cmv, int count)
   } else {
     offset = next ? caretNode->maxOffset() : caretNode->minOffset();
   }/*end if*/
-  placeCaretOnChar();
+  placeCaretOnChar(it.box());
 }
 
-void KHTMLView::placeCaretOnChar()
+void KHTMLView::placeCaretOnChar(InlineBox *hintBox)
 {
   caretOff();
-  recalcAndStoreCaretPos();
+  recalcAndStoreCaretPos(hintBox);
   ensureVisible(d->m_caretViewContext->x, d->m_caretViewContext->y,
   	d->m_caretViewContext->width, d->m_caretViewContext->height);
   d->m_caretViewContext->origX = d->m_caretViewContext->x;

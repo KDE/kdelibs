@@ -46,7 +46,9 @@ class InlineTextBox : public InlineBox
 {
 public:
     InlineTextBox(RenderObject *obj)
-    :InlineBox(obj)
+    	:InlineBox(obj),
+    	// ### necessary as some codepaths (<br>) do *not* initialize these (LS)
+    	m_start(0), m_len(0)
     {
     }
 

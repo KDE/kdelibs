@@ -152,10 +152,10 @@ void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, Render
 }
 
 /**
- * Distributes pixels to a justified text.
+ * Distributes pixels to justify text.
  * @param numSpaces spaces left, will be decremented by one
- * @param toAdd number of pixels left to be distributes, will have the
- *	amount of pixels distributed in this call subtracted.
+ * @param toAdd number of pixels left to be distributed, will have the
+ *	amount of pixels distributed during this call subtracted.
  * @return number of pixels to distribute
  */
 inline int justifyWidth(int &numSpaces, int &toAdd) {
@@ -600,17 +600,12 @@ void RenderText::caretPos(int offset, bool override, int &_x, int &_y, int &widt
   int pos;
   InlineTextBox * s = findInlineTextBox( offset, pos );
 //  kdDebug(6040) << "offset="<<offset << " pos="<<pos << endl;
-  _y = s->m_y;
 
   const QFontMetrics &fm = metrics( s->m_firstLine );
   height = fm.height(); // s->m_height;
 
-//  QConstString tekst(str->s + s->m_start, s->m_len);
-//  _x = s->m_x + (fm.boundingRect(tekst, pos)).right();
-//  if(pos)
-//      _x += fm.rightBearing( *(str->s + s->m_start + pos - 1 ) );
-  //_x = s->m_x + fm.width(tekst.string(), pos);
   _x = s->m_x + s->width(pos);
+  _y = s->m_y + s->baseline() - fm.ascent();
   width = 1;
   if (override) {
     width = offset < maxOffset() ? fm.width(str->s[offset]) : 1;

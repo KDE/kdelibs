@@ -283,8 +283,10 @@ private:
     /** inquires the current caret position and stores it in the caret view
      * context. Also resets the blink frequency timer. It will not display
      * the caret on the canvas.
+     * @param hintBox inline box whose coordinates will be used if the
+     * caret position could not be determined otherwise.
      */
-    void recalcAndStoreCaretPos();
+    void recalcAndStoreCaretPos(khtml::InlineBox *hintBox = 0);
     /** displays the caret and reinitializes the blink frequency timer. */
     void caretOn();
     /** hides the caret and kills the blink frequency timer. */
@@ -321,9 +323,11 @@ private:
      * The caret is switched off, the position recalculated with respect to
      * the new position. The caret will only be redisplayed if it is on an
      * editable node, in design mode, or in caret mode.
+     * @param hintBox inline box whose coordinates will be used if the
+     * caret position could not be determined otherwise.
      * @return @p true if the caret has been displayed.
      */
-    bool placeCaret();
+    bool placeCaret(khtml::InlineBox *hintBox = 0);
 
     // -- caret event handler
 
@@ -388,8 +392,10 @@ private:
      *
      * This method is only suitable if the new caret position has already been
      * determined.
+     * @param hintBox inline box whose coordinates will be used if the
+     * caret position could not be determined otherwise.
      */
-    void placeCaretOnChar();
+    void placeCaretOnChar(khtml::InlineBox *hintBox);
 
     /** does the actual caret placement so that it becomes visible at
      * the new position.
