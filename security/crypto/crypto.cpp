@@ -378,7 +378,6 @@ QString whatstr;
                 " based site.");
   QWhatsThis::add(mWarnOnLeave, whatstr);
 
-#if 0  // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted = new QCheckBox(i18n("Warn on sending &unencrypted data"), tabSSL);
   connect(mWarnOnUnencrypted, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mWarnOnUnencrypted, 6, 0);
@@ -386,6 +385,7 @@ QString whatstr;
                 " unencrypted data via a web browser.");
   QWhatsThis::add(mWarnOnUnencrypted, whatstr);
 
+#if 0  // NOT IMPLEMENTED IN KDE 3.0
   mWarnOnMixed = new QCheckBox(i18n("Warn on &mixed SSL/non-SSL pages"), tabSSL);
   connect(mWarnOnMixed, SIGNAL(clicked()), SLOT(configChanged()));
   grid->addWidget(mWarnOnMixed, 6, 1);
@@ -838,6 +838,16 @@ void KCryptoConfig::load()
   config->setGroup("Warnings");
   mWarnOnEnter->setChecked(config->readBoolEntry("OnEnter", false));
   mWarnOnLeave->setChecked(config->readBoolEntry("OnLeave", true));
+  mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", false));
+
+#if 0 // NOT IMPLEMENTED IN KDE 2.0
+  mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
+
+  config->setGroup("Validation");
+  mWarnSelfSigned->setChecked(config->readBoolEntry("WarnSelfSigned", true));
+  mWarnExpired->setChecked(config->readBoolEntry("WarnExpired", true));
+  mWarnRevoked->setChecked(config->readBoolEntry("WarnRevoked", true));
+#endif
 
   config->setGroup("EGD");
   mUseEGD->setChecked(config->readBoolEntry("UseEGD", false));
@@ -846,19 +856,10 @@ void KCryptoConfig::load()
   mEGDPath->setEnabled(mUseEGD->isChecked());
   mEGDPath->setText(config->readEntry("EGDPath", ""));
 
+
 #ifdef HAVE_SSL
   config->setGroup("OpenSSL");
   oPath->setText(config->readEntry("Path", ""));
-#endif
-
-#if 0 // NOT IMPLEMENTED IN KDE 2.0
-  mWarnOnUnencrypted->setChecked(config->readBoolEntry("OnUnencrypted", false));
-  mWarnOnMixed->setChecked(config->readBoolEntry("OnMixed", true));
-
-  config->setGroup("Validation");
-  mWarnSelfSigned->setChecked(config->readBoolEntry("WarnSelfSigned", true));
-  mWarnExpired->setChecked(config->readBoolEntry("WarnExpired", true));
-  mWarnRevoked->setChecked(config->readBoolEntry("WarnRevoked", true));
 #endif
 
   config->setGroup("SSLv2");
@@ -998,24 +999,24 @@ void KCryptoConfig::save()
   config->setGroup("Warnings");
   config->writeEntry("OnEnter", mWarnOnEnter->isChecked());
   config->writeEntry("OnLeave", mWarnOnLeave->isChecked());
+  config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
 
   config->setGroup("EGD");
   config->writeEntry("UseEGD", mUseEGD->isChecked());
   config->writeEntry("EGDPath", mEGDPath->text());
 
-#ifdef HAVE_SSL
-  config->setGroup("OpenSSL");
-  config->writeEntry("Path", oPath->text());
-#endif
-
 #if 0  // NOT IMPLEMENTED IN KDE 2.0
-  config->writeEntry("OnUnencrypted", mWarnOnUnencrypted->isChecked());
   config->writeEntry("OnMixed", mWarnOnMixed->isChecked());
 
   config->setGroup("Validation");
   config->writeEntry("WarnSelfSigned", mWarnSelfSigned->isChecked());
   config->writeEntry("WarnExpired", mWarnExpired->isChecked());
   config->writeEntry("WarnRevoked", mWarnRevoked->isChecked());
+#endif
+
+#ifdef HAVE_SSL
+  config->setGroup("OpenSSL");
+  config->writeEntry("Path", oPath->text());
 #endif
 
   int ciphercount = 0;
@@ -1181,8 +1182,8 @@ void KCryptoConfig::defaults()
   mUseSSLv3->setChecked(false);  // GS 3/2001 - this seems to be more compatible
   mWarnOnEnter->setChecked(false);
   mWarnOnLeave->setChecked(true);
-#if 0  // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnUnencrypted->setChecked(false);
+#if 0  // NOT IMPLEMENTED IN KDE 2.0
   mWarnOnMixed->setChecked(true);
   mWarnSelfSigned->setChecked(true);
   mWarnExpired->setChecked(true);
