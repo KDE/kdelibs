@@ -1007,10 +1007,14 @@ void RegressionTest::testStaticFile(const QString & filename)
         if ( comp.complType() == ReturnValue || comp.complType() == Normal )
         {
             if (!comp.value().isNull() && comp.value().isA(ObjectType) &&
-                (Object::dynamicCast(comp.value()).inherits(&ArrayInstanceImp::info) ) )
+                (Object::dynamicCast(comp.value()).
+                 inherits(m_part->jScriptInterpreter()->builtinArray().
+                    imp()->classInfo()) ) )
             {
                 Object argArrayObj = Object::dynamicCast(comp.value());
-                unsigned int length = argArrayObj.get(exec,lengthPropertyName).toUInt32(exec);
+                unsigned int length = argArrayObj.
+                                      get(exec,lengthPropertyName).
+                                      toUInt32(exec);
                 if ( length == 1 )
                     functionname = argArrayObj.get(exec, 0).toString(exec).qstring();
             }
