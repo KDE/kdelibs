@@ -45,6 +45,12 @@ class QListboxItem;
 #include <qpixmap.h>
 #include <qintdict.h>
 #include <qmultilineedit.h>
+#include <qlineedit.h>
+#include <qcheckbox.h>
+#include <qradiobutton.h>
+#include <qpushbutton.h>
+#include <klistbox.h>
+#include <qcombobox.h>
 
 namespace DOM {
     class HTMLFormElementImpl;
@@ -69,12 +75,18 @@ public:
 
     virtual bool isRendered() const  { return true; }
 
-    virtual void setChecked(bool) {}
-
     virtual void calcMinMaxWidth();
     virtual void layout(bool);
 
     virtual bool isInline() const { return true; }
+
+    HTMLGenericFormElementImpl *element() { return m_element; }
+
+public slots:
+    virtual void slotBlurred();
+    virtual void slotFocused();
+    virtual void slotSelected();
+    virtual void slotClicked();
 
 protected:
 
@@ -95,6 +107,24 @@ public:
 
     virtual void layout(bool);
 };	
+
+// -------------------------------------------------------------------------
+
+class PushButtonWidget : public QPushButton
+{
+    Q_OBJECT
+public:
+    PushButtonWidget(QWidget *parent) : QPushButton(parent) {}
+    PushButtonWidget(const QString &text, QWidget *parent) : QPushButton(text,parent) {}
+    virtual void focusInEvent(QFocusEvent *)
+	{ emit focused(); }
+    virtual void focusOutEvent(QFocusEvent *)
+	{ emit blurred(); }
+signals:
+    void focused();
+    void blurred();
+};
+
 
 
 // -------------------------------------------------------------------------
@@ -123,6 +153,23 @@ public slots:
     virtual void slotStateChanged(int state);
 };
 
+// -------------------------------------------------------------------------
+
+class CheckBoxWidget : public QCheckBox
+{
+    Q_OBJECT
+public:
+    CheckBoxWidget(QWidget *parent) : QCheckBox(parent) {}
+    virtual void focusInEvent(QFocusEvent *)
+	{ emit focused(); }
+    virtual void focusOutEvent(QFocusEvent *)
+	{ emit blurred(); }
+signals:
+    void focused();
+    void blurred();
+};
+
+
 
 // -------------------------------------------------------------------------
 
@@ -140,6 +187,22 @@ public:
 
  public slots:	
     void slotClicked();
+};
+
+// -------------------------------------------------------------------------
+
+class RadioButtonWidget : public QRadioButton
+{
+    Q_OBJECT
+public:
+    RadioButtonWidget(QWidget *parent) : QRadioButton(parent) {}
+    virtual void focusInEvent(QFocusEvent *)
+	{ emit focused(); }
+    virtual void focusOutEvent(QFocusEvent *)
+	{ emit blurred(); }
+signals:
+    void focused();
+    void blurred();
 };
 
 
@@ -209,7 +272,6 @@ public:
     virtual void slotClicked();
 };
 
-
 // -------------------------------------------------------------------------
 
 class RenderLineEdit : public RenderFormElement
@@ -225,6 +287,23 @@ public:
 public slots:	
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
+};
+
+// -------------------------------------------------------------------------
+
+class LineEditWidget : public QLineEdit
+{
+    Q_OBJECT
+public:
+    LineEditWidget(QWidget *parent) : QLineEdit(parent) {}
+    // grrr... why can't qwidget have built-in signals for this!
+    virtual void focusInEvent(QFocusEvent *)
+	{ emit focused(); }
+    virtual void focusOutEvent(QFocusEvent *)
+	{ emit blurred(); }
+signals:
+    void focused();
+    void blurred();
 };
 
 // -------------------------------------------------------------------------
@@ -256,9 +335,12 @@ public slots:
     virtual void slotClicked();
     virtual void slotReturnPressed();
     virtual void slotTextChanged(const QString &string);
+    virtual void slotBlurred();
+    virtual void slotFocused();
 
 protected:
     bool m_clicked;
+    bool m_haveFocus;
     QLineEdit   *m_edit;
     QPushButton *m_button;
 };
@@ -287,6 +369,38 @@ public:
     virtual const char *renderName() const { return "RenderLegend"; }
 };
 
+// -------------------------------------------------------------------------
+
+class ListBoxWidget : public KListBox
+{
+    Q_OBJECT
+public:
+    ListBoxWidget(QWidget *parent) : KListBox(parent) {}
+    virtual void focusInEvent(QFocusEvent *)
+	{ emit focused(); }
+    virtual void focusOutEvent(QFocusEvent *)
+	{ emit blurred(); }
+signals:
+    void focused();
+    void blurred();
+};
+
+
+// -------------------------------------------------------------------------
+
+class ComboBoxWidget : public QComboBox
+{
+    Q_OBJECT
+public:
+    ComboBoxWidget(QWidget *parent) : QComboBox(parent) {}
+    virtual void focusInEvent(QFocusEvent *)
+	{ emit focused(); }
+    virtual void focusOutEvent(QFocusEvent *)
+	{ emit blurred(); }
+signals:
+    virtual void focused();
+    virtual void blurred();
+};
 
 // -------------------------------------------------------------------------
 
@@ -315,6 +429,9 @@ public:
     int listToOptionIndex(int listIndex);
 
 protected:
+    ListBoxWidget *createListBox();
+    ComboBoxWidget *createComboBox();
+
     unsigned  m_size;
     bool m_multiple;
     QIntDict<HTMLOptionElementImpl> listOptions;

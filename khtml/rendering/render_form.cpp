@@ -23,19 +23,12 @@
  * $Id$
  */
 
-//#define BUTTON_DEBUG
-
 #include <kdebug.h>
 
 #include <kurl.h>
 #include <klocale.h>
-#include <klistbox.h>
 #include <kfiledialog.h>
 
-#include <qpushbutton.h>
-#include <qradiobutton.h>
-#include <qcheckbox.h>
-#include <qlineedit.h>
 #include <qcombobox.h>
 #include <qstack.h>
 #include <qlayout.h>
@@ -50,7 +43,6 @@
 
 #include "rendering/render_form.h"
 #include "rendering/render_style.h"
-#include <iostream.h>
 
 using namespace khtml;
 
@@ -85,6 +77,24 @@ void RenderFormElement::calcMinMaxWidth()
     m_maxWidth = m_width;
 }
 
+void RenderFormElement::slotBlurred()
+{
+    m_element->onBlur();
+}
+
+void RenderFormElement::slotFocused()
+{
+    m_element->onFocus();
+}
+
+void RenderFormElement::slotSelected()
+{
+}
+
+void RenderFormElement::slotClicked()
+{
+}
+
 // -------------------------------------------------------------------------
 
 RenderButton::RenderButton(QScrollView *view,
@@ -106,7 +116,6 @@ void RenderButton::layout(bool)
     RenderFormElement::layout(false);
 }
 
-
 // ------------------------------------------------------------------------------
 
 RenderHiddenButton::RenderHiddenButton(QScrollView *view,
@@ -121,8 +130,10 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
                                HTMLInputElementImpl *element)
     : RenderButton(view, element)
 {
-    QCheckBox *b = new QCheckBox(view->viewport());
+    CheckBoxWidget *b = new CheckBoxWidget(view->viewport());
     setQWidget(b);
+    connect(b,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(b,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
 }
 
@@ -137,7 +148,6 @@ void RenderCheckBox::slotStateChanged(int state)
     m_element->setAttribute(ATTR_CHECKED,state == 2 ? "" : 0);
 }
 
-
 // -------------------------------------------------------------------------------
 
 
@@ -145,9 +155,11 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
 				     HTMLInputElementImpl *element)
     : RenderButton(view, element)
 {
-    QRadioButton *b = new QRadioButton(view->viewport());
+    RadioButtonWidget *b = new RadioButtonWidget(view->viewport());
 
     setQWidget(b);
+    connect(b,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(b,SIGNAL(blurred()),this,SLOT(slotBlurred()));
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
@@ -169,15 +181,16 @@ void RenderRadioButton::layout(bool deep)
     RenderButton::layout(deep);
 }
 
-
 // -------------------------------------------------------------------------------
 
 
 RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *element)
     : RenderButton(view, element)
 {
-    QPushButton *p = new QPushButton(view->viewport());
+    PushButtonWidget *p = new PushButtonWidget(view->viewport());
     setQWidget(p);
+    connect(m_widget,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(m_widget,SIGNAL(blurred()),this,SLOT(slotBlurred()));
 
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
     m_clicked = false;
@@ -216,9 +229,6 @@ RenderImageButton::RenderImageButton(QScrollView *view,
     : RenderImage()
 {
     m_element = element;
-
-//###    connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
-//    m_clicked = false;
 }
 
 RenderImageButton::~RenderImageButton()
@@ -276,9 +286,11 @@ QString RenderPushButton::defaultLabel() {
 RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
     : RenderFormElement(view, element)
 {
-    QLineEdit *edit = new QLineEdit(view);
-    connect(edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
-    connect(edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
+    LineEditWidget *edit = new LineEditWidget(view);
+    connect(edit,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
+    connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
     if(element->inputType() == HTMLInputElementImpl::PASSWORD)
 	edit->setEchoMode( QLineEdit::Password );
@@ -355,11 +367,15 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     QWidget *w = new QWidget(view->viewport());
     QHBoxLayout *layout = new QHBoxLayout(w);
 
-    m_edit = new QLineEdit(w);
+    m_edit = new LineEditWidget(w);
     connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(m_edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
-    m_button = new QPushButton(i18n("Browse..."), w);
+    connect(m_edit,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(m_edit,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    m_button = new PushButtonWidget(i18n("Browse..."), w);
     connect(m_button, SIGNAL(clicked()), this, SLOT(slotClicked()));
+    connect(m_button,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(m_button,SIGNAL(blurred()),this,SLOT(slotBlurred()));
 
     if (element->maxLength() > 0) m_edit->setMaxLength(element->maxLength());
 
@@ -367,6 +383,7 @@ RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *elem
     layout->addWidget(m_button);
 
     setQWidget(w);
+    m_haveFocus = false;
 }
 
 RenderFileButton::~RenderFileButton()
@@ -425,6 +442,30 @@ void RenderFileButton::slotTextChanged(const QString &string)
     static_cast<HTMLInputElementImpl*>(m_element)->setFilename(DOMString(string));
 }
 
+void RenderFileButton::slotBlurred()
+{
+    if (sender() != m_edit && sender() != m_button)
+	return;
+
+    if ((sender() == m_edit && m_button->hasFocus()) ||
+ 	(sender() == m_button && m_edit->hasFocus()))
+	m_haveFocus = true;
+    else {
+	m_haveFocus = false;
+	RenderFormElement::slotBlurred();
+    }
+}
+
+void RenderFileButton::slotFocused()
+{
+    if (sender() != m_edit && sender() != m_button)
+	return;
+
+    if (!m_haveFocus)
+	RenderFormElement::slotFocused();
+    m_haveFocus = true;
+}
+
 // -------------------------------------------------------------------------
 
 RenderLabel::RenderLabel(QScrollView *view,
@@ -463,13 +504,13 @@ RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
     m_listBox = (m_multiple || m_size > 1);
 
     if(m_listBox) {
-        KListBox* w = new KListBox(view);
+        ListBoxWidget *w = createListBox();
         w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
         setQWidget(w);
         connect(w,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
     }
     else {
-        QComboBox *w = new QComboBox(view);
+        ComboBoxWidget *w = createComboBox();
         m_size = 1;
         setQWidget(w);
         connect(w,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
@@ -508,13 +549,13 @@ void RenderSelect::layout( bool )
 	    delete m_widget;
 
 	    if(m_listBox) {
-		KListBox* w = new KListBox(m_view);
+		ListBoxWidget *w = createListBox();
 		w->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
 		setQWidget(w);
 		connect(w,SIGNAL(highlighted(int)),this,SLOT(slotActivated(int)));
 	    }
 	    else {
-		QComboBox *w = new QComboBox(m_view);
+		ComboBoxWidget *w = createComboBox();
 		m_size = 1;
 		setQWidget(w);
 		connect(w,SIGNAL(activated(int)),this,SLOT(slotActivated(int)));
@@ -882,6 +923,22 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
     m_optionsChanged = _optionsChanged;
 }
 
+ListBoxWidget *RenderSelect::createListBox()
+{
+    ListBoxWidget *lb = new ListBoxWidget(m_view);
+    connect(lb,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(lb,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    return lb;
+}
+
+ComboBoxWidget *RenderSelect::createComboBox()
+{
+    ComboBoxWidget *cb = new ComboBoxWidget(m_view);
+    connect(cb,SIGNAL(focused()),this,SLOT(slotFocused()));
+    connect(cb,SIGNAL(blurred()),this,SLOT(slotBlurred()));
+    return cb;
+}
+
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
@@ -976,12 +1033,12 @@ void RenderTextArea::focus()
 
 void RenderTextArea::slotBlurred()
 {
-    static_cast<HTMLTextAreaElementImpl*>(m_element)->onBlur();
+    m_element->onBlur();
 }
 
 void RenderTextArea::slotFocused()
 {
-    static_cast<HTMLTextAreaElementImpl*>(m_element)->onFocus();
+    m_element->onFocus();
 }
 
 void RenderTextArea::select()

@@ -122,6 +122,12 @@ public:
 
     virtual void reset() {}
 
+    void onBlur();
+    void onFocus();
+    void onSelect();
+    void onChange();
+
+
     bool disabled() const { return m_disabled; }
     void setDisabled(bool _disabled) { m_disabled = _disabled; }
 
@@ -137,7 +143,6 @@ public:
      */
     virtual QCString encoding() { return ""; }
     QCString encodeString( QString e );
-//    QString decodeString( QString e );
 
 protected:
     HTMLFormElementImpl *getForm() const;
@@ -456,11 +461,6 @@ public:
     void blur (  );
     void focus (  );
     void select (  );
-
-    void onBlur();
-    void onFocus();
-    void onSelect();
-    void onChange();
 
     virtual void parseAttribute(AttrImpl *attr);
     virtual void attach(KHTMLView *w);

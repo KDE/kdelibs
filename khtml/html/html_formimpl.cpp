@@ -42,7 +42,7 @@
 using namespace DOM;
 using namespace khtml;
 
-template class QList<khtml::RenderFormElement>;
+//template class QList<khtml::RenderFormElement>;
 
 HTMLFormElementImpl::HTMLFormElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
@@ -438,46 +438,33 @@ QCString HTMLGenericFormElementImpl::encodeString( QString e )
     return encoded.latin1();
 }
 
-/*
-// not sure if this is still needed
-QString HTMLGenericFormElementImpl::decodeString( QString e )
+void HTMLGenericFormElementImpl::onBlur()
 {
-    unsigned int pos = 0;
-    unsigned int len = e.length();
-    QString decoded;
-
-    while ( pos < len )
-    {
-        if (e[pos] == QChar('%'))
-        {
-            if (pos+2 < len)
-            {
-                DOMString buffer(e.unicode()+pos+1, 2);
-                bool ok;
-                unsigned char val = buffer.string().toInt(&ok, 16);
-                if (((char) val) != '\r')
-                {
-                    decoded += (char) val;
-                }
-            }
-            else
-            {
-                decoded += e[pos];
-            }
-        }
-        else if (e[pos] == '+')
-        {
-            decoded += ' ';
-        }
-        else
-        {
-            decoded += e[pos];
-        }
-        pos++;
-    }
-    return decoded;
+    DOMString script = getAttribute(ATTR_ONBLUR);
+    if (!script.isEmpty())
+	view->part()->executeScript(script.string());
 }
-*/
+
+void HTMLGenericFormElementImpl::onFocus()
+{
+    DOMString script = getAttribute(ATTR_ONFOCUS);
+    if (!script.isEmpty())
+	view->part()->executeScript(script.string());
+}
+
+void HTMLGenericFormElementImpl::onSelect()
+{
+    DOMString script = getAttribute(ATTR_ONSELECT);
+    if (!script.isEmpty())
+	view->part()->executeScript(script.string());
+}
+
+void HTMLGenericFormElementImpl::onChange()
+{
+    DOMString script = getAttribute(ATTR_ONFOCUS);
+    if (!script.isEmpty())
+	view->part()->executeScript(script.string());
+}
 
 // -------------------------------------------------------------------------
 
@@ -699,6 +686,11 @@ void HTMLInputElementImpl::blur(  )
 {
     // ###
     kdDebug( 6030 ) << "HTMLInputElementImpl::blur(  )" << endl;
+
+    if (m_render)
+	static_cast<RenderTextArea*>(m_render)->blur();
+//    onBlur(); // ### enable this - but kjs needs to support re-entry
+
 
 }
 
@@ -996,6 +988,7 @@ bool HTMLInputElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
     if (_type == IMAGE && (type == MouseClick || ((type == MouseRelease) && wasPressed))) {
 	// ### if the above mouse event called a javascript which deleted us, then
 	// we will probably crash here
+	// ### submit co-ordinates clicked on as specified in html specs
 	_form->submit();
 	return true;
     }
@@ -1509,34 +1502,6 @@ void HTMLTextAreaElementImpl::setValue(DOMString _value)
 {
     m_value = _value;
     setChanged(true);
-}
-
-void HTMLTextAreaElementImpl::onBlur()
-{
-    DOMString script = getAttribute(ATTR_ONBLUR);
-    if (!script.isEmpty())
-	view->part()->executeScript(script.string());
-}
-
-void HTMLTextAreaElementImpl::onFocus()
-{
-    DOMString script = getAttribute(ATTR_ONFOCUS);
-    if (!script.isEmpty())
-	view->part()->executeScript(script.string());
-}
-
-void HTMLTextAreaElementImpl::onSelect()
-{
-    DOMString script = getAttribute(ATTR_ONSELECT);
-    if (!script.isEmpty())
-	view->part()->executeScript(script.string());
-}
-
-void HTMLTextAreaElementImpl::onChange()
-{
-    DOMString script = getAttribute(ATTR_ONFOCUS);
-    if (!script.isEmpty())
-	view->part()->executeScript(script.string());
 }
 
 
