@@ -452,38 +452,36 @@ void KGlobalAccel::writeSettings() const
 
 bool KGlobalAccel::x11EventFilter( const XEvent *event_ ) {
 
-	if ( aKeyMap.isEmpty() ) return false;
-	if ( event_->type != KeyPress ) return false;
+    if ( aKeyMap.isEmpty() ) return false;
+    if ( event_->type != KeyPress ) return false;
 	
-	uint mod=event_->xkey.state & (ControlMask | ShiftMask | Mod1Mask);
-	uint keysym= XKeycodeToKeysym(qt_xdisplay(), event_->xkey.keycode, 0);
+    uint mod=event_->xkey.state & (ControlMask | ShiftMask | Mod1Mask);
+    uint keysym= XKeycodeToKeysym(qt_xdisplay(), event_->xkey.keycode, 0);
 	
-        KKeyEntry entry;
-
-        for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
-             it != aKeyMap.end(); ++it) {
-            int kc = (*it).aCurrentKeyCode;
-            if ( mod == keyToXMod( kc ) && keysym == keyToXSym( kc ) ) {
-                entry = *it;
-            }
+    KKeyEntry entry;
+    for (KKeyEntryMap::ConstIterator it = aKeyMap.begin();
+	 it != aKeyMap.end(); ++it) {
+	int kc = (*it).aCurrentKeyCode;
+	if ( mod == keyToXMod( kc ) && keysym == keyToXSym( kc ) ) {
+	    entry = *it;
 	}
+    }
 	
-	if ( !entry.receiver )
-            return false;
+    if ( !entry.receiver || !entry.bEnabled )
+	return false;
 	
-
+    if ( !QWidget::keyboardGrabber() ) {
 	XAllowEvents(qt_xdisplay(), AsyncKeyboard, CurrentTime);
 	XUngrabKeyboard(qt_xdisplay(), CurrentTime);
 	XSync(qt_xdisplay(), false);
-	if ( !QWidget::keyboardGrabber() ) {
-	    connect( this, SIGNAL( activated() ),
-                     entry.receiver, entry.member);
-	    emit activated();
-	    disconnect( this, SIGNAL( activated() ), entry.receiver,
-                        entry.member );
-	}
+	connect( this, SIGNAL( activated() ),
+		 entry.receiver, entry.member);
+	emit activated();
+	disconnect( this, SIGNAL( activated() ), entry.receiver,
+		    entry.member );
+    }
 
-	return true;
+    return true;
 }
 
 /*****************************************************************************/
