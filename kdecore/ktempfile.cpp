@@ -90,6 +90,9 @@ bool
 KTempFile::create(const QString &filePrefix, const QString &fileExtension,
 		  int mode)
 {
+   // make sure the random seed is randomized
+   (void) KApplication::random();
+
    QCString ext = QFile::encodeName(fileExtension);
    QCString nme = QFile::encodeName(filePrefix) + "XXXXXX" + ext;
    if((mFd = mkstemps(nme.data(), ext.length())) < 0)
