@@ -138,7 +138,7 @@ public:
      * containing the "unknown" pixmap is returned when no appropriate icon has
      * been found.
      * @return the icon set. Can be null when not found, depending on 
-     *          @canReturnNull.
+     *          @p canReturnNull.
      */
     QIconSet loadIconSet(const QString& name, KIcon::Group group, int size,
                          bool canReturnNull);
