@@ -40,9 +40,11 @@ public:
 
 protected slots:
 	void slotPortSelected(QListViewItem*);
+	void slotTextChanged( const QString& );
 
 protected:
 	void initialize();
+	QListViewItem* lookForItem( const QString& );
 
 protected:
 	KListView	*m_ports;
@@ -50,6 +52,7 @@ protected:
 	QStringList	m_uris;
 	QListViewItem	*m_parents[4];
 	bool		m_initialized;
+	bool m_block;
 };
 
 #endif

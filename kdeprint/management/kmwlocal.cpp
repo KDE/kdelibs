@@ -39,6 +39,7 @@ KMWLocal::KMWLocal(QWidget *parent, const char *name)
 	m_ID = KMWizard::Local;
 	m_nextpage = KMWizard::Driver;
 	m_initialized = false;
+	m_block = false;
 
 	m_ports = new KListView(this);
 	m_ports->setFrameStyle(QFrame::WinPanel|QFrame::Sunken);
@@ -52,6 +53,7 @@ KMWLocal::KMWLocal(QWidget *parent, const char *name)
 	connect(m_ports, SIGNAL(selectionChanged(QListViewItem*)), SLOT(slotPortSelected(QListViewItem*)));
 	QLabel	*l1 = new QLabel(i18n("URI:"), this);
 	m_localuri = new QLineEdit(this);
+	connect( m_localuri, SIGNAL( textChanged( const QString& ) ), SLOT( slotTextChanged( const QString& ) ) );
 	m_parents[0] = new QListViewItem(root, i18n("Parallel"));
 	m_parents[1] = new QListViewItem(root, m_parents[0], i18n("Serial"));
 	m_parents[2] = new QListViewItem(root, m_parents[1], i18n("USB"));
@@ -89,15 +91,26 @@ bool KMWLocal::isValid(QString& msg)
 
 void KMWLocal::slotPortSelected(QListViewItem *item)
 {
-	if (!item || item->depth() <= 1 || item->depth() > 3)
+	if ( m_block )
 		return;
+
+	QString uri;
+	if (!item || item->depth() <= 1 || item->depth() > 3)
+		uri = QString::null;
 	else if (item->depth() == 3)
-		item = item->parent();
-	m_localuri->setText(item->text(1));
+		uri = item->parent()->text( 1 );
+	else
+		uri = item->text( 1 );
+	m_block = true;
+	m_localuri->setText( uri );
+	m_block = false;
 }
 
 void KMWLocal::updatePrinter(KMPrinter *printer)
 {
+	QListViewItem *item = m_ports->selectedItem();
+	if ( item && item->depth() == 3 )
+		printer->setOption( "kde-autodetect", item->text( 0 ) );
 	printer->setDevice(KURL(m_localuri->text()));
 }
 
@@ -110,6 +123,39 @@ void KMWLocal::initPrinter(KMPrinter *printer)
 	{
 		m_localuri->setText(printer->device().url());
 	}
+}
+
+QListViewItem* KMWLocal::lookForItem( const QString& uri )
+{
+	for ( int i=0; i<4; i++ )
+	{
+		QListViewItem *item = m_parents[ i ]->firstChild();
+		while ( item )
+			if ( item->text( 1 ) == uri )
+				if ( item->firstChild() )
+					return item->firstChild();
+				else
+					return item;
+			else
+				item = item->nextSibling();
+	}
+	return 0;
+}
+
+void KMWLocal::slotTextChanged( const QString& txt )
+{
+	if ( m_block )
+		return;
+
+	QListViewItem *item = lookForItem( txt );
+	if ( item )
+	{
+		m_block = true;
+		m_ports->setSelected( item, true );
+		m_block = false;
+	}
+	else
+		m_ports->clearSelection();
 }
 
 void KMWLocal::initialize()
