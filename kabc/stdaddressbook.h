@@ -76,7 +76,7 @@ class KABC_EXPORT StdAddressBook : public AddressBook
                           signal has been emitted. So connect to this signal when
                           using this method!
      */
-    static StdAddressBook *self( bool asyncronous );
+    static StdAddressBook *self( bool asynchronous );
 
     /**
       Saves the standard address book to disk.
