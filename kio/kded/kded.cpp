@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
         printf("KDED already running!\n");
         exit(0);
      }
-     KUniqueApplication k(argc,argv, "kded", false /* not GUI */);
+     KUniqueApplication k(argc,argv, "kded", false, false );
 
      Kded *kded= new Kded; // Build data base
      kded->recreate();
