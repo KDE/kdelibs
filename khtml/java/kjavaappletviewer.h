@@ -41,14 +41,6 @@ class KAboutData;
 class KInstance;
 class KConfig;
 
-/* FIXME: merge with KJavaAppletWidget */
-class KJavaAppletViewerWidget : public KJavaAppletWidget {
-public:
-    KJavaAppletViewerWidget (QWidget* parent=0, const char* name=0);
-protected:
-    void showEvent (QShowEvent *);
-};
-
 class KJavaAppletViewerBrowserExtension : public KParts::BrowserExtension {
     Q_OBJECT
 public:

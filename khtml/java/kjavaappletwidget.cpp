@@ -127,4 +127,14 @@ void KJavaAppletWidget::resize( int w, int h )
     QXEmbed::resize( w, h );
 }
 
+void KJavaAppletWidget::showEvent (QShowEvent * e) {
+    QXEmbed::showEvent(e);
+    if (!applet()->isCreated() && !applet()->appletClass().isEmpty()) {
+        // delayed showApplet
+        if (applet()->size().width() <= 0)
+            applet()->setSize (sizeHint());
+        showApplet();
+    }
+}
+
 #include "kjavaappletwidget.moc"

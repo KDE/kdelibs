@@ -109,6 +109,7 @@ protected slots:
 protected:
     //The counter to generate ID's for the applets
     static int appletCount;
+    void showEvent (QShowEvent *);
 
 private:
     KJavaAppletWidgetPrivate* d;

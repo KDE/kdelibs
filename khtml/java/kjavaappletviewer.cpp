@@ -160,7 +160,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
         serverMaintainerDeleter.setObject (serverMaintainer,
                                            new KJavaServerMaintainer);
     }
-    m_view = new KJavaAppletViewerWidget (wparent);
+    m_view = new KJavaAppletWidget (wparent);
     QString classname, classid, codebase;
     int width = -1;
     int height = -1;
@@ -257,7 +257,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent, const char *,
 }
 
 KJavaAppletViewer::~KJavaAppletViewer () {
-    m_view = (KJavaAppletViewerWidget*) 0;
+    m_view = (KJavaAppletWidget*) 0;
     serverMaintainer->releaseContext (parent(), baseurl);
 }
 
@@ -430,19 +430,5 @@ void KJavaAppletViewerLiveConnectExtension::jsEvent (const QStringList & args) {
 }
 
 //-----------------------------------------------------------------------------
-// TODO move this to kjavaappletwidget
-
-KJavaAppletViewerWidget::KJavaAppletViewerWidget(QWidget* parent, const char* name)
-  : KJavaAppletWidget(parent, name) {}
-
-void KJavaAppletViewerWidget::showEvent (QShowEvent * e) {
-    KJavaAppletWidget::showEvent(e);
-    if (!applet()->isCreated() && !applet()->appletClass().isEmpty()) {
-        // delayed showApplet
-        if (applet()->size().width() <= 0)
-            applet()->setSize (sizeHint());
-        showApplet();
-    }
-}
 
 #include "kjavaappletviewer.moc"
