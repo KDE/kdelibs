@@ -784,3 +784,18 @@ ushort HTMLTableCaptionElementImpl::id() const
 }
 
 
+void HTMLTableCaptionElementImpl::parseAttribute(AttrImpl *attr)
+{
+    switch(attr->attrId)
+    {
+    case ATTR_ALIGN:
+	if (attr->val())
+	    addCSSProperty(CSS_PROP_CAPTION_SIDE, attr->value(), false);
+	else
+	    removeCSSProperty(CSS_PROP_CAPTION_SIDE);
+	break;
+    default:
+	HTMLElementImpl::parseAttribute(attr);
+    }
+
+}

@@ -271,6 +271,8 @@ public:
 
     virtual tagStatus startTag() { return CAPTIONStartTag; }
     virtual tagStatus endTag() { return CAPTIONEndTag; }
+    
+    virtual void parseAttribute(AttrImpl *attr);
 
 };
 
