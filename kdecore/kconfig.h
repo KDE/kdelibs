@@ -30,7 +30,7 @@ class QTimer;
 #include <qdatetime.h>
 
 /**
-* KDE Configuration entries
+* Access KDE Configuration entries.
 *
 * This class implements KDE's default configuration system.
 *
@@ -80,7 +80,7 @@ public:
   virtual void rollback(bool bDeep = true);
 
   /**
-   * Retrieve true if the specified group is known.
+   * @return @p true if the specified group is known.
    *
    * @param _pGroup The group to search for.
    * @returns @p true if the group exists.
@@ -105,7 +105,9 @@ public:
 
   /**
    * Retrieve a map (tree) of entries for all entries in a particular
-   * group.  Only the actual entry string is returned, none of the
+   * group.
+   *
+   *  Only the actual entry string is returned, none of the
    * other internal data should be included.
    *
    * @param pGroup A group to get keys from.
@@ -123,7 +125,7 @@ public:
 protected:
 
   /**
-   * Returns an map (tree) of the entries in the specified group.
+   * Retrieve a map (tree) of the entries in the specified group.
    *
    * Do not use this function, the implementation / return type are
    * subject to change.
@@ -169,9 +171,11 @@ protected:
 
   /**
    * Contains all key,value entries, as well as some "special"
-   * keys which indicate the start of a group of entries.  These
-   * special keys will have the .key portion of their KEntryKey
-   * set to QString::null.
+   * keys which indicate the start of a group of entries.
+   *
+   * These
+   * special keys will have the .key portion of their @ref KEntryKey
+   * set to @ref QString::null.
    */
   KEntryMap aEntryMap;
 

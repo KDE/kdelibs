@@ -22,6 +22,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.38  2000/01/09 19:18:31  dsweet
+// Spiffed up documentation.
+//
 // Revision 1.37  1999/11/19 23:30:53  kulow
 // using explicit QString::fromLatin1 calls
 //
@@ -107,7 +110,7 @@
 #include "kconfigdata.h"
 
 /**
- * Abstract base class for KDE configuration entries
+ * Abstract base class for KDE configuration entries.
  *
  * This class forms the base for all KDE configuration. It is an
  * abstract base class, meaning that you cannot directly instantiate
@@ -149,7 +152,9 @@ public:
   virtual ~KConfigBase();
 
   /**
-   * Specify the group in which keys will be searched.  Subsequent
+   * Specify the group in which keys will be searched.
+   *
+   *  Subsequent
    * calls to @ref readEntry() will only look for keys in the currently
    * activated group.
    *

@@ -24,7 +24,7 @@
 #include "kconfig.h"
 
 /** 
- * KDE Desktop File Management
+ * KDE Desktop File Management.
  *
  * @author Pietro Iglio <iglio@kde.org>
  * @version $Id$
@@ -58,11 +58,12 @@ public:
   virtual ~KDesktopFile();
 
   /**
-   * Returns @p true if the file appears to be a desktop file.
+   * Check to see whether this is a desktop file.
+   * 
    * The check is performed looking at the file extension (the file is not
    * opened).
    * Currently, valid extensions are ".kdelnk" and ".desktop".
-   * 
+   * @eturn @p true if the file appears to be a desktop file.
    */
   static bool isDesktopFile(const QString& path);
 
@@ -97,29 +98,30 @@ public:
   QString readURL();
 
   /**
-   * Returns @p true if there is an entry "Type=Link".
+   * Check to see if there is a "Type=Link" entry.
+   *
    * The link points to the "URL=" entry.
    */
   bool hasLinkType();
 
   /**
-   * Returns @p true if there is an entry "Type=Application".
+   * Check to see if there is an entry "Type=Application".
    */
   bool hasApplicationType();
 
   /**
-   * Returns @p true if there is an entry "Type=MimeType".
+   * Check to see if there is an entry "Type=MimeType".
    */
   bool hasMimeTypeType(); // funny name :)
 
   /**
-   * Returns @p true if there is an entry "Type=FSDev".
+   * Check to see if there is an entry "Type=FSDev".
    */
   bool hasDeviceType();
 
   /**
-   * Returns @p true f the TryExec field contains a binary
-   * which is found on the, otherwise returns false.
+   * Check to see if the TryExec field contains a binary
+   * which is found on the local system.
    */
   bool tryExec();
 

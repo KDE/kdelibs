@@ -32,6 +32,7 @@ class QWidget;
 
 /**
  * Accelerator information, similar to an action.
+ *
  * It is used internally by @ref KAccel.
  * @internal
  * @deprecated
@@ -51,11 +52,13 @@ struct KKeyEntry {
 };
 
 /**
- * The KAccel class handles keyboard accelerators, allowing a user to configure
+ * Handle keyboard accelerators.
+ *
+ * Allowe a user to configure
  * key bindings through application configuration files or through the
  * @ref KKeyChooser GUI.
  *
- * A KAccel contains a list of accelerator items. Each accelerator item
+ * A @ref KAccel contains a list of accelerator items. Each accelerator item
  * consists of an action name and a keyboard code combined with modifiers
  * (Shift, Ctrl and Alt.)
  *
@@ -102,7 +105,7 @@ struct KKeyEntry {
  *</pre>
  *
  * If a shortcut has a menu entry as well, you could insert them like
- * this. The example is again the KAccel::Print from above.
+ * this. The example is again the @ref KAccel::Print from above.
  *
  * <pre>
  * int id;
@@ -125,7 +128,7 @@ struct KKeyEntry {
  * </pre>
  *
  * Please keep the order right:  First insert all functions in the
- * acceleratior, then call a->readSettings() and _then_ build your
+ * acceleratior, then call a -> @ref readSettings() and @em then_build your
  * menu structure.
  *
  * @short Configurable key binding support.
@@ -134,10 +137,13 @@ struct KKeyEntry {
 class KAccel
 {
  public:
+  /**
+   * Standard actions.
+   **/
  	enum StdAccel { Open=1, New, Close, Save, Print, Quit, Cut, Copy,
 		Paste, Undo, Redo, Find, Replace, Insert, Home, End, Prior,
-		Next, Help, FindNext, FindPrev, ZoomIn, ZoomOut, AddBookmark,
-        TextCompletion, RotateUpInList, RotateDownInList };
+			Next, Help, FindNext, FindPrev, ZoomIn, ZoomOut, AddBookmark,
+			TextCompletion, RotateUpInList, RotateDownInList };
 	/**
 	 * Create a KAccel object with a parent widget and a name.
 	 */
@@ -172,6 +178,7 @@ class KAccel
         /**
 	 * Same as @ref connectItem() from above, but for standard
 	 * accelerators.
+	 *
 	 * If the standard accelerator was not inserted so far, it
 	 * will be inserted automatically.
 	 */
@@ -193,7 +200,7 @@ class KAccel
 
 	/**
          * Retrieve the description  of the accelerator item with the
-	 * action name @p action, or QString::null if the action name cannot
+	 * action name @p action, or @ref QString::null if the action name cannot
 	 * be found. Useful for menus.
          */
         QString description( const QString& action ) const;
@@ -213,7 +220,7 @@ class KAccel
 	
 	/**
 	 * Rerieve the identifier of the accelerator item with the keycode @p key,
-	 * or QString::null if the item cannot be found.
+	 * or @ref QString::null if the item cannot be found.
 	 */
 	QString findKey( int key ) const;
 	
@@ -234,7 +241,7 @@ class KAccel
 	 *  the key binding using the @ref KKeyChooser GUI and whether the
 	 *  key will be written back to configuration files when
 	 *  @ref writeSettings() is called.
-	 *  @return true If successful.
+	 *  @return @p true if successful.
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
 			uint defaultKeyCode, bool configurable = true );
@@ -258,7 +265,7 @@ class KAccel
 	 *  the key binding using the @ref KKeyChooser GUI and whether the
 	 *  key will be written back to configuration files when
 	 *  @ref writeSettings() is called.
-	 *  @return true If successful.
+	 *  @return @p true if successful.
 	 *
 	 */
 	bool insertItem( const QString& descr, const QString& action, 
@@ -283,7 +290,7 @@ class KAccel
 	 *  the key binding using the @ref KKeyChooser GUI and whether the
 	 *  key will be written back to configuration files when
 	 *  @ref writeSettings() is called.
-	 *  @return true If successful.
+	 *  @return @p true if successful.
 	 *
 	 */
 	bool insertItem( const QString& descr, const QString& action,
@@ -306,7 +313,7 @@ class KAccel
 	 *  the key binding using the @ref KKeyChooser GUI and whether the
 	 *  key will be written back to configuration files when
 	 *  @ref writeSettings() is called.
-	 *  @return true If successful.
+	 *  @return @p true if successful.
 	 *
 	 */
         bool insertItem( const QString& descr, const QString& action,
@@ -330,7 +337,9 @@ class KAccel
 	/**
 	 * Convenience function form of @ref insertItem() 
 	 * without the need to specify a localized
-	 * function name for the user. This is useful if the accelerator
+	 * function name for the user.
+	 *
+	 * This is useful if the accelerator
 	 * is only used internally, without appearing in a menu or a
 	 * keybinding editor.
 	 */
@@ -340,7 +349,9 @@ class KAccel
 	/**
 	 * Convenience function for of @ref insertItem() without the need
 	 * to specify a localized
-	 * function name for the user. This is useful if the accelerator
+	 * function name for the user.
+	 *
+	 * This is useful if the accelerator
 	 * is only used internally, without appearing in a menu or a
 	 * keybinding editor.
 	 */
@@ -355,7 +366,9 @@ class KAccel
 
 	/**
 	 * Shortcuts should be visible in the menu
-	 * structure of an application. Use this function for that
+	 * structure of an application.
+	 *
+	 * Use this function for that
 	 * purpose.  Note that the action must have been inserted
 	 * before!
 	 */
@@ -370,7 +383,9 @@ class KAccel
 
 	/**
          * Set the dictionary of accelerator action names and @ref KKeyEntry
-	 * objects to @p nKeyDict. Note that only a shallow copy is made so
+	 * objects to @p nKeyDict.
+	 *
+	 * Note that only a shallow copy is made so
 	 * that items will be lost when the @ref KKeyEntry objects are deleted.
 	 */	
 	bool setKeyDict( QDict<KKeyEntry> nKeyDict );
@@ -387,6 +402,7 @@ class KAccel
 	 * Read all key associations from @p config, or (if @p config
          * is zero) from the application's configuration file
          * @ref KGlobal::config().
+	 *
 	 * The group in which the configuration is stored can be
          * set with @ref setConfigGroup().
 	 */	
@@ -401,7 +417,9 @@ class KAccel
 	
         /**
          * Set the group in the configuration file in which the
-         * accelerator settings are stored. By default, this is "Keys".
+         * accelerator settings are stored.
+	 *
+	 * By default, this is "Keys".
          */
 	void setConfigGroup( const QString& group );
 
@@ -452,7 +470,7 @@ class KAccel
 	 *      the following: Open,
 	 *	New, Close, Save, Print, Quit, Cut, Copy, Paste, Undo, Redo,
 	 *	Find, Replace, Insert, Home, End, Prior, Next, or Help.
-	 *	The method returns QString::null otherwise.
+	 *	The method returns @ref QString::null otherwise.
 	 */
 	static QString stdAction( StdAccel id );
 
@@ -479,7 +497,9 @@ class KAccel
         /**
          * Retrieve the key code corresponding to the string @p sKey or
 	 * zero if the string
-         * is not recognized. The string must be something like "Shift+A",
+         * is not recognized.
+	 *
+	 * The string must be something like "Shift+A",
          * "F1+Ctrl+Alt" or "Backspace" for example. That is, the string
 	 * must consist of a key name plus a combination of
 	 * the modifiers Shift, Ctrl and Alt.

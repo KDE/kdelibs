@@ -54,31 +54,31 @@ public:
   // Static functions:
   
   /**
-   * Initialization function.
+   * Initialize class.
    *
    * This function should be called as the very first thing in
    *  your application.
-   * @param argc As passed to main(...).
-   * @param argv As passed to main(...).
+   * @param argc As passed to @p main(...).
+   * @param argv As passed to @p main(...).
    * @param appname The untranslated name of your application. This should
-   *                match with argv[0].
+   *                match with @p argv[0].
    * @param description A short description of what your application is about.
    * @param version A version.
-   * @param noKApp Don't add commandline options for QApplication/KApplication
+   * @param noKApp Don't add commandline options for @ref QApplication/@ref KApplication
    */
   static void init(int _argc, char **_argv, 
                    const char *_appname, const char *_description,
                    const char *_version, bool noKApp = false);
 
   /**
-   * Initialization function.
+   * Initialize class.
    *
    * This function should be called as the very first thing in
    *  your application.
-   * @param argc As passed to main(...).
-   * @param argv As passed to main(...).
+   * @param argc As passed to @p main(...).
+   * @param argv As passed to @p main(...).
    * @param about A KAboutData object describing your program.
-   * @param noKApp Don't add commandline options for QApplication/KApplication
+   * @param noKApp Don't add commandline options for @ref QApplication / @ref KApplication
    */
   static void init(int _argc, char **_argv, 
                    const KAboutData *about, bool noKApp = false);
@@ -89,7 +89,7 @@ public:
    * You must make sure that all possible options have been added before
    * any class uses the command line arguments. 
    *
-   * @param options A list of options which your code supplies
+   * @param options A list of options which your code supplies.
    * @param id A name with which these options can be identified.
    *          
    */
@@ -97,7 +97,7 @@ public:
 				 const char *name=0, const char *id = 0);
 
   /**
-   * Access parsed arguments
+   * Access parsed arguments.
    *
    * This function returns all command line arguments which your code
    * handles. If unknown command line arguments are encountered the program
@@ -154,32 +154,32 @@ public:
    *  @return The value of the option. If the option was not
    *          present on the cmdline the default is returned.
    *          If the option is listed as '-no<option>' the
-   *          default is true.
+   *          default is @p true.
    *          If the option is listed as '-<option>' the
-   *          default is false.
+   *          default is @p false.
    *
    *          If the option is listed as '-<option> <arg>'
-   *          this function returns true if the option was present
-   *          and false otherwise.
+   *          this function returns @p true if the option was present
+   *          and @p false otherwise.
    *
    */
   bool isSet(const char *option);
 
   /**
    *  Read the number of arguments that aren't options (but
-   *  e.g. filenames)
+   *  e.g. filenames).
    *
    *  @return the number of arguments that aren't options
    */
   int count();
   
   /**
-   *  Read out an argument
+   *  Read out an argument.
    *
    *  @param n The argument to read. 0 is the first argument.
-   *           count()-1 is the last argument.
+   *           @ref count()-1 is the last argument.
    *
-   *  @return a const char * pointer to the n'th argument.
+   *  @return a @p const @p char @p * pointer to the n'th argument.
    */
   const char *arg(int n);
 
