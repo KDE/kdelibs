@@ -1072,12 +1072,6 @@ public:
    */
   static uint mouseState() KDE_DEPRECATED;
 
-  /** 
-   * Checks whether the given colors have enough contrast
-   * @returns true if contrast is ok
-   * @since 3.4
-  */
-  static bool hasSufficientContrast(const QColor &c1, const QColor &c2);
 
 public slots:
   /**
