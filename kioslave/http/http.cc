@@ -32,10 +32,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>  // Required for AIX
 #include <netinet/tcp.h>
+#include <unistd.h> // must be explicitly included for MacOSX
 
 /*
 #include <netdb.h>
-#include <unistd.h>
 #include <sys/time.h>
 #include <sys/wait.h>
 */
