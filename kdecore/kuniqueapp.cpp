@@ -113,12 +113,18 @@ KUniqueApplication::start()
   s_nofork = !args->isSet("fork");
   delete args;
 
-  const char *appName = KCmdLineArgs::about->appName();
+  QCString appName = KCmdLineArgs::about->appName();
+  if (s_multipleInstances)
+  {
+     QCString pid;
+     pid.setNum(getpid());
+     appName = appName + "-" + pid;
+  }
 
   if (s_nofork)
   {
      s_DCOPClient = new DCOPClient();
-     s_DCOPClient->registerAs(appName, s_multipleInstances );
+     s_DCOPClient->registerAs(appName, false );
      // We'll call newInstance in the constructor. Do nothing here.
      return true;
   }
@@ -140,7 +146,7 @@ KUniqueApplication::start()
      ::close(fd[0]);
      dc = new DCOPClient();
      {
-        QCString regName = dc->registerAs(appName, s_multipleInstances);
+        QCString regName = dc->registerAs(appName, false);
         if (regName.isEmpty())
         {
            // Check DISPLAY
@@ -154,7 +160,7 @@ KUniqueApplication::start()
 
            // Try to launch kdeinit.
            startKdeinit();
-           regName = dc->registerAs(appName, s_multipleInstances);
+           regName = dc->registerAs(appName, false);
            if (regName.isEmpty())
            {
               kdError() << "KUniqueApplication: Can't setup DCOP communication." << endl;
@@ -164,7 +170,7 @@ KUniqueApplication::start()
               ::exit(255);
            }
         }
-        if (!s_multipleInstances && (regName != appName))
+        if (regName != appName)
         {
            // Already running. Ok.
            result = 0;
@@ -253,7 +259,7 @@ KUniqueApplication::start()
      KCmdLineArgs::saveAppArgs(ds);
 
      QCString replyType;
-     if (!dc->call(appName, appName, "newInstance()", data, replyType, reply))
+     if (!dc->call(appName, KCmdLineArgs::about->appName(), "newInstance()", data, replyType, reply))
      {
         kdError() << "KUniqueApplication: DCOP communication error!" << endl;
         delete dc;	// Clean up DCOP commmunication
