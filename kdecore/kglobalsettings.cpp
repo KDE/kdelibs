@@ -70,11 +70,13 @@ bool KGlobalSettings::singleClick()
     return c->readBoolEntry("SingleClick", KDE_DEFAULT_SINGLECLICK);
 }
 
-bool KGlobalSettings::insertTearOffHandle()
+KGlobalSettings::TearOffHandle KGlobalSettings::insertTearOffHandle()
 {
+    int tearoff;
     KConfig *c = KGlobal::config();
     KConfigGroupSaver cgs( c, "KDE" );
-    return c->readBoolEntry("InsertTearOffHandle", KDE_DEFAULT_INSERTTEAROFFHANDLES);
+    tearoff =c->readNumEntry("InsertTearOffHandle", KDE_DEFAULT_INSERTTEAROFFHANDLES);
+    return (TearOffHandle) tearoff;
 }
 
 bool KGlobalSettings::changeCursorOverIcon()

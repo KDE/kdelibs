@@ -23,7 +23,7 @@
 #include <qfont.h>
 
 #define KDE_DEFAULT_SINGLECLICK true
-#define KDE_DEFAULT_INSERTTEAROFFHANDLES true
+#define KDE_DEFAULT_INSERTTEAROFFHANDLES 0
 #define KDE_DEFAULT_AUTOSELECTDELAY -1
 #define KDE_DEFAULT_CHANGECURSOR true
 #define KDE_DEFAULT_LARGE_CURSOR false
@@ -96,9 +96,20 @@ class KGlobalSettings
     static bool singleClick();
 
     /**
+     * This enum describes the return type for insertTearOffHandle() wether to insert
+     * a handle or not. Applications who independently want to use handles in their popup menus
+     * should test for Application level before calling the appropriate function in KPopupMenu.
+     **/
+    enum TearOffHandle {
+      Disable = 0,
+      ApplicationLevel,
+      Enable
+    };
+
+    /**
      * Returns whether tear-off handles are inserted in KPopupMenus.
      **/
-    static bool insertTearOffHandle();
+    static TearOffHandle insertTearOffHandle();
 
     /**
      * @return the KDE setting for "change cursor over icon"
@@ -163,7 +174,7 @@ class KGlobalSettings
        CompletionPopup,
        /**
         * Lists all possible matches in a popup list-box to choose from, and automatically
-	* fill the result whenever possible.
+        * fill the result whenever possible.
         */
        CompletionPopupAuto
    };
