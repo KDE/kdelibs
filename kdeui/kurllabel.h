@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1  1998/07/28 01:09:28  granroth
+ * Added KURLLabel class
+ *
  */
 #ifndef _KURLLABEL_H
 #define _KURLLABEL_H
@@ -70,7 +73,7 @@ typedef enum
  *
  * @short A drop-in replacement for QLabel that displays hyperlinks.
  * @author Kurt Granroth <granroth@kde.org>
- * @version 0.5.2
+ * @version 0.5.3
  */
 class KURLLabel : public QLabel
 {
@@ -142,7 +145,7 @@ public slots:
 	 * hand") whenever the cursor passes over the label.  By default,
 	 * it is <EM>on</EM>
 	 */
-	void setUseCursor(bool use_cursor = true, const QCursor* cursor = 0);
+	void setUseCursor(bool use_cursor, const QCursor* cursor = 0);
 
 	/**
 	 * Turn on or off the tool tip feature.  When this is on, the
