@@ -548,6 +548,8 @@ void KHTMLView::clear()
 
     QScrollView::setHScrollBarMode(d->hmode);
     QScrollView::setVScrollBarMode(d->vmode);
+    verticalScrollBar()->setEnabled( false );
+    horizontalScrollBar()->setEnabled( false );
 }
 
 void KHTMLView::hideEvent(QHideEvent* e)
@@ -771,6 +773,13 @@ void KHTMLView::layout()
         root->layout();
 
         emit finishedLayout();
+        if (d->firstRelayout) { 
+            // make sure firstRelayout is set to false now in case this layout
+            // wasn't scheduled
+            d->firstRelayout = false;
+            verticalScrollBar()->setEnabled( true );
+            horizontalScrollBar()->setEnabled( true );
+        }
 #if 0
     ElementImpl *listitem = m_part->xmlDocImpl()->getElementById("__test_element__");
     if (listitem) kdDebug(6000) << "after layout, before repaint" << endl;
@@ -2938,7 +2947,11 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
     else if ( e->timerId() == d->layoutTimerId ) {
         d->dirtyLayout = true;
         layout();
-        d->firstRelayout = false;
+        if (d->firstRelayout) {
+            d->firstRelayout = false;
+            verticalScrollBar()->setEnabled( true );
+            horizontalScrollBar()->setEnabled( true );
+        }
     }
 #ifndef KHTML_NO_CARET
     else if (d->m_caretViewContext
