@@ -202,6 +202,8 @@
       <template name="partintro" text="%t"/>
       <template name="preface" text="%t"/>
       <template name="procedure" text="%t"/>
+      <template name="procedure.formal" text="Procedur %n. %t"/>
+      <template name="question" text="%t"/>
       <template name="qandadiv" text="%t"/>
       <template name="qandaset" text="%t"/>
       <template name="reference" text="%t"/>
@@ -296,6 +298,7 @@
       <template name="index" text="%t"/>
       <template name="part" text="Del %n. %t"/>
       <template name="preface" text="%t"/>
+      <template name="question" text="Fr&#229;ga %n"/>
       <template name="reference" text="%t"/>
       <template name="set" text="%t"/>
       <template name="setindex" text="%t"/>
