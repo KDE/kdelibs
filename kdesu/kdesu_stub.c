@@ -405,6 +405,7 @@ fprintf(stderr," before forking\n");
     } else 
     {
 	/* Child: exec command. */
+	setsid();
 	sprintf(buf, "%s", params[P_COMMAND].value);
 	execl("/bin/sh", "sh", "-c", buf, 0L);
 	perror("kdesu_stub: exec()");
