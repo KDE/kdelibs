@@ -59,7 +59,7 @@
 
 <!-- Temporary solution -->
 <!ENTITY copy  "(c)"--=copyright sign-->
-<!ENTITY trade "(TM)"--=trade mark sign-->
+<!ENTITY trade "[tm]"--=trade mark sign-->
 <!ENTITY reg   "(R)"--/circledR =registered sign-->
 
 
