@@ -33,6 +33,7 @@
 #include <assert.h>
 #include <qstyle.h>
 #include <qobjectlist.h>
+#include <kstringhandler.h>
 
 #include "kjs_proxy.h"
 #include "kjs_window.h"
@@ -1058,16 +1059,30 @@ Value Window::openWindow(ExecState *exec, const List& args)
 {
   KHTMLView *widget = m_part->view();
   Value v = args[0];
-  UString s = v.toString(exec);
-  QString str = s.qstring();
+  QString str = v.toString(exec).qstring();
+
+  // prepare arguments
+  KURL url;
+  if (!str.isEmpty())
+  {
+    KHTMLPart* p = Window::retrieveActive(exec)->m_part;
+    if ( p )
+      url = p->htmlDocument().completeURL(str).string();
+    if ( !p ||
+         !static_cast<DOM::DocumentImpl*>(p->htmlDocument().handle())->isURLAllowed(url.url()) )
+      return Undefined();
+  }
 
   KHTMLSettings::KJSWindowOpenPolicy policy =
 		m_part->settings()->windowOpenPolicy(m_part->url().host());
   if ( policy == KHTMLSettings::KJSWindowOpenAsk ) {
     if ( KMessageBox::questionYesNo(widget,
-                                    i18n( "This site is trying to open up a new browser "
-                                          "window using JavaScript.\n"
-                                          "Do you want to allow this?" ),
+                                    str.isEmpty() ?
+                                    i18n( "This site is requesting to open up a new browser "
+                                          "window via JavaScript.\n"
+                                          "Do you want to allow this?" ) :
+                                    i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via Javascript.<br />"
+                                          "Do you want to allow this?</qt>").arg(KStringHandler::csqueeze(url.htmlURL(),  100)),
                                     i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
@@ -1147,18 +1162,6 @@ Value Window::openWindow(ExecState *exec, const List& args)
       }
     }
 
-    // prepare arguments
-    KURL url;
-    if (!str.isEmpty())
-    {
-      KHTMLPart* p = Window::retrieveActive(exec)->m_part;
-      if ( p )
-        url = p->htmlDocument().completeURL(str).string();
-      if ( !p ||
-           !static_cast<DOM::DocumentImpl*>(p->htmlDocument().handle())->isURLAllowed(url.url()) )
-          return Undefined();
-    }
-
     KParts::URLArgs uargs;
     KHTMLPart *p = m_part;
     uargs.frameName = args.size() > 1 ?
@@ -1193,7 +1196,7 @@ Value Window::openWindow(ExecState *exec, const List& args)
         khtmlpart->write("<HTML><BODY>");
         khtmlpart->end();
         if ( p->docImpl() ) {
-          kdDebug(6070) << "Setting domain to " << p->docImpl()->domain().string() << endl;
+          //kdDebug(6070) << "Setting domain to " << p->docImpl()->domain().string() << endl;
           khtmlpart->docImpl()->setDomain( p->docImpl()->domain());
           khtmlpart->docImpl()->setBaseURL( p->docImpl()->baseURL() );
         }
