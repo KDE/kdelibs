@@ -238,7 +238,7 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
   for(;s < eof;s++)
   {
      const char *startLine = s;
-     while ((*s != '\n') && (s < eof)) s++; // Search till end of line / end of file
+     while ((s < eof) && (*s != '\n')) s++; // Search till end of line / end of file
      if (*startLine == '[')
      {
         if (*(s-1) != ']')
