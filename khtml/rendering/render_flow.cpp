@@ -42,7 +42,6 @@
 
 #include <kdebug.h>
 #include <assert.h>
-#include <iostream.h>
 
 using namespace DOM;
 using namespace khtml;

@@ -108,6 +108,7 @@ public:
 			     int _tx, int _ty, DOMString &,
                              NodeImpl *& innerNode, long &offset);
     virtual NodeImpl *cloneNode(bool deep);
+    virtual void recalcStyle();
 
     khtml::RenderStyle *m_style;
 };

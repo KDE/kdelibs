@@ -513,9 +513,22 @@ bool KHTMLPart::executeScript( const QString &script )
 
   if (proxy) {
     bool ret = proxy->evaluate( script.unicode(), script.length() );
-    // ### update the whole page for now
-    // in future we should look more closely at what has actually changed
-    //d->m_doc->applyChanges();
+
+    // ### perhaps move this into HTMLDocumentImpl?
+    QListIterator<NodeImpl> it(d->m_doc->changedNodes);
+    for (; it.current(); ++it) {
+	if (it.current()->changed()) {
+	    it.current()->recalcStyle();
+	    if (it.current()->renderer())
+		it.current()->renderer()->setLayouted(false);
+	}
+    }
+    it.toFirst();
+    for (; it.current(); ++it)
+	if (it.current()->changed() && it.current()->renderer())
+	    it.current()->renderer()->updateSize();
+    d->m_doc->changedNodes.clear();
+
     return ret;
   }
   else

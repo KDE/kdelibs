@@ -182,7 +182,7 @@ public:
      * this function get's called, if a child changed it's geometry
      * (because an image got loaded or some changes in the DOM...)
      */
-    virtual void updateSize() {}
+    virtual void updateSize();
 
     /**
      * this function get's called, if a child changed it's height

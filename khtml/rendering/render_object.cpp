@@ -425,6 +425,10 @@ void RenderObject::selectionStartEnd(int& spos, int& epos)
     	parent()->selectionStartEnd(spos, epos);
 }
 
+void RenderObject::updateSize()
+{
+    containingBlock()->updateSize();
+}
 
 void RenderObject::setStyle(RenderStyle *style)
 {

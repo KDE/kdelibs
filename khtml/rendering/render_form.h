@@ -447,6 +447,7 @@ public:
     virtual QString state();
     virtual void restoreState(const QString &);
 
+    void recalcOptions();
     void setSelectedIndex(long index);
 
 protected:

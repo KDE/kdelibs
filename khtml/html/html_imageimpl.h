@@ -56,6 +56,7 @@ public:
 
     virtual void attach(KHTMLView *w);
     virtual void applyChanges(bool top=true, bool force=true);
+    virtual void recalcStyle();
 
 protected:
     bool ismap;

@@ -204,8 +204,8 @@ public:
 	{ b ? flags|=MouseInside : flags&=~MouseInside; }
     void setAttached(bool b=true)
 	{ b ? flags|=Attached : flags&=~Attached; }
-    void setChanged(bool b=true)
-	{ b ? flags|=Changed : flags&=~Changed; }
+    virtual void setChanged(bool b=true);
+//	{ b ? flags|=Changed : flags&=~Changed; }
 
     /**
      * attach to a KHTMLView. Additional info (like style information,
@@ -229,6 +229,7 @@ public:
     virtual QRect getRect();
 
     void setKeyboardFocus(ActivationState b=ActivationPassive);
+    virtual void recalcStyle() {}
 
 protected:
     DocumentImpl *document;

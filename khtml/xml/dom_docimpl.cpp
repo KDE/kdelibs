@@ -439,7 +439,7 @@ void DocumentImpl::applyChanges(bool,bool force)
     if(!m_render) return;
 
     if (force || changed())
-	m_render->setStyle(m_style);
+	recalcStyle();
 
     // a style change can influence the children, so we just go
     // through them and trigger an appplyChanges there too
@@ -457,6 +457,20 @@ void DocumentImpl::applyChanges(bool,bool force)
     m_render->repaint();
     setChanged(false);
 }
+
+void DocumentImpl::setChanged(bool b=true)
+{
+    if (b)
+	changedNodes.append(this);
+    NodeBaseImpl::setChanged(b);
+}
+
+void DocumentImpl::recalcStyle()
+{
+    if (m_render)
+	m_render->setStyle(m_style);
+}
+
 
 // ------------------------------------------------------------------------
 

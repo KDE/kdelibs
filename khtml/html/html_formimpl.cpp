@@ -872,6 +872,38 @@ void HTMLSelectElementImpl::focus(  )
     // ###
 }
 
+NodeImpl *HTMLSelectElementImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
+{
+    NodeImpl *result = HTMLGenericFormElementImpl::insertBefore(newChild,refChild);
+    if (m_render)
+	static_cast<RenderSelect*>(m_render)->recalcOptions();
+    return result;
+}
+
+NodeImpl *HTMLSelectElementImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
+{
+    NodeImpl *result = HTMLGenericFormElementImpl::replaceChild(newChild,oldChild);
+    if (m_render)
+	static_cast<RenderSelect*>(m_render)->recalcOptions();
+    return result;
+}
+
+NodeImpl *HTMLSelectElementImpl::removeChild ( NodeImpl *oldChild )
+{
+    NodeImpl *result = HTMLGenericFormElementImpl::removeChild(oldChild);
+    if (m_render)
+	static_cast<RenderSelect*>(m_render)->recalcOptions();
+    return result;
+}
+
+NodeImpl *HTMLSelectElementImpl::appendChild ( NodeImpl *newChild )
+{
+    NodeImpl *result = HTMLGenericFormElementImpl::appendChild(newChild);
+    if (m_render)
+	static_cast<RenderSelect*>(m_render)->recalcOptions();
+    return result;
+}
+
 void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
 {
     switch(attr->attrId)

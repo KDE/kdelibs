@@ -188,14 +188,23 @@ void HTMLImageElementImpl::attach(KHTMLView *w)
 void HTMLImageElementImpl::applyChanges(bool top, bool force)
 {
     kdDebug(0) << "Image::applyChanges(" << top << ", " << force <<")" << endl;
-    if((force || changed()) && m_render) {
-	static_cast<RenderImage *>(m_render)
-	    ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL(),
-	                  static_cast<HTMLDocumentImpl *>(document)->docLoader());
+    if(force || changed()) {
+	recalcStyle();
     }
     HTMLElementImpl::applyChanges(top,force);
     setChanged(false);
 }
+
+void HTMLImageElementImpl::recalcStyle()
+{
+    // ### perhaps not the most appropriate place for this.... here so it get's called after
+    // a script has executed
+    if (m_render)
+	static_cast<RenderImage *>(m_render)
+	    ->setImageUrl(imageURL, static_cast<HTMLDocumentImpl *>(document)->baseURL(),
+	                  static_cast<HTMLDocumentImpl *>(document)->docLoader());
+}
+
 
 // -------------------------------------------------------------------------
 

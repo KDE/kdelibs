@@ -154,6 +154,7 @@ public:
 
     virtual void attach(KHTMLView *w);
     virtual void detach();
+    virtual void recalcStyle();
 
 protected: // member variables
 

@@ -132,6 +132,10 @@ public:
 // ###    TreeWalker createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
 //                                bool entityReferenceExpansion);
 
+    QList<NodeImpl> changedNodes;
+    virtual void setChanged(bool b=true);
+    virtual void recalcStyle();
+
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
     KHTMLView *m_view;

@@ -68,7 +68,6 @@ void CharacterDataImpl::setData( const DOMString &newStr )
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
-    applyChanges(true, false);
 }
 
 unsigned long CharacterDataImpl::length() const
@@ -90,7 +89,6 @@ void CharacterDataImpl::appendData( const DOMString &arg )
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
     _parent->setChanged(true);
-    _parent->applyChanges(true, false);
 }
 
 void CharacterDataImpl::insertData( const unsigned long offset, const DOMString &arg )
@@ -99,7 +97,6 @@ void CharacterDataImpl::insertData( const unsigned long offset, const DOMString 
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
-    applyChanges(true, false);
 }
 
 void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned long count )
@@ -108,7 +105,6 @@ void CharacterDataImpl::deleteData( const unsigned long offset, const unsigned l
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
-    applyChanges(true, false);
 }
 
 void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned long count, const DOMString &arg )
@@ -127,7 +123,6 @@ void CharacterDataImpl::replaceData( const unsigned long offset, const unsigned 
     if (m_render)
       (static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
-    applyChanges(true, false);
 }
 
 // ---------------------------------------------------------------------------
@@ -211,7 +206,6 @@ TextImpl *TextImpl::splitText( const unsigned long offset )
     if (m_render)
 	(static_cast<RenderText*>(m_render))->setText(str);
     setChanged(true);
-    applyChanges(true, false);
     return newText;
 }
 
@@ -253,10 +247,8 @@ void TextImpl::detach()
 
 void TextImpl::applyChanges(bool,bool force)
 {
-    if (force || changed()) {
-	m_style = parentNode()->style();
-	if(m_render) m_render->setStyle(m_style);
-    }
+    if (force || changed())
+	recalcStyle();
     setChanged(false);
 }
 
@@ -299,4 +291,12 @@ NodeImpl *TextImpl::cloneNode(bool /*deep*/)
     newImpl->setLastChild(0);
 
     return newImpl;
+}
+
+void TextImpl::recalcStyle()
+{
+    if (!parentNode())
+	return;
+    m_style = parentNode()->style();
+    if(m_render) m_render->setStyle(m_style);
 }

@@ -177,7 +177,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 {
     QRect r = pe->rect();
 
-//    kdDebug( 6000 ) << "viewportPaintEvent r x=" << //    	r.x() << ",y=" << r.y() << ",w=" << r.width() << ",h=" << r.height() << endl;
+    //kdDebug( 6000 ) << "viewportPaintEvent r x=" << r.x() << ",y=" << r.y() << ",w=" << r.width() << ",h=" << r.height() << endl;
 
     NodeImpl *body = 0;
 
@@ -219,8 +219,8 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
 	p.fillRect(r.x(), r.y(), ew, eh, bgCol );
     }
 
-    QTime qt;
-    qt.start();
+//    QTime qt;
+//    qt.start();
 
     int py=0;
     while (py < eh)

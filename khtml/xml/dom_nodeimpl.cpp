@@ -56,6 +56,8 @@ NodeImpl::NodeImpl(DocumentImpl *doc)
 NodeImpl::~NodeImpl()
 {
   if(m_render) m_render->deref();
+  if (document)
+    document->changedNodes.remove(this);
 }
 
 DOMString NodeImpl::nodeValue() const
@@ -313,6 +315,16 @@ void NodeImpl::setKeyboardFocus(ActivationState b)
     }
 }
 
+
+void NodeImpl::setChanged(bool b)
+{
+    b ? flags|=Changed : flags&=~Changed;
+//    if (b)
+//	applyChanges(true,true);
+    if (b && document)
+	document->changedNodes.append(this);
+}
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentImpl *doc) : NodeImpl(doc)
@@ -466,7 +478,6 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild )
 
     // ### set style in case it's attached
     setChanged(true);
-    applyChanges(true, false);
 
     return newChild;
 }
@@ -526,7 +537,6 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild )
 
     // ### set style in case it's attached
     setChanged(true);
-    applyChanges(true, false);
 
     return oldChild;
 }
@@ -552,7 +562,6 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild )
 	m_render->removeChild(oldChild->renderer());
 
     setChanged(true);
-    applyChanges(true, false);
 
     return oldChild;
 }
@@ -602,7 +611,6 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild )
     }
 
     setChanged(true);
-    applyChanges(true, false);
     // ### set style in case it's attached
     return newChild;
 }

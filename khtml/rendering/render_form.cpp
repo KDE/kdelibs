@@ -52,8 +52,6 @@
 #include "rendering/render_form.h"
 #include "rendering/render_style.h"
 
-#include <iostream.h>
-
 using namespace khtml;
 
 RenderFormElement::RenderFormElement(QScrollView *view,
@@ -824,78 +822,7 @@ void RenderSelect::close()
 {
     HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
 
-    // insert all given <option>'s
-    NodeImpl* current = f->firstChild();
-    int i = 0;
-    bool inOptGroup = false;
-    bool finished = false;
-
-    listOptions.clear();
-    while(!finished) {
-	if (!inOptGroup && current->id() == ID_OPTGROUP && current->firstChild()) {
-            if(m_multiple || m_size > 1) {
-		// put the optgroup label in the list - ### make this work for combo boxes
-		DOMString text = static_cast<HTMLElementImpl*>(current)->getAttribute(ATTR_LABEL);
-		if (text.isNull())
-		    text = "";	
-		QListBoxText *optGroupItem = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
-
-                static_cast<KListBox*>(m_widget)->insertItem(optGroupItem, i);
-		optGroupItem->setSelectable(false);
-		i++;
-	    }
-	
-	    current = current->firstChild();
-	    inOptGroup = true;
-	}
-        if (current->id() == ID_OPTION) {
-            DOMString text = static_cast<HTMLElementImpl*>(current)->getAttribute(ATTR_LABEL);
-            if (text.isNull() && current->firstChild() && current->firstChild()->id() == ID_TEXT)
-		text = static_cast<TextImpl *>(current->firstChild())->string();
-	    if (text.isNull())
-		text = "";
-	    if (inOptGroup)
-		text = DOMString("    ")+text;
-
-            if(m_multiple || m_size > 1)
-                static_cast<KListBox*>(m_widget)
-                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), i);
-            else
-                static_cast<QComboBox*>(m_widget)
-                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), i);
-            listOptions.insert(i,static_cast<HTMLOptionElementImpl*>(current));
-        }
-	NodeImpl *parent = current->parentNode();
-        current = current->nextSibling();
-        i++;
-        if (!current) {
-	    if (inOptGroup) {
-		current = parent->nextSibling();
-		inOptGroup = false;
-	    }
-	    if (!current)
-		finished = true;
-        }
-    }
-
-    if(m_multiple || m_size > 1) {
-        // check if multiple and size was not given or invalid
-        // Internet Exploder sets size to QMIN(number of elements, 4)
-        // Netscape seems to simply set it to "number of elements"
-        // the average of that is IMHO QMIN(number of elements, 15)
-        // so I did that ;-)
-        if(m_multiple && m_size < 1)
-            m_size = QMIN(static_cast<KListBox*>(m_widget)->count(), 15);
-    }
-    else {
-        // and now disable the widget in case there is no <option> given
-        QComboBox* w = static_cast<QComboBox*>(m_widget);
-        if(!w->count())
-            w->setEnabled(false);
-    }
-
-    reset();
-    layout();
+    recalcOptions();
 
     // Restore state
     QString state = f->ownerDocument()->registerElement(f);
@@ -1105,6 +1032,83 @@ void RenderSelect::slotActivated(int index)
 
 }
 
+void RenderSelect::recalcOptions()
+{
+    HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_gform);
+    // insert all given <option>'s
+    NodeImpl* current = f->firstChild();
+    int i = 0;
+    bool inOptGroup = false;
+    bool finished = false;
+
+    listOptions.clear();
+    while(!finished) {
+	if (!inOptGroup && current->id() == ID_OPTGROUP && current->firstChild()) {
+            if(m_multiple || m_size > 1) {
+		// put the optgroup label in the list - ### make this work for combo boxes
+		DOMString text = static_cast<HTMLElementImpl*>(current)->getAttribute(ATTR_LABEL);
+		if (text.isNull())
+		    text = "";	
+		QListBoxText *optGroupItem = new QListBoxText(QString(text.implementation()->s, text.implementation()->l));
+
+                static_cast<KListBox*>(m_widget)->insertItem(optGroupItem, i);
+		optGroupItem->setSelectable(false);
+		i++;
+	    }
+	
+	    current = current->firstChild();
+	    inOptGroup = true;
+	}
+        if (current->id() == ID_OPTION) {
+            DOMString text = static_cast<HTMLElementImpl*>(current)->getAttribute(ATTR_LABEL);
+            if (text.isNull() && current->firstChild() && current->firstChild()->id() == ID_TEXT)
+		text = static_cast<TextImpl *>(current->firstChild())->string();
+	    if (text.isNull())
+		text = "";
+	    if (inOptGroup)
+		text = DOMString("    ")+text;
+
+            if(m_multiple || m_size > 1)
+                static_cast<KListBox*>(m_widget)
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), i);
+            else
+                static_cast<QComboBox*>(m_widget)
+                    ->insertItem(QString(text.implementation()->s, text.implementation()->l), i);
+            listOptions.insert(i,static_cast<HTMLOptionElementImpl*>(current));
+        }
+	NodeImpl *parent = current->parentNode();
+        current = current->nextSibling();
+        i++;
+        if (!current) {
+	    if (inOptGroup) {
+		current = parent->nextSibling();
+		inOptGroup = false;
+	    }
+	    if (!current)
+		finished = true;
+        }
+    }
+
+    if(m_multiple || m_size > 1) {
+        // check if multiple and size was not given or invalid
+        // Internet Exploder sets size to QMIN(number of elements, 4)
+        // Netscape seems to simply set it to "number of elements"
+        // the average of that is IMHO QMIN(number of elements, 15)
+        // so I did that ;-)
+        if(m_multiple && m_size < 1)
+            m_size = QMIN(static_cast<KListBox*>(m_widget)->count(), 15);
+    }
+    else {
+        // and now disable the widget in case there is no <option> given
+        QComboBox* w = static_cast<QComboBox*>(m_widget);
+        if(!w->count())
+            w->setEnabled(false);
+    }
+
+    reset();
+    layout();
+
+}
 
 
 // -------------------------------------------------------------------------

@@ -1,24 +1,401 @@
-<HTML>
+<html>
+<head>
+  <title>Interface</title>
+  <script language="javascript">
+  
+// ---------------------------- General class/function definitions ------------------------------
+  
+    // class: MenuItem
+  
+    function MenuItem(_name,_text,_status) {
+      this.name = _name;
+      this.text = _text;
+      this.status = _status;
+      return this;
+    }
+    
+    // class: Menu
+    
+    function Menu(_name,_loColor,_hiColor,_itemClicked) {
+      this.name = _name;
+      this.loColor = _loColor;
+      this.hiColor = _hiColor;
+      this.items = new Array();
+      this.addItem = Menu_addItem;
+      this.itemClicked = _itemClicked;
+      return this;
+    }
+    
+    function Menu_addItem(_name,_text,_status) {
+      this.items[this.items.length] = new MenuItem(_name,_text,_status);
+    }
+    
+    // class Content
+    function Content(_element) {
+      this.element = _element;
+      
+      this.clear = Content_clear;
+      this.addH1 = Content_addH1;
+      this.addPText = Content_addPText;
+      this.addElement = Content_addElement;
+      return this;
+    }
 
-<HEAD>
-<TITLE>DOM tests</TITLE>
-</HEAD>
+    function Content_clear() {
+      var i;
+      while (this.element.hasChildNodes()) {
+        this.element.removeChild(this.element.childNodes.item(0));
+      }
+    }
+    
+    function Content_addH1(_text) {
+      var h1 = document.createElement("h1");
+      h1.appendChild(document.createTextNode(_text));
+      this.element.appendChild(h1);
+    }
 
-<SCRIPT>
-function test()
-{
-  body = document.body;
-  text = document.createTextNode("The DOM is working");
-  br = document.createElement("BR");
-  body.appendChild(text);
-  body.appendChild(br);
-}
-</SCRIPT>
+    function Content_addPText(_text) {
+      var p = document.createElement("p");
+      p.appendChild(document.createTextNode(_text));
+      this.element.appendChild(p);
+    }
 
-<BODY>
+    function Content_addElement(_element) {
+      this.element.appendChild(_element);
+    }
+    
+    // class MultiSelectItem
+    
+    function MultiSelectItem(_td,_name,_text,_bgColor,_clicked) {
+      this.td = _td;
+      this.name = _name;
+      this.text = _text;
+      this.bgColor = _bgColor;
+      this.clicked = _clicked;
+      return this;
+    }
+    
+    // class MultiSelect
+    
+    function MultiSelect(_name,_text) {
+      this.name = _name;
+      this.text = _text;
+      
+      var table = document.createElement("table");
+      var tbody = document.createElement("tbody");
+      var tr = document.createElement("tr");
+      var td = document.createElement("td");
+      td.width = "100";
+      td.appendChild(document.createTextNode(this.text));
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      table.appendChild(tbody);
+      
+      this.tr = tr;
+      this.element = table;
+      this.items = new Array();
+      
+      this.addItem = MultiSelect_addItem;
+      
+      return this;
+    }
+    
+    function MultiSelect_addItem(_name,_text,_bgColor,_clicked) {
+      var td = document.createElement("td");
+      td.bgColor = _bgColor;
+      td.setAttribute("onClick",_clicked);
+      td.appendChild(document.createTextNode(_text));
+      td.width = "60";
+      this.tr.appendChild(td);
+      var item = new MultiSelectItem(_td,_name,_text,_bgColor,_clicked);
+      this.items[this.items.length] = item;
+    }
+    
 
-<p onclick="test();">(Click here to run the test)</p>
 
-</BODY>
 
-</HTML>
+    // General functions
+    
+    function submenuOn(menu,itemno) {
+      var td = document.getElementById("td_"+menu.name+"_"+itemno);
+      td.bgColor = menu.hiColor;
+      setStatusBar(menu.items[itemno].status);
+    }
+
+    function submenuOff(menu,itemno) {
+      var td = document.getElementById("td_"+menu.name+"_"+itemno);
+      td.bgColor = menu.loColor;
+    }
+
+  
+    function submenuClicked(itemno) {
+      window.alert("submenuClicked("+itemno+")");    
+    }
+    
+    function setupSubmenu(menuName,element) {
+      var i;
+      var tr;
+      var td;
+      var font;
+      var b;
+      var menu = eval(menuName);
+      
+      for (i = 0; i < menu.items.length; i++) {
+        if (element.nodeName == "TBODY")
+          tr = document.createElement("tr");
+	td = document.createElement("td");
+        td.setAttribute("onMouseOver","submenuOn("+menuName+","+i+")");
+	td.setAttribute("onMouseOut","submenuOff("+menuName+","+i+")");
+        td.setAttribute("onClick",menuName+".itemClicked("+i+")");
+	td.id = "td_"+menu.name+"_"+i;
+	td.bgColor = menu.loColor;
+	font = document.createElement("font");
+	font.face = "helvetica";
+	font.color = "#FFFFFF";
+	b = document.createElement("b");
+	
+	b.appendChild(document.createTextNode(menu.items[i].text));
+	font.appendChild(b);
+	td.appendChild(font);
+        if (element.nodeName == "TBODY") {
+          tr.appendChild(td);
+          element.appendChild(tr);
+	}
+	else {
+	  // assume TR
+	  td.align = "center";
+          element.appendChild(td);
+	}
+      }
+    }
+    
+    function setStatusBar(text) {
+      var sb = document.getElementById("statusbar");
+      while (sb != null && sb.nodeName != "#text") {
+        sb = sb.firstChild;
+      }
+      if (sb != null) {
+        sb.data = text;
+      }
+    }
+    
+    function printDOMTree(node,level) {
+      var line = "";
+      var i;
+      for (i = 0; i < level; i++) {
+        line += "  ";
+      }
+      line += node.nodeName;
+      if (node.nodeValue != null) {
+        line += ": \"" + node.nodeValue + "\"";
+      }
+      debug(line);
+      
+      var child = node.firstChild;
+      while (child != null) {
+        printDOMTree(child,level+1);
+        child = child.nextSibling;
+      }
+    }
+
+
+
+// ---------------------------------- FONT test ---------------------------------------
+
+    function fontColorSelectClicked(color) {
+      fontFont.color = color;
+    }
+    
+    function fontSizeSelectClicked(size) {
+      fontFont.size = size;
+    }
+    
+    function fontFontClicked(fontName) {
+      fontFont.face = fontName;
+    }
+    
+    function fontAlignClicked(align) {
+      fontDiv.align = align;
+    }
+
+    function fontTest() {
+        mainContent.clear();
+	mainContent.addH1("Font test");
+	mainContent.addPText("Use the controls below to manipulate the sample text, and watch how it's appearance changes");
+	
+	// create controls for manipulating text
+
+	var colorSelect = new MultiSelect("colorSelect","Color");
+	var colors = new Array();
+	var colorNames = new Array();
+	colors[0] = "#FF0000"; colorNames[0] = "red";
+	colors[1] = "#00FF00"; colorNames[1] = "green";
+	colors[2] = "#0000FF"; colorNames[2] = "blue";
+	colors[3] = "#FFFF00"; colorNames[3] = "yellow";
+	colors[4] = "#FF00FF"; colorNames[4] = "magenta";
+	colors[5] = "#00FFFF"; colorNames[5] = "cyan";
+	var option;
+	var i;
+	for (i = 0; i < colors.length; i++) {
+	  colorSelect.addItem("",colorNames[i],colors[i],"fontColorSelectClicked(\""+colors[i]+"\")");
+	}
+	mainContent.addElement(colorSelect.element);
+	
+	var sizeSelect = new MultiSelect("sizeSelect","Size");
+	for (i = 1; i <= 7; i++) {
+	  sizeSelect.addItem("",i,"","fontSizeSelectClicked("+i+")");
+	}
+	mainContent.addElement(sizeSelect.element);
+	
+	var fontSelect = new MultiSelect("fontSelect","Font");
+	fontSelect.addItem("","helvetica","","fontFontClicked(\"helvetica\")");
+	fontSelect.addItem("","times","","fontFontClicked(\"times\")");
+	fontSelect.addItem("","courier","","fontFontClicked(\"courier\")");
+	mainContent.addElement(fontSelect.element);
+	
+	var alignSelect = new MultiSelect("alignSelect","Alignment");
+	alignSelect.addItem("","Left","","fontAlignClicked(\"left\")");
+	alignSelect.addItem("","Center","","fontAlignClicked(\"center\")");
+	alignSelect.addItem("","Right","","fontAlignClicked(\"right\")");
+	mainContent.addElement(alignSelect.element);
+
+	
+	
+	// create sample text
+	var center = document.createElement("center");
+	var sampleTable = document.createElement("table");
+	sampleTable.width = "80%";
+	sampleTable.bgColor = "#FFFFFF";
+	var sampleBody = document.createElement("tbody");
+	var sampleRow = document.createElement("tr");
+	var sampleCell = document.createElement("td");
+	fontDiv = document.createElement("div");
+	fontDiv.align = "center";
+	fontFont = document.createElement("font");
+	fontFont.color="#FF0000";
+	fontFont.appendChild(document.createTextNode("This is some text"));
+	fontDiv.appendChild(fontFont);
+	sampleCell.appendChild(fontDiv);
+	sampleRow.appendChild(sampleCell);
+	sampleBody.appendChild(sampleRow);
+	sampleTable.appendChild(sampleBody);
+	center.appendChild(sampleTable);
+	mainContent.addPText("");
+	mainContent.addElement(center);
+//	debug(sampleTable.nodeName+": "+sampleTable.childNodes.length);
+    }
+    
+
+
+
+    
+// ---------------------------------- Initialization ---------------------------------------
+
+    function submenu_itemClicked(itemno) {
+      if (this.items[itemno].name == "font") {
+        fontTest();
+      }
+      else if (this.items[itemno].name == "domtree") {
+        printDOMTree(document,0);
+      }
+    }
+
+    submenu = new Menu("mymenu","#600000","#FF0000",submenu_itemClicked);
+    submenu.addItem("item1","First item","This is the first menu item in the menu");
+    submenu.addItem("item2","Second item","Here is another item!");
+    submenu.addItem("item3","Last item","Last item in the list......");
+    submenu.addItem("font","FONT test","Test various attributes of the FONT tag and others");
+    submenu.addItem("domtree","Print DOM tree","Print the DOM tree to the debugger output");
+
+    function menu_itemClicked(itemno) {
+      if (this.items[itemno].name == "about") {
+        mainContent.clear();
+	mainContent.addH1("About this test");
+	mainContent.addPText("This is a test to see how well ECMAScript & DOM support works in khtml.");
+	mainContent.addElement(document.createElement("hr"));
+      }      
+      else if (this.items[itemno].name == "tests") {
+        mainContent.clear();
+        mainContent.addPText("test123");
+      }
+      else if (this.items[itemno].name == "links") {
+        mainContent.clear();
+	mainContent.addH1("Links");
+/*	var a = document.createElement("a");
+	a.href = "http://www.people.fas.harvard.edu/%7Edbaron/dom/test/";
+	a.appendChild(document.createTextNode("DOM test suite"));
+	mainContent.addElement(a);
+	mainContent.addElement(document.createElement("br"));
+	a = document.createElement("a");
+	a.href = "http://www.w3.org";
+	a.appendChild(document.createTextNode("The W3C site"));
+	mainContent.addElement(a);*/
+      }
+    }
+
+    menu = new Menu("menu","#000000","#000060",menu_itemClicked);
+    menu.addItem("about","About","General information about the test");
+    menu.addItem("tests","Tests","Run the tests");
+    menu.addItem("links","Links","Links to various websites related to the DOM");
+
+
+
+    
+    function init() {
+      setupSubmenu("submenu",document.getElementById("submenu").firstChild);
+      setupSubmenu("menu",document.getElementById("menu"));
+      mainContent = new Content(document.getElementById("main_content"));
+
+    }
+
+
+
+  </script>
+</head>
+<body bgcolor="#000000">
+<table border="0" cellspacing="2" cellpadding="0" bgcolor="#808080" width="600">
+  <tr>
+    <td>
+      <table border="0" cellspacing="0" cellpadding="0" width="596">
+        <tr id="menu">
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td bgcolor="#000000">
+      <table border="0" cellspacing="0" cellpadding="0" width="100%" height="300">
+        <tr>
+	  <td bgcolor="#000000" width="100" valign="top">
+            <table border="0" cellspacing="2" cellpadding="0" width="100%" id="submenu">
+	    <tr><td></td></tr>
+	    </table>
+	  </td>
+          <td width="500" bgcolor="#8080F0" id="main_content" valign="top">
+	    <center><font face="helvetica" size="5">
+	    This is the main content area
+	    </font></center>
+            <p onclick="printDOMTree(document,0)">Click here to print the DOM tree</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr id="statusbar" bgcolor="#000000">
+    <td bgcolor="#000000">
+      <font color="#FFFFFF" face="helvetica"><b>
+      Status bar
+      </b></font>
+    </td>
+  </tr>
+</table>
+</td></tr></table>
+
+<script language="javascript">
+  init();
+</script>
+
+</body>
+</html>
+
+

@@ -311,6 +311,12 @@ public:
     void blur (  );
     void focus (  );
 
+    virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild );
+    virtual NodeImpl *replaceChild ( NodeImpl *newChild, NodeImpl *oldChild );
+    virtual NodeImpl *removeChild ( NodeImpl *oldChild );
+    virtual NodeImpl *appendChild ( NodeImpl *newChild );
+
+
     virtual void parseAttribute(AttrImpl *attr);
 
     virtual void attach(KHTMLView *w);

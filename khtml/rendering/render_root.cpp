@@ -110,7 +110,7 @@ void RenderRoot::repaintRectangle(int x, int y, int w, int h)
 {
     x += m_x;
     y += m_y;
- //   kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
+    //kdDebug( 6040 ) << "updating views contents (" << x << "/" << y << ") (" << w << "/" << h << ")" << endl;
     if (m_view) m_view->updateContents(x, y, w, h);
 }
 
