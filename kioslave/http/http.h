@@ -55,7 +55,7 @@ public:
   virtual ~HTTPProtocol();
 
   /** HTTP version **/
-  enum HTTP_REV    {HTTP_Unknown, HTTP_10, HTTP_11};
+  enum HTTP_REV    {HTTP_None, HTTP_Unknown, HTTP_10, HTTP_11};
 
   /** Authorization method used **/
   enum HTTP_AUTH   {AUTH_None, AUTH_Basic, AUTH_Digest};
@@ -269,7 +269,8 @@ protected:
 
   char *gets (char *str, int size);
 
-  void ungets(char *str, int size);
+  void setRewindMarker();
+  void rewind();
 
   /**
     * Add an encoding on to the appropiate stack this
@@ -465,6 +466,8 @@ protected:
   QByteArray m_bufReceive; // Receive buffer
   bool m_dataInternal; // Data is for internal consumption
   char m_lineBuf[1024];
+  char m_rewindBuf[4096];
+  size_t m_rewindCount;
   char *m_linePtr;
   size_t m_lineCount;
   char *m_lineBufUnget;

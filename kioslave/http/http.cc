@@ -1592,6 +1592,19 @@ ssize_t HTTPProtocol::write (const void *_buf, size_t nbytes)
   return bytes_sent;
 }
 
+void HTTPProtocol::setRewindMarker()
+{
+  m_rewindCount = 0;
+}
+
+void HTTPProtocol::rewind()
+{
+  m_linePtrUnget = m_rewindBuf,
+  m_lineCountUnget = m_rewindCount;
+  m_rewindCount = 0;
+}
+
+
 char *HTTPProtocol::gets (char *s, int size)
 {
   int len=0;
@@ -1603,11 +1616,14 @@ char *HTTPProtocol::gets (char *s, int size)
     read(mybuf, 1);
     if (m_bEOF)
       break;
-
+      
+    if (m_rewindCount < sizeof(m_rewindBuf))
+       m_rewindBuf[m_rewindCount++] = *mybuf;
+    
     if (*mybuf == '\r') // Ignore!
       continue;
 
-    if (*mybuf == '\n')
+    if ((*mybuf == '\n') || !*mybuf)
       break;
 
     *buf++ = *mybuf;
@@ -1616,22 +1632,6 @@ char *HTTPProtocol::gets (char *s, int size)
 
   *buf=0;
   return s;
-}
-
-void HTTPProtocol::ungets(char *str, int size)
-{
-  char *newbuf = (char *) malloc(size+1+m_lineCountUnget);
-  memcpy(newbuf, str, size );
-  newbuf[size] = '\n';
-  if (m_lineCountUnget)
-     memcpy(newbuf+size+1, m_linePtrUnget, m_lineCountUnget);
-
-  if (m_lineBufUnget)
-     free(m_lineBufUnget);
-
-  m_lineBufUnget = newbuf;
-  m_linePtrUnget = newbuf;
-  m_lineCountUnget = size+1+m_lineCountUnget;
 }
 
 ssize_t HTTPProtocol::read (void *b, size_t nbytes)
@@ -1644,12 +1644,6 @@ ssize_t HTTPProtocol::read (void *b, size_t nbytes)
     m_lineCountUnget -= ret;
     memcpy(b, m_linePtrUnget, ret);
     m_linePtrUnget += ret;
-
-    if (m_lineCountUnget == 0)
-    {
-      free(m_lineBufUnget);
-      m_lineBufUnget = 0;
-    }
 
     return ret;
   }
@@ -2445,6 +2439,8 @@ bool HTTPProtocol::readHeader()
      error( ERR_SERVER_TIMEOUT , m_state.pretty_hostname );
      return false;
   }
+  
+  setRewindMarker();
 
   gets(buffer, sizeof(buffer)-1);
 
@@ -2478,7 +2474,7 @@ bool HTTPProtocol::readHeader()
   kdDebug(7103) << "(" << m_pid << ") ============ Received Response:"<< endl;
 
   bool noHeader = true;
-  HTTP_REV httpRev = HTTP_Unknown;
+  HTTP_REV httpRev = HTTP_None;
   int headerSize = 0;
 
   do
@@ -3046,13 +3042,28 @@ bool HTTPProtocol::readHeader()
       }
       // *** Responses to the HTTP OPTIONS method finished
     }
+    else if ((httpRev == HTTP_None) && (strlen(buf) != 0))
+    {
+      // Remote server does not seem to speak HTTP at all
+      // Put the crap back into the buffer and hope for the best
+      rewind();
+      if (m_responseCode)
+        m_prevResponseCode = m_responseCode;
+
+      m_responseCode = 200; // Fake it
+      httpRev = HTTP_Unknown;
+      m_bKeepAlive = false;
+      break;
+    }
     else if (buf[0] == '<')
     {
       // We get XML / HTTP without a proper header
       // put string back
-      ungets(buf, strlen(buf));
+      rewind();
       break;
     }
+
+    setRewindMarker();
 
     // Clear out our buffer for further use.
     memset(buffer, 0, sizeof(buffer));
@@ -3691,6 +3702,8 @@ int HTTPProtocol::readChunked()
 {
   if ((m_iBytesLeft == 0) || (m_iBytesLeft == NO_SIZE))
   {
+     setRewindMarker();
+     
      m_bufReceive.resize(4096);
 
      if (!gets(m_bufReceive.data(), m_bufReceive.size()-1))
