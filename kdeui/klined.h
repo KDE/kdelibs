@@ -8,10 +8,11 @@
 #include <qlined.h>
 
 /**
- * This widget has the same behaviour as QLineEditor, but has
- * signals two more key-events: ctrl-s and ctrl-d. This
- * class is first written by Torben Weis for KFMII as
- * fileentry.cpp
+ * This widget has the same behaviour as QLineEditor, but emits
+ * signals for two more key-events: @ref completion when Ctrl-D is
+ * pressed and  @ref rotation when Ctrl-S is pressed. This
+ * class is inspired by Torben Weis' fileentry.cpp for KFM II
+ * @short KDE Line input widget
  */
 
 class KLined : public QLineEdit
@@ -31,7 +32,7 @@ public:
   signals:
 
   /**
-	* Connect to this signal to receive ctrl-D
+	* Connect to this signal to receive Ctrl-D
 	*/
   void completion ();
     
@@ -40,9 +41,8 @@ public:
 	*/
   void rotation ();
     
-protected:
-  virtual void keyPressEvent( QKeyEvent *_ev );
-
-};
+ protected:
+     bool eventFilter (QObject *, QEvent *);
+ };
 
 #endif

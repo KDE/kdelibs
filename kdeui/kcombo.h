@@ -16,9 +16,9 @@ public:
   /**
     *
     * Kcombo is normal writable or readonly ComboBox with two
-    * more signals completion() (ctrl-d) and rotation (ctrl-s).
-    * Unfortunately, ctrl-d combination doesn't work. Use signal
-    * rotation() instead.
+    * more signals @ref completion (Ctrl-D pressed) and @ref rotation
+    * (Ctrl-S pressed).
+    * @short KDE combo-box Widget
     * @author sven.radej@iname.com
     */
    
@@ -27,26 +27,26 @@ public:
 
   /**
     * This puts cursor at and of string. When using out of toolbar,
-    * call this in your slot connected to signal completion.
-    *
+    * call this in your slot connected to signal @ref completion
+    * or @ref rotation
     */
    
-  void cursorAtEnd();
+   void cursorAtEnd();
 
-  signals:
+ signals:
 
-  /**
-	* Connect to this signal to receive ctrl-D
-	* Unfortunately this doesn't work. Use signal rotation() instead.
-	*/
-     
-  void completion ();
-  /// Connect to this signal to receive Ctrl-S
-  void rotation ();
+     /**
+      * Connect to this signal to receive Ctrl-D
+      */
+    void completion ();
 
-protected:
-  virtual void keyPressEvent( QKeyEvent *_ev );
+    /**
+     * Connect to this signal to receive Ctrl-S
+     */
+    void rotation ();
 
-};
+ protected:
+   bool eventFilter (QObject *, QEvent *);
+ };
 
 #endif

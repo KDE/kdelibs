@@ -11,11 +11,12 @@
 KLined::KLined (QWidget *parent, const char *name)
   : QLineEdit (parent, name)
 {
-  // setFocusPolicy(ClickFocus); // this doesn't enable tab (grin!)
+  installEventFilter (this);
 }
 
 KLined::~KLined ()
 {
+  removeEventFilter (this);
 }
 
 void KLined::cursorAtEnd ()
@@ -24,24 +25,29 @@ void KLined::cursorAtEnd ()
   QLineEdit::keyPressEvent( &ev );
 }
 
-void KLined::keyPressEvent (QKeyEvent *e)
+
+bool KLined::eventFilter (QObject *, QEvent *e)
 {
-  // if (e->key() == Key_Tab)   // Is there any way to use Tab?
-  if ( e->key() == Key_D && e->state() == ControlButton )
+  if (e->type() == Event_KeyPress)
     {
-      e->accept();
-      emit completion ();
-      QKeyEvent ev( Event_KeyPress, Key_End, 0, 0 );
-      QLineEdit::keyPressEvent( &ev );
+      QKeyEvent *k = (QKeyEvent *) e;
+      if (k->state() == ControlButton)
+		{
+		  if (k->key() == Key_S)
+			{
+			  emit rotation ();
+			  QKeyEvent ev( Event_KeyPress, Key_End, 0, 0 );
+			  QLineEdit::keyPressEvent( &ev );
+			  return TRUE;
+			}
+		  if (k->key() == Key_D)
+			{
+			  emit completion ();
+			  QKeyEvent ev( Event_KeyPress, Key_End, 0, 0 );
+			  QLineEdit::keyPressEvent( &ev );
+			  return TRUE;
+			}
+		}
     }
-  else if ( e->key() == Key_S && e->state() == ControlButton )
-    {
-      e->accept();
-      emit rotation ();
-      QKeyEvent ev( Event_KeyPress, Key_End, 0, 0 );
-      QLineEdit::keyPressEvent( &ev );
-    }
-  else
-	QLineEdit::keyPressEvent(e);
-  return;
+  return FALSE;
 }
