@@ -3576,6 +3576,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
   DOM::DOMString url = event->url();
   DOM::Node innerNode = event->innerNode();
 
+#ifndef QT_NO_DRAGANDDROP
   if( d->m_bMousePressed && (!d->m_strSelectedURL.isEmpty() || (!innerNode.isNull() && innerNode.elementId() == ID_IMG) ) &&
       ( d->m_dragStartPos - _mouse->pos() ).manhattanLength() > KGlobalSettings::dndEventDelay() &&
       d->m_bDnd && d->m_mousePressNode == innerNode ) {
@@ -3608,6 +3609,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
     d->m_strSelectedURL = "";
     return;
   }
+#endif
 
   QString target;
   QString surl = splitUrlTarget(url.string(), &target);
@@ -3739,6 +3741,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
   // the mouse is pressed again.
   d->m_bMousePressed = false;
 
+#ifndef QT_NO_CLIPBOARD
   if ((_mouse->button() == MidButton) && (event->url() == 0))
   {
     QClipboard *cb = QApplication::clipboard();
@@ -3748,6 +3751,7 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
     if (u.isValid())
       urlSelected(url, 0,0, "_top");
   }
+#endif
 
   // delete selection in case start and end position are at the same point
   if(d->m_selectionStart == d->m_selectionEnd && d->m_startOffset == d->m_endOffset) {
@@ -3789,10 +3793,12 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
       d->m_startBeforeEnd = true;
     }
     // get selected text and paste to the clipboard
+#ifndef QT_NO_CLIPBOARD
     QString text = selectedText();
     text.replace(QRegExp(QChar(0xa0)), " ");
     QClipboard *cb = QApplication::clipboard();
     cb->setText(text);
+#endif
     //kdDebug( 6000 ) << "selectedText = " << text << endl;
     emitSelectionChanged();
   }
