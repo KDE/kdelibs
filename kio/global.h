@@ -140,7 +140,8 @@ namespace KIO
     ERR_NEED_PASSWD = 58,
     ERR_CANNOT_SYMLINK = 59,
     ERR_NO_CONTENT = 60, // Action succeeded but no content will follow.
-    ERR_DISK_FULL = 61
+    ERR_DISK_FULL = 61,
+    ERR_IDENTICAL_FILES = 62 // src==dest when moving/copying
   };
 
   /**
