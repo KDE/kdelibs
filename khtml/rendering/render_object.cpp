@@ -854,7 +854,7 @@ void RenderObject::repaintRectangle(int x, int y, int w, int h, bool immediate, 
     if(parent()) parent()->repaintRectangle(x, y, w, h, immediate, f);
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 
 QString RenderObject::information() const
 {

@@ -113,7 +113,7 @@ public:
     static void paintWidget(QPainter *p, QWidget *widget, int x, int y, int w, int h, int tx, int ty);
     virtual bool handleEvent(const DOM::EventImpl& ev);
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 

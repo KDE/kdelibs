@@ -2394,7 +2394,7 @@ const char *RenderBlock::renderName() const
     return "RenderBlock";
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderBlock::printTree(int indent) const
 {
     RenderFlow::printTree(indent);

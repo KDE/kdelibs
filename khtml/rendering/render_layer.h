@@ -194,7 +194,7 @@ public:
 
     void detach(RenderArena* renderArena);
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     void dump(QTextStream &stream, const QString &ind = QString::null);
 #endif
 

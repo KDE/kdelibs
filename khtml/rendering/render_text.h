@@ -270,7 +270,7 @@ public:
      */
     unsigned inlineTextBoxCount() const { return m_lines.count(); }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 

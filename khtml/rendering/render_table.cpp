@@ -628,7 +628,7 @@ RenderObject* RenderTable::removeChildNode(RenderObject* child)
 }
 
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTable::dump(QTextStream &stream, const QString &ind) const
 {
     RenderBlock::dump(stream, ind);
@@ -1298,7 +1298,7 @@ RenderObject* RenderTableSection::removeChildNode(RenderObject* child)
     return RenderContainer::removeChildNode( child );
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTableSection::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);
@@ -1512,7 +1512,7 @@ RenderObject* RenderTableRow::removeChildNode(RenderObject* child)
     return RenderContainer::removeChildNode( child );
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTableRow::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);
@@ -1771,7 +1771,7 @@ void RenderTableCell::paintBoxDecorations(QPainter *p,int, int _y,
 }
 
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTableCell::dump(QTextStream &stream, const QString &ind) const
 {
     RenderFlow::dump(stream,ind);
@@ -1818,7 +1818,7 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
     RenderContainer::addChild(child,beforeChild);
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderTableCol::dump(QTextStream &stream, const QString &ind) const
 {
     RenderContainer::dump(stream,ind);

@@ -1156,14 +1156,12 @@ void RenderLayer::collectLayers(QPtrVector<RenderLayer>*& posBuffer, QPtrVector<
     }
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 
-#ifndef KDE_USE_FINAL
 static QTextStream &operator<<(QTextStream &ts, const QRect &r)
 {
     return ts << "at (" << r.x() << "," << r.y() << ") size " << r.width() << "x" << r.height();
 }
-#endif
 
 static void write(QTextStream &ts, RenderObject& o, const QString& indent )
 {

@@ -118,7 +118,7 @@ public:
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
     struct ColumnStruct {
@@ -219,7 +219,7 @@ public:
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
@@ -301,7 +301,7 @@ public:
     RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()); }
     RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()); }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString& ind) const;
 #endif
 };
@@ -361,7 +361,7 @@ public:
     RenderTable *table() const { return static_cast<RenderTable *>(parent()->parent()->parent()); }
     RenderTableSection *section() const { return static_cast<RenderTableSection *>(parent()->parent()); }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
 #endif
 
@@ -415,7 +415,7 @@ public:
 
     virtual void updateFromElement();
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString& ind) const;
 #endif
 

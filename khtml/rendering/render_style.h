@@ -53,6 +53,12 @@
     if (!(group->variable == value)) \
         group.access()->variable = value;
 
+#ifndef ENABLE_DUMP
+#ifndef NDEBUG
+#define ENABLE_DUMP 1
+#endif
+#endif
+
 namespace DOM {
     class DOMStringImpl;
 }
@@ -917,7 +923,7 @@ public:
     enum Diff { Equal, NonVisible = Equal, Visible, Position, Layout, CbLayout };
     Diff diff( const RenderStyle *other ) const;
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     QString createDiff( const RenderStyle &parent ) const;
 #endif
 

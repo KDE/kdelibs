@@ -175,7 +175,7 @@ public:
 
 public:
     virtual const char *renderName() const { return "RenderObject"; }
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
     QString information() const;
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream &stream, const QString &ind = QString::null) const;

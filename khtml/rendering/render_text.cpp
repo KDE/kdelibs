@@ -1511,7 +1511,7 @@ void RenderText::paintTextOutline(QPainter *p, int tx, int ty, const QRect &last
 		 true);
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 
 static QString quoteAndEscapeNonPrintables(const QString &s)
 {

@@ -700,7 +700,7 @@ FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx,
     return SelectionPointInside;
 }
 
-#ifndef NDEBUG
+#ifdef ENABLE_DUMP
 void RenderWidget::dump(QTextStream &stream, const QString &ind) const
 {
     RenderReplaced::dump(stream,ind);
