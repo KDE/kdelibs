@@ -88,12 +88,12 @@ namespace KIO {
          * Error codes are defined in @ref KIO::Error.
          * Only call this method from the slot connected to @ref result.
          */
-        int error() { return m_error; }
+        int error() const { return m_error; }
 
         /**
          * @return the progress id for this job, as returned by uiserver
          */
-        int progressId() { return m_progressId; }
+        int progressId() const { return m_progressId; }
 
         /**
          * @return a string to help understand the error, usually the url
@@ -101,7 +101,7 @@ namespace KIO {
          * Only call if @ref error is not 0.
          * This is really internal, better use errorString or errorDialog.
          */
-        const QString & errorText() { return m_errorText; }
+        const QString & errorText() const { return m_errorText; }
 
         /**
          * Converts an error code and a non-i18n error message into an
@@ -113,7 +113,7 @@ namespace KIO {
          * Use this to display the error yourself, but for a dialog box
          * use @ref KIO::ErrorDialog.
          */
-        QString errorString();
+        QString errorString() const;
 
         /**
          * Display a dialog box to inform the user of the error given by
@@ -308,12 +308,12 @@ namespace KIO {
          * @internal
          * Slave in use by this job.
          */
-        Slave *slave() { return m_slave; }
+        Slave *slave() const { return m_slave; }
 
         /**
          * @internal
          */
-        int command() { return m_command; }
+        int command() const { return m_command; }
 
     protected slots:
         /**
@@ -488,13 +488,13 @@ namespace KIO {
         /**
          * @internal. For the scheduler. Do not use.
          */
-        MetaData outgoingMetaData();
+        MetaData outgoingMetaData() const;
 
         /**
          * Get meta data received from the slave.
          * (Valid when first data is received and/or slave is finished)
          */
-        MetaData metaData();
+        MetaData metaData() const;
 
         /**
          * Query meta data received from the slave.

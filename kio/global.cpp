@@ -194,7 +194,7 @@ QString KIO::decodeFileName( const QString & _str )
   return str;
 }
 
-QString KIO::Job::errorString()
+QString KIO::Job::errorString() const
 {
   QString result;
 

@@ -715,7 +715,7 @@ void TransferJob::slotMetaData( const KIO::MetaData &_metaData)
     m_incomingMetaData += _metaData;
 }
 
-MetaData TransferJob::metaData()
+MetaData TransferJob::metaData() const
 {
     return m_incomingMetaData;
 }
@@ -744,7 +744,7 @@ void TransferJob::addMetaData( const QMap<QString,QString> &values)
       m_outgoingMetaData.insert(it.key(), it.data());
 }
 
-MetaData TransferJob::outgoingMetaData()
+MetaData TransferJob::outgoingMetaData() const
 {
     return m_outgoingMetaData;
 }
