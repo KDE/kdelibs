@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Settings
-// $Id:  $
+// $Id$
 
 #ifndef __HTMLDATA_H__
 #define __HTMLDATA_H__
@@ -32,6 +32,11 @@
 #include <qstring.h>
 #include <kcharsets.h>
 
+// Also defined in khtmlfont.h
+#ifndef MAXFONTSIZES
+#define MAXFONTSIZES 7
+#endif
+
 class HTMLSettings
 {
 public:
@@ -40,7 +45,11 @@ public:
 
     const HTMLSettings &operator=( const HTMLSettings & );
 
-    int     fontBaseSize;
+    void setFontSizes(const int *newFontSizes);
+    void getFontSizes(int *newFontSizes);
+    void resetFontSizes(void);
+
+    int     fontSizes[MAXFONTSIZES];
     QColor  fontBaseColor;
     QString fontBaseFace;
 
@@ -54,6 +63,8 @@ public:
     KCharset charset; 
 
     bool    underlineLinks;
+
+	static const int fontBaseSize=3;
 };
 
 #endif

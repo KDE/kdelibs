@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Settings
-// $Id:  $
+// $Id$
 
 #include "khtmldata.h"
 #include <kapp.h>
@@ -31,9 +31,14 @@
 #include <config.h>
 #endif
 
+// most of these sizes are standard X font sizes, so all of our fonts
+// display nicely.
+
+const int defaultFontSizes[MAXFONTSIZES] = { 8, 10, 12, 14, 18, 24, 32 };
+
 HTMLSettings::HTMLSettings()
 {
-    fontBaseSize  = 3;
+    memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
     fontBaseColor = black;
     fontBaseFace  = "times";
 
@@ -49,9 +54,24 @@ HTMLSettings::HTMLSettings()
     underlineLinks = true;
 }
 
+void HTMLSettings::setFontSizes(const int *newFontSizes)
+{
+    memcpy( fontSizes, newFontSizes, sizeof(fontSizes) );
+}                                    
+
+void HTMLSettings::getFontSizes(int *oldFontSizes)
+{
+    memcpy( oldFontSizes, fontSizes, sizeof(fontSizes) );
+}                                    
+
+void HTMLSettings::resetFontSizes(void)
+{
+    memcpy( fontSizes, defaultFontSizes, sizeof(fontSizes) );
+}                                    
+
 HTMLSettings::HTMLSettings( const HTMLSettings &s )
 {
-    fontBaseSize  = s.fontBaseSize;
+    memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
     fontBaseColor = s.fontBaseColor;
     fontBaseFace  = s.fontBaseFace;
 
@@ -69,7 +89,7 @@ HTMLSettings::HTMLSettings( const HTMLSettings &s )
 
 const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
 {
-    fontBaseSize  = s.fontBaseSize;
+    memcpy( fontSizes, s.fontSizes, sizeof(fontSizes) );
     fontBaseColor = s.fontBaseColor;
     fontBaseFace  = s.fontBaseFace;
 
@@ -87,3 +107,4 @@ const HTMLSettings &HTMLSettings::operator=( const HTMLSettings &s )
     return *this;
 }
 
+const int HTMLSettings::fontBaseSize = 3;

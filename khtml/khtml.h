@@ -430,12 +430,28 @@ public:
     void setSelected( bool _active );
   
     /**
-     * Sets the base font size ( range: 2-5,  default: 3 ).
+     * Sets point sizes to be associated with the HTML-sizes used in
+     * <FONT size=Html-Font-Size>
      *
-     * Note that font sizes are not defined in points.
-     * Font sizes range from 1 (smallest) to 7 (biggest).
+     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
      */
-    void setDefaultFontBase( int size );
+    void setFontSizes(const int *newFontSizes);
+
+    /**
+     * Gets point sizes to be associated with the HTML-sizes used in
+     * <FONT size=Html-Font-Size>
+     *
+     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+     */
+    void getFontSizes(int *newFontSizes);
+
+    /**
+     * Resets the point sizes to be associated with the HTML-sizes used in
+     * <FONT size=Html-Font-Size> to their default.
+     *
+     * Html-Font-Sizes range from 1 (smallest) to 7 (biggest).
+     */
+    void resetFontSizes( void );
 
     /**
      * Sets the standard font style.
@@ -1208,6 +1224,9 @@ protected:
     KHTMLCache *cache;
 
 public:
+    /**
+     * Loads an image into the cache and makes it persistant
+     */
 	static void preloadImage( const char *_filename );
 
     KHTMLCache *imageCache() { return cache; }

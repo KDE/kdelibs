@@ -1956,45 +1956,55 @@ KHTMLWidget::~KHTMLWidget()
     delete cache;
 }
 
-void 
-KHTMLWidget::setDefaultFontBase( int size )
-{	
-  if ( size < 2 ) size = 2;
-  else if ( size > 5 ) size = 5;
-  defaultSettings->fontBaseSize = size - 1;
+void
+KHTMLWidget::setFontSizes(const int *newFontSizes)
+{
+    defaultSettings->setFontSizes(newFontSizes);
+}
+
+void
+KHTMLWidget::getFontSizes(int *newFontSizes)
+{
+    defaultSettings->getFontSizes(newFontSizes);
+}
+
+void
+KHTMLWidget::resetFontSizes(void)
+{
+    defaultSettings->resetFontSizes();
 }
 
 void 
 KHTMLWidget::setStandardFont( const char *name )
 {	
-  defaultSettings->fontBaseFace = name; 
+    defaultSettings->fontBaseFace = name; 
 }
 
 void 
 KHTMLWidget::setFixedFont( const char *name )
 {	
-  defaultSettings->fixedFontFace = name; 
+    defaultSettings->fixedFontFace = name; 
 }
 
 void 
 KHTMLWidget::setDefaultBGColor( const QColor &col )
 {	
-  defaultSettings->bgColor = col; 
+    defaultSettings->bgColor = col; 
 }
 
 void 
 KHTMLWidget::setDefaultTextColors( const QColor &normal, const QColor &link,
 				   const QColor &vlink )
 {
-  defaultSettings->fontBaseColor = normal;
-  defaultSettings->linkColor = link;
-  defaultSettings->vLinkColor = vlink;
+    defaultSettings->fontBaseColor = normal;
+    defaultSettings->linkColor = link;
+    defaultSettings->vLinkColor = vlink;
 }
 
 void 
 KHTMLWidget::setUnderlineLinks( bool ul )
 { 
-  defaultSettings->underlineLinks = ul; 
+    defaultSettings->underlineLinks = ul; 
 }
 
 //-----------------------------------------------------------

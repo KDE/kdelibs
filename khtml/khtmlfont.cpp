@@ -22,7 +22,7 @@
 //----------------------------------------------------------------------------
 //
 // KDE HTML Widget -- Fonts
-// $Id:  $
+// $Id$
 
 #include "khtmlfont.h"
 #include <string.h>
@@ -30,25 +30,18 @@
 #include <kapp.h>
 #include <klocale.h>
 
-// most of these sizes are standard X font sizes, so all of our fonts
-// display nicely.
-//
-static int fontSizes[7] = { 8, 10, 12, 14, 18, 24, 32 };
+HTMLFontManager* pFontManager = 0;
 
-
-HTMLFont::HTMLFont( const char *_family, int _size, int _weight, bool _italic,
-                    const char *_charset)
+HTMLFont::HTMLFont( const char *_family, int _size, const int fontSizes[7], 
+                    int _weight, bool _italic, const char *_charset)
     : font( _family, fontSizes[ _size ], _weight, _italic )
 {
     textCol = black;
     fsize = _size;
     if (_charset) setCharset(_charset);
     else setCharset(klocale->charset());
-}
-
-int HTMLFont::pointSize( int _size )
-{
-    return fontSizes[ _size ];
+    pointsize = fontSizes[ _size ];
+	
 }
 
 HTMLFontManager::HTMLFontManager()
@@ -72,3 +65,4 @@ const HTMLFont *HTMLFontManager::getFont( const HTMLFont &f )
 
     return cf;
 }
+
