@@ -130,6 +130,17 @@ class DataPacket : public GenericDataPacket {
 public:
 	T *contents;
 
+protected:	
+	DataPacket(GenericDataChannel *channel)
+	    : GenericDataPacket(channel) {}
+	~DataPacket() {}
+};
+
+/**
+ * The RawDataPacket<T> interface handles raw class T arrays of data
+ */
+template<class T>
+class RawDataPacket : public DataPacket<T> {
 protected:
 	int capacity;
 	void ensureCapacity(int newCapacity)
@@ -141,13 +152,13 @@ protected:
 			contents = new T[capacity];
 		}
 	}
-	DataPacket(int capacity, GenericDataChannel *channel)
-		:GenericDataPacket(channel), capacity(capacity)
+	RawDataPacket(int capacity, GenericDataChannel *channel)
+		:DataPacket<T>(channel), capacity(capacity)
 	{
 		size = capacity;
 		contents = new T[capacity];
 	}
-	~DataPacket()
+	~RawDataPacket()
 	{
 		delete contents;
 	}
@@ -157,10 +168,10 @@ protected:
  * FloatDataPacket finally is one concrete DataPacket (which contains the
  * information how to marshal a datapacket of type float)
  */
-class FloatDataPacket : public DataPacket<float> {
+class FloatDataPacket : public RawDataPacket<float> {
 public:
 	FloatDataPacket(int capacity, GenericDataChannel *channel)
-			: DataPacket<float>(capacity, channel)
+			: RawDataPacket<float>(capacity, channel)
 	{
 		//
 	}
@@ -168,10 +179,10 @@ public:
 	void write(Buffer& stream);
 };
 
-class ByteDataPacket : public DataPacket<mcopbyte> {
+class ByteDataPacket : public RawDataPacket<mcopbyte> {
 public:
 	ByteDataPacket(int capacity, GenericDataChannel *channel)
-			: DataPacket<mcopbyte>(capacity, channel)
+			: RawDataPacket<mcopbyte>(capacity, channel)
 	{
 		//
 	}
