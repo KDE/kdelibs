@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.50  1999/06/17 17:28:01  kulow
+   taking out assert in kglobal and make kiconloader a bit more defensive
+
    Revision 1.49  1999/06/17 11:50:37  kulow
    yet another addition to make KIconLoader flexible (some kcontrol apps tried
    really hard to ruin all internals of KIconLoader ;(
@@ -186,7 +189,7 @@ void KIconLoader::initPath()
 	KGlobal::dirs()->addResourceType("toolbar", 
 					 KStandardDirs::kde_data_relative() + appname + "/pics/large");
     KGlobal::dirs()->addResourceType("toolbar", 
-				     KStandardDirs::kde_data_relative() + "/pics/");
+				     KStandardDirs::kde_data_relative() + appName + "/pics/");
     
 }
 
