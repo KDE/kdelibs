@@ -25,7 +25,13 @@ Name: libkwin<clientname>.la
 LDFLAGS: $(KDE_PLUGIN)
 
 
-The last three (not kdeinit modules) should be defined with 
+KIOSlave
+========
+Name: kio_<protocol>.la
+LDFLAGS: -module $(KDE_PLUGIN)
+
+
+The last four (not kdeinit modules) should be defined with 
 kde_module_LTLIBRARIES = <Name>
 so that they are installed under $(kde_moduledir), which is usually $prefix/lib/kde2/
 
