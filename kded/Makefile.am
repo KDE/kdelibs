@@ -60,8 +60,7 @@ noinst_HEADERS = kbuildsycoca.h kbuildservicetypefactory.h \
 servicetype_DATA = kdedmodule.desktop
 servicetypedir = $(kde_servicetypesdir)
 
-applnk_DATA = default_applications.menu
-applnkdir = $(kde_appsdir)
+xdg_menu_DATA = applications.menu
 
 update_DATA = kded.upd
 updatedir = $(kde_datadir)/kconf_update

@@ -74,6 +74,8 @@ KDE_DO_UIC_AGAIN
 test "x$prefix" = xNONE && prefix=$ac_default_prefix
 
 AC_DEFINE_UNQUOTED(KDEDIR, "$prefix", [The prefix to use as fallback])
+KDE_EXPAND_MAKEVAR(ac_kde_sysconfdir, sysconfdir)
+AC_DEFINE_UNQUOTED(KDESYSCONFDIR, "$ac_kde_sysconfdir", [The compiled in system configuration prefix])
 
 ac_cpp_safe=$ac_cpp
 ac_CPPFLAGS_safe=$CPPFLAGS

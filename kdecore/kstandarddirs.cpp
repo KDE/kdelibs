@@ -1089,6 +1089,7 @@ void KStandardDirs::addKDEDefaults()
     {
 	xdgdirList.clear();
         xdgdirList.append("/etc/xdg");
+        xdgdirList.append(KDESYSCONFDIR "/xdg");
     }
 
     QString localXdgDir = readEnvPath("XDG_CONFIG_HOME");

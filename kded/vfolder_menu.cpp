@@ -684,10 +684,6 @@ VFolderMenu::locateMenuFile(const QString &fileName)
    QString baseName = m_docInfo.baseDir + fileName;
    QString result = locate("xdgconf-menu", baseName);
 
-   if (result.isEmpty() && !m_docInfo.baseDir.startsWith("/"))
-   {
-      result = locate("apps", m_docInfo.baseDir+"default_"+fileName);
-   }
    return result;
 }
 
