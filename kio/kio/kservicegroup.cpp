@@ -243,7 +243,7 @@ static void addItem(KServiceGroup::List &sorted, const KSycocaEntry::Ptr &p, boo
 }
 
 KServiceGroup::List
-KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators)
+KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators, bool sortByGenericName)
 {
     KServiceGroup *group = this;
 
@@ -278,9 +278,13 @@ KServiceGroup::entries(bool sort, bool excludeNoDisplay, bool allowSeparators)
            continue;
         // Choose the right list
         KSortableValueList<SPtr,QCString> & list = p->isType(KST_KServiceGroup) ? glist : slist;
-        QString name = p->isType(KST_KServiceGroup) ?
-                                   static_cast<KServiceGroup *>(p)->caption() :
-                                   p->name();
+        QString name;
+        if (p->isType(KST_KServiceGroup))
+          name = static_cast<KServiceGroup *>(p)->caption();
+        else if (sortByGenericName)
+          name = static_cast<KService *>(p)->genericName() + " " + p->name();
+        else
+          name = p->name() + " " + static_cast<KService *>(p)->genericName();
                                                                       
         QCString key( name.length() * 4 + 1 );
         // strxfrm() crashes on Solaris
