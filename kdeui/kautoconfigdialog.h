@@ -67,6 +67,7 @@ signals:
    * the user clicked on the Apply or Ok button.
    */
   void settingsChanged();
+
   /**
    * One or more of the settings have been permanently changed such as if
    * the user clicked on the Apply or Ok button.
@@ -78,15 +79,15 @@ signals:
   void settingsChanged(const char *dialogName);
 
   /**
-   * Helper function.
+   * Helper signal.
    */
   void okClicked();
   /**
-   * Helper function.
+   * Helper signal.
    */
   void applyClicked();
   /**
-   * Helper function.
+   * Helper signal.
    */
   void defaultClicked();
 
@@ -180,7 +181,7 @@ public:
    * this function.
    * @see show()
    */
-  void hide(){ kdialogbase->hide(); };
+  void hide() const { kdialogbase->hide(); };
 
   /**
    * KAutoConfigDialog automatically gives the dialog a common KDE
