@@ -93,7 +93,6 @@ private:
         StateP
     };
     State state;
-    QValueList<DOMString> sheetElemId;
 };
 
 

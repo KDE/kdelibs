@@ -664,15 +664,28 @@ NodeListImpl *DocumentImpl::getElementsByTagName( const DOMString &tagname )
 
 void DocumentImpl::updateRendering()
 {
-//    int o=changedNodes.count();
-//    int a=0;
+    int o=changedNodes.count();
+    if (!o) return;        
+//    kdDebug() << "UPDATERENDERING "<<o<<endl;
+
+    int a=0;
     QListIterator<NodeImpl> it(changedNodes);
     for (; it.current(); ) {
         // applyChanges removes current from the list
-	    it.current()->applyChanges( true, true );
-//        a++;
+        NodeImpl* t = it.current();
+        NodeImpl* n = t;
+        while (t)
+        {
+            if (t->changed())
+                n=t;
+            t=t->parentNode();
+        }
+            
+//        kdDebug() << n->nodeName().string() << ": applyChanges opt=" << (n!=it.current()) << endl;
+	n->applyChanges( true, true );
+        a++;
     }
-//    kdDebug() << "UpdateRendering orig="<<o<<" actual="<<a<<endl;
+//    kdDebug() << "UPDATERENDERING orig="<<o<<" actual="<<a<<endl;
     changedNodes.clear();
 }
 
@@ -823,7 +836,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId )
 
 void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet)
 {
-    kdDebug( 6030 ) << "HTMLDocument::setStyleSheet()" << endl;
+//    kdDebug( 6030 ) << "HTMLDocument::setStyleSheet()" << endl;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->parseString(sheet);
@@ -1274,7 +1287,22 @@ void DocumentImpl::createSelector()
     for (n = this; n; n = n->traverseNextNode()) {
     	StyleSheetImpl *sheet = 0;
     	if (n->nodeType() == Node::PROCESSING_INSTRUCTION_NODE)
-	    sheet = static_cast<ProcessingInstructionImpl*>(n)->sheet();
+        {
+            ProcessingInstructionImpl* pi = static_cast<ProcessingInstructionImpl*>(n);
+            sheet = pi->sheet();
+            if (!sheet && !pi->localHref().isEmpty())
+            {
+                ElementImpl* elem = getElementById(pi->localHref());
+                if (elem->firstChild() && elem->firstChild()->isTextNode())
+                {
+                    DOMString sheetText= static_cast<TextImpl*>(elem->firstChild())->data();
+                    sheet = new CSSStyleSheetImpl(this);
+                    sheet->parseString(sheetText);
+                    pi->setStyleSheet(sheet);
+                }
+            }
+
+        }     
     	else if (n->id() == ID_LINK)
 	    sheet = static_cast<HTMLLinkElementImpl*>(n)->sheet();
     	else if (n->id() == ID_STYLE)
@@ -1293,6 +1321,7 @@ void DocumentImpl::createSelector()
     for (; it.current(); ++it)
 	it.current()->deref();
     applyChanges(true,true);
+
 }
 
 void DocumentImpl::setFocusNode(ElementImpl *n)

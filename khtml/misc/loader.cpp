@@ -752,6 +752,8 @@ DocLoader::DocLoader(KHTMLPart* part)
     m_showAnimations = true;
     m_part = part;
 
+    if (!Cache::docloader)
+        Cache::init();
     Cache::docloader->append( this );
 }
 
@@ -1065,7 +1067,7 @@ void Cache::init()
         nullPixmap = new QPixmap;
 
     if ( !brokenPixmap )
-        brokenPixmap = new QPixmap(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::FileSystem, 0, KIcon::DisabledState));
+        brokenPixmap = new QPixmap;//(KHTMLFactory::instance()->iconLoader()->loadIcon("file_broken", KIcon::FileSystem, 0, KIcon::DisabledState));
 
     if ( !m_loader )
         m_loader = new Loader();

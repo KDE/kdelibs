@@ -56,6 +56,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
+      m_styleElement( false ),
       m_regdListeners( 0 )
 {
     document->ref();

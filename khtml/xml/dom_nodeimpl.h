@@ -210,6 +210,7 @@ public:
     bool attached() const   { return m_attached; }
     bool changed() const    { return m_changed; }
     bool complexText() const { return m_complexText; }
+    bool styleElement() const { return m_styleElement; }
     void setComplexText(bool b=true) { m_complexText = b; }
     void setHasEvents(bool b=true) { m_hasEvents = b; }
     void setHasID(bool b=true) { m_hasId = b; }
@@ -306,6 +307,7 @@ protected:
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
     bool m_active : 1;
+    bool m_styleElement : 1; // contains stylesheet text
 
     // used in elementimpl. Defined here to save a few bytes in the data structures.
     bool has_tabindex  : 1;

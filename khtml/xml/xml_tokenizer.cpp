@@ -150,7 +150,7 @@ bool XMLHandler::characters( const QString& ch )
 
     if (m_currentNode->nodeType() == Node::TEXT_NODE || m_currentNode->nodeType() == Node::CDATA_SECTION_NODE
         || enterText()) {
-        static_cast<TextImpl*>(m_currentNode)->appendData(ch);
+        static_cast<TextImpl*>(m_currentNode)->appendData(ch.simplifyWhiteSpace());
         return TRUE;
     }
     else
@@ -216,26 +216,7 @@ void XMLHandler::exitText()
 {
     NodeImpl* par = m_currentNode->parentNode();
     if (par != 0)
-    {
-        if (!sheetElemId.isEmpty() && par->isElementNode())
-        {
-            QValueList<DOMString>::Iterator it;
-            for( it = sheetElemId.begin(); it != sheetElemId.end(); ++it )
-            {
-                if (static_cast<ElementImpl*>(par)->getAttribute("id")==*it)
-                {
-    //                kdDebug() << "sheet found:" << endl;
-                    DOMString sheet= static_cast<TextImpl*>(m_currentNode)->data();
-    //                kdDebug() << sheet.string() << endl;
-                    CSSStyleSheetImpl *styleSheet = new CSSStyleSheetImpl(m_doc->document());
-                    styleSheet->parseString(sheet);
-                    m_doc->document()->createSelector();
-                }
-            }
-        }
-
         m_currentNode = par;
-    }
 }
 
 bool XMLHandler::attributeDecl(const QString &/*eName*/, const QString &/*aName*/, const QString &/*type*/,
@@ -369,13 +350,19 @@ void XMLTokenizer::finish()
         body->renderer()->close();
         m_doc->document()->applyChanges();
         m_doc->document()->updateRendering();
-
+        
         end();
+
     }
     else {
         addScripts(m_doc->document());
         m_scriptsIt = new QListIterator<HTMLScriptElementImpl>(m_scripts);
         executeScripts();
+    
+        m_doc->document()->createSelector();
+        m_doc->document()->renderer()->close();
+        
+        end();
     }
 
 }
@@ -418,9 +405,6 @@ void XMLTokenizer::executeScripts()
             }
             ++(*m_scriptsIt);
         }
-    }
-    if (!m_scriptsIt->current()) {
-        end(); // this actually causes us to be deleted
     }
 }
 

@@ -250,6 +250,7 @@ ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc) : NodeBas
 {
     m_target = 0;
     m_data = 0;
+    m_localHref = 0;
     m_sheet = 0;
     m_cachedSheet = 0;
 }
@@ -264,6 +265,7 @@ ProcessingInstructionImpl::ProcessingInstructionImpl(DocumentPtr *doc, DOMString
         m_data->ref();
     m_sheet = 0;
     m_cachedSheet = 0;
+    m_localHref = 0;    
 }
 
 ProcessingInstructionImpl::~ProcessingInstructionImpl()
@@ -303,6 +305,11 @@ DOMString ProcessingInstructionImpl::data() const
     return m_data;
 }
 
+DOMString ProcessingInstructionImpl::localHref() const
+{
+    return m_localHref;
+}
+
 void ProcessingInstructionImpl::setData( const DOMString &_data )
 {
     if (m_data)
@@ -323,6 +330,8 @@ NodeImpl *ProcessingInstructionImpl::cloneNode ( bool /*deep*/, int &/*exception
     return new ProcessingInstructionImpl(docPtr(),m_target,m_data);
 }
 
+#include <kdebug.h>
+
 void ProcessingInstructionImpl::checkStyleSheet()
 {
     if (m_target && DOMString(m_target) == "xml-stylesheet") {
@@ -337,21 +346,32 @@ void ProcessingInstructionImpl::checkStyleSheet()
             return;
         if (attrs.value("type") != "text/css")
             return;
-
+       
         DOMString href = attrs.value("href");
-/*        if (href[0]=='#')
-            sheetElemId.append(href.string().mid(1)); // ###
-        else {*/
-            // ### some validation on the URL?
-	    // ### make sure doc->baseURL() is not empty?
-	    // ### FIXME charset
-	    if (m_cachedSheet)
-		m_cachedSheet->deref(this);
-	    m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(href, QString::null);
-	    m_cachedSheet->ref( this );
-//        }
+        
+        if (href.length()>1)
+        {
+            if (href[0]=='#')
+            {
+                if (m_localHref)
+                    m_localHref->deref();
+                m_localHref=href.implementation()->split(1);
+                if (m_localHref)
+                    m_localHref->ref();
+            }
+            else 
+            {
+                // ### some validation on the URL?
+	        // ### make sure doc->baseURL() is not empty?
+	        // ### FIXME charset
+	        if (m_cachedSheet)
+	        m_cachedSheet->deref(this);
+	        m_cachedSheet = ownerDocument()->docLoader()->requestStyleSheet(href, QString::null);
+	        m_cachedSheet->ref( this );
+            }
 
-    }
+        }
+    }   
 }
 
 StyleSheetImpl *ProcessingInstructionImpl::sheet() const
@@ -371,6 +391,15 @@ void ProcessingInstructionImpl::setStyleSheet(const DOM::DOMString &url, const D
     m_cachedSheet = 0;
 
     getDocument()->createSelector();
+}
+
+void ProcessingInstructionImpl::setStyleSheet(StyleSheetImpl* sheet)
+{
+    if (m_sheet)
+        m_sheet->deref();
+    m_sheet = static_cast<CSSStyleSheetImpl*>(sheet);
+    if (m_sheet)
+        m_sheet->ref();
 }
 
 // -------------------------------------------------------------------------

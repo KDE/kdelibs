@@ -110,16 +110,19 @@ public:
 
     virtual DOMString target() const;
     virtual DOMString data() const;
+    virtual DOMString localHref() const;
     virtual void setData( const DOMString &_data );
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
     StyleSheetImpl *sheet() const;
     void checkStyleSheet();
     virtual void setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet);
+    virtual void setStyleSheet(StyleSheetImpl* sheet);
 
 protected:
     DOMStringImpl *m_target;
     DOMStringImpl *m_data;
+    DOMStringImpl *m_localHref;
     khtml::CachedCSSStyleSheet *m_cachedSheet;
     CSSStyleSheetImpl *m_sheet;
 };

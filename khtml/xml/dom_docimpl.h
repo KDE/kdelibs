@@ -30,6 +30,7 @@
 #include <qstringlist.h>
 #include <qobject.h>
 #include <qdict.h>
+#include <qmap.h>
 
 class QPaintDevice;
 class QPaintDeviceMetrics;
@@ -254,14 +255,20 @@ public:
     void addListenerType(ListenerType listenerType) { m_listenerTypes = m_listenerTypes | listenerType; }
 
     CSSStyleDeclarationImpl *getOverrideStyle(ElementImpl *elt, DOMStringImpl *pseudoElt);
+    
+    typedef QMap<QString, ProcessingInstructionImpl*> LocalStyleRefs;    
+    LocalStyleRefs* localStyleRefs() { return &m_localStyleRefs; }
+
     virtual void defaultEventHandler(EventImpl *evt);
     virtual void setWindowEventListener(int id, EventListener *listener);
     EventListener *getWindowEventListener(int id);
     virtual void removeWindowEventListener(int id);
     EventListener *createHTMLEventListener(QString code);
 
+
 signals:
     void finishedParsing();
+
 
 private:
     ElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
@@ -304,7 +311,9 @@ protected:
 
     unsigned short m_listenerTypes;
     StyleSheetListImpl* m_styleSheets;
+    LocalStyleRefs m_localStyleRefs; // references to inlined style elements
     QList<RegisteredEventListener> m_windowEventListeners;
+
 };
 
 class DocumentFragmentImpl : public NodeBaseImpl
