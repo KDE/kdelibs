@@ -183,6 +183,7 @@
 0       string          #!/usr/local/bin/python           application/x-python
 0       string          #!\ /usr/local/bin/python         application/x-python
 0       string          eval\ "exec\ /usr/local/bin/python application/x-python
+0	belongs		0x994e0d0a		application/x-python-bytecode
 
 #------------------------------------------------------------------------------
 # compress:  file(1) magic for pure-compression formats (no archives)
