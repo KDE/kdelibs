@@ -492,7 +492,7 @@ QString KAction::toolTip() const
 
 int KAction::plug( QWidget *w, int index )
 {
-  //kdDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl; // remove -- ellis
+  //kdDebug(129) << "KAction::plug( " << w << ", " << index << " )" << endl;
   if (w == 0) {
 	kdWarning() << "KAction::plug called with 0 argument\n";
  	return -1;
@@ -662,7 +662,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
 
 void KAction::unplugAccel()
 {
-  //kdDebug(129) << "KAction::unplugAccel()" << endl;
+  //kdDebug(129) << "KAction::unplugAccel() " << this << " " << name() << endl;
   if ( d->m_kaccel )
   {
     d->m_kaccel->remove(name());
@@ -739,8 +739,12 @@ void KAction::updateText( int i )
 {
   QWidget *w = container( i );
 
-  if ( w->inherits( "QPopupMenu" ) )
-    static_cast<QPopupMenu*>(w)->changeItem( itemId( i ), d->text() );
+  if ( w->inherits( "QPopupMenu" ) ) {
+    int id = itemId( i );
+    static_cast<QPopupMenu*>(w)->changeItem( id, d->text() );
+    if ( d->m_kaccel )
+        updateShortcut( static_cast<QPopupMenu*>(w), id );
+  }
   else if ( w->inherits( "QMenuBar" ) )
     static_cast<QMenuBar*>(w)->changeItem( itemId( i ), d->text() );
   else if ( w->inherits( "KToolBar" ) )
