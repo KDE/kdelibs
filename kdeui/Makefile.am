@@ -40,8 +40,8 @@ include_HEADERS = qttableview.h kprogress.h kcolordlg.h kcolordialog.h kselect.h
 		kcontainer.h keditcl.h kled.h keditlistbox.h \
 		kdbtn.h kwizard.h kkeydialog.h \
 		kurllabel.h kruler.h kcursor.h kaccelmenu.h \
-		klineeditdlg.h kthemebase.h \
-		kthemestyle.h kcharselect.h kcolordrag.h qxembed.h \
+		klineeditdlg.h \
+		kcharselect.h kcolordrag.h qxembed.h \
 		knumvalidator.h kdialog.h kdialogbase.h \
 		kjanuswidget.h kaboutdialog.h kpixmapeffect.h \
 		kauthicon.h kmessagebox.h ksharedpixmap.h \
@@ -65,7 +65,7 @@ include_HEADERS = qttableview.h kprogress.h kcolordlg.h kcolordialog.h kselect.h
 # in ksharedpixmap.cpp
 libkdeui_la_SOURCES = \
 		qxembed.cpp qttableview.cpp ksharedpixmap.cpp \
-		kthemestyle.cpp kurllabel.cpp \
+		kurllabel.cpp \
 		knuminput.cpp ktoolbar.cpp klineedit.cpp klistview.cpp kprogress.cpp \
 		kimageeffect.cpp kcolordialog.cpp kselect.cpp kdatepik.cpp \
 		kdatetbl.cpp kfontdialog.cpp kpopupmenu.cpp ktabctl.cpp \
@@ -76,7 +76,7 @@ libkdeui_la_SOURCES = \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp \
 		kled.cpp kdbtn.cpp kwizard.cpp kcontainer.cpp \
 		kkeydialog.cpp kruler.cpp kcursor.cpp kaccelmenu.cpp \
-		klineeditdlg.cpp kthemebase.cpp  \
+		klineeditdlg.cpp  \
 		kcharselect.cpp kcolordrag.cpp  \
 		knumvalidator.cpp kdialog.cpp kdialogbase.cpp \
 		kjanuswidget.cpp kaboutdialog.cpp kpixmapeffect.cpp \

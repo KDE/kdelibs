@@ -264,7 +264,6 @@ void KProgress::drawText(QPainter *p)
 
 void KProgress::drawContents(QPainter *p)
 {
-        bool useKStyle = kapp->kstyle() != NULL;
         QRect cr = contentsRect(), er = cr;
 	fr = cr;
 	QBrush fb(bar_color), eb(backgroundColor());
@@ -286,12 +285,6 @@ void KProgress::drawContents(QPainter *p)
 			}
 				
 			p->setBrushOrigin(cr.topLeft());
-                        if(useKStyle)
-                            kapp->kstyle()->
-                                drawKProgressBlock(p, fr.x(), fr.y(),
-                                                   fr.width(), fr.height(),
-                                                   colorGroup(), &fb);
-                        else
                             p->fillRect(fr, fb);
 
                         p->fillRect(er, eb);
@@ -322,12 +315,6 @@ void KProgress::drawContents(QPainter *p)
 						   cr.width() - margin, cr.height() - margin);
 			for (int i = 0; i < num; i++) {
 				p->setBrushOrigin(fr.topLeft());
-                                if(useKStyle)
-                                    kapp->kstyle()->
-                                        drawKProgressBlock(p, fr.x(), fr.y(),
-                                                           fr.width(), fr.height(),
-                                                           colorGroup(), &fb);
-                                else
                                     p->fillRect(fr, fb);
                                 fr.moveBy(dx, dy);
                         }

@@ -32,7 +32,6 @@
 #include <kconfig.h>
 #include <kglobalsettings.h>
 #include <kmenubar.h>
-#include <kstyle.h>
 #include <kapplication.h>
 #include <kwin.h>
 #include <kwinmodule.h>
@@ -123,56 +122,7 @@ void KMenuBar::drawContents(QPainter *p)
 // From Qt's spacing
 static const int motifItemHMargin       = 5;    // menu item hor text margin
 static const int motifItemVMargin       = 4;    // menu item ver text margin
-    KStyle *stylePtr = kapp->kstyle();
-    if(!stylePtr)
         QMenuBar::drawContents(p);
-    else{
-        int i, x, y, nlitems;
-        int dw = stylePtr->pixelMetric( QStyle::PM_DefaultFrameWidth );
-        QFontMetrics fm = fontMetrics();
-        stylePtr->drawKMenuBar(p, 0, 0, width(), height(), colorGroup(),
-                               d->topLevel, NULL);
-
-        for(i=0, nlitems=0, x=dw, y=dw; i < (int)mitems->count(); ++i, ++nlitems)
-        {
-            int h=0;
-            int w=0;
-            QMenuItem *mi = mitems->at(i);
-            if(mi->pixmap()){
-                w = QMAX(mi->pixmap()->width() + 4, QApplication::globalStrut().width());
-                h = QMAX(mi->pixmap()->height() + 4, QApplication::globalStrut().height());
-            }
-            else if(!mi->text().isEmpty()){
-                QString s = mi->text();
-                w = fm.boundingRect(s).width() + 2*motifItemHMargin;
-                w -= s.contains('&')*fm.width('&');
-                w += s.contains(QString::fromLatin1("&&"))*fm.width('&');
-                w = QMAX(w, QApplication::globalStrut().width());
-                h = QMAX(fm.height() + motifItemVMargin, QApplication::globalStrut().height());
-            }
-
-	    else if (mi->widget()) {
-		// For a Widget in the menubar space is needed.
-		w = QMAX(mi->widget()->width() + 2, QApplication::globalStrut().width());
-		h = QMAX(mi->widget()->height() +2, QApplication::globalStrut().height());
-	    }
-
-            if (!mi->isSeparator()){
-                if (x + w + dw - width() > 0 && nlitems > 0 ){
-                    nlitems = 0;
-                    x = dw;
-                    y += h;
-                }
-            }
-
-            stylePtr->drawKMenuItem(p, x, y, w, h, mi->isEnabled()  ?
-                                    palette().active() : palette().disabled(),
-                                    i == actItem,
-                                    mi, NULL);
-
-            x += w;
-        }
-    }
 }
 
 void KMenuBar::enterEvent(QEvent *ev)
