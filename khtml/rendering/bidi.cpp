@@ -15,6 +15,8 @@
 
 #include "stdio.h"
 
+#include <assert.h>
+
 // an iterator which goes through a BiDiParagraph
 class BiDiIterator
 {
@@ -443,6 +445,7 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
 	if(!o->isHidden())
 	{
 	    int aWidth = o->width(pos, o->length() - pos);
+	    assert(o->length() >= pos);
 	    w = new BiDiWord(o, pos, o->length() - pos, level, aWidth);
 	    width -= aWidth;
 	    line.append(w);
@@ -454,8 +457,12 @@ static void addWord(BiDiParagraph *par, QList<BiDiWord> &line, const BiDiIterato
     {
 	int pos2 = it2.pos;
 	if(!ignoreLast) pos2++;
-	w = new BiDiWord(o, pos, pos2 - pos, level, width);
-	line.append(w);
+	// ### this if shouldn't be needed
+	if(pos2 >= pos)
+	{
+	    w = new BiDiWord(o, pos, pos2 - pos, level, width);
+	    line.append(w);
+	}
     }
 }
 
