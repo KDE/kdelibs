@@ -51,13 +51,12 @@ class KNotifyClient : public QObject
 Q_OBJECT
 
 public:
-	enum Presentation
-	{
+	enum {
 		Default=-1,
 		None=0,
 		Sound=1,
 		Messagebox=2,
-		Logwindow=4,
+		Logfile=4,
 		Stderr=8
 	};
 	
@@ -114,7 +113,7 @@ public: //static methods
 	 * Remeber that they may be ORed:
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }	
 	 */
-	static Presentation getPresentation(const QString &eventname);
+	static int getPresentation(const QString &eventname);
 	
 	/**
 	 * Gets the default file associated with a certain event name
@@ -131,7 +130,7 @@ public: //static methods
 	 * Remember that the Presentation may be ORed.  Try this:
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }
 	 */
-	static Presentation getDefaultPresentation(const QString &eventname);
+	static int getDefaultPresentation(const QString &eventname);
 	
 	/**
 	 * Gets the default File for the event of this program.

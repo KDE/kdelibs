@@ -70,7 +70,7 @@ bool KNotifyClient::userEvent(const QString &text, int present,
 	return c.send();
 }
 
-KNotifyClient::Presentation KNotifyClient::getPresentation(const QString &eventname)
+int KNotifyClient::getPresentation(const QString &eventname)
 {
 	(void)eventname;
 	return None;
@@ -84,7 +84,7 @@ QString KNotifyClient::getFile(const QString &eventname, int present)
 
 }
 
-KNotifyClient::Presentation KNotifyClient::getDefaultPresentation(const QString &eventname)
+int KNotifyClient::getDefaultPresentation(const QString &eventname)
 {
 	(void)eventname;
 	return None;
