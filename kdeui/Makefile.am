@@ -69,7 +69,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kdatewidget.h karrowbutton.h kguiitem.h kstdguiitem.h \
 		kstringvalidator.h kwindowinfo.h \
 		ktextedit.h kpassivepopup.h \
-		kdatetimewidget.h ktimewidget.h \
+		kdatetimewidget.h ktimewidget.h kscrollview.h \
 		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h \
 		ktabbar.h ktabwidget.h ksplashscreen.h kconfigdialog.h \
 		kactionselector.h klanguagebutton.h klistviewsearchline.h \
@@ -90,7 +90,7 @@ libkdeui_la_SOURCES = \
 		kcolordialog.cpp kselect.cpp kdatepicker.cpp \
 		kdatetbl.cpp kfontrequester.cpp kfontdialog.cpp ktabctl.cpp \
 		kstatusbar.cpp kmainwindow.cpp \
-		keditlistbox.cpp \
+		keditlistbox.cpp kscrollview.cpp \
 		kseparator.cpp krestrictedline.cpp  \
 		kcolorbutton.cpp ksystemtray.cpp \
 		kbuttonbox.cpp keditcl1.cpp keditcl2.cpp kled.cpp \
