@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/kdeprint $(all_includes)
+INCLUDES = -I$(top_srcdir)/kdeprint -I$(top_srcdir) $(all_includes)
 
 check_PROGRAMS = helpviewer drawdemo
 
