@@ -241,9 +241,9 @@ void Job::showErrorDialog( QWidget * parent )
   if ( m_error != ERR_USER_CANCELED ) {
     //old plain error message
     kdDebug() << "Default language: " << KGlobal::locale()->defaultLanguage() << endl;
-    if ( KGlobal::locale()->defaultLanguage() == "en" ||
-         KGlobal::locale()->defaultLanguage().left(2) == "en_" ) {
+    if ( 1 ) 
       KMessageBox::queuedMessageBox( parent, KMessageBox::Error, errorString() );
+#if 0
     } else {
       QStringList errors = detailedErrorStrings();
       QString caption, err, detail;
@@ -256,6 +256,7 @@ void Job::showErrorDialog( QWidget * parent )
         detail = *it;
       KMessageBox::queuedDetailedError( parent, err, detail, caption );
     }
+#endif
   }
 }
 
