@@ -123,8 +123,8 @@ public:
    *
    * @param _templUrl template used for reading only
    * @param _currentDir directory where the file will be written to
-   * @param _defaultName something to put in the name field, 
-   * like mimetype.desktop 
+   * @param _defaultName something to put in the name field,
+   * like mimetype.desktop
    */
   KPropertiesDialog( const KURL& _tempUrl, const KURL& _currentDir,
                     const QString& _defaultName );
@@ -232,7 +232,7 @@ private:
   /**
    * Common initialization for all constructors
    */
-  void init(QWidget* parent = 0L, bool modal = false, bool autoShow = false);
+  void init(QWidget* parent = 0L, bool modal = false, bool autoShow = true);
 
   /**
    * Inserts all pages in the dialog.
@@ -523,7 +523,7 @@ public:
 
   virtual void applyChanges();
   virtual QString tabName() const;
-  
+
   static bool supports( KFileItemList _items );
 
 private:
