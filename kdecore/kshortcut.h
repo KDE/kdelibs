@@ -533,6 +533,10 @@ class KDECORE_EXPORT KKeySequence
 *  closeShortcut.append( KKey(Key_Escape));
 *  closeAction->setShortcut(closeShortcut);
 * \endcode
+*
+* Note that a shortcut cannot have more than 2 key combinations associated with it, so the above
+* code would not do anything (and .append would return false) if the closeAction already had
+* an key and alternate key.
 * 
 */
 
@@ -759,19 +763,20 @@ class KDECORE_EXPORT KShortcut
 	 * Sets the @p i 'th key sequence of the shortcut. You can not introduce
 	 * gaps in the list of sequences, so you must use an @p i <= count().
 	 * Also note that the maximum number of key sequences is MAX_SEQUENCES.
-	 * @param i the position of the new key sequence(<= count(),
-	 *          <= MAX_SEQUENCES)
+	 * @param i the position of the new key sequence(0 <= i <= count(), 0 <= i < MAX_SEQUENCES)
 	 * @param keySeq the key sequence to set
 	 * @return true if successful, false otherwise
 	 */
 	bool setSeq( uint i, const KKeySequence& keySeq );
 
 	/**
-	 * Appends the given key sequence.
+	 * Appends the given key sequence.  This sets it as either the keysequence or
+	 * the alternate keysequence.  If the shortcut already has MAX_SEQUENCES
+	 * sequences then this call does nothing, and returns false.
+	 *
 	 * @param keySeq the key sequence to add
 	 * @return true if successful, false otherwise
 	 * @see setSeq()
-	 * @see MAX_SEQUENCES
 	*/
 	bool append( const KKeySequence& keySeq );
 
