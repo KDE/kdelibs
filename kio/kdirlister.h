@@ -255,6 +255,8 @@ signals:
 
   /** Signal a redirection */
   void redirection( const KURL & url );
+  /** Alternative signal for indicating a redirection */
+  void redirection( const KURL & oldUrl, const KURL & newUrl );
 
   /** Clear all items */
   void clear();

@@ -233,6 +233,7 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
 void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
 {
   kdDebug(7003) << "KDirLister::slotRedirection " << url.url() << endl;
+  KURL oldUrl = m_url;
   m_url = url;
   if ( m_lstDirs.count() == 1 )
   {
@@ -245,6 +246,7 @@ void KDirLister::slotRedirection( KIO::Job *, const KURL & url )
       emit clear();
   }
   emit redirection( url );
+  emit redirection( oldUrl, url );
 }
 
 void KDirLister::updateDirectory( const KURL& _dir )
