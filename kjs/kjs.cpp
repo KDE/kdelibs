@@ -38,6 +38,11 @@ KJScript::KJScript()
 KJScript::~KJScript()
 {
   delete rep;
+
+#ifdef KJS_DEBUG_MEM
+  printf("Imp::count: %d\n", Imp::count);
+  assert(Imp::count == 0);
+#endif
 }
 
 bool KJScript::evaluate(const char *code)

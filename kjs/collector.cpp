@@ -137,15 +137,22 @@ void Collector::privateCollect()
     for (int i = 0; i < block->filled; i++, r++)
       if (*r) {
 	// emulate 'operator delete()'
-	//	(*r)->~Imp();
-	//	free(*r);
+	(*r)->~Imp();
+	free(*r);
 	*r = 0L;
 	count--;
       }
+    block = block->next;
+  }
+
+  // delete the emtpy containers
+  block = root;
+  while (block) {
     CollectorBlock *next = block->next;
     delete block;
     block = next;
   }
+
   root = 0L;
 }
 
