@@ -139,8 +139,8 @@ void KHTMLView::init()
 
     if(!paintBuffer) paintBuffer = new QPixmap();
 
-    setFocusPolicy(QWidget::StrongFocus);
-  viewport()->setFocusPolicy( QWidget::WheelFocus );
+//    setFocusPolicy(QWidget::StrongFocus);
+//  viewport()->setFocusPolicy( QWidget::WheelFocus );
 
   _marginWidth = -1; // undefined
   _marginHeight = -1;
@@ -743,7 +743,7 @@ void KHTMLView::print()
     QPrinter *printer = new QPrinter;
     if(printer->setup(this)) {
         // set up QPrinter
-        printer->setFullPage(true);
+        printer->setFullPage(false);
         printer->setCreator("KDE 2.0 HTML Library");
         //printer->setDocName(m_part->url());
 
@@ -773,24 +773,35 @@ void KHTMLView::print()
         m_part->docImpl()->applyChanges();
 
         // ok. now print the pages.
-        kdDebug(6000) << "printing: html page width = " << root->width()
-                      << " height = " << root->height() << endl;
+        kdDebug(6000) << "printing: html page width = " << root->docWidth()
+                      << " height = " << root->docHeight() << endl;
+        kdDebug(6000) << "printing: margins left = " << printer->margins().width()
+                      << " top = " << printer->margins().height() << endl;
+        kdDebug(6000) << "printing: paper width = " << metrics.width()
+                      << " height = " << metrics.height() << endl;
         // if the width is too large to fit on the paper we just scale
         // the whole thing.
         int pageHeight = metrics.height();
         int pageWidth = metrics.width();
-        if(root->width() > metrics.width()) {
-            double scale = ((double) metrics.width())/((double) root->width());
+        // We print the bottom 'overlap' units again at the top of the next page.
+        int overlap = 10;
+        p->setClipRect(0,0, pageWidth, pageHeight);
+        if(root->docWidth() > metrics.width()) {
+            double scale = ((double) metrics.width())/((double) root->docWidth());
             p->scale(scale, scale);
             pageHeight = (int) (pageHeight/scale);
             pageWidth = (int) (pageWidth/scale);
+            overlap = (int) (overlap/scale);
         }
+        kdDebug(6000) << "printing: scaled html width = " << pageWidth
+                      << " height = " << pageHeight << endl;
         int top = 0;
         while(top < root->docHeight()) {
             if(top > 0) printer->newPage();
+		
             root->print(p, 0, top, pageWidth, pageHeight, 0, 0);
-            p->translate(0,-pageHeight);
-            top += pageHeight;
+            p->translate(0,-(pageHeight-overlap));
+            top += (pageHeight-overlap);
         }
 
         p->end();
