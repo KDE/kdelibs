@@ -67,7 +67,7 @@ struct BufferInfo {
   int   h;
 };
 
-QList<BufferInfo> bufferInfoList;
+QList<BufferInfo> *bufferInfoList = 0L;
 QPixmap *buffer = 0;
 
 QPixmap *getBuffer(void *user) {
@@ -80,7 +80,7 @@ QPixmap *getBuffer(void *user) {
   info->user = user;
   info->w = 0;
   info->h = 0;
-  bufferInfoList.append(info);
+  bufferInfoList->append(info);
   return buffer;
 }
 
@@ -91,8 +91,8 @@ void resizeBuffer(void *user, int w, int h) {
 
   maxW = w;
   maxH = h;
-  for (z = 0; z < (int) bufferInfoList.count(); z++) {
-    info = bufferInfoList.at(z);
+  for (z = 0; z < (int) bufferInfoList->count(); z++) {
+    info = bufferInfoList->at(z);
     if (info->user == user) {
       info->w = w;
       info->h = h;
@@ -110,17 +110,23 @@ void releaseBuffer(void *user) {
   int z;
   BufferInfo *info;
 
-  for (z = (int) bufferInfoList.count() -1; z >= 0 ; z--) {
-    info = bufferInfoList.at(z);
-    if (info->user == user) bufferInfoList.remove(z);
+  for (z = (int) bufferInfoList->count() -1; z >= 0 ; z--) {
+    info = bufferInfoList->at(z);
+    if (info->user == user) bufferInfoList->remove(z);
   }
   resizeBuffer(0, 0, 0);
 }
 
 KWrite::KWrite(KWriteDoc *doc, QWidget *parent, const QString &name, bool HandleOwnDND)
   : QWidget(parent, name) {
+
+  if( !bufferInfoList )
+    bufferInfoList = new QList<BufferInfo>;
+
   m_doc = doc;
   m_view = new KWriteView(this, doc, HandleOwnDND);
+
+
 
   // some defaults
   m_configFlags = cfAutoIndent | cfSpaceIndent | cfBackspaceIndents
