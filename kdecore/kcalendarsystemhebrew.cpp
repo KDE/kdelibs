@@ -237,7 +237,7 @@ int KCalendarSystemHebrew::monthsInYear( const QDate & date ) const
     return 12;
 }
 
-// Ok
+// ### HPB Recursive call without termination
 int KCalendarSystemHebrew::weeksInYear(int year) const
 {
   QDate temp;
