@@ -29,7 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qmap.h>
 
 class KWinModule;
-class KWIndowListMenuPrivate;
+class KWindowListMenuPrivate;
 
 class KWindowListMenu : public QPopupMenu
 {
