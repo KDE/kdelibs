@@ -26,7 +26,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define __KPANELMENU_H__
 
 #include <qstring.h>
-#include <qpopupmenu.h>
+#include <kpopupmenu.h>
 
 class KPanelMenuPrivate;
 
@@ -50,7 +50,7 @@ class KPanelMenuPrivate;
  * @short Base class to build dynamically loaded menu entries for the K-menu, or the panel.
  * @author The kicker maintainer, Michael Goffioul <goffioul@imec.be>
  */
-class KPanelMenu : public QPopupMenu
+class KPanelMenu : public KPopupMenu
 {
     Q_OBJECT
 

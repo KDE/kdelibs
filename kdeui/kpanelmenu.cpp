@@ -39,13 +39,13 @@ public:
 };
 
 KPanelMenu::KPanelMenu(const QString &startDir, QWidget *parent, const char *name)
-  : QPopupMenu(parent, name)
+  : KPopupMenu(parent, name)
 {
     init(startDir);
 }
 
 KPanelMenu::KPanelMenu(QWidget *parent, const char *name)
-  : QPopupMenu(parent, name)
+  : KPopupMenu(parent, name)
 {
     init();
 }
