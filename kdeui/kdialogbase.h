@@ -432,35 +432,6 @@ class KDialogBase : public KDialog
      * buttons an the main widget.
      */
     void enableButtonSeparator( bool state );
-
-    /**
-     * Enable or disable (gray out) a general action button.
-     *
-     * @param id Button identifier.
-     * @param state @p true enables the button(s). 
-     */
-    void enableButton( ButtonCode id, bool state );
-    
-    /**
-     * Enable or disable (gray out) the OK button.
-     *
-     * @param state @p true enables the button. 
-     */
-    void enableButtonOK( bool state );
-
-    /**
-     * Enable or disable (gray out) the Apply button.
-     *
-     * @param state true enables the button. 
-     */
-    void enableButtonApply( bool state );
-    
-    /**
-     * Enable or disable (gray out) the Cancel button.
-     *
-     * @param state true enables the button. 
-     */
-    void enableButtonCancel( bool state );
     
     /**
      * Hide or display a general action button.
@@ -752,6 +723,35 @@ class KDialogBase : public KDialog
     QString helpLinkText( void );
 
   public slots:
+    /**
+     * Enable or disable (gray out) a general action button.
+     *
+     * @param id Button identifier.
+     * @param state @p true enables the button(s). 
+     */
+    void enableButton( ButtonCode id, bool state );
+
+    /**
+     * Enable or disable (gray out) the OK button.
+     *
+     * @param state @p true enables the button. 
+     */
+    void enableButtonOK( bool state );
+
+    /**
+     * Enable or disable (gray out) the Apply button.
+     *
+     * @param state true enables the button. 
+     */
+    void enableButtonApply( bool state );
+    
+    /**
+     * Enable or disable (gray out) the Cancel button.
+     *
+     * @param state true enables the button. 
+     */
+    void enableButtonCancel( bool state );
+
     /**
      * Display or hide the help link area on the top of the dialog.
      *
