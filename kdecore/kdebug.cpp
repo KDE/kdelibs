@@ -47,7 +47,7 @@
 #include <qtextstream.h>
 
 #include <stdlib.h>	// abort
-//#include <unistd.h>	// getpid
+#include <unistd.h>	// getpid
 #include <stdarg.h>	// vararg stuff
 #include <syslog.h>
 #include <errno.h>
@@ -97,6 +97,7 @@ static QString getDescrFromNum(unsigned short _num)
   bool longOK;
 
   QTextStream *ts = new QTextStream(&file);
+  ts->setEncoding( QTextStream::Latin1 );
   while (!ts->eof()) {
     data = ts->readLine().simplifyWhiteSpace();
 
@@ -254,8 +255,8 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
               else */
                   output = stderr;				
               // Uncomment this to get the pid of the app in the output (useful for e.g. kioslaves)
-	      //if ( !aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), aAreaName.ascii() );
-	      if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
+	      if ( !aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), aAreaName.ascii() );
+	      //if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
 	      fputs(  data, output);
 	      break;
           }
