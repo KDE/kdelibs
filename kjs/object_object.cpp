@@ -41,6 +41,12 @@ ObjectPrototypeImp::ObjectPrototypeImp(ExecState *exec,
   Value protect(this);
   put(exec,"toString", Object(new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ToString, 0)), DontEnum);
   put(exec,"valueOf",  Object(new ObjectProtoFuncImp(exec,funcProto,ObjectProtoFuncImp::ValueOf,  0)), DontEnum);
+#ifndef KJS_PURE_ECMA // standard compliance location is the Global object
+  // see http://www.devguru.com/Technologies/ecmascript/quickref/object.html
+  put(exec, "eval",
+      Object(new GlobalFuncImp(exec, funcProto,GlobalFuncImp::Eval, 1)),
+      DontEnum);
+#endif
 }
 
 

@@ -366,7 +366,7 @@ bool GlobalFuncImp::implementsCall() const
   return true;
 }
 
-Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
+Value GlobalFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
 {
   Value res;
 
@@ -402,9 +402,7 @@ Value GlobalFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args
 
       // enter a new execution context
       Object glob(exec->interpreter()->globalObject());
-      Object thisVal(Object::dynamicCast(exec->context().thisValue()));
-      ContextImp ctx(glob, exec, thisVal,
-		     EvalCode, exec->context().imp());
+      ContextImp ctx(glob, exec, thisObj, EvalCode, exec->context().imp());
       ExecState newExec(exec->interpreter(), &ctx);
       newExec.setException(exec->exception()); // could be null
 

@@ -330,6 +330,7 @@ namespace KJS {
    */
   class ContextImp {
   public:
+    // TODO: remove glob parameter. deducable from exec.
     ContextImp(Object &glob, ExecState *exec, Object &thisV, CodeType type = GlobalCode,
                ContextImp *_callingContext = 0L, FunctionImp *func = 0L, const List &args = List());
     virtual ~ContextImp();
