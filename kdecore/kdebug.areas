@@ -38,7 +38,7 @@
 7001	kio (KDirWatch)
 7002	kio (KIOCache)
 7005	kio (Filter)
-7006	kio (ConnectionSlots::dispatch)
+7006	kio (Scheduler)
 7007	kio (KIOJob)
 7008	kio (ProtocolManager)
 7009	kio (KMimeType)
