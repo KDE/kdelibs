@@ -1,6 +1,6 @@
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -73,11 +73,9 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
 #endif
     KJS::Global global(Global::current());
 
-    KJSO window(Window::retrieve(khtmlpart));
-    global.put("window", window);
     // make "window" prefix implicit for shortcuts like alert()
-    global.setFilter(window);
-    global.setPrototype(window);
+    global.setPrototype(Window::retrieve(khtmlpart));
+    global.put("window", global);
 
     return script;
   }
