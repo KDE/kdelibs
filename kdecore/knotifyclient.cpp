@@ -156,3 +156,15 @@ bool KNotifyClient::startDaemon()
 }
 
 
+void KNotifyClient::beep(const QString& reason)
+{
+  DCOPClient *client=kapp->dcopClient();
+  if (!client->isAttached())
+  {
+    client->attach();
+    if (!client->isAttached() || !client->isApplicationRegistered(daemonName))
+      return QApplication::beep();
+  }
+
+  KNotifyClient::event(KNotifyClient::notification, reason);
+}

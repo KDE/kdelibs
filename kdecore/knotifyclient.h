@@ -133,6 +133,15 @@ namespace KNotifyClient
 	                      const QString &sound=0, const QString &file=0);
 	
 	/**
+	 * This is a simple substitution for QApplication::beep().
+	 * It simply calls
+	 * <pre>
+	 * KNotifyClient::event( KNotifyClient::notification, reason );
+	 * </pre>
+	 */
+	void beep(const QString& reason=QString::null);
+
+	/**
 	 * Gets the presentation associated with a certain event name
 	 * Remeber that they may be ORed:
 	 * if (present & KNotifyClient::Sound) { [Yes, sound is a default] }	
