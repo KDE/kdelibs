@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=W3C XML Schema
+Icon=html
+Type=MimeType
+MimeType=application/xml
+X-KDE-IsAlso=text/xml
+Patterns=*.xsd;
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
