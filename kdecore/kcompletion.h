@@ -584,8 +584,8 @@ public:
     bool isCompletionObjectAutoDeleted() const { return m_bAutoDelCompObj; }
 
     /**
-    * Sets the completion object for deletion upon this
-    * widget's destruction.
+    * Sets the completion object when this widget's destructor
+    * is called.
     *
     * If the argument is set to true, the completion object
     * is deleted when this widget's destructor is called.
@@ -597,28 +597,23 @@ public:
     }
 
     /**
-    * Disables (temporarily) this widget's ability to emit
-    * the rotation and completion signals.
+    * Sets the widget's ability to emit completion signals.
     *
-    * Invoking this function will cause the completion &
-    * rotation signals not to be emitted.  Note that this
-    * also disbales any internal handling of these signals.
-    * However, unlike @ref setCompletionObject() object,
-    * disabling the emition of the signals through this
-    * method does not delete the completion object.
-    */
-    void disableSignals() { m_bEmitSignals = false; }
-
-    /**
-    * Enables the widget's ability to emit completion signals.
+    * Invoking this function with @p enable set to @p false will
+    * cause the completion & rotation signals not to be emitted.
+    * This means that internal handling of these signals will be
+    * disabled as well.  However, unlike setting the completion
+    * object to @p NULL using @ref setCompletionObject, disabling
+    * the emition of the signals through this method does not
+    * affect the current completion object.
     *
-    * Note that there is no need to invoke this function by
-    * default.  When a completion object is created through
-    * completionObject() or setCompletionObject(), these
-    * signals are automatically actiavted.  Only call this
-    * functions if you disabled them manually.
+    * There is no need to invoke this function by default.  When a
+    * completion object is created through completionObject() or
+    * setCompletionObject(), these signals are automatically actiavted.
+    *
+    * @param enable if false disables the emittion of completion & rotation signals.
     */
-    void enableSignals()  { m_bEmitSignals = true; }
+    void setEnableSignals( bool enable ) { m_bEmitSignals = enable; }
 
     /**
     * Returns true if the object handles the signals
@@ -729,12 +724,13 @@ public:
     * all inheriting classes.
     *
     * This function is intended to allow external completion
-    * implementors to set text completion appropriately.  It
-    * is mostly relevant when completing text in CompletionAuto
-    * and CompletionManual modes.
+    * implementions to set completed text appropriately.  It
+    * is mostly relevant when the completion mode is set to
+    * CompletionAuto and CompletionManual modes. See
+    * @ref KCompletionBase::setCompletedText.
     *
     * @param text the completed text to be set in the widget.
-    */    
+    */
     virtual void setCompletedText( const QString& /* text */ ) = 0;
 
 protected:
@@ -749,7 +745,7 @@ protected:
     */
     virtual void connectSignals( bool handle ) const = 0;
 
-    /**
+     /**
      * Returns an instance of the completion object.
      *
      * This method is only different from @ref completionObject()
@@ -760,9 +756,9 @@ protected:
      *	
      * @returns an instance of the completion object.
      */
-    KCompletion* compObj() { return m_pCompObj; }
+     KCompletion* compObj() { return m_pCompObj; }
 
-    /**
+     /**
      * Returns a key-binding maps
      *
      * This method is the same as @ref getKeyBinding() except it
@@ -790,8 +786,7 @@ private:
     KeyBindingMap m_keyMap;
 	
     // BCI
-    KCompletionPrivate *d;
-	
+    KCompletionPrivate *d;	
 };
 
 #endif // KCOMPLETION_H
