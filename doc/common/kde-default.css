@@ -31,8 +31,14 @@
 
 /* Make the main contents of the page not slide up under the top banner */
 
-#bodytext { position: relative;
-	    top: 100px;	   }
+/* #body_text { position: relative;
+	    top: 100px; } */
+
+/* This is a horrible awful hack.. to once again fix the sliding
+navigation problem.  */
+
+body { padding-top: 100px; background-color:
+white; color: black;}
 
 /* Nice link colors for the main text, and bottom navigation */
 
