@@ -693,6 +693,8 @@ void RenderTableSection::ensureRows( int numRows )
 	for ( int r = nRows; r < numRows; r++ ) {
 	    grid[r].row = new Row( nCols );
 	    grid[r].row->fill( 0 );
+	    grid[r].baseLine = 0;
+	    grid[r].height = Length();
 	}
     }
 
