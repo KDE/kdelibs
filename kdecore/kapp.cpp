@@ -632,17 +632,16 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 	    if (argv[i+1][0] == '/')
 		aIconPixmap = QPixmap(argv[i+1]);
 	    else
-		aIconPixmap = KGlobal::iconLoader()->loadIcon( argv[i+1] );
+		aIconPixmap = DesktopIcon(argv[i+1]);
 	    if (aMiniIconPixmap.isNull())
-		aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( argv[i+1], KIconLoader::Small);
+		aMiniIconPixmap = SmallIcon(argv[i+1]);
 	    aDummyString2 += parameter_strings[icon-1];
 	    aDummyString2 += " ";
 	    aDummyString2 += argv[i+1];
 	    aDummyString2 += " ";
 	    break;
 	case miniicon:
-	    aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( argv[i+1],
-							    KIconLoader::Small);
+	    aMiniIconPixmap = SmallIcon(argv[i+1]);
 	    aDummyString2 += parameter_strings[miniicon-1];
 	    aDummyString2 += " ";
 	    aDummyString2 += argv[i+1];
@@ -704,15 +703,15 @@ void KApplication::parseCommandLine( )
     if (args->isSet("miniicon"))
     {
        const char *tmp = args->getOption("miniicon");
-       aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( tmp );
+       aMiniIconPixmap = SmallIcon(tmp);
     }
 
     if (args->isSet("icon"))
     {
        const char *tmp = args->getOption("icon");
-       aIconPixmap = KGlobal::iconLoader()->loadIcon( tmp );
+       aIconPixmap = DesktopIcon( tmp );
        if (aMiniIconPixmap.isNull())
-          aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( tmp, KIconLoader::Small);
+          aMiniIconPixmap = SmallIcon( tmp );
     }
 
     if (args->isSet("dcopserver"))
@@ -737,7 +736,7 @@ QPixmap KApplication::icon() const
 {
   if( aIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aIconPixmap = KGlobal::iconLoader()->loadIcon( instanceName() );
+      that->aIconPixmap = DesktopIcon( instanceName() );
   }
   return aIconPixmap;
 }
@@ -746,7 +745,7 @@ QPixmap KApplication::miniIcon() const
 {
   if (aMiniIconPixmap.isNull()) {
       KApplication *that = const_cast<KApplication*>(this);
-      that->aMiniIconPixmap = KGlobal::iconLoader()->loadIcon( instanceName(), KIconLoader::Small);
+      that->aMiniIconPixmap = SmallIcon( instanceName() );
   }
   return aMiniIconPixmap;
 }
