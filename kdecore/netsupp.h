@@ -253,6 +253,9 @@ namespace KDE
 # define gai_strerror	KDE::gai_strerror
 # define getnameinfo	KDE::getnameinfo
 
+#else 
+#include <netdb.h>
+
 #endif
 
 #ifndef HAVE_INET_PTON
