@@ -274,9 +274,12 @@ void RenderFlow::layout()
 
     calcHeight();
 
-    int lp = 0;
-    if ( firstChild() && isTableCell() && ( lp = lowestPosition() ) > m_height ) {
-	m_height = lp;
+//    int lp = 0;
+//     if ( firstChild() && isTableCell() && ( lp = lowestPosition() ) > m_height ) {
+// 	m_height = lp;
+    if ( lastChild() && lastChild()->hasOverhangingFloats() && isTableCell() ) {
+       m_height = lastChild()->yPos() + static_cast<RenderFlow*>(lastChild())->floatBottom();
+
 	m_height += borderBottom() + paddingBottom();
     }
     if( hasOverhangingFloats() && (isFloating() || isTableCell()) ) {
