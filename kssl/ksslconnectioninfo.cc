@@ -63,7 +63,4 @@ int KSSLConnectionInfo::getCipherBits() const {
 }
 
 
-// KSSLCertificate *getUserCertificate() const;
-
-
 

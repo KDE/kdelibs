@@ -35,7 +35,6 @@ public:
   const QString& getCipherVersion() const;
   int getCipherUsedBits() const;
   int getCipherBits() const;
-  // KSSLCertificate *getUserCertificate() const;
 
 private:
 
