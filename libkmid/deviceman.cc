@@ -189,7 +189,7 @@ for (i=0;i<n_synths;i++)
 close(seqfd);
 
 //#ifdef AT_HOME
-//MidiMapper *map=new MidiMapper("/opt/kde/share/apps/kmid/maps/yamaha790.map");
+//MidiMapper *map=new MidiMapper(KApplication::kde_datadir() + "/kmid/maps/yamaha790.map");
 //device[0]->useMapper(map);
 //#endif
 

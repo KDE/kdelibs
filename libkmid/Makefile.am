@@ -1,4 +1,6 @@
 
+INCLUDES = $(all_includes)
+
 noinst_LIBRARIES = libplayer.a
 
 libplayer_a_SOURCES  = midiout.cc player.cc track.cc midimapper.cc \
@@ -10,6 +12,7 @@ noinst_HEADERS = *.h
 
 noinst_PROGRAMS = consolekmid
 consolekmid_SOURCES = main.cc
-consolekmid_LDADD = libplayer.a
+consolekmid_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
+consolekmid_LDADD = libplayer.a -lkdecore -lqt -lXext -lX11 $(LIBSOCKET)
 
 DISTCLEANFILES = ./.deps/* ./.deps/.P
