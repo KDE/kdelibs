@@ -557,7 +557,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
       switch(_ke->key())
         {
         case Key_Space:
-            scrollBy( 0, -clipper()->height() - offs );
+            if ( d->vmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                scrollBy( 0, -clipper()->height() - offs );
             break;
         }
     else
@@ -565,37 +568,54 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         {
         case Key_Down:
         case Key_J:
-            scrollBy( 0, 10 );
+            if ( d->vmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                scrollBy( 0, 10 );
             break;
 
         case Key_Space:
         case Key_Next:
-            scrollBy( 0, clipper()->height() - offs );
+            if ( d->vmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                scrollBy( 0, clipper()->height() - offs );
             break;
 
         case Key_Up:
         case Key_K:
-            scrollBy( 0, -10 );
+            if ( d->vmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                scrollBy( 0, -10 );
             break;
 
         case Key_Prior:
-            scrollBy( 0, -clipper()->height() + offs );
+            if ( d->vmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                scrollBy( 0, -clipper()->height() + offs );
             break;
         case Key_Right:
         case Key_L:
-            scrollBy( 10, 0 );
+            if ( d->hmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                scrollBy( 10, 0 );
             break;
         case Key_Left:
         case Key_H:
-            scrollBy( -10, 0 );
+            if ( d->hmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                scrollBy( -10, 0 );
             break;
         case Key_Enter:
         case Key_Return:
 	    // ### FIXME:
 	    // move this code to HTMLAnchorElementImpl::setPressed(false),
 	    // or even better to HTMLAnchorElementImpl::event()
-            if (m_part->xmlDocImpl())
-	    {
+            if (m_part->xmlDocImpl()) {
 		ElementImpl *e = m_part->xmlDocImpl()->focusNode();
 		if (e)
 		    e->setActive();
@@ -603,10 +623,16 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	    }
             break;
         case Key_Home:
-            setContentsPos( 0, 0 );
+            if ( d->vmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                setContentsPos( 0, 0 );
             break;
         case Key_End:
-            setContentsPos( 0, contentsHeight() - height() );
+            if ( d->vmode == QScrollView::AlwaysOff )
+                _ke->accept();
+            else
+                setContentsPos( 0, contentsHeight() - height() );
             break;
         default:
 	    _ke->ignore();
