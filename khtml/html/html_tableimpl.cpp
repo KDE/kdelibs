@@ -198,7 +198,7 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 	    _currentCol++;
 	else
 	    _currentCol+=colel->span();
-	addColInfo(colel);	
+	addColInfo(colel);
 	incremental = true;
 #endif
 	}
@@ -215,7 +215,7 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
 	//if(incremental && !columnPos[totalCols]);// calcColWidth();
 	if(!firstBody)
 	    firstBody = static_cast<HTMLTableSectionElementImpl *>(child);
-    default:	
+    default:
  	HTMLElementImpl::addChild(child);
 	break;
     }
@@ -256,7 +256,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 	QString str;
 	str.sprintf("%dpx solid", border);
 	addCSSProperty(CSS_PROP_BORDER, str, false);
-#if 0	
+#if 0
 	// wanted by HTML4 specs
 	if(!border)
 	    frame = Void, rules = None;
@@ -369,7 +369,7 @@ void HTMLTableElementImpl::attach(KHTMLView *w)
 {
     HTMLElementImpl::attach(w);
     style()->setFlowAroundFloats(true);
-}	
+}
 
 // --------------------------------------------------------------------------
 
@@ -636,19 +636,19 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
 	    removeCSSProperty(CSS_PROP_WIDTH);
 	break;
     case ATTR_HEIGHT:
-	if (attr->val())
+	if (!attr->value().isEmpty())
 	    addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
 	else
 	    removeCSSProperty(CSS_PROP_HEIGHT);
 	break;
     case ATTR_ALIGN:
-	if (attr->val())
+	if (!attr->value().isEmpty())
 	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
 	else
 	    removeCSSProperty(CSS_PROP_TEXT_ALIGN);
 	break;
     case ATTR_VALIGN:
-	if (attr->val())
+	if (!attr->value().isEmpty())
 	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
 	else
 	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
@@ -714,7 +714,7 @@ NodeImpl *HTMLTableColElementImpl::addChild(NodeImpl *child)
     {
     case ID_COL:
     {
-	// these have to come before the table definition!	
+	// these have to come before the table definition!
 	HTMLElementImpl::addChild(child);
 	HTMLTableColElementImpl* colel = static_cast<HTMLTableColElementImpl *>(child);
 	colel->setStartCol(_currentCol);
