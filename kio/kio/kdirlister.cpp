@@ -20,7 +20,6 @@
 */
 
 #include "kdirlister.h"
-#include "kdirlister_p.h"
 
 #include <qregexp.h>
 #include <qptrlist.h>
@@ -34,6 +33,8 @@
 #include <kglobalsettings.h>
 #include <kstaticdeleter.h>
 #include <kdebugclasses.h>
+
+#include "kdirlister_p.h"
 
 #include <assert.h>
 
@@ -443,9 +444,6 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
 
   Q_ASSERT( item );
 
-  if ( lister->d->autoUpdate )
-    item->decAutoUpdate();
-
   if ( holders->isEmpty() )
   {
     urlsCurrentlyHeld.remove( urlStr ); // this deletes the (empty) holders list
@@ -481,6 +479,9 @@ void KDirListerCache::forgetDirInternal( KDirLister *lister, const KURL& url )
         delete item;
     }
   }
+
+  if ( lister->d->autoUpdate )
+    item->decAutoUpdate();
 }
 
 void KDirListerCache::updateDirectory( const KURL& _dir )
@@ -945,7 +946,7 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
     goNext = true;
     DirItem* dir = itu.current();
     KURL oldDirUrl = itu.currentKey();
-    //kdDebug() << "itemInUse: " << oldDirUrl.prettyURL() << endl;
+    //kdDebug(7004) << "itemInUse: " << oldDirUrl.prettyURL() << endl;
     // Check if this dir is oldUrl, or a subfolder of it
     if ( oldUrl.isParentOf( oldDirUrl ) )
     {
@@ -954,7 +955,7 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
       KURL newDirUrl( newUrl ); // take new base
       if ( !relPath.isEmpty() )
         newDirUrl.addPath( relPath ); // add unchanged relative path
-      //kdDebug() << "KDirListerCache::renameDir new url=" << newDirUrl.prettyURL() << endl;
+      //kdDebug(7004) << "KDirListerCache::renameDir new url=" << newDirUrl.prettyURL() << endl;
 
       // Update URL in root item and in itemsInUse
       if ( dir->rootItem )
@@ -974,7 +975,7 @@ void KDirListerCache::renameDir( const KURL &oldUrl, const KURL &newUrl )
           KURL newItemUrl( oldItemUrl );
           newItemUrl.setPath( newDirUrl.path() );
           newItemUrl.addPath( oldItemUrl.fileName() );
-          kdDebug() << "KDirListerCache::renameDir renaming " << oldItemUrlStr << " to " << newItemUrl.url() << endl;
+          kdDebug(7004) << "KDirListerCache::renameDir renaming " << oldItemUrlStr << " to " << newItemUrl.url() << endl;
           (*kit)->setURL( newItemUrl );
         }
       }
@@ -1033,7 +1034,7 @@ void KDirListerCache::emitRedirections( const KURL &oldUrl, const KURL &url )
 
 void KDirListerCache::removeDirFromCache( const KURL& dir )
 {
-  kdDebug() << "KDirListerCache::removeDirFromCache " << dir.prettyURL() << endl;
+  kdDebug(7004) << "KDirListerCache::removeDirFromCache " << dir.prettyURL() << endl;
   QCacheIterator<DirItem> itc( itemsCached );
   while ( itc.current() )
   {
