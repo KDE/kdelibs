@@ -420,13 +420,15 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, int offs
     {
 	int thisOffset = offset;
 	CSSProperty *prop = values->at(i);
-	if(prop->m_bImportant) offset += important;
+	if(prop->m_bImportant) thisOffset += important;
 	// give special priority to font-xxx, color properties
 	switch(prop->m_id)
 	{
 	case CSS_PROP_FONT_SIZE:
 	case CSS_PROP_FONT:
 	case CSS_PROP_COLOR:
+	    // these have to be applied first, because other properties use the computed
+	    // values of these porperties.
 	    break;
 	default:
 	    // don't use 0x80000000, that is negative usually
