@@ -253,7 +253,7 @@ class BrowserExtensionPrivate;
   * @li @p rename : Rename item in place.
   * @li @p trash : Move selected items to trash.
   * @li @p del : Delete selected items (couldn't call it delete!).
-  * @li @p shred : Shred selected items (secure deletion).
+  * @li @p shred : Shred selected items (secure deletion) - DEPRECATED.
   * @li @p properties : Show file/document properties.
   * @li @p editMimeType : show file/document's mimetype properties.
   *
