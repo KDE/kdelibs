@@ -10,10 +10,8 @@ AC_ARG_PROGRAM
 dnl Automake doc recommends to do this only here. (Janos)
 AM_INIT_AUTOMAKE(kdebase, 0.7) dnl searches for some needed programs
 
-dnl We have a good optimizing compiler.
-test "$CFLAGS" = "" && CFLAGS="-O2 -Wall"
-test "$CXXFLAGS" = "" && CXXFLAGS="-O2 -Wall"
-test "$LDFLAGS" = "" && LDFLAGS="-s"
+dnl checks, if the debug code is wanted
+AC_CHECK_FLAGS
 
 dnl make $KDEDIR the default for the installation
 AC_PREFIX_DEFAULT(${KDEDIR:-/usr/local/kde})

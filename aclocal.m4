@@ -276,31 +276,27 @@ AC_DEFUN(AC_CHECK_BOOL,
                 AC_MSG_RESULT(yes) ; AC_DEFINE(HAVE_BOOL),
                 AC_MSG_RESULT(no))])
 
-# serial 1 AM_PROG_LIBTOOL
-AC_DEFUN(AM_PROG_LIBTOOL,
-[AC_REQUIRE([AC_CANONICAL_HOST])
-AC_REQUIRE([AC_PROG_CC])
-AC_REQUIRE([AC_PROG_RANLIB])
- 
-# Always use our own libtool.
-LIBTOOL='$(top_builddir)/libtool'
-AC_SUBST(LIBTOOL)
- 
-dnl Allow the --disable-shared flag to stop us from building shared libs.
-AC_ARG_ENABLE(shared,
-[  --enable-shared         build shared libraries [default=yes]],
-test "$enableval" = no && libtool_shared=" --disable-shared",
-libtool_shared=)
- 
-libtool_flags="$libtool_shared"
-test "$silent" = yes && libtool_flags="$libtool_flags --silent"
-test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
- 
-# Actually configure libtool.  ac_aux_dir is where install-sh is found.
-CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" LD="$LD" RANLIB="$RANLIB" \
-$ac_aux_dir/ltconfig $libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
-|| AC_MSG_ERROR([libtool configure failed])
+AC_DEFUN(AC_CHECK_DEBUG,
+[AC_ARG_ENABLE(debug,debug 	creates debugging code,
+[test "$CFLAGS" = "" && CFLAGS="-g -Wall" 
+ test "$CXXFLAGS" = "" && CXXFLAGS="-g -Wall"
+ LDFLAGS=""
+] , [
+ test "$CFLAGS" = "" && CFLAGS="-O2 -Wall"
+ test "$CXXFLAGS" = "" && CXXFLAGS="-O2 -Wall"
+ test "$LDFLAGS" = "" && LDFLAGS="-s"
 ])
+])
+
+dnl just a test
+AC_DEFUN(AC_CHECK_FLAGS, 
+[
+AC_REQUIRE([AC_CHECK_DEBUG])
+AC_SUBST(CXXFLAGS)
+AC_SUBST(CFLAGS)
+AC_SUBST(LDFLAGS)
+])
+
 
 # Do all the work for Automake.  This macro actually does too much --
 # some checks are only needed if your package does certain things.
@@ -399,4 +395,46 @@ dnl and everything past the last "/".
 AC_OUTPUT_COMMANDS(changequote(<<,>>)dnl
 test -z "<<$>>CONFIG_HEADERS" || echo timestamp > patsubst(<<$1>>, <<^\([^:]*/\)?.*>>, <<\1>>)stamp-h<<>>dnl
 changequote([,]))])
+
+
+# serial 4 AM_PROG_LIBTOOL
+AC_DEFUN(AM_PROG_LIBTOOL,
+[AC_REQUIRE([AC_CANONICAL_HOST])
+AC_REQUIRE([AC_PROG_CC])
+AC_REQUIRE([AC_PROG_RANLIB])
+
+# Always use our own libtool.
+LIBTOOL='$(top_builddir)/libtool'
+AC_SUBST(LIBTOOL)
+
+dnl Allow the --disable-shared flag to stop us from building shared libs.
+AC_ARG_ENABLE(shared,
+[  --enable-shared         build shared libraries [default=yes]],
+test "$enableval" = no && libtool_shared=" --disable-shared",
+libtool_shared=)
+
+libtool_flags="$libtool_shared"
+test "$silent" = yes && libtool_flags="$libtool_flags --silent"
+test "$ac_cv_prog_gcc" = yes && libtool_flags="$libtool_flags --with-gcc"
+
+[case "$host" in
+*-*-irix6*)
+  # For IRIX 6, ld needs -n32 if cc uses it.
+  if echo " $CC $CFLAGS " | egrep -e '[ 	]-n32[	 ]' > /dev/null; then
+    LD="${LD-ld} -n32"
+  fi
+  ;;
+
+*-*-sco3.2v5*)
+  # On SCO OpenServer 5, we need -belf to get full-featured binaries.
+  CFLAGS="$CFLAGS -belf"
+  ;;
+esac]
+
+# Actually configure libtool.  ac_aux_dir is where install-sh is found.
+CC="$CC" CFLAGS="$CFLAGS" CPPFLAGS="$CPPFLAGS" LD="$LD" RANLIB="$RANLIB" \
+${CONFIG_SHELL-/bin/sh} $ac_aux_dir/ltconfig \
+$libtool_flags --no-verify $ac_aux_dir/ltmain.sh $host \
+|| AC_MSG_ERROR([libtool configure failed])
+])
 

@@ -10,7 +10,7 @@ VERSION = @VERSION@
 EXTRA_DIST = convert_key.c
 lib_LTLIBRARIES = libkdecore.la
 SUFFIXES = .moc
-CXXFLAGS = -DKDEDIR=\"@KDEDIR@\"
+CXXFLAGS = @CXXFLAGS@ -DKDEDIR=\"@KDEDIR@\"
 
 include_HEADERS = Kconfig.h Kconfigdata.h kcolorgroup.h kapp.h\
 	kurl.h ksock.h drag.h kpixmap.h kkeyconf.h kkeydata.h ckey.h kmisc.h
