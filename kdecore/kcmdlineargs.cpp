@@ -39,7 +39,7 @@
 #include <limits.h>
 #endif
 
-template class QAsciiDict<char>;
+template class QAsciiDict<QCString>;
 template class QList<KCmdLineArgs>;
 
 class KCmdLineParsedOptions : public QAsciiDict<QCString>
