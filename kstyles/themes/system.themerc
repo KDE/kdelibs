@@ -8,8 +8,7 @@ XShift=1
 YShift=1
 
 [PushButtonDown]
-Background=147,165,198
-Foreground=255,255,255
+Background=224,212,201
 
 [HScrollGroove]
 Pixmap=darkgraytexture.png
@@ -36,9 +35,8 @@ GradientLow=171,171,171
 #GradientHigh=170,196,234
 #GradientLow=123,139,162
 #Gradient=Vertical
-Background=200,200,200
+Background=214,192,181
 Foreground=0,0,0
-Pixmap=graytexture.png
 Border=0
 Highlight=0
 
@@ -56,8 +54,10 @@ GradientHigh=233,233,233
 GradientLow=171,171,171
 
 [ComboBoxDown]
-Background=147,165,198
-Foreground=255,255,255
+Background=219,219,219
+Gradient=Diagonal
+GradientHigh=233,233,253
+GradientLow=171,171,191
 
 [VSBarSlider]
 Background=219,219,219
@@ -81,11 +81,11 @@ GradientLow=171,171,171
 
 [ToolButton]
 Border=0
-Background=154,180,201
+Background=206,172,148
 
 [ToolButtonDown]
 Border=0
-Background=174,200,221
+Background=226,192,168
 
 [ScrollButton]
 Border=0
@@ -116,10 +116,11 @@ CopyWidget=ToolBar
 
 [ProgressBar]
 Border=0
-Background=150,200,255
+Highlight=0
+Background=50,50,50
 Gradient=Horizontal
-GradientHigh=150,200,225
-GradientLow=0,0,128 
+GradientLow=0,0,0
+GradientHigh=200,200,200
 
 [ProgressBackground]
 Background=200,200,200
@@ -135,8 +136,12 @@ Border=0
 BottomLine=false
 
 [MenuBarItem]
-Background=147,165,198
+Background=206,172,148
+GradientHigh=186,152,128
+GradientLow=226,192,168
+Gradient=Vertical
 Border=0
+Highlight=1
 
 [Slider]
 Pixmap=elec_slider.png
