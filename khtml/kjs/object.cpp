@@ -32,6 +32,7 @@ namespace KJS {
 
 using namespace KJS;
 
+// [[call]]
 KJSO *KJSO::executeCall(KJSO *, KJSArgList *)
 {
   KJSFunction *func = static_cast<KJSFunction*>(this);
@@ -54,11 +55,14 @@ KJSO *KJSO::executeCall(KJSO *, KJSArgList *)
 
   KJSWorld::context = new KJSContext(ctype, save, func, 0L /* TODO */ );
 
-  KJSO *result = func->execute();
+  KJSO *compl = func->execute();
 
   KJSWorld::context = save;
 
-  return result;
+  if(compl->isValueCompletion())
+    return compl->complValue();
+  else
+    return new KJSUndefined();
 }
 
 // ECMA 8.7.1

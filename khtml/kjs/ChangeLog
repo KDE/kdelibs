@@ -1,6 +1,8 @@
 1999-10-16  Harri Porten  <porten@kde.org>
 
 	* object.cpp: enter execution context on function calls 
+	
+	* return values work, finally. Strip them off from Completions
 
 1999-10-15  Harri Porten  <porten@kde.org>
 

@@ -73,6 +73,7 @@ public:
   const UString sVal()  { assert(type()==String); return *(val.s); }
   Compl cVal() { assert(type()==Completion); return val.c; }
   bool isValueCompletion() { assert(type()==Completion); return (complVal); }
+  KJSO *complValue() { assert(type()==Completion); return complVal; }
 
   // function call
   bool implementsCall() const { return (type() == InternalFunction ||
