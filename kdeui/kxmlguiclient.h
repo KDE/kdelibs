@@ -178,6 +178,8 @@ public:
   void plugActionList( const QString &name, const QList<KAction> &actionList );
   void unplugActionList( const QString &name );
 
+  static QString findMostRecentXMLFile( const QStringList &files, QString &doc );
+
 protected:
   /**
    * Set the instance (@ref KInstance) for this part.
@@ -196,8 +198,10 @@ protected:
    *             filename, which will then be assumed to be installed
    *             in the "data" resource, under a directory named like
    *             the instance.
+   * @param setXML Specify whether to call setXML. Default is true.
+   *               and the DOM document at once.
    **/
-  virtual void setXMLFile( const QString& file, bool merge = false );
+  virtual void setXMLFile( const QString& file, bool merge = false, bool setXMLDoc = true );
 
   /**
    * Set the XML for the part.
@@ -228,9 +232,7 @@ private:
   QDomElement findMatchingElement( const QDomElement &base,
                                    const QDomElement &additive );
 
-  QString findMostRecentXMLFile( const QString &fileName, QString &doc );
-
-  QString findVersionNumber( const QString &_xml );
+  static QString findVersionNumber( const QString &_xml );
 
   KXMLGUIClientPrivate *d;
 };

@@ -131,18 +131,27 @@ void KXMLGUIClient::setInstance( KInstance *instance )
     d->m_builder->setBuilderClient( this );
 }
 
-void KXMLGUIClient::setXMLFile( const QString& _file, bool merge )
+void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc )
 {
   // store our xml file name
   if ( !_file.isNull() )
     d->m_xmlFile = _file;
+
+  if ( !setXMLDoc )
+    return;
 
   QString file = _file;
   if ( file[0] != '/' )
   {
   //    file = locate( "data", QString(instance()->instanceName())+"/"+file );
     QString doc;
-    file = findMostRecentXMLFile( _file, doc );
+
+    QString filter  = QString::fromLatin1( instance()->instanceName() + '/' ) + _file;
+
+    QStringList allFiles = instance()->dirs()->findAllResources( "data", filter );
+
+    file = findMostRecentXMLFile( allFiles, doc );
+
     if ( file.isEmpty() )
     {
       // maybe the user hasn't installed the rc file or is just
@@ -194,7 +203,7 @@ void KXMLGUIClient::setDOMDocument( const QDomDocument &document, bool merge )
   }
   else
     d->m_doc = document;
-  
+
   setXMLGUIBuildDocument( QDomDocument() );
 }
 
@@ -540,16 +549,13 @@ void KXMLGUIClient::unplugActionList( const QString &name )
   d->m_factory->unplugActionList( this, name );
 }
 
-QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &doc )
+QString KXMLGUIClient::findMostRecentXMLFile( const QStringList &files, QString &doc )
 {
-  QString filter  = QString::fromLatin1( instance()->instanceName() + '/' ) + fileName;
-
-  QStringList allFiles = instance()->dirs()->findAllResources( "data", filter );
 
   QMap<QString,QString> allDocuments;
 
-  QStringList::ConstIterator it = allFiles.begin();
-  QStringList::ConstIterator end = allFiles.end();
+  QStringList::ConstIterator it = files.begin();
+  QStringList::ConstIterator end = files.end();
   for (; it != end; ++it )
   {
     QString data = KXMLGUIFactory::readConfigFile( *it );
@@ -591,10 +597,10 @@ QString KXMLGUIClient::findMostRecentXMLFile( const QString &fileName, QString &
     doc = best.data();
     return best.key();
   }
-  else if ( allFiles.count() > 0 )
+  else if ( files.count() > 0 )
   {
     doc = QString::null;
-    return ( *allFiles.begin() );
+    return ( *files.begin() );
   }
 
   return QString::null;

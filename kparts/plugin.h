@@ -35,7 +35,7 @@ namespace KParts
  * or to a @ref Part.
  *
  * The XML of those plugins looks exactly like of the shell or parts,
- * with one small difference: The document tag should have an additional 
+ * with one small difference: The document tag should have an additional
  * attribute, named "library", and contain the name of the library implementing
  * the plugin.
  *
@@ -48,6 +48,14 @@ class Plugin : public QObject, public KXMLGUIClient
 {
     Q_OBJECT
 public:
+    struct PluginInfo
+    {
+        QString m_relXMLFileName; // relative filename, i.e. instanceName/kpartplugins/name
+        QString m_absXMLFileName; // full path of most recent filename matching the relative
+				  // filename
+        QDomDocument m_document;
+    };
+
     /**
      * Construct a new KParts plugin.
      */
@@ -67,7 +75,7 @@ public:
      * Load the plugin libraries specified by the list @p docs and make the
      * Plugin objects children of @p parent .
      */
-    static void loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs );
+    static void loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos );
 
     /**
      * Returns a list of plugin objects loaded for @p parent. This
@@ -83,7 +91,7 @@ protected:
      *
      * @return A list of @ref QDomDocument s, containing the parsed xml documents returned by plugins.
      */
-    static const QValueList<QDomDocument> pluginDocuments( const KInstance * instance );
+    static QValueList<Plugin::PluginInfo> pluginInfos( const KInstance * instance );
 
     /**
      * @internal

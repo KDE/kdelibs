@@ -23,6 +23,7 @@
 #include <kparts/part.h>
 
 #include <qobjectlist.h>
+#include <qfileinfo.h>
 
 #include <klibloader.h>
 #include <kinstance.h>
@@ -58,54 +59,74 @@ Plugin::~Plugin()
 }
 
 //static
-const QValueList<QDomDocument> Plugin::pluginDocuments( const KInstance * instance )
+QValueList<Plugin::PluginInfo> Plugin::pluginInfos( const KInstance * instance )
 {
   if ( !instance )
     kdError(1000) << "No instance ???" << endl;
 
-  QValueList<QDomDocument> docs;
+  QValueList<PluginInfo> plugins;
 
   QStringList pluginDocs = instance->dirs()->findAllResources(
     "data", instance->instanceName()+"/kpartplugins/*", true, false );
 
+  QMap<QString,QStringList> sortedPlugins;
+
   QStringList::ConstIterator pIt = pluginDocs.begin();
   QStringList::ConstIterator pEnd = pluginDocs.end();
-    for (; pIt != pEnd; ++pIt )
-    {
-      kdDebug(1000) << "Plugin : " << (*pIt) << endl;
-      QString xml = KXMLGUIFactory::readConfigFile( *pIt );
-      if ( !xml.isEmpty() )
-      {
-        QDomDocument doc;
-        doc.setContent( xml );
-        if ( !doc.documentElement().isNull() )
-          docs.append( doc );
-      }
-    }
+  for (; pIt != pEnd; ++pIt )
+  {
+      QFileInfo fInfo( *pIt );
+      QMap<QString,QStringList>::Iterator mapIt = sortedPlugins.find( fInfo.fileName() );
+      if ( mapIt == sortedPlugins.end() )
+          mapIt = sortedPlugins.insert( fInfo.fileName(), QStringList() );
 
-  return docs;
+      mapIt.data().append( *pIt );
+  }
+
+  QMap<QString,QStringList>::ConstIterator mapIt = sortedPlugins.begin();
+  QMap<QString,QStringList>::ConstIterator mapEnd = sortedPlugins.end();
+  for (; mapIt != mapEnd; ++mapIt )
+  {
+      PluginInfo info;
+      QString doc;
+      info.m_absXMLFileName = KXMLGUIClient::findMostRecentXMLFile( mapIt.data(), doc );
+      if ( !info.m_absXMLFileName.isEmpty() )
+      {
+          kdDebug() << "found Plugin : " << info.m_absXMLFileName << " !" << endl;
+          info.m_relXMLFileName = QString::fromLocal8Bit( instance->instanceName() ) + "/kpartplugins/" + mapIt.key();
+
+          info.m_document.setContent( doc );
+          if ( !info.m_document.documentElement().isNull() )
+            plugins.append( info );
+      }
+  }
+
+  return plugins;
 }
 
 void Plugin::loadPlugins( QObject *parent, const KInstance *instance )
 {
-  loadPlugins( parent, pluginDocuments( instance ) );
+  loadPlugins( parent, pluginInfos( instance ) );
 }
 
-void Plugin::loadPlugins( QObject *parent, const QValueList<QDomDocument> &docs )
+void Plugin::loadPlugins( QObject *parent, const QValueList<PluginInfo> &pluginInfos )
 {
-   QValueList<QDomDocument>::ConstIterator pIt = docs.begin();
-   QValueList<QDomDocument>::ConstIterator pEnd = docs.end();
+   QValueList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
+   QValueList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
    for (; pIt != pEnd; ++pIt )
    {
-     QString library = (*pIt).documentElement().attribute( "library" );
+     QString library = (*pIt).m_document.documentElement().attribute( "library" );
 
      if ( library.isEmpty() )
        continue;
 
-     Plugin *plugin = Plugin::loadPlugin( parent, library.latin1() );
+     Plugin *plugin = loadPlugin( parent, library.latin1() );
 
      if ( plugin )
-       plugin->setDOMDocument( *pIt );
+     {
+       plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
+       plugin->setDOMDocument( (*pIt).m_document );
+     }
    }
 }
 

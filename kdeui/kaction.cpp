@@ -668,7 +668,7 @@ QPixmap KAction::pixmap() const
   return d->m_pixmap;
 }
 
-QWidget* KAction::container( int index )
+QWidget* KAction::container( int index ) const
 {
   return d->m_containers[ index ].m_container;
 }

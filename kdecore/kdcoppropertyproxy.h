@@ -21,6 +21,7 @@
 
 #include <qobject.h>
 #include <qcstring.h>
+#include <qvaluelist.h>
 
 /**
  * The KDCOPPropertyProxy class provides an easy way to publish Qt properties of a
@@ -58,13 +59,13 @@ public:
    * static processPropertyRequest method.
    */
   bool processPropertyRequest( const QCString &fun, const QByteArray &data, QCString &replyType,
-			       QByteArray &replyData );
+                               QByteArray &replyData );
 
   /**
    * Convenience method, when using this class as object. See documentation of the constructor and
    * static functions method.
    */
-  QCString functions();
+  QValueList<QCString> functions();
 
   /**
    * Returns a semicolon-separated list of functions understood by the PropertyProxy for the given
@@ -75,7 +76,7 @@ public:
    *
    * @see DCOPObject::functions()
    */
-  static QCString functions( QObject *object );
+  static QValueList<QCString> functions( QObject *object );
 
   /**
    * Returns true if the method request in the fun argument matches the signature of the three standard
@@ -91,11 +92,11 @@ public:
    * on the given QObject argument.
    */
   static bool processPropertyRequest( const QCString &fun, const QByteArray &data, QCString &replyType,
-				      QByteArray &replyData, QObject *object );
+                                      QByteArray &replyData, QObject *object );
 
 private:
   static bool decodePropertyRequestInternal( const QCString &fun, QObject *object, bool &set,
-					     QCString &propName, QCString &arg );
+                                             QCString &propName, QCString &arg );
 
   class KDCOPPropertyProxyPrivate;
   KDCOPPropertyProxyPrivate *d;

@@ -40,7 +40,7 @@ class KDCOPActionProxy : public DCOPObjectProxy
 public:
   /**
    * Constructs a dcop action proxy, being able to export the actions of the provided
-   * @ref KActionCollection through DCOP, using the parent DCOPObject's object id to 
+   * @ref KActionCollection through DCOP, using the parent DCOPObject's object id to
    * generate unique object ids for the actions.
    */
   KDCOPActionProxy( KActionCollection *actionCollection, DCOPObject *parent );
@@ -76,7 +76,7 @@ public:
    *
    * The action with the given name has to be available through the @ref action method.
    */
-  virtual QCString actionObjectId( const QString &name ) const;
+  virtual QCString actionObjectId( const QCString &name ) const;
 
   /**
    * Returns a map of all exported actions, with the action name as keys and a global DCOP reference
@@ -84,20 +84,20 @@ public:
    * The appId argument is used to specify the appid component of the DCOP reference. By default the
    * global application id is used ( kapp->dcopClient()->appId() ) .
    */
-  virtual QMap<QString,DCOPRef> actionMap( const QCString &appId = QCString() ) const;
+  virtual QMap<QCString,DCOPRef> actionMap( const QCString &appId = QCString() ) const;
 
   /**
    * Internal reimplementation of @ref DCOPObjectProxy::process .
    */
   virtual bool process( const QCString &obj, const QCString &fun, const QByteArray &data,
-			QCString &replyType, QByteArray &replyData );
+                        QCString &replyType, QByteArray &replyData );
 
   /**
    * Called by the @ref process method and takes care of processing the object request for an
    * action object.
    */
   virtual bool processAction( const QCString &obj, const QCString &fun, const QByteArray &data,
-			      QCString &replyType, QByteArray &replyData, KAction *action );
+                              QCString &replyType, QByteArray &replyData, KAction *action );
 private:
   void init( KActionCollection *collection, DCOPObject *parent );
 

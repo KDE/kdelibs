@@ -214,7 +214,7 @@ public:
      * @param name An internal name for this action.
      */
     KAction( const QString& text, int accel,
-	     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+             const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
      * Construct an action with text, icon, and a potential keyboard
@@ -230,7 +230,7 @@ public:
      * @param name An internal name for this action.
      */
     KAction( const QString& text, const QIconSet& pix, int accel = 0,
-	     QObject* parent = 0, const char* name = 0 );
+             QObject* parent = 0, const char* name = 0 );
 
     /**
      * Construct an action with text, automatically loaded icon, and a
@@ -246,7 +246,7 @@ public:
      * @param name An internal name for this action.
      */
     KAction( const QString& text, const QString& pix, int accel = 0,
-	     QObject* parent = 0, const char* name = 0 );
+             QObject* parent = 0, const char* name = 0 );
 
     /**
      * Construct an action with text, icon, potential keyboard
@@ -268,7 +268,7 @@ public:
      * @param name An internal name for this action.
      */
     KAction( const QString& text, const QIconSet& pix, int accel,
-	     const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+             const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
      * Construct an action with text, icon, potential keyboard
@@ -291,7 +291,7 @@ public:
      * @param name An internal name for this action.
      */
     KAction( const QString& text, const QString& pix, int accel,
-	     const QObject* receiver, const char* slot, QObject* parent,
+             const QObject* receiver, const char* slot, QObject* parent,
          const char* name = 0 );
 
     /**
@@ -319,7 +319,7 @@ public:
      * @param w The GUI element to display this action
      */
     virtual int plug( QWidget *w, int index = -1 );
-	
+
     /**
      * "Plug" or insert this action into a given KAccel.
      *
@@ -347,12 +347,12 @@ public:
      * @param w Remove the action from this GUI element.
      */
     virtual void unplug( QWidget *w );
-	
+
     /**
      * Disconnect this action from the KAccel.
      */
     virtual void unplugAccel();
-	
+
     /**
      * returns whether the action is plugged into any container widget or not.
      */
@@ -370,7 +370,7 @@ public:
      */
     virtual bool isPlugged( const QWidget *container, const QWidget *_representative ) const;
 
-    QWidget* container( int index );
+    QWidget* container( int index ) const;
     int itemId( int index ) const;
     QWidget* representative( int index ) const;
     int containerCount() const;
@@ -480,7 +480,7 @@ protected slots:
     virtual void slotDestroyed();
     virtual void slotKeycodeChanged();
     virtual void slotActivated();
-	
+
 protected:
     KToolBar* toolBar( int index ) const;
     QPopupMenu* popupMenu( int index ) const;
@@ -551,7 +551,7 @@ public:
      *  @param name An internal name for this action.
      */
     KToggleAction( const QString& text, int accel,
-		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -561,7 +561,7 @@ public:
      *  @param name An internal name for this action.
      */
     KToggleAction( const QString& text, const QIconSet& pix, int accel = 0,
-	     QObject* parent = 0, const char* name = 0 );
+             QObject* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -583,7 +583,7 @@ public:
      *  @param name An internal name for this action.
      */
     KToggleAction( const QString& text, const QIconSet& pix, int accel,
-		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -681,7 +681,7 @@ public:
      *  @param name An internal name for this action.
      */
     KRadioAction( const QString& text, int accel,
-		  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -691,7 +691,7 @@ public:
      *  @param name An internal name for this action.
      */
     KRadioAction( const QString& text, const QIconSet& pix, int accel = 0,
-	          QObject* parent = 0, const char* name = 0 );
+                  QObject* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -713,7 +713,7 @@ public:
      *  @param name An internal name for this action.
      */
     KRadioAction( const QString& text, const QIconSet& pix, int accel,
-		  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -784,7 +784,7 @@ public:
      *  @param name An internal name for this action.
      */
     KSelectAction( const QString& text, int accel,
-		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -794,7 +794,7 @@ public:
      *  @param name An internal name for this action.
      */
     KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
-	     QObject* parent = 0, const char* name = 0 );
+             QObject* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -816,7 +816,7 @@ public:
      *  @param name An internal name for this action.
      */
     KSelectAction( const QString& text, const QIconSet& pix, int accel,
-		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+                   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -875,7 +875,7 @@ public slots:
      *
      *  @param index Index of the item (remember the first item is zero).
      */
-    virtual void setCurrentItem( int index );	
+    virtual void setCurrentItem( int index );
 
     virtual void setItems( const QStringList &lst );
 
@@ -883,7 +883,7 @@ public slots:
 
     virtual void setEditable( bool );
 
-    virtual void setComboWidth( int width );	
+    virtual void setComboWidth( int width );
 
 protected:
     virtual void changeItem( int id, int index, const QString& text );
@@ -902,14 +902,14 @@ protected:
     virtual void setComboWidth( int id, int width );
 
     virtual void setItems( int id, const QStringList &lst );
-    	
+
     virtual void clear( int id );
 
 private:
     class KSelectActionPrivate;
     KSelectActionPrivate *d;
-	
-	void slotActivated() { KAction::slotActivated(); }
+
+        void slotActivated() { KAction::slotActivated(); }
 };
 
 class KListAction : public KSelectAction
@@ -948,7 +948,7 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QIconSet& pix, int accel = 0,
-	              QObject* parent = 0, const char* name = 0 );
+                      QObject* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -958,7 +958,7 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QString& pix, int accel = 0,
-	              QObject* parent = 0, const char* name = 0 );
+                      QObject* parent = 0, const char* name = 0 );
 
     /**
      *  @param text The text that will be displayed.
@@ -970,7 +970,7 @@ public:
      *  @param name An internal name for this action.
      */
     KListAction( const QString& text, const QIconSet& pix, int accel,
-		          const QObject* receiver, const char* slot, QObject* parent,
+                          const QObject* receiver, const char* slot, QObject* parent,
                   const char* name = 0 );
 
     /**
@@ -1217,7 +1217,7 @@ public:
     ~KFontAction();
 
     QString font() const {
-	return currentText();
+        return currentText();
     }
 
     int plug( QWidget*, int index = -1 );
