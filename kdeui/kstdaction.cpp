@@ -851,6 +851,6 @@ KAction *KStdAction::aboutApp(const QObject *recvr, const char *slot,
 KAction *KStdAction::aboutKDE(const QObject *recvr, const char *slot,
                                                       QObject *parent, const char *name )
 {
-    return new KAction(i18n("About &KDE..."), 0, recvr, slot,
+    return new KAction(i18n("About &KDE..."), "go", 0, recvr, slot,
                        parent, name ? name : stdName(AboutKDE));
 }
