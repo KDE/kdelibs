@@ -83,6 +83,7 @@ public:
   bool needSSLHandShake;
   bool militantSSL;              // If true, we just drop a connection silently
                                  // if SSL certificate check fails in any way.
+  MetaData savedMetaData;
 };
 
 
@@ -391,11 +392,8 @@ bool TCPSlaveBase::initializeSSL()
             d->kssl = new KSSL;
             return true;
         }
-        else
-            return false;
     }
-    else
-        return false;
+return false;
 }
 
 void TCPSlaveBase::cleanSSL()
@@ -442,6 +440,7 @@ int TCPSlaveBase::startTLS()
         return -3;
     }
 
+    d->savedMetaData = mOutgoingMetaData;
     return (d->usingTLS ? 1 : 0);
 }
 
@@ -453,6 +452,14 @@ void TCPSlaveBase::stopTLS()
         d->usingTLS = false;
         setMetaData("ssl_in_use", "FALSE");
     }
+}
+
+
+void TCPSlaveBase::setSSLMetaData() {
+	if (!(d->usingTLS || d->useSSLTunneling || m_bIsSSL))
+		return;
+
+	mOutgoingMetaData = d->savedMetaData;
 }
 
 
@@ -946,11 +953,6 @@ int TCPSlaveBase::verifyCertificate()
 
    if (rc == -1) return rc;
 
-   // Things to check:
-   //  - posting unencrypted data  -- elsewhere?
-   //                 - transmitting any data unencrypted?  In the app??
-   //                         singleton in write()?
-
    if (metaData("ssl_activate_warnings") == "TRUE") {
    //  - entering SSL
    if (!isChild && metaData("ssl_was_in_use") == "FALSE" &&
@@ -1150,6 +1152,8 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
         return false;
     }
     d->needSSLHandShake = false;
+
+    d->savedMetaData = mOutgoingMetaData;
     return true;
 }
 

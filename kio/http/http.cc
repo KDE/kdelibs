@@ -868,6 +868,8 @@ bool HTTPProtocol::httpOpen()
   {
     if (!httpOpenConnection())
        return false;
+  } else {
+    setSSLMetaData();
   }
 
   // Clean up previous POST

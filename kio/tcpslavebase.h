@@ -228,6 +228,15 @@ protected:
 
 
     /**
+     * Call this if you use persistent connections and want all the
+     * metadata restored.  This is particularily important for SSL
+     * sessions since the app needs to know the state of connection,
+     * certificates, etc.
+     */
+    void setSSLMetaData();
+
+
+    /**
      * Initializs all SSL variables
      */
     bool initializeSSL();
