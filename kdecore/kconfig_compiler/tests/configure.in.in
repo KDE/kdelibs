@@ -1,0 +1,2 @@
+AC_PATH_PROGS(MD5SUM, [md5sum gmd5sum], [md5sum])
+

@@ -49,8 +49,8 @@ test4.cpp test4.h: $(srcdir)/test4.kcfg ../kconfig_compiler $(srcdir)/test4.kcfg
 	../kconfig_compiler $(srcdir)/test4.kcfg $(srcdir)/test4.kcfgc
 
 md5sums:
-	md5sum $(srcdir)/test*.ref | sed -e "s,$(srcdir)/,,; s,\.ref$$,," > md5sums
+	$(MD5SUM) $(srcdir)/test*.ref | sed -e "s,$(srcdir)/,,; s,\.ref$$,," > md5sums
 
 md5check: test1.cpp test2.cpp test3.cpp test4.cpp md5sums
-	md5sum --check md5sums
+	$(MD5SUM) --check md5sums
 
