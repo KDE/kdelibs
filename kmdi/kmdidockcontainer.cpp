@@ -55,6 +55,7 @@ KMdiDockContainer::KMdiDockContainer(QWidget *parent, QWidget *win, int position
   mTabCnt=0;
   m_position = position;
   m_previousTab=-1;
+  m_separatorPos = 17;
 
   kdDebug(760)<<"KMdiDockContainer created"<<endl;
 

@@ -165,6 +165,7 @@ public:
    ,m_documentTabWidget(0)
    ,m_managedDockPositionMode(false)
 {
+  kdDebug()<<"=== KMdiMainFrm() ==="<<endl;
    // Create the local lists of windows
    m_pDocumentViews = new QPtrList<KMdiChildView>;
    m_pDocumentViews->setAutoDelete(false);
@@ -206,29 +207,29 @@ public:
 
    // the MDI view taskbar
    createTaskBar();
-   
+
    // this is only a hack, but prevents us from crash because the buttons are otherwise
    // not created before we switch the modes where we need them !!!
    setMenuForSDIModeSysButtons(menuBar());
 
    switch (mdiMode) {
     case KMdi::IDEAlMode:
-            kdDebug(760)<<"switch(mdiMode): IDEAlMode"<<endl;    
+            kdDebug(760)<<"switch(mdiMode): IDEAlMode"<<endl;
             switchToIDEAlMode();
         break;
     case KMdi::TabPageMode:
-            kdDebug(760)<<"switch(mdiMode): TabPageMode"<<endl;    
+            kdDebug(760)<<"switch(mdiMode): TabPageMode"<<endl;
             switchToTabPageMode();
         break;
     case KMdi::ToplevelMode:
-            kdDebug(760)<<"switch(mdiMode): TopLevelMode"<<endl;    
+            kdDebug(760)<<"switch(mdiMode): TopLevelMode"<<endl;
             switchToToplevelMode();
         break;
     default:
         m_mdiMode=KMdi::ChildframeMode;
         kdDebug(760)<<"switch(mdiMode): default"<<endl;
         break;
-   }   
+   }
 
    // drag end timer
    m_pDragEndTimer = new QTimer();
@@ -243,13 +244,13 @@ void KMdiMainFrm::setStandardMDIMenuEnabled(bool showModeMenu) {
   connect(m_mdiGUIClient,SIGNAL(toggleBottom()),this,SIGNAL(toggleBottom()));
 
   if (m_mdiMode==KMdi::IDEAlMode) {
-    if (m_topContainer) 
+    if (m_topContainer)
         connect(this,SIGNAL(toggleTop()),m_topContainer->getWidget(),SLOT(toggle()));
-    if (m_leftContainer) 
+    if (m_leftContainer)
         connect(this,SIGNAL(toggleLeft()),m_leftContainer->getWidget(),SLOT(toggle()));
-    if (m_rightContainer) 
+    if (m_rightContainer)
         connect(this,SIGNAL(toggleRight()),m_rightContainer->getWidget(),SLOT(toggle()));
-    if (m_bottomContainer) 
+    if (m_bottomContainer)
         connect(this,SIGNAL(toggleBottom()),m_bottomContainer->getWidget(),SLOT(toggle()));
   }
 
@@ -406,9 +407,9 @@ void KMdiMainFrm::addWindow( KMdiChildView* pWnd, int flags)
    // embed the view depending on the current MDI mode
    if (m_mdiMode == KMdi::TabPageMode || m_mdiMode == KMdi::IDEAlMode) {
 //      const QPixmap& wndIcon = pWnd->icon() ? *(pWnd->icon()) : QPixmap();
-     
+
       m_documentTabWidget->addTab(pWnd, pWnd->icon() ? *(pWnd->icon()) : QPixmap(),pWnd->tabCaption());
-/*    
+/*
     connect(pWnd,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
         m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
 */
@@ -1515,8 +1516,8 @@ void KMdiMainFrm::setupTabbedDocumentViewSpace() {
       QPtrListIterator<KMdiChildView> it4( *m_pDocumentViews);
       for( ; it4.current(); ++it4) {
         KMdiChildView* pView = it4.current();
-        m_documentTabWidget->addTab(pView, pView->icon() ? *(pView->icon()) : QPixmap(),pView->tabCaption());    
-/*    
+        m_documentTabWidget->addTab(pView, pView->icon() ? *(pView->icon()) : QPixmap(),pView->tabCaption());
+/*
     connect(pView,SIGNAL(iconOrCaptionUdpated(QWidget*,QPixmap,const QString&)),
         m_documentTabWidget,SLOT(updateView(QWidget*,QPixmap,const QString&)));
 */
@@ -2040,7 +2041,7 @@ void KMdiMainFrm::activateFirstWin()
    for (it->first(); !it->isDone(); it->next()) {
       m.insert(it->currentItem()->getTimeStamp(), it->currentItem());
    }
-   
+
    if ( !activeWindow() ) return;
 
    QDateTime current = activeWindow()->getTimeStamp();
@@ -2070,7 +2071,7 @@ void KMdiMainFrm::activateLastWin()
    }
 
    if ( !activeWindow() ) return;
-   
+
    QDateTime current = activeWindow()->getTimeStamp();
    QMap<QDateTime,KMdiChildView*>::iterator pos(m.find(current));
    if (pos != m.begin()) {
@@ -2523,7 +2524,7 @@ void KMdiMainFrm::removeFromActiveDockList(KMdiDockContainer* td) {
 void KMdiMainFrm::prevToolViewInDock() {
     KMdiDockContainer* td=d->activeDockPriority[0];
     if (!td) return;
-    td->prevToolView();    
+    td->prevToolView();
 }
 
 void KMdiMainFrm::nextToolViewInDock() {
@@ -2536,7 +2537,7 @@ KMdi::TabWidgetVisibility KMdiMainFrm::tabWidgetVisibility()
 {
     if ( m_documentTabWidget )
       return m_documentTabWidget->tabWidgetVisibility();
-    
+
     return KMdi::NeverShowTabs;
 }
 
