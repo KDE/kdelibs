@@ -2,10 +2,10 @@
    Copyright (C) 2000-2001 Dawit Alemayehu <adawit@kde.org>
    Copyright (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+   This program is free software; you can redistribute it and/or modify it
+   under the terms of the GNU Lesser General Public License (LGPL) as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -16,18 +16,18 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-   This KMD5 class is based on a C++ implementation of
-   "RSA Data Security, Inc. MD5 Message-Digest Algorithm" by
-   Mordechai T. Abzug,	Copyright (c) 1995.  This implementation
-   passes the test-suite supplied with RFC 1321.
+   This KMD5 class is based upon a C++ implementation of "RSA
+   Data Security, Inc. MD5 Message-Digest Algorithm" by Mordechai
+   T. Abzug,	Copyright (c) 1995.  This implementation passes the
+   test-suite supplied with RFC 1321.
 
    RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992,
    RSA Data Security, Inc. Created 1991. All rights reserved.
 
-   The encode/decode with the exception of quoted-printable utilities
-   in KCodecs were adapted from the HTTPClient java package, Ronald Tschalär
-   Copyright (C) 1996-1999. The quoted-printable as described in RFC
-   2045, section 6.7. codec is by (C) 2001 Rik Hemsley <rik@kde.org>
+   The encoding and decoding utilities in KCodecs with the exception of
+   quoted-printable were ported from the HTTPClient java package by Ronald
+   Tschalär Copyright (C) 1996-1999. The quoted-printable codec as described
+   in RFC 2045, section 6.7. is by Rik Hemsley (C) 2001.
 */
 
 #include <string.h>
@@ -503,28 +503,34 @@ void KBase64::base64Decode( const QByteArray& in, QByteArray& out )
             tail--;
         }
     }
-
+/*
     kdDebug() << "Input Size = " << len << endl;
     kdDebug() << "Tail size = " << tail << endl;
-
+*/
     // 4-byte to 3-byte conversion
     len = tail-(len/4);
     unsigned int sidx = 0, didx = 0;
     while (didx < len-2)
     {
+/*
+        kdDebug() << "Didx= " << didx << " Len-2= " << len-2 << endl;
         kdDebug() << "4-bytes: " << out[didx] << "**" << out[didx+1] << "**"
                   << out[didx+2] << endl;
+*/
         out[didx] = (((out[sidx] << 2) & 255) | ((out[sidx+1] >> 4) & 003));
         out[didx+1] = (((out[sidx+1] << 4) & 255) | ((out[sidx+2] >> 2) & 017));
         out[didx+2] = (((out[sidx+2] << 6) & 255) | (out[sidx+3] & 077));
+/*
         kdDebug() << "3-bytes: " << out[didx] << "**" << out[didx+1]
                   << "**" << out[didx+2] << endl;
+*/
         sidx += 4;
         didx += 3;
     }
-
+/*
     kdDebug() << "Output size = " << len << endl;
-
+    kdDebug() << "Output = " << out.data() << endl;
+*/
     if (didx < len)
         out[didx] = (((out[sidx] << 2) & 255) | ((out[sidx+1] >> 4) & 003));
 

@@ -3,9 +3,9 @@
    Copyright (C) 2001 Rik Hemsley (rikkus) <rik@kde.org>
 
    This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+   it under the terms of the GNU Lesser General Public License (LGPL) as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,9 +24,10 @@
    RFC 1321 "MD5 Message-Digest Algorithm" Copyright (C) 1991-1992.
    RSA Data Security, Inc. Created 1991. All rights reserved.
 
-   The encode/decode utilities in KCodecs were adapted from
-   Ronald Tschalär Copyright (C) 1996-1999 HTTPClient java
-   package.
+   The encoding and decoding utilities in KCodecs with the exception of
+   quoted-printable were ported from the HTTPClient java package by Ronald
+   Tschalär Copyright (C) 1996-1999. The quoted-printable codec as described
+   in RFC 2045, section 6.7. is by Rik Hemsley (C) 2001.
 */
 
 #ifndef _KMDBASE_H
