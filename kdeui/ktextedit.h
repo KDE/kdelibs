@@ -27,6 +27,8 @@
 class KSpell;
 
 /**
+ * @short A KDE'ified QTextEdit
+ *
  * This is just a little subclass of QTextEdit, implementing
  * some standard KDE features, like Cursor auto-hiding, configurable
  * wheelscrolling (fast-scroll or zoom) and deleting of entire
@@ -35,7 +37,6 @@ class KSpell;
  * Basic rule: whenever you want to use QTextEdit, use KTextEdit!
  *
  * @see QTextEdit
- * @short A KDE'ified QTextEdit
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @since 3.1
  */
@@ -89,7 +90,7 @@ public:
     bool checkSpellingEnabled() const;
 
     void highLightWord( unsigned int length, unsigned int pos );
-    
+
 
 public slots:
     /**
@@ -107,11 +108,11 @@ protected:
     virtual void keyPressEvent( QKeyEvent * );
 
     /**
-     * Reimplemented to instantiate a KDictSpellingHighlighter, if 
+     * Reimplemented to instantiate a KDictSpellingHighlighter, if
      * spellchecking is enabled.
      */
     virtual void focusInEvent( QFocusEvent * );
-    
+
     /**
      * Reimplemented to allow fast-wheelscrolling with Ctrl-Wheel
      * or zoom.
