@@ -497,6 +497,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 
   eDocking = DockFullDocking;
   sDocking = DockFullSite;
+  isGroup = false;
 
   header = 0L;
   setHeader( new KDockWidgetHeader( this, "AutoCreatedDockHeader" ) );
@@ -511,8 +512,6 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   else
     setTabPageLabel( strTabPageLabel);
 
-
-  isGroup = false;
   isTabGroup = false;
   d->isContainer =false;
   setIcon( pixmap);
