@@ -1164,7 +1164,7 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const KURL& reqUr
   QString errText = QString::fromLatin1( "<HTML><HEAD><TITLE>" );
   errText += i18n( "Error while loading %1" ).arg( reqUrl.htmlURL() );
   errText += QString::fromLatin1( "</TITLE></HEAD><BODY><P>" );
-  errText += i18n( "An error occured while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
+  errText += i18n( "An error occurred while loading <B>%1</B>:" ).arg( reqUrl.htmlURL() );
   errText += QString::fromLatin1( "</P><P>" );
   QString kioErrString = KIO::buildErrorString( errorCode, text );
 
