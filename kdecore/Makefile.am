@@ -87,12 +87,7 @@ install-data-local: charsets.config
 	$(INSTALL_DATA) $(srcdir)/40.colors "$(DESTDIR)$(kde_confdir)/colors/40 Colors"
 	$(INSTALL_DATA) $(srcdir)/Web.colors $(kde_confdir)/colors/Web
 	$(INSTALL_DATA) $(srcdir)/Royal.colors $(kde_confdir)/colors/Royal
-
-install-data-hook:
-	# For compatibility with KDE 2.1 (remove in 3.0)
-	-rm -f $(DESTDIR)$(includedir)/kio/kmdcodec.h
-	$(mkinstalldirs) $(DESTDIR)$(includedir)/kio
-	$(LN_S) ../kmdcodec.h $(DESTDIR)$(includedir)/kio/kmdcodec.h
+	$(INSTALL_DATA) $(srcdir)/kmdcodec_compat.h $(includedir)/kio/kmdcodec.h
 
 uninstall-local:
 	-rm -f $(kde_confdir)/charsets
@@ -101,7 +96,7 @@ uninstall-local:
 
 EXTRA_DIST = generate_keys.sh charsets.config $(kdebug_DATA) Web.colors \
 	Royal.colors 40.colors DESIGN.COLOR KCONFIG_DESIGN eventsrc \
-	kentities.c kentities.gperf makeentities 
+	kentities.c kentities.gperf makeentities kmdcodec_compat.h
 
 parser: kentities.gperf
 	cd $(srcdir) && gperf -a -L "ANSI-C" -C -G -c -o -t -k '*' -NfindEntity -D -Hhash_Entity -Wwordlist_Entity -s 2 kentities.gperf > kentities.c
