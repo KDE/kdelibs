@@ -330,6 +330,7 @@ void KWin::setOnAllDesktops( WId win, bool b )
 	info.setDesktop( NETWinInfo::OnAllDesktops );
     else if ( info.desktop()  == NETWinInfo::OnAllDesktops ) {
 	NETRootInfo rinfo( qt_xdisplay(), NET::CurrentDesktop );
+        rinfo.activate();
 	info.setDesktop( rinfo.currentDesktop() );
     }
 }
@@ -356,3 +357,22 @@ void KWin::setStrut( WId win, int left, int right, int top, int bottom )
     strut.bottom = bottom;
     info.setStrut( strut );
 }
+
+int KWin::currentDesktop()
+{
+    NETRootInfo info( qt_xdisplay(), NET::CurrentDesktop );
+    return info.currentDesktop();
+}
+
+int KWin::numberOfDesktops()
+{
+    NETRootInfo info( qt_xdisplay(), NET::NumberOfDesktops );
+    return info.numberOfDesktops();
+}
+
+void KWin::setCurrentDesktop( int desktop )
+{
+    NETRootInfo info( qt_xdisplay(), NET::CurrentDesktop );
+    info.setCurrentDesktop( desktop );
+}
+

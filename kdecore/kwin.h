@@ -175,6 +175,24 @@ public:
      *
      */
     static void setStrut( WId win, int left, int right, int top, int bottom );
+
+    /**
+     * Convienence function to access the current desktop.  See NETRootInfo.
+     */
+    static int currentDesktop();
+
+    /**
+     * Convienence function to access the number of desktops. See
+     * NETRootInfo.
+     */
+    static int numberOfDesktops();
+
+    /**
+     * Convienence function to set the current desktop to @p desktop.
+     * See NETRootInfo.
+     */
+    static void setCurrentDesktop( int desktop );
+    
 };
 
 #endif
