@@ -10,9 +10,10 @@
 <firstname><!-- --Your first name-- --></firstname>
 <surname><!-- --Your last name-- --></surname>
 </personname>
-<email><!-- --Your email address-- --></email></author>
+<affiliation><address><email><!-- --Your email address-- --></email></address></affiliation></author>
 <date><!-- --Date when this manpage was written, in the format
 'Month Daynumber, 4-Digit-Year'-- --></date>
+<productname>K Desktop Environment</productname>
 </refentryinfo>
 
 <refmeta>
