@@ -17,7 +17,7 @@ static KCmdLineOptions options[] =
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init( argc, argv, "testKJASSever", "test program", "0.0" );
+    KCmdLineArgs::init( argc, argv, "testKJASSever", "testKJASServer", "test program", "0.0" );
 
     KCmdLineArgs::addCmdLineOptions( options );
 
@@ -25,8 +25,7 @@ int main(int argc, char **argv)
 
     QString path_to_kdelibs = "/build/wynnw/kde-src";
 
-    KJavaAppletContext* context = new KJavaAppletContext();
-    KJavaAppletWidget *a = new KJavaAppletWidget( context );
+    KJavaAppletWidget *a = new KJavaAppletWidget;
 
     a->show();
 
