@@ -715,6 +715,58 @@ HTTPProtocol::http_openConnection()
           return false;
         }
       }
+
+      // SSL proxying requires setting up a tunnel through the proxy server
+      // with the CONNECT directive.
+      #ifdef DO_SSL
+      if (m_bUseSSL) {   // we might have DO_SSL but not m_bUseSSL someday
+      kdDebug(7113) << "http proxy for SSL - setting up" << endl;
+      // Set socket blocking.
+      fcntl(m_sock, F_SETFL, ( fcntl(m_sock, F_GETFL) & ~O_NDELAY));
+
+      QString proxyconheader = QString("CONNECT %1:443 HTTP/1.0\r\n\r\n").arg(m_request.url.host());
+      // WARNING: ugly hack alert!  We don't want to use the SSL routines
+      //          for this code so we have to disabled it temporarily.
+      bool useSSLSaved = m_bUseSSL;   m_bUseSSL = false;
+      bool sendOk = (write(proxyconheader.latin1(), proxyconheader.length()) 
+                           == (ssize_t) proxyconheader.length());
+      char buffer[513];
+      if (!sendOk) {
+        // FIXME: do we have to close() the connection here?
+        //        also the error code should be changed
+        error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+        m_bUseSSL = useSSLSaved;
+        return false;
+      }
+
+      if (!waitForHeader(m_sock, RESPONSE_TIMEOUT) ) {
+        // FIXME: a good workaround would be to fallback to non-proxy mode
+        //        here if we can.
+        // FIXME: do we have to close() the connection here?
+        //        also the error code should be changed
+        error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+        m_bUseSSL = useSSLSaved;
+        return false;
+      }
+
+      // In SSL mode we normally don't use this.  Does it cause a resource
+      // leak that I'm not cleaning this up here if we're in SSL mode?
+      int rhrc = ::read(m_sock, buffer, sizeof(buffer)-1);
+      buffer[sizeof(buffer)-1] = 0;  // just in case so we don't run away!
+      if (rhrc == -1 || strncmp(buffer, "HTTP/1.0 200", 12)) {
+        // FIXME: a good workaround would be to fallback to non-proxy mode
+        //        here if we can.
+        // FIXME: do we have to close() the connection here?
+        //        also the error code should be changed
+        error(ERR_COULD_NOT_CONNECT, m_strProxyHost );
+        m_bUseSSL = useSSLSaved;
+        return false;
+      }
+
+      m_bUseSSL = useSSLSaved;
+      }  // if m_bUseSSL
+      m_ssl_ip = i18n("Proxied by %1.").arg(inet_ntoa(m_proxySockaddr.sin_addr));
+      #endif
     } else {
       // apparently we don't want a proxy.  let's just connect directly
       ksockaddr_in server_name;
