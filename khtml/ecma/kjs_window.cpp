@@ -1305,10 +1305,12 @@ Completion LocationFunc::tryExecute(const List &args)
   if (part) {
     switch (id) {
     case Replace:
-      QString str = v.toString().value().qstring();
+    {
+      QString str = args[0].toString().value().qstring();
       part->scheduleRedirection(0, Window::retrieveActive()->part()->
                               completeURL(str).url().prepend( "target://_self/#" ));
       break;
+    }
     case Reload:
       part->scheduleRedirection(0, part->url().url().prepend( "target://_self/#" ) );
       break;
