@@ -47,6 +47,7 @@
 #include <qtextstream.h>
 
 #include <stdlib.h>	// abort
+//#include <unistd.h>	// getpid
 #include <stdarg.h>	// vararg stuff
 #include <syslog.h>
 #include <errno.h>
@@ -80,6 +81,9 @@ static QString getDescrFromNum(unsigned short _num)
   KDebugEntry *ent = KDebugCache->find( _num );
   if ( ent )
     return ent->descr;
+  
+  if ( !KDebugCache->isEmpty() ) // areas already loaded
+    return QString::null;
 
   QString data, filename(locate("config","kdebug.areas"));
   QFile file(filename);
@@ -248,7 +252,9 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
               if (nPriority == LOG_INFO)
                   output = stderr;
               else */
-                  output = stderr;
+                  output = stderr;				
+              // Uncomment this to get the pid of the app in the output (useful for e.g. kioslaves)
+	      //if ( !aAreaName.isEmpty() ) fprintf( output, "%d %s: ", (int)getpid(), aAreaName.ascii() );
 	      if ( !aAreaName.isEmpty() ) fprintf( output, "%s: ", aAreaName.ascii() );
 	      fputs(  data, output);
 	      break;
