@@ -1,24 +1,24 @@
 Source: kdelibs
 Build-Depends: debhelper (>> 3.0.0), flex, bison, gettext, libqt3-dev (>= 2:3.0.0-beta6-1), qt3-tools (>= 2:3.0.0-0beta6-0), libtiff3g-dev | libtiff-dev, libaudiofile-dev, libasound1-dev, docbook, libbz2-dev, libpcre3-dev, libcupsys2-dev | cupsys-dev, libxml2-dev (>= 2.4.1), libsasl-dev
-Build-Depends-Indep: kdoc, qt-doc
-Build-Conflicts: nas-lib
+Build-Depends-Indep: kdoc, qt3-doc
+Build-Conflicts: nas-lib, kdelibs-dev
 Section: libs
 Priority: optional
 Maintainer: Ivan E. Moore II <rkrusty@debian.org>
 Standards-Version: 3.5.6
 
-Package: kdelibs3
+Package: kdelibs4
 Architecture: any
 Section: libs
-Replaces: kdelibs2g, kdebase-libs (<< 4:2.2.1-2)
+Replaces: kdelibs2g, kdelibs3, kdebase-libs (<< 4:2.2.1-2)
 Depends: ${shlibs:Depends}, python-base, xbase-clients
-Recommends: libarts, libkmid, kdelibs3-cups, aspell | ispell
-Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb
+Recommends: libarts1, libkmid0, kdelibs4-cups, aspell | ispell
+Suggests: kdelibs4-crypto, anti-aliasing-howto, gdb
 Description: KDE core libraries (runtime files)
  KDE core libraries.
  You need these files to run kde applications.
 
-Package: kdelibs3-cups
+Package: kdelibs4-cups
 Architecture: any
 Section: libs
 Depends: ${shlibs:Depends}
@@ -27,14 +27,14 @@ Suggests: cupsomatic-ppd
 Description: KDE print system (CUPS support)
  This package contains the KDE printer bits which use CUPS. 
 
-Package: libarts
+Package: libarts1
 Architecture: any
 Section: libs
-Replaces: libarts-alsa
+Replaces: libarts1-alsa, libarts, libarts-alsa
 Depends: ${shlibs:Depends}
-Suggests: kdelibs3, artsbuilder
+Suggests: kdelibs4, artsbuilder
 Enhances: kdebase
-Conflicts: suidmanager (<< 0.50), libarts-alsa
+Conflicts: suidmanager (<< 0.50), libarts1-alsa, libarts, libarts-alsa
 Description: aRts Sound system
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -44,13 +44,13 @@ Description: aRts Sound system
  .
  aRts is the core sound system for KDE (and other systems)
 
-Package: libkmid
+Package: libkmid0
 Architecture: any
 Section: libs
-Replaces: libkmid-alsa
+Replaces: libkmid0-alsa, libkmid, libkmid-alsa
 Depends: ${shlibs:Depends}
 Enhances: kdebase
-Conflicts: libkmid-alsa
+Conflicts: libkmid0-alsa, libkmid-alsa
 Description: aRts Sound system (midi/kmedia support libraries)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -61,14 +61,14 @@ Description: aRts Sound system (midi/kmedia support libraries)
  This package contains the midi and kmedia support files for aRts as well as 
  knotify
 
-Package: libkmid-alsa
+Package: libkmid0-alsa
 Architecture: any
 Section: libs
 Priority: extra
-Replaces: libkmid
+Replaces: libkmid0, libkmid, libkmid-alsa
 Depends: ${shlibs:Depends}
 Enhances: kdebase
-Provides: libkmid
+Provides: libkmid0
 Description: aRts Sound system (midi/kmedia support libraries with alsa)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -79,16 +79,16 @@ Description: aRts Sound system (midi/kmedia support libraries with alsa)
  This package contains the midi and kmdedia support files for aRts as well as 
  knotify
 
-Package: libarts-alsa
+Package: libarts1-alsa
 Architecture: any
 Section: libs
 Priority: extra
-Replaces: libarts
+Replaces: libarts1, libarts, libarts-alsa
 Depends: ${shlibs:Depends}
-Suggests: kdelibs3, artsbuilder
+Suggests: kdelibs4, artsbuilder
 Enhances: kdebase
 Conflicts: suidmanager (<< 0.50)
-Provides: libarts
+Provides: libarts1
 Description: aRts Sound system (built with alsa support)
  aRts is a short form for "analog realtime synthesizer". The idea of the whole
  thing is to create/process sound using small modules which do certain tasks.
@@ -98,45 +98,44 @@ Description: aRts Sound system (built with alsa support)
  .
  aRts is the core sound system for KDE (and other systems)
 
-Package: libarts-dev
+Package: libarts1-dev
 Architecture: any
 Section: devel
-Replaces: libarts (<< ${Source-Version}), libarts-alsa (<< ${Source-Version})
-Depends: libarts (= ${Source-Version}) | libarts-alsa (= ${Source-Version}), libc6-dev, libaudiofile-dev
-Suggests: kdelibs-dev, libasound1-dev
+Depends: libarts1 (= ${Source-Version}) | libarts1-alsa (= ${Source-Version}), libc6-dev, libaudiofile-dev
+Suggests: kdelibs4-dev, libasound1-dev
 Description: aRts Sound system (development files)
  aRts sound system.
  .
  Header files needed to build apps that use the aRts sound daemon
 
-Package: libkmid-dev
+Package: libkmid0-dev
 Architecture: any
 Section: devel
-Depends: libkmid (= ${Source-Version}) | libkmid-alsa (= ${Source-Version}) , kdelibs-dev
+Depends: libkmid0 (= ${Source-Version}) | libkmid0-alsa (= ${Source-Version}) , kdelibs4-dev
 Description: aRts Sound system (midi development files)
  aRts sound system.
  .
  Header files needed to build apps that use the aRts sound daemon and the
  midi specific portions of it.
 
-Package: kdelibs3-doc
+Package: kdelibs4-doc
 Architecture: all
 Section: doc
 Replaces: kdelibs-doc
-Suggests: kdelibs-dev, libqt3-dev, kdoc
+Suggests: kdelibs4-dev, libqt3-dev, kdoc
 Provides: kdelibs-doc
 Description: KDE core library documentation
  These are the core documentation created by the kdoc package.  This package
  is needed for developing KDE related packages.
 
-Package: kdelibs-dev
+Package: kdelibs4-dev
 Architecture: any
 Section: devel
 Replaces: kdelibs2g-dev
-Depends: kdelibs3 (= ${Source-Version}), libarts-dev (= ${Source-Version}), libkmid-dev (= ${Source-Version}), libqt3-dev (>= 2:3.0.0-0beta6-0), qt3-tools (>= 2:3.0.0-0beta6-0), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
-Recommends: kdelibs3-cups (= ${Source-Version})
-Conflicts: kdelibs2g-dev
-Suggests: kdelibs3-doc, kdoc, libxml2-dev, libxslt1-dev
+Depends: kdelibs4 (= ${Source-Version}), libarts1-dev (= ${Source-Version}), libkmid0-dev (= ${Source-Version}), libqt3-dev (>= 2:3.0.0-0beta6-0), qt3-tools (>= 2:3.0.0-0beta6-0), libaudiofile-dev, gettext, libtiff3g-dev | libtiff-dev, docbook, libpcre3-dev, libbz2-dev
+Recommends: kdelibs4-cups (= ${Source-Version})
+Conflicts: kdelibs2g-dev, kdelibs-dev
+Suggests: kdelibs4-doc, kdoc, libxml2-dev, libxslt1-dev
 Description: KDE core libraries (development files)
  KDE core libraries.
  You need these files to compile kde applications.

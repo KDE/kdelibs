@@ -10,7 +10,7 @@ export DH_COMPAT=3
 SHELL=/bin/sh
 BUILDDIR = $(shell pwd)
 QTDOCDIR  = usr/share/doc/qt-doc/doc/html
-KDEDOCDIR = usr/share/doc/kdelibs3-doc/html
+KDEDOCDIR = usr/share/doc/kdelibs4-doc/html
 export KDB2HTML_UNINSTALLED=$(BUILDDIR)/ksgmltools/customization/
 ARCH = $(shell dpkg-architecture -qDEB_BUILD_ARCH)
 ifeq ($(ARCH),alpha)
@@ -19,7 +19,7 @@ else
   COMPILER_FLAGS=CXX=g++ CC=gcc
 endif
 
-tmp = $(shell pwd)/debian/kdelibs3
+tmp = $(shell pwd)/debian/kdelibs4
 alsa-tmp = $(shell pwd)/debian/alsa-tmp
 
 build: build-stamp alsa-stamp
@@ -68,12 +68,10 @@ debian-clean:
 
 clean: debian-clean
 	-rm -rf debian/debiandirs debian/install-tmp debian/alsa-tmp
-	#if test -d CVS; then \
-	#  $(MAKE) -f admin/Makefile.common cvs-clean ;\
-	#fi
+	if test -d CVS; then \
+	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
+	fi
 	-$(MAKE) distclean
-	-rm -f `find arts -name "*.mcoptype"`
-	-rm -f kdoctools/kgzipfilter.cpp kdoctools/kbzip2filter.cpp
 
 binary-indep:	build-stamp alsa-stamp indep-stamp
 indep-stamp:
@@ -81,23 +79,23 @@ indep-stamp:
 	dh_testroot
 	dh_clean -i
 	if test -f /usr/bin/qt2kdoc; then \
-		(mkdir -p debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference) ; \
+		(mkdir -p debian/kdelibs4-doc/$(KDEDOCDIR)/kdoc-reference) ; \
 		qt2kdoc --url=/$(QTDOCDIR) \
-		--outdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference \
+		--outdir=`pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kdoc-reference \
 		--compress \
 		/$(QTDOCDIR) ; \
-		makekdedoc --libdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdoc-reference \
+		makekdedoc --libdir=`pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kdoc-reference \
 		--kdocopt='--skip-internal --compress' \
 		--url=/$(KDEDOCDIR) \
-		--outputdir=`pwd`/debian/kdelibs3-doc/$(KDEDOCDIR) ; \
+		--outputdir=`pwd`/debian/kdelibs4-doc/$(KDEDOCDIR) ; \
 	fi
 	
-	mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
-	cp doc/api/*.png `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kdeui
-	mkdir -p `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
-	cp kio/DESKTOP_ENTRY_STANDARD `pwd`/debian/kdelibs3-doc/$(KDEDOCDIR)/kio
+	mkdir -p `pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kdeui
+	cp doc/api/*.png `pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kdeui
+	mkdir -p `pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kio
+	cp kio/DESKTOP_ENTRY_STANDARD `pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kio
 	dh_installdocs -i
-	dh_installchangelogs -pkdelibs3-doc 
+	dh_installchangelogs -pkdelibs4-doc 
 	dh_compress -i -X.docbook -X.css -X-license -X.dcl -X.bz2
 	dh_fixperms -i
 	dh_installdeb -i
@@ -110,20 +108,20 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -a
-	-rm -rf debian/kdelibs3 debian/alsa-tmp
-	-install -d debian/kdelibs3
+	-rm -rf debian/kdelibs4 debian/alsa-tmp
+	-install -d debian/kdelibs4
 	cd debian/install-tmp && find ./ | cpio -pmd $(tmp)/
 	dh_installdirs -a
 	$(MAKE) -C libkmid/ DESTDIR=$(alsa-tmp)/ install
 	$(MAKE) -C arts/ DESTDIR=$(alsa-tmp)/ install
-	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs3/ install
+	$(MAKE) -C kdeprint/cups DESTDIR=`pwd`/debian/kdelibs4/ install
 
 binary-arch:  build install
 	dh_testdir
 	dh_testroot
 	dh_installdirs -a
-	-rm -f debian/kdelibs3/usr/share/doc/kde/HTML/default
-	debianrc=debian/kdelibs3/etc/kde2/system.kdeglobals ;\
+	-rm -f debian/kdelibs4/usr/share/doc/kde/HTML/default
+	debianrc=debian/kdelibs4/etc/kde2/system.kdeglobals ;\
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/etc/kde2" >> $$debianrc ;\
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
@@ -134,7 +132,7 @@ binary-arch:  build install
 	echo "dir_servicetypes=/usr/share/servicetypes" >> $$debianrc ;\
 	echo "[General]" >> $$debianrc ;\
 	echo "TerminalApplication=x-terminal-emulator" >> $$debianrc
-	cp debian/kde.pamd debian/kdelibs3/etc/pam.d/kde
+	cp debian/kde.pamd debian/kdelibs4/etc/pam.d/kde
 	dh_installdocs -a
 	-cp debian/dh-make/* debian/kdelibs-dev/usr/share/doc/kdelibs-dev/dh-make/
 	-cp admin/debianrules debian/kdelibs-dev/usr/share/doc/kdelibs-dev/dh-make/
@@ -143,16 +141,16 @@ binary-arch:  build install
 	dh_installmenu -a
 	dh_installdebconf -a
 	# musical chairs
-	dh_movefiles -plibarts --sourcedir=debian/kdelibs3
-	dh_movefiles -plibarts-dev --sourcedir=debian/kdelibs3
-	dh_movefiles -plibkmid --sourcedir=debian/kdelibs3
-	dh_movefiles -plibkmid-dev --sourcedir=debian/kdelibs3
-	dh_movefiles -pkdelibs-dev --sourcedir=debian/kdelibs3
-	dh_movefiles -pkdelibs3-cups --sourcedir=debian/kdelibs3
-	dh_movefiles -plibarts-alsa --sourcedir=debian/alsa-tmp
-	dh_movefiles -plibkmid-alsa --sourcedir=debian/alsa-tmp
+	dh_movefiles -plibarts1 --sourcedir=debian/kdelibs4
+	dh_movefiles -plibarts1-dev --sourcedir=debian/kdelibs4
+	dh_movefiles -plibkmid0 --sourcedir=debian/kdelibs4
+	dh_movefiles -plibkmid0-dev --sourcedir=debian/kdelibs4
+	dh_movefiles -pkdelibs4-dev --sourcedir=debian/kdelibs4
+	dh_movefiles -pkdelibs4-cups --sourcedir=debian/kdelibs4
+	dh_movefiles -plibarts1-alsa --sourcedir=debian/alsa-tmp
+	dh_movefiles -plibkmid0-alsa --sourcedir=debian/alsa-tmp
 	# ssl cleanup
-	-rm -rf debian/kdelibs3/usr/share/apps/kssl
+	-rm -rf debian/kdelibs4/usr/share/apps/kssl
 	dh_installchangelogs -a 
 	dh_strip -a
 	dh_perl -a
@@ -161,11 +159,11 @@ binary-arch:  build install
 	dh_fixperms -a
 	dh_makeshlibs -V
 	dh_installdeb -a
-	dh_shlibdeps -a -l`pwd`/debian/kdelibs3/usr/lib:`pwd`/debian/libarts/usr/lib:`pwd`/debian/libkmid/usr/lib:`pwd`/debian/kdelibs3-cups/usr/lib
-	echo -n `cat debian/libarts.substvars ` > debian/libarts-alsa.substvars
-	echo ", libasound1 (>= 0.5.5)" >> debian/libarts-alsa.substvars
-	echo -n `cat debian/libkmid.substvars` > debian/libkmid-alsa.substvars
-	echo ", libasound1 (>= 0.5.5)" >> debian/libkmid-alsa.substvars
+	dh_shlibdeps -a -l`pwd`/debian/kdelibs4/usr/lib:`pwd`/debian/libarts1/usr/lib:`pwd`/debian/libkmid0/usr/lib:`pwd`/debian/kdelibs4-cups/usr/lib
+	echo -n `cat debian/libarts1.substvars ` > debian/libarts1-alsa.substvars
+	echo ", libasound1 (>= 0.5.5)" >> debian/libarts1-alsa.substvars
+	echo -n `cat debian/libkmid0.substvars` > debian/libkmid0-alsa.substvars
+	echo ", libasound1 (>= 0.5.5)" >> debian/libkmid0-alsa.substvars
 	dh_gencontrol 
 	dh_md5sums 
 	dh_builddeb -a
