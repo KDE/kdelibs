@@ -53,11 +53,11 @@ signals:
 private:
     void createLayout();
 
-    QWidget* makeBoolWidget(const KFileMetaInfoItem& item, QWidget* parent);
+    QWidget* makeBoolWidget(const KFileMetaInfoItem& item, QWidget* parent, bool editable);
     QWidget* makeIntWidget(const KFileMetaInfoItem& item, QWidget* parent,
-                                                    QString& valClass);
+                                                    QString& valClass, bool editable);
     QWidget* makeStringWidget(const KFileMetaInfoItem& item, QWidget* parent,
-                                                       QString& valClass);
+                                                       QString& valClass, bool editable);
 
 private slots:
     // Code disabled until the "Add" button is implemented

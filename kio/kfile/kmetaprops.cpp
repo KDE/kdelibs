@@ -34,6 +34,7 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qcheckbox.h>
+#include <qfileinfo.h>
 
 #include <iostream.h>
 
@@ -128,7 +129,8 @@ KFileMetaPropsPlugin::KFileMetaPropsPlugin(KPropertiesDialog* props)
 void KFileMetaPropsPlugin::createLayout()
 {
     QStringList l;
-  
+    QFileInfo file_info(properties->item()->url().path());
+
     if ( !d->m_info.isValid() || (l = d->m_info.preferredKeys()) .isEmpty() )
         return;
 
@@ -156,21 +158,22 @@ void KFileMetaPropsPlugin::createLayout()
 
         QWidget* w = 0L;
         QString valClass;
+        bool editable = file_info.isWritable() && item.isEditable();
         
         switch (item.value().type())
         {
             // if you change something here, you need to also change also
             // slotAdd() and applyChanges()        
-            case QVariant::Bool : w = makeBoolWidget  (item, d->m_frame); break;
-            case QVariant::Int  : w = makeIntWidget   (item, d->m_frame, valClass); break;
-            default             : w = makeStringWidget(item, d->m_frame, valClass); break;
+            case QVariant::Bool : w = makeBoolWidget  (item, d->m_frame, editable); break;
+            case QVariant::Int  : w = makeIntWidget   (item, d->m_frame, valClass, editable); break;
+            default             : w = makeStringWidget(item, d->m_frame, valClass, editable); break;
         }
       
         if (w)
         {
             // save a mapping between editable info objects and their widgets
-            if (item.isEditable())
-            d->m_items.append(new MetaPropsItem(w, item, valClass));
+            if (editable)
+                 d->m_items.append(new MetaPropsItem(w, item, valClass));
           
             toplayout->addWidget( new QLabel(w, item.translatedKey() + ":",
                                              d->m_frame), count, 0);
@@ -255,9 +258,9 @@ void KFileMetaPropsPlugin::createLayout()
 }*/
 
 QWidget* KFileMetaPropsPlugin::makeBoolWidget(const KFileMetaInfoItem& item,
-                                              QWidget* parent)
+                                              QWidget* parent, bool editable)
 {
-  if (!item.isEditable())
+  if (!editable)
     return new QLabel(item.value().toBool() ? i18n("Yes") : i18n("No"), parent);
 
   QCheckBox* c = new QCheckBox(parent);
@@ -267,9 +270,9 @@ QWidget* KFileMetaPropsPlugin::makeBoolWidget(const KFileMetaInfoItem& item,
 }
 
 QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item, 
-                                             QWidget* parent, QString& valClass)
+                                             QWidget* parent, QString& valClass, bool editable)
 {
-  if (!item.isEditable()) return new QLabel(item.value().toString(), parent);
+  if (!editable) return new QLabel(item.value().toString(), parent);
   
   QSpinBox* sb = new QSpinBox(parent);
   sb->setValue(item.value().toInt());
@@ -299,9 +302,9 @@ QWidget* KFileMetaPropsPlugin::makeIntWidget(const KFileMetaInfoItem& item,
 }            
 
 QWidget* KFileMetaPropsPlugin::makeStringWidget(const KFileMetaInfoItem& item, 
-                                              QWidget* parent, QString& valClass)
+                                              QWidget* parent, QString& valClass, bool editable)
 {
-  if (!item.isEditable()) return new QLabel(item.value().toString(), parent);
+  if (!editable) return new QLabel(item.value().toString(), parent);
 
   QValidator* validator = d->m_info.createValidator(item.key(), 0, 0);
   valClass = validator->className();
