@@ -384,6 +384,26 @@ public:
   QString queryItem( const QString& _item ) const;
 
   /**
+   * Add an additional query item.
+   * To replace an existing query item, the item should first be
+   * removed with @ref removeQueryItem()
+   *
+   * @param _item Name of item to add
+   * @param _value Value of item to add
+   * @param encoding_hint MIB of encoding to use for _value.
+   *             @see QTextCodec::mibEnum()
+   *
+   */
+  void addQueryItem( const QString& _item, const QString& _value, int encoding_hint = 0 );
+
+  /**
+   * Remove an item from the query.
+   *
+   * @param _item Item to be removed
+   */
+  void removeQueryItem( const QString& _item );
+
+  /**
    * In comparison to @ref addPath() this function does not assume that the current path
    * is a directory. This is only assumed if the current path ends with '/'.
    *

@@ -1697,27 +1697,55 @@ bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, 
 
 QString KURL::queryItem( const QString& _item ) const
 {
+  QString item = _item + '=';
   if ( m_strQuery_encoded.length() <= 1 )
     return QString::null;
 
   QStringList items = QStringList::split( '&', m_strQuery_encoded );
-  int _len = _item.length();
-  QString item;
+  unsigned int _len = item.length();
   for ( QStringList::ConstIterator it = items.begin(); it != items.end(); ++it )
   {
-    item = (*it);
-    if ( item.startsWith( _item ) )
+    if ( (*it).startsWith( item ) )
     {
-      int len = item.length();
-      if ( len > _len && item.at( _len ) == '=' )
-      {
-        if ( len > ++_len )
-          return decode_string( item.mid( _len ) );
-        else // empty value
-          return QString::fromLatin1("");
-      }
+      if ( (*it).length() > _len )
+        return decode_string( (*it).mid( _len ) );
+      else // empty value
+        return QString::fromLatin1("");
     }
   }
 
   return QString::null;
+}
+
+void KURL::removeQueryItem( const QString& _item )
+{
+  QString item = _item + '=';
+  if ( m_strQuery_encoded.length() <= 1 )
+    return;
+
+  QStringList items = QStringList::split( '&', m_strQuery_encoded );
+  for ( QStringList::Iterator it = items.begin(); it != items.end(); )
+  {
+    if ( (*it).startsWith( item ) || (*it == _item) )
+    {
+      QStringList::Iterator deleteIt = it;
+      ++it;
+      items.remove(deleteIt);
+    }
+    else
+    {
+       ++it;
+    }
+  }
+  m_strQuery_encoded = items.join( "&" );
+}
+
+void KURL::addQueryItem( const QString& _item, const QString& _value, int encoding_hint )
+{
+  QString item = _item + '=';
+  QString value = encode( _value, true, encoding_hint );
+
+  if (!m_strQuery_encoded.isEmpty())
+     m_strQuery_encoded += '&';
+  m_strQuery_encoded += item + value;
 }
