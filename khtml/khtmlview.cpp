@@ -757,9 +757,8 @@ bool KHTMLView::focusNextPrevChild( bool next )
     // Now try to find the next child
     if (m_part->xmlDocImpl()) {
         focusNextPrevNode(next);
-        if (m_part->xmlDocImpl()->focusNode() != 0) { // focus node found
-            return true;
-        }
+        if (m_part->xmlDocImpl()->focusNode() != 0)
+            return true; // focus node found
     }
 
     // If we get here, there is no next/previous child to go to, so pass up to the next/previous child in our parent
@@ -876,8 +875,6 @@ void KHTMLView::focusNextPrevNode(bool next)
     // used is that specified in the HTML spec (see DocumentImpl::nextFocusNode() and DocumentImpl::previousFocusNode()
     // for details).
 
-    d->scrollBarMoved = false;
-
     DocumentImpl *doc = m_part->xmlDocImpl();
     NodeImpl *oldFocusNode = doc->focusNode();
     NodeImpl *newFocusNode;
@@ -916,6 +913,8 @@ void KHTMLView::focusNextPrevNode(bool next)
             newFocusNode = toFocus;
     }
 
+    d->scrollBarMoved = false;
+
     if (!newFocusNode)
       {
         // No new focus node, scroll to bottom or top depending on next
@@ -926,9 +925,18 @@ void KHTMLView::focusNextPrevNode(bool next)
     }
     else
     // Scroll the view as necessary to ensure that the new focus node is visible
-    if (!scrollTo(newFocusNode->getRect()))
-        return;
-
+    {
+      if (oldFocusNode)
+	{
+	  if (!scrollTo(newFocusNode->getRect()))
+	    return;
+	}
+      else
+	{
+	  ensureVisible(contentsX(), next?0:contentsHeight());
+	  //return;
+	}
+    }
     // Set focus node on the document
     m_part->xmlDocImpl()->setFocusNode(newFocusNode);
     emit m_part->nodeActivated(Node(newFocusNode));
