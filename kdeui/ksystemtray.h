@@ -107,7 +107,7 @@ protected:
        Access to the context menu. This makes it easy to add new items
        to it.
      */
-    KPopupMenu* contextMenu();
+    KPopupMenu* contextMenu() const;
 
 
     /**

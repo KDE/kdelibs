@@ -95,7 +95,7 @@ void KSystemTray::enterEvent( QEvent* )
 #endif
 }
 
-KPopupMenu* KSystemTray::contextMenu()
+KPopupMenu* KSystemTray::contextMenu() const
 {
     return menu;
 }
