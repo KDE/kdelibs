@@ -56,15 +56,16 @@
  
 void KEdit::search(){
 
-  if (replace_dialog)
-	if (replace_dialog->isVisible())
-		replace_dialog->hide();
-  
+  if( replace_dialog != 0 && replace_dialog->isVisible() == true )
+  {
+    replace_dialog->hide();
+  } 
 
-  if(!srchdialog){
-    srchdialog = new KEdSrch(0, "searchdialog");
-    connect(srchdialog,SIGNAL(search_signal()),this,SLOT(search_slot()));
-    connect(srchdialog,SIGNAL(search_done_signal()),this,SLOT(searchdone_slot()));
+  if( srchdialog == 0 )
+  {
+    srchdialog = new KEdFind( parentWidget(), "searchdialog", false);
+    connect(srchdialog,SIGNAL(search()),this,SLOT(search_slot()));
+    connect(srchdialog,SIGNAL(done()),this,SLOT(searchdone_slot()));
   }
 
   // If we already searched / replaced something before make sure it shows
@@ -77,16 +78,6 @@ void KEdit::search(){
 
   this->deselect();
   last_search = NONE;
-
-  this->clearFocus();
-
-  QPoint point = this->mapToGlobal (QPoint (0,0));
-
-  QRect pos = this->geometry();
-  srchdialog->setGeometry(point.x() + pos.width()/2  - srchdialog->width()/2,
-			   point.y() + pos.height()/2 - srchdialog->height()/2, 
-			   srchdialog->width(),
-			   srchdialog->height());
    
   srchdialog->show();
   srchdialog->result();
@@ -261,21 +252,20 @@ int KEdit::repeatSearch() {
 //
 
 
-void KEdit::replace(){
+void KEdit::replace()
+{
+  if( srchdialog != 0 && srchdialog->isVisible() == true)
+  {
+    srchdialog->hide();
+  } 
 
-  if (srchdialog)
-	if (srchdialog->isVisible())
-		srchdialog->hide();
-  
-
-  if (!replace_dialog){
-    
-    replace_dialog = new KEdReplace(0, "replace_dialog");
-    connect(replace_dialog,SIGNAL(find_signal()),this,SLOT(replace_search_slot()));
-    connect(replace_dialog,SIGNAL(replace_signal()),this,SLOT(replace_slot()));
-    connect(replace_dialog,SIGNAL(replace_all_signal()),this,SLOT(replace_all_slot()));
-    connect(replace_dialog,SIGNAL(replace_done_signal()),this,SLOT(replacedone_slot()));
-  
+  if( replace_dialog == 0 )
+  {
+    replace_dialog = new KEdReplace( parentWidget(), "replace_dialog" );
+    connect(replace_dialog,SIGNAL(find()),this,SLOT(replace_search_slot()));
+    connect(replace_dialog,SIGNAL(replace()),this,SLOT(replace_slot()));
+    connect(replace_dialog,SIGNAL(replaceAll()),this,SLOT(replace_all_slot()));
+    connect(replace_dialog,SIGNAL(done()),this,SLOT(replacedone_slot()));
   }
 
   QString string = replace_dialog->getText();
@@ -287,15 +277,6 @@ void KEdit::replace(){
   this->deselect();
   last_replace = NONE;
 
-  this->clearFocus();
-
-  QPoint point = this->mapToGlobal (QPoint (0,0));
-
-  QRect pos = this->geometry();
-  replace_dialog->setGeometry(point.x() + pos.width()/2  - replace_dialog->width()/2,
-			   point.y() + pos.height()/2 - replace_dialog->height()/2, 
-			   replace_dialog->width(),
-			   replace_dialog->height());
   replace_dialog->show();
   replace_dialog->result();
 }
@@ -656,33 +637,27 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 //
 // Find Dialog
 //
-
-
-
-KEdSrch::KEdSrch(QWidget *parent, const char *name)
-  : QDialog(parent, name,FALSE)
+KEdFind::KEdFind( QWidget *parent, const char *name, bool modal )
+  :KDialogBase( parent, name, modal, i18n("Find"),
+		User1|Cancel, User1, false, i18n("&Find") )
 {
-  QString text;
+  QWidget *page = new QWidget( this ); 
+  setMainWidget(page);
+  QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
-  const int OUTER_SEP = 6;
-  const int INNER_SEP = 6;
-
-  QVBoxLayout *topLayout = new QVBoxLayout(this,OUTER_SEP,INNER_SEP);
-  
-  text = i18n("Find");
-  QLabel *label = new QLabel( text, this, "find" );
+  QString text = i18n("Find:");
+  QLabel *label = new QLabel( text, page , "find" );
   topLayout->addWidget( label );
 
-  value = new QLineEdit( this, "value");
+  value = new QLineEdit( page, "value");
   value->setMinimumWidth(fontMetrics().maxWidth()*20);
   value->setFocus();
   topLayout->addWidget(value);
-  connect(value, SIGNAL(returnPressed()), SLOT(ok_slot()) );
 
-  QButtonGroup *group = new QButtonGroup( i18n("Options"), this );
+  QButtonGroup *group = new QButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
 
-  QGridLayout *gbox = new QGridLayout( group, 3, 2, INNER_SEP, INNER_SEP );
+  QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
   gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
   
   text = i18n("Case Sensitive");
@@ -692,108 +667,82 @@ KEdSrch::KEdSrch(QWidget *parent, const char *name)
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
   gbox->setRowStretch( 2, 10 );
-  gbox->activate();
-
-  KButtonBox *buttonBox = new KButtonBox( this, KButtonBox::HORIZONTAL, 0, 
-					  INNER_SEP );
-  buttonBox->addStretch();
-  ok = buttonBox->addButton( i18n("&Find"), false );
-  cancel = buttonBox->addButton( i18n("&Cancel"), false );
-  buttonBox->layout();
-  ok ->setDefault( true );
-  connect( ok, SIGNAL(clicked()), SLOT(ok_slot()) );
-  connect( cancel, SIGNAL(clicked()), SLOT(done_slot()) );
-  topLayout->addWidget( buttonBox );
-  
-  topLayout->activate();
-  setGeometry( x(), y(), minimumSize().width(), minimumSize().height() );
 }
 
-void KEdSrch::focusInEvent( QFocusEvent *)
+
+void KEdFind::slotCancel( void )
 {
-    value->setFocus();
-    //value->selectAll();
+  emit done();
 }
 
-QString KEdSrch::getText() { return value->text(); }
 
-void KEdSrch::setText(QString string){
+void KEdFind::slotUser1( void )
+{
+  if( value->text().isEmpty() == false )
+  {
+    emit search();
+  }
+}
 
+
+QString KEdFind::getText() 
+{ 
+  return value->text(); 
+}
+
+
+void KEdFind::setText(QString string)
+{
   value->setText(string);
-
-}
-
-void KEdSrch::done_slot(){
-
-  emit search_done_signal();
-
 }
 
 
-bool KEdSrch::case_sensitive(){
-
+bool KEdFind::case_sensitive()
+{
   return sensitive->isChecked();
-
 }
 
-bool KEdSrch::get_direction(){
 
+bool KEdFind::get_direction()
+{
   return direction->isChecked();
-
 }
 
-
-void KEdSrch::ok_slot(){
-
-  QString text;
-
-  text = value->text();
-
-  if (!text.isEmpty())
-    emit search_signal();
-
-}
 
 ////////////////////////////////////////////////////////////////////
 //
 //  Replace Dialog
 //
-
-
-KEdReplace::KEdReplace(QWidget *parent, const char *name)
-  : QDialog(parent, name,FALSE)
+KEdReplace::KEdReplace( QWidget *parent, const char *name, bool modal )
+  :KDialogBase( parent, name, modal, i18n("Replace"),
+		User3|User2|User1|Cancel, User3, false,
+		i18n("Replace &All"), i18n("&Replace"), i18n("&Find") )
 {
-  QString text;
+  QWidget *page = new QWidget( this ); 
+  setMainWidget(page);
+  QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
 
-  const int OUTER_SEP = 6;
-  const int INNER_SEP = 6;
-
-  QVBoxLayout *topLayout = new QVBoxLayout(this,OUTER_SEP,INNER_SEP);
-  
-  text = i18n("Find");
-  QLabel *label = new QLabel( text, this, "find" );
+  QString text = i18n("Find:");
+  QLabel *label = new QLabel( text, page, "find" );
   topLayout->addWidget( label );
 
-  value = new QLineEdit( this, "value");
+  value = new QLineEdit( page, "value");
   value->setMinimumWidth(fontMetrics().maxWidth()*20);
   value->setFocus();
   topLayout->addWidget(value);
-  connect(value, SIGNAL(returnPressed()), SLOT(ok_slot()) );
 
-  text = i18n("Replace with");
-  label = new QLabel( text, this, "replace" );
+  text = i18n("Replace with:");
+  label = new QLabel( text, page, "replace" );
   topLayout->addWidget( label );
 
-  replace_value = new QLineEdit( this, "value");
+  replace_value = new QLineEdit( page, "value");
   replace_value->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget(replace_value);
-  connect(replace_value, SIGNAL(returnPressed()), SLOT(ok_slot()) );
 
-
-  QButtonGroup *group = new QButtonGroup( i18n("Options"), this );
+  QButtonGroup *group = new QButtonGroup( i18n("Options"), page );
   topLayout->addWidget( group );
 
-  QGridLayout *gbox = new QGridLayout( group, 3, 2, INNER_SEP, INNER_SEP );
+  QGridLayout *gbox = new QGridLayout( group, 3, 2, spacingHint() );
   gbox->addRowSpacing( 0, fontMetrics().lineSpacing() );
   
   text = i18n("Case Sensitive");
@@ -803,253 +752,85 @@ KEdReplace::KEdReplace(QWidget *parent, const char *name)
   gbox->addWidget( sensitive, 1, 0 );
   gbox->addWidget( direction, 1, 1 );
   gbox->setRowStretch( 2, 10 );
-  gbox->activate();
+} 
 
 
-  KButtonBox *buttonBox = new KButtonBox( this, KButtonBox::HORIZONTAL, 0, 
-					  INNER_SEP );
-  buttonBox->addStretch();
-  ok = buttonBox->addButton( i18n("&Find"), false );
-  replace = buttonBox->addButton( i18n("&Replace"), false );
-  replace_all = buttonBox->addButton( i18n("Replace &All"), false );
-  cancel = buttonBox->addButton( i18n("&Cancel"), false );
-  buttonBox->layout();
-  ok ->setDefault( true );
-  connect(ok, SIGNAL(clicked()), SLOT(ok_slot()));
-  connect(replace, SIGNAL(clicked()), SLOT(replace_slot()));
-  connect(replace_all, SIGNAL(clicked()), SLOT(replace_all_slot()));
-  connect(cancel, SIGNAL(clicked()), SLOT(done_slot()));
-  topLayout->addWidget( buttonBox );
-  
-  topLayout->activate();
-  setGeometry( x(), y(), minimumSize().width(), minimumSize().height() );
-}
-
-
-
-
-
-#if 0
-KEdReplace::KEdReplace(QWidget *parent, const char *name)
-    : QDialog(parent, name,FALSE){
-
-
-    this->setFocusPolicy(QWidget::StrongFocus);
-    int fontHeight = 2*fontMetrics().height();
-    QVBoxLayout * mainLayout = new QVBoxLayout(this, 10);
-
-    frame1 = new QGroupBox(i18n("Find:"), this, "frame1");
-    mainLayout->addWidget(frame1);
-    QVBoxLayout * frameLayout = new QVBoxLayout(frame1, 20);
-
-    value = new QLineEdit( frame1, "value");
-    value->setFocus();
-    value->setMinimumWidth(200);
-    value->setFixedHeight(fontHeight);
-    frameLayout->addWidget(value);
-    connect(value, SIGNAL(returnPressed()), this, SLOT(ok_slot()));
-
-    label = new QLabel(frame1,"Rlabel");
-    label->setText(i18n("Replace with:"));
-    label->setFixedSize( label->sizeHint() );
-    frameLayout->addWidget(label);
-
-    replace_value = new QLineEdit( frame1, "replac_value");
-    replace_value->setMinimumWidth(200);
-    replace_value->setFixedHeight(fontHeight);
-    frameLayout->addWidget(replace_value);
-    connect(replace_value, SIGNAL(returnPressed()), this, SLOT(ok_slot()));
-
-    QHBoxLayout * hLay = new QHBoxLayout();
-    frameLayout->addLayout(hLay);
-
-    sensitive = new QCheckBox(i18n("Case Sensitive"), frame1, "case");
-    sensitive->setChecked(TRUE);
-    sensitive->setMinimumSize( sensitive->sizeHint() );
-    hLay->addWidget(sensitive);
-
-    direction = new QCheckBox(i18n("Find Backwards")
-			      ,frame1 , "direction");
-    direction->setMinimumSize( direction->sizeHint() );
-    hLay->addWidget(direction);
-
-    frameLayout->addStretch(10); // so that frame doesn't grow
-    mainLayout->addStretch(10);
-
-    hLay = new QHBoxLayout();
-    mainLayout->addLayout(hLay);
-    
-    ok = new QPushButton(i18n("Find"), this, "find");
-    connect(ok, SIGNAL(clicked()), this, SLOT(ok_slot()));
-    ok->setFixedSize(ok->sizeHint()); 
-    hLay->addStretch();
-    hLay->addWidget(ok);
-    hLay->addStretch();
-
-    replace = new QPushButton(i18n("Replace"), this, "rep");
-    connect(replace, SIGNAL(clicked()), this, SLOT(replace_slot()));
-    replace->setFixedSize(replace->sizeHint()); 
-    hLay->addWidget(replace);
-    hLay->addStretch();
-
-    replace_all = new QPushButton(i18n("Replace All"), this, "repall");
-    connect(replace_all, SIGNAL(clicked()), this, SLOT(replace_all_slot()));
-    replace_all->setFixedSize(replace_all->sizeHint()); 
-    hLay->addWidget(replace_all);
-    hLay->addStretch();
-
-    cancel = new QPushButton(i18n("Done"), this, "cancel");
-    connect(cancel, SIGNAL(clicked()), this, SLOT(done_slot()));
-    cancel->setFixedSize(cancel->sizeHint()); 
-    hLay->addWidget(cancel);
-    hLay->addStretch();
-    mainLayout->activate();
-    //setMinimumSize(size());
-}
-#endif
-
-
-
-void KEdReplace::focusInEvent( QFocusEvent *){
-
-    value->setFocus();
-    // value->selectAll();
-}
-
-QString KEdReplace::getText() { return value->text(); }
-
-QString KEdReplace::getReplaceText() { return replace_value->text(); }
-
-void KEdReplace::setText(QString string) { 
-
-  value->setText(string); 
-
-}
-
-void KEdReplace::done_slot(){
-
-  emit replace_done_signal();
-
-}
-
-
-void KEdReplace::replace_slot(){
-
-  emit replace_signal();
-
-}
-
-void KEdReplace::replace_all_slot(){
-
-  emit replace_all_signal();
-
-}
-
-
-bool KEdReplace::case_sensitive(){
-
-  return sensitive->isChecked();
-
-}
-
-
-bool KEdReplace::get_direction(){
-
-  return direction->isChecked();
-
-}
-
-
-void KEdReplace::ok_slot(){
-
-  QString text;
-  text = value->text();
-
-  if (!text.isEmpty())
-    emit find_signal();
-
-}
-
-
-
-
-
-
-KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name)
-	: QDialog( parent, name, TRUE )
+void KEdReplace::slotCancel( void )
 {
-  
-  QString text;
-  const int OUTER_SEP = 6;
-  const int INNER_SEP = 6;
+  emit done();
+}
 
-  QVBoxLayout *topLayout = new QVBoxLayout(this,OUTER_SEP,INNER_SEP);
-  
-  text = i18n("Goto Line");
-  QLabel *label = new QLabel( text, this, "gotoline" );
+
+void KEdReplace::slotUser1( void )
+{
+  emit replaceAll();
+}
+
+
+void KEdReplace::slotUser2( void )
+{
+  emit replace();
+}
+
+
+void KEdReplace::slotUser3( void )
+{
+  if( value->text().isEmpty() == false )
+  {
+    emit find();
+  }
+}
+
+
+QString KEdReplace::getText() 
+{ 
+  return value->text(); 
+}
+
+
+QString KEdReplace::getReplaceText() 
+{ 
+  return replace_value->text(); 
+}
+
+
+void KEdReplace::setText(QString string) 
+{ 
+  value->setText(string); 
+}
+
+
+bool KEdReplace::case_sensitive()
+{
+  return sensitive->isChecked();
+}
+
+
+bool KEdReplace::get_direction()
+{
+  return direction->isChecked();
+}
+
+
+
+KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
+  :KDialogBase( parent, name, modal, i18n("Goto Line"), Ok|Cancel, Ok, false )
+{
+  QWidget *page = new QWidget( this ); 
+  setMainWidget(page);
+  QVBoxLayout *topLayout = new QVBoxLayout( page, 0, spacingHint() );
+
+  QString text = i18n("Goto Line:");
+  QLabel *label = new QLabel( text, page, "gotoline" );
   topLayout->addWidget( label );
   
   lineNum = new KIntNumInput( QString::null, 1, INT_MAX, 1, 1, 
-			      QString::null, 10, false, this );
+			      QString::null, 10, false, page );
   lineNum->setMinimumWidth(fontMetrics().maxWidth()*20);
   topLayout->addWidget( lineNum );
 
   topLayout->addStretch(10);
-
-  QFrame *hline = new QFrame( this );
-  hline->setFrameStyle( QFrame::Sunken | QFrame::HLine );
-  topLayout->addWidget( hline );
-
-  
-  KButtonBox *buttonBox = new KButtonBox( this, KButtonBox::HORIZONTAL, 0, 
-					  INNER_SEP );
-  buttonBox->addStretch();
-  ok = buttonBox->addButton( i18n("&OK"), false );
-  cancel = buttonBox->addButton( i18n("&Cancel"), false );
-  buttonBox->layout();
-  ok ->setDefault( true );
-  connect( ok , SIGNAL(clicked()), SLOT(accept()) );
-  connect( cancel , SIGNAL(clicked()), SLOT(reject()) );
-  topLayout->addWidget( buttonBox );
-  
-  topLayout->activate();
 }
-
-void KEdGotoLine::resizeEvent(QResizeEvent *)
-{
-  // Can be removed
-}
-
-
-
-
-#if 0
-KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name)
-	: QDialog( parent, name, TRUE )
-{
-	frame = new QGroupBox( i18n("Goto Line"), this );
-	lineNum = new KIntNumInput( QString::null, 1, INT_MAX, 1, 1, QString::null, 10, false, this );
-	this->setFocusPolicy( QWidget::StrongFocus );
-	connect(lineNum, SIGNAL(returnPressed()), this, SLOT(accept()));
-
-	ok = new QPushButton(i18n("Go"), this );
-	cancel = new QPushButton(i18n("Cancel"), this ); 
-
-	connect(cancel, SIGNAL(clicked()), this, SLOT(reject()));
-	connect(ok, SIGNAL(clicked()), this, SLOT(accept()));
-	resize(300, 120); 
-
-}
-
-void KEdGotoLine::resizeEvent(QResizeEvent *)
-{
-    frame->setGeometry(5, 5, width() - 10, 80);
-    cancel->setGeometry(width() - 80, height() - 30, 70, 25);
-    ok->setGeometry(10, height() - 30, 70, 25);
-    lineNum->setGeometry(20, 35, width() - 40, 25);
-}
-#endif
-
 
 
 void KEdGotoLine::selected(int)
@@ -1057,17 +838,6 @@ void KEdGotoLine::selected(int)
 	accept();
 }
 
-
-
-
-void KEdGotoLine::focusInEvent( QFocusEvent *)
-{
-#ifdef __GNUC__
-#warning fixme! Focus should be handled by KIntNumInput itself    
-#endif
-    lineNum->setFocus();
-//    lineNum->selectAll();
-}
 
 int KEdGotoLine::getLineNumber()
 {

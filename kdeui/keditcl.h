@@ -31,125 +31,95 @@
 #ifndef __KEDITCL_H__
 #define __KEDITCL_H__
 
-
-#include <qdialog.h>
-#include <qstring.h>
 #include <qmultilineedit.h>
+#include <qstring.h>
+#include <kdialogbase.h>
 
 class QDropEvent;
-class QLabel;
 class QPushButton;
 class QCheckBox;
 class QRadioButton;
-class QGroupBox;
 class QLineEdit;
 class QTextStream;
 class KIntNumInput;
 
 ///
-class KEdGotoLine : public QDialog
+class KEdGotoLine : public KDialogBase
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-
-	KEdGotoLine( QWidget *parent = 0, const char *name = 0 );
-
-	int getLineNumber();
-	KIntNumInput *lineNum;
-
-private:
-	QPushButton *ok, *cancel;
-	QGroupBox *frame;
-	void resizeEvent(QResizeEvent *);
-	void focusInEvent(QFocusEvent *);
+    KEdGotoLine( QWidget *parent=0, const char *name=0, bool modal=true );
+    int getLineNumber();
 
 public slots:
+    void selected( int );
 
-	void selected( int );
+private:
+    KIntNumInput *lineNum;
 };
 
 ///
-class KEdSrch : public QDialog
+class KEdFind : public KDialogBase
 {
     Q_OBJECT
 
 public:
 
-    KEdSrch ( QWidget *parent = 0, const char *name=0);
+    KEdFind( QWidget *parent = 0, const char *name=0, bool modal=true);
 
     QString getText();
     void setText(QString string);
     bool case_sensitive();
     bool get_direction();
 
-protected:
-    void focusInEvent( QFocusEvent *);
+protected slots:
+    void slotCancel( void );
+    void slotUser1( void );
 
 private:
-
-    QPushButton *ok, *cancel;
     QCheckBox *sensitive;
     QCheckBox *direction;
-    QGroupBox *frame1;
     QLineEdit *value;
 
 signals:
 
-    void search_signal();
-    void search_done_signal();
-
-public slots:
-
-    void done_slot();
-    void ok_slot();
-
+    void search();
+    void done();
 };
 
 ///
-class KEdReplace : public QDialog
+class KEdReplace : public KDialogBase
 {
     Q_OBJECT
 
 public:
 
-    KEdReplace ( QWidget *parent = 0, const char *name=0);
+    KEdReplace ( QWidget *parent = 0, const char *name=0, bool modal=true );
 
     QString 	getText();
     QString 	getReplaceText();
     void 	setText(QString);
     QLineEdit 	*value;
     QLineEdit 	*replace_value;
-    QLabel 	*label;
     bool 	case_sensitive();
     bool 	get_direction();
 
-protected:
-
-    void focusInEvent( QFocusEvent *);
+protected slots:
+    void slotCancel( void );
+    void slotUser1( void );
+    void slotUser2( void );
+    void slotUser3( void );
 
 private:
-
-    QPushButton *ok, *cancel, *replace, *replace_all;
     QCheckBox 	*sensitive;
     QCheckBox 	*direction;
-    QGroupBox 	*frame1;
-
 
 signals:
-
-    void replace_signal();
-    void find_signal();
-    void replace_all_signal();
-    void replace_done_signal();
-
-public slots:
-
-    void done_slot();
-    void replace_slot();
-    void replace_all_slot();
-    void ok_slot();
-
+    void replace();
+    void find();
+    void replaceAll();
+    void done();
 };
 
 
@@ -342,7 +312,7 @@ private:
 private:
     QString	killbufferstring;
     QWidget     *parent;
-    KEdSrch 	*srchdialog;
+    KEdFind 	*srchdialog;
     KEdReplace 	*replace_dialog;
     KEdGotoLine *gotodialog;
 
