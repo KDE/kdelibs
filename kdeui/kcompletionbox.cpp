@@ -24,6 +24,7 @@
 
 #include <X11/Xlib.h>
 #undef KeyPress
+#undef FocusIn
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
     : KListBox( 0L, name, WType_Popup )
@@ -74,7 +75,7 @@ void KCompletionBox::slotActivated( QListBoxItem *item )
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 {
     int type = e->type();
-
+    
     switch( type ) {
     case QEvent::Show:
  	move( m_parent->mapToGlobal( QPoint(0, m_parent->height())) );
@@ -96,6 +97,9 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
 	break;
     }
+    case QEvent::FocusIn: // workaround for "first item not highlighted"
+	if ( currentItem() == 0 )
+	    setSelected( currentItem(), true );
     default:
 	break;
     }
