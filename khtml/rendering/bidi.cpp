@@ -1346,47 +1346,60 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
                 // proportional font, needs a bit more work.
                 int lastSpace = pos;
                 bool isPre = style()->whiteSpace() == PRE;
-                currentCharacterIsSpace = str[pos] == ' ' || (!isPre && str[pos] == '\n');
+
                 while(len) {
+                    currentCharacterIsSpace = str[pos] == ' ' || (!isPre && str[pos] == '\n');
                     if( (isPre && str[pos] == '\n') ||
                         (!isPre && isBreakable( str, pos, strlen ) ) ) {
-		    tmpW += t->width(lastSpace, pos - lastSpace, f);
-                    if ( !appliedStartWidth ) {
-                        tmpW += inlineWidth( o, true, false );
-                        appliedStartWidth = true;
+
+                        tmpW += t->width(lastSpace, pos - lastSpace, f);
+
+                        if ( !appliedStartWidth ) {
+                            tmpW += inlineWidth( o, true, false );
+                            appliedStartWidth = true;
+                        }
+#ifdef DEBUG_LINEBREAKS
+                        kdDebug(6041) << "found space: '" << QString( str, pos ).latin1() << "' +" << tmpW << " -> w = " << w << endl;
+#endif
+                        if ( !isPre && w + tmpW > width && w == 0 ) {
+                            int fb = nearestFloatBottom(m_height);
+                            int newLineWidth = lineWidth(fb);
+                            int lastFloatBottom = m_height;
+                            while ( lastFloatBottom < fb && tmpW > newLineWidth ) {
+                                lastFloatBottom = fb;
+                                fb = nearestFloatBottom( fb );
+                                newLineWidth = lineWidth( fb );
+                            }
+
+                            if(!w && m_height < fb && width < newLineWidth) {
+                                m_height = fb;
+                                width = newLineWidth;
+#ifdef DEBUG_LINEBREAKS
+                                kdDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
+#endif
+                            }
+                        }
+
+                        if ( w + tmpW > width && o->style()->whiteSpace() == NORMAL )
+                            goto end;
+
+                        if ( isPre && str[pos] == '\n' ) {
+                            lBreak.obj = o;
+                            lBreak.pos = pos;
+                            return lBreak;
+                        }
+
+                        if ( o->style()->whiteSpace() == NORMAL ) {
+                            w += tmpW;
+                            tmpW = 0;
+                            lBreak.obj = o;
+                            lBreak.pos = pos;
+                        }
+
+                        lastSpace = pos;
                     }
-#ifdef DEBUG_LINEBREAKS
-		    kdDebug(6041) << "found space: '" << QString( str, pos ).latin1() << "' +" << tmpW << " -> w = " << w << endl;
-#endif
-		    if ( !isPre && w + tmpW > width && w == 0 ) {
-			int fb = floatBottom();
-			int newLineWidth = lineWidth(fb);
-			if(!w && m_height < fb && width < newLineWidth) {
-			    m_height = fb;
-			    width = newLineWidth;
-#ifdef DEBUG_LINEBREAKS
-			    kdDebug() << "RenderBlock::findNextLineBreak new position at " << m_height << " newWidth " << width << endl;
-#endif
-			}
-		    }
-		    if ( !isPre && w + tmpW > width )
-			goto end;
-
-		    lBreak.obj = o;
-		    lBreak.pos = pos;
-
-		    if( str[pos] == '\n' ) {
-#ifdef DEBUG_LINEBREAKS
-			kdDebug(6041) << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << endl;
-#endif
-			return lBreak;
-		    }
-		    w += tmpW;
-		    tmpW = 0;
-		    lastSpace = pos;
-		}
-		pos++;
-		len--;
+                    pos++;
+                    len--;
                 }
                 // IMPORTANT: pos is > length here!
                 tmpW += t->width(lastSpace, pos - lastSpace, f);
@@ -1527,10 +1540,6 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start)
     // of the object. Do this adjustment to make it point to the start
     // of the next object instead to avoid confusing the rest of the
     // code.
-    if (lBreak.pos > 0) {
-        lBreak.pos--;
-        ++lBreak;
-    }
 
 #ifdef DEBUG_LINEBREAKS
     kdDebug(6041) << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w << "/" << width << endl;
