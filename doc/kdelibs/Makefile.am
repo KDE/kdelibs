@@ -1,5 +1,7 @@
 
 KDE_LANG = en
-KDE_DOCS = AUTO
 
 KDE_MANS = AUTO
+KDE_XSL_MAN_STYLESHEET = $(top_srcdir)/kdoctools/customization/kde-man.xsl
+MEINPROC = $(top_builddir)/kdoctools/meinproc
+
