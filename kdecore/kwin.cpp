@@ -36,6 +36,10 @@
 
 #include "kwin.h"
 #include "kapp.h"
+
+#include <kglobal.h>
+#include <kiconloader.h>
+
 #include <kdatastream.h>
 #include <klocale.h>
 #include <dcopclient.h>
@@ -285,7 +289,55 @@ QPixmap KWin::icon( WId win, int width, int height, bool scale )
 		result = pm;
 	    }
 	}
-    }
+
+	}
+	
+	// Try to load the icon from the classhint if the app didn't specify
+	// its own:
+	if( result.isNull() )
+	{
+		int iconWidth;
+			
+		// Since width can be any arbitrary size, but the icons cannot,
+		// take the nearest value for best results (ignoring 22 pixel
+		// icons as they don't exist for apps):
+		if( width < 24 )
+			iconWidth = 16;
+		else if( width < 40 )
+			iconWidth = 32;
+		else
+			iconWidth = 48;
+			
+		XClassHint	hint;
+    if( XGetClassHint( qt_xdisplay(), win, &hint ) )
+		{
+			QString className = hint.res_class;
+
+    	QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(
+													className.lower(), KIcon::Small, iconWidth,
+													KIcon::DefaultState, 0, true );
+			if( scale )
+				result.convertFromImage(
+													pm.convertToImage().smoothScale( width, height ) );
+			else
+				result = pm;
+
+		}
+
+		// If the icon is still a null pixmap, load the 'xapp' icon
+		// as a last resort:
+    if ( result.isNull() )
+		{
+    	QPixmap pm = KGlobal::instance()->iconLoader()->loadIcon(
+													"xapp", KIcon::Small, iconWidth,
+													KIcon::DefaultState, 0, true );
+			if( scale )
+				result.convertFromImage(
+													pm.convertToImage().smoothScale( width, height ) );
+			else
+				result = pm;
+		}
+	}
     return result;
 }
 
