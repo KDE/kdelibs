@@ -1160,14 +1160,14 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  // ### To be done
 	  break;
 	}
-        
+
       case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
 	// close-quote | no-open-quote | no-close-quote ]+ | inherit
         {
             if (len>0)
             {
                 const QString str(value.stripWhiteSpace()); // ### Optimize
-	        if (str.left(4).lower() == "url(") 
+	        if (str.left(4).lower() == "url(")
                 {
 		    DOMString value(curP, endP - curP);
 		    value = khtml::parseURL(value);
@@ -1200,7 +1200,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
                     }
                     QString str = QConstString( const_cast<QChar*>( curP ), endVal - curP ).string();
                     str = str.replace(QRegExp("\\\\a"),"\n");
-                    parsedValue = new CSSPrimitiveValueImpl(DOMString(str), CSSPrimitiveValue::CSS_STRING);                  
+                    parsedValue = new CSSPrimitiveValueImpl(DOMString(str), CSSPrimitiveValue::CSS_STRING);
                 }
             }
             break;
@@ -1919,9 +1919,9 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 #ifdef CSS_DEBUG_BCKGR
 	  kdDebug(6080) << "CSS_PROP_BACKGROUND" << endl;
 #endif
-	  const int properties[5] = { CSS_PROP_BACKGROUND_COLOR, CSS_PROP_BACKGROUND_IMAGE,
-				      CSS_PROP_BACKGROUND_REPEAT, CSS_PROP_BACKGROUND_ATTACHMENT,
-				      CSS_PROP_BACKGROUND_POSITION};
+	  const int properties[5] = { CSS_PROP_BACKGROUND_IMAGE, CSS_PROP_BACKGROUND_REPEAT,
+                                      CSS_PROP_BACKGROUND_ATTACHMENT, CSS_PROP_BACKGROUND_POSITION,
+                                      CSS_PROP_BACKGROUND_COLOR };
 	  return parseShortHand(curP, endP, properties, 5);
 
 	  //return parseBackground(curP, endP);
@@ -1964,8 +1964,8 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_OUTLINE:
     	// [ 'outline-color' || 'outline-style' || 'outline-width' ] | inherit
 	{
-	  const int properties[3] = { CSS_PROP_OUTLINE_COLOR, CSS_PROP_OUTLINE_STYLE,
-				      CSS_PROP_OUTLINE_WIDTH };
+	  const int properties[3] = { CSS_PROP_OUTLINE_WIDTH, CSS_PROP_OUTLINE_STYLE,
+                                      CSS_PROP_OUTLINE_COLOR };
 	  return parseShortHand(curP, endP, properties, 3);
 	}
       case CSS_PROP_BORDER_COLOR:
