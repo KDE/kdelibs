@@ -56,7 +56,7 @@ public:
   /**
    * Default constructor.
    *
-   * @param host	destination host
+   * @param node	destination host
    * @param service	destination service to connect to
    * @param parent      the parent object for this object
    * @param name        the internal name for this object
