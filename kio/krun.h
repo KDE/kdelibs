@@ -183,7 +183,6 @@ protected:
 private:
 
   static QString libmapnotify();
-  static QString libkmapnotify;
 
 };
 

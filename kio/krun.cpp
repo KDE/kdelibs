@@ -403,12 +403,10 @@ KRun::KRun( const KURL& _url, mode_t _mode, bool _is_local_file, bool _auto_dele
 
 }
 
-
-QString KRun::libkmapnotify("(none)");
-
-
 QString KRun::libmapnotify()
 {
+  static QString libkmapnotify("(none)");
+
   if (libkmapnotify != "(none)")
     return libkmapnotify;
 
