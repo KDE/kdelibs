@@ -323,8 +323,6 @@ void KApplication::init(bool GUIenabled)
     XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
 					PropModeReplace, (unsigned char *)&data, 1);
   }
-
-  captionLayout = CaptionAppLast;
 }
 
 static int my_system (const char *command) {
@@ -1076,71 +1074,32 @@ QString KApplication::caption() const
 QString KApplication::makeStdCaption( const QString &userCaption,
 	                              bool withAppName, bool modified ) const
 {
-  //
   // This string should be collected from a global object.
-  //
-  QString modString = i18n("**");
-  if( modified == true )
-  {
-    modified = modString.isNull() == true ? false : true;
-  }
+  QString mod = i18n("modified");
 
-  if( userCaption.isNull() == true )
-  {
-    if ( modified )
-      return QString("%1 %2").arg(modString).arg(caption());
-    else
-      return( caption() );
-  }
+  // If the translated version of 'modified' is not available, use '*'.
+  if (!mod)
+    mod = "*";
 
+  QString s;
 
-  // WABA:
-  // Always put the "userCaption" in as last arg because it can
-  // can contain the text "%1" or "%2" which will mess up the rest
-  // of the arguments.
+  // If the user supplied a caption, put that first.
+  if (!!userCaption)
+    s = userCaption;
 
-  if( withAppName == true )
-  {
-    if( captionLayout == CaptionAppLast )
-    {
-      if( modified == true )
-      {
-	// userCaption must be last arg!!!
-	return( QString("%1 %3 - %2").arg(modString).
-		arg(caption()).arg(userCaption)); // useCaption last!!!
-      }
-      else {
+  // If the document is modified, add '[modified]'.
+  if (modified)
+    s += " [" + mod + "]";
 
-	// userCaption must be last arg!!!	
-	return( QString("%2 - %1").arg(caption()).arg(userCaption));
-      }
-    }
-    else if( captionLayout == CaptionAppFirst )
-    {
-      if( modified == true )
-      {
+  // Add the application name if:
+  // User asked for it and the app name (caption()) is not empty
+  // OR
+  // The user-supplied caption is empty.
 
-	// userCaption must be last!!!
-	return( QString("%1: %2 %3").arg(caption()).arg(modString).
-		arg(userCaption) );
-      }
-      else
-      {
-	// userCaption must be last!!!
-	return( QString("%1: %2").arg(caption()).arg(userCaption) );
-      }
-    }
-  }
+  if ((withAppName && !!caption()) || !userCaption)
+    s += " - " + caption();
 
-  if( modified == true )
-  {
-    // userCaption must be last!!!
-    return( QString("%1 %2").arg(modString).arg(userCaption) );
-  }
-  else
-  {
-    return( userCaption );
-  }
+  return s;
 }
 
 void KApplication::kdisplaySetPalette()
