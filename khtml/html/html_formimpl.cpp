@@ -1336,6 +1336,8 @@ void HTMLInputElementImpl::attach()
     case IMAGE:
         if (!getAttribute(ATTR_WIDTH).isNull())
             addCSSLength(CSS_PROP_WIDTH, getAttribute(ATTR_WIDTH));
+        if (!getAttribute(ATTR_HEIGHT).isNull())
+            addCSSLength(CSS_PROP_HEIGHT, getAttribute(ATTR_HEIGHT));
     default:
         break;
     };
