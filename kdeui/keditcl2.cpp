@@ -60,10 +60,9 @@ void KEdit::search(){
   // If we already searched / replaced something before make sure it shows
   // up in the find dialog line-edit.
 
-//   QString string;
-//   string = srchdialog->getText();
-//   if(string.isEmpty())
-//     srchdialog->setText(pattern);
+  QString string;
+  string = srchdialog->getText();
+  srchdialog->setText(string.isEmpty() ? pattern : string);
 
   this->deselect();
   last_search = NONE;
@@ -257,9 +256,8 @@ void KEdit::replace()
     connect(replace_dialog,SIGNAL(done()),this,SLOT(replacedone_slot()));
   }
 
-//   QString string = replace_dialog->getText();
-//   if(string.isEmpty())
-//     replace_dialog->setText(pattern);
+  QString string = replace_dialog->getText();
+  replace_dialog->setText(string.isEmpty() ? pattern : string);
 
 
   this->deselect();
@@ -631,6 +629,7 @@ class KEdFind::KEdFindPrivate
 public:
     KEdFindPrivate( QWidget *parent ) {
 	combo = new KHistoryCombo( parent, "value" );
+	combo->setMaxCount( 20 ); // just some default
     }
     ~KEdFindPrivate() {
 	delete combo;
@@ -683,6 +682,7 @@ void KEdFind::slotCancel( void )
 {
   emit done();
   d->combo->clearEdit();
+  KDialogBase::slotCancel();
 }
 
 
@@ -746,6 +746,9 @@ public:
     KEdReplacePrivate( QWidget *parent ) {
 	searchCombo = new KHistoryCombo( parent, "value" );
 	replaceCombo = new KHistoryCombo( parent, "replace_value" );
+
+	searchCombo->setMaxCount( 20 ); // just some defaults
+	replaceCombo->setMaxCount( 20 );
     }
     ~KEdReplacePrivate() {
 	delete searchCombo;
@@ -809,6 +812,7 @@ void KEdReplace::slotCancel( void )
   emit done();
   d->searchCombo->clearEdit();
   d->replaceCombo->clearEdit();
+  KDialogBase::slotCancel();
 }
 
 
