@@ -2145,8 +2145,14 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
 
 void KApplication::invokeMailer(const KURL &mailtoURL, const QCString& startup_id )
 {
-   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
+    return invokeMailer( mailtoURL, startup_id, false);
+}
+
+void KApplication::invokeMailer(const KURL &mailtoURL, const QCString& startup_id, bool allowAttachments )
+{
+   QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body;
    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
+   QStringList attachURLs;
    for (QStringList::Iterator it = queries.begin(); it != queries.end(); ++it)
    {
      QString q = (*it).lower();
@@ -2154,19 +2160,22 @@ void KApplication::invokeMailer(const KURL &mailtoURL, const QCString& startup_i
        subject = KURL::decode_string((*it).mid(8));
      else
      if (q.startsWith("cc="))
-       cc = KURL::decode_string((*it).mid(3));
+       cc = cc.isEmpty()? KURL::decode_string((*it).mid(3)): cc + ',' + KURL::decode_string((*it).mid(3));
      else
      if (q.startsWith("bcc="))
-       bcc = KURL::decode_string((*it).mid(4));
+       bcc = bcc.isEmpty()? KURL::decode_string((*it).mid(4)): bcc + ',' + KURL::decode_string((*it).mid(4));
      else
      if (q.startsWith("body="))
        body = KURL::decode_string((*it).mid(5));
-     //else
-     //  if (q.startsWith("attach="))
-     //    attach = KURL::decode_string((*it).mid(7));
+     else
+     if (allowAttachments && q.startsWith("attach="))
+       attachURLs.push_back(KURL::decode_string((*it).mid(7)));
+     else
+     if (q.startsWith("to="))
+       address = address.isEmpty()? KURL::decode_string((*it).mid(3)): address + ',' + KURL::decode_string((*it).mid(3));
    }
 
-   invokeMailer( address, cc, bcc, subject, body, QString::null, QStringList(), startup_id );
+   invokeMailer( address, cc, bcc, subject, body, QString::null, attachURLs, startup_id );
 }
 
 void KApplication::invokeMailer(const QString &to, const QString &cc, const QString &bcc,

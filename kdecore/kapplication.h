@@ -481,7 +481,11 @@ public:
    * @param mailtoURL A mailto URL.
    * @param startup_id for app startup notification, "0" for none,
    *           "" ( empty string ) is the default
+   * @param allowAttachments whether attachments specified in mailtoURL should be honoured.
+               The default is false; do not honour requests for attachments.
    */
+  void invokeMailer( const KURL &mailtoURL, const QCString& startup_id, bool allowAttachments );
+  // KDE4 merge with above with allowAttachments = false
   void invokeMailer( const KURL &mailtoURL, const QCString& startup_id );
   // KDE4 merge with above with startup_id = ""
   void invokeMailer( const KURL &mailtoURL );
