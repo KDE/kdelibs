@@ -386,9 +386,26 @@ bool ReadWritePart::saveAs( const KURL & kurl )
   if (kurl.isMalformed())
       return false;
   m_url = kurl; // Store where to upload in saveToURL
-  // We haven't saved yet - provide a local file name
-  if ( m_file.isEmpty() )
-    m_file = tmpnam(0);
+  // Local file
+  if ( m_url.isLocalFile() )
+  {
+    if ( m_bTemp ) // get rid of a possible temp file first
+    {              // (happens if previous url was remote)
+      unlink( m_file.ascii() );
+      m_bTemp = false;
+    }
+    m_file = m_url.path();
+  }
+  else
+  { // Remote file
+    // We haven't saved yet, or we did but locally - provide a temp file
+    if ( m_file.isEmpty() || !m_bTemp )
+    {
+      m_file = tmpnam(0);
+      m_bTemp = true;
+    }
+    // otherwise, we already had a temp file
+  }
   return save(); // Save local file and upload local file
 }
 
