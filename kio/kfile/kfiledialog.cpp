@@ -1727,6 +1727,7 @@ void KFileDialog::setOperationMode( OperationMode mode )
     d->operationMode = mode;
     d->keepLocation = true;
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
+    d->okButton->setText( (mode == Saving) ? i18n("&Save") : "&OK" );
 }
 
 KFileDialog::OperationMode KFileDialog::operationMode() const
