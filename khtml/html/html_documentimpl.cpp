@@ -90,7 +90,7 @@ DOMString HTMLDocumentImpl::referrer() const
 DOMString HTMLDocumentImpl::domain() const
 {
     if ( m_domain.isEmpty() ) // not set yet (we set it on demand to save time and space)
-        const_cast<HTMLDocumentImpl *>(this)->m_domain = KURL(URL()).host(); // Initially set to the host
+        m_domain = KURL(URL()).host(); // Initially set to the host
     return m_domain;
 }
 

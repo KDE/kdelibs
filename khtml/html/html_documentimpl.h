@@ -87,7 +87,7 @@ protected slots:
      */
     void slotHistoryChanged();
 private:
-    DOMString m_domain;
+    mutable DOMString m_domain;
 };
 
 }; //namespace
