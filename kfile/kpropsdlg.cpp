@@ -225,7 +225,7 @@ void KPropertiesDialog::init (QWidget* parent, bool modal, bool autoShow)
   connect( m_tab, SIGNAL( cancelClicked() ), this, SLOT( slotCancel() ) );
 
   m_tab->resize(m_tab->sizeHint());
-  
+
   if (autoShow)
     {
       if (!modal)
@@ -821,6 +821,10 @@ bool KFilePropsPage::supports( KFileItemList /*_items*/ )
   return true;
 }
 
+// Don't do this at home
+void qt_enter_modal( QWidget *widget );
+void qt_leave_modal( QWidget *widget );
+
 void KFilePropsPage::applyChanges()
 {
   QString fname = properties->kurl().fileName();
@@ -850,7 +854,10 @@ void KFilePropsPage::applyChanges()
     connect( job, SIGNAL( renamed( KIO::Job *, const KURL &, const KURL & ) ),
              SLOT( slotFileRenamed( KIO::Job *, const KURL &, const KURL & ) ) );
     // wait for job
+    QWidget dummy(0,0,WType_Modal);
+    qt_enter_modal(&dummy);
     qApp->enter_loop();
+    qt_leave_modal(&dummy);
   }
   else
   {
@@ -1279,7 +1286,10 @@ void KFilePermissionsPropsPage::applyChanges()
     connect( job, SIGNAL( result( KIO::Job * ) ),
              SLOT( slotChmodResult( KIO::Job * ) ) );
     // Wait for job
+    QWidget dummy(0,0,WType_Modal);
+    qt_enter_modal(&dummy);
     qApp->enter_loop();
+    qt_leave_modal(&dummy);
   }
 }
 
