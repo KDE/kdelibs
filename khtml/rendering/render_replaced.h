@@ -62,12 +62,6 @@ public:
 
     virtual void position(InlineBox*, int, int, bool, int);
 
-    // Return before, after (offset set to max), or inside the replaced element,
-    // at @p offset
-    virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
-                                                     DOM::NodeImpl*& node, int & offset,
-						     SelPointState & );
-
     /** returns the lowest possible value the caret offset may have to
      * still point to a valid position.
      *
@@ -138,22 +132,6 @@ public:
 };
 
 extern bool allowWidgetPaintEvents;
-
-class RenderReplacedBlock : public RenderBlock
-{
-public:
-    RenderReplacedBlock(DOM::NodeImpl* node);
-
-    virtual const char *renderName() const { return "RenderReplacedBlock"; }
-
-protected:
-    virtual void calcMinMaxWidth();
-    virtual short intrinsicWidth() const { return m_intrinsicWidth; }
-    short calcObjectWidth( RenderObject *o, short width );
-    void setIntrinsicWidth(int w) {  m_intrinsicWidth = w; }
-    short m_intrinsicWidth;
-};
-
 
 }
 

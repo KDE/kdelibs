@@ -362,13 +362,15 @@ void RenderBox::paintBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             QRect fix(cx,cy,cw,ch);
             QRect ele(_tx+borderLeft(),_ty+borderTop(),w-vpab,h-hpab);
             QRect b = fix.intersect(ele);
+
+            //kdDebug() <<" ele is " << ele << " b is " << b << " fix is " << fix << endl;
             sx+=b.x()-cx;
             sy+=b.y()-cy;
             cx=b.x();cy=b.y();cw=b.width();ch=b.height();
         }
 
 
-        //kdDebug() << "cy="<<cy<< " ch="<<ch << " clipy=" << clipy << " cliph=" << cliph << " sx="<<sx << " sy="<<sy << endl;
+        ////kdDebug() << "cy="<<cy<< " ch="<<ch << " clipy=" << clipy << " cliph=" << cliph << " sx="<<sx << " sy="<<sy << endl;
 	int diff = clipy - cy;
 	if ( diff > 0 ) {
 	    cy += diff;
@@ -605,28 +607,39 @@ void RenderBox::calcWidth()
 
             return;
         }
-        else if (w.isVariable())
-        {
-//          kdDebug( 6040 ) << "variable" << endl;
-            m_marginLeft = ml.minWidth(cw);
-            m_marginRight = mr.minWidth(cw);
-            if (cw) m_width = cw - m_marginLeft - m_marginRight;
-
-//          kdDebug( 6040 ) <<  m_width <<"," << cw <<"," <<
-//              m_marginLeft <<"," <<  m_marginRight << endl;
-
-            if (isFloating()) {
-                if(m_width < m_minWidth) m_width = m_minWidth;
-                if(m_width > m_maxWidth) m_width = m_maxWidth;
-            }
-        }
         else
         {
-//          kdDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;
-            m_width = w.width(cw);
-            m_width += paddingLeft() + paddingRight() + style()->borderLeftWidth() + style()->borderRightWidth();
+            LengthType widthType, minWidthType, maxWidthType;
+            if (isReplaced()) {
+                m_width = w.width(cw);
+                m_width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+                widthType = w.type();
+            } else {
+                m_width = calcWidthUsing(Width, cw, widthType);
+                int minW = calcWidthUsing(MinWidth, cw, minWidthType);
+                int maxW = style()->maxWidth().value() == UNDEFINED ?
+                             m_width : calcWidthUsing(MaxWidth, cw, maxWidthType);
 
-            calcHorizontalMargins(ml,mr,cw);
+                if (m_width > maxW) {
+                    m_width = maxW;
+                    widthType = maxWidthType;
+                }
+                if (m_width < minW) {
+                    m_width = minW;
+                    widthType = minWidthType;
+                }
+            }
+
+            if (widthType == Variable) {
+    //          kdDebug( 6040 ) << "variable" << endl;
+                m_marginLeft = ml.minWidth(cw);
+                m_marginRight = mr.minWidth(cw);
+            }
+            else
+            {
+//              kdDebug( 6040 ) << "non-variable " << w.type << ","<< w.value << endl;
+                calcHorizontalMargins(ml,mr,cw);
+            }
         }
 
         if (cw && cw != m_width + m_marginLeft + m_marginRight && !isFloating() && !isInline())
@@ -642,6 +655,43 @@ void RenderBox::calcWidth()
     kdDebug( 6040 ) << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
     kdDebug( 6040 ) << "m_marginLeft=" << m_marginLeft << " m_marginRight=" << m_marginRight << endl;
 #endif
+}
+
+int RenderBox::calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType)
+{
+    int width = m_width;
+    Length w;
+    if (widthType == Width)
+        w = style()->width();
+    else if (widthType == MinWidth)
+        w = style()->minWidth();
+    else
+        w = style()->maxWidth();
+
+    lengthType = w.type();
+
+    if (lengthType == Variable) {
+        int marginLeft = style()->marginLeft().minWidth(cw);
+        int marginRight = style()->marginRight().minWidth(cw);
+        if (cw) width = cw - marginLeft - marginRight;
+
+        // size to max width?
+        if (isFloating() ||
+            style()->display() == COMPACT ||
+            style()->display() == INLINE_BLOCK) {
+            if (width < m_minWidth)
+                width = m_minWidth;
+            if (width > m_maxWidth)
+                width = m_maxWidth;
+        }
+    }
+    else
+    {
+        width = w.width(cw);
+        width += paddingLeft() + paddingRight() + borderLeft() + borderRight();
+    }
+
+    return width;
 }
 
 void RenderBox::calcHorizontalMargins(const Length& ml, const Length& mr, int cw)

@@ -75,6 +75,7 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
     case NONE:
         break;
     case INLINE:
+    case INLINE_BLOCK:
     case BLOCK:
         // In compat mode, if <td> has a display of block, build a table cell instead.
         // This corrects erroneous HTML.  A better fix would be to implement full-blown
@@ -100,9 +101,6 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
     case RUN_IN:
     case COMPACT:
         o = new (arena) RenderBlock(node);
-        break;
-    case INLINE_BLOCK:
-//        o = new (arena) RenderReplacedFlow(node);
         break;
     case TABLE:
     case INLINE_TABLE:
@@ -132,31 +130,31 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node,  RenderStyle* styl
 
 RenderObject::RenderObject(DOM::NodeImpl* node)
     : CachedObjectClient(),
-m_style( 0 ),
-m_node( node ),
-m_parent( 0 ),
-m_previous( 0 ),
-m_next( 0 ),
-m_verticalPosition( PositionUndefined ),
-m_layouted( false ),
-m_unused( false ),
-m_minMaxKnown( false ),
-m_floating( false ),
+      m_style( 0 ),
+      m_node( node ),
+      m_parent( 0 ),
+      m_previous( 0 ),
+      m_next( 0 ),
+      m_verticalPosition( PositionUndefined ),
+      m_layouted( false ),
+      m_unused( false ),
+      m_minMaxKnown( false ),
+      m_floating( false ),
 
-m_positioned( false ),
-m_overhangingContents( false ),
-m_relPositioned( false ),
-m_paintBackground( false ),
+      m_positioned( false ),
+      m_overhangingContents( false ),
+      m_relPositioned( false ),
+      m_paintBackground( false ),
 
-m_isAnonymous( node->isDocumentNode() ),
-m_recalcMinMax( false ),
-m_isText( false ),
-m_inline( true ),
+      m_isAnonymous( node->isDocumentNode() ),
+      m_recalcMinMax( false ),
+      m_isText( false ),
+      m_inline( true ),
 
-m_replaced( false ),
-m_mouseInside( false ),
-m_hasFirstLine( false ),
-m_isSelectionBorder( false )
+      m_replaced( false ),
+      m_mouseInside( false ),
+      m_hasFirstLine( false ),
+      m_isSelectionBorder( false )
 {
   assert( node );
 }

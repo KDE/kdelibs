@@ -116,13 +116,6 @@ short RenderButton::baselinePosition( bool f ) const
 // -------------------------------------------------------------------------------
 
 
-RenderCustomButton::RenderCustomButton(HTMLGenericFormElementImpl *element)
-    : RenderReplacedBlock(element)
-{
-}
-
-// -------------------------------------------------------------------------------
-
 RenderCheckBox::RenderCheckBox(HTMLInputElementImpl *element)
     : RenderButton(element)
 {

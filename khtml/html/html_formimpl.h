@@ -186,7 +186,6 @@ public:
 
     DOMString type() const;
     typeEnum buttonType() const { return m_type; }
-    virtual void attach();
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void defaultEventHandler(EventImpl *evt);
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool);

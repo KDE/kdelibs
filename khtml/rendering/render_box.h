@@ -29,6 +29,8 @@
 
 namespace khtml {
 
+enum WidthType { Width, MinWidth, MaxWidth };
+
 class RenderBox : public RenderContainer
 {
 
@@ -106,6 +108,10 @@ public:
     virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
 
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
+
+private:
+
+    int calcWidthUsing(WidthType widthType, int cw, LengthType& lengthType);
 
 protected:
     virtual void paintBoxDecorations(QPainter *p,int _x, int _y,

@@ -217,8 +217,6 @@ public:
     bool isRelPositioned() const { return m_relPositioned; }
     bool isText() const { return m_isText; }
     bool isInline() const { return m_inline; }
-    bool isCompact() const { return style()->display() == COMPACT; }
-    bool isRunIn() const { return style()->display() == RUN_IN; }
     bool mouseInside() const;
     bool isReplaced() const { return m_replaced; }
     bool shouldPaintBackgroundOrBorder() const { return m_paintBackground; }

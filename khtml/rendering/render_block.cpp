@@ -678,14 +678,15 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // FIXME: We only deal with one compact at a time.  It is unclear what should be
         // done if multiple contiguous compacts are encountered.  For now we assume that
         // compact A followed by another compact B should simply be treated as block A.
-        if (child->isCompact() && !compactChild && (child->childrenInline() || child->isReplaced())) {
+        if (child->style()->display() == COMPACT && !compactChild && (child->childrenInline() || child->isReplaced())) {
             // Get the next non-positioned/non-floating RenderBlock.
             RenderObject* next = child->nextSibling();
             RenderObject* curr = next;
             while (curr && curr->isFloatingOrPositioned())
                 curr = curr->nextSibling();
             if (curr && curr->isRenderBlock() && !curr->isAnonymous() &&
-                !curr->isCompact() && !curr->isRunIn()) {
+                curr->style()->display() != COMPACT &&
+                curr->style()->display() != RUN_IN) {
                 curr->calcWidth(); // So that horizontal margins are correct.
                 // Need to compute margins for the child as though it is a block.
                 child->style()->setDisplay(BLOCK);
@@ -722,13 +723,14 @@ void RenderBlock::layoutBlockChildren( bool relayoutChildren )
         // See if we have a run-in element with inline children.  If the
         // children aren't inline, then just treat the run-in as a normal
         // block.
-        if (child->isRunIn() && (child->childrenInline() || child->isReplaced())) {
+        if (child->style()->display() == RUN_IN && (child->childrenInline() || child->isReplaced())) {
             // Get the next non-positioned/non-floating RenderBlock.
             RenderObject* curr = child->nextSibling();
             while (curr && curr->isFloatingOrPositioned())
                 curr = curr->nextSibling();
             if (curr && (curr->isRenderBlock() && !curr->isAnonymous() && curr->childrenInline() &&
-                         !curr->isCompact() && !curr->isRunIn())) {
+                         curr->style()->display() != COMPACT &&
+                         curr->style()->display() != RUN_IN)) {
                 // The block acts like an inline, so just null out its
                 // position.
                 child->setInline(true);
@@ -2332,9 +2334,9 @@ const char *RenderBlock::renderName() const
         return "RenderBlock (anonymous)";
     if (isRelPositioned())
         return "RenderBlock (relative positioned)";
-    if (style() && isCompact())
+    if (style() && style()->display() == COMPACT)
         return "RenderBlock (compact)";
-    if (style() && isRunIn())
+    if (style() && style()->display() == RUN_IN)
         return "RenderBlock (run-in)";
     return "RenderBlock";
 }

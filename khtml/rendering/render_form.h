@@ -267,15 +267,6 @@ private:
     KSpell *m_spell;
     KAction *m_spellAction;
 };
-// -------------------------------------------------------------------------
-
-class RenderCustomButton : public RenderReplacedBlock
-{
-public:
-    RenderCustomButton(DOM::HTMLGenericFormElementImpl *element);
-
-    virtual const char *renderName() const { return "RenderCustomButton"; }
-};
 
 // -------------------------------------------------------------------------
 

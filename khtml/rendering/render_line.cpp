@@ -143,7 +143,7 @@ bool InlineFlowBox::onEndChain(RenderObject* endObject)
 {
     if (!endObject)
         return false;
-    
+
     if (endObject == object())
         return true;
 
@@ -167,12 +167,12 @@ void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* en
     bool includeRightEdge = false;
 
     RenderFlow* flow = static_cast<RenderFlow*>(object());
-    
+
     if (!flow->firstChild())
         includeLeftEdge = includeRightEdge = true; // Empty inlines never split across lines.
     else if (parent()) { // The root inline box never has borders/margins/padding.
         bool ltr = flow->style()->direction() == LTR;
-        
+
         // Check to see if all initial lines are unconstructed.  If so, then
         // we know the inline began on this line.
         if (!flow->firstLineBox()->isConstructed()) {
@@ -181,7 +181,7 @@ void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* en
             else if (!ltr && flow->lastLineBox() == this)
                 includeRightEdge = true;
         }
-    
+
         // In order to determine if the inline ends on this line, we check three things:
         // (1) If we are the last line and we don't have a continuation(), then we can
         // close up.
@@ -202,7 +202,7 @@ void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* en
                      prevOnLineExists() || onEndChain(endObject)))
                     includeLeftEdge = true;
             }
-            
+
         }
     }
 
@@ -224,12 +224,12 @@ int InlineFlowBox::placeBoxesHorizontally(int x)
 
     int startX = x;
     x += borderLeft() + paddingLeft();
-    
+
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         if (curr->object()->isText()) {
             InlineTextBox* text = static_cast<InlineTextBox*>(curr);
             text->setXPos(x);
-#warning fixme
+#warning FIXME
             //x += text->width();
         }
         else {
@@ -249,7 +249,7 @@ int InlineFlowBox::placeBoxesHorizontally(int x)
             }
             if (curr->object()->isInlineFlow()) {
                 InlineFlowBox* flow = static_cast<InlineFlowBox*>(curr);
-                if (curr->object()->isCompact()) {
+                if (curr->object()->style()->display() == COMPACT) {
                     int ignoredX = x;
                     flow->placeBoxesHorizontally(ignoredX);
                 }
@@ -259,7 +259,7 @@ int InlineFlowBox::placeBoxesHorizontally(int x)
                     x += flow->marginRight();
                 }
             }
-            else if (!curr->object()->isCompact()) {
+            else if (curr->object()->style()->display() != COMPACT ) {
                 x += curr->object()->marginLeft();
                 curr->setXPos(x);
                 x += curr->width() + curr->object()->marginRight();
@@ -284,7 +284,7 @@ void InlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
     while (curr && !curr->element())
         curr = curr->container();
     bool strictMode = (curr && curr->element()->getDocument()->inStrictMode());
-    
+
     computeLogicalBoxHeights(maxPositionTop, maxPositionBottom, maxAscent, maxDescent, strictMode);
 
     if (maxAscent + maxDescent < kMax(maxPositionTop, maxPositionBottom))
@@ -300,7 +300,7 @@ void InlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
     // Shrink boxes with no text children in quirks and almost strict mode.
     if (!strictMode)
         shrinkBoxesWithNoTextChildren(topPosition, bottomPosition);
-    
+
     heightOfBlock += maxHeight;
 }
 
@@ -354,11 +354,11 @@ void InlineFlowBox::computeLogicalBoxHeights(int& maxPositionTop, int& maxPositi
                 maxDescent = descent;
         }
     }
-    
+
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         if (curr->object()->isPositioned())
             continue; // Positioned placeholders don't affect calculations.
-        
+
         curr->setHeight(curr->object()->lineHeight(m_firstLine));
         curr->setBaseline(curr->object()->baselinePosition(m_firstLine));
         curr->setYPos(curr->object()->verticalPositionHint(m_firstLine));
@@ -389,11 +389,11 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
 {
     if (isRootInlineBox())
         setYPos(y + maxAscent - baseline());// Place our root box.
-    
+
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         if (curr->object()->isPositioned())
             continue; // Positioned placeholders don't affect calculations.
-        
+
         // Adjust boxes to use their real box y/height and not the logical height (as dictated by
         // line-height).
         if (curr->isInlineFlowBox())
@@ -410,7 +410,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
                 childAffectsTopBottomPos = false;
             curr->setYPos(curr->yPos() + y + maxAscent - curr->baseline());
         }
-        
+
         int newY = curr->yPos();
         int newHeight = curr->height();
         int newBaseline = curr->baseline();
@@ -424,7 +424,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
                             curr->object()->borderBottom() + curr->object()->paddingBottom();
                 newY -= curr->object()->borderTop() + curr->object()->paddingTop();
                 newBaseline += curr->object()->borderTop() + curr->object()->paddingTop();
-            }	
+            }
         }
         else {
             newY += curr->object()->marginTop();
@@ -463,7 +463,7 @@ void InlineFlowBox::shrinkBoxesWithNoTextChildren(int topPos, int bottomPos)
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         if (curr->object()->isPositioned())
             continue; // Positioned placeholders don't affect calculations.
-        
+
         if (curr->isInlineFlowBox())
             static_cast<InlineFlowBox*>(curr)->shrinkBoxesWithNoTextChildren(topPos, bottomPos);
     }
@@ -485,7 +485,7 @@ void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
     // Move x/y to our coordinates.
     _tx += m_x;
     _ty += m_y;
-    
+
     int w = width();
     int h = height();
 
@@ -553,7 +553,7 @@ static bool shouldDrawDecoration(RenderObject* obj)
                  !curr->element() || !curr->element()->containsOnlyWhitespace())) {
             shouldDraw = true;
             break;
-        }	
+        }
     }
     return shouldDraw;
 }
