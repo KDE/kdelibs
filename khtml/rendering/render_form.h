@@ -50,8 +50,9 @@ namespace khtml {
 
 // -------------------------------------------------------------------------
 
-class RenderFormElement : public RenderWidget
+class RenderFormElement : public khtml::RenderWidget
 {
+    Q_OBJECT
 public:
     RenderFormElement(QScrollView *view,
                       HTMLFormElementImpl *form);
@@ -126,6 +127,7 @@ protected:
 // generic class for all buttons
 class RenderButton : public RenderFormElement
 {
+    Q_OBJECT
 public:
     RenderButton(QScrollView *view,
                  HTMLFormElementImpl *form);
