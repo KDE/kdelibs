@@ -2926,6 +2926,9 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		if ((event->type() == QEvent::Show) && !animationTimer->isActive())
 		{
 			animationTimer->start( 50, false );
+		} else if ((event->type() == QEvent::Hide) && animationTimer->isActive())
+		{
+			animationTimer->stop();
 		}
 	}
 	return false;
