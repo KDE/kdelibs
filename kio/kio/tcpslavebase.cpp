@@ -34,6 +34,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <ksocks.h>
 #include <kdebug.h>
@@ -77,7 +78,7 @@ public:
 
   int status;
   int timeout;
-  int rblockSz;			// Size for reading blocks in readLine()
+  int rblockSz;      // Size for reading blocks in readLine()
   bool block;
   bool useSSLTunneling;
   bool needSSLHandShake;
@@ -169,9 +170,12 @@ ssize_t TCPSlaveBase::read(void *data, ssize_t len)
 }
 
 
-void TCPSlaveBase::setBlockSize(int sz) {
-	if (sz <= 0) sz = 1;
-	d->rblockSz = sz;
+void TCPSlaveBase::setBlockSize(int sz) 
+{
+  if (sz <= 0)
+    sz = 1;
+  
+  d->rblockSz = sz;
 }
 
 
@@ -182,84 +186,84 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 //   speed connections.  I moved 3 if statements out of the while loop
 //   so that the while loop is as small as possible.  (GS)
 
-	// let's not segfault!
-	if (!data) 
-		return -1;
+  // let's not segfault!
+  if (!data) 
+    return -1;
 
-	char tmpbuf[1024];   // 1kb temporary buffer for peeking
-	*data = 0;
-	int clen = 0;
-	char *buf = data;
-	int rc = 0;
+  char tmpbuf[1024];   // 1kb temporary buffer for peeking
+  *data = 0;
+  int clen = 0;
+  char *buf = data;
+  int rc = 0;
 
 if ((m_bIsSSL || d->usingTLS) && !d->useSSLTunneling) {       // SSL CASE
-	if ( d->needSSLHandShake )
-		(void) doSSLHandShake( true );
+  if ( d->needSSLHandShake )
+    (void) doSSLHandShake( true );
 
-	while (clen < len-1) {
-		rc = d->kssl->pending();
-		if (rc > 0) {   // Read a chunk
-			int bytes = rc;
-			if (bytes > d->rblockSz)
-				 bytes = d->rblockSz;
+  while (clen < len-1) {
+    rc = d->kssl->pending();
+    if (rc > 0) {   // Read a chunk
+      int bytes = rc;
+      if (bytes > d->rblockSz)
+         bytes = d->rblockSz;
 
-			rc = d->kssl->peek(tmpbuf, bytes);
-			if (rc <= 0) {
-				// FIXME: this doesn't cover rc == 0 case
-				return -1;
-			}
+      rc = d->kssl->peek(tmpbuf, bytes);
+      if (rc <= 0) {
+        // FIXME: this doesn't cover rc == 0 case
+        return -1;
+      }
 
-			bytes = rc;   // in case it contains no \n
-			for (int i = 0; i < rc; i++) {
-				if (tmpbuf[i] == '\n') {
-					bytes = i+1;
-					break;
-				}
-			}
+      bytes = rc;   // in case it contains no \n
+      for (int i = 0; i < rc; i++) {
+        if (tmpbuf[i] == '\n') {
+          bytes = i+1;
+          break;
+        }
+      }
 
-			if (bytes+clen >= len)   // don't read too much!
-				bytes = len - clen - 1;
+      if (bytes+clen >= len)   // don't read too much!
+        bytes = len - clen - 1;
 
-			rc = d->kssl->read(buf, bytes);
-			if (rc > 0) {
-				clen += rc;
-				buf += (rc-1);
-				if (*buf++ == '\n')
-					break;
-			} else {
-				// FIXME: different case if rc == 0;
-				return -1;
-			}
-		} else {        // Read a byte
-			rc = d->kssl->read(buf, 1);
-			if (rc <= 0) {
-				return -1;
-				// hm rc = 0 then
-				// SSL_read says to call SSL_get_error to see if
-				// this was an error.    FIXME
-			} else {
-				clen++;
-				if (*buf++ == '\n')
-					break;
-			}
-		}
-	}
+      rc = d->kssl->read(buf, bytes);
+      if (rc > 0) {
+        clen += rc;
+        buf += (rc-1);
+        if (*buf++ == '\n')
+          break;
+      } else {
+        // FIXME: different case if rc == 0;
+        return -1;
+      }
+    } else {        // Read a byte
+      rc = d->kssl->read(buf, 1);
+      if (rc <= 0) {
+        return -1;
+        // hm rc = 0 then
+        // SSL_read says to call SSL_get_error to see if
+        // this was an error.    FIXME
+      } else {
+        clen++;
+        if (*buf++ == '\n')
+          break;
+      }
+    }
+  }
 } else {                                                      // NON SSL CASE
-	while (clen < len-1) {
-		rc = KSocks::self()->read(m_iSock, buf, 1);
-		if (rc <= 0) {
-			// FIXME: this doesn't cover rc == 0 case
-			return -1;
-		} else {
-			clen++;
-			if (*buf++ == '\n')
-				break;
-		}
-	}
+  while (clen < len-1) {
+    rc = KSocks::self()->read(m_iSock, buf, 1);
+    if (rc <= 0) {
+      // FIXME: this doesn't cover rc == 0 case
+      return -1;
+    } else {
+      clen++;
+      if (*buf++ == '\n')
+        break;
+    }
+  }
 }
 
-	// Both cases fall through to here
-	*buf = 0;
+  // Both cases fall through to here
+  *buf = 0;
 return clen;
 }
 
@@ -462,10 +466,10 @@ void TCPSlaveBase::stopTLS()
 
 
 void TCPSlaveBase::setSSLMetaData() {
-	if (!(d->usingTLS || d->useSSLTunneling || m_bIsSSL))
-		return;
+  if (!(d->usingTLS || d->useSSLTunneling || m_bIsSSL))
+    return;
 
-	mOutgoingMetaData = d->savedMetaData;
+  mOutgoingMetaData = d->savedMetaData;
 }
 
 
@@ -559,17 +563,17 @@ KSSLCertificateHome::KSSLAuthAction aa;
   if (prompt || forcePrompt) {
      QStringList certs = KSSLCertificateHome::getCertificateList();
 
-	for (QStringList::Iterator it = certs.begin();
-				   it != certs.end();
-				   ++it) {
-		KSSLPKCS12 *pkcs =
-			KSSLCertificateHome::getCertificateByName(*it);
-		if (pkcs)
-		if (!pkcs->getCertificate() ||
-		    !pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient()) {
-			certs.remove(*it);
-		}
-	}
+  for (QStringList::Iterator it = certs.begin();
+           it != certs.end();
+           ++it) {
+    KSSLPKCS12 *pkcs =
+      KSSLCertificateHome::getCertificateByName(*it);
+    if (pkcs)
+    if (!pkcs->getCertificate() ||
+        !pkcs->getCertificate()->x509V3Extensions().certTypeSSLClient()) {
+      certs.remove(*it);
+    }
+  }
 
         if (certs.isEmpty()) return;  // we had nothing else, and prompt failed
 
@@ -711,9 +715,9 @@ int TCPSlaveBase::verifyCertificate()
     QString theurl = QString(m_sServiceName)+"://"+ourHost+":"+QString::number(m_iPort);
 
    if (!hasMetaData("ssl_militant") || metaData("ssl_militant") == "FALSE")
-	   d->militantSSL = false;
+     d->militantSSL = false;
    else if (metaData("ssl_militant") == "TRUE")
-	   d->militantSSL = true;
+     d->militantSSL = true;
 
     if (!d->cc) d->cc = new KSSLCertificateCache;
 
@@ -768,9 +772,9 @@ int TCPSlaveBase::verifyCertificate()
 
       //  - validation code
       if (ksv != KSSLCertificate::Ok || !_IPmatchesCN) {
-	 if (d->militantSSL) {
-	       return -1;
-	 }
+   if (d->militantSSL) {
+         return -1;
+   }
 
          if (cp == KSSLCertificateCache::Unknown ||
              cp == KSSLCertificateCache::Ambiguous) {
@@ -889,8 +893,8 @@ int TCPSlaveBase::verifyCertificate()
           setMetaData("ssl_action", "accept");
         } else {
           /*
-	  if (d->militantSSL) {
-	          return -1;
+    if (d->militantSSL) {
+            return -1;
           }
           result = messageBox(WarningYesNo,
                               i18n("The certificate is valid but does not appear to have been assigned to this server.  Do you wish to continue loading?"),
@@ -909,9 +913,9 @@ int TCPSlaveBase::verifyCertificate()
                     // icon on the toolbar, and can investigate with the RMB
         }
       } else {
-	if (d->militantSSL) {
-		return -1;
-	}
+  if (d->militantSSL) {
+    return -1;
+  }
         if (cp == KSSLCertificateCache::Accept) {
            if (certAndIPTheSame) {    // success
              rc = 1;
@@ -1068,65 +1072,80 @@ bool TCPSlaveBase::isConnectionValid()
     struct timeval tv;
     tv.tv_usec = 0;
     tv.tv_sec = 0;
-    int retval = select(m_iSock+1, &rdfs, NULL, NULL, &tv);
-    // retval ==  0 ==> Connection Idle
-    // retval >=  1 ==> Connection Active
+    int retval = KSocks::self()->select(m_iSock+1, &rdfs, NULL, NULL, &tv);
+    
+    kdDebug(7029) << "TCPSlaveBase::isConnectionValid: select returned: "
+                  << retval << endl;
+                  
+    // A -1 does not necessarily mean error.  We have to check
+    // the value errno and make sure it is not EAGAIN since that
+    // is the expected result for a non-blocking socket.
     if ( retval == -1 )
-        return false;       // should really never happen, but just in-case...
-    else if ( retval > 0 )
     {
-      char buffer[100];
-      retval = recv(m_iSock, buffer, 80, MSG_PEEK);
-      // retval ==  0 ==> Connection closed
-      if ( retval == 0 )
-        return false;
+        if ( !d->block && errno != EAGAIN )
+            return false;
+            
+        kdDebug(7029) << "TCPSlaveBase::isConnectionValid: error = EAGAIN: TRUE" 
+                      << endl;
     }
+    else if ( retval > -1 )
+    {
+        struct sockaddr addr;
+        ksocklen_t addrlen = sizeof (addr);
+        retval = KSocks::self()->getpeername(m_iSock, &addr, &addrlen);
+        
+        kdDebug(7029) << "TCPSlaveBase::isConnectionValid: getpeername returned: "
+                      << retval << endl;
+                      
+        if ( retval == -1 )
+            return false;
+    }
+    
     return true;
 }
 
 
 bool TCPSlaveBase::waitForResponse( int t )
 {
-	fd_set rd;
-	struct timeval timeout;
+  fd_set rd;
+  struct timeval timeout;
 
-	if ( (m_bIsSSL || d->usingTLS) && 
-		!d->useSSLTunneling && 
-		d->kssl )
-		if (d->kssl->pending() > 0)
-				return true;
+  if ( (m_bIsSSL || d->usingTLS) && !d->useSSLTunneling && d->kssl )
+    if (d->kssl->pending() > 0)
+        return true;
 
-	FD_ZERO(&rd);
-	FD_SET(m_iSock, &rd);
+  FD_ZERO(&rd);
+  FD_SET(m_iSock, &rd);
 
-	timeout.tv_usec = 0;
-	timeout.tv_sec = t;
-	time_t startTime;
+  timeout.tv_usec = 0;
+  timeout.tv_sec = t;
+  time_t startTime;
 
-	int rc;
-	int n = t;
+  int rc;
+  int n = t;
 
 reSelect:
-	startTime = time(NULL);
-	rc = select(m_iSock+1, &rd, (fd_set *)0, (fd_set *)0, &timeout);
+  startTime = time(NULL);
+  rc = KSocks::self()->select(m_iSock+1, &rd, NULL, NULL, &timeout);
 
-	if (rc == -1)
-		return false;
+  if (rc == -1)
+    return false;
 
-	if (FD_ISSET(m_iSock, &rd))
-		return true;
+  if (FD_ISSET(m_iSock, &rd))
+    return true;
 
-	// Well it returned but it wasn't set.  Let's see if it
-	// returned too early (perhaps from an errant signal) and
-	// start over with the remaining time
-	int timeDone = time(NULL) - startTime;
-	if (timeDone < n) {
-		n -= timeDone;
-		timeout.tv_sec = n;
-		goto reSelect;
-	}
+  // Well it returned but it wasn't set.  Let's see if it
+  // returned too early (perhaps from an errant signal) and
+  // start over with the remaining time
+  int timeDone = time(NULL) - startTime;
+  if (timeDone < n) 
+  {
+    n -= timeDone;
+    timeout.tv_sec = n;
+    goto reSelect;
+  }
 
-	return false; // Timed out!
+  return false; // Timed out!
 }
 
 int TCPSlaveBase::connectResult()
@@ -1177,7 +1196,8 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     d->kssl->setPeerHost(msgHost);
 
     d->status = d->kssl->connect(m_iSock);
-    if (d->status < 0) {
+    if (d->status < 0) 
+    {
         closeDescriptor();
         if ( sendError )
             error( ERR_COULD_NOT_CONNECT, msgHost);
@@ -1187,7 +1207,8 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
     setMetaData("ssl_in_use", "TRUE");
 
     int rc = verifyCertificate();
-    if ( rc != 1 ) {
+    if ( rc != 1 ) 
+    {
         d->status = -1;
         closeDescriptor();
         if ( sendError )
@@ -1202,7 +1223,8 @@ bool TCPSlaveBase::doSSLHandShake( bool sendError )
 }
 
 
-bool TCPSlaveBase::userAborted() const {
+bool TCPSlaveBase::userAborted() const 
+{
    return d->userAborted;
 }
 
