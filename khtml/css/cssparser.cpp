@@ -2108,6 +2108,7 @@ QList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const QC
         }
         list.append(curP);
         list.append(nextP);
+        if ( last ) break;
         while(nextP->isSpace()) { // skip over WS between tokens
             nextP++;
             curP = nextP;
