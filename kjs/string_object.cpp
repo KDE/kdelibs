@@ -214,7 +214,7 @@ Value StringProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &arg
     RegExpObjectImp* regExpObj = static_cast<RegExpObjectImp*>(exec->interpreter()->builtinRegExp().imp());
     int **ovector = regExpObj->registerRegexp( reg, u );
     {
-      UString mstr = reg->match(u, -1, 0L, ovector);
+      UString mstr = reg->match(u, -1, &pos, ovector);
       if (a0.isA(StringType))
         delete reg;
       if (id == Search) {
