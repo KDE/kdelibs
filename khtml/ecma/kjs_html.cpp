@@ -34,6 +34,10 @@
 #include <dom/html_object.h>
 #include <dom_string.h>
 
+// ### HACK
+#include <xml/dom_docimpl.h>
+#include <khtmlview.h>
+
 #include <kjs/operations.h>
 #include "kjs_dom.h"
 #include "kjs_html.h"
@@ -142,8 +146,6 @@ const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
 
 KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 {
-  DOM::HTMLDocument doc = part->htmlDocument();
-
   KJSO result;
 
   if (p == "title")
@@ -157,7 +159,8 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
   else if (p == "body")
     result = getDOMNode(doc.body());
   else if (p == "location")
-    result = new Location(part);
+    #warning "HACK HACK HACK HACK"
+    result = new Location( static_cast<DOM::DocumentImpl *>( doc.handle() )->view()->part() );
   else if (p == "images")
     result = new HTMLDocFunction(doc, HTMLDocFunction::Images);
   else if (p == "applets")
@@ -201,8 +204,6 @@ KJSO KJS::HTMLDocument::tryGet(const UString &p) const
 
 void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
 {
-  DOM::HTMLDocument doc = part->htmlDocument();
-
   if (p == "title")
     doc.setTitle(v.toString().value().string());
   else if (p == "body")
@@ -216,8 +217,8 @@ void KJS::HTMLDocument::tryPut(const UString &p, const KJSO& v)
 }
 
 DOM::Node HTMLDocument::toNode() const
-{ 
-  return part->htmlDocument();
+{
+  return doc;
 }
 
 const TypeInfo KJS::HTMLElement::info = { "HTMLElement", HostType,

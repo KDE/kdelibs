@@ -49,14 +49,14 @@ namespace KJS {
 
   class HTMLDocument : public NodeObject {
   public:
-    HTMLDocument(KHTMLPart *p) : part(p) { }
+    HTMLDocument(const DOM::HTMLDocument &d) : doc(d) { }
     virtual KJSO tryGet(const UString &p) const;
     virtual void tryPut(const UString &p, const KJSO& v);
     virtual DOM::Node toNode() const;
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
   private:
-    KHTMLPart *part;
+    DOM::HTMLDocument doc;
   };
 
   class HTMLElement : public NodeObject {

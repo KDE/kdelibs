@@ -60,7 +60,7 @@ extern "C" {
     KJS::Global global(Global::current());
 
     KJSO window(new KJS::Window(khtml->view()));
-    KJSO document(new KJS::HTMLDocument(khtml));
+    KJSO document(new KJS::HTMLDocument(khtml->htmlDocument()));
 
     window.put("document", document);
     global.put("window", window);
