@@ -281,6 +281,8 @@ void KAction::setAccel( int a )
     }
   }
 
+  if (d->m_kaccel)
+    d->m_kaccel->updateItem(name(), a);
   int len = containerCount();
   for( int i = 0; i < len; ++i )
     setAccel( i, a );
@@ -288,8 +290,6 @@ void KAction::setAccel( int a )
 
 void KAction::setAccel( int i, int a )
 {
-  if (d->m_kaccel)
-    d->m_kaccel->updateItem(name(), a);
   QWidget* w = container( i );
   if ( w->inherits( "QPopupMenu" ) )
     ((QPopupMenu*)w)->setAccel( a, menuId( i ) );
