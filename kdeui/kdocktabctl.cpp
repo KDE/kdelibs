@@ -349,14 +349,13 @@ void KDockTabCtl::setTabPos( KDockTabBar::TabPos pos )
   if ( layout ){
     delete layout;
   }
-  switch ( tabPos )
-    case KDockTabBar::TAB_TOP:{
+  switch ( tabPos ){
+    case KDockTabBar::TAB_TOP:
       layout = new QVBoxLayout( this );
       break;
-    case KDockTabBar::TAB_RIGHT:{
+    case KDockTabBar::TAB_RIGHT:
       layout = new QHBoxLayout( this );
       break;
-    }
   }
   layout->setResizeMode( QLayout::Minimum );
   layout->addWidget( tabs );
@@ -423,8 +422,8 @@ void KDockTabBarPainter::paintEvent( QPaintEvent* )
   if ( buffer->isNull() ) return;
   drawBuffer();
 
-  switch ( ((KDockTabBar*)parent())->tabPos )
-    case KDockTabBar::TAB_TOP:{
+  switch ( ((KDockTabBar*)parent())->tabPos ){
+    case KDockTabBar::TAB_TOP:
       bitBlt( this, 0, 0, buffer, 0, 0, width(), height() );
       break;
     case KDockTabBar::TAB_RIGHT:{
@@ -437,17 +436,16 @@ void KDockTabBarPainter::paintEvent( QPaintEvent* )
   }
 }
 
-void KDockTabBarPainter::resizeEvent( QResizeEvent *e )
+void KDockTabBarPainter::resizeEvent( QResizeEvent* )
 {
   delete buffer;
-  switch ( ((KDockTabBar*)parent())->tabPos )
-    case KDockTabBar::TAB_TOP:{
+  switch ( ((KDockTabBar*)parent())->tabPos ){
+    case KDockTabBar::TAB_TOP:
       buffer = new QPixmap( width(), height() );
       break;
-    case KDockTabBar::TAB_RIGHT:{
+    case KDockTabBar::TAB_RIGHT:
       buffer = new QPixmap( height(), width() );
       break;
-    }
   }
 }
 
@@ -461,19 +459,18 @@ void KDockTabBarPainter::drawBuffer()
   int H = 0;
   int shadowX = 1;
   int shadowY = 1;
-  switch ( ((KDockTabBar*)parent())->tabPos )
-    case KDockTabBar::TAB_TOP:{
+  switch ( ((KDockTabBar*)parent())->tabPos ){
+    case KDockTabBar::TAB_TOP:
       W = width();
       H = height();
       break;
-    case KDockTabBar::TAB_RIGHT:{
+    case KDockTabBar::TAB_RIGHT:
       shadowX = -1;
       c1 = colorGroup().dark();
       c2 = colorGroup().light();
       H = width();
       W = height();
       break;
-    }
   }
 
   QPainter paint;
@@ -506,13 +503,12 @@ void KDockTabBarPainter::drawBuffer()
 
     if ( mainData->at(k)->pix != 0L && iconShow ){
       QWMatrix m;
-      switch ( ((KDockTabBar*)parent())->tabPos )
-        case KDockTabBar::TAB_TOP:{
+      switch ( ((KDockTabBar*)parent())->tabPos ){
+        case KDockTabBar::TAB_TOP:
           break;
-        case KDockTabBar::TAB_RIGHT:{
+        case KDockTabBar::TAB_RIGHT:
           m.rotate( 90 );
           break;
-        }
       }
       paint.drawPixmap( x1+ 11, y1 + 2 , mainData->at(k)->pix->xForm(m) );
     }
