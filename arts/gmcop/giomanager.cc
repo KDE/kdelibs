@@ -312,8 +312,7 @@ void GIOManager::remove(IONotify *notify, int types)
 		}
 		else i++;
 	}
-	if(types & IOType::reentrant)
-		gioManagerBlocking->remove(notify, types);
+	gioManagerBlocking->remove(notify, types);
 }
 
 void GIOManager::addTimer(int milliseconds, TimeNotify *notify)

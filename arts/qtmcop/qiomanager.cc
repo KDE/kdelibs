@@ -232,7 +232,7 @@ void QIOManager::remove(IONotify *notify, int types)
 		}
 		else i++;
 	}
-	if(types & IOType::reentrant) qioManagerBlocking->remove(notify, types);
+	qioManagerBlocking->remove(notify, types);
 }
 
 void QIOManager::addTimer(int milliseconds, TimeNotify *notify)
