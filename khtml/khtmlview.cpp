@@ -177,6 +177,7 @@ public:
 
     int repaintTimerId;
     int scrollTimerId;
+    int scrollTiming;
     int scrollBy;
     bool complete;
     bool firstRelayout;
@@ -622,7 +623,8 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
-    if (_ke->state()&ShiftButton)
+    static int timings [][2] = { {100,1}, {50,1}, {30,1}, {20,1}, {20,2}, {20,4}, {20,6}, {0,0} };
+    if (_ke->state() & Qt::ShiftButton)
       switch(_ke->key())
         {
         case Key_Space:
@@ -630,6 +632,35 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
                 _ke->accept();
             else
                 scrollBy( 0, -clipper()->height() - offs );
+            break;
+
+        case Key_Down:
+        case Key_J:
+            if (!d->scrollTimerId) {
+                d->scrollTiming = 2;
+                d->scrollBy = timings[d->scrollTiming][1];
+                scrollBy( 0, d->scrollBy );
+                d->scrollTimerId = startTimer(timings[d->scrollTiming][0]);
+            } else if (timings[d->scrollTiming+1][0]) {
+                d->scrollBy = timings[++d->scrollTiming][1];
+                scrollBy( 0, d->scrollBy );
+                killTimer(d->scrollTimerId);
+                d->scrollTimerId = startTimer(timings[d->scrollTiming][0]);
+            }
+            break;
+
+        case Key_Up:
+        case Key_K:
+            if (d->scrollTimerId)
+                if (d->scrollTiming) {
+                    d->scrollBy = timings[--d->scrollTiming][1];
+                    killTimer(d->scrollTimerId);
+                    d->scrollTimerId = startTimer(timings[d->scrollTiming][0]);
+                } else {
+                    killTimer(d->scrollTimerId);
+                    d->scrollTimerId = 0;
+                }
+
             break;
         }
     else
@@ -639,18 +670,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_J:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else if (_ke->isAutoRepeat()) {
+            else {
                 if (d->scrollTimerId) {
                     killTimer(d->scrollTimerId);
                     d->scrollTimerId = 0;
                 }
                 scrollBy( 0, 10 );
-            } else if (!d->scrollTimerId) {
-                d->scrollBy = 1;
-                scrollBy( 0, d->scrollBy );
-                d->scrollTimerId = startTimer(30);
-            } else if (d->scrollBy < 10)
-                d->scrollBy++;
+            }
             break;
 
         case Key_Space:
@@ -665,13 +691,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_K:
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else if (d->scrollTimerId) {
-                if (--d->scrollBy <= 0) {
+            else {
+                if (d->scrollTimerId) {
                     killTimer(d->scrollTimerId);
                     d->scrollTimerId = 0;
                 }
-            } else
                 scrollBy( 0, -10 );
+            }
             break;
 
         case Key_Prior:
@@ -1481,7 +1507,7 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 {
 //    kdDebug() << "timer event " << e->timerId() << endl;
     if (e->timerId() == d->scrollTimerId) {
-        if (contentsY() + visibleHeight () >= contentsHeight() || d->scrollBy <= 0) {
+        if (contentsY() + visibleHeight () >= contentsHeight()) {
             kdDebug() << "timer event killing timer" << endl;
             killTimer(d->scrollTimerId);
             d->scrollTimerId = 0;
