@@ -29,6 +29,14 @@
 #include <stdio.h>
 #include <qlist.h>
 
+/**
+ * Memory allocator for large groups of small objects.
+ * This should be used for large groups of objects that are created and
+ * destroyed together. When used carefully for this purpose it is faster
+ * and more memory efficient than malloc.
+ * @author Waldo Bastian <bastian@kde.org>
+ * @version $Id$
+ */
 class KZoneAllocator
 {
 public:

@@ -1,4 +1,7 @@
 
+/**
+ * Template array type.
+ */
 template <class X>
 class kauto_array {
   X *ptr;

@@ -10,6 +10,11 @@
 
 #include <qshared.h>
 
+/**
+ * Reference counting for shared objects.
+ * @author Waldo Bastian <bastian@kde.org>
+ * @version $Id$
+ */
 class KShared {
 public:      
    KShared() : count(0) { }      
@@ -33,6 +38,8 @@ protected:
  *
  * KShared and KSharedPtr are preferred over QShared / 
  * QSharedPtr since they are more safe.
+ * @author Waldo Bastian <bastian@kde.org>
+ * @version $Id$
  */
 
 

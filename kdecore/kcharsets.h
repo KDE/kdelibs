@@ -157,6 +157,11 @@ protected:
 
 };
 
+/**
+ * Information about a font.
+ * @internal
+ * @deprecated
+ */
 struct KFontStruct {
     KFontStruct();
     KFontStruct & operator = (const QFont &f);
@@ -171,6 +176,11 @@ struct KFontStruct {
     bool scalable;
 };
 
+/**
+ * List of @ref KFontStruct objects.
+ * @internal
+ * @deprecated
+ */
 class KFontStructList : public QList<KFontStruct>
 {
 public:

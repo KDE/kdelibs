@@ -30,6 +30,12 @@ class KConfig;
 class QObject;
 class QWidget;
 
+/**
+ * Accelerator information, similar to an action.
+ * It is used internally by @ref KAccel.
+ * @internal
+ * @deprecated
+ */
 struct KKeyEntry {
     uint aCurrentKeyCode;
     uint aDefaultKeyCode;
