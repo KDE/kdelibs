@@ -266,11 +266,9 @@ bool BrowserRun::allowExecution( const QString &serviceType, const KURL &url )
     return ( KMessageBox::warningYesNo( 0, i18n( "Do you really want to execute '%1'? " ).arg( url.prettyURL() ) ) == KMessageBox::Yes );
 }
 
-//static
-BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename )
+static QString makeQuestion( const KURL& url, const QString& mimeType, const QString& suggestedFilename )
 {
     QString surl = KStringHandler::csqueeze( url.prettyURL() );
-    QString question;
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
     QString comment = mimeType;
 
@@ -283,11 +281,15 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
     // The strange order in the i18n() calls below is due to the possibility
     // of surl containing a '%'
     if ( suggestedFilename.isEmpty() )
-    {
-        question = i18n("Open '%2'?\nType: %1").arg(comment).arg(surl);
-    } else {
-        question = i18n("Open '%3'?\nName: %2\nType: %1").arg(comment).arg(suggestedFilename).arg(surl);
-    }
+        return i18n("Open '%2'?\nType: %1").arg(comment).arg(surl);
+    else
+        return i18n("Open '%3'?\nName: %2\nType: %1").arg(comment).arg(suggestedFilename).arg(surl);
+}
+
+//static
+BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename )
+{
+    QString question = makeQuestion( url, mimeType, suggestedFilename );
 
     // Text used for the open button
     QString openText = (offer && !offer->name().isEmpty())
@@ -300,6 +302,19 @@ BrowserRun::AskSaveResult BrowserRun::askSave( const KURL & url, KService::Ptr o
         QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
     return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
 }
+
+//static
+BrowserRun::AskSaveResult BrowserRun::askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename )
+{
+    QString question = makeQuestion( url, mimeType, suggestedFilename );
+
+    int choice = KMessageBox::questionYesNoCancel(
+        0L, question, QString::null,
+        KStdGuiItem::saveAs(), KStdGuiItem::open(),
+        QString::fromLatin1("askSave")+ mimeType ); // dontAskAgainName
+    return choice == KMessageBox::Yes ? Save : ( choice == KMessageBox::No ? Open : Cancel );
+}
+
 // Default implementation, overridden in KHTMLRun
 void BrowserRun::save( const KURL & url, const QString & suggestedFilename )
 {

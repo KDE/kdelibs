@@ -77,7 +77,24 @@ namespace KParts {
         bool hideErrorDialog() const;
 
         enum AskSaveResult { Save, Open, Cancel };
+        /**
+         * Ask the user whether to save or open a url in another application.
+         * @param url the URL in question
+         * @param offer the application that will be used to open the URL
+         * @param mimeType the mimetype of the URL
+         * @param suggestedFilename optional filename suggested by the server
+         * @return Save, Open or Cancel.
+         */
         static AskSaveResult askSave( const KURL & url, KService::Ptr offer, const QString& mimeType, const QString & suggestedFilename = QString::null );
+        /**
+         * Similar to askSave but for the case where the current application is
+         * able to embed the url itself (instead of passing it to another app).
+         * @param url the URL in question
+         * @param mimeType the mimetype of the URL
+         * @param suggestedFilename optional filename suggested by the server
+         * @return Save, Open or Cancel.
+         */
+        static AskSaveResult askEmbedOrSave( const KURL & url, const QString& mimeType, const QString & suggestedFilename = QString::null );
 
         // virtual so that KHTML can implement differently (HTML cache)
         virtual void save( const KURL & url, const QString & suggestedFilename );
