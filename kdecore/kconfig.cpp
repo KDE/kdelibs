@@ -43,7 +43,7 @@
 KConfig::KConfig( const QString& fileName,
                  bool bReadOnly, bool bUseKderc, const char *resType )
   : KConfigBase(), bGroupImmutable(false), bFileImmutable(false),
-    bForceGlobal(false), bForceDefault(false)
+    bForceGlobal(false)
 {
   // set the object's read-only status.
   setReadOnly(bReadOnly);
@@ -75,7 +75,7 @@ KConfig::KConfig( const QString& fileName,
 
 KConfig::KConfig(KConfigBackEnd *aBackEnd, bool bReadOnly)
     : bGroupImmutable(false), bFileImmutable(false),
-    bForceGlobal(false), bForceDefault(false)
+    bForceGlobal(false)
 {
   setReadOnly(bReadOnly);
   backEnd = aBackEnd;
@@ -210,52 +210,27 @@ void KConfig::putData(const KEntryKey &_key, const KEntry &_data, bool _checkGro
     return;
 
   // now either add or replace the data
-  if (!bForceDefault)
+  KEntry &entry = aEntryMap[_key];
+  if (entry.bImmutable)
+    return;
+
+  entry = _data;
+
+  entry.bGlobal |= bForceGlobal; // force to kdeglobals
+
+  if (_key.bDefault)
   {
-     KEntry &entry = aEntryMap[_key];
-
-     if (entry.bImmutable)
-        return;
-
-     entry = _data;
-     entry.bGlobal |= bForceGlobal; // force to kdeglobals
-  }
-
-  if (_key.bDefault || bForceDefault)
-  {
-     // Either:
-     // * We have added the data as default value
-     //   and now add it as normal value as well.
-     // Or:
-     // * We haven't added it at all
-     //   and now force it as default.
-
+     // We have added the data as default value,
+     // add it as normal value as well.
      KEntryKey key(_key);
-     key.bDefault = bForceDefault;
-     KEntry &entry = aEntryMap[key];
-     if (entry.bImmutable)
-        return;
-
-     entry = _data;
-     entry.bGlobal |= bForceGlobal; // force to kdeglobals
+     key.bDefault = false;
+     aEntryMap[key] = _data;
   }
 }
 
 KEntry KConfig::lookupData(const KEntryKey &_key) const
 {
-  KEntryMapConstIterator aIt;
-  if (!bForceDefault)
-  {
-    // This is the common path
-    aIt = aEntryMap.find(_key);
-  }
-  else
-  {
-    KEntryKey key(_key);
-    key.bDefault = true;
-    aIt = aEntryMap.find(key);
-  }
-
+  KEntryMapConstIterator aIt = aEntryMap.find(_key);
   if (aIt != aEntryMap.end())
   {
     const KEntry &entry = *aIt;

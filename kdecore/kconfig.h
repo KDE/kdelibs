@@ -135,23 +135,6 @@ public:
   bool forceGlobal() const { return bForceGlobal; }
 
   /**
-   * Forces all following read- and write-operations being
-   * performed on the default values instead of the actual
-   * values.
-   * @param force true to force usage of default values
-   * @see #forceDefault
-   */
-  void setForceDefault( bool force ) { bForceDefault = force; }
-
-  /**
-   * Returns true if all read- and write-operations are performed on
-   * the default entries instead of the actual entries.
-   * @return true if writing to default entries is active
-   * @see #setForceDefault
-   */
-  bool forceDefault() const { return bForceDefault; }
-
-  /**
    * Checks whether the config file contains the update @p id
    * as contained in @p updateFile. If not, it runs kconf_update
    * to update the config file.
@@ -259,7 +242,6 @@ private:
   bool bGroupImmutable : 1; // Current group is immutable.
   bool bFileImmutable  : 1; // Current file is immutable.
   bool bForceGlobal    : 1; // Apply everything to kdeglobals.
-  bool bForceDefault   : 1; // Operate on the default values
 protected:
   virtual void virtual_hook( int id, void* data );
 private:
