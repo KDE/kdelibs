@@ -439,9 +439,9 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Counter &c)
     m_type = CSSPrimitiveValue::CSS_COUNTER;
 }
 
-CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Rect &r)
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl( RectImpl *r)
 {
-    m_value.rect = r.handle();
+    m_value.rect = r;
     if (m_value.rect)
 	m_value.rect->ref();
     m_type = CSSPrimitiveValue::CSS_RECT;
@@ -675,6 +675,34 @@ RectImpl::~RectImpl()
     if (m_right) m_right->deref();
     if (m_bottom) m_bottom->deref();
     if (m_left) m_left->deref();
+}
+
+void RectImpl::setTop( CSSPrimitiveValueImpl *top )
+{
+    if( top ) top->ref();
+    if ( m_top ) m_top->deref();
+    m_top = top;
+}
+
+void RectImpl::setRight( CSSPrimitiveValueImpl *right )
+{
+    if( right ) right->ref();
+    if ( m_right ) m_right->deref();
+    m_right = right;
+}
+
+void RectImpl::setBottom( CSSPrimitiveValueImpl *bottom )
+{
+    if( bottom ) bottom->ref();
+    if ( m_bottom ) m_bottom->deref();
+    m_bottom = bottom;
+}
+
+void RectImpl::setLeft( CSSPrimitiveValueImpl *left )
+{
+    if( left ) left->ref();
+    if ( m_left ) m_left->deref();
+    m_left = left;
 }
 
 // -----------------------------------------------------------------

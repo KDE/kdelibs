@@ -1118,7 +1118,6 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 
       case CSS_PROP_SIZE:                 // <length>{1,2} | auto | portrait | landscape | inherit
       case CSS_PROP_QUOTES:               // [<string> <string>]+ | none | inherit
-      case CSS_PROP_CLIP:                 // <shape> | auto | inherit
       case CSS_PROP_TEXT_SHADOW:          // none | [<color> || <length> <length> <length>? ,]*
 	//    [<color> || <length> <length> <length>?] | inherit
       case CSS_PROP_CONTENT:              // [ <string> | <uri> | <counter> | attr(X) | open-quote |
@@ -1145,6 +1144,66 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
 	  // ### To be done
 	  break;
 	}
+
+      case CSS_PROP_CLIP:                 // <shape> | auto | inherit
+      {
+	  int i;
+	  if ( cssval && cssval->id == CSS_VAL_AUTO )
+	      parsedValue = new CSSPrimitiveValueImpl( cssval->id );
+	  else {
+	      // only shape in CSS2 is rect( top right bottom left )
+	      QString str = QConstString( const_cast<QChar*>( curP ), endP - curP ).string();
+	      str = str.simplifyWhiteSpace();
+	      if ( str.find( "rect", 0, false ) != 0 )
+		  break;
+	      int pos = str.find( '(', 4 );
+	      int end = str.findRev( ')' );
+	      if ( end <= pos )
+		  break;
+	      str = str.mid( pos + 1, end - pos - 1 );
+
+	      pos = 0;
+	      RectImpl *rect = new RectImpl();
+	      for ( i = 0; i < 4; i++ ) {
+		  int comma;
+		  if ( i < 3 )
+		      comma = str.find( ',', pos );
+		  else
+		      comma = str.length() - 1;
+		  const QChar *start = str.unicode() + pos;
+		  const QChar *end = str.unicode() + comma;
+		  if ( start >= end )
+		      goto cleanup;
+		  CSSPrimitiveValueImpl *length = parseUnit( start, end, LENGTH );
+		  if ( !length )
+		      goto cleanup;
+		  switch ( i ) {
+		      case 0:
+			  rect->setTop( length );
+			  break;
+		      case 1:
+			  rect->setRight( length );
+			  break;
+		      case 2:
+			  rect->setBottom( length );
+			  break;
+		      case 3:
+			  rect->setLeft( length );
+			  break;
+		  }
+		  pos = comma + 1;
+	      }    
+	      parsedValue = new CSSPrimitiveValueImpl( rect );
+	      qDebug(" passed rectangle parsing");
+	      break;
+	  
+	  cleanup:
+	      qDebug(" rectangle parsing failed, i=%d", i);
+	      delete rect;
+	  }
+	  break;
+      }
+
       /* Start of supported CSS properties with validation. This is needed for parseShortHand to work
        * correctly and allows optimization in khtml::applyRule(..)
        */
@@ -2271,7 +2330,7 @@ bool StyleBaseImpl::parse4Values( const QChar *curP, const QChar *endP, const in
     }
 }
 
-CSSValueImpl *
+CSSPrimitiveValueImpl *
 StyleBaseImpl::parseUnit(const QChar * curP, const QChar *endP, int allowedUnits)
 {
     // Everything should be lowercase -> preprocess

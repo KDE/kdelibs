@@ -151,7 +151,7 @@ public:
     CSSPrimitiveValueImpl(float num, CSSPrimitiveValue::UnitTypes type);
     CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveValue::UnitTypes type);
     CSSPrimitiveValueImpl(const Counter &c);
-    CSSPrimitiveValueImpl(const Rect &r);
+    CSSPrimitiveValueImpl( RectImpl *r);
     CSSPrimitiveValueImpl(const RGBColor &rgb);
     CSSPrimitiveValueImpl(const QColor &color);
 
@@ -212,6 +212,10 @@ public:
     CSSPrimitiveValueImpl *bottom() { return m_bottom; }
     CSSPrimitiveValueImpl *left() { return m_left; }
 
+    void setTop( CSSPrimitiveValueImpl *top );
+    void setRight( CSSPrimitiveValueImpl *right );
+    void setBottom( CSSPrimitiveValueImpl *bottom );
+    void setLeft( CSSPrimitiveValueImpl *left );
 protected:
     CSSPrimitiveValueImpl *m_top;
     CSSPrimitiveValueImpl *m_right;

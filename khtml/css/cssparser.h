@@ -37,6 +37,7 @@ namespace DOM {
     class CSSSelector;
     class CSSProperty;
     class CSSValueImpl;
+    class CSSPrimitiveValueImpl;
     class CSSStyleDeclarationImpl;
     class CSSRuleImpl;
     class CSSStyleRuleImpl;
@@ -171,7 +172,7 @@ public:
 	};
 
 	/* called by parseValue, parses numbers+units */
-	CSSValueImpl *parseUnit(const QChar * curP, const QChar *endP, int allowedUnits);
+	CSSPrimitiveValueImpl *parseUnit(const QChar * curP, const QChar *endP, int allowedUnits);
 
 	CSSRuleImpl *parseAtRule(const QChar *&curP, const QChar *endP);
 	CSSStyleRuleImpl *parseStyleRule(const QChar *&curP, const QChar *endP);

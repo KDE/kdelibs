@@ -827,6 +827,26 @@ void CSSOrderedPropertyList::append(DOM::CSSStyleDeclarationImpl *decl, uint sel
 // -------------------------------------------------------------------------------------
 // this is mostly boring stuff on how to apply a certain rule to the renderstyle...
 
+static Length convertToLength( CSSPrimitiveValueImpl *primitiveValue, RenderStyle *style, QPaintDeviceMetrics *paintDeviceMetrics, bool *ok = 0 )
+{
+    Length l;
+    if ( !primitiveValue ) {
+	if ( *ok )
+	    *ok = false;
+    } else {
+	int type = primitiveValue->primitiveType();
+	if(type > CSSPrimitiveValue::CSS_PERCENTAGE && type < CSSPrimitiveValue::CSS_DEG)
+	    l = Length(computeLength(primitiveValue, style, paintDeviceMetrics), Fixed);
+	else if(type == CSSPrimitiveValue::CSS_PERCENTAGE)
+	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_PERCENTAGE)), Percent);
+	else if(type == CSSPrimitiveValue::CSS_NUMBER)
+	    l = Length(int(primitiveValue->getFloatValue(CSSPrimitiveValue::CSS_NUMBER)*100), Percent);
+	else if ( *ok )
+	    *ok = false;
+    }
+    return l;
+}
+
 void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e)
 {
     CSSValueImpl *value = prop->value();
@@ -2071,9 +2091,44 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
     }
 // rect
     case CSS_PROP_CLIP:
+    {
+	Length top;
+	Length right;
+	Length bottom;
+	Length left;
+	if ( value->valueType() == CSSValue::CSS_INHERIT ) {
+	    RenderStyle *inherited = e->parentNode()->style();
+	    top = inherited->clipTop();
+	    right = inherited->clipRight();
+	    bottom = inherited->clipBottom();
+	    left = inherited->clipLeft();
+	} else if ( !primitiveValue ) {
+	    break;
+	} else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RECT ) {
+	    RectImpl *rect = primitiveValue->getRectValue();
+	    if ( !rect )
+		break;
+	    top = convertToLength( rect->top(), style, paintDeviceMetrics );
+	    right = convertToLength( rect->right(), style, paintDeviceMetrics );
+	    bottom = convertToLength( rect->bottom(), style, paintDeviceMetrics );
+	    left = convertToLength( rect->left(), style, paintDeviceMetrics );
+	    
+	} else if ( primitiveValue->getIdent() != CSS_VAL_AUTO ) {
+	    break;
+	}
+// 	qDebug("setting top to %d", top.value );
+// 	qDebug("setting right to %d", right.value );
+// 	qDebug("setting bottom to %d", bottom.value );
+// 	qDebug("setting left to %d", left.value );
+	style->setClipTop( top );
+	style->setClipRight( right );
+	style->setClipBottom( bottom );
+	style->setClipLeft( left );
+	    
         // rect, ident
         break;
-
+    }
+    
 // lists
     case CSS_PROP_CONTENT:
         // list of string, uri, counter, attr, i
