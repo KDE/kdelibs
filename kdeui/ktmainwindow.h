@@ -28,21 +28,13 @@
  * KTMainWindow and - unlike old KTopLevelWidget - may, but do not
  * have to be deleted by you. KTMainWindow will handle that internaly.
  *
- * The behaviour of KTMainWindow has changed significantly compared to
- * earlier version. The widget now uses Qt-like geometry management. An
- * application programmer does not have to worry about calling or
- * overloading this function. The geometry management should be
- * transparent. The application must define it's minimum and maximum
- * size and the rest is handled by KTMainWindow.
- *
  * Height and width can be operated independantly from each other. Simply
  * define the minimum/maximum height/width of your main widget and
  * KTMainWindow will take this into account. For fixed size windows set
  * your main widget to a fixed size.
  *
- * Fixed aspect ratios (heightForWidth()) are and fixed width widgets
- * not supported yet. This will require interaction with the WM for
- * smooth a operation. It is beeing investigated.
+ * Fixed aspect ratios (heightForWidth()) and fixed width widgets are
+ * not supported.
  *
  * KTMainWindow will set icon, mini icon and caption, which it gets
  * from KApplication. It provides full session management, and will save
@@ -91,16 +83,16 @@ public:
     ~KTMainWindow();
 
     /** Deletes all KTMainWindows. This is a good thing to call before
-      * an applications wants to exit via kapp->quit(). Rationale: The
-      * destructors of main windows may want to delete other widgets
-      * as well. Now, if an application calls kapp->quit() then Qt
-      * will destroy all widgets in a somewhat random order which may
-      * result in double-free'ed memory (=segfault). Since not every
-      * program checks for QApplication::closingDown() before deleting
-      * a widget, calling KTMainWindow::deleteAll() before is a good
-      * and proper solution.
+	 * an applications wants to exit via kapp->quit(). Rationale: The
+	 * destructors of main windows may want to delete other widgets
+	 * as well. Now, if an application calls kapp->quit() then Qt
+	 * will destroy all widgets in a somewhat random order which may
+	 * result in double-free'ed memory (=segfault). Since not every
+	 * program checks for QApplication::closingDown() before deleting
+	 * a widget, calling KTMainWindow::deleteAll() before is a good
+	 * and proper solution.
      */
-  static void deleteAll();
+	static void deleteAll();
 
     /**
      * Add a toolbar to the widget.
@@ -127,7 +119,10 @@ public:
      *
      * Only one client widget can be handled at a time; multiple calls
      * of setView will cause only the last widget to be added to be
-     * properly handled.
+     * properly handled. The layout management will not start before this
+	 * function has been called. It increases the application start
+	 * speed to call this function after all bars have been registered. The
+	 * presence of the view widget is mandatory for the class to operate.
      *
      * The widget must have been created with this instance of
      * KTMainWindow as its parent.
@@ -155,6 +150,24 @@ public:
      * @ref #setView ().
      */
     void setFrameBorderWidth( int );
+
+	/**
+	 * Set the maximum number of wraps for a single block of
+	 * subsequent non-full-size tool bars. If more wraps would be
+	 * necessary to properly layout the tool bars the bars will extend
+	 * outside of the window. This behaviour is helpful when having
+	 * many toolbars on small displays. Not all toolbars are
+	 * accessible any longer but at least the main view keeps
+	 * reasonably visible and is not squished by all the tool
+	 * bars. Since the user cannot easyly distinguish between
+	 * full-size and non full-size bars, they should not be mixed when
+	 * using this function.  Technically there is no reason but it is
+	 * very confusing when some bars automatically wrap (full-size
+	 * bars) while other extend out of sight.  See @ref KTMLayout for
+	 * more details. The toolbar wrapping limitation is disabled by
+	 * default.
+	 */
+	void setMaximumToolBarWraps(unsigned wraps);
 
     /**
      * Returns a pointer to the toolbar with the specified ID.

@@ -16,6 +16,9 @@
     along with this library; see the file COPYING.LIB.  If not, write to
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
+
+    $Id$
+
 */
 
 #include <stdio.h>
@@ -31,6 +34,7 @@ KTMLayout::KTMLayout(QWidget *parent, int border, int space,
 {
 	topMenuBar = bottomMenuBar = statusBar = 0;
 	mainItem = 0;
+	maxWraps = (unsigned) -1;	// set to maximum value
 }
 
 void 
@@ -309,18 +313,22 @@ KTMLayout::hToolBarLayout(const QRect& rect, int& currY,
 	int currX = 0;
 	bool prevFullSize = false;
 	int currHeight = 0;
+	unsigned wraps = 0;
 	while (*li)
 	{
 		/* If the previous toolbar was not full width and the current one
 		 * is also not full width, we put them in the same line. If this is
 		 * not the case or the current one does not fit in the line anymore
-		 * we start a new line. */
+		 * we start a new line. If the maximum number of lines has been
+		 * reached the line is not wrapped. */
 		if (prevFullSize || (*li)->fullSize() ||
-			(currX + (*li)->maximumSizeHint().width() > rect.width()))
+			((currX + (*li)->maximumSizeHint().width() > rect.width()) &&
+			 (wraps < maxWraps)))
 		{
 			currY += currHeight;
 			currX = 0;
 			currHeight = 0;
+			wraps++;
 		}
 
 		int mw = rect.width();
@@ -329,12 +337,20 @@ KTMLayout::hToolBarLayout(const QRect& rect, int& currY,
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain width, this will be used. If no size has been requested
 			 * and the parent width is larger than the maximum width, we use
-			 * the maximum width. */
+			 * the maximum width. If the maximum wraps have been reached, the
+			 * toolbar extends anyhow out of the parent, so we can use it's
+			 * maximum width as well. */
 			if ((*li)->maxWidth() != -1)
 				mw = (*li)->maxWidth();
-			else if (rect.width() > (*li)->maximumSizeHint().width())
+			else if ((rect.width() > (*li)->maximumSizeHint().width()) ||
+					 (wraps >= maxWraps))
 				mw = (*li)->maximumSizeHint().width();
-		}	
+		}
+		else
+		{
+			// When a full-size bar has been seen the wrap counter is reset.
+			wraps = 0;
+		}
 
 		int hfw = (*li)->heightForWidth(mw);
 		if (hfw == 0)
@@ -362,18 +378,23 @@ KTMLayout::toolBarHeight(int rectw, const QList<KToolBar>& tbl) const
 	int currY = 0;
 	bool prevFullSize = false;
 	int currHeight = 0;
+	unsigned wraps = 0;
 	while (*li)
 	{
-		/* If the previous toolbar was not full width and the current one
-		 * is also not full width, we put them in the same line. If this is
-		 * not the case or the current one does not fit in the line anymore
-		 * we start a new line. */
+		/* If the previous toolbar was not full width and the current
+		 * one is also not full width, we put them in the same
+		 * line. If this is not the case or the current one does not
+		 * fit in the line anymore we start a new line. If the maximum
+		 * number of lines has been reached the line is not
+		 * wrapped. */
 		if (prevFullSize || (*li)->fullSize() ||
-			(currX + (*li)->maximumSizeHint().width() > rectw))
+			((currX + (*li)->maximumSizeHint().width() > rectw) &&
+			 (wraps < maxWraps)))
 		{
 			currY += currHeight;
 			currX = 0;
 			currHeight = 0;
+			wraps++;
 		}
 
 		int mw = rectw;
@@ -382,12 +403,20 @@ KTMLayout::toolBarHeight(int rectw, const QList<KToolBar>& tbl) const
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain width, this will be used. If no size has been requested
 			 * and the parent width is larger than the maximum width, we use
-			 * the maximum width. */
+			 * the maximum width. If the maximum wraps have been reached, the
+			 * toolbar extends anyhow out of the parent, so we can use it's
+			 * maximum width as well. */
 			if ((*li)->maxWidth() != -1)
 				mw = (*li)->maxWidth();
-			else if (rectw > (*li)->maximumSizeHint().width())
+			else if ((rectw > (*li)->maximumSizeHint().width()) ||
+					 (wraps >= maxWraps))
 				mw = (*li)->maximumSizeHint().width();
 		}	
+		else
+		{
+			// When a full-size bar has been seen the wrap counter is reset.
+			wraps = 0;
+		}
 
 		int hfw = (*li)->heightForWidth(mw);
 		if (hfw == 0)
@@ -413,6 +442,7 @@ KTMLayout::vToolBarLayout(const QRect& rect, int& currX,
 	int currY = 0;
 	bool prevFullSize = false;
 	int currWidth = 0;
+	unsigned wraps = 0;
 
 	while (*li)
 	{
@@ -421,11 +451,13 @@ KTMLayout::vToolBarLayout(const QRect& rect, int& currX,
 		 * column. If this is not the case or the current one does not
 		 * fit in the column anymore we start a new line. */
 		if (prevFullSize || (*li)->fullSize() ||
-			(currY + (*li)->maximumSizeHint().height() > rect.height()))
+			((currY + (*li)->maximumSizeHint().height() > rect.height()) &&
+			 (wraps < maxWraps)))
 		{
 			currX += currWidth;
 			currY = 0;
 			currWidth = 0;
+			wraps++;
 		}
 
 		int mh = rect.height();
@@ -434,13 +466,21 @@ KTMLayout::vToolBarLayout(const QRect& rect, int& currX,
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain height, this will be used. If no size has been requested
 			 * and the parent height is larger than the maximum height, we use
-			 * the maximum height. */
+			 * the maximum height. If the maximum wraps have been reached, the
+			 * toolbar extends anyhow out of the parent, so we can use it's
+			 * maximum height as well. */
 			if ((*li)->maxHeight() != -1)
 				mh = (*li)->maxHeight();
-			else if (rect.height() > (*li)->maximumSizeHint().height())
+			else if ((rect.height() > (*li)->maximumSizeHint().height()) ||
+					 (wraps >= maxWraps))
 				mh = (*li)->maximumSizeHint().height();
 		}
-		
+		else
+		{
+			// When a full-size bar has been seen the wrap counter is reset.
+			wraps = 0;
+		}
+
 		int wfh = (*li)->widthForHeight(mh);
 		if (wfh == 0)
 			wfh = (*li)->width();
@@ -467,6 +507,7 @@ KTMLayout::toolBarWidth(int recth, const QList<KToolBar>& tbl) const
 	int currY = 0;
 	bool prevFullSize = false;
 	int currWidth = 0;
+	unsigned wraps = 0;
 
 	while (*li)
 	{
@@ -475,11 +516,13 @@ KTMLayout::toolBarWidth(int recth, const QList<KToolBar>& tbl) const
 		 * column. If this is not the case or the current one does not
 		 * fit in the column anymore we start a new line. */
 		if (prevFullSize || (*li)->fullSize() ||
-			(currY + (*li)->maximumSizeHint().height() > recth))
+			((currY + (*li)->maximumSizeHint().height() > recth) &&
+			 (wraps < maxWraps)))
 		{
 			currX += currWidth;
 			currY = 0;
 			currWidth = 0;
+			wraps++;
 		}
 
 		int mh = recth;
@@ -488,11 +531,19 @@ KTMLayout::toolBarWidth(int recth, const QList<KToolBar>& tbl) const
 			/* If we are not in fullSize mode and the user has requested a
 			 * certain height, this will be used. If no size has been requested
 			 * and the parent height is larger than the maximum height, we use
-			 * the maximum height. */
+			 * the maximum height. If the maximum wraps have been reached, the
+			 * toolbar extends anyhow out of the parent, so we can use it's
+			 * maximum height as well.*/
 			if ((*li)->maxHeight() != -1)
 				mh = (*li)->maxHeight();
-			else if (recth > (*li)->maximumSizeHint().height())
+			else if ((recth > (*li)->maximumSizeHint().height()) ||
+					 (wraps >= maxWraps))
 				mh = (*li)->maximumSizeHint().height();
+		}
+		else
+		{
+			// When a full-size bar has been seen the wrap counter is reset.
+			wraps = 0;
 		}
 		
 		int wfh = (*li)->widthForHeight(mh);

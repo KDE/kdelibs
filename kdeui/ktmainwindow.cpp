@@ -542,6 +542,11 @@ void KTMainWindow::setFrameBorderWidth(int size){
 
 }
 
+void KTMainWindow::setMaximumToolBarWraps(unsigned wraps)
+{
+	layoutMgr->setMaximumWraps(wraps);
+}
+
 //Matthias
 bool KTMainWindow::canBeRestored(int number){
   if (!kapp->isRestored())
