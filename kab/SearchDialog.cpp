@@ -110,7 +110,7 @@ void SearchDialog::keySelected(int index)
 void SearchDialog::valueChanged(const QString& value)
 {
   // ############################################################################
-  L("SearchDialog::valueChanged: new value %s.\n", value);
+  L("SearchDialog::valueChanged: new value %s.\n", value.ascii());
   data=value;
   // ############################################################################
 }

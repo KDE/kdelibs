@@ -54,6 +54,7 @@
 #include "select.xbm"
 #include <kapp.h>
 #include <klocale.h>
+#include <kstddirs.h>
 
 const unsigned int AddressWidget::Grid=3;
 const unsigned int AddressWidget::ButtonSize=24;
