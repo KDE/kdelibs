@@ -598,6 +598,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
 			    scriptCode = new QChar[ 1024 ];
 			    scriptCodeSize = 0;
 			    scriptCodeMaxSize = 1024;
+			    tag = NoTag;
 			    parseComment(src);
 			
 			    return; // Finished parsing tag!

@@ -406,7 +406,6 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	// switch according to the element to insert
 	switch(id)
 	{
-	    // head elements in the body should be ignored.
 	case ID_HEAD:
 	    if(inBody)
 	    {
@@ -664,6 +663,11 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    if(!n->isInline())
 		popBlock(ID_H6);
 	    break;
+	case ID_OPTION:
+	    if (id == ID_OPTGROUP)
+		popBlock(ID_OPTION);
+	    break;
+	    // head elements in the body should be ignored.
 	default:
 	    if(current->isDocumentNode())
 	    {
