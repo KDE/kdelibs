@@ -26,6 +26,7 @@
 #include <qfont.h>
 #include "khtml_settings.h"
 #include <qwidget.h>
+#include <assert.h>
 
 #if 0
 class QFakeFontEngine : public QFontEngineXLFD
@@ -222,6 +223,16 @@ QFontDatabase::findFont( QFont::Script script, const QFontPrivate *fp,
     QFontCache::instance->insertEngine( key, fe );
     return fe;
 }
+
+int QFontEngineBox::leading() const
+{
+    // the original uses double and creates quite random results depending
+    // on the compiler flags
+    int l = ( _size * 15 + 50) / 100;
+    // only valid on i386 without -O2 assert(l == int(qRound(_size * 0.15)));
+    return (l > 0) ? l : 1;
+}
+
 #endif
 
 bool QFontDatabase::isBitmapScalable( const QString &,
