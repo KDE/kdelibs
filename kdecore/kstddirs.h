@@ -10,10 +10,6 @@
 #include <qdict.h>
 #include <qstringlist.h>
 
-#ifndef locate
-#define locate(x, y) KGlobal::dirs()->findResource(x, y)
-#endif
-
 /**
 * Site-independent access to standard KDE directories.
 *
@@ -244,5 +240,11 @@ public:
 	KStandardDirs& operator= ( const KStandardDirs& );
      
 };
+
+/**
+ * This function is just for convience. It simply calls 
+ * KGlobal::dirs()->findResource(type, filename)
+ **/
+QString locate( const QString& type, const QString& filename );
 
 #endif // SSK_KSTDDIRS_H

@@ -5,17 +5,21 @@
 * Generated:	Thu Mar  5 16:05:28 EST 1998
 */
 
-#include"kstddirs.h"
-#include"config.h"
+
+#include "config.h"
 
 #include <stdlib.h>
+#include <assert.h>
 
 #include <qdict.h>
 #include <qdir.h>
 #include <qfileinfo.h>
 #include <qstring.h>
 #include <qstringlist.h>
-#include <assert.h>
+
+#include "kstddirs.h"
+#include "kglobal.h"
+
 static int tokenize( QStringList& token, const QString& str,
 		const QString& delim );
 
@@ -301,4 +305,9 @@ void KStandardDirs::addKDEDefaults() {
     addResourceType("wallpaper", "share/wallpapers/");
     addResourceType("exe", "bin/");
     addResourceType("lib", "lib/");
+}
+
+QString locate( const QString& type,
+		const QString& filename ) {
+  return KGlobal::dirs()->findResource(type, filename);
 }
