@@ -1,9 +1,9 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 David Smith  <dsmith@algonet.se>
 
-	This class was inspired by a previous KURLCompletion by
-	Henner Zeller <zeller@think.de>
-	
+    This class was inspired by a previous KURLCompletion by
+    Henner Zeller <zeller@think.de>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License as published by the Free Software Foundation; either
@@ -49,9 +49,10 @@ public:
 	 * @li ExeCompletion - executables in $PATH or with full path.
 	 * @li FileCompletion - all files with full path or in dir(), URLs
 	 * are listed using KIO.
-	 * @li DirCompletion - as FileCompletion but only returns directories.
+	 * @li DirCompletion - Same as FileCompletion but only returns directories.
+	 * @li LocalPathCompletion - Same as FileCompletion but only for local urls (file:/).
 	 */
-	enum Mode { ExeCompletion=1, FileCompletion, DirCompletion };
+	enum Mode { ExeCompletion=1, FileCompletion, DirCompletion, LocalPathCompletion };
 
 	/**
 	 * Constructs a KURLCompletion object in FileCompletion mode.
@@ -88,7 +89,7 @@ public:
 	 * @param dir the current directory
 	 */
 	virtual void setDir(const QString &dir);
-	
+
 	/**
 	 * Returns the current directory.
 	 * @return the current directory
@@ -125,7 +126,7 @@ public:
 	 * @return true if environment vvariables will be replaced
 	 */
 	virtual bool replaceEnv() const;
-	
+
 	/**
 	 * Enables/disables completion and replacement (internally) of
 	 * environment variables in URLs. Default is enabled.
@@ -140,7 +141,7 @@ public:
 	 * @return true to replace tilde with the home directory
 	 */
 	virtual bool replaceHome() const;
-	
+
 	/**
 	 * Enables/disables completion of ~username and replacement
 	 * (internally) of ~username with the user's home directory.
@@ -177,7 +178,7 @@ private slots:
 private:
 
 	bool isAutoCompletion();
-	
+
 	bool userCompletion(const MyURL &url, QString *match);
 	bool envCompletion(const MyURL &url, QString *match);
 	bool exeCompletion(const MyURL &url, QString *match);
@@ -203,11 +204,11 @@ private:
 	               const QString &filter = QString::null,
 	               bool only_exe = false,
 	               bool no_hidden = false );
-	
+
 	void addMatches( QStringList * );
 	QString finished();
-	
-	void init(Mode mode);
+
+	void init();
 
 	void setListedURL(int compl_type /* enum ComplType */,
 	                  QString dir = QString::null,
