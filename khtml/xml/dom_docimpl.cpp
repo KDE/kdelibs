@@ -908,8 +908,6 @@ void DocumentImpl::recalcStyle( StyleChange change )
     if ( changed() ) {
 	renderer()->setLayouted( false );
 	renderer()->setMinMaxKnown( false );
-	renderer()->layout();
-	renderer()->repaint();
     }
 
 bail_out:
