@@ -1,6 +1,6 @@
 LIB_CUPS = @LIB_CUPS@
 
-INCLUDES= -I$(top_srcdir)/kdeprint -I$(top_srcdir)/kdeprint/management $(all_includes)
+INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kdeprint -I$(top_srcdir)/kdeprint/management $(all_includes)
 
 kde_module_LTLIBRARIES = libkdeprint_cups.la
 
