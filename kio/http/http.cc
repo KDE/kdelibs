@@ -78,7 +78,9 @@ using namespace KIO;
 
 // time frame in which the cache cleaner is run
 // (30 Minutes)
+#ifndef MAX_CACHE_AGE
 #define MAX_CACHE_AGE 30*60
+#endif
 
 extern "C" {
   void sigalrm_handler(int);
