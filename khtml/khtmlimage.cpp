@@ -57,7 +57,7 @@ KParts::Part *KHTMLImageFactory::createPartObject( QWidget *parentWidget, const 
 
 KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
                         QObject *parent, const char *name )
-    : KParts::ReadOnlyPart( parent, name )
+    : KParts::ReadOnlyPart( parent, name ), m_image( 0 )
 {
     setInstance( KHTMLImageFactory::instance() );
 
@@ -111,6 +111,8 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget, const char *widgetName,
 
 KHTMLImage::~KHTMLImage()
 {
+    disposeImage();
+
     // important: delete the html part before the part or qobject destructor runs.
     // we now delete the htmlpart which deletes the part's widget which makes
     // _OUR_ m_widget 0 which in turn avoids our part destructor to delete the
@@ -126,12 +128,16 @@ bool KHTMLImage::openURL( const KURL &url )
 {
     static const QString &html = KGlobal::staticQString( "<html><body><img src=\"%1\"></body></html>" );
 
+    disposeImage();
+
     m_url = url;
 
     emit started( 0 );
 
     KParts::URLArgs args = m_ext->urlArgs();
     m_mimeType = args.serviceType;
+
+    emit setWindowCaption( url.prettyURL() );
 
     m_khtml->begin( m_url, args.xOffset, args.yOffset );
     m_khtml->setAutoloadImages( true );
@@ -140,19 +146,48 @@ bool KHTMLImage::openURL( const KURL &url )
     if ( impl && m_ext->urlArgs().reload )
         impl->docLoader()->setCachePolicy( KIO::CC_Refresh );
 
+    khtml::DocLoader *dl = impl ? impl->docLoader() : 0;
+    m_image = khtml::Cache::requestImage( dl, m_url.url(), true /*reload*/ );
+    assert( m_image );
+    m_image->ref( this );
+
     m_khtml->write( html.arg( m_url.url() ) );
     m_khtml->end();
 
-    emit setWindowCaption( url.prettyURL() );
-
+    /*
     connect( khtml::Cache::loader(), SIGNAL( requestDone( khtml::DocLoader*, khtml::CachedObject *) ),
             this, SLOT( updateWindowCaption() ) );
+            */
     return true;
 }
 
 bool KHTMLImage::closeURL()
 {
+    disposeImage();
     return m_khtml->closeURL();
+}
+
+void KHTMLImage::notifyFinished( khtml::CachedObject *o )
+{
+    if ( !m_image || o != m_image )
+        return;
+
+    const QPixmap &pix = m_image->pixmap();
+    QString caption;
+
+    KMimeType::Ptr mimeType;
+    if ( !m_mimeType.isEmpty() )
+        mimeType = KMimeType::mimeType( m_mimeType );
+
+    if ( mimeType )
+        caption = i18n( "%1 - %2x%3 Pixels" ).arg( mimeType->comment() )
+                  .arg( pix.width() ).arg( pix.height() );
+    else
+        caption = i18n( "Image - %1x%2 Pixels" ).arg( pix.width() ).arg( pix.height() );
+
+    emit setWindowCaption( caption );
+    emit completed();
+    emit setStatusBarText(i18n("Done."));
 }
 
 void KHTMLImage::guiActivateEvent( KParts::GUIActivateEvent *e )
@@ -165,6 +200,7 @@ void KHTMLImage::guiActivateEvent( KParts::GUIActivateEvent *e )
     KParts::ReadOnlyPart::guiActivateEvent(e);
 }
 
+/*
 void KHTMLImage::slotImageJobFinished( KIO::Job *job )
 {
     if ( job->error() )
@@ -224,6 +260,16 @@ void KHTMLImage::updateWindowCaption()
     emit setWindowCaption( caption );
     emit completed();
     emit setStatusBarText(i18n("Done."));
+}
+*/
+
+void KHTMLImage::disposeImage()
+{
+    if ( !m_image )
+        return;
+
+    m_image->deref( this );
+    m_image = 0;
 }
 
 bool KHTMLImage::eventFilter(QObject *, QEvent *e) {

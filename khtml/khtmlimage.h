@@ -24,8 +24,15 @@
 #include <kparts/factory.h>
 #include <kparts/browserextension.h>
 
+#include "misc/loader_client.h"
+
 class KHTMLPart;
 class KInstance;
+
+namespace khtml
+{
+    class CachedImage;
+};
 
 /**
  * @internal
@@ -50,7 +57,7 @@ private:
 /**
  * @internal
  */
-class KHTMLImage : public KParts::ReadOnlyPart
+class KHTMLImage : public KParts::ReadOnlyPart, public khtml::CachedObjectClient
 {
     Q_OBJECT
 public:
@@ -66,19 +73,24 @@ public:
 
     KHTMLPart *doc() const { return m_khtml; }
 
+    virtual void notifyFinished( khtml::CachedObject *o );
+
 protected:
     virtual void guiActivateEvent( KParts::GUIActivateEvent *e );
     virtual bool eventFilter( QObject *filterTarget, QEvent *e );
 
 private slots:
-    void slotImageJobFinished( KIO::Job *job );
+//    void slotImageJobFinished( KIO::Job *job );
 
-    void updateWindowCaption();
+//    void updateWindowCaption();
 
 private:
+    void disposeImage();
+
     QGuardedPtr<KHTMLPart> m_khtml;
     KParts::BrowserExtension *m_ext;
     QString m_mimeType;
+    khtml::CachedImage *m_image;
 };
 
 /**
