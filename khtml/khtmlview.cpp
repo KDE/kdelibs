@@ -61,6 +61,30 @@
 
 #define PAINT_BUFFER_HEIGHT 128
 
+#define NEWSCROLLTIMER(x)                                \
+{   kdDebug() << "timer event killing timer" << endl;    \
+    killTimer(d->scrollTimerId); d->scrollTimerId = (x); }
+
+#define ADJUSTSCROLLER(direction,oppositedir)                           \
+    if (!d->scrollTimerId ||                                            \
+        (d->scrollDirection != direction &&                             \
+         d->scrollDirection != oppositedir)) {                          \
+        d->scrollTiming = 2;                                            \
+        d->scrollBy = timings[d->scrollTiming].pixels;                  \
+        d->scrollDirection = direction;                                 \
+        NEWSCROLLTIMER(startTimer(timings[d->scrollTiming].msec));      \
+    } else if (d->scrollDirection == direction &&                       \
+               timings[d->scrollTiming+1].msec) {                       \
+        d->scrollBy = timings[++d->scrollTiming].pixels;                \
+        NEWSCROLLTIMER(startTimer(timings[d->scrollTiming].msec));      \
+    } else if (d->scrollDirection == oppositedir) {                     \
+        if (d->scrollTiming) {                                          \
+            d->scrollBy = timings[--d->scrollTiming].pixels;            \
+            NEWSCROLLTIMER(startTimer(timings[d->scrollTiming].msec));  \
+        } else                                                          \
+            NEWSCROLLTIMER(0);                                          \
+    }
+
 using namespace DOM;
 using namespace khtml;
 class KHTMLToolTip;
@@ -95,6 +119,7 @@ public:
         reset();
         tp=0;
         paintBuffer=0;
+        vertPaintBuffer=0;
         formCompletions=0;
         prevScrollbarVisible = true;
 	timerId = 0;
@@ -109,6 +134,7 @@ public:
         delete formCompletions;
         delete tp; tp = 0;
         delete paintBuffer; paintBuffer =0;
+        delete vertPaintBuffer;
         if (underMouse)
 	    underMouse->deref();
 	delete tooltip;
@@ -151,6 +177,7 @@ public:
 
     QPainter *tp;
     QPixmap  *paintBuffer;
+    QPixmap  *vertPaintBuffer;
     NodeImpl *underMouse;
 
     // the node that was selected when enter was pressed
@@ -181,6 +208,7 @@ public:
     int scrollTimerId;
     int scrollTiming;
     int scrollBy;
+    enum { ScrollLeft, ScrollRight, ScrollUp, ScrollDown } scrollDirection;
     bool complete;
     bool firstRelayout;
     bool layoutSchedulingEnabled;
@@ -252,6 +280,8 @@ KHTMLView::~KHTMLView()
 void KHTMLView::init()
 {
     if(!d->paintBuffer) d->paintBuffer = new QPixmap(PAINT_BUFFER_HEIGHT, PAINT_BUFFER_HEIGHT);
+    if(!d->vertPaintBuffer) 
+        d->vertPaintBuffer = new QPixmap(10, PAINT_BUFFER_HEIGHT);
     if(!d->tp) d->tp = new QPainter();
 
     setFocusPolicy(QWidget::StrongFocus);
@@ -331,27 +361,39 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         p->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
         return;
     }
-    if ( d->paintBuffer->width() < visibleWidth() )
-        d->paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
-
-    int py=0;
-    while (py < eh) {
-        int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
-        d->tp->begin(d->paintBuffer);
-        d->tp->translate(-ex, -ey-py);
-        d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
-        m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
-#ifdef BOX_DEBUG
-        if (m_part->xmlDocImpl()->focusNode())
-        {
-            d->tp->setBrush(Qt::NoBrush);
-            d->tp->drawRect(m_part->xmlDocImpl()->focusNode()->getRect());
-        }
-#endif
+    if (eh > PAINT_BUFFER_HEIGHT && ew <= 10) {
+        if ( d->vertPaintBuffer->height() < visibleHeight() )
+            d->vertPaintBuffer->resize(10, visibleHeight());
+        d->tp->begin(d->vertPaintBuffer);
+        d->tp->translate(-ex, -ey);
+        d->tp->fillRect(ex, ey, ew, eh, palette().normal().brush(QColorGroup::Base));
+        m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey, ew, eh, 0, 0);
         d->tp->end();
+        p->drawPixmap(ex, ey, *d->vertPaintBuffer, 0, 0, ew, eh);
+    }
+    else {
+        if ( d->paintBuffer->width() < visibleWidth() )
+            d->paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
 
-        p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
-        py += PAINT_BUFFER_HEIGHT;
+        int py=0;
+        while (py < eh) {
+            int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
+            d->tp->begin(d->paintBuffer);
+            d->tp->translate(-ex, -ey-py);
+            d->tp->fillRect(ex, ey+py, ew, ph, palette().normal().brush(QColorGroup::Base));
+            m_part->xmlDocImpl()->renderer()->print(d->tp, ex, ey+py, ew, ph, 0, 0);
+#ifdef BOX_DEBUG
+            if (m_part->xmlDocImpl()->focusNode())
+            {
+                d->tp->setBrush(Qt::NoBrush);
+                d->tp->drawRect(m_part->xmlDocImpl()->focusNode()->getRect());
+            }
+#endif
+            d->tp->end();
+
+            p->drawPixmap(ex, ey+py, *d->paintBuffer, 0, 0, ew, ph);
+            py += PAINT_BUFFER_HEIGHT;
+        }
     }
     khtml::DrawContentsEvent event( p, ex, ey, ew, eh );
     QApplication::sendEvent( m_part, &event );
@@ -635,7 +677,9 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     }
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
-    static int timings [][2] = { {100,1}, {50,1}, {30,1}, {20,1}, {20,2}, {20,4}, {20,6}, {0,0} };
+    static const struct { int msec, pixels; } timings [] = { 
+        {100,1}, {50,1}, {30,1}, {20,1}, {20,2}, {20,4}, {20,6}, {0,0} 
+    };
     if (_ke->state() & Qt::ShiftButton)
       switch(_ke->key())
         {
@@ -648,31 +692,22 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
         case Key_Down:
         case Key_J:
-            if (!d->scrollTimerId) {
-                d->scrollTiming = 2;
-                d->scrollBy = timings[d->scrollTiming][1];
-                scrollBy( 0, d->scrollBy );
-                d->scrollTimerId = startTimer(timings[d->scrollTiming][0]);
-            } else if (timings[d->scrollTiming+1][0]) {
-                d->scrollBy = timings[++d->scrollTiming][1];
-                scrollBy( 0, d->scrollBy );
-                killTimer(d->scrollTimerId);
-                d->scrollTimerId = startTimer(timings[d->scrollTiming][0]);
-            }
+            ADJUSTSCROLLER(KHTMLViewPrivate::ScrollDown, KHTMLViewPrivate::ScrollUp);
             break;
 
         case Key_Up:
         case Key_K:
-            if (d->scrollTimerId)
-                if (d->scrollTiming) {
-                    d->scrollBy = timings[--d->scrollTiming][1];
-                    killTimer(d->scrollTimerId);
-                    d->scrollTimerId = startTimer(timings[d->scrollTiming][0]);
-                } else {
-                    killTimer(d->scrollTimerId);
-                    d->scrollTimerId = 0;
-                }
+            ADJUSTSCROLLER(KHTMLViewPrivate::ScrollUp, KHTMLViewPrivate::ScrollDown);
+            break;
 
+        case Key_Left:
+        case Key_H:
+            ADJUSTSCROLLER(KHTMLViewPrivate::ScrollLeft, KHTMLViewPrivate::ScrollRight);
+            break;
+
+        case Key_Right:
+        case Key_L:
+            ADJUSTSCROLLER(KHTMLViewPrivate::ScrollRight, KHTMLViewPrivate::ScrollLeft);
             break;
         }
     else
@@ -683,11 +718,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
-                if (d->scrollTimerId) {
-                    killTimer(d->scrollTimerId);
-                    d->scrollTimerId = 0;
-                }
-                scrollBy( 0, 10 );
+                if (d->scrollTimerId)
+                    NEWSCROLLTIMER(0)
+                else 
+                    scrollBy( 0, 10 );
             }
             break;
 
@@ -704,11 +738,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             if ( d->vmode == QScrollView::AlwaysOff )
                 _ke->accept();
             else {
-                if (d->scrollTimerId) {
-                    killTimer(d->scrollTimerId);
-                    d->scrollTimerId = 0;
-                }
-                scrollBy( 0, -10 );
+                if (d->scrollTimerId)
+                    NEWSCROLLTIMER(0)
+                else 
+                    scrollBy( 0, -10 );
             }
             break;
 
@@ -722,15 +755,23 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         case Key_L:
             if ( d->hmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
-                scrollBy( 10, 0 );
+            else {
+                if (d->scrollTimerId)
+                    NEWSCROLLTIMER(0)
+                else 
+                    scrollBy( 10, 0 );
+            }
             break;
         case Key_Left:
         case Key_H:
             if ( d->hmode == QScrollView::AlwaysOff )
                 _ke->accept();
-            else
-                scrollBy( -10, 0 );
+            else {
+                if (d->scrollTimerId)
+                    NEWSCROLLTIMER(0)
+                else 
+                    scrollBy( -10, 0 );
+            }
             break;
         case Key_Enter:
         case Key_Return:
@@ -756,7 +797,13 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
             else
                 setContentsPos( 0, contentsHeight() - visibleHeight() );
             break;
+        case Key_Shift:
+            // what are you doing here?
+	    _ke->ignore();
+            return;
         default:
+            if (d->scrollTimerId)
+                NEWSCROLLTIMER(0);
 	    _ke->ignore();
             return;
         }
@@ -1524,12 +1571,32 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 {
 //    kdDebug() << "timer event " << e->timerId() << endl;
     if (e->timerId() == d->scrollTimerId) {
-        if (contentsY() + visibleHeight () >= contentsHeight()) {
-            kdDebug() << "timer event killing timer" << endl;
-            killTimer(d->scrollTimerId);
-            d->scrollTimerId = 0;
-        } else
-            scrollBy( 0, d->scrollBy );
+        switch (d->scrollDirection) {
+            case KHTMLViewPrivate::ScrollDown:
+                if (contentsY() + visibleHeight () >= contentsHeight())
+                    NEWSCROLLTIMER(0)
+                else
+                    scrollBy( 0, d->scrollBy );
+                break;
+            case KHTMLViewPrivate::ScrollUp:
+                if (contentsY() <= 0)
+                    NEWSCROLLTIMER(0)
+                else
+                    scrollBy( 0, -d->scrollBy );
+                break;
+            case KHTMLViewPrivate::ScrollRight:
+                if (contentsX() + visibleWidth () >= contentsWidth())
+                    NEWSCROLLTIMER(0)
+                else
+                    scrollBy( d->scrollBy, 0 );
+                break;
+            case KHTMLViewPrivate::ScrollLeft:
+                if (contentsX() <= 0)
+                    NEWSCROLLTIMER(0)
+                else
+                    scrollBy( -d->scrollBy, 0 );
+                break;
+        }
         return;
     }
     if (e->timerId()==d->timerId)
