@@ -226,7 +226,7 @@ void kimgio_tga_write( QImageIO *io )
     QDataStream s( io->ioDevice() );
     s.setByteOrder( QDataStream::LittleEndian );
 
-    QImage img = io->image().swapRGB();
+    QImage img = io->image();
     for( int i = 0; i < 12; i++ )
         s << targaMagic[i];
 
@@ -239,9 +239,9 @@ void kimgio_tga_write( QImageIO *io )
     for( int y = 0; y < img.height(); y++ )
         for( int x = 0; x < img.width(); x++ ) {
             int color = img.pixel( x, y );
-            s << (unsigned char)qRed( color );
-            s << (unsigned char)qGreen( color );
             s << (unsigned char)qBlue( color );
+            s << (unsigned char)qGreen( color );
+            s << (unsigned char)qRed( color );
             if( img.depth() == 32 )
                 s << (unsigned char)qAlpha( color );
         }
