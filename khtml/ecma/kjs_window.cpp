@@ -30,6 +30,7 @@
 #include <klocale.h>
 #include <kparts/browserextension.h>
 #include <kparts/browserinterface.h>
+#include <kwin.h>
 #include <kwinmodule.h>
 #include <kconfig.h>
 
@@ -389,11 +390,13 @@ KJSO Window::get(const UString &p) const
       return Null(); 	// ### a null Window might be better, but == null
     else                // doesn't work yet
       return retrieve(opener);
-  else if (p == "outerHeight")
-    return Number(m_part->view() ? m_part->view()->height() : 0); // ###
-  else if (p == "outerWidth")
-    return Number(m_part->view() ? m_part->view()->width() : 0); // ###
-  else if (p == "pageXOffset")
+  else if (p == "outerHeight" || p == "outerWidth") {
+    if (!m_part->widget())
+      return Number(0);
+    KWin::Info inf = KWin::info(m_part->widget()->topLevelWidget()->winId());
+    return Number(p == "outerHeight" ?
+		  inf.geometry.height() : inf.geometry.width());
+  } else if (p == "pageXOffset")
     return Number(m_part->view()->contentsX());
   else if (p == "pageYOffset")
     return Number(m_part->view()->contentsY());
