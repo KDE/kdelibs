@@ -184,14 +184,27 @@ namespace KIO
     UDS_GUESSED_MIME_TYPE = 16392 | UDS_STRING
   };
 
+  /**
+   * Returns the mount point where @p device is mounted
+   * right now. This means, it has to be mounted, not just
+   * defined in fstab.
+   */
   QString findDeviceMountPoint( const QString& device );
 
-    /**
-    * checks if the path belongs to a file system that is probably
-    * slow. It checks for NFS or for paths belonging to automounted
-    * paths not yet mounted
-    */
-    bool probably_slow_mounted(const QString& filename);
+  /**
+   * Returns the mount point on which resides @p filename.
+   * For instance if /home is a separate partition, findPathMountPoint("/home/user/blah")
+   * will return /home
+   */
+  QString findPathMountPoint( const QString & filename );
+
+  /**
+   * checks if the path belongs to a file system that is probably
+   * slow. It checks for NFS or for paths belonging to automounted
+   * paths not yet mounted
+   */
+  bool probably_slow_mounted(const QString& filename);
+
 
 /************
  *

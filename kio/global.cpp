@@ -615,43 +615,170 @@ QString KIO::findDeviceMountPoint( const QString& filename )
     return result;
 }
 
-typedef enum { Unseen, Right, Wrong } MountState;
-
-/**
- * Idea and code base by Olaf Kirch <okir@caldera.de>
- **/
-static void check_mount_point(const char *mountpoint, const char *mounttype,
-                              const char *fsname, const char *realname,
-                              MountState &isslow, MountState &isauto, int &max)
+// Don't just trust the return value, keep iterating to check for a better match (bigger max)
+static bool is_my_mountpoint( const char *mountpoint, const char *realname, int &max )
 {
     int length = strlen(mountpoint);
 
     if (!strncmp(mountpoint, realname, length)
         && length > max) {
         max = length;
-        if (length == 1 || realname[length] == '/' || realname[length] == '\0') {
+        if (length == 1 || realname[length] == '/' || realname[length] == '\0')
+            return true;
+    }
+    return false;
+}
 
-            bool nfs = !strcmp(mounttype, "nfs");
-            bool autofs = !strcmp(mounttype, "autofs");
-            bool pid = (strstr(fsname, ":(pid") != 0);
+QString KIO::findPathMountPoint( const QString & filename )
+{
+    char realname[MAXPATHLEN];
 
-            if (nfs && !pid)
-                isslow = Right;
-            else if (isslow == Right)
-                isslow = Wrong;
+    memset(realname, 0, MAXPATHLEN);
 
-            /* Does this look like automounted? */
-            if (autofs || (nfs && pid)) {
-                isauto = Right;
-                isslow = Right;
-            }
+    /* If the path contains symlinks, get the real name */
+    if (realpath(QFile::encodeName(filename), realname) == 0) {
+        if (filename.length() >= sizeof(realname))
+            return QString::null;
+        strcpy(realname, QFile::encodeName(filename));
+    }
+
+    int max = 0;
+    QString mountPoint;
+
+#ifdef HAVE_GETMNTINFO
+
+    struct statfs *mounted;
+    char    realpath_buffer[MAXPATHLEN];
+
+    int num_fs = getmntinfo(&mounted, MNT_NOWAIT);
+
+    for (int i=0;i<num_fs;i++) {
+
+        QCString device_name = mounted[i].f_mntfromname;
+
+        // If the path contains symlinks, get
+        // the real name
+        if (realpath(device_name, realpath_buffer) != 0)
+            // succes, use result from realpath
+            device_name = realpath_buffer;
+        if ( is_my_mountpoint( mounted[i].f_mntonname, realname, max ) )
+            mountPoint = QFile::decodeName(mounted[i].f_mntonname);
+    }
+
+#elif defined(_AIX)
+
+    struct vmount *mntctl_buffer;
+    struct vmount *vm;
+    char *mountedfrom;
+    char *mountedto;
+    int fsname_len, num;
+    char realpath_buffer[MAXPATHLEN];
+    int buf_sz = 4096;
+
+    mntctl_buffer = (struct vmount*)malloc(buf_sz);
+    num = mntctl(MCTL_QUERY, buf_sz, mntctl_buffer);
+    if (num == 0)
+    {
+	buf_sz = *(int*)mntctl_buffer;
+	free(mntctl_buffer);
+	mntctl_buffer = (struct vmount*)malloc(buf_sz);
+	num = mntctl(MCTL_QUERY, buf_sz, mntctl_buffer);
+    }
+
+    if (num > 0)
+    {
+        /* iterate through items in the vmount structure: */
+        vm = (struct vmount *)mntctl_buffer;
+        for ( ; num > 0; num-- )
+        {
+            /* get the name of the mounted file systems: */
+            fsname_len = vmt2datasize(vm, VMT_STUB);
+            mountedto     = (char*)malloc(fsname_len + 1);
+	    mountedto[fsname_len] = '\0';
+            strncpy(mountedto, (char *)vmt2dataptr(vm, VMT_STUB), fsname_len);
+
+            fsname_len = vmt2datasize(vm, VMT_OBJECT);
+            mountedfrom     = (char*)malloc(fsname_len + 1);
+	    mountedfrom[fsname_len] = '\0';
+            strncpy(mountedfrom, (char *)vmt2dataptr(vm, VMT_OBJECT), fsname_len);
+
+            /* get the mount-from information: */
+            QCString device_name = mountedfrom;
+
+            if (realpath(device_name, realpath_buffer) != 0)
+                // success, use result from realpath
+                device_name = realpath_buffer;
+
+            if ( is_my_mountpoint( mountedto, realname, max ) )
+                mountPoint = QFile::decodeName(mountedto);
+
+            free(mountedfrom);
+            free(mountedto);
+
+            /* goto the next vmount structure: */
+            vm = (struct vmount *)((char *)vm + vm->vmt_length);
         }
+
+	endvfsent( );
+    }
+
+    free( mntctl_buffer );
+
+#else
+
+    STRUCT_SETMNTENT mtab;
+    /* Get the list of mounted file systems */
+
+    if ((mtab = SETMNTENT(MNTTAB, "r")) == 0) {
+        perror("setmntent");
+        return QString::null;
+    }
+
+    STRUCT_MNTENT me;
+
+    while (true) {
+        if (!GETMNTENT(mtab, me))
+            break;
+
+        if ( is_my_mountpoint( MOUNTPOINT(me), realname, max ) )
+            mountPoint = QFile::decodeName( MOUNTPOINT(me) );
+    }
+
+    ENDMNTENT(mtab);
+
+#endif
+
+    return mountPoint;
+}
+
+typedef enum { Unseen, Right, Wrong } MountState;
+
+/**
+ * Idea and code base by Olaf Kirch <okir@caldera.de>
+ **/
+static void check_mount_point(const char *mounttype,
+                              const char *fsname,
+                              MountState &isslow, MountState &isauto)
+{
+    bool nfs = !strcmp(mounttype, "nfs");
+    bool autofs = !strcmp(mounttype, "autofs");
+    bool pid = (strstr(fsname, ":(pid") != 0);
+
+    if (nfs && !pid)
+        isslow = Right;
+    else if (isslow == Right)
+        isslow = Wrong;
+
+    /* Does this look like automounted? */
+    if (autofs || (nfs && pid)) {
+        isauto = Right;
+        isslow = Right;
     }
 }
 
 bool KIO::probably_slow_mounted(const QString& filename)
 {
-    char                realname[MAXPATHLEN];
+    char realname[MAXPATHLEN];
 
     memset(realname, 0, MAXPATHLEN);
 
@@ -696,8 +823,12 @@ bool KIO::probably_slow_mounted(const QString& filename)
 #else
         char * mounttype = mounted[i].f_fstypename;
 #endif
-        check_mount_point(mounted[i].f_mntonname, mounttype, mounted[i].f_mntfromname,
-                          realname, isauto, isslow,max);
+        if ( is_my_mountpoint( mounted[i].f_mntonname, realname, max ) )
+        {
+            check_mount_point( mounttype, mounted[i].f_mntfromname,
+                               isauto, isslow );
+            // keep going, looking for a potentially better one
+        }
     }
 
 #elif defined(_AIX)
@@ -750,9 +881,8 @@ bool KIO::probably_slow_mounted(const QString& filename)
              */
             struct vfs_ent* ent = getvfsbytype(vm->vmt_gfstype);
 
-            check_mount_point(mountedto,
-                              ent->vfsent_name,
-                              device_name, realname, isauto, isslow, max);
+            if ( is_my_mountpoint( mountedto, realname, max ) )
+                check_mount_point(ent->vfsent_name, device_name, isauto, isslow);
 
             free(mountedfrom);
             free(mountedto);
@@ -782,7 +912,8 @@ bool KIO::probably_slow_mounted(const QString& filename)
         if (!GETMNTENT(mtab, me))
             break;
 
-        check_mount_point(MOUNTPOINT(me), MOUNTTYPE(me), FSNAME(me), realname, isauto, isslow, max);
+        if ( is_my_mountpoint( MOUNTPOINT(me), realname, max ) )
+            check_mount_point(MOUNTTYPE(me), FSNAME(me), isauto, isslow);
     }
 
     ENDMNTENT(mtab);
