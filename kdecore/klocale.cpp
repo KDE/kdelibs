@@ -1795,7 +1795,7 @@ QStringList KLocale::languagesTwoAlpha() const
 	    langIt != langLst.end();
 	    ++langIt )
 	{
-	  if ( !result.contains( *langIt ) )
+	  if ( !(*langIt).isEmpty() && !result.contains( *langIt ) )
 	    result += *langIt;
 	}
     }
