@@ -11,6 +11,7 @@
 <!ENTITY Ctrl   "<keycap>Ctrl</keycap>">
 <!ENTITY dh     "<abbrev>d.h.</abbrev>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY Esc    "<keycap>Esc</keycap>">
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
@@ -21,10 +22,11 @@
  khelpcenter -->
 <!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
  kicker -->
+<!ENTITY kwm    "<application>kwm</application>">
 <!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
 <!ENTITY Shift  "<keycap>Umschalt</keycap>">
-<!ENTITY Strg "<keycap>Strg</keycap>" ><!-- ctrl -->
-<!ENTITY Umschalt "<keycap>Umschalt</keycap>" > <!-- Shift -->
+<!ENTITY Strg "<keycap>Strg</keycap>"><!-- ctrl -->
+<!ENTITY Umschalt "<keycap>Umschalt</keycap>"> <!-- Shift -->
 <!ENTITY usw    "<abbrev>usw.</abbrev>">
 <!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch
  -->
