@@ -176,6 +176,10 @@ void TCPSlaveBase::CloseDescriptor()
 		m_iSock=-1;
 		CleanSSL();
 	}
+	if (m_iSock != -1) {
+		close(m_iSock);
+		m_iSock=-1;
+	}
 }
 
 bool TCPSlaveBase::InitializeSSL()
