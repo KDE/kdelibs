@@ -292,7 +292,8 @@ double KFloatValidator::top () const
 //  Implementation of KDoubleValidator
 //
 
-struct KDoubleValidator::Private {
+class KDoubleValidator::Private {
+public:
   Private( bool accept=true ) : acceptLocalizedNumbers( accept ) {}
 
   bool acceptLocalizedNumbers;

@@ -251,7 +251,8 @@ void KIntSpinBox::setEditFocus(bool mark)
 
 // ----------------------------------------------------------------------------
 
-struct KIntNumInput::KIntNumInputPrivate {
+class KIntNumInput::KIntNumInputPrivate {
+public:
     int referencePoint;
     short blockRelative;
     KIntNumInputPrivate( int r )
@@ -511,7 +512,8 @@ void KIntNumInput::setLabel(const QString & label, int a)
 
 // ----------------------------------------------------------------------------
 
-struct KDoubleNumInput::KDoubleNumInputPrivate {
+class KDoubleNumInput::KDoubleNumInputPrivate {
+public:
     KDoubleNumInputPrivate( double r )
 	: spin( 0 ),
 	  referencePoint( r ),
@@ -852,7 +854,8 @@ void KDoubleNumInput::setLabel(const QString & label, int a)
 // 4. upperInt = upper * factor;
 // 5. lower = lowerInt * basicStep;
 // 6. upper = upperInt * basicStep;
-struct KDoubleSpinBox::Private {
+class KDoubleSpinBox::Private {
+public:
   Private( int precision=1 )
     : mPrecision( precision ),
       mValidator( 0 )
