@@ -411,13 +411,13 @@ bool KNotify::notifyByPassivePopup( const QString &text, const QString &appName 
 
         }
     }
-    if (senderWinId != 0) {
-	KIconLoader iconLoader( appName );
-	QPixmap icon = iconLoader.loadIcon( appName, KIcon::Small );
-	KPassivePopup::message(appName, text, icon, senderWinId);
-	return true;
-    }
-    return false;
+    KIconLoader iconLoader( appName );
+    KConfigGroup config( d->events[ appName ], "!Global!" );
+    QString iconName = config.readEntry( "IconName", appName );
+    QPixmap icon = iconLoader.loadIcon( iconName, KIcon::Small );
+    QString title = config.readEntry( "Comment", appName );
+    KPassivePopup::message(title, text, icon, senderWinId);
+    return true;
 }
 
 bool KNotify::notifyByExecute(const QString &command) {
