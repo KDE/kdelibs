@@ -1,0 +1,161 @@
+<html> <head> <title>Parser Test 1</title> </head>
+
+<body>
+<H1>Parser Test 1</H1>
+This is a regression test to see if the parser handles spaces and LFs
+correctly.<BR>
+<H2>Simple text parsing</H2>
+This line contains single spaces.<BR>
+This  line  contains  double  spaces.<BR>
+This
+line
+contains
+single
+LFs.
+<BR>
+<H2>Parsing around tags</H2>
+This line contains <U>underlined text</U> with no spaces inside the &lt;U&gt; tag.<BR>
+This line contains <U> underlined text </U> with spaces inside the &lt;U&gt; tag.<BR>
+This line contains <U>
+underlined text
+</U> with LFs inside the &lt;U&gt; tag.<BR>
+<H2>Parsing inside &lt;PRE&gt;</H2>
+<PRE>This line contains single spaces.</PRE>
+<PRE>This  line  contains  double  spaces.</PRE>
+<PRE>This
+line
+contains
+single
+LFs.</PRE>
+<H2>Parsing around tags inside &lt;PRE&gt;</H2>
+<PRE>This line contains <U>underlined text</U> with no spaces inside the &lt;U&gt; tag.</PRE>
+<PRE>This line contains <U> underlined text </U> with spaces inside the &lt;U&gt; tag.</PRE>
+<PRE>This line contains <U>
+underlined text
+</U> with LFs inside the &lt;U&gt; tag.</PRE>
+<H2>Parsing &lt;PRE&gt; followed by LFs</H2>
+The PRE-blocks are seperated by a &lt;HR&gt; (horizontal rule) tag<BR>
+<HR>
+<PRE>This is the first single line with no LFs</PRE>
+<HR>
+<PRE>
+This is the second single line within a single pair of LFs
+</PRE>
+<HR>
+<PRE>
+
+This is the third single line within a double pair of LFs
+
+</PRE>
+<HR>
+<PRE>
+
+
+This is the forth single line within a triple pair of LFs
+
+
+</PRE>
+<HR>
+<P>Now follows a PRE section with 1 empty line.
+<HR>
+<PRE>
+
+</PRE>
+<HR>
+<P>Now follows a PRE section with 2 empty lines.
+<HR>
+<PRE>
+
+
+</PRE>
+<HR>
+<H2>Tab's and spaces inside &lt;PRE&gt;</H2>
+The position of the numbers should be equal to 
+the value of the numbers. TAB1 should be left aligned with the number 9.
+TAB2 should be left aligned with the number 17. 
+<HR>
+<PRE>
+1
+ 2
+  3
+   4
+    5
+     6
+      7
+       8
+        9
+                17
+	TAB1	TAB2
+1	TAB1	TAB2
+ 2	TAB1	TAB2
+  3	TAB1	TAB2
+   4	TAB1	TAB2
+    5	TAB1	TAB2
+     6	TAB1	TAB2
+      7	TAB1	TAB2
+       8	TAB2
+1		TAB2
+ 2		TAB2
+  3		TAB2
+   4		TAB2
+    5		TAB2
+     6		TAB2
+      7		TAB2
+       8	TAB2
+<U>1</U>	TAB1	TAB2
+<U> 2</U>	TAB1	TAB2
+<U>  3</U>	TAB1	TAB2
+<U>   4</U>	TAB1	TAB2
+<U>    5</U>	TAB1	TAB2
+<U>     6</U>	TAB1	TAB2
+<U>      7</U>	TAB1	TAB2
+<U>       8</U>	TAB2
+<U>1</U>		TAB2
+<U> 2</U>		TAB2
+<U>  3</U>		TAB2
+<U>   4</U>		TAB2
+<U>    5</U>		TAB2
+<U>     6</U>		TAB2
+<U>      7</U>		TAB2
+<U>       8</U>	TAB2
+</PRE>
+<HR>
+<H2>The broken tag section</H2>
+On the next line follows a &lt; without a tagname directly following<BR>
+it should be displayed as text: < 
+<BR>
+<HR>On the next line follows a &lt; with a space following<BR>
+it should be displayed as text: < with a space following.
+<BR>
+<HR>On the next line follows a &gt; with a space following<BR>
+it should be displayed as text: > with a space following.
+<BR>
+<HR>On the next line follows &lt;&gt;<BR>
+it should be displayed as text: <>
+<BR>
+<HR>On the next line follows &lt;/&gt;<BR>
+it should be displayed as text: </> 
+<BR>
+<HR>On the next line follows a &lt;/ without a tagname directly following<BR>
+it should be displayed as text: </ 
+<BR>
+<HR>On the next line follows a &lt;/ with a space following<BR>
+it should be displayed as text: </ with a space following.
+<BR>
+<HR>On the next line a not properly terminated start-tag is closed only by the next tag<BR>
+<P this should not be shown<BR>This should be shown again. 
+<BR>
+<HR>On the next line a not properly terminated end-tag is closed only by the next tag<BR>
+</P this should not be shown<BR>This should be shown again. 
+<BR>
+<HR>
+<H2>Unknown tags</H2>
+Unknown tags should be ignored.<BR>
+<HR>The next line should read "This is good."<BR>
+This <YYYYYY>is good<BR>
+<HR>The next line should read "This is good." but should not be bold.<BR>
+<BADTAG>This is good<BR>
+<HR>The next line should read "This is good." and should not be in a table.<BR>
+<TABLEF border=2>This is good<BR>
+</BODY>
+</HTML>
