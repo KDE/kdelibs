@@ -2,15 +2,13 @@
  * $Id$
  *
  * KDE3 HighColor Style (version 0.99)
- * Copyright (C) 2001 Karol Szwed      <gallium@kde.org>
- *           (C) 2001 Fredrik Höglund  <fredrik@kde.org> 
+ * Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
+ *           (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
  *
  * Drawing routines adapted from the KDE2 HCStyle,
- * Copyright (C) 2000 Daniel M. Duley  <mosfet@kde.org>
- *           (C) 2000 Dirk Mueller     <mueller@kde.org>
- *           (C) 2001 Martijn Klingens <mklingens@yahoo.com>
- *
- * Many thanks to Bradley T. Hughes for the 3 button scrollbar code.
+ * Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
+ *           (C) 2000 Dirk Mueller          <mueller@kde.org>
+ *           (C) 2001 Martijn Klingens      <mklingens@yahoo.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -213,15 +211,17 @@ void HighColorStyle::unPolish(QWidget* widget)
 
 
 /* reimp. */
-void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg )
+void HighColorStyle::renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg ) const
 {
 	QColor col = cg.button();
 
-	if ( highcolor )
+#ifdef Q_WS_X11 // Only draw menu gradients on TrueColor, X11 visuals
+	if ( QPaintDevice::x11AppDepth() >= 24 )
 		KPixmapEffect::gradient( pix, col.light(120), col.dark(115),
 				KPixmapEffect::HorizontalGradient );
 	else
-		pix.fill( col );
+#endif
+	pix.fill( col );
 }
 
 

@@ -66,7 +66,7 @@ class HighColorStyle : public KStyle
 		void polish( QWidget* widget );
 		void unPolish( QWidget* widget );
 
-		void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg );
+		void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg ) const;
 
 		void drawKStylePrimitive( KStylePrimitive kpe,
 					QPainter* p,
