@@ -168,7 +168,9 @@ void KHTMLPartBrowserExtension::copy()
         // get selected text and paste to the clipboard
         QString text = m_part->selectedText();
         QClipboard *cb = QApplication::clipboard();
+        disconnect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
         cb->setText(text);
+        connect( cb, SIGNAL( selectionChanged() ), m_part, SLOT( slotClearSelection() ) );
     }
     else
     {
