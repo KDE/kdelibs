@@ -191,6 +191,7 @@
 <!ENTITY kenolaba 	"<application>Kenolaba</application>">
 <!ENTITY kedit	"<application>KEdit</application>">
 <!ENTITY keduca	"<application>KEduca</application>">
+<!ENTITY kexi		"<application>Kexi</application>">
 <!ENTITY keystone	"<application>Keystone</application>">
 <!ENTITY kfax	"<application>KFax</application>">
 <!ENTITY kfaxview	"<application>Kfaxview</application>">
