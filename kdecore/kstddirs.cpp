@@ -51,11 +51,12 @@ KStandardDirs::~KStandardDirs()
 {
 }
 
-void KStandardDirs::addPrefix( QString dir )
+void KStandardDirs::addPrefix( const QString& _dir )
 {
-    if (dir.isNull())
+    if (_dir.isNull())
       return;
 
+    QString dir = _dir;   
     if (dir.at(dir.length() - 1) != '/')
 	dir += '/';
 
