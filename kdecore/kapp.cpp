@@ -777,7 +777,6 @@ void KApplication::kdisplaySetPalette()
 
 void KApplication::kdisplaySetFont()
 {
-    KGlobal::freeAll();
     QApplication::setFont( KGlobal::generalFont(), true );
 
     emit kdisplayFontChanged();
@@ -799,7 +798,6 @@ void KApplication::kdisplaySetStyle()
 
 void KApplication::kdisplaySetStyleAndFont()
 {
-    KGlobal::freeAll();
     QApplication::setFont( KGlobal::generalFont(), true );
     kdisplaySetPalette(); // does both palette and style
     emit kdisplayFontChanged();
