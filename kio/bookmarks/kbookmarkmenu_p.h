@@ -184,4 +184,26 @@ public:
   static KBookmarkSettings *self();
 };
 
+class RMB
+{
+public:
+  bool invalid( int val );
+  KBookmark atAddress(const QString & address);
+  void fillContextMenu( QPopupMenu* contextMenu, const QString & address, int val );
+  void slotRMBActionEditAt( int val );
+  void slotRMBActionProperties( int val );
+  void slotRMBActionInsert( int val );
+  void slotRMBActionRemove( int val );
+  void slotRMBActionCopyLocation( int val );
+  void slotRMBActionOpen( int val );
+  void hidePopup();
+public:
+  QObject *recv;
+  KBookmarkManager *m_pManager;
+  QString s_highlightedAddress;
+  QString m_parentAddress;
+  KBookmarkOwner *m_pOwner;
+  QWidget *m_parentMenu;
+};
+
 #endif
