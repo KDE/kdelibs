@@ -57,7 +57,8 @@ public:
     virtual void applyChanges(bool top=true, bool force=true);
     virtual void recalcStyle();
 
-    bool isServerMap() const;
+    bool isServerMap() const { return ( ismap && !usemap.length() );  }
+    QImage currentImage() const;
 
 protected:
     bool ismap;
@@ -75,8 +76,6 @@ protected:
 
 
 //------------------------------------------------------------------
-
-
 
 class HTMLAreaElementImpl : public HTMLAnchorElementImpl
 {

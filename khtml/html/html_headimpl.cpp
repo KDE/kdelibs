@@ -133,10 +133,8 @@ void HTMLLinkElementImpl::attach(KHTMLView *v)
         {
             m_loading = true;
             HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
-            if (doc->docLoader())
-                m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL());
-            else
-                m_cachedSheet = Cache::requestStyleSheet(m_url, doc->baseURL());
+            // we must have a doc->docLoader() !
+            m_cachedSheet = doc->docLoader()->requestStyleSheet(m_url, doc->baseURL());
             if(m_cachedSheet) m_cachedSheet->ref(this);
         }
     }

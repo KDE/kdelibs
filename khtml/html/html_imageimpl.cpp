@@ -218,12 +218,14 @@ void HTMLImageElementImpl::recalcStyle()
     HTMLElementImpl::recalcStyle();
 }
 
-bool HTMLImageElementImpl::isServerMap() const
+QImage HTMLImageElementImpl::currentImage() const
 {
-  if ( ismap && !usemap.length() )
-    return true;
-  else
-    return false;
+    RenderImage *r = static_cast<RenderImage*>(renderer());
+
+    if(r)
+        return r->pixmap().convertToImage();
+
+    return QImage();
 }
 
 // -------------------------------------------------------------------------
