@@ -398,24 +398,50 @@ int KFileView::compareItems(const KFileViewItem *fi1, const KFileViewItem *fi2) 
 	    //if (fi1->isDir() || fi2->isDir())
             // sort = static_cast<QDir::SortSpec>(KFileView::defaultSortSpec & QDir::SortByMask);
 
-	    switch (sort) {
-	    case QDir::Name:
-	    default:
-		if ( (mySorting & QDir::IgnoreCase) == QDir::IgnoreCase )
-		    bigger = (fi1->name( true ) > fi2->name( true ));
-		else
-		    bigger = (fi1->name() > fi2->name());
-		break;
-	    case QDir::Time:
-		bigger = (fi1->time(KIO::UDS_MODIFICATION_TIME) >
-			  fi2->time(KIO::UDS_MODIFICATION_TIME));
-		break;
-	    case QDir::Size:
-		bigger = (fi1->size() > fi2->size());
-		break;
-	    case QDir::Unsorted:
-		bigger = true;  // nothing
-		break;
+            switch (sort) {
+                case QDir::Name:
+                default:
+sort_by_name:
+                    if ( (mySorting & QDir::IgnoreCase) == QDir::IgnoreCase )
+                        bigger = (fi1->name( true ) > fi2->name( true ));
+                    else
+                        bigger = (fi1->name() > fi2->name());
+                    break;
+                case QDir::Time: 
+                {
+                    time_t t1 = fi1->time( KIO::UDS_MODIFICATION_TIME );
+                    time_t t2 = fi2->time( KIO::UDS_MODIFICATION_TIME );
+                    if ( t1 != t2 ) {
+                        bigger = (t1 > t2);
+                        break;
+                    }
+
+                    // Sort by name if both items have the same timestamp.
+                    // Don't honor the reverse flag tho.
+                    else {
+                        keepFirst = true; 
+                        goto sort_by_name;
+                    }
+                }
+                case QDir::Size: 
+                {
+                    KIO::filesize_t s1 = fi1->size();
+                    KIO::filesize_t s2 = fi2->size();
+                    if ( s1 != s2 ) {
+                        bigger = (s1 > s2);
+                        break;
+                    }
+
+                    // Sort by name if both items have the same size.
+                    // Don't honor the reverse flag tho.
+                    else {
+                        keepFirst = true; 
+                        goto sort_by_name;
+                    }
+                }
+                case QDir::Unsorted:
+                    bigger = true;  // nothing
+                    break;
 	    }
 	}
     }
