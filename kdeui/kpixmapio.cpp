@@ -54,6 +54,7 @@ struct KPixmapIOPrivate
     XImage *ximage;
 #ifdef HAVE_MITSHM
     XShmSegmentInfo *shminfo;
+    bool first_try;
 #endif
 #else
     void *ximage;
@@ -109,6 +110,7 @@ KPixmapIO::KPixmapIO()
     d->ximage = XShmCreateImage(qt_xdisplay(), (Visual *) QPaintDevice::x11AppVisual(),
 	    QPaintDevice::x11AppDepth(), ZPixmap, 0L, d->shminfo, 10, 10);
     d->bpp = d->ximage->bits_per_pixel;
+    d->first_try = true;
     int bpp = d->bpp;
     if (d->ximage->byte_order == LSBFirst)
 	bpp++;
@@ -189,7 +191,7 @@ QPixmap KPixmapIO::convertToPixmap(const QImage &img)
 	dst.convertFromImage(img);
 	return dst;
     }
-	
+
 }
 
 
@@ -224,6 +226,7 @@ void KPixmapIO::putImage(QPixmap *dst, int dx, int dy, const QImage *src)
 	    convertToXImage(*src);
 	    XShmPutImage(qt_xdisplay(), dst->handle(), qt_xget_temp_gc(qt_xscreen(), false), d->ximage,
 		    dx, dy, 0, 0, src->width(), src->height(), false);
+            // coolo: do we really need this here? I see no good for it
 	    XSync(qt_xdisplay(), false);
 	    doneXImage();
 	    fallback  = false;
@@ -400,10 +403,12 @@ bool KPixmapIO::createShmSegment(int size)
 
     d->shminfo->readOnly = false;
 
-    // make sure that we don't get errors of old stuff
-    XSync(qt_xdisplay(), False);
-    old_errhandler = XSetErrorHandler(kpixmapio_errorhandler);
-    kpixmapio_serial = NextRequest(qt_xdisplay());
+    if (d->first_try) {
+        // make sure that we don't get errors of old stuff
+        XSync(qt_xdisplay(), False);
+        old_errhandler = XSetErrorHandler(kpixmapio_errorhandler);
+        kpixmapio_serial = NextRequest(qt_xdisplay());
+    }
 
     if ( !XShmAttach(qt_xdisplay(), d->shminfo))
     {
@@ -413,12 +418,15 @@ bool KPixmapIO::createShmSegment(int size)
 	shmctl(d->shminfo->shmid, IPC_RMID, 0);
     }
 
-    XSync(qt_xdisplay(), false);
+    if (d->first_try) {
+        XSync(qt_xdisplay(), false);
 
-    if (!use_xshm)
-        m_bShm = false;
+        if (!use_xshm)
+            m_bShm = false;
 
-    XSetErrorHandler(old_errhandler);
+        XSetErrorHandler(old_errhandler);
+        d->first_try = false;
+    }
     d->shmsize = size;
 
     return m_bShm;
