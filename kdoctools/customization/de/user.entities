@@ -6,22 +6,23 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
- kicker -->
-<!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
-<!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch
- -->
-<!ENTITY Strg "<keycap>Strg</keycap>" ><!-- ctrl -->
-<!ENTITY Umschalt "<keycap>Umschalt</keycap>" > <!-- Shift -->
-<!ENTITY zb     "<abbrev>z.B.</abbrev>" ><!-- eg -->
-<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
-<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
- khelpcenter -->
-<!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
-<!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
-<!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
-
+<!ENTITY cdrom  "<abbrev>CD-ROM</abbrev>">
+<!ENTITY dh     "<abbrev>d.h.</abbrev>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
 <!ENTITY etc    "<abbrev>etc.</abbrev>">
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
-<!ENTITY dh     "<abbrev>d.h.</abbrev>">
+<!ENTITY kcc "<application>KDE-Kontrollzentrum</application>" ><!-- kcc -->
+<!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
+<!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
+<!ENTITY kde-hilfe "<application>KDE-Hilfe</application>" ><!-- kde help -->
+<!ENTITY khilfezentrum "<application>KDE-Hilfezentrum</application>" ><!--
+ khelpcenter -->
+<!ENTITY kontrollleiste "<application>Kontrollleiste</application>"><!--
+ kicker -->
+<!ENTITY mondphase "<application>Mondphase</application>"> <!-- kmoon -->
+<!ENTITY Strg "<keycap>Strg</keycap>" ><!-- ctrl -->
+<!ENTITY Umschalt "<keycap>Umschalt</keycap>" > <!-- Shift -->
+<!ENTITY usw    "<abbrev>usw.</abbrev>">
+<!ENTITY weltzeit "<application>Weltzeituhr</application>" ><!-- kworldwatch
+ -->
+<!ENTITY zb     "<abbrev>z.B.</abbrev>" ><!-- eg -->

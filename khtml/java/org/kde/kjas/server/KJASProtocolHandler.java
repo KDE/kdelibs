@@ -27,6 +27,9 @@ public class KJASProtocolHandler
     private static final int GetURLDataCode      = 12;
     private static final int URLDataCode         = 13;
     private static final int ShutdownServerCode  = 14;
+    private static final int EvalulateJavaScript = 15;
+    private static final int GetMember           = 16;
+    private static final int CallMember          = 17;
 
     //Holds contexts in contextID-context pairs
     private Hashtable contexts;
@@ -237,7 +240,53 @@ public class KJASProtocolHandler
                     context.addImage( requestedURL, data );
                 }
             }
+        } else
+        if (cmd_code_value == EvalulateJavaScript)
+        {
+            String retval = getArg(command);
+            Main.debug( "EvalulateJavaScript return value: " + retval);
+            Main.liveconnect_returnval = retval;
+            try {
+                Main.liveconnect_thread.interrupt();
+            } catch (SecurityException ex) {}
+        } else
+        if (cmd_code_value == GetMember)
+        {
+            String contextID = getArg( command );
+            String appletID  = getArg( command );
+            String name  = getArg( command );
+            StringBuffer value = new StringBuffer();
+            int type = 0;
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context != null )
+                type = context.getMember(appletID, name, value);
+            Main.debug( "GetMember " + name);
+            sendMemberValue(contextID, GetMember, value.toString(), type); 
+        } else
+        if (cmd_code_value == CallMember)
+        {
+            String contextID = getArg( command );
+            String appletID  = getArg( command );
+            String name  = getArg( command );
+            StringBuffer value = new StringBuffer();
+            java.util.List args = new java.util.Vector();
+            try { // fix getArg
+                String param = getArg(command);
+                while (param != null) {
+                    args.add(param);
+                    param = getArg(command);
+                }
+            } catch (Exception e) {}
+            int type = 0;
+            Main.debug( "stopApplet, context = " + contextID + ", applet = " + appletID );
+
+            KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
+            if ( context != null )
+                type = context.callMember(appletID, name, value, args);
+            Main.debug( "CallMember " + name);
+            sendMemberValue(contextID, CallMember, value.toString(), type); 
         }
+ 
         else
         {
            throw new IllegalArgumentException( "Unknown command code" );
@@ -421,7 +470,64 @@ public class KJASProtocolHandler
 
         signals.print( chars );
     }
+    public void sendEvaluateJavaScriptCmd( String contextID, String script )
+    {
+        Main.debug( "sendEvaluateJavaScriptCmd, contextID = " + contextID + " script = " + script );
 
+        int length = contextID.length() + script.length() + 4;
+        char[] chars = new char[ length + 8 ]; //for length of message
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) EvalulateJavaScript;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = script.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
+    public void sendMemberValue( String contextID, int cmd, String value, int type )
+    {
+        Main.debug( "sendMemberValue, contextID = " + contextID + " value = " + value );
+
+        String strtype = new String("" + type);
+        int length = contextID.length() + value.length() + strtype.length() + 5;
+        char[] chars = new char[ length + 8 ]; //for length of message
+        char[] tmpchar = getPaddedLength( length );
+        int index = 0;
+
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = (char) cmd;
+        chars[index++] = sep;
+
+        tmpchar = contextID.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = value.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = strtype.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        signals.print( chars );
+    }
     /**************************************************************
      *****  Utility functions for parsing commands ****************
      **************************************************************/

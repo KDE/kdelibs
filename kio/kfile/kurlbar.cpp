@@ -179,40 +179,43 @@ void KURLBarItem::paint( QPainter *p )
     }
 }
 
+QSize KURLBarItem::sizeHint() const
+{
+    int wmin = 0;
+    int hmin = 0;
+    const KURLBarListBox *lb =static_cast<const KURLBarListBox*>(listBox());
+
+    if ( m_parent->iconSize() < KIcon::SizeMedium ) {
+        wmin = QListBoxPixmap::width( lb );
+        hmin = QListBoxPixmap::height( lb );
+    }
+    else {
+        wmin = QMAX(lb->fontMetrics().width(text()), pixmap()->width()) + 6;
+        hmin = lb->fontMetrics().lineSpacing() + pixmap()->height() + 6;
+    }
+
+    if ( lb->isVertical() )
+        wmin = QMAX( wmin, lb->viewport()->sizeHint().width() );
+    else
+        hmin = QMAX( hmin, lb->viewport()->sizeHint().height() );
+
+    return QSize( wmin, hmin );
+    }
+
 int KURLBarItem::width( const QListBox *lb ) const
 {
-    int min = 0;
-    bool vertical = (static_cast<const KURLBarListBox*>(lb)->orientation()
-                     == Qt::Vertical);
-
-    if ( m_parent->iconSize() < KIcon::SizeMedium )
-        min = QListBoxPixmap::width( lb );
+    if ( static_cast<const KURLBarListBox *>( lb )->isVertical() )
+        return QMAX( sizeHint().width(), lb->viewport()->width() );
     else
-        min = QMAX(lb->fontMetrics().width( text() ), pixmap()->width()) + 6;
-
-    if ( vertical ) {
-        // qDebug("** min: %i, box: %i", min, lb->viewport()->width());
-        return QMAX( min, lb->viewport()->width() );
-    }
-    else
-        return min;
+        return sizeHint().width();
 }
 
 int KURLBarItem::height( const QListBox *lb ) const
 {
-    int min = 0;
-    bool horiz = (static_cast<const KURLBarListBox*>(lb)->orientation()
-                  == Qt::Horizontal);
-
-    if ( m_parent->iconSize() < KIcon::SizeMedium )
-        min = QListBoxPixmap::height( lb );
+    if ( static_cast<const KURLBarListBox *>( lb )->isVertical() )
+        return sizeHint().height();
     else
-        min = lb->fontMetrics().lineSpacing() + pixmap()->height() + 6;
-
-    if ( horiz )
-        return QMAX( min, lb->viewport()->height() );
-    else
-        return min;
+        return QMAX( sizeHint().height(), lb->viewport()->height() );
 }
 
 ///////////////////////////////////////////////////////////////////
@@ -228,8 +231,12 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
       m_iconSize( KIcon::SizeMedium )
 {
     setListBox( 0L );
-    setSizePolicy( QSizePolicy( isVertical() ? QSizePolicy::Maximum   : QSizePolicy::Preferred,
-                                isVertical() ? QSizePolicy::Preferred : QSizePolicy::Maximum ));
+    setSizePolicy( QSizePolicy( isVertical() ? 
+                                QSizePolicy::Maximum : 
+                                QSizePolicy::Preferred,
+                                isVertical() ? 
+                                QSizePolicy::Preferred : 
+                                QSizePolicy::Maximum ));
 }
 
 KURLBar::~KURLBar()
@@ -249,8 +256,12 @@ KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
 void KURLBar::setOrientation( Qt::Orientation orient )
 {
     m_listBox->setOrientation( orient );
-    setSizePolicy( QSizePolicy( isVertical() ? QSizePolicy::Maximum   : QSizePolicy::Preferred,
-                                isVertical() ? QSizePolicy::Preferred : QSizePolicy::Maximum ));
+    setSizePolicy( QSizePolicy( isVertical() ? 
+                                QSizePolicy::Maximum : 
+                                QSizePolicy::Preferred,
+                                isVertical() ? 
+                                QSizePolicy::Preferred : 
+                                QSizePolicy::Maximum ));
 }
 
 Qt::Orientation KURLBar::orientation() const
@@ -276,14 +287,17 @@ void KURLBar::setListBox( KURLBarListBox *view )
     m_listBox->setSelectionMode( KListBox::Single );
     QPalette pal = palette();
     QColor gray = pal.color( QPalette::Normal, QColorGroup::Mid );
+    QColor selectedTextColor = pal.color( QPalette::Normal, QColorGroup::BrightText );
     pal.setColor( QPalette::Normal,   QColorGroup::Base, gray );
+    pal.setColor( QPalette::Normal,   QColorGroup::HighlightedText, selectedTextColor );
     pal.setColor( QPalette::Inactive, QColorGroup::Base, gray );
+    pal.setColor( QPalette::Inactive, QColorGroup::HighlightedText, selectedTextColor );
 
     setPalette( pal );
     m_listBox->viewport()->setBackgroundMode( PaletteMid );
 
-    connect( m_listBox, SIGNAL( executed( QListBoxItem * ) ),
-             SLOT( slotSelected( QListBoxItem * )));
+    connect( m_listBox, SIGNAL( mouseButtonClicked( int, QListBoxItem *, const QPoint & ) ),
+             SLOT( slotSelected( int, QListBoxItem * )));
     connect( m_listBox, SIGNAL( dropped( QDropEvent * )),
              this, SLOT( slotDropped( QDropEvent * )));
     connect( m_listBox, SIGNAL( contextMenuRequested( QListBoxItem *,
@@ -305,6 +319,7 @@ void KURLBar::setIconSize( int size )
         item = static_cast<KURLBarItem*>( item->next() );
     }
 
+    resize( sizeHint() );
     updateGeometry();
 }
 
@@ -323,24 +338,29 @@ QSize KURLBar::sizeHint() const
 {
     int w = 0;
     int h = 0;
-    QListBoxItem *item;
+    KURLBarItem *item;
     bool vertical = isVertical();
 
-    for ( item = m_listBox->firstItem(); item; item = item->next() ) {
+    for ( item = static_cast<KURLBarItem*>( m_listBox->firstItem() );
+          item; 
+          item = static_cast<KURLBarItem*>( item->next() ) ) {
+
+        QSize sh = item->sizeHint();
+
         if ( vertical ) {
-            w = QMAX( w, item->width( m_listBox ) );
-            h += item->height( m_listBox );
+            w = QMAX( w, sh.width() );
+            h += sh.height();
         }
         else {
-            w += item->width( m_listBox );
-            h = QMAX( h, item->height( m_listBox ) );
+            w += sh.width();
+            h = QMAX( h, sh.height() );
         }
     }
 
-    if ( vertical && m_listBox->verticalScrollBar()->isVisible() )
-        w += m_listBox->verticalScrollBar()->width();
-    else if ( !vertical && m_listBox->horizontalScrollBar()->isVisible() )
-        h += m_listBox->horizontalScrollBar()->height();
+//     if ( vertical && m_listBox->verticalScrollBar()->isVisible() )
+//         w += m_listBox->verticalScrollBar()->width();
+//     else if ( !vertical && m_listBox->horizontalScrollBar()->isVisible() )
+//         h += m_listBox->horizontalScrollBar()->height();
 
     if ( w == 0 && h == 0 )
         return QSize( 100, 200 );
@@ -356,12 +376,22 @@ QSize KURLBar::minimumSizeHint() const
     return QSize( w, h );
 }
 
+void KURLBar::slotSelected( int button, QListBoxItem *item )
+{
+    if (button != Qt::LeftButton) 
+        return;
+
+    slotSelected(item);
+}
+
 void KURLBar::slotSelected( QListBoxItem *item )
 {
-    if ( item && item != m_activeItem ) {
-        KURLBarItem *it = static_cast<KURLBarItem*>( item );
-        m_activeItem = it;
-        emit activated( it->url() );
+    if ( item && item != m_activeItem )
+        m_activeItem = static_cast<KURLBarItem*>( item );
+    
+    if ( m_activeItem ) {
+        m_listBox->setCurrentItem( m_activeItem );
+        emit activated( m_activeItem->url() );
     }
 }
 
@@ -376,7 +406,9 @@ void KURLBar::setCurrentItem( const KURL& url )
     QListBoxItem *item = m_listBox->firstItem();
     while ( item ) {
         if ( static_cast<KURLBarItem*>( item )->url().url(-1) == u ) {
+            m_activeItem = static_cast<KURLBarItem*>( item );
             m_listBox->setCurrentItem( item );
+            m_listBox->setSelected( item, true );
             hasURL = true;
             break;
         }
@@ -384,8 +416,8 @@ void KURLBar::setCurrentItem( const KURL& url )
     }
 
     if ( !hasURL ) {
-        m_listBox->clearSelection();
         m_activeItem = 0L;
+        m_listBox->clearSelection();
     }
 }
 
@@ -410,7 +442,7 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 
     if ( m_useGlobal ) { // read global items
         KConfig *globalConfig = KGlobal::config();
-        KConfigGroupSaver cs( globalConfig, itemGroup + " (Global)");
+        KConfigGroupSaver cs( globalConfig, (QString)(itemGroup +" (Global)"));
         int num = globalConfig->readNumEntry( "Number of Entries" );
         for ( int i = 0; i < num; i++ ) {
             readItem( i, globalConfig, false );
@@ -533,9 +565,7 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
     static const int EditItem   = 30;
     static const int RemoveItem = 40;
 
-    // also emit activated(), as the item will be painted as "current" anyway
-    if ( item )
-        slotSelected( item );
+    KURL lastURL = m_activeItem ? m_activeItem->url() : KURL();
 
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
     QPopupMenu *popup = new QPopupMenu();
@@ -565,14 +595,16 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
             editItem( static_cast<KURLBarItem *>( item ) );
             break;
         case RemoveItem:
-            if ( item == m_activeItem )
-                m_activeItem = 0L;
             delete item;
             m_isModified = true;
             break;
         default: // abort
             break;
     }
+
+    // reset current item
+    m_activeItem = 0L;
+    setCurrentItem( lastURL );
 }
 
 bool KURLBar::addNewItem()

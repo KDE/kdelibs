@@ -29,6 +29,7 @@
 #include <qurl.h>
 #include <qdir.h>
 #include <qstringlist.h>
+#include <qregexp.h>
 
 #include <qtextcodec.h>
 #include <kcharsets.h>
@@ -97,7 +98,7 @@ static QString encode( const QString& segment, bool encode_slash, int encoding_h
   return result;
 }
 
-static char hex2int( unsigned int _char )
+static int hex2int( unsigned int _char )
 {
   if ( _char >= 'A' && _char <='F')
     return _char - 'A' + 10;
@@ -186,8 +187,8 @@ static QString decode( const QString& segment, bool *keepEncoded=0, int encoding
        bKeepEncoded = false;
     if (character == '%' )
     {
-      signed char a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
-      signed char b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
+      int a = i+1 < old_length ? hex2int( segment[i].latin1() ) : -1;
+      int b = i+1 < old_length ? hex2int( segment[i+1].latin1() ) : -1;
       if ((a == -1) || (b == -1)) // Only replace if sequence is valid
       {
          // Contains stray %, make sure to re-encode!
@@ -584,9 +585,9 @@ void KURL::parse( const QString& _url, int encoding_hint )
   // Node 4: Accept any amount of characters.
   if (buf[pos] == '[')     // An IPv6 host follows.
       goto Node8;
-  // Terminate on / or @ or ? or #
+  // Terminate on / or @ or ? or # or " or ; or <
   x = buf[pos];
-  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (pos < len) )
+  while( (x != ':') && (x != '@') && (x != '/') && (x != '?') && (x != '#') && (x != '\"') && (x != ';') && (x != '<') && (pos < len) )
      x = buf[++pos];
   if ( pos == len )
     {
@@ -1236,6 +1237,15 @@ QString KURL::prettyURL( int _trailing, AdjustementFlags _flags) const
 	if (_flags & StripFileProtocol && u.startsWith("file:"))
 		u.remove(0, 5);
 	return u;
+}
+
+QString KURL::htmlURL() const
+{
+  QString s = prettyURL();
+  s.replace(QRegExp("&"), QString("&amp;"));
+  s.replace(QRegExp("<"), QString("&lt;"));
+  s.replace(QRegExp(">"), QString("&gt;"));
+  return s;
 }
 
 KURL::List KURL::split( const KURL& _url )

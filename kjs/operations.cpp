@@ -220,8 +220,10 @@ int KJS::minInt(int d1, int d2)
 // ECMA 11.6
 Value KJS::add(ExecState *exec, const Value &v1, const Value &v2, char oper)
 {
-  Value p1 = v1.toPrimitive(exec);
-  Value p2 = v2.toPrimitive(exec);
+  // exception for the Date exception in defaultValue()
+  Type preferred = oper == '+' ? UnspecifiedType : NumberType;
+  Value p1 = v1.toPrimitive(exec, preferred);
+  Value p2 = v2.toPrimitive(exec, preferred);
 
   if ((p1.type() == StringType || p2.type() == StringType) && oper == '+') {
     UString s1 = p1.toString(exec);
@@ -242,17 +244,17 @@ Value KJS::add(ExecState *exec, const Value &v1, const Value &v2, char oper)
 // ECMA 11.5
 Value KJS::mult(ExecState *exec, const Value &v1, const Value &v2, char oper)
 {
-  Number n1 = v1.toNumber(exec);
-  Number n2 = v2.toNumber(exec);
+  double n1 = v1.toNumber(exec);
+  double n2 = v2.toNumber(exec);
 
   double result;
 
   if (oper == '*')
-    result = n1.value() * n2.value();
+    result = n1 * n2;
   else if (oper == '/')
-    result = n1.value() / n2.value();
+    result = n1 / n2;
   else
-    result = fmod(n1.value(), n2.value());
+    result = fmod(n1, n2);
 
   return Number(result);
 }

@@ -41,7 +41,7 @@
 
 #include "khtmlview.h"
 #include "khtml_ext.h"
-#include "xml/dom_docimpl.h" // ### remove dependency
+#include "xml/dom_docimpl.h"
 
 #include <kdebug.h>
 
@@ -65,7 +65,7 @@ RenderFormElement::~RenderFormElement()
 
 short RenderFormElement::baselinePosition( bool f ) const
 {
-    return RenderWidget::baselinePosition( f ) - 2 - QFontMetrics( style()->font() ).descent();
+    return RenderWidget::baselinePosition( f ) - 2 - style()->fontMetrics().descent();
 }
 
 short RenderFormElement::calcReplacedWidth(bool*) const
@@ -101,36 +101,36 @@ void RenderFormElement::updateFromElement()
         int lowlightVal = 100 + (2*contrast_+4)*10;
 
         if (backgroundColor.isValid()) {
-            pal.setColor(QPalette::Active,QColorGroup::Background,backgroundColor);
-            pal.setColor(QPalette::Active,QColorGroup::Light,backgroundColor.light(highlightVal));
-            pal.setColor(QPalette::Active,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
-            pal.setColor(QPalette::Active,QColorGroup::Mid,backgroundColor.dark(120));
-            pal.setColor(QPalette::Active,QColorGroup::Midlight, backgroundColor.light(110));
-            pal.setColor(QPalette::Active,QColorGroup::Button,backgroundColor);
-            pal.setColor(QPalette::Active,QColorGroup::Base,backgroundColor);
-            pal.setColor(QPalette::Inactive,QColorGroup::Background,backgroundColor);
-            pal.setColor(QPalette::Inactive,QColorGroup::Light,backgroundColor.light(highlightVal));
-            pal.setColor(QPalette::Inactive,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
-            pal.setColor(QPalette::Inactive,QColorGroup::Mid,backgroundColor.dark(120));
-            pal.setColor(QPalette::Inactive,QColorGroup::Midlight, backgroundColor.light(110));
-            pal.setColor(QPalette::Inactive,QColorGroup::Button,backgroundColor);
-            pal.setColor(QPalette::Inactive,QColorGroup::Base,backgroundColor);
-            pal.setColor(QPalette::Disabled,QColorGroup::Background,backgroundColor);
-            pal.setColor(QPalette::Disabled,QColorGroup::Light,backgroundColor.light(highlightVal));
-            pal.setColor(QPalette::Disabled,QColorGroup::Dark,backgroundColor.dark(lowlightVal));
-            pal.setColor(QPalette::Disabled,QColorGroup::Mid,backgroundColor.dark(120));
-            pal.setColor(QPalette::Disabled,QColorGroup::Text,backgroundColor.dark(120));
-            pal.setColor(QPalette::Disabled,QColorGroup::Midlight, backgroundColor.light(110));
-            pal.setColor(QPalette::Disabled,QColorGroup::Button, backgroundColor);
-            pal.setColor(QPalette::Disabled,QColorGroup::Base,backgroundColor);
+	    for ( int i = 0; i < QPalette::NColorGroups; i++ ) {
+		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Background, backgroundColor );
+		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Light, backgroundColor.light(highlightVal) );
+		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Dark, backgroundColor.dark(lowlightVal) );
+		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Mid, backgroundColor.dark(120) );
+		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Midlight, backgroundColor.light(110) );
+		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Button, backgroundColor );
+		pal.setColor( (QPalette::ColorGroup)i, QColorGroup::Base, backgroundColor );
+	    }
         }
         if ( color.isValid() ) {
-            pal.setColor(QPalette::Active,QColorGroup::Foreground,color);
-            pal.setColor(QPalette::Active,QColorGroup::ButtonText,color);
-            pal.setColor(QPalette::Active,QColorGroup::Text,color);
-            pal.setColor(QPalette::Inactive,QColorGroup::Foreground,color);
-            pal.setColor(QPalette::Inactive,QColorGroup::ButtonText,color);
-            pal.setColor(QPalette::Inactive,QColorGroup::Text,color);
+	    struct ColorSet {
+		QPalette::ColorGroup cg;
+		QColorGroup::ColorRole cr;
+	    };
+	    const struct ColorSet toSet [] = {
+		{ QPalette::Active, QColorGroup::Foreground },
+		{ QPalette::Active, QColorGroup::ButtonText },
+		{ QPalette::Active, QColorGroup::Text },
+		{ QPalette::Inactive, QColorGroup::Foreground },
+		{ QPalette::Inactive, QColorGroup::ButtonText },
+		{ QPalette::Inactive, QColorGroup::Text },
+		{ QPalette::Disabled,QColorGroup::ButtonText },
+		{ QPalette::NColorGroups, QColorGroup::NColorRoles },
+	    };
+	    const ColorSet *set = toSet;
+	    while( set->cg != QPalette::NColorGroups ) {
+		pal.setColor( set->cg, set->cr, color );
+		++set;
+	    }
 
             QColor disfg = color;
             int h, s, v;
@@ -138,14 +138,13 @@ void RenderFormElement::updateFromElement()
             if (v > 128)
                 // dark bg, light fg - need a darker disabled fg
                 disfg = disfg.dark(lowlightVal);
-            else if (disfg != black)
+            else if (disfg != Qt::black)
                 // light bg, dark fg - need a lighter disabled fg - but only if !black
                 disfg = disfg.light(highlightVal);
             else
                 // black fg - use darkgrey disabled fg
                 disfg = Qt::darkGray;
             pal.setColor(QPalette::Disabled,QColorGroup::Foreground,disfg);
-            pal.setColor(QPalette::Disabled,QColorGroup::ButtonText, color);
         }
 
         m_widget->setPalette(pal);
@@ -166,8 +165,9 @@ void RenderFormElement::layout()
     calcHeight();
 
     if ( m_widget )
-        m_widget->resize( m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
-                          m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
+        resizeWidget(m_widget,
+                     m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
+                     m_height-borderLeft()-borderRight()-paddingLeft()-paddingRight());
 
     if ( !style()->width().isPercent() )
         setLayouted();
@@ -175,14 +175,12 @@ void RenderFormElement::layout()
 
 void RenderFormElement::slotClicked()
 {
-    if(isRenderButton()) {
-        ref();
-        QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
+    ref();
+    QMouseEvent e2( QEvent::MouseButtonRelease, m_mousePos, m_button, m_state);
 
-        element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
-        m_isDoubleClick = false;
-        deref();
-    }
+    element()->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
+    m_isDoubleClick = false;
+    deref();
 }
 
 // -------------------------------------------------------------------------
@@ -257,7 +255,7 @@ void RenderRadioButton::updateFromElement()
 
 void RenderRadioButton::slotClicked()
 {
-    element()->setChecked(widget()->isChecked());
+    element()->setChecked(true);
 
     // emit mouseClick event etc
     RenderButton::slotClicked();
@@ -307,21 +305,21 @@ void RenderSubmitButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     QString raw = rawText();
-    static_cast<QPushButton*>(m_widget)->setText(raw);
-    static_cast<QPushButton*>(m_widget)->setFont(style()->font());
+    QPushButton* pb = static_cast<QPushButton*>(m_widget);
+    pb->setText(raw);
+    pb->setFont(style()->font());
 
-    // this is a QLineEdit/RenderLineEdit compatible sizehint
-    QFontMetrics fm = QFontMetrics( m_widget->font() );
-    m_widget->constPolish();
-    QSize ts = fm.size( ShowPrefix, raw );
-    int h = ts.height() + 8;
-    int w = ts.width() + 2*fm.width( ' ' );
-    if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
-        h = 22;
-    QSize s = QSize( w + 8, h ).expandedTo( m_widget->minimumSizeHint()).expandedTo( QApplication::globalStrut() );
+    bool empty = raw.isEmpty();
+    if ( empty )
+        raw = QString::fromLatin1("XXXX");
+    QFontMetrics fm = pb->fontMetrics();
+    int margin = pb->style().pixelMetric( QStyle::PM_ButtonMargin, pb);
+    QSize s(pb->style().sizeFromContents(
+                QStyle::CT_PushButton, pb, fm.size( ShowPrefix, raw))
+            .expandedTo(QApplication::globalStrut()));
 
-    setIntrinsicWidth( s.width() );
-    setIntrinsicHeight( s.height() );
+    setIntrinsicWidth( s.width() - margin / 2 );
+    setIntrinsicHeight( s.height() - margin / 2);
 
     RenderButton::calcMinMaxWidth();
 }
@@ -466,22 +464,11 @@ void RenderLineEdit::calcMinMaxWidth()
 
     int size = element()->size();
 
-    int h = fm.height();
+    int h = fm.lineSpacing();
     int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
-    if ( widget()->frame() ) {
-        h += 8;
-        // ### this is not really portable between all styles.
-        // I think one should try to find a generic solution which
-        // works with all possible styles. Lars.
-        // ### well, it is. it's the 1:1 copy of QLineEdit::sizeHint()
-        // the only reason that made me including this thingie is
-        // that I cannot get a sizehint for a specific number of characters
-        // in the lineedit from it. It's not my fault, it's Qt's. Dirk
-        if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
-            h = 22;
-        s = QSize( w + 8, h ).expandedTo( QApplication::globalStrut() );
-    } else
-	s = QSize( w + 4, h + 4 ).expandedTo( QApplication::globalStrut() );
+    s = QSize(w + 2 + 2*widget()->frameWidth(),
+              QMAX(h, 14) + 2 + 2*widget()->frameWidth())
+        .expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
@@ -491,21 +478,23 @@ void RenderLineEdit::calcMinMaxWidth()
 
 void RenderLineEdit::updateFromElement()
 {
+    int ml = element()->maxLength();
+    if ( ml < 0 || ml > 1024 )
+        ml = 1024;
+    if ( widget()->maxLength() != ml )
+        widget()->setMaxLength( ml );
+
     if (element()->value().string() != widget()->text()) {
         widget()->blockSignals(true);
         int pos = widget()->cursorPosition();
         widget()->setText(element()->value().string());
 
-        int ml = element()->maxLength();
-        if ( ml < 0 || ml > 1024 )
-            ml = 1024;
-        if ( widget()->maxLength() != ml )
-            widget()->setMaxLength( ml );
         widget()->setEdited( false );
 
         widget()->setCursorPosition(pos);
         widget()->blockSignals(false);
     }
+    widget()->setReadOnly(element()->readOnly());
 
     RenderFormElement::updateFromElement();
 }
@@ -559,17 +548,12 @@ void RenderFileButton::calcMinMaxWidth()
     QSize s;
     int size = element()->size();
 
-    int h = fm.height();
-    int w = fm.width( 'x' ) * (size > 0 ? size : 17);
-    w += fm.width( m_button->text() ) + 2*fm.width( ' ' );
-
-    if ( m_edit->frame() ) {
-        h += 8;
-        if ( m_widget->style().styleHint(QStyle::SH_GUIStyle) == Qt::WindowsStyle && h < 26 )
-            h = 22;
-        s = QSize( w + 8, h );
-    } else
-        s = QSize( w + 4, h + 4 );
+    int h = fm.lineSpacing();
+    int w = fm.width( 'x' ) * (size > 0 ? size : 17); // "some"
+    w += 6 + fm.width( m_button->text() ) + 2*fm.width( ' ' );
+    s = QSize(w + 2 + 2*m_edit->frameWidth(),
+              QMAX(h, 14) + 2 + 2*m_edit->frameWidth())
+        .expandedTo(QApplication::globalStrut());
 
     setIntrinsicWidth( s.width() );
     setIntrinsicHeight( s.height() );
@@ -960,6 +944,7 @@ KListBox* RenderSelect::createListBox()
     // ### looks broken
     //lb->setAutoMask(true);
     connect( lb, SIGNAL( selectionChanged() ), this, SLOT( slotSelectionChanged() ) );
+    connect( lb, SIGNAL( clicked( QListBoxItem * ) ), this, SLOT( slotClicked() ) );
     m_ignoreSelectEvents = false;
     lb->setMouseTracking(true);
 
@@ -986,19 +971,20 @@ void RenderSelect::updateSelection()
     }
     else {
         bool found = false;
-        for (i = 0; i < int(listItems.size()); i++)
-            if (listItems[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
-                static_cast<KComboBox*>(m_widget)->setCurrentItem(i);
-                found = true;
-                break;
+        unsigned firstOption = listItems.size();
+        i = listItems.size();
+        while (i--)
+            if (listItems[i]->id() == ID_OPTION) {
+                if (found)
+                    static_cast<HTMLOptionElementImpl*>(listItems[i])->m_selected = false;
+                else if (static_cast<HTMLOptionElementImpl*>(listItems[i])->selected()) {
+                    static_cast<KComboBox*>( m_widget )->setCurrentItem(i);
+                    found = true;
+                }
+                firstOption = i;
             }
-        // ok, nothing was selected, select the first one..
-        for (i = 0; !found && i < int(listItems.size()); i++)
-            if ( listItems[i]->id() == ID_OPTION ) {
-//                static_cast<HTMLOptionElementImpl*>( listItems[i] )->m_selected = true;
-                static_cast<KComboBox*>( m_widget )->setCurrentItem( i );
-                break;
-            }
+
+        Q_ASSERT(firstOption == listItems.size() || found);
     }
 
     m_selectionChanged = false;
@@ -1008,7 +994,7 @@ void RenderSelect::updateSelection()
 // -------------------------------------------------------------------------
 
 TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
-    : QTextEdit(parent)
+    : KTextEdit(parent)
 {
     if(wrap != DOM::HTMLTextAreaElementImpl::ta_NoWrap) {
         setWordWrap(QTextEdit::WidgetWidth);
@@ -1020,7 +1006,7 @@ TextAreaWidget::TextAreaWidget(int wrap, QWidget* parent)
         setHScrollBarMode( Auto );
         setVScrollBarMode( Auto );
     }
-    KCursor::setAutoHideCursor(this, true);
+    KCursor::setAutoHideCursor(viewport(), true);
     setTextFormat(QTextEdit::PlainText);
     setAutoMask(true);
     setMouseTracking(true);
@@ -1044,7 +1030,7 @@ bool TextAreaWidget::event( QEvent *e )
             }
         }
     }
-    return QTextEdit::event( e );
+    return KTextEdit::event( e );
 }
 
 // -------------------------------------------------------------------------
@@ -1082,6 +1068,7 @@ void RenderTextArea::calcMinMaxWidth()
 
     TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
     const QFontMetrics &m = style()->fontMetrics();
+    w->setTabStopWidth(8 * m.width(" "));
     QSize size( QMAX(element()->cols(), 1)*m.width('x') + w->frameWidth() +
                 w->verticalScrollBar()->sizeHint().width(),
                 QMAX(element()->rows(), 1)*m.height() + w->frameWidth()*2 +

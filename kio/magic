@@ -216,6 +216,19 @@
 >>18	string		application/x-kivio\004\006	application/x-kivio
 >>18	string		application/x-karbon\004\006	application/x-karbon
 
+#KOffice documents post v1.1 (may 1 2002) using zip as a wrapper
+0    string   PK\003\004                  application/x-zip 
+>30  string   mimetype
+>>38 string   application/x-kchart        application/x-kchart
+>>38 string   application/x-kformula      application/x-kformula
+>>38 string   application/x-kontour       application/x-kontour
+>>38 string   application/x-kpresenter    application/x-kpresenter
+>>38 string   application/x-kspread       application/x-kspread
+>>38 string   application/x-krita         application/x-krita
+>>38 string   application/x-kword         application/x-kword
+>>38 string   application/x-kivio         application/x-kivio
+>>38 string   application/x-karbon        application/x-karbon
+
 # BZIP2
 0	string          BZh             application/x-bzip2
 
@@ -301,7 +314,7 @@
 # crunched
 0	lelong&0x8080ffff	0x0000061a	application/x-arc
 
-0	leshort	0xea60	application/octet-stream	x-arj
+0	leshort			0xea60		x-arj
 
 # LHARC/LHA archiver (Greg Roelofs, newt@uchicago.edu)
 2	string	-lh0-	application/x-lharc
@@ -471,7 +484,7 @@
 0	string		\320\317\021\340\241\261	application/msword
 0	string		\333\245-\0\0\0			application/msword
 2080    string		Microsoft\ Word\ 6.0\ Document  application/msword
-2112    string          Microsoft Word document data    application/msword
+2112    string          Microsoft\ Word\ document\ data application/msword
 
 # excel
 2080    string  Microsoft\ Excel\ 5.0\ Worksheet	application/msexcel
@@ -687,13 +700,13 @@
 # adi: file(1) magic for ADi's objects
 # From Gregory McGarry <g.mcgarry@ieee.org>
 #
-0	leshort		0x521c		application/x-executable # COFF DSP21k
->18	lelong		&02		application/x-executable # executable,
+0	leshort		0x521c		application/x-executable
+>18	lelong		&02		application/x-executable
 >18	lelong		^02
->>18	lelong		&01		application/x-executable # static object,
->>18	lelong		^01		application/x-executable # relocatable object,
->18	lelong		&010		application/x-executable # stripped
->18	lelong		^010		application/x-executable # not stripped
+>>18	lelong		&01		application/x-executable
+>>18	lelong		^01		application/x-executable
+>18	lelong		&010		application/x-executable
+>18	lelong		^010		application/x-executable
 
 #------------------------------------------------------------------------------
 # alliant:  file(1) magic for Alliant FX series a.out files
@@ -705,26 +718,26 @@
 # big-endian or little-endian versions, depending on the mode they ran
 # the 860 in....
 #
-0	short		0420		application/x-executable # 0420 Alliant virtual executable
->2	short		&0x0020		application/x-sharedlib # common library
->16	long		>0		application/x-sharedlib # not stripped
-0	short		0421		application/x-executable # 0421 Alliant compact executable
->2	short		&0x0020		application/x-sharedlib # common library
->16	long		>0		application/x-sharedlib # not stripped
+0	short		0420		application/x-executable
+>2	short		&0x0020		application/x-sharedlib
+>16	long		>0		application/x-sharedlib
+0	short		0421		application/x-executable
+>2	short		&0x0020		application/x-sharedlib
+>16	long		>0		application/x-sharedlib
 #-----------------------------------------------------------
 
 # alpha architecture description
 #
 
-0	leshort		0603		application/x-executable #  COFF format alpha
->22	leshort&030000	!020000		application/x-executable # executable
->24	leshort		0410		application/x-executable # pure
->24	leshort		0413		application/x-executable # paged
->22	leshort&020000	!0		application/x-executable # dynamically linked
->16	lelong		!0		application/x-executable # not stripped
->16	lelong		0		application/x-executable # stripped
->22	leshort&030000	020000		application/x-sharedlib # shared library
->24	leshort		0407		application/x-executable # object
+0	leshort		0603		application/x-executable
+>22	leshort&030000	!020000		application/x-executable
+>24	leshort		0410		application/x-executable
+>24	leshort		0413		application/x-executable
+>22	leshort&020000	!0		application/x-executable
+>16	lelong		!0		application/x-executable
+>16	lelong		0		application/x-executable
+>22	leshort&030000	020000		application/x-sharedlib
+>24	leshort		0407		application/x-executable
 
 # Basic recognition of Digital UNIX core dumps - Mike Bremford <mike@opac.bl.uk>
 #
@@ -734,8 +747,8 @@
 # byte of the version number as well; DU 5.0 appears only to be up to
 # version 2.
 #
-0	string		Core\001	application/x-core # Alpha COFF format core dump (Digital UNIX)
-0	string		Core\002	application/x-core # Alpha COFF format core dump (Digital UNIX)
+0	string		Core\001	application/x-core
+0	string		Core\002	application/x-core
 
 #------------------------------------------------------------------------------
 # amigaos:  file(1) magic for AmigaOS binary formats:
@@ -745,10 +758,10 @@
 # Some formats are still missing: AmigaOS special IFF's, e.g.: FORM....CTLG
 # (the others should be separate, anyway)
 #
-0	belong		0x000003f3	application/x-executable # AmigaOS loadseg()ble executable/binary
-0	belong		0x000003e7	application/x-sharedlib # AmigaOS object/library data 
+0	belong		0x000003f3	application/x-executable
+0	belong		0x000003e7	application/x-sharedlib
 
 0 	string		%TGIF		application/x-tgif	
 
 0 	string		#FIG		application/x-xfig
-0	string		#LyX 1		application/x-lyx
+0	string		#LyX\ 1		application/x-lyx

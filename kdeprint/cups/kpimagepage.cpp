@@ -77,7 +77,9 @@ KPImagePage::KPImagePage(DrMain *driver, QWidget *parent, const char *name)
 	m_sizetype = new QComboBox(sizebox);
 	m_sizetype->insertItem(i18n("Natural Image Size"));
 	m_sizetype->insertItem(i18n("Resolution (ppi)"));
+	// xgettext:no-c-format
 	m_sizetype->insertItem(i18n("% of Page"));
+	// xgettext:no-c-format
 	m_sizetype->insertItem(i18n("% of Natural Image Size"));
 	m_size = new KIntNumInput(sizebox);
 	m_size->setRange(1, 1200, 20, true);

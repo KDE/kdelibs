@@ -760,6 +760,8 @@ Scheduler::slotSlaveConnected()
     Slave *slave = (Slave *)sender();
 //    kdDebug(7006) << "slotSlaveConnected( " << slave << ")" << endl;
     slave->setConnected(true);
+    disconnect(slave, SIGNAL(connected()),
+               this, SLOT(slotSlaveConnected()));
     emit slaveConnected(slave);
     assert(!coIdleSlaves->contains(slave));
     coIdleSlaves->append(slave);

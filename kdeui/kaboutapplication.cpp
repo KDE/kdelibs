@@ -138,6 +138,8 @@ void KAboutApplication::buildDialog( const KAboutData *aboutData )
 
       QLabel *label = new QLabel(KAboutData::aboutTranslationTeam()
               ,translatorPage);
+	  label->adjustSize();
+	  label->setMinimumSize(label->sizeHint());
       translatorPage->addWidget(label);
   }
 

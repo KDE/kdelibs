@@ -33,7 +33,7 @@ Comment[lt]=Priedas savybių dialogui
 Comment[lv]=Īpašību Dialoga Iespraudnis
 Comment[mk]=Плагин за дијалогот за параметри
 Comment[mt]=Plugin għad-djalogu tal-propjetajiet
-Comment[nb]=Plugin for egenskaper-dialogen
+Comment[nb]=Tilleggsmodul for egenskaper-dialogen
 Comment[nl]=Plugin voor het 'Eigenschappen'-dialoog
 Comment[nn]=Tillegg til eigenskapar-dialogen
 Comment[oc]=Branquament pel dialeg de propietats
@@ -51,11 +51,11 @@ Comment[th]=ปลั๊กอินสำหรับกล่องคุณ�
 Comment[tr]=Özellikler İletişim Kutusu İçin Eklenti
 Comment[uk]=Додаток для діалогу властивостей
 Comment[ven]=U pulaga ha zwishumiswa zwa nyambedzano
-Comment[vi]=Plugin cho tính chất của hộp thoại 
+Comment[vi]=Plugin cho hộp thoại thuộc tính
 Comment[xh]=Iplagi efakiweyo yempahla yencoko yababini
 Comment[xx]=xx
 Comment[zh_CN]=属性对话的插件
-Comment[zh_TW]=屬性對話的外掛程式
+Comment[zh_TW]=屬性對話盒的外掛程式
 Comment[zu]=Iplagi efakiweyo Yempahla Yegxoxo
 
 [PropertyDef::X-KDE-Protocol]

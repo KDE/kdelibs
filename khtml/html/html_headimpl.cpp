@@ -163,7 +163,9 @@ void HTMLLinkElementImpl::process()
     KHTMLPart* part = getDocument()->view() ? getDocument()->view()->part() : 0;
 
     // IE extension: location of small icon for locationbar / bookmarks
-    if ( part && rel.contains("shortcut icon") && !m_url.isEmpty() && !part->parentPart())
+    // Uses both "shortcut icon" and "icon"
+   
+    if ( part && rel.contains("icon") && !m_url.isEmpty() && !part->parentPart())
         part->browserExtension()->setIconURL( KURL(m_url.string()) );
 
     // Stylesheet

@@ -64,7 +64,7 @@ void CupsLocationDialog::loadLocation(CupsLocation *loc)
 void CupsLocationDialog::saveLocation(CupsLocation *loc)
 {
 	if (!general_->isValid())
-		KMessageBox::error(this, i18n("You must specify a resource name !"));
+		KMessageBox::error(this, i18n("You must specify a resource name!"));
 	else
 	{
 		general_->saveLocation(loc);
@@ -78,7 +78,7 @@ void CupsLocationDialog::done(int result)
 	{
 		if (!general_->isValid())
 		{
-			KMessageBox::error(this, i18n("You must specify a resource name !"));
+			KMessageBox::error(this, i18n("You must specify a resource name!"));
 			return;
 		}
 	}

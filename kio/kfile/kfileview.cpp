@@ -22,6 +22,8 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include <qguardedptr.h>
+
 #include <kaction.h>
 #include <kapplication.h>
 #include <kdebug.h>
@@ -54,7 +56,7 @@ public:
         }
     }
 
-    KActionCollection *actions;
+    QGuardedPtr<KActionCollection> actions;
 };
 
 

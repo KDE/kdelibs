@@ -42,6 +42,7 @@
 #include "html/dtd.h"
 #include "xml/dom2_eventsimpl.h"
 #include "html/html_documentimpl.h"
+#include <math.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -72,11 +73,11 @@ void RenderImage::setStyle(RenderStyle* _style)
     setOverhangingContents(style()->height().isPercent());
     setSpecialObjects(true);
 
-    if (style()->contentObject())
-    {
+    CachedObject* co = style()->contentObject();
+    if (co && image != co ) {
         if (image) image->deref(this);
         image = static_cast<CachedImage*>(style()->contentObject());
-        image->ref(this);
+        if (image) image->ref(this);
     }
 }
 
@@ -94,7 +95,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         int ih = p.height() + 8;
 
         // we have an alt and the user meant it (its not a text we invented)
-        if ( !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
+        if ( element() && !alt.isEmpty() && !element()->getAttribute( ATTR_ALT ).isNull()) {
             const QFontMetrics &fm = style()->fontMetrics();
             QRect br = fm.boundingRect (  0, 0, 1024, 256, Qt::AlignAuto|Qt::WordBreak, alt.string() );
             if ( br.width() > iw )
@@ -301,6 +302,19 @@ void RenderImage::layout()
     calcWidth();
     calcHeight();
 
+    // if they are variable width and we calculate a huge height or width, we assume they
+    // actually wanted the intrinsic width.
+    if ( m_width > 2048 && !style()->width().isFixed() )
+	m_width = intrinsicWidth();
+    if ( m_height > 2048 && !style()->height().isFixed() )
+	m_height = intrinsicHeight();
+    // limit total size to not run out of memory when doing the xform call.
+    if ( m_width * m_height > 2048*2048 ) {
+	float scale = sqrt( m_width*m_height / ( 2048.*2048. ) );
+	m_width = (int) (m_width/scale);
+	m_height = (int) (m_height/scale);
+    }
+    
     if ( m_width != oldwidth || m_height != oldheight )
         resizeCache = QPixmap();
 
@@ -309,7 +323,7 @@ void RenderImage::layout()
 
 void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
-    if (image == finishedObj && !loadEventSent) {
+    if (image == finishedObj && !loadEventSent && element()) {
         loadEventSent = true;
         element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
     }
@@ -339,11 +353,10 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
 void RenderImage::updateFromElement()
 {
-    assert(element());
     CachedImage *new_image = element()->getDocument()->docLoader()->
                              requestImage(khtml::parseURL(element()->getAttribute(ATTR_SRC)));
 
-    if(new_image && new_image != image) {
+    if(new_image && new_image != image && (!style() || !style()->contentObject())) {
         loadEventSent = false;
         if(image) image->deref(this);
         image = new_image;

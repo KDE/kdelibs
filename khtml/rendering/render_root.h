@@ -67,6 +67,8 @@ public:
     bool printingMode() const { return m_printingMode; }
     void setPrintImages(bool enable) { m_printImages = enable; }
     bool printImages() const { return m_printImages; }
+    void setTruncatedAt(int y) { m_truncatedAt = y; }
+    int truncatedAt() const { return m_truncatedAt; }
 
     virtual void setWidth( int width ) { m_rootWidth = m_width = width; }
     virtual void setHeight( int height ) { m_rootHeight = m_height = height; }
@@ -90,6 +92,7 @@ protected:
     // used to ignore viewport width when printing to the printer
     bool m_printingMode;
     bool m_printImages;
+    int m_truncatedAt;
 };
 
 };

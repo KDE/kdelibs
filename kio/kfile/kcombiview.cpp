@@ -51,6 +51,9 @@ KCombiView::KCombiView( QWidget *parent, const char *name)
     dirs->setParentView( this );
     left = dirs;
 
+    m_lastViewForNextItem = 0L;
+    m_lastViewForPrevItem = 0L;
+
     connect( left->signaler(), SIGNAL( sortingChanged( QDir::SortSpec ) ),
              SLOT( slotSortingChanged( QDir::SortSpec ) ));
 }
@@ -98,7 +101,7 @@ void KCombiView::setSorting( QDir::SortSpec sort )
     if ( !right )
         kdFatal() << "You need to call setRight( someview ) before!" << endl;
     right->setSorting( sort );
-    left->KFileView::setSorting( sort );
+    left->setSorting( sort );
 
     KFileView::setSorting( right->sorting() );
 }
@@ -205,12 +208,12 @@ KFileItem * KCombiView::currentFileItem() const
     // Smarter: if the right view has focus, prefer that over the left.
     if ( !right )
         return left->currentFileItem();
-    
+
     KFileView *preferredView = focusView( right );
     KFileItem *item = preferredView->currentFileItem();
     if ( !item && preferredView != left )
         item = left->currentFileItem();
-    
+
     return item;
 }
 
@@ -225,7 +228,7 @@ KFileItem * KCombiView::firstFileItem() const
 {
     if ( !right )
         return left->firstFileItem();
-    
+
     KFileView *preferredView = focusView( left );
     KFileView *otherView = (preferredView == left) ? right : left;
     KFileItem *item = preferredView->firstFileItem();
@@ -239,12 +242,24 @@ KFileItem * KCombiView::nextItem( const KFileItem *fileItem ) const
 {
     if ( !right )
         return left->nextItem( fileItem );
-    
+
     KFileView *preferredView = focusView( left );
     KFileView *otherView = (preferredView == left) ? right : left;
     KFileItem *item = preferredView->nextItem( fileItem );
-    if ( !item )
+    if ( item )
+        m_lastViewForNextItem = preferredView;
+
+    else { // no item, check other view
+        // when changing from one to another view, we need to continue
+        // with the next view's first item!
+        if ( m_lastViewForNextItem != otherView ) {
+            m_lastViewForNextItem = otherView;
+            return otherView->firstFileItem();
+        }
+
         item = otherView->nextItem( fileItem );
+        m_lastViewForNextItem = otherView;
+    }
 
     return item;
 }
@@ -253,12 +268,25 @@ KFileItem * KCombiView::prevItem( const KFileItem *fileItem ) const
 {
     if ( !right )
         return left->nextItem( fileItem );
-    
+
     KFileView *preferredView = focusView( left );
     KFileView *otherView = (preferredView == left) ? right : left;
     KFileItem *item = preferredView->prevItem( fileItem );
-    if ( !item )
+    if ( item )
+        m_lastViewForPrevItem = preferredView;
+
+    else { // no item, check other view
+        // when changing from one to another view, we need to continue
+        // with the next view's last item!
+        if ( m_lastViewForPrevItem != otherView ) {
+            fileItem = otherView->firstFileItem();
+            while ( otherView->nextItem( fileItem ) ) // find the last item
+                fileItem = otherView->nextItem( fileItem );
+        }
+
         item = otherView->prevItem( fileItem );
+        m_lastViewForPrevItem = otherView;
+    }
 
     return item;
 }

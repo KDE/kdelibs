@@ -441,7 +441,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
      {
        QCString procTitle( name );
        d.argv = (char **) malloc(sizeof(char *) * (argc+1));
-       d.argv[0] = name.data();
+       d.argv[0] = (char *) _name;
        for (int i = 1;  i < argc; i++)
        {
           d.argv[i] = (char *) args;

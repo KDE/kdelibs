@@ -210,7 +210,7 @@ QString KFileMetaInfoItem::string( bool mangle ) const
             break;
 
         case QVariant::DateTime :
-            s = KGlobal::locale()->formatDateTime( d->value.toDate(),
+            s = KGlobal::locale()->formatDateTime( d->value.toDateTime(),
                                                    true, true );
             break;
 
@@ -348,9 +348,12 @@ KFileMetaInfo::KFileMetaInfo( const QString& path, const QString& mimeType,
     if ( d->mimeTypeInfo )
     {
         kdDebug(7033) << "Found mimetype info for " << mT << endl;
-        if (!plugin()->readInfo( item, what)) *this=KFileMetaInfo();
+        KFilePlugin *p = plugin();
+        if (p && !p->readInfo( item, what))
+            *this=KFileMetaInfo();
     }
-    else {
+    else 
+    {
         kdDebug(7033) << "No mimetype info for " << mimeType << endl;
         d = Data::makeNull();
     }
@@ -584,8 +587,8 @@ QString KFileMetaInfo::mimeType() const
 
 bool KFileMetaInfo::contains(const QString& key) const
 {
-    QStringList groups = preferredGroups();
-    for (QStringList::Iterator it = groups.begin(); it != groups.end(); ++it)
+    QStringList glist = groups();
+    for (QStringList::Iterator it = glist.begin(); it != glist.end(); ++it)
     {
         KFileMetaInfoGroup g = d->groups[*it];
         if (g.contains(key)) return true;
@@ -650,7 +653,6 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
     QStringList groups = preferredGroups();
 
     KFileMetaInfoItem item;
-    bool ok = false;
 
     QStringList::ConstIterator groupIt = groups.begin();
     for ( ; groupIt != groups.end(); ++groupIt )
@@ -659,8 +661,8 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
         if ( it != d->groups.end() ) 
         {
             KFileMetaInfoGroup group = it.data();
-            item = findEditableItem( group, key, ok );
-            if ( ok )
+            item = findEditableItem( group, key );
+            if ( item.isValid() )
                 return item;
         }
         else // not existant -- try to create the group
@@ -688,8 +690,7 @@ KFileMetaInfoItem KFileMetaInfo::saveItem( const QString& key,
 }
 
 KFileMetaInfoItem KFileMetaInfo::findEditableItem( KFileMetaInfoGroup& group, 
-                                                   const QString& key, 
-                                                   bool& valid )
+                                                   const QString& key )
 {
     KFileMetaInfoItem item = group.addItem( key );
     if ( item.isValid() && item.isEditable() )
@@ -1236,9 +1237,15 @@ KFileMetaInfoItem KFileMetaInfoGroup::appendItem(const QString& key,
                                                  const QVariant& value)
 {
     const KFileMimeTypeInfo::GroupInfo* ginfo = d->mimeTypeInfo->groupInfo(d->name);
+    if ( !ginfo ) {
+        kdWarning() << "Trying to append a Metadata item for a non-existant group:" << d->name << endl;
+        return KFileMetaInfoItem();
+    }
     const KFileMimeTypeInfo::ItemInfo* info = ginfo->itemInfo(key);
-
-    Q_ASSERT(info);
+    if ( !info ) {
+        kdWarning() << "Trying to append a Metadata item for an unknown key (no ItemInfo): " << key << endl;
+        return KFileMetaInfoItem();
+    }
 
     KFileMetaInfoItem item;
 
@@ -1505,6 +1512,14 @@ QDataStream& operator >>(QDataStream& s, KFileMetaInfoGroup& group )
 
     group.d->mimeTypeInfo = KFileMetaInfoProvider::self()->mimeTypeInfo(mimeType);
 
+    // we need to set the item info for the items here
+    QMapIterator<QString, KFileMetaInfoItem> it = group.d->items.begin();
+    for ( ; it != group.d->items.end(); ++it)
+    {
+        (*it).d->mimeTypeInfo = group.d->mimeTypeInfo->groupInfo(group.d->name)
+                                  ->itemInfo((*it).key());
+    }
+    
     return s;
 }
 

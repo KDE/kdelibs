@@ -85,6 +85,16 @@ void CodeCompletion_Impl::showCompletionBox(QValueList<KTextEditor::CompletionEn
 bool CodeCompletion_Impl::eventFilter( QObject *o, QEvent *e ){
 
   if ( o == m_completionPopup || o == m_completionListBox || o == m_completionListBox->viewport() ) {
+    if ( e->type() == QEvent::MouseButtonPress ) {
+        QTimer::singleShot(0, this, SLOT(showComment()));
+        return FALSE;
+    }
+
+    if ( e->type() == QEvent::MouseButtonDblClick  ) {
+      doComplete();
+      return FALSE;
+    }
+
     if ( e->type() == QEvent::KeyPress ) {
       QKeyEvent *ke = (QKeyEvent*)e;
       if ( (ke->key() == Key_Left) || (ke->key() == Key_Right) ||
@@ -95,26 +105,8 @@ bool CodeCompletion_Impl::eventFilter( QObject *o, QEvent *e ){
 	return FALSE;
       }
       if (ke->key() == Key_Enter || ke->key() == Key_Return) { // return
-	CompletionItem* item = static_cast<CompletionItem*> (m_completionListBox->item(m_completionListBox->currentItem()));
-	if(item !=0){
-	  QString text = item->m_entry.text;
-	  QString currentLine = m_view->currentTextLine();
-	  int len = m_view->cursorColumnReal() - m_colCursor;
-	  QString currentComplText = currentLine.mid(m_colCursor,len);
-	  QString add = text.mid(currentComplText.length());
-	  if(item->m_entry.postfix == "()") add=add+"(";
-
-   	  emit filterInsertString(&(item->m_entry),&add);      
-          m_view->insertText(add);
-
-	  m_completionPopup->hide();
-	  deleteCommentLabel();
-	  m_view->setFocus();
-
-	  emit  completionDone((item->m_entry));
-	  emit completionDone();
-	}
-	return FALSE;
+        doComplete();
+        return FALSE;
       }
 
       if(ke->key() == Key_Escape){ // abort
@@ -202,6 +194,31 @@ void CodeCompletion_Impl::updateBox(bool newCoordinate){
   
 }
 
+
+void CodeCompletion_Impl::doComplete ( void )
+{
+    CompletionItem* item = static_cast<CompletionItem*> (m_completionListBox->item(m_completionListBox->currentItem()));
+
+    if(item !=0){
+        QString text = item->m_entry.text;
+        QString currentLine = m_view->currentTextLine();
+        int len = m_view->cursorColumnReal() - m_colCursor;
+        QString currentComplText = currentLine.mid(m_colCursor,len);
+        QString add = text.mid(currentComplText.length());
+        if(item->m_entry.postfix == "()") add=add+"(";
+
+        emit filterInsertString(&(item->m_entry),&add);
+        m_view->insertText(add);
+
+        m_completionPopup->hide();
+        deleteCommentLabel();
+        m_view->setFocus();
+
+        emit completionDone((item->m_entry));
+        emit completionDone();
+    }
+}
+
 void CodeCompletion_Impl::showArgHint ( QStringList functionList, const QString& strWrapping, const QString& strDelimiter )
 {
 	m_pArgHint->reset();
@@ -245,9 +262,9 @@ void CodeCompletion_Impl::showComment()
 {
 	CompletionItem* item = static_cast<CompletionItem*> (m_completionListBox->item(m_completionListBox->currentItem()));
 	if (item)
-	{
-                if (m_commentLabel) delete m_commentLabel;
-                if (!item->m_entry.comment.isEmpty())
+        {
+                deleteCommentLabel();
+                if (m_completionPopup->isVisible() && !item->m_entry.comment.isEmpty())
                 {
                         m_commentLabel=new KateCodeCompletionCommentLabel(0,item->m_entry.comment);
 			m_commentLabel->setFont(QToolTip::font());

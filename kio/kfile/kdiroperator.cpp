@@ -49,6 +49,7 @@
 #include <kio/previewjob.h>
 #include <kpropertiesdialog.h>
 #include <kservicetypefactory.h>
+#include <kstdaccel.h>
 
 #include "config-kfile.h"
 #include "kcombiview.h"
@@ -601,7 +602,7 @@ void KDirOperator::pathChanged()
 
 void KDirOperator::slotRedirected( const KURL& newURL )
 {
-    qDebug("*** REDIRECTED: %s", newURL.url().latin1());
+    currUrl = newURL;
     pendingMimeTypes.clear();
     myCompletion.clear();
     myDirCompletion.clear();
@@ -965,6 +966,8 @@ void KDirOperator::setDirLister( KDirLister *lister )
     connect( dir, SIGNAL(redirection( const KURL& )),
 	     SLOT( slotRedirected( const KURL& )));
     connect( dir, SIGNAL( clear() ), SLOT( slotClearView() ));
+    connect( dir, SIGNAL( refreshItems( const KFileItemList& ) ),
+             SLOT( slotRefreshItems( const KFileItemList& ) ) );
 }
 
 void KDirOperator::insertNewFiles(const KFileItemList &newone)
@@ -995,9 +998,7 @@ void KDirOperator::insertNewFiles(const KFileItemList &newone)
 
 void KDirOperator::selectDir(const KFileItem *item)
 {
-    KURL tmp( currUrl );
-    tmp.cd(item->name());
-    setURL(tmp, true);
+    setURL(item->url(), true);
 }
 
 void KDirOperator::itemDeleted(KFileItem *item)
@@ -1096,6 +1097,7 @@ void KDirOperator::setupActions()
                   SLOT( deleteSelected() ), myActionCollection, "delete" );
     mkdirAction->setIcon( QString::fromLatin1("folder_new") );
     reloadAction->setText( i18n("Reload") );
+    reloadAction->setShortcut( KStdAccel::shortcut( KStdAccel::Reload ));
 
 
     // the sort menu actions
@@ -1511,6 +1513,17 @@ void KDirOperator::togglePreview( bool on )
         setView( (KFile::FileView) (d->restorePreview &
                                     ~(KFile::PreviewContents|KFile::PreviewInfo)) );
 }
+
+void KDirOperator::slotRefreshItems( const KFileItemList& items )
+{
+    if ( !m_fileView )
+        return;
+    
+    KFileItemListIterator it( items );
+    for ( ; it.current(); ++it )
+        m_fileView->updateView( it.current() );
+}
+
 
 void KDirOperator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

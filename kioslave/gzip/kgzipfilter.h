@@ -44,6 +44,7 @@ private:
     Result uncompress_noop();
     int m_mode;
     ulong m_crc;
+    bool m_headerWritten;
     class KGzipFilterPrivate;
     KGzipFilterPrivate *d;
 };
