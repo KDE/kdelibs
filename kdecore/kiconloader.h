@@ -480,14 +480,14 @@ QIconSet MainBarIconSet(const QString& name, int size=0,
 
 /**
  * \relates KIconLoader
- * Load a user icon. User icons are searched in $appdir/pics and $appdir/toolbar.
+ * Load a user icon. User icons are searched in $appdir/pics.
  */
 QPixmap UserIcon(const QString& name, int state=KIcon::DefaultState,
 	KInstance *instance=KGlobal::instance());
 
 /**
  * \relates KIconLoader
- * Load a user icon. User icons are searched in $appdir/pics and $appdir/toolbar.
+ * Load a user icon. User icons are searched in $appdir/pics.
  */
 QPixmap UserIcon(const QString& name, KInstance *instance);
 
