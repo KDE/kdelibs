@@ -401,9 +401,15 @@ public:
          */
         QString kfsstnd_prefixes();
 
- private:
+	/**
+	 * @returns the toplevel directory in which KStandardDirs 
+	 * will store things. Most likely $HOME/.kde
+	 *
+	 * Don't use this function if you can use locateLocal
+	 */
+	QString localkdedir() const; 
 
-	QString localkdedir() const;
+ private:
 
 	QStringList prefixes;
 

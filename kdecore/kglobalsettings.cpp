@@ -29,6 +29,7 @@
 #include <kapp.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kstddirs.h>
 
 QString* KGlobalSettings::s_desktopPath = 0;
 QString* KGlobalSettings::s_templatesPath = 0;
@@ -119,16 +120,14 @@ void KGlobalSettings::initStatic()
 	*s_trashPath += "/";
 
     // Templates Path
-    // TODO: Honor KDEHOME - possibly adding KStdDirs::localKdeDir()
-    *s_templatesPath = QDir::homeDirPath() + "/.kde/" + "Templates/";
+    *s_templatesPath = KGlobal::dirs()->localkdedir() + "Templates/";
     *s_templatesPath = config->readEntry( "Templates" , *s_templatesPath);
     *s_templatesPath = QDir::cleanDirPath( *s_templatesPath );
     if ( s_templatesPath->right(1) != "/")
 	*s_templatesPath += "/";
 
     // Autostart Path
-    // TODO: Honor KDEHOME - possibly adding KStdDirs::localKdeDir()
-    *s_autostartPath = QDir::homeDirPath() + "/.kde/" + "Autostart/";
+    *s_autostartPath = KGlobal::dirs()->localkdedir() + "Autostart/";
     *s_autostartPath = config->readEntry( "Autostart" , *s_autostartPath);
     *s_autostartPath = QDir::cleanDirPath( *s_autostartPath );
     if ( s_autostartPath->right(1) != "/")
