@@ -738,6 +738,18 @@ KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
   return _negativeMonetarySignPosition;
 }
 
+inline void put_it_in( QChar *buffer, uint& index, const QString &s )
+{
+     for ( uint l = 0; l < s.length(); l++ )
+         buffer[index++] = s.at( l );
+}
+
+inline void put_it_in( QChar *buffer, uint& index, int number )
+{
+    buffer[index++] = number / 10 + '0'; \
+    buffer[index++] = number % 10 + '0';
+}
+
 QString KLocale::formatMoney(double num, const QString &symbol, int precision) const
 {
     // some defaults
@@ -823,49 +835,69 @@ QString KLocale::formatNumber(const QString &numStr) const
 
 QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 {
-    QString rst = shortfmt?_datefmtshort:_datefmt;
+    const QString rst = shortfmt?_datefmtshort:_datefmt;
 
-    int i = -1;
-    while ( (i = rst.findRev('%', i)) != -1 )
-        switch ( rst.at(i + 1).unicode() )
+    // I'm rather safe than sorry
+    QChar *buffer = new QChar[rst.length() * 3 / 2 + 50];
+
+    unsigned int index = 0;
+    bool escape = false;
+    int number;
+
+    for ( uint format_index = 0; format_index < rst.length(); format_index++ )
+    {
+        switch ( rst.at( format_index ).unicode() )
         {
+        case '%':
+            if ( escape ) {
+                buffer[index++] = '%';
+                escape = false;
+            } else
+                escape = true;
+            continue;
         case 'Y':
-                rst.replace(i, 2, QString().sprintf("%4d", pDate.year()));
-		continue;
-	case 'y':
-                rst.replace(i, 2, QString().sprintf("%02d", pDate.year() % 100));
-		continue;
+            put_it_in( buffer, index, pDate.year() / 100 );
+        case 'y':
+            put_it_in( buffer, index, pDate.year() % 100 );
+            break;
 	case 'n':
-                rst.replace(i, 2, QString().sprintf("%d", pDate.month()));
-		continue;
+            put_it_in( buffer, index, pDate.month() );
+        case 'e':
+            // to share the code
+            if ( rst.at( format_index ).unicode() == 'e' )
+                number = pDate.day();
+            if ( number / 10 )
+                buffer[index++] = number / 10 + '0';
+            buffer[index++] = number % 10 + '0';
+            break;
 	case 'm':
-                rst.replace(i, 2, QString().sprintf("%02d", pDate.month()));
-		continue;
+            put_it_in( buffer, index, pDate.month() );
+            break;
 	case 'b':
-                rst.replace(i, 2, monthName(pDate.month(), true));
-		continue;
+            put_it_in( buffer, index, monthName(pDate.month(), true) );
+            break;
 	case 'B':
-                rst.replace(i, 2, monthName(pDate.month(), false));
-		continue;
+            put_it_in( buffer, index, monthName(pDate.month(), false) );
+            break;
 	case 'd':
-                rst.replace(i, 2, QString().sprintf("%02d", pDate.day() ));
-		continue;
-	case 'e':
-                rst.replace(i, 2, QString().sprintf("%d", pDate.day() ));
-		continue;
+            put_it_in( buffer, index, pDate.day() );
+            break;
 	case 'a':
-                rst.replace(i, 2, weekDayName(pDate.dayOfWeek(), true));
-		continue;
+            put_it_in( buffer, index, weekDayName(pDate.dayOfWeek(), true) );
+            break;
 	case 'A':
-                rst.replace(i, 2, weekDayName(pDate.dayOfWeek(), false));
-		continue;
+            put_it_in( buffer, index, weekDayName(pDate.dayOfWeek(), false) );
+            break;
 	default:
-                rst.remove(i, 1);
-		i--;
-		continue;
+            buffer[index++] = rst.at( format_index );
+            break;
         }
+        escape = false;
+    }
+    QString ret( buffer, index );
+    delete [] buffer;
+    return ret;
 
-    return rst;
 }
 
 void KLocale::setMainCatalogue(const char *catalogue)
@@ -1194,42 +1226,72 @@ error:
 
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 {
-  QString rst(_timefmt);
+    const QString rst = _timefmt;
 
-  int i = -1;
-  while ( (i = rst.findRev('%', i)) != -1 )
-    switch ( rst.at(i + 1).unicode() )
-      {
-      case 'H':
-	rst.replace(i, 2, QString().sprintf("%02d", pTime.hour()));
-	continue;
-      case 'k':
-	rst.replace(i, 2, QString().sprintf("%d", pTime.hour()));
-	continue;
-      case 'I':
-	rst.replace(i, 2, QString().sprintf("%02d", (pTime.hour() + 11) % 12 + 1));
-	continue;
-      case 'l':
-	rst.replace(i, 2, QString().sprintf("%d",  (pTime.hour() + 11) % 12 + 1));
-	continue;
-      case 'M':
-	rst.replace(i, 2, QString().sprintf("%02d", pTime.minute()));
-	continue;
-      case 'S':
-	if (includeSecs)
-	  rst.replace(i, 2, QString().sprintf("%02d", pTime.second()));
-	else
-	  rst.remove(--i, 3);
-	continue;
-      case 'p':
-	rst.replace(i, 2, pTime.hour() >= 12?translate("pm"):translate("am"));
-	continue;
-      default:
-	rst.remove(i--, 1);
-	continue;
-      }
+    /* only "pm/am" here can grow, the rest shrinks, but
+       I'm rather safe than sorry */
+    QChar *buffer = new QChar[rst.length() * 3 / 2 + 30];
 
-  return rst;
+    uint index = 0;
+    bool escape = false;
+    int number;
+
+    for ( uint format_index = 0; format_index < rst.length(); format_index++ )
+    {
+        switch ( rst.at( format_index ).unicode() )
+        {
+        case '%':
+            if ( escape ) {
+                buffer[index++] = '%';
+                escape = false;
+            } else
+                escape = true;
+            continue;
+        case 'H':
+            put_it_in( buffer, index, pTime.hour() );
+            break;
+        case 'I':
+            put_it_in( buffer, index, ( pTime.hour() + 11) % 12 + 1 );
+            break;
+        case 'M':
+            put_it_in( buffer, index, pTime.minute() );
+            break;
+        case 'S':
+            if (includeSecs)
+                put_it_in( buffer, index, pTime.second() );
+            else { // we remove the seperator sign before the seconds and assume that works everywhere
+                --index;
+                break;
+            }
+            break;
+        case 'k':
+            number = pTime.hour();
+            break;
+        case 'l':
+            // to share the code
+            if ( rst.at( format_index ).unicode() == 'l' )
+                number = (pTime.hour() + 11) % 12 + 1;
+            if ( number / 10 )
+                buffer[index++] = number / 10 + '0';
+            buffer[index++] = number % 10 + '0';
+            break;
+        case 'p': {
+            QString s;
+            if ( pTime.hour() >= 12 )
+                put_it_in( buffer, index, translate("pm") );
+            else
+                put_it_in( buffer, index, translate("am") );
+            break;
+        }
+        default:
+            buffer[index++] = rst.at( format_index );
+            break;
+        }
+        escape = false;
+    }
+    QString ret( buffer, index );
+    delete [] buffer;
+    return ret;
 }
 
 bool KLocale::use12Clock() const
