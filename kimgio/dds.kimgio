@@ -2,7 +2,9 @@
 Type=DDS
 Header=^DDS 
 Name=Direct Draw Surface
+Name[da]=Overflade til direkte tegning
 Name[sv]=Direktrityta
+Name[ta]=நேரடியாக வரையும் சூழல்
 Read=true
 Write=false
 Suffices=dds,DDS
