@@ -65,18 +65,18 @@ KAboutKDE::KAboutKDE( QWidget *parent, const char *name, bool modal )
     "<A HREF=\"http://developer.kde.org/\">http://developer.kde.org/</A> "
     "will provide you with what you need.");
   const QString text4 = i18n(""
-    "KDE is available free of charge, but making it is not for free.<br>"
+    "KDE is available free of charge, but making it is not for free.<br><br>"
     "Thus, the KDE Team formed the KDE Association, a non-profit organization"
     " legally founded in Tuebingen, Germany. The KDE Association represents"
-    " the KDE Project in legal and financial matters.<br>"
-    "See <a href=\"http://www.kde.org/kde-ev/\">http://www.kde.org/kde-ev/<a>"
-    " for information on the KDE Association.<br>"
+    " the KDE Project in legal and financial matters."
+    " See <a href=\"http://www.kde.org/kde-ev/\">http://www.kde.org/kde-ev/<a>"
+    " for information on the KDE Association.<br><br>"
     "The KDE Team does need financial support. Most of the money is used to "
     "reimburse members and others on expenses they experienced when "
     "contributing to KDE. You are encouraged to support KDE through a financial "
     "donation, using one of the ways described at "
     "<a href=\"http://www.kde.org/support.html\">http://www.kde.org/support"
-    ".html</a>.<br>Thank you very much in advance for your support.");
+    ".html</a>.<br><br>Thank you very much in advance for your support.");
   setHelp( QString::fromLatin1("khelpcenter/main.html"), QString::null );
   setTitle(i18n("K Desktop Environment. Release %1").
 	   arg(QString::fromLatin1(KDE_VERSION_STRING)) );
