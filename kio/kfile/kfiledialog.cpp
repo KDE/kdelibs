@@ -969,6 +969,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     // we set the completionLock to avoid entering pathComboChanged() when
     // inserting the list of URLs into the combo.
     d->completionLock = true;
+    ops->setViewConfig( config, ConfigGroup );
     readConfig( config, ConfigGroup );
     setSelection(d->selection);
     d->completionLock = false;
@@ -1397,7 +1398,7 @@ QString KFileDialog::getExistingDirectory(const QString& startDir,
                                           QWidget *parent,
                                           const QString& caption)
 {
-    KURL url = KDirSelectDialog::selectDirectory(startDir, true, parent, 
+    KURL url = KDirSelectDialog::selectDirectory(startDir, true, parent,
                                                  caption);
     if ( url.isValid() )
         return url.path();

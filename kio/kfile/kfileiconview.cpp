@@ -157,13 +157,10 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
 
     // for mimetype resolving
     m_resolver = new KMimeTypeResolver<KFileIconViewItem,KFileIconView>(this);
-
-//###    readConfig();
 }
 
 KFileIconView::~KFileIconView()
 {
-// ###    writeConfig();
     delete m_resolver;
     removeToolTip();
     delete d;
@@ -175,6 +172,8 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
     KConfigGroupSaver cs( kc, gr );
     QString small = QString::fromLatin1("SmallColumns");
     d->previewIconSize = kc->readNumEntry( "Preview Size", 60 );
+    d->previews->setChecked( kc->readBoolEntry( "ShowPreviews", false ) );
+    qDebug("*** readConfig!: %i", d->previews->isChecked());
 
     if ( kc->readEntry("ViewMode", small ) == small ) {
 	d->smallColumns->setChecked( true );
@@ -184,6 +183,9 @@ void KFileIconView::readConfig( KConfig *kc, const QString& group )
 	d->largeRows->setChecked( true );
 	slotLargeRows();
     }
+    
+    if ( d->previews->isChecked() )
+        showPreviews();
 }
 
 void KFileIconView::writeConfig( KConfig *kc, const QString& group )
@@ -193,7 +195,8 @@ void KFileIconView::writeConfig( KConfig *kc, const QString& group )
     kc->writeEntry( "ViewMode", d->smallColumns->isChecked() ?
 		    QString::fromLatin1("SmallColumns") :
 		    QString::fromLatin1("LargeRows") );
-    // kc->writeEntry( "Preview Size", d->previewIconSize );
+    kc->writeEntry( "Preview Size", d->previewIconSize );
+    kc->writeEntry( "ShowPreviews", d->previews->isChecked() );
 }
 
 void KFileIconView::removeToolTip()

@@ -46,11 +46,15 @@ int main(int argc, char **argv)
     QStringList names;
 
     QString argv1;
+    QString startDir;
     if (argc > 1)
 	argv1 = QString::fromLatin1(argv[1]);
+    if ( argc > 2 )
+        startDir = QString::fromLatin1( argv[2]);
 
     if (argv1 == QString::fromLatin1("diroperator")) {
-	KDirOperator *op = new KDirOperator(QString::null, 0, "operator");
+	KDirOperator *op = new KDirOperator(startDir, 0, "operator");
+	op->setViewConfig( KGlobal::config(), "TestGroup" );
 	op->setView(KFile::Simple);
 	op->show();
 	a.setMainWidget(op);
@@ -58,7 +62,7 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QString::fromLatin1("justone")) {
-        QString name = KFileDialog::getOpenFileName();
+        QString name = KFileDialog::getOpenFileName(startDir);
         qDebug("filename=%s",name.latin1());
     }
 
@@ -86,7 +90,7 @@ int main(int argc, char **argv)
 	name1 = KFileDialog::getExistingDirectory();
 
     else if (argv1 == QString::fromLatin1("heap")) {
-	KFileDialog *dlg = new KFileDialog( QString::null, QString::null, 0L,
+	KFileDialog *dlg = new KFileDialog( startDir, QString::null, 0L,
 					    "file dialog", true );
     dlg->setOperationMode( KFileDialog::Saving );
     QStringList filter;
@@ -119,7 +123,7 @@ int main(int argc, char **argv)
 //     }
 
     else {
-	KFileDialog dlg(QString::null,
+	KFileDialog dlg(startDir,
 			QString::fromLatin1("*|All files\n"
 					    "*.lo *.o *.la|All libtool files"),
 			0, 0, true);

@@ -92,10 +92,13 @@ public:
 
     virtual void setSorting( QDir::SortSpec sort );
 
+    virtual void readConfig( KConfig *, const QString& group = QString::null );
+    virtual void writeConfig( KConfig *, const QString& group = QString::null);
+
     void ensureItemVisible( const KFileItem * );
 
     virtual KActionCollection * actionCollection() const;
-    
+
 protected:
     KFileIconView *left;
     KFileView *right;

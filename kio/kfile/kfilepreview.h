@@ -86,6 +86,9 @@ public:
 
     virtual void setSorting( QDir::SortSpec sort );
 
+    virtual void readConfig( KConfig *, const QString& group = QString::null );
+    virtual void writeConfig( KConfig *, const QString& group = QString::null);
+
     /**
      * This overrides KFileView::actionCollection() by returning
      * the actionCollection() of the KFileView (member left) it contains.

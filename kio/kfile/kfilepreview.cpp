@@ -264,6 +264,16 @@ KActionCollection * KFilePreview::actionCollection() const
     }
 }
 
+void KFilePreview::readConfig( KConfig *config, const QString& group )
+{
+    left->readConfig( config, group );
+}
+
+void KFilePreview::writeConfig( KConfig *config, const QString& group )
+{
+    left->writeConfig( config, group );
+}
+
 void KFilePreview::virtual_hook( int id, void* data )
 { KFileView::virtual_hook( id, data ); }
 
