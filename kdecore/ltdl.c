@@ -165,8 +165,9 @@ strchr(str, ch)
 	int ch;
 {
 	const char *p;
+    int i = 0, len = strlen( str );
 
-	for (p = str; *p != (char)ch && p != '\0'; p++)
+	for (p = str; *p != (char)ch && p != '\0' && i < len; p++)
 		/*NOWORK*/;
 
 	return (*p == (char)ch) ? p : 0;
@@ -192,8 +193,9 @@ strrchr(str, ch)
 	int ch;
 {
 	const char *p;
+    int i = 0, len = strlen( str );
 
-	for (p = str; p != '\0'; p++)
+	for (p = str; p != '\0' && i < len; p++, ++i )
 		/*NOWORK*/;
 
 	while (*p != (char)ch && p >= str)
