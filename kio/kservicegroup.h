@@ -126,6 +126,12 @@ public:
   /**
    * List of all Services and ServiceGroups within this
    * ServiceGroup
+   * @param sorted indicates whether to sort items
+   * @param whether to include items marked "NoDisplay"
+   */
+  virtual List entries(bool sorted, bool excludeNoDisplay);
+  /**
+   * As above with excludeNoDisplay true.
    */
   virtual List entries(bool sorted = false);
 

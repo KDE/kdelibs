@@ -138,6 +138,12 @@ void KServiceGroup::save( QDataStream& s )
 KServiceGroup::List
 KServiceGroup::entries(bool sort)
 {
+   return entries(sort, true);
+}
+
+KServiceGroup::List
+KServiceGroup::entries(bool sort, bool excludeNoDisplay)
+{
     KServiceGroup *group = this;
 
     // If the entries haven't been loaded yet, we have to reload ourselves
@@ -179,7 +185,15 @@ KServiceGroup::entries(bool sort)
     for(QMap<QString,SPtr>::ConstIterator it = glist.begin(); it != glist.end(); ++it)
         lsort.append(it.data());
     for(QMap<QString,SPtr>::ConstIterator it = slist.begin(); it != slist.end(); ++it)
+    {
+        if (excludeNoDisplay)
+        {
+           KService *service = (KService *)((KSycocaEntry *)(*it));
+           if (service->property("NoDisplay").asBool())
+              continue;
+        }
         lsort.append(it.data());
+    }
 
     // honor the SortOrder Key
 
