@@ -25,6 +25,7 @@
 #include "kpopupmenu.h"
 #include "kapplication.h"
 #include "klocale.h"
+#include "kaboutdata.h"
 
 #ifdef Q_WS_X11
 #include <kwin.h> 
@@ -93,6 +94,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
         connect(quitAction, SIGNAL(activated()), qApp, SLOT(closeAllWindows()));
 	d->on_all_desktops = false;
     }
+    setCaption( KGlobal::instance()->aboutData()->programName());
 }
 
 KSystemTray::~KSystemTray()
@@ -282,6 +284,19 @@ QPixmap KSystemTray::loadIcon( const QString &icon, KInstance *instance )
     KConfigGroupSaver configSaver(appCfg, "System Tray");
     int iconWidth = appCfg->readNumEntry("systrayIconWidth", 22);
     return instance->iconLoader()->loadIcon( icon, KIcon::Panel, iconWidth );
+}
+
+void KSystemTray::setPixmap( const QPixmap& p )
+{
+    QLabel::setPixmap( p );
+#ifdef Q_WS_X11
+    KWin::setIcons( winId(), p, QPixmap());
+#endif
+}
+
+void KSystemTray::setCaption( const QString& s )
+{
+    QLabel::setCaption( s );
 }
 
 void KSystemTray::virtual_hook( int, void* )

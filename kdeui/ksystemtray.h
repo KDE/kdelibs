@@ -99,6 +99,17 @@ public:
     KActionCollection* actionCollection();
 
     /**
+     * Changes the tray's icon.
+     */
+    virtual void setPixmap( const QPixmap& icon );
+
+    /**
+     * Changes the tray's text description (which can be seen e.g. in the systray
+     * configuration dialog). The default value is KAboutData::programName().
+     */
+    virtual void setCaption( const QString& title );
+    
+    /**
      * Loads an icon @p icon using the icon loader class of the given instance @p instance.
      * The icon is applied the panel effect as it should only be used to be shown in the
      * system tray.
