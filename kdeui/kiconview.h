@@ -41,8 +41,7 @@ protected slots:
   * Auto selection happend.
   */
  void slotAutoSelect();
-
- void slotTestExecute( QIconViewItem * ) { kdDebug() << "KIconView: Execute" << endl; }
+ void slotExecute( QIconViewItem *item );
 
 protected:
  /**

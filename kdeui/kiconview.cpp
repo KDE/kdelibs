@@ -36,10 +36,10 @@ void KIconView::checkSettings()
     m_bUseSingle = KGlobalSettings::singleClick();
     if( m_bUseSingle )
       connect( this, SIGNAL( clicked( QIconViewItem * ) ),
-	       this, SIGNAL( executed( QIconViewItem * ) ) );
+	       this, SLOT( slotExecute( QIconViewItem * ) ) );
     else
       connect( this, SIGNAL( doubleClicked( QIconViewItem * ) ),
-	       this, SIGNAL( executed( QIconViewItem * ) ) );
+	       this, SLOT( slotExecute( QIconViewItem * ) ) );
   }
   
   m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
@@ -137,4 +137,11 @@ void KIconView::slotAutoSelect()
     kdDebug() << "That´s not supposed to happen!!!!" << endl;
 
   setCurrentItem( m_pCurrentItem );
+}
+
+void KIconView::slotExecute( QIconViewItem *item )
+{
+  m_pAutoSelect->stop();
+  
+  emit executed( item );
 }
