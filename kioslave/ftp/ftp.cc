@@ -856,7 +856,7 @@ bool Ftp::ftpOpenDataConnection()
   } sin;
 
   struct linger lng = { 0, 0 };
-  socklen_t l;
+  ksocklen_t l;
   char buf[64];
   int on = 1;
 
@@ -947,7 +947,7 @@ int Ftp::ftpAcceptConnect()
 {
   struct sockaddr addr;
   int sData;
-  socklen_t l;
+  ksocklen_t l;
   fd_set mask;
 
   FD_ZERO(&mask);
