@@ -223,6 +223,7 @@ protected slots:
 
   /**
    * Emitting to this slot is equivalent to emitting changed(true)
+   * @since 3.3
    */
   void changed();
 
