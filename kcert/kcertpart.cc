@@ -212,7 +212,7 @@ QCString pass;
 
   // Set the chain if it's there
   if (xc->chain().depth() > 1) {
-    QList<KSSLCertificate> cl = xc->chain().getChain();
+    QPtrList<KSSLCertificate> cl = xc->chain().getChain();
     int cnt = 0;
     _chain->setEnabled(true);
     _chain->clear();
