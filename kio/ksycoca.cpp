@@ -36,7 +36,7 @@
 template class QList<KSycocaFactory>;
 
 // Read-only constructor
-KSycoca::KSycoca() 
+KSycoca::KSycoca()
   : DCOPObject("ksycoca")
 {
    openDatabase();
@@ -68,9 +68,9 @@ bool KSycoca::openDatabase( bool abortOnError )
 
      // We open a dummy database instead.
      kdDebug(7011) << "No database, opening a dummy one." << endl;
-     QBuffer *buffer = new QBuffer( QByteArray() ); 
+     QBuffer *buffer = new QBuffer( QByteArray() );
      buffer->open(IO_ReadWrite);
-     m_str = new QDataStream( buffer);  
+     m_str = new QDataStream( buffer);
      (*m_str) << (Q_INT32) KSYCOCA_VERSION;
      (*m_str) << (Q_INT32) 0;
    }
@@ -108,7 +108,7 @@ void KSycoca::closeDatabase()
       device = m_str->device();
    if (device)
       device->close();
-      
+
    delete m_str;
    delete device;
    m_str = 0L;

@@ -194,11 +194,17 @@ class DCOPClient : public QObject
 	    bool fast=false);
 
   /**
-   * Perform a synchronous send and receive.
+   * Performs a synchronous send and receive.
    *
-   *  The parameters are
-   * the same as for send, with the exception of another @ref QByteArray
-   * being provided for results to be (optionally) returned in.
+   *  The parameters are the same as for send, with the exception of
+   *  another @ref QByteArray being provided for results to be
+   *  (optionally) returned in.
+   *
+   * A call blocks the application until the process receives the
+   * answer, for a maximum of 1/10 of a second. If the call was not
+   * answered by then, the client opens a local event loop in order to
+   * keep the user interface updated (by processing paint events and
+   * such) until the answer message finally drops in.
    *
    * @see send()
    */
@@ -214,7 +220,7 @@ class DCOPClient : public QObject
    *
    * If you do not want to reimplement this function for whatever reason,
    * you can also use a default object  or a @ref DCOPObjectProxy.
-   * 
+   *
    * @see setDefaultObject()
    */
   virtual bool process(const QCString &fun, const QByteArray &data,
@@ -236,7 +242,7 @@ class DCOPClient : public QObject
   void endTransaction( DCOPClientTransaction *, QCString& replyType, QByteArray &replyData);
 
   /**
-   * Test whether the current function call is delayed.
+   * Tests whether the current function call is delayed.
    *
    * NOTE: Should be called from inside process(...) only!
    * @return The ID of the current transaction
@@ -251,12 +257,12 @@ class DCOPClient : public QObject
   bool isApplicationRegistered( const QCString& remApp);
 
   /**
-   * Retrieve the list of all currently registered applications.
+   * Retrieves the list of all currently registered applications.
    */
   QCStringList registeredApplications();
 
   /**
-   * Receive a piece of data from the server.
+   * Receives a piece of data from the server.
    *
    * @param app The application the data was intended for.  Should be
    *        equal to our appId that we passed when the @ref DCOPClient was
@@ -291,13 +297,13 @@ class DCOPClient : public QObject
 
 
     /**
-   * Retrieve the @p appId of the last application that talked to us.
+   * Retrieves the @p appId of the last application that talked to us.
    */
   QCString senderId() const;
 
 
     /**
-     * Install object @p objId as application-wide default object.
+     * Installs object @p objId as application-wide default object.
      *
      * All app-wide messages that have not been processed by the dcopclient
      * will be send further to @p objId.
@@ -305,7 +311,7 @@ class DCOPClient : public QObject
     void setDefaultObject( const QCString& objId );
 
     /**
-     * Retrieve the current default object or an empty string if no object is
+     * Retrieves the current default object or an empty string if no object is
      * installed as default object.
      *
      * A default object receives application-wide messages that have not
@@ -314,12 +320,13 @@ class DCOPClient : public QObject
     QCString defaultObject() const;
 
     /**
-     * Enable / disable the @ref applicationRegistered() / @ref applicationRemoved()
+     * Enables / disables the @ref applicationRegistered() / @ref applicationRemoved()
      * signals.
      *
      * They are disabled by default.
      */
     void setNotifications( bool enabled );
+    
 
 signals:
   /**
@@ -346,6 +353,25 @@ signals:
    * aid.
    */
     void attachFailed(const QString &msg);
+    
+    /** 
+     * Indicates that user input shall be blocked or released,
+     * depending on the argument.
+     * 
+     * The signal is emitted whenever the client has to wait too long
+     * (i.e. more than 1/10 of a second) for an answer to a
+     * synchronous call. In that case, it will enter a local event
+     * loop to keep the GUI updated until finally an answer arrives.
+     *
+     * In KDE, the KApplication object connects to this signal to be
+     * able to block any user input (i.e. mouse and key events) while
+     * we are waiting for an answer. If we did not do this, the
+     * application might end up in an illegal state, as a keyboard
+     * shortcut or a mouse action might cause another dcop call to be
+     * issued.
+     */
+    void blockUserInput( bool );
+
 
 public slots:
 

@@ -94,6 +94,9 @@
 #include <X11/SM/SMlib.h>
 
 // defined by X11 headers
+const int XKeyPress = KeyPress;
+const int XKeyRelease = KeyRelease;
+#define Key
 #ifdef KeyPress
 #undef KeyPress
 #endif
@@ -348,6 +351,8 @@ DCOPClient *KApplication::dcopClient()
   pDCOPClient = new DCOPClient();
   connect(pDCOPClient, SIGNAL(attachFailed(const QString &)),
 	  SLOT(dcopFailure(const QString &)));
+  connect(pDCOPClient, SIGNAL(blockUserInput(bool) ),
+	  SLOT(dcopBlockUserInput(bool)) );
 
   return pDCOPClient;
 }
@@ -848,12 +853,31 @@ public:
 };
 
 
+
+static bool kapp_block_user_input = false;
+
+void KApplication::dcopBlockUserInput( bool b )
+{
+    kapp_block_user_input = b;
+}
+
 bool KApplication::x11EventFilter( XEvent *_event )
 {
-    if (x11Filter)
-    {
-	for (QWidget* w=x11Filter->first(); w; w=x11Filter->next())
-	{
+    if ( kapp_block_user_input ) {
+	switch ( _event->type  ) {
+	case ButtonPress:
+	case ButtonRelease:
+	case XKeyPress:
+	case XKeyRelease:
+	case MotionNotify:
+	    return TRUE;
+	default:
+	    break;
+	}
+    }
+
+    if (x11Filter) {
+	for (QWidget* w=x11Filter->first(); w; w=x11Filter->next()) {
 	    if (((KAppX11HackWidget*) w)->publicx11Event(_event))
 		return true;
 	}
@@ -969,7 +993,7 @@ void KApplication::applyGUIStyle(GUIStyle /* pointless */) {
 
     if(pKStyle)
 	disconnect(pKStyle, SIGNAL(destroyed()), this, 0);
-    
+
     if(styleStr == "Default"){
         pKStyle = new KDEStyle;
         setStyle(pKStyle);
@@ -1267,7 +1291,7 @@ void KApplication::kdisplaySetStyle()
 }
 
 
-void KApplication::invokeHelp( const QString& anchor, 
+void KApplication::invokeHelp( const QString& anchor,
 			       const QString& _appname) const
 {
    QString url;
@@ -1294,7 +1318,7 @@ void KApplication::invokeHelp( const QString& anchor,
 void KApplication::invokeHTMLHelp( const QString& _filename, const QString& topic ) const
 {
    warning("invoking HTML help is deprecated! use docbook and invokeHelp!");
-  
+
    QString filename;
 
    if( _filename.isEmpty() )

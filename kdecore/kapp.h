@@ -534,6 +534,7 @@ protected slots:
 
 private slots:
   void dcopFailure(const QString &);
+  void dcopBlockUserInput( bool );
   void x11FilterDestroyed();
   void kstyleDestroyed();
 
@@ -753,6 +754,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.156  2000/05/30 20:53:17  coolo
+// >= 20000531 (at least in Moscwa :)
+//
 // Revision 1.155  2000/05/24 08:24:35  kulow
 // fixes kdelibs and kdebase, the rest has to work with grep invokeHTMLHelp :)
 //

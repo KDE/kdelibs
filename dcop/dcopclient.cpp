@@ -45,6 +45,10 @@ extern "C" {
 #include <X11/ICE/ICEutil.h>
 #include <X11/ICE/ICEmsg.h>
 #include <X11/ICE/ICEproto.h>
+
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 }
 
 template class QList<DCOPObjectProxy>;
@@ -65,6 +69,7 @@ public:
     static const char* serverAddr; // location of server in ICE-friendly format.
     QSocketNotifier *notifier;
     bool notifier_enabled;
+    bool non_blocking_call_lock;
     bool registered;
 
     QCString senderId;
@@ -73,6 +78,7 @@ public:
     QList<DCOPClientTransaction> *transactionList;
     bool transaction;
     Q_INT32 transactionId;
+    
 
     CARD32 time;
 };
@@ -308,6 +314,7 @@ DCOPClient::DCOPClient()
     d->appId = 0;
     d->notifier = 0L;
     d->notifier_enabled = true;
+    d->non_blocking_call_lock = false;
     d->registered = false;
     d->transactionList = 0L;
     d->transactionId = 0;
@@ -528,7 +535,7 @@ QCString DCOPClient::normalizeFunctionSignature( const QCString& fun ) {
     char *to	= result.data();
     char *first = to;
     char last = 0;
-    while ( TRUE ) {
+    while ( true ) {
 	while ( *from && isspace(*from) )
 	    from++;
 	if ( last && isIdentChar( last ) && isIdentChar( *from ) )
@@ -639,6 +646,7 @@ void DCOPClient::setNotifications(bool enabled)
     if (!call("DCOPServer", "", "setNotifications( bool )", data, replyType, reply))
 	qWarning("I couldn't enable notifications at the dcopserver!");
 }
+
 
 bool DCOPClient::receive(const QCString &app, const QCString &objId,
 			 const QCString &fun, const QByteArray &data,
@@ -753,13 +761,38 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 	Bool readyRet = False;
 	IceProcessMessagesStatus s;
 
-
 	do {
+	    
+	    if ( d->notifier ) { // we have a socket notifier and a qApp
+		
+		int msecs = 100; // timeout for the GUI refresh
+		fd_set fds;
+		struct timeval tv;
+		FD_ZERO( &fds );
+		FD_SET( socket(), &fds );
+		tv.tv_sec = msecs / 1000;
+		tv.tv_usec = (msecs % 1000) * 1000;
+		if ( select( socket() + 1, &fds, 0, 0, &tv ) <= 0 ) {
+		    // nothing was available, we got a timeout. Reactivate
+		    // the GUI in blocked state.
+		    bool old_lock = d->non_blocking_call_lock;
+		    if ( !old_lock ) {
+			d->non_blocking_call_lock = true;
+			emit blockUserInput( true );
+		    }
+		    qApp->enter_loop();
+		    if ( !old_lock ) {
+			d->non_blocking_call_lock = false;
+			emit blockUserInput( false );
+		    }
+		}
+	    }
+	    
+	    // something is available
 	    s = IceProcessMessages(d->iceConn, &waitInfo,
 				   &readyRet);
 	    if (s == IceProcessMessagesIOError) {
 		IceCloseConnection(d->iceConn);
-		qWarning("received an error processing data from DCOP server!");
 		return false;
 	    }
 	} while (!readyRet);
@@ -778,6 +811,12 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 
 void DCOPClient::processSocketData(int)
 {
+    
+    if ( d->non_blocking_call_lock ) {
+	qApp->exit_loop();
+	return;
+    }
+    
     if ( !d->notifier_enabled )
 	return;
 

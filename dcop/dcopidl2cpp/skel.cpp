@@ -71,8 +71,6 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	str << "#include \"" << e.firstChild().toText().data() << "\"" << endl << endl;
     }
 
-    str << "#include \"qasciidict.h\"" << endl;
-
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
 	if ( e.tagName() == "CLASS" ) {
 	    QDomElement n = e.firstChild().toElement();
@@ -129,8 +127,10 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 	    }
 	
 	    bool useHashing = funcNames.count() > 7;
-	    if ( useHashing )
+	    if ( useHashing ) {
+		str << "#include \"qasciidict.h\"" << endl;
 		str << "static const int " << className << "_fhash = " << fhash << ";" << endl;
+	    }
 	    str << "static const char* const " << className << "_ftable[ " << funcNames.count() + 1 << " ] = {" << endl;
 	    for( QStringList::Iterator it = funcNames.begin(); it != funcNames.end(); ++it ){
 		str << "    \"" << *it << "\"," << endl;
