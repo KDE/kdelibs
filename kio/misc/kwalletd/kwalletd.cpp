@@ -20,12 +20,14 @@
 
 */
 
+#include "kbetterthankdialogbase.h"
 #include "kwalletwizard.h"
 #include "kwalletd.h"
 #include "ktimeout.h"
 
 #include <dcopclient.h>
 #include <dcopref.h>
+#include <kactivelabel.h>
 #include <kapplication.h>
 #include <kconfig.h>
 #include <kdebug.h>
@@ -39,8 +41,12 @@
 #include <kwin.h>
 
 #include <qdir.h>
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qpushbutton.h>
 #include <qregexp.h>
 #include <qstylesheet.h>
+#include <qvbox.h>
 
 #include <assert.h>
 
@@ -219,7 +225,6 @@ void KWalletD::openAsynchronous(const QString& wallet, const QCString& returnObj
 	xact->returnObject = returnObject;
 	_transactions.append(xact);
 
-	kdDebug() << "OpenAsynch " << peerName << " " << wallet << endl;
 	DCOPRef(appid, returnObject).send("walletOpenResult", 0);
 
 	QTimer::singleShot(0, this, SLOT(processTransactions()));
@@ -332,6 +337,10 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 	int rc = -1;
 	bool brandNew = false;
 
+	if (implicitDeny(wallet, appid)) {
+		return -1;
+	}
+
 	for (QIntDictIterator<KWallet::Backend> i(_wallets); i.current(); ++i) {
 		if (i.current()->walletName() == wallet) {
 			rc = i.currentKey();
@@ -436,34 +445,27 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 			KApplication::startServiceByDesktopName("kwalletmanager-kwalletd");
 		}
 	} else {
-		int response = KDialogBase::Yes;
+		int response = 0;
 
 		if (_openPrompt && !_handles[appid].contains(rc) && !implicitAllow(wallet, appid)) {
-			KDialogBase *dialog = new KDialogBase(
-					i18n("KDE Wallet Service"),
-					KDialogBase::Yes
-					| KDialogBase::No
-					| KDialogBase::Cancel,
-					KDialogBase::Yes, KDialogBase::Cancel,
-					0, "questionYesNoCancel", true, true,
-					KGuiItem(i18n("Allow &Once")),
-					KGuiItem(i18n("Allow &Always")),
-					KGuiItem(i18n("&Deny")));
+			KBetterThanKDialogBase *dialog = new KBetterThanKDialogBase;
+			if (appid.isEmpty()) {
+				dialog->setLabel(i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)));
+			} else {
+				dialog->setLabel(i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)));
+			}
 			XSetTransientForHint(qt_xdisplay(), dialog->winId(), w);
 			KWin::setState(dialog->winId(), NET::KeepAbove);
 			KWin::setOnAllDesktops(dialog->winId(), true);
 
-			if (appid.isEmpty()) {
-				response = KMessageBox::createKMessageBox(dialog, QMessageBox::Information, i18n("<qt>KDE has requested access to the open wallet '<b>%1</b>'.").arg(QStyleSheet::escape(wallet)), QStringList(), QString::null, 0L, 0);
-			} else {
-				response = KMessageBox::createKMessageBox(dialog, QMessageBox::Information, i18n("<qt>The application '<b>%1</b>' has requested access to the open wallet '<b>%2</b>'.").arg(QStyleSheet::escape(QString(appid))).arg(QStyleSheet::escape(wallet)), QStringList(), QString::null, 0L, 0);
-			}
+			response = dialog->exec();
+			delete dialog;
 		}
 
-		if (response == KDialogBase::Yes || response == KDialogBase::No) {
+		if (response == 0 || response == 1) {
 			_handles[appid].append(rc);
 			_wallets.find(rc)->ref();
-			if (response == KMessageBox::No) {
+			if (response == 1) {
 				KConfig cfg("kwalletrc");
 				cfg.setGroup("Auto Allow");
 				QStringList apps = cfg.readListEntry(wallet);
@@ -474,6 +476,17 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 					cfg.sync();
 				}
 			}
+		} else if (response == 3) {
+			KConfig cfg("kwalletrc");
+			cfg.setGroup("Auto Deny");
+			QStringList apps = cfg.readListEntry(wallet);
+			if (!apps.contains(appid)) {
+				apps += appid;
+				_implicitDenyMap[wallet] += appid;
+				cfg.writeEntry(wallet, apps);
+				cfg.sync();
+			}
+			return -1;
 		} else {
 			return -1;
 		}
@@ -1230,6 +1243,14 @@ void KWalletD::reconfigure() {
 		_implicitAllowMap[*i] = cfg.readListEntry(*i);
 	}
 
+	// Update the implicit allow stuff
+	_implicitDenyMap.clear();
+	cfg.setGroup("Auto Deny");
+	entries = cfg.entryMap("Auto Deny").keys();
+	for (QStringList::Iterator i = entries.begin(); i != entries.end(); ++i) {
+		_implicitDenyMap[*i] = cfg.readListEntry(*i);
+	}
+
 	// Update if wallet was enabled/disabled
 	if (!_enabled) { // close all wallets
 		while (!_wallets.isEmpty()) {
@@ -1288,6 +1309,11 @@ bool KWalletD::keyDoesNotExist(const QString& wallet, const QString& folder, con
 
 bool KWalletD::implicitAllow(const QString& wallet, const QCString& app) {
 	return _implicitAllowMap[wallet].contains(QString::fromLocal8Bit(app));
+}
+
+
+bool KWalletD::implicitDeny(const QString& wallet, const QCString& app) {
+	return _implicitDenyMap[wallet].contains(QString::fromLocal8Bit(app));
 }
 
 

@@ -164,6 +164,7 @@ class KWalletD : public KDEDModule {
 		int closeWallet(KWallet::Backend *w, int handle, bool force);
 		// Implicitly allow access for this application
 		bool implicitAllow(const QString& wallet, const QCString& app);
+		bool implicitDeny(const QString& wallet, const QCString& app);
 		QCString friendlyDCOPPeerName();
 
 		void doTransactionChangePassword(const QCString& appid, const QString& wallet, uint wId);
@@ -178,7 +179,7 @@ class KWalletD : public KDEDModule {
 		bool _leaveOpen, _closeIdle, _launchManager, _enabled;
 	       	bool _openPrompt, _firstUse, _showingFailureNotify;
 		int _idleTime;
-		QMap<QString,QStringList> _implicitAllowMap;
+		QMap<QString,QStringList> _implicitAllowMap, _implicitDenyMap;
 		KTimeout *_timeouts;
 
 		QPtrList<KWalletTransaction> _transactions;

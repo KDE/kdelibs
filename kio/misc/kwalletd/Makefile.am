@@ -22,7 +22,7 @@ kde_module_LTLIBRARIES = kded_kwalletd.la
 
 kded_kwalletd_la_LDFLAGS = $(all_libraries) -module -avoid-version
 kded_kwalletd_la_LIBADD = $(LIB_KIO) ../../../kwallet/backend/libkwalletbackend.la ../../../kwallet/client/libkwalletclient.la
-kded_kwalletd_la_SOURCES = kwalletd.cpp kwalletd.skel ktimeout.cpp kwalletwizard.ui
+kded_kwalletd_la_SOURCES = kwalletd.cpp kwalletd.skel ktimeout.cpp kwalletwizard.ui kbetterthankdialogbase.ui
 
 METASOURCES = AUTO
 
@@ -32,3 +32,4 @@ services_DATA = kwalletd.desktop
 servicesdir = $(kde_servicesdir)/kded
 
 kwalletwizard.lo: kwalletwizard.ui kwalletwizard.ui.h
+kbetterthankdialogbase.lo: kbetterthankdialogbase.ui kbetterthankdialogbase.ui.h
