@@ -163,10 +163,8 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	    for ( module = modules.first(); module; module = modules.next() ) {
 		emit module->windowChanged( ev->xany.window );
 		emit module->windowChanged( ev->xany.window, dirty );
-		if ( (dirty & NET::WMStrut) != 0 ) {
-		    kdDebug() << "KWINMODULE: strutChanged()" << endl;
+		if ( (dirty & NET::WMStrut) != 0 )
 		    emit module->strutChanged();
-		}
 	    }
 	}
     }
@@ -188,23 +186,19 @@ void KWinModulePrivate::addClient(Window w)
 	XSelectInput( qt_xdisplay(), w, PropertyChangeMask );
     bool emit_strutChanged = FALSE;
     for ( module = modules.first(); module; module = modules.next() ) {
-	if ( module->receivers( "strutChanged" ) ) {
-	    NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut );
-	    NETStrut strut = info.strut();
-	    if ( strut.left || strut.top || strut.right || strut.bottom ) {
-		strutWindows.append( w );
-		emit_strutChanged = TRUE;
-	    }
-	    break;
+	NETWinInfo info( qt_xdisplay(), w, qt_xrootwin(), NET::WMStrut );
+	NETStrut strut = info.strut();
+	if ( strut.left || strut.top || strut.right || strut.bottom ) {
+	    strutWindows.append( w );
+	    emit_strutChanged = TRUE;
 	}
+	break;
     }
     windows.append( w );
     for ( module = modules.first(); module; module = modules.next() ) {
 	emit module->windowAdded( w );
-	if ( emit_strutChanged ) {
+	if ( emit_strutChanged )
 	    emit module->strutChanged();
-	    kdDebug() << "KWINMODULE: strutChanged()" << endl;
-	}
     }
 }
 
@@ -215,10 +209,8 @@ void KWinModulePrivate::removeClient(Window w)
     windows.remove( w );
     for ( module = modules.first(); module; module = modules.next() ) {
 	emit module->windowRemoved( w );
-	if ( emit_strutChanged ) {
+	if ( emit_strutChanged )
 	    emit module->strutChanged();
-	    kdDebug() << "KWINMODULE: strutChanged()" << endl;
-	}
     }
 }
 
