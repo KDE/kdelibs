@@ -473,6 +473,12 @@ public slots:
     virtual void slotStateChanged(const QString &newstate);
 
     /**
+     * DEPRECATED
+     */
+    void slotStateChanged(const QString &newstate,
+                          KXMLGUIClient::ReverseStateChange);
+
+    /**
      * Apply a state change
      *
      * Enable and disable actions as defined in the XML rc file,
@@ -480,7 +486,7 @@ public slots:
      * enabled, and vice-versa) if specified.
      */
     void slotStateChanged(const QString &newstate,
-                          KXMLGUIClient::ReverseStateChange); // KDE 4.0: make virtual
+                          bool reverse); // KDE 4.0: make virtual
 
     /**
      * @internal. Used for the auto-save-settings feature.
