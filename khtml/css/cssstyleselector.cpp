@@ -2927,10 +2927,11 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 	    }
 	    if ( !face.isEmpty() ) {
 		fontDef.family = face;
-		if (style->setFontDef( fontDef ))
+		if (style->setFontDef( fontDef )) {
 		    fontDirty = true;
+                    return;
+                }
 	    }
-	    return;
 	}
         break;
     }
