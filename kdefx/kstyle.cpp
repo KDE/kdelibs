@@ -985,7 +985,7 @@ int KStyle::pixelMetric(PixelMetric m, const QWidget* widget) const
 
 #if QT_VERSION >= 0x030300
 		case PM_MenuBarItemSpacing:
-			return 3;
+			return 5;
 
 		case PM_ToolBarItemSpacing:
 			return 0;
