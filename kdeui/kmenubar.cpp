@@ -48,6 +48,10 @@
 
 // $Id$
 // $Log$
+// Revision 1.87  1999/10/29 14:28:03  mosfet
+// Fix for KStyle menubar active items to work correctly with the latest Qt CVS.
+// Should be fine with older ones too ;-)
+//
 // Revision 1.86  1999/10/28 12:29:16  mosfet
 // New KStyle drawing code. David: This should fix the active item repaint
 // problem. I finally started getting it too ;-)
@@ -1092,8 +1096,8 @@ void KMenuBar::setFlat (bool flag)
 // From Qt's spacing
 static const int motifBarFrame          = 2;    // menu bar frame width
 
-#ifndef KTHEMESTYLE_CONSTANTS
 static const int motifBarHMargin        = 2;    // menu bar hor margin to item
+#ifndef KTHEMESTYLE_CONSTANTS
 static const int motifBarVMargin        = 1;    // menu bar ver margin to item
 static const int motifItemFrame         = 2;    // menu item frame width
 
