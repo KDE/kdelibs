@@ -882,14 +882,22 @@ void RenderLayer::calculateClipRects(const RenderLayer* rootLayer, QRect& overfl
                            // we need to keep in sync, since we may have shifted relative
                            // to our parent layer.
 
-    // A fixed object is essentially the root of its containing block hierarchy, so when
-    // we encounter such an object, we reset our clip rects to the fixedClipRect.
-    if (m_object->style()->position() == FIXED) {
-        posClipRect = fixedClipRect;
-        overflowClipRect = fixedClipRect;
-    }
-    else if (m_object->style()->position() == RELATIVE)
+    switch (m_object->style()->position()) {
+      // A fixed object is essentially the root of its containing block hierarchy, so when
+      // we encounter such an object, we reset our clip rects to the fixedClipRect.
+      case FIXED:
+         posClipRect = fixedClipRect;
+         overflowClipRect = fixedClipRect;
+        break;
+      case ABSOLUTE:
+        overflowClipRect = posClipRect;
+        break;
+      case RELATIVE:
         posClipRect = overflowClipRect;
+        break;
+      default:
+        break;
+    }
 
     // Update the clip rects that will be passed to child layers.
     if (m_object->hasOverflowClip() || m_object->hasClip()) {

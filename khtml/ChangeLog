@@ -1,3 +1,11 @@
+
+2004-07-10 Germain Garand <germain@ebooksfrance.org>
+
+        * rendering/render_layer.cpp (calculateClipRects): 
+        absolutely positioned objects must update the overflowClipRect 
+        passed to relatively positioned child layers to match the
+        posClipRect in effect (#67665/#72994).
+
 2004-06-30  Tobias Anton  <anton@stud.fbi.fh-darmstadt.de>
 	* khtmlview.{cpp,h}:
 	integrated keyboard tabbing with mouse scrolling.
