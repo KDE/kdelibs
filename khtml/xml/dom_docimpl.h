@@ -60,6 +60,7 @@ namespace DOM {
     class EventImpl;
     class EventListener;
     class GenericRONamedNodeMapImpl;
+    class HTMLDocumentImpl;
     class HTMLElementImpl;
     class NodeFilterImpl;
     class NodeIteratorImpl;
@@ -85,9 +86,22 @@ public:
                                           const DOMString &systemId, int &exceptioncode );
 
     DocumentImpl *createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName, 
-                                  const DOMString &doctype, int &exceptioncode );
+                                  const DocumentType &doctype, int &exceptioncode );
 
     CSSStyleSheetImpl *createCSSStyleSheet(DOMStringImpl *title, DOMStringImpl *media);
+
+    // Other methods (not part of DOM)
+
+    DocumentImpl *createDocument( KHTMLView *v = 0 );
+
+    HTMLDocumentImpl *createHTMLDocument( KHTMLView *v = 0 );
+
+    // Returns the static instance of this class - only one instance of this class should
+    // ever be present, and is used as a factory method for creating DocumentImpl objects
+    static DOMImplementationImpl *instance();
+
+protected:
+    static DOMImplementationImpl *m_instance;
 };
 
 
@@ -98,11 +112,8 @@ class DocumentImpl : public QObject, public NodeBaseImpl
 {
     Q_OBJECT
 public:
-    DocumentImpl(KHTMLView *v=0);
+    DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v=0);
     ~DocumentImpl();
-
-
-
 
     // DOM methods & attributes for Element
 
@@ -237,7 +248,7 @@ public:
         Transitional,
         Strict
     };
-    void determineParseMode( const QString &str );
+    virtual void determineParseMode( const QString &str );
     void setParseMode( ParseMode m ) { pMode = m; }
     ParseMode parseMode() const { return pMode; }
 
@@ -380,10 +391,10 @@ protected:
 class DocumentTypeImpl : public NodeImpl
 {
 public:
-    DocumentTypeImpl(DocumentPtr *doc);
+    DocumentTypeImpl(DOMImplementationImpl *_implementation, DocumentPtr *doc,
+                     const DOMString &qualifiedName, const DOMString &publicId,
+                     const DOMString &systemId);
     ~DocumentTypeImpl();
-
-    void setName( const QString& name ) { m_name = name; }
 
     // DOM methods & attributes for DocumentType
     virtual const DOMString name() const;
@@ -399,17 +410,25 @@ public:
     virtual DOMString internalSubset() const;
 
     // DOM methods overridden from  parent classes
-
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual DOMString namespaceURI() const;
+
+    // Other methods (not part of DOM)
+    void setName(const QString& name);
+    virtual void setOwnerDocument(DocumentPtr *doc);
+    DOMImplementationImpl *implementation() const;
 
     GenericRONamedNodeMapImpl *m_entities;
     GenericRONamedNodeMapImpl *m_notations;
     virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
-private:
-    DOMString m_name;
+protected:
+    DOMImplementationImpl *m_implementation;
+
+    DOMStringImpl *m_qualifiedName;
+    DOMStringImpl *m_publicId;
+    DOMStringImpl *m_systemId;
 };
 
 }; //namespace

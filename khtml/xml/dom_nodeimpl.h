@@ -67,6 +67,7 @@ class EventImpl;
         DocumentPtr() { doc = 0; }
         void resetDocument() { doc = 0; }
         friend class DocumentImpl;
+        friend class DOMImplementationImpl;
 
         DocumentImpl *doc;
     };
@@ -81,6 +82,7 @@ class EventImpl;
 // tree)
 class NodeImpl : public DomShared
 {
+    friend class DocumentImpl;
 public:
     NodeImpl(DocumentPtr *doc);
     virtual ~NodeImpl();
@@ -108,7 +110,7 @@ public:
 
     virtual NamedNodeMapImpl *attributes();
 
-    DocumentImpl *ownerDocument() const
+    virtual DocumentImpl *ownerDocument() const
         { return document->document(); }
 
     virtual NodeImpl *insertBefore ( NodeImpl *newChild, NodeImpl *refChild, int &exceptioncode );
@@ -315,15 +317,14 @@ public:
 
     static bool validAttrName(const DOMString &/*name*/) { return true; }
     static bool validPrefix(const DOMString &/*prefix*/) { return true; }
+    static bool vaildQualifiedName(const DOMString &/*qualifiedName*/) { return true; }
     static bool malformedPrefix(const DOMString &/*prefix*/) { return false; }
+    static bool malformedQualifiedName(const DOMString &/*qualifiedName*/) { return false; }
 
     virtual void dump(QTextStream *stream, QString ind = "") const;
 
-private:
-    DocumentPtr *document;
-    friend class DocumentImpl;
-
 protected:
+    DocumentPtr *document;
     khtml::RenderObject *m_render;
     bool m_complexText : 1;
     bool m_hasEvents : 1;

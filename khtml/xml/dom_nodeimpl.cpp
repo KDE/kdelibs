@@ -62,16 +62,18 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
 {
     m_hasTabindex=false;
     m_tabindex=0;
-    document->ref();
+    if (document)
+        document->ref();
 }
 
 NodeImpl::~NodeImpl()
 {
-    if (document->document())
+    if (document && document->document())
         document->document()->changedNodes.remove(this);
     if (m_regdListeners)
         delete m_regdListeners;
-    document->deref();
+    if (document)
+        document->deref();
 }
 
 DOMString NodeImpl::nodeValue() const

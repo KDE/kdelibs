@@ -1414,9 +1414,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
 
   // ### not sure if XHTML documents served as text/xml should use DocumentImpl or HTMLDocumentImpl
   if (args.serviceType == "text/xml")
-    d->m_doc = new DocumentImpl( d->m_view );
+    d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
   else
-    d->m_doc = new HTMLDocumentImpl( d->m_view );
+    d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
 
   d->m_doc->ref();
   d->m_doc->attach( d->m_view );

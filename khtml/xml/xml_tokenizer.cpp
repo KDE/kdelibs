@@ -250,14 +250,17 @@ bool XMLHandler::internalEntityDecl(const QString &name, const QString &value)
     EntityImpl *e = new EntityImpl(m_doc,name);
     // ### further parse entities inside the value and add them as separate nodes (or entityreferences)?
     e->addChild(m_doc->document()->createTextNode(value));
-    static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->entities())->addNode(e);
+    if (m_doc->document()->doctype())
+        static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->entities())->addNode(e);
     return true;
 }
 
 bool XMLHandler::notationDecl(const QString &name, const QString &publicId, const QString &systemId)
 {
-    NotationImpl *n = new NotationImpl(m_doc,name,publicId,systemId);
-    static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->notations())->addNode(n);
+    if (m_doc->document()->doctype()) {
+        NotationImpl *n = new NotationImpl(m_doc,name,publicId,systemId);
+        static_cast<GenericRONamedNodeMapImpl*>(m_doc->document()->doctype()->notations())->addNode(n);
+    }
     return true;
 }
 

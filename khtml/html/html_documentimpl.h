@@ -47,8 +47,7 @@ class HTMLDocumentImpl : public DOM::DocumentImpl, public khtml::CachedObjectCli
 {
     Q_OBJECT
 public:
-    HTMLDocumentImpl();
-    HTMLDocumentImpl(KHTMLView *v);
+    HTMLDocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v = 0);
 
     ~HTMLDocumentImpl();
 
@@ -71,6 +70,7 @@ public:
     virtual ElementImpl *createElement ( const DOMString &tagName );
 
     HTMLMapElementImpl* getMap(const DOMString& url_);
+    virtual void determineParseMode( const QString &str );
 
 protected:
     HTMLElementImpl *bodyElement;
@@ -88,22 +88,6 @@ protected slots:
      */
     void slotHistoryChanged();
 };
-
-// ###  this is a temporary class just to get us going with XHTML
-// eventually HTMLTokenizer will be able to detect if the document is XHTML or HTML
-class XHTMLDocumentImpl : public HTMLDocumentImpl
-{
-    Q_OBJECT
-public:
-
-    XHTMLDocumentImpl();
-    XHTMLDocumentImpl(KHTMLView *v);
-    ~XHTMLDocumentImpl();
-
-    virtual Tokenizer *createTokenizer();
-
-};
-
 
 }; //namespace
 

@@ -94,7 +94,7 @@ DocumentType DOMImplementation::createDocumentType ( const DOMString &qualifiedN
 
 Document DOMImplementation::createDocument ( const DOMString &namespaceURI,
                                              const DOMString &qualifiedName,
-                                             const DOMString &doctype )
+                                             const DocumentType &doctype )
 {
     if (!impl)
 	throw DOMException(DOMException::NOT_FOUND_ERR);
@@ -128,7 +128,7 @@ bool DOMImplementation::isNull() const
 Document::Document() : Node()
 {
     // we always wan't an implementation
-    impl = new DocumentImpl();
+    impl = DOMImplementationImpl::instance()->createDocument();
     impl->ref();
 //    kdDebug(6090) << "Document::Document()" << endl;
 }
@@ -137,7 +137,7 @@ Document::Document(bool create) : Node()
 {
     if(create)
     {
-	impl = new DocumentImpl();
+	impl = DOMImplementationImpl::instance()->createDocument();
 	impl->ref();
     }
     else

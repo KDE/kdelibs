@@ -161,7 +161,7 @@ public:
      */
     Document createDocument ( const DOMString &namespaceURI,
                               const DOMString &qualifiedName,
-                              const DOMString &doctype );
+                              const DocumentType &doctype );
 
     /**
      * Introduced in DOM Level 2

@@ -82,6 +82,7 @@ using namespace khtml;
 
 //template class QStack<DOM::NodeImpl>; // needed ?
 
+DOMImplementationImpl *DOMImplementationImpl::m_instance = 0;
 
 DOMImplementationImpl::DOMImplementationImpl()
 {
@@ -101,29 +102,130 @@ bool DOMImplementationImpl::hasFeature ( const DOMString &feature, const DOMStri
         return false;
 }
 
-DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &/*qualifiedName*/, const DOMString &/*publicId*/,
-                                                             const DOMString &/*systemId*/, int &/*exceptioncode*/ )
+DocumentTypeImpl *DOMImplementationImpl::createDocumentType( const DOMString &qualifiedName, const DOMString &publicId,
+                                                             const DOMString &systemId, int &exceptioncode )
 {
-    // ## implement
-    return 0;
+    // Not mentioned in spec: throw NAMESPACE_ERR if no qualifiedName supplied
+    if (qualifiedName.isNull()) {
+        exceptioncode = DOMException::NAMESPACE_ERR;
+        return 0;
+    }
+
+    // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
+    if (!NodeImpl::vaildQualifiedName(qualifiedName)) {
+        exceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return 0;
+    }
+
+    // NAMESPACE_ERR: Raised if the qualifiedName is malformed.
+    if (NodeImpl::malformedQualifiedName(qualifiedName)) {
+        exceptioncode = DOMException::NAMESPACE_ERR;
+        return 0;
+    }
+
+    return new DocumentTypeImpl(this,0,qualifiedName,publicId,systemId);
 }
 
-DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &/*namespaceURI*/, const DOMString &/*qualifiedName*/,
-                                                     const DOMString &/*doctype*/, int &/*exceptioncode*/ )
+DocumentImpl *DOMImplementationImpl::createDocument( const DOMString &namespaceURI, const DOMString &qualifiedName,
+                                                     const DocumentType &doctype, int &exceptioncode )
 {
-    // ## implement
-    return 0;
+    exceptioncode = 0;
+
+    // Not mentioned in spec: throw NAMESPACE_ERR if no qualifiedName supplied
+    if (qualifiedName.isNull()) {
+        exceptioncode = DOMException::NAMESPACE_ERR;
+        return 0;
+    }
+
+    // INVALID_CHARACTER_ERR: Raised if the specified qualified name contains an illegal character.
+    if (!NodeImpl::vaildQualifiedName(qualifiedName)) {
+        exceptioncode = DOMException::INVALID_CHARACTER_ERR;
+        return 0;
+    }
+
+    // NAMESPACE_ERR:
+    // - Raised if the qualifiedName is malformed,
+    // - if the qualifiedName has a prefix and the namespaceURI is null, or
+    // - if the qualifiedName has a prefix that is "xml" and the namespaceURI is different
+    //   from "http://www.w3.org/XML/1998/namespace" [Namespaces].
+    int colonpos = -1;
+    uint i;
+    DOMStringImpl *qname = qualifiedName.implementation();
+    for (i = 0; i < qname->l && colonpos < 0; i++) {
+        if ((*qname)[i] == ':')
+            colonpos = i;
+    }
+
+    if (NodeImpl::malformedQualifiedName(qualifiedName) ||
+        (colonpos >= 0 && namespaceURI.isNull()) ||
+        (colonpos == 3 && qualifiedName[0] == 'x' && qualifiedName[1] == 'm' && qualifiedName[2] == 'l' &&
+         namespaceURI != "http://www.w3.org/XML/1998/namespace")) {
+
+        exceptioncode = DOMException::NAMESPACE_ERR;
+        return 0;
+    }
+
+    DocumentTypeImpl *dtype = static_cast<DocumentTypeImpl*>(doctype.handle());
+    // WRONG_DOCUMENT_ERR: Raised if doctype has already been used with a different document or was
+    // created from a different implementation.
+    if (dtype && (dtype->ownerDocument() || dtype->implementation() != this)) {
+        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+        return 0;
+    }
+
+    DocumentImpl *doc = new DocumentImpl(this,dtype);
+
+    ElementImpl *element = doc->createElementNS(namespaceURI,qualifiedName);
+    doc->appendChild(element,exceptioncode);
+    if (exceptioncode) {
+        delete element;
+        delete doc;
+        return 0;
+    }
+
+    // When doctype is not null, its Node.ownerDocument attribute is set to the document being created.
+    if (!doctype.isNull())
+        static_cast<DocumentTypeImpl*>(doctype.handle())->setOwnerDocument(doc->docPtr());
+
+    return doc;
 }
 
 CSSStyleSheetImpl *DOMImplementationImpl::createCSSStyleSheet(DOMStringImpl */*title*/, DOMStringImpl */*media*/)
 {
-    return 0; // ###
+    // ### implement
+    return 0;
+}
+
+DocumentImpl *DOMImplementationImpl::createDocument( KHTMLView *v = 0 )
+{
+    return new DocumentImpl(this, 0, v);
+}
+
+HTMLDocumentImpl *DOMImplementationImpl::createHTMLDocument( KHTMLView *v = 0 )
+{
+    DOMString nullstr;
+    int exceptioncode = 0;
+    DocumentTypeImpl *doctype = createDocumentType("",nullstr,nullstr,exceptioncode);
+    if (exceptioncode)
+        return 0; // should never happen
+
+    return new HTMLDocumentImpl(this, doctype, v);
+}
+
+DOMImplementationImpl *DOMImplementationImpl::instance()
+{
+    if (!m_instance) {
+        m_instance = new DOMImplementationImpl();
+        m_instance->ref();
+    }
+
+    return m_instance;
 }
 
 // ------------------------------------------------------------------------
 
 // KHTMLView might be 0
-DocumentImpl::DocumentImpl(KHTMLView *v)
+DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v)
     : NodeBaseImpl( new DocumentPtr() )
 {
     document->doc = this;
@@ -144,9 +246,10 @@ DocumentImpl::DocumentImpl(KHTMLView *v)
     m_sheet = 0;
     m_elemSheet = 0;
     m_tokenizer = 0;
-    m_doctype = new DocumentTypeImpl( docPtr() );
-    m_doctype->ref();
-    m_implementation = new DOMImplementationImpl();
+    m_doctype = _doctype;
+    if (m_doctype)
+        m_doctype->ref();
+    m_implementation = _implementation;
     m_implementation->ref();
     pMode = Strict;
     m_textColor = "#000000";
@@ -169,7 +272,8 @@ DocumentImpl::~DocumentImpl()
     delete m_docLoader;
     if (m_elemSheet )  m_elemSheet->deref();
     delete m_tokenizer;
-    m_doctype->deref();
+    if (m_doctype)
+        m_doctype->deref();
     m_implementation->deref();
     delete m_paintDeviceMetrics;
 
@@ -931,131 +1035,11 @@ CSSStyleSheetImpl* DocumentImpl::elementSheet()
     return m_elemSheet;
 }
 
-static bool isTransitional(const QString &spec, int start)
-{
-    if((spec.find("TRANSITIONAL", start, false ) != -1 ) ||
-       (spec.find("LOOSE", start, false ) != -1 ) ||
-       (spec.find("FRAMESET", start, false ) != -1 ) ||
-       (spec.find("LATIN1", start, false ) != -1 ) ||
-       (spec.find("SYMBOLS", start, false ) != -1 ) ||
-       (spec.find("SPECIAL", start, false ) != -1 ) ) {
-        //kdDebug() << "isTransitional" << endl;
-        return true;
-    }
-    return false;
-}
-
-enum HTMLMode {
-    Html3 = 0,
-    Html4 = 1,
-    XHtml = 2
-};
-
 void DocumentImpl::determineParseMode( const QString &str )
 {
-    //kdDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
-    // determines the parse mode for HTML
-    // quite some hints here are inspired by the mozilla code.
-
-    // default parsing mode is Loose
-    pMode = Compat;
-
-    ParseMode systemId = Unknown;
-    ParseMode publicId = Unknown;
-    HTMLMode htmlMode = Html3;
-
-    int pos = 0;
-    int doctype = str.find("!doctype", 0, false);
-    if( doctype > 2 ) {
-        pos = doctype - 2;
-        // Store doctype name
-        int start = doctype + 9;
-        while ( start < (int)str.length() && str[start].isSpace() )
-            start++;
-        int espace = str.find(' ',start);
-        QString name = str.mid(start,espace-start);
-        //kdDebug() << "DocumentImpl::determineParseMode setName: " << name << endl;
-        m_doctype->setName( name );
-    }
-
-    // get the first tag (or the doctype tag)
-    int start = str.find('<', pos);
-    int stop = str.find('>', pos);
-    if( start > -1 && stop > start ) {
-        QString spec = str.mid( start + 1, stop - start - 1 );
-        //kdDebug() << "DocumentImpl::determineParseMode dtd=" << spec<< endl;
-        start = 0;
-        int quote = -1;
-        if( doctype != -1 ) {
-            while( (quote = spec.find( "\"", start )) != -1 ) {
-                int quote2 = spec.find( "\"", quote+1 );
-                if(quote2 < 0) quote2 = spec.length();
-                QString val = spec.mid( quote+1, quote2 - quote-1 );
-                //kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl;
-                // find system id
-                pos = val.find("http://www.w3.org/tr/", 0, false);
-                if ( pos != -1 ) {
-                    // loose or strict dtd?
-                    if ( val.find("strict.dtd", pos, false) != -1 )
-                        systemId = Strict;
-                    else if (isTransitional(val, pos))
-                        systemId = Transitional;
-                }
-
-                // find public id
-                pos = val.find("//dtd", 0, false );
-                if ( pos != -1 ) {
-                    if( val.find( "xhtml", pos+6, false ) != -1 ) {
-                        htmlMode = XHtml;
-                        if( isTransitional( val, pos ) )
-                            publicId = Transitional;
-                        else
-                            publicId = Strict;
-                    } else if ( val.find( "15445:1999", pos+6 ) != -1 ) {
-                        htmlMode = Html4;
-                        publicId = Strict;
-                    } else {
-                        int tagPos = val.find( "html", pos+6, false );
-                        if( tagPos == -1 )
-                            tagPos = val.find( "hypertext markup", pos+6, false );
-                        if ( tagPos != -1 ) {
-                            tagPos = val.find(QRegExp("[0-9]"), tagPos );
-                            int version = val.mid( tagPos, 1 ).toInt();
-                            //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl;
-                            if( version > 3 ) {
-                                htmlMode = Html4;
-                                publicId = isTransitional( val, tagPos ) ? Transitional : Strict;
-                            }
-                        }
-                    }
-                }
-                start = quote2 + 1;
-            }
-        }
-
-        if( systemId == publicId )
-            pMode = publicId;
-        else if ( systemId == Unknown )
-            pMode = htmlMode == Html4 ? Compat : publicId;
-        else if ( publicId == Transitional && systemId == Strict ) {
-            if ( htmlMode == Html3 )
-                pMode = Compat;
-            else
-                pMode = Strict;
-        } else
-            pMode = Compat;
-
-        if ( htmlMode == XHtml )
-            pMode = Strict;
-    }
-    //kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
-    //kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl;
-    if( pMode == Strict )
-        kdDebug(6020) << " using strict parseMode" << endl;
-    else if (pMode == Compat )
-        kdDebug(6020) << " using compatibility parseMode" << endl;
-    else
-        kdDebug(6020) << " using transitional parseMode" << endl;
+    // For xML documents, use string parse mode
+    pMode = Strict;
+    kdDebug(6020) << " using strict parseMode" << endl;
 }
 
 // Please see if there`s a possibility to merge that code
@@ -1604,9 +1588,24 @@ NodeImpl *DocumentFragmentImpl::cloneNode ( bool deep, int &exceptioncode )
 
 // ----------------------------------------------------------------------------
 
-DocumentTypeImpl::DocumentTypeImpl(DocumentPtr *doc)
+DocumentTypeImpl::DocumentTypeImpl(DOMImplementationImpl *_implementation, DocumentPtr *doc,
+                                   const DOMString &qualifiedName, const DOMString &publicId,
+                                   const DOMString &systemId)
     : NodeImpl(doc)
 {
+    m_implementation = _implementation;
+    m_implementation->ref();
+
+    m_qualifiedName = qualifiedName.implementation();
+    if (m_qualifiedName)
+        m_qualifiedName->ref();
+    m_publicId = publicId.implementation();
+    if (m_publicId)
+        m_publicId->ref();
+    m_systemId = systemId.implementation();
+    if (m_systemId)
+        m_systemId->ref();
+
     m_entities = new GenericRONamedNodeMapImpl();
     m_entities->ref();
     m_notations = new GenericRONamedNodeMapImpl();
@@ -1615,13 +1614,21 @@ DocumentTypeImpl::DocumentTypeImpl(DocumentPtr *doc)
 
 DocumentTypeImpl::~DocumentTypeImpl()
 {
+    m_implementation->deref();
     m_entities->deref();
     m_notations->deref();
+
+    if (m_qualifiedName)
+        m_qualifiedName->deref();
+    if (m_publicId)
+        m_publicId->deref();
+    if (m_systemId)
+        m_systemId->deref();
 }
 
 const DOMString DocumentTypeImpl::name() const
 {
-    return m_name;
+    return m_qualifiedName;
 }
 
 NamedNodeMapImpl *DocumentTypeImpl::entities() const
@@ -1636,14 +1643,12 @@ NamedNodeMapImpl *DocumentTypeImpl::notations() const
 
 DOMString DocumentTypeImpl::publicId() const
 {
-    // ### implement
-    return DOMString();
+    return m_publicId;
 }
 
 DOMString DocumentTypeImpl::systemId() const
 {
-    // ### implement
-    return DOMString();
+    return m_systemId;
 }
 
 DOMString DocumentTypeImpl::internalSubset() const
@@ -1666,6 +1671,26 @@ DOMString DocumentTypeImpl::namespaceURI() const
 {
     // ###
     return DOMString();
+}
+
+void DocumentTypeImpl::setName(const QString& name)
+{
+    if (m_qualifiedName)
+        m_qualifiedName->deref();
+    DOMString n(name);
+    m_qualifiedName = n.implementation();
+    if (m_qualifiedName)
+        m_qualifiedName->ref();
+}
+
+void DocumentTypeImpl::setOwnerDocument(DocumentPtr *doc)
+{
+    document = doc;
+}
+
+DOMImplementationImpl *DocumentTypeImpl::implementation() const
+{
+    return m_implementation;
 }
 
 // DOM Section 1.1.1

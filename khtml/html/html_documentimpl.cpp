@@ -57,7 +57,8 @@ using namespace DOM;
 using namespace khtml;
 
 
-HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
+HTMLDocumentImpl::HTMLDocumentImpl(DOMImplementationImpl *_implementation, DocumentTypeImpl *_doctype, KHTMLView *v)
+  : DocumentImpl(_implementation,_doctype)
 {
 //    kdDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this << endl;
     bodyElement = 0;
@@ -71,25 +72,9 @@ HTMLDocumentImpl::HTMLDocumentImpl() : DocumentImpl()
 */
     connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
              SLOT( slotHistoryChanged() ));
-}
 
-HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
-    : DocumentImpl(v)
-{
-//    kdDebug( 6090 ) << "HTMLDocumentImpl constructor2 this = " << this << endl;
-    bodyElement = 0;
-    htmlElement = 0;
-
-    m_styleSelector = new CSSStyleSelector(this);
-
-/*
-    connect( KHTMLFactory::vLinks(), SIGNAL( inserted( const QString& )),
-             SLOT( slotHistoryChanged() ));
-    connect( KHTMLFactory::vLinks(), SIGNAL( removed( const QString& )),
-             SLOT( slotHistoryChanged() ));
-*/
-    connect( KHTMLFactory::vLinks(), SIGNAL( cleared()),
-             SLOT( slotHistoryChanged() ));
+    if (v)
+        m_styleSelector = new CSSStyleSelector(this); // ###
 }
 
 HTMLDocumentImpl::~HTMLDocumentImpl()
@@ -188,26 +173,131 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
         return 0;
 }
 
-//-----------------------------------------------------------------------------
-
-
-XHTMLDocumentImpl::XHTMLDocumentImpl() : HTMLDocumentImpl()
+static bool isTransitional(const QString &spec, int start)
 {
+    if((spec.find("TRANSITIONAL", start, false ) != -1 ) ||
+       (spec.find("LOOSE", start, false ) != -1 ) ||
+       (spec.find("FRAMESET", start, false ) != -1 ) ||
+       (spec.find("LATIN1", start, false ) != -1 ) ||
+       (spec.find("SYMBOLS", start, false ) != -1 ) ||
+       (spec.find("SPECIAL", start, false ) != -1 ) ) {
+        //kdDebug() << "isTransitional" << endl;
+        return true;
+    }
+    return false;
 }
 
-XHTMLDocumentImpl::XHTMLDocumentImpl(KHTMLView *v) : HTMLDocumentImpl(v)
+enum HTMLMode {
+    Html3 = 0,
+    Html4 = 1,
+    XHtml = 2
+};
+
+void HTMLDocumentImpl::determineParseMode( const QString &str )
 {
+    //kdDebug() << "DocumentImpl::determineParseMode str=" << str<< endl;
+    // determines the parse mode for HTML
+    // quite some hints here are inspired by the mozilla code.
+
+    // default parsing mode is Loose
+    pMode = Compat;
+
+    ParseMode systemId = Unknown;
+    ParseMode publicId = Unknown;
+    HTMLMode htmlMode = Html3;
+
+    int pos = 0;
+    int doctype = str.find("!doctype", 0, false);
+    if( doctype > 2 ) {
+        pos = doctype - 2;
+        // Store doctype name
+        int start = doctype + 9;
+        while ( start < (int)str.length() && str[start].isSpace() )
+            start++;
+        int espace = str.find(' ',start);
+        QString name = str.mid(start,espace-start);
+        //kdDebug() << "DocumentImpl::determineParseMode setName: " << name << endl;
+        m_doctype->setName( name );
+    }
+
+    // get the first tag (or the doctype tag)
+    int start = str.find('<', pos);
+    int stop = str.find('>', pos);
+    if( start > -1 && stop > start ) {
+        QString spec = str.mid( start + 1, stop - start - 1 );
+        //kdDebug() << "DocumentImpl::determineParseMode dtd=" << spec<< endl;
+        start = 0;
+        int quote = -1;
+        if( doctype != -1 ) {
+            while( (quote = spec.find( "\"", start )) != -1 ) {
+                int quote2 = spec.find( "\"", quote+1 );
+                if(quote2 < 0) quote2 = spec.length();
+                QString val = spec.mid( quote+1, quote2 - quote-1 );
+                //kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl;
+                // find system id
+                pos = val.find("http://www.w3.org/tr/", 0, false);
+                if ( pos != -1 ) {
+                    // loose or strict dtd?
+                    if ( val.find("strict.dtd", pos, false) != -1 )
+                        systemId = Strict;
+                    else if (isTransitional(val, pos))
+                        systemId = Transitional;
+                }
+
+                // find public id
+                pos = val.find("//dtd", 0, false );
+                if ( pos != -1 ) {
+                    if( val.find( "xhtml", pos+6, false ) != -1 ) {
+                        htmlMode = XHtml;
+                        if( isTransitional( val, pos ) )
+                            publicId = Transitional;
+                        else
+                            publicId = Strict;
+                    } else if ( val.find( "15445:1999", pos+6 ) != -1 ) {
+                        htmlMode = Html4;
+                        publicId = Strict;
+                    } else {
+                        int tagPos = val.find( "html", pos+6, false );
+                        if( tagPos == -1 )
+                            tagPos = val.find( "hypertext markup", pos+6, false );
+                        if ( tagPos != -1 ) {
+                            tagPos = val.find(QRegExp("[0-9]"), tagPos );
+                            int version = val.mid( tagPos, 1 ).toInt();
+                            //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl;
+                            if( version > 3 ) {
+                                htmlMode = Html4;
+                                publicId = isTransitional( val, tagPos ) ? Transitional : Strict;
+                            }
+                        }
+                    }
+                }
+                start = quote2 + 1;
+            }
+        }
+
+        if( systemId == publicId )
+            pMode = publicId;
+        else if ( systemId == Unknown )
+            pMode = htmlMode == Html4 ? Compat : publicId;
+        else if ( publicId == Transitional && systemId == Strict ) {
+            if ( htmlMode == Html3 )
+                pMode = Compat;
+            else
+                pMode = Strict;
+        } else
+            pMode = Compat;
+
+        if ( htmlMode == XHtml )
+            pMode = Strict;
+    }
+    //kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
+    //kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl;
+    if( pMode == Strict )
+        kdDebug(6020) << " using strict parseMode" << endl;
+    else if (pMode == Compat )
+        kdDebug(6020) << " using compatibility parseMode" << endl;
+    else
+        kdDebug(6020) << " using transitional parseMode" << endl;
 }
-
-XHTMLDocumentImpl::~XHTMLDocumentImpl()
-{
-}
-
-Tokenizer *XHTMLDocumentImpl::createTokenizer()
-{
-    return new XMLTokenizer(docPtr(),m_view);
-}
-
-
 
 #include "html_documentimpl.moc"
