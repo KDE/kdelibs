@@ -155,7 +155,9 @@ bool KTabWidget::isEmptyTabbarSpace( const QPoint &p ) const
     QSize size( tabBar()->sizeHint() );
     if ( ( tabPosition()==Top && point.y()< size.height() ) || ( tabPosition()==Bottom && point.y()>(height()-size.height() ) ) ) {
 #if QT_VERSION >= 0x030200
-        if ( cornerWidget( TopLeft ) )
+	// QTabWidget::cornerWidget isn't const even it doesn't write any data ;(
+	KTabWidget *that = const_cast<KTabWidget*>(this);
+        if ( that->cornerWidget( TopLeft ) )
             point.setX( point.x()-size.height() );
 #endif
 	if ( tabPosition()==Bottom )
