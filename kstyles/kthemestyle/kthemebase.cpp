@@ -1,42 +1,42 @@
 /*
-  $Id$
+ $Id$
 
-  This file is part of the KDE libraries
-  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
+ This file is part of the KDE libraries
+ Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
-  KDE3 port (C) 2001 Maksim Orlovich <mo002j@mail.rochester.edu>
-  Port version 0.8.8
+ KDE3 port (C) 2001 Maksim Orlovich <mo002j@mail.rochester.edu>
+ Port version 0.9.0
 
-  Palette setup code is from KApplication,
-Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
-Copyright (C) 1998, 1999, 2000 KDE Team
+ Palette setup code is from KApplication,
+		Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
+		Copyright (C) 1998, 1999, 2000 KDE Team
 
- Includes code portions from the KDE HighColor style.
+  Includes code portions from the KDE HighColor style.
 
- KDE3 HighColor Style
-Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
-   (C) 2001 Fredrik Höglund   <fredrik@kde.org>
+		KDE3 HighColor Style
+		Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
+		(C) 2001 Fredrik Höglund   <fredrik@kde.org>
 
-Drawing routines adapted from the KDE2 HCStyle,
-Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
-   (C) 2000 Dirk Mueller      <mueller@kde.org>
-   (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+		Drawing routines adapted from the KDE2 HCStyle,
+		Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
+		(C) 2000 Dirk Mueller      <mueller@kde.org>
+		(C) 2001 Martijn Klingens  <mklingens@yahoo.com>
 
 
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License version 2 as published by the Free Software Foundation.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License version 2 as published by the Free Software Foundation.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
 
-  You should have received a copy of the GNU Library General Public License
-  along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
+ You should have received a copy of the GNU Library General Public License
+ along with this library; see the file COPYING.LIB.  If not, write to
+ the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
 */
 
 #include <kthemebase.h>
@@ -421,7 +421,7 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
     bool loaded[ WIDGETS ]; // used for preloading for CopyWidget
 
     QSettings config;
-    d->dirs.addToSearch( config, "share/apps/kstyle/themes" );
+    config.insertSearchPath( QSettings::Unix, configDirName );
 
     applyConfigFile( config );
 
@@ -492,18 +492,21 @@ void KThemeBase::readConfig( Qt::GUIStyle /*style*/ )
 
 }
 
-KThemeBase::KThemeBase( const QString & configFile )
+KThemeBase::KThemeBase( const QString& dir, const QString & configFile )
         : KStyle( FilledFrameWorkaround ), configFileName( configFile )
 {
     d = new KThemeBasePrivate;
     if ( configFileName.isEmpty() )
         configFileName = "kstylerc";
+
+    configDirName = dir;
     //Strip of rc from the configFileName
     if ( configFileName.endsWith( "rc" ) )
     {
         configFileName.truncate( configFileName.length() - 2 ); //Get rid of rc..
     }
     //else SCREAM!!
+
 
     configFileName = "/" + configFileName + "/";
 
@@ -1340,7 +1343,7 @@ void KThemeBase::readResourceGroup( int i, QString *pixnames, QString *brdnames,
         {
             if ( tmpStr == widgetEntries[ sIndex ] )
             {
-                if ( !loadArray[ sIndex ] )  // hasn't been loaded yet
+                if ( !loadArray[ sIndex ] )   // hasn't been loaded yet
                     readResourceGroup( sIndex, pixnames, brdnames,
                                        loadArray );
                 break;
@@ -1597,7 +1600,7 @@ QPalette KThemeBase::overridePalette( const QPalette& pal )
         // black fg - use darkgrey disabled fg
         disfg = Qt::darkGray;
 
-    QColorGroup disabledgrp( disfg, background,  //TODO:Convert this to the new ctor.
+    QColorGroup disabledgrp( disfg, background,   //TODO:Convert this to the new ctor.
                              background.light( highlightVal ),
                              background.dark( lowlightVal ),
                              background.dark( 120 ),

@@ -5,7 +5,7 @@
  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
  KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.8.8
+ Port version 0.9.0
 
  Includes code portions from the dotNET style, and the KDE HighColor style.
 
@@ -14,13 +14,13 @@
                     Carsten Pfeiffer <pfeiffer@kde.org>
 
  KDE3 HighColor Style
-Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
-   (C) 2001 Fredrik Höglund   <fredrik@kde.org>
+	Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
+	(C) 2001 Fredrik Höglund   <fredrik@kde.org>
 
-Drawing routines adapted from the KDE2 HCStyle,
-Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
-   (C) 2000 Dirk Mueller      <mueller@kde.org>
-   (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+	Drawing routines adapted from the KDE2 HCStyle,
+		Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
+		(C) 2000 Dirk Mueller      <mueller@kde.org>
+		(C) 2001 Martijn Klingens  <mklingens@yahoo.com>
 
 
  This library is free software; you can redistribute it and/or
@@ -104,49 +104,44 @@ Nicer disabled buttons.
 Sliders are not disabled properly
 */
 
+
 class KThemeStylePlugin : public QStylePlugin
 {
 public:
-    KThemeStylePlugin() {}
-    ~KThemeStylePlugin() {}
+
+    KThemeStylePlugin()
+	{}
+
+    ~KThemeStylePlugin()
+	{}
 
     QStringList keys() const
     {
-        QStringList keys;
-        //We need
-        KStyleDirs dirs;
-        const QStringList& drs = dirs.enumerateDirs();
+		KStyleDirs dirs;
+		QSettings cfg;
+		dirs.addToSearch( cfg, "share/config" );
 
-        for ( int i = 0; i < drs.size(); i++ )
-        {
-            QDir path ( drs[ i ] + "share/apps/kstyle/themes" );
-            QSettings conf;
-            conf.insertSearchPath( QSettings::Unix, drs[ i ] + "share/apps/kstyle/themes" );
+		QStringList keys;
+		bool ok;
 
-            const QStringList& files = path.entryList( "*.themerc" ); //QDir::Readable);//"*.themerc",
-            for ( int f = 0; f < files.size(); f++ )
-            {
-                //Strip off RC..
-                QString rname = files[ f ];
-                rname.truncate( rname.length() - 2 );
-                rname = "/" + rname + "/";
-                if ( conf.readEntry( rname + "KDE/widgetStyle" ) == "basicstyle.la" || conf.readEntry( rname + "KDE/WidgetStyle" ).endsWith( " [Pixmap]" ) )
-                {
-                    QString close_name = files[ f ];
-                    close_name.truncate( close_name.length() - 8 ); //Get rid of .themerc
-                    keys.append( close_name + " [Pixmap]" );
-                }
-            }
-        }
+		keys = cfg.readListEntry("/kthemestyle/themes",&ok);
+		if (!ok)
+			qWarning("KThemeStyle cache seems corrupt!\n");//Too bad one can't i18n this :-(
+
         return keys;
     }
 
     QStyle* create( const QString& key )
     {
-        if ( key.endsWith( " [pixmap]" ) )
+		KStyleDirs dirs;
+		QSettings cfg;
+		dirs.addToSearch( cfg, "share/config" );
+
+		QString file = cfg.readEntry("/kthemestyle/"+key+"/file");
+		if (!key.isEmpty())
         {
-            QString themerc = key.left( key.length() - 9 ) + ".themerc";
-            return new KThemeStyle( themerc );
+			QFileInfo fi(file);
+            return new KThemeStyle( fi.dirPath(), fi.fileName() );
         }
 
         return 0;
@@ -377,8 +372,8 @@ int KThemeStyle::pixelMetric ( PixelMetric metric, const QWidget * widget ) cons
 
 
 
-KThemeStyle::KThemeStyle( const QString &configFile )
-        : KThemeBase( configFile ), paletteSaved( false ), vsliderCache( 0L ), vsliderBackCache( 0L )
+KThemeStyle::KThemeStyle( const QString& configDir,const QString &configFile )
+        : KThemeBase( configDir, configFile ), paletteSaved( false ), vsliderCache( 0L ), vsliderBackCache( 0L )
 {
     mtfstyle = QStyleFactory::create( "Motif" );
     if ( !mtfstyle )
@@ -450,6 +445,8 @@ void KThemeStyle::polish( QWidget *w )
                 || w->inherits( "QSlider" )
                 || w->inherits( "QButton" )
                 || w->inherits( "QProgressBar" )
+				|| w->inherits( "KActiveLabel" )
+				|| w->inherits( "KJanusWidget" )
            )
         {
             w->setBackgroundOrigin( QWidget::ParentOrigin );
@@ -532,6 +529,8 @@ void KThemeStyle::unPolish( QWidget* w )
                 || w->inherits( "QSlider" )
                 || w->inherits( "QButton" )
                 || w->inherits( "QProgressBar" )
+				|| w->inherits( "KActiveLabel" )
+				|| w->inherits( "KJanusWidget" )
            )
         {
             w->setBackgroundOrigin( QWidget::WidgetOrigin );
@@ -1686,58 +1685,6 @@ void KThemeStyle::drawControl( ControlElement element,
                 handled = true;
                 break;
             }
-        case CE_ProgressBarLabel:
-            {
-                bool reverse = QApplication::reverseLayout();
-                const QProgressBar* pb = ( const QProgressBar* ) widget;
-                QRect cr = subRect( SR_ProgressBarContents, widget );
-                double progress = pb->progress();
-
-                if ( !cr.isValid() )
-                    return ;
-
-                QFont font = p->font();
-                font.setBold( true );
-                p->setFont( font );
-
-                // Draw label
-                if ( progress > 0 )
-                {
-                    int steps = pb->totalSteps();
-                    double pg = progress / steps;
-                    int width = QMIN( cr.width(), ( int ) ( pg * cr.width() ) );
-                    QRect crect;
-                    if ( !reverse )
-                        crect = QRect( cr.x() + width, cr.y(), cr.width(), cr.height() );
-                    else
-                        crect = QRect( cr.x(), cr.y(), cr.width()-width, cr.height() );
-
-
-                    p->save();
-                    p->setPen( pb->isEnabled() ? cg.highlightedText() : cg.text() );
-                    p->drawText( r, AlignCenter, pb->progressString() );
-                    if ( width != cr.width() )
-                    {
-                        p->setClipRect( crect );
-                        p->setPen( cg.text() );
-                        p->drawText( r, AlignCenter, pb->progressString() );
-                    }
-                    p->restore();
-
-                }
-                else
-                {
-                    p->setPen( cg.text() );
-                    p->drawText( r, AlignCenter, pb->progressString() );
-                }
-
-                handled = true;
-
-                break;
-            }
-
-
-
     };
 
     if ( !handled )

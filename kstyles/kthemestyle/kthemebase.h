@@ -1,33 +1,33 @@
 /*
-  $Id$
+ $Id$
 
-  This file is part of the KDE libraries
-  Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
+ This file is part of the KDE libraries
+ Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
-  KDE3 port (C) 2001 Maksim Orlovich <mo002j@mail.rochester.edu>
+ KDE3 port (C) 2001 Maksim Orlovich <mo002j@mail.rochester.edu>
 
-  Palette setup code is from KApplication,
+ Palette setup code is from KApplication,
 Copyright (C) 1997 Matthias Kalle Dalheimer (kalle@kde.org)
 Copyright (C) 1998, 1999, 2000 KDE Team
 
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License version 2 as published by the Free Software Foundation.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License version 2 as published by the Free Software Foundation.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
 
-  You should have received a copy of the GNU Library General Public License
-  along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
+ You should have received a copy of the GNU Library General Public License
+ along with this library; see the file COPYING.LIB.  If not, write to
+ the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
 */
 
-#ifndef __KTHEMEBASE_H
-#define __KTHEMEBASE_H
+#ifndef KTHEMEBASE_H
+#define KTHEMEBASE_H
 
 #include <qtimer.h>
 #include <qdatetime.h>
@@ -212,7 +212,7 @@ public:
     /**
      * Constructs a new KThemeBase object.
      */
-    KThemeBase( const QString &configFile );
+    KThemeBase( const QString &dirs, const QString &configFile );
     ~KThemeBase();
     /**
      * Describes if a pixmap should be scaled fully, horizontally, vertically,
@@ -604,6 +604,7 @@ private:
     KThemeCache *cache;
     int cacheSize;
     QString configFileName;
+    QString configDirName;
 
     /**
      * The theme pixmaps. Many of these may be NULL if no pixmap is specified.

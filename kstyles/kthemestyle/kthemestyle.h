@@ -1,44 +1,44 @@
 /*
- $Id$
+$Id$
 
- This file is part of the KDE libraries
- Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
+This file is part of the KDE libraries
+Copyright (C) 1999 Daniel M. Duley <mosfet@kde.org>
 
- KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
- Port version 0.8.5
+KDE3 port (C) 2001-2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+Port version 0.8.5
 
- Includes code portions from the dotNET style, and the KDE HighColor style.
+Includes code portions from the dotNET style, and the KDE HighColor style.
 
- dotNET Style
-  Copyright (C) 2001, Chris Lee        <lee@azsites.com>
-                    Carsten Pfeiffer <pfeiffer@kde.org>
+dotNET Style
+ Copyright (C) 2001, Chris Lee        <lee@azsites.com>
+                   Carsten Pfeiffer <pfeiffer@kde.org>
 
- KDE3 HighColor Style
+KDE3 HighColor Style
 Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
-   (C) 2001 Fredrik Höglund   <fredrik@kde.org>
+  (C) 2001 Fredrik Höglund   <fredrik@kde.org>
 
 Drawing routines adapted from the KDE2 HCStyle,
 Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
-   (C) 2000 Dirk Mueller      <mueller@kde.org>
-   (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+  (C) 2000 Dirk Mueller      <mueller@kde.org>
+  (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
 
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License version 2 as published by the Free Software Foundation.
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License version 2 as published by the Free Software Foundation.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
 
-  You should have received a copy of the GNU Library General Public License
-  along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
+ You should have received a copy of the GNU Library General Public License
+ along with this library; see the file COPYING.LIB.  If not, write to
+ the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
 */
-#ifndef __KTHEMESTYLE_H
-#define __KTHEMESTYLE_H
+#ifndef KTHEMESTYLE_H
+#define KTHEMESTYLE_H
 
 #include <qglobal.h>
 
@@ -75,7 +75,7 @@ public:
      * @param configFile A KConfig file to use as the theme configuration.
      * Defaults to ~/.kderc.
      */
-    KThemeStyle( const QString &configFile = QString::null );
+    KThemeStyle( const QString& configDir, const QString &configFile = QString::null );
     ~KThemeStyle();
 
     virtual int pixelMetric ( PixelMetric metric, const QWidget * widget = 0 ) const;
