@@ -1,4 +1,3 @@
-
 /*
   This file is part of the KDE libraries
   Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
@@ -157,7 +156,7 @@ fprintf(stderr, "arg[0] = %s\n", name.data());
      /** Give the process a new name **/
      kinit_setproctitle( "%s", name.data() );
          
-     d.argv = (char **) malloc(sizeof(char *) * argc);
+     d.argv = (char **) malloc(sizeof(char *) * (argc+1));
      d.argv[0] = name.data();
      for (int i = 1;  i < argc; i++)
      {
@@ -166,12 +165,20 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
         while(*args != 0) args++;
         args++; 
      }
+     d.argv[argc] = 0;
 
      printf("Opening \"%s\"\n", cmd.data() );
      d.handle = lt_dlopen( cmd.data() );
      if (!d.handle )
      {
-        fprintf(stderr, "Could not dlopen library: %s\n", lt_dlerror());        
+        fprintf(stderr, "Could not dlopen library: %s\n", lt_dlerror());
+        d.result = 2; // Try execing
+        write(d.fd[1], &d.result, 1);
+
+        // We set the close on exec flag.
+        // Closing of d.fd[1] indicates that the execvp succeeded!
+        fcntl(d.fd[1], F_SETFD, FD_CLOEXEC);
+        execvp(name.data(), d.argv);
         d.result = 1; // Error
         write(d.fd[1], &d.result, 1);
         close(d.fd[1]);
@@ -184,7 +191,7 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
         if (!d.sym )
         {
            fprintf(stderr, "Could not find main: %s\n", lt_dlerror());        
-           d.result = 0; // Error
+           d.result = 1; // Error
            write(d.fd[1], &d.result, 1);
            close(d.fd[1]);
            exit(255);
@@ -205,7 +212,7 @@ fprintf(stderr, "Starting klauncher.\n");
         if (!d.sym )
         {
            fprintf(stderr, "Could not find start_launcher: %s\n", lt_dlerror());        
-           d.result = 0; // Error
+           d.result = 1; // Error
            write(d.fd[1], &d.result, 1);
            close(d.fd[1]);
            exit(255);
@@ -228,14 +235,38 @@ fprintf(stderr, "Starting klauncher.\n");
      {
         d.launcher_pid = d.fork;
      }
+     bool exec = false;
      for(;;)
      {
        d.n = read(d.fd[0], &d.result, 1);
-       if (d.n == 1) break;
+       if (d.n == 1) 
+       {
+          if (d.result == 2)
+          {
+             fprintf(stderr, "Could not load library! Trying exec....\n");
+             exec = true;
+          }
+          else
+             break;
+       }
        if (d.n == 0)
        {
-          perror("kinit: Pipe closed unexpected.\n");
-          exit(255);
+          if (exec)
+          {
+             fprintf(stderr, "Exec successfull.\n");
+             d.result = 0;
+             break;
+          }
+          else
+          {
+             perror("kinit: Pipe closed unexpected.\n");
+             exit(255);
+          }
+       }
+       if (errno == ECHILD)
+       {
+          fprintf(stderr, "A child died.....\n");
+          continue;
        }
        if (errno != EINTR)
        {
