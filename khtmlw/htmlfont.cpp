@@ -22,6 +22,7 @@
 #include <string.h>
 #include <qstring.h>
 #include <kapp.h>
+#include <klocale.h>
 
 // most of these sizes are standard X font sizes, so all of our fonts
 // display nicely.
@@ -36,6 +37,7 @@ HTMLFont::HTMLFont( const char *_family, int _size, int _weight, bool _italic,
     textCol = black;
     fsize = _size;
     if (_charset) setCharset(_charset);
+    else setCharset(klocale->charset());
 }
 
 int HTMLFont::pointSize( int _size )
@@ -43,12 +45,6 @@ int HTMLFont::pointSize( int _size )
     return fontSizes[ _size ];
 }
 
-void HTMLFont::setCharset( const char *ch )
-{
-  KApplication::getKApplication()->getCharsets()->setQFont(font,ch);
-  chset=ch;
-}
-		
 HTMLFontManager::HTMLFontManager()
 {
     list.setAutoDelete( TRUE );

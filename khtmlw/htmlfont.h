@@ -50,7 +50,6 @@ public:
 		{	textCol = col; }
 	void setCharset( const KCharset &ch )
 		{	 chset=ch; chset.setQFont(font);}
-	void setCharset( const char *ch );
 
 	const char *family() const
 		{	return font.family(); }

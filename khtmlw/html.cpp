@@ -4413,10 +4413,16 @@ bool KHTMLWidget::setCharset(const char *name){
 	}
  	debugM("Setting charset to: %s\n",name);
         HTMLFont f( *font_stack.top());
+	debugM("Original font: face: %s qtCharset: %i\n",QFont(f).family(),(int)QFont(f).charSet());
 	f.setCharset(name);
+	debugM("Changed font: face: %s qtCharset: %i\n",QFont(f).family(),(int)QFont(f).charSet());
         const HTMLFont *fp = pFontManager->getFont( f );
+	debugM("Got font: %p\n",fp);
+	debugM("Got font: face: %s qtCharset: %i\n",QFont(*fp).family(),(int)QFont(*fp).charSet());
         font_stack.push( fp );
-        painter->setFont( *(font_stack.top()) );
+	debugM("painter: %p\n",painter);
+	debugM("Font stack top: %p\n",font_stack.top());
+        if (painter) painter->setFont( *font_stack.top() );
 	return TRUE;
 }
 
