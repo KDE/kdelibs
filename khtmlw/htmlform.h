@@ -63,7 +63,7 @@ public:
 	virtual QString encoding()
 		{	return QString( "" ); }
 
-	virtual void calcAbsolutePos( int _x, int _y ) {}
+	virtual void calcAbsolutePos( int , int ) {}
 
 	virtual void reset() { }
 
