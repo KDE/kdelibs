@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KCONFIGUREDIALOG_H
-#define KCONFIGUREDIALOG_H
+#ifndef KSETTINGS_DIALOG_H
+#define KSETTINGS_DIALOG_H
 
 #include <qobject.h>
 #include <kservice.h>
@@ -26,6 +26,10 @@
 template<class T> class QValueList;
 class KPluginInfo;
 class KCMultiDialog;
+class KCModuleInfo;
+
+namespace KSettings
+{
 
 /**
  * @short Generic configuration dialog that even works over component boundaries
@@ -39,7 +43,7 @@ class KCMultiDialog;
  *
  * You initialize \p m_cfgdlg with
  * \code
- * m_cfgdlg = new KConfigureDialog( KConfigureDialog::Static, this );
+ * m_cfgdlg = new Dialog( Dialog::Static, this );
  * \endcode
  * If you use a KPart that was not especially designed for your app you can use
  * the second constructor:
@@ -47,7 +51,7 @@ class KCMultiDialog;
  * QStringList kpartslist;
  * for( all my kparts )
  *   kpartslist += m_mypart->instance().instanceName();
- * m_cfgdlg = new KConfigureDialog( kpartslist, this );
+ * m_cfgdlg = new Dialog( kpartslist, this );
  * \endcode
  * and the action for the config dialog is connected to the show slot:
  * \code
@@ -55,12 +59,12 @@ class KCMultiDialog;
  * \endcode
  *
  * If you need to be informed when the config was changed and applied in the
- * dialog you might want to take a look at KCDDispatcher.
+ * dialog you might want to take a look at Dispatcher.
  *
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class KConfigureDialog : public QObject
+class Dialog : public QObject
 {
     Q_OBJECT
     public:
@@ -86,12 +90,12 @@ class KConfigureDialog : public QObject
          * Construct a new Preferences Dialog for the application. It uses all
          * KCMs with X-KDE-ParentApp set to KGlobal::instance()->instanceName().
          *
-         * @param parent       The parent is only used for the QObject tree
-         *                     (this way the KConfigureDialog object is deleted
-         *                     when the parent is deleted).
+         * @param parent       The parent is only used as the parent for the
+         *                     dialog - centering the dialog over the parent
+         *                     widget.
          * @param name         name
          */
-        KConfigureDialog( QObject * parent = 0, const char * name = 0 );
+        Dialog( QWidget * parent = 0, const char * name = 0 );
 
         /**
          * Construct a new Preferences Dialog for the application. It uses all
@@ -99,12 +103,12 @@ class KConfigureDialog : public QObject
          *
          * @param content      Select whether you want a static or configurable
          *                     config dialog.
-         * @param parent       The parent is only used for the QObject tree
-         *                     (this way the KConfigureDialog object is deleted
-         *                     when the parent is deleted).
+         * @param parent       The parent is only used as the parent for the
+         *                     dialog - centering the dialog over the parent
+         *                     widget.
          * @param name         name
          */
-        KConfigureDialog( ContentInListView content = Static, QObject * parent = 0,
+        Dialog( ContentInListView content = Static, QWidget * parent = 0,
                 const char * name = 0 );
 
         /**
@@ -115,12 +119,12 @@ class KConfigureDialog : public QObject
          *
          * @param components   A list of the names of the components that your
          *                     config dialog should merge the config pages in.
-         * @param parent       The parent is only used for the QObject tree
-         *                     (this way the KConfigureDialog object is deleted
-         *                     when the parent is deleted).
+         * @param parent       The parent is only used as the parent for the
+         *                     dialog - centering the dialog over the parent
+         *                     widget.
          * @param name         name
          */
-        KConfigureDialog( const QStringList & components, QObject * parent = 0,
+        Dialog( const QStringList & components, QWidget * parent = 0,
                 const char * name = 0 );
 
         /**
@@ -133,15 +137,15 @@ class KConfigureDialog : public QObject
          *                     config dialog should merge the config pages in.
          * @param content      Select whether you want a static or configurable
          *                     config dialog.
-         * @param parent       The parent is only used for the QObject tree
-         *                     (this way the KConfigureDialog object is deleted
-         *                     when the parent is deleted).
+         * @param parent       The parent is only used as the parent for the
+         *                     dialog - centering the dialog over the parent
+         *                     widget.
          * @param name         name
          */
-        KConfigureDialog( const QStringList & components, ContentInListView
-                content, QObject * parent = 0, const char * name = 0 );
+        Dialog( const QStringList & components, ContentInListView
+                content, QWidget * parent = 0, const char * name = 0 );
 
-        ~KConfigureDialog();
+        ~Dialog();
 
         /**
          * If you use a Configurable dialog you need to pass KPluginInfo
@@ -163,13 +167,15 @@ class KConfigureDialog : public QObject
         void updateTreeList();
 
     private:
+        bool isPluginForKCMEnabled( KCModuleInfo * ) const;
         QValueList<KService::Ptr> instanceServices() const;
         QValueList<KService::Ptr> parentComponentsServices( const QStringList & ) const;
         void createDialogFromServices();
-        class KConfigureDialogPrivate;
-        KConfigureDialogPrivate * d;
+        class DialogPrivate;
+        DialogPrivate * d;
 };
 
-#endif // KCONFIGUREDIALOG_H
+}
 
 // vim: sw=4 sts=4 et
+#endif // KSETTINGS_DIALOG_H

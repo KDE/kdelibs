@@ -17,12 +17,11 @@
 
 */
 
-#include "kconfiguredialog.h"
+#include "ksettings/dialog.h"
 
 #include <qptrlist.h>
 
-#include "kcddispatcher.h"
-#include "kcmultidialog.h"
+#include <kcmultidialog.h>
 #include <kglobal.h>
 #include <klocale.h>
 #include <kinstance.h>
@@ -30,8 +29,12 @@
 #include <kjanuswidget.h>
 #include <kdebug.h>
 #include <ktrader.h>
-#include "kselectentriesdialog.h"
-#include "kplugininfo.h"
+#include <kplugininfo.h>
+#include "ksettings/dispatcher.h"
+#include "ksettings/componentsdialog.h"
+
+namespace KSettings
+{
 
 class KCMISortedList : public QPtrList<KCModuleInfo>
 {
@@ -60,10 +63,10 @@ class KCMISortedList : public QPtrList<KCModuleInfo>
 		}
 };
 
-class KConfigureDialog::KConfigureDialogPrivate
+class Dialog::DialogPrivate
 {
 	public:
-		KConfigureDialogPrivate()
+		DialogPrivate()
 			: dlg( 0 )
 			{
 				moduleinfos.setAutoDelete( true );
@@ -74,71 +77,76 @@ class KConfigureDialog::KConfigureDialogPrivate
 		KCMultiDialog * dlg;
 		QValueList<KService::Ptr> services;
 		QMap<QString, KPluginInfo*> plugininfomap;
+		QWidget * parentwidget;
 };
 
-KConfigureDialog::KConfigureDialog( QObject * parent, const char * name )
+Dialog::Dialog( QWidget * parent, const char * name )
 	: QObject( parent, name )
-, d( new KConfigureDialogPrivate )
+, d( new DialogPrivate )
 {
+	d->parentwidget = parent;
 	d->staticlistview = true;
 	d->services = instanceServices();
 }
 
-KConfigureDialog::KConfigureDialog( ContentInListView content,
-		QObject * parent, const char * name )
+Dialog::Dialog( ContentInListView content,
+		QWidget * parent, const char * name )
 	: QObject( parent, name )
-, d( new KConfigureDialogPrivate )
+, d( new DialogPrivate )
 {
+	d->parentwidget = parent;
 	d->staticlistview = ( content == Static );
 	d->services = instanceServices();
 }
 
-KConfigureDialog::KConfigureDialog( const QStringList & components,
-		QObject * parent, const char * name )
+Dialog::Dialog( const QStringList & components,
+		QWidget * parent, const char * name )
 	: QObject( parent, name )
-, d( new KConfigureDialogPrivate )
+, d( new DialogPrivate )
 {
+	d->parentwidget = parent;
 	d->staticlistview = true;
 	d->services = instanceServices() + parentComponentsServices( components );
 }
 
-KConfigureDialog::KConfigureDialog( const QStringList & components,
-		ContentInListView content, QObject * parent, const char * name )
+Dialog::Dialog( const QStringList & components,
+		ContentInListView content, QWidget * parent, const char * name )
 	: QObject( parent, name )
-, d( new KConfigureDialogPrivate )
+, d( new DialogPrivate )
 {
+	d->parentwidget = parent;
 	d->staticlistview = ( content == Static );
 	d->services = instanceServices() + parentComponentsServices( components );
 }
 
-KConfigureDialog::~KConfigureDialog()
+Dialog::~Dialog()
 {
 	delete d;
 }
 
-void KConfigureDialog::addPluginInfos( const QValueList<KPluginInfo*> & plugininfos )
+void Dialog::addPluginInfos( const QValueList<KPluginInfo*> & plugininfos )
 {
 	for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
 			it != plugininfos.end(); ++it )
 		d->plugininfomap[ ( *it )->pluginname() ] = *it;
 }
 
-void KConfigureDialog::show()
+void Dialog::show()
 {
 	if( 0 == d->dlg )
 		createDialogFromServices();
-	KCDDispatcher::self()->syncConfiguration();
+	Dispatcher::self()->syncConfiguration();
 	return d->dlg->show();
 }
 
-KCMultiDialog * KConfigureDialog::dialog()
+KCMultiDialog * Dialog::dialog()
 {
 	if( 0 == d->dlg )
 		createDialogFromServices();
 	return d->dlg;
 }
 
-QValueList<KService::Ptr> KConfigureDialog::instanceServices() const
+QValueList<KService::Ptr> Dialog::instanceServices() const
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
 	QString instanceName = KGlobal::instance()->instanceName();
@@ -167,7 +175,7 @@ QValueList<KService::Ptr> KConfigureDialog::instanceServices() const
 	return ret;
 }
 
-QValueList<KService::Ptr> KConfigureDialog::parentComponentsServices( const QStringList & kcdparents ) const
+QValueList<KService::Ptr> Dialog::parentComponentsServices( const QStringList & kcdparents ) const
 {
 	QString constraint = kcdparents.join( "' in [X-KDE-ParentComponents]) or ('" );
 	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
@@ -176,7 +184,39 @@ QValueList<KService::Ptr> KConfigureDialog::parentComponentsServices( const QStr
 	return KTrader::self()->query( "KCModule", constraint );
 }
 
-void KConfigureDialog::createDialogFromServices()
+bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
+{
+	// and if the user of this class requested to hide disabled modules
+	// we check whether it should be enabled or not
+	bool enabled = false;
+	kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName() << " KCM should be shown" << endl;
+	// for all parent components
+	for( QStringList::ConstIterator pcit = moduleinfo->parentComponents().begin();
+			pcit != moduleinfo->parentComponents().end(); ++pcit )
+	{
+		// we check if the parent component is a plugin
+		if( ! d->plugininfomap.contains( *pcit ) )
+		{
+			// if not the KCModule must be enabled
+			enabled = true;
+			// we're done for this KCModuleInfo
+			break;
+		}
+		// if it is a plugin we check whether the plugin is enabled
+		KPluginInfo * pinfo = d->plugininfomap[ *pcit ];
+//X 			if( pinfo->config() )
+//X 				pinfo->config()->reparseConfiguration();
+		pinfo->load();
+		enabled = pinfo->pluginEnabled();
+		kdDebug( 700 ) << "parent " << *pcit << " is " << ( enabled ? "enabled" : "disabled" ) << endl;
+		// if it is enabled we're done for this KCModuleInfo
+		if( enabled )
+			break;
+	}
+	return enabled;
+}
+
+void Dialog::createDialogFromServices()
 {
 	QStringList groupnames;
 	// for all services
@@ -186,32 +226,7 @@ void KConfigureDialog::createDialogFromServices()
 		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
 		if( ! d->staticlistview )
 		{
-			// and if the user of this class requested to hide disabled modules
-			// we check whether it should be enabled or not
-			bool enabled = false;
-			kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName() << " KCM should be shown" << endl;
-			// for all parent components
-			for( QStringList::ConstIterator pcit = moduleinfo->parentComponents().begin();
-					pcit != moduleinfo->parentComponents().end(); ++pcit )
-			{
-				// we check if the parent component is a plugin
-				if( ! d->plugininfomap.contains( *pcit ) )
-				{
-					// if not the KCModule must be enabled
-					enabled = true;
-					// we're done for this KCModuleInfo
-					break;
-				}
-				// if it is a plugin we check whether the plugin is enabled
-				KPluginInfo * pinfo = d->plugininfomap[ *pcit ];
-				pinfo->load();
-				enabled = pinfo->pluginEnabled();
-				kdDebug( 700 ) << "parent " << *pcit << " is " << ( enabled ? "enabled" : "disabled" ) << endl;
-				// if it is enabled we're done for this KCModuleInfo
-				if( enabled )
-					break;
-			}
-			if( ! enabled )
+			if( ! isPluginForKCMEnabled( moduleinfo ) )
 			{
 				// it's not enabled so the KCModuleInfo is not needed anymore
 				delete moduleinfo;
@@ -230,7 +245,9 @@ void KConfigureDialog::createDialogFromServices()
 		// we need a treelist dialog
 		d->dlg = new KCMultiDialog( KJanusWidget::TreeList, i18n( "Preferences" ) );
 		d->dlg->setShowIconsInTreeList( true );
-		d->dlg->unfoldTreeList( true );
+		// Problem i18n:
+		//
+		// The X-KDE-Group entry is a not i18ned name of the entries above.
 		// We need to find the .desktop files for all group names (those where
 		// Name=<group name>)
 
@@ -248,32 +265,35 @@ void KConfigureDialog::createDialogFromServices()
 		  }*/
 	}
 	else
-		d->dlg = new KCMultiDialog( KJanusWidget::IconList, i18n( "Preferences" ) );
+		d->dlg = new KCMultiDialog( KJanusWidget::IconList, i18n( "Preferences" ), d->parentwidget );
 
 	if( ! d->staticlistview )
-		d->dlg->addButtonBelowList( i18n( "Configure ..." ), this, SLOT( configureTree() ) );
+		d->dlg->addButtonBelowList( i18n( "Configure..." ), this, SLOT( configureTree() ) );
 
-	connect( d->dlg, SIGNAL( okClicked() ), KCDDispatcher::self(), SLOT( syncConfiguration() ) );
-	connect( d->dlg, SIGNAL( applyClicked() ), KCDDispatcher::self(), SLOT( syncConfiguration() ) );
-	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ), KCDDispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
+	connect( d->dlg, SIGNAL( okClicked() ), Dispatcher::self(), SLOT( syncConfiguration() ) );
+	connect( d->dlg, SIGNAL( applyClicked() ), Dispatcher::self(), SLOT( syncConfiguration() ) );
+	connect( d->dlg, SIGNAL( configCommitted( const QCString & ) ), Dispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
 	for( KCModuleInfo * info = d->moduleinfos.first(); info; info = d->moduleinfos.next() )
 	{
 		kdDebug( 700 ) << "add module: " << info->fileName() << " with ParentComponents=" << info->parentComponents() << endl;
 		d->dlg->addModule( *info );
 	}
+
+	if( groupnames.size() > 1 )
+		d->dlg->unfoldTreeList( true );
 }
 
-void KConfigureDialog::configureTree()
+void Dialog::configureTree()
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
-	KSelectEntriesDialog * subdlg = new KSelectEntriesDialog( d->dlg );
+	ComponentsDialog * subdlg = new ComponentsDialog( d->dlg );
 	subdlg->setPluginInfos( d->plugininfomap );
 	subdlg->show();
 	connect( subdlg, SIGNAL( okClicked() ), this, SLOT( updateTreeList() ) );
 	connect( subdlg, SIGNAL( applyClicked() ), this, SLOT( updateTreeList() ) );
 }
 
-void KConfigureDialog::updateTreeList()
+void Dialog::updateTreeList()
 {
 	// FIXME: very inefficient code
 	kdDebug( 700 ) << k_funcinfo << endl;
@@ -282,32 +302,7 @@ void KConfigureDialog::updateTreeList()
 	{
 		// we create the KCModuleInfo
 		KCModuleInfo * moduleinfo = new KCModuleInfo( *it );
-		bool enabled = false;
-		kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName() << " KCM should be shown" << endl;
-		// for all parent components
-		for( QStringList::ConstIterator pcit = moduleinfo->parentComponents().begin();
-				pcit != moduleinfo->parentComponents().end(); ++pcit )
-		{
-			// we check if the parent component is a plugin
-			if( ! d->plugininfomap.contains( *pcit ) )
-			{
-				// if not the KCModule must be enabled
-				enabled = true;
-				// we're done for this KCModuleInfo
-				break;
-			}
-			// if it is a plugin we check whether the plugin is enabled
-			KPluginInfo * pinfo = d->plugininfomap[ *pcit ];
-			if( pinfo->config() )
-				pinfo->config()->reparseConfiguration();
-			pinfo->load();
-			enabled = pinfo->pluginEnabled();
-			kdDebug( 700 ) << "parent " << *pcit << " is " << ( enabled ? "enabled" : "disabled" ) << endl;
-			// if it is enabled we're done for this KCModuleInfo
-			if( enabled )
-				break;
-		}
-		if( ! enabled )
+		if( ! isPluginForKCMEnabled( moduleinfo ) )
 		{
 			// it's not enabled so the KCModuleInfo is not needed anymore
 			for( KCModuleInfo * torm = d->moduleinfos.first(); torm;
@@ -342,6 +337,8 @@ void KConfigureDialog::updateTreeList()
 	}
 }
 
-#include "kconfiguredialog.moc"
+} //namespace
+
+#include "dialog.moc"
 
 // vim: sw=4 ts=4 noet

@@ -17,26 +17,29 @@
 
 */
 
-#ifndef KCDPLUGINPAGE_H
-#define KCDPLUGINPAGE_H
+#ifndef KSETTINGS_PLUGINPAGE_H
+#define KSETTINGS_PLUGINPAGE_H
 
 #include <kcmodule.h>
 
 class KPluginSelector;
+
+namespace KSettings
+{
 
 /**
  * @short Convenience KCModule for creating a plugins config page.
  *
  * This class makes it very easy to create a plugins configuration page to your
  * program. All you need to do is create a class that is derived from
- * KCDPluginPage and add the appropriate plugin infos to the KPluginSelector.
+ * PluginPage and add the appropriate plugin infos to the KPluginSelector.
  * This is done using the pluginSelector() method:
  * \code
  * typedef KGenericFactory<MyAppPluginConfig, QWidget> MyAppPluginConfigFactory;
  * K_EXPORT_COMPONENT_FACTORY(  kcm_myapppluginconfig, MyAppPluginConfigFactory(  "kcm_myapppluginconfig" ) );
  *
  * MyAppPluginConfig( QWidget * parent, const char *, const QStringList & args )
- *     : KCDPluginPage( MyAppPluginConfigFactory::instance(), parent, args )
+ *     : PluginPage( MyAppPluginConfigFactory::instance(), parent, args )
  * {
  *     pluginSelector()->addPlugins( KGlobal::instance()->instanceName(), i18n( "General Plugins" ), "General" );
  *     pluginSelector()->addPlugins( KGlobal::instance()->instanceName(), i18n( "Effects" ), "Effects" );
@@ -64,7 +67,7 @@ class KPluginSelector;
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class KCDPluginPage : public KCModule
+class PluginPage : public KCModule
 {
     Q_OBJECT
     public:
@@ -72,15 +75,15 @@ class KCDPluginPage : public KCModule
          * Standart KCModule constructor. Automatically creates the the
          * KPluginSelector widget.
          */
-        KCDPluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
+        PluginPage( QWidget * parent = 0, const char * name = 0, const QStringList & args = QStringList() );
 
         /**
          * Standart KCModule constructor. Automatically creates the the
          * KPluginSelector widget.
          */
-        KCDPluginPage( KInstance * instance, QWidget * parent = 0, const QStringList & args = QStringList() );
+        PluginPage( KInstance * instance, QWidget * parent = 0, const QStringList & args = QStringList() );
 
-        ~KCDPluginPage();
+        ~PluginPage();
 
         /**
          * @return a reference to the KPluginSelector.
@@ -103,11 +106,12 @@ class KCDPluginPage : public KCModule
         virtual void defaults();
 
     private:
-        class KCDPluginPagePrivate;
-        KCDPluginPagePrivate * d;
+        class PluginPagePrivate;
+        PluginPagePrivate * d;
 };
+
+}
 
 // vim: sw=4 sts=4 et
 
-#endif // KCDPLUGINPAGE_H
-
+#endif // KSETTINGS_PLUGINPAGE_H

@@ -17,16 +17,20 @@
 
 */
 
-#include "kcdpluginpage.h"
+#include "ksettings/pluginpage.h"
 #include "kpluginselector.h"
 #include <kglobal.h>
 #include <qlayout.h>
 #include <kdialog.h>
+#include "ksettings/dispatcher.h"
 
-class KCDPluginPage::KCDPluginPagePrivate
+namespace KSettings
+{
+
+class PluginPage::PluginPagePrivate
 {
     public:
-        KCDPluginPagePrivate()
+        PluginPagePrivate()
             : selwid( 0 )
         {
         }
@@ -34,48 +38,52 @@ class KCDPluginPage::KCDPluginPagePrivate
         KPluginSelector * selwid;
 };
 
-    KCDPluginPage::KCDPluginPage( QWidget * parent, const char * name, const QStringList & args )
+    PluginPage::PluginPage( QWidget * parent, const char * name, const QStringList & args )
     : KCModule( parent, name, args )
-    , d( new KCDPluginPagePrivate )
+    , d( new PluginPagePrivate )
 {
     ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
     connect( d->selwid, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
 }
 
-    KCDPluginPage::KCDPluginPage( KInstance * instance, QWidget * parent, const QStringList & args )
+    PluginPage::PluginPage( KInstance * instance, QWidget * parent, const QStringList & args )
     : KCModule( instance, parent, args )
-    , d( new KCDPluginPagePrivate )
+    , d( new PluginPagePrivate )
 {
     ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
     connect( d->selwid, SIGNAL( changed( bool ) ), this, SLOT( setChanged( bool ) ) );
+    connect( d->selwid, SIGNAL( configCommitted( const QCString & ) ),
+            Dispatcher::self(), SLOT( reparseConfiguration( const QCString & ) ) );
 }
 
-KCDPluginPage::~KCDPluginPage()
+PluginPage::~PluginPage()
 {
     delete d;
 }
 
-KPluginSelector * KCDPluginPage::pluginSelector()
+KPluginSelector * PluginPage::pluginSelector()
 {
     return d->selwid;
 }
 
-void KCDPluginPage::load()
+void PluginPage::load()
 {
     d->selwid->load();
 }
 
-void KCDPluginPage::save()
+void PluginPage::save()
 {
     d->selwid->save();
 }
 
-void KCDPluginPage::defaults()
+void PluginPage::defaults()
 {
     d->selwid->defaults();
 }
 
-#include "kcdpluginpage.moc"
+} //namespace
+
+#include "pluginpage.moc"
 // vim: sw=4 sts=4 et

@@ -17,20 +17,23 @@
 
 */
 
-#ifndef KSELECTENTRIESDIALOG_H
-#define KSELECTENTRIESDIALOG_H
+#ifndef KSETTINGS_COMPONENTSDIALOG_H
+#define KSETTINGS_COMPONENTSDIALOG_H
 
 #include <kdialogbase.h>
 
 class QString;
 class KPluginInfo;
 
-class KSelectEntriesDialog : public KDialogBase
+namespace KSettings
+{
+
+class ComponentsDialog : public KDialogBase
 {
     Q_OBJECT
     public:
-        KSelectEntriesDialog( QWidget * parent = 0, const char * name = 0 );
-        ~KSelectEntriesDialog();
+        ComponentsDialog( QWidget * parent = 0, const char * name = 0 );
+        ~ComponentsDialog();
 
         void setPluginInfos( const QMap<QString, KPluginInfo*> & plugininfos );
 
@@ -49,10 +52,11 @@ class KSelectEntriesDialog : public KDialogBase
     private:
         void savePluginInfos();
 
-        class KSelectEntriesDialogPrivate;
-        KSelectEntriesDialogPrivate * d;
+        class ComponentsDialogPrivate;
+        ComponentsDialogPrivate * d;
 };
 
-#endif // KSELECTENTRIESDIALOG_H
+}
 
 // vim: sw=4 sts=4 et
+#endif // KSETTINGS_COMPONENTSDIALOG_H

@@ -17,7 +17,7 @@
 
 */
 
-#include "kselectentriesdialog.h"
+#include "ksettings/componentsdialog.h"
 #include <klocale.h>
 #include <qlayout.h>
 #include <klistview.h>
@@ -25,13 +25,16 @@
 #include <qlabel.h>
 #include <qstring.h>
 #include <qheader.h>
-#include "kplugininfo.h"
+#include <kplugininfo.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kseparator.h>
 
-class KSelectEntriesDialog::KSelectEntriesDialogPrivate
+namespace KSettings
+{
+
+class ComponentsDialog::ComponentsDialogPrivate
 {
     public:
         KListView * listview;
@@ -43,9 +46,9 @@ class KSelectEntriesDialog::KSelectEntriesDialogPrivate
         QValueList<KPluginInfo*> plugininfolist;
 };
 
-KSelectEntriesDialog::KSelectEntriesDialog( QWidget * parent, const char * name )
+ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
     : KDialogBase( parent, name, false, i18n( "Select components" ) )
-, d( new KSelectEntriesDialogPrivate )
+, d( new ComponentsDialogPrivate )
 {
     QWidget * page = new QWidget( this );
     setMainWidget( page );
@@ -80,11 +83,11 @@ KSelectEntriesDialog::KSelectEntriesDialog( QWidget * parent, const char * name 
             SLOT( executed( QListViewItem * ) ) );
 }
 
-KSelectEntriesDialog::~KSelectEntriesDialog()
+ComponentsDialog::~ComponentsDialog()
 {
 }
 
-void KSelectEntriesDialog::setPluginInfos( const QMap<QString, KPluginInfo*> &
+void ComponentsDialog::setPluginInfos( const QMap<QString, KPluginInfo*> &
         plugininfos )
 {
     for( QMap<QString, KPluginInfo*>::ConstIterator it = plugininfos.begin();
@@ -94,7 +97,7 @@ void KSelectEntriesDialog::setPluginInfos( const QMap<QString, KPluginInfo*> &
     }
 }
 
-void KSelectEntriesDialog::show()
+void ComponentsDialog::show()
 {
     // construct the treelist
     for( QValueList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
@@ -111,7 +114,7 @@ void KSelectEntriesDialog::show()
     KDialogBase::show();
 }
 
-void KSelectEntriesDialog::executed( QListViewItem * item )
+void ComponentsDialog::executed( QListViewItem * item )
 {
     kdDebug( 704 ) << k_funcinfo << endl;
     if( item == 0 )
@@ -134,7 +137,7 @@ void KSelectEntriesDialog::executed( QListViewItem * item )
     //d->descriptionwidget->setText( info->description() );
 }
 
-void KSelectEntriesDialog::savePluginInfos()
+void ComponentsDialog::savePluginInfos()
 {
     for( QValueList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
             it != d->plugininfolist.end(); ++it )
@@ -147,17 +150,19 @@ void KSelectEntriesDialog::savePluginInfos()
     }
 }
 
-void KSelectEntriesDialog::slotOk()
+void ComponentsDialog::slotOk()
 {
     savePluginInfos();
     KDialogBase::slotOk();
 }
 
-void KSelectEntriesDialog::slotApply()
+void ComponentsDialog::slotApply()
 {
     savePluginInfos();
     KDialogBase::slotApply();
 }
 
-#include "kselectentriesdialog.moc"
+} //namespace
+
+#include "componentsdialog.moc"
 // vim: sw=4 sts=4 et

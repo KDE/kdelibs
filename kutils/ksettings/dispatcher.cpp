@@ -17,7 +17,7 @@
 
 */
 
-#include "kcddispatcher.h"
+#include "ksettings/dispatcher.h"
 
 #include <qstrlist.h>
 #include <qcstring.h>
@@ -29,36 +29,39 @@
 #include <kconfig.h>
 #include <assert.h>
 
-//class KCDDispatcher::KCDDispatcherPrivate
+namespace KSettings
+{
+
+//class Dispatcher::DispatcherPrivate
 //{
 //};
 
-static KStaticDeleter<KCDDispatcher> ksd_kpd;
+static KStaticDeleter<Dispatcher> ksd_kpd;
 
-KCDDispatcher * KCDDispatcher::m_self = 0;
+Dispatcher * Dispatcher::m_self = 0;
 
-KCDDispatcher * KCDDispatcher::self()
+Dispatcher * Dispatcher::self()
 {
     kdDebug( 701 ) << k_funcinfo << endl;
     if( m_self == 0 )
-        ksd_kpd.setObject( m_self, new KCDDispatcher() );
+        ksd_kpd.setObject( m_self, new Dispatcher() );
     return m_self;
 }
 
-KCDDispatcher::KCDDispatcher( QObject * parent, const char * name )
+Dispatcher::Dispatcher( QObject * parent, const char * name )
     : QObject( parent, name )
     //, d( 0 )
 {
     kdDebug( 701 ) << k_funcinfo << endl;
 }
 
-KCDDispatcher::~KCDDispatcher()
+Dispatcher::~Dispatcher()
 {
     kdDebug( 701 ) << k_funcinfo << endl;
     //delete d;
 }
 
-void KCDDispatcher::registerInstance( KInstance * instance, QObject * recv, const char * slot )
+void Dispatcher::registerInstance( KInstance * instance, QObject * recv, const char * slot )
 {
     assert( instance != 0 );
     // keep the KInstance around and call
@@ -83,7 +86,21 @@ void KCDDispatcher::registerInstance( KInstance * instance, QObject * recv, cons
     connect( recv, SIGNAL( destroyed( QObject * ) ), this, SLOT( unregisterInstance( QObject * ) ) );
 }
 
-QStrList KCDDispatcher::instanceNames() const
+KConfig * Dispatcher::configForInstanceName( const QCString & instanceName )
+{
+    kdDebug( 701 ) << k_funcinfo << endl;
+    if( m_instanceInfo.contains( instanceName ) )
+    {
+        KInstance * inst = m_instanceInfo[ instanceName ].instance;
+        if( inst )
+            return inst->config();
+    }
+    //if( fallback )
+        //return new KSimpleConfig( instanceName );
+    return 0;
+}
+
+QStrList Dispatcher::instanceNames() const
 {
     kdDebug( 701 ) << k_funcinfo << endl;
     QStrList names;
@@ -93,7 +110,7 @@ QStrList KCDDispatcher::instanceNames() const
     return names;
 }
 
-void KCDDispatcher::reparseConfiguration( const QCString & instanceName )
+void Dispatcher::reparseConfiguration( const QCString & instanceName )
 {
     kdDebug( 701 ) << k_funcinfo << instanceName << endl;
     // check if the instanceName is valid:
@@ -110,7 +127,7 @@ void KCDDispatcher::reparseConfiguration( const QCString & instanceName )
     }
 }
 
-void KCDDispatcher::syncConfiguration()
+void Dispatcher::syncConfiguration()
 {
     for( QMap<QCString, InstanceInfo>::ConstIterator it = m_instanceInfo.begin(); it != m_instanceInfo.end(); ++it )
     {
@@ -118,7 +135,7 @@ void KCDDispatcher::syncConfiguration()
     }
 }
 
-void KCDDispatcher::unregisterInstance( QObject * obj )
+void Dispatcher::unregisterInstance( QObject * obj )
 {
     kdDebug( 701 ) << k_funcinfo << endl;
     QCString name = m_instanceName[ obj ];
@@ -131,11 +148,13 @@ void KCDDispatcher::unregisterInstance( QObject * obj )
     }
 }
 
-//X KInstance * KCDDispatcher::instanceForName( const QCString & instanceName )
+//X KInstance * Dispatcher::instanceForName( const QCString & instanceName )
 //X {
 //X     return m_instanceInfo[ instanceName ].instance;
 //X }
 
-#include "kcddispatcher.moc"
+} //namespace
+
+#include "dispatcher.moc"
 
 // vim: sw=4 sts=4 et

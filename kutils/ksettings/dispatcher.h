@@ -17,8 +17,8 @@
 
 */
 
-#ifndef KCDDISPATCHER_H
-#define KCDDISPATCHER_H
+#ifndef KSETTINGS_DISPATCHER_H
+#define KSETTINGS_DISPATCHER_H
 
 #include <qobject.h>
 #include <qmap.h>
@@ -28,6 +28,10 @@ class QSignal;
 class QStrList;
 template<class T> class KStaticDeleter;
 class KInstance;
+class KConfig;
+
+namespace KSettings
+{
 
 /**
  * @short Dispatch change notifications from the KCMs to the program.
@@ -36,22 +40,22 @@ class KInstance;
  * into the KConfigureDialog you need a way to get notified. This is what you
  * do:
  * \code
- * KCDDispatcher::self()->registerInstance( instance(), this, SLOT( readSettings() ) );
+ * Dispatcher::self()->registerInstance( instance(), this, SLOT( readSettings() ) );
  * \endcode
  *
  * @author Matthias Kretz <kretz@kde.org>
  * @since 3.2
  */
-class KCDDispatcher : public QObject
+class Dispatcher : public QObject
 {
-    friend class KStaticDeleter<KCDDispatcher>;
+    friend class KStaticDeleter<Dispatcher>;
 
     Q_OBJECT
     public:
         /**
-         * Get a reference the the KCDDispatcher object.
+         * Get a reference the the Dispatcher object.
          */
-        static KCDDispatcher * self();
+        static Dispatcher * self();
 
         /**
          * Register a slot to be called when the configuration for the instance
@@ -66,6 +70,11 @@ class KCDDispatcher : public QObject
          * @param slot         The slot to be called: SLOT( slotName() )
          */
         void registerInstance( KInstance * instance, QObject * recv, const char * slot );
+
+        /**
+         * @return the KConfig object that belongs to the instanceName
+         */
+        KConfig * configForInstanceName( const QCString & instanceName );
 
         /**
          * @return a list of all the instance names that are currently
@@ -100,9 +109,9 @@ class KCDDispatcher : public QObject
         void unregisterInstance( QObject * );
 
     private:
-        KCDDispatcher( QObject * parent = 0, const char * name = 0 );
-        ~KCDDispatcher();
-        static KCDDispatcher * m_self;
+        Dispatcher( QObject * parent = 0, const char * name = 0 );
+        ~Dispatcher();
+        static Dispatcher * m_self;
 
         struct InstanceInfo {
             KInstance * instance;
@@ -112,9 +121,11 @@ class KCDDispatcher : public QObject
         QMap<QCString, InstanceInfo> m_instanceInfo;
         QMap<QObject *, QCString> m_instanceName;
 
-        class KCDDispatcherPrivate;
-        KCDDispatcherPrivate * d;
+        class DispatcherPrivate;
+        DispatcherPrivate * d;
 };
 
+}
+
 // vim: sw=4 sts=4 et
-#endif // KCDDISPATCHER_H
+#endif // KSETTINGS_DISPATCHER_H
