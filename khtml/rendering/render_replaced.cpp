@@ -82,8 +82,9 @@ short RenderReplaced::calcReplacedWidth() const
             o = o->parent();
         }
         if ( doIEhack )
-            width = static_cast<const RenderRoot*>(o)->view()->visibleWidth();
-            width = containingBlockWidth();
+            width = w.minWidth(static_cast<const RenderRoot*>(o)->view()->visibleWidth() );
+        else
+            width = w.minWidth( containingBlockWidth() );
         break;
     }
     case Fixed:
