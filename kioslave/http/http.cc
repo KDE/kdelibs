@@ -91,7 +91,7 @@ void sigsegv_handler(int )
   exit(1);
 }
 
-void sigchld_handler(int signo)
+void sigchld_handler(int )
 {
   int pid, status;
 
@@ -451,7 +451,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
   }
 
   do_proxy = m_bUseProxy;
-  bzero(c_buffer, 64);
+  memset(c_buffer, 0, 64);
 
   if ( do_proxy && !m_strNoProxyFor.isEmpty() ) 
     do_proxy = !revmatch( _url.host(), m_strNoProxyFor );    
