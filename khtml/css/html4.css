@@ -47,7 +47,7 @@ script {
 @media print {
 	body {
 		display: block;
-		margin: 0 !important;
+		margin: 0px;
 	}
 }
 

@@ -992,10 +992,18 @@ void KHTMLView::print()
         m_part->xmlDocImpl()->setPaintDevice( printer );
         QString oldMediaType = mediaType();
         setMediaType( "print" );
+        // We ignore margin settings for html and body when printing
+        // and use the default margins from the print-system
+        // (In Qt 3.0.x the default margins are hardcoded in Qt)
         m_part->xmlDocImpl()->setPrintStyleSheet( printer->option("app-khtml-printfriendly") == "true" ?
                                                   "* { background-image: none !important;"
                                                   "    background-color: transparent !important;"
-                                                  "    color: black !important }" : "" );
+                                                  "    color: black !important; }"
+						  "body { margin: 0px !important; }"
+						  "html { margin: 0px !important; }" : 
+						  "body { margin: 0px !important; }"
+						  "html { margin: 0px !important; }"
+						  );
 
         QPaintDeviceMetrics metrics( printer );
 
