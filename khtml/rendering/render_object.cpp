@@ -334,12 +334,12 @@ void RenderObject::styleChanged(RenderStyle *newStyle)
 
 void RenderObject::relativePositionOffset(int &tx, int &ty)
 {
-    if(!m_style->right().isUndefined())
-	tx -= m_style->right().width(containingBlockWidth());
-    if(!m_style->left().isUndefined()) 
+    if(!m_style->left().isUndefined())
 	tx += m_style->left().width(containingBlockWidth());
+    else if(!m_style->right().isUndefined())
+	tx -= m_style->right().width(containingBlockWidth());
     if(!m_style->top().isUndefined())
 	ty += m_style->top().width(containingBlockHeight());
-    if(!m_style->bottom().isUndefined()) 
+    else if(!m_style->bottom().isUndefined())
 	ty -= m_style->bottom().width(containingBlockHeight());
 }

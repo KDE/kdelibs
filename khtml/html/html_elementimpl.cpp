@@ -128,7 +128,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
     KHTMLView *view = (KHTMLView *) static_cast<HTMLDocumentImpl *>(document)->view();
     if(!view) return;
 
-    int id;
+    int id = 0;
     bool click = false;
 
     switch(type)
@@ -142,9 +142,6 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	if(pressed()) click = true;
 	setPressed(false);
 	break;
-    case MouseClick:
-	// handled differently at the moment
-	break;
     case MouseDblClick:
 	id = ATTR_ONDBLCLICK;
 	break;
@@ -155,20 +152,22 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	break;
     }
 
+    if(id && !click) {
     DOMString script = getAttribute(id);
     if(script.length())
     {
 	kdDebug(300) << "emit executeScript( " << script.string() << " )" << endl;
 	view->part()->executeScript( script.string() );
     }
+    }
 
     if(click)
     {
-	script = getAttribute(ATTR_ONCLICK);
+	DOMString script = getAttribute(ATTR_ONCLICK);
 	if(script.length())
 	{
+	    kdDebug(300) << "(click) emit executeScript( " << script.string() << " )" << endl;
 	    view->part()->executeScript( script.string() );
-	    kdDebug(300) << "emit executeScript( " << script.string() << " )" << endl;
 	}
     }
 
@@ -178,7 +177,7 @@ void HTMLElementImpl::mouseEventHandler( int /*button*/, MouseEventType type, bo
 	int id = ATTR_ONMOUSEOVER;
 	if(!inside)
 	    id = ATTR_ONMOUSEOUT;
-	script = getAttribute(ATTR_ONCLICK);
+	DOMString script = getAttribute(id);
 	if(script.length())
 	{
 	    view->part()->executeScript( script.string() );
