@@ -1,3 +1,7 @@
+2004-03-21  Dirk Mueller  <mueller@kde.org>
+
+	* css/css_renderstyledeclarationimpl.cpp (getPropertyCSSValue): fix crash (#77324).
+
 2004-03-20  Dirk Mueller  <mueller@kde.org>
 
 	* xml/dom_docimpl.cpp (processHttpEquiv): improve refresh handling for negative and

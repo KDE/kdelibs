@@ -96,12 +96,16 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     case CSS_PROP_BORDER_LEFT_STYLE:
         break;
     case CSS_PROP_BORDER_TOP_WIDTH:
+        val = new CSSPrimitiveValueImpl( m_renderer->borderTop(), CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_BORDER_RIGHT_WIDTH:
+        val = new CSSPrimitiveValueImpl( m_renderer->borderRight(), CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_BORDER_BOTTOM_WIDTH:
+        val = new CSSPrimitiveValueImpl( m_renderer->borderBottom(), CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_BORDER_LEFT_WIDTH:
+        val = new CSSPrimitiveValueImpl( m_renderer->borderLeft(), CSSPrimitiveValue::CSS_PX );
         break;
     case CSS_PROP_BOTTOM:
         break;
@@ -370,6 +374,9 @@ CSSProperty RenderStyleDeclarationImpl::property( int id ) const
     prop.m_bImportant = false;
     prop.nonCSSHint = false;
 
-    prop.setValue( getPropertyCSSValue( id ) );
+    CSSValueImpl* v = getPropertyCSSValue( id );
+    if ( !v )
+        v = new CSSPrimitiveValueImpl;
+    prop.setValue( v );
     return prop;
 }
