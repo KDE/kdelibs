@@ -157,7 +157,16 @@ public:
    * @see show()
    */ 
   inline void hide(){ kdialogbase->hide(); };
-
+  
+  /**
+   * KAutoConfigDialog automatically gives the dialog a common KDE
+   * configuration caption. This function is provided for dialogs other
+   * then the normal application configuration such as plugin configurations.
+   * Do not include the applications name as it will automaticly be added
+   * via the KDE rules. @ref KDialog::setCaption() 
+   **/
+  virtual void setCaption(const QString &caption);
+  
 protected slots:
   /**
    * Some setting was modified, updates the Apply and Default buttons.
@@ -168,16 +177,6 @@ protected slots:
    * Some setting was changed.
    */
   virtual void settingsChangedSlot();
-
-  /**
-   * KAutoConfigDialog automaticaly gives the dialog a common KDE
-   * configuration caption. This function is provided for dialogs other
-   * then the normal application configuration such as plugin configurations.
-   * Do not include the applications name as it will automaticly be added
-   * via the KDE rules. @ref KDialog::setCaption() 
-   **/
-  virtual void setCaption(const QString &caption);
-
 
 protected:
   // Pointer to the KAutoConfig object.
