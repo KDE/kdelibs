@@ -275,7 +275,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	    //cout << "area found " << endl;
 	    HTMLAreaElementImpl* area=static_cast<HTMLAreaElementImpl*>(current);
 	    if (area->mapMouseEvent(x_,y_,width_,height_,button_,type_,url_))
-	    	inside = true;
+			inside = true;
 	}
 	NodeImpl *child = current->firstChild();
 	if(child)
@@ -336,6 +336,7 @@ HTMLAreaElementImpl::HTMLAreaElementImpl(DocumentImpl *doc)
 {
     coords=0L;
     href = 0;
+    nohref = false;
     target = 0;
     shape = Unknown;
     lasth = lastw = -1;
@@ -377,6 +378,7 @@ void HTMLAreaElementImpl::parseAttribute(AttrImpl *attr)
     	coords = attr->val()->toLengthList();
 	break;
     case ATTR_NOHREF:
+        nohref = true;
 	break;
     case ATTR_HREF:
     {
@@ -402,6 +404,10 @@ bool
 HTMLAreaElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 				   int button, MouseEventType type, DOMString& url_)
 {
+    // Ignore it when it has no "NOHREF" attribute and no "HREF"
+    if(!nohref && href == 0)
+        return false;
+
     //cout << "area:mapMouseEvent " << endl;
     bool inside = false;
     if (width_ != lastw || height_ != lasth)

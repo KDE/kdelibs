@@ -119,6 +119,7 @@ protected:
     QList<khtml::Length>* coords;
     DOMStringImpl *href;
     DOMStringImpl *target;
+    bool nohref;
 
     QRegion region;
 
