@@ -113,7 +113,7 @@ public:
      * @internal get a pointer to start of the string
      * Needed by kBackpage
      */
-    QChar *stringPtr() const;
+    const QChar *stringPtr() const;
     
 protected:
     DOMStringImpl *impl;

@@ -283,7 +283,7 @@ bool DOMString::isEmpty()
     return (impl->l == 0);
 }
 
-QChar *DOMString::stringPtr() const
+const QChar *DOMString::stringPtr() const
 {
     if (impl) return impl->s;
     return 0;
