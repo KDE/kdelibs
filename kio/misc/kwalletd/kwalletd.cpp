@@ -133,22 +133,31 @@ int KWalletD::open(const QString& wallet) {
 				return -1;
 			}
 
-			KWallet::Backend *b;
+			KWallet::Backend *b = new KWallet::Backend(wallet);
 			KPasswordDialog *kpd;
 			if (KWallet::Backend::exists(wallet)) {
-				b = new KWallet::Backend(wallet);
-				kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below if you wish to open it, or cancel to deny access.").arg(dc->senderId()).arg(wallet), false);
+				kpd = new KPasswordDialog(KPasswordDialog::Password, i18n("The application '%1' has requested to open the wallet '%2'. Please enter the password for this wallet below.").arg(dc->senderId()).arg(wallet), false);
 				brandNew = true;
+				kpd->setButtonOKText(i18n("&Open"));
 			} else {
-				b = new KWallet::Backend(wallet);
 				kpd = new KPasswordDialog(KPasswordDialog::NewPassword, i18n("The application '%1' has requested to create a new wallet named '%2'. Please choose a password for this wallet, or cancel to deny the application's request.").arg(dc->senderId()).arg(wallet), false);
+				kpd->setButtonOKText(i18n("&Create"));
 			}
+
 			kpd->setCaption(i18n("KDE Wallet Service"));
 			const char *p = 0L;
-			if (kpd->exec() == KDialog::Accepted) {
-				p = kpd->password();
-				b->open(QByteArray().duplicate(p, strlen(p)));
+			while (!b->isOpen()) {
+				if (kpd->exec() == KDialog::Accepted) {
+					p = kpd->password();
+					b->open(QByteArray().duplicate(p, strlen(p)));
+					if (!b->isOpen()) {
+						kpd->setPrompt(i18n("Invalid password for wallet '%1'.  Please try again.").arg(wallet));
+					}
+				} else {
+					break;
+				}
 			}
+
 			if (!p || !b->isOpen()) {
 				delete b;
 				delete kpd;
