@@ -536,7 +536,6 @@ void BrowserExtension::createActionSlotMap()
     s_actionSlotMap->insert( "rename", SLOT( rename() ) );
     s_actionSlotMap->insert( "trash", SLOT( trash() ) );
     s_actionSlotMap->insert( "del", SLOT( del() ) );
-    s_actionSlotMap->insert( "shred", SLOT( shred() ) );
     s_actionSlotMap->insert( "properties", SLOT( properties() ) );
     s_actionSlotMap->insert( "editMimeType", SLOT( editMimeType() ) );
     s_actionSlotMap->insert( "print", SLOT( print() ) );
