@@ -593,7 +593,7 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
 	}
 	case FILE:
         {
-            f = new RenderFileButton(view, _form);
+            f = new RenderFileButton(view, _form, _maxLen, _size);
             break;
         }
 	case HIDDEN:
