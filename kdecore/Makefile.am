@@ -28,7 +28,8 @@ lib_LTLIBRARIES = libkdefakes.la libkdecore.la
 
 include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kdesktopfile.h kurl.h ksock.h kaboutdata.h kcmdlineargs.h \
-	kconfigbackend.h kapp.h kuniqueapp.h kcharsets.h \
+	kconfigbackend.h kapp.h kapplication.h kuniqueapp.h kuniqueapplication.h \
+	kcharsets.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kstdaccel.h kwinmodule.h kwin.h krootprop.h kpixmap.h  \
 	kaccel.h kglobalaccel.h kcatalogue.h \
@@ -50,11 +51,11 @@ libkdefakes_la_LDFLAGS = -version-info 4:0
 noinst_HEADERS = kckey.h kregpriv.h kcompletion_private.h netsupp.h \
 	ksycocafactory.h ksycocadict.h kextsocklookup.h
 
-libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapp.cpp \
+libkdecore_la_SOURCES = libintl.cpp kdebug.cpp netwm.cpp kapplication.cpp \
 	kconfigbase.cpp kstyle.cpp \
 	kconfig.cpp  ksimpleconfig.cpp kdesktopfile.cpp \
 	kconfigbackend.cpp kglobalaccel.cpp  \
-        kstddirs.cpp kuniqueapp.cpp ksock.cpp\
+        kstddirs.cpp kuniqueapplication.cpp ksock.cpp\
 	kprocess.cpp kprocctrl.cpp klocale.cpp krfcdate.cpp\
 	kiconeffect.cpp kicontheme.cpp kiconloader.cpp \
 	kstdaccel.cpp kwin.cpp kwinmodule.cpp krootprop.cpp kcharsets.cpp \
