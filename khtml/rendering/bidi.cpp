@@ -866,7 +866,7 @@ void RenderFlow::layoutInlineChildren()
             if( start.atEnd() ) break;
 	    embed = bidiReorderLine(status, start, end, embed);
 
-            if( end == start || (end.obj && end.obj->isBR() ) )
+            if( end == start || (end.obj && end.obj->isBR() && !start.obj->isBR() ) )
                 ++end;
 
             newLine();
