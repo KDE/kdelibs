@@ -459,7 +459,7 @@ public:
   *  pad was used to generate the key event the value is true,
   *  otherwise the value is false.
   */
- bool             numPad() const;
+    bool             numPad() const { return m_numPad; }
 
  /**
   *outputString of type DOMString
@@ -479,7 +479,7 @@ public:
   *  representation or no virtual code is available the value is
   *  DOM_VK_UNDEFINED.
   */
- unsigned long    virtKeyVal() const;
+    unsigned long virtKeyVal() const { return m_virtKeyVal; }
 
  QKeyEvent *qKeyEvent;
 
