@@ -100,7 +100,7 @@ KMWBanners::KMWBanners(QWidget *parent, const char *name)
 	QLabel	*l0 = new QLabel(this);
 	l0->setText(i18n("<p>Select the default banners associated with this printer. These "
 			 "banners will be inserted before and/or after each print job sent "
-			 "to the printer. If you don't want to use banners, select <b>None</b>.</p>"));
+			 "to the printer. If you don't want to use banners, select <b>No Banner</b>.</p>"));
 
 	QGridLayout	*lay = new QGridLayout(this, 5, 2, 0, 10);
 	lay->setColStretch(1,1);
