@@ -22,7 +22,8 @@
      { "autogroupadd", "Automatically add a group if none is found", 0},
      { "set ", "Set the value of --item in --group", 0},
      { "groups",  "list the groups of this file", 0 },
-     { "mimetypeinfo ", "the mimetype info for a mimetype", 0 }
+     { "mimetypeinfo ", "the mimetype info for a mimetype", 0 },
+     { 0, 0, 0 }
   };
   
 void printKeyValues(KFileMetaInfo& info)
