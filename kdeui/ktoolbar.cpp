@@ -91,7 +91,7 @@ public:
 
         m_xmlguiClient   = 0;
         m_configurePlugged = false;
-        hasRealPos = FALSE;
+        //hasRealPos = FALSE;
 
         oldPos = QMainWindow::Unmanaged;
 
@@ -108,7 +108,7 @@ public:
     QWidget *m_parent;
 
     bool m_enableContext;
-    bool hasRealPos;
+    //bool hasRealPos;
     QMainWindow::ToolBarDock realPos;
     int realIndex, realOffset;
     bool realNl;
@@ -815,6 +815,7 @@ void KToolBar::setBarPos (BarPosition bpos)
     if ( !mainWindow() )
         return;
 
+#if 0
     if ( d->hasRealPos ) {
         if ( d->realPos != (QMainWindow::ToolBarDock)bpos ) {
             d->realPos = (QMainWindow::ToolBarDock)bpos;
@@ -822,27 +823,25 @@ void KToolBar::setBarPos (BarPosition bpos)
             d->realIndex = 0;
             d->realNl = FALSE;
         }
-    } else {
+    } else
+#endif
         mainWindow()->moveToolBar( this, (QMainWindow::ToolBarDock)bpos );
-    }
 }
 
 
 KToolBar::BarPosition KToolBar::barPos() const
 {
-#if defined(Q_CC_GNU)
-#warning FIXME: remove this const cast when we upgrade to the next qt version
-#endif
-    KToolBar *that = const_cast<KToolBar *>( this );
-    if ( !that->mainWindow() )
+    if ( !mainWindow() )
         return KToolBar::Top;
     QMainWindow::ToolBarDock dock;
     int dm1, dm2;
     bool dm3;
-    that->mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
+    mainWindow()->getLocation( (QToolBar*)this, dock, dm1, dm3, dm2 );
     if ( dock == QMainWindow::Unmanaged ) {
+#if 0
         if ( d->hasRealPos )
             return (KToolBar::BarPosition)d->realPos;
+#endif
         return (KToolBar::BarPosition)QMainWindow::Top;
     }
     return (BarPosition)dock;
@@ -1467,6 +1466,7 @@ bool KToolBar::highlight() const
 
 void KToolBar::hide()
 {
+#if 0
     //kdDebug(220) << "KToolBar::hide " << name() << endl;
     // Reggie: Ugly hack, I hate it
     if ( mainWindow() ) {
@@ -1479,19 +1479,22 @@ void KToolBar::hide()
             d->realPos = dock;
         }
     }
+#endif
     QToolBar::hide();
 }
 
 void KToolBar::show()
 {
     //kdDebug(220) << "KToolBar::show " << name() << endl;
+#if 0
     // Reggie: Ugly hack, I hate it
     if ( d->hasRealPos && d->realPos != QMainWindow::Unmanaged && mainWindow() ) {
         d->hasRealPos = FALSE;
-        //kdDebug(220) << "KToolBar::show " << name() << " moveToolBar with realNl=" << d->realNl << endl;
+        //kdDebug(220) << "KToolBar::show " << name() << " moveToolBar with realPos=" << d->realPos << " realNl=" << d->realNl << endl;
         mainWindow()->moveToolBar( this, d->realPos, d->realNl, d->realIndex, d->realOffset );
     }
     d->hasRealPos = FALSE;
+#endif
 #if QT_VERSION < 300
     QObject *o = 0;
     QObjectListIt it( *children() );
