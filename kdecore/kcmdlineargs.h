@@ -518,6 +518,10 @@ public:
    */
   void clear();
 
+  /**
+   * Load arguments from a stream.
+   */
+  static void loadAppArgs( QDataStream &);
 
 protected:
   /**
@@ -576,20 +580,12 @@ private:
    */
   static void removeArgs(const char *id);
 
-
   /**
    * @internal for KUniqueApplication only:
    *
    * Save all but the Qt and KDE arguments to a stream.
    */
   static void saveAppArgs( QDataStream &);
-
-  /**
-   * @internal for KUniqueApplication only:
-   *
-   * Load arguments from a stream.
-   */
-  static void loadAppArgs( QDataStream &);
 
   /**
    * @internal

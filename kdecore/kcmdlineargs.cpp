@@ -251,6 +251,7 @@ KCmdLineArgs::saveAppArgs( QDataStream &ds)
    KCmdLineArgs *args;
    for(args = argsList->first(); args; args = argsList->next())
    {
+      ds << QCString(args->id);
       args->save(ds);
    }
 }
@@ -282,19 +283,18 @@ KCmdLineArgs::loadAppArgs( QDataStream &ds)
    uint count;
    ds >> count;
 
-   if (count == 0)
-      return;
-
-   if (!argsList || (count != argsList->count()))
+   while(count--)
    {
-      fprintf(stderr, "loadAppArgs:: Unexpected number of command line sets "
-                      "(%d instead of %d)\n", count, argsList ? argsList->count() : 0);
-      return;
-   }
-
-   for(args = argsList->first(); args; args = argsList->next())
-   {
-      args->load(ds);
+     QCString id;
+     ds >> id;
+     for(args = argsList->first(); args; args = argsList->next())
+     {
+       if (args->id  == id)
+       {
+          args->load(ds);
+          break;
+       }
+     }
    }
 }
 
