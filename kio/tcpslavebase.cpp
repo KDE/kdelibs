@@ -178,7 +178,7 @@ ssize_t TCPSlaveBase::ReadLine(char *data, ssize_t len)
 
 unsigned short int TCPSlaveBase::GetPort(unsigned short int _port)
 {
-    unsigned short int port;
+    unsigned short int port = _port;
     if (_port <= 0) {
         struct servent *srv=getservbyname(m_sServiceName, "tcp");
         if (srv) {
@@ -187,8 +187,6 @@ unsigned short int TCPSlaveBase::GetPort(unsigned short int _port)
         else
             port=m_iDefaultPort;
     }
-    else
-        port=_port;
     return port;
 }
 
@@ -554,17 +552,17 @@ bool TCPSlaveBase::usingTLS()
 //  Returns 0 for failed verification, -1 for rejected cert and 1 for ok
 int TCPSlaveBase::verifyCertificate()
 {
-int rc = 0;
-bool permacache = false;
-bool isChild = false;
-QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
-bool _IPmatchesCN = false;
+    int rc = 0;
+    bool permacache = false;
+    bool isChild = false;
+    QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
+    bool _IPmatchesCN = false;
 
-   if (!d->cc) d->cc = new KSSLCertificateCache;
+    if (!d->cc) d->cc = new KSSLCertificateCache;
 
-   KSSLCertificate& pc = d->kssl->peerInfo().getPeerCertificate();
+    KSSLCertificate& pc = d->kssl->peerInfo().getPeerCertificate();
 
-   KSSLCertificate::KSSLValidation ksv = pc.validate();
+    KSSLCertificate::KSSLValidation ksv = pc.validate();
 
     /* Setting the various bits of meta-info that will be needed. */
     setMetaData("ssl_peer_cert_subject", pc.getSubject());
@@ -609,6 +607,7 @@ bool _IPmatchesCN = false;
          }
 
          // Precondition: cp is one of Reject, Accept or Prompt
+
          switch (cp) {
          case KSSLCertificateCache::Accept:
            rc = 1;
@@ -834,7 +833,7 @@ bool TCPSlaveBase::isConnectionValid()
     {
       char buffer[100];
       retval = recv(m_iSock, buffer, 80, MSG_PEEK);
-      // retval ==  0 ==> Connection clased
+      // retval ==  0 ==> Connection closed
       if ( retval == 0 )
         return false;
     }

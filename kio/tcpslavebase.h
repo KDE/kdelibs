@@ -68,8 +68,10 @@ protected:
      * except it is also capable of making SSL or SOCKS
      * connections.
      *
-     * @param data
-     * @param len
+     * @param data info to be sent to remote machine
+     * @param len the length of the data to be sent
+     *
+     * @return the actual size of the data that was sent
      */
     ssize_t Write(const void *data, ssize_t len);
 
@@ -78,22 +80,24 @@ protected:
      * except it is also capable of deciphering SSL data as
      * well as handling data over SOCKSified connections.
      *
-     * @param data
-     * @param len
+     * @param data storage for the info read from server
+     * @param len lenght of the info to read from the server
+     *
+     * @return the actual size of data that was obtained
      */
     ssize_t Read(void *data, ssize_t len);
 
     /**
-     * Same as above except it reads data one line
-     * at a time.
-     *
-     * @param data
-     * @param len
+     * Same as above except it reads data one line at a time.
      */
     ssize_t ReadLine(char *data, ssize_t len);
 
     /**
-     * This determines the appropiate port to use.
+     * Determines the appropiate port to use.
+     *
+     * This functions attempts to discover the appropriate port.
+     *
+     * @param port
      */
     unsigned short int GetPort(unsigned short int port);
 
@@ -106,11 +110,11 @@ protected:
      * sent back to the calling application!  You can then use the
      * @ref connectResult() function to determine the result of the
      * request for connection.
-     * 
+     *
      * @param host hostname
      * @param port port number
      * @param sendError if true sends error message to calling app.
-     * 
+     *
      * @return on succes, true is returned.
      *         on failure, false is returned and an appropriate
      *         error message is send to the application.
@@ -191,42 +195,47 @@ protected:
     bool isConnectionValid();
 
     /**
-     * Returns the status of the connection so
-     * that inheriting io-slaves can return back
-     * the appropriate error as needed.
+     * Returns the status of the connection.
+     *
+     * This function allows you to invoke @ref ConnectToHost
+     * with the @p sendError flag set to false so that you
+     * can send the appropriate error message back to the
+     * calling io-slave.
      *
      * @return the status code as returned by KExtendedSocket.
      */
     int connectResult();
 
     /**
-     * Waits for the specified time for activity on
-     * the socket.
+     * Wait for some type of activity on the socket
+     * for the period specified by @p t.
      *
-     * @param t  amount of time to monitor socket for activity
-     * @return true if we see activity on socket before @p timeout
-     *         false otherwise.
+     * @param t  length of time in seconds that we should monitor the
+     *           socket before timing out.
+     *
+     * @return true if any activity was seen on the socket before the
+     *              timeout value was reached, false otherwise.
      */
     bool waitForResponse( int t );
 
     /**
-     * Sets the connection's mode of connection (blocking/nonblocking).
+     * Sets the mode of the connection to blocking or non-blocking.
      *
-     * Be sure to call this function before calling @ref ConnectToHost
-     * otherwise this method will have no effect.
+     * Be sure to call this function before calling @ref ConnectToHost.
+     * Otherwise, this setting will not have any effect until the next
+     * @p ConnectToHost.
      *
-     * @param b if true the connection will be a blocking one
-     *              otherwise not!
+     * @param b true to make the connection a blocking one, false otherwise.
      */
     void setBlockConnection( bool b );
 
     /**
-     * Sets how long the connection will wait for repsonse
-     * before timinig out.
+     * Sets how long to wait for orignally connecting to
+     * the requested before timinig out.
      *
-     * Be sure to call this function before calling
-     * @ref ConnectToHost, otherwise this method will
-     * have no effect.
+     * Be sure to call this function before calling @ref ConnectToHost,
+     * otherwise the setting will not take effect until the next call
+     * to @p ConnectToHost.
      *
      * @param t timeout value
      */
@@ -234,18 +243,23 @@ protected:
 
     /**
      * Returns true if SSL tunneling is enabled.
+     *
+     * @see setEnableSSlTunnel
      */
     bool isSSLTunnelEnabled();
 
     /**
-     * Sets SSL tunneling mode for making connection
-     * to SSL sites through proxy servers.
+     * Set up SSL tunneling mode.
      *
-     * Please note that when tunneling is enabled
-     * all connection will be un-encrypted even if
-     * explicitly specified!  This mode is mostly
-     * useful for connecting to remote sites through
-     * un-encrypted proxy servers!
+     * Calling this function with a @p true argument will allow
+     * you to temprarly ignore the @p m_bIsSSL flag setting and
+     * make a non-SSL connection.  It is mostly useful for making
+     * connections to SSL sites through a non-transparent proxy
+     * server (i.e. most proxy servers out there).
+     *
+     * Note that once you have successfully "tunneled" through the
+     * proxy server you must call this function with its argument
+     * set to false to properly connect to the SSL site.
      *
      * @param enable if true SSL Tunneling will be enabled
      */
