@@ -1,0 +1,9 @@
+#!/bin/sh
+PREFIX=`kde-config --prefix`
+LIBDIR=$PREFIX/share/apps/dcopidlng
+perl -I$LIBDIR $LIBDIR/kalyptus --allow_k_dcop_accessors -f dcopidl $1 2>/tmp/dcopidlng.stderr.$$
+if [[ $? -ne 0 ]]
+then
+   cat /tmp/dcopidlng.stderr.$$
+fi
+rm /tmp/dcopidlng.stderr.$$
