@@ -79,11 +79,5 @@ public:
 	long cleanUp(long cacheLimit);
 };
 
-class CacheShutdown :public StartupClass
-{
-public:
-	void startup();
-	void shutdown();
-};
 };
 #endif

@@ -22,6 +22,8 @@
 
 #include "cache.h"
 #include "debug.h"
+#include "iomanager.h"
+#include "dispatcher.h"
 #include <iostream>
 #include <cassert>
 
@@ -153,7 +155,7 @@ long Cache::cleanUp(long cacheLimit)
 			}
 			else
 			{
-				artsdebug("%d => %ld\n",co->refCnt(),co->lastAccess());
+				//artsdebug("%d => %ld\n",co->refCnt(),co->lastAccess());
 			}
 		}
 
@@ -165,7 +167,7 @@ long Cache::cleanUp(long cacheLimit)
 		}
 		else
 		{
-			artsdebug("cache problem: memory overused, but nothing there to free\n");
+			//artsdebug("cache problem: memory overused, but nothing there to free\n");
 		}
 	}
 
@@ -221,13 +223,53 @@ void Cache::shutdown()
 	}
 }
 
-void CacheShutdown::startup()
+namespace Arts {			// internal helpers
+
+// periodic cache clean
+class CacheClean : public TimeNotify {
+public:
+	CacheClean();
+	void notifyTime();
+	virtual ~CacheClean();
+};
+
+// cache startup & shutdown
+class CacheStartup :public StartupClass
 {
+public:
+	void startup();
+	void shutdown();
+private:
+	CacheClean *cacheClean;
+};
+
+};
+
+CacheClean::CacheClean()
+{
+	Dispatcher::the()->ioManager()->addTimer(5000, this);
 }
 
-void CacheShutdown::shutdown()
+void CacheClean::notifyTime()
 {
+	// TODO: make this configurable
+	Cache::the()->cleanUp(8192*1024);
+}
+
+CacheClean::~CacheClean()
+{
+	Dispatcher::the()->ioManager()->removeTimer(this);
+}
+
+void CacheStartup::startup()
+{
+	cacheClean = new CacheClean;	
+}
+
+void CacheStartup::shutdown()
+{
+	delete cacheClean;
 	Cache::shutdown();
 }
 
-static CacheShutdown cacheShutdown;
+static CacheStartup cacheStartup;

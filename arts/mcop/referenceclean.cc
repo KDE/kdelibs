@@ -21,6 +21,7 @@
     */
 
 #include "referenceclean.h"
+#include "time.h"
 
 using namespace std;
 using namespace Arts;
@@ -33,10 +34,27 @@ ReferenceClean::ReferenceClean(Pool<Object_skel>& objectPool)
 
 void ReferenceClean::notifyTime()
 {
-	list<Object_skel *> items = objectPool.enumerate();
-	list<Object_skel *>::iterator i;
+	/*
+	 * This last_notify and now check is because IOManager accumulates
+	 * notifyTime() calls, so it may happen that we don't get one for ten
+	 * seconds, and then two. However, this breaks the "second-chance"
+	 * algorithm referenceClean is using, which depends on the fact that
+	 * there is some significant time delay between two calls. So we'll
+	 * verify it by hand.
+	 */
 
-	for(i=items.begin();i != items.end();i++) (*i)->_referenceClean();
+	static time_t last_notify = 0;
+	time_t now;
+
+	time(&now);
+	if(last_notify-now > 4)
+	{
+		list<Object_skel *> items = objectPool.enumerate();
+		list<Object_skel *>::iterator i;
+
+		for(i=items.begin();i != items.end();i++) (*i)->_referenceClean();
+		last_notify = now;
+	}
 }
 
 ReferenceClean::~ReferenceClean()
