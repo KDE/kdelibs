@@ -118,8 +118,18 @@ Completion ObjectProtoFunc::execute(const List &)
     str = "[object Number]";
     break;
   case ObjectClass:
-    str = "[object Object]";
-    break;
+  {
+      const TypeInfo * info;
+      if ( thisObj.imp() && ( (info = thisObj.imp()->typeInfo() ) ) )
+      { // #### doesn't seem to work
+          str = "[object ";
+          str += info->name;
+          str += "]";
+      }
+      else
+          str = "[object Object]";
+      break;
+  }
   default:
     str = "[undefined object]";
   }

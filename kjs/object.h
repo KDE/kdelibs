@@ -437,10 +437,10 @@ namespace KJS {
     // reference counting mechanism
     inline Imp* ref() { refcount++; return this; }
     inline bool deref() { return (!--refcount); }
-  public:      
+  public:
     unsigned int refcount;
 
-  private:      
+  private:
     Property *prop;
     Imp *proto;
     static const TypeInfo info;
@@ -504,6 +504,7 @@ namespace KJS {
    */
   class HostImp : public Imp {
   public:
+    HostImp();
     virtual ~HostImp();
     virtual const TypeInfo* typeInfo() const { return &info; }
 

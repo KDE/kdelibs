@@ -562,9 +562,10 @@ Imp::~Imp()
   }
 }
 
-KJSO Imp::toPrimitive(Type) const
+KJSO Imp::toPrimitive(Type preferred) const
 {
-  return Undefined();
+  return defaultValue(preferred);
+  /* TODO: is there still any need to throw a runtime error _here_ ? */
 }
 
 Boolean Imp::toBoolean() const
@@ -853,12 +854,6 @@ ObjectImp::ObjectImp(Class c, const KJSO &v, const KJSO &p)
 
 ObjectImp::~ObjectImp() { }
 
-KJSO ObjectImp::toPrimitive(Type preferred) const
-{
-  return defaultValue(preferred);
-  /* TODO: is there still any need to throw a runtime error _here_ ? */
-}
-
 Boolean ObjectImp::toBoolean() const
 {
   return Boolean(true);
@@ -895,6 +890,13 @@ Object ObjectImp::toObject() const
   return Object(const_cast<ObjectImp*>(this));
 }
 
+KJSO ObjectImp::toPrimitive(Type preferred) const
+{
+  // ### Imp already does that now. Remove in KDE 3.0.
+  return defaultValue(preferred);
+  /* TODO: is there still any need to throw a runtime error _here_ ? */
+}
+
 void ObjectImp::mark(Imp*)
 {
   // mark objects from the base
@@ -905,13 +907,18 @@ void ObjectImp::mark(Imp*)
     val->mark();
 }
 
+HostImp::HostImp()
+{
+    setPrototype(Global::current().get("[[Object.prototype]]"));
+    //printf("HostImp::HostImp() %p\n",this);
+}
+
 HostImp::~HostImp() { }
 
 Boolean HostImp::toBoolean() const
 {
   return Boolean(true);
 }
-
 
 const TypeInfo HostImp::info = { "HostObject", HostType, 0, 0, 0 };
 
