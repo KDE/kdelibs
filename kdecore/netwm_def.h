@@ -434,6 +434,8 @@ public:
        @li WMIconGeometry
        @li WMIcon
        @li WMPid
+       @li WMVisibleIconName
+       @li WMIconName
 
        ICCCM properties (provided for convenience):
 

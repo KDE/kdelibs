@@ -894,16 +894,20 @@ public:
     const char *visibleName() const;
 
     /**
-       Returns the icon name of the window in UTF-8 format.
+       Returns the iconic name of the window in UTF-8 format. Note that this has
+       nothing to do with icons, but it's for "iconic"
+       representations of the window, i.e. taskbars etc.
        
-       @return the name of the icon
+       @return the iconic name
     **/
     const char *iconName() const;
 
     /**
-       Returns the visible icon name as set by the window manager in UTF-8 format.
+       Returns the visible iconic name as set by the window manager in UTF-8 format.
+       Note that this has nothing to do with icons, but it's for "iconic"
+       representations of the window, i.e. taskbars etc.
 
-       @return the visible icon name
+       @return the visible iconic name
     **/
     const char *visibleIconName() const;
 

@@ -437,27 +437,54 @@ public:
      * Requires NET::WMWindowType passed to KWin::windowInfo().
      */
     NET::WindowType windowType( int supported_types ) const;
-    /** Returns a visible name with state.
+    /**
+     * Returns the visible name of the window (i.e. including possible <2> appended
+     * when there are two or more windows with the same name). Note that
+     * in many cases you should use visibleIconName instead.
+     * Requires NET::WMVisibleName passed to KWin::windowInfo().
+     */
+    QString visibleName() const;
+    /**
+     * Returns a visible name with state.
      *
      * This is a simple convenience function that returns the
-     * visible name but with parentheses around iconified windows.
+     * visible name but with parentheses around minimized windows. Note that
+     * in many cases you should use visibleIconNameWithState() instead.
      * Requires NET::WMVisibleName, NET::WMState and NET::XAWMState passed
      * to KWin::windowInfo().
      * @return the window name with state
      */
     QString visibleNameWithState() const;
     /**
-     * Returns the visible name of the window (i.e. including possible <2> appended
-     * when there are two or more windows with the same name).
-     * Requires NET::WMVisibleName passed to KWin::windowInfo().
-     */
-    QString visibleName() const;
-    /**
      * Returns the name of the window, as specified by the application, without
      * any modifications. You should often use visibleName() instead.
      * Requires NET::WMName passed to KWin::windowInfo().
      */
     QString name() const;
+    /*
+     * Returns the visible name of the window that should be shown in taskbar
+     * and all other "iconic" representations of the window. Note that this
+     * has nothing to do with normal icons.
+     * Requires NET::WMVisibleIconName passed to KWin::windowInfo().
+     */
+    QString visibleIconName() const;
+    /**
+     * Returns an iconic name with state.
+     *
+     * This is a simple convenience function that returns the
+     * visible iconic name but with parentheses around minimized windows.
+     * Requires NET::WMVisibleName, NET::WMState and NET::XAWMState passed
+     * to KWin::windowInfo().
+     * @return the window name with state
+     */
+    QString visibleIconNameWithState() const;
+    /*
+     * Returns the name of the window that should be shown in taskbar and all other
+     * "iconic" representations of the window. Note that this has nothing to do
+     * with normal icons.
+     * Requires NET::WMIconName passed to KWin::windowInfo().
+     */
+    QString iconName() const;
     /**
      * Returns true if the window is on the currently active virtual desktop.
      * Requires NET::WMDesktop passed to KWin::windowInfo().

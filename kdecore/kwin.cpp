@@ -543,6 +543,7 @@ class KWin::WindowInfoPrivate
 	NETWinInfo* info;
 	WId win_;
 	QString name_;
+        QString iconic_name_;
 	QRect geometry_;
 	int ref;
     private:
@@ -561,30 +562,20 @@ KWin::WindowInfo::WindowInfo( WId win, unsigned long properties, unsigned long p
 		     NET::WMWindowType |
 		     NET::WMName |
 		     NET::WMVisibleName |
+                     NET::WMIconName |
+                     NET::WMVisibleIconName |
 		     NET::WMDesktop |
 		     NET::WMPid |
 		     NET::WMKDEFrameStrut |
 		     NET::XAWMState |
                      NET::WMGeometry;
+    if( properties & NET::WMVisibleIconName )
+	properties |= NET::WMIconName | NET::WMVisibleName; // force, in case it will be used as a fallback
     if( properties & NET::WMVisibleName )
 	properties |= NET::WMName; // force, in case it will be used as a fallback
     unsigned long props[ 2 ] = { properties, properties2 };
     d->info = new NETWinInfo( qt_xdisplay(), win, qt_xrootwin(), props, 2 );
     d->win_ = win;
-    if ( d->info->name() ) {
-	d->name_ = QString::fromUtf8( d->info->name() );
-    } else {
-	char* c = 0;
-	if ( XFetchName( qt_xdisplay(), win, &c ) != 0 ) {
-	    d->name_ = QString::fromLocal8Bit( c );
-	    XFree( c );
-	}
-    }
-    if( properties & NET::WMGeometry ) {
-        NETRect frame, geom;
-        d->info->kdeGeometry( frame, geom );
-        d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
-    }
 }
 
 // this one is only to make QValueList<> or similar happy
@@ -665,6 +656,16 @@ QString KWin::WindowInfo::visibleNameWithState() const
     return s;
 }
 
+QString KWin::WindowInfo::visibleIconNameWithState() const
+{
+    QString s = visibleIconName();
+    if ( isMinimized() ) {
+	s.prepend('(');
+	s.append(')');
+    }
+    return s;
+}
+
 QString KWin::Info::visibleNameWithState() const
 {
     QString s = visibleName;
@@ -686,7 +687,57 @@ QString KWin::WindowInfo::name() const
 {
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMName ) == 0, 176 )
         << "Pass NET::WMName to KWin::windowInfo()" << endl;
+    if( d->info->name())
+        return QString::fromUtf8( d->info->name());
+    if( d->name_.isNull()) {
+	char* c = 0;
+	if ( XFetchName( qt_xdisplay(), d->win_, &c ) != 0 ) {
+    	    d->name_ = QString::fromLocal8Bit( c );
+	    XFree( c );
+        } else
+            d->name_ = "";
+    }
     return d->name_;
+}
+
+QString KWin::WindowInfo::visibleIconName() const
+{
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMVisibleIconName ) == 0, 176 )
+        << "Pass NET::WMVisibleIconName to KWin::windowInfo()" << endl;
+    if( d->info->visibleIconName())
+        return QString::fromUtf8( d->info->visibleIconName());
+    if( d->info->iconName())
+        return QString::fromUtf8( d->info->iconName());
+    if( d->iconic_name_.isNull()) {
+	char* c = 0;
+	if ( XGetIconName( qt_xdisplay(), d->win_, &c ) != 0 ) {
+    	    d->iconic_name_ = QString::fromLocal8Bit( c );
+	    XFree( c );
+        } else
+            d->iconic_name_ = "";
+    }
+    if( !d->iconic_name_.isEmpty())
+        return d->iconic_name_;
+    return visibleName();
+}
+
+QString KWin::WindowInfo::iconName() const
+{
+    kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMIconName ) == 0, 176 )
+        << "Pass NET::WMIconName to KWin::windowInfo()" << endl;
+    if( d->info->iconName())
+        return QString::fromUtf8( d->info->iconName());
+    if( d->iconic_name_.isNull()) {
+	char* c = 0;
+	if ( XGetIconName( qt_xdisplay(), d->win_, &c ) != 0 ) {
+    	    d->iconic_name_ = QString::fromLocal8Bit( c );
+	    XFree( c );
+        } else
+            d->iconic_name_ = "";
+    }
+    if( !d->iconic_name_.isEmpty())
+        return d->iconic_name_;
+    return name();
 }
 
 bool KWin::WindowInfo::isOnCurrentDesktop() const
@@ -719,6 +770,11 @@ QRect KWin::WindowInfo::geometry() const
 {
     kdWarning(( d->info->passedProperties()[ NETWinInfo::PROTOCOLS ] & NET::WMGeometry ) == 0, 176 )
         << "Pass NET::WMGeometry to KWin::windowInfo()" << endl;
+    if( d->geometry_.isNull()) {
+        NETRect frame, geom;
+        d->info->kdeGeometry( frame, geom );
+        d->geometry_.setRect( geom.pos.x, geom.pos.y, geom.size.width, geom.size.height );
+    }
     return d->geometry_;
 }
 
