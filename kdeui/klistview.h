@@ -101,6 +101,15 @@ public:
    */
   virtual ~KListView();
 
+ /**
+   * Reimplemented for internal reasons.
+   * Further reimplementations should call this function or else
+   * some features may not work correctly.
+   *
+   * The API is unaffected.
+   */
+  virtual void setAcceptDrops (bool);
+
   /**
    * This function determines whether the given coordinates are within the
    * execute area. The execute area is the part of a @ref QListViewItem where mouse
