@@ -915,7 +915,7 @@ Value DOMCSSValue::tryGet(ExecState *exec, const Identifier &p) const
 {
   if (p == "cssText")
     return getString(cssValue.cssText());
-  else if (p == "cssValueType");
+  else if (p == "cssValueType")
     return Number(cssValue.cssValueType());
   return DOMObject::tryGet(exec,p);
 }
