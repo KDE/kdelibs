@@ -535,6 +535,7 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	    case ID_TITLE:
 	    case ID_ISINDEX:
 	    case ID_BASE:
+		// ### what about <script> tags between head and body????
 		e = new HTMLHeadElementImpl(document);
 		insertNode(e);
 		break;

@@ -203,13 +203,16 @@ void HTMLImageElementImpl::applyChanges(bool top)
 
 // -------------------------------------------------------------------------
 
+QMap<QString,HTMLMapElementImpl*> *HTMLMapElementImpl::mapMap = 0;
+
 HTMLMapElementImpl::HTMLMapElementImpl(DocumentImpl *doc) : HTMLElementImpl(doc)
 {
+    if(!mapMap) mapMap = new QMap<QString, HTMLMapElementImpl *>();
 }
 
 HTMLMapElementImpl::~HTMLMapElementImpl()
 {
-    HTMLMapElementImpl::mapMap.remove(name);
+    HTMLMapElementImpl::mapMap->remove(name);
 }
 
 const DOMString HTMLMapElementImpl::nodeName() const
@@ -271,8 +274,6 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     return inside;
 }
 
-QMap<QString,HTMLMapElementImpl*> HTMLMapElementImpl::mapMap;
-
 HTMLMapElementImpl*
 HTMLMapElementImpl::getMap(const DOMString& _url)
 {
@@ -281,8 +282,8 @@ HTMLMapElementImpl::getMap(const DOMString& _url)
 	s = QString(_url.unicode()+1, _url.length()-1);
     else
 	s = _url.string();
-    if (mapMap.contains(s))
-	return mapMap[s];
+    if (mapMap->contains(s))
+	return (*mapMap)[s];
     else
 	return 0;
 }
@@ -300,7 +301,7 @@ void HTMLMapElementImpl::parseAttribute(Attribute *attr)
 	    name = QString(s.unicode()+1, s.length()-1);
 	else
 	    name = s.string();
-	HTMLMapElementImpl::mapMap[name] = this;
+	(*mapMap)[name] = this;
 	break;
     }
     default:

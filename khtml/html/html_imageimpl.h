@@ -162,7 +162,7 @@ private:
     QString name;
     // ### FIxme: this doesn't work, if we have multiple views at the same time.
     // the map has to be somehow attached to the document.
-    static QMap<QString,HTMLMapElementImpl*> mapMap;
+    static QMap<QString,HTMLMapElementImpl*> *mapMap;
 };
 
 
