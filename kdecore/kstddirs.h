@@ -67,7 +67,6 @@ class KStandardDirsPrivate;
 *
 * @sect Standard resources that kdelibs allocates are:
 *
-* @li appdata - Application specific data dir (actually by KApplication).
 * @li apps - Applications menu (.desktop files).
 * @li cgi - CGIs to run from kdehelp.
 * @li config - Configuration files.
@@ -83,6 +82,13 @@ class KStandardDirsPrivate;
 * @li sound - Application sounds.
 * @li templates - Templates
 * @li wallpaper - Wallpapers.
+*
+* A type that is added by the class KApplication if you use it, is
+* appdata. This one makes the use of the type data a bit easier as it
+* appends the name of the application.
+* So while you had to @ref locate("data", "myapp/myfile") so you can
+* also write @ref locate("appdata", "myfile") if your KApplication instance
+* is called "myapp".
 *
 * @sect KStandardDirs supports the following environment variables:
 *
@@ -390,6 +396,26 @@ public:
 	static bool makeDir(const QString& dir, int mode = 0755);
 
 	/**
+	 * This returns a default relative path for the standard KDE
+         * resource types. Below is a list of them so you get an idea
+         * of what this is all about
+         *
+         * @li data - share/apps
+         * @li html - share/doc/HTML
+         * @li icon - share/icon
+         * @li config - share/config
+         * @li pixmap - share/pixmaps
+         * @li apps - share/applnk
+         * @li sound - share/sounds
+         * @li locale - share/locale
+         * @li services - share/services
+         * @li servicetypes - share/servicetypes
+         * @li mime - share/mimelnk
+         * @li wallpaper - share/wallpapers
+         * @li templates - share/templates
+         * @li exe - bin
+         * @li lib - lib
+
 	 * @returns Static default for the specified resource.  You
 	 *          should probably be using @ref locate() or @ref locateLocal()
 	 *          instead.
