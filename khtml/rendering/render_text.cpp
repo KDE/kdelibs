@@ -636,21 +636,25 @@ void RenderText::calcMinMaxWidth()
     // ### not 100% correct for first-line
     const Font *f = htmlFont( false );
     int len = str->l;
+    bool isPre = style()->whiteSpace() == PRE;
     if ( len == 1 && str->s->latin1() == '\n' )
 	m_hasReturn = true;
     for(int i = 0; i < len; i++)
     {
         int wordlen = 0;
-        while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) )
-            wordlen++;
-        if (wordlen)
-        {
+        if (isPre)
+            while( i+wordlen < len && str->s[i+wordlen] != '\n' )
+                wordlen++;
+        else
+            while( i+wordlen < len && !(isBreakable( str->s, i+wordlen, str->l )) )
+                wordlen++;
+
+        if (wordlen) {
             int w = f->width(str->s, str->l, i, wordlen);
             currMinWidth += w;
             currMaxWidth += w;
         }
-        if(i+wordlen < len)
-        {
+        if(i+wordlen < len) {
 	    m_hasBreakableChar = true;
             if ( (*(str->s+i+wordlen)).latin1() == '\n' )
             {
