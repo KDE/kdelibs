@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.18  1999/05/13 19:03:24  bieker
+// More QStrings.
+//
 // Revision 1.17  1999/05/07 15:42:42  kulow
 // making some changes to the code and partly to the API to make it
 // -DQT_NO_ASCII_CAST compatible.
@@ -172,7 +175,7 @@ const QString KSimpleConfig::deleteEntry( const QString& pKey, bool bLocalized )
 		  aLocalizedKey += data()->aLocaleString;
 		  aLocalizedKey += "]";
 		  // find the value for the key in the current group
-		  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ aLocalizedKey.data() ];
+		  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ aLocalizedKey ];
 		  if( pEntryData )
 			{
 			  QString aValue = pEntryData->aValue;

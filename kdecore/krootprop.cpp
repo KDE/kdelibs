@@ -107,7 +107,7 @@ void KRootProp::setProp( const QString& rProp )
 			if( i != -1 ) {
 				key = keypair.left( i );
 				value = keypair.right( keypair.length() - i - 1 );
-				propDict.insert( key.data(), new QString( value ) );
+				propDict.insert( key, new QString( value ) );
 			}
 		}
 	}
@@ -118,7 +118,7 @@ QString KRootProp::readEntry( const QString& rKey,
 {
 	if( !propDict.isEmpty() ) {
 	
-		QString *aValue = propDict[ rKey.data() ];
+		QString *aValue = propDict[ rKey ];
 
 		if (!aValue && !pDefault.isNull() )
 		    *aValue = pDefault;
@@ -262,10 +262,10 @@ QString KRootProp::writeEntry( const QString& rKey, const QString& rValue )
 {
 	QString *aValue = new QString();
 	
-	if( propDict[ rKey.data() ] )
-		aValue = propDict[ rKey.data() ];
+	if( propDict[ rKey ] )
+		aValue = propDict[ rKey ];
 
-	propDict.replace( rKey.data(), new QString( rValue ) );
+	propDict.replace( rKey, new QString( rValue ) );
 	
 	if ( !aValue )
 	    *aValue = rValue;
@@ -298,18 +298,19 @@ QString KRootProp::writeEntry( const QString& rKey, const QFont& rFont )
   if( rFont.rawMode() )
 	nFontBits = nFontBits | 0x20;
 
-  aValue.sprintf( "%s,%d,%d,%d,%d,%d", rFont.family().ascii(), 
+  aValue.sprintf( "%s,%d,%d,%d,%d,%d",
+		   rFont.family().ascii(), 
 		   rFont.pointSize(),
-		   rFont.styleHint(), rFont.charSet(), rFont.weight(),
+		   rFont.styleHint(),
+		   rFont.charSet(),
+		   rFont.weight(),
 		   nFontBits );
-  
   return writeEntry( rKey, aValue );
 }
 
 QString KRootProp::writeEntry( const QString& rKey, const QColor& rColor )
 {
-    QString aValue;
-    aValue.sprintf( "%d,%d,%d", rColor.red(), rColor.green(), rColor.blue() );
+    QString aValue = QString( "%1,%2,%3").arg(rColor.red()).arg(rColor.green()).arg(rColor.blue() );
     
     return writeEntry( rKey, aValue );
 }

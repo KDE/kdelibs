@@ -723,7 +723,7 @@ void KColorDialog::readSettings()
 
 	for ( int i = 0; i < custColorCells->numCells(); i++ )
 	{
-		key.sprintf( "Color%d", i );
+		key = QString( "Color%1").arg( i );
 		col = config->readColorEntry( key, &lightGray );
 		custColorCells->setColor( i, col );
 	}
@@ -743,7 +743,7 @@ void KColorDialog::writeSettings()
 	for ( int i = 0; i < custColorCells->numCells(); i++ )
 	{
 		color = custColorCells->color( i );
-		key.sprintf( "Color%d", i );
+		key = QString( "Color%d").arg( i );
 		config->writeEntry( key, color, true, true );
 	}
 

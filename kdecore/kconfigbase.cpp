@@ -771,14 +771,14 @@ QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
   QString aValue;
 
   // retrieve the current group dictionary
-  KEntryDict* pCurrentGroupDict = data()->aGroupDict[ data()->aGroup.data() ];
+  KEntryDict* pCurrentGroupDict = data()->aGroupDict[ data()->aGroup ];
 
   if( !pCurrentGroupDict )
 	{
 	  // no such group -> create a new entry dictionary
 	  KEntryDict* pNewDict = new KEntryDict( 37, false );
 	  pNewDict->setAutoDelete( true );
-	  data()->aGroupDict.insert( data()->aGroup.data(), pNewDict );
+	  data()->aGroupDict.insert( data()->aGroup, pNewDict );
 	  
 	  // this is now the current group
 	  pCurrentGroupDict = pNewDict;
@@ -790,7 +790,7 @@ QString KConfigBase::writeEntry( const QString& pKey, const QString& value,
 	aLocalizedKey = aLocalizedKey + '[' + data()->aLocaleString + ']';
 
   // try to retrieve the current entry for this key
-  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ aLocalizedKey.data() ];
+  KEntryDictEntry* pEntryData = (*pCurrentGroupDict)[ aLocalizedKey ];
   if( pEntryData )
 	{
 	  // there already is such a key

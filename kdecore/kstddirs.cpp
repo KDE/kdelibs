@@ -137,7 +137,7 @@ const QString KStandardDirs::closest( DirScope method,
 		// system dir
 		QString *name = new QString( KDEDir );
 		*name += realsuffix;
-		sys = name->data();
+		sys = *name;
 
 		const_cast<KStandardDirs*>(this)->_sys->insert( 
 				suffix, name );
@@ -148,7 +148,7 @@ const QString KStandardDirs::closest( DirScope method,
 		*name += "/share/apps/";
 		*name += realsuffix;
 
-		sysapp = name->data();
+		sysapp = *name;
 
 		const_cast<KStandardDirs*>(this)->_sysapp->insert( 
 				suffix, name );
@@ -160,7 +160,7 @@ const QString KStandardDirs::closest( DirScope method,
 		*name += realsuffix;
 
 
-		user = name->data();
+		user = *name;
 
 		const_cast<KStandardDirs*>(this)->_user->insert( 
 				suffix, name );
@@ -173,7 +173,7 @@ const QString KStandardDirs::closest( DirScope method,
 		*name += *_appName;
 		*name += realsuffix;
 
-		app = name->data();
+		app = *name;
 
 		const_cast<KStandardDirs*>(this)->_app->insert( 
 				suffix, name );
@@ -181,10 +181,10 @@ const QString KStandardDirs::closest( DirScope method,
 	}
 	else {
 		// string's already in there
-		user = found->data(); 
-		sys = _sys->find( suffix )->data();
-		sysapp = _sysapp->find( suffix )->data();
-		app = _app->find( suffix )->data();
+		user = *found; 
+		sys = *_sys->find( suffix );
+		sysapp = *_sysapp->find( suffix );
+		app = *_app->find( suffix );
 	}
 			
 	// return specific dirs
@@ -224,10 +224,10 @@ const QString KStandardDirs::app( KStandardDirs::DirScope s ) const
 {
 	if( _appPath == 0 ) {
 		QString app( "/share/apps/" );
-		app += _appName->data();
+		app += *_appName;
 
 		const_cast<KStandardDirs*>(this)->_appPath
-			= closest( s, app.data() );
+			= closest( s, app );
 	}
 
 	return _appPath;
