@@ -73,8 +73,7 @@ public:
     virtual void setHeight( int height ) { m_height = height; }
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine);
-    virtual unsigned int width( int, int) const { return width(); }
-
+    
     virtual int lowestPosition() const;
     virtual int rightmostPosition() const;
 

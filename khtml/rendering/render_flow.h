@@ -125,17 +125,9 @@ public:
     void addOverHangingFloats( RenderFlow *flow, int xoffset, int yoffset, bool child = false );
 
     // implementation of the following functions is in bidi.cpp
-    void appendRun(QPtrList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
-                   BidiContext *context, QChar::Direction dir);
-    void embed( QChar::Direction d, BidiIterator &sor, BidiIterator &eor, BidiContext *&context, 
-		BidiStatus &status, QPtrList<BidiRun> &runs, QChar::Direction &dir );
-    BidiContext *bidiReorderLine(BidiStatus &, const BidiIterator &start, const BidiIterator &end, BidiContext *startEmbed);
+    void bidiReorderLine(const BidiIterator &start, const BidiIterator &end);
     BidiIterator findNextLineBreak(BidiIterator &start);
 
-public:
-    RenderObject *first();
-    RenderObject *next(RenderObject *current);
-    RenderObject *nextObject(RenderObject *current);
 protected:
 
     struct SpecialObject {
@@ -187,7 +179,7 @@ private:
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
 };
 
-
+    
 }; //namespace
 
 #endif

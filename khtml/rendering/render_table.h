@@ -274,10 +274,6 @@ public:
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
     virtual bool isTableSection() const { return true; }
 
-    // from BiDiObject, just define to be empty
-    virtual unsigned int width(int, int) const { return 0;}
-    virtual short width() const { return RenderContainer::width(); }
-
     virtual short lineHeight(bool) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
 
@@ -312,10 +308,6 @@ public:
 
     // overrides
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
-
-    // from BiDiObject, just define to be empty
-    virtual unsigned int width(int, int) const { return 0;}
-    virtual short width() const { return RenderContainer::width(); }
 
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
@@ -454,11 +446,9 @@ public:
     long span() const { return _span; }
     void setSpan( long s ) { _span = s; }
     khtml::Length width();
-    virtual short width() const { return RenderContainer::width(); }
 
     virtual void addChild(RenderObject *child, RenderObject *beforeChild = 0);
 
-    virtual unsigned int width(int, int) const { return 0;}
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(int, int, int, int, int, bool, bool) {}
     virtual void layout() {}

@@ -977,6 +977,32 @@ void RenderFlow::addOverHangingFloats( RenderFlow *flow, int xoff, int offset, b
 }
 
 
+static inline RenderObject *next(RenderObject *par, RenderObject *current)
+{
+    RenderObject *next = 0;
+    while(current != 0)
+    {
+        //kdDebug( 6040 ) << "current = " << current << endl;
+	if(!current->isFloating() && !current->isReplaced() && !current->isPositioned())
+	    next = current->firstChild();
+	if(!next) {
+	    while(current && current != par) {
+		next = current->nextSibling();
+		if(next) break;
+		current = current->parent();
+	    }
+	}
+	
+        if(!next) break;
+
+        if(next->isText() || next->isBR() || next->isFloating() || next->isReplaced() || next->isPositioned())
+            break;
+        current = next;
+    }
+    return next;
+}
+
+
 void RenderFlow::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
@@ -1053,7 +1079,7 @@ void RenderFlow::calcMinMaxWidth()
                     {
                         if(inlineMin < currentMin) inlineMin = currentMin;
                         prevchild = child;
-                        child = next(child);
+                        child = next(this, child);
                         hasNbsp = false;
                         continue;
                     }
@@ -1083,7 +1109,7 @@ void RenderFlow::calcMinMaxWidth()
             }
 	    prevWasText = false;
             prevchild = child;
-            child = next(child);
+            child = next(this, child);
         }
         if(m_minWidth < inlineMin) m_minWidth = inlineMin;
         if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;

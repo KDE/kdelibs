@@ -104,6 +104,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_DIR:
         addCSSProperty(CSS_PROP_DIRECTION, attr->value());
+        addCSSProperty(CSS_PROP_UNICODE_BIDI, CSS_VAL_EMBED);
         break;
 // standard events
     case ATTR_ONCLICK:
