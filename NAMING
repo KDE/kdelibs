@@ -31,7 +31,19 @@ Name: kio_<protocol>.la
 LDFLAGS: -module $(KDE_PLUGIN)
 
 
-The last four (not kdeinit modules) should be defined with 
+KControl Module
+===============
+Name: libkcm_<modulename>.la
+LDFLAGS: -module $(KDE_PLUGIN)
+
+
+KDED Module
+===========
+Name: libkded_<modulename>.la
+LDFLAGS: -module $(KDE_PLUGIN)
+
+
+The last six (not kdeinit modules) should be defined with 
 kde_module_LTLIBRARIES = <Name>
 so that they are installed under $(kde_moduledir), which is usually $prefix/lib/kde2/
 
