@@ -178,6 +178,12 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
     kdDebug( 6080 ) << "CSSParser::parseValue: id=" << _id << " important=" << _important
 		    << " nonCSSHint=" << _nonCSSHint << " value='" << string.string() << "'" << endl;
 #endif
+
+    StyleBaseImpl *b = declaration;
+    while(b && !b->isStyleSheet())
+        b = b->parent();
+    styleElement = static_cast<StyleSheetImpl *>(b);
+    
     const char konq_value[] = "@-konq-value{";
     int length = string.length() + 4 + strlen(konq_value);
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
