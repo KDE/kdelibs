@@ -128,9 +128,13 @@ protected:
    * the KXMLGUIFactory:
    * \code
    * QPtrList<KParts::Plugin> plugins = KParts::Plugin::pluginObjects( this );
+   * QPtrListIterator<KParts::Plugin> it( plugins );
    * KParts::Plugin * plugin;
-   * for( plugin = plugins.first(); plugin; plugin = plugins.next() )
+   * while( ( plugin = it.current() ) != 0 )
+   * {
+   *   ++it;
    *   factory()->addClient(  plugin );
+   * }
    * \endcode
    */
   void loadPlugins( QObject *parent, KXMLGUIClient *parentGUIClient, KInstance *instance );
