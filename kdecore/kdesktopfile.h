@@ -146,13 +146,13 @@ public:
 
   /**
    * Sets the desktop action group.
-   * @param the new action group
+   * @param group the new action group
    */
   void setActionGroup(const QString &group);
 
   /**
    * Returns true if the action group exists, false otherwise
-   * @param the action group to test
+   * @param group the action group to test
    * @return true if the action group exists
    */
   bool hasActionGroup(const QString &group) const;

@@ -30,7 +30,6 @@ class KLocale;
 /**
  * Factory class for calendar types
  * @author Carlos Moro <cfmoro@correo.uniovi.es>
- * @license GNU-GPL v.2
  * @version $Id$
  * @since 3.2
  */

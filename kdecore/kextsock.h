@@ -877,7 +877,7 @@ public:
    * That is, tries to resolve the raw form of the socket address into a textual
    * representation.
    *
-   * @param sockaddr	the socket address
+   * @param sock	the socket address
    * @param host	where the hostname will be written
    * @param port	where the service-port will be written
    * @param flags	the same flags as getnameinfo()
@@ -891,7 +891,7 @@ public:
    * That is, tries to resolve the raw form of the socket address into a textual
    * representation.
    *
-   * @param sockaddr	the socket address
+   * @param sock	the socket address
    * @param host	where the hostname will be written
    * @param port	where the service-port will be written
    * @param flags	the same flags as getnameinfo()

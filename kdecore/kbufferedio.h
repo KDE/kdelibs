@@ -176,7 +176,7 @@ public:
    * problem. For instance, sockets are sequential devices, so they won't
    * accept unreading.
    * @param data	the data to be unread
-   * @param size	the size of the data
+   * @param len	the size of the data
    * @return the number of bytes actually unread
    */
   virtual int unreadBlock(const char *data, uint len);

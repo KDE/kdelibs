@@ -28,9 +28,9 @@
 class KApplication;
 
 /**
-This is the main interface to the @ref KApplication.  This will provide a consistant
+This is the main interface to the KApplication.  This will provide a consistant
 dcop interface to all KDE applications that use it.
-@short DCOP interface to @ref KApplication.
+@short DCOP interface to KApplication.
 @author Ian Reinhart Geiser <geiseri@yahoo.com>
 */
 class KAppDCOPInterface : virtual public DCOPObject
@@ -40,8 +40,8 @@ K_DCOP
 public:
 	/**
 	Construct a new interface object.
-	@param KApplication - The parent @ref KApplication object
-	that will provide us with the functional interface.
+	@param theKapp - The parent KApplication object
+	    that will provide us with the functional interface.
 	*/
 	KAppDCOPInterface( KApplication * theKapp );
 	/**

@@ -151,8 +151,8 @@ public:
 
     // BCI: remove in libkdecore.so.4
     /**
-      *  A small wrapper around @ref gethostbyname() and such.
-      *  Don't use this in new programs. Use @ref KExtendedSocket::lookup
+      *  A small wrapper around gethostbyname() and such.
+      *  Don't use this in new programs. Use KExtendedSocket::lookup
       *  @deprecated
       */
     static bool initSockaddr(ksockaddr_in *server_name, const char *hostname, unsigned short int port, int domain = PF_INET);
