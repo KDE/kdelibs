@@ -47,7 +47,7 @@ KFilePreview::KFilePreview(
       KFileInfoContents(s,sorting)
 {
 
-    fileList = new KFileSimpleView(s, sorting, this, "_dirs");
+    fileList = new KDirListBox(true, s, sorting, this, "_dirs");
 
     myPreview = new KPreview( inDir, this, "_preview" );
 

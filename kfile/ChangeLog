@@ -1,3 +1,9 @@
+1998-04-15  Stephan Kulow  <coolo@kde.org>
+
+	* kfilepreview.cpp: use a list box instead of simple view
+
+	* kfiledialog.cpp: fixed an ugly bug
+
 1998-04-14  Stephan Kulow  <coolo@kde.org>
 
 	* kfiledialogconf.cpp: removed the width/height sliders

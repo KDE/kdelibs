@@ -30,12 +30,15 @@ class KDirListBox : protected QListBox, public KFileInfoContents
     Q_OBJECT
 	
 public:
-    KDirListBox( bool s, QDir::SortSpec sorting, QWidget * parent=0, const char * name=0 );
+    KDirListBox( bool acceptFiles, bool s, QDir::SortSpec sorting, 
+		 QWidget * parent=0, const char * name=0 );
+    KDirListBox( bool s, QDir::SortSpec sorting, 
+		 QWidget * parent=0, const char * name=0 );
     ~KDirListBox() {};
     virtual QWidget *widget() { return this; }
     virtual void setAutoUpdate(bool);
 
-    virtual bool acceptsFiles() { return false; }
+    virtual bool acceptsFiles() { return _acceptFiles; }
     virtual bool acceptsDirs() { return true; }
 
 protected:
@@ -44,6 +47,7 @@ protected:
     virtual void mouseDoubleClickEvent ( QMouseEvent * );
     virtual void clearView();
     virtual bool insertItem(const KFileInfo *i, int index);
+    bool _acceptFiles;
 };
 
 #endif

@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1997, 1998 Richard Moore <rich@kde.org>
+                  1998 Mario Weilguni <mweilguni@sime.com>
                   1998 Stephan Kulow <coolo@kde.org>
                   1998 Daniel Grana <grana@ie.iwi.unibe.ch>
     
@@ -50,12 +51,16 @@ protected:
 private:
     static QPixmap *folder_pixmap;
     static QPixmap *locked_folder;
+    static QPixmap *file_pixmap;
+    static QPixmap *locked_file;
     QPixmap *pm;
     bool italic;
 };
 
 QPixmap *KDirListBoxItem::folder_pixmap = 0;
 QPixmap *KDirListBoxItem::locked_folder = 0;
+QPixmap *KDirListBoxItem::file_pixmap = 0;
+QPixmap *KDirListBoxItem::locked_file = 0;
 
 KDirListBoxItem::KDirListBoxItem(const KFileInfo *i)
     : QListBoxItem() 
@@ -67,7 +72,18 @@ KDirListBoxItem::KDirListBoxItem(const KFileInfo *i)
 	locked_folder = new QPixmap(KApplication::kde_icondir() + 
 				    "/mini/lockedfolder.xpm");
     
-    pm = (i->isReadable()) ? folder_pixmap : locked_folder;
+    if (!file_pixmap)
+	file_pixmap = new QPixmap(KApplication::kde_icondir() +
+				  "/mini/mini-ball.xpm");
+    if (!locked_file)
+	locked_file = new QPixmap(KApplication::kde_icondir() +
+				  "/mini/mini-rball.xpm");
+    
+    if (i->isDir())
+      pm = (i->isReadable()) ? folder_pixmap : locked_folder;
+    else
+      pm = (i->isReadable()) ? file_pixmap : locked_file;
+
     italic = FALSE;
     setText(i->fileName());
 }
@@ -120,17 +136,31 @@ bool KDirListBoxItem::isItalic() const {
 
 void KDirListBox::mousePressEvent ( QMouseEvent *inEvent )
 {
-    if ( useSingle() && inEvent->button() == LeftButton ) {
-	int newItem = this->findItem(inEvent->pos().y());
-	if ( newItem != -1 )
-	    select(newItem);
-    }
+    int index = this->findItem(inEvent->pos().y());
+    if (index == -1 || inEvent->button() != LeftButton)
+        return;
+  
+    if ( useSingle() && isDir(index)) 
+        select( index );
+    else
+        highlight( index );
+  
+}
+
+KDirListBox::KDirListBox( bool accepts, bool s, QDir::SortSpec sorting,
+                          QWidget * parent , const char * name ) 
+    : QListBox(parent, name) , KFileInfoContents(s,sorting)
+{
+    _acceptFiles = accepts;
+    setSortMode(Increasing);
+    setSorting(QDir::Name);
 }
 
 KDirListBox::KDirListBox( bool s, QDir::SortSpec sorting,
                           QWidget * parent , const char * name ) 
     : QListBox(parent, name) , KFileInfoContents(s,sorting)
 {
+   _acceptFiles = false;
     setSortMode(Increasing);
     setSorting(QDir::Name);
 }

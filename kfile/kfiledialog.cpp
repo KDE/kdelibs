@@ -312,10 +312,9 @@ void KFileBaseDialog::init()
     }
     adjustSize();
     int w1 = minimumSize().width();
-    int w2 = toolbar->sizeHint().width();
+    int w2 = toolbar->sizeHint().width() + 10;
     if (w1 < w2)
       setMinimumWidth(w2);
-    debug("size %d %d", toolbar->sizeHint().width(), minimumSize().width());
     resize(w, h);
 }
 
@@ -482,6 +481,7 @@ QString KFileBaseDialog::dirPath()
 
 void KFileBaseDialog::setDir(const char *_pathstr, bool clearforward)
 {
+    filename_ = 0;
     QString pathstr = _pathstr;
     
     if (pathstr.right(1)[0] != '/')
