@@ -264,6 +264,16 @@ public:
    */
   static BrowserExtension *childObject( QObject *obj );
 
+  /**
+   * Returns the Entries in History (updated by Konq)
+   */
+  int getHistoryLength() const;
+  
+  /**
+   * Sets the Entries in History (set by Konq)
+   */
+  void setHistoryLength( int length );
+
 // KDE invents support for public signals...
 #undef signals
 #define signals public

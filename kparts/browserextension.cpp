@@ -242,6 +242,7 @@ class BrowserExtensionPrivate
 public:
   BrowserExtensionPrivate()
   {
+    m_historyLength = 0;
   }
   ~BrowserExtensionPrivate()
   {
@@ -250,6 +251,7 @@ public:
   KURL m_delayedURL;
   KParts::URLArgs m_delayedArgs;
   bool m_urlDropHandlingEnabled;
+  int m_historyLength;
   KBitArray m_actionStatus;
 };
 
@@ -343,6 +345,16 @@ bool BrowserExtension::isURLDropHandlingEnabled() const
 void BrowserExtension::setURLDropHandlingEnabled( bool enable )
 {
     d->m_urlDropHandlingEnabled = enable;
+}
+
+void BrowserExtension::setHistoryLength( int length )
+{
+    d->m_historyLength = length;
+}
+
+int BrowserExtension::getHistoryLength() const
+{
+    return d->m_historyLength;
 }
 
 void BrowserExtension::slotCompleted()
