@@ -34,10 +34,11 @@
 #include <kdebug.h>
 #include <kckey.h>
 
+// For the X11-related static functions
 #define XK_MISCELLANY
 #define XK_XKB_KEYS
-#include <X11/keysymdef.h> // For the X11-related static functions
 #include <qt_x11.h>
+#include <X11/keysymdef.h>
 #include <ctype.h>
 
 void KKeyEntry::operator=(const KKeyEntry& e) {
@@ -638,11 +639,11 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	uint	keyCombQt = 0;
 	QString sKeySym;
 
-	QString t;
-	for( int i = 0; i < keyStr.length(); i++ ) {
-		t += QString( "[%1]" ).arg( keyStr[i] );
-	}
-	kdDebug() << t << endl;
+	//QString t;
+	//for( int i = 0; i < keyStr.length(); i++ ) {
+	//	t += QString( "[%1]" ).arg( keyStr[i] );
+	//}
+	//kdDebug() << t << endl;
 
 	if( keyStr.isNull() || keyStr.isEmpty() )
 		return 0;
@@ -732,7 +733,7 @@ uint KAccel::stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint 
 	if( pKeyCodeX )	*pKeyCodeX = keyCodeX;
 	if( pKeyModX )	*pKeyModX = keyModX;
 
-	kdDebug() << "KAccel::stringToKey( " << keyStr << " ) = " << QString().setNum( keyCombQt, 16 ) << endl;
+	//kdDebug(125) << "KAccel::stringToKey( " << keyStr << " ) = " << QString().setNum( keyCombQt, 16 ) << endl;
 
 	return keyCombQt;
 }
@@ -784,7 +785,7 @@ void KAccel::keySymXMods( uint keySym, uint *pKeyModQt, uint *pKeyModX )
 		keyModX |= ShiftMask;
 	}
 	if( i == 2 || i == 3 ) {
-		keyModX |= g_aModKeys[ModAltGrIndex].keyModMaskX;
+		keyModX |= g_aModKeys[ModModeSwitchIndex].keyModMaskX;
 	}
 
 	if( pKeyModQt )	*pKeyModQt |= keyModQt;
@@ -903,17 +904,28 @@ void KAccel::keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySy
 	if( pKeyModX )  *pKeyModX = keyModX;
 }
 
-QString KAccel::keyXToString( unsigned char keyCodeX, uint keyModX, bool bi18n )
+QString KAccel::keyCodeXToString( unsigned char keyCodeX, uint keyModX, bool bi18n )
 {
-	uint keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, (keyModX & ShiftMask) );
+	int index = ((keyModX & ShiftMask) ? 1 : 0) + ((keyModX & Mod3Mask) ? 2 : 0);
+	uint keySymX = XKeycodeToKeysym( qt_xdisplay(), keyCodeX, index );
 	uint keyCombQt = keyXToKeyQt( keySymX, keyModX );
 	return keyToString( keyCombQt, bi18n );
 }
 
-QString KAccel::keyXToString( uint keySymX, uint keyModX, bool bi18n )
+QString KAccel::keySymXToString( uint keySymX, uint keyModX, bool bi18n )
 {
 	uint keyCombQt = keyXToKeyQt( keySymX, keyModX );
 	return keyToString( keyCombQt, bi18n );
+}
+
+uint KAccel::accelModMaskQt()
+{
+	return Qt::SHIFT | Qt::CTRL | Qt::ALT | (Qt::ALT<<1);
+}
+
+uint KAccel::accelModMaskX()
+{
+	return ShiftMask | ControlMask | Mod1Mask | Mod4Mask;
 }
 
 #include "kaccel.moc"

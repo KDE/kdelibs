@@ -525,7 +525,7 @@ class KAccel : public QAccel
 	// X11-Related Functions
 	enum ModKeysIndex {
 		ModShiftIndex, ModCapsLockIndex, ModCtrlIndex, ModAltIndex,
-		ModNumLockIndex, ModAltGrIndex, ModMetaIndex, ModScrollLockIndex,
+		ModNumLockIndex, ModModeSwitchIndex, ModMetaIndex, ModScrollLockIndex,
 		MOD_KEYS
 	};
 	static uint stringToKey( const QString& keyStr, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
@@ -534,8 +534,10 @@ class KAccel : public QAccel
 	static void keySymXMods( uint keySym, uint *pKeyModQt, uint *pKeyModX );
 	static uint keyXToKeyQt( uint keySymX, uint keyModX );
 	static void keyQtToKeyX( uint keyCombQt, unsigned char *pKeyCodeX, uint *pKeySymX, uint *pKeyModX );
-	static QString keyXToString( unsigned char keyCodeX, uint keyModX, bool bi18n );
-	static QString keyXToString( uint keySymX, uint keyModX, bool bi18n );
+	static QString keyCodeXToString( unsigned char keyCodeX, uint keyModX, bool bi18n );
+	static QString keySymXToString( uint keySymX, uint keyModX, bool bi18n );
+	static uint accelModMaskQt();
+	static uint accelModMaskX();
 
 signals:
 	void keycodeChanged();

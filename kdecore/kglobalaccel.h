@@ -292,7 +292,13 @@ protected:
 	bool do_not_grab;
 	KGlobalAccelPrivate* d;
 
- protected:
+public:
+	// Setting this to false shuts off processing of KeyPress events in
+	//  x11EventFilter(). It will still be called, but won't act on them.
+	// This is a more effecient means for briefly suspending processing
+	//  than setEnabled(false) ... setEnabled(true).
+	static void setKeyEventsEnabled( bool enabled );
+	static bool areKeyEventsEnabled();
 };
 
 #endif // _KGLOBALACCEL_H_
