@@ -137,9 +137,8 @@ public:
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
     bool containsWidget() const { return m_containsWidget; }
-
-    RenderRoot *root() const { return m_root; }
-
+    RenderRoot* root() const;
+    
     /**
      * returns the object containing this one. can be different from parent for
      * positioned elements
@@ -460,7 +459,6 @@ private:
     RenderObject *m_last;
 
     friend class RenderRoot;
-    RenderRoot *m_root;
 
     CachedImage *m_bgImage;
 
@@ -483,12 +481,10 @@ private:
 };
 
 
-    enum VerticalPositionHint {
-        PositionTop = -1,
-        PositionBottom = -2
-    };
-
-
+enum VerticalPositionHint {
+    PositionTop = -1,
+    PositionBottom = -2
+};
 
 }; //namespace
 #endif

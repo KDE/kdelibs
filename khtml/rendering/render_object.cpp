@@ -107,7 +107,6 @@ RenderObject::RenderObject()
     m_next = 0;
     m_first = 0;
     m_last = 0;
-    m_root=0;
 
     m_floating = false;
     m_positioned = false;
@@ -159,8 +158,6 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
     kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << ", "
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
-
-    newChild->m_root = m_root;
 
     if(parsing())
         newChild->setParsing();
@@ -809,6 +806,15 @@ int RenderObject::paddingRight() const
     if (style()->paddingRight().isPercent())
         cw = containingBlock()->contentWidth();
     return m_style->paddingRight().minWidth(cw);
+}
+
+RenderRoot* RenderObject::root() const
+{
+    RenderObject* o = const_cast<RenderObject*>( this );
+    while ( o->parent() ) o = o->parent();
+
+    assert( o->isRoot() );
+    return static_cast<RenderRoot*>( o );
 }
 
 RenderObject *RenderObject::container() const
