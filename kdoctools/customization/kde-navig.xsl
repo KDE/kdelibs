@@ -8,17 +8,18 @@
   <xsl:variable name="up" select="parent::*"/>
 
   <xsl:if test="$suppress.navigation = '0'">
-      <div id="headline"
-           style="position : absolute;
-                  height : 85px;
-                  z-index : 100;
-                  background : transparent;
-                  text-align : center;
-                  width : 100%;
-                  top : 0;
-                  left : 0;
-                  width : 100%;
-                  color : #000000;">
+    <div id="headline"
+         style="position : absolute;
+                height : 85px;
+                z-index : 100;
+                background : transparent;
+                text-align : center;
+		text-transform: smallcaps;
+                width : 100%;
+                top : 0px;
+                left : 0px;
+                width : 100%;
+                color : #000000;">
         <h1><xsl:apply-templates select="/" mode="title.ref"/></h1>
        </div>
 
@@ -28,27 +29,27 @@
   height : 124px;
   background-image : url('common/doctop2.png');
   z-index : 5;
-  left : 0;
-  top : 0;
-  padding : 0;">
+  left : 0px;
+  top : 0px;
+  padding : 0px;">
 
 <div id="bulb1"
- style="padding : 0;
+ style="padding : 0px;
   position : absolute;
   z-index : 15;
   width : 150px;
   height : 85px;
-  top : 0;
-  left : 0;
+  top : 0px;
+  left : 0px;
   background : url('common/doctop1.png') repeat;"></div>
 
 <div id="gradient"
   style="  position : absolute;
   width : 275px;
   height : 85px;
-  z-index : 19;
-  top : 0;
-  padding : 0;
+  z-index : 19px;
+  top : 0px;
+  padding : 0px;
   left : 150px;
   background-image : url('common/doctop1a.png');
   background-repeat : no-repeat;
@@ -60,7 +61,7 @@ style="position : absolute;
   width : 100%;
   height : 25px;
   top : 85px;
-  left : 0;
+  left : 0px;
   background-image : url('common/doctop1b.png');
   background-repeat : no-repeat;
   background-color : transparent;
@@ -124,10 +125,11 @@ style="position : absolute;
     <div id="bottom-nav"
          style="position : relative;
                 width : 100%;
-                height : 59px;
+                height : 185px;
                 left : 0px;
 		right : 0px;
-                top : 100px;
+                top : 0px;
+		margin-top: 100px;
                 background-image : url('common/bottom1.png');
                 background-repeat : repeat-x;
                 background-color : transparent;
@@ -218,7 +220,6 @@ style="position : absolute;
             <xsl:apply-templates select="$next" mode="title.ref"/>
           </td>
         </tr>
-
       </table>
     </div>
     </div>
