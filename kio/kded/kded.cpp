@@ -267,14 +267,14 @@ int main(int argc, char *argv[])
 
      KUniqueApplication k( false, false ); // No styles, no GUI
 
-     if (!needUpdate)
-     {
-        // During startup kdesktop waits for KDED to finish.
-        // Send a databaseChanged signal even if the database hasn't
-        // changed.
-        QByteArray data;
-        kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data );
-     }
+     // During startup kdesktop waits for KDED to finish.
+     // Send a databaseChanged signal even if the database hasn't
+     // changed.
+     // If the database changed, kbuildsycoca's signal didn't go anywhere
+     // anyway, because it was too early, so let's send this signal
+     // unconditionnally (David)
+     QByteArray data;
+     kapp->dcopClient()->send( "*", "ksycoca", "databaseChanged()", data );
 
      return k.exec(); // keep running
 }
