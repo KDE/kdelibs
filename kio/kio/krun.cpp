@@ -515,7 +515,7 @@ static pid_t runCommandInternal( KProcess* proc, const KService* service, const 
       data.setDesktop( KWin::currentDesktop());
       KStartupInfo::sendStartup( id, data );
   }
-  pid_t pid = KProcessRunner::run( proc, bin, id );
+  pid_t pid = KProcessRunner::run( proc, binName, id );
   if( startup_notify && pid )
   {
       KStartupInfoData data;
