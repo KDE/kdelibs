@@ -587,9 +587,10 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
   if ( !_url.isLocalFile() )
     return result;
 
-  KSimpleConfig cfg( _url.path( 1 ) + _url.filename(), true );
+  KSimpleConfig cfg( _url.path(), true );
   cfg.setDesktopGroup();
   QString type = cfg.readEntry( "Type" );
+
   if ( type.isEmpty() )
     return result;
 
@@ -621,11 +622,6 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::builtinServices( con
       }
     }
   }
-
-  /* Service props;
-  props.m_strName = i18n("Properties");
-  props.m_type = ST_PROPERTIES;
-  _lst.push_back( props );   */
 
   return result;
 }

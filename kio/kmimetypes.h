@@ -214,7 +214,15 @@ public:
   virtual QString comment( const QString& _url, bool _is_local ) const;
   virtual QString comment( const KURL& _url, bool _is_local ) const;
 
+  /**
+   * @return a list of services for the given .desktop file that are handled
+   * by kio itself. Namely mount/unmount for FSDevice files.
+   */
   static QValueList<Service> builtinServices( const KURL& _url );
+  /**
+   * @return a list of services defined by the user as possible actions
+   * on the given .desktop file.
+   */
   static QValueList<Service> userDefinedServices( const KURL& _url );
 
   /** 
