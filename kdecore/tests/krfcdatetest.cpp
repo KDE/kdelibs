@@ -53,6 +53,16 @@ int main(int argc, char *argv[])
   a = KRFCDate::parseDate("Wed, 05-November-1994 13:15:30 GMT");
   check( "Wed, 05-November-1994 13:15:30 GMT", a, b);
 
+  b = KRFCDate::parseDateISO8601("1994-01-01T12:00:00");
+  a = KRFCDate::parseDateISO8601("1994");
+  check( "1994", a, b );
+
+  a = KRFCDate::parseDateISO8601("1994-01");
+  check( "1994-01", a, b );
+
+  a = KRFCDate::parseDateISO8601("1994-01-01");
+  check( "1994-01-01", a, b );
+
   printf("\nTest OK !\n");
 }
 
