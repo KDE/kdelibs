@@ -343,7 +343,10 @@ static struct lt_user_dlloader sys_dl = {
 	   0,
 #  endif
 	   sys_dl_open, sys_dl_close, sys_dl_sym, 0, 0 };
-#endif
+
+#else
+int lt_dlopen_flag = 0;
+#endif /* HAVE_LIBDL */
 
 #if HAVE_SHL_LOAD
 
