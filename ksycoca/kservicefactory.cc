@@ -44,48 +44,14 @@ KServiceFactory::~KServiceFactory()
 {
 }
 
-/*
-KService* KServiceFactory::createEntry( const QString& _file )
+KService* KServiceFactory::createEntry( const QString& file )
 {
-  Q_UINT32 u;
-  _str >> u;
+  // Just a backup file ?
+  if ( file.right(1) == "~" || file.right(4) == ".bak" || ( file[0] == '%' && file.right(1) == "%" ) )
+      return 0;
 
-  if ( u != TC_KService )
-  {
-    kdebug( KDEBUG_WARN, 7012, "Invalid Service : %s", _file.ascii() );
-    return 0;
-  }
-
-  KService *s = new KService( _str );
-  if ( !s->isValid() )
-  {
-    kdebug( KDEBUG_WARN, 7012, "Invalid Service : %s", _file.ascii() );
-    delete s;
-    return 0;
-  }
-
-  KServiceEntry* e = new KServiceEntry( _reg, _file, s, this );
-
-  e->load( _str );
-
-  return e;
+  return new KService( file );
 }
-
-KRegEntry* KServiceFactory::create( KRegistry* _reg, const QString& _file, KSimpleConfig &_cfg )
-{
-  KService *service = new KService( _cfg );
-  if ( !service->isValid() )
-  {
-    kdebug( KDEBUG_WARN, 7012, "Invalid Service : %s", _file.ascii() );
-    delete service;
-    return 0;
-  }
-
-  KServiceEntry* e = new KServiceEntry( _reg, _file, service, this );
-
-  return e;
-}
-*/
 
 // Static function!
 KService *

@@ -19,34 +19,41 @@
 #ifndef __ksycoca_h__
 #define __ksycoca_h__ "$Id$"
 
-#include <ksycocatype.h>
+#include "ksycocatype.h"
 
 class QDataStream;
 class KSycocaFactory;
 class KSycocaFactoryList;
 
+/**
+ * Read-only SYstem COnfiguration CAche
+ */
 class KSycoca
 {
-public:
+protected:
    /**
-    * @param buildDatabase create the database if true, otherwise open readonly
+    * @internal
     */
-   KSycoca(bool buildDatabase=false);
+   KSycoca( bool buildDatabase );
+
+public:
+
+   KSycoca();
 
    virtual ~KSycoca();
 
-   void addFactory( KSycocaFactory *);
-   void save();
-
    static QDataStream *findEntry(int offset, KSycocaType &type);
+   /**
+    * @internal - called by factories in read-only mode
+    */
    static QDataStream *registerFactory( KSycocaFactoryId id);
 
 protected:
    QDataStream *_findEntry(int offset, KSycocaType &type);
    QDataStream *_registerFactory( KSycocaFactoryId id);
 
-private:
-   KSycocaFactoryList *factories;
+protected:
+   KSycocaFactoryList *m_lstFactories;
    QDataStream *str;
    static KSycoca *self;
 };

@@ -1,10 +1,11 @@
 
-#include "ksycoca.h"
+#include "kbuildsycoca.h"
 #include "kservicetypefactory.h"
 #include "kservicefactory.h"
 
 #include <qfile.h>
 #include <qdatastream.h>
+
 
 main(int argc, char *argv[])
 {
@@ -18,7 +19,7 @@ main(int argc, char *argv[])
 
    if (build)
    {
-     KSycoca *sycoca= new KSycoca(true); // Build data base
+     KBuildSycoca *sycoca= new KBuildSycoca(); // Build data base
      
      KServiceTypeFactory *factory = new KServiceTypeFactory(true); // Build data base
      sycoca->addFactory(factory);

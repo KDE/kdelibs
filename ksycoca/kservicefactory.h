@@ -53,6 +53,11 @@ protected:
   KService *_findServiceByName( const QString &_name);
   KService *createService(int offset);
 
+  /**
+   * Construct a KService from a config file.
+   */
+  KService *createEntry(const QString &file);
+
 private:
   static KServiceFactory *self;
 };

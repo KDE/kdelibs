@@ -26,31 +26,32 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 
-KSycoca::KSycoca(bool buildDatabase)
-   : factories(0)
+// Read-only constructor
+KSycoca::KSycoca()
 {
    QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
-   if (!buildDatabase)
+   QFile *database = new QFile(path);
+   if (!database->open( IO_ReadOnly ))
    {
-      QFile *database = new QFile(path);
-      if (!database->open( IO_ReadOnly ))
-      {
-         fprintf(stderr, "Error can't open database!\n");
-         exit(-1);
-      }
-      str = new QDataStream(database);
+     fprintf(stderr, "Error can't open database!\n");
+     exit(-1);
    }
-   else
+   str = new QDataStream(database);
+   m_lstFactories = new KSycocaFactoryList();
+}
+
+// Read-write constructor - only for KBuildSycoca
+KSycoca::KSycoca( bool /* dummy */ )
+{
+   QString path = KGlobal::dirs()->saveLocation("config") + "ksycoca";
+   QFile *database = new QFile(path);
+   if (!database->open( IO_ReadWrite ))
    {
-      QFile *database = new QFile(path);
-      if (!database->open( IO_ReadWrite ))
-      {
-         fprintf(stderr, "Error can't open database!\n");
-         exit(-1);
-      }
-      str = new QDataStream(database);
-      factories = new KSycocaFactoryList();
+      fprintf(stderr, "Error can't open database!\n");
+      exit(-1);
    }
+   str = new QDataStream(database);
+   m_lstFactories = new KSycocaFactoryList();
 }
 
 KSycoca::~KSycoca()
@@ -60,64 +61,12 @@ KSycoca::~KSycoca()
       device = str->device();
    if (device)
       device->close();
-
+      
    delete str;
    delete device;
+   delete m_lstFactories;
 }
 
-void
-KSycoca::addFactory( KSycocaFactory *factory)
-{
-   factories->append(factory);
-}
-
-void 
-KSycoca::save()
-{
-   // Write header (#pass 1)
-   str->device()->at(0);
-
-   for(KSycocaFactory *factory = factories->first();
-       factory;
-       factory = factories->next())
-   {
-      Q_INT32 aId;
-      Q_INT32 aOffset;
-      aId = factory->factoryId();
-      aOffset = factory->offset();
-      (*str) << aId;
-      (*str) << aOffset;
-   }
-   (*str) << (Q_INT32) 0; // No more factories.
-
-   // Write factory data....
-   for(KSycocaFactory *factory = factories->first();
-       factory;
-       factory = factories->next())
-   {
-      factory->save(*str);
-   }
-   int endOfData = str->device()->at();
-
-   // Write header (#pass 2)
-   str->device()->at(0);
-
-   for(KSycocaFactory *factory = factories->first();
-       factory;
-       factory = factories->next())
-   {
-      Q_INT32 aId;
-      Q_INT32 aOffset;
-      aId = factory->factoryId();
-      aOffset = factory->offset();
-      (*str) << aId;
-      (*str) << aOffset;
-   }
-   (*str) << (Q_INT32) 0; // No more factories.
-
-   // Jump to end of database
-   str->device()->at(endOfData);
-}
 
 QDataStream *
 KSycoca::findEntry(int offset, KSycocaType &type)

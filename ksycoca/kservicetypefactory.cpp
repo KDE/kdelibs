@@ -21,12 +21,12 @@
 #include "ksycocatype.h"
 #include "ksycocadict.h"
 #include "kservicetype.h"
+#include "kmimetype.h"
 
+#include <klocale.h>
 #include <kglobal.h>
 #include <kstddirs.h>
-
-// DEBUG
-#include <stdio.h>
+#include <kmessagebox.h>
 #include <kdebug.h>
 
 KServiceTypeFactory::KServiceTypeFactory(bool buildDatabase)
@@ -68,17 +68,15 @@ KServiceTypeFactory::createEntry(const QString &file)
 */
   
   KServiceType* e;
-#if 0
   if ( mime == "inode/directory" )
-    e = new KFolderType( _cfg );
+    e = new KFolderType( cfg );
   else if ( mime == "application/x-desktop" )
-    e = new KDEDesktopMimeType( _cfg );
+    e = new KDEDesktopMimeType( cfg );
   else if ( mime == "application/x-executable" || mime == "application/x-shellscript" )
-    e = new KExecMimeType( _cfg );
+    e = new KExecMimeType( cfg );
   else if ( !mime.isEmpty() )
-    e = new KMimeType( _cfg );
+    e = new KMimeType( cfg );
   else
-#endif
     e = new KServiceType( cfg );
 
   if ( !e->isValid() )
@@ -137,12 +135,13 @@ KServiceTypeFactory::createServiceType(int offset)
         break;
 
      default:
-fprintf(stderr, "KServiceTypeFactory: unexpected object entry in KSycoca database (type = %d)\n", type);
+        QString tmp = i18n("KServiceFactory: unexpected object entry in KSycoca database (type = %1)\n");
+        KMessageBox::error( 0L, tmp.arg((int)type) );
         break;
    } 
    if (!newEntry->isValid())
    {
-fprintf(stderr, "KServiceTypeFactory: corrupt object in KSycoca database!\n");
+      KMessageBox::error( 0L, i18n("KServiceFactory: corrupt object in KSycoca database!\n") );
       delete newEntry;
       newEntry = 0;
    }   
