@@ -2884,6 +2884,8 @@ bool HTTPProtocol::readHeader()
      m_strMimeType = QString::fromLatin1("application/x-zip");
   else if (m_strMimeType == "image/x-png")
      m_strMimeType = QString::fromLatin1("image/png");
+  else if (m_strMimeType == "image/bmp")
+     m_strMimeType = QString::fromLatin1("image/x-bmp");
   else if (m_strMimeType == "audio/mpeg" || m_strMimeType == "audio/x-mpeg" || m_strMimeType == "audio/mp3")
      m_strMimeType = QString::fromLatin1("audio/x-mp3");
   else if (m_strMimeType == "audio/microsoft-wave")
