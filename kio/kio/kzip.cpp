@@ -387,6 +387,10 @@ bool KZip::openArchive( int mode )
     // KArchive::open() opened the underlying device already.
     QIODevice* dev = device();
 
+    if (!dev) {
+        return false;
+    }
+
     uint offset = 0; // holds offset, where we read
     int n;
 
