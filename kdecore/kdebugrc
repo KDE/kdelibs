@@ -64,6 +64,10 @@ InfoOutput=4
 [1002]
 InfoOutput=4
 
+# KDesktop icons
+[1214]
+InfoOutput=4
+
 # KMail
 [5006]
 InfoOutput=2
@@ -75,7 +79,6 @@ InfoOutput=4
 # kbzip2filter's debug info off
 [7118]
 InfoOutput=4
-WarnOutput=1
 
 # kio_nntp debug info off
 [7114]
