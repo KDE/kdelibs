@@ -47,6 +47,7 @@ KSimpleConfig::KSimpleConfig(const QString &fileName, bool bReadOnly)
   } else {
      backEnd->changeFileName(fileName, "config", false);
   }
+  setReadOnly( bReadOnly );
   reparseConfiguration();
 }
 
