@@ -1,11 +1,20 @@
-/*
-  kmd5test.cc - a test suite for KDE's implementation of MD2, MD4 and MD5
-  Copyright (C) 2000 Dawit Alemayehu <adawit@kde.org>
+/* This file is part of the KDE libraries
+    Copyright (C) 2000,2001 Dawit Alemayehu <adawit@kde.org>
 
-  This work is completely based on the work done by
-  Copyright (C) 1995 by Mordechai T. Abzug and
-  Copyright (C) 1990-1992, RSA Data Security, Inc. Created 1990. All rights reserved.
-  See the "License" file for details.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 */
 
 #include <config.h>
@@ -17,6 +26,7 @@
 #include <sys/stat.h>
 
 #include <qbuffer.h>
+#include <qfile.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -162,9 +172,7 @@ void testCodec( const char* msg, Codec type, bool isFile )
             out = KCodecs::base64Encode(output);
             break;
           case Base64Decode:
-            kdDebug() << "Decoding base64 data..." << endl;
             out = KCodecs::base64Decode(output);
-            kdDebug() << "Base64 decoding completed!" << endl;
             break;
           case UUEncode:
             out = KCodecs::uuencode(output);
@@ -191,13 +199,15 @@ void testCodec( const char* msg, Codec type, bool isFile )
 void MD5_timeTrial ()
 {
     KMD5 context;
-    time_t endTime, startTime;
+
+    time_t endTime;
+    time_t startTime;
+
     Q_UINT8 block[TEST_BLOCK_LEN];
     Q_UINT32 i;
 
-    kdDebug() << endl << "Timing test. Digesting "
-              << TEST_BLOCK_COUNT << " blocks of "
-              << TEST_BLOCK_LEN << "-byte..." << endl;
+    kdDebug() << endl << "Timing test. Digesting " << TEST_BLOCK_COUNT
+              << " blocks of " << TEST_BLOCK_LEN << "-byte..." << endl;
 
     // Initialize block
     for (i = 0; i < TEST_BLOCK_LEN; i++)
@@ -210,14 +220,16 @@ void MD5_timeTrial ()
     for (i = 0; i < TEST_BLOCK_COUNT; i++)
         context.update (block, TEST_BLOCK_LEN);
 
-    context.finalize();
-
     // Stop timer
     time (&endTime);
 
     long duration = endTime - startTime;
-    long speed = duration ? (TEST_BLOCK_LEN * (TEST_BLOCK_COUNT/duration)) : TEST_BLOCK_COUNT;
-    kdDebug() << endl << "Result: " << endl
+    long speed;
+    if (duration)
+      speed = (TEST_BLOCK_LEN * (TEST_BLOCK_COUNT/duration));
+    else
+      speed = TEST_BLOCK_COUNT;
+    kdDebug() << "Result: " << endl
               << "  Digest = " << context.hexDigest() << endl
               << "  Time   = "<< duration << " seconds" << endl
               << "  Speed  = " << speed << " bytes/second" << endl << endl;
@@ -227,7 +239,7 @@ void MD5_timeTrial ()
 
 void MD5_testSuite ()
 {
-  kdDebug() << "MD5 test preset test suite as defined in RFC 1321:" << endl;
+  kdDebug() << "MD5 preset test suite as defined in RFC 1321:" << endl;
   MD5_string ( "", "d41d8cd98f00b204e9800998ecf8427e" );
   MD5_string ( "a", "0cc175b9c0f1b6a831c399e269772661" );
   MD5_string ( "abc", "900150983cd24fb0d6963f7d28e17f72" );
@@ -241,59 +253,70 @@ void MD5_testSuite ()
 
 void MD5_verify( const char *input, const char *digest, bool isFile )
 {
-    KMD5 context;
-    bool result;
-    if ( !isFile )
-    {
-        result = context.verify( QCString(input), digest );
-        kdDebug() << endl << "Input string: " << input << endl;
-    }
-    else
-    {
-        FILE* f = fopen( input, "r" );
-        if ( !f )
-            kdFatal() << "Cannot open file for reading!"  << endl;
-        result = context.verify ( f, digest );
-        kdDebug() << endl << "Input filename: " << input << endl;
-    }
-    kdDebug() << "Calculated Digest = " <<  context.hexDigest() << endl
-              << "Supplied Digest   = " << digest << endl
-              << "Verified As: " << (result ? "A MATCH!!":"NOT A MATCH!!")
-              << endl << endl;
+  bool result;
+  KMD5 context;
+
+  if ( !isFile )
+  {
+    context.update (QCString(input));
+    result = context.verify( digest );
+    kdDebug() << "Input string: " << input << endl;
+  }
+  else
+  {
+    QFile f (input);
+
+    if (!f.open (IO_ReadOnly))
+      kdFatal() << "Cannot open file for reading!"  << endl;
+
+    result = context.verify (digest);
+    f.close ();
+
+    kdDebug() << "Input filename: " << input << endl;
+  }
+
+  kdDebug() << "Calculated Digest = " <<  context.hexDigest() << endl
+            << "Supplied Digest   = " << digest << endl
+            << "Verified As: " << (result ? "A MATCH":"NOT A MATCH")
+            << endl;
 }
 
 void MD5_file (const char *filename, bool rawOutput )
 {
-    FILE* f = fopen( filename, "r" );
+  QFile f (QFile::encodeName(filename));
 
-    if (!f)
-    {
-        kdError() << "(" << filename << ") cannot be opened!" << endl;
-    }
-    else
-    {
-       KMD5 context( f );
-       if ( rawOutput )
-          kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.rawDigest() << endl;
-       else
-          kdDebug() <<  "MD5 ("  << filename <<  ") = "  <<  context.hexDigest() << endl;
-    }
+  if (!f.open(IO_ReadOnly))
+  {
+    kdError() << "(" << filename << ") cannot be opened!" << endl;
+    return;
+  }
+
+  KMD5 context;
+  context.update( f );
+
+  if ( rawOutput )
+    kdDebug() << "MD5 (" << filename << ") = " << context.rawDigest() << endl;
+  else
+    kdDebug() << "MD5 (" << filename << ") = " << context.hexDigest() << endl;
+
+  f.close ();
 }
 
 void MD5_string (const char *input, const char* expected, bool rawOutput )
 {
   KMD5 context;
-  QCString data = input;
+  context.update (QCString(input));
 
-  context.update ( data );
-  context.finalize ();
+  kdDebug() << "Checking MD5 for: " << input << endl;
+
   if ( rawOutput )
-    kdDebug() << endl << "Result: MD5 (\"" << input << "\") = " << context.rawDigest() << endl;
+    kdDebug() << "Result: " << context.rawDigest() << endl;
   else
-    kdDebug() << endl << "Result: MD5 (\"" << input << "\") = " << context.hexDigest() << endl;
+    kdDebug() << "Result: " << context.hexDigest() << endl;
+
   if ( expected )
-    kdDebug() << "Expected: MD5 (\"" << input << "\") = " << expected << endl
-              << "Result is a match: " << context.verify( expected ) << endl << endl;
+    kdDebug() << "Expected: " << expected << endl
+              << "Status: " << context.verify (expected) << endl;
 }
 
 int main (int argc, char *argv[])
@@ -324,6 +347,7 @@ int main (int argc, char *argv[])
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();
+
     KApplication app;
 
     if (!count)
