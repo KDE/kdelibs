@@ -1023,7 +1023,7 @@ void KHTMLWidget::paint( HTMLChain *_chain, int x, int y, int w, int h )
 	drawBackground( x, y, w, h );
 	bDrawBackground = db;
 
-	_chain->current()->print( painter, _chain, x - x_offset - leftBorder,
+	_chain->current()->print( painter, _chain, x + x_offset - leftBorder,
 		y + y_offset - topBorder, w, h, tx, ty );
     
 	if ( newPainter )
@@ -1263,7 +1263,18 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
         actualURL = _url;
         reference = actualURL.reference();
         setBaseURL( _url);
+
+        // Set a default title
+        KURL title(_url);
+        title.setReference(0);
+        title.setSearchPart(0);
+        emit setTitle( title.url().data() );
     }
+    else
+    {
+        emit setTitle( "* Unknown *" );
+    }
+
 
     
     if ( painter )
