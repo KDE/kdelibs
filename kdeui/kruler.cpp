@@ -21,6 +21,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2000/09/12 17:48:02  mueller
+ * avoid compiler warning
+ *
  * Revision 1.13  2000/06/05 21:31:45  gehrmab
  * QFrame's 4th argument is no more
  *
@@ -656,9 +659,18 @@ KRuler::drawContents(QPainter *p)
 
   int value  = range.value(),
     minval = range.minValue(),
+    maxval;
+    if (dir == Horizontal) {
+    maxval = range.maxValue()
+    + offset_
+    - (d->lengthFix?(height()-d->endOffset_length):d->endOffset_length);
+    }
+    else
+    {
     maxval = range.maxValue()
     + offset_
     - (d->lengthFix?(width()-d->endOffset_length):d->endOffset_length);
+    }
     //ioffsetval = value-offset;
     //    pixelpm = (int)ppm;
   //    left  = clip.left(),
