@@ -12,6 +12,7 @@
 <!ENTITY Ctrl        "<keycap>Ctrl</keycap>">
 <!ENTITY Esc         "<keycap>Esc</keycap>">
 <!ENTITY Enter       "<keycap>Enter</keycap>">
+<!ENTITY Tab         "<keycap>Tab</keycap>">
 
 <!ENTITY HVN         "hiire <mousebutton>vasak</mousebutton> nupp">
 <!ENTITY HKN         "hiire <mousebutton>keskmine</mousebutton> nupp">
@@ -48,4 +49,7 @@
 <!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
 <!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
 <!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
+
+<!ENTITY FAQ    '<acronym>KKK</acronym>'>
+<!ENTITY OS     "operatsioonisüsteem"><!-- <acronym>OS</acronym>-->
 
