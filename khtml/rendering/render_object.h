@@ -404,6 +404,9 @@ public:
 
     virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
 
+    // returns the lowest position of the lowest object in that particular object.
+    // This 'height' is relative to the topleft of the margin box of the object.
+    // Implemented in RenderFlow.
     virtual int lowestPosition() const {return 0;}
 
     virtual int rightmostPosition() const {return 0;}
@@ -442,7 +445,7 @@ protected:
     short getVerticalPosition( bool firstLine ) const;
 
     virtual void removeLeftoverAnonymousBoxes();
-    
+
 private:
     RenderStyle* m_style;
     DOM::NodeImpl* m_node;
