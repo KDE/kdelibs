@@ -21,15 +21,7 @@
 #ifndef kcharselect_h
 #define kcharselect_h
 
-#include <qglobal.h>
-
-#if QT_VERSION < 300
-#include <qtableview.h>
-#else
-#include <qttableview.h>
-#define QTableView QtTableView
-#endif
-
+#include <qgridview.h>
 #include <qvbox.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
@@ -55,7 +47,7 @@ class KCharSelectPrivate;
  * @author Reginald Stadlbauer <reggie@kde.org>
  */
 
-class KCharSelectTable : public QTableView
+class KCharSelectTable : public QGridView
 {
     Q_OBJECT
 
@@ -106,7 +98,7 @@ signals:
 
 private:
     KCharSelectTablePrivate *d;
-    virtual void setFont(const QFont &f) { QTableView::setFont(f); }
+    virtual void setFont(const QFont &f) { QGridView::setFont(f); }
 };
 
 /**
