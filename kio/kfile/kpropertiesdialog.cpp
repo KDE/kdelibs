@@ -66,6 +66,7 @@ extern "C" {
 #include <qwhatsthis.h>
 #include <qtooltip.h>
 #include <qstyle.h>
+#include <qprogressbar.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -916,33 +917,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       m_sizeStopButton->setEnabled( false );
   }
 
-  if ( isLocal )
-  {
-      QString mountPoint = KIO::findPathMountPoint( properties->item()->url().path() );
-
-      if (mountPoint != "/")
-      {
-          l = new QLabel(i18n("Mounted on:"), d->m_frame );
-          grid->addWidget(l, curRow, 0);
-
-          l = new KSqueezedTextLabel( mountPoint, d->m_frame );
-          grid->addWidget( l, curRow++, 2 );
-      }
-
-      l = new QLabel(i18n("Free disk space:"), d->m_frame );
-      grid->addWidget(l, curRow, 0);
-
-      d->m_freeSpaceLabel = new QLabel( d->m_frame );
-      grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
-
-      KDiskFreeSp * job = new KDiskFreeSp;
-      connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
-					     const unsigned long&, const QString& ) ),
-               this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
-						const unsigned long&, const QString& ) ) );
-      job->readDF( mountPoint );
-  }
-
   if (!d->bMultiple && item->isLink()) {
     l = new QLabel(i18n("Points to:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
@@ -953,10 +927,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
   if (!d->bMultiple) // Dates for multiple don't make much sense...
   {
-    sep = new KSeparator( KSeparator::HLine, d->m_frame);
-    grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
-    ++curRow;
-
     QDateTime dt;
     time_t tim = item->time(KIO::UDS_CREATION_TIME);
     if ( tim )
@@ -991,6 +961,38 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
       grid->addWidget(l, curRow++, 2);
     }
   }
+
+  if ( isLocal && hasDirs )  // only for directories
+  {
+    sep = new KSeparator( KSeparator::HLine, d->m_frame);
+    grid->addMultiCellWidget(sep, curRow, curRow, 0, 2);
+    ++curRow;
+
+    QString mountPoint = KIO::findPathMountPoint( properties->item()->url().path() );
+
+    if (mountPoint != "/")
+    {
+        l = new QLabel(i18n("Mounted on:"), d->m_frame );
+        grid->addWidget(l, curRow, 0);
+
+        l = new KSqueezedTextLabel( mountPoint, d->m_frame );
+        grid->addWidget( l, curRow++, 2 );
+    }
+
+    l = new QLabel(i18n("Free disk space:"), d->m_frame );
+    grid->addWidget(l, curRow, 0);
+
+    d->m_freeSpaceLabel = new QLabel( d->m_frame );
+    grid->addWidget( d->m_freeSpaceLabel, curRow++, 2 );
+
+    KDiskFreeSp * job = new KDiskFreeSp;
+    connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
+             const unsigned long&, const QString& ) ),
+             this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
+          const unsigned long&, const QString& ) ) );
+    job->readDF( mountPoint );
+  }
+
   vbl->addStretch(1);
 }
 
@@ -2576,6 +2578,9 @@ public:
 
   QFrame *m_frame;
   QStringList mountpointlist;
+  QLabel *m_freeSpaceText;
+  QLabel *m_freeSpaceLabel;
+  QProgressBar *m_freeSpaceBar;
 };
 
 KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgPlugin( _props )
@@ -2604,7 +2609,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
      }
   }
 
-  QGridLayout *layout = new QGridLayout( d->m_frame, 0, 3, 0,
+  QGridLayout *layout = new QGridLayout( d->m_frame, 0, 2, 0,
                                         KDialog::spacingHint());
   layout->setColStretch(1, 1);
 
@@ -2626,28 +2631,50 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   layout->addWidget(readonly, 1, 1);
 
   label = new QLabel( d->m_frame );
+  label->setText( i18n("File system:") );
+  layout->addWidget(label, 2, 0);
+
+  QLabel *fileSystem = new QLabel( d->m_frame );
+  layout->addWidget(fileSystem, 2, 1);
+
+  label = new QLabel( d->m_frame );
   label->setText( devices.count()==0 ?
                       i18n("Mount point (/mnt/floppy):") : // old style
                       i18n("Mount point:")); // new style (combobox)
-  layout->addWidget(label, 2, 0);
+  layout->addWidget(label, 3, 0);
 
   mountpoint = new QLabel( d->m_frame, "LineEdit_mountpoint" );
 
-  layout->addWidget(mountpoint, 2, 1);
+  layout->addWidget(mountpoint, 3, 1);
+
+  // show disk free
+  d->m_freeSpaceText = new QLabel(i18n("Free disk space:"), d->m_frame );
+  layout->addWidget(d->m_freeSpaceText, 4, 0);
+
+  d->m_freeSpaceLabel = new QLabel( d->m_frame );
+  layout->addWidget( d->m_freeSpaceLabel, 4, 1 );
+
+  d->m_freeSpaceBar = new QProgressBar( d->m_frame, "freeSpaceBar" );
+  layout->addMultiCellWidget(d->m_freeSpaceBar, 5, 5, 0, 1);
+
+  // we show it in the slot when we know the values
+  d->m_freeSpaceText->hide();
+  d->m_freeSpaceLabel->hide();
+  d->m_freeSpaceBar->hide();
 
   KSeparator* sep = new KSeparator( KSeparator::HLine, d->m_frame);
-  layout->addMultiCellWidget(sep, 4, 4, 0, 2);
+  layout->addMultiCellWidget(sep, 6, 6, 0, 1);
 
   unmounted = new KIconButton( d->m_frame );
   int bsize = 66 + 2 * unmounted->style().pixelMetric(QStyle::PM_ButtonMargin);
   unmounted->setFixedSize(bsize, bsize);
   unmounted->setIconType(KIcon::Desktop, KIcon::Device);
-  layout->addWidget(unmounted, 5, 0);
+  layout->addWidget(unmounted, 7, 0);
 
   label = new QLabel( i18n("Unmounted Icon"),  d->m_frame );
-  layout->addWidget(label, 5, 1);
+  layout->addWidget(label, 7, 1);
 
-  layout->setRowStretch(6, 1);
+  layout->setRowStretch(8, 1);
 
   QString path( _props->kurl().path() );
 
@@ -2663,6 +2690,8 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   bool ro = config.readBoolEntry( "ReadOnly", false );
   QString unmountedStr = config.readEntry( "UnmountIcon" );
 
+  fileSystem->setText( i18n(config.readEntry("FSType").local8Bit()) );
+
   device->setEditText( deviceStr );
   if ( !deviceStr.isEmpty() ) {
     // Set default options for this device (first matching entry)
@@ -2675,7 +2704,10 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropsDlgP
   }
 
   if ( !mountPointStr.isEmpty() )
+  {
     mountpoint->setText( mountPointStr );
+    updateInfo();
+  }
 
   readonly->setChecked( ro );
 
@@ -2707,11 +2739,32 @@ KDevicePropsPlugin::~KDevicePropsPlugin()
 //   return i18n ("De&vice");
 // }
 
+void KDevicePropsPlugin::updateInfo()
+{
+  // we show it in the slot when we know the values
+  d->m_freeSpaceText->hide();
+  d->m_freeSpaceLabel->hide();
+  d->m_freeSpaceBar->hide();
+
+  if ( !mountpoint->text().isEmpty() )
+  {
+    KDiskFreeSp * job = new KDiskFreeSp;
+    connect( job, SIGNAL( foundMountPoint( const unsigned long&, const unsigned long&,
+                                           const unsigned long&, const QString& ) ),
+             this, SLOT( slotFoundMountPoint( const unsigned long&, const unsigned long&,
+                                              const unsigned long&, const QString& ) ) );
+        
+    job->readDF( mountpoint->text() );
+  }
+}
+
 void KDevicePropsPlugin::slotActivated( int index )
 {
   // Update mountpoint so that it matches the device that was selected in the combo
   device->setEditText( m_devicelist[index] );
   mountpoint->setText( d->mountpointlist[index] );
+
+  updateInfo();
 }
 
 void KDevicePropsPlugin::slotDeviceChanged()
@@ -2722,6 +2775,28 @@ void KDevicePropsPlugin::slotDeviceChanged()
     mountpoint->setText( d->mountpointlist[index] );
   else
     mountpoint->setText( QString::null );
+
+  updateInfo();
+}
+
+void KDevicePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
+                                              const unsigned long& /*kBUsed*/,
+                                              const unsigned long& kBAvail,
+                                              const QString& )
+{
+  d->m_freeSpaceText->show();
+  d->m_freeSpaceLabel->show();
+
+  int percUsed = 100 - (int)(100.0 * kBAvail / kBSize);
+
+  d->m_freeSpaceLabel->setText(
+      i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
+      .arg(KIO::convertSizeFromKB(kBAvail))
+      .arg(KIO::convertSizeFromKB(kBSize))
+      .arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
+
+  d->m_freeSpaceBar->setProgress(percUsed, 100);
+  d->m_freeSpaceBar->show();
 }
 
 bool KDevicePropsPlugin::supports( KFileItemList _items )

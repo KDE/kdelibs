@@ -697,6 +697,13 @@ public:
 private slots:
   void slotActivated( int );
   void slotDeviceChanged();
+  void slotFoundMountPoint( const unsigned long& kBSize,
+                            const unsigned long& /*kBUsed*/,
+                            const unsigned long& kBAvail,
+                            const QString& );
+
+private:
+  void updateInfo();
 
 private:
   QComboBox* device;
