@@ -18,7 +18,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #ifndef _DOM_DOMStringImpl_h_
 #define _DOM_DOMStringImpl_h_
@@ -79,6 +78,8 @@ public:
 	{ return *(s+pos); }
 
     khtml::Length toLength() const;
+
+    bool containsOnlyWhitespace() const;
 
     // ignores trailing garbage, unlike QString
     int toInt() const {

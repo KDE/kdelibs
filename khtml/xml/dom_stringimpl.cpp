@@ -1,9 +1,10 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- *           (C) 2001 Dirk Mueller ( mueller@kde.org )
+ *           (C) 2001-2003 Dirk Mueller ( mueller@kde.org )
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +21,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #include "dom_stringimpl.h"
@@ -51,6 +51,26 @@ DOMStringImpl::DOMStringImpl(const char *str)
         l = 0;
     }
 }
+
+// FIXME: should be a cached flag maybe.
+bool DOMStringImpl::containsOnlyWhitespace() const
+{
+    if (!s)
+        return true;
+
+    for (uint i = 0; i < l; i++) {
+        QChar c = s[i];
+        if (c.unicode() <= 0x7F) {
+            if (c.unicode() > ' ')
+                return false;
+        } else {
+            if (c.direction() != QChar::DirWS)
+                return false;
+        }
+    }
+    return true;
+}
+
 
 void DOMStringImpl::append(DOMStringImpl *str)
 {

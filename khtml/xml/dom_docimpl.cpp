@@ -4,6 +4,7 @@
  * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2001 Dirk Mueller (mueller@kde.org)
+ *           (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -35,6 +36,7 @@
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
 #include "ecma/kjs_proxy.h"
+#include "ecma/kjs_binding.h"
 
 #include <qptrstack.h>
 #include <qpaintdevicemetrics.h>

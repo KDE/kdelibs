@@ -1,7 +1,8 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * (C) 2001-2003 Dirk Mueller (mueller@kde.org)
  * (C) 2000 Gunnstein Lye (gunnstein@netcom.no)
  * (C) 2000 Frederik Holljen (frederik.holljen@hig.no)
  * (C) 2001 Peter Kelly (pmk@post.com)
@@ -27,6 +28,7 @@
 #include "dom2_rangeimpl.h"
 #include "dom_textimpl.h"
 #include "dom_xmlimpl.h"
+#include "html/html_elementimpl.h"
 
 using namespace DOM;
 

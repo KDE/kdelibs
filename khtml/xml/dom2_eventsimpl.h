@@ -195,6 +195,8 @@ public:
     long screenY() const { return m_screenY; }
     long clientX() const { return m_clientX; }
     long clientY() const { return m_clientY; }
+    long layerX() const { return m_layerX; } // non-DOM extension
+    long layerY() const { return m_layerX; } // non-DOM extension
     bool ctrlKey() const { return m_ctrlKey; }
     bool shiftKey() const { return m_shiftKey; }
     bool altKey() const { return m_altKey; }
@@ -225,6 +227,8 @@ protected:
     long m_screenY;
     long m_clientX;
     long m_clientY;
+    long m_layerX;
+    long m_layerY;
     bool m_ctrlKey;
     bool m_altKey;
     bool m_shiftKey;
