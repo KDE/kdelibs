@@ -20,6 +20,9 @@
 
 //$Id$
 //$Log$
+//Revision 1.14  1998/11/25 13:24:53  radej
+//sven: Someone changed protected things to private (was it me?).
+//
 //Revision 1.13  1998/11/23 15:34:05  radej
 //sven: Nicer sysmenu button
 //
@@ -44,14 +47,14 @@
 //Revision 1.17  1999/03/06 18:03:34  ettrich
 //the nifty "flat" feature of kmenubar/ktoolbar is now more visible:
 //It has its own menu entry and reacts on simple LMP clicks.
-#include <qmenubar.h> 
+
 #ifndef _KMENUBAR_H
 #define _KMENUBAR_H
 
 class _menuBar : public QMenuBar
  {
    Q_OBJECT
-     
+
  public:
    _menuBar(QWidget *parent=0, const char *name=0);
    ~_menuBar();
@@ -80,7 +83,7 @@ class KMenuBar : public QFrame
    Q_OBJECT
 
  public:
-   enum menuPosition{Top, Bottom, Floating, Flat};
+
    /**
     * Positions of menubar.
     */
@@ -144,18 +147,18 @@ class KMenuBar : public QFrame
    virtual int accel(int id);
    virtual void setAccel(int key, int id );
    virtual QString text(int id);
-   
-   int heightForWidth ( int max_width ) const; 
+   virtual void changeItem(const QString& text, int id);
+   virtual void setItemChecked(int id , bool flag);
    virtual void setItemEnabled(int id, bool flag);
    virtual int idAt( int index );
-   
+
    int heightForWidth ( int max_width ) const;
 
    void setFlat (bool);
 
  protected slots:
    void ContextCallback(int index);
-   
+   void slotActivated (int id);
    void slotHighlighted (int id);
    void slotHotSpot (int i);
 
@@ -164,7 +167,7 @@ class KMenuBar : public QFrame
    void init();
    void mousePressEvent ( QMouseEvent *m );
    void resizeEvent( QResizeEvent *e );
-   
+   void paintEvent(QPaintEvent *);
    void closeEvent (QCloseEvent *e);
    void leaveEvent (QEvent *e);
    bool eventFilter(QObject *, QEvent *);
@@ -175,11 +178,11 @@ private:
    int oldX;
    int oldY;
    int oldWFlags;
-   
+   QString title;
    menuPosition position;
    menuPosition lastPosition;
    menuPosition movePosition;
-     
+
    QPopupMenu *context;
    QMenuBar *menu;
    QFrame *frame;

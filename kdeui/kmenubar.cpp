@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.58  1998/12/16 01:27:12  ettrich
+// fixed slightly broken macstyle removal
+//
 // Revision 1.57  1998/12/16 00:01:38  ettrich
 // small fix for menubars
 //
@@ -236,7 +239,7 @@ void KMenuBar::ContextCallback( int )
     case CONTEXT_TOP:
       setMenuBarPos( Top );
       break;
-      if (position == Floating){
+    case CONTEXT_BOTTOM:
       setMenuBarPos( Bottom );
       break;
     case CONTEXT_FLOAT:
@@ -306,14 +309,14 @@ void KMenuBar::slotReadConfig ()
   if (_transparent != transparent)
     menu->setStyle(style()); //Uh!
 
-    if (position != Floating)
+  if (style() == MotifStyle)
   {
     // menu->setStyle(style()); TODO: port to real Styles
     menu->setMouseTracking(false);
     if (position != Floating || position == FloatingSystem)
     menu->setStyle(style()); //Uh!
   }
-    if (position != Floating)
+  else
   {
     // menu->setStyle(style()); TODO: port to real Styles
     menu->setMouseTracking(true);
@@ -324,18 +327,16 @@ void KMenuBar::slotReadConfig ()
   config->setGroup("KDE");//CT as Sven asked
   if (!standalone_menubar && macmode) //was not and now is
   if (config->readEntry("macStyle") == "on") //CT as Sven asked
-    standalone_menubar = TRUE;
-    Parent->installEventFilter(this); // to show menubar
-    if (Parent->isVisible())
-    {
-      Parent->hide();
-      Parent->setGeometry(Parent->geometry());
-      Parent->show();
-    }
+    macmode = true;
+
+  if ( menuBarPos() != FloatingSystem && macmode) //was not and now is
+  {
+      standalone_menubar = TRUE;
+      if (Parent->isVisible())
 	  setMenuBarPos( FloatingSystem );
   else if (standalone_menubar && !macmode) //was and now is not
 	  Parent->installEventFilter(this); // to show menubar
-    standalone_menubar = false;
+      }
   }
   else if (menuBarPos() == FloatingSystem && !macmode) //was and now is not
   {
@@ -425,20 +426,7 @@ void KMenuBar::leaveEvent (QEvent *e){
   if (ob == Parent && ev->type() == Event_Show && standalone_menubar)
 bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 
-    setMenuBarPos(Floating);
-    QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
-    setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(), // check panel top
-                heightForWidth(r.width()));
-    int dim = fontMetrics().height();
-    if (!miniGo)
-      miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
 
-    QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
-    if (!px.isNull())
-      *miniGo = px;
-
-    //if (aha)
-      show();  //force show
   if (ob == Parent && ev->type() == QEvent::Show && standalone_menubar)
   {
     //bool aha = isVisible(); // did app enable show?
@@ -548,8 +536,6 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 
         if (miniGo)
         {
-        //else
-          //debug ("No go mini Go");
           int dx = ( handle->width() - miniGo->width() ) / 2;
           int dy = ( handle->height() - miniGo->height() ) / 2;
           paint.drawPixmap( dx, dy, *miniGo);
@@ -669,12 +655,13 @@ bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
 void KMenuBar::enableMoving(bool flag)
 {
   moving = flag;
-  if (position == Floating && standalone_menubar == true)
-    return; // Ignore positioning of Mac menubar
+}
+
+void KMenuBar::setMenuBarPos(menuPosition mpos)
 {
     if (position == FloatingSystem && standalone_menubar == true) {
 	return; // Ignore positioning of Mac menubar
-     if (mpos == Floating)
+    }
 
         lastPosition = position;
         position = mpos;
@@ -687,7 +674,7 @@ void KMenuBar::enableMoving(bool flag)
         recreate(0, 0,
                  p, FALSE);
  	XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
-        if (standalone_menubar)
+        if (mpos == FloatingSystem)
 	    KWM::setDecoration(winId(), KWM::noDecoration | KWM::standaloneMenuBar | KWM::noFocus);
 	else
 	    KWM::setDecoration(winId(), KWM::tinyDecoration | KWM::noFocus);
@@ -702,7 +689,7 @@ void KMenuBar::enableMoving(bool flag)
 	  setCaption(s);
 	}
         setFrameStyle( NoFrame);
-        if (standalone_menubar)
+        if (mpos == FloatingSystem)
         {
           if (style() == MotifStyle)
             menu->setFrameStyle(Panel | Raised);
@@ -712,6 +699,23 @@ void KMenuBar::enableMoving(bool flag)
         else
           menu->setFrameStyle( NoFrame) ;
         context->changeItem (klocale->translate("UnFloat"), CONTEXT_FLOAT);
+	  else
+	      menu->setFrameStyle( NoFrame) ;
+	  context->changeItem (i18n("UnFloat"), CONTEXT_FLOAT);
+	  context->setItemEnabled (CONTEXT_FLAT, FALSE);
+	
+	
+
+	if (mpos == FloatingSystem) {
+	    QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
+	    setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(), // check panel top
+	    
+	    int dim = fontMetrics().height();
+	    if (!miniGo)
+		miniGo = new QPixmap(kapp->kde_datadir() + "/kpanel/pics/mini/go.xpm");
+	    show(); 
+	    QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
+	    if (!px.isNull())
 		*miniGo = px;
 	    show();
 	}
@@ -735,7 +739,7 @@ void KMenuBar::enableMoving(bool flag)
           Parent->installEventFilter(obj);
           connect( Parent, SIGNAL(destroyed()), obj, SLOT(tlwDestroyed()));
         }
-     else if (position == Floating) // was floating
+//----------------------------------------------------------------------------
 
         return;
       }
@@ -870,7 +874,7 @@ void KMenuBar::slotHighlighted (int id)
 }
 
 void KMenuBar::setFlat (bool flag)
-  if (flag && (position == Floating && position == Flat))
+  if (flag && ((position == Floating  || position == FloatingSystem) && position == Flat))
 
   if (!flag && (position != Flat))
 
