@@ -18,7 +18,8 @@
 */
 // This was taken from filentry.cpp
 // fileentry.cpp is part of KFM II, by Torben Weis
-
+// changed to accept Tab, maybe this should be switchable (constructor)
+// 'cause a tabbed dialog will stop working ..
 
 #include <qlined.h>
 #include "klined.moc"
@@ -43,29 +44,21 @@ void KLined::cursorAtEnd ()
   QLineEdit::keyPressEvent( &ev );
 }
 
-
 bool KLined::eventFilter (QObject *, QEvent *e)
 {
   if (e->type() == Event_KeyPress)
     {
       QKeyEvent *k = (QKeyEvent *) e;
-      if (k->state() == ControlButton)
-		{
-		  if (k->key() == Key_S)
-			{
-			  emit rotation ();
-			  QKeyEvent ev( Event_KeyPress, Key_End, 0, 0 );
-			  QLineEdit::keyPressEvent( &ev );
-			  return TRUE;
-			}
-		  if (k->key() == Key_D)
-			{
-			  emit completion ();
-			  QKeyEvent ev( Event_KeyPress, Key_End, 0, 0 );
-			  QLineEdit::keyPressEvent( &ev );
-			  return TRUE;
-			}
-		}
+      
+      if ( ((k->state() == ControlButton) && (k->key() == Key_S || k->key() == Key_D))
+	   || k->key() == Key_Tab) {   
+	      if (k->key() == Key_Tab || k->key() == Key_S)
+		      emit completion ();
+	      else
+		      emit rotation ();
+	      cursorAtEnd();
+	      return TRUE;
+      }
     }
   return FALSE;
 }

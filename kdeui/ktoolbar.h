@@ -385,6 +385,15 @@ public:
   KToolBarCombo * getCombo(int id);
   
   /**
+   * This returns pointer to KToolBarLined. Use it as
+   * KToolBarLined * lined = toolbar->getKTollBarLined(lined_id);
+   * That way you can get access to other public methods
+   * that KToolBarLined provides. KTollBarLined is the same thing
+   * as KToolBarLined plus completion signals
+   */  
+  KToolBarLined * getLined (int id);
+
+  /**
    * Alignes item right.
    * This works only if toolbar is set to full width.
    * @see #setFullWidth

@@ -290,10 +290,10 @@ QPixmap KIconLoaderDialog::selectIcon( QString &name, const QString &filter)
   if( old_filter.isEmpty() )
     old_filter = filter;
   if( exec(old_filter) )
-    {
+  {
       if( (pix_name = canvas->getCurrent()) )
-	pixmap = icon_loader->loadApplicationIcon( pix_name );
-    }
+	  pixmap = icon_loader->loadIcon( pix_name );
+  }
   name = pix_name;
   return pixmap;
 }
@@ -302,12 +302,22 @@ KIconLoaderButton::KIconLoaderButton( QWidget *_parent ) : QPushButton( _parent 
 {
     iconStr = "";
     connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
+    iconLoader = kapp->getIconLoader();
+    loaderDialog = new KIconLoaderDialog();
+}
+
+KIconLoaderButton::KIconLoaderButton( KIconLoader *_icon_loader, QWidget *_parent ) : QPushButton( _parent )
+{
+    iconStr = "";
+    connect( this, SIGNAL( clicked() ), this, SLOT( slotChangeIcon() ) );
+    loaderDialog = new KIconLoaderDialog( _icon_loader );
+    iconLoader = _icon_loader;
 }
 
 void KIconLoaderButton::slotChangeIcon()
 {
     QString name;
-    QPixmap pix = loaderDialog.selectIcon( name, "*" );
+    QPixmap pix = loaderDialog->selectIcon( name, "*" );
     if( !pix.isNull() )
     {
 	setPixmap(pix);
@@ -322,4 +332,10 @@ void KIconLoaderButton::setIcon( const char *_icon )
 
     // A Hack, since it uses loadApplicationIcon!!!
     setPixmap( KApplication::getKApplication()->getIconLoader()->loadApplicationIcon( iconStr ) );
+}
+
+KIconLoaderButton::~KIconLoaderButton() 
+{
+    if ( loaderDialog )
+	delete loaderDialog;
 }

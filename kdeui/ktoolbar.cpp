@@ -1297,6 +1297,16 @@ KToolBarCombo *KToolBar::getCombo (int id)
         return ((KToolBarCombo *) b);
   return 0;
 }
+
+KToolBarLined *KToolBar::getLined (int id)
+{
+  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+    if (getID(b) == id )
+      if (getType(b) == ITEM_LINED)
+        return ((KToolBarLined *) b);
+  return 0;
+}
+
 /// Toolbar itself
 
 void KToolBar::setFullWidth(bool flag)

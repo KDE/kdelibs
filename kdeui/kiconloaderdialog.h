@@ -167,7 +167,9 @@ public:
      * Creates a new button.
      */
     KIconLoaderButton( QWidget *_widget );
-
+    KIconLoaderButton( KIconLoader *_icon_loader, QWidget *_widget );
+    ~KIconLoaderButton();
+    
     /**
      * Set the buttons icon. 
      *
@@ -181,7 +183,7 @@ public:
     /**
      * @return a reference to the icon loader dialog used.
      */
-    KIconLoaderDialog& iconLoaderDialog() { return loaderDialog; }
+    KIconLoaderDialog* iconLoaderDialog() { return loaderDialog; }
     
 public slots:
     void slotChangeIcon();
@@ -193,8 +195,9 @@ signals:
     void iconChanged( const char *icon );
     
 protected:
-    KIconLoaderDialog loaderDialog;
+    KIconLoaderDialog *loaderDialog;
     QString iconStr;
+    KIconLoader *iconLoader;
 };
 
 
