@@ -95,6 +95,49 @@ void consoleOutput(void)
     
 }
 
+int IsLineFeed(char c,int type, int *delta)
+{
+    *delta=1;
+    switch (type)
+    {
+    case (1) : if (/*(c==0)||*/(c=='\\')||(c=='/')||(c=='@')) return 1;break;
+    case (5) : if (/*(c==0)||*/(c==10)||(c==13)) return 1;break;
+    default :  if ((c==0)||(c==10)||(c==13)||(c=='\\')||(c=='/')||(c=='@')) return 1;break;
+    };
+    *delta=0;
+    return 0;
+}
+
+void displayLyrics(player *p)
+{
+  int i=1;
+  int delta=0;
+  while (i<=5)
+  { 
+    SpecialEvent *spev=p->takeSpecialEvents();
+    while (spev!=NULL)
+    {
+      if (spev->type==i)
+      {
+	if (i==1)
+ 	{
+	if (IsLineFeed(spev->text[0],1,&delta)) printf("\n");
+	printf("%s",&spev->text[delta]);
+	} 
+	else if (i==5)
+ 	{
+	if (IsLineFeed(spev->text[0],5,&delta)) printf("\n");
+	printf("%s",&spev->text[delta]);
+	}
+      }
+      spev=spev->next;
+    }
+    printf("\n");
+    i+=4;
+  }
+}
+
+
 int main(int argc, char **argv)
 {
 #ifdef linux
@@ -105,6 +148,7 @@ int main(int argc, char **argv)
     int device=DEFAULT_DEVICE;
     int gm=1;
     int interactive=0; 
+    int justtext=0;
     char *map_path=NULL;
     char *inputfile=NULL;
     FILE *inputfh=NULL;
@@ -120,18 +164,18 @@ int main(int argc, char **argv)
         {"device",1,NULL,'d'},
         {"list",0,NULL,'l'},
         {"map",1,NULL,'m'},
-        {"map",1,NULL,'m'},
         {"volume",1,NULL,'v'},
         {"file",1,NULL,'f'},
         {"mt32",0,NULL,'3'},
         {"interactive",0,NULL,'i'},
         {"quiet",0,NULL,'q'},
+        {"text",0,NULL,'t'},
         {"help",0,NULL,'h'},
         { 0, 0, 0, 0}
     };
-    c=getopt_long( argc, argv, "d:lm:v:f:3iqh" , long_options, &option_index);
+    c=getopt_long( argc, argv, "d:lm:v:f:3iqth" , long_options, &option_index);
 #else
-    c=getopt( argc, argv, "d:lm:v:f:3iqh");
+    c=getopt( argc, argv, "d:lm:v:f:3iqth");
 #endif
     
     long l;
@@ -168,6 +212,7 @@ int main(int argc, char **argv)
         case '3' :  gm=0;break;
         case 'i' :  interactive=1;break;
         case 'q' :  quiet=1;break;
+        case 't' :  justtext=1;break;
         case 0 :
         case ':' :
         case '?' :
@@ -177,9 +222,9 @@ int main(int argc, char **argv)
             break;
         }
 #ifdef linux
-        c=getopt_long( argc, argv, "d:lm:v:f:3iqh" , long_options, &option_index);
+        c=getopt_long( argc, argv, "d:lm:v:f:3iqth" , long_options, &option_index);
 #else
-        c=getopt( argc, argv, "d:lm:v:f:3iqh");
+        c=getopt( argc, argv, "d:lm:v:f:3iqth");
 #endif
     }
     
@@ -195,9 +240,9 @@ int main(int argc, char **argv)
     }
     
     if (error) exit(0);
-    printf("ConsoleKMid version %s, Copyright (C) 1997,98 Antonio Larrosa Jimenez\n",VERSION_SHORTTXT);
     if (!quiet)
     {
+        printf("ConsoleKMid version %s, Copyright (C) 1997,98 Antonio Larrosa Jimenez\n",VERSION_SHORTTXT);
         printf("ConsoleKMid comes with ABSOLUTELY NO WARRANTY; for details view file COPYING\n");
         printf("This is free software, and you are welcome to redistribute it\n");
         printf("under certain conditions\n");
@@ -214,6 +259,8 @@ int main(int argc, char **argv)
                "  -f, --file=INPUTFILE\tTakes the midi files to play from a text file\n"
                "  -3, --mt32 \t\tEmulate a mt32 synth\n"
                "  -i, --interactive\t\tAsk for each file if it must be played\n"
+               "  -q, --quiet\t\tBe quiet\n"
+               "  -t, --text\t\tJust display the lyrics\n"
                "  -h, --help \t\tDisplay this help and exit\n");
         printf("\nPlease report bugs to Antonio Larrosa (antlarr@arrakis.es)\n");
         exit(0);
@@ -259,7 +306,7 @@ int main(int argc, char **argv)
     }
     
     player *Player=new player(devman,&pctl);
-    Player->setParseSong(false);
+    if (!justtext) Player->setParseSong(false);
     pctl.message=0;
     pctl.gm=gm;
     pctl.error=0;
@@ -300,10 +347,13 @@ int main(int argc, char **argv)
         }
         if (playfile)
         {
-            cout << "Loading song : " << name << endl;
+            if (!quiet) cout << "Loading song : " << name << endl;
             if (strncmp(name,"file:",5)==0) name+=5;
             if (Player->loadSong(name)==0)
-                Player->play(1,consoleOutput);
+                if (!justtext)
+		  Player->play(1,consoleOutput);
+		else
+		  displayLyrics(Player);
             if (!quiet) cout << endl;
         }
         ok=songlist->next();
