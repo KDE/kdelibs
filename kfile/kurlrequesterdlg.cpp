@@ -44,10 +44,26 @@ KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
     :   KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, name,
                 modal, true, i18n("Clear") )
 {
-    QVBoxLayout * topLayout = new QVBoxLayout( plainPage(), 0,
+  initDialog(i18n( "Location:" ),urlName,modal);
+}
+
+KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent, const char *name, bool modal )
+    :   KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, name,
+                modal, true, i18n("Clear") )
+{
+  initDialog(_text,urlName,modal);
+}
+
+KURLRequesterDlg::~KURLRequesterDlg()
+{
+}
+
+void KURLRequesterDlg::initDialog(const QString &_text,const QString &urlName,bool modal)
+{
+   QVBoxLayout * topLayout = new QVBoxLayout( plainPage(), 0,
             spacingHint() );
 
-    QLabel * label = new QLabel( i18n( "Location:" ), plainPage() );
+    QLabel * label = new QLabel( _text , plainPage() );
     topLayout->addWidget( label );
 
     urlRequester_ = new KURLRequester( urlName, plainPage(),
@@ -62,11 +78,6 @@ KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
 	urlRequester_->fileDialog()->setMode( mode );
     */
     connect( this, SIGNAL( user1Clicked() ), SLOT( slotClear() ) );
-}
-
-
-KURLRequesterDlg::~KURLRequesterDlg()
-{
 }
 
 void KURLRequesterDlg::slotClear()

@@ -53,6 +53,17 @@ public:
             const char *name, bool modal = true );
     
     /**
+     * Constructs a KURLRequesterDlg
+     * 
+     * @param urlName   The url of the directory to start in. Use QString::null
+     *                  to start in the current working directory, or the last
+     *                  directory where a file has been selected.
+     * @param _text     Text of the label
+     * @param modal     Specifies whether the dialog should be opened as modal
+     *                  or not.
+     */
+    KURLRequesterDlg( const QString& urlName, const QString& _text, QWidget *parent, const char *name, bool modal=true );
+    /**
      * Destructs the dialog
      */
     ~KURLRequesterDlg();
@@ -72,8 +83,9 @@ public:
             QWidget *parent= 0, const QString& caption = QString::null);
 
 protected slots:
-    void slotClear();
-
+      void slotClear();
+ void initDialog(const QString &_text,const QString &urlName,bool modal);
+ 
 protected:
 
     KURLCompletion *    urlCompletion_;
