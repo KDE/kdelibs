@@ -192,4 +192,4 @@
     virtual void reservedVirtual10() {} \
     RESERVE_VIRTUAL_9
 
-#endif // _KDE_MACROS_H_
+#endif /* _KDE_MACROS_H_ */
