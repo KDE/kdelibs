@@ -763,7 +763,7 @@ public:
      * @param compensate compensate for darkening
      * @param invert invert bumpmap
      * @param type type of the bumpmap
-     * @param tiled tile the bumpmp over the image through the Y offset
+     * @param tiled tile the bumpmap over the image through the Y offset
      *
      * @return The destination image (dst) containing the result.
      * @author Zack Rusin <zack@kde.org>
