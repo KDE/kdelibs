@@ -412,6 +412,8 @@ public:
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
   *
   * NOTE: The cancel button will always have the i18n'ed text '&Cancel'.
+  *
+  * @since 3.2
   */
   static int warningYesNoCancelList(QWidget *parent,
                                 const QString &text,
