@@ -141,7 +141,9 @@ void KSSLCertChain::setChain(void *stack_of_x509) {
 #ifdef HAVE_SSL
 if (_chain) {
       sk_X509_free((STACK_OF(X509)*)_chain);
+      _chain = NULL;
 }
+if (!stack_of_x509) return;
 _chain = sk_X509_dup((STACK_OF(X509)*)stack_of_x509);
 #else
 _chain = NULL;
