@@ -14,22 +14,21 @@ class KIOSimpleProgressDlg : public QDialog
   Q_OBJECT
 public:
   KIOSimpleProgressDlg( KIOJob*, bool m_bStartIconified = false );
+  ~KIOSimpleProgressDlg() {}
 
-  void totalSize( unsigned long );
-  void totalDirs( unsigned long );
-  void totalFiles( unsigned long );
-  void processedSize( unsigned long );
-  void processedDirs( unsigned long );
-  void processedFiles( unsigned long );
-  void speed( unsigned long );
-  void scanningDir( const char *_dir );
-  void copyingFile( const char *_from, const char *_to );
-  void makingDir( const char *_dir );
-  // Get Command
-  void gettingFile( const char *_url );
-  // Delete Command
-  void deletingFile( const char *_url );
+  void processedSize();
+  void processedDirs();
+  void processedFiles();
+  void speed();
+  void scanningDir();
+  void copyingFile();
+  void makingDir();
+  void gettingFile();
+  void deletingFile();
   
+protected slots:
+  virtual void done ( int r );
+
 protected:
   QVBoxLayout *m_pLayout;
   QLabel* m_pLine1;
@@ -39,10 +38,7 @@ protected:
   QLabel* m_pLine5;
   KProgress* m_pProgressBar;
 
-  unsigned long m_iTotalSize;
-  unsigned long m_iTotalFiles;
-  unsigned long m_iTotalDirs;
-  unsigned long m_iProcessedSize;
+  int m_iPercent;
 
   KIOJob* m_pJob;
 };

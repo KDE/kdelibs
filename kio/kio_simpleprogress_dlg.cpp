@@ -9,13 +9,9 @@
 
 KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified ) : QDialog( 0L )
 {
-  m_iTotalSize = 0;
-  m_iTotalFiles = 0;
-  m_iTotalDirs = 0;
-  m_iProcessedSize = 0;
-
   m_pJob = _job;
-  
+  m_iPercent = 0;
+
   m_pProgressBar = new KProgress( 0, 100, 0, KProgress::Horizontal, this );
   m_pLine1 = new QLabel( this );
   m_pLine2 = new QLabel( this );
@@ -78,180 +74,93 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified
     KWM::setIconify( this->winId(), true );
 }
 
-void KIOSimpleProgressDlg::totalSize( unsigned long _bytes )
+
+void KIOSimpleProgressDlg::done( int r ) 
 {
-  m_iTotalSize = _bytes;
+  if ( m_pJob )
+    m_pJob->m_pSimpleProgressDlg = 0L;
+
+  hide();
 }
 
-void KIOSimpleProgressDlg::totalDirs( unsigned long _dirs )
-{
-  m_iTotalDirs = _dirs;
-}
 
-void KIOSimpleProgressDlg::totalFiles( unsigned long _files )
+void KIOSimpleProgressDlg::processedSize()
 {
-  m_iTotalFiles = _files;
-  processedFiles( 0 );
-}
-
-void KIOSimpleProgressDlg::processedSize( unsigned long _bytes )
-{
-  if ( _bytes == 0 || m_iTotalSize == 0 )
+  if ( m_pJob->m_iProcessedSize == 0 || m_pJob->m_iTotalSize == 0 )
     return;
   
-  m_iProcessedSize = _bytes;
-  
-  char ext1[ 100 ];
-  char ext2[ 100 ];
-  unsigned long div1, div2;
-  if ( _bytes <= 2000 )
-  {
-    strcpy( ext1, i18n( "Bytes" ) );
-    div1 = 1;
-  }
-  else if ( _bytes <= 1000000 )
-  {
-    strcpy( ext1, i18n( "Kb" ) );
-    div1 = 1000;
-  }
-  else
-  {
-    strcpy( ext1, i18n( "Mb" ) );
-    div1 = 1000000;
-  }
+  int old = m_iPercent;
 
-  if ( m_iTotalSize <= 2000 )
-  {
-    strcpy( ext2, i18n( "Bytes" ) );
-    div2 = 1;
-  }
-  else if ( m_iTotalSize <= 1000000 )
-  {
-    strcpy( ext2, i18n( "Kb" ) );
-    div2 = 1000;
-  }
-  else
-  {
-    strcpy( ext2, i18n( "Mb" ) );
-    div2 = 1000000;
-  }
+  m_iPercent = (int)(( (float)m_pJob->m_iProcessedSize / (float)m_pJob->m_iTotalSize ) * 100.0);
 
-  char buffer[ 100 ];
-  sprintf( buffer, "%i %s %s %i %s", (int)_bytes / (int)div1, ext1, i18n("of").ascii(), (int)m_iTotalSize / (int)div2, ext2 );
-  m_pLine4->setText( buffer );
+  if ( m_iPercent == old )
+    return;
 
-  int progress = (int)( (float)_bytes / (float)m_iTotalSize * 100.0 );
-  if ( m_iTotalSize )
-    m_pProgressBar->setValue( progress );
+  QString tmp = i18n( "%1 % of %2 ").arg( m_iPercent ).arg( KIOJob::convertSize(m_pJob->m_iTotalSize));
 
-  sprintf( buffer, "%i %% %s %i %s", progress, i18n("of").ascii(), (int)m_iTotalSize / (int)div2, ext2 );
-  setCaption( buffer );
+  m_pLine4->setText( tmp );
+  m_pProgressBar->setValue( m_iPercent );
+  setCaption( tmp );
 }
 
-void KIOSimpleProgressDlg::processedDirs( unsigned long _dirs )
+
+void KIOSimpleProgressDlg::processedDirs()
 {
-  char buffer[ 200 ];
-  sprintf( buffer, "%i/%i directories created", (int)_dirs, (int)m_iTotalDirs );
-  m_pLine1->setText( buffer );
+  m_pLine1->setText( i18n("%1/%2 directories created").arg((int)m_pJob->m_iProcessedDirs).arg((int)m_pJob->m_iTotalDirs ) );
 }
 
-void KIOSimpleProgressDlg::processedFiles( unsigned long _files )
+
+void KIOSimpleProgressDlg::processedFiles()
 {
-  char buffer[ 200 ];
-  sprintf( buffer, "%i/%i files", (int)_files, (int)m_iTotalFiles );
-  m_pLine1->setText( buffer );
+  m_pLine1->setText( i18n("%1/%2 files").arg( (int)m_pJob->m_iProcessedFiles ).arg( (int)m_pJob->m_iTotalFiles ) );
 }
 
-void KIOSimpleProgressDlg::speed( unsigned long _bytes_per_second )
+
+void KIOSimpleProgressDlg::speed()
 {
-  if ( m_iProcessedSize == 0 )
+  if ( m_pJob->m_iProcessedSize == 0 )
     return;
   
-  if ( _bytes_per_second == 0 )
-  {
-    m_pLine5->setText( i18n( "Stalled" ) );
-    return;
-  }
-  
-  unsigned long div1;
-  char ext1[ 100 ];
-  if ( _bytes_per_second <= 2000 )
-  {
-    strcpy( ext1, i18n( " Bytes/s" ) );
-    div1 = 1;
-  }
-  else if ( _bytes_per_second <= 1000000 )
-  {
-    strcpy( ext1, i18n( " Kb/s" ) );
-    div1 = 1000;
-  }
+  if ( m_pJob->m_iSpeed == 0 )
+    m_pLine5->setText( i18n( "Stalled") );
   else
-  {
-    strcpy( ext1, i18n( " Mb/s" ) );
-    div1 = 1000000;
-  }
-
-  char t[ 100 ];
+    m_pLine5->setText( i18n( "%1/s %2").arg( KIOJob::convertSize( m_pJob->m_iSpeed )).arg( m_pJob->m_RemainingTime.toString()) );
   
-  unsigned long secs = ( m_iTotalSize - m_iProcessedSize ) / _bytes_per_second;
-  if ( secs < 60 )
-  {
-    sprintf( t, i18n( "%i seconds" ), secs );
-  }
-  else if ( secs < 60 * 60 )
-  {
-    int m = secs / 60;
-    int s = secs - m * 60;
-    sprintf( t, i18n( "%i:%i" ), m, s );
-  }
-  else
-  {
-    int h = secs / ( 60 * 60 );
-    int m = ( secs - h * 60 * 60 ) / 60;
-    int s = ( secs - h * 60 * 60 - m * 60 );
-    sprintf( t, i18n( "%i:%i:%i" ), h, m, s );
-  }
-  
-  char buffer[ 200 ];
-  sprintf( buffer, i18n( "%i%s  Remaining time: %s" ), _bytes_per_second / div1, ext1, t );
-  m_pLine5->setText( buffer );
 }
 
-void KIOSimpleProgressDlg::scanningDir( const char *_dir )
+
+void KIOSimpleProgressDlg::scanningDir()
 {
-  string tmp = (const char*)i18n( "Scanning " );
-  tmp += _dir;
-  m_pLine2->setText( tmp.c_str() );
+  m_pLine2->setText( i18n("Scanning %1").arg( m_pJob->m_strFrom ) );
 }
 
-void KIOSimpleProgressDlg::copyingFile( const char *_from, const char *_to )
+
+void KIOSimpleProgressDlg::copyingFile()
 {
-  string tmp = i18n("From : ").ascii();
-  tmp += _from;
-  m_pLine2->setText( tmp.c_str() );
-
-  tmp = i18n("To: ").ascii();
-  tmp += _to;
-  m_pLine3->setText( tmp.c_str() );
+  m_pLine1->setText( i18n("Copying") );
+  m_pLine2->setText( i18n("From : %1").arg( m_pJob->m_strFrom ) );
+  m_pLine3->setText( i18n("To : %1").arg( m_pJob->m_strTo ) );
 }
 
-void KIOSimpleProgressDlg::makingDir( const char *_dir )
+
+void KIOSimpleProgressDlg::makingDir()
 {
-  string tmp = (const char*)i18n( "Creating dir " );
-  tmp += _dir;
-  m_pLine2->setText( tmp.c_str() );
+  m_pLine2->setText( i18n("Creating dir %1").arg( m_pJob->m_strTo ) );
 }
 
-void KIOSimpleProgressDlg::gettingFile( const char *_url )
+
+void KIOSimpleProgressDlg::gettingFile()
 {
   m_pLine1->setText( i18n("Fetching file") );
-  m_pLine2->setText( _url );
+  m_pLine2->setText( m_pJob->m_strFrom );
 }
 
-void KIOSimpleProgressDlg::deletingFile( const char *_url )
+
+void KIOSimpleProgressDlg::deletingFile()
 {
   m_pLine1->setText( i18n("Deleting file") );
-  m_pLine2->setText( _url );
+  m_pLine2->setText( m_pJob->m_strTo );
 }
+
 
 #include "kio_simpleprogress_dlg.moc"
