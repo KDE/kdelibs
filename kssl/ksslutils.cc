@@ -21,6 +21,7 @@
 
 #include "ksslutils.h"
 
+#include <qstring.h>
 #include <kglobal.h>
 #include <klocale.h>
 

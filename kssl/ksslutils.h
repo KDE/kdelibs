@@ -27,7 +27,7 @@
 #ifdef HAVE_SSL
 #include <openssl/x509.h>
 #endif
-#include <qstring.h>
+class QString;
 
 
 #ifdef HAVE_SSL

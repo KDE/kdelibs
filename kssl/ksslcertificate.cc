@@ -293,6 +293,8 @@ return rc;
 QString KSSLCertificate::getNotBefore() const {
 #ifdef HAVE_SSL
 return ASN1_UTCTIME_QString(X509_get_notBefore(d->m_cert));
+#else
+return QString::null;
 #endif
 }
 
@@ -300,6 +302,8 @@ return ASN1_UTCTIME_QString(X509_get_notBefore(d->m_cert));
 QString KSSLCertificate::getNotAfter() const {
 #ifdef HAVE_SSL
 return ASN1_UTCTIME_QString(X509_get_notAfter(d->m_cert));
+#else
+return QString::null;
 #endif
 }
 
