@@ -82,16 +82,5 @@ private:
   KOpenSSLProxy *kossl;
 };
 
-#if 0
-  KSSLPKCS12* getCertificateByHost(QString host, QString password, KSSLAuthAction* aa);
-  KSSLPKCS12* getCertificateByName(QString name, QString password);
-  KSSLPKCS12* getCertificateByName(QString name);
-  QString getDefaultCertificateName(QString host, KSSLAuthAction *aa = NULL);
-  QString getDefaultCertificateName(KSSLAuthAction *aa = NULL);
-  KSSLPKCS12* getDefaultCertificate(QString password, KSSLAuthAction *aa = NULL);
-  KSSLPKCS12* getDefaultCertificate(KSSLAuthAction *aa = NULL);
-  void setDefaultCertificate(QString name, bool send = true, bool prompt = false);
-  void setDefaultCertificate(KSSLPKCS12 *cert, bool send = true, bool prompt = false);
-#endif
 
 #endif
