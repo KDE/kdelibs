@@ -721,11 +721,6 @@ protected:
 #endif
 
   /**
-   * Reimplementation of QObject::eventFilter .
-   */
-  virtual bool eventFilter( QObject *o, QEvent *event );
-
-  /**
    * Eventhandler of the khtml::MousePressEvent.
    */
   virtual void khtmlMousePressEvent( khtml::MousePressEvent *event );
@@ -854,9 +849,8 @@ private slots:
   virtual void slotSetEncoding();
 
   virtual void slotFind();
-
-  void slotFindDone(); // BCI: make virtual
-  void slotFindDialogDestroyed();
+  virtual void slotFindDone();
+  virtual void slotFindDialogDestroyed();
 
   void slotIncFontSizes();
   void slotDecFontSizes();

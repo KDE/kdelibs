@@ -536,7 +536,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
            this, SLOT( slotRedirect() ) );
 
-  d->m_view->viewport()->installEventFilter( this );
 }
 
 KHTMLPart::~KHTMLPart()
@@ -4074,12 +4073,6 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 
 void KHTMLPart::khtmlDrawContentsEvent( khtml::DrawContentsEvent * )
 {
-}
-
-bool KHTMLPart::eventFilter( QObject* o, QEvent* ev )
-{
-    // ### BCI remove for 3.0 (no longer needed)
-    return KParts::ReadOnlyPart::eventFilter( o, ev );
 }
 
 void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
