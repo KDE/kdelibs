@@ -67,6 +67,7 @@ namespace KJS {
     virtual Value tryCall(ExecState *exec, Object &thisObj, const List&args)
       { return ObjectImp::call(exec, thisObj, args); }
     virtual bool toBoolean(ExecState *) const { return true; }
+    virtual Value toPrimitive(ExecState *exec, Type) const { return String(toString(exec)); }
     virtual UString toString(ExecState *) const { return UString("[function]"); }
   };
 
@@ -130,9 +131,16 @@ namespace KJS {
   {
     const HashEntry* entry = Lookup::findEntry(table, propertyName);
 
-    if (!entry || (entry->attr & Function)) { // not found, or function: forward to parent
-       thisObj->ParentImp::tryPut(exec, propertyName, value, attr);
-    }
+    if (!entry) // not found: forward to parent
+      thisObj->ParentImp::tryPut(exec, propertyName, value, attr);
+    else if (entry->attr & Function) // function: put as override property
+      thisObj->ObjectImp::put(exec, propertyName, value, attr);
+    else if (entry->attr & ReadOnly) // readonly! Can't put!
+#ifdef KJS_VERBOSE
+      fprintf(stderr,"Attempt to change value of readonly property '%s'\n",propertyName.ascii());
+#else
+      ; // do nothing
+#endif
     else
       thisObj->putValue(exec, entry->value, value, attr);
   }
@@ -152,9 +160,9 @@ namespace KJS {
       return Object::dynamicCast(Value(obj));
     else
     {
-      Object newProto = new ClassCtor(exec);
-      exec->interpreter()->globalObject().put(exec, propertyName, newProto, Internal);
-      return newProto;
+      Object newObject = new ClassCtor(exec);
+      exec->interpreter()->globalObject().put(exec, propertyName, newObject, Internal);
+      return newObject;
     }
   }
 

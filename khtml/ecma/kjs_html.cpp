@@ -173,18 +173,18 @@ const ClassInfo KJS::HTMLDocument::info =
   body			HTMLDocument::Body		DontDelete
   location		HTMLDocument::Location		DontDelete
   cookie		HTMLDocument::Cookie		DontDelete
-  images		HTMLDocument::Images		DontDelete|ReadOnly|Function 0
-  applets		HTMLDocument::Applets		DontDelete|ReadOnly|Function 0
-  links			HTMLDocument::Links		DontDelete|ReadOnly|Function 0
-  forms			HTMLDocument::Forms		DontDelete|ReadOnly|Function 0
-  anchors		HTMLDocument::Anchors		DontDelete|ReadOnly|Function 0
-  all			HTMLDocument::All		DontDelete|ReadOnly|Function 0
-  open			HTMLDocument::Open		DontDelete|ReadOnly|Function 0
-  close			HTMLDocument::Close		DontDelete|ReadOnly|Function 0
-  write			HTMLDocument::Write		DontDelete|ReadOnly|Function 1
-  writeln		HTMLDocument::WriteLn		DontDelete|ReadOnly|Function 1
-  getElementById	HTMLDocument::GetElementById	DontDelete|ReadOnly|Function 1
-  getElementsByName	HTMLDocument::GetElementsByName	DontDelete|ReadOnly|Function 1
+  images		HTMLDocument::Images		DontDelete|Function 0
+  applets		HTMLDocument::Applets		DontDelete|Function 0
+  links			HTMLDocument::Links		DontDelete|Function 0
+  forms			HTMLDocument::Forms		DontDelete|Function 0
+  anchors		HTMLDocument::Anchors		DontDelete|Function 0
+  all			HTMLDocument::All		DontDelete|Function 0
+  open			HTMLDocument::Open		DontDelete|Function 0
+  close			HTMLDocument::Close		DontDelete|Function 0
+  write			HTMLDocument::Write		DontDelete|Function 1
+  writeln		HTMLDocument::WriteLn		DontDelete|Function 1
+  getElementById	HTMLDocument::GetElementById	DontDelete|Function 1
+  getElementsByName	HTMLDocument::GetElementsByName	DontDelete|Function 1
   bgColor		HTMLDocument::BgColor		DontDelete
   fgColor		HTMLDocument::FgColor		DontDelete
   alinkColor		HTMLDocument::AlinkColor	DontDelete
