@@ -527,6 +527,7 @@ void KOpenWithDlg::slotOK()
   // association to be remembered.  Create/update service.
   QString keepExec(edit->url());
   QString serviceName;
+  QString pathName;
   if (!m_pService) {
     if (keepExec.contains('/'))
     {
@@ -536,17 +537,18 @@ void KOpenWithDlg::slotOK()
         // Hmm, add a KMessageBox::error here after 2.0
         return;
       }
+      pathName = serviceName;
     }
     else
     {
       // Creating a new one. Let's hide it to avoid cluttering the K menu.
-      serviceName = ".hidden/";
-      serviceName += keepExec;
+      pathName = ".hidden/";
+      pathName += keepExec;
+      serviceName = keepExec;
     }
   } else
-    serviceName = m_pService->desktopEntryPath();
+    serviceName = pathName = m_pService->desktopEntryPath();
 
-  QString pathName (serviceName);
   if (pathName.right(8) != QString::fromLatin1(".desktop"))
     pathName += QString::fromLatin1(".desktop");
   QString path(locateLocal("apps", pathName));
