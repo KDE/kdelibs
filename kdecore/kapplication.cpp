@@ -590,6 +590,37 @@ KApplication::KApplication( bool allowStyles, bool GUIenabled ) :
     d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
 }
 
+#ifdef Q_WS_X11
+KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
+		            bool allowStyles ) :
+  QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+                visual, colormap ),
+  KInstance( KCmdLineArgs::about), display(0L), d (new KApplicationPrivate)
+{
+    read_app_startup_id();
+    useStyles = allowStyles;
+    setName( instanceName() );
+    installSigpipeHandler();
+    parseCommandLine( );
+    init( true );
+    d->m_KAppDCOPInterface = new KAppDCOPInterface(this);
+}
+
+KApplication::KApplication( Display *dpy, Qt::HANDLE visual, Qt::HANDLE colormap,
+		            bool allowStyles, KInstance * _instance ) :
+  QApplication( dpy, *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
+                visual, colormap ),
+  KInstance( _instance ), display(0L), d (new KApplicationPrivate)
+{
+    read_app_startup_id();
+    useStyles = allowStyles;
+    setName( instanceName() );
+    installSigpipeHandler();
+    parseCommandLine( );
+    init( true );
+}
+#endif
+
 KApplication::KApplication( bool allowStyles, bool GUIenabled, KInstance* _instance ) :
   QApplication( *KCmdLineArgs::qt_argc(), *KCmdLineArgs::qt_argv(),
                 GUIenabled ),

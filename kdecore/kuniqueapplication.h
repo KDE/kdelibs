@@ -61,6 +61,34 @@ public:
 		      bool GUIenabled=true,
 		      bool configUnique=false);
 
+#ifdef Q_WS_X11
+  /**
+   * Constructor. Takes command line arguments from KCmdLineArgs
+   *
+   * @param display Will be passed to Qt as the X display. The display
+   * must be valid and already opened.
+   * @param visual Pointer to the X11 visual that should be used by the
+   * application. If NULL, the default visual will be used instead.
+   * @param colormap The colormap that should be used by the application.
+   * If 0, the default colormap will be used instead.
+   * @param allowStyles Set to false to disable the loading on plugin based
+   * styles. This is only useful to applications that do not display a GUI
+   * normally. If you do create an application with @p allowStyles set to false
+   * it normally runs in the background but under special circumstances
+   * displays widgets.  Call KApplication::enableStyles() before 
+   * displaying any widgets.
+   * @param configUnique If true, the uniqueness of the application will
+   *                 depend on the value of the "MultipleInstances"
+   *                 key in the "KDE" group of the application config file.
+   * @since KDE 3.3
+   */
+  KUniqueApplication( Display *display,
+		      Qt::HANDLE visual=0,
+		      Qt::HANDLE colormap=0,
+		      bool allowStyles=true,
+		      bool configUnique=false);
+#endif
+
   /**
    * Adds command line options specific for KUniqueApplication.
    *

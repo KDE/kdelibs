@@ -322,6 +322,24 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled, bool c
     QTimer::singleShot( 0, this, SLOT(newInstanceNoFork()) );
 }
 
+
+#ifdef Q_WS_X11
+KUniqueApplication::KUniqueApplication(Display *display, Qt::HANDLE visual,
+		Qt::HANDLE colormap, bool allowStyles, bool configUnique)
+  : KApplication( display, visual, colormap, allowStyles, initHack( configUnique )),
+    DCOPObject(KCmdLineArgs::about->appName())
+{
+  d = new KUniqueApplicationPrivate;
+  d->processingRequest = false;
+  d->firstInstance = true;
+
+  if (s_nofork)
+    // Can't call newInstance directly from the constructor since it's virtual...
+    QTimer::singleShot( 0, this, SLOT(newInstanceNoFork()) );
+}
+#endif
+
+
 KUniqueApplication::~KUniqueApplication()
 {
   delete d;
