@@ -127,7 +127,7 @@ void RenderFrameSet::layout( )
 	    else
 		totalFixed += m_rows->at(i)->value;
 	}
-	if ( allFixed ) {
+	if ( allFixed && totalFixed ) {
 	    for(i = 0; i< m_frameset->totalRows(); i++) {
 		m_rows->at(i)->type = Percent;
 		m_rows->at(i)->value = m_rows->at(i)->value *100 / totalFixed;
@@ -205,7 +205,7 @@ void RenderFrameSet::layout( )
 	    else
 		totalFixed += m_cols->at(i)->value;
 	}
-	if ( allFixed ) {
+	if ( allFixed && totalFixed) {
 	    for(i = 0; i< m_frameset->totalCols(); i++) {
 		m_cols->at(i)->type = Percent;
 		m_cols->at(i)->value = m_cols->at(i)->value * 100 / totalFixed;
