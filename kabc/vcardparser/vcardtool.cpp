@@ -112,9 +112,11 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
       card.addLine( VCardLine( "categories", (*addrIt).categories().join( "," ) ) );
 
     // CLASS
-    if ( version == VCard::v3_0 )
-      card.addLine( createSecrecy( (*addrIt).secrecy() ) );
-
+    if ( version == VCard::v3_0 ) {
+      Secrecy s = (*addrIt).secrecy();
+      if ( s.isValid() ) card.addLine( createSecrecy( s ) );
+    }
+    
     // EMAIL
     QStringList emails = (*addrIt).emails();
     bool pref = true;
@@ -158,7 +160,9 @@ QString VCardTool::createVCards( Addressee::List list, VCard::Version version )
     name.append( (*addrIt).prefix() );
     name.append( (*addrIt).suffix() );
 
-    card.addLine( VCardLine( "n", name.join( ";" ) ) );
+    if ( !name.join( "" ).isEmpty() ) {
+      card.addLine( VCardLine( "n", name.join( ";" ) ) );
+    }
 
     // NICKNAME
     if ( version == VCard::v3_0 )
@@ -670,10 +674,7 @@ VCardLine VCardTool::createSecrecy( const Secrecy &secrecy )
 {
   VCardLine line( "class" );
 
-  // use default type if no type is set
   int type = secrecy.type();
-  if ( type == 0 )
-    type = Secrecy::Private;
 
   if ( type == Secrecy::Public )
     line.setValue( "PUBLIC" );

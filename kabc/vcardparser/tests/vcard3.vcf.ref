@@ -1,12 +1,13 @@
 BEGIN:VCARD
 ADR:;;;;;;
-EMAIL;internet:geiseri@yahoo.com
+EMAIL;TYPE=INTERNET:geiseri@yahoo.com
 FN:ian geiser
-N:geiser;ian
+N:geiser;ian;;;
 ORG:Source eXtreme
 TITLE:VP of Engineering
-UID:65LKIhyl7r
-VERSION:2.1
+UID:ebvq9Wo9rO
+VERSION:3.0
 X-MOZILLA-CPT:;0
 X-MOZILLA-HTML:FALSE
 END:VCARD
+

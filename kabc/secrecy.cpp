@@ -39,6 +39,11 @@ bool Secrecy::operator!=( const Secrecy &s ) const
   return !( *this == s );
 }
 
+bool Secrecy::isValid() const
+{
+  return mType != Invalid;
+}
+
 void Secrecy::setType( int type )
 {
   mType = type;

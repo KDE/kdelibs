@@ -43,7 +43,8 @@ public:
   enum Types {
     Public,
     Private,
-    Confidential
+    Confidential,
+    Invalid
   };
 
   /**
@@ -51,10 +52,15 @@ public:
    *
    * @param type  The secrecy type, @see Types.
    */
-  Secrecy( int type = Private );
+  Secrecy( int type = Invalid );
 
   bool operator==( const Secrecy & ) const;
   bool operator!=( const Secrecy & ) const;
+
+  /**
+    Returns if the Secrecy object has a valid value.
+  */
+  bool isValid() const;
 
   /**
    * Sets the type, @see Types.

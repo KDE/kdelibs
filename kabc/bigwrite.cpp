@@ -20,7 +20,7 @@ int main(int argc,char **argv)
   KApplication app;
 
   AddressBook ab;
-  ResourceFile r( "my.kabc" );
+  ResourceFile r( "my.kabc", "vcard" );
   ab.addResource( &r );
   
   for( int i = 0; i < 5000; ++i ) {

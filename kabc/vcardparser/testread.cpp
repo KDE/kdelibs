@@ -17,6 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <iostream>
 #include <stdlib.h>
 
 #include <qfile.h>
@@ -24,21 +25,38 @@
 
 #include <kprocess.h>
 #include <kdebug.h>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
+#include <klocale.h>
+#include <kaboutdata.h>
 
 #include "vcardtool.h"
 
+static const KCmdLineOptions options[] =
+{
+  {"vcard21", I18N_NOOP("vCard 2.1"), 0},
+  {"+inputfile", I18N_NOOP("Input File"), 0},
+  {0,0,0}
+};
+
 int main( int argc, char **argv )
 {
-  if ( argc != 3 ) {
-    qDebug("Usage: testread <inputfile> <outputfile>");
+  KAboutData aboutData( "testread", "vCard test reader", "0.1" );
+  aboutData.addAuthor( "Cornelius Schumacher", 0, "schumacher@kde.org" );
+
+  KCmdLineArgs::init( argc, argv, &aboutData );
+  KCmdLineArgs::addCmdLineOptions( options );
+
+  KApplication app( false, false );
+
+  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+
+  if ( args->count() != 1 ) {
+    std::cerr << "Missing argument" << std::endl;
     return 1;
   }
 
-  QString inputFile( argv[ 1 ] );
-  QString outputFile( argv[ 2 ] );
-  QString referenceFile( inputFile + ".ref" );
-
-  qDebug( "Reading from '%s', writing to '%s'.", argv[1], argv[2] );
+  QString inputFile( args->arg( 0 ) );
 
   QFile file( inputFile );
   if ( !file.open( IO_ReadOnly ) ) {
@@ -55,24 +73,14 @@ int main( int argc, char **argv )
 
   KABC::VCardTool tool;
   KABC::Addressee::List list = tool.parseVCards( text );
-  text = tool.createVCards( list ); // uses version 3.0
-//  text = tool.createVCards( list, VCard::v2_1 ); // uses version 2.1
 
-  file.setName( outputFile );
-  if ( !file.open( IO_WriteOnly ) ) {
-    qDebug( "Unable to open file '%s' for writing!", file.name().latin1() );
-    return 1;
+  if ( args->isSet( "vcard21" ) ) {
+    text = tool.createVCards( list, VCard::v2_1 ); // uses version 2.1
+  } else {
+    text = tool.createVCards( list ); // uses version 3.0
   }
 
-  s.setDevice( &file );
-  s << text;
-  file.close();
-
-  QString command = "diff -pub " + referenceFile + " " + outputFile;
-
-  kdDebug() << "CHECKING " << inputFile << endl;
-
-  system( command.local8Bit() );
+  std::cout << text.utf8();
 
   return 0;
 }
