@@ -69,6 +69,7 @@ using namespace DOM;
 #include <kiconeffect.h>
 #include <kdatastream.h>
 #include <ktempfile.h>
+#include <kglobalsettings.h>
 
 #include <qtextcodec.h>
 

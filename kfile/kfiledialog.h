@@ -30,7 +30,7 @@
 #include <kfile.h>
 #include <kurl.h>
 #include <kmimetype.h>
-#include <jobclasses.h>
+#include <kio/jobclasses.h>
 
 class QCheckBox;
 class QHBoxLayout;
