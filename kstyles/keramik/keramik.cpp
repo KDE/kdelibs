@@ -1,6 +1,6 @@
 /* Keramik Style for KDE3
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
-             (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+             (c) 2002,2003 Maksim Orlovich <mo002j@mail.rochester.edu>
 
    based on the KDE3 HighColor Style
 
@@ -250,16 +250,16 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 				Qt::black, Qt::black, false, false);
 			//return qpixmap_from_bits( iconify_bits, "title-iconify.png" );
 		case SP_TitleBarMaxButton:
-			return Keramik::PixmapLoader::the().pixmap(keramik_title_maximize, 
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_maximize,
 				Qt::black, Qt::black, false, false);
 		case SP_TitleBarCloseButton:
 			if (widget && widget->inherits("KDockWidgetHeader"))
-				return Keramik::PixmapLoader::the().pixmap(keramik_title_close_tiny, 
+				return Keramik::PixmapLoader::the().pixmap(keramik_title_close_tiny,
 				Qt::black, Qt::black, false, false);
-			else	return Keramik::PixmapLoader::the().pixmap(keramik_title_close, 
+			else	return Keramik::PixmapLoader::the().pixmap(keramik_title_close,
 				Qt::black, Qt::black, false, false);
 		case SP_TitleBarNormalButton:
-			return Keramik::PixmapLoader::the().pixmap(keramik_title_restore, 
+			return Keramik::PixmapLoader::the().pixmap(keramik_title_restore,
 				Qt::black, Qt::black, false, false);
 		default:
 			break;
@@ -415,20 +415,20 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 					//nr = QRect(r.x(), r.y(),
 					//	QMIN(r.width(), r.height()), r.width() ) );
 					nr = QRect(r.x(), r.y(), r.width()-1, r.height() );;
-						
+
 				}
 				else
 				{
 					int offX = (r.width() - 15)/2;
 					int offY = (r.height() - 15)/2;
-				
+
 					if (flags & Style_Down)
 						offY += 1;
-						
+
 					nr = QRect(r.x()+offX, r.y()+offY, 15, 15);
 				}
-				
-				Keramik::ScaledPainter(flags & Style_Down ? keramik_titlebutton_pressed : keramik_titlebutton, 
+
+				Keramik::ScaledPainter(flags & Style_Down ? keramik_titlebutton_pressed : keramik_titlebutton,
 										Keramik::ScaledPainter::Both).draw( p, nr, cg.button(), cg.background());
 				return;
 			}
@@ -529,9 +529,9 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			else {
 				Keramik::ScaledPainter( name + KeramikTileCC, Keramik::ScaledPainter::Vertical).draw(
 					p, r, cg.button(), cg.background(), disabled, pmode() );
-				
+
 				p->setPen(cg.button().light(75));
-				
+
 				p->drawLine(x, y, x2, y);
 				p->drawLine(x, y, x, y2);
 				p->drawLine(x, y2, x2, y2);
@@ -660,7 +660,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				painter.draw( p, r, down? cg.buttonText() : cg.button(), cg.background(), disabled, pmode() );
 
 				p->setPen( cg.buttonText() );
-				p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2, 
+				p->drawLine(r.x()+r.width()/2 - 4, r.y()+r.height()/2,
 				            r.x()+r.width()/2 + 2, r.y()+r.height()/2);
 
 
@@ -1168,7 +1168,7 @@ void KeramikStyle::drawControl( ControlElement element,
 
 			if ( btn->isFlat( ) )
 				flatMode = true;
-			
+
 			if ( btn->isDefault( ) && !flatMode )
 			{
 				drawPrimitive( PE_ButtonDefault, p, r, cg, flags );
@@ -1182,7 +1182,7 @@ void KeramikStyle::drawControl( ControlElement element,
 
 				toolbarBlendWidget = 0;
 			}
-			
+
 			flatMode = false;
 
 			break;
@@ -1234,18 +1234,18 @@ void KeramikStyle::drawControl( ControlElement element,
 					state = QIconSet::On;
 
 				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode, state );
-				
+
 				if (button->text().isEmpty() && !button->pixmap())
-					p->drawPixmap( x + w/2 - pixmap.width()/2, y + h / 2 - pixmap.height() / 2, 
+					p->drawPixmap( x + w/2 - pixmap.width()/2, y + h / 2 - pixmap.height() / 2,
 									pixmap );
 				else
 					p->drawPixmap( x + 4, y + h / 2 - pixmap.height() / 2, pixmap );
-					
+
 				if (cornArrow) //Draw over the icon
 					drawPrimitive( PE_ArrowDown, p, visualRect( QRect(x + w - 6, x + h - 6, 7, 7), r ),
 							   cg, flags, opt );
 
-					
+
 				int  pw = pixmap.width();
 				x += pw + 4;
 				w -= pw + 4;
@@ -1255,7 +1255,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						&button->colorGroup().buttonText() );
-						
+
 
 
 			if ( flags & Style_HasFocus )
@@ -1860,7 +1860,7 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 					drawPrimitive( PE_ScrollBarAddLine, p, addline, cg, flags | Style_Down );
 				}
 			}
-			
+
 			customScrollMode = false;
 
 
@@ -1873,7 +1873,7 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 			const QToolButton *toolbutton = (const QToolButton *) widget;
 			bool onToolbar = widget->parentWidget() && widget->parentWidget()->inherits( "QToolBar" );
 			bool onExtender = !onToolbar && widget->parentWidget() && widget->parentWidget()->inherits( "QToolBarExtensionWidget" );
-			
+
 			bool onControlButtons = false;
 			if (!onToolbar && !onExtender && widget->parentWidget() &&
 				 !qstrcmp(widget->parentWidget()->name(),"qt_maxcontrols" ) )
@@ -1881,9 +1881,9 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				onControlButtons = true;
 				titleBarMode = Maximized;
 			}
-				
-			
-				
+
+
+
 
 			QRect button, menuarea;
 			button   = querySubControlMetrics(control, widget, SC_ToolButton, opt);
@@ -1949,18 +1949,18 @@ keramik_ripple ).width(), ar.height() - 8 ), widget );
 				fr.addCoords(3, 3, -3, -3);
 				drawPrimitive(PE_FocusRect, p, fr, cg);
 			}
-			
+
 			titleBarMode = None;
 
 			break;
 		}
-		
+
 		case CC_TitleBar:
 			titleBarMode = Regular; //Handle buttons on titlebar different from toolbuttons
 		default:
 			KStyle::drawComplexControl( control, p, widget,
 						r, cg, flags, controls, active, opt );
-						
+
 			titleBarMode = None;
 	}
 }
@@ -2094,7 +2094,7 @@ QSize KeramikStyle::sizeFromContents( ContentsType contents,
 			return QSize( contentSize.width() + arrow + (cb->editable() ? 26 : 22),
 					contentSize.height() + 10 );
 		}
-						  
+
 		// POPUPMENU ITEM SIZE
 		// -----------------------------------------------------------------
 		case CT_PopupMenuItem: {
@@ -2200,14 +2200,14 @@ QRect KeramikStyle::querySubControlMetrics( ComplexControl control,
 					else
 						return QRect( 6, 4, widget->width() - arrow - 22, widget->height() - 9 );
 				}
-				
+
 				case SC_ComboBoxListBoxPopup:
 				{
 					QRect def = opt.rect();
 					if ( widget->inherits( "KCompletionBox" ) )
 						def.addCoords( -4, 4, 10, 8 );
 					else def.addCoords( 4, -4, -6, 4 );
-					
+
 					return def;
 				}
 
@@ -2391,7 +2391,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		//CHECKME: Not sure the rects are perfect..
 		XRectangle rects[5] = {
 			{0, 0, resize->size().width()-2, resize->size().height()-6},
-			{1, resize->size().height()-6, resize->size().width()-3, 1},
+			{0, resize->size().height()-6, resize->size().width()-2, 1},
 			{1, resize->size().height()-5, resize->size().width()-3, 1},
 			{2, resize->size().height()-4, resize->size().width()-5, 1},
 			{3, resize->size().height()-3, resize->size().width()-7, 1}
@@ -2414,7 +2414,7 @@ bool KeramikStyle::eventFilter( QObject* object, QEvent* event )
 		if ( !listbox->contentsRect().contains( paint->rect() ) )
 		{
 			QPainter p( listbox );
-			Keramik::RectTilePainter( keramik_combobox_list, false ).draw( &p, 0, 0, listbox->width(), listbox->height(),
+			Keramik::RectTilePainter( keramik_combobox_list, false, false ).draw( &p, 0, 0, listbox->width(), listbox->height(),
 					listbox->palette().color( QPalette::Normal, QColorGroup::Button ),
 					listbox->palette().color( QPalette::Normal, QColorGroup::Background ) );
 
