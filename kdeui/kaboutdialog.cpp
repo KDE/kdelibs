@@ -935,6 +935,7 @@ void KAboutContainer::addImage( const QString &fileName, int alignment )
 }
 
 #if 0
+//MOC_SKIP_BEGIN
 
 /** Every person displayed is stored in a KAboutContributor object.
  *  Every contributor, the author and/or the maintainer of the application are
@@ -1187,6 +1188,7 @@ KAboutContributor::paintEvent(QPaintEvent* e)
   paint.drawText(WORKTEXT_IDENTATION, cy, w, h, AlignLeft | WordBreak, work);
   // ############################################################################
 }
+// MOC_SKIP_END
 #endif
 
 
