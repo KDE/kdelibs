@@ -1157,7 +1157,7 @@ void KHTMLView::print(bool quick)
     QString docname = m_part->xmlDocImpl()->URL();
     if ( !docname.isEmpty() )
         docname = KStringHandler::csqueeze(docname, 80);
-    if(quick || printer->setup(this, docname)) {
+    if(quick || printer->setup(this, QString("Print %1").arg(docname))) {
         viewport()->setCursor( waitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer->setFullPage(false);
