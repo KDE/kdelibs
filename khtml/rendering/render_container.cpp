@@ -42,6 +42,7 @@ RenderContainer::~RenderContainer()
 {
     RenderObject* next;
     for(RenderObject* n = m_first; n; n = next ) {
+	n->removeFromSpecialObjects();
         n->setParent(0);
         next = n->nextSibling();
         delete n;

@@ -91,7 +91,6 @@ public:
     int leftOffset(int y) const { return leftRelOffset(y, leftOffset()); }
 
     virtual void printTree(int indent=0) const;
-    virtual RenderObject* removeChildNode(RenderObject* child);
 
 protected:
 

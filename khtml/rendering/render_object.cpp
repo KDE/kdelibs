@@ -127,6 +127,8 @@ RenderObject::RenderObject()
 
 RenderObject::~RenderObject()
 {
+    removeFromSpecialObjects();
+	
     if(m_style->backgroundImage()) {
         m_style->backgroundImage()->deref(this);
     }
@@ -706,6 +708,17 @@ void RenderObject::invalidateLayout()
     setLayouted(false);
     if (m_parent && m_parent->layouted())
         m_parent->invalidateLayout();
+}
+
+void RenderObject::removeFromSpecialObjects()
+{
+    if (isPositioned() || isFloating()) {
+	RenderObject *p;
+	for (p = parent(); p; p = p->parent()) {
+	    if (p->isFlow())
+		static_cast<RenderFlow*>(p)->removeSpecialObject(this);
+	}
+    }
 }
 
 

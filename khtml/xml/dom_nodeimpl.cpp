@@ -833,8 +833,8 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
-    if (m_render && oldChild->renderer())
-        m_render->removeChild(oldChild->renderer());
+    if(oldChild->attached())
+	oldChild->detach();
 
     while (child) {
         nextChild = isFragment ? child->nextSibling() : 0;
@@ -913,8 +913,8 @@ void NodeBaseImpl::removeChildren()
         n->setPreviousSibling(0);
         n->setNextSibling(0);
         n->setParent(0);
-        if (n->renderer() && n->renderer()->parent())
-            n->renderer()->parent()->removeChild(n->renderer());
+        if (n->attached())
+	    n->detach();
         n->setRenderer( 0 );
         n->setStyle( 0 );
         if(n->deleteMe())

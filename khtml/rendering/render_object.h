@@ -439,6 +439,7 @@ public:
     void invalidateLayout();
     
     virtual void calcVerticalMargins() {}
+    void removeFromSpecialObjects();
 
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
