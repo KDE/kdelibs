@@ -627,7 +627,8 @@ void KFileBaseDialog::pathChanged()
     // we select a file
     *lastDirectory = dir->url();
 
-    const KFileInfoList *il = dir->entryInfoList();
+    const KFileInfoList *il = dir->entryInfoList(filter, \
+				QDir::Name | QDir::IgnoreCase);
 
     if (!dir->isReadable()) {
 	QMessageBox::message(i18n("Error: Cannot Open Directory"),
