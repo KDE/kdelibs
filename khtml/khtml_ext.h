@@ -29,6 +29,8 @@ public:
     void editableWidgetFocused( QWidget *widget );
     void editableWidgetBlurred( QWidget *widget );
 
+    void setExtensionProxy( KParts::BrowserExtension *proxyExtension );
+
 public slots:
     void cut();
     void copy();
@@ -39,9 +41,17 @@ public slots:
     // internal . updates the state of the cut/copt/paste action based
     // on whether data is available in the clipboard
     void updateEditActions();
+
+private slots:
+    // connected to a frame's browserextensions enableAction signal
+    void extensionProxyActionEnabled( const char *action, bool enable );
+
 private:
+    void callExtensionProxyMethod( const char *method );
+
     KHTMLPart *m_part;
     QGuardedPtr<QWidget> m_editableFormWidget;
+    QGuardedPtr<KParts::BrowserExtension> m_extensionProxy;
     bool m_connectedToClipboard;
 };
 

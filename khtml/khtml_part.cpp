@@ -1869,7 +1869,7 @@ DOM::Range KHTMLPart::selection() const
 {
     DOM::Range r = document().createRange();DOM::Range();
     r.setStart( d->m_selectionStart, d->m_startOffset );
-    r.setEnd( d->m_selectionEnd, d->m_endOffset );    
+    r.setEnd( d->m_selectionEnd, d->m_endOffset );
     return r;
 }
 
@@ -3762,7 +3762,9 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
            frame->repaint();
         }
     }
+
     d->m_activeFrame = part;
+
     if ( d->m_activeFrame && d->m_activeFrame->widget()->inherits( "QFrame" ) )
     {
         QFrame *frame = static_cast<QFrame *>( d->m_activeFrame->widget() );
@@ -3773,7 +3775,11 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
         }
         kdDebug(6050) << "new active frame " << d->m_activeFrame << endl;
     }
+
     updateActions();
+
+    // (note: childObject returns 0 if the argument is 0)
+    d->m_extension->setExtensionProxy( KParts::BrowserExtension::childObject( d->m_activeFrame ) );
 }
 
 #include "khtml_part.moc"

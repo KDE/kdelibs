@@ -8,6 +8,7 @@
 #include <qclipboard.h>
 #include <qpopupmenu.h>
 #include <qlineedit.h>
+#include <qmetaobject.h>
 
 #include <kdebug.h>
 #include <klocale.h>
@@ -105,8 +106,38 @@ void KHTMLPartBrowserExtension::editableWidgetBlurred( QWidget *widget )
     }
 }
 
+void KHTMLPartBrowserExtension::setExtensionProxy( KParts::BrowserExtension *proxy )
+{
+    if ( m_extensionProxy )
+        disconnect( m_extensionProxy, SIGNAL( enableAction( const char *, bool ) ),
+                    this, SLOT( extensionProxyActionEnabled( const char *, bool ) ) );
+
+    m_extensionProxy = proxy;
+
+    if ( m_extensionProxy )
+    {
+        connect( m_extensionProxy, SIGNAL( enableAction( const char *, bool ) ),
+                 this, SLOT( extensionProxyActionEnabled( const char *, bool ) ) );
+
+        enableAction( "cut", m_extensionProxy->isActionEnabled( "cut" ) );
+        enableAction( "copy", m_extensionProxy->isActionEnabled( "copy" ) );
+        enableAction( "paste", m_extensionProxy->isActionEnabled( "paste" ) );
+    }
+    else
+    {
+        updateEditActions();
+        enableAction( "copy", false ); // ### re-check this
+    }
+}
+
 void KHTMLPartBrowserExtension::cut()
 {
+    if ( m_extensionProxy )
+    {
+        callExtensionProxyMethod( "cut()" );
+        return;
+    }
+
     ASSERT( m_editableFormWidget );
     if ( !m_editableFormWidget )
         return; // shouldn't happen
@@ -119,25 +150,37 @@ void KHTMLPartBrowserExtension::cut()
 
 void KHTMLPartBrowserExtension::copy()
 {
-  kdDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()" << endl;
-  if ( !m_editableFormWidget )
-  {
-      // get selected text and paste to the clipboard
-      QString text = m_part->selectedText();
-      QClipboard *cb = QApplication::clipboard();
-      cb->setText(text);
-  }
-  else
-  {
-      if ( m_editableFormWidget->inherits( "QLineEdit" ) )
-          static_cast<QLineEdit *>( &(*m_editableFormWidget) )->copy();
-      else if ( m_editableFormWidget->inherits( "QMultiLineEdit" ) )
-          static_cast<QMultiLineEdit *>( &(*m_editableFormWidget) )->copy();
-  }
+    if ( m_extensionProxy )
+    {
+        callExtensionProxyMethod( "copy()" );
+        return;
+    }
+
+    kdDebug( 6050 ) << "************! KHTMLPartBrowserExtension::copy()" << endl;
+    if ( !m_editableFormWidget )
+    {
+        // get selected text and paste to the clipboard
+        QString text = m_part->selectedText();
+        QClipboard *cb = QApplication::clipboard();
+        cb->setText(text);
+    }
+    else
+    {
+        if ( m_editableFormWidget->inherits( "QLineEdit" ) )
+            static_cast<QLineEdit *>( &(*m_editableFormWidget) )->copy();
+        else if ( m_editableFormWidget->inherits( "QMultiLineEdit" ) )
+            static_cast<QMultiLineEdit *>( &(*m_editableFormWidget) )->copy();
+    }
 }
 
 void KHTMLPartBrowserExtension::paste()
 {
+    if ( m_extensionProxy )
+    {
+        callExtensionProxyMethod( "paste()" );
+        return;
+    }
+
     ASSERT( m_editableFormWidget );
     if ( !m_editableFormWidget )
         return; // shouldn't happen
@@ -146,6 +189,18 @@ void KHTMLPartBrowserExtension::paste()
         static_cast<QLineEdit *>( &(*m_editableFormWidget) )->paste();
     else if ( m_editableFormWidget->inherits( "QMultiLineEdit" ) )
         static_cast<QMultiLineEdit *>( &(*m_editableFormWidget) )->paste();
+}
+
+void KHTMLPartBrowserExtension::callExtensionProxyMethod( const char *method )
+{
+    if ( !m_extensionProxy )
+        return;
+
+    QMetaData *metaData = m_extensionProxy->metaObject()->slot( method );
+    if ( !metaData )
+        return;
+
+    (m_extensionProxy->*(metaData->ptr))();
 }
 
 void KHTMLPartBrowserExtension::updateEditActions()
@@ -170,6 +225,15 @@ void KHTMLPartBrowserExtension::updateEditActions()
 
     enableAction( "copy", hasSelection );
     enableAction( "cut", hasSelection );
+}
+
+void KHTMLPartBrowserExtension::extensionProxyActionEnabled( const char *action, bool enable )
+{
+    // only forward enableAction calls for actions we actually do foward
+    if ( strcmp( action, "cut" ) == 0 ||
+         strcmp( action, "copy" ) == 0 ||
+         strcmp( action, "paste" ) == 0 )
+        enableAction( action, enable );
 }
 
 void KHTMLPartBrowserExtension::reparseConfiguration()
