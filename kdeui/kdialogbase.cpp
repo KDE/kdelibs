@@ -328,19 +328,20 @@ void KDialogBase::adjustSize()
   //
   // The button box
   //
-  s2 = mButton.box->minimumSize();
-  if( mButtonOrientation == Horizontal )
+  if( mButton.box != 0 )
   {
-    s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
-    s1.rheight() += s2.rheight();
+    s2 = mButton.box->minimumSize();
+    if( mButtonOrientation == Horizontal )
+    {
+      s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
+      s1.rheight() += s2.rheight();
+    }
+    else
+    {
+      s1.rwidth() += s2.rwidth();
+      s1.rheight() = QMAX( s1.rheight(), s2.rheight() );
+    }
   }
-  else
-  {
-    s1.rwidth() += s2.rwidth();
-    s1.rheight() = QMAX( s1.rheight(), s2.rheight() );
-  }
-  //s1.rwidth()   = QMAX( s1.rwidth(), s2.rwidth() );
-  //s1.rheight() += s2.rheight();
 
   //
   // Outer margings
@@ -391,6 +392,12 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
 				 const QString &user1, const QString &user2,
 				 const QString &user3 )
 {
+  if( buttonMask == 0 )
+  {
+    mButton.box = 0;
+    return; // When we want no button box
+  }
+
   if( buttonMask & Cancel ) { buttonMask &= ~Close; }
   if( buttonMask & Apply ) { buttonMask &= ~Try; }
 
@@ -483,6 +490,11 @@ void KDialogBase::makeButtonBox( int buttonMask, ButtonCode defaultButton,
 
 void KDialogBase::setButtonStyle( int style )
 {
+  if( mButton.box == 0 )
+  {
+    return;
+  }
+
   if( style < 0 || style > ActionStyleMAX ) { style = ActionStyle0; }
   mButton.style = style;
 
@@ -513,17 +525,6 @@ void KDialogBase::setButtonStyle( int style )
     layout = layoutRule[ mButton.style ];
   }
 
-  // static int layoutRule[5][8] =
-  //{
-  //  {Help,Default|Stretch,User3,User2,User1,Ok,Apply|Try,Cancel|Close},
-  //  {Help,Default|Stretch,User3,User2,User1,Cancel|Close,Apply|Try,Ok},
-  //  {Help,Default|Stretch,User3,User2,User1,Apply|Try,Cancel|Close,Ok},
-  //  {Ok,Apply|Try,Cancel|Close,User3,User2,User1|Stretch,Default,Help},
-  // {Ok,Cancel|Close,Apply|Try,User3,User2,User1|Stretch,Default,Help},
-  //};
-  //const int *layout = layoutRule[ mButton.style ];
-
-
   if( mButton.box->layout() )
   {
     delete mButton.box->layout();
@@ -540,8 +541,6 @@ void KDialogBase::setButtonStyle( int style )
     lay = new QBoxLayout( mButton.box, QBoxLayout::TopToBottom, 0,
 			  spacingHint());
   }
-
-  //QHBoxLayout *hbox = new QHBoxLayout( mButton.box, 0, spacingHint() );
 
   if( mMessageBoxMode == true )
   {
@@ -1158,7 +1157,15 @@ QRect KDialogBase::getContentsRect()
   r.setTop( marginHint() + (mUrlHelp != 0 ? mUrlHelp->height() : 0) );
   r.setRight( width() - marginHint() );
   int h = (mActionSep==0?0:mActionSep->minimumSize().height()+marginHint());
-  r.setBottom( height() - mButton.box->minimumSize().height() - h );
+  if( mButton.box != 0 )
+  {
+    r.setBottom( height() - mButton.box->minimumSize().height() - h );
+  }
+  else
+  {
+    r.setBottom( height() - h );
+  }
+
   return(r);
 }
 
@@ -1174,7 +1181,7 @@ void KDialogBase::getBorderWidths(int& ulx, int& uly, int& lrx, int& lry) const
   }
 
   lrx = marginHint();
-  lry = mButton.box->minimumSize().height();
+  lry = mButton.box != 0 ? mButton.box->minimumSize().height() : 0;
   if( mActionSep != 0 )
   {
     lry += mActionSep->minimumSize().height() + marginHint();
@@ -1303,15 +1310,21 @@ void KDialogBase::updateBackground()
   {
     QPixmap nullPixmap;
     setBackgroundPixmap(nullPixmap);
-    mButton.box->setBackgroundPixmap(nullPixmap);
+    if( mButton.box != 0 )
+    {
+      mButton.box->setBackgroundPixmap(nullPixmap);
+      mButton.box->setBackgroundMode(PaletteBackground);
+    }
     setBackgroundMode(PaletteBackground);
-    mButton.box->setBackgroundMode(PaletteBackground);
   }
   else
   {
     const QPixmap *pix = mTile->get();
     setBackgroundPixmap(*pix);
-    mButton.box->setBackgroundPixmap(*pix);
+    if( mButton.box != 0 )
+    {
+      mButton.box->setBackgroundPixmap(*pix);
+    }
     showTile( mShowTile );
   }
 }
@@ -1323,7 +1336,10 @@ void KDialogBase::showTile( bool state )
   if( mShowTile == false || mTile == 0 || mTile->get() == 0 )
   {
     setBackgroundMode(PaletteBackground);
-    mButton.box->setBackgroundMode(PaletteBackground);
+    if( mButton.box != 0 )
+    {
+      mButton.box->setBackgroundMode(PaletteBackground);
+    }
     if( mUrlHelp != 0 )
     {
       mUrlHelp->setBackgroundMode(PaletteBackground);
@@ -1333,7 +1349,10 @@ void KDialogBase::showTile( bool state )
   {
     const QPixmap *pix = mTile->get();
     setBackgroundPixmap(*pix);
-    mButton.box->setBackgroundPixmap(*pix);
+    if( mButton.box != 0 )
+    {
+      mButton.box->setBackgroundPixmap(*pix);
+    }
     if( mUrlHelp != 0 )
     {
       mUrlHelp->setBackgroundPixmap(*pix);

@@ -117,11 +117,24 @@ class KDialogBaseTile : public QObject
  * buttons. Each button has a virtual slot so you can overload the method 
  * when required. The default slots emit a signal as well, so you can choose
  * to connect a signal instead of overriding the slot.
- * The default implementation of @ref slotHelp() will automatically enable the 
- * help system if you have provided a path to the help text. @ref slotCancel() 
- * and @ref slotClose() will run @ref QDialog::reject() while @ref slotOk() 
- * will run @ref QDialog::accept(). You define a default button in the 
- * constructor.
+ * The default implementation of @ref slotHelp() will automatically enable 
+ * the help system if you have provided a path to the help text. 
+ * @ref slotCancel() and @ref slotClose() will run @ref QDialog::reject() 
+ * while @ref slotOk() will run @ref QDialog::accept(). You define a default 
+ * button in the constructor.
+ *
+ * If you don't not want any buttons at all because your dialog is special
+ * in some way, then set the buttonMask argument in the constructor to zero 
+ * (0). The optional button box separator line should not be enabled  
+ * in this case. Note that the KDialogBase will animate a button press
+ * when the user press Escape. The button that is enabled is either Cancel,
+ * Close or the button that is defined by @ref setEscapeButton() The 
+ * animation will not take place when the buttonMask is zero. Your 
+ * custom dialog code should reimplement the @ref keyPressEvent and 
+ * animate the cancel button so that the dialog behaves like regular 
+ * dialogs. NOTE: None of the regular slots (like @ref slotOk() ) or 
+ * signals that are related to the standard action buttons will be used 
+ * when you don't use these buttons.
  *
  * @sect Dialog shapes:
  *
@@ -275,9 +288,12 @@ class KDialogBase : public KDialog
   private:
     struct SButton
     {
-      int mask;
-      int style;
-      QList<KDialogBaseButton> list;
+      SButton()
+      {
+	box = 0;
+	mask = 0;
+	style = 0;
+      }
       
       QPushButton *append( int key, const QString &text )
       {
@@ -308,7 +324,7 @@ class KDialogBase : public KDialog
 	  }
 	
 	  p = list.first();
-	  box->setMinimumHeight( margin*2 + ( p==0? 0:p->sizeHint().height()));
+	  box->setMinimumHeight( margin*2 + ( p==0?0:p->sizeHint().height()));
 	  box->setMinimumWidth( margin*2 + t - spacing );
 	}
 	else
@@ -341,13 +357,17 @@ class KDialogBase : public KDialog
       }
 
       QWidget *box;
+      int mask;
+      int style;
+      QList<KDialogBaseButton> list;
+      
     };
 
   public:
 
     /** 
-     * Constructor for the standard mode where you must specify the main widget
-     * with @ref setMainWidget() .
+     * Constructor for the standard mode where you must specify the main 
+     * widget with @ref setMainWidget() .
      * 
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only)
@@ -356,8 +376,10 @@ class KDialogBase : public KDialog
      *        the dialog is open.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
-     * @param buttonMask Specifies which buttons will be visible.
-     * @param defaultButton Specifies which button will be marked as the default.
+     * @param buttonMask Specifies which buttons will be visible. If zero 
+     *        (0) no button box will be made.
+     * @param defaultButton Specifies which button will be marked as 
+     *        the default.
      * @param separator If @p true, a separator line is drawn between the 
      *        action buttons and the main widget.
      * @param user1 User button1 text.
@@ -373,14 +395,17 @@ class KDialogBase : public KDialog
 		 const QString &user3=QString::null);
 
     /** 
-     * Constructor for the predefined layout mode where you specify the kind of
-     * layout (face).
+     * Constructor for the predefined layout mode where you specify the 
+     * kind of layout (face).
      * 
-     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or IconList.
+     * @param dialogFace You can use TreeList, Tabbed, Plain, Swallow or 
+     *        IconList.
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
-     * @param buttonMask Specifies what buttons will be visible.
-     * @param defaultButton Specifies what button we be marked as the default.
+     * @param buttonMask Specifies which buttons will be visible. If zero 
+     *        (0) no button box will be made.
+     * @param defaultButton Specifies which button will be marked as 
+     *        the default.
      * @param parent Parent of the dialog.
      * @param name Dialog name (for internal use only).
      * @param modal Controls dialog modality. If @p false, the rest of the 
@@ -414,8 +439,10 @@ class KDialogBase : public KDialog
      * 
      * @param caption The dialog caption. Do not specify the application name
      *        here. The class will take care of that.
-     * @param buttonMask Specifies which buttons will be visible.
-     * @param defaultButton Specifies which button we be marked as the default.
+     * @param buttonMask Specifies which buttons will be visible. If zero 
+     *        (0) no button box will be made.
+     * @param defaultButton Specifies which button will be marked as 
+     *        the default.
      * @param escapeButton Specifies which button will be activated by
      *        when the dialog receives a @p Key_Escape keypress. 
      * @param parent Parent of the dialog.
