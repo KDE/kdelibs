@@ -384,6 +384,7 @@ KateDocument::~KateDocument()
   myMarks.clear ();
 
   delete buffer;
+  delete fileInfo;
 }
 
 //
