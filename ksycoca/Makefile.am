@@ -3,15 +3,15 @@ INCLUDES= $(all_includes)
 
 CXXFLAGS := $(CXXFLAGS) -Wall @NOREPO@
 
-lib_LTLIBRARIES = libksycoca.la
-libksycoca_la_LDFLAGS = -version-info 1:0
-libksycoca_la_LIBADD = ../kdeui/libkdeui.la
+lib_LTLIBRARIES = libkio.la
+libkio_la_LDFLAGS = -version-info 1:0
+libkio_la_LIBADD = ../kdeui/libkdeui.la
 
 bin_PROGRAMS = ksycocatest
 ksycocatest_LDADD = libksycoca.la
 ksycocatest_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-libksycoca_la_SOURCES = \
+libkio_la_SOURCES = \
 	ksycoca.cpp ksycocadict.cpp ksycocaentry.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kmimemagic.cpp \
@@ -26,7 +26,7 @@ libksycoca_la_SOURCES = \
 ksycocatest_SOURCES = main.cpp
 
 ksycoca_METASOURCES = AUTO
-libksycoca_la_METASOURCES = AUTO
+libkio_la_METASOURCES = AUTO
 
 include_HEADERS = ksycoca.h ksycocafactory.h ksycocaentry.h ksycocadict.h \
 	kservicetype.h kservicetypefactory.h \
