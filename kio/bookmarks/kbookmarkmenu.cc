@@ -56,6 +56,7 @@
 #include <kstdaction.h>
 #include <kconfig.h>
 
+#include <qheader.h>
 #include <qlistview.h>
 
 #include <kiconloader.h>
@@ -568,34 +569,41 @@ void KBookmarkMenuNSImporter::endFolder()
   mstack.pop();
 }
 
-BookmarkEditDialog::BookmarkEditDialog(QString title, QString url, KBookmarkManager * mgr,
-                                       QWidget * parent, const char * name)
-  : KDialogBase(parent, name, true, "", Ok|Cancel, Ok, true)
+BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr,
+                                       QWidget * parent, const char * name, const QString& caption)
+  : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem("Insert Folder..."))
 {
   m_mgr = mgr;
+
+  setButtonOKText( i18n( "Add" ) );
 
   m_main = new QWidget( this );
   setMainWidget( m_main );
 
-  QBoxLayout *vert = new QVBoxLayout( m_main );
+  QBoxLayout *vert = new QVBoxLayout( m_main, spacingHint() );
+  QGridLayout *grid = new QGridLayout( vert, 2, 2 );
 
-  vert->addWidget( new QLabel( "Name", m_main ) );
   m_title = new KLineEdit( m_main );
   m_title->setText( title );
-  vert->addWidget( m_title );
+  grid->addWidget( m_title, 0, 1 );
+  grid->addWidget( new QLabel( m_title, i18n( "Name:" ), m_main ), 0, 0 );
 
-  vert->addWidget( new QLabel( "Location", m_main ) );
   m_url = new KLineEdit( m_main );
   m_url->setText( url );
-  vert->addWidget( m_url );
+  grid->addWidget( m_url, 1, 1 );
+  grid->addWidget( new QLabel( m_url, i18n( "Location:" ), m_main ), 1, 0 );
 
   m_folderTree = KBookmarkFolderTree::createTree( m_mgr, m_main, name );
+  m_folderTree->header()->hide();
+  m_folderTree->setRootIsDecorated( false );
+  m_folderTree->setResizeMode( QListView::AllColumns );
   m_folderTree->setMinimumSize( 60, 100 );
   vert->addWidget( m_folderTree );
 
-  m_button = new QPushButton( "Insert Folder...", m_main );
-  vert->addWidget( m_button );
-  connect( m_button, SIGNAL( clicked() ), this, SLOT( slotInsertFolder() ) );
+  connect( this, SIGNAL( user1Clicked() ), SLOT( slotInsertFolder() ) );
+
+  m_folderTree->setFocus();
+  m_folderTree->firstChild()->setSelected( true );
 }
 
 void BookmarkEditDialog::slotOk() { accept(); }

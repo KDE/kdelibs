@@ -28,6 +28,7 @@
 #include <qlistview.h>
 
 #include <kdialogbase.h>
+#include <klocale.h>
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
@@ -197,7 +198,7 @@ class BookmarkEditDialog : public KDialogBase
   Q_OBJECT
 
 public:
-  BookmarkEditDialog( QString, QString, KBookmarkManager *, QWidget * = 0, const char * = 0 );
+  BookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
   QString finalUrl();
   QString finalTitle();
   QString finalAddress();
