@@ -885,7 +885,7 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
 		if (filename != ".." && filename != ".") {
  		    KURL newone = url();
 		    newone.addPath(filename);
-		    ListJob *job = new ListJob(newone, true, prefix + filename + "/");
+		    ListJob *job = new ListJob(newone, m_progressId!=0, true, prefix + filename + "/");
 		    connect(job, SIGNAL(entries( KIO::Job *,
 						 const KIO::UDSEntryList& )),
 			    SLOT( gotEntries( KIO::Job*,
@@ -1161,7 +1161,7 @@ void CopyJob::slotResultStating( Job *job )
             destinationState = DEST_IS_DIR;
 
         state = STATE_LISTING;
-        ListJob *newjob = listRecursive( srcurl );
+        ListJob *newjob = listRecursive( srcurl, false );
         connect(newjob, SIGNAL(entries( KIO::Job *,
                                         const KIO::UDSEntryList& )),
                 SLOT( slotEntries( KIO::Job*,
