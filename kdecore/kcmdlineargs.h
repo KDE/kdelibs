@@ -121,6 +121,7 @@ class KCmdLineArgsPrivate;
  *     { "nooption5", I18N_NOOP("Another long option with an alias."), 0 },
  *     { "f", 0, 0 },
  *     { "option6 <speed>", I18N_NOOP("'--option6 speed' is same a '-f speed'"), 0 },
+ *     { "!option7 <cmd>", I18N_NOOP("All options following this one will be treated as arguments", 0 },
  *     { "+file", I18N_NOOP("A required argument 'file'.), 0 },
  *     { "+[arg1]", I18N_NOOP("An optional argument 'arg1'."), 0 },
  *     { 0, 0, 0 } // End of options.
@@ -173,7 +174,7 @@ class KCmdLineArgsPrivate;
  *
  *  @short A class for command-line argument handling.
  *  @author Waldo Bastian
- *  @version 0.0.3
+ *  @version 0.0.4
  */
 class KCmdLineArgs
 {
@@ -447,7 +448,7 @@ private:
    *
    * Checks what to do with a single option
    */
-  static void findOption(const char *_opt, QCString opt, int &i, bool enabled);
+  static void findOption(const char *_opt, QCString opt, int &i, bool enabled, bool &moreOptions);
 
   /**
    * @internal
