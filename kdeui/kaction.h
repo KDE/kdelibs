@@ -72,7 +72,7 @@ class KAccel;
  * @sect General Usage:
  *
  * The steps to using actions are roughly as follows
- * 
+ *
  * @li Decide which attributes you want to associate with a given
  *     action (icons, text, keyboard accelerator, etc)
  * @li Create the action using KAction (or derived or super class).
@@ -207,7 +207,7 @@ public:
     KAction( QObject* parent = 0, const char* name = 0 );
 
     /**
-     * "Plug" or insert this action into a given widget.  
+     * "Plug" or insert this action into a given widget.
 
      * This will
      * typically be a menu or a toolbar.  From this point on, you will
@@ -224,7 +224,7 @@ public:
 	virtual void plugStdAccel(KAccel *accel, KStdAccel::StdAccel stdaccel);
 
     /**
-     * "Unplug" or remove this action from a given widget.  
+     * "Unplug" or remove this action from a given widget.
 
      * This will
      * typically be a menu or a toolbar.  This is rarely used in
@@ -270,9 +270,9 @@ public:
 class KToggleAction : public QToggleAction
 {
     Q_OBJECT
-    
+
 public:
-    
+
     /**
      * Construct a toggle action with text and potential keyboard
      * accelerator but nothing else. Use this only if you really
@@ -284,7 +284,7 @@ public:
      * @param name An internal name for this action.
      */
     KToggleAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
-    
+
     /**
      *  @param text The text that will be displayed.
      *  @param accel The corresponding keyboard accelerator (shortcut).
@@ -295,7 +295,7 @@ public:
      */
     KToggleAction( const QString& text, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-    
+
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
@@ -305,7 +305,7 @@ public:
      */
     KToggleAction( const QString& text, const QIconSet& pix, int accel = 0,
 	     QObject* parent = 0, const char* name = 0 );
-    
+
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
@@ -317,7 +317,7 @@ public:
      */
     KToggleAction( const QString& text, const QIconSet& pix, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-    
+
     /**
      *  @param parent This action's parent.
      *  @param name An internal name for this action.
@@ -348,13 +348,72 @@ public:
     bool isChecked() const;
 
 protected slots:
-    
-    void slotActivated();
+
+    virtual void slotActivated();
 
 protected:
-    
+
     bool locked, locked2;
     bool checked;
+};
+
+class KRadioAction : public KToggleAction
+{
+  Q_OBJECT
+public:
+    /**
+     * Construct a radio action with text and potential keyboard
+     * accelerator but nothing else. Use this only if you really
+     * know what you are doing.
+     *
+     * @param text The text that will be displayed.
+     * @param accel The corresponding keyboard accelerator (shortcut).
+     * @param parent This action's parent.
+     * @param name An internal name for this action.
+     */
+    KRadioAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KRadioAction( const QString& text, int accel,
+		  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KRadioAction( const QString& text, const QIconSet& pix, int accel = 0,
+	          QObject* parent = 0, const char* name = 0 );
+
+    /**
+     *  @param text The text that will be displayed.
+     *  @param pix The icons that go with this action.
+     *  @param accel The corresponding keyboard accelerator (shortcut).
+     *  @param receiver The SLOT's parent.
+     *  @param slot The SLOT to invoke to execute this action.
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KRadioAction( const QString& text, const QIconSet& pix, int accel,
+		  const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
+
+    /**
+     *  @param parent This action's parent.
+     *  @param name An internal name for this action.
+     */
+    KRadioAction( QObject* parent = 0, const char* name = 0 );
+
+protected:
+    virtual void slotActivated();
 };
 
 /**
@@ -385,7 +444,7 @@ public:
      * @param name An internal name for this action.
      */
     KSelectAction( const QString& text, int accel = 0, QObject* parent = 0, const char* name = 0 );
-    
+
     /**
      *  @param text The text that will be displayed.
      *  @param accel The corresponding keyboard accelerator (shortcut).
@@ -396,7 +455,7 @@ public:
      */
     KSelectAction( const QString& text, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-    
+
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
@@ -406,7 +465,7 @@ public:
      */
     KSelectAction( const QString& text, const QIconSet& pix, int accel = 0,
 	     QObject* parent = 0, const char* name = 0 );
-    
+
     /**
      *  @param text The text that will be displayed.
      *  @param pix The icons that go with this action.
@@ -418,7 +477,7 @@ public:
      */
     KSelectAction( const QString& text, const QIconSet& pix, int accel,
 		   const QObject* receiver, const char* slot, QObject* parent, const char* name = 0 );
-    
+
     /**
      *  @param parent This action's parent.
      *  @param name An internal name for this action.

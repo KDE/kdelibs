@@ -391,6 +391,42 @@ bool KToggleAction::isChecked() const
     return checked;
 }
 
+KRadioAction::KRadioAction( const QString& text, int accel, QObject* parent, const char* name )
+: KToggleAction( text, accel, parent, name )
+{
+}
+
+KRadioAction::KRadioAction( const QString& text, int accel,
+	                    const QObject* receiver, const char* slot, QObject* parent, const char* name )
+: KToggleAction( text, accel, receiver, slot, parent, name )
+{
+}
+
+KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, int accel,
+	                    QObject* parent, const char* name )
+: KToggleAction( text, pix, accel, parent, name )
+{
+}
+
+KRadioAction::KRadioAction( const QString& text, const QIconSet& pix, int accel,
+			    const QObject* receiver, const char* slot, QObject* parent, const char* name )
+: KToggleAction( text, pix, accel, receiver, slot, parent, name )
+{
+}
+
+KRadioAction::KRadioAction( QObject* parent, const char* name )
+: KToggleAction( parent, name )
+{
+} 
+
+void KRadioAction::slotActivated()
+{
+  if ( isChecked() )
+    return;
+  
+  KToggleAction::slotActivated();
+} 
+
 KSelectAction::KSelectAction( const QString& text, int accel,
 			      QObject* parent, const char* name )
     : QSelectAction( text, accel, parent, name )
