@@ -91,7 +91,7 @@ public:
 	/**
 	 * sets the method to invoke
 	 */
-	DynamicRequest& method(const string& method);
+	DynamicRequest& method(const std::string& method);
 
 	/**
 	 * adds a parameter to the call

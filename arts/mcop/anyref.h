@@ -37,7 +37,7 @@ protected:
 	 * an enum or similar. For normal types, it remains unset, as their
 	 * name can be generated from rep.
 	 */
-	string _type;
+	std::string _type;
 
 	/*
 	 * What representation data is pointing to?
@@ -69,7 +69,7 @@ protected:
 	AnyRefBase(const AnyRefBase &copy)
 		: data(copy.data), _type(copy._type), rep(copy.rep) { }
 public:
-	string type() const;
+	std::string type() const;
 };
 
 class AnyConstRef : public AnyRefBase {
@@ -80,13 +80,17 @@ public:
 	AnyConstRef(const long& 	value)	: AnyRefBase(&value,repLong) { };
 	AnyConstRef(const float& 	value)	: AnyRefBase(&value,repFloat) { };
 	AnyConstRef(const double& 	value)	: AnyRefBase(&value,repDouble) { };
-	AnyConstRef(const string&	value)	: AnyRefBase(&value,repString) { };
+	AnyConstRef(const std::string& value) : AnyRefBase(&value,repString) { };
 	AnyConstRef(const char *value)		: AnyRefBase(value,repCString) { };
 
-	AnyConstRef(const vector<mcopbyte>& v)	: AnyRefBase(&v,repByteSeq) { };
-	AnyConstRef(const vector<long>& v)		: AnyRefBase(&v,repLongSeq) { };
-	AnyConstRef(const vector<float>& v)		: AnyRefBase(&v,repFloatSeq) { };
-	AnyConstRef(const vector<string>& v)	: AnyRefBase(&v,repStringSeq) { };
+	AnyConstRef(const std::vector<mcopbyte>& v)
+										: AnyRefBase(&v,repByteSeq) { };
+	AnyConstRef(const std::vector<long>& v)	
+										: AnyRefBase(&v,repLongSeq) { };
+	AnyConstRef(const std::vector<float>& v)
+										: AnyRefBase(&v,repFloatSeq) { };
+	AnyConstRef(const std::vector<std::string>& v)
+										: AnyRefBase(&v,repStringSeq) { };
 
 	AnyConstRef(const AnyConstRef& ref) : AnyRefBase(ref) { }
 	void write(Buffer *b) const			{ _write(b); }
@@ -102,13 +106,13 @@ public:
 	AnyRef(long& 	value)				: AnyRefBase(&value,repLong) { };
 	AnyRef(float& 	value)				: AnyRefBase(&value,repFloat) { };
 	AnyRef(double& 	value)				: AnyRefBase(&value,repDouble) { };
-	AnyRef(string&	value)				: AnyRefBase(&value,repString) { };
+	AnyRef(std::string&	value)			: AnyRefBase(&value,repString) { };
 
 	// sequence of primitive types
-	AnyRef(vector<mcopbyte>& value)		: AnyRefBase(&value,repByteSeq) { };
-	AnyRef(vector<long>& value)			: AnyRefBase(&value,repLongSeq) { };
-	AnyRef(vector<float>& value)		: AnyRefBase(&value,repFloatSeq) { };
-	AnyRef(vector<string>& value)		: AnyRefBase(&value,repStringSeq) { };
+	AnyRef(std::vector<mcopbyte>& value)	: AnyRefBase(&value,repByteSeq) { };
+	AnyRef(std::vector<long>& value)		: AnyRefBase(&value,repLongSeq) { };
+	AnyRef(std::vector<float>& value)		: AnyRefBase(&value,repFloatSeq) { };
+	AnyRef(std::vector<std::string>& value)	: AnyRefBase(&value,repStringSeq){};
 	
 	AnyRef(const AnyRef& ref) : AnyRefBase(ref) { }
 
