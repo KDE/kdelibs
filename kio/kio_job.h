@@ -6,7 +6,9 @@
 #include <kurl.h>
 
 #include <qobject.h>
-#include <qmap.h>
+#include <qintdict.h>
+#include <qlist.h>
+#include <qdict.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdatetime.h>
@@ -511,7 +513,8 @@ protected:
   int m_id;
   static int s_id;
 
-  static QMap<int,KIOJob*>* s_mapJobs;
+  typedef QIntDict<KIOJob> jobDict;
+  static jobDict* s_allJobs;
   static KIOListProgressDlg *m_pListProgressDlg;
 };
 
@@ -547,8 +550,10 @@ protected:
     QString m_user;
     QString m_pass;
   };
-  
-  QMap<QString,Entry> m_mapSlaves;
+
+  typedef QList<Entry> entryList;
+  typedef QDict<entryList> entryMap;
+  entryMap m_allSlaves;
 
   static KIOSlavePool* s_pSelf;
 };

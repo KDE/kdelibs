@@ -32,8 +32,13 @@
 #include <sys/mount.h>
 #endif      
 
+/**
+ * Maximum number of slaves started for certain protocol.
+ */
+#define MAX_SLAVES( protocol )   6
+
 int KIOJob::s_id = 0;
-QMap<int,KIOJob*>* KIOJob::s_mapJobs = 0L;
+KIOJob::jobDict *KIOJob::s_allJobs = 0L;
 KIOListProgressDlg* KIOJob::m_pListProgressDlg = 0L;
 
 KIOJob::KIOJob(const char *name)
@@ -41,11 +46,11 @@ KIOJob::KIOJob(const char *name)
 
   m_id = ++s_id;
 
-  if (!s_mapJobs) {
+  if (!s_allJobs) {
     initStatic();
   }
 
-  (*s_mapJobs)[ m_id ] = this;
+  s_allJobs->insert( m_id, this);
   
   m_bAutoDelete = true;
   m_iGUImode = SIMPLE; // !!! LIST;  // default is list progress dialog
@@ -90,8 +95,8 @@ KIOJob::~KIOJob() {
 
 
 void KIOJob::initStatic() {
-  if ( !s_mapJobs ) {
-    s_mapJobs = new QMap<int,KIOJob*>;
+  if ( !s_allJobs ) {
+    s_allJobs = new jobDict;
   }
 
   if ( !m_pListProgressDlg ) {  // !!! really need to check ?
@@ -101,12 +106,7 @@ void KIOJob::initStatic() {
 
 
 KIOJob *KIOJob::find( int _id ) {
-  QMap<int,KIOJob*>::Iterator it = s_mapJobs->find( _id );
-  if ( it == s_mapJobs->end() ) {
-    return 0L;
-  }
-
-  return (*it);
+  return s_allJobs->find( _id );
 }
 
 
@@ -123,10 +123,10 @@ void KIOJob::kill( bool quiet ) {
 
 
 void KIOJob::clean() {
-  assert( s_mapJobs );
+  assert( s_allJobs );
   if ( m_id ) {
-    assert( s_mapJobs->find( m_id ) != s_mapJobs->end() );
-    s_mapJobs->remove( m_id );
+    assert( s_allJobs->find( m_id ) != 0 );
+    s_allJobs->remove( m_id );
     m_id = 0;
   }
   
@@ -625,8 +625,8 @@ void KIOJob::slotFinished() {
   // we remove the id from the map NOW, nobody gets the pointer to this
   // object => nobody can delete it. We delete this object at the end
   // of this function anyway.
-  assert( s_mapJobs );
-  s_mapJobs->remove( m_id );
+  assert( s_allJobs );
+  s_allJobs->remove( m_id );
 
   // Put the slave back to the pool
   if ( m_pSlave ) {  
@@ -677,8 +677,8 @@ void KIOJob::slotError( int _errid, const char *_txt ) {
   // we remove the id from the map NOW, nobody gets the pointer to this
   // object => nobody can delete it. We delete this object at the end
   // of this function anyway.
-  assert( s_mapJobs );
-  s_mapJobs->remove( m_id );
+  assert( s_allJobs );
+  s_allJobs->remove( m_id );
 
   emit sigError( m_id, _errid, _txt );
   m_id = 0;
@@ -1045,66 +1045,112 @@ KIOSlavePool* KIOSlavePool::s_pSelf = 0L;
 
 
 KIOSlave* KIOSlavePool::slave( const char *_protocol ) {
-  QMap<QString,Entry>::Iterator it = m_mapSlaves.find( _protocol );
-  if ( it == m_mapSlaves.end() )
-    return 0L;
+  entryList *slaveList = m_allSlaves.find( _protocol );
+  if (!slaveList)
+     return 0L;
 
-  KIOSlave *s = (*it).m_pSlave;
-  m_mapSlaves.remove( it );
+  Entry *entry = slaveList->take();
+
+  // Remove empty lists
+  if (slaveList->count() == 0)
+  {
+      m_allSlaves.remove( _protocol );
+      delete slaveList;
+  }
+
+  assert(entry != 0);
+
+  KIOSlave *s = entry->m_pSlave;
+  delete entry;
 
   return s;
 }
 
 
 KIOSlave* KIOSlavePool::slave( const char *_protocol, const char *_host,
-			       const char *_user, const char *_pass) {
-  QMap<QString,Entry>::Iterator it = m_mapSlaves.begin();
+			       const char *_user, const char *_pass) 
+{
+  entryList *slaveList = m_allSlaves.find( _protocol );
+  if (!slaveList)
+  {
+     kdebug( KDEBUG_INFO, 7007, "No matching slave - no such protocol (%s)", _protocol );
+     return 0L;
+  }
+  assert( slaveList->count() > 0);
 
-  for( ; it != m_mapSlaves.end(); ++it ) {    
-    if ( it.key() == _protocol && (*it).m_host == _host &&
-	 (*it).m_user == _user && (*it).m_pass == _pass ) {
-      kdebug( KDEBUG_INFO, 7007, "found matching slave - total match" );
-      break;
-    }
+  Entry *entry = slaveList->first();
+  for(; entry; entry = slaveList->next())
+  {
+     if ( (entry->m_host == _host) &&
+          (entry->m_user == _user) &&
+          (entry->m_pass == _pass) )
+     {
+        kdebug( KDEBUG_INFO, 7007, "found matching slave - total match" );
+        break;
+     }
   }
 
-  // if we didn't find complete match, try at least protocol
-  if ( it == m_mapSlaves.end() ||
-       !strcmp( _protocol, "http" ) ) { // we don't support persistent http yet
-    it == m_mapSlaves.find( _protocol );
+  if (!entry)
+  {
+     kdebug( KDEBUG_INFO, 7007, "found matching slave - protocol" );
+     entry = slaveList->first();
+  }
+  assert( entry != 0 );
 
-    if ( it == m_mapSlaves.end() ) {// sorry, no match
-      return 0L;
-    }
+  slaveList->removeRef( entry );
 
-    kdebug( KDEBUG_INFO, 7007, "found matching slave - protocol" );
+  // Remove empty lists
+  if (slaveList->count() == 0)
+  {
+      m_allSlaves.remove( _protocol );
+      delete slaveList;
   }
 
-  KIOSlave *s = (*it).m_pSlave;
-  m_mapSlaves.remove( it );
+  assert(entry != 0);
+
+  KIOSlave *s = entry->m_pSlave;
+  delete entry;
 
   return s;
 }
 
 
 void KIOSlavePool::addSlave( KIOSlave *_slave, const char *_protocol, const char *_host,
-			     const char *_user, const char *_pass ) {
-
-  if ( m_mapSlaves.count() == 6 ) {
-    eraseOldest();
+			     const char *_user, const char *_pass ) 
+{
+  Entry *entry = new Entry();
+  entry->m_time = time( 0L );
+  entry->m_pSlave = _slave;
+  entry->m_host = _host;
+  entry->m_user = _user;
+  entry->m_pass = _pass;
+  
+  entryList *slaveList = m_allSlaves.find( _protocol );
+  if (!slaveList)
+  {
+     slaveList = new entryList();
+     m_allSlaves.insert( _protocol, slaveList);
   }
-
-  Entry e;
-  e.m_time = time( 0L );
-  e.m_pSlave = _slave;
-  e.m_host = _host;
-  e.m_user = _user;
-  e.m_pass = _pass;
-  m_mapSlaves.insert(_protocol, e );
+  if (slaveList->count() >= MAX_SLAVES(_protocol) )
+  {
+     Entry *entry = slaveList->first();
+     Entry *oldest = entry;
+     for(entry = slaveList->next(); entry; entry = slaveList->next())
+     {
+        if (oldest->m_time > entry->m_time)
+           oldest = entry;
+     }
+     slaveList->removeRef(oldest);
+     delete oldest->m_pSlave;
+     delete oldest;
+  }
+  assert( slaveList != 0);
+  slaveList->append(entry);
 }
 
 
 void KIOSlavePool::eraseOldest() {
+#if 0
   assert( m_mapSlaves.count() >= 1 );
   
   QMap<QString,Entry>::Iterator oldie = m_mapSlaves.begin();
@@ -1118,6 +1164,7 @@ void KIOSlavePool::eraseOldest() {
   }
   
   m_mapSlaves.remove( oldie );
+#endif
 }
 
     
