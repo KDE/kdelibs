@@ -10,7 +10,7 @@ Package: kdelibs3
 Architecture: any
 Section: libs
 Replaces: kdelibs2g, kdebase (<< 4:2.2-alpha1), konqueror (<< 4:2.2-alpha1)
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, debconf
 Recommends: libarts | libarts-alsa, libkmid | libkmid-alsa, kdelibs3-cups
 Suggests: kdelibs3-crypto, anti-aliasing-howto, gdb, libkdb-mysql, libkdb-postgresql
 Conflicts: kdebase (<< 4:2.2-alpha1), konqueror (<< 4:2.2-alpha1)

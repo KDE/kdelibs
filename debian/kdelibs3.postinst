@@ -4,6 +4,11 @@
 # see: dh_installdeb(1)
 
 set -e
+
+. /usr/share/debconf/confmodule
+db_version 2.0
+
+
 case "$1" in
     configure)
 	if [ -x /usr/sbin/update-alternatives ]; then

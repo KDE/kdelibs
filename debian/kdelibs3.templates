@@ -1,0 +1,18 @@
+Template: kdelibs3/applnk
+Type: note
+Description: Applnk files have been moved to /etc/kde2/applnk
+ All of the .desktop files that used to exist under /usr/share/applnk
+ have been moved to /etc/kde2/applnk.  A link has been provided back to
+ /usr/share/applnk.  KDE still uses /usr/share/applnk for determining it's
+ menu structure and application information so it is important that the
+ link stay in place.  The reason for the move to /etc/kde2/applnk is so that
+ these files can be set as conffiles and admins can customize the files if
+ they see fit.  ****NOTE**** If you modify any of these files you must be
+ aware that when you upgrade you may end up with extra files in your
+ applnk tree (things like *.dpkg-old).  For every single file under the
+ /usr/share/applnk directory tree (and thus /etc/kde2/applnk) a menu item
+ will be seen in the menu tree (if it follows the proper KDE format that is)
+ so if you have any of these upgrade files (*.dpkg-old) laying around you
+ will have duplications and possibly experience other problems.  Just
+ remember to clean out any of these files once you verify your conffiles have
+ been updated properly.

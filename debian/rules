@@ -139,6 +139,7 @@ binary-arch:  build install
 	dh_undocumented
 	dh_installman -a
 	dh_installmenu -a
+	dh_installdebconf -a
 	# music chairs
 	dh_movefiles -plibarts --sourcedir=debian/kdelibs3
 	dh_movefiles -plibarts-dev --sourcedir=debian/kdelibs3
