@@ -570,11 +570,7 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
   }
   else
   {
-    QString readonly = cfg.readEntry( "ReadOnly" );
-    bool ro = FALSE;
-    if ( !readonly.isNull() )
-      if ( readonly == "1" )
-	ro = true;
+    bool ro = cfg.readEntry( "ReadOnly", false );
 		
     KURL u( _url );
     (void) new KAutoMount( ro, 0L, dev.ascii(), 0L, u.path() );
@@ -761,11 +757,7 @@ void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType
 	return;
       }
 
-      QString readonly = cfg.readEntry( "ReadOnly" );
-      bool ro = false;
-      if ( !readonly.isNull() )
-	if ( readonly == "1" )
-	  ro = true;
+      bool ro = cfg.readEntry( "ReadOnly", false );
 
       (void)new KAutoMount( ro, 0L, dev.ascii(), 0L, u.path(), false );
     }
