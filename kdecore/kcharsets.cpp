@@ -597,7 +597,7 @@ QString KCharsets::xCharsetName(QFont::CharSet charSet) const
 	return "unknown";
 	case QFont::Set_GBK:
 	case QFont::Set_Zh:
-	 return "set-gbk";
+	 return "gb2312.1980-0";
     case QFont::Set_Zh_TW:
         return "cns11643.1986-*";
     case QFont::Set_Big5:
