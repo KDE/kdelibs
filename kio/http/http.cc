@@ -417,6 +417,16 @@ int HTTPProtocol::openStream() {
       return false;
     }
     kdDebug(7103) << "SSL connection established." << endl;
+    kdDebug(7103) << "SSL connection information follows:" << endl
+                  << "+-----------------------------------------------" << endl
+                  << "| Cipher: " << m_ssl.connectionInfo().getCipher() << endl
+                  << "| Description: " << m_ssl.connectionInfo().getCipherDescription()
+                  << "| Version: " << m_ssl.connectionInfo().getCipherVersion() << endl
+                  << "| Strength: " << m_ssl.connectionInfo().getCipherUsedBits()
+                  << " of " << m_ssl.connectionInfo().getCipherBits()
+                  << " bits used." << endl
+                  << "+-----------------------------------------------"
+                  << endl;
     return true;
   }
 #endif
