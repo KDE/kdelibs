@@ -17,7 +17,7 @@
 class FileProtocol : public KIO::SlaveBase
 {
 public:
-  FileProtocol( KIO::Connection *_conn = 0);
+  FileProtocol( const QCString &pool, const QCString &app);
   virtual ~FileProtocol() { }
 
   /*

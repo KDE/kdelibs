@@ -39,7 +39,29 @@ using namespace KIO;
 
 QString testLogFile( const QString& _filename );
 
-FileProtocol::FileProtocol( Connection *_conn ) : SlaveBase( "file", _conn )
+extern "C" { int kdemain(int argc, char **argv); }
+
+int kdemain( int argc, char **argv )
+{
+  KInstance instance( "kio_file" );
+
+  kDebugInfo(7101, "Starting %d", getpid());
+
+  if (argc != 4)
+  {
+     fprintf(stderr, "Usage: kio_file protocol domain-socket1 domain-socket2\n");
+     exit(-1);
+  }
+
+  FileProtocol slave(argv[2], argv[3]);
+  slave.dispatchLoop();
+
+  kDebugInfo(7101, "Done" );
+  return 0;
+}
+
+
+FileProtocol::FileProtocol( const QCString &pool, const QCString &app ) : SlaveBase( "file", pool, app )
 {
     usercache.setAutoDelete( TRUE );
     groupcache.setAutoDelete( TRUE );
@@ -869,11 +891,5 @@ QString testLogFile( const QString& _filename )
     unlink( _filename );
 
     return result;
-}
-
-extern "C" {
-    SlaveBase *init_file() {
-	return new FileProtocol();
-    }
 }
 
