@@ -48,6 +48,13 @@
 #define	LONGTOIN(x)	(*(struct in_addr*)(&(x)))
 #define	INTOLONG(x)	((unsigned long)((x).s_addr))
 
+// For Sun Solaris, maybe others
+//
+//
+#ifndef INADDR_NONE
+#define INADDR_NONE	((unsigned int)-1)
+#endif
+
 unsigned long getIP();
 unsigned long getIPStart(unsigned long IP);
 unsigned long getIPStop(unsigned long IP);
