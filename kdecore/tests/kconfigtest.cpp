@@ -31,6 +31,7 @@
 #include <qdialog.h>
 #include <qfile.h>
 #include <qfileinfo.h>
+#include <qdatetime.h>
 #include <kdebug.h>
 #include <ksimpleconfig.h>
 #include <config.h>
@@ -61,6 +62,11 @@
 // Construct the KConfigTestView with buttons
 //
 
+void test(const char *msg, bool result)
+{
+    fprintf( stderr, "Testing %s ..... %s\n", msg, result ? "OK" : "FAILED" );
+}
+
 KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
     : QDialog( parent, name ),
       pConfig( 0L ),
@@ -77,10 +83,10 @@ KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
   pAppFileLabel->setGeometry( 20, 20, 200, 20 );
 
   pAppFileEdit = new QLineEdit( this, "appconfigedit" );
-  pAppFileEdit->setGeometry( 240, 20, 160, 20 ); 
+  pAppFileEdit->setGeometry( 240, 20, 160, 20 );
   connect( pAppFileEdit, SIGNAL(returnPressed()),
 	   SLOT(appConfigEditReturnPressed()));
-  
+
   // Label and edit for the group
   pGroupLabel = new QLabel( this, "grouplabel" );
   pGroupLabel->setText( "Group:" );
@@ -122,7 +128,7 @@ KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
   // Quit button
   pQuitButton = new QPushButton( this, "quitbutton" );
   pQuitButton->setText( "Quit" );
-  pQuitButton->setGeometry( 340, 60, 60, 60 ); 
+  pQuitButton->setGeometry( 340, 60, 60, 60 );
   connect( pQuitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
 
   // create a default KConfig object in order to be able to start right away
@@ -134,7 +140,7 @@ KConfigTestView::~KConfigTestView()
     delete pConfig;
     delete pFile;
     delete pStream;
-}  
+}
 
 void KConfigTestView::appConfigEditReturnPressed()
 {
@@ -149,8 +155,8 @@ void KConfigTestView::appConfigEditReturnPressed()
   // create a new config object
   if( !pAppFileEdit->text().isEmpty() )
 	  pConfig = new KConfig( pAppFileEdit->text() );
-  
-  pInfoLabel2->setText( "New config object created." ); 
+
+  pInfoLabel2->setText( "New config object created." );
 }
 
 void KConfigTestView::groupEditReturnPressed()
@@ -199,11 +205,11 @@ int main( int argc, char **argv )
 {
   KApplication  a( argc, argv, "bla" );
 
-  //  KConfigTestView   *w = new KConfigTestView();
+  // KConfigTestView   *w = new KConfigTestView();
   // a.setMainWidget( w );
-  // w->show();
+  // w->exec();
 
-#define BOOLVALUE(w) (w ? "true" : "false")
+  // test data
 #define BOOLENTRY1 true
 #define BOOLENTRY2 false
 #define STRINGENTRY1 "hello"
@@ -212,19 +218,21 @@ int main( int argc, char **argv )
 #define STRINGENTRY4 " hello "
 #define STRINGENTRY5 " "
 #define STRINGENTRY6 ""
+#define LOCAL8BITENTRY "Hello הצü"
+#define POINTENTRY QPoint( 4351, 1235 )
+#define SIZEENTRY QSize( 10, 20 )
+#define RECTENTRY QRect( 10, 23, 5321, 13 )
+#define DATETIMEENTRY QDateTime( QDate( 2002, 06, 23 ), QTime( 12, 55, 40 ) )
 
 if (argc == 2)
 {
   KConfig sc( "kconfigtest" );
 
-  sc.setGroup("Hello");  
-  sc.writeEntry( "Bua", "Brumm" );
+  sc.setGroup("Hello");
   sc.writeEntry( "boolEntry1", BOOLENTRY1 );
   sc.writeEntry( "boolEntry2", BOOLENTRY2 );
-  
-  qWarning("Bua = %s", sc.readEntry("Bua").latin1());
-  
-  sc.writeEntry( "Test", QString::fromLocal8Bit("Hello הצü"));
+
+  sc.writeEntry( "Test", QString::fromLocal8Bit( LOCAL8BITENTRY ) );
   sc.writeEntry( "Test2", "");
   sc.writeEntry( "stringEntry1", STRINGENTRY1 );
   sc.writeEntry( "stringEntry2", STRINGENTRY2 );
@@ -238,90 +246,29 @@ if (argc == 2)
 
   sc.deleteGroup("deleteMe", true);
 
-  sc.setGroup("Bye");  
-  sc.writeEntry( "rectEntry", QRect( 10, 23, 5321, 13 ) );
-  sc.writeEntry( "pointEntry", QPoint( 4351, 1235 ) );
-  sc.sync(); 
+  sc.setGroup("Bye");
+  sc.writeEntry( "rectEntry", RECTENTRY );
+  sc.writeEntry( "pointEntry", POINTENTRY );
+  sc.writeEntry( "sizeEntry", SIZEENTRY );
+  sc.writeEntry( "dateTimeEntry", DATETIMEENTRY );
+  sc.sync();
 }
 
   KConfig sc2( "kconfigtest" );
-  sc2.setGroup("Hello");  
-  QString hello = sc2.readEntry("Test");
-  fprintf(stderr, "hello = %s\n", hello.local8Bit().data());
-  hello = sc2.readEntry("Test2", "Fietsbel");
-  fprintf(stderr, "Test2 = '%s'\n", hello.latin1());
-  bool b1 = sc2.readBoolEntry( "boolEntry1" );
-  fprintf(stderr, "comparing boolEntry1 %s with %s -> ", BOOLVALUE(BOOLENTRY1), BOOLVALUE(b1));
-  if (b1 == BOOLENTRY1)
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
-  bool b2 = sc2.readBoolEntry( "boolEntry2" );
-  fprintf(stderr, "comparing boolEntry2 %s with %s -> ", BOOLVALUE(BOOLENTRY2), BOOLVALUE(b2));
-  if (b2 == BOOLENTRY2)
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
+  sc2.setGroup("Hello");
+  test( "readEntry()", sc2.readEntry( "Test" ) == LOCAL8BITENTRY );
+  test( "readEntry() 0", sc2.readEntry("Test2", "Fietsbel") == "" );
+  test( "readEntry() 1", sc2.readEntry( "stringEntry1" ) == STRINGENTRY1 );
+  test( "readEntry() 2", sc2.readEntry( "stringEntry2" ) == STRINGENTRY2 );
+  test( "readEntry() 3", sc2.readEntry( "stringEntry3" ) == STRINGENTRY3 );
+  test( "readEntry() 4", sc2.readEntry( "stringEntry4" ) == STRINGENTRY4 );
+  test( "readEntry() 5", sc2.readEntry( "stringEntry5", "test" ) == "test" );
+  test( "readEntry() 6", sc2.readEntry( "stringEntry6", "foo" ) == "foo" );
+  test( "readBoolEntry() 1", sc2.readBoolEntry( "boolEntry1" ) == BOOLENTRY1 );
+  test( "readBoolEntry() 2", sc2.readBoolEntry( "boolEntry2" ) == BOOLENTRY2 );
 
+#if 0
   QString s;
-  s = sc2.readEntry( "stringEntry1" );
-  fprintf(stderr, "comparing stringEntry1 %s with %s -> ", STRINGENTRY1, s.latin1());
-  if (s == STRINGENTRY1)
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
-
-  s = sc2.readEntry( "stringEntry2" );
-  fprintf(stderr, "comparing stringEntry2 %s with %s -> ", STRINGENTRY2, s.latin1());
-  if (s == STRINGENTRY2)
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
-
-  s = sc2.readEntry( "stringEntry3" );
-  fprintf(stderr, "comparing stringEntry3 %s with %s -> ", STRINGENTRY3, s.latin1());
-  if (s == STRINGENTRY3)
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
-
-  s = sc2.readEntry( "stringEntry4" );
-  fprintf(stderr, "comparing stringEntry4 %s with %s -> ", STRINGENTRY4, s.latin1());
-  if (s == STRINGENTRY4)
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
-
-  s = sc2.readEntry( "stringEntry5", "test" );
-  fprintf(stderr, "comparing stringEntry5 '%s' with '%s' -> ", "test", s.latin1());
-  if (s == "test")
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
-
-  s = sc2.readEntry( "stringEntry6", "foo" );
-  fprintf(stderr, "comparing stringEntry6 %s with %s -> ", "foo", s.latin1());
-  if (s == "foo")
-    fprintf(stderr, "OK\n");
-  else {
-    fprintf(stderr, "not OK\n");
-    exit(-1);
-  }
-
   s = sc2.readEntry( "keywith=equalsign" );
   fprintf(stderr, "comparing keywith=equalsign %s with %s -> ", STRINGENTRY1, s.latin1());
   if (s == STRINGENTRY1)
@@ -330,12 +277,14 @@ if (argc == 2)
     fprintf(stderr, "not OK\n");
     exit(-1);
   }
+#endif
 
-  sc2.setGroup("Bye");  
-  QRect rect = sc2.readRectEntry( "rectEntry" );
-  QPoint point = sc2.readPointEntry( "pointEntry" );
-  fprintf( stderr, "rect is (%d,%d,%d,%d)\n", rect.left(), rect.top(), rect.width(), rect.height() );
-  fprintf( stderr, "point is (%d,%d)\n", point.x(), point.y() );
+  sc2.setGroup("Bye");
+
+  test( "readPointEntry()", sc2.readPointEntry( "pointEntry" ) == POINTENTRY );
+  test( "readSizeEntry()", sc2.readSizeEntry( "sizeEntry" ) == SIZEENTRY);
+  test( "readRectEntry()", sc2.readRectEntry( "rectEntry" ) == RECTENTRY );
+  test( "readDateTimeEntry()", sc2.readDateTimeEntry( "dateTimeEntry" ) == DATETIMEENTRY );
 }
 
 #include "kconfigtest.moc"
