@@ -521,7 +521,7 @@ void KFileView::setViewMode( ViewMode vm )
 
 void KFileView::removeItem( const KFileViewItem *item )
 {
-    if ( !item && !myFirstItem )
+    if ( !item || !myFirstItem )
 	return;
 
     KFileViewItem *it = myFirstItem;
