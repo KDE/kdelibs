@@ -27,8 +27,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef __NetBSD__
+/* NetBSD doesn't define symbol unix and gives a warning if it's used */
+#undef unix
+#define unix
+#endif
 #if (defined(__unix__) || defined(unix)) && !defined(USG)
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__NetBSD__)
 #define HAS_MKSTEMP
 #endif
 #include <sys/param.h>
