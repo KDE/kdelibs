@@ -13,7 +13,7 @@
 <!ENTITY FAQ	'<acronym>FAQ</acronym>'>
 <!ENTITY ie     "c'est-&agrave;-dire">
 <!ENTITY kcontrol	'<application>Centre de Configuration de &kde;</application>'>
-<!ENTITY khelpcenter	'<application>Aide dentralis&eacute;e de &kde;</application>'>
+<!ENTITY khelpcenter	'<application>Aide Centralis&eacute;e de &kde;</application>'>
 <!ENTITY LMB    "bouton <mousebutton>gauche</mousebutton> de la souris">
 <!ENTITY MMB    "bouton <mousebutton>central</mousebutton> de la souris">
 <!ENTITY RMB    "bouton <mousebutton>droit</mousebutton> de la souris">
