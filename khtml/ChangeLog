@@ -1,5 +1,8 @@
 2004-10-14  David Faure  <faure@kde.org>
 
+        * html/htmltokenizer.cpp (parseTag): Merged patch by John Sullivan (safari)
+        to refuse skip more <script> tags depending on the value of type and language.
+
         * html/html_documentimpl.cpp (determineParseMode):
         When the document is loaded as text/html, even if xhtml doctype, activate case-insensitive
         ("htmlCompat") lookup of tags and attributes (but not in CSS parser). (#86446)

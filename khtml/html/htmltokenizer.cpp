@@ -1059,6 +1059,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 tagID -= ID_CLOSE_TAG;
             else if ( beginTag && !brokenScript && tagID == ID_SCRIPT ) {
                 DOMStringImpl* a = 0;
+                bool foundTypeAttribute = false;
                 scriptSrc = scriptSrcCharset = QString::null;
                 if ( currToken.attrs && /* potentially have a ATTR_SRC ? */
                      view &&  /* are we a regular tokenizer or just for innerHTML ? */
@@ -1070,17 +1071,54 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                         scriptSrcCharset = DOMString(a).string().stripWhiteSpace();
                     if ( scriptSrcCharset.isEmpty() && view)
                         scriptSrcCharset = parser->doc()->view()->part()->encoding();
-                    if (!(a = currToken.attrs->getValue( ATTR_LANGUAGE )))
-                        a = currToken.attrs->getValue(ATTR_TYPE);
+                    /* Check type before language, since language is deprecated */
+                    if ((a = currToken.attrs->getValue(ATTR_TYPE)) != 0 && !DOMString(a).string().isEmpty())
+                        foundTypeAttribute = true;
+                    else
+                        a = currToken.attrs->getValue(ATTR_LANGUAGE);
                 }
                 javascript = true;
-                if( a ) {
+
+                if( foundTypeAttribute ) {
+                    /*
+                        Mozilla 1.5 doesn't accept the text/javascript1.x formats, but WinIE 6 does.
+                        Mozilla 1.5 doesn't accept text/jscript, text/ecmascript, and text/livescript, but WinIE 6 does.
+                        Mozilla 1.5 allows leading and trailing whitespace, but WinIE 6 doesn't.
+                        Mozilla 1.5 and WinIE 6 both accept the empty string, but neither accept a whitespace-only string.
+                        We want to accept all the values that either of these browsers accept, but not other values.
+                     */
+                    QString type = DOMString(a).string().stripWhiteSpace().lower();
+                    if( type.compare("text/javascript") != 0 &&
+                        type.compare("text/javascript1.0") != 0 &&
+                        type.compare("text/javascript1.1") != 0 &&
+                        type.compare("text/javascript1.2") != 0 &&
+                        type.compare("text/javascript1.3") != 0 &&
+                        type.compare("text/javascript1.4") != 0 &&
+                        type.compare("text/javascript1.5") != 0 &&
+                        type.compare("text/jscript") != 0 &&
+                        type.compare("text/ecmascript") != 0 &&
+                        type.compare("text/livescript") )
+                        javascript = false;
+                } else if( a ) {
+                    /*
+                     Mozilla 1.5 doesn't accept jscript or ecmascript, but WinIE 6 does.
+                     Mozilla 1.5 accepts javascript1.0, javascript1.4, and javascript1.5, but WinIE 6 accepts only 1.1 - 1.3.
+                     Neither Mozilla 1.5 nor WinIE 6 accept leading or trailing whitespace.
+                     We want to accept all the values that either of these browsers accept, but not other values.
+                     */
                     QString lang = DOMString(a).string();
                     lang = lang.lower();
-                    if( !lang.contains("javascript") &&
-                        !lang.contains("ecmascript") &&
-                        !lang.contains("livescript") &&
-                        !lang.contains("jscript") )
+                    if( lang.compare("") != 0 &&
+                        lang.compare("javascript") != 0 &&
+                        lang.compare("javascript1.0") != 0 &&
+                        lang.compare("javascript1.1") != 0 &&
+                        lang.compare("javascript1.2") != 0 &&
+                        lang.compare("javascript1.3") != 0 &&
+                        lang.compare("javascript1.4") != 0 &&
+                        lang.compare("javascript1.5") != 0 &&
+                        lang.compare("ecmascript") != 0 &&
+                        lang.compare("livescript") != 0 &&
+                        lang.compare("jscript") )
                         javascript = false;
                 }
             }
