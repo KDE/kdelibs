@@ -17,6 +17,7 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "kaccelmanager.h"
 
 #include <qapplication.h>
 #include <qcheckbox.h>
@@ -47,7 +48,6 @@
 #include "kaccelmanager_private.h"
 #include "../kdeui/kstdaction_p.h"
 
-#include "kaccelmanager.h"
 
 /*********************************************************************
 

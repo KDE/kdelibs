@@ -25,6 +25,8 @@
 class QWidget;
 class QString;
 
+#include <kdelibs.h>
+
 /**
  * KDE Accelerator manager.
  *
