@@ -1420,8 +1420,8 @@ void KeramikStyle::drawControl( ControlElement element,
 								r.x() + r.width() - 1, r.y() + r.height() - 1 );
 					}
 				}
-				else if ( w > smallButMaxW && h > smallButMaxH )
-					nr.setWidth(r.width()-2); //Account for shadow
+				//else if ( w > smallButMaxW && h > smallButMaxH )
+				//	nr.setWidth(r.width()-2); //Account for shadow
 			}
 
 			KStyle::drawControl(element, p, widget, nr, cg, flags, opt);
