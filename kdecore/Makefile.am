@@ -66,8 +66,8 @@ SRCDOC_DEST=$(kde_htmldir)/en/kdelibs/kdecore
 kdebugdir = $(kde_confdir)
 kdebug_DATA = kdebug.areas kdebugrc
 
-kckey_h : generate_keys.sh $(QNAMESPACE_H)
-	./generate_keys.sh $(QNAMESPACE_H)
+kckey_h : $(srcdir)/generate_keys.sh $(QNAMESPACE_H)
+	(cd $(srcdir) && ./generate_keys.sh $(QNAMESPACE_H))
 
 install-data-local: charsets.config
 	$(mkinstalldirs) $(includedir)
