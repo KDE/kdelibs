@@ -118,6 +118,7 @@ DrMain* PPDLoader::readFromFile( const QString& filename )
 	// Initialization
 	m_groups.clear();
 	m_option = NULL;
+	m_fonts.clear();
 	// Open driver file
 	QIODevice *d = KFilterDev::deviceForFile( filename );
 	if ( d && d->open( IO_ReadOnly ) )
@@ -146,6 +147,8 @@ DrMain* PPDLoader::readFromFile( const QString& filename )
 					kdWarning( 500 ) << "PPD syntax error, Foomatic data read failed" << endl;
 			}
 			processPageSizes( driver );
+			if ( !m_fonts.isEmpty() )
+				driver->set( "fonts", m_fonts.join( "," ) );
 			return driver;
 		}
 		else
@@ -302,6 +305,10 @@ bool PPDLoader::putStatement( const QString& keyword, const QString& name, const
 			m_option->set( "maxval", values[ 1 ] );
 		}
 	}
+	else if ( keyword == "Font" && m_groups.size() > 0 )
+	{
+		m_fonts << name;
+	}
 	return true;
 }
 
@@ -325,9 +332,17 @@ bool PPDLoader::putStatement2( const QString& keyword, const QString& value )
 	return true;
 }
 
-bool PPDLoader::putDefault( const QString& value )
+bool PPDLoader::putDefault( const QString& keyword, const QString& value )
 {
-	if ( m_option )
+	if ( keyword == "Resolution" && m_groups.size() > 0 )
+	{
+		// Store default resolution as it could be fed back
+		// to the application. And default resolution can
+		// occur outside a OpenUI/CloseUI pair.
+		m_groups[ 0 ]->set( "resolution", value );
+	}
+
+	if ( m_option && m_option->name() == keyword )
 	{
 		m_option->set( "default", value );
 		return true;

@@ -99,8 +99,8 @@ ppdelement:   KEYWORD ':' value                          { builder->putStatement
 		    | KEYWORD OPTION ':' value                   { builder->putStatement($1[0], $2[0], QString::null, $4); }
 			| KEYWORD OPTION '/' TRANSLATION ':' value   { builder->putStatement($1[0], $2[0], $4[0], $6); }
 			| KEYWORD OPTION '/' ':' value               { builder->putStatement($1[0], $2[0], QString::null, $4); }
-			| DEFAULT ':' string                         { builder->putDefault($3[0]); }
-			| DEFAULT ':' string '/' TRANSLATION         { builder->putDefault($3[0]); }
+			| DEFAULT ':' string                         { builder->putDefault($1[0], $3[0]); }
+			| DEFAULT ':' string '/' TRANSLATION         { builder->putDefault($1[0], $3[0]); }
 			| openui
 			| endui
 			| opengroup

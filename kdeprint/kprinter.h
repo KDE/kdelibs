@@ -512,6 +512,18 @@ public:
 	int resolution() const;
 
 	/**
+	 * Define the KPrinter object to use the actual printer resolution. Under some print systems
+	 * (CUPS, Foomatic, PostScript printers), it is possible to know the actual resolution that
+	 * is used by the printer, as selected by the user in the driver settings. If @p on is true,
+	 * this KPrinter object will use the actual printer resolution if it is able to extract it.
+	 * If nothing can be found, the default resolution will be the one defined by the PrinterMode
+	 * argument used in the KPrinter constructor, or set explicitely by setResolution().
+	 * @param on true if the KPrinter object should use the actual printer resolution
+	 * @see resolution(), setResolution()
+	 */
+	void setUsePrinterResolution( bool on );
+
+	/**
 	 * For internal use only.
 	 */
 	KPrinterImpl* implementation() const;

@@ -77,6 +77,9 @@ void KPrinterImpl::preparePrinting(KPrinter *printer)
 	DrMain	*driver = mgr->loadPrinterDriver(mgr->findPrinter(printer->printerName()), false);
 	if (driver)
 	{
+		// Find the page size:
+		// 1) print option
+		// 2) default driver option
 		QString	psname = printer->option("PageSize");
 		if (psname.isEmpty())
 		{
@@ -93,6 +96,39 @@ void KPrinterImpl::preparePrinting(KPrinter *printer)
 				printer->setMargins(ps->margins());
 			}
 		}
+
+		// Find the numerical resolution
+		// 1) print option (Resolution)
+		// 2) default driver option (Resolution)
+		// 3) default printer resolution
+		// The resolution must have the format: XXXdpi or XXXxYYYdpi. In the second
+		// case the YYY value is used as resolution.
+		QString res = printer->option( "Resolution" );
+		if ( res.isEmpty() )
+		{
+			DrBase *opt = driver->findOption( "Resolution" );
+			if ( opt )
+				res = opt->get( "default" );
+			if ( res.isEmpty() )
+				res = driver->get( "resolution" );
+		}
+		if ( !res.isEmpty() )
+		{
+			QRegExp re( "(\\d+)(?:x(\\d+))?dpi" );
+			if ( re.search( res ) != -1 )
+			{
+				if ( !re.cap( 2 ).isEmpty() )
+					printer->setOption( "kde-resolution", re.cap( 2 ) );
+				else
+					printer->setOption( "kde-resolution", re.cap( 1 ) );
+			}
+		}
+
+		// Find the supported fonts
+		QString fonts = driver->get( "fonts" );
+		if ( !fonts.isEmpty() )
+			printer->setOption( "kde-fonts", fonts );
+
 		delete driver;
 	}
 

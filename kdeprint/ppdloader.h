@@ -45,7 +45,7 @@ public:
 	bool endGroup( const QString& name );
 	bool putStatement( const QString& keyword, const QString& name, const QString& desc, const QStringList& values );
 	bool putStatement2( const QString& keyword, const QString& value );
-	bool putDefault( const QString& value );
+	bool putDefault( const QString& keyword, const QString& value );
 	bool putConstraint( const QString& opt1, const QString& opt2, const QString& ch1, const QString& ch2 );
 	bool putFooData( const QString& data );
 	bool putFooProcessedData( const QVariant& var );
@@ -58,6 +58,7 @@ private:
 	QValueStack<DrGroup*> m_groups;
 	DrBase*               m_option;
 	QDict<PS_private>     m_ps;
+	QStringList           m_fonts;
 
 	friend int kdeprint_ppdparse(void*);
 	DrGroup* findOrCreateGroupForOption( const QString& );

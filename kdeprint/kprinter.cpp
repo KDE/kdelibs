@@ -114,6 +114,8 @@ public:
 	bool			m_ready;
 	int		m_pagenumber;
 	DrPageSize *m_pagesize;
+	bool m_useprinterres;
+	int m_defaultres;
 };
 
 //**************************************************************************************
@@ -154,6 +156,8 @@ void KPrinter::init(bool restore, QPrinter::PrinterMode m)
 	// other initialization
 	d->m_tmpbuffer = d->m_impl->tempFile();
 	d->m_ready = false;
+	d->m_defaultres = d->m_wrapper->resolution();
+	d->m_useprinterres = false;
 
 	// reload options from implementation (static object)
 	if (d->m_restore)
@@ -432,6 +436,13 @@ void KPrinter::preparePrinting()
 	if (option("kde-isspecial") != "1")
 		d->m_impl->preparePrinting(this);
 
+	// set the correct resolution, if needed (or reset it)
+	int res = option( "kde-resolution" ).toInt();
+	if ( d->m_useprinterres && res > 0 )
+		d->m_wrapper->setResolution( res );
+	else
+		d->m_wrapper->setResolution( d->m_defaultres );
+
 	// standard Qt settings
 	translateQtOptions();
 
@@ -627,6 +638,8 @@ void KPrinter::setOptions(const QMap<QString,QString>& opts)
 	tmpset.remove("kde-margin-left");
 	tmpset.remove("kde-margin-bottom");
 	tmpset.remove("kde-margin-right");
+	tmpset.remove( "kde-resolution" );
+	tmpset.remove( "kde-fonts" );
 	for (QMap<QString,QString>::ConstIterator it=tmpset.begin();it!=tmpset.end();++it)
 		if (it.key().left(4) == "kde-" && !(d->m_options.contains(it.key())))
 			d->m_options[it.key()] = it.data();
@@ -987,7 +1000,13 @@ QString KPrinter::docDirectory() const
 { return ( d->m_docdirectory.isEmpty() ? QDir::homeDirPath() : d->m_docdirectory ); }
 
 void KPrinter::setResolution(int dpi)
-{ d->m_wrapper->setResolution(dpi); }
+{
+	d->m_wrapper->setResolution(dpi);
+	d->m_defaultres = dpi;
+}
 
 int KPrinter::resolution() const
 { return d->m_wrapper->resolution(); }
+
+void KPrinter::setUsePrinterResolution( bool on )
+{ d->m_useprinterres = on; }
