@@ -1032,3 +1032,16 @@ KIO::CacheControl KIO::parseCacheControl(const QString &cacheControl)
   kdWarning() << "unrecognized Cache control option:"<<cacheControl<<endl;
   return KIO::CC_Verify;
 }
+
+QString KIO::getCacheControlString(KIO::CacheControl cacheControl)
+{
+    if (cacheControl == KIO::CC_CacheOnly)
+	return "CacheOnly";
+    if (cacheControl == KIO::CC_Cache)
+	return "Cache";
+    if (cacheControl == KIO::CC_Verify)
+	return "Verify";
+    if (cacheControl == KIO::CC_Reload)
+	return "Reload";
+    kdFatal() << "unrecognized Cache control enum value:"<<cacheControl<<endl;
+}

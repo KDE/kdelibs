@@ -205,6 +205,8 @@ namespace KIO
 
   KIO::CacheControl parseCacheControl(const QString &cacheControl);
 
+  QString getCacheControlString(KIO::CacheControl cacheControl);
+
   /**
    * Returns the mount point where @p device is mounted
    * right now. This means, it has to be mounted, not just

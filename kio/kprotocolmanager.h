@@ -457,7 +457,16 @@ public:
    */
   static void setEnableSendUserAgent( bool );
 
-  KIO::CacheControl defaultCacheControl();
+  /**
+   * returns the Cache control directive to be used by default,
+   * say if no reload flag is set and no metadata specifies anything else.
+   */
+  static KIO::CacheControl defaultCacheControl();
+
+  /**
+   * sets the policy Cache control directive.
+   */
+  static void setDefaultCacheControl(KIO::CacheControl);
 
 private:
   static KConfig *config();
