@@ -399,7 +399,7 @@ void RenderWidget::paintWidget(QPainter *p, QWidget *widget, int, int, int, int,
 	bool dsbld = QSharedDoubleBuffer::isDisabled();
 	QSharedDoubleBuffer::setDisabled(true);
 	pm = QPixmap(widget->width(), widget->height());
-	if (widget->inherits("QLineEdit")) {
+	if (p->device()->isExtDev() || widget->inherits("QLineEdit")) {
 	    // even hackier!
 	    pm.fill(widget, QPoint(0, 0));
 	} else {
