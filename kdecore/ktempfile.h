@@ -170,6 +170,7 @@ public:
     * 
     * See status() for details about errors.
     * @return true if successful, or false if an error has occurred.
+    * @since 3.3
     **/
    bool sync();
 
