@@ -369,7 +369,7 @@ public:
   struct Format{
      bool text : 1;
      enum { NoCompression=0, GZipCompression } compression : 4;
-     int dummy : 27;
+     unsigned dummy : 27;
   };
   static Format findFormatByFileContent( const QString &fileName );
 
