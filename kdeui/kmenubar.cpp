@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.49  1998/11/23 00:12:27  radej
+// sven: MACMenu: doesn't show if app doesn't want it to (kvt) + icon size fix
+//
 // Revision 1.48  1998/11/22 13:35:46  radej
 // sven: IMPROVED Mac menubar: Accelerators, SystemMenu, look...
 //
@@ -230,7 +233,8 @@ void KMenuBar::ContextCallback( int )
   highlight = false;
   transparent = false;
 
-
+  // Sven: move this to slotReadConfig and make sure it works in other
+  // direction too.
   {
       KConfig* config = kapp->getConfig();
       KConfigGroupSaver saver(config, "Menubar");
@@ -240,10 +244,10 @@ void KMenuBar::ContextCallback( int )
           Parent->installEventFilter(this); // to show menubar
           handle->removeEventFilter(this);
           handle->hide();
-          QPixmap px(KWM::miniIcon(Parent->winId()));
+          int dim = fontMetrics().height();
+          QPixmap px(KWM::miniIcon(Parent->winId(), dim, dim));
           if (!px.isNull())
-            menu->insertItem(px, 0, this, SLOT(slotSysMenu()), -2, 0);
-
+            menu->insertItem(px, 0, this, SLOT(slotSysMenu()), 0, -2, 0);
       }
   }
 
@@ -387,11 +391,13 @@ void KMenuBar::leaveEvent (QEvent *e){
 
   if (ob == Parent && ev->type() == Event_Show && standalone_menubar)
 bool KMenuBar::eventFilter(QObject *ob, QEvent *ev){
+    bool aha = isVisible(); // did app enable show?
     setMenuBarPos(Floating);
     QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
     setGeometry(r.x(),(r.y()-1)<0?0:r.y()-1, r.width(), // check panel top
                 heightForWidth(r.width()));
-    show();
+    if (aha)
+      show();
     Parent->removeEventFilter(this); //One time only
     //bool aha = isVisible(); // did app enable show?
       setMenuBarPos(FloatingSystem);
