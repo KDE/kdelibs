@@ -51,6 +51,7 @@ private:
 	int m_lines;
 	KMultiTabBar::KMultiTabBarMode m_barMode;
 protected:
+	virtual bool eventFilter(QObject *,QEvent*);
         virtual void drawContents ( QPainter *, int, int, int, int);
 
         /**

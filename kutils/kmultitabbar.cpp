@@ -164,11 +164,9 @@ void KMultiTabBarInternal::mousePressEvent(QMouseEvent *ev)
 }
 
 void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
-	kdDebug()<<"KMultiTabBarInternal::resizeEvent"<<endl;
+	//kdDebug()<<"KMultiTabBarInternal::resizeEvent"<<endl;
 	if (ev) QScrollView::resizeEvent(ev);
 
-	box->setPaletteBackgroundColor(Qt::green);
-	setPaletteBackgroundColor(Qt::red);
 	if ( (m_style==KMultiTabBar::KDEV3) ||
 		(m_style==KMultiTabBar::KDEV3ICON) ){
 		box->setGeometry(0,0,width(),height());
@@ -197,34 +195,30 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 
 			setFixedHeight(lines*24);
 			box->setFixedHeight(lines*24);
-			QApplication::flush();
-			QApplication::syncX();
 			tmp=0;
 			cnt=0;
 			m_lines=lines=height()/24;
-			kdDebug()<<"m_lines recalculated="<<m_lines<<endl;
+			//kdDebug()<<"m_lines recalculated="<<m_lines<<endl;
 			lines=0;
 		        for (uint i=0;i<m_tabs.count();i++) {
 				cnt++;
 				tmp+=m_tabs.at(i)->neededSize();
 				if (tmp>space) {
-					kdDebug()<<"about to start new line"<<endl;
+					//kdDebug()<<"about to start new line"<<endl;
 					if (cnt>1) i--;
 					else {
-						kdDebug()<<"placing line on old line"<<endl;
+						//kdDebug()<<"placing line on old line"<<endl;
 						m_tabs.at(i)->move(tmp-m_tabs.at(i)->neededSize(),lines*24);
 					}
 					cnt=0;
 					tmp=0;
 					lines++;
-					kdDebug()<<"starting new line:"<<lines<<endl;
+					//kdDebug()<<"starting new line:"<<lines<<endl;
 
 				} else 	{
-					kdDebug()<<"Placing line on line:"<<lines<<" pos: (x/y)=("<<tmp-m_tabs.at(i)->neededSize()<<"/"<<lines*24<<")"<<endl;
+					//kdDebug()<<"Placing line on line:"<<lines<<" pos: (x/y)=("<<tmp-m_tabs.at(i)->neededSize()<<"/"<<lines*24<<")"<<endl;
 					
 					m_tabs.at(i)->move(tmp-m_tabs.at(i)->neededSize(),lines*24);
-			QApplication::flush();
-			QApplication::syncX();
 
 				}
 			}
@@ -251,7 +245,7 @@ void KMultiTabBarInternal::resizeEvent(QResizeEvent *ev) {
 		}
 
 
-		kdDebug()<<"needed lines:"<<m_lines<<endl;
+		//kdDebug()<<"needed lines:"<<m_lines<<endl;
 	}
 }
 
@@ -270,11 +264,16 @@ KMultiTabBarTab* KMultiTabBarInternal::tab(int id) const
         return 0;
 }
 
+bool KMultiTabBarInternal::eventFilter(QObject *obj, QEvent *e) {
+	if (e->type()==QEvent::Resize) resizeEvent(0);
+	return false;
+}
 
 int KMultiTabBarInternal::appendTab(const QPixmap &pic ,int id,const QString& text)
 {
 	KMultiTabBarTab  *tab;
 	m_tabs.append(tab= new KMultiTabBarTab(pic,text,id,box,m_position,m_style));
+	tab->installEventFilter(this);
 	tab->showActiveTabText(m_showActiveTabTexts);
 
 	if (m_style==KMultiTabBar::KONQSBC)
@@ -287,6 +286,7 @@ int KMultiTabBarInternal::appendTab(const QPixmap &pic ,int id,const QString& te
 		} else tab->setSize(m_expandedTabSize);
 	} else tab->updateState();
 	tab->show();
+	resizeEvent(0);
 	return 0;
 }
 
