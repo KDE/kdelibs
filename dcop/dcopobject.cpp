@@ -31,6 +31,12 @@ inline QMap<QCString, DCOPObject *> *objMap()
   return objMap_;
 }
 
+DCOPObject::DCOPObject()
+{
+    ident.sprintf("%p", this );
+    objMap()->insert(ident, this );
+}
+
 DCOPObject::DCOPObject(QObject *obj)
 {
   QObject *currentObj = obj;

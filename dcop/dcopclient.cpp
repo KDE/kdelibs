@@ -170,76 +170,78 @@ void DCOPClient::setServerAddress(const QCString &addr)
 
 bool DCOPClient::attach()
 {
-  char errBuf[1024];
+    qDebug("attach");
+    char errBuf[1024];
 
-  if ( isAttached() )
-      detach();
+    if ( isAttached() )
+	detach();
 
-  if ((d->majorOpcode = IceRegisterForProtocolSetup((char *) "DCOP", (char *) DCOPVendorString,
-						    (char *) DCOPReleaseString, 1, DCOPVersions,
-						    DCOPAuthCount, (char **) DCOPAuthNames,
-						    DCOPClientAuthProcs, 0L)) < 0) {
-    emit attachFailed("Communications could not be established.");
-    return false;
-  }
+    if ((d->majorOpcode = IceRegisterForProtocolSetup((char *) "DCOP", (char *) DCOPVendorString,
+						      (char *) DCOPReleaseString, 1, DCOPVersions,
+						      DCOPAuthCount, (char **) DCOPAuthNames,
+						      DCOPClientAuthProcs, 0L)) < 0) {
+	emit attachFailed("Communications could not be established.");
+	return false;
+    }
 
-  // first, check if serverAddr was ever set.
-  if (!d->serverAddr) {
-    // here, we will check some environment variable and find the
-    // DCOP server.  Now, we hardcode it.  CHANGE ME
-    char buff[1024];
+    // first, check if serverAddr was ever set.
+    if (!d->serverAddr) {
+	// here, we will check some environment variable and find the
+	// DCOP server.  Now, we hardcode it.  CHANGE ME
+	char buff[1024];
 
-    gethostname(buff, 1023);
-    d->serverAddr = qstrdup( (QCString("local/") + buff + ":/tmp/.ICE-unix/5432").data() );
-    //    serverAddr = "tcp/faui06e:5000";
-  }
+	gethostname(buff, 1023);
+	d->serverAddr = qstrdup( (QCString("local/") + buff + ":/tmp/.ICE-unix/5432").data() );
+	//    serverAddr = "tcp/faui06e:5000";
+    }
 
-  if ((d->iceConn = IceOpenConnection(d->serverAddr, 0, 0, d->majorOpcode,
-                                      sizeof(errBuf), errBuf)) == 0L) {
-    emit attachFailed(errBuf);
-    d->iceConn = 0;
-    return false;
-  }
+    if ((d->iceConn = IceOpenConnection(d->serverAddr, 0, 0, d->majorOpcode,
+					sizeof(errBuf), errBuf)) == 0L) {
+	emit attachFailed(errBuf);
+	d->iceConn = 0;
+	return false;
+    }
 
-  IceSetShutdownNegotiation(d->iceConn, False);
+    IceSetShutdownNegotiation(d->iceConn, False);
 
-  int setupstat;
-  setupstat = IceProtocolSetup(d->iceConn, d->majorOpcode,
-			       (IcePointer) d,
-			       False, /* must authenticate */
-			       &(d->majorVersion), &(d->minorVersion),
-			       &(d->vendor), &(d->release), 1024, errBuf);
+    int setupstat;
+    setupstat = IceProtocolSetup(d->iceConn, d->majorOpcode,
+				 (IcePointer) d,
+				 False, /* must authenticate */
+				 &(d->majorVersion), &(d->minorVersion),
+				 &(d->vendor), &(d->release), 1024, errBuf);
 
-  if (setupstat == IceProtocolSetupFailure ||
-      setupstat == IceProtocolSetupIOError) {
-    IceCloseConnection(d->iceConn);
-    emit attachFailed(errBuf);
-    return false;
-  } else if (setupstat == IceProtocolAlreadyActive) {
-    /* should not happen because 3rd arg to IceOpenConnection was 0. */
-    emit attachFailed("internal error in IceOpenConnection");
-    return false;
-  }
+    if (setupstat == IceProtocolSetupFailure ||
+	setupstat == IceProtocolSetupIOError) {
+	IceCloseConnection(d->iceConn);
+	emit attachFailed(errBuf);
+	return false;
+    } else if (setupstat == IceProtocolAlreadyActive) {
+	/* should not happen because 3rd arg to IceOpenConnection was 0. */
+	emit attachFailed("internal error in IceOpenConnection");
+	return false;
+    }
 
 
-  // check if we have a qApp instantiated.  If we do,
-  // we can create a QSocketNotifier and use it for receiving data.
-  if (qApp) {
-    if (IceConnectionStatus(d->iceConn) != IceConnectAccepted)
-      emit attachFailed("DCOP server did not accept the connection.");
-      return false;
+    if (IceConnectionStatus(d->iceConn) != IceConnectAccepted) {
+	emit attachFailed("DCOP server did not accept the connection.");
+	return false;
+    }
+    
+    // check if we have a qApp instantiated.  If we do,
+    // we can create a QSocketNotifier and use it for receiving data.
+    if (qApp) {
+	if ( d->notifier )
+	    delete d->notifier;
+	d->notifier = new QSocketNotifier(socket(),
+					  QSocketNotifier::Read, 0, 0);
+	connect(d->notifier, SIGNAL(activated(int)),
+		SLOT(processSocketData(int)));
+    }
 
-    if ( d->notifier )
-	delete d->notifier;
-    d->notifier = new QSocketNotifier(socket(),
-				      QSocketNotifier::Read, 0, 0);
-    connect(d->notifier, SIGNAL(activated(int)),
-	    SLOT(processSocketData(int)));
-  }
+    registerAs( "anonymous" );
 
-  registerAs( "anonymous" );
-
-  return true;
+    return true;
 }
 
 
@@ -270,6 +272,7 @@ bool DCOPClient::isAttached() const
 
 QCString DCOPClient::registerAs( const QCString& appId )
 {
+    qDebug("registeras %s", appId.data() );
     QCString result;
     if ( !isAttached() ) {
 	if ( !attach() ) {
