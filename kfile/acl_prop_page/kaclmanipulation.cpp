@@ -184,7 +184,7 @@ KACLEntry *KACLEntry::GetACLEntry (acl_entry &acl)
 #if defined(ACL_READ)
 		e->access_r = (*perms & ACL_READ);
 		e->access_w = (*perms & ACL_WRITE);
-		e->access_x = (*perms & ACL_EXEC);
+		e->access_x = (*perms & ACL_EXECUTE);
 #else
 		e->access_r = (*perms & ACL_PERM_READ);
 		e->access_w = (*perms & ACL_PERM_WRITE);
