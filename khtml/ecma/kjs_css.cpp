@@ -151,7 +151,7 @@ Completion DOMCSSStyleDeclarationFunc::tryExecute(const List &args)
       result = Undefined();
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 KJSO KJS::getDOMCSSStyleDeclaration(DOM::CSSStyleDeclaration s)

@@ -394,12 +394,12 @@ KJSO MimeType::get(const UString &p) const
 
 Completion PluginsFunc::tryExecute(const List &)
 {
-  return Completion(Normal, Undefined());
+  return Completion(Normal);
 }
 
 
 Completion NavigatorFunc::execute(const List &)
 {
   // javaEnabled()
-  return Completion(Normal, Boolean(part->javaEnabled()));
+  return Completion(ReturnValue, Boolean(part->javaEnabled()));
 }

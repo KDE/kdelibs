@@ -161,7 +161,7 @@ Completion KJS::HTMLDocFunction::tryExecute(const List &args)
     result = getDOMNode(element);
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 const TypeInfo KJS::HTMLDocument::info = { "HTMLDocument", HostType,
@@ -964,7 +964,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
     break;
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
@@ -1616,7 +1616,7 @@ Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
       break;
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 ////////////////////// Option Object ////////////////////////
@@ -1654,7 +1654,7 @@ ImageObject::ImageObject(const Global& global)
 
 Completion ImageObject::tryExecute(const List &)
 {
-  return Completion(Normal, Undefined());
+  return Completion(ReturnValue);
 }
 #endif
 

@@ -93,7 +93,7 @@ Completion DOMCharacterDataFunction::tryExecute(const List &args)
       result = Undefined();
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // -------------------------------------------------------------------------
@@ -128,6 +128,6 @@ Completion DOMTextFunction::tryExecute(const List &args)
       result = Undefined();
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 

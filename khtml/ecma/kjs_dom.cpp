@@ -212,7 +212,7 @@ Completion DOMNodeFunc::tryExecute(const List &args)
 	result = getDOMNode(node.replaceChild(n1, n2));
     }
   }
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // -------------------------------------------------------------------------
@@ -251,7 +251,7 @@ Completion DOMNodeListFunc::tryExecute(const List &args)
 
   if (id == Item)
     result = getDOMNode(list.item(args[0].toNumber().intValue()));
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // -------------------------------------------------------------------------
@@ -393,7 +393,7 @@ Completion DOMDocFunction::tryExecute(const List &args)
     result = Undefined();
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // -------------------------------------------------------------------------
@@ -498,7 +498,7 @@ Completion DOMElementFunction::tryExecute(const List &args)
     result = Undefined();
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // -------------------------------------------------------------------------
@@ -541,7 +541,7 @@ Completion DOMDOMImplementationFunction::tryExecute(const List &args)
       result = Undefined();
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // -------------------------------------------------------------------------
@@ -638,7 +638,7 @@ Completion DOMNamedNodeMapFunction::tryExecute(const List &args)
       result = Undefined();
   }
 
-  return Completion(Normal, result);
+  return Completion(ReturnValue, result);
 }
 
 // -------------------------------------------------------------------------

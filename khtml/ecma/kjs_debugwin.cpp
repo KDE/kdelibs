@@ -99,7 +99,7 @@ bool KJSDebugWin::stopEvent()
 	edit->setText("????????");
       }
   }
-  highLight(line());
+  highLight(lineNumber());
   enterSession();
   return true;
 }
