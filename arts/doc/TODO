@@ -14,6 +14,8 @@ Index:
 - add options
   -N  (to add extra network buffers)
   -S  (to change the autosuspend timeout)
+- add kmessagebox style output of error messages (often, people don't know
+  why artsd is not running, does not start, doesn't like their soundcard,...)
 - make a generic gui factory, make noatun and artscontrol use it for effect
   guis
 - ensure DynamicCast(<some null object>) == Object::null()
