@@ -566,14 +566,18 @@ bool KHTMLPart::openURL( const KURL &url )
 
   QString host = url.isLocalFile() ? "localhost" : url.host();
   QString userAgent = KProtocolManager::userAgentForHost(host);
-  if (userAgent == KProtocolManager::userAgentForHost(QString::null)) {
-    d->m_statusBarUALabel = new KURLLabel(d->m_statusBarExtension->statusBar());
-    d->m_statusBarUALabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
-    d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
-    d->m_statusBarUALabel->setUseCursor(false);
-    d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
+  if (userAgent != KProtocolManager::userAgentForHost(QString::null)) {
+    if (!d->m_statusBarUALabel) {
+      d->m_statusBarUALabel = new KURLLabel(d->m_statusBarExtension->statusBar());
+      d->m_statusBarUALabel->setFixedHeight(instance()->iconLoader()->currentSize(KIcon::Small));
+      d->m_statusBarUALabel->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));
+      d->m_statusBarUALabel->setUseCursor(false);
+      d->m_statusBarExtension->addStatusBarItem(d->m_statusBarUALabel, 0, false);
+      d->m_statusBarUALabel->setPixmap(SmallIcon("agent", instance()));
+    } else {
+      QToolTip::remove(d->m_statusBarUALabel);
+    }
     QToolTip::add(d->m_statusBarUALabel, i18n("The fake user-agent '%1' is in use.").arg(userAgent));
-    d->m_statusBarUALabel->setPixmap(SmallIcon("agent", instance()));
   } else if (d->m_statusBarUALabel) {
     d->m_statusBarExtension->removeStatusBarItem(d->m_statusBarUALabel);
     delete d->m_statusBarUALabel;
