@@ -306,7 +306,7 @@ QString KConfigBase::readPathEntry( const QString& pKey, const QString& pDefault
   KConfigBase *that = const_cast<KConfigBase *>(this);
   bool bExpandSave = bExpand;
   that->bExpand = true;
-  QString aValue = readEntry( pKey );
+  QString aValue = readEntry( pKey, pDefault );
   that->bExpand = bExpandSave;
   return aValue;
 }
