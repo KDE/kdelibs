@@ -26,6 +26,7 @@
 #include "dom/html_list.h"
 #include "dom/html_table.h"
 #include "dom/html_object.h"
+#include "dom/dom_exception.h"
 
 // ### HACK
 #include "html/html_baseimpl.h"
