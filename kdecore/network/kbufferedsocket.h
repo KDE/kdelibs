@@ -212,6 +212,19 @@ private:
   KBufferedSocket& operator=(const KBufferedSocket&);
 
   KBufferedSocketPrivate *d;
+
+public:
+  // KDE4: remove this function
+  /**
+   * @deprecated
+   * Closes the socket.
+   *
+   * This function is provided to ease porting from KExtendedSocket,
+   * which required a call to reset() in order to be able to connect again
+   * using the same device. This is not necessary in KBufferedSocket any more.
+   */
+  inline void reset()
+  { closeNow(); }
 };
 
 }				// namespace KNetwork
