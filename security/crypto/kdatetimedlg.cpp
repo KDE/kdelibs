@@ -73,7 +73,7 @@ KDateTimeDlg::~KDateTimeDlg() {
 
 
 QDate KDateTimeDlg::getDate() {
-   return _date->getDate();
+   return _date->date();
 }
 
 
@@ -87,7 +87,7 @@ QDateTime KDateTimeDlg::getDateTime() {
 QDateTime qdt;
 QTime qtime(_hours->value(), _mins->value(), _secs->value());
 
-   qdt.setDate(_date->getDate());
+   qdt.setDate(_date->date());
    qdt.setTime(qtime);
 
 return qdt;
