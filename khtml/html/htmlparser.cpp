@@ -755,6 +755,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             case ID_COLGROUP:
             case ID_P:
                 break;
+            case ID_TABLE:
+                popBlock(ID_TABLE); // end the table
+                handled = true;      // ...and start a new one
+                break;                
             default:
                 e = new HTMLTableRowElementImpl(document);
                 insertNode(e);
