@@ -140,6 +140,12 @@ protected:
      * ( = the width of the element with line breaking disabled)
      */
     short m_maxWidth;
+    
+    /*
+     *  The transitional width of the overlap that must be added when repainting
+     *  to account for surrounding outlines
+     */
+    short m_overlapWidth;
 
     RenderLayer *m_layer;
 };
