@@ -610,9 +610,22 @@ public:
   void setDockWindowTransient (QWidget *parent, bool transientEnabled);
 
 public slots:
+  /**
+   * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps 
+   * KDE 3.1.x oder 3.2
+   * width is in pixel. It only affects a widget, which is placed directly into a horizontal KDockSplitter
+   **/
   void setForcedFixedWidth(int);
+  /**
+   * subject to changes. It doesn't completely work yet without small hacks from within the calling application (Perhaps 
+   * KDE 3.1.x oder 3.2
+   * height is in pixel. It only affects a widget, which is placed directly into a vertical KDockSplitter
+   **/
+  void setForcedFixedHeight(int);
   void restoreFromForcedFixedSize();
+
   int forcedFixedWidth();
+  int forcedFixedHeight();
   
   /**
    * Docks a dockwidget back to the dockwidget that was the neighbor

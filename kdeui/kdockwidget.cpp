@@ -830,11 +830,19 @@ QWidget *KDockWidget::parentDockContainer() const
 void KDockWidget::setForcedFixedWidth(int w)
 {
 	d->forcedWidth=w;
-//	setFixedWidth(w);
 	setFixedWidth(w);
 	if (!parent()) return;
 	if (parent()->inherits("KDockSplitter"))
 		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->setForcedFixedWidth(this,w);
+}
+
+void KDockWidget::setForcedFixedHeight(int h)
+{
+	d->forcedHeight=h;
+	setFixedHeight(h);
+	if (!parent()) return;
+	if (parent()->inherits("KDockSplitter"))
+		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->setForcedFixedHeight(this,h);
 }
 
 int KDockWidget::forcedFixedWidth()
@@ -842,11 +850,18 @@ int KDockWidget::forcedFixedWidth()
 	return d->forcedWidth;
 }
 
+int KDockWidget::forcedFixedHeight()
+{
+	return d->forcedHeight;
+}
+
 void KDockWidget::restoreFromForcedFixedSize()
 {
 	d->forcedWidth=-1;
 	setMinimumWidth(0);
 	setMaximumWidth(32000);	
+	setMinimumHeight(0);
+	setMaximumHeight(32000);	
 	if (!parent()) return;
 	if (parent()->inherits("KDockSplitter"))
 		static_cast<KDockSplitter*>(parent()->qt_cast("KDockSplitter"))->restoreFromForcedFixedSize(this);	
