@@ -895,6 +895,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     }
 }
 
+// returns true if event should be swallowed
 bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
 {
     if (!m_part->xmlDocImpl())
@@ -915,7 +916,7 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     //
     //  Qt:      Press      | Release(autorepeat) Press(autorepeat) etc. |   Release
     //  DOM:   Down + Press |      (nothing)           Press             |     Up
-    
+
     if( _ke == d->postponed_autorepeat ) // replayed event
         return false;
 
@@ -956,22 +957,15 @@ bool KHTMLView::dispatchKeyEvent( QKeyEvent *_ke )
     }
 }
 
+// returns true if event should be swallowed
 bool KHTMLView::dispatchKeyEventHelper( QKeyEvent *_ke, bool keypress )
 {
     DOM::NodeImpl* keyNode = m_part->xmlDocImpl()->focusNode();
     if (keyNode) {
-        if (keyNode->dispatchKeyEvent(_ke, keypress)) {
-            return true;
-	}
+        return keyNode->dispatchKeyEvent(_ke, keypress);
+    } else { // no focused node, send to document
+        return m_part->xmlDocImpl()->dispatchKeyEvent(_ke, keypress);
     }
-    else // no focused node, send to document
-    {
-        // If listener returned false, stop here. Otherwise handle standard keys (#60403).
-        if (!m_part->xmlDocImpl()->dispatchKeyEvent(_ke, keypress)) {
-            return true;
-        }
-    }
-    return false;
 }
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
@@ -1856,6 +1850,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
     d->formCompletions->writeEntry(name, items);
 }
 
+// returns true if event should be swallowed
 bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
 				   int detail,QMouseEvent *_mouse, bool setUnder,
 				   int mouseEventType)
@@ -1942,26 +1937,26 @@ bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
     bool swallowEvent = false;
 
     if (targetNode) {
-	// send the actual event
+        // send the actual event
         bool dblclick = ( eventId == EventImpl::CLICK_EVENT &&
                           _mouse->type() == QEvent::MouseButtonDblClick );
-	MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
+        MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
 						true,cancelable,m_part->xmlDocImpl()->defaultView(),
 						detail,screenX,screenY,clientX,clientY,
 						ctrlKey,altKey,shiftKey,metaKey,
 						button,0, _mouse, dblclick );
-	me->ref();
-	targetNode->dispatchEvent(me,exceptioncode,true);
+        me->ref();
+        targetNode->dispatchEvent(me,exceptioncode,true);
         if (me->defaultHandled() || me->defaultPrevented())
             swallowEvent = true;
-	me->deref();
+        me->deref();
 
-	if (eventId == EventImpl::MOUSEDOWN_EVENT) {
+        if (eventId == EventImpl::MOUSEDOWN_EVENT) {
             if (targetNode->isSelectable())
                 m_part->xmlDocImpl()->setFocusNode(targetNode);
             else
                 m_part->xmlDocImpl()->setFocusNode(0);
-	}
+        }
     }
 
     return swallowEvent;

@@ -1,3 +1,15 @@
+2003-12-05  David Faure  <faure@kde.org>
+
+	Clean up "default handling" of events. Fixes recent regressions like
+	"arrow keys in lineedit make the scrollview scroll".
+	* xml/dom_nodeimpl.*: Removed bool return value from most dispatch*Event methods,
+	documented the two that still return a bool. The meat of the change is
+	that dispatchKeyEvent returns defaultHandled || defaultPrevented.
+	* dom/dom_node.cpp (dispatchEvent): Return !defaultPrevented as mandated by
+	the DOM, now that NodeImpl doesn't do it anymore.
+	* rendering/render_replaced.cpp (eventFilter): Adapted to new logic
+	* khtmlview.cpp (dispatchKeyEventHelper): Adapted to new logic
+
 2003-12-05  Stephan Kulow  <coolo@kde.org>
 
 	* css/cssparser.cpp (parseValue): Do not accept negative values for padding (#59557)

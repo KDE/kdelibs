@@ -248,13 +248,16 @@ public:
     void setHTMLEventListener(int id, EventListener *listener);
     EventListener *getHTMLEventListener(int id);
 
-    bool dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent = false);
-    bool dispatchGenericEvent( EventImpl *evt, int &exceptioncode);
+    void dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent = false);
+    void dispatchGenericEvent( EventImpl *evt, int &exceptioncode);
+    // return true if event not prevented
     bool dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg);
-    bool dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg);
-    bool dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
-    bool dispatchUIEvent(int _id, int detail = 0);
-    bool dispatchSubtreeModifiedEvent();
+    void dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg);
+    void dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
+    void dispatchUIEvent(int _id, int detail = 0);
+    void dispatchSubtreeModifiedEvent();
+    // return true if defaultPrevented (i.e. event should be swallowed)
+    // this matches the logic in KHTMLView.
     bool dispatchKeyEvent(QKeyEvent *key, bool keypress);
 
     void handleLocalEvents(EventImpl *evt, bool useCapture);

@@ -75,7 +75,7 @@ Node NamedNodeMap::setNamedItem( const Node &arg )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->setNamedItem(arg.impl, false, 
+    Node r = impl->setNamedItem(arg.impl, false,
                        arg.handle()->nodeName().implementation(), exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
@@ -86,7 +86,7 @@ Node NamedNodeMap::removeNamedItem( const DOMString &name )
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
     int exceptioncode = 0;
-    Node r = impl->removeNamedItem(impl->mapId(0, name.implementation(), false), 
+    Node r = impl->removeNamedItem(impl->mapId(0, name.implementation(), false),
                                    false, name.implementation(), exceptioncode);
     if (exceptioncode)
         throw DOMException(exceptioncode);
@@ -382,10 +382,10 @@ bool Node::dispatchEvent(const Event &evt)
         throw DOMException(DOMException::NOT_FOUND_ERR);
 
     int exceptioncode = 0;
-    bool r = impl->dispatchEvent(evt.handle(),exceptioncode);
+    impl->dispatchEvent(evt.handle(),exceptioncode);
     if (exceptioncode)
 	throw DOMException(exceptioncode);
-    return r;
+    return !evt.handle()->defaultPrevented();
 }
 
 

@@ -462,25 +462,23 @@ EventListener *NodeImpl::getHTMLEventListener(int id)
 }
 
 
-bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
+void NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
 {
     evt->setTarget(this);
 
     // Since event handling code could cause this object to be deleted, grab a reference to the view now
     KHTMLView *view = document->document()->view();
 
-    bool ret = dispatchGenericEvent( evt, exceptioncode );
+    dispatchGenericEvent( evt, exceptioncode );
 
     // If tempEvent is true, this means that the DOM implementation will not be storing a reference to the event, i.e.
     // there is no way to retrieve it from javascript if a script does not already have a reference to it in a variable.
     // So there is no need for the interpreter to keep the event in its cache
     if (tempEvent && view && view->part() && view->part()->jScript())
         view->part()->jScript()->finishedWithEvent(evt);
-
-    return ret;
 }
 
-bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
+void NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 {
     // ### check that type specified
 
@@ -545,8 +543,6 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 
     DocumentImpl::updateDocumentsRendering();
     doc->deref();
-
-    return !evt->defaultPrevented(); // ### what if defaultPrevented was called before dispatchEvent?
 }
 
 bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
@@ -554,12 +550,13 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
     int exceptioncode = 0;
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->ref();
-    bool r = dispatchEvent(evt,exceptioncode,true);
+    dispatchEvent(evt,exceptioncode,true);
+    bool ret = !evt->defaultPrevented();
     evt->deref();
-    return r;
+    return ret;
 }
 
-bool NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg)
+void NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg)
 {
     int exceptioncode = 0;
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
@@ -567,15 +564,14 @@ bool NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableAr
     evt->ref();
     DocumentPtr *doc = document;
     doc->ref();
-    bool r = dispatchGenericEvent( evt, exceptioncode );
+    dispatchGenericEvent( evt, exceptioncode );
     if (!evt->defaultPrevented() && doc->document())
 	doc->document()->defaultEventHandler(evt);
     doc->deref();
     evt->deref();
-    return r;
 }
 
-bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overrideDetail)
+void NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overrideDetail)
 {
     bool cancelable = true;
     int detail = overrideDetail; // defaults to 0
@@ -604,7 +600,7 @@ bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
         }
     }
     if (evtId == EventImpl::UNKNOWN_EVENT)
-        return false; // shouldn't happen
+        return; // shouldn't happen
 
 
     int exceptioncode = 0;
@@ -640,13 +636,11 @@ bool NodeImpl::dispatchMouseEvent(QMouseEvent *_mouse, int overrideId, int overr
                    detail,screenX,screenY,clientX,clientY,ctrlKey,altKey,shiftKey,metaKey,
                    button,0);
     evt->ref();
-    bool r = dispatchEvent(evt,exceptioncode,true);
+    dispatchEvent(evt,exceptioncode,true);
     evt->deref();
-    return r;
-
 }
 
-bool NodeImpl::dispatchUIEvent(int _id, int detail)
+void NodeImpl::dispatchUIEvent(int _id, int detail)
 {
     assert (!( (_id != EventImpl::DOMFOCUSIN_EVENT &&
         _id != EventImpl::DOMFOCUSOUT_EVENT &&
@@ -660,18 +654,17 @@ bool NodeImpl::dispatchUIEvent(int _id, int detail)
     UIEventImpl *evt = new UIEventImpl(static_cast<EventImpl::EventId>(_id),true,
                                        cancelable,getDocument()->defaultView(),detail);
     evt->ref();
-    bool r = dispatchEvent(evt,exceptioncode,true);
+    dispatchEvent(evt,exceptioncode,true);
     evt->deref();
-    return r;
 }
 
-bool NodeImpl::dispatchSubtreeModifiedEvent()
+void NodeImpl::dispatchSubtreeModifiedEvent()
 {
     childrenChanged();
     if (!getDocument()->hasListenerType(DocumentImpl::DOMSUBTREEMODIFIED_LISTENER))
-	return false;
+	return;
     int exceptioncode = 0;
-    return dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
+    dispatchEvent(new MutationEventImpl(EventImpl::DOMSUBTREEMODIFIED_EVENT,
 			 true,false,0,DOMString(),DOMString(),DOMString(),0),exceptioncode,true);
 }
 
@@ -681,11 +674,8 @@ bool NodeImpl::dispatchKeyEvent(QKeyEvent *key, bool keypress)
     //kdDebug(6010) << "DOM::NodeImpl: dispatching keyboard event" << endl;
     TextEventImpl *keyEventImpl = new TextEventImpl(key, keypress, getDocument()->defaultView());
     keyEventImpl->ref();
-    bool r = dispatchEvent(keyEventImpl,exceptioncode,true);
-    // the default event handler should accept() the internal QKeyEvent
-    // to prevent the view from further evaluating it.
-    if (!keyEventImpl->defaultPrevented() && !keyEventImpl->qKeyEvent->isAccepted())
-      r = false;
+    dispatchEvent(keyEventImpl,exceptioncode,true);
+    bool r = keyEventImpl->defaultHandled() || keyEventImpl->defaultPrevented();
     keyEventImpl->deref();
     return r;
 }

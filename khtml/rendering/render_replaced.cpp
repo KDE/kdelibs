@@ -471,7 +471,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
     case QEvent::KeyRelease:
     // TODO this seems wrong - Qt events are not correctly translated to DOM ones,
     // like in KHTMLView::dispatchKeyEvent()
-        if (!element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e),false))
+        if (element()->dispatchKeyEvent(static_cast<QKeyEvent*>(e),false))
             filtered = true;
         break;
     default:
