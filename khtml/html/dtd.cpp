@@ -58,7 +58,7 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_BDO
     1, // ID_BIG
     5, // ID_BLOCKQUOTE
-    9, // ID_BODY
+   10, // ID_BODY
     0, // ID_BR
     1, // ID_BUTTON
     5, // ID_CAPTION
@@ -80,16 +80,16 @@ const unsigned short DOM::tagPriority[] = {
     5, // ID_FONT
     3, // ID_FORM
     0, // ID_FRAME
-    9, // ID_FRAMESET
+   10,// ID_FRAMESET
     5, // ID_H1
     5, // ID_H2
     5, // ID_H3
     5, // ID_H4
     5, // ID_H5
     5, // ID_H6
-    9, // ID_HEAD
+   10,// ID_HEAD
     0, // ID_HR
-    10, // ID_HTML
+   11,// ID_HTML
     1, // ID_I
     1, // ID_IFRAME
     0, // ID_IMG
@@ -109,8 +109,8 @@ const unsigned short DOM::tagPriority[] = {
     4, // ID_MENU
     0, // ID_META
     1, // ID_NOBR
-    9, // ID_NOEMBED
-    9, // ID_NOFRAMES
+   10,// ID_NOEMBED
+   10,// ID_NOFRAMES
     3, // ID_NOSCRIPT
     1, // ID_NOLAYER
     7, // ID_OBJECT
@@ -125,7 +125,7 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_S
     1, // ID_SAMP
     1, // ID_SCRIPT
-    5, // ID_SELECT
+    6, // ID_SELECT
     1, // ID_SMALL
     1, // ID_SPAN
     1, // ID_STRIKE
@@ -133,15 +133,15 @@ const unsigned short DOM::tagPriority[] = {
     1, // ID_STYLE
     1, // ID_SUB
     1, // ID_SUP
-    8, // ID_TABLE
-    7, // ID_TBODY
-    5, // ID_TD
+    9,// ID_TABLE
+    8, // ID_TBODY
+    6, // ID_TD
     1, // ID_TEXTAREA
-    7, // ID_TFOOT
-    5, // ID_TH
-    7, // ID_THEAD
+    8, // ID_TFOOT
+    6, // ID_TH
+    8, // ID_THEAD
     1, // ID_TITLE
-    6, // ID_TR
+    7, // ID_TR
     1, // ID_TT
     1, // ID_U
     4, // ID_UL
@@ -212,7 +212,7 @@ const tagStatus DOM::endTag[] = {
     OPTIONAL,  // ID_LI
     FORBIDDEN, // ID_LINK
     REQUIRED,  // ID_MAP
-    REQUIRED,  // ID_MARQUEE    
+    REQUIRED,  // ID_MARQUEE
     REQUIRED,  // ID_MENU
     FORBIDDEN, // ID_META
     REQUIRED,  // ID_NOBR
@@ -384,7 +384,7 @@ static const ushort tag_list_1[] = {
     ID_DEL,
     ID_NOBR,
     ID_WBR,
-    ID_MARQUEE,    
+    ID_MARQUEE,
     0
 };
 
@@ -424,7 +424,7 @@ static const ushort tag_list_3[] = {
     ID_LI,
     ID_XMP,
     ID__KONQBLOCK,
-    ID_MARQUEE,    
+    ID_MARQUEE,
     0
 };
 
@@ -499,7 +499,7 @@ static const ushort tag_list_4[] = {
     ID_COMMENT,
     ID_LI,
     ID_XMP,
-    ID_MARQUEE,    
+    ID_MARQUEE,
     0
 };
 
