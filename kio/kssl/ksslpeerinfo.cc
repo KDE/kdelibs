@@ -55,86 +55,72 @@ KSSLCertificate& KSSLPeerInfo::getPeerCertificate() {
 }
 
 void KSSLPeerInfo::setPeerHost(QString realHost) {
-	d->peerHost = realHost;
+	d->peerHost = realHost.stripWhiteSpace();
+	while(d->peerHost.endsWith("."))
+		d->peerHost.truncate(d->peerHost.length()-1);
+
+	d->peerHost = d->peerHost.lower();
 }
 
 bool KSSLPeerInfo::certMatchesAddress() {
 #ifdef HAVE_SSL
-  KSSLX509Map certinfo(m_cert.getSubject());
-  QString cn = certinfo.getValue("CN");
+KSSLX509Map certinfo(m_cert.getSubject());
+QString cn = certinfo.getValue("CN").stripWhiteSpace().lower();
+QRegExp rx;
+bool isIPAddress;
 
-  // Do not let empty CN's get by!!
-  if (cn.stripWhiteSpace().isEmpty ())
-    return false;
+	kdDebug(7029) << "Matching CN=[" << cn << "] to [" 
+		      << d->peerHost << "]" << endl;
 
-  QStringList domains;
+	// Check for invalid characters
+	if (QRegExp("[^a-zA-Z0-9\\.\\*\\-]").search(cn) >= 0) {
+		kdDebug(7029) << "CN contains invalid characters!  Failing." << endl;
+		return false;
+	}
 
-  kdDebug(7029) << "Matching CN=" << cn << " to " << d->peerHost << endl;
+	// Domains can legally end with '.'s.  We don't need them though.
+	while(cn.endsWith("."))
+		cn.truncate(cn.length()-1);
 
-  extractDomains(d->peerHost, domains);
-  QStringList::Iterator it = domains.begin();
-  for (; it != domains.end(); it++)
-  {
-    int match = cn.findRev(*it, -1, false);
-    kdDebug(7029) << "Match= " << match << ", CN.length= " << cn.length()
-                  << ", host.length= " << (*it).length() << endl;
+	// Do not let empty CN's get by!!
+	if (cn.isEmpty())
+		return false;
 
-    if (match > -1 && ((match + (*it).length()) == cn.length()))
-    {
-      kdDebug(7029) << "Found a match ==> " << (*it) << endl;
-      return true;
-    }
-  }
+	// Check for IPv4 address
+	rx.setPattern("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
+	isIPAddress = rx.exactMatch(d->peerHost);
+
+	// Check for IPv6 address here...
+	rx.setPattern("^\\[.*\\]$");
+	isIPAddress |= rx.exactMatch(d->peerHost);
+
+	if (cn.contains('*') && !isIPAddress) {
+		QStringList parts = QStringList::split('.', cn, false);
+
+		while(parts.count() > 2)
+			parts.remove(parts.begin());
+
+		if (parts.count() != 2) {
+			return false;  // we don't allow *.root - that's bad
+		}
+
+		if (parts[0].contains('*') || parts[1].contains('*')) {
+			return false;
+		}
+
+		if (QRegExp(cn, false, true).exactMatch(d->peerHost))
+			return true;
+
+		return false;
+	}
+
+	// We must have an exact match in this case (insensitive though)
+	// (note we already did .lower())
+	if (cn == d->peerHost)
+		return true;
+
 #endif
-  return false;
-}
-
-void KSSLPeerInfo::extractDomains(const QString &fqdn, QStringList &domains)
-{
-    QRegExp rx;
-    bool isIPAddress;
-
-
-    domains.clear();
-
-    // Check for IPv4 address
-    rx.setPattern ("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}");
-    isIPAddress = rx.exactMatch (fqdn);
-
-    // Check for IPv6 address here...
-    rx.setPattern ("^\\[.*\\]$");
-    isIPAddress |= rx.exactMatch (fqdn);
-
-    if (isIPAddress)
-    {
-       domains.append(fqdn);
-       return;
-    }
-
-    QStringList partList = QStringList::split('.', fqdn, false);
-
-    if (partList.count())
-        partList.remove(partList.begin()); // Remove hostname
-
-    while(partList.count()) {
-       if (partList.count() == 1)
-         break; // We only have a TLD left.
-
-       if (partList.count() == 2) {
-          // If this is a TLD, we should stop. (e.g. co.uk)
-          // We assume this is a TLD if it ends with .xx.yy or .x.yy
-          if (partList[0].length() <= 2 && partList[1].length() == 2)
-             break; // This is a TLD.
-       }
-
-       QString domain = partList.join(".");
-       domains.append(domain);
-       partList.remove(partList.begin());
-    }
-
-    // Add the entire FQDN at the end of the
-    // list for fqdn == CN checks
-    domains.append(fqdn);
+return false;
 }
 
 

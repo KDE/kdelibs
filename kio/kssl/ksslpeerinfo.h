@@ -47,7 +47,6 @@ protected:
   KSSLPeerInfo();
 
   KSSLCertificate m_cert;
-  void extractDomains(const QString &fqdn, QStringList &domains);
 
 private:
   KSSLPeerInfoPrivate *d;
