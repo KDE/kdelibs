@@ -1221,7 +1221,7 @@ void KDirOperator::setupActions()
 
 
     // the view menu actions
-    viewActionMenu = new KActionMenu( i18n("View"), myActionCollection, "view menu" );
+    viewActionMenu = new KActionMenu( i18n("&View"), myActionCollection, "view menu" );
     connect( viewActionMenu->popupMenu(), SIGNAL( aboutToShow() ),
              SLOT( insertViewDependentActions() ));
 
