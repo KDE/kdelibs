@@ -68,277 +68,277 @@ public:
      * @ref KStdAction::StdAction enum.
      */
     static QAction *action(StdAction act_enum, const QObject *recvr = 0,
-                           const char *slot = 0, QObject *parent = 0);
+                           const char *slot = 0, QObject *parent = 0, const char *name = 0L );
 
     /** Create a new document or window. */
     static KAction *openNew(const QObject *recvr = 0, const char *slot = 0,
-                            QObject *parent = 0);
+                            QObject *parent = 0, const char *name = 0L );
 
     /**
      * Open an existing file
      */
     static KAction *open(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Open a recently used document
      */
     static KSelectAction *openRecent(const QObject *recvr = 0, const char *slot = 0,
-                                     QObject *parent = 0);
+                                     QObject *parent = 0, const char *name = 0L );
 
     /**
      * Save the current document
      */
     static KAction *save(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Save the current document under a different name
      */
     static KAction *saveAs(const QObject *recvr = 0, const char *slot = 0,
-                           QObject *parent = 0);
+                           QObject *parent = 0, const char *name = 0L );
 
     /**
      * Revert the current document to the last saved version
      * (essentially will undo all changes)
      */
     static KAction *revert(const QObject *recvr = 0, const char *slot = 0,
-                           QObject *parent = 0);
+                           QObject *parent = 0, const char *name = 0L );
 
     /**
      * Close the current document
      */
     static KAction *close(const QObject *recvr = 0, const char *slot = 0,
-                          QObject *parent = 0);
+                          QObject *parent = 0, const char *name = 0L );
 
     /**
      * Print the current document
      */
     static KAction *print(const QObject *recvr = 0, const char *slot = 0,
-                          QObject *parent = 0);
+                          QObject *parent = 0, const char *name = 0L );
 
     /**
      * Show a print preview of the current document
      */
     static KAction *printPreview(const QObject *recvr = 0, const char *slot = 0,
-                                 QObject *parent = 0);
+                                 QObject *parent = 0, const char *name = 0L );
 
     /**
      * Quit the program
      */
     static KAction *quit(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Undo the last operation
      */
     static KAction *undo(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Redo the last operation.
      */
     static KAction *redo(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Cut selected area and store it in the clipboard
      */
     static KAction *cut(const QObject *recvr = 0, const char *slot = 0,
-                        QObject *parent = 0);
+                        QObject *parent = 0, const char *name = 0L );
 
     /**
      * Copy the selected area into the clipboard
      */
     static KAction *copy(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Paste the contents of clipboard at the current mouse or cursor
      * position
      */
     static KAction *paste(const QObject *recvr = 0, const char *slot = 0,
-                          QObject *parent = 0);
+                          QObject *parent = 0, const char *name = 0L );
 
     /**
      * Select all elements in the current document
      */
     static KAction *selectAll(const QObject *recvr = 0, const char *slot = 0,
-                              QObject *parent = 0);
+                              QObject *parent = 0, const char *name = 0L );
 
     /**
      * Initiate a 'find' request in the current document
      */
     static KAction *find(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Find the next instance of a stored 'find'
      */
     static KAction *findNext(const QObject *recvr = 0, const char *slot = 0,
-                             QObject *parent = 0);
+                             QObject *parent = 0, const char *name = 0L );
 
     /**
      * Find a previous instance of a stored 'find'
      */
     static KAction *findPrev(const QObject *recvr = 0, const char *slot = 0,
-                             QObject *parent = 0);
+                             QObject *parent = 0, const char *name = 0L );
 
     /**
      * Find and replace matches
      */
     static KAction *replace(const QObject *recvr = 0, const char *slot = 0,
-                            QObject *parent = 0);
+                            QObject *parent = 0, const char *name = 0L );
 
     /**
      * View the actual size of the document
      */
     static KAction *actualSize(const QObject *recvr = 0, const char *slot = 0,
-                               QObject *parent = 0);
+                               QObject *parent = 0, const char *name = 0L );
 
     /**
      * Fit the document view to the size of the current window
      */
     static KAction *fitToPage(const QObject *recvr = 0, const char *slot = 0,
-                              QObject *parent = 0);
+                              QObject *parent = 0, const char *name = 0L );
 
     /**
      * Fit the document view to the width of the current window
      */
     static KAction *fitToWidth(const QObject *recvr = 0, const char *slot = 0,
-                               QObject *parent = 0);
+                               QObject *parent = 0, const char *name = 0L );
 
     /**
      * Fit the document view to the height of the current window
      */
     static KAction *fitToHeight(const QObject *recvr = 0, const char *slot = 0,
-                                QObject *parent = 0);
+                                QObject *parent = 0, const char *name = 0L );
 
     /**
      * Zoom in
      */
     static KAction *zoomIn(const QObject *recvr = 0, const char *slot = 0,
-                           QObject *parent = 0);
+                           QObject *parent = 0, const char *name = 0L );
 
     /**
      * Zoom out
      */
     static KAction *zoomOut(const QObject *recvr = 0, const char *slot = 0,
-                            QObject *parent = 0);
+                            QObject *parent = 0, const char *name = 0L );
 
     /**
      * Popup a zoom dialog
      */
     static KAction *zoom(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Redisplay or redraw the document
      */
     static KAction *redisplay(const QObject *recvr = 0, const char *slot = 0,
-                              QObject *parent = 0);
+                              QObject *parent = 0, const char *name = 0L );
 
     /**
      * Move up (web style menu)
      */
     static KAction *up(const QObject *recvr = 0, const char *slot = 0,
-                       QObject *parent = 0);
+                       QObject *parent = 0, const char *name = 0L );
 
     /**
      * Move back (web style menu)
      */
     static KAction *back(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Move forward (web style menu)
      */
     static KAction *forward(const QObject *recvr = 0, const char *slot = 0,
-                            QObject *parent = 0);
+                            QObject *parent = 0, const char *name = 0L );
 
     /**
      * Go to the "Home" position or document
      */
     static KAction *home(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Scroll up one page
      */
     static KAction *prior(const QObject *recvr = 0, const char *slot = 0,
-                          QObject *parent = 0);
+                          QObject *parent = 0, const char *name = 0L );
 
     /**
      * Scroll down one page
      */
     static KAction *next(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 
     /**
      * Go to a specific page (dialog)
      */
     static KAction *gotoPage(const QObject *recvr = 0, const char *slot = 0,
-                             QObject *parent = 0);
+                             QObject *parent = 0, const char *name = 0L );
 
     /**
      * Jump to the first page
      */
     static KAction *firstPage(const QObject *recvr = 0, const char *slot = 0,
-                              QObject *parent = 0);
+                              QObject *parent = 0, const char *name = 0L );
 
     /**
      * Jump to the last page
      */
     static KAction *lastPage(const QObject *recvr = 0, const char *slot = 0,
-                             QObject *parent = 0);
+                             QObject *parent = 0, const char *name = 0L );
 
     /**
      * Add the current page to the bookmarks tree
      */
     static KAction *addBookmark(const QObject *recvr = 0, const char *slot = 0,
-                                QObject *parent = 0);
+                                QObject *parent = 0, const char *name = 0L );
 
     /**
      * Edit the application bookmarks
      */
     static KAction *editBookmarks(const QObject *recvr = 0, const char *slot = 0,
-                                  QObject *parent = 0);
+                                  QObject *parent = 0, const char *name = 0L );
 
     /**
      * Show/Hide the menubar
      */
     static KToggleAction *showMenubar(const QObject *recvr = 0, const char *slot = 0,
-				      QObject *parent = 0);
+				      QObject *parent = 0, const char *name = 0L );
 
     /**
      * Show/Hide the primary toolbar
      */
     static KToggleAction *showToolbar(const QObject *recvr = 0, const char *slot = 0,
-				      QObject *parent = 0);
+				      QObject *parent = 0, const char *name = 0L );
 
     /**
      * Show/Hide the statusbar
      */
     static KToggleAction *showStatusbar(const QObject *recvr = 0, const char *slot = 0,
-					QObject *parent = 0);
+					QObject *parent = 0, const char *name = 0L );
 
     /**
      * Display the configure key bindings dialog
      */
     static KAction *keyBindings(const QObject *recvr = 0, const char *slot = 0,
-                                QObject *parent = 0);
+                                QObject *parent = 0, const char *name = 0L );
 
     /**
      * Display the preferences/options dialog
      */
     static KAction *preferences(const QObject *recvr = 0, const char *slot = 0,
-                                QObject *parent = 0);
+                                QObject *parent = 0, const char *name = 0L );
 
     /**
      * Display the help menu
      */
     static KAction *help(const QObject *recvr = 0, const char *slot = 0,
-                         QObject *parent = 0);
+                         QObject *parent = 0, const char *name = 0L );
 };
 
 #endif // KSTDACTION_H
