@@ -651,12 +651,142 @@ QString KCalendarSystemHebrew::yearString(const QDate & pDate, bool bShort) cons
   return sResult;
 }
 
+static int heb2num(const QString& str, int & iLength) {
+  QChar c;
+  QString s = str;
+  int result = 0;
+  s.remove("\'");
+  s.remove("\"");
+
+  uint i;
+  for (i = 0 ; i < s.length() ; i++)
+  {
+    c = s[i];
+    if (c == QChar(0x05D0) || c == QChar(0x05D1) || c == QChar(0x05D2) ||
+        c == QChar(0x05D3) || c == QChar(0x05D4) || c == QChar(0x05D5) ||
+	c == QChar(0x05D6) || c == QChar(0x05D7))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D0) && s[i + 1] <= QChar(0x05EA))
+	result += (c.unicode() - 0x05D0 + 1) * 1000;
+      else
+	result += c.unicode() - 0x05D0 + 1;
+    }
+    else if (c == QChar(0x05D8))
+    {
+      if (s.length() > i && s[i + 1] == QChar(0x05D5))
+        result += 15;
+      else if (s.length() > i && s[i + 1] == QChar(0x05D6))
+        result += 16;
+      else if (s.length() > i && s[i + 1] >= QChar(0x05D0) && s[i + 1] <= QChar(0x05EA))
+	result += 9000;
+      else
+	result += 9;
+    }
+    else if (c == QChar(0x05D9))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 10;
+    }
+    else if (c == QChar(0x05DA) || c == QChar(0x05DB))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 20;
+    }
+    else if (c == QChar(0x05DC))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 30;
+    }
+    else if (c == QChar(0x05DD) || c == QChar(0x05DE))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 40;
+    }
+    else if (c == QChar(0x05DF) || c == QChar(0x05E0))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 50;
+    }
+    else if (c == QChar(0x05E1))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 60;
+    }
+    else if (c == QChar(0x05E2))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 70;
+    }
+    else if (c == QChar(0x05E3) || c == QChar(0x05E4))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 80;
+    }
+    else if (c == QChar(0x05E5) || c == QChar(0x05E6))
+    {
+      if (s.length() > i && s[i + 1] >= QChar(0x05D9))
+        return -1;
+      else
+        result += 90;
+    }
+    else if (c == QChar(0x05E7) || c == QChar(0x05E8) ||
+             c == QChar(0x05E9) || c == QChar(0x05EA))
+   {
+	result += (c.unicode() - 0x05E7 + 1) * 100;
+   }
+   else
+   {
+     break;
+   }
+  }
+
+  iLength = i;
+
+  return result;
+}
+
 int KCalendarSystemHebrew::dayStringToInteger(const QString & sNum, int & iLength) const
 {
+  int iResult;
+  if (locale()->language() == "he")
+    iResult= heb2num(sNum, iLength);
+  else
+    iResult = KCalendarSystem::yearStringToInteger(sNum, iLength);
+
   kdDebug() << "KCalendarSystemHebrew::dayStringToInteger: Not implemnted" << endl;
+
+  return iResult;
 }
 
 int KCalendarSystemHebrew::yearStringToInteger(const QString & sNum, int & iLength) const
 {
+  int iResult;
+  if (locale()->language() == "he")
+    iResult = heb2num(sNum, iLength);
+  else
+    iResult = KCalendarSystem::yearStringToInteger(sNum, iLength);
+  
+  if (iResult < 1000)
+    iResult += 5000; // assume we're in the 6th millenium (y6k bug)
+
   kdDebug() << "KCalendarSystemHebrew::yearStringToInteger: Not implemnted" << endl;
+
+  return iResult;
 }
+
