@@ -144,6 +144,8 @@ public:
 	 */
 	QString replacedPath( const QString& text );
 
+        class MyURL;
+        class DirLister;
 protected:
 	// Called by KCompletion, adds '/' to directories
 	void postProcessMatch( QString *match ) const;
@@ -157,8 +159,6 @@ private slots:
 	void slotTimer();
 
 private:
-        class MyURL;
-        class DirLister;
 
         bool isAutoCompletion();
 	
