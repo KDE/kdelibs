@@ -344,7 +344,7 @@ public:
 
         /**
          * Return the attributes of the item. See
-         * @ref KFileMimeTypInfo::Attributes
+         * @ref KFileMimeTypeInfo::Attributes
          */
         uint attributes() const
         {
@@ -353,7 +353,7 @@ public:
 
         /**
          * Return the hints for the item. See
-         * @ref KFileMimeTypInfo::Hint
+         * @ref KFileMimeTypeInfo::Hint
          */
         uint hint() const
         {
@@ -362,7 +362,7 @@ public:
 
         /**
          * Return the unit of the item. See
-         * @ref KFileMimeTypInfo::Unit
+         * @ref KFileMimeTypeInfo::Unit
          */
         uint unit() const
         {
