@@ -122,8 +122,11 @@ Completion ConstructorImp::execute(const List &)
 Function::Function(Imp *d)
   : KJSO(d)
 {
-  assert(rep);
-  static_cast<FunctionImp*>(rep)->attr = ImplicitNone;
+  if (d) {
+    static_cast<FunctionImp*>(rep)->attr = ImplicitNone;
+    assert(Global::current().hasProperty("[[Function.prototype]]"));
+    setPrototype(Global::current().functionPrototype());
+  }
 }
 
 Completion Function::execute(const List &args)
@@ -154,9 +157,12 @@ InternalFunction::~InternalFunction()
 Constructor::Constructor(Imp *d)
   : Function(d)
 {
-  setPrototype(((GlobalImp*)Global::current().imp())->funcProto);
-  put("constructor", *this);
-  put("length", 1, DontEnum);
+  if (d) {
+    assert(Global::current().hasProperty("[[Function.prototype]]"));
+    setPrototype(Global::current().get("[[Function.prototype]]"));
+    put("constructor", *this);
+    put("length", 1, DontEnum);
+  }
 }
 
 #if 0
@@ -180,7 +186,7 @@ Completion Constructor::execute(const List &)
 
 Object Constructor::construct(const List &args)
 {
-  assert(rep->type() == ConstructorType);
+  assert(rep && rep->type() == ConstructorType);
   return ((ConstructorImp*)rep)->construct(args);
 }
 

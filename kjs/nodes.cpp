@@ -218,12 +218,15 @@ KJSO NewExprNode::evaluate()
   List *argList = args ? args->evaluateList() : 0;
 
   if (!v.isObject()) {
+    delete argList;
     return throwError(TypeError, "Expression is no object.");
   }
-  if (!v.isA(ConstructorType))
-    return throwError(TypeError, "Expression is no constructor.");
 
   Constructor constr = Constructor::dynamicCast(v);
+  if (constr.isNull()) {
+    delete argList;
+    return throwError(TypeError, "Expression is no constructor.");
+  }
 
   if (!argList)
     argList = new List;

@@ -242,6 +242,11 @@ const List *List::empty()
 {
   if (!emptyList)
     emptyList = new List;
+#ifdef KJS_DEBUG_MEM
+  else
+    count++;
+#endif
+
 
   return emptyList;
 }

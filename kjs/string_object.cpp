@@ -148,7 +148,6 @@ KJSO StringPrototype::get(const UString &p) const
 StringProtoFunc::StringProtoFunc(int i)
   : id(i)
 {
-  setPrototype(Global::current().functionPrototype());
 }
 
 // ECMA 15.5.4.2 - 15.5.4.20

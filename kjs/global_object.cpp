@@ -53,8 +53,9 @@ private:
 };
 
 Global::Global()
-  : Object(new GlobalImp())
+  : Object(0L)
 {
+  init();
 }
 
 Global::Global(void *)
@@ -68,7 +69,9 @@ Global::~Global()
 
 void Global::init()
 {
-  rep = new GlobalImp();
+  GlobalImp *g = new GlobalImp();
+  rep = g;
+  g->init();
 }
 
 Global Global::current()
@@ -78,29 +81,37 @@ Global Global::current()
 
 KJSO Global::objectPrototype() const
 {
-  assert(rep);
-  return ((GlobalImp*)rep)->objProto;
+  return get("[[Object.prototype]]");
 }
 
 KJSO Global::functionPrototype() const
 {
-  assert(rep);
-  return ((GlobalImp*)rep)->funcProto;
+  return get("[[Function.prototype]]");
 }
 
 GlobalImp::GlobalImp()
   : ObjectImp(ObjectClass)
 {
   // constructor properties. prototypes as Global's member variables first.
-  objProto = Object(new ObjectPrototype());
-  funcProto = Object(new FunctionPrototype());
-  arrayProto = Object(new ArrayPrototype(objProto));
-  stringProto = Object(new StringPrototype(objProto));
-  booleanProto = Object(new BooleanPrototype(objProto));
-  numberProto = Object(new NumberPrototype(objProto));
-  dateProto = Object(new DatePrototype(objProto));
-  regexpProto = Object(new RegExpPrototype(objProto));
-  errorProto = Object(new ErrorPrototype(objProto));
+  Object objProto(new ObjectPrototype());
+  Object funcProto(new FunctionPrototype());
+  Object arrayProto(new ArrayPrototype(objProto));
+  Object stringProto(new StringPrototype(objProto));
+  Object booleanProto(new BooleanPrototype(objProto));
+  Object numberProto(new NumberPrototype(objProto));
+  Object dateProto(new DatePrototype(objProto));
+  Object regexpProto(new RegExpPrototype(objProto));
+  Object errorProto(new ErrorPrototype(objProto));
+
+  put("[[Object.prototype]]", objProto);
+  put("[[Function.prototype]]", funcProto);
+  put("[[Array.prototype]]", arrayProto);
+  put("[[String.prototype]]", stringProto);
+  put("[[Boolean.prototype]]", booleanProto);
+  put("[[Number.prototype]]", numberProto);
+  put("[[Date.prototype]]", dateProto);
+  put("[[RegExp.prototype]]", regexpProto);
+  put("[[Error.prototype]]", errorProto);
 
   Object objectObj(new ObjectObject(objProto));
   Object arrayObj(new ArrayObject(funcProto));
@@ -128,7 +139,10 @@ GlobalImp::GlobalImp()
   dateProto.setConstructor(dateObj);
   regexpProto.setConstructor(regObj);
   errorProto.setConstructor(errObj);
+};
 
+void GlobalImp::init()
+{
   // value properties
   put("NaN", Number(NaN), DontEnum | DontDelete);
   put("Infinity", Number(Inf), DontEnum | DontDelete);

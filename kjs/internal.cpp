@@ -334,7 +334,7 @@ Object DeclaredFunctionImp::construct(const List &args)
   if (p.isObject())
     obj.setPrototype(p);
   else
-    obj.setPrototype(Global::current().objectPrototype());
+    obj.setPrototype(Global::current().get("[[Object.prototype]]"));
 
   KJSO res = executeCall(obj.imp(), &args);
 

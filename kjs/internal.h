@@ -158,22 +158,7 @@ namespace KJS {
   public:
     GlobalImp();
     virtual ~GlobalImp();
-
-    Object objProto;
-    Object funcProto;
-    Object arrayProto;
-    Object stringProto;
-    Object booleanProto;
-    Object numberProto;
-    Object dateProto;
-    Object regexpProto;
-    Object errorProto;
-    Object evalErrorProto;
-    Object rangeErrorProto;
-    Object refErrorProto;
-    Object syntaxErrorProto;
-    Object typeErrorProto;
-    Object uriErrorProto;
+    void init();
   private:
     class GlobalInternal;
     GlobalInternal *internal;

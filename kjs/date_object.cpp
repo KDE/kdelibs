@@ -232,7 +232,6 @@ KJSO DatePrototype::get(const UString &p) const
 
 DateProtoFunc::DateProtoFunc(int i, bool u) : id(i), utc(u) 
 {
-  setPrototype(Global::current().functionPrototype());
 }
 
 Completion DateProtoFunc::execute(const List &)

@@ -89,7 +89,6 @@ KJSO ObjectPrototype::get(const UString &p) const
 ObjectProtoFunc::ObjectProtoFunc(int i)
   : id(i)
 {
-  setPrototype(Global::current().functionPrototype());
 }
 
 // ECMA 15.2.4.2 + 15.2.4.3

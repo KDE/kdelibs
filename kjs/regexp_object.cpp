@@ -59,7 +59,7 @@ Object RegExpObject::construct(const List &args)
   dat->setRegExp(new RegExp(p.value() /* TODO flags */));
   Object obj(dat);
   obj.setClass(RegExpClass);
-  obj.setPrototype(((GlobalImp*)Global::current().imp())->regexpProto);
+  obj.setPrototype(Global::current().get("[[RegExp.prototype]]"));
 
   return obj;
 }

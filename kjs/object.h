@@ -310,6 +310,10 @@ namespace KJS {
     inline Imp* ref() { refcount++; return this; }
     inline bool deref() { return (!--refcount); }
     unsigned int refcount;
+    /**
+     * @internal Reserved for mark & sweep garbage collection
+     */
+    virtual void mark(Imp*);
 
     Type type() const { return typeInfo()->type; }
     /**
@@ -361,9 +365,13 @@ namespace KJS {
 
     virtual const TypeInfo* typeInfo() const { return &info; }
     static const TypeInfo info;
+    /**
+     * @internal Reimplemenation of @ref Imp::mark().
+     */
+    virtual void mark(Imp*);
   private:
     Class cl;
-    KJSO val;
+    Imp *val;
   };
 
   /**

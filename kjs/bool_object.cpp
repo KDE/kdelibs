@@ -70,7 +70,6 @@ KJSO BooleanPrototype::get(const UString &p) const
 BooleanProtoFunc::BooleanProtoFunc(int i)
   : id(i)
 {
-  setPrototype(Global::current().functionPrototype());
 }
 
 // ECMA 15.6.4.2 + 15.6.4.3

@@ -428,13 +428,13 @@ Class Object::getClass() const
 void Object::setInternalValue(const KJSO& v)
 {
   assert(rep);
-  static_cast<ObjectImp*>(rep)->val = v;
+  static_cast<ObjectImp*>(rep)->val = v.imp();
 }
 
 KJSO Object::internalValue()
 {
   assert(rep);
-  return static_cast<ObjectImp*>(rep)->val;
+  return KJSO(static_cast<ObjectImp*>(rep)->val);
 }
 
 Object Object::create(Class c)
@@ -450,39 +450,42 @@ Object Object::create(Class c, const KJSO& val)
 {
   Global global(Global::current());
   Object obj = Object();
-  Object prot;
   obj.setClass(c);
   obj.setInternalValue(val);
-
-  GlobalImp *g = (GlobalImp*)global.imp();
   
+  UString p = "[[";
   switch (c) {
   case UndefClass:
   case ObjectClass:
-    prot = g->objProto;
+    p += "Object";
     break;
   case ArrayClass:
-    prot = g->arrayProto;
+    p += "Array";
     break;
   case StringClass:
-    prot = g->stringProto;
+    p += "String";
     break;
   case BooleanClass:
-    prot = g->booleanProto;
+    p += "Boolean";
     break;
   case NumberClass:
-    prot = g->numberProto;
+    p += "Number";
     break;
   case DateClass:
-    prot = g->dateProto;
+    p += "Date";
     break;
   case RegExpClass:
-    prot = g->regexpProto;
+    p += "RegExp";
     break;
   case ErrorClass:
-    prot = g->errorProto;
+    p += "Error";
     break;
   }
+  p += ".prototype]]";
+
+  //  KJSO prot = global.get(p).get("prototype");
+  KJSO prot = global.get(p);
+  assert(!prot.isA(UndefinedType));
 
   obj.setPrototype(prot);
   return obj;
@@ -572,14 +575,15 @@ KJSO Imp::get(const UString &p) const
 {
   Property *pr = prop;
   while (pr) {
-    if (pr->name == p)
+    if (pr->name == p) {
       return pr->object;
+    }
     pr = pr->next;
   }
 
   if (!proto)
     return Undefined();
-
+  
   return proto->get(p);
 }
 
@@ -639,9 +643,6 @@ bool Imp::canPut(const UString &p) const
 // ECMA 8.6.2.4
 bool Imp::hasProperty(const UString &p, bool recursive) const
 {
-  if (!prop)
-    return false;
-
   const Property *pr = prop;
   while (pr) {
     if (pr->name == p)
@@ -758,6 +759,10 @@ KJSO Imp::defaultValue(Type hint) const
   return Error::create(TypeError);
 }
 
+void Imp::mark(Imp*)
+{
+}
+
 void Imp::setPrototype(const KJSO& p)
 {
   proto = p.imp() ? p.imp()->ref() : 0L;
@@ -781,10 +786,10 @@ void Imp::operator delete(void*, size_t)
 
 ObjectImp::ObjectImp(Class c) : cl(c) { }
 
-ObjectImp::ObjectImp(Class c, const KJSO &v) : cl(c), val(v) { }
+ObjectImp::ObjectImp(Class c, const KJSO &v) : cl(c), val(v.imp()) { }
 
 ObjectImp::ObjectImp(Class c, const KJSO &v, const KJSO &p)
-  : cl(c), val(v)
+  : cl(c), val(v.imp())
 {
   setPrototype(p);
 }
@@ -831,6 +836,10 @@ const TypeInfo ObjectImp::info = { "Object", ObjectType, 0, 0, 0 };
 Object ObjectImp::toObject() const
 {
   return Object(const_cast<ObjectImp*>(this));
+}
+
+void ObjectImp::mark(Imp*)
+{
 }
 
 HostImp::~HostImp() { }
