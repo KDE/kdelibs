@@ -614,7 +614,7 @@ int RenderCanvas::docHeight() const
     int y = 0;
     while ( layer ) {
 	h = kMax( h, layer->yPos() + layer->height() );
-	h = kMax( h, layer->xPos() + layer->renderer()->overflowHeight() );
+	h = kMax( h, layer->yPos() + layer->renderer()->overflowHeight() );
 	if ( layer->firstChild() ) {
 	    y += layer->yPos();
 	    layer = layer->firstChild();
