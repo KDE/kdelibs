@@ -1873,6 +1873,7 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
 	    // if Accesskey is a label, give focus to the label's referrer.
 	    node=static_cast<ElementImpl *>(static_cast< HTMLLabelElementImpl* >( node )->getFormElement());
 	    if (!node) return true;
+            guard = node;
 	}
         // Set focus node on the document
         m_part->xmlDocImpl()->setFocusNode(node);
@@ -1882,12 +1883,7 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
         if( node != NULL && node->hasOneRef())
             return true;
     }
-    if (node->id()==ID_LABEL)
-    {
-        // if Accesskey is a label, give focus to the label's referrer.
-        node=static_cast<ElementImpl *>(static_cast< HTMLLabelElementImpl* >( node )->getFormElement());
-        if (!node) return true;
-    }
+
     switch( node->id()) {
         case ID_A:
             static_cast< HTMLAnchorElementImpl* >( node )->click();
@@ -1902,7 +1898,7 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
             static_cast< HTMLAreaElementImpl* >( node )->click();
           break;
         case ID_TEXTAREA:
-	    m_part->xmlDocImpl()->setFocusNode(node);
+	  break; // just focusing it is enough
         case ID_LEGEND:
             // TODO
           break;
