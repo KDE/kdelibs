@@ -299,14 +299,28 @@ bool TCPSlaveBase::connectToHost( const QString &host,
         !m_bIsSSL) {
        KSSLSettings kss;
        if (kss.warnOnLeave()) {
-          int result = messageBox( WarningContinueCancel,
-                                   i18n("You are about to leave secure "
+          int result = messageBox( i18n("You are about to leave secure "
                                         "mode. Transmissions will no "
                                         "longer be encrypted.\nThis "
                                         "means that a third party could "
                                         "observe your data in transit."),
+                                   WarningContinueCancel,
                                    i18n("Security Information"),
-                                   i18n("C&ontinue Loading") );
+                                   i18n("C&ontinue Loading"), QString::null,
+                                   "WarnOnLeaveSSLMode" );
+
+           // Move this setting into KSSL instead
+          KConfig *config = new KConfig("kioslaverc");
+          config->setGroup("Notification Messages");
+
+          if (!config->readBoolEntry("WarnOnLeaveSSLMode", true)) {
+              config->deleteEntry("WarnOnLeaveSSLMode");
+              config->sync();
+              kss.setWarnOnLeave(false);
+              kss.save();
+          }
+          delete config;
+
           if ( result == KMessageBox::Cancel ) {
              d->userAborted = true;
              return false;
@@ -1053,7 +1067,7 @@ int TCPSlaveBase::verifyCertificate()
                                         d->kssl->settings()->warnOnEnter()) {
      int result;
      do {
-                result = messageBox( WarningYesNo, i18n("You are about to "
+                result = messageBox(               i18n("You are about to "
                                                         "enter secure mode. "
                                                         "All transmissions "
                                                         "will be encrypted "
@@ -1063,10 +1077,24 @@ int TCPSlaveBase::verifyCertificate()
                                                         "will be able to "
                                                         "easily observe your "
                                                         "data in transit."),
+                                                   WarningYesNo,
                                                    i18n("Security Information"),
-                                                   i18n("&Display SSL "
-                                                        "Information"),
-                                                   i18n("C&onnect") );
+                                                   i18n("Display SSL "
+                                                        "&Information"),
+                                                   i18n("C&onnect"),
+                                                   "WarnOnEnterSSLMode" );
+      // Move this setting into KSSL instead
+      KConfig *config = new KConfig("kioslaverc");
+      config->setGroup("Notification Messages");
+
+      if (!config->readBoolEntry("WarnOnEnterSSLMode", true)) {
+          config->deleteEntry("WarnOnEnterSSLMode");
+          config->sync();
+          d->kssl->settings()->setWarnOnEnter(false);
+          d->kssl->settings()->save();
+      }
+      delete config;
+
       if ( result == KMessageBox::Yes )
       {
           if (!d->dcc) {
