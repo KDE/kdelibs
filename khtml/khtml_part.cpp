@@ -1595,7 +1595,7 @@ void KHTMLPart::checkCompleted()
 
   emit setStatusBarText( i18n("Loading complete") );
 #ifdef SPEED_DEBUG
-  kdDebug() << "DONE: " <<d->m_parsetime.elapsed() << endl;
+  kdDebug(6050) << "DONE: " <<d->m_parsetime.elapsed() << endl;
 #endif
 }
 
@@ -1745,7 +1745,7 @@ bool KHTMLPart::gotoAnchor( const QString &name )
   anchors->deref();
 
   if(!n) {
-      kdDebug() << "KHTMLPart::gotoAnchor no node found" << endl;
+      kdDebug(6050) << "KHTMLPart::gotoAnchor no node found" << endl;
       return false;
   }
 
@@ -3087,7 +3087,7 @@ void KHTMLPart::restoreState( QDataStream &stream )
   // nth node is active. value is set in checkCompleted()
   stream >> d->m_focusNodeNumber;
   d->m_focusNodeRestored = false;
-  kdDebug()<<"new focus Node number is:"<<d->m_focusNodeNumber<<endl;
+  kdDebug(6050)<<"new focus Node number is:"<<d->m_focusNodeNumber<<endl;
 
   stream >> d->m_cacheId;
 
@@ -4028,7 +4028,7 @@ void KHTMLPart::setActiveNode(const DOM::Node &node)
     if (!d->m_view || !e || e->ownerDocument()!=d->m_doc)
         return;
     QRect rect  = e->getRect();
-    kdDebug()<<"rect.x="<<rect.x()<<" rect.y="<<rect.y()<<" rect.width="<<rect.width()<<" rect.height="<<rect.height()<<endl;
+    kdDebug(6050)<<"rect.x="<<rect.x()<<" rect.y="<<rect.y()<<" rect.width="<<rect.width()<<" rect.height="<<rect.height()<<endl;
     d->m_view->ensureVisible(rect.right(), rect.bottom());
     d->m_view->ensureVisible(rect.left(), rect.top());
 }

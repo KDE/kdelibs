@@ -395,7 +395,7 @@ void KHTMLSettings::resetFontSizes()
 	sizeAdjust = 0;
     if ( sizeAdjust > 9 )
 	sizeAdjust = 9;
-    kdDebug() << "KHTMLSettings::resetFontSizes adjustment is " << sizeAdjust << endl;
+    //kdDebug(6050) << "KHTMLSettings::resetFontSizes adjustment is " << sizeAdjust << endl;
     for ( int i = 0; i < MAXFONTSIZES; i++ )
 	m_fontSizes << defaultFontSizes[ i  + sizeAdjust ];
 }
@@ -533,7 +533,7 @@ void KHTMLSettings::internalSetCharset( QFont::CharSet c )
 
 void KHTMLSettings::setScript( QFont::CharSet c )
 {
-    kdDebug() << "KHTMLSettings::setScript to " << c << endl;
+    kdDebug(6050) << "KHTMLSettings::setScript to " << c << endl;
     m_script = c;
 }
 
