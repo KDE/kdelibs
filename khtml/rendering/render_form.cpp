@@ -881,8 +881,6 @@ void RenderSelect::layout( )
 
 void RenderSelect::close()
 {
-    HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_element);
-
     setLayouted(false);
     static_cast<HTMLSelectElementImpl*>(m_element)->recalcListItems();
 
