@@ -4918,7 +4918,14 @@ void KHTMLPart::slotPartRemoved( KParts::Part *part )
 {
 //    kdDebug(6050) << "KHTMLPart::slotPartRemoved " << part << endl;
     if ( part == d->m_activeFrame )
+    {
         d->m_activeFrame = 0L;
+        if ( !part->inherits( "KHTMLPart" ) )
+        {
+            factory()->removeClient( part );
+            removeChildClient( part );
+        }
+    }
 }
 
 void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
@@ -4940,6 +4947,18 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
            frame->repaint();
         }
     }
+
+    if( d->m_activeFrame && !d->m_activeFrame->inherits( "KHTMLPart" ) )
+    {
+        factory()->removeClient( d->m_activeFrame );
+        removeChildClient( d->m_activeFrame );
+    }
+    if( part && !part->inherits( "KHTMLPart" ) )
+    {
+        factory()->addClient( part );
+        insertChildClient( part );
+    }
+
 
     d->m_activeFrame = part;
 
