@@ -51,9 +51,9 @@ public:
 };
 
 
-class RenderWidget : public QObject, public RenderReplaced
+class RenderWidget : public QObject, public RenderReplaced, public DOM::DomShared
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     RenderWidget(QScrollView *view);
     virtual ~RenderWidget();
@@ -72,18 +72,17 @@ public:
 
     void placeWidget(int x, int y);
 
+    virtual void detach();
+    
 public slots:
     void slotWidgetDestructed();
-
 
 protected:
     void setQWidget(QWidget *widget, bool show = true);
     QScrollView *m_view;
-    bool deleted;
 public:
     QWidget *m_widget;
 };
-
 
 };
 
