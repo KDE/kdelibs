@@ -1,3 +1,6 @@
+#ifndef spinboxtest_h
+#define spinboxtest_h
+
 #include <qwidget.h>
 class KSpinBox;
 
@@ -33,3 +36,4 @@ class StringTest : public QObject // Widget
 
 	
 };
+#endif

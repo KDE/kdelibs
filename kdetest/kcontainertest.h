@@ -1,3 +1,6 @@
+#ifndef kcontainertest_h
+#define kcontainertest_h
+
 #include <qwidget.h>
 #include <qdialog.h>
 #include <kcontainer.h>
@@ -24,4 +27,5 @@ Q_OBJECT
 public:
     TopLevelTest();
 };
+#endif
 

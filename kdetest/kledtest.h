@@ -1,3 +1,6 @@
+#ifndef kledtest_h
+#define kledtest_h
+
 #include <ktopwidget.h>
 #include <qwidget.h>
 #include <qtimer.h>
@@ -26,3 +29,5 @@ private:
   KLed::Color ledcolor;
   KLed::Look  ledlook;
 };
+#endif
+

@@ -1,3 +1,5 @@
+#ifndef testwindow_h
+#define testwindow_h
 
 #include <qpopmenu.h>
 #include <qtimer.h>
@@ -65,10 +67,5 @@ protected:
     QProgressBar *pr;
     KRadioGroup *rg;
 };
+#endif
 
-
-
-
-    
-
-        

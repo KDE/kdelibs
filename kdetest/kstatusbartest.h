@@ -1,3 +1,6 @@
+#ifndef test_kstatusbar_h
+#define test_kstatusbar_h
+
 #include <kmenubar.h>
 #include <qpopmenu.h>
 #include <kstatusbar.h>
@@ -26,10 +29,5 @@ protected:
     bool insert;
     QMultiLineEdit *widget;
 };
+#endif
 
-
-
-
-    
-
-        

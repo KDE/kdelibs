@@ -1,5 +1,7 @@
 /* -*- c++ -*- */
 
+#ifndef krulertest_h
+#define krulertest_h
 
 #include <kapp.h>
 #include <ktopwidget.h>
@@ -73,3 +75,5 @@ private:
   QRadioButton *pixelmetric, *inchmetric, *mmmetric, *cmmetric, *mmetric;
 
 };
+#endif
+
