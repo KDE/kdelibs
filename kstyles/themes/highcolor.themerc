@@ -6,7 +6,7 @@ Name[hu]=Sok-színű alapértelmezett
 Name[it]=Molti colori predefinito
 Name[nl]=Standaard hoge kleuren
 Name[no]=Mange farger-standard
-Name[no_NY]=Mange farger-standard
+Name[no_NY]=Standard med mange fargar
 Name[sl]=Številne barve privzete
 Name[tr]=Yüksek Renk Öntanýmlý
 Comment=Highcolor version of the default style
@@ -16,7 +16,7 @@ Comment[hu]=Az alapértelmezett stílus sok-színű változata
 Comment[it]=Versione con molti colori dello stile predefinito
 Comment[nl]=Hoge-kleuren-versie van het standaard-type
 Comment[no]=Mange farger-versjon med standard stil
-Comment[no_NY]=Mange farger-versjon med standard stil
+Comment[no_NY]=Standardstil med mange fargar
 Comment[sl]=Raznobarvna različica privzetega sloga
 Comment[tr]=Öntanýmlý stilin yüksek renk versiyonu
 [KDE]
