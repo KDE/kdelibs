@@ -445,7 +445,7 @@ void KToolBarButton::drawButton( QPainter *_painter )
   }
   if (isEnabled()) 	flags |= QStyle::Style_Enabled;
   if (isOn()) 		flags |= QStyle::Style_On;
-  if (isEnabled() && d->m_isRaised)	flags |= QStyle::Style_Raised;
+  if (isEnabled() && hasMouse())	flags |= QStyle::Style_Raised;
   if (hasFocus())	flags |= QStyle::Style_HasFocus;
 
   // Draw a styled toolbutton
