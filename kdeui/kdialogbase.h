@@ -803,6 +803,11 @@ class KDialogBase : public KDialog
      *
      * @return The current main widget. Can be 0 if no widget has been defined.
      */
+    QWidget *mainWidget(); 
+    /**
+     * @deprecated
+     * Use @ref mainWidget() instead
+     */
     QWidget *getMainWidget(); 
 
     /**
@@ -976,6 +981,11 @@ class KDialogBase : public KDialog
      * @return The tile pointer or 0 if no tile is defined.
      *
      **/
+    static const QPixmap *backgroundTile();
+    /**
+     * @deprecated
+     * Use @ref backgroundTile() instead.
+     */
     static const QPixmap *getBackgroundTile();
     
     /** 
@@ -995,6 +1005,7 @@ class KDialogBase : public KDialog
     void showTile( bool state );
 
     /** 
+     * @deprecated
      * Do not use this method. It is included for compatibility reasons.     
      *
      * This method returns the border widths in all directions the dialog 
@@ -1007,6 +1018,7 @@ class KDialogBase : public KDialog
     void  getBorderWidths( int& ulx, int& uly, int& lrx, int& lry ) const;
 
     /**
+     * @deprecated
      * Do not use this method. It is included for compatibility reasons. 
      *
      * This method returns the contents rectangle of the work area. Place 

@@ -1201,7 +1201,10 @@ void KDialogBase::setMainWidget( QWidget *widget )
 }
 
 
-QWidget *KDialogBase::getMainWidget()
+// For compatibility only.
+QWidget *KDialogBase::getMainWidget() { return mainWidget(); }
+
+QWidget *KDialogBase::mainWidget()
 {
   return( mMainWidget );
 }
@@ -1225,7 +1228,7 @@ int KDialogBase::pageIndex( QWidget *widget ) const
 }
 
 
-
+// Deprecated
 QRect KDialogBase::getContentsRect()
 {
   QRect r;
@@ -1246,7 +1249,7 @@ QRect KDialogBase::getContentsRect()
 }
 
 
-
+// Deprecated
 void KDialogBase::getBorderWidths(int& ulx, int& uly, int& lrx, int& lry) const
 {
   ulx = marginHint();
@@ -1364,8 +1367,10 @@ bool KDialogBase::haveBackgroundTile()
   return( mTile == 0 || mTile->get() == 0 ? false : true );
 }
 
+// Deprecated. For compatibility only.
+const QPixmap *KDialogBase::getBackgroundTile() { return backgroundTile(); }
 
-const QPixmap *KDialogBase::getBackgroundTile()
+const QPixmap *KDialogBase::backgroundTile()
 {
   return( mTile == 0 ? 0 : mTile->get() );
 }
