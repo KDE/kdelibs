@@ -30,6 +30,10 @@
 namespace KIO
 {
 
+class ForwardingSlaveBasePrivate
+{
+};
+
 ForwardingSlaveBase::ForwardingSlaveBase(const QCString &protocol,
                                          const QCString &poolSocket,
                                          const QCString &appSocket)

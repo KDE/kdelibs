@@ -28,6 +28,63 @@
 namespace KIO
 {
 
+class ForwardingSlaveBasePrivate;
+
+/**
+ * This class should be used as a base for ioslaves acting as a
+ * forwarder to other ioslaves. It has been designed to support only
+ * local filesystem like ioslaves.
+ *
+ * If the resulting ioslave should be a simple proxy, you only need
+ * to implement the ForwardingSlaveBase::rewriteURL() method.
+ * 
+ * For more advanced behavior, the classic ioslave methods should
+ * be reimplemented, because their default behavior in this class
+ * is to forward using the ForwardingSlaveBase::rewriteURL() method.
+ * 
+ * A possible code snippet for an advanced stat() behavior would look
+ * like this in the child class:
+ * 
+ * \code
+ *     void ChildProtocol::stat(const KURL &url)
+ *     {
+ *         bool is_special = false;
+ *         
+ *         // Process the URL to see if it should have
+ *         // a special treatment
+ *         
+ *         if ( is_special )
+ *         {
+ *             // Handle the URL ourselves
+ *             KIO::UDSEntry entry;
+ *             // Fill entry with UDSAtom instances
+ *             statEntry(entry);
+ *             finished();
+ *         }
+ *         else
+ *         {
+ *             // Setup the ioslave internal state if
+ *             // required by ChildProtocol::rewriteURL()
+ *             ForwardingSlaveBase::stat(url);
+ *         }
+ *     }
+ * \endcode
+ * 
+ * Of course in this case, you surely need to reimplement listDir()
+ * and get() accordingly.
+ * 
+ * If you want view on directories to be correctly refreshed when
+ * something changes on a forwarded URL, you'll need a companion kded
+ * module to emit the KDirNotify Files*() DCOP signals.
+ * 
+ * This class was initially used for media:/ ioslave. This ioslave code
+ * and the MediaDirNotify class of its companion kded module can be a
+ * good source of inspiration.
+ * 
+ * @see ForwardingSlaveBase::rewriteURL()
+ * @since 3.4
+ * @author Kevin Ottens <ervin ipsquad net>
+ */
 class ForwardingSlaveBase : public QObject, public SlaveBase
 {
 Q_OBJECT
@@ -70,12 +127,17 @@ protected:
      * If a problem is detected it's up to this method to trigger error()
      * before returning. Returning false silently cancel the current
      * slave operation.
+     *
+     * @param url The URL as given during the slave call
+     * @param newURL The new URL to forward the slave call to
+     * @return true if the given url could be correctly rewritten
      */
     virtual bool rewriteURL(const KURL &url, KURL &newURL)=0;
   
 private:
     KURL m_processedURL;
     KURL m_requestedURL;
+    ForwardingSlaveBasePrivate *d;
     
     bool internalRewriteURL(const KURL &url, KURL &newURL);
     void prepareUDSEntry(KIO::UDSEntry &entry, bool listing=false);
