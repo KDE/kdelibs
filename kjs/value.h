@@ -120,6 +120,8 @@ namespace KJS {
 
     unsigned short int refcount;
 
+    bool isDestroyed() const { return _flags & VI_DESTRUCTED; }
+
   private:
     unsigned short int _flags;
 
@@ -139,7 +141,7 @@ namespace KJS {
       VI_MARKED = 1,
       VI_GCALLOWED = 2,
       VI_CREATED = 4,
-      VI_DESTRUCTED = 8
+      VI_DESTRUCTED = 8   // nice word we have here :)
     }; // VI means VALUEIMPL
 
     ValueImpPrivate *_vd;

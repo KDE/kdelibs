@@ -649,6 +649,7 @@ void ArgumentsImp::mark()
 Value ArgumentsImp::get(ExecState *exec, const Identifier &propertyName) const
 {
   Value val = ObjectImp::get(exec,propertyName);
+  assert(SimpleNumber::is(val.imp()) || !val.imp()->isDestroyed());
   Object obj = Object::dynamicCast(val);
   if (obj.isValid() && obj.inherits(&ShadowImp::info)) {
     ShadowImp *shadow = static_cast<ShadowImp*>(val.imp());
