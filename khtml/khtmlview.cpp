@@ -440,7 +440,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
             break;
         }
     }
-    setCursor( c );
+    viewport()->setCursor( c );
 
     khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
@@ -466,7 +466,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed(false);
-		
+
     khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
     event.setURLHandlingEnabled( mev.urlHandling );
     event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
@@ -978,7 +978,7 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	d->underMouse = targetNode;
 	if (d->underMouse)
 	    d->underMouse->ref();
-	
+
 	// send mouseover event to the new node
 	MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
 						true,true,m_part->xmlDocImpl()->defaultView(),
