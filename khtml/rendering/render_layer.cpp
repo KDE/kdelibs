@@ -1454,7 +1454,7 @@ void Marquee::updateMarqueePosition()
             m_start = computePosition(direction(), behavior == MALTERNATE);
             m_end = computePosition(reverseDirection(), behavior == MALTERNATE || behavior == MSLIDE);
         }
-        start();
+        if (!m_suspended) start();
     }
 }
 
