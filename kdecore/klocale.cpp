@@ -453,6 +453,12 @@ QString KLocale::translate(const char* msgid) const
 {
     ASSERT(_inited);
 
+    if (!msgid || !msgid[0])
+    {
+        debug("KLocale: trying to look up \"\" in catalouge. Fix the program");
+	return QString::null;
+    }
+
     const char *text = msgid;
 
     for (const char* catalogue = catalogues->first(); catalogue;
