@@ -109,10 +109,12 @@ private:
   QValueList<KProcess*> processList;
   QTimer delayedChildrenCleanupTimer;
 
+protected:
   // Disallow instantiation
   KProcessController();
   ~KProcessController();
 
+private:
   // Disallow assignment and copy-construction
   KProcessController( const KProcessController& );
   KProcessController& operator= ( const KProcessController& );
