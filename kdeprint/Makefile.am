@@ -49,6 +49,10 @@ printdatadir = $(kde_datadir)/kdeprint
 servicesdir = $(kde_servicesdir)/kded
 services_DATA = kdeprintd.desktop
 
+# Config file
+configdir = $(kde_confdir)
+config_DATA = kdeprintrc
+
 # parser and scanner
 parser:
 	bison -d -p matic $(srcdir)/maticparser.yy -o $(srcdir)/maticparser.cpp
