@@ -255,6 +255,8 @@ bool KGlobalAccelPrivate::x11KeyPress( const XEvent *pEvent )
 		QPopupMenu* pMenu = createPopupMenu( 0, seq );
 		connect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)) );
 		pMenu->exec();
+		disconnect( pMenu, SIGNAL(activated(int)), this, SLOT(slotActivated(int)));
+		delete pMenu;
 	} else if( !pAction->objSlotPtr() || !pAction->isEnabled() ) {
 		kdDebug(125) << "KGlobalAccel::x11EventFilter(): Key has been grabbed(" << KKeyX11::keySymXToString( keySymX, keyModX, false ) << ") which doesn't have an associated action or was disabled.\n";
 		return false;
