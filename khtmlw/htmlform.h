@@ -6,7 +6,14 @@
 #ifndef __HTMLFORM_H__
 #define __HTMLFORM_H__
 
+class HTMLElement;
+class HTMLForm;
+class HTMLSelect;
+class HTMLButton;
+class HTMLTextArea;
+
 #include <qwidget.h>
+
 #include "htmlobj.h"
 
 //---------------------------------------------------------------------------
@@ -55,6 +62,44 @@ private:
 	int _absX;
 	int _absY;
 };
+
+//---------------------------------------------------------------------------
+
+class HTMLForm : public QObject
+{
+	Q_OBJECT
+public:
+	HTMLForm( const char *a, const char *m );
+	virtual ~HTMLForm() {}
+
+	void addElement( HTMLElement *e );
+
+	const char *method() const
+		{	return _method; }
+	const char *action() const
+		{	return _action; }
+
+	void position( int _x, int _y, int _width, int _height );
+
+public slots:
+	void slotReset();
+	void slotSubmit();
+	void slotRadioSelected( const char *n, const char *v );
+
+signals:
+	void submitted( const char *method, const char *url );
+	void radioSelected( const char *n, const char *v );
+
+private:
+	QString _method;
+	QString _action;
+
+	QList<HTMLElement> elements;
+};
+
+//---------------------------------------------------------------------------
+
+#include "jscript.h"
 
 //---------------------------------------------------------------------------
 
@@ -196,6 +241,23 @@ signals:
 
 //---------------------------------------------------------------------------
 
+class HTMLButton : public HTMLInput
+{
+    Q_OBJECT
+public:
+    HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_handlers );
+    virtual ~HTMLButton();
+    
+protected slots:
+    void slotClicked();
+    
+protected:
+    KHTMLWidget *view;
+    QList<JSEventHandler> *eventHandlers;
+};
+
+//---------------------------------------------------------------------------
+
 class HTMLSubmit : public HTMLInput
 {
 	Q_OBJECT
@@ -232,42 +294,6 @@ signals:
 private:
 	QString _defText;
 };
-
-//---------------------------------------------------------------------------
-
-class HTMLForm : public QObject
-{
-	Q_OBJECT
-public:
-	HTMLForm( const char *a, const char *m );
-	virtual ~HTMLForm() {}
-
-	void addElement( HTMLElement *e );
-
-	const char *method() const
-		{	return _method; }
-	const char *action() const
-		{	return _action; }
-
-	void position( int _x, int _y, int _width, int _height );
-
-public slots:
-	void slotReset();
-	void slotSubmit();
-	void slotRadioSelected( const char *n, const char *v );
-
-signals:
-	void submitted( const char *method, const char *url );
-	void radioSelected( const char *n, const char *v );
-
-private:
-	QString _method;
-	QString _action;
-
-	QList<HTMLElement> elements;
-};
-
-//---------------------------------------------------------------------------
 
 #endif
 

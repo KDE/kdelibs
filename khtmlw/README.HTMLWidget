@@ -1,7 +1,7 @@
 KDE HTML Widget
 ---------------
 
-This is the alpha version 0.6
+This is the alpha version 0.7.9
 
 Developers
 ----------
@@ -275,6 +275,164 @@ Version 0.6 - Martin
  General cleanups.
  Suppress space at the start of a paragraph (HTMLClueFlow)
 
+Version 0.7 - Torben
+
+ This version supports FRAMES! It is not perfect yet, but it seems
+ to work. I did not change much in the rendering engine, but added
+ some new classes. The most interesting one is KHTMLView.
+ I recommend not to use KHTMLWidget directly any more since you
+ dont get frames this way. KHTMLWidget cares about frames and comes
+ with integrated scrollbars. The scrollbars appear/disappera as needed.
+ This causes an ugly hack. I set the right border to 20 pixels. If we
+ need a vertical scrollbar, then the scrollbar is just put on top
+ op the KHTMLWidget. The horizontal scrollbar does not need this track.
+ As a result the scrollbars can appear/disappear very fast. Changing
+ the width of the HTML Widget would cause a new parsing session!!!!
+
+ KHTMLView is a layer on KHTMLWidget. It has many comments in his
+ header files. So using it is not too hard, I hope.
+ It is perhaps a good Idea to subclass KHTMLView. KFM does it.
+
+ New classes are HTMLFrameSet and HTMLFramePanner.
+
+ You can select all URLs in a given rectangle now.
+
+ The select( QPainter *_painter, ...) Functions accept a 0L
+ as argument to _painter now.
+
+ KHTMLView has duplicate signals. One tells that the widget itself
+ ( not one of its frames ) wants to tell you something. Use these ones
+ if you subclasses KHTMLView.
+ The other signals tell you which widget emitted the signal. This
+ way you dont have to care about the children of your widget.
+ The parent widget informs you about its children and their demands.
+ Use this way if you did not subclass KHTMLView.
+
+ Design:
+ -------
+ For every <frameset> a HTMLFrameSet object is created. A HTMLFrameSet
+ may contain other frame sets, a HTMLView ( or subclass ) or
+ a HTMLFramePanner. On resize events the HTMLFrameSet recalculates
+ the size of its children and resizes them.
+ A bug right now is this one:
+  The user moves the HTMLFramePanner arround and resizes now
+  the window. The widget wont remember that the user changed the
+  panner. I will fix this later on.
+ Every <frame> tag becomes a KHTMLView instance. If you subclass
+ KHTMLView, subclass the function:
+  KHTMLView* newView(...)
+ This function is asked to create a new frame. This way all children
+ of KHTMLWidget are of your subclassed class, not only KHTMLView.
+
+ This works like this:
+
+ KHTMLView* MyKHTMLView::newView(...)
+ {
+   return new MyKHTMLView(...)
+ }
+
+ The user may select a frame by clicking on it. The active frame
+ is highlighted with a black border.
+
+ This version is for developers only. My changes seem to not affect
+ the stability, but I did not test it too hard yet.
+
+ DND
+ ---
+
+ Make shure that a picture called
+ khtmlw_dnd.xpm is in $KDEDIR/lib/pics. This is the default pixmap used for DND.
+ The widget can Drag and Drop every link.
+
+Version 0.7.1 - Torben
+
+ Some bug fixes, more frame support.
+
+ Applied patch from Stephan.
+
+Version 0.7.3 - Torben
+
+ <frame noresize frameborder=... marginwidth=...> works now
+ 
+ <frameset noresize frameborder=... >, too.
+ 
+ <frame marginheight=... scrolling=...> is recongnized but does not have
+ any effect right now.
+
+ Other bug fixes related to frames.
+
+ You can select a KHTMLView by clicking on it. It will show a black border
+ to indicate its state. 
+
+Version 0.7.4 - Torben
+ 
+ Moving the panner in a framed HTML page works now ( again )
+
+ No black frames any more
+
+ Loading of background pixmaps from the net works now.
+
+Version 0.7.6 - Martin
+
+ Separate parsing and size/position calculations.  Document should now be
+ parsed only once.  HTMLWidget handles resizing without reparsing.
+
+ General fix-ups in HTMLView scrollbars.
+
+Version 0.7.7 - Martin
+
+ Fixes for tables and independant parsing/position stuff.
+
+Version 0.7.8 - Torben
+
+ Changed the <cell> tag, deleted the <grid> tag ( html.cpp )
+
+ Fixed bug in selecting by rectangle ( html.cpp )
+
+Version 0.7.9 - Martin
+
+ Added printing capability - just call HTMLView::print()
+ There are still some unresolved printing issues:
+  * should the background be printed?
+  * should all text be printed black?
+  * should highlighted text be printed highlighted?
+  * some objects don't print properly - <hr>, table borders.
+  * form controls don't print.
+  * aligned images not handled by paginator.
+  * printing does not release control to the event loop.
+  * no way of cancelling printing.
+  * do we want to print headers/footers?
+  * Qt-1.2 has some printing problems which do not have work-arounds
+    - who cares... wait for 1.3.
+ A long list, but in general I think you should find printer output quite
+ good.
+
+ Modified table cell width calculation slightly to match Netscape more closely.
+
+ Fix left/right alignment.
+
+ Support for left/right alignment and centering of tables.
+
+ Merge <td> and <th> parsing.
+
+ Support table captions
+
+Version 0.8.0 - Torben
+
+ Introduced JavaScript. Most code resides in the HTML Tokenizer
+ You have to compile and install libjscript now before you
+ can compile and use this library. No JavaScript code is executed
+ until used for the first time.
+
+ Introduced some few JavaScript event handlers in htmlform.cpp
+
+ You need libjscript to use the widget
+
+ Fixed frame layout problem. The frames are resized and shown only
+ if we have scanned the complete frame set. All resize events before
+ are ignored.
+
 Last change
-16.5.97 Martin Jones
+27.6.97 Torben Weis
+
 

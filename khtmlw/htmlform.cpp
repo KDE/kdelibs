@@ -21,8 +21,7 @@ void HTMLElement::position( int _x, int _y, int , int _height )
 {
 	if ( widget == NULL ) // CC: HTMLHidden does not have a widget...
 		return;
-	
-//	if ( _y > absY() + ascent || _y + _height < absY() )
+
 	if ( _y > absY() + ascent + descent || _y + _height < absY() )
 	{
 		widget->hide();
@@ -261,6 +260,55 @@ HTMLInput::HTMLInput( const char *n, const char *v )
 
 //----------------------------------------------------------------------------
 
+HTMLButton::HTMLButton( KHTMLWidget *_parent, const char *_name, const char *v, QList<JSEventHandler> *_events )
+	: HTMLInput( "", v )
+{
+    view = _parent;
+    widget = new QPushButton( _parent );
+    
+    if ( strlen( value() ) != 0 )
+	((QPushButton *)widget)->setText( value() );
+    else if ( strlen( _name ) != 0 )
+	((QPushButton *)widget)->setText( _name );
+    else
+	((QPushButton *)widget)->setText( "" );
+
+    QSize size = widget->sizeHint();
+    widget->resize( size );
+    
+    descent = 5;
+    ascent = size.height() - descent;
+    width = size.width();
+    
+    connect( widget, SIGNAL( clicked() ), SLOT( slotClicked() ) );
+    
+    eventHandlers = _events;
+}
+
+void HTMLButton::slotClicked()
+{
+    if ( eventHandlers == 0L )
+	return;
+    
+    JSEventHandler* ev;
+    for ( ev = eventHandlers->first(); ev != 0L; ev = eventHandlers->next() )
+    {
+	if ( strcmp( ev->getName(), "onClick" ) == 0L )
+	{
+	    ev->exec( 0L );
+	    return;
+	}
+    }
+}
+
+HTMLButton::~HTMLButton()
+{
+    if ( eventHandlers )
+	delete eventHandlers;
+}
+
+//----------------------------------------------------------------------------
+
 HTMLCheckBox::HTMLCheckBox( QWidget *parent, const char *n, const char *v,
 		bool ch )
 	: HTMLInput( n, v )
@@ -308,7 +356,7 @@ HTMLHidden::HTMLHidden( const char *n, const char *v )
 
 QString HTMLHidden::encoding()
 {
-	QString _encoding = "";
+	QString _encoding;
 
 	if ( name().length() )
 	{

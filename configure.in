@@ -27,6 +27,9 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_INSTALL
 AM_PROG_LIBTOOL dnl for libraries
+AC_PROG_LEX
+AC_PROG_YACC
+AC_DECL_YYTEXT
 
 dnl find out some variables (not supported yet)
 AC_AIX
@@ -78,4 +81,4 @@ if test "${prefix}" = NONE; then
 fi
 AC_SUBST(KDEDIR)
 
-AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile kdetest/Makefile kdedoc/Makefile)
+AC_OUTPUT(Makefile kdecore/Makefile kdeui/Makefile khtmlw/Makefile kdetest/Makefile kdedoc/Makefile jscript/Makefile)

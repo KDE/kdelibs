@@ -4,6 +4,7 @@
 //
 
 #include <kurl.h>
+#include <kapp.h>
 
 #include "html.h"
 
@@ -16,6 +17,16 @@
 #include <qregexp.h>
 #include <qkeycode.h>
 
+// This MUST be removed when Qt-1.3 is released - Trolls
+#if QT_VERSION < 130
+#define private public
+#include <qprinter.h>
+#include <qpsprn.h>
+#undef private
+#else
+#include <qprinter.h>
+#endif
+
 #ifdef HAVE_LIBGIF
 #include "gif.h"
 #endif
@@ -23,6 +34,8 @@
 #ifdef HAVE_LIBJPEG
 #include "jpeg.h"
 #endif
+
+#define PRINTING_MARGIN		36	// printed margin in 1/72in units
 
 HTMLFontManager* pFontManager = NULL;
 
@@ -60,9 +73,14 @@ parseFunc KHTMLWidget::parseFuncArray[26] = {
 };
 
 
-KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char *_pix_path )
+KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name )
     : KDNDWidget( parent, name ), tempStrings( TRUE )
 {
+    jsEnvironment = 0L;      
+    leftBorder = 10;
+    rightBorder = 20;
+    topBorder = 10;
+    bottomBorder = 10;
     setBackgroundColor( lightGray );
     x_offset = 0;
     y_offset = 0;
@@ -74,8 +92,19 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char *_pix_pa
     ht = 0L;
     pressed = false;
     pressedURL = "";
+    pressedTarget = "";
     actualURL= "";
     baseURL = "";
+    bIsSelected = FALSE;
+    selectedFrame = 0L;
+    htmlView = 0L;
+    bIsFrameSet = FALSE;
+    bIsFrame = FALSE;
+    frameSet = 0L;
+    bFramesComplete = FALSE;
+    framesetStack.setAutoDelete( FALSE );
+    framesetList.setAutoDelete( FALSE );
+    frameList.setAutoDelete( FALSE ); 
     painter = NULL;
     parsing = false;
     defaultFontBase = 3;
@@ -85,13 +114,14 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char *_pix_pa
     waitingImageList.setAutoDelete( false );
     bParseAfterLastImage = false;
     bPaintAfterParsing = false;
-	formList.setAutoDelete( true );
+    formList.setAutoDelete( true );
 
-	standardFont = "times";
-	fixedFont = "courier";
+    standardFont = "times";
+    fixedFont = "courier";
     
-    QString f = _pix_path;
-    f += "/khtmlw_dnd.xpm";
+    QString f = kapp->kdedir();
+    f.detach();
+    f += "/lib/pics/khtmlw_dnd.xpm";
     dndDefaultPixmap.load( f.data() );
     
     registerFormats();
@@ -156,7 +186,7 @@ void KHTMLWidget::slotImageLoaded( const char *_url, const char *_filename )
 			bPaintAfterParsing = FALSE;
 	    }
 	}
-    }
+    }    
 }
 	    
 void KHTMLWidget::parseAfterLastImage()
@@ -173,17 +203,31 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 {
     if ( clue == 0L )
 	return;
+ 
+    printf("Mouse Press Event %i %i %x\n", (int)bIsFrame, (int)bIsSelected,(int)this);
     
-    pressed = TRUE;
+    if ( bIsFrame && !bIsSelected )
+      htmlView->setSelected( TRUE );
+    
+    if ( _mouse->button() == LeftButton )
+      pressed = TRUE;
+    press_x = _mouse->pos().x();
+    press_y = _mouse->pos().y();    
 	    
     HTMLObject *obj;
 
-    obj = clue->checkPoint( _mouse->pos().x() + x_offset - LEFT_BORDER, _mouse->pos().y() + y_offset );
+    obj = clue->checkPoint( _mouse->pos().x() + x_offset - leftBorder, _mouse->pos().y() + y_offset );
     
     if ( obj != 0L)
 	if ( obj->getURL() != 0 )
 	    if (obj->getURL()[0] != 0)
 	    {
+		// Does the parent want to process the event now ?
+	        if ( htmlView )	
+		  if ( htmlView->mousePressedHook( obj->getURL(), obj->getTarget(), _mouse,
+						   obj->isSelected() ) )
+		       return;
+
 		if ( _mouse->button() == RightButton )
 		{
 		    emit popupMenu( obj->getURL(), mapToGlobal( _mouse->pos() ) );
@@ -191,17 +235,22 @@ void KHTMLWidget::mousePressEvent( QMouseEvent *_mouse )
 		}
 	
 		// Save data. Perhaps the user wants to start a drag.
-		press_x = _mouse->pos().x();
-		press_y = _mouse->pos().y();    
+		printf(">>>>>>>>>>>>>>> preparing for drag <<<<<<<<<<<<<<<<<<<<\n");
 		pressedURL = obj->getURL();
 		pressedURL.detach();
+		pressedTarget = obj->getTarget();
+		pressedTarget.detach();
 		return;
 	    }
     
     pressedURL = "";
+    pressedTarget = "";
 
+    if ( htmlView )	
+      if ( htmlView->mousePressedHook( 0L, 0L, _mouse, FALSE ) )
+	return;
     if ( _mouse->button() == RightButton )
-	emit popupMenu( 0L, mapToGlobal( _mouse->pos() ) );
+	emit popupMenu( 0L, mapToGlobal( _mouse->pos() ) );    
 }
 
 void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
@@ -211,7 +260,7 @@ void KHTMLWidget::mouseDoubleClickEvent( QMouseEvent *_mouse )
     
     HTMLObject *obj;
     
-    obj = clue->checkPoint( _mouse->pos().x() + x_offset - LEFT_BORDER, _mouse->pos().y() + y_offset );
+    obj = clue->checkPoint( _mouse->pos().x() + x_offset - leftBorder, _mouse->pos().y() + y_offset );
     
     if ( obj != 0L)
 	if ( obj->getURL() != 0 )
@@ -223,7 +272,8 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 {
     if ( !pressed )
     {
-    HTMLObject *obj = clue->checkPoint( _mouse->pos().x()+x_offset-LEFT_BORDER,
+      // Look wether the cursor is over an URL.
+      HTMLObject *obj = clue->checkPoint( _mouse->pos().x()+x_offset-leftBorder,
 		 _mouse->pos().y() + y_offset );
 	if ( obj != NULL )
 	{
@@ -251,17 +301,46 @@ void KHTMLWidget::dndMouseMoveEvent( QMouseEvent * _mouse )
 	}
 	return;
     }
+
+    printf(">>>>>>>>>>>>>>>>>>> Move detected <<<<<<<<<<<<<<<<<<<\n");
+    
+    // Does the parent want to process the event now ?
+    if ( htmlView )
+    {
+      if ( htmlView->mouseMoveHook( _mouse ) )
+	return;
+    }
+
+    printf("Not handled %i %i %i\n",(int)_mouse->button(),(int)LeftButton,(int)RightButton );
+    
+    // Drags are only started with the left mouse button ...
+    // if ( _mouse->button() != LeftButton )
+    // return;
+      
+    printf("Testing 1\n");
     if ( pressedURL.isNull() )
 	return;
+    printf("Testing 2\n");
     if ( pressedURL.data()[0] == 0 )
 	return;
     
     int x = _mouse->pos().x();
     int y = _mouse->pos().y();
 
-    if ( abs( x - press_x ) > Dnd_X_Precision || abs( y - press_y ) > Dnd_Y_Precision )
+    printf("Testing\n");
+    
+    // Did the user start a drag?
+    if ( abs( x - press_x ) > Dnd_X_Precision || abs( y - press_y ) > Dnd_Y_Precision && !drag )
     {
+        printf(">>>>>>>>>>>>>>>>>>>>>>> Starting DND <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 	QPoint p = mapToGlobal( _mouse->pos() );
+
+	// Does the parent want to process the event now ?
+	if ( htmlView )
+        {
+	  if ( htmlView->dndHook( pressedURL.data(), p ) )
+	    return;
+	}
 
 	int dx = - dndDefaultPixmap.width() / 2;
 	int dy = - dndDefaultPixmap.height() / 2;
@@ -276,6 +355,13 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
     // the mouse is pressed again.
     pressed = false;
 
+    // Does the parent want to process the event now ?
+    if ( htmlView )
+    {
+      if ( htmlView->mouseReleaseHook( _mouse ) )
+	return;
+    }
+
     if ( clue == 0L )
 	return;
     if ( pressedURL.isNull() )
@@ -286,7 +372,8 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
     // if ( pressedURL.data()[0] == '#' )
     //	gotoAnchor( pressedURL.data() + 1 );
     // else
-	emit URLSelected( pressedURL.data(), _mouse->button() );
+    if ( _mouse->button() != RightButton )
+	   	emit URLSelected( pressedURL.data(), _mouse->button(), pressedTarget.data() );
 }
 
 void KHTMLWidget::dragEndEvent()
@@ -316,6 +403,43 @@ const char* KHTMLWidget::getURL( QPoint &p )
     return 0L;
 }
 
+void KHTMLWidget::select( QPainter * _painter, QRect &_rect )
+{
+    if ( clue == 0L )
+	return;
+    
+    bool newPainter = FALSE;
+
+    QRect r = _rect;
+    // r.setTop( r.top() + y_offset );
+    // r.setLeft( r.left() + x_offset );
+    
+    int tx = -x_offset + leftBorder;
+    int ty = -y_offset;
+
+    if ( _painter == 0L )
+    {
+	if ( painter == NULL )
+	{
+                printf("New Painter for painting\n");
+		painter = new QPainter();
+		painter->begin( this );
+		newPainter = TRUE;
+	}
+    
+	clue->select( painter, r, tx, ty );
+
+	if ( newPainter )
+	{
+		painter->end();
+		delete painter;
+		painter = NULL;
+	}
+    }
+    else
+      clue->select( _painter, r, tx, ty );    
+}
+
 void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 {
     bool newPainter = FALSE;
@@ -333,13 +457,23 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 	positionFormElements();
 
     // painter->translate( x_offset, -y_offset );    
-    int tx = -x_offset + LEFT_BORDER;
+    int tx = -x_offset + leftBorder;
     int ty = -y_offset;
     
 	drawBackground( x_offset, y_offset, _pe->rect().x(), _pe->rect().y(),
 			_pe->rect().width(), _pe->rect().height() );
+
     clue->print( painter, _pe->rect().x()-x_offset, _pe->rect().y()+y_offset,
-		 _pe->rect().width(), _pe->rect().height(), tx, ty );
+		 _pe->rect().width(), _pe->rect().height(), tx, ty, false );
+    
+    if ( bIsSelected )
+    {
+	QPen pen = painter->pen();
+	painter->setPen( black );
+	painter->drawRect( 0, 0, width(), height() );
+	painter->drawRect( 1, 1, width() - 2, height() - 2 );
+	painter->setPen( pen );
+    }
     
     if ( newPainter )
     {
@@ -351,6 +485,25 @@ void KHTMLWidget::paintEvent( QPaintEvent* _pe )
 
 void KHTMLWidget::resizeEvent( QResizeEvent* _re )
 {
+	printf( "KHTMLWidget::resizeEvent\n" );
+
+	if ( clue == 0L )
+	    return;
+
+	printf( "KHTMLWidget::doing it\n" );
+	
+	if ( isFrameSet() )
+	{
+	    framesetList.getFirst()->setGeometry( 0, 0, width(), height() );
+	}            
+	else if ( clue && _re->oldSize().width() != _re->size().width() )
+	{
+		clue->reset();
+		clue->setMaxWidth( _re->size().width() - leftBorder - rightBorder );
+		clue->calcSize();
+		clue->setPos( 0, clue->getAscent() );
+	}
+
 	emit resized( _re->size() );
 }
 
@@ -446,7 +599,7 @@ void KHTMLWidget::paintSingleObject( HTMLObject *_obj )
 	newPainter = TRUE;
     }
 
-    int tx = x_offset + LEFT_BORDER;
+    int tx = x_offset + leftBorder;
     int ty = -y_offset;
     
     clue->print( painter, x_offset, y_offset,
@@ -468,8 +621,151 @@ void KHTMLWidget::getSelected( QStrList &_list )
     clue->getSelected( _list );
 }
 
+// Print the current document to the printer.
+// This currently prints the entire document without releasing control
+// to the event loop.  This isn't a problem for small documents, but
+// may be annoying for very large documents.  If this is changed in
+// the future, it should be noted that this widget CANNOT be redrawn
+// while it is printing as its layout is recalculated to suit the paper
+// size it is being printed on.
+//
+void KHTMLWidget::print()
+{
+	QPrinter printer;
+#if QT_VERSION < 130  // remove when QT-1.3 is released
+		QTextStream *s = &((QPSPrinter*)printer.pdrv)->stream;
+#endif
+
+	if ( printer.setup( 0 ) )
+	{
+		bool newPainter = false;
+		int pgWidth = 595, pgHeight = 842;
+
+		switch ( printer.pageSize() )
+		{
+			case QPrinter::A4:
+				pgWidth = 595;
+				pgHeight = 842;
+				break;
+
+			case QPrinter::B5:
+				pgWidth = 516;
+				pgHeight = 729;
+				break;
+
+			case QPrinter::Letter:
+				pgWidth = 612;
+				pgHeight = 792;
+				break;
+
+			case QPrinter::Legal:
+				pgWidth = 612;
+				pgHeight = 1008;
+				break;
+
+			case QPrinter::Executive:
+				pgWidth = 540;
+				pgHeight = 720;
+				break;
+		}
+
+		if ( printer.orientation() == QPrinter::Landscape )
+		{
+			int tmp = pgWidth;
+			pgWidth = pgHeight;
+			pgHeight = tmp;
+		}
+
+		pgWidth -= ( 2*PRINTING_MARGIN );
+		pgHeight -= ( 2*PRINTING_MARGIN );
+
+		QPainter prPainter;
+		prPainter.begin( &printer );
+
+		clue->recalcBaseSize( &prPainter );
+		clue->reset();
+		clue->setMaxWidth( pgWidth );
+		clue->calcSize();
+		clue->setPos( 0, clue->getAscent() );
+
+		unsigned numBreaks = 1;
+		int pos = 0;
+		QArray<int> breaks( 10 );
+		breaks[0] = 0;
+
+		do
+		{
+			printf( "Break pos = %d\n", pos );
+			pos = clue->findPageBreak( pos + pgHeight );
+			if ( pos >= 0 )
+			{
+				breaks[ numBreaks ] =  pos;
+				numBreaks++;
+				if ( numBreaks == breaks.size() )
+					breaks.resize( numBreaks + 10 );
+			}
+		}
+		while ( pos > 0 );
+
+		for ( unsigned b = 0; b < numBreaks; b++ )
+		{
+			int printHeight;
+			if ( b < numBreaks - 1 )
+				printHeight = breaks[b+1] - breaks[b];
+			else
+				printHeight = pgHeight;
+			clue->print( &prPainter, 0, breaks[b], pgWidth, printHeight,
+					PRINTING_MARGIN, PRINTING_MARGIN-breaks[b], true );
+			if ( b < numBreaks - 1 )
+			{
+				printer.newPage();
+#if QT_VERSION < 130
+				*s << "PageX PageY TR 1 -1 scale\n";
+#endif
+			}
+		}
+
+		prPainter.end();
+
+		if ( painter == NULL )
+		{
+			painter = new QPainter;
+			painter->begin( this );
+			newPainter = TRUE;
+		}
+
+		clue->recalcBaseSize( painter );
+		clue->reset();
+		clue->setMaxWidth( width() - leftBorder - rightBorder );
+		clue->calcSize();
+		clue->setPos( 0, clue->getAscent() );
+
+		if ( newPainter )
+		{
+			painter->end();
+			delete painter;
+			painter = NULL;
+		}
+	}
+}
+
 void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 {
+    emit documentStarted();
+    
+    bIsFrameSet = FALSE;
+    // bIsFrame = FALSE;
+    bFramesComplete = FALSE;
+    framesetStack.clear();
+    framesetList.clear();
+    frameList.clear();
+    
+    if ( frameSet )
+      {
+	delete frameSet;
+	frameSet = 0L;
+      }
+
     x_offset = _x_offset;
     y_offset = _y_offset;
 
@@ -510,10 +806,10 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 
     if ( ht != 0L )
 	delete ht;
-    ht = new HTMLTokenizer;
-	ht->begin();
+    ht = new HTMLTokenizer( this );
+    ht->begin();
 
-	writing = true;
+    writing = true;
 }
 
 void KHTMLWidget::write( const char *_str)
@@ -599,9 +895,21 @@ void KHTMLWidget::popFont()
 
 void KHTMLWidget::parse()
 {
-	// if there is no tokenizer then no html has been added
-	if ( !ht )
-		return;
+    emit documentStarted();
+    
+  // Dont parse an existing framed document twice.
+  // If parse is called two times after begin() then
+  // the second call is ususally done because the widget
+  // has been resized.
+  if ( bIsFrameSet && frameSet )
+  {
+    frameSet->resize( width(), height() );
+    return;
+  }
+  
+  // if there is no tokenizer then no html has been added
+  if ( !ht )
+    return;
 	
     bParseAfterLastImage = FALSE;
     bPaintAfterParsing = FALSE;
@@ -668,7 +976,7 @@ void KHTMLWidget::parse()
 
 	if (clue)
 		delete clue;
-	clue = new HTMLClueV( 0, 0, width() - LEFT_BORDER - RIGHT_BORDER );
+	clue = new HTMLClueV( 0, 0, width() - leftBorder - rightBorder );
 	clue->setVAlign( HTMLClue::Top );
 	clue->setHAlign( HTMLClue::Left );
 
@@ -757,7 +1065,29 @@ void KHTMLWidget::slotTimeout()
 	    delete painter;
 	    painter = NULL;
 
+	    // Did we finish the job or are still pictures missing ?
+	    if ( waitingImageList.count() == 0 && bgPixmapURL.isNull() )
+	    {
 		emit documentDone();
+	    }
+
+	    // Now it is time to tell all frames what they should do
+	    KHTMLView *v;
+	    KHTMLWidget *w;
+	    for ( w = frameList.first(); w != 0L; w = frameList.next() )
+	    {
+		v = w->getView();
+		v->openURL( v->getCookie() );
+		v->show();
+	    }
+
+	    HTMLFrameSet *s;
+	    for ( s = framesetList.first(); s != 0L; s = framesetList.next() )
+	    {
+		s->show();
+	    }
+	    if ( ( s = framesetList.getFirst() ) )
+		s->setGeometry( 0, 0, width(), height() );
 	}
 }
 
@@ -796,9 +1126,9 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 	    i = 0;
 	    while ( _end[i] != NULL )
 	    {
-		if ( strcasecmp( str, _end[i] ) == 0 )
+		if ( strncasecmp( str, _end[i], strlen( _end[i] ) ) == 0 )
 		{
-		    return str;
+		    return str-1;
 		}
 		i++;
 	    }
@@ -812,18 +1142,25 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		flow = new HTMLClueH( 0, 0, _clue->getMaxWidth() );
 		_clue->append( flow );
 	    }
-		else if ( *str == '<' )
+	    else if ( *str == '<' )
+	    {
+		int indx;
+		
+		if ( str[1] == '/' )
+		    indx = toupper( str[2] ) - 'A';
+		else
+		    indx = toupper( str[1] ) - 'A';
+		
+		if ( indx >= 0 && indx < 26 )
+		    parseFuncArray[indx]( _clue, str );
+		
+		// perhaps we have the frame read complete. So skip the rest
+		if ( bFramesComplete )
 		{
-			int indx;
-
-			if ( str[1] == '/' )
-				indx = toupper( str[2] ) - 'A';
-			else
-				indx = toupper( str[1] ) - 'A';
-
-			if ( indx >= 0 && indx < 26 )
-				parseFuncArray[indx]( _clue, str );
+		    stopParser();
+		    return 0L;
 		}
+	    }
 	}
 	else if ( strcmp( str, " " ) == 0 )
 	{
@@ -856,7 +1193,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 			flow->setHAlign( divAlign );
 			_clue->append( flow );
 			}
-			flow->append( new HTMLText( str, currentFont(), painter, url ) );
+			flow->append( new HTMLText( str, currentFont(), painter, url, target ) );
 		}
 	}
 
@@ -882,9 +1219,11 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 	{
 		vspace_inserted = FALSE;
 		url[0] = '\0';
-		
+		target[0] = '\0';
+
 		QString s = str + 3;
 		StringTokenizer st( s, " >" );
+
 		while ( st.hasMoreTokens() )
 		{
 			const char* p = st.nextToken();
@@ -895,9 +1234,9 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 
 				if ( *p == '#' )
 				{// reference
-				    KURL u( actualURL );
-				    u.setReference( p + 1 );
-				    strcpy( url, u.url() );
+					KURL u( actualURL );
+					u.setReference( p + 1 );
+					strcpy( url, u.url() );
 				}
 				else if ( strchr( p, ':' ) )
 				{// full URL
@@ -905,9 +1244,9 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 				}
 				else
 				{// relative URL
-				    KURL u( baseURL );
-				    KURL u2( baseURL, p );
-				    strcpy( url, u2.url() );
+					KURL u( baseURL );
+					KURL u2( baseURL, p );
+					strcpy( url, u2.url() );
 				}
 			}
 			else if ( strncasecmp( p, "name=", 5 ) == 0 )
@@ -919,12 +1258,17 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 				else
 					flow->append( new HTMLAnchor( p ) );
 			}
+			else if ( strncasecmp( p, "target=", 7 ) == 0 )
+			{
+				strcpy( target, p+7 );
+			}
 		}
 	}
 	else if ( strncasecmp( str, "</a>", 4 ) == 0 )
 	{
 		vspace_inserted = FALSE;
 		url[ 0 ] = 0;
+		target[ 0 ] = 0;
 	}
 	else if ( strncasecmp( str, "<address>", 9) == 0 )
 	{
@@ -1021,23 +1365,14 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 			else if ( strncasecmp( token, "background=", 11 ) == 0 )
 			{
 				const char* filename = token + 11;
-				if ( filename[0] == '/' )
-				{
-					bgPixmap.load( filename );
-					if ( !bgPixmap.isNull() )
-						bgPixmapSet = TRUE;
-				}
+				KURL kurl( baseURL, filename );
+				if ( strcmp( kurl.protocol(), "file" ) == 0 )
+				    bgPixmap.load( kurl.path() );
 				else
-				{
-					KURL kurl( baseURL, filename );
-					if ( strcmp( kurl.protocol(), "file" ) == 0 )
-					    bgPixmap.load( kurl.path() );
-					else
-					    requestBackgroundImage( kurl.url() );
-					
-					if ( !bgPixmap.isNull() )
-						bgPixmapSet = TRUE;
-				}
+				    requestBackgroundImage( kurl.url() );
+				
+				if ( !bgPixmap.isNull() )
+				    bgPixmapSet = TRUE;
 			}
 			else if ( strncasecmp( token, "text=", 5 ) == 0 )
 			{
@@ -1081,8 +1416,9 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 // <center>         </center>
 // <cite>           </cite>
 // <code>           </code>
+// <cell>           </cell>
 // <comment>        </comment>      unimplemented
-void KHTMLWidget::parseC( HTMLClueV *, const char *str )
+void KHTMLWidget::parseC( HTMLClueV *_clue, const char *str )
 {
 	if (strncasecmp( str, "<center>", 8 ) == 0)
 	{
@@ -1093,6 +1429,21 @@ void KHTMLWidget::parseC( HTMLClueV *, const char *str )
 	{
 		divAlign = HTMLClue::Left;
 		flow = NULL;
+	}
+	else if (strncasecmp( str, "<cell", 5 ) == 0)
+	{
+	    HTMLClue *f = flow;
+	    if ( flow == 0L )
+	    {
+		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setHAlign( divAlign );
+		_clue->append( flow );
+		f = flow;
+	    }
+
+	    parseCell( flow, str );
+		
+	    flow = f;
 	}
 	else if (strncasecmp( str, "<cite>", 6 ) == 0)
 	{
@@ -1201,6 +1552,124 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	{
 		popFont();
 	}
+	else if ( strncasecmp( str, "<frameset", 9 ) == 0 )
+        {
+	  // Determine the parent for the frameset
+	  QWidget *p = this;
+	  if ( framesetStack.count() > 0 )
+	    p = framesetStack.getLast();
+
+	  htmlView->setIsFrameSet( TRUE );
+	  HTMLFrameSet *f = new HTMLFrameSet( p, str );
+
+	  // Append the new set to a parent set ?
+	  if ( framesetStack.count() > 0 )
+	      framesetStack.getLast()->append( f );
+
+	  // Append the set to the stack
+	  framesetStack.append( f );
+	  framesetList.append( f );
+	}
+	else if ( strncasecmp( str, "</frameset", 10 ) == 0 )
+        {
+	  // Is it the toplevel frameset ?
+	  if ( framesetStack.count() == 1 )
+	  {
+	      if ( selectedFrame )
+		selectedFrame->setSelected( TRUE );
+	      printf("Showing First frame\n");
+	      framesetStack.getFirst()->parse();
+	      frameSet = framesetStack.getFirst();
+	      frameSet->setGeometry( 0, 0, width(), height() );
+	      frameSet->show();
+	      framesetStack.removeLast();
+	  }
+	  else if ( bIsFrameSet )
+	  {
+	      framesetStack.removeLast();
+	  }
+	}	
+	else if ( strncasecmp( str, "<frame", 6 ) == 0 )
+        {
+	    if ( !framesetStack.isEmpty() )
+	    {
+	      QString src;
+	      QString name;
+	      int marginwidth = leftBorder;
+	      int marginheight = rightBorder;
+	      // 0 = no, 1 = yes, 2 = auto
+	      int scrolling = 2;
+	      bool noresize = FALSE;
+	      // -1 = default ( 5 )
+	      int frameborder = -1;
+	      
+	      QString s = str + 7;
+	      StringTokenizer st( s, " >" );
+	      while ( st.hasMoreTokens() )
+		{
+		  const char* token = st.nextToken();
+		  if ( strncasecmp( token, "SRC=", 4 ) == 0 )
+		    {
+		      src = token + 4;
+		    }
+		  else if ( strncasecmp( token, "NAME=", 5 ) == 0 )
+		    {
+		      name = token + 5;
+		    }
+		  else if ( strncasecmp( token, "MARGINWIDTH=", 12 ) == 0 )
+		    {
+		      marginwidth = atoi( token + 12 );
+		    }
+		  else if ( strncasecmp( token, "MARGINHEIGHT=", 13 ) == 0 )
+		    {
+		      marginheight = atoi( token + 13 );
+		    }
+		  else if ( strncasecmp( token, "FRAMEBORDER=", 12 ) == 0 )
+		    {
+		      frameborder = atoi( token + 12 );
+		      if ( frameborder < 0 )
+			frameborder = -1;
+		    }
+		  else if ( strncasecmp( token, "NORESIZE", 8 ) == 0 )
+		    noresize = TRUE;
+		  else if ( strncasecmp( token, "SCROLLING=", 10 ) == 0 )
+		    {
+		      if ( strncasecmp( token + 10, "yes", 3 ) == 0 )
+			scrolling = 1;
+		      if ( strncasecmp( token + 10, "no", 2 ) == 0 )
+			scrolling = 0;
+		      if ( strncasecmp( token + 10, "auto", 4 ) == 0 )
+			scrolling = -1;
+		    }
+		}	      
+
+	      // Determine the parent for the frame
+	      QWidget *p = this;
+	      if ( framesetStack.count() > 0 )
+		p = framesetStack.getLast();
+	      // Create the HTML widget
+	      KHTMLView *html = htmlView->newView( p, name );
+	      html->setIsFrame( TRUE );
+	      html->setScrolling( scrolling );
+	      html->setAllowResize( !noresize );
+	      html->setFrameBorder( frameborder );
+	      html->setMarginWidth( marginwidth );
+	      html->setMarginHeight( marginheight );
+	      // Determine the complete URL for this widget
+	      KURL u( actualURL, src.data() );
+	      connect( html, SIGNAL( frameSelected( KHTMLView * ) ),
+		       this, SLOT( slotFrameSelected( KHTMLView * ) ) );
+	      framesetStack.getLast()->append( html );
+
+	      selectedFrame = html;
+	      // Tell the new widget what it should show
+	      // html->openURL( u.url().data() );
+	      html->setCookie( u.url().data() );   
+	      // html->show();
+	      // Add frame to list
+	      frameList.append( html->getKHTMLWidget() );  
+	    }
+	}
 	else if ( strncasecmp( str, "<form", 5 ) == 0 )
 	{
 		QString action = "";
@@ -1233,15 +1702,16 @@ void KHTMLWidget::parseF( HTMLClueV *, const char *str )
 	}
 }
 
-// <grid                            extension
-void KHTMLWidget::parseG( HTMLClueV *_clue, const char *str )
+// <grid>
+// </grid>
+void KHTMLWidget::parseG( HTMLClueV *, const char * )
 {
-	if ( strncasecmp( str, "<grid", 5 ) == 0 )
-	{
-		vspace_inserted = insertVSpace( _clue, vspace_inserted );
-		flow = 0L;
-		parseGrid( _clue, _clue->getMaxWidth(), str + 6 );
-	}
+    /* if ( strncasecmp( str, "<grid", 5 ) == 0 )
+    {
+	vspace_inserted = insertVSpace( _clue, vspace_inserted );
+	flow = 0L;
+	parseGrid( _clue, _clue->getMaxWidth(), str + 6 );
+    } */
 }
 
 // <h[1-6]>         </h[1-6]>
@@ -1441,15 +1911,16 @@ void KHTMLWidget::parseI( HTMLClueV *_clue, const char *str )
 
 			if ( align != HTMLClue::Left && align != HTMLClue::Right )
 			{
-				flow->append( new HTMLImage( this, kurl.url(), url,
-								 _clue->getMaxWidth(), width, height, percent ) );
+			    flow->append( new HTMLImage( this, kurl.url(), url, target,
+							 _clue->getMaxWidth(), width, height, percent ) );
 			}
 			// we need to put the image in a HTMLClueAligned
 			else
 			{
 				HTMLClueAligned *aligned = new HTMLClueAligned (flow, 0, 0, _clue->getMaxWidth() );
 				aligned->setHAlign( align );
-				aligned->append( new HTMLImage( this, kurl.url(), url, _clue->getMaxWidth(), width, height, percent ) );
+				aligned->append( new HTMLImage( this, kurl.url(), url, target,
+								_clue->getMaxWidth(), width, height, percent ) );
 				flow->append( aligned );
 			}
 		} 
@@ -1731,7 +2202,10 @@ void KHTMLWidget::parseT( HTMLClueV *_clue, const char *str )
 {
 	if ( strncasecmp( str, "<table", 6 ) == 0 )
 	{
-		parseTable( _clue, _clue->getMaxWidth(), str + 7 );
+		flow = new HTMLClueFlow( 0, 0, _clue->getMaxWidth() );
+		flow->setHAlign( divAlign );
+		_clue->append( flow );
+		parseTable( flow, _clue->getMaxWidth(), str + 7 );
 	}
 	else if ( strncasecmp( str, "<title>", 7 ) == 0 )
 	{
@@ -1866,93 +2340,42 @@ void KHTMLWidget::parseZ( HTMLClueV *, const char * )
 {
 }
 
-const char* KHTMLWidget::parseGrid( HTMLClue *_clue, int _max_width,
-	const char *attr )
+const char* KHTMLWidget::parseCell( HTMLClue *_clue, const char *str )
 {
-    const char* str;
     static const char *end[] = { "</cell>", NULL }; 
-	HTMLClue::HAlign gridHAlign = HTMLClue::HCenter;// global align of all cells
-	int cell_width = 100;
+    
+    HTMLClue::HAlign gridHAlign = HTMLClue::HCenter;// global align of all cells
+    int cell_width = 90;
 
-	QString s = attr;
-	StringTokenizer st( s, " >" );
-	while ( st.hasMoreTokens() )
-	{
-		const char* token = st.nextToken();
-		if ( strncasecmp( token, "width=", 6 ) == 0 )
-		{
-			cell_width = atoi( token + 6 );
-		}
-		else if ( strncasecmp( token, "align=", 6 ) == 0 )
-		{
-			if ( strncasecmp( token + 6, "left", 4 ) == 0 )
-				gridHAlign = HTMLClue::Left;
-			else if ( strncasecmp( token + 6, "right", 5 ) == 0 )
-				gridHAlign = HTMLClue::Right;
-		}
-	}
-
-    HTMLClueFlow *c = new HTMLClueFlow( 0, 0, _max_width );
-	_clue->append( c);
-
-    while ( ht->hasMoreTokens() )
+    QString s = str + 5;
+    StringTokenizer st( s, " >" );
+    while ( st.hasMoreTokens() )
     {
-	str = ht->nextToken();
-
-	// Every tag starts with an escape character
-	if ( str[0] == TAG_ESCAPE )
+	const char* token = st.nextToken();
+	if ( strncasecmp( token, "width=", 6 ) == 0 )
 	{
-	    str++;
-	    
-	    if (strncasecmp( str, "</grid>", 7 ) == 0)
-	    {
-		return str;
-	    }
-	    else if (strncasecmp( str, "<cell>", 6 ) == 0)
-	    {
-		HTMLClue::VAlign valign = HTMLClue::Top;
-		HTMLClue::HAlign halign = gridHAlign;
-		
-		// Parse all arguments but delete '<' and '>' and skip 'cell'
-		/*   QString s = str;
-		     QString tmp = s.mid( 1, s.length() - 2 );
-		     StringTokenizer st( tmp, " " );
-		     st.nextToken();
-		     while ( st.hasMoreTokens() )
-		     {
-		     QString token = st.nextToken();
-		     if (token.find( "halign=left" ) == 0)
-		     halign = HTMLClue::Left;
-		     else if (token.find( "halign=center" ) == 0)
-		     halign = HTMLClue::HCenter;
-		     else if (token.find( "halign=right" ) == 0)
-		     halign = HTMLClue::Right;
-		     else if (token.find( "valign=top" ) == 0)
-		     valign = HTMLClue::Top;
-		     else if (token.find( "valign=center" ) == 0)
-		     valign = HTMLClue::VCenter;
-		     else if (token.find( "valign=bottom" ) == 0)
-		     valign = HTMLClue::Bottom;
-		     } */
-		
-		HTMLClueV *vc = new HTMLClueV( 0, 0, cell_width, 0 ); // fixed width
-		c->append( vc );
-		vc->setVAlign( valign );
-		vc->setHAlign( halign );
-		flow = NULL;
-		str = parseBody( vc, end );
-
-		vc = new HTMLClueV( 0, 0, 10, 0 ); // fixed width
-		c->append( vc );
-
-		// did we run out of html
-		if ( str == NULL )
-			return NULL;
-	    }
+	    cell_width = atoi( token + 6 );
+	}
+	else if ( strncasecmp( token, "align=", 6 ) == 0 )
+	{
+	    if ( strncasecmp( token + 6, "left", 4 ) == 0 )
+		gridHAlign = HTMLClue::Left;
+	    else if ( strncasecmp( token + 6, "right", 5 ) == 0 )
+		gridHAlign = HTMLClue::Right;
 	}
     }
+    
+    HTMLClue::VAlign valign = HTMLClue::Top;
+    HTMLClue::HAlign halign = gridHAlign;
+    
+    HTMLClueV *vc = new HTMLClueV( 0, 0, cell_width, 0 ); // fixed width
+    _clue->append( vc );
+    vc->setVAlign( valign );
+    vc->setHAlign( halign );
+    str = parseBody( vc, end );
 
-	flow = NULL;
+    vc = new HTMLClueV( 0, 0, 10, 0 ); // fixed width
+    _clue->append( vc );
 
     return str;
 }
@@ -1967,7 +2390,7 @@ const char* KHTMLWidget::parseList(HTMLClueV *_clue,int _max_width,ListType t)
 	static const char *endol[] = { "<li>", "</ol>", NULL };
 	static const char *endmenu[] = { "<li>", "</menu>", NULL };
 	static const char *enddir[] = { "<li>", "</dir>", NULL };
-	const char **end;     
+	const char **end = endul;     
 	int   itemNum = 1;
 	QString item;
 
@@ -2031,7 +2454,7 @@ const char* KHTMLWidget::parseList(HTMLClueV *_clue,int _max_width,ListType t)
 				item.sprintf( "%2d. ", itemNum );
 				tempStrings.append( item );
 				flow->append(new HTMLText(tempStrings.getLast(),currentFont(),
-					painter,""));
+							  painter,"", ""));
 				break;
 
 			default:
@@ -2145,11 +2568,12 @@ const char* KHTMLWidget::parseGlossary( HTMLClueV *_clue, int _max_width )
     return str;
 }
 
-const char* KHTMLWidget::parseTable( HTMLClueV *_clue, int _max_width,
+const char* KHTMLWidget::parseTable( HTMLClue *_clue, int _max_width,
 	const char *attr )
 {
 	static const char *endth[] = { "</th>", NULL };
 	static const char *endtd[] = { "</td>", NULL };    
+	static const char *endcap[] = { "</caption>", NULL };    
 	const char* str = NULL;
 	bool firstRow = TRUE;
 	int padding = 1;
@@ -2160,6 +2584,9 @@ const char* KHTMLWidget::parseTable( HTMLClueV *_clue, int _max_width,
 	char has_cell = 0;
 	HTMLClue::VAlign rowvalign = HTMLClue::VNone;
 	HTMLClue::HAlign rowhalign = HTMLClue::HNone;
+	HTMLClue::HAlign align = HTMLClue::HNone;
+	HTMLClueV *caption = NULL;
+	HTMLClue::VAlign capAlign = HTMLClue::Bottom;
 
 	QString s = attr;
 	StringTokenizer st( s, " >" );
@@ -2188,6 +2615,13 @@ const char* KHTMLWidget::parseTable( HTMLClueV *_clue, int _max_width,
 			else
 				width = atoi( token + 6 );
 		}
+		else if (strncasecmp( token, "align=", 6 ) == 0)
+		{
+			if ( strcasecmp( token + 6, "left" ) == 0 )
+				align = HTMLClue::Left;
+			else if ( strcasecmp( token + 6, "right" ) == 0 )
+				align = HTMLClue::Right;
+		}
 	}
 
 	HTMLTable *table = new HTMLTable( 0, 0, _max_width, width, percent,
@@ -2204,7 +2638,28 @@ const char* KHTMLWidget::parseTable( HTMLClueV *_clue, int _max_width,
 	{
 		str++;
 
-		if ( strncasecmp( str, "<tr", 3 ) == 0 )
+		if ( strncasecmp( str, "<caption", 8 ) == 0 )
+		{
+			QString s = str + 9;
+			StringTokenizer st( s, " >" );
+			while ( st.hasMoreTokens() )
+			{
+				const char* token = st.nextToken();
+				if ( strncasecmp( token, "align=", 6 ) == 0)
+				{
+					if ( strncasecmp( token+6, "top", 3 ) == 0)
+						capAlign = HTMLClue::Top;
+				}
+			}
+			caption = new HTMLClueV( 0, 0, _clue->getMaxWidth() );
+			HTMLClue::HAlign oldhalign = divAlign;
+			divAlign = HTMLClue::HCenter;
+			flow = NULL;
+			parseBody( caption, endcap );
+			divAlign = oldhalign;
+			table->setCaption( caption, capAlign );
+		}
+		else if ( strncasecmp( str, "<tr", 3 ) == 0 )
 		{
 			if ( !firstRow )
 				table->endRow();
@@ -2238,8 +2693,12 @@ const char* KHTMLWidget::parseTable( HTMLClueV *_clue, int _max_width,
 				}
 			}
 		}
-		else if ( strncasecmp( str, "<th", 3 ) == 0 )
-		{
+		else if ( strncasecmp( str, "<td", 3 ) == 0 ||
+			strncasecmp( str, "<th", 3 ) == 0 )
+	 	{
+			bool heading = false;
+			if ( strncasecmp( str, "<th", 3 ) == 0 )
+				heading = true;
 			// <tr> may not be specified for the first row
 			if ( firstRow )
 			{
@@ -2248,101 +2707,19 @@ const char* KHTMLWidget::parseTable( HTMLClueV *_clue, int _max_width,
 			}
 
 			int rowSpan = 1, colSpan = 1;
-			int width = 0;
-			int percent = 0;
+			int width = _clue->getMaxWidth();
+			int percent = 100;
 			QColor bgcolor;
 			HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
 							HTMLClue::VCenter : rowvalign);
 			HTMLClue::HAlign oldhalign = divAlign;
-			divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::HCenter :
+
+			if ( heading )
+				divAlign = (rowhalign == HTMLClue::HNone ? HTMLClue::HCenter :
 					rowhalign);
-
-			QString s = str + 4;
-			StringTokenizer st( s, " >" );
-			while ( st.hasMoreTokens() )
-			{
-				const char* token = st.nextToken();
-				if ( strncasecmp( token, "rowspan=", 8 ) == 0)
-					rowSpan = atoi( token+8 );
-				else if ( strncasecmp( token, "colspan=", 8 ) == 0)
-					colSpan = atoi( token+8 );
-				else if ( strncasecmp( token, "valign=", 7 ) == 0)
-				{
-					if ( strncasecmp( token+7, "top", 3 ) == 0)
-						valign = HTMLClue::Top;
-					else if ( strncasecmp( token+7, "bottom", 6 ) == 0)
-						valign = HTMLClue::Bottom;
-					else
-						valign = HTMLClue::VCenter;
-				}
-				else if ( strncasecmp( token, "align=", 6 ) == 0)
-				{
-					if ( strncasecmp( token+6, "left", 4 ) == 0)
-						divAlign = HTMLClue::Left;
-					else if ( strncasecmp( token+6, "right", 5 ) == 0)
-						divAlign = HTMLClue::Right;
-					else
-						divAlign = HTMLClue::HCenter;
-				}
-				else if ( strncasecmp( token, "width=", 6 ) == 0 )
-				{
-					if ( strchr( token + 6, '%' ) )
-						percent = atoi( token + 6 );
-					else
-					{
-						width = atoi( token + 6 );
-						percent = 0;
-					}
-				}
-				else if ( strncasecmp( token, "bgcolor=", 8 ) == 0 )
-				{
-					if ( *(token+8) != '#' && strlen( token+8 ) == 6 )
-					{
-						QString col = "#";
-						col += token+8;
-						bgcolor.setNamedColor( col );
-					}
-					else
-						bgcolor.setNamedColor( token+8 );
-				}
-			}
-
-			HTMLTableCell *cell = new HTMLTableCell(0, 0, _clue->getMaxWidth(),
-				width, percent, rowSpan, colSpan, padding);
-			if ( bgcolor.isValid() )
-				cell->setBGColor( bgcolor );
-			cell->setVAlign( valign );
-			table->addCell( cell );
-			has_cell = 1;
-			flow = 0;
-			weight = QFont::Bold;
-			selectFont( 0 );
-			str = parseBody( cell, endth );
-			popFont();
-			divAlign = oldhalign;
-			if ( str == NULL )
-			{
-				delete table;
-				return NULL;
-			}
-		}
-		else if ( strncasecmp( str, "<td", 3 ) == 0 )
-		{
-			// <tr> may not be specified for the first row
-			if ( firstRow )
-			{
-				table->startRow();
-				firstRow = FALSE;
-			}
-
-			int rowSpan = 1, colSpan = 1;
-			int width = 0;
-			int percent = 0;
-			QColor bgcolor;
-			HTMLClue::VAlign valign = (rowvalign == HTMLClue::VNone ?
-							HTMLClue::VCenter : rowvalign);
-			HTMLClue::HAlign oldhalign = divAlign;
-			divAlign = (rowhalign == HTMLClue::HNone ? divAlign : rowhalign);
+			else
+				divAlign = (rowhalign == HTMLClue::HNone ? divAlign :
+					rowhalign);
 
 			QString s = str + 4;
 			StringTokenizer st( s, " >" );
@@ -2394,22 +2771,32 @@ const char* KHTMLWidget::parseTable( HTMLClueV *_clue, int _max_width,
 				}
 			}
 
-			HTMLTableCell *cell = new HTMLTableCell(0, 0, _clue->getMaxWidth(),
-				width, percent, rowSpan, colSpan, padding );
+			HTMLTableCell *cell = new HTMLTableCell(0, 0, width, percent,
+				rowSpan, colSpan, padding );
 			if ( bgcolor.isValid() )
 				cell->setBGColor( bgcolor );
 			cell->setVAlign( valign );
 			table->addCell( cell );
 			has_cell = 1;
 			flow = 0;
-			str = parseBody( cell, endtd );
+			if ( heading )
+			{
+				weight = QFont::Bold;
+				selectFont( 0 );
+				str = parseBody( cell, endth );
+				popFont();
+			}
+			else
+				str = parseBody( cell, endtd );
 			divAlign = oldhalign;
-			if ( str == NULL ) { 
-			       // CC: Close table description in case of a malformed table
-			       // before returning!
-			       if ( !firstRow )
-				 table->endRow();
-			       table->endTable(); 
+			if ( str == NULL )
+			{ 
+				// CC: Close table description in case of a malformed table
+				// before returning!
+				if ( !firstRow )
+					table->endRow();
+				table->endTable(); 
+				delete table;
 				return NULL;
 			}
 		}
@@ -2420,25 +2807,40 @@ const char* KHTMLWidget::parseTable( HTMLClueV *_clue, int _max_width,
 	}
     }
 
-	flow = NULL;
-
-	if (has_cell) {
-	    // CC: the ending "</table>" might be missing, so 
-	    // we close the table here... ;-) 
-	    if ( !firstRow )
-		table->endRow();
-	    table->endTable();
-	  _clue->append ( table );
-	} else {
+	if (has_cell)
+	{
+		// CC: the ending "</table>" might be missing, so 
+		// we close the table here... ;-) 
+		if ( !firstRow )
+			table->endRow();
+		table->endTable();
+		if ( align != HTMLClue::Left && align != HTMLClue::Right )
+		{
+			_clue->append ( table );
+		}
+		else
+		{
+			HTMLClueAligned *aligned = new HTMLClueAligned (_clue, 0, 0,
+				_clue->getMaxWidth() );
+			aligned->setHAlign( align );
+			aligned->append( table );
+			_clue->append( aligned );
+		}
+	}
+	else
+	{
 	  // CC: last ressort -- remove tables that do not contain any cells
 	  delete table;
 	}
+
+	flow = NULL;
+
 	return str;
 }
 
 const char *KHTMLWidget::parseInput( const char *attr )
 {
-	enum Type { CheckBox, Hidden, Radio, Reset, Submit, Text, Image };
+	enum Type { CheckBox, Hidden, Radio, Reset, Submit, Text, Image, Button };
 	const char *p;
 	HTMLInput *element = NULL;
 	Type type = Text;
@@ -2446,6 +2848,7 @@ const char *KHTMLWidget::parseInput( const char *attr )
 	QString value = "";
 	bool checked = false;
 	int size = 20;
+	QList<JSEventHandler> *handlers = 0L;      
 
 	QString s = attr;
 	StringTokenizer st( s, " >" );
@@ -2457,17 +2860,19 @@ const char *KHTMLWidget::parseInput( const char *attr )
 			p = token + 5;
 			if ( *p == '"' ) p++;
 			if ( strncasecmp( p, "checkbox", 8 ) == 0 )
-				type = CheckBox;
+			    type = CheckBox;
 			else if ( strncasecmp( p, "hidden", 6 ) == 0 )
-				type = Hidden;
+			    type = Hidden;
 			else if ( strncasecmp( p, "radio", 5 ) == 0 )
-				type = Radio;
+			    type = Radio;
 			else if ( strncasecmp( p, "reset", 5 ) == 0 )
-				type = Reset;
+			    type = Reset;
 			else if ( strncasecmp( p, "submit", 5 ) == 0 )
-				type = Submit;
+			    type = Submit;
+			else if ( strncasecmp( p, "button", 6 ) == 0 )
+			    type = Button;      
 			else if ( strncasecmp( p, "text", 5 ) == 0 )
-				type = Text;
+			    type = Text;
 		}
 		else if ( strncasecmp( token, "name=", 5 ) == 0 )
 		{
@@ -2493,6 +2898,21 @@ const char *KHTMLWidget::parseInput( const char *attr )
 		{
 			checked = true;
 		}
+		else if ( strncasecmp( token, "onClick=", 8 ) == 0 )
+		{
+		    QString code;
+		    p = token + 8;
+		    if ( *p == '"' ) p++;
+		    code = p;
+		    if ( code[ code.length() - 1 ] == '"' )
+			code.truncate( value.length() - 1 );
+		    if ( handlers == 0L )
+		    {
+			handlers = new QList<JSEventHandler>;
+			handlers->setAutoDelete( TRUE );
+		    }
+		    handlers->append( new JSEventHandler( getJSEnvironment(), "onClick", code ) );
+		}     
 	}
 
 	switch ( type )
@@ -2525,6 +2945,10 @@ const char *KHTMLWidget::parseInput( const char *attr )
 				form, SLOT( slotSubmit() ) );
 			break;
 
+                case Button:
+                        element = new HTMLButton( this, name, value, handlers );
+                        break;
+   
 		case Text:
 			element = new HTMLTextInput( this, name, value, size );
 			connect( element, SIGNAL( submitForm() ),
@@ -2552,18 +2976,21 @@ void KHTMLWidget::slotScrollVert( int _val )
 	if ( clue == 0L )
 		return;
     
-	bitBlt( this, 0, ( y_offset - _val ), this );
+	if ( bIsSelected )	
+	  bitBlt( this, 2, 2 + ( y_offset - _val ), this, 2, 2, width() - 4, height() - 4 );
+	else 
+	  bitBlt( this, 0, ( y_offset - _val ), this );
 
 	if ( _val > y_offset)
 	{
-		int diff = _val - y_offset;
-    	y_offset = _val;
+		int diff = _val - y_offset + 2;
+		y_offset = _val;
 		repaint( 0, height() - diff, width(), diff, false );
 	}
 	else
 	{
-		int diff = y_offset - _val;
-    	y_offset = _val;
+		int diff = y_offset - _val + 2;
+		y_offset = _val;
 		repaint( 0, 0, width(), diff, false );
 	}
 }
@@ -2576,17 +3003,20 @@ void KHTMLWidget::slotScrollHorz( int _val )
 	if ( clue == 0L )
 		return;
     
-	bitBlt( this, x_offset - _val, 0, this );
+	if ( bIsSelected )
+	  bitBlt( this, 2 + x_offset - _val, 2, this, 2, 2, width() - 4, height() - 4 );
+	else
+	  bitBlt( this, x_offset - _val, 0, this );
 
 	if ( _val > x_offset)
 	{
-		int diff = _val - x_offset;
+		int diff = _val - x_offset + 2;
 		x_offset = _val;
 		repaint( width() - diff, 0, diff, height(), false );
 	}
 	else
 	{
-		int diff = x_offset - _val;
+		int diff = x_offset - _val + 2;
 		x_offset = _val;
 		repaint( 0, 0, diff, height(), false );
 	}
@@ -2598,7 +3028,7 @@ void KHTMLWidget::positionFormElements()
 
 	for ( f = formList.first(); f != NULL; f = formList.next() )
 	{
-		f->position( x_offset - LEFT_BORDER, y_offset, width(), height() );
+		f->position( x_offset - leftBorder, y_offset, width(), height() );
 	}
 }
 
@@ -2653,31 +3083,75 @@ bool KHTMLWidget::gotoAnchor( const char *_name )
 
 void KHTMLWidget::select( QPainter *_painter, bool _select )
 {
-    int tx = x_offset + LEFT_BORDER;
+    int tx = x_offset + leftBorder;
     int ty = -y_offset;
 
     if ( clue == 0L )
 	return;
     
-    clue->select( _painter, _select, tx, ty );
+    bool newPainter = FALSE;
+
+    if ( clue == 0L )
+	return;
+
+    if ( _painter == 0L )
+    {
+	if ( painter == NULL )
+	{
+		painter = new QPainter();
+		painter->begin( this );
+		newPainter = TRUE;
+	}
+
+	clue->select( painter, _select, tx, ty );
+
+	if ( newPainter )
+	{
+		painter->end();
+		delete painter;
+		painter = NULL;
+	}
+    }
+    else    
+      clue->select( _painter, _select, tx, ty );
 }
 
 void KHTMLWidget::selectByURL( QPainter *_painter, const char *_url, bool _select )
 {
-    int tx = x_offset + LEFT_BORDER;
+    int tx = x_offset + leftBorder;
     int ty = -y_offset;
+    bool newPainter = FALSE;
 
     if ( clue == 0L )
 	return;
-    
-    clue->selectByURL( _painter, _url, _select, tx, ty );
+
+    if ( _painter == 0L )
+    {
+	if ( painter == NULL )
+	{
+		painter = new QPainter();
+		painter->begin( this );
+		newPainter = TRUE;
+	}
+
+	clue->selectByURL( painter, _url, _select, tx, ty );
+
+	if ( newPainter )
+	{
+		painter->end();
+		delete painter;
+		painter = NULL;
+	}
+    }
+    else    
+      clue->selectByURL( _painter, _url, _select, tx, ty );
 }
 
 void KHTMLWidget::select( QPainter *_painter, QRegExp& _pattern, bool _select )
 {
-    int tx = x_offset + LEFT_BORDER;
+    int tx = x_offset + leftBorder;
     int ty = -y_offset;
-	bool newPainter = FALSE;
+    bool newPainter = FALSE;
 
     if ( clue == 0L )
 	return;
@@ -2706,32 +3180,124 @@ void KHTMLWidget::select( QPainter *_painter, QRegExp& _pattern, bool _select )
 
 int KHTMLWidget::docWidth()
 {
+    if ( bIsFrameSet )
+      return width();
+    
 	if ( clue )
-    	return clue->getWidth() + LEFT_BORDER + RIGHT_BORDER;
+    	return clue->getWidth() + leftBorder + rightBorder;
 	else
-		return LEFT_BORDER + RIGHT_BORDER;
+		return leftBorder + rightBorder;
 }
 
 int KHTMLWidget::docHeight()
 {
+  if ( bIsFrameSet )
+    return height();
+  
 	if ( clue )
     	return clue->getHeight();
 
 	return 0;
 }
 
+void KHTMLWidget::setSelected( bool _active )
+{
+    if ( _active == bIsSelected )
+    return;
+  
+  bIsSelected = _active;
+
+  if ( _active )
+  {
+      bool isOld = TRUE;
+      if ( !painter )
+      {
+	  painter = new QPainter;
+	  painter->begin( this );
+	  isOld = FALSE;
+      }
+      
+      QPen pen = painter->pen();
+      painter->setPen( black );
+      painter->drawRect( 0, 0, width(), height() );
+      painter->drawRect( 1, 1, width() - 2, height() - 2 );
+      painter->setPen( pen );
+
+      if ( !isOld )
+      {	  
+	  painter->end();
+	  delete painter;
+	  painter = 0L;
+      }
+  }
+  else
+    repaint();
+}
+
+void KHTMLWidget::setIsFrameSet( bool _b )
+{
+  bIsFrameSet = _b;
+}
+
+void KHTMLWidget::setIsFrame( bool _b )
+{
+  bIsFrame = _b;
+}
+
+void KHTMLWidget::slotFrameSelected( KHTMLView *_view )
+{
+  if ( selectedFrame && selectedFrame != _view )
+    selectedFrame->setSelected( FALSE );
+  selectedFrame = _view;
+}
+
+KHTMLView* KHTMLWidget::getSelectedFrame()
+{
+  if ( isFrame() && isSelected() )
+    return htmlView;
+
+  if ( isFrameSet() )
+  {
+    HTMLFrameSet *f;
+    for ( f = framesetList.first(); f != 0L; f = framesetList.next() )
+    {
+      KHTMLView *v = f->getSelectedFrame();
+      if ( v )
+	return v;
+    }
+  }
+    
+  return 0L;
+}
+
+JSEnvironment* KHTMLWidget::getJSEnvironment()
+{
+    if ( jsEnvironment == 0L )
+	jsEnvironment = new JSEnvironment( this );
+    
+    return jsEnvironment;
+}
+
+JSWindowObject* KHTMLWidget::getJSWindowObject()
+{
+    return getJSEnvironment()->getJSWindowObject();
+}
+      
 KHTMLWidget::~KHTMLWidget()
 {
-	if ( painter )
-	{
-		painter->end();
-		delete painter;
-	}
-	if (clue)
-		delete clue;
+    if ( painter )
+    {
+	painter->end();
+	delete painter;
+    }
+    if (clue)
+	delete clue;
     if (ht)
-		delete ht;
-	font_stack.clear();
+	delete ht;
+    font_stack.clear();
+    
+    if ( jsEnvironment )
+	delete jsEnvironment;            
 }
 
 #include "html.moc"

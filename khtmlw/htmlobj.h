@@ -48,6 +48,13 @@ public:
      * width and height.
      */
     virtual void calcSize( HTMLClue * = NULL ) { }
+	/************************************************************
+	 * This function forces a size calculation for objects which
+	 * calculate their size at construction.  This is useful if
+	 * the metrics of the painter change, e.g. if the html is to
+	 * be printed on a printer instead of the display.
+	 */
+	virtual void recalcBaseSize( QPainter * ) { }
     /************************************************************
      * This function calculates the minimum width that the object
      * can be set to. (added for table support)
@@ -55,17 +62,18 @@ public:
 	virtual int  calcMinWidth() { return width; }
     /************************************************************
      * This function calculates the width that the object would like
-	 * to be. (added for table support)
+     * to be. (added for table support)
      */
-	virtual int  calcPreferredWidth() { return width; }
+    virtual int  calcPreferredWidth() { return width; }
     virtual void setMaxAscent( int ) { }
-	virtual void setMaxWidth( int _w ) { max_width = _w; }
+    virtual void setMaxWidth( int _w ) { max_width = _w; }
+    virtual int  findPageBreak( int _y );
     /************************************************************
      * Print the object but only if it fits in the rectangle given
      * by _x,_y,_width,_ascender. (_x|_y) is the lower left corner relative
      * to the parent of this object ( usually HTMLClue ).
      */
-    virtual void print( QPainter *, int, int, int, int, int, int ) { }
+    virtual bool print( QPainter *, int, int, int, int, int, int, bool = false ) { return false; }
     /************************************************************
      * Print the object.
      */
@@ -73,18 +81,22 @@ public:
     virtual HTMLObject* checkPoint( int, int );
     virtual void selectByURL( QPainter *, const char *, bool, int _tx, int _ty );
     virtual void select( QPainter *, bool, int _tx, int _ty );
+    /**
+     * Selects the object if it is inside the rectangle and deselects it otherwise.
+     */
+    virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
     /// Select all objects matching the regular expression.
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty );
     virtual void select( bool _s ) { setSelected( _s ); }
     virtual void getSelected( QStrList & );
 
     /************************************************************
-	 * Some objects may need to know their absolute position on the page.
-	 * This is only used by form elements so far.
-	 */
-	virtual void calcAbsolutePos( int, int ) { }
-
-	virtual void reset() { }
+     * Some objects may need to know their absolute position on the page.
+     * This is only used by form elements so far.
+     */
+    virtual void calcAbsolutePos( int, int ) { }
+    
+    virtual void reset() { setPrinted( false ); }
 
     /************************************************************
      * Get X-Position of this object relative to its parent
@@ -99,29 +111,34 @@ public:
     int getAscent() { return ascent; }
     int getDescent() { return descent; }
     int getMaxWidth() { return max_width; }
-	int getPercent() { return percent; }
+    int getPercent() { return percent; }
     const char* getURL() { return url; }
+    const char* getTarget() { return target; }
+
     void setPos( int _x, int _y ) { y=_y; x=_x; }
     void setXPos( int _x ) { x=_x; }
     void setYPos( int _y ) { y=_y; }
 
 	enum ObjectFlags { Separator = 0x01, NewLine = 0x02, Selected = 0x04,
-				FixedWidth = 0x08, Printing = 0x10, Aligned = 0x20 };
+				FixedWidth = 0x08, Printing = 0x10, Aligned = 0x20,
+				Printed = 0x40 };
 
     bool isSeparator() { return flags & Separator; }
     bool isNewline() { return flags & NewLine; }
     bool isSelected() { return flags & Selected; }
-	bool isFixedWidth() { return flags & FixedWidth; }
-	bool isPrinting() { return flags & Printing; }
-	bool isAligned() { return flags & Aligned; }
-
-	void setSeparator( bool s ) { s ? flags|=Separator : flags&=~Separator; }
-	void setNewline( bool n ) { n ? flags|=NewLine : flags&=~NewLine; }
-	void setSelected( bool s ) { s ? flags|=Selected : flags&=~Selected; }
-	void setFixedWidth( bool f ) { f ? flags|=FixedWidth : flags&=~FixedWidth; }
-	void setPrinting( bool p ) { p ? flags|=Printing : flags&=~Printing; }
-	void setAligned( bool a ) { a ? flags|=Aligned : flags&=~Aligned; }
-
+    bool isFixedWidth() { return flags & FixedWidth; }
+    bool isPrinting() { return flags & Printing; }
+    bool isAligned() { return flags & Aligned; }
+    bool isPrinted() { return flags & Printed; }
+    
+    void setSeparator( bool s ) { s ? flags|=Separator : flags&=~Separator; }
+    void setNewline( bool n ) { n ? flags|=NewLine : flags&=~NewLine; }
+    void setSelected( bool s ) { s ? flags|=Selected : flags&=~Selected; }
+    void setFixedWidth( bool f ) { f ? flags|=FixedWidth : flags&=~FixedWidth; }
+    void setPrinting( bool p ) { p ? flags|=Printing : flags&=~Printing; }
+    void setAligned( bool a ) { a ? flags|=Aligned : flags&=~Aligned; }
+    void setPrinted( bool p ) { p ? flags|=Printed : flags&=~Printed; }
+    
     /************************************************************
      * Searches in all children ( and tests itself ) for an HTMLAnchor object
      * with the name '_name'. Returns 0L if the anchor could not be found.
@@ -131,8 +148,7 @@ public:
     virtual HTMLAnchor* findAnchor( const char */*_name*/, QPoint */*_point*/ )
 			{ return 0L; }
 
-	void printCount()
-		{	printf( "Object count: %d\n", objCount ); }
+    void printCount() { printf( "Object count: %d\n", objCount ); }
 
 protected:
     int x;
@@ -143,9 +159,10 @@ protected:
     int max_width;
     // percent stuff added for table support
     short percent;	// width = max_width * percent / 100
-	unsigned char flags;
+    unsigned char flags;
     QString url;
-	static int objCount;
+    QString target;
+    static int objCount;
 };
 
 //-----------------------------------------------------------------------------
@@ -165,17 +182,19 @@ public:
     HTMLClue( int _x, int _y, int _max_width, int _percent = 100);
 	virtual ~HTMLClue() { }
 
-    virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
+	virtual int  findPageBreak( int _y );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     /// Prints a special object only
     /**
-      This function is for example used to redraw an image that had to be loaded from the world wide wait.
-      */
+     * This function is for example used to redraw an image that had to be loaded from the world wide wait.
+     */
     virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, HTMLObject *_obj );
     virtual void print( QPainter *, int _tx, int _ty );
     /************************************************************
      * Calls all children and tells them to calculate their size.
      */
     virtual void calcSize( HTMLClue *parent = NULL );
+	virtual void recalcBaseSize( QPainter * );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxAscent( int );
@@ -183,12 +202,17 @@ public:
     virtual void selectByURL( QPainter *, const char *, bool, int _tx, int _ty );
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty );
     virtual void select( QPainter *, bool, int _tx, int _ty );
+    /**
+     * Selects every objectsin this clue if it is inside the rectangle
+     * and deselects it otherwise.
+     */
+    virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
     virtual void select( bool );
     virtual void getSelected( QStrList & );
 
-	virtual void calcAbsolutePos( int _x, int _y );
+    virtual void calcAbsolutePos( int _x, int _y );
 
-	virtual void reset();
+    virtual void reset();
 
     /************************************************************
      * Make an object a child of this Box.
@@ -196,13 +220,13 @@ public:
     void append( HTMLObject *_object )
 		{	list.append( _object ); }
 	
-	virtual void appendLeftAligned( HTMLClueAligned * ) { }
-	virtual void appendRightAligned( HTMLClueAligned * ) { }
-	virtual int  getLeftMargin( HTMLClue *, int )
-		{	return 0; }
-	virtual int  getRightMargin( HTMLClue *, int )
-		{	return max_width; }
-
+    virtual void appendLeftAligned( HTMLClueAligned * ) { }
+    virtual void appendRightAligned( HTMLClueAligned * ) { }
+    virtual int  getLeftMargin( int )
+    {	return 0; }
+    virtual int  getRightMargin( int )
+    {	return max_width; }
+    
     void setVAlign( VAlign _v ) { valign = _v; }
     void setHAlign( HAlign _h ) { halign = _h; }
     VAlign getVAlign() { return valign; }
@@ -213,7 +237,7 @@ public:
 protected:
     QList<HTMLObject> list;
 
-	int prevCalcObj;
+    int prevCalcObj;
 
     VAlign valign;
     HAlign halign;
@@ -226,21 +250,21 @@ protected:
 class HTMLClueAligned : public HTMLClue
 {
 public:
-	HTMLClueAligned( HTMLClue *_parent, int _x, int _y, int _max_width,
-		 int _percent = 100 )
-		: HTMLClue( _x, _y, _max_width, _percent )
-		{ prnt = _parent; setAligned( true ); }
-	virtual ~HTMLClueAligned() { }
-
-	virtual void setMaxWidth( int );
+    HTMLClueAligned( HTMLClue *_parent, int _x, int _y, int _max_width,
+		     int _percent = 100 )
+	: HTMLClue( _x, _y, _max_width, _percent )
+    { prnt = _parent; setAligned( true ); }
+    virtual ~HTMLClueAligned() { }
+    
+    virtual void setMaxWidth( int );
     virtual void setMaxAscent( int ) { }
-	virtual void calcSize( HTMLClue *_parent = NULL );
-
-	HTMLClue *parent()
-		{	return prnt; }
-
+    virtual void calcSize( HTMLClue *_parent = NULL );
+    
+    HTMLClue *parent()
+    {	return prnt; }
+    
 private:
-	HTMLClue *prnt;
+    HTMLClue *prnt;
 };
 
 //-----------------------------------------------------------------------------
@@ -254,6 +278,7 @@ public:
 	virtual ~HTMLClueFlow() { }
     
     virtual void calcSize( HTMLClue *parent = NULL );
+	virtual int  findPageBreak( int _y );
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int );
 };
@@ -268,11 +293,13 @@ public:
 		: HTMLClue( _x, _y, _max_width, _percent ) { }
 	virtual ~HTMLClueV() { }
 
+	virtual void reset();
+
 	virtual void setMaxWidth( int );
     virtual HTMLObject* checkPoint( int, int );
     virtual void calcSize( HTMLClue *parent );
-    virtual void print( QPainter *_painter, int _x, int _y, int _width,
-		int _height, int _tx, int _ty );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+		int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, HTMLObject *_obj )
 		{	HTMLClue::print(_painter,_x,_y,_width,_height,_tx,_ty,_obj ); }
@@ -281,8 +308,8 @@ public:
 		{	alignLeftList.append( _clue ); }
 	virtual void appendRightAligned( HTMLClueAligned *_clue )
 		{	alignRightList.append( _clue ); }
-	virtual int  getLeftMargin( HTMLClue *child, int _y );
-	virtual int  getRightMargin( HTMLClue *child, int _y );
+	virtual int  getLeftMargin( int _y );
+	virtual int  getRightMargin( int _y );
 
 protected:
 	// These are the objects which are left or right aligned within this
@@ -317,7 +344,7 @@ public:
 class HTMLTableCell : public HTMLClueV
 {
 public:
-	HTMLTableCell( int _x, int _y, int _max_width, int _width, int _percent,
+	HTMLTableCell( int _x, int _y, int _max_width, int _percent,
 		int rs, int cs, int pad );
 	virtual ~HTMLTableCell() { }
 
@@ -331,8 +358,9 @@ public:
 	void setBGColor( const QColor &c )
 		{	bg = c; }
 
-    virtual void print( QPainter *_painter, int _x, int _y, int _width,
-		int _height, int _tx, int _ty );
+	virtual void setMaxWidth( int );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width,
+		int _height, int _tx, int _ty, bool toPrinter = false );
 
 protected:
 	int rspan;
@@ -357,6 +385,10 @@ public:
 	void endRow();
 	void endTable();
 
+	void setCaption( HTMLClueV *cap, HTMLClue::VAlign al )
+		{	caption = cap; capAlign = al; }
+
+	virtual void reset();
     virtual void calcSize( HTMLClue *parent = NULL );
 	virtual int  calcMinWidth();
 	virtual int  calcPreferredWidth();
@@ -366,6 +398,11 @@ public:
     virtual void selectByURL( QPainter *, const char *, bool, int _tx, int _ty );
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty );
     virtual void select( QPainter *, bool, int _tx, int _ty );
+    /**
+     * Selects every object in this table if it is inside the rectangle
+     * and deselects it otherwise.
+     */
+    virtual void select( QPainter *, QRect &_rect, int _tx, int _ty );
     virtual void select( bool );
     virtual void getSelected( QStrList & );
 
@@ -373,7 +410,8 @@ public:
 
 	virtual HTMLAnchor *findAnchor( const char *_name, QPoint *_p );
 
-    virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
+	virtual int  findPageBreak( int _y );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
@@ -388,12 +426,15 @@ protected:
 	HTMLTableCell ***cells;
 	QArray<int> columnPos;
 	QArray<int> columnPrefPos;
+	QArray<int> columnOpt;
 	QArray<int> rowHeights;
 	unsigned int col, totalCols;
 	unsigned int row, totalRows;
 	int spacing;
 	int padding;
 	int border;
+	HTMLClueV *caption;
+	HTMLClue::VAlign capAlign;
 };
 
 //-----------------------------------------------------------------------------
@@ -401,11 +442,12 @@ protected:
 class HTMLText : public HTMLObject
 {
 public:
-    HTMLText( const char*, const HTMLFont *, QPainter *, const char * );
+    HTMLText( const char*, const HTMLFont *, QPainter *, const char *_url, const char *_target );
     HTMLText( const HTMLFont *, QPainter * );
 	virtual ~HTMLText() { }
 
-    virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
+	virtual void recalcBaseSize( QPainter *_painter );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
@@ -424,7 +466,7 @@ public:
 	virtual int  calcMinWidth() { return 1; }
 	virtual int  calcPreferredWidth() { return 1; }
 	virtual void setMaxWidth( int );
-    virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *, int _tx, int _ty );
 
 
@@ -442,7 +484,7 @@ public:
     HTMLBullet( int _height, int _level, const QColor &col );
 	virtual ~HTMLBullet() { }
 
-    virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *, int _tx, int _ty );
 
 protected:
@@ -499,14 +541,14 @@ protected:
 class HTMLImage : public HTMLObject
 {
 public:
-    HTMLImage( KHTMLWidget *widget, const char*, const char *, int _max_width, int _width = -1,
-		 int _height = -1, int _percent = 0 );
-	virtual ~HTMLImage();
+    HTMLImage( KHTMLWidget *widget, const char*, const char *_url, const char *_target,
+	       int _max_width, int _width = -1, int _height = -1, int _percent = 0 );
+    virtual ~HTMLImage();
 
 	virtual int  calcMinWidth();
 	virtual int  calcPreferredWidth();
 	virtual void setMaxWidth( int );
-    virtual void print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty );
+    virtual bool print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter = false );
     virtual void print( QPainter *, int _tx, int _ty );
 
     static void cacheImage( const char * );

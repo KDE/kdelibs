@@ -17,6 +17,8 @@
 #include <qimage.h>
 #include <qdrawutl.h>
 
+//#define CLUE_DEBUG
+
 // This will be constructed once and NEVER deleted.
 QList<HTMLCachedImage>* HTMLImage::pCache = NULL;
 int HTMLObject::objCount = 0;
@@ -43,6 +45,27 @@ HTMLObject* HTMLObject::checkPoint( int _x, int _y )
 	    return this;
     
     return 0L;
+}
+
+void HTMLObject::select( QPainter *_painter, QRect &_rect, int _tx, int _ty )
+{
+  QRect r( x + _tx, y - ascent + _ty, width, ascent + descent );
+
+  bool s = isSelected();
+  bool s2;
+
+  //    {
+  //      printf("Comparing Image %i %i %i %i\n",_rect.left(), _rect.top(), _rect.right(), _rect.bottom() );
+  //      printf("          with %i %i %i %i\n",r.left(), r.top(), r.right(), r.bottom() );    
+  //    }
+  
+  if ( _rect.contains( r ) )
+    s2 = TRUE;
+  else
+    s2 = FALSE;
+  
+  if ( s != s2 )
+    select( _painter, s2, _tx, _ty );
 }
 
 void HTMLObject::getSelected( QStrList &_list )
@@ -91,13 +114,21 @@ void HTMLObject::select( QPainter *_painter, QRegExp& _pattern, bool _select, in
 
 void HTMLObject::select( QPainter *_painter, bool _select, int _tx, int _ty )
 {
-    if ( _select == isSelected() || url[0] == 0 )
+    if ( _select == isSelected() || url.data() == 0 || url[0] == 0 )
 	return;
 	
     setSelected( _select );
 
     _painter->eraseRect( x + _tx, y - ascent + _ty, width, ascent+descent );
     print( _painter, _tx, _ty );
+}
+
+int HTMLObject::findPageBreak( int _y )
+{
+	if ( _y < y + descent )
+		return ( y - ascent );
+
+	return -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -111,7 +142,8 @@ HTMLVSpace::HTMLVSpace( int _vspace ) : HTMLObject()
 
 //-----------------------------------------------------------------------------
 
-HTMLText::HTMLText( const char* _text, const HTMLFont *_font, QPainter *_painter, const char *_url ) : HTMLObject()
+HTMLText::HTMLText( const char* _text, const HTMLFont *_font, QPainter *_painter,
+		    const char *_url, const char *_target ) : HTMLObject()
 {
     text = _text;
     font = _font;
@@ -120,6 +152,8 @@ HTMLText::HTMLText( const char* _text, const HTMLFont *_font, QPainter *_painter
     width = _painter->fontMetrics().width( (const char*)_text );
     url = _url;
     url.detach();
+    target = _target;
+    target.detach();
 }
 
 HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
@@ -132,12 +166,33 @@ HTMLText::HTMLText( const HTMLFont *_font, QPainter *_painter ) : HTMLObject()
     setSeparator( true );
 }
 
-void HTMLText::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
+void HTMLText::recalcBaseSize( QPainter *_painter )
+{
+	const QFont &oldFont = _painter->font();
+	_painter->setFont( *font );
+	ascent = _painter->fontMetrics().ascent();
+	descent = _painter->fontMetrics().descent();
+	width = _painter->fontMetrics().width( (const char*)text );
+	_painter->setFont( oldFont );
+}
+
+bool HTMLText::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y + getDescent() )
-	return;
+	return false;
+
+	if ( toPrinter )
+	{
+		if ( _y + _height < y + descent )
+			return true;
+		if ( isPrinted() )
+			return false;
+		setPrinted( true );
+	}
 
     print( _painter, _tx, _ty );
+
+	return false;
 }
 
 void HTMLText::print( QPainter *_painter, int _tx, int _ty )
@@ -160,8 +215,25 @@ void HTMLText::print( QPainter *_painter, int _tx, int _ty )
 	if ( !url.isNull() && url.data()[0] != 0 )	
 	    _painter->setPen( font->linkColor() );
     }
-    
-    _painter->drawText( x + _tx, y + _ty, text );
+
+#if QT_VERSION < 130  // remove when Qt-1.3 is released
+	if ( _painter->device()->devType() == PDT_PRINTER )
+	{
+		QString escText = "";
+
+		const char *p = text;
+
+		while ( *p != '\0' )
+		{
+			if ( *p == '(' || *p == ')' || *p == '\\' )
+				escText += '\\';
+			escText += *p++;
+		}
+		_painter->drawText( x + _tx, y + _ty, escText );
+	}
+	else
+#endif
+		_painter->drawText( x + _tx, y + _ty, text );
 
     if ( isSelected() )
 	_painter->setPen( pen );
@@ -200,12 +272,23 @@ void HTMLRule::setMaxWidth( int _max_width )
 		length = max_width * percent / 100;
 }
 
-void HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
+bool HTMLRule::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y + getDescent() )
-	return;
+	return false;
+
+	if ( toPrinter )
+	{
+		if ( _y + _height <= y + descent )
+			return true;
+		if ( isPrinted() )
+			return false;
+		setPrinted( true );
+	}
 
     print( _painter, _tx, _ty );
+
+	return false;
 }
 
 void HTMLRule::print( QPainter *_painter, int _tx, int _ty )
@@ -250,12 +333,23 @@ HTMLBullet::HTMLBullet( int _height, int _level, const QColor &col )
 	level = _level;
 }
 
-void HTMLBullet::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
+bool HTMLBullet::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y + getDescent() )
-	return;
+	return false;
+
+	if ( toPrinter )
+	{
+		if ( _y + _height <= y + descent )
+			return true;
+		if ( isPrinted() )
+			return false;
+		setPrinted( true );
+	}
 
     print( _painter, _tx, _ty );
+
+	return false;
 }
 
 void HTMLBullet::print( QPainter *_painter, int _tx, int _ty )
@@ -330,8 +424,8 @@ void HTMLImage::cacheImage( const char *_filename )
 	pCache->append( new HTMLCachedImage( _filename ) );
 }
 
-HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _url, int _max_width,
-		      int _width, int _height, int _percent )
+HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _url, const char *_target,
+		      int _max_width, int _width, int _height, int _percent )
 {
 	if ( pCache == NULL )
 		pCache = new QList<HTMLCachedImage>;
@@ -342,6 +436,8 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename, const char* _u
     
     url = _url;
     url.detach();
+    target = _target;
+    target.detach();
     
     cached = TRUE;
 
@@ -481,20 +577,35 @@ void HTMLImage::setMaxWidth( int _max_width )
 	}
 }
 
-void HTMLImage::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty )
+bool HTMLImage::print( QPainter *_painter, int, int _y, int, int _height, int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y + getDescent() )
-	return;
+	return false;
+
+	if ( toPrinter )
+	{
+		if ( _y + _height <= y + descent )
+			return true;
+		if ( isPrinted() )
+			return false;
+		setPrinted( true );
+	}
 
     print( _painter, _tx, _ty );
+
+	return false;
 }
 
 void HTMLImage::print( QPainter *_painter, int _tx, int _ty )
 {
-    if ( pixmap == 0L )
-	return;
-
-	if ( (width != pixmap->width() || ascent != pixmap->height() ) &&
+    if ( pixmap == 0L || pixmap->isNull() )
+	{
+		QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
+			black, white );
+		qDrawShadePanel( _painter, x + _tx, y - ascent + _ty, width, ascent,
+			colorGrp, true, 1 );
+	}
+	else if ( (width != pixmap->width() || ascent != pixmap->height() ) &&
 		pixmap->width() != 0 && pixmap->height() != 0 )
 	{
 		QWMatrix matrix;
@@ -534,31 +645,41 @@ void HTMLAnchor::setMaxAscent( int _a )
 
 //-----------------------------------------------------------------------------
 
-HTMLTableCell::HTMLTableCell( int _x, int _y, int _max_width, int _width,
-	int _percent, int rs, int cs, int pad )
+HTMLTableCell::HTMLTableCell( int _x, int _y, int _max_width, int _percent,
+	int rs, int cs, int pad )
 	 : HTMLClueV( _x, _y, _max_width, _percent )
 {
 	rspan = rs;
 	cspan = cs;
 	padding = pad;
-
-	if ( _width )
-	{
-		width = _width;
-		setFixedWidth( true );
-	}
-	else
-		setFixedWidth( false );
 }
 
-void HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
-	int _height, int _tx, int _ty )
+void HTMLTableCell::setMaxWidth( int _max_width )
+{
+	HTMLObject *obj;
+
+	// We allow fixed width cells to be resized in a table
+	max_width = _max_width;
+
+    if ( percent )
+		width = _max_width * percent / 100;
+	else if ( !isFixedWidth() )
+		width = max_width;
+
+	for ( obj = list.first(); obj != 0L; obj = list.next() )
+	{
+		obj->setMaxWidth( width );
+	}
+}
+
+bool HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
+	int _height, int _tx, int _ty, bool toPrinter )
 {
 	if ( _y + _height < y - getAscent() || _y > y )
-		return;
+		return false;
     
 	if ( !isPrinting() )
-		return;
+		return false;
     
  	if ( bg.isValid() )
 	{
@@ -574,7 +695,7 @@ void HTMLTableCell::print( QPainter *_painter, int _x, int _y, int _width,
 			getMaxWidth() + padding * 2, bottom - top, brush );
 	}
 
-	HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty );
+	return HTMLClueV::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
 }
 
 //-----------------------------------------------------------------------------
@@ -590,6 +711,7 @@ HTMLTable::HTMLTable( int _x, int _y, int _max_width, int _width, int _percent,
 	padding = _padding;
 	spacing = _spacing;
 	border  = _border;
+	caption = NULL;
 
 	setFixedWidth( false );
 	row = 0;
@@ -695,6 +817,7 @@ void HTMLTable::calcAbsolutePos( int _x, int _y )
 {
 	int lx = _x + x;
 	int ly = _y + y - ascent;
+	HTMLTableCell *cell;
 
  	unsigned int r, c;
 
@@ -702,7 +825,14 @@ void HTMLTable::calcAbsolutePos( int _x, int _y )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			cells[r][c]->calcAbsolutePos( lx, ly );
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->calcAbsolutePos( lx, ly );
 		}
 	}
 }
@@ -710,6 +840,7 @@ void HTMLTable::calcAbsolutePos( int _x, int _y )
 HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
 {
     HTMLAnchor *ret;
+	HTMLTableCell *cell;
 
     _p->setX( _p->x() + x );
     _p->setY( _p->y() + y - ascent );
@@ -720,7 +851,14 @@ HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			ret = cells[r][c]->findAnchor( _name, _p );
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			ret = cell->findAnchor( _name, _p );
 			if ( ret != NULL )
 				return ret;
 		}
@@ -730,6 +868,27 @@ HTMLAnchor* HTMLTable::findAnchor( const char *_name, QPoint *_p )
     _p->setY( _p->y() - y + ascent );
 
 	return NULL;
+}
+
+void HTMLTable::reset()
+{
+	unsigned int r, c;
+	HTMLTableCell *cell;
+
+	for ( r = 0; r < row; r++ )
+	{
+		for ( c = 0; c < totalCols; c++ )
+		{
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->reset();
+		}
+	}
 }
 
 void HTMLTable::calcSize( HTMLClue * )
@@ -745,20 +904,26 @@ void HTMLTable::calcSize( HTMLClue * )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			cell = cells[r][c];
-
-			if (NULL == cell)
-			        continue; 
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
 			if ( r < row - 1 && cell == cells[r+1][c] )
 				continue;
 
-			cell->setMaxWidth( columnPos[c+1] -
-				 columnPos[ c-cell->colSpan()+1 ] - spacing -
+			cell->setMaxWidth( columnOpt[c+1] -
+				 columnOpt[ c-cell->colSpan()+1 ] - spacing -
 				 padding - padding - 1 );
 			cell->calcSize( NULL );
 		}
+	}
+
+	if ( caption )
+	{
+		caption->setMaxWidth( columnOpt[ totalCols ] + border );
+		caption->calcSize();
+		if ( capAlign == HTMLClue::Top )
+			caption->setPos( 0, caption->getAscent() );
 	}
 
 	// We have the cell sizes now, so calculate the vertical positions
@@ -770,19 +935,19 @@ void HTMLTable::calcSize( HTMLClue * )
 		int cellHeight;
 
 		ascent = rowHeights[r+1] - padding - spacing;
+		if ( caption && capAlign == HTMLClue::Top )
+			ascent += caption->getHeight();
 
 		for ( c = 0; c < totalCols; c++ )
 		{
-			cell = cells[r][c];
-			if (NULL == cell)
-			       continue;
-
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
 			if ( r < row - 1 && cell == cells[r+1][c] )
 				continue;
 
-			cell->setPos( columnPos[ c-cell->colSpan() + 1 ] + padding,
+			cell->setPos( columnOpt[ c-cell->colSpan() + 1 ] + padding,
 				ascent - cell->getDescent() );
 
 			cellHeight = rowHeights[r+1] - rowHeights[r-cell->rowSpan()+1] -
@@ -791,8 +956,13 @@ void HTMLTable::calcSize( HTMLClue * )
 		}
 	}
 
-	width = columnPos[ totalCols ] + border;
+	if ( caption && capAlign == HTMLClue::Bottom )
+		caption->setPos( 0, rowHeights[ row ] + border + caption->getAscent() );
+
+	width = columnOpt[ totalCols ] + border;
 	ascent = rowHeights[ row ] + border;
+	if ( caption )
+		ascent += caption->getHeight();
 }
 
 // Both the minimum and preferred column sizes are calculated here.
@@ -829,7 +999,7 @@ void HTMLTable::calcColumnWidths()
 			if (NULL == cell)
 			        continue; 
 
-			/*
+/*
 			// calculate minimum pos
 			if ( cell->isFixedWidth() )
 			{
@@ -851,6 +1021,7 @@ void HTMLTable::calcColumnWidths()
 				continue;
 
 			// calculate preferred pos
+/*
 			if ( cell->getPercent() )
 			{
 				colPos = columnPrefPos[ c - cell->colSpan() + 1 ] +
@@ -859,7 +1030,9 @@ void HTMLTable::calcColumnWidths()
 				fixed[c] = true;
 				columnPrefPos[c + 1] = colPos;
 			}
-			else if ( cell->isFixedWidth() )
+			else
+*/
+			if ( cell->isFixedWidth() )
 			{
 				colPos = columnPrefPos[ c - cell->colSpan() + 1 ] +
 					cell->getWidth() + padding +
@@ -880,12 +1053,14 @@ void HTMLTable::calcColumnWidths()
 }
 
 // Use the minimum and preferred cell widths to produce an optimum
-// cell spacing.  When this has been done columnPos contains
+// cell spacing.  When this has been done columnOpt contains
 // the optimised cell widths.
 void HTMLTable::optimiseCellWidth()
 {
 	unsigned int c;
-	int tableWidth = width;
+	int tableWidth = width - border;
+
+	columnOpt = columnPos.copy();
 
 	if ( columnPrefPos[totalCols] > tableWidth )
 	{
@@ -901,7 +1076,7 @@ void HTMLTable::optimiseCellWidth()
 
 				for ( unsigned int c1 = c; c1 <= totalCols; c1++ )
 				{
-					columnPos[c1] += addSize;
+					columnOpt[c1] += addSize;
 				}
 				extra -= addSize;
 			}
@@ -916,12 +1091,12 @@ void HTMLTable::optimiseCellWidth()
 		for ( c = 1; c <= totalCols; c++ )
 		{
 			for ( unsigned int c1 = c; c1 <= totalCols; c1++ )
-				columnPos[c1] += addSize;
+				columnOpt[c1] += addSize;
 		}
 	}
 	else
 	{
-		columnPos = columnPrefPos;
+		columnOpt = columnPrefPos.copy();
 	}
 }
 
@@ -929,6 +1104,7 @@ void HTMLTable::calcRowHeights()
 {
 	unsigned int r, c;
 	int borderExtra = border ? 1 : 0;
+	HTMLTableCell *cell;
 
 	rowHeights.resize( row+1 );
 	rowHeights[0] = border + spacing;
@@ -938,10 +1114,8 @@ void HTMLTable::calcRowHeights()
 		rowHeights[r+1] = 0;
 		for ( c = 0; c < totalCols; c++ )
 		{
-			HTMLTableCell *cell = cells[r][c];
-
-			if (cell == NULL) 
-			        continue;
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
 			if ( r < row - 1 && cells[r+1][c] == cell )
@@ -987,6 +1161,7 @@ HTMLObject *HTMLTable::checkPoint( int _x, int _y )
 {
 	unsigned int r, c;
     HTMLObject *obj;
+	HTMLTableCell *cell;
 
     if ( _x < x || _x > x + width || _y > y + descent || _y < y - ascent)
 	return 0L;
@@ -995,7 +1170,15 @@ HTMLObject *HTMLTable::checkPoint( int _x, int _y )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			if ((obj = cells[r][c]->checkPoint( _x-x, _y-(y - ascent) )) != 0L)
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			if ((obj = cell->checkPoint( _x-x, _y-(y - ascent) )) != 0L)
 				return obj;
 		}
 	}
@@ -1006,6 +1189,7 @@ HTMLObject *HTMLTable::checkPoint( int _x, int _y )
 void HTMLTable::selectByURL( QPainter *_painter, const char *_url, bool _select, int _tx, int _ty )
 {
 	unsigned int r, c;
+	HTMLTableCell *cell;
 
     _tx += x;
     _ty += y - ascent;
@@ -1014,7 +1198,15 @@ void HTMLTable::selectByURL( QPainter *_painter, const char *_url, bool _select,
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			cells[r][c]->selectByURL( _painter, _url, _select, _tx, _ty );
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->selectByURL( _painter, _url, _select, _tx, _ty );
 		}
 	}
 }
@@ -1022,6 +1214,7 @@ void HTMLTable::selectByURL( QPainter *_painter, const char *_url, bool _select,
 void HTMLTable::select( QPainter *_painter, QRegExp& _pattern, bool _select, int _tx, int _ty )
 {
 	unsigned int r, c;
+	HTMLTableCell *cell;
 
     _tx += x;
     _ty += y - ascent;
@@ -1030,7 +1223,15 @@ void HTMLTable::select( QPainter *_painter, QRegExp& _pattern, bool _select, int
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			cells[r][c]->select( _painter, _pattern, _select, _tx, _ty );
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->select( _painter, _pattern, _select, _tx, _ty );
 		}
 	}
 }
@@ -1038,6 +1239,7 @@ void HTMLTable::select( QPainter *_painter, QRegExp& _pattern, bool _select, int
 void HTMLTable::select( QPainter *_painter, bool _select, int _tx, int _ty )
 {
 	unsigned int r, c;
+	HTMLTableCell *cell;
 
     _tx += x;
     _ty += y - ascent;
@@ -1046,7 +1248,40 @@ void HTMLTable::select( QPainter *_painter, bool _select, int _tx, int _ty )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			cells[r][c]->select( _painter, _select, _tx, _ty );
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->select( _painter, _select, _tx, _ty );
+		}
+	}
+}
+
+void HTMLTable::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
+{
+	unsigned int r, c;
+	HTMLTableCell *cell;
+
+    _tx += x;
+    _ty += y - ascent;
+
+	for ( r = 0; r < row; r++ )
+	{
+		for ( c = 0; c < totalCols; c++ )
+		{
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->select( _painter, _rect, _tx, _ty );
 		}
 	}
 }
@@ -1054,12 +1289,21 @@ void HTMLTable::select( QPainter *_painter, bool _select, int _tx, int _ty )
 void HTMLTable::select( bool _select )
 {
 	unsigned int r, c;
+	HTMLTableCell *cell;
 
 	for ( r = 0; r < row; r++ )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			cells[r][c]->select( _select );
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->select( _select );
 		}
 	}
 }
@@ -1067,76 +1311,148 @@ void HTMLTable::select( bool _select )
 void HTMLTable::getSelected( QStrList &_list )
 {
 	unsigned int r, c;
+	HTMLTableCell *cell;
 
 	for ( r = 0; r < row; r++ )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			cells[r][c]->getSelected( _list );
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+
+			cell->getSelected( _list );
 		}
 	}
 }
 
-void HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty )
+int HTMLTable::findPageBreak( int _y )
+{
+	if ( _y > y )
+		return -1;
+
+	unsigned int r, c;
+	HTMLTableCell *cell;
+	int pos, minpos = 0x7FFFFFFF;
+	QArray<bool> colsDone( totalCols );
+	colsDone.fill( false );
+
+	for ( r = 0; r < row; r++ )
+	{
+		for ( c = 0; c < totalCols; c++ )
+		{
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
+
+			if ( c < totalCols - 1 && cell == cells[r][c+1] )
+				continue;
+			if ( r < row - 1 && cells[r+1][c] == cell )
+				continue;
+			if ( colsDone[c] )
+				continue;
+
+			pos = cell->findPageBreak( _y - ( y - ascent ) );
+			if ( pos >= 0 && pos < minpos )
+			{
+				colsDone[c] = true;
+				minpos = pos;
+			}
+		}
+
+	}
+
+	if ( minpos != 0x7FFFFFFF )
+		return ( minpos + y - ascent );
+
+	return -1;
+}
+
+bool HTMLTable::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y )
-	return;
+	return false;
     
     if ( !isPrinting() )
-	return;
+	return false;
     
     _tx += x;
     _ty += y - ascent;
     
 	unsigned int r, c;
+	HTMLTableCell *cell;
+	QArray<bool> colsDone( totalCols );
+	colsDone.fill( false );
+
+	if ( caption )
+	{
+		caption->print( _painter, _x - x, _y - (y - ascent),
+			_width, _height, _tx, _ty, toPrinter );
+	}
 
 	// draw the cells
 	for ( r = 0; r < row; r++ )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			HTMLTableCell *cell = cells[r][c];
-			if (NULL == cell)
-			        continue;
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
 			if ( r < row - 1 && cells[r+1][c] == cell )
 				continue;
-			cell->print( _painter, _x - x, _y - (y - getHeight()), _width, _height, _tx, _ty );
+			if ( colsDone[c] )
+				continue;
+			if ( cell->print( _painter, _x - x, _y - (y - ascent),
+					_width, _height, _tx, _ty, toPrinter ) )
+				colsDone[c] = true;
 		}
 	}
 
-	// draw the border
-	if ( border )
+	// draw the border - needs work to print to printer
+	if ( border && !toPrinter )
 	{
+		int capOffset = 0;
+		if ( caption && capAlign == HTMLClue::Top )
+			capOffset = caption->getHeight();
 		QColorGroup colorGrp( black, lightGray, white, darkGray, gray,
 			black, white );
-		qDrawShadePanel( _painter, _tx, _ty, width, ascent, colorGrp, false, border );
+		qDrawShadePanel( _painter, _tx, _ty + capOffset, width,
+			rowHeights[row] + border, colorGrp, false, border );
 
 		// draw borders around each cell
 		for ( r = 0; r < row; r++ )
 		{
 			for ( c = 0; c < totalCols; c++ )
 			{
-				HTMLTableCell *cell = cells[r][c];
-
-				if (NULL == cell)
-				        continue;
+				if ( ( cell = cells[r][c] ) == NULL )
+					continue;
 				if ( c < totalCols - 1 && cell == cells[r][c+1] )
 					continue;
 				if ( r < row - 1 && cells[r+1][c] == cell )
 					continue;
 
 				qDrawShadePanel(_painter,
-					_tx + columnPos[c-cell->colSpan()+1],
-					_ty + rowHeights[r-cell->rowSpan()+1],
-					columnPos[c+1] - columnPos[c - cell->colSpan() + 1] -
+					_tx + columnOpt[c-cell->colSpan()+1],
+					_ty + rowHeights[r-cell->rowSpan()+1] + capOffset,
+					columnOpt[c+1] - columnOpt[c - cell->colSpan() + 1] -
 					spacing,
 					rowHeights[r+1] - rowHeights[r-cell->rowSpan()+1]-spacing,
 					colorGrp, TRUE, 1 );
 			}
 		}
 	}
+
+	for ( c = 0; c < totalCols; c++ )
+	{
+		if ( colsDone[c] == true )
+			return true;
+	}
+
+	return false;
 }
 
 void HTMLTable::print( QPainter *_painter, int _tx, int _ty )
@@ -1147,12 +1463,14 @@ void HTMLTable::print( QPainter *_painter, int _tx, int _ty )
 HTMLTable::~HTMLTable()
 {
 	unsigned int r, c;
+	HTMLTableCell *cell;
 
 	for ( r = 0; r < row; r++ )
 	{
 		for ( c = 0; c < totalCols; c++ )
 		{
-			HTMLTableCell *cell = cells[r][c];
+			if ( ( cell = cells[r][c] ) == NULL )
+				continue;
 			if ( c < totalCols - 1 && cell == cells[r][c+1] )
 				continue;
 			if ( r < row - 1 && cells[r+1][c] == cell )
@@ -1164,6 +1482,8 @@ HTMLTable::~HTMLTable()
 	}
 
 	delete [] cells;
+
+	delete caption;
 }
 
 //-----------------------------------------------------------------------------
@@ -1269,7 +1589,6 @@ void HTMLClue::select( QPainter *_painter, bool _select, int _tx, int _ty )
 {
     HTMLObject *obj;
 
-    //_painter->translate( (float)x, (float)( y - ascent ) );
     _tx += x;
     _ty += y - ascent;
 
@@ -1277,8 +1596,32 @@ void HTMLClue::select( QPainter *_painter, bool _select, int _tx, int _ty )
     {
 	obj->select( _painter, _select, _tx, _ty );
     }
+}
 
-    // _painter->translate( (float)-x, (float)-( y - ascent ) );
+void HTMLClue::select( QPainter *_painter, QRect & _rect, int _tx, int _ty )
+{
+    HTMLObject *obj;
+
+    QRect r( x + _tx, y - ascent + _ty, width, ascent + descent );
+
+    _tx += x;
+    _ty += y - ascent;
+    
+    if ( _rect.contains( r ) )
+      for ( obj = list.first(); obj != 0L; obj = list.next() )
+      {
+	obj->select( _painter, TRUE, _tx, _ty );
+      }
+    else if ( !_rect.intersects( r ) )
+      for ( obj = list.first(); obj != 0L; obj = list.next() )
+      {
+	obj->select( _painter, FALSE, _tx, _ty );
+      }
+    else
+      for ( obj = list.first(); obj != 0L; obj = list.next() )
+      {
+	obj->select( _painter, _rect, _tx, _ty );
+      }
 }
 
 void HTMLClue::selectByURL( QPainter *_painter, const char *_url, bool _select, int _tx, int _ty )
@@ -1323,7 +1666,11 @@ void HTMLClue::calcSize( HTMLClue * )
 	if ( prevCalcObj >= 0 )
 		obj = list.at( prevCalcObj );	// this will always find an object
 	else
+	{
+//		x = y = ascent = 0;
+		ascent = 0;
 		obj = list.first();
+	}
 
 	while ( obj != NULL )
 	{
@@ -1335,6 +1682,14 @@ void HTMLClue::calcSize( HTMLClue * )
 	// we are called.
 	list.last();
 	prevCalcObj = list.at();
+}
+
+void HTMLClue::recalcBaseSize( QPainter *_painter )
+{
+	HTMLObject *obj;
+
+	for ( obj = list.first(); obj != NULL; obj = list.next() )
+		obj->recalcBaseSize( _painter );
 }
 
 int HTMLClue::calcMinWidth()
@@ -1388,28 +1743,58 @@ void HTMLClue::setMaxAscent( int _a )
 	ascent = _a;
 }
 
-void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty )
+int HTMLClue::findPageBreak( int _y )
+{
+	if ( _y > y )
+		return -1;
+
+	HTMLObject *obj;
+	int pos;
+
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
+    {
+		if ( !obj->isAligned() )
+		{
+			pos = obj->findPageBreak( _y - ( y - ascent ) );
+			if ( pos >= 0 )
+				return ( pos + y - ascent );
+		}
+    }
+
+	return -1;
+}
+
+bool HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
     if ( _y + _height < y - getAscent() || _y > y )
-	return;
+	return false;
     
     if ( !isPrinting() )
-	return;
+	return false;
     
     HTMLObject *obj;
 
     _tx += x;
     _ty += y - ascent;
-/*
+
+#ifdef CLUE_DEBUG
 	// draw rectangles around clues - for debugging
-	_painter->setBrush( QBrush() );
+	QBrush brush;
+	_painter->setBrush( brush );
 	_painter->drawRect( _tx, _ty, width, getHeight() );
-*/
+#endif
+
     for ( obj = list.first(); obj != 0L; obj = list.next() )
     {
 		if ( !obj->isAligned() )
-	obj->print( _painter, _x - x, _y - (y - getHeight()), _width, _height, _tx, _ty );
+		{
+			if ( obj->print( _painter, _x - x, _y - (y - getHeight()),
+					_width, _height, _tx, _ty, toPrinter ) && toPrinter )
+				return true;
+		}
     }
+
+	return false;
 }
 
 void HTMLClue::print( QPainter *_painter, int _tx, int _ty )
@@ -1442,20 +1827,30 @@ void HTMLClue::print( QPainter *_painter, int _x, int _y, int _width, int _heigh
 
 //-----------------------------------------------------------------------------
 
+void HTMLClueV::reset()
+{
+	HTMLClue::reset();
+
+	alignLeftList.clear();
+	alignRightList.clear();
+}
+
 void HTMLClueV::setMaxWidth( int _max_width )
 {
 	HTMLObject *obj;
 
-	max_width = _max_width;
-
-    if ( percent )
-		width = _max_width * percent / 100;
-	else if ( !isFixedWidth() )
-		width = max_width;
+	if ( !isFixedWidth() )
+	{
+		max_width = _max_width;
+		if ( percent )
+			width = _max_width * percent / 100;
+		else
+			width = max_width;
+	}
 
 	for ( obj = list.first(); obj != 0L; obj = list.next() )
 	{
-	obj->setMaxWidth( width );
+		obj->setMaxWidth( width );
 	}
 }
 
@@ -1491,7 +1886,7 @@ HTMLObject* HTMLClueV::checkPoint( int _x, int _y )
 void HTMLClueV::calcSize( HTMLClue *parent )
 {
 	HTMLObject *obj;
-	int lmargin = parent ? parent->getLeftMargin( this, 0 ) : 0;
+	int lmargin = parent ? parent->getLeftMargin( getYPos() ) : 0;
 
 	// If we have already called calcSize for the children, then just
 	// continue from the last object done in previous call.
@@ -1501,7 +1896,10 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 		ascent -= obj->getHeight();	// Otherwise it will be added twice.
 	}
 	else
+	{
+		ascent = descent = 0;
 		obj = list.first();
+	}
 
 	while ( obj != NULL )
 	{
@@ -1520,10 +1918,10 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 	// we are called.
 	list.last();
 	prevCalcObj = list.at();
-
+/*
 	if (max_width != 0 && width < max_width)
 		width = max_width;
-
+*/
 	if ( halign == HCenter )
 	{
 		for ( obj = list.first(); obj != 0L; obj = list.next() )
@@ -1548,16 +1946,16 @@ void HTMLClueV::calcSize( HTMLClue *parent )
 	}
 }
 
-void HTMLClueV::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty )
+bool HTMLClueV::print( QPainter *_painter, int _x, int _y, int _width, int _height, int _tx, int _ty, bool toPrinter )
 {
-	HTMLClue::print( _painter, _x, _y, _width, _height, _tx, _ty );
+	bool rv = HTMLClue::print( _painter, _x, _y, _width, _height, _tx, _ty, toPrinter );
 
 	// print aligned objects
     if ( _y + _height < y - getAscent() || _y > y )
-	return;
+	return rv;
     
     if ( !isPrinting() )
-	return;
+	return rv;
 
     _tx += x;
     _ty += y - ascent;
@@ -1575,14 +1973,14 @@ void HTMLClueV::print( QPainter *_painter, int _x, int _y, int _width, int _heig
 	clue->print( _painter, _tx + clue->parent()->getXPos(),
 		_ty + clue->parent()->getYPos() - clue->parent()->getAscent() );
     }
+
+	return rv;
 }
 
-int HTMLClueV::getLeftMargin( HTMLClue *child, int _y )
+int HTMLClueV::getLeftMargin( int _y )
 {
 	int margin = 0;
 	HTMLClueAligned *clue;
-
-	_y += child->getYPos();
 
 	for ( clue=alignLeftList.first(); clue!=NULL; clue=alignLeftList.next() )
 	{
@@ -1596,12 +1994,10 @@ int HTMLClueV::getLeftMargin( HTMLClue *child, int _y )
 	return margin;
 }
 
-int HTMLClueV::getRightMargin( HTMLClue *child, int _y )
+int HTMLClueV::getRightMargin( int _y )
 {
 	int margin = max_width;
 	HTMLClueAligned *clue;
-
-	_y += child->getYPos();
 
 	for ( clue=alignRightList.first(); clue!=NULL; clue=alignRightList.next() )
 	{
@@ -1643,7 +2039,7 @@ void HTMLClueH::calcSize( HTMLClue *parent )
     HTMLClue::calcSize( this );
     
     HTMLObject *obj;
-	int lmargin = parent->getLeftMargin( this, 0 );
+	int lmargin = parent->getLeftMargin( getYPos() );
 
     width = lmargin;
     descent = 0;
@@ -1715,8 +2111,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	ascent = 0;
 	descent = 0;
 	width = 0;
-	lmargin = parent->getLeftMargin( this, 0 );
-	rmargin = parent->getRightMargin( this, 0 );
+	lmargin = parent->getLeftMargin( getYPos() );
+	rmargin = parent->getRightMargin( getYPos() );
 	int w = lmargin;
 	int a = 0;
 	int d = 0;
@@ -1748,8 +2144,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 				while ( it.current() != line.current() )
 					++line;
 				++line;
-				lmargin = parent->getLeftMargin( this, 1 );
-				rmargin = parent->getRightMargin( this, 1 );
+				lmargin = parent->getLeftMargin( getYPos() + 1 );
+				rmargin = parent->getRightMargin( getYPos() + 1 );
 				w = lmargin;
 			}
 		}
@@ -1773,12 +2169,12 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 					HTMLClue *c = (HTMLClue *)line.current();
 					if ( c->getHAlign() == Left )
 					{
-						int margin = parent->getLeftMargin( this, 1 );
+						int margin = parent->getLeftMargin( getYPos() + 1 );
 						c->setPos( margin, ascent + c->getAscent() );
 					}
 					else
 					{
-						int margin = parent->getRightMargin( this, 1 );
+						int margin = parent->getRightMargin( getYPos() + 1 );
 						c->setPos( margin - c->getWidth(),
 							ascent + c->getAscent() );
 					}
@@ -1797,8 +2193,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 				++line;
 			}
 
-			lmargin = parent->getLeftMargin( this, 1 );
-			rmargin = parent->getRightMargin( this, 1 );
+			lmargin = parent->getLeftMargin( getYPos() + 1 );
+			rmargin = parent->getRightMargin( getYPos() + 1 );
 
 			ascent += obj->getHeight();
 			obj->setPos( lmargin, ascent - obj->getDescent() );
@@ -1853,12 +2249,12 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 					HTMLClue *c = (HTMLClue *)line.current();
 					if ( c->getHAlign() == Left )
 					{
-						int margin = parent->getLeftMargin( this, 1 );
+						int margin = parent->getLeftMargin( getYPos() + 1 );
 						c->setPos( margin, ascent + c->getAscent() );
 					}
 					else
 					{
-						int margin = parent->getRightMargin( this, 1 );
+						int margin = parent->getRightMargin( getYPos() + 1 );
 						c->setPos( margin - c->getWidth(),
 							ascent + c->getAscent() );
 					}
@@ -1877,8 +2273,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 				++line;
 			}
 
-			lmargin = parent->getLeftMargin( this, 1 );
-			rmargin = parent->getRightMargin( this, 1 );
+			lmargin = parent->getLeftMargin( getYPos() + 1 );
+			rmargin = parent->getRightMargin( getYPos() + 1 );
 
 			// Do not print newlines or separators at the beginning of a line.
 			if ( obj->isSeparator() || obj->isNewline() )
@@ -1913,12 +2309,12 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 				HTMLClue *c = (HTMLClue *)line.current();
 				if ( c->getHAlign() == HTMLClue::Left )
 				{
-					int margin = parent->getLeftMargin( this, 1 );
+					int margin = parent->getLeftMargin( getYPos() + 1 );
 					c->setPos( margin, ascent + c->getAscent() );
 				}
 				else
 				{
-					int margin = parent->getRightMargin( this, 1 );
+					int margin = parent->getRightMargin( getYPos() + 1 );
 					c->setPos( margin - c->getWidth(),
 						ascent + c->getAscent() );
 				}
@@ -1943,6 +2339,36 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 
 	if ( width < max_width )
 		width = max_width;
+}
+
+int HTMLClueFlow::findPageBreak( int _y )
+{
+	if ( _y > y )
+		return -1;
+
+	HTMLObject *obj;
+	int pos, minpos, yp;
+
+    for ( obj = list.first(); obj != 0L; obj = list.next() )
+    {
+		yp = obj->getYPos();
+		minpos = yp;
+
+		while ( obj && obj->getYPos() == yp )
+		{
+			if ( !obj->isAligned() )
+			{
+				pos = obj->findPageBreak( _y - ( y - ascent ) );
+				if ( pos >= 0 && pos < minpos )
+					minpos = pos;
+			}
+			obj = list.next();
+		}
+		if ( minpos != yp )
+			return ( minpos + y - ascent );
+    }
+
+	return -1;
 }
 
 int HTMLClueFlow::calcPreferredWidth()

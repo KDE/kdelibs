@@ -11,6 +11,9 @@
 #include <ctype.h>
 #include <string.h>
 
+// Include Java Script
+#include <jsexec.h>
+
 //-----------------------------------------------------------------------------
 
 const char *BlockingToken::token()
@@ -44,6 +47,18 @@ const char *BlockingToken::token()
 		case Glossary:
 			return "</dl";
 			break;
+
+		case FrameSet:
+			return "</frameset";
+			break;
+
+		case Script:
+			return "</script";
+			break;
+
+		case Cell:
+			return "</cell";
+			break;
 	}
 
 	return "";
@@ -51,34 +66,49 @@ const char *BlockingToken::token()
 
 //-----------------------------------------------------------------------------
 
-HTMLTokenizer::HTMLTokenizer()
+HTMLTokenizer::HTMLTokenizer( KHTMLWidget *_widget )
 {
-	blocking.setAutoDelete( true );
+    blocking.setAutoDelete( true );
+    scriptString = "</script>";
+    jsEnvironment = 0L;
+    widget = _widget;
 }
 
 void HTMLTokenizer::begin()
 {
-	size = 1000;
+    size = 1000;
     buffer = new char[ 1024 ];
-	dest = buffer;
-	tokenList.clear();
-	tokenList.append( "" );		// dummy first token
-	blocking.clear();
+    dest = buffer;
+    tokenList.clear();
+    tokenList.append( "" );		// dummy first token
+    blocking.clear();
     tag = false;
     space = false;
     pre = false;
-	comment = false;
+    script = FALSE;
+    comment = false;
+    squote = FALSE;
+    dquote = FALSE;
+    scriptCount = 0;
 }
 
 void HTMLTokenizer::write( const char *str )
 {
-	if ( str == NULL )
-		return;
-
-	const char *src = str;
-	if ( tokenList.current() == NULL )
-		tokenList.last();
-	int pos = tokenList.at();
+    // If this pointer is not 0L then we allocated some memory to store HTML
+    // code in. This may happen while parsing the <script> tag, since the output
+    // of the java code is treated as HTML code. This means we have to modify
+    // the HTML code on the fly by inserting new HTML stuff.
+    // If this pointer is not null, one has to free the memory before leaving this
+    // function.
+    char *srcPtr = 0L;
+    
+    if ( str == NULL )
+	return;
+    
+    const char *src = str;
+    if ( tokenList.current() == NULL )
+	tokenList.last();
+    int pos = tokenList.at();
 
     // If we have <pre> and get a '\t' we need to know
     // in which row we are in order to calculate the next
@@ -105,10 +135,94 @@ void HTMLTokenizer::write( const char *str )
 			else
 				src++;
 		}
+		// We are inside of the <script> tag. Look for </script>, otherwise
+		// print out every received character
+		else if ( script )
+		{
+		    // Allocate memory to store the script. We will write maximal
+		    // 10 characers.
+		    if ( scriptCodeSize + 11 > scriptCodeMaxSize )
+		    {
+			char *newbuf = new char [ scriptCodeSize + 1024 ];
+			memcpy( newbuf, scriptCode, scriptCodeSize );
+			delete [] scriptCode;
+			scriptCode = newbuf;
+			scriptCodeMaxSize += 1024;
+		    }
+
+		    if ( *src == '\"' && !squote)
+		    {
+			scriptCode[ scriptCodeSize++ ] = *src++;
+			dquote = !dquote;
+		    }
+		    else if ( *src == '\'' && !dquote )
+		    {
+			scriptCode[ scriptCodeSize++ ] = *src++;
+			squote = !squote;
+		    }
+		    // Did we find </script> ? => We have the complete code
+		    else if ( scriptCount == 8 && *src == '>' )
+		    {
+			src++;
+			scriptCode[ scriptCodeSize ] = 0;
+			scriptCode[ scriptCodeSize + 1 ] = 0;
+			script = FALSE;
+			printf("================================================================\n");
+			if ( jsEnvironment == 0L )
+			    jsEnvironment = widget->getJSEnvironment();
+			printf("================================================================\n");
+			printf("%s\n",scriptCode );
+			printf("================================================================\n");
+			JSCode *code = jsEnvironment->parse( scriptCode );
+			printf("================================================================\n");
+			int ret = jsEnvironment->exec( code );
+			printf("RETURN '%i'\n",ret );
+			delete code;
+			const char *javaOutString = jsEnvironment->readOutput();
+			printf("================================================================\n");
+			if ( srcPtr )
+			    delete [] srcPtr;
+			srcPtr = new char[ strlen( src ) + strlen( javaOutString ) + 1 ];
+			strcpy( srcPtr, javaOutString );
+			strcat( srcPtr, src );
+			src = srcPtr;
+			printf("================================================================\n");
+		    }
+		    // Find out wether we see a </script> tag without looking at
+		    // any other then the current character, since further characters
+		    // may still be on their way thru the web!
+		    else if ( scriptCount > 0 )
+		    {
+			if ( *src == scriptString[ scriptCount ] )
+			{
+			    scriptBuffer[ scriptCount ] = *src;
+			    scriptCount++;
+			    src++;
+			}
+			// We were wrong => print all buffered characters and the current one;
+			else
+			{
+			    scriptBuffer[ scriptCount ] = 0;
+			    char *p = scriptBuffer;
+			    while ( *p ) scriptCode[ scriptCodeSize++ ] = *p++;
+			    scriptCode[ scriptCodeSize++ ] = *src++;
+			}
+			
+		    }
+		    // Is this perhaps the start of the </script> tag?
+		    else if ( *src == '<' && !dquote && !squote )
+		    {
+			scriptCount = 1;
+			scriptBuffer[ 0 ] = '<';
+			src++;
+		    }
+		    else
+			scriptCode[ scriptCodeSize++ ] = *src++;
+		}
 		else if ( *src == '&' )
 		{
 			if ( pre )
-			pre_pos ++;	    
+			    pre_pos ++;	    
 			space = false;
 
 			// Is the string long enough?
@@ -161,15 +275,35 @@ void HTMLTokenizer::write( const char *str )
 			}
 			else if ( strncasecmp( src, "</pre>", 6 ) == 0 )
 				pre = false;
-			else if ( strncasecmp( src, "<!--", 4 ) == 0 )
+			else if ( strncasecmp( src, "<!--", 4 ) == 0 && !script )
 			{
 				src += 4;
 				comment = true;
 				continue;
 			}
-			else if ( strncasecmp( src, "<grid", 5 ) == 0 )
+			else if ( strncasecmp( src, "<script", 7 ) == 0 )
 			{
-				blocking.append( new BlockingToken( BlockingToken::Grid,
+			        script = TRUE;
+				blocking.append( new BlockingToken( BlockingToken::Script,
+						tokenList.at() ) );
+				src = strchr( src, '>' );
+				if ( src == 0L )
+				    src = "";
+				else
+				    src++;
+				
+				scriptCode = new char[ 1024 ];
+				scriptCodeSize = 0;
+				scriptCodeMaxSize = 1024;
+			}
+			else if ( strncasecmp( src, "<frameset", 9 ) == 0 )
+			{
+				blocking.append( new BlockingToken( BlockingToken::FrameSet,
+						tokenList.at() ) );
+			}
+			else if ( strncasecmp( src, "<cell", 5 ) == 0 )
+			{
+				blocking.append( new BlockingToken( BlockingToken::Cell,
 						tokenList.at() ) );
 			}
 			else if ( strncasecmp( src, "<table", 6 ) == 0 )
@@ -206,16 +340,19 @@ void HTMLTokenizer::write( const char *str )
 
 			space = false;
 
-			if ( dest > buffer )
+			if ( !script )
 			{
+			    if ( dest > buffer )
+			    {
 				*dest++ = 0;
 				tokenList.append( buffer );
 				dest = buffer;
+			    }
+			    *dest++ = TAG_ESCAPE;
+			    *dest++ = '<';
+			    tag = true;
+			    src++;
 			}
-			*dest++ = TAG_ESCAPE;
-			*dest++ = '<';
-			tag = true;
-			src++;
 		}
 		else if ( *src == '>' )
 		{
@@ -257,6 +394,11 @@ void HTMLTokenizer::write( const char *str )
 			}
 			src++;
 		}
+		// Dont manipulate any character inside of the <script> tag
+		else if ( !tag && script && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
+		{
+		    *dest++ = *src++;
+		}
 		else if ( !tag && ( *src == ' ' || *src == '\t' || *src == '\n' || *src == 13 ) )
 		{
 			if ( !space )
@@ -286,6 +428,9 @@ void HTMLTokenizer::write( const char *str )
 		tokenList.at( pos );
 	else
 		tokenList.last();
+
+	if ( srcPtr )
+	    delete [] srcPtr;
 }
 
 void HTMLTokenizer::end()

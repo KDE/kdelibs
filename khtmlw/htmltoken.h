@@ -6,9 +6,14 @@
 #ifndef HTMLTOKEN_H
 #define HTMLTOKEN_H
 
+class StringTokenizer;
+class HTMLTokenizer;
+
 #include <qlist.h>
 #include <qstrlist.h>
 #include <qarray.h>
+
+#include "jscript.h"
 
 // Every tag as deliverd by HTMLTokenizer starts with TAG_ESCAPE. This way
 // you can devide between tags and words.
@@ -39,7 +44,8 @@ protected:
 class BlockingToken
 {
 public:
-	enum Token { Grid, Table, UnorderedList, OrderedList, Menu, Dir, Glossary };
+	enum Token { Grid, Table, UnorderedList, OrderedList, Menu, Dir, Glossary,
+		     FrameSet, Script, Cell };
 
 	BlockingToken( Token t, int p )
 		{	ttype = t; pos = p; }
@@ -58,7 +64,7 @@ protected:
 class HTMLTokenizer
 {
 public:
-    HTMLTokenizer();
+    HTMLTokenizer( KHTMLWidget *_widget );
     ~HTMLTokenizer();
 
 	void begin();
@@ -68,38 +74,68 @@ public:
     const char* nextToken();
     bool hasMoreTokens();
 
-	int getPosition()
-		{	return tokenList.at(); }
-	void setPosition( int p )
-		{	if ( p >= 0 ) tokenList.at( p ); }
-
-	const char *first()
-		{	return tokenList.first(); }
-	const char *last()
-		{	return tokenList.last(); }
-
+    int getPosition()
+    {	return tokenList.at(); }
+    void setPosition( int p )
+    {	if ( p >= 0 ) tokenList.at( p ); }
+    
+    const char *first()
+    {	return tokenList.first(); }
+    const char *last()
+    {	return tokenList.last(); }
+    
 protected:
-	QStrList tokenList;
-	char *buffer;
-	char *dest;
+    QStrList tokenList;
+    char *buffer;
+    char *dest;
+    
+    // the size of buffer
+    int size;
+    
+    // are we in a html tag
+    bool tag;
+    
+    // To avoid multiple spaces
+    bool space;
+    
+    // Are we in a <pre> ... </pre> block
+    bool pre;
+    
+    // Are we in a <script> ... </script> block
+    bool script;
+    
+    // Are we in a <-- comment -->
+    bool comment;
 
-	// the size of buffer
-	int size;
+    // Used to store the code of a srcipting sequence
+    char *scriptCode;
+    // Size of the script sequenze stored in @ref #scriptCode
+    int scriptCodeSize;
+    // Maximal size that can be stored in @ref #scriptCode
+    int scriptCodeMaxSize;
+    
+    // Used to store the string "</script>" for comparison
+    const char *scriptString;
+    // Stores characters if we are scanning for "</script>"
+    char scriptBuffer[ 10 ];
+    // Counts where we are in the string "</script>"
+    int scriptCount;
+    
+    // Is TRUE if we are in a <script> tag and insideof '...' quotes
+    bool squote;
+    // Is TRUE if we are in a <script> tag and insideof "..." quotes
+    bool dquote;
 
-	// are we in a html tag
-	bool tag;
-
-	// To avoid multiple spaces
-	bool space;
-
-	// Are we in a <pre> ... </pre> block
-	bool pre;
-
-	// Are we in a <-- comment -->
-	bool comment;
-
-	// These are tokens which we are waiting for ending tokens for
-	QList<BlockingToken> blocking;
+    KHTMLWidget *widget;
+    
+    /**
+     * This pointer is 0L until used. The @ref KHTMLWidget has an instance of this
+     * class for us. We ask for it when we see some JavaScript stuff for the first time.
+     */
+    JSEnvironment* jsEnvironment;
+    
+    // These are tokens which we are waiting for ending tokens for
+    QList<BlockingToken> blocking;
 };
 
 #endif // HTMLTOKEN
