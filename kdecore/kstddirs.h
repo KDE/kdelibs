@@ -218,8 +218,13 @@ public:
 	/**
 	 * Reads customized entries out of the given config object and adds
 	 * them via addResourceDirs
+	 * 
+	 * @param config the object the entries are read from. This should
+	 *        contain global config files
+	 * @return if new config paths have been added that would reflect
+	 * to config
 	 **/
-	void addCustomized(KConfig *config);
+	bool addCustomized(KConfig *config);
 
 	/**
 	 * returns the list of possible directories for the type 

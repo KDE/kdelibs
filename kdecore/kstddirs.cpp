@@ -448,8 +448,9 @@ void KStandardDirs::addKDEDefaults()
     
 }
 
-void KStandardDirs::addCustomized(KConfig *config)
+bool KStandardDirs::addCustomized(KConfig *config)
 {
+    uint configdirs = getResourceDirs("config").count();
     KConfigGroupSaver(config, "Directories");
     QStringList list;
     QStringList::ConstIterator it;
@@ -465,6 +466,7 @@ void KStandardDirs::addCustomized(KConfig *config)
 	    debug("adding custom dir %s", it2.data().ascii());
 	}
     }
+    return (getResourceDirs("config").count() != configdirs);
 }
 
 QString KStandardDirs::localkdedir() const

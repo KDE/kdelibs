@@ -72,7 +72,7 @@ protected:
 
 	static bool newAppConfig();
 	static bool addedConfig;
-
+	
 };
 
 #endif // SSK_KGLOBAL_H

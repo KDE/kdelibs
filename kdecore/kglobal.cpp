@@ -33,10 +33,11 @@ KStandardDirs *KGlobal::dirs()
 		_dirs = new KStandardDirs( );
 		_dirs->addKDEDefaults();
 		if( kapp )
-			_dirs->addResourceType("appdata", KStandardDirs::kde_data_relative()
-								   + kapp->name() + "/");
+		    _dirs->addResourceType("appdata", KStandardDirs::kde_data_relative()
+					   + kapp->name() + "/");
 		if (!addedConfig && _config) {
-		    _dirs->addCustomized(_config);
+		    if (_dirs->addCustomized(_config))
+			_config->reparseConfiguration();
 		    addedConfig = true;
 		}
 	}
@@ -53,7 +54,8 @@ KConfig	*KGlobal::config()
 		_config = new KConfig();
 
 	    if (!addedConfig && _dirs) {
-		_dirs->addCustomized(_config);
+		if (_dirs->addCustomized(_config))
+		    _config->reparseConfiguration();
 		addedConfig = true;
 	    }
 	}
