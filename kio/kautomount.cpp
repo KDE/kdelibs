@@ -35,7 +35,7 @@ void KAutoMount::slotFinished( int )
   QString mp = KIOJob::findDeviceMountPoint( m_strDevice.ascii() );
 
   if ( m_bShowFilemanagerWindow )
-    KFileManager::getFileManager()->openFileManagerWindow( mp.ascii() );
+    KFileManager::getFileManager()->openFileManagerWindow( mp );
 
   // Update of window which contains the desktop entry which is used for mount/unmount
   kdebug( KDEBUG_INFO, 7015, " mount finished : updating %s", m_desktopFile.ascii());

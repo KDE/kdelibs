@@ -586,7 +586,7 @@ void KRun::killJob()
 }
 
 /****************/
-bool KFileManager::openFileManagerWindow( const char *_url )
+bool KFileManager::openFileManagerWindow( const QString & _url )
 {
   QString cmd = "kfmclient openURL ";
   cmd += _url;

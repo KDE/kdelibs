@@ -176,7 +176,7 @@ public:
    * Opens a file manager window for _url
    * @returns true if the operation succeeded
    */
-  virtual bool openFileManagerWindow( const char *_url );
+  virtual bool openFileManagerWindow( const QString & _url );
   
   /**
    * Call this to get the (only) instance of KFileManager

@@ -521,7 +521,7 @@ bool KDEDesktopMimeType::runFSDevice( const QString& _url, KSimpleConfig &cfg )
     QString mp2 = "file:";
     mp2 += mp;
     // Open a new window
-    KFileManager::getFileManager()->openFileManagerWindow( mp2.ascii() );
+    KFileManager::getFileManager()->openFileManagerWindow( mp2 );
   }
   else
   {
