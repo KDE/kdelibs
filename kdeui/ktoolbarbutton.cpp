@@ -655,7 +655,7 @@ void KToolBarButton::slotClicked()
   emit clicked( d->m_id );
 
   // emit buttonClicked when the button was clicked while being in an extension popupmenu
-  if ( !d->m_parent->rect().contains( geometry() ) ) {
+  if ( d->m_parent && !d->m_parent->rect().contains( geometry() ) ) {
     ButtonState state = KApplication::keyboardMouseState();
     if ( ( state & MouseButtonMask ) == NoButton )
       state = ButtonState( LeftButton | state );
