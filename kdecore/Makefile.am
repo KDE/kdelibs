@@ -31,10 +31,10 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kconfigbackend.h kapp.h kuniqueapp.h kcharsets.h \
 	kprocess.h kprocctrl.h klocale.h kicontheme.h kiconloader.h kdebug.h \
 	kstdaccel.h kwinmodule.h kwin.h krootprop.h kpixmap.h  \
-	kaccel.h kglobalaccel.h \
+	kaccel.h kglobalaccel.h kapplication.h kstandarddirs.h \
 	kregexp.h kstyle.h kcompletion.h kstringhandler.h kstringhandler.h \
 	kstddirs.h kglobal.h kglobalsettings.h ksharedptr.h kde_dmalloc.h \
-	kallocator.h kcrash.h krfcdate.h \
+	kallocator.h kcrash.h krfcdate.h kuniqueapplication.h \
 	kinstance.h kpalette.h kipc.h klibloader.h ktempfile.h ksavefile.h \
 	krandomsequence.h kstringhandler.h knotifyclient.h kiconeffect.h \
 	kaudioplayer.h kdestyle.h kdcoppropertyproxy.h kdatastream.h  netwm.h \
