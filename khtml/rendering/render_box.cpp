@@ -29,6 +29,7 @@
 #include <qpainter.h>
 #include <qfontmetrics.h>
 #include <qstack.h>
+#include <qtextstream.h>
 
 #include "dom_node.h"
 #include "dom_textimpl.h"
@@ -710,6 +711,21 @@ void RenderBox::calcVerticalMargins()
     m_marginBottom = bm.minWidth(cw);
 }
 
+void RenderBox::dump(QTextStream *stream, QString ind) const
+{
+    *stream << ind << "m_height = " << m_height << endl;
+    *stream << ind << "m_y = " << m_y << endl;
+    *stream << ind << "m_x = " << m_x << endl;
+    *stream << ind << "m_width = " << m_width << endl;
+    *stream << ind << "m_marginTop = " << m_marginTop << endl;
+    *stream << ind << "m_marginBottom = " << m_marginBottom << endl;
+    *stream << ind << "m_marginLeft = " << m_marginLeft << endl;
+    *stream << ind << "m_marginRight = " << m_marginRight << endl;
+    *stream << ind << "m_minWidth = " << m_minWidth << endl;
+    *stream << ind << "m_maxWidth = " << m_maxWidth << endl;
+
+    RenderContainer::dump(stream,ind);
+}
 
 void RenderBox::calcAbsoluteHorizontal()
 {

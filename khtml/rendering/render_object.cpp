@@ -42,6 +42,7 @@
 #include <qcolor.h>
 #include <qpen.h>
 #include <qsize.h>
+#include <qtextstream.h>
 
 #include <assert.h>
 using namespace DOM;
@@ -479,6 +480,36 @@ void RenderObject::printTree(int indent) const
     while( child != 0 )
     {
         child->printTree(indent+2);
+        child = child->nextSibling();
+    }
+}
+
+void RenderObject::dump(QTextStream *stream, QString ind) const
+{
+    *stream << ind << "m_verticalPosition = " << m_verticalPosition << endl;
+    *stream << ind << "m_layouted = " << m_layouted << endl;
+    *stream << ind << "m_parsing = " << m_parsing << endl;
+    *stream << ind << "m_minMaxKnown = " << m_minMaxKnown << endl;
+    *stream << ind << "m_floating = " << m_floating << endl;
+    *stream << ind << "m_positioned = " << m_positioned << endl;
+    *stream << ind << "m_containsPositioned = " << m_containsPositioned << endl;
+    *stream << ind << "m_relPositioned = " << m_relPositioned << endl;
+    *stream << ind << "m_printSpecial = " << m_printSpecial << endl;
+    *stream << ind << "m_isAnonymous = " << m_isAnonymous << endl;
+    *stream << ind << "m_visible = " << m_visible << endl;
+    *stream << ind << "m_isText = " << m_isText << endl;
+    *stream << ind << "m_inline = " << m_inline << endl;
+    *stream << ind << "m_replaced " << m_replaced << endl;
+    *stream << ind << "m_containsWidget = " << m_containsWidget << endl;
+    *stream << ind << "m_containsOverhangingFloats = " << m_containsOverhangingFloats << endl;
+    *stream << ind << "m_hasFirstLine = " << m_hasFirstLine << endl;
+    *stream << endl;
+
+    RenderObject *child = firstChild();
+    while( child != 0 )
+    {
+	*stream << ind << "    *** " << child->renderName() << " *** " << endl;
+        child->dump(stream,ind+"    ");
         child = child->nextSibling();
     }
 }

@@ -29,6 +29,7 @@
 #include <qpixmap.h>
 #include <qdrawutil.h>
 #include <qpalette.h>
+#include <qtextstream.h>
 
 #include <kdebug.h>
 
@@ -149,5 +150,13 @@ void RenderHR::calcMinMaxWidth()
     }
 
 //    setMinMaxKnown();
+}
+
+void RenderHR::dump(QTextStream *stream, QString ind) const
+{
+    *stream << ind << "m_length = " << m_length << endl;
+    *stream << ind << "hr_shade = " << hr_shade << endl;
+
+    RenderBox::dump(stream,ind);
 }
 

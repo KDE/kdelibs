@@ -37,6 +37,7 @@
 #include <qrect.h>
 #include <qevent.h>
 #include <qnamespace.h>
+#include <qtextstream.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -719,6 +720,38 @@ NodeImpl *NodeImpl::traverseNextNode(NodeImpl *stayWithin) {
 RenderObject *NodeImpl::nextRenderer()
 {
     return 0;
+}
+
+void NodeImpl::dump(QTextStream *stream, QString ind) const
+{
+    // ### implement dump() for all appropriate subclasses
+
+    *stream << ind << "m_complexText = " << m_complexText << endl;
+    *stream << ind << "m_hasEvents = " << m_hasEvents << endl;
+    *stream << ind << "m_hasId = " << m_hasId << endl;
+    *stream << ind << "m_hasClass = " << m_hasClass << endl;
+    *stream << ind << "m_hasStyle = " << m_hasStyle << endl;
+    *stream << ind << "m_pressed = " << m_pressed << endl;
+    *stream << ind << "m_mouseInside = " << m_mouseInside << endl;
+    *stream << ind << "m_attached = " << m_attached << endl;
+    *stream << ind << "m_changed = " << m_changed << endl;
+    *stream << ind << "m_specified = " << m_specified << endl;
+    *stream << ind << "m_focused = " << m_focused << endl;
+    *stream << ind << "m_active = " << m_active << endl;
+    *stream << ind << "m_styleElement = " << m_styleElement << endl;
+    *stream << ind << "has_tabindex = " << has_tabindex << endl;
+    *stream << ind << "tabindex = " << tabindex << endl;
+    *stream << ind << "m_regdListeners = (" << (m_regdListeners ? m_regdListeners->count() : 0) << ")" << endl; // ### more detail
+    *stream << endl;
+
+    NodeImpl *child = firstChild();
+    while( child != 0 )
+    {
+	*stream << ind << "    *** " << child->nodeName().string().ascii() << " *** " << endl;
+        child->dump(stream,ind+"    ");
+        child = child->nextSibling();
+    }
+
 }
 
 //--------------------------------------------------------------------

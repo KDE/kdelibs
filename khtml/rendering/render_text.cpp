@@ -38,6 +38,7 @@
 #include <qstring.h>
 #include <qcolor.h>
 #include <qrect.h>
+#include <qtextstream.h>
 #include <kdebug.h>
 
 #define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
@@ -945,6 +946,21 @@ QFontMetrics RenderText::metrics(bool firstLine) const
     if ( khtml::printpainter )
 	return fontMetrics(style()->font());
     return *fm;
+}
+
+void RenderText::dump(QTextStream *stream, QString ind) const
+{
+    *stream << ind << "str = \"" << DOMString(str).string().ascii() << "\"" << endl;
+
+    *stream << ind << "m_lineHeight = " << m_lineHeight << endl;
+    *stream << ind << "m_minWidth = " << m_minWidth << endl;
+    *stream << ind << "m_maxWidth = " << m_maxWidth << endl;
+
+// ###    SelectionState m_selectionState : 3 ;
+    *stream << ind << "m_hasReturn = " << m_hasReturn << endl;
+    *stream << ind << "m_hasBreakableChar = " << m_hasBreakableChar << endl;
+
+    RenderObject::dump(stream,ind);
 }
 
 void RenderText::printTextOutline(QPainter *p, int tx, int ty, const QRect &lastline, const QRect &thisline, const QRect &nextline)

@@ -35,6 +35,7 @@ class KHTMLView;
 class QRect;
 class QMouseEvent;
 class QKeyEvent;
+class QTextStream;
 
 namespace khtml {
     class RenderStyle;
@@ -293,6 +294,8 @@ public:
     DocumentPtr *docPtr() const { return document; }
 
     virtual khtml::RenderObject *nextRenderer();
+
+    virtual void dump(QTextStream *stream, QString ind = "") const;
 
 private:
     DocumentPtr *document;

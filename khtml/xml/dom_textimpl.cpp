@@ -34,6 +34,7 @@
 #include "misc/htmlhashes.h"
 #include "rendering/render_text.h"
 
+#include <qtextstream.h>
 #include <kdebug.h>
 
 using namespace DOM;
@@ -187,6 +188,13 @@ void CharacterDataImpl::dispatchModifiedEvent(DOMStringImpl *prevValue)
 		  true,false,0,prevValue,newValue,0,0),exceptioncode);
     newValue->deref();
     dispatchSubtreeModifiedEvent();
+}
+
+void CharacterDataImpl::dump(QTextStream *stream, QString ind = "") const
+{
+    *stream << ind << "str = \"" << DOMString(str).string().ascii() << "\"" << endl;
+
+    NodeWParentImpl::dump(stream,ind);
 }
 
 // ---------------------------------------------------------------------------

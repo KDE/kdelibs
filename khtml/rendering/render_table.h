@@ -131,6 +131,8 @@ public:
     void setNeedsCellsRecalc();
     void recalcCells();
 
+    virtual void dump(QTextStream *stream, QString ind = "") const;
+
 public:
     /*
      * For each table element with a different width a ColInfo struct is
@@ -277,6 +279,8 @@ public:
 
     virtual void setTable(RenderTable *t) { table = t; }
 
+    virtual void dump(QTextStream *stream, QString ind = "") const;
+
 protected:
     RenderTable *table;
     int nrows;
@@ -314,6 +318,8 @@ public:
     virtual void repaint();
 
     virtual void setTable(RenderTable *t) { table = t; }
+
+    virtual void dump(QTextStream *stream, QString ind = "") const;
 
 protected:
     RenderTable *table;
@@ -383,6 +389,8 @@ public:
     virtual bool absolutePosition(int &xPos, int &yPos, bool f = false);
 
     virtual short baselinePosition( bool = false ) const;
+
+    virtual void dump(QTextStream *stream, QString ind = "") const;
     
 protected:
     RenderTable *m_table;
@@ -434,6 +442,8 @@ public:
     virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
+
+    virtual void dump(QTextStream *stream, QString ind = "") const;
 
 protected:
     RenderTable *table;

@@ -63,6 +63,8 @@ public:
 
   DOM::HTMLFrameSetElementImpl *frameSetImpl() const { return m_frameset; }
 
+  virtual void dump(QTextStream *stream, QString ind = "") const;
+
 private:
   DOM::HTMLFrameSetElementImpl *m_frameset;
 

@@ -35,6 +35,7 @@
 #include "render_style.h"
 
 class QPainter;
+class QTextStream;
 class CSSStyle;
 class KHTMLView;
 
@@ -90,6 +91,7 @@ private:
 public:
     virtual const char *renderName() const { return "RenderObject"; }
     virtual void printTree(int indent=0) const;
+    virtual void dump(QTextStream *stream, QString ind = "") const;
 
     static RenderObject *createObject(DOM::NodeImpl *node);
 

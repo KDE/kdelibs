@@ -42,8 +42,8 @@ libkhtml_la_METASOURCES = AUTO
 
 include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
 
-noinst_HEADERS = design.h testkhtml.h testrender.h khtml_find.h khtml_ext.h khtml_pagecache.h \
-		 khtmlimage.h
+noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_find.h khtml_ext.h \
+		 khtml_pagecache.h khtmlimage.h
 
 libkhtml_la_LDFLAGS = -version-info 4:0 -module -no-undefined $(all_libraries)
 libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
@@ -89,7 +89,7 @@ parser:
 	bash scripts/makeprop
 
 ## test program
-check_PROGRAMS 	= testkhtml testcss testrender testkhtml_static
+check_PROGRAMS 	= testkhtml testcss testrender testkhtml_static test_regression
 testkhtml_SOURCES = testkhtml.cpp domtreeview.cpp
 testkhtml_LDADD = libkhtml.la
 testkhtml_static_SOURCES = testkhtml.cpp domtreeview.cpp $(libkhtml_la_SOURCES)
@@ -98,3 +98,5 @@ testcss_SOURCES = testcss.cpp
 testcss_LDADD = libkhtml.la
 testrender_SOURCES = testrender.cpp
 testrender_LDADD = libkhtml.la
+test_regression_SOURCES = test_regression.cpp
+test_regression_LDADD = libkhtml.la

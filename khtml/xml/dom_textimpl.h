@@ -59,6 +59,9 @@ public:
     void replaceData ( const unsigned long offset, const unsigned long count, const DOMString &arg, int &exceptioncode );
 
     DOMStringImpl *string() { return str; }
+
+    virtual void dump(QTextStream *stream, QString ind = "") const;
+
 protected:
     // note: since DOMStrings are shared, str should always be copied when making
     // a change or returning a string

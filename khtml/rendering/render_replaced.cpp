@@ -26,6 +26,7 @@
 
 #include <assert.h>
 #include <qscrollview.h>
+#include <qtextstream.h>
 
 #include "misc/helper.h"
 #include "khtmlview.h"
@@ -197,6 +198,15 @@ void RenderReplaced::position(int x, int y, int, int, int, bool, bool)
     m_x = x + marginLeft();
     m_y = y + marginTop();
 }
+
+void RenderReplaced::dump(QTextStream *stream, QString ind) const
+{
+    *stream << ind << "m_intrinsicWidth = " << m_intrinsicWidth << endl;
+    *stream << ind << "m_intrinsicHeight = " << m_intrinsicHeight << endl;
+
+    RenderBox::dump(stream,ind);
+}
+
 
 // -----------------------------------------------------------------------------
 

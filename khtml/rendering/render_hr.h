@@ -45,6 +45,8 @@ public:
     
     virtual void layout();
 
+    virtual void dump(QTextStream *stream, QString ind = "") const;
+
 protected:
     short m_length;
     bool hr_shade;

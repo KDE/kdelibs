@@ -39,6 +39,8 @@
 #include "html/htmlparser.h"
 #include "xml/dom_xmlimpl.h"
 
+#include <qtextstream.h>
+
 using namespace DOM;
 using namespace khtml;
 
@@ -811,6 +813,19 @@ void ElementImpl::dispatchAttrAdditionEvent(NodeImpl *attr)
     AttrImpl *att = static_cast<AttrImpl*>(attr);
     dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,att->value(),
 		  att->value(),att->name(),MutationEvent::ADDITION),exceptioncode);
+}
+
+void ElementImpl::dump(QTextStream *stream, QString ind) const
+{
+    if (namedAttrMap) {
+	for (uint i = 0; i < namedAttrMap->length(); i++) {
+	    AttrImpl *attr = static_cast<AttrImpl*>(namedAttrMap->item(i));
+	    *stream << ind << "attribute \"" << DOMString(attr->name()).string().ascii() << 
+			      "\" = \"" << DOMString(attr->value()).string().ascii() << "\"\n";
+	}
+    }
+
+    NodeBaseImpl::dump(stream,ind);
 }
 
 // -------------------------------------------------------------------------

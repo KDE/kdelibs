@@ -166,6 +166,8 @@ public:
     void dispatchAttrRemovalEvent(NodeImpl *attr);
     void dispatchAttrAdditionEvent(NodeImpl *attr);
 
+    virtual void dump(QTextStream *stream, QString ind = "") const;
+
 protected: // member variables
 
     friend class NodeImpl;

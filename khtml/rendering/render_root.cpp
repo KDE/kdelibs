@@ -22,8 +22,11 @@
  */
 #include "render_root.h"
 
+#include <qtextstream.h>
+
 #include "khtmlview.h"
 #include <kdebug.h>
+
 using namespace khtml;
 
 RenderRoot::RenderRoot(KHTMLView *view)
@@ -393,6 +396,14 @@ void RenderRoot::clearSelection()
         selectionEnd->repaint();
     }
 
+}
+
+void RenderRoot::dump(QTextStream *stream, QString ind) const
+{
+    *stream << ind << "m_rootWidth = " << m_rootWidth << endl;
+    *stream << ind << "m_rootHeight = " << m_rootHeight << endl;
+
+    RenderFlow::dump(stream,ind);
 }
 
 void RenderRoot::selectionStartEnd(int& spos, int& epos)

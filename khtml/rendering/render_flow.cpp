@@ -32,6 +32,7 @@
 #include <qfontmetrics.h>
 #include <qsortedlist.h>
 #include <qpainter.h>
+#include <qtextstream.h>
 
 #include <kglobal.h>
 
@@ -1512,6 +1513,36 @@ void RenderFlow::printTree(int indent) const
         }
     }
 }
+
+void RenderFlow::dump(QTextStream *stream, QString ind) const
+{
+    *stream << ind << "m_childrenInline = " << m_childrenInline << endl;
+    *stream << ind << "m_haveAnonymous = " << m_haveAnonymous << endl;
+    *stream << ind << "m_pre = " << m_pre << endl;
+    *stream << ind << "firstLine = " << firstLine << endl;
+
+    if(specialObjects)
+    {
+        QListIterator<SpecialObject> it(*specialObjects);
+        SpecialObject *r;
+        for ( ; (r = it.current()); ++it )
+        {
+            *stream << ind << "special: " << r->node->renderName() << endl;
+            *stream << ind << "    startY = " << r->startY << endl;
+            *stream << ind << "    endY = " << r->endY << endl;
+	    // ### Type type
+            *stream << ind << "    left = " << r->left << endl;
+            *stream << ind << "    width = " << r->width << endl;
+            *stream << ind << "    count = " << r->count << endl;
+            *stream << ind << "    noPaint = " << r->noPaint << endl;
+        }
+    }
+
+    // ### EClear m_clearStatus
+
+    RenderBox::dump(stream,ind);
+}
+
 
 #undef DEBUG
 #undef DEBUG_LAYOUT
