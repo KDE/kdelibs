@@ -130,6 +130,8 @@ static PKCS7* (*K_d2i_PKCS7_fp)(FILE*,PKCS7**) = NULL;
 static PKCS7* (*K_PKCS7_dup)(PKCS7*) = NULL;
 static STACK_OF(X509_NAME) *(*K_SSL_load_client_CA_file)(const char*) = NULL;
 static STACK_OF(X509_INFO) *(*K_PEM_X509_INFO_read)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void*) = NULL;
+static char *(*K_ASN1_d2i_fp)(char *(*)(),char *(*)(),FILE*,unsigned char**) = NULL;
+static X509 *(*K_X509_new)() = NULL;
 #endif
 };
 
@@ -335,6 +337,8 @@ KConfig *cfg;
       K_d2i_PKCS7_fp = (PKCS7 *(*)(FILE *,PKCS7**)) _cryptoLib->symbol("d2i_PKCS7_fp");
       K_PKCS7_dup = (PKCS7* (*)(PKCS7*)) _cryptoLib->symbol("PKCS7_dup");
       K_PEM_X509_INFO_read = (STACK_OF(X509_INFO) *(*)(FILE*, STACK_OF(X509_INFO)*, pem_password_cb*, void *)) _cryptoLib->symbol("PEM_X509_INFO_read");
+      K_ASN1_d2i_fp = (char *(*)(char *(*)(),char *(*)(),FILE*,unsigned char**)) _cryptoLib->symbol("ASN1_d2i_fp");
+      K_X509_new = (X509 *(*)()) _cryptoLib->symbol("X509_new");
 #endif
    }
 
@@ -1026,6 +1030,13 @@ STACK_OF(X509_INFO) *KOpenSSLProxy::PEM_X509_INFO_read(FILE *fp, STACK_OF(X509_I
    if (K_PEM_X509_INFO_read) return (K_PEM_X509_INFO_read)(fp,sk,cb,u);
    else return NULL;
 }
+
+
+X509 *KOpenSSLProxy::X509_d2i_fp(FILE *out, X509** buf) {
+   if (K_ASN1_d2i_fp) return reinterpret_cast<X509 *>((K_ASN1_d2i_fp)(reinterpret_cast<char *(*)()>(K_X509_new), reinterpret_cast<char *(*)()>(K_d2i_X509), out, reinterpret_cast<unsigned char **>(buf)));
+   else return NULL;
+}
+
 
 #endif
 

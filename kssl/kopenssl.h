@@ -382,6 +382,12 @@ public:
 
 
    /*
+    *   ASN1_d2i_fp - read an X509 from a DER encoded file (buf can be NULL)
+    */
+   X509 *X509_d2i_fp(FILE *out, X509** buf);
+
+
+   /*
     *   X509_print - print the text form of an X509
     */
    int X509_print(FILE *fp, X509 *x);
