@@ -23,13 +23,14 @@ LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
 check_PROGRAMS = kfstest kurlrequestertest kfiletreeviewtest \
                  kopenwithtest kdirselectdialogtest kicondialogtest \
-                 knotifytest
+                 knotifytest kcustommenueditortest
 
 # noinst_HEADERS = 
 
 METASOURCES = AUTO
 
 LDADD = $(LIB_KIO)
+kcustommenueditortest_SOURCES = kcustommenueditortest.cpp
 kurlrequestertest_SOURCES = kurlrequestertest.cpp
 kfstest_SOURCES = kfstest.cpp
 kfiletreeviewtest_SOURCES = kfiletreeviewtest.cpp

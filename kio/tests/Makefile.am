@@ -25,7 +25,7 @@ check_PROGRAMS = ksycocatest getalltest kruntest ktartest kziptest\
                  ktradertest kdefaultprogresstest kclipboardtest kmimemagictest \
                  kfiltertest kiopassdlgtest kscantest kdirlistertest \
                  previewtest kionetrctest kdcopcheck metatest \
-		 kcustommenueditortest kmimefromext 
+		 kmimefromext 
 
 METASOURCES = AUTO
 
@@ -51,7 +51,6 @@ previewtest_SOURCES = previewtest.cpp
 ktartest_SOURCES = ktartest.cpp
 kziptest_SOURCES = kziptest.cpp
 metatest_SOURCES = metatest.cpp
-kcustommenueditortest_SOURCES = kcustommenueditortest.cpp
 kmimefromext_SOURCES = kmimefromext.cpp
 
 # kfile meta stuff. Comment this in, if you want a small
