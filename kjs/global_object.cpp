@@ -43,6 +43,23 @@
 
 extern int kjsyyparse();
 
+namespace KJS {
+    
+  class GlobalImp : public ObjectImp {
+  public:
+    GlobalImp();
+    virtual ~GlobalImp();
+    void init();
+    virtual KJSO get(const UString &p) const;
+    virtual void put(const UString &p, const KJSO& v);
+    Imp *filter;
+  private:
+    class GlobalInternal;
+    GlobalInternal *internal;
+  };
+
+};
+
 using namespace KJS;
 
 class GlobalFunc : public InternalFunctionImp {
@@ -92,8 +109,20 @@ KJSO Global::functionPrototype() const
   return get("[[Function.prototype]]");
 }
 
+void Global::setFilter(const KJSO &f)
+{
+  static_cast<GlobalImp*>(rep)->filter = f.imp();
+}
+
+KJSO Global::filter() const
+{
+  Imp *f = static_cast<GlobalImp*>(rep)->filter;
+  return f ? KJSO(f) : Null();
+}
+
 GlobalImp::GlobalImp()
-  : ObjectImp(ObjectClass)
+  : ObjectImp(ObjectClass),
+    filter(0L)
 {
   // constructor properties. prototypes as Global's member variables first.
   Object objProto(new ObjectPrototype());
@@ -125,14 +154,14 @@ GlobalImp::GlobalImp()
   Object regObj(new RegExpObject(regexpProto));
   Object errObj(new ErrorObject(errorProto));
 
-  put("Object", objectObj, DontEnum);
-  put("Array", arrayObj, DontEnum);
-  put("Boolean", boolObj, DontEnum);
-  put("String", stringObj, DontEnum);
-  put("Number", numObj, DontEnum);
-  put("Date", dateObj, DontEnum);
-  put("RegExp", regObj, DontEnum);
-  put("Error", errObj, DontEnum);
+  Imp::put("Object", objectObj, DontEnum);
+  Imp::put("Array", arrayObj, DontEnum);
+  Imp::put("Boolean", boolObj, DontEnum);
+  Imp::put("String", stringObj, DontEnum);
+  Imp::put("Number", numObj, DontEnum);
+  Imp::put("Date", dateObj, DontEnum);
+  Imp::put("RegExp", regObj, DontEnum);
+  Imp::put("Error", errObj, DontEnum);
 
   objProto.setConstructor(objectObj);
   arrayProto.setConstructor(arrayObj);
@@ -146,25 +175,39 @@ GlobalImp::GlobalImp()
 
 void GlobalImp::init()
 {
-  /* TODO: hardcode them in a get() method */
-  
-  // value properties
-  put("NaN", Number(NaN), DontEnum | DontDelete);
-  put("Infinity", Number(Inf), DontEnum | DontDelete);
-  put("undefined", Undefined(), DontEnum | DontDelete);
-  put("eval", Function(new GlobalFunc(GlobalFunc::Eval)));
-  put("parseInt", Function(new GlobalFunc(GlobalFunc::ParseInt)));
-  put("parseFloat", Function(new GlobalFunc(GlobalFunc::ParseFloat)));
-  put("isNaN", Function(new GlobalFunc(GlobalFunc::IsNaN)));
-  put("isFinite", Function(new GlobalFunc(GlobalFunc::IsFinite)));
-  put("escape", Function(new GlobalFunc(GlobalFunc::Escape)));
-  put("unescape", Function(new GlobalFunc(GlobalFunc::UnEscape)));
+  Imp::put("eval", Function(new GlobalFunc(GlobalFunc::Eval)));
+  Imp::put("parseInt", Function(new GlobalFunc(GlobalFunc::ParseInt)));
+  Imp::put("parseFloat", Function(new GlobalFunc(GlobalFunc::ParseFloat)));
+  Imp::put("isNaN", Function(new GlobalFunc(GlobalFunc::IsNaN)));
+  Imp::put("isFinite", Function(new GlobalFunc(GlobalFunc::IsFinite)));
+  Imp::put("escape", Function(new GlobalFunc(GlobalFunc::Escape)));
+  Imp::put("unescape", Function(new GlobalFunc(GlobalFunc::UnEscape)));
 
   // other properties
-  put("Math", Object(new Math()), DontEnum);
+  Imp::put("Math", Object(new Math()), DontEnum);
 }
 
 GlobalImp::~GlobalImp() { }
+
+KJSO GlobalImp::get(const UString &p) const
+{
+  if (p == "NaN")
+    return Number(NaN);
+  else if (p == "Infinity")
+    return Number(Inf);
+  else if (p == "undefined")
+    return Undefined();
+
+  return Imp::get(p);
+}
+
+void GlobalImp::put(const UString &p, const KJSO& v)
+{
+  if (filter)
+    filter->put(p, v);
+  else
+    Imp::put(p, v);
+}
 
 Completion GlobalFunc::execute(const List &args)
 {

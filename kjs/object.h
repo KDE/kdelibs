@@ -536,6 +536,17 @@ namespace KJS {
      * @return A handle to Function.prototype.
      */
     KJSO functionPrototype() const;
+    /**
+     * Set a filter object that will intercept all put() and get() calls
+     * to the global object. If this object returns Undefined on get() the
+     * request will be passed on the global object.
+     */
+    void setFilter(const KJSO &f);
+    /**
+     * Return a handle to the filter object (see @ref setFilter()).
+     * Null if no filter has been installed.
+     */
+    KJSO filter() const;
   private:
     Global(void *);
     void init();

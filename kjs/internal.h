@@ -156,16 +156,6 @@ namespace KJS {
     RegExp *reg;
   };
 
-  class GlobalImp : public ObjectImp {
-  public:
-    GlobalImp();
-    virtual ~GlobalImp();
-    void init();
-  private:
-    class GlobalInternal;
-    GlobalInternal *internal;
-  };
-
   class StatementNode;
   class UString;
 
