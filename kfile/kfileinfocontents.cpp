@@ -360,7 +360,7 @@ void  KFileInfoContents::repaint(bool f)
     widget()->repaint(f);
 }
 
-void KFileInfoContents::setCurrentItem(QString &item, 
+void KFileInfoContents::setCurrentItem(const QString &item, 
 				       const KFileInfo *entry)
 {
     uint i;
