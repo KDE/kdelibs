@@ -2664,11 +2664,31 @@ KWidgetAction::KWidgetAction( QWidget* widget,
     KActionCollection* parent, const char* name )
   : KAction( text, cut, receiver, slot, parent, name )
   , m_widget( widget )
+  , m_autoSized( false )
 {
 }
 
 KWidgetAction::~KWidgetAction()
 {
+}
+
+void KWidgetAction::setAutoSized( bool autoSized )
+{
+  if( m_autoSized == autoSized )
+    return;
+  
+  m_autoSized = autoSized;
+  
+  if( !m_widget || !isPlugged() )
+    return;
+  
+  KToolBar* toolBar = (KToolBar*)m_widget->parent();
+  int i = findContainer( toolBar );
+  if ( i == -1 )
+    return;
+  int id = itemId( i );
+  
+  toolBar->setItemAutoSized( id, m_autoSized );
 }
 
 int KWidgetAction::plug( QWidget* w, int index )
@@ -2688,6 +2708,7 @@ int KWidgetAction::plug( QWidget* w, int index )
 
   m_widget->reparent( toolBar, QPoint() );
   toolBar->insertWidget( id, 0, m_widget, index );
+  toolBar->setItemAutoSized( id, m_autoSized );
 
   addContainer( toolBar, id );
   

@@ -1655,6 +1655,8 @@ public:
      */
     QWidget* widget() { return m_widget; }
 
+    void setAutoSized( bool );
+    
     /**
      * Plug the action. The widget passed to the constructor
      * will be reparented to w, which must inherit KToolBar.
@@ -1667,6 +1669,7 @@ public:
     virtual void unplug( QWidget *w );
 private:
     QGuardedPtr<QWidget> m_widget;
+    bool                 m_autoSized;
 protected:
     virtual void virtual_hook( int id, void* data );
 private:
