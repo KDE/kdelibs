@@ -24,8 +24,6 @@
 #ifndef _DOM_NodeImpl_h_
 #define _DOM_NodeImpl_h_
 
-#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
-#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
 
 #include "dom/dom_misc.h"
 #include <qstring.h>

@@ -23,6 +23,8 @@
 #ifndef _DOM_Node_h_
 #define _DOM_Node_h_
 
+#include <qstring.h>
+
 namespace DOM {
 
 class Node;
@@ -576,7 +578,7 @@ public:
      * @internal returns the index of a node
      */
     unsigned long index() const;
-    DOMString toHTML(DOMString _string);
+    QString toHTML();
     virtual void applyChanges();
     virtual void getCursor(int offset, int &_x, int &_y, int &height);
     

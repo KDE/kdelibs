@@ -19,7 +19,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #include "dom_nodeimpl.h"
 
@@ -34,6 +33,9 @@
 
 #include "rendering/render_object.h"
 #include <qstring.h>
+
+#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ 2*( N ) ]
+#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
 
 using namespace DOM;
 using namespace khtml;

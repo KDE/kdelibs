@@ -27,6 +27,7 @@
 #include "dom_string.h"
 #include "dom_nodeimpl.h"
 #include "dom_elementimpl.h"
+#include <qstring.h>
 using namespace DOM;
 
 
@@ -280,10 +281,10 @@ unsigned long Node::index() const
     return count;
 }
 
-DOMString Node::toHTML(DOMString _string)
+QString Node::toHTML()
 {
-    if(impl) return impl->toHTML(_string);
-      return 0;
+    if(impl) return ( impl->toHTML() );
+        return 0;
 }
 
 void Node::applyChanges()
