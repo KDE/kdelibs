@@ -32,13 +32,14 @@ libksycoca_la_LDFLAGS = -version-info 3:0 -no-undefined
 libksycoca_la_LIBADD = ./libkio.la
 
 libksycoca_la_SOURCES = \
+	kdirwatch.cpp \
 	ktrader.cpp ktraderparse.cpp ktraderparsetree.cpp \
 	ksycoca.cpp ksycocadict.cpp ksycocafactory.cpp \
         kservicetypefactory.cpp kservicetype.cpp \
 	kmimetype.cpp kservicegroup.cpp \
 	kservice.cpp kservicefactory.cpp \
 	kuserprofile.cpp kservicegroupfactory.cpp \
-	kdirwatch.cpp kurifilter.cpp \
+	kurifilter.cpp \
 	kfilterbase.cpp kfilterdev.cpp \
 	kshellcompletion.cpp kurlcompletion.cpp \
 	kautomount.cpp krun.cpp \
