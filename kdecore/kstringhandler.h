@@ -76,8 +76,9 @@ public:
       * @param text the string to search for the words
       * @param pos the position of the word to search
       * @return the word, or an empty string if not found
+      * @deprecated use QString::section instead
       */
-    static QString        word( const QString &text , uint pos );
+    static QString        word( const QString &text , uint pos ) KDE_DEPRECATED;
 
     /** Returns a range of words from that string.
       * Ie:
@@ -181,8 +182,9 @@ public:
       * @param text the text to justify
       * @param width the desired width of the new string
       * @return the resulting string
+      * @deprecated use QString::leftJustify instead
       */
-    static QString        ljust( const QString &text , uint width );
+    static QString        ljust( const QString &text , uint width ) KDE_DEPRECATED;
 
     /** Right-justifies a string and returns a string at least 'width' characters
       * wide.
@@ -191,8 +193,9 @@ public:
       * @param text the text to justify
       * @param width the desired width of the new string
       * @return the resulting string
+      * @deprecated use QString::rightJustify instead
       */
-    static QString        rjust( const QString &text , uint width );
+    static QString        rjust( const QString &text , uint width ) KDE_DEPRECATED;
 
     /** Centers a string and returns a string at least 'width' characters
       * wide.

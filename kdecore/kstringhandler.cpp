@@ -26,12 +26,7 @@
 
 QString KStringHandler::word( const QString &text , uint pos )
 {
-    QStringList list = QStringList::split( " ", text , true );
-
-    if ( pos < list.count() )
-        return list[ pos ];
-
-    return "";
+    return text.section( ' ', pos, pos );
 }
 
 QString KStringHandler::word( const QString &text , const char *range )
@@ -317,58 +312,27 @@ QStringList KStringHandler::reverse( const QStringList &list )
 //
 QString KStringHandler::ljust( const QString &text , uint width )
 {
-    QString tmp = text;
-    tmp = tmp.stripWhiteSpace(); // remove leading/trailing spaces
-
-    if ( tmp.length() >= width )
-        return tmp;
-
-    for ( uint pos = tmp.length() ; pos < width ; pos++ )
-        tmp.append(" ");
-
-    return tmp;
+    return text.stripWhiteSpace().leftJustify( width );
 }
 
 QString KStringHandler::rjust( const QString &text , uint width )
 {
-    QString tmp = text;
-    tmp = tmp.stripWhiteSpace(); // remove leading/trailing spaces
-
-    if ( tmp.length() >= width )
-        return tmp;
-
-    for ( uint pos = tmp.length() ; pos < width ; pos++ )
-        tmp.prepend(" ");
-
-    return tmp;
+    return text.stripWhiteSpace().rightJustify( width );
 }
 
 QString KStringHandler::center( const QString &text , uint width )
 {
-    // Center is slightly different, in that it will add
-    // spaces to the RIGHT side (left-justified) before
-    // it adds a space to the LEFT side.
+    const QString s = text.stripWhiteSpace();
+    const unsigned int length = s.length();
+    if ( width <= length ) {
+        return s;
+     }
 
-    QString tmp = text;
-    tmp = tmp.stripWhiteSpace(); // remove leading/trailing spaces
+    QString result;
+    result.fill( ' ', ( width - length ) / 2 );
+    result += s;
 
-    if ( tmp.length() >= width )
-        return tmp;
-
-    bool left = false; // start at right side.
-
-    for ( uint pos = tmp.length() ; pos < width ; pos++ )
-    {
-        if ( left )
-            tmp.prepend(" ");
-        else
-            tmp.append(" ");
-
-        // Reverse bool
-        left = !left;
-    }
-
-    return tmp;
+    return result.leftJustify( width );
 }
 
 QString KStringHandler::lsqueeze( const QString & str, uint maxlen )
@@ -401,13 +365,6 @@ QString KStringHandler::rsqueeze( const QString & str, uint maxlen )
 QString KStringHandler::lEmSqueeze(const QString &name, const QFontMetrics& fontMetrics, uint maxlen)
 {
   return lPixelSqueeze(name, fontMetrics, fontMetrics.maxWidth() * maxlen);
-}
-
-static inline int emSqueezeLimit(int delta, int min, int max)
-{
-  if (delta < min) return min;
-  if (delta > max) return max;
-  return delta;
 }
 
 QString KStringHandler::lPixelSqueeze(const QString& s, const QFontMetrics& fm, uint width)
@@ -471,7 +428,7 @@ QString KStringHandler::cPixelSqueeze(const QString& name, const QFontMetrics& f
     {
       int length = tmp.length();
       int delta = (nameWidth - maxPixels) / em;
-      delta = emSqueezeLimit(delta, 1, length) ;
+      delta = kClamp(delta, 1, length) ;
 
       tmp.remove((length / 2) - (delta / 2), delta);
       nameWidth = fontMetrics.width(tmp);
@@ -502,7 +459,7 @@ QString KStringHandler::rPixelSqueeze(const QString& name, const QFontMetrics& f
     {
       int length = tmp.length();
       int delta = (nameWidth - maxPixels) / em;
-      delta = emSqueezeLimit(delta, 1, length) ;
+      delta = kClamp(delta, 1, length) ;
 
       tmp.remove(length - delta, delta);
       nameWidth = fontMetrics.width(tmp);
