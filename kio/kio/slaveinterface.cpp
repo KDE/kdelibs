@@ -119,14 +119,14 @@ QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e )
 
 static const unsigned int max_nums = 8;
 
-class KIO::SlaveInterfacePrivate 
+class KIO::SlaveInterfacePrivate
 {
 public:
-  SlaveInterfacePrivate() { 
-    slave_calcs_speed = false; 
+  SlaveInterfacePrivate() {
+    slave_calcs_speed = false;
     start_time.tv_sec = 0;
     start_time.tv_usec = 0;
-    last_time = 0; 
+    last_time = 0;
     nums = 0;
     filesize = 0;
     offset = 0;
@@ -149,7 +149,7 @@ SlaveInterface::SlaveInterface( Connection * connection )
     m_pConnection = connection;
     m_progressId = 0;
     signal( SIGPIPE, sigpipe_handler );
-    
+
     d = new SlaveInterfacePrivate;
     connect(&d->speed_timer, SIGNAL(timeout()), SLOT(calcSpeed()));
 }
@@ -198,7 +198,7 @@ void SlaveInterface::calcSpeed()
 
   struct timeval tv;
   gettimeofday(&tv, 0);
-  
+
   long diff = ((tv.tv_sec - d->start_time.tv_sec) * 1000000 +
 	       tv.tv_usec - d->start_time.tv_usec) / 1000;
   if (diff - d->last_time >= 900) {
@@ -214,9 +214,9 @@ void SlaveInterface::calcSpeed()
     }
     d->times[d->nums] = diff;
     d->sizes[d->nums++] = d->filesize;
-    
+
     KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
-    
+
     // kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " << long(d->sizes[d->nums-1] - d->sizes[0]) << " " <<  d->times[d->nums-1] - d->times[0] << " " << long(lspeed) << " " << double(d->filesize) / diff << " " << convertSize(lspeed) << " " << convertSize(long(double(d->filesize) / diff) * 1000) << " " <<  endl ;
 
     if (!lspeed) {
@@ -278,7 +278,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	{
 	    KIO::filesize_t offset = readFilesize_t(stream);
 	    emit canResume( offset );
-	}   
+	}
 	break;
     case MSG_CANRESUME: // From the get job
         d->filesize = d->offset;
@@ -470,7 +470,6 @@ void SlaveInterface::openPassDlg( const QString& prompt, const QString& user,
     info.commentLabel = label;
     info.readOnly = readOnly;
     openPassDlg( info );
-    return;
 }
 
 void SlaveInterface::openPassDlg( AuthInfo& info )
@@ -505,11 +504,11 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &_
 
     QString caption( _caption );
     if ( type == KIO::SlaveBase::SSLMessageBox )
-        caption = QString::fromUtf8(kapp->dcopClient()->appId()); // hack, see uiserver.cpp
+        caption = QString::fromUtf8(kapp->dcopClient()->appId()); // hack, see observer.cpp
 
     emit needProgressId();
     kdDebug(7007) << "SlaveInterface::messageBox m_progressId=" << m_progressId << endl;
-    int result = Observer::self()->messageBox( m_progressId, type, text, caption, buttonYes, buttonNo );
+    int result = Observer::/*self()->*/messageBox( m_progressId, type, text, caption, buttonYes, buttonNo );
     if ( m_pConnection ) // Don't do anything if deleted meanwhile
     {
         kdDebug(7007) << this << " SlaveInterface result=" << result << endl;

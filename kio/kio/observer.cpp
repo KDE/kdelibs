@@ -31,6 +31,16 @@
 
 #include "uiserver_stub.h"
 
+#include "passdlg.h"
+#include "slavebase.h"
+#include "observer_stub.h"
+#include <kmessagebox.h>
+#include <ksslinfodlg.h>
+#include <ksslcertdlg.h>
+#include <ksslcertificate.h>
+#include <ksslcertchain.h>
+#include <klocale.h>
+
 using namespace KIO;
 
 template class QIntDict<KIO::Job>;
@@ -208,7 +218,7 @@ void Observer::unmounting( KIO::Job* job, const QString & point )
   m_uiserver->unmounting( job->progressId(), point );
 }
 
-bool Observer::openPassDlg( const QString& prompt, QString& user, 
+bool Observer::openPassDlg( const QString& prompt, QString& user,
 			    QString& pass, bool readOnly )
 {
    AuthInfo info;
@@ -222,11 +232,25 @@ bool Observer::openPassDlg( const QString& prompt, QString& user,
      user = info.username;
      pass = info.password;
    }
-   return result; 
+   return result;
 }
 
 bool Observer::openPassDlg( KIO::AuthInfo& info )
 {
+    kdDebug(KDEBUG_OBSERVER) << "Observer::openPassDlg: User= " << info.username
+                             << ", Message= " << info.prompt << endl;
+    int result = KIO::PasswordDialog::getNameAndPassword( info.username, info.password,
+                                                          &info.keepPassword, info.prompt,
+                                                          info.readOnly, info.caption,
+                                                          info.comment, info.commentLabel );
+    if ( result == QDialog::Accepted )
+    {
+        info.setModified( true );
+        return true;
+    }
+    return false;
+
+#if 0
   kdDebug(KDEBUG_OBSERVER) << "Observer::openPassDlg: User= " << info.username
                 << ", Message= " << info.prompt << endl;
   QCString replyType;
@@ -253,12 +277,91 @@ bool Observer::openPassDlg( KIO::AuthInfo& info )
   }
   kdDebug(KDEBUG_OBSERVER) << "Observer::openPassDlg call failed!" << endl;
   return false;
+#endif
 }
 
 int Observer::messageBox( int progressId, int type, const QString &text,
                           const QString &caption, const QString &buttonYes,
                           const QString &buttonNo )
 {
+    kdDebug() << "Observer::messageBox " << type << " " << text << " - " << caption << endl;
+    int result = -1;
+
+    switch (type) {
+        case KIO::SlaveBase::QuestionYesNo:
+            result = KMessageBox::questionYesNo( 0L, // parent ?
+                                               text, caption, buttonYes, buttonNo );
+            break;
+        case KIO::SlaveBase::WarningYesNo:
+            result = KMessageBox::warningYesNo( 0L, // parent ?
+                                              text, caption, buttonYes, buttonNo );
+            break;
+        case KIO::SlaveBase::WarningContinueCancel:
+            result = KMessageBox::warningContinueCancel( 0L, // parent ?
+                                              text, caption, buttonYes );
+            break;
+        case KIO::SlaveBase::WarningYesNoCancel:
+            result = KMessageBox::warningYesNoCancel( 0L, // parent ?
+                                              text, caption, buttonYes, buttonNo );
+            break;
+        case KIO::SlaveBase::Information:
+            KMessageBox::information( 0L, // parent ?
+                                      text, caption );
+            result = 1; // whatever
+            break;
+        case KIO::SlaveBase::SSLMessageBox:
+        {
+            QCString observerAppId = caption.utf8(); // hack, see slaveinterface.cpp
+            // Contact the object "KIO::Observer" in the application <appId>
+            // Yes, this could be the same application we are, but not necessarily.
+            Observer_stub observer( observerAppId, "KIO::Observer" );
+
+            KIO::MetaData meta = observer.metadata( progressId );
+            KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
+            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].local8Bit());
+            if (x) {
+               // Set the chain back onto the certificate
+               QStringList cl =
+                      QStringList::split(QString("\n"), meta["ssl_peer_chain"]);
+               QPtrList<KSSLCertificate> ncl;
+
+               ncl.setAutoDelete(true);
+               for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
+                  KSSLCertificate *y = KSSLCertificate::fromString((*it).local8Bit());
+                  if (y) ncl.append(y);
+               }
+
+               if (ncl.count() > 0)
+                  x->chain().setChain(ncl);
+
+               kid->setup( x,
+                           meta["ssl_peer_ip"],
+                           text, // the URL
+                           meta["ssl_cipher"],
+                           meta["ssl_cipher_desc"],
+                           meta["ssl_cipher_version"],
+                           meta["ssl_cipher_used_bits"].toInt(),
+                           meta["ssl_cipher_bits"].toInt(),
+                           KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
+               kdDebug(7024) << "Showing SSL Info dialog" << endl;
+               kid->exec();
+               delete x;
+               kdDebug(7024) << "SSL Info dialog closed" << endl;
+            } else {
+               KMessageBox::information( 0L, // parent ?
+                                         i18n("The peer SSL certificate appears to be corrupt."), i18n("SSL") );
+            }
+            // This doesn't have to get deleted.  It deletes on it's own.
+            result = 1; // whatever
+            break;
+        }
+        default:
+            kdWarning() << "Observer::messageBox: unknown type " << type << endl;
+            result = 0;
+            break;
+    }
+    return result;
+#if 0
     QByteArray data, replyData;
     QCString replyType;
     QDataStream arg( data, IO_WriteOnly );
@@ -279,6 +382,7 @@ int Observer::messageBox( int progressId, int type, const QString &text,
     }
     kdDebug(KDEBUG_OBSERVER) << "Observer::messageBox call failed" << endl;
     return 0;
+#endif
 }
 
 RenameDlg_Result Observer::open_RenameDlg( KIO::Job * job,

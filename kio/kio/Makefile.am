@@ -65,7 +65,7 @@ include_HEADERS = \
 libkiocore_la_SOURCES = \
 	kshred.cpp \
 	kprotocolmanager.cpp \
-	slave.cpp slaveinterface.cpp \
+	slave.cpp slaveinterface.cpp observer.stub \
 	sessiondata.cpp	scheduler.cpp \
 	connection.cpp \
 	job.cpp global.cpp \

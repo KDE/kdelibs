@@ -38,6 +38,7 @@
 #include <kwin.h>
 
 #include "observer_stub.h"
+#include "observer.h" // for static methods only
 #include "kio/defaultprogress.h"
 #include "kio/jobclasses.h"
 #include "uiserver.h"
@@ -783,6 +784,8 @@ void UIServer::slotSelection() {
   toolBar()->setItemEnabled( TOOL_CANCEL, FALSE);
 }
 
+// This code is deprecated, slaves go to Observer::openPassDlg now,
+// but this is kept for compat (DCOP calls to kio_uiserver).
 QByteArray UIServer::openPassDlg( const KIO::AuthInfo &info )
 {
     kdDebug(7024) << "UIServer::openPassDlg: User= " << info.username
@@ -804,72 +807,7 @@ QByteArray UIServer::openPassDlg( const KIO::AuthInfo &info )
 
 int UIServer::messageBox( int progressId, int type, const QString &text, const QString &caption, const QString &buttonYes, const QString &buttonNo )
 {
-    switch (type) {
-        case KIO::SlaveBase::QuestionYesNo:
-            return KMessageBox::questionYesNo( 0L, // parent ?
-                                               text, caption, buttonYes, buttonNo );
-        case KIO::SlaveBase::WarningYesNo:
-            return KMessageBox::warningYesNo( 0L, // parent ?
-                                              text, caption, buttonYes, buttonNo );
-        case KIO::SlaveBase::WarningContinueCancel:
-            return KMessageBox::warningContinueCancel( 0L, // parent ?
-                                              text, caption, buttonYes );
-        case KIO::SlaveBase::WarningYesNoCancel:
-            return KMessageBox::warningYesNoCancel( 0L, // parent ?
-                                              text, caption, buttonYes, buttonNo );
-        case KIO::SlaveBase::Information:
-            KMessageBox::information( 0L, // parent ?
-                                      text, caption );
-            return 1; // whatever
-        case KIO::SlaveBase::SSLMessageBox:
-        {
-            QCString observerAppId = caption.utf8(); // hack, see slaveinterface.cpp
-
-            // Contact the object "KIO::Observer" in the application <appId>
-            Observer_stub observer( observerAppId, "KIO::Observer" );
-
-            KIO::MetaData meta = observer.metadata( progressId );
-            KSSLInfoDlg *kid = new KSSLInfoDlg(meta["ssl_in_use"].upper()=="TRUE", 0L /*parent?*/, 0L, true);
-            KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].local8Bit());
-            if (x) {
-               // Set the chain back onto the certificate
-               QStringList cl =  
-                      QStringList::split(QString("\n"), meta["ssl_peer_chain"]);
-               QPtrList<KSSLCertificate> ncl;
-
-               ncl.setAutoDelete(true);
-               for (QStringList::Iterator it = cl.begin(); it != cl.end(); ++it) {
-                  KSSLCertificate *y = KSSLCertificate::fromString((*it).local8Bit());
-                  if (y) ncl.append(y);
-               }
-
-               if (ncl.count() > 0)
-                  x->chain().setChain(ncl);
-
-               kid->setup( x,
-                           meta["ssl_peer_ip"],
-                           text, // the URL
-                           meta["ssl_cipher"],
-                           meta["ssl_cipher_desc"],
-                           meta["ssl_cipher_version"],
-                           meta["ssl_cipher_used_bits"].toInt(),
-                           meta["ssl_cipher_bits"].toInt(),
-                           KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()));
-               kdDebug(7024) << "Showing SSL Info dialog" << endl;
-               kid->exec();
-               delete x;
-               kdDebug(7024) << "SSL Info dialog closed" << endl;
-            } else {
-               KMessageBox::information( 0L, // parent ?
-                                         i18n("The peer SSL certificate appears to be corrupt."), i18n("SSL") );
-            }
-            // This doesn't have to get deleted.  It deletes on it's own.
-            return 1; // whatever
-        }
-        default:
-            kdWarning() << "UIServer::messageBox unknown type " << type << endl;
-            return 0;
-    }
+    return Observer::messageBox( progressId, type, text, caption, buttonYes, buttonNo );
 }
 
 void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
@@ -878,7 +816,7 @@ void UIServer::showSSLInfoDialog(const QString &url, const KIO::MetaData &meta)
    KSSLCertificate *x = KSSLCertificate::fromString(meta["ssl_peer_certificate"].local8Bit());
    if (x) {
       // Set the chain back onto the certificate
-      QStringList cl =  
+      QStringList cl =
                       QStringList::split(QString("\n"), meta["ssl_peer_chain"]);
       QPtrList<KSSLCertificate> ncl;
 

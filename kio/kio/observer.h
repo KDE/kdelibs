@@ -87,9 +87,11 @@ public:
 
   /**
    * Popup a message box. See @ref KIO::SlaveBase.
+   * This doesn't use DCOP anymore, it shows the dialog in the application's process.
+   * Otherwise, other apps would block when trying to communicate with UIServer.
    */
-  int messageBox( int progressId, int type, const QString &text, const QString &caption,
-                  const QString &buttonYes, const QString &buttonNo );
+  static int messageBox( int progressId, int type, const QString &text, const QString &caption,
+                         const QString &buttonYes, const QString &buttonNo );
 
   /**
    * See renamedlg.h
