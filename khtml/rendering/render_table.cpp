@@ -111,15 +111,11 @@ void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
     switch(child->style()->display())
     {
     case TABLE_CAPTION:
-	if ( tCaption )
-	    removeChild( tCaption );
         tCaption = static_cast<RenderTableCaption *>(child);
         break;
     case TABLE_COLUMN:
     case TABLE_COLUMN_GROUP:
 	RenderContainer::addChild(child,beforeChild);
-	child->setLayouted( false );
-	child->setMinMaxKnown( false );
 	has_col_elems = true;
         return;
     case TABLE_HEADER_GROUP:
@@ -224,7 +220,6 @@ void RenderTable::layout()
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(Table)::layout1() width=" << width() << ", marginLeft=" << marginLeft() << " marginRight=" << marginRight() << endl;
 #endif
-
 
     setCellWidths();
 
