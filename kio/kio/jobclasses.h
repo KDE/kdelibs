@@ -979,6 +979,12 @@ namespace KIO {
          * If you know the size of the source file, call this method
          * to inform this job. It will be displayed in the "resume" dialog.
 	 * @param size the size of the source file
+	 * @since 3.2
+         */
+        void setSourceSize64(KIO::filesize_t size);
+
+        /**
+         * @deprecated
          */
         void setSourceSize( off_t size );
 
@@ -1150,7 +1156,7 @@ namespace KIO {
         //mode_t type;
         time_t ctime;
         time_t mtime;
-        off_t size; // 0 for dirs
+        KIO::filesize_t size; // 0 for dirs
     };
 
     /**

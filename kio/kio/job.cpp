@@ -1192,7 +1192,7 @@ MimetypeJob *KIO::mimetype(const KURL& url, bool showProgressInfo )
 class FileCopyJob::FileCopyJobPrivate
 {
 public:
-    off_t m_sourceSize;
+    KIO::filesize_t m_sourceSize;
     SimpleJob *m_delJob;
 };
 
@@ -1221,7 +1221,7 @@ FileCopyJob::FileCopyJob( const KURL& src, const KURL& dest, int permissions,
     m_putJob = 0;
     d = new FileCopyJobPrivate;
     d->m_delJob = 0;
-    d->m_sourceSize = (off_t) -1;
+    d->m_sourceSize = (KIO::filesize_t) -1;
     QTimer::singleShot(0, this, SLOT(slotStart()));
 }
 
@@ -1272,6 +1272,12 @@ FileCopyJob::~FileCopyJob()
 }
 
 void FileCopyJob::setSourceSize( off_t size )
+{
+    d->m_sourceSize = size;
+    m_totalSize = size;
+}
+
+void FileCopyJob::setSourceSize64( KIO::filesize_t size )
 {
     d->m_sourceSize = size;
     m_totalSize = size;
@@ -1387,7 +1393,7 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         m_getJob->addMetaData( "errorPage", "false" );
         m_getJob->addMetaData( "AllowCompressedPage", "false" );
         // Set size in subjob. This helps if the slave doesn't emit totalSize.
-        if ( d->m_sourceSize != (off_t)-1 )
+        if ( d->m_sourceSize != (KIO::filesize_t)-1 )
             m_getJob->slotTotalSize( d->m_sourceSize );
         if (offset)
         {
@@ -1788,7 +1794,7 @@ void CopyJob::slotResultStating( Job *job )
             info.permissions = (mode_t) -1;
             info.mtime = (time_t) -1;
             info.ctime = (time_t) -1;
-            info.size = (off_t)-1;
+            info.size = (KIO::filesize_t)-1;
             info.uSource = srcurl;
             info.uDest = m_dest;
             // Append filename or dirname to destination URL, if allowed
@@ -1953,7 +1959,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
         info.permissions = -1;
         info.mtime = (time_t) -1;
         info.ctime = (time_t) -1;
-        info.size = (off_t)-1;
+        info.size = (KIO::filesize_t)-1;
         QString relName;
         bool isDir = false;
         for( ; it2 != (*it).end(); it2++ ) {
@@ -1972,7 +1978,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     info.permissions = ((*it2).m_long);
                     break;
                 case UDS_SIZE:
-                    info.size = (off_t)((*it2).m_long);
+                    info.size = (KIO::filesize_t)((*it2).m_long);
                     m_totalSize += info.size;
                     break;
                 case UDS_MODIFICATION_TIME:
@@ -2030,7 +2036,7 @@ void CopyJob::statNextSrc()
             info.permissions = -1;
             info.mtime = (time_t) -1;
             info.ctime = (time_t) -1;
-            info.size = (off_t)-1;
+            info.size = (KIO::filesize_t)-1;
             info.uSource = m_currentSrcURL;
             info.uDest = m_currentDest;
             // Append filename or dirname to destination URL, if allowed
@@ -2708,7 +2714,7 @@ void CopyJob::copyNextFile()
         } else if (m_mode == Move) // Moving a file
         {
             KIO::FileCopyJob * moveJob = KIO::file_move( (*it).uSource, (*it).uDest, (*it).permissions, bOverwrite, false, false/*no GUI*/ );
-            moveJob->setSourceSize( (*it).size );
+            moveJob->setSourceSize64( (*it).size );
             newjob = moveJob;
             //kdDebug(7007) << "CopyJob::copyNextFile : Moving " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
             //emit moving( this, (*it).uSource, (*it).uDest );
@@ -2726,7 +2732,7 @@ void CopyJob::copyNextFile()
             int permissions = ( remoteSource && (*it).uDest.isLocalFile() ) ? -1 : (*it).permissions;
             KIO::FileCopyJob * copyJob = KIO::file_copy( (*it).uSource, (*it).uDest, permissions, bOverwrite, false, false/*no GUI*/ );
             copyJob->setParentJob( this ); // in case of rename dialog
-            copyJob->setSourceSize( (*it).size );
+            copyJob->setSourceSize64( (*it).size );
             newjob = copyJob;
             //kdDebug(7007) << "CopyJob::copyNextFile : Copying " << (*it).uSource.prettyURL() << " to " << (*it).uDest.prettyURL() << endl;
             m_currentSrcURL=(*it).uSource;
@@ -3096,7 +3102,7 @@ void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
             atomsFound++;
             break;
          case UDS_SIZE:
-            m_totalSize += (off_t)((*it2).m_long);
+            m_totalSize += (KIO::filesize_t)((*it2).m_long);
             atomsFound++;
             break;
          default:
