@@ -71,6 +71,11 @@ public:
         v = new DOMStringImpl(_s, _l);
         v->ref();
     }
+    void setValue( DOMString s ) {
+	if(v) v->deref();
+	v = s.implementation();
+	v->ref();
+    }
     DOMString value() const { return v; }
     DOMStringImpl *val() const { return v; }
 

@@ -123,10 +123,23 @@ protected:
      */
     DOM::HTMLHeadElementImpl *head;
 
+    /*
+     * a possible <isindex> element in the head. Compatibility hack for
+     * html from the stone age
+     */
+    DOM::NodeImpl *isindex;
+    DOM::NodeImpl *handleIsindex( khtml::Token *t );
+    
+    /*
+     * inserts the stupid isIndex element.
+     */
+    void startBody();
+    
     bool inBody;
     bool haveFrameSet;
     bool _inline;
     bool end;
+    bool flat;
     /*
      * tells the parser to discard all tags, until it reaches the one specified
      */

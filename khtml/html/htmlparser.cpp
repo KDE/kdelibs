@@ -53,6 +53,7 @@
 #include "rendering/render_object.h"
 
 #include <kdebug.h>
+#include <klocale.h>
 
 using namespace DOM;
 using namespace khtml;
@@ -259,6 +260,7 @@ KHTMLParser::~KHTMLParser()
     freeBlock();
 
     delete [] forbiddenTag;
+    delete isindex;
 }
 
 void KHTMLParser::reset()
@@ -278,7 +280,9 @@ void KHTMLParser::reset()
     map = 0;
     head = 0;
     end = false;
-
+    isindex = 0;
+    flat = false;
+    
     discard_until = 0;
 }
 
@@ -381,7 +385,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         kdDebug( 6035 ) << "added " << n->nodeName().string() << " to " << tmp->nodeName().string() << ", new current=" << newNode->nodeName().string() << endl;
 #endif
         // don't push elements without end tag on the stack
-        if(tagPriority[id] != 0)
+        if(tagPriority[id] != 0 && !flat)
         {
             pushBlock(id, tagPriority[id]);
             current = newNode;
@@ -391,8 +395,10 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 document->createSelector();
             if(current->isInline()) _inline = true;
         }
-        else
+        else {
             if(!n->attached() && HTMLWidget)  n->attach(HTMLWidget);
+	    flat = false;
+	}
 
         if(tagPriority[id] == 0 && n->renderer()) {
             n->renderer()->calcMinMaxWidth();
@@ -645,7 +651,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 break;
             default:
                 e = new HTMLBodyElementImpl(document);
-                inBody = true;
+                startBody();
                 insertNode(e);
                 document->createSelector();
                 handled = true;
@@ -660,7 +666,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 // This means the body starts here...
                 popBlock(ID_HEAD);
                 e = new HTMLBodyElementImpl(document);
-                inBody = true;
+                startBody();
                 insertNode(e);
                 document->createSelector();
                 handled = true;
@@ -847,7 +853,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
     case ID_BODY:
         popBlock(ID_HEAD);
         n = new HTMLBodyElementImpl(document);
-        inBody = true;
+        startBody();
         break;
 
 // head elements
@@ -877,7 +883,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
             break;
         n = new HTMLFrameSetElementImpl(document);
         haveFrameSet = true;
-        inBody = true;
+        startBody();
         break;
         // a bit a special case, since the frame is inlined...
     case ID_IFRAME:
@@ -901,7 +907,13 @@ NodeImpl *KHTMLParser::getElement(Token *t)
         n = new HTMLInputElementImpl(document, form);
         break;
     case ID_ISINDEX:
-        n = new HTMLIsIndexElementImpl(document, form);
+	n = handleIsindex(t);
+	if( !inBody ) {
+	    isindex = n;
+	    n = 0;
+	} else
+	    flat = true;
+        //n = new HTMLIsIndexElementImpl(document, form);
         break;
     case ID_LABEL:
         n = new HTMLLabelElementImpl(document, form);
@@ -1283,5 +1295,53 @@ void KHTMLParser::createHead()
 #endif
         delete head;
         head = 0;
+    }
+}
+
+NodeImpl *KHTMLParser::handleIsindex( Token *t )
+{
+    NodeImpl *n;
+    HTMLFormElementImpl *myform = form;
+    if ( !myform ) {
+	myform = new HTMLFormElementImpl(document);
+	n = myform;
+	Attribute a;
+	a.id = ATTR_METHOD;
+	DOMString aStr = "get";
+	a.setValue( aStr );
+	t->attrs.add(a);
+    } else
+	n = new HTMLDivElementImpl( document );
+
+    NodeImpl *child = new HTMLHRElementImpl( document );
+    n->addChild( child );
+    DOMString text( i18n("This is a searchable index. Enter search keywords:") );
+    child = new TextImpl(document, text);
+    n->addChild( child );
+    child = new HTMLInputElementImpl(document, myform);
+    AttributeList attrs;
+    Attribute a;
+    a.id = ATTR_TYPE;
+    DOMString aStr = "text";
+    a.setValue( aStr );
+    t->attrs.add( a );
+    static_cast<ElementImpl *>(child)->setAttribute(attrs);
+    n->addChild( child );
+    child = new HTMLHRElementImpl( document );
+    n->addChild( child );
+    
+    return n;
+}
+
+void KHTMLParser::startBody()
+{
+    if(inBody) return;
+    
+    inBody = true;
+    
+    if( isindex ) {
+	flat = true; // don't decend into this node
+	insertNode( isindex );
+	isindex = 0;
     }
 }
