@@ -348,51 +348,42 @@ DCOPServer::DCOPServer()
   authDataEntries = new IceAuthDataEntry[ numTransports * 2  ];
 
 
- for ( int i = 0; i < numTransports * 2; i += 2)
-    {
-	authDataEntries[i].network_id =
-	    IceGetListenConnectionString (listenObjs[i/2]);
-	authDataEntries[i].protocol_name = (char *) "ICE";
-	authDataEntries[i].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
-
-	authDataEntries[i].auth_data =
-	    IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
-	authDataEntries[i].auth_data_length = MAGIC_COOKIE_LEN;
-
-	authDataEntries[i+1].network_id =
-	    IceGetListenConnectionString (listenObjs[i/2]);
-	authDataEntries[i+1].protocol_name = (char *) "DCOP";
-	authDataEntries[i+1].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
-
-	authDataEntries[i+1].auth_data =
-	    IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
-	authDataEntries[i+1].auth_data_length = MAGIC_COOKIE_LEN;
-
+  for ( int i = 0; i < numTransports * 2; i += 2) {
+    authDataEntries[i].network_id =
+      IceGetListenConnectionString (listenObjs[i/2]);
+    authDataEntries[i].protocol_name = (char *) "ICE";
+    authDataEntries[i].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
+    
+    authDataEntries[i].auth_data =
+      IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
+    authDataEntries[i].auth_data_length = MAGIC_COOKIE_LEN;
+    
+    authDataEntries[i+1].network_id =
+      IceGetListenConnectionString (listenObjs[i/2]);
+    authDataEntries[i+1].protocol_name = (char *) "DCOP";
+    authDataEntries[i+1].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
+    
+    authDataEntries[i+1].auth_data =
+      IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
+    authDataEntries[i+1].auth_data_length = MAGIC_COOKIE_LEN;
+    
 //#### 	write_iceauth (addfp, removefp, authDataEntries[i]);
 // 	write_iceauth (addfp, removefp, authDataEntries[i+1]);
 
- 	IceSetPaAuthData (2, &authDataEntries[i]);
+    IceSetPaAuthData (2, &authDataEntries[i]);
+    
+    IceSetHostBasedAuthProc (listenObjs[i/2], HostBasedAuthProc);
+  }
 
-	IceSetHostBasedAuthProc (listenObjs[i/2], HostBasedAuthProc);
-    }
-
-
- IceAddConnectionWatch (DCOPWatchProc, (IcePointer) this);
-
-
-
- listener.setAutoDelete( TRUE );
- DCOPListener* con;
-    for ( int i = 0; i < numTransports; i++) {
-      con = new DCOPListener( listenObjs[i] );
-      listener.append( con );
-      connect( con, SIGNAL( activated(int) ), this, SLOT( newClient(int) ) );
-    }
-
-    char * networkIds = IceComposeNetworkIdList (numTransports, listenObjs);
-    qDebug("networkids: %s", networkIds );
-
-    free ( networkIds );
+  IceAddConnectionWatch (DCOPWatchProc, (IcePointer) this);
+  
+  listener.setAutoDelete( TRUE );
+  DCOPListener* con;
+  for ( int i = 0; i < numTransports; i++) {
+    con = new DCOPListener( listenObjs[i] );
+    listener.append( con );
+    connect( con, SIGNAL( activated(int) ), this, SLOT( newClient(int) ) );
+  }
 }
 
 DCOPServer::~DCOPServer()
