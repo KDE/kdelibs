@@ -47,3 +47,7 @@ heavy modifications to KURL, autoconf and automake stuff
 
 Jacek Konieczny <jajcus@zeus.polsl.gliwice.pl>
 KCharset* classes
+
+These files are part of GNU Libtool, originally by 
+Thomas Tanner <tanner@gmx.de>
+ltdl.c + ltdl.h
