@@ -34,6 +34,7 @@
 <xsl:param name="use.id.as.filename">1</xsl:param>
 <xsl:param name="generate.section.toc">1</xsl:param>
 <xsl:param name="use.extensions">0</xsl:param>
+<xsl:param name="html.stylesheet">common/kde-default.css</xsl:param>
 
 <xsl:template name="dbhtml-filename">
 <xsl:choose>
@@ -46,6 +47,9 @@
       </xsl:otherwise>
 </xsl:choose>
 </xsl:template>
+
+<!-- libxslt has problems with customizing this one, so 
+    I changed the docbook xsl itself for now
 
 <xsl:template name="chunk-element-content">
   <xsl:param name="prev"></xsl:param>
@@ -64,9 +68,9 @@
       </xsl:call-template>
  
       <xsl:call-template name="user.header.content"/>
- 
-      <div id="body_text">
-         <xsl:apply-imports/>
+
+      <div id="body_text"> 
+        <xsl:apply-imports/>
       </div>
 
       <xsl:call-template name="user.footer.content"/>
@@ -78,5 +82,7 @@
     </body>
   </html>
 </xsl:template>
+
+-->
 
 </xsl:stylesheet>

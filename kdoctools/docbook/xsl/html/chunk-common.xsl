@@ -712,8 +712,10 @@ is system dependent.)</para>
       </xsl:call-template>
 
       <xsl:call-template name="user.header.content"/>
-
-      <xsl:apply-imports/>
+  
+      <div id="bodytext">
+        <xsl:apply-imports/>
+      </div>
 
       <xsl:call-template name="user.footer.content"/>
 
