@@ -1,5 +1,9 @@
 2004-01-22  David Faure  <faure@kde.org>
 
+	* xml/dom_nodeimpl.cpp (setNodeValue): Don't throw NO_MODIFICATION_ALLOWED_ERR from
+	there, DOMTS-Core-Level1's hc_nodevalue03 says createEntityReference().setNodeValue()
+	should simply do nothing.
+
 	* dom/dom_element.cpp (removeAttributeNode): Fixed logic for NOT_FOUND_ERR.
 	(setAttributeNode): removed tests for WRONG_DOCUMENT_ERR and 
 	INUSE_ATTRIBUTE_ERR, the latter being incorrect and both being already
