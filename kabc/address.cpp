@@ -31,6 +31,12 @@ Address::Address() :
   mId = KApplication::randomString( 10 );
 }
 
+Address::Address( int type ) :
+  mEmpty( true ), mType( type )
+{
+  mId = KApplication::randomString( 10 );
+}
+
 bool Address::isEmpty() const
 {
   if ( mPostOfficeBox.isEmpty() &&

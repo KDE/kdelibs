@@ -39,12 +39,6 @@ class Address
     typedef QValueList<Address> List;
   
     /**
-      Construct an empty address. It is initialized with a unique id (@see
-      id()).
-    */
-    Address();
-  
-    /**
       Address type:
       Dom domestic
       Intl international
@@ -57,6 +51,18 @@ class Address
     enum Type { Dom = 1, Intl = 2, Postal = 4, Parcel = 8, Home = 16, Work = 32,
            Pref = 64 };
 
+    /**
+      Construct an empty address. It is initialized with a unique id (@see
+      id()).
+    */
+    Address();
+  
+    /**
+      Construct an empty address of the given type. It is initialized with a
+      n unique id (@see id()).
+    */
+    Address( int );
+  
     /**
       Return, if the address is empty.
     */

@@ -24,15 +24,127 @@
 #include <klocale.h>
 #include <kcmdlineargs.h>
 #include <kabapi.h>
+#include <kglobal.h>
 
 #include "addressbook.h"
 #include "stdaddressbook.h"
 
 using namespace KABC;
 
+void readKAddressBookEntries( const QString &dataString, Addressee &a )
+{
+  // Strip "KMail:1.0" prefix and "[EOS]" suffix.
+  QString str = dataString.mid( 11, dataString.length() - 24 );
+
+  QStringList entries = QStringList::split("\n[EOR]\n ",str);
+
+  Address homeAddress( Address::Home );
+  Address businessAddress( Address::Work );
+  Address otherAddress;
+  
+  QStringList::ConstIterator it;
+  for( it = entries.begin(); it != entries.end(); ++it ) {
+    int pos = (*it).find("\n");
+    QString fieldName = (*it).left( pos );
+    QString fieldValue = (*it).mid( pos + 2 );
+//    kdDebug() << "KABENTRY: " << fieldName << endl;
+//    kdDebug() << "KABENTRY: " << fieldName << ":" << fieldValue << endl;
+
+    if ( fieldName == "X-HomeFax" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Home |
+                                                    PhoneNumber::Fax ) );
+    } else if ( fieldName == "X-OtherPhone" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, 0 ) );
+    } else if ( fieldName == "X-PrimaryPhone" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Pref ) );
+    } else if ( fieldName == "X-BusinessFax" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Work |
+                                                    PhoneNumber::Fax ) );
+    } else if ( fieldName == "X-CarPhone" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Car ) );
+    } else if ( fieldName == "X-MobilePhone" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Cell ) );
+    } else if ( fieldName == "X-ISDN" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Isdn ) );
+    } else if ( fieldName == "X-OtherFax" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Fax ) );
+    } else if ( fieldName == "X-Pager" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Pager ) );
+    } else if ( fieldName == "X-BusinessPhone" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Work ) );
+    } else if ( fieldName == "X-HomePhone" ) {
+      a.insertPhoneNumber( PhoneNumber( fieldValue, PhoneNumber::Home ) );
+    } else if ( fieldName == "X-HomeAddress" ) {
+      homeAddress.setLabel( fieldValue );
+    } else if ( fieldName == "X-HomeAddressStreet" ) {
+      homeAddress.setStreet( fieldValue );
+    } else if ( fieldName == "X-HomeAddressCity" ) {
+      homeAddress.setLocality( fieldValue );
+    } else if ( fieldName == "X-HomeAddressPostalCode" ) {
+      homeAddress.setPostalCode( fieldValue );
+    } else if ( fieldName == "X-HomeAddressState" ) {
+      homeAddress.setRegion( fieldValue );
+    } else if ( fieldName == "X-HomeAddressCountry" ) {
+      homeAddress.setCountry( fieldValue );
+    } else if ( fieldName == "X-BusinessAddress" ) {
+      businessAddress.setLabel( fieldValue );
+    } else if ( fieldName == "X-BusinessAddressStreet" ) {
+      businessAddress.setStreet( fieldValue );
+    } else if ( fieldName == "X-BusinessAddressCity" ) {
+      businessAddress.setLocality( fieldValue );
+    } else if ( fieldName == "X-BusinessAddressPostalCode" ) {
+      businessAddress.setPostalCode( fieldValue );
+    } else if ( fieldName == "X-BusinessAddressState" ) {
+      businessAddress.setRegion( fieldValue );
+    } else if ( fieldName == "X-BusinessAddressCountry" ) {
+      businessAddress.setCountry( fieldValue );
+    } else if ( fieldName == "X-OtherAddress" ) {
+      otherAddress.setLabel( fieldValue );
+    } else if ( fieldName == "X-OtherAddressStreet" ) {
+      otherAddress.setStreet( fieldValue );
+    } else if ( fieldName == "X-OtherAddressCity" ) {
+      otherAddress.setLocality( fieldValue );
+    } else if ( fieldName == "X-OtherAddressPostalCode" ) {
+      otherAddress.setPostalCode( fieldValue );
+    } else if ( fieldName == "X-OtherAddressState" ) {
+      otherAddress.setRegion( fieldValue );
+    } else if ( fieldName == "X-OtherAddressCountry" ) {
+      otherAddress.setCountry( fieldValue );
+    } else if ( fieldName == "NICKNAME" ) {
+      a.setNickName( fieldValue );
+    } else if ( fieldName == "ORG" ) {
+      a.setOrganization( fieldValue );
+    } else if ( fieldName == "ROLE" ) {
+      a.setRole( fieldValue );
+    } else if ( fieldName == "BDAY" ) {
+      a.setBirthday( KGlobal::locale()->readDate( fieldValue ) );
+    } else if ( fieldName == "WEBPAGE" ) {
+      a.setUrl( KURL( fieldValue ) );
+    } else if ( fieldName == "N" ) {
+    } else if ( fieldName == "X-FirstName" ) {
+    } else if ( fieldName == "X-MiddleName" ) {
+    } else if ( fieldName == "X-LastName" ) {
+    } else if ( fieldName == "X-Title" ) {
+    } else if ( fieldName == "X-Suffix" ) {
+    } else if ( fieldName == "X-FileAs" ) {
+    } else if ( fieldName == "EMAIL" ) {
+    } else if ( fieldName == "X-E-mail2" ) {
+    } else if ( fieldName == "X-E-mail3" ) {
+    } else if ( fieldName == "X-Notes" ) {
+    } else {
+      a.insertCustom( "KADDRESSBOOK", fieldName, fieldValue );
+    }
+  }
+
+  if ( !homeAddress.isEmpty() ) a.insertAddress( homeAddress );
+  if ( !businessAddress.isEmpty() ) a.insertAddress( businessAddress );
+  if ( !otherAddress.isEmpty() ) a.insertAddress( otherAddress );
+}
+
 int main(int argc,char **argv)
 {
   KAboutData aboutData("kab2kabc",I18N_NOOP("Kab to Kabc Converter"),"0.1");
+  aboutData.addAuthor("Cornelius Schumacher", 0, "schumacher@kde.org");
   KCmdLineArgs::init(argc,argv,&aboutData);
 
   KApplication app;
@@ -68,17 +180,21 @@ int main(int argc,char **argv)
 
     Addressee a;
 
+    // Convert custom entries
+    int count = 0;
+    bool idFound = false;
     QStringList::ConstIterator customIt;
     for( customIt = entry.custom.begin(); customIt != entry.custom.end(); ++customIt ) {
       if ( (*customIt).startsWith( "X-KABC-UID:" ) ) {
         a.setUid( (*customIt).mid( (*customIt).find( ":" ) + 1 ) );
-        break;
+        idFound = true;
+      } else if ( (*customIt).startsWith( "KMail:1.0\n" ) ) {
+        readKAddressBookEntries( *customIt, a );
       } else {
-        int count = 0;
         a.insertCustom( "kab2kabc", QString::number( count++ ), *customIt );
       }
     }
-    if( customIt == entry.custom.end() ) {
+    if( !idFound ) {
       entry.custom << "X-KABC-UID:" + a.uid();
       ::AddressBook::ErrorCode error = kab.addressbook()->change( key, entry );
       if (error != ::AddressBook::NoError) {
