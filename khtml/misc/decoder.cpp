@@ -52,8 +52,12 @@ void Decoder::setEncoding(const char *_encoding)
     if(!m_codec) {
 	if(!strcmp(_encoding, "windows-1252"))
 	    m_codec = QTextCodec::codecForName("iso8859-1");
+	// ### we need to write real decoders for these codepages, as
+	// they contain some additional chars not in iso8859-6/8
 	else if(!strcmp(_encoding, "windows-1255"))
 	    m_codec = QTextCodec::codecForName("iso8859-8-i");
+	else if(!strcmp(_encoding, "windows-1256"))
+	    m_codec = QTextCodec::codecForName("iso8859-6");
 	else // unknown code, default to latin1
 	    m_codec = QTextCodec::codecForName("iso8859-1");
     }
@@ -62,11 +66,11 @@ void Decoder::setEncoding(const char *_encoding)
 	m_codec = QTextCodec::codecForName("iso8859-8-i");
 	visualRTL = true;
     }
-    else if(m_codec->mibEnum() == 9) // iso8859-6 (visually ordered)
+/*    else if(m_codec->mibEnum() == 9) // iso8859-6 (visually ordered)
     {
-	m_codec = QTextCodec::codecForName("iso8859-8-i");
+	m_codec = QTextCodec::codecForName("iso8859-6-i");
 	visualRTL = true;
-    }
+    }*/
 }
 
 const char *Decoder::encoding() const
