@@ -202,7 +202,7 @@ void KBuildSycoca::build(KSycocaEntryListList *allEntries,
 
 void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *ctimeDict)
 {
-  QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
+  QString path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
 
   // KSaveFile first writes to a temp file.
   // Upon close() it moves the stuff to the right place.
