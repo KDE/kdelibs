@@ -112,20 +112,21 @@ void RenderFrameSet::layout( )
     int totalRelative = 0;
     int colsRelative = 0;
     int rowsRelative = 0;
+    int rowsPercent = 0;
+    int colsPercent = 0;
     int remainingRelativeWidth = 0;
     // fixed rows first, then percent and then relative
 
     if(m_rows)
     {
-        kdDebug(6040) << "more than one row!!!" << endl;
-        for(i = 0; i< m_frameset->totalRows(); i++)
+         for(i = 0; i< m_frameset->totalRows(); i++)
         {
-            kdDebug( 6031 ) << "setting row " << i << endl;
-            if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
+             if(m_rows->at(i)->type == Fixed || m_rows->at(i)->type == Percent)
             {
                 m_rowHeight[i] = QMAX(m_rows->at(i)->width(heightAvailable), 14);
-                kdDebug( 6031 ) << "setting row height to " << m_rowHeight[i] << endl;
-                remainingHeight -= m_rowHeight[i];
+                 remainingHeight -= m_rowHeight[i];
+		if( m_rows->at(i)->type == Percent)
+		    rowsPercent++;
             }
             else if(m_rows->at(i)->type == Relative)
             {
@@ -157,13 +158,16 @@ void RenderFrameSet::layout( )
         {
             // just distribute it over all columns...
             int rows = m_frameset->totalRows();
-            for(i = 0; i< m_frameset->totalRows(); i++)
-            {
-                int toAdd = remainingHeight/rows;
-                rows--;
-                m_rowHeight[i] += toAdd;
-                remainingHeight -= toAdd;
-            }
+	    if ( rowsPercent )
+		rows = rowsPercent;
+            for(i = 0; i< m_frameset->totalRows(); i++) {
+		if( !rowsPercent || m_rows->at(i)->type == Percent ) {
+		    int toAdd = remainingHeight/rows;
+		    rows--;
+		    m_rowHeight[i] += toAdd;
+		    remainingHeight -= toAdd;
+		}
+	    }
         }
     }
     else
@@ -180,6 +184,8 @@ void RenderFrameSet::layout( )
             {
                 m_colWidth[i] = QMAX(m_cols->at(i)->width(widthAvailable), 14);
                 remainingWidth -= m_colWidth[i];
+		if( m_cols->at(i)->type == Percent)
+		    colsPercent++;
             }
             else if(m_cols->at(i)->type == Relative)
             {
@@ -211,13 +217,16 @@ void RenderFrameSet::layout( )
         {
             // just distribute it over all columns...
             int cols = m_frameset->totalCols();
-            for(i = 0; i< m_frameset->totalCols(); i++)
-            {
-                int toAdd = remainingWidth/cols;
-                cols--;
-                m_colWidth[i] += toAdd;
-                remainingWidth -= toAdd;
-            }
+	    if ( colsPercent )
+		cols = colsPercent;
+            for(i = 0; i< m_frameset->totalCols(); i++) {
+		if( !colsPercent || m_cols->at(i)->type == Percent ) {
+		    int toAdd = remainingWidth/cols;
+		    cols--;
+		    m_colWidth[i] += toAdd;
+		    remainingWidth -= toAdd;
+		}
+	    }
         }
 
     }
