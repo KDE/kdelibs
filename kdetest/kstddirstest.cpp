@@ -21,4 +21,10 @@ int main(int, char **)
   for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
     debug("config %s", (*it).ascii());
   }
+
+  list = t.findAllResources("apps", "S*/*.desktop", true);
+  for (QStringList::ConstIterator it = list.begin(); it != list.end(); it++) {
+    debug("setting %s", (*it).ascii());
+  }
+  
 }
