@@ -207,15 +207,15 @@
 <!ENTITY kmines	"<application>KMines</application>">
 <!ENTITY kmix	"<application>KMix</application>">
 <!ENTITY kmoon  "<application>Moon Phase</application>">
-<!ENTITY knewsticker "<application>KNewsTicker</application>">
+<!ENTITY knewsticker	"<application>KNewsTicker</application>">
 <!ENTITY knode	"<application>KNode</application>">
 <!ENTITY knotes	"<application>KNotes</application>">
-<!ENTITY kodo 	"<application>KOdometer</application>">
-<!ENTITY koffice "<application>KOffice</application>">
+<!ENTITY kodo	"<application>KOdometer</application>">
+<!ENTITY koffice	"<application>KOffice</application>">
 <!ENTITY konqueror	"<application>Konqueror</application>">
 <!ENTITY konquest	"<application>Konquest</application>">
 <!ENTITY konsole	"<application>Konsole</application>">
-<!ENTITY kontour    "<application>Kontour</application>">
+<!ENTITY kontour	"<application>Kontour</application>">
 <!ENTITY korganizer	"<application>Korganizer</application>">
 <!ENTITY korn	"<application>KOrn</application>">
 <!ENTITY koshell "<application>KOShell</application>">
@@ -265,7 +265,7 @@
 <!ENTITY kview	"<application>KView</application>">
 <!ENTITY kviewshell "<application>KViewshell</application>">
 <!ENTITY kvt	"<application>kvt</application>">
-<!ENTITY kworldclock "<application>KWorldClock</application>">
+<!ENTITY kworldclock	"<application>KWorldClock</application>">
 <!ENTITY kword "<application>KWord</application>">
 <!ENTITY kwin	"<application>KWin</application>">
 <!ENTITY kwin4	"<application>K Four Wins</application>">
@@ -296,15 +296,16 @@
 <!ENTITY quantaplus	"<application>Quanta Plus</application>">
 <!ENTITY Qt	"<trademark>Qt</trademark>">
 <!ENTITY RedHat	'<trademark class="registered">Red Hat</trademark>'>
-<!ENTITY Sendmail '<application><trademark class="registered">sendmail</trademark></application>'>
-<!ENTITY Shift "<keycap>Shift</keycap>">
+<!ENTITY Sendmail	'<application><trademark class="registered">sendmail</trademark></application>'>
+<!ENTITY Shift	"<keycap>Shift</keycap>">
+<!ENTITY SMTP	"<acronym>SMTP<acronym>">
 <!ENTITY SGI	"<trademark>SGI</trademark>">
 <!ENTITY Solaris	"<trademark>Solaris</trademark>">
-<!ENTITY ThreeCom   '<trademark class="registered">3Com</trademark>'>
+<!ENTITY ThreeCom	'<trademark class="registered">3Com</trademark>'>
 <!ENTITY TrueType	'<trademark class="registered">TrueType</trademark>'>
 <!ENTITY UNIX	'<trademark class="registered">UNIX</trademark>'>
 <!ENTITY URL	"<acronym>URL</acronym>">
-<!ENTITY Visor  "<trademark>Visor</trademark>">
+<!ENTITY Visor	"<trademark>Visor</trademark>">
 <!ENTITY windowmaker	"<application>Window Maker</application>">
 <!ENTITY Windows	'<trademark class="registered">Windows</trademark>'>
 <!ENTITY X-Server "<application>X-Server</application>">
