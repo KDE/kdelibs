@@ -23,14 +23,18 @@
  * $Id$
  */
 
-#include <font.h>
+#include "font.h"
+
+#include <kdebug.h>
+#include <kglobal.h>
+
 #include <qpainter.h>
 #include <qfontdatabase.h>
 #include <qpaintdevicemetrics.h>
 
 using namespace khtml;
 
-void Font::drawText( QPainter *p, int x, int y, QChar *str, int len, 
+void Font::drawText( QPainter *p, int x, int y, QChar *str, int len,
         int toAdd, QPainter::TextDirection d, int from, int to, QColor bg ) const
 {
     // ### fixme for RTL
@@ -44,7 +48,7 @@ void Font::drawText( QPainter *p, int x, int y, QChar *str, int len,
 		if ( str[i].direction() == QChar::DirWS )
 		    numSpaces++;
 	}
-	    
+
 	QConstString cstr( str, len );
 	QString s( cstr.string() );
 	if ( d == QPainter::RTL ) {
@@ -109,7 +113,7 @@ int Font::width( QChar ch ) const
 }
 
 
-void Font::update( QPaintDeviceMetrics *devMetrics ) const
+void Font::update( QPaintDeviceMetrics* devMetrics ) const
 {
     f.setFamily( fontDef.family );
     f.setItalic( fontDef.italic );
@@ -117,26 +121,24 @@ void Font::update( QPaintDeviceMetrics *devMetrics ) const
 
     QFontDatabase db;
 
-    float size = fontDef.size;
-
-    float toPix = devMetrics->logicalDpiY()/72.;
+    int size = fontDef.size;
+    int lDpiY = kMax(devMetrics->logicalDpiY(), 96);
 
     // ok, now some magic to get a nice unscaled font
     // all other font properties should be set before this one!!!!
-
     if( !db.isSmoothlyScalable(f.family(), db.styleString(f)) )
     {
         QValueList<int> pointSizes = db.smoothSizes(f.family(), db.styleString(f));
         // lets see if we find a nice looking font, which is not too far away
         // from the requested one.
-        //kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
+        // kdDebug(6080) << "khtml::setFontSize family = " << f.family() << " size requested=" << size << endl;
 
         QValueList<int>::Iterator it;
         float diff = 1; // ### 100% deviation
         float bestSize = 0;
         for( it = pointSizes.begin(); it != pointSizes.end(); ++it )
         {
-            float newDiff = ((*it)*toPix - size)/size;
+            float newDiff = ((*it)*(lDpiY/72.) - float(size))/float(size);
             //kdDebug( 6080 ) << "smooth font size: " << *it << " diff=" << newDiff << endl;
             if(newDiff < 0) newDiff = -newDiff;
             if(newDiff < diff)
@@ -147,19 +149,13 @@ void Font::update( QPaintDeviceMetrics *devMetrics ) const
         }
         //kdDebug( 6080 ) << "best smooth font size: " << bestSize << " diff=" << diff << endl;
         if ( bestSize != 0 && diff < 0.2 ) // 20% deviation, otherwise we use a scaled font...
-            size = bestSize*toPix;
-//         else if ( size > 4 && size < 16 )
-//             size = float( int( ( size + 1 ) / 2 )*2 );
-    } else {
-	size = size*toPix;
+            size = (bestSize*lDpiY) / 72;
     }
 
-    //qDebug(" -->>> using %f pixel font", size);
+//     qDebug("setting font to %s, italic=%d, weight=%d, size=%d", fontDef.family.latin1(), fontDef.italic,
+//  	   fontDef.weight, size );
 
-//     qDebug("setting font to %s, italic=%d, weight=%d, size=%f", fontDef.family.latin1(), fontDef.italic,
-// 	   fontDef.weight, size );
-
-    f.setPixelSizeFloat( size );
+    f.setPixelSize( size );
 
     fm = QFontMetrics( f );
 }
