@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="1">
+<kpartgui name="khtmlpart" version="2">
 <MenuBar>
  <Menu name="edit"><text>&amp;Edit</text>
   <Action name="selectAll" />
