@@ -1,7 +1,7 @@
 /**
  * crypto.cpp
  *
- * Copyright (c) 2000-2003 George Staikos <staikos@kde.org>
+ * Copyright (c) 2000-2005 George Staikos <staikos@kde.org>
  *               2000 Carsten Pfeiffer <pfeiffer@kde.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -118,8 +118,8 @@ QString CipherItem::configName() const
 
 
 
-OtherCertItem::OtherCertItem( QListView *view, QString& sub, bool perm, int policy, QDateTime exp, KCryptoConfig *module )
-    : QListViewItem( view, QString::null ), _sub(sub), _exp(exp), _perm(perm), _policy(policy)
+OtherCertItem::OtherCertItem( QListView *view, const QString& sub, const QString& md5, bool perm, int policy, QDateTime exp, KCryptoConfig *module )
+    : QListViewItem( view, QString::null ), _sub(sub), _md5(md5), _exp(exp), _perm(perm), _policy(policy)
 
 {
     m_module = module;
@@ -927,23 +927,23 @@ void KCryptoConfig::load()
   QStringList groups = policies->groupList();
 
   otherSSLBox->clear();
-  for (QStringList::Iterator i = groups.begin();
-                             i != groups.end();
-                             ++i) {
-    if ((*i).isEmpty() || *i == "<default>") continue;
+  for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
+    if ((*i).isEmpty() || *i == "<default>" || *i == "General") continue;
     policies->setGroup(*i);
-    new OtherCertItem(otherSSLBox, *i,
-                      policies->readBoolEntry("Permanent", true),
-                      policies->readNumEntry("Policy", 3),
-                      policies->readDateTimeEntry("Expires"), this );
+    KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
+    if (cert) {
+      new OtherCertItem(otherSSLBox, cert->getSubject(), *i,
+                        policies->readBoolEntry("Permanent", true),
+                        policies->readNumEntry("Policy", 3),
+                        policies->readDateTimeEntry("Expires"), this );
+      delete cert;
+    }
   }
 
   groups = pcerts->groupList();
 
   yourSSLBox->clear();
-  for (QStringList::Iterator i = groups.begin();
-                             i != groups.end();
-                             ++i) {
+  for (QStringList::Iterator i = groups.begin(); i != groups.end(); ++i) {
     if ((*i).isEmpty() || *i == "<default>") continue;
     pcerts->setGroup(*i);
     YourCertItem *j = new YourCertItem(yourSSLBox,
@@ -1100,7 +1100,6 @@ void KCryptoConfig::save()
                                    i18n("SSLv3 Ciphers"));
   // SSL Policies code
   for (OtherCertItem *x = otherCertDelList.first(); x != 0; x = otherCertDelList.next()) {
-     //policies->deleteGroup(x->configName());
      KSSLX509Map cert(x->configName());
      QString thisCN = cert.getValue("CN");
      _cc.removeByCN(thisCN);
@@ -1362,7 +1361,7 @@ void KCryptoConfig::cwAll() {
 void KCryptoConfig::slotExportCert() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
    if (x) {
-     policies->setGroup(x->getSub());
+     policies->setGroup(x->getMD5());
      KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
      if (cert) {
         KCertExport kce;
@@ -1395,7 +1394,7 @@ void KCryptoConfig::slotVerifyCert() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
   if (!x) return;
 
-  policies->setGroup(x->getSub());
+  policies->setGroup(x->getMD5());
   KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
 
   if (!cert) {
@@ -1504,7 +1503,7 @@ QString iss = QString::null;
       cacheGroup->setEnabled(true);
       cachePerm->setEnabled(true);
       cacheUntil->setEnabled(true);
-      policies->setGroup(x->getSub());
+      policies->setGroup(x->getMD5());
 
       KSSLCertificate *cert = KSSLCertificate::fromString(policies->readEntry("Certificate", QString::null).local8Bit());
 

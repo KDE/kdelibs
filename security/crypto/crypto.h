@@ -75,12 +75,13 @@ private:
 class OtherCertItem : public QListViewItem
 {
 public:
-    OtherCertItem(QListView *view, QString& sub, bool perm, int policy, QDateTime exp, KCryptoConfig *module );
+    OtherCertItem(QListView *view, const QString& sub, const QString& md5, bool perm, int policy, QDateTime exp, KCryptoConfig *module );
     ~OtherCertItem() {}
 
     QString configName() const;
-    QString& getSub() { return _sub; }
+    const QString& getSub() { return _sub; }
     int getPolicy() { return _policy; }
+    const QString& getMD5() { return _md5; }
     bool isPermanent() { return _perm; }
     QDateTime getExpires() { return _exp; }
     void setPolicy(int x) { _policy = x; }
@@ -91,7 +92,7 @@ protected:
     virtual void stateChange( bool );
 
 private:
-    QString _sub;
+    QString _sub, _md5;
     KCryptoConfig *m_module; // just to call configChanged()
     QDateTime _exp;
     bool _perm;
