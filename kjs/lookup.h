@@ -128,13 +128,13 @@ namespace KJS {
     if (!entry) // not found, forward to parent
       return thisObj->ParentImp::get(exec, propertyName);
 
-    //fprintf(stderr, "MathObjectImp::get, found value=%d attr=%d\n", entry->value, entry->attr);
+    //fprintf(stderr, "lookupOrCreate: found value=%d attr=%d\n", entry->value, entry->attr);
     if (entry->attr & Function)
     {
       // Look for cached value in dynamic map of properties (in ObjectImp)
       ValueImp * cachedVal = thisObj->ObjectImp::getDirect(propertyName);
       /*if (cachedVal)
-        fprintf(stderr, "MathObjectImp::get Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
+        fprintf(stderr, "lookupOrCreate: Function -> looked up in ObjectImp, found type=%d (object=%d)\n",
                  cachedVal->type(),  ObjectType);*/
       if (cachedVal && cachedVal->type() == ObjectType)
         return cachedVal;
@@ -161,6 +161,27 @@ namespace KJS {
     if (entry->attr & Function)
       fprintf(stderr, "Function bit set! Shouldn't happen in lookupValue!\n" );
     return thisObj->getValue(exec, entry->value);
+  }
+
+  /**
+   * This one is for "put".
+   * Lookup hash entry for property to be set, and set the value.
+   */
+  template <class ThisImp, class ParentImp>
+  inline void lookupPutValue(ExecState *exec, const UString &propertyName,
+                             const Value& value, int attr,
+                             const HashTable* table, const ThisImp* thisObj)
+  {
+    const HashEntry* entry = Lookup::findEntry(table, propertyName);
+
+    if (!entry) { // not found, forward to parent
+       thisObj->ParentImp::put(exec, propertyName, value, attr);
+       return;
+    }
+
+    if (entry->attr & Function)
+      fprintf(stderr, "Function bit set! Shouldn't happen in lookupPutValue!\n" );
+    thisObj->putValue(exec, entry->value, value, attr);
   }
 
 }; // namespace

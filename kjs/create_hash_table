@@ -3,8 +3,11 @@
 $file = $ARGV[0];
 shift;
 my $findSize = 0;
+my $includelookup = 0;
 # Use -s as second argument to make it try many hash sizes
 $findSize = 1 if (defined($ARGV[0]) && $ARGV[0] eq "-s");
+# Use -i as second argument to make it include "lookup.h"
+$includelookup = 1 if (defined($ARGV[0]) && $ARGV[0] eq "-i");
 print STDERR "Creating hashtable for $file\n";
 open(IN, $file) or die "No such file $file";
 
@@ -114,7 +117,7 @@ sub output() {
     print "/* Automatically generated from $file using $0. DO NOT EDIT ! */\n";
   }
 
-  print "\n#include \"lookup.h\"\n";
+  print "\n#include \"lookup.h\"\n" if ($includelookup);
   print "\nnamespace KJS {\n";
   print "\nconst struct HashEntry ${name}Entries[] = {\n";
   my $i = 0;

@@ -68,7 +68,7 @@ Value ErrorProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &/*ar
 
   Value v = thisObj.get(exec,"name");
   if (v.type() != UndefinedType) {
-    s = v.toString(exec).value()+" "+s;
+    s = v.toString(exec).value();
   }
 
   v = thisObj.get(exec,"message");
