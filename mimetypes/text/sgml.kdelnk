@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+MimeType=text/sgml
+Comment=SGML
+DefaultApp=Kwrite
+Icon=txt.xpm
+Type=MimeType
+Patterns=*.sgml;*.SGML;
