@@ -2,7 +2,7 @@
  <!ENTITY kapp "<application>Kapp</application>">
  <!ENTITY kappname "&kapp;" -- this only *seems* redundant -->
  <!ENTITY % addindex "IGNORE">
- <!ENTITY % ents PUBLIC "-//KDE//ENTITIES KDE Application-Variable Entities V1.0//EN">
+ <!ENTITY % ents PUBLIC "-//KDE//ENTITIES Application-Variable Entities V1.0//EN">
  %ents;
 ]>
 <!-- kdoctemplate v0.8 October 1 1999 -->
