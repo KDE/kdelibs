@@ -152,7 +152,7 @@ public:
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
      * NET::SkipTaskbar, NET::SkipPager, NET::Hidden,
-     * NET::FullScreen, NET::Above, NET::Below, NET::StaysOnTop
+     * NET::FullScreen, NET::KeepAbove, NET::KeepBelow, NET::StaysOnTop
      *
      * @param win the id of the window
      * @param state the new flags that will be set
@@ -165,7 +165,7 @@ public:
      * Possible values are or'ed combinations of NET::Modal,
      * NET::Sticky, NET::MaxVert, NET::MaxHoriz, NET::Shaded,
      * NET::SkipTaskbar, NET::SkipPager, NET::Hidden,
-     * NET::FullScreen, NET::Above, NET::Below, NET::StaysOnTop
+     * NET::FullScreen, NET::KeepAbove, NET::KeepBelow, NET::StaysOnTop
      *
      * @param win the id of the window
      * @param state the flags that will be cleared
