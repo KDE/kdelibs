@@ -54,7 +54,7 @@
 # define COLOR_GRADIENTINACTIVECAPTION 28
 #endif
 #endif
-#endif
+//#endif
 
 //////////////////////////////////////////////////////////////////////////////
 // Class   : KMdiChildFrmCaption
