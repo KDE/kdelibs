@@ -715,15 +715,16 @@ QString KLocale::formatDate(const QDate &pDate) const
 	case 'w':
                 rst.replace(i, 2, QString::number( pDate.dayOfWeek()==7?0:pDate.dayOfWeek() ) );
 		continue;
-	case '%':
-                rst.remove(i, 1);
-		continue;
 	case 'n':
                 rst.replace(i, 2, "\n");
 		continue;
 	case 't':
                 rst.replace(i, 2, "\t");
                 continue;
+	default:
+                rst.remove(i, 1);
+		i--;
+		continue;
         }
 
     return rst;
@@ -764,14 +765,15 @@ QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
       case 'p':
 	rst.replace(i, 2, pTime.hour() >= 12?translate("pm"):translate("am"));
 	continue;
-      case '%':
-	rst.remove(i, 1);
-	continue;
       case 'n':
 	rst.replace(i, 2, "\n");
 	continue;
       case 't':
 	rst.replace(i, 2, "\t");
+	continue;
+      default:
+	rst.remove(i, 1);
+	i--;
 	continue;
       }
   
