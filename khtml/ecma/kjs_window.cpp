@@ -1071,8 +1071,9 @@ Completion WindowFunc::tryExecute(const List &args)
     (const_cast<Window*>(window))->clearTimeout(v.toInt32());
     break;
   case Focus:
+    if (widget) 
+      widget->setActiveWindow();
     result = Undefined();
-    // TODO
     break;
   case Blur:
     result = Undefined();
