@@ -158,8 +158,10 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
     {
        QString tmp = job->queryMetaData("media-boundary");
        kdDebug() << "Got Boundary from kio-http '" << tmp << "'" << endl;
-       m_boundary = QCString("--")+tmp.latin1();
-       m_boundaryLength = m_boundary.length();
+       if ( !tmp.isEmpty() ) {
+           m_boundary = QCString("--")+tmp.latin1();
+           m_boundaryLength = m_boundary.length();
+       }
     }
     // Append to m_currentLine until eol
     for ( uint i = 0; i < data.size() ; ++i )
