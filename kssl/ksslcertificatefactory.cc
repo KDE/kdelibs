@@ -25,7 +25,7 @@
 //#include <kopenssl.h>
 
 KSSLCertificate*
-KSSLCertificateFactory::generateSelfSigned(KSSLKeyType keytype) {
+KSSLCertificateFactory::generateSelfSigned(KSSLKeyType /*keytype*/) {
 #if 0
   //#ifdef HAVE_SSL
   X509_NAME *x509name = X509_NAME_new();
