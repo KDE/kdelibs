@@ -730,6 +730,11 @@ QString KLocale::formatDateTime(const QDateTime &pDateTime) const
   return formatDate(pDateTime.date()) + QString::fromLatin1(" ") + formatTime(pDateTime.time());
 }
 
+bool KLocale::use12Clock()
+{
+  return _timefmt.contains(QString::fromLatin1("%p")) > 0;
+}
+
 void KLocale::aliasLocale( const char* text, long int index)
 {
     aliases.insert(index, new QString(translate(text)));

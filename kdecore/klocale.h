@@ -247,6 +247,13 @@ public:
     QString formatTime(const QTime &pTime, bool includeSecs = false) const;
 
     /**
+     * Use this to determine if the user wants a 12 clock.
+     *
+     * @return If the user wants 12h lock
+     */
+    bool use12Clock();
+
+    /**
      * Return a string containing the name of the month name.
      *
      * @return The name of the month
