@@ -32,8 +32,10 @@
  * for long replacement texts.
  */
 class KReplaceDialog::KReplaceDialogPrivate {
-public:
+  public:
+    KReplaceDialogPrivate() : m_initialShowDone(false) {}
     QStringList replaceStrings;
+    bool m_initialShowDone;
 };
 
 KReplaceDialog::KReplaceDialog(QWidget *parent, const char *name, long options, const QStringList &findStrings, const QStringList &replaceStrings, bool hasSelection) :
@@ -52,7 +54,17 @@ KReplaceDialog::~KReplaceDialog()
 
 void KReplaceDialog::showEvent( QShowEvent *e )
 {
-    setReplacementHistory(d->replaceStrings);
+    if ( !d->m_initialShowDone )
+    {
+        d->m_initialShowDone = true; // only once
+
+        if (!d->replaceStrings.isEmpty())
+        {
+          setReplacementHistory(d->replaceStrings);
+          m_replace->lineEdit()->setText( d->replaceStrings[0] );
+        }
+    }
+
     KFindDialog::showEvent(e);
 }
 
