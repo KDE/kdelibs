@@ -46,6 +46,7 @@ class KTempDirPrivate;
  *
  * See also KStandardDirs
  *
+ * @since 3.2
  * @author Joseph Wenninger <jowenn@kde.org>
  */
 class KTempDir
