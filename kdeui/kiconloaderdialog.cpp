@@ -251,7 +251,7 @@ void KIconLoaderDialog::init()
   cb_dirs = new QComboBox(FALSE, this);
   cb_dirs->setGeometry(10, 8, 230, 24);
   //---
-  ok = new QPushButton( klocale->translate("Ok"), this );
+  ok = new QPushButton( klocale->translate("OK"), this );
   cancel = new QPushButton( klocale->translate("Cancel"), this );
   ok->setGeometry(65, 200, 80, 30);
   cancel->setGeometry(325, 200, 80, 30);

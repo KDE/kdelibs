@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
-    QPushButton *b = bbox->addButton("Ok");
+    QPushButton *b = bbox->addButton("OK");
     b->setDefault(TRUE);
     w->connect(b, SIGNAL(clicked()),
 	       w, SLOT(accept()));
@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
     bbox->addStretch(1);
-    QPushButton *b = bbox->addButton("Ok");
+    QPushButton *b = bbox->addButton("OK");
     b->setDefault(TRUE);
     w->connect(b, SIGNAL(clicked()),
 	       w, SLOT(accept()));
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
     bbox->addStretch(1);
-    QPushButton *b = bbox->addButton("Ok");
+    QPushButton *b = bbox->addButton("OK");
     b->setDefault(TRUE);
     w->connect(b, SIGNAL(clicked()),
 	       w, SLOT(accept()));
@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
     bbox->addStretch(1);
-    QPushButton *b = bbox->addButton("Ok");
+    QPushButton *b = bbox->addButton("OK");
     b->setDefault(TRUE);
     w->connect(b, SIGNAL(clicked()),
 	       w, SLOT(accept()));
@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w);
     bbox->addStretch(1);
-    QPushButton *b = bbox->addButton("Ok");
+    QPushButton *b = bbox->addButton("OK");
     b->setDefault(TRUE);
     w->connect(b, SIGNAL(clicked()),
 	       w, SLOT(accept()));
@@ -185,7 +185,7 @@ int main(int argc, char **argv) {
     l->setMinimumSize(l->sizeHint());
     tl->addWidget(l,1);
     KButtonBox *bbox = new KButtonBox(w, KButtonBox::VERTICAL);
-    QPushButton *b = bbox->addButton("Ok");
+    QPushButton *b = bbox->addButton("OK");
     b->setDefault(TRUE);
     w->connect(b, SIGNAL(clicked()),
 	       w, SLOT(accept()));

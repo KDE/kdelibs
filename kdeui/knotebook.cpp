@@ -244,7 +244,7 @@ QButton *KNoteBook::getHelpButton()
 
 void KNoteBook::setOkButton()
 {
-  setOkButton(klocale->translate("&Ok"));
+  setOkButton(klocale->translate("&OK"));
 }
 
 void KNoteBook::setOkButton(const char *name)

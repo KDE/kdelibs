@@ -460,7 +460,7 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	
 	// the standard buttons
 	KButtonBox *bbox = new KButtonBox(this);
-	button = bbox->addButton(klocale->translate("Ok"));
+	button = bbox->addButton(klocale->translate("OK"));
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( slotOkPressed() ) );
 	button = bbox->addButton(klocale->translate("Cancel"));

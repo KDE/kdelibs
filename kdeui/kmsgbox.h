@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  1998/09/01 20:22:04  kulow
+ * I renamed all old qt header files to the new versions. I think, this looks
+ * nicer (and gives the change in configure a sense :)
+ *
  * Revision 1.8  1998/08/03 15:24:24  ssk
  * Wrote documentation.
  * Eliminated dead and commented-out code.
@@ -215,7 +219,7 @@ public:
      * @param type	Selects message box options. This value is 
      *			a constant from @ref ::DefaultButton and/or
      *			a constant from @ref ::IconStyle or-ed together.
-     * @param btext	the text for the "Ok" button. defaults to "Ok", or
+     * @param btext	the text for the "OK" button. defaults to "Ok", or
      *			its translation in the current user's locale if
      *			available.
      * @return		1 if the Ok button is clicked

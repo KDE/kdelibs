@@ -83,8 +83,8 @@ public:
 
   /**
     * This adds a stretch to the buttonbox. @see QBoxLayout for details.
-    * Can be used to separate buttons (i.e. if you add the buttons "Ok",
-    * "Cancel", add a stretch and then add the button "Help", "Ok" and
+    * Can be used to separate buttons (i.e. if you add the buttons "OK",
+    * "Cancel", add a stretch and then add the button "Help", "OK" and
     * "Cancel" will be left-aligned (or top-aligned for vertical) while
     * "Help" will be right-aligned (or bottom-aligned for vertical).
     */

@@ -225,7 +225,7 @@ QButton *KWizard::getHelpButton()
 
 void KWizard::setOkButton()
 {
-  setOkButton(klocale->translate("&Ok"));
+  setOkButton(klocale->translate("&OK"));
 }
 
 void KWizard::setOkButton(const char *name)

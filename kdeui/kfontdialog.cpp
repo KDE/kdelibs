@@ -23,6 +23,10 @@
     Boston, MA 02111-1307, USA.
   
     $Log$
+    Revision 1.25  1998/09/01 20:21:53  kulow
+    I renamed all old qt header files to the new versions. I think, this looks
+    nicer (and gives the change in configure a sense :)
+
     Revision 1.24  1998/08/31 12:43:26  esken
     GPL -> LGPL
 
@@ -360,7 +364,7 @@ KFontDialog::KFontDialog( QWidget *parent, const char *name,
   cancel_button->setGeometry( 3*XOFFSET +100, OKBUTTONY +40, 80, BUTTONHEIGHT );
   connect( cancel_button, SIGNAL( clicked() ), SLOT( reject() ) );
 
-  ok_button = new QPushButton( klocale->translate("Ok"), this );
+  ok_button = new QPushButton( klocale->translate("OK"), this );
   ok_button->setGeometry( 3*XOFFSET, OKBUTTONY +40,80, BUTTONHEIGHT );
   connect( ok_button, SIGNAL( clicked() ), SLOT( accept() ) );	
 

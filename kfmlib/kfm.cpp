@@ -400,7 +400,7 @@ DlgLocation::DlgLocation( const char *_text, const char* _value, QWidget *parent
 
     QPushButton *ok;
     QPushButton *cancel;
-    ok = new QPushButton( i18n("Ok"), this );
+    ok = new QPushButton( i18n("OK"), this );
     ok->setGeometry( 10,70, 50,30 );
     connect( ok, SIGNAL(clicked()), SLOT(accept()) );
 

@@ -867,7 +867,7 @@ void KFileBaseDialog::mkdir()
 
     okButton = new QPushButton( lMakeDir, "okButton" );
     okButton->adjustSize();
-    okButton->setText( i18n("Ok") );
+    okButton->setText( i18n("OK") );
     okButton->setFixedHeight( okButton->height() );
     okButton-> setMinimumWidth( okButton->width() );
 
