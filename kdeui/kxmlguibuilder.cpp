@@ -188,9 +188,9 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
 
     KToolBar *bar = 0;
     if ( d->m_widget->inherits( "KMainWindow" ) )
-	bar = new KToolBar( ( (KMainWindow*)d->m_widget ), element.attribute( d->attrName ).utf8(), honor);
+	bar = new KToolBar( ( (KMainWindow*)d->m_widget ), element.attribute( d->attrName ).utf8(), honor, false);
     else
-	bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor);
+	bar = new KToolBar( d->m_widget, element.attribute( d->attrName ).utf8(), honor, false);
 
     if ( d->m_widget->inherits( "KMainWindow" ) )
     {

@@ -133,8 +133,8 @@ public:
    * @param _honor_mode If true, then global settings for IconSize
    *                    and IconText will be honored
    */
-    KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE );
-
+  KToolBar( QWidget *parent, const char *name = 0, bool honor_style = FALSE, bool readConfig = TRUE );
+    
   /**
    * Insert a button (a @ref KToolbarButton) with a pixmap.  The
    * pixmap is loaded by the button itself based on the global icon
@@ -863,7 +863,7 @@ public:
     void saveState( QDomElement &e );
 
     void positionYourself();
-    
+
 signals:
     /**
      * Emitted when button @p id is clicked.
@@ -966,13 +966,15 @@ private slots:
     void slotIconChanged(int);
     void slotRepaint();
     void toolBarPosChanged( QToolBar *tb );
+    void slotContextAboutToShow();
 
 private:
-    void init();
+    void init( bool readConfig = true );
     void doConnections( KToolBarButton *button );
     void insertWidgetInternal( QWidget *w, int &index, int id );
     void getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine );
-    
+    KPopupMenu *contextMenu();
+
     QMap<QWidget*, int > widget2id;
     QMap<int, QWidget* > id2widget;
     KToolBarPrivate *d;

@@ -89,6 +89,7 @@ public:
   KAccel *m_kaccel;
 
   QString m_text;
+  QString m_plainText;
   QString m_whatsThis;
   QString m_groupText;
   QPixmap m_pixmap;
@@ -365,22 +366,22 @@ int KAction::plug( QWidget *w, int index )
     int id;
     if ( !d->m_pixmap.isNull() )
     {
-      id = menu->insertItem( pixmap(), this, SLOT( slotActivated() ),
-                            accel(), -1, index );
+      id = menu->insertItem( d->m_pixmap, this, SLOT( slotActivated() ),
+                             d->m_accel, -1, index );
     }
     else
     {
       if ( d->m_bIconSet )
-        id = menu->insertItem( iconSet(), text(), this,   //dsweet
-                               SLOT( slotActivated() ), accel(),
+        id = menu->insertItem( d->m_iconSet, d->m_text, this,   //dsweet
+                               SLOT( slotActivated() ), d->m_accel,
                                -1, index );
       else
-        id = menu->insertItem( text(), this, SLOT( slotActivated() ),  //dsweet
-                               accel(), -1, index );
+        id = menu->insertItem( d->m_text, this, SLOT( slotActivated() ),  //dsweet
+                               d->m_accel, -1, index );
     }
 
-    menu->setItemEnabled( id, isEnabled() );
-    menu->setWhatsThis( id, whatsThis() );
+    menu->setItemEnabled( id, d->m_enabled );
+    menu->setWhatsThis( id, d->m_whatsThis );
 
     addContainer( menu, id );
     connect( menu, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -397,9 +398,9 @@ int KAction::plug( QWidget *w, int index )
     int id_ = getToolButtonID();
     if ( icon().isEmpty() && d->m_bIconSet )
     {
-      bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this,
+      bar->insertButton( d->m_iconSet.pixmap(), id_, SIGNAL( clicked() ), this,
                          SLOT( slotActivated() ),
-                         isEnabled(), plainText(), index );
+                         d->m_enabled, d->m_plainText, index );
     }
     else
     {
@@ -410,12 +411,12 @@ int KAction::plug( QWidget *w, int index )
       else
         instance = KGlobal::instance();
 
-      bar->insertButton( icon(), id_, SIGNAL( clicked() ), this,
-                         SLOT( slotActivated() ), isEnabled(), plainText(),
+      bar->insertButton( d->m_iconName, id_, SIGNAL( clicked() ), this,
+                         SLOT( slotActivated() ), d->m_enabled, d->m_plainText,
                          index, instance );
     }
 
-    QWhatsThis::add( bar->getButton(id_), whatsThis() );
+    QWhatsThis::add( bar->getButton(id_), d->m_whatsThis );
     addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
@@ -466,7 +467,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
   if (d->m_kaccel)
     unplugAccel();
   d->m_kaccel = kacc;
-  d->m_kaccel->insertItem(plainText(), name(), accel(), configurable);
+  d->m_kaccel->insertItem(d->m_plainText, name(), d->m_accel, configurable);
   d->m_kaccel->connectItem(name(), this, SLOT(slotActivated()));
   connect(d->m_kaccel, SIGNAL(destroyed()), this, SLOT(slotDestroyed()));
   connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
@@ -474,11 +475,12 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
 
 void KAction::unplugAccel()
 {
-	if ( d->m_kaccel==0 )
+  if ( d->m_kaccel==0 )
     return;
-	d->m_kaccel->removeItem(name());
-	d->m_kaccel->disconnect(this);
-	d->m_kaccel = 0;
+  
+   d->m_kaccel->removeItem(name());
+   d->m_kaccel->disconnect(this);
+   d->m_kaccel = 0;
 }
 
 void KAction::setEnabled(bool enable)
@@ -516,6 +518,7 @@ void KAction::setText( const QString& text )
     d->m_kaccel->setDescription(name(), text);
 
   d->m_text = text;
+  d->m_plainText = plainText();
 
   int len = containerCount();
   for( int i = 0; i < len; ++i )
@@ -524,7 +527,7 @@ void KAction::setText( const QString& text )
   if ( m_parentCollection )
   {
     KKeyEntryMap& keys = m_parentCollection->keyMap();
-    keys[name()].descr = plainText();
+    keys[name()].descr = d->m_plainText;
   }
 }
 
@@ -2339,7 +2342,7 @@ public:
   {
   }
   KInstance *m_instance;
-  QList<KAction> m_actions;
+  QAsciiDict<KAction> m_actionDict;
   QPtrDict< QList<KAction> > m_dctHighlightContainers;
   bool m_highlight;
   KKeyEntryMap m_keyMap;
@@ -2357,7 +2360,7 @@ KActionCollection::KActionCollection( const KActionCollection &copy )
     : QObject()
 {
   d = new KActionCollectionPrivate;
-  d->m_actions = copy.d->m_actions;
+  d->m_actionDict = copy.d->m_actionDict;
   d->m_keyMap = copy.d->m_keyMap;
   setInstance( copy.instance() );
 }
@@ -2369,32 +2372,33 @@ KActionCollection::~KActionCollection()
 
 void KActionCollection::childEvent( QChildEvent* ev )
 {
+  QObject::childEvent( ev );
+  /*
   if ( ev->inserted() && ev->child()->inherits( "KAction" ) )
     insert( static_cast<KAction*>( ev->child() ) );
   else if ( ev->removed() )
     // We can not emit a removed signal here since the
     // actions destructor did already run :-(
-    d->m_actions.remove( static_cast<KAction*>( ev->child() ) );
+    d->m_actionDict.remove( static_cast<KAction*>( ev->child() ) );
+    */
 }
 
 void KActionCollection::insert( KAction* action )
 {
-  uint len = d->m_actions.count();
-  for( uint i = 0; i < len; ++i )
-  {
-    KAction* a = d->m_actions.at( i );
-    if ( action == a )
+  KAction *a = d->m_actionDict[ action->name() ];
+  if ( a && a == action )
       return;
-  }
 
-  d->m_actions.append( action );
+  d->m_actionDict.insert( action->name(), action );
+  
   emit inserted( action );
 
   KKeyEntry entry;
 
-  entry.aDefaultKeyCode = action->accel();
-  entry.aCurrentKeyCode = action->accel();
-  entry.aConfigKeyCode  = action->accel();
+  int accel = action->accel();
+  entry.aDefaultKeyCode = accel;
+  entry.aCurrentKeyCode = accel;
+  entry.aConfigKeyCode  = accel;
   entry.bConfigurable   = true;
   entry.descr           = action->plainText();
 
@@ -2414,25 +2418,21 @@ void KActionCollection::remove( KAction* action )
 
 KAction* KActionCollection::take( KAction* action )
 {
-  uint len = d->m_actions.count();
-  for( uint i = 0; i < len; ++i )
-  {
-    KAction* a = d->m_actions.at( i );
-    if ( action == a )
-    {
-      d->m_actions.remove( a );
-	  d->m_keyMap.remove( a->name() );
-      emit removed( action );
-      return a;
-    }
-  }
-
-  return 0;
+  KAction *a = d->m_actionDict.take( action->name() );
+  if ( !a || a != action )
+      return 0;
+  
+  d->m_keyMap.remove( a->name() );
+  emit removed( action );
+  return a;
 }
 
 KAction* KActionCollection::action( const char* name, const char* classname ) const
 {
-  QListIterator<KAction> it( d->m_actions );
+  if ( !classname && name )
+    return d->m_actionDict[ name ];
+      
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
   {
     if ( ( !name || strcmp( it.current()->name(), name ) == 0 ) &&
@@ -2444,7 +2444,10 @@ KAction* KActionCollection::action( const char* name, const char* classname ) co
 
 KAction* KActionCollection::action( int index ) const
 {
-  return d->m_actions.at( index );
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
+  it += index;
+  return it.current();
+//  return d->m_actions.at( index );
 }
 
 void KActionCollection::setKeyMap( const KKeyEntryMap &map )
@@ -2467,14 +2470,14 @@ KKeyEntryMap & KActionCollection::keyMap()
 
 uint KActionCollection::count() const
 {
-  return d->m_actions.count();
+  return d->m_actionDict.count();
 }
 
 QStringList KActionCollection::groups() const
 {
   QStringList lst;
 
-  QListIterator<KAction> it( d->m_actions );
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
     if ( !it.current()->group().isEmpty() && !lst.contains( it.current()->group() ) )
       lst.append( it.current()->group() );
@@ -2486,7 +2489,7 @@ QValueList<KAction*> KActionCollection::actions( const QString& group ) const
 {
   QValueList<KAction*> lst;
 
-  QListIterator<KAction> it( d->m_actions );
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
     if ( it.current()->group() == group )
       lst.append( it.current() );
@@ -2500,7 +2503,7 @@ QValueList<KAction*> KActionCollection::actions() const
 {
   QValueList<KAction*> lst;
 
-  QListIterator<KAction> it( d->m_actions );
+  QAsciiDictIterator<KAction> it( d->m_actionDict );
   for( ; it.current(); ++it )
     lst.append( it.current() );
 
@@ -2522,7 +2525,7 @@ KActionCollection KActionCollection::operator+(const KActionCollection &c ) cons
 
 KActionCollection &KActionCollection::operator=( const KActionCollection &c )
 {
-  d->m_actions = c.d->m_actions;
+  d->m_actionDict = c.d->m_actionDict;
   d->m_keyMap = c.d->m_keyMap;
   setInstance( c.instance() );
   return *this;
@@ -2530,7 +2533,7 @@ KActionCollection &KActionCollection::operator=( const KActionCollection &c )
 
 KActionCollection &KActionCollection::operator+=( const KActionCollection &c )
 {
-  QListIterator<KAction> it(c.d->m_actions);
+  QAsciiDictIterator<KAction> it(c.d->m_actionDict);
   for ( ; it.current(); ++it )
     insert( it.current() );
 

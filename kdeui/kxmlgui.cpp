@@ -144,6 +144,7 @@ public:
   QString attrName;
 
   QValueList<MergingIndex>::Iterator m_currentDefaultMergingIt;
+  QValueList<MergingIndex>::Iterator m_currentClientMergingIt;
 
   QStringList m_builderContainerTags;
 };
@@ -547,6 +548,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
   KXMLGUIContainerClient *containerClient = 0L;
 
   d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
+  calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt, false );
 
   /*
    * When we encounter the "Merge" tag, then have to make sure to ingore it for the actions on the
@@ -616,25 +618,39 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
         ignoreDefaultMergingIndex = true;
 
       d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
+      calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt, ignoreDefaultMergingIndex );
     }
     else if ( tag == tagAction || customTags.contains( tag ) )
     {
       if ( !parentNode->container )
         continue;
 
-      QValueList<MergingIndex>::Iterator it = parentNode->mergingIndices.end();
+      QValueList<MergingIndex>::Iterator it = d->m_currentClientMergingIt;
 
+      bool haveGroup = false;
       QString group = e.attribute( attrGroup );
       if ( !group.isEmpty() )
+      {
         group.prepend( attrGroup );
+	haveGroup = true;
+      }
 
-      int idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+//      int idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+      int idx;
+      if ( haveGroup )
+	  idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+      else if ( d->m_currentClientMergingIt == parentNode->mergingIndices.end() )
+	  idx = parentNode->index;
+      else
+	  idx = (*d->m_currentClientMergingIt).value;
+	  
 
-      containerClient = findClient( parentNode, group, it );
+      //      if ( !containerClient || haveGroup )
+        containerClient = findClient( parentNode, group, it );
 
       if ( tag == tagAction )
       {
-        KAction *action = m_client->action( e );
+	KAction *action = m_client->action( e );
 
 	if ( !action )
 	  continue;
@@ -671,16 +687,29 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	 */
         buildRecursive( e, matchingContainer );
         d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
+        calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt, ignoreDefaultMergingIndex );
       }	
       else
       {	
-      QValueList<MergingIndex>::Iterator it = parentNode->mergingIndices.end();
+	QValueList<MergingIndex>::Iterator it = d->m_currentClientMergingIt;
 
+	bool haveGroup = false;
 	QString group = e.attribute( attrGroup );
         if ( !group.isEmpty() )
+	{
           group.prepend( attrGroup );
+	  haveGroup = true;
+	}
 	
-	int idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+//	int idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+	//	int idx = d->m_currentClientMergingIndex;
+	int idx;
+	if ( haveGroup )
+	    idx = calcMergingIndex( parentNode, group, it, ignoreDefaultMergingIndex );
+        else if ( d->m_currentClientMergingIt == parentNode->mergingIndices.end() )
+	    idx = parentNode->index;
+        else
+	    idx = (*d->m_currentClientMergingIt).value;
 	
 	/*
 	 * let the builder create the container
@@ -689,7 +718,7 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	int id;
 	
 	KXMLGUIBuilder *builder;
-	
+
         QWidget *container = createContainer( parentNode->container, idx, e, id, &builder );
 	
 	// no container? (probably some <text> tag or so ;-)
@@ -710,13 +739,13 @@ void KXMLGUIFactory::buildRecursive( const QDomElement &element, KXMLGUIContaine
 	
           containerNode = new KXMLGUIContainerNode( container, tag, currName, parentNode, m_client, builder, id, mergingName, group );
 	}
-	
+
         buildRecursive( e, containerNode );
         d->m_currentDefaultMergingIt = parentNode->findIndex( d->m_defaultMergingName );
+        calcMergingIndex( parentNode, QString::null, d->m_currentClientMergingIt, ignoreDefaultMergingIndex );
       }
     }
   }
-
 }
 
 bool KXMLGUIFactory::removeRecursive( QDomElement &element, KXMLGUIContainerNode *node )
