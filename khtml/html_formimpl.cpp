@@ -1386,13 +1386,11 @@ void HTMLTextAreaElementImpl::attach(KHTMLWidget *_view)
 	edit->setText(QString(t->string()->s, t->string()->l));
     }
     if(edit && _disabled) edit->setEnabled(false);
+
 }
 
 void HTMLTextAreaElementImpl::layout( bool )
 {
-    width = availableWidth;
-    if(!width) return;
-
     _style->font.family = pSettings->fixedFontFace;
     w->setFont( *getFont() );
 
@@ -1412,12 +1410,13 @@ void HTMLTextAreaElementImpl::calcMinMaxWidth()
     printf("%s(InputElement)::calcMinMaxWidth() known=%d\n", nodeName().string().ascii(), minMaxKnown());
 #endif
 
-    if(minMaxKnown()) return;
+    //if(minMaxKnown()) return;
 
     if(w)
-	minWidth = w->width();
+        layout();
     else
 	printf("InputElement: no Widget!!!\n");
+    minWidth = width;
     maxWidth = minWidth;
 
     if(availableWidth && minWidth > availableWidth)
