@@ -214,7 +214,8 @@ void KMMainView::initActions()
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotToggleToolBar(bool)));
 	tact = new KToggleAction( i18n( "View Me&nu Toolbar" ), 0, m_actions, "view_menubar" );
 	connect( tact, SIGNAL( toggled( bool ) ), SLOT( slotToggleMenuBar( bool ) ) );
-	tact = new KToggleAction(i18n("Show/Hide Pr&inter Details"),"kdeprint_printer_infos", 0,m_actions,"view_printerinfos");
+	tact = new KToggleAction(i18n("Show Pr&inter Details"),"kdeprint_printer_infos", 0,m_actions,"view_printerinfos");
+	tact->setCheckedState(KGuiItem(i18n("Hide Pr&inter Details"),"kdeprint_printer_infos"));
 	tact->setChecked(true);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowPrinterInfos(bool)));
 

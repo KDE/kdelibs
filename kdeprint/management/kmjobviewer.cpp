@@ -273,6 +273,7 @@ void KMJobViewer::initActions()
 	tact->setEnabled(m_manager->actions() & KMJob::ShowCompleted);
 	connect(tact,SIGNAL(toggled(bool)),SLOT(slotShowCompleted(bool)));
 	KToggleAction	*uact = new KToggleAction(i18n("Show Only User Jobs"), "personal", 0, actionCollection(), "view_user_jobs");
+	uact->setCheckedState(KGuiItem(i18n("Hide Only User Jobs"),"personal"));
 	connect(uact, SIGNAL(toggled(bool)), SLOT(slotUserOnly(bool)));
 	m_userfield = new QLineEdit(0);
 	m_userfield->setText(getenv("USER"));
@@ -528,7 +529,7 @@ void KMJobViewer::loadPrinters()
 	for (;it.current();++it)
 	{
 		// keep only real printers (no instance, no implicit) and special printers
-		if ((it.current()->isPrinter() || it.current()->isClass(false) || 
+		if ((it.current()->isPrinter() || it.current()->isClass(false) ||
 					( it.current()->isSpecial() && it.current()->isValid() ) )
 				&& (it.current()->name() == it.current()->printerName()))
 			m_printers.append(it.current());

@@ -237,6 +237,7 @@ void KMDIGUIClient::addToolView(KMdiToolViewAccessor* mtva) {
 	KAction *a=new ToggleToolViewAction(i18n("Show %1").arg(mtva->wrappedWidget()->caption()),
 		/*QString::null*/sc,dynamic_cast<KDockWidget*>(mtva->wrapperWidget()),
 		m_mdiMainFrm,actionCollection(), aname.latin1() );
+	((ToggleToolViewAction*)a)->setCheckedState(i18n("Hide %1").arg(mtva->wrappedWidget()->caption()));
 	connect(a,SIGNAL(destroyed(QObject*)),this,SLOT(actionDeleted(QObject*)));
 	m_toolViewActions.append(a);
 	m_toolMenu->insert(a);
