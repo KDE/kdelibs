@@ -42,6 +42,8 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node)
     RenderObject *o = 0;
     switch(style->display())
     {
+    case NONE:
+        break;
     case INLINE:
     case BLOCK:
         o = new RenderFlow();
@@ -80,8 +82,6 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl* node)
     case TABLE_CAPTION:
         o = new RenderTableCaption();
         break;
-    case NONE:
-        return 0;
     }
     if(o) o->setStyle(style);
     return o;

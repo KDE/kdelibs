@@ -91,6 +91,9 @@ public:
     virtual void calcWidth();
     virtual void calcHeight();
 
+    virtual short calcReplacedWidth(bool* ieHack=0) const;
+    virtual int   calcReplacedHeight() const;
+
     void calcVerticalMargins();
     virtual bool containsPoint(int _x, int _y, int _tx, int _ty);
 

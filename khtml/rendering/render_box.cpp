@@ -27,12 +27,11 @@
 
 #include <qpainter.h>
 
+#include "rendering/render_box.h"
+#include "rendering/render_replaced.h"
+#include "rendering/render_root.h"
 
-
-#include "render_box.h"
-#include "render_replaced.h"
-#include "render_root.h"
-
+#include <khtmlview.h>
 #include <kdebug.h>
 #include <assert.h>
 
@@ -494,7 +493,7 @@ void RenderBox::calcWidth()
     {
         Length w;
         if ( isReplaced () )
-            w = Length( static_cast<RenderReplaced*>( this )->calcReplacedWidth(), Fixed );
+            w = Length( calcReplacedWidth(), Fixed );
         else
             w = style()->width();
 
@@ -621,8 +620,7 @@ void RenderBox::calcHeight()
     {
         Length h;
         if ( isReplaced() )
-            h = Length( static_cast<RenderReplaced*>( this )->
-                        calcReplacedHeight(), Fixed );
+            h = Length( calcReplacedHeight(), Fixed );
         else
             h = style()->height();
 
@@ -654,6 +652,88 @@ void RenderBox::calcHeight()
             }
         }
     }
+}
+
+short RenderBox::calcReplacedWidth(bool* ieHack) const
+{
+    Length w = style()->width();
+    short width;
+    if ( ieHack )
+        *ieHack = false;
+
+    switch( w.type ) {
+    case Variable:
+    {
+        Length h = style()->height();
+        int ih = intrinsicHeight();
+        if ( ih > 0 && ( h.isPercent() || h.isFixed() ) )
+            width = ( ( h.isPercent() ? calcReplacedHeight() : h.value )*intrinsicWidth() ) / ih;
+        else
+            width = intrinsicWidth();
+        break;
+    }
+    case Percent:
+    {
+        int cw = containingBlockWidth();
+        if ( cw )
+            width = w.minWidth( cw );
+        else
+            width = intrinsicWidth();
+
+        if ( ieHack )
+            *ieHack = cw;
+        break;
+    }
+    case Fixed:
+        width = w.value;
+        break;
+    default:
+        width = intrinsicWidth();
+        break;
+    };
+
+    return width;
+}
+
+int RenderBox::calcReplacedHeight() const
+{
+    Length h = style()->height();
+    short height;
+    switch( h.type ) {
+    case Variable:
+    {
+        Length w = style()->width();
+        int iw = intrinsicWidth();
+        if( iw > 0 && ( w.isFixed() || w.isPercent() ))
+            height = (( w.isPercent() ? calcReplacedWidth() : w.value ) * intrinsicHeight()) / iw;
+        else
+            height = intrinsicHeight();
+    }
+    break;
+    case Percent:
+    {
+        RenderObject* cb = containingBlock();
+        if ( cb->isBody() )
+            height = h.minWidth( cb->root()->view()->visibleHeight() );
+        else {
+            if ( cb->isTableCell() )
+                cb = cb->containingBlock();
+
+            if ( cb->style()->height().isFixed() )
+                height = h.minWidth( cb->style()->height().value );
+            else
+                height = intrinsicHeight();
+        }
+    }
+    break;
+    case Fixed:
+        height = h.value;
+        break;
+    default:
+        height = intrinsicHeight();
+    };
+
+    return height;
 }
 
 void RenderBox::calcVerticalMargins()
