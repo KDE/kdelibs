@@ -59,6 +59,55 @@ QList<KHTMLView> *KHTMLView::lstViews = 0L;
 using namespace DOM;
 using namespace khtml;
 
+class KHTMLViewDropHandler : public QObject
+{
+ public:
+    KHTMLViewDropHandler( KHTMLView *parent, const char *name );
+
+    virtual bool eventFilter( QObject *obj, QEvent *ev );
+
+ private:
+    KHTMLView *m_view;
+};
+
+KHTMLViewDropHandler::KHTMLViewDropHandler( KHTMLView *parent, const char *name )
+    : QObject( parent, name )
+{
+    m_view = parent;
+    m_view->installEventFilter( this );
+}
+
+bool KHTMLViewDropHandler::eventFilter( QObject *obj, QEvent *ev )
+{
+    if ( obj != m_view )
+        return false;
+
+    if ( ev->type() == QEvent::DragEnter )
+    {
+        QDragEnterEvent *e = static_cast<QDragEnterEvent *>( ev );
+
+        if( QUriDrag::canDecode( e ) )
+        {
+            KURL::List lstDragURLs;
+            bool ok = KURLDrag::decode( e, lstDragURLs );
+
+            if ( ok &&
+                 !lstDragURLs.first().url().contains( "javascript:", false ) &&
+                 e->source() != m_view->viewport() )
+                e->acceptAction();
+        }
+    }
+    else if ( ev->type() == QEvent::Drop )
+    {
+        KURL::List lstDragURLs;
+        bool ok = KURLDrag::decode( static_cast<QDropEvent *>( ev ), lstDragURLs );
+        if ( ok )
+            emit m_view->part()->browserExtension()->openURLRequest( lstDragURLs.first() );
+    }
+
+    return false;
+}
+
 class KHTMLViewPrivate {
 public:
     KHTMLViewPrivate()
@@ -119,23 +168,31 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     viewport()->show();
 
+    // Daniel Naber's patch to allow dropping URLs onto Konqueror.
+    // Implemented as separate-object-installs-event-filter solution
+    // as reimplementing the virtual dnd methods of QWidget might
+    // arise problems regarding binary compatibility (it doesn't break
+    // BC as is but already existing reimplementations would call the
+    // wrong base implementation (leaving out the new one) .
+    // ### FIXME KDE 3.0 :-)
+    (void)new KHTMLViewDropHandler( this, "htmlviewdrophandler" );
 }
 
 KHTMLView::~KHTMLView()
 {
     if (m_part)
     {
-	//WABA: Is this Ok? Do I need to deref it as well?
-	//Does this need to be done somewhere else?
-	DOM::DocumentImpl *doc = m_part->xmlDocImpl();
-	if (doc)
-	    doc->detach();
+        //WABA: Is this Ok? Do I need to deref it as well?
+        //Does this need to be done somewhere else?
+        DOM::DocumentImpl *doc = m_part->xmlDocImpl();
+        if (doc)
+            doc->detach();
     }
     lstViews->removeRef( this );
     if(lstViews->isEmpty())
     {
-	delete lstViews;
-	lstViews = 0;
+        delete lstViews;
+        lstViews = 0;
     }
 
     delete d;
@@ -246,17 +303,17 @@ void KHTMLView::layout(bool)
         khtml::RenderRoot* root = static_cast<khtml::RenderRoot *>(document->renderer());
 
         if (document->isHTMLDocument()) {
-	    NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
-	    if(body && body->id() == ID_FRAMESET) {
-		QScrollView::setVScrollBarMode(AlwaysOff);
-		QScrollView::setHScrollBarMode(AlwaysOff);
-		_width = visibleWidth();
-		body->renderer()->setLayouted(false);
-		body->renderer()->layout();
-		root->layout();
-		return;
-	    }
-	}
+            NodeImpl *body = static_cast<HTMLDocumentImpl*>(document)->body();
+            if(body && body->id() == ID_FRAMESET) {
+                QScrollView::setVScrollBarMode(AlwaysOff);
+                QScrollView::setHScrollBarMode(AlwaysOff);
+                _width = visibleWidth();
+                body->renderer()->setLayouted(false);
+                body->renderer()->layout();
+                root->layout();
+                return;
+            }
+        }
 
         _height = visibleHeight();
         _width = visibleWidth();
@@ -436,61 +493,61 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     if (_ke->state()&ShiftButton)
       switch(_ke->key())
-	{
-	case Key_Space:
-	    scrollBy( 0, -clipper()->height() - offs );
-	    break;
-	}
+        {
+        case Key_Space:
+            scrollBy( 0, -clipper()->height() - offs );
+            break;
+        }
     else
-	switch ( _ke->key() )
-	{
-	case Key_Down:
-	case Key_J:
-	    scrollBy( 0, 10 );
-	    break;
+        switch ( _ke->key() )
+        {
+        case Key_Down:
+        case Key_J:
+            scrollBy( 0, 10 );
+            break;
 
-	case Key_Space:
-	    if (d->currentNode)
-	    {
-	        toggleActLink(false);
-	        break;
-	    }
-	    // no current Node? scroll...
-	case Key_Next:
-	    scrollBy( 0, clipper()->height() - offs );
-	    break;
+        case Key_Space:
+            if (d->currentNode)
+            {
+                toggleActLink(false);
+                break;
+            }
+            // no current Node? scroll...
+        case Key_Next:
+            scrollBy( 0, clipper()->height() - offs );
+            break;
 
-	case Key_Up:
-	case Key_K:
-	    scrollBy( 0, -10 );
-	    break;
+        case Key_Up:
+        case Key_K:
+            scrollBy( 0, -10 );
+            break;
 
-	case Key_Prior:
-	    scrollBy( 0, -clipper()->height() + offs );
-	    break;
-	case Key_Right:
-	case Key_L:
-	    scrollBy( 10, 0 );
-	    break;
-	case Key_Left:
-	case Key_H:
-	    scrollBy( -10, 0 );
-	    break;
-	case Key_Enter:
-	case Key_Return:
-	    toggleActLink(false);
-	    break;
-	case Key_Home:
-	    setContentsPos( 0, 0 );
-	    break;
-	case Key_End:
-	    setContentsPos( 0, contentsHeight() - height() );
-	    break;
-	default:
-	    //	d->currentNode->keyPressEvent( _ke );
-	    return;
-	    break;
-	}
+        case Key_Prior:
+            scrollBy( 0, -clipper()->height() + offs );
+            break;
+        case Key_Right:
+        case Key_L:
+            scrollBy( 10, 0 );
+            break;
+        case Key_Left:
+        case Key_H:
+            scrollBy( -10, 0 );
+            break;
+        case Key_Enter:
+        case Key_Return:
+            toggleActLink(false);
+            break;
+        case Key_Home:
+            setContentsPos( 0, 0 );
+            break;
+        case Key_End:
+            setContentsPos( 0, contentsHeight() - height() );
+            break;
+        default:
+            //  d->currentNode->keyPressEvent( _ke );
+            return;
+            break;
+        }
     _ke->accept();
 }
 
@@ -545,16 +602,16 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
     kdDebug(6000)<<"                :Link found:"<<n<<"\n";
     if(d->currentNode) d->currentNode->blur();
     if(!n)
-	{
-	    kdDebug(6000)<<"end of link list reached.\n";
-	    d->currentNode = 0;
-	    return false;
-	}
+        {
+            kdDebug(6000)<<"end of link list reached.\n";
+            d->currentNode = 0;
+            return false;
+        }
     if (!n->isSelectable())
-	{
-	    d->currentNode = 0;
-	    return false;
-	}
+        {
+            d->currentNode = 0;
+            return false;
+        }
     n->focus();
     if (d->linkPressed)
         n->setKeyboardFocus(DOM::ActivationActive);
@@ -574,35 +631,35 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
 
     // is ypos of target above upper border?
     if (y < contentsY() + borderY)
-	{
-	    deltay = y - contentsY() - borderY;
-	}
+        {
+            deltay = y - contentsY() - borderY;
+        }
     // is ypos of target below lower border:
     else if (ye + borderY > contentsY() + height())
-	{
-	    deltay = ye + borderY - ( contentsY() + height() );
-	}
+        {
+            deltay = ye + borderY - ( contentsY() + height() );
+        }
     else
-	deltay = 0;
+        deltay = 0;
 
     // is xpos of target left of the view's border?
     if (x - borderX - contentsX() < 0)
-	{
-	    deltax = x - contentsX() - borderX;
-	}
+        {
+            deltax = x - contentsX() - borderX;
+        }
     // is xpos of target right of the view's right border?
     else if (xe + borderX > contentsX() + width())
-	{
-	    deltax = xe + borderX - ( contentsX() + width() );
-	}
+        {
+            deltax = xe + borderX - ( contentsX() + width() );
+        }
     else
-	deltax = 0;
+        deltax = 0;
 
     if (!d->currentNode)
     {
-	scrollBy(deltax, deltay);
-	d->currentNode = n;
-	return true;
+        scrollBy(deltax, deltay);
+        d->currentNode = n;
+        return true;
     }
 
     int maxx = width()-borderX;
@@ -621,15 +678,15 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
 
     // generate abs(scroll.)
     if (scrollX<0)
-	scrollX=-scrollX;
+        scrollX=-scrollX;
     if (scrollY<0)
-	scrollY=-scrollY;
+        scrollY=-scrollY;
 
     // only set cursor to new node if scrolling could make
     // the link completely visible
     if ( (scrollX!=maxx) && (scrollY!=maxy) )
     {
-	d->currentNode = n;
+        d->currentNode = n;
     }
     return true;
 }
@@ -637,32 +694,32 @@ bool KHTMLView::gotoLink(HTMLElementImpl *n)
 bool KHTMLView::gotoLink(bool forward)
 {
     if (!m_part->docImpl())
-	return false;
+        return false;
 
     if (!d->currentNode && forward)
-	return notabindex(0, forward);
+        return notabindex(0, forward);
     else if (!d->currentNode && !forward)
-	return tabindexzero(0, forward);
+        return tabindexzero(0, forward);
     else if(d->currentNode->tabIndex()==-1)
-	return notabindex(d->currentNode, forward);
+        return notabindex(d->currentNode, forward);
     else if (d->currentNode->tabIndex()>0)
-	return intabindex(d->currentNode, forward);
+        return intabindex(d->currentNode, forward);
     else // d->currentNode->tabIndex()==0
-	return tabindexzero(d->currentNode, forward);
+        return tabindexzero(d->currentNode, forward);
 }
-  
+
 bool KHTMLView::notabindex(HTMLElementImpl *cur, bool forward)
 {
     // REQ: n must be after the current node and its tabindex must be -1
     if (cur = m_part->docImpl()->findLink(cur, forward, -1))
-	return gotoLink(cur);
+        return gotoLink(cur);
 
     if (forward)
-	return intabindex(cur, forward);
+        return intabindex(cur, forward);
     setContentsPos( 0, 0);
     return gotoLink((HTMLElementImpl *)0);
 }
-  
+
 bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
 {
     short tmptabindex;
@@ -670,29 +727,29 @@ bool KHTMLView::intabindex(HTMLElementImpl *cur, bool forward)
     short increment=(forward?1:-1);
     if (cur)
     {
-	tmptabindex = cur->tabIndex();
+        tmptabindex = cur->tabIndex();
     }
     else tmptabindex=(forward?1:maxtabindex);
 
     while(tmptabindex>0 && tmptabindex<=maxtabindex)
     {
-	if (cur = m_part->docImpl()->findLink(cur, forward, tmptabindex))
-	    return gotoLink(cur);
-	tmptabindex+=increment;
+        if (cur = m_part->docImpl()->findLink(cur, forward, tmptabindex))
+            return gotoLink(cur);
+        tmptabindex+=increment;
     }
     if (forward)
-	return tabindexzero(cur, forward);
+        return tabindexzero(cur, forward);
     else
-	return notabindex(cur, forward) ;
+        return notabindex(cur, forward) ;
 }
-  
+
 bool KHTMLView::tabindexzero(HTMLElementImpl *cur, bool forward)
 {
     //REQ: tabindex of result must be 0 and it must be after the current node ;
     if (cur = m_part->docImpl()->findLink(cur, forward, 0))
-	return gotoLink(cur);
+        return gotoLink(cur);
     if (!forward)
-	return intabindex(cur, forward);
+        return intabindex(cur, forward);
     setContentsPos( 0, contentsHeight() - height() + 5 );
     return gotoLink((HTMLElementImpl *)0);
 }
@@ -805,14 +862,14 @@ void KHTMLView::toggleActLink(bool actState)
             d->linkPressed=false;
             if (d->currentNode==d->originalNode)
             {
-	      if (e->id()==ID_A)
-		{
-		  HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
-		  d->currentNode=0;
-		  m_part->urlSelected( a->areaHref().string(),
-				       LeftButton, 0,
-				       a->targetRef().string() );
-		}
+              if (e->id()==ID_A)
+                {
+                  HTMLAnchorElementImpl *a = static_cast<HTMLAnchorElementImpl *>(d->currentNode);
+                  d->currentNode=0;
+                  m_part->urlSelected( a->areaHref().string(),
+                                       LeftButton, 0,
+                                       a->targetRef().string() );
+                }
             }
             d->originalNode=0;
         }
@@ -858,16 +915,16 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
       lstViews->first();
       while(lstViews->next())
       {
-	  KHTMLView * actView = lstViews->current();
-	  if (!actView || !this)
-	      kdFatal(6000)<<"no object / subject\n";
+          KHTMLView * actView = lstViews->current();
+          if (!actView || !this)
+              kdFatal(6000)<<"no object / subject\n";
 
-	  if (actView != this)
-	  {
-	      if (actView->d->currentNode && actView->d->currentNode!=n)
-		  actView->d->currentNode->blur();
-	      actView->d->currentNode = 0;
-	  }
+          if (actView != this)
+          {
+              if (actView->d->currentNode && actView->d->currentNode!=n)
+                  actView->d->currentNode->blur();
+              actView->d->currentNode = 0;
+          }
 
       }
   }
@@ -875,42 +932,15 @@ void KHTMLView::setLinkCursor(DOM::HTMLElementImpl *n)
   if (d->currentNode != n)
   {
       if (d->currentNode)
-	  d->currentNode->blur();
+          d->currentNode->blur();
       d->currentNode = n;
       if (n)
       {
-	  kdDebug(6000)<<"setLinkCursor to:"<<getTagName(n->id()).string()<<"\n";
-	  n->setKeyboardFocus(DOM::ActivationPassive);
-	  n->focus();
+          kdDebug(6000)<<"setLinkCursor to:"<<getTagName(n->id()).string()<<"\n";
+          n->setKeyboardFocus(DOM::ActivationPassive);
+          n->focus();
       }
   }
   d->linkPressed=false;
 }
 
-/* not BC
-void KHTMLView::dragEnterEvent( QDragEnterEvent *e )
-{
-  if ( e->provides( "text/uri-list" ) )
-  {
-      KURL::List m_lstDragURLs;
-      bool ok = KURLDrag::decode( e, m_lstDragURLs );
-      if( ok
-          && ! m_lstDragURLs.first().prettyURL().contains("javascript:", false)
-          && e->source() != viewport() ) 	// don't accept on this window, only on others
-      {
-          e->acceptAction();
-      }
-  }
-}
-
-void KHTMLView::dropEvent(QDropEvent* event)
-{
-    KURL::List m_lstDragURLs;
-    bool ok = KURLDrag::decode( event, m_lstDragURLs );
-    if( ok )
-    {
-        // just take the first URL
-	part()->slotShowDocument(m_lstDragURLs.first().url(), "_top");
-    }
-}
-*/

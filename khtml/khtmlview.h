@@ -4,7 +4,7 @@
              (C) 1998 Waldo Bastian (bastian@kde.org)
              (C) 1998, 1999 Torben Weis (weis@kde.org)
              (C) 1999 Lars Knoll (knoll@kde.org)
-	     (C) 1999 Antti Koivisto (koivisto@kde.org)
+             (C) 1999 Antti Koivisto (koivisto@kde.org)
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -134,9 +134,9 @@ public:
 
     /*
      * Set horizontal scrollbar mode. Reimplemented for internal reasons.
-     */        
+     */
     virtual void setHScrollBarMode ( ScrollBarMode mode );
-    
+
     /**
      * Print the HTML document.
      **/
@@ -186,16 +186,6 @@ protected:
      */
     void doAutoScroll();
 
-    /**
-     * Something is dragged over this view.
-     */
-//    void dragEnterEvent( QDragEnterEvent *e );
-
-    /**
-     * Something is dropped on this view.
-     */
-//    void dropEvent( QDropEvent* event );
-
 private:
     /**
      * move the view towards the currently selected node
@@ -214,7 +204,7 @@ private:
     bool tabindexzero(DOM::HTMLElementImpl *cur, bool forward);
 
     /**
-     * move the view towards the next node 
+     * move the view towards the next node
      * or the last node from this one.
      */
     bool gotoLink(bool);
@@ -224,7 +214,7 @@ private:
     void init();
 
     DOM::NodeImpl *nodeUnderMouse() const;
-    
+
     void restoreScrollBar();
 
     // ------------------------------------- member variables ------------------------------------
