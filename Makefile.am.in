@@ -24,6 +24,8 @@ COMPILE_BEFORE_khtml = kparts kdeprint kspell kjs
 COMPILE_BEFORE_kdeprint = kparts
 COMPILE_BEFORE_kinit = kparts
 COMPILE_BEFORE_kabc = kab
+COMPILE_BEFORE_kate = interfaces kdeprint kparts
+COMPILE_BEFORE_interfaces = kparts
 
 $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/admin/libtool.m4.in $(top_srcdir)/libltdl/ltdl.m4
 	@cd $(top_srcdir) && cat admin/acinclude.m4.in admin/libtool.m4.in libltdl/ltdl.m4 > acinclude.m4
