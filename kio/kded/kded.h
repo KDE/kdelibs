@@ -37,7 +37,7 @@ class Kded : public KSycoca
 {
   Q_OBJECT
 public:
-   Kded( );
+   Kded(int pollInterval, int NFSPollInterval);
    virtual ~Kded();
 
    /**
@@ -76,7 +76,7 @@ protected:
    /**
     * Scans dir for new files and new subdirectories.
     */
-   void readDirectory(const QString& dir );
+   void readDirectory(const QString& dir, KDirWatch *dirWatch );
    
    /**
     * @internal
@@ -91,6 +91,13 @@ protected:
     * changed.
     */
    KDirWatch* m_pDirWatch;
+   /*
+    * A dirwatch used for remote file systems
+    */
+   KDirWatch* m_pDirWatchNfs;
+
+   int m_PollInterval;
+   int m_NFSPollInterval;
 
    /**
     * When a desktop file is updated, a timer is started (5 sec)

@@ -44,6 +44,7 @@
 #include <kdebug.h>
 #include <kdirwatch.h>
 #include <kstddirs.h>
+#include <kio/global.h>
 
 static void runBuildSycoca()
 {
@@ -53,8 +54,10 @@ static void runBuildSycoca()
 }
 
 
-Kded::Kded()
-  : KSycoca( true )
+Kded::Kded(int pollInterval, int NFSPollInterval)
+  : KSycoca( true ), 
+    m_PollInterval(pollInterval), 
+    m_NFSPollInterval(NFSPollInterval)
 {
   QString path = KGlobal::dirs()->saveLocation("tmp")+"ksycoca";
   QCString cPath = QFile::encodeName(path);
@@ -62,6 +65,7 @@ Kded::Kded()
   connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
   m_pDirWatch = 0;
+  m_pDirWatchNfs = 0;
 }
 
 Kded::~Kded()
@@ -69,16 +73,23 @@ Kded::~Kded()
   m_pTimer->stop();
   delete m_pTimer;
   delete m_pDirWatch;
+  delete m_pDirWatchNfs;
 }
 
 void Kded::build()
 {
   delete m_pDirWatch;
-  m_pDirWatch = new KDirWatch;
+  delete m_pDirWatchNfs;
+  m_pDirWatch = new KDirWatch(m_PollInterval);
+  m_pDirWatchNfs = new KDirWatch(m_NFSPollInterval);
 
   QObject::connect( m_pDirWatch, SIGNAL(dirty(const QString&)),
            this, SLOT(update(const QString&)));
   QObject::connect( m_pDirWatch, SIGNAL(deleted(const QString&)),
+           this, SLOT(dirDeleted(const QString&)));
+  QObject::connect( m_pDirWatchNfs, SIGNAL(dirty(const QString&)),
+           this, SLOT(update(const QString&)));
+  QObject::connect( m_pDirWatchNfs, SIGNAL(deleted(const QString&)),
            this, SLOT(dirDeleted(const QString&)));
 
   // It is very important to build the servicetype one first
@@ -109,7 +120,12 @@ void Kded::build()
            it2 != dirs.end();
            ++it2 )
       {
-         readDirectory( *it2 );
+         if (KIO::probably_slow_mounted(*it2))
+         {   
+            readDirectory( *it2, m_pDirWatchNfs );
+         } else {
+            readDirectory( *it2, m_pDirWatch );
+         }
       }
     }
     m_lstFactories->removeRef(factory);
@@ -162,13 +178,13 @@ bool Kded::process(const QCString &fun, const QByteArray &/*data*/,
     m_requests.append(kapp->dcopClient()->beginTransaction());
     replyType = "void";
     return true;
-  } else
+  } else 
     return false;
     // don't call KSycoca::process - this is for other apps, not kded
 }
 
 
-void Kded::readDirectory( const QString& _path )
+void Kded::readDirectory( const QString& _path, KDirWatch *dirWatch )
 {
   // kdDebug(7020) << QString("reading %1").arg(_path) << endl;
 
@@ -176,7 +192,7 @@ void Kded::readDirectory( const QString& _path )
   if ( path.right(1) != "/" )
     path += "/";
 
-  if ( m_pDirWatch->contains( path ) ) // Already seen this one?
+  if ( dirWatch->contains( path ) ) // Already seen this one?
      return;
 
   QDir d( _path, QString::null, QDir::Unsorted, QDir::AccessMask | QDir::Dirs );
@@ -187,7 +203,7 @@ void Kded::readDirectory( const QString& _path )
   //                           Setting dirs
   //************************************************************************
 
-  m_pDirWatch->addDir(path);          // add watch on this dir
+  dirWatch->addDir(path);          // add watch on this dir
 
   if ( !d.exists() )                            // exists&isdir?
   {
@@ -211,7 +227,7 @@ void Kded::readDirectory( const QString& _path )
      file = path;                           // set full path
      file += d[i];                          // and add the file name.
 
-     readDirectory( file );      // yes, dive into it.
+     readDirectory( file, dirWatch );      // yes, dive into it.
   }
 }
 
@@ -262,7 +278,7 @@ int main(int argc, char *argv[])
      putenv(strdup("SESSION_MANAGER="));
 
      KInstance *instance = new KInstance(&aboutData);
-     (void) instance->config(); // Enable translations.
+     KConfig *config = instance->config(); // Enable translations.
 
      KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
@@ -278,7 +294,11 @@ int main(int argc, char *argv[])
         exit(0);
      }
 
-     Kded *kded = new Kded(); // Build data base
+     config->setGroup("General");
+     int PollInterval = config->readNumEntry("PollInterval", 500);
+     int NFSPollInterval = config->readNumEntry("NFSPollInterval", 5000);
+
+     Kded *kded = new Kded(PollInterval, NFSPollInterval); // Build data base
 
      kded->recreate();
 
