@@ -169,7 +169,6 @@ inline kndbgstream &perror( kndbgstream & s) { return s; }
 kdbgstream kdDebug(int area = 0);
 kdbgstream kdDebug(bool cond, int area = 0);
 #else
-#define kdebug kndDebug
 #define kdDebug kndDebug
 inline kndbgstream kndDebug(int = 0) { return kndbgstream(); }
 inline kndbgstream kndDebug(bool , int  = 0) { return kndbgstream(); }
