@@ -39,7 +39,7 @@ namespace KJS {
   class Window : public HostImp {
     friend class WindowFunc;
     friend class WindowQObject;
-    friend Window *newWindow(KHTMLPart*);
+    friend Window *newWindow(KHTMLPart*, bool);
     Window(KHTMLPart *p);
   public:
     ~Window();
@@ -59,7 +59,7 @@ namespace KJS {
    * for the specified part p this will be returned in order to have unique
    * bindings.
    */
-  Window *newWindow(KHTMLPart *p);
+  Window *newWindow(KHTMLPart *p, bool own = false);
 
   class WindowFunc : public DOMFunction {
   public:
