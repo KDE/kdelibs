@@ -631,7 +631,11 @@ bool KHTMLPart::openURL( const KURL &url )
   // operation and d) the caller did not request to reload the page we try to
   // be smart and instead of reloading the whole document we just jump to the
   // request html anchor
-  bool isFrameSet = (d->m_doc && d->m_doc->isHTMLDocument() && (static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->id() == ID_FRAMESET));
+  bool isFrameSet = false;
+  if ( d->m_doc && d->m_doc->isHTMLDocument() ) {
+      HTMLDocumentImpl* htmlDoc = static_cast<HTMLDocumentImpl*>(d->m_doc);
+      isFrameSet = htmlDoc->body() && (htmlDoc->body()->id() == ID_FRAMESET);
+  }
   if ( !isFrameSet &&
        urlcmp( url.url(), m_url.url(), true, true ) &&
        url.hasRef() && !args.doPost() && !args.reload )
