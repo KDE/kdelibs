@@ -170,13 +170,21 @@ void KRootPixmap::repaint(bool force)
     m_Desk = currentDesktop();
 
     // KSharedPixmap will correctly generate a tile for us.
-    m_pPixmap->loadFromShared(QString("DESKTOP%1").arg(m_Desk), m_Rect);
+    m_pPixmap->loadFromShared(pixmapName(m_Desk), m_Rect);
 }
 
 bool KRootPixmap::isAvailable() const
 {
-    QString name = QString("DESKTOP%1").arg( currentDesktop() );
-    return m_pPixmap->isAvailable(name);
+    return m_pPixmap->isAvailable(pixmapName(m_Desk));
+}
+
+QString KRootPixmap::pixmapName(int desk) {
+    QString pattern = QString("DESKTOP%1");
+    int screen_number = DefaultScreen(qt_xdisplay());
+    if (screen_number) {
+        pattern = QString("SCREEN%1-DESKTOP").arg(screen_number) + "%1";
+    }
+    return pattern.arg( desk );
 }
 
 
@@ -189,7 +197,13 @@ void KRootPixmap::enableExports()
     QByteArray data;
     QDataStream args( data, IO_WriteOnly );
     args << 1;
-    client->send( "kdesktop", "KBackgroundIface", "setExport(int)", data );
+
+    QCString appname( "kdesktop" );
+    int screen_number = DefaultScreen(qt_xdisplay());
+    if ( screen_number )
+        appname.sprintf("kdesktop-screen-%d", screen_number );
+
+    client->send( appname, "KBackgroundIface", "setExport(int)", data );
 }
 
 

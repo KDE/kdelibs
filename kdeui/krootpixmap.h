@@ -150,6 +150,10 @@ public slots:
      */
     void enableExports();
 
+    /**
+     * Returns the name of the shared pixmap (only needed for low level access)
+     */
+    static QString pixmapName(int desk);
 signals:
     /**
      * Emitted when the background needs updating and custom painting
