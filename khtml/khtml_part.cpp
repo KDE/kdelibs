@@ -47,6 +47,7 @@ using namespace DOM;
 #include "khtmlview.h"
 #include "decoder.h"
 #include "ecma/kjs_proxy.h"
+#include "kjs/object.h"
 #include "khtml_settings.h"
 
 #include <sys/types.h>
@@ -182,6 +183,7 @@ public:
   QString m_encoding;
   long m_cacheId;
   QString scheduledScript;
+  DOM::Node scheduledScriptNode;
 
   KJSProxy *m_jscript;
   KLibrary *m_kjs_lib;
@@ -637,10 +639,7 @@ bool KHTMLPart::jScriptEnabled() const
 
 KJSProxy *KHTMLPart::jScript()
 {
-  if ( d->m_bJScriptOverride && !d->m_bJScriptForce)
-      return 0;
-
-  if ( !d->m_bJScriptEnabled && !d->m_bJScriptOverride )
+  if ( d->m_bJScriptOverride && !d->m_bJScriptForce || !d->m_bJScriptOverride && !d->m_bJScriptEnabled)
       return 0;
 
   if ( !d->m_jscript )
@@ -666,7 +665,7 @@ KJSProxy *KHTMLPart::jScript()
 
 bool KHTMLPart::executeScript( const QString &script )
 {
-  return executeScript( DOM::Node(), script );
+    return executeScript( DOM::Node(), script );
 }
 
 bool KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
@@ -685,6 +684,16 @@ bool KHTMLPart::scheduleScript( const QString &script )
 {
     //kdDebug() << "KHTMLPart::scheduleScript "<< script << endl;
     d->scheduledScript = script;
+    d->scheduledScriptNode = DOM::Node();
+    return true;
+}
+
+bool KHTMLPart::scheduleScript(const DOM::Node &n, const QString& script)
+{
+
+    d->scheduledScript = script;
+    d->scheduledScriptNode = n;
+
     return true;
 }
 
@@ -700,7 +709,7 @@ bool KHTMLPart::executeScheduledScript()
 
   //kdDebug() << "executing delayed " << d->scheduledScript << endl;
 
-  bool ret = proxy->evaluate( d->scheduledScript.unicode(), d->scheduledScript.length(), Node() );
+  bool ret = proxy->evaluate( d->scheduledScript.unicode(), d->scheduledScript.length(), d->scheduledScriptNode );
   d->scheduledScript = QString();
   d->m_doc->updateRendering();
   return ret;
@@ -864,8 +873,7 @@ void KHTMLPart::clear()
   }
   d->m_doc = 0;
 
-  if ( d->m_decoder )
-    delete d->m_decoder;
+  delete d->m_decoder;
 
   d->m_decoder = 0;
   d->m_haveEncoding = false;
@@ -1119,9 +1127,8 @@ void KHTMLPart::write( const QString &str )
 void KHTMLPart::end()
 {
     // make sure nothing's left in there...
-    if(d->m_decoder) {
+    if(d->m_decoder)
         write(d->m_decoder->flush());
-    }
     d->m_doc->finishParsing();
 }
 

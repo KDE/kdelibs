@@ -207,6 +207,7 @@ public:
    *
    * Returns @p true if JavaScript was enabled, no error occured
    * and the code returned true itself or @p false otherwise.
+   * @deprecated, use the one below.
    */
   bool executeScript( const QString &script );
   /**
@@ -756,8 +757,13 @@ private:
 
   void clear();
 
-    bool scheduleScript( const QString &script );
-    bool executeScheduledScript();
+  /**
+   * @deprecated
+   */
+  bool scheduleScript( const QString &script );
+  bool scheduleScript( const DOM::Node &n, const QString& script);
+
+  bool executeScheduledScript();
 
   /**
    * @internal
