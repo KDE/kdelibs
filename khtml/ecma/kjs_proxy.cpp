@@ -103,7 +103,7 @@ namespace KJS {
     kjs_html_debugger->setMode(KJS::Debugger::Step);
 #endif
 
-    KJS::KJSO thisNode = n.isNull() ? KJSO() : getDOMNode(n);
+    KJS::KJSO thisNode = n.isNull() ? KJSO( Window::retrieve( khtmlpart ) ) : getDOMNode(n);
 
     KJS::Global::current().setExtra(khtmlpart);
     bool ret = script->evaluate(thisNode, c, len);

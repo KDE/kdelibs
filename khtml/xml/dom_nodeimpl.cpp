@@ -422,10 +422,16 @@ void NodeImpl::removeHTMLEventListener(int id)
         }
 }
 
-bool NodeImpl::dispatchEvent(EventImpl *evt, int &/*exceptioncode*/)
+bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode)
+{
+    evt->setTarget(this);
+    return dispatchGenericEvent( evt, exceptioncode );
+}
+
+bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
 {
     // ### check that type specified
-    evt->setTarget(this);
+
     // work out what nodes to send event to
     QList<NodeImpl> nodeChain;
     NodeImpl *n;
@@ -493,6 +499,17 @@ bool NodeImpl::dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg)
     EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
     evt->ref();
     bool r = dispatchEvent(evt,exceptioncode);
+    evt->deref();
+    return r;
+}
+
+bool NodeImpl::dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg)
+{
+    int exceptioncode;
+    EventImpl *evt = new EventImpl(static_cast<EventImpl::EventId>(_id),canBubbleArg,cancelableArg);
+    evt->setTarget( 0 );
+    evt->ref();
+    bool r = dispatchGenericEvent( evt, exceptioncode );
     evt->deref();
     return r;
 }

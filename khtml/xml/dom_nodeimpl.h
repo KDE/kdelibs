@@ -258,20 +258,22 @@ public:
     virtual DocumentImpl *getDocument()
         { return document->document(); } // different from ownerDocument() in that it is never null
 
-    virtual void addEventListener(int id, EventListener *listener, const bool useCapture);
-    virtual void addEventListener(const DOMString &type, EventListener *listener,
+    void addEventListener(int id, EventListener *listener, const bool useCapture);
+    void addEventListener(const DOMString &type, EventListener *listener,
                                   const bool useCapture, int &exceptioncode);
-    virtual void removeEventListener(int id, EventListener *listener, bool useCapture);
-    virtual void removeEventListener(const DOMString &type, EventListener *listener,
+    void removeEventListener(int id, EventListener *listener, bool useCapture);
+    void removeEventListener(const DOMString &type, EventListener *listener,
                                      bool useCapture,int &exceptioncode);
-    virtual void removeHTMLEventListener(int id);
+    void removeHTMLEventListener(int id);
 
-    virtual bool dispatchEvent(EventImpl *evt, int &exceptioncode);
-    virtual bool dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg);
-    virtual bool dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
-    virtual bool dispatchUIEvent(int _id, int detail = 0);
-    virtual bool dispatchSubtreeModifiedEvent();
-    virtual void handleLocalEvents(EventImpl *evt, bool useCapture);
+    bool dispatchEvent(EventImpl *evt, int &exceptioncode);
+    bool dispatchGenericEvent( EventImpl *evt, int &exceptioncode);
+    bool dispatchHTMLEvent(int _id, bool canBubbleArg, bool cancelableArg);
+    bool dispatchWindowEvent(int _id, bool canBubbleArg, bool cancelableArg);
+    bool dispatchMouseEvent(QMouseEvent *e, int overrideId = 0, int overrideDetail = 0);
+    bool dispatchUIEvent(int _id, int detail = 0);
+    bool dispatchSubtreeModifiedEvent();
+    void handleLocalEvents(EventImpl *evt, bool useCapture);
     /**
      * Perform the default action for an event e.g. submitting a form
      */

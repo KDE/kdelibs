@@ -602,10 +602,11 @@ bool RegisteredEventListener::operator==(const RegisteredEventListener &other)
 
 // -----------------------------------------------------------------------------
 
-HTMLEventListener::HTMLEventListener(KHTMLPart *_part, QString _scriptCode)
+HTMLEventListener::HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool thisIsCurrentTarget)
 {
     m_part = _part;
     m_scriptCode = _scriptCode;
+    thisIsCurrent = thisIsCurrentTarget;
 }
 
 HTMLEventListener::~HTMLEventListener()
@@ -618,9 +619,8 @@ void HTMLEventListener::handleEvent(Event &evt)
     // See DOM2 Events section 1.3.2
 
     // If the script returns false, we prevent default actions (e.g. submitting a form)
-    // ### is this correct for everything?
-    // ### should evt.target() be used as the this value instead?
-    QVariant ret = m_part->executeScript(evt.currentTarget(),m_scriptCode);
+    // most events need currentTarget, but some (thos that have window as this value (eg. onload) need target as this value.
+    QVariant ret = m_part->executeScript( thisIsCurrent ? evt.currentTarget() : evt.target(), m_scriptCode );
     if (ret.type() == QVariant::Bool && ret.toBool() == false)
 	evt.preventDefault();
 

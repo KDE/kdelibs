@@ -132,11 +132,11 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     }
     case ATTR_ONLOAD:
         removeHTMLEventListener(EventImpl::LOAD_EVENT);
-        addEventListener(EventImpl::LOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
+        addEventListener( EventImpl::LOAD_EVENT, new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string(), false), false );
         break;
     case ATTR_ONUNLOAD:
         removeHTMLEventListener(EventImpl::UNLOAD_EVENT);
-        addEventListener(EventImpl::UNLOAD_EVENT,new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string()),false);
+        addEventListener( EventImpl::UNLOAD_EVENT, new HTMLEventListener(ownerDocument()->view()->part(),DOMString(attr->value()).string(), false), false );
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);

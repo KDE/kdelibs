@@ -266,13 +266,14 @@ public:
 
 class HTMLEventListener : public EventListener {
 public:
-    HTMLEventListener(KHTMLPart *_part, QString _scriptCode);
+    HTMLEventListener(KHTMLPart *_part, QString _scriptCode, bool thisIsCurrentTarget = true );
     virtual ~HTMLEventListener();
     virtual void handleEvent(Event &evt);
     virtual DOMString eventListenerType();
 protected:
     QString m_scriptCode;
     KHTMLPart *m_part;
+    bool thisIsCurrent;
 };
 
 }; //namespace
