@@ -28,6 +28,8 @@
 #define KDE_VERSION_MINOR 1
 #define KDE_VERSION_RELEASE 90
 
+#define KDE_IS_VERSION( a,b,c ) ( ( a ) * 100 + ( b ) * 10 + ( c ) )
+
 /**
  * Namespace for general KDE functions.
  */
