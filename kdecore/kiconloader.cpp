@@ -166,7 +166,14 @@ QPixmap KIconLoader::loadApplicationIcon ( const QString& name,
     
     }
 
-    return canReturnNull ? QPixmap() : loadInternal("unknown");
+    // one last desparate gasp -- we try to locate our icon using the
+    // defaults in 'locate'
+    path = name;
+    if (path.left(8) == "toolbar/")
+        path = path.mid(8);
+    icon_path = iconPath(path, false);
+    if (icon_path.isEmpty())
+        return canReturnNull ? QPixmap() : loadInternal("unknown");
 
  loading:
     pix = loadInternal(icon_path);
@@ -228,8 +235,9 @@ QPixmap KIconLoader::loadInternal ( const QString& name, bool hcache )
 
 QPixmap BarIcon(const QString& pixmap , const KInstance* library )
 {
-    return library->iconLoader()->loadIcon(pixmap, false);
+    if (pixmap.at(0) == '/')
+        return library->iconLoader()->loadApplicationIcon(pixmap);
+    else
+        return library->iconLoader()->loadApplicationIcon("toolbar/" + pixmap,
+                                                      KIconLoader::Medium);
 }
-
-
-
