@@ -55,6 +55,7 @@ public:
   int jobId() { return m_iJobId; }
 
   void setVisible( bool visible );
+  void setDefaultProgressVisible( bool visible );
   bool isVisible() const { return m_visible; }
 
   void setTotalSize( KIO::filesize_t bytes );
@@ -105,6 +106,7 @@ protected:
 
   // whether shown or not (it is hidden if a rename dialog pops up for the same job)
   bool m_visible;
+  bool m_defaultProgressVisible;
 
   // parent listview
   ListProgress *listProgress;
@@ -231,10 +233,9 @@ k_dcop:
   ASYNC canResume64( int id, KIO::filesize_t offset );
 
   /**
-   * Prompts the user for authorization info.
-   *
-   * @param info See @p AuthInfo in kio/global.cpp.
-   * @return a modified and seralized authorization info object.
+   * @deprecated (it blocks other apps).
+   * Use KIO::PasswordDialog::getNameAndPassword instead.
+   * To be removed in KDE 4.0.
    */
   QByteArray openPassDlg( const KIO::AuthInfo &info );
 
@@ -258,8 +259,9 @@ k_dcop:
                   const QString &buttonYes, const QString &buttonNo );
 
   /**
-   * See renamedlg.h
-   * @return serialized answer: (RenameDlg_Result result, QString newDest)
+   * @deprecated (it blocks other apps).
+   * Use KIO::open_RenameDlg instead.
+   * To be removed in KDE 4.0.
    */
   QByteArray open_RenameDlg64( int id,
                              const QString & caption,
@@ -273,8 +275,9 @@ k_dcop:
                              unsigned long /* time_t */ mtimeDest
                              );
   /**
-   * See renamedlg.h
-   * @return serialized answer: (RenameDlg_Result result, QString newDest)
+   * @deprecated (it blocks other apps).
+   * Use KIO::open_RenameDlg instead.
+   * To be removed in KDE 4.0.
    */
   QByteArray open_RenameDlg( int id,
                              const QString & caption,
@@ -289,7 +292,9 @@ k_dcop:
                              );
 
   /**
-   * See skiplg.h
+   * @deprecated (it blocks other apps).
+   * Use KIO::open_SkipDlg instead.
+   * To be removed in KDE 4.0.
    */
   int open_SkipDlg( int id,
                     int /*bool*/ multi,
@@ -299,6 +304,12 @@ k_dcop:
    * Switch to or from list mode - called by the kcontrol module
    */
   void setListMode( bool list );
+
+  /**
+   * Hide or show a job. Typically, we hide a job while a "skip" or "rename" dialog
+   * is being shown for this job. This prevents killing it from the uiserver.
+   */
+  void setJobVisible( int id, bool visible );
 
   /**
    * Show a SSL Information Dialog
@@ -336,7 +347,6 @@ protected:
   QString properties;
 
   void readSettings();
-  void writeSettings();
 
 private:
 

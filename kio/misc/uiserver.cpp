@@ -93,6 +93,7 @@ ProgressItem::ProgressItem( ListProgress* view, QListViewItem *after, QCString a
   m_sAppId = app_id;
   m_iJobId = job_id;
   m_visible = true;
+  m_defaultProgressVisible = true;
 
   // create dialog, but don't show it
   defaultProgress = new KIO::DefaultProgress( false );
@@ -280,9 +281,9 @@ void ProgressItem::slotCanceled() {
   emit jobCanceled( this );
 }
 
-
+// Called 0.5s after the job has been started
 void ProgressItem::slotShowDefaultProgress() {
-  if ( m_visible )
+  if ( m_visible && m_defaultProgressVisible )
     defaultProgress->show();
 }
 
@@ -293,10 +294,25 @@ void ProgressItem::slotToggleDefaultProgress() {
     defaultProgress->show();
 }
 
+// Called when a rename or skip dialog pops up
+// We want to prevent someone from killing the job in the uiserver then
 void ProgressItem::setVisible( bool visible ) {
-    m_visible = visible;
-    if ( defaultProgress )
+    if ( m_visible != visible )
     {
+        m_visible = visible;
+        if ( !visible ) {
+            // we save the current visibility of the defaultProgress
+            m_defaultProgressVisible = defaultProgress && defaultProgress->isVisible();
+            setDefaultProgressVisible( false );
+        } else {
+            setDefaultProgressVisible( m_defaultProgressVisible );
+        }
+    }
+}
+
+// Can be toggled by the user
+void ProgressItem::setDefaultProgressVisible( bool visible ) {
+    if ( defaultProgress ) {
         if ( visible )
             defaultProgress->show();
         else
@@ -410,7 +426,6 @@ UIServer::UIServer() : KMainWindow(0, ""), DCOPObject("UIServer")
 
 UIServer::~UIServer() {
   updateTimer->stop();
-  writeSettings();
 }
 
 
@@ -463,23 +478,24 @@ ProgressItem* UIServer::findItem( int id )
 
 void UIServer::setItemVisible( ProgressItem * item, bool visible )
 {
-  kdDebug(7024) << "setItemVisible " << visible << endl;
   item->setVisible( visible );
   // Check if we were the last one to be visible
-  // or the first one
-  if ( m_bShowList )
-  {
-    QListViewItemIterator it( listProgress );
-    for ( ; it.current(); ++it )
-      if ( ((ProgressItem*)it.current())->isVisible() )
-      {
-        kdDebug(7024) << "show " << endl;
-        listProgress->show();
-        return;
-      }
-    kdDebug(7024) << "hide " << endl;
-    listProgress->hide();
+  // or the first one -> hide/show the list in that case
+  // (Note that the user could have hidden the listview by hand yet, no time)
+  if ( m_bShowList ) {
+      m_bUpdateNewJob = true;
+      slotUpdate();
   }
+}
+
+// Called by Observer when opening a skip or rename dialog
+void UIServer::setJobVisible( int id, bool visible )
+{
+  kdDebug(7024) << "UIServer::setJobVisible id=" << id << " visible=" << visible << endl;
+  ProgressItem *item = findItem( id );
+  Q_ASSERT( item );
+  if ( item )
+      setItemVisible( item, visible );
 }
 
 void UIServer::jobFinished( int id )
@@ -721,16 +737,22 @@ void UIServer::slotUpdate() {
       break;
     }
 
-  if ( !visible ) {
+  if ( !visible || !m_bShowList ) {
     hide();
     updateTimer->stop();
     return;
   }
 
+  // Calling show() is conditional, so that users can close the window
+  // and it only pops up back when a new job is started
   if (m_bUpdateNewJob)
   {
     m_bUpdateNewJob=false;
     show();
+
+    // Make sure we'll be called back
+    if ( m_bShowList && !updateTimer->isActive() )
+      updateTimer->start( 1000 );
   }
 
   int iTotalFiles = 0;
@@ -769,11 +791,11 @@ void UIServer::slotUpdate() {
 void UIServer::setListMode( bool list )
 {
   m_bShowList = list;
-  ProgressItem *item;
   QListViewItemIterator it( listProgress );
   for ( ; it.current(); ++it ) {
-    item = (ProgressItem*) it.current();
-    item->setVisible( !list );
+    // When going to list mode -> hide all progress dialogs
+    // When going back to separate dialogs -> show them all
+    ((ProgressItem*) it.current())->setDefaultProgressVisible( !list );
   }
 
   if (m_bShowList)
@@ -962,15 +984,6 @@ void UIServer::readSettings() {
 }
 
 
-// This is useless IMHO (David)
-void UIServer::writeSettings() {
-  KConfig config("uiserverrc");
-  config.setGroup( "UIServer" );
-
-  config.writeEntry( "ShowList", m_bShowList );
-}
-
-
 void UIServer::cancelCurrent() {
   QListViewItemIterator it( listProgress );
   ProgressItem *item;
@@ -1016,12 +1029,11 @@ int main(int argc, char **argv)
     app.disableSessionManagement();
     app.dcopClient()->setDaemonMode( true );
 
-    uiserver =  new UIServer;
+    uiserver = new UIServer;
 
     app.setMainWidget( uiserver );
 
     return app.exec();
 }
-
 
 #include "uiserver.moc"
