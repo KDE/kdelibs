@@ -90,8 +90,6 @@ indep-stamp:
 		--outputdir=`pwd`/debian/kdelibs4-doc/$(KDEDOCDIR) ; \
 	fi
 	
-	mkdir -p `pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kdeui
-	#cp doc/api/*.png `pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kdeui
 	mkdir -p `pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kio
 	cp kio/DESKTOP_ENTRY_STANDARD `pwd`/debian/kdelibs4-doc/$(KDEDOCDIR)/kio
 	dh_installdocs -i
