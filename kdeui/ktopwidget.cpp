@@ -761,7 +761,7 @@ bool KTopLevelWidget::canBeRestored(int number){
 }
 
 //Matthias
-const QString classNameOfToplevel(int number){
+const QString KTopLevelWidget::classNameOfToplevel(int number){
   if (!kapp->isRestored())
     return "";
   KConfig *config = kapp->getSessionConfig();
