@@ -54,7 +54,7 @@ public:
 
   /**
    * This will reseed the PRNG with the EGD if the EGD is configured and
-   * enabled.
+   * enabled.  You don't need to call this yourself normally.
    */
   int seedWithEGD();
 
