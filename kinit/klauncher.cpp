@@ -153,7 +153,7 @@ IdleSlave::age(time_t now)
 
 KLauncher::KLauncher(int _kdeinitSocket)
   : KUniqueApplication( false, false ), // No Styles, No GUI
-    kdeinitSocket(_kdeinitSocket)
+    kdeinitSocket(_kdeinitSocket), dontBlockReading(false)
 {
 #ifdef Q_WS_X11
    mCached_dpy = NULL;
@@ -447,6 +447,20 @@ KLauncher::slotKDEInitData(int)
 {
    klauncher_header request_header;
    QByteArray requestData;
+   if( dontBlockReading )
+   {
+   // in case we get a request to start an application and data arrive
+   // to kdeinitSocket at the same time, requestStart() will already
+   // call slotKDEInitData(), so we must check there's still something
+   // to read, otherwise this would block
+      fd_set in;
+      timeval tm = { 0, 0 };
+      FD_SET( kdeinitSocket, &in );
+      select( kdeinitSocket + 1, &in, 0, 0, &tm );
+      if( !FD_ISSET( kdeinitSocket, &in ))
+         return;
+   }
+   dontBlockReading = false;
    int result = read_socket(kdeinitSocket, (char *) &request_header,
                             sizeof( request_header));
    if (result == -1)
@@ -722,10 +736,12 @@ KLauncher::requestStart(KLaunchRequest *request)
 
    // Wait for pid to return.
    lastRequest = request;
+   dontBlockReading = false;
    do {
       slotKDEInitData( kdeinitSocket );
    }
    while (lastRequest != 0);
+   dontBlockReading = true;
 }
 
 void

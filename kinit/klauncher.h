@@ -180,6 +180,7 @@ protected:
    bool bProcessingQueue;
    AutoStart mAutoStart;
    QCString mSlaveDebug;
+   bool dontBlockReading;
 #ifdef Q_WS_X11
    Display *mCached_dpy;
 #endif
