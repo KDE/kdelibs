@@ -172,7 +172,7 @@ public:
 	 dialog is not needed any more. NOTE: This affects only the dialog
 	 and not the normal cache created by loadIcon(). 
   */
-  void    setCaching( Bool b );
+  void    setCaching( bool b );
 
 protected:
   KConfig           *config;
@@ -180,7 +180,7 @@ protected:
   QStrList           name_list;
   QList<QPixmap>     pixmap_list;
   KIconLoaderDialog *pix_dialog;
-  Bool               caching;
+  bool               caching;
 };
 
 #endif // KICONLOADER_H

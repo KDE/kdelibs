@@ -303,7 +303,7 @@ QPixmap KIconLoader::selectIcon(QString &name, const QString &filter)
   return pixmap;
 }
 
-void KIconLoader::setCaching( Bool b )
+void KIconLoader::setCaching( bool b )
 {
   if( b == TRUE )
     {
