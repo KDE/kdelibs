@@ -65,7 +65,13 @@ Range::Range(const Range &other)
 
 Range &Range::operator = (const Range &other)
 {
-    Range::operator = (other);
+    startContainer = other.startContainer;
+    startOffset = other.startOffset;
+    endContainer = other.endContainer;
+    endOffset = other.endOffset;
+    commonAncestorContainer = other.commonAncestorContainer;
+    collapsed = other.collapsed;
+    detached = false;
     return *this;
 }
 
@@ -118,19 +124,18 @@ Node Range::getCommonAncestorContainer() /*const*/
     for(parentStart = startContainer;
         (!parentStart.isNull() ) && (parentStart != parentEnd);
         parentStart = parentStart.parentNode() )
-      for(parentEnd = endContainer;
-          (!parentEnd.isNull() ) && (parentStart != parentEnd);
-          parentEnd = parentEnd.parentNode() );
-
+        for(parentEnd = endContainer;
+            (!parentEnd.isNull() ) && (parentStart != parentEnd);
+            parentEnd = parentEnd.parentNode() );
+    
     if(parentStart == parentEnd)
-      commonAncestorContainer = parentStart;
+        commonAncestorContainer = parentStart;
     else
-     {
-       printf("uh? No common ancestor container?");
-       return Node();
-     }
+    {
+        printf("uh? No common ancestor container?\n");
+        return Node();
+    }
     return commonAncestorContainer;
-
 }
 
 bool Range::isCollapsed() const
@@ -166,17 +171,17 @@ void Range::setStart( const Node &refNode, long offset )
     if( offset < 0 )
         throw DOMException( DOMException::INDEX_SIZE_ERR );
 
-    if( !refNode.nodeType() == Node::TEXT_NODE )
+    if( refNode.nodeType() != Node::TEXT_NODE )
     {
 	if( (unsigned)offset > refNode.childNodes().length() )
-	    throw DOMException( DOMException::INDEX_SIZE_ERR );
+            throw DOMException( DOMException::INDEX_SIZE_ERR );
     }
     else
     {
 	Text t;
 	t = refNode;
-	if( t.isNull() || (unsigned)offset > t.length() )
-	    throw DOMException( DOMException::INDEX_SIZE_ERR );
+        if( t.isNull() || (unsigned)offset > t.length() )
+            throw DOMException( DOMException::INDEX_SIZE_ERR );
     }
 
     if( isDetached() )
@@ -185,15 +190,8 @@ void Range::setStart( const Node &refNode, long offset )
     startContainer = refNode;
     startOffset = offset;
 
-    _tempNode = refNode.parentNode();
-    Node rootContainer = getCommonAncestorContainer();
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode == rootContainer )
-            break;
-        _tempNode = _tempNode.parentNode();
-    }
-    if( _tempNode != rootContainer )
+    Node oldCommonAncestorContainer = commonAncestorContainer;
+    if( oldCommonAncestorContainer != getCommonAncestorContainer() )
         collapse( true );
 
     if( !boundaryPointsValid() )
@@ -217,8 +215,21 @@ void Range::setEnd( const Node &refNode, long offset )
         _tempNode = _tempNode.parentNode();
     }
 
-    if( offset < 0  ||  (unsigned)offset > refNode.childNodes().length() )
+    if( offset < 0 )
         throw DOMException( DOMException::INDEX_SIZE_ERR );
+
+    if( refNode.nodeType() != Node::TEXT_NODE )
+    {
+	if( (unsigned)offset > refNode.childNodes().length() )
+	    throw DOMException( DOMException::INDEX_SIZE_ERR );
+    }
+    else
+    {
+	Text t;
+	t = refNode;
+	if( t.isNull() || (unsigned)offset > t.length() )
+	    throw DOMException( DOMException::INDEX_SIZE_ERR );
+    }
 
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
@@ -226,15 +237,8 @@ void Range::setEnd( const Node &refNode, long offset )
     endContainer = refNode;
     endOffset = offset;
 
-    _tempNode = refNode.parentNode();
-    Node rootContainer = getCommonAncestorContainer();
-    while( !_tempNode.isNull() )
-    {
-        if( _tempNode == rootContainer )
-            break;
-        _tempNode = _tempNode.parentNode();
-    }
-    if( _tempNode != rootContainer )
+    Node oldCommonAncestorContainer = commonAncestorContainer;
+    if( oldCommonAncestorContainer != getCommonAncestorContainer() )
         collapse( false );
 
     if( !boundaryPointsValid() )
@@ -657,9 +661,7 @@ DocumentFragment Range::extractContents(  )
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    // this is just to avoid compiler warnings
-    DocumentFragment d;
-    return d;
+    return masterTraverse( true );
 }
 
 DocumentFragment Range::cloneContents(  )
@@ -667,15 +669,15 @@ DocumentFragment Range::cloneContents(  )
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    // this is just to avoid compiler warnings
-    DocumentFragment d;
-    return d;
+    return masterTraverse( false );
 }
 
-void Range::insertNode( const Node &/*newNode*/ )
+void Range::insertNode( const Node &newNode )
 {
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
+    
+    startContainer.insertBefore( newNode, startContainer.childNodes().item( startOffset ) );
 }
 
 void Range::surroundContents( const Node &/*newParent*/ )
@@ -689,9 +691,7 @@ Range Range::cloneRange(  )
     if( isDetached() )
         throw DOMException( DOMException::INVALID_STATE_ERR );
 
-    // this is just to avoid compiler warnings
-    Range r;
-    return r;
+    return Range( this );
 }
 
 DOMString Range::toString(  )
@@ -706,13 +706,10 @@ DOMString Range::toString(  )
 
 void Range::detach(  )
 {
-  if( isDetached() )
-    throw DOMException(DOMException::INVALID_STATE_ERR);
-  else
-    detached = true;
-
-
-
+    if( isDetached() )
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+    else
+        detached = true;
 }
 
 DocumentFragment Range::masterTraverse(bool contentExtract)
@@ -722,256 +719,256 @@ DocumentFragment Range::masterTraverse(bool contentExtract)
      * start & end and put them into the fragment
      * If we don't have a text node, find the offset and copy/clone the content
      * between the two offsets
-     * We end with returning the fragment ofcourse
+     * We end with returning the fragment of course
      */
-  Node _clone;
-  DocumentFragment _endFragment;
-
-  if(startContainer == endContainer)
+    Node _clone;
+    DocumentFragment _endFragment;
+    
+    if(startContainer == endContainer)
     {
-      if(startOffset == endOffset)            // we have a collapsed range
-        return DocumentFragment();
-
-      // TODO: we need to delete the text Node if a whole text is selected!!
-      if( startContainer.nodeType() == Node::TEXT_NODE )    // we have a text node.. special :)
+        if(startOffset == endOffset)            // we have a collapsed range
+            return DocumentFragment();
+        
+        // TODO: we need to delete the text Node if a whole text is selected!!
+        if( startContainer.nodeType() == Node::TEXT_NODE )    // we have a text node.. special :)
         {
-          _clone = startContainer.cloneNode(false);
-          // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
-          // use QString.mid() and QString.remove()
-          if(contentExtract)
+            _clone = startContainer.cloneNode(false);
+            // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
+            // use QString.mid() and QString.remove()
+            if(contentExtract)
             {
+                //TODO:  startContainer.nodeValue().string().remove(startOffset, endOffset-startOffset);
+                // remove what wasn't in the substring
+            }
+            _endFragment.appendChild(_clone);
+        }
+        else  // we have the same container class but we are not a text node
+        {
+            Node _tempCurrent = startContainer.firstChild();
+            unsigned int i;
+            
+            for(i=0; i < startOffset; i++)    // get the node given by the offset
+                _tempCurrent = _tempCurrent.nextSibling();
+            
+            /* now copy (or move) all the nodes in the range into the document fragment */
+            unsigned int range = endOffset - startOffset;
+            Node _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
+            for(i=0; i<range && !_tempCurrent.isNull(); i++)   // check of isNull in case of strange errors
+            {
+                _nextCurrent = _tempCurrent.nextSibling();
+                
+                if(contentExtract)
+                {
+                    _endFragment.appendChild(_tempCurrent);
+                }
+                else
+                {
+                    _clone = _tempCurrent.cloneNode(true);
+                    _endFragment.appendChild(_clone);
+                }
+                
+                _tempCurrent = _nextCurrent;
+            }
+        }
+        return _endFragment;
+    }// END COMMON CONTAINER HERE!!!
+    
+    
+    /* Ok here we go for the harder part, first a general desription:
+     * First we copy all the border nodes (the have to be copied as long
+     * as they are partially selected) from the startContainer to the CmnAContainer. Then we do
+     * the same for the endContainer. After this we add all fully selected
+     * nodes that are between these two!
+     */
+    
+    Node _cmnRoot = getCommonAncestorContainer();
+    Node _tempCurrent = startContainer;
+    Node _tempPartial;
+    // we still have Node _clone!!
+    
+    // Special case text is first:
+    if( _tempCurrent.nodeType() == Node::TEXT_NODE )
+    {
+        _clone = _tempCurrent.cloneNode(false);
+        // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
+        // use QString.mid() and QString.remove()
+        if(contentExtract)
+        {
             //TODO:  startContainer.nodeValue().string().remove(startOffset, endOffset-startOffset);
             // remove what wasn't in the substring
-            }
-          _endFragment.appendChild(_clone);
-        }
-      else  // we have the same container class but we are not a text node
-        {
-          Node _tempCurrent = startContainer.firstChild();
-          unsigned int i;
-
-          for(i=0; i < startOffset; i++)    // get the node given by the offset
-            _tempCurrent = _tempCurrent.nextSibling();
-
-          /* now copy (or move) all the nodes in the range into the document fragment */
-          unsigned int range = endOffset - startOffset;
-          Node _nextCurrent = _tempCurrent;                  // to keep track of which node to take next
-          for(i=0; i<range && !_tempCurrent.isNull(); i++)  // check of isNull in case of strange errors
-            {
-              _nextCurrent = _tempCurrent.nextSibling();
-
-              if(contentExtract)
-                {
-                  _endFragment.appendChild(_tempCurrent);
-                }
-              else
-                {
-                  _clone = _tempCurrent.cloneNode(true);
-                  _endFragment.appendChild(_clone);
-                }
-
-              _tempCurrent = _nextCurrent;
-            }
-        }
-      return _endFragment;
-    }// END COMMON CONTAINER HERE!!!
-
-
-  /* Ok here we go for the harder part, first a general desription:
-   * First we copy all the border nodes (the have to be copied as long
-   * as they are partially selected) from the startContainer to the CmnAContainer. Then we do
-   * the same for the endContainer. After this we add all fully selected
-   * nodes that are between these two!
-   */
-
-  Node _cmnRoot = getCommonAncestorContainer();
-  Node _tempCurrent = startContainer;
-  Node _tempPartial;
-  // we still have Node _clone!!
-
-  // Special case text is first:
-  if( _tempCurrent.nodeType() == Node::TEXT_NODE )
-    {
-      _clone = _tempCurrent.cloneNode(false);
-      // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
-      // use QString.mid() and QString.remove()
-      if(contentExtract)
-        {
-          //TODO:  startContainer.nodeValue().string().remove(startOffset, endOffset-startOffset);
-          // remove what wasn't in the substring
         }
     }
-  else // container node was not a text node
+    else // container node was not a text node
     {
-      _tempCurrent = _tempCurrent.firstChild();
-      unsigned int i;
-      for(i=0; i < startOffset; i++)
+        _tempCurrent = _tempCurrent.firstChild();
+        unsigned int i;
+        for(i=0; i < startOffset; i++)
+            _tempCurrent = _tempCurrent.nextSibling();
+        
+        if(contentExtract)
+            _clone = _tempCurrent.cloneNode(true);
+        else
+            _clone = _tempCurrent;   // is this enough? Don't we have to delete the node from the original tree??
+    }
+    
+    Node _tempParent;                       // we use this to traverse upwords trough the tree
+    Node _cloneParent;                      // this one is used to copy the current parent
+    Node _fragmentRoot;                     // this is eventually becomming the root of the DocumentFragment
+    
+    
+    while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
+    {                                    // we are in luck, all these node must be cloned because they are partially selected
+        _tempParent = _tempCurrent.parentNode();
+        
+        if(_tempParent == _cmnRoot)
+        {
+            _cloneParent = _endFragment;
+            _fragmentRoot = _tempCurrent;
+        }
+        else
+        {
+            _cloneParent = _tempParent.cloneNode(false);
+            if( _tempPartial.isNull() && _tempParent != _cmnRoot )
+            {
+                _tempPartial = _tempParent;
+                // TODO: this means we should collapse after I think... :))
+            }
+        }
+        
+        // we must not forget to grab with us the rest of this nodes siblings
+        Node _nextCurrent;
+        
         _tempCurrent = _tempCurrent.nextSibling();
-
-      if(contentExtract)
-        _clone = _tempCurrent.cloneNode(true);
-      else
-        _clone = _tempCurrent;   // is this enough? Don't we have to delete the node from the original tree??
-
+        _cloneParent.appendChild( _tempCurrent );
+        while( !_tempCurrent.isNull() )
+        {
+            _nextCurrent = _tempCurrent.nextSibling();
+            if( !_tempCurrent.isNull() && _tempParent != _cmnRoot) // the isNull() part should be unessesary
+            {
+                if(contentExtract)
+                {
+                    _cloneParent.appendChild(_tempCurrent);         // delete from old tree?
+                }
+                else
+                {
+                    _clone = _tempCurrent.cloneNode(true);
+                    _cloneParent.appendChild(_clone);
+                }
+            }
+            _tempCurrent = _nextCurrent;
+        }
+        _tempCurrent = _tempParent;
+        _clone = _cloneParent;
     }
-
-  Node _tempParent;                       // we use this to traverse upwords trough the tree
-  Node _cloneParent;                      // this one is used to copy the current parent
-  Node _fragmentRoot;                     // this is eventually becomming the root of the DocumentFragment
-
-
-  while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
+    
+    //****** we should now be FINISHED with startContainer **********
+    _tempCurrent = endContainer;
+    Node _tempEnd;
+    // we still have Node _clone!!
+    
+    // Special case text is first:
+    if( _tempCurrent.nodeType() == Node::TEXT_NODE )
+    {
+        _clone = _tempCurrent.cloneNode(false);
+        // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
+        // use QString.mid() and QString.remove()
+        if(contentExtract)
+        {
+            //TODO:  startContainer.nodeValue().string().remove(startOffset, endOffset-startOffset);
+            // remove what wasn't in the substring
+        }
+    }
+    else // container node was not a text node
+    {
+        if(endOffset == 0)
+            _tempCurrent = endContainer;
+        else
+        {
+            _tempCurrent = _tempCurrent.firstChild();
+            unsigned int i;
+            for(i=0; i< endOffset; i++)
+                _tempCurrent = _tempCurrent.nextSibling();
+        }
+        if(contentExtract)
+            _clone = _tempCurrent;
+        else
+            _clone = _tempCurrent.cloneNode(true);
+    }
+    
+    
+    
+    
+    while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
     {                                  // we are in luck, all these node must be cloned because they are partially selected
-      _tempParent = _tempCurrent.parentNode();
-
-      if(_tempParent == _cmnRoot)
+        _tempParent = _tempCurrent.parentNode();
+        
+        if(_tempParent == _cmnRoot)
         {
-          _cloneParent = _endFragment;
-          _fragmentRoot = _tempCurrent;
+            _cloneParent = _endFragment;
+            _fragmentRoot = _tempCurrent;
         }
-      else
+        else
         {
-          _cloneParent = _tempParent.cloneNode(false);
-          if( _tempPartial.isNull() && _tempParent != _cmnRoot )
+            _cloneParent = _tempParent.cloneNode(false);
+            if( _tempPartial.isNull() && _tempParent != _cmnRoot )
             {
-              _tempPartial = _tempParent;
-              // TODO: this means we should collapse after I think... :))
+                _tempPartial = _tempParent;
+                // TODO: this means we should collapse before I think... :))
             }
         }
-
-      // we must not forget to grab with us the rest of this nodes siblings
-      Node _nextCurrent;
-
-      _tempCurrent = _tempCurrent.nextSibling();
-      _cloneParent.appendChild( _tempCurrent );
-      while( !_tempCurrent.isNull() )
+        
+        // we must not forget to grab with us the rest of this nodes siblings
+        Node _nextCurrent;
+        Node _stopNode = _tempCurrent;
+        _tempCurrent = _tempParent.firstChild();
+        
+        
+        _cloneParent.appendChild(_clone);
+        
+        while( _tempCurrent != _stopNode && !_tempCurrent.isNull() )
         {
-          _nextCurrent = _tempCurrent.nextSibling();
-          if( !_tempCurrent.isNull() && _tempParent != _cmnRoot) // the isNull() part should be unessesary
+            _nextCurrent = _tempCurrent.nextSibling();
+            if( !_tempCurrent.isNull() && _tempParent != _cmnRoot) // the isNull() part should be unessesary
             {
-              if(contentExtract)
+                if(contentExtract)
                 {
-                  _cloneParent.appendChild(_tempCurrent);         // delete from old tree?
+                    _cloneParent.appendChild(_tempCurrent);         // delete from old tree?
                 }
-              else
+                else
                 {
-                  _clone = _tempCurrent.cloneNode(true);
-                  _cloneParent.appendChild(_clone);
+                    _clone = _tempCurrent.cloneNode(true);
+                    _cloneParent.appendChild(_clone);
                 }
             }
-          _tempCurrent = _nextCurrent;
+            _tempCurrent = _nextCurrent;
         }
-      _tempCurrent = _tempParent;
-      _clone = _cloneParent;
+        _tempCurrent = _tempParent;
+        _clone = _cloneParent;
     }
-
-  //****** we should now FINISHED with startContainer **********
-  _tempCurrent = endContainer;
-  Node _tempEnd;
-  // we still have Node _clone!!
-
-  // Special case text is first:
-  if( _tempCurrent.nodeType() == Node::TEXT_NODE )
+    // now we should copy all the shit in between!!
+    
+    Node _clonePrevious = _endFragment.lastChild();
+    _tempCurrent = _tempEnd.previousSibling();
+    Node _nextCurrent;
+    
+    while( (_nextCurrent != _fragmentRoot) && (!_tempCurrent.isNull()) )
     {
-      _clone = _tempCurrent.cloneNode(false);
-      // TODO: clone.nodeValue().string().remove(startOffset, endOffset-startOffset);  // we need to get the SUBSTRING
-      // use QString.mid() and QString.remove()
-      if(contentExtract)
-        {
-          //TODO:  startContainer.nodeValue().string().remove(startOffset, endOffset-startOffset);
-          // remove what wasn't in the substring
-        }
+        _nextCurrent = _tempCurrent.previousSibling();
+        
+        if(contentExtract)
+            _clone = _tempCurrent.cloneNode(true);
+        else
+            _clone = _tempCurrent;
+
+        _endFragment.insertBefore(_clone, _clonePrevious);
+        
+        _tempCurrent = _nextCurrent;
+        _clonePrevious = _tempCurrent;
     }
-  else // container node was not a text node
-    {
-      if(endOffset == 0)
-        _tempCurrent = endContainer;
-      else
-        {
-          _tempCurrent = _tempCurrent.firstChild();
-          unsigned int i;
-          for(i=0; i< endOffset; i++)
-            _tempCurrent = _tempCurrent.nextSibling();
-        }
-      if(contentExtract)
-        _clone = _tempCurrent;
-      else
-        _clone = _tempCurrent.cloneNode(true);
-    }
-
-
-
-
-  while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
-    {                                  // we are in luck, all these node must be cloned because they are partially selected
-      _tempParent = _tempCurrent.parentNode();
-
-      if(_tempParent == _cmnRoot)
-        {
-          _cloneParent = _endFragment;
-          _fragmentRoot = _tempCurrent;
-        }
-      else
-        {
-          _cloneParent = _tempParent.cloneNode(false);
-          if( _tempPartial.isNull() && _tempParent != _cmnRoot )
-            {
-              _tempPartial = _tempParent;
-              // TODO: this means we should collapse before I think... :))
-            }
-        }
-
-      // we must not forget to grab with us the rest of this nodes siblings
-      Node _nextCurrent;
-      Node _stopNode = _tempCurrent;
-      _tempCurrent = _tempParent.firstChild();
-
-
-      _cloneParent.appendChild(_clone);
-
-      while( _tempCurrent != _stopNode && !_tempCurrent.isNull() )
-        {
-          _nextCurrent = _tempCurrent.nextSibling();
-          if( !_tempCurrent.isNull() && _tempParent != _cmnRoot) // the isNull() part should be unessesary
-            {
-              if(contentExtract)
-                {
-                  _cloneParent.appendChild(_tempCurrent);         // delete from old tree?
-                }
-              else
-                {
-                  _clone = _tempCurrent.cloneNode(true);
-                  _cloneParent.appendChild(_clone);
-                }
-            }
-          _tempCurrent = _nextCurrent;
-        }
-      _tempCurrent = _tempParent;
-      _clone = _cloneParent;
-    }
-  // now we should copy all the shit in between!!
-
-  Node _clonePrevious = _endFragment.lastChild();
-  _tempCurrent = _tempEnd.previousSibling();
-  Node _nextCurrent;
-
-  while( (_nextCurrent != _fragmentRoot) && (!_tempCurrent.isNull()) )
-    {
-      _nextCurrent = _tempCurrent.previousSibling();
-
-      if(contentExtract)
-        _clone = _tempCurrent.cloneNode(true);
-      else
-        _clone = _tempCurrent;
-
-      _endFragment.insertBefore(_clone, _clonePrevious);
-
-      _tempCurrent = _nextCurrent;
-      _clonePrevious = _tempCurrent;
-    }
-  // WHAT ABOUT THE COLLAPSES??
-  return _endFragment;
+    // WHAT ABOUT THE COLLAPSES??
+    return _endFragment;
 }
+
 // ---------------------------------------------------------------
 
 DocumentRange::DocumentRange()

@@ -95,7 +95,8 @@ public:
     long getEndOffset() const;
 
     /**
-     * The common ancestor container of the range's two end-points.
+     * Gets the common ancestor container of the range's two end-points.
+     * Also sets it.
      *
      */
     Node getCommonAncestorContainer() /*const*/;
@@ -444,6 +445,11 @@ public:
      *
      */
     void detach (  );
+
+    /**
+     * Extracts or clones the contents of the Range depending on
+     * it's argument, extract if contentExtract = true, else clone.
+     */
     DocumentFragment masterTraverse(bool contentExtract);
     
 protected:
