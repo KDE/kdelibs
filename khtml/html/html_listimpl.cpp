@@ -47,7 +47,7 @@ void HTMLUListElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_TYPE:
-        addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value(), false);
+        addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value());
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -117,15 +117,15 @@ void HTMLOListElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_TYPE:
         if ( strcmp( attr->value(), "a" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha");
         else if ( strcmp( attr->value(), "A" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha");
         else if ( strcmp( attr->value(), "i" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman");
         else if ( strcmp( attr->value(), "I" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman");
         else if ( strcmp( attr->value(), "1" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal");
         break;
     case ATTR_START:
         // ###
@@ -169,17 +169,17 @@ void HTMLLIElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_TYPE:
         if ( strcmp( attr->value(), "a" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-alpha");
         else if ( strcmp( attr->value(), "A" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-alpha");
         else if ( strcmp( attr->value(), "i" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "lower-roman");
         else if ( strcmp( attr->value(), "I" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "upper-roman");
         else if ( strcmp( attr->value(), "1" ) == 0 )
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal", false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, "decimal");
         else
-            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value(), false);
+            addCSSProperty(CSS_PROP_LIST_STYLE_TYPE, attr->value());
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);

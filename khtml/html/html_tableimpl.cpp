@@ -244,13 +244,13 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_WIDTH:
 	if (!attr->value().isEmpty())
-	    addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	    addCSSLength(CSS_PROP_WIDTH, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_WIDTH);
     	break;
     case ATTR_HEIGHT:
 	if (!attr->value().isEmpty())
-	    addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+	    addCSSLength(CSS_PROP_HEIGHT, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_HEIGHT);
     	break;
@@ -270,7 +270,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 #endif
 	QString str;
 	str.sprintf("%dpx solid", border);
-	addCSSProperty(CSS_PROP_BORDER, str, false);
+	addCSSProperty(CSS_PROP_BORDER, str);
 #if 0
 	// wanted by HTML4 specs
 	if(!border)
@@ -282,7 +282,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     }
     case ATTR_BGCOLOR:
 	if (!attr->value().isEmpty())
-	    addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false );
+	    addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_BACKGROUND);
 	break;
@@ -291,7 +291,7 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 	if (!attr->value().isEmpty()) {
 	    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
 	    DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
-	    addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url, false );
+	    addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url );
 	}
 	else
 	    removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
@@ -335,16 +335,16 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
 	break;
    case ATTR_CELLSPACING:
 	if (!attr->value().isEmpty())
-	    addCSSLength(CSS_PROP_BORDER_SPACING, attr->value(), false);
+	    addCSSLength(CSS_PROP_BORDER_SPACING, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_BORDER_SPACING);
 	break;
     case ATTR_CELLPADDING:
 	if (!attr->value().isEmpty()) {
-	    addCSSLength(CSS_PROP_PADDING_TOP, attr->value(), false);
-	    addCSSLength(CSS_PROP_PADDING_LEFT, attr->value(), false);
-	    addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value(), false);
-	    addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value(), false);
+	    addCSSLength(CSS_PROP_PADDING_TOP, attr->value());
+	    addCSSLength(CSS_PROP_PADDING_LEFT, attr->value());
+	    addCSSLength(CSS_PROP_PADDING_BOTTOM, attr->value());
+	    addCSSLength(CSS_PROP_PADDING_RIGHT, attr->value());
 	}
 	else {
 	    removeCSSProperty(CSS_PROP_PADDING_TOP);
@@ -365,13 +365,13 @@ void HTMLTableElementImpl::parseAttribute(AttrImpl *attr)
     }
     case ATTR_ALIGN:
 	if (!attr->value().isEmpty())
-	    addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
+	    addCSSProperty(CSS_PROP_FLOAT, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_FLOAT);
 	break;
     case ATTR_VALIGN:
 	if (!attr->value().isEmpty())
-	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
 	break;
@@ -395,7 +395,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_BGCOLOR:
 	if (attr->val())
-	    addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false );
+	    addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value() );
 	else
 	    removeCSSProperty(CSS_PROP_BACKGROUND_COLOR);
 	break;
@@ -404,7 +404,7 @@ void HTMLTablePartElementImpl::parseAttribute(AttrImpl *attr)
 	if (attr->val()) {
 	    HTMLDocumentImpl *doc = static_cast<HTMLDocumentImpl *>(document);
 	    DOMString url(Cache::completeURL(attr->value(), doc->baseURL()).url());
-	    addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url, false );
+	    addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, url );
 	}
 	else
 	    removeCSSProperty(CSS_PROP_BACKGROUND_IMAGE);
@@ -578,13 +578,13 @@ void HTMLTableRowElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_ALIGN:
 	if (attr->val())
-	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_TEXT_ALIGN);
 	break;
     case ATTR_VALIGN:
 	if (attr->val())
-	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
     default:
@@ -624,7 +624,7 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
 	border = attr->val() ? attr->val()->toInt() : 0;
 	QString str;
 	str.sprintf("%dpx solid black", border);
-	addCSSProperty(CSS_PROP_BORDER, str, false);
+	addCSSProperty(CSS_PROP_BORDER, str);
 	break;
     }
     case ATTR_ROWSPAN:
@@ -642,25 +642,25 @@ void HTMLTableCellElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_WIDTH:
 	if (!attr->value().isEmpty())
-	    addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	    addCSSLength(CSS_PROP_WIDTH, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_WIDTH);
 	break;
     case ATTR_HEIGHT:
 	if (!attr->value().isEmpty())
-	    addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+	    addCSSLength(CSS_PROP_HEIGHT, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_HEIGHT);
 	break;
     case ATTR_ALIGN:
 	if (!attr->value().isEmpty())
-	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_TEXT_ALIGN);
 	break;
     case ATTR_VALIGN:
 	if (!attr->value().isEmpty())
-	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
 	break;
@@ -751,19 +751,19 @@ void HTMLTableColElementImpl::parseAttribute(AttrImpl *attr)
 	break;
     case ATTR_WIDTH:
 	if (!attr->value().isEmpty())
-	    addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+	    addCSSLength(CSS_PROP_WIDTH, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_WIDTH);
 	break;
     case ATTR_ALIGN:
 	if (!attr->value().isEmpty())
-	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	    addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_TEXT_ALIGN);
 	break;
     case ATTR_VALIGN:
 	if (!attr->value().isEmpty())
-	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_VERTICAL_ALIGN);
 	break;
@@ -801,7 +801,7 @@ void HTMLTableCaptionElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_ALIGN:
 	if (!attr->value().isEmpty())
-	    addCSSProperty(CSS_PROP_CAPTION_SIDE, attr->value(), false);
+	    addCSSProperty(CSS_PROP_CAPTION_SIDE, attr->value());
 	else
 	    removeCSSProperty(CSS_PROP_CAPTION_SIDE);
 	break;

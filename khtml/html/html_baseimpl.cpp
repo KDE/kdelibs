@@ -76,31 +76,31 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
     {
 	KURL u = khtml::Cache::completeURL(attr->value(), static_cast<HTMLDocumentImpl *>(document)->baseURL());
 	bgImage = u.url();
-	addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url(), false);
+	addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, u.url() );
 	break;
     }
     case ATTR_MARGINWIDTH:
     {
 	QString str;
 	str += attr->value().string() + "px";
-        addCSSProperty(CSS_PROP_MARGIN_LEFT, str, false);
-        addCSSProperty(CSS_PROP_MARGIN_RIGHT, str, false);
+        addCSSProperty(CSS_PROP_MARGIN_LEFT, str );
+        addCSSProperty(CSS_PROP_MARGIN_RIGHT, str );
 	break;
     }
     case ATTR_MARGINHEIGHT:
     {
 	QString str;
 	str += attr->value().string() + "px";
-        addCSSProperty(CSS_PROP_MARGIN_TOP, str, false);
-        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, str, false);
+        addCSSProperty(CSS_PROP_MARGIN_TOP, str);
+        addCSSProperty(CSS_PROP_MARGIN_BOTTOM, str);
 	break;
     }
     case ATTR_BGCOLOR:
 	bgColor = attr->value();
-	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value(), false);
+	addCSSProperty(CSS_PROP_BACKGROUND_COLOR, attr->value());
 	break;
     case ATTR_TEXT:
-	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
+	addCSSProperty(CSS_PROP_COLOR, attr->value());
 	break;
     case ATTR_LINK:
     {
@@ -138,14 +138,14 @@ void HTMLBodyElementImpl::attach(KHTMLView *w)
     if(w->marginWidth() != -1) {
 	QString str;
 	str.sprintf("%dpx",w->marginWidth());
-	addCSSProperty(CSS_PROP_PADDING_LEFT, str, false);
-        addCSSProperty(CSS_PROP_PADDING_RIGHT, str, false);
+	addCSSProperty(CSS_PROP_PADDING_LEFT, str);
+        addCSSProperty(CSS_PROP_PADDING_RIGHT, str);
     }
     if(w->marginHeight() != -1) {
 	QString str;
 	str.sprintf("%dpx",w->marginHeight());
-	addCSSProperty(CSS_PROP_PADDING_TOP, str, false);
-        addCSSProperty(CSS_PROP_PADDING_BOTTOM, str, false);
+	addCSSProperty(CSS_PROP_PADDING_TOP, str);
+        addCSSProperty(CSS_PROP_PADDING_BOTTOM, str);
     }
 
     m_style = document->styleSelector()->styleForElement( this );
@@ -577,10 +577,10 @@ void HTMLIFrameElementImpl::parseAttribute(AttrImpl *attr )
   switch (  attr->attrId )
   {
     case ATTR_WIDTH:
-      addCSSLength( CSS_PROP_WIDTH, attr->value(), false );
+      addCSSLength( CSS_PROP_WIDTH, attr->value());
       break;
     case ATTR_HEIGHT:
-      addCSSLength( CSS_PROP_HEIGHT, attr->value(), false );
+      addCSSLength( CSS_PROP_HEIGHT, attr->value() );
       break;
     default:
       HTMLFrameElementImpl::parseAttribute( attr );

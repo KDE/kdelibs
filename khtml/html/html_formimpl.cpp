@@ -829,13 +829,13 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
         // ### ignore for the moment
         break;
     case ATTR_ALIGN:
-        addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+        addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value() );
         break;
     case ATTR_WIDTH:
-        addCSSProperty(CSS_PROP_WIDTH, attr->value(), false);
+        addCSSLength(CSS_PROP_WIDTH, attr->value() );
         break;
     case ATTR_HEIGHT:
-        addCSSProperty(CSS_PROP_HEIGHT, attr->value(), false);
+        addCSSLength(CSS_PROP_HEIGHT, attr->value() );
         break;
 
     default:

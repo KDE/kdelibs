@@ -123,13 +123,12 @@ void HTMLBRElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_CLEAR:
-	if ( strcasecmp( attr->value(), "left" ) == 0 )
-	    addCSSProperty(CSS_PROP_CLEAR, "left", false);
-	else if ( strcasecmp( attr->value(), "right" ) == 0 )
-	    addCSSProperty(CSS_PROP_CLEAR, "right", false);
-	else if ( strcasecmp( attr->value(), "all" ) == 0 )
-	    addCSSProperty(CSS_PROP_CLEAR, "both", false);
+    {
+	DOMString str = attr->value();
+	if( str == "all" ) str = "both";
+	addCSSProperty(CSS_PROP_CLEAR, str);
 	break;
+    }
     default:
     	HTMLElementImpl::parseAttribute(attr);
     }
@@ -182,48 +181,45 @@ void HTMLFontElementImpl::parseAttribute(AttrImpl *attr)
 	    if ( *s.unicode() == '+' || *s.unicode() == '-' ) {
 		num += 3;
 	    }
+	    DOMString size;
 	    switch (num)
 	    {
 		// size = 3 is the normal size according to html specs
 		case 1:
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "x-small", false);
+		    size = "x-small";
 		    break;
 		case 2:
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "small", false);
+		    size = "small";
 		    break;
 		case 3:
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "medium", false);
+		    size = "medium";
 		    break;
 		case 4:
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "large", false);
+		    size = "large";
 		    break;
 		case 5:
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "x-large", false);
-		    break;
-		case 6:
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
-		    break;
-		case 7:
-		    addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
+		    size = "x-large";
 		    break;
 		default:
-		    if (num >= 6) {
-			addCSSProperty(CSS_PROP_FONT_SIZE, "xx-large", false);
-		    } else if (num < 1) {
-			addCSSProperty(CSS_PROP_FONT_SIZE, "xx-small", false);
-		    }
+		    if (num >= 6)
+			size = "xx-large";
+		    else if (num < 1)
+			size = "xx-small";
+		    
 		    break;
-		}
+	    }
+	    if( !size.isNull() )
+		addCSSProperty(CSS_PROP_FONT_SIZE, size);
 	}
 	break;
     }
     case ATTR_COLOR:
-	addCSSProperty(CSS_PROP_COLOR, attr->value(), false);
+	addCSSProperty(CSS_PROP_COLOR, attr->value());
 	// HTML4 compatibility hack
-	addCSSProperty(CSS_PROP_TEXT_DECORATION_COLOR, attr->value(), false);
+	addCSSProperty(CSS_PROP_TEXT_DECORATION_COLOR, attr->value());
 	break;
     case ATTR_FACE:
-	addCSSProperty(CSS_PROP_FONT_FAMILY, attr->value(), false);
+	addCSSProperty(CSS_PROP_FONT_FAMILY, attr->value());
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);

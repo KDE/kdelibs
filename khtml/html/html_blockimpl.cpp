@@ -88,7 +88,7 @@ void HTMLDivElementImpl::parseAttribute(AttrImpl *attr)
 	DOMString v = attr->value();
 	if ( strcasecmp( attr->value(), "center" ) == 0 )
 	    v = "konq-center";
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, v, false);
+	addCSSProperty(CSS_PROP_TEXT_ALIGN, v);
 	break;
     }
     default:
@@ -122,29 +122,29 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     switch( attr->attrId )
     {
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value() );
     case ATTR_SIZE:
     {
         DOMString s = attr->value();
         if(s.toInt() < 2)
         {
-            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0", false);
-            addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, "1", false);
+            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0px");
+            addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, "1px");
         }
         else
-            addCSSProperty(CSS_PROP_BORDER_WIDTH, s, false);
+            addCSSLength(CSS_PROP_BORDER_WIDTH, s);
 	break;
     }
     case ATTR_WIDTH:
-	addCSSProperty(CSS_PROP_WIDTH, attr->value(), false);
+	addCSSLength(CSS_PROP_WIDTH, attr->value());
 	break;
     case ATTR_NOSHADE:
-        addCSSProperty(CSS_PROP_BORDER_STYLE, "solid", false);
+        addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
         // ###
-        addCSSProperty(CSS_PROP_BORDER_COLOR, "black", false);
+        addCSSProperty(CSS_PROP_BORDER_COLOR, "black");
         break;
     case ATTR_COLOR:
-        addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value(), false);
+        addCSSProperty(CSS_PROP_BORDER_COLOR, attr->value());
         break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
@@ -183,7 +183,7 @@ void HTMLHeadingElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);
@@ -216,7 +216,7 @@ void HTMLParagraphElementImpl::parseAttribute(AttrImpl *attr)
     switch(attr->attrId)
     {
     case ATTR_ALIGN:
-	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value(), false);
+	addCSSProperty(CSS_PROP_TEXT_ALIGN, attr->value());
 	break;
     default:
 	HTMLElementImpl::parseAttribute(attr);

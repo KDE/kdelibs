@@ -110,45 +110,45 @@ void HTMLImageElementImpl::parseAttribute(AttrImpl *attr)
 	imageURL = khtml::parseURL(attr->value());
 	break;
     case ATTR_WIDTH:
-        addCSSLength(CSS_PROP_WIDTH, attr->value(), false);
+        addCSSLength(CSS_PROP_WIDTH, attr->value());
 	break;
     case ATTR_HEIGHT:
-        addCSSLength(CSS_PROP_HEIGHT, attr->value(), false);
+        addCSSLength(CSS_PROP_HEIGHT, attr->value());
 	break;
     case ATTR_BORDER:
         // border="noborder" -> border="0"
         if(attr->value().toInt())
         {
-            addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value(), false);
-            addCSSProperty(CSS_PROP_BORDER_STYLE, "solid", false);
+            addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
+            addCSSProperty(CSS_PROP_BORDER_STYLE, "solid");
         }
 	break;
     case ATTR_VSPACE:
-	addCSSLength(CSS_PROP_MARGIN_TOP, attr->value(), false);
-	addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value(), false);
+	addCSSLength(CSS_PROP_MARGIN_TOP, attr->value());
+	addCSSLength(CSS_PROP_MARGIN_BOTTOM, attr->value());
 	break;
     case ATTR_HSPACE:
-	addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value(), false);
-	addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value(), false);
+	addCSSLength(CSS_PROP_MARGIN_LEFT, attr->value());
+	addCSSLength(CSS_PROP_MARGIN_RIGHT, attr->value());
 	break;
     case ATTR_ALIGN:
 	// vertical alignment with respect to the current baseline of the text
 	// right or left means floating images
 	if ( strcasecmp( attr->value(), "left" ) == 0 )
 	{
-	    addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
-	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
+	    addCSSProperty(CSS_PROP_FLOAT, attr->value());
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top");
 	}
 	else if ( strcasecmp( attr->value(), "right" ) == 0 )
 	{
-	    addCSSProperty(CSS_PROP_FLOAT, attr->value(), false);
-	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top", false);
+	    addCSSProperty(CSS_PROP_FLOAT, attr->value());
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, "top");
 	}
 	else
-	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
 	break;
     case ATTR_VALIGN:
-    	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value(), false);
+    	    addCSSProperty(CSS_PROP_VERTICAL_ALIGN, attr->value());
 	break;
     case ATTR_USEMAP:
 	if ( attr->value()[0] == '#' )

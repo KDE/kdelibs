@@ -154,13 +154,14 @@ void CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
     int pos = m_lstValues->count();
     parseValue(value.unicode(), value.unicode()+value.length(), id, important, m_lstValues);
 
-    if(nonCSSHint) {
+    if( nonCSSHint && pos < (int)m_lstValues->count() ) {
 	CSSProperty *p = m_lstValues->at(pos);
 	while ( p ) {
 	    p->nonCSSHint = true;
 	    p = m_lstValues->next();
 	}
-    }
+    } else 
+	kdDebug() << "CSSStyleDeclarationImpl::setProperty invalid property=" << id << "value: " << value.string() << endl; 
 }
 
 

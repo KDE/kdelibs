@@ -133,7 +133,7 @@ void HTMLElement::addCSSProperty( const DOMString &property, const DOMString &va
 {
     if(impl) {
 	HTMLElementImpl *e = ((HTMLElementImpl *)impl);
-	e->addCSSProperty( property, value, false, true );
+	e->addCSSProperty( property, value );
 	e->setChanged( true );
     }
 }    

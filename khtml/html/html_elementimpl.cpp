@@ -184,7 +184,7 @@ void HTMLElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_LANG:
 	break;
     case ATTR_DIR:
-	addCSSProperty(CSS_PROP_DIRECTION, attr->value(), false );
+	addCSSProperty(CSS_PROP_DIRECTION, attr->value());
 	break;
 	// BiDi info
 	break;
@@ -216,22 +216,22 @@ static inline CSSStyleDeclarationImpl *createDecl( DocumentImpl *document )
     return m_styleDecls;
 }
 
-void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString &value, bool important, bool nonCSSHint)
+void HTMLElementImpl::addCSSProperty( const DOMString &property, const DOMString &value)
 {
     if(!m_styleDecls) m_styleDecls = createDecl( document );
-    m_styleDecls->setProperty(property, value, important, nonCSSHint);
+    m_styleDecls->setProperty(property, value, false, true);
 }
 
-void HTMLElementImpl::addCSSProperty(int id, const DOMString &value, bool important, bool nonCSSHint)
+void HTMLElementImpl::addCSSProperty(int id, const DOMString &value)
 {
     if(!m_styleDecls) m_styleDecls = createDecl( document );
-    m_styleDecls->setProperty(id, value, important, nonCSSHint);
+    m_styleDecls->setProperty(id, value, false, true);
 }
 
-void HTMLElementImpl::addCSSLength(int id, const DOMString &value, bool important, bool nonCSSHint)
+void HTMLElementImpl::addCSSLength(int id, const DOMString &value)
 {
     if(!m_styleDecls) m_styleDecls = createDecl( document );
-    m_styleDecls->setLengthProperty(id, value, important, nonCSSHint);
+    m_styleDecls->setLengthProperty(id, value, false, true);
 }
 
 void HTMLElementImpl::addCSSProperty(const DOMString &property)
