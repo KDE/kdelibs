@@ -389,6 +389,11 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
 
 void RenderImage::updateFromElement()
 {
+    if (element()->id() == ID_INPUT)
+        alt = static_cast<HTMLInputElementImpl*>(element())->altText();
+    else if (element()->id() == ID_IMG)
+        alt = static_cast<HTMLImageElementImpl*>(element())->altText();
+
     DOMString u = element()->id() == ID_OBJECT ?
                   element()->getAttribute(ATTR_DATA) : element()->getAttribute(ATTR_SRC);
 
@@ -409,11 +414,6 @@ void RenderImage::updateFromElement()
             berrorPic = image->isErrorImage();
         }
     }
-
-    if (element()->id() == ID_INPUT)
-        alt = static_cast<HTMLInputElementImpl*>(element())->altText();
-    else if (element()->id() == ID_IMG)
-        alt = static_cast<HTMLImageElementImpl*>(element())->altText();
 }
 
 bool RenderImage::complete() const

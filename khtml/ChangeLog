@@ -1,3 +1,9 @@
+2003-12-11  Stephan Kulow  <coolo@kde.org>
+
+	* rendering/render_image.cpp (updateFromElement): set the alt text before doing anything
+	else, because it might trigger a setting of the error pixmap and then we don't know the
+	alt text to draw and get wrong sizes
+
 2003-12-10  Germain Garand  <germain@ebooksfrance.org>
 
         * rendering/render_replaced.cpp (updateFromElement): don't use setEraseColor for __khtml
