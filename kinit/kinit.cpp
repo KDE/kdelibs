@@ -473,7 +473,10 @@ static pid_t launch(int argc, const char *_name, const char *args,
         exitWithErrorMsg(errorMsg);
      }
 
-     if ( !libpath.isEmpty())
+     if ( getenv("KDE_IS_PRELINKED") && !execpath.isEmpty() && !launcher)
+         libpath.truncate(0);
+
+     if ( !libpath.isEmpty() )
      {
        d.handle = lt_dlopen( QFile::encodeName(libpath) );
        if (!d.handle )
@@ -643,7 +646,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
 #ifdef Q_WS_X11
   if( !startup_id.none())
   {
-     if( d.fork && d.result == 0 ) // launched succesfully    
+     if( d.fork && d.result == 0 ) // launched succesfully
         complete_startup_info( startup_id, d.fork );
      else // failure, cancel ASN
         complete_startup_info( startup_id, 0 );
