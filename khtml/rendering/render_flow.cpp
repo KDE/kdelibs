@@ -351,10 +351,10 @@ void RenderFlow::layoutBlockChildren()
         //kdDebug(0) << "margin = " << margin << " yPos = " << m_height << endl;
 
         child->setYPos(m_height);
-
         child->layout();
-
+        
         int chPos = xPos + child->marginLeft();
+                
         if( m_style->textAlign() == KONQ_CENTER && !child->style()->marginLeft().isVariable()) {
             //kdDebug() << "should align to center" << endl;
             chPos += ( width() - child->width() )/2;
@@ -930,14 +930,10 @@ void RenderFlow::calcMinMaxWidth()
         while(child != 0)
         {
             if( !child->isBR() )
-            {
-                // we have to take care about nbsp's, and places were
-                // we can't break between two inline objects...
-                // But for the moment, this will do...
-
-                // mostly done -antti
-
-
+            {    
+                int childMin = child->minWidth() + child->marginLeft() + child->marginRight();
+                int childMax = child->maxWidth() + child->marginLeft() + child->marginRight();
+                                                    
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
 //                    if(!child->minMaxKnown())
@@ -946,8 +942,8 @@ void RenderFlow::calcMinMaxWidth()
                     RenderText* t = static_cast<RenderText *>(child);
                     if (t->data()[0] == nbsp) //inline starts with nbsp
                     {
-                        inlineMin += child->minWidth();
-                        inlineMax += child->maxWidth();
+                        inlineMin += childMin;
+                        inlineMax += childMax;
                         hasNbsp = true;
                     }
                     if (hasNbsp && t->data()[t->length()-1]==nbsp)
@@ -956,10 +952,8 @@ void RenderFlow::calcMinMaxWidth()
                     }
                     else if (t->data()[t->length()-1] == nbsp)
                     {                           //inline only ends with nbsp
-                        int w = child->minWidth();
-                        if(inlineMin < w) inlineMin = w;
-                        w = child->maxWidth();
-                        inlineMax += w;
+                        if(inlineMin < childMin) inlineMin = childMin;
+                        inlineMax += childMax;
                         noBreak = true;
                         hasNbsp = true;
                     }
@@ -972,16 +966,14 @@ void RenderFlow::calcMinMaxWidth()
                 }
                 if (noBreak)
                 {
-                    inlineMin += child->minWidth();
-                    inlineMax += child->maxWidth();
+                    inlineMin += childMin;
+                    inlineMax += childMax;
                     noBreak = false;
                 }
                 else
                 {
-                    int w = child->minWidth();
-                    if(inlineMin < w) inlineMin = w;
-                    w = child->maxWidth();
-                    inlineMax += w;
+                    if(inlineMin < childMin) inlineMin = childMin;
+                    inlineMax += childMax;
 
                 }
             }
