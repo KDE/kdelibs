@@ -1106,12 +1106,12 @@ QPopupMenu *KEdit::createPopupMenu( const QPoint& pos )
     QPopupMenu *menu = QMultiLineEdit::createPopupMenu( pos );
 
     int id = menu->idAt(0);
-    menu->changeItem( id - IdUndo, SmallIcon("undo"), menu->text( id - IdUndo) );
-    menu->changeItem( id - IdRedo, SmallIcon("redo"), menu->text( id - IdRedo) );
-    menu->changeItem( id - IdCut, SmallIcon("editcut"), menu->text( id - IdCut) );
-    menu->changeItem( id - IdCopy, SmallIcon("editcopy"), menu->text( id - IdCopy) );
-    menu->changeItem( id - IdPaste, SmallIcon("editpaste"), menu->text( id - IdPaste) );
-    menu->changeItem( id - IdClear, SmallIcon("editclear"), menu->text( id - IdClear) );
+    menu->changeItem( id - IdUndo, SmallIconSet("undo"), menu->text( id - IdUndo) );
+    menu->changeItem( id - IdRedo, SmallIconSet("redo"), menu->text( id - IdRedo) );
+    menu->changeItem( id - IdCut, SmallIconSet("editcut"), menu->text( id - IdCut) );
+    menu->changeItem( id - IdCopy, SmallIconSet("editcopy"), menu->text( id - IdCopy) );
+    menu->changeItem( id - IdPaste, SmallIconSet("editpaste"), menu->text( id - IdPaste) );
+    menu->changeItem( id - IdClear, SmallIconSet("editclear"), menu->text( id - IdClear) );
 
     return menu;
 }
