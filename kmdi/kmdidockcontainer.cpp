@@ -317,11 +317,8 @@ void KMdiDockContainer::tabClicked(int t)
       KDockWidget *tmpDw=static_cast<KDockWidget*>(m_ws->widget(t)->qt_cast("KDockWidget"));
       if (tmpDw)
       {
-        if (tmpDw->getWidget()) tmpDw->getWidget()->setFocus();
-        if ( m_vertical )
-          parentDockWidget()->setForcedFixedWidth( m_width );
-        else
-          parentDockWidget()->setForcedFixedHeight( m_height );
+         if (tmpDw->getWidget()) tmpDw->getWidget()->setFocus();
+ //         /*parentDockWidget()->*/setSeparatorPos( m_width, true );
       }
       else
         kdDebug(760)<<"Something really weird is going on"<<endl;
@@ -545,7 +542,7 @@ void KMdiDockContainer::load(KConfig* cfg,const QString& group_or_prefix)
 
   m_width = cfg->readNumEntry( "width", m_width );
   m_height = cfg->readNumEntry( "height", m_height );
-kdDebug()<<"=== "<<m_width<<", "<<m_height<<endl;
+
   int i=0;
   QString raise;
   while (true)
