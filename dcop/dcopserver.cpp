@@ -861,11 +861,11 @@ if (opcode == DCOPCall)
     }
 }
 
-static const IcePaVersionRec DCOPServerVersions[] = {
+static IcePaVersionRec DCOPServerVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor,  DCOPProcessMessage }
 };
 
-static const IcePoVersionRec DUMMYVersions[] = {
+static IcePoVersionRec DUMMYVersions[] = {
     { DCOPVersionMajor, DCOPVersionMinor, 0 }
 };
 
