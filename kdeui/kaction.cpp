@@ -945,9 +945,9 @@ KSelectAction::KSelectAction( const QString& text, int accel, QObject* parent,
 }
 
 KSelectAction::KSelectAction( const QString& text, int accel,
-                              const QObject*, const char*,
+                              const QObject* receiver, const char* slot,
                               QObject* parent, const char* name )
-  : KAction( text, accel, parent, name )
+  : KAction( text, accel, receiver, slot, parent, name )
 {
   d = new KSelectActionPrivate;
 }
@@ -997,15 +997,18 @@ KSelectAction::~KSelectAction()
 
 void KSelectAction::setCurrentItem( int id )
 {
+    if ( id < 0 )
+        return;
+
     if ( id >= (int)d->m_list.count() )
-	return;
+        return;
 
     if ( d->m_menu )
     {
-	if ( d->m_current >= 0 )
-	    d->m_menu->setItemChecked( d->m_current, FALSE );
-	if ( id >= 0 )
-	    d->m_menu->setItemChecked( id, TRUE );
+        if ( d->m_current >= 0 )
+            d->m_menu->setItemChecked( d->m_current, FALSE );
+        if ( id >= 0 )
+            d->m_menu->setItemChecked( id, TRUE );
     }
 
     d->m_current = id;
@@ -1013,7 +1016,7 @@ void KSelectAction::setCurrentItem( int id )
     int len = containerCount();
 
     for( int i = 0; i < len; ++i )
-	setCurrentItem( i, id );
+        setCurrentItem( i, id );
 
     emit KAction::activated();
     emit activated( currentItem() );

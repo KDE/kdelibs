@@ -776,7 +776,6 @@ protected slots:
 signals:
     void activated( int index );
     void activated( const QString& text );
-    void activate();
 
 protected:
     virtual void setCurrentItem( int id, int index );
