@@ -20,6 +20,9 @@
     */
 
 #include "buffer.h"
+#include <cassert>
+
+using namespace std;
 
 Buffer::Buffer() {
 	rpos = 0;
@@ -60,7 +63,8 @@ void Buffer::writeString(const string& s) {
 	long len = s.size()+1;
 
 	writeLong(len);
-	contents.insert(contents.end(),s.c_str(),s.c_str()+len);
+	contents.insert(contents.end(),reinterpret_cast<const unsigned char*>(s.c_str()),
+		        reinterpret_cast<const unsigned char*>(s.c_str()+len));
 }
 
 void Buffer::writeStringSeq(const vector<string>& seq) {
@@ -221,7 +225,7 @@ bool Buffer::fromString(const string& data, const string& name)
 	string start = name+":";
 	if(name == "") start = "";
 
-	if(data.compare(start,0,start.size()) != 0) return false;
+	if(data.compare(0,start.size(), start) != 0) return false;
 	contents.clear();
 
 	string::const_iterator di = data.begin() + start.size();

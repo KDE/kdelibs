@@ -26,7 +26,7 @@
 #include <vector>
 
 class Buffer {
-	vector<unsigned char> contents;
+	std::vector<unsigned char> contents;
 	long rpos;
 	bool _readError;
 	unsigned char fromHexNibble(char c);
@@ -36,10 +36,10 @@ public:
 	bool readError();
 	void writeBool(bool b);
 	void writeLong(long l);
-	void writeLongSeq(const vector<long>& seq);
+	void writeLongSeq(const std::vector<long>& seq);
 	void writeFloat(float f);
-	void writeString(const string& s);
-	void writeStringSeq(const vector<string>& seq);
+	void writeString(const std::string& s);
+	void writeStringSeq(const std::vector<std::string>& seq);
 	inline long size() {
 		return contents.size();
 	}
@@ -56,15 +56,15 @@ public:
 
 	bool readBool();
 	long readLong();
-	void readLongSeq(vector<long>& result);
+	void readLongSeq(std::vector<long>& result);
 	float readFloat();
-	void readString(string& result);
-	void readStringSeq(vector<string>& result);
+	void readString(std::string& result);
+	void readStringSeq(std::vector<std::string>& result);
 
 	void patchLength();
 
-	string toString(const string& name);
-	bool fromString(const string& data, const string& name);
+	std::string toString(const std::string& name);
+	bool fromString(const std::string& data, const std::string& name);
 };
 
 #endif
