@@ -95,13 +95,14 @@ public:
 
         modified = m_isHorizontal = positioned = FALSE;
 
-        HiddenDefault = false;
         IconSizeDefault = 0;
         IconTextDefault = "IconOnly";
-        IndexDefault = -1;
+        
+	IndexDefault = -1;
         NewLineDefault = false;
         OffsetDefault = -1;
         PositionDefault = "Top";
+        HiddenDefault = false;
         idleButtons.setAutoDelete(true);
     }
 
@@ -1109,38 +1110,24 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
 
     if ( position != d->PositionDefault )
       config->writeEntry("Position", position);
-    else
-      config->revertToDefault("Position");
 
     if ( icontext != d->IconTextDefault )
       config->writeEntry("IconText", icontext);
-    else
-      config->revertToDefault("IconText");
 	    
     if ( iconSize() != d->IconSizeDefault )
       config->writeEntry("IconSize", iconSize());
-    else
-      config->revertToDefault("IconSize");
 
     if ( isHidden() != d->HiddenDefault )
       config->writeEntry("Hidden", isHidden());
-    else
-      config->revertToDefault("Hidden");
 
     if ( index != d->IndexDefault )
       config->writeEntry( "Index", index );
-    else
-      config->revertToDefault("Index");
 
     if ( offset() != d->OffsetDefault )
       config->writeEntry( "Offset", offset() );
-    else
-      config->revertToDefault("Offset");
 
     if ( newLine() != d->NewLineDefault )
       config->writeEntry( "NewLine", newLine() );
-    else
-      config->revertToDefault("NewLine");
 }
 
 
