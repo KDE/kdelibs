@@ -326,7 +326,8 @@ void KHTMLParser::parseToken(Token *t)
     // ignore spaces, if we're not inside a paragraph or other inline code
     if( t->id == ID_TEXT ) {
 #ifdef PARSER_DEBUG
-	kdDebug(6035) << "length="<< t->text.length() << "text='" << t->text.string() << "'" << endl;
+        if(t->text)
+            kdDebug(6035) << "length="<< t->text->l << "text='" << QConstString(t->text->s, t->text->l).string() << "'" << endl;
 #endif
 	if (!_inline  || !inBody || current->id() == ID_OPTION)  {
 	    if(t->text && t->text->l == 1 && (*t->text->s).latin1() == ' ')
@@ -688,7 +689,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 e = new HTMLBodyElementImpl(document);
                 startBody();
                 insertNode(e);
-                document->createSelector();
                 handled = true;
                 break;
             }
@@ -703,7 +703,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 e = new HTMLBodyElementImpl(document);
                 startBody();
                 insertNode(e);
-                document->createSelector();
                 handled = true;
             }
             break;
@@ -1068,6 +1067,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 
 // anchor
     case ID_A:
+        popBlock(ID_A);
         n = new HTMLAnchorElementImpl(document);
         break;
 
@@ -1392,7 +1392,6 @@ void KHTMLParser::startBody()
 {
     if(inBody) return;
 
-    document->createSelector();
     inBody = true;
 
     if( isindex ) {
