@@ -356,7 +356,7 @@ int Backend::open(const QByteArray& password) {
 	// compare hashes
 	int sz = encrypted.size();
 	for (int i = 0; i < 20; i++) {
-		if (testhash[i] != encrypted[sz-20+i]) {
+		if (testhash[i] != encrypted[sz - 20 + i]) {
 			encrypted.fill(0);
 			sha.reset();
 			return -8;         // hash error.
@@ -499,7 +499,6 @@ int Backend::sync(const QByteArray& password) {
 	QByteArray wholeFile;
 	long blksz = bf.blockSize();
 	long newsize = decrypted.size() +
-		       hashes.size()    +
 		       blksz            +    // encrypted block
 		       4                +    // file size
 		       20;      // size of the SHA hash
@@ -534,7 +533,7 @@ int Backend::sync(const QByteArray& password) {
 
 	const char *hash = (const char *)sha.hash();
 	for (int i = 0; i < 20; i++) {
-		wholeFile[(int)(newsize-20+i)] = hash[i];
+		wholeFile[(int)(newsize - 20 + i)] = hash[i];
 	}
 
 	sha.reset();
@@ -545,7 +544,7 @@ int Backend::sync(const QByteArray& password) {
 	password2hash(password, passhash);
 
 	// encrypt the data
-	if (!bf.setKey(passhash.data(), passhash.size()*8)) {
+	if (!bf.setKey(passhash.data(), passhash.size() * 8)) {
 		passhash.fill(0);
 		wholeFile.fill(0);
 		return -2;
