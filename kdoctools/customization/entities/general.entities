@@ -252,6 +252,7 @@
 <!ENTITY ktop	"<application>KTop</application>">
 <!ENTITY ktron	"<application>KTron</application>">
 <!ENTITY ktuberling	"<application>KTuberling</application>">
+<!ENTITY kugar "<application>Kugar</application>">
 <!ENTITY kuser	"<application>Kuser</application>">
 <!ENTITY kview	"<application>KView</application>">
 <!ENTITY kvt	"<application>kvt</application>">
