@@ -23,7 +23,7 @@ noinst_LTLIBRARIES  = libkfile.la
 
 METASOURCES = AUTO
 
-SUBDIRS = . acl_prop_page
+#SUBDIRS = . acl_prop_page
 
 include_HEADERS = kfiledialog.h kfilebookmark.h  \
 	kdiroperator.h kfileview.h kfilefiltercombo.h \
