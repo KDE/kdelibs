@@ -18,7 +18,7 @@ INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/khtml \
 	-I$(top_srcdir)/kio/kssl -I$(top_builddir)/kio/kssl \
 	$(all_includes) 
 
-kjavadata_DATA = kjava.jar kjava.policy
+kjavadata_DATA = kjava.jar kjava.policy pluginsinfo
 kjavadatadir = $(kde_datadir)/kjava/
 
 SUBDIRS = . tests dummy

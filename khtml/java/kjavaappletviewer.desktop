@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=Embedded Java Applet Viewer
+Name[ar]=عارض بريمجات جافا المدمج
 Name[az]=Daxili Java Applet Nümayişçisi
 Name[bg]=Вграден визуализатор на Джава аплети
 Name[bn]=অভ্যন্তরীণ জাভা অ্যাপলেট প্রদর্শক
@@ -42,6 +43,7 @@ Name[sr]=Уграђени приказивач Java аплета
 Name[sv]=Inbäddningsbar visare av Javaminiprogram
 Name[ta]=உட்பொதிந்த ஜாவா சிறுநிரல் காட்டி
 Name[tg]=Шоҳиди Java Applet дар Дарун Сохтан
+Name[th]=ตัวแสดงจาวาแอพเพล็ตที่ฝังอยู่
 Name[tr]=Gömülü Java Aplet Görüntüleyici
 Name[uk]=Вмонтований переглядач аплетів Java
 Name[uz]=Ички Java апплетини кўрувчи
@@ -55,3 +57,4 @@ MimeType=application/x-java-applet;
 ServiceTypes=KParts/ReadOnlyPart,Browser/View
 Type=Service
 InitialPreference=2
+X-KDE-BrowserView-PluginsInfo=kjava/pluginsinfo
