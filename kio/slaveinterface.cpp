@@ -16,22 +16,6 @@ SlaveInterface::SlaveInterface( Connection * connection )
     m_pConnection = connection;
 }
 
-void SlaveInterface::sigchld_handler (int)
-{
-    int pid, status;
-
-    while(true) {
-        pid = waitpid(-1, &status, WNOHANG);
-        if ( pid <= 0 ) {
-            // Reinstall signal handler, since Linux resets to default after
-            // the signal occured ( BSD handles it different, but it should do
-            // no harm ).
-            signal(SIGCHLD, sigchld_handler);
-            return;
-        }
-    }
-}
-
 bool SlaveInterface::dispatch()
 {
     assert( m_pConnection );

@@ -112,8 +112,6 @@ public:
     void setConnection( Connection* connection ) { m_pConnection = connection; }
     Connection *connection() const { return m_pConnection; }
 
-    static void sigchld_handler(int);
-
  signals:
     ///////////
     // Messages sent by the slave

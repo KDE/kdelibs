@@ -211,6 +211,13 @@ bool KIODaemon::process(const QCString &fun, const QByteArray &data,
     return false;
 }
 
+void slave_sigchld_handler(int)
+{
+    int status;
+    /*pid = */waitpid(-1, &status, WNOHANG);
+    signal(SIGCHLD, slave_sigchld_handler);
+}
+
 int main(int argc, char **argv)
 {
   //  KCmdLineArgs::init(argc, argv, "kioslave",
@@ -223,6 +230,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "kioslave already running!\n");
 	return 0;
     }
+  signal(SIGCHLD, slave_sigchld_handler);
 
     KIODaemon k(argc,argv);
     return k.exec(); // keep running
