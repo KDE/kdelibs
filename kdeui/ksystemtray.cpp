@@ -27,6 +27,7 @@
 #include <kwin.h>
 #include <kwinmodule.h>
 #include <kiconloader.h>
+#include <qxembed.h>
 
 #include <qapplication.h>
 #ifndef Q_WS_QWS
@@ -62,6 +63,8 @@ public:
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
+    QXEmbed::initialize();
+    
     d = new KSystemTrayPrivate;
     d->actionCollection = new KActionCollection(this);
 
@@ -176,7 +179,6 @@ void KSystemTray::mouseReleaseEvent( QMouseEvent * )
 void KSystemTray::contextMenuAboutToShow( KPopupMenu* )
 {
 }
-
 
 void KSystemTray::toggleMinimizeRestore()
 {
