@@ -627,11 +627,10 @@ int RenderBox::calcReplacedHeight() const
     case Percent:
     {
         RenderObject* cb = containingBlock();
-        if ( cb->isBody() )
+        if ( !cb->isTableCell() )
             height = h.minWidth( cb->root()->view()->visibleHeight() );
         else {
-            if ( cb->isTableCell() )
-                cb = cb->containingBlock();
+            cb = cb->containingBlock();
 
             if ( cb->style()->height().isFixed() )
                 height = h.minWidth( cb->style()->height().value );
