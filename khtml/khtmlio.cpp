@@ -309,7 +309,7 @@ KHTMLCachedImage::load( QString _f )
     arr.assign( c, s );
 
     formatType = QImageDecoder::formatName( (const uchar*)arr.data(), arr.size());
-    printf("KHTMLCache: image file %s, format %s\n",_file, formatType);
+    printf("KHTMLCache: image file %s, format %s\n",_file, formatType ? formatType : "<null>");
     if ( formatType )
       {
 	// set width and height of image
