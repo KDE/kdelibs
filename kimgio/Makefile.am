@@ -12,23 +12,23 @@ TIFF_MODULE = kimg_tiff.la
 endif
 
 kimg_jpeg_la_SOURCES = jpeg.cpp
-kimg_jpeg_la_LDFLAGS = -module -avoid-version
+kimg_jpeg_la_LDFLAGS = -module -avoid-version $(USER_LDFLAGS)
 kimg_jpeg_la_LIBADD = $(LIBJPEG) 
 
 kimg_tiff_la_SOURCES = tiffr.cpp
-kimg_tiff_la_LDFLAGS = -module -avoid-version
+kimg_tiff_la_LDFLAGS = -module -avoid-version $(USER_LDFLAGS)
 kimg_tiff_la_LIBADD = $(LIBTIFF) 
 
 kimg_xview_la_SOURCES = xview.cpp
-kimg_xview_la_LDFLAGS = -module -avoid-version
+kimg_xview_la_LDFLAGS = -module -avoid-version $(USER_LDFLAGS)
 kimg_xview_la_LIBADD = 
 
 kimg_krl_la_SOURCES = krl.cpp
-kimg_krl_la_LDFLAGS = -module -avoid-version
+kimg_krl_la_LDFLAGS = -module -avoid-version $(USER_LDFLAGS)
 kimg_krl_la_LIBADD = 
 
 kimg_eps_la_SOURCES = eps.cpp
-kimg_eps_la_LDFLAGS = -module -avoid-version
+kimg_eps_la_LDFLAGS = -module -avoid-version $(USER_LDFLAGS)
 kimg_eps_la_LIBADD = 
 
 kimgio-config.h: staticmodules
@@ -61,7 +61,7 @@ staticmodules: $(JPEG_MODULE) $(TIFF_MODULE)
 
 CLEANFILES = staticmodules kimgio-config.h
 
-libkimgio_la_LDFLAGS = -version-info 3:0 --export-dynamic $(USER_LDFLAGS)
+libkimgio_la_LDFLAGS = -version-info 3:0 --export-dynamic $(all_libraries)
 libkimgio_la_LIBADD = `cat staticmodules` $(LIBQIMGIO) $(LIB_KIO)
 libkimgio_la_DEPENDENCIES = staticmodules 
 libkimgio_la_SOURCES = kimgio.cpp
