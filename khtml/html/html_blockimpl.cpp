@@ -135,10 +135,14 @@ void HTMLHRElementImpl::parseAttribute(AttrImpl *attr)
     case ATTR_SIZE:
     {
         DOMString s = attr->value();
-        if(s.toInt() < 2)
+        int _s = s.toInt();
+        if(_s % 2)
         {
-            addCSSProperty(CSS_PROP_BORDER_WIDTH, "0px");
-            addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, "1px");
+            QString n;
+            n.sprintf("%dpx", _s / 2);
+            addCSSProperty(CSS_PROP_BORDER_WIDTH, DOMString(n));
+            n.sprintf("%dpx", (_s/ 2)+(_s ? 1 : 0));
+            addCSSProperty(CSS_PROP_BORDER_TOP_WIDTH, DOMString(n));
         }
         else
             addCSSLength(CSS_PROP_BORDER_WIDTH, s);
