@@ -75,7 +75,7 @@ using namespace KJS;
 using namespace khtml;
 
 SourceDisplay::SourceDisplay(KJSDebugWin *debugWin, QWidget *parent, const char *name)
-  : QScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin), 
+  : QScrollView(parent,name), m_currentLine(-1), m_sourceFile(0), m_debugWin(debugWin),
     m_font(KGlobalSettings::fixedFont())
 {
   verticalScrollBar()->setLineStep(QFontMetrics(m_font).height());
@@ -93,15 +93,13 @@ SourceDisplay::~SourceDisplay()
 
 void SourceDisplay::setSource(SourceFile *sourceFile)
 {
-  if (m_sourceFile != sourceFile) {
-    if (m_sourceFile) {
+  if ( sourceFile )
+      sourceFile->ref();
+  if (m_sourceFile)
       m_sourceFile->deref();
-    }
-    m_sourceFile = sourceFile;
-    if (m_sourceFile) {
+  m_sourceFile = sourceFile;
+  if ( m_sourceFile )
       m_sourceFile->ref();
-    }
-  }
 
   if (!m_sourceFile || !m_debugWin->isVisible()) {
     return;
@@ -151,6 +149,7 @@ void SourceDisplay::setSource(SourceFile *sourceFile)
   int linenoDisplayWidth = metrics.width("888888");
   resizeContents(linenoDisplayWidth+4+width,metrics.height()*m_lines.count());
   update();
+  sourceFile->deref();
 }
 
 void SourceDisplay::setCurrentLine(int lineno, bool doCenter)
@@ -327,7 +326,7 @@ void KJSErrorDialog::slotUser1()
 }
 
 //-------------------------------------------------------------------------
-EvalMultiLineEdit::EvalMultiLineEdit(QWidget *parent) 
+EvalMultiLineEdit::EvalMultiLineEdit(QWidget *parent)
     : QMultiLineEdit(parent) {
 }
 
@@ -901,7 +900,10 @@ void KJSDebugWin::displaySourceFile(SourceFile *sourceFile, bool forceRefresh)
 {
   if (m_curSourceFile == sourceFile && !forceRefresh)
     return;
+  sourceFile->ref();
   m_sourceDisplay->setSource(sourceFile);
+  if (m_curSourceFile)
+     m_curSourceFile->deref();
   m_curSourceFile = sourceFile;
 }
 
