@@ -55,10 +55,12 @@ KURLRequesterDlg::KURLRequesterDlg( const QString& urlName, QWidget *parent,
     urlRequester_->setMinimumWidth( urlRequester_->sizeHint().width() * 3 );
     topLayout->addWidget( urlRequester_ );
     urlRequester_->setFocus();
-    
+   
+    /*
     KFile::Mode mode = static_cast<KFile::Mode>( KFile::File | 
             KFile::ExistingOnly );
 	urlRequester_->fileDialog()->setMode( mode );
+    */
 }
 
 
@@ -76,7 +78,7 @@ KURL KURLRequesterDlg::selectedURL() const
 }
 
 
-KURL KURLRequesterDlg::getOpenURL(const QString& dir, QWidget *parent, 
+KURL KURLRequesterDlg::getURL(const QString& dir, QWidget *parent, 
         const QString& caption)
 {
     KURLRequesterDlg dlg(dir, parent, "filedialog", true);

@@ -68,7 +68,7 @@ public:
      * @param url This specifies the initial path of the input line.
      * @param parent The widget the dialog will be centered on initially.
      */
-    static KURL getOpenURL(const QString& url = QString::null,
+    static KURL getURL(const QString& url = QString::null,
             QWidget *parent= 0, const QString& caption = QString::null);
 
 protected:
