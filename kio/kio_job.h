@@ -146,7 +146,7 @@ public:
   virtual void slotMakingDir( const char *_dir );
   virtual void slotGettingFile( const char *_url );
   virtual void slotDeletingFile( const char *_url );
-  virtual void slotListEntry( UDSEntry& _entry );
+  virtual void slotListEntry( const UDSEntry& _entry );
   virtual void slotMimeType( const char *_type );
   virtual void slotRedirection( const char *_url );
 
@@ -181,7 +181,7 @@ signals:
    */
   void sigCanceled( int id );
 
-  void sigListEntry( int id, UDSEntry& _entry );
+  void sigListEntry( int id, const UDSEntry& _entry );
   void sigMimeType( int id, const char *_mimetype );
 
   /**

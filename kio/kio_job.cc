@@ -587,7 +587,7 @@ void KIOJob::slotData( void *_p, int _len )
 }
 
 
-void KIOJob::slotListEntry( UDSEntry& _entry )
+void KIOJob::slotListEntry( const UDSEntry& _entry )
 {
   emit sigListEntry( m_id, _entry );
 }
