@@ -4,7 +4,7 @@ kdelibs (4:2.1.2-4) unstable; urgency=low
     dangling link (Closes: #98910)
   * More libtool fixes for hppa before they know they need it.
  
- -- Ivan E. Moore II <rkrusty@debian.org>  Sun, 03 Jun 2001 13:035:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 04 Jun 2001 13:34:00 -0700
 
 kdelibs (4:2.1.2-3) unstable; urgency=low
  
