@@ -66,7 +66,7 @@ KFileSpeedBar::KFileSpeedBar( QWidget *parent, const char *name )
             insertItem( u, i18n("Devices"), false,
                                    KProtocolInfo::icon( "devices" ) );
 
-        u = "lan:/";
+        u = "remote:/";
         if ( KProtocolInfo::isKnownProtocol( u ) )
             insertItem( u, i18n("Network"), false,
                                    "network_local" );
