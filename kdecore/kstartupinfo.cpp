@@ -479,8 +479,6 @@ struct KStartupInfoIdPrivate
     QString id; // id
     };
 
-// CHECKME move up & inline ?
-inline
 const QString& KStartupInfoId::id() const
     {
     return d->id;
@@ -589,7 +587,6 @@ bool KStartupInfoId::operator<( const KStartupInfoId& id_P ) const
     return id() < id_P.id();
     }
     
-inline
 bool KStartupInfoId::valid() const
     {
     return !d->id.isEmpty();
