@@ -2,6 +2,13 @@
 Type=BMP
 Header=
 Name=MSWindows Pixmaps
+Name[da]=MSWindows billeder
+Name[de]=Windows-Pixmaps
+Name[he]=Windows לש םילסקיפ תופמ
+Name[nl]=MS Windows Bitmaps
+Name[no]=MS Windows-bilder
+Name[no_NY]=MS Windows-bilete
+Name[pt_BR]=Pixmaps MS-Windows
 Read=true
 Write=true
 Suffices=bmp,BMP

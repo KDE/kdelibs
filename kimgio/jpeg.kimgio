@@ -2,6 +2,14 @@
 Type=JPEG
 Header=
 Name=JPEG-Pictures
+Name[da]=JPEG-Billeder
+Name[de]=JPEG-Bilder
+Name[he]=JPEG תונומת
+Name[it]=Immagini JPEG
+Name[nl]=JPEG-afbeeldingen
+Name[no]=JPEG-bilder
+Name[no_NY]=JPEG-bilete
+Name[pt_BR]=Figuras JPEG
 Read=true
 Write=true
 Suffices=jpg,JPG,jpeg,JPEG 

@@ -2,6 +2,14 @@
 Type=PNG
 Header=
 Name=PNG-Pictures
+Name[da]=PNG-Billeder
+Name[de]=PNG-Bilder
+Name[he]=PNG תונומת
+Name[it]=Immagini PNG
+Name[nl]=PNG-afbeeldingen
+Name[no]=PNG-bilder
+Name[no_NY]=PNG-bilete
+Name[pt_BR]=Figuras PNG
 Read=true
 Write=true
 Suffices=png,PNG

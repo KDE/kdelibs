@@ -2,6 +2,14 @@
 Type=TIFF
 Header=[MI][MI]
 Name=TIFF-Pictures
+Name[da]=TIFF-Billeder
+Name[de]=TIFF-Bilder
+Name[he]=TIFF תונומת
+Name[it]=Immagini TIFF
+Name[nl]=TIFF-afbeeldingen
+Name[no]=TIFF-bilder
+Name[no_NY]=TIFF-bilete
+Name[pt_BR]=Figuras TIFF
 Read=true
 Write=true
 Suffices=tiff,TIFF,tif,TIF 

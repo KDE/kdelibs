@@ -2,6 +2,14 @@
 Type=GIF
 Header=
 Name=GIF-Pictures
+Name[da]=GIF-Billeder
+Name[de]=GIF-Bilder
+Name[he]=GIF תונומת
+Name[it]=Immagini GIF
+Name[nl]=GIF-afbeeldingen
+Name[no]=GIF-bilder
+Name[no_NY]=GIF-bilete
+Name[pt_BR]=Figuras GIF
 Read=true
 Write=false
 Suffices=gif,GIF

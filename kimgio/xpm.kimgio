@@ -2,6 +2,13 @@
 Type=XPM
 Header=
 Name=XWindow Pixmaps
+Name[da]=XWindow pixmaps
+Name[de]=XWindow-Pixmaps
+Name[he]=XWindows לש םילסקיפ תופמ
+Name[nl]=XWindow pixmaps
+Name[no]=X Window-bilder
+Name[no_NY]=X Window-pixmap
+Name[pt_BR]=Pixmaps XWindow
 Read=true
 Write=true
 Suffices=xpm,XPM
