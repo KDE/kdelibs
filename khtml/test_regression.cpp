@@ -42,6 +42,7 @@
 #include "khtml_factory.h"
 #include <kio/job.h>
 #include <kmainwindow.h>
+#include <ksimpleconfig.h>
 
 #include <qcolor.h>
 #include <qcursor.h>
@@ -338,6 +339,13 @@ int main(int argc, char *argv[])
 
     KApplication a;
     a.setStyle( "windows" );
+    KSimpleConfig sc1( "cryptodefaults" );
+    sc1.setGroup( "Warnings" );
+    sc1.writeEntry( "OnUnencrypted",  false );
+    a.config()->setGroup( "Notification Messages" );
+    a.config()->writeEntry( "kjscupguard_alarmhandler", true );
+    a.config()->setGroup("HTML Settings");
+    a.config()->writeEntry("ReportJSErrors", false);
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
     int rv = 1;
@@ -366,6 +374,7 @@ int main(int argc, char *argv[])
 
     toplevel->setCentralWidget( part->widget() );
     part->setJScriptEnabled(true);
+
     part->executeScript(DOM::Node(), ""); // force the part to create an interpreter
 //    part->setJavaEnabled(true);
 
@@ -441,6 +450,8 @@ RegressionTest::RegressionTest(KHTMLPart *part, QString _sourceFilesDir,
     curr = this;
 };
 
+#include <qobjectlist.h>
+
 bool RegressionTest::runTests(QString relPath, bool mustExist)
 {
     if (!QFile(m_sourceFilesDir+"/"+relPath).exists()) {
@@ -506,14 +517,28 @@ bool RegressionTest::runTests(QString relPath, bool mustExist)
 	    return false;
 	}
 
-#if 1
+#if 0
 	PartMonitor pm(m_part);
+        m_part->closeURL();
+        kapp->processEvents(60000);
         qApp->mainWidget()->resize( 800, 600); // restore size
         m_part->begin(KURL());
         m_part->write("<html><body></body></html>");
         m_part->end();
         pm.waitForCompletion();
         RenderObject *r = static_cast<DocumentImpl*>( m_part->document().handle() )->renderer();
+
+        QObjectList *l = qApp->mainWidget()->queryList( "QWidget" );
+        QObjectListIt it( *l ); // iterate over the buttons
+        QObject *obj;
+
+        while ( (obj = it.current()) != 0 ) {
+            // for each found object...
+            ++it;
+            kdDebug() << ( QWidget* )*it << endl;
+        }
+        delete l; // delete the list, not the objects
+
         if ( r->contentHeight() != 594 || r->contentWidth() != 796 )
             printf( "ERROR renderer size %d %d\n", r->contentHeight(), r->contentWidth() );
 #endif
