@@ -323,11 +323,6 @@ protected:
   /**
    * Overridden for internal reasons; the API remains unaffected.
    */
-  virtual void mousePressEvent (QMouseEvent*);
-
-  /**
-   * Overridden for internal reasons; the API remains unaffected.
-   */
   virtual void mouseReleaseEvent (QMouseEvent*);
 
   /**

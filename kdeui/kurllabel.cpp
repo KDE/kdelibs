@@ -77,12 +77,6 @@ KURLLabel::~KURLLabel ()
   delete d;
 }
 
-// BCI: remove in KDE 3.0
-void KURLLabel::mousePressEvent (QMouseEvent* e)
-{
-  QLabel::mousePressEvent (e);
-}
-
 void KURLLabel::mouseReleaseEvent (QMouseEvent* e)
 {
   QLabel::mouseReleaseEvent (e);
