@@ -2154,8 +2154,10 @@ int KActionMenu::plug( QWidget* widget, int index )
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
-    bar->setDelayedPopup( id_, popupMenu() );
-
+    KToolBarButton *button = bar->getButton( id_ );
+    if ( button ) 
+        button->setPopup( popupMenu() );
+    
     return containerCount() - 1;
   }
   else if ( widget->inherits( "KMenuBar" ) )
