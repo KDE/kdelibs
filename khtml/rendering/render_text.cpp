@@ -51,8 +51,6 @@ using namespace DOM;
 
 TextSlave::~TextSlave()
 {
-    if(m_reversed)
-        QT_DELETE_QCHAR_VEC(m_text);
 }
 
 void TextSlave::print( QPainter *pt, RenderText* p, int _tx, int _ty)
@@ -72,7 +70,7 @@ void TextSlave::print( QPainter *pt, RenderText* p, int _tx, int _ty)
     Q_UNUSED( p );
 #endif
 
-    pt->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string(), -1, QPainter::LTR);
+    pt->drawText(m_x + _tx, m_y + _ty + m_baseline, s.string(), -1, m_reversed ? QPainter::RTL : QPainter::LTR);
 
 #ifdef DEBUG_VALIGN
     pt->setBrush( Qt::NoBrush );
@@ -118,7 +116,7 @@ void TextSlave::printSelection(QPainter *p, RenderStyle* style, int tx, int ty, 
     ty += m_baseline;
 
     //kdDebug( 6040 ) << "textSlave::printing(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
-    p->drawText(m_x + tx + _offset, m_y + ty, s.string(), -1, QPainter::LTR);
+    p->drawText(m_x + tx + _offset, m_y + ty, s.string(), -1, m_reversed ? QPainter::RTL : QPainter::LTR);
     p->restore();
 }
 
@@ -827,26 +825,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
 
     QChar *ch;
     reverse = reverse && !style()->visuallyOrdered();
-    if ( reverse ) {
-        // reverse String
-        QString aStr = QConstString(str->s+from, len).string();
-        //kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
-        len = aStr.length();
-        ch = QT_ALLOC_QCHAR_VEC(len);
-        int half =  len/2;
-        const QChar *s = aStr.unicode();
-        for(int i = 0; i <= half; i++)
-        {
-            ch[len-1-i] = s[i];
-            ch[i] = s[len-1-i];
-            if(ch[i].mirrored() && !style()->visuallyOrdered())
-                ch[i] = ch[i].mirroredChar();
-            if(ch[len-1-i].mirrored() && !style()->visuallyOrdered() && i != len-1-i)
-                ch[len-1-i] = ch[len-1-i].mirroredChar();
-        }
-    }
-    else
-        ch = str->s+from;
+    ch = str->s+from;
 
     // ### margins and RTL
     if(from == 0 && parent()->isInline() && parent()->firstChild()==this)
