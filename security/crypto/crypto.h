@@ -67,6 +67,8 @@ private:
     KCryptoConfig *m_module; // just to call configChanged()
 };
 
+
+
 class OtherCertItem : public QListViewItem
 {
 public:
@@ -92,6 +94,36 @@ private:
     bool _perm;
     int _policy;
 };
+
+
+
+
+class YourCertItem : public QListViewItem
+{
+public:
+    YourCertItem(QListView *view, QString pkcs, QString pass, QString name, KCryptoConfig *module );
+    ~YourCertItem() {}
+
+    QString configName() const;
+    QString& getPKCS() { return _pkcs; }
+    void setPKCS(QString pkcs) { _pkcs = pkcs; }
+    QString& getPass() { return _pass; }
+    void setPass(QString pass) { _pass = pass; }
+    QString& getName() { return _name; }
+    void setName(QString name) { _name = name; }
+
+protected:
+    virtual void stateChange( bool );
+
+private:
+    QString _pkcs;
+    QString _pass;
+    QString _name;
+    KCryptoConfig *m_module; // just to call configChanged()
+};
+
+
+
 
 
 class KCryptoConfig : public KCModule
@@ -135,6 +167,15 @@ public slots:
   void slotUntil();
   void slotDatePick();
 
+  void slotYourImport();
+  void slotYourExport();
+  void slotYourVerify();
+  void slotYourRemove();
+  void slotYourUnlock();
+  void slotYourPass();
+  void slotYourCertSelect();
+
+
 private:
   QTabWidget *tabs;
   QWidget *tabSSL, *tabOSSL;
@@ -161,17 +202,19 @@ private:
   QListBox *macBox;
   QPushButton *otherSSLExport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
   QPushButton *caSSLImport, *caSSLView, *caSSLRemove, *caSSLVerify;
-  QPushButton *yourSSLImport, *yourSSLView, *yourSSLRemove, *yourSSLExport,
-              *yourSSLDefault, *yourSSLVerify;
+  QPushButton *yourSSLImport, *yourSSLPass, *yourSSLRemove, *yourSSLExport,
+              *yourSSLUnlock, *yourSSLVerify;
   QRadioButton *yourSSLUseDefault, *yourSSLList, *yourSSLDont;
   QLineEdit *macCert;
   KSSLCertBox *oSubject, *oIssuer;
+  KSSLCertBox *ySubject, *yIssuer;
   QGridLayout *oGrid;
 
   QVButtonGroup *policyGroup;
   QRadioButton *policyAccept, *policyReject, *policyPrompt;
   QRadioButton *cacheUntil, *cachePerm;
   QLabel *validFrom, *validUntil;
+  QLabel *yValidFrom, *yValidUntil;
   KURLLabel *untilDate;
 
   /* OpenSSL tab */
@@ -179,11 +222,12 @@ private:
   QLineEdit *oPath;
   QPushButton *oFind;
   QPushButton *oTest;
-  QList<OtherCertItem> certDelList;
+  QList<OtherCertItem> otherCertDelList;
+  QList<YourCertItem> yourCertDelList;
 
 
   KConfig *config;
-  KSimpleConfig *policies;
+  KSimpleConfig *policies, *pcerts;
 };
 
 #endif

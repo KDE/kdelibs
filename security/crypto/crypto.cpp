@@ -52,6 +52,7 @@
 #include <klocale.h>
 #include <kdialog.h>
 #include <kmessagebox.h>
+#include <kpassdlg.h>
 #include <kseparator.h>
 #include <kdatepik.h>
 #include <kurllabel.h>
@@ -130,6 +131,41 @@ QString OtherCertItem::configName() const
 }
 
 
+YourCertItem::YourCertItem( QListView *view, QString pkcs, QString pass, QString name, KCryptoConfig *module )
+    : QListViewItem( view, QString::null )
+
+{
+    m_module = module;
+KSSLX509Map cert(name);
+    setText(0, cert.getValue("CN"));
+    setText(1, cert.getValue("Email"));
+    _pkcs = pkcs;
+    _name = name;
+    _pass = pass;
+}
+
+void YourCertItem::stateChange( bool )
+{
+    m_module->configChanged();
+}
+
+QString YourCertItem::configName() const
+{
+    return _name;
+}
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+
+
+
+
 KCryptoConfig::KCryptoConfig(QWidget *parent, const char *name)
   : KCModule(parent, name)
 {
@@ -137,14 +173,15 @@ QGridLayout *grid;
 QBoxLayout *top = new QVBoxLayout(this);
 QString whatstr;
 
-  certDelList.setAutoDelete(true);
+  otherCertDelList.setAutoDelete(true);
+  yourCertDelList.setAutoDelete(true);
 
   ///////////////////////////////////////////////////////////////////////////
   // Create the GUI here - there are currently a total of 4 tabs.
   // The first is SSL and cipher related
-  // The second is user's SSL certificate related
-  // The third is other SSL certificate related
-  // The fourth is SSL certificate authority related
+  // The second is OpenSSL settings
+  // The third is user's SSL certificate related
+  // The fourth is other SSL certificate related
   ///////////////////////////////////////////////////////////////////////////
 
   tabs = new QTabWidget(this);
@@ -201,6 +238,7 @@ QString whatstr;
   // no need to parse kdeglobals.
   config = new KConfig("cryptodefaults", false, false);
   policies = new KSimpleConfig("ksslpolicies", false);
+  pcerts = new KSimpleConfig("ksslcertificates", false);
 
 #ifdef HAVE_SSL
   SSLv3Box = new QListView(tabSSL, "v3ciphers");
@@ -329,65 +367,85 @@ QString whatstr;
 
 
 
-#if 0
-
   ///////////////////////////////////////////////////////////////////////////
   // THIRD TAB
   ///////////////////////////////////////////////////////////////////////////
   tabYourSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
-  grid = new QGridLayout(tabYourSSLCert, 10, 2, KDialog::marginHint(), KDialog::spacingHint() );
+  grid = new QGridLayout(tabYourSSLCert, 15, 6, KDialog::marginHint(), KDialog::spacingHint() );
 
-  yourSSLBox = new QListBox(tabYourSSLCert);
+  yourSSLBox = new QListView(tabYourSSLCert);
   whatstr = i18n("This list box shows which certificates of yours KDE"
                 " knows about.  You can easily manage them from here.");
   QWhatsThis::add(yourSSLBox, whatstr);
-  yourSSLBox->setSelectionMode(QListBox::Single);
-  yourSSLBox->setColumnMode(QListBox::FixedNumber);
-  grid->addMultiCellWidget(yourSSLBox, 0, 7, 0, 0);
+  grid->addMultiCellWidget(yourSSLBox, 0, 5, 0, 4);
+  yourSSLBox->addColumn(i18n("Common Name"));
+  yourSSLBox->addColumn(i18n("E-Mail Address"));
+  connect(yourSSLBox, SIGNAL(selectionChanged()), SLOT(slotYourCertSelect()));
 
   yourSSLImport = new QPushButton(i18n("&Import..."), tabYourSSLCert);
-  //connect(yourSSLImport, SIGNAL(), SLOT());
-  grid->addWidget(yourSSLImport, 0, 1);
-
-  yourSSLView = new QPushButton(i18n("&View/Edit..."), tabYourSSLCert);
-  //connect(yourSSLView, SIGNAL(), SLOT());
-  grid->addWidget(yourSSLView, 1, 1);
-
-  yourSSLRemove = new QPushButton(i18n("&Remove..."), tabYourSSLCert);
-  //connect(yourSSLRemove, SIGNAL(), SLOT());
-  grid->addWidget(yourSSLRemove, 2, 1);
+  connect(yourSSLImport, SIGNAL(clicked()), SLOT(slotYourImport()));
+  grid->addWidget(yourSSLImport, 0, 5);
 
   yourSSLExport = new QPushButton(i18n("&Export..."), tabYourSSLCert);
-  //connect(yourSSLExport, SIGNAL(), SLOT());
-  grid->addWidget(yourSSLExport, 3, 1);
+  yourSSLExport->setEnabled(false);
+  connect(yourSSLExport, SIGNAL(clicked()), SLOT(slotYourExport()));
+  grid->addWidget(yourSSLExport, 1, 5);
 
-  yourSSLDefault = new QPushButton(i18n("&Set Default..."), tabYourSSLCert);
-  //connect(yourSSLDefault, SIGNAL(), SLOT());
-  grid->addWidget(yourSSLDefault, 4, 1);
+  yourSSLRemove = new QPushButton(i18n("Remo&ve"), tabYourSSLCert);
+  yourSSLRemove->setEnabled(false);
+  connect(yourSSLRemove, SIGNAL(clicked()), SLOT(slotYourRemove()));
+  grid->addWidget(yourSSLRemove, 2, 5);
+
+  yourSSLUnlock = new QPushButton(i18n("&Unlock"), tabYourSSLCert);
+  yourSSLUnlock->setEnabled(false);
+  connect(yourSSLUnlock, SIGNAL(clicked()), SLOT(slotYourUnlock()));
+  grid->addWidget(yourSSLUnlock, 3, 5);
 
   yourSSLVerify = new QPushButton(i18n("Verif&y..."), tabYourSSLCert);
-  //connect(yourSSLVerify, SIGNAL(), SLOT());
-  grid->addWidget(yourSSLVerify, 5, 1);
+  yourSSLVerify->setEnabled(false);
+  connect(yourSSLVerify, SIGNAL(clicked()), SLOT(slotYourVerify()));
+  grid->addWidget(yourSSLVerify, 4, 5);
 
-  yourSSLGen = new QPushButton(i18n("&Generate..."), tabYourSSLCert);
-  connect(yourSSLGen, SIGNAL(pressed()), SLOT(slotGeneratePersonal()));
-  grid->addWidget(yourSSLGen, 6, 1);
+  yourSSLPass = new QPushButton(i18n("&Change Password..."), tabYourSSLCert);
+  yourSSLPass->setEnabled(false);
+  connect(yourSSLPass, SIGNAL(clicked()), SLOT(slotYourPass()));
+  grid->addWidget(yourSSLPass, 5, 5);
+
+  grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabYourSSLCert), 6, 6, 0, 5);
+  ySubject = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(""));
+  yIssuer = KSSLInfoDlg::certInfoWidget(tabYourSSLCert, QString(""));
+  grid->addMultiCellWidget(ySubject, 7, 11, 0, 2);
+  grid->addMultiCellWidget(yIssuer, 7, 11, 3, 5);
+  whatstr = i18n("This is the information known about the owner of the certificate.");
+  QWhatsThis::add(ySubject, whatstr);
+  whatstr = i18n("This is the information known about the issuer of the certificate.");
+  QWhatsThis::add(yIssuer, whatstr);
+
+  grid->addWidget(new QLabel(i18n("Valid From:"), tabYourSSLCert), 12, 0);
+  grid->addWidget(new QLabel(i18n("Valid Until:"), tabYourSSLCert), 13, 0);
+  yValidFrom = new QLabel(tabYourSSLCert);
+  grid->addWidget(yValidFrom, 12, 1);
+  yValidUntil = new QLabel(tabYourSSLCert);
+  grid->addWidget(yValidUntil, 13, 1);
+  whatstr = i18n("The certificate is valid starting at this date.");
+  QWhatsThis::add(yValidFrom, whatstr);
+  whatstr = i18n("The certificate is valid until this date.");
+  QWhatsThis::add(yValidUntil, whatstr);
 
   QHButtonGroup *ocbg = new QHButtonGroup(i18n("On SSL Connection..."), tabYourSSLCert);
   yourSSLUseDefault = new QRadioButton(i18n("&Use default certificate"), ocbg);
   yourSSLList = new QRadioButton(i18n("&List upon connection"), ocbg);
   yourSSLDont = new QRadioButton(i18n("&Do not use certificates"), ocbg);
-  grid->addMultiCellWidget(ocbg, 9, 9, 0, 1);
+  grid->addMultiCellWidget(ocbg, 14, 14, 0, 5);
 #else
   nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
                                " because this module was not linked"
                                " with OpenSSL."), tabYourSSLCert);
-  grid->addMultiCellWidget(nossllabel, 3, 3, 0, 1);
+  grid->addMultiCellWidget(nossllabel, 3, 3, 0, 5);
 #endif
 
-#endif
 
   ///////////////////////////////////////////////////////////////////////////
   // FOURTH TAB
@@ -590,10 +648,10 @@ QString whatstr;
 #ifdef HAVE_SSL
   tabs->addTab(tabOSSL, i18n("OpenSSL"));
 #endif
-  tabs->addTab(tabOtherSSLCert, i18n("Other SSL Certificates"));
+  tabs->addTab(tabYourSSLCert, i18n("Your Certificates"));
+  tabs->addTab(tabOtherSSLCert, i18n("Peer SSL Certificates"));
 
 #if 0
-  tabs->addTab(tabYourSSLCert, i18n("Your SSL Certificates"));
   tabs->addTab(tabSSLCA, i18n("SSL C.A.s"));
   tabs->addTab(tabSSLCOpts, i18n("Validation Options"));
 #endif
@@ -606,6 +664,7 @@ KCryptoConfig::~KCryptoConfig()
 {
     delete config;
     delete policies;
+    delete pcerts;
 }
 
 void KCryptoConfig::configChanged()
@@ -617,7 +676,8 @@ void KCryptoConfig::configChanged()
 void KCryptoConfig::load()
 {
 #ifdef HAVE_SSL
-  certDelList.clear();
+  otherCertDelList.clear();
+  yourCertDelList.clear();
   config->setGroup("TLS");
   mUseTLS->setChecked(config->readBoolEntry("Enabled", true));
 
@@ -686,9 +746,24 @@ void KCryptoConfig::load()
                       policies->readDateTimeEntry("Expires"), this );
   }
 
+  groups = pcerts->groupList();
+ 
+  yourSSLBox->clear();
+  for (QStringList::Iterator i = groups.begin();
+                             i != groups.end();
+                             ++i) {
+    if ((*i).isEmpty() || *i == "<default>") continue;
+    pcerts->setGroup(*i);
+    new YourCertItem(yourSSLBox,
+                     pcerts->readEntry("PKCS12Base64", ""), 
+                     pcerts->readEntry("Password", ""),
+                     *i, this );
+  }
+
 #endif
 
   slotOtherCertSelect();
+  slotYourCertSelect();
   emit changed(false);
 }
 
@@ -769,9 +844,9 @@ void KCryptoConfig::save()
                                        " cipher, SSLv3 will not work."),
                                    i18n("SSLv3 Ciphers"));
   // SSL Policies code
-  for (OtherCertItem *x = certDelList.first(); x != 0; x = certDelList.next()) {
+  for (OtherCertItem *x = otherCertDelList.first(); x != 0; x = otherCertDelList.next()) {
      policies->deleteGroup(x->configName());
-     certDelList.remove(x);
+     otherCertDelList.remove(x);
   }
   // Go through the non-deleted ones and save them
   for (OtherCertItem *x = 
@@ -782,6 +857,21 @@ void KCryptoConfig::save()
      policies->writeEntry("Policy", x->getPolicy());
      policies->writeEntry("Expires", x->getExpires());
      policies->writeEntry("Permanent", x->isPermanent());
+  }
+
+  // SSL Personal certificates code
+  for (YourCertItem *x = yourCertDelList.first(); x != 0; x = yourCertDelList.next()) {
+     pcerts->deleteGroup(x->configName());
+     yourCertDelList.remove(x);
+  }
+  // Go through the non-deleted ones and save them
+  for (YourCertItem *x = 
+        static_cast<YourCertItem *>(yourSSLBox->firstChild()); 
+                                                            x;
+             x = static_cast<YourCertItem *>(x->nextSibling())) {
+     pcerts->setGroup(x->configName());
+     pcerts->writeEntry("PKCS12Base64", x->getPKCS());
+     pcerts->writeEntry("Password", x->getPass());
   }
 
 #endif
@@ -947,7 +1037,7 @@ void KCryptoConfig::slotRemoveCert() {
 OtherCertItem *x = static_cast<OtherCertItem *>(otherSSLBox->selectedItem());
    if (x) {
       otherSSLBox->takeItem(x);
-      certDelList.append(x);
+      otherCertDelList.append(x);
       configChanged();
    }
 }
@@ -1128,6 +1218,227 @@ QString iss = "";
    oIssuer->setValues(iss);
 
 }
+
+
+void KCryptoConfig::slotYourImport() {
+#ifdef HAVE_SSL
+KSSLPKCS12 *cert = NULL;
+QCString pass;
+
+   QString certFile = KFileDialog::getOpenFileName();
+   if (certFile.isEmpty())
+      return;
+
+TryImportPassAgain:
+   int rc = KPasswordDialog::getPassword(pass, i18n("Certificate password")); 
+   if (rc != KPasswordDialog::Accepted) return;
+
+   cert = KSSLPKCS12::loadCertFile(certFile, QString(pass));
+
+   if (!cert) {
+      rc = KMessageBox::warningYesNo(this, i18n("The certificate file could not be loaded.  Try a different password?"), i18n("SSL"));
+      if (rc == KMessageBox::Yes) goto TryImportPassAgain;
+      return;
+   }
+
+   // At this point, we know that we can read the certificate in.
+   // The procedure will be to convert it to Base64 in it's raw form
+   // and add it to the ListView - eventually going into the SimpleConfig.
+   
+   // FIXME: prompt if the user wants the password stored along with the
+   //        certificate
+
+   QString name = cert->getCertificate()->getSubject();
+   for (YourCertItem *i =
+        static_cast<YourCertItem *>(yourSSLBox->firstChild());
+                                                            i;
+             i = static_cast<YourCertItem *>(i->nextSibling())) {
+      if (i->configName() == name) {
+         rc = KMessageBox::warningYesNo(this, i18n("A certificate with that name already exists.  Are you sure that you wish to replace it?"), i18n("SSL"));
+         if (rc == KMessageBox::No) {
+            delete cert;
+            return;
+         }
+         yourSSLBox->takeItem(i);
+         yourCertDelList.append(i);
+      }
+   }
+
+   new YourCertItem(yourSSLBox,
+                    cert->toString(), 
+                    "",  // the password - don't store it yet!
+                    name, 
+                    this );
+
+   configChanged();
+   delete cert;
+#endif
+}
+
+
+void KCryptoConfig::slotYourExport() {
+YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
+   if (!x) return;
+
+   KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
+   if (!pkcs) {
+      QString pprompt = i18n("Enter the certificate password:");
+      QCString oldpass;
+      do {
+         int i = KPasswordDialog::getPassword(oldpass, pprompt);
+         if (i != KPasswordDialog::Accepted) return; 
+         pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
+         pprompt = i18n("Decoding failed.  Please try again:");
+      } while (!pkcs);
+   }
+
+  // For now, we will only export to PKCS#12
+   QString certFile = KFileDialog::getSaveFileName();
+   if (certFile.isEmpty())
+      return;
+
+   if (!pkcs->toFile(certFile))
+      KMessageBox::sorry(this, i18n("Export failed."), i18n("SSL"));
+}
+
+
+void KCryptoConfig::slotYourVerify() {
+  // Must verify the X.509 against the CA list, and the private key.
+}
+
+
+void KCryptoConfig::slotYourRemove() {
+YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
+   if (x) {
+      yourSSLBox->takeItem(x);
+      yourCertDelList.append(x);
+      configChanged();
+   }
+}
+
+
+void KCryptoConfig::slotYourUnlock() {
+YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
+QString iss;
+   if (!x) return;
+
+   KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
+   if (!pkcs) {
+      QString pprompt = i18n("Enter the certificate password:");
+      QCString oldpass;
+      do {
+         int i = KPasswordDialog::getPassword(oldpass, pprompt);
+         if (i != KPasswordDialog::Accepted) return; 
+         pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
+         pprompt = i18n("Decoding failed.  Please try again:");
+      } while (!pkcs);
+   }
+
+   // update the info
+   iss = pkcs->getCertificate()->getIssuer();
+   ySubject->setValues(x ? x->getName() : QString(""));
+   yIssuer->setValues(iss);
+         QPalette cspl;
+         KSSLCertificate *cert = pkcs->getCertificate();
+         cspl = yValidFrom->palette();
+         if (QDateTime::currentDateTime() < cert->getQDTNotBefore()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         yValidFrom->setPalette(cspl);
+
+         cspl = yValidUntil->palette();
+         if (QDateTime::currentDateTime() > cert->getQDTNotAfter()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         yValidUntil->setPalette(cspl);
+
+         yValidFrom->setText(cert->getNotBefore());
+         yValidUntil->setText(cert->getNotAfter());
+   yourSSLUnlock->setEnabled(false);
+   delete pkcs;
+}
+
+
+void KCryptoConfig::slotYourCertSelect() {
+YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
+QString iss;
+
+   yourSSLExport->setEnabled(x != NULL);
+   yourSSLPass->setEnabled(x != NULL);
+   yourSSLUnlock->setEnabled(false);
+//   yourSSLVerify->setEnabled(x != NULL);
+   yourSSLRemove->setEnabled(x != NULL);
+
+   if (x) {
+      KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
+      if (pkcs) {
+         QPalette cspl;
+         KSSLCertificate *cert = pkcs->getCertificate();
+         iss = cert->getIssuer();
+         cspl = yValidFrom->palette();
+         if (QDateTime::currentDateTime() < cert->getQDTNotBefore()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         yValidFrom->setPalette(cspl);
+
+         cspl = yValidUntil->palette();
+         if (QDateTime::currentDateTime() > cert->getQDTNotAfter()) {
+            cspl.setColor(QColorGroup::Foreground, QColor(196,33,21));
+         } else {
+            cspl.setColor(QColorGroup::Foreground, QColor(42,153,59));
+         }
+         yValidUntil->setPalette(cspl);
+
+         yValidFrom->setText(cert->getNotBefore());
+         yValidUntil->setText(cert->getNotAfter());
+         delete pkcs;
+      } else {
+         yourSSLUnlock->setEnabled(x != NULL);
+      }
+   } else {
+   }
+
+   ySubject->setValues(x ? x->getName() : QString(""));
+   yIssuer->setValues(iss);
+}
+
+
+void KCryptoConfig::slotYourPass() {
+YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->selectedItem());
+QCString oldpass = "";
+   if (!x) return;
+
+   KSSLPKCS12 *pkcs = KSSLPKCS12::fromString(x->getPKCS(), x->getPass());
+   if (!pkcs) {
+      QString pprompt = i18n("Enter the OLD password for the certificate:");
+      do {
+         int i = KPasswordDialog::getPassword(oldpass, pprompt);
+         if (i != KPasswordDialog::Accepted) break; 
+         pkcs = KSSLPKCS12::fromString(x->getPKCS(), oldpass);
+         pprompt = i18n("Decoding failed.  Please try again:");
+      } while (!pkcs);
+   }
+
+   if (pkcs) {
+      QCString pass;
+      int i = KPasswordDialog::getNewPassword(pass, 
+                                   i18n("Enter the new certificate password"));
+      if (i == KPasswordDialog::Accepted) {
+         pkcs->changePassword(QString(oldpass), QString(pass));
+         x->setPKCS(pkcs->toString());
+         configChanged();
+      }
+      delete pkcs;
+   }
+}
+
+
 
 
 
