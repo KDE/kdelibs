@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="khtmlpart" version="12">
+<kpartgui name="khtmlpart" version="13">
 <MenuBar>
  <Menu name="file"><text>&amp;File</text>
   <Action name="saveBackground" />
@@ -40,4 +40,8 @@
  <Separator />
  <Action name="security" />
 </ToolBar>
+<ActionProperties>
+ <Action shortcut="Ctrl+KP_Add" name="incZoomFast" />
+ <Action shortcut="Ctrl+KP_Subtract" name="decZoomFast" />
+</ActionProperties>
 </kpartgui>

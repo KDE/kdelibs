@@ -939,6 +939,8 @@ private slots:
 
   void slotIncZoom();
   void slotDecZoom();
+  void slotIncZoomFast();
+  void slotDecZoomFast();
 
   void slotLoadImages();
 
@@ -1137,6 +1139,15 @@ private:
   void findTextNext();
   void extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& selectionNode, long& selectionOffset, bool right, bool paragraph );
   khtml::Decoder *createDecoder();
+  
+  /** @internal
+   * generic zoom in
+   */
+  void zoomIn(const int stepping[], int count);
+  /** @internal
+   * generic zoom out
+   */
+  void zoomOut(const int stepping[], int count);
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

@@ -298,6 +298,12 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDecZoomFactor->setWhatsThis( i18n( "Decrease Font Size<p>"
                                             "Make the font in this window smaller. "
 					    "Hold the mouse button for a menu with all available font sizes." ) );
+  /*KAction *incZoomFactorFast = */new KAction(i18n("Zoom in fast"),
+				0, this, SLOT(slotIncZoomFast()),
+				actionCollection(), "incZoomFast");
+  /*KAction *decZoomFactorFast = */new KAction(i18n("Zoom out fast"),
+				0, this, SLOT(slotDecZoomFast()),
+				actionCollection(), "decZoomFast");
 
   d->m_paFind = KStdAction::find( this, SLOT( slotFind() ), actionCollection(), "find" );
   d->m_paFind->setWhatsThis( i18n( "Find text<p>"
@@ -4223,35 +4229,57 @@ int KHTMLPart::zoomFactor() const
   return d->m_zoomFactor;
 }
 
-// ### make the list configurable ? How about sane defaults ;-)
-extern const int zoomSizes[] = { 20, 50, 75, 90, 100, 120, 150, 200, 300 };
-extern const int zoomSizeCount = (sizeof(zoomSizes) / sizeof(int));
+// ### make the list configurable ?
+static const int zoomSizes[] = { 20, 40, 60, 80, 90, 95, 100, 105, 110, 120, 140, 160, 180, 200, 250, 300 };
+static const int zoomSizeCount = (sizeof(zoomSizes) / sizeof(int));
 static const int minZoom = 20;
 static const int maxZoom = 300;
 
+// My idea of useful stepping ;-) (LS)
+static const int fastZoomSizes[] = { 20, 50, 75, 100, 150, 200, 300 };
+static const int fastZoomSizeCount = sizeof fastZoomSizes / sizeof fastZoomSizes[0];
+
 void KHTMLPart::slotIncZoom()
+{
+  zoomIn(zoomSizes, zoomSizeCount);
+}
+
+void KHTMLPart::slotDecZoom()
+{
+  zoomOut(zoomSizes, zoomSizeCount);
+}
+
+void KHTMLPart::slotIncZoomFast() {
+  zoomIn(fastZoomSizes, fastZoomSizeCount);
+}
+
+void KHTMLPart::slotDecZoomFast() {
+  zoomOut(fastZoomSizes, fastZoomSizeCount);
+}
+
+void KHTMLPart::zoomIn(const int stepping[], int count)
 {
   int zoomFactor = d->m_zoomFactor;
 
   if (zoomFactor < maxZoom) {
     // find the entry nearest to the given zoomsizes
-    for (int i = 0; i < zoomSizeCount; ++i)
-      if (zoomSizes[i] > zoomFactor) {
-        zoomFactor = zoomSizes[i];
+    for (int i = 0; i < count; ++i)
+      if (stepping[i] > zoomFactor) {
+        zoomFactor = stepping[i];
         break;
       }
     setZoomFactor(zoomFactor);
   }
 }
 
-void KHTMLPart::slotDecZoom()
+void KHTMLPart::zoomOut(const int stepping[], int count)
 {
     int zoomFactor = d->m_zoomFactor;
     if (zoomFactor > minZoom) {
       // find the entry nearest to the given zoomsizes
-      for (int i = zoomSizeCount-1; i >= 0; --i)
-        if (zoomSizes[i] < zoomFactor) {
-          zoomFactor = zoomSizes[i];
+      for (int i = count-1; i >= 0; --i)
+        if (stepping[i] < zoomFactor) {
+          zoomFactor = stepping[i];
           break;
         }
       setZoomFactor(zoomFactor);
