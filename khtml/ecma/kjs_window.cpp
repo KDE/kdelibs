@@ -207,7 +207,7 @@ bool Window::hasProperty(const UString &p, bool recursive) const
       part->findFrame( p.qstring() ))
     return true;
 
-  // allow shortcuts like 'Image1' instead of document.images.Image1
+  //  allow shortcuts like 'Image1' instead of document.images.Image1
   if (part->document().isHTMLDocument()) { // might be XML
     DOM::HTMLCollection coll = part->htmlDocument().all();
     DOM::HTMLElement element = coll.namedItem(p.string());
@@ -393,7 +393,28 @@ void Window::put(const UString &p, const KJSO &v)
     String s = v.toString();
     part->setJSDefaultStatusBarText(s.value().qstring());
   } else if (p == "location") {
-    QString str = v.toString().value().qstring().prepend( "target://_self/#" );
+       DOM::HTMLDocument doc;
+       if (!opener.isNull()) {
+               doc = opener->htmlDocument();
+       }
+       QString str;
+       if (!doc.isNull()) {
+               KURL parent (doc.URL().string());
+               KURL next = v.toString().value().qstring();
+               if (!parent.protocol().isNull() && !next.protocol().isNull())
+                       next.setProtocol (parent.protocol());
+               if (parent.hasUser() && !next.hasUser())
+                       next.setUser (parent.user());
+               if (parent.hasPass() && !next.hasPass())
+                       next.setPass (parent.pass());
+               if (parent.hasHost() && !next.hasHost())
+                       next.setHost (parent.host());
+               if (parent.port() && !next.port())
+                       next.setPort (parent.port());
+               str = next.url();
+       } else {
+               str = v.toString().value().qstring().prepend( "target://_self/#" );
+       }
     part->scheduleRedirection(0, str);
   } else if (p == "onload") {
     if (isSafeScript() && v.isA(ConstructorType)) {
