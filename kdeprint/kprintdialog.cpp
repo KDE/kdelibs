@@ -79,8 +79,8 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	QLabel	*m_commentlabel = new QLabel(i18n("Comment:"), m_pbox);
 	m_printerlabel->setBuddy(m_printers);
 	m_properties = new QPushButton(i18n("P&roperties..."), m_pbox);
-	m_options = new QPushButton(i18n("Op&tions..."), this);
-	m_default = new QPushButton(i18n("S&et as default"), m_pbox);
+	m_options = new QPushButton(i18n("System Op&tions..."), this);
+	m_default = new QPushButton(i18n("Set as &default"), m_pbox);
 	m_wizard = new QPushButton(m_pbox);
 	m_wizard->setPixmap(SmallIcon("wizard"));
 	m_wizard->setMinimumSize(QSize(m_printers->minimumHeight(),m_printers->minimumHeight()));
@@ -94,7 +94,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	m_file->fileDialog()->setCaption(i18n("Print to file"));
 	m_file->setEnabled(false);
 	m_filelabel->setBuddy(m_file);
-	m_cmdlabel = new QLabel(i18n("Pr&int command:"), m_pbox);
+	m_cmdlabel = new QLabel(i18n("Print co&mmand:"), m_pbox);
 	m_cmd = new QLineEdit(m_pbox);
 	m_cmdlabel->setBuddy(m_cmd);
 	m_dummy = new QVBox(this);
@@ -104,20 +104,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	pluginlabel->setBuddy(m_plugin);
 	m_fileselect = new KFileList(this);
 	m_extbtn = new QPushButton(this);
-	KConfig	*config = KGlobal::config();
-	config->setGroup("KPrinter Settings");
-	m_reduced = config->readBoolEntry("DialogReduced", (KMFactory::self()->settings()->application != KPrinter::StandAlone));
-	if (m_reduced)
-	{
-		m_dummy->hide();
-		m_extbtn->setPixmap(SmallIcon("down"));
-		QToolTip::add(m_extbtn, i18n("Expanded View"));
-	}
-	else
-	{
-		m_extbtn->setPixmap(SmallIcon("up"));
-		QToolTip::add(m_extbtn, i18n("Reduced View"));
-	}
+	QToolTip::add(m_extbtn, i18n("Expand/Collapse Dialog"));
 
 	// layout creation
 	QVBoxLayout	*l1 = new QVBoxLayout(this, 10, 10);
@@ -126,12 +113,11 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	l1->addWidget(m_dummy,1);
 	QHBoxLayout	*ll1 = new QHBoxLayout(0, 0, 5);
 	l1->addLayout(ll1, 0);
-	ll1->addWidget(m_extbtn, 0);
-	ll1->addSpacing(15);
 	ll1->addWidget(pluginlabel, 1);
 	ll1->addWidget(m_plugin, 0);
 	QHBoxLayout	*l2 = new QHBoxLayout(0, 0, 10);
 	l1->addLayout(l2);
+	l2->addWidget(m_extbtn,0);
 	l2->addWidget(m_options,0);
 	l2->addStretch(1);
 	l2->addWidget(m_ok,0);
@@ -178,6 +164,10 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 	connect(m_options,SIGNAL(clicked()),SLOT(slotOptions()));
 	connect(m_wizard,SIGNAL(clicked()),SLOT(slotWizard()));
 	connect(m_extbtn, SIGNAL(clicked()), SLOT(slotExtensionClicked()));
+
+	KConfig	*config = KGlobal::config();
+	config->setGroup("KPrinter Settings");
+	expandDialog(!config->readBoolEntry("DialogReduced", (KMFactory::self()->settings()->application != KPrinter::StandAlone)));
 }
 
 KPrintDialog::~KPrintDialog()
@@ -245,7 +235,7 @@ void KPrintDialog::setDialogPages(QPtrList<KPrintDialogPage> *pages)
 	m_extbtn->setEnabled(m_pages.count() > 0);
 }
 
-bool KPrintDialog::printerSetup(KPrinter *printer, QWidget *parent, const QString& caption)
+bool KPrintDialog::printerSetup(KPrinter *printer, QWidget *parent, const QString& caption, bool forceExpand)
 {
 	if (printer)
 	{
@@ -258,6 +248,8 @@ bool KPrintDialog::printerSetup(KPrinter *printer, QWidget *parent, const QStrin
 		dlg.initialize(printer);
 		if (!caption.isEmpty())
 			dlg.setCaption(caption);
+		if (forceExpand)
+			dlg.expandDialog(true);
 		return dlg.exec();
 	}
 	return false;
@@ -507,33 +499,41 @@ void KPrintDialog::reload()
 	initialize(m_printer);
 }
 
-void KPrintDialog::slotExtensionClicked()
+void KPrintDialog::expandDialog(bool on)
 {
-	// As all pages are children of m_dummy, I simply have to hide/show it
 	QSize	sz(size());
-	QString	iconstr, toolstr;
+	bool	needResize(isVisible());
 
-	if (m_dummy->isVisible())
+	if (on)
 	{
-		sz.setHeight(sz.height()-m_dummy->height()-layout()->spacing());
-		m_dummy->hide();
-		iconstr = "down";
-		toolstr = i18n("Expanded View");
-		m_reduced = true;
+		sz.setHeight(sz.height()+m_dummy->minimumSize().height()+layout()->spacing());
+		if (isVisible() || !m_dummy->isVisible())
+			m_dummy->show();
+		m_extbtn->setIconSet(SmallIconSet("up"));
+		m_extbtn->setText(i18n("Collaps&e"));
+		m_reduced = false;
 	}
 	else
 	{
-		sz.setHeight(sz.height()+m_dummy->minimumSize().height()+layout()->spacing());
-		m_dummy->show();
-		iconstr = "up";
-		toolstr = i18n("Reduced View");
-		m_reduced = false;
+		sz.setHeight(sz.height()-m_dummy->height()-layout()->spacing());
+		if (!isVisible() || m_dummy->isVisible())
+			m_dummy->hide();
+		m_extbtn->setIconSet(SmallIconSet("down"));
+		m_extbtn->setText(i18n("&Expand"));
+		m_reduced = true;
 	}
-	layout()->activate();
-	resize(sz);
-	m_extbtn->setPixmap(SmallIcon(iconstr));
-	QToolTip::remove(m_extbtn);
-	QToolTip::add(m_extbtn, toolstr);
+
+	if (needResize)
+	{
+		layout()->activate();
+		resize(sz);
+	}
+}
+
+void KPrintDialog::slotExtensionClicked()
+{
+	// As all pages are children of m_dummy, I simply have to hide/show it
+	expandDialog(!(m_dummy->isVisible()));
 }
 
 #include "kprintdialog.moc"

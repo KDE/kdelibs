@@ -50,7 +50,7 @@ public:
 	void initialize(KPrinter*);
 	KPrinter* printer() const;
 
-	static bool printerSetup(KPrinter*, QWidget*, const QString& caption = QString::null);
+	static bool printerSetup(KPrinter*, QWidget*, const QString& caption = QString::null, bool forceExpand = false);
 
 protected slots:
 	void slotPrinterSelected(int);
@@ -67,6 +67,7 @@ protected:
 	void enableOutputFile(bool on);
 	void setOutputFileExtension(const QString&);
 	void reload();
+	void expandDialog(bool on = true);
 
 protected:
 	QLabel	*m_type, *m_state, *m_comment, *m_location, *m_cmdlabel, *m_filelabel;
