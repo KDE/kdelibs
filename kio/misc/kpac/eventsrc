@@ -1,18 +1,32 @@
 [!Global!]
 IconName=proxy
 Comment=Automatic Proxy Configuration
+Comment[pt_BR]=Configuração Automática do Proxy
+Comment[sv]=Automatisk proxyinställning
 
 [script-error]
 Name=Invalid proxy script
+Name[pt_BR]=Script de proxy inválido
+Name[sv]=Ogiltigt proxy-skript
 Comment=The downloaded proxy configuration script is invalid
+Comment[pt_BR]=O script de configuração do proxy baixado é inválido
+Comment[sv]=Det nerladdade proxyinställningsskriptet är ogiltigt
 default_presentation=16
 
 [download-error]
 Name=Script download error
+Name[pt_BR]=Erro de download de script
+Name[sv]=Nerladdningsfel för skript
 Comment=The proxy configuration script could not be downloaded
+Comment[pt_BR]=O script de configuração do proxy não pode ser carregado
+Comment[sv]=Proxyinställningsskriptet kunde inte laddas ner
 default_presentation=16
 
 [evaluation-error]
 Name=Script evaluation error
+Name[pt_BR]=Erro de avaliação de script
+Name[sv]=Utvärderingsfel för skript
 Comment=There was an error executing the proxy configuration script
+Comment[pt_BR]=Ocorreu um erro ao executar o script de configuração do proxy.
+Comment[sv]=Ett fel uppstod vid körning av proxyinställningsskriptet
 default_presentation=0
