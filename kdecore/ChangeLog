@@ -1,3 +1,7 @@
+1999-03-22  Harri Porten  <porten@kde.org>
+
+	* kcharsets*.cpp: fixed memory leaks.
+
 1999-02-13  Kurt Granroth <granroth@kde.org>
 
 	* whole-lotta 'const char*' to QString conversions
