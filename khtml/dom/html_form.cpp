@@ -450,7 +450,9 @@ void HTMLInputElement::setMaxLength( long _maxLength )
 DOMString HTMLInputElement::name() const
 {
     if(!impl) return DOMString();
-    return static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
+    DOMString n = static_cast<ElementImpl*>(impl)->getAttribute(ATTR_NAME);
+    if(n.isNull) return DOMString("");
+    return n;
 }
 
 void HTMLInputElement::setName( const DOMString &value )
