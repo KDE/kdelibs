@@ -25,6 +25,7 @@
  */
 
 #include <sys/types.h>
+#include <sys/param.h> /* for BSD */
 #include <errno.h>
 #include <grp.h>
 #include <stdio.h>
@@ -172,7 +173,7 @@ int main (int argc, char *argv[])
     return 1; /* FAIL */
   }
 
-#ifndef __linux__
+#ifdef BSD
   if (revoke(tty) < 0)
   {
     fprintf(stderr,"%s: cannot revoke %s: %s\n",argv[0],tty,strerror(errno));
