@@ -22,7 +22,6 @@
 #define _OBJECT_H_
 
 #include <assert.h>
-#include <strings.h>
 
 #include "global.h"
 #include "kjsstring.h"
@@ -168,7 +167,7 @@ protected:
 
 class KJSInternalFunction : public KJSFunction {
 public:
-  KJSInternalFunction(KJSO* (*f)(KJSO*)) { call = f; }
+  KJSInternalFunction(KJSO* (*f)(KJSO*)) { func = f; }
   Type type() const { return InternalFunction; }
   KJSO* execute() { return (*func)(0L); }
 private:
