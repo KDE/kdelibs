@@ -127,11 +127,11 @@ protected:
        const QValueList<QCString> &envs, const QCString& startup_id = "",
        bool blind = false, bool autoStart = false );
    bool start_service_by_name(const QString &serviceName, const QStringList &urls,
-       const QValueList<QCString> &envs, const QCString& startup_id = "");
+       const QValueList<QCString> &envs, const QCString& startup_id, bool blind);
    bool start_service_by_desktop_path(const QString &serviceName, const QStringList &urls,
-       const QValueList<QCString> &envs, const QCString& startup_id = "");
+       const QValueList<QCString> &envs, const QCString& startup_id, bool blind);
    bool start_service_by_desktop_name(const QString &serviceName, const QStringList &urls,
-       const QValueList<QCString> &envs, const QCString& startup_id = "");
+       const QValueList<QCString> &envs, const QCString& startup_id, bool blind);
    bool kdeinit_exec(const QString &app, const QStringList &args, const QValueList<QCString> &envs, bool wait);
 
    void waitForSlave(pid_t pid);

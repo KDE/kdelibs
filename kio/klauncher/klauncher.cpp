@@ -208,8 +208,10 @@ KLauncher::destruct(int exit_code)
    if (kapp)
    {
       // work around braindead QApplication mutex handling
+#if defined(QT_THREAD_SUPPORT)
       if (kapp->locked())
          kapp->unlock(false);
+#endif
       delete kapp;
    }
    ::exit(exit_code);
@@ -243,11 +245,14 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
        (fun == "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString)") ||
        (fun == "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString)")||
        (fun == "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString)") ||
+       (fun == "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)") ||
+       (fun == "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)")||
+       (fun == "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)") ||
        (fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>)") ||
        (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)"))
    {
       QDataStream stream(data, IO_ReadOnly);
-
+      bool bNoWait = false;
       QString serviceName;
       QStringList urls;
       QValueList<QCString> envs;
@@ -257,31 +262,32 @@ KLauncher::process(const QCString &fun, const QByteArray &data,
       DCOPresult.error = QString::null;
       DCOPresult.pid = 0;
       stream >> serviceName >> urls;
-      if ((fun == "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString)") ||
+      if ((fun == "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString,bool)") ||
+          (fun == "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString,bool)")||
+          (fun == "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString,bool)"))
+         stream >> envs >> startup_id >> bNoWait;
+      else if ((fun == "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString)") ||
           (fun == "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString)")||
           (fun == "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString)"))
          stream >> envs >> startup_id;
-      if ((fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>)") ||
+      else if ((fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>)") ||
           (fun == "kdeinit_exec_wait(QString,QStringList,QValueList<QCString>)"))
          stream >> envs;
       bool finished;
-      if ((fun == "start_service_by_name(QString,QStringList)")
-        || (fun == "start_service_by_name(QString,QStringList,QValueList<QCString>,QCString)"))
+      if (strncmp(fun, "start_service_by_name(", 22) == 0)
       {
          kdDebug(7016) << "KLauncher: Got start_service_by_name('" << serviceName << "', ...)" << endl;
-         finished = start_service_by_name(serviceName, urls, envs, startup_id);
+         finished = start_service_by_name(serviceName, urls, envs, startup_id, bNoWait);
       }
-      else if ((fun == "start_service_by_desktop_path(QString,QStringList)")
-               ||(fun == "start_service_by_desktop_path(QString,QStringList,QValueList<QCString>,QCString)"))
+      else if (strncmp(fun, "start_service_by_desktop_path(", 30) == 0)
       {
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_path('" << serviceName << "', ...)" << endl;
-         finished = start_service_by_desktop_path(serviceName, urls, envs, startup_id);
+         finished = start_service_by_desktop_path(serviceName, urls, envs, startup_id, bNoWait);
       }
-      else if ((fun == "start_service_by_desktop_name(QString,QStringList)")
-              || (fun == "start_service_by_desktop_name(QString,QStringList,QValueList<QCString>,QCString)"))
+      else if (strncmp(fun, "start_service_by_desktop_name(", 30) == 0)
       {
          kdDebug(7016) << "KLauncher: Got start_service_by_desktop_name('" << serviceName << "', ...)" << endl;
-         finished = start_service_by_desktop_name(serviceName, urls, envs, startup_id );
+         finished = start_service_by_desktop_name(serviceName, urls, envs, startup_id, bNoWait );
       }
       else if ((fun == "kdeinit_exec(QString,QStringList)")
               || (fun == "kdeinit_exec(QString,QStringList,QValueList<QCString>)"))
@@ -709,7 +715,7 @@ KLauncher::exec_blind( const QCString &name, const QValueList<QCString> &arg_lis
 
 bool
 KLauncher::start_service_by_name(const QString &serviceName, const QStringList &urls,
-    const QValueList<QCString> &envs, const QCString& startup_id)
+    const QValueList<QCString> &envs, const QCString& startup_id, bool blind)
 {
    KService::Ptr service = 0;
    // Find service
@@ -720,12 +726,12 @@ KLauncher::start_service_by_name(const QString &serviceName, const QStringList &
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
       return false;
    }
-   return start_service(service, urls, envs, startup_id);
+   return start_service(service, urls, envs, startup_id, blind);
 }
 
 bool
 KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStringList &urls,
-    const QValueList<QCString> &envs, const QCString& startup_id)
+    const QValueList<QCString> &envs, const QCString& startup_id, bool blind)
 {
    KService::Ptr service = 0;
    // Find service
@@ -744,12 +750,12 @@ KLauncher::start_service_by_desktop_path(const QString &serviceName, const QStri
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
       return false;
    }
-   return start_service(service, urls, envs, startup_id);
+   return start_service(service, urls, envs, startup_id, blind);
 }
 
 bool
 KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStringList &urls,
-    const QValueList<QCString> &envs, const QCString& startup_id)
+    const QValueList<QCString> &envs, const QCString& startup_id, bool blind)
 {
    KService::Ptr service = 0;
    // Find service
@@ -760,7 +766,7 @@ KLauncher::start_service_by_desktop_name(const QString &serviceName, const QStri
       DCOPresult.error = i18n("Could not find service '%1'.").arg(serviceName);
       return false;
    }
-   return start_service(service, urls, envs, startup_id);
+   return start_service(service, urls, envs, startup_id, blind);
 }
 
 bool
