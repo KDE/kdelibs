@@ -2390,7 +2390,7 @@ void KHTMLPart::slotClearSelection()
       emitSelectionChanged();
 }
 
-void KHTMLPart::overURL( const QString &url, const QString &target, bool shiftPressed )
+void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shiftPressed*/ )
 {
   KURL u = completeURL(url);
 
