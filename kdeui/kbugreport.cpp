@@ -19,7 +19,7 @@
 // $Id$
 
 
-#include <qhbuttongroup.h> 
+#include <qhbuttongroup.h>
 #include <qlabel.h>
 #include <qlayout.h>
 #include <qlineedit.h>
@@ -61,7 +61,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
   QGridLayout *glay = new QGridLayout( lay, 3, 3 );
   glay->setColStretch( 1, 10 );
   glay->setColStretch( 2, 10 );
-  
+
 
   // From
   tmpLabel = new QLabel( i18n("From :"), parent );
@@ -81,7 +81,7 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
   glay->addWidget( tmpLabel, 2, 0 );
   m_aboutData = KGlobal::instance()->aboutData(); // TODO : use the "active" instance
   if (m_aboutData) m_strVersion = m_aboutData->version();
-   else m_strVersion = "no version set (programmer error!)";
+   else m_strVersion = i18n("no version set (programmer error!)");
   m_strVersion += QString::fromLatin1(" (KDE " KDE_VERSION_STRING ")");
   m_version = new QLabel( m_strVersion, parent );
   //glay->addWidget( m_version, 2, 1 );
@@ -126,8 +126,8 @@ KBugReport::KBugReport( QWidget * parentw, bool modal )
 
   /*
     2000-01-15 Espen
-    Does not work (yet). The label has no well defined height so the 
-    dialog can be resized so that the action buttons become obscured 
+    Does not work (yet). The label has no well defined height so the
+    dialog can be resized so that the action buttons become obscured
 
   QString text = i18n(""
     "Enter the text (in English if possible) that you wish to submit for the "
@@ -204,7 +204,7 @@ void KBugReport::slotUrlClicked(const QString &urlText)
 
 void KBugReport::slotOk( void )
 {
-  if( m_lineedit->text().isEmpty() == true || 
+  if( m_lineedit->text().isEmpty() == true ||
       m_subject->text().isEmpty() == true )
   {
     QString msg = i18n(""
@@ -223,8 +223,8 @@ void KBugReport::slotOk( void )
     KMessageBox::error(this, msg );
     return;
   }
-  
-   KMessageBox::information(this, 
+
+   KMessageBox::information(this,
 			    i18n("Bug report sent, thanks for your input."));
    accept();
 }
@@ -233,17 +233,18 @@ void KBugReport::slotOk( void )
 
 QString KBugReport::text()
 {
+    debug(m_bgSeverity->selected()->name());
   // Prepend the pseudo-headers to the contents of the mail
   QString severity = QString::fromLatin1(m_bgSeverity->selected()->name());
   if (severity == QString::fromLatin1("i18n"))
     // Case 1 : i18n bug
-    return QString::fromLatin1("Package: i18n")+QString::fromLatin1("\n"
-      "Severity: Normal\n"
-      "\n"
-      "Application: %1\n"
-      "Version: %2\n" // not really i18n's version, so better here IMHO
-      "\n").arg(QString::fromLatin1(kapp->name())).arg(m_strVersion)+
-      m_lineedit->text();
+      return QString::fromLatin1("Package: i18n_") + KGlobal::locale()->language() +
+	QString::fromLatin1("\n"
+			    "Application: %1\n"
+			    // not really i18n's version, so better here IMHO
+			    "Version: %2\n"
+	  "\n").arg(QString::fromLatin1(kapp->name())).arg(m_strVersion)+
+	  m_lineedit->text();
   else
     // Case 2 : normal bug
     return QString::fromLatin1("Package: ")+QString::fromLatin1(kapp->name())+QString::fromLatin1("\n"
@@ -258,7 +259,7 @@ bool KBugReport::sendBugReport()
   QString command = KStandardDirs::findExe( QString::fromLatin1("sendmail"), QString::fromLatin1("/sbin:/usr/sbin:/usr/lib") ) + QString::fromLatin1(" -oi -t");
   bool needHeaders = true;
 
-  QString recipient ( m_aboutData ? 
+  QString recipient ( m_aboutData ?
     m_aboutData->bugAddress() :
     QString::fromLatin1("submit@bugs.kde.org") );
 
