@@ -24,6 +24,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <qfile.h>
+#include <qtextstream.h>
+
 #include "kconfigbackend.h"
 
 #include "kdesktopfile.h"
@@ -90,7 +93,43 @@ QString KDesktopFile::readDevice()
 
 QString KDesktopFile::readURL()
 {
-    return readEntry(QString::fromLatin1("URL"));
+    if (hasDeviceType()) {
+	QString devURL;
+	
+	// in this case, we do some magic. :)
+	QCString fstabFile;
+	int indexDevice = 0;  // device on first column
+	int indexMountPoint = 1; // mount point on second column
+	int indexFSType = 2; // fstype on third column 
+	if (QFile::exists(QString::fromLatin1("/etc/fstab"))) { // Linux, ...
+	    fstabFile = "/etc/fstab";
+	} else if (QFile::exists(QString::fromLatin1("/etc/vfstab"))) { // Solaris
+	    fstabFile = "/etc/vfstab";
+	    indexMountPoint++;
+	    indexFSType++;
+	} 
+	// insert your favorite location for fstab here
+	
+	if ( !fstabFile.isEmpty() ) {
+	    QFile f( fstabFile );
+	    f.open( IO_ReadOnly );
+	    QTextStream stream( &f );
+	    while ( !stream.eof() ) {
+		QString line = stream.readLine();
+		line = line.simplifyWhiteSpace();
+		if (!line.isEmpty() && line[0] == '/') { // skip comments but also
+		    QStringList lst = QStringList::split( ' ', line );
+		    if ( lst[indexDevice] == readDevice() )
+			devURL = lst[indexMountPoint];
+		}
+	    }
+	    f.close();
+	}
+	return devURL;
+
+    } else {
+	return readEntry(QString::fromLatin1("URL"));
+    }
 }
 
 QStringList KDesktopFile::readActions()
