@@ -121,9 +121,9 @@ int main(int argc, char **argv)
     {
         if ( KMessageBox::questionYesNo(
                  0L,
-                 i18n("On last startup, KNotify crashed while creating "
+                 i18n("During the previous startup, KNotify crashed while creating "
                       "Arts::Dispatcher. Do you want to try again or disable "
-                      "aRts Sound output?"),
+                      "aRts sound output?"),
                  i18n("KNotify Problem"),
                  i18n("Try again"),
                  i18n("Disable aRts output"),
@@ -155,9 +155,9 @@ int main(int argc, char **argv)
     {
         if ( KMessageBox::questionYesNo(
                  0L,
-                 i18n("On last startup, KNotify crashed while instantiating "
+                 i18n("During the previous startup, KNotify crashed while instantiating "
                       "KNotify. Do you want to try again or disable "
-                      "aRts Sound output?"),
+                      "aRts sound output?"),
                  i18n("KNotify Problem"),
                  i18n("Try again"),
                  i18n("Disable aRts output"),
