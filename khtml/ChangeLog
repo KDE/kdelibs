@@ -1,3 +1,12 @@
+2004-08-04  Germain Garand <germain@ebooksfrance.org>
+
+	* khtmlview.cpp (resizeEvent): take care, in case we are shrinking,
+        not to pass past the content limits yet. Next layout will calculate
+        if we positively need scrollbars or not (#84798).
+
+        * rendering/render_canvas.cpp (layout): remove scrollbar flickering turnarounds.
+        instead, account for a scrollbar hysteresis level when sizing the content (#61730).
+
 2004-07-30  Jean-Baptiste Mardelle <bj@altern.org>
 	* khtmlview.{cpp,h} (displayAccessKeys): When accesskeys are activated,
 	small tooltips appear showing existing accesskeys on the page.

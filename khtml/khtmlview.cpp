@@ -521,6 +521,16 @@ void KHTMLView::showEvent(QShowEvent* e)
 
 void KHTMLView::resizeEvent (QResizeEvent* e)
 {
+    int dw = e->oldSize().width() - e->size().width();
+    int dh = e->oldSize().height() - e->size().height();
+
+    // if we are shrinking the view, don't allow the content to overflow
+    // before the layout occurs - we don't know if we need scrollbars yet
+    dw = dw>0 ? kMax(0, contentsWidth()-dw) : contentsWidth();
+    dh = dh>0 ? kMax(0, contentsHeight()-dh) : contentsHeight();
+
+    resizeContents(dw, dh);
+
     QScrollView::resizeEvent(e);
 
     if ( m_part && m_part->xmlDocImpl() )

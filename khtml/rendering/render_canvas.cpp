@@ -143,25 +143,10 @@ void RenderCanvas::layout()
     kdDebug() << "RenderCanvas::layout time used=" << qt.elapsed() << endl;
     qt.start();
 #endif
-    KHTMLView::ScrollBarMode vsmode = m_view->vScrollBarMode();
-    KHTMLView::ScrollBarMode hsmode = m_view->hScrollBarMode();
 
     if (!m_printingMode) {
-        QSize s = m_view->viewportSize(m_view->contentsWidth(),
-                                       m_view->contentsHeight());
-        m_viewportWidth = m_width = s.width();
-        m_viewportHeight = m_height = s.height();
-
-        if (m_view->verticalScrollBar()->isVisible())
-            m_view->setVScrollBarMode(KHTMLView::AlwaysOn);
-        else
-            m_view->setVScrollBarMode(KHTMLView::AlwaysOff);
-
-        if (m_view->horizontalScrollBar()->isVisible())
-            m_view->setHScrollBarMode(KHTMLView::AlwaysOn);
-        else
-            m_view->setHScrollBarMode(KHTMLView::AlwaysOff);
-
+        m_viewportWidth = m_width = m_view->visibleWidth();
+        m_viewportHeight = m_height = m_view->visibleHeight();
     }
     else {
         m_width = m_rootWidth;
@@ -174,12 +159,36 @@ void RenderCanvas::layout()
     int docH = docHeight();
 
     if (!m_printingMode) {
-        m_view->resizeContents(docW, docH);
-        // be optimistic and say that we never need a vertical
-        // scroll bar. fixes ugly cyclic recalculation chains
-        // with QScrollView.
-        QSize s = m_view->viewportSize(m_view->contentsWidth(),
-                                       0);
+        bool vss = m_view->verticalScrollBar()->isShown();
+        bool hss = m_view->horizontalScrollBar()->isShown();
+        QSize s = m_view->viewportSize(docW, docH);
+
+        // content size, with scrollbar hysteresis
+        int hDocH = docH;
+        int hDocW = docW;
+
+        // if we are about to show a scrollbar, and the document is sized to the viewport w or h,
+        // then reserve the scrollbar space so that it doesn't trigger the _other_ scrollbar
+
+        if (!vss && m_width - m_view->verticalScrollBar()->sizeHint().width() == s.width() &&
+            docW <= m_width)
+            hDocW = kMin( docW, s.width() );
+
+        if (!hss && m_height - m_view->horizontalScrollBar()->sizeHint().height() == s.height() &&
+            docH <= m_height)
+            hDocH = kMin( docH, s.height() );
+
+        // likewise, if a scrollbar is shown, and we have a cunning plan to turn it off,
+        // think again if we are falling downright in the hysteresis zone
+
+        if (vss && s.width() > docW && docW > m_view->visibleWidth())
+            hDocW = s.width()+1; 
+
+        if (hss && s.height() > docH && docH > m_view->visibleHeight())
+            hDocH = s.height()+1;
+
+        m_view->resizeContents(hDocW, hDocH);
+
         setWidth( m_viewportWidth = s.width() );
         setHeight( m_viewportHeight = s.height() );
     }
@@ -192,12 +201,6 @@ void RenderCanvas::layout()
 #endif
 
     layer()->resize( kMax( docW,int( m_width ) ), kMax( docH,m_height ) );
-
-    if ( !m_printingMode ) {
-        m_view->setHScrollBarMode(hsmode);
-        m_view->setVScrollBarMode(vsmode);
-    }
-
     setLayouted();
 }
 
