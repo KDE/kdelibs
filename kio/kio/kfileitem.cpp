@@ -252,7 +252,7 @@ QString KFileItem::linkDest() const
   if ( m_bIsLocalURL )
   {
     char buf[1000];
-    int n = readlink( QFile::encodeName(m_url.path( -1 )), buf, 1000 );
+    int n = readlink( QFile::encodeName(m_url.path( -1 )), buf, sizeof(buf)-1 );
     if ( n != -1 )
     {
       buf[ n ] = 0;
