@@ -108,12 +108,16 @@ CSSStyleDeclarationImpl *CSSFontFaceRuleImpl::style() const
 
 // --------------------------------------------------------------------------
 
-CSSImportRuleImpl::CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString &href,
-				     MediaListImpl *media)
+CSSImportRuleImpl::CSSImportRuleImpl( StyleBaseImpl *parent,
+                                      const DOM::DOMString &href,
+                                      const DOM::DOMString &media )
     : CSSRuleImpl(parent)
 {
     m_type = CSSRule::IMPORT_RULE;
-    m_lstMedia = media;
+
+    m_lstMedia = new MediaListImpl( this, media );
+    m_lstMedia->ref();
+    
     m_strHref = href;
     m_styleSheet = 0;
 
@@ -184,21 +188,42 @@ bool CSSImportRuleImpl::isLoading()
 
 
 CSSMediaRuleImpl::CSSMediaRuleImpl(StyleBaseImpl *parent)
-    : CSSRuleImpl(parent)
+    :   CSSRuleImpl( parent )
 {
     m_type = CSSRule::MEDIA_RULE;
-    m_lstMedia = new MediaListImpl( this );
+    m_lstMedia = 0;
+    m_lstCSSRules = new CSSRuleListImpl();
+    m_lstCSSRules->ref();
+}
+
+CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
+                              const QChar *endP, const DOM::DOMString &media )
+:   CSSRuleImpl( parent )
+{
+    m_type = CSSRule::MEDIA_RULE;
+    m_lstMedia = new MediaListImpl( this, media );
     m_lstMedia->ref();
     m_lstCSSRules = new CSSRuleListImpl();
     m_lstCSSRules->ref();
+
+    // Parse CSS data
+    while( curP < endP )
+    {   
+        //kdDebug( 6080 ) << "Style rule: '" << QString( curP, endP - curP )
+        //                << "'" << endl;
+        CSSRuleImpl *rule = parseStyleRule( curP, endP );
+        rule->ref();
+        appendRule( rule );
+        while( curP < endP && *curP == QChar( ' ' ) )
+            curP++;
+    }
 }
 
 CSSMediaRuleImpl::~CSSMediaRuleImpl()
 {
     if( m_lstMedia )
         m_lstMedia->deref();
-    if( m_lstCSSRules )
-        m_lstCSSRules->deref();
+    m_lstCSSRules->deref();
 }
 
 MediaListImpl *CSSMediaRuleImpl::media() const
@@ -211,6 +236,14 @@ CSSRuleListImpl *CSSMediaRuleImpl::cssRules()
     return m_lstCSSRules;
 }
 
+unsigned long CSSMediaRuleImpl::appendRule( CSSRuleImpl *rule )
+{
+    if( rule )
+        return m_lstCSSRules->insertRule( rule, m_lstCSSRules->length() );
+    else
+        return 0;
+}
+
 unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule,
                                             unsigned long index )
 {
@@ -218,17 +251,21 @@ unsigned long CSSMediaRuleImpl::insertRule( const DOMString &rule,
     CSSRuleImpl *newRule = parseRule( curP, curP + rule.length() );
 
     if( newRule )
-    {
-        newRule->ref();
         return m_lstCSSRules->insertRule( newRule, index );
-    }
-    else
-        return 0;
+
+    return 0;
 }
 
 void CSSMediaRuleImpl::deleteRule( unsigned long index )
 {
     m_lstCSSRules->deleteRule( index );
+}
+
+CSSRuleListImpl::~CSSRuleListImpl()
+{
+    CSSRuleImpl* rule;
+    while ( ( rule = m_lstCSSRules.take( 0 ) ) )
+        rule->deref();
 }
 
 // ---------------------------------------------------------------------------
@@ -353,22 +390,23 @@ CSSRuleImpl *CSSRuleListImpl::item ( unsigned long index )
 
 void CSSRuleListImpl::deleteRule ( unsigned long index )
 {
-    CSSRuleImpl *rule = m_lstCSSRules.at( index );
+    CSSRuleImpl *rule = m_lstCSSRules.take( index );
     if( rule )
-    {
-        m_lstCSSRules.remove( index );
         rule->deref();
-    }
+    else
+        ; // ### Throw INDEX_SIZE_ERR exception here (TODO)
 }
 
 unsigned long CSSRuleListImpl::insertRule( CSSRuleImpl *rule,
                                            unsigned long index )
 {
-    if( m_lstCSSRules.insert( index, rule ) )
+    if( rule && m_lstCSSRules.insert( index, rule ) )
+    {
+        rule->ref();
         return index;
-    else
-        rule->deref();    // insertion failed
-
+    }
+       
+    // ### Should throw INDEX_SIZE_ERR exception instead! (TODO)
     return 0;
 }
 

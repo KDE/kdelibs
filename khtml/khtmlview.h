@@ -151,6 +151,19 @@ public:
 
     void layout(bool force = false);
 
+    /**
+     * Get/set the CSS Media Type.
+     *
+     * Media type is set to "screen" for on-screen rendering and "print"
+     * during printing. Other media types lack the proper support in the
+     * renderer and are not activated. The DOM tree and the parser itself,
+     * however, properly handle other media types. To make them actually work
+     * you only need to enable the media type in the view and if necessary
+     * add the media type dependent changes to the renderer.
+     */
+    void setMediaType( const QString &medium );
+    QString mediaType() const;
+
 signals:
     void cleared();
 
@@ -223,6 +236,8 @@ private:
 
     KHTMLPart *m_part;
     KHTMLViewPrivate *d;
+
+    QString m_medium;   // media type
 };
 
 #endif

@@ -99,7 +99,8 @@ protected:
 class CSSImportRuleImpl : public khtml::CachedObjectClient, public CSSRuleImpl
 {
 public:
-    CSSImportRuleImpl(StyleBaseImpl *parent, const DOM::DOMString &href, MediaListImpl *media = 0);
+    CSSImportRuleImpl( StyleBaseImpl *parent, const DOM::DOMString &href,
+                       const DOM::DOMString &media );
 
     virtual ~CSSImportRuleImpl();
 
@@ -128,7 +129,9 @@ class CSSRuleList;
 class CSSMediaRuleImpl : public CSSRuleImpl
 {
 public:
-    CSSMediaRuleImpl(StyleBaseImpl *parent);
+    CSSMediaRuleImpl( StyleBaseImpl *parent );
+    CSSMediaRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
+                      const QChar * endP, const DOM::DOMString &media );
 
     virtual ~CSSMediaRuleImpl();
 
@@ -140,7 +143,10 @@ public:
     virtual bool isMediaRule() { return true; }
 protected:
     MediaListImpl *m_lstMedia;
-	CSSRuleListImpl *m_lstCSSRules;
+    CSSRuleListImpl *m_lstCSSRules;
+
+    /* Not part of the DOM */
+    unsigned long appendRule( CSSRuleImpl *rule );
 };
 
 
@@ -201,30 +207,25 @@ public:
 
     ~CSSUnknownRuleImpl();
 
-     virtual bool isUnknownRule() { return true; }
+    virtual bool isUnknownRule() { return true; }
 };
+
 
 class CSSRuleListImpl : public DomShared
 {
 public:
     CSSRuleListImpl();
+    ~CSSRuleListImpl();
 
     unsigned long length() const;
     CSSRuleImpl *item ( unsigned long index );
    
-    /**
-     * Internal API, _NOT_ to be exposed outside! (Used by CSSMediaRuleImpl)
-     */
+    /* not part of the DOM */
     unsigned long insertRule ( CSSRuleImpl *rule, unsigned long index );
     void deleteRule ( unsigned long index );
     
 protected:
-#if QT_VERSION < 300
     QList<CSSRuleImpl> m_lstCSSRules;
-#else
-    QPtrList<CSSRuleImpl> m_lstCSSRules;
-#endif
-
 };
 
 }; // namespace

@@ -174,6 +174,8 @@ void KHTMLToolTip::maybeTip(const QPoint& /*p*/)
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase )
 {
+    m_medium = "screen";
+
     m_part = part;
     d = new KHTMLViewPrivate;
     QScrollView::setVScrollBarMode(d->vmode);
@@ -867,6 +869,16 @@ bool KHTMLView::gotoLinkInternal(bool forward)
     return true;
 }
 
+void KHTMLView::setMediaType( const QString &medium )
+{
+    m_medium = medium;
+}
+
+QString KHTMLView::mediaType() const
+{
+    return m_medium;
+}
+
 void KHTMLView::print()
 {
     if(!m_part->xmlDocImpl()) return;
@@ -885,9 +897,11 @@ void KHTMLView::print()
 
         QPainter *p = new QPainter;
         p->begin( printer );
-	khtml::setPrintPainter( p );
+        khtml::setPrintPainter( p );
 
         m_part->xmlDocImpl()->setPaintDevice( printer );
+        QString oldMediaType = mediaType();
+        setMediaType( "print" );
 
         QPaintDeviceMetrics metrics( printer );
 
@@ -954,7 +968,8 @@ void KHTMLView::print()
 
         // and now reset the layout to the usual one...
         root->setPrintingMode(false);
-	khtml::setPrintPainter( 0 );
+        khtml::setPrintPainter( 0 );
+        setMediaType( oldMediaType );
         m_part->xmlDocImpl()->setPaintDevice( this );
         m_part->setFontSizes(oldSizes);
         m_part->xmlDocImpl()->applyChanges();

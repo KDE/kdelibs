@@ -107,15 +107,15 @@ namespace khtml
 	 * Also takes into account special cases for HTML documents,
 	 * including the defaultStyle (which is html only)
 	 */
-	CSSStyleSelector(DOM::DocumentImpl *doc);
+	CSSStyleSelector( DOM::DocumentImpl *doc );
 	/**
 	 * same as above but for a single stylesheet.
 	 */
-	CSSStyleSelector(DOM::StyleSheetImpl *sheet);
+	CSSStyleSelector( DOM::CSSStyleSheetImpl *sheet );
 
 	virtual ~CSSStyleSelector();
 	
-	void addSheet(DOM::StyleSheetImpl *sheet);
+	void addSheet( DOM::CSSStyleSheetImpl *sheet );
         
 	static void loadDefaultStyle(const KHTMLSettings *s = 0);
 	static void clear();
@@ -229,7 +229,8 @@ namespace khtml
 	CSSStyleSelectorList();
 	virtual ~CSSStyleSelectorList();
 	
-	void append(DOM::StyleSheetImpl *sheet);
+	void append( DOM::CSSStyleSheetImpl *sheet,
+                 const DOM::DOMString &medium = "screen" );
 	
 	void collect( QList<DOM::CSSSelector> *selectorList, CSSOrderedPropertyList *propList,
 		      Source regular, Source important );

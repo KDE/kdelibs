@@ -119,6 +119,15 @@ MediaListImpl *StyleSheetImpl::media() const
     return m_media;
 }
 
+void StyleSheetImpl::setMedia( MediaListImpl *media )
+{
+    if( m_media )
+        m_media->deref();
+    m_media = media;
+    if( m_media )
+        m_media->ref();    
+}
+
 // -----------------------------------------------------------------------
 
 
@@ -362,13 +371,32 @@ MediaListImpl::MediaListImpl(CSSStyleSheetImpl *parentSheet)
 {
 }
 
+MediaListImpl::MediaListImpl( CSSStyleSheetImpl *parentSheet,
+                              const DOMString &media )
+    : StyleBaseImpl( parentSheet )
+{
+    setMediaText( media );
+}
+
 MediaListImpl::MediaListImpl(CSSRuleImpl *parentRule)
     : StyleBaseImpl(parentRule)
 {
 }
 
+MediaListImpl::MediaListImpl( CSSRuleImpl *parentRule, const DOMString &media )
+    : StyleBaseImpl(parentRule)
+{
+    setMediaText( media );
+}
+
 MediaListImpl::~MediaListImpl()
 {
+}
+
+bool MediaListImpl::contains( const DOMString &medium ) const
+{
+    return m_lstMedia.count() == 0 || m_lstMedia.contains( medium ) ||
+            m_lstMedia.contains( "all" );
 }
 
 CSSStyleSheetImpl *MediaListImpl::parentStyleSheet() const
@@ -388,7 +416,7 @@ unsigned long MediaListImpl::length() const
     return m_lstMedia.count();
 }
 
-DOMString MediaListImpl::item( unsigned long index )
+DOMString MediaListImpl::item( unsigned long index ) const
 {
     return m_lstMedia[index];
 }
@@ -424,5 +452,9 @@ void MediaListImpl::setMediaText(const DOM::DOMString &value)
     QString val = value.string();
     QStringList list = QStringList::split( ',', value.string() );
     for ( QStringList::Iterator it = list.begin(); it != list.end(); ++it )
-        m_lstMedia.append( DOMString( (*it).stripWhiteSpace() ) );
+    {
+        DOMString medium = (*it).stripWhiteSpace();
+        if( medium != "" )
+            m_lstMedia.append( medium );
+    }
 }

@@ -180,10 +180,16 @@ void HTMLLinkElementImpl::parseAttribute(AttrImpl *attr)
 void HTMLLinkElementImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheetStr)
 {
 //    kdDebug( 6030 ) << "HTMLLinkElement::setStyleSheet()" << endl;
+//    kdDebug( 6030 ) << "**** current medium: " << m_media << endl;
+    
     if( m_sheet ) return;
     m_sheet = new CSSStyleSheetImpl(this, url);
     m_sheet->ref();
     m_sheet->parseString(sheetStr);
+    
+    MediaListImpl *media = new MediaListImpl( m_sheet, m_media );
+    m_sheet->setMedia( media );
+    
     m_loading = false;
 
     if ( sheet() )  getDocument()->createSelector();
@@ -205,15 +211,9 @@ void HTMLLinkElementImpl::sheetLoaded()
 
 StyleSheetImpl *HTMLLinkElementImpl::sheet() const
 {
-    if ( khtml::printpainter ) {
-        // we're currently printing, return all and print style sheets
-        if( m_media.isNull() || m_media.contains("all") || m_media.contains("print") )
-            return m_sheet;
-    } else {
-        if( m_media.isNull() || m_media.contains("screen") || m_media.contains("all") )
-            return m_sheet;
-    }
-    return 0;
+    //kdDebug( 6030 ) << "**** HTMLLinkElementImpl::sheet()" << endl;
+
+    return m_sheet;
 }
 
 

@@ -92,14 +92,21 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
         userSheet->parseString( DOMString( doc->userStyleSheet() ) );
 
         userStyle = new CSSStyleSelectorList();
-        userStyle->append(userSheet);
+        userStyle->append( userSheet, doc->view()->mediaType() );
     }
 
     // add stylesheets from document
     authorStyle = new CSSStyleSelectorList();
     StyleSheetListImpl* ss = doc->styleSheets();
-    for ( QListIterator<StyleSheetImpl> it( ss->styleSheets ); it.current(); ++it )
- 	    authorStyle->append( it.current());
+    
+    QListIterator<StyleSheetImpl> it( ss->styleSheets );
+    for ( ; it.current(); ++it )
+    {
+        CSSStyleSheetImpl *curSheet =
+                            dynamic_cast<CSSStyleSheetImpl *>( it.current() );
+        if( curSheet )
+     	    authorStyle->append( curSheet, doc->view()->mediaType() );
+    }
 
     buildLists();
 
@@ -123,12 +130,12 @@ CSSStyleSelector::CSSStyleSelector(DocumentImpl * doc)
     //kdDebug() << "CSSStyleSelector::CSSStyleSelector encoded url " << encodedurl.path << endl;
 }
 
-CSSStyleSelector::CSSStyleSelector(StyleSheetImpl *sheet)
+CSSStyleSelector::CSSStyleSelector( CSSStyleSheetImpl *sheet )
 {
     if(!defaultStyle) loadDefaultStyle();
 
     authorStyle = new CSSStyleSelectorList();
-    authorStyle->append(sheet);
+    authorStyle->append( sheet, sheet->doc()->view()->mediaType() );
 }
 
 CSSStyleSelector::~CSSStyleSelector()
@@ -139,9 +146,9 @@ CSSStyleSelector::~CSSStyleSelector()
     delete userSheet;
 }
 
-void CSSStyleSelector::addSheet(StyleSheetImpl *sheet)
+void CSSStyleSelector::addSheet( CSSStyleSheetImpl *sheet )
 {
-    authorStyle->append(sheet);
+    authorStyle->append( sheet, sheet->doc()->view()->mediaType() );
 }
 
 void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
@@ -166,7 +173,7 @@ void CSSStyleSelector::loadDefaultStyle(const KHTMLSettings *s)
     defaultSheet->parseString( str );
 
     defaultStyle = new CSSStyleSelectorList();
-    defaultStyle->append(defaultSheet);
+    defaultStyle->append( defaultSheet );
     //kdDebug() << "CSSStyleSelector: default style has " << defaultStyle->count() << " elements"<< endl;
 }
 
@@ -743,10 +750,15 @@ CSSStyleSelectorList::~CSSStyleSelectorList()
 {
 }
 
-void CSSStyleSelectorList::append(StyleSheetImpl *sheet)
+void CSSStyleSelectorList::append( CSSStyleSheetImpl *sheet,
+                                   const DOMString &medium )
 {
-
     if(!sheet || !sheet->isCSSStyleSheet()) return;
+
+    // No media implies "all", but if a medialist exists it must
+    // contain our current medium
+    if( sheet->media() && !sheet->media()->contains( medium ) )
+        return; // style sheet not applicable for this medium
 
     int len = sheet->length();
 
@@ -767,11 +779,63 @@ void CSSStyleSelectorList::append(StyleSheetImpl *sheet)
         else if(item->isImportRule())
         {
             CSSImportRuleImpl *import = static_cast<CSSImportRuleImpl *>(item);
-            // ### check media type
-            StyleSheetImpl *importedSheet = import->styleSheet();
-            append(importedSheet);
+
+            //kdDebug( 6080 ) << "@import: Media: "
+            //                << import->media()->mediaText().string() << endl;
+            
+            if( !import->media() || import->media()->contains( medium ) )
+            {
+                CSSStyleSheetImpl *importedSheet = import->styleSheet();
+                append( importedSheet, medium );
+            }
         }
-        // ### include media, import rules and other
+        else if( item->isMediaRule() )
+        {
+            CSSMediaRuleImpl *r = static_cast<CSSMediaRuleImpl *>( item );
+            CSSRuleListImpl *rules = r->cssRules();
+
+            //DOMString mediaText = media->mediaText();
+            //kdDebug( 6080 ) << "@media: Media: "
+            //                << r->media()->mediaText().string() << endl;
+            
+            if( ( !r->media() || r->media()->contains( medium ) ) && rules)
+            {
+                // Traverse child elements of the @import rule. Since
+                // many elements are not allowed as child we do not use
+                // a recursive call to append() here
+                for( int j = 0; j < rules->length(); j++ )
+                {
+                    //kdDebug( 6080 ) << "*** Rule #" << j << endl;
+        
+                    CSSRuleImpl *childItem = rules->item( j );
+                    if( childItem->isStyleRule() )
+                    {
+                        // It is a StyleRule, so append it to our list
+                        CSSStyleRuleImpl *styleRule =
+                                static_cast<CSSStyleRuleImpl *>( childItem );
+                                
+                        QList<CSSSelector> *s = styleRule->selector();
+                        for( int j = 0; j < ( int ) s->count(); j++ )
+                        {
+                            CSSOrderedRule *orderedRule = new CSSOrderedRule(
+                                            styleRule, s->at( j ), count() );
+                	    QList<CSSOrderedRule>::append( orderedRule );
+                        }
+                    }
+                    else
+                    {
+                        //kdDebug( 6080 ) << "Ignoring child rule of "
+                        //    "ImportRule: rule is not a StyleRule!" << endl;
+                    }
+                }   // for rules
+            }   // if rules
+            else
+            {
+                //kdDebug( 6080 ) << "CSSMediaRule not rendered: "
+                //                << "rule empty or wrong medium!" << endl;
+            }
+        }
+        // ### include other rules
     }
 }
 

@@ -236,13 +236,13 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
         if(*curP != ';')
             curP = parseToChar(startP, endP, ';', false, true);
         if(!curP) return 0;
-        QString media(startP, curP - startP);
-	media = media.stripWhiteSpace();
+        
+        DOMString mediaList = DOMString( startP, curP - startP);
         // ### check if at the beginning of the stylesheet (no style rule
         //     before the import rule)
 #ifdef CSS_DEBUG
-        kdDebug( 6080 ) << "at rule: url = '" << url.string()
-                        << "' media = '" << media << "'"<< endl;
+        kdDebug( 6080 ) << "import rule = " << url.string() << ", mediaList = "
+                        << mediaList.string << endl;
 #endif
         // ignore block following @import rule
         if( *curP == '{' ) {
@@ -251,12 +251,9 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
             if(curP)
                 curP++;
         }
-        // ### only media="", "screen and "all" are imported for the moment...
-        // ### add at least "print" here once the MediaList class is implemented
-        if( !media.isEmpty() && !(media.contains("all") || media.contains("screen") ) )
-            return 0;
         if(!this->isCSSStyleSheet()) return 0;
-        return new CSSImportRuleImpl(this, url, 0);
+        
+        return new CSSImportRuleImpl( this, url, mediaList );
     }
     else if(rule == "charset")
     {
@@ -284,7 +281,7 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
         curP = parseToChar(startP, endP, '{', false);
 	//qDebug("mediaList = '%s'", mediaList.latin1() );
         if ( !curP || curP >= endP ) return 0;
-	QString mediaList = QString( startP, curP - startP);
+	DOMString mediaList = DOMString( startP, curP - startP);
         curP++;
 	startP = curP;
 	if ( curP >= endP ) return 0;
@@ -292,10 +289,10 @@ StyleBaseImpl::parseAtRule(const QChar *&curP, const QChar *endP)
 	if ( !curP || startP >= curP )
 	    return 0;
 #ifdef CSS_DEBUG
-        kdDebug( 6080 ) << "media rule = " << QString(startP, curP - startP) << endl;
+        kdDebug( 6080 ) << "media rule = " << QString(startP, curP - startP)
+                        << ", mediaList = " << mediaList.string() << endl;
 #endif
-	if ( mediaList.contains( "screen" ) || mediaList.contains( "all" ) )
-	    return parseStyleRule(startP, curP);
+        return new CSSMediaRuleImpl( this, startP, curP, mediaList );
     }
     else if(rule == "page")
     {

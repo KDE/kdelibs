@@ -73,6 +73,7 @@ public:
     DOM::DOMString href() const;
     DOM::DOMString title() const;
     MediaListImpl *media() const;
+    void setMedia( MediaListImpl *media );
 
 protected:
     DOM::NodeImpl *m_parentNode;
@@ -140,8 +141,11 @@ public:
 class MediaListImpl : public StyleBaseImpl
 {
 public:
-    MediaListImpl(CSSStyleSheetImpl *parentSheet);
-    MediaListImpl(CSSRuleImpl *parentRule);
+    MediaListImpl( CSSStyleSheetImpl *parentSheet );
+    MediaListImpl( CSSStyleSheetImpl *parentSheet,
+                   const DOM::DOMString &media );
+    MediaListImpl( CSSRuleImpl *parentRule );
+    MediaListImpl( CSSRuleImpl *parentRule, const DOM::DOMString &media );
 
     virtual ~MediaListImpl();
 
@@ -150,12 +154,22 @@ public:
     CSSStyleSheetImpl *parentStyleSheet() const;
     CSSRuleImpl *parentRule() const;
     unsigned long length() const;
-    DOM::DOMString item ( unsigned long index );
+    DOM::DOMString item ( unsigned long index ) const;
     void deleteMedium ( const DOM::DOMString &oldMedium );
     void appendMedium ( const DOM::DOMString &newMedium );
 
     DOM::DOMString mediaText() const;
     void setMediaText(const DOM::DOMString &value);
+
+    /**
+     * Check if the list contains either the requested medium, or the
+     * catch-all "all" media type. Returns true when found, false otherwise.
+     * Since not specifying media types should be treated as "all" according
+     * to DOM specs, an empty list always returns true.
+     *
+     * _NOT_ part of the DOM!
+     */
+    bool contains( const DOM::DOMString &medium ) const;
 
 protected:
     QValueList<DOM::DOMString> m_lstMedia;

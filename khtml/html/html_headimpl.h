@@ -39,6 +39,7 @@ namespace DOM {
 class DOMString;
 class HTMLFormElementImpl;
 class StyleSheetImpl;
+class CSSStyleSheetImpl;
 
 class HTMLBaseElementImpl : public HTMLElementImpl
 {
@@ -86,7 +87,7 @@ public:
 
 protected:
     khtml::CachedCSSStyleSheet *m_cachedSheet;
-    StyleSheetImpl *m_sheet;
+    CSSStyleSheetImpl *m_sheet;
     DOMString m_url;
     DOMString m_type;
     QString m_media;
