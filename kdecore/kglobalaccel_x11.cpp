@@ -13,21 +13,19 @@
 #include <kapplication.h>
 #include <kdebug.h>
 #include <kkeynative.h>
+#include <kxerrorhandler.h>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <fixx11h.h>
 
-static bool g_bGrabFailed;
-
 extern "C" {
   static int XGrabErrorHandler( Display *, XErrorEvent *e ) {
 	if ( e->error_code != BadAccess ) {
 	    kdWarning() << "grabKey: got X error " << e->type << " instead of BadAccess\n";
 	}
-	g_bGrabFailed = true;
-	return 0;
+	return 1;
   }
 }
 
@@ -111,11 +109,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	if( !keyCodeX )
 		return false;
 
-	// We want to catch only our own errors
-	g_bGrabFailed = false;
-	XSync( qt_xdisplay(), 0 );
-	XErrorHandler savedErrorHandler = XSetErrorHandler( XGrabErrorHandler );
-
+        KXErrorHandler handler( XGrabErrorHandler );
 	// We'll have to grab 8 key modifier combinations in order to cover all
 	//  combinations of CapsLock, NumLock, ScrollLock.
 	// Does anyone with more X-savvy know how to set a mask on qt_xrootwin so that
@@ -130,20 +124,10 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 #ifndef NDEBUG
 			sDebug += QString("0x%3, ").arg(irrelevantBitsMask, 0, 16);
 #endif
-			if( bGrab ) {
+			if( bGrab )
 				XGrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask,
 					qt_xrootwin(), True, GrabModeAsync, GrabModeSync );
-
-				// If grab failed, then ungrab any previously successful grabs.
-				if( g_bGrabFailed ) {
-					kdDebug(125) << "grab failed!\n";
-					for( uint m = 0; m < irrelevantBitsMask; m++ ) {
-						if( m & keyModMaskX == 0 )
-							XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | m, qt_xrootwin() );
-					}
-					break;
-				}
-			} else
+			else
 				XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | irrelevantBitsMask, qt_xrootwin() );
 		}
 	}
@@ -151,10 +135,20 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 	kdDebug(125) << sDebug << endl;
 #endif
 
-	XSync( qt_xdisplay(), 0 );
-	XSetErrorHandler( savedErrorHandler );
-
-	if( !g_bGrabFailed ) {
+        bool failed = false;
+        if( bGrab ) {
+        	failed = handler.error( true ); // sync now
+        	// If grab failed, then ungrab any grabs that could possibly succeed
+		if( failed ) {
+			kdDebug(125) << "grab failed!\n";
+			for( uint m = 0; m <= 0xff; m++ ) {
+				if( m & keyModMaskX == 0 )
+					XUngrabKey( qt_xdisplay(), keyCodeX, keyModX | m, qt_xrootwin() );
+				}
+                }
+	}
+        if( !failed )
+        {
 		CodeMod codemod;
 		codemod.code = keyCodeX;
 		codemod.mod = keyModX;
@@ -166,7 +160,7 @@ bool KGlobalAccelPrivate::grabKey( const KKeyServer::Key& key, bool bGrab, KAcce
 		else
 			m_rgCodeModToAction.remove( codemod );
 	}
-	return !g_bGrabFailed;
+	return !failed;
 }
 
 bool KGlobalAccelPrivate::x11Event( XEvent* pEvent )
