@@ -708,7 +708,7 @@ void KDirOperator::insertNewFiles(const KFileViewItemList &newone, bool ready)
     myCompleteListDirty = true;
 
     bool isLocal = dir->isLocalFile();
-    if (!isLocal)
+    if (!isLocal && !newone.isEmpty())
 	fileView->addItemList(newone);
 
     KFileViewItemListIterator it(newone);
