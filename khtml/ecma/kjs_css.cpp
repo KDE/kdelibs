@@ -147,7 +147,7 @@ Value DOMCSSStyleDeclaration::tryGet(ExecState *exec, const UString &propertyNam
 }
 
 
-void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &pName, const Value& value, int )
+void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &pName, const Value& value, int attr )
 {
   UString propertyName = pName;
    if ( propertyName == "clip" ) {
@@ -178,7 +178,17 @@ void DOMCSSStyleDeclaration::tryPut(ExecState *exec, const UString &pName, const
 #endif
     styleDecl.removeProperty(prop);
     if(!propvalue.isEmpty())
-      styleDecl.setProperty(prop,DOM::DOMString(propvalue),""); // ### is "" ok for priority?
+    {
+      // Look whether the property is known. In that case add it as a CSS property.
+      QCString cprop = prop.latin1();
+      if (DOM::getPropertyID(cprop.data(), cprop.length()))
+        styleDecl.setProperty(prop,DOM::DOMString(propvalue),""); // ### is "" ok for priority?
+      else
+      {
+        // otherwise add it as a JS property
+        DOMObject::tryPut( exec, pName, value, attr );
+      }
+    }
   }
 }
 
