@@ -39,7 +39,7 @@
 #include "kglobalaccel.h"
 
 /**
-* A list box item for KSplitList.It uses two columns to display 
+* A list box item for KSplitList.It uses two columns to display
 * action/key combination pairs.
 * @short A list box item for KSplitList.
 */
@@ -110,7 +110,7 @@ public:
 	void setText( QString text );
 	void setEdit( bool edit );
 	bool editing;
-  
+
 protected:
 	void paint( QPainter *_painter );
 	void drawButton( QPainter *p ) { paint( p ); }
@@ -119,17 +119,17 @@ protected:
 /**
  * The KKeyDialog class is used for configuring dictionaries of key/action
  * associations for KAccel and KGlobalAccel. It uses the KKeyChooser widget and
- * offers buttons to set all keys to defaults and invoke on-line help. 
+ * offers buttons to set all keys to defaults and invoke on-line help.
  *
  * Two static methods are supplied which provide the most convienient interface
  * to the dialog. For example you could use KAccel and KKeyDialog like this
  *
  * KAccel keys;
  *
- * keys.insertItem( "Zoom in", "+" );
- * 
- * keys.connectItem( KAccel::Print, SLOT( print() ) );
- * keys.connectItem( "Zoom in", SLOT( zoomIn() ) );
+ * keys.insertItem( i18n("Zoom in" ), "Zoom in", "+" );
+ * keys.connectItem( "Zoom in", myWindow, SLOT( zoomIn() ) );
+ *
+ * keys.connectItem( KAccel::Print, myWindow, SLOT( print() ) );
  *
  * keys.readSettings();
  *
@@ -206,7 +206,7 @@ protected slots:
 
 protected:
 	void keyPressEvent( QKeyEvent *e );
-	void fontChange( const QFont & ); 
+	void fontChange( const QFont & );
 
 protected:
 	QDict<int> *globalDict;
