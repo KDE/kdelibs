@@ -64,7 +64,6 @@ SlaveBase::SlaveBase( const QCString &protocol,
     signal( SIGPIPE, sigpipe_handler );
 
     appconn = new Connection();
-    pendingListEntries.setAutoDelete(true);
     listEntryCurrentSize = 0;
     struct timeval tp;
     gettimeofday(&tp, 0);
@@ -272,7 +271,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
     static const int minimum_updatetime = (maximum_updatetime * 3) / 4;
 
     if (!_ready) {
-	pendingListEntries.append(new UDSEntry(entry));
+	pendingListEntries.append(entry);
 	
 	if (pendingListEntries.count() > listEntryCurrentSize) {
 	
@@ -307,9 +306,10 @@ void SlaveBase::listEntries( const UDSEntryList& list )
     kdDebug(7007) << "listEntries " << list.count() << endl;
 
     KIO_DATA << list.count();
-    UDSEntryListIterator it(list);
-    for (; it.current(); ++it)
-	stream << *it.current();
+    UDSEntryListConstIterator it = list.begin();
+    UDSEntryListConstIterator end = list.end();
+    for (; it != end; ++it)
+	stream << *it;
     m_pConnection->send( MSG_LIST_ENTRIES, data);
 }
 
@@ -367,7 +367,7 @@ void SlaveBase::slave_status()
 
 void SlaveBase::reparseConfiguration()
 {
-} 
+}
 
 bool SlaveBase::dispatch()
 {

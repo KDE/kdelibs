@@ -269,11 +269,12 @@ void KFileReader::startLoading()
 
 void KFileReader::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 {
-    KIO::UDSEntryListIterator it(entries);
+    KIO::UDSEntryListConstIterator it = entries.begin();
+    KIO::UDSEntryListConstIterator end = entries.end();
     myNewEntries.clear();
     QString baseurl = url();
-    for (; it.current(); ++it) {
-      KFileViewItem *i= new KFileViewItem(baseurl, *(it.current()));
+    for (; it != end; ++it) {
+      KFileViewItem *i= new KFileViewItem(baseurl, *it);
       CHECK_PTR(i);
 
       if (!filterEntry(i)) {

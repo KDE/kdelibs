@@ -1050,15 +1050,17 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
     slotProcessedSize( m_processedEntries );
 
     if (recursive) {
-	UDSEntryListIterator it(list);
+	UDSEntryListConstIterator it = list.begin();
+	UDSEntryListConstIterator end = list.end();
 
-	for (; it.current(); ++it) {
+	for (; it != end; ++it) {
 	    bool isDir = false;
 	    bool isLink = false;
 	    QString filename;
 	
-	    UDSEntry::ConstIterator it2 = it.current()->begin();
-	    for( ; it2 != it.current()->end(); it2++ ) {
+	    UDSEntry::ConstIterator it2 = (*it).begin();
+	    UDSEntry::ConstIterator end2 = (*it).end();
+	    for( ; it2 != end2; it2++ ) {
 		switch( (*it2).m_uds ) {
                     case UDS_FILE_TYPE:
                         isDir = S_ISDIR((*it2).m_long);
@@ -1097,13 +1099,14 @@ void ListJob::slotListEntries( const KIO::UDSEntryList& list )
 
     UDSEntryList newlist;
 
-    UDSEntryListIterator it(list);
-    for (; it.current(); ++it) {
+    UDSEntryListConstIterator it = list.begin();
+    UDSEntryListConstIterator end = list.end();
+    for (; it != end; ++it) {
 	
-	UDSEntry *newone = new UDSEntry(*it.current());
-	UDSEntry::Iterator it2 = newone->begin();
+	UDSEntry newone = *it;
+	UDSEntry::Iterator it2 = newone.begin();
         QString filename;
-	for( ; it2 != newone->end(); it2++ ) {
+	for( ; it2 != newone.end(); it2++ ) {
 	    if ((*it2).m_uds == UDS_NAME) {
                 filename = (*it2).m_str;
 		(*it2).m_str = prefix + filename;
@@ -1191,15 +1194,16 @@ CopyJob::CopyJob( const KURL::List& src, const KURL& dest, bool move, bool asMet
 
 void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
-    UDSEntryListIterator it(list);
-    for (; it.current(); ++it) {
-        UDSEntry::ConstIterator it2 = it.current()->begin();
+    UDSEntryListConstIterator it = list.begin();
+    UDSEntryListConstIterator end = list.end();
+    for (; it != end; ++it) {
+        UDSEntry::ConstIterator it2 = (*it).begin();
         struct CopyInfo info;
         info.permissions = (mode_t) -1;
         info.mtime = (time_t) -1;
         info.ctime = (time_t) -1;
         QString relName;
-        for( ; it2 != it.current()->end(); it2++ ) {
+        for( ; it2 != (*it).end(); it2++ ) {
             switch ((*it2).m_uds) {
                 case UDS_FILE_TYPE:
                     info.type = (mode_t)((*it2).m_long);
@@ -1307,7 +1311,7 @@ void CopyJob::slotResultStating( Job *job )
     m_currentDest = m_dest;
     // Create a dummy list with it, for slotEntries
     UDSEntryList lst;
-    lst.append(new UDSEntry(entry));
+    lst.append(entry);
 
     // There 6 cases, and all end up calling slotEntries(job, lst) first :
     // 1 - src is a dir, destination is a directory,
@@ -2020,13 +2024,14 @@ DeleteJob::DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo )
 
 void DeleteJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
 {
-    UDSEntryListIterator it(list);
-    for (; it.current(); ++it) {
-        UDSEntry::ConstIterator it2 = it.current()->begin();
+    UDSEntryListConstIterator it = list.begin();
+    UDSEntryListConstIterator end = list.end();
+    for (; it != end; ++it) {
+        UDSEntry::ConstIterator it2 = (*it).begin();
         bool bDir = false;
         bool bLink = false;
         QString relName;
-        for( ; it2 != it.current()->end(); it2++ ) {
+        for( ; it2 != (*it).end(); it2++ ) {
             switch ((*it2).m_uds) {
                 case UDS_FILE_TYPE:
                     bDir = S_ISDIR((*it2).m_long);

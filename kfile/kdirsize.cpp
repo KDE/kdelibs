@@ -36,13 +36,14 @@ KDirSize::KDirSize( const KURL & directory )
 
 void KDirSize::slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
 {
-    KIO::UDSEntryListIterator it(list);
-    for (; it.current(); ++it) {
-        KIO::UDSEntry::ConstIterator it2 = it.current()->begin();
+    KIO::UDSEntryListConstIterator it = list.begin();
+    KIO::UDSEntryListConstIterator end = list.end();
+    for (; it != end; ++it) {
+        KIO::UDSEntry::ConstIterator it2 = (*it).begin();
         int size = 0L;
         //bool isDir = false;
         QString name;
-        for( ; it2 != it.current()->end(); it2++ ) {
+        for( ; it2 != (*it).end(); it2++ ) {
           switch( (*it2).m_uds ) {
             case KIO::UDS_NAME:
               name = (*it2).m_str;

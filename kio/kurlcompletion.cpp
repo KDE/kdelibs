@@ -821,21 +821,22 @@ QString KURLCompletion::listDirectories()
 
 void KURLCompletion::slotEntries(KIO::Job*, const KIO::UDSEntryList& entries)
 {
-    KIO::UDSEntryListIterator it(entries);
+    KIO::UDSEntryListConstIterator it = entries.begin();
+    KIO::UDSEntryListConstIterator end = entries.end();
 	
 	//kDebugInfo("slotEntries() -- prepend = '%s'", m_prepend.latin1());
 
 	// Iterate over all files
 	//
-    for (; it.current(); ++it) {
+    for (; it != end; ++it) {
 
 		QString name;
 		bool is_exe = false, is_dir = false;
 			
-		KIO::UDSEntry *e = it.current();
-		KIO::UDSEntry::ConstIterator it_2 = e->begin();
+		KIO::UDSEntry e = *it;
+		KIO::UDSEntry::ConstIterator it_2 = e.begin();
 
-		for( ; it_2 != e->end(); it_2++ ) {
+		for( ; it_2 != e.end(); it_2++ ) {
 			switch ( (*it_2).m_uds ) {
 				case KIO::UDS_NAME:
 					name = (*it_2).m_str;

@@ -201,8 +201,9 @@ public:
  * An entry is the list of atoms containing all the informations for a file or URL
  */
 typedef QValueList<UDSAtom> UDSEntry;
-typedef QList<UDSEntry> UDSEntryList;
-typedef QListIterator<UDSEntry> UDSEntryListIterator;
+typedef QValueList<UDSEntry> UDSEntryList;
+typedef QValueListIterator<UDSEntry> UDSEntryListIterator;
+typedef QValueListConstIterator<UDSEntry> UDSEntryListConstIterator;
 
 }
 

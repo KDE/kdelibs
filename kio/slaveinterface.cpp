@@ -84,11 +84,10 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	    stream >> count;
 	
 	    UDSEntryList list;
-	    list.setAutoDelete(true);
 	    UDSEntry entry;
 	    for (uint i = 0; i < count; i++) {
 		stream >> entry;
-		list.append(new UDSEntry(entry));
+		list.append(entry);
 	    }
 	    emit listEntries(list);
 	

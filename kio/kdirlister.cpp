@@ -178,17 +178,18 @@ void KDirLister::slotResult( KIO::Job * job )
 void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
 {
   KFileItemList lstNewItems;
-  KIO::UDSEntryListIterator it(entries);
+  KIO::UDSEntryListConstIterator it = entries.begin();
+  KIO::UDSEntryListConstIterator end = entries.end();
 
   // avoid creating these QStrings again and again
   static const QString dot = QString::fromLatin1(".");
 
-  for (; it.current(); ++it) {
+  for (; it != end; ++it) {
     QString name;
 
     // Find out about the name
-    KIO::UDSEntry::ConstIterator entit = it.current()->begin();
-    for( ; entit != it.current()->end(); entit++ )
+    KIO::UDSEntry::ConstIterator entit = (*it).begin();
+    for( ; entit != (*it).end(); ++entit )
       if ( (*entit).m_uds == KIO::UDS_NAME )
         name = (*entit).m_str;
 
@@ -198,13 +199,13 @@ void KDirLister::slotEntries( KIO::Job*, const KIO::UDSEntryList& entries )
     {
       if ( !m_rootFileItem ) // only if we didn't keep the previous dir
       {
-        m_rootFileItem = createFileItem( *(*it), m_url, m_bDelayedMimeTypes );
+        m_rootFileItem = createFileItem( *it, m_url, m_bDelayedMimeTypes );
       }
     }
     else
     {
       //kdDebug(1203)<< "Adding " << u.url() << endl;
-      KFileItem* item = createFileItem( *(*it), m_url, m_bDelayedMimeTypes, 
+      KFileItem* item = createFileItem( *it, m_url, m_bDelayedMimeTypes,
 					true );
       assert( item != 0L );
 
@@ -382,9 +383,10 @@ void KDirLister::deleteUnmarkedItems()
 void KDirLister::slotUpdateEntries( KIO::Job*, const KIO::UDSEntryList& list )
 {
   // list is a QList, m_buffer is a QValueList, keeps a copy
-  KIO::UDSEntryListIterator it(list);
-  for (; it.current(); ++it) {
-      m_buffer.append( *(*it) );
+  KIO::UDSEntryListConstIterator it = list.begin();
+  KIO::UDSEntryListConstIterator end = list.end();
+  for (; it != end; ++it) {
+      m_buffer.append( *it );
   }
 }
 
@@ -428,7 +430,7 @@ KFileItem * KDirLister::createFileItem( const KIO::UDSEntry& entry,
 					bool determineMimeTypeOnDemand,
 					bool urlIsDirectory )
 {
-    return new KFileItem( entry, url, determineMimeTypeOnDemand, 
+    return new KFileItem( entry, url, determineMimeTypeOnDemand,
 			  urlIsDirectory );
 }
 
