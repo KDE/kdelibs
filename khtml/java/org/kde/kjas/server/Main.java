@@ -121,30 +121,53 @@ public class Main
         if( show_console )
             console.setVisible( true );
 
+        // set up https
+        boolean hasHTTPS = true;
 
-        try  //Check for the JSSE packages, and install them
-        {
-            //set this property first
-				System.setProperty( "java.protocol.handler.pkgs",
-				"com.sun.net.ssl.internal.www.protocol|com.ibm.net.ssl.www.protocol" );
-				if(  ( Security.getProvider(  "SunJSSE" ) == null ) && 
-				( Security.getProvider(  "IBMJSSE" ) == null ) )
-            {
+        try {
+            // https needs a secure socket provider
+            Provider[] sslProviders = Security.getProviders("SSLContext.SSL");
+            
+            if (sslProviders == null || sslProviders.length == 0) {
+                // as a fallback, try to dynamically install Sun's jsse
                 Class provider = Class.forName("com.sun.net.ssl.internal.ssl.Provider");
-                if( provider != null )
-                {
-                    Main.debug( "adding Security Provider" );
+                
+                if (provider != null) {
+                    Main.debug("adding Security Provider");
                     Provider p = (Provider) provider.newInstance();
-                    Security.addProvider( p );
+                    Security.addProvider(p);
+                } else {
+                    Main.debug("could not get class: com.sun.net.ssl.internal.ssl.Provider");
+                    hasHTTPS = false;
                 }
-                else
-                    Main.debug( "could not get class: com.sun.net.ssl.internal.ssl.Provider" );
             }
-            else
-                Main.debug( "could not get provider: SunJSSE" );
-        } catch( Exception e )
-        {
-            System.out.println( "Unable to load JSSE SSL stream handler, https support not available" );
+
+            if (hasHTTPS) {
+                // allow user to provide own protocol handler
+                // -Djava.protocol.handler.pkgs = user.package.name
+                // getting and setting of properties might generate SecurityExceptions
+                // so this needs to be in a try block
+                String handlerPkgs = System.getProperty("java.protocol.handler.pkgs");
+
+                if (handlerPkgs == null) {
+                    // set default packages for Sun and IBM
+                    handlerPkgs = "com.sun.net.ssl.internal.www.protocol" + 
+                                  "|com.ibm.net.ssl.www.protocol";
+                } else {
+                    // add default packages for Sun and IBM as fallback
+                    handlerPkgs += "|com.sun.net.ssl.internal.www.protocol" + 
+                                   "|com.ibm.net.ssl.www.protocol";
+                }
+
+                System.setProperty("java.protocol.handler.pkgs", handlerPkgs);
+            }
+        } catch (Exception e) {
+            hasHTTPS = false;
+        }
+
+        if (hasHTTPS == false) {
+            System.out.println("Unable to load JSSE SSL stream handler, https support not available");
+            System.out.println("For more information see http://java.sun.com/products/jsse/");
         }
 
         //start the command parsing
