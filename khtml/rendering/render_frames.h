@@ -81,14 +81,24 @@ private:
 class RenderPart : public RenderWidget
 {
 public:
-  RenderPart( QScrollView *view );
-  virtual ~RenderPart();
+    RenderPart( QScrollView *view );
+    virtual ~RenderPart();
 
-  virtual const char *renderName() const { return "RenderPart"; }
+    virtual const char *renderName() const { return "RenderPart"; }
 
-  virtual void layout();
+    virtual void layout();
 
-  virtual void setWidget( QWidget *widget );
+    virtual void setWidget( QWidget *widget );
+
+    /**
+     * Called by KHTMLPart to notify the frame object that loading the
+     * part was not successfuly. (called either asyncroniously after a
+     * after the servicetype of the given url (the one passed with requestObject)
+     * has been determined or syncroniously from within requestObject)
+     *
+     * The default implementation does nothing.
+     */
+    virtual void partLoadingErrorNotify();
 };
 
 class RenderFrame : public RenderPart

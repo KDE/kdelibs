@@ -474,6 +474,10 @@ void RenderPart::layout( )
     m_widget->resize( m_width, m_height );
 }
 
+void RenderPart::partLoadingErrorNotify()
+{
+}
+
 /***************************************************************************************/
 
 RenderFrame::RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame )

@@ -2359,7 +2359,12 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
     KParts::ReadOnlyPart *part = createPart( d->m_view->viewport(), child->m_name.ascii(), this, child->m_name.ascii(), mimetype, child->m_serviceName, child->m_services, child->m_params );
 
     if ( !part )
-      return false;
+    {
+        if ( child->m_frame )
+            child->m_frame->partLoadingErrorNotify();
+
+        return false;
+    }
 
     //CRITICAL STUFF
     if ( child->m_part )
