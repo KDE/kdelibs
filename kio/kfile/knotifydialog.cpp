@@ -218,6 +218,8 @@ KNotifyWidget::KNotifyWidget( QWidget *parent, const char *name,
 
     connect( m_listview, SIGNAL( currentChanged( QListViewItem * ) ),
              SLOT( slotEventChanged( QListViewItem * ) ));
+    connect( m_listview, SIGNAL(clicked( QListViewItem *, const QPoint&, int)),
+             SLOT( slotItemClicked( QListViewItem *, const QPoint&, int )));
 
     connect( m_playSound, SIGNAL( toggled( bool )),
              SLOT( soundToggled( bool )) );
@@ -618,6 +620,39 @@ void KNotifyWidget::commandlineChanged( const QString& text )
     emit changed( true );
 }
 
+void KNotifyWidget::slotItemClicked( QListViewItem *item, const QPoint&, 
+                                     int col )
+{
+    if ( !item || !item->isSelected() )
+        return;
+
+    Event *event = currentEvent();
+    if ( !event )
+        return; // very unlikely, but safety first
+    
+    switch( col )
+    {
+        case COL_EXECUTE:
+            m_execute->toggle();
+            break;
+        case COL_STDERR:
+            m_stderr->toggle();
+            break;
+        case COL_MESSAGE:
+            m_passivePopup->setChecked( true ); // default to passive popups
+            m_messageBox->toggle();
+            break;
+        case COL_LOGFILE:
+            m_logToFile->toggle();
+            break;
+        case COL_SOUND:
+            m_playSound->toggle();
+            break;
+        default: // do nothing
+            break;
+    }
+}
+
 void KNotifyWidget::sort( bool ascending )
 {
     m_listview->setSorting( COL_EVENT, ascending );
@@ -927,7 +962,9 @@ void Application::reloadEvents( bool revertToDefaults )
                 delete e;
 
             else { // load the event
-                int default_rep = kc->readNumEntry("default_presentation", 0);
+                // default to passive popups over plain messageboxes
+                int default_rep = kc->readNumEntry("default_presentation", 
+                                                   0 | KNotifyClient::PassivePopup);
                 QString default_logfile = kc->readEntry("default_logfile");
                 QString default_soundfile = kc->readEntry("default_sound");
                 QString default_commandline = kc->readEntry("default_commandline");
