@@ -97,7 +97,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ByteSoundProducer sender = new Sender();
+	ByteSoundProducer sender = ByteSoundProducer::_from_base(new Sender());
 	server.attach(sender);
 	sender.start();
 	dispatcher.run();
