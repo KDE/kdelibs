@@ -76,6 +76,7 @@ public:
     virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
 
 private:
+    void updateImage(CachedImage* new_image);
     /*
      * Cache for images that need resizing
      */

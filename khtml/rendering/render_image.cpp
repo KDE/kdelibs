@@ -67,6 +67,9 @@ RenderImage::RenderImage(NodeImpl *_element)
 
 RenderImage::~RenderImage()
 {
+    assert( !image || image != oimage );
+    assert( !image || !image->canDelete() );
+    assert( !oimage || !oimage->canDelete() );
     if(image) image->deref(this);
     if (oimage) oimage->deref( this );
 }
@@ -87,22 +90,19 @@ void RenderImage::setStyle(RenderStyle* _style)
 
 void RenderImage::setContentObject(CachedObject* co )
 {
-    if (co && image != co) {
-        co->ref( this );
-        if (oimage ) oimage->deref( this );
-        oimage = image;
-        image = static_cast<CachedImage*>(co);
-    }
+    if (co && image != co)
+        updateImage( static_cast<CachedImage*>( co ) );
 }
 
 void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
 {
+    if ( o == oimage )
+        return;
+
     if(o != image) {
         RenderReplaced::setPixmap(p, r, o);
         return;
     }
-
-    assert( o != oimage );
 
     bool iwchanged = false;
 
@@ -376,8 +376,15 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
             false,false);
     }
 
-    if ( oimage ) {
-        oimage->deref(this);
+    assert( image );
+    assert( !image->canDelete() );
+
+    if ( image == finishedObj && oimage ) {
+        assert( image != oimage );
+        assert( oimage != finishedObj );
+        assert( !oimage->canDelete() );
+
+        oimage->deref( this );
         oimage = 0;
     }
 }
@@ -405,6 +412,24 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty, 
     return inside;
 }
 
+void RenderImage::updateImage(CachedImage* new_image)
+{
+    CachedImage* tempimage = oimage;
+    assert( !tempimage || !tempimage->canDelete() );
+    oimage = image;
+    image = new_image;
+    assert( image != oimage );
+    if ( image != tempimage && image != oimage )
+        image->ref(this);
+    if ( tempimage && image != tempimage && oimage != tempimage )
+        tempimage->deref(this);
+
+    assert( image );
+    assert( !image->canDelete() );
+    assert( !oimage || !oimage->canDelete() );
+    berrorPic = image->isErrorImage();
+}
+
 void RenderImage::updateFromElement()
 {
     if (element()->id() == ID_INPUT)
@@ -425,12 +450,7 @@ void RenderImage::updateFromElement()
            /*&& (!style() || !style()->contentObject())*/
             ) {
             loadEventSent = false;
-            CachedImage* tempimage = oimage;
-            oimage = image;
-            image = new_image;
-            image->ref(this);
-            if(tempimage) tempimage->deref(this);
-            berrorPic = image->isErrorImage();
+            updateImage( new_image );
         }
     }
 }
