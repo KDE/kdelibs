@@ -66,12 +66,11 @@ void KDirLister::slotFileDirty( const QString& _file )
   kdDebug(1203) << "KDirLister::slotFileDirty( " << _file << " )" << endl;
   KFileItem * item = find( _file );
   if ( item ) {
-    emit deleteItem( item );
     // We need to refresh the item, because i.e. the permissions can have changed.
     item->refresh();
     KFileItemList lst;
     lst.append( item );
-    emit newItems( lst );
+    emit refreshItems( lst );
   }
 }
 

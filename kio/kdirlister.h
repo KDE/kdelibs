@@ -166,6 +166,11 @@ signals:
   void newItems( const KFileItemList & items );
   /** Signal a item to remove */
   void deleteItem( KFileItem * _fileItem );
+  /**
+   * Signal an item to refresh (its mimetype/icon/name has changed)
+   * Note: KFileItem::refresh has already been called on those items.
+   */
+  void refreshItems( const KFileItemList & items );
 
 protected slots:
   // internal slots used by the directory lister (connected to the job)
