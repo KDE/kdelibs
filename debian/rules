@@ -41,7 +41,7 @@ clean: debian-clean
 binary-indep:	build
 	dh_testdir
 	dh_testroot
-	dh_clean
+	dh_clean -i
 	if test -f /usr/bin/qt2kdoc; then \
 		(mkdir -p debian/kdelibs3-doc/usr/share/kdoc/index) ; \
 		(mkdir -p debian/kdelibs3-doc/usr/share/doc/kdelibs3-doc/html/kdoc-reference) ; \
@@ -66,7 +66,7 @@ binary-indep:	build
 binary-arch:  build
 	dh_testdir
 	dh_testroot
-	dh_clean 
+	dh_clean -a
 	-rm -f debian/undocumented
 	dh_installdirs
 	install -d debian/tmp/usr/share/applnk
@@ -116,10 +116,10 @@ binary-arch:  build
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a
-	dh_gencontrol -a
+	dh_gencontrol 
 	cd debian/tmp && find ./etc -type f -print | sed -e 's#^./#/#' > DEBIAN/conffiles
 	chmod 644 debian/tmp/DEBIAN/conffiles
-	dh_md5sums -a
+	dh_md5sums 
 	dh_builddeb -a
 
 # Below here is fairly generic really
