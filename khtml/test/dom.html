@@ -321,7 +321,7 @@
       else if (this.items[itemno].name == "links") {
         mainContent.clear();
 	mainContent.addH1("Links");
-/*	var a = document.createElement("a");
+	var a = document.createElement("a");
 	a.href = "http://www.people.fas.harvard.edu/%7Edbaron/dom/test/";
 	a.appendChild(document.createTextNode("DOM test suite"));
 	mainContent.addElement(a);
@@ -329,7 +329,12 @@
 	a = document.createElement("a");
 	a.href = "http://www.w3.org";
 	a.appendChild(document.createTextNode("The W3C site"));
-	mainContent.addElement(a);*/
+	mainContent.addElement(a);
+	mainContent.addElement(document.createElement("br"));
+	a = document.createElement("a");
+	a.href = "http://xw2k.sdct.itl.nist.gov/dom/index.html";
+	a.appendChild(document.createTextNode("The NIST DOM Test Suite"));
+	mainContent.addElement(a);
       }
     }
 
