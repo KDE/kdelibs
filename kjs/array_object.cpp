@@ -114,7 +114,7 @@ Completion ArrayProtoFunc::execute(const List &args)
     // fall trough
   case Join:
     {
-      if (!args[0].isA(UndefinedType))
+      if (args.size() > 0)
 	separator = args[0].toString().value();
       for (unsigned int k = 0; k < length; k++) {
 	if (k >= 1)

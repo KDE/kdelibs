@@ -244,6 +244,14 @@ UString UString::from(double d)
     strcpy(buf,"-Infinity");
   else
     sprintf(buf, "%.16g", d);	// does the right thing
+
+  // ECMA 3rd ed. 9.8.1 9 e: "with no leading zeros"
+  int buflen = strlen(buf);
+  if (buflen >= 4 && buf[buflen-4] == 'e' && buf[buflen-2] == '0') {
+    buf[buflen-2] = buf[buflen-1];
+    buf[buflen-1] = 0;
+  }
+
   return UString(buf);
 }
 
