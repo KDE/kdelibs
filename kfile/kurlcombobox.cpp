@@ -67,12 +67,17 @@ void KURLComboBox::init( Mode mode )
 
 QStringList KURLComboBox::urls() const
 {
+    static QString fileProt = QString::fromLatin1("file:");
     QStringList list;
     QString url;
     for ( int i = firstItemIndex; i < count(); i++ ) {
 	url = text( i );
-	if ( !url.isEmpty() )
-	    list.append( url );
+	if ( !url.isEmpty() ) {
+	    if ( url.at(0) == '/' )
+		list.append( url.prepend( fileProt ) );
+	    else
+		list.append( url );
+	}
     }
 
     return list;
@@ -131,30 +136,33 @@ void KURLComboBox::setURLs( QStringList urls )
     if ( urls.isEmpty() )
 	return;
 
-    QStringList::ConstIterator it = urls.begin();
-    int overload = urls.count() - myMaximum + firstItemIndex;
-    if ( overload > 0 )
-	it = urls.at( overload );
-
-    KURLComboItem *item = 0L;
-    KURL u;
+    QStringList::Iterator it = urls.begin();
 
     // kill duplicates
     QString text;
     while ( it != urls.end() ) {
-	text = *it;
-	while ( urls.contains( text ) > 1 )
-	    urls.remove( text );
+	while ( urls.contains( *it ) > 1 ) {
+	    it = urls.remove( it );
+	    continue;
+	}
 	++it;
     }
+    
+    // limit to myMaximum items
+    int overload = urls.count() - myMaximum + firstItemIndex;
+    if ( overload < 0 )
+	overload = 0;
+    it = urls.at( overload );
 
-    it = urls.begin();
+    
+    KURLComboItem *item = 0L;
+    KURL u;
+
     while ( it != urls.end() ) {
 	if ( (*it).isEmpty() ) {
 	    ++it;
 	    continue;
 	}
-	
 	u = *it;
 
 	item = new KURLComboItem;

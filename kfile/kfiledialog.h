@@ -80,7 +80,9 @@ public:
     /**
       * Construct a KFileDialog
       *
-      * @param urlName  The url of the directory to start in.
+      * @param urlName  The url of the directory to start in. Use QString::null
+                        to start in the current working directory, or the last
+			directory where a file has been selected.
       * @param filter   A shell glob that specifies which files to display.
       * See @ref setFilter for details on how to use this argument
       * @param acceptURLs If set to false, @ref KFileDialog will just accept
@@ -306,11 +308,31 @@ public:
 
     /**
      * Set the mode of the dialog.
+     * The mode is defined as (in kfile.h):
+     * <pre>    enum Mode {
+     *                      File         = 1,
+     *                      Directory    = 2,
+     *                      Files        = 4,
+     *                      ExistingOnly = 8,
+     *                      LocalOnly    = 16
+     *                    };
+     * </pre>
+     * You can OR the values, e.g.
+     * <pre>
+     * KFile::Mode mode = static_cast<KFile::Mode>( KFile::Files |
+     *                                              KFile::ExistingOnly |
+     *						    KFile::LocalOnly );
+     * setMode( mode );
+     * </pre>
+     * You need an explicit cast, which looks a little ugly, but is unavoidable
+     * without using (even uglier) #defines
+     * @see #mode
      */
     void setMode( KFile::Mode m );
 
     /**
      * Retrieve the mode of the filedialog.
+     * @see #setMode
      */
     KFile::Mode mode() const;
 
