@@ -65,6 +65,11 @@ KService::init( KDesktopFile *config )
 
   config->setDesktopGroup();
   config->setDollarExpansion( true ); // mainly for Exec and Path
+  if(access(entryPath(), R_OK))
+  {
+    m_bValid=false;
+    return;
+  }
   m_bDeleted = config->readBoolEntry( "Hidden", false );
   if (m_bDeleted)
   {
