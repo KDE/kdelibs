@@ -870,6 +870,12 @@ void KThemeStyle::drawPrimitive ( PrimitiveElement pe, QPainter * p, const QRect
                 }
                 break;
             }
+        case PE_PanelPopup:
+            {
+                if (h==8 && w==50) //Used by Qt when no items..  #### WORKAROUND/HACK
+                    p->fillRect(r, g.brush(QColorGroup::Background) );
+                break;
+            }
         case PE_Splitter:
             {
                 drawBaseButton( p, x, y, w, h, *colorGroup( g, Splitter ), false, false,
