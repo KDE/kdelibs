@@ -143,6 +143,7 @@ KURL::KURL( KURL & _base_url, const char * _rel_url )
     host_part = _base_url.host_part;
     port_number = _base_url.port_number;
     path_part = _base_url.path_part;
+    path_part_decoded = _base_url.path_part_decoded;
     ref_part = _base_url.ref_part;
     dir_part = _base_url.dir_part;
     user_part = _base_url.user_part;
@@ -527,6 +528,8 @@ bool KURL::cd( const char* _dir, bool zapRef)
     if ( !_dir )
 	return false;
     
+    path_part_decoded = 0;
+
     // Now we have a path for shure
     bNoPath = ( _dir[0] == 0);
 
@@ -569,12 +572,17 @@ bool KURL::setReference( const char* _ref)
 
 KURL& KURL::operator=( const KURL &u)
 {
+  port_number = u.port_number;
   malformed = u.malformed;
   protocol_part = u.protocol_part;
   host_part = u.host_part;
   path_part = u.path_part;
   ref_part = u.ref_part;
   bNoPath = u.bNoPath;
+  path_part_decoded = u.path_part_decoded;
+  dir_part = u.dir_part;
+  user_part = u.user_part;
+  passwd_part = u.passwd_part;
   
   detach();
   return *this;
