@@ -777,11 +777,17 @@ void HTMLButtonElementImpl::parseAttribute(AttributeImpl *attr)
 
 void HTMLButtonElementImpl::attach()
 {
-    // skip the generic handler
-    HTMLElementImpl::attach();
-    // doesn't work yet in the renderer ### fixme
-    if (renderer())
-        renderer()->setReplaced(true);
+    assert(!attached());
+    assert(!m_render);
+    assert(parentNode());
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
+    if (parentNode()->renderer() && _style->display() != NONE) {
+        m_render = new (getDocument()->renderArena()) RenderCustomButton(this);
+        m_render->setStyle(_style);
+    }
+    HTMLGenericFormElementImpl::attach();
+    _style->deref();
 }
 
 void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)

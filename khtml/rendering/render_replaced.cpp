@@ -461,5 +461,65 @@ void RenderWidget::deref(RenderArena *arena)
 }
 
 
+// -----------------------------------------------------------------------------
+
+RenderReplacedFlow::RenderReplacedFlow(DOM::NodeImpl* node)
+    : RenderFlow(node)
+{
+    assert(node);
+    m_intrinsicWidth = 100;
+    setReplaced( true );
+}
+
+void RenderReplacedFlow::calcMinMaxWidth()
+{
+    KHTMLAssert( !minMaxKnown() );
+
+    RenderObject *r = firstChild();
+    short wi, maxw;
+    wi = maxw = 0;
+
+    while(r) {
+        if(r->isSpecial())
+        {
+            r = r->nextSibling();
+            continue;
+        }
+        if( !r->minMaxKnown() )
+             r->calcMinMaxWidth();
+        short childMaxWidth = r->maxWidth();
+        if( r->isInline() && r->childrenInline() )
+            wi = calcObjectWidth( r, wi );
+        else if( r->isInline() )
+            wi += r->maxWidth();
+        else
+            maxw = QMAX( maxw, childMaxWidth );
+        r = r->nextSibling();
+    }
+
+    maxw = QMAX( maxw, wi );
+
+    if ( style()->width().isPercent() || style()->height().isPercent() ) {
+         m_minWidth = 0;
+         m_maxWidth = maxw;
+    }
+    else
+         m_minWidth = m_maxWidth = maxw;
+
+    setIntrinsicWidth( maxw );
+    setMinMaxKnown();
+}
+
+short RenderReplacedFlow::calcObjectWidth( RenderObject *o, short width )
+{
+    for( o = o->firstChild(); o; o = o->nextSibling() )
+    {
+        width = calcObjectWidth( o, width );
+        if( o->isInline() )
+            width += o->maxWidth();
+    }
+    return width;
+}
+
 #include "render_replaced.moc"
 

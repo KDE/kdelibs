@@ -23,7 +23,7 @@
 #ifndef render_replaced_h
 #define render_replaced_h
 
-#include "render_box.h"
+#include "render_flow.h"
 #include <qobject.h>
 class KHTMLView;
 class QWidget;
@@ -102,6 +102,23 @@ protected:
     QWidget *m_widget;
     KHTMLView* m_view;
 };
+
+
+class RenderReplacedFlow : public RenderFlow
+{
+public:
+    RenderReplacedFlow(DOM::NodeImpl* node);
+
+    virtual const char *renderName() const { return "RenderReplacedFlow"; }
+
+protected:
+    virtual void calcMinMaxWidth();
+    virtual short intrinsicWidth() const { return m_intrinsicWidth; }
+    short calcObjectWidth( RenderObject *o, short width );
+    void setIntrinsicWidth(int w) {  m_intrinsicWidth = w; }
+    short m_intrinsicWidth;
+};
+
 
 }
 

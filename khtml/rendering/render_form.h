@@ -270,6 +270,15 @@ private:
     KHTMLView* m_view;
     KSpell *m_spell;
 };
+// -------------------------------------------------------------------------
+
+class RenderCustomButton : public RenderReplacedFlow
+{
+public:
+    RenderCustomButton(DOM::HTMLGenericFormElementImpl *element);
+
+    virtual const char *renderName() const { return "RenderCustomButton"; }
+};
 
 // -------------------------------------------------------------------------
 
