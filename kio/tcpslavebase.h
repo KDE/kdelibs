@@ -2,6 +2,7 @@
  * $Id$
  *
  * Copyright (C) 2000 Alex Zepeda <jazepeda@pacbell.net>
+ * Copyright (C) 2001 George Staikos <staikos@kde.org>
  * This file is part of the KDE project
  *
  * This library is free software; you can redistribute it and/or
@@ -76,11 +77,20 @@ protected:
      */
     bool ConnectToHost(const QCString &host, unsigned short int port);
 
+    /**
+     * Start using TLS on the connection.
+     *
+     * @return on success, true is returned.
+     *         on failure, true certainly isn't returned.
+     */
+    bool startTLS();
+
     // The proper way to close up a socket here, as it closes the stdio
     // fstream stuff, as well as sets the socket back to -1
     void CloseDescriptor();
 
     // Initializs the SSL variables, called from the constructor
+    // Don't call us
     bool InitializeSSL();
     void CleanSSL();
 
@@ -95,7 +105,9 @@ protected:
     class TcpSlaveBasePrivate;
     TcpSlaveBasePrivate *d;
 
+    // don't use me!
     void doConstructorStuff();
+
 };
 
 };

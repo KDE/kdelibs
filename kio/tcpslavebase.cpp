@@ -23,6 +23,7 @@ using namespace KIO;
 class TCPSlaveBase::TcpSlaveBasePrivate {
 public:
   KSSL *kssl;
+  bool usingTLS;
 };
 
 
@@ -47,11 +48,13 @@ TCPSlaveBase::TCPSlaveBase(unsigned short int default_port, const QCString &prot
 void TCPSlaveBase::doConstructorStuff()
 {
         d = new TcpSlaveBasePrivate;
+        d->usingTLS = false;
 }
 
 TCPSlaveBase::~TCPSlaveBase()
 {
 	CleanSSL();
+        if (d->usingTLS) delete d->kssl;
         delete d;
 }
 
@@ -173,7 +176,6 @@ bool TCPSlaveBase::InitializeSSL()
    if (m_bIsSSL) {
       if (KSSL::doesSSLWork()) {
          d->kssl = new KSSL;
-         d->kssl->setAutoReconfig(true);
          return true;
       } else return false;
    } else return false;
@@ -189,6 +191,26 @@ void TCPSlaveBase::CleanSSL()
 bool TCPSlaveBase::AtEOF()
 {
 	return feof(fp);
+}
+
+bool TCPSlaveBase::startTLS()
+{
+        if (d->usingTLS || m_bIsSSL || !KSSL::doesSSLWork()) return false;
+
+        d->kssl = new KSSL(false);
+        if (!d->kssl->TLSInit()) {
+           delete d->kssl;
+           return false;
+        }
+
+        int rc = d->kssl->connect(m_iSock);
+        if (rc < 0) {
+           delete d->kssl;
+           return false;
+        }
+
+        d->usingTLS = true;
+return d->usingTLS;
 }
 
 
