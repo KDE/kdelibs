@@ -255,7 +255,6 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     {
        QString key = (*it).isNull() ? "" : (*it);
        KHttpCookieList *cookieList = m_cookieDomains[key];
-       
        if (!cookieList)
           continue; // No cookies for this domain
 
@@ -427,6 +426,14 @@ bool KCookieJar::parseURL(const QString &_url,
        return false;
 
     _fqdn = kurl.host().lower();
+    if (kurl.port())
+    {
+       if (((kurl.protocol() == "http") && (kurl.port() != 80)) ||
+           ((kurl.protocol() == "https") && (kurl.port() != 443)))
+       {
+          _fqdn = QString("%1:%2").arg(kurl.port()).arg(_fqdn);
+       }
+    }
 
     // Cookie spoofing protection.  Since there is no way a path separator
     // or escape encoded character is allowed in the hostname according
@@ -445,12 +452,29 @@ bool KCookieJar::parseURL(const QString &_url,
 void KCookieJar::extractDomains(const QString &_fqdn,
                                 QStringList &_domains)
 {
-    // Return IPv4 and IPv6 addresses as is...
-    if (((_fqdn[0] >= '0') && (_fqdn[0] <= '9')) ||
-        _fqdn[0] == '[')
+    // Return numeric IPv6 addresses as is...
+    if (_fqdn[0] == '[')
     {
        _domains.append( _fqdn );
        return;
+    }
+    // Return numeric IPv4 addresses as is...
+    if ((_fqdn[0] >= '0') && (_fqdn[0] <= '9'))
+    {
+       bool allNumeric = true;
+       for(int i = _fqdn.length(); i--;)
+       {
+          if (!index("0123456789:.", _fqdn[i].latin1()))
+          {
+             allNumeric = false;
+             break;
+          }
+       }
+       if (allNumeric)
+       {
+          _domains.append( _fqdn );
+          return;
+       }
     }
 
     QStringList partList = QStringList::split('.', _fqdn, false);
