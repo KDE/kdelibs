@@ -21,9 +21,11 @@
 #define KMCONFIGFILTER_H
 
 #include "kmconfigpage.h"
+#include <qstringlist.h>
 
 class KListBox;
 class QPushButton;
+class QLineEdit;
 
 class KMConfigFilter : public KMConfigPage
 {
@@ -38,13 +40,15 @@ protected slots:
 	void slotSelectionChanged();
 	void slotAddClicked();
 	void slotRemoveClicked();
-	
+
 protected:
 	void transfer(KListBox *from, KListBox *to);
 
 private:
 	KListBox	*m_list1, *m_list2;
 	QPushButton	*m_add, *m_remove;
+	QLineEdit	*m_locationre;
+	QStringList	m_plist;
 };
 
 #endif

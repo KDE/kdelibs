@@ -19,9 +19,11 @@
 
 #include "kmconfigfilter.h"
 #include "kmmanager.h"
+#include "kmfactory.h"
 
 #include <klistbox.h>
 #include <qgroupbox.h>
+#include <qlineedit.h>
 #include <qpushbutton.h>
 #include <qlayout.h>
 #include <qlabel.h>
@@ -46,12 +48,15 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 	m_add->setPixmap(SmallIcon("forward"));
 	m_remove = new QPushButton(box);
 	m_remove->setPixmap(SmallIcon("back"));
+	m_locationre = new QLineEdit(box);
 	QLabel	*lab = new QLabel(box);
-	lab->setText(i18n("The printer filtering allows you to only view a specific set of "
-	                  "printers instead of all of them. This may be useful when there's a "
+	lab->setText(i18n("The printer filtering allows you to view only a specific set of "
+	                  "printers instead of all of them. This may be useful when there are a "
 			  "lot of printers available but you only use a few ones. Select the "
-			  "printers you want to see from the list on the left."));
+			  "printers you want to see from the list on the left or enter a <b>Location</b> "
+			  "filter (ex: Group_1*). Both are cumulative and ignored if empty."));
 	lab->setTextFormat(Qt::RichText);
+	QLabel	*lab1 = new QLabel(i18n("Location filter:"), box);
 
 	QVBoxLayout	*l0 = new QVBoxLayout(this, 5, 10);
 	l0->addWidget(box, 1);
@@ -67,6 +72,10 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 	l2->addMultiCellWidget(m_list2, 0, 3, 2, 2);
 	l2->addWidget(m_add, 1, 1);
 	l2->addWidget(m_remove, 2, 1);
+	QHBoxLayout	*l3 = new QHBoxLayout(0, 0, 10);
+	l1->addLayout(l3, 0);
+	l3->addWidget(lab1, 0);
+	l3->addWidget(m_locationre, 1);
 
 	connect(m_add, SIGNAL(clicked()), SLOT(slotAddClicked()));
 	connect(m_remove, SIGNAL(clicked()), SLOT(slotRemoveClicked()));
@@ -79,18 +88,19 @@ KMConfigFilter::KMConfigFilter(QWidget *parent, const char *name)
 void KMConfigFilter::loadConfig(KConfig *conf)
 {
 	conf->setGroup("Filter");
-	QStringList	plist = conf->readListEntry("Printers");
+	m_plist = conf->readListEntry("Printers");
 	QPtrListIterator<KMPrinter>	it(*(KMManager::self()->printerListComplete(false)));
 	for (; it.current(); ++it)
 	{
 		if (!it.current()->isSpecial() && !it.current()->isVirtual())
 		{
-			KListBox	*lb = (plist.find(it.current()->printerName()) == plist.end() ? m_list1 : m_list2);
+			KListBox	*lb = (m_plist.find(it.current()->printerName()) == m_plist.end() ? m_list1 : m_list2);
 			lb->insertItem(SmallIcon(it.current()->pixmap()), it.current()->printerName());
 		}
 	}
 	m_list1->sort();
 	m_list2->sort();
+	m_locationre->setText(conf->readEntry("LocationRe"));
 }
 
 void KMConfigFilter::saveConfig(KConfig *conf)
@@ -100,6 +110,10 @@ void KMConfigFilter::saveConfig(KConfig *conf)
 	for (int i=0; i<m_list2->count(); i++)
 		plist << m_list2->text(i);
 	conf->writeEntry("Printers", plist);
+	conf->writeEntry("LocationRe", m_locationre->text());
+	// notify all other applications about filter change
+	if (plist != m_plist)
+		KMFactory::self()->reload(KMFactory::self()->printSystem(), true);
 }
 
 void KMConfigFilter::transfer(KListBox *from, KListBox *to)
