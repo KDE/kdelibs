@@ -21,6 +21,7 @@
 
 #include <klibloader.h>
 #include <ktypelist.h>
+#include <kinstance.h>
 #include <kgenericfactory.tcc>
 
 /* @internal */
