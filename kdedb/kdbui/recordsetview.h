@@ -1,5 +1,5 @@
-#ifndef __RECORDSETVIEW_H__
-#define __RECORDSETVIEW_H__
+#ifndef RECORDSETVIEW_H
+#define RECORDSETVIEW_H "$Id$"
 
 #include <qtable.h>
 

@@ -17,12 +17,9 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef PLUGININFODLG_H
-#define PLUGININFODLG_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef PLUGININFODLG_H
+#define PLUGININFODLG_H "$Id$"
 
 #include <kdialogbase.h>
 

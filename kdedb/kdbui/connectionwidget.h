@@ -17,12 +17,9 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef CONNECTIONWIDGET_H
-#define CONNECTIONWIDGET_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#ifndef CONNECTIONWIDGET_H
+#define CONNECTIONWIDGET_H "$Id$"
 
 #include "connectionbase.h"
 
