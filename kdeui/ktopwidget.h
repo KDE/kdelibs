@@ -46,13 +46,10 @@ public:
     ~KTopLevelWidget();
 
     /**
-     * Add a toolbar to the widget.
-     * A toolbar added to this widget will be automatically laid out
-     * by it.
-     *
-     * The toolbar must have been created with this instance of
-     * KTopLevelWidget as its parent.
-     */
+      * THIS FEATURE IS OBSOLETE AND WILL BE REMOVED.
+      * DO NOT USE! Use toolBar() instead (Matthias)
+      *
+      */
     int addToolBar( KToolBar *toolbar, int index = -1 );
 
     /**
@@ -72,23 +69,15 @@ public:
     void setView( QWidget *view, bool show_frame = TRUE );
 
     /**
-     * Sets the main menubar for this widget.
-     * Unless a main menu is added, its geometry will not be properly
-     * taken into account when laying out the other children of this
-     * widget.
-     *
-     * Only one menubar can be added to the widget and it must have
-     * been created with this instance of KTopLevelWidget as its parent.
-     */
+      * THIS FEATURE IS OBSOLETE AND WILL BE REMOVED.
+      * DO NOT USE! Use menuBar() instead (Matthias)
+      *
+      */
     void setMenu( KMenuBar *menu );
 
     /**
-     * Sets the status bar for this widget.
-     * For the status bar to be automatically laid out at the bottom
-     * of the widget, this must be called.
-     *
-     * Only once status bar can be added to the widget and it must have
-     * been created with this instance of KTopLevelWidget as its parent.
+      * THIS FEATURE IS OBSOLETE AND WILL BE REMOVED.
+      * DO NOT USE! Use statusBar() instead (Matthias)
      */
     void setStatusBar( KStatusBar *statusbar );
 
@@ -115,20 +104,20 @@ public:
     void setFrameBorderWidth( int );
 
     /**
-     * Returns a pointer to a toolbar in the toolbar list.
-     * The toolbar must have been added to the widget with
-     * addToolBar.
-     *
-     * If no toolbars were added, null is returned.
+     * Returns a pointer to the toolbar with the specified ID. 
+     * If there is no such tool bar yet, it will be generated
      */
     KToolBar *toolBar( int ID = 0 );
 
     /**
-     * Returns a pointer to the status bar.
-     * The status bar must have been added to the widget with
-     * addStatusBar.
-     *
-     * If no status bar was added, null is returned.
+     * Returns a pointer to the menu bar. If there is no
+     * menu bar yet, it will be generated
+     */
+    KMenuBar *menuBar();
+
+    /**
+     * Returns a pointer to the status bar. If there is no
+     * status bar yet, it will be generated
      */
     KStatusBar *statusBar();
 
@@ -178,8 +167,7 @@ public:
    * if (kapp->isRestored()){
    *   int n = 1;
    *   while (KTopLevelWidget::canBeRestored(n)){
-   *     the_childTLW = new childTLW;
-   *     the_childTLW->restore(n);
+   *     (new childTLW)->restore(n);
    *     n++;
    *   }
    * } else {
@@ -191,10 +179,26 @@ public:
    * With this you can easily restore all toplevel windows of your
    * application.  
    *
-   * Note: If your application uses different kinds of toplevel
+   * If your application uses different kinds of toplevel
    * windows, then you can use KTopLevelWidget::classNameOfToplevel(n)
    * to determine the exact type before calling the childTLW
-   * constructor in the example from above.  (Matthias) 
+   * constructor in the example from above.  
+   * 
+   * If your client has only one kind of toplevel widgets (which should
+   * be pretty usual) then you should use the RESTORE-macro:
+   *
+   * <pre>
+   * if (kapp->isRestored())
+   *   RESTORE(childTLW)
+   * else {
+   * // create default application as usual
+   * }
+   * </pre>
+   *
+   * The macro expands to the term above but is easier to use and
+   * less code to write.
+   *
+   *(Matthias) 
    */
   static bool canBeRestored(int number);
 
@@ -223,23 +227,38 @@ public:
   void setUnsavedData( bool );
 
 
-
 protected:
-    /**
-     * Default implementation calls @ref updateRects if main widget is resizable. If
-     * mainWidget is not resizable  it does
-     * nothing. You shouldn't need to override this function.
+    /** Default implementation calls @ref updateRects if main widget
+     * is resizable. If mainWidget is not resizable it does
+     * nothing. You shouldn't need to override this function.  
      */
-    void resizeEvent( QResizeEvent *e);
-    /**
-     * Default implementation just calls repaint (FALSE);
-     */
-    void focusInEvent ( QFocusEvent *);
+    virtual void resizeEvent( QResizeEvent *e);
     /**
      * Default implementation just calls repaint (FALSE);
      */
-    void focusOutEvent ( QFocusEvent *);
+    virtual void focusInEvent ( QFocusEvent *);
+    /**
+     * Default implementation just calls repaint (FALSE);
+     */
+    virtual void focusOutEvent ( QFocusEvent *);
 
+    /** 
+      * This is called when the widget is closed.
+      * The default implementation will also destroy the
+      * widget.(Matthias)
+      */
+    virtual void closeEvent ( QCloseEvent *);
+
+  /** KTopLevelWidget has the nice habbit that it will exit the
+    * application when the very last KTopLevelWidget is
+    * destroyed. Some applications may not want this default
+    * behaviour,for example if the application wants to ask the user
+    * wether he really wants to quit the application.  This can be
+    * achived by overloading the queryExit() method.  The default
+    * implementation simply returns TRUE, which means that the
+    * application will be quitted. FALSE will cancel the exiting
+    * process. (Matthias) */
+    virtual bool queryExit();
 
   /** Save your instance-specific properties.
    * You MUST NOT change the group of the kconfig object,
@@ -249,8 +268,7 @@ protected:
    * Note that any interaction or X calls are forbidden
    * in these functions!
    *
-   * (Matthias)
-   */ 
+   * (Matthias) */
   virtual void saveProperties(KConfig*){};
   /**
   * Read your instance-specific properties.
@@ -324,5 +342,11 @@ protected:
   void savePropertiesInternal (KConfig*, int);
   bool readPropertiesInternal (KConfig*, int);
 };
+
+
+#define RESTORE(type) { int n = 1;\
+    while (KTopLevelWidget::canBeRestored(n)){\
+      (new type)->restore(n);\
+      n++;}}
 
 #endif

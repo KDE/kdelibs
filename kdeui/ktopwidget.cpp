@@ -108,22 +108,33 @@ KTopLevelWidget::~KTopLevelWidget()
 	memberList->remove( this );
 
 	// if this was the topWidget, find a new one to be it
-	if( kapp && kapp->topWidget() == this )
-	  {
-		KTopLevelWidget* pTemp = 0L;
-		if( ( pTemp = memberList->getFirst() ) )
-		  kapp->setTopWidget( pTemp );
-		// if there is no mainWidget left: bad luck
-		else
-		  {
-//			KDEBUG( KDEBUG_FATAL, 151, "No main widget left" );
-			kapp->setTopWidget( 0L );
+	if( kapp && kapp->topWidget() == this ){
+	    KTopLevelWidget* pTemp = 0;
+	    if( ( pTemp = memberList->getFirst() ) )
+	      kapp->setTopWidget( pTemp );
+	}
+	if(kapp && memberList->isEmpty()){
+	  // if there is no mainWidget left: bad luck
+	  // Matthias:
+	  //        Nope, not bad luck. We should simply
+	  //        exit the application in this case.
+	  //        (But emit a signal before)
+	  
+	  kapp->setTopWidget( 0 );
+	  kapp->quit();
+	}
+}
 
-			// but since it is the last one, it can at least deallocate
-			// the member list...
-			delete memberList;
-		  }
-	  }
+
+void KTopLevelWidget::closeEvent ( QCloseEvent *e){
+  if (memberList->count() > 1 || queryExit()){
+    e->accept();
+    delete this;
+  }
+}
+
+bool KTopLevelWidget::queryExit(){
+  return true;
 }
 
 int KTopLevelWidget::addToolBar( KToolBar *toolbar, int index )
@@ -811,12 +822,38 @@ void KTopLevelWidget::resizeEvent( QResizeEvent *ev )
 
 KStatusBar *KTopLevelWidget::statusBar()
 {
+  if (!kstatusbar) 
+    kstatusbar = new KStatusBar(this);
   return kstatusbar;
+}
+
+KMenuBar *KTopLevelWidget::menuBar()
+{
+  if (!kmenubar) {
+    kmenubar = new KMenuBar(this);
+    connect ( kmenubar, SIGNAL( moved (menuPosition) ),
+	      this, SLOT( updateRects() ) );
+    updateRects();
+  }
+  return kmenubar;
 }
 
 KToolBar *KTopLevelWidget::toolBar( int ID )
 {
-  return toolbars.at( ID );
+  KToolBar* result = 0;
+  if (ID < int(toolbars.count()))
+    result = toolbars.at( ID );
+  if (!result) {
+    result  = new KToolBar(this);
+    toolbars.append( result );
+    while (int(toolbars.count()) < ID){
+      toolbars.append( result );
+    }
+    connect ( result, SIGNAL( moved (BarPosition) ),
+	      this, SLOT( updateRects() ) );
+    updateRects();
+  }
+  return result;
 }
 
 void KTopLevelWidget::enableToolBar( KToolBar::BarStatus stat, int ID )
