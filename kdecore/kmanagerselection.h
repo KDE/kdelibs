@@ -173,7 +173,7 @@ class KDECORE_EXPORT KSelectionWatcher
          * This constructor initializes the object, but doesn't perform any
          * operation on the selection.
          *
-         * @param selection atom representing the manager selection
+         * @param selection_P atom representing the manager selection
          */
         KSelectionWatcher( Atom selection_P, int screen_P = -1, QObject* parent = NULL );
         /**
@@ -181,7 +181,7 @@ class KDECORE_EXPORT KSelectionWatcher
          * This constructor accepts the selection name and creates the appropriate atom
          * for it automatically.
          *
-         * @param selection name of the manager selection
+         * @param selection_P name of the manager selection
          */
         KSelectionWatcher( const char* selection_P, int screen_P = -1, QObject* parent = NULL );
 	virtual ~KSelectionWatcher();
