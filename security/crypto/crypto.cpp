@@ -65,7 +65,7 @@ CipherItem::CipherItem( QListView *view, const QString& cipher, int bits,
     m_bits = bits;
     m_module = module;
 
-    QString tmp( "%1 (%2 of %3 bits)" );
+    QString tmp( i18n("%1 (%2 of %3 bits)") );
     setText( 0, tmp.arg( cipher ).arg( bits ).arg( maxBits ));
 }
 
