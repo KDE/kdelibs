@@ -1,8 +1,5 @@
 SUBDIRS = scripts vcard vcardparser . formats plugins
 
-# FIXME: doesn't work with final for now
-KDE_OPTIONS = nofinal
-
 # Make sure $(all_includes) remains last!
 INCLUDES = -I$(top_builddir)/kabc -I$(top_srcdir)/kabc -I$(top_srcdir)/kab \
            -I$(srcdir)/vcardparser/ -I$(srcdir)/vcard/include \

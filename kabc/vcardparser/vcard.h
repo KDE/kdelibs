@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef VCARD_H
-#define VCARD_H
+#ifndef VCARDPARSER_VCARD_H
+#define VCARDPARSER_VCARD_H
 
 #include "vcardline.h"
 #include <qmap.h>
