@@ -79,8 +79,6 @@ public:
 
     virtual void setStyle(RenderStyle *style);
 
-    virtual bool isInline() const;
-    virtual bool isReplaced() const;
     virtual bool isRendered() const { return true; }
     virtual bool isTable() const { return true; }
 
@@ -270,7 +268,6 @@ public:
     virtual short baselineOffset() const { return 0; }
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
-    virtual bool isInline() const { return false; }
     virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
@@ -306,7 +303,6 @@ public:
     virtual short baselineOffset() const { return 0; }
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
-    virtual bool isInline() const { return false; }
     virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }
@@ -426,7 +422,6 @@ public:
     virtual short baselineOffset() const { return 0; }
     virtual int bidiHeight() const { return 0; }
     virtual void position(int, int, int, int, int, bool) {}
-    virtual bool isInline() const { return false; }
     virtual void layout() {}
 
     virtual void setTable(RenderTable *t) { table = t; }

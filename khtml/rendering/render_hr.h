@@ -42,9 +42,7 @@ public:
 
     virtual const char *renderName() const { return "RenderHR"; }
 
-    virtual bool isInline() const { return false; }
     virtual bool isRendered() const { return true; }
-    virtual bool isReplaced() const { return true; }
 
     virtual void calcMinMaxWidth();
 

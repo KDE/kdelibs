@@ -33,20 +33,19 @@ namespace khtml {
 class RenderReplaced : public RenderBox
 {
 public:
-    RenderReplaced() : RenderBox() {}
+    RenderReplaced();
     virtual ~RenderReplaced() {}
 
     virtual const char *renderName() const { return "RenderReplaced"; }
 
-    virtual bool isReplaced() const { return true; }
     virtual bool isRendered() const { return true; }
 
     virtual void print( QPainter *, int x, int y, int w, int h,
-			int tx, int ty);
+                        int tx, int ty);
     virtual void printObject( QPainter *p, int /*x*/, int /*y*/,
-			int /*w*/, int /*h*/, int tx, int ty)
+                        int /*w*/, int /*h*/, int tx, int ty)
     {
-	printReplaced(p, tx, ty);
+        printReplaced(p, tx, ty);
     }
 
 

@@ -42,10 +42,8 @@ namespace khtml
         virtual void setStyle(RenderStyle *style);
 
         virtual const char *renderName() const { return "RenderListMarker"; }
-        virtual bool isInline() const { return true; }
         // so the marker gets to layout itself. Only needed for
         // list-style-position: inside
-        virtual bool isReplaced() const { return true; }
 
         virtual void print(QPainter *p, int x, int y, int w, int h,
                            int xoff, int yoff);
@@ -78,7 +76,6 @@ public:
     virtual void setStyle(RenderStyle *style);
 
     virtual bool isListItem() const { return true; }
-    virtual bool isInline() const { return false; }
 
     long value() const { return m_marker->val; }
     void setValue( long v ) { predefVal = v; }

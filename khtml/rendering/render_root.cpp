@@ -29,6 +29,9 @@ using namespace khtml;
 RenderRoot::RenderRoot(KHTMLView *view)
     : RenderFlow()
 {
+    // init RenderObject attributes
+    m_inline = false;   // our object is no Inline
+
     m_view = view;
     // try to contrain the width to the views width
     m_minWidth = view->visibleWidth();
@@ -90,7 +93,7 @@ void RenderRoot::layout()
 
     // this fixes frameset resizing
     if(firstChild()) {
-    	firstChild()->setLayouted(false);
+        firstChild()->setLayouted(false);
     }
     RenderFlow::layout();
 
@@ -124,26 +127,26 @@ void RenderRoot::print(QPainter *p, int _x, int _y, int _w, int _h, int _tx, int
 }
 
 void RenderRoot::printObject(QPainter *p, int _x, int _y,
-				       int _w, int _h, int _tx, int _ty)
+                                       int _w, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::printObject() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     // add offset for relative positioning
     if(isRelPositioned())
-	relativePositionOffset(_tx, _ty);
+        relativePositionOffset(_tx, _ty);
 
     // 1. print background, borders etc
     if(m_printSpecial && !isInline())
-	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+        printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     // 2. print contents
     RenderObject *child = firstChild();
     while(child != 0) {
-	if(!child->isFloating() && !child->isPositioned()) {
-	    child->print(p, _x, _y, _w, _h, _tx, _ty);
-	}
-	child = child->nextSibling();
+        if(!child->isFloating() && !child->isPositioned()) {
+            child->print(p, _x, _y, _w, _h, _tx, _ty);
+        }
+        child = child->nextSibling();
     }
 
     // 3. print floats and other non-flow objects.
@@ -154,17 +157,17 @@ void RenderRoot::printObject(QPainter *p, int _x, int _y,
 
     if(specialObjects)
     {
-	SpecialObject* r;	
-	QListIterator<SpecialObject> it(*specialObjects);
-	for ( ; (r = it.current()); ++it )
-	{
-    	    if (r->node->containingBlock()==this)
-	    {
-		RenderObject *o = r->node;	
-		//kdDebug(0) << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
-		o->print(p, _x, _y, _w, _h, _tx , _ty);
-	    }
-	}
+        SpecialObject* r;
+        QListIterator<SpecialObject> it(*specialObjects);
+        for ( ; (r = it.current()); ++it )
+        {
+            if (r->node->containingBlock()==this)
+            {
+                RenderObject *o = r->node;
+                //kdDebug(0) << "printing positioned at " << _tx + o->xPos() << "/" << _ty + o->yPos()<< endl;
+                o->print(p, _x, _y, _w, _h, _tx , _ty);
+            }
+        }
     }
 
 #ifdef BOX_DEBUG
@@ -209,10 +212,10 @@ void RenderRoot::updateHeight()
 
     if (parsing())
     {
-	if (!updateTimer.isNull() && updateTimer.elapsed()<1000) {
-	    return;
-	} else
-	    updateTimer.start();	
+        if (!updateTimer.isNull() && updateTimer.elapsed()<1000) {
+            return;
+        } else
+            updateTimer.start();
     }
 
     int oldHeight = docHeight();
@@ -222,24 +225,24 @@ void RenderRoot::updateHeight()
     //kdDebug(0) << "root layout, time used=" << updateTimer.elapsed() << endl;
 
     if(parsing())
-	updateTimer.start();
+        updateTimer.start();
 
     int h = docHeight();
     int w = docWidth();
     if(h != oldHeight || h < m_view->visibleHeight())
     {
-	if( h < m_view->visibleHeight() )
-	    h = m_view->visibleHeight();
-    	m_view->resizeContents(docWidth(), h);    	
+        if( h < m_view->visibleHeight() )
+            h = m_view->visibleHeight();
+        m_view->resizeContents(docWidth(), h);
     }
-    m_view->repaintContents( 0, 0, w, h, FALSE );	//sync repaint!
+    m_view->repaintContents( 0, 0, w, h, FALSE );       //sync repaint!
 }
 
 void RenderRoot::close()
 {
     setParsing(false);
     updateSize();
-    m_view->layout(true);	
+    m_view->layout(true);
 //    printTree();
 }
 
@@ -251,33 +254,33 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
     clearSelection();
 
     while (s->firstChild())
-    	s = s->firstChild();
+        s = s->firstChild();
     while (e->lastChild())
-    	e = e->lastChild();
+        e = e->lastChild();
 
     selectionStart = s;
     selectionEnd = e;
     selectionStartPos = sp;
     selectionEndPos = ep;
-	
+
     RenderObject* o = s;
     while (o && o!=e)
     {
-    	if (o->selectionState()!=SelectionInside)
-	    o->repaint();
-    	o->setSelectionState(SelectionInside);	
-//	kdDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
-    	RenderObject* no;
-    	if ( !(no = o->firstChild()) )
-    	    if ( !(no = o->nextSibling()) )
-	    {
-	    	no = o->parent();
-		while (no && !no->nextSibling())
-		    no = no->parent();
-		if (no)
-		    no = no->nextSibling();
-	    }
-	o=no;    	
+        if (o->selectionState()!=SelectionInside)
+            o->repaint();
+        o->setSelectionState(SelectionInside);
+//      kdDebug( 6040 ) << "setting selected " << o << ", " << o->isText() << endl;
+        RenderObject* no;
+        if ( !(no = o->firstChild()) )
+            if ( !(no = o->nextSibling()) )
+            {
+                no = o->parent();
+                while (no && !no->nextSibling())
+                    no = no->parent();
+                if (no)
+                    no = no->nextSibling();
+            }
+        o=no;
     }
     s->setSelectionState(SelectionStart);
     e->setSelectionState(SelectionEnd);
@@ -288,29 +291,29 @@ void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
 
 
 void RenderRoot::clearSelection()
-{	
+{
     RenderObject* o = selectionStart;
     while (o && o!=selectionEnd)
     {
-    	if (o->selectionState()!=SelectionNone)
-	    o->repaint();
-    	o->setSelectionState(SelectionNone);	
-    	RenderObject* no;
-    	if ( !(no = o->firstChild()) )
-    	    if ( !(no = o->nextSibling()) )
-	    {
-	    	no = o->parent();
-		while (no && !no->nextSibling())
-		    no = no->parent();
-		if (no)
-		    no = no->nextSibling();
-	    }
-	o=no;    	
+        if (o->selectionState()!=SelectionNone)
+            o->repaint();
+        o->setSelectionState(SelectionNone);
+        RenderObject* no;
+        if ( !(no = o->firstChild()) )
+            if ( !(no = o->nextSibling()) )
+            {
+                no = o->parent();
+                while (no && !no->nextSibling())
+                    no = no->parent();
+                if (no)
+                    no = no->nextSibling();
+            }
+        o=no;
     }
     if (selectionEnd)
     {
-    	selectionEnd->setSelectionState(SelectionNone);
-    	selectionEnd->repaint();
+        selectionEnd->setSelectionState(SelectionNone);
+        selectionEnd->repaint();
     }
 
 }
@@ -326,10 +329,10 @@ QRect RenderRoot::viewRect() const
     if (printingMode)
         return QRect(0,0, m_width, m_height);
     else if (m_view)
-    	return QRect(m_view->contentsX(),
-	    m_view->contentsY(),
-	    m_view->visibleWidth(),
-	    m_view->visibleHeight());
+        return QRect(m_view->contentsX(),
+            m_view->contentsY(),
+            m_view->visibleWidth(),
+            m_view->visibleHeight());
     else return QRect();
 }
 
@@ -342,11 +345,11 @@ int RenderRoot::docHeight() const
         h = m_view->visibleHeight();
 
     if(m_first) {
-	int dh = m_first->height() + m_first->marginTop() + m_first->marginBottom();
+        int dh = m_first->height() + m_first->marginTop() + m_first->marginBottom();
         if( m_first->lowestPosition() > dh )
-	    dh = m_first->lowestPosition();
-	if( dh > h )
-	    h = dh;
+            dh = m_first->lowestPosition();
+        if( dh > h )
+            h = dh;
     }
     return h;
 }
@@ -360,9 +363,9 @@ int RenderRoot::docWidth() const
         w = m_view->visibleWidth();
 
     if(m_first) {
-	int dw = m_first->width() + m_first->marginLeft() + m_first->marginRight();
-	if( dw > w )
-	    w = dw;
+        int dw = m_first->width() + m_first->marginLeft() + m_first->marginRight();
+        if( dw > w )
+            w = dw;
     }
     return w;
 }

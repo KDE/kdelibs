@@ -74,7 +74,7 @@ void RenderFlow::setStyle(RenderStyle *style)
     RenderBox::setStyle(style);
 
     if(m_positioned)
-	m_style->setDisplay(BLOCK);
+        m_style->setDisplay(BLOCK);
 
     if( m_floating || !style->display() == INLINE)
         m_inline = false;
@@ -136,7 +136,7 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
         if(specialObjects && floatBottom() > h) h = floatBottom();
         if((_ty > _y + _h) || (_ty + h < _y))
         {
-//          kdDebug( 6040 ) << "cut!" << endl;
+            //kdDebug( 6040 ) << "cut!" << endl;
             return;
         }
     }
@@ -180,9 +180,7 @@ void RenderFlow::printObject(QPainter *p, int _x, int _y,
     while(child != 0)
     {
         if(!child->isFloating() && !child->isPositioned())
-        {
             child->print(p, _x, _y, _w, _h, _tx, _ty);
-        }
         child = child->nextSibling();
     }
 
@@ -211,8 +209,6 @@ void RenderFlow::layout()
     //t.start();
 
     assert(!isInline());
-
-    //if(layouted()) return;
 
     int oldWidth = m_width;
 
@@ -320,9 +316,9 @@ void RenderFlow::layoutBlockChildren()
     }
 
     if( m_style->direction() == RTL ) {
-	xPos = marginLeft() + m_width - paddingRight() - borderRight();
+        xPos = marginLeft() + m_width - paddingRight() - borderRight();
     }
-    
+
     RenderObject *child = firstChild();
     int prevMargin = 0;
     if(isTableCell())
@@ -360,20 +356,20 @@ void RenderFlow::layoutBlockChildren()
 
         child->layout();
 
-	int chPos = xPos + child->marginLeft();
-	if( m_style->textAlign() == KONQ_CENTER ) {
-	    //kdDebug() << "should align to center" << endl;
-	    chPos += ( width() - child->width() )/2;
-	} else if(m_style->direction() == LTR) {
-	    // html blocks flow around floats
-	    if (style()->htmlHacks() && child->style()->flowAroundFloats() )
-		chPos = leftOffset(m_height) + child->marginLeft();
-	} else {
-	    chPos -= child->width() + child->marginLeft() + child->marginRight();
-	    if (style()->htmlHacks() && child->style()->flowAroundFloats() )
-		chPos -= leftOffset(m_height);
-	}	    
-	child->setXPos(chPos);
+        int chPos = xPos + child->marginLeft();
+        if( m_style->textAlign() == KONQ_CENTER ) {
+            //kdDebug() << "should align to center" << endl;
+            chPos += ( width() - child->width() )/2;
+        } else if(m_style->direction() == LTR) {
+            // html blocks flow around floats
+            if (style()->htmlHacks() && child->style()->flowAroundFloats() )
+                chPos = leftOffset(m_height) + child->marginLeft();
+        } else {
+            chPos -= child->width() + child->marginLeft() + child->marginRight();
+            if (style()->htmlHacks() && child->style()->flowAroundFloats() )
+                chPos -= leftOffset(m_height);
+        }
+        child->setXPos(chPos);
 
         m_height += child->height();
 
@@ -432,7 +428,7 @@ bool RenderFlow::checkClear(RenderObject *child)
 void
 RenderFlow::insertPositioned(RenderObject *o)
 {
-    //kdDebug() << "RenderFlow::insertPositioned" << this<< isAnonymousBox() << " " << o << endl; 
+    //kdDebug() << "RenderFlow::insertPositioned" << this<< isAnonymousBox() << " " << o << endl;
     if(!specialObjects) {
         specialObjects = new QSortedList<SpecialObject>;
         specialObjects->setAutoDelete(true);
@@ -606,8 +602,8 @@ void RenderFlow::positionNewFloats()
                     }
                 }
             }
-        }        
-        
+        }
+
 //      kdDebug( 6040 ) << "specialObject y= (" << f->startY << "-" << f->endY << ")" << endl;
 
         f = specialObjects->next();
@@ -904,8 +900,6 @@ void RenderFlow::calcMinMaxWidth()
     // non breaking space
     const QChar nbsp = 0xa0;
 
-//    if(minMaxKnown()) return;
-
     m_minWidth = 0;
     m_maxWidth = 0;
 
@@ -929,7 +923,8 @@ void RenderFlow::calcMinMaxWidth()
 
                 if (child->isText() && static_cast<RenderText *>(child)->length() > 0)
                 {
-                    child->calcMinMaxWidth();
+//                    if(!child->minMaxKnown())
+                        child->calcMinMaxWidth();
                     bool hasNbsp=false;
                     RenderText* t = static_cast<RenderText *>(child);
                     if (t->data()[0] == nbsp) //inline starts with nbsp
@@ -1034,6 +1029,7 @@ void RenderFlow::calcMinMaxWidth()
     m_minWidth += toAdd;
     m_maxWidth += toAdd;
 
+//    setMinMaxKnown();
     // ### compare with min/max width set in style sheet...
 
 }
@@ -1051,16 +1047,7 @@ void RenderFlow::close()
     calcWidth();
     calcHeight();
 
-/*    if(!isInline() && m_childrenInline)
-    {
-        layout();
-    }
-    else
-    {
-        calcMinMaxWidth();
-    }*/
-
-calcMinMaxWidth();
+    calcMinMaxWidth();
 
     if(containingBlockWidth() < m_minWidth && m_parent)
         containingBlock()->updateSize();

@@ -76,8 +76,6 @@ public:
     virtual void calcMinMaxWidth();
     virtual void layout();
 
-    virtual bool isInline() const { return true; }
-
     HTMLGenericFormElementImpl *element() { return m_element; }
 
     void blur();

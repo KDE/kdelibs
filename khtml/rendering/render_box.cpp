@@ -227,13 +227,13 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
 
         int sx = 0;
         int sy = 0;
-          
-        
+
+
         //hacky stuff
         EBackgroundRepeat bgr = m_style->backgroundRepeat();
         if (isHtml() && firstChild())
             bgr = firstChild()->style()->backgroundRepeat();
-        
+
         //maybe here too?
         if( !m_style->backgroundAttachment() ) {
             //kdDebug(0) << "fixed background" << endl;
@@ -241,7 +241,7 @@ void RenderBox::printBackground(QPainter *p, const QColor &c, CachedImage *bg, i
             sx = _tx - r.x();
             sy = _ty - r.y();
 
-        }          
+        }
 
         switch(bgr) {
         case NO_REPEAT:
@@ -520,7 +520,7 @@ void RenderBox::calcWidth()
         Length mr = m_style->marginRight();
 
         int cw = containingBlockWidth();
-        
+
         if (cw<0) cw = 0;
 
         m_marginLeft = 0;
@@ -545,7 +545,7 @@ void RenderBox::calcWidth()
             m_marginLeft = ml.minWidth(cw);
             m_marginRight = mr.minWidth(cw);
             if (cw) m_width = cw - m_marginLeft - m_marginRight;
-            
+
 //          kdDebug( 6040 ) <<  m_width <<"," << cw <<"," <<
 //              m_marginLeft <<"," <<  m_marginRight << endl;
 

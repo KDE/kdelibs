@@ -42,6 +42,9 @@ using namespace khtml;
 RenderHR::RenderHR()
     : RenderReplaced()
 {
+    // init RenderObject attributes
+    m_inline = false;   // our object is not Inline
+
     m_printSpecial=false;
 }
 
@@ -54,7 +57,7 @@ void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
 {
     // add offset for relative positioning
     if(isRelPositioned())
-	relativePositionOffset(_tx, _ty);
+        relativePositionOffset(_tx, _ty);
 
 
     QColorGroup colorGrp( Qt::black, Qt::black, QColor(220,220,220), QColor(100,100,100),
@@ -64,29 +67,29 @@ void RenderHR::printReplaced(QPainter *p, int _tx, int _ty)
 
     RenderObject *prev = m_previous;
     while(prev && !prev->isFlow())
-	prev = prev->previousSibling();
+        prev = prev->previousSibling();
     if(prev && static_cast<RenderFlow *>(prev)->floatBottom() > prev->height() )
-	xp += static_cast<RenderFlow *>(prev)->leftOffset( prev->height() );
+        xp += static_cast<RenderFlow *>(prev)->leftOffset( prev->height() );
 
 
     int yp = _ty ;
 
     //kdDebug() << "tx = " << xp << " m_width = " << m_width << " length = " << length << endl;
-    
+
     switch(m_style->textAlign()) {
     case LEFT:
-	break;
+        break;
     case RIGHT:
-	xp += m_width - length;
-	break;
+        xp += m_width - length;
+        break;
     case JUSTIFY:
     case CENTER:
     case KONQ_CENTER:
-	//kdDebug() << "centered" << endl;
-	xp += (m_width - length)/2;
-	break;
+        //kdDebug() << "centered" << endl;
+        xp += (m_width - length)/2;
+        break;
     }
-    
+
     int lw = size/2;
 
     if ( shade )
@@ -107,7 +110,7 @@ void RenderHR::layout()
     calcMinMaxWidth();
     m_height = size+2;
     if( length == 0 )
-	length = m_width;
+        length = m_width;
     calcHeight();
     setLayouted(true);
 }
@@ -125,12 +128,12 @@ void RenderHR::calcMinMaxWidth()
     switch(w.type)
     {
     case Fixed:
-	m_minWidth = m_width;
-	break;
+        m_minWidth = m_width;
+        break;
     case Percent:
-	m_minWidth = 1;
+        m_minWidth = 1;
     default:
-	m_maxWidth = m_width;
+        m_maxWidth = m_width;
     }
 }
 
@@ -138,12 +141,12 @@ short RenderHR::intrinsicWidth() const
 {
     RenderObject *prev = m_previous;
     while(prev && !prev->isFlow())
-	prev = prev->previousSibling();
+        prev = prev->previousSibling();
     int w;
     if(prev && static_cast<RenderFlow *>(prev)->floatBottom() > prev->height() )
-	w = static_cast<RenderFlow *>(prev)->lineWidth( prev->height() );
+        w = static_cast<RenderFlow *>(prev)->lineWidth( prev->height() );
     else
-	w =containingBlockWidth();
+        w =containingBlockWidth();
     //kdDebug(0) << "renderHR::intrinsicWidth = " << w << endl;
     return w;
 }

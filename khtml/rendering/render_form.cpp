@@ -50,6 +50,9 @@ RenderFormElement::RenderFormElement(QScrollView *view,
                                      HTMLGenericFormElementImpl *element)
     : RenderWidget(view)
 {
+    // init RenderObject attributes
+    m_inline = true;   // our object is Inline
+
     m_element = element;
 }
 
@@ -283,7 +286,9 @@ void RenderSubmitButton::layout()
 {
     QString value = static_cast<HTMLInputElementImpl*>(m_element)->value().isNull() ?
         defaultLabel() : static_cast<HTMLInputElementImpl*>(m_element)->value().string();
-    static_cast<QPushButton*>(m_widget)->setText(value);
+    static_cast<PushButtonWidget*>(m_widget)->setText(value);
+    static_cast<PushButtonWidget*>(m_widget)->setFont(m_style->font());
+
     RenderButton::layout();
 }
 

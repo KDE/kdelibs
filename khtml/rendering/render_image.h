@@ -44,9 +44,7 @@ public:
 
     virtual const char *renderName() const { return "RenderImage"; }
 
-    virtual bool isInline() const { return m_style->display()==INLINE; }
     virtual bool isRendered() const { return true; }
-    virtual bool isReplaced() const { return true; }
 
     virtual void calcMinMaxWidth();
 
@@ -67,6 +65,9 @@ public:
 
     virtual short intrinsicWidth() const;
     virtual int intrinsicHeight() const;
+
+    // hook to keep RendeObject::m_inline() up to date
+    virtual void setStyle(RenderStyle *style);
 
 private:
     /*

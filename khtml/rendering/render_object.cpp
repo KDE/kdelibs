@@ -51,41 +51,41 @@ RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
     {
     case INLINE:
     case BLOCK:
-	o = new RenderFlow();
-	break;
+        o = new RenderFlow();
+        break;
     case LIST_ITEM:
-	o = new RenderListItem();
-	break;
+        o = new RenderListItem();
+        break;
     case RUN_IN:
     case COMPACT:
     case MARKER:
-	break;
+        break;
     case TABLE:
     case INLINE_TABLE:
-	// ### set inline/block right
-	//kdDebug( 6040 ) << "creating RenderTable" << endl;
-	o = new RenderTable();
-	break;
+        // ### set inline/block right
+        //kdDebug( 6040 ) << "creating RenderTable" << endl;
+        o = new RenderTable();
+        break;
     case TABLE_ROW_GROUP:
     case TABLE_HEADER_GROUP:
     case TABLE_FOOTER_GROUP:
-	o = new RenderTableSection();
-	break;
+        o = new RenderTableSection();
+        break;
     case TABLE_ROW:
-	o = new RenderTableRow();
-	break;
+        o = new RenderTableRow();
+        break;
     case TABLE_COLUMN_GROUP:
     case TABLE_COLUMN:
-	o = new RenderTableCol();
-	break;
+        o = new RenderTableCol();
+        break;
     case TABLE_CELL:
-	o = new RenderTableCell();
-	break;
+        o = new RenderTableCell();
+        break;
     case TABLE_CAPTION:
-	o = new RenderTableCaption();
-	break;
+        o = new RenderTableCaption();
+        break;
     case NONE:
-	return 0;
+        return 0;
     }
     if(o) o->setStyle(style);
     return o;
@@ -113,25 +113,28 @@ RenderObject::RenderObject()
     m_printSpecial = false;
     m_containsPositioned = false;
     m_isAnonymous = false;
+    m_isText = false;
+    m_inline = false;
+    m_replaced = false;
     m_visible = true;
-    
+
     m_bgImage = 0;
 }
 
 RenderObject::~RenderObject()
 {
     if(m_bgImage) m_bgImage->deref(this);
-    
+
     //kdDebug( 6090 ) << "RenderObject::~RenderObject this=" << this << endl;
     // previous and next node may still reference this!!!
     // hope this fix is fine...
-    
+
     if (m_parent)
     {
         //have parent, take care of the tree integrity
-                
+
         m_parent->removeChild(this);
-    
+
     } //if not, it is mass a deletion, just kill everyone
 
     RenderObject *n;
@@ -139,12 +142,12 @@ RenderObject::~RenderObject()
 
     for( n = m_first; n != 0; n = next )
     {
-	n->setParent(0); //zero the parent
-	next = n->nextSibling();
-	delete n;
+        n->setParent(0); //zero the parent
+        next = n->nextSibling();
+        delete n;
     }
 
-    
+
 }
 
 
@@ -160,84 +163,84 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
     bool needsTable = false;
 
     if(!newChild->isText()) {
-	switch(newChild->style()->display()) {
-	case INLINE:
-	case BLOCK:
-	case LIST_ITEM:
-	case RUN_IN:
-	case COMPACT:
-	case MARKER:
-	case TABLE:
-	case INLINE_TABLE:
-	    break;
-	case TABLE_COLUMN_GROUP:
-	case TABLE_COLUMN:
-	case TABLE_CAPTION:
-	case TABLE_ROW_GROUP:
-	case TABLE_HEADER_GROUP:
-	case TABLE_FOOTER_GROUP:
-	    //kdDebug( 6040 ) << "adding section" << endl;
-	    if ( !isTable() )
-		needsTable = true;
-	    break;
-	case TABLE_ROW:
-	    //kdDebug( 6040 ) << "adding row" << endl;
-	    if ( !isTableSection() )
-		needsTable = true;
-	    break;
-	case TABLE_CELL:
-	    //kdDebug( 6040 ) << "adding cell" << endl;
-	    if ( !isTableRow() )
-		needsTable = true;
-	    break;
-	case NONE:
-	    kdDebug( 6000 ) << "error in RenderObject::addChild()!!!!" << endl;
-	}
+        switch(newChild->style()->display()) {
+        case INLINE:
+        case BLOCK:
+        case LIST_ITEM:
+        case RUN_IN:
+        case COMPACT:
+        case MARKER:
+        case TABLE:
+        case INLINE_TABLE:
+            break;
+        case TABLE_COLUMN_GROUP:
+        case TABLE_COLUMN:
+        case TABLE_CAPTION:
+        case TABLE_ROW_GROUP:
+        case TABLE_HEADER_GROUP:
+        case TABLE_FOOTER_GROUP:
+            //kdDebug( 6040 ) << "adding section" << endl;
+            if ( !isTable() )
+                needsTable = true;
+            break;
+        case TABLE_ROW:
+            //kdDebug( 6040 ) << "adding row" << endl;
+            if ( !isTableSection() )
+                needsTable = true;
+            break;
+        case TABLE_CELL:
+            //kdDebug( 6040 ) << "adding cell" << endl;
+            if ( !isTableRow() )
+                needsTable = true;
+            break;
+        case NONE:
+            kdDebug( 6000 ) << "error in RenderObject::addChild()!!!!" << endl;
+        }
     }
 
     if ( needsTable ) {
-	RenderTable *table;
-	if( !beforeChild )
-	    beforeChild = lastChild();
-	if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTable() )
-	    table = static_cast<RenderTable *>(beforeChild);
-	else {
-//	    kdDebug( 6040 ) << "creating anonymous table" << endl;
-	    table = new RenderTable();
-	    RenderStyle *newStyle = new RenderStyle(m_style);
-	    newStyle->setDisplay(TABLE);
-	    table->setStyle(newStyle);
-	    table->setIsAnonymousBox(true);
-	    addChild(table, beforeChild);
-	}
-	table->addChild(newChild);
-	return;
+        RenderTable *table;
+        if( !beforeChild )
+            beforeChild = lastChild();
+        if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTable() )
+            table = static_cast<RenderTable *>(beforeChild);
+        else {
+//          kdDebug( 6040 ) << "creating anonymous table" << endl;
+            table = new RenderTable();
+            RenderStyle *newStyle = new RenderStyle(m_style);
+            newStyle->setDisplay(TABLE);
+            table->setStyle(newStyle);
+            table->setIsAnonymousBox(true);
+            addChild(table, beforeChild);
+        }
+        table->addChild(newChild);
+        return;
     }
 
     // just add it...
     newChild->setParent(this);
 
     if (!beforeChild) {
-	if(m_last)
-	{
-	    newChild->setPreviousSibling(m_last);
-	    m_last->setNextSibling(newChild);
-	    m_last = newChild;
-	}
-	else
-	{
-	    m_first = m_last = newChild;
-	}
+        if(m_last)
+        {
+            newChild->setPreviousSibling(m_last);
+            m_last->setNextSibling(newChild);
+            m_last = newChild;
+        }
+        else
+        {
+            m_first = m_last = newChild;
+        }
     }
     else {
-	if (beforeChild == m_first)
-	    m_first = newChild;
+        if (beforeChild == m_first)
+            m_first = newChild;
         RenderObject *newPrev = beforeChild->previousSibling();
-	newChild->setNextSibling(beforeChild);
-	beforeChild->setPreviousSibling(newChild);
+        newChild->setNextSibling(beforeChild);
+        beforeChild->setPreviousSibling(newChild);
 
-	if(newPrev) newPrev->setNextSibling(newChild);
-	newChild->setPreviousSibling(newPrev);
+        if(newPrev) newPrev->setNextSibling(newChild);
+        newChild->setPreviousSibling(newPrev);
 
     }
     newChild->calcWidth();
@@ -245,52 +248,52 @@ void RenderObject::addChild(RenderObject *newChild, RenderObject *beforeChild)
 
 void RenderObject::removeChild(RenderObject *oldChild)
 {
-    //kdDebug() << "RenderObject::removeChild" << endl; 
+    //kdDebug() << "RenderObject::removeChild" << endl;
     if (oldChild->previousSibling())
-	oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
+        oldChild->previousSibling()->setNextSibling(oldChild->nextSibling());
     if (oldChild->nextSibling())
-	oldChild->nextSibling()->setPreviousSibling(oldChild->previousSibling());
+        oldChild->nextSibling()->setPreviousSibling(oldChild->previousSibling());
 
     if (m_first == oldChild)
-	m_first = oldChild->nextSibling();
+        m_first = oldChild->nextSibling();
     if (m_last == oldChild)
-	m_last = oldChild->previousSibling();
+        m_last = oldChild->previousSibling();
 
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
-    
+
     setLayouted(false);
 }
 
 RenderObject *RenderObject::containingBlock() const
 {
     if(isTableCell()) {
-	return static_cast<const RenderTableCell *>(this)->table();
+        return static_cast<const RenderTableCell *>(this)->table();
     }
 
     RenderObject *o = parent();
     if(m_style->position() == FIXED) {
-	while ( o && !o->isRoot() )
-	    o = o->parent();
+        while ( o && !o->isRoot() )
+            o = o->parent();
     }
     else if(m_style->position() == ABSOLUTE) {
-	while (o && o->style()->position() == STATIC && !o->isHtml())
-	    o = o->parent();
+        while (o && o->style()->position() == STATIC && !o->isHtml())
+            o = o->parent();
     } else {
-	while(o && o->style()->display() == INLINE)
-	    o = o->parent();
+        while(o && o->style()->display() == INLINE)
+            o = o->parent();
     }
     // this is just to make sure we return a valid element.
     // the case below should never happen...
     if(!o) {
-	if(!isRoot()) {
-	    //assert ( false );
-	    kdDebug( 6040 ) << renderName() << "(RenderObject): No containingBlock!" << endl;
-	}
-	return const_cast<RenderObject *>(this);
+        if(!isRoot()) {
+            //assert ( false );
+            kdDebug( 6040 ) << renderName() << "(RenderObject): No containingBlock!" << endl;
+        }
+        return const_cast<RenderObject *>(this);
     } else
-	return o;
+        return o;
 }
 
 QSize RenderObject::containingBlockSize() const
@@ -299,12 +302,12 @@ QSize RenderObject::containingBlockSize() const
 
     if(m_style->position() == ABSOLUTE)
     {
-	if(o->isInline())
-	{
-	    // ### fixme
-	}
-	else
-	    return o->paddingSize();
+        if(o->isInline())
+        {
+            // ### fixme
+        }
+        else
+            return o->paddingSize();
     }
 
     return o->contentSize();
@@ -349,22 +352,22 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
     {
     case BNONE:
     case BHIDDEN:
-	return;
+        return;
     case DOTTED:
-	p->setPen(QPen(c, width, Qt::DotLine));
-	break;
+        p->setPen(QPen(c, width, Qt::DotLine));
+        break;
     case DASHED:
-	p->setPen(QPen(c, width, Qt::DashLine));
-	break;
+        p->setPen(QPen(c, width, Qt::DashLine));
+        break;
     case DOUBLE:
     case GROOVE:
     case RIDGE:
     case INSET:
     case OUTSET:
-	// ### don't treat them as solid
+        // ### don't treat them as solid
     case SOLID:
-	p->setPen(QPen(c, width, Qt::SolidLine));
-	break;
+        p->setPen(QPen(c, width, Qt::SolidLine));
+        break;
     }
 
     int half = width/2;
@@ -372,15 +375,15 @@ void RenderObject::drawBorder(QPainter *p, int x1, int y1, int x2, int y2, int w
     switch(s)
     {
     case BSTop:
-	y1 += half; y2 += half; break;
+        y1 += half; y2 += half; break;
     case BSBottom:
-	y1 -= half; y2 -= half; break;
+        y1 -= half; y2 -= half; break;
     case BSLeft:
-	x1 += half; x2 += half; break;
+        x1 += half; x2 += half; break;
     case BSRight:
-	x1 -= half; x2 -= half; break;
+        x1 -= half; x2 -= half; break;
     }
-	
+
     p->drawLine(x1, y1, x2, y2);
 }
 
@@ -405,25 +408,25 @@ void RenderObject::printTree(int indent) const
     QString ind;
     ind.fill(' ', indent);
     kdDebug( 6045 ) << ind << renderName() << ": " << (void*)this
-    	    	 << " il=" << isInline() << " ci=" << childrenInline()
+                 << " il=" << isInline() << " ci=" << childrenInline()
                  << " fl=" << isFloating() << " rp=" << isReplaced()
-		 << " an=" << isAnonymousBox()
-		 << " ps=" << isPositioned()
-		 << " cp=" << containsPositioned()
+                 << " an=" << isAnonymousBox()
+                 << " ps=" << isPositioned()
+                 << " cp=" << containsPositioned()
                  << " laytd=" << layouted()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
-    {    	
-	child->printTree(indent+2);
-	child = child->nextSibling();
+    {
+        child->printTree(indent+2);
+        child = child->nextSibling();
     }
 }
 
 void RenderObject::selectionStartEnd(int& spos, int& epos)
 {
     if (parent())
-    	parent()->selectionStartEnd(spos, epos);
+        parent()->selectionStartEnd(spos, epos);
 }
 
 void RenderObject::updateSize()
@@ -441,11 +444,11 @@ void RenderObject::setStyle(RenderStyle *style)
     if(m_bgImage) m_bgImage->ref(this);
 
     if( m_style->backgroundColor().isValid() || m_style->hasBorder() || m_bgImage )
-	m_printSpecial = true;
+        m_printSpecial = true;
 
     if( m_style->visiblity() == HIDDEN || m_style->visiblity() == COLLAPSE )
-	m_visible = false;
-    
+        m_visible = false;
+
     setMinMaxKnown(false);
     setLayouted(false);
 }
@@ -454,29 +457,29 @@ void RenderObject::setContainsPositioned(bool p)
 {
     if (p)
     {
-    	m_containsPositioned = true;
-    	if (containingBlock()!=this)
-    	    containingBlock()->setContainsPositioned(true);
+        m_containsPositioned = true;
+        if (containingBlock()!=this)
+            containingBlock()->setContainsPositioned(true);
     }
     else
     {
-	RenderObject *n;
-	bool c=false;
+        RenderObject *n;
+        bool c=false;
 
-	for( n = m_first; n != 0; n = n->nextSibling() )
-	{
-	    if (n->isPositioned() || n->containsPositioned())
-	    	c=true;
-	}
-	
-	if (c)
-	    return;
-	else
-	{
-	    m_containsPositioned = false;
-	    if (containingBlock()!=this)
-    	    	containingBlock()->setContainsPositioned(false);	
-	}
+        for( n = m_first; n != 0; n = n->nextSibling() )
+        {
+            if (n->isPositioned() || n->containsPositioned())
+                c=true;
+        }
+
+        if (c)
+            return;
+        else
+        {
+            m_containsPositioned = false;
+            if (containingBlock()!=this)
+                containingBlock()->setContainsPositioned(false);
+        }
     }
 }
 
@@ -499,9 +502,9 @@ QRect RenderObject::viewRect() const
 void RenderObject::absolutePosition(int &xPos, int &yPos)
 {
     if(m_parent)
-	m_parent->absolutePosition(xPos, yPos);
+        m_parent->absolutePosition(xPos, yPos);
     else
-	xPos = yPos = -1;
+        xPos = yPos = -1;
 }
 
 void RenderObject::cursorPos(int /*offset*/, int &_x, int &_y, int &height)

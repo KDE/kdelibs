@@ -26,11 +26,19 @@
 
 using namespace khtml;
 
+
+RenderReplaced::RenderReplaced()
+    : RenderBox()
+{
+    // init RenderObject attributes
+    m_replaced = true;
+}
+
 void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
-			    int _tx, int _ty)
+                            int _tx, int _ty)
 {
     if ( !m_visible )
-	return;
+        return;
 
     _tx += m_x;
    _ty += m_y;
@@ -43,7 +51,7 @@ void RenderReplaced::print( QPainter *p, int _x, int _y, int _w, int _h,
 
 
 RenderWidget::RenderWidget(QScrollView *view)
-	: RenderReplaced()
+        : RenderReplaced()
 {
     deleted = false;
     m_widget = 0;
@@ -66,9 +74,9 @@ RenderWidget::~RenderWidget()
 void RenderWidget::setQWidget(QWidget *widget)
 {
     if(m_widget) {
-	disconnect( m_widget, SIGNAL( destroyed()),
-		    this, SLOT( slotWidgetDestructed()));
-	delete m_widget;
+        disconnect( m_widget, SIGNAL( destroyed()),
+                    this, SLOT( slotWidgetDestructed()));
+        delete m_widget;
     }
     m_widget = widget;
     connect( m_widget, SIGNAL( destroyed()),
@@ -97,10 +105,10 @@ void RenderWidget::printReplaced(QPainter *, int _tx, int _ty)
 
     // add offset for relative positioning
     if(isRelPositioned())
-	relativePositionOffset(_tx, _ty);
+        relativePositionOffset(_tx, _ty);
 
     m_view->addChild(m_widget, _tx, _ty);
-    	
+
     if(!m_widget->isVisible())
         m_widget->show();
 }
@@ -111,22 +119,22 @@ short RenderWidget::verticalPositionHint() const
     switch(m_style->verticalAlign())
     {
     case BASELINE:
-	//kdDebug( 6040 ) << "aligned to baseline" << endl;
-	return (contentHeight() - QFontMetrics(m_style->font()).descent());
+        //kdDebug( 6040 ) << "aligned to baseline" << endl;
+        return (contentHeight() - QFontMetrics(m_style->font()).descent());
     case SUB:
-	// ###
+        // ###
     case SUPER:
-	// ###
+        // ###
     case TOP:
-	return PositionTop;
+        return PositionTop;
     case TEXT_TOP:
-	return QFontMetrics(m_style->font()).ascent();
+        return QFontMetrics(m_style->font()).ascent();
     case MIDDLE:
-	return -QFontMetrics(m_style->font()).width('x')/2;
+        return -QFontMetrics(m_style->font()).width('x')/2;
     case BOTTOM:
-	return PositionBottom;
+        return PositionBottom;
     case TEXT_BOTTOM:
-	return QFontMetrics(m_style->font()).descent();
+        return QFontMetrics(m_style->font()).descent();
     }
     return 0;
 }
@@ -134,17 +142,17 @@ short RenderWidget::verticalPositionHint() const
 short RenderWidget::intrinsicWidth() const
 {
     if (m_widget)
-	return m_widget->width();
+        return m_widget->width();
     else
-	return 0;
+        return 0;
 }
 
 int RenderWidget::intrinsicHeight() const
 {
     if (m_widget)
-	return m_widget->height();
+        return m_widget->height();
     else
-	return 0;
+        return 0;
 }
 
 

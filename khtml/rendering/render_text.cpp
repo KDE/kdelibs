@@ -47,8 +47,18 @@
 
 #include <assert.h>
 
+#define QT_ALLOC_QCHAR_VEC( N ) (QChar*) new char[ sizeof(QChar)*( N ) ]
+#define QT_DELETE_QCHAR_VEC( P ) delete[] ((char*)( P ))
+
 using namespace khtml;
 using namespace DOM;
+
+
+TextSlave::~TextSlave()
+{
+    if(deleteText)
+        QT_DELETE_QCHAR_VEC(m_text);
+}
 
 
 void TextSlave::print( QPainter *p, int _tx, int _ty)
@@ -197,8 +207,13 @@ bool TextSlave::checkPoint(int _x, int _y, int _tx, int _ty)
 RenderText::RenderText(DOMStringImpl *_str)
     : RenderObject()
 {
+    // init RenderObject attributes
+    m_isText = true;   // our object inherits from RenderText
+    m_inline = true;   // our object is Inline
+
     m_first = 0;
     m_last = 0;
+    //m_boundingHeight = 0;
     m_minWidth = -1;
     m_maxWidth = -1;
     str = _str;
@@ -212,7 +227,6 @@ RenderText::RenderText(DOMStringImpl *_str)
     QConstString cstr(str->s, str->l);
     kdDebug( 6040 ) << "RenderText::setText '" << (const char *)cstr.string().utf8() << "'" << endl;
 #endif
-
 }
 
 void RenderText::setStyle(RenderStyle *style)
@@ -241,6 +255,7 @@ void RenderText::deleteSlaves()
         s = next;
     }
     m_first = m_last = 0;
+    //m_boundingHeight = 0;
 }
 
 bool RenderText::checkPoint(int _x, int _y, int _tx, int _ty, int &offset)
@@ -339,22 +354,26 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     bool start = true;
 #ifndef BIDI_DEBUG
     if(m_printSpecial && m_parent->isInline())
-    {
 #endif
+    {
+        bool breakallowed = false;
         while(s)
         {
             bool end = false;
             if(!s->next()) end = true;
             if(s->checkVerticalPoint(y, ty, h))
+            {
+                breakallowed = true;
                 s->printBoxDecorations(p, this, tx, ty, start, end);
+            }
+            else if (breakallowed)
+                break;
+
             s=s->next();
             start = false;
         }
         s = m_first;
-#ifndef BIDI_DEBUG
     }
-#endif
-
 
     p->setFont( m_style->font() );
     //kdDebug( 6040 ) << "charset used: " << m_style->font().charSet() << endl;
@@ -362,10 +381,22 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     kdDebug( 6040 ) << "charset used: " << m_style->font().charSet() << " mapper: " << fm->mapper()->name() << endl;
 #endif
     p->setPen( m_style->color() );
+
+    // as the textslaves are ordered from top to bottom
+    // as soon as we find one that is "below" our
+    // printing range, we can quit
+    // ### better if textslaves are placed in a double linked list
+    bool breakallowed = false;
     while(s)
     {
         if(s->checkVerticalPoint(y, ty, h))
+        {
+            breakallowed = true;
             s->print(p, tx, ty);
+        }
+        else if(breakallowed)
+            break;
+
         s=s->next();
     }
 
@@ -374,10 +405,17 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     {
         p->setPen( m_style->textDecorationColor() );
         s = m_first;
+        bool breakallowed = false;
         while(s)
         {
             if(s->checkVerticalPoint(y, ty, h))
+            {
+                breakallowed = true;
                 s->printDecoration(p, tx, ty, d);
+            }
+            else if(breakallowed)
+                break;
+
             s=s->next();
         }
     }
@@ -406,10 +444,17 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
 //          kdDebug( 6040 ) << "selectionstartend start=" << startPos << " end=" << endPos << endl;
         }
 
+        breakallowed = false;
         while(s && endPos)
         {
             if(s->checkVerticalPoint(y, ty, h))
+            {
+                breakallowed = true;
                 s->printSelection(p, tx, ty, startPos, endPos);
+            }
+            else if(breakallowed)
+                break;
+
             int diff;
             if(s->next())
                 diff = s->next()->m_text - s->m_text;
@@ -422,21 +467,27 @@ void RenderText::printObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
         }
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
-      {
+    {
         if (hasKeyboardFocus==DOM::ActivationPassive)
           p->setPen(QColor("green"));
         else
           p->setPen(QColor("blue"));
         p->drawRect(tx+xPos(),ty+yPos(),width(0,length()), height());
         p->drawRect(tx+xPos()+1,ty+yPos()+1,width(0,length())-2, height()-2);
-      }
+    }
+#ifdef BIDI_DEBUG
+    p->setPen(QPen(QColor("#00CC00"), 1, Qt::DashLine));
+    p->setBrush( Qt::NoBrush );
+    p->drawRect(tx + boundingRect.x(), ty + boundingRect.y(), boundingRect.width(), boundingRect.height());
+#endif
 }
 
 void RenderText::print( QPainter *p, int x, int y, int w, int h,
                       int tx, int ty)
 {
-    if ( !m_visible )
+    if ( !m_visible /*|| !boundingRect.intersects(QRect(x-tx, y-ty, w, h))*/ )
         return;
+
     printObject(p, x, y, w, h, tx, ty);
 }
 
@@ -469,7 +520,6 @@ void RenderText::calcMinMaxWidth()
         wordlen--;
         if (wordlen)
         {
-            // DOH. this is slow. QConstString would be better
             int w = fm->width(QConstString(str->s+i, wordlen).string());
             currMinWidth += w;
             currMaxWidth += w;
@@ -591,7 +641,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
         kdDebug( 6040 ) << "reversing '" << (const char *)aStr.utf8() << "' len=" << aStr.length() << " oldlen=" << len << endl;
 #endif
         len = aStr.length();
-        ch = new QChar[len];
+        ch = QT_ALLOC_QCHAR_VEC(len);
         int half =  len/2;
         const QChar *s = aStr.unicode();
         for(int i = 0; i <= half; i++)
@@ -610,7 +660,7 @@ void RenderText::position(int x, int y, int from, int len, int width, bool rever
         QString aStr = QConstString(str->s+from, len).string();
         aStr.compose();
         len = aStr.length();
-        ch = new QChar[len];
+        ch = QT_ALLOC_QCHAR_VEC(len);
         const QChar *s = aStr.unicode();
         for( int i = 0; i < len; i++ ) {
             if( s[i].mirrored() )
@@ -656,10 +706,8 @@ unsigned int RenderText::width( int from, int len) const
     int w;
     if( len == 1)
         w = fm->width( *(str->s+from) );
-    else {
-        QString s = QConstString(str->s+from, len).string();
-        w = fm->width(s);
-    }
+    else
+        w = fm->width(QConstString(str->s+from, len).string());
 
     // ### add margins and support for RTL
 
@@ -687,3 +735,5 @@ bool RenderText::isFixedWidthFont() const
 {
     return QFontInfo(m_style->font()).fixedPitch();
 }
+
+#undef BIDI_DEBUG

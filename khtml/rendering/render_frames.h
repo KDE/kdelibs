@@ -43,7 +43,7 @@ class RenderFrameSet : public RenderBox
 {
 public:
   RenderFrameSet( DOM::HTMLFrameSetElementImpl *frameSet, KHTMLView *view,
-		  QList<khtml::Length> *rows, QList<khtml::Length> *cols );
+                  QList<khtml::Length> *rows, QList<khtml::Length> *cols );
 
   virtual ~RenderFrameSet();
 
@@ -52,8 +52,6 @@ public:
   virtual void layout();
 
   void positionFrames( );
-
-  virtual bool isInline() const { return false; }
 
   bool resizing() const { return m_resizing; }
 
@@ -66,19 +64,18 @@ private:
 
   QList<khtml::Length> *m_rows;
   QList<khtml::Length> *m_cols;
+  KHTMLView *m_view;
   int *m_rowHeight;
   int *m_colWidth;
+  bool *m_hSplitVar; // is this split variable?
+  bool *m_vSplitVar;
 
   int m_hSplit;     // the split currently resized
   int m_vSplit;
   int m_hSplitPos;
   int m_vSplitPos;
-  bool *m_hSplitVar; // is this split variable?
-  bool *m_vSplitVar;
 
   bool m_resizing;
-
-  KHTMLView *m_view;
 };
 
 class RenderPart : public RenderWidget
@@ -88,8 +85,6 @@ public:
   virtual ~RenderPart();
 
   virtual const char *renderName() const { return "RenderPart"; }
-
-  virtual bool isInline() const { return false; }
 
   virtual void layout();
 
@@ -112,7 +107,7 @@ public:
 public slots:
     void slotViewCleared();
     void slotWidgetDestructed();
-    
+
 private:
   DOM::HTMLFrameElementImpl *m_frame;
 };
@@ -130,9 +125,6 @@ public:
   virtual void close();
 
   virtual void setWidget( QWidget *widget );
-
-  virtual bool isInline() const;
-
   virtual void setSize( int w, int h );
 
   virtual void layout( );

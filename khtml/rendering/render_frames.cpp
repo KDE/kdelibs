@@ -46,6 +46,9 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet, KHTMLView *vi
                                 QList<khtml::Length> *rows, QList<khtml::Length> *cols )
 : RenderBox()
 {
+  // init RenderObject attributes
+  m_inline = false;   // our object is not Inline
+
   m_frameset = frameSet;
 
   m_rows = rows;
@@ -113,7 +116,7 @@ void RenderFrameSet::layout( )
 
     if(m_rows)
     {
-	kdDebug(6040) << "more than one row!!!" << endl;
+        kdDebug(6040) << "more than one row!!!" << endl;
         for(i = 0; i< m_frameset->totalRows(); i++)
         {
             kdDebug( 6031 ) << "setting row " << i << endl;
@@ -305,7 +308,7 @@ void RenderFrameSet::positionFrames()
     {
     //      HTMLElementImpl *e = static_cast<HTMLElementImpl *>(child);
       child->setPos( xPos, yPos );
-      kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_colWidth[c] << "/" << m_rowHeight[r] << ")" << endl; 
+      kdDebug(6040) << "child frame at (" << xPos << "/" << yPos << ") size (" << m_colWidth[c] << "/" << m_rowHeight[r] << ")" << endl;
       child->setSize( m_colWidth[c], m_rowHeight[r] );
 
       child->layout( );
@@ -431,6 +434,9 @@ bool RenderFrameSet::userResize( int _x, int _y, DOM::NodeImpl::MouseEventType t
 RenderPart::RenderPart( QScrollView *view )
 : RenderWidget( view )
 {
+  // init RenderObject attributes
+  m_inline = false;   // our object is not Inline
+
   m_view = view;
 }
 
@@ -472,7 +478,7 @@ void RenderFrame::setWidget( QWidget *widget )
     slotViewCleared();
 
     if(widget->inherits("KHTMLView"))
-	connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
+        connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
 }
 
 void RenderFrame::slotViewCleared()
@@ -490,7 +496,7 @@ void RenderFrame::slotViewCleared()
             if(m_frame->marginWidth != -1) htmlView->setMarginWidth(m_frame->marginWidth);
             if(m_frame->marginHeight != -1) htmlView->setMarginHeight(m_frame->marginHeight);
         }
-    }    
+    }
 }
 
 void RenderFrame::slotWidgetDestructed()
@@ -503,7 +509,10 @@ void RenderFrame::slotWidgetDestructed()
 RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
 : RenderPart( view )
 {
-   m_obj = o;
+  // init RenderObject attributes
+  m_inline = true;   // our object is Inline
+
+  m_obj = o;
 }
 
 RenderPartObject::~RenderPartObject()
@@ -618,7 +627,7 @@ void RenderPartObject::close()
 void RenderPartObject::setWidget( QWidget *w )
 {
     if(w->inherits("KHTMLView"))
-	connect( w, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
+        connect( w, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
 
     if ( w && m_width == 0 && m_height == 0 ) {
       QSize hint = w->sizeHint();
@@ -628,11 +637,6 @@ void RenderPartObject::setWidget( QWidget *w )
   }
 
   RenderPart::setWidget( w );
-}
-
-bool RenderPartObject::isInline() const
-{
-  return true;
 }
 
 void RenderPartObject::setSize( int w, int h )

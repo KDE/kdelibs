@@ -44,23 +44,23 @@ static QString toRoman( int number, bool upper )
 
     do
     {
-	int num = number % 10;
+        int num = number % 10;
 
-	if ( num % 5 < 4 )
-	    for ( i = num % 5; i > 0; i-- )
-		roman.insert( 0, digits[ d ] );
+        if ( num % 5 < 4 )
+            for ( i = num % 5; i > 0; i-- )
+                roman.insert( 0, digits[ d ] );
 
-	if ( num >= 4 && num <= 8)
-	    roman.insert( 0, digits[ d+1 ] );
+        if ( num >= 4 && num <= 8)
+            roman.insert( 0, digits[ d+1 ] );
 
-	if ( num == 9 )
-	    roman.insert( 0, digits[ d+2 ] );
+        if ( num == 9 )
+            roman.insert( 0, digits[ d+2 ] );
 
-	if ( num % 5 == 4 )
-	    roman.insert( 0, digits[ d ] );
+        if ( num % 5 == 4 )
+            roman.insert( 0, digits[ d ] );
 
-	number /= 10;
-	d += 2;
+        number /= 10;
+        d += 2;
     }
     while ( number );
 
@@ -72,6 +72,9 @@ static QString toRoman( int number, bool upper )
 RenderListItem::RenderListItem()
     : RenderFlow()
 {
+    // init RenderObject attributes
+    m_inline = false;   // our object is not Inline
+
     predefVal = -1;
     m_marker = 0;
 }
@@ -85,11 +88,11 @@ void RenderListItem::setStyle(RenderStyle *style)
        else
            newStyle->setFloating(FRIGHT);
        if(!m_marker) {
-	m_marker = new RenderListMarker();
-	m_marker->setStyle(newStyle);
-	addChild(m_marker);
+        m_marker = new RenderListMarker();
+        m_marker->setStyle(newStyle);
+        addChild(m_marker);
     } else {
-	m_marker->setStyle(newStyle);
+        m_marker->setStyle(newStyle);
     }
 }
 
@@ -100,18 +103,18 @@ RenderListItem::~RenderListItem()
 void RenderListItem::calcListValue()
 {
     if(predefVal != -1)
-	m_marker->val = predefVal;
+        m_marker->val = predefVal;
     else if(!m_previous)
-	m_marker->val = 1;
+        m_marker->val = 1;
     else
     {
-	if( m_previous && m_previous->isListItem() && m_previous->style()->listStyleType() != LNONE )
-	{
-	    RenderListItem *item = static_cast<RenderListItem *>(m_previous);
-	    m_marker->val = item->value() + 1;
-	}
-	else
-	    m_marker->val = 1;
+        if( m_previous && m_previous->isListItem() && m_previous->style()->listStyleType() != LNONE )
+        {
+            RenderListItem *item = static_cast<RenderListItem *>(m_previous);
+            m_marker->val = item->value() + 1;
+        }
+        else
+            m_marker->val = 1;
     }
 }
 
@@ -119,9 +122,9 @@ void RenderListItem::calcListValue()
 void RenderListItem::layout( )
 {
     if ( !checkChildren() ) {
-	m_height = 0;
-	//kdDebug(0) << "empty item" << endl;
-	return;
+        m_height = 0;
+        //kdDebug(0) << "empty item" << endl;
+        return;
     }
     calcListValue();
     m_marker->layout();
@@ -134,39 +137,39 @@ bool RenderListItem::checkChildren() const
 {
     //kdDebug(0) << " checkCildren" << endl;
     if(!m_first)
-	return false;
+        return false;
     RenderObject *o = m_first;
     while(o->firstChild())
-	o = o->firstChild();
+        o = o->firstChild();
     while (!o->nextSibling() && o->parent() != static_cast<const RenderObject*>(this))
-	o = o->parent();
+        o = o->parent();
     o = o->nextSibling();
     while( o ) {
-	//kdDebug(0) << "checking " << renderName() << endl;
-	if ( o->isText() || o->isReplaced() ) {
-	    //kdDebug(0) << "found" << endl;
-	    return true;
-	}
-	RenderObject *next = o->firstChild();
-	if ( !next )
-	    next = o->nextSibling();
-	while ( !next && o->parent() != static_cast<const RenderObject*>(this) ) {
-	    o = o->parent();
-	    next =  o->nextSibling();
-	}
-	if( !next )
-	    break;
-	o = next;
+        //kdDebug(0) << "checking " << renderName() << endl;
+        if ( o->isText() || o->isReplaced() ) {
+            //kdDebug(0) << "found" << endl;
+            return true;
+        }
+        RenderObject *next = o->firstChild();
+        if ( !next )
+            next = o->nextSibling();
+        while ( !next && o->parent() != static_cast<const RenderObject*>(this) ) {
+            o = o->parent();
+            next =  o->nextSibling();
+        }
+        if( !next )
+            break;
+        o = next;
     }
     //kdDebug(0) << "not found" << endl;
     return false;
 }
 
 void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
-			     int _tx, int _ty)
+                             int _tx, int _ty)
 {
     if ( !m_height )
-	return;
+        return;
 
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << nodeName().string() << "(LI)::print()" << endl;
@@ -175,7 +178,7 @@ void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
 }
 
 void RenderListItem::printObject(QPainter *p, int _x, int _y,
-				    int _w, int _h, int _tx, int _ty)
+                                    int _w, int _h, int _tx, int _ty)
 {
     // ### this should scale with the font size in the body... possible?
     //m_marker->printIcon(p, _tx, _ty);
@@ -187,6 +190,10 @@ void RenderListItem::printObject(QPainter *p, int _x, int _y,
 RenderListMarker::RenderListMarker()
     : RenderBox()
 {
+    // init RenderObject attributes
+    m_inline = true;   // our object is Inline
+    m_replaced = true; // pretend to be replaced
+
     val = -1;
     listImage = 0;
 }
@@ -194,7 +201,7 @@ RenderListMarker::RenderListMarker()
 RenderListMarker::~RenderListMarker()
 {
     if(listImage)
-	listImage->deref(this);
+        listImage->deref(this);
     delete m_style;
 }
 
@@ -203,24 +210,24 @@ void RenderListMarker::setStyle(RenderStyle *s)
     RenderBox::setStyle(s);
 
     if(listImage)
-	listImage->deref(this);
+        listImage->deref(this);
     listImage = m_style->listStyleImage();
     if(listImage)
-	listImage->ref(this);
+        listImage->ref(this);
 }
 
 
 void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
-			     int _tx, int _ty)
+                             int _tx, int _ty)
 {
     printObject(p, _x, _y, _w, _h, _tx, _ty);
 }
 
 void RenderListMarker::printObject(QPainter *p, int, int,
-				    int, int, int _tx, int _ty)
+                                    int, int, int _tx, int _ty)
 {
     if( !m_visible )
-	return;
+        return;
 #ifdef DEBUG_LAYOUT
 
         kdDebug( 6040 ) << nodeName().string() << "(ListMarker)::printObject(" << _tx << ", " << _ty << ")" << endl;
@@ -241,14 +248,14 @@ void RenderListMarker::printObject(QPainter *p, int, int,
     int yoff = fm.ascent() - offset;
 
     if(m_style->listStylePosition() != INSIDE) {
-	xoff = -7 - offset;
-	if(m_style->direction() == RTL)
-	    xoff = -xoff + m_parent->width();
+        xoff = -7 - offset;
+        if(m_style->direction() == RTL)
+            xoff = -xoff + m_parent->width();
     }
 
     if ( listImage ) {
-	p->drawPixmap( QPoint( _tx + xoff, _ty ), listImage->pixmap());
- 	return;
+        p->drawPixmap( QPoint( _tx + xoff, _ty ), listImage->pixmap());
+        return;
     }
 
     QColor color( style()->color() );
@@ -256,40 +263,40 @@ void RenderListMarker::printObject(QPainter *p, int, int,
 
     switch(m_style->listStyleType()) {
     case DISC:
-	p->setBrush( QBrush( color ) );
-	p->drawEllipse( _tx + xoff, _ty + yoff, offset, offset );
-	return;
+        p->setBrush( QBrush( color ) );
+        p->drawEllipse( _tx + xoff, _ty + yoff, offset, offset );
+        return;
     case CIRCLE:
-	p->setBrush( QBrush( color ) );
-	p->drawArc( _tx + xoff, _ty + yoff, offset, offset, 0, 16*360 );
-	return;
+        p->setBrush( QBrush( color ) );
+        p->drawArc( _tx + xoff, _ty + yoff, offset, offset, 0, 16*360 );
+        return;
     case SQUARE:
     {
-	int xp = _tx + xoff;
-	int yp = _ty + fm.ascent() - offset + 1;
-	p->setBrush( QBrush( color ) );
-	QCOORD points[] = { xp,yp, xp+offset,yp, xp+offset,yp+offset, xp,yp+offset, xp,yp };
-	QPointArray a( 5, points );
-	p->drawPolyline( a );
-	return;
+        int xp = _tx + xoff;
+        int yp = _ty + fm.ascent() - offset + 1;
+        p->setBrush( QBrush( color ) );
+        QCOORD points[] = { xp,yp, xp+offset,yp, xp+offset,yp+offset, xp,yp+offset, xp,yp };
+        QPointArray a( 5, points );
+        p->drawPolyline( a );
+        return;
     }
     case LNONE:
-	    return;
+            return;
     default:
-	if(item != QString::null) {
-	    //_ty += fm.ascent() - fm.height()/2 + 1;
-	    if(m_style->listStylePosition() == INSIDE) {
-		if(m_style->direction() == LTR)
-		    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
-		else
-		    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
-	    } else {
-		if(m_style->direction() == LTR)
-		    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
-		else
-		    p->drawText(_tx+offset/2 + m_parent->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
-	    }
-	}
+        if(item != QString::null) {
+            //_ty += fm.ascent() - fm.height()/2 + 1;
+            if(m_style->listStylePosition() == INSIDE) {
+                if(m_style->direction() == LTR)
+                    p->drawText(_tx, _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
+                else
+                    p->drawText(_tx, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
+            } else {
+                if(m_style->direction() == LTR)
+                    p->drawText(_tx-offset/2, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
+                else
+                    p->drawText(_tx+offset/2 + m_parent->width(), _ty, 0, 0, Qt::AlignLeft|Qt::DontClip, item);
+            }
+        }
     }
 }
 
@@ -308,14 +315,14 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
     }
 
     if(o != listImage)
-	RenderBox::setPixmap(p, r, o);
+        RenderBox::setPixmap(p, r, o);
 
     if(m_width != listImage->pixmap_size().width() || m_height != listImage->pixmap_size().height())
     {
-	setLayouted(false);
-	setMinMaxKnown(false);
-	layout();
-	// the updateSize() call should trigger a repaint too
+        setLayouted(false);
+        setMinMaxKnown(false);
+        layout();
+        // the updateSize() call should trigger a repaint too
         if (manualUpdate)
         {
             *manualUpdate = true;
@@ -323,12 +330,12 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
         else
         {
             updateSize();
-	    repaintRectangle(0, 0, m_width, m_height); //should not be needed!
+            repaintRectangle(0, 0, m_width, m_height); //should not be needed!
         }
     }
     else
     {
-	repaintRectangle(0, 0, m_width, m_height);
+        repaintRectangle(0, 0, m_width, m_height);
     }
 }
 
@@ -337,10 +344,10 @@ void RenderListMarker::calcMinMaxWidth()
     m_width = 0;
 
     if(listImage) {
-	if(m_style->listStylePosition() == INSIDE)
-	    m_width = listImage->pixmap().width() + 5;
-	m_height = listImage->pixmap().height();
-	return;
+        if(m_style->listStylePosition() == INSIDE)
+            m_width = listImage->pixmap().width() + 5;
+        m_height = listImage->pixmap().height();
+        return;
     }
 
     switch(m_style->listStyleType())
@@ -349,13 +356,13 @@ void RenderListMarker::calcMinMaxWidth()
     case CIRCLE:
     case SQUARE:
     {
-	QFontMetrics fm(m_style->font());
-	if(m_style->listStylePosition() == INSIDE) {
-	    m_width = fm.ascent();
-	}
-	else
-	    m_width = 0;
-	m_height = fm.ascent();
+        QFontMetrics fm(m_style->font());
+        if(m_style->listStylePosition() == INSIDE) {
+            m_width = fm.ascent();
+        }
+        else
+            m_width = 0;
+        m_height = fm.ascent();
     }
     goto end;
     case HEBREW:
@@ -367,38 +374,38 @@ void RenderListMarker::calcMinMaxWidth()
     case HIRAGANA_IROHA:
     case KATAKANA_IROHA:
     case DECIMAL_LEADING_ZERO:
-	// ### unsupported, we use decimal instead
+        // ### unsupported, we use decimal instead
     case LDECIMAL:
-	item.sprintf( "%2ld", val );
-	break;
+        item.sprintf( "%2ld", val );
+        break;
     case LOWER_ROMAN:
-	item = toRoman( val, false );
-	break;
+        item = toRoman( val, false );
+        break;
     case UPPER_ROMAN:
-	item = toRoman( val, true );
-	break;
+        item = toRoman( val, true );
+        break;
     case LOWER_GREEK:
-	// ### unsupported, use low-alpha instead
+        // ### unsupported, use low-alpha instead
     case LOWER_ALPHA:
     case LOWER_LATIN:
-	item = (QChar) ((int)('a' + val - 1));
-	break;
+        item = (QChar) ((int)('a' + val - 1));
+        break;
     case UPPER_ALPHA:
     case UPPER_LATIN:
-	item = (QChar) ((int)('A' + val - 1));
-	break;
+        item = (QChar) ((int)('A' + val - 1));
+        break;
     case LNONE:
-	break;
+        break;
     }
     item += QString::fromLatin1(". ");
 
     {
-	QFontMetrics fm(m_style->font());
-	if(m_style->listStylePosition() != INSIDE)
-	    m_width = 0;
-	else 
-	    m_width = fm.width(item);
-	m_height = fm.ascent();
+        QFontMetrics fm(m_style->font());
+        if(m_style->listStylePosition() != INSIDE)
+            m_width = 0;
+        else
+            m_width = fm.width(item);
+        m_height = fm.ascent();
     }
  end:
 

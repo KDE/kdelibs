@@ -42,27 +42,25 @@ class TextSlave
 public:
     TextSlave(int _x, int _y, QChar *text, int _len,
               int height, int baseline, int width, bool _deleteText = false)
-        {
-            x = _x;
-            y = _y;
-            m_text = text;
-            len = _len;
-            n = 0;
-            m_height = height;
-            m_baseline = baseline;
-            m_width = width;
-            deleteText = _deleteText;
-        }
-    ~TextSlave() { if(deleteText) delete [] m_text; }
-
+    {
+        x = _x;
+        y = _y;
+        m_text = text;
+        len = _len;
+        n = 0;
+        m_height = height;
+        m_baseline = baseline;
+        m_width = width;
+        deleteText = _deleteText;
+    }
+    ~TextSlave();
     void print( QPainter *p, int _tx, int _ty);
     void printDecoration( QPainter *p, int _tx, int _ty, int decoration);
     void printBoxDecorations(QPainter *p, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     bool checkPoint(int _x, int _y, int _tx, int _ty);
     bool checkVerticalPoint(int _y, int _ty, int _h)
-{ if((_ty + y > _y + _h) || (_ty + y + m_height < _y)) return false; return true; }
+    { if((_ty + y > _y + _h) || (_ty + y + m_height < _y)) return false; return true; }
     void printSelection(QPainter *p, int tx, int ty, int startPos, int endPos);
-
 
     void setNext(TextSlave *_n) { n = _n; }
     TextSlave *next() { return n; }
@@ -82,7 +80,6 @@ public:
     bool deleteText;
 };
 
-
 class RenderText : public RenderObject
 {
 public:
@@ -93,8 +90,6 @@ public:
 
     virtual void setStyle(RenderStyle *style);
 
-    virtual bool isText() const { return true; }
-    virtual bool isInline() const { return true; }
     virtual bool isRendered() const { return true; }
 
     virtual void print( QPainter *, int x, int y, int w, int h,
@@ -160,6 +155,7 @@ protected:
     TextSlave *m_first;
     TextSlave *m_last;
 
+    //int m_boundingHeight;
     int m_contentHeight;
     short m_minWidth;
     short m_maxWidth;

@@ -46,7 +46,7 @@ public:
     virtual void setStyle(RenderStyle *style);
 
     virtual void print(QPainter *p, int _x, int _y, int _w, int _h,
-		       int _tx, int _ty);
+                       int _tx, int _ty);
 
     virtual void updateSize();
     virtual void updateHeight();
@@ -108,10 +108,10 @@ public:
 
 protected:
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,
-				       int _w, int _h, int _tx, int _ty);
+                                       int _w, int _h, int _tx, int _ty);
     void printBackground(QPainter *p, const QColor &c, CachedImage *bg, int clipy, int cliph, int _tx, int _ty, int w, int h);
     void printBorder(QPainter *p, int _tx, int _ty, int w, int h);
-    
+
     void outlineBox(QPainter *p, int _tx, int _ty, const char *color = "red");
 
     virtual int borderTopExtra() { return 0; }
@@ -123,6 +123,21 @@ protected:
     void calcAbsoluteVertical();
 
     void calcHorizontalMargins(const Length& ml, const Length& mr, int cw);
+
+    // the actual height of the contents + borders + padding
+    int m_height;
+
+    int m_y;
+    short m_x;
+
+    // the actual width of the contents + borders + padding
+    short m_width;
+
+    short m_marginTop;
+    short m_marginBottom;
+    short m_marginLeft;
+    short m_marginRight;
+
     /*
      * the minimum width the element needs, to be able to render
      * it's content without clipping
@@ -132,19 +147,6 @@ protected:
      * ( = the width of the element with line breaking disabled)
      */
     short m_maxWidth;
-
-    short m_x;
-    int m_y;
-
-    short m_marginTop;
-    short m_marginBottom;
-    short m_marginLeft;
-    short m_marginRight;
-
-    // the actual width of the contents + borders + padding
-    short m_width;
-    // the actual height of the contents + borders + padding
-    int m_height;
 };
 
 

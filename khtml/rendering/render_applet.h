@@ -42,10 +42,6 @@ public:
 
     virtual const char *renderName() const { return "RenderApplet"; }
 
-    virtual bool isInline() const { return true; }
-
-    virtual bool isReplaced() const { return true; }
-
     virtual void layout();
 
 private:
@@ -61,10 +57,6 @@ public:
   RenderEmptyApplet(QScrollView *view, QSize sz);
 
   virtual const char *renderName() const { return "RenderEmptyApplet"; }
-
-  virtual bool isInline() const { return true; }
-
-  virtual bool isReplaced() const { return true; }
 
   virtual void layout() {};
 };

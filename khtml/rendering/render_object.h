@@ -83,15 +83,10 @@ public:
     /**
      * is an Element that should be floated in the textstream
      */
-    virtual bool isInline() const = 0;
     virtual bool childrenInline() const { return false; }
     virtual bool isRendered() const { return false; }
-    virtual bool isText() const { return false; }
     virtual bool isFlow() const { return false; }
-    /**
-     * is a "replaced" element (see CSS specs for details)
-     */
-    virtual bool isReplaced() const { return false; }
+
     virtual bool isListItem() const { return false; }
     virtual bool isRoot() const { return false; }
     virtual bool isBR() const { return false; }
@@ -104,9 +99,13 @@ public:
     bool isAnonymousBox() const { return m_isAnonymous; }
     void setIsAnonymousBox(bool b) { m_isAnonymous = b; }
 
-    inline bool isFloating() const { return m_floating; }
+    bool isFloating() const { return m_floating; }
     bool isPositioned() const { return m_positioned; } // absolute or fixed positioning
     bool isRelPositioned() const { return m_relPositioned; } // relative positioning
+    bool isText() const  { return m_isText; }   // inherits RenderText
+    bool isInline() const { return m_inline; }  // inline object
+    bool isReplaced() const { return m_replaced; } // a "replaced" element (see CSS)
+
     bool layouted() const   { return m_layouted; }
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
@@ -364,8 +363,12 @@ protected:
     bool m_containsPositioned     : 1;
     bool m_relPositioned  : 1;
     bool m_printSpecial   : 1; // if the box has something special to print (background, border, etc)
+
     bool m_isAnonymous    : 1;
-    bool m_visible : 1;
+    bool m_visible        : 1;
+    bool m_isText         : 1;
+    bool m_inline         : 1;
+    bool m_replaced       : 1;
 };
 
 

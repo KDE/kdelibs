@@ -41,7 +41,6 @@ public:
     virtual const char *renderName() const { return "RenderRoot"; }
 
     virtual bool isRendered() const { return true; }
-    virtual bool isInline() const { return false; }
     virtual bool isRoot() const { return true; }
 
     virtual void layout();
@@ -51,7 +50,7 @@ public:
     virtual void updateSize();
     virtual void updateHeight();
     virtual void close();
-    
+
     int docHeight() const;
     int docWidth() const;
 
@@ -62,7 +61,7 @@ public:
     virtual void repaintObject(RenderObject *o, int x, int y);
     virtual void print( QPainter *, int x, int y, int w, int h, int tx, int ty);
     void printObject(QPainter *p, int _x, int _y,
-		     int _w, int _h, int _tx, int _ty);
+                     int _w, int _h, int _tx, int _ty);
 
     virtual void setSelection(RenderObject *s, int sp, RenderObject *e, int ep);
     virtual void clearSelection();

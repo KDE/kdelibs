@@ -39,9 +39,6 @@ namespace khtml {
  * one needs to know the whole paragraph to calculate bidirectional
  * behaviour of text, so putting the layouting routines in the inline
  * elements is impossible.
- *
- * not that BiDi is implemented at the moment, but we want to keep the
- * possibility.
  */
 class RenderFlow : public RenderBox
 {
@@ -55,7 +52,6 @@ public:
 
     virtual void setStyle(RenderStyle *style);
 
-    virtual bool isInline() const { return m_inline; }
     virtual bool isFlow() const { return true; }
     virtual bool childrenInline() const { return m_childrenInline; }
     virtual bool isRendered() const { return true; }
@@ -166,11 +162,10 @@ protected:
     QSortedList<SpecialObject>* specialObjects;
 
 private:
-    bool m_inline         : 1;
     bool m_childrenInline : 1;
     bool m_haveAnonymous  : 1;
     bool m_pre            : 1;
-    bool firstLine      : 1; // used in inline layouting
+    bool firstLine        : 1; // used in inline layouting
     EClear m_clearStatus  : 2; // used during layuting of paragraphs
 };
 

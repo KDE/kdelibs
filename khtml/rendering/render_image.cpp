@@ -52,6 +52,14 @@ RenderImage::~RenderImage()
     if(image) image->deref(this);
 }
 
+void RenderImage::setStyle(RenderStyle* style)
+{
+    RenderReplaced::setStyle(style);
+
+    // init RenderObject attributes
+    m_inline = ( m_style->display()==INLINE );
+}
+
 void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
 {
     if(o != image) {
@@ -141,7 +149,7 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
             //scaling does not work if w or h is 1
             if (scaledrect.width()==1) scaledrect.setWidth(2);
             if (scaledrect.height()==1) scaledrect.setHeight(2);
-                        
+
             if (resizeCache.isNull() || image->valid_rect().size() != resizeCache.size())
             {
                 QWMatrix matrix;

@@ -49,6 +49,9 @@ RenderApplet::RenderApplet(QScrollView *view,
                            QMap<QString, QString> args, HTMLElementImpl *applet)
     : RenderWidget(view)
 {
+    // init RenderObject attributes
+    m_inline = true;   // our object is Inline
+
     if( context == 0 ) {
         context = new KJavaAppletContext();
         context_counter = 0;
@@ -126,16 +129,19 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
 RenderEmptyApplet::RenderEmptyApplet(QScrollView *view, QSize sz)
   : RenderWidget( view )
 {
-  setQWidget(
-    new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"),
-               view->viewport())
-	);
+    // init RenderObject attributes
+    m_inline = true;   // our object is Inline
 
-  ((QLabel*)m_widget)->setAlignment( Qt::AlignCenter );
+    setQWidget(
+        new QLabel(i18n("Java Applet is not loaded. (Java interpreter disabled)"),
+                   view->viewport())
+        );
 
-  m_width = sz.width();
-  m_minWidth = m_maxWidth = m_width;
-  m_height = sz.height();
-  m_widget->resize( sz );
+    ((QLabel*)m_widget)->setAlignment( Qt::AlignCenter );
+
+    m_width = sz.width();
+    m_minWidth = m_maxWidth = m_width;
+    m_height = sz.height();
+    m_widget->resize( sz );
 }
 
