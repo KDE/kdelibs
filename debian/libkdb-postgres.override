@@ -1,1 +1,2 @@
-libkdb-postgres: shlib-missing-in-control-file libkdb_postgres.so usr/lib/libkdb_postgres.so
+libkdb-postgres: no-shlibs-control-file usr/lib/libkdb_postgres.so
+libkdb-postgres: postinst-must-call-ldconfig usr/lib/libkdb_postgres.so
