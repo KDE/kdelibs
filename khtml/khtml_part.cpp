@@ -2346,7 +2346,9 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( button == LeftButton && ( state & ShiftButton ) )
   {
-    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As..." ), cURL );
+    KIO::MetaData metaData;
+    metaData["referrer"] = d->m_referrer;
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As..." ), cURL, metaData );
     return;
   }
 
@@ -2456,7 +2458,9 @@ void KHTMLPart::slotSaveBackground()
 
   KURL backgroundURL( m_url, relURL );
 
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n("Save background image as"), backgroundURL );
+  KIO::MetaData metaData;
+  metaData["referrer"] = d->m_referrer;
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n("Save background image as"), backgroundURL, metaData );
 }
 
 void KHTMLPart::slotSaveDocument()
@@ -2466,7 +2470,9 @@ void KHTMLPart::slotSaveDocument()
   if ( srcURL.fileName(false).isEmpty() )
     srcURL.setFileName( "index.html" );
 
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("*.html *.htm|HTML files"), d->m_cacheId );
+  KIO::MetaData metaData;
+  // Referre unknown?
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, metaData, i18n("*.html *.htm|HTML files"), d->m_cacheId );
 }
 
 void KHTMLPart::slotSecurity()
@@ -2524,7 +2530,9 @@ void KHTMLPart::slotSaveFrame()
     if ( srcURL.fileName(false).isEmpty() )
         srcURL.setFileName( "index.html" );
 
-    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, i18n("*.html *.htm|HTML files") );
+    KIO::MetaData metaData;
+    // Referrer unknown?
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save as" ), srcURL, metaData, i18n("*.html *.htm|HTML files") );
 }
 
 void KHTMLPart::slotSetEncoding()
@@ -3570,6 +3578,11 @@ QString KHTMLPart::jsStatusBarText() const
 QString KHTMLPart::jsDefaultStatusBarText() const
 {
    return d->m_kjsDefaultStatusBarText;
+}
+
+QString KHTMLPart::referrer() const
+{
+   return d->m_referrer;
 }
 
 void KHTMLPart::updateFontSize( int add )

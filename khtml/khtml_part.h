@@ -686,6 +686,11 @@ public:
    */
   QString jsDefaultStatusBarText() const;
 
+  /**
+   * Referrer used for links in this page.
+   */
+  QString referrer() const;
+
 signals:
   /**
    * Emitted if the cursor is moved over an URL.

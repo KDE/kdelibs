@@ -103,7 +103,7 @@ bool KHTMLRun::askSave( const KURL & url, KService::Ptr offer, const QString & m
         i18n("Save to disk"), i18n("Open"),
         QString::fromLatin1("askSave")+mimeType); // dontAskAgainName
     if ( choice == KMessageBox::Yes ) // Save
-        KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As..." ), url, QString::null, 0, suggestedFilename );
+        KHTMLPopupGUIClient::saveURL( m_part->widget(), i18n( "Save As..." ), url, m_args.metaData(), QString::null, 0, suggestedFilename );
 
     return choice != KMessageBox::No; // saved or canceled -> don't open
 }

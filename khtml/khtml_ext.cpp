@@ -354,12 +354,16 @@ KHTMLPopupGUIClient::~KHTMLPopupGUIClient()
 
 void KHTMLPopupGUIClient::slotSaveLinkAs()
 {
-  saveURL( d->m_khtml->widget(), i18n( "Save Link As" ), d->m_url );
+  KIO::MetaData metaData;
+  metaData["referrer"] = d->m_khtml->referrer();
+  saveURL( d->m_khtml->widget(), i18n( "Save Link As" ), d->m_url, metaData );
 }
 
 void KHTMLPopupGUIClient::slotSaveImageAs()
 {
-  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL );
+  KIO::MetaData metaData;
+  metaData["referrer"] = d->m_khtml->referrer();
+  saveURL( d->m_khtml->widget(), i18n( "Save Image As" ), d->m_imageURL, metaData );
 }
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
@@ -404,7 +408,11 @@ void KHTMLPopupGUIClient::slotReloadFrame()
   d->m_khtml->openURL( d->m_khtml->url() );
 }
 
-void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, const KURL &url, const QString &filter, long cacheId, const QString & suggestedFilename )
+void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, 
+                                   const KURL &url, 
+                                   const KIO::MetaData &metaData,
+                                   const QString &filter, long cacheId, 
+                                   const QString & suggestedFilename )
 {
   KFileDialog *dlg = new KFileDialog( QString::null, filter, parent, "filedia", true );
 
@@ -453,7 +461,8 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, cons
       }
       if(!saved)
       {
-        /*KIO::Job *job = */ KIO::copy( url, destURL );
+        KIO::Job *job = KIO::file_copy( url, destURL );
+        job->setMetaData(metaData);
         // TODO connect job result, to display errors
       }
     }

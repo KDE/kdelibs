@@ -6,6 +6,7 @@
 #include <qguardedptr.h>
 
 #include <kaction.h>
+#include <kio/global.h>
 
 /**
  * This is the BrowserExtension for a @ref KHTMLPart document. Please see the KParts documentation for
@@ -86,6 +87,7 @@ public:
   virtual ~KHTMLPopupGUIClient();
 
   static void saveURL( QWidget *parent, const QString &caption, const KURL &url,
+                       const KIO::MetaData &metaData = KIO::MetaData(),
                        const QString &filter = QString::null, long cacheId = 0,
                        const QString &suggestedFilename = QString::null );
 
