@@ -679,7 +679,12 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
 {
    m_docInfoStack.push(m_docInfo);
    if (!baseDir.isEmpty())
-      m_docInfo.baseDir = baseDir;
+   {
+      if (baseDir.startsWith("/"))
+         m_docInfo.baseDir = KGlobal::dirs()->relativeLocation("xdgconf-menu", baseDir);
+      else
+         m_docInfo.baseDir = baseDir;
+   }
 
    QString baseName = fileName;
    if (baseName.startsWith("/"))
