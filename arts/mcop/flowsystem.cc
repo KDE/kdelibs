@@ -48,7 +48,7 @@ RemoteScheduleNode *ScheduleNode::remoteScheduleNode()
 	return 0;
 }
 
-void *ScheduleNode::cast(const std::string &target)
+void *ScheduleNode::cast(const std::string&)
 {
 	return 0;
 }
@@ -66,7 +66,7 @@ RemoteScheduleNode *RemoteScheduleNode::remoteScheduleNode()
 	return this;
 }
 
-void RemoteScheduleNode::initStream(std::string name, void *ptr, long flags)
+void RemoteScheduleNode::initStream(std::string, void *, long)
 {
 	// not for stub objects
 	assert(false);
@@ -78,15 +78,13 @@ void RemoteScheduleNode::requireFlow()
 	assert(false);
 }
 
-void RemoteScheduleNode::virtualize(std::string port, ScheduleNode *fromNode,
-			                        std::string fromPort)
+void RemoteScheduleNode::virtualize(std::string, ScheduleNode *, std::string)
 {
 	// (de)virtualization of ports is only implemented locally
 	assert(false);
 }
 
-void RemoteScheduleNode::devirtualize(std::string port, ScheduleNode *fromNode,
-			                        std::string fromPort)
+void RemoteScheduleNode::devirtualize(std::string, ScheduleNode *, std::string)
 {
 	// (de)virtualization of ports is only implemented locally
 	assert(false);
@@ -171,6 +169,8 @@ void RemoteScheduleNode::disconnect(std::string port, ScheduleNode *remoteNode,
 // constant values
 void RemoteScheduleNode::setFloatValue(std::string port, float value)
 {
-	// currently unsupported; TODO
-	assert(false);
+	FlowSystem fs = nodeObject()._flowSystem();
+	arts_return_if_fail(!fs.isNull());
+
+	fs.setFloatValue(nodeObject(), port, value);
 }
