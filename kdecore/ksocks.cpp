@@ -83,6 +83,7 @@ static int     (*F_bind)        (int, struct sockaddr *, ksocklen_t) = 0L;
 class KSocksTable {
  public:
    KSocksTable();
+  virtual ~KSocksTable();
  
    // The name of each symbol and it's SOCKS replacement
    QMap<SymbolKeys,QString>  symbols;
@@ -93,6 +94,9 @@ class KSocksTable {
 
 
 KSocksTable::KSocksTable() : myname("Unknown"), hasWorkingAsyncConnect(true) {
+}
+
+KSockTable::~KSocksTable() {
 }
 
 
