@@ -166,6 +166,7 @@ struct lt_dlhandle_struct {
 #define LT_DLRESIDENT_FLAG	    (0x01 << 0)
 #ifdef _AIX
 #define LT_DLNOTFOUND_FLAG	    (0x01 << 1) /* may be linked statically */
+#define LT_DLMEMBER_FLAG	    RTLD_MEMBER
 #endif /* _AIX */
 /* ...add more flags here... */
 
@@ -601,7 +602,14 @@ sys_dl_open (loader_data, filename)
      lt_user_data loader_data;
      const char *filename;
 {
-  lt_module   module   = dlopen (filename, lt_dlopen_flag);
+  lt_module module;
+#ifdef _AIX
+  /* If the basename is of the form "libname.a(member)",
+     set the appropriate flag. */
+  if (strrchr(filename, '('))
+    lt_dlopen_flag |= LT_DLMEMBER_FLAG;
+#endif
+  module = dlopen (filename, lt_dlopen_flag);
 
   if (!module)
     {
