@@ -183,12 +183,5 @@ void khtml::setFontSize( QFont &f,  int  pixelsize, const KHTMLSettings *s, QPai
 
     //qDebug(" -->>> using %f pixel font", size);
 
-#ifdef __GNUC__
-#warning another workaround for broken Qt - remove when fixed
-#endif
-
-    if ( khtml::printpainter )
-        f.setPointSize( size);
-    else
-        f.setPixelSizeFloat( size );
+    f.setPixelSizeFloat( size );
 }
