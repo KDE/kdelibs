@@ -1,6 +1,6 @@
 /* This file is part of the KDE project
  *
- * Copyright (C) 2002 David Faure <david@mandrakesoft.com>
+ * Copyright (C) 2002 David Faure <faure@kde.org>
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
  * License version 2, as published by the Free Software Foundation.
@@ -32,6 +32,12 @@
 
 using namespace KParts;
 
+class BrowserRun::BrowserRunPrivate
+{
+public:
+  bool m_bHideErrorDialog;
+};
+
 BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
                         KParts::ReadOnlyPart *part, QWidget* window,
                         bool removeReferrer, bool trustedSource )
@@ -39,6 +45,57 @@ BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
       m_args( args ), m_part( part ), m_window( window ),
       m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource )
 {
+  d = new BrowserRunPrivate;
+  d->m_bHideErrorDialog = false;
+}
+
+// BIC: merge with above ctor
+BrowserRun::BrowserRun( const KURL& url, const KParts::URLArgs& args,
+                        KParts::ReadOnlyPart *part, QWidget* window,
+                        bool removeReferrer, bool trustedSource, bool hideErrorDialog )
+    : KRun( url, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
+      m_args( args ), m_part( part ), m_window( window ),
+      m_bRemoveReferrer( removeReferrer ), m_bTrustedSource( trustedSource )
+{
+  d = new BrowserRunPrivate;
+  d->m_bHideErrorDialog = hideErrorDialog;
+}
+
+BrowserRun::~BrowserRun()
+{
+  delete d;
+}
+
+void BrowserRun::init()
+{
+  if ( d->m_bHideErrorDialog )
+  {
+    // ### KRun doesn't call a virtual method when it finds out that the URL
+    // is either malformed, or points to a non-existing local file...
+    // So we need to reimplement some of the checks, to handle m_bHideErrorDialog
+    m_bFault = !m_strURL.isValid();
+    if ( !m_bIsLocalFile && !m_bFault && m_strURL.isLocalFile() )
+      m_bIsLocalFile = true;
+
+    if ( m_bIsLocalFile )  {
+      struct stat buff;
+      if ( stat( QFile::encodeName(m_strURL.path()), &buff ) == -1 )
+      {
+        m_bFault = true;
+        kdDebug(1000) << "BrowserRun::init : " << m_strURL.prettyURL() << " doesn't exist." << endl;
+      }
+      m_mode = buff.st_mode; // while we're at it, save it for KRun::init() to use it
+    }
+
+    if ( m_bFault )
+    {
+      m_bFinished = true;
+      m_timer.start( 0, true );
+      handleError( 0 );
+      return;
+    }
+  }
+  KRun::init();
 }
 
 void BrowserRun::scanFile()
@@ -154,11 +211,13 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable( const QString& 
         KParts::BrowserRun::AskSaveResult res = askSave( m_strURL, offer, mimeType, m_suggestedFilename );
         if ( res == KParts::BrowserRun::Save ) {
             save( m_strURL, m_suggestedFilename );
+            kdDebug(1000) << "BrowserRun::handleNonEmbeddable: Save: returning Handled" << endl;
             m_bFinished = true;
             return Handled;
         }
         else if ( res == KParts::BrowserRun::Cancel ) {
             // saving done or canceled
+            kdDebug(1000) << "BrowserRun::handleNonEmbeddable: Cancel: returning Handled" << endl;
             m_bFinished = true;
             return Handled;
         }
@@ -303,6 +362,11 @@ void BrowserRun::slotStatResult( KIO::Job *job )
 
 void BrowserRun::handleError( KIO::Job * job )
 {
+    if ( !job ) { // Shouldn't happen, see docu.
+        kdWarning(1000) << "BrowserRun::handleError called with job=0! hideErrorDialog=" << d->m_bHideErrorDialog << endl;
+        return;
+    }
+
     // Reuse code in KRun, to benefit from d->m_showingError etc.
     // KHTMLRun and KonqRun reimplement handleError anyway.
     KRun::slotStatResult( job );
@@ -333,6 +397,11 @@ bool BrowserRun::isExecutable( const QString &serviceType )
              serviceType == "application/x-executable" ||
              serviceType == "application/x-msdos-program" ||
              serviceType == "application/x-shellscript" );
+}
+
+bool BrowserRun::hideErrorDialog() const
+{
+    return d->m_bHideErrorDialog;
 }
 
 #include "browserrun.moc"
