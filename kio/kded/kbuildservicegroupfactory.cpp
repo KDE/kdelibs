@@ -35,6 +35,13 @@ KBuildServiceGroupFactory::KBuildServiceGroupFactory() :
    m_resourceList->add( "apps", "*.directory" );
 }
 
+// return all service types for this factory
+// i.e. first arguments to m_resourceList->add() above
+QStringList KBuildServiceGroupFactory::resourceTypes()
+{
+    return QStringList() << "apps";
+}
+
 KBuildServiceGroupFactory::~KBuildServiceGroupFactory()
 {
    delete m_resourceList;

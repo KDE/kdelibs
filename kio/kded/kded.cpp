@@ -48,11 +48,16 @@
 #include <klibloader.h>
 #include <kio/global.h>
 
+static bool checkStamps = true;
+
 static void runBuildSycoca()
 {
    QStringList args;
    args.append("--incremental");
+   if(checkStamps)
+      args.append("--checkstamps");
    KApplication::kdeinitExecWait( "kbuildsycoca", args );
+   checkStamps = false; // useful only during kded startup
 }
 
 static void runKonfUpdate()
@@ -484,6 +489,8 @@ int main(int argc, char *argv[])
 
      if (args->isSet("check"))
      {
+        config->setGroup("General");
+        checkStamps = config->readBoolEntry("CheckFileStamps", true);
         runBuildSycoca();
         runKonfUpdate();
         exit(0);
@@ -502,6 +509,7 @@ int main(int argc, char *argv[])
      bool bCheckSycoca = config->readBoolEntry("CheckSycoca", true);
      bool bCheckUpdates = config->readBoolEntry("CheckUpdates", true);
      bool bCheckHostname = config->readBoolEntry("CheckHostname", true);
+     checkStamps = config->readBoolEntry("CheckFileStamps", true);
 
      Kded *kded = new Kded(bCheckUpdates, PollInterval, NFSPollInterval); // Build data base
 

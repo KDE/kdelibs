@@ -43,6 +43,13 @@ KBuildServiceFactory::KBuildServiceFactory( KSycocaFactory *serviceTypeFactory,
    m_resourceList->add( "services", "*.kdelnk" );
 }
 
+// return all service types for this factory
+// i.e. first arguments to m_resourceList->add() above
+QStringList KBuildServiceFactory::resourceTypes()
+{
+    return QStringList() << "apps" << "services";
+}
+
 KBuildServiceFactory::~KBuildServiceFactory()
 {
    delete m_resourceList;

@@ -21,6 +21,7 @@
 
 #include <kservicegroupfactory.h>
 #include <qdict.h>
+#include <qstringlist.h>
 
 /**
  * @internal
@@ -64,6 +65,10 @@ public:
    */
   virtual void saveHeader(QDataStream &str);
 
+  /**
+   * Returns all resource types for this service factory
+   */  
+  static QStringList resourceTypes();
 };
 
 #endif

@@ -35,6 +35,13 @@ KBuildProtocolInfoFactory::KBuildProtocolInfoFactory() :
    m_resourceList->add( "services", "*.protocol" );
 }
 
+// return all service types for this factory
+// i.e. first arguments to m_resourceList->add() above
+QStringList KBuildProtocolInfoFactory::resourceTypes()
+{
+    return QStringList() << "services";
+}
+
 KBuildProtocolInfoFactory::~KBuildProtocolInfoFactory()
 {
    delete m_resourceList;

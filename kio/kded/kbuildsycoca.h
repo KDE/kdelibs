@@ -43,6 +43,10 @@ public:
     */
    void recreate(KSycocaEntryListList *, QDict<Q_UINT32> *);
 
+   static bool checkTimestamps( Q_UINT32 timestamp );
+
+   static QStringList existingResourceDirs();
+
 protected:
 
    /**
@@ -64,7 +68,9 @@ protected:
     * Clear the factories
     */
    void clear();
-
+   
+   static bool checkDirTimestamps( const QString& dir, const QDateTime& stamp, bool top );
+   
    /**
     * @internal
     * @return true if building (i.e. if a KBuildSycoca);

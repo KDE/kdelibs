@@ -42,6 +42,13 @@ KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
    m_resourceList->add( "mime", "*.kdelnk" );
 }
 
+// return all service types for this factory
+// i.e. first arguments to m_resourceList->add() above
+QStringList KBuildServiceTypeFactory::resourceTypes()
+{
+    return QStringList() << "servicetypes" << "mime";
+}
+
 KBuildServiceTypeFactory::~KBuildServiceTypeFactory()
 {
    delete m_resourceList;

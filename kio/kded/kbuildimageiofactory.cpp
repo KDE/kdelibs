@@ -36,6 +36,13 @@ KBuildImageIOFactory::KBuildImageIOFactory() :
    m_resourceList->add( "services", "*.kimgio" );
 }
 
+// return all service types for this factory
+// i.e. first arguments to m_resourceList->add() above
+QStringList KBuildImageIOFactory::resourceTypes()
+{
+    return QStringList() << "services";
+}
+
 KBuildImageIOFactory::~KBuildImageIOFactory() 
 {
    delete m_resourceList;

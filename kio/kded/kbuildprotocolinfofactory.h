@@ -21,7 +21,7 @@
 
 #include <kprotocolinfofactory.h>
 #include <assert.h>
-
+#include <qstringlist.h>
 /**
  * @internal
  * Protocol Info factory for building ksycoca
@@ -47,6 +47,11 @@ public:
    * Add a new entry
    */
   virtual void addEntry( KSycocaEntry *newEntry, const char *resource );
+  
+  /**
+   * Returns all resource types for this service factory
+   */  
+  static QStringList resourceTypes();
 };
 
 #endif

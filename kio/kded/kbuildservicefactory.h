@@ -22,6 +22,7 @@
 #define __k_build_service_factory_h__
 
 #include <kservicefactory.h>
+#include <qstringlist.h>
 // We export the services to the service group factory!
 #include <kbuildservicegroupfactory.h>
 
@@ -66,6 +67,11 @@ public:
    * this function.
    */
   virtual void saveHeader(QDataStream &str);
+
+  /**
+   * Returns all resource types for this service factory
+   */  
+  static QStringList resourceTypes();
 private:
   void saveOfferList(QDataStream &str);
   void saveInitList(QDataStream &str);

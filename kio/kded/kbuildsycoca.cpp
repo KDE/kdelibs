@@ -305,7 +305,14 @@ void KBuildSycoca::recreate( KSycocaEntryListList *allEntries, QDict<Q_UINT32> *
     database.abort();
     kdDebug(7021) << "Database is up to date" << endl;
   }
-   
+
+  // update the timestamp file
+  QString stamppath = KGlobal::dirs()->saveLocation("tmp")+"ksycocastamp";
+  QFile ksycocastamp(stamppath);
+  ksycocastamp.open( IO_WriteOnly );
+  QDataStream str( &ksycocastamp );
+  str << newTimestamp;
+  str << existingResourceDirs();
 }
 
 void KBuildSycoca::save()
@@ -368,9 +375,92 @@ void KBuildSycoca::save()
    m_str->device()->at(endOfData);
 }
 
+bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& stamp, bool top )
+{
+   if( top )
+   {
+      QFileInfo inf( dirname );
+      if( inf.lastModified() > stamp )
+         {
+         kdDebug( 7021 ) << "timestamp changed:" << dirname << endl;
+         return false;
+         }
+   }
+   QDir dir( dirname );
+   const QFileInfoList *list = dir.entryInfoList( QDir::DefaultFilter, QDir::Unsorted );
+   for( QFileInfoListIterator it( *list );
+        it.current() != NULL;
+        ++it )
+   {
+      QFileInfo* fi = it.current();
+      if( fi->fileName() == "." || fi->fileName() == ".." )
+         continue;
+      if( fi->lastModified() > stamp )
+      {
+         kdDebug( 7201 ) << "timestamp changed:" << fi->filePath() << endl;
+         return false;
+      }
+      if( fi->isDir() && !checkDirTimestamps( fi->filePath(), stamp, false ))
+            return false;
+   }
+   return true;
+}
+
+// check times of last modification of all files on which ksycoca depens,
+// and also their directories
+// if all of them all older than the timestamp in file ksycocastamp, this
+// means that there's no need to rebuild ksycoca
+bool KBuildSycoca::checkTimestamps( Q_UINT32 timestamp )
+{
+   kdDebug( 7021 ) << "checking file timestamps" << endl;
+   QStringList dirs = existingResourceDirs();
+   QDateTime stamp;
+   stamp.setTime_t( timestamp );
+   for( QStringList::Iterator it = dirs.begin();
+        it != dirs.end();
+        ++it )
+   {
+      if( !checkDirTimestamps( *it, stamp, true ))
+            return false;
+   }
+   kdDebug( 7021 ) << "timestamps check ok" << endl;
+   return true;                                             
+}
+
+QStringList KBuildSycoca::existingResourceDirs()
+{
+   static QStringList* dirs = NULL;
+   if( dirs != NULL )
+       return *dirs;
+   dirs = new QStringList;
+   // these are all resources cached by ksycoca
+   QStringList resources;
+   resources += KBuildServiceTypeFactory::resourceTypes();
+   resources += KBuildServiceGroupFactory::resourceTypes();
+   resources += KBuildServiceFactory::resourceTypes();
+   resources += KBuildImageIOFactory::resourceTypes();
+   resources += KBuildProtocolInfoFactory::resourceTypes();
+   while( !resources.empty())
+   {
+      QString res = resources.front();
+      *dirs += KGlobal::dirs()->resourceDirs( res.latin1());
+      resources.remove( res ); // remove this 'res' and all its duplicates
+   }
+   for( QStringList::Iterator it = dirs->begin();
+        it != dirs->end();
+        ++it )
+   {
+      QFileInfo inf( *it );
+      if( !inf.exists())
+         it = dirs->remove( it );
+   }
+   return *dirs;
+}
+
 static KCmdLineOptions options[] = {
    { "nosignal", I18N_NOOP("Don't signal applications."), 0 },
    { "incremental", I18N_NOOP("Incremental update."), 0 },
+   { "checkstamps", I18N_NOOP("Check file timestamps."), 0 },
    { 0, 0, 0 }
 };
 
@@ -429,44 +519,67 @@ int main(int argc, char **argv)
         delete KSycoca::self();
      }
    }
-
+   
    g_changeList = new QStringList;
 
-   KBuildSycoca::KSycocaEntryListList *allEntries = 0;
-   QDict<Q_UINT32> *ctimeDict = 0;
-   if (incremental)
-   {
-      KSycoca *oldSycoca = KSycoca::self();
-      KSycocaFactoryList *factories = new KSycocaFactoryList;
-      allEntries = new KBuildSycoca::KSycocaEntryListList;
-      ctimeDict = new QDict<Q_UINT32>(523);
-
-      // Must be in same order as in KBuildSycoca::recreate()!
-      factories->append( new KServiceTypeFactory );
-      factories->append( new KServiceGroupFactory );
-      factories->append( new KServiceFactory );
-      factories->append( new KImageIOFactory );
-      factories->append( new KProtocolInfoFactory );
-
-      // For each factory
-      for (KSycocaFactory *factory = factories->first();
-           factory;
-           factory = factories->next() )
-      {
-          KSycocaEntry::List list;
-          list = factory->allEntries();
-          allEntries->append( list );
-      }
-      delete factories; factories = 0;
-      KCTimeInfo *ctimeInfo = new KCTimeInfo;
-      ctimeInfo->fillCTimeDict(*ctimeDict);
-      delete oldSycoca;
-   }
+   bool checkstamps = incremental && args->isSet("checkstamps");
+   Q_UINT32 filestamp = 0;
+   if( checkstamps && incremental )
+       {
+       QString path = KGlobal::dirs()->saveLocation("tmp")+"ksycocastamp";
+       QFile ksycocastamp(path);
+       if( ksycocastamp.open( IO_ReadOnly ))
+           {
+           QDataStream str( &ksycocastamp );
+           str >> filestamp;
+           QStringList oldresourcedirs;
+           str >> oldresourcedirs;
+           if( oldresourcedirs != KBuildSycoca::existingResourceDirs())
+               checkstamps = false;
+           }
+       else
+           checkstamps = false;
+       }
 
    newTimestamp = (Q_UINT32) time(0);
 
-   KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
-   sycoca->recreate(allEntries, ctimeDict);
+   if( !checkstamps || !KBuildSycoca::checkTimestamps( filestamp ))
+   {
+
+      KBuildSycoca::KSycocaEntryListList *allEntries = 0;
+      QDict<Q_UINT32> *ctimeDict = 0;
+      if (incremental)
+      {
+         KSycoca *oldSycoca = KSycoca::self();
+         KSycocaFactoryList *factories = new KSycocaFactoryList;
+         allEntries = new KBuildSycoca::KSycocaEntryListList;
+         ctimeDict = new QDict<Q_UINT32>(523);
+
+         // Must be in same order as in KBuildSycoca::recreate()!
+         factories->append( new KServiceTypeFactory );
+         factories->append( new KServiceGroupFactory );
+         factories->append( new KServiceFactory );
+         factories->append( new KImageIOFactory );
+         factories->append( new KProtocolInfoFactory );
+
+         // For each factory
+         for (KSycocaFactory *factory = factories->first();
+              factory;
+              factory = factories->next() )
+         {
+             KSycocaEntry::List list;
+             list = factory->allEntries();
+             allEntries->append( list );
+         }
+         delete factories; factories = 0;
+         KCTimeInfo *ctimeInfo = new KCTimeInfo;
+         ctimeInfo->fillCTimeDict(*ctimeDict);
+         delete oldSycoca;
+      }
+
+      KBuildSycoca *sycoca= new KBuildSycoca; // Build data base
+      sycoca->recreate(allEntries, ctimeDict);
+   }
 
    if (args->isSet("signal"))
    {

@@ -20,6 +20,7 @@
 #define __k_build_imageio_factory_h__
 
 #include <kimageiofactory.h>
+#include <qstringlist.h>
 
 /**
  * @internal
@@ -53,6 +54,11 @@ public:
   virtual KSycocaEntry * createEntry( int ) { assert(0); return 0L; }
 
   virtual void addEntry(KSycocaEntry *newEntry, const char *);
+
+  /**
+   * Returns all resource types for this service factory
+   */  
+  static QStringList resourceTypes();
 };
 
 #endif

@@ -21,6 +21,7 @@
 #define __k_build_service_type_factory_h__
 
 #include <kservicetypefactory.h>
+#include <qstringlist.h>
 
 /**
  * @internal
@@ -67,6 +68,10 @@ public:
    */
   virtual void saveHeader(QDataStream &str);
 
+  /**
+   * Returns all resource types for this service factory
+   */  
+  static QStringList resourceTypes();
 private:
 
   void savePatternLists(QDataStream &str);
