@@ -2,7 +2,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 MimeType=application/x-vnd.kde.kplato
-#Comment=...
+Comment=KPlato Project Management Document
 Type=MimeType
 Patterns=*.kplato;*.kplatot;
 X-KDE-AutoEmbed=false
