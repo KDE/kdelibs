@@ -829,7 +829,7 @@ QFont::CharSet qcharset=charset->qtCharset;
     f.setCharSet(qcharset);
     f.setFamily(face);
     QFontInfo fi(f);
-    kchdebug("fi.charset()=%i fi.family()=%s\n",fi.charSet(),fi.family());
+    kchdebug("fi.charset()=%i fi.family()=%s\n",fi.charSet(),fi.family().data());
     if (fi.family()!=face ) return FALSE;
     /* This face will work for this charset, remember it */
     if (!charset->good_family) charset->good_family=new QString;
