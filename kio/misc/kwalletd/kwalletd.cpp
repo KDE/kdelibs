@@ -337,7 +337,14 @@ int KWalletD::internalOpen(const QCString& appid, const QString& wallet, bool is
 	int rc = -1;
 	bool brandNew = false;
 
-	if (implicitDeny(wallet, appid)) {
+	QCString thisApp;
+	if (appid.isEmpty()) {
+		thisApp = "KDE System";
+	} else {
+		thisApp = appid;
+	}
+
+	if (implicitDeny(wallet, thisApp)) {
 		return -1;
 	}
 
