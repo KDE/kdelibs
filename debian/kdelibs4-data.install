@@ -1,0 +1,9 @@
+debian/system.kdeglobals	etc/kde3/
+debian/tmp/etc/kde3
+debian/tmp/usr/share/autostart
+debian/tmp/usr/share/kde3/apps
+debian/tmp/usr/share/kde3/html
+debian/tmp/usr/share/kde3/icons
+debian/tmp/usr/share/kde3/mimelnk
+debian/tmp/usr/share/kde3/services
+debian/tmp/usr/share/kde3/servicetypes

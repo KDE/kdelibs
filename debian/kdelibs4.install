@@ -1,0 +1,87 @@
+debian/tmp/usr/lib/libDCOP.so.*	usr/lib/
+debian/tmp/usr/lib/libartskde.so.*	usr/lib/
+debian/tmp/usr/lib/libkabc.so.*	usr/lib/
+debian/tmp/usr/lib/libkatepartinterfaces.la
+debian/tmp/usr/lib/libkatepartinterfaces.so.*	usr/lib/
+debian/tmp/usr/lib/libkdecore.so.*	usr/lib/
+debian/tmp/usr/lib/libkdefakes.so.*	usr/lib/
+debian/tmp/usr/lib/libkdefx.so.*	usr/lib/
+debian/tmp/usr/lib/libkdeprint.la
+debian/tmp/usr/lib/libkdeprint.so.*	usr/lib/
+debian/tmp/usr/lib/libkdeprint_management.la
+debian/tmp/usr/lib/libkdeprint_management.so.*	usr/lib/
+debian/tmp/usr/lib/libkdesasl.so.*	usr/lib/
+debian/tmp/usr/lib/libkdesu.so.*	usr/lib/
+debian/tmp/usr/lib/libkdeui.so.*	usr/lib/
+debian/tmp/usr/lib/libkhtml.la
+debian/tmp/usr/lib/libkhtml.so.*	usr/lib/
+debian/tmp/usr/lib/libkio.so.*	usr/lib/
+debian/tmp/usr/lib/libkjava.so.*	usr/lib/
+debian/tmp/usr/lib/libkjs.so.*	usr/lib/
+debian/tmp/usr/lib/libkmid.so.*	usr/lib/
+debian/tmp/usr/lib/libkparts.so.*	usr/lib/
+debian/tmp/usr/lib/libkscreensaver.so.*	usr/lib/
+debian/tmp/usr/lib/libkscript.so.*	usr/lib/
+debian/tmp/usr/lib/libkspell.so.*	usr/lib/
+debian/tmp/usr/lib/libktexteditor.la
+debian/tmp/usr/lib/libktexteditor.so.*	usr/lib/
+debian/tmp/usr/lib/libshellscript.so.*	usr/lib/
+debian/tmp/usr/lib/libvcard.so.*	usr/lib/
+debian/tmp/usr/lib/libcupsdconf.la
+debian/tmp/usr/lib/libcupsdconf.so
+debian/tmp/usr/lib/libkatepart.la
+debian/tmp/usr/lib/libkatepart.so
+debian/tmp/usr/lib/libkcertpart.la
+debian/tmp/usr/lib/libkcertpart.so
+debian/tmp/usr/lib/libkhtmlimage.la
+debian/tmp/usr/lib/libkhtmlimage.so
+debian/tmp/usr/lib/kde3/kbzip2filter.la
+debian/tmp/usr/lib/kde3/kbzip2filter.so
+debian/tmp/usr/lib/kde3/kded_kdeprintd.la
+debian/tmp/usr/lib/kde3/kded_kdeprintd.so
+debian/tmp/usr/lib/kde3/kded_kssld.la
+debian/tmp/usr/lib/kde3/kded_kssld.so
+debian/tmp/usr/lib/kde3/kdeprint_cups.la
+debian/tmp/usr/lib/kde3/kdeprint_cups.so
+debian/tmp/usr/lib/kde3/kdeprint_ext.la
+debian/tmp/usr/lib/kde3/kdeprint_ext.so
+debian/tmp/usr/lib/kde3/kdeprint_lpdunix.la
+debian/tmp/usr/lib/kde3/kdeprint_lpdunix.so
+debian/tmp/usr/lib/kde3/kdeprint_lpr.la
+debian/tmp/usr/lib/kde3/kdeprint_lpr.so
+debian/tmp/usr/lib/kde3/kdeprint_rlpr.la
+debian/tmp/usr/lib/kde3/kdeprint_rlpr.so
+debian/tmp/usr/lib/kde3/kgzipfilter.la
+debian/tmp/usr/lib/kde3/kgzipfilter.so
+debian/tmp/usr/lib/kde3/kimg_eps.la
+debian/tmp/usr/lib/kde3/kimg_eps.so
+debian/tmp/usr/lib/kde3/kimg_g3.la
+debian/tmp/usr/lib/kde3/kimg_g3.so
+debian/tmp/usr/lib/kde3/kimg_ico.la
+debian/tmp/usr/lib/kde3/kimg_ico.so
+debian/tmp/usr/lib/kde3/kimg_krl.la
+debian/tmp/usr/lib/kde3/kimg_krl.so
+debian/tmp/usr/lib/kde3/kimg_tiff.la
+debian/tmp/usr/lib/kde3/kimg_tiff.so
+debian/tmp/usr/lib/kde3/kimg_xview.la
+debian/tmp/usr/lib/kde3/kimg_xview.so
+debian/tmp/usr/lib/kde3/kio_file.la
+debian/tmp/usr/lib/kde3/kio_file.so
+debian/tmp/usr/lib/kde3/kio_ftp.la
+debian/tmp/usr/lib/kde3/kio_ftp.so
+debian/tmp/usr/lib/kde3/kio_help.la
+debian/tmp/usr/lib/kde3/kio_help.so
+debian/tmp/usr/lib/kde3/kio_http.la
+debian/tmp/usr/lib/kde3/kio_http.so
+debian/tmp/usr/lib/kde3/kjs_html.la
+debian/tmp/usr/lib/kde3/kjs_html.so
+debian/tmp/usr/lib/kde3/libkpac.la
+debian/tmp/usr/lib/kde3/libkpac.so
+debian/tmp/usr/lib/kde3/styles/highcolor.la
+debian/tmp/usr/lib/kde3/styles/highcolor.so
+debian/tmp/usr/lib/kde3/styles/kthemestyle.la
+debian/tmp/usr/lib/kde3/styles/kthemestyle.so
+debian/tmp/usr/lib/kde3/styles/light.la
+debian/tmp/usr/lib/kde3/styles/light.so
+debian/tmp/usr/lib/kde3/widgets/kdewidgets.la
+debian/tmp/usr/lib/kde3/widgets/kdewidgets.so
