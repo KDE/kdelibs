@@ -858,6 +858,8 @@ bool KURL::isLocalFile() const
 
 bool KURL::hasSubURL() const
 {
+  if ( m_strProtocol.isEmpty() || m_bIsMalformed )
+    return false;
   return ( KProtocolManager::self().isFilterProtocol( m_strProtocol ) && !m_strRef_encoded.isEmpty() );
 }
 
