@@ -25,17 +25,18 @@
 //  e9025461@student.tuwien.ac.at
 //
 
-#include <string.h>
-#include <errno.h>
-#include <unistd.h>
+#include <config.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
+
+#include <errno.h>
 #include <fcntl.h>
-
 #include <stdio.h>
-#include <config.h>
-#include "kprocess.h"
+#include <string.h>
+#include <unistd.h>
 
+#include "kprocess.h"
 #include "kprocctrl.h"
 
 template class QList<KProcess>;
@@ -136,8 +137,8 @@ void KProcessController::slotDoHousekeeping(int )
 	       bytes_read, len);
 	return;           // it makes no sense to continue here!
   }
-  pid    = *((pid_t*) buf);
-  status = *((int*) (buf + sizeof(pid_t)));
+  pid    = *reinterpret_cast<pid_t *>(buf);
+  status = *reinterpret_cast<int *>(buf + sizeof(pid_t));
 
   bool found = false;
  
