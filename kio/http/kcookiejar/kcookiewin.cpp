@@ -51,10 +51,15 @@ KCookieWin::KCookieWin(QWidget *parent, KHttpCookie *_cookie, KCookieJar *cookie
     cookie(_cookie)
 {
     KWin::setState( winId(), NET::StaysOnTop );
+#if 0
     if (cookie->windowId())
     {
        XSetTransientForHint( x11Display(), winId(), cookie->windowId());
     }
+#endif
+    // Always place the dialog on the current desktop.
+    KWin::setOnDesktop(winId(), KWin::currentDesktop());
+
     QWidget *contents = new QWidget(this);
 
     QGridLayout *layout = new QGridLayout(contents, 5, 3, 
