@@ -61,7 +61,7 @@ namespace KIO {
         Q_OBJECT
 
     protected:
-        Job( bool showProgressInfo = true );
+        Job( bool showProgressInfo );
 
     public:
         virtual ~Job();
@@ -170,7 +170,7 @@ namespace KIO {
 
     public:
         SimpleJob(const KURL& url, int command, const QByteArray &packedArgs,
-                  bool showProgressInfo = true);
+                  bool showProgressInfo);
 
         ~SimpleJob();
 
@@ -282,8 +282,8 @@ namespace KIO {
     public:
         TransferJob(const KURL& url, int command,
                     const QByteArray &packedArgs,
-                    const QByteArray &_staticData = QByteArray(),
-                    bool showProgressInfo = true);
+                    const QByteArray &_staticData,
+                    bool showProgressInfo);
 
         virtual void start(Slave *slave);
 
@@ -369,7 +369,7 @@ namespace KIO {
 
     public:
         FileCopyJob( const KURL& src, const KURL& dest, int permissions,
-                     bool move, bool overwrite, bool resume, bool showProgressInfo = true);
+                     bool move, bool overwrite, bool resume, bool showProgressInfo);
 
     public slots:
         void slotData( KIO::Job *, const QByteArray &data);
@@ -421,7 +421,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        ListJob(const KURL& url, bool showProgressInfo = true,
+        ListJob(const KURL& url, bool showProgressInfo,
                 bool recursive = false, QString prefix = QString::null);
 
         virtual void start( Slave *slave );
@@ -464,7 +464,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        CopyJob( const KURL::List& src, const KURL& dest, bool move = false, bool showProgressInfo = true );
+        CopyJob( const KURL::List& src, const KURL& dest, bool move, bool showProgressInfo );
 
     signals:
 
@@ -537,7 +537,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo = true );
+        DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo );
 
     signals:
 
