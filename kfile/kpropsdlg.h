@@ -333,21 +333,28 @@ public:
   virtual void applyChanges();
 
   /**
-   * Called after all pages applied their changes
-   */
-  void postApplyChanges();
-
-  /**
    * Tests whether the files specified by _items need a 'General' page.
    */
   static bool supports( KFileItemList _items );
 
+  /**
+   * Called after all pages applied their changes
+   */
+  void postApplyChanges();
+
+protected:
+
+  void displaySize( unsigned long size );
+
 protected slots:
   void slotRenameFinished( KIO::Job * );
+  void slotDirSizeFinished( KIO::Job * );
 
 private:
   QWidget *iconArea;
   QWidget *nameArea;
+
+  QLabel *sizeLabel;
 
   QString m_sRelativePath;
   bool m_bFromTemplate;

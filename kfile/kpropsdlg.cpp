@@ -60,6 +60,7 @@
 #include <qcombobox.h>
 
 #include <kdialog.h>
+#include <kdirsize.h>
 #include <kdirwatch.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
@@ -437,11 +438,15 @@ class KFilePropsPage::KFilePropsPagePrivate
 public:
   KFilePropsPagePrivate()
   {
+    dirSizeJob = 0L;
   }
   ~KFilePropsPagePrivate()
   {
+    if ( dirSizeJob )
+      dirSizeJob->kill();
   }
 
+  KDirSize * dirSizeJob;
   QFrame *m_frame;
 };
 
@@ -591,23 +596,22 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   l->setText( directory );
   grid->addWidget(l, curRow++, 2);
 
-  if (S_ISREG(item->mode())) {
+  if (S_ISREG(item->mode()) || S_ISDIR(item->mode())) {
     l = new QLabel(i18n("Size:"), d->m_frame );
     grid->addWidget(l, curRow, 0);
 
-    // Should we use KIO::convertSize ? Seems less accurate...
-    int size = item->size();
-    if (size > 1024*1024) {
-      tempstr = i18n("%1MB ").arg(KGlobal::locale()->formatNumber(ROUND(size/(1024*1024.0)), 0));
-      tempstr += i18n("(%1 bytes)").arg(KGlobal::locale()->formatNumber(size, 0));
-
-    } else if (size > 1024) {
-      tempstr = i18n("%1KB ").arg(KGlobal::locale()->formatNumber(ROUND(size/1024.0), 2));
-      tempstr += i18n("(%1 bytes)").arg(KGlobal::locale()->formatNumber(size, 0));
-    } else
-      tempstr = i18n("%1 bytes").arg(KGlobal::locale()->formatNumber(size, 0));
-    l = new QLabel(tempstr, d->m_frame );
-    grid->addWidget(l, curRow++, 2);
+    sizeLabel = new QLabel(QString::fromLatin1("..."), d->m_frame );
+    grid->addWidget(sizeLabel, curRow++, 2);
+    if (S_ISREG(item->mode()))
+    {
+        displaySize( item->size() );
+    }
+    else
+    {
+        d->dirSizeJob = KDirSize::dirSizeJob( item->url() );
+        connect( d->dirSizeJob, SIGNAL( result( KIO::Job * ) ),
+                 SLOT( slotDirSizeFinished( KIO::Job * ) ) );
+    }
   }
 
   if (item->isLink()) {
@@ -655,6 +659,32 @@ KFilePropsPage::KFilePropsPage( KPropertiesDialog *_props )
   grid->addWidget(l, curRow++, 2);
 
   vbl->addStretch(1);
+}
+
+void KFilePropsPage::slotDirSizeFinished( KIO::Job * job )
+{
+  if (job->error())
+    job->showErrorDialog( properties->dialog() );
+  else
+    displaySize( static_cast<KDirSize*>(job)->totalSize() );
+  d->dirSizeJob = 0L;
+}
+
+void KFilePropsPage::displaySize( unsigned long size )
+{
+    QString tempstr;
+    // Should we use KIO::convertSize ? Seems less accurate...
+    if (size > 1024*1024) {
+      tempstr = i18n("%1MB ").arg(KGlobal::locale()->formatNumber(ROUND(size/(1024*1024.0)), 0));
+      tempstr += i18n("(%1 bytes)").arg(KGlobal::locale()->formatNumber(size, 0));
+
+    } else if (size > 1024) {
+      tempstr = i18n("%1KB ").arg(KGlobal::locale()->formatNumber(ROUND(size/1024.0), 2));
+      tempstr += i18n("(%1 bytes)").arg(KGlobal::locale()->formatNumber(size, 0));
+    } else
+      tempstr = i18n("%1 bytes").arg(KGlobal::locale()->formatNumber(size, 0));
+
+    sizeLabel->setText( tempstr );
 }
 
 KFilePropsPage::~KFilePropsPage()
