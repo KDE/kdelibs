@@ -127,12 +127,15 @@ int main(int argc, char **argv)
 	connect(playObject, "left", playToFile,"left");
 	connect(playObject, "right", playToFile,"right");
 
-#if 0 /* more internal tricks */
-	// special case when using mpeglib, do tell it not to block
+	// <ignore the following lines>
+	// special case when using mpeglib, do tell it not to block (internal
+	// interface) - we also put an usleep here to ensure that the threads
+	// and everything is fully initialized as soon as we start
+	usleep(100000);
 	if(playObject._base()->_isCompatibleWith("DecoderBaseObject"))
 		if(!DynamicRequest(playObject).method("_set_blocking").param(true).invoke())
 			cerr << "mpeglib, and blocking attribute can't be changed?" << endl;
-#endif
+	// </ignore>
 
 	playToFile.start();
 	while(playObject.state() != posIdle)
