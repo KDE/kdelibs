@@ -1552,6 +1552,15 @@ bool HTTPProtocol::readHeader()
         kdDebug(7113) << "(" << getpid() << ") Content-Disposition: " << disposition << endl;
       }
     }
+    else if (strncasecmp(buf, "Proxy-Connection:", 17) == 0) {
+      if (strncasecmp(trimLead(buf + 17), "Close", 5) == 0) {
+        m_bKeepAlive = false;
+      } else if (strncasecmp(trimLead(buf + 17), "Keep-Alive", 10)==0) {
+        // Don't do persistant connections with SSL.
+        if (!m_bIsSSL)
+           m_bKeepAlive = true;
+      }
+    }
     // continue only if we know that we're HTTP/1.1
     else if (m_HTTPrev == HTTP_11) {
       // let them tell us if we should stay alive or not
