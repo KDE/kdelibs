@@ -1020,7 +1020,7 @@ void KHTMLPart::slotSaveDocument()
      KURL destURL( dlg->selectedURL() );
       if ( !destURL.isMalformed() )
       {
-        KIO::Job *job = KIO::copy( url(), destURL );
+        KIO::Job *job = KIO::file_copy( url(), destURL );
         // TODO connect job result, to display errors
       }
   }
