@@ -48,7 +48,7 @@ public:
 /**
 * Constructor
 */
-  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0) : QWizard(parent, name, modal, f) {}
+  KWizard(QWidget *parent = 0, const char *name = 0, bool modal = false, WFlags f = 0);
 /**
 * Destructor
 */

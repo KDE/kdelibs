@@ -99,7 +99,7 @@ libkdeui_la_SOURCES = \
 		kdatewidget.cpp karrowbutton.cpp kmainwindowiface.cpp \
                 kmainwindowiface.skel kguiitem.cpp kstdguiitem.cpp \
 		kstringvalidator.cpp kactivelabel.cpp kaccelmanager.cpp \
-		kwindowinfo.cpp kpassivepopup.cpp ktextedit.cpp
+		kwindowinfo.cpp kpassivepopup.cpp ktextedit.cpp kwizard.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
