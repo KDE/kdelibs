@@ -158,17 +158,14 @@ DOMStringImpl *DOMStringImpl::substring(uint pos, uint len)
 
 static Length parseLength(const QChar *s, unsigned int l)
 {
-
-    const QChar* last = &(s[l-1]);
+    const QChar* last = s+l-1;
     if (l && *last == QChar('%')) {
         // CSS allows one decimal after the point, like
         //  42.2%, but not 42.22%
         // we ignore the non-integer part for speed/space reasons
-
         int i = QConstString(s, l).string().findRev('.');
-        if ( i >= 0 && i < (int)l-1 ) {
+        if ( i >= 0 && i < (int)l-1 )
             l = i + 1;
-        }
 
         bool ok;
         i = QConstString(s, l-1).string().toInt(&ok);
@@ -177,15 +174,14 @@ static Length parseLength(const QChar *s, unsigned int l)
             return Length(i, Percent);
 
         // in case of weird constructs like 5*%
-        last-=sizeof(QChar);
+        last--;
         l--;
     }
 
-    if (l == 0) { // if the string passed is just a single % character this prevents accessing invalid memory
+    if (l == 0)
         return Length(0, Variable);
-    }
 
-    if ( *last == QChar('*')) {
+    if ( *last == '*') {
         if(last == s)
             return Length(1, Relative);
         else
@@ -196,7 +192,6 @@ static Length parseLength(const QChar *s, unsigned int l)
     // CSS says no, all important browsers do so, including Mozilla. sigh.
     bool ok;
     // this ugly construct helps in case someone specifies a length as "100."
-
     int v = (int) QConstString(s, l).string().toFloat(&ok);
 
     if(ok)
