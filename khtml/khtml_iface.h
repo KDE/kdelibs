@@ -219,6 +219,11 @@ k_dcop:
     void saveDocument(const QString &url);
     QString evalJS(const QString &script);
 
+    /**
+     * Stops display of animated images 
+     */
+    void stopAnimations();
+
 private:
     KHTMLPart *part;
 };

@@ -199,6 +199,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), 0, this, SLOT( slotDebugScript() ), actionCollection(), "debugScript" );
   d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
   d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
+  d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), 0, this, SLOT( slotStopAnimations() ), actionCollection(), "stopAnimations" );
 
   QString foo1 = i18n("Show Images");
   QString foo2 = i18n("Show Animated Images");
@@ -978,6 +979,11 @@ void KHTMLPart::slotDebugRenderTree()
   if ( d->m_doc )
     d->m_doc->renderer()->printTree();
 #endif
+}
+
+void KHTMLPart::slotStopAnimations()
+{
+  stopAnimations();
 }
 
 void KHTMLPart::setAutoloadImages( bool enable )

@@ -148,6 +148,11 @@ void KHTMLPartIface::debugRenderTree()
     part->slotDebugRenderTree();
 }
 
+void KHTMLPartIface::stopAnimations()
+{
+    part->slotStopAnimations();
+}
+
 void KHTMLPartIface::viewDocumentSource()
 {
     part->slotViewDocumentSource();

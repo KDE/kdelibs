@@ -303,6 +303,7 @@ public:
   KAction *m_paDebugScript;
   KAction *m_paDebugDOMTree;
   KAction *m_paDebugRenderTree;
+  KAction *m_paStopAnimations;
 
   KParts::PartManager *m_manager;
 

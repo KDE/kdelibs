@@ -931,6 +931,10 @@ private slots:
   /**
    * @internal
    */
+  void slotStopAnimations();
+  /**
+   * @internal
+   */
   virtual void slotViewDocumentSource();
   /**
    * @internal
