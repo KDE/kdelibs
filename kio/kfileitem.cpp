@@ -278,9 +278,25 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
   if ( m_bLink )
       _state |= KIcon::LinkOverlay;
-  // TODO fix this
+
+  /*
+  struct passwd * user = getpwuid( geteuid() );
+  bool isMyFile = (QString::fromLocal8Bit(user->pw_name) == m_user);
+  // This gets ugly for the group....
+  // Maybe we want a static QString for the user and a static QStringList
+  // for the groups... then we need to handle the deletion properly...
+  */
+
+  // No read permission at all
   if ( !(S_IRUSR & m_permissions) && !(S_IRGRP & m_permissions) && !(S_IROTH & m_permissions) )
        _state |= KIcon::LockOverlay;
+
+  // Or if we can't read it [using access()] - not network transparent
+  else if ( m_bIsLocalURL
+       && !S_ISDIR( m_fileMode ) // Locked dirs have a special icon
+       && access( QFile::encodeName(m_url.path()), R_OK ) == -1 )
+       _state |= KIcon::LockOverlay;
+
   QPixmap p = m_pMimeType->pixmap( m_url, KIcon::Desktop, _size, _state );
   if (p.isNull())
     kdWarning() << "Pixmap not found for mimetype " << m_pMimeType->name() << endl;
