@@ -299,7 +299,7 @@ namespace KIO {
 	 * @param msg the info message
          */
         void infoMessage( KIO::Job *job, const QString & msg );
-        // KDE 3.0: Separate rich-text string from plain-text string, for different widgets.
+        // KDE4: Separate rich-text string from plain-text string, for different widgets.
 
         /**
          * Emitted when the slave successfully connected to the host.
