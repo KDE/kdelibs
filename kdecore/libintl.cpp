@@ -155,16 +155,6 @@ static int _nl_explode_name (char *name, const char **language,
 		      const char **revision);
 
 
-//#line 44 "libgettext.h"
-
-#ifndef NULL
-# if !defined __cplusplus || defined __GNUC__
-#  define NULL ((void *) 0)
-# else
-#  define NULL (0)
-# endif
-#endif
-
 #if !HAVE_LC_MESSAGES
 /* This value determines the behaviour of the gettext() and dgettext()
    function.  But some system does not have this defined.  Define it
@@ -303,13 +293,13 @@ _nl_load_domain (struct loaded_l10nfile *domain_file)
   struct loaded_domain *domain;
 
   domain_file->decided = 1;
-  domain_file->data = NULL;
+  domain_file->data = 0L;
 
   /* If the record does not represent a valid locale the FILENAME
      might be NULL.  This can happen when according to the given
      specification the locale file name is different for XPG and CEN
      syntax.  */
-  if (domain_file->filename == NULL)
+  if (domain_file->filename == 0L)
     return;
 
   /* Try to open the addressed file.  */
@@ -329,7 +319,7 @@ _nl_load_domain (struct loaded_l10nfile *domain_file)
 #if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP)
   /* Now we are ready to load the file.  If mmap() is available we try
      this first.  If not available or it failed we try to load it.  */
-  data = (struct mo_file_header *) mmap (NULL, st.st_size, PROT_READ,
+  data = (struct mo_file_header *) mmap (0L, st.st_size, PROT_READ,
 					 MAP_PRIVATE, fd, 0);
 
   if (data != (struct mo_file_header *) -1)
@@ -348,7 +338,7 @@ _nl_load_domain (struct loaded_l10nfile *domain_file)
       char *read_ptr;
 
       data = (struct mo_file_header *) malloc (st.st_size);
-      if (data == NULL)
+      if (data == 0L)
 	return;
 
       to_read = st.st_size;
@@ -386,7 +376,7 @@ _nl_load_domain (struct loaded_l10nfile *domain_file)
 
   domain_file->data
     = (struct loaded_domain *) malloc (sizeof (struct loaded_domain));
-  if (domain_file->data == NULL)
+  if (domain_file->data == 0L)
     return;
 
   domain = (struct loaded_domain *) domain_file->data;
@@ -415,7 +405,7 @@ _nl_load_domain (struct loaded_l10nfile *domain_file)
 #endif
 	free (data);
       free (domain);
-      domain_file->data = NULL;
+      domain_file->data = 0L;
       return;
     }
 
@@ -469,9 +459,9 @@ k_nl_find_domain (const char *dirname, char *locale, const char *domainname)
   /* If we have already tested for this locale entry there has to
      be one data set in the list of loaded domains.  */
   retval = _nl_make_l10nflist (&_nl_loaded_domains, dirname,
-			       strlen (dirname) + 1, 0, locale, NULL, NULL,
-			       NULL, NULL, NULL, NULL, NULL, domainname, 0);
-  if (retval != NULL)
+			       strlen (dirname) + 1, 0, locale, 0L, 0L,
+			       0L, 0L, 0L, 0L, 0L, domainname, 0);
+  if (retval != 0L)
     {
       /* We know something about this locale.  */
       int cnt;
@@ -479,18 +469,18 @@ k_nl_find_domain (const char *dirname, char *locale, const char *domainname)
       if (retval->decided == 0)
 	_nl_load_domain (retval);
 
-      if (retval->data != NULL)
+      if (retval->data != 0L)
 	return retval;
 
-      for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
+      for (cnt = 0; retval->successor[cnt] != 0L; ++cnt)
 	{
 	  if (retval->successor[cnt]->decided == 0)
 	    _nl_load_domain (retval->successor[cnt]);
 
-	  if (retval->successor[cnt]->data != NULL)
+	  if (retval->successor[cnt]->data != 0L)
 	    break;
 	}
-      return cnt >= 0 ? retval : NULL;
+      return cnt >= 0 ? retval : 0L;
       /* NOTREACHED */
     }
 
@@ -498,12 +488,12 @@ k_nl_find_domain (const char *dirname, char *locale, const char *domainname)
      *overwrites* the alias name.  No test for the original value is
      done.  */
   alias_value = _nl_expand_alias (locale);
-  if (alias_value != NULL)
+  if (alias_value != 0L)
     {
       size_t len = strlen (alias_value) + 1;
       locale = (char *) malloc (len);
-      if (locale == NULL)
-	return NULL;
+      if (locale == 0L)
+	return 0L;
 
       memcpy (locale, alias_value, len);
     }
@@ -521,26 +511,26 @@ k_nl_find_domain (const char *dirname, char *locale, const char *domainname)
 			       strlen (dirname) + 1, mask, language, territory,
 			       codeset, normalized_codeset, modifier, special,
 			       sponsor, revision, domainname, 1);
-  if (retval == NULL)
+  if (retval == 0L)
     /* This means we are out of core.  */
-    return NULL;
+    return 0L;
 
   if (retval->decided == 0)
     _nl_load_domain (retval);
-  if (retval->data == NULL)
+  if (retval->data == 0L)
     {
       int cnt;
-      for (cnt = 0; retval->successor[cnt] != NULL; ++cnt)
+      for (cnt = 0; retval->successor[cnt] != 0L; ++cnt)
 	{
 	  if (retval->successor[cnt]->decided == 0)
 	    _nl_load_domain (retval->successor[cnt]);
-	  if (retval->successor[cnt]->data != NULL)
+	  if (retval->successor[cnt]->data != 0L)
 	    break;
 	}
     }
 
   /* The room for an alias was dynamically allocated.  Free it now.  */
-  if (alias_value != NULL)
+  if (alias_value != 0L)
     free (locale);
 
   return retval;
@@ -613,10 +603,10 @@ k_bindtextdomain (const char *domainname, const char *dirname)
   struct binding *binding;
 
   /* Some sanity checks.  */
-  if (domainname == NULL || domainname[0] == '\0')
-    return NULL;
+  if (domainname == 0L || domainname[0] == '\0')
+    return 0L;
 
-  for (binding = _nl_domain_bindings; binding != NULL; binding = binding->next)
+  for (binding = _nl_domain_bindings; binding != 0L; binding = binding->next)
     {
       int compare = strcmp (domainname, binding->domainname);
       if (compare == 0)
@@ -625,16 +615,16 @@ k_bindtextdomain (const char *domainname, const char *dirname)
       if (compare < 0)
 	{
 	  /* It is not in the list.  */
-	  binding = NULL;
+	  binding = 0L;
 	  break;
 	}
     }
 
-  if (dirname == NULL)
+  if (dirname == 0L)
     /* The current binding has be to returned.  */
-    return binding == NULL ? (char *) _nl_default_dirname : binding->dirname;
+    return binding == 0L ? (char *) _nl_default_dirname : binding->dirname;
 
-  if (binding != NULL)
+  if (binding != 0L)
     {
       /* The domain is already bound.  Replace the old binding.  */
       char *new_dirname;
@@ -645,8 +635,8 @@ k_bindtextdomain (const char *domainname, const char *dirname)
 	{
 	  size_t len = strlen (dirname) + 1;
 	  new_dirname = (char *) malloc (len);
-	  if (new_dirname == NULL)
-	    return NULL;
+	  if (new_dirname == 0L)
+	    return 0L;
 
 	  memcpy (new_dirname, dirname, len);
 	}
@@ -663,13 +653,13 @@ k_bindtextdomain (const char *domainname, const char *dirname)
       struct binding *new_binding =
 	(struct binding *) malloc (sizeof (*new_binding));
 
-      if (new_binding == NULL)
-	return NULL;
+      if (new_binding == 0L)
+	return 0L;
 
       len = strlen (domainname) + 1;
       new_binding->domainname = (char *) malloc (len);
-      if (new_binding->domainname == NULL)
-	  return NULL;
+      if (new_binding->domainname == 0L)
+	  return 0L;
       memcpy (new_binding->domainname, domainname, len);
 
       if (strcmp (dirname, _nl_default_dirname) == 0)
@@ -678,13 +668,13 @@ k_bindtextdomain (const char *domainname, const char *dirname)
 	{
 	  len = strlen (dirname) + 1;
 	  new_binding->dirname = (char *) malloc (len);
-	  if (new_binding->dirname == NULL)
-	    return NULL;
+	  if (new_binding->dirname == 0L)
+	    return 0L;
 	  memcpy (new_binding->dirname, dirname, len);
 	}
 
       /* Now enqueue it.  */
-      if (_nl_domain_bindings == NULL
+      if (_nl_domain_bindings == 0L
 	  || strcmp (domainname, _nl_domain_bindings->domainname) < 0)
 	{
 	  new_binding->next = _nl_domain_bindings;
@@ -693,7 +683,7 @@ k_bindtextdomain (const char *domainname, const char *dirname)
       else
 	{
 	  binding = _nl_domain_bindings;
-	  while (binding->next != NULL
+	  while (binding->next != 0L
 		 && strcmp (domainname, binding->next->domainname) > 0)
 	    binding = binding->next;
 
@@ -739,7 +729,7 @@ struct block_list
     struct block_list *newp = (struct block_list *) malloc (sizeof (*newp));  \
     /* If we cannot get a free block we cannot add the new element to	      \
        the list.  */							      \
-    if (newp != NULL) {							      \
+    if (newp != 0L) {							      \
       newp->address = (addr);						      \
       newp->next = (list);						      \
       (list) = newp;							      \
@@ -747,7 +737,7 @@ struct block_list
   } while (0)
 # define FREE_BLOCKS(list)						      \
   do {									      \
-    while (list != NULL) {						      \
+    while (list != 0L) {						      \
       struct block_list *old = list;					      \
       list = list->next;						      \
       free (old);							      \
@@ -764,7 +754,7 @@ char *
 k_dcgettext (const char *domainname, const char *msgid, const int category)
 {
 #ifndef HAVE_ALLOCA
-  struct block_list *block_list = NULL;
+  struct block_list *block_list = 0L;
 #endif
   struct loaded_l10nfile *domain;
   struct binding *binding;
@@ -774,21 +764,21 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
   char *single_locale;
   char *retval;
   int saved_errno = errno;
-  const char *_domainname = (domainname == NULL) ? _nl_current_default_domain : domainname;
+  const char *_domainname = (domainname == 0L) ? _nl_current_default_domain : domainname;
 
-  /* If no real MSGID is given return NULL.  */
-  if (msgid == NULL)
-    return NULL;
+  /* If no real MSGID is given return 0L.  */
+  if (msgid == 0L)
+    return 0L;
 
-  /* If DOMAINNAME is NULL, we are interested in the default domain.  If
+  /* If DOMAINNAME is 0L, we are interested in the default domain.  If
      CATEGORY is not LC_MESSAGES this might not make much sense but the
      defintion left this undefined.  */
-  /* if (domainname == NULL)
+  /* if (domainname == 0L)
      domainname = _nl_current_default_domain;
   */
 
   /* First find matching binding.  */
-  for (binding = _nl_domain_bindings; binding != NULL; binding = binding->next)
+  for (binding = _nl_domain_bindings; binding != 0L; binding = binding->next)
     {
       int compare = strcmp (_domainname, binding->domainname);
       if (compare == 0)
@@ -797,12 +787,12 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
       if (compare < 0)
 	{
 	  /* It is not in the list.  */
-	  binding = NULL;
+	  binding = 0L;
 	  break;
 	}
     }
 
-  if (binding == NULL)
+  if (binding == 0L)
     dirname = (char *) _nl_default_dirname;
   else if (binding->dirname[0] == '/')
     dirname = binding->dirname;
@@ -820,7 +810,7 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
       ADD_BLOCK (block_list, dirname);
 
       errno = 0;
-      while ((ret = getcwd (dirname, path_max)) == NULL && errno == ERANGE)
+      while ((ret = getcwd (dirname, path_max)) == 0L && errno == ERANGE)
 	{
 	  path_max += PATH_INCR;
 	  dirname = (char *) alloca (path_max + dirname_len);
@@ -828,7 +818,7 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
 	  errno = 0;
 	}
 
-      if (ret == NULL)
+      if (ret == 0L)
 	{
 	  /* We cannot get the current working directory.  Don't signal an
 	     error but simply return the default string.  */
@@ -903,24 +893,24 @@ k_dcgettext (const char *domainname, const char *msgid, const int category)
 	 DOMAINNAME and CATEGORY.  */
       domain = k_nl_find_domain (dirname, single_locale, xdomainname);
 
-      if (domain != NULL)
+      if (domain != 0L)
 	{
 	  retval = find_msg (domain, msgid);
 
-	  if (retval == NULL)
+	  if (retval == 0L)
 	    {
 	      int cnt;
 
-	      for (cnt = 0; domain->successor[cnt] != NULL; ++cnt)
+	      for (cnt = 0; domain->successor[cnt] != 0L; ++cnt)
 		{
 		  retval = find_msg (domain->successor[cnt], msgid);
 
-		  if (retval != NULL)
+		  if (retval != 0L)
 		    break;
 		}
 	    }
 
-	  if (retval != NULL)
+	  if (retval != 0L)
 	    {
 	      FREE_BLOCKS (block_list);
 	      errno = saved_errno;
@@ -940,13 +930,13 @@ find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
   if (domain_file->decided == 0)
     _nl_load_domain (domain_file);
 
-  if (domain_file->data == NULL)
-    return NULL;
+  if (domain_file->data == 0L)
+    return 0L;
 
   domain = (struct loaded_domain *) domain_file->data;
 
   /* Locate the MSGID and its translation.  */
-  if (domain->hash_size > 2 && domain->hash_tab != NULL)
+  if (domain->hash_size > 2 && domain->hash_tab != 0L)
     {
       /* Use the hashing table.  */
       nls_uint32 len = strlen (msgid);
@@ -957,7 +947,7 @@ find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
 
       if (nstr == 0)
 	/* Hash table entry is empty.  */
-	return NULL;
+	return 0L;
 
       if (W (domain->must_swap, domain->orig_tab[nstr - 1].length) == len
 	  && strcmp (msgid,
@@ -976,7 +966,7 @@ find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
 	  nstr = W (domain->must_swap, domain->hash_tab[idx]);
 	  if (nstr == 0)
 	    /* Hash table entry is empty.  */
-	    return NULL;
+	    return 0L;
 
 	  if (W (domain->must_swap, domain->orig_tab[nstr - 1].length) == len
 	      && strcmp (msgid,
@@ -1082,28 +1072,28 @@ static const char *guess_category_value (int /*category*/, const char *categoryn
   /* The highest priority value is the `LANGUAGE' environment
      variable.  This is a GNU extension.  */
   retval = getenv ("LANGUAGE");
-  if (retval != NULL && retval[0] != '\0')
+  if (retval != 0L && retval[0] != '\0')
     return retval;
 
   /* `LANGUAGE' is not set.  So we have to proceed with the POSIX
      methods of looking to `LC_ALL', `LC_xxx', and `LANG'.  On some
      systems this can be done by the `setlocale' function itself.  */
 #if defined HAVE_SETLOCALE && defined HAVE_LC_MESSAGES && defined HAVE_LOCALE_NULL
-  return setlocale (category, NULL);
+  return setlocale (category, 0L);
 #else
   /* Setting of LC_ALL overwrites all other.  */
   retval = getenv ("LC_ALL");
-  if (retval != NULL && retval[0] != '\0')
+  if (retval != 0L && retval[0] != '\0')
     return retval;
 
   /* Next comes the name of the desired category.  */
   retval = getenv (categoryname);
-  if (retval != NULL && retval[0] != '\0')
+  if (retval != 0L && retval[0] != '\0')
     return retval;
 
   /* Last possibility is the LANG environment variable.  */
   retval = getenv ("LANG");
-  if (retval != NULL && retval[0] != '\0')
+  if (retval != 0L && retval[0] != '\0')
     return retval;
 
   /* We use C as the default domain.  POSIX says this is implementation
@@ -1128,7 +1118,7 @@ k_dgettext (const char *domainname, const char *msgid)
 char *
 k_gettext (const char *msgid)
 {
-  return k_dgettext ((const char *)NULL, msgid);
+  return k_dgettext ((const char *)0L, msgid);
 }
 
 /* Set the current default message catalog to DOMAINNAME.
@@ -1139,8 +1129,8 @@ k_textdomain (const char *domainname)
 {
   char *old;
 
-  /* A NULL pointer requests the current setting.  */
-  if (domainname == NULL)
+  /* A 0L pointer requests the current setting.  */
+  if (domainname == 0L)
     return (char *) _nl_current_default_domain;
 
   old = (char *) _nl_current_default_domain;
@@ -1156,7 +1146,7 @@ k_textdomain (const char *domainname)
 	 are out of core.  */
       size_t len = strlen (domainname) + 1;
       char *cp = (char *) malloc (len);
-      if (cp != NULL)
+      if (cp != 0L)
 	memcpy (cp, domainname, len);
       _nl_current_default_domain = cp;
     }
@@ -1217,7 +1207,7 @@ argz_next__ (char *argz, size_t argz_len, const char *entry)
       if (entry < argz + argz_len)
         entry = strchr (entry, '\0') + 1;
  
-      return entry >= argz + argz_len ? NULL : (char *) entry;
+      return entry >= argz + argz_len ? 0L : (char *) entry;
     }
   else
     if (argz_len > 0)
@@ -1254,7 +1244,7 @@ _nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
 		    int do_allocate)
 {
   char *abs_filename;
-  struct loaded_l10nfile *last = NULL;
+  struct loaded_l10nfile *last = 0L;
   struct loaded_l10nfile *retval;
   char *cp;
   size_t entries;
@@ -1280,11 +1270,11 @@ _nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
                                      ? strlen (revision) + 1 : 0)
                                   + 1 + strlen (filename) + 1);
  
-  if (abs_filename == NULL)
-    return NULL;
+  if (abs_filename == 0L)
+    return 0L;
  
-  retval = NULL;
-  last = NULL;
+  retval = 0L;
+  last = 0L;
  
   /* Construct file name.  */
   memcpy (abs_filename, dirlist, dirlist_len);
@@ -1336,9 +1326,9 @@ _nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
  
   /* Look in list of already loaded domains whether it is already
      available.  */
-  last = NULL;
-  for (retval = *l10nfile_list; retval != NULL; retval = retval->next)
-    if (retval->filename != NULL)
+  last = 0L;
+  for (retval = *l10nfile_list; retval != 0L; retval = retval->next)
+    if (retval->filename != 0L)
       {
         int compare = strcmp (retval->filename, abs_filename);
         if (compare == 0)
@@ -1347,14 +1337,14 @@ _nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
         if (compare < 0)
           {
             /* It's not in the list.  */
-            retval = NULL;
+            retval = 0L;
             break;
           }
  
         last = retval;
       }
  
-  if (retval != NULL || do_allocate == 0)
+  if (retval != 0L || do_allocate == 0)
     {
       free (abs_filename);
       return retval;
@@ -1364,16 +1354,16 @@ _nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
     malloc (sizeof (*retval) + (__argz_count (dirlist, dirlist_len)
                                 * (1 << pop (mask))
                                 * sizeof (struct loaded_l10nfile *)));
-  if (retval == NULL)
-    return NULL;
+  if (retval == 0L)
+    return 0L;
  
   retval->filename = abs_filename;
   retval->decided = (__argz_count (dirlist, dirlist_len) != 1
                      || ((mask & XPG_CODESET) != 0
                          && (mask & XPG_NORM_CODESET) != 0));
-  retval->data = NULL;
+  retval->data = 0L;
  
-  if (last == NULL)
+  if (last == 0L)
     {
       retval->next = *l10nfile_list;
       *l10nfile_list = retval;
@@ -1395,16 +1385,16 @@ _nl_make_l10nflist (struct loaded_l10nfile **l10nfile_list,
         && ((cnt & XPG_CODESET) == 0 || (cnt & XPG_NORM_CODESET) == 0))
       {
         /* Iterate over all elements of the DIRLIST.  */
-        char *dir = NULL;
+        char *dir = 0L;
         while ((dir = __argz_next ((char *) dirlist, dirlist_len, dir))
-               != NULL)
+               != 0L)
           retval->successor[entries++]
             = _nl_make_l10nflist (l10nfile_list, dir, strlen (dir) + 1, cnt,
                                   language, territory, codeset,
                                   normalized_codeset, modifier, special,
                                   sponsor, revision, filename, 1);
       }
-  retval->successor[entries] = NULL;
+  retval->successor[entries] = 0L;
  
   return retval;
 }
@@ -1457,7 +1447,7 @@ static size_t
 read_alias_file (const char *fname, int fname_len)
 {
 #ifndef HAVE_ALLOCA
-  struct block_list *block_list = NULL;
+  struct block_list *block_list = 0L;
 #endif
   FILE *fp;
   char *full_fname;
@@ -1470,7 +1460,7 @@ read_alias_file (const char *fname, int fname_len)
   memcpy (&full_fname[fname_len], aliasfile, sizeof aliasfile);
 
   fp = fopen (full_fname, "r");
-  if (fp == NULL)
+  if (fp == 0L)
     {
       FREE_BLOCKS (block_list);
       return 0;
@@ -1489,7 +1479,7 @@ read_alias_file (const char *fname, int fname_len)
       char *value;
       char *cp;
 
-      if (fgets (buf, BUFSIZ, fp) == NULL)
+      if (fgets (buf, BUFSIZ, fp) == 0L)
 	/* EOF reached.  */
 	break;
 
@@ -1538,7 +1528,7 @@ read_alias_file (const char *fname, int fname_len)
 	      /* We cannot depend on strdup available in the libc.  Sigh!  */
 	      len = strlen (alias) + 1;
 	      tp = (char *) malloc (len);
-	      if (tp == NULL)
+	      if (tp == 0L)
 		{
 		  FREE_BLOCKS (block_list);
 		  return added;
@@ -1548,7 +1538,7 @@ read_alias_file (const char *fname, int fname_len)
 
 	      len = strlen (value) + 1;
 	      tp = (char *) malloc (len);
-	      if (tp == NULL)
+	      if (tp == 0L)
 		{
 		  FREE_BLOCKS (block_list);
 		  return added;
@@ -1563,10 +1553,10 @@ read_alias_file (const char *fname, int fname_len)
 
       /* Possibily not the whole line fitted into the buffer.  Ignore
 	 the rest of the line.  */
-      while (strchr (cp, '\n') == NULL)
+      while (strchr (cp, '\n') == 0L)
 	{
 	  cp = buf;
-	  if (fgets (buf, BUFSIZ, fp) == NULL)
+	  if (fgets (buf, BUFSIZ, fp) == 0L)
 	    /* Make sure the inner loop will be left.  The outer loop
 	       will exit at the `feof' test.  */
 	    *cp = '\n';
@@ -1605,10 +1595,10 @@ _nl_expand_alias (const char *name)
 							 const void *)
 						) alias_compare);
       else
-	retval = NULL;
+	retval = 0L;
 
       /* We really found an alias.  Return the value.  */
-      if (retval != NULL)
+      if (retval != 0L)
 	return retval->value;
 
       /* Perhaps we can find another alias file.  */
@@ -1630,7 +1620,7 @@ _nl_expand_alias (const char *name)
     }
   while (added != 0);
 
-  return NULL;
+  return 0L;
 }
 
 static void
@@ -1642,7 +1632,7 @@ extend_alias_table ()
   new_size = maxmap == 0 ? 100 : 2 * maxmap;
   new_map = (struct alias_map *) malloc (new_size
                                          * sizeof (struct alias_map));
-  if (new_map == NULL)
+  if (new_map == 0L)
     /* Simply don't extend: we don't have any more core.  */
     return;
  
@@ -1667,13 +1657,13 @@ _nl_explode_name (char *name, const char **language,
   char *cp;
   int mask;
 
-  *modifier = NULL;
-  *territory = NULL;
-  *codeset = NULL;
-  *normalized_codeset = NULL;
-  *special = NULL;
-  *sponsor = NULL;
-  *revision = NULL;
+  *modifier = 0L;
+  *territory = 0L;
+  *codeset = 0L;
+  *normalized_codeset = 0L;
+  *special = 0L;
+  *sponsor = 0L;
+  *revision = 0L;
 
   /* Now we determine the single parts of the locale name.  First
      look for the language.  Termination symbols are `_' and `@' if
@@ -1781,13 +1771,13 @@ _nl_explode_name (char *name, const char **language,
      separator character in the file name, not for XPG syntax.  */
   if (syntax == xpg)
     {
-      if (*territory != NULL && (*territory)[0] == '\0')
+      if (*territory != 0L && (*territory)[0] == '\0')
 	mask &= ~TERRITORY;
 
-      if (*codeset != NULL && (*codeset)[0] == '\0')
+      if (*codeset != 0L && (*codeset)[0] == '\0')
 	mask &= ~XPG_CODESET;
 
-      if (*modifier != NULL && (*modifier)[0] == '\0')
+      if (*modifier != 0L && (*modifier)[0] == '\0')
 	mask &= ~XPG_MODIFIER;
     }
 
@@ -1817,7 +1807,7 @@ _nl_normalize_codeset (const char *codeset, size_t name_len)
 
   retval = (char *) malloc ((only_digit ? 3 : 0) + len + 1);
 
-  if (retval != NULL)
+  if (retval != 0L)
     {
       if (only_digit)
 	wp = stpcpy (retval, "iso");
