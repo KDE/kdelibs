@@ -46,10 +46,9 @@ public:
      * Returns a pixmap for @p url with size @p size
      * Uses @ref KMimeType::pixmapForURL()
      */
-    virtual QPixmap KURLPixmapProvider::pixmapFor( const QString& url,
-						   int size = 0 ) {
-	static KURL u;
-	if ( url.at(1) == '/' )
+    virtual QPixmap pixmapFor( const QString& url, int size = 0 ) {
+	KURL u;
+	if ( url.at(0) == '/' )
 	    u.setPath( url );
 	else
 	    u = url;
