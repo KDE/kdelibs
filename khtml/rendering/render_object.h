@@ -92,6 +92,13 @@ public:
 
     static RenderObject *createObject(DOM::NodeImpl *node);
 
+    /**
+     * (defined in dom_nodeimpl.h)
+     * Generally, this is DOM::ActivationOff, except the keyboard cursor
+     * is over this node (DOM::ActivationPassive), or even
+     * pushed down(DOM::ActivationActive).
+     * visited links carry DOM::ActivationOffButVisited (at least i hope so...)
+     */
     DOM::ActivationState hasKeyboardFocus;
 
     // some helper functions...
@@ -209,19 +216,19 @@ public:
     virtual void layout() = 0;
 
     /**
-     * this function get's called, if a child changed it's geometry
+     * this function gets called when a child changed it's geometry
      * (because an image got loaded or some changes in the DOM...)
      */
     virtual void updateSize();
 
     /**
-     * this function get's called, if a child changed it's height
+     * this function gets called when a child changed it's height
      * (because an image got loaded or some changes in the DOM...)
      */
     virtual void updateHeight() {}
 
     /**
-     * This function gets called, when the parser leaves the element
+     * This function gets called as soon as the parser leaves the element
      *
      */
     virtual void close() { setParsing(false); }
@@ -250,9 +257,9 @@ public:
      */
     RenderObject *containingBlock() const;
 
-    /** return the size of the containing block.
-     * Needed for layout
-     * calculations, see CSS2 specs, 10.1
+    /**
+     * return the size of the containing block.
+     * Needed for layout calculations, see CSS2 specs, 10.1
      */
     virtual QSize containingBlockSize() const;
 
@@ -264,19 +271,59 @@ public:
      * Renderingtree.
      */
     virtual short containingBlockWidth() const;
+
+    /**
+     * returns the height of the block the current Element is in. useful
+     * for relative width/height calculations.
+     *
+     * must not be called before the Element has been added to the
+     * Renderingtree.
+     */
     virtual int containingBlockHeight() const;
 
-    // the size of the content area (see CSS2 visual formatting details)
+    /**
+     * the original size of the content area
+     * (see CSS2 visual formatting details)
+     */
     virtual QSize contentSize() const;
+
+    /**
+     * the original width of the content area
+     */
     virtual short contentWidth() const { return 0; }
+
+    /**
+     * the original height of the content area
+     */
     virtual int contentHeight() const { return 0; }
 
-    // Intrinsic size of replaced element 
+    /**
+     * A helper value for calculating the layout
+     * extent of a replaced element. for images, it is the physical
+     * width of the image.
+     * Note that this value can differ from the layouted size as 
+     * retrieved by @ref contentWidth(), i.e. if the image is scaled.
+     *
+     * for inlined elements, the value is undefined, and 0 is returned.
+     */
     virtual short intrinsicWidth() const { return 0; }
+
+    /**
+     * A helper value for calculating the layout
+     * extent of a replaced element. for images, it is the physical
+     * height of the image.
+     * Note that this value can differ from the layouted size as 
+     * retrieved by @ref contentHeight(), i.e. if the image is scaled.
+     *
+     * for inlined elements, the value is undefined, and 0 is returned.
+     */
     virtual int intrinsicHeight() const { return 0; }
 
 
-    // the offset of the contents relative to the box borders (basically border+padding)
+    /**
+     * the offset of the contents relative to the box borders
+     * (basically border+padding)
+     */
     virtual QSize contentOffset() const;
     // the size of the content + padding
     virtual QSize paddingSize() const;
@@ -291,12 +338,12 @@ public:
     virtual void setHeight( int /*height*/ ) { }
 
     /**
-     * Get X-Position of this object relative to its parent
+     * Get the X-Position of this object relative to its parent
      */
     virtual int xPos() const { return 0; }
 
     /**
-     * Get Y-Position of this object relative to its parent
+     * Get the Y-Position of this object relative to its parent
      */
     virtual int yPos() const { return 0; }
    
@@ -374,7 +421,7 @@ public:
 
     /**
      * called by the dom node. affects rendering so that the next call
-     * to print() adds an activation. ActivationPassive indicates that
+     * to print() adds an activation. DOM::ActivationPassive indicates that
      * the keyboard cursor is over the associated dom node, while
      * DOM::ActivationActive means that the activating key is
      * currently pressed.
@@ -390,7 +437,14 @@ public:
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
-    // paint box decorations (helper function for ::print())
+    /**
+     * helper function for RenderObject::print().
+     * Draws the box decorations:
+     * - DOC: (what box decorations are there?)
+     * - 
+     * - 
+     * the coordinates are meant relative to the contents area.
+     */
     virtual void printBoxDecorations(QPainter* /*p*/, int /*_x*/, int /*_y*/,
                                      int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {}
 
