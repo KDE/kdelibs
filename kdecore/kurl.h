@@ -368,19 +368,21 @@ private:
 };
 
 /**
- * Compares both URLs. They are parsed, splitted and compared. Two malformed URLs
+ * Compares both URLs. They are parsed, splitted and compared. This means they
+ * should be both encoded before, or both decoded. Two malformed URLs
  * with the same string representation are nevertheless considered to be
  * unequal. That means no malformed URL equals anything else.
  */
 bool urlcmp( const QString& _url1, const QString& _url2 );
 
 /**
- * Compares both URLs. They are parsed, splitted and compared. Two malformed URLs
+ * Compares both URLs. They are parsed, splitted and compared. This means they
+ * should be both encoded before, or both decoded. Two malformed URLs
  * with the same string representation are nevertheless considered to be
  * unequal. That means no malformed URL equals anything else.
  *
- * @param _ignore_ref if true disables comparison of HTML style references.
  * @param _ignore_trailing is described in @ref KURL::cmp
+ * @param _ignore_ref if true disables comparison of HTML style references.
  */
 bool urlcmp( const QString& _url1, const QString& _url2, bool _ignore_trailing, bool _ignore_ref );
 
