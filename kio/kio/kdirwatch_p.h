@@ -11,6 +11,8 @@
 #include <fam.h>
 #endif
 
+#define invalid_ctime ((time_t)-1)
+
 /* KDirWatchPrivate is a singleton and does the watching
  * for every KDirWatch instance in the application.
  */
@@ -36,7 +38,9 @@ public:
   {
   public:
     // the last observed modification time
-    QDateTime m_ctime;
+    time_t m_ctime;
+    // the last observed link count
+    int m_nlink; 
     entryStatus m_status;
     entryMode m_mode;
     bool isDir;

@@ -34,9 +34,9 @@
 #include <config.h>
 
 #ifdef HAVE_DNOTIFY
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <unistd.h>
-//#include <time.h>
+#include <time.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <errno.h>
@@ -503,6 +503,8 @@ bool KDirWatchPrivate::useStat(Entry* e)
   else
     useFreq(e, m_PollInterval);
 
+  e->m_nlink = 0;
+
   if (e->m_mode != StatMode) {
     e->m_mode = StatMode;
     statEntries++;
@@ -571,28 +573,31 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 
   // we have a new path to watch
 
-  QFileInfo info(path);
+  struct stat stat_buf;
+  bool exists = (stat(QFile::encodeName(path), &stat_buf) == 0);
 
   Entry newEntry;
   m_mapEntries.insert( path, newEntry );
   // the insert does a copy, so we have to use <e> now
   Entry* e = &(m_mapEntries[path]);
 
-  if (info.exists()) {
-    e->isDir = info.isDir();
+  if (exists) {
+    e->isDir = S_ISDIR(stat_buf.st_mode);
 
     if (e->isDir && !isDir)
       qWarning("KDirWatch: %s is a directory. Use addDir!", path.ascii());
     else if (!e->isDir && isDir)
       qWarning("KDirWatch: %s is a file. Use addFile!", path.ascii());
 
-    e->m_ctime = info.lastModified();
+    e->m_ctime = stat_buf.st_ctime;
     e->m_status = Normal;
+    e->m_nlink = stat_buf.st_nlink;
   }
   else {
     e->isDir = isDir;
-    e->m_ctime = QDateTime(); // invalid
+    e->m_ctime = invalid_ctime;
     e->m_status = NonExistent;
+    e->m_nlink = 0;
   }
 
   e->path = path;
@@ -757,7 +762,7 @@ bool KDirWatchPrivate::stopEntryScan( KDirWatch* instance, Entry* e)
 
   if (stillWatching == 0) {
     // if nobody is interested, we don't watch
-    e->m_ctime = QDateTime(); // invalid
+    e->m_ctime = invalid_ctime; // invalid
     //    e->m_status = Normal;
   }
   return true;
@@ -788,13 +793,14 @@ bool KDirWatchPrivate::restartEntryScan( KDirWatch* instance, Entry* e,
   int ev = NoChange;
   if (wasWatching == 0) {
     if (!notify) {
-      QFileInfo info(e->path);
-      if (info.exists()) {
-	e->m_ctime = info.lastModified();
+      struct stat stat_buf;
+      bool exists = (stat(QFile::encodeName(e->path), &stat_buf) == 0);
+      if (exists) {
+	e->m_ctime = stat_buf.st_ctime;
 	e->m_status = Normal;
       }
       else {
-	e->m_ctime = QDateTime(); // invalid
+	e->m_ctime = invalid_ctime;
 	e->m_status = NonExistent;
       }
     }
@@ -873,18 +879,20 @@ int KDirWatchPrivate::scanEntry(Entry* e)
     e->msecLeft += e->freq;
   }
 
-  QFileInfo info(e->path);
-  if (info.exists()) {
+  struct stat stat_buf;
+  bool exists = (stat(QFile::encodeName(e->path), &stat_buf) == 0);
+  if (exists) {
 
     if (e->m_status == NonExistent) {
-      e->m_ctime = info.lastModified();
+      e->m_ctime = stat_buf.st_ctime;
       e->m_status = Normal;
       return Created;
     }
 
-    if ( e->m_ctime.isValid() &&
-	 (info.lastModified() != e->m_ctime) ) {
-      e->m_ctime = info.lastModified();
+    if ( (e->m_ctime != invalid_ctime) && 
+	 ((stat_buf.st_ctime != e->m_ctime) || (stat_buf.st_nlink != (nlink_t) e->m_nlink)) ) {
+      e->m_ctime = stat_buf.st_ctime;
+      e->m_nlink = stat_buf.st_nlink;
       return Changed;
     }
 
@@ -893,10 +901,11 @@ int KDirWatchPrivate::scanEntry(Entry* e)
 
   // dir/file doesn't exist
 
-  if (!e->m_ctime.isValid())
+  if (e->m_ctime == invalid_ctime)
     return NoChange;
 
-  e->m_ctime = QDateTime(); // invalid
+  e->m_ctime = invalid_ctime;
+  e->m_nlink = 0;
   e->m_status = NonExistent;
 
   return Deleted;
@@ -1316,8 +1325,10 @@ QDateTime KDirWatch::ctime( const QString &_path )
 
   if (!e)
     return QDateTime();
-  else
-    return e->m_ctime;
+
+  QDateTime result;
+  result.setTime_t(e->m_ctime);
+  return result;
 }
 
 void KDirWatch::removeDir( const QString& _path )
