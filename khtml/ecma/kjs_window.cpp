@@ -959,7 +959,9 @@ bool Window::checkIsSafeScript(KHTMLPart *activePart) const
   DOM::DOMString thisDomain = thisDocument.domain();
 
   if ( actDomain == thisDomain ) {
+#ifdef KJS_VERBOSE
     kdDebug(6070) << "JavaScript: access granted, domain is '" << actDomain.string() << "'" << endl;
+#endif
     return true;
   }
 
