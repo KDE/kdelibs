@@ -1,3 +1,7 @@
+2004-11-29  Allan Sandfeld Jensen <kde@carewolf.com>
+
+        * css/cssstyleselector.cpp: Handle :lang selector
+
 2004-11-27  Germain Garand  <germain@ebooksfrance.org>
 
         merge WebCore differences in logic for Auto table layout
