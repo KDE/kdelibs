@@ -22,6 +22,13 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
+ifeq ($(DEB_BUILD_GNU_TYPE),i386-linux)
+  # Uncomment the following 2 lines to enable i686 optimziation
+  # You may want to tweak the settings to your likings
+  #export CFLAGS=-O3 -march=i686 -ffast-math -finline-functions
+  #export CXXFLAGS=-O3 -march=i686 -ffast-math -finline-functions
+endif
+
 ifeq ($(DEB_BUILD_GNU_TYPE),alpha-linux)
   export CFLAGS +=-O0 -mieee
   export CXXFLAGS +=-O0 -mieee
@@ -29,14 +36,21 @@ endif
 
 -include debian/debiandirs
 
-debian/debiandirs: debian/debianrules
-	perl -w debian/debianrules echodirs > debian/debiandirs
+# To be used with kde-style admin subdirectories if desired. debian/debiandirs is included in
+# this template. 
+#debian/debiandirs: admin/debianrules
+#	perl -w admin/debianrules echodirs > debian/debiandirs
 
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
-	#CONFIGURE#
+	# make build directory
+	mkdir $(objdir)
+
+ 	# run configure with build tree $(objdir)
+	cd $(objdir) && \
+	../configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) $(configkde) \
 
 	touch configure-stamp
 
@@ -45,7 +59,13 @@ build-stamp: configure-stamp
 	dh_testdir
 
 	# Add here commands to compile the package.
+	cd $(objdir) && \
 	$(MAKE)
+
+	# generate manpages
+	#for i in debian/*.sgml; do \
+	#        docbook-to-man $$i > `dirname $$i`/`basename $$i .sgml`.1 ;\
+	#done
 
 	touch build-stamp
 
@@ -66,7 +86,8 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/tmp
-	#INSTALL#
+	cd $(objdir) && \
+        $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 
 
 # Build architecture-independent files here.
