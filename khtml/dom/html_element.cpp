@@ -23,6 +23,8 @@
 #include "dom_string.h"
 #include "html_element.h"
 #include "html_elementimpl.h"
+#include "html_misc.h" // HTMLCollection
+#include "html_miscimpl.h" // HTMLCollectionImpl
 #include "dom_exception.h"
 using namespace DOM;
 
@@ -167,4 +169,10 @@ void HTMLElement::setInnerText( const DOMString &text )
 	ok = ((HTMLElementImpl *)impl)->setInnerText( text );
     if ( !ok )
 	throw DOMException(DOMException::NO_MODIFICATION_ALLOWED_ERR);
+}
+
+HTMLCollection HTMLElement::children() const
+{
+    if(!impl) return HTMLCollection();
+    return HTMLCollection(impl, HTMLCollectionImpl::NODE_CHILDREN);
 }
