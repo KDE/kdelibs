@@ -673,9 +673,10 @@ QString KFileItem::getToolTipText(int maxcount)
       if ( item.isValid() )
       {
         QString s = item.string();
-        if (s.length() > 50) {
-          s.truncate(47);
-          s.append("...");
+        if ( ( item.attributes() & KFileMimeTypeInfo::SqueezeText )
+             && s.length() > 50) {
+            s.truncate(47);
+            s.append("...");
         }
         if ( !s.isEmpty() )
         {
