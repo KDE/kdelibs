@@ -32,9 +32,6 @@ namespace KHE
 
 class TextColumnInterface
 {
-  public:
-    //static const char *Name = "KHE::TextColumnInterface";
-
   public: // set methods
     /** sets whether "unprintable" chars (>32) should be displayed in the text column
       * with their corresponding character.
@@ -58,6 +55,7 @@ class TextColumnInterface
 };
 
 
+/** tries to get the textcolumn interface of t */
 template<class T>
 TextColumnInterface *textColumnInterface( T *t )
 {

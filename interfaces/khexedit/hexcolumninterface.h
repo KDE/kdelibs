@@ -22,7 +22,7 @@ namespace KHE
 {
 
 /**
- *  A hex edit editor/viewer for arrays of byte
+ *  Interface for the hex value displaying column of a hexedit widget
  *
  * @author Friedrich W. H. Kossebau Friedrich.W.H@Kossebau.de
  */
@@ -64,12 +64,13 @@ class HexColumnInterface
     virtual void setGroupSpacingWidth( int GSW ) = 0;
 
     /** sets the spacing in the middle of a binary byte in the hex column
-      * @param BinaryGapW spacing in the middle of a binary in pixels
+      * @param BGW spacing in the middle of a binary in pixels
       */
     virtual void setBinaryGapWidth( int BGW )    = 0;
 };
 
 
+/** tries to get the hexcolumn interface of t */
 template<class T>
 HexColumnInterface *hexColumnInterface( T *t )
 {

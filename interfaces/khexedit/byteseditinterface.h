@@ -27,7 +27,7 @@ namespace KHE
 {
 
 /**
- *  A hex edit editor/viewer interface for arrays of byte
+ *  An interface for a hex edit editor/viewer for arrays of byte
  *
  * @author Friedrich W. H. Kossebau Friedrich.W.H@Kossebau.de
  */
@@ -72,8 +72,6 @@ class BytesEditInterface
 
 
   public: // get methods
-    /** returns true if there is a selected range in the array */
-    virtual bool hasSelectedData() const = 0;
     /** */
     virtual char *data() const = 0;
     /** returns the size of the actual byte array */
@@ -97,6 +95,7 @@ class BytesEditInterface
 };
 
 
+/** tries to get the bytesedit interface of t */
 template<class T>
 BytesEditInterface *bytesEditInterface( T *t )
 {
@@ -106,7 +105,58 @@ BytesEditInterface *bytesEditInterface( T *t )
   return static_cast<BytesEditInterface*>( t->qt_cast("KHE::BytesEditInterface") );
 }
 
-
+/** tries to create an instance of a hexedit widget for arrays of chars (char[])
+  *
+  * Usage:
+  *
+  * \code
+  * #include <khexeditor/byteseditinterface.h>
+  * #include <khexeditor/hexcolumninterface.h>
+  * #include <khexeditor/textcolumninterface.h>
+  * #include <khexeditor/clipboardinterface.h>
+  * ...
+  *
+  * QWidget *BytesEditWidget = KHE::createBytesEditWidget( this, "BytesEditWidget" );
+  * // was khexedit2 installed, so the widget could be found?
+  * if( BytesEditWidget )
+  * {
+  *   // fetch the editor interface
+  *   KHE::BytesEditInterface *BytesEdit = KHE::bytesEditInterface( BytesEditWidget );
+  *   Q_ASSERT( BytesEdit ); // This should not fail!
+  *
+  *   // now use the editor.
+  *   BytesEdit->setData( Buffer, BufferSize, -1 );
+  *   BytesEdit->setMaxDataSize( BufferSize );
+  *   BytesEdit->setReadOnly( false );
+  *   BytesEdit->setAutoDelete( true );
+  *
+  *   KHE::HexColumnInterface *HexColumn = KHE::hexColumnInterface( BytesEditWidget );
+  *   if( HexColumn )
+  *   {
+  *     HexColumn->setCoding( KHE::HexColumnInterface::BinaryCoding );
+  *     HexColumn->setByteSpacingWidth( 2 );
+  *     HexColumn->setNoOfGroupedBytes( 4 );
+  *     HexColumn->setGroupSpacingWidth( 12 );
+  *   }
+  *
+  *   KHE::TextColumnInterface *TextColumn = KHE::textColumnInterface( BytesEditWidget );
+  *   if( TextColumn )
+  *   {
+  *     TextColumn->setShowUnprintable( false );
+  *     TextColumn->setSubstituteChar( '*' );
+  *   }
+  *   KHE::ClipboardInterface *Clipboard = KHE::clipboardInterface( BytesEditWidget );
+  *   if( Clipboard )
+  *   {
+  *     // Yes, use BytesEditWidget, not Clipboard, because that's the QObject, indeed hacky...
+  *     connect( BytesEditWidget, SIGNAL(copyAvailable(bool)), this, SLOT(offerCopy(bool)) );
+  *   }
+  * }
+  * \endcode
+  *
+  * @param Parent  parent widget
+  * @param Name    identifier
+  */
 QWidget *createBytesEditWidget( QWidget *Parent = 0, const char *Name = 0 )
 {
   return KParts::ComponentFactory::createInstanceFromQuery<QWidget>

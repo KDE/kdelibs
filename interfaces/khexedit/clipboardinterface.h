@@ -22,11 +22,10 @@ namespace KHE
 {
 
 /**
- *  A hex edit editor/viewer for arrays of byte
+ *  Interface for interaction with the clipboard
  *
  * @author Friedrich W. H. Kossebau Friedrich.W.H@Kossebau.de
  */
-
 class ClipboardInterface
 {
   public: // slots
@@ -34,16 +33,21 @@ class ClipboardInterface
     virtual void copy() = 0;
     /** try to cut */
     virtual void cut() = 0;
-    /** try to paste */
+    /** try to paste
+      * Use BytesEditInterface::isReadOnly() to find out if you can paste
+      */
     virtual void paste() = 0;
 
   public: // signals
     /** tells whether there is a copy available or not.
+      * Remember to use the created object, not the interface for connecting
       * Use BytesEditInterface::isReadOnly() to find out if you can also cut
       */
     virtual void copyAvailable( bool Really ) = 0;
 };
 
+
+/** tries to get the clipboard interface of t */
 template<class T>
 ClipboardInterface *clipboardInterface( T *t )
 {
@@ -56,4 +60,3 @@ ClipboardInterface *clipboardInterface( T *t )
 }
 
 #endif
-

@@ -40,7 +40,7 @@ class ZoomInterface
     /** increases the display size by an arbitrary value */
     virtual void zoomIn() = 0;
     /** makes the display smaller
-      * @param PointInc decrement to the display size, in font point size
+      * @param PointDec decrement to the display size, in font point size
       */
     virtual void zoomOut( int PointDec ) = 0;
     /** decreases the display size by an arbitrary value */
