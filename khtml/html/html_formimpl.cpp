@@ -624,25 +624,31 @@ bool HTMLGenericFormElementImpl::isSelectable() const
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 {
-  kdDebug(6010)<<"default form event handler reached"<<endl;
-  if (evt->target()==this)
-    { 
-      if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT || evt->id()==EventImpl::CLICK_EVENT)
-	{
-	  setFocus();
-	  setActive();
-	}
-      else if (evt->id()==EventImpl::KHTML_KEYUP_EVENT)
-	{
-	  setActive(false);
-	}
-      if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT ||
-	  evt->id()==EventImpl::KHTML_KEYUP_EVENT)
-	{
-	  KeyEventImpl * k = static_cast<KeyEventImpl *>(evt);
-	  if (k->keyVal() == QChar('\n').unicode() && m_render && m_render->isWidget() && k->qKeyEvent)
-	    QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->m_widget, k->qKeyEvent);
-	}
+    kdDebug(6010)<<"default form event handler reached for event "<<evt->type().string()<<endl;
+    if (evt->target()==this)
+    {
+        if (evt->id()==EventImpl::MOUSEDOWN_EVENT || evt->id()==EventImpl::KHTML_KEYDOWN_EVENT)
+        {
+            setActive();
+        }
+        else if (evt->id() == EventImpl::MOUSEUP_EVENT || evt->id()==EventImpl::KHTML_KEYUP_EVENT)
+        {
+	    if (m_active)
+	    {
+		setActive(false);
+		setFocus();
+	    }
+	    else
+	      setActive(false);
+        }
+
+        if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT ||
+            evt->id()==EventImpl::KHTML_KEYUP_EVENT)
+        {
+            KeyEventImpl * k = static_cast<KeyEventImpl *>(evt);
+            if (k->keyVal() == QChar('\n').unicode() && m_render && m_render->isWidget() && k->qKeyEvent)
+                QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->m_widget, k->qKeyEvent);
+        }
     }
 }
 
@@ -705,11 +711,11 @@ void HTMLButtonElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -728,6 +734,7 @@ void HTMLButtonElementImpl::defaultEventHandler(EventImpl *evt)
         }
         if(m_form && m_type == RESET) m_form->reset();
     }
+    HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
 
 void HTMLButtonElementImpl::attach()
@@ -980,19 +987,19 @@ void HTMLInputElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONSELECT:
         setHTMLEventListener(EventImpl::SELECT_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
@@ -1308,16 +1315,17 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 
         m_clicked = true;
         if(m_type == RESET)
-	    m_form->reset();
+            m_form->reset();
         else {
             m_activeSubmit = true;
-	    if (!m_form->prepareSubmit()) {
-		xPos = 0;
-		yPos = 0;
-	    }
+            if (!m_form->prepareSubmit()) {
+                xPos = 0;
+                yPos = 0;
+            }
             m_activeSubmit = false;
         }
     }
+    HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
 
 
@@ -1348,11 +1356,11 @@ void HTMLLabelElementImpl::parseAttribute(AttrImpl *attr)
     {
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLElementImpl::parseAttribute(attr);
@@ -1596,15 +1604,15 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
         break;
     case ATTR_ONFOCUS:
         setHTMLEventListener(EventImpl::FOCUS_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONBLUR:
         setHTMLEventListener(EventImpl::BLUR_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     case ATTR_ONCHANGE:
         setHTMLEventListener(EventImpl::CHANGE_EVENT,
-	    ownerDocument()->createHTMLEventListener(attr->value().string()));
+            ownerDocument()->createHTMLEventListener(attr->value().string()));
         break;
     default:
         HTMLGenericFormElementImpl::parseAttribute(attr);
