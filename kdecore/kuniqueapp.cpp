@@ -49,7 +49,7 @@ KUniqueApplication::~KUniqueApplication()
 }
 
 bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
-				 QCString &replyType, QByteArray &reply)
+				 QCString &replyType, QByteArray &/*reply*/)
 {
   if (fun == "newInstance(QValueList<QCString>)") {
     QDataStream ds(data, IO_ReadOnly);

@@ -62,7 +62,7 @@
 static int minimumListWidth( const QListBox *list ) 
 {
   int w=0;
-  for( int i=0; i<list->count(); i++ )
+  for( uint i=0; i<list->count(); i++ )
   {
     int itemWidth = list->item(i)->width(list);
     w = QMAX(w,itemWidth);
@@ -521,6 +521,9 @@ int KFontDialog::getFontAndText( QFont &theFont, QString &theString,
 ****************************************************************************
 *
 * $Log$
+* Revision 1.45  1999/10/09 00:08:29  kalle
+* The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
+*
 * Revision 1.44  1999/09/30 21:30:56  espensa
 * KFontCooser:
 * 1. Reimplemented the sizeHint() to return the value of minimumSizeHint()

@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.40  1999/10/09 09:48:42  kalle
+   more get killing
+   You need to cvs update your libc (joke!)
+
    Revision 1.39  1999/10/08 23:04:37  torben
    For components in libraries one has to use KLibGlobal instead
    of KGlobal
@@ -142,13 +146,14 @@
 #define KICONLOADER_H
 
 class KConfig;
-class KLibGlobal;
+class KInstance;
 
 #include <qobject.h>
 #include <qlist.h>
 #include <qpixmap.h>
 #include <qstringlist.h>
 #include <qstring.h>
+#include <kglobal.h>
 
 /**
 	Icon loader with caching.
@@ -248,16 +253,16 @@ public:
 
   /**
    * Constructs an KIconLoader for a component stored in a shared library.
-   * In this case KLibGlobal has to be used instead of the @ref KGlobal.
+   * In this case KInstance has to be used instead of the @ref KGlobal.
    */
-  KIconLoader( KLibGlobal* _library, const QString& var_name );
+  KIconLoader( const KInstance* library, const QString &var_name = "PixmapPath" );
     
   /** Destructor. */
   ~KIconLoader () {}
 
   /**
-  	Load an icon from disk or cache.
-
+     Load an icon from disk or cache.
+     
 	@param name	The name of the icon to load. Absolute pathnames are
 	 		allowed.
   	@param w	The max width of the resulting pixmap. Larger icons
@@ -335,7 +340,7 @@ public:
 protected:
 
   KConfig		*config;
-  KLibGlobal* library;
+  const KInstance             * library;
     
   /**
 	honourcache will check if the icon is contained in the cache before
@@ -358,7 +363,7 @@ private:
 
 };
 
-QPixmap BarIcon(const QString& pixmap, KLibGlobal* library = 0);
+QPixmap BarIcon(const QString& pixmap, const KInstance* library = KGlobal::instance());
 
 #endif // KICONLOADER_H
 

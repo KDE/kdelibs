@@ -199,7 +199,7 @@ void KConfigTestView::writeButtonClicked()
 
 int main( int argc, char **argv )
 {
-  KApplication  a( argc, argv );
+  KApplication  a( argc, argv, "kconfigtest" );
 
   //  KConfigTestView   *w = new KConfigTestView();
   // a.setMainWidget( w );

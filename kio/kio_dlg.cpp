@@ -9,7 +9,7 @@ bool open_CriticalDlg( const char *_title, const char *_message, const char *_bu
   {
     const char* a[2] = { "dummy", 0L };
     int b = 1;
-    (void)new KApplication( b, const_cast<char**>(a));
+    (void)new KApplication( b, const_cast<char**>(a), "kio_dlg");
   }
 
   if ( QMessageBox::critical( 0L, _title, _message, _but1, _but2 ) )

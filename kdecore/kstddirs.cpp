@@ -27,7 +27,7 @@
 #include "kstddirs.h"
 #include "kglobal.h"
 #include "kconfig.h"
-#include "klibglobal.h"
+#include "kinstance.h"
 
 static const char* types[] = {"html", "icon", "mini", "apps", "sound",
 			      "data", "locale", "services", "mime",
@@ -634,31 +634,22 @@ QString KStandardDirs::localkdedir() const
 
 // just to make code more readable without macros
 QString locate( const QString& type,
-		const QString& filename, KLibGlobal* library )
+		const QString& filename, KInstance* inst )
 {
-    if ( library )
-	return library->dirs()->findResource(type, filename);
-    else
-	return KGlobal::dirs()->findResource(type, filename);
+    return inst->dirs()->findResource(type, filename);
 }
 
 QString locateLocal( const QString& type,
-	             const QString& filename, KLibGlobal* library )
+	             const QString& filename, KInstance* inst )
 {
     // try to find slashes. If there are some, we have to
     // create the subdir first
     int slash = filename.findRev('/')+1;
     if (!slash) // only one filename
-    {
-        if ( library )
-            return library->dirs()->saveLocation(type) + filename;
-        else
-            return KGlobal::dirs()->saveLocation(type) + filename;
-    }
+	return inst->dirs()->saveLocation(type) + filename;
 
     // split path from filename
     QString dir = filename.left(slash);
     QString file = filename.mid(slash);
-    return KGlobal::dirs()->saveLocation(type, dir) + file;
+    return inst->dirs()->saveLocation(type, dir) + file;
 }
-

@@ -114,7 +114,7 @@ SkipDlg_Result open_SkipDlg( const char *_dest, bool _multi )
   {
     const char* a[2] = { "dummy", 0L };
     int b = 1;
-    (void)new KApplication( b, const_cast<char**>(a) );
+    (void)new KApplication( b, const_cast<char**>(a), "skip_dlg" );
   }
   
   KIOSkipDlg dlg( 0L, _dest, _multi, true );

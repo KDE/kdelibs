@@ -34,7 +34,7 @@
  */
  
 #include <config.h>
-#ifdef WITH_DMALLOC
+#ifdef WITH_DMALLOC2
 
 extern "C" {
 #include <stdlib.h>

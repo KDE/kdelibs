@@ -40,6 +40,7 @@
 #include "kglobal.h"
 #include "kstddirs.h"
 #include "ksimpleconfig.h"
+#include <kinstance.h>
 
 /**
   * Stephan: I don't want to put this in an extra header file, since
@@ -182,7 +183,7 @@ KLocale::KLocale( const QString& _catalogue )
 
     catalogues = new QStrList(true);
 
-    initLanguage(KGlobal::_config, catalogue);
+    initLanguage(KGlobal::instance()->_config, catalogue);
 }
 
 void KLocale::initLanguage(KConfig *config, const QString& catalogue)

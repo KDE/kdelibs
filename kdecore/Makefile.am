@@ -33,7 +33,7 @@ include_HEADERS = kconfig.h kconfigdata.h ksimpleconfig.h kconfigbase.h \
 	kprotocolmanager.h kregexp.h kstyle.h \
 	kstddirs.h kglobal.h ksharedptr.h kde_dmalloc.h \
 	kstartparams.h kallocator.h kautoarray.h ksharedpixmap.h \
-	klibglobal.h kpalette.h kipc.h klibloader.h
+	kinstance.h kpalette.h kipc.h klibloader.h
 
 noinst_HEADERS = kdebugdialog.h kckey.h kregpriv.h
 
@@ -48,7 +48,7 @@ libkdecore_la_SOURCES = libintl.cpp kstddirs.cpp  \
 	kprotocolmanager.cpp kurl.cpp ltdl.c kregexp.cpp \
 	kglobal.cpp dmalloc.cpp  kstartparams.cpp \
 	kallocator.cpp ksharedpixmap.cpp vsnprintf.c \
-	klibglobal.cpp kpalette.cpp kipc.cpp klibloader.cpp
+	kinstance.cpp kpalette.cpp kipc.cpp klibloader.cpp
 
 libkdecore_la_LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(USER_LDFLAGS) -version-info 3:0 -no-undefined
 libkdecore_la_LIBADD = qk/libqk.la -lXext $(LIB_DCOP) $(LIBDL) $(LIB_DMALLOC)

@@ -9,7 +9,7 @@
 
 #include <unistd.h>
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
      KApplication k(argc,argv, "kded", false /* not GUI */);
 
@@ -40,5 +40,5 @@ main(int argc, char *argv[])
 #endif
 
 
-     k.exec(); // keep running
+     return k.exec(); // keep running
 }

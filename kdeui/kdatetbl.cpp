@@ -360,7 +360,7 @@ KDateTable::sizeHint() const
 }
 
 KDateInternalMonthPicker::KDateInternalMonthPicker
-(int fontsize, QWidget* parent, const char* name=0)
+(int fontsize, QWidget* parent, const char* name)
   : QTableView(parent, name),
     result(0) // invalid
 {
@@ -454,7 +454,7 @@ KDateInternalMonthPicker::mousePressEvent(QMouseEvent *e)
 }
 
 KDateInternalYearSelector::KDateInternalYearSelector
-(int fontsize, QWidget* parent=0, const char* name=0)
+(int fontsize, QWidget* parent, const char* name)
   : QLineEdit(parent, name),
     val(new QIntValidator(this)),
     result(0)
@@ -508,7 +508,7 @@ KDateInternalYearSelector::setYear(int year)
   setText(temp);
 }
 
-QPopupFrame::QPopupFrame(QWidget* parent=0, const char*  name=0)
+QPopupFrame::QPopupFrame(QWidget* parent, const char*  name)
   : QFrame(parent, name, WType_Popup),
     result(0), // rejected
     main(0)

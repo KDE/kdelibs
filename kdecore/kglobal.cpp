@@ -15,78 +15,51 @@
 #include <kcharsets.h>
 #include <kiconloader.h>
 #include <kstddirs.h>
+#include <kinstance.h>
 
 #include <qfont.h>
 
-KApplication *KGlobal::kApp()
-{
-//	assert( kapp != 0 ); 	// This would be good, but not practical
-
-	return kapp;
-}
-
 KStandardDirs *KGlobal::dirs()
 {
-	if( _dirs == 0 ) {
-		_dirs = new KStandardDirs( );
-		_dirs->addKDEDefaults();
-	}
-
-	return _dirs;
+    return _instance->dirs();
 }
 
 KConfig	*KGlobal::config()
 {
-        if( _config == 0 ) {
-	    if (kapp)
-		_config = new KConfig(QString(kapp->name()) + "rc");
-	    else
-		_config = new KConfig();
-	}
-
-	return _config;
-}
-
-KConfig	*KGlobal::instanceConfig()
-{
-	if( _instanceConfig == 0 ) {
-		_instanceConfig = kApp()->sessionConfig();
-	}
-
-	return _instanceConfig;
+    return _instance->config();
 }
 
 KIconLoader *KGlobal::iconLoader()
 {
-    if( _iconLoader == 0 ) {
-	_iconLoader = new KIconLoader();
-    }
-
-    return _iconLoader;
+    return _instance->iconLoader();
 }
 
 KLocale	*KGlobal::locale()
 {	
-	if( _locale == 0 ) {
-		// will set _locale if it works - otherwise 0 is returned
-		KLocale::initInstance();
-	}
-
-	return _locale;
+    if( _locale == 0 ) {
+	init();
+	// will set _locale if it works - otherwise 0 is returned
+	KLocale::initInstance();
+    }
+    
+    return _locale;
 }
 
 KCharsets *KGlobal::charsets()
 {
-	if( _charsets == 0 ) {
-		_charsets =new KCharsets();
-	}
-
-	return _charsets;
+    if( _charsets == 0 ) {
+	init();
+	_charsets =new KCharsets();
+    }
+    
+    return _charsets;
 }
 
 QFont KGlobal::generalFont()
 {
     if(_generalFont) return *_generalFont;
+
+    init();
 
     _generalFont = new QFont("helvetica", 12, QFont::Normal);
     charsets()->setQFont(*_generalFont, charsets()->charsetForLocale());
@@ -101,6 +74,8 @@ QFont KGlobal::fixedFont()
     if(_fixedFont) {
         return *_fixedFont;
     }
+
+    init();
 
     KConfig *c = KGlobal::config();
     c->setGroup( "General" );
@@ -119,6 +94,9 @@ QFont KGlobal::fixedFont()
 int KGlobal::dndEventDelay()
 {
     static int delay = -1;
+
+    init();
+
     if(delay == -1){
         KConfig *c = KGlobal::config();
         c->setGroup("General");
@@ -127,37 +105,31 @@ int KGlobal::dndEventDelay()
     return(delay);
 }
 
-
+void KGlobal::init()
+{
+    if (_instance)
+	return;
+    _instance = new KInstance("unknown");
+    qAddPostRoutine( freeAll );
+}
 
 void KGlobal::freeAll()
 {	
-	delete _iconLoader;
-	_iconLoader = 0;
-	delete _locale;
-	_locale = 0;
-	delete _charsets;
-	_charsets = 0;
-	delete _generalFont;
-	_generalFont = 0;
-	delete _fixedFont;
-	_fixedFont = 0;
-	delete _config;
-	_config = 0;
-	delete _instanceConfig;
-	_instanceConfig = 0;
-	delete _dirs;
-	_dirs = 0;
+    delete _locale;
+    _locale = 0;
+    delete _charsets;
+    _charsets = 0;
+    delete _generalFont;
+    _generalFont = 0;
+    delete _fixedFont;
+    _fixedFont = 0;
+    delete _instance;
+    _instance = 0;
 }
 	
 // The Variables
 
-KApplication    *KGlobal::_kapp		= 0;
-KStandardDirs   *KGlobal::_dirs		= 0;
-
-KConfig         *KGlobal::_config	= 0;
-KConfig         *KGlobal::_instanceConfig	= 0;
-KIconLoader     *KGlobal::_iconLoader	= 0;
-
+KInstance       *KGlobal::_instance     = 0;
 KLocale         *KGlobal::_locale	= 0;
 KCharsets       *KGlobal::_charsets	= 0;
 

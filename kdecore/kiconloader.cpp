@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.74  1999/10/16 14:00:56  reggie
+   fixes for Canossa
+
    Revision 1.73  1999/10/09 09:48:41  kalle
    more get killing
    You need to cvs update your libc (joke!)
@@ -238,7 +241,7 @@ Load large icons in icons/large or pics/large if setting is 'large'.
 #include "kapp.h"
 #include "kconfig.h"
 #include "kglobal.h"
-#include "klibglobal.h"
+#include "kinstance.h"
 #include "kstddirs.h"
 
 void KIconLoader::initPath()
@@ -279,10 +282,7 @@ void KIconLoader::initPath()
   bool large = (setting == "Large" );
 
   KStandardDirs* dirs;
-  if ( library )
-      dirs = library->dirs();
-  else
-      dirs = KGlobal::dirs();
+  dirs = library->dirs();
 
   if ( large )
       dirs->addResourceType("icon",
@@ -308,21 +308,23 @@ void KIconLoader::initPath()
 }
 
 KIconLoader::KIconLoader( KConfig *conf, const QString &app_name, const QString &var_name ) :
-  config(conf), library( 0 ), appname(app_name), varname(var_name)
+  config(conf), appname(app_name), varname(var_name)
 {
+    library = KGlobal::instance();
     iconType = "toolbar";
     initPath();
 }
 
-KIconLoader::KIconLoader( KLibGlobal* _library, const QString& var_name )
-    : config( _library->config() ), appname( _library->name() ), varname(var_name)
+KIconLoader::KIconLoader( const KInstance* _library, const QString& var_name)
+  : library(_library), varname(var_name)
 {
-    library = _library;
+    config = library->config();
+    appname = library->instanceName();
     iconType = "toolbar";
     initPath();
 }
 
-KIconLoader::KIconLoader() : config(0), library( 0 ), varname("IconPath")
+KIconLoader::KIconLoader() : config(0), varname("IconPath")
 {
   KApplication *app = KApplication::kApplication();
   if (app) {
@@ -330,6 +332,7 @@ KIconLoader::KIconLoader() : config(0), library( 0 ), varname("IconPath")
     config->setGroup("KDE Setup");
     appname = KApplication::kApplication()->name();
   }
+  library = KGlobal::instance();
   iconType = "toolbar";
 
   initPath();
@@ -434,10 +437,7 @@ QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h,
 
 void KIconLoader::addPath( QString path )
 {
-    if ( library )
-	library->dirs()->addResourceDir("toolbar", path);
-    else
-	KGlobal::dirs()->addResourceDir("toolbar", path);
+    library->dirs()->addResourceDir("toolbar", path);
 }
 
 void KIconLoader::flush( const QString& )
@@ -446,12 +446,9 @@ void KIconLoader::flush( const QString& )
 	warning( "KIconLoader::flush is deprecated." );
 }
 
-QPixmap BarIcon(const QString& pixmap , KLibGlobal* library )
+QPixmap BarIcon(const QString& pixmap , const KInstance* library )
 {
-    if ( library )
-	return library->iconLoader()->loadIcon(pixmap, 0, 0, false);
-    else
-	return KGlobal::iconLoader()->loadIcon(pixmap, 0, 0, false);
+  return library->iconLoader()->loadIcon(pixmap, 0, 0, false);
 }
 
 #include "kiconloader.moc"

@@ -27,9 +27,9 @@
 #include <qdict.h>
 #include <qlist.h>
 #include <qstringlist.h>
+#include <kglobal.h>
 
 class KConfig;
-class KLibGlobal;
 
 /**
 * @short Site-independent access to standard KDE directories.
@@ -403,7 +403,7 @@ public:
  * But if you pass a KLibGlobal, then library->dirs() is
  * queried for the desired resource.
  **/
-QString locate( const QString& type, const QString& filename, KLibGlobal* library = 0 );
+QString locate( const QString& type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
 /**
  * This function is much like locate. However it returns a
@@ -413,6 +413,6 @@ QString locate( const QString& type, const QString& filename, KLibGlobal* librar
  * specific file, filename must have a trailing slash.
  *
  **/
-QString locateLocal( const QString& type, const QString& filename, KLibGlobal* library = 0 );
+QString locateLocal( const QString& type, const QString& filename, const KInstance* instance = KGlobal::instance() );
 
 #endif // SSK_KSTDDIRS_H

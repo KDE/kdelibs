@@ -40,6 +40,8 @@ typedef unsigned long Atom;
 
 #include <qapplication.h>
 #include <qpixmap.h>
+#include <kinstance.h>
+
 class QPopupMenu;
 class QStrList;
 class KSessionManaged;
@@ -70,7 +72,7 @@ class KApplicationPrivate;
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 * @version $Id$
 */
-class KApplication : public QApplication
+class KApplication : public QApplication, public KInstance
 {
   friend QTDispatcher;
 
@@ -78,17 +80,17 @@ class KApplication : public QApplication
 public:
   enum CaptionLayout { CaptionAppLast=1, CaptionAppFirst, CaptionNoApp };
 
-/**
- * Constructor. Parses command-line arguments.
- *
- * @param allowStyles Set to false to disable the loading on plugin based
- * styles. This is only useful to applications that do not display a GUI
- * normally. If you do create an application with allowStyles set to false
- * that normally runs in the background but under special circumstances
- * displays widgets call enableStyles() before displaying any widgets.
- */
+  /**
+   * Constructor. Parses command-line arguments.
+   *
+   * @param allowStyles Set to false to disable the loading on plugin based
+   * styles. This is only useful to applications that do not display a GUI
+   * normally. If you do create an application with allowStyles set to false
+   * that normally runs in the background but under special circumstances
+   * displays widgets call enableStyles() before displaying any widgets.
+   */
   KApplication(int& argc, char** argv,
-              const QCString& rAppName = 0, bool allowStyles=true);
+              const QCString& rAppName, bool allowStyles=true);
 
   /** Destructor */
   virtual ~KApplication();
@@ -246,8 +248,6 @@ public:
    * @return true on success.
    */
   bool kdeFonts(QStringList &fontlist) const;
-
-  // QString appName () const { return name(); }
 
   /**
    * Return a text for the window caption.
@@ -503,6 +503,11 @@ public:
 #endif
 
 // $Log$
+// Revision 1.116  1999/10/22 21:08:44  mosfet
+// Added an additional bool parameter for disabling of plugin styles. Intended
+// only for apps that link to kdecore but don't display a GUI. For apps that
+// usually don't use a GUI but may on error see enableStyles().
+//
 // Revision 1.115  1999/10/21 22:20:09  espensa
 // helpMenu(), aboutKDE(), aboutApp() and appHelpActivated() has moved to
 // ktmainwindow (kdeui). This will break a lot of code. KDE2PORTING has

@@ -142,17 +142,15 @@ static QString sessionConfigName()
 
 KApplication::KApplication( int& argc, char** argv, const QCString& rAppName,
                             bool allowStyles) :
-    QApplication( argc, argv )
+    QApplication( argc, argv ), KInstance(rAppName)
 {
     useStyles = allowStyles;
-    if (!rAppName.isEmpty())
-	QApplication::setName(rAppName );
-
+    ASSERT (!rAppName.isEmpty());
+    setName(rAppName);
     pAppData = new KApplicationPrivate;
 
     init();
     parseCommandLine( argc, argv );
-
 }
 
 KConfig* KApplication::config() const { return KGlobal::config(); }
@@ -198,10 +196,10 @@ void KApplication::init()
 
   display = desktop()->x11Display();
 
-  KDEChangePalette = XInternAtom( display, "KDEChangePalette", False );
-  KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", False );
-  KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", False);
-  KDEChangeBackground = XInternAtom( display, "KDEChangeBackground", False);
+  KDEChangePalette = XInternAtom( display, "KDEChangePalette", false );
+  KDEChangeGeneral = XInternAtom( display, "KDEChangeGeneral", false );
+  KDEChangeStyle = XInternAtom( display, "KDEChangeStyle", false);
+  KDEChangeBackground = XInternAtom( display, "KDEChangeBackground", false);
 
   readSettings(false);
   kdisplaySetPalette();
@@ -222,7 +220,7 @@ void KApplication::init()
 
   // register a communication window for desktop changes (Matthias)
   {
-    Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", False);
+    Atom a = XInternAtom(qt_xdisplay(), "KDE_DESKTOP_WINDOW", false);
     smw = new QWidget(0,0);
     long data = 1;
     XChangeProperty(qt_xdisplay(), smw->winId(), a, a, 32,
@@ -261,6 +259,7 @@ KSessionManaged::KSessionManaged()
     sessionClients()->remove( this );
     sessionClients()->append( this );
 }
+
 KSessionManaged::~KSessionManaged()
 {
     sessionClients()->remove( this );
@@ -268,17 +267,17 @@ KSessionManaged::~KSessionManaged()
 
 bool KSessionManaged::saveState(QSessionManager&)
 {
-    return TRUE;
+    return true;
 }
 
 bool KSessionManaged::commitData(QSessionManager&)
 {
-    return TRUE;
+    return true;
 }
 
 
 void KApplication::disableSessionManagement() {
-  bSessionManagement = True;
+  bSessionManagement = true;
 }
 
 void KApplication::commitData( QSessionManager& sm )
@@ -300,7 +299,7 @@ void KApplication::commitData( QSessionManager& sm )
 
 void KApplication::saveState( QSessionManager& sm )
 {
-    static bool firstTime = FALSE;
+    static bool firstTime = false;
 
     if ( !bSessionManagement ) {
 	sm.setRestartHint( QSessionManager::RestartNever );
@@ -308,7 +307,7 @@ void KApplication::saveState( QSessionManager& sm )
     }
 
     if ( firstTime ) {
-	firstTime = FALSE;
+	firstTime = false;
 	return; // no need to save the state.
     }
 
@@ -612,8 +611,6 @@ KApplication::~KApplication()
 
   delete smw;
 
-  KGlobal::freeAll();
-
   // close down IPC
   delete pDCOPClient;
 
@@ -647,7 +644,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	readSettings(true);
 	kdisplaySetPalette();
 	
-	return True;
+	return true;
       }
 
     if ( cme->message_type == KDEChangeGeneral )
@@ -656,14 +653,14 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	kdisplaySetPalette();
 	kdisplaySetStyleAndFont();
 	
-	return True;
+	return true;
       }
 
     if ( cme->message_type == KDEChangeBackground )
       {
         int data = cme->data.l[0];
 	emit backgroundChanged(data);
-	return True;
+	return true;
       }
   }
 

@@ -52,7 +52,6 @@ class KWMModuleApplication:public KApplication {
 
 public:
 
-  KWMModuleApplication( int &argc, char *argv[]);
   KWMModuleApplication( int &argc, char *argv[], const QCString& rAppName);
   virtual ~KWMModuleApplication(){};
 

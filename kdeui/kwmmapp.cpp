@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.21  1999/10/13 15:54:06  mosfet
+    KApp now uses QCString for name.
+
     Revision 1.20  1999/10/09 09:48:45  kalle
     more get killing
     You need to cvs update your libc (joke!)
@@ -60,14 +63,6 @@ int KWMModuleXErrorHandler(Display *, XErrorEvent *){
   return 0; // ignore Xerrors
 
 };
-
-KWMModuleApplication::KWMModuleApplication( int &argc, char *argv[])
-                     :KApplication(argc, argv){
-
-    XSetErrorHandler(KWMModuleXErrorHandler);
-    module = new QWidget;
-
-}
 
 KWMModuleApplication::KWMModuleApplication(
 					   int &argc, char *argv[],
