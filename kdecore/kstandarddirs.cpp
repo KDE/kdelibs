@@ -1360,6 +1360,7 @@ bool KStandardDirs::addCustomized(KConfig *config)
         {
             addPrefix(*it, priority);
 	    addXdgConfigPrefix(*it+"/etc/xdg", priority);
+	    addXdgDataPrefix(*it+"/share", priority);
 	}
 
         // iterating over all entries in the group Directories
