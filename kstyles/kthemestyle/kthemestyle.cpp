@@ -68,9 +68,13 @@ Port version 0.9.6
 #include <qobjectlist.h>
 #include "kstyledirs.h"
 
+#include <qimage.h>
+
 #include <limits.h>
 
-#include <qimage.h>
+#ifdef __GLIBC__
+#include <dlfcn.h>
+#endif
 
 static const QCOORD u_arrow[] = { -1, -3, 0, -3, -2, -2, 1, -2, -3, -1, 2, -1, -4, 0, 3, 0, -4, 1, 3, 1};
 static const QCOORD d_arrow[] = { -4, -2, 3, -2, -4, -1, 3, -1, -3, 0, 2, 0, -2, 1, 1, 1, -1, 2, 0, 2};
@@ -108,7 +112,17 @@ class KThemeStylePlugin : public QStylePlugin
 public:
 
     KThemeStylePlugin()
-    {}
+    {
+#ifdef __GLIBC__
+        dlopen("kthemestyle.so",RTLD_LAZY);
+	//####### Keep reference count up so kdecore w. fast-malloc doesn't get unloaded
+	//####### (Fixes exit crashes with qt-only apps that occur on Linux)
+	//####### This should be rethought after 3.0,
+	//####### as it relies on the implementation-specific behavior
+	//####### of the glibc libdl (finding already loaded libraries based on the
+	//####### soname)
+#endif
+    }
 
     ~KThemeStylePlugin()
     {}
