@@ -1,3 +1,8 @@
+2004-02-23  Stephan Kulow  <coolo@kde.org>
+
+	* rendering/render_inline.cpp: check if the containingBlock is displayed 
+	as block before using it as continuation (#73573)
+
 2004-02-22  Frerich Raabe  <raabe@kde.org>
 
 	* khtml_part.cpp/.h (openURL): In case the call is a reload, do a stat

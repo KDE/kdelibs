@@ -196,32 +196,21 @@ void RenderInline::splitInlines(RenderBlock* fromBlock, RenderBlock* toBlock,
 void RenderInline::splitFlow(RenderObject* beforeChild, RenderBlock* newBlockBox,
                              RenderObject* newChild, RenderFlow* oldCont)
 {
-    RenderBlock *pre = 0;
-    RenderStyle* newStyle = 0;
+    RenderBlock* pre = 0;
     RenderBlock* block = containingBlock();
     bool madeNewBeforeBlock = false;
-    if (block->isAnonymous()) {
+    if (block->isAnonymous() && block->style()->display() == BLOCK) {
         // We can reuse this block and make it the preBlock of the next continuation.
         pre = block;
         block = block->containingBlock();
     }
     else {
         // No anonymous block available for use.  Make one.
-        newStyle = new RenderStyle();
-        newStyle->inheritFrom(block->style());
-        newStyle->setDisplay(BLOCK);
-        pre = new (renderArena()) RenderBlock(document() /* anonymous */);
-        pre->setStyle(newStyle);
-        pre->setChildrenInline(true);
+        pre = block->createAnonymousBlock();
         madeNewBeforeBlock = true;
     }
 
-    newStyle = new RenderStyle();
-    newStyle->inheritFrom(block->style());
-    newStyle->setDisplay(BLOCK);
-    RenderBlock *post = new (renderArena()) RenderBlock(document() /* anonymous */);
-    post->setStyle(newStyle);
-    post->setChildrenInline(true);
+    RenderBlock* post = block->createAnonymousBlock();
 
     RenderObject* boxFirst = madeNewBeforeBlock ? block->firstChild() : pre->nextSibling();
     if (madeNewBeforeBlock)
