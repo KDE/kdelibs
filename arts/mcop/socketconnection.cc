@@ -59,7 +59,7 @@ SocketConnection::SocketConnection()
 }
 
 SocketConnection::SocketConnection(int _fd)
-  : _broken(false), fd(_fd)
+  : fd(_fd), _broken(false)
 {
 	arts_debug("socketconnection created, fd = %d",fd);
 	Dispatcher::the()->ioManager()->watchFD(fd,
