@@ -211,7 +211,7 @@ int KPrinterImpl::filterFiles(KPrinter *printer, QStringList& files, bool flag)
 		if (flist.findIndex("psselect") == -1)
 		{
 			int	index = KMFactory::self()->filterManager()->insertFilter(flist, "psselect", false);
-			if (index == -1 || !KMFactory::self()->filterManager()->checkFilter("pselect"))
+			if (index == -1 || !KMFactory::self()->filterManager()->checkFilter("psselect"))
 			{
 				printer->setErrorMessage(i18n("<p>Unable to perform the requested page selection. The filter <b>psselect</b> "
 							      "cannot be inserted in the current filter chain. See <b>Filter</b> tab in the "
