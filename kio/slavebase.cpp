@@ -323,7 +323,7 @@ bool SlaveBase::requestNetwork(const QString& host)
     KIO_DATA << host << d->slaveid;
     m_pConnection->send( MSG_NET_REQUEST, data );
 
-    if ( waitForAnswer( INF_NETWORK_STATUS, 0, data ) )
+    if ( waitForAnswer( INF_NETWORK_STATUS, 0, data ) != -1 )
     {
         bool status;
         QDataStream stream( data, IO_ReadOnly );
@@ -473,7 +473,8 @@ bool SlaveBase::openPassDlg( const QString& head, QString& user, QString& pass, 
     kdDebug(7019) << "openPassDlg " << head << endl;
     KIO_DATA << key << head << user << pass;
     m_pConnection->send( INF_NEED_PASSWD, data );
-    if ( waitForAnswer( CMD_USERPASS, CMD_NONE, data ) == CMD_USERPASS ) {
+    int cmd;
+    if ( waitForAnswer( CMD_USERPASS, CMD_NONE, data, &cmd ) != -1 && cmd == CMD_USERPASS ) {
         QDataStream stream( data, IO_ReadOnly );
         stream >> user >> pass;
         kdDebug(7019) << "got " << user << "  [password hidden]" << endl;
@@ -487,7 +488,7 @@ int SlaveBase::messageBox( int type, const QString &text, const QString &caption
     kdDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo << endl;
     KIO_DATA << type << text << caption << buttonYes << buttonNo;
     m_pConnection->send( INF_MESSAGEBOX, data );
-    if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) )
+    if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
     {
         QDataStream stream( data, IO_ReadOnly );
         int answer;
@@ -498,15 +499,19 @@ int SlaveBase::messageBox( int type, const QString &text, const QString &caption
         return 0; // communication failure
 }
 
-int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data )
+int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, int *pCmd )
 {
-    int cmd;
+    int cmd, result;
     for (;;)
     {
-        if ( m_pConnection->read( &cmd, data ) == -1 )
-            return 0;
+        result = m_pConnection->read( &cmd, data );
+        if ( result == -1 )
+            return -1;
         if ( cmd == expected1 || cmd == expected2 )
-            return cmd;
+        {
+            if ( pCmd ) *pCmd = cmd;
+            return result;
+        }
         if ( cmd == CMD_SLAVE_STATUS || cmd == CMD_REPARSECONFIGURATION || cmd == CMD_META_DATA )
             dispatch( cmd, data );
         else
@@ -516,18 +521,8 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data )
 
 int SlaveBase::readData( QByteArray &buffer)
 {
-   int cmd;
-   int result;
-   result = m_pConnection->read( &cmd, buffer );
-
-   if (result == -1)
-      return -1;
-
-   kdDebug(7019) << "readData: cmd = " << cmd << ", length = " << result << " " << endl;
-
-   if (cmd != MSG_DATA)
-      return -1;
-
+   int result = waitForAnswer( MSG_DATA, 0, buffer );
+   //kdDebug(7019) << "readData: length = " << result << " " << endl;
    return result;
 }
 
