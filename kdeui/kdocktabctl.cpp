@@ -984,7 +984,7 @@ void KDockTabBar::paintEvent(QPaintEvent *)
       paint.setPen( colorGroup().light() );
       paint.moveTo( 0, height()-1 );
       paint.lineTo( curx, height()-1 );
-      paint.moveTo( QMIN( curx + curWidth, width() - 50 ), height()-1 );
+      paint.moveTo( QMIN( curx + curWidth, width() /*- 50*/ ), height()-1 );
       paint.lineTo( width() - 1, height()-1 );
       break;
     case TAB_RIGHT:
