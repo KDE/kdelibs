@@ -154,7 +154,7 @@ private:
   /**
    * @internal. For use by KIconViewItem.
    */
-  QBitmap itemMask( QPixmap *pix ) const;
+  QPixmap selectedIconPixmap( QPixmap *pix, const QColor &col ) const;
 
   class KIconViewPrivate;
   KIconViewPrivate *d;

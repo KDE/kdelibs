@@ -28,6 +28,8 @@
 #include <kapplication.h>
 #include <kipc.h>
 #include <kcursor.h>
+#include <kpixmap.h>
+#include <kpixmapeffect.h>
 
 #ifdef Q_WS_X11
 #include <X11/Xlib.h>
@@ -168,7 +170,7 @@ void KIconView::slotAutoSelect()
     //Shift pressed?
 #ifdef Q_WS_X11 //FIXME
     if( (keybstate & ShiftMask) ) {
-      //Temporary implementaion of the selection until QIconView supports it
+      //Temporary implementation of the selection until QIconView supports it
       bool block = signalsBlocked();
       blockSignals( true );
 
@@ -326,13 +328,12 @@ QFontMetrics *KIconView::itemFontMetrics() const
     return d->fm;
 }
 
-QBitmap KIconView::itemMask( QPixmap *pix ) const
+QPixmap KIconView::selectedIconPixmap( QPixmap *pix, const QColor &col ) const
 {
-    // Yet more code duplication from QIconView, due to QIconView::mask() being private
-    QBitmap m;
+    QPixmap m;
     if ( d->maskCache.find( QString::number( pix->serialNumber() ), m ) )
 	return m;
-    m = pix->createHeuristicMask();
+    m = KPixmapEffect::selectedPixmap( KPixmap(*pix), col );
     d->maskCache.insert( QString::number( pix->serialNumber() ), m );
     return m;
 }
@@ -485,22 +486,6 @@ void KIconViewItem::calcRect( const QString& text_ )
 
 }
 
-static QPixmap *kiv_buffer_pixmap = 0;
-static QCleanupHandler<QPixmap> kiv_cleanup_pixmap;
-
-// Yay let's keep duplicating stuff, we love that so much...
-static QPixmap *get_kiv_buffer_pixmap( const QSize &s )
-{
-    if ( !kiv_buffer_pixmap ) {
-        kiv_buffer_pixmap = new QPixmap( s );
-        kiv_cleanup_pixmap.add( &kiv_buffer_pixmap );
-        return kiv_buffer_pixmap;
-    }
-
-    kiv_buffer_pixmap->resize( s );
-    return kiv_buffer_pixmap;
-}
-
 void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
 {
     QIconView* view = iconView();
@@ -509,6 +494,8 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
         return;
     // No word-wrap ? Call the default paintItem in that case
     // (because we don't have access to calcTmpText()).
+    // ################ This prevents the use of KPixmapEffect::selectedPixmap
+    // This really needs to be opened up in qt.
     if ( !view->wordWrapIconText() )
     {
         QIconViewItem::paintItem( p, cg );
@@ -529,111 +516,44 @@ void KIconViewItem::paintItem( QPainter *p, const QColorGroup &cg )
     KIconView *kview = static_cast<KIconView *>(iconView());
     int textX = textRect( FALSE ).x();
     int textY = textRect( FALSE ).y();
-
-    // Yet more code duplication from QIconView
-    // just to replace p->drawText() with m_wordWrap->drawText() !
+    int iconX = pixmapRect( FALSE ).x();
+    int iconY = pixmapRect( FALSE ).y();
 
     p->save();
-
-    if ( isSelected() ) {
-	p->setPen( cg.highlightedText() );
-    } else {
-	p->setPen( cg.text() );
-    }
 
 #ifndef QT_NO_PICTURE
     if ( picture() ) {
 	QPicture *pic = picture();
 	if ( isSelected() ) {
+            // TODO something as nice as selectedIconPixmap if possible ;)
 	    p->fillRect( pixmapRect( FALSE ), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
 	}
 	p->drawPicture( x()-pic->boundingRect().x(), y()-pic->boundingRect().y(), *pic );
-	if ( isSelected() ) {
-	    p->fillRect( textRect( FALSE ), cg.highlight() );
-	    p->setPen( QPen( cg.highlightedText() ) );
-	} else if ( view->itemTextBackground() != NoBrush )
-	    p->fillRect( textRect( FALSE ), view->itemTextBackground() );
-
-	int align = view->itemTextPos() == QIconView::Bottom ? AlignHCenter : AlignAuto;
-        //align |= WordBreak /*| BreakAnywhere*/;
-	//p->drawText( textRect( FALSE ), align, text() );
-        m_wordWrap->drawText( p, textX, textY, align );
-	p->restore();
-	return;
-    }
+    } else
 #endif
-    // ### get rid of code duplication
-    if ( view->itemTextPos() == QIconView::Bottom ) {
-	int w = pixmap()->width();
-
-	if ( isSelected() ) {
-	    QPixmap *pix = pixmap();
-	    if ( pix && !pix->isNull() ) {
-		QPixmap *buffer = get_kiv_buffer_pixmap( pix->size() );
-		QBitmap mask = kview->itemMask( pix );
-
-		QPainter p2( buffer );
-		p2.fillRect( pix->rect(), white );
-		p2.drawPixmap( 0, 0, *pix );
-		p2.end();
-		buffer->setMask( mask );
-		p2.begin( buffer );
-		p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
-		p2.end();
-		QRect cr = pix->rect();
-		p->drawPixmap( x() + ( width() - w ) / 2, y(), *buffer, 0, 0, cr.width(), cr.height() );
-	    }
-	} else {
-	    p->drawPixmap( x() + ( width() - w ) / 2, y(), *pixmap() );
-	}
-
-	p->save();
-	if ( isSelected() ) {
-	    p->fillRect( textRect( FALSE ), cg.highlight() );
-	    p->setPen( QPen( cg.highlightedText() ) );
-	} else if ( view->itemTextBackground() != NoBrush )
-	    p->fillRect( textRect( FALSE ), view->itemTextBackground() );
-
-	//int align = AlignHCenter | WordBreak /*| BreakAnywhere*/;
-	//p->drawText( textRect( FALSE ), align, text() );
-        m_wordWrap->drawText( p, textX, textY, AlignHCenter );
-
-	p->restore();
-    } else {
-	if ( isSelected() ) {
-	    QPixmap *pix = pixmap();
-	    if ( pix && !pix->isNull() ) {
-		QPixmap *buffer = get_kiv_buffer_pixmap( pix->size() );
-		QBitmap mask = kview->itemMask( pix );
-
-		QPainter p2( buffer );
-		p2.fillRect( pix->rect(), white );
-		p2.drawPixmap( 0, 0, *pix );
-		p2.end();
-		buffer->setMask( mask );
-		p2.begin( buffer );
-		p2.fillRect( pix->rect(), QBrush( cg.highlight(), QBrush::Dense4Pattern) );
-		p2.end();
-		QRect cr = pix->rect();
-		p->drawPixmap( x() , pixmapRect(FALSE).y(), *buffer, 0, 0, cr.width(), cr.height() );
-	    }
-	} else {
-	    p->drawPixmap( x() , pixmapRect(FALSE).y(), *pixmap() );
-	}
-
-	p->save();
-	if ( isSelected() ) {
-	    p->fillRect( textRect( FALSE ), cg.highlight() );
-	    p->setPen( QPen( cg.highlightedText() ) );
-	} else if ( view->itemTextBackground() != NoBrush )
-	    p->fillRect( textRect( FALSE ), view->itemTextBackground() );
-
-	//int align = AlignAuto | WordBreak /*| BreakAnywhere*/;
-	//p->drawText( textRect( FALSE ), align, text() );
-        m_wordWrap->drawText( p, textX, textY, AlignAuto );
-
-	p->restore();
+    {
+        QPixmap *pix = pixmap();
+        if ( isSelected() ) {
+            if ( pix && !pix->isNull() ) {
+                QPixmap selectedPix = kview->selectedIconPixmap( pix, cg.highlight() );
+                p->drawPixmap( iconX, iconY, selectedPix );
+            }
+        } else {
+            p->drawPixmap( iconX, iconY, *pix );
+        }
     }
+
+    if ( isSelected() ) {
+        p->fillRect( textRect( FALSE ), cg.highlight() );
+        p->setPen( QPen( cg.highlightedText() ) );
+    } else {
+        if ( view->itemTextBackground() != NoBrush )
+            p->fillRect( textRect( FALSE ), view->itemTextBackground() );
+	p->setPen( cg.text() );
+    }
+
+    int align = view->itemTextPos() == QIconView::Bottom ? AlignHCenter : AlignAuto;
+    m_wordWrap->drawText( p, textX, textY, align );
 
     p->restore();
 }
