@@ -146,6 +146,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     pressedTarget = "";
     actualURL     = "";
     baseURL       = "";
+    baseTarget    = "";
     target        = 0;
     url           = 0;
     bIsSelected   = false;
@@ -570,7 +571,7 @@ const char* KHTMLWidget::getURL( QPoint &p )
     obj = clue->checkPoint( p.x() + x_offset, p.y() + y_offset );
     
     if ( obj != 0L)
-	if (obj->getURL()[0] != 0)
+	if ( obj->getURL() && obj->getURL()[0] != 0 )
 	    return obj->getURL();
     
     return 0L;
@@ -1082,6 +1083,8 @@ void KHTMLWidget::begin( const char *_url, int _x_offset, int _y_offset )
 	baseURL = base;
       }
     }
+
+    baseTarget = "";
 
     if ( stringTok )
 	delete stringTok;
@@ -1610,7 +1613,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 
 	QString href;
 	QString coords;
-	QString atarget;
+	QString atarget = baseTarget;
 	HTMLArea::Shape shape = HTMLArea::Rect;
 
 	while ( stringTok->hasMoreTokens() )
@@ -1775,6 +1778,12 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 		parsedTargets.append( target );
 	    }
 	}
+	if ( !target && !baseTarget.isEmpty() )
+	{
+	    target = new char [ baseTarget.length() ];
+	    strcpy( target, baseTarget );
+	    parsedTargets.append( target );
+	}
 	if ( tmpurl[0] != '\0' )
 	{
 	    vspace_inserted = false;
@@ -1797,7 +1806,7 @@ void KHTMLWidget::parseA( HTMLClueV *_clue, const char *str )
 }
 
 // <b>              </b>
-// <base>                           unimplemented
+// <base
 // <basefont                        unimplemented
 // <big>            </big>
 // <blockquote>     </blockquote>
@@ -1807,6 +1816,22 @@ void KHTMLWidget::parseB( HTMLClueV *_clue, const char *str )
 {
     if ( strncmp( str, "basefont", 8 ) == 0 )
     {
+    }
+    else if ( strncmp(str, "base", 4 ) == 0 )
+    {
+	stringTok->tokenize( str + 5, " >" );
+	while ( stringTok->hasMoreTokens() )
+	{
+	    const char* token = stringTok->nextToken();
+	    if ( strncasecmp( token, "target=", 7 ) == 0 )
+	    {
+		baseTarget = token+7;
+	    }
+	    else if ( strncasecmp( token, "href=", 5 ) == 0 )
+	    {
+		baseURL = token + 5;
+	    }
+	}
     }
     else if ( strncmp(str, "big", 3 ) == 0 )
     {
@@ -3246,6 +3271,7 @@ void KHTMLWidget::parseU( HTMLClueV *_clue, const char *str )
 	    if ( listStack.isEmpty() )
 		vspace_inserted = insertVSpace( _clue, vspace_inserted );
 	}
+	flow = 0;
     }
     else if ( strncmp(str, "u", 1 ) == 0 )
     {

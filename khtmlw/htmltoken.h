@@ -51,7 +51,7 @@ public:
     Token( const char *t, int len )
     {
 	tok = new char [ len + 1 ];
-	strcpy( tok, t );
+	memcpy( tok, t, len+1 );
 	nextToken = 0;
     }
 
@@ -114,6 +114,9 @@ protected:
     void reset();
     void appendToken( const char *t, int len )
     {
+	if ( len < 1 )
+	    return;
+
 	Token *tok = new Token( t, len );
 
 	if ( head )

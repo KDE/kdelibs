@@ -1,6 +1,13 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.12.08 - 16 January  1998
+---------------
+
+support <BASE ...>
+tokenizer fixes
+
+
 Version 0.12.07 - 29 December 1997
 ---------------
 

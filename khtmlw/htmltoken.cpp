@@ -146,9 +146,9 @@ void HTMLTokenizer::write( const char *str )
 	}
 	if ( comment )
 	{
-	    if ( !strncmp( src, "-->", 3 ) )
+	    if ( !strncmp( src, "->", 2 ) )
 	    {
-		src += 3;
+		src += 2;
 		comment = false;
 	    }
 	    else
@@ -274,7 +274,8 @@ void HTMLTokenizer::write( const char *str )
 		    }
 		    else
 		    {
-			*dest++ = z;
+			*dest = z;
+			dest++;
 		    }
 		    src = endptr;
 		    // Skip a trailing ';' ?
@@ -320,7 +321,8 @@ void HTMLTokenizer::write( const char *str )
 			    appendToken( ampBuffer, strlen( ampBuffer ) );
 			}
 
-			*dest++ = AmpSequences[ tmpcnt ].value;
+			*dest = AmpSequences[ tmpcnt ].value;
+			dest++;
 			src += strlen( AmpSequences[ tmpcnt ].tag ) + 1;
 			if ( *src == ';' )
 			    src++;
@@ -336,13 +338,22 @@ void HTMLTokenizer::write( const char *str )
 			}
 		    }
 		    else
-			*dest++ = *src++;
+		    {
+			*dest = *src++;
+			dest++;
+		    }
 		}
 		else
-		    *dest++ = *src++;
+		{
+		    *dest = *src++;
+		    dest++;
+		}
 	    }
 	    else
-		*dest++ = *src++;
+	    {
+		*dest = *src++;
+		dest++;
+	    }
 	}
 	else if ( *src == '<' )
 	{
@@ -364,8 +375,10 @@ void HTMLTokenizer::write( const char *str )
 		appendToken( buffer, dest-buffer );
 		dest = buffer;
 	    }
-	    *dest++ = TAG_ESCAPE;
-	    *dest++ = '<';
+	    *dest = TAG_ESCAPE;
+	    dest++;
+	    *dest = '<';
+	    dest++;
 	    tag = true;
 	}
 	else if ( *src == '>' && tag && !tquote )
@@ -374,8 +387,8 @@ void HTMLTokenizer::write( const char *str )
 //	    discardCR = true;
 	    discardCR = false;
 
-	    *dest++ = '>';
-	    *dest = 0;
+	    *dest = '>';
+	    *(dest+1) = 0;
 
 	    // make the tag lower case
 	    char *ptr = buffer+2;
@@ -385,7 +398,7 @@ void HTMLTokenizer::write( const char *str )
 		ptr++;
 	    }
 
-	    appendToken( buffer, dest-buffer );
+	    appendToken( buffer, dest-buffer+1 );
 	    dest = buffer;
 
 	    tag = false;
@@ -446,7 +459,8 @@ void HTMLTokenizer::write( const char *str )
 		{
 		    if ( !space )
 		    {
-			*dest++ = ' ';
+			*dest = ' ';
+			dest++;
 			space = true;
 		    }
 		}
@@ -460,9 +474,9 @@ void HTMLTokenizer::write( const char *str )
 			    appendToken( buffer, dest-buffer );
 			    dest = buffer;
 			}
-			*dest++ = TAG_ESCAPE;
-			*dest++ = '\n';
-			*dest = 0;
+			*dest = TAG_ESCAPE;
+			*(dest+1) = '\n';
+			*(dest+2) = 0;
 			appendToken( buffer, 2 );
 			dest = buffer;
 			pre_pos = 0; 
@@ -474,8 +488,8 @@ void HTMLTokenizer::write( const char *str )
 		    appendToken( buffer, dest-buffer );
 		    dest = buffer;
 
-		    *dest++ = ' ';
-		    *dest = 0;
+		    *dest = ' ';
+		    *(dest+1) = 0;
 		    appendToken( buffer, 1 );
 		    dest = buffer;
 
@@ -490,14 +504,16 @@ void HTMLTokenizer::write( const char *str )
 	    {
 		if ( !space )
 		{
-		    *dest++ = ' ';
+		    *dest = ' ';
+		    dest++;
 		    space = true;
 		}
 	    }
 	    else if ( pre )
 	    {
 		pre_pos++;
-		*dest++ = ' ';
+		*dest = ' ';
+		dest++;
 	    }
 	    else if ( !space )
 	    {
@@ -505,8 +521,8 @@ void HTMLTokenizer::write( const char *str )
 		appendToken( buffer, dest-buffer );
 		dest = buffer;
 
-		*dest++ = ' ';
-		*dest = 0;
+		*dest = ' ';
+		*(dest+1) = 0;
 		appendToken( buffer, 1 );
 		dest = buffer;
 
@@ -520,7 +536,8 @@ void HTMLTokenizer::write( const char *str )
 	    {
 		if ( !space )
 		{
-		    *dest++ = ' ';
+		    *dest = ' ';
+		    dest++;
 		    space = true;
 		}
 	    }
@@ -528,7 +545,10 @@ void HTMLTokenizer::write( const char *str )
 	    {
 		int p = TAB_SIZE - ( pre_pos % TAB_SIZE );
 		for ( int x = 0; x < p; x++ )
-		    *dest++ = ' ';
+		{
+		    *dest = ' ';
+		    dest++;
+		}
 	    }
 	    else if ( !space )
 	    {
@@ -536,8 +556,8 @@ void HTMLTokenizer::write( const char *str )
 		appendToken( buffer, dest-buffer );
 		dest = buffer;
 
-		*dest++ = ' ';
-		*dest = 0;
+		*dest = ' ';
+		*(dest+1) = 0;
 		appendToken( buffer, 1 );
 		dest = buffer;
 
@@ -558,15 +578,18 @@ void HTMLTokenizer::write( const char *str )
 		if ( *(dest-1) == '=' )
 		{
 		    tquote = true;
-		    *dest++ = '\"';
+		    *dest = '\"';
+		    dest++;
 		    space = false;
 		    discardCR = false;
 		}
 		else if ( tquote )
 		{
 		    tquote = false;
-		    *dest++ = '\"';
-		    *dest++ = ' ';
+		    *dest = '\"';
+		    dest++;
+		    *dest = ' ';
+		    dest++;
 		    space = true;
 		    discardCR = true;
 		}
@@ -581,7 +604,8 @@ void HTMLTokenizer::write( const char *str )
 		if ( pre )
 		    pre_pos++;
 
-		*dest++ = *src++;
+		*dest = *src++;
+		dest++;
 	    }
 	}
 	else if ( *src == '=' )
@@ -594,7 +618,8 @@ void HTMLTokenizer::write( const char *str )
 		{
 		    space = false;
 		    discardCR = false;
-		    *dest++ = '=';
+		    *dest = '=';
+		    dest++;
 		}
 		else
 		{
@@ -602,7 +627,8 @@ void HTMLTokenizer::write( const char *str )
 		    if ( *(dest-1) == ' ' )
 			dest--;
 
-		    *dest++ = '=';
+		    *dest = '=';
+		    dest++;
 		    space = true;
 		    discardCR = true;
 		}
@@ -615,7 +641,8 @@ void HTMLTokenizer::write( const char *str )
 		if ( pre )
 		    pre_pos++;
 
-		*dest++ = '=';
+		*dest = '=';
+		dest++;
 	    }
 	}
 	else
@@ -626,7 +653,8 @@ void HTMLTokenizer::write( const char *str )
 	    if ( pre )
 		pre_pos++;
 
-	    *dest++ = *src++;
+	    *dest = *src++;
+	    dest++;
 	}
     }
 

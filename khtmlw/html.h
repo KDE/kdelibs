@@ -1051,12 +1051,16 @@ protected:
      * This is the URL which is visible on the screen. This URL
      * is needed to complete URLs like <a href="classes.html"> since
      * for example 'URLSelected' should provide a complete URL.
-     * TODO: Does not work yet, because KURL is missing.
      */
     KURL actualURL;
     KURL baseURL;	// this will do for now - MRJ
 			// actually we need something like this to implement
 			// <base ...>
+
+    /*
+     * from <BASE TARGET="...">
+     */
+    QString baseTarget;
 
     /*
      * Current text color is at the top of the stack
