@@ -581,7 +581,7 @@ QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
       description = i18n( "The <strong>U</strong>niform <strong>R</strong>esource "
         "<strong>L</strong>ocator (URL) that you entered was not properly "
         "formatted. The format of a URL is generally as follows:"
-        "<blockquote><strong>protocol://user@password:www.example.org:port/directory/"
+        "<blockquote><strong>protocol://user:password@www.example.org:port/directory/"
         "filename.extension?query=value</strong></blockquote>" );
       solutions << sTypo;
       break;
