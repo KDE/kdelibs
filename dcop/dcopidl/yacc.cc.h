@@ -65,6 +65,7 @@ typedef union
 #define	T_SHORT	314
 #define	T_FUNOPERATOR	315
 #define	T_MISCOPERATOR	316
+#define	T_SHIFT	317
 
 
 extern YYSTYPE yylval;

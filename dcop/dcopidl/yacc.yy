@@ -122,6 +122,7 @@ void yyerror( const char *s )
 %token T_SHORT
 %token T_FUNOPERATOR
 %token T_MISCOPERATOR
+%token T_SHIFT
 
 %type <_str> body
 %type <_str> class_header
@@ -391,6 +392,7 @@ number
 int_expression
 	: number {}
 	| number T_PLUS number {}
+	| number T_SHIFT number {}
 
 typedef
 	: T_TYPEDEF Identifier T_LESS type_list T_GREATER Identifier T_SEMICOLON
@@ -611,7 +613,7 @@ virtual_qualifier
 	| T_VIRTUAL { $$ = 1; }
 
 operator
-	: T_MISCOPERATOR | T_GREATER | T_LESS | T_EQUAL ;
+	: T_MISCOPERATOR | T_SHIFT | T_GREATER | T_LESS | T_EQUAL ;
 
 function_header
 	: type Identifier T_LEFT_PARANTHESIS params T_RIGHT_PARANTHESIS const_qualifier

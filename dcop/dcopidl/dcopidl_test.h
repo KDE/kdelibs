@@ -34,6 +34,7 @@ public:
 
     SomeForwardFooPrivate *d;
     static const int AUDIO_CD = 1;
+    static const int AUDIO_CD = 1 << 6;
 k_dcop:
     virtual QString url();
     virtual DCOPRef firstView();

@@ -199,7 +199,8 @@ Kidl_Identifier		[_a-zA-Z][a-zA-Z0-9_]*
 "["			return T_ARRAY_OPEN;
 "]"			return T_ARRAY_CLOSE;
 "->"			return T_ACCESS;
-(">="|"<="|"!="|"=="|"<<"|">>")	return T_MISCOPERATOR;
+(">>"|"<<")		return T_SHIFT;
+(">="|"<="|"!="|"==")	return T_MISCOPERATOR;
 
 
 const			return T_CONST;
