@@ -20,7 +20,7 @@ Copyright (C) 2001 Karol Szwed       <gallium@kde.org>
 Drawing routines adapted from the KDE2 HCStyle,
 Copyright (C) 2000 Daniel M. Duley   <mosfet@kde.org>
   (C) 2000 Dirk Mueller      <mueller@kde.org>
-  (C) 2001 Martijn Klingens  <mklingens@yahoo.com>
+  (C) 2001 Martijn Klingens  <klingens@kde.org>
 
 
  This library is free software; you can redistribute it and/or
