@@ -69,7 +69,7 @@ include_HEADERS = kprogress.h kcolordlg.h \
 		kspell.h ksconfig.h kspelldlg.h ksyntaxhighlighter.h \
 		ktabbar.h ktabwidget.h ksplashscreen.h kconfigdialog.h \
 		kactionselector.h klanguagebutton.h klistviewsearchline.h \
-		kpixmapregionselectorwidget.h kpixmapregionselectordialog.h \
+		kpixmapregionselectorwidget.h kpixmapregionselectordialog.h
 
 # the order of the sources isn't randomly (at least not completely).
 # the order is predictated by the use of X11 header files
