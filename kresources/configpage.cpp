@@ -330,7 +330,7 @@ void ResourcesConfigPage::slotItemClicked( QListViewItem *item )
   if ( !configItem ) return;
 
   if ( configItem->standard() && !configItem->isOn() ) {
-    KMessageBox::sorry( this, i18n( "You can't deactivate the standard resource, choose another standard resource first" ) );
+    KMessageBox::sorry( this, i18n( "You cannot deactivate the standard resource. Choose another standard resource first." ) );
     configItem->setOn( true );
     return;
   }

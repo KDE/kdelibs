@@ -205,7 +205,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   d->m_automaticDetection = new KPopupMenu( 0L );
 
-  d->m_automaticDetection->insertItem( i18n( "Semiautomatic" ), 0 );
+  d->m_automaticDetection->insertItem( i18n( "Semi-automatic" ), 0 );
   d->m_automaticDetection->insertItem( i18n( "Arabic" ), 1 );
   d->m_automaticDetection->insertItem( i18n( "Baltic" ), 2 );
   d->m_automaticDetection->insertItem( i18n( "Central European" ), 3 );

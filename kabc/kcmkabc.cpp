@@ -55,7 +55,7 @@ const KAboutData* KCMkabc::aboutData() const
    KAboutData *about =
    new KAboutData( I18N_NOOP( "kcmkabc" ), I18N_NOOP( "Address book configuration module" ),
                    0, 0, KAboutData::License_GPL,
-                   I18N_NOOP( "(c), 2003 Tobias Koenig" ) );
+                   I18N_NOOP( "(c) 2003 Tobias Koenig" ) );
 
    about->addAuthor( "Tobias Koenig", 0, "tokoe@kde.org" );
 

@@ -119,7 +119,7 @@ namespace KPAC
             catch ( const Script::Error& e )
             {
                 KNotifyClient::event( "script-error", i18n( 
-                    "There proxy configuration script is invalid:\n%1" )
+                    "The proxy configuration script is invalid:\n%1" )
                     .arg( e.message() ) );
                 success = false;
             }
