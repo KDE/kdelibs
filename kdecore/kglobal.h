@@ -206,7 +206,7 @@ template<class T>
 inline const T& kClamp( const T& x, const T& low, const T& high )
 {
     if ( x < low )       return low;
-    else if ( x > high ) return high;
+    else if ( high < x ) return high;
     else                 return x;
 }
 
