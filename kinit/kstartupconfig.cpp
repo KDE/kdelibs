@@ -36,6 +36,12 @@ the values to shell variables, named <file>_<group>_<key> (all spaces replaced
 by underscores, everything lowercase). So e.g. line
 "ksplashrc KSplash Theme Default" may result in "ksplashrc_ksplash_theme=Default".
 
+In order to real a whole group it is possible to use <file> <[group]>, e.g.
+"ksplashrc [KSplash]", which will set shell variables for all keys in the group.
+It is not possible to specify default values, but since the configuration options
+are processed in the order they are specified this can be solved by first
+specifying a group and then all the entries that need default values.
+
 When a kconf_update script is used to update such option, kstartupconfig is run
 before kconf_update and therefore cannot see the change in time. To avoid this
 problem, together with the kconf_update script also the matching global config

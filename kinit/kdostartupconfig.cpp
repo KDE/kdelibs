@@ -24,6 +24,8 @@ DEALINGS IN THE SOFTWARE.
 
 #undef QT_NO_CAST_ASCII
 
+// See description in kstartupconfig.cpp .
+
 #include <qfile.h>
 #include <qtextstream.h>
 #include <kinstance.h>
@@ -89,16 +91,39 @@ int main()
         group = get_entry( &tmp );
         key = get_entry( &tmp );
         def = get_entry( &tmp );
-        if( file.isEmpty() || group.isEmpty() || key.isEmpty())
+        if( file.isEmpty() || group.isEmpty())
             return 6;
-        KConfig cfg( file );
-        cfg.setGroup( group );
-        QString value = cfg.readEntry( key, def );
-        startupconfig << "# " << line << "\n";
-        startupconfig << file.replace( ' ', '_' ).lower()
-            << "_" << group.replace( ' ', '_' ).lower()
-            << "_" << key.replace( ' ', '_' ).lower()
-            << "=\"" << value.replace( "\"", "\\\"" ) << "\"\n";
+        if( group.left( 1 ) == "[" && group.right( 1 ) == "]" )
+            { // whole config group
+            KConfig cfg( file );
+            group = group.mid( 1, group.length() - 2 );
+            QMap< QString, QString > entries = cfg.entryMap( group );
+            startupconfig << "# " << line << "\n";
+            for( QMap< QString, QString >::ConstIterator it = entries.begin();
+                 it != entries.end();
+                 ++it )
+                {
+                QString key = it.key();
+                QString value = *it;
+                startupconfig << file.replace( ' ', '_' ).lower()
+                    << "_" << group.replace( ' ', '_' ).lower()
+                    << "_" << key.replace( ' ', '_' ).lower()
+                    << "=\"" << value.replace( "\"", "\\\"" ) << "\"\n";
+                }
+            }
+        else
+            { // a single key
+            if( key.isEmpty())
+                return 7;
+            KConfig cfg( file );
+            cfg.setGroup( group );
+            QString value = cfg.readEntry( key, def );
+            startupconfig << "# " << line << "\n";
+            startupconfig << file.replace( ' ', '_' ).lower()
+                << "_" << group.replace( ' ', '_' ).lower()
+                << "_" << key.replace( ' ', '_' ).lower()
+                << "=\"" << value.replace( "\"", "\\\"" ) << "\"\n";
+            }
         startupconfigfiles << line << endl;
         // use even currently non-existing paths in $KDEDIRS
         QStringList dirs = QStringList::split( KPATH_SEPARATOR, KGlobal::dirs()->kfsstnd_prefixes());
