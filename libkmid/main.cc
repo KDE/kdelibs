@@ -97,7 +97,9 @@ void consoleOutput(void)
 
 int main(int argc, char **argv)
 {
+#ifdef linux
     int option_index=0;
+#endif
     int help=0,error=0,list_dev=0;
     int vol_percentage=DEFAULT_VOLUME;
     int device=DEFAULT_DEVICE;

@@ -430,8 +430,8 @@ int gusOut::loadPatch(int pgm)
         return -1;
     }
     unsigned short nWaves= *(unsigned short *)&tmp[85];
-    unsigned short masterVolume= *(unsigned short *)&tmp[87];
 #ifdef GUSOUTDEBUG
+    unsigned short masterVolume= *(unsigned short *)&tmp[87];
     printf("nWaves: %d\n",nWaves);
     printf("masterVolume : %d\n",masterVolume);
 #endif
