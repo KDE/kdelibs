@@ -149,6 +149,7 @@ public:
 
   /**
   * return the filename of the currently watched file.
+  * @since 3.4
   */
   QString fileName() const { return fi.fileName(); }
 
