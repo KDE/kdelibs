@@ -125,7 +125,8 @@ static QCString encodeCString(const QCString& e)
 
     //QCString orig(e.data(), e.size());
 
-    for(unsigned pos = 0; pos < e.length(); pos++) {
+    unsigned len = e.length();
+    for(unsigned pos = 0; pos < len; pos++) {
         oldc = c;
         c = e[pos];
 
