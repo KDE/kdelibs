@@ -176,13 +176,14 @@ void KButtonBox::resizeEvent(QResizeEvent *) {
   placeButtons();
 }
 
-QSize KButtonBox::bestButtonSize() {
+QSize KButtonBox::bestButtonSize() const {
   QSize s(0, 0);
   unsigned i;
 
   // calculate optimal size
   for(i = 0; i < buttons.count(); i++) {
-    KButtonBoxItem *item = buttons.at(i);
+    KButtonBox *that = (KButtonBox*)this; // to remove the const ;(
+    KButtonBoxItem *item = that->buttons.at(i);
     QPushButton *b = item->button;
  
     if(b != 0 && !item->noexpand) {      
@@ -205,7 +206,7 @@ QSize KButtonBox::bestButtonSize() {
   return s;
 }
 
-QSize KButtonBox::sizeHint() {
+QSize KButtonBox::sizeHint() const {
   unsigned i, dw;
 
   if(buttons.count() == 0)
@@ -215,7 +216,8 @@ QSize KButtonBox::sizeHint() {
 
     QSize bs = bestButtonSize();
     for(i = 0; i < buttons.count(); i++) {
-      KButtonBoxItem *item = buttons.at(i);
+      KButtonBox *that = (KButtonBox*)this;
+      KButtonBoxItem *item = that->buttons.at(i);
       QPushButton *b = item->button;
       if(b != 0) {
 	QSize s;

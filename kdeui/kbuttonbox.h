@@ -67,7 +67,7 @@ public:
     * @return the minimum size needed to fit all buttons. This size is
     * calculated by the with/height of all buttons plus border/autoborder
     */
-  virtual QSize sizeHint();
+  virtual QSize sizeHint() const;
 
   virtual void resizeEvent(QResizeEvent *);
 
@@ -100,7 +100,7 @@ protected:
     * @return the best size for a button. Checks all buttons and takes
     * the maximum width/height.
     */
-  QSize bestButtonSize();
+  QSize bestButtonSize() const;
   void  placeButtons();
 
 protected:
