@@ -128,8 +128,7 @@ bool QXEmbedAppFilter::eventFilter( QObject *o, QEvent * e)
 	    QFocusEvent* fe = (QFocusEvent*) e; 
 		
 	    if (fe->reason() == QFocusEvent::Mouse ||
-		fe->reason() == QFocusEvent::Shortcut ||
-		fe->reason() == QFocusEvent::Other ) {
+		fe->reason() == QFocusEvent::Shortcut ) {
 		WId window = ((QPublicWidget*)qApp->focusWidget()->topLevelWidget())->topData()->parentWinId;
 		focusMap->remove( qApp->focusWidget()->topLevelWidget() );
 		send_xembed_message( window, XEMBED_REQUEST_FOCUS );
