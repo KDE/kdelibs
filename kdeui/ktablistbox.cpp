@@ -367,6 +367,7 @@ void KTabListBox::setColumnWidth(int col, int aWidth)
 {
   if (col<0 || col>=numCols()) return;
   colList[col]->setWidth(aWidth);
+  lbox.updateTableSize();
 }
 
 
@@ -710,10 +711,11 @@ void KTabListBox::paintEvent(QPaintEvent*)
 //-----------------------------------------------------------------------------
 void KTabListBox::mouseMoveEvent(QMouseEvent* e)
 {
-  register int i, x, ex;
+  register int i, x, ex, ey;
   bool mayResize = FALSE;
 
   ex = e->pos().x();
+  ey = e->pos().y();
 
   if ((e->state() & LeftButton))
   {
@@ -728,18 +730,18 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
     return;
   }
 
-  if (e->pos().y() <= labelHeight)
+  for (i=1, x=colList[0]->width(); ; i++)
   {
-    for (i=0, x=0; ; i++)
+    if (ex >= x-4 && ex <= x+4)
     {
-      if (ex >= x-4 && ex <= x+4)
-      {
-	mayResize = TRUE;
-	break;
-      }
-      if (i >= numColumns) break;
-      x += colList[i]->width();
+      mayResize = TRUE;
+      mMouseCol   = i-1;
+      mMouseColLeft = ex;
+      mMouseColWidth = lbox.cellWidth(i-1);
+      break;
     }
+    if (i >= numColumns) break;
+    x += colList[i]->width();
   }
 
   if (mayResize)
@@ -764,7 +766,7 @@ void KTabListBox::mouseMoveEvent(QMouseEvent* e)
 //-----------------------------------------------------------------------------
 void KTabListBox::mousePressEvent(QMouseEvent* e)
 {
-  if (e->button() == LeftButton)
+  if (!mResizeCol && e->button() == LeftButton)
   {
     mMouseStart = e->pos();
     mMouseCol = findCol(e->pos().x());
@@ -795,9 +797,20 @@ void KTabListBox::mouseReleaseEvent(QMouseEvent* e)
 
 
 //-----------------------------------------------------------------------------
-void KTabListBox::doMouseResizeCol(QMouseEvent* )
+void KTabListBox::doMouseResizeCol(QMouseEvent* e)
 {
+  int w;
+
   if (!mMouseAction) mMouseAction = TRUE;
+
+  if (mMouseCol >= 0)
+  {
+    w = mMouseColWidth + (e->pos().x() - mMouseColLeft);
+    if (w < 0) w = 0;
+
+    colList[mMouseCol]->setWidth(w);
+    repaint();
+  }
 }
 
 
@@ -890,7 +903,7 @@ KTabListBoxTable::KTabListBoxTable(KTabListBox *parent):
   setCellHeight(fm.lineSpacing() + 1);
   setNumRows(0);
 
-  //setCursor(arrowCursor);
+  setCursor(arrowCursor);
   setMouseTracking(FALSE);
 
   setFocusPolicy(StrongFocus);
