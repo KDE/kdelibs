@@ -2675,6 +2675,15 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 
 void KHTMLView::slotScrollBarMoved()
 {
+    if ( !d->firstRelayout && !d->complete && m_part->xmlDocImpl() &&
+          d->layoutSchedulingEnabled) {
+        // contents scroll while we are not complete: we need to check our layout *now*
+        khtml::RenderCanvas* root = static_cast<khtml::RenderCanvas *>( m_part->xmlDocImpl()->renderer() );
+        if (root && root->needsLayout()) {
+            unscheduleRelayout();
+            root->layout();
+        }
+    }
     if (!d->scrollingSelf) {
         d->scrollBarMoved = true;
         d->contentsMoving = true;
