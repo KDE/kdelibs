@@ -420,8 +420,8 @@ protected:
 
   virtual void addNewItem( const KFileItem *item );
   virtual void addNewItems( const KFileItemList& items );
+  virtual void addRefreshItem( const KFileItem *item );
   virtual void emitItems();
-  
 
   class KDirListerPrivate;
   KDirListerPrivate *d;

@@ -910,7 +910,7 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   // once we are updating dirs that are only in the cache this will fail!
   Q_ASSERT( listers );
   if (!listers) 
-	  return;
+	  return;          // FIXME: FIX THIS EVIL HACK!!
 
   if ( job->error() )
   {
@@ -947,7 +947,6 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   // should be enough to get reasonable speed in most cases
   QDict<KFileItem> fileItems( 9973 );
 
-  KFileItemList lstRefreshItems;
   KFileItemListIterator kit ( *(dir->lstItems) );
 
   // Unmark all items in url
@@ -1006,15 +1005,17 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
       // check if something changed for this file
       if ( !tmp->cmp( *item ) )
       {
+        //kdDebug(7004) << "slotUpdateResult: file changed: " << tmp->name() << endl;
         tmp->assign( *item );
-        lstRefreshItems.append( tmp );
-        kdDebug(7004) << "slotUpdateResult: file changed: " << tmp->name() << endl;
+
+        for ( kdl = listers->first(); kdl; kdl = listers->next() )
+          kdl->addRefreshItem( item );
       }
       delete item;  // gmbl, this is the most often case... IMPORTANT TODO: speed it up somehow!
     }
     else // this is a new file
     {
-      kdDebug(7004) << "slotUpdateResult: new file: " << name << endl;
+      //kdDebug(7004) << "slotUpdateResult: new file: " << name << endl;
 
       item->mark();
       dir->lstItems->append( item );
@@ -1031,9 +1032,6 @@ void KDirListerCache::slotUpdateResult( KIO::Job * j )
   for ( kdl = listers->first(); kdl; kdl = listers->next() )
   {
     kdl->emitItems();
-
-    if ( !lstRefreshItems.isEmpty() )
-      emit kdl->refreshItems( lstRefreshItems );
 
     emit kdl->completed( url );
     if ( --kdl->d->numJobs == 0 )
@@ -1396,6 +1394,20 @@ void KDirLister::addNewItems( const KFileItemList& items )
     addNewItem( *kit );
 }
 
+void KDirLister::addRefreshItem( const KFileItem *item )
+{
+  bool isNameFilterMatch = (d->dirOnlyMode && !item->isDir()) || !matchesFilter( item );
+  bool isMimeFilterMatch = !matchesMimeFilter( item );
+
+  if ( !isNameFilterMatch && !isMimeFilterMatch )
+  {
+    if ( !d->lstRefreshItems )
+      d->lstRefreshItems = new KFileItemList;
+
+    d->lstRefreshItems->append( item );
+  }
+}
+
 void KDirLister::emitItems()
 {
   KFileItemList *tmpNew = d->lstNewItems;
@@ -1403,6 +1415,9 @@ void KDirLister::emitItems()
 
   KFileItemList *tmpMime = d->lstMimeFilteredItems;
   d->lstMimeFilteredItems = 0;
+
+  KFileItemList *tmpRefresh = d->lstRefreshItems;
+  d->lstRefreshItems = 0;
 
   if ( tmpNew )
   {
@@ -1414,6 +1429,12 @@ void KDirLister::emitItems()
   {
     emit itemsFilteredByMime( *tmpMime );
     delete tmpMime;
+  }
+
+  if ( tmpRefresh )
+  {
+    emit refreshItems( *tmpRefresh );
+    delete tmpRefresh;
   }
 }
 
