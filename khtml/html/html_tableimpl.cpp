@@ -313,7 +313,8 @@ NodeImpl *HTMLTableElementImpl::addChild(NodeImpl *child)
     kdDebug( 6030 ) << nodeName().string() << "(Table)::addChild( " << child->nodeName().string() << " )" << endl;
 #endif
 
-    NodeImpl *retval = HTMLElementImpl::addChild( child );
+    int exceptioncode = 0;
+    NodeImpl *retval = appendChild( child, exceptioncode );
     if ( retval ) {
 	switch(child->id()) {
 	case ID_CAPTION:
