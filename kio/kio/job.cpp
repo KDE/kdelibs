@@ -50,6 +50,7 @@ extern "C" {
 #include <kmessagebox.h>
 #include <kdatastream.h>
 #include <kmainwindow.h>
+#include <kde_file.h>
 
 #include <errno.h>
 
@@ -3384,12 +3385,37 @@ void CopyJob::slotResultRenaming( Job* job )
 
                 // we lack mtime info for both the src (not stated)
                 // and the dest (stated but this info wasn't stored)
+                // Let's do it for local files, at least
+                KIO::filesize_t sizeSrc = (KIO::filesize_t) -1;
+                KIO::filesize_t sizeDest = (KIO::filesize_t) -1;
+                time_t ctimeSrc = (time_t) -1;
+                time_t ctimeDest = (time_t) -1;
+                time_t mtimeSrc = (time_t) -1;
+                time_t mtimeDest = (time_t) -1;
+
+                KDE_struct_stat stat_buf;
+                if ( m_currentSrcURL.isLocalFile() &&
+                     KDE_stat(QFile::encodeName(m_currentSrcURL.path()), &stat_buf) == 0 ) {
+                    sizeSrc = stat_buf.st_size;
+                    ctimeSrc = stat_buf.st_ctime;
+                    mtimeSrc = stat_buf.st_mtime;
+                }
+                if ( dest.isLocalFile() &&
+                     KDE_stat(QFile::encodeName(dest.path()), &stat_buf) == 0 ) {
+                    sizeDest = stat_buf.st_size;
+                    ctimeDest = stat_buf.st_ctime;
+                    mtimeDest = stat_buf.st_mtime;
+                }
+
                 RenameDlg_Result r = Observer::self()->open_RenameDlg(
                     this,
                     err == ERR_FILE_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
                     m_currentSrcURL.prettyURL(0, KURL::StripFileProtocol),
                     dest.prettyURL(0, KURL::StripFileProtocol),
-                    mode, newPath );
+                    mode, newPath,
+                    sizeSrc, sizeDest,
+                    ctimeSrc, ctimeDest,
+                    mtimeSrc, mtimeDest );
                 if (m_reportTimer)
                     m_reportTimer->start(REPORT_TIMEOUT,false);
 
