@@ -968,6 +968,8 @@ void RenderTable::calcColMinMax()
 	        m_maxWidth = maxPercent*100/tot;
         if (tot<100)
             m_maxWidth = KMAX( short((maxVar+maxRel)*100/(100-tot)), m_maxWidth );
+        else 
+            m_maxWidth = 10000;
     }
 
 
