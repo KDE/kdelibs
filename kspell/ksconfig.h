@@ -26,22 +26,24 @@ enum KSpellClients {
 };
 
 /**
- *  KSpellConfig v 0.2
+ * A configuration class/dialog for @ref KSpell.
  *
- * KSpellConfig is config class for KSpell.  It contains all of the options
+ *  It contains all of the options
  *  settings.  The options are set to default values by the constructor
  *  and can be reset either by using the public interface or by using
- *  KSpellConfig as a widget in a dialog (or, preferably a tabbed dialog
- *  using QTabDialog or KTabCtl) and letting the user change the settings.
- *  This way an application that uses KSpell can either rely on the default
- *  settings (in the simplest case), or offer a dialog to configure
- *  KSpell, or offer a dialog to configure KSpell _for_this_app_only_ 
+ *  @ref KSpellConfig as a widget in a dialog (or, preferably a tabbed dialog
+ *  using @ref QTabDialog or @ref KTabCtl) and letting the user change the settings.
+ *  This way an application that uses @ref KSpell can either rely on the default
+ *  settings (in the simplest case), offer a dialog to configure
+ *  @ref KSpell, or offer a dialog to configure @ref KSpell _for_this_app_only_ 
  *  (in which case, the application should save the settings for use
  *  next time it is run).
+ *  This last option might be useful in an email program, for example, where
+ *   people may be writing in a language different from that used for
+ *   writing papers in their word processor.
  *
  *
  *  @author David Sweet dsweet@kde.org
- *  @short Configuration dialog for KSpell
  *  @version $Id$
  *  @see KSpell
  */
@@ -53,8 +55,9 @@ class KSpellConfig : public QWidget
 public:
   
   /**
-   *  Create a KSpellConfig with the default options set if _ksc==0, or
-   *   copy the options in _ksc.
+   *  Create a @ref KSpellConfig with the default options set if @p _ksc==0, or
+   *   copy the options in @p _ksc.
+   *
    *  This constructor also sets up the dialog.
    */
   KSpellConfig (QWidget *parent=0, const char *name=0,
@@ -67,22 +70,43 @@ public:
   void operator= (const KSpellConfig &ksc);
 
   /**
-   *Options setting routines.
-   * The ignorelist is a QStringList that contains words you'd like KSpell
-   *  to ignore when it it spellchecking.  When you get a KSpellConfig
-   *  object back from KSpell (using KSpell::kcConfig()), the ignorlist
+   *@sect Options setting routines.
+   **/
+
+  /**
+   *
+   * The @p ignorelist contains words you'd like @ref KSpell
+   *  to ignore when it is spellchecking.  When you get a @ref KSpellConfig
+   *  object back from @ref KSpell (using @ref KSpell::kcConfig()),
+   *  the @ref ignorelist
    *  contains whatever was put in by you plus any words the user has
    *  chosen to ignore via the dialog box.  It might be useful to save
    *  this list with the document being edited to facilitate quicker
    *  future spellchecking.
    */
+  void setIgnoreList (QStringList _ignorelist);
+
+  /**
+   * Set an ISpell option.
+   *
+   * If @p true, don't create root-affix combinations.
+   **/
   void setNoRootAffix (bool);
+  /**
+   * Set an ISpell option.
+   *
+   * If @p true, treat run-together words a valid.
+   **/
   void setRunTogether(bool);
+  /**
+   * Set the name of the dictionary to use.
+   **/
   void setDictionary (const QString qs);
   void setDictFromList (bool dfl);
   //  void setPersonalDict (const char *s);
+  /**
+   * 
   void setEncoding (int enctype);
-  void setIgnoreList (QStringList _ignorelist);
   void setClient (int client);
 
   /**
