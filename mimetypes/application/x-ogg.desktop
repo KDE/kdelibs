@@ -1,4 +1,7 @@
 [Desktop Entry]
+# Note: this mimetype is deprecated. application/ogg replaces it.
+# The old mimetype (application/x-ogg) is only provided for compatibility reasons.
+# application/ogg "inherits" from it, so that apps associated with x-ogg can open ogg files.
 Encoding=UTF-8
 Type=MimeType
 Comment=Ogg Multimedia
@@ -44,8 +47,5 @@ Comment[wa]=Fitchî multimedia Ogg
 Comment[zh_CN]=Ogg 多媒体
 Comment[zh_TW]=Ogg 多媒體
 Comment[zu]=Onozindaba be-Ogg
-MimeType=application/ogg
+MimeType=application/x-ogg
 Icon=multimedia
-Patterns=*.ogg;*.OGG;
-# Previous name of this mimetype
-X-KDE-IsAlso=application/x-ogg

@@ -18,7 +18,7 @@ mimetypeapplicationdata_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-applixword.desktop x-applixspread.desktop x-applixgraphics.desktop \
 	msexcel2.desktop xhtml+xml.desktop \
 	x-shockwave-flash.desktop x-designer.desktop x-linguist.desktop \
-	ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
+	x-ogg.desktop ogg.desktop x-pkcs12.desktop x-x509-ca-cert.desktop \
 	pkcs7-signature.desktop pgp-signature.desktop pgp-encrypted.desktop \
 	pgp-keys.desktop \
 	x-mswrite.desktop illustrator.desktop x-abiword.desktop \
