@@ -79,12 +79,20 @@ class TabWidget : public KTabWidget
 
     void setTabWidgetVisibility( KMDI::TabWidgetVisibility );
 
+    bool eventFilter(QObject *obj, QEvent *e );
+
   private slots:
     void closeTab(QWidget* w);
 
   public slots:
     void updateIconInView(QWidget*,QPixmap);
     void updateCaptionInView(QWidget*,const QString&);
+
+  signals:
+    void focusInEvent ();
+
+  protected slots:
+   void childDestroyed ();
 
   private:
     void maybeShow();

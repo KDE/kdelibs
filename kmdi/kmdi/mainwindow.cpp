@@ -137,6 +137,9 @@ void MainWindow::setupMainDock ()
   // set this dock to main view
   setView(dw);
   setMainDockWidget(dw);
+
+  // connect signals to collapse sidebars
+  connect(m_tabWidget,SIGNAL(focusInEvent()),this,SIGNAL(collapseOverlapContainers()));
 }
 
 void MainWindow::setupToolViews ()

@@ -41,6 +41,9 @@
 
 #include <ktabbar.h>
 #include <kpopupmenu.h>
+#include <kdebug.h>
+
+#include <qobjectlist.h>
 
 #include "tabwidget.h"
 #include "tabwidget.moc"
@@ -61,6 +64,8 @@ TabWidget::TabWidget(QWidget* parent, const char* name)
  , m_visibility (KMDI::ShowWhenMoreThanOneTab)
  , d (new KMDIPrivate::TabWidgetPrivate())
 {
+  installEventFilter (this);
+
   tabBar()->hide();
 
   setHoverCloseButton(true);
@@ -72,6 +77,78 @@ TabWidget::~TabWidget()
 {
   delete d;
   d = 0;
+}
+
+bool TabWidget::eventFilter(QObject *obj, QEvent *e )
+{
+  if(e->type() == QEvent::FocusIn)
+  {
+    emit focusInEvent ();
+  }
+  else if (e->type() == QEvent::ChildRemoved)
+  {
+    // if we lost a child we uninstall ourself as event filter for the lost
+    // child and its children
+    QObject* pLostChild = ((QChildEvent*)e)->child();
+    if ((pLostChild != 0L) && (pLostChild->isWidgetType())) {
+       QObjectList *list = pLostChild->queryList( "QWidget" );
+       list->insert(0, pLostChild);        // add the lost child to the list too, just to save code
+       QObjectListIt it( *list );          // iterate over all lost child widgets
+       QObject * o;
+       while ( (o=it.current()) != 0 ) { // for each found object...
+          QWidget* widg = (QWidget*)o;
+          ++it;
+          widg->removeEventFilter(this);
+       }
+       delete list;                        // delete the list, not the objects
+    }
+  }
+  else if (e->type() == QEvent::ChildInserted)
+  {
+    // if we got a new child and we are attached to the MDI system we
+    // install ourself as event filter for the new child and its children
+    // (as we did when we were added to the MDI system).
+    QObject* pNewChild = ((QChildEvent*)e)->child();
+    if ((pNewChild != 0L) && (pNewChild->isWidgetType()))
+    {
+       QWidget* pNewWidget = (QWidget*)pNewChild;
+       if (pNewWidget->testWFlags(Qt::WType_Dialog | Qt::WShowModal))
+           return false;
+       QObjectList *list = pNewWidget->queryList( "QWidget" );
+       list->insert(0, pNewChild);         // add the new child to the list too, just to save code
+       QObjectListIt it( *list );          // iterate over all new child widgets
+       QObject * o;
+       while ( (o=it.current()) != 0 ) { // for each found object...
+          QWidget* widg = (QWidget*)o;
+          ++it;
+          widg->installEventFilter(this);
+          connect(widg, SIGNAL(destroyed()), this, SLOT(childDestroyed()));
+       }
+       delete list;                        // delete the list, not the objects
+    }
+  }
+
+  return KTabWidget::eventFilter (obj, e);
+}
+
+void TabWidget::childDestroyed()
+{
+  // if we lost a child we uninstall ourself as event filter for the lost
+  // child and its children
+  const QObject* pLostChild = QObject::sender();
+  if ((pLostChild != 0L) && (pLostChild->isWidgetType()))
+  {
+     QObjectList *list = ((QObject*)(pLostChild))->queryList("QWidget");
+     list->insert(0, pLostChild);        // add the lost child to the list too, just to save code
+     QObjectListIt it( *list );          // iterate over all lost child widgets
+     QObject * obj;
+     while ( (obj=it.current()) != 0 ) { // for each found object...
+       QWidget* widg = (QWidget*)obj;
+       ++it;
+       widg->removeEventFilter(this);
+     }
+     delete list;                        // delete the list, not the objects
+  }
 }
 
 void TabWidget::closeTab(QWidget* w)
