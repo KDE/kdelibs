@@ -22,6 +22,7 @@
 #define KOSSL KOpenSSLProxy;
 class KOpenSSLProxyPrivate;
 
+#include <config.h>
 #include <klibloader.h>
 
 class KOpenSSLProxy {
@@ -72,8 +73,45 @@ public:
    void SSL_CTX_free(SSL_CTX *ctx);
 
    /*
+    *   SSL_set_fd - connect the SSL object with a file descriptor
+    */
+   int SSL_set_fd(SSL *ssl, int fd);
+
+   /*
+    *   SSL_pending - obtain number of readable bytes buffered in an SSL object
+    */
+   int SSL_pending(SSL *ssl);
+
+   /*
+    *   SSL_CTX_set_cipher_list - choose list of available SSL_CIPHERs
+    */
+   int SSL_CTX_set_cipher_list(SSL_CTX *ctx, const char *str);
+
+   /*
+    *   SSL_CTX_set_verify - set peer certificate verification parameters
+    */
+   void SSL_CTX_set_verify(SSL_CTX *ctx, int mode,
+                         int (*verify_callback)(int, X509_STORE_CTX *));
+
+   /*
+    *   SSL_CTX_use_certificate - load certificate and key data
+    */
+   int SSL_CTX_use_certificate(SSL_CTX *ctx, X509 *x);
+
+   /*
+    *   SSL_get_current_cipher - get SSL_CIPHER of a connection
+    */
+   SSL_CIPHER *SSL_get_current_cipher(SSL *ssl);
+
+   /*
+    *   SSL_set_options - manipulate SSL engine options
+    */
+   //long SSL_set_options(SSL *ssl, long options);
+
+   /*
     *   
     */
+
 
 
 #endif
@@ -86,6 +124,7 @@ private:
    KLibrary *_sslLib;
    static KOpenSSLProxy *_me;
 
+   bool _ok;
 };
 
 #endif
