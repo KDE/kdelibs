@@ -356,7 +356,7 @@ void HTMLTokenizer::parseSpecial(DOMStringIt &src, bool begin)
         // possible end of tagname, lets check.
         if ( !scriptCodeResync && !escaped && !src.escaped() && ( ch == '>' || ch == '/' || ch <= ' ' ) && ch &&
              scriptCodeSize >= searchStopperLen &&
-             !QConstString( scriptCode+scriptCodeSize-searchStopperLen, searchStopperLen+1 ).string().find( searchStopper, 0, false )) {
+             !QConstString( scriptCode+scriptCodeSize-searchStopperLen, searchStopperLen ).string().find( searchStopper, 0, false )) {
             scriptCodeResync = scriptCodeSize-searchStopperLen+1;
             tquote = NoQuote;
             continue;
