@@ -21,6 +21,7 @@ case "$1" in
       if [ -e /usr/share/config -a ! -L /usr/share/config ]; then
         mv /usr/share/config/* /etc/kde2/ >/dev/null 2>&1
         rm -rf /usr/share/config > /dev/null 2>&1
+        #ln -s /etc/kde2 /usr/share/config > /dev/null 2>&1
       fi
       if [ -e /etc/kde2/services -a ! -L /etc/kde2/services ]; then
         rm -rf /etc/kde2/services > /dev/null 2>&1

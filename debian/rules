@@ -20,7 +20,7 @@ build-stamp:
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version" \
-	--includedir=$(kde_includedir) --without-ssl
+	--includedir=/usr/include/kde --without-ssl
 
 	make
 
@@ -78,7 +78,8 @@ binary-arch:  build
 	echo "[Directories]" > $$debianrc ;\
 	echo "dir_config=/etc/kde2" >> $$debianrc ;\
 	echo "dir_html=/usr/share/doc/kde/HTML" >> $$debianrc ;\
-	echo "dir_apps=/usr/share/applnk" >> $$debianrc 
+	echo "dir_apps=/usr/share/applnk" >> $$debianrc ;\
+	echo "dir_cgi=/usr/lib/cgi-bin" >> $$debianrc
 	cp debian/tmp/etc/kde2/system.kdeglobals debian/tmp/etc/kderc
 	perl -w admin/debianrules cleanup
 	cp debian/kde.pamd debian/tmp/etc/pam.d/kde
@@ -88,11 +89,14 @@ binary-arch:  build
 	for i in `cat debian/undocumented.in | grep -v "#"`; do \
 	  echo "$$i.1" >> debian/undocumented ; \
 	done
+	sed -e "s#kde_confdir='etc/kde2'#kde_confdir='/etc/kde2'#" debian/tmp/etc/kde2/kde-config > debian/tmp/etc/kde2/kde-config.tmp
+	mv debian/tmp/etc/kde2/kde-config.tmp debian/tmp/etc/kde2/kde-config
 	dh_installdocs
 # libraries not starting with lib are modules
 	list=`cd debian/tmp && find ./ -type l -name "lib*.so" | sed -e 's#^./##'` ;\
 	dh_movefiles -pkdelibs3-dev $$list usr/include/kde usr/lib/lib*.a
 	install -d debian/tmp/usr/share/icons/locolor/16x16/apps/
+	cp debian/package.png debian/tmp/usr/share/icons/locolor/16x16/apps/
 	-rm -rf debian/tmp/usr/share/apps/kssl
 	mv debian/tmp/usr/lib/kio_https.so debian/tmp/usr/lib/kio_https-nossl.so
 	mv debian/tmp/usr/lib/kio_https.la debian/tmp/usr/lib/kio_https-nossl.la
@@ -111,7 +115,7 @@ binary-arch:  build
 	dh_fixperms 
 	chmod 4755 debian/tmp/usr/bin/artswrapper
 	dh_suidregister usr/bin/artswrapper
-	dh_makeshlibs 
+	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps 
 	dh_gencontrol
