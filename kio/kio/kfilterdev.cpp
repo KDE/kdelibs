@@ -222,7 +222,10 @@ Q_LONG KFilterDev::readBlock( char *data, Q_ULONG maxlen )
 {
     Q_ASSERT ( filter->mode() == IO_ReadOnly );
     //kdDebug(7005) << "KFilterDev::readBlock maxlen=" << maxlen << endl;
-    // If we had an error, or came to the end of the stream, return 0.
+    // If we came to the end of the stream, return 0.
+    if ( d->result == KFilterBase::END )
+        return 0;
+    // If we had an error, return -1.
     if ( d->result != KFilterBase::OK )
         return -1;
 
