@@ -882,7 +882,7 @@ void KApplication::applyGUIStyle(GUIStyle newstyle) {
   QWidgetListIt wl_it( *wl );
 
   // foreach toplevel ...
-  tmp += "./kde";
+  while(wl_it.current()) {
     QWidget *w = wl_it.current();
 
     // set new style
