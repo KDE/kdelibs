@@ -170,7 +170,7 @@ interface SoundServer : SimpleSoundServer
  * the autosuspend time, and returning more information about the server
  * settings.
  */
-interface SoundServerV2 : SoundServer
+interface SoundServerV2 : SoundServer, PlayObjectFactoryV2
 {
 	/**
 	 * Time in seconds after which server will suspend if idle.

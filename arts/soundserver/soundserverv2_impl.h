@@ -55,6 +55,9 @@ namespace Arts {
 		void bufferSizeMultiplier(long newValue);
 		StereoVolumeControl outVolume();
 		SampleStorage sampleStorage();
+
+		Arts::PlayObject createPlayObjectForURL(const std::string& url, const std::string& mimetype, bool createBUS);
+		Arts::PlayObject createPlayObjectForStream(Arts::InputStream instream, bool createBUS);
 	};
 };
 

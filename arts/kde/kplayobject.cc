@@ -52,8 +52,8 @@ void KPlayObject::seek(Arts::poTime newTime)
 
 void KPlayObject::pause()
 {
-    if(!m_isStream)
-	object().pause();
+	if(!m_isStream)
+		object().pause();
 }
 
 void KPlayObject::halt()

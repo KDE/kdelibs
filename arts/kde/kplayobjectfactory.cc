@@ -21,13 +21,14 @@
 
 #include <kmimetype.h>
 #include "kplayobject.h"
+#include "artskde.h"
 #include "kplayobjectfactory.h"
 
 using namespace std;
 
-KPlayObjectFactory::KPlayObjectFactory(Arts::SimpleSoundServer server)
+KPlayObjectFactory::KPlayObjectFactory(Arts::SoundServerV2 server)
 {
-    m_factory = Arts::DynamicCast(server.createObject("Arts::KWrapperFactory"));
+    m_server = server;
 }
 
 KPlayObjectFactory::~KPlayObjectFactory()
@@ -36,23 +37,18 @@ KPlayObjectFactory::~KPlayObjectFactory()
 
 KPlayObject *KPlayObjectFactory::createPlayObject(KURL url, bool createBUS)
 {
-    QString mimetypename;
-    bool isStream;
-    if(!m_factory.isNull())
+    if(!m_server.isNull())
     {
 	KMimeType::Ptr mimetype = KMimeType::findByURL(url);
-	// ICEcast/SHOUTcast
 	if(mimetype->name() == "application/octet-stream")
 	{
-	    mimetypename = "audio/x-mp3";
-	    isStream = true;
+	    Arts::KIOInputStream instream;
+	    instream.openURL(url.path().latin1());
+	    
+	    return new KPlayObject(m_server.createPlayObjectForStream(instream, createBUS), true);
 	}
 	else
-	{
-	    mimetypename = mimetype->name();
-	    isStream = false;
-	}
-	return new KPlayObject(m_factory.createPlayObject(string(url.path().latin1()), string(mimetypename.latin1()), createBUS), isStream);
+	    return new KPlayObject(m_server.createPlayObjectForURL(string(url.path().latin1()), string(mimetype->name().latin1()), createBUS), false);
     }
     else
 	return new KPlayObject();

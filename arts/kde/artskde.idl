@@ -9,4 +9,11 @@ interface KFloatWatchProxy {
 	attribute float value;
 };
 
+/* 
+ * used for deliviering MCOP data to the playobjects
+ */
+interface KIOInputStream : InputStream {
+	boolean openURL(string url);
+};
+
 };

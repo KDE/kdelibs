@@ -1,4 +1,4 @@
-	/*
+    /*
 
     Copyright (C) 2001 Nikolas Zimmermann <wildfox@kde.org>
 
@@ -19,22 +19,45 @@
 
     */
 
-#ifndef KWRAPPER_IMPL_H
-#define KWRAPPER_IMPL_H
-
-#include "kwrapper.h"
+#include <qobject.h>
+#include <qcstring.h>
+#include <kio/jobclasses.h>
+#include <kurl.h>
+#include "artskde.h"
+#include "stdsynthmodule.h" 
 
 namespace Arts {
 
-	class KWrapperFactory_impl : virtual public KWrapperFactory_skel
-	{
-	    public:
-		KWrapperFactory_impl();
-		~KWrapperFactory_impl();
+class KIOInputStream_impl : public QObject, virtual public KIOInputStream_skel, virtual public StdSynthModule
+{
+    Q_OBJECT
+    public:
+	static const unsigned int PACKET_COUNT = 8;
+	static const unsigned int PACKET_SIZE = 8192;
 
-		PlayObject createPlayObject(const std::string& url, const std::string& mimetype, bool createBUS);		
-	};
+	KIOInputStream_impl();
+	~KIOInputStream_impl();
+	
+	void streamStart();	
+	void streamEnd();
 
+	bool eof();
+	bool seekOk();
+	long size();
+	long seek(long);
+
+	bool openURL(const std::string& url);
+
+	void processQueue();
+
+    private slots:
+	void slotData(KIO::Job *, const QByteArray &);
+
+    private:
+	KURL m_url;
+	KIO::TransferJob *m_job;
+	queue<DataPacket<mcopbyte> *> m_sendqueue;
+	bool m_finished;
 };
 
-#endif
+};

@@ -23,20 +23,19 @@
 #define KPLAYOBJECTFACTORY_H
 
 #include <kurl.h>
-#include "kwrapper.h"
 #include "soundserver.h"
 #include "kplayobject.h"
 
 class KPlayObjectFactory
 {
     public:
-    	KPlayObjectFactory(Arts::SimpleSoundServer server);
+    	KPlayObjectFactory(Arts::SoundServerV2 server);
 	~KPlayObjectFactory();
 
 	KPlayObject *createPlayObject(KURL url, bool createBUS);
 
     private:
-	Arts::KWrapperFactory m_factory;
+	Arts::SoundServerV2 m_server;
 };
 
 #endif

@@ -130,7 +130,6 @@ interface PlayObjectFactory {
 	PlayObject createPlayObject(string filename);
 };
 
-
 /**
  * UNSTABLE/EXPERIMENTAL!
  */
@@ -174,6 +173,35 @@ interface FileInputStream : InputStream {
 
 interface StdoutWriter : SynthModule {
 	async in byte stream indata;
+};
+
+interface StreamPlayObject : PlayObject {
+	/**
+	 * prepares the playobject for the stream
+	 */
+	boolean streamMedia(InputStream instream);
+};
+
+/**
+ * Extended Version of PlayObjectFactory
+ */
+interface PlayObjectFactoryV2 : PlayObjectFactory {
+	/**
+	 * creates a PlayObject
+	 *
+	 * @param url the url to create a play object for
+	 * @param mimetype mimetype for the url
+	 * @param createBUS specifies wheter to create the bus-uplink or not
+	 */
+	PlayObject createPlayObjectForURL(string url, string mimetype, boolean createBUS);
+
+	/**
+	 * creates a StreamPlayObject (used internally!)
+	 *
+	 * @param instream specifies the InputStream
+	 * @param createBUS specifies wheter to create the bus-uplink or not
+	 */
+	PlayObject createPlayObjectForStream(InputStream instream, boolean createBUS);
 };
 
 };

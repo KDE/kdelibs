@@ -12,8 +12,8 @@ to ie. play a sound
 2. How to use it?
 <snip>
 1	Arts::Dispatcher *dispatcher = new Arts::Dispatcher();
-2	Arts::SimpleSoundServer server;
-3	server = Arts::Reference("global:Arts_SimpleSoundServer");
+2	Arts::SoundServerV2 server;
+3	server = Arts::Reference("global:Arts_SoundServerV2");
 
 4	KURL file = "file:/home/nikoz/test.mp3";
 
