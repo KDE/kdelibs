@@ -2,7 +2,7 @@
 #define PLUGIN_H
 
 #include <qobject.h>
-#include <qaction.h>
+#include <kaction.h>
 #include <kxmlgui.h>
 #include <kxmlguiclient.h>
 
@@ -35,16 +35,16 @@ public:
     /**
      * Retrieve an action by name.
      **/
-    QAction* action( const char* name );
+    KAction* action( const char* name );
     /**
      * Retrieve the entire action collection for the plugin.
      **/
-    QActionCollection* actionCollection();
+    KActionCollection* actionCollection();
 
     /**
      * Retrieve an action for a given @ref QDomElement.
      **/
-    virtual QAction *action( const QDomElement &element );
+    virtual KAction *action( const QDomElement &element );
 
     /**
      * Set the @ref QDomDocument describing the part.
@@ -82,7 +82,7 @@ protected:
     static Plugin* loadPlugin( QObject * parent, const char* libname );
 
 private:
-    QActionCollection m_collection;
+    KActionCollection m_collection;
     QDomDocument m_doc;
 };
 

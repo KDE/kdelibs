@@ -27,7 +27,7 @@
 #include <qlist.h>
 #include <qdatastream.h>
 
-#include <qaction.h>
+#include <kaction.h>
 #include <kparts/part.h>
 #include <kparts/event.h>
 

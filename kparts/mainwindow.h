@@ -2,7 +2,7 @@
 #define __KGUIBUILDER_H
 
 #include <qlist.h>
-#include <qaction.h>
+#include <kaction.h>
 
 #include <ktmainwindow.h>
 

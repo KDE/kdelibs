@@ -107,7 +107,7 @@ class KDirOperator : public QWidget {
     /**
      * an accessor to a collection of all available Actions. The actions
      * are static, they will be there all the time (no need to connect to
-     * the signals QActionCollection::inserted() or removed().
+     * the signals KActionCollection::inserted() or removed().
      *
      * There are the following actions:
      *
@@ -142,7 +142,7 @@ class KDirOperator : public QWidget {
      *
      * @returns all available Actions
      */
-    QActionCollection * actionCollection() const { return myActionCollection; }
+    KActionCollection * actionCollection() const { return myActionCollection; }
 
     /**
      * Reads the default settings for a view, i.e. the default KFile::FileView.
@@ -233,7 +233,7 @@ class KDirOperator : public QWidget {
     KToggleAction *showHiddenAction;
     KToggleAction *separateDirsAction;
 
-    QActionCollection *myActionCollection;
+    KActionCollection *myActionCollection;
 
  public slots:
     void back();

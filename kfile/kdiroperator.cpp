@@ -926,7 +926,7 @@ void KDirOperator::setupActions()
 
 
     // insert them into the actionCollection
-    myActionCollection = new QActionCollection( this, "action collection" );
+    myActionCollection = new KActionCollection( this, "action collection" );
     myActionCollection->insert( actionMenu );
     myActionCollection->insert( backAction );
     myActionCollection->insert( forwardAction );

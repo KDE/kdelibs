@@ -20,17 +20,17 @@ Plugin::~Plugin()
 {
 }
 
-QAction* Plugin::action( const char* name )
+KAction* Plugin::action( const char* name )
 {
     return m_collection.action( name );
 }
 
-QActionCollection* Plugin::actionCollection()
+KActionCollection* Plugin::actionCollection()
 {
     return &m_collection;
 }
 
-QAction *Plugin::action( const QDomElement &element )
+KAction *Plugin::action( const QDomElement &element )
 {
   return action( element.attribute( "name" ).latin1() );
 }

@@ -206,7 +206,7 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
     	    ops->completionObject(), SLOT( slotNextMatch() ) );
     */
 
-    QActionCollection *coll = ops->actionCollection();
+    KActionCollection *coll = ops->actionCollection();
     coll->action( "up" )->plug( toolbar );
     coll->action( "back" )->plug( toolbar );
     coll->action( "forward" )->plug( toolbar );

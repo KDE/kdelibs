@@ -32,7 +32,7 @@ Shell::Shell()
   m_part1 = new Part1(this, m_splitter);
   m_part2 = new Part2(this, m_splitter);
 
-  QActionCollection *coll = actionCollection();
+  KActionCollection *coll = actionCollection();
 
   (void)new KAction( i18n( "&View local file" ), 0, this, SLOT( slotFileOpen() ), coll, "open_local_file" );
   (void)new KAction( i18n( "&View remote file" ), 0, this, SLOT( slotFileOpenRemote() ), coll, "open_remote_file" );

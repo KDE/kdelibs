@@ -10,8 +10,8 @@
 
 class KInstance;
 class QWidget;
-class QAction;
-class QActionCollection;
+class KAction;
+class KActionCollection;
 class QEvent;
 
 namespace KIO {
