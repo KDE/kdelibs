@@ -485,7 +485,7 @@ public:
    */
   bool isValid() const  { return !m_bIsMalformed; }
   /**
-   * @deprecated
+   * @deprecated Use !isValid() instead.
    */
   KDE_DEPRECATED bool isMalformed() const { return !isValid(); }
 
@@ -748,7 +748,7 @@ public:
    * @return true if both urls are the same
    * @see operator==. This function should be used if you want to
    * ignore trailing '/' characters.
-   * @deprecated
+   * @deprecated Use equals() instead.
    */
   bool cmp( const KURL &u, bool ignore_trailing = false ) const KDE_DEPRECATED;
 
