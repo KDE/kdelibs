@@ -889,11 +889,15 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
 
    request->dcop_service_type =  service->DCOPServiceType();
 
-   if ((request->dcop_service_type == KService::DCOP_None) ||
-       (request->dcop_service_type == KService::DCOP_Wait))
-      request->dcop_name = 0;
-   else
-      request->dcop_name = request->name;
+   if ((request->dcop_service_type == KService::DCOP_Unique) ||
+       (request->dcop_service_type == KService::DCOP_Multi))
+   {
+      QVariant v = service->property("X-DCOP-ServiceName");
+      if (v.isValid())
+         request->dcop_name = v.toString().utf8();
+      if (request->dcop_name.isEmpty())
+         request->dcop_name = request->name;
+   }
 
    request->pid = 0;
    request->transaction = 0;
