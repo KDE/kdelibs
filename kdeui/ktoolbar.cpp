@@ -1553,6 +1553,8 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
 
             // now get the size
             iconsize = config->readNumEntry(attrSize, d->IconSizeDefault);
+            d->IconSizeDefault = iconsize;
+            d->IconTextDefault = icontext;
         }
         else
         {
