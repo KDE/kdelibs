@@ -1493,6 +1493,7 @@ void CopyJob::slotEntries(KIO::Job* job, const UDSEntryList& list)
                     break;
                 case UDS_MODIFICATION_TIME:
                     info.mtime = (time_t)((*it2).m_long);
+                    break;
                 case UDS_CREATION_TIME:
                     info.ctime = (time_t)((*it2).m_long);
                 default:
