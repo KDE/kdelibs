@@ -30,6 +30,7 @@ class QCheckBox;
 class QGroupBox;
 class QLabel;
 class QLineEdit;
+class KAccel;
 class KAccelBase;
 class KActionCollection;
 
@@ -220,7 +221,9 @@ public:
    * @return Accept if the dialog was closed with OK, Reject otherwise.
    **/
   static int configureKeys( KAccelBase *keys, bool save_settings = true,
-			    QWidget *parent = 0  );
+                            QWidget *parent = 0  );
+  static int configureKeys( KAccel *keys, bool save_settings = true,
+                            QWidget *parent = 0  );
   /**
    * Pops up a modal dialog for configuring key settings. The dialog is initialized
    * from an action collection (for XMLGUI based applications).

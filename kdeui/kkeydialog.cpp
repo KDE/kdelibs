@@ -30,6 +30,7 @@
 #include <qbuttongroup.h>
 #include <qwhatsthis.h>
 
+#include <kaccel.h>
 #include <kaction.h>
 #include <kapplication.h>
 #include <kconfig.h>
@@ -120,8 +121,7 @@ void KKeyDialog::commitChanges()
 	m_pKeyChooser->commitChanges();
 }
 
-int KKeyDialog::configureKeys( KAccelBase *keys, bool save_settings,
-                               QWidget *parent )
+int KKeyDialog::configureKeys( KAccelBase *keys, bool save_settings, QWidget *parent )
 {
     KAccelActions& actions = keys->actions();
     KKeyDialog kd( actions, parent );
@@ -134,6 +134,11 @@ int KKeyDialog::configureKeys( KAccelBase *keys, bool save_settings,
             keys->writeSettings();
     }
     return retcode;
+}
+
+int KKeyDialog::configureKeys( KAccel *keys, bool save_settings, QWidget *parent )
+{
+	return configureKeys( keys->basePtr(), save_settings, parent );
 }
 
 int KKeyDialog::configureKeys( KActionCollection *coll, const QString& file,
