@@ -37,6 +37,8 @@
 #include "kconfigbackend.h"
 
 #include "kconfig.h"
+#include "kglobal.h"
+#include "kstddirs.h"
 #include <qtimer.h>
 
 KConfig::KConfig( const QString& fileName,
