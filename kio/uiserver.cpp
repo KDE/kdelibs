@@ -921,7 +921,9 @@ void UIServer::cancelCurrent() {
 int main(int argc, char **argv)
 {
     KLocale::setMainCatalogue("kdelibs");
-    KAboutData aboutdata("kio_uiserver", I18N_NOOP("UIServer"),
+    //  GS 5/2001 - I changed the name to "KDE" to make it look better
+    //              in the titles of dialogs which are displayed.
+    KAboutData aboutdata("kio_uiserver", I18N_NOOP("KDE"),
                          "0.8", I18N_NOOP("KDE Progress Information UI Server"),
                          KAboutData::License_GPL, "(C) 2000, David Faure & Matt Koss");
     // Who's the maintainer ? :)

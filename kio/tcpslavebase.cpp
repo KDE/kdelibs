@@ -31,6 +31,7 @@ public:
   KSSL *kssl;
   bool usingTLS;
   KSSLCertificateCache *cc;
+  QString host;
 };
 
 
@@ -131,6 +132,7 @@ bool TCPSlaveBase::ConnectToHost(const QCString &host, unsigned short int _port)
 	unsigned short int port;
 	KExtendedSocket ks;
 
+        d->host = host;
 	port = GetPort(_port);
 
 	ks.setAddress(host, port);
@@ -273,6 +275,7 @@ int TCPSlaveBase::verifyCertificate()
 int rc = 0;
 bool permacache = false;
 bool isChild = false;
+QString theurl = QString(m_sServiceName)+"://"+d->host+":"+QString::number(m_iPort);
 
    if (!d->cc) d->cc = new KSSLCertificateCache;
 
@@ -339,12 +342,6 @@ bool isChild = false;
           break;
          case KSSLCertificateCache::Prompt:
            {
-           // We need to get one of the following:
-           //      accept current session  - record a temp record
-           //      accept always           - record a permarecord
-           //      reject current session  - record a temp record
-           //      reject always           - record a permarecord
-           //        - pseudo response of "Display Info"
            int result;
              do {
                 result = messageBox( WarningYesNoCancel,
@@ -356,7 +353,7 @@ bool isChild = false;
 
                 if (result == KMessageBox::Yes) {
                    sendMetaData();
-                   messageBox( SSLMessageBox, m_sServiceName );
+                   messageBox( SSLMessageBox, theurl );
                 } 
              } while (result == KMessageBox::Yes);
 
@@ -387,6 +384,8 @@ bool isChild = false;
 
       //  - cache the results
       d->cc->addCertificate(pc, cp, permacache);
+      d->cc->saveToDisk();    // So that other slaves can get at it.
+      // FIXME: we should be able to notify other slaves of this here.
 
    } else {        // Child frame
       //  - Read from cache and see if there is a policy for this
@@ -419,7 +418,7 @@ bool isChild = false;
       {
          // Force sending of the metadata
          sendMetaData();
-         messageBox( SSLMessageBox, m_sServiceName );
+         messageBox( SSLMessageBox, theurl );
       }
    }
 
@@ -444,7 +443,9 @@ bool isChild = false;
    // I assert that if any two portions of a loaded document are of opposite
    // SSL status then either one of them must be different than the parent.
    // Therefore we can only compare each child against the parent both here
-   // and in non-SSL mode
+   // and in non-SSL mode.
+   // The problem which remains is how to have this notification appear only
+   // once per page.
    if (isChild && d->kssl->settings()->warnOnMixed() && 
                                        metaData("ssl_was_in_use") != "TRUE") {
       // FIXME: do something!
