@@ -1,5 +1,6 @@
 
 #include <assert.h>
+#include "kapplication.h"
 #include "khtml_ext.h"
 #include "khtmlview.h"
 #include "khtml_pagecache.h"
@@ -408,10 +409,10 @@ void KHTMLPopupGUIClient::slotReloadFrame()
   d->m_khtml->openURL( d->m_khtml->url() );
 }
 
-void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption, 
-                                   const KURL &url, 
-                                   const KIO::MetaData &metaData,
-                                   const QString &filter, long cacheId, 
+void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
+                                   const KURL &url,
+                                   const QMap<QString, QString> &metadata,
+                                   const QString &filter, long cacheId,
                                    const QString & suggestedFilename )
 {
   KFileDialog *dlg = new KFileDialog( QString::null, filter, parent, "filedia", true );
@@ -462,7 +463,9 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
       if(!saved)
       {
         KIO::Job *job = KIO::file_copy( url, destURL );
+#if KDE_VERSION > 290
         job->setMetaData(metaData);
+#endif
         // TODO connect job result, to display errors
       }
     }
