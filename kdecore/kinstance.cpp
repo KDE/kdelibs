@@ -28,6 +28,8 @@ KInstance::KInstance( const QCString& name)
 KInstance::KInstance( const KAboutData * aboutData )
   : _name( aboutData->appName() ), _aboutData( aboutData )
 {
+    ASSERT(!_name.isEmpty());
+
     if (!KGlobal::_instance)
       KGlobal::_instance = this;
 
@@ -85,6 +87,7 @@ const KAboutData * KInstance::aboutData() const
 {
     return _aboutData;
 }
+
 QCString KInstance::instanceName() const
 {
     return _name;
