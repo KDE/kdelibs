@@ -23,7 +23,7 @@
 #include <qpopupmenu.h>
 #include <kpixmapeffect.h>
 #include <kpixmap.h>
-
+#include <kdelibs_export.h>
 /**
  * Title widget for use in KPopupMenu.
  *
@@ -250,7 +250,7 @@ protected:
 protected slots:
     /// @since 3.1
     QString underlineText(const QString& text, uint length);
-    /// @since 3.1 
+    /// @since 3.1
     void resetKeyboardVars(bool noMatches = false);
     void itemHighlighted(int whichItem);
     void showCtxMenu(QPoint pos);
