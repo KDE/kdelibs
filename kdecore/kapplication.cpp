@@ -207,11 +207,11 @@ public:
   class URLActionRule
   {
   public:
-#define checkEndWildCard(s, b) \
+#define checkExactMatch(s, b) \
         if (s.isEmpty()) b = true; \
-        else if (s[s.length()-1] == '*') \
-        { b = true; s.truncate(s.length()-1); } \
-        else b = false;
+        else if (s[s.length()-1] == '!') \
+        { b = false; s.truncate(s.length()-1); } \
+        else b = true;
 #define checkStartWildCard(s, b) \
         if (s.isEmpty()) b = true; \
         else if (s[0] == '*') \
@@ -229,12 +229,12 @@ public:
                      destProt(dProt), destHost(dHost), destPath(dPath),
                      permission(perm)
                    {
-                      checkEndWildCard(baseProt, baseProtWildCard);
+                      checkExactMatch(baseProt, baseProtWildCard);
                       checkStartWildCard(baseHost, baseHostWildCard);
-                      checkEndWildCard(basePath, basePathWildCard);
-                      checkEndWildCard(destProt, destProtWildCard);
+                      checkExactMatch(basePath, basePathWildCard);
+                      checkExactMatch(destProt, destProtWildCard);
                       checkStartWildCard(destHost, destHostWildCard);
-                      checkEndWildCard(destPath, destPathWildCard);
+                      checkExactMatch(destPath, destPathWildCard);
                       checkEqual(destProt, destProtEqual);
                       checkEqual(destHost, destHostEqual);
                    }
@@ -2362,19 +2362,19 @@ void KApplication::initUrlActionRestrictions()
 //  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
 //  ("list", QString::null, QString::null, QString::null, QString::null, QString::null, QString::null, false));
 //  d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-//  ("list", QString::null, QString::null, QString::null, "file", QString::null, QDir::homeDirPath()+"*", true));
+//  ("list", QString::null, QString::null, QString::null, "file", QString::null, QDir::homeDirPath(), true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("link", QString::null, QString::null, QString::null, "http*", QString::null, QString::null, true));
+  ("link", QString::null, QString::null, QString::null, "http", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("link", QString::null, QString::null, QString::null, "ftp*", QString::null, QString::null, true));
+  ("link", QString::null, QString::null, QString::null, "ftp", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("link", QString::null, QString::null, QString::null, "news", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("link", QString::null, QString::null, QString::null, "mailto", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "http*", QString::null, QString::null, true));
+  ("redirect", QString::null, QString::null, QString::null, "http", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
-  ("redirect", QString::null, QString::null, QString::null, "ftp*", QString::null, QString::null, true));
+  ("redirect", QString::null, QString::null, QString::null, "ftp", QString::null, QString::null, true));
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "mailto", QString::null, QString::null, true));
 
@@ -2389,6 +2389,40 @@ void KApplication::initUrlActionRestrictions()
 
   d->urlActionRestrictions.append( new KApplicationPrivate::URLActionRule
   ("redirect", QString::null, QString::null, QString::null, "=", QString::null, QString::null, true));
+  
+  KConfig *config = KGlobal::config();
+  KConfigGroupSaver saver( config, "KDE URL Restrictions" );
+  int count = config->readNumEntry("rule_count");
+  QString keyFormat = QString("rule_%1");
+  for(int i = 1; i <= count; i++)
+  {
+    QString key = keyFormat.arg(i);
+    QStringList rule = config->readListEntry(key);
+    if (rule.count() != 8)
+      continue;
+    QString action = rule[0];
+    QString refProt = rule[1];
+    QString refHost = rule[2];
+    QString refPath = rule[3];
+    QString urlProt = rule[4];
+    QString urlHost = rule[5];
+    QString urlPath = rule[6];
+    QString strEnabled = rule[7].lower();
+
+    bool bEnabled = (strEnabled == "true");
+
+    if (refPath.startsWith("$HOME"))
+       refPath.replace(0, 5, QDir::homeDirPath());
+    else if (refPath.startsWith("~"))
+       refPath.replace(0, 1, QDir::homeDirPath());
+    if (urlPath.startsWith("$HOME"))
+       urlPath.replace(0, 5, QDir::homeDirPath());
+    else if (urlPath.startsWith("~"))
+       urlPath.replace(0, 1, QDir::homeDirPath());
+
+    d->urlActionRestrictions.append(new KApplicationPrivate::URLActionRule
+    	( action, refProt, refHost, refPath, urlProt, urlHost, urlPath, bEnabled));
+  }
 }
 
 bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL, const KURL &destURL)
@@ -2405,7 +2439,6 @@ bool KApplication::authorizeURLAction(const QString &action, const KURL &baseURL
          rule->destMatch(destURL, baseURL))
      {
         result = rule->permission;
-//qWarning("APPLIED: %s %s %s %s %s %s %s %s", rule->action.latin1(), rule->baseProt.latin1(), rule->baseHost.latin1(), rule->basePath.latin1(), rule->destProt.latin1(), rule->destHost.latin1(), rule->destPath.latin1(), rule->permission ? "true" : "false");
      }
   }
   return result;
