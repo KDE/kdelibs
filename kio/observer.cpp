@@ -82,79 +82,79 @@ void Observer::killJob( int progressId )
 
 void Observer::slotTotalSize( KIO::Job* job, unsigned long size )
 {
-  kdDebug() << "** Observer::slotTotalSize " << job << " " << size << endl;
+//   kdDebug() << "** Observer::slotTotalSize " << job << " " << size << endl;
   m_uiserver->totalSize( job->progressId(), size );
 }
 
 void Observer::slotTotalFiles( KIO::Job* job, unsigned long files )
 {
-  kdDebug() << "** Observer::slotTotalFiles " << job << " " << files << endl;
+//   kdDebug() << "** Observer::slotTotalFiles " << job << " " << files << endl;
   m_uiserver->totalFiles( job->progressId(), files );
 }
 
 void Observer::slotTotalDirs( KIO::Job* job, unsigned long dirs )
 {
-  kdDebug() << "** Observer::slotTotalDirs " << job << " " << dirs << endl;
+//   kdDebug() << "** Observer::slotTotalDirs " << job << " " << dirs << endl;
   m_uiserver->totalDirs( job->progressId(), dirs );
 }
 
 void Observer::slotProcessedSize( KIO::Job* job, unsigned long size )
 {
-  kdDebug() << "** Observer::slotProcessedSize " << job << " " << size << endl;
+//   kdDebug() << "** Observer::slotProcessedSize " << job << " " << size << endl;
   m_uiserver->processedSize( job->progressId(), size );
 }
 
 void Observer::slotProcessedFiles( KIO::Job* job, unsigned long files )
 {
-  kdDebug() << "** Observer::slotProcessedFiles " << job << " " << files << endl;
+//   kdDebug() << "** Observer::slotProcessedFiles " << job << " " << files << endl;
   m_uiserver->processedFiles( job->progressId(), files );
 }
 
 void Observer::slotProcessedDirs( KIO::Job* job, unsigned long dirs )
 {
-  kdDebug() << "** Observer::slotProcessedDirs " << job << " " << dirs << endl;
+//   kdDebug() << "** Observer::slotProcessedDirs " << job << " " << dirs << endl;
   m_uiserver->processedDirs( job->progressId(), dirs );
 }
 
 void Observer::slotSpeed( KIO::Job* job, unsigned long bytes_per_second )
 {
-  kdDebug() << "** Observer::slotSpeed " << job << " " << bytes_per_second << endl;
+//   kdDebug() << "** Observer::slotSpeed " << job << " " << bytes_per_second << endl;
   m_uiserver->speed( job->progressId(), bytes_per_second );
 }
 
 void Observer::slotPercent( KIO::Job* job, unsigned long percent )
 {
-  kdDebug() << "** Observer::slotPercent " << job << " " << percent << endl;
+//   kdDebug() << "** Observer::slotPercent " << job << " " << percent << endl;
   m_uiserver->percent( job->progressId(), percent );
 }
 
 void Observer::slotCopying( KIO::Job* job, const KURL& from, const KURL& to )
 {
-  kdDebug() << "** Observer::slotCopying " << job << " " << from.url() << " " << to.url() << endl;
+//   kdDebug() << "** Observer::slotCopying " << job << " " << from.url() << " " << to.url() << endl;
   m_uiserver->copying( job->progressId(), from, to );
 }
 
 void Observer::slotMoving( KIO::Job* job, const KURL& from, const KURL& to )
 {
-  kdDebug() << "** Observer::slotMoving " << job << " " << from.url() << " " << to.url() << endl;
+//   kdDebug() << "** Observer::slotMoving " << job << " " << from.url() << " " << to.url() << endl;
   m_uiserver->moving( job->progressId(), from, to );
 }
 
 void Observer::slotDeleting( KIO::Job* job, const KURL& url )
 {
-  kdDebug() << "** Observer::slotDeleting " << job << " " << url.url() << endl;
+//   kdDebug() << "** Observer::slotDeleting " << job << " " << url.url() << endl;
   m_uiserver->deleting( job->progressId(), url );
 }
 
 void Observer::slotCreatingDir( KIO::Job* job, const KURL& dir )
 {
-  kdDebug() << "** Observer::slotCreatingDir " << job << " " << dir.url() << endl;
+//   kdDebug() << "** Observer::slotCreatingDir " << job << " " << dir.url() << endl;
   m_uiserver->creatingDir( job->progressId(), dir );
 }
 
 void Observer::slotCanResume( KIO::Job* job, bool can_resume )
 {
-  kdDebug() << "** Observer::slotCanResume " << job << " " << can_resume << endl;
+//   kdDebug() << "** Observer::slotCanResume " << job << " " << can_resume << endl;
   m_uiserver->canResume( job->progressId(), (uint)can_resume );
 }
 
