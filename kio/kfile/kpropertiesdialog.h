@@ -424,6 +424,7 @@ public:
   void postApplyChanges();
 
 protected slots:
+  void slotEditFileType();
   void slotCopyFinished( KIO::Job * );
   void slotFileRenamed( KIO::Job *, const KURL &, const KURL & );
   void slotDirSizeUpdate();

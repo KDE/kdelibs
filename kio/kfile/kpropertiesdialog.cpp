@@ -37,6 +37,8 @@
  *  Preston Brown <pbrown@kde.org>
  * Plugin capability, cleanups and port to KDialogBase by
  *  Simon Hausmann <hausmann@kde.org>
+ * KDesktopPropsPlugin by
+ *  Waldo Bastian <bastian@kde.org>
  */
 
 #include <config.h>
@@ -62,6 +64,7 @@ extern "C" {
 #include <qcombobox.h>
 #include <qgroupbox.h>
 #include <qwhatsthis.h>
+#include <qtooltip.h>
 
 #include <kapplication.h>
 #include <kdialog.h>
@@ -96,6 +99,7 @@ extern "C" {
 #include <ktrader.h>
 #include <kparts/componentfactory.h>
 #include <kmetaprops.h>
+#include <kprocess.h>
 #include <krun.h>
 #include <klistview.h>
 #include "kfilesharedlg.h"
@@ -587,6 +591,7 @@ public:
   QFrame *m_frame;
   bool bMultiple;
   QLabel *m_freeSpaceLabel;
+  QString mimeType;
 };
 
 KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
@@ -608,6 +613,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   QString directory = properties->kurl().directory();
   QString protocol = properties->kurl().protocol();
   QString mimeComment = item->mimeComment();
+  d->mimeType = item->mimetype();
   KIO::filesize_t totalSize = item->size();
   QString magicMimeComment;
   if ( isLocal ) {
@@ -797,10 +803,27 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   if ( !mimeComment.isEmpty() )
   {
     l = new QLabel(i18n("Type:"), d->m_frame );
-    grid->addWidget(l, curRow, 0);
 
+    grid->addWidget(l, curRow, 0);
+    
     l = new QLabel(mimeComment, d->m_frame );
-    grid->addWidget(l, curRow++, 2);
+
+    QPushButton *button = new QPushButton(d->m_frame);
+    
+    QIconSet iconSet = SmallIconSet(QString::fromLatin1("configure"));
+    QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
+    button->setIconSet( iconSet );
+    button->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
+    QToolTip::add(button, i18n("Edit file type"));
+
+    connect( button, SIGNAL( pressed() ), SLOT( slotEditFileType() ));
+
+    QHBoxLayout *layout = new QHBoxLayout(grid);
+    
+    layout->addWidget(l,1);
+    layout->addWidget(button);
+
+    grid->addLayout(layout, curRow++, 2);
   }
 
   if ( !magicMimeComment.isEmpty() && magicMimeComment != mimeComment )
@@ -863,7 +886,16 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   {
       QString mountPoint = KIO::findPathMountPoint( properties->item()->url().path() );
 
-      l = new QLabel(i18n("Free space on %1:").arg(mountPoint), d->m_frame );
+      if (mountPoint != "/")
+      {
+          l = new QLabel(i18n("Mounted on:"), d->m_frame );
+          grid->addWidget(l, curRow, 0);
+
+          l = new QLabel( mountPoint, d->m_frame );
+          grid->addWidget( l, curRow++, 2 );
+      }
+
+      l = new QLabel(i18n("Disk usage:"), d->m_frame );
       grid->addWidget(l, curRow, 0);
 
       d->m_freeSpaceLabel = new QLabel( d->m_frame );
@@ -939,6 +971,13 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 //   return i18n ("&General");
 // }
 
+void KFilePropsPlugin::slotEditFileType()
+{
+  QString keditfiletype = QString::fromLatin1("keditfiletype");
+  KRun::runCommand( keditfiletype + " " + KProcess::quote(d->mimeType),
+                    keditfiletype, keditfiletype /*unused*/);
+}
+
 
 void KFilePropsPlugin::nameFileChanged(const QString &text )
 {
@@ -981,7 +1020,7 @@ void KFilePropsPlugin::slotFoundMountPoint( const QString&,
 					    unsigned long kBAvail )
 {
     d->m_freeSpaceLabel->setText(
-	i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
+	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
 	.arg(KIO::convertSizeFromKB(kBAvail))
 	.arg(KIO::convertSizeFromKB(kBSize))
 	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
@@ -995,7 +1034,7 @@ void KFilePropsPlugin::slotFoundMountPoint( const unsigned long& kBSize,
 					    const QString& )
 {
     d->m_freeSpaceLabel->setText(
-	i18n("Available space out of total partition size (percent used)", "%1/%2 (%3% used)")
+	i18n("Available space out of total partition size (percent used)", "%1 out of %2 (%3% used)")
 	.arg(KIO::convertSizeFromKB(kBAvail))
 	.arg(KIO::convertSizeFromKB(kBSize))
 	.arg( 100 - (int)(100.0 * kBAvail / kBSize) ));
