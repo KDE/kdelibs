@@ -369,18 +369,8 @@ void KFileDialog::slotOk()
 
     else {
 	QString url = locationEdit->currentText();
-	if ( url.at(1) == QChar('/') ) { // absolute path
-            selectedURL = d->url;
-	    selectedURL.setPath( url );
-        }
-	else if ( url.find(QString::fromLatin1(":/")) != -1 ) { // full URL
-	    KURL u( ops->url(), url );
-	    selectedURL = u;
-	}
-	else {
-	    url.prepend( ops->url().url(+1) );
-	    selectedURL = url;
-	}
+	KURL u( ops->url(), url );
+	selectedURL = u;
     }
 
     if ( selectedURL.isMalformed() ) {

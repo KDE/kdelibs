@@ -44,6 +44,7 @@ KFileIconView::KFileIconView(QWidget *parent, const char *name)
     : KIconView(parent, name), KFileView()
 {
     setViewName( i18n("Icon View") );
+    setVScrollBarMode( QScrollView::AlwaysOff );
     myIconSize = KIcon::SizeSmall;
 
     toolTip = 0;
