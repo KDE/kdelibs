@@ -19,7 +19,7 @@ testwrite_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 testwrite_LDADD = libvcards.la ../libkabc.la
 testwrite_SOURCES = testwrite.cpp
 
-TESTFILES = vcard1.vcf vcard2.vcf vcard3.vcf vcard4.vcf
+TESTFILES = vcard1.vcf vcard2.vcf vcard3.vcf vcard4.vcf vcard5.vcf
 
 check: testread
 	for i in $(TESTFILES); do perl $(top_srcdir)/kabc/vcardparser/checkvcard.pl \
