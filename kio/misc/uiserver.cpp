@@ -264,9 +264,7 @@ void ProgressItem::setProcessedDirs( unsigned long dirs ) {
 
 
 void ProgressItem::setPercent( unsigned long percent ) {
-  QString total = m_iTotalSize ? KIO::convertSize(m_iTotalSize)
-                  : i18n( "%1 files" ).arg( m_iTotalFiles );
-  QString tmps = i18n( "%1 % of %2 ").arg( percent ).arg( total );
+  const QString tmps = KIO::DefaultProgress::makePercentString( percent, m_iTotalSize, m_iTotalFiles );
   setText( ListProgress::TB_PROGRESS, tmps );
 
   defaultProgress->slotPercent( 0, percent );

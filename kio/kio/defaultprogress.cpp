@@ -227,31 +227,42 @@ void DefaultProgress::showTotals()
   }
 }
 
+//static
+QString DefaultProgress::makePercentString( unsigned long percent,
+                                            KIO::filesize_t totalSize,
+                                            unsigned long totalFiles )
+{
+  if ( totalSize )
+      return i18n( "%1 % of %2 " ).arg( percent ).arg( KIO::convertSize( totalSize ) );
+  else if ( totalFiles )
+      return i18n( "%1 % of 1 file", "%1 % of %n files", totalFiles ).arg( percent );
+  else
+      return i18n( "%1 %" ).arg( percent );
+}
+
 void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
 {
-  QString total = m_iTotalSize ? KIO::convertSize( m_iTotalSize )
-                  : i18n( "%1 files" ).arg( m_iTotalFiles );
-  QString tmp = i18n( "%1 % of %2 " ).arg( percent ).arg( total );
+  QString caption = makePercentString( percent, m_iTotalSize, m_iTotalFiles );
   m_pProgressBar->setValue( percent );
   switch(mode) {
   case Copy:
-    tmp.append(i18n(" (Copying)"));
+    caption.append(i18n(" (Copying)"));
     break;
   case Move:
-    tmp.append(i18n(" (Moving)"));
+    caption.append(i18n(" (Moving)"));
     break;
   case Delete:
-    tmp.append(i18n(" (Deleting)"));
+    caption.append(i18n(" (Deleting)"));
     break;
   case Create:
-    tmp.append(i18n(" (Creating)"));
+    caption.append(i18n(" (Creating)"));
     break;
   case Done:
-    tmp.append(i18n(" (Done)"));
+    caption.append(i18n(" (Done)"));
     break;
   }
 
-  setCaption( tmp );
+  setCaption( caption );
   d->noCaptionYet = false;
 }
 
@@ -268,8 +279,9 @@ void DefaultProgress::slotProcessedSize( KIO::Job*, KIO::filesize_t bytes ) {
     return;
   m_iProcessedSize = bytes;
 
-  QString tmp;
-  tmp = i18n( "%1 of %2 complete").arg( KIO::convertSize(bytes) ).arg( KIO::convertSize(m_iTotalSize));
+  QString tmp = i18n( "%1 of %2 complete")
+                .arg( KIO::convertSize(bytes) )
+                .arg( KIO::convertSize(m_iTotalSize));
   sizeLabel->setText( tmp );
 }
 
