@@ -1985,12 +1985,14 @@ void KExtendedSocket::connectionEvent()
 
   // ok, we have to try something here
   // and sockfd == -1
-  addrinfo *p, *q;
+  addrinfo *p, *q = NULL;
   if (d->current == 0)
     p = d->current = d->resolution->data;
   else
     p = d->current->ai_next;
-  for (q = d->bindres->data; p; p = p->ai_next)
+  if (d->bindres)
+    q = d->bindres->data;
+  for ( ; p; p = p->ai_next)
     {
       // same code as in connect()
       if (q != NULL)
@@ -2090,18 +2092,24 @@ void KExtendedSocket::dnsResultsReady()
     return;
 
   // ok, we have all results
-  if (d->dns)
-    d->resolution = d->dns->results();
-  if (d->dnsLocal)
-    d->bindres = d->dnsLocal->results();
-
   // count how many results we have
   int n = 0;
   addrinfo *p;
-  for (p = d->resolution->data; p; p = p->ai_next)
-    n++;
-  for (p = d->bindres->data; p; p = p->ai_next)
-    n++;
+
+  if (d->dns)
+    {
+      d->resolution = d->dns->results();
+      for (p = d->resolution->data; p; p = p->ai_next)
+	n++;
+    }
+
+  if (d->dnsLocal)
+    {
+      d->bindres = d->dnsLocal->results();
+      for (p = d->bindres->data; p; p = p->ai_next)
+	n++;
+    }
+
   d->status = lookupDone;
   emit lookupFinished(n);
 
