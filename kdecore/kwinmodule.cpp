@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.8  1999/11/11 01:22:08  ettrich
+    support for docking windows
+
     Revision 1.7  1999/11/07 03:50:54  ettrich
     small fix (don't destroy the XSelect mask)
 
@@ -84,6 +87,9 @@ static Atom net_client_list_stacking;
 static Atom net_active_window;
 static Atom net_current_desktop;
 static Atom net_kde_docking_windows;
+
+
+extern Atom qt_wm_state;
 
 static void createAtoms() {
     if (!atoms){
@@ -219,7 +225,7 @@ QValueList<WId> KWinModulePrivate::readWindowList( Atom a )
 void KWinModulePrivate::updateWindows()
 {
     QValueList<WId> old = windows;
-    
+
     windows = readWindowList( net_client_list );
     qHeapSort( windows );
 
@@ -262,10 +268,10 @@ void KWinModulePrivate::updateWindowsSorted()
 void KWinModulePrivate::updateDockWindows()
 {
     QValueList<WId> old = dockWindows;
-    
+
     dockWindows = readWindowList( net_kde_docking_windows );
     qHeapSort( dockWindows );
-    
+
     QValueList<WId>::Iterator it1, it2;
 
     it1 = old.begin();
@@ -363,10 +369,26 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
     }
 
     if ( ev->type == PropertyNotify &&  module->hasWId( ev->xproperty.window ) ) {
-	emit module->windowChange( ev->xproperty.window );
-	return FALSE;
+	Atom a = ev->xproperty.atom;
+	bool  doit = FALSE;
+	switch  ( a ) {
+	case XA_WM_ICON_NAME:
+	case XA_WM_NAME:
+	case XA_WM_NORMAL_HINTS:
+	    doit = TRUE;
+	default:
+	    if ( doit || a == qt_wm_state ) {
+		XEvent dummy;
+		while (XCheckTypedWindowEvent (qt_xdisplay(), ev->xproperty.window,
+					       PropertyNotify, &dummy) )
+		    ;
+		emit module->windowChange( ev->xproperty.window );
+		return FALSE;
+	    }
+	    break;
+	}
     }
-
+    
 
     // old stuff below
 
