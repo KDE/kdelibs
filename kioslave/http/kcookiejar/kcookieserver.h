@@ -28,6 +28,8 @@
 #include <qasciidict.h>
 #include <dcopobject.h>
 #include <kuniqueapplication.h>
+#include <kpasswdserver.h>
+
 
 class KHttpCookieList;
 class KCookieJar;
@@ -56,6 +58,7 @@ k_dcop:
   void deleteCookie(QString, QString, QString, QString);
   void deleteCookiesFromDomain(QString);
   void registerWindowId(long int);
+  void unregisterWindowId(long int);
   void deleteSessionCookies(long);
   void deleteSessionCookiesFor(QString, long);
   void deleteAllCookies();
@@ -82,6 +85,7 @@ protected:
   QTimer *mTimer;
   bool mAdvicePending;
   QAsciiDict<QValueList<long> > mWindowIdList;
+  KPasswdServer mPasswdServer;
 
 private:
   virtual int newInstance(QValueList<QCString>) { return 0; }

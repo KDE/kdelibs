@@ -517,6 +517,7 @@ KCookieServer::deleteSessionCookies( long windowId )
      windowIds->remove(windowId);
   }
 
+  mPasswdServer.removeAuthForWindowId( windowId ); 
   mCookieJar->eatSessionCookies( windowId );
   if(!mTimer)
     saveCookieJar();
@@ -613,6 +614,13 @@ KCookieServer::registerWindowId(long windowId)
    windowIds->append(windowId);
 }
 
+// DCOP function
+void
+KCookieServer::unregisterWindowId(long windowId)
+{
+   deleteSessionCookies(windowId);
+}
+
 void
 KCookieServer::unregisterApp(const QCString& sender)
 {
@@ -624,6 +632,7 @@ KCookieServer::unregisterApp(const QCString& sender)
    {
       long windowId = windowIds->first();
       windowIds->remove(windowId);
+      mPasswdServer.removeAuthForWindowId( windowId );
       mCookieJar->eatSessionCookies( windowId );
    }
 

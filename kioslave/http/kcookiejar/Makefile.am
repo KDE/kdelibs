@@ -10,6 +10,7 @@ lib_LTLIBRARIES = kcookiejar.la
 
 kcookiejar_la_SOURCES = kcookiejar.cpp kcookieserver.cpp \
 			kcookieserver.skel kcookiewin.cpp \
+			kpasswdserver.cpp kpasswdserver.skel \
 			main.cpp 
 kcookiejar_la_METASOURCES = AUTO
 kcookiejar_la_LDFLAGS = $(all_libraries) -module -avoid-version

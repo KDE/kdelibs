@@ -55,7 +55,6 @@ KPasswdServer::~KPasswdServer()
 KIO::AuthInfo 
 KPasswdServer::checkCachedAuthInfo(KIO::AuthInfo info, long windowId)
 {
-qWarning("KPasswdServer::checkCachedAuthInfo");
     QString key = createCacheKey(info);
 
     Request *request = m_authPending.first();
@@ -72,7 +71,6 @@ qWarning("KPasswdServer::checkCachedAuthInfo");
              continue;
        }
        
-       qWarning("KPasswdServer::checkCachedAuthInfo queue request!");
        request = new Request;
        request->transaction = m_dcopClient->beginTransaction();
        request->key = key;
@@ -82,7 +80,7 @@ qWarning("KPasswdServer::checkCachedAuthInfo");
     }
 
     const AuthInfo *result = findAuthInfoItem(key, info);
-    if (!result)
+    if (!result || result->isCanceled)
     {
        info.setModified(false);
        return info;
@@ -92,7 +90,7 @@ qWarning("KPasswdServer::checkCachedAuthInfo");
 }
 
 KIO::AuthInfo 
-KPasswdServer::queryAuthInfo(KIO::AuthInfo info, long windowId, long seqNr)
+KPasswdServer::queryAuthInfo(KIO::AuthInfo info, QString errorMsg, long windowId, long seqNr)
 {
     kdDebug() << "KPasswdServer::queryAuthInfo: User= " << info.username
               << ", Message= " << info.prompt << endl;
@@ -103,6 +101,7 @@ KPasswdServer::queryAuthInfo(KIO::AuthInfo info, long windowId, long seqNr)
     request->info = info;
     request->windowId = windowId;
     request->seqNr = seqNr;
+    request->errorMsg = errorMsg;
     m_authPending.append(request);
     
     if (m_authPending.count() == 1)
@@ -129,16 +128,19 @@ KPasswdServer::processRequest()
     if (result && (request->seqNr < result->seqNr))
     {
         kdDebug() << "KPasswdServer::processRequest: auto retry!" << endl;
-        info = copyAuthInfo(result);
+        if (result->isCanceled)
+           info.setModified(false);
+        else
+           info = copyAuthInfo(result);
     }
     else
     {
         m_seqNr++;
         bool askPw = true;
-        if (result && !info.password.isEmpty())
+        if (result && !info.username.isEmpty() &&
+            !request->errorMsg.isEmpty())
         {
-           // TODO i18n("Proxy Authentication Failed!");
-           QString prompt = i18n("Authentication Failed!");
+           QString prompt = request->errorMsg;
            prompt += i18n("  Do you want to retry?");
            int dlgResult = KMessageBox::questionYesNo(0, prompt, 
                            i18n("Authentication"));
@@ -174,12 +176,12 @@ KPasswdServer::processRequest()
         }
         if ( dlgResult != QDialog::Accepted )
         {
+            addAuthInfoItem(request->key, info, 0, m_seqNr, true);
             info.setModified( false );
         }
         else
         {
-            addAuthInfoItem(request->key, info, request->windowId, m_seqNr);
-    
+            addAuthInfoItem(request->key, info, request->windowId, m_seqNr, false);
             info.setModified( true );
         }
     }
@@ -221,12 +223,10 @@ KPasswdServer::processRequest()
        }
        if (keepQueued)
        {
-qWarning("KPasswdServer::processRequest skipping request from wait queue.");
            waitRequest = m_authWait.next();
        }
        else
        {
-qWarning("KPasswdServer::processRequest handling request from wait queue.");
            const AuthInfo *result = findAuthInfoItem(waitRequest->key, waitRequest->info);
 
            QCString replyType;
@@ -234,7 +234,7 @@ qWarning("KPasswdServer::processRequest handling request from wait queue.");
 
            QDataStream stream2(replyData, IO_WriteOnly);
 
-           if (!result)
+           if (!result || result->isCanceled)
            {
                waitRequest->info.setModified(false);
                stream2 << waitRequest->info;
@@ -254,7 +254,6 @@ qWarning("KPasswdServer::processRequest handling request from wait queue.");
        }
     }
 
-qWarning("KPasswdServer::processRequest: %d requests left", m_authPending.count());
     if (m_authPending.count())
        QTimer::singleShot(0, this, SLOT(processRequest()));
 
@@ -306,8 +305,16 @@ KPasswdServer::findAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
       
    QString path2 = info.url.path(+1);
    for(AuthInfo *current = authList->first();
-       current; current = authList->next())
+       current; )
    {
+       if ((current->expire == AuthInfo::expTime) && 
+          (difftime(time(0), current->expireTime) > 0))
+       {
+          authList->remove();
+          current = authList->current();
+          continue;
+       }
+          
        if (!info.verifyPath)
           return current;
 
@@ -315,7 +322,7 @@ KPasswdServer::findAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
        if (path2.startsWith(path1))
           return current;
           
-       // TODO add windowId to AuthInfo (?)
+       current = authList->next();
    }
    return 0;
 }
@@ -347,7 +354,7 @@ KPasswdServer::removeAuthInfoItem(const QString &key, const KIO::AuthInfo &info)
 }
 
 void
-KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, long windowId, long seqNr)
+KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, long windowId, long seqNr, bool canceled)
 {
    QPtrList<AuthInfo> *authList = m_authDict.find(key);
    if (!authList)
@@ -375,8 +382,9 @@ KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, lo
    current->realmValue = info.realmValue;
    current->digestInfo = info.digestInfo;
    current->seqNr = seqNr;
+   current->isCanceled = canceled;
    
-   if (info.keepPassword)
+   if (info.keepPassword && !canceled)
    {
       current->expire = AuthInfo::expNever;
    }
@@ -389,7 +397,7 @@ KPasswdServer::addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, lo
    else
    {
       current->expire = AuthInfo::expTime;
-      current->expireTime = time(0);
+      current->expireTime = time(0)+10;
    }
    
    // Update mWindowIdList

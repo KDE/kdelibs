@@ -47,7 +47,7 @@ public:
 
 k_dcop:
   KIO::AuthInfo checkCachedAuthInfo(KIO::AuthInfo, long);
-  KIO::AuthInfo queryAuthInfo(KIO::AuthInfo, long, long);
+  KIO::AuthInfo queryAuthInfo(KIO::AuthInfo, QString, long, long);
 
 public slots:
   void processRequest();
@@ -58,7 +58,7 @@ protected:
   QString createCacheKey( const KIO::AuthInfo &info );
   const AuthInfo *findAuthInfoItem(const QString &key, const KIO::AuthInfo &info);
   void removeAuthInfoItem(const QString &key, const KIO::AuthInfo &info);
-  void addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, long windowId, long seqNr);
+  void addAuthInfoItem(const QString &key, const KIO::AuthInfo &info, long windowId, long seqNr, bool canceled);
   KIO::AuthInfo copyAuthInfo(const AuthInfo *);
   
 private:
@@ -86,6 +86,7 @@ private:
      DCOPClientTransaction *transaction;
      QString key;
      KIO::AuthInfo info;
+     QString errorMsg;
      long windowId;
      long seqNr;
   };
