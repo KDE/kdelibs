@@ -47,7 +47,13 @@ int gethostname (char *Name, int Namelen);
 #ifndef HAVE_RANDOM
 #define HAVE_RANDOM
 #define RANDOM_MAX 2^31 
+#ifdef __cplusplus  
+extern "C" 
+#endif
 long int random(void); /* defined in fakes.cpp */
+#ifdef __cplusplus  
+extern "C" 
+#endif
 void srandom(unsigned int seed);
 #else
 /* normal random() */
@@ -102,18 +108,30 @@ int getmntinfo(struct statfs **mntbufp, int flags);
 extern "C"
 #endif
 int vsnprintf(char *str, size_t n, char const *fmt, va_list ap);
+#ifdef __cplusplus  
+extern "C" 
+#endif
 int snprintf(char *str, size_t n, char const *fmt, ...);
 #endif
 
 #if !defined(HAVE_SETENV)
+#ifdef __cplusplus  
+extern "C" 
+#endif
 int setenv(const char *name, const char *value, int overwrite);
 #endif
 
 #if !defined(HAVE_UNSETENV)
+#ifdef __cplusplus  
+extern "C" 
+#endif
 int unsetenv(const char *name);
 #endif
 
 #if !defined(HAVE_MKSTEMPS)
+#ifdef __cplusplus  
+extern "C" 
+#endif
 int mkstemps (char* _template, int suffix_len);
 #endif
 
@@ -124,6 +142,17 @@ int mkstemps (char* _template, int suffix_len);
 
 #if defined(_AIX)
 #include <strings.h>
+#endif
+
+/*
+ * AIX prior to 5.1 fails to provide a declaration for initgroups()
+ */
+#if defined(_AIX) && !defined(_AIX51)
+#include <grp.h>
+#ifdef __cplusplus
+extern "C"
+#endif
+int initgroups(char *, gid_t);  /* missing declaration in AIX < 5.1 */
 #endif
 
 /*
