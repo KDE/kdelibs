@@ -160,16 +160,6 @@ class Resource : public KRES::Resource
     virtual void writeConfig( KConfig *config );
 
     /**
-      Opens the resource and returns if it was successfully
-     */
-    virtual bool doOpen() = 0;
-
-    /**
-      Closes the resource and returns if it was successfully
-     */
-    virtual void doClose() = 0;
-
-    /**
       Request a ticket, you have to pass through save() to
       allow locking. The resource has to create its locks
       in this function.
@@ -194,9 +184,11 @@ class Resource : public KRES::Resource
       the loadingFinished() or loadingError() signal is emitted from within
       this function.
 
+      The default implementation simply calls the synchronous load.
+
       @return Whether the synchronous part of loading was successfully.
      */
-    virtual bool asyncLoad() = 0;
+    virtual bool asyncLoad();
 
     /**
       Insert an addressee into the resource.
@@ -222,11 +214,13 @@ class Resource : public KRES::Resource
       the savingFinished() or savingError() signal is emitted from within
       this function.
 
+      The default implementation simply calls the synchronous save.
+
       @param ticket You have to release the ticket later with
                     releaseSaveTicket() explicitely.
       @return Whether the saving was successfully.
      */
-    virtual bool asyncSave( Ticket *ticket ) = 0;
+    virtual bool asyncSave( Ticket *ticket );
 
     /**
       Searches an addressee with the specified unique identifier.

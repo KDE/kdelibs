@@ -19,6 +19,7 @@
 */
 
 #include <kdebug.h>
+#include <klocale.h>
 
 #include "resource.h"
 
@@ -333,6 +334,29 @@ Addressee::List Resource::findByCategory( const QString &category )
 void Resource::clear()
 {
   mAddrMap.clear();
+}
+
+bool Resource::asyncLoad()
+{
+  bool ok = load();
+  if ( !ok )
+    emit loadingError( this, i18n( "Loading resource '%1' failed!" )
+                       .arg( resourceName() ) );
+  else
+    emit loadingFinished( this );
+
+  return ok;
+}
+
+bool Resource::asyncSave( Ticket *ticket ) {
+  bool ok = save( ticket );
+  if ( !ok )
+    emit savingError( this, i18n( "Saving resource '%1' failed!" )
+                      .arg( resourceName() ) );
+  else
+    emit savingFinished( this );
+
+  return ok;
 }
 
 #include "resource.moc"
