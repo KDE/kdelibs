@@ -2,7 +2,7 @@
 Type=XV
 Header=^P7 332
 Flags=T
-Pattern=XView format
+Name=XView format
 Read=true
 Write=true
 Suffices=

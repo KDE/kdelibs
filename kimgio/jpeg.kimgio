@@ -1,7 +1,7 @@
 [Image Format]
 Type=JPEG
 Header=
-Pattern=JPEG-Pictures
+Name=JPEG-Pictures
 Read=true
 Write=true
 Suffices=jpg,JPG,jpeg,JPEG 

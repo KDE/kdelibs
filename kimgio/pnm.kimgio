@@ -1,7 +1,7 @@
 [Image Format]
 Type=PNM
 Header=
-Pattern=PNM-Pictures
+Name=PNM-Pictures
 Read=true
 Write=true
 Suffices=pnm,PNM,pbm,PBM,pgm,PGM,ppm,PPM,pbmraw,PBMRAW,pgmraw,PGMRAW,ppmraw,PPMRAW

@@ -1,7 +1,7 @@
 [Image Format]
 Type=GIF
 Header=
-Pattern=GIF-Pictures
+Name=GIF-Pictures
 Read=true
 Write=false
 Suffices=gif,GIF

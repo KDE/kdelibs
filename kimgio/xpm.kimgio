@@ -1,7 +1,7 @@
 [Image Format]
 Type=XPM
 Header=
-Pattern=XWindow Pixmaps
+Name=XWindow Pixmaps
 Read=true
 Write=true
 Suffices=xpm,XPM
