@@ -267,7 +267,7 @@ bool XMLHandler::internalEntityDecl(const QString &name, const QString &value)
     return true;
 }
 
-bool XMLHandler::notationDecl(const QString &name, const QString &publicId, const QString &systemId)
+bool XMLHandler::notationDecl(const QString &/*name*/, const QString &/*publicId*/, const QString &/*systemId*/)
 {
 // ### FIXME
 //     if (m_doc->document()->doctype()) {
