@@ -199,6 +199,10 @@ action/openwith
 action/openintab
 action/openintabfront
 
+Kicker related:
+action/kicker_rmb // RMB menu
+action/menuedit
+
 Konsole related:
 action/konsole_rmb // RMB context menu
 
