@@ -536,9 +536,6 @@ public:
          * adds action to show/hide the toolbar(s) and adds
          * action to configure the toolbar(s).
          * @see setStandardToolBarMenuEnabled
-         *
-         * Do NOT use this option if this is a KParts::MainWindow.
-         * You have to use KEditToolbar directly for now.
          */
         ToolBar = 1,
 

@@ -878,8 +878,9 @@ void KMainWindow::finalizeGUI( bool force )
     // the toolbariterator should give them in the proper order.
     // Both the XMLGUI and applySettings call this, hence "force" for the latter.
     QPtrListIterator<KToolBar> it( toolBarIterator() );
-    for ( ; it.current() ; ++ it )
-            it.current()->positionYourself( force );
+    for ( ; it.current() ; ++it ) {
+        it.current()->positionYourself( force );
+    }
 
     d->settingsDirty = false;
 }
@@ -1005,6 +1006,8 @@ void KMainWindow::setAutoSaveSettings( const QString & groupName, bool saveWindo
     d->autoSaveGroup = groupName;
     d->autoSaveWindowSize = saveWindowSize;
     // Get notified when the user moves a toolbar around
+    disconnect( this, SIGNAL( dockWindowPositionChanged( QDockWindow * ) ),
+                this, SLOT( setSettingsDirty() ) );
     connect( this, SIGNAL( dockWindowPositionChanged( QDockWindow * ) ),
              this, SLOT( setSettingsDirty() ) );
 
