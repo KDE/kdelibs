@@ -29,7 +29,7 @@ METASOURCES = AUTO
 
 CLEANFILES = exampleprefs_base.h exampleprefs_base.cpp
 
-TESTFILES = test1.kcfg test2.kcfg
+TESTFILES = test1.kcfg test2.kcfg test3.kcfg
 
 check:
 	for i in $(TESTFILES); \

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE kcfg SYSTEM "http://www.kde.org/standards/kcfg/1.0/kcfg.dtd">
+<kcfg>
+  <kcfgfile name="test3rc"/>
+
+  <group name="General">
+    <entry type="Bool" key="Auto Save">
+      <label>Enable automatic saving of calendar</label>
+      <whatsthis>WhatsThis text for AutoSave option</whatsthis>
+      <default>false</default>
+    </entry>
+  </group>
+
+  <group name="Blah">
+    <entry type="Int" name="Blubb">
+      <default>10</default>
+    </entry>
+    <entry type="String" name="BlahBlah">
+      <default>a string</default>
+    </entry>
+  </group>
+
+</kcfg>

@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -I$(top_srcdir)/kdecore $(all_includes)
 
-check_PROGRAMS = test1 test2
+check_PROGRAMS = test1 test2 test3
 
 test1_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 test1_LDADD = $(LIB_KDECORE)
@@ -9,6 +9,10 @@ test1_SOURCES = test1main.cpp test1.cpp
 test2_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 test2_LDADD = $(LIB_KDECORE)
 test2_SOURCES = test2main.cpp test2.cpp
+
+test3_LDFLAGS = $(all_libraries) $(KDE_RPATH)
+test3_LDADD = $(LIB_KDECORE)
+test3_SOURCES = test3main.cpp test3.cpp
 
 test1main.o test1.o: test1.h
 # avoid running the below command in parallel
@@ -21,3 +25,9 @@ test2main.o test2.o: test2.h
 test2.cpp: test2.h
 test2.cpp test2.h: $(srcdir)/test2.kcfg ../kconfig_compiler $(srcdir)/test2.kcfgc
 	../kconfig_compiler $(srcdir)/test2.kcfg $(srcdir)/test2.kcfgc
+
+test3main.o test3.o: test3.h
+# avoid running the below command in parallel
+test3.cpp: test3.h
+test3.cpp test3.h: $(srcdir)/test3.kcfg ../kconfig_compiler $(srcdir)/test3.kcfgc
+	../kconfig_compiler $(srcdir)/test3.kcfg $(srcdir)/test3.kcfgc

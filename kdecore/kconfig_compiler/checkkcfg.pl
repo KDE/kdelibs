@@ -10,9 +10,6 @@ $file = $ARGV[0];
 $file =~ /^(.*)\.[^\.]*$/;
 $filebase = $1;
 
-print "FILE: $file\n";
-print "FILEBASE: $filebase\n";
-
 $file_h = "$filebase.h";
 $file_cpp = "$filebase.cpp";
 

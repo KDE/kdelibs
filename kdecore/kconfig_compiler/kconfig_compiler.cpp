@@ -648,6 +648,7 @@ int main( int argc, char **argv )
 
   KSimpleConfig codegenConfig( codegenFilename, true );
 
+  QString nameSpace = codegenConfig.readEntry("NameSpace");
   QString className = codegenConfig.readEntry("ClassName");
   QString inherits = codegenConfig.readEntry("Inherits");
   bool singleton = codegenConfig.readBoolEntry("Singleton", false);
@@ -775,6 +776,9 @@ int main( int argc, char **argv )
   if ( includes.count() > 0 ) h << endl;
 
   h << "#include <kconfigskeleton.h>" << endl << endl;
+
+  if ( !nameSpace.isEmpty() )
+    h << "namespace " << nameSpace << " {" << endl << endl;
 
   // Class declaration header
   h << "class " << className << " : public " << inherits << endl;
@@ -952,6 +956,8 @@ int main( int argc, char **argv )
 
   h << "};" << endl << endl;
 
+  if ( !nameSpace.isEmpty() ) h << "}" << endl << endl;
+
   h << "#endif" << endl;
 
 
@@ -974,12 +980,15 @@ int main( int argc, char **argv )
 
   if ( setUserTexts ) cpp << "#include <klocale.h>" << endl << endl;
 
-  // Static class pointer for singleton
+  // Header required by singleton implementation
+  if ( singleton )
+    cpp << "#include <kstaticdeleter.h>" << endl << endl;
+
+  if ( !nameSpace.isEmpty() )
+    cpp << "using namespace " << nameSpace << ";" << endl << endl;
+  
+  // Singleton implementation
   if ( singleton ) {
-    cpp << "#include <kstaticdeleter.h>" << endl;
-
-    cpp << endl;
-
     cpp << className << " *" << className << "::mSelf = 0;" << endl;
     cpp << "static KStaticDeleter<" << className << "> staticDeleter;" << endl << endl;
 
