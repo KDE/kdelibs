@@ -74,12 +74,14 @@ void FileProtocol::slotMkdir( const char *_url, int _mode )
   if ( usrc.isMalformed() ) {
     error( ERR_MALFORMED_URL, strdup(_url) );
     m_cmd = CMD_NONE;
+    finished();
     return;
   }
 
   if ( !usrc.isLocalFile() ) {
     error( ERR_INTERNAL, "kio_file got non local name in mkdir command" );
     m_cmd = CMD_NONE;
+    finished();
     return;
   }
 
@@ -89,17 +91,20 @@ void FileProtocol::slotMkdir( const char *_url, int _mode )
       if ( errno == EACCES ) {
 	error( ERR_ACCESS_DENIED, strdup(_url) );
 	m_cmd = CMD_NONE;
+        finished();
 	return;
       } else {
 	error( ERR_COULD_NOT_MKDIR, strdup(_url) );
 	m_cmd = CMD_NONE;
-	return;
+        finished();
+        return;
       }
     } else {
       if ( _mode != -1 )
 	if ( chmod( usrc.path(), _mode ) == -1 ) {
 	  error( ERR_CANNOT_CHMOD, strdup(_url) );
 	  m_cmd = CMD_NONE;
+          finished();
 	  return;
 	}
 
@@ -112,11 +117,13 @@ void FileProtocol::slotMkdir( const char *_url, int _mode )
     debug("ERR_DOES_ALREADY_EXIST");
     error( ERR_DOES_ALREADY_EXIST, strdup(_url) );
     m_cmd = CMD_NONE;
+    finished();
     return;
   }
 
   error( ERR_COULD_NOT_MKDIR, strdup(_url) );
   m_cmd = CMD_NONE;
+  finished();
   return;
 }
 
@@ -1103,7 +1110,7 @@ void FileProtocol::slotListDir( const char *_url )
   KUDSAtom atom;
   while ( ( ep = readdir( dp ) ) != 0L ) {
 
-    kdebug( KDEBUG_INFO, 0, "Listing %s", ep->d_name );
+    //kdebug( KDEBUG_INFO, 0, "Listing %s", ep->d_name );
 
     entry.clear();
 
