@@ -2,8 +2,6 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999 Harri Porten (porten@kde.org)
  *
- *  $Id$
- *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
  *  License as published by the Free Software Foundation; either
@@ -30,6 +28,9 @@
 #include "kjs.h"
 #include "object.h"
 #include "nodes.h"
+#include "object_object.h"
+#include "function_object.h"
+#include "bool_object.h"
 #include "math_object.h"
 #include "html_object.h"
 
@@ -75,6 +76,7 @@ const char *typeName[] = {
   "InternalFunction",
   "DeclaredFunction",
   "AnonymousFunction",
+  "Constructor",
   "Activation",
   "Error"
 };
@@ -89,6 +91,7 @@ KJSO *KJS::zeroRef(KJSO *obj)
 void KJSO::init()
 {
   proto = 0L; prop = 0L; call = 0L;
+  constr = 0L;
   refCount = 1;
 
 #ifdef KJS_DEBUG_MEM
@@ -111,6 +114,12 @@ KJSO::~KJSO()
     p = p->next;
     delete tmp;
   }
+
+  if (constr)
+    constr->deref();
+
+  if (proto)
+    proto->deref();
 
 #ifdef KJS_DEBUG_MEM
   if (prevObject)
@@ -147,6 +156,13 @@ KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
     return comp->complValue();
   else
     return new KJSUndefined();
+}
+
+void KJSO::setConstructor(KJSConstructor *c)
+{
+  assert(c);
+  c->ref();
+  constr = c;
 }
 
 // ECMA 8.7.1
@@ -196,6 +212,22 @@ ErrorCode KJSO::putValue(KJSO *v)
     o->put(getPropertyName(), v);
 
   return ErrOK;
+}
+
+// [[construct]] property
+KJSObject *KJSO::construct(KJSArgList *args)
+{
+  assert(constr);
+  /* TODO: pass `undefined' arguments if needed */
+  return constr->construct(args);
+}
+
+void KJSO::setPrototype(KJSPrototype *p)
+{
+  assert(p);
+  p->ref();
+  proto = p;
+  put("prototype", p, DontEnum | DontDelete | ReadOnly);
 }
 
 KJSReference::KJSReference(KJSO *b, const CString &s)
@@ -273,14 +305,27 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
 
 KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
 {
+  // value properties
   put("NaN", zeroRef(new KJSNumber(NaN)));
   put("Infinity", zeroRef(new KJSNumber(Inf)));
 
+  // function properties
+  //  put("eval", new KJSInternalFunction(&eval));
+
+  // constructor properties. basic prototypes first.
+  KJSPrototype *objProto = new ObjectPrototype();
+  KJSPrototype *funcProto = new FunctionPrototype();
+
+  put("Boolean", zeroRef(new BooleanObject(objProto, funcProto)), DontEnum);
+
+  // other properties
   put("Math", zeroRef(new KJSMath()), DontEnum);
+
+  // DOM & HTML objects
   put("document", new HTMLDocument(htmlw), DontEnum, true);
 
-  // TODO: add function properties
-  //  put("eval", new KJSInternalFunction(&eval));
+  objProto->deref();
+  funcProto->deref();
 }
 
 KJSO* KJSGlobal::eval()
@@ -486,8 +531,10 @@ KJSError::KJSError(ErrorCode e, Node *n)
 {
   line = n ? n->lineNo() : -1;
 
-  if (!KJSWorld::error)
-    KJSWorld::error = (KJSError*) this->ref();
+  if (!KJSWorld::error) {
+    ref();
+    KJSWorld::error = this;
+  }
 
   cerr << "Runtime error " << (int) e << " at line " << line << endl;
 }
@@ -496,8 +543,10 @@ KJSError::KJSError(ErrorCode e, Node *n)
 KJSError::KJSError(ErrorCode e, KJSO *)
   : errNo(e)
 {
-  if (!KJSWorld::error)
-    KJSWorld::error = (KJSError*) this->ref();
+  if (!KJSWorld::error) {
+    ref();
+    KJSWorld::error = this;
+  }
 
   cerr << "Runtime error " << (int) e << endl;
 }

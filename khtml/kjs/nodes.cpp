@@ -152,18 +152,21 @@ KJSO *NewExprNode::evaluate()
   Ptr e = expr->evaluate();
   Ptr v = e->getValue();
 
-  KJSO *a;
-  if (args)
-    a = args->evaluate();
-  else
-    a = 0L;
+  /* TODO: build argList on the stack */
+  KJSArgList *argList = args->evaluateList();
 
-  if (!v->isObject())
+  if (!v->isObject()) {
+    delete argList;
     return new KJSError(ErrExprNoObject, this);
-  if (!v->implementsConstruct())
+  }
+  if (!v->implementsConstruct()) {
+    delete argList;
     return new KJSError(ErrNoConstruct, this);
+  }
 
-  KJSO *res = v->construct(a);
+  KJSO *res = v->construct(argList);
+  delete argList;
+
   if (!res->isObject())
     return new KJSError(ErrResNoObject, this);
 
@@ -589,7 +592,7 @@ KJSO *StatListNode::evaluate()
 // ECMA 12.2
 KJSO *VarStatementNode::evaluate()
 {
-  list->evaluate();
+  (void) list->evaluate(); // returns 0L
 
   return new KJSCompletion(Normal);
 }
@@ -601,7 +604,6 @@ KJSO *VarDeclNode::evaluate()
 
   // TODO: coded with help of 10.1.3. Correct ?
   if (!variable->hasProperty(ident)) {
-    //    KJSO *val;
     Ptr val, tmp;
     if (init) {
       tmp = init->evaluate();
@@ -620,7 +622,7 @@ KJSO *VarDeclListNode::evaluate()
 
   var->evaluate();
 
-  return new KJSUndefined();
+  return 0L;
 }
 
 // ECMA 12.2

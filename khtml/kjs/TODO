@@ -1,6 +1,4 @@
-* implement hundreds of missing functions
-
-* take care of memory leaks
+* DOM- and HTML-bindings
 
 * check if NaN, Inf and -0 support is really possible
 

@@ -38,9 +38,12 @@ union Value {
 };
 
 // forward declarations
+class KJSObject;
+class KJSPrototype;
 class KJSProperty;
 class KJSArgList;
 class KJSParamList;
+class KJSConstructor;
 class Node;
 class StatementNode;
 
@@ -65,8 +68,8 @@ public:
 #endif
 
   // Properties
-  KJSO *prototype() const { return proto; }
-  Class getClass() const { return cl; }
+  void setPrototype(KJSPrototype *p);
+  KJSPrototype *prototype() const { return proto; }
   KJSO *get(const CString &p) const;
   bool hasProperty(const CString &p) const;
   void put(const CString &p, KJSO *v, int attr = None, bool z = false);
@@ -74,7 +77,7 @@ public:
   void deleteProperty(const CString &p);
   KJSO *defaultValue(Hint hint = NoneHint);
   void dump(int level = 0);
-  virtual KJSO *construct() { return 0L; }
+  virtual KJSObject *construct() { return 0L; }
 
   //private:
 public:
@@ -105,12 +108,14 @@ public:
   KJSO* (*call)(KJSO*);
 
   // constructor
-  bool implementsConstruct() const { return true; /* TODO */ }
-  KJSO *construct(KJSO *) { /* TODO */ return 0L; }
+  void setConstructor(KJSConstructor *c);
+  KJSConstructor *constructor() const { return constr; }
+  bool implementsConstruct() const { return (constr); }
+  KJSObject *construct(KJSArgList *args);
 
-protected:
-  KJSO *proto;
-  Class cl;
+private:
+  KJSPrototype *proto;
+  KJSConstructor *constr;
   KJSProperty *prop;
 
 protected:
@@ -233,6 +238,12 @@ public:
   CodeType codeType() { return AnonymousCode; }
 };
 
+class KJSConstructor : public KJSO {
+public:
+  Type type() const { return Constructor; }
+  virtual KJSObject* construct(KJSArgList *args) = 0;
+};
+
 class KJSCompletion : public KJSO {
 public:
   KJSCompletion(Compl c, KJSO *v = 0L)
@@ -243,8 +254,20 @@ public:
 
 class KJSObject : public KJSO {
 public:
-  KJSObject() {}
+  KJSObject() : internVal(0L) { }
+  ~KJSObject() { if (internVal) internVal->deref(); }
   Type type() const { return Object; }
+  void setClass(Class c) { cl = c; } 
+  Class getClass() const { return cl; }
+  void setInternalValue(KJSO *v) { internVal = v->ref(); }
+  KJSO *internalValue() { return internVal->ref(); }
+private:
+  Class cl;
+  KJSO* internVal;
+};
+
+class KJSPrototype : public KJSObject {
+  // for type safety
 };
 
 class KJSScope : public KJSO {

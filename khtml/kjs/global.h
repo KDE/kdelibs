@@ -38,6 +38,7 @@ namespace KJS {
 	      InternalFunction,
 	      DeclaredFunction,
 	      AnonymousFunction,
+	      Constructor,
 	      Activation,
 	      Error
   };
@@ -48,7 +49,7 @@ namespace KJS {
 		   DontDelete = 1 >> 3,
 		   Internal   = 1 >> 4 };
 
-  enum Class { Test };
+  enum Class { StringClass, BooleanClass, NumberClass, ObjectClass };
 
   enum Hint { NoneHint, StringHint, NumberHint };
 
@@ -100,7 +101,8 @@ namespace KJS {
 		   ErrExprNoObject,
 		   ErrNoConstruct,
 		   ErrResNoObject,
-		   ErrNoDefault
+		   ErrNoDefault,
+		   ErrInvalidThis
   };
 
   // XChar2b and QChar compatible character representation

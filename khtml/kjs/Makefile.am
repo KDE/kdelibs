@@ -23,12 +23,13 @@ lib_LTLIBRARIES = libkjs.la
 
 libkjs_la_SOURCES =  kjs.cpp grammar.cpp lexer.cpp nodes.cpp object.cpp \
 	operations.cpp property.cpp kjsstring.cpp math_object.cpp \
-	html_object.cpp
+	html_object.cpp bool_object.cpp
 
 include_HEADERS = kjs.h
 
 noinst_HEADERS = global.h object.h nodes.h operations.h lexer.h \
-	kjsstring.h grammar.h math_object.h html_object.h
+	kjsstring.h grammar.h object_object.h function_object.h \
+	bool_object.h math_object.h html_object.h
 
 libkjs_la_LDFLAGS = -version-info 1:0 $(QT_LDFLAGS)
 libkjs_la_LIBADD = $(LIB_KDECORE) -lm

@@ -13,3 +13,6 @@ s = sum(10, sum(20, 30));
 print("s = " + s);
 print("i = " + i);
 
+var b = new Boolean(1==1);
+print("b = " + b);
+
