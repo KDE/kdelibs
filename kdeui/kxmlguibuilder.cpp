@@ -295,7 +295,28 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   if ( element.tagName().lower() == d->tagSeparator )
   {
     if ( parent->inherits( "QPopupMenu" ) )
-      return static_cast<QPopupMenu *>(parent)->insertSeparator( index );
+    {
+      // Don't insert multiple separators in a row
+      QPopupMenu *menu = static_cast<QPopupMenu *>(parent);
+      int count = menu->count();
+      if (count)
+      {
+         int previousId = -1;
+         if ((index == -1) || (index > count))
+            previousId = menu->idAt(count-1);
+         else if (index > 0)
+            previousId = menu->idAt(index-1);
+         if (previousId != -1)
+         {
+            if (menu->text(previousId).isEmpty() &&
+                !menu->iconSet(previousId) &&
+                !menu->pixmap(previousId))
+               return 0;
+         }
+      }
+      
+      return menu->insertSeparator( index );
+    }
     else if ( parent->inherits( "QMenuBar" ) )
        return static_cast<QMenuBar *>(parent)->insertSeparator( index );
     else if ( parent->inherits( "KToolBar" ) )
