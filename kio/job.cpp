@@ -155,7 +155,7 @@ void Job::emitResult()
 
 void Job::kill( bool quietly )
 {
-  kdDebug(7007) << "Job::kill this=" << this << endl;
+  kdDebug(7007) << "Job::kill this=" << this << " m_progressId=" << m_progressId << " quietly=" << quietly << endl;
   // kill all subjobs, without triggering their result slot
   QListIterator<Job> it( subjobs );
   for ( ; it.current() ; ++it )
@@ -167,7 +167,11 @@ void Job::kill( bool quietly )
     emit canceled( this ); // Not very useful (deprecated)
     emitResult();
   } else
+  {
+    if ( m_progressId ) // in both cases we want to hide the progress window
+      Observer::self()->jobFinished( m_progressId );
     delete this;
+  }
 }
 
 void Job::slotResult( Job *job )
