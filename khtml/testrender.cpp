@@ -144,7 +144,7 @@ void TestRender::renderToImage()
 
     int ph = eh-py<PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
 
-    tp->fillRect(0, py, ew, ph, palette().normal().brush(QColorGroup::Background));
+    tp->fillRect(0, py, ew, ph, palette().active().brush(QColorGroup::Background));
     part->docImpl()->renderer()->print(tp, 0, py, ew, ph, 0, 0);
     tp->end();
     delete tp;
