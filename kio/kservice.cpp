@@ -115,14 +115,21 @@ KService::init( KDesktopFile *config )
     return;
   }
 
+  QString name = entryPath();
+  int pos = name.findRev('/');
+  if (pos != -1)
+     name = name.mid(pos+1);
+  pos = name.find('.');
+  if (pos != -1)
+     name = name.left(pos);
+
   m_strExec = config->readEntry( "Exec" );
   m_strName = config->readEntry( "Name" );
   if ( m_strName.isEmpty() )
   {
     kdWarning(7012) << "The desktop entry file " << entryPath()
                     <<  " has no Name" << endl;
-    m_bValid = false;
-    return;
+    m_strName = name;
   }
 
   m_strIcon = config->readEntry( "Icon", "unknown" );
@@ -157,14 +164,6 @@ KService::init( KDesktopFile *config )
      m_DCOPServiceType = DCOP_Multi;
   else
      m_DCOPServiceType = DCOP_None;
-
-  QString name = entryPath();
-  int pos = name.findRev('/');
-  if (pos != -1)
-     name = name.mid(pos+1);
-  pos = name.find('.');
-  if (pos != -1)
-     name = name.left(pos);
 
   m_strDesktopEntryName = name.lower();
 
