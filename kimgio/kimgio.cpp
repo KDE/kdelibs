@@ -230,7 +230,7 @@ QStringList KImageIO::mimeTypes( Mode _mode )
   else
   {
     #ifdef HAVE_QIMGIO
-      mimeList.append( "image/jpg" );
+      mimeList.append( "image/jpeg" );
     #endif
   }
 
