@@ -123,8 +123,11 @@ DCOPObjectProxy:: ~DCOPObjectProxy()
 	parent->removeObjectProxy( this );
 }
 
-bool DCOPObjectProxy::process( const QCString& obj, const QCString& fun, const QByteArray& data,
-			       QCString& replyType, QByteArray &replyData )
+bool DCOPObjectProxy::process( const QCString& /*obj*/, 
+			       const QCString& /*fun*/, 
+			       const QByteArray& /*data*/,
+			       QCString& /*replyType*/, 
+			       QByteArray &/*replyData*/ )
 {
     return FALSE;
 }
