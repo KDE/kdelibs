@@ -82,7 +82,7 @@ gsl_complex_list (unsigned int n_points,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, tbuffer[FLOAT_STRING_SIZE * 2 * n_points];
+  char *s, *tbuffer = g_alloca ((FLOAT_STRING_SIZE * 2 * n_points) * sizeof(char));
   unsigned int i;
 
   rbi++; if (rbi >= RING_BUFFER_LENGTH) rbi -= RING_BUFFER_LENGTH;
@@ -134,7 +134,7 @@ gsl_poly_str (unsigned int degree,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, tbuffer[degree * FLOAT_STRING_SIZE];
+  char *s, *tbuffer = g_alloca ((degree * FLOAT_STRING_SIZE) * sizeof (char));
   unsigned int i;
 
   if (!var)
@@ -167,7 +167,7 @@ gsl_poly_str1 (unsigned int degree,
 {
   static unsigned int rbi = 0;
   static char* rbuffer[RING_BUFFER_LENGTH] = { NULL, };
-  char *s, tbuffer[degree * FLOAT_STRING_SIZE];
+  char *s, *tbuffer = g_alloca ((degree * FLOAT_STRING_SIZE) * sizeof (char));
   unsigned int i, need_plus = 0;
 
   if (!var)
@@ -290,7 +290,8 @@ gsl_poly_complex_roots (unsigned int degree,
 			GslComplex  *roots)	/* [degree] */
 {
   static void zrhqr (double a[], int m, double rtr[], double rti[]);
-  double roots_re[1 + degree], roots_im[1 + degree];
+  double *roots_re = g_alloca ((1 + degree) * sizeof (double));
+  double *roots_im = g_alloca ((1 + degree) * sizeof (double));
   unsigned int i;
 
   zrhqr (a, degree, roots_re, roots_im);

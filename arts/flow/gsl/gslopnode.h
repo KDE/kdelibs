@@ -129,7 +129,7 @@ struct _OpNode
 
 
 
-#ifdef __GNUC__
+#if defined(__GNUC__) || defined(__DECC__)
 #define OP_DEBUG(lvl, args...)	_op_debug (OP_DEBUG_ ## lvl, args)
 void _op_debug         (OpDebugLevel lvl,
 		       const gchar *format,

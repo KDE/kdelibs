@@ -6,7 +6,9 @@
 #include <malloc.h>
 #include <unistd.h>
 #include <stdio.h>
+#ifndef __DECC__
 #include <inttypes.h>
+#endif
 
 
 gpointer g_malloc         (gulong        n_bytes) { void*p = malloc(n_bytes); GSL_ASSERT(p!=0); return p; }
@@ -14,7 +16,7 @@ gpointer g_malloc0        (gulong        n_bytes) { return memset(g_malloc(n_byt
 gpointer g_realloc        (gpointer      mem,
 			   gulong        n_bytes) { void*p = realloc(mem,n_bytes); GSL_ASSERT(p!=0); return p; }
 void     g_free           (gpointer      mem) { if (mem) free(mem); }
-void g_usleep(unsigned long usec) { usleep(usec); };
+void g_usleep(unsigned long usec) { usleep(usec); }
 char* g_strerror(int e) { return strerror (e); }
 
 

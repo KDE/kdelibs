@@ -56,7 +56,7 @@ typedef enum	/*< skip >*/
   GSL_COST_NORMAL	= 0,
   GSL_COST_CHEAP	= 1 << 0,
   GSL_COST_EXPENSIVE	= 1 << 1,
-  GSL_ALWAYS_PROCESS	= 1 << 2,
+  GSL_ALWAYS_PROCESS	= 1 << 2
 } GslModuleFlags;
 /* class, filled out by user */
 struct _GslClass
