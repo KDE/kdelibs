@@ -50,7 +50,7 @@ namespace KSpell2
         void replace( const QString& oldWord, int start,
                       const QString& newWord );
 
-        void finished();
+        void stop();
         void cancel();
     private slots:
         void slotMisspelling(const QString& word, int start );

@@ -121,7 +121,7 @@ void Dialog::initGui()
 void Dialog::slotFinished()
 {
     kdDebug()<<"void Dialog::slotFinished() \n";
-    emit finished();
+    emit stop();
 }
 
 void Dialog::slotCancel()
