@@ -853,14 +853,20 @@ KLauncher::send_service_startup_info( KService::Ptr service, const QCString& sta
     }
     KStartupInfoId id;
     id.initId( startup_id );
-    const char* dpy = NULL;
+    static Display* cached_dpy = NULL;
+    const char* dpy_str = NULL;
     for( QValueList<QCString>::ConstIterator it = envs.begin();
          it != envs.end();
          ++it )
         if( strncmp( *it, "DISPLAY=", 8 ) == 0 )
-            dpy = static_cast< const char* >( *it ) + 8;
-    Display* disp = XOpenDisplay( dpy );
-    if( disp == NULL )
+            dpy_str = static_cast< const char* >( *it ) + 8;
+    Display* dpy = NULL;
+    if( dpy_str != NULL && cached_dpy != NULL
+        && qstrcmp( dpy_str, XDisplayString( cached_dpy )) == 0 )
+        dpy = cached_dpy;
+    if( dpy == NULL )
+        dpy = XOpenDisplay( dpy_str );
+    if( dpy == NULL )
         return id.id();
     KStartupInfoData data;
     data.setName( service->name());
@@ -868,8 +874,10 @@ KLauncher::send_service_startup_info( KService::Ptr service, const QCString& sta
     if( !wmclass.isEmpty())
         data.setWMClass( wmclass );
     // the rest will be sent by kdeinit
-    KStartupInfo::sendStartupX( disp, id, data );
-    XCloseDisplay( disp );
+    KStartupInfo::sendStartupX( dpy, id, data );
+    if( cached_dpy != dpy && cached_dpy != NULL )
+        XCloseDisplay( cached_dpy );
+    cached_dpy = dpy;
     return id.id();
 #else
     return 0;
