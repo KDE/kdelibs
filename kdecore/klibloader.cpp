@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (C) 1999 Torben Weis <weis@kde.org>
-   Copyright (C) 2000 Michael Matz <matz@ifh.de>
+   Copyright (C) 2000 Michael Matz <matz@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -24,6 +24,8 @@
 #include "klibloader.h"
 #include "kstddirs.h"
 #include "kdebug.h"
+
+#include "ltdl.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -72,7 +74,7 @@ class KLibraryPrivate {
 public:
 };
 
-KLibrary::KLibrary( const QString& libname, const QString& filename, lt_dlhandle handle )
+KLibrary::KLibrary( const QString& libname, const QString& filename, void * handle )
 {
     /* Make sure, we have a KLibLoader */
     (void) KLibLoader::self();
@@ -154,7 +156,7 @@ KLibFactory* KLibrary::factory()
 
 void* KLibrary::symbol( const char* symname )
 {
-    void* sym = lt_dlsym( m_handle, symname );
+    void* sym = lt_dlsym( (lt_dlhandle) m_handle, symname );
     if ( !sym )
     {
         kdWarning(150) << "KLibrary: " << lt_dlerror() << endl;

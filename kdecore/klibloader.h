@@ -25,8 +25,6 @@
 #include <qlist.h>
 #include <kglobal.h>
 
-#include "ltdl.h"
-
 class KInstance;
 class QTimer;
 class KLibFactoryPrivate;
@@ -148,7 +146,7 @@ public:
      * @internal
      * Don't create KLibrary objects on your own. Instead use @ref KLibLoader.
      */
-    KLibrary( const QString& libname, const QString& filename, lt_dlhandle handel );
+    KLibrary( const QString& libname, const QString& filename, void * handle );
     /**
      * @internal
      * Don't destruct KLibrary objects yourself. Instead use @ref KLibLoader::unloadLibrary.
@@ -185,7 +183,7 @@ private:
     QString m_libname;
     QString m_filename;
     KLibFactory* m_factory;
-    lt_dlhandle m_handle;
+    void * m_handle;
     QList<QObject> m_objs;
     QTimer *m_timer;
     KLibraryPrivate *d;
