@@ -1088,6 +1088,7 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 			 const QCString &fun, const QByteArray &data,
 			 QCString& replyType, QByteArray &replyData)
 {
+    d->transaction = false; // Assume no transaction.
     if ( objId == "DCOPClient" ) {
 	if ( fun == "objects()" ) {
 	    replyType = "QCStringList";
@@ -1138,7 +1139,6 @@ bool DCOPClient::receive(const QCString &/*app*/, const QCString &objId,
 
 	// fall through and send to object proxies
     }
-    d->transaction = false; // Assume no transaction.
 
     if (objId[objId.length()-1] == '*') {
 	// handle a multicast to several objects.
