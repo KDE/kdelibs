@@ -86,7 +86,7 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 
     // initialize QScrollview
 
-    //enableClipper(true);
+    enableClipper(true);
 
     viewport()->setMouseTracking(true);
     //viewport()->setBackgroundMode(PaletteBase);
@@ -161,7 +161,9 @@ void KHTMLView::clear()
     if(d->useSlowRepaints) {
 	delete paintBuffer;
 	paintBuffer = 0;
+#ifndef FIXED_POSITIONING
 	setStaticBackground(false);
+#endif
     }
 	
     delete d;
@@ -207,17 +209,19 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
 
     if(d->useSlowRepaints) {
-//	kdDebug(0) << "using slow repaints" << endl;
+	kdDebug(0) << "using slow repaints" << endl;
 	// used in case some element defines a fixed background or we have fixed positioning
 	// #### flickers terribly, but that will need some support in Qt to work.
-	//ex = contentsX();
-	//ey = contentsY();
-	//ew = visibleWidth();
-	//eh = visibleHeight();
-	//int tx, ty;
-	//contentsToViewport(ex, ey, tx, ty);
-	//p->setClipping(false);
-	//p->setClipRect(tx, ty, ew, eh);
+#ifndef FIXED_POSITIONING
+	ex = contentsX();
+	ey = contentsY();
+	ew = visibleWidth();
+	eh = visibleHeight();
+	int tx, ty;
+	contentsToViewport(ex, ey, tx, ty);
+	p->setClipping(false);
+	p->setClipRect(tx, ty, ew, eh);
+#endif
 	if ( paintBuffer->width() < visibleWidth() || paintBuffer->height() < visibleHeight()) {
 	    paintBuffer->resize( visibleWidth(), visibleHeight() );
 	}
@@ -246,7 +250,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
 
 	delete tp;
 
-	//kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
+	kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
 	p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
 		
 	py += PAINT_BUFFER_HEIGHT;
@@ -833,7 +837,9 @@ void KHTMLView::useSlowRepaints()
 {
     kdDebug(0) << "slow repaints requested" << endl;
     d->useSlowRepaints = true;
+#ifndef FIXED_POSITIONING
     setStaticBackground(true);
+#endif
 }
 
 
