@@ -70,6 +70,7 @@ class KStandardDirsPrivate;
 * @sect Standard resources that kdelibs allocates are:
 *
 * @li apps - Applications menu (.desktop files).
+* @li cache - Cached information (e.g. favicons, web-pages)
 * @li cgi - CGIs to run from kdehelp.
 * @li config - Configuration files.
 * @li data - Where applications store data.
