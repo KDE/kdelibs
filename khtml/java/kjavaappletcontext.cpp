@@ -103,12 +103,24 @@ void KJavaAppletContext::stop (KJavaApplet *applet )
 
 void KJavaAppletContext::received( const QString &cmd, const QStringList &arg )
 {
+    kdDebug() << "KJavaAppletContext::received, cmd = >>" << cmd << "<<" << endl;
+    kdDebug() << "arg count = " << arg.count() << endl;;
+
     if ( cmd=="showstatus" && arg.count()>0 )
+    {
+        kdDebug() << "status message = " << arg[0] << endl;
         emit showStatus( arg[0] );
+    }
     else if ( cmd=="showurlinframe" && arg.count()>1 )
+    {
+        kdDebug() << "url = " << arg[0] << ", frame = " << arg[1] << endl;
         emit showDocument( arg[0], arg[1] );
+    }
     else if ( cmd=="showdocument" && arg.count()>0 )
+    {
+        kdDebug() << "url = " << arg[0] << endl;
         emit showDocument( arg[0], "_top" );
+    }
     else if ( cmd=="resizeapplet" )
     {
 

@@ -101,6 +101,7 @@ protected slots:
     void wroteData();
     void processExited();
     void receivedData( KProcess *, char *, int );
+    void receivedData( int, int& );
     void javaHasDied();
 
 protected:
@@ -110,7 +111,9 @@ protected:
     void popBuffer();
 
     KProcess *javaProcess;
+
 signals:
+    /* deprecated- use received(const QByteArray&) */
     void received( const QString & );
     void received( const QByteArray& );
 
@@ -124,6 +127,13 @@ private:
 
 /**
  * $Log$
+ * Revision 1.7  2000/11/15 19:52:46  wynnw
+ * This update:
+ *  * modifies the KJAS protocol- documented in KJAS_GRAMMAR.txt
+ *  * adds the option to start the default security manager
+ *     this allows the KJAS code to run with all permissions,
+ *     but restricts applets
+ *
  * Revision 1.6  2000/06/06 22:53:36  gehrmab
  * Beauty and wellness for the API documentation
  *

@@ -4,7 +4,7 @@ import java.io.*;
 
 /**
  *  KJAS server recognizes these variablers:
- *    kjas.debug - makes server actions verbose 
+ *    kjas.debug - makes server actions verbose
  *    kjas.showConsole - shows Java Console window
  */
 
@@ -46,16 +46,14 @@ public class Main
 
     public static void main( String[] args )
     {
-        int retries = 0;
-        int LIMIT = 5;
-
         if( System.getProperty("kjas.showConsole") != null )
             (new KJASConsole()).show();
 
         KJASAppletRunner runner = new KJASAppletRunner();
         protocol = new KJASProtocolHandler( System.in, stdout,
                                             runner, "friend" );
-        while( retries < LIMIT )
+
+        while( true )
         {
             try
             {
@@ -69,8 +67,6 @@ public class Main
             {
                 kjas_err( "Serious error: " + t, t );
             }
-
-            retries++;
         }
     }
 }

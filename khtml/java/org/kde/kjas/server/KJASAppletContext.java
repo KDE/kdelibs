@@ -13,6 +13,11 @@ import java.io.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.12  2000/11/16 00:34:57  wynnw
+ * added check to add a '/' to a url like www.absurd.org if that is given
+ * as the code base.  Seems like URLClassLoader assumes that anything without
+ * an ending '/' is a jar file.  This should fix PR#8152
+ *
  * Revision 1.11  2000/11/15 19:54:48  wynnw
  * This update:
  * * Updates the parsing to handle the new KJAS protocol
@@ -245,24 +250,18 @@ public class KJASAppletContext implements AppletContext
     {
         if( url != null )
             Main.protocol.sendShowDocumentCmd( contextID, url.toString()  );
-        else
-            System.err.println( "tried showDocument with null url" );
     }
 
     public void showDocument( URL url, String targetFrame )
     {
         if ( ( url != null ) && ( targetFrame != null ) )
             Main.protocol.sendShowDocumentCmd( contextID, url.toString(), targetFrame );
-        else
-            System.err.println( "tried showDocument (frames) with invalid params" );
     }
 
     public void showStatus( String message )
     {
         if( message != null )
             Main.protocol.sendShowStatusCmd( contextID, message );
-        else
-            System.err.println( "tried showStatus with null message" );
     }
 
     class AppletPanel

@@ -24,6 +24,8 @@
 struct KJavaAppletServerPrivate
 {
    int counter;
+
+   QMap<QString, KJavaAppletContext> context_cache;
 };
 
 static KJavaAppletServer *self = 0;
@@ -35,11 +37,8 @@ KJavaAppletServer::KJavaAppletServer()
 
    process = new KJavaProcess();
    CHECK_PTR( process );
-//   connect( process, SIGNAL(received(const QString&)),
-//            this,    SLOT(received(const QString&)) );
-
    connect( process, SIGNAL(received(const QByteArray&)),
-            this,    SLOT(received(const QByteArray&)) );
+            this, SLOT(received(const QByteArray&)) );
 
    setupJava( process );
 
@@ -266,41 +265,73 @@ void KJavaAppletServer::received( const QString& s )
 
 void KJavaAppletServer::received( const QByteArray& qb )
 {
+    // qb should be one command only without the length string,
+    // we parse out the command and it's meaning here...
+    kdDebug() << "begin KJavaAppletServer::received buffer of length = " << qb.count() << endl;
+    QString buff;
+    for( int i = 0; i < qb.count(); i++ )
+    {
+        if( qb[i] == 0 )
+            buff += "<SEP>";
+        else
+        if( qb[i] > 0 && qb[i] < 16 )
+            buff += "<CMD " + QString::number(qb[i]) + ">";
+        else
+            buff += qb[i];
+    }
+    kdDebug() << "buffer = >>" << buff << "<<" << endl;
+
     QString cmd;
     QStringList args;
     int index = 0;
+    int qb_size = qb.size();
 
     //get the command code
     char cmd_code = qb[ index++ ];
-    if( cmd_code == SHOW_DOCUMENT )
-        cmd = "showdocument";
-    else
-    if( cmd_code == SHOW_URLINFRAME )
-        cmd = "showurlinframe";
-    else
-    if( cmd_code == SHOW_STATUS )
-        cmd = "showstatus";
-    else
-    if( cmd_code == RESIZE_APPLET )
-        cmd = "resizeapplet";
+    ++index; //skip the next sep
 
+    //get contextID
+    QString contextID;
+    while( qb[index] != 0 && index < qb_size )
+    {
+        contextID += qb[ index++ ];
+    }
     ++index; //skip the sep
 
-    //parse args, but skip the contextID which is sent for now....
-    int size = qb.size();
-    bool contextID = true;
-    while( index < size )
+    //parse out the args
+    while( index < qb_size )
     {
         QString tmp;
         while( qb[index] != 0 )
-        {
             tmp += qb[ index++ ];
-        }
-        if( contextID )
-            contextID = false;
-        else
-            args.append( tmp );
-        ++index;
+
+        args.append( tmp );
+
+        ++index; //skip the sep
+    }
+
+    //here I should find the context and call the method directly
+    //instead of emitting signals
+    switch( cmd_code )
+    {
+        case SHOW_DOCUMENT:
+            cmd = "showdocument";
+            break;
+
+        case SHOW_URLINFRAME:
+            cmd = "showurlinframe";
+            break;
+
+        case SHOW_STATUS:
+            cmd = "showstatus";
+            break;
+
+        case RESIZE_APPLET:
+            cmd = "resizeapplet";
+            break;
+
+        default:
+            break;
     }
 
     emit receivedCommand( cmd, args );

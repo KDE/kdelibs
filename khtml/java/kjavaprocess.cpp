@@ -1,9 +1,13 @@
 #include "kjavaprocess.moc"
+#include "kjavaappletserver.h"
 #include <kdebug.h>
 #include <kprotocolmanager.h>
+
 #include <qtextstream.h>
 
 #include <iostream.h>
+#include <unistd.h>
+
 
 typedef QMap<QString, QString> PropsMap;
 
@@ -26,8 +30,6 @@ struct KJavaProcessPrivate
    QList<QByteArray> BufferList;
 };
 
-
-
 KJavaProcess::KJavaProcess()
     : inputBuffer(),
       systemProps()
@@ -43,8 +45,8 @@ KJavaProcess::KJavaProcess()
              this, SLOT( wroteData() ) );
     connect( javaProcess, SIGNAL( processExited( KProcess * ) ),
              this, SLOT( javaHasDied() ) );
-    connect( javaProcess, SIGNAL( receivedStdout( KProcess *, char *, int ) ),
-             this, SLOT( receivedData( KProcess *, char *, int ) ) );
+    connect( javaProcess, SIGNAL( receivedStdout( int, int& ) ),
+             this, SLOT( receivedData(int, int&) ) );
 
     d->jvmPath = "java";
     d->mainClass = "-help";
@@ -53,18 +55,17 @@ KJavaProcess::KJavaProcess()
     if( KProtocolManager::useProxy() )
     {
         d->httpProxyHost = KProtocolManager::proxyFor( "http" );
-
         setSystemProperty( "kjas.proxy", d->httpProxyHost );
     }
 }
 
 KJavaProcess::~KJavaProcess()
 {
-  if ( d->ok && isRunning() )
-    stopJava();
+    if ( d->ok && isRunning() )
+        stopJava();
 
-  delete javaProcess;
-  delete d;
+    delete javaProcess;
+    delete d;
 }
 
 bool KJavaProcess::isOK()
@@ -257,7 +258,7 @@ void KJavaProcess::invokeJVM()
     //load the extra user-defined arguments
     if( !d->extraArgs.isEmpty() )
     {
-            // BUG HERE: if an argument contains space (-Dname="My name")
+        // BUG HERE: if an argument contains space (-Dname="My name")
         // this parsing will fail. Need more sophisticated parsing
         QStringList args = QStringList::split( " ", d->extraArgs );
         for ( QStringList::Iterator it = args.begin(); it != args.end(); ++it )
@@ -279,8 +280,13 @@ void KJavaProcess::invokeJVM()
     }
     kdDebug() << str_args << endl;
 
-    KProcess::Communication comms = ( KProcess::Communication ) (KProcess::Stdin | KProcess::Stdout);
-    javaProcess->start( KProcess::NotifyOnExit, comms );
+    KProcess::Communication flags =  (KProcess::Communication)
+                                     (KProcess::Stdin | KProcess::Stdout |
+                                      KProcess::NoRead);
+    kdDebug() << "kprocess flags = " << flags << endl;
+    javaProcess->start( KProcess::NotifyOnExit, flags );
+    javaProcess->resume(); //start processing stdout on the java process
+
 }
 
 void KJavaProcess::killJVM()
@@ -294,24 +300,51 @@ void KJavaProcess::processExited()
     d->ok = false;
 }
 
-void KJavaProcess::receivedData( KProcess*, char* buffer, int len )
+/*  In this method, read one command and send it to the d->appletServer
+ *  then return, so we don't block the event handling
+ */
+void KJavaProcess::receivedData( int fd, int& )
 {
-    //here we need to parse out returned commands from the java process
-    kdWarning() << "HEY- We got a message from the Java Process. It is " << len << "bytes" << endl;
-    cout << "buffer = >>";
-    for( int i = 0; i < len; i++ )
+    kdDebug() << "KJavaProcess::receivedData" << endl;
+
+    //read out the length of the message,
+    //read the message and send it to the applet server
+    char length[9] = { 0 };
+    int num_bytes = ::read( fd, length, 8 );
+    if( num_bytes == -1 )
     {
-        if( buffer[i] == (char)0 )
-            cout << "<SEP>";
-        else if( buffer[i] > (char)0 && buffer[i] < (char)16 )
-            cout << "<CMD " << (int) buffer[i] << ">";
-        else
-            cout << buffer[i];
+        kdError() << "could not read 8 characters for the message length!!!!" << endl;
+        return;
     }
-    cout << "<<" << endl;
+
+    QString lengthstr( length );
+    bool ok;
+    int num_len = lengthstr.toInt( &ok );
+    if( !ok )
+    {
+        kdError() << "could not parse length out of: " << lengthstr << endl;
+        return;
+    }
+
+    kdDebug() << "msg length = " << num_len << endl;
+
+    //now parse out the rest of the message.
+    char* msg = new char[num_len];
+    num_bytes = ::read( fd, msg, num_len );
+    if( num_bytes == -1 ||  num_bytes != num_len )
+    {
+        kdError() << "could not read the msg, num_bytes = " << num_bytes << endl;
+        return;
+    }
 
     QByteArray qb;
-    QByteArray copied_data = qb.duplicate( buffer, len );
+    QByteArray copied_data = qb.duplicate( msg, num_len );
+    delete msg;
 
     emit received( copied_data );
+}
+
+void KJavaProcess::receivedData( KProcess*, char*, int )
+{
+    kdWarning() << "This method is deprecated- it doesn't do anything anymore" << endl;
 }

@@ -10,6 +10,14 @@ import java.awt.*;
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.6  2000/11/15 19:54:48  wynnw
+ * This update:
+ * * Updates the parsing to handle the new KJAS protocol
+ * * changes the classloading to use the URLClassLoader
+ * * encapsulates callbacks in the KJASProtocolHandler class
+ * * adds more debug functionality
+ * * fixed the callbacks to use the original PrintStream of stdout
+ *
  * Revision 1.5  2000/05/21 19:27:28  rogozin
  *
  * Fix reload exception
@@ -259,12 +267,20 @@ public class KJASProtocolHandler
 
     public void sendShowDocumentCmd( String contextID, String url )
     {
+        Main.kjas_debug( "sendShowDocumentCmd, contextID, url" );
+
         //figure out how long this will be, 4 extra for 2 seps, end, and code
         int length = contextID.length() + url.length() + 4;
-        char[] chars = new char[ length ]; //8 for the length of this message
+        char[] chars = new char[ length + 8 ]; //8 for the length of this message
         int index = 0;
         char sep = (char) 0;
-        char[] tmpchar;
+        char[] tmpchar = getPaddedLength( length );
+
+        //fill in the length of the command
+        for( int i = 0; i < 8; i++ )
+        {
+            chars[index++] = tmpchar[i];
+        }
 
         //fill chars array to print it with the PrintStream
         chars[index++] = (char) ShowDocumentCode;
@@ -285,12 +301,20 @@ public class KJASProtocolHandler
 
     public void sendShowDocumentCmd( String contextID, String url, String frame)
     {
+        Main.kjas_debug( "sendShowDocumentCmd, contextID, url, frame" );
+
         //length = length of args plus code, 3 seps, end
         int length = contextID.length() + url.length() + frame.length() + 5;
-        char[] chars = new char[ length ];
+        char[] chars = new char[ length + 8 ]; //for length of message
         int index = 0;
         char sep = (char) 0;
-        char[] tmpchar;
+        char[] tmpchar = getPaddedLength( length );
+
+        //fill in the length of the command
+        for( int i = 0; i < 8; i++ )
+        {
+            chars[index++] = tmpchar[i];
+        }
 
         //fill chars array to print it with the PrintStream
         chars[index++] = (char) ShowURLInFrameCode;
@@ -316,11 +340,19 @@ public class KJASProtocolHandler
 
     public void sendShowStatusCmd( String contextID, String msg )
     {
+        Main.kjas_debug( "sendShowStatusCmd, msg = " + msg );
+
         int length = contextID.length() + msg.length() + 4;
-        char[] chars = new char[ length ];
+        char[] chars = new char[ length + 8 ]; //for length of message
         int index = 0;
         char sep = (char) 0;
-        char[] tmpchar;
+        char[] tmpchar = getPaddedLength( length );
+
+        //fill in the length of the command
+        for( int i = 0; i < 8; i++ )
+        {
+            chars[index++] = tmpchar[i];
+        }
 
         //fill chars array to print it with the PrintStream
         chars[index++] = (char) ShowStatusCode;
@@ -339,18 +371,27 @@ public class KJASProtocolHandler
         signals.print( chars );
     }
 
-    public void sendResizeAppletCmd( String contextID, String appletID, int width, int height )
+    public void sendResizeAppletCmd( String contextID, String appletID,
+                                     int width, int height )
     {
+        Main.kjas_debug( "sendResizeAppletCmd" );
+
         String width_str = String.valueOf( width );
         String height_str = String.valueOf( height );
 
         //lenght = length of args plus code, 4 seps, end
         int length = contextID.length() + appletID.length() + width_str.length() +
                      height_str.length() + 6;
-        char[] chars = new char[ length ];
+        char[] chars = new char[ length + 8 ]; //for length of message
         int index = 0;
         char sep = (char) 0;
-        char[] tmpchar;
+        char[] tmpchar = getPaddedLength( length );
+
+        //fill in the length of the command
+        for( int i = 0; i < 8; i++ )
+        {
+            chars[index++] = tmpchar[i];
+        }
 
         //fill chars array to print it with the PrintStream
         chars[index++] = (char) ResizeAppletCode;
@@ -377,6 +418,26 @@ public class KJASProtocolHandler
         chars[index++] = sep;
 
         signals.print( chars );
+    }
+
+    private char[] getPaddedLength( int length )
+    {
+        String length_str = String.valueOf( length );
+
+        int pads = 8 - length_str.length();
+        String space = new String( " " );
+        String rval = length_str;
+        for( int i = 0; i < pads; i++ )
+        {
+            rval = space.concat( rval );
+        }
+
+        if( rval.length() != 8 )
+        {
+           throw new IllegalArgumentException( "can't create string number of length = 8" );
+        }
+
+        return rval.toCharArray();
     }
 
 }
