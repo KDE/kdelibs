@@ -62,6 +62,7 @@ public slots:
   void slotCanResume( KIO::Job*, unsigned long );
 
 protected:
+  void showTotals();
   void setDestVisible( bool visible );
 
   KSqueezedTextLabel* sourceLabel;

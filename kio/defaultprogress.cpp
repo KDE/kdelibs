@@ -116,14 +116,30 @@ void DefaultProgress::slotTotalSize( KIO::Job*, unsigned long bytes )
 void DefaultProgress::slotTotalFiles( KIO::Job*, unsigned long files )
 {
   m_iTotalFiles = files;
+  showTotals();
 }
 
 
 void DefaultProgress::slotTotalDirs( KIO::Job*, unsigned long dirs )
 {
   m_iTotalDirs = dirs;
+  showTotals();
 }
 
+void DefaultProgress::showTotals()
+{
+  // Show the totals in the progress label, if we still haven't
+  // processed anything. This is useful when the stat'ing phase
+  // of CopyJob takes a long time (e.g. over networks).
+  if ( m_iProcessedFiles == 0 && m_iProcessedDirs == 0 )
+  {
+    QString tmps;
+    if ( m_iTotalDirs > 1 )
+      tmps = i18n("%1 directories").arg( m_iTotalDirs );
+    tmps += i18n("%1 files").arg( m_iTotalFiles );
+    progressLabel->setText( tmps );
+  }
+}
 
 void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
 {
@@ -294,4 +310,3 @@ void DefaultProgress::setDestVisible( bool visible )
 }
 
 #include "defaultprogress.moc"
-
