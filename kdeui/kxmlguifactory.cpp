@@ -128,7 +128,10 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
     // Work around bug in QString::fromUtf8 (which calls strlen).
     QByteArray buffer(file.size() + 1);
     buffer = file.readAll();
-    buffer[ buffer.size() - 1 ] = '\0';
+    if(!buffer.isEmpty())
+        buffer[ buffer.size() - 1 ] = '\0';
+    else
+        return QString::null;
 #else
     QByteArray buffer(file.readAll());
 #endif
@@ -495,7 +498,7 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
 {
     static const QString &tagAction = KGlobal::staticQString( "action" );
 
-    for (QDomNode n = actionPropElement.firstChild(); 
+    for (QDomNode n = actionPropElement.firstChild();
          !n.isNull(); n = n.nextSibling() )
     {
         QDomElement e = n.toElement();
