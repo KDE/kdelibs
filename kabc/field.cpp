@@ -227,7 +227,7 @@ QString Field::value( const KABC::Addressee &a )
       return a.preferredEmail();
     case FieldImpl::Birthday:
       if ( a.birthday().isValid() )
-        return KGlobal::locale()->formatDate( a.birthday().date() );
+        return a.birthday().date().toString( Qt::ISODate );
       else
         return QString::null;
     case FieldImpl::Url:

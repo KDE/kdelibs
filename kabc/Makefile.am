@@ -19,9 +19,10 @@ libkabc_la_SOURCES = \
 kabcincludedir = $(includedir)/kabc
 kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   distributionlist.h distributionlisteditor.h errorhandler.h field.h \
-  formatfactory.h geo.h phonenumber.h resource.h resourceconfigwidget.h \
-  resourcefactory.h resourcefile.h resourceselectdialog.h stdaddressbook.h \
-  timezone.h vcard21parser.h vcardformat.h vcardformatimpl.h
+  formatfactory.h geo.h phonenumber.h plugin.h resource.h \
+  resourceconfigwidget.h resourcefactory.h resourcefile.h \
+  resourceselectdialog.h stdaddressbook.h timezone.h vcard21parser.h \
+  vcardformat.h vcardformatimpl.h
 
 METASOURCES = AUTO
 
