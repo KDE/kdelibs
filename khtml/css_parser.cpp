@@ -478,13 +478,13 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
     QString value(curP, endP - curP);
     value = value.lower();
     const char *val = value.ascii();
-   
+
     if(!strcmp(val, "inherit"))
     {
 	// inherited value
 	return new CSSInheritedValueImpl();
     }
-    
+
     switch(propId)
     {
     case CSS_PROP_AZIMUTH:
@@ -637,6 +637,7 @@ CSSValueImpl *StyleBaseImpl::parseValue(const QChar *curP, const QChar *endP, in
 	QColor c;
 	setNamedColor(c, value);
 	printf("color is: %d, %d, %d\n", c.red(), c.green(), c.blue());
+	return new CSSPrimitiveValueImpl(c);
     }
   break;
 

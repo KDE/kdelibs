@@ -113,12 +113,13 @@ class CSSPrimitiveValueImpl : public CSSValueImpl
 public:
     CSSPrimitiveValueImpl();
     CSSPrimitiveValueImpl(int ident);
-    CSSPrimitiveValueImpl(int num, CSSValue::UnitTypes type);
-    CSSPrimitiveValueImpl(const DOMString &str, CSSValue::UnitTypes type);
+    CSSPrimitiveValueImpl(float num, CSSPrimitiveValue::UnitTypes type);
+    CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveValue::UnitTypes type);
     CSSPrimitiveValueImpl(const Counter &c);
     CSSPrimitiveValueImpl(const Rect &r);
     CSSPrimitiveValueImpl(const RGBColor &rgb);
-    
+    CSSPrimitiveValueImpl(const QColor &color);
+
     virtual ~CSSPrimitiveValueImpl();
 
     unsigned short primitiveType() const;

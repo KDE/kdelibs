@@ -25,6 +25,8 @@
 
 #include <dom_string.h>
 
+#include <qcolor.h>
+
 namespace DOM {
 
 class CSSStyleDeclarationImpl;
@@ -553,6 +555,7 @@ class RGBColor
 public:
     RGBColor();
     RGBColor(const RGBColor &other);
+    RGBColor(const QColor &color);
 
     RGBColor & operator = (const RGBColor &other);
 
@@ -576,6 +579,10 @@ public:
      */
     CSSPrimitiveValue blue() const;
 
+    const QColor &color() const { return m_color; }
+    
+protected:
+    QColor m_color;
 };
 
 /**

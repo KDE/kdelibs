@@ -167,13 +167,13 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(int ident)
     m_type = CSSPrimitiveValue::CSS_IDENT;
 }
 
-CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(int num, CSSValue::UnitTypes type)
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(float num, CSSPrimitiveValue::UnitTypes type)
 {
     m_value.num = num;
     m_type = type;
 }
 
-CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const DOMString &str, CSSValue::UnitTypes type)
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const DOMString &str, CSSPrimitiveValue::UnitTypes type)
 {
     m_value.string = str.implementation();
     m_value.string->ref();
@@ -195,6 +195,12 @@ CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const Rect &r)
 CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const RGBColor &rgb)
 {
     m_value.rgbcolor = new RGBColor(rgb);
+    m_type = CSSPrimitiveValue::CSS_RGBCOLOR;
+}
+
+CSSPrimitiveValueImpl::CSSPrimitiveValueImpl(const QColor &color)
+{
+    m_value.rgbcolor = new RGBColor(color);
     m_type = CSSPrimitiveValue::CSS_RGBCOLOR;
 }
 
@@ -254,7 +260,7 @@ DOMStringImpl *CSSPrimitiveValueImpl::getStringValue(  )
     if(m_type > CSSPrimitiveValue::CSS_ATTR) return 0;
     if(m_type == CSSPrimitiveValue::CSS_IDENT)
     {
-	// ### 
+	// ###
 	return 0;
     }
     return m_value.string;

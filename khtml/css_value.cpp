@@ -251,7 +251,7 @@ void CSSPrimitiveValue::setStringValue( unsigned short stringType, const DOMStri
 DOMString CSSPrimitiveValue::getStringValue(  )
 {
     if(!impl) return 0;
-    
+
     //return ((CSSPrimitiveValueImpl *)impl)->getStringValue(  );
 }
 
@@ -313,10 +313,17 @@ RGBColor::RGBColor()
 
 RGBColor::RGBColor(const RGBColor &other)
 {
+    m_color = other.m_color;
+}
+
+RGBColor::RGBColor(const QColor &color)
+{
+    m_color = color;
 }
 
 RGBColor &RGBColor::operator = (const RGBColor &other)
 {
+    m_color = other.m_color;
 }
 
 RGBColor::~RGBColor()
@@ -325,14 +332,17 @@ RGBColor::~RGBColor()
 
 CSSPrimitiveValue RGBColor::red() const
 {
+    return new CSSPrimitiveValueImpl((float)m_color.red(), CSSPrimitiveValue::CSS_DIMENSION);
 }
 
 CSSPrimitiveValue RGBColor::green() const
 {
+    return new CSSPrimitiveValueImpl((float)m_color.green(), CSSPrimitiveValue::CSS_DIMENSION);
 }
 
 CSSPrimitiveValue RGBColor::blue() const
 {
+    return new CSSPrimitiveValueImpl((float)m_color.blue(), CSSPrimitiveValue::CSS_DIMENSION);
 }
 
 
