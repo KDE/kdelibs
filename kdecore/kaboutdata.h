@@ -262,7 +262,7 @@ class KDECORE_EXPORT KAboutData
      *
      * @param webAddress The person's homepage or a relevant link.
      *        Start the address with "http://". "http://some.domain" is
-     *        is correct, "some.domain" is not. Can be 0.
+     *        correct, "some.domain" is not. Can be 0.
      *
      */
     void addAuthor( const char *name,
