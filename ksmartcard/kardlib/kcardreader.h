@@ -25,6 +25,9 @@
 #include <kpcsc.h>
 #include <qstring.h>
 
+typedef QMemArray<unsigned char> KCardATR;
+
+
 class KCardReader {
 friend class KPCSC;
 public:
@@ -36,7 +39,9 @@ public:
 	int endTransaction();
 	int cancelTransaction();
 	bool inTransaction();
-	
+
+	KCardATR getATR();
+
 	int doCommand(QString command, QString& response);
 	int doCommand(KCardCommand command, KCardCommand& response);
 

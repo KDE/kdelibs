@@ -144,3 +144,27 @@ return 0;
 }
 
 
+KCardATR KCardReader::getATR() {
+KCardATR x(0);
+unsigned long state, protocol;
+unsigned long atrLen;
+
+	long rc = SCardStatus(_card, NULL, NULL, &state, &protocol, NULL, &atrLen);
+
+	if (rc != SCARD_S_SUCCESS) {
+		return x;
+	}
+
+	x.resize(atrLen);
+	rc = SCardStatus(_card, NULL, NULL, &state, &protocol, x.data(), &atrLen);
+
+	if (rc != SCARD_S_SUCCESS) {
+		x.resize(0);
+		return x;
+	}
+
+return x;
+}
+
+
+
