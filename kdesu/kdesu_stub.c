@@ -277,19 +277,29 @@ int main()
 	xsetenv("DISPLAY", params[P_DISPLAY].value);
 	if (params[P_DISPLAY_AUTH].value[0]) 
 	{
-	    fname = tmpnam(0L);
-	    fout = fopen(fname, "w");
-	    if (!fout) 
+           int fd, fd2;
+           strcpy(fname, "/tmp/kdesu.XXXXXXXXXX");
+
+           fd = mkstemp(fname);
+           if (fd == -1 || (fout = fdopen(fd, "w")) == NULL)
 	    {
-		perror("kdesu_stub: fopen()");
+		perror("kdesu_stub: mkstemp/fdopen()");
 		exit(1);
 	    }
 	    fprintf(fout, "add %s %s\n", params[P_DISPLAY].value,
 		    params[P_DISPLAY_AUTH].value);
 	    fclose(fout);
-	    tmpnam(xauthority);
-	    xsetenv("XAUTHORITY", xauthority);
-	    sprintf(command, "xauth source %s >/dev/null 2>&1", fname);
+            strcpy(xauthority, "/tmp/xauth.XXXXXXXXXX");
+            fd2 = mkstemp(xauthority);
+            if (fd2 == -1)
+            {
+                perror("kdesu_stub: mkstemp()");
+                exit(1);
+            }
+            else
+                close(fd2);
+            xsetenv("XAUTHORITY", xauthority);
+            sprintf(command, "xauth source %s >/dev/null 2>&1", fname);
 	    if (system(command))
 		printf("kdesu_stub: failed to add X authentication");
 	    unlink(fname);
@@ -306,11 +316,13 @@ int main()
 	auth = xstrsep(params[P_ICE_AUTH].value);
 	if (host[0]) 
 	{
-	    fname = tmpnam(0L);
-	    fout = fopen(fname, "w");
-	    if (!fout) 
+            int fd, fd2;
+            strcpy(fname, "/tmp/kdesu.XXXXXXXXXX");
+    
+            fd = mkstemp(fname);
+            if (fd == -1 || (fout = fdopen(fd, "w")) == NULL)
 	    {
-		perror("kdesu_stub: fopen()");
+		perror("kdesu_stub: mkstemp/fdopen()");
 		exit(1);
 	    }
 	    for (i=0; host[i]; i++)
@@ -319,7 +331,15 @@ int main()
 	    for (i=0; host[i]; i++)
 		fprintf(fout, "add DCOP \"\" %s %s\n", host[i], auth[i]);
 	    fclose(fout);
-	    tmpnam(iceauthority);
+            strcpy(iceauthority, "/tmp/iceauth.XXXXXXXXXX");
+            fd2 = mkstemp(iceauthority);
+            if (fd2 == -1)
+            {
+                perror("kdesu_stub: mkstemp()");
+                exit(1);
+            }
+            else
+                close(fd2);
 	    xsetenv("ICEAUTHORITY", iceauthority);
 	    sprintf(command, "iceauth source %s >/dev/null 2>&1", fname);
 	    if (system(command))
