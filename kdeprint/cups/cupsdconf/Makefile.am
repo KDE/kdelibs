@@ -1,7 +1,5 @@
 #$Id$
 
-LIB_CUPS = @LIB_CUPS@
-
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kfile $(all_includes)
 
 bin_PROGRAMS = cupsdconf

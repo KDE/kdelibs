@@ -1,5 +1,3 @@
-LIB_CUPS = @LIB_CUPS@
-
 SUBDIRS = cupsdconf2
 
 INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/kio -I$(top_srcdir)/kfile -I$(top_srcdir)/kdeprint -I$(top_srcdir)/kdeprint/management $(all_includes)
