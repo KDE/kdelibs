@@ -85,7 +85,7 @@
 6070	khtml (jscript)
 6080	khtml (css)
 6090	khtml (memory)
-
+6100    kjas
 # libkio
 7001	kio (KDirWatch)
 7002	kio (Slave)
