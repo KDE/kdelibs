@@ -57,6 +57,7 @@
 #include <kdebug.h>
 #include <kurldrag.h>
 #include <qobjectlist.h>
+#include <qtimer.h>
 
 #define PAINT_BUFFER_HEIGHT 128
 
@@ -101,6 +102,7 @@ public:
         scrollTimerId = 0;
         complete = false;
 	tooltip = 0;
+        possibleTripleClick = false;
     }
     ~KHTMLViewPrivate()
     {
@@ -182,6 +184,7 @@ public:
     bool complete;
     bool firstRelayout;
     bool layoutSchedulingEnabled;
+    bool possibleTripleClick;
     QRect updateRect;
     KHTMLToolTip *tooltip;
 };
@@ -409,6 +412,11 @@ void KHTMLView::layout()
 void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
     if(!m_part->xmlDocImpl()) return;
+    if (d->possibleTripleClick)
+    {
+        viewportMouseDoubleClickEvent( _mouse ); // it handles triple clicks too
+        return;
+    }
 
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
@@ -449,7 +457,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
     int xm, ym;
     viewportToContents(_mouse->x(), _mouse->y(), xm, ym);
 
-    //kdDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
+    kdDebug( 6000 ) << "mouseDblClickEvent: x=" << xm << ", y=" << ym << endl;
 
     d->isDoubleClick = true;
 
@@ -458,8 +466,6 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 
     // We do the same thing as viewportMousePressEvent() here, since the DOM does not treat
     // single and double-click events as separate (only the detail, i.e. number of clicks differs)
-    // In other words an even detail value for a mouse click event means a double click, and an
-    // odd detail value means a single click
     if (d->clickCount > 0 && d->clickX == xm && d->clickY == ym) // ### support mouse threshold
 	d->clickCount++;
     else {
@@ -467,6 +473,7 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 	d->clickX = xm;
 	d->clickY = ym;
     }
+    kdDebug() << "KHTMLView::viewportMouseDoubleClickEvent clickCount=" << d->clickCount << endl;
     bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
@@ -474,13 +481,18 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 	mev.innerNode.handle()->setPressed();
 
     if (!swallowEvent) {
-	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
+	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode, d->clickCount );
 	QApplication::sendEvent( m_part, &event );
-
-	// ###
-	//if ( url.length() )
-	//emit doubleClick( url.string(), _mouse->button() );
     }
+
+    d->possibleTripleClick=true;
+    QTimer::singleShot(QApplication::doubleClickInterval(),this,SLOT(tripleClickTimeout()));
+}
+
+void KHTMLView::tripleClickTimeout()
+{
+    d->possibleTripleClick = false;
+    d->clickCount = 0;
 }
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )

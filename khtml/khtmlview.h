@@ -177,8 +177,10 @@ protected slots:
     void slotPaletteChanged();
     void slotScrollBarMoved();
 
-private:
+private slots:
+    void tripleClickTimeout();
 
+private:
     void resetCursor();
 
     void scheduleRelayout();

@@ -3918,19 +3918,28 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
 
       if ( node )
       {
-        // Extend selection to a complete word
         int start = offset;
         int end = start;
         DOM::Node n = node;
         if(n.nodeType() == DOM::Node::TEXT_NODE) {
           QString str = n.nodeValue().string();
-          //kdDebug(6050) << " str=" << str << " offset=" << offset << endl;
-          while ( start > 0 && !str[start-1].isSpace() && !str[start-1].isPunct() )
-            start--;
           int len = str.length();
-          while ( end < len-1 && !str[end].isSpace() && !str[end].isPunct() )
-            end++;
-
+          if ( event->clickCount() != 3 )
+          {
+            // Extend selection to a complete word
+            //kdDebug(6050) << " str=" << str << " offset=" << offset << endl;
+            while ( start > 0 && !str[start-1].isSpace() && !str[start-1].isPunct() )
+              start--;
+            while ( end < len && !str[end].isSpace() && !str[end].isPunct() )
+              end++;
+          }
+          else // Triple click --> select paragraph
+          {
+            // ##### This breaks as soon as a paragraph has formatted text, or links, etc.
+            // TODO: use the render tree to find the whole paragraph.
+            start = 0;
+            end = len;
+          }
           d->m_startOffset = start;
           d->m_selectionEnd = d->m_selectionStart = n;
           d->m_endOffset = end;

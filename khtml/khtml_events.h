@@ -79,16 +79,21 @@ private:
 class MouseDoubleClickEvent : public MouseEvent
 {
 public:
+  // clickCount is 3 for a triple-click event
   MouseDoubleClickEvent( QMouseEvent *mouseEvent, int x, int y,
                          const DOM::DOMString &url, const DOM::DOMString& target,
-		         const DOM::Node &innerNode)
-  : MouseEvent( s_strMouseDoubleClickEvent, mouseEvent, x, y, url, target, innerNode )
+		         const DOM::Node &innerNode, int clickCount )
+  : MouseEvent( s_strMouseDoubleClickEvent, mouseEvent, x, y, url, target, innerNode ),
+    m_clickCount( clickCount )
   {}
 
   static bool test( const QEvent *event )
   { return KParts::Event::test( event, s_strMouseDoubleClickEvent ); }
 
+  int clickCount() const { return m_clickCount; }
+
 private:
+  int m_clickCount;
   static const char *s_strMouseDoubleClickEvent;
 };
 
