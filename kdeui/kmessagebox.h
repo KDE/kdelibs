@@ -200,7 +200,7 @@ public:
   *                the title. The default title is i18n("Error").
   * @param notify  Emit a KNotify event.
   *
-  * Your program fucked up and now it's time to inform the user.
+  * Your program messed up and now it's time to inform the user.
   * To be used for important things like "Sorry, I deleted your hard disk."
   * 
   * If your program detects the action specified by the user is somehow
@@ -227,7 +227,7 @@ public:
   *                the title. The default title is i18n("Sorry").
   * @param notify  Emit a KNotify event.
   *
-  * Either your program fucked up and asks for understanding
+  * Either your program messed up and asks for understanding
   * or your user did something stupid.
   *
   * To be used for small problems like 
