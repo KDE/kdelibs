@@ -1035,9 +1035,10 @@ FtpEntry* Ftp::ftpParseDir( char* buffer )
 		    else if ( p_access[0] == 'c' )
 		      de.type = S_IFCHR;
 		    else if ( p_access[0] == 'l' )
-		      de.type = S_IFLNK | S_IFDIR;
+		      de.type = S_IFDIR;
         // links on ftp sites are often links to dirs, and we have no way to check that
         // let's do like Netscape : assume dirs (David)
+        // we don't set S_IFLNK here.  de.link says it.
 		  
 		    if ( p_access[1] == 'r' )
 		      de.access |= S_IRUSR;
