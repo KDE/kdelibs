@@ -43,6 +43,8 @@ noinst_HEADERS = internal.h collector.h nodes.h lexer.h lexer.lut.h lookup.h \
 libkjs_la_LDFLAGS = -version-info 1:0 -no-undefined $(USER_LDFLAGS) $(all_libraries)
 libkjs_la_LIBADD = -lm $(LIBPCRE)
 
+EXTRA_DIST = grammar.y
+
 parser: $(srcdir)/grammar.y
 	cd $(srcdir); \
 	$(YACC) -d -p kjsyy grammar.y && mv grammar.tab.c grammar.cpp; \
