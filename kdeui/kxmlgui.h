@@ -84,6 +84,11 @@ class KXMLGUIFactory
   void removeClient( KXMLGUIClient *client );
 
   /**
+   * Returns a list of all clients currently added to this factory
+   */
+  QValueList<KXMLGUIClient*> clients() const;
+
+  /**
    * Use this method to get access to a container widget with the name specified with @p containerName
    * and which is owned by the @p client. The container name is specified with a "name" attribute in the
    * XML document.

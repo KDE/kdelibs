@@ -98,6 +98,7 @@ public:
   QString m_defaultMergingName;
   QString m_containerName;
   KXMLGUIBuilder *m_clientBuilder;
+  QValueList<KXMLGUIClient*> m_clients;
 };
 
 KXMLGUIContainerNode::KXMLGUIContainerNode( QWidget *_container, const QString &_tagName, const QString &_name, KXMLGUIContainerNode *_parent, KXMLGUIClient *_client, KXMLGUIBuilder *_builder, bool _merged, int id, const QString &_groupName )
@@ -181,6 +182,10 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
   if ( client->factory() && client->factory() != this )
     client->factory()->removeClient( client ); //just in case someone does stupid things ;-)
 
+  // add this client to our client list
+  if ( d->m_clients.contains( client ) == 0 )
+    d->m_clients.append( client );
+
   QDomElement docElement = client->document().documentElement();
 
   d->m_rootNode->index = -1;
@@ -247,6 +252,9 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
   if ( client->factory() && client->factory() != this )
     return;
 
+  // remove this client from our client list
+  d->m_clients.remove( client );
+
   if ( client->childClients()->count() > 0 )
   {
     const QList<KXMLGUIClient> *children = client->childClients();
@@ -264,6 +272,11 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
   m_client = 0L;
   d->m_clientBuilder = 0L;
   d->m_clientName = QString::null;
+}
+
+QValueList<KXMLGUIClient*> KXMLGUIFactory::clients() const
+{
+  return d->m_clients;
 }
 
 QWidget *KXMLGUIFactory::container( const QString &containerName, KXMLGUIClient *client )
