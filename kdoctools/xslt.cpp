@@ -16,6 +16,7 @@
 #include <qtextcodec.h>
 #include <stdlib.h>
 #include <config.h>
+#include <stdarg.h>
 #include <klibloader.h>
 #include <gzip/kgzipfilter.h>
 #include <bzip2/kbzip2filter.h>
