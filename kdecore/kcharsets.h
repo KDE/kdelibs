@@ -453,43 +453,7 @@ public:
    const KCharsetConversionResult & convertTag(const char *tag);
    const KCharsetConversionResult & convertTag(const char *tag,int &len);
   
-// Obsolete methods definition for binary compability
   QString defaultCharset()const;
-#ifdef KCHARSETS_CPP
-  
-  QFont &setQFont(QFont &fnt,const char *charset){
-    warning("KCharsets::setQFont(Qfont,const char *) called. Recompile the application.");
-    return setQFont(fnt,KCharset(charset));
-  }
-  QFont::CharSet qtCharset(const char * charset){
-    warning("KCharsets::qtCharset(const char *) called. Recompile the application. You may use KCharset::qtCharset insteed.");
-    return KCharset(charset).qtCharset();
-  }
-  bool setDefault(const char *ch){
-    warning("KCharsets::setDefault(const char *) called. Recompile the application.");
-    return setDefault(KCharset(ch));    
-  }
-  bool isAvailable(const char* charset){
-    warning("KCharsets::isAvailable(const char *) called. Recompile the application. You may use KCharset::isAvailable() insteed");
-    return KCharset(charset).isAvailable();
-  }
-  bool isDisplayable(const char* charset,const char *face){
-    warning("KCharsets::isDisplayable(const char *,const char *) called. Recompile the application. You may use KCharset::isDisplayable(const char *) insteed");
-    return KCharset(charset).isDisplayable(face);
-  }
-  bool isDisplayable(const char* charset){
-    warning("KCharsets::isDisplayable(const char *) called. Recompile the application. You may use KCharset::isDisplayable() insteed");
-    return KCharset(charset).isDisplayable();
-  }
-  bool isRegistered(const char* charset){
-    warning("KCharsets::isRegistered(const char *) called. Recompile the application. You may use KCharset::isRegistered() insteed");
-    return KCharset(charset).isRegistered();
-  }
-  int bits(const char * charset){
-    warning("KCharsets::bits(const char *) called. Recompile the application. You may use KCharset::bits() insteed");
-    return KCharset(charset).bits();
-  }
-#endif  
 };
 
 #endif

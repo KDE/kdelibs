@@ -430,7 +430,12 @@ KCharset KCharsets::charset(QFont::CharSet qtcharset){
 
 QFont::CharSet KCharsets::qtCharset(){
 
-  return qtCharset(data->defaultCharset()->name);
+  return qtCharset(data->defaultCharset());
+}
+
+QFont::CharSet KCharsets::qtCharset(KCharset set){
+
+  return set.qtCharset();
 }
 
 QFont &KCharsets::setQFont(QFont &fnt,KCharset charset){
