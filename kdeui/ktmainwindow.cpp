@@ -81,12 +81,6 @@ KTMainWindow::~KTMainWindow()
   // remove this widget from the member list
   memberList->remove( this );
 
-  // delete list if empty
-  if(memberList->count() == 0) {
-    delete memberList;
-    memberList = 0L;
-  }
-
   // delete all toolbars (necessary if they are floating)
   KToolBar *toolbar = 0;
   for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() ) {
