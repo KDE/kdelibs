@@ -1538,7 +1538,7 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	    {
 		HTMLFitType fit;
 		run->setMaxWidth( rmargin - lmargin );
-		fit = run->fitLine( (run == line), rmargin-runWidth-w);
+		fit = run->fitLine( (w+runWidth == 0), rmargin-runWidth-w);
 		
 		if ( fit == HTMLNoFit)
 		{

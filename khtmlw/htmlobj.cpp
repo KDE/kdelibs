@@ -688,6 +688,11 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine,
             }
     	}	
     }
+    else
+    {
+    	newLen = posLen;
+    	newWidth = width;
+    }
     
     if (!splitPtr)
     {
@@ -697,30 +702,8 @@ HTMLFitType HTMLTextSlave::fitLine( bool startOfLine,
     	    // Text does not fit, wait for next line
     	    return HTMLNoFit;
     	}
-    	// Make it fit :]
     
-	int lastLen;
-	int lastWidth;
-
-	newLen = posLen;
-	newWidth = width;
-	
-//	printf("Make text fit: widthLeft = %d\n", widthLeft);
-
-//	printf("    newLen = %d, newWidth = %d\n", newLen, newWidth);
-    	do {
-    	    lastLen = newLen;
-    	    lastWidth = newWidth;
-    	
-    	    newLen = 1 + (lastLen * widthLeft) / lastWidth;
-    	    if (newLen >= lastLen)
-    	    {
-    	    	newLen = lastLen - 1;
-    	    }
-    	    newWidth = fm.width( text, newLen);
-//	    printf("    newLen = %d, newWidth = %d\n", newLen, newWidth);
-    	}
-    	while (( newWidth > widthLeft) && (newLen > 1));
+	// Text does not fit, too bad.
 	// newLen & newWidth are valid
     }
 
