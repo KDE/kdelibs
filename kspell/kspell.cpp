@@ -375,25 +375,21 @@ bool
 KSpell::cleanFputsWord (QString s, bool appendCR)
 {
   QString qs(s);
-  // bool firstchar = TRUE;
+  bool firstchar = TRUE;
   bool empty = TRUE;
 
   for (unsigned int i=0; i<qs.length(); i++)
   {
     //we need some punctuation for ornaments
-    if (qs[i] != '\'' && qs[i] != '\"' && !qs[i].isLetter() // &&
-  
-	// this works only with some dictionaries :-(
+    if (qs[i] != '\'' && qs[i] != '\"' && !qs[i].isLetter() &&
     // permit hyphen when it's not at the beginning of the word 
-	//(firstchar || qs[i] != '-')
-
-	) {
-	qs.remove(i,1);
-	i--;
-      } else {
-	//firstchar = FALSE; 
-	if (qs[i].isLetter()) empty=FALSE;
-      }
+	(firstchar || qs[i] != '-')) {
+      qs.remove(i,1);
+      i--;
+    } else {
+      firstchar = FALSE; 
+      if (qs[i].isLetter()) empty=FALSE;
+    }
   }
 
   // don't check empty words, otherwise synchronisation fails
@@ -664,7 +660,7 @@ void KSpell::checkList2 ()
       kdDebug(750) << "KS::cklist2 " << lastpos << ": " << *wlIt << endl;
 
       bool put;
-      lastpos++;
+      lastpos++; offset=0;
       put = cleanFputsWord (*wlIt);
       wlIt++;
 
@@ -705,13 +701,15 @@ void KSpell::checkList3a (KProcIO *)
 
 		if (e==REPLACE)
 		  {
+		    QString old = *(--wlIt); wlIt++;
+
+		    // replace word
+		    checkList3();
+
 		    // inform application
-		    dlgreplacement=word;
-		    emit corrected (orig, replacement(), lastpos);
-		    // replace in list
-		    wlIt--; // go back to misspelled word
-		    wordlist->insert (wlIt, replacement());
-		    wlIt = wordlist->remove (wlIt);
+		    dlgreplacement=word;   
+		    emit corrected (old, *(--wlIt), lastpos); wlIt++;
+
 		  }
 		else
 		  {
@@ -732,13 +730,26 @@ void KSpell::checkList3a (KProcIO *)
       checkList2();
 }
 
-// remove, when binary compatibility isn't needed
-void KSpell::checkList3 () {}
+// rename to "checkListReplaceCurrent", when binary compatibility isn't needed
+void KSpell::checkList3 () {
+
+  // go back to misspelled word
+  wlIt--;
+
+  QString s = *wlIt;
+  s.replace(posinline+offset,orig.length(),replacement());
+  offset += replacement().length()-orig.length();
+  wordlist->insert (wlIt, s);
+  wlIt = wordlist->remove (wlIt);
+  // wlIt now points to the word after the repalced one
+  
+}
 
 void KSpell::checkList4 ()
   // evaluate dialog return, when a button was pressed there
 {
   dlgon=FALSE;
+  QString old;
 
   disconnect (this, SIGNAL (dialog3()), this, SLOT (checkList4()));
 
@@ -747,10 +758,16 @@ void KSpell::checkList4 ()
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
+      
+      old = *(--wlIt); wlIt++;
+
       kdDebug(750) << "KS: cklist4: lastpos: " << lastpos << endl;
-      wlIt--; // go back to misspelled word
-      wordlist->insert (wlIt, replacement());
-      wlIt = wordlist->remove (wlIt);
+
+      // replace word
+      checkList3();
+
+      emit corrected (old, *(--wlIt), lastpos); wlIt++;
+
       break;
     case KS_CANCEL:
       ksdlg->hide();
@@ -762,8 +779,8 @@ void KSpell::checkList4 ()
       break;
     };
 
-  // send next word
-  checkList2();
+  // read more if there is more
+  checkList3a(NULL);
 }
 
 bool KSpell::check( const QString &_buffer )
@@ -930,6 +947,7 @@ void KSpell::check3 ()
       offset+=replacement().length()-cwword.length();
       newbuffer.replace (lastpos, cwword.length(),
 			 replacement());
+      emit corrected (dlgorigword, replacement(), lastpos);
       break;
     case KS_CANCEL:
     //      kdDebug(750) << "cancelled\n" << endl;
@@ -965,7 +983,7 @@ KSpell::slotStopCancel (int result)
 }
 
 
-void KSpell::dialog (QString word, QStringList *sugg, const char *_slot)
+void KSpell::dialog(QString word, QStringList *sugg, const char *_slot)
 {
   dlgorigword=word;
 
@@ -1005,8 +1023,10 @@ void KSpell::dialog2 (int result)
     case KS_REPLACEALL:
       replacelist.append (dlgorigword);
       replacelist.append (replacement());
+      /*
     case KS_REPLACE:
-      emit corrected (dlgorigword, replacement(), lastpos);
+    emit corrected (dlgorigword, replacement(), lastpos);
+*/
       break;
     }
 

@@ -280,6 +280,8 @@ signals:
    *  If it is emitted by @ref checkList(), @p pos is the index to
    *  the misspelled
    *   word in the @ref QStringList passed to @ref checkList().
+   *  Note, that @p originalword can be only a word part, if it's
+   *  word with hyphens.
    *
    *  These are called _before_ the dialog is opened, so that the
    *   calling program's GUI may be updated. (e.g. the misspelled word may
@@ -296,6 +298,10 @@ signals:
    *
    * Results from the dialog may be checked with @ref dlgResult()
    *  and @ref replacement().
+   *
+   * Note, that when using @ref checkList() this signal cann occure
+   * more then once with same list position, when checking a word with
+   * hyphens. In this case @p orignalword is the last replacement.
    *
    * @see check()
    */
