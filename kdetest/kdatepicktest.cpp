@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-  KApplication *app=new KApplication(argc, argv);
+  KApplication *app=new KApplication(argc, argv, "KDatePickertest");
   KDatePicker picker;
   app->setMainWidget(&picker);
   picker.resize(picker.sizeHint().width(), 

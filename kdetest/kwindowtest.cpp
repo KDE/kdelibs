@@ -9,6 +9,7 @@
 
 #include <kstatusbar.h>
 #include <kapp.h>
+#include <khelpmenu.h>
 #include <ktmainwindow.h>
 #include <kmenubar.h>
 #include <ktoolbarradiogroup.h>
@@ -76,8 +77,8 @@ testWindow::testWindow (QWidget *, const char *name)
     itemsMenu->insertItem ("Important!", this, SLOT(slotImportant()));
 
 	menuBar->insertSeparator();
-	helpMenu = kapp->helpMenu( true, "KWindowTest was programmed by Sven Radej");
-	menuBar->insertItem( "&Help", helpMenu );
+	helpMenu = new KHelpMenu(this, "KWindowTest was programmed by Sven Radej");
+	menuBar->insertItem( "&Help", helpMenu->menu() );
 
     /**************************************************/
     /*Now, we setup statusbar order is not important. */
@@ -509,7 +510,7 @@ void testWindow::slotMakeItem3Current()
 int main( int argc, char *argv[] )
 {
     int i;
-    KApplication *myApp = new KApplication( argc, argv );
+    KApplication *myApp = new KApplication( argc, argv, "KWindowTest" );
 //    testWindow *test = new testWindow;
     testWindow test;
 

@@ -28,7 +28,7 @@ int main( int argc, char *argv[] )
 	aConfig.setGroup( "KColorDialog-test" );
 
 	QApplication::setColorMode( QApplication::CustomColors );
-	KApplication a( argc, argv );
+	KApplication a( argc, argv, "KColorDialogText" );
 
 	color = aConfig.readColorEntry( "Chosen" );
 	int nRet = KColorDialog::getColor( color );

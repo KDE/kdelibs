@@ -2,18 +2,18 @@
 //
 // Author: Lars Knoll <knoll@kde.org>
 
-#include <khtmlview.h>
+#include <khtml.h>
 #include <kapp.h>
 #include <qfile.h>
 
 int main( int argc, char **argv)
 {
-  KApplication a(argc, argv);
+  KApplication a(argc, argv, "KHtmlTest");
 
   if( argc != 2 )
     printf("Usage: khtmltest filename\n");
 
-  KHTMLView v;
+  KHTMLWidget v;
 
   a.setMainWidget( &v );
 
@@ -22,9 +22,7 @@ int main( int argc, char **argv)
 
   char s[2048];
 
-  v.setScrolling(1);
   v.begin();
-  v.parse();
   while( f.readBlock(s, 1023) > 0 )
     v.write(s);
   v.end();

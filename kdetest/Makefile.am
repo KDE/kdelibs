@@ -30,9 +30,8 @@ check_PROGRAMS = kprogresstest kcolordlgtest kdatepicktest kfontdialogtest	\
 		kpopuptest ktabctltest kseparatortest kiconloadertest \
 		kwindowtest kstatusbartest kbuttonboxtest \
 		kledtest kcontainertest krulertest \
-		kwizardtest kformulatest \
-		kcharselecttest kstddirstest khtmltest \
-		kopenwithtest kaboutdialogtest dialogbasetest \
+		kwizardtest kformulatest kcharselecttest khtmltest \
+        kopenwithtest kaboutdialogtest dialogbasetest \
 		kgradienttest kmemtest \
 		kunbalancedgrdtest kcolortest knuminputtest kblendtest \
 		kdualcolortest kpalettetest kmessageboxtest khashtest ktartest \
@@ -76,8 +75,6 @@ ktabctltest_SOURCES = ktabctltest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
 kcharselecttest_SOURCES = kcharselecttest.cpp
-kstddirstest_SOURCES = kstddirstest.cpp
-kstddirstest_LDADD = $(LIB_KDECORE)
 khtmltest_SOURCES = khtmltest.cpp
 khtmltest_LDADD = $(LIB_KHTML)
 kcolortest_SOURCES = kcolortest.cpp

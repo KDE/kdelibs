@@ -146,7 +146,7 @@ int main(int argc, char **argv)
       else
 	printf("Usage: %s [fullscreen [orig]]", argv[0]);
     }
-    KApplication *app = new KApplication(argc, argv);
+    KApplication *app = new KApplication(argc, argv, "KColorTest");
     KColorWidget w;
     app->setMainWidget(&w);
     w.show();

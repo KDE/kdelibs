@@ -11,6 +11,7 @@
 
 class QMultiLineEdit;
 class KToolBarRadioGroup;
+class KHelpMenu;
 
 class testWindow  : public KTMainWindow
 {
@@ -53,8 +54,8 @@ protected:
     QPopupMenu *itemsMenu;
     QPopupMenu *completions;
     QPopupMenu *toolBarMenu;
-    QPopupMenu* helpMenu;
     KStatusBar *statusBar;
+    KHelpMenu *helpMenu;
     KToolBar *toolBar;
     KToolBar *tb1;
     int toolbar1;

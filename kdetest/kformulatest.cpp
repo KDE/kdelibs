@@ -11,7 +11,7 @@
 
 int main( int argc, char **argv )
 {
-    KApplication a( argc, argv );
+    KApplication a( argc, argv, "KFormulaTest" );
 
     KTMainWindow w;
     w.resize( 640, 480 );

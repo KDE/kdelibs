@@ -5,7 +5,7 @@
 
 int main( int argc, char** argv )
 {
-    KApplication app( argc, argv );
+    KApplication app( argc, argv, "KIDLTestClient" );
 
     kapp->dcopClient()->attach();
     // kapp->dcopClient()->registerAs( "kidlclienttest" );

@@ -93,7 +93,7 @@ void KBlendWidget::paintEvent(QPaintEvent */*ev*/)
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv);
+    KApplication *app = new KApplication(argc, argv, "KBlendTest");
     KBlendWidget w;
     app->setMainWidget(&w);
     w.show();

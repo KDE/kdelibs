@@ -44,11 +44,9 @@ void MyWidget::timerEvent(QTimerEvent *)
 	}
 }
 
-//#include "demo.h"
-
 int main(int argc, char *argv[])
 {
-	KApplication app(argc, argv);
+	KApplication app(argc, argv, "KProgressTest");
 	MyWidget w;
 	
 	app.setMainWidget(&w);

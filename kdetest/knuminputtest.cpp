@@ -59,7 +59,7 @@ TopLevel::TopLevel(QWidget *parent, const char *name)
 
 int main( int argc, char ** argv )
 {
-    a = new KApplication ( argc, argv );
+    a = new KApplication ( argc, argv, "KNuminputTest" );
 
     TopLevel *toplevel = new TopLevel(0, "_ktabctl_test");
 

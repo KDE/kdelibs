@@ -8,7 +8,7 @@
 #define PACK packEnd
 
 TestWidget::TestWidget(int orientation, bool homogeneos, int spacing)
-: KContainerLayout(0L,"",orientation,homogeneos,spacing)
+    : KContainerLayout(0L,"",orientation,homogeneos,spacing)
 {
     setStartOffset(20);
     setEndOffset(40);
@@ -220,7 +220,7 @@ TopLevelTest::TopLevelTest()
 
 int main( int argc, char **argv )
 {
-    KApplication a( argc, argv );
+    KApplication a( argc, argv, "KContainerTest" );
     TestWidget test(KContainerLayout::Horizontal,TRUE,5);
 
     a.setMainWidget( &test );

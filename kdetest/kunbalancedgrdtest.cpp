@@ -123,7 +123,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
 }
 
-myTopWidget::myTopWidget (QWidget *parent, const char *name=0)
+myTopWidget::myTopWidget (QWidget *parent, const char *name)
   :QWidget(parent, name)
 {
   QGridLayout *lay = new QGridLayout (this, 2, 3, 0);
@@ -168,7 +168,7 @@ void myTopWidget::rebalance()
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv);
+    KApplication *app = new KApplication(argc, argv, "KUnbalancedGradientTest");
     myTopWidget w;
     app->setMainWidget(&w);
     w.show();

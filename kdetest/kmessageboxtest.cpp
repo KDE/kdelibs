@@ -13,7 +13,7 @@
 int main( int argc, char *argv[] )
 {
     int i, test;
-    KApplication *myApp = new KApplication( argc, argv );
+    KApplication *myApp = new KApplication( argc, argv, "KMessageBoxTest" );
 
 for( test = 1; true; test++)
 {

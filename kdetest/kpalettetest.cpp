@@ -12,7 +12,7 @@
 
 int main( int argc, char **argv )
 {
-    KApplication a( argc, argv );
+    KApplication a( argc, argv, "KPalettetest" );
 
     QStringList palettes = KPalette::getPaletteList();
     for(QStringList::ConstIterator it = palettes.begin(); 

@@ -1,37 +1,6 @@
 /*
  * $Id$
  *
- * $Log$
- * Revision 1.4.2.1  1999/02/22 21:14:19  kulow
- * extreme QStringing
- *
- * Revision 1.4  1999/01/19 13:36:32  kulow
- * removed explicit settings of DISTCLEANFILES, where the only sense was
- * to remove the MOC files
- *
- * Revision 1.3  1999/01/15 08:59:42  kulow
- * use seperate moc.cpp files - did you know that most header files herein are
- * complete hacks? ;)
- *
- * Revision 1.2  1997/09/10 13:53:20  kdecvs
- * Kalle: Use KApplication instead of QApplication
- *
- * Revision 1.1  1997/04/13 17:49:44  kulow
- * Sources imported
- *
- * Revision 1.1  1997/03/15 21:40:24  kalle
- * Initial revision
- *
- * Revision 1.3.2.1  1997/01/07 14:41:57  alex
- * release 0.1
- *
- * Revision 1.3  1997/01/07 14:39:15  alex
- * some doc added, tested - ok.
- *
- * Revision 1.2  1997/01/07 13:47:09  alex
- * first working release
- *
- *
  */
 
 #include <kapp.h>
@@ -123,7 +92,7 @@ void TopLevel::okPressed()
 
 int main( int argc, char ** argv )
 {
-    a = new KApplication ( argc, argv );
+    a = new KApplication ( argc, argv, "KTabCtlTest" );
 
     a->setFont(default_font);
 

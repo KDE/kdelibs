@@ -100,7 +100,7 @@ void KGradientWidget::paintEvent(QPaintEvent */*ev*/)
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv);
+    KApplication *app = new KApplication(argc, argv, "KGradientTest");
     KGradientWidget w;
     w.resize(250 * cols, 250 * rows);
     app->setMainWidget(&w);

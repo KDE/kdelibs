@@ -10,7 +10,7 @@
 
 int main( int argc, char **argv )
 {
-    KApplication a( argc, argv );
+    KApplication a( argc, argv, "KLedTest" );
     KTMainWindow ktw;
     QWidget qw;
     QTimer t_toggle, t_color, t_look;

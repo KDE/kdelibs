@@ -51,7 +51,7 @@ void KDualColorWidget::slotCurrentChanged(KDualColorButton::DualColor current)
 
 int main(int argc, char **argv)
 {
-    KApplication *app = new KApplication(argc, argv);
+    KApplication *app = new KApplication(argc, argv, "KDualColorTest");
     KDualColorWidget w;
     app->setMainWidget(&w);
     w.show();

@@ -16,7 +16,7 @@
 
 int main(int argc, char** argv)
 {
-  KApplication *app=new KApplication(argc, argv);
+  KApplication *app=new KApplication(argc, argv, "KAboutDialogTest");
   QImage logo;
   QImage bg;
   QPixmap pix;

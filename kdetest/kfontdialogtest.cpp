@@ -21,23 +21,6 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
-    $Log$
-    Revision 1.3  1997/09/10 13:53:13  kdecvs
-    Kalle: Use KApplication instead of QApplication
-
-    Revision 1.2  1997/04/15 20:01:58  kalle
-    Kalles changes for 0.8
-
-    Revision 1.1  1997/04/13 17:49:41  kulow
-    Sources imported
-
-    Revision 1.1  1997/03/15 21:40:24  kalle
-    Initial revision
-
-    Revision 1.1  1997/01/04 17:36:44  wuebben
-    Initial revision
-
-
 */
 
 
@@ -51,7 +34,7 @@
   KConfig aConfig;
   aConfig.setGroup( "KFontDialog-test" );
 
-  KApplication app( argc, argv );
+  KApplication app( argc, argv, "KFontDialogtest" );
   app.setFont(QFont("Helvetica",12));
 
   //  QFont font = QFont("Times",18,QFont::Bold);
