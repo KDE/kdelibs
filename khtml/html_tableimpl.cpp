@@ -27,7 +27,7 @@
 
 // ### FIXME: get rid of setStyle calls...
 // ### cellpadding and spacing should be converted to Length
-#undef TABLE_DEBUG
+//#define TABLE_DEBUG
 //#define DEBUG_LAYOUT
 
 #include <qlist.h>
@@ -932,6 +932,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
     printf("START calcColWidthII() this = %p\n", this);
     printf("---- %d ----\n", totalColInfos);
     printf("maxColSpan = %d\n", maxColSpan);
+    printf("availableWidth = %d\n", availableWidth);
 #endif
 
     // 2. calc min and max width for the table
@@ -971,7 +972,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 	    break;
 	case Percent:
 	    // if the table is not fixed width, we use the available space
-	    if(!width)
+	    if(predefinedWidth.type < Percent) // undefined table width
 		actColWidth[i] = colValue[i]*availableWidth/100;
 	    else
 		actColWidth[i] = colValue[i]*width/100;
