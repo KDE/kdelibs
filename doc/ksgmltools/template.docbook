@@ -25,7 +25,7 @@ Please don't forget to remove all these comments in your final documentation,
 thanks ;-).
 -->
 
-<!-- ---------------------------------------------------------------- -->
+<!-- ................................................................ -->
 
 <!-- The language must be changed in the <book> tag for translations. -->
 
@@ -48,6 +48,11 @@ as Authors, publish date, the abstract, and Keywords -->
 </author>
 </authorgroup>
 
+
+<copyright>
+<year>1999-2000</year>
+<holder>George N. Ugnacious</holder>
+</copyright>
 <!-- Put here the FDL notice.  Read the explanation in fdl-notice.docbook 
      and in the FDL itself on how to use it. -->
 <legalnotice>&FDLNotice;</legalnotice>
@@ -65,7 +70,8 @@ Please respect the format of the date (DD/MM/YYYY) and of the version
 
 <abstract>
 <para>
-&kapp; is an application specially designed to do nothing you would ever want.
+&kapp; is an application specially designed to do nothing you would
+ever want.
 </para>
 </abstract>
 
@@ -101,9 +107,9 @@ report problems, and a brief revision history of the app. Basically a long
 version of the abstract. -->
 
 <para>
-&kapp; is a program that lets you do absolutely
-nothing. Please report any problems or feature requests to the KDE mailing
-lists.</para>
+&kapp; is a program that lets you do absolutely nothing. Please report
+any problems or feature requests to the KDE mailing lists.
+</para>
 
 <!-- Note that the revhistory tags apply to the documentation version and not to
 the app version. That is why we use an itemizedlist here. -->
