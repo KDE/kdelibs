@@ -1313,7 +1313,7 @@ void KXMLGUIFactory::processStateElement( const QDomElement &element )
 
   for (; !e.isNull(); e = e.nextSibling().toElement() ) {
     QString tagName = e.tagName().lower();
-    
+
     if ( tagName != "enable" && tagName != "disable" )
       continue;
     
@@ -1343,7 +1343,7 @@ void KXMLGUIFactory::processStateElement( const QDomElement &element )
 void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement )
 {
     static const QString &tagAction = KGlobal::staticQString( "action" );
-    static const QString &attrAccel = KGlobal::staticQString( "accel" );
+    static const QString &attrShortcut = KGlobal::staticQString( "shortcut" );
 
     QDomElement e = actionPropElement.firstChild().toElement();
     for (; !e.isNull(); e = e.nextSibling().toElement() )
@@ -1361,6 +1361,7 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
             QDomAttr attr = attributes.item( i ).toAttr();
             if ( attr.isNull() )
                 continue;
+            QString attrName = attr.name();
 
             //don't let someone change the name of the action! (Simon)
             if ( attr.name() == d->attrName )
@@ -1370,17 +1371,18 @@ void KXMLGUIFactory::applyActionProperties( const QDomElement &actionPropElement
 
             QVariant::Type propertyType = action->property( attr.name().latin1() ).type();
 
-            // readable accels please ;-)
-            if ( attr.name().lower() == attrAccel )
-                propertyValue = QVariant( KShortcut(attr.value()).keyPrimaryQt() );
-            else if ( propertyType == QVariant::Int )
+            // If the attribute is a depricated "accel", change to "shortcut".
+            if ( attrName.lower() == "accel" )
+                attrName = attrShortcut;
+
+            if ( propertyType == QVariant::Int )
                 propertyValue = QVariant( attr.value().toInt() );
             else if ( propertyType == QVariant::UInt )
                 propertyValue = QVariant( attr.value().toUInt() );
             else
                 propertyValue = QVariant( attr.value() );
 
-            action->setProperty( attr.name().latin1() /* ???????? */, propertyValue );
+            action->setProperty( attrName.latin1() /* ???????? */, propertyValue );
         }
     }
 }
