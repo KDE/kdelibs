@@ -2015,7 +2015,6 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
 		    col = QColor();
 		else
 		    col = colorForCSSValue( ident );
-		qDebug("color ident = %d, rgb=%8x", ident, col.rgb() );
 	    } else if ( primitiveValue->primitiveType() == CSSPrimitiveValue::CSS_RGBCOLOR ) {
 		if(qAlpha(primitiveValue->getRGBColorValue()))
 		    col.setRgb(primitiveValue->getRGBColorValue());
