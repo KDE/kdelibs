@@ -51,6 +51,7 @@ KFileSimpleView::~KFileSimpleView()
 
 void KFileSimpleView::setNumCols(int count)
 {
+    delete [] cellWidths;
     cellWidths = new int[count];
     for (int i = 0; i < count; i++)
 	cellWidths[i] = -1;
