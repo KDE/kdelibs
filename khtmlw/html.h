@@ -25,7 +25,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-#define KHTMLW_VERSION  1302		// 00.13.02
+#define KHTMLW_VERSION  1303		// 00.13.03
 
 #include <qpainter.h>
 #include <qstrlist.h>
@@ -861,6 +861,8 @@ protected:
 	target = 0;
     }
 
+	void insertText(char *str, const HTMLFont * fp);
+
     /*
      * This function is called after &lt;body&gt; usually. You can
      * call it for every rectangular area: For example a tables cell
@@ -1014,6 +1016,9 @@ protected:
      * pointing to.
      */
     HTMLTokenizer *ht;
+	
+	QArray<char *> memPool;
+	int memPoolMax;
 
     /*
      * This is used generally for processing the contents of < ... >
@@ -1203,11 +1208,6 @@ protected:
     void blockEndFont(HTMLClueV *_clue, HTMLStackElem *stackElem);
 
 	 /*
-	  * Code for closing the PRE tag
-	  */
-    void blockEndPre(HTMLClueV *_clue, HTMLStackElem *stackElem);
-
-	 /*
 	  * Code for closing-tag to restore font and font-color
 	  */
     void blockEndColorFont(HTMLClueV *_clue, HTMLStackElem *stackElem);
@@ -1364,9 +1364,6 @@ protected:
     // true if the current text is destined for a <TEXTAREA>...</TEXTAREA>
     bool inTextArea;
 
-	// true if the current text is part of a <PRE>...</PRE>
-    bool inPre;
-  
     // the text to be put in a form element
     QString formText;
 

@@ -73,6 +73,7 @@ protected:
 	char data[1];
 };
 
+
 class HTMLTokenizer
 {
 public:
@@ -90,6 +91,7 @@ public:
 
 protected:
     void reset();
+	void addPending();
     void appendToken( const char *t, int len );
     void appendTokenBuffer( int min_size);
     void nextTokenBuffer(); // Move curr to next tokenBuffer
@@ -123,20 +125,35 @@ protected:
     // are we in quotes within a html tag
     bool tquote;
     
-    // To avoid multiple spaces
-    bool space;
+	typedef enum 
+	{ 
+		NonePending = 0, SpacePending, 
+		LFPending, TabPending 
+	} HTMLPendingType;
 
-    // Discard line breaks immediately after tags
-    bool discardCR;
+    // To avoid multiple spaces
+    HTMLPendingType pending;
+
+    // Discard space / line breaks immediately after start-tags
+    bool discard;
 
 	 // Discard the LF part of CRLF sequence
     bool skipLF;
 
-	 // Are we in a <title> ... </title> block
-	 bool title;
+    // Flag to say that we have the '<' but not the character following it.
+    // Used to decide whether we will get a <TAG> or </TAG>
+    // In case of a </TAG> we ignore pending spaces.
+    // In case of a <TAG> we add the spaces.
+	bool startTag;
+
+	// Are we in a <title> ... </title> block
+	bool title;
     
     // Are we in a <pre> ... </pre> block
     bool pre;
+    
+    // if 'pre == true' we track in which column we are
+    int prePos;
     
     // Are we in a <script> ... </script> block
     bool script;

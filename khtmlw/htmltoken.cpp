@@ -109,19 +109,84 @@ void HTMLTokenizer::begin()
     buffer = new char[ 1024 ];
     dest = buffer;
     tag = false;
-    space = false;
-    discardCR = false;
+    pending = NonePending;
+    discard = false;
     pre = false;
+    prePos = 0;
     script = false;
     style = false;
     skipLF = false;
     select = false;
     comment = false;
     textarea = false;
+    startTag = false;
     tquote = false;
     searchCount = 0;
     title = false;
     charEntity = false;
+}
+
+void HTMLTokenizer::addPending()
+{
+    if ( tag || select)     
+    {
+    	*dest++ = ' ';
+    }
+    else if ( textarea )
+    {
+	if (pending == LFPending)
+	    *dest++ = '\n';
+	else
+	    *dest++ = ' ';    	
+    }
+    else if ( pre )
+    {
+    	int p;
+
+	switch (pending)
+	{
+	  case SpacePending:
+		// Insert a non-breaking space
+		*(unsigned char *)dest++ = 0xa0; 
+	  	prePos++;
+	  	break;
+
+	  case LFPending:
+		if ( dest > buffer )
+		{
+		    *dest = 0;
+		    appendToken( buffer, dest-buffer );
+		}
+		dest = buffer;
+		*dest = TAG_ESCAPE;
+		*(dest+1) = '\n';
+		*(dest+2) = 0;
+		appendToken( buffer, 2 );
+		dest = buffer;
+		prePos = 0; 
+	  	break;
+	  	
+	  case TabPending:
+		p = TAB_SIZE - ( prePos % TAB_SIZE );
+		for ( int x = 0; x < p; x++ )
+		{
+		    *dest = ' ';
+		    dest++;
+		}
+		prePos += p;
+	  	break;
+	  	
+	  default:
+	  	printf("Assertion failed: pending = %d\n", (int) pending);
+	  	break;
+	}
+    }
+    else
+    {
+    	*dest++ = ' ';
+    }
+
+    pending = NonePending;
 }
 
 void HTMLTokenizer::write( const char *str )
@@ -140,11 +205,6 @@ void HTMLTokenizer::write( const char *str )
 	return;
     
     const char *src = str;
-
-    // If we have <pre> and get a '\t' we need to know
-    // in which row we are in order to calculate the next
-    // tabulators position.
-    int pre_pos = 0;
 
     while ( *src != 0 )
     {
@@ -303,11 +363,21 @@ void HTMLTokenizer::write( const char *str )
 	    }
 	    else
 	    {
+	    	
 	    	// We have a complete sequence
+	    	if (res && (res.length() == 1))
+	    	{
+	    	    entityValue = *((unsigned char *)res.data());
+	    	}
 
-		if ((searchBuffer[1] == '#') &&
-		    (entityValue< 128) &&
-		    (entityValue> 0))
+		if (
+		    (
+		     (entityValue < 128) &&
+		     (entityValue > 0)
+		    ) 
+		    ||
+		    (entityValue == 160)
+		   )
 		{
 		    // Just insert plain ascii
 		    *dest++ = (char) entityValue;
@@ -332,7 +402,7 @@ void HTMLTokenizer::write( const char *str )
 		    memcpy(dest, res.data(), res.length());
 		    dest += res.length();
 		}
-		else if ((searchBuffer[1] == '#') && (entityValue > 0)) 
+		else if (entityValue > 0) 
 		{
 		    // insert the character, assuming iso-8859-1
 		    *dest++ = (char) entityValue;
@@ -348,24 +418,19 @@ void HTMLTokenizer::write( const char *str )
 		searchCount = 0;
 	    }
 	}
-	else if ( *src == '&' ) 
+	else if ( startTag)
 	{
-            src++;
-	    if ( pre )
-		pre_pos++;	    
-	    space = false;
-	    
-	    charEntity = true;
-            searchCount = 0;
-            searchBuffer[searchCount++] = '&';
-	}
-	else if ( *src == '<' && !tquote )
-	{
-	    src++;
-
-	    space = true;      // skip leading spaces
-	    discardCR = true;  // skip leading CR
-	    tquote = false;
+	    startTag = false;
+	    if (*src == '/') 
+	    {
+	       // Start of an End-Tag 
+	       pending = NonePending; // Ignore leading spaces 
+	    }
+	    else
+	    {
+	    	if (pending)
+	    	    addPending();
+	    }
 
 	    if ( dest > buffer )
 	    {
@@ -379,18 +444,48 @@ void HTMLTokenizer::write( const char *str )
 	    dest++;
 	    tag = true;
 	    searchCount = 1; // Look for '<!--' sequence to start comment
+	    // No 'src++' add '*src' in a second pass with 'startTag=false'
+	}
+	else if ( *src == '&' ) 
+	{
+            src++;
+	    if ( pre )
+		prePos++;	    
+	    
+	    discard = false; 
+	    if (pending)
+	    	addPending();
+	    
+	    charEntity = true;
+            searchCount = 0;
+            searchBuffer[searchCount++] = '&';
+	}
+	else if ( *src == '<' && !tag)
+	{
+	    src++;
+	    startTag = true;
+	    discard = false;
 	}
 	else if ( *src == '>' && tag && !tquote )
 	{
             searchCount = 0; // Stop looking for '<!--' sequence
-	    space = false;
-	    discardCR = false;
 
 	    *dest = '>';
 	    *(dest+1) = 0;
 
 	    // make the tag lower case
 	    char *ptr = buffer+2;
+	    if (*ptr == '/')
+	    { 
+	    	// End Tag
+	    	discard = false;
+	    }
+	    else
+	    {
+	    	// Start Tag
+	    	// Ignore spaces & CR/LF's after a start tag
+	    	discard = true;
+	    }
 	    while ( *ptr && *ptr != ' ' )
 	    {
 		*ptr = tolower( *ptr );
@@ -401,11 +496,12 @@ void HTMLTokenizer::write( const char *str )
 	    dest = buffer;
 
 	    tag = false;
+	    pending = NonePending; // Ignore pending spaces
 	    src++;
 
 	    if ( strncmp( buffer+2, "pre", 3 ) == 0 )
 	    {
-		pre_pos = 0;
+		prePos = 0;
 		pre = true;
 	    }
 	    else if ( strncmp( buffer+2, "/pre", 4 ) == 0 )
@@ -475,48 +571,41 @@ void HTMLTokenizer::write( const char *str )
 		blocking.removeLast();
 	    }
 	}
-	else if (( *src == '\n' ) || ( *src == '\r' ))
+	else if (( *src == '\n' ) || ( *src == '\r' ) ||
+	         ( *src == ' ' ) || ( *src == '\t'))
 	{
-            searchCount = 0; // Stop looking for '<!--' sequence
-	    if ( !discardCR )
+	    if ( tquote)
 	    {
-		if ( tag )
-		{
-		    if ( !space )
-		    {
-			*dest = ' ';
-			dest++;
-			space = true;
-		    }
-		}
-		else if ( pre )
-		{ // For every line break in <pre> insert the tag '\n'.
-		    if ( !select )
-		    {
-			if ( dest > buffer )
-			{
-			    *dest = 0;
-			    appendToken( buffer, dest-buffer );
-			}
-			dest = buffer;
-			*dest = TAG_ESCAPE;
-			*(dest+1) = '\n';
-			*(dest+2) = 0;
-			appendToken( buffer, 2 );
-			dest = buffer;
-			pre_pos = 0; 
-		    }
-		}
-		else if (textarea)
-		{
-		    *dest++ = '\n';
-		}
-		else if ( !space )
-		{
-		    *dest = ' ';
-		    dest++;
-		    space = true;
-		}
+	    	*dest++ = *src; // Just add it
+	    }
+	    else if ( tag )
+	    {
+                searchCount = 0; // Stop looking for '<!--' sequence
+		if (!discard)
+		    pending = SpacePending;
+	    }
+	    else if ( pre)
+	    {
+	    	if (!discard)
+	    	{
+	    	    if (pending)
+	    	        addPending();
+	    	    if (*src == ' ')
+	    	        pending = SpacePending;
+	    	    else if (*src == '\t')
+	    	        pending = TabPending;
+	    	    else
+	    	    	pending = LFPending;
+	    	}
+	    	else
+	    	{
+	    	    discard = false; // We have discarded 1 white-space
+	    	}
+	    } 
+	    else
+	    {
+	    	if (!discard)
+	    	    pending = SpacePending;
 	    }
 	    /* Check for MS-DOS CRLF sequence */
 	    if (*src == '\r')
@@ -525,145 +614,76 @@ void HTMLTokenizer::write( const char *str )
 	    }
 	    src++;
 	}
-	else if ( *src == ' ' )
-	{
-	    if ( tag )
-	    {
-	        searchCount = 0; // Stop looking for '<!--' sequence
-		if ( !space )
-		{
-		    *dest = ' ';
-		    dest++;
-		    space = true;
-		}
-	    }
-	    else if ( pre )
-	    {
-		pre_pos++;
-		*dest = ' ';
-		dest++;
-	    }	
-	    else if ( !space )
-	    {
-		*dest = ' ';
-		dest++;
-		space = true;
-	    }
-	    src++;
-	}
-	else if ( *src == '\t' )
-	{
-	    if ( tag )
-	    {
-	        searchCount = 0; // Stop looking for '<!--' sequence
-		if ( !space )
-		{
-		    *dest = ' ';
-		    dest++;
-		    space = true;
-		}
-	    }
-	    else if ( pre )
-	    {
-		int p = TAB_SIZE - ( pre_pos % TAB_SIZE );
-		for ( int x = 0; x < p; x++ )
-		{
-		    *dest = ' ';
-		    dest++;
-		}
-	    }
-	    else if ( !space )
-	    {
-		*dest = ' ';
-		dest++;
-		space = true;
-	    }
-	    src++;
-	}
 	else if ( *src == '\"' || *src == '\'')
 	{ // we treat " & ' the same in tags
+    	    discard = false;
 	    if ( tag )
 	    {
 	        searchCount = 0; // Stop looking for '<!--' sequence
 		src++;
 		if ( *(dest-1) == '=' && !tquote )
 		{
+		    pending = NonePending;
 		    tquote = true;
-		    *dest = '\"';
-		    dest++;
-		    space = false;
-		    discardCR = false;
+		    *dest++ = '\"';
 		}
 		else if ( tquote )
 		{
 		    tquote = false;
-		    *dest = '\"';
-		    dest++;
-		    *dest = ' ';
-		    dest++;
-		    space = true;
-		    discardCR = true;
+		    *dest++ = '\"';
+		    pending = SpacePending; // Add space automatically
 		}
 		else
-		    continue;  // stray '\"'
+		{
+		    // Ignore stray "\'"
+		}
 	    }
 	    else
 	    {
-		space = false;
-		discardCR = false;
+	    	if (pending)
+	    	    addPending();
 
 		if ( pre )
-		    pre_pos++;
+		    prePos++;
 
-		*dest = *src++;
-		dest++;
+		*dest++ = *src++;
 	    }
 	}
 	else if ( *src == '=' )
 	{
 	    src++;
-
+	    discard = false;
 	    if ( tag )
 	    {
 	        searchCount = 0; // Stop looking for '<!--' sequence
-		if ( tquote )
+                *dest++ = '=';
+		if ( !tquote )
 		{
-		    space = false;
-		    discardCR = false;
-		    *dest = '=';
-		    dest++;
-		}
-		else
-		{
-		    // discard space before '='
-		    if ( *(dest-1) == ' ' )
-			dest--;
-
-		    *dest = '=';
-		    dest++;
-		    space = true;
-		    discardCR = true;
+		    pending = NonePending; // Discard spaces before '='
+		    discard = true; // Ignore following spaces
 		}
 	    }
 	    else
 	    {
-		space = false;
-		discardCR = false;
+	    	if (pending)
+	    	    addPending();
 
 		if ( pre )
-		    pre_pos++;
+		    prePos++;
 
-		*dest = '=';
-		dest++;
+		*dest++ = '=';
 	    }
 	}
 	else
 	{
-	    space = false;
-	    discardCR = false;
+	    discard = false;
+	    if (pending)
+	    	addPending();
 
-	    if (tag && (searchCount > 0))
+	    if (tag)
 	    {
+	      if (searchCount > 0)
+	      {
 	    	if (*src == commentStart[searchCount])
 	    	{
 	    	    searchCount++;
@@ -680,15 +700,15 @@ void HTMLTokenizer::write( const char *str )
 	    	else
 	    	{
 	            searchCount = 0; // Stop looking for '<!--' sequence
-                }
+                }  
+              }
 	    } 
 	    else if ( pre )
 	    {
-		pre_pos++;
+		prePos++;
 	    }
 	    
-	    *dest = *src++;
-	    dest++;
+	    *dest++ = *src++;
 	}
     }
 

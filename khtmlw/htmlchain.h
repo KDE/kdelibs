@@ -22,40 +22,34 @@
 
 class HTMLObject;
 
-class HTMLChainElement
-{
-public:
-    HTMLChainElement(HTMLObject *_obj,HTMLChainElement *_parent,
-	HTMLChainElement *_child) :
-	object( _obj ), parent( _parent ), child( _child ) {}
-
-    HTMLObject *object;
-    HTMLChainElement *parent;
-    HTMLChainElement *child;
-};
-
 /*
  */
 class HTMLChain
 {
 public:
-    HTMLChain() { head = tail = curr = 0; }
-    ~HTMLChain();
+    HTMLChain() : chain(30), curr(0), tail(0) {  }
 
-    void first() { curr = head; }
+    void first() { curr = 0; }
     void last()  { curr = tail; }
-    void next()  { curr = curr->child; }
-    void prev()  { curr = curr->parent; }
+    void next()  { if (curr < tail) curr++; }
+    void prev()  { if (curr > 0) curr--; }
 
-    HTMLObject *current() { return curr ? curr->object : 0; }
+    HTMLObject *current() { return chain[curr]; }
 
-    void push( HTMLObject *obj );
-    void pop();
+    void push( HTMLObject *obj ) { 
+    	if (tail >= (int) chain.size()) 
+    	{
+    		chain.resize(chain.size()*2);
+    	}
+    	chain[tail] = obj;
+    	tail++;
+    }
+    void pop() { if (tail > 0) tail--; }
 
 protected:
-    HTMLChainElement *head;
-    HTMLChainElement *tail;
-    HTMLChainElement *curr;
+	QArray<HTMLObject *> chain;
+	int curr;
+	int tail;
 };
 
 #endif

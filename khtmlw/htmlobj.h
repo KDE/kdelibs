@@ -69,6 +69,8 @@ public:
 
 class HTMLAnchor;
 
+typedef enum { HTMLNoFit, HTMLPartialFit, HTMLCompleteFit } HTMLFitType;
+
 //-----------------------------------------------------------------------------
 // HTMLObject is the base class for all HTML objects.
 //
@@ -90,11 +92,11 @@ public:
     /*
      * This function should cause the HTMLObject to break itself up so 
      * that it will fit within the given length. Only usefull for text.
-     * If 'startOfLine' is 'false', this function may return 'false' to 
+     * If 'startOfLine' is 'false', this function may return 'HTMLNoFit' to 
      * indicate it is not possible to use the specified 'widthLeft'.
      */
-    virtual bool fitLine( bool startOfLine, int widthLeft ) 
-    { return true; }
+    virtual HTMLFitType fitLine( bool startOfLine, int widthLeft ) 
+    { return HTMLCompleteFit; }
     
     /*
      * This function forces a size calculation for objects which
@@ -388,7 +390,7 @@ public:
     	             
     virtual int  calcMinWidth() { return minWidth; }
     virtual int  calcPreferredWidth() { return prefWidth; }
-    virtual bool fitLine( bool startOfLine, int widthLeft );
+    virtual HTMLFitType fitLine( bool startOfLine, int widthLeft );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 					    int _height, int _tx, int _ty, bool toPrinter )
 	    { return false; } // Dummy
@@ -408,7 +410,7 @@ class HTMLTextSlave : public HTMLObject
 {
 public:
     HTMLTextSlave( HTMLTextMaster *_owner, short _posStart, short _posLen);
-    virtual bool fitLine( bool startOfLine, int widthLeft );
+    virtual HTMLFitType fitLine( bool startOfLine, int widthLeft );
     virtual bool selectText( KHTMLWidget *_htmlw, HTMLChain *_chain, int _x1,
 	int _y1, int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & ) { }; // Handled by master

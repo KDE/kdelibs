@@ -1,6 +1,13 @@
 KHTMLW CHANGES
 ==============
 
+Version 0.13.3  - 26 Oct 1998 (Waldo Bastian)
+-------------- 
+
+Fixed bugs introduced in previous version. 
+Fixed handling of non-breaking spaces.
+Ready for KDE 1.1
+
 Version 0.13.2  - 14 Oct 1998 (Waldo Bastian)
 --------------
 

@@ -1527,14 +1527,20 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	// separator/newline/aligned object.
 	else
 	{
+	    // By setting "newLine = true" we move the complete run to
+	    // a new line.
+	    // We shouldn't set newLine if we are at the start of a line. 
+		
 	    int runWidth = 0;
 	    HTMLObject *run = obj;
 	    while ( run && !run->isSeparator() && !run->isNewline() &&
 		    !run->isAligned() )
 	    {
+		HTMLFitType fit;
 		run->setMaxWidth( rmargin - lmargin );
-		if (run->fitLine( (run == line), 
-				  rmargin-lmargin-runWidth) == false)
+		fit = run->fitLine( (run == line), rmargin-runWidth-w);
+		
+		if ( fit == HTMLNoFit)
 		{
 		    newLine = true;
 		    break;		
@@ -1556,10 +1562,16 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 		    d = run->getDescent();
 
 		run = run->next();
+		
+		if (fit == HTMLPartialFit)
+		{
+		    // We encountered an implicit separator
+		    break;
+		}
 
 		// If this is the first object but it doesn't fit the 
-		// allowed area, break idirectly after it.
-		if (runWidth > rmargin - lmargin )
+		// allowed area, break directly after it.
+		if (runWidth > rmargin - lmargin)
 		{
 		     break;
 		}    
@@ -1572,7 +1584,8 @@ void HTMLClueFlow::calcSize( HTMLClue *parent )
 	    {
 		newLine = true;
 	    }
-	    else
+	    
+	    if (!newLine)
 	    {
 	    	int new_y, new_lmargin, new_rmargin;
 

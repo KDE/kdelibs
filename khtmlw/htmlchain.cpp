@@ -17,46 +17,4 @@
     Boston, MA 02111-1307, USA.
 */
 
-#include "htmlobj.h"
-#include "htmlchain.h"
-
-HTMLChain::~HTMLChain()
-{
-    while ( head )
-	pop();
-}
-
-void HTMLChain::push( HTMLObject *obj )
-{
-    HTMLChainElement *ce = new HTMLChainElement( obj, tail, 0 );
-
-    if ( !head )
-    {
-	head = tail = curr = ce;
-    }
-    else if ( tail )
-    {
-	tail->child = ce;
-	tail = ce;
-    }
-}
-
-void HTMLChain::pop()
-{
-    if ( !head )
-	return;
-
-    HTMLChainElement *tmp = tail;
-    tail = tail->parent;
-    delete tmp;
-
-    if ( tail )
-    {
-	tail->child = 0;
-    }
-    else
-    {
-	head = curr = 0;
-    }
-}
-
+// Obsolete

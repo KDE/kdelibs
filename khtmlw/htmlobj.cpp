@@ -566,33 +566,17 @@ HTMLTextMaster::HTMLTextMaster( const char* _text, const HTMLFont *_font,
     }
 
     strLen = strlen(text);
-    if ((strLen > 1) && (text[strLen-1] == ' '))
-    {
-    	// Convert trailing space to HTMLHSpace
-    	// Unless we are the last object, or another space follows
-    	if (next() && !next()->isSeparator())
-    	{
-    	    strLen--;	
-	    HTMLHSpace *HSpace = new HTMLHSpace( _font, _painter);
-	    HSpace->setNext(next());
-	    setNext(HSpace);
-    	}
-    } 
 }
                                                                                                                  
 
 
-bool HTMLTextMaster::fitLine( bool startOfLine, 
-			      int widthLeft )
+HTMLFitType HTMLTextMaster::fitLine( bool startOfLine, int widthLeft )
 {
     int startPos;
     
     /* split ourselves up :) */
     if ( isNewline() )
-    	return true;
-
-    // Set font settings in painter for correct width calculation
-//  painter->setFont( *font );
+    	return HTMLCompleteFit;
 
     // Remove existing slaves	
     HTMLObject *next_obj = next();
@@ -603,28 +587,12 @@ bool HTMLTextMaster::fitLine( bool startOfLine,
     	next_obj = next();
     }
 
-
-// Always skip a leading space, since it is already added as a HTMLHSpace
-
-//    if ((text[0] == ' ') && startOfLine && (widthLeft >= 0) )
-    if (text[0] == ' ')
-    {
-        // Skip leading space
-        startPos = 1;
-    }
-    else
-    {
-        // Don't skip leading space
-        startPos = 0;
-    }
- 
     // Turn all text over to our slave.
-    HTMLTextSlave *text_slave = new HTMLTextSlave( this, 
-    						   startPos, strLen-startPos);
+    HTMLTextSlave *text_slave = new HTMLTextSlave( this, 0, strLen);
 
     text_slave->setNext(next());
     setNext(text_slave);
-    return true;
+    return HTMLCompleteFit;
 }
 
 //-----------------------------------------------------------------------------
@@ -640,7 +608,7 @@ HTMLTextSlave::HTMLTextSlave( HTMLTextMaster *_owner,
     width = fm.width( (const char*) &(_owner->text[_posStart]), _posLen );
 }
 
-bool HTMLTextSlave::fitLine( bool startOfLine, 
+HTMLFitType HTMLTextSlave::fitLine( bool startOfLine, 
                              int widthLeft )
 {
     int newLen;
@@ -679,7 +647,7 @@ bool HTMLTextSlave::fitLine( bool startOfLine,
     if ((width <= widthLeft) || (posLen <= 1) || (widthLeft < 0) )
     {
         // Text fits completely 
-        return true;
+        return HTMLCompleteFit;
     }
 
     char *splitPtr = index( text+1, ' ');
@@ -727,7 +695,7 @@ bool HTMLTextSlave::fitLine( bool startOfLine,
     	if (startOfLine == false)
     	{
     	    // Text does not fit, wait for next line
-    	    return false;
+    	    return HTMLNoFit;
     	}
     	// Make it fit :]
     
@@ -766,7 +734,7 @@ bool HTMLTextSlave::fitLine( bool startOfLine,
     posLen = newLen;
     width = newWidth;
 
-    return true;
+    return HTMLPartialFit;
 }
 
 bool HTMLTextSlave::selectText( const QRegExp &exp )

@@ -182,6 +182,7 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
     bIsTextSelected = false;
     charsetConverter = 0;
     blockStack = 0;
+    memPoolMax = 0;
 
     framesetStack.setAutoDelete( false );
     framesetList.setAutoDelete( false );
@@ -569,7 +570,7 @@ void KHTMLWidget::dndMouseReleaseEvent( QMouseEvent * _mouse )
     // else
     if ( _mouse->button() != RightButton )
     {
-	printf("pressedURL='%s'\n",pressedURL.data());
+//	printf("pressedURL='%s'\n",pressedURL.data());
 	emit URLSelected( pressedURL.data(), _mouse->button(), pressedTarget.data() );
 	// required for backward compatability
 	emit URLSelected( pressedURL.data(), _mouse->button() );
@@ -1451,14 +1452,6 @@ void KHTMLWidget::blockEndFont( HTMLClueV *_clue, HTMLStackElem *Elem)
     }
 }
 
-void KHTMLWidget::blockEndPre( HTMLClueV *_clue, HTMLStackElem *Elem)
-{
-    popFont();
-    vspace_inserted = insertVSpace( _clue, vspace_inserted );
-    flow = 0;
-    inPre = false;
-}
-
 void KHTMLWidget::blockEndColorFont( HTMLClueV *_clue, HTMLStackElem *Elem)
 {
     popColor();
@@ -1553,7 +1546,6 @@ void KHTMLWidget::parse()
     formSelect = 0;
     inOption = false;
     inTextArea = false;
-    inPre = false;
     inTitle = false;
     bodyParsed = false;
 
@@ -1765,6 +1757,174 @@ bool KHTMLWidget::insertVSpace( HTMLClueV *_clue, bool _vspace_inserted )
     return true;
 }
 
+// Function insertText
+// ====
+// This function inserts text in the flow. It decides whether to use
+// HTMLText or HTMLTextMaster objects for the text.
+// 
+// HTMLText is used if the text may not be broken.
+// HTMLTextMaster is used if the text contains (breaking) spaces.
+//
+// This function converts non-breaking spaces to normal spaces since
+// non-breaking spaces aren't shown correctly for all fonts.
+//
+// The hard part is to make several objects if the text contains both
+// normal spaces and non-breaking spaces.
+void KHTMLWidget::insertText(char *str, const HTMLFont * fp)
+{
+    enum { unknown, fixed, variable} textType = unknown; 
+    	// Flag, indicating whether text may be broken
+    int i = 0;
+    char *remainingStr = 0;
+    bool insertSpace = false;
+    bool insertNBSP = false;
+    bool insertBlock = false;
+    
+    for(;;)
+    {
+        if (((unsigned char *)str)[i] == 0xa0)
+        {
+            // Non-breaking space
+            if (textType == variable)
+            {
+                // We have a non-breaking space in a block of variable text
+                // We need to split the text and insert a seperate
+                // non-breaking space object
+                str[i] = 0x00; // End of string
+                remainingStr = &(str[i+1]);
+                insertBlock = true; 
+                insertNBSP = true;
+            }
+            else
+            {
+                // We have a non-breaking space: this makes the block fixed.
+                str[i] = 0x20; // Normal space
+                textType = fixed;
+            }
+        }
+        else if (str[i] == 0x20)
+        {
+            // Normal space
+            if (textType == fixed)
+            {
+            	// We have a normal space in a block of fixed text.
+            	// We need to split the text and insert a seperate normal
+            	// space.
+            	str[i] = 0x00; // End of string
+            	remainingStr = &(str[i+1]);
+            	insertBlock = true;
+            	insertSpace = true;
+            }
+            else
+            {
+            	// We have a normal space: if this is the first character
+            	// we insert a normal space and continue
+            	if (i == 0)
+            	{
+            	    if (str[i+1] == 0x00)
+            	    {
+            	    	str++;
+            	    	remainingStr = 0;
+            	    }
+            	    else
+            	    {
+            	        str[i] = 0x00; // End of string
+            	        remainingStr = str+1;
+            	    }
+                    insertBlock = true; // Block is zero-length, no actual insertion
+            	    insertSpace = true;
+            	}
+            	else if (str[i+1] == 0x00)
+            	{
+            	    // Last character is a space: Insert the block and 
+            	    // a normal space
+            	    str[i] = 0x00; // End of string
+            	    remainingStr = 0;
+            	    insertBlock = true;
+            	    insertSpace = true;
+            	}
+            	else
+            	{
+            	    textType = variable;
+            	}
+            }
+        } 
+        else if (str[i] == 0x00)
+        {
+            // End of string
+            insertBlock = true;
+            remainingStr = 0;
+        }
+        
+        if (insertBlock)
+        {
+            if (*str)
+            {
+                if (textType == variable)
+                {
+		    if ( url || target )
+	       		flow->append( new HTMLLinkTextMaster( str, 
+	       			      fp, painter, url, target, FALSE ) );
+	            else
+		       	flow->append( new HTMLTextMaster( str, 
+		       	              fp, painter, FALSE ) );
+                }
+                else
+                {
+	            if ( url || target )
+	       	        flow->append( new HTMLLinkText( str, 
+	       	                      fp, painter, url, target, FALSE ) );
+		    else
+		        flow->append( new HTMLText( str, 
+		                      fp, painter, FALSE ) );
+		}
+            }
+            if (insertSpace)
+            {
+                if ( url || target)
+                {
+		    HTMLLinkText *sp = new HTMLLinkText( " ", fp, painter,
+			url, target );
+		    sp->setSeparator( true );
+		    flow->append( sp );
+		}
+                else
+                {
+   	            flow->append( new HTMLHSpace( fp, painter));
+   	        }
+            }
+            else if (insertNBSP)
+            {
+                if ( url || target)
+                {
+		    HTMLLinkText *sp = new HTMLLinkText( " ", fp, painter,
+			url, target );
+		    sp->setSeparator( false );
+		    flow->append( sp );
+		}
+                else
+                {
+                    HTMLHSpace *sp = new HTMLHSpace( fp, painter);
+                    sp->setSeparator(false);
+   	            flow->append( sp );
+   	        }
+            }
+            str = remainingStr;
+            if ((str == 0) || (*str == 0x00))
+               return; // Finished
+	    i = 0;
+	    textType = unknown;
+	    insertBlock = false;
+	    insertSpace = false;
+	    insertNBSP = false;
+        }
+        else
+        {
+            i++;
+        }       
+    }
+}                                         
+
 const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool toplevel )
 {
     const char *str;
@@ -1790,16 +1950,7 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		title += " ";
 	    else if ( flow != 0)
 	    {
-		if ( url || target ) {
-		    HTMLLinkText *t = new HTMLLinkText( " ", currentFont(), painter,
-			url, target );
-		    t->setSeparator( true );
-		    flow->append( t );
-		}
-		else {
-		    HTMLHSpace *t = new HTMLHSpace( currentFont(), painter );
-		    flow->append( t );
-		}
+	    	insertText( " ", currentFont());
 	    }
 	}
 	else if ( *str != TAG_ESCAPE )
@@ -1847,32 +1998,19 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		       
 			debugM("Adding string to flow...");
 			
-			
-		   	if (inPre)
-		   	{
-		   	    if ( url || target )
-	       		        flow->append( new HTMLLinkText( str1, fp,
-				            painter, url, target,TRUE ) );
-		   	    else
-		       	        flow->append( new HTMLText( str1, fp,
-				            painter,TRUE ) );
-			}
-			else
-			{	        
-			    if (*str1 == ' ')
-		   	        flow->append( new HTMLHSpace( fp, painter));
-		   	    if ( url || target )
-	       		        flow->append( new HTMLLinkTextMaster( str1, fp,
-				            painter, url, target,TRUE ) );
-		   	    else
-		       	        flow->append( new HTMLTextMaster( str1, fp,
-				            painter,TRUE ) );
+			// Add this string to our own garbage collector
+		        if ((memPoolMax % 256) == 0)
+		        {
+		            memPool.resize(memPoolMax+256);
 		        }
+		        memPool[memPoolMax++] = str1;
+
+			insertText(str1, fp);
+			
 			debugM("OK\n");
 		  }		
 		}
 		else{
-		  bool autoDelete = false;
 		  debugM("Getting current font...");
 	          const HTMLFont *fp = currentFont();
 		  debugM("OK\n");
@@ -1911,31 +2049,21 @@ const char* KHTMLWidget::parseBody( HTMLClueV *_clue, const char *_end[], bool t
 		       strcat(buffer,str+l);
 		       debugM("OK\n");
 		       str=buffer;
-		       autoDelete=TRUE;
+
+		       // Add this string to our own garbage collector
+		       if ((memPoolMax % 256) == 0)
+		       {
+		           memPool.resize(memPoolMax+256);
+		       }
+		       memPool[memPoolMax++] = buffer;
+
 		     }  
 		  }
 		
 		  debugM("Adding string to flow...");
-		  if (inPre) 
-		  {
-		      if ( url || target )
-		          flow->append( new HTMLLinkText( str, fp, painter,
-		  	       url, target,autoDelete ) );
-		      else
-		          flow->append( new HTMLText( str, fp, painter,
-		      	       autoDelete ) );
-		  }
-		  else 
-		  {
-                      if (*str == ' ')
-	                  flow->append( new HTMLHSpace( fp, painter));
-		      if ( url || target )
-		          flow->append( new HTMLLinkTextMaster( str, fp, painter,
-		  	       url, target,autoDelete ) );
-		      else
-		          flow->append( new HTMLTextMaster( str, fp, painter,
-		      	       autoDelete ) );
-		  }
+
+		  insertText((char *)str, fp); // Override constness
+
 	  	  debugM("OK\n");
 		}      
 	    }
@@ -3443,8 +3571,7 @@ void KHTMLWidget::parseP( HTMLClueV *_clue, const char *str )
 		_clue->append( flow );
 		selectFont( settings->fixedFontFace, settings->fontBaseSize,
 		    QFont::Normal, FALSE );
-		inPre = true;
-		pushBlock(ID_PRE, 2, &blockEndPre);
+		pushBlock(ID_PRE, 2, &blockEndFont, true);
 	}	
 	else if ( strncmp( str, "/pre", 4 ) == 0 )
 	{
@@ -4925,6 +5052,9 @@ KHTMLWidget::~KHTMLWidget()
 
     if ( jsEnvironment )
 	delete jsEnvironment;            
+	
+    for ( int i = memPoolMax; i--;)
+    	delete [] memPool[i];
 }
 
 bool KHTMLWidget::setCharset(const char *name){
@@ -5381,7 +5511,8 @@ void KHTMLWidget::cellContextMenu()
 
   if ( curr == 0 )
     return;
-  printf("curr->url='%s'\n",curr->pCell->getURL());
+
+//  printf("curr->url='%s'\n",curr->pCell->getURL());
   
   if ( curr->pCell->getURL() == 0 )
     return;
