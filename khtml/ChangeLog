@@ -1,5 +1,13 @@
 2004-12-29  Germain Garand  <germain@ebooksfrance.org>
 
+        merge bug fix for suboptimal updating of layer hierarchy
+
+        * rendering/render_container.cpp (appendChildNode/insertChildNode): optimize for common case
+
+        * rendering/render_object.{h,cpp} (addLayers): merge optimization
+
+2004-12-29  Germain Garand  <germain@ebooksfrance.org>
+
         memory allocation fixes
 
         * khtml_factory.cpp: cleanup the global Arena freelist after the last khtml part gets unloaded

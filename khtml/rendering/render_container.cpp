@@ -334,9 +334,12 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
 
     setLastChild(newChild);
 
-    // Keep our layer hierarchy updated.
-    RenderLayer* layer = enclosingLayer();
-    newChild->addLayers(layer, findNextLayer(layer, newChild));
+    // Keep our layer hierarchy updated.  Optimize for the common case where we don't have any children
+    // and don't have a layer attached to ourselves.
+    if (newChild->firstChild() || newChild->layer()) {
+        RenderLayer* layer = enclosingLayer();
+        newChild->addLayers(layer, newChild);
+    }
 
     newChild->setNeedsLayoutAndMinMaxRecalc(); // Goes up the containing block hierarchy.
     if (!normalChildNeedsLayout())
@@ -367,7 +370,7 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
 
     // Keep our layer hierarchy updated.
     RenderLayer* layer = enclosingLayer();
-    child->addLayers(layer, findNextLayer(layer, child));
+    child->addLayers(layer, child);
 
     child->setNeedsLayoutAndMinMaxRecalc();
     if (!normalChildNeedsLayout())

@@ -129,7 +129,7 @@ public:
 
     virtual RenderLayer* layer() const { return 0; }
     RenderLayer* enclosingLayer() const;
-    void addLayers(RenderLayer* parentLayer, RenderLayer* beforeChild=0);
+    void addLayers(RenderLayer* parentLayer, RenderObject* newObject);
     void removeLayers(RenderLayer* parentLayer);
     void moveLayers(RenderLayer* oldParent, RenderLayer* newParent);
     RenderLayer* findNextLayer(RenderLayer* parentLayer, RenderObject* startPoint,

@@ -268,18 +268,33 @@ void RenderObject::insertChildNode(RenderObject*, RenderObject*)
     KHTMLAssert(0);
 }
 
-void RenderObject::addLayers(RenderLayer* parentLayer, RenderLayer* beforeChild)
+static void addLayers(RenderObject* obj, RenderLayer* parentLayer, RenderObject*& newObject,
+                      RenderLayer*& beforeChild)
 {
-    if (!parentLayer)
-        return;
-
-    if (layer()) {
-        parentLayer->addChild(layer(), beforeChild);
+    if (obj->layer()) {
+        if (!beforeChild && newObject) {
+            // We need to figure out the layer that follows newObject.  We only do
+            // this the first time we find a child layer, and then we update the
+            // pointer values for newObject and beforeChild used by everyone else.
+            beforeChild = newObject->parent()->findNextLayer(parentLayer, newObject);
+            newObject = 0;
+        }
+        parentLayer->addChild(obj->layer(), beforeChild);
         return;
     }
 
-    for (RenderObject* curr = firstChild(); curr; curr = curr->nextSibling())
-        curr->addLayers(parentLayer, beforeChild);
+    for (RenderObject* curr = obj->firstChild(); curr; curr = curr->nextSibling())
+        addLayers(curr, parentLayer, newObject, beforeChild);
+}
+
+void RenderObject::addLayers(RenderLayer* parentLayer, RenderObject* newObject)
+{
+    if (!parentLayer)
+        return;
+    
+    RenderObject* object = newObject;
+    RenderLayer* beforeChild = 0;
+    ::addLayers(this, parentLayer, object, beforeChild);
 }
 
 void RenderObject::removeLayers(RenderLayer* parentLayer)
