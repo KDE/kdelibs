@@ -301,7 +301,7 @@ class MyClass: public QObject, virtual public MyInterface
     QRect mySynchronousMethod();
 };
 \endcode
-Note: (Qt issue) Remember that if you are inheriting from QObject, you must
+\note (Qt issue) Remember that if you are inheriting from QObject, you must
 place it first in the list of inherited classes.
 
 In the implementation of your class' ctor, you must explicitly initialize
@@ -395,37 +395,37 @@ pass important information around this way.
 \section protocol DCOP Protocol description:
 
 A DCOPSend message does not expect any reply.
-<code>
+\code
 data: << fromId << toId << objId << fun << dataSize + data[dataSize]
-</code>
+\endcode
 
 A DCOPCall message can get a DCOPReply, a DCOPReplyFailed
 or a DCOPReplyWait message in response.
-<code>
+\code
 data: << fromId << toId << objId << fun << dataSize + data[dataSize]
-</code>
+\endcode
 
 DCOPReply is the successful reply to a DCOPCall message
-<code>
+\code
 data: << fromId << toId << replyType << replyDataSize + replyData[replyDataSize]
-</code>
+\endcode
 
 DCOPReplyFailed indicates failure of a DCOPCall message
-<code>
+\code
 data: << fromId << toId
-</code>
+\endcode
 
 DCOPReplyWait indicates that a DCOPCall message is successfully
 being processed but that response will come later.
-<code>
+\code
 data: << fromId << toId << transactionId
-</code>
+\endcode
 
 DCOPReplyDelayed is the successful reply to a DCOPCall message
 after a DCOPReplyWait message.
-<code>
+\code
 data: << fromId << toId << transactionId << replyType << replyData
-</code>
+\endcode
 
 DCOPFind is a message much like a "call" message. It can however
 be send to multiple objects within a client. If a function in a
@@ -435,17 +435,81 @@ who returned "true".
 
 All c-strings (fromId, toId, objId, fun and replyType), are marshalled with
 their respective  length as 32 bit unsigned integer first:
-<code>
+\code
 data: length + string[length]
-</code>
-Note: This happens automatically when using QCString on a
-QDataStream.
+\endcode
+\note This happens automatically when using QCString on a QDataStream.
+
+
+\section dcop_signals DCOP Signals:
+
+Sometimes a component wants to send notifications via DCOP to other
+components but does not know which components will be interested in these
+notifications. One could use a broadcast in such a case but this is a very
+crude method. For a more sophisticated method DCOP signals have been invented.
+
+DCOP signals are very similair to Qt signals, there are some differences 
+though. A DCOP signal can be connected to a DCOP function. Whenever the DCOP
+signal gets emitted, the DCOP functions to which the signal is connected are
+being called. DCOP signals are, just like Qt signals, one way. They do not
+provide a return value. 
+
+A DCOP signal originates from a DCOP Object/DCOP Client combination (sender). 
+It can be connected to a function of another DCOP Object/DCOP Client 
+combination (receiver).
+
+There are two major differences between connections of Qt signals and 
+connections of DCOP signals. In DCOP, unlike Qt, a signal connections can
+have an anonymous sender and, unlike Qt, a DCOP signal connection can be
+non-volatile.
+
+With DCOP one can connect a signal without specifying the sending DCOP Object 
+or DCOP Client. In that case signals from any DCOP Object and/or DCOP Client
+will be delivered. This allows the specification of certain events without
+tying oneself to a certain object that implementes the events.
+
+Another DCOP feature are so called non-volatile connections. With Qt signal
+connections, the connection gets deleted when either sender or receiver of
+the signal gets deleted. A volatile DCOP signal connection will behave the
+same. However, a non-volatile DCOP signal connection will not get deleted 
+when the sending object gets deleted. Once a new object gets created with 
+the same name as the original sending object, the connection will be restored.
+There is no difference between the two when the receiving object gets deleted,
+in that case the signal connection will always be deleted.
+
+A receiver can create a non-volatile connection while the sender doesn't (yet)
+exist. An anonymous DCOP connection should always be non-volatile.
+
+The following example shows how KLauncher emits a signal whenever it notices
+that an application that was started via KLauncher terminates.
+
+\code
+QByteArray params;
+QDataStream stream(params, IO_WriteOnly);
+stream << pid;
+kapp->dcopClient()->emitDCOPSignal("clientDied(pid_t)", params);
+\endcode
+
+The task manager of the KDE panel connects to this signal. It uses an 
+anonymous connection (it doesn't require that the signal is being emitted
+by KLauncher) that is non-volatile:
+
+\code
+connectDCOPSignal(0, 0, "clientDied(pid_t)", "clientDied(pid_t)", false);
+\endcode
+
+It connects the clientDied(pid_t) signal to its own clientDied(pid_t) DCOP
+function. In this case the signal and the function to call have the same name.
+This isn't needed as long as the arguments of both signal and receiving function
+match. The receiving function may ignore one or more of the trailing arguments
+of the signal. E.g. it is allowed to connect the clientDied(pid_t) signal to
+a clientDied(void) DCOP function.
+
 
 \section conclusion Conclusion:
 
 Hopefully this document will get you well on your way into the world of
 inter-process communication with KDE!  Please direct all comments and/or
-suggestions to Preston Brown \<pbrown\@kde.org\>
-and Matthias Ettrich \<ettrich\@kde.org\>.
+suggestions to the KDE Core Developers List \<kde-core-devel@kde.org\>.
 
 */
