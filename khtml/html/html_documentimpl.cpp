@@ -38,6 +38,7 @@
 #include <kdebug.h>
 #include <kurl.h>
 #include <kglobal.h>
+#include <kcharsets.h>
 #include <kglobalsettings.h>
 
 #include "css/cssstyleselector.h"
@@ -325,7 +326,7 @@ void HTMLDocumentImpl::attach(KHTMLView *w)
     QFont f = KGlobalSettings::generalFont();
     f.setFamily(settings->stdFontName());
     f.setPointSize(size);
-    f.setCharSet(settings->charset());
+    KGlobal::charsets()->setQFont(f, settings->charset());
     m_style->setFont(f);
 
     m_style->setHtmlHacks(true); // enable html specific rendering tricks
@@ -386,7 +387,10 @@ void HTMLDocumentImpl::applyChanges(bool,bool force)
         QFont f = KGlobalSettings::generalFont();
         f.setFamily(settings->stdFontName());
         f.setPointSize(size);
-        f.setCharSet(settings->charset());
+	KGlobal::charsets()->setQFont(f, settings->charset());
+	//kdDebug() << "HTMLDocumentImpl::applyChanges " << f.charSet() << f.family() << endl; 
+	QFontInfo fi(f);
+	//kdDebug() << "HTMLDocumentImpl::applyChanges " << fi.charSet() << fi.family() << endl; 
         m_style->setFont(f);
     }
 

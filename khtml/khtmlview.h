@@ -167,12 +167,6 @@ protected:
      */
     void doAutoScroll();
 
-public slots:
-    /**
-     * @internal
-     */
-    void triggerResize();
-
 private:    
     bool gotoLink();
 

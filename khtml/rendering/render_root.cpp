@@ -228,8 +228,9 @@ void RenderRoot::updateHeight()
     {
 //    	kdDebug( 6040 ) << "resizing " << m_width << "," << m_height << endl;
     	m_view->resizeContents(docWidth(), docHeight());    	
+    } else {
+	m_view->repaintContents(0,0,1000000,1000000, FALSE);	//sync repaint!
     }
-    m_view->repaintContents(0,0,1000000,1000000);	//sync repaint!
 }
 
 void RenderRoot::close()
@@ -237,7 +238,6 @@ void RenderRoot::close()
     setParsing(false);
     updateSize();
     m_view->layout(true);	
-    m_view->repaintContents(0,0,1000000,1000000);
 //    printTree();
 }
 

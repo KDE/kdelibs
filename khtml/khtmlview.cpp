@@ -43,6 +43,7 @@
 #include <qprinter.h>
 #include <qpaintdevicemetrics.h>
 #include <qtimer.h>
+#include <kapp.h>
 
 #include <kimageio.h>
 #include <kdebug.h>
@@ -84,8 +85,7 @@ public:
 
 
 KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
-    : QScrollView( parent, name, WNorthWestGravity )
-//    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase)
+    : QScrollView( parent, name, WResizeNoErase | WRepaintNoErase)
 {
     m_part = part;
 
@@ -94,8 +94,8 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
     enableClipper(true);
 
     viewport()->setMouseTracking(true);
-    //viewport()->setBackgroundMode(PaletteBase);
-    viewport()->setBackgroundMode(NoBackground);
+    viewport()->setBackgroundMode(PaletteBase);
+    //viewport()->setBackgroundMode(NoBackground);
 
 
     KImageIO::registerFormats();
@@ -176,26 +176,19 @@ void KHTMLView::clear()
 
 void KHTMLView::resizeEvent ( QResizeEvent * event )
 {
+    //kdDebug() << "KHTMLView::resizeEvent" << endl; 
 
     QScrollView::resizeEvent(event);
-
-#if 0
-    if(!m_part->parentPart()) {
-           kdDebug( 0 ) << "top level resizeEvent" << endl;
-           // ### this doesn't work for some strange reason
-           d->resizeTimer.start(100, true);
-    } else
-        layout();
-#else
+    
+    int w = visibleWidth();
+    int h = visibleHeight();
+    
     layout();
-#endif
-}
 
-void KHTMLView::triggerResize()
-{
-    kdDebug(0 ) << "triggerResize" << endl;
-
-    layout(true);
+    if(visibleHeight() != h || visibleWidth() != w)
+	layout();
+    
+    KApplication::sendPostedEvents(viewport(), QEvent::Paint);
 }
 
 void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
@@ -208,41 +201,15 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
     if(!body)
         return;
 
-    //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << "wflag=" << testWFlags(WPaintClever) << endl;
+    //kdDebug( 6000 ) << "drawContents x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;
 
-    int pbHeight;
-    if(paintBuffer)
-        pbHeight = paintBuffer->height();
-    else {
+    if(!paintBuffer)
         paintBuffer = new QPixmap( visibleWidth(),PAINT_BUFFER_HEIGHT );
-        pbHeight = PAINT_BUFFER_HEIGHT;
-    }
+    if ( paintBuffer->width() < visibleWidth() )
+	paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
 
-    if(d->useSlowRepaints) {
-        //kdDebug(0) << "using slow repaints" << endl;
-        // used in case some element defines a fixed background or we have fixed positioning
-        // #### flickers terribly, but that will need some support in Qt to work.
-        ex = contentsX();
-        ey = contentsY();
-        ew = visibleWidth();
-        eh = visibleHeight();
-        int tx, ty;
-        contentsToViewport(ex, ey, tx, ty);
-        p->setClipping(false);
-        //p->setClipRect(tx, ty, ew, eh);
-        if ( paintBuffer->width() < visibleWidth() || paintBuffer->height() < visibleHeight()) {
-            pbHeight = visibleHeight();
-            paintBuffer->resize( visibleWidth(), pbHeight );
-        }
-    } else {
-        if ( paintBuffer->width() < visibleWidth() ) {
-            paintBuffer->resize(visibleWidth(),PAINT_BUFFER_HEIGHT);
-            pbHeight = PAINT_BUFFER_HEIGHT;
-        }
-    }
-
-        QTime qt;
-        qt.start();
+    //QTime qt;
+    //   qt.start();
 
     int py=0;
 
@@ -252,7 +219,7 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         tp->begin( paintBuffer );
         tp->translate(-ex,-ey-py);
 
-        int ph = eh-py < pbHeight ? eh-py : pbHeight;
+        int ph = eh-py < PAINT_BUFFER_HEIGHT ? eh-py : PAINT_BUFFER_HEIGHT;
 
         // ### fix this for frames...
 
@@ -265,12 +232,12 @@ void KHTMLView::drawContents( QPainter *p, int ex, int ey, int ew, int eh )
         //kdDebug( 6000 ) << "bitBlt x=" << ex << ",y=" << ey+py << ",sw=" << ew << ",sh=" << ph << endl;
         p->drawPixmap(ex, ey+py, *paintBuffer, 0, 0, ew, ph);
 
-        py += pbHeight;
+        py += PAINT_BUFFER_HEIGHT;
     }
 //    kdDebug(0) << "repaint time=" << qt.elapsed() << endl;
 }
 
-void KHTMLView::layout(bool force)
+void KHTMLView::layout(bool)
 {
     //### take care of frmaes (hide scrollbars,...)
 
@@ -291,28 +258,13 @@ void KHTMLView::layout(bool force)
         }
 
 
-        int w = visibleWidth();
-        _height = visibleHeight();
-
-        if (w != _width || force) {
-            //kdDebug( 6000 ) << "layouting document" << endl;
-
-            _width = w;
+	_height = visibleHeight();
+	_width = visibleWidth();
 
             //      QTime qt;
             //      qt.start();
-
             root->layout();
-
-
             //      kdDebug( 6000 ) << "TIME: layout() dt=" << qt.elapsed() << endl;
-            viewport()->repaint(false);
-            //QApplication::postEvent(viewport(), new QPaintEvent( QRegion( 0, 0, visibleWidth(), visibleHeight()), false ));
-
-        } else {
-           root->layout();
-
-        }
     } else {
         _width = visibleWidth();
     }

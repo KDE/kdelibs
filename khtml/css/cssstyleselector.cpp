@@ -1796,7 +1796,7 @@ void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::El
 	    if ( fi.family() == face )
 	    {
 		//kdDebug( 6080 ) << "=====> setting font family to " << face << endl;
-		//KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset);
+		KGlobal::charsets()->setQFont(f, e->ownerDocument()->view()->part()->settings()->charset());
 		style->setFont(f);
 		break;
 	    }
