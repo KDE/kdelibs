@@ -468,7 +468,7 @@ static void init_kdeinit_socket()
      int s;
      struct sockaddr_un server;
 
-     fprintf(stderr, "kdeinit: Warning, socket_file already exists!\n");
+//     fprintf(stderr, "kdeinit: Warning, socket_file already exists!\n");
      /*
       * create the socket stream
       */
@@ -488,7 +488,7 @@ static void init_kdeinit_socket()
         close(s);
         exit(255);
      }
-     perror("connect() failed: ");
+//     perror("connect() failed: ");
      close(s);
   }
 
