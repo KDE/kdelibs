@@ -95,11 +95,6 @@ KInstance *KCModule::instance() const
     return d->_instance;
 }
 
-void KCModule::setChanged(bool c)
-{
-    emit changed(c);
-}
-
 void KCModule::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }
 

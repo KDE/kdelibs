@@ -113,13 +113,12 @@ public:
    * Save the configuration data.
    *
    * The save method stores the config information as shown
-   * in the user interface in the config files. Don't forget to call
-   * setChanged( false ) after saving.
+   * in the user interface in the config files.
    *
    * If necessary, this method also updates the running system,
    * e.g. by restarting applications. This normally does not apply for
-   * KConfigureDialog modules where the updating is taken care of by
-   * KCDDispatcher.
+   * KSettings::Dialog modules where the updating is taken care of by
+   * KSettings::Dispatcher.
    *
    * save is called when the user clicks "Apply" or "Ok".
    */
@@ -207,10 +206,6 @@ signals:
    * This signal is emitted whenever the state of the configuration
    * shown in the module changes. It allows the control center to
    * keep track of unsaved changes.
-   *
-   * Don't emit this signal yourself use setChanged() instead.
-   *
-   * @see setChanged()
    */
   void changed(bool state);
 
@@ -261,8 +256,6 @@ protected:
    */
   void setUseRootOnlyMsg(bool on);
 
-protected slots:
-  void setChanged(bool);
 private:
 
   int _btn;
