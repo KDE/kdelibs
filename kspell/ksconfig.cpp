@@ -250,6 +250,9 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   else if (fname=="slovensko") {
     lname="sk"; hname=i18n("Slovak");
   }
+  else if (fname=="czech") {
+    lname="cs"; hname=i18n("Czech");
+  }
   else if (fname=="svenska") {
     lname="sv"; hname=i18n("Swedish");
   }
