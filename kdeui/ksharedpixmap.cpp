@@ -27,6 +27,7 @@
 #include <krootprop.h>
 #include <ksharedpixmap.h>
 #include <kdebug.h>
+#include <stdlib.h> // for abs
 
 #include <X11/Xlib.h>
 
