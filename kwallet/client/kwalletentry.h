@@ -27,12 +27,12 @@
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qpair.h>
-#include <qvaluelist.h>
+#include <qmap.h>
 
 namespace KWallet {
 
-typedef QPair<QString,QString> NVPair;
-typedef QValueList<NVPair> Key;
+typedef QPair<const QString,QString> NVPair;
+typedef QMap<QString,QString> Key;
 typedef QByteArray Value;
 
 class Entry {
@@ -48,11 +48,12 @@ class Entry {
 
 		void setValue(const Value& val);
 		void setKey(const Key& key);
-		void addKey(const NVPair& key);
+		void addKey(NVPair& key);
+		void addKey(const QString& name, const QString& value);
 
 	private:
-		class KWalletEntryPrivate;
-		KWalletEntryPrivate *d;
+		class EntryPrivate;
+		EntryPrivate *d;
 		QString _app;
 		bool _dirty;
 		Key _key;

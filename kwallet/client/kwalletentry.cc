@@ -69,8 +69,14 @@ void Entry::setKey(const Key& key) {
 }
 
 
-void Entry::addKey(const NVPair& key) {
-	_key.append(key);
+void Entry::addKey(NVPair& key) {
+	_key.insert(key);
+	_dirty = true;
 }
 
+
+void Entry::addKey(const QString& name, const QString& value) {
+	_key[name] = value;
+	_dirty = true;
+}
 
