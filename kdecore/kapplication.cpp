@@ -142,18 +142,8 @@ bool KApplication::s_dcopClientNeedsPostInit = false;
 
 static Atom atom_DesktopWindow;
 static Atom atom_NetSupported;
-#if KDE_IS_VERSION( 3, 2, 91 )
-#warning Obsolete, remove.
-// remove atom_KdeNetUserTime related stuff (l.lunak@kde.org)
-#endif
-static Atom atom_KdeNetUserTime;
-static Atom kde_net_wm_user_time     = 0;
-#if KDE_IS_VERSION( 3, 2, 91 )
-#warning This should be in Qt already, check.
-// remove things related to qt_x_user_time that should be in Qt by now (l.lunak@kde.org)
-#endif
-Time   qt_x_user_time = CurrentTime;
 extern Time qt_x_time;
+extern Time qt_x_user_time;
 static Atom kde_xdnd_drop;
 
 // duplicated from patched Qt, so that there won't be unresolved symbols if Qt gets
@@ -491,13 +481,6 @@ bool KApplication::notify(QObject *receiver, QEvent *event)
 	QWidget* w = static_cast< QWidget* >( receiver );
         if( w->isTopLevel() && !startupId().isEmpty()) // TODO better done using window group leader?
             KStartupInfo::setWindowStartupId( w->winId(), startupId());
-	if( w->isTopLevel() && qt_x_user_time != CurrentTime ) // CurrentTime means no input event yet
-            XChangeProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time, XA_CARDINAL,
-                32, PropModeReplace, (unsigned char*)&qt_x_user_time, 1 );
-    //}
-    //if( t == QEvent::Show && receiver->isWidgetType())
-    //{
-	//QWidget* w = static_cast< QWidget* >( receiver );
         if( w->isTopLevel() && !w->testWFlags( WX11BypassWM ) && !w->isPopup() && !event->spontaneous())
         {
             if( d->app_started_timer == NULL )
@@ -753,12 +736,6 @@ void KApplication::init(bool GUIenabled)
 
       atoms[n] = &atom_NetSupported;
       names[n++] = (char *) "_NET_SUPPORTED";
-
-      atoms[n] = &atom_KdeNetUserTime;
-      names[n++] = (char *) "_KDE_NET_USER_TIME";
-
-      atoms[n] = &kde_net_wm_user_time;
-      names[n++] = (char *) "_NET_WM_USER_TIME";
 
       atoms[n] = &kde_xdnd_drop;
       names[n++] = (char *) "XdndDrop";
@@ -1580,29 +1557,9 @@ void KApplication::dcopBlockUserInput( bool b )
 bool KApplication::x11EventFilter( XEvent *_event )
 {
     switch ( _event->type ) {
-        case ButtonPress:
-        case XKeyPress:
-        {
-	    if( _event->type == ButtonPress )
-		qt_x_user_time = _event->xbutton.time;
-	    else // KeyPress
-		qt_x_user_time = _event->xkey.time;
-	    QWidget* w = activeWindow();
-	    if( w ) {
-    		XChangeProperty( qt_xdisplay(), w->winId(), kde_net_wm_user_time, XA_CARDINAL,
-        	    32, PropModeReplace, (unsigned char*)&qt_x_user_time, 1 );
-    		timeval tv;
-		gettimeofday( &tv, NULL );
-		unsigned long now = tv.tv_sec * 10 + tv.tv_usec / 100000;
-		XChangeProperty(qt_xdisplay(), w->winId(),
-			    atom_KdeNetUserTime, XA_CARDINAL,
-			    32, PropModeReplace, (unsigned char *)&now, 1);
-	    }
-	}
-	break;
         case ClientMessage:
         {
-#if KDE_IS_VERSION( 3, 2, 91 )
+#if KDE_IS_VERSION( 3, 3, 91 )
 #warning This should be already in Qt, check.
 #endif
         // Workaround for focus stealing prevention not working when dragging e.g. text from KWrite
