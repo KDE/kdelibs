@@ -2670,14 +2670,27 @@ bool KApplication::authorizeKAction(const char *action)
    return authorize(action_prefix + action);
 }
 
-bool KApplication::authorizeControlModule(const QString &/*menuId*/)
+bool KApplication::authorizeControlModule(const QString &menuId)
 {
-   return true;
+   if (menuId.isEmpty())
+      return true;
+   KConfig *config = KGlobal::config();
+   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
+   return config->readBoolEntry(menuId, true);
 }
 
 QStringList KApplication::authorizeControlModules(const QStringList &menuIds)
 {
-   return menuIds;
+   KConfig *config = KGlobal::config();
+   KConfigGroupSaver saver( config, "KDE Control Module Restrictions" );
+   QStringList result;
+   for(QStringList::ConstIterator it = menuIds.begin();
+       it != menuIds.end(); ++it)
+   {
+      if (config->readBoolEntry(*it, true))
+         result.append(*it);
+   }
+   return result;
 }
 
 void KApplication::initUrlActionRestrictions()
