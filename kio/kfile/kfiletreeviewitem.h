@@ -21,7 +21,7 @@
 #define kfile_tree_view_item_h
 
 #include <qptrlist.h>
-#include <qlistview.h>
+#include <klistview.h>
 
 #include <kfileitem.h>
 #include <kio/global.h>
@@ -35,7 +35,7 @@ class KFileTreeItem;
 
 
 
-class KFileTreeViewItem : public QListViewItem
+class KFileTreeViewItem : public KListViewItem
 {
 public:
    KFileTreeViewItem( KFileTreeViewItem*, KFileItem*, KFileTreeBranch * );

@@ -29,7 +29,7 @@
 KFileTreeViewItem::KFileTreeViewItem( KFileTreeViewItem *parent,
 				      KFileItem* item,
 				      KFileTreeBranch *brnch )
-   : QListViewItem( parent ),
+   : KListViewItem( parent ),
      m_kfileitem( item ),
      m_branch( brnch )
 {
@@ -41,7 +41,7 @@ KFileTreeViewItem::KFileTreeViewItem( KFileTreeViewItem *parent,
 KFileTreeViewItem::KFileTreeViewItem( KFileTreeView* parent,
 				      KFileItem* item,
 				      KFileTreeBranch *brnch )
-   :QListViewItem( (QListView*)parent ),
+   :KListViewItem( (QListView*)parent ),
     m_kfileitem(item ),
     m_branch( brnch )
 {
