@@ -59,12 +59,14 @@ using namespace KIO;
 DataSlave::DataSlave() :
 	Slave(true, 0, "data", QString::null)
 {
+  //kdDebug() << this << k_funcinfo << endl;
   _suspended = false;
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), SLOT(dispatchNext()));
 }
 
 DataSlave::~DataSlave() {
+  //kdDebug() << this << k_funcinfo << endl;
 }
 
 void DataSlave::hold(const KURL &/*url*/) {
@@ -84,6 +86,14 @@ void DataSlave::resume() {
   // implementation slow as molasses. But it wouldn't work otherwise,
   // and I don't want to start messing around with threads
   timer->start(KIO_DATA_POLL_INTERVAL);
+}
+
+// finished is a special case. If we emit it right away, then
+// TransferJob::start can delete the job even before the end of the method
+void DataSlave::dispatch_finished() {
+    QueueStruct q(Queue_finished);
+    dispatchQueue.push_back(q);
+    if (!timer->isActive()) timer->start(KIO_DATA_POLL_INTERVAL);
 }
 
 void DataSlave::dispatchNext() {
@@ -196,7 +206,6 @@ DISPATCH_IMPL1(mimeType, const QString &, s)
 DISPATCH_IMPL1(totalSize, KIO::filesize_t, size)
 DISPATCH_IMPL(sendMetaData)
 DISPATCH_IMPL1(data, const QByteArray &, ba)
-DISPATCH_IMPL(finished)
 
 #undef DISPATCH_IMPL
 #undef DISPATCH_IMPL1

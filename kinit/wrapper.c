@@ -538,7 +538,7 @@ int main(int argc, char **argv)
    }
    else 
    {
-      fprintf(stderr, "Unexected response from KInit (response = %ld).\n", header.cmd);
+      fprintf(stderr, "Unexpected response from KInit (response = %ld).\n", header.cmd);
       exit(255);
    }
    exit(0);
