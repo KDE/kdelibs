@@ -27,6 +27,8 @@
  */
 
 #include <qstyleplugin.h>
+#include <qstylefactory.h>
+#include <qcommonstyle.h>
 #include <qpointarray.h>
 #include <qpainter.h>
 #include <qtabbar.h>
@@ -155,8 +157,14 @@ KPixmap* GradientSet::gradient(GradientType type)
 
 // ---------------------------------------------------------------------------
 
-HighColorStyle::HighColorStyle() : QWindowsStyle()
+HighColorStyle::HighColorStyle() : QCommonStyle()
 {
+	winstyle = QStyleFactory::create("Windows");
+	if(!winstyle) {
+		// We don't have the Windows style, neither builtin nor as a plugin.
+		// Use any style rather than crashing.
+		winstyle = QStyleFactory::create(*(QStyleFactory::keys().begin()));
+	}
 	highcolor = QPixmap::defaultDepth() > 8;
 	gDict.setAutoDelete(true);
 }
@@ -169,7 +177,7 @@ HighColorStyle::~HighColorStyle()
 
 void HighColorStyle::polish(QWidget* widget)
 {
-	QWindowsStyle::polish(widget);
+	winstyle->polish(widget);
 
 	if (widget->inherits("QMenuBar")) {
 		widget->setBackgroundMode(QWidget::NoBackground);
@@ -184,7 +192,7 @@ void HighColorStyle::unPolish(QWidget* widget)
 		widget->setBackgroundMode(QWidget::PaletteBackground);
 	} 
 
-	QWindowsStyle::unPolish(widget);
+	winstyle->unPolish(widget);
 }
 
 
@@ -695,7 +703,7 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				p->restore();
 
 			} else
-		        QWindowsStyle::drawPrimitive( pe, p, r, cg, flags, opt );
+		        winstyle->drawPrimitive( pe, p, r, cg, flags, opt );
 		}
 	}
 }
@@ -718,7 +726,7 @@ void HighColorStyle::drawControl( ControlElement element,
 
 			// ### Only rounded "above" tabs are implemented thus far
 			if (tb->shape() != QTabBar::RoundedAbove) {
-				QWindowsStyle::drawControl(element, p, widget, r, cg, flags, opt);
+				winstyle->drawControl(element, p, widget, r, cg, flags, opt);
 				return;
 			}
 
@@ -795,7 +803,7 @@ void HighColorStyle::drawControl( ControlElement element,
 		} */
 
 		default:
-			QWindowsStyle::drawControl(element, p, widget, r, cg, flags, opt);
+			winstyle->drawControl(element, p, widget, r, cg, flags, opt);
 	}
 }
 
@@ -1047,7 +1055,7 @@ void HighColorStyle::drawComplexControl( ComplexControl control,
 		} */
 
 		default: 
-			QWindowsStyle::drawComplexControl(control, p, widget, 
+			winstyle->drawComplexControl(control, p, widget, 
 							r, cg, flags, controls, active, opt);
 			break;
 	}
@@ -1081,7 +1089,7 @@ QRect HighColorStyle::subRect(SubRect r, const QWidget *widget) const
         }
 
 		default:
-			return QWindowsStyle::subRect(r, widget);
+			return winstyle->subRect(r, widget);
 	}
 }
 
@@ -1144,7 +1152,7 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 1;
 
 		default:
-			return QWindowsStyle::pixelMetric(m, widget);
+			return winstyle->pixelMetric(m, widget);
 	}
 }
 
@@ -1155,7 +1163,7 @@ QStyle::SubControl HighColorStyle::querySubControl( ComplexControl control,
                                                     const QStyleOption& opt ) const
 {
     QStyle::SubControl ret =
-        QWindowsStyle::querySubControl(control, widget, pos, opt);
+        winstyle->querySubControl(control, widget, pos, opt);
 
 	// Enable third button
     if (control == CC_ScrollBar &&
@@ -1252,7 +1260,7 @@ QRect HighColorStyle::querySubControlMetrics( ComplexControl control,
         }
 
 		default:
-			ret = QWindowsStyle::querySubControlMetrics(control, widget, sc, opt);
+			ret = winstyle->querySubControlMetrics(control, widget, sc, opt);
 
 			break;
 	}
@@ -1273,7 +1281,7 @@ QPixmap HighColorStyle::stylePixmap(StylePixmap stylepixmap,
     default:
 		break;
     }
-	return QWindowsStyle::stylePixmap(stylepixmap, widget, opt);
+	return winstyle->stylePixmap(stylepixmap, widget, opt);
 }
 
 
@@ -1286,7 +1294,7 @@ int HighColorStyle::styleHint( StyleHint sh, const QWidget *w, QStyleHintReturn 
 			return 0;
 			
 		default:
-			return QWindowsStyle::styleHint(sh, w, shr);
+			return winstyle->styleHint(sh, w, shr);
 	}
 }
 

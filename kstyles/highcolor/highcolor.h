@@ -29,7 +29,8 @@
 #ifndef __HIGHCOLOR_H
 #define __HIGHCOLOR_H
 
-#include <qwindowsstyle.h>
+#include <qstyle.h>
+#include <qcommonstyle.h>
 #include <qbitmap.h>
 #include <kdrawutil.h>
 #include <kpixmap.h>
@@ -52,7 +53,7 @@ class GradientSet
 };
 
 
-class HighColorStyle : public QWindowsStyle
+class HighColorStyle : public QCommonStyle
 {
 	Q_OBJECT
 
@@ -113,6 +114,19 @@ class HighColorStyle : public QWindowsStyle
 					const QWidget *w = 0,
 					QStyleHintReturn* shr = 0 ) const;
 
+		// Pass virtual functions on to QWindowsStyle, since we can't inherit
+		// it directly (might be a plugin)
+		void polishPopupMenu(QPopupMenu *m)
+				{ winstyle->polishPopupMenu(m); }
+
+		void drawControlMask(QStyle::ControlElement e, QPainter *p, const QWidget *w, const QRect &r, const QStyleOption &o=QStyleOption::Default) const
+				{ winstyle->drawControlMask(e, p, w, r, o); }
+
+		void drawComplexControlMask(QStyle::ComplexControl c, QPainter *p, const QWidget *w, const QRect &r, const QStyleOption &o=QStyleOption::Default) const
+				{ winstyle->drawComplexControlMask(c, p, w, r, o); }
+
+		QSize sizeFromContents(QStyle::ContentsType t, const QWidget *w, const QSize &s, const QStyleOption &o) const
+				{ return winstyle->sizeFromContents(t, w, s, o); }
 	protected:
 		void renderGradient( QPainter* p, 
 					const QRect& r, 
@@ -129,6 +143,7 @@ class HighColorStyle : public QWindowsStyle
 		// Disable copy constructor and = operator
 		HighColorStyle( const HighColorStyle & );
 		HighColorStyle& operator=( const HighColorStyle & );
+		QStyle *winstyle;
 };
 
 // vim: set noet ts=4 sw=4:
