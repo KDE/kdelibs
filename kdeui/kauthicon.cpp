@@ -97,23 +97,17 @@ KAuthIcon::KAuthIcon(QWidget *parent, const char *name)
   else
     lockLabel->setText(openLockText);
   lockLabel->setAlignment(AlignCenter);
-  lockLabel->setFixedSize(lockLabel->sizeHint());
+  lockLabel->setMinimumSize(lockLabel->sizeHint());
   lockLabel->setText(lockText);
 
-  topLayout = new QGridLayout(this, 3, 5);
+  layout = new QHBoxLayout(this);
 
-  topLayout->setRowStretch(0, 1);
-  topLayout->setRowStretch(2, 1);
+  layout->addWidget(lockBox, 0, AlignLeft|AlignVCenter);
+  layout->addSpacing(5);
+  layout->addWidget(lockLabel, 0, AlignRight|AlignVCenter);
 
-  topLayout->setColStretch(0, 1);
-  topLayout->addColSpacing(2, 5);
-  topLayout->setColStretch(4, 1);
-
-  topLayout->addWidget(lockBox, 1, 1, AlignLeft|AlignVCenter);
-  topLayout->addWidget(lockLabel, 1, 3, AlignRight|AlignVCenter);
-
+  layout->activate();
   resize(sizeHint());
-  topLayout->activate();
 }
 
 KAuthIcon::~KAuthIcon()
@@ -123,7 +117,7 @@ KAuthIcon::~KAuthIcon()
 
 QSize KAuthIcon::sizeHint() const
 {
-  return topLayout->minimumSize();
+  return layout->minimumSize();
 }
 
 

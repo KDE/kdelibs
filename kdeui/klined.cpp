@@ -31,6 +31,20 @@
 #undef KeyPress
 #endif
 
+KLineEdit::KLineEdit(const QString &string, QWidget *parent, const char *name)
+  : QLineEdit(string, parent, name)
+{
+  pop = new QPopupMenu( this );
+  pmid[0] = pop->insertItem( "Cut", this, SLOT(doCut()) );
+  pmid[1] = pop->insertItem( "Copy", this, SLOT(doCopy()) );
+  pmid[2] = pop->insertItem( "Paste", this, SLOT(doPaste()) );
+  pmid[3] = pop->insertItem( "Clear", this, SLOT(doClear()) );
+  pop->insertSeparator();
+  pmid[4] = pop->insertItem( "Select All", this, SLOT(doSelect()) );
+  
+  installEventFilter (this);
+}
+
 KLineEdit::KLineEdit (QWidget *parent, const char *name)
   : QLineEdit (parent, name)
 {

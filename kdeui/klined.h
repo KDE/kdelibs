@@ -44,6 +44,7 @@ class KLineEdit : public QLineEdit
   Q_OBJECT
         
 public:
+  KLineEdit (const QString &string, QWidget *parent, const char *name = 0);
   KLineEdit ( QWidget *parent=0, const char *name=0 );
   ~KLineEdit ();
 

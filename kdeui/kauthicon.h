@@ -14,7 +14,7 @@
 #include <qfileinfo.h>
 
 class QPixmap;
-class QGridLayout;
+class QHBoxLayout;
 
 /**
  * This is the base class from which different authorization icon widget
@@ -41,13 +41,17 @@ public:
   ~KAuthIcon();
 
   virtual QSize sizeHint() const;
+  /**
+   * return the status of whatever is being monitored.
+   */
+  virtual bool status() const = 0;
 
 public slots:
   /**
    * Re-implement this method if you want the icon to update itself
    * when something external has changed (i.e. a file on disk, uid/gid).
    */
-  virtual void updateStatus() {}
+  virtual void updateStatus() = 0;
 
 signals:
   /**
@@ -59,7 +63,7 @@ signals:
   void authChanged(bool authorized);
 
 protected:
-  QGridLayout *topLayout;
+  QHBoxLayout *layout;
 
   QLabel *lockBox, *lockLabel;
   QPixmap lockPM, openLockPM;
@@ -79,7 +83,11 @@ class KRootPermsIcon : public KAuthIcon
 public:
   KRootPermsIcon(QWidget *parent = 0, const char *name = 0);
   ~KRootPermsIcon();
-  bool isRoot() const { return root; }
+
+  /**
+   * return whether or not the current user has root permissions.
+   */
+  bool status() const { return root; }
 
 public slots:
   void updateStatus();
@@ -102,7 +110,10 @@ class KWritePermsIcon : public KAuthIcon
 public:
   KWritePermsIcon(QString fileName, QWidget *parent = 0, const char *name = 0);
   ~KWritePermsIcon();
-  bool canWrite() const { return writable; }
+  /**
+   * @return whether or not the monitored file is writable.
+   */
+  bool status() const { return writable; }
 
   /**
    * make the icon watch a new filename.
