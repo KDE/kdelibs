@@ -1,7 +1,14 @@
+2003-10-26  Harri Porten  <porten@kde.org>
+
+	* added Apple's Identifier::toArrayIndex() and use it in
+	ArrayInstanceImp instead of our range validity checks
+
+	* do without ArgumentsNode::reverseList()
+
 2003-10-20  Harri Porten  <harri@froglogic.com>
 
-	* number_object.cpp: rewrote Number.toString(radix) to work with negative
-	numbers, floating point and very large numbers.
+	* number_object.cpp: rewrote Number.toString(radix) to work with
+	negative numbers, floating point and very large numbers.
 
 2003-10-19  Harri Porten  <porten@froglogic.com>
 

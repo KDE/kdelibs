@@ -240,7 +240,7 @@ CallExpr:
 ;
 
 Arguments:
-    '(' ')'                        { $$ = new ArgumentsNode(0L); }
+    '(' ')'                        { $$ = new ArgumentsNode(); }
   | '(' ArgumentList ')'           { $$ = new ArgumentsNode($2); }
 ;
 

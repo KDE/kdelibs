@@ -50,7 +50,7 @@ namespace KJS {
    */
   struct UChar {
     /**
-     * Construct a character with uninitialized value.    
+     * Construct a character with uninitialized value.
      */
     UChar();
     UChar(char u);
@@ -376,7 +376,17 @@ namespace KJS {
      * Attempts an conversion to an unsigned long integer. ok will be set
      * according to the success.
      */
-    unsigned long toULong(bool *ok = 0L) const;
+    unsigned long toULong(bool *ok = 0) const;
+
+    unsigned int toStrictUInt32(bool *ok = 0) const;
+
+    /**
+     * Attempts an conversion to an array index. The "ok" boolean will be set
+     * to true if it is a valid array index according to the rule from
+     * ECMA 15.2 about what an array index is. It must exactly match the string
+     * form of an unsigned integer, and be less than 2^32 - 1.
+     */
+    unsigned toArrayIndex(bool *ok = 0) const;
 
     /**
      * Returns this string converted to lower case characters

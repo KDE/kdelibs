@@ -198,24 +198,24 @@ unsigned UString::Rep::computeHash(const UChar *s, int length)
 
     unsigned h = PHI;
     h += length;
-    h += (h << 10); 
-    h ^= (h << 6); 
+    h += (h << 10);
+    h ^= (h << 6);
 
     for (int i = 0; i < prefixLength; i++) {
-        h += s[i].uc; 
-	h += (h << 10); 
-	h ^= (h << 6); 
+        h += s[i].uc;
+	h += (h << 10);
+	h ^= (h << 6);
     }
     for (int i = suffixPosition; i < length; i++){
-        h += s[i].uc; 
-	h += (h << 10); 
-	h ^= (h << 6); 
+        h += s[i].uc;
+	h += (h << 10);
+	h ^= (h << 6);
     }
 
     h += (h << 3);
     h ^= (h >> 11);
     h += (h << 15);
- 
+
     if (h == 0)
         h = 0x80000000;
 
@@ -233,18 +233,18 @@ unsigned UString::Rep::computeHash(const char *s)
 
     unsigned h = PHI;
     h += length;
-    h += (h << 10); 
-    h ^= (h << 6); 
+    h += (h << 10);
+    h ^= (h << 6);
 
     for (int i = 0; i < prefixLength; i++) {
         h += (unsigned char)s[i];
-	h += (h << 10); 
-	h ^= (h << 6); 
+	h += (h << 10);
+	h ^= (h << 6);
     }
     for (int i = suffixPosition; i < length; i++) {
         h += (unsigned char)s[i];
-	h += (h << 10); 
-	h ^= (h << 6); 
+	h += (h << 10);
+	h ^= (h << 6);
     }
 
     h += (h << 3);
@@ -385,12 +385,12 @@ UString UString::from(double d)
 
   char *result = kjs_dtoa(d, 0, 0, &decimalPoint, &sign, NULL);
   int length = strlen(result);
-  
+
   int i = 0;
   if (sign) {
     buf[i++] = '-';
   }
-  
+
   if (decimalPoint <= 0 && decimalPoint > -6) {
     buf[i++] = '0';
     buf[i++] = '.';
@@ -421,7 +421,7 @@ UString UString::from(double d)
       strcpy(buf + i, result + 1);
       i += length - 1;
     }
-    
+
     buf[i++] = 'e';
     buf[i++] = (decimalPoint >= 0) ? '+' : '-';
     // decimalPoint can't be more than 3 digits decimal given the
@@ -439,7 +439,7 @@ UString UString::from(double d)
     buf[i++] = '0' + exponential % 10;
     buf[i++] = '\0';
   }
-  
+
   kjs_freedtoa(result);
 
   return UString(buf);
@@ -686,6 +686,66 @@ UString UString::toUpper() const
   for (int i = 0; i < size(); i++)
     u[i] = u[i].toUpper();
   return u;
+}
+
+unsigned int UString::toStrictUInt32(bool *ok) const
+{
+  if (ok)
+    *ok = false;
+
+  // Empty string is not OK.
+  int len = rep->len;
+  if (len == 0)
+    return 0;
+  const UChar *p = rep->dat;
+  unsigned short c = p->unicode();
+
+  // If the first digit is 0, only 0 itself is OK.
+  if (c == '0') {
+    if (len == 1 && ok)
+      *ok = true;
+    return 0;
+  }
+
+  // Convert to UInt32, checking for overflow.
+  unsigned int i = 0;
+  while (1) {
+    // Process character, turning it into a digit.
+    if (c < '0' || c > '9')
+      return 0;
+    const unsigned d = c - '0';
+
+    // Multiply by 10, checking for overflow out of 32 bits.
+    if (i > 0xFFFFFFFFU / 10)
+      return 0;
+    i *= 10;
+
+    // Add in the digit, checking for overflow out of 32 bits.
+    const unsigned max = 0xFFFFFFFFU - d;
+    if (i > max)
+        return 0;
+    i += d;
+
+    // Handle end of string.
+    if (--len == 0) {
+      if (ok)
+        *ok = true;
+      return i;
+    }
+
+    // Get next character.
+    c = (++p)->unicode();
+  }
+}
+
+// Rule from ECMA 15.2 about what an array index is.
+// Must exactly match string form of an unsigned integer, and be less than 2^32 - 1.
+unsigned UString::toArrayIndex(bool *ok) const
+{
+  unsigned i = toStrictUInt32(ok);
+  if (i >= 0xFFFFFFFFU && ok)
+    *ok = false;
+  return i;
 }
 
 int UString::find(const UString &f, int pos) const

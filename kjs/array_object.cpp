@@ -79,11 +79,14 @@ Value ArrayInstanceImp::get(ExecState *exec, const Identifier &propertyName) con
     return Number(length);
 
   bool ok;
-  unsigned index = propertyName.toULong(&ok);
-  if (ok && index <= MAX_INDEX && UString::from(index) == propertyName.ustring() &&
-      index < length && index < storageLength) {
-    ValueImp *v = storage[index];
-    return v ? Value(v) : Undefined();
+  unsigned index = propertyName.toArrayIndex(&ok);
+  if (ok) {
+    if (index >= length)
+      return Undefined();
+    if (index < storageLength) {
+      ValueImp *v = storage[index];
+      return v ? Value(v) : Undefined();
+    }
   }
 
   return ObjectImp::get(exec, propertyName);
@@ -99,7 +102,7 @@ Value ArrayInstanceImp::get(ExecState *exec, unsigned index) const
     ValueImp *v = storage[index];
     return v ? Value(v) : Undefined();
   }
-  
+
   return ObjectImp::get(exec, Identifier::from(index));
 }
 
@@ -116,14 +119,14 @@ void ArrayInstanceImp::put(ExecState *exec, const Identifier &propertyName, cons
     setLength(newLen, exec);
     return;
   }
-  
+
   bool ok;
-  unsigned index = propertyName.toULong(&ok);
-  if (ok && index <= MAX_INDEX && UString::from(index) == propertyName.ustring()) {
+  unsigned index = propertyName.toArrayIndex(&ok);
+  if (ok) {
     put(exec, index, value, attr);
     return;
   }
-  
+
   ObjectImp::put(exec, propertyName, value, attr);
 }
 
@@ -141,7 +144,7 @@ void ArrayInstanceImp::put(ExecState *exec, unsigned index, const Value &value, 
     storage[index] = value.imp();
     return;
   }
-  
+
   assert(index >= sparseArrayCutoff);
   ObjectImp::put(exec, Identifier::from(index), value, attr);
 }
@@ -150,10 +153,10 @@ bool ArrayInstanceImp::hasProperty(ExecState *exec, const Identifier &propertyNa
 {
   if (propertyName == lengthPropertyName)
     return true;
-  
+
   bool ok;
-  unsigned index = propertyName.toULong(&ok);
-  if (ok && index <= MAX_INDEX && UString::from(index) == propertyName.ustring()) {
+  unsigned index = propertyName.toArrayIndex(&ok);
+  if (ok) {
     if (index >= length)
       return false;
     if (index < storageLength) {
@@ -161,7 +164,7 @@ bool ArrayInstanceImp::hasProperty(ExecState *exec, const Identifier &propertyNa
       return v && v != UndefinedImp::staticUndefined;
     }
   }
-  
+
   return ObjectImp::hasProperty(exec, propertyName);
 }
 
@@ -175,7 +178,7 @@ bool ArrayInstanceImp::hasProperty(ExecState *exec, unsigned index) const
     ValueImp *v = storage[index];
     return v && v != UndefinedImp::staticUndefined;
   }
-  
+
   return ObjectImp::hasProperty(exec, Identifier::from(index));
 }
 
@@ -183,10 +186,10 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
 {
   if (propertyName == lengthPropertyName)
     return false;
-  
+
   bool ok;
-  unsigned index = propertyName.toULong(&ok);
-  if (ok && index <= MAX_INDEX && UString::from(index) == propertyName.ustring()) {
+  unsigned index = propertyName.toArrayIndex(&ok);
+  if (ok) {
     if (index >= length)
       return true;
     if (index < storageLength) {
@@ -194,7 +197,7 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, const Identifier &propert
       return true;
     }
   }
-  
+
   return ObjectImp::deleteProperty(exec, propertyName);
 }
 
@@ -208,7 +211,7 @@ bool ArrayInstanceImp::deleteProperty(ExecState *exec, unsigned index)
     storage[index] = 0;
     return true;
   }
-  
+
   return ObjectImp::deleteProperty(exec, Identifier::from(index));
 }
 
@@ -258,19 +261,20 @@ void ArrayInstanceImp::setLength(unsigned newLength, ExecState *exec)
 
   if (newLength < length) {
     ReferenceList sparseProperties;
-    
+
     _prop.addSparseArrayPropertiesToReferenceList(sparseProperties, Object(this));
-    
+
     ReferenceListIterator it = sparseProperties.begin();
     while (it != sparseProperties.end()) {
       Reference ref = it++;
       bool ok;
-      if (ref.getPropertyName(exec).toULong(&ok) > newLength) {
+      unsigned index = ref.getPropertyName(exec).toArrayIndex(&ok);
+      if (ok && index > newLength) {
 	ref.deleteValue(exec);
       }
     }
   }
-  
+
   length = newLength;
 }
 
@@ -296,7 +300,7 @@ static int compareByStringForQSort(const void *a, const void *b)
 void ArrayInstanceImp::sort(ExecState *exec)
 {
     int lengthNotIncludingUndefined = pushUndefinedObjectsToEnd(exec);
-    
+
     execForCompareByStringForQSort = exec;
     qsort(storage, lengthNotIncludingUndefined, sizeof(ValueImp *), compareByStringForQSort);
     execForCompareByStringForQSort = 0;
@@ -323,7 +327,7 @@ static CompareWithCompareFunctionArguments *compareWithCompareFunctionArguments;
 static int compareWithCompareFunctionForQSort(const void *a, const void *b)
 {
     CompareWithCompareFunctionArguments *args = compareWithCompareFunctionArguments;
-    
+
     args->arguments.clear();
     args->arguments.append(*(ValueImp **)a);
     args->arguments.append(*(ValueImp **)b);
@@ -342,7 +346,7 @@ static int compareWithCompareFunctionForQSort(const void *a, const void *b)
 void ArrayInstanceImp::sort(ExecState *exec, Object &compareFunction)
 {
     int lengthNotIncludingUndefined = pushUndefinedObjectsToEnd(exec);
-    
+
     CompareWithCompareFunctionArguments args(exec, compareFunction.imp());
     compareWithCompareFunctionArguments = &args;
     qsort(storage, lengthNotIncludingUndefined, sizeof(ValueImp *), compareWithCompareFunctionForQSort);
@@ -354,7 +358,7 @@ unsigned ArrayInstanceImp::pushUndefinedObjectsToEnd(ExecState *exec)
     ValueImp *undefined = UndefinedImp::staticUndefined;
 
     unsigned o = 0;
-    
+
     for (unsigned i = 0; i != storageLength; ++i) {
         ValueImp *v = storage[i];
         if (v && v != undefined) {
@@ -363,14 +367,14 @@ unsigned ArrayInstanceImp::pushUndefinedObjectsToEnd(ExecState *exec)
             o++;
         }
     }
-    
+
     ReferenceList sparseProperties;
     _prop.addSparseArrayPropertiesToReferenceList(sparseProperties, Object(this));
     unsigned newLength = o + sparseProperties.length();
 
     if (newLength > storageLength) {
       resizeStorage(newLength);
-    } 
+    }
 
     ReferenceListIterator it = sparseProperties.begin();
     while (it != sparseProperties.end()) {
@@ -379,10 +383,10 @@ unsigned ArrayInstanceImp::pushUndefinedObjectsToEnd(ExecState *exec)
       ObjectImp::deleteProperty(exec, ref.getPropertyName(exec));
       o++;
     }
-    
+
     if (newLength != storageLength)
         memset(storage + o, 0, sizeof(ValueImp *) * (storageLength - o));
-    
+
     return o;
 }
 
@@ -410,7 +414,7 @@ const ClassInfo ArrayPrototypeImp::info = {"Array", &ArrayInstanceImp::info, &ar
 // ECMA 15.4.4
 ArrayPrototypeImp::ArrayPrototypeImp(ExecState */*exec*/,
                                      ObjectPrototypeImp *objProto)
-  : ArrayInstanceImp(objProto,0)
+  : ArrayInstanceImp(objProto, 0)
 {
   Value protect(this);
   setInternalValue(Null());
@@ -789,7 +793,8 @@ bool ArrayObjectImp::implementsConstruct() const
 
 // ECMA 15.4.2
 Object ArrayObjectImp::construct(ExecState *exec, const List &args)
-{  // a single numeric argument denotes the array size (!)
+{
+  // a single numeric argument denotes the array size (!)
   if (args.size() == 1 && args[0].type() == NumberType)
     return Object(new ArrayInstanceImp(exec->interpreter()->builtinArrayPrototype().imp(), args[0].toUInt32(exec)));
 

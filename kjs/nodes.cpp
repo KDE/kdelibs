@@ -655,15 +655,6 @@ Reference AccessorNode2::evaluateReference(ExecState *exec) const
 
 // ----------------------------- ArgumentListNode -----------------------------
 
-ArgumentListNode::ArgumentListNode(Node *e) : list(0L), expr(e)
-{
-}
-
-ArgumentListNode::ArgumentListNode(ArgumentListNode *l, Node *e)
-  : list(l), expr(e)
-{
-}
-
 void ArgumentListNode::ref()
 {
   for (ArgumentListNode *n = this; n; n = n->list) {
@@ -707,18 +698,6 @@ List ArgumentListNode::evaluateList(ExecState *exec) const
 }
 
 // ----------------------------- ArgumentsNode --------------------------------
-
-void ArgumentsNode::reverseList()
-{
-  ArgumentListNode *head = 0;
-  ArgumentListNode *next;
-  for (ArgumentListNode *n = list; n; n = next) {
-    next = n->list;
-    n->list = head;
-    head = n;
-  }
-  list = head;
-}
 
 void ArgumentsNode::ref()
 {

@@ -342,8 +342,9 @@ namespace KJS {
 
   class ArgumentListNode : public Node {
   public:
-    ArgumentListNode(Node *e);
-    ArgumentListNode(ArgumentListNode *l, Node *e);
+    ArgumentListNode(Node *e) : list(this), expr(e) {}
+    ArgumentListNode(ArgumentListNode *l, Node *e)
+      : list(l->list), expr(e) { l->list = this; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -357,7 +358,8 @@ namespace KJS {
 
   class ArgumentsNode : public Node {
   public:
-    ArgumentsNode(ArgumentListNode *l) : list(l) { reverseList(); }
+    ArgumentsNode() : list(0) {}
+    ArgumentsNode(ArgumentListNode *l) : list(l->list) { l->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;

@@ -49,6 +49,8 @@ namespace KJS {
         bool isEmpty() const { return _ustring.isEmpty(); }
 
         unsigned long toULong(bool *ok) const { return _ustring.toULong(ok); }
+        unsigned toStrictUInt32(bool *ok) const { return _ustring.toStrictUInt32(ok); }
+        unsigned toArrayIndex(bool *ok) const { return _ustring.toArrayIndex(ok); }
 
         double toDouble() const { return _ustring.toDouble(); }
 

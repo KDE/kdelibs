@@ -1665,7 +1665,7 @@ case 39:
     break;}
 case 40:
 #line 243 "grammar.y"
-{ yyval.args = new ArgumentsNode(0L); ;
+{ yyval.args = new ArgumentsNode(); ;
     break;}
 case 41:
 #line 244 "grammar.y"
