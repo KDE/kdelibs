@@ -35,6 +35,7 @@
 #include <ktempfile.h>
 #include <klocale.h>
 #include <qfile.h>
+#include <qstrlist.h>
 #include "file.h"
 #include <limits.h>
 
@@ -579,9 +580,8 @@ void FileProtocol::del( const KURL& url, bool isfile)
     finished();
 }
 
-void FileProtocol::createUDSEntry( const QString & filename, const QString & path, UDSEntry & entry  )
+bool FileProtocol::createUDSEntry( const QString & filename, const QCString & path, UDSEntry & entry  )
 {
-    QCString _path( QFile::encodeName(path));
     assert(entry.count() == 0); // by contract :-)
     UDSAtom atom;
     atom.m_uds = KIO::UDS_NAME;
@@ -592,12 +592,12 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
     mode_t access;
     struct stat buff;
 
-	if ( lstat( _path.data(), &buff ) == 0 )  {
+	if ( lstat( path.data(), &buff ) == 0 )  {
 	
 	    if (S_ISLNK(buff.st_mode)) {
 
 		char buffer2[ 1000 ];
-		int n = readlink( _path.data(), buffer2, 1000 );
+		int n = readlink( path.data(), buffer2, 1000 );
 		if ( n != -1 ) {
 		    buffer2[ n ] = 0;
                 }
@@ -607,7 +607,7 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 		entry.append( atom );
 
 		// A link poiting to nowhere ?
-		if ( ::stat( _path.data(), &buff ) == -1 ) {
+		if ( ::stat( path.data(), &buff ) == -1 ) {
 		    // It is a link pointing to nowhere
 		    type = S_IFMT - 1;
 		    access = S_IRWXU | S_IRWXG | S_IRWXO;
@@ -628,6 +628,9 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 
 		}
 	    }
+	} else {
+            kdWarning() << "lstat didn't work on " << path.data() << endl;
+	    return false;
 	}
 	
 	type = buff.st_mode & S_IFMT; // extract file type
@@ -690,6 +693,7 @@ void FileProtocol::createUDSEntry( const QString & filename, const QString & pat
 	atom.m_uds = KIO::UDS_CREATION_TIME;
 	atom.m_long = buff.st_ctime;
 	entry.append( atom );
+	return true;
 }
 
 void FileProtocol::stat( const KURL & url )
@@ -702,9 +706,14 @@ void FileProtocol::stat( const KURL & url )
     }
 
     UDSEntry entry;
-    createUDSEntry( url.fileName(), url.path(), entry );
+    if ( !createUDSEntry( url.fileName(), _path, entry ) )
+    {
+	// Should never happen
+	error( KIO::ERR_DOES_NOT_EXIST, url.path() );
+	return;
+    }
+#if 0
 ///////// debug code
-
     KIO::UDSEntry::ConstIterator it = entry.begin();
     for( ; it != entry.end(); it++ ) {
         switch ((*it).m_uds) {
@@ -735,8 +744,8 @@ void FileProtocol::stat( const KURL & url )
                 break;
         }
     }
-
 /////////
+#endif
     statEntry( entry );
 
     finished();
@@ -767,10 +776,13 @@ void FileProtocol::listDir( const KURL& url)
 	return;
     }
 
-    QStringList entryNames;
+    // Don't make this a QStringList. The locale file name we get here
+    // should be passed intact to createUDSEntry to avoid problems with
+    // files where QFile::encodeName(QFile::decodeName(a)) != a.
+    QStrList entryNames;
 
     while ( ( ep = readdir( dp ) ) != 0L )
-	entryNames.append( QFile::decodeName(ep->d_name) );
+	entryNames.append( ep->d_name );
 
     closedir( dp );
     totalSize( entryNames.count() );
@@ -787,12 +799,13 @@ void FileProtocol::listDir( const KURL& url)
     chdir( _path.data() );
 
     UDSEntry entry;
-    QStringList::Iterator it (entryNames.begin());
-
-    for (; it != entryNames.end(); ++it) {
-	entry.clear();
-        createUDSEntry( *it, *it /* we can use the filename as relative path*/, entry );
-	listEntry( entry, false);
+    QStrListIterator it(entryNames);
+    for (; it.current(); ++it) {
+        entry.clear();
+        if ( createUDSEntry( QFile::decodeName(*it), *it /* we can use the filename as relative path*/, entry ) )
+          listEntry( entry, false);
+        else
+          ;//Well, this should never happen... but with wrong encoding names
     }
 
     listEntry( entry, true ); // ready
@@ -834,14 +847,14 @@ void FileProtocol::special( const QByteArray &data)
     switch (tmp) {
     case 1:
       {
-		QString fstype, dev, point;
+	QString fstype, dev, point;
 	Q_INT8 iRo;
 	
 	stream >> iRo >> fstype >> dev >> point;
 	
 	bool ro = ( iRo != 0 );
 	
-	kdDebug(7101) << "!!!!!!!!! MOUNTING " << fstype << " " << dev << " " << point << endl;
+	kdDebug(7101) << "MOUNTING fstype=" << fstype << " dev=" << dev << " point=" << point << " ro=" << ro << endl;
 	mount( ro, fstype.ascii(), dev, point );
 	
       }
