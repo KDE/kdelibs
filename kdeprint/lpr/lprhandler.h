@@ -32,6 +32,7 @@ class LprHandler
 {
 public:
 	LprHandler(const QString& name, KMManager *mgr = 0);
+	virtual ~LprHandler();
 
 	virtual bool validate(PrintcapEntry*);
 	virtual KMPrinter* createPrinter(PrintcapEntry*);

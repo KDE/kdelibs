@@ -29,6 +29,10 @@ LprHandler::LprHandler(const QString& name, KMManager *mgr)
 {
 }
 
+LprHandler::~LprHandler()
+{
+}
+
 bool LprHandler::validate(PrintcapEntry*)
 {
 	return true;
