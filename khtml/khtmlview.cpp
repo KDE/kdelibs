@@ -480,7 +480,7 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     }
 
     // selection stuff
-    if( pressed && innerNode->isTextNode()) {
+    if( pressed && innerNode && innerNode->isTextNode()) {
 	d->selectionEnd = innerNode;
 	d->endOffset = offset;
 	kdDebug(300) << "setting end of selection to " << innerNode << "/" << offset << endl;
@@ -559,7 +559,7 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 	m_part->urlSelected( m_strSelectedURL, _mouse->button(), _mouse->state(), pressedTarget );
    }
 
-    if(innerNode->isTextNode()) {
+    if(innerNode && innerNode->isTextNode()) {
 	kdDebug(300) << "final range of selection to " << d->selectionStart << "/" << d->startOffset << " --> " << innerNode << "/" << offset << endl;
 	d->selectionEnd = innerNode;
 	d->endOffset = offset;
