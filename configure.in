@@ -261,5 +261,6 @@ AC_OUTPUT(Makefile \
 	toolbar/Makefile \
 	doc/Makefile \
 	doc/kfile/Makefile \
+	doc/kdebug/Makefile \
 	doc/kspell/Makefile )
 
