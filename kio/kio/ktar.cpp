@@ -49,9 +49,9 @@ public:
     int tarEnd;
     KTempFile* tmpFile;
     QString mimetype;
-
-    void fillTempFile(const QString & filename);
-    void writeBackTempFile( const QString & filename );
+    
+    bool fillTempFile(const QString & filename);    
+    bool writeBackTempFile( const QString & filename );
 };
 
 KTar::KTar( const QString& filename, const QString & _mimetype )
@@ -269,10 +269,10 @@ Q_LONG KTar::readHeader(char *buffer,QString &name,QString &symlink) {
  * to decompress the original file now and write
  * the contents to the temporary file.
  */
-void KTar::KTarPrivate::fillTempFile( const QString & filename) {
+bool KTar::KTarPrivate::fillTempFile( const QString & filename) {
     if ( ! tmpFile )
-        return;
-
+        return true;
+        
     kdDebug( 7041 ) <<
         "KTar::openArchive: filling tmpFile of mimetype '" << mimetype <<
         "' ... " << endl;
@@ -287,10 +287,18 @@ void KTar::KTarPrivate::fillTempFile( const QString & filename) {
     if( filterDev ) {
         QFile* file = tmpFile->file();
         file->close();
-        file->open( IO_WriteOnly );
+        if ( ! file->open( IO_WriteOnly ) )
+        {
+            delete filterDev;
+            return false;
+        }
         QByteArray buffer(8*1024);
         filterDev->close();
-        filterDev->open( IO_ReadOnly );
+        if ( ! filterDev->open( IO_ReadOnly ) )
+        {
+            delete filterDev;
+            return false;
+        }
         Q_LONG len;
         while ( ! filterDev->atEnd()) {
             len = filterDev->readBlock(buffer.data(),buffer.size());
@@ -300,12 +308,14 @@ void KTar::KTarPrivate::fillTempFile( const QString & filename) {
         delete filterDev;
 
         file->close();
-        file->open( IO_ReadOnly );
-    }
+        if ( ! file->open( IO_ReadOnly ) )
+            return false;
+    }      
     else
         kdDebug( 7041 ) << "KTar::openArchive: no filterdevice found!" << endl;
 
     kdDebug( 7041 ) << "KTar::openArchive: filling tmpFile finished." << endl;
+    return true;
 }
 
 bool KTar::openArchive( int mode )
@@ -314,8 +324,9 @@ bool KTar::openArchive( int mode )
     if ( !(mode & IO_ReadOnly) )
         return true;
 
-    d->fillTempFile( m_filename );
-
+    if ( !d->fillTempFile( m_filename ) )
+        return false;
+    
     // We'll use the permission and user/group of d->rootDir
     // for any directory we emulate (see findOrCreate)
     //struct stat buf;
@@ -467,10 +478,10 @@ bool KTar::openArchive( int mode )
  * to the original file.
  * Must only be called if in IO_WriteOnly mode
  */
-void KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
+bool KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
     if ( ! tmpFile )
-        return;
-
+        return true;
+        
     kdDebug(7041) << "Write temporary file to compressed file" << endl;
     kdDebug(7041) << filename << " " << mimetype << endl;
 
@@ -484,8 +495,12 @@ void KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
     if( dev ) {
         QFile* file = tmpFile->file();
         file->close();
-        file->open(IO_ReadOnly);
-        dev->open(IO_WriteOnly);
+        if ( ! file->open(IO_ReadOnly) || ! dev->open(IO_WriteOnly) )
+        {
+            file->close();
+            delete dev;
+            return false;
+        }
         QByteArray buffer(8*1024);
         Q_LONG len;
         while ( ! file->atEnd()) {
@@ -498,6 +513,7 @@ void KTar::KTarPrivate::writeBackTempFile( const QString & filename ) {
     }
 
     kdDebug(7041) << "Write temporary file to compressed file done." << endl;
+    return true;
 }
 
 bool KTar::closeArchive()
@@ -507,9 +523,9 @@ bool KTar::closeArchive()
     // If we are in write mode and had created
     // a temporary tar file, we have to write
     // back the changes to the original file
-    if( mode() == IO_WriteOnly)
-        d->writeBackTempFile( m_filename );
-
+    if( mode() == IO_WriteOnly) 
+        return d->writeBackTempFile( m_filename );
+        
     return true;
 }
 
