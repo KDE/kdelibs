@@ -279,6 +279,11 @@ KDB::Handler *ConnectorImpl::query(const QString &SQL)
 
 KDB::DataType ConnectorImpl::nativeToKDB(const QString &t)
 {
+	return _nativeToKDB(t);
+}
+
+KDB::DataType ConnectorImpl::_nativeToKDB(const QString &t)
+{
 	if (t == "CHAR")
 		return KDB::CHAR;
 	if (t == "VARCHAR")
@@ -305,6 +310,11 @@ KDB::DataType ConnectorImpl::nativeToKDB(const QString &t)
 }
 
 QString ConnectorImpl::KDBToNative(KDB::DataType type)
+{
+	return _KDBToNative(type);
+}
+
+QString ConnectorImpl::_KDBToNative(KDB::DataType type)
 {
 	QString ret;
 	switch (type) {
@@ -351,11 +361,28 @@ QString ConnectorImpl::KDBToNative(KDB::DataType type)
 
 QString constructTypeDef(KDB::Field *f)
 {
+	QString ret = ConnectorImpl::_KDBToNative(f->type());
+
+	if (f->size()) {
+		ret += QString::fromLatin1("(%1");
+		ret = ret.arg(f->size());
+		if (f->precision()) {
+			ret += QString::fromLatin1(",%1");
+			ret = ret.arg(f->precision());
+		}
+		ret += QString::fromLatin1(")");
+	}
+
+	if (!f->acceptNull()) {
+		ret += QString::fromLatin1(" NOT NULL");
+	}
+
+	return ret;
 }
 
 bool ConnectorImpl::createTable(const KDB::Table &t)
 {
-	QString cmd(QString::fromLatin1("CREATE TABLE %1 "));
+	QString cmd(QString::fromLatin1("CREATE TABLE %1 ("));
 	cmd = cmd.arg(t.name());
 
 	KDB::FieldList fl = t.fields();
@@ -370,12 +397,17 @@ bool ConnectorImpl::createTable(const KDB::Table &t)
 		s_field = QString::fromLatin1("%1 %2, ");
 		cmd = cmd.arg(f->name()).arg(constructTypeDef(f));
 	}
-	return false;
+
+	cmd = cmd.mid(0, cmd.length()-2);
+	cmd += ")";
+
+	execute(cmd);
+	return (!DBENGINE->error());
 }
 
 bool ConnectorImpl::dropDatabase(const QString & name)
 {
-	QString sql(QString::fromLatin1("Drop DATABASE %1").arg(name));
+	QString sql(QString::fromLatin1("DROP DATABASE %1").arg(name));
 	execute(sql);
 	return (!DBENGINE->error());
 }

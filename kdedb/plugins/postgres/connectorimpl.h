@@ -66,6 +66,9 @@ public:
     KDB::DataType nativeToKDB(const QString &type);
     QString KDBToNative(KDB::DataType type);
 
+    static KDB::DataType _nativeToKDB(const QString &type);
+    static QString _KDBToNative(KDB::DataType type);
+
     bool createDatabase(const QString & name) ;
     bool dropDatabase(const QString & name) ;
     bool createTable(const KDB::Table &tab) ;
