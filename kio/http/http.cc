@@ -45,6 +45,7 @@
 #endif
 
 #include <qregexp.h>
+#include <qbuffer.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -179,7 +180,6 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
   m_fcache = 0;
   m_bKeepAlive = false;
   m_iSize = -1;
-  m_bufferList.setAutoDelete( true );
 
   m_dcopClient = new DCOPClient();
   if (!m_dcopClient->attach())
@@ -760,7 +760,6 @@ bool HTTPProtocol::http_open()
   m_bCachedRead = false;
   m_bCachedWrite = false;
   m_bMustRevalidate = false;
-  m_bUnauthorized = false;
   if (m_bUseCache)
   {
      m_fcache = checkCacheEntry( );
@@ -815,11 +814,8 @@ bool HTTPProtocol::http_open()
        return false;
   }
 
-  // Some previous POST request variable cleanups...
+  // Clean up previous POST
   bool moreData = false;
-  if ( m_responseCode != 401 && m_responseCode != 407 )
-    m_bufferList.clear();
-
   // Variable to hold the entire header...
   QString header;
 
@@ -1640,8 +1636,9 @@ bool HTTPProtocol::readHeader()
   {
     return readHeader();
   }
+
   // We need to try to login again if we failed earlier
-  else if ( m_bUnauthorized )
+  if ( m_bUnauthorized )
   {
     if ( m_responseCode == 401 || m_responseCode == 407 )
     {
@@ -1650,8 +1647,9 @@ bool HTTPProtocol::readHeader()
     }
     m_bUnauthorized = false;
   }
+
   // We need to do a redirect
-  else if (!locationStr.isEmpty())
+  if (!locationStr.isEmpty())
   {
     kdDebug(7113) << "request.url: " << m_request.url.url() << endl
                   << "LocationStr: " << locationStr.data() << endl;
@@ -1670,6 +1668,14 @@ bool HTTPProtocol::readHeader()
   // Inform the job that we can indeed resume...
   if ( m_bCanResume && m_request.offset )
     canResume();
+
+  // Reset the POST buffer if we do not get an authorization
+  // request and the previous action was POST.
+  if ( m_request.method==HTTP_POST && !m_bUnauthorized && !m_bufPOST.isEmpty()  )
+  {
+    m_bufPOST.resetRawData( m_bufPOST.data(), m_bufPOST.size() );
+    m_bufPOST.resize(0);
+  }
 
   // WABA: Correct for tgz files with a gzip-encoding.
   // They really shouldn't put gzip in the Content-Encoding field!
@@ -1901,8 +1907,8 @@ void HTTPProtocol::configAuth( const char *p, bool b )
 
 bool HTTPProtocol::sendBody()
 {
-  int result, length = 0;
-  QByteArray *buffer;
+  int result=-1;
+  int length=0;
 
   // Loop until we got 'dataEnd'
   kdDebug(7113) << "Response code: " << m_responseCode << endl;
@@ -1910,31 +1916,37 @@ bool HTTPProtocol::sendBody()
   {
     // For RE-POST on authentication failure the
     // buffer should not be empty...
-    if ( m_bufferList.isEmpty() )
+    if ( m_bufPOST.isNull() )
     {
       error( ERR_ABORTED, m_request.hostname );
       return false;
     }
     kdDebug(7113) << "POST'ing saved data..." << endl;
-    QByteArray* buffer = m_bufferList.first();
-    for ( ; buffer != 0 ; buffer = m_bufferList.next() )
-        length += buffer->size();
+    length = m_bufPOST.size();
     result = 0;
   }
   else
   {
     kdDebug(7113) << "POST'ing live data..." << endl;
-    m_bufferList.clear();
+    QBuffer buf ( m_bufPOST );
+    bool okay = buf.open( IO_WriteOnly );
+    if ( !okay )
+      kdDebug(7113) << "Could not open buffer" << endl;
+    QByteArray buffer;
     do
     {
-        QByteArray *buffer = new QByteArray();
-        dataReq(); // Request for data
-        result = readData( *buffer );
-        if (result > 0)
-        {
-            m_bufferList.append(buffer);
-            length += result;
-        }
+      dataReq(); // Request for data
+      result = readData( buffer );
+      if ( result > 0 )
+      {
+        kdDebug(7113) << "POST data read: " << buffer.data() << endl;
+        buf.at(length);
+        int size = buf.writeBlock( buffer.copy().data(), buffer.size() );
+        if ( size != result )
+            kdDebug() << "Unequal read/write size" << endl;
+        length += result;
+        buffer.resetRawData( buffer.data(), buffer.size() );
+      }
     } while ( result > 0 );
   }
 
@@ -1948,13 +1960,10 @@ bool HTTPProtocol::sendBody()
   sprintf(c_buffer, "Content-Length: %d\r\n\r\n", length);
   kdDebug( 7113 ) << c_buffer << endl;
 
-/*
-   Debugging code...
-   buffer = m_bufferList.first();
-   for ( ; buffer != 0 ; buffer = m_bufferList.next() )
-    kdDebug( 7113 ) << "POST Data: " << buffer->data() << endl;
-*/
+  // Debugging code...
+  kdDebug( 7113 ) << "POST'ing Data: " << m_bufPOST.data() << endl;
 
+  // Send the content length...
   bool sendOk = (write(c_buffer, strlen(c_buffer)) == (ssize_t) strlen(c_buffer));
   if (!sendOk)
   {
@@ -1963,16 +1972,13 @@ bool HTTPProtocol::sendBody()
     return false;
   }
 
-  buffer = m_bufferList.first();
-  for ( ; buffer != 0 ; buffer = m_bufferList.next() )
+  // Send the data...
+  sendOk = (write(m_bufPOST.data(), m_bufPOST.size()) == (ssize_t) m_bufPOST.size());
+  if (!sendOk)
   {
-    sendOk = (write(buffer->data(), buffer->size()) == (ssize_t) buffer->size());
-    if (!sendOk)
-    {
-      kdDebug(7103) << "Connection broken (sendBody(2))! (" << m_state.hostname << ")" << endl;
-      error( ERR_CONNECTION_BROKEN, m_state.hostname );
-      return false;
-    }
+    kdDebug(7103) << "Connection broken (sendBody(2))! (" << m_state.hostname << ")" << endl;
+    error( ERR_CONNECTION_BROKEN, m_state.hostname );
+    return false;
   }
   return true;
 }
@@ -2594,8 +2600,8 @@ bool HTTPProtocol::readBody( )
   kdDebug(7113) << "HTTPProtocol::readBody m_iBytesLeft=" << m_iBytesLeft << endl;
 
   // Main incoming loop...  Gather everything while we can...
+  big_buffer.resetRawData(big_buffer.data(), big_buffer.size());
   KMD5 context;
-  big_buffer.resize(0);
   while (!eof())
   {
     int bytesReceived;
@@ -2624,7 +2630,7 @@ bool HTTPProtocol::readBody( )
       {
         if (useMD5)
         {
-          Q_UINT8* data = (Q_UINT8*) strdup( m_bufReceive.data() );
+          Q_UINT8* data = reinterpret_cast<Q_UINT8*>( m_bufReceive.copy().data() );
           context.update( data, bytesReceived );
         }
 
@@ -2658,7 +2664,7 @@ bool HTTPProtocol::readBody( )
       break;
   }
 
-  m_bufReceive.resize(0);
+  m_bufReceive.resetRawData( m_bufReceive.data(), m_bufReceive.size() );
   // if we have something in big_buffer, then we know that we have
   // encoded data.  of course, we need to do something about this
   if (!big_buffer.isNull())
@@ -2682,7 +2688,7 @@ bool HTTPProtocol::readBody( )
     // prior to checking the Content-MD5 value against the received entity.
     if ( useMD5 )
     {
-        Q_UINT8* data = (Q_UINT8*) strdup( big_buffer.data() );
+        Q_UINT8* data = reinterpret_cast<Q_UINT8*>( big_buffer.copy().data() );
         context.update( data, big_buffer.size() );
     }
 

@@ -281,6 +281,11 @@ protected:
   long m_iBytesLeft; // # of bytes left to receive in this message.
   QByteArray m_bufReceive; // Receive buffer
 
+  // Holds the POST data so it won't get lost on if we
+  // happend to get a 401/407 response when submitting,
+  // a form.
+  QByteArray m_bufPOST;
+
   // Cache related
   bool m_bUseCache; // Whether the cache is active
   bool m_bCachedRead; // Whether the file is to be read from m_fcache.
@@ -339,7 +344,7 @@ protected:
   // Flag that indicates whether there was some connection
   // error...
   bool m_bError;
-  
+
   // Flag that indicates application prefers errorPage() instead over error.
   bool m_bErrorPage;
 
@@ -355,10 +360,6 @@ protected:
   int m_proxyConnTimeout;
   int m_remoteConnTimeout;
   int m_remoteRespTimeout;
-
-  // Buffer to hold POST data so it won't get lost on
-  // if we get a 401/407 response when submitting...
-  QList<QByteArray> m_bufferList;
 
 #ifdef DO_SSL
   bool m_bUseSSL;
