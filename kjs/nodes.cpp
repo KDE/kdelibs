@@ -191,23 +191,24 @@ Value ThisNode::evaluate(ExecState *exec)
 // ECMA 11.1.2 & 10.1.4
 Value ResolveNode::evaluate(ExecState *exec)
 {
-  //  assert(context);
   const List chain = exec->context().scopeChain();
-  //  assert(chain);
   ListIterator scope = chain.begin();
 
   while (scope != chain.end()) {
     ObjectImp *o = static_cast<ObjectImp*>((*scope).imp());
+
+    //cout << "Resolve: looking at '" << ident.ascii() << "'"
+    //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
     if (o->hasProperty(exec,ident)) {
-//        cout << "Resolve: found '" << ident.ascii() << "'"
-// 	    << " type " << scope->get(ident).imp()->typeInfo()->name << endl;
+      //cout << "Resolve: FOUND '" << ident.ascii() << "'"
+      //     << " in " << (void*)o << " " << o->classInfo()->className << endl;
       return Reference(o, ident);
     }
     scope++;
   }
 
   // identifier not found
-//  cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
+  //cout << "Resolve: didn't find '" << ident.ascii() << "'" << endl;
   return Reference(Null(), ident);
 }
 
