@@ -100,7 +100,7 @@ public:
  * </pre>
  */
 template<class Parent_skel>
-class DynamicSkeleton : public Parent_skel, public DynamicSkeletonBase
+class DynamicSkeleton : virtual public Parent_skel, public DynamicSkeletonBase
 {
 public:
 	/**
