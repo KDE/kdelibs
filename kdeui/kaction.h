@@ -44,6 +44,7 @@ class QString;
 class KAccel;
 class KAccelActions;
 class KConfig;
+class KConfigBase;
 class KURL;
 class KInstance;
 class KToolBar;
