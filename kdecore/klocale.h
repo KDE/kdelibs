@@ -1268,6 +1268,13 @@ private:
   static QString catalogueFileName(const QString & language,
 				   const KCatalogue & catalog);
 
+  /**
+   * @internal Checks whether or not theFind catalog for given language and given catalog name.
+   *
+   * @param language language to check
+   */
+   bool isApplicationTranslatedInto( const QString & language);
+   
 private:
   // Numbers and money
   QString m_decimalSymbol;

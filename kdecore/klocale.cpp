@@ -68,6 +68,7 @@ public:
   QString calendarType;
   KCalendarSystem * calendar;
   bool utf8FileEncoding;
+  QString appName;
 };
 
 static KLocale *this_klocale = 0;
@@ -88,7 +89,8 @@ KLocale::KLocale( const QString & catalog, KConfig * config )
   if (!cfg) cfg = KGlobal::instance()->config();
   this_klocale = 0;
   Q_ASSERT( cfg );
-
+   
+  d->appName = catalog;
   initLanguageList( cfg, config == 0);
   initMainCatalogues(catalog);
 }
@@ -410,17 +412,37 @@ bool KLocale::setLanguage(const QString & language)
 
 bool KLocale::setLanguage(const QStringList & languages)
 {
-  QStringList languageList(languages);
-
-  // Remove duplicate entries in reverse so that we
-  // can keep user's language preference order intact. (DA)
+  QStringList languageList( languages );
+  // This list might contain 
+  // 1) some empty strings that we have to eliminate
+  // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrance of a language in order 
+  //    to preserve the order of precenence of the user => iterate backwards
+  // 3) languages into which the application is not translated. For those languages we should not even load kdelibs.mo or kio.po.
+  //    these langugage have to be dropped. Otherwise we get strange side effects, e.g. with Hebrew:
+  //    the right/left switch for languages that write from 
+  //    right to left (like Hebrew or Arabic) is set in kdelibs.mo. If you only have kdelibs.mo
+  //    but nothing from appname.mo, you get a mostly English app with layout from right to left.
+  //    That was considered to be a bug by the Hebrew translators.
   for( QStringList::Iterator it = languageList.fromLast();
-         it != languageList.begin();
-         --it )
+    it != languageList.begin(); --it )
   {
-    if ( languageList.contains(*it) > 1 || (*it).isEmpty() ) {
+    // kdDebug() << "checking " << (*it) << endl;
+    bool bIsTranslated = isApplicationTranslatedInto( *it );
+    if ( languageList.contains(*it) > 1 || (*it).isEmpty() || (!bIsTranslated) ) {
+      // kdDebug() << "removing " << (*it) << endl;
       it = languageList.remove( it );
-	}
+    }
+  }
+  // now this has left the first element of the list unchecked. 
+  // The question why this is the case is left as an exercise for the reader...
+  // Besides the list might have been empty all the way, so check that too.
+  if ( languageList.begin() != languageList.end() ) { 
+     QStringList::Iterator it = languageList.begin(); // now pointing to the first element
+     // kdDebug() << "checking " << (*it) << endl;
+     if( (*it).isEmpty() || !(isApplicationTranslatedInto( *it )) ) {
+        // kdDebug() << "removing " << (*it) << endl;
+     	languageList.remove( it ); // that's what the iterator was for...
+     }
   }
 
   if ( languageList.isEmpty() ) {
@@ -437,6 +459,32 @@ bool KLocale::setLanguage(const QStringList & languages)
   updateCatalogues();
 
   return true; // we found something. Maybe it's only English, but we found something
+}
+
+bool KLocale::isApplicationTranslatedInto( const QString & language)
+{
+  if ( language.isEmpty() ) {
+    return false;
+  }
+  
+  QString appName = d->appName;
+  if (maincatalogue) {
+    appName = QString::fromLatin1(maincatalogue);
+  }
+  // sorry, catalogueFileName requires catalog object,k which we do not have here
+  // path finding was supposed to be moved completely to KCatalogue. The interface cannot
+  // be changed that far during deep freeze. So in order to fix the bug now, we have
+  // duplicated code for file path evaluation. Cleanup will follow later. We could have e.g.
+  // a static method in KCataloge that can translate between these file names.
+  // a stat
+  QString sFileName = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
+    .arg( language )
+    .arg( appName );
+  // kdDebug() << "isApplicationTranslatedInto: filename " << sFileName << endl;
+
+  QString sAbsFileName = locate( "locale", sFileName );
+  // kdDebug() << "isApplicationTranslatedInto: absname " << sAbsFileName << endl;
+  return ! sAbsFileName.isEmpty();
 }
 
 void KLocale::splitLocale(const QString & aStr,
