@@ -216,6 +216,38 @@ void AddresseeList::sortByTrait()
   }
 }
 
+class SortContainer
+{
+  public:
+    SortContainer()
+      : mField( 0 )
+    {
+    }
+
+    SortContainer( const Addressee &addr, Field *field )
+      : mAddressee( addr ), mField( field )
+    {
+    }
+
+    bool operator< ( const SortContainer &cnt )
+    {
+      if ( !mField )
+        return false;
+      else
+        return ( QString::localeAwareCompare( mField->value( mAddressee ).lower(),
+                 mField->value( cnt.mAddressee ).lower() ) < 0 );
+    }
+
+    Addressee addressee() const
+    {
+      return mAddressee;
+    }
+
+  private:
+    Addressee mAddressee;
+    Field *mField;
+};
+
 void AddresseeList::sortByField( Field *field )
 {
   if ( !field ) {
@@ -228,42 +260,18 @@ void AddresseeList::sortByField( Field *field )
   if ( count() == 0 )
     return;
 
-  quickSortByField( field, 0, count() - 1 );
-}
+  QValueList<SortContainer> list;
+  QValueList<SortContainer>::ConstIterator sortIt;
 
-void AddresseeList::quickSortByField( Field *field, int left, int right )
-{
-  int i = left;
-  int j = right;
-  int mid = ( left + right ) / 2;
+  QValueList<Addressee>::ConstIterator it;
+  for ( it = begin(); it != end(); ++it )
+    list.append( SortContainer( *it, sActiveField ) );
 
-  iterator x = at( mid );
+  qHeapSort( list );
+  clear();
 
-  do {
-    if ( !mReverseSorting ) {
-      while ( QString::localeAwareCompare( field->value( *at( i ) ).upper(),
-                                           field->value( *x ).upper() ) < 0 )
-        i++;
-      while ( QString::localeAwareCompare( field->value( *at( j ) ).upper(),
-                                           field->value( *x ).upper() ) > 0 )
-        j--;
-    } else {
-      while ( QString::localeAwareCompare( field->value( *at( i ) ).upper(),
-                                           field->value( *x ).upper() ) > 0 )
-        i++;
-      while ( QString::localeAwareCompare( field->value( *at( j ) ).upper(),
-                                           field->value( *x ).upper() ) < 0 )
-        j--;
-    }
-    if ( i <= j ) {
-      qSwap( *at( i ), *at( j ) );
-      i++;
-      j--;
-    }
-  } while ( i <= j );
-
-  if ( left < j ) quickSortByField( field, left, j );
-  if ( right > i ) quickSortByField( field,i, right );
+  for ( sortIt = list.begin(); sortIt != list.end(); ++sortIt )
+    append( (*sortIt).addressee() );
 }
 
 Field*

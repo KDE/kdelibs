@@ -202,8 +202,6 @@ class AddresseeList : public QValueList<Addressee>
     Field* sortingField() const;
 
   private:
-    void quickSortByField( Field*, int, int );
-
     bool mReverseSorting;
     SortingCriterion mActiveSortingCriterion;
     //KDE 4.0 - add a d-pointer here!
