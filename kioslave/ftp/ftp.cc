@@ -275,12 +275,11 @@ bool Ftp::ftpConnect2( const char *host, int _port )
   m_host = "";
   
   memset( &sin, 0, sizeof( sin ) );
-  sin.sin_family = AF_INET;
 
   if ( _port == -1 && ( pse = getservbyname( "ftp", "tcp" ) ) == NULL )
     _port = 21;
   else if ( _port == -1 )
-    _port = pse->s_port;
+    _port = ntohs(pse->s_port);
 
   if (!KSocket::initSockaddr(&sin, host, _port)) {
     m_error = ERR_UNKNOWN_HOST;
