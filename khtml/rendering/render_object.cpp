@@ -530,18 +530,17 @@ void RenderObject::printTree(int indent) const
                      : QString::null)
                  << "(" << (style() ? style()->refCount() : 0) << ")"
                  << ": " << (void*)this
-//                  << " il=" << (int)isInline()
-// 		 << " ci=" << (int) childrenInline()
-//                  << " fl=" << (int)isFloating()
-// 		 << " rp=" << (int)isReplaced()
-//                  << " an=" << (int)isAnonymousBox()
-//                  << " ps=" << (int)isPositioned()
-//                  << " cp=" << (int)containsPositioned()
+                 << " il=" << (int)isInline()
+                 << " ci=" << (int) childrenInline()
+                 << " fl=" << (int)isFloating()
+                 << " rp=" << (int)isReplaced()
+                 << " an=" << (int)isAnonymousBox()
+                 << " ps=" << (int)isPositioned()
+                 << " oc=" << (int)overhangingContents()
                  << " lt=" << (int)layouted()
-                 << " mmk=" << (int)minMaxKnown()
-                 << " rmm=" << (int)m_recalcMinMax
-//                  << " pa=" << (int)parsing()
-//                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
+                 << " mk=" << (int)minMaxKnown()
+                 << " pa=" << (int)parsing()
+                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")"
 		 << endl;
     RenderObject *child = firstChild();
     while( child != 0 )
