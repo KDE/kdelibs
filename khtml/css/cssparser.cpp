@@ -612,22 +612,22 @@ bool CSSParser::parseValue( int propId, bool important )
 	        id = value->id;
 	        switch( id ) {
 	        case CSS_VAL_TOP:
-	            if ( pos[0] != -1 )
+	            if ( pos[1] != -1 )
 		        invalid = true;
 	            pos[1] = 0;
 	            break;
 	        case CSS_VAL_BOTTOM:
-	            if ( pos[0] != -1 )
+	            if ( pos[1] != -1 )
 		        invalid = true;
 	            pos[1] = 100;
 	            break;
 	        case CSS_VAL_LEFT:
-	            if ( pos[1] != -1 )
+	            if ( pos[0] != -1 )
 		        invalid = true;
 	            pos[0] = 0;
 	            break;
 	        case CSS_VAL_RIGHT:
-	            if ( pos[1] != -1 )
+	            if ( pos[0] != -1 )
 		        invalid = true;
 	            pos[0] = 100;
 	            break;
@@ -1097,7 +1097,7 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
     	fnd[i] = false;
 
 #ifdef CSS_DEBUG
-//     kdDebug(6080) << "PSH: numProperties=" << numProperties << endl;
+    kdDebug(6080) << "PSH: numProperties=" << numProperties << endl;
 #endif
 
     while ( valueList->current() ) {
@@ -1105,11 +1105,13 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
 	// qDebug("outer loop" );
         for (int propIndex = 0; !found && propIndex < numProperties; ++propIndex) {
             if (!fnd[propIndex]) {
-// 		kdDebug(6080) << "LOOKING FOR: " << getPropertyName(properties[propIndex]).string() << endl;
+#ifdef CSS_DEBUG
+		kdDebug(6080) << "LOOKING FOR: " << getPropertyName(properties[propIndex]).string() << endl;
+#endif
 		if ( parseValue( properties[propIndex], important ) ) {
 		    fnd[propIndex] = found = true;
 #ifdef CSS_DEBUG
-// 		    kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << endl;
+		    kdDebug(6080) << "FOUND: " << getPropertyName(properties[propIndex]).string() << endl;
 #endif
 		}
 	    }
@@ -1117,13 +1119,17 @@ bool CSSParser::parseShortHand( const int *properties, int numProperties, bool i
         // if we didn't find at least one match, this is an
         // invalid shorthand and we have to ignore it
         if (!found) {
-// 	    qDebug("didn't find anything" );
+#ifdef CSS_DEBUG
+	    qDebug("didn't find anything" );
+#endif
 	    inParseShortHand = false;
 	    return false;
 	}
     }
     inParseShortHand = false;
-//     kdDebug( 6080 ) << "parsed shorthand" << endl;
+#ifdef CSS_DEBUG
+    kdDebug( 6080 ) << "parsed shorthand" << endl;
+#endif
     return true;
 }
 
