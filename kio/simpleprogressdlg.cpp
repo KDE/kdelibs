@@ -2,6 +2,7 @@
 
 #include "kio_job.h"
 #include <qpushbutton.h>
+#include <qtimer.h>
 
 #include <kapp.h>
 #include <klocale.h>
@@ -99,7 +100,11 @@ KIOSimpleProgressDlg::KIOSimpleProgressDlg( KIOJob* _job, bool m_bStartIconified
   m_pLayout->activate();
   resize( sizeHint() );
 
-  this->show();
+  // instead of showing immediately, we fire off a one shot timer to
+  // show ourselves after 1.5 seconds.  This avoids massive window creation/
+  // destruction on single file copies or other short operations.
+
+  QTimer::singleShot(1500, this, SLOT(show()));
 
   if ( m_bStartIconified ) {
     KWM::setIconify( this->winId(), true );

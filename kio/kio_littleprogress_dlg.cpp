@@ -7,7 +7,9 @@
 
 #include "kio_littleprogress_dlg.h"
 
-KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent ) : QWidget( parent ) {
+KIOLittleProgressDlg::KIOLittleProgressDlg( QWidget* parent ) 
+  : QWidget( parent ) 
+{
   m_pJob = 0L;
   
   QFontMetrics fm = fontMetrics();
