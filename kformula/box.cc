@@ -609,9 +609,14 @@ QRect box::symbolRect(SymbolType s, int size)
     break;
 
   case PRODUCT:
+    size = size * 6 / 5;
+    return QRect(-size / 16, -size / 2 - size / 16,
+		 size + size / 8, size + size / 8);
     break;
 
   case ARROW:
+    return QRect(-size / 32, -size / 4 - size / 16,
+		 size + size / 16, size / 2 + size / 8);
     break;
   }
 
@@ -659,9 +664,35 @@ void box::drawSymbol(QPainter &p, SymbolType s, int size, int x, int y)
     break;
 
   case PRODUCT:
+    size = size * 6 / 5;
+    p.setPen(QPen(Qt::black, size / 8));
+    p.drawLine(x, y - size / 2, x + size, y - size / 2);
+    p.drawLine(x, y + size / 2, x + size / 2 - size / 8,
+	       y + size / 2);
+    p.drawLine(x + size / 2 + size / 8, y + size / 2,
+	       x + size, y + size / 2);
+    p.setPen(QPen(Qt::black, size / 6));
+    p.drawLine(x + size / 4 - size / 16, y - size / 2,
+	       x + size / 4 - size / 16, y + size / 2);
+    p.drawLine(x + size - size / 4 + size / 16, y - size / 2,
+	       x + size - size / 4 + size / 16, y + size / 2);
+    p.setPen(QPen());
+
+    return; // don't draw a polygon
+    
     break;
 
   case ARROW:
+    p.setPen(QPen(Qt::black, size / 8));
+    p.drawLine(x, y, x + size, y);
+    p.drawLine(x + size - size / 16, y,
+	       x + size - size / 16 - size / 4, y - size / 4); 
+    p.drawLine(x + size - size / 16, y,
+	       x + size - size / 16 - size / 4, y + size / 4); 
+    p.setPen(QPen());
+
+    return; //don't draw a polygon
+
     break;
   }
 

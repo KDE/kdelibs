@@ -899,6 +899,15 @@ void KFormulaEdit::keyPressEvent(QKeyEvent *e)
     case Key_5:
       insertChar(QChar(SUM));
       break;
+
+    case Key_8:
+      insertChar(QChar(PRODUCT));
+      break;
+
+    case Key_Period:
+      insertChar(QChar(ARROW));
+      break;
+      
     }
 
     MODIFIED

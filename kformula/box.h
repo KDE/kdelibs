@@ -33,6 +33,7 @@ enum BoxType {
   LESS = '<',
   ABS = '|',
   SLASH = '/',
+  MATRIX = 649,
   ABOVE = 650, //something useless
   BELOW = 651,
   SYMBOL = 652
@@ -80,12 +81,12 @@ public:
   virtual ~box();
 
   void setText(QString newText);
-  void calculate(QPainter &p, int setFontsize = -1);
+  virtual void calculate(QPainter &p, int setFontsize = -1);
   QRect getRect() { return rect; }
   int getType() { return type; }
   box *getParent() { return parent; }
   QString getText() { return text; }
-  void draw(QPainter &p, int x, int y);
+  virtual void draw(QPainter &p, int x, int y);
 
   QRect getCursorPos(charinfo i, int x, int y);
   QRect getLastRect();
