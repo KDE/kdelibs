@@ -1031,7 +1031,7 @@ TransferJob *KIO::http_post( const KURL& url, const QByteArray &postData, bool s
             valid = false;
             break;
         }
-	
+
     if( !valid )
     {
 	static bool override_loaded = false;
@@ -1304,7 +1304,8 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
                 // Ask confirmation about resuming previous transfer
                 res = Observer::self()->open_RenameDlg(
                       this, i18n("File Already Exists"),
-                      m_src.prettyURL(), m_dest.prettyURL(),
+                      m_src.prettyURL(0, KURL::StripFileProtocol),
+                      m_dest.prettyURL(0, KURL::StripFileProtocol),
                       (RenameDlg_Mode) (M_OVERWRITE | M_RESUME | M_NORENAME), newPath,
                       d->m_sourceSize, offset );
             }
@@ -2131,7 +2132,9 @@ void CopyJob::slotResultConflictCreatingDirs( KIO::Job * job )
     if (m_reportTimer)
         m_reportTimer->stop();
     RenameDlg_Result r = Observer::self()->open_RenameDlg( this, i18n("Directory Already Exists"),
-                                         (*it).uSource.prettyURL(), (*it).uDest.prettyURL(), mode, newPath,
+                                         (*it).uSource.prettyURL(0, KURL::StripFileProtocol),
+                                         (*it).uDest.prettyURL(0, KURL::StripFileProtocol),
+                                         mode, newPath,
                                          (*it).size, destsize,
                                          (*it).ctime, destctime,
                                          (*it).mtime, destmtime );
@@ -2375,7 +2378,9 @@ void CopyJob::slotResultConflictCopyingFiles( KIO::Job * job )
             mode = (RenameDlg_Mode) ( mode | M_SINGLE );
         res = Observer::self()->open_RenameDlg( this, m_conflictError == ERR_FILE_ALREADY_EXIST ?
                                 i18n("File Already Exists") : i18n("Already Exists as a Directory"),
-                                (*it).uSource.prettyURL(), (*it).uDest.prettyURL(), mode, newPath,
+                                (*it).uSource.prettyURL(0, KURL::StripFileProtocol),
+                                (*it).uDest.prettyURL(0, KURL::StripFileProtocol),
+                                mode, newPath,
                               (*it).size, destsize,
                               (*it).ctime, destctime,
                               (*it).mtime, destmtime );
