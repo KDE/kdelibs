@@ -2,6 +2,10 @@
 # compile entire kdelibs/win32 in debug mode
 # (c) 2003-2005, Jaroslaw Staniek, js@iidea.pl
 
+if [ "$1" == "noclean" ] ; then
+	noclean=1
+fi
+
 update_kdelibs_pro_files || exit 1
 
 pwd=`pwd`
@@ -36,7 +40,11 @@ kate/interfaces \
 kate/part \
  ; do 
 	echo ================== $d =================
-	cd $d && qmake && $make clean && $make || exit 1
+	cd $d && qmake || exit 1
+	if [ -z $noclean ] ; then
+		$make clean || exit 1
+	fi
+	$make || exit 1
 	cd $pwd
 done
 
