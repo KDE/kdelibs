@@ -926,6 +926,7 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
         break;
     case ATTR_MAXLENGTH:
         m_maxLen = attr->val() ? attr->val()->toInt() : -1;
+        setChanged();
         break;
     case ATTR_SIZE:
         m_size = attr->val() ? attr->val()->toInt() : 20;

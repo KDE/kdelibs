@@ -254,7 +254,7 @@ void RenderRadioButton::updateFromElement()
 
 void RenderRadioButton::slotClicked()
 {
-    element()->setChecked(widget()->isChecked());
+    element()->setChecked(true);
 
     // emit mouseClick event etc
     RenderButton::slotClicked();
@@ -488,16 +488,17 @@ void RenderLineEdit::calcMinMaxWidth()
 
 void RenderLineEdit::updateFromElement()
 {
+    int ml = element()->maxLength();
+    if ( ml < 0 || ml > 1024 )
+        ml = 1024;
+    if ( widget()->maxLength() != ml )
+        widget()->setMaxLength( ml );
+
     if (element()->value().string() != widget()->text()) {
         widget()->blockSignals(true);
         int pos = widget()->cursorPosition();
         widget()->setText(element()->value().string());
 
-        int ml = element()->maxLength();
-        if ( ml < 0 || ml > 1024 )
-            ml = 1024;
-        if ( widget()->maxLength() != ml )
-            widget()->setMaxLength( ml );
         widget()->setEdited( false );
 
         widget()->setCursorPosition(pos);
