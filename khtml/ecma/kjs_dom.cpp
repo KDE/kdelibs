@@ -189,11 +189,11 @@ Value DOMNode::getValueProperty(ExecState *exec, int token) const
   case Attributes:
     return getDOMNamedNodeMap(exec,node.attributes());
   case NamespaceURI:
-    return String(node.namespaceURI());
+    return getString(node.namespaceURI()); // Moz returns null if not set (dom/namespaces.html)
   case Prefix:
-    return String(node.prefix());
+    return getString(node.prefix());  // Moz returns null if not set (dom/namespaces.html)
   case LocalName:
-    return String(node.localName());
+    return getString(node.localName());  // Moz returns null if not set (dom/namespaces.html)
   case OwnerDocument:
     return getDOMNode(exec,node.ownerDocument());
   case OnAbort:
