@@ -298,6 +298,7 @@ KMdiMainFrm::~KMdiMainFrm()
   delete m_pWindowPopup;
   delete m_pWindowMenu;
   delete m_mdiGUIClient;
+  delete m_pTempDockSession;
   m_mdiGUIClient=0;
   delete d;
   d=0;
