@@ -187,7 +187,7 @@ void HTMLSelect::addOption( const char *v, bool sel )
 	if ( v )
 		_values.append( new QString( v ) );
 	else
-		_values.append( new QString( "" ) );
+		_values.append( new QString( (char *)0L) );
 }
 
 const QString &HTMLSelect::value( int item )
@@ -219,7 +219,7 @@ void HTMLSelect::setText( const char *text )
 		item = cb->count() - 1;
 	}
 
-	if ( strlen( value( item ) ) == 0 )
+	if ( value( item ).isNull() )
 		setValue( t, item );
 }
 
