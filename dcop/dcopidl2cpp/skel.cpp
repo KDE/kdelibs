@@ -126,10 +126,11 @@ void generateSkel( const QString& idl, const QString& filename, QDomElement de )
 		}
 	    }
 	
+	    str << "#include <kdatastream.h>" << endl;
+
 	    bool useHashing = funcNames.count() > 7;
 	    if ( useHashing ) {
 		str << "#include <qasciidict.h>" << endl;
-		str << "#include <kdatastream.h>" << endl;
 		str << "static const int " << className << "_fhash = " << fhash << ";" << endl;
 	    }
 	    str << "static const char* const " << className << "_ftable[ " << funcNames.count() + 1 << " ] = {" << endl;
