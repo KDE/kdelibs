@@ -130,7 +130,7 @@ Because of the QStyle rewrite our old extensions have been dropped
 in order to have styles that fully integrate in KDE and Qt applications.
 
 <H4>KDirectionButton</H4>
-...is dead. Use KArrowButton instead, it offers virtually the same
+...is gone. Use KArrowButton instead, it offers about the same
 functionality.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
@@ -167,29 +167,29 @@ and <code>bool isModified() const</code> methods.
 <H4>KParts::BrowserExtension</H4>
 The <code>URLArgs urlArgs()</code> method is no more virtual. So when you want to
 change the behaviour of the urlArgs property you don't need to re-implement
-both virtual functions, setURLArgs and urlArgs, but instead just re-implementing 
+both virtual functions, setURLArgs and urlArgs, but instead just re-implementing
 setURLArgs does the job.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
 <H3><A NAME="khtmlpart">API-cleanups in KHTML</A></H3>
 
-There were a few relatively minor API-adjustements in KHTMLPart. In particular: 
+There were a few relatively minor API-adjustements in KHTMLPart. In particular:
 <ul><li>enableJScript(bool) has been replaced by setJScriptEnabled(bool)
 <li>enableJava(bool) has been replaced by setJavaEnabled(bool)
 <li>enablePlugins(bool) has been replaced by setPluginsEnabled(bool)
 <li>autoloadImages(bool) has been replaced by setAutoloadImages(bool)
 <li>enableMetaRefresh(bool) has been replaced by setMetaRefreshEnabled(bool)
 <li>setBaseURL and setBaseTarget have been removed. baseURL(), baseTarget() and
-completeURL() are remained for compatibility reasons, but they're deprecated now. use the variants in DOM::HTMLDocument() instead. 
-<li>the second parameter of KHTMLPart::completeURL is removed. it didn't have 
-   any effect before either. 
+completeURL() are remained for compatibility reasons, but they're deprecated now. use the variants in DOM::HTMLDocument() instead.
+<li>the second parameter of KHTMLPart::completeURL is removed. it didn't have
+   any effect before either.
 </ul>
 Besides that, all methods previously marked as deprecated or were internal
-but accidently part of the public API are now private or removed. 
+but accidently part of the public API are now private or removed.
 As they were marked as becoming private already you should not experience
 any problems. Backward compatibility exists for the common methods, to
-disable this use a #define KDE_NO_COMPAT. 
+disable this use a #define KDE_NO_COMPAT.
 <p>In KHTMLView, the following changes were done:
 <ul>
 <li>gotoNextLink has been replaced by gotoLink(true);
@@ -197,11 +197,107 @@ disable this use a #define KDE_NO_COMPAT.
 </ul>
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 
+<H3><A NAME="kfile">Changes in kfile</A></H3>
+The kfile-library, as used by the KFileDialog provides classes for directory browsing widgets.
+Those classes gained some new features, some parts were merged with other existing classes
+and in some cases the API was cleaned up/fixed.
+<p>
+Even if the list of changes is long, the affected codebase should be relatively small, as most
+parts are rarely used outside of kfile.
+<p>
+The changes are:
+<H4>KFileItem</H4>
+The KFileViewItem class is completely replaced with KFileItem from kio. All its functionality has
+been merged with its former baseclass KFileItem. Additionally, some of its methods have been
+modified:
+<table>
+<tr><th>Old:</th><th>New:</th></tr>
+<tr><td>access()</td><td>permissionsString()</td></tr>
+<tr><td>date()</td><td>timeString()</td></tr>
+<tr><td>setViewItem( const KFileView *view, const void *item )</td><td>setExtraData( const void *key, void *value )</td></tr>
+<tr><td>pixmap()</td><td>The parameterless method has been removed, use pixmap( int size, int state = 0 ) instead.</td></tr>
+</table>
+
+<H4>KFileReader</H4>
+This class has been merged with KDirLister from kio.
+
+<H4>KDirOperator</H4>
+<table>
+<tr><th>Old:</th><th>New:</th></tr>
+<tr><td>saveConfig()</td><td>writeConfig()</td></tr>
+<tr><td>setFileReader()</td><td>setDirLister()</td></tr>
+<tr><td>fileReader()</td><td>dirLister()</td></tr>
+<tr><td>activatedMenu( const KFileViewItem * )</td><td>activatedMenu( const KFileItem *, const QPoint& pos )</td></tr>
+</table>
+
+<H4>KFileDetailView</H4>
+The protected method setSortIndicator() has been removed, it's not needed anymore.
+
+<H4>KFileView</H4>
+This is the baseclass for all the views. It changed in many respects to allow for greater
+flexibility and efficiency.
+<br><br>
+Sorting has changed radically. Previously, KFileView had protected methods QuickSort,
+compareItems() and mergeLists() to sort directory entries for displaying in the views. Now,
+KFileView does not do any sorting anymore. Instead, the view's (i.e. KIconView, KListView)
+sorting is utilized by letting its view-items provide a QString key() method. Therefore,
+KFileView offers the two methods
+<ul>
+<li>QString sortingKey( const QString&amp; value, bool isDir, int sortSpec )</li>
+<li>QString sortingKey( KIO::filesize_t value, bool isDir, int sortSpec )</li>
+</ul>
+which the view-classes can use to generate the string for the key() method. The KFile::SortMode
+enum has been removed, as QDir::SortSpec is used entirely.
+
+<br><br>
+Further changes:
+<table>
+<tr><th>Old:</th><th>New:</th></tr>
+<tr><td>not existant</td><td>virtual void readConfig( KConfig *, const QString&amp; group = QString::null )</td></tr>
+<tr><td>not existant</td><td>void writeConfig( KConfig *, const QString&amp; group = QString::null)</td></tr>
+<tr><td>virtual void setCurrentItem( const QString&amp; filename, KFileViewItem * )</td><td>Replaced with the two methods below.</td></tr>
+<tr><td>&nbsp;</td><td>void setCurrentItem( const QString&amp; filename );</td></tr>
+<tr><td>&nbsp;</td><td>virtual void setCurrentItem( const KFileViewItem * ) = 0;</td></tr>
+<tr><td>setOperator( QObject * )</td><td>setParentView( KFileView * )</td></tr>
+<tr><td>virtual void insertSorted( KFileViewItem *, uint count )</td><td>virtual void insertItem( KFileItem * )</td></tr>
+<tr><td>virtual void addItemList( const KFileViewItemList &amp;list )</td><td>not virtual anymore. Sufficient to reimplement insertItem()</td></tr>
+</table>
+<br><br>
+Three more pure virtual methods have been added:
+<ul>
+<li>virtual KFileItem * firstFileItem() const = 0</li>
+<li>virtual KFileItem * nextItem( const KFileItem * ) const = 0</li>
+<li>virtual KFileItem * prevItem( const KFileItem * ) const = 0</li>
+</ul>
+
+<p>
+State-changes are now signaled solely via the KFileViewSignaler object, that every KFileView
+has a protected member of ("sig"). The methods activateMenu(), highlight() and select() have
+been removed. If you implemented a KFileView, change your code in the following way:
+<table>
+<tr><th>Old:</th><th>New:</th></tr>
+<tr><td>activateMenu( item )</td><td>sig->activateMenu( item, pos )</td></tr>
+<tr><td>highlight( item )</td><td>sig->highlightFile( item )</td></tr>
+<tr><td>select( item )</td><td>sig->select( item )</td></tr>
+</table>
+
+
+<H4>KFileViewSignaler</H4>
+The methods activateDir( const KFileViewItem * ) and activateFile( const KFileViewItem * )
+have been merged into the new method activate( const KFileItem * ).
+
+<br><br>
+Carsten Pfeiffer <A HREF="mailto:pfeiffer@kde.org">pfeiffer@kde.org</A>
+
+<H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
+<p>
+
+
 <H3><A NAME="kcontrol">Changes in KControl</A></H3>
 
 <H4>Modules that require root permission</H4>
 The meaning of the <i>X-KDE-RootOnly</i> flag in the .desktop files has changed.
-In KControl 2.0 a message was shown if the user did not press the &quot;modify&quot; 
+In KControl 2.0 a message was shown if the user did not press the &quot;modify&quot;
 button. With the additional flag <i>X-KDE-HasReadOnlyMode</i> it was possible to show
 a disabled version of the module instead of the message. The behaviour was inconsistent
 and has been changed:
@@ -209,7 +305,7 @@ and has been changed:
 <ul>
 <li><i>X-KDE-HasReadOnlyMode</i> is not used anymore and is ignored by KControl &gt; 2.0.
 <li><i>X-KDE-RootOnly</i> does now show a disabled preview of the widget and a notification box.
-<li>If you want the old behaviour back set <i>X-KDE-IsHiddenByDefault</i> along with 
+<li>If you want the old behaviour back set <i>X-KDE-IsHiddenByDefault</i> along with
 <i>X-KDE-RootOnly</i>. Please note that this behaviour is deprecated the sake of
 usability.
 </ul>
@@ -218,6 +314,8 @@ For more details please consult the HOWTO file in the kcontrol directory.
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
 <p>
+
+
 Dirk Mueller <A HREF="mailto:mueller@kde.org">mueller@kde.org</A>
 </BODY>
 </HTML>
