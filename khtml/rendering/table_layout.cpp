@@ -170,7 +170,7 @@ int FixedTableLayout::calcWidthArray( int tableWidth )
 	section = table->firstBody;
     if ( !section )
 	section = table->foot;
-    if ( section ) {
+    if ( section && section->firstChild() ) {
 	cCol = 0;
 	// get the first cell in the first row
 	child = section->firstChild()->firstChild();
