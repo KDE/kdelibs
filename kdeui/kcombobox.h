@@ -128,8 +128,8 @@ public:
     * Constructs a read-only or rather select-only combo box with a parent object
     * and a name.
     *
-    * @param parent the parent object of this widget
-    * @param name the name of this widget
+    * @p parent the parent object of this widget
+    * @p name the name of this widget
     */
     KComboBox( QWidget *parent=0, const char *name=0 );
 
@@ -137,9 +137,9 @@ public:
     * Constructs a "read-write" or "read-only" combo box depending on the value of
     * the first argument( bool rw ) with a parent, a name.
     *
-    * @param rw when @p true widget will be editable.
-    * @param parent the parent object of this widget.
-    * @param name the name of this widget.
+    * @p rw when @p true widget will be editable.
+    * @p parent the parent object of this widget.
+    * @p name the name of this widget.
     */
     KComboBox( bool rw, QWidget *parent=0, const char *name=0 );
 
@@ -154,7 +154,7 @@ public:
     * This method always returns a -1 if the combo-box is NOT
     * editable (read-write).
     *
-    * @return current cursor position.
+    * @returns current cursor position.
     */
     int cursorPosition() const { return ( m_pEdit ) ? m_pEdit->cursorPosition() : -1; }
 
@@ -166,7 +166,7 @@ public:
     * methods has been replaced by the more comprehensive @ref
     * setCompletionMode.
     *
-    * @param autocomplete flag to enable/disable automatic completion mode.
+    * @p autocomplete flag to enable/disable automatic completion mode.
     */
     virtual void setAutoCompletion( bool autocomplete );
 
@@ -177,7 +177,7 @@ public:
     * to automatic.  See its more comprehensive replacement
     * @ref completionMode.
     *
-    * @return true when completion mode is automatic.
+    * @returns true when completion mode is automatic.
     */
     bool autoCompletion() const { return completionMode() == KGlobalSettings::CompletionAuto; }
 
@@ -194,22 +194,22 @@ public:
     * this widget is editable. Call this function with the
     * argument set to false to disable the popup menu.
     *
-    * @param showMenu if true, show the context menu.
-    * @param showMode if true, show the mode changer.
+    * @p showMenu if true, show the context menu.
+    * @p showMode if true, show the mode changer.
     */
     virtual void setContextMenuEnabled( bool showMenu );
 
     /**
     * Returns true when the context menu is enabled.
     *
-    * @return true if context menu is enabled.
+    * @returns true if context menu is enabled.
     */
     bool isContextMenuEnabled() const { return m_bEnableMenu; }
 
     /**
     * Returns true if the combo-box is editable.
     *
-    * @return true if combo is editable.
+    * @returns true if combo is editable.
     */
     bool isEditable() const { return !m_pEdit.isNull() ; }
 
@@ -305,7 +305,7 @@ public slots:
     * For other insertion modes whatever has been typed by the user
     * when the rotation event was initiated will be lost.
     *
-    * @param type the key-binding invoked.
+    * @p type the key-binding invoked.
     */
     void rotateText( KCompletionBase::KeyBindingType /* type */ );
 
@@ -343,7 +343,7 @@ protected:
     * This function simply connects the signals to appropriate
     * slots when they are handled internally.
     *
-    * @param handle if true, handle completion & roation internally.
+    * @p handle if true, handle completion & roation internally.
     */
     virtual void connectSignals( bool handle ) const;
 
@@ -381,15 +381,13 @@ private :
  * load and save the completion list to preserve the weighting between
  * sessions.
  *
- * @see KCompletion
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short A combobox for offering a history and completion
  */
 class KHistoryCombo : public KComboBox
 {
     Q_OBJECT
-    Q_PROPERTY( QStringList historyItems
-		READ historyItems WRITE setHistoryItems )
+    Q_PROPERTY( QStringList historyItems READ historyItems WRITE setHistoryItems )
 
 public:
     /**
@@ -399,6 +397,7 @@ public:
      * The insertion-policy is set to NoInsertion, you have to add the items
      * yourself via the slot @ref addToHistory. If you want every item added,
      * use
+     *
      * <pre>
      * connect( combo, SIGNAL( activated( const QString& )),
      *          combo, SLOT( addToHistory( const QString& )));
@@ -406,10 +405,10 @@ public:
      *
      * Use @ref QComboBox::setMaxCount() to limit the history.
      *
-     * @param parent the parent object of this widget.
-     * @param name the name of this widget.
+     * @p parent the parent object of this widget.
+     * @p name the name of this widget.
      */
-    KHistoryCombo( QWidget *parent=0, const char *name=0 );
+    KHistoryCombo( QWidget *parent = 0L, const char *name = 0L );
 
     /**
      * Calls @ref clearHistory and sets the list of history items. Might get

@@ -340,8 +340,8 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
 
 	    // On Return pressed event, emit both returnPressed(const QString&)
 	    // and returnPressed() signals
-	    qDebug("******** RETURN PRESSED ****** : %s : ", currentText().latin1());
-            emit returnPressed();
+	    if ( !m_trapReturnKey )
+		emit returnPressed();
             emit returnPressed( currentText() );
 
 	    return m_trapReturnKey;
@@ -437,7 +437,6 @@ void KHistoryCombo::addToHistory( const QString& item )
     // now add the items
     insertItem( item, 0 );
     completionObject()->addItem( item );
-    clearEdit();
 }
 
 bool KHistoryCombo::removeFromHistory( const QString& item )
