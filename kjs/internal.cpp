@@ -472,6 +472,9 @@ ListImp::~ListImp()
 
   clear();
   delete hook;
+
+  if ( emptyList == this )
+    emptyList = 0L;
 }
 
 void ListImp::mark()
