@@ -2074,7 +2074,7 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url, bool doLockH
 
 void KHTMLPart::slotRedirect()
 {
-  kdDebug() << k_funcinfo << endl;
+  kdDebug(6050) << k_funcinfo << endl;
   QString u = d->m_redirectURL;
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
@@ -3217,7 +3217,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 //
 void KHTMLPart::urlSelected( const QString &url, int button, int state, const QString &_target, KParts::URLArgs args )
 {
-  kdDebug() << k_funcinfo << url << endl;
+  kdDebug(6050) << k_funcinfo << url << endl;
   bool hasTarget = false;
 
   QString target = _target;
@@ -4256,7 +4256,7 @@ void KHTMLPart::slotChildCompleted( bool pendingAction )
   khtml::ChildFrame *child = frame( sender() );
 
   if ( child ) {
-    kdDebug() << this << "slotChildCompleted child=" << child << " m_frame=" << child->m_frame << endl;
+    kdDebug(6050) << this << "slotChildCompleted child=" << child << " m_frame=" << child->m_frame << endl;
     child->m_bCompleted = true;
     child->m_bPendingRedirection = pendingAction;
     child->m_args = KParts::URLArgs();
