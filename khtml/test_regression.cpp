@@ -306,6 +306,7 @@ int main(int argc, char *argv[])
 
     KApplication a;
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
+    int rv = 1;
 
     if ( args->count() < 2 ) {
 	KCmdLineArgs::usage();
@@ -351,18 +352,23 @@ int main(int argc, char *argv[])
 	result = regressionTest->runTests(args->getOption("test"),true);
     else
 	result = regressionTest->runTests();
+
     if (result) {
-    if (args->isSet("genoutput")) {
-	printf("\nOutput generation completed.\n");
+	if (args->isSet("genoutput")) {
+	    printf("\nOutput generation completed.\n");
+	}
+	else {
+	    printf("\nTests completed.\n");
+	    printf("Passes:   %d\n",regressionTest->m_passes);
+	    printf("Failures: %d\n",regressionTest->m_failures);
+	    printf("Errors:   %d\n",regressionTest->m_errors);
+	    printf("Total:    %d\n",regressionTest->m_passes+regressionTest->m_failures+regressionTest->m_errors);
+	}
     }
-    else {
-	printf("\nTests completed.\n");
-	printf("Passes:   %d\n",regressionTest->m_passes);
-	printf("Failures: %d\n",regressionTest->m_failures);
-	printf("Errors:   %d\n",regressionTest->m_errors);
-	printf("Total:    %d\n",regressionTest->m_passes+regressionTest->m_failures+regressionTest->m_errors);
-    }
-    }
+
+    // Only return a 0 exit code if all tests were successful
+    if (regressionTest->m_failures == 0 && regressionTest->m_errors == 0)
+	rv = 0;
 
     // cleanup
     delete regressionTest;
@@ -374,11 +380,7 @@ int main(int argc, char *argv[])
     khtml::CSSStyleSelector::clear();
     khtml::RenderStyle::cleanup();
 
-    // Only return a 0 exit code if all tests were successful
-    if (regressionTest->m_failures == 0 && regressionTest->m_errors == 0)
-      return 0;
-    else
-      return 1;
+    return rv;
 }
 
 // -------------------------------------------------------------------------
