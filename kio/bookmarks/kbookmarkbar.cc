@@ -61,11 +61,6 @@ private:
     KBookmarkGroup m_visibleStart;
 };
 
-#ifndef ENABLE_FINAL_USERS_SUCK_SUCK_SUCK
-#define ENABLE_FINAL_USERS_SUCK_SUCK_SUCK
-KBookmarkSettings* KBookmarkSettings::s_self = 0;
-#endif
-
 KBookmarkBar::KBookmarkBar( KBookmarkManager* mgr,
                             KBookmarkOwner *_owner, KToolBar *_toolBar,
                             KActionCollection *coll,
