@@ -194,7 +194,7 @@ void KURLRequester::init()
     KURLDragPushButton *button = new KURLDragPushButton( this, "kfile button");
     myButton = button; // small hack for bin compat (myButton is a QPushButton)
     myButton->setPixmap(SmallIcon(QString::fromLatin1("fileopen")));
-    QToolTip::add(myButton, i18n("Open filedialog"));
+    QToolTip::add(myButton, i18n("Open File Dialog"));
 
     connect( button, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
 

@@ -95,9 +95,9 @@ void KFileDialogConfigureDlg::setupAboutPage( const QString &title )
     "Mario Weilguni <A HREF=\"mailto:mweilguni@sime.com\">"
     "mweilguni@sime.com</A><br>"
     "Martin Jones <A HREF=\"mailto:mjones@kde.org\">"
-    "mjones@kde.org</A> and<br>"
+    "mjones@kde.org</A><br>"
     "Espen Sand <A HREF=\"mailto:espen@kde.org\">"
-    "espen@kde.org</A> and<br>"
+    "espen@kde.org</A><br>"
     "Olaf Kirch <A HREF=\"mailto:okir@caldera.de\">"
     "okir@caldera.de</A>");
 

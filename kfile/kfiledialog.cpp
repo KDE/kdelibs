@@ -1384,7 +1384,7 @@ KURL::List KFileDialog::tokenize( const QString& line ) const
 
     if ( (count % 2) == 1 ) { // odd number of " -> error
         QWidget *that = const_cast<KFileDialog *>(this);
-        KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in doublequotes").arg(line), i18n("Filename error"));
+        KMessageBox::sorry(that, i18n("The requested filenames\n%1\ndon't look valid to me.\nMake sure every filename is enclosed in double quotes").arg(line), i18n("Filename error"));
         return urls;
     }
 

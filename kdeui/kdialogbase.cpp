@@ -862,7 +862,7 @@ void KDialogBase::setButtonApplyText( const QString &text,
   const QString whatsThis = i18n( ""
     "When clicking <b>Apply</b>, the settings will be\n"
     "handed over to the program, but the dialog\n"
-    "will not be closed."
+    "will not be closed. "
     "Use this to try different settings. ");
 
   pb->setText( text.isEmpty() ? i18n("&Apply") : text );
