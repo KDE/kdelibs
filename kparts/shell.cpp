@@ -256,7 +256,12 @@ void Shell::createToolBars( const QDomElement& element )
 	if ( e.tagName() == "ToolBar" )
         {
 	    KToolBar* bar = createToolBar( e.attribute("name") );
-
+	    if ( !e.attribute( "fullWidth" ).isEmpty() &&
+		 e.attribute( "fullWidth" ).lower() == "true" )
+		bar->setFullWidth( TRUE );
+	    else
+		bar->setFullWidth( FALSE );
+		
 	    QDomElement f = e.firstChild().toElement();
 	    for( ; !f.isNull(); f = f.nextSibling().toElement() )
 	    {
