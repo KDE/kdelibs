@@ -252,25 +252,28 @@ public class KJASProtocolHandler
         {
             String contextID = getArg( command );
             String appletID  = getArg( command );
+            int objid  = Integer.parseInt( getArg( command ) );
             String name  = getArg( command );
+            int [] ret_type_obj = { -1, 0 };
             StringBuffer value = new StringBuffer();
             int type = 0;
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
-                type = context.getMember(appletID, name, value);
-            Main.debug( "GetMember " + name);
-            sendMemberValue(contextID, GetMember, value.toString(), type); 
+                ret_type_obj = context.getMember(appletID, objid, name, value);
+            Main.debug( "GetMember " + name + "=" + value.toString());
+            sendMemberValue(contextID, GetMember, ret_type_obj[0], ret_type_obj[1], value.toString()); 
         } else
         if (cmd_code_value == PutMember)
         {
             String contextID = getArg( command );
             String appletID  = getArg( command );
+            int objid  = Integer.parseInt( getArg( command ) );
             String name  = getArg( command );
             String value  = getArg( command );
             boolean ret = false;
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
-                ret = context.putMember(appletID, name, value);
+                ret = context.putMember(appletID, objid, name, value);
             Main.debug( "PutMember " + name + "=" + value);
             sendPutMember(contextID, ret); 
         } else
@@ -278,7 +281,9 @@ public class KJASProtocolHandler
         {
             String contextID = getArg( command );
             String appletID  = getArg( command );
+            int objid  = Integer.parseInt( getArg( command ) );
             String name  = getArg( command );
+            int [] ret_type_obj = { -1, 0 };
             StringBuffer value = new StringBuffer();
             java.util.List args = new java.util.Vector();
             try { // fix getArg
@@ -289,13 +294,12 @@ public class KJASProtocolHandler
                 }
             } catch (Exception e) {}
             int type = 0;
-            Main.debug( "stopApplet, context = " + contextID + ", applet = " + appletID );
 
             KJASAppletContext context = (KJASAppletContext) contexts.get( contextID );
             if ( context != null )
-                type = context.callMember(appletID, name, value, args);
-            Main.debug( "CallMember " + name);
-            sendMemberValue(contextID, CallMember, value.toString(), type);
+                ret_type_obj = context.callMember(appletID, objid, name, value, args);
+            Main.debug( "CallMember " + name + "=" + value.toString());
+            sendMemberValue(contextID, CallMember, ret_type_obj[0], ret_type_obj[1], value.toString()); 
         } else
         if (cmd_code_value == DerefObject)
         {
@@ -548,12 +552,13 @@ public class KJASProtocolHandler
 
         signals.print( chars );
     }
-    public void sendMemberValue( String contextID, int cmd, String value, int type )
+    public void sendMemberValue( String contextID, int cmd, int type, int rid, String value )
     {
-        Main.debug( "sendMemberValue, contextID = " + contextID + " value = " + value );
+        Main.debug( "sendMemberValue, contextID = " + contextID + " value = " + value + " type=" + type + " rid=" + rid );
 
         String strtype = new String("" + type);
-        int length = contextID.length() + value.length() + strtype.length() + 5;
+        String strobj = new String("" + rid);
+        int length = contextID.length() + value.length() + strtype.length() + strobj.length() + 6;
         char[] chars = new char[ length + 8 ]; //for length of message
         char[] tmpchar = getPaddedLength( length );
         int index = 0;
@@ -568,12 +573,17 @@ public class KJASProtocolHandler
         index += tmpchar.length;
         chars[index++] = sep;
 
-        tmpchar = value.toCharArray();
+        tmpchar = strtype.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;
 
-        tmpchar = strtype.toCharArray();
+        tmpchar = strobj.toCharArray();
+        System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
+        index += tmpchar.length;
+        chars[index++] = sep;
+
+        tmpchar = value.toCharArray();
         System.arraycopy( tmpchar, 0, chars, index, tmpchar.length );
         index += tmpchar.length;
         chars[index++] = sep;

@@ -492,33 +492,12 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             kdError(6100) << "no context object for this id" << endl;
     }
 }
-/* TODO: sync JType with KParts::LiveConnect::Type
- *       make object reference work again
- */
-static int convertJType(int t) {
-    switch (t) {
-        case 2: // JBoolean  = 2;
-            return (int) KParts::LiveConnectExtension::TypeBool;
-        case 3: // JFunction = 3;
-            return (int) KParts::LiveConnectExtension::TypeFunction;
-        case 5: // JNumber   = 5;
-            return (int) KParts::LiveConnectExtension::TypeNumber;
-        case 1: // JArray    = 1;
-        case 6: // JObject   = 6;
-            return (int) KParts::LiveConnectExtension::TypeObject;
-        case 7: // JString   = 7;
-            return (int) KParts::LiveConnectExtension::TypeString;
-        case 4: // JNull     = 4;
-        case 8: // JVoid     = 8;
-        default:
-            return (int) KParts::LiveConnectExtension::TypeVoid;
-    }
-}
 
-bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned long /*objid*/, const QString & name, int & type, unsigned long & rid, QString & value) {
+bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned long objid, const QString & name, int & type, unsigned long & rid, QString & value) {
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
+    args.append( QString::number(objid) );
     args.append( name );
 
     JSStackNode * frame = d->jsstack = new JSStackNode(d->jsstack);
@@ -535,14 +514,11 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
 
     bool retval = frame->ready;
     if (retval) {
-        value = frame->args[0];
-        bool ok;
-        int t = frame->args[1].toInt(&ok);
-        if (ok && t /*!JError*/) {
-            type = convertJType(t);
-            rid = 0;
-        } else
-            retval = false;
+        type = frame->args[0].toInt(&retval);
+        if (retval && type >= 0) {
+            rid = frame->args[1].toInt(&retval);
+            value = frame->args[2];
+        }
     } else {
         kdError(6100) << "Error: timeout on Java  member return data" << endl;
         d->jsstack = frame->up; // FIXME: if(d->jsstack != frame)
@@ -553,10 +529,11 @@ bool KJavaAppletServer::getMember(int contextId, int appletId, const unsigned lo
     return retval;
 }
 
-bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned long /*objid*/, const QString & name, const QString & value) {
+bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned long objid, const QString & name, const QString & value) {
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
+    args.append( QString::number(objid) );
     args.append( name );
     args.append( value );
 
@@ -573,9 +550,7 @@ bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned lo
 
     bool retval = frame->ready;
     if (retval) {
-        bool ok;
-        int ret = frame->args[0].toInt(&ok);
-        if (!ok || !ret)
+        if (!frame->args[0].toInt(&retval))
             retval = false;
     } else {
         kdError(6100) << "Error: timeout on Java member return data" << endl;
@@ -587,10 +562,11 @@ bool KJavaAppletServer::putMember(int contextId, int appletId, const unsigned lo
     return retval;
 }
 
-bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned long /*objid*/, const QString & name, const QStringList & fargs, int & type, unsigned long & rid, QString & value) {
+bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned long objid, const QString & name, const QStringList & fargs, int & type, unsigned long & rid, QString & value) {
     QStringList args;
     args.append( QString::number(contextId) );
     args.append( QString::number(appletId) );
+    args.append( QString::number(objid) );
     args.append( name );
     for (QStringList::const_iterator it = fargs.begin(); it != fargs.end(); it++)
         args.append(*it);
@@ -608,14 +584,12 @@ bool KJavaAppletServer::callMember(int contextId, int appletId, const unsigned l
 
     bool retval = frame->ready;
     if (retval) {
-        value = frame->args[0];
-        bool ok;
-        int t = frame->args[1].toInt(&ok);
-        if (ok && t /*!JError*/) {
-            type = convertJType(t);
-            rid = 0;
-        } else
-            retval = false;
+        type = frame->args[0].toInt(&retval);
+        if (retval && type > -1) {
+            rid = frame->args[1].toInt(&retval);
+            if (retval)
+                value = frame->args[2];
+        }
     } else {
         kdError(6100) << "Error: timeout on Java  member return data" << endl;
         d->jsstack = frame->up;
