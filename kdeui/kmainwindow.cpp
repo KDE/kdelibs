@@ -443,6 +443,10 @@ void KMainWindow::saveNewToolbarConfig()
 }
 
 void KMainWindow::setupGUI( int options, const QString & xmlfile ) {
+    setupGUI(QSize(), options, xmlfile);
+}
+
+void KMainWindow::setupGUI( QSize defaultSize, int options, const QString & xmlfile ) {
     if( options & Keys ){
         KStdAction::keyBindings(guiFactory(),
                     SLOT(configureShortcuts()), actionCollection());
@@ -467,8 +471,18 @@ void KMainWindow::setupGUI( int options, const QString & xmlfile ) {
         // so the default window size will be incorrect unless the application
         // hard coded the size which they should try not to do (i.e. use
         // size hints).
-        if(!isShown())
+        if(initialGeometrySet())
+        {
+          // Do nothing...
+        }
+        else if(defaultSize.isValid())
+        {
+          resize(defaultSize);
+        }
+        else if(!isShown())
+        {
           adjustSize();
+        }
         setAutoSaveSettings();
     }
 

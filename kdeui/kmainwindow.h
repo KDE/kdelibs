@@ -587,12 +587,16 @@ public:
      * fashion.  The options are all enabled by default but can be turned
      * off if desired through the params or if the prereqs don't exists.
      *
+     * @p defaultSize The default size of the window
+     *
      * Typically this function replaces createGUI().
      *
      * @see StandardWindowOptions
      *
      * @since 3.3
      */
+    void setupGUI( QSize defaultSize, int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString::null );
+
     void setupGUI( int options = ToolBar | Keys | StatusBar | Save | Create, const QString& xmlfile = QString::null );
 
     /**
