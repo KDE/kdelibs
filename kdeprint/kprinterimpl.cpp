@@ -449,31 +449,53 @@ int KPrinterImpl::doFilterFiles(KPrinter *printer, QStringList& files, const QSt
 
 int KPrinterImpl::autoConvertFiles(KPrinter *printer, QStringList& files, bool flag)
 {
+	QString primaryMimeType = "application/postscript";
+	QStringList mimeTypes( primaryMimeType );
+	if ( printer->option( "kde-isspecial" ) == "1" )
+	{
+		if ( !printer->option( "kde-special-command" ).isEmpty() )
+		{
+			KXmlCommand *cmd = KXmlCommandManager::self()->loadCommand( printer->option( "kde-special-command" ) );
+			if ( cmd )
+			{
+				mimeTypes = cmd->inputMimeTypes();
+				// FIXME: the XML command description should now contain a primiary
+				// mime type as well. This is a temporary-only solution.
+				primaryMimeType = mimeTypes[ 0 ];
+			}
+		}
+	}
+	else
+	{
+		KMFactory::PluginInfo	info = KMFactory::self()->pluginInfo(KMFactory::self()->printSystem());
+		mimeTypes = info.mimeTypes;
+		primaryMimeType = info.primaryMimeType;
+	}
 	KMFactory::PluginInfo	info = KMFactory::self()->pluginInfo(KMFactory::self()->printSystem());
 	int		status(0), result;
 	for (QStringList::Iterator it=files.begin(); it!=files.end(); )
 	{
 		QString	mime = KMimeMagic::self()->findFileType(*it)->mimeType();
-		if (info.mimeTypes.findIndex(mime) == -1)
+		if (mimeTypes.findIndex(mime) == -1)
 		{
 			if ((result=KMessageBox::warningYesNoCancel(NULL,
 					       i18n("The file format %1 is not directly supported by the current print system. "
 					            "KDE can try to convert this file automatically to a supported format. But you can "
 						    "still try to send the file to the printer without any conversion. Do you want KDE "
-						    "to try to convert this file to %2?").arg(mime).arg(info.primaryMimeType),
+						    "to try to convert this file to %2?").arg(mime).arg(primaryMimeType),
 					       QString::null,
 					       i18n("Convert"),
 					       i18n("Keep"),
 					       QString::fromLatin1("kdeprintAutoConvert"))) == KMessageBox::Yes)
 			{
 				// find the filter chain
-				QStringList	flist = KXmlCommandManager::self()->autoConvert(mime, info.primaryMimeType);
+				QStringList	flist = KXmlCommandManager::self()->autoConvert(mime, primaryMimeType);
 				if (flist.count() == 0)
 				{
 					if (KMessageBox::warningYesNo(NULL,
 								      i18n("No appropriate filter was found to convert the file "
 								           "format %1 into %2. Do you want to print the "
-									   "file using its original format?").arg(mime).arg(info.primaryMimeType),
+									   "file using its original format?").arg(mime).arg(primaryMimeType),
 								      QString::null,
 								      i18n("Print"),
 								      i18n("Skip")) == KMessageBox::No)
