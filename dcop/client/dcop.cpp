@@ -342,21 +342,59 @@ void callFunction( const char* app, const char* obj, const char* func, int argc,
     if ( left < 0 )
 	f += "()";
 
+    // This may seem expensive but is done only once per invocation
+    // of dcop, so it should be OK.
+    //
+    //
+    QStringList intTypes;
+    intTypes << "int" << "unsigned" << "long" << "bool" ;
+
     QStringList types;
     if ( left >0 && left + 1 < right - 1) {
 	types = QStringList::split( ',', f.mid( left + 1, right - left - 1) );
 	for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
-	    (*it).stripWhiteSpace();
-//#if 0
-// This destroys all possible support for things like unsigned long int
-// Simon: I re-enabled this, because without it breaks what the dcop idl
-// compiler generates. For example from konq: 'openURL(QString name)' . We
-// certainly want to support that. If people want 'unsigned long int' then
-// they should IMHO fix the dcop interface to use 'ulong' or the like.
-	    int s = (*it).find(' ');
+	    QString lt = (*it).simplifyWhiteSpace();
+
+	    int s = lt.find(' ');
+
+	    // If there are spaces in the name, there may be two
+	    // reasons: the parameter name is still there, ie.
+	    // "QString URL" or it's a complicated int type, ie.
+	    // "unsigned long long int bool".
+	    //
+	    //
 	    if ( s > 0 )
-		(*it) = (*it).left( s );
-//#endif
+	    {
+		QStringList partl = QStringList::split(' ' , lt);
+		
+		// The zero'th part is -- at the very least -- a 
+		// type part. Any trailing parts *might* be extra
+		// int-type keywords, or at most one may be the
+		// parameter name.
+		//
+		//
+	    	s=1;
+
+		while (s < partl.count() && intTypes.contains(partl[s]))
+		{
+			s++;
+		}
+
+		if (s<partl.count()-1)
+		{
+			qWarning("The argument `%s' seems syntactically wrong.",
+				lt.latin1());
+		}
+		if (s==partl.count()-1)
+		{
+			partl.remove(partl.at(s));
+		}
+
+	    	lt = partl.join(" ");
+		lt = lt.simplifyWhiteSpace();
+	    }
+
+	    (*it) = lt;
 	}
 	QString fc = f.left( left );
 	fc += '(';
