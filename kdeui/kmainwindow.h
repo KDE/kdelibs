@@ -609,13 +609,13 @@ protected slots:
     *   ..
     * }
     *
-    * void MyMainLevel::showAboutApplication( void )
+    * void MyMainLevel::showAboutApplication()
     * {
     *   <activate your custom dialog>
     * }
     * </pre>
     */
-    void showAboutApplication( void ); //### shouldn't it be virtual, then ???
+    virtual void showAboutApplication();
 
 private slots:
    /**

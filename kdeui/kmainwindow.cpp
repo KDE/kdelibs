@@ -499,7 +499,7 @@ void KMainWindow::updateRects()
 }
 #endif
 
-void KMainWindow::showAboutApplication( void )
+void KMainWindow::showAboutApplication()
 {
 }
 
@@ -850,7 +850,7 @@ void KMainWindow::paintEvent( QPaintEvent * )
 
 QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 {
-    KToolBar *tb = toolBar(); 
+    KToolBar *tb = toolBar();
     if (!tb->isHidden()) {
         switch( tb->barPos() )
         {
@@ -858,7 +858,7 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
           case KToolBar::Bottom:
             size += QSize(0, tb->sizeHint().height());
             break;
-          
+
           case KToolBar::Left:
           case KToolBar::Right:
             size += QSize(toolBar()->sizeHint().width(), 0);
@@ -884,7 +884,7 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 
 #if QT_VERSION == 302
     size += QSize(0,2); // Qt 3.0.2 insists on wasting 2 pixels it seems.
-#endif 
+#endif
 
     return size;
 }
