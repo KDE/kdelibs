@@ -54,6 +54,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <kstaticdeleter.h>
 
 #include "kdirwatch.h"
 #include "kdirwatch_p.h"
@@ -121,13 +122,12 @@ void KDirWatchPrivate::dnotify_handler(int, siginfo_t *si, void *)
 
 KDirWatchPrivate::KDirWatchPrivate()
 {
-  dwp_self = this;
-
   timer = new QTimer(this);
   connect (timer, SIGNAL(timeout()), this, SLOT(slotRescan()));
   freq = 3600000; // 1 hour as upper bound
   statEntries = 0;
   delayRemove = false;
+  m_ref = 0;
 
   KConfigGroup config(KGlobal::config(), QCString("DirWatch"));
   m_nfsPollInterval = config.readNumEntry("NFSPollInterval", 5000);
@@ -171,7 +171,6 @@ KDirWatchPrivate::KDirWatchPrivate()
 
   kdDebug(7001) << "Available methods: " << available << endl;
 }
-
 
 /* This should never be called, but doesn't harm */
 KDirWatchPrivate::~KDirWatchPrivate()
@@ -626,7 +625,8 @@ void KDirWatchPrivate::removeEntries( KDirWatch* instance )
       c->count = 1; // forces deletion of instance as client
       list.append(&(*it));
     }
-    else if ( (*it).freq < minfreq) minfreq = (*it).freq;
+    else if ( (*it).m_mode == StatMode && (*it).freq < minfreq )
+      minfreq = (*it).freq;
   }
 
   for(Entry* e=list.first();e;e=list.next())
@@ -772,7 +772,6 @@ int KDirWatchPrivate::scanEntry(Entry* e)
     if (e->msecLeft>0) return NoChange;
     e->msecLeft += e->freq;
   }
-
 
   QFileInfo info(e->path);
   if (info.exists()) {
@@ -1128,12 +1127,13 @@ void KDirWatchPrivate::statistics()
 // Class KDirWatch
 //
 
+static KStaticDeleter<KDirWatch> sd_dw;
 KDirWatch* KDirWatch::s_pSelf = 0L;
 
 KDirWatch* KDirWatch::self()
 {
   if ( !s_pSelf ) {
-    s_pSelf = new KDirWatch;
+    sd_dw.setObject( s_pSelf, new KDirWatch );
   }
 
   return s_pSelf;
@@ -1152,6 +1152,7 @@ KDirWatch::KDirWatch (QObject* parent, const char* name)
   if (!dwp_self)
     dwp_self = new KDirWatchPrivate;
   d = dwp_self;
+  d->ref();
 
   _isStopped = false;
 }
@@ -1159,7 +1160,7 @@ KDirWatch::KDirWatch (QObject* parent, const char* name)
 KDirWatch::~KDirWatch()
 {
   if (d) d->removeEntries(this);
-  // we don't remove singleton KDirWatchPrivate
+  d->deref(); // will delete it if it's the last one
 }
 
 

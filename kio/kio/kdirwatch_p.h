@@ -85,6 +85,10 @@ public:
   int scanEntry(Entry* e);
   void emitEvent(Entry* e, int event, const QString &fileName = QString::null);
 
+  // Memory management - delete when last KDirWatch gets deleted
+  void ref() { m_ref++; }
+  void deref() { if ( --m_ref == 0 ) delete this; }
+
 public slots:
   void slotRescan();
   void famEventReceived(); // for FAM
@@ -98,6 +102,7 @@ private:
   int freq;
   int statEntries;
   int m_nfsPollInterval, m_PollInterval;
+  int m_ref;
   bool useStat(Entry*);
 
   bool delayRemove;
