@@ -24,6 +24,7 @@
 #include <qpaintdevicemetrics.h>
 #include <qapplication.h>
 #include <dom_string.h>
+#include <kdebug.h>
 #include <kurl.h>
 #include <kmessagebox.h>
 #include <klocale.h>
@@ -380,13 +381,13 @@ Completion WindowFunc::tryExecute(const List &args)
   break;
   }
   case ScrollBy:
-    if(args.size() == 2 && part->view())
+    if(args.size() == 2 && widget)
       part->view()->scrollBy(args[0].toInt32(), args[1].toInt32());
     result = Undefined();
     break;
   case ScrollTo:
-    if(args.size() == 2 && part->view())
-      part->view()->setContentsPos(args[0].toInt32(), args[1].toInt32());
+    if(args.size() == 2 && widget)
+      widget->setContentsPos(args[0].toInt32(), args[1].toInt32());
     result = Undefined();
     break;
   case SetTimeout:
@@ -419,8 +420,28 @@ Completion WindowFunc::tryExecute(const List &args)
     // TODO
     break;
   case Close:
+      /* From http://developer.netscape.com/docs/manuals/js/client/jsref/window.htm :
+        The close method closes only windows opened by JavaScript using the open method.
+        If you attempt to close any other window, a confirm is generated, which
+        lets the user choose whether the window closes.
+        This is a security feature to prevent "mail bombs" containing self.close().
+        However, if the window has only one document (the current one) in its
+        session history, the close is allowed without any confirm. This is a
+        special case for one-off windows that need to open other windows and
+        then dispose of themselves.
+        */
+    if (window->opener.isNull())
+    {
+        // TODO confirmation, see above
+        kdWarning(6070) << "KJS: window.close() not implemented for windows not opened with window.open()" << endl;
+    }
+    else
+    {
+        kdDebug(6070) << "WindowFunc::tryExecute window.close. Deleting part " << window->part << endl;
+        delete window->part;
+    }
+
     result = Undefined();
-    // TODO
     break;
   }
   return Completion(Normal, result);
@@ -429,8 +450,9 @@ Completion WindowFunc::tryExecute(const List &args)
 
 void WindowFunc::setStatusBarText(KHTMLPart *p, const QString &s)
 {
-  p->setStatusBarText(s);
+  emit p->setStatusBarText(s);
 }
+
 void WindowFunc::initJScript(KHTMLPart *p)
 {
   (void)p->jScript(); // dummy call to create an interpreter
