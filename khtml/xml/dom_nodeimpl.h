@@ -191,7 +191,7 @@ public:
 
     // ### check if this function is still needed at all...
     virtual bool isInline() { return true; }
-
+    virtual void printTree(int indent=0) const;
     virtual QString toHTML();
     virtual void recursive( QChar *&htmlText, long &currentLength, long &offset, int stdInc );
     virtual bool increaseStringLength( QChar *&htmlText, long &currentLength, long offset, int stdInc );

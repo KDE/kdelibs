@@ -340,12 +340,54 @@ void NodeImpl::setKeyboardFocus(ActivationState b)
     }
 }
 
-
 void NodeImpl::setChanged(bool b)
 {
     if (b && !changed() && document)
 	document->changedNodes.append(this);
     m_changed = b;
+}
+
+void NodeImpl::printTree(int indent) const
+{
+    QString ind;
+    QString s;
+    ind.fill(' ', indent);
+
+    s = ind + "<" + nodeName().string();
+
+#if 0
+    // ### find out why this isn't working
+    if(isElementNode())
+    {
+        const ElementImpl* e = static_cast<const ElementImpl*>(this);
+        bool complained = false;
+
+        for(int i=0; i < e->getAttributeCount(); i++)
+        {
+            AttrImpl* a = e->attributes()->item(i);
+            if(a)
+                s += a->name().string() +"=\"" + a->value().string() + "\"";
+            else if(!complained)
+            {
+                s += "*** attribute count mismatch ***";
+                complained = true;
+            }
+        }
+    }
+#endif
+
+    s += ">";
+
+    kdDebug() << s << endl;
+
+    NodeImpl *child = firstChild();
+    while( child )
+    {
+        child->printTree(indent+2);
+        child = child->nextSibling();
+    }
+    if(isElementNode())
+        kdDebug() << ind << "</" << nodeName().string() << ">" << endl;
 }
 
 //--------------------------------------------------------------------
@@ -478,7 +520,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
 	removeChild(newChild, exceptioncode);
     if( exceptioncode )
 	return 0;
-    
+
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;
@@ -499,7 +541,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
 	    newParent->removeChild( child, exceptioncode );
 	if ( exceptioncode )
 	    return 0;
-	
+
 	// seems ok, lets's insert it.
 	if (prev)
 	    prev->setNextSibling(child);
@@ -569,7 +611,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
 	    return 0;
 	}
-	
+
 	// if already in the tree, remove it first!
 	NodeImpl *newParent = child->parentNode();
 	if(newParent)
@@ -643,7 +685,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 	removeChild(newChild, exceptioncode);
     if ( exceptioncode )
 	return 0;
-    
+
     bool isFragment = newChild->nodeType() == Node::DOCUMENT_FRAGMENT_NODE;
     NodeImpl *nextChild;
     NodeImpl *child = isFragment ? newChild->firstChild() : newChild;

@@ -414,8 +414,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSaveDocument = new KAction( i18n( "&Save As..." ), CTRL+Key_S, this, SLOT( slotSaveDocument() ), actionCollection(), "saveDocument" );
   d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), 0, this, SLOT( slotSaveFrame() ), actionCollection(), "saveFrame" );
   d->m_paSecurity = new KAction( i18n( "Security..." ), "unlock", 0, this, SLOT( slotSecurity() ), actionCollection(), "security" );
-  d->m_paDebugRenderTree = new KAction( "print RenderingTree to stdout", CTRL+Key_D, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
-  d->m_paDebugDOMTree = new KAction( "print DOM Tree to stdout", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
+  d->m_paDebugRenderTree = new KAction( "print rendering tree to stdout", 0, this, SLOT( slotDebugRenderTree() ), actionCollection(), "debugRenderTree" );
+  d->m_paDebugDOMTree = new KAction( "print DOM tree to stdout", 0, this, SLOT( slotDebugDOMTree() ), actionCollection(), "debugDOMTree" );
 
   d->m_paSetEncoding = new KSelectAction( i18n( "Set &Encoding" ), 0, this, SLOT( slotSetEncoding() ), actionCollection(), "setEncoding" );
   QStringList encodings = KGlobal::charsets()->availableEncodingNames();
@@ -843,14 +843,15 @@ void KHTMLPart::slotShowDocument( const QString &url, const QString &target )
 
 void KHTMLPart::slotDebugDOMTree()
 {
-    qDebug("slotDebugDOMTree");
+    if(d->m_doc && d->m_doc->firstChild())
+        d->m_doc->firstChild()->printTree();
 }
 
 void KHTMLPart::slotDebugRenderTree()
 {
-    qDebug("slotDebugRenderTree");
+    if(d->m_doc && d->m_doc->firstChild() && d->m_doc->firstChild()->renderer())
+        d->m_doc->firstChild()->renderer()->printTree();
 }
-
 
 void KHTMLPart::autoloadImages( bool enable )
 {
@@ -947,7 +948,7 @@ void KHTMLPart::clear()
   d->m_bClearing = false;
   d->m_frameNameId = 1;
   d->m_bFirstData = true;
-  
+
   d->m_bMousePressed = false;
 
   d->m_selectionStart = DOM::Node();

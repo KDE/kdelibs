@@ -21,6 +21,7 @@
  *
  * $Id$
  */
+
 #include "dom_docimpl.h"
 
 #include "dom_node.h"
@@ -759,7 +760,7 @@ static bool isTransitional(const QString &spec, int start)
        (spec.find("LATIN1", start, false ) != -1 ) ||
        (spec.find("SYMBOLS", start, false ) != -1 ) ||
        (spec.find("SPECIAL", start, false ) != -1 ) ) {
-	//kdDebug() << "isTransitional" << endl; 
+	//kdDebug() << "isTransitional" << endl;
 	return true;
     }
     return false;
@@ -793,7 +794,7 @@ void DocumentImpl::determineParseMode( const QString &str )
     int stop = str.find('>', pos);
     if( start > -1 && stop > start ) {
 	QString spec = str.mid( start + 1, stop - start - 1 );
-	//kdDebug() << "DocumentImpl::determineParseMode dtd=" << spec<< endl; 
+	//kdDebug() << "DocumentImpl::determineParseMode dtd=" << spec<< endl;
 	start = 0;
 	int quote = -1;
 	if( doctype != -1 ) {
@@ -801,7 +802,7 @@ void DocumentImpl::determineParseMode( const QString &str )
 		int quote2 = spec.find( "\"", quote+1 );
 		if(quote2 < 0) quote2 = spec.length() - quote - 1;
 		QString val = spec.mid( quote+1, quote2 - quote-1 );
-		//kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl; 
+		//kdDebug() << "DocumentImpl::determineParseMode val = " << val << endl;
 		// find system id
 		pos = val.find("http://www.w3.org/tr/", 0, false);
 		if ( pos != -1 ) {
@@ -831,7 +832,7 @@ void DocumentImpl::determineParseMode( const QString &str )
 			if ( tagPos != -1 ) {
 			    tagPos = val.find(QRegExp("[0-9]"), tagPos );
 			    int version = val.mid( tagPos, 1 ).toInt();
-			    //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl; 
+			    //kdDebug() << "DocumentImpl::determineParseMode tagPos = " << tagPos << " version=" << version << endl;
 			    if( version > 3 ) {
 				htmlMode = Html4;
 				if( isTransitional( val, tagPos ) )
@@ -863,8 +864,8 @@ void DocumentImpl::determineParseMode( const QString &str )
 	if ( htmlMode == XHtml )
 	    pMode = Strict;
     }
-//     kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl; 
-//     kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl; 
+//     kdDebug() << "DocumentImpl::determineParseMode: publicId =" << publicId << " systemId = " << systemId << endl;
+//     kdDebug() << "DocumentImpl::determineParseMode: htmlMode = " << htmlMode<< endl;
     if( pMode == Strict )
 	kdDebug() << " using strict parseMode" << endl;
     else if (pMode == Compat )

@@ -111,13 +111,10 @@ public:
     DOMString getAttribute ( const DOMString &name ) const;
 
     void setAttribute ( const DOMString &name, const DOMString &value);
-
     void removeAttribute ( const DOMString &name );
 
     AttrImpl *getAttributeNode ( const DOMString &name );
-
     AttrImpl *setAttributeNode ( AttrImpl *newAttr, int &exceptioncode );
-
     AttrImpl *removeAttributeNode ( AttrImpl *oldAttr, int &exceptioncode );
 
     NodeListImpl *getElementsByTagName ( const DOMString &name );
@@ -157,17 +154,15 @@ public:
     virtual void detach();
     virtual void recalcStyle();
     virtual void setOwnerDocument(DocumentImpl *_document);
-    
+
     virtual bool mouseEvent( int x, int y, int button,
 			     MouseEventType type, int _tx, int _ty,
 			     DOMString &url,
                              NodeImpl *&innerNode, long &offset);
-    
+
     virtual void mouseEventHandler( int /*button*/, MouseEventType /*type*/, bool /*inside*/ ) {};
-    
+
 protected: // member variables
-        
-    
 
     NamedAttrMapImpl *namedAttrMap;
 
