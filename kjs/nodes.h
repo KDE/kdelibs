@@ -707,6 +707,15 @@ namespace KJS {
     StatementNode *block;
   };
 
+  class FuncExprNode : public Node {
+  public:
+    FuncExprNode(ParameterNode *p, StatementNode *b) : param(p), block(b) { }
+    KJSO evaluate();
+  private:
+    ParameterNode *param;
+    StatementNode *block;
+  };
+
   class SourceElementNode : public Node {
   public:
     SourceElementNode(StatementNode *s) { statement = s; function = 0L; }

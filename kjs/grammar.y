@@ -104,7 +104,7 @@ using namespace KJS;
 %token AUTO
 
 /* non-terminal types */
-%type <node>  Literal PrimaryExpr Expr MemberExpr NewExpr CallExpr
+%type <node>  Literal PrimaryExpr Expr MemberExpr FunctionExpr NewExpr CallExpr
 %type <node>  ArrayLiteral PropertyName PropertyNameAndValueList
 %type <node>  LeftHandSideExpr PostfixExpr UnaryExpr
 %type <node>  MultiplicativeExpr AdditiveExpr
@@ -202,6 +202,7 @@ PropertyName:
 
 MemberExpr:
     PrimaryExpr
+  | FunctionExpr
   | MemberExpr '[' Expr ']'        { $$ = new AccessorNode1($1, $3); }
   | MemberExpr '.' IDENT           { $$ = new AccessorNode2($1, $3);
                                      delete $3; }
@@ -472,7 +473,8 @@ BreakStatement:
   | BREAK IDENT error              { if (automatic()) {
                                        $$ = new BreakNode($2); delete $2;
                                      } else
-				       YYABORT; }
+				       YYABORT;
+                                   }
 ;
 
 ReturnStatement:
@@ -553,6 +555,12 @@ FunctionDeclaration:
   | FUNCTION IDENT '(' FormalParameterList ')' Block
                                    { $$ = new FuncDeclNode($2, $4, $6);
                                      delete $2; }
+
+FunctionExpr:
+    FUNCTION '(' ')' Block   	   { $$ = new FuncExprNode(0L, $4); }
+  | FUNCTION '(' FormalParameterList ')' Block
+                                   { $$ = new FuncExprNode($3, $5); }
+
 ;
 
 FormalParameterList:

@@ -1222,6 +1222,17 @@ void FuncDeclNode::processFuncDecl()
   Global::current().put(ident, f);
 }
 
+// ECMA 13
+KJSO FuncExprNode::evaluate()
+{
+  FunctionImp *fimp = new DeclaredFunctionImp(UString::null, block);
+
+  for(ParameterNode *p = param; p != 0L; p = p->nextParam())
+    fimp->addParameter(p->ident());
+
+  return Function(fimp);
+}
+
 ParameterNode* ParameterNode::append(const UString *i)
 {
   ParameterNode *p = this;
