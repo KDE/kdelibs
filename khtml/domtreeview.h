@@ -32,12 +32,19 @@ class DOMTreeView : public KListView
 	~DOMTreeView();
 
 	void recursive(const DOM::Node &pNode, const DOM::Node &node);
+
+    signals:
+	void sigNodeClicked(const DOM::Node &);
 	
     public slots:
 	void showTree(const DOM::Node &pNode);
 
+    protected slots:
+	void slotItemClicked(QListViewItem *);
+
     private:
 	QPtrDict<QListViewItem> m_itemdict;
+	QPtrDict<DOM::NodeImpl> m_nodedict;
 	DOM::Node document;
 
 	KHTMLPart *part;
