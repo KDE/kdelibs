@@ -65,8 +65,5 @@ bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
 
 void KUniqueApplication::newInstance(QValueList<QCString> params)
 {
-  qDebug("KUniqueApplication::newInstance was called, arguments:\n");
-  QValueList<QCString>::ConstIterator pIt(params.begin());
-  for (; pIt != params.end(); ++pIt)
-    qDebug("  %s",(*pIt).data());
+  return; // do nothing in default implementation
 }
