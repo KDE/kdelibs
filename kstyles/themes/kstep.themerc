@@ -1,12 +1,10 @@
 [Misc]
 Name=KDE Step
-Name[de]=KDE-Step
 Name[eo]=KDE-Paŝo
 Name[ro]=Stil Step KDE
 Comment=Unthemed Next-like style
 Comment[ca]=Estil del tipus Next sense temes
 Comment[cs]=Styl jako NeXT (netémovaný)
-Comment[de]=NeXT-Stil (kein komplettes Design)
 Comment[eo]=Next-Step-stilo neetosa
 Comment[fr]=Style sans thème similaire à Next
 Comment[hu]=Next-szerű kinézet

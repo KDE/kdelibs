@@ -1,6 +1,5 @@
 [Misc]
 Name=Pillbox
-Name[de]=Pillenschachtel
 Name[eo]=Pilolujo
 Name[hu]=Gyógyszeresdoboz
 Name[pt]=Caixa
@@ -8,7 +7,6 @@ Name[sl]=Škatlica tablet
 Comment=Pillbox unthemed style.
 Comment[ca]=Estil sense tema Pillbox.
 Comment[cs]=Pillbox styl (netémovaný)
-Comment[de]=Pillenschachtel (kein komplettes Design)
 Comment[eo]=Pilolujo-stilo neetosa
 Comment[he]=Pillbox unthemed style
 Comment[hu]=Gyógyszeresdoboz stílus
