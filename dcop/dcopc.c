@@ -304,11 +304,11 @@ dcop_send_signal(
   /* the length field tells the dcopserver how much bytes the dcop message
    * takes up. We add that size to the already by IceGetHeader initialized
    * length value, as it seems that under some circumstances (depending on the
-   * DCOPMsg structure size) the length field is aligned/padded. 
+   * DCOPMsg structure size) the length field is aligned/padded.
    */
   pMsgPtr->length += headerLength + dataLength;
 
-  /* first let's send the dcop message header 
+  /* first let's send the dcop message header
    * IceSendData automatically takes care of first sending the Ice Message
    * Header (outbufptr > outbuf -> flush the connection buffer)
    */
@@ -323,6 +323,8 @@ dcop_send_signal(
 
   if (IceConnectionStatus(iceConn) != IceConnectAccepted)
     return DCOP_ERROR_SERVER_REFUSED_DATA;
+	
+  IceProtocolShutdown( iceConn, majorOpcode );
 
   IceCloseConnection( iceConn );
 
