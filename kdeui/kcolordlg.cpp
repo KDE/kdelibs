@@ -569,9 +569,13 @@ int KColorDialog::getColor( QColor &theColor )
 	return result;
 }
 
+#include <iostream.h>
+
 void KColorDialog::slotOkPressed()
 {
+cerr << "coldlg" << endl;
 	writeSettings();
+cerr << "coldlg" << endl;
 	accept();
 }
 
@@ -742,7 +746,7 @@ void KColorDialog::writeSettings()
 	for ( int i = 0; i < custColorCells->numCells(); i++ )
 	{
 		color = custColorCells->color( i );
-		key = QString( "Color%d").arg( i );
+		key = QString( "Color%1").arg( i );
 		config->writeEntry( key, color, true, true );
 	}
 
