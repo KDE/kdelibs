@@ -27,13 +27,13 @@ int main ( int argc, char **argv)
     QPushButton * push = new QPushButton( "E&xit", w );
 
     // Set up the editable combo box.
-    rwc->setEnableMultipleInsertion( false );
+    rwc->setDuplicatesEnabled( false );
     QObject::connect( rwc, SIGNAL( returnPressed( const QString& ) ), rwc->completionObject(), SLOT( addItem( const QString& ) ) );
 
 
     // Set up select-only combo box.
     soc->setCompletionMode( KGlobal::CompletionAuto );
-    soc->setEnableMultipleInsertion( false );
+    soc->setDuplicatesEnabled( false );
     // Popuplate the select-only list box
     QStringList list;
     list <<i18n("Stone") <<i18n("Tree") <<i18n("Peables") <<i18n("Ocean") <<i18n("Sand") <<i18n("Chips") <<i18n("Computer") <<i18n("Mankind");
