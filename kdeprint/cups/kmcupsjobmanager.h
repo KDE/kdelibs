@@ -24,19 +24,30 @@
 
 #include "kmjobmanager.h"
 #include "ipprequest.h"
+#include <qstringlist.h>
 
 class KMCupsJobManager : public KMJobManager
 {
+	Q_OBJECT
+
 public:
 	KMCupsJobManager(QObject *parent = 0, const char *name = 0);
 	virtual ~KMCupsJobManager();
 
 	int actions();
+	void createPluginActions(KActionCollection*);
+	void validatePluginActions(KActionCollection*, const QPtrList<KMJob>&);
+
+protected slots:
+	void slotJobIppReport();
 
 protected:
 	bool listJobs();
 	bool sendCommandSystemJob(const QPtrList<KMJob>& jobs, int action, const QString& arg = QString::null);
 	void parseListAnswer(IppRequest& req);
+
+private:
+	QStringList	m_currenturis;
 };
 
 #endif

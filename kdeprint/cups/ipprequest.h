@@ -24,6 +24,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
+#include <qtextstream.h>
 
 #include <cups/ipp.h>
 
@@ -76,6 +77,9 @@ public:
 	// processing functions
 	bool doRequest(const QString& res);
 	bool doFileRequest(const QString& res, const QString& filename = QString::null);
+
+	// report functions
+	bool htmlReport(int group, QTextStream& output);
 
 protected:
 	void addString_p(int group, int type, const QString& name, const QString& value);

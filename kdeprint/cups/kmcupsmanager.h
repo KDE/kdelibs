@@ -29,6 +29,9 @@ class KLibrary;
 
 class KMCupsManager : public KMManager
 {
+	friend class KMWIppPrinter;
+	friend class KMCupsJobManager;
+
 	Q_OBJECT
 public:
 	KMCupsManager(QObject *parent = 0, const char *name = 0);
@@ -64,6 +67,7 @@ public:
 
 public slots:
 	void exportDriver();
+	void printerIppReport();
 
 protected:
 	// the real printer listing job is done here
@@ -77,6 +81,7 @@ protected:
 	void* loadCupsdConfFunction(const char*);
 	void unloadCupsdConf();
 	QString cupsInstallDir();
+	void ippReport(IppRequest&, int, const QString&);
 
 private:
 	KLibrary	*m_cupsdconf;

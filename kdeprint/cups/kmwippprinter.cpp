@@ -22,6 +22,7 @@
 #include "kmwizard.h"
 #include "kmprinter.h"
 #include "ipprequest.h"
+#include "kmcupsmanager.h"
 
 #include <klistview.h>
 #include <qheader.h>
@@ -62,6 +63,8 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	m_info->setPaper(colorGroup().background());
 	m_info->setMinimumHeight(100);
 	m_info->setText(i18n("<p>Either enter the printer URI directly, or use the network scanning facility.</p>"));
+	m_ippreport = new QPushButton(i18n("IPP Report..."), this);
+	m_ippreport->setEnabled(false);
 
 	QPushButton	*settings_ = new QPushButton(i18n("Settings"),this);
 	QPushButton	*scan_ = new QPushButton(i18n("Scan"),this);
@@ -72,11 +75,13 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	connect(m_list,SIGNAL(selectionChanged(QListViewItem*)),SLOT(slotPrinterSelected(QListViewItem*)));
 	connect(scan_,SIGNAL(clicked()),SLOT(slotScan()));
 	connect(settings_,SIGNAL(clicked()),SLOT(slotSettings()));
+	connect(m_ippreport, SIGNAL(clicked()), SLOT(slotIppReport()));
 
 	// layout
 	QHBoxLayout	*lay3 = new QHBoxLayout(this, 0, 10);
 	QVBoxLayout	*lay2 = new QVBoxLayout(0, 0, 0);
 	QHBoxLayout	*lay1 = new QHBoxLayout(0, 0, 10);
+	QHBoxLayout	*lay4 = new QHBoxLayout(0, 0, 0);
 
 	lay3->addWidget(m_list,1);
 	lay3->addLayout(lay2,1);
@@ -84,6 +89,10 @@ KMWIppPrinter::KMWIppPrinter(QWidget *parent, const char *name)
 	lay2->addWidget(m_uri);
 	lay2->addSpacing(10);
 	lay2->addWidget(m_info, 1);
+	lay2->addSpacing(5);
+	lay2->addLayout(lay4);
+	lay4->addStretch(1);
+	lay4->addWidget(m_ippreport);
 	lay2->addWidget(sep);
 	lay2->addWidget(l3);
 	lay2->addSpacing(10);
@@ -132,6 +141,7 @@ void KMWIppPrinter::slotScan()
 	else
 	{
 		m_list->clear();
+		m_ippreport->setEnabled(false);
 		const QPtrList<SocketInfo>	*list = m_util->printerList();
 		QPtrListIterator<SocketInfo>	it(*list);
 		for (;it.current();++it)
@@ -150,6 +160,7 @@ void KMWIppPrinter::slotScan()
 
 void KMWIppPrinter::slotPrinterSelected(QListViewItem *item)
 {
+	m_ippreport->setEnabled(item != 0);
 	if (!item) return;
 
 	// trying to get printer attributes
@@ -202,4 +213,29 @@ void KMWIppPrinter::slotPrinterSelected(QListViewItem *item)
 		m_info->setText(i18n("Unable to retrieve printer info. Printer answered:<br><br>%1").arg(ippErrorString((ipp_status_t)req.status())));
 	}
 }
+
+void KMWIppPrinter::slotIppReport()
+{
+	IppRequest	req;
+	QString	uri("ipp://%1:%2/ipp");
+	QListViewItem	*item = m_list->currentItem();
+
+	if (item)
+	{
+		req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
+		req.setHost(item->text(1));
+		req.setPort(item->text(2).toInt());
+		uri = uri.arg(item->text(1)).arg(item->text(2));
+		req.addURI(IPP_TAG_OPERATION, "printer-uri", uri);
+		if (req.doRequest("/ipp/"))
+		{
+			QString	caption = i18n("IPP report for %1").arg(item->text(0));
+			static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_PRINTER, caption);
+		}
+		else
+			KMessageBox::error(this, i18n("Unable to generate report. IPP request failed with message "
+			                              "<b>%1</b> (0x%2).").arg(ippErrorString((ipp_status_t)req.status())).arg(req.status(),0,16));
+	}
+}
+
 #include "kmwippprinter.moc"

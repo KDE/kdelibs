@@ -218,3 +218,76 @@ dumpRequest(request_);
 #endif
 	return true;
 }
+
+bool IppRequest::htmlReport(int group, QTextStream& output)
+{
+	if (!request_) return false;
+	// start table
+	output << "<table border=\"1\">" << endl;
+	output << "<tr><th bgcolor=\"dark blue\"><font color=\"white\">" << i18n("Attribute") << "</font></th>" << endl;
+	output << "<th bgcolor=\"dark blue\"><font color=\"white\">" << i18n("Values") << "</font></th></tr>" << endl;
+	// go to the first attribute of the specified group
+	ipp_attribute_t	*attr = request_->attrs;
+	while (attr && attr->group_tag != group)
+		attr = attr->next;
+	// print each attribute
+	ipp_uchar_t	*d;
+	QCString	dateStr;
+	while (attr && attr->group_tag == group)
+	{
+		output << "  <tr>\n    <td><b>" << attr->name << "</b></td>\n    <td>" << endl;
+		for (int i=0; i<attr->num_values; i++)
+		{
+			switch (attr->value_tag)
+			{
+				case IPP_TAG_INTEGER:
+					output << attr->values[i].integer;
+					break;
+				case IPP_TAG_ENUM:
+					output << "0x" << hex << attr->values[i].integer << dec;
+					break;
+				case IPP_TAG_BOOLEAN:
+					output << (attr->values[i].boolean ? i18n("True") : i18n("False"));
+					break;
+				case IPP_TAG_STRING:
+				case IPP_TAG_TEXTLANG:
+				case IPP_TAG_NAMELANG:
+				case IPP_TAG_TEXT:
+				case IPP_TAG_NAME:
+				case IPP_TAG_KEYWORD:
+				case IPP_TAG_URI:
+				case IPP_TAG_CHARSET:
+				case IPP_TAG_LANGUAGE:
+				case IPP_TAG_MIMETYPE:
+					output << attr->values[i].string.text;
+					break;
+				case IPP_TAG_RESOLUTION:
+					output << "( " << attr->values[i].resolution.xres
+					       << ", " << attr->values[i].resolution.yres << " )";
+					break;
+				case IPP_TAG_RANGE:
+					output << "[ " << attr->values[i].range.lower
+					       << ", " << attr->values[i].range.upper << " ]";
+					break;
+				case IPP_TAG_DATE:
+					d = attr->values[i].date;
+					dateStr.sprintf("%.4d-%.2d-%.2d, %.2d:%.2d:%.2d %c%.2d%.2d",
+							d[0]*256+d[1], d[2], d[3],
+							d[4], d[5], d[6],
+							d[8], d[9], d[10]);
+					output << dateStr;
+					break;
+				default:
+					continue;
+			}
+			if (i < attr->num_values-1)
+				output << "<br>";
+		}
+		output << "</td>\n  </tr>" << endl;
+		attr = attr->next;
+	}
+	// end table
+	output << "</table>" << endl;
+
+	return true;
+}

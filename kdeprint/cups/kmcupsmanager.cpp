@@ -34,6 +34,7 @@
 
 #include <qfile.h>
 #include <qtextstream.h>
+#include <qtextedit.h>
 #include <kdebug.h>
 #include <kapplication.h>
 #include <klocale.h>
@@ -42,13 +43,14 @@
 #include <klibloader.h>
 #include <kmessagebox.h>
 #include <kaction.h>
+#include <kdialogbase.h>
 #include <cups/cups.h>
 #include <cups/ppd.h>
 
 #define ppdi18n(s)	i18n(QString::fromLocal8Bit(s).utf8())
 
 void extractMaticData(QString& buf, const QString& filename);
-QString printerURI(KMPrinter *p, bool useExistingURI = true);
+QString printerURI(KMPrinter *p, bool useExistingURI = false);
 
 //*****************************************************************************************************
 
@@ -237,12 +239,17 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 	QString		uri;
 
 	req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
-	uri = printerURI(p);
+	uri = printerURI(p, true);
 	req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+	// change host and port for remote stuffs
+	if (!p->uri().isEmpty())
+	{
+		req.setHost(p->uri().host());
+		req.setPort(p->uri().port());
+	}
 	keys.append("printer-location");
 	keys.append("printer-info");
 	keys.append("printer-make-and-model");
-	keys.append("printer-uri-supported");
 	keys.append("job-sheets-default");
 	keys.append("job-sheets-supported");
 	keys.append("job-quota-period");
@@ -265,7 +272,6 @@ bool KMCupsManager::completePrinterShort(KMPrinter *p)
 		if (req.text("printer-info",value)) p->setDescription(value);
 		if (req.text("printer-location",value)) p->setLocation(value);
 		if (req.text("printer-make-and-model",value)) p->setDriverInfo(value);
-		if (req.uri("printer-uri-supported",value)) p->setUri(KURL(value));
 		if (req.uri("device-uri",value)) p->setDevice(KURL(value));
 		QStringList	values;
 /*		if (req.uri("member-uris",values))
@@ -351,6 +357,7 @@ void KMCupsManager::loadServerPrinters()
 	keys.append("printer-name");
 	keys.append("printer-type");
 	keys.append("printer-state");
+	keys.append("printer-uri-supported");
 	req.addKeyword(IPP_TAG_OPERATION,"requested-attributes",keys);
 
 	if (req.doRequest("/printers/"))
@@ -405,6 +412,10 @@ void KMCupsManager::processRequest(IppRequest* req)
 				case IPP_PRINTER_PROCESSING: printer->setState(KMPrinter::Processing); break;
 				case IPP_PRINTER_STOPPED: printer->setState(KMPrinter::Stopped); break;
 			}
+		}
+		else if (attrname == "printer-uri-supported")
+		{
+			printer->setUri(KURL(attr->values[0].string.text));
 		}
 		if (attrname.isEmpty() || attr == req->last())
 		{
@@ -748,7 +759,9 @@ QStringList KMCupsManager::detectLocalPrinters()
 
 void KMCupsManager::createPluginActions(KActionCollection *coll)
 {
-	KAction	*act = new KAction(i18n("Export driver..."), "up", 0, this, SLOT(exportDriver()), coll, "plugin_export_driver");
+	KAction	*act = new KAction(i18n("Export Driver..."), "up", 0, this, SLOT(exportDriver()), coll, "plugin_export_driver");
+	act->setGroup("plugin");
+	act = new KAction(i18n("Printer IPP Report..."), "editpaste", 0, this, SLOT(printerIppReport()), coll, "plugin_printer_ipp_report");
 	act->setGroup("plugin");
 }
 
@@ -757,6 +770,7 @@ void KMCupsManager::validatePluginActions(KActionCollection *coll, KMPrinter *pr
 	// save selected printer for future use in slots
 	m_currentprinter = pr;
 	coll->action("plugin_export_driver")->setEnabled(pr && pr->isLocal() && !pr->isClass(true) && !pr->isSpecial());
+	coll->action("plugin_printer_ipp_report")->setEnabled(pr && !pr->isSpecial());
 }
 
 void KMCupsManager::exportDriver()
@@ -788,49 +802,51 @@ void KMCupsManager::exportDriver()
 				return;
 			}
 			QCString	dest(m_currentprinter->printerName().local8Bit()), datadir(QFile::encodeName(path));
-			//int	result = export_dest(dest.data(), datadir.data());
 			int result = CupsAddSmb::exportDest(m_currentprinter->printerName(), path);
-/*			if (result == 0)
-				KMessageBox::information(0, i18n("Driver successfully exported"));
-			else
-			{
-				QString	msg;
-				switch (result)
-				{
-					case 1:
-						msg = i18n("Driver not found for <b>%1</b>. Either the PPD file could not "
-						           "be found, or %1 is a raw printer.").arg(dest).arg(dest);
-						break;
-					case 2:
-						msg = i18n("<p>Unable to create temporary files. Check that you have enough "
-						           "free disk space.</p>");
-						break;
-					case 3:
-						msg = i18n("Unable to %1 the driver files on server <b>%1</b>. Usual "
-						           "reasons are: permission denied, invalid share name, missing "
-								   "driver files. Check that samba is correctly configured. See "
-								   "<b>cupsaddsmb</b> manual page for more details "
-								   "(needs at least cups-1.1.11).")
-								   .arg(i18n("copy"))
-								   .arg(cupsServer());
-						break;
-					case 4:
-						msg = i18n("Unable to %1 the driver files on server <b>%1</b>. Usual "
-						           "reasons are: permission denied, invalid share name, missing "
-								   "driver files. Check that samba is correctly configured. See "
-								   "<b>cupsaddsmb</b> manual page for more details "
-								   "(needs at least cups-1.1.11).")
-								   .arg(i18n("install"))
-								   .arg(cupsServer());
-						break;
-					default:
-						msg = i18n("Export failed. Unknown error (code = %1).").arg(result);
-						break;
-				}
-				KMessageBox::error(0, msg);
-			}*/
 		}
 	}
+}
+
+void KMCupsManager::printerIppReport()
+{
+	if (m_currentprinter && !m_currentprinter->isSpecial())
+	{
+		IppRequest	req;
+		QString	uri;
+
+		req.setOperation(IPP_GET_PRINTER_ATTRIBUTES);
+		uri = printerURI(m_currentprinter, true);
+		req.addURI(IPP_TAG_OPERATION,"printer-uri",uri);
+		if (!m_currentprinter->uri().isEmpty())
+		{
+			req.setHost(m_currentprinter->uri().host());
+			req.setPort(m_currentprinter->uri().port());
+		}
+		if (req.doRequest("/printers/"))
+		{
+			ippReport(req, IPP_TAG_PRINTER, i18n("IPP report for %1").arg(m_currentprinter->printerName()));
+		}
+	}
+}
+
+void KMCupsManager::ippReport(IppRequest& req, int group, const QString& caption)
+{
+	QString	report;
+	QTextStream	t(&report, IO_WriteOnly);
+
+	if (req.htmlReport(group, t))
+	{
+		QTextEdit	*edit = new QTextEdit;
+		edit->setReadOnly(true);
+		edit->setText(report);
+		KDialogBase	dlg(KDialogBase::Swallow, caption, KDialogBase::Close, KDialogBase::Close);
+		dlg.setMainWidget(edit);
+		dlg.resize(540, 500);
+		dlg.setFocusProxy(edit);
+		dlg.exec();
+	}
+	else
+		KMessageBox::error(0, i18n("Internal error: unable to generate HTML report."));
 }
 
 //*****************************************************************************************************

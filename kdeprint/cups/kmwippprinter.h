@@ -28,6 +28,7 @@ class QProgressBar;
 class QLineEdit;
 class KMWSocketUtil;
 class QTextView;
+class QPushButton;
 
 class KMWIppPrinter : public KMWizardPage
 {
@@ -43,6 +44,7 @@ protected slots:
 	void slotSettings();
 	void slotScan();
 	void slotPrinterSelected(QListViewItem*);
+	void slotIppReport();
 
 private:
 	KListView	*m_list;
@@ -50,6 +52,7 @@ private:
 	QLineEdit	*m_uri;
 	KMWSocketUtil	*m_util;
 	QTextView	*m_info;
+	QPushButton	*m_ippreport;
 };
 
 #endif

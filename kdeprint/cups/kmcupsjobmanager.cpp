@@ -20,9 +20,13 @@
  **/
 
 #include "kmcupsjobmanager.h"
+#include "kmcupsmanager.h"
 #include "kmjob.h"
 #include "cupsinfos.h"
 #include "ipprequest.h"
+
+#include <kaction.h>
+#include <klocale.h>
 
 KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name)
 : KMJobManager(parent,name)
@@ -189,3 +193,35 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req)
 		attr = attr->next;
 	}
 }
+
+void KMCupsJobManager::slotJobIppReport()
+{
+	if (m_currenturis.count() == 1)
+	{
+		IppRequest	req;
+
+		req.setOperation(IPP_GET_JOB_ATTRIBUTES);
+		req.addURI(IPP_TAG_OPERATION, "job-uri", m_currenturis[0]);
+		if (req.doRequest("/"))
+		{
+			static_cast<KMCupsManager*>(KMManager::self())->ippReport(req, IPP_TAG_JOB, i18n("Job Report"));
+		}
+	}
+}
+
+void KMCupsJobManager::createPluginActions(KActionCollection *coll)
+{
+	KAction	*act = new KAction(i18n("Job IPP Report..."), "editpaste", 0, this, SLOT(slotJobIppReport()), coll, "plugin_job_ipp_report");
+	act->setGroup("plugin");
+}
+
+void KMCupsJobManager::validatePluginActions(KActionCollection *coll, const QPtrList<KMJob>& joblist)
+{
+	m_currenturis.clear();
+	QPtrListIterator<KMJob>	it(joblist);
+	for (; it.current(); ++it)
+		m_currenturis.append(it.current()->uri());
+	coll->action("plugin_job_ipp_report")->setEnabled(m_currenturis.count() == 1);
+}
+
+#include "kmcupsjobmanager.moc"
