@@ -3,15 +3,19 @@
 
 INCLUDES=	$(all_includes) 
 LDFLAGS =       $(all_libraries) $(KDE_RPATH)
-LDADD	=	$(LIB_KIO) 
 
 ####### Files
 
 bin_PROGRAMS = kcookiejar
+lib_LTLIBRARIES = kcookiejar.la
 
-kcookiejar_SOURCES = kcookiejar.cpp kcookiejar.h 	\
+kcookiejar_la_SOURCES = kcookiejar.cpp kcookiejar.h 	\
 		     kcookieserver.cpp kcookieserver.h	\
 		     kcookiewin.cpp kcookiewin.h main.cpp
+kcookiejar_la_METASOURCES = AUTO
+kcookiejar_la_LDFLAGS = $(all_libraries) -module -avoid-version
+kcookiejar_la_LIBADD = $(LIB_KIO)
 
-kcookiejar_METASOURCES = AUTO
-
+kcookiejar_SOURCES = dummy.cpp
+kcookiejar_LDADD = kcookiejar.la
+kcookiejar_LDFLAGS = $(all_libraries) $(KDE_RPATH)
