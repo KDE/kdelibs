@@ -6,9 +6,6 @@
 
 #include "eps.h"
 
-#define OK (1==1)
-#define FAIL (1==0)
-
 #define BUFLEN 200
 char buf[BUFLEN+1];
 
