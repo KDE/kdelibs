@@ -2061,6 +2061,9 @@ void KHTMLPart::findText()
 // New method
 void KHTMLPart::findTextNext()
 {
+  if (!d->m_find) // shouldn't be called before find is activated
+	return;
+
   long options = d->m_find->options();
   KFind::Result res = KFind::NoMatch;
   khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
