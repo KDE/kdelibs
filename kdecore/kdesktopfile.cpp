@@ -318,3 +318,12 @@ QString KDesktopFile::readDocPath() const
 	return readPathEntry( "DocPath" );
 }
 
+KDesktopFile* KDesktopFile::copyTo(const QString &file)
+{
+  KDesktopFile *config = new KDesktopFile(QString::null, false);
+  KConfig::copyTo(file, config);
+  config->setDesktopGroup();
+  return config;
+}
+
+

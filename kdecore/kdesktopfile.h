@@ -123,9 +123,8 @@ public:
   /**
    * Returns the value of the "Path=" entry.
    * @return the path or QString::null if not specified
-   * @deprecated
    */
-  QString readPath() const KDE_DEPRECATED;
+  QString readPath() const;
 
   /**
    * Returns the value of the "Dev=" entry.
@@ -216,6 +215,17 @@ public:
    */
   QStringList sortOrder() const;
 
+  /**
+   * Copies all entries from this config object to a new 
+   * KDesktopFile object that will save itself to @p file.
+   *
+   * Actual saving to @p file happens when the returned object is
+   * destructed or when sync() is called upon it.
+   *
+   * @param file the new KDesktopFile object it will save itself to.
+   * @since 3.2
+   */
+  KDesktopFile* copyTo(const QString &file);
 
 #ifdef KDE_NO_COMPAT
 private:

@@ -286,9 +286,10 @@ void KConfig::checkUpdate(const QString &id, const QString &updateFile)
   setGroup(oldGroup);
 }
 
-KConfig* KConfig::copyTo(const QString &file)
+KConfig* KConfig::copyTo(const QString &file, KConfig *config)
 {
-  KConfig *config = new KConfig(QString::null, false, false);
+  if (!config)
+     config = new KConfig(QString::null, false, false);
   config->backEnd->changeFileName(file, "config", false);
   config->setReadOnly(false);
   config->bFileImmutable = false;

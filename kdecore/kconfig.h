@@ -158,8 +158,10 @@ public:
    * destructed or when sync() is called upon it.
    *
    * @param file the new config object will save itself to.
+   * @param config optional config object to reuse
+   * @since 3.2
    */
-  KConfig* copyTo(const QString &file);
+  KConfig* copyTo(const QString &file, KConfig *config=0);
 
 protected:
 
