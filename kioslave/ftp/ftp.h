@@ -185,7 +185,7 @@ public:
 
   bool ftpOpenDir( KURL& _url );
   bool ftpCloseDir();
-  FtpEntry* ftpStat( KURL& _url );
+  FtpEntry* ftpStat( const KURL& _url );
 
   bool ftpOpen( KURL& _url, Mode mode, unsigned long offset = 0 );
   bool ftpClose();

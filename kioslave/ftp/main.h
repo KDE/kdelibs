@@ -43,7 +43,7 @@ public:
 protected:
   struct Copy
   {
-    QString m_strAbsSource;
+    KURL m_strAbsSource;
     QString m_strRelDest;
     mode_t m_access;
     mode_t m_type;
@@ -53,7 +53,7 @@ protected:
 
   struct CopyDir
   {
-    QString m_strAbsSource;
+    KURL m_strAbsSource;
     QString m_strRelDest;
     mode_t m_access;
     mode_t m_type;
@@ -62,9 +62,9 @@ protected:
 
   void doCopy( QStringList& _source, const char *_dest, bool _rename, bool _move = false );
 
-  long listRecursive( const char *_path, QValueList<Copy>& _files,
+  long listRecursive( const KURL & url, QValueList<Copy>& _files,
 		      QValueList<CopyDir>& _dirs, bool _rename );
-  long listRecursive2( const char *_abs_path, const char *_rel_path,
+  long listRecursive2( const KURL & _abs_path, const char *_rel_path,
 		       QValueList<Copy>& _files, QValueList<CopyDir>& _dirs );
 
   bool m_bAutoSkip, m_bIgnoreJobErrors, m_bCanResume;

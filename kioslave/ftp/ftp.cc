@@ -873,7 +873,7 @@ FtpEntry* Ftp::stat( KURL& _url )
 }
 
 
-FtpEntry* Ftp::ftpStat( KURL& _url )
+FtpEntry* Ftp::ftpStat( const KURL& _url )
 {
   static FtpEntry fe;
   m_error = 0;
