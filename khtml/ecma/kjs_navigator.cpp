@@ -134,7 +134,7 @@ int KJS::PluginBase::m_refCount = 0;
 
 const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
 /*
-@begin NavigatorTable 11
+@begin NavigatorTable 12
   appCodeName	Navigator::AppCodeName	DontDelete|ReadOnly
   appName	Navigator::AppName	DontDelete|ReadOnly
   appVersion	Navigator::AppVersion	DontDelete|ReadOnly
@@ -148,6 +148,7 @@ const ClassInfo Navigator::info = { "Navigator", 0, &NavigatorTable, 0 };
   mimeTypes	Navigator::_MimeTypes	DontDelete|ReadOnly
   product	Navigator::Product	DontDelete|ReadOnly
   vendor	Navigator::Vendor	DontDelete|ReadOnly
+  productSub    Navigator::ProductSub   DontDelete|ReadOnly
   cookieEnabled	Navigator::CookieEnabled DontDelete|ReadOnly
   javaEnabled	Navigator::JavaEnabled	DontDelete|Function 0
 @end
@@ -193,6 +194,21 @@ Value Navigator::getValueProperty(ExecState *exec, int token) const
     return String(userAgent.mid(userAgent.find('/') + 1));
   case Product:
     return String("Konqueror/khtml");
+  case ProductSub:
+    {
+      int ix = userAgent.find("Gecko");
+      if (ix >= 0 && userAgent.length() >= (uint)ix+14 && userAgent.at(ix+5) == '/' && 
+          userAgent.find(QRegExp("\\d{8}"), ix+6) == ix+6)
+      {
+          // We have Gecko/<productSub> in the UA string
+          return String(userAgent.mid(ix+6, 8));
+      }
+      else if (ix >= 0)
+      {
+          return String("20040107");
+      }
+    } 
+    return Undefined();
   case Vendor:
     return String("KDE");
   case BrowserLanguage:
