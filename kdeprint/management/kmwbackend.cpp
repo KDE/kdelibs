@@ -25,11 +25,13 @@
 #include <qregexp.h>
 #include <qbuttongroup.h>
 #include <qradiobutton.h>
+#include <qwhatsthis.h>
 
 #include <kcursor.h>
 #include <klocale.h>
 #include <kseparator.h>
 #include <kdialog.h>
+#include <kdebug.h>
 
 class KRadioButton : public QRadioButton
 {
@@ -57,6 +59,9 @@ KMWBackend::KMWBackend(QWidget *parent, const char *name)
 	m_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	m_layout->addStretch(1);
 	m_count = 0;
+
+	QWhatsThis::add( this,
+			i18n( "" ) );
 }
 
 bool KMWBackend::isValid(QString& msg)
@@ -105,7 +110,49 @@ void KMWBackend::updatePrinter(KMPrinter *p)
 	setNextPage((m_map.contains(ID) ? m_map[ID] : KMWizard::Error));
 }
 
-void KMWBackend::addBackend(int ID, const QString& txt, bool on, int nextpage)
+void KMWBackend::addBackend( int ID, bool on, int nextpage )
+{
+	switch ( ID )
+	{
+		case KMWizard::Local:
+			addBackend( ID, i18n("&Local printer (parallel, serial, USB)"), on,
+					i18n( "<qt><p>Locally-connected printer</p>"
+						  "<p>Use this for a printer connected "
+						  "to the computer via a parallel, serial or USB port.</p></qt>" ),
+					nextpage );
+			break;
+		case KMWizard::SMB:
+			addBackend( ID, i18n("&SMB shared printer (Windows)"), on,
+					i18n( "<qt><p>Shared Windows printer</p>"
+						  "<p>Use this for a printer installed "
+						  "on a Windows server and shared on the network using the SMB "
+						  "protocol (samba).</p></qt>" ),
+					nextpage );
+			break;
+		case KMWizard::LPD:
+			addBackend( ID, i18n("&Remote LPD queue"), on,
+					i18n( "<qt><p>Print queue on a remote LPD server</p>"
+						  "<p>Use this for a print queue "
+						  "existing on a remote machine running a LPD print server.</p></qt>" ),
+					nextpage );
+			break;
+		case KMWizard::TCP:
+			addBackend( ID, i18n("Ne&twork printer (TCP)"), on,
+					i18n( "<qt><p>Network TCP printer</p>"
+						  "Use this for a network-enabled printer "
+						  "using TCP (usually on port 9100) as communication protocol. Most "
+						  "network printers can use this mode.</p></qt>" ),
+					nextpage );
+			break;
+		case -1:
+			addBackend( ID, QString::null, on, QString::null, nextpage );
+			break;
+		default:
+			kdError( 500 ) << "Non standard wizard page ID: " << ID << endl;
+	}
+}
+
+void KMWBackend::addBackend(int ID, const QString& txt, bool on, const QString& whatsThis, int nextpage)
 {
 	if (ID == -1)
 	{
@@ -116,6 +163,8 @@ void KMWBackend::addBackend(int ID, const QString& txt, bool on, int nextpage)
 	{
 		KRadioButton	*btn = new KRadioButton(txt, this);
 		btn->setEnabled(on);
+		if ( !whatsThis.isEmpty() )
+			QWhatsThis::add( btn, whatsThis );
 		m_buttons->insert(btn, ID);
 		m_map[ID] = (nextpage == -1 ? ID : nextpage);	// use nextpage if specified, default to ID
 		m_layout->insertWidget(m_count, btn);

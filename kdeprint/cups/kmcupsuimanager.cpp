@@ -80,58 +80,55 @@ void KMCupsUiManager::setupPropertyPages(KMPropertyPage *p)
 
 void KMCupsUiManager::setupWizard(KMWizard *wizard)
 {
-	QString whatsThisLocalprinterBackend = i18n("<qt><p> </p>."
-					        " </qt>" );
+	QString whatsThisRemoteCUPSIPPBackend =
+		i18n( "<qt><p>Print queue on remote CUPS server</p>"
+			  "<p>Use this for a print queue installed on a remote "
+			  "machine running a CUPS server. This allows to use "
+			  "remote printers when CUPS browsing is turned off.</p></qt>"
+			);
 
-	QString whatsThisRemoteLPDBackend = i18n("<qt><p> </p>."
-					        " </qt>" );
+	QString whatsThisRemotePrinterIPPBackend =
+		i18n( "<qt><p>Network IPP printer</p>"
+			  "<p>Use this for a network-enabled printer using the "
+			  "IPP protocol. Modern high-end printers can use this mode. "
+			  "Use this mode instead of TCP if your printer can do both.</p></qt>"
+			);
 
-	QString whatsThisSMBSharedPrinterBackend = i18n("<qt><p> </p>."
-					        " </qt>" );
+	QString whatsThisSerialFaxModemBackend =
+		i18n( "<qt><p>Fax/Modem printer</p>"
+			  "<p>Use this for a fax/modem printer. This requires the installation "
+			  "of the <a href=\"http://vigna.dsi.unimi.it/fax4CUPS/\">fax4CUPS</a> backend. Documents sent on this printer will be faxed "
+			  "to the given target fax number.</p></qt>"
+			);
 
-	QString whatsThisNetworkprinterTCPBackend = i18n("<qt><p> </p>."
-					        " </qt>" );
+	QString whatsThisOtherPrintertypeBackend =
+		i18n( "<qt><p>Other printer</p>"
+			  "<p>Use this for any printer type. To use this option, you must know "
+			  "the URI of the printer you want to install. Refer to the CUPS documentation "
+			  "for more information about the printer URI. This option is mainly useful for "
+			  "printer types using 3rd party backends not covered by the other possibilities.</p></qt>"
+			);
 
-	QString whatsThisRemoteCUPSIPPBackend = i18n("<qt><p> </p>."
-					        " </qt>" );
+	QString whatsThisClassOfPrinters =
+		i18n( "<qt><p>Class of printers</p>"
+			  "<p>Use this to create a class of printers. When sending a document to a class, "
+			  "the document is actually sent to the first available (idle) printer in the class. "
+			  "Refer to the CUPS documentation for more information about class of printers.</p></qt>"
+			);
 
-	QString whatsThisRemotePrinterIPPBackend = i18n("<qt><p> </p>."
-					        " </qt>" );
-
-	QString whatsThisSerialFaxModemBackend = i18n("<qt><p> </p>."
-					        " </qt>" );
-
-	QString whatsThisOtherPrintertypeBackend = i18n("<qt><p> </p>."
-					        " </qt>" );
-
-	QString whatsThisClassOfPrinters = i18n("<qt><p> </p>."
-					        " </qt>" );
-
-	QString whatsThis = i18n("<qt><p> </p>."
-					        " </qt>" );
 	KMWBackend	*backend = wizard->backendPage();
 	if (!backend)
 		return;
-	backend->addBackend(KMWizard::Local,i18n("&Local printer (parallel, serial, USB)"),false);
-	QWhatsThis::add(backend, whatsThisLocalprinterBackend);
-	backend->addBackend(KMWizard::LPD,i18n("&Remote LPD queue"),false);
-	QWhatsThis::add(backend, whatsThisRemoteLPDBackend);
-	backend->addBackend(KMWizard::SMB,i18n("&SMB shared printer (Windows)"),false,KMWizard::Password);
-	QWhatsThis::add(backend, whatsThisSMBSharedPrinterBackend);
-	backend->addBackend(KMWizard::TCP,i18n("Ne&twork printer (TCP)"),false);
-	QWhatsThis::add(backend, whatsThisNetworkprinterTCPBackend);
-	backend->addBackend(KMWizard::IPP,i18n("Re&mote CUPS server (IPP/HTTP)"),false,KMWizard::Password);
-	QWhatsThis::add(backend, whatsThisRemoteCUPSIPPBackend);
-	backend->addBackend(KMWizard::Custom+1,i18n("Network printer w/&IPP (IPP/HTTP)"),false);
-	QWhatsThis::add(backend, whatsThisRemotePrinterIPPBackend);
-	backend->addBackend(KMWizard::Custom+2,i18n("S&erial Fax/Modem printer"),false);
-	QWhatsThis::add(backend, whatsThisSerialFaxModemBackend);
-	backend->addBackend(KMWizard::Custom+5,i18n("Other &printer type"),false);
-	QWhatsThis::add(backend, whatsThisOtherPrintertypeBackend);
+	backend->addBackend(KMWizard::Local,false);
+	backend->addBackend(KMWizard::LPD,false);
+	backend->addBackend(KMWizard::SMB,false,KMWizard::Password);
+	backend->addBackend(KMWizard::TCP,false);
+	backend->addBackend(KMWizard::IPP,i18n("Re&mote CUPS server (IPP/HTTP)"),false,whatsThisRemoteCUPSIPPBackend,KMWizard::Password);
+	backend->addBackend(KMWizard::Custom+1,i18n("Network printer w/&IPP (IPP/HTTP)"),false,whatsThisRemotePrinterIPPBackend);
+	backend->addBackend(KMWizard::Custom+2,i18n("S&erial Fax/Modem printer"),false,whatsThisSerialFaxModemBackend);
+	backend->addBackend(KMWizard::Custom+5,i18n("Other &printer type"),false,whatsThisOtherPrintertypeBackend);
 	backend->addBackend();
-	QWhatsThis::add(backend, whatsThis);
-	backend->addBackend(KMWizard::Class,i18n("Cl&ass of printers"),false);
-	QWhatsThis::add(backend, whatsThisClassOfPrinters);
+	backend->addBackend(KMWizard::Class,i18n("Cl&ass of printers"),false,whatsThisClassOfPrinters);
 
 	IppRequest	req;
 	QString		uri;
