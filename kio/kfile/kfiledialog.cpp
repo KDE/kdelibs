@@ -395,6 +395,7 @@ void KFileDialog::slotOk()
             {
                 selectedURL = ops->url();
                 selectedURL.addPath( text ); // works for filenames and relative paths
+                selectedURL.cleanPath (); // fix "dir/../"
             }
         } else // complete URL
             selectedURL = text;
@@ -1149,6 +1150,12 @@ void KFileDialog::urlEntered(const KURL& url)
 
 void KFileDialog::locationActivated( const QString& url )
 {
+    // This guard prevents any URL _typed_ by the user from being interpreted
+    // twice (by returnPressed/slotOk and here, activated/locationActivated)
+    // after the user presses Enter.  Without this, _both_ setSelection and
+    // slotOk would "u.addPath( url )" ...so instead we leave it up to just
+    // slotOk....
+    if (!locationEdit->lineEdit()->edited())
     setSelection( url );
 }
 
