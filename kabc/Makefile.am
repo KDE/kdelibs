@@ -83,7 +83,7 @@ DOXYGEN_REFERENCES = kdecore kdeui
 
 kde_module_LTLIBRARIES = kcm_kabc.la kabc_sql.la
 
-kcm_kabc_la_SOURCES = kcmkabc.cpp kcm_config.ui resourceconfigdlg.cpp
+kcm_kabc_la_SOURCES = kcmkabc.cpp resourceconfigdlg.cpp
 kcm_kabc_la_LDFLAGS = $(all_libraries) -module -avoid-version -no-undefined
 kcm_kabc_la_LIBADD = $(LIB_KIO) libkabc.la
 

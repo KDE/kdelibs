@@ -21,6 +21,7 @@
 */
 
 #include <qgroupbox.h>
+#include <qinputdialog.h>
 #include <qlabel.h>
 #include <qlayout.h>
 
@@ -61,32 +62,45 @@ void ConfigBoxItem::setText( const QString &text )
     QListBoxText::setText( text );
 }
 
-ConfigPageImpl::ConfigPageImpl( QWidget *parent, const char *name )
-    : ConfigPage( parent, name )
+ConfigPage::ConfigPage( QWidget *parent, const char *name )
+    : QWidget( parent, name )
 {
-    KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
+//    resize( 328, 241 ); 
+    setCaption( i18n( "Resource Configuration" ) );
 
-    types = factory->resources();
+    QVBoxLayout *mainLayout = new QVBoxLayout( this );
 
-    for ( QStringList::Iterator it = types.begin(); it != types.end(); ++it ) {
-	KABC::ResourceInfo *info = factory->info( (*it) );
-	if ( !info )
-	    typeCombo->insertItem( "no name available" );
-	else
-	    typeCombo->insertItem( info->name );
-    }
+    QGroupBox *groupBox = new QGroupBox( i18n( "Resources" ), this );
+    groupBox->setColumnLayout(0, Qt::Vertical );
+    groupBox->layout()->setSpacing( 6 );
+    groupBox->layout()->setMargin( 11 );
+    QHBoxLayout *groupBoxLayout = new QHBoxLayout( groupBox->layout() );
 
-    connect( addButton, SIGNAL(clicked()), this, SLOT(slotAdd()) );
-    connect( removeButton, SIGNAL(clicked()), this, SLOT(slotRemove()) );
-    connect( editButton, SIGNAL(clicked()), this, SLOT(slotEdit()) );
+    listBox = new KListBox( groupBox );
+
+    groupBoxLayout->addWidget( listBox );
+
+    KButtonBox *buttonBox = new KButtonBox( groupBox, Vertical );
+    addButton = buttonBox->addButton( i18n( "&Add" ), this, SLOT(slotAdd()) );
+    removeButton = buttonBox->addButton( i18n( "&Remove" ), this, SLOT(slotRemove()) );
+    removeButton->setEnabled( false );
+    editButton = buttonBox->addButton( i18n( "&Edit" ), this, SLOT(slotEdit()) );
+    editButton->setEnabled( false );
+    buttonBox->layout();
+
+    groupBoxLayout->addWidget( buttonBox );
+
+    mainLayout->addWidget( groupBox );
+
     connect( listBox, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()) );
+    connect( listBox, SIGNAL(doubleClicked(QListBoxItem*)), this, SLOT(slotEdit()) );
 
     config = 0;
 
     load();
 }
 
-void ConfigPageImpl::load()
+void ConfigPage::load()
 {
     QStringList keys;
 
@@ -112,7 +126,7 @@ void ConfigPageImpl::load()
     emit changed( false );
 }
 
-void ConfigPageImpl::save()
+void ConfigPage::save()
 {
     QStringList keys;
 
@@ -131,7 +145,7 @@ void ConfigPageImpl::save()
     emit changed( false );
 }
 
-void ConfigPageImpl::defaults()
+void ConfigPage::defaults()
 {
     QStringList groups = config->groupList();
     QStringList::Iterator it;
@@ -163,16 +177,23 @@ void ConfigPageImpl::defaults()
     listBox->insertItem( item );
 }
 
-void ConfigPageImpl::slotAdd()
+void ConfigPage::slotAdd()
 {
+    KABC::ResourceFactory *factory = KABC::ResourceFactory::self();
     QString key = KApplication::randomString( 10 );
-    QString type = types[typeCombo->currentItem()];
+
+    QStringList types = factory->resources();
+    bool ok = false;
+    QString type = QInputDialog::getItem( i18n( "Resource Configuration" ),
+	    i18n( "Please select type of the new resource" ), types, 0, false, &ok, this );
+    if ( !ok )
+	return;
 
     config->setGroup( "Resource_" + key );
 
     ResourceConfigDlg dlg( this, type, config, "ResourceConfigDlg" );
 
-    dlg.resourceName->setText( type + " Resource" );
+    dlg.resourceName->setText( type + "-resource" );
     dlg.resourceIsFast->setChecked( true );
 
     if ( dlg.exec() ) {
@@ -191,7 +212,7 @@ void ConfigPageImpl::slotAdd()
     }
 }
 
-void ConfigPageImpl::slotRemove()
+void ConfigPage::slotRemove()
 {
     QListBoxItem *item = listBox->item( listBox->currentItem() );
     QString key = dynamic_cast<ConfigBoxItem*>( item )->key;
@@ -202,7 +223,7 @@ void ConfigPageImpl::slotRemove()
     emit changed( true );
 }
 
-void ConfigPageImpl::slotEdit()
+void ConfigPage::slotEdit()
 {
     QListBoxItem *item = listBox->item( listBox->currentItem() );
     ConfigBoxItem *configItem = dynamic_cast<ConfigBoxItem*>( item );
@@ -231,7 +252,7 @@ void ConfigPageImpl::slotEdit()
     }
 }
 
-void ConfigPageImpl::slotSelectionChanged()
+void ConfigPage::slotSelectionChanged()
 {
     bool state = ( listBox->currentItem() != -1 );
 
@@ -243,7 +264,7 @@ KCMkabc::KCMkabc( QWidget *parent, const char *name )
     : KCModule( parent, name )
 {
     QVBoxLayout *layout = new QVBoxLayout( this );
-    mConfigPage = new ConfigPageImpl( this );
+    mConfigPage = new ConfigPage( this );
     layout->addWidget( mConfigPage );
     connect( mConfigPage, SIGNAL( changed( bool ) ), SIGNAL( changed( bool ) ) );
 }

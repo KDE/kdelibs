@@ -29,16 +29,14 @@
 #include <klineedit.h>
 #include <kpushbutton.h>
 
-#include "kcm_config.h"
-
 #ifndef KCMKABC_H
 #define KCMKABC_H
 
-class ConfigPageImpl : public ConfigPage
+class ConfigPage : public QWidget
 {
     Q_OBJECT
 public:
-    ConfigPageImpl( QWidget *parent = 0, const char *name = 0 );
+    ConfigPage( QWidget *parent = 0, const char *name = 0 );
 
     void load();
     void save();
@@ -55,7 +53,11 @@ signals:
 
 private:
     KConfig *config;
-    QStringList types;
+
+    KListBox* listBox;
+    QPushButton* addButton;
+    QPushButton* removeButton;
+    QPushButton* editButton;
 };
 
 class KCMkabc : public KCModule
@@ -69,7 +71,7 @@ public:
     void defaults();
 
 private:
-    ConfigPageImpl *mConfigPage;
+    ConfigPage *mConfigPage;
 };
 
 #endif // KCMKABC_H
