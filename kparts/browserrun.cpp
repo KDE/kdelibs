@@ -20,6 +20,7 @@
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kio/job.h>
+#include <kio/scheduler.h>
 #include <klocale.h>
 #include <kprocess.h>
 #include <kstringhandler.h>
@@ -261,10 +262,12 @@ void BrowserRun::simpleSave( const KURL & url, const QString & suggestedFilename
         else
         {
             // ### suggestedFilename not taken into account. Fix this (and
-            // the duplicated code) with shiny new KDownload class for 3.2 
+            // the duplicated code) with shiny new KDownload class for 3.2
             // (pfeiffer)
             cmd += " " + KProcess::quote(url.url());
             kdDebug(1000) << "Calling command  "<<cmd<<endl;
+            // slave is already on hold (slotBrowserMimetype())
+            KIO::Scheduler::publishSlaveOnHold();
             KRun::runCommand(cmd);
             return;
         }
