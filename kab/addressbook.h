@@ -356,6 +356,7 @@ public:
     QString user2; /**< The second user-declared field. */
     QString user3; /**< The third user-declared field. */
     QString user4; /**< The fourth user-declared field. */    
+    QStringList custom;
   };
   /** The constructor. If \e load is true, the user standard file will
    *  automatically be loaded into the object. */
