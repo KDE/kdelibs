@@ -5,10 +5,10 @@ information. The examples are covered by the GNU General Public License,
 more information can be found in COPYING.
 
 IMPORTANT: You should set the environment variable KDEDIR to the
-directory you want to install the KDE files to.  
+directory you want to install the KDE files to (usually /usr/local/kde/).
 
-If configure claims Qt cannot be found, have a look at
-http://www.troll.no.  Qt 1.3 or newer is needed to install KDE.
+If configure claims Qt cannot be found, have a look at http://www.troll.no.
+Qt 1.41 or newer is needed to install this version of the KDE.
 
 Please direct any bug reports to me (kalle@kde.org). General KDE
 discussions should go to the KDE mailing list (kde@kde.org).

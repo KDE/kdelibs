@@ -1,3 +1,7 @@
+1998-11-23  Alex Zepeda  <garbanzo@hooked.net>
+
+	* README: Freshen a few stale comments.
+
 1998-11-10  Alex Zepeda  <alex@zippy.dyn.ml.org>
 
 	* configure.in: Fix a small typo.
