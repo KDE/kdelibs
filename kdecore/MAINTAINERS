@@ -15,7 +15,7 @@ kappdcopiface.cpp
 kapplication.cpp	Waldo Bastian <bastian@kde.org>
 kaudioplayer.cpp
 kbufferedio.cpp
-kcatalogue.cpp
+kcatalogue.cpp		Hans Petter Bieker <bieker@kde.org>
 kcharsets.cpp
 kckey.cpp
 kcmdlineargs.cpp	Waldo Bastian <bastian@kde.org>
@@ -45,7 +45,7 @@ kkeynative_x11.cpp
 kkeysequence.cpp
 kkeysequence_emb.cpp
 klibloader.cpp
-klocale.cpp
+klocale.cpp		Hans Petter Bieker <bieker@kde.org>
 kmdcodec.cpp
 kmimesourcefactory.cpp
 kmultipledrag.cpp
@@ -80,6 +80,6 @@ kurldrag.cpp
 kwin.cpp
 kwinmodule.cpp
 kxmessages.cpp		Lubos Lunak <l.lunak@kde.org>
-libintl.cpp
+libintl.cpp		Hans Petter Bieker <bieker@kde.org>
 netsupp.cpp
 netwm.cpp
