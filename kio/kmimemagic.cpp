@@ -295,7 +295,10 @@ static struct names {
 		"<!--", L_HTML
 	},
 	{
-		"<!DOCTYPE HTML", L_HTML
+		"<!doctype", L_HTML
+	},
+	{
+		"<!DOCTYPE", L_HTML
 	},
 	{
 		"/*", L_C|L_CPP|L_JAVA
