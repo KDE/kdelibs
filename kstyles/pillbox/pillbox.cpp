@@ -559,6 +559,19 @@ void PillBoxStyle::drawExclusiveIndicator(QPainter *p, int x, int y, int w,
     p->setPen(oldPen);
 }
 
+void PillBoxStyle::drawIndicatorMask(QPainter *p, int x, int y, int w, int h,
+                                   int)
+{
+    p->fillRect(x, y, w, h, Qt::color1);
+}
+
+void PillBoxStyle::drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
+                                            int h, bool)
+{
+    p->fillRect(x, y, w, h, Qt::color1);
+}
+
+
 void PillBoxStyle::drawSliderGroove(QPainter *p, int x, int y, int w, int h,
                                     const QColorGroup &g, QCOORD,
                                     Orientation)

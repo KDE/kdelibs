@@ -63,6 +63,9 @@ public:
     void drawExclusiveIndicator(QPainter *p, int x, int y, int w,
                                 int h, const QColorGroup &g, bool on,
                                 bool down, bool);
+    void drawIndicatorMask(QPainter *p, int x, int y, int w, int h, int);
+    void drawExclusiveIndicatorMask(QPainter *p, int x, int y, int w,
+                                    int h, bool);
     void drawSliderGroove(QPainter *p, int x, int y, int w, int h,
                           const QColorGroup &g, QCOORD, Orientation);
     int sliderLength() const;
