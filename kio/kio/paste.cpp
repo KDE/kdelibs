@@ -164,7 +164,7 @@ void KIO::pasteData( const KURL& u, const QByteArray& _data )
     tempFile.dataStream()->writeRawBytes( _data.data(), _data.size() );
     tempFile.close();
 
-    (void) KIO::NetAccess::upload( tempFile.name(), new_url );
+    (void) KIO::NetAccess::upload( tempFile.name(), new_url, 0 );
 }
 
 KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data )
