@@ -100,12 +100,14 @@ void DCOPWatchProc ( IceConn iceConn, IcePointer client_data, Bool opening, IceP
   }
 }
 
-void DCOPProcessMessage( IceConn iceConn, IcePointer clientData, int opcode, unsigned long length, Bool swap)
+void DCOPProcessMessage( IceConn iceConn, IcePointer /*clientData*/, 
+			 int opcode, unsigned long length, Bool swap)
 {
   the_server->processMessage( iceConn, opcode, length, swap );
 }
 
-void DCOPServer::processMessage( IceConn iceConn, int opcode, unsigned long length, Bool swap)
+void DCOPServer::processMessage( IceConn iceConn, int opcode, 
+				 unsigned long length, Bool /*swap*/)
 {
   switch( opcode ) {
   case DCOPSend:
@@ -215,7 +217,7 @@ IcePaVersionRec DCOPVersions[] = {
 
 
 
-static Bool HostBasedAuthProc ( char* hostname)
+static Bool HostBasedAuthProc ( char* /*hostname*/)
 {
 
 //   qDebug("HostBasedAuthProc for %s", hostname);
@@ -248,8 +250,10 @@ struct DCOPServerConnStruct
 
 
 static Status DCOPServerProtocolSetupProc ( IceConn iceConn,
-    int majorVersion, int minorVersion, char* vendor, char* release,
-    IcePointer *clientDataRet, char **failureReasonRet)
+					    int majorVersion, int minorVersion,
+					    char* vendor, char* release,
+					    IcePointer *clientDataRet, 
+					    char **/*failureReasonRet*/)
 {
     DCOPServerConn serverConn;
 //     unsigned long 	mask;
@@ -294,17 +298,20 @@ DCOPServer::DCOPServer()
   : QObject(0,0), appIds(200), clients(200)
 {
   the_server = this;
-  if (( majorOpcode = IceRegisterForProtocolReply ("DCOP",
-					      DCOPVendorString, DCOPReleaseString,
-					      1, DCOPVersions,
-					      1, (char **) DCOPAuthNames, DCOPServerAuthProcs, HostBasedAuthProc,
-						 DCOPServerProtocolSetupProc,
-						 NULL,	/* IceProtocolActivateProc - we don't care about
-							   when the Protocol Reply is sent, because the
-							   session manager can not immediately send a
-							   message - it must wait for RegisterClient. */
-						 NULL	/* IceIOErrorProc */
-						 )) < 0)
+  if (( majorOpcode = IceRegisterForProtocolReply ((char *) "DCOP",
+						   (char *) DCOPVendorString, 
+						   (char *) DCOPReleaseString,
+						   1, DCOPVersions,
+						   1, (char **) DCOPAuthNames,
+						   DCOPServerAuthProcs,
+						   HostBasedAuthProc,
+						   DCOPServerProtocolSetupProc,
+						   NULL,	/* IceProtocolActivateProc - we don't care about
+								   when the Protocol Reply is sent, because the
+								   session manager can not immediately send a
+								   message - it must wait for RegisterClient. */
+						   NULL	/* IceIOErrorProc */
+						   )) < 0)
     {
       qDebug("Could not register DCOP protocol with ICE");
     }
@@ -312,7 +319,8 @@ DCOPServer::DCOPServer()
 
 //   if (!IceListenForConnections (&numTransports, &listenObjs,
 // 				256, errormsg))
-  if (!IceListenForWellKnownConnections ("5432", &numTransports, &listenObjs,
+  if (!IceListenForWellKnownConnections ((char *) "5432", 
+					 &numTransports, &listenObjs,
 					 256, errormsg))
     {
       fprintf (stderr, "%s\n", errormsg);
@@ -328,8 +336,8 @@ DCOPServer::DCOPServer()
     {
 	authDataEntries[i].network_id =
 	    IceGetListenConnectionString (listenObjs[i/2]);
-	authDataEntries[i].protocol_name = "ICE";
-	authDataEntries[i].auth_name = "MIT-MAGIC-COOKIE-1";
+	authDataEntries[i].protocol_name = (char *) "ICE";
+	authDataEntries[i].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
 
 	authDataEntries[i].auth_data =
 	    IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
@@ -337,8 +345,8 @@ DCOPServer::DCOPServer()
 
 	authDataEntries[i+1].network_id =
 	    IceGetListenConnectionString (listenObjs[i/2]);
-	authDataEntries[i+1].protocol_name = "DCOP";
-	authDataEntries[i+1].auth_name = "MIT-MAGIC-COOKIE-1";
+	authDataEntries[i+1].protocol_name = (char *) "DCOP";
+	authDataEntries[i+1].auth_name = (char *) "MIT-MAGIC-COOKIE-1";
 
 	authDataEntries[i+1].auth_data =
 	    IceGenerateMagicCookie (MAGIC_COOKIE_LEN);
@@ -376,7 +384,7 @@ DCOPServer::~DCOPServer()
 }
 
 
-void DCOPServer::processData( int socket )
+void DCOPServer::processData( int /*socket*/ )
 {
   DCOPConnection* conn = (DCOPConnection*)sender();
   IceProcessMessagesStatus s =  IceProcessMessages( conn->iceConn, 0, 0 );
@@ -389,7 +397,7 @@ void DCOPServer::processData( int socket )
   conn->status = IceConnectionStatus(  conn->iceConn );
 }
 
-void DCOPServer::newClient( int socket )
+void DCOPServer::newClient( int /*socket*/ )
 {
   IceAcceptStatus status;
   IceConn iceConn = IceAcceptConnection( ((DCOPListener*)sender())->listenObj, &status);
