@@ -63,7 +63,26 @@ class KAboutDialog;
  *   delete mHelpMenu;
  * }
  *
+ *
+ * Using your own "about application" dialog box:
+ *
+ * The standard "about application" dialog box is quite simple. If you 
+ * need a dialog box with more functionality you must design that one 
+ * yourself. When you want to display the dialog you can connect it to 
+ * the help menu. Here are the steps you must follow:
  * 
+ * 1. Make a help menu object with no text argument. If the text is missing
+ *    the default dialog box will nor be displayed:
+ *    mHelpMenu = new KHelpMenu( this );
+ *
+ * 2. Make a slot method that launches you dialog:
+ *    void slotShowAboutDialog( void )
+ *
+ * 3. Connect the slot to the help menu:
+ *    QPopupMenu *help = mHelpMenu->menu();
+ *    help->connectItem( 2, this, SLOT(slotShowAboutDialog()) );
+ *
+ *
  * @short Standard KDE help menu with dialog boxes.
  * @author Espen Sand (espen@kde.org)
  * @version $Id:

@@ -55,19 +55,19 @@ QPopupMenu* KHelpMenu::menu( void )
     if( mMenu == 0 ) { return(0); }
     connect( mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
-    int id = mMenu->insertItem( i18n( "&Contents" ) );
+    int id = mMenu->insertItem( i18n( "&Contents" ), 1 );
     mMenu->connectItem( id, this, SLOT( appHelpActivated() ) );
     mMenu->setAccel( Key_F1, id );
 
     mMenu->insertSeparator();
 
-    id = mMenu->insertItem( i18n( "&About" ) + " " + kapp->name() + "..." );
+    id = mMenu->insertItem( i18n( "&About" ) + " " + kapp->name() + "...", 2 );
     if( mAboutAppText.isNull() == false )
     {
       mMenu->connectItem( id, this, SLOT( aboutApp() ) );
     }
 
-    id = mMenu->insertItem( i18n( "About &KDE..." ) );
+    id = mMenu->insertItem( i18n( "About &KDE..." ), 3 );
     mMenu->connectItem( id, this, SLOT( aboutKDE() ) );
   }
 
@@ -84,6 +84,11 @@ void KHelpMenu::appHelpActivated( void )
 
 void KHelpMenu::aboutApp( void )
 {
+  //
+  // 1999-16-11-Espen Sand: I will improve (*) this later + some other stuff 
+  // after the freeze have been removed. (mid December)
+  // (*) Make the dialog destroy itself on close as propsed by M Ettrich.
+  //
   if( mAboutApp == 0 )
   {
     QString caption = i18n("About %1").arg(kapp->caption());
@@ -100,6 +105,7 @@ void KHelpMenu::aboutApp( void )
 
   mAboutApp->show();
 }
+
 
 
 void KHelpMenu::aboutKDE( void )
