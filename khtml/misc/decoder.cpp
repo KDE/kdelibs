@@ -173,13 +173,15 @@ QString Decoder::decode(const char *data, int len)
 			while( !endFlag ) {
 			    if( (pos = str.find("charset", pos)) == -1) break;
 			    pos += 7;
-			    while(  pos < (int)str.length() && (str[pos] == ' ' || str[pos] == '='
-								|| str[pos] == '"' ) )
+			    while(  pos < (int)str.length() &&
+                                    (str[pos] == ' ' || str[pos] == '=' ||
+                                     str[pos] == '"' || str[pos] == '\'') )
 				pos++;
 
 			    uint endpos = pos;
-			    while( endpos < str.length() && (str[endpos] != ' ' && str[endpos] != '"' && str[endpos] != ';'
-							     && str[endpos] != '>') )
+			    while( endpos < str.length() &&
+                                   (str[endpos] != ' ' && str[endpos] != '"' && str[endpos] != '\''
+                                    && str[endpos] != ';' && str[endpos] != '>') )
 				endpos++;
 			    if ( endpos >= str.length() || str[endpos] == '>' )
 				endFlag = true;
