@@ -60,7 +60,8 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     List *scope = 0;
     if (thisVal.type() != NullType)
       scope = static_cast<DOMNode*>(thisVal.imp())->eventHandlerScope();
-    QVariant ret = win->part()->executeKJSFunctionCall(thisVal,listener,args,*scope);
+    Global::current().setExtra(win->part());
+    QVariant ret = KJSOToVariant(listener.executeCall(thisVal, &args, scope));
     if (scope)
       delete scope;
     if (ret.type() == QVariant::Bool && ret.toBool() == false)

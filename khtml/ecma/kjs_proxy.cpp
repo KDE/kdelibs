@@ -47,7 +47,7 @@ extern "C" {
 static KJSDebugWin *kjs_html_debugger = 0;
 #endif
 
-QVariant KJSOToVariant(KJSO obj) {
+QVariant KJS::KJSOToVariant(KJSO obj) {
   QVariant res;
   switch (obj.type()) {
   case BooleanType:
@@ -73,7 +73,7 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   KJScript *script = kjs_create(khtmlpart);
 
   // proxy class operating via callback functions
-  KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval, &kjs_execFuncCall,
+  KJSProxy *proxy = new KJSProxy(script, &kjs_create, &kjs_eval,
                                  &kjs_clear, &kjs_special, &kjs_destroy,
 				 &kjs_createHTMLEventHandler);
   proxy->khtmlpart = khtmlpart;
@@ -152,19 +152,6 @@ KJSProxy *kjs_html_init(KHTMLPart *khtmlpart)
   void kjs_destroy(KJScript *script)
   {
     delete script;
-  }
-
-  QVariant kjs_execFuncCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope, bool inEvaluate, KHTMLPart *khtmlpart)
-  {
-    QVariant ret;
-    if (functionObj.implementsCall()) {
-      if (!inEvaluate)
-	KJS::Global::current().setExtra(khtmlpart);
-      ret = KJSOToVariant(functionObj.executeCall(thisVal,&args,&extraScope));
-      if (!inEvaluate)
-	KJS::Global::current().setExtra(0L);
-    }
-    return ret;
   }
 
   DOM::EventListener* kjs_createHTMLEventHandler(KJScript *script, QString code, KHTMLPart *part)

@@ -53,7 +53,6 @@ using namespace DOM;
 #include "khtmlview.h"
 #include "decoder.h"
 #include "ecma/kjs_proxy.h"
-#include "kjs/object.h"
 #include "khtml_settings.h"
 
 #include <sys/types.h>
@@ -4240,24 +4239,6 @@ DOM::Node KHTMLPart::activeNode() const
 {
     return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
-
-QVariant KHTMLPart::executeKJSFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope)
-{
-    KJSProxy *proxy = jScript();
-
-    if (!proxy)
-        return QVariant();
-
-    d->m_runningScripts++;
-    QVariant v = proxy->executeFunctionCall( thisVal, functionObj,
-					     args, extraScope );
-    d->m_runningScripts--;
-    if ( d->m_submitForm )
-      submitFormAgain();
-
-    return v;
-}
-
 
 DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code )
 {

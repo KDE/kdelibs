@@ -40,7 +40,6 @@ namespace KJS {
 typedef KJScript* (KJSCreateFunc)(KHTMLPart *);
 typedef QVariant (KJSEvalFunc)(KJScript *script, const QChar *, unsigned int,
 			   const DOM::Node &, KHTMLPart *);
-typedef QVariant (KJSExecFuncCall)(KJS::KJSO &, KJS::KJSO &, KJS::List &, KJS::List &, bool, KHTMLPart *);
 typedef void (KJSClearFunc)(KJScript *script, KHTMLPart *part);
 typedef const char* (KJSSpecialFunc)(KJScript *script, const char *);
 typedef void (KJSDestroyFunc)(KJScript *script);
@@ -48,7 +47,6 @@ typedef DOM::EventListener* (KJSCreateHTMLEventHandlerFunc)(KJScript *script, QS
 extern "C" {
   KJSCreateFunc kjs_create;
   KJSEvalFunc kjs_eval;
-  KJSExecFuncCall kjs_execFuncCall;
   KJSClearFunc kjs_clear;
   KJSSpecialFunc kjs_special;
   KJSDestroyFunc kjs_destroy;
@@ -60,16 +58,15 @@ extern "C" {
  */
 class KJSProxy {
 public:
-  KJSProxy(KJScript *s, KJSCreateFunc cr, KJSEvalFunc e, KJSExecFuncCall fc,
+  KJSProxy(KJScript *s, KJSCreateFunc cr, KJSEvalFunc e,
            KJSClearFunc c, KJSSpecialFunc sp, KJSDestroyFunc d,
 	   KJSCreateHTMLEventHandlerFunc cheh)
-    : create(cr), script(s), eval(e), execFuncCall(fc), clr(c), spec(sp), destr(d), 
+    : create(cr), script(s), eval(e), clr(c), spec(sp), destr(d), 
       createHTMLEH(cheh), inEvaluate(false) { }
   ~KJSProxy() { (*destr)(script); }
   QVariant evaluate(const QChar *c, unsigned int l, const DOM::Node &n);
   const char *special(const char *c);
   void clear();
-  QVariant executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope);
   DOM::EventListener *createHTMLEventHandler(QString code);
   KHTMLPart *khtmlpart;
   KJScript *jScript();
@@ -77,7 +74,6 @@ private:
   KJSCreateFunc *create;
   KJScript *script;
   KJSEvalFunc *eval;
-  KJSExecFuncCall *execFuncCall;
   KJSClearFunc *clr;
   KJSSpecialFunc *spec;
   KJSDestroyFunc *destr;
@@ -98,13 +94,6 @@ inline QVariant KJSProxy::evaluate(const QChar *c, unsigned int l,
     inEvaluate = false;
   }
   return r;
-}
-
-inline QVariant KJSProxy::executeFunctionCall( KJS::KJSO &thisVal, KJS::KJSO &functionObj, KJS::List &args, KJS::List &extraScope)
-{
-  if (!script)
-    script = (*create)(khtmlpart);
-  return (*execFuncCall)(thisVal,functionObj,args,extraScope,inEvaluate,khtmlpart);
 }
 
 inline const char *KJSProxy::special(const char *c) {
