@@ -30,7 +30,8 @@ libkdeui_la_LIBADD = ../kdecore/libkdecore.la
 picsdir = $(kde_datadir)/kdeui/pics
 pics_DATA = aboutkde.png keys.png ktip-bulb.png ktip-background.png
 
-include_HEADERS = kprogress.h kcolordlg.h kcolordialog.h kselect.h \
+include_HEADERS = kautoconfig.h kautoconfigwidgets.h kprogress.h kcolordlg.h \
+		kcolordialog.h kselect.h \
 		kdatepik.h kdatepicker.h kdatetbl.h kfontdialog.h kpopupmenu.h \
 		ktabctl.h kstatusbar.h \
 		kmainwindow.h kmainwindowiface.h ktoolbar.h kmenubar.h \
@@ -106,12 +107,12 @@ libkdeui_la_SOURCES = \
 		kwindowinfo.cpp ktextedit.cpp kwizard.cpp kpassivepopup.cpp \
 		ktoolbarhandler.cpp kdatetimewidget.cpp ktimewidget.cpp \
 		kpreferencesdialog.cpp kpreferencesmodule.cpp \
-		kpluginselector.cpp
+		kpluginselector.cpp kautoconfig.cpp
 
 noinst_HEADERS = kdockwidget_private.h klistviewlineedit.h \
 		kdialogbase_priv.h kaboutdialog_private.h kcursor_private.h \
 		kdepackages.h kdeui-doc.h kshortcutdialog.h kxmlguifactory_p.h \
-		kaccelmanager_private.h
+		kaccelmanager_private.h kautoconfigwidgets.h
 
 scripts_SCRIPTS = preparetips
 scriptsdir = $(kde_bindir)
