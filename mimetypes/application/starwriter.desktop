@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/vnd.stardivision.writer
+Patterns=*.sdw;*.SDW;
+Icon=wordprocessing
+Comment=StarOffice Writer Document

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=MimeType
+MimeType=application/vnd.stardivision.impress
+Patterns=*.sdd;*.SDD;
+Icon=document
+Comment=StarOffice Impress Presentation
