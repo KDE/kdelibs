@@ -52,6 +52,8 @@ class Entry;
  * @author Cornelius Schumacher (schumacher@kde.org)
  * \par Maintainer:
  * Josef Spillner (spillner@kde.org)
+ *
+ * @since 3.3
  */
 class KNewStuff
 {
