@@ -551,6 +551,11 @@ void KMJobViewer::reload()
 	// no refresh needed: view has been cleared before reloading
 	// and the actual refresh will be triggered either by the KControl
 	// module, or by KJobViewerApp using timer.
+	
+	// reload the columns needed: remove the old one
+	for (int c=m_view->columns()-1; c>5; c--)
+		m_view->removeColumn(c);
+	KMFactory::self()->uiManager()->setupJobViewer(m_view);
 }
 
 void KMJobViewer::closeEvent(QCloseEvent *e)
