@@ -687,6 +687,7 @@ void HTMLIFrameElementImpl::attach()
       m_render->setStyle(m_style);
       r->addChild( m_render, nextRenderer() );
       renderFrame->updateWidget();
+      needWidgetUpdate = false;
   }
 
   HTMLElementImpl::attach();
