@@ -1428,7 +1428,7 @@ void KToolBar::hide()
         if ( dock != QMainWindow::Unmanaged )
             d->realPos = dock;
         else
-            d->realPos = QMainWindow::Top;
+            ;// (bugfix of F@lk for kdevelop-2.0) old code was: d->realPos = QMainWindow::Top;
     }
     QToolBar::hide();
 }
