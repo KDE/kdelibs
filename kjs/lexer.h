@@ -25,6 +25,8 @@
 
 namespace KJS {
 
+  class RegExp;
+
   class Lexer {
   public:
     Lexer();
@@ -63,10 +65,12 @@ namespace KJS {
 		 InUnicodeEscape,
 		 Other,
 		 Bad };
-
-    int yylineno;
+    
+    bool scanRegExp();
+    UString pattern, flags;
 
   private:
+    int yylineno;
     bool done;
     char *buffer8;
     UChar *buffer16;

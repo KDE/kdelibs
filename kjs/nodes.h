@@ -28,6 +28,7 @@ namespace KJS {
 
   class KJSO;
   class KJSArgList;
+  class RegExp;
   class ProgramNode;
 
   enum Operator { OpEqual,
@@ -117,6 +118,15 @@ namespace KJS {
     UString value;
   };
 
+  class RegExpNode : public Node {
+  public:
+    RegExpNode(const UString &p, const UString &f)
+      : pattern(p), flags(f) { }
+    KJSO *evaluate();
+  private:
+    UString pattern, flags;
+  };
+  
   class ThisNode : public Node {
   public:
     KJSO *evaluate();

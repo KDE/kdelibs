@@ -126,6 +126,11 @@ namespace KJS {
      * for a single object type with @ref isA().
      */
     bool isObject() const { return (type() >= ObjectType); }
+    /**
+     * Check whether this is an object of a specified class.
+     * @param c is one of @ref KJS::Class.
+     * @return True if this object is of class c. False otherwise.
+     */
     bool isClass(Class c) const;
 
 #ifdef KJS_DEBUG_MEM
@@ -151,12 +156,46 @@ namespace KJS {
     static KJSO *newError(ErrorType e, const char *m = 0L, int ln = -1);
 
     // Properties
+    /**
+     * Set the internal [[prototype]] property of this object.
+     * @param p A prototype object.
+     */
     void setPrototype(Object *p);
+    /**
+     * @return The internal [[prototype]] property.
+     */
     Object *prototype() const { return pprototype; }
+    /**
+     * The internal [[Get]] method.
+     * @return The value of property p.
+     */
     virtual KJSO *get(const UString &p);
+    /**
+     * The internal [[HasProperty]] method.
+     * @param p Property name.
+     * @param recursive Indicates whether prototypes are searched as well.
+     * @return Boolean value indicating whether the object already has a
+     * member with the given name p.
+     */
     virtual bool hasProperty(const UString &p, bool recursive = true) const;
+    /**
+     * The internal [[Put]] method. Sets the specified property to the value v.
+     * @param p Property name.
+     * @param v Value.
+     */
     virtual void put(const UString &p, KJSO *v);
+    /**
+     * The internal [[CanPut]] method.
+     * @param p Property name.
+     * @return A boolean value indicating whether a [[Put]] operation with
+     * p succeed.
+     */
     virtual bool canPut(const UString &p) const;
+    /**
+     * The internal [[Delete]] method. Removes the specified property from
+     * the object.
+     * @param p Property name.
+     */
     virtual void deleteProperty(const UString &p);
 
     void put(const UString &p, KJSO *v, int attr);
@@ -196,7 +235,6 @@ namespace KJS {
     // reference counting
     KJSO *ref() { refCount++; return this; }
     void deref() { assert(refCount > 0); if(!--refCount) delete this; }
-    friend KJSO *zeroRef(KJSO *obj);
 
     static KJSO *error() { return currentErr; }
     static void setError(ErrorObject *e);
@@ -220,6 +258,7 @@ namespace KJS {
     KJSO *complVal;
 
   private:
+    friend KJSO *zeroRef(KJSO *obj);
     // disallow copy constructor and assignment operator
     KJSO(const KJSO &);
     KJSO& operator=(const KJSO &);

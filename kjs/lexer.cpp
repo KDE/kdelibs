@@ -660,3 +660,30 @@ void Lexer::record16(UChar c)
 
   buffer16[pos16++] = c;
 }
+
+bool Lexer::scanRegExp()
+{
+  pos16 = 0;
+
+  while (1) {
+    if (isLineTerminator() || current == 0)
+      return false;
+    else if (current != '/')
+      record16(current);
+    else {
+      pattern = UString(buffer16, pos16);
+      pos16 = 0;
+      shift(1);
+      break;
+    }
+    shift(1);
+  }
+
+  while (isIdentLetter()) {
+    record16(current);
+    shift(1);
+  }
+  flags = UString(buffer16, pos16);
+
+  return true;
+}

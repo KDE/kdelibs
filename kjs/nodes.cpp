@@ -28,6 +28,7 @@
 #include "nodes.h"
 #include "types.h"
 #include "operations.h"
+#include "regexp_object.h"
 
 using namespace KJS;
 
@@ -97,6 +98,20 @@ KJSO *NumberNode::evaluate()
 KJSO *StringNode::evaluate()
 {
   return KJSO::newString(value);
+}
+
+KJSO *RegExpNode::evaluate()
+{
+  List list;
+  Ptr p = KJSO::newString(pattern);
+  Ptr f = KJSO::newString(flags);
+  list.append(p);
+  list.append(f);
+
+  // very ugly
+  Ptr r = KJScript::global()->get("RegExp");
+  RegExpObject *r2 = (RegExpObject*)(KJSO*) r;
+  return r2->construct(list);
 }
 
 // ECMA 11.1.1

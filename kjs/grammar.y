@@ -35,7 +35,6 @@ using namespace KJS;
   int                 ival;
   double              dval;
   UString             *ustr;
-  void                *rxp; /* TODO */
   Node                *node;
   StatementNode       *stat;
   ParameterNode       *param;
@@ -66,7 +65,6 @@ using namespace KJS;
 /* literals */
 %token NULLTOKEN TRUETOKEN FALSETOKEN
 %token STRING DECIMAL INTEGER
-%token REGEXP
 
 /* keywords */
 %token BREAK CASE DEFAULT FOR NEW VAR CONTINUE
@@ -95,7 +93,6 @@ using namespace KJS;
 %token <dval> DOUBLE
 %token <ustr> STRING
 %token <ustr> IDENT
-%token <rxp>  REGEXP
 
 /* automatically inserted semicolon */
 %token AUTO
@@ -147,7 +144,9 @@ Literal:
   | INTEGER                        { $$ = new NumberNode($1); }
   | DOUBLE                         { $$ = new NumberNode($1); }
   | STRING                         { $$ = new StringNode($1); delete $1; }
-  | REGEXP                         { $$ = new NullNode(); /* TODO */ }
+  | '/'       /* a RegExp ? */     { Lexer *l = Lexer::curr();
+                                     if (!l->scanRegExp()) YYABORT;
+                                     $$ = new RegExpNode(l->pattern,l->flags);}
 ;
 
 PrimaryExpr:
