@@ -26,11 +26,17 @@ class QPainter;
 class QWidget;
 
 /**
-* KDirectionButton is a helper class for KTabBar and KWizard. It
+* KDirectionButton was a helper class for KTabBar and KWizard which
+* existed in the stone ages of KDE. The replacement QTabBar uses
+* QToolButton for the direction buttons which have a look and feel
+* that adjusts to the widget style in use.
+* It
 * provides the buttons used to scroll the tab bar and to change pages
 * in KWizard.
 *
-* @short Direction buttons for page flipping in @ref KWizard.
+* 
+*
+* @short Direction buttons.
 * @internal
 * @author Thomas Tanghus <tanghus@earthling.net>
 * @version 0.1
