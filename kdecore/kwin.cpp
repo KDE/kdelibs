@@ -31,6 +31,7 @@
 #include <qimage.h>
 #include <qwhatsthis.h>
 #include <qcstring.h>
+#include <qdialog.h>
 
 #include "config.h"
 //#ifndef Q_WS_QWS
@@ -282,7 +283,19 @@ void KWin::setMainWindow( QWidget* subwindow, WId mainwindow )
 {
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
     if( mainwindow != 0 )
+    {
+        /*
+         Grmbl. See QDialog::show(). That should get fixed in Qt somehow.
+        */
+        if( qt_cast< QDialog* >( subwindow ) != NULL
+            && subwindow->parentWidget() == NULL
+            && kapp->mainWidget() != NULL )
+        {
+            kdWarning() << "KWin::setMainWindow(): There either mustn't be kapp->mainWidget(),"
+                " or the dialog must have a non-NULL parent, otherwise Qt will reset the change. Bummer." << endl;
+        }
         XSetTransientForHint( qt_xdisplay(), subwindow->winId(), mainwindow );
+    }
     else
         XDeleteProperty( qt_xdisplay(), subwindow->winId(), XA_WM_TRANSIENT_FOR );
 #endif
