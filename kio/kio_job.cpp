@@ -10,13 +10,16 @@
 
 #include <assert.h>
 #include <dirent.h>
-#include <fstab.h>
+
 #include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
 #include <unistd.h>
 
+#ifdef HAVE_FSTAB_H
+#include <fstab.h>
+#endif
 #ifdef HAVE_PATHS_H
 #include <paths.h>
 #endif
