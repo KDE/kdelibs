@@ -84,11 +84,21 @@ void FunctionImp::processParameters(const List *args)
 
   assert(args);
 
+#ifdef KJS_VERBOSE
+  fprintf(stderr, "---------------------------------------------------\n"
+	  "processing parameters for %s call\n",
+	  name().isEmpty() ? "(internal)" : name().ascii());
+#endif
+
   if (param) {
     ListIterator it = args->begin();
     Parameter **p = &param;
     while (*p) {
       if (it != args->end()) {
+#ifdef KJS_VERBOSE
+	fprintf(stderr, "setting parameter %s ", (*p)->name.ascii());
+	printInfo("to", *it);
+#endif
 	variable.put((*p)->name, *it);
 	it++;
       } else
@@ -96,6 +106,12 @@ void FunctionImp::processParameters(const List *args)
       p = &(*p)->next;
     }
   }
+#ifdef KJS_VERBOSE
+  else {
+    for (int i = 0; i < args->size(); i++)
+      printInfo("setting argument", (*args)[i]);
+  }
+#endif
 }
 
 // ECMA 13.2.1
@@ -122,6 +138,15 @@ KJSO FunctionImp::executeCall(Imp *thisV, const List *args)
 
   delete ctx;
   Context::setCurrent(save);
+
+#ifdef KJS_VERBOSE
+  if (comp.complType() == Throw)
+    printInfo("throwing", comp.value());
+  else if (comp.complType() == ReturnValue)
+    printInfo("returning", comp.value());
+  else
+    fprintf(stderr, "returning: undefined\n");
+#endif
 
   if (comp.complType() == Throw)
     return comp.value();

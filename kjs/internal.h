@@ -344,7 +344,9 @@ namespace KJS {
     bool contains(const UString &name);
   };
 
+// #define KJS_VERBOSE
 #ifndef NDEBUG
+#include <stdio.h>
   void printInfo( const char *s, const KJSO &o );
 #endif
 
