@@ -1458,7 +1458,7 @@ void HTMLTokenizer::finish()
 
 void HTMLTokenizer::processToken()
 {
-    KJSProxy *jsProxy = view->part()->jScript();
+    KJSProxy *jsProxy = view ? view->part()->jScript() : 0L;
     if (jsProxy)
         jsProxy->setEventHandlerLineno(tagStartLineno);
     if ( dest > buffer )
@@ -1565,7 +1565,8 @@ void HTMLTokenizer::notifyFinished(CachedObject *finishedObj)
         setSrc(QString::null);
 	scriptExecution( scriptSource.string(), cachedScript->url().string() );
 
-        cachedScript->deref(this);
+        if (cachedScript)
+            cachedScript->deref(this);
         cachedScript = 0;
 
         // 'script' is true when we are called synchronously from
