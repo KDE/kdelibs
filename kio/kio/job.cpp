@@ -601,11 +601,71 @@ void SimpleJob::storeSSLSessionFromJob(const KURL &m_redirectionURL) {
     }
 }
 
+//////////
+MkdirJob::MkdirJob( const KURL& url, int command,
+                    const QByteArray &packedArgs, bool showProgressInfo )
+    : SimpleJob(url, command, packedArgs, showProgressInfo)
+{
+}
+
+void MkdirJob::start(Slave *slave)
+{
+    SimpleJob::start(slave);
+
+    connect( slave, SIGNAL( redirection(const KURL &) ),
+             SLOT( slotRedirection(const KURL &) ) );
+}
+
+// Slave got a redirection request
+void MkdirJob::slotRedirection( const KURL &url)
+{
+     kdDebug(7007) << "MkdirJob::slotRedirection(" << url << ")" << endl;
+     if (!kapp->authorizeURLAction("redirect", m_url, url))
+     {
+       kdWarning(7007) << "MkdirJob: Redirection from " << m_url << " to " << url << " REJECTED!" << endl;
+       m_error = ERR_ACCESS_DENIED;
+       m_errorText = url.prettyURL();
+       return;
+     }
+     m_redirectionURL = url; // We'll remember that when the job finishes
+     if (m_url.hasUser() && !url.hasUser() && (m_url.host().lower() == url.host().lower()))
+        m_redirectionURL.setUser(m_url.user()); // Preserve user
+     // Tell the user that we haven't finished yet
+     emit redirection(this, m_redirectionURL);
+}
+
+void MkdirJob::slotFinished()
+{
+    if ( m_redirectionURL.isEmpty() || !m_redirectionURL.isValid())
+    {
+        // Return slave to the scheduler
+        SimpleJob::slotFinished();
+    } else {
+        //kdDebug(7007) << "MkdirJob: Redirection to " << m_redirectionURL << endl;
+        if (queryMetaData("permanent-redirect")=="true")
+            emit permanentRedirection(this, m_url, m_redirectionURL);
+        KURL dummyUrl;
+        int permissions;
+        QDataStream istream( m_packedArgs, IO_ReadOnly );
+        istream >> dummyUrl >> permissions;
+        
+        m_url = m_redirectionURL;
+        m_redirectionURL = KURL();
+        m_packedArgs.truncate(0);
+        QDataStream stream( m_packedArgs, IO_WriteOnly );
+        stream << m_url << permissions;
+
+        // Return slave to the scheduler
+        slaveDone();
+        Scheduler::doJob(this);
+    }
+}
+
 SimpleJob *KIO::mkdir( const KURL& url, int permissions )
 {
     //kdDebug(7007) << "mkdir " << url << endl;
     KIO_ARGS << url << permissions;
-    return new SimpleJob(url, CMD_MKDIR, packedArgs, false);
+    return new MkdirJob(url, CMD_MKDIR, packedArgs, false);
 }
 
 SimpleJob *KIO::rmdir( const KURL& url )
@@ -660,6 +720,8 @@ SimpleJob *KIO::unmount( const QString& point, bool showProgressInfo )
          Observer::self()->unmounting( job, point );
     return job;
 }
+
+
 
 //////////
 
@@ -4224,6 +4286,9 @@ void Job::virtual_hook( int, void* )
 
 void SimpleJob::virtual_hook( int id, void* data )
 { KIO::Job::virtual_hook( id, data ); }
+
+void MkdirJob::virtual_hook( int id, void* data )
+{ SimpleJob::virtual_hook( id, data ); }
 
 void StatJob::virtual_hook( int id, void* data )
 { SimpleJob::virtual_hook( id, data ); }

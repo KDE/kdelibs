@@ -706,6 +706,66 @@ namespace KIO {
     };
 
     /**
+     * A KIO job that creates a directory
+     * @see KIO::mkdir()
+     * @since 3.3
+     */
+    class MkdirJob : public SimpleJob {
+
+    Q_OBJECT
+
+    public:
+        /**
+	 * Do not use this constructor to create a MkdirJob, use KIO::mkdir() instead.
+	 * @param url the url of the file or directory to check
+	 * @param command the command to issue
+	 * @param packedArgs the arguments
+	 * @param showProgressInfo true to show progress information to the user
+	 */
+        MkdirJob(const KURL& url, int command, const QByteArray &packedArgs, bool showProgressInfo);
+
+        /**
+	 * @internal
+         * Called by the scheduler when a @p slave gets to
+         * work on this job.
+	 * @param slave the slave that starts working on this job
+         */
+        virtual void start( Slave *slave );
+
+    signals:
+        /**
+         * Signals a redirection.
+         * Use to update the URL shown to the user.
+         * The redirection itself is handled internally.
+	 * @param job the job that is redirected
+	 * @param url the new url
+         */
+        void redirection( KIO::Job *job, const KURL &url );
+
+        /**
+         * Signals a permanent redirection.
+         * The redirection itself is handled internally.
+	 * @param job the job that is redirected
+	 * @param fromUrl the original URL
+	 * @param toUrl the new URL
+         */
+        void permanentRedirection( KIO::Job *job, const KURL &fromUrl, const KURL &toUrl );
+
+    protected slots:
+        void slotRedirection( const KURL &url);
+        virtual void slotFinished();
+
+    protected:
+        KURL m_redirectionURL;
+                    
+    protected:
+	virtual void virtual_hook( int id, void* data );
+    private:
+        class MkdirJobPrivate;
+        MkdirJobPrivate *d;
+    };
+
+    /**
      * @internal
      * Used for direct copy from or to the local filesystem (i.e. SlaveBase::copy())
      */
