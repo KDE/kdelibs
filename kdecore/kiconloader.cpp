@@ -24,6 +24,7 @@
 #include <qdir.h>
 #include <qiconset.h>
 #include <qmovie.h>
+#include <qbitmap.h>
 
 #include <kdebug.h>
 #include <kstandarddirs.h>
@@ -399,7 +400,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     QString name = _name;
     QPixmap pix;
     QString key;
-    bool absolutePath=false;
+    bool absolutePath=false, favIconOverlay=false;
 
     if (d->mpThemeRoot == 0L)
 	return pix;
@@ -407,6 +408,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     // Special case for absolute path icons.
     if (name.startsWith("favicons/"))
     {
+       favIconOverlay = true;
        name = locateLocal("cache", name+".png");
     }
     if (name.at(0) == '/') absolutePath=true;
@@ -495,6 +497,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     {
 	size = d->mpGroups[group].size;
     }
+    favIconOverlay = favIconOverlay && (size > 16);
 
     // Generate a unique cache key for the icon.
 
@@ -530,7 +533,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     {
         // No? load it.
         KIcon icon;
-        if (absolutePath)
+        if (absolutePath && !favIconOverlay)
         {
             icon.context=KIcon::Any;
             icon.type=KIcon::Scalable;
@@ -538,7 +541,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
         }
         else
         {
-            icon = findMatchingIcon(name, size);
+            icon = findMatchingIcon(favIconOverlay ? "www" : name, size);
             if (!icon.isValid())
             {
                 // Try "User" icon too. Some apps expect this.
@@ -609,7 +612,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     // Scale the icon and apply effects if necessary
     if ((iconType == KIcon::Scalable) && (size != img->width()))
     {
-	*img = img->smoothScale(size, size);
+        *img = img->smoothScale(size, size);
     }
     if ((iconType == KIcon::Threshold) && (size != img->width()))
     {
@@ -628,6 +631,23 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     pix.convertFromImage(*img);
 
     delete img;
+
+    if (favIconOverlay)
+    {
+        QPixmap favIcon(name, "PNG");
+        int x = pix.width() - favIcon.width() - 1,
+            y = pix.height() - favIcon.height() - 1;
+        if (pix.mask())
+        {
+            QBitmap mask = *pix.mask();
+            bitBlt(&mask, x, y,
+                   favIcon.mask() ? const_cast<QBitmap *>(favIcon.mask()) : &favIcon,
+                   0, 0, favIcon.width(), favIcon.height(),
+                   favIcon.mask() ? Qt::OrROP : Qt::SetROP);
+            pix.setMask(mask);
+        }
+        bitBlt(&pix, x, y, &favIcon);
+    }
 
     QPixmapCache::insert(key, pix);
     return pix;
