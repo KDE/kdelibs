@@ -29,6 +29,9 @@
 #include <kstatusbar.h>
 #include <ktoolbar.h>
 
+#include <kxmlgui.h>
+#include <kxmlguibase.h>
+
 class KConfig;
 class KHelpMenu;
 class KMenuBar;
@@ -89,7 +92,7 @@ class KTMainWindowPrivate;
 
  */
 
-class KTMainWindow : public QWidget
+class KTMainWindow : public QWidget, public KXMLGUIBuilder, public KXMLGUIBase
 {
     Q_OBJECT
 
@@ -389,6 +392,25 @@ public:
      */
     bool hasToolBar( int ID = 0 );
 
+    KXMLGUIFactory *guiFactory() const;
+
+    // KXMLGUIBuilder interface (internal)
+    virtual QWidget *createContainer( QWidget *parent, int index, const QDomElement &element, const QByteArray &containerStateBuffer, int &id );
+
+    // KXMLGUIBuilder interface (internal)
+    virtual QByteArray removeContainer( QWidget *container, QWidget *parent, int id );
+
+    virtual int insertSeparator( QWidget *parent, int index );
+    virtual void removeSeparator( QWidget *parent, int id );
+
+    /**
+     * Create a GUI given a local XML file.  If xmlfile is NULL, then
+     * only the global (standard) XML file is used 
+     *
+     * @param xmlfile The local xmlfile (relative or absolute)
+     */
+    virtual void createGUI( const QString &xmlfile = QString::null );
+
 protected:
     /**
      * @sect And now back to methods you might need...
@@ -673,6 +695,7 @@ private:
    KTMainWindowPrivate *d;
 
 protected:
+  KXMLGUIFactory *m_factory;
 
   void savePropertiesInternal (KConfig*, int);
   bool readPropertiesInternal (KConfig*, int);

@@ -53,7 +53,8 @@ include_HEADERS = kprogress.h kcolordlg.h kselect.h \
 		ktoolbarradiogroup.h ktextbrowser.h kaction.h khelpmenu.h \
 		kcmodule.h kcmenumngr.h panelmenu.h \
 		kstdaction.h kdrawutil.h kcombobox.h \
-		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h
+		kiconview.h klistview.h klistbox.h kbugreport.h kpassdlg.h \
+        kxmlguibase.h kxmlgui.h
 
 # the order of the sources isn't randomly (at least not completly).
 # the order is predictated by the use of X11 header files
@@ -78,7 +79,7 @@ libkdeui_la_SOURCES = kthemestyle.cpp kurllabel.cpp knuminput.cpp  \
 		ktextbrowser.cpp kaction.cpp khelpmenu.cpp kcmodule.cpp \
 		kcmenumngr.cpp panelmenu.cpp kstdaction.cpp kdrawutil.cpp \
 		kiconview.cpp klistview.cpp klistbox.cpp kbugreport.cpp \
-                kcombobox.cpp kpassdlg.cpp
+		kcombobox.cpp kpassdlg.cpp kxmlguibase.cpp kxmlgui.cpp
 
 libkdeui_la_METASOURCES = AUTO
 
