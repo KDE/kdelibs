@@ -119,8 +119,7 @@ public class KJASAppletRunner
             throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
                                                 + contextId );
 
-        Applet app = context.getAppletStub( appletId ).getApplet();
-        context.destroyApplet( app );
+        context.destroyApplet( appletId );
     }
 
     public void showApplet( String contextId, String appletId, String title )
@@ -131,8 +130,7 @@ public class KJASAppletRunner
             throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
                                                 + contextId );
 
-        Applet app = context.getAppletStub( appletId ).getApplet();
-        context.show( app, title );
+        context.showApplet( appletId, title );
     }
 
     public void startApplet( String contextId, String appletId )
@@ -143,19 +141,7 @@ public class KJASAppletRunner
             throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
                                                 + contextId );
 
-        final Applet app = context.getAppletStub( appletId ).getApplet();
-
-        Thread t = new Thread
-        (
-            new Runnable()
-            {
-                public void run()
-                {
-                    app.start();
-                }
-            }
-        );
-        t.start();
+        context.startApplet( appletId );
     }
 
     public void stopApplet( String contextId, String appletId )
@@ -166,9 +152,7 @@ public class KJASAppletRunner
             throw new IllegalArgumentException( "Invalid contextId passed to stopApplet() "
                                                 + contextId );
 
-        Applet app = context.getAppletStub( appletId ).getApplet();
-
-        app.stop();
+        context.stopApplet( appletId );
     }
 
     public void setParameter( String contextId, String appletId,
@@ -180,9 +164,7 @@ public class KJASAppletRunner
             throw new IllegalArgumentException( "Invalid contextId passed to startApplet() "
                                                 + contextId );
 
-        KJASAppletStub stub = context.getAppletStub( appletId );
-
-        stub.setParameter( name, value );
+        context.setAppletParameter( appletId, name, value );
     }
 
     //

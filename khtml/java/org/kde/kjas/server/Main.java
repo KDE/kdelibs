@@ -53,7 +53,7 @@ public class Main
         boolean bad_jdk = checkForJavaVersion();
 
         if( bad_jdk || System.getProperty("kjas.showConsole") != null )
-            console.show();
+            console.setVisible( true );
 	
         if( bad_jdk )
         {

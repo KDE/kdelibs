@@ -3,29 +3,38 @@ package org.kde.kjas.server;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import javax.swing.*;
 
 public class KJASConsole
-    extends Frame 
+    extends JFrame
 {
-    TextArea txt;
-    
+    private JTextArea txt;
+    private JScrollPane scroll;
+
     public KJASConsole()
     {
         super("Java Console");
-        Panel main = new Panel(new BorderLayout());
-        Panel btns = new Panel(new BorderLayout());
-        txt = new TextArea();
-        Button clear = new Button("Clear");
-        Button close = new Button("Close");
+
+        txt = new JTextArea();
+        txt.setEditable(false);
+
+        scroll = new JScrollPane( txt );
+
+        JPanel main = new JPanel(new BorderLayout());
+        JPanel btns = new JPanel(new BorderLayout());
+
+        JButton clear = new JButton("Clear");
+        JButton close = new JButton("Close");
         
         btns.add(clear, "West");
         btns.add(close, "East");
-        main.add(txt, "Center");
+
+        main.add(scroll, "Center");
         main.add(btns, "South");
         
-        add(main); 
+        getContentPane().add( main );
         
-        txt.setEditable(false);
+
         clear.addActionListener
         (
             new ActionListener() {
@@ -69,9 +78,9 @@ public class KJASConsole
 class KJASConsoleStream
     extends OutputStream
 {
-    TextArea txt;
+    JTextArea txt;
 
-    public KJASConsoleStream( TextArea _txt )
+    public KJASConsoleStream( JTextArea _txt )
     {
         txt = _txt;
     }
@@ -89,12 +98,10 @@ class KJASConsoleStream
             String msg = new String( bytes, offset, length );
             synchronized( txt )
             {
+                //get the caret position
+                int old_pos = txt.getCaretPosition();
                 txt.append(msg);
-
-                // Attempt to move carret beyond text length
-                // results carret to be placed at the end
-                // Just what we need without calculating text length
-                txt.setCaretPosition(100000);
+                txt.setCaretPosition( old_pos + length );
             }
         }
         catch(Throwable t) {}

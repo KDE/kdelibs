@@ -11,15 +11,15 @@ import java.io.*;
  * The context in which applets live.
  *
  */
-
 public class KJASAppletContext implements AppletContext
 {
     //* All the applets in this context
-    private Hashtable applets;
-    private Hashtable stubList;
+    private Hashtable appletNames;
+    private Hashtable appletIDs;
 
-    private String contextID;
+    private Hashtable stubs;
 
+    private String myID;
     private KJASAppletClassLoader loader;
 
 
@@ -29,30 +29,22 @@ public class KJASAppletContext implements AppletContext
      */
     public KJASAppletContext( String _contextID )
     {
-        applets = new Hashtable();
-        stubList = new Hashtable();
+        appletNames = new Hashtable();
+        appletIDs = new Hashtable();
+        stubs = new Hashtable();
 
-        contextID = _contextID;
+        myID = _contextID;
     };
 
     public String getID()
     {
-        return contextID;
+        return myID;
     }
 
-    public KJASAppletStub getAppletStub( String appletId )
-    {
-        KJASAppletStub stb = (KJASAppletStub) stubList.get( appletId );
-        if ( stb == null )
-            throw new IllegalArgumentException( "Invalid appletId passed to getAppletStub() "
-                                                + appletId );
-        return stb;
-    }
-
-    public KJASAppletStub createApplet( String appletID,
-                                        String className, URL codeBase,
-                                        URL docBase, String jars,
-                                        String name, Dimension size )
+    public void createApplet( String appletID,
+                              String className, URL codeBase,
+                              URL docBase, String jars,
+                              String name, Dimension size )
     {
         try
         {
@@ -83,9 +75,9 @@ public class KJASAppletContext implements AppletContext
                 }
             }
 
-            Main.kjas_debug( "Creating class loader with url = " + real_codeBase );
             if( loader == null )
             {
+                Main.kjas_debug( "Creating class loader with url = " + real_codeBase );
                 loader = KJASAppletClassLoader.createLoader( real_codeBase );
             }
             else
@@ -111,10 +103,9 @@ public class KJASAppletContext implements AppletContext
 
             KJASAppletStub stub = new KJASAppletStub( this, appletID, app, codeBase, docBase, name );
 
-            applets.put( name, app );
-            stubList.put( appletID, stub );
-
-            return stub;
+            appletNames.put( name, app );
+            appletIDs.put( appletID, app );
+            stubs.put( appletID, stub );
         }
         catch ( ClassNotFoundException e )
         {
@@ -124,28 +115,38 @@ public class KJASAppletContext implements AppletContext
         {
             Main.kjas_err( "Something bad happened: " + e, e );
         }
-        return null;
-   }
+    }
 
     public void destroy()
     {
-        Enumeration e = applets.elements();
-        while ( e.hasMoreElements() ) {
+        Enumeration e = appletNames.elements();
+        while ( e.hasMoreElements() )
+        {
             Applet app = (Applet) e.nextElement();
             app.stop();
         }
-        applets.clear();
-        stubList.clear();
+        appletNames.clear();
+        appletIDs.clear();
+        stubs.clear();
     }
 
-    public void destroyApplet( Applet app )
+    public void destroyApplet( String appletID )
     {
-        app.stop();
+        Applet app = (Applet) appletIDs.get( appletID );
+        if( app == null )
+            Main.kjas_debug( "could not destroy applet: " + appletID );
+        else
+            app.stop();
     }
 
-    public void show( Applet app, String title )
+    public void showApplet( String appletID, String title )
     {
-        if ( applets.contains( app ) )
+        Applet app = (Applet) appletIDs.get( appletID );
+        if( app == null )
+        {
+            Main.kjas_debug( "could not show applet: " + appletID );
+        }
+        else
         {
             Frame f = new Frame( title );
             AppletPanel p = new AppletPanel( app.getSize() );
@@ -155,23 +156,69 @@ public class KJASAppletContext implements AppletContext
             f.pack();
 
             app.init();
-            app.start();
+            startApplet( appletID );
 
             f.setVisible( true );
+        }
+    }
+
+    public void setAppletParameter( String appletID, String name, String value )
+    {
+        KJASAppletStub stub = (KJASAppletStub) stubs.get( appletID );
+        if( stub == null )
+            Main.kjas_debug( "could not get applet stub" );
+        else
+            stub.setParameter( name, value );
+    }
+
+    public void startApplet( String appletID )
+    {
+        final Applet app = (Applet) appletIDs.get( appletID );
+
+        if( app == null )
+        {
+            Main.kjas_debug( "could not start applet: " + appletID );
+        }
+        else
+        {
+            Thread t = new Thread
+            (
+                new Runnable()
+                {
+                    public void run()
+                    {
+                        app.start();
+                    }
+                }
+            );
+            t.start();
+        }
+    }
+
+    public void stopApplet( String appletID )
+    {
+        Applet app = (Applet) appletIDs.get( appletID );
+        if( app == null )
+        {
+            Main.kjas_debug( "could not stop applet: " + appletID );
+        }
+        else
+        {
+            app.stop();
         }
     }
 
     //
     // AppletContext interface
     //
-    public Applet getApplet( String name )
+    public Applet getApplet( String appletID )
     {
-        return (Applet) applets.get( name );
+        return (Applet) appletIDs.get( appletID );
     }
 
     public Enumeration getApplets()
     {
-        Enumeration e = applets.elements();
+        Enumeration e = appletNames.elements();
         return e;
     }
 
@@ -189,19 +236,19 @@ public class KJASAppletContext implements AppletContext
     public void showDocument( URL url )
     {
         if( url != null )
-            Main.protocol.sendShowDocumentCmd( contextID, url.toString()  );
+            Main.protocol.sendShowDocumentCmd( myID, url.toString()  );
     }
 
     public void showDocument( URL url, String targetFrame )
     {
         if ( ( url != null ) && ( targetFrame != null ) )
-            Main.protocol.sendShowDocumentCmd( contextID, url.toString(), targetFrame );
+            Main.protocol.sendShowDocumentCmd( myID, url.toString(), targetFrame );
     }
 
     public void showStatus( String message )
     {
         if( message != null )
-            Main.protocol.sendShowStatusCmd( contextID, message );
+            Main.protocol.sendShowStatusCmd( myID, message );
     }
 
     class AppletPanel

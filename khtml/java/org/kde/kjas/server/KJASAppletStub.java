@@ -54,11 +54,6 @@ public class KJASAppletStub implements AppletStub
         applet.setStub( this );
     }
 
-    public Applet getApplet()
-    {
-        return applet;
-    }
-
     public void setParameter( String name, String value )
     {
         name = name.toLowerCase();
