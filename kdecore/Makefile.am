@@ -156,6 +156,10 @@ kgrantpty_LDADD = ./libkdefakes.la
 # kgrantpty needs to be installed setuid root
 install-exec-hook: 
 	@(chown root $(DESTDIR)$(bindir)/kgrantpty && chmod 4755 $(DESTDIR)$(bindir)/kgrantpty) || echo "Please make kgrantpty setuid root" >&2
+	@echo ""
+	@echo "kgrantpty is by default installed with a set SETUID root bit!"
+	@echo "This is needed for konsole, etc. to ensure that they can't be eavesdroped."
+	@echo ""
 
 DISTCLEANFILES = kde-config.cpp
 
