@@ -560,7 +560,8 @@ void KListView::focusOutEvent( QFocusEvent *fe )
       && (d->selectionMode == FileManager)
       && (fe->reason()!=QFocusEvent::Popup)
       && (fe->reason()!=QFocusEvent::ActiveWindow)
-      && (currentItem()!=0))
+      && (currentItem()!=0)
+      && (!d->editor->isVisible()))
   {
       currentItem()->setSelected(false);
       currentItem()->repaint();
