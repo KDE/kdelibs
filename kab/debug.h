@@ -27,7 +27,7 @@ extern "C" {
 #include <errno.h>
 }
 // C++ headers:
-#include "stl_headers.h"
+//#include "stl_headers.h"
 
 #if defined USE_NAMESPACES
 using namespace std;
