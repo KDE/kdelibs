@@ -92,9 +92,9 @@ int KTMainWindow::addToolBar( KToolBar *toolbar, int index )
     int id = idBarMap.count();
     idBarMap.insert( id, toolbar );
     if ( index == -1 )
-	QMainWindow::addToolBar( toolbar, (ToolBarDock)toolbar->barPos(), FALSE );
+	QMainWindow::addToolBar( toolbar, (ToolBarDock)toolbar->barPos(), false );
     else
-	moveToolBar( toolbar, (ToolBarDock)toolbar->barPos(), FALSE, index );
+	moveToolBar( toolbar, (ToolBarDock)toolbar->barPos(), false, index );
     return id;
 }
 
