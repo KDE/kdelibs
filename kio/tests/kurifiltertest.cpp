@@ -7,6 +7,16 @@
 
 #include "kurifilter.h"
 
+void filter( const char* u, QStringList list = QStringList() )
+{
+    QString a = QString::fromLatin1( u );
+    cout << "Filtering: " << a << endl;
+    if (KURIFilter::self()->filterURI(a, list))
+        cout << "After filtering: " << a << endl;
+    else
+        cout << "No filtering required" << endl;
+}
+
 int main(int argc, char **argv) {
     KAboutData aboutData("kurifiltertest", "KURIFilter Test",
                         "1.0");
@@ -14,19 +24,22 @@ int main(int argc, char **argv) {
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 
-    QString a("linuxtoday.com");
+    // URI that should require no filtering
+    filter( "http://www.kde.org" );
 
-    cout << "Filtering: " << a << endl;
-    if (KURIFilter::filter()->filterURI(a)) {
-	cout << "After filtering: " << a << endl;
-    }
+    // ShortURI tests
+    filter( "linuxtoday.com" );
+    filter( "kde.org" );
+    filter( "mosfet.org" );
 
-    a = "http://www.kde.org";
-    cout << "Filtering: " << a << endl;
-    if (KURIFilter::filter()->filterURI(a)) {
-	cout << "After filtering: " << a << endl;
-    }
+    // SMB share test with a specific filter chosen
+    filter( "smb:///", "ShortURIFilter" ); // use specific filter.
+    filter( "smb:", "ShortURIFilter" ); // use specific filter.
+    filter( "smb:/", "ShortURIFilter" ); // use specific filter.
 
+    // IKWS test
+    filter( "KDE" );
+    filter( "GNOME" );
     return 0;
 }
 
