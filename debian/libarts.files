@@ -16,6 +16,7 @@ usr/lib/libsoundserver_idl.la
 usr/lib/libx11globalcomm.so.0.0.0
 usr/lib/libx11globalcomm.so.0
 usr/lib/libx11globalcomm.la
+usr/bin/artsmessage
 usr/bin/mcopidl
 usr/bin/artsd
 usr/bin/artsplay

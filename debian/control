@@ -97,7 +97,7 @@ Description: aRts Sound system (midi support libraries with alsa)
 Package: libarts-alsa
 Architecture: any
 Section: libs
-Replaces: libarts
+Replaces: libarts, kdelibs3 (<< 4:2.2-alpha1-3)
 Depends: ${shlibs:Depends}
 Suggests: kdelibs3
 Conflicts: suidmanager (<< 0.50), libarts
