@@ -591,9 +591,6 @@ DCOPServer::DCOPServer()
       fclose(f);
     }
       
-
-  atexit(CloseListeners);
-  
   if (!SetAuthentication(numTransports, listenObjs, &authDataEntries)) {
     qDebug("dcopserver could not set authorization");
     exit(1);
