@@ -65,7 +65,7 @@ KBuildServiceFactory::createEntry( const QString& file, const char *resource )
   if ( serv->isValid() )
      return serv;
   else {
-     kDebugWarning( 7012, "Invalid Service : %s", file.ascii() );
+     kdWarning(7012) << "Invalid Service : " << file << endl;
      delete serv;
      return 0L;
   }
@@ -76,8 +76,7 @@ void
 KBuildServiceFactory::saveHeader(QDataStream &str)
 {
    KSycocaFactory::saveHeader(str);
-   kDebugInfo( 7012, QString("KBuildServiceFactory m_offerListOffset = %1")
-	.arg( m_offerListOffset, 8, 16) );
+   kdDebug(7012) << QString("KBuildServiceFactory m_offerListOffset = %1")	.arg( m_offerListOffset, 8, 16) << endl;
 
    str << (Q_INT32) m_nameDictOffset;
    str << (Q_INT32) m_relNameDictOffset;

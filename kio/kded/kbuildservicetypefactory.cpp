@@ -79,7 +79,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
   {
     QString tmp = QString("The service/mime type config file\n%1\n"
 		  "does not contain a ServiceType=...\nor MimeType=... entry").arg( file );
-    kDebugWarning(7012, tmp);
+    kdWarning(7012) << tmp << endl;
     return 0;
   }
 
@@ -97,7 +97,7 @@ KBuildServiceTypeFactory::createEntry(const QString &file, const char *resource)
 
   if ( !(e->isValid()) )
   {
-    kDebugWarning(7012, "Invalid ServiceType : %s", file.ascii() );
+    kdWarning(7012) << "Invalid ServiceType : " << file << endl;
     delete e;
     return 0;
   }
@@ -109,9 +109,7 @@ void
 KBuildServiceTypeFactory::saveHeader(QDataStream &str)
 {
    KSycocaFactory::saveHeader(str);
-   kDebugInfo(7012, QString("KBuildServiceTypeFactory m_fastPatternOffset = %1 m_otherPatternOffset = %2")
-	.arg( m_fastPatternOffset, 8, 16)
-	.arg( m_otherPatternOffset, 8, 16));
+   kdDebug(7012) << QString("KBuildServiceTypeFactory m_fastPatternOffset = %1 m_otherPatternOffset = %2")	.arg( m_fastPatternOffset, 8, 16)	.arg( m_otherPatternOffset, 8, 16) << endl;
 
    str << (Q_INT32) m_fastPatternOffset;
    str << (Q_INT32) m_otherPatternOffset;

@@ -45,7 +45,7 @@ int kdemain( int argc, char **argv )
 {
   KInstance instance( "kio_file" );
 
-  kDebugInfo(7101, "Starting %d", getpid());
+  kdDebug(7101) << "Starting " << getpid() << endl;
 
   if (argc != 4)
   {
@@ -56,7 +56,7 @@ int kdemain( int argc, char **argv )
   FileProtocol slave(argv[2], argv[3]);
   slave.dispatchLoop();
 
-  kDebugInfo(7101, "Done" );
+  kdDebug(7101) << "Done" << endl;
   return 0;
 }
 
@@ -194,14 +194,14 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
     QString dest;
     if (bMarkPartial)
     {
-        kDebugInfo( 7101, "Appending .part extension to %s", debugString(dest_orig) );
+        kdDebug(7101) << "Appending .part extension to " << debugString(dest_orig) << endl;
         dest = dest_part;
 
         struct stat buff_part;
         bool part_exists = ( ::stat( dest_part, &buff_part ) != -1 );
         if ( part_exists && !_resume )
         {
-             kDebugInfo( 7101, "Deleting partial file %s", debugString(dest_part) );
+             kdDebug(7101) << "Deleting partial file " << debugString(dest_part) << endl;
              if ( ! remove( dest_part ) ) {
                  part_exists = false;
              } else {
@@ -215,7 +215,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
        dest = dest_orig;
        if ( orig_exists && !_resume )
         {
-             kDebugInfo( 7101, "Deleting destination file %s", debugString(dest_part) );
+             kdDebug(7101) << "Deleting destination file " << debugString(dest_part) << endl;
              remove( dest_orig );
              // Catch errors when we try to open the file.
         }
@@ -237,7 +237,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
     }
 
     if ( m_fPut == 0L ) {
-	kDebugInfo( 7101, "####################### COULD NOT WRITE %s", debugString(dest));
+	kdDebug(7101) << "####################### COULD NOT WRITE " << debugString(dest) << endl;
         if ( errno == EACCES ) {
             error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
         } else {
@@ -264,7 +264,7 @@ void FileProtocol::put( const QString& dest_orig, int _mode, bool _overwrite, bo
     if (result != 0)
     {
         fclose(m_fPut);
-	kDebugInfo( 7101, "Error during 'put'. Aborting.");
+	kdDebug(7101) << "Error during 'put'. Aborting." << endl;
         if (bMarkPartial)
         {
            struct stat buff;
@@ -358,7 +358,7 @@ void FileProtocol::copy( const QString &src, const QString &dest,
     int fd = open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
     m_fPut = fdopen( fd, "wb" );
     if ( m_fPut == 0L ) {
-	kDebugInfo( 7101, "####################### COULD NOT WRITE %s", debugString(dest));
+	kdDebug(7101) << "####################### COULD NOT WRITE " << debugString(dest) << endl;
         if ( errno == EACCES ) {
             error( KIO::ERR_WRITE_ACCESS_DENIED, dest );
         } else {
@@ -499,7 +499,7 @@ void FileProtocol::del( const QString& path, bool isfile)
 	 * Delete empty directory
 	 *****/
 	
-	kDebugInfo( 7101, "Deleting directory %s", debugString(path) );
+	kdDebug(7101) << "Deleting directory " << debugString(path) << endl;
 
 	// TODO deletingFile( source );
 	
@@ -651,29 +651,29 @@ void FileProtocol::stat( const QString & path )
     for( ; it != entry.end(); it++ ) {
         switch ((*it).m_uds) {
             case KIO::UDS_FILE_TYPE:
-                kDebugInfo("File Type : %d", (mode_t)((*it).m_long) );
+                kdDebug() << "File Type : " << (mode_t)((*it).m_long) << endl;
                 break;
             case KIO::UDS_ACCESS:
-                kDebugInfo("Access permissions : %d", (mode_t)((*it).m_long) );
+                kdDebug() << "Access permissions : " << (mode_t)((*it).m_long) << endl;
                 break;
             case KIO::UDS_USER:
-                kDebugInfo("User : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "User : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_GROUP:
-                kDebugInfo("Group : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "Group : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_NAME:
-                kDebugInfo("Name : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "Name : " << ((*it).m_str.ascii() ) << endl;
                 //m_strText = decodeFileName( (*it).m_str );
                 break;
             case KIO::UDS_URL:
-                kDebugInfo("URL : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "URL : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_MIME_TYPE:
-                kDebugInfo("MimeType : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "MimeType : " << ((*it).m_str.ascii() ) << endl;
                 break;
             case KIO::UDS_LINK_DEST:
-                kDebugInfo("LinkDest : %s", ((*it).m_str.ascii() ) );
+                kdDebug() << "LinkDest : " << ((*it).m_str.ascii() ) << endl;
                 break;
         }
     }
@@ -686,7 +686,7 @@ void FileProtocol::stat( const QString & path )
 
 void FileProtocol::listDir( const QString& path )
 {
-    kDebugInfo( 7101, "=============== LIST %s ===============", debugString(path) );
+    kdDebug(7101) << "=============== LIST " << debugString(path) << " ===============" << endl;
 
     struct stat buff;
     if ( ::stat( path, &buff ) == -1 ) {
@@ -732,13 +732,13 @@ void FileProtocol::listDir( const QString& path )
 
     listEntry( entry, true ); // ready
 
-    kDebugInfo(7101, "============= COMPLETED LIST ============" );
+    kdDebug(7101) << "============= COMPLETED LIST ============" << endl;
 
     chdir(path_buffer);
 
     finished();
 
-    kDebugInfo(7101, "=============== BYE ===========" );
+    kdDebug(7101) << "=============== BYE ===========" << endl;
 }
 
 /*
@@ -775,8 +775,7 @@ void FileProtocol::special( const QByteArray &data)
 	
 	bool ro = ( iRo != 0 );
 	
-	kDebugInfo(7006 ,"!!!!!!!!! MOUNTING %s %s %s",
-		   debugString(fstype), debugString(dev), debugString(point) );
+	kdDebug(7006) << "!!!!!!!!! MOUNTING " << debugString(fstype) << " " << debugString(dev) << " " << debugString(point) << endl;
 	mount( ro, fstype, dev, point );
 	
       }

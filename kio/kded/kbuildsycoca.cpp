@@ -104,7 +104,7 @@ void KBuildSycoca::recreate()
 
   m_str = database.dataStream();
 
-  kDebugInfo(7021, "Recreating ksycoca file");
+  kdDebug(7021) << "Recreating ksycoca file" << endl;
 
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
@@ -117,7 +117,7 @@ void KBuildSycoca::recreate()
   m_str = 0L;
   if (!database.close())
   {
-     kDebugError(7021, "Error writing database to %s", database.name().ascii());
+     kdError(7021) << "Error writing database to " << database.name() << endl;
      return;
   }
 }
@@ -176,8 +176,7 @@ void KBuildSycoca::save()
    }
    (*m_str) << (Q_INT32) 0; // No more factories.
 
-   kDebugInfo(7021, debugString(QString("endOfData : %1").
-				arg(endOfData,8,16)));
+   kdDebug(7021) << debugString(QString("endOfData : %1").				arg(endOfData,8,16)) << endl;
 
    // Jump to end of database
    m_str->device()->at(endOfData);

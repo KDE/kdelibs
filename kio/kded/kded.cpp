@@ -129,7 +129,7 @@ void Kded::dirDeleted(const QString& /*path*/)
 
 void Kded::update(const QString& path)
 {
-  kDebugInfo(7020, QString("Kded::update( %1 ) - starting timer").arg( path ));
+  kdDebug(7020) << QString("Kded::update( %1 ) - starting timer").arg( path ) << endl;
   // We could be smarter here, and find out which factory
   // deals with that dir, and update only that...
   // But rebuilding everything is fine for me.
