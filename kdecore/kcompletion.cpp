@@ -104,7 +104,7 @@ QString KCompletion::makeCompletion( const QString& string )
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
-    if ( myCompletionMode == KGlobal::CompletionEOL &&
+    if ( myCompletionMode == KGlobal::CompletionShell &&
 	 string == myLastString ) {
         myMatches = findAllCompletions( string );
 	emit matches( myMatches );
@@ -315,7 +315,7 @@ QString KCompletion::findCompletion( const QString& string )
     // in auto-completion mode
     if ( node && node->childrenCount() > 1 ) {
         int index = myBackwards ? node->childrenCount()-1 : -1;
-	if ( myCompletionMode != KGlobal::CompletionEOL && !myBackwards )
+	if ( myCompletionMode != KGlobal::CompletionShell && !myBackwards )
 	    index = 0;
         myForkList.append( completion, node, index );
 	
@@ -454,7 +454,7 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
 
 void KCompletion::doBeep()
 {
-    if ( myBeep && myCompletionMode == KGlobal::CompletionEOL )
+    if ( myBeep && myCompletionMode == KGlobal::CompletionShell )
         kapp->beep();
 }
 

@@ -27,7 +27,7 @@
 
 #include <kglobal.h>
 
-#include <kcompletion_private.h>
+#include "kcompletion_private.h"
 
 struct KCompletionPrivate;
 
@@ -225,7 +225,7 @@ public:
    * Default is enabled (does beep).
    * @see isBeepEnabled
    */
-  void setEnableBeep( bool enable ) { myBeep = enable; }
+  void setBeepEnabled( bool enable ) { myBeep = enable; }
 
   /**
    * Tells you whether KCompletion will issue beeps (@ref KApplication::beep)
