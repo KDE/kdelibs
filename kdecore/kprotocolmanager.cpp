@@ -62,7 +62,7 @@ void KProtocolManager::scanConfig( const QString& _dir )
     Protocol p;
     p.exec = config.readEntry( "exec" );
     p.isSourceProtocol = config.readBoolEntry( "source", true );
-    p.isHelperProtocol = config.readBoolEntry( "helper", true );
+    p.isHelperProtocol = config.readBoolEntry( "helper", false );
     p.supportsReading = config.readBoolEntry( "reading", false );
     p.supportsWriting = config.readBoolEntry( "writing", false );
     p.supportsMakeDir = config.readBoolEntry( "makedir", false );
