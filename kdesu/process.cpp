@@ -105,6 +105,11 @@ void PtyProcess::setEnvironment( const QCStringList &env )
     d->env = env;
 }
 
+const QCStringList& PtyProcess::environment() const
+{
+    return d->env;
+}
+
 /*
  * Read one line of input. The terminal is in canonical mode, so you always
  * read a line at at time, but it's possible to receive multiple lines in
