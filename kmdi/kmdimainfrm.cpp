@@ -916,7 +916,8 @@ void KMdiMainFrm::closeWindow( KMdiChildView *pWnd, bool layoutTaskBar )
 		}
 	}
 
-	if ( !m_pCurrentWindow ) {
+	if ( !m_pCurrentWindow )
+	{
 		d->closeWindowAction->setEnabled(false);
 		emit lastChildViewClosed();
 	}
