@@ -414,13 +414,7 @@ private:
 
 static QString buildAcceptHeader()
 {
-    QString result = KImageIO::mimeTypes( KImageIO::Reading ).join(", ");
-    if (result.endsWith(", "))
-        result.truncate(result.length()-2);
-    if ( !result.isEmpty() )
-        result += ";q=0.5";
-    result += ",*/*;q=0.1";
-    return result;
+    return "image/png, image/jpeg, video/x-mng, image/jp2, image/gif;q=0.5,*/*;q=0.1";
 }
 
 // -------------------------------------------------------------------------------------
