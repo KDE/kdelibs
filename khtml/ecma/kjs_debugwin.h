@@ -137,7 +137,7 @@ public:
   virtual ~KJSDebugWin();
 
   static KJSDebugWin *createInstance();
-  static void *destroyInstance();
+  static void destroyInstance();
   static KJSDebugWin *instance();
 
   enum Mode { Disabled = 0, // No break on any statements

@@ -195,7 +195,7 @@ KJSDebugWin::KJSDebugWin(QWidget *parent, const char *name)
 
   setMinimumSize(300,200);
   resize(600,450);
-  m_mode = Step;
+  m_mode = Continue;
   m_sourceBreakpoints = 0;
 
   KIconLoader loader;
@@ -226,9 +226,10 @@ KJSDebugWin *KJSDebugWin::createInstance()
   assert(!kjs_html_debugger);
   kjs_html_debugger = new KJSDebugWin();
   kjs_html_debugger->show();
+  return kjs_html_debugger;
 }
 
-void *KJSDebugWin::destroyInstance()
+void KJSDebugWin::destroyInstance()
 {
   assert(kjs_html_debugger);
   kjs_html_debugger->hide();
