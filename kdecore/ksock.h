@@ -95,7 +95,7 @@ public:
     /** 
      * Destructor. Closes the socket if it is still open.
      */
-    ~KSocket();
+    virtual ~KSocket();
 
     /**
       *  A small wrapper around @ref gethostbyname() and such.
@@ -234,7 +234,7 @@ public:
     /** 
      * Destructor. Closes the socket if it was not already closed.
      */
-    ~KServerSocket();
+    virtual ~KServerSocket();
     
     /** 
      * Get the file descriptor assoziated with the socket.
