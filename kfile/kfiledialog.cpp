@@ -1224,6 +1224,10 @@ void KFileDialog::fileCompletion( const QString& file )
 	else
 	    locationEdit->setCompletedText( text );
     }
+    else
+        if (locationEdit->completionMode() == KGlobalSettings::CompletionPopup)
+            locationEdit->completionBox()->hide();
+    
     d->completionLock = false;
 }
 
