@@ -124,8 +124,9 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, bool never_null
             return QString::null;
     }
 
-    QByteArray buffer(file.readAll());
-    return QString::fromUtf8(buffer.data(), buffer.size());
+    QTextStream buffer( &file );
+    buffer.setEncoding( QTextStream::UnicodeUTF8 );
+    return buffer.read();
 }
 
 bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
