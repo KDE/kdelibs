@@ -187,7 +187,7 @@ bool KComboBox::showContextMenu()
 
 void KComboBox::setEditText( const QString& text )
 {
-    if( m_pEdit != 0 )
+    if( m_pEdit != 0 && !text.isNull() )
     {
         int pos = cursorPosition();
         m_pEdit->validateAndSet( text, pos, 0, text.length() );

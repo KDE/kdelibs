@@ -30,41 +30,121 @@
 #include <kcompletion.h>
 
 
+/**
+ * A combined button, line-edit and a popup list widget.
+ *
+ * This widget inherits from QComboBox and enhances it with the following
+ * added functionalities : a popup menu that provides basic features
+ * such as copy/cut/paste to manipulate content through the mouse, a
+ * built-in hook into @ref a KCompletion object which provides automatic
+ * manual completion, and the ability to change which keyboard key is used
+ * for this feature.  Since this widget inherits form QComboBox, it can be
+ * used as a drop-in replacement where the above extra functionalities are
+ * needed and/or useful.
+ *
+ * KComboBox emits a few more additional signals than @ref QComboBox, the
+ * main one being the comepltion signal.  This signal can be connected to a
+ * slot that will assist the user in filling out the remaining text.  The
+ * other signals are mainly provided a matter of convenience.  See @ref
+ * returnPressed, @ref clicked and @ref pressed.
+ *
+ * The default key-binding for completion is determined from the global
+ * setting in @ref KStdAccel.  However, this value can be set locally to
+ * override the global setting.  Simply invoking @see useGlobalSettings then
+ * allows you to immediately default the bindings back to the global settings
+ * again.  You can also default the key-binding by simply invoking the
+ * @ref setCompletionKey method without any argumet.  This will then force the
+ * key-event filter to use the global value.
+ *
+ * @sect A small example:
+ *
+ * To enable the basic completion feature :
+ *
+ * <pre>
+ * KComboBox *combo = new KComboBox( true, this, "mywidget" );
+ *
+ * combo->enableCompletion(); // enables completion
+ *
+ * combo->autoHighLightItem(); // highlights items in the list box on mouse over
+ *
+ * KCompletion *comp = edit->completionObject();
+ *
+ * // connect to the return pressed signal to some filter method of a completion object's list...
+ * connect( edit, SIGNAL( returnPressed( const QString& ) ), combo->completionObject(), SLOT( addItem( const QString& ) );
+ * // connect the clicked signal and let the widget worry about what to do. Easy, isn't it ?
+ * connect( edit, SIGNAL( clicked( int ) ), combo, SLOT( setSelectedItem( int ) ) );
+ * </pre>
+ *
+ * To use a customized completion object such as KURLCompletion
+ * use setCompletionObject instead :
+ *
+ * <pre>
+ * KComboBox *combo = new KComboBox( this,"mywidget" );
+ * KURLCompletion *comp = new KURLCompletion();
+ * edit->setCompletionObject( comp );
+ * </pre>
+ *
+ * Of course @ref setCompletionObject can also be used to assign the base
+ * KCompletion class as the comepltion object.  This is specailly important
+ * when you share a single completion object across multiple widgets.
+ *
+ * See @ref setCompletionObject and @ref enableCompletion for detailed
+ * information.
+ *
+ *
+ * @short An enhanced combo box.
+ * @author Dawit Alemayehu <adawit@earthlink.net>
+ */
 class KComboBox : public QComboBox
 {
   Q_OBJECT
 
 public:
+
+    /**
+    * Constructs a combo box widget with a parent object
+    * and a name.
+    */
     KComboBox( QWidget *parent=0, const char *name=0 );
 
+    /**
+    * Constructs a combo box widget in "select-only" or "read-write"
+    * mode with a parent, a name and a context menu.
+    *
+    */
     KComboBox( bool rw, QWidget *parent=0, const char *name=0,
                bool showContext=true, bool showModeChager=true );
-
+    /**
+    * Destructor
+    */
     virtual ~KComboBox();
 
-    /*
-    * Returns the current cursor position when the combobox is editable.
+    /**
+    * Returns the current cursor position.
     *
-    * @return the current cursor position.
+    * This method always returns a -1 if the combo-box is NOT
+    * editable (read-write).
+    *
+    * @return current cursor position.
     */
     int cursorPosition() const { return (m_pEdit) ? m_pEdit->cursorPosition() : -1; }
 
-    /*
+    /**
     * Re-implemented from QComboBox.
     *
     * If true, the completion mode will be set to automatic.
     * Otherwise, it is defaulted to the gloabl setting.
     *
-    * @param @p autocomplete flag to set completion mode to automatic.
+    * @param @p autocomplete flag to enable/disable automatic completion mode.
     */
     virtual void setAutoCompletion( bool autocomplete );
 
-    /*
+    /**
     * Re-implemented from QComboBox.
     *
-    * Returns true if the current completion mode is set to Auto.
+    * Returns true if the current completion mode is set to automatic.
     *
-    * @return true if the current completion mode is automatic.
+    * @return true when completion mode is automatic.
     */
     bool autoCompletion() const { return m_iCompletionMode == KGlobal::CompletionAuto; }
 
@@ -86,14 +166,14 @@ public:
     */
     void setCompletionObject( KCompletion* obj, bool autoDelete = false );
 
-    /*
+    /**
     * Returns a pointer to the current completion object.
     *
     * @return a pointer the completion object.
     */
     KCompletion* completionObject() const { return m_pCompObj; }
 
-    /*
+    /**
     * Returns true if the completion object is deleted upon this widget's
     * destruction.
     *
@@ -158,7 +238,7 @@ public:
     */
     virtual void setCompletionMode( KGlobal::Completion mode );
 
-    /*
+    /**
     * Retrieves the current completion mode.
     *
     * The return values are of type @ref KGlobal::Completion. See @ref
@@ -216,62 +296,145 @@ public:
     */
     void useGlobalSettings() { m_iCompletionKey = 0; }
 
-    /*
-    * Sets items in the list box to be highlighted.
+    /**
+    * Sets items in the list box to be highlighted on a "mouse over" event.
     *
     * This is a convienence method to turn on highlighting when the mouse
     * cursor is over an item in the list box.  The same thing can be achived
-    * by connecting to the signals from the list box manually.  This method
-    * does all the work for you.  NOTE:  if you opt for manaully connecting
-    * these signals yourself, DO NOT invoke this method or you will be receive
-    * duplicated signals.
+    * by connecting to the signals from the list box directly.  This method
+    * does all that work for you.  NOTE: if you opt for manaully connecting
+    * these signals yourself, DO NOT invoke this method.  Otherwise you will
+    * receive duplicate signals.
     *
     * @param @p highlight if true enables highlighting on mouse
     */
     void autoHighlightItems( bool highlight = false );
 
-    /*
+    /**
     * Enables the default popup (context) menu for this widget.
     *
-    * Note that this method only works if this widget is an editable widget.
-    * If this widget was constructed without being enabled for read-write,
-    * invoking this function will accomplish nothing.  Hence, the return value
-    * will be false.
+    * This method only works if this widget is editable, i.e. set to
+    * read-write.  If this widget was constructed without being enabled
+    * for read-write, invoking this function will accomplish nothing.
+    * Hence, the return value will be false.
     *
     * @return true if popup menu can be created, i.e. widget is not read-only.
     */
     bool showContextMenu();
 
-    /*
+    /**
     * Disables the default popup (context) menu for this widget.
+    *
+    * This method only works if this widget is editable, i.e. set to
+    * read-write.  If this widget was constructed without being enabled
+    * for read-write, invoking this function is meaningless.
     *
     */
     void hideContextMenu();
 
-    /*
+    /**
+    * Shows the completion mode changer in the context menu.
     *
+    * This function allows to show the mode changer item in the
+    * context menu again after you have disabled it with
+    * @ref hideModeChanger.  Note that there is no need to call
+    * this function unless you have disabled the mode changer when
+    * you created the object, through the option in the constructor
+    * or
     *
+    * NOTE : this function is meaningless if this widget is "select-only".
     */
     void showModeChanger() { m_bShowModeChanger = true; }
 
-    /*
+    /**
+    * Hides the completion mode changer in the context menu.
     *
+    * This function allows you to hide the completion mode changer as
+    * needed without completely disabling the popup menu.
     *
+    * NOTE : this function is meaningless if this widget is "select-only".
     */
     void hideModeChanger() { m_bShowModeChanger = false; }
 
 signals:
+
+    /**
+    * This signal is emitted when the user presses the return key.  It
+    * is emitted if and only if the widget is editable (read-write).
+    */
     void returnPressed();
+
+    /**
+    * This signal is emitted when the user presses the return key.  The
+    * argument is the current text being edited.  This signal, just like
+    * @ref returnPressed(), is only emitted if this widget is editable.
+    */
     void returnPressed( const QString& );
+
+    /**
+    * This is a convienence signal emitted to make life easier.  It has
+    * the integer value of the item clicked in combo-box's list box as its
+    * argument.  Unlike its counter parts in @ref QListBox, however, this
+    * signal is only emitted if the click action was on an actual item.
+    *
+    * See also @see QComboBox::listBox
+    */
     void clicked( int );
+
+    /**
+    * This is a convienence signal emitted to make life easier.  It has
+    * the integer value of the item pressed in combo-box's list box as its
+    * argument.  Unlike its counter parts in @ref QListBox, however, this
+    * signal is only emitted if the press action was on an actual item.
+    *
+    * See also @see QComboBox::listBox
+    */
     void pressed( int );
+
+    /**
+    * This signal is emitted when the completion key is pressed.  The
+    * argument is the current text being edited.
+    *
+    * Note that this signal is NOT available if this widget is non-editable
+    * or the completion mode is set to KGlobal::CompletionNone.
+    */
     void completion( const QString& );
 
 public slots:
+
+    /**
+    * TODO : NOT YET IMPLEMENTED...
+    */
     virtual void multipleCompletions( const QStringList& );
+
+    /**
+    * This slot and its counter-parts below are provided to
+    * readily connect the clicked or pressed signals from the
+    * user, when (s)he select an item from the list.  That way,
+    * you the app developer, can determine which signal should
+    * cause this widget to set the selected item and close the
+    * list box.
+    */
     virtual void setSelectedItem( QListBoxItem* );
+
+    /**
+    * This is the same as the above slot except the argument
+    * it expects, a QString value.
+    */
     virtual void setSelectedItem( const QString& );
+
+    /**
+    * This is the same as the above slot except the argument
+    * it expects, an interger value.
+    */
     virtual void setSelectedItem( int );
+
+    /**
+    * This slot is a reimplemention of @see QComboBox::setEditText.
+    * It is re-implemeted to provide a consitent look when items are
+    * completed as well as selected from the list box.  The argument
+    * is the text to set in the line edit box.
+    */
     virtual void setEditText( const QString& );
 
 protected slots:
@@ -295,17 +458,16 @@ protected slots:
     virtual void itemSelected( QListBoxItem* );
     //
     virtual void makeCompletion( const QString& );
-    //
+    // slot used to highlight an item in list box if autohighlight is enabled.
     virtual void mouseOverItem( QListBoxItem* );
-    //
+    // slot the emits a clicked signal with an integer parameter
     virtual void clickItemEvent( QListBoxItem* );
-    //
+    // slot the emits a pressed signal with an integer parameter
     virtual void pressedItemEvent( QListBoxItem* );
-    //
+    // slot that emits a returnPressed signal with a QString parameter.
     virtual void returnKeyPressed();
-    //
+    // slots to populate the context menu before it is shown
     virtual void aboutToShowMenu();
-    //
     virtual void aboutToShowSubMenu( int );
 
 protected:
