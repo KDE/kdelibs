@@ -41,6 +41,7 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     : QLabel( parent, name, WType_TopLevel )
 {
     KWin::setSystemTrayWindowFor( winId(), parent?parent->topLevelWidget()->winId(): qt_xrootwin() );
+    setBackgroundMode(X11ParentRelative);
     hasQuit = 0;
     menu = new KPopupMenu( this );
     menu->setTitle( kapp->caption() );
