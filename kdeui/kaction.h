@@ -221,7 +221,7 @@ public:
 	
 	virtual void plugAccel(KAccel *accel, const QString &actionName,
 						   bool configurable = true);
-	virtual void plugStdAccel(KAccel *accel, KStdAccel::StdAccel accel);
+	virtual void plugStdAccel(KAccel *accel, KStdAccel::StdAccel stdaccel);
 
     /**
      * "Unplug" or remove this action from a given widget.  
