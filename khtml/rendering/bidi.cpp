@@ -189,8 +189,10 @@ inline bool operator < ( const BidiIterator &it1, const BidiIterator &it2 )
 void RenderFlow::appendRun(QList<BidiRun> &runs, BidiIterator &sor, BidiIterator &eor,
                            BidiContext *context, QChar::Direction dir)
 {
-    //kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
-
+#if BIDI_DEBUG > 1
+    kdDebug(6041) << "appendRun: dir="<<(int)dir<<endl;
+#endif
+    
     int start = sor.pos;
     RenderObject *obj = sor.obj;
     while( obj && obj != eor.obj ) {
@@ -449,9 +451,15 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
                 }
                 switch(status.last)
                     {
+                    case QChar::DirET:
+			if ( status.lastStrong == QChar::DirR || status.lastStrong == QChar::DirAL ) {
+			    appendRun(runs, sor, eor, context, dir);
+			    ++eor; sor = eor; 
+			    dir = QChar::DirAN;
+			}
+			// fall through
                     case QChar::DirEN:
                     case QChar::DirL:
-                    case QChar::DirET:
                         eor = current;
                         status.eor = dirCurrent;
                         break;
@@ -459,12 +467,12 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
                     case QChar::DirAL:
                     case QChar::DirAN:
                         appendRun(runs, sor, eor, context, dir);
-                        ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
+                        ++eor; sor = eor; status.eor = QChar::DirEN;
                         dir = QChar::DirAN; break;
                     case QChar::DirES:
                     case QChar::DirCS:
                         if(status.eor == QChar::DirEN) {
-                            eor = current; status.eor = QChar::DirEN; break;
+                            eor = current; break;
                         }
                     case QChar::DirBN:
                     case QChar::DirB:
@@ -475,7 +483,7 @@ BidiContext *RenderFlow::bidiReorderLine(BidiStatus &status, const BidiIterator 
                             // neutrals go to R
                             eor = last;
                             appendRun(runs, sor, eor, context, dir);
-                            ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirON;
+                            ++eor; sor = eor; dir = QChar::DirON; status.eor = QChar::DirEN;
                             dir = QChar::DirAN;
                         }
                         else if( status.eor == QChar::DirL ||
