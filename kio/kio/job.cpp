@@ -676,6 +676,7 @@ SimpleJob *KIO::http_update_cache( const KURL& url, bool no_cache, time_t expire
     // Send http update_cache command (2)
     KIO_ARGS << (int)2 << url << no_cache << expireDate;
     SimpleJob * job = new SimpleJob( url, CMD_SPECIAL, packedArgs, false );
+    Scheduler::scheduleJob(job);
     return job;
 }
 
