@@ -95,8 +95,9 @@ public:
    * Constructor allowing relative URLs.
    *
    * @param _baseurl The base url.
-   * @param _rel_url This is considered to be encoded. If an absolute path/URL,
-   * then _baseurl will be ignored.
+   * @param _rel_url A relative or absolute URL. 
+   * If this is an absolute URL then @p _baseurl will be ignored.
+   * If this is a relative URL it will be combined with @p _baseurl.
    * @param encoding_hint Reserved, should be 0.
    */
   KURL( const KURL& _baseurl, const QString& _rel_url, int encoding_hint=0 );
@@ -473,6 +474,16 @@ public:
    * @param encoding_hint Reserved, should be 0.
    **/
   static QString decode_string(const QString &str, int encoding_hint = 0);
+
+  /**
+   * Convenience function
+   *
+   * Returns whether '_url' is likely to be a "relative" URL instead of
+   * an "absolute" URL.
+   * @param _url URL to examine
+   * @return true when the URL is likely to be "relative", false otherwise.
+   */
+  static bool isRelativeURL(const QString &_url);
 
 protected:
   void reset();

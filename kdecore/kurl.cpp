@@ -202,39 +202,28 @@ static QString decode( const QString& segment, bool *keepEncoded=0 )
   return result;
 }
 
-static bool
-isRelativeURL(const QString &_url)
+bool KURL::isRelativeURL(const QString &_url)
 {
-  // A relative URL has no ':' at least not before the first '/'.
-  int colonPos = _url.find(':');
-  if (colonPos == -1)
-      return true; // No ':' found, this is a relative URL
+  int len = _url.length();
+  if (!len) return true; // Very short relative URL.
+  const QChar *str = _url.unicode();
 
-  int slashPos = _url.find('/');
-  if ((slashPos != -1) && (colonPos > slashPos))
-      return true; // We have a ':' but it comes after a '/' so it is a relative URL
+  // Absolute URL must start with alpha-character
+  if (!isalpha(str[0].latin1()))
+     return true; // Relative URL
 
-  int questionPos = _url.find('?');
-  if ((questionPos != -1) && (colonPos > questionPos))
-      return true; // We have a ':' but it comes after a '?' so it is a relative URL
-
-  int anchorPos = _url.find('#');
-  if ((anchorPos != -1) && (colonPos > anchorPos))
-      return true; // We have a ':' but it comes after a '#' so it is a relative URL      
-
-  return false; // It's not a relative URL.
-}
-
-// Reference: RFC 1738 Uniform Resource Locators
-
-KURL::List::List(const QStringList &list)
-{
-   for( QStringList::ConstIterator it = list.begin();
-        it != list.end();
-        it++)
-   {
-      append( KURL( *it));
-   }
+  for(int i = 1; i < len; i++)
+  {
+     char c = str[i].latin1(); // Note: non-latin1 chars return 0!
+     if (c == ':')
+        return false; // URL starts with "xxx:" -> absolute URL
+     
+     // Protocol part may only contain alpha, digit, + or -
+     if (!isalpha(c) && !isdigit(c) && (c != '+') && (c != '-'))
+        return true; // Relative URL
+  }
+  // URL did not contain ':'
+  return true; // Relative URL
 }
 
 QStringList KURL::List::toStringList() const
