@@ -8,30 +8,30 @@
 
 <!ENTITY Alt	"<keycap>Alt</keycap>">
 <!ENTITY Backspace	"<keycap>Backspace</keycap>">
-<!ENTITY cdrom	'<hardware>CD-ROM drive</hardware>'>
+<!ENTITY cdrom	'<hardware>CD-ROM 驱动器</hardware>'>
 <!ENTITY Ctrl	"<keycap>Ctrl</keycap>">
 <!ENTITY dpi	'<acronym>dpi</acronym>'>
-<!ENTITY eg     "<abbrev>e.g.</abbrev>">
+<!ENTITY eg     "<abbrev>如</abbrev>">
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
-<!ENTITY etc    "<abbrev>etc.</abbrev>">
-<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY etc    "<abbrev>等等</abbrev>">
+<!ENTITY FAQ	'常见问题解答'>
 <!ENTITY ie     "<abbrev>i.e.</abbrev>">
-<!ENTITY infocenter	"<application>Info Center</application>">
-<!ENTITY kcontrolcenter	"<application>&kde; Control Center</application>">
+<!ENTITY infocenter	"<application>信息中心</application>">
+<!ENTITY kcontrolcenter	"<application>&kde; 控制中心</application>">
 <!ENTITY kicon	"<guiicon>
 <inlinemediaobject>
- <objectinfo><title>&kde;'s K-icon</title></objectinfo>
+ <objectinfo><title>&kde; 的 K 图标</title></objectinfo>
  <imageobject><imagedata fileref='common/kmenu.png' format='PNG'/></imageobject>
  <textobject><phrase>K</phrase></textobject>
 </inlinemediaobject>
 </guiicon> icon"><!-- if image is localised, then entityref should be used 
                       instead of fileref -->
-<!ENTITY kmenu  "<guimenu>K</guimenu> menu">
-<!ENTITY LMB    "<mousebutton>left</mousebutton> mouse button">
-<!ENTITY MMB    "<mousebutton>middle</mousebutton> mouse button">
-<!ENTITY OS	"operating system"><!-- <acronym>OS</acronym>-->
-<!ENTITY RMB    "<mousebutton>right</mousebutton> mouse button">
+<!ENTITY kmenu  "<guimenu>K</guimenu> 菜单">
+<!ENTITY LMB    "鼠标<mousebutton>左</mousebutton>键">
+<!ENTITY MMB    "鼠标<mousebutton>中</mousebutton>键">
+<!ENTITY OS	"操作系统"><!-- <acronym>OS</acronym>-->
+<!ENTITY RMB    "鼠标<mousebutton>右</mousebutton>键">
 <!ENTITY Shift	"<keycap>Shift</keycap>">
-<!ENTITY systemtray "<application>system tray</application>">
+<!ENTITY systemtray "<application>系统托盘</application>">
 <!ENTITY Tab	"<keycap>Tab</keycap>">
