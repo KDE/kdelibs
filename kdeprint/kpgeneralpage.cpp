@@ -95,6 +95,7 @@ static const char*	default_size[] = {
 	"A1", I18N_NOOP( "ISO A1" ),
 	"A0", I18N_NOOP( "ISO A0" )
 };
+
 #define SMALLSIZE_BEGIN   0
 #define MEDIUMSIZE_BEGIN 14
 #define HIGHSIZE_BEGIN   20
@@ -118,31 +119,56 @@ static const char*	default_type[] = {
 KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const char *name)
 : KPrintDialogPage(pr,dr,parent,name)
 {
-        //WhatsThis strings.... (added by pfeifle@kde.org)
+	//WhatsThis strings.... (added by pfeifle@kde.org)
 	QString whatsThisPrintPropertiesGeneralPage = i18n( " <qt> "
-			" This dialog page contains <em>general</em> print job settings."
+			" <p>\"General\" </p> "
+			" <p>This dialog page contains <em>general</em> print job settings."
 			" General settings are applicable to most printers, most jobs "
 			" and most job file types. "
                         " <p>To get more specific help, enable the \"WhatsThis\" cursor and click on any of the "
                         " text labels or GUI elements of this dialog. "
 			" </qt>" );
 	QString whatsThisGeneralPageSizeLabel = i18n( " <qt> "
-			" <b>Selection of page size:</b> Select paper size to be printed on from "
-			" the drop-down menu. "
-			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. "
+			" <p><b>Page size:</b> Select paper size to be printed on from "
+			" the drop-down menu. </p>"
+			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed.</p> "
+                        " <br> "
+                        " <hr> "
+                        " <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+                        " <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o PageSize=...         # examples: \"A4\" or \"Letter\" "
+			" </pre>"
+			" </p> "
 			" </qt>" );
 	QString whatsThisGeneralPaperTypeLabel = i18n( " <qt> "
-			" <b>Selection of paper type:</b> Select paper type to be printed on from "
-			" the drop-down menu. "
-			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. "
+			" <p><b>Paper type:</b> Select paper type to be printed on from "
+			" the drop-down menu. </p>"
+			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. </p>"
+                        " <br> "
+                        " <hr> "
+                        " <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+                        " <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o MediaType=...        # example: \"Transparency\" "
+			" </pre>"
+			" </p> "
 			" </qt>" );
 	QString whatsThisGeneralPaperSourceLabel = i18n( " <qt> "
-			" <b>Selection of paper source:</b> Select paper source tray for the paper"
+			" <p><b>Paper source:</b> Select paper source tray for the paper"
                         " to be printed on from the drop-down menu. "
-			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. "
+			" <p>The exact list of choices depends on the printer driver (\"PPD\") you have installed. </p>"
+                        " <br> "
+                        " <hr> "
+                        " <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+                        " <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o InputSlot=...        # examples: \"Lower\" or \"LargeCapacity\" "
+			" </pre>"
+			" </p> "
 			" </qt>" );
 	QString whatsThisGeneralOrientationLabel = i18n( " <qt> "
-			" <b>Selection of image orientation:</b> Orientation of the printed "
+			" <p><b>Image Orientation:</b> Orientation of the printed "
                         " page image on your paper is controlled by the radio buttons. By default, "
                         " the orientation is <em>Portrait</em> "
                         " <p>You can select 4 alternatives: "
@@ -152,14 +178,22 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
                         " <li> <b>Reverse Landscape.</b> Reverse Landscape prints the images upside down. </li> "
                         " <li> <b>Reverse Portrait.</b> Reverse Portrait prints the image upside down.</li> "
                         " </ul> "
-                        " The icon changes according to your selection." 
+                        " The icon changes according to your selection.</p>" 
+                        " <br> "
+                        " <hr> "
+                        " <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+                        " <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o orientation-requested=...       # examples: \"landscape\" or \"reverse-portrait\" "
+			" </pre>"
+			" </p> "
 			" </qt>" );
 	QString whatsThisGeneralDuplexLabel = i18n( " <qt> "
-			" <b>Selection of duplex printing:</b> These controls may be grayed out if your printer "
+			" <p><b>Duplex Printing:</b> These controls may be grayed out if your printer "
                         " does not support <em>duplex printing</em> (i.e. printing on both sides of the sheet). "
                         " These controls are active if your printer supports duplex printing. "
                         " <p> "
-                        " You can choose from 3 alternatives: "
+                        " You can choose from 3 alternatives: </p>"
                         " <ul> "
                         " <li> <b>None.</b> This prints each page of the job on one side of the sheets only. </li> "
                         " <li> <b>Long Side.</b> This prints the job on both sides of the paper sheets. "
@@ -172,31 +206,54 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
                         " the short edge. (Some printer drivers name this mode "
                         " <em>duplex-tumbled</em>).  </li> "
                         " </ul> "
+                        " <hr> "
+                        " <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+                        " <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o duplex=...       # examples: \"tumble\" or \"two-sided-short-edge\" "
+			" </pre>"
+			" </p> "
 			" </qt>" );
 	QString whatsThisGeneralBannersLabel = i18n( " <qt> "
-			" <b>Selection of banner page(s):</b> Select banner(s) to print one or two special sheets "
-                        " of paper just before or after your main job. "
+			" <p><b>Banner Page(s):</b> Select banner(s) to print one or two special sheets "
+                        " of paper just before or after your main job. </p>"
 			" <p>Banners may contain some pieces of job information, such as user name, time of printing, job"
-                        " title and more. "
+                        " title and more. </p>"
                         " <p>Banner pages are useful to separate different jobs more easily, especially in a multi-user "
-                        " environment. "
+                        " environment. </p>"
                         " <p><em><b>Hint:</em></b> You can design your own banner pages. To make use of them, just put the banner "
                         " file into the standard CUPS <em>banners</em> directory (This is usually <em>\"/usr/share/cups/banner/\"</em> "
 			" Your custom banner(s) must have one of the supported printable formats. "
                         " Supported formats are ASCII text, PostScript, PDF and nearly any image format such as PNG, JPEG or "
-                        " GIF. Your added banner pages will appear in the drop down menu after a restart of CUPS. "
-                        " <p>CUPS comes with a selection of banner pages. "
+                        " GIF. Your added banner pages will appear in the drop down menu after a restart of CUPS. </p>"
+                        " <p>CUPS comes with a selection of banner pages. </p>"
+                        " <br> "
+                        " <hr> "
+                        " <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+                        " <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o job-sheets=...       # examples: \"standard\" or \"topsecret\" "
+			" </pre>"
+			" </p> "
 			" </qt>" );
 	QString whatsThisGeneralPagesPerSheetLabel = i18n( " <qt> "
-			" <b>Selection of pages per sheet:</b> "
+			" <p><b>Pages per Sheet:</b> "
                         " You can choose to print more than one page onto each sheet of paper. "
-                        " This is sometimes useful to save paper. "
+                        " This is sometimes useful to save paper. </p>"
                         " <p><b>Note 1:</b> the page images get scaled down accordingly to print 2 or 4 pages per sheet. "
                         " The page image does not get scaled if you print 1 page per sheet (the default setting.). "
                         " <p><b>Note 2:</b> If you select multiple pages per sheet here, the scaling and re-arranging is done "
                         " by your printing system. Be aware, that some printers can by themselves print multiple pages per sheet. "
                         " In this case you find the option in the printer driver settings. Be careful: if you enable multiple "
-                        " pages per sheet in both places, your printout will not look as you intended. "
+                        " pages per sheet in both places, your printout will not look as you intended. </p>"
+                        " <br> "
+                        " <hr> "
+                        " <p><b><em>CUPS commandline parameter match for this KDEPrint GUI element:</em></b></p> "
+                        " <p>This KDEPrint GUI element matches with the CUPS commandline job option parameter "
+			" <pre>"
+			"    -o number-up=...        # examples: \"2\" or \"4\" "
+			" </pre>"
+			" </p> "
 			" </qt>" );
 
 
@@ -241,13 +298,9 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
           QWhatsThis::add(m_bannerbox, whatsThisGeneralBannersLabel);
 
 	QRadioButton	*m_portrait = new QRadioButton(i18n("&Portrait"), m_orientbox);
-          QWhatsThis::add(m_portrait, whatsThisGeneralOrientationLabel);
 	QRadioButton	*m_landscape = new QRadioButton(i18n("&Landscape"), m_orientbox);
-          QWhatsThis::add(m_portrait, whatsThisGeneralOrientationLabel);
 	QRadioButton	*m_revland = new QRadioButton(i18n("&Reverse landscape"), m_orientbox);
-          QWhatsThis::add(m_portrait, whatsThisGeneralOrientationLabel);
 	QRadioButton	*m_revport = new QRadioButton(i18n("R&everse portrait"), m_orientbox);
-          QWhatsThis::add(m_portrait, whatsThisGeneralOrientationLabel);
 
 	m_portrait->setChecked(true);
 	m_orientpix = new QLabel(m_orientbox);
@@ -273,7 +326,7 @@ KPGeneralPage::KPGeneralPage(KMPrinter *pr, DrMain *dr, QWidget *parent, const c
 
 	// layout creation
 	QVBoxLayout	*lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
-        //  QWhatsThis::add(lay0, whatsThisPrintPropertiesGeneralPage);
+          QWhatsThis::add(this, whatsThisPrintPropertiesGeneralPage);
 	QGridLayout	*lay1 = new QGridLayout(0, 3, 2, 0, KDialog::spacingHint());
 	QGridLayout	*lay2 = new QGridLayout(0, 2, 2, 0, KDialog::spacingHint());
 	lay0->addStretch(1);
