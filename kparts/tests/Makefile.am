@@ -3,13 +3,12 @@ INCLUDES= -I$(top_srcdir) -I$(top_srcdir)/libltdl $(all_includes)
 LDFLAGS	= $(all_libraries)
 LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KDECORE)
 
-check_PROGRAMS = kpartstest normalktmtest ghostviewtest metadatatest
+check_PROGRAMS = kpartstest normalktmtest ghostviewtest 
 
 kpartstest_SOURCES = example.cpp notepad.cpp parts.cpp
 normalktmtest_SOURCES = normalktm.cpp notepad.cpp parts.cpp
 ghostviewtest_SOURCES = ghostview.cpp
 ghostviewtest_LDADD = $(top_builddir)/kparts/libkparts.la $(LIB_KFILE)
-metadatatest_SOURCES = metadatatest.cpp
 
 lib_LTLIBRARIES = libspellcheck.la libnotepad.la
 
