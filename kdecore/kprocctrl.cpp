@@ -190,7 +190,7 @@ void KProcessController::slotDoHousekeeping(int )
 {
   // NOTE: It can happen that QSocketNotifier fires while
   // we have already read from the socket. Deal with it.
-  unsigned int bytes_read = 0;
+  int bytes_read = 0;
   // read pid and status from the pipe.
   struct waitdata wd;
   do {

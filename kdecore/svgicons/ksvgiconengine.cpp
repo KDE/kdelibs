@@ -257,7 +257,7 @@ public:
 			float x = (*(it++)).toFloat();
 			float y = (*(it)).toFloat();
 			
-			array.setPoint(i, x, y);
+			array.setPoint(i, static_cast<int>(x), static_cast<int>(y));
 	        i++;
 		}
 
@@ -648,7 +648,7 @@ bool KSVGIconEngine::load(int width, int height, const QString &path)
 		d->height = d->helper->toPixel("100%", false);
 
 	// Create icon painter
-	d->painter = new KSVGIconPainter(width, height, d->width, d->height);
+	d->painter = new KSVGIconPainter(width, height, static_cast<int>(d->width), static_cast<int>(d->height));
 
 	// Set viewport clipping rect
 	d->painter->setClippingRect(0, 0, width, height);

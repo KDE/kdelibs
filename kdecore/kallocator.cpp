@@ -62,7 +62,7 @@ KZoneAllocator::~KZoneAllocator()
   if (hashList) {
     /* No need to maintain the different lists in hashList[] anymore.
        I.e. no need to use delBlock().  */
-    for (int i = 0; i < hashSize; i++)
+    for (unsigned int i = 0; i < hashSize; i++)
       delete hashList[i];
     delete [] hashList;
     hashList = 0;
@@ -113,7 +113,7 @@ void KZoneAllocator::addBlock(MemBlock *b)
 void KZoneAllocator::initHash()
 {
   if (hashList) {
-    for (int i = 0; i < hashSize; i++)
+    for (unsigned int i = 0; i < hashSize; i++)
       delete hashList[i];
     delete [] hashList;
     hashList = 0;
@@ -177,7 +177,7 @@ KZoneAllocator::allocate(size_t _size)
    if ((unsigned long) _size + blockOffset > blockSize)
    {
       if (_size > blockSize) {
-	qDebug("KZoneAllocator: allocating more than %u bytes", blockSize);
+	qDebug("KZoneAllocator: allocating more than %lu bytes", blockSize);
 	return 0;
       }
       addBlock(new MemBlock(blockSize));
