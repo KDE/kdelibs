@@ -22,7 +22,7 @@
 #define __KIO_AUTHINFO_H
 
 #include <qmap.h>
-#include <qlist.h>
+#include <qvaluelist.h>
 #include <kurl.h>
 
 
@@ -246,11 +246,7 @@ public:
     QMap<QString, QStringList> macdef;
   };
 
-  class LoginList : public QList<AutoLogin>
-  {
-  public:
-      LoginList() { setAutoDelete( true ); }
-  };
+  typedef QValueList<AutoLogin> LoginList;
   typedef QMap<QString, LoginList> LoginMap;
 
   static NetRC* self();

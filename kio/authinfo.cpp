@@ -155,42 +155,42 @@ bool NetRC::lookup( const KURL& url, AutoLogin& login, bool userealnetrc,
     if ( l.isEmpty() )
         return false;
 
-    QListIterator<AutoLogin> it (l);
-    for ( ; it.current(); ++it )
+    LoginList::Iterator it = l.begin();
+    for ( ; it != l.end(); ++it )
     {
-        AutoLogin* log = it.current();
+        AutoLogin &log = *it;
 
         if ( (mode & defaultOnly) == defaultOnly &&
-             log->machine == QString::fromLatin1("default") &&
-             (login.login.isEmpty() || login.login == log->login) )
+             log.machine == QString::fromLatin1("default") &&
+             (login.login.isEmpty() || login.login == log.login) )
         {
-            login.type = log->type;
-            login.machine = log->machine;
-            login.login = log->login;
-            login.password = log->password;
-            login.macdef = log->macdef;
+            login.type = log.type;
+            login.machine = log.machine;
+            login.login = log.login;
+            login.password = log.password;
+            login.macdef = log.macdef;
         }
 
         if ( (mode & presetOnly) == presetOnly &&
-             log->machine == QString::fromLatin1("preset") &&
-             (login.login.isEmpty() || login.login == log->login) )
+             log.machine == QString::fromLatin1("preset") &&
+             (login.login.isEmpty() || login.login == log.login) )
         {
-            login.type = log->type;
-            login.machine = log->machine;
-            login.login = log->login;
-            login.password = log->password;
-            login.macdef = log->macdef;
+            login.type = log.type;
+            login.machine = log.machine;
+            login.login = log.login;
+            login.password = log.password;
+            login.macdef = log.macdef;
         }
 
         if ( (mode & exactOnly) == exactOnly &&
-             log->machine == url.host() &&
-             (login.login.isEmpty() || login.login == log->login) )
+             log.machine == url.host() &&
+             (login.login.isEmpty() || login.login == log.login) )
         {
-            login.type = log->type;
-            login.machine = log->machine;
-            login.login = log->login;
-            login.password = log->password;
-            login.macdef = log->macdef;
+            login.type = log.type;
+            login.machine = log.machine;
+            login.login = log.login;
+            login.password = log.password;
+            login.macdef = log.macdef;
             break;
         }
     }
@@ -217,14 +217,15 @@ bool NetRC::flush() const
     LoginMap::ConstIterator it = loginMap.begin();
     for ( ; it != loginMap.end() ; ++it )
     {
-        QListIterator<AutoLogin> itr ( it.data() );
-        for ( ; itr.current(); ++itr )
+        LoginList lst = it.data();
+        LoginList::ConstIterator itr = lst.begin();  
+        for ( ; itr != lst.end(); ++itr )
         {
-            AutoLogin* al = itr.current();
+            AutoLogin al = itr.data();
             fprintf( f, "%-5s %-10s %-5s %10s %-5s %-10s %-5s %-10s",
-                     "machine", al->machine.local8Bit().data(), "login",
-                     al->login.local8Bit().data(), "password",
-                     al->password.local8Bit().data(), "type",
+                     "machine", al.machine.local8Bit().data(), "login",
+                     al.login.local8Bit().data(), "password",
+                     al.password.local8Bit().data(), "type",
                      it.key().local8Bit().data() );
         }
     }
@@ -302,48 +303,48 @@ void NetRC::parse( int fd )
 
             if ( !mac.isEmpty() )
             {
-                loginMap[type].at(index)->macdef[macro].append( mac );
+                loginMap[type][index].macdef[macro].append( mac );
                 kdDebug() << mac << endl;
             }
             continue;
         }
 
-        AutoLogin* l = new AutoLogin;
-        l->machine = extract( buf, "machine", pos );
-        if ( l->machine.isEmpty() )
+        AutoLogin l;
+        l.machine = extract( buf, "machine", pos );
+        if ( l.machine.isEmpty() )
         {
             if (strncasecmp(buf+pos, "default", 7) == 0 )
             {
                 pos += 7;
-                l->machine = QString::fromLatin1("default");
+                l.machine = QString::fromLatin1("default");
             }
             else if (strncasecmp(buf+pos, "preset", 6) == 0 )
             {
                 pos += 6;
-                l->machine = QString::fromLatin1("preset");
+                l.machine = QString::fromLatin1("preset");
             }
         }
-        kdDebug() << "Machine: " << l->machine << endl;
+        kdDebug() << "Machine: " << l.machine << endl;
 
-        l->login = extract( buf, "login", pos );
-        kdDebug() << "Login: " << l->login << endl;
+        l.login = extract( buf, "login", pos );
+        kdDebug() << "Login: " << l.login << endl;
 
-        l->password = extract( buf, "password", pos );
-        if ( l->password.isEmpty() )
-            l->password = extract( buf, "account", pos );
-        kdDebug() << "Password: " << l->password << endl;
+        l.password = extract( buf, "password", pos );
+        if ( l.password.isEmpty() )
+            l.password = extract( buf, "account", pos );
+        kdDebug() << "Password: " << l.password << endl;
 
-        type = l->type = extract( buf, "type", pos );
-        if ( l->type.isEmpty() && !l->machine.isEmpty() )
-            type = l->type = QString::fromLatin1("ftp");
-        kdDebug() << "Type: " << l->type << endl;
+        type = l.type = extract( buf, "type", pos );
+        if ( l.type.isEmpty() && !l.machine.isEmpty() )
+            type = l.type = QString::fromLatin1("ftp");
+        kdDebug() << "Type: " << l.type << endl;
 
         macro = extract( buf, "macdef", pos );
         isMacro = !macro.isEmpty();
         kdDebug() << "Macro: " << macro << endl;
 
-        loginMap[l->type].append(l);
-        index = loginMap[l->type].count()-1;
+        loginMap[l.type].append(l);
+        index = loginMap[l.type].count()-1;
     }
     delete [] buf;
 }
