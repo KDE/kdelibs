@@ -568,6 +568,12 @@ bool KDEDesktopMimeType::runApplication( const KURL& , const QString & _serviceF
       cmd = QString("kdesu -u %1 -- %2").arg(user).arg(cmd);
   } else if (s.terminal())
     cmd = QString("konsole %1 -e /bin/sh -- -c \"%2\"").arg(opts).arg(cmd);
+  else
+  {
+    // No special options, do straight run
+    KURL::List lst;
+    return KRun::run( s, lst );
+  }
 
   KURL::List empty;
   bool res = KRun::run( cmd, empty, s.name(), s.icon(), s.icon(), _serviceFile );
@@ -670,7 +676,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
   QStringList::ConstIterator end = keys.end();
   for ( ; it != end; ++it )
   {
-    kdDebug(7009) << "CURRENT KEY = " << (*it) << endl;
+    //kdDebug(7009) << "CURRENT KEY = " << (*it) << endl;
 
     QString group = *it;
     group.prepend( "Desktop Action " );
@@ -709,7 +715,7 @@ QValueList<KDEDesktopMimeType::Service> KDEDesktopMimeType::userDefinedServices(
 
 void KDEDesktopMimeType::executeService( const QString& _url, KDEDesktopMimeType::Service& _service )
 {
-  kdDebug(7009) << "EXECUTING Service " << _service.m_strName.data() << endl;
+  //kdDebug(7009) << "EXECUTING Service " << _service.m_strName.data() << endl;
 
   KURL u( _url );
 

@@ -90,11 +90,27 @@ void KRun::shellQuote( QString &_str )
 
 bool KRun::run( const KService& _service, const KURL::List& _urls )
 {
-  QString icon = _service.icon();
-  QString miniicon = _service.icon();
+  kdDebug(7010) << "KRun::run " << _service.desktopEntryPath() << endl;
   QString name = _service.name();
-
-  return run( _service.exec(), _urls, name, icon, miniicon );
+  QString miniicon = _service.icon();
+  QString error;
+  int /*pid_t*/ pid;
+  // First try using startServiceByDesktopPath, since that one benefits from kdeinit.
+  if ( KApplication::startServiceByDesktopPath( _service.desktopEntryPath(), _urls.toStringList(), 0L, 0L, &pid ) == 0 )
+  {
+    //kdDebug(7010) << "startServiceByDesktopPath worked fine!" << endl;
+    // App-starting notification
+    clientStarted( name, miniicon, pid);
+    return true;
+  }
+  else
+  {
+    // Fall back on normal running
+    QString icon = _service.icon();
+    bool ret = run( _service.exec(), _urls, name, icon, miniicon );
+    //kdDebug(7010) << "KRun::run returned " << ret << endl;
+    return ret;
+  }
 }
 
 bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _name,
@@ -212,6 +228,7 @@ bool KRun::run( const QString& _exec, const KURL::List& _urls, const QString& _n
   // The application accepts only local files ?
   if ( b_local_app && !b_local_files )
   {
+      //kdDebug(7010) << "Using runOldApplication" << endl;
       return runOldApplication( exec, _urls, b_allow_multiple );
   }
 
