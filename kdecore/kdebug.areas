@@ -39,6 +39,7 @@
 7013    kio (KPing)
 7014    kio (KFind)
 7015    kio (KAutoMount)
+7020    kded
 
 # 710x  are for kioslaves
 7101    kio_file
