@@ -424,24 +424,27 @@ AC_DEFUN(AC_BASE_PATH_KDE,
 [
 AC_REQUIRE([AC_PATH_QT])dnl
 AC_MSG_CHECKING([for KDE])
+
 if test "${prefix}" != NONE; then
   kde_libraries=${prefix}/lib
   kde_includes=${prefix}/include
-  AC_MSG_RESULT(["will be installed in" $prefix])
+  ac_kde_libraries=$prefix/lib
+  ac_kde_includes=$prefix/include
 else
-ac_kde_includes=NO ac_kde_libraries=NO
-kde_libraries=""
-kde_includes=""
+  ac_kde_includes=NO ac_kde_libraries=NO
+  kde_libraries=""
+  kde_includes=""
+fi
+
 AC_CACHE_VAL(ac_cv_have_kde,
 [#try to guess kde locations
 
-kde_incdirs="/usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include /opt/kde/include $x_includes $qt_includes"
-
+kde_incdirs="$kde_includes /usr/lib/kde/include /usr/local/kde/include /usr/kde/include /usr/include/kde /usr/include /opt/kde/include $x_includes $qt_includes"
 test -n "$KDEDIR" && kde_incdirs="$KDEDIR/include $KDEDIR $kde_incdirs"
 AC_FIND_FILE(ksock.h, $kde_incdirs, kde_incdir)
 ac_kde_includes=$kde_incdir
 
-kde_libdirs="/usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/lib /usr/X11R6/lib /opt/kde/lib /usr/X11R6/kde/lib"
+kde_libdirs="$kde_libraries /usr/lib/kde/lib /usr/local/kde/lib /usr/kde/lib /usr/lib/kde /usr/lib /usr/X11R6/lib /opt/kde/lib /usr/X11R6/kde/lib"
 test -n "$KDEDIR" && kde_libdirs="$KDEDIR/lib $KDEDIR $kde_libdirs"
 AC_FIND_FILE(libkdecore.la, $kde_libdirs, kde_libdir)
 ac_kde_libraries=$kde_libdir
@@ -473,7 +476,6 @@ else
   
   kde_libraries=$ac_kde_libraries
   kde_includes=$ac_kde_includes
-fi
 fi
 AC_SUBST(kde_libraries)
 AC_SUBST(kde_includes)
