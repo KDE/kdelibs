@@ -1262,25 +1262,84 @@ long HTMLSelectElementImpl::length() const
     return len;
 }
 
-void HTMLSelectElementImpl::add( const HTMLElement &/*element*/, const HTMLElement &/*before*/ )
+void HTMLSelectElementImpl::add( const HTMLElement &element, const HTMLElement &before )
 {
-    // ###
+    if(element.isNull() || element.id() != ID_OPTION)
+        return;
+
+    int exceptioncode = 0;
+    insertBefore(element.handle(), before.handle(), exceptioncode );
+    if (!exceptioncode)
+	recalcListItems();
 }
 
-void HTMLSelectElementImpl::remove( long /*index*/ )
+void HTMLSelectElementImpl::remove( long index )
 {
-    // ###
+    int exceptioncode = 0;
+    int listIndex = optionToListIndex(index);
+
+    if(listIndex < 0 || index >= int(m_listItems.size()))
+        return; // ### what should we do ? remove the last item?
+
+    removeChild(m_listItems[listIndex], exceptioncode);
+    if( !exceptioncode )
+	recalcListItems();
 }
 
 QString HTMLSelectElementImpl::state( )
 {
-    return m_render ? static_cast<RenderSelect*>(m_render)->state() : QString::null;
+    qDebug("HTMLSelectElementImpl::state()");
+
+    QString state;
+    QArray<HTMLGenericFormElementImpl*> items = listItems();
+
+    int c = 0;
+    int l = items.count();
+
+    state.fill('.', l);
+
+    for(int i = 0; i < l; i++)
+        if(items[i]->id() == ID_OPTION && static_cast<HTMLOptionElementImpl*>(items[i])->selected())
+            state[c++] = 'X';
+
+    qDebug("HTMLSelectElementImpl::state is %s", state.latin1());
+
+
+    return state;
 }
 
-void HTMLSelectElementImpl::restoreState(const QString &state)
+void HTMLSelectElementImpl::restoreState(const QString &_state)
 {
-    if (m_render)
-        static_cast<RenderSelect*>(m_render)->restoreState(state);
+    qDebug("HTMLSelectElementImpl::restoreState");
+//    recalcListItems();
+
+    QString state = _state;
+    if(!state.isEmpty() && !state.contains('X') && !m_multiple) {
+        ASSERT("should not happen in restoreState!");
+        state[0] = 'X';
+    }
+
+//     static_cast<HTMLSelectElementImpl*>(m_element)->recalcListItems();
+//     layout();
+
+    qDebug("restorestate: %s", state.latin1());
+
+    QArray<HTMLGenericFormElementImpl*> items = listItems();
+
+    int c = 0;
+    int l = items.count();
+
+    for(int i = 0; i < l; i++) {
+        if(items[i]->id() == ID_OPTION) {
+            HTMLOptionElementImpl* oe = static_cast<HTMLOptionElementImpl*>(items[i]);
+            oe->setSelected(state[c++] == 'X');
+            if(state[c-1] == 'X')
+                qDebug("selected c=%d, i=%d", c-1, i);
+        }
+    }
+
+//     if (m_render)
+//         static_cast<RenderSelect*>(m_render)->restoreState(state);
     setChanged(true);
 }
 
@@ -1343,6 +1402,8 @@ void HTMLSelectElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLSelectElementImpl::attach(KHTMLView *_view)
 {
+    qDebug("HTMLSelectElementImpl::attach");
+
     setStyle(document->styleSelector()->styleForElement(this));
     view = _view;
 
@@ -1431,6 +1492,8 @@ int HTMLSelectElementImpl::listToOptionIndex(int listIndex) const
 
 void HTMLSelectElementImpl::recalcListItems()
 {
+    qDebug("HTMLSelectElementImpl::recalcListItems");
+
     NodeImpl* current = firstChild();
     bool inOptGroup = false;
     m_listItems.resize(0);
