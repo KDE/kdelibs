@@ -1299,7 +1299,7 @@ void RenderLayer::suspendMarquees()
 // Marquee implementation
 
 Marquee::Marquee(RenderLayer* l)
-:m_layer(l), m_currentLoop(0), m_timerId(0), m_start(0), m_end(0), m_speed(0), m_unfurlPos(0), m_reset(false),
+:m_layer(l), m_currentLoop(0), m_totalLoops(0), m_timerId(0), m_start(0), m_end(0), m_speed(0), m_unfurlPos(0), m_reset(false),
  m_suspended(false), m_stopped(false), m_whiteSpace(NORMAL), m_direction(MAUTO)
 {
 }
