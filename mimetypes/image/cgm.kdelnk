@@ -1,0 +1,7 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=image/cgm
+Icon=image.xpm
+Patterns=*.cgm;*.CGM;
+Comment=Computer Graphics Metafile

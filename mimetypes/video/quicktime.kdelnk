@@ -1,0 +1,7 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=video/quicktime
+Icon=video.xpm
+Patterns=*.mov;*.MOV;
+Comment=Quicktime Movies

@@ -1,0 +1,7 @@
+# KDE Config File
+[KDE Desktop Entry]
+Type=MimeType
+MimeType=video/x-msvideo
+Icon=video.xpm
+Patterns=*.avi;*.AVI;
+Comment=Microsoft AVI Movie Format
