@@ -22,6 +22,7 @@ Comment[eo]=Stilo uzanta diafanecon
 Comment[es]=Un estilo que utiliza mezcla alfa
 Comment[et]=Alphablendingut kasutav stiil
 Comment[eu]=Alphablending-a erabiltzen duen estilo bat
+Comment[fa]=سبکی با استفاده از تابش آلفا
 Comment[fi]=Alphasekoitusta käyttävä tyyli
 Comment[fr]=Un style utilisant l'alpha-blending
 Comment[hr]=Stil koji koristi alpha-miješanje
@@ -43,14 +44,16 @@ Comment[ro]=Un stil care utilizeaza alfa-blending
 Comment[ru]=Стиль с использованием alphablending
 Comment[sk]=Štýl používajúci alfa kanál
 Comment[sl]=Slog z uporabo mešanja alfa
-Comment[sv]=En stil som använder alfablandning
+Comment[sv]=Stil som använder alfablandning
+Comment[ta]=alphablending ÀÂýÀÎòÐõ À¡ó¾õ
 Comment[th]=รูปแบบที่ใช้เทคนิคการไล่สีช่องอัลฟา
 Comment[uk]=Стиль з використанням плавного переходу кольорів
 Comment[ven]=Dzimbekanyo dza zwitaela zwo tangananaho
 Comment[vi]=Một kiểu dùng alphablending
+Comment[xh]=Uhlobo lokusebenzisa i oonobumba abaxubileyo
 Comment[zh_CN]=一个使用 alpha 混和的风格
 Comment[zh_TW]=使用 alphablending 的風格
-Comment[zu]=Isitayela kusetshenziswa ukuxutshwa kokupelwa kwamagama
+Comment[zu]=Isitayela esisebenzisa ukuxutshwa kokupelwa
 
 [KDE]
 WidgetStyle=Keramik
