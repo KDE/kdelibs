@@ -41,6 +41,7 @@ class KMWSessionManaged;
 class KMainWindowPrivate;
 class KAccel;
 class KToolBarMenuAction;
+class DCOPObject;
 
 #define KDE_DEFAULT_WINDOWFLAGS WType_TopLevel | WDestructiveClose
 
@@ -131,6 +132,18 @@ public:
      **/
     KMainWindow( QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
 
+    enum CreationFlags { NoDCOPObject = 1 };
+
+    /**
+     * Overloaded constructor which allows to passing some flags.
+     * NoDCOPObject tells KMainWindow not to create a KMainWindowInterface.
+     * This can be useful in particular for inherited classes, which
+     * might want to create more specific dcop interfaces. It's a good
+     * idea to use KMainWindowInterface as the base class for such interfaces
+     * though (to provide the standard mainwindow functionality via DCOP).
+     * @since 3.2
+     */
+    KMainWindow( int cflags, QWidget* parent = 0, const char *name = 0, WFlags f = WType_TopLevel | WDestructiveClose );
 
     /**
      * Destructor.
@@ -696,7 +709,7 @@ protected:
        @see KApplication::sessionSaving()
     */
     virtual bool queryClose();
-    
+
     /**
      * Save your instance-specific properties. The function is
      * invoked when the session manager requests your application
@@ -813,7 +826,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     KMainWindowPrivate *d;
-    void initKMainWindow(const char *name);
+    void initKMainWindow(const char *name, int cflags);
 };
 
 #ifndef NDEBUG

@@ -162,10 +162,16 @@ static bool being_first = true;
 KMainWindow::KMainWindow( QWidget* parent, const char *name, WFlags f )
     : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
 {
-    initKMainWindow(name);
+    initKMainWindow(name, 0);
 }
 
-void KMainWindow::initKMainWindow(const char *name)
+KMainWindow::KMainWindow( int cflags, QWidget* parent, const char *name, WFlags f )
+    : QMainWindow( parent, name, f ), KXMLGUIBuilder( this ), helpMenu2( 0 ), factory_( 0 )
+{
+    initKMainWindow(name, cflags);
+}
+
+void KMainWindow::initKMainWindow(const char *name, int cflags)
 {
     setDockMenuEnabled( FALSE );
     mHelpMenu = 0;
@@ -239,8 +245,10 @@ void KMainWindow::initKMainWindow(const char *name)
     }
 
     setCaption( kapp->caption() );
-    // attach dcop interface
-    d->m_interface = new KMainWindowInterface(this);
+    if ( cflags & NoDCOPObject)
+        d->m_interface = 0;
+    else
+        d->m_interface = new KMainWindowInterface(this);
 
     if (!kapp->authorize("movable_toolbars"))
         setDockWindowsMovable(false);
@@ -790,7 +798,7 @@ void KMainWindow::saveWindowSize( KConfig * config ) const
      config->revertToDefault(widthString);
   else
      config->writeEntry(widthString, width() );
-  
+
   if (!config->hasDefault(heightString) && defaultSize)
      config->revertToDefault(heightString);
   else
@@ -1065,6 +1073,7 @@ QSize KMainWindow::sizeForCentralWidgetSize(QSize size)
 }
 
 // why do we support old gcc versions? using KXMLGUIBuilder::finalizeGUI;
+// DF: because they compile KDE much faster :)
 void KMainWindow::finalizeGUI( KXMLGUIClient *client )
 { KXMLGUIBuilder::finalizeGUI( client ); }
 
