@@ -58,8 +58,8 @@ RenderContainer::~RenderContainer()
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " << newChild->renderName() << ", "
-                       (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderObject)::addChild( " <<
+        newChild->renderName() << ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
 
     if(parsing())
@@ -78,13 +78,14 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         case TABLE:
         case INLINE_TABLE:
         case KONQ_RULER:
+        case TABLE_COLUMN:
             break;
         case TABLE_COLUMN_GROUP:
-        case TABLE_COLUMN:
         case TABLE_CAPTION:
         case TABLE_ROW_GROUP:
         case TABLE_HEADER_GROUP:
         case TABLE_FOOTER_GROUP:
+
             //kdDebug( 6040 ) << "adding section" << endl;
             if ( !isTable() )
                 needsTable = true;
@@ -101,7 +102,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
             break;
         case NONE:
             kdDebug( 6000 ) << "error in RenderObject::addChild()!!!!" << endl;
-	    break;
+            break;
         }
     }
 
@@ -112,7 +113,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         if( beforeChild && beforeChild->isAnonymousBox() && beforeChild->isTable() )
             table = static_cast<RenderTable *>(beforeChild);
         else {
-//          kdDebug( 6040 ) << "creating anonymous table" << endl;
+            //kdDebug( 6040 ) << "creating anonymous table" << endl;
             table = new RenderTable;
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(m_style);
@@ -178,49 +179,48 @@ void RenderContainer::removeChild(RenderObject *oldChild)
 
 void RenderContainer::insertPseudoChild(RenderStyle::PseudoId type, RenderObject* child, RenderObject* beforeChild)
 {
-    
+
     if (child->isText())
         return;
-    
+
     RenderStyle* pseudo = child->style()->getPseudoStyle(type);
 
     if (pseudo)
-    {            
-        if (pseudo->contentType()==RenderStyle::CONTENT_TEXT)   
-        {                
-            RenderObject* po = new RenderFlow();    
+    {
+        if (pseudo->contentType()==RenderStyle::CONTENT_TEXT)
+        {
+            RenderObject* po = new RenderFlow();
             po->setStyle(pseudo);
-            
+
             addChild(po, beforeChild);
-                  
+
             RenderText* t = new RenderText(pseudo->contentText());
             t->setStyle(pseudo);
-            
+
 //            kdDebug() << DOM::DOMString(pseudo->contentText()).string() << endl;
 
             po->addChild(t);
-            
+
             t->close();
             po->close();
-        } 
+        }
         else if (pseudo->contentType()==RenderStyle::CONTENT_OBJECT)
         {
             RenderObject* po = new RenderImage(0);
             po->setStyle(pseudo);
             addChild(po, beforeChild);
-            po->close();                        
+            po->close();
         }
 
     }
-           
+
 }
 
 
 void RenderContainer::appendChildNode(RenderObject* newChild)
 {
-    
     assert(newChild->parent() == 0);
-            
+
     newChild->setParent(this);
     RenderObject* lChild = lastChild();
 
@@ -239,12 +239,12 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
 {
     if(!beforeChild) {
         appendChildNode(child);
-	return;
+        return;
     }
-            
+
     assert(!child->parent());
     assert(beforeChild->parent() == this);
-    
+
     if(beforeChild == firstChild())
         setFirstChild(child);
 
