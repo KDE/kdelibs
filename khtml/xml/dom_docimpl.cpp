@@ -52,14 +52,14 @@
 using namespace DOM;
 using namespace khtml;
 
-DocumentImpl::DocumentImpl() : NodeBaseImpl(0)
+DocumentImpl::DocumentImpl() : NodeBaseImpl(this)
 {
     m_styleSelector = 0;
     m_view = 0;
     m_style = 0;
 }
 
-DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(0)
+DocumentImpl::DocumentImpl(KHTMLView *v) : NodeBaseImpl(this)
 {
     m_styleSelector = 0;
     m_view = v;
