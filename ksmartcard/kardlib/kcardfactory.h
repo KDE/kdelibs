@@ -28,6 +28,8 @@ class KCardReader;
 class KCardImplementation;
 
 
+// FIXME: Change this to use the strings instead.  Makes it easier to extend
+// later.
 typedef  enum {KCardGSMType, KCardProcessorType} KCardType;
 
 class KCardFactory{

@@ -26,7 +26,10 @@
 #include <qstring.h>
 #include <kpcsc.h>
 
-#define KCARD_TYPE_UNKNOWN "Unknown"
+#define KCARD_TYPE_UNKNOWN   "Unknown"
+#define KCARD_TYPE_PROCESSOR "Processor"
+#define KCARD_TYPE_GSM       "GSM"
+#define KCARD_TYPE_MEMORY    "Memory"
 
 
 class KCardReader;
