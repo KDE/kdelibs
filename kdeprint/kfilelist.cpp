@@ -25,6 +25,7 @@
 #include <qdragobject.h>
 #include <qtooltip.h>
 #include <qregexp.h>
+#include <qheader.h>
 
 #include <kio/netaccess.h>
 #include <kfiledialog.h>
@@ -40,12 +41,14 @@ KFileList::KFileList(QWidget *parent, const char *name)
 	m_block = false;
 
 	m_files = new KListView(this);
-	m_files->addColumn(i18n("Path"));
+	m_files->addColumn(i18n("Name"));
 	m_files->addColumn(i18n("Type"));
+	m_files->addColumn(i18n("Path"));
 	m_files->setAllColumnsShowFocus(true);
 	m_files->setSorting(-1);
 	m_files->setAcceptDrops(false);
 	m_files->setSelectionMode(QListView::Extended);
+	m_files->header()->setStretchEnabled(true, 2);
 	connect(m_files, SIGNAL(selectionChanged()), SLOT(slotSelectionChanged()));
 
 	m_add = new QPushButton(this);
@@ -115,7 +118,7 @@ void KFileList::addFiles(const QStringList& files)
 			{
 				KURL	url(downloaded);
 				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
-				item = new QListViewItem(m_files, item, downloaded, mime->comment());
+				item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), downloaded);
 				item->setPixmap(0, mime->pixmap(url, KIcon::Small));
 			}
 
@@ -141,7 +144,7 @@ QStringList KFileList::fileList() const
 	QListViewItem	*item = m_files->firstChild();
 	while (item)
 	{
-		l << item->text(0);
+		l << item->text(2);
 		item = item->nextSibling();
 	}
 	return l;
@@ -170,7 +173,7 @@ void KFileList::slotOpenFile()
 	QListViewItem	*item = m_files->currentItem();
 	if (item)
 	{
-		new KRun(KURL(item->text(0)));
+		new KRun(KURL(item->text(2)));
 	}
 }
 
