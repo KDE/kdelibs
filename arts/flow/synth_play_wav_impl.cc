@@ -111,7 +111,7 @@ CachedWav::CachedWav(Cache *cache, string filename) : CachedObject(cache),
 	}
 
 	frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK);
-	if(frameCount <= 0)
+	if(frameCount <= 0 || frameCount >= INT_MAX)
 	{
 		arts_info("CachedWav: Invalid length for '%s'", filename.c_str());
 		afCloseFile(file);
