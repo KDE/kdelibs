@@ -29,11 +29,7 @@
 #include "ktoolbarbutton.h"
 #include "ktoolbar.h"
 
-#include <kpixmap.h>
-#include <kpixmapeffect.h>
 #include <qimage.h>
-#include <kimageeffect.h>
-
 #include <qtimer.h>
 #include <qdrawutil.h>
 #include <qtooltip.h>
@@ -44,7 +40,7 @@
 #include <kglobal.h>
 #include <kstyle.h>
 #include <kglobalsettings.h>
-
+#include <kiconeffect.h>
 #include <kiconloader.h>
 
 template class QIntDict<KToolBarButton>;
@@ -277,20 +273,28 @@ void KToolBarButton::setText( const QString& text)
 
 void KToolBarButton::setIcon( const QString &icon )
 {
-  setIcon( icon, true );
+  setIcon( icon, false );
 }
 
-void KToolBarButton::setIcon( const QString &icon, bool generate )
+void KToolBarButton::setIcon( const QString &icon, bool )
 {
   d->m_iconName = icon;
   d->m_iconSize = d->m_parent->iconSize();
   // QObject::name() return "const char *" instead of QString.
   if (!strcmp(d->m_parent->name(), "mainToolBar"))
-    setPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::ActiveState), generate );
-  else
-    setPixmap( BarIcon(icon, d->m_iconSize, KIcon::ActiveState), generate );
+  {
+    setPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::ActiveState), false );
+    setDisabledPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
+    setDefaultPixmap( MainBarIcon(icon, d->m_iconSize, KIcon::DefaultState) );
+  } else
+  {
+    setPixmap( BarIcon(icon, d->m_iconSize, KIcon::ActiveState), false );
+    setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
+    setDefaultPixmap( BarIcon(icon, d->m_iconSize, KIcon::DefaultState) );
+  }
 }
 
+// obsolete?
 void KToolBarButton::setDisabledIcon( const QString &icon )
 {
   d->m_disabledIconName = icon;
@@ -301,6 +305,7 @@ void KToolBarButton::setDisabledIcon( const QString &icon )
     setDisabledPixmap( BarIcon(icon, d->m_iconSize, KIcon::DisabledState) );
 }
 
+// obsolete?
 void KToolBarButton::setDefaultIcon( const QString &icon )
 {
   d->m_defaultIconName = icon;
@@ -318,28 +323,11 @@ void KToolBarButton::setPixmap( const QPixmap &pixmap )
 
 void KToolBarButton::setPixmap( const QPixmap &pixmap, bool generate )
 {
-  QPixmap tmp_pixmap(pixmap);
-  // if our pixmap is null, then try to load the "unknown" icon
-  if (tmp_pixmap.isNull())
-  {
-    tmp_pixmap = BarIcon("unknown", KIcon::SizeSmall);
-
-    // if it's still null, then we wing it
-    if (tmp_pixmap.isNull())
-    {
-      defaultPixmap.resize(16, 16);
-      activePixmap.resize(16, 16);
-      disabledPixmap.resize(16, 16);
-      return;
-    }
-  }
-
-  activePixmap = tmp_pixmap;
+  activePixmap = pixmap;
 
   if ( generate )
   {
-    // the default pixmap is derived from the active on.  if the active
-    // pixmap is 8 bits, then they will be identical
+    // These pixmaps are derived from the active one.
     makeDefaultPixmap();
     makeDisabledPixmap();
   }
@@ -671,25 +659,13 @@ void KToolBarButton::makeDefaultPixmap()
   if (d->m_isSeparator)
     return;
 
-  // we do not want any effects if we are dealing with lo-color icons
-  // or if we are a text-right button or if we don't honor styles
-  if ((activePixmap.depth() <= 8) ||
-      (d->m_parent->iconText() == KToolBar::IconTextRight) ||
-      (d->m_noStyle == true))
-  {
-    defaultPixmap = activePixmap;
-    return;
- }
-
-  // we do want our effect otherwise
-  defaultPixmap = activePixmap;
-#if 0
-  // this is disabled for now since qt seems to handle our toolbar
-  // icons a bit strange
-  QImage img = activePixmap.convertToImage();
-  KImageEffect::desaturate(img);
-  defaultPixmap.convertFromImage(img);
-#endif
+  KIconEffect effect;
+  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+    defaultPixmap = effect.apply(activePixmap, KIcon::MainToolbar, 
+	    KIcon::DefaultState);
+  else
+    defaultPixmap = effect.apply(activePixmap, KIcon::Toolbar, 
+	    KIcon::DefaultState);
 }
 
 void KToolBarButton::makeDisabledPixmap()
@@ -697,16 +673,13 @@ void KToolBarButton::makeDisabledPixmap()
   if (d->m_isSeparator)
     return;             // No pixmaps for separators
 
-  QPalette pal  = palette();
-  QColorGroup g = pal.disabled();
-
-  // Prepare the disabledPixmap for drawing
-  disabledPixmap.detach(); // prevent flicker
-  disabledPixmap = defaultPixmap;
-  QPainter p;
-  p.begin(&disabledPixmap);
-  p.fillRect(disabledPixmap.rect(), QBrush(g.background(), Dense4Pattern));
-  p.end();
+  KIconEffect effect;
+  if (!strcmp(d->m_parent->name(), "mainToolBar"))
+    disabledPixmap = effect.apply(activePixmap, KIcon::MainToolbar, 
+	    KIcon::DisabledState);
+  else
+    disabledPixmap = effect.apply(activePixmap, KIcon::Toolbar, 
+	    KIcon::DisabledState);
 }
 
 void KToolBarButton::showMenu()
