@@ -35,9 +35,9 @@
 #endif // QT_H
 
 class QString;
+class QCString;
 class QFont;
 class QPixmap;
-// class QMovie;
 class QBrush;
 class QRect;
 class QPoint;
@@ -57,28 +57,28 @@ class Q_EXPORT QVariant : public QShared
 {
 public:
     enum Type {
-      Empty,
-      String,
-      StringList,
-      IntList,
-      DoubleList,
-      Font,
-      Pixmap,
-      Brush,
-      Rect,
-      Size,
-      Color,
-      Palette,
-      ColorGroup,
-      IconSet,
-      Point,
-      Image,
-      Int,
-      Bool,
-      Double,
-      // Movie,
-      NTypes,
-      Custom = 0x1000
+	Invalid,
+	String,
+	StringList,
+	IntList,
+	DoubleList,
+	Font,
+	Pixmap,
+	Brush,
+	Rect,
+	Size,
+	Color,
+	Palette,
+	ColorGroup,
+	IconSet,
+	Point,
+	Image,
+	Int,
+	Bool,
+	Double,
+	CString,
+	NTypes = CString,
+	Custom = 0x1000
     };
 
     QVariant();
@@ -86,30 +86,31 @@ public:
     QVariant( QDataStream& s );
     virtual ~QVariant();
 
-    QVariant( const QString& _v );
-    QVariant( const char* _v );
-    QVariant( const QStringList& _v );
-    QVariant( const QValueList<int>& _v );
-    QVariant( const QValueList<double>& _v );
-    QVariant( const QFont& _v );
-    QVariant( const QPixmap& _v );
-    QVariant( const QImage& _v );
-  // QVariant( const QMovie& _v );
-    QVariant( const QBrush& _v );
-    QVariant( const QPoint& _v );
-    QVariant( const QRect& _v );
-    QVariant( const QSize& _v );
-    QVariant( const QColor& _v );
-    QVariant( const QPalette& _v );
-    QVariant( const QColorGroup& _v );
-    QVariant( const QIconSet& _v );
-    QVariant( int _v );
-    QVariant( bool _v );
-    QVariant( double _v );
+    QVariant( const QString& );
+    QVariant( const QCString& );
+    QVariant( const char* );
+    QVariant( const QStringList& );
+    QVariant( const QValueList<int>& );
+    QVariant( const QValueList<double>& );
+    QVariant( const QFont& );
+    QVariant( const QPixmap& );
+    QVariant( const QImage& );
+    QVariant( const QBrush& );
+    QVariant( const QPoint& );
+    QVariant( const QRect& );
+    QVariant( const QSize& );
+    QVariant( const QColor& );
+    QVariant( const QPalette& );
+    QVariant( const QColorGroup& );
+    QVariant( const QIconSet& );
+    QVariant( int );
+    QVariant( bool );
+    QVariant( double );
 
     QVariant& operator= ( const QVariant& );
 
     void setValue( const QString& );
+    void setValue( const QCString& );
     void setValue( const char* );
     void setValue( const QStringList& );
     void setValue( const QValueList<int>& );
@@ -117,7 +118,6 @@ public:
     void setValue( const QFont& );
     void setValue( const QPixmap& );
     void setValue( const QImage& );
-  // void setValue( const QMovie& );
     void setValue( const QBrush& );
     void setValue( const QPoint& );
     void setValue( const QRect& );
@@ -130,39 +130,36 @@ public:
     void setValue( bool );
     void setValue( double );
 
-    Type type() const { return typ; }
-    virtual QString typeName() const;
+    Type type() const;
+    virtual const char* typeName() const;
 
-    bool isEmpty() const { return ( typ == Empty ); }
+    bool isValid() const;
 
-    QString stringValue() const;
-    QStringList stringListValue() const;
-    QValueList<int> intListValue() const;
-    QValueList<double> doubleListValue() const;
-    QFont fontValue() const;
-    QPixmap pixmapValue() const;
-    QImage imageValue() const;
-  // QMovie movieValue() const;
-    QBrush brushValue() const;
-    QPoint pointValue() const;
-    QRect rectValue() const;
-    QSize sizeValue() const;
-    QColor colorValue() const;
-    QPalette paletteValue() const;
-    QColorGroup colorgroupValue() const;
-    QIconSet iconsetValue() const;
-    int intValue() const;
-    bool boolValue() const;
-    double doubleValue() const;
+    QString toString() const;
+    QCString toCString() const;
+    QStringList toStringList() const;
+    QValueList<int> toIntList() const;
+    QValueList<double> toDoubleList() const;
+    QFont toFont() const;
+    QPixmap toPixmap() const;
+    QImage toImage() const;
+    QBrush toBrush() const;
+    QPoint toPoint() const;
+    QRect toRect() const;
+    QSize toSize() const;
+    QColor toColor() const;
+    QPalette toPalette() const;
+    QColorGroup toColorGroup() const;
+    QIconSet toIconSet() const;
+    int toInt() const;
+    bool toBool() const;
+    double toDouble() const;
 
     virtual void load( QDataStream& );
     virtual void save( QDataStream& ) const;
 
-    static QString typeToName( Type _typ );
-    /**
-     * @return QVariant::Empty if the given name is empty or unknown.
-     */
-    static Type nameToType( const QString& _name );
+    static const char* typeToName( Type typ );
+    static Type nameToType( const char* name );
 
 protected:
     virtual void clear();
@@ -170,15 +167,23 @@ protected:
     Type typ;
     union
     {
-      int i;
-      bool b;
-      double d;
-      void *ptr;
-    } val;
+	int i;
+	bool b;
+	double d;
+	void *ptr;
+    } value;
 
-private:
-    static void initTypeNameMap();
 };
+
+inline QVariant::Type QVariant::type() const
+{
+    return typ;
+}
+
+inline bool QVariant::isValid() const
+{
+    return (typ == Invalid);
+}
 
 Q_EXPORT QDataStream& operator>> ( QDataStream& s, QVariant& p );
 Q_EXPORT QDataStream& operator<< ( QDataStream& s, const QVariant& p );

@@ -158,7 +158,7 @@ QVariant KConfigBase::readPropertyEntry( const QString& aKey,
 
   switch( type )
     {
-    case QVariant::Empty:
+    case QVariant::Invalid:
       return QVariant();
     case QVariant::String:
       return QVariant( readEntry( aKey ) );
@@ -740,18 +740,18 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
 
   switch( prop.type() )
     {
-    case QVariant::Empty:
+    case QVariant::Invalid:
       writeEntry( pKey, "", bPersistent, bGlobal, bNLS );
       break;
     case QVariant::String:
-      writeEntry( pKey, prop.stringValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toString(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::StringList:
-      writeEntry( pKey, prop.stringListValue(), ',', bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toStringList(), ',', bPersistent, bGlobal, bNLS );
       break;
     case QVariant::IntList:
 
-      intList = prop.intListValue();
+      intList = prop.toIntList();
       iIt = intList.begin();
       iEnd = intList.end();
 
@@ -763,7 +763,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
       break;
     case QVariant::DoubleList:
 
-      doubleList = prop.doubleListValue();
+      doubleList = prop.toDoubleList();
       dIt = doubleList.begin();
       dEnd = doubleList.end();
 
@@ -774,7 +774,7 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
 
       break;
     case QVariant::Font:
-      writeEntry( pKey, prop.fontValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toFont(), bPersistent, bGlobal, bNLS );
       break;
       // case QVariant::Movie:
       // return "QMovie";
@@ -788,16 +788,16 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
       ASSERT( 0 );
       break;
     case QVariant::Point:
-      writeEntry( pKey, prop.pointValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toPoint(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Rect:
-      writeEntry( pKey, prop.rectValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toRect(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Size:
-      writeEntry( pKey, prop.sizeValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toSize(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Color:
-      writeEntry( pKey, prop.colorValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toColor(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Palette:
       ASSERT( 0 );
@@ -806,13 +806,13 @@ void KConfigBase::writeEntry ( const QString& pKey, const QVariant &prop,
       ASSERT( 0 );
       break;
     case QVariant::Int:
-      writeEntry( pKey, prop.intValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toInt(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Bool:
-      writeEntry( pKey, prop.boolValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toBool(), bPersistent, bGlobal, bNLS );
       break;
     case QVariant::Double:
-      writeEntry( pKey, prop.doubleValue(), bPersistent, bGlobal, bNLS );
+      writeEntry( pKey, prop.toDouble(), bPersistent, bGlobal, bNLS );
       break;
     default:
       ASSERT( 0 );
