@@ -230,11 +230,15 @@ const QString& KQuickHelp::add(QWidget *w, const QString& s) {
 
 void KQuickHelp::hyperlinkRequested(QString link) {
   // check protocol
-  if(strncasecmp("http:", link.data(), 5) == 0 ||
-     strncasecmp("info:", link.data(), 5) == 0 ||
-     strncasecmp("ftp:", link.data(), 4) == 0 ||
-     strncasecmp("file:", link.data(), 5) == 0 ||
-     strncasecmp("mailto:", link.data(), 7) == 0)
+  int pos = link.find(':');
+  QString protocol;
+
+  if(pos != -1 &&
+    (protocol = link.left(pos).lower() == "http" ||
+     protocol == "info" ||
+     protocol == "ftp"  ||
+     protocol == "file" ||
+     protocol == "mailto"))
     {
       // lets give this URL to kfm, he knows better what
       // to do with it
@@ -243,7 +247,7 @@ void KQuickHelp::hyperlinkRequested(QString link) {
 	setgid(getgid());
 	setuid(getuid());
 	
-	execlp("kfmclient", "kfmclient", "exec", link.data(), 0);
+	execlp("kfmclient", "kfmclient", "exec", link.ascii(), 0);
 	_exit(0);
       }
     } else {
@@ -254,7 +258,7 @@ void KQuickHelp::hyperlinkRequested(QString link) {
       if((idx = link.find('#')) == -1)
 	fname = link;
       else {
-	if(*link.data() == '#') {
+	if(link.at(0) == '#') {
 	  anchor = link.mid(1, 255);
 	  fname = QString(kapp->name()) + ".html";
 	} else {
@@ -515,7 +519,7 @@ void KQuickHelpWindow::paint(QPainter *p, int &w, int &h) {
       switch(tokenID) {
       case -1:
 	// ignore
-	fprintf(stderr, "KQuickHelp: ignoring unknown token \"%s\"!\n", t.data());
+	fprintf(stderr, "KQuickHelp: ignoring unknown token \"%s\"!\n", t.ascii());
 	break;
 
 	// font attributes
@@ -615,7 +619,7 @@ void KQuickHelpWindow::paint(QPainter *p, int &w, int &h) {
 	break;
 
       default:
-	printf("TOKEN: \"%s\", ID=%d\n", t.data(), tokenID);
+	printf("TOKEN: \"%s\", ID=%d\n", t.ascii(), tokenID);
       }
     } else { // plain text
       p->setPen(txtColor);
