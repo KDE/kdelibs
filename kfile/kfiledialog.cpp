@@ -413,7 +413,8 @@ void KFileDialog::slotOk()
 	    if ( !items || items->isEmpty() )
 	        return;
 
-	    // weird case: the location edit is empty, but there are highlighted files
+	    // weird case: the location edit is empty, but there are
+	    // highlighted files
 	    else {
 
 		bool multi = (mode() & KFile::Files) != 0;
@@ -431,12 +432,15 @@ void KFileDialog::slotOk()
 		    ++it;
 		}
 		locationEdit->setEditText( files );
+		locationEdit->lineEdit()->setEdited( false );
 		return;
 	    }
 	}
     }
 
     KURL selectedURL;
+
+    // #warning TODO: check locationEdit->lineEdit()->edited()!
 
     if ( (mode() & KFile::Files) == KFile::Files ) {// multiselection mode
 	if ( locationEdit->currentText().contains( '/' )) {
@@ -588,8 +592,10 @@ void KFileDialog::slotStatResult(KIO::Job* job)
     // currently, we only stat in File[s] mode, not Directory mode, so a
     // directory means ERROR
     if (isDir) {
-        if ( count == 0 )
+        if ( count == 0 ) {
+	    locationEdit->clearEdit();
             setURL( sJob->url() );
+	}
         d->statJobs.clear();
         return;
     }
@@ -638,6 +644,7 @@ void KFileDialog::fileHighlighted(const KFileViewItem *i)
         if ( !d->completionLock ) {
             locationEdit->setCurrentItem( 0 );
             locationEdit->setEditText( i->name() );
+	    locationEdit->lineEdit()->setEdited( false );
         }
         emit fileHighlighted(d->url.url());
     }
@@ -660,6 +667,7 @@ void KFileDialog::fileSelected(const KFileViewItem *i)
         d->url = i->url();
         locationEdit->setCurrentItem( 0 );
         locationEdit->setEditText( i->name() );
+	locationEdit->lineEdit()->setEdited( false );
     }
     else {
         multiSelectionChanged();
@@ -676,6 +684,7 @@ void KFileDialog::multiSelectionChanged()
     if ( d->completionLock ) // FIXME: completion with multiselection?
         return;
 
+    locationEdit->lineEdit()->setEdited( false );
     KFileViewItem *item;
     const KFileViewItemList *list = ops->selectedItems();
     if ( !list ) {
@@ -789,7 +798,6 @@ void KFileDialog::pathComboChanged( const QString& txt )
         d->completionHack = newText;
         return;
     }
-
 
     // the user is backspacing -> don't annoy him with completions
     if ( autoDirectoryFollowing && d->completionHack.startsWith( newText ) ) {
@@ -1038,6 +1046,11 @@ void KFileDialog::slotLoadingFinished()
 
 void KFileDialog::dirCompletion( const QString& dir ) // SLOT
 {
+    // we don't support popup completion here, sorry
+    if ( ops->dirCompletionObject()->completionMode() ==
+	 KGlobalSettings::CompletionPopup )
+	return;
+
     QString base = ops->url().url();
 
     // if someone uses completion, he doesn't like the current selection
@@ -1055,8 +1068,7 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
     d->completionLock = true;
 
     if (url.url().startsWith( base )) {
-        QString complete =
-            ops->makeDirCompletion( url.fileName(false) );
+        QString complete = ops->makeDirCompletion( url.fileName(false) );
 
         if (!complete.isNull()) {
 	    QString newText = base + complete;
@@ -1064,8 +1076,9 @@ void KFileDialog::dirCompletion( const QString& dir ) // SLOT
 	    if ( dir.startsWith( fileProt ) != newText.startsWith( fileProt ))
 		newText = newText.mid( 5 ); // remove file:
 
-            d->pathCombo->setCompletedText( newText );
-            d->url = newText;
+	    d->pathCombo->setCompletedText( newText );
+
+	    d->url = newText;
         }
     }
     d->completionLock = false;
@@ -1416,12 +1429,25 @@ void KFileDialog::readConfig( KConfig *kc, const QString& group )
     ops->readConfig( kc, group );
 
     KURLComboBox *combo = d->pathCombo;
-    combo->setMaxItems( kc->readNumEntry( RecentURLsNumber,
-                                          DefaultRecentURLsNumber ) );
     combo->setURLs( kc->readListEntry( RecentURLs ) );
     combo->setURL( ops->url() );
+    combo->setMaxItems( kc->readNumEntry( RecentURLsNumber,
+                                          DefaultRecentURLsNumber ) );
     autoDirectoryFollowing = kc->readBoolEntry( AutoDirectoryFollowing,
                                                 DefaultDirectoryFollowing );
+
+    KGlobalSettings::Completion cm = (KGlobalSettings::Completion)
+			   kc->readNumEntry( PathComboCompletionMode,
+					     KGlobalSettings::CompletionAuto );
+    if ( cm != KGlobalSettings::completionMode() )
+	combo->setCompletionMode( cm );
+
+    cm = (KGlobalSettings::Completion)
+                      kc->readNumEntry( LocationComboCompletionMode,
+					KGlobalSettings::CompletionAuto );
+    if ( cm != KGlobalSettings::completionMode() )
+	locationEdit->setCompletionMode( cm );
+
 
     int w, h;
     QWidget *desk = QApplication::desktop();
@@ -1453,6 +1479,8 @@ void KFileDialog::saveConfig( KConfig *kc, const QString& group )
     kc->writeEntry( RecentURLs, d->pathCombo->urls() );
     kc->writeEntry( DialogWidth.arg( desk->width() ), width() );
     kc->writeEntry( DialogHeight.arg( desk->height() ), height() );
+    kc->writeEntry( PathComboCompletionMode, d->pathCombo->completionMode() );
+    kc->writeEntry(LocationComboCompletionMode,locationEdit->completionMode());
 
     ops->saveConfig( kc, group );
     kc->setGroup( oldGroup );

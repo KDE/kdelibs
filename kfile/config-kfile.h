@@ -22,5 +22,7 @@ const int kfile_area = 250;
 #define DialogHeight QString::fromLatin1("Height (%1)")
 #define ConfigShowStatusLine QString::fromLatin1("ShowStatusLine")
 #define AutoDirectoryFollowing QString::fromLatin1("Automatic directory following")
+#define PathComboCompletionMode QString::fromLatin1("PathCombo Completionmode")
+#define LocationComboCompletionMode QString::fromLatin1("LocationCombo Completionmode")
 
 #endif
