@@ -338,7 +338,8 @@ void KJSProxyImpl::initScript()
 void KJSProxyImpl::applyUserAgent()
 {
   assert( m_script );
-  QString userAgent = KProtocolManager::userAgentForHost(m_part->url().host());
+  QString host = m_part->url().isLocalFile() ? "localhost" : m_part->url().host();
+  QString userAgent = KProtocolManager::userAgentForHost(host);
   if (userAgent.find(QString::fromLatin1("Microsoft")) >= 0 ||
       userAgent.find(QString::fromLatin1("MSIE")) >= 0)
   {
