@@ -7,7 +7,7 @@
 
 #include <kspinbox.h>
 #include <kspinboxtest.h>
-
+#include <stdio.h>
 
 //////////////////////////// bool test ////////////////////////////////////
 

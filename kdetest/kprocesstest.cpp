@@ -25,7 +25,7 @@
 //
 // A nice input for "sort"... ;- )
 //
-static char *txt= "hat\nder\nalte\nhexenmeister\nsich\ndoch\neinmal\nwegbegeben\n\
+static const char *txt= "hat\nder\nalte\nhexenmeister\nsich\ndoch\neinmal\nwegbegeben\n\
 und\nnun\nsollen\nseine\ngeister\nsich\nnach\nmeinem\nwillen\nregen\nseine\nwort\nund\n\
 werke\nmerkt\nich\nund\nden\nbrauch\nund\nmit\ngeistesstaerke\ntu\nich\nwunder\nauch\n";
 

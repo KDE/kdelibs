@@ -1,7 +1,7 @@
 #include <kapp.h>
 #include <kstddirs.h>
 
-int main(int argc, char **argv)
+int main(int, char **)
 {
   KStandardDirs t("test");
   t.addKDEDefaults();	

@@ -49,7 +49,7 @@ MouseWidget::resizeEvent( QResizeEvent *r )
 }
 
 
-KRulerTest::KRulerTest( const char *name = 0L )
+KRulerTest::KRulerTest( const char *name )
   : KTopLevelWidget(name)
 {
   mainframe = new QFrame(this);

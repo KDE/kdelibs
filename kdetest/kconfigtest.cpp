@@ -19,6 +19,9 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.22  1999/05/23 00:53:59  kulow
+ * CVS_SILENT moving some header files that STL comes before Qt
+ *
  * Revision 1.21  1999/05/20 22:21:21  kulow
  * misc fixes (not related to MICO :)
  *
@@ -277,32 +280,20 @@ KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
 
 KConfigTestView::~KConfigTestView()
 {
-  if( pConfig )
-      delete pConfig;
-  if( pFile )
-      delete pFile;
-  if( pStream )
-      delete pStream;
+    delete pConfig;
+    delete pFile;
+    delete pStream;
 }  
 
 void KConfigTestView::appConfigEditReturnPressed()
 {
-  // if there already was a config object, delete it and its associated data
-  if( pConfig )
-    {
-      delete pConfig;
-      pConfig = 0L;
-    }
-  if( pFile )
-    {
-      delete pFile;
-      pFile = 0L;
-    }
-  if( pStream )
-    {
-      delete pStream;
-      pStream = 0L;
-    }
+    // if there already was a config object, delete it and its associated data
+    delete pConfig;
+    pConfig = 0L;
+    delete pFile;
+    pFile = 0L;
+    delete pStream;
+    pStream = 0L;
 
   // create a new config object
   if( strlen( pAppFileEdit->text() ) )

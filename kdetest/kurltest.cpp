@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
   KURL::List lst;
 
 //  char * u1 = "file:/home/dfaure/my tar file.tgz#gzip:/decompress#tar:/";
-  char * u1 = "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz";
+  const char * u1 = "tar:/#gzip:/decompress#file:/home/dfaure/my%20tar%20file.tgz";
   KURL url1(u1);
   printf("\n* URL to be split is %s\n",u1);
   //check("KURL::url()", url1.url(), "file:/home/dfaure/my%20tar%20file.tgz#gzip:/decompress#tar:/");
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   u2 = u2.upURL();
   check("KURL::upURL()", u2.url(), "file:/home/dfaure/");
 
-  char * u3 = "ftp://host/dir1/dir2/myfile.txt";
+  const char * u3 = "ftp://host/dir1/dir2/myfile.txt";
   printf("\n* URL is %s\n",u3);
   check("KURL::hasSubURL()", KURL(u3).hasSubURL() ? "yes" : "no", "no");
   lst.clear();

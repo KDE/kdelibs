@@ -7,6 +7,7 @@
 #include <kiconloaderdialog.h>
 
 #include "kiconloadertestmain.h"
+#include <kstddirs.h>
 #include <kglobal.h>
 #include "kiconloadertestmain.h"
 
@@ -37,7 +38,7 @@ void MyMain::changePix()
 
 void MyMain::insertPath()
 {
-  KGlobal::iconLoader()->insertDirectory(3, le_dir->text() );
-  delete icon_sel;
-  icon_sel = new KIconLoaderDialog();
+    KGlobal::dirs()->addResourceDir("toolbar", le_dir->text() );
+    delete icon_sel;
+    icon_sel = new KIconLoaderDialog();
 }

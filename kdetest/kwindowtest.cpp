@@ -122,7 +122,7 @@ testWindow::testWindow (QWidget *, const char *name)
     // And a combobox
     // arguments: text (or strList), ID, writable, signal, object, slot, enabled,
     //            tooltiptext, size
-    toolBar->insertCombo ("one", 4, TRUE, SIGNAL(activated(const QString&)), this,
+    toolBar->insertCombo (QString("one"), 4, TRUE, SIGNAL(activated(const QString&)), this,
                           SLOT(slotList(const QString&)), TRUE, "ComboBox", 150);
 
 
