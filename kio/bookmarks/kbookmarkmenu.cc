@@ -751,13 +751,18 @@ void KBookmarkMenuNSImporter::openNSBookmarks()
 {
   mstack.push(m_menu);
   KNSBookmarkImporter importer( KNSBookmarkImporter::netscapeBookmarksFile() );
+  connectToImporter(importer);
+  importer.parseNSBookmarks();
+}
+
+void KBookmarkMenuNSImporter::connectToImporter(const QObject &importer)
+{
   connect( &importer, SIGNAL( newBookmark( const QString &, const QCString &, const QString & ) ),
            SLOT( newBookmark( const QString &, const QCString &, const QString & ) ) );
   connect( &importer, SIGNAL( newFolder( const QString &, bool, const QString & ) ),
            SLOT( newFolder( const QString &, bool, const QString & ) ) );
   connect( &importer, SIGNAL( newSeparator() ), SLOT( newSeparator() ) );
   connect( &importer, SIGNAL( endFolder() ), SLOT( endFolder() ) );
-  importer.parseNSBookmarks();
 }
 
 void KBookmarkMenuNSImporter::newBookmark( const QString & text, const QCString & url, const QString & )
