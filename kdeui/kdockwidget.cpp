@@ -17,6 +17,7 @@
 */
 #include "kdockwidget.h"
 #include "kdockwidget_private.h"
+#include "kdockwidget_p.h"
 
 #include <qapplication.h>
 #include <qlayout.h>
@@ -321,6 +322,44 @@ void KDockWidgetHeader::loadConfig( KConfig* c )
 #endif
 
 /*************************************************************************/
+
+class KDockManager::KDockManagerPrivate
+{
+public:
+  /**
+   * This rectangle is used to highlight the current dockposition. It stores global screen coordinates.
+   */
+  QRect dragRect;
+
+  /**
+   * This rectangle is used to erase the previously highlighted dockposition. It stores global screen coordinates.
+   */
+  QRect oldDragRect;
+
+  /**
+   * This flag stores the information if dragging is ready to start. Used between mousePress and mouseMove event.
+   */
+  bool readyToDrag;
+
+  /**
+   * This variable stores the offset of the mouse cursor to the upper left edge of the current drag widget.
+   */
+  QPoint dragOffset;
+
+  /**
+   * These flags store information about the splitter behaviour
+   */
+  bool splitterOpaqueResize;
+  bool splitterKeepSize;
+  bool splitterHighResolution;
+
+  QGuardedPtr<KDockWidget> mainDockWidget;
+  
+  QObjectList containerDocks;
+};
+
+
+/*************************************************************************/
 KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel, WFlags f)
 : QWidget( parent, name, f )
   ,formerBrotherDockWidget(0L)
@@ -358,7 +397,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
 
   isGroup = false;
   isTabGroup = false;
-
+  d->isContainer =false;
   setIcon( pixmap);
   widget = 0L;
 
@@ -375,8 +414,9 @@ KDockWidget::~KDockWidget()
     d->blockHasUndockedSignal = false;
   }
   
-  if (latestKDockContainer()) latestKDockContainer()->removeWidget(this);
+  if (latestKDockContainer()) static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
   emit iMBeingClosed();
+  manager->d->containerDocks.remove(this);
   manager->childDock->remove( this );
   delete pix;
   delete d; // destroy private data
@@ -386,13 +426,17 @@ void KDockWidget::setLatestKDockContainer(QWidget* container)
 {
 	if (container)
 	{
+		if (container->qt_cast("KDockContainer"))
 		d->container=container;
+		else
+		d->container=0;
 	}
 }
 
-KDockContainer *KDockWidget::latestKDockContainer()
+QWidget* KDockWidget::latestKDockContainer()
 {
-	if (d->container)  return static_cast<KDockContainer*>(d->container->qt_cast("KDockContainer"));
+	if (!(d->container)) return 0;
+	if (d->container->qt_cast("KDockContainer")) return d->container;
 	return 0;
 }
 
@@ -629,7 +673,8 @@ KDockWidget* KDockWidget::manualDock( KDockWidget* target, DockPosition dockPos,
 	  	KDockContainer *cont=(KDockContainer*)contWid->qt_cast("KDockContainer");
 		  if (cont)
 		  {
-			if (latestKDockContainer() && (latestKDockContainer()!=cont)) latestKDockContainer()->removeWidget(this);
+			if (latestKDockContainer() && (latestKDockContainer()!=contWid)) 
+				static_cast<KDockContainer*>(latestKDockContainer()->qt_cast("KDockContainer"))->removeWidget(this);
 			kdDebug()<<"KDockContainerFound"<<endl;
 			applyToWidget( contWid );
 			cont->insertWidget( this, icon() ? *icon() : QPixmap(),
@@ -968,6 +1013,16 @@ void KDockWidget::setWidget( QWidget* mw )
   layout = new QVBoxLayout( this );
   layout->setResizeMode( QLayout::Minimum );
 
+  if (widget->qt_cast("KDockContainer"))
+  {
+    d->isContainer=true;
+    manager->d->containerDocks.append(this);
+  }
+  else
+  {
+  	d->isContainer=false;
+  }
+  
 //  if (widget->qt_cast("KDockContainer"))
 
 //  {
@@ -1101,38 +1156,6 @@ bool KDockWidget::isDockBackPossible() const
 
 /**************************************************************************************/
 
-class KDockManager::KDockManagerPrivate
-{
-public:
-  /**
-   * This rectangle is used to highlight the current dockposition. It stores global screen coordinates.
-   */
-  QRect dragRect;
-
-  /**
-   * This rectangle is used to erase the previously highlighted dockposition. It stores global screen coordinates.
-   */
-  QRect oldDragRect;
-
-  /**
-   * This flag stores the information if dragging is ready to start. Used between mousePress and mouseMove event.
-   */
-  bool readyToDrag;
-
-  /**
-   * This variable stores the offset of the mouse cursor to the upper left edge of the current drag widget.
-   */
-  QPoint dragOffset;
-
-  /**
-   * These flags store information about the splitter behaviour
-   */
-  bool splitterOpaqueResize;
-  bool splitterKeepSize;
-  bool splitterHighResolution;
-
-  QGuardedPtr<KDockWidget> mainDockWidget;
-};
 
 KDockManager::KDockManager( QWidget* mainWindow , const char* name )
 :QObject( mainWindow, name )
@@ -2386,7 +2409,8 @@ void KDockContainer::insertWidget (KDockWidget *, QPixmap, const QString &, int 
 void KDockContainer::removeWidget (KDockWidget *){;}
 void KDockContainer::undockWidget (KDockWidget *){;}
 void KDockContainer::setToolTip(KDockWidget *, QString &){;}
-
+void KDockContainer::load (KConfig*){;}
+void KDockContainer::save (KConfig*){;}
 
 void KDockWidgetAbstractHeader::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -87,6 +87,8 @@ class KConfig;
 class QToolBar;
 #endif
 
+class KDockContainer;
+
 /**
  * An abstract base clase for all dockwidget headers (and member of the dockwidget class set).
  * See the class description of @ref KDockWidgetHeader!
@@ -349,22 +351,6 @@ private:
   class KDockTabGroupPrivate;
   KDockTabGroupPrivate *d;
 };
-
-
-// Add some describing comment !!
-class EXPORT_DOCKCLASS KDockContainer
-{
-public:
-  KDockContainer();
-  virtual ~KDockContainer();
-  virtual KDockWidget *parentDockWidget();
-  virtual void insertWidget (KDockWidget *, QPixmap, const QString &, int &);
-  virtual void removeWidget(KDockWidget*);
-  virtual void undockWidget(KDockWidget*);
-
-  virtual void setToolTip (KDockWidget *, QString &);
-};
-
 
 
 /**
@@ -657,7 +643,7 @@ protected:
   void updateHeader();
 
   void setLatestKDockContainer(QWidget *);
-  KDockContainer *latestKDockContainer();
+  QWidget *latestKDockContainer();
   
 signals:
   /**
@@ -785,7 +771,6 @@ private:
   Orientation splitterOrientation;
   bool isGroup;
   bool isTabGroup;
-
 protected:
   virtual void virtual_hook( int id, void* data );
 private:

@@ -31,7 +31,6 @@
 #endif
 
 class QFrame;
-class KDockContainer;
 
 
 /**
@@ -138,6 +137,7 @@ public:
   bool pendingDtor;
   int forcedWidth;
   int forcedHeight;
+  bool isContainer;
 
 #ifndef NO_KDE2
   NET::WindowType windowType;
