@@ -87,7 +87,7 @@ class Dialog::DialogPrivate
 		};
 
 		QMap<QString, GroupInfo> groupmap;
-		QMap<KCModuleInfo *, QStringList> parentmodulenames;
+		QStringList registeredComponents;
 };
 
 Dialog::Dialog( QWidget * parent, const char * name )
@@ -138,7 +138,11 @@ void Dialog::addPluginInfos( const QValueList<KPluginInfo*> & plugininfos )
 {
 	for( QValueList<KPluginInfo*>::ConstIterator it = plugininfos.begin();
 			it != plugininfos.end(); ++it )
+	{
+		d->registeredComponents.append( ( *it )->pluginName() );
+		d->services += ( *it )->kcmServices();
 		d->plugininfomap[ ( *it )->pluginName() ] = *it;
+	}
 }
 
 void Dialog::show()
@@ -160,6 +164,7 @@ QValueList<KService::Ptr> Dialog::instanceServices() const
 {
 	kdDebug( 700 ) << k_funcinfo << endl;
 	QString instanceName = KGlobal::instance()->instanceName();
+	d->registeredComponents.append( instanceName );
 	kdDebug( 700 ) << "calling KServiceGroup::childGroup( " << instanceName
 		<< " )" << endl;
 	KServiceGroup::Ptr service = KServiceGroup::childGroup( instanceName );
@@ -191,6 +196,7 @@ QValueList<KService::Ptr> Dialog::instanceServices() const
 QValueList<KService::Ptr> Dialog::parentComponentsServices(
 		const QStringList & kcdparents ) const
 {
+	d->registeredComponents += kcdparents;
 	QString constraint = kcdparents.join(
 			"' in [X-KDE-ParentComponents]) or ('" );
 	constraint = "('" + constraint + "' in [X-KDE-ParentComponents])";
@@ -225,7 +231,7 @@ void Dialog::setGroupIcons()
 
 bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 {
-	// and if the user of this class requested to hide disabled modules
+	// if the user of this class requested to hide disabled modules
 	// we check whether it should be enabled or not
 	bool enabled = false;
 	kdDebug( 700 ) << "check whether the " << moduleinfo->moduleName()
@@ -236,6 +242,11 @@ bool Dialog::isPluginForKCMEnabled( KCModuleInfo * moduleinfo ) const
 	for( QStringList::ConstIterator pcit = parentComponents.begin();
 			pcit != parentComponents.end(); ++pcit )
 	{
+		// if the parentComponent is not registered ignore it
+		if( d->registeredComponents.find( *pcit ) ==
+				d->registeredComponents.end() )
+			continue;
+
 		// we check if the parent component is a plugin
 		if( ! d->plugininfomap.contains( *pcit ) )
 		{
@@ -281,32 +292,32 @@ void Dialog::setupTreeListDialog()
 	d->dlg->setShowIconsInTreeList( true );
 
 	setGroupIcons();
+}
 
-	for( KCModuleInfo * info = d->moduleinfos.first(); info;
-			info = d->moduleinfos.next() )
+QStringList Dialog::parentModuleNames( KCModuleInfo * info )
+{
+	QStringList parentnames;
+	QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
+			QVariant::String );
+	if( ! tmp.isValid() )
+		return parentnames;
+
+	QString id = tmp.toString();
+	if( ! d->groupmap.contains( id ) )
+		// the KCM wants to be a child of a not existing group
+		return parentnames;
+
+	// ok, this module is a child in some group. KDialogBase needs a
+	// QStringList of the parent pages to put this module at the right
+	// place. Create that list:
+	DialogPrivate::GroupInfo gi = d->groupmap[ id ];
+	parentnames.prepend( gi.name );
+	while( ! gi.parent.isNull() && d->groupmap.contains( gi.parent ) )
 	{
-		QVariant tmp = info->service()->property( "X-KDE-CfgDlgHierarchy",
-				QVariant::String );
-		if( ! tmp.isValid() )
-			continue;
-		QString id = tmp.toString();
-		if( ! d->groupmap.contains( id ) )
-			// the KCM wants to be a child of a not existing group
-			continue;
-
-		// ok, this module is a child in some group. KDialogBase needs a
-		// QStringList of the parent pages to put this module at the right
-		// place. Create that list:
-		DialogPrivate::GroupInfo gi = d->groupmap[ id ];
-		QStringList parentnames;
+		gi = d->groupmap[ gi.parent ];
 		parentnames.prepend( gi.name );
-		while( ! gi.parent.isNull() && d->groupmap.contains( gi.parent ) )
-		{
-			gi = d->groupmap[ gi.parent ];
-			parentnames.prepend( gi.name );
-		}
-		d->parentmodulenames[ info ] = parentnames;
 	}
+	return parentnames;
 }
 
 void Dialog::createDialogFromServices()
@@ -376,7 +387,7 @@ void Dialog::createDialogFromServices()
 		info = d->moduleinfos.next() )
 	{
 		kdDebug( 700 ) << "add module: " << info->fileName() << endl;
-		d->dlg->addModule( *info, d->parentmodulenames[ info ] );
+		d->dlg->addModule( *info, parentModuleNames( info ) );
 	}
 
 	if( d->groupmap.size() > 1 )
@@ -391,6 +402,10 @@ void Dialog::configureTree()
 	subdlg->show();
 	connect( subdlg, SIGNAL( okClicked() ), this, SLOT( updateTreeList() ) );
 	connect( subdlg, SIGNAL( applyClicked() ), this, SLOT( updateTreeList() ) );
+	connect( subdlg, SIGNAL( okClicked() ), this,
+			SIGNAL( pluginSelectionChanged() ) );
+	connect( subdlg, SIGNAL( applyClicked() ), this,
+			SIGNAL( pluginSelectionChanged() ) );
 }
 
 void Dialog::updateTreeList()
@@ -413,7 +428,7 @@ void Dialog::updateTreeList()
 					kdDebug( 700 ) << "remove module " << torm->moduleName()
 						<< endl;
 					d->dlg->removeModule( *torm );
-					d->moduleinfos.remove( torm ); //autodeleted
+					d->moduleinfos.remove(); //autodeleted
 					break;
 				}
 			delete moduleinfo;
@@ -432,7 +447,8 @@ void Dialog::updateTreeList()
 			if( needtoadd )
 			{
 				// it's not there yet - add it
-				d->dlg->addModule( *moduleinfo );
+				d->dlg->addModule( *moduleinfo,
+						parentModuleNames( moduleinfo ) );
 				d->moduleinfos.append( moduleinfo );
 			}
 		}

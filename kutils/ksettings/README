@@ -116,6 +116,7 @@ Some explanation for those keys:
      pages that have the components name in their ParentComponents list.
 - X-KDE-Weight sets the order for the modules to be inserted into the dialog.
   The higher the number (heavier) the lower the module will appear in the list.
+  (the default value is 100)
 - Name is the string that is shown in the listview/iconview right below the
   icon.
 - Comment is the string that is shown on top of the config page for a short
@@ -182,16 +183,48 @@ one for the rest.
 
 this is the entry for the Makefile.am:
 
-myappconfigpagedir = $(kde_services)/ksettings
+myappconfigpagedir = $(kde_servicesdir)/<appname>
 myappconfigpage_DATA = myappconfigpage.desktop
 
 
 And this is what the .desktop file looks like:
 
 [Desktop Entry]
-.
-.
-.
+Encoding=UTF-8
+Icon=myplugin
+Type=Service
+ServiceTypes=KPluginInfo
 
+X-KDE-PluginInfo-Author=<your name>
+X-KDE-PluginInfo-Email=<your email>
+X-KDE-PluginInfo-Website=http://www.myplugin.org/
+X-KDE-PluginInfo-Name=myplugin
+X-KDE-PluginInfo-Category=CoolPlugins
+X-KDE-PluginInfo-Version=0.1
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true
+X-KDE-PluginInfo-Depends=myotherplugin
+
+Name=MyPlugin
+Comment=My plugin is cool and does foo and bar.
+
+
+Explanation:
+mandatory entries:
+- Name
+- Comment
+- X-KDE-PluginInfo-Name is the "internal name" of the plugin.
+- You need to have KPluginInfo in ServiceTypes but of course you may have more
+  entries in there.
+- leave Type and Encoding like in the example
+
+optional entries:
+- Icon is the icon used for your plugin (it's shown in the pluginselector if you
+  set one)
+- Author and Email is some information about the author of the plugin.
+- Website is the address for a webpage for this plugin
+- Category is used if your application has different categories of plugins.
+- Depends can be used to tell the application that you need to have
+  myotherplugin enabled for your plugin to work.
 
 # vim: tw=80

@@ -162,6 +162,16 @@ class Dialog : public QObject
          */
         void show();
 
+    signals:
+        /**
+         * If you use the dialog in Configurable mode and want to be notified
+         * when the user changes the plugin selections use this signal. It's
+         * emitted if the selection has changed and the user pressed Apply or
+         * Ok. In the slot you would then load and unload the plugins as
+         * requested.
+         */
+        void pluginSelectionChanged();
+
     protected slots:
         void configureTree();
         void updateTreeList();
@@ -195,6 +205,13 @@ class Dialog : public QObject
          * structure.
          */
         void setupTreeListDialog();
+
+        /**
+         * @internal
+         * If this module is put into a TreeList hierarchy this will return a
+         * list of the names of the parent modules.
+         */
+        QStringList parentModuleNames( KCModuleInfo * );
 
         /**
          * @internal
