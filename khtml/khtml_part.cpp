@@ -323,6 +323,7 @@ public:
     const char *submitAction;
     QString submitUrl;
     QByteArray submitFormData;
+    QString target;
     QString submitContentType;
     QString submitBoundary;
   };
@@ -2864,7 +2865,7 @@ KParts::PartManager *KHTMLPart::partManager()
 void KHTMLPart::submitFormAgain()
 {
   if( !d->m_bParsing && d->m_submitForm)
-    KHTMLPart::submitForm( d->m_submitForm->submitAction, d->m_submitForm->submitUrl, d->m_submitForm->submitFormData, d->m_submitForm->submitContentType, d->m_submitForm->submitBoundary );
+    KHTMLPart::submitForm( d->m_submitForm->submitAction, d->m_submitForm->submitUrl, d->m_submitForm->submitFormData, d->m_submitForm->target, d->m_submitForm->submitContentType, d->m_submitForm->submitBoundary );
 
   delete d->m_submitForm;
   d->m_submitForm = 0;
@@ -2936,6 +2937,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     d->m_submitForm->submitAction = action;
     d->m_submitForm->submitUrl = url;
     d->m_submitForm->submitFormData = formData;
+    d->m_submitForm->target = _target;
     d->m_submitForm->submitContentType = contentType;
     d->m_submitForm->submitBoundary = boundary;
     connect(this, SIGNAL(completed()), this, SLOT(submitFormAgain()));
