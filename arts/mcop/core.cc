@@ -741,6 +741,15 @@ void ModuleDef::writeType(Buffer& stream) const
 	writeTypeSeq(stream,interfaces);
 }
 
+InterfaceRepo *InterfaceRepo::_create(const std::string& subClass)
+{
+	Object_skel *skel = ObjectManager::the()->create(subClass);
+	assert(skel);
+	InterfaceRepo *castedObject = (InterfaceRepo *)skel->_cast("InterfaceRepo");
+	assert(castedObject);
+	return castedObject;
+}
+
 InterfaceRepo *InterfaceRepo::_fromString(std::string objectref)
 {
 	ObjectReference r;
@@ -912,6 +921,15 @@ InterfaceRepo_skel::InterfaceRepo_skel()
 {
 }
 
+FlowSystemSender *FlowSystemSender::_create(const std::string& subClass)
+{
+	Object_skel *skel = ObjectManager::the()->create(subClass);
+	assert(skel);
+	FlowSystemSender *castedObject = (FlowSystemSender *)skel->_cast("FlowSystemSender");
+	assert(castedObject);
+	return castedObject;
+}
+
 FlowSystemSender *FlowSystemSender::_fromString(std::string objectref)
 {
 	ObjectReference r;
@@ -991,6 +1009,15 @@ void FlowSystemSender_skel::_buildMethodTable()
 
 FlowSystemSender_skel::FlowSystemSender_skel()
 {
+}
+
+FlowSystemReceiver *FlowSystemReceiver::_create(const std::string& subClass)
+{
+	Object_skel *skel = ObjectManager::the()->create(subClass);
+	assert(skel);
+	FlowSystemReceiver *castedObject = (FlowSystemReceiver *)skel->_cast("FlowSystemReceiver");
+	assert(castedObject);
+	return castedObject;
 }
 
 FlowSystemReceiver *FlowSystemReceiver::_fromString(std::string objectref)
@@ -1079,6 +1106,15 @@ void FlowSystemReceiver_skel::_buildMethodTable()
 
 FlowSystemReceiver_skel::FlowSystemReceiver_skel()
 {
+}
+
+FlowSystem *FlowSystem::_create(const std::string& subClass)
+{
+	Object_skel *skel = ObjectManager::the()->create(subClass);
+	assert(skel);
+	FlowSystem *castedObject = (FlowSystem *)skel->_cast("FlowSystem");
+	assert(castedObject);
+	return castedObject;
 }
 
 FlowSystem *FlowSystem::_fromString(std::string objectref)
@@ -1334,6 +1370,15 @@ FlowSystem_skel::FlowSystem_skel()
 {
 }
 
+GlobalComm *GlobalComm::_create(const std::string& subClass)
+{
+	Object_skel *skel = ObjectManager::the()->create(subClass);
+	assert(skel);
+	GlobalComm *castedObject = (GlobalComm *)skel->_cast("GlobalComm");
+	assert(castedObject);
+	return castedObject;
+}
+
 GlobalComm *GlobalComm::_fromString(std::string objectref)
 {
 	ObjectReference r;
@@ -1478,6 +1523,15 @@ void GlobalComm_skel::_buildMethodTable()
 
 GlobalComm_skel::GlobalComm_skel()
 {
+}
+
+TmpGlobalComm *TmpGlobalComm::_create(const std::string& subClass)
+{
+	Object_skel *skel = ObjectManager::the()->create(subClass);
+	assert(skel);
+	TmpGlobalComm *castedObject = (TmpGlobalComm *)skel->_cast("TmpGlobalComm");
+	assert(castedObject);
+	return castedObject;
 }
 
 TmpGlobalComm *TmpGlobalComm::_fromString(std::string objectref)

@@ -38,21 +38,6 @@
 
 /* that code should go into MCOP or something similar */
 
-#define creator(class)                                                  \
-class * class ## _create(const string& subclass = __STRING(class))      \
-{                                                                       \
-	Object_skel *skel = ObjectManager::the()->create(subclass);         \
-	assert(skel);                                                       \
-	class *result = (class *)skel->_cast(__STRING(class));              \
-	assert(result);                                                     \
-	return result;                                                      \
-}
-
-creator(Synth_FREQUENCY);
-creator(Synth_WAVE_SIN);
-creator(Synth_PLAY);
-creator(ExecutionManager);
-
 void connect(Object *from, string fromPort, Object *to, string toPort)
 {
 	from->_node()->connect(fromPort, to->_node(), toPort);
@@ -69,9 +54,9 @@ int main()
 	Dispatcher dispatcher;
 
 	// object creation
-	Synth_FREQUENCY_var freq = Synth_FREQUENCY_create();
-	Synth_WAVE_SIN_var sin = Synth_WAVE_SIN_create();
-	Synth_PLAY_var play = Synth_PLAY_create();
+	Synth_FREQUENCY_var freq = Synth_FREQUENCY::_create();
+	Synth_WAVE_SIN_var sin = Synth_WAVE_SIN::_create();
+	Synth_PLAY_var play = Synth_PLAY::_create();
 
 	// object initialization
 	freq->_node()->setFloatValue("frequency",440.0);

@@ -23,11 +23,11 @@
 
     */
 
-#include "simplesoundserver_impl.h"
 #include "mcoputils.h"
 #include <csignal>
 #include <iostream>
 #include <stdio.h>
+#include "soundserver.h"
 #include "audiosubsys.h"
 #include "synthschedule.h"
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv)
 	if(cfgFragmentSize)  AudioSubSystem::the()->fragmentSize(cfgFragmentSize);
 
 	/* start sound server implementation */
-	SimpleSoundServer_var server = new SimpleSoundServer_impl;
+	SimpleSoundServer_var server = SimpleSoundServer::_create();
 
 	bool result = ObjectManager::the()
 				->addGlobalReference(server,"Arts_SimpleSoundServer")

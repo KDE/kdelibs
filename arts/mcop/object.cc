@@ -590,6 +590,13 @@ void Object_stub::_release()
 	}
 }
 
+Object *Object::_create(const std::string& subClass)
+{
+	Object_skel *skel = ObjectManager::the()->create(subClass);
+	assert(skel);
+	return skel;
+}
+
 Object *Object::_fromString(string objectref)
 {
 	Object *result = 0;

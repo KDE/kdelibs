@@ -279,6 +279,7 @@ public:
 
 class InterfaceRepo : virtual public Object {
 public:
+	static InterfaceRepo *_create(const std::string& subClass = "InterfaceRepo");
 	static InterfaceRepo *_fromString(std::string objectref);
 	static InterfaceRepo *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -322,6 +323,7 @@ public:
 
 class FlowSystemSender : virtual public Object {
 public:
+	static FlowSystemSender *_create(const std::string& subClass = "FlowSystemSender");
 	static FlowSystemSender *_fromString(std::string objectref);
 	static FlowSystemSender *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -359,6 +361,7 @@ public:
 
 class FlowSystemReceiver : virtual public Object {
 public:
+	static FlowSystemReceiver *_create(const std::string& subClass = "FlowSystemReceiver");
 	static FlowSystemReceiver *_fromString(std::string objectref);
 	static FlowSystemReceiver *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -396,6 +399,7 @@ public:
 
 class FlowSystem : virtual public Object {
 public:
+	static FlowSystem *_create(const std::string& subClass = "FlowSystem");
 	static FlowSystem *_fromString(std::string objectref);
 	static FlowSystem *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -443,6 +447,7 @@ public:
 
 class GlobalComm : virtual public Object {
 public:
+	static GlobalComm *_create(const std::string& subClass = "GlobalComm");
 	static GlobalComm *_fromString(std::string objectref);
 	static GlobalComm *_fromReference(ObjectReference ref, bool needcopy);
 
@@ -484,6 +489,7 @@ public:
 
 class TmpGlobalComm : virtual public GlobalComm {
 public:
+	static TmpGlobalComm *_create(const std::string& subClass = "TmpGlobalComm");
 	static TmpGlobalComm *_fromString(std::string objectref);
 	static TmpGlobalComm *_fromReference(ObjectReference ref, bool needcopy);
 

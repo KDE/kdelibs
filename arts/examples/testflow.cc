@@ -106,12 +106,7 @@ int main()
 	printf("%s\n",b.toString("StructureDesc").c_str());
 
 */
-	Object_skel *eman_object = ObjectManager::the()->create("ExecutionManager");
-	assert(eman_object);
-
-	ExecutionManager *eman =
-		(ExecutionManager *)eman_object->_cast("ExecutionManager");
-	assert(eman);
+	ExecutionManager_var eman = ExecutionManager::_create();
 
 	setartsdebug(true);
 	long id = eman->createStructure(sd);

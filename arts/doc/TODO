@@ -30,6 +30,12 @@ These are:
 - more work on audio playing stuff (different sampling rates, different
   hardware, mono, tunable buffer sizes)
 - make buffer sizes / samplingrate / depths / ... configurable
+- rewrite resampling to work nicely on small blocks (instead of requiring
+  the whole sample to be in memory). This in turn leads to
+   - allow different sampling rates for artscat (make it work the same also
+     regardless whether what samplingrate the server is running on)
+   - allow progressive loading for wave files
+- write blockwise caching (not requiring whole samples to be held in memory)
 
 3. To have more fun
 

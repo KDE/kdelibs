@@ -44,34 +44,35 @@ bool AttachedProducer::finished()
 	return (sender->finished() || sender->_error());
 }
 
+/*
+ *    ( This place where we will put the objects for playing wave files and
+ *      such, they are then connected to addLeft and addRight, to get their
+ *      output mixed with the other clients ).
+ *     _________   __________
+ *    | addLeft | | addRight |
+ *     ~~~~~~~~~   ~~~~~~~~~~
+ *        |            |
+ *     ___V____________V____
+ *    |      outStack       |      (here the user can plugin various effects)
+ *     ~~~~~~~~~~~~~~~~~~~~~
+ *        |            |
+ *     ___V____________V____
+ *    |      playSound      |      (output to soundcard)
+ *     ~~~~~~~~~~~~~~~~~~~~~
+ */
 SimpleSoundServer_impl::SimpleSoundServer_impl()
 {
-	play_obj = ObjectManager::the()->create("Synth_PLAY");
-	assert(play_obj);
+	playSound = Synth_PLAY::_create();
+	addLeft = Synth_MULTI_ADD::_create();
+	addRight = Synth_MULTI_ADD::_create();
 
-	add_left = ObjectManager::the()->create("Synth_MULTI_ADD");
-	assert(add_left);
+	_outstack = StereoEffectStack::_create();
+	_outstack->setInputs(addLeft,"outvalue",addRight,"outvalue");
+	_outstack->setOutputs(playSound,"invalue_left",playSound,"invalue_right");
 
-	add_right = ObjectManager::the()->create("Synth_MULTI_ADD");
-	assert(add_right);
-
-	Object_skel *obj = ObjectManager::the()->create("StereoEffectStack");
-	assert(obj);
-
-	_outstack = (StereoEffectStack *)obj->_cast("StereoEffectStack");
-	assert(_outstack);
-
-	/*
-	play_obj->_node()->connect("invalue_left",add_left->_node(),"outvalue");
-	play_obj->_node()->connect("invalue_right",add_right->_node(),"outvalue");
-	*/
-
-	_outstack->setInputs(add_left,"outvalue",add_right,"outvalue");
-	_outstack->setOutputs(play_obj,"invalue_left",play_obj,"invalue_right");
-
-	add_left->_node()->start();
-	add_right->_node()->start();
-	play_obj->_node()->start();
+	addLeft->_node()->start();
+	addRight->_node()->start();
+	playSound->_node()->start();
 
 	Dispatcher::the()->ioManager()->addTimer(200,this);
 }
@@ -90,17 +91,11 @@ long SimpleSoundServer_impl::play(const string& filename)
 {
 	printf("Play '%s'!\n",filename.c_str());
 
-	Object_skel *playwavobj = ObjectManager::the()->create("Synth_PLAY_WAV");
-	assert(playwavobj);
-
-	Synth_PLAY_WAV *playwav =
-		(Synth_PLAY_WAV *)playwavobj->_cast("Synth_PLAY_WAV");
-	assert(playwav);
-
+	Synth_PLAY_WAV *playwav = Synth_PLAY_WAV::_create();
 	playwav->filename(filename);
 
-	add_left->_node()->connect("invalue",playwav->_node(),"left");
-	add_right->_node()->connect("invalue",playwav->_node(),"right");
+	addLeft->_node()->connect("invalue",playwav->_node(),"left");
+	addRight->_node()->connect("invalue",playwav->_node(),"right");
 
 	playwav->_node()->start();
 
@@ -112,20 +107,15 @@ long SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
 {
 	printf("Attach ByteSoundProducer!\n");
 
-	Object_skel *convertObj = ObjectManager::the()->create("ByteStreamToAudio");
-	assert(convertObj);
-
-	ByteStreamToAudio_var convert =
-		(ByteStreamToAudio *)convertObj->_cast("ByteStreamToAudio");
-	assert(convert);
+	ByteStreamToAudio_var convert = ByteStreamToAudio::_create();
 
 //	convert->samplingRate(bsp->samplingRate());
 //	convert->channels(bsp->channels());
 //	convert->bits(bsp->bits());
 
 	convert->_node()->connect("indata",bsp->_node(),"outdata");
-	add_left->_node()->connect("invalue",convert->_node(),"left");
-	add_right->_node()->connect("invalue",convert->_node(),"right");
+	addLeft->_node()->connect("invalue",convert->_node(),"left");
+	addRight->_node()->connect("invalue",convert->_node(),"right");
 
 	convert->_node()->start();
 
@@ -140,7 +130,7 @@ StereoEffectStack *SimpleSoundServer_impl::outstack()
 
 Object *SimpleSoundServer_impl::createObject(const string& name)
 {
-	return ObjectManager::the()->create(name);
+	return Object::_create(name);
 }
 
 void SimpleSoundServer_impl::notifyTime()
@@ -181,76 +171,44 @@ void SimpleSoundServer_impl::notifyTime()
 
 PlayObject *SimpleSoundServer_impl::createPlayObject(const string& filename)
 {
-/*
-	ReferenceHelper<Object_skel>
-		obj = ObjectManager::the()->create("WavPlayObject");
-	if(obj)
-	{
-		WavPlayObject *result = (WavPlayObject *)obj->_cast("WavPlayObject");
-		if(result)
-		{
-			if(result->loadMedia(filename))
-			{
-				add_left->_node()->connect("invalue",result->_node(),"left");
-				add_right->_node()->connect("invalue",result->_node(),"right");
-				result->_node()->start();
-				return result->_copy();
-			}
-		}
-	}
-*/
-	string extension="";
+	string extension="", objectType = "";
 	if(filename.size()>4)
 	{
 		extension = filename.substr(filename.size()-4);
 		for(int i=1;i<4;i++) extension[i] = toupper(extension[i]);
+
+		cout << "extension = " << extension << endl;
 	}
 
-	ReferenceHelper<Object_skel> obj;
-	cout << "extension = " << extension << endl;
-	if(extension == ".WAV")
-	{
-		cout << "Creating WavPlayObject" << endl;
-		obj = ObjectManager::the()->create("WavPlayObject");
-	}
-	else if(extension == ".MP3")
-	{
-		cout << "Creating MP3PlayObject" << endl;
-		obj = ObjectManager::the()->create("MP3PlayObject");
-	}
-	else if(extension == ".MPG")
-	{
-		cout << "Creating MP3PlayObject" << endl;
-		obj = ObjectManager::the()->create("MP3PlayObject");
-	}
+	if(extension == ".WAV")			objectType = "WavPlayObject";
+	/* TODO: write a service which can find out which object decodes what
+	else if(extension == ".MP3") 	objectType = "MP3PlayObject";
+	else if(extension == ".MPG")	objectType = "MP3PlayObject";
+	*/
 
-	if(obj)
+	if(objectType != "")
 	{
-		PlayObject *result = (PlayObject *)obj->_cast("PlayObject");
-		if(result)
+		cout << "Creating " << objectType << " to play file." << endl;
+		PlayObject_var result = PlayObject::_create(objectType);
+		if(result->loadMedia(filename))
 		{
-			if(result->loadMedia(filename))
-			{
-				// TODO: check for existence of left & right streams
-				add_left->_node()->connect("invalue",result->_node(),"left");
-				add_right->_node()->connect("invalue",result->_node(),"right");
-				result->_node()->start();
-				return result->_copy();
-			}
-			else
-			{
-				cout << "loadmedia failed." << endl;
-			}
+			// TODO: check for existence of left & right streams
+			addLeft->_node()->connect("invalue",result->_node(),"left");
+			addRight->_node()->connect("invalue",result->_node(),"right");
+			result->_node()->start();
+			return result->_copy();
 		}
 		else
 		{
-			cout << "cast failed." << endl;
+			cout << "loadmedia failed." << endl;
 		}
 	}
 	else
 	{
-		cout << "object not available" << endl;
+		cout << "can't play this" << endl;
 	}
 
 	return 0;
 }
+
+REGISTER_IMPLEMENTATION(SimpleSoundServer_impl);

@@ -113,10 +113,7 @@ Dispatcher::Dispatcher(IOManager *ioManager, StartServer startServer)
 	string globalCommName
 			= MCOPUtils::readConfigEntry("GlobalComm","TmpGlobalComm");
 
-	Object_skel *gcSkel = objectManager->create(globalCommName);
-	assert(gcSkel);
-	_globalComm = (GlobalComm *)gcSkel->_cast("GlobalComm");
-	assert(_globalComm);
+	_globalComm = GlobalComm::_create(globalCommName);
 
 	// --- initialize MD5auth ---
 	/*

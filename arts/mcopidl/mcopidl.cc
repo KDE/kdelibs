@@ -954,6 +954,8 @@ void doInterfacesHeader(FILE *header)
 
 		fprintf(header,"class %s : %s {\n",d->name.c_str(),inherits.c_str());
 		fprintf(header,"public:\n");
+		fprintf(header,"\tstatic %s *_create(const std::string& subClass"
+						" = \"%s\");\n", d->name.c_str(),d->name.c_str());
 		fprintf(header,"\tstatic %s *_fromString(std::string objectref);\n",
 														d->name.c_str());
 		fprintf(header,"\tstatic %s *_fromReference(ObjectReference ref,"
@@ -1168,6 +1170,19 @@ void doInterfacesSource(FILE *source)
 
 		// create static functions
 
+		fprintf(source,"%s *%s::_create(const std::string& subClass)\n",
+											d->name.c_str(),d->name.c_str());
+		fprintf(source,"{\n");
+		fprintf(source,"\tObject_skel *skel = "
+							"ObjectManager::the()->create(subClass);\n");
+		fprintf(source,"\tassert(skel);\n");
+		fprintf(source,"\t%s *castedObject = (%s *)skel->_cast(\"%s\");\n",
+							d->name.c_str(),d->name.c_str(),d->name.c_str());
+		fprintf(source,"\tassert(castedObject);\n");
+		fprintf(source,"\treturn castedObject;\n");
+		fprintf(source,"}\n\n");
+
+	
 		fprintf(source,"%s *%s::_fromString(std::string objectref)\n",
 											d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");

@@ -33,17 +33,13 @@
 int main(int argc, char **argv)
 {
 	Dispatcher dispatcher;
-
-	Object_skel *sk = ObjectManager::the()->create("X11GlobalComm");
-	assert(sk);
-	GlobalComm_var g = (GlobalComm *)sk->_cast("GlobalComm");
-	assert(g);
+	GlobalComm_var gcomm = GlobalComm::_create("X11GlobalComm");
 
 	if(argc == 4)
 	{
 		if(string(argv[1]) == "put")
 		{
-			g->put(argv[2],argv[3]);
+			gcomm->put(argv[2],argv[3]);
 			return 0;
 		}
 	}
@@ -51,12 +47,12 @@ int main(int argc, char **argv)
 	{
 		if(string(argv[1]) == "get")
 		{
-			cout << g->get(argv[2]) << endl;
+			cout << gcomm->get(argv[2]) << endl;
 			return 0;
 		}
 		if(string(argv[1]) == "erase")
 		{
-			g->erase(argv[2]);
+			gcomm->erase(argv[2]);
 			return 0;
 		}
 	}

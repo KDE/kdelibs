@@ -43,7 +43,8 @@ class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 										public TimeNotify
 {
 protected:
-	Object_var play_obj, add_left, add_right;
+	Synth_PLAY_var playSound;
+	Synth_MULTI_ADD_var addLeft, addRight;
 	std::list<Synth_PLAY_WAV *> activeWavs;
 	std::list<AttachedProducer *> activeProducers;
 	StereoEffectStack_var _outstack;

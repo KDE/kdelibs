@@ -127,6 +127,9 @@ public:
 	inline static long _objectCount() { return _staticObjectCount; }
 	inline long _mkNotifyID() { return _nextNotifyID++; }
 
+	// object creation
+	static Object *_create(const std::string& subClass = "Object");
+
 	// static converter (from reference)
 	static Object *_fromString(std::string objectref);
 	static Object *_fromReference(class ObjectReference ref, bool needcopy);
