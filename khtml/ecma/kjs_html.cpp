@@ -934,7 +934,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
       if (id == InsertRow)
         result = getDOMNode(tableSection.insertRow(args[0].toNumber().intValue()));
       else if (id == DeleteRow) {
-        tableSection.deleteRow(args[0].toNumber().value());
+        tableSection.deleteRow(args[0].toInt32());
         result = Undefined();
       }
     }
@@ -944,7 +944,7 @@ Completion KJS::HTMLElementFunction::tryExecute(const List &args)
       if (id == InsertCell)
         result = getDOMNode(tableRow.insertCell(args[0].toNumber().intValue()));
       else if (id == DeleteCell) {
-        tableRow.deleteCell(args[0].toNumber().intValue());
+        tableRow.deleteCell(args[0].toInt32());
         result = Undefined();
       }
     }
@@ -1538,7 +1538,7 @@ Completion KJS::HTMLCollectionFunc::tryExecute(const List &args)
 
   switch (id) {
     case Item:
-      result = getDOMNode(coll.item(args[0].toNumber().value()));
+      result = getDOMNode(coll.item(args[0].toUInt32()));
       break;
     case NamedItem:
       result = getDOMNode(coll.namedItem(args[0].toString().value().string()));
