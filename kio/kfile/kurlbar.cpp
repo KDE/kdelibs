@@ -378,7 +378,8 @@ QSize KURLBar::minimumSizeHint() const
 
 void KURLBar::slotSelected( int button, QListBoxItem *item )
 {
-    if (button != Qt::LeftButton) return;
+    if (button != Qt::LeftButton) 
+        return;
 
     slotSelected(item);
 }
@@ -560,6 +561,8 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
     static const int EditItem   = 30;
     static const int RemoveItem = 40;
 
+    KURL lastURL = m_activeItem ? m_activeItem->url() : KURL();
+
     bool smallIcons = m_iconSize < KIcon::SizeMedium;
     QPopupMenu *popup = new QPopupMenu();
     popup->insertItem( smallIcons ?
@@ -588,14 +591,16 @@ void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
             editItem( static_cast<KURLBarItem *>( item ) );
             break;
         case RemoveItem:
-            if ( item == m_activeItem )
-                m_activeItem = 0L;
             delete item;
             m_isModified = true;
             break;
         default: // abort
             break;
     }
+
+    // reset current item
+    m_activeItem = 0L;
+    setCurrentItem( lastURL );
 }
 
 bool KURLBar::addNewItem()
