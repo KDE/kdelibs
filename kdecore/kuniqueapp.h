@@ -60,9 +60,9 @@ public:
    * application asking for a new window to be created, possibly with
    * some data already loaded based on the arguments received.
    *
-   * @params is the bundled up command line parameters that were passed
-   *          on the command line when the application request was initiated,
-   *          _after_ being processed by Qt's QApplication.
+   * @param params is the bundled up command line parameters that were passed
+   *               on the command line when the application request was initiated,
+   *               _after_ being processed by Qt's QApplication.
    *
    * @return An exit value. The calling process will exit with this value.
    */
