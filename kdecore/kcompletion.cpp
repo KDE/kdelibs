@@ -115,12 +115,13 @@ QString KCompletion::makeCompletion( const QString& string )
     myMatches.clear();
     myRotationIndex = 0;
     myHasMultipleMatches = false;
-    
+
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
     if ( myCompletionMode == KGlobal::CompletionShell &&
 	 string == myLastString ) {
         myMatches = findAllCompletions( string );
+	postProcessMatches( &myMatches );
 	emit matches( myMatches );
     }
 
@@ -133,6 +134,7 @@ QString KCompletion::makeCompletion( const QString& string )
     if ( !string.isEmpty() ) { // only emit match when string != ""
 	debug("KCompletion: Match: %s", debugString( completion ));
 
+	postProcessMatch( &completion );
         emit match( completion );
     }
 
@@ -160,6 +162,7 @@ QString KCompletion::nextMatch()
     if ( myMatches.isEmpty() ) {
 	myMatches = findAllCompletions( myLastString );
 	completion = myMatches.first();
+	postProcessMatch( &completion );
 	emit match( completion );
 	return completion;
     }
@@ -167,11 +170,12 @@ QString KCompletion::nextMatch()
     myRotationIndex++;
     if ( myRotationIndex == myMatches.count() -1 )
 	doBeep(); // indicate last matching item -> rotating
-    
+
     else if ( myRotationIndex == myMatches.count() )
 	myRotationIndex = 0;
-    
+
     completion = myMatches[ myRotationIndex ];
+    postProcessMatch( &completion );
     emit match( completion );
     return completion;
 }
@@ -184,19 +188,21 @@ QString KCompletion::previousMatch()
     if ( myMatches.isEmpty() ) {
 	myMatches = findAllCompletions( myLastString );
 	completion = myMatches.last();
+	postProcessMatch( &completion );
 	emit match( completion );
 	return completion;
     }
 
     if ( myRotationIndex == 1 )
 	doBeep(); // indicate first item -> rotating
-    
+
     else if ( myRotationIndex == 0 )
 	myRotationIndex = myMatches.count();
 
     myRotationIndex--;
-    
+
     completion = myMatches[ myRotationIndex ];
+    postProcessMatch( &completion );
     emit match( completion );
     return completion;
 }
@@ -220,7 +226,7 @@ QString KCompletion::findCompletion( const QString& string )
 	else
 	    return QString::null; // no completion
     }
-    
+
     // Now we have the last node of the to be completed string.
     // Follow it as long as it has exactly one child (= longest possible
     // completion)

@@ -358,6 +358,33 @@ signals:
      */
     void multipleMatches();
 
+    
+protected:
+    /**
+     * This method is called after a completion is found and before the 
+     * matching string is emitted. You can override this method to modify the
+     * string that will be emitted.
+     * This is necessary e.g. in @ref KURLCompletion, where files with spaces
+     * in their names are shown escaped ("filename\ with\ spaces"), but stored
+     * unescaped inside KCompletion.
+     * Never delete that pointer!
+     *
+     * Default implementation does nothing.
+     * @see #postProcessMatches
+     */
+    virtual void postProcessMatch( QString *match ) {}
+    
+    /**
+     * This method is called before a list of all available completions is
+     * emitted via @ref matches. You can override this method to modify the
+     * list which that will be emitted.
+     * Never delete that pointer!
+     * 
+     * Default implementation does nothing.
+     * @see #postProcessMatch
+     */
+    virtual void postProcessMatches( QStringList *matches ) {}
+    
 private:
     void 		addItemInternal( const QString& );
     QString 		findCompletion( const QString& string );
