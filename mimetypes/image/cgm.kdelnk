@@ -6,4 +6,4 @@ Icon=image.xpm
 Patterns=*.cgm;*.CGM;
 Comment=Computer Graphics Metafile
 Comment[no]=Metafil for datagrafikk
-Comment[ru]=Графический метафайл .CGM
+Comment[ru]=Метафайл графических данных
