@@ -1,5 +1,9 @@
 2004-02-09  David Faure  <faure@kde.org>
 
+	* ecma/kjs_events.h (clear): set listener object to Null(), not to an invalid Object(),
+	which will crash when the listener is stored in another frame (#61467). Maybe it would be better
+	to really remove the event listener in this case, but this is hard to do efficiently.
+
 	* ecma/kjs_html.cpp (getValueProperty): s/getString/String/ for meta attributes,
         fixes http://www.accorhotels.com/fr/fidelisation/travelplus/tp_pros_adh_form.shtml
 

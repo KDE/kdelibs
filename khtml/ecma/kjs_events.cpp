@@ -61,7 +61,8 @@ void JSEventListener::handleEvent(DOM::Event &evt)
   if (part)
     proxy = KJSProxy::proxy( part );
 
-  if (proxy && listener.implementsCall()) {
+  Object listenerObj = Object::dynamicCast( listener );
+  if (proxy && listenerObj.implementsCall()) {
     ref();
 
     KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());
@@ -72,13 +73,13 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     // Set "this" to the event's current target
     Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
-    ScopeChain oldScope = listener.scope();
+    ScopeChain oldScope = listenerObj.scope();
     if ( thisObj.isValid() ) {
       ScopeChain scope = oldScope;
       // Add the event's target element to the scope
       // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
       static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
-      listener.setScope( scope );
+      listenerObj.setScope( scope );
     }
     else {
       if ( m_hackThisObj.isValid() ) { // special hack for Image
@@ -100,10 +101,10 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     KJSCPUGuard guard;
     guard.start();
-    Value retval = listener.call(exec, thisObj, args);
+    Value retval = listenerObj.call(exec, thisObj, args);
     guard.stop();
 
-    listener.setScope( oldScope );
+    listenerObj.setScope( oldScope );
 
     window->setCurrentEvent( 0 );
     interpreter->setCurrentEvent( 0 );
@@ -126,15 +127,6 @@ DOM::DOMString JSEventListener::eventListenerType()
 	return "_khtml_HTMLEventListener";
     else
 	return "_khtml_JSEventListener";
-}
-
-Value KJS::getNodeEventListener(DOM::Node n, int eventId)
-{
-    DOM::EventListener *listener = n.handle()->getHTMLEventListener(eventId);
-    if (listener)
-	return static_cast<JSEventListener*>(listener)->listenerObj();
-    else
-	return Null();
 }
 
 // -------------------------------------------------------------------------
