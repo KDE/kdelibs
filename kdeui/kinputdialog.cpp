@@ -335,10 +335,14 @@ QStringList KInputDialog::getItemList( const QString &caption,
 
   QStringList result;
 
-  for ( unsigned int i=0; i<list.count(); ++i )
-    if ( dlg->listBox()->isSelected( i ) )
-      result.append( dlg->listBox()->text( i ) );
+  if ( ok )
+  {
+    for ( unsigned int i=0; i<list.count(); ++i )
+      if ( dlg->listBox()->isSelected( i ) )
+        result.append( dlg->listBox()->text( i ) );
+  }
 
+  delete dlg;
   return result;
 }
 
