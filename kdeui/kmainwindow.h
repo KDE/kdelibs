@@ -382,6 +382,7 @@ public:
     //KDE4: replace with memberList() and make memberList member private
     /**
      * List of members of KMainWindow class.
+     * @since 3.4
      */
     static QPtrList<KMainWindow>* getMemberList();
 

@@ -254,7 +254,7 @@ class KDEUI_EXPORT KDateTable : public QGridView
     Q_OBJECT
     Q_PROPERTY( QDate date READ getDate WRITE setDate )
     Q_PROPERTY( bool popupMenu READ popupMenuEnabled WRITE setPopupMenuEnabled )
-    
+
 public:
     /**
      * The constructor.
@@ -264,14 +264,15 @@ public:
 
     /**
      * The constructor.
+     * @since 3.4
      */
     KDateTable(QWidget *parent, const char* name, WFlags f=0);
-	       
+
     /**
      * The destructor.
      */
     ~KDateTable();
-    
+
     /**
      * Returns a recommended size for the widget.
      * To save some time, the size of the largest used cell content is
@@ -292,8 +293,8 @@ public:
     const QDate& getDate() const;
 
     /**
-     * Enables a popup menu when right clicking on a date. 
-     * 
+     * Enables a popup menu when right clicking on a date.
+     *
      * When it's enabled, this object emits a aboutToShowContextMenu signal
      * where you can fill in the menu items.
      *
@@ -329,11 +330,11 @@ protected:
      */
     int posFromDate( const QDate &date ); // KDE4: make this virtual, so subclasses can reimplement this and use a different default for the start of the matrix
     /**
-     * calculate the date that is displayed at a given cell in the matrix. pos is the 
+     * calculate the date that is displayed at a given cell in the matrix. pos is the
      * 0-based index in the matrix. Inverse function to posForDate().
      */
     QDate dateFromPos( int pos ); // KDE4: make this virtual
-    
+
     /**
      * Paint a cell.
      */
@@ -352,7 +353,7 @@ protected:
     virtual void focusOutEvent( QFocusEvent *e );
 
     // ### KDE 4.0 make the following private and mark as members
-    
+
     /**
      * The font size of the displayed text.
      */

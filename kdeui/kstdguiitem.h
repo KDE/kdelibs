@@ -48,8 +48,14 @@ public:
     {
         Ok=1, Cancel, Yes, No, Discard, Save, DontSave, SaveAs,
         Apply, Clear, Help, Defaults, Close, Back, Forward, Print,
-        Continue, Open, Quit, AdminMode, Reset, Delete, Insert, Configure,
-        Find, Stop, Add, Remove, Test, Properties
+        Continue, Open, Quit, AdminMode, Reset, Delete, Insert,
+	Configure,    ///< @since 3.4
+        Find,         ///< @since 3.4
+	Stop,         ///< @since 3.4
+	Add,          ///< @since 3.4
+	Remove,       ///< @since 3.4
+	Test,         ///< @since 3.4
+	Properties    ///< @since 3.4
     };
     static KGuiItem guiItem ( StdItem ui_enum );
     static QString  stdItem ( StdItem ui_enum );
@@ -68,6 +74,9 @@ public:
     static KGuiItem defaults();
     static KGuiItem close();
     static KGuiItem print();
+    /**
+     * @since 3.4
+     */
     static KGuiItem properties();
     static KGuiItem reset();
     /**
