@@ -1,6 +1,6 @@
 /*  This file is part of the KDE libraries
- *  Copyright (C) 1999, 2000 Waldo Bastian <bastian@kde.org>
- *  Copyright (C) 1999       David Faure   <faure@kde.org>
+ *  Copyright (C) 1999 - 2001 Waldo Bastian <bastian@kde.org>
+ *  Copyright (C) 1999        David Faure   <faure@kde.org>
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -45,6 +45,21 @@
 #include "kservicetype.h"
 #include "kuserprofile.h"
 #include "ksycoca.h"
+
+KService::KService( const QString & _name, const QString &_exec, const QString &_icon)
+ : KSycocaEntry( QString::null)
+{
+  m_bValid = true;
+  m_bDeleted = false;
+  m_strType = "Application";
+  m_strName = _name;  
+  m_strExec = _exec;
+  m_strIcon = _icon;
+  m_bTerminal = false;
+  m_bAllowAsDefault = true;
+  m_initialPreference = 10;
+}
+
 
 KService::KService( const QString & _fullpath )
  : KSycocaEntry( _fullpath)

@@ -49,6 +49,10 @@ public:
   typedef KSharedPtr<KService> Ptr;
   typedef QValueList<Ptr> List;
 public:
+  /**
+   * Construct a temporary service with a given name, exec-line and icon.
+   */
+  KService( const QString & _name, const QString &_exec, const QString &_icon);
 
   /**
    * Construct a service and take all information from a config file.
