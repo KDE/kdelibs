@@ -788,6 +788,102 @@ error:
 	return date;
 }
 
+QTime KLocale::readTime(const QString &intstr) const
+{
+  QTime _time;
+  QString str = intstr.simplifyWhiteSpace().lower();
+  QString fmt = _timefmt.simplifyWhiteSpace();
+
+  int hour = 0, minute = 0, second = 0;
+  bool _12h = false;
+  bool pm = false;
+  uint strpos = 0;
+  uint fmtpos = 0;
+
+  while (fmt.length() > fmtpos && str.length() > strpos) {
+    QChar c = fmt.at(fmtpos++);
+
+    if (c != '%') {
+      if (c.isSpace())
+	strpos++;
+      else if (c != str.at(strpos++))
+	goto error;
+      continue;
+    }
+
+    // remove space at the begining
+    if (str.length() > strpos && str.at(strpos).isSpace())
+      strpos++;
+
+    c = fmt.at(fmtpos++);
+    switch (c) {
+    case 'p':
+      {
+	QString s;
+	s = translate("pm").lower();
+	int len = s.length();
+	if (str.mid(strpos, len) == s) {
+	  pm = true;
+	  strpos += len;
+	}
+	else {
+	  s = translate("am").lower();
+	  len = s.length();
+	  if (str.mid(strpos, len) == s) {
+	    pm = false;
+	    strpos += len;
+	  }
+	  else
+	    goto error;
+	}
+      }
+      break;
+
+    case 'k':
+    case 'H':
+      _12h = false;
+      hour = readInt(str, strpos);
+      if (hour < 0 || hour > 23)
+	goto error;
+      
+      break;
+			
+    case 'l':
+    case 'I':
+      _12h = true;
+      hour = readInt(str, strpos);
+      if (hour < 1 || hour > 12)
+	goto error;
+
+      break;
+
+    case 'M':
+      minute = readInt(str, strpos);
+      if (minute < 0 || minute > 59)
+	goto error;
+
+      break;
+
+    case 'S':
+      second = readInt(str, strpos);
+      if (second < 0 || second > 59)
+	goto error;
+
+      break;
+    }
+  }
+  if (_12h)
+    {
+      hour %= 12;
+      if (pm) hour += 12;
+    }
+  _time.setHMS(hour, minute, second);
+
+error:
+  // if there was an error time will be zero, if not it would be ok
+  return _time;
+}
+
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 {
   QString rst(_timefmt);

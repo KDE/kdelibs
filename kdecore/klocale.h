@@ -388,6 +388,15 @@ public:
     QDate readDate(const QString &str) const;
 
     /**
+     * Converts a localized time string to a QTime.
+     *
+     * @param str the string we want to convert.
+     *
+     * @return The string converted to a QTime
+     */
+    QTime readTime(const QString &str) const;
+
+    /**
       * Returns the language used by this object. The domain AND the
       * library translation must be available in this language.
       * 'C' is default, if no other available.
