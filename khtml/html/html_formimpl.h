@@ -320,6 +320,7 @@ public:
     virtual Id id() const;
     virtual void attach();
     virtual void defaultEventHandler(EventImpl *evt);
+    virtual bool isSelectable() const { return true; }
     NodeImpl* getFormElement();
 
  private:

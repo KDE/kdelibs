@@ -1602,18 +1602,28 @@ return newNode;
 }
 
 void HTMLLabelElementImpl::defaultEventHandler(EventImpl *evt)
- {
-    if ( !m_disabled  && 
-        evt->isMouseEvent() && evt->id() == EventImpl::CLICK_EVENT){
+{
+    if ( !m_disabled ) {
+	bool act = false;
+	if ( evt->id() == EventImpl::CLICK_EVENT ) {
+	    act = true;
+	}
+	else if ( evt->id() == EventImpl::KEYUP_EVENT ) {
+	    QKeyEvent *ke = static_cast<TextEventImpl *>(evt)->qKeyEvent;
+	    if (ke && active() && (ke->key() == Qt::Key_Return || ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Space))
+		act = true;
+	}
+
+	if (act) {
 	    NodeImpl *formNode=getFormElement();
-	    if (formNode)
-	    {
-	        getDocument()->setFocusNode(formNode);
+	    if (formNode) {
+		getDocument()->setFocusNode(formNode);
 		if (formNode->id()==ID_INPUT)
-    		    static_cast<DOM::HTMLInputElementImpl*>(formNode)->click();
+		    static_cast<DOM::HTMLInputElementImpl*>(formNode)->click();
 	    }
-		evt->setDefaultHandled();
-            }
+	    evt->setDefaultHandled();
+	}
+    }
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
 
