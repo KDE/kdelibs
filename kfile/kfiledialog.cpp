@@ -268,24 +268,12 @@ KFileDialog::KFileDialog(const QString& dirName, const QString& filter,
 
     connect( locationEdit, SIGNAL( completion( const QString& )),
 	     SLOT( fileCompletion( const QString& )));
-    connect( locationEdit, SIGNAL( rotateUp(KCompletionBase::KeyBindingType) ),
-	     locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-    connect( locationEdit, SIGNAL( rotateDown(KCompletionBase::KeyBindingType) ),
-	     locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-    connect( locationEdit, SIGNAL( nextMatch(KCompletionBase::KeyBindingType) ),
-	     locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-    connect( locationEdit, SIGNAL( previousMatch(KCompletionBase::KeyBindingType) ),
+    connect( locationEdit, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
 	     locationEdit, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 	
     connect( d->pathCombo, SIGNAL( completion( const QString& )),
 	     SLOT( dirCompletion( const QString& )));	
-    connect( d->pathCombo, SIGNAL( rotateUp(KCompletionBase::KeyBindingType) ),
-	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-    connect( d->pathCombo, SIGNAL( rotateDown(KCompletionBase::KeyBindingType) ),
-	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-    connect( d->pathCombo, SIGNAL( nextMatch(KCompletionBase::KeyBindingType) ),
-	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
-    connect( d->pathCombo, SIGNAL( previousMatch(KCompletionBase::KeyBindingType) ),
+    connect( d->pathCombo, SIGNAL( textRotation(KCompletionBase::KeyBindingType) ),
 	     d->pathCombo, SLOT( rotateText(KCompletionBase::KeyBindingType) ));
 	
     d->locationLabel = new QLabel(locationEdit, i18n("&Location:"),
