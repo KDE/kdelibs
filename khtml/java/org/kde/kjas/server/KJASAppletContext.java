@@ -16,14 +16,15 @@ public class KJASAppletContext implements AppletContext
 
     private String myID;
     private KJASAppletClassLoader loader;
-
+    private boolean active;
     /**
      * Create a KJASAppletContext
      */
     public KJASAppletContext( String _contextID )
     {
-        stubs         = new Hashtable();
-        myID          = _contextID;
+        stubs  = new Hashtable();
+        myID   = _contextID;
+        active = true;
     }
 
     public String getID()
@@ -170,6 +171,7 @@ public class KJASAppletContext implements AppletContext
         }
 
         stubs.clear();
+        active = false;
     }
 
     /***************************************************************************
@@ -177,29 +179,35 @@ public class KJASAppletContext implements AppletContext
     ***************************************************************************/
     public Applet getApplet( String appletName )
     {
-        Enumeration e = stubs.elements();
-        while( e.hasMoreElements() )
+        if( active )
         {
-            KJASAppletStub stub = (KJASAppletStub) e.nextElement();
+            Enumeration e = stubs.elements();
+            while( e.hasMoreElements() )
+            {
+                KJASAppletStub stub = (KJASAppletStub) e.nextElement();
 
-            if( stub.getAppletName().equals( appletName ) )
-                return stub.getApplet();
+                if( stub.getAppletName().equals( appletName ) )
+                    return stub.getApplet();
+            }
         }
-
         return null;
     }
 
     public Enumeration getApplets()
     {
-        Vector v = new Vector();
-        Enumeration e = stubs.elements();
-        while( e.hasMoreElements() )
+        if( active )
         {
-            KJASAppletStub stub = (KJASAppletStub) e.nextElement();
-            v.add( stub );
-        }
+            Vector v = new Vector();
+            Enumeration e = stubs.elements();
+            while( e.hasMoreElements() )
+            {
+                KJASAppletStub stub = (KJASAppletStub) e.nextElement();
+                v.add( stub );
+            }
 
-        return v.elements();
+            return v.elements();
+        }
+        return null;
     }
 
     public AudioClip getAudioClip( URL url )
@@ -210,26 +218,37 @@ public class KJASAppletContext implements AppletContext
 
     public Image getImage( URL url )
     {
-        Toolkit kit = Toolkit.getDefaultToolkit();
-        return kit.getImage( url );
+        if( active )
+        {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            return kit.getImage( url );
+        }
+        return null;
     }
 
     public void showDocument( URL url )
     {
-        if( url != null )
+        if( active && (url != null) )
+        {
             Main.protocol.sendShowDocumentCmd( myID, url.toString()  );
+        }
     }
 
     public void showDocument( URL url, String targetFrame )
     {
-        if ( ( url != null ) && ( targetFrame != null ) )
-            Main.protocol.sendShowDocumentCmd( myID, url.toString(), targetFrame );
+        if( active )
+        {
+            if ( ( url != null ) && ( targetFrame != null ) )
+                Main.protocol.sendShowDocumentCmd( myID, url.toString(), targetFrame );
+        }
     }
 
     public void showStatus( String message )
     {
-        if( message != null )
+        if( active && (message != null) )
+        {
             Main.protocol.sendShowStatusCmd( myID, message );
+        }
     }
 
 }

@@ -324,7 +324,7 @@ public class KJASProtocolHandler
 
     public void sendShowStatusCmd( String contextID, String msg )
     {
-        Main.debug( "sendShowStatusCmd, msg = " + msg );
+        Main.debug( "sendShowStatusCmd, contextID = " + contextID + " msg = " + msg );
 
         int length = contextID.length() + msg.length() + 4;
         char[] chars = new char[ length + 8 ]; //for length of message

@@ -26,6 +26,7 @@ public class KJASAppletStub extends Frame
     Class             appletClass;
     Thread            classLoadingThread;
     Thread            setupWindowThread;
+    Thread            runThread;
     String            appletLabel;
 
 
@@ -103,7 +104,7 @@ public class KJASAppletStub extends Frame
 
     public void initApplet()
     {
-        new Thread
+        runThread = new Thread
         (
             new Runnable()
             {
@@ -112,7 +113,8 @@ public class KJASAppletStub extends Frame
                     createApplet();
                 }
             }
-        ).start();
+        );
+        runThread.start();
     }
 
     private void setupPanel()
@@ -155,6 +157,8 @@ public class KJASAppletStub extends Frame
         {
             if( appletClass != null )
             {
+                //this order is very important and touchy- be careful when
+                //playing around with it...
                 Main.debug( "Applet #" + appletID + ": class is loaded" );
                 app = (Applet) appletClass.newInstance();
                 app.setStub( this );
@@ -204,7 +208,9 @@ public class KJASAppletStub extends Frame
     {
         if( app != null )
             app.stop();
+
         dispose();
+        runThread.interrupt();
     }
 
     public Applet getApplet()
