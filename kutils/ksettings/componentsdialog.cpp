@@ -103,6 +103,7 @@ void ComponentsDialog::setPluginInfos( const QValueList<KPluginInfo *> &plugins 
 void ComponentsDialog::show()
 {
     // construct the treelist
+    d->listview->clear();
     for( QValueList<KPluginInfo*>::ConstIterator it = d->plugininfolist.begin();
             it != d->plugininfolist.end(); ++it )
     {
