@@ -45,27 +45,27 @@ class Resource;
 
 /**
   @short address book entry
- 
+
   This class represents an entry in the address book.
- 
+
   The data of this class is implicitly shared. You can pass this class by value.
- 
+
   If you need the name of a field for presenting it to the user you should use
   the functions ending in Label(). They return a translated string which can be
   used as label for the corresponding field.
- 
+
   About the name fields:
- 
-  givenName() is the first name and familyName() the last name. In some 
-  countries the family name comes first, that's the reason for the 
+
+  givenName() is the first name and familyName() the last name. In some
+  countries the family name comes first, that's the reason for the
   naming. formattedName() is the full name with the correct formatting.
   It is used as an override, when the correct formatting can't be generated
   from the other name fields automatically.
- 
+
   realName() returns a fully formatted name(). It uses formattedName, if set,
   otherwise it constucts the name from the name fields. As fallback, if
   nothing else is set it uses name().
- 
+
   name() is the NAME type of RFC2426. It can be used as internal name for the
   data enty, but shouldn't be used for displaying the data to the user.
  */
@@ -112,19 +112,19 @@ class Addressee
       Return the name that consists of all name parts.
      */
     QString assembledName() const;
-    
+
     /**
       Return email address including real name.
-      
+
       @param email Email address to be used to construct the full email string.
                    If this is QString::null the preferred email address is used.
      */
     QString fullEmail( const QString &email=QString::null ) const;
-    
+
     /**
       Insert an email address. If the email address already exists in this
       addressee it is not duplicated.
-      
+
       @param email Email address
       @param preferred Set to true, if this is the preferred email address of
                        the addressee.
@@ -146,7 +146,14 @@ class Addressee
       Return list of all email addresses.
      */
     QStringList emails() const;
-    
+
+    /**
+       Set the emails to @param.
+       The first email address gets the preferred one!
+       @param list The list of email addresses.
+     */
+    void setEmails( const QStringList& list);
+
     /**
       Insert a phone number. If a phoen number with the same id already exists
       in this addressee it is not duplicated.
@@ -205,6 +212,12 @@ class Addressee
     Key::List keys() const;
 
     /**
+       Set the list of keys
+       @param keys The keys to be set.
+     */
+    void setKeys( const Key::List& keys);
+
+    /**
       Return list of keys with a special type.
       If @p type == Key::Custom you can specify a string
       that should match. If you leave the string empty, all custom
@@ -216,7 +229,7 @@ class Addressee
       Return key with the given id.
      */
     Key findKey( const QString &id ) const;
-    
+
     /**
       Insert an address. If an address with the same id already exists
       in this addressee it is not duplicated.
@@ -243,7 +256,7 @@ class Addressee
       Return list of addresses with a special type.
      */
     Address::List addresses( int type ) const;
-	
+
     /**
       Return address with the given id.
      */
@@ -327,7 +340,7 @@ class Addressee
       Return pointer to resource.
      */
     Resource *resource() const;
-  
+
     /**
 	    Mark addressee as changed.
 	   */
