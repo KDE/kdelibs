@@ -256,7 +256,8 @@ void HTMLFrameElementImpl::layout(bool)
 #ifdef DEBUG_LAYOUT
     printf("%s(Frame)::layout(???) width=%d, layouted=%d\n", nodeName().string().ascii(), width, layouted());
 #endif
-
+    width = availableWidth;
+    
     if(!parentWidget || !view) return;
 
     int x,y;
@@ -589,9 +590,10 @@ void HTMLFrameSetElementImpl::positionFrames(bool deep)
 	    e->setXPos(xPos);
 	    e->setYPos(yPos);
 	    e->setWidth(colWidth[c]);
+	    e->setAvailableWidth(colWidth[c]);
 	    e->setDescent(rowHeight[r]);
 	    if(deep)
-		e->layout();
+		e->layout(deep);
 	    xPos += colWidth[c] + border;
 	    child = child->nextSibling();
 	    if(!child) return;
