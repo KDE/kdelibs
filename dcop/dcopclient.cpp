@@ -689,8 +689,8 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     IceSetShutdownNegotiation(d->iceConn, False);
 
     int setupstat;
-    const char* vendor = 0;
-    const char* release = 0;
+    char* vendor = 0;
+    char* release = 0;
     setupstat = IceProtocolSetup(d->iceConn, d->majorOpcode,
 				 static_cast<IcePointer>(d),
 				 False, /* must authenticate */
