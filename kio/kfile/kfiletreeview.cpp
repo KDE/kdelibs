@@ -188,19 +188,16 @@ void KFileTreeView::contentsDropEvent( QDropEvent *e )
        emit dropped(e, parent, afterme);
        emit dropped(this, e, parent, afterme);
 
-
-       KURL parentURL;
-       if( afterme )
-       {
-	  if(  static_cast<KFileTreeViewItem*>(afterme)->isDir() )
-	     parentURL = static_cast<KFileTreeViewItem*>(afterme)->url();
-	  else
-	     parentURL = static_cast<KFileTreeViewItem*>(parent)->url();
-       }
-
        KURL::List urls;
        KURLDrag::decode( e, urls );
        emit dropped( this, e, urls );
+
+       KURL parentURL;
+       if( parent )
+           parentURL = static_cast<KFileTreeViewItem*>(parent)->url();
+       else
+           return; // can happen when dropping above the root item
+
        emit dropped( urls, parentURL );
        emit dropped( this , e, urls, parentURL );
     }
