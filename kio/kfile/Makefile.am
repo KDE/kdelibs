@@ -40,7 +40,7 @@ noinst_HEADERS = kfiledialogconf.h config-kfile.h krecentdirs.h kmetaprops.h \
 	kfilebookmarkhandler.h kfilemetainfowidget.h kopenwith_p.h \
 	knotifydialog_private.h 
 
-libkfile_la_SOURCES = kfiledialogconf.cpp \
+libkfile_la_SOURCES = knotifydialog.cpp kfiledialogconf.cpp \
 	kfilefiltercombo.cpp \
 	kfileview.cpp kfileiconview.cpp  \
 	krecentdocument.cpp kfiledialog.cpp kdiroperator.cpp \
@@ -51,7 +51,7 @@ libkfile_la_SOURCES = kfiledialogconf.cpp \
 	kurlbar.cpp kmetaprops.cpp\
 	kfiletreeview.cpp kfiletreeviewitem.cpp kfiletreebranch.cpp \
 	kdirselectdialog.cpp kfilebookmarkhandler.cpp \
-	kfilemetainfowidget.cpp knotifydialog.cpp
+	kfilemetainfowidget.cpp 
 
 EXTRA_DIST = NOTES
 
@@ -67,9 +67,6 @@ servicetypedir = $(kde_servicetypesdir)
 #libkfileshare_la_LIBADD = libkfile.la
 #libkfileshare_la_LDFLAGS = -module $(KDE_PLUGIN)
 #kde_services_DATA = kfilesharepropsplugin.desktop
-
-# Temporary, to be removed
-KDE_OPTIONS = nofinal
 
 kpropertiesdialog.lo: ../kio/kdirnotify_stub.h
 kfiletreeview.lo: ../kio/kdirnotify_stub.h
