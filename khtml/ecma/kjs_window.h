@@ -185,7 +185,7 @@ namespace KJS {
   public:
     Konqueror(KHTMLPart *p) : part(p) { }
     virtual Value get(ExecState *exec, const UString &propertyName) const;
-    virtual bool hasProperty(const UString &p, bool recursive) const;
+    virtual bool hasProperty(ExecState *exec, const UString &p, bool recursive) const;
     virtual String toString(ExecState *exec) const;
   private:
     KHTMLPart *part;

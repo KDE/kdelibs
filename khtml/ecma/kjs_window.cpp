@@ -1571,7 +1571,7 @@ Value HistoryFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
 
 #ifdef Q_WS_QWS
 
-bool Konqueror::hasProperty(ExecState *exec, const UString &propertyName, bool recursive) const
+bool Konqueror::hasProperty(ExecState *exec, const UString &p, bool recursive) const
 {
   if ( p.qstring().startsWith( "goHistory" ) ) return false;
 
@@ -1594,7 +1594,7 @@ Value Konqueror::get(ExecState *exec, const UString &p) const
         case QVariant::Int:
           return Number( prop.toInt() );
         case QVariant::String:
-          return String( prop.toString(exec) );
+          return String( prop.toString() );
         default:
           break;
         }
