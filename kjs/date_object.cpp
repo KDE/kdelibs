@@ -23,9 +23,6 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-#ifndef HAVE_SYS_TIMEB_H
-#define HAVE_SYS_TIMEB_H 0
-#endif
 
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -37,7 +34,7 @@
 #  include <time.h>
 # endif
 #endif
-#if HAVE_SYS_TIMEB_H
+#ifdef HAVE_SYS_TIMEB_H
 #include <sys/timeb.h>
 #endif
 
@@ -507,7 +504,7 @@ Object DateObjectImp::construct(ExecState *exec, const List &args)
   double value;
 
   if (numArgs == 0) { // new Date() ECMA 15.9.3.3
-#if HAVE_SYS_TIMEB_H
+#ifdef HAVE_SYS_TIMEB_H
 #  if defined(__BORLANDC__)
     struct timeb timebuffer;
     ftime(&timebuffer);
