@@ -773,13 +773,51 @@ void B2Style::drawArrow(QPainter *p, Qt::ArrowType type, bool on, int x,
 void B2Style::drawKBarHandle(QPainter *p, int x, int y, int w, int h,
                                 const QColorGroup &g, bool, QBrush *)
 {
-    qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
-    if(h > w)
-        qDrawArrow(p, RightArrow, WindowsStyle, false, x+1, y+4, w-4, w-4, g,
-                   true);
-    else
-        qDrawArrow(p, DownArrow, WindowsStyle, false, x+4, y+1, h-4, h-4, g,
-                   true);
+    if(h > w){
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+        int x2 = x+w-1;
+        int y2 = y+h-1;
+
+        p->setPen(g.light());
+        p->drawLine(x, y, x2, y);
+        p->drawLine(x, y, x, y2);
+
+        p->drawLine(x+3, y+4, x+3, y2-4);
+        p->drawLine(x+5, y+4, x+5, y2-4);
+        p->drawLine(x+7, y+4, x+7, y2-4);
+
+        p->setPen(g.dark());
+        p->drawLine(x, y2, x2, y2);
+
+        p->setPen(g.mid());
+        p->drawLine(x+4, y+4, x+4, y2-4);
+        p->drawLine(x+6, y+4, x+6, y2-4);
+        p->drawLine(x+8, y+4, x+8, y2-4);
+
+    }
+    else{
+        p->fillRect(x, y, w, h, g.brush(QColorGroup::Button));
+        int x2 = x+w-1;
+        int y2 = y+h-1;
+
+        p->setPen(g.light());
+        p->drawLine(x, y, x2, y);
+        p->drawLine(x, y, x, y2);
+        p->drawLine(x2, y, x2, y2);
+
+        p->drawLine(x+4, y+3, x2-4, y+3);
+        p->drawLine(x+4, y+5, x2-4, y+5);
+        p->drawLine(x+4, y+7, x2-4, y+7);
+        
+        p->setPen(g.dark());
+        p->drawLine(x2, y, x2, y2);
+
+        p->setPen(g.mid());
+        p->drawLine(x+4, y+4, x2-4, y+4);
+        p->drawLine(x+4, y+6, x2-4, y+6);
+        p->drawLine(x+4, y+8, x2-4, y+8);
+        
+    }
         
 }
 
@@ -793,6 +831,7 @@ void B2Style::drawKToolBar(QPainter *p, int x, int y, int w, int h,
                            const QColorGroup &g, bool)
 {
     qDrawShadePanel(p, x, y, w, h, g, false, 1, &g.brush(QColorGroup::Button));
+    p->setPen(g.button());
 }
 
 void B2Style::drawKToolBarButton(QPainter *p, int x, int y, int w, int h,
