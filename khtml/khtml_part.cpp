@@ -337,8 +337,6 @@ bool KHTMLPart::openURL( const KURL &url )
       // error=0 isn't a valid error code, so 0 means it's missing from the URL
       if ( error == 0 ) error = KIO::ERR_UNKNOWN;
       QString errorText = mainURL.queryItem( "errText" );
-      // ### should be fixed in queryItem
-      errorText = KURL::decode_string( errorText );
       urls.pop_front();
       d->m_workingURL = KURL::join( urls );
       //kdDebug() << "Emitting fixed URL " << d->m_workingURL.prettyURL() << endl;
