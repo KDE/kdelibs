@@ -1,3 +1,22 @@
+/* This file is part of the KDE libraries
+    Copyright (C) 1999 Reginald Stadlbauer <reggie@kde.org>
+              (C) 1999 Simon Hausmann <hausmann@kde.org>
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+*/
 
 #include "kaction.h"
 
@@ -110,7 +129,7 @@ int KAction::plug( QWidget *w )
 
     int id_ = get_toolbutton_id();
     bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
-		       isEnabled(), text() );
+		       isEnabled(), plainText() );
 
     addContainer( bar, id_ );
 
@@ -234,7 +253,7 @@ int KToggleAction::plug( QWidget* widget )
 
 	int id_ = get_toolbutton_id();
  	bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
- 			   isEnabled(), text() );
+ 			   isEnabled(), plainText() );
 
 	KToolBarButton *but = bar->getButton( id_ );
 	addContainer( bar, id_ );
@@ -661,6 +680,98 @@ void KFontSizeAction::slotActivated( const QString& size )
     m_lock = TRUE;
     setFontSize( size.toInt() );
     m_lock = FALSE;
+}
+
+KActionMenu::KActionMenu( QObject* parent, const char* name )
+ : QActionMenu( parent, name )
+{
+}
+
+KActionMenu::KActionMenu( const QString& text, QObject* parent, const char* name )
+ : QActionMenu( text, parent, name )
+{
+}
+
+KActionMenu::KActionMenu( const QString& text, const QIconSet& icon, QObject* parent, const char* name )
+ : QActionMenu( text, icon, parent, name )
+{
+}
+
+int KActionMenu::plug( QWidget* widget )
+{
+
+  if ( widget->inherits( "KToolBar" ) )
+  {
+    KToolBar *bar = (KToolBar *)widget;
+
+    int id_ = get_toolbutton_id();
+    bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
+		       isEnabled(), plainText() );
+
+    addContainer( bar, id_ );
+
+    connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+    bar->setDelayedPopup( id_, popupMenu() );
+
+    return containerCount() - 1;
+  }
+
+  return QActionMenu::plug( widget );  
+}
+
+void KActionMenu::unplug( QWidget* widget )
+{
+  if ( widget->inherits( "KToolBar" ) )
+  {
+    KToolBar *bar = (KToolBar *)widget;
+
+    int idx = findContainer( bar );
+
+    bar->removeItem( menuId( idx ) );
+  }
+
+  QActionMenu::unplug( widget );
+}
+
+void KActionMenu::setEnabled( bool b )
+{
+  int len = containerCount();
+
+  for ( int i = 0; i < len; i++ )
+  {
+    QWidget *w = container( i );
+
+    if ( w->inherits( "KToolBar" ) )
+      ((KToolBar *)w)->setItemEnabled( menuId( i ), b );
+
+  }
+
+  QActionMenu::setEnabled( b );
+}
+
+void KActionMenu::setText( const QString& text )
+{
+  //TODO?
+
+  QActionMenu::setText( text );
+}
+
+
+void KActionMenu::setIconSet( const QIconSet& iconSet )
+{
+  int len = containerCount();
+
+  for ( int i = 0; i < len; i++ )
+  {
+    QWidget *w = container( i );
+
+    if ( w->inherits( "KToolBar" ) )
+      ((KToolBar *)w)->setButtonPixmap( menuId( i ), iconSet.pixmap() );
+
+  }
+
+  QActionMenu::setIconSet( iconSet );
 }
 
 #include "kaction.moc"
