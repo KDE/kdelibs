@@ -120,6 +120,8 @@
 
 ;; I have the feeling the next two should be removed (or
 ;; an error message should be issued).
+;;-- Anyway: the next three functions are not needed when the possible
+;;-- languages are defined in the DTD, as is the case now
 ;; Origin: print/dbprint.dsl
 ;; How:    replace "_" by "-"
 ;; Why:    "-" complies with RFC1766, "_" doesn't
