@@ -46,8 +46,7 @@ int main(int argc, char *argv[])
     KHTMLFactory *fac = new KHTMLFactory();
 
     KMainWindow *toplevel = new KMainWindow();
-    KHTMLPart *doc = new KHTMLPart( toplevel, 0,
-				    toplevel, 0, KHTMLPart::BrowserViewGUI );
+    KHTMLPart *doc = new KHTMLPart( toplevel, 0, toplevel, 0, KHTMLPart::BrowserViewGUI );
 
     Dummy *dummy = new Dummy( doc );
     QObject::connect( doc->browserExtension(), SIGNAL( openURLRequest( const KURL &, const KParts::URLArgs & ) ),
@@ -103,8 +102,6 @@ int main(int argc, char *argv[])
 
 
     int ret = a.exec();
-
-    delete doc;
 
     //delete dtv;
 
