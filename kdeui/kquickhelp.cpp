@@ -469,7 +469,7 @@ void KQuickHelpWindow::paint(QPainter *p, int &w, int &h) {
   QColor txtColor = black;
   QColor savedColor;
   int txtFlags = 0;
-  int savedFlags = 0;
+  bool wasUnderline = false;
 
   QString link;
 
@@ -579,7 +579,7 @@ void KQuickHelpWindow::paint(QPainter *p, int &w, int &h) {
 	if(idx != -1) {
 	  link = t.mid(idx+1, t.length()-idx-2);
 	  savedColor = txtColor;
-	  savedFlags = txtFlags & F_UNDERLINE;
+	  wasUnderline = (txtFlags & F_UNDERLINE) != 0;
 	  txtColor = blue;
 	  txtFlags |= F_UNDERLINE;
 	}
@@ -587,7 +587,8 @@ void KQuickHelpWindow::paint(QPainter *p, int &w, int &h) {
 
       case TOK_ENDLINK:
 	txtColor = savedColor;
-	txtFlags &= ~savedFlags;
+	if(!wasUnderline)
+	  txtFlags &= ~F_UNDERLINE;
 	link = "";
 	break;
 
