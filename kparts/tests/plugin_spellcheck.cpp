@@ -19,10 +19,10 @@ PluginSpellCheck::~PluginSpellCheck()
 
 void PluginSpellCheck::slotSpellCheck()
 {
- qDebug("Plugin parent : %s (%s)", parent()->name(), parent()->className());
+    qDebug("Plugin parent : %s (%s)", parent()->name(), parent()->className());
     // The parent is assumed to be a NotepadPart
     if ( !parent()->inherits("NotepadPart") )
-       KMessageBox::error(0L,"You just called the spell-check action on a wrong part");
+       KMessageBox::error(0L,"You just called the spell-check action on a wrong part (not NotepadPart)");
     else
     {
          NotepadPart * part = (NotepadPart *) parent();
@@ -48,11 +48,6 @@ extern "C"
   {
     return new KPluginFactory;
   }
-
-  /*Plugin *init_spellcheck(QObject *parent, const char *name)
-  {
-    return new PluginSpellCheck(parent, name);
-  }*/
 
 }
 
