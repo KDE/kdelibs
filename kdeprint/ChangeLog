@@ -90,3 +90,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * CUPS plugin: removed the "file" backend as it doesn't seem to
     be available since a couple of releases, and added a "Other"
     page to the wizard for any third-party backend (like pdf).
+
+18/10/2001 Michael Goffioul <goffioul@imec.be>
+  * kdeprintfax: don't hardcode program path, use the $PATH variable
+    first to find the program. Default to /usr/bin if not found.
