@@ -72,7 +72,10 @@ RenderListItem::RenderListItem(RenderStyle *style)
     : RenderFlow(style)
 {
     predefVal = -1;
-    val = -1;
+    
+    RenderStyle *newStyle = new RenderStyle(style);
+    m_marker = new RenderListMarker(newStyle);
+    addChild(m_marker);
 }
 
 RenderListItem::~RenderListItem()
@@ -82,9 +85,9 @@ RenderListItem::~RenderListItem()
 void RenderListItem::calcListValue()
 {
     if(predefVal != -1)
-	val = predefVal;
+	m_marker->val = predefVal;
     else if(!m_previous)
-	val = 1;
+	m_marker->val = 1;
     else
     {
 	RenderObject *prev = m_previous;
@@ -93,10 +96,10 @@ void RenderListItem::calcListValue()
 	if(prev)
 	{
 	    RenderListItem *item = static_cast<RenderListItem *>(prev);
-	    val = item->value() + 1;
+	    m_marker->val = item->value() + 1;
 	}
 	else
-	    val = 1;
+	    m_marker->val = 1;
     }
 }
 
@@ -116,39 +119,89 @@ void RenderListItem::print(QPainter *p, int _x, int _y, int _w, int _h,
     RenderFlow::print(p, _x, _y, _w, _h, _tx, _ty);
 }
 
-void RenderListItem::printIcon(QPainter *p, int _tx, int _ty)
+void RenderListItem::printObject(QPainter *p, int _x, int _y,
+				    int _w, int _h, int _tx, int _ty)
+{
+    // ### this should scale with the font size in the body... possible?
+    //m_marker->printIcon(p, _tx, _ty);
+    RenderFlow::printObject(p, _x, _y, _w, _h, _tx, _ty);
+}
+
+RenderListMarker::RenderListMarker( RenderStyle *style )
+    : RenderBox(style)
+{
+    val = -1;
+}
+
+void RenderListMarker::print(QPainter *p, int _x, int _y, int _w, int _h,
+			     int _tx, int _ty)
+{
+    printObject(p, _x, _y, _w, _h, _tx, _ty);
+}
+
+void RenderListMarker::printObject(QPainter *p, int _x, int _y,
+				    int _w, int _h, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    printf("%s(LI)::printObject(%d, %d)\n", nodeName().string().ascii(), _tx, _ty);
+    printf("%s(ListMarker)::printObject(%d, %d)\n", nodeName().string().ascii(), _tx, _ty);
 #endif
-
-    // ### this should scale with the font size in the body... possible?
-    int yp = _ty + 4;
-    int xp = _tx - 13;
+    
+    
 
     QColor color( style()->color() );
     p->setPen( QPen( color ) );
-
-    QString item;
 
     switch(m_style->listStyleType())
     {
     case DISC:
 	p->setBrush( QBrush( color ) );
-	p->drawEllipse( xp, yp, 7, 7 );
-	break;
+	p->drawEllipse( _tx - 13, _ty + 4, 7, 7 );
+	return;
     case CIRCLE:
 	p->setBrush( QBrush( color ) );
-	p->drawArc( xp, yp, 7, 7, 0, 16*360 );
-	break;
+	p->drawArc( _tx -  13, _ty + 4, 7, 7, 0, 16*360 );
+	return;
     case SQUARE:
     {
+	int xp = _tx+13;
+	int yp = _ty -4;
 	p->setBrush( QBrush( color ) );
 	QCOORD points[] = { xp,yp, xp+7,yp, xp+7,yp+7, xp,yp+7, xp,yp };
 	QPointArray a( 5, points );
 	p->drawPolyline( a );
-	break;
+	return;
     }
+    default:
+	if(item != QString::null)
+	    p->drawText(_tx-5, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
+    }
+}
+
+void RenderListMarker::layout(bool)
+{	
+    calcMinMaxWidth();
+    m_height = QFontMetrics(m_style->font()).height();
+}
+
+	       
+	       
+void RenderListMarker::calcMinMaxWidth()
+{
+    m_width = 0;
+
+    if(m_style->listStylePosition() != INSIDE)
+	goto end;
+    
+    switch(m_style->listStyleType())
+    {
+    case DISC:
+    case CIRCLE:
+    case SQUARE:
+	if(m_style->listStylePosition() == INSIDE)
+	    m_width = 10;
+	else 
+	    m_width = 0;
+	goto end;
     case HEBREW:
     case ARMENIAN:
     case GEORGIAN:
@@ -186,14 +239,11 @@ void RenderListItem::printIcon(QPainter *p, int _tx, int _ty)
     case LNONE:
 	break;
     }
-    if(item != QString::null)
-    p->drawText(_tx-5, _ty, 0, 0, Qt::AlignRight|Qt::DontClip, item);
-}
-
-void RenderListItem::printObject(QPainter *p, int _x, int _y,
-				    int _w, int _h, int _tx, int _ty)
-{
-    printIcon(p, _tx, _ty);
-    RenderFlow::printObject(p, _x, _y, _w, _h, _tx, _ty);
-}
-
+    {
+	QFontMetrics fm(m_style->font());
+	m_width = fm.width(item);
+    }
+ end:
+    m_minWidth = m_width;
+    m_maxWidth = m_width;
+}    

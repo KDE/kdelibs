@@ -30,7 +30,31 @@
 
 namespace khtml
 {
+    /* used to render the lists marker.
+       This class always has to be a direct child of a RenderListItem!
+     */
+    class RenderListMarker : public RenderBox
+    {
+    public:
+	RenderListMarker( RenderStyle *style );
+	
+	virtual bool isInline() const { return true; }
+	// so the marker gets to layout itself. Only needed for
+	// list-style-position: inside
+	virtual bool isReplaced() const { return true; }
 
+	virtual void print(QPainter *p, int x, int y, int w, int h,
+			   int xoff, int yoff);
+	virtual void printObject(QPainter *p, int x, int y, int w, int h,
+				 int xoff, int yoff);
+	virtual void layout( bool );
+	virtual void calcMinMaxWidth();
+	
+	long int val;
+	QString item;
+    };
+    
+    
 class RenderListItem : public RenderFlow
 {
 public:
@@ -42,7 +66,7 @@ public:
     virtual bool isListItem() const { return true; }
     virtual bool isInline() const { return false; }
 
-    long value() const { return val; }
+    long value() const { return m_marker->val; }
     void setValue( long v ) { predefVal = v; }
     void calcListValue();
 
@@ -50,13 +74,12 @@ public:
 		       int xoff, int yoff);
     virtual void printObject(QPainter *p, int x, int y, int w, int h,
 		       int xoff, int yoff);
-    void printIcon(QPainter *p, int _tx, int _ty);
 
     virtual void layout( bool deep = false );
 
 protected:
     long int predefVal;
-    long int val;
+    RenderListMarker *m_marker;
 };
 
 }; //namespace
