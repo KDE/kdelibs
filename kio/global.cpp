@@ -233,7 +233,7 @@ QString Job::errorString()
       result = i18n( "Could not accept\n%1" ).arg( m_errorText );
       break;
     case  KIO::ERR_COULD_NOT_LOGIN:
-      result = i18n( "Could not login into %1" ).arg ( m_errorText );
+      result = m_errorText;
       break;
     case  KIO::ERR_COULD_NOT_STAT:
       result = i18n( "Could not access\n%1" ).arg( m_errorText );

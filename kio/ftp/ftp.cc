@@ -397,7 +397,7 @@ bool Ftp::ftpLogin( const QString & user )
       kdDebug(7102) << "Sending pass command" << endl;
       if ( !ftpSendCmd( tempbuf, '2' ) ) {
         kdDebug(7102) << "Wrong password" << endl;
-        error( ERR_COULD_NOT_LOGIN, m_host );
+        error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.").arg(m_host));
         return false;
       }
     }
@@ -430,7 +430,7 @@ bool Ftp::ftpLogin( const QString & user )
   if ( !ftpSendCmd( "pwd", '2' ) )
   {
     kdDebug(7102) << "Couldn't issue pwd command" << endl;
-    error( ERR_COULD_NOT_LOGIN, m_host ); // or anything better ?
+    error( ERR_COULD_NOT_LOGIN, i18n("Could not login to %1.").arg(m_host) ); // or anything better ?
     return false;
   }
 
