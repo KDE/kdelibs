@@ -553,14 +553,14 @@ HTTPProtocol::http_openConnection()
       if (::connect(m_sock, (struct sockaddr*)(&m_proxySockaddr), sizeof(m_proxySockaddr))) {
         if ((errno != EINPROGRESS) && (errno != EWOULDBLOCK)) {
           // Error
-          error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %1").arg(proxy_host).arg(proxy_port) );
+          error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
           kdDebug(7103) << "Could not connect to PROXY server!!" << endl;
           return false;
         }
         // Wait for connection
         if (!waitForConnect(m_sock, m_proxyConnTimeout))
         {
-          error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %1").arg(proxy_host).arg(proxy_port) );
+          error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
           kdDebug(7103) << "Timed out waiting to connect to PROXY server!!" << endl;
           return false;
         }
@@ -584,7 +584,7 @@ HTTPProtocol::http_openConnection()
       if (!sendOk) {
         // FIXME: do we have to close() the connection here?
         //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %1").arg(proxy_host).arg(proxy_port) );
+        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
         m_bUseSSL = useSSLSaved;
         return false;
       }
@@ -594,7 +594,7 @@ HTTPProtocol::http_openConnection()
         //        here if we can.
         // FIXME: do we have to close() the connection here?
         //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %1").arg(proxy_host).arg(proxy_port) );
+        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
         m_bUseSSL = useSSLSaved;
         return false;
       }
@@ -608,7 +608,7 @@ HTTPProtocol::http_openConnection()
         //        here if we can.
         // FIXME: do we have to close() the connection here?
         //        also the error code should be changed
-        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %1").arg(proxy_host).arg(proxy_port) );
+        error(ERR_COULD_NOT_CONNECT, i18n("proxy %1, port %2").arg(proxy_host).arg(proxy_port) );
         m_bUseSSL = useSSLSaved;
         return false;
       }
