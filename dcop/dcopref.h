@@ -31,7 +31,9 @@ class QDataStream;
 class DCOPObject;
 class DCOPClient;
 
-
+/**
+ * @since 3.1
+ */
 class DCOPReply
 {
 public:
@@ -70,6 +72,9 @@ private:
     bool typeCheck( const char* t );
 };
 
+/**
+ * @since 3.1
+ */
 class DCOPArg  {
 public:
     template <class T> DCOPArg( const T& t, const char* tname_arg )
@@ -253,6 +258,7 @@ public:
 
     /**
      * Object ID of the referenced object.
+     * @since 3.1
      */
     QCString obj() const;
 
@@ -289,19 +295,27 @@ public:
     /**
      * Returns the dcop client the reference operates on. If no client
      * has been set, this is the DCOPClient::mainClient().
+     * @since 3.1
      */
     DCOPClient* dcopClient() const;
 
     /**
      * Sets a specific dcop client for this reference. Otherwise
      * DCOPClient::mainClient() is used.
+     * @since 3.1
      */
     void setDCOPClient( DCOPClient* );
 
+    /**
+     * @since 3.1
+     */
     DCOPReply call( const QCString& fun ) {
 	QByteArray data;
 	return callInternal( fun, "()", data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1>
     DCOPReply call( const QCString& fun, const T1& t1 ) {
 	QCString args;
@@ -312,6 +326,9 @@ public:
 	ds << t1;
 	return callInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1, class T2>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -325,6 +342,9 @@ public:
 	ds << t1 << t2;
 	return callInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1, class T2, class T3>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -340,6 +360,9 @@ public:
 	ds << t1 << t2 << t3;
 	return callInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -357,6 +380,9 @@ public:
 	ds << t1 << t2 << t3 << t4;
 	return callInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4,class T5>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -376,6 +402,9 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5;
 	return callInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -397,6 +426,9 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return callInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -420,6 +452,9 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return callInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
     DCOPReply call( const QCString& fun,
 		    const T1& t1,
@@ -446,11 +481,17 @@ public:
 	return callInternal( fun, args, data );
     }
 
-
+    /**
+     * @since 3.1
+     */
     bool send( const QCString& fun ) {
 	QByteArray data;
 	return sendInternal( fun, "()", data );
     }
+
+    /**
+     * @since 3.1
+     */
     template <class T1>
     bool send( const QCString& fun, const T1& t1 ) {
 	QCString args;
@@ -461,6 +502,9 @@ public:
 	ds << t1;
 	return sendInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1, class T2>
     bool send( const QCString& fun,
 		    const T1& t1,
@@ -474,6 +518,9 @@ public:
 	ds << t1 << t2;
 	return sendInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1, class T2, class T3>
     bool send( const QCString& fun,
 		    const T1& t1,
@@ -489,6 +536,9 @@ public:
 	ds << t1 << t2 << t3;
 	return sendInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4>
     bool send( const QCString& fun,
 		    const T1& t1,
@@ -506,6 +556,9 @@ public:
 	ds << t1 << t2 << t3 << t4;
 	return sendInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4,class T5>
     bool send( const QCString& fun,
 		    const T1& t1,
@@ -525,6 +578,9 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5;
 	return sendInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6>
     bool send( const QCString& fun,
 		    const T1& t1,
@@ -546,6 +602,9 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5 << t6;
 	return sendInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7>
     bool send( const QCString& fun,
 		    const T1& t1,
@@ -569,6 +628,9 @@ public:
 	ds << t1 << t2 << t3 << t4 << t5 << t6 << t7;
 	return sendInternal( fun, args, data );
     }
+    /**
+     * @since 3.1
+     */
     template <class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
     bool send( const QCString& fun,
 		    const T1& t1,

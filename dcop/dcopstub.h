@@ -96,11 +96,19 @@ protected:
     */
     DCOPClient* dcopClient();
 
-    // Never use. Used only for default ctors of inherited stubs,
-    // because of the way ctors of virtual base classes work.
-    // Otherwise dcopidl2cpp would have to call ctors of all, even
-    // indirect, bases.
+    /**
+     * @internal
+     * Never use. Used only for default ctors of inherited stubs,
+     * because of the way ctors of virtual base classes work.
+     * Otherwise dcopidl2cpp would have to call ctors of all, even
+     * indirect, bases.
+     * @since 3.1
+     */
     enum never_use_t { never_use };
+    /**
+     * @internal
+     * @since 3.1
+     */
     DCOPStub( never_use_t ) { abort(); }
     
 private:
