@@ -198,10 +198,6 @@ protected:
     int  addColInfo(int _startCol, int _colSpan, int _minSize,
                     int _prefSize, ColType _colType);
     void addRowInfo(int _row, int _colInfoIndex);
-    void optimiseCellWidth();
-    void scaleColumns(unsigned int c_start, unsigned int c_end, int tooAdd);
-    int scaleSelectedColumns(int c_start, int c_end, int tooAdd, 
-			     bool *selected);
     void calcRowHeights();
     void addRows( int );
     void addColumns( int );
@@ -269,8 +265,6 @@ protected:
 
     QArray<int> columnPos;
     QArray<int> columnPrefPos;
-    QArray<int> columnOpt;
-    QArray<int> colSpan;
     QArray<int> rowHeights;
     QArray<ColType> colType;
 
