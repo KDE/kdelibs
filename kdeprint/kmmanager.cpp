@@ -362,6 +362,7 @@ bool KMManager::removeSpecialPrinter(KMPrinter *p)
 		m_printers.removeRef(p);
 		return m_specialmgr->savePrinters();
 	}
+	return false;
 }
 
 /* format of output:

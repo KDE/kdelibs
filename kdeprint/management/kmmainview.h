@@ -37,7 +37,7 @@ class KToolBar;
 class KAction;
 class PluginComboBox;
 
-class KMMainView : public QWidget, KPReloadObject
+class KMMainView : public QWidget, public KPReloadObject
 {
 	Q_OBJECT
 public:
