@@ -20,6 +20,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  1999/09/12 13:35:04  espensa
+ * I have had problems getting the action button to be properly underlined.
+ * The changes should fix this once and for all. There were errors in the
+ * "box->setButtonText()" (index errors)
+ *
+ * One minor typo removed in kmessagebox.h as well.
+ *
  * Revision 1.5  1999/08/24 13:16:17  waba
  * WABA: Adding enums, fixing default for warningYesNo
  *
@@ -57,7 +64,7 @@ class QWidget;
 class KMessageBox
 {
 public:
- enum { Ok = 1, Cancel = 2, Yes = 3, No = 4 };
+ enum { Ok = 1, Cancel = 2, Yes = 3, No = 4, Continue = 5 };
  /**
   * Displays a simple "question" dialog. 
   *
@@ -75,7 +82,7 @@ public:
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
   * 
-  * To be used for conmfirmation on questions like "Shall I do xyz?"
+  * To be used for questions like "Do you have a printer?"
   *
   * The default button is "Yes". Pressing "Esc" selects "No".
   */
@@ -103,8 +110,8 @@ public:
   * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
   *
-  * To be used for questions "Are you sure you want to do this?"
-  * The text should explain the implication of choosing 'Yes'.
+  * To be used for questions "Shall I update your configuration?"
+  * The text should explain the implication of both options.
   *
   * The default button is "No". Pressing "Esc" selects "No".
   */
@@ -113,6 +120,32 @@ public:
                          const QString &caption = QString::null,
                          const QString &buttonYes = QString::null,  
                          const QString &buttonNo = QString::null);
+
+ /**
+  * Displays a "warning" dialog. 
+  *
+  * @param parent  If parent is 0, then the message box becomes an 
+  *                application-global modal dialog box. If parent is a
+  *                widget, the message box becomes modal relative to parent.
+  * @param text    Message string. May contain newlines.
+  * @param caption Message box title. The application name is added to
+  *                the title. The default title is i18n("Warning").
+  * @param buttonContinue The text for the first button. 
+  *
+  * The second button always has the text "Cancel".
+  *
+  * @return  'Continue' is returned if the Continue-button is pressed. 
+  *          'Cancel' is returned if the Cancel-button is pressed.
+  *
+  * To be used for questions like "You are about to Print. Are you sure?"
+  * the continueButton should then be labeled "Print".
+  *
+  * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
+  */
+ static int warningContinueCancel(QWidget *parent, 
+                         const QString &text,
+                         const QString &caption,
+                         const QString &buttonContinue);
 
  /**
   * Displays a Yes/No/Cancel "warning" dialog. 
@@ -186,7 +219,7 @@ public:
   * or your user did something stupid.
   *
   * To be used for small problems like 
-  * "Sorry, I can't find the file you specified.."
+  * "Sorry, I can't find the file you specified."
   *
   * The default button is "&OK". Pressing "Esc" selects the OK-button.
   *
@@ -206,6 +239,10 @@ public:
   * @param text    Message string. May contain newlines.
   * @param caption Message box title. The application name is added to
   *                the title. The default title is i18n("Information").
+  * @param dontShowAgainName If provided, a checkbox is added with which
+  *                further notifications can be turned off.
+  *                The string is used to lookup and store the setting
+  *                in the applications config file.
   *
   *
   * Your program wants to tell the user something.
@@ -219,8 +256,14 @@ public:
    
   static void information(QWidget *parent, 
                           const QString &text, 
-                          const QString &caption = QString::null);
+                          const QString &caption = QString::null,
+                          const QString &dontShowAgainName = QString::null);
 
+  /**
+   * Enables all messages which have been turned off with the
+   * "dontShowAgainName" feature of the information dialog.
+   */
+  static void enableAllMessages();
   
   /**
    * Displays an "About" dialog. 

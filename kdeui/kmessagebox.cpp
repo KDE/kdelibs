@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1999/10/09 00:08:29  kalle
+ * The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
+ *
  * Revision 1.7  1999/09/23 18:27:45  espensa
  * Changed to the new kapp->makeStdCaption() for creating captions.
  * Result: More maintainable code and libkdeui size was reduced by
@@ -53,9 +56,15 @@
 
 #include "kmessagebox.h"
 #include <qmessagebox.h>
+#include <qhbox.h>
+#include <qvbox.h>
+#include <qlabel.h>
+#include <qcheckbox.h>
 
 #include "kapp.h"
+#include "kconfig.h"
 #include "klocale.h"
+#include "kdialogbase.h"
 
  /** 
   * Easy MessageBox Dialog. 
@@ -72,32 +81,39 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &buttonYes, 
                            const QString &buttonNo)
 {
-    QString _buttonYes = buttonYes;
-    if (_buttonYes.isEmpty())
-        _buttonYes = i18n("&Yes");
-    QString _buttonNo = buttonNo;
-    if (_buttonNo.isEmpty())
-        _buttonNo = i18n("&No");
+    KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
+                       KDialogBase::Yes | KDialogBase::No,
+                       KDialogBase::Yes, KDialogBase::Yes,
+                       parent, "questionYesNo", true, true,
+                       buttonYes, buttonNo);
 
-    QMessageBox *box = new QMessageBox(
-      kapp->makeStdCaption(caption.isEmpty() ? i18n("Question") : caption),
-      text,
-      QMessageBox::Information,
-      QMessageBox::Yes | QMessageBox::Default,
-      QMessageBox::No | QMessageBox::Escape,	     
-      0, parent, "information" );
+    QHBox *contents = new QHBox(&dialog);
+    contents->setSpacing(KDialog::spacingHint()*2);
+    contents->setMargin(KDialog::marginHint()*2);
 
-    box->setButtonText(QMessageBox::Yes, _buttonYes);
-    box->setButtonText(QMessageBox::No, _buttonNo);
-    box->adjustSize();
-    box->setFixedSize(box->size());
+    QLabel *label1 = new QLabel( contents);
+    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
 
-    int result = box->exec();
-    delete box;
-    if (result == QMessageBox::Yes)
-	return Yes;
-    else
-        return No;
+    new QLabel(text, contents);
+
+    dialog.setMainWidget(contents);
+    dialog.enableButtonSeparator(false);
+     
+    int result = dialog.exec();
+    
+    switch( result )
+    {
+      case KDialogBase::Yes:
+         return Yes;
+
+      case KDialogBase::No:
+         return No;
+      
+      default: // Huh?
+         break;
+    }
+
+    return Yes; // Default
 }
 
 int 
@@ -106,33 +122,81 @@ KMessageBox::warningYesNo(QWidget *parent, const QString &text,
                           const QString &buttonYes,  
                           const QString &buttonNo)
 {
-    QString _buttonYes = buttonYes;
-    if (_buttonYes.isEmpty())
-        _buttonYes = i18n("&Yes");
-    QString _buttonNo = buttonNo;
-    if (_buttonNo.isEmpty())
-        _buttonNo = i18n("&No");
+    KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
+                       KDialogBase::Yes | KDialogBase::No,
+                       KDialogBase::No, KDialogBase::No,
+                       parent, "warningYesNo", true, true,
+                       buttonYes, buttonNo);
 
-    QMessageBox *box = new QMessageBox( 
-      kapp->makeStdCaption(caption.isEmpty() ? i18n("Warning") : caption),
-      text,
-      QMessageBox::Warning,
-      QMessageBox::Yes,
-      QMessageBox::No | QMessageBox::Escape | QMessageBox::Default,
-      0, parent, "warning" );
+    QHBox *contents = new QHBox(&dialog);
+    contents->setSpacing(KDialog::spacingHint()*2);
+    contents->setMargin(KDialog::marginHint()*2);
 
-    box->setButtonText(QMessageBox::Yes, _buttonYes);
-    box->setButtonText(QMessageBox::No, _buttonNo);
-    box->adjustSize();
-    box->setFixedSize(box->size());
+    QLabel *label1 = new QLabel( contents);
+    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
 
-    int result = box->exec();
-    delete box;
-    if (result == QMessageBox::Yes)
-	return Yes;
-    else
-        return No;
+    new QLabel(text, contents);
+
+    dialog.setMainWidget(contents);
+    dialog.enableButtonSeparator(false);
+ 
+    int result = dialog.exec();
+
+    switch( result )
+    {
+      case KDialogBase::Yes:
+         return Yes;
+
+      case KDialogBase::No:
+         return No;
+      
+      default: // Huh?
+         break;
+    }
+
+    return No; // Default
 }
+
+int 
+KMessageBox::warningContinueCancel(QWidget *parent, const QString &text,
+                          const QString &caption,
+                          const QString &buttonContinue)
+{
+    KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
+                       KDialogBase::Yes | KDialogBase::No,
+                       KDialogBase::Yes, KDialogBase::No,
+                       parent, "warningYesNo", true, true,
+                       buttonContinue, i18n("&Cancel"));
+
+    QHBox *contents = new QHBox(&dialog);
+    contents->setSpacing(KDialog::spacingHint()*2);
+    contents->setMargin(KDialog::marginHint()*2);
+
+    QLabel *label1 = new QLabel( contents);
+    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
+
+    new QLabel(text, contents);
+
+    dialog.setMainWidget(contents);
+    dialog.enableButtonSeparator(false);
+ 
+    int result = dialog.exec();
+
+    switch( result )
+    {
+      case KDialogBase::Yes:
+         return Continue;
+
+      case KDialogBase::No:
+         return Cancel;
+      
+      default: // Huh?
+         break;
+    }
+
+    return Cancel; // Default
+}
+
 
 int 
 KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
@@ -140,96 +204,178 @@ KMessageBox::warningYesNoCancel(QWidget *parent, const QString &text,
                                 const QString &buttonYes,  
                                 const QString &buttonNo)
 {
-    QString _buttonYes = buttonYes;
-    if (_buttonYes.isEmpty())
-        _buttonYes = i18n("&Yes");
-    QString _buttonNo = buttonNo;
-    if (_buttonNo.isEmpty())
-        _buttonNo = i18n("&No");
+    KDialogBase dialog(caption.isEmpty() ? i18n("Warning") : caption,
+                       KDialogBase::Yes | KDialogBase::No | KDialogBase::Cancel,
+                       KDialogBase::Yes, KDialogBase::Cancel,
+                       parent, "warningYesNoCancel", true, true,
+                       buttonYes, buttonNo);
 
-    QMessageBox *box = new QMessageBox( 
-      kapp->makeStdCaption(caption.isEmpty() ? i18n("Warning") : caption),
-      text,
-      QMessageBox::Warning,
-      QMessageBox::Yes | QMessageBox::Default,
-      QMessageBox::No,
-      QMessageBox::Cancel | QMessageBox::Escape,	     
-      parent, "warning" );
+    QHBox *contents = new QHBox(&dialog);
+    contents->setSpacing(KDialog::spacingHint()*2);
+    contents->setMargin(KDialog::marginHint()*2);
 
-    box->setButtonText(QMessageBox::Yes, _buttonYes);
-    box->setButtonText(QMessageBox::No, _buttonNo);
-    box->setButtonText(QMessageBox::Cancel, i18n("&Cancel")); 
-    box->adjustSize();
-    box->setFixedSize(box->size());
+    QLabel *label1 = new QLabel( contents);
+    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
 
-    int result = box->exec();
-    delete box;
-    if (result == QMessageBox::Yes)
-	return Yes;
-    else if (result == QMessageBox::No)
-        return No;
-    else 
-        return Cancel;
+    new QLabel(text, contents);
+
+    dialog.setMainWidget(contents);
+    dialog.enableButtonSeparator(false);
+ 
+    int result = dialog.exec();
+
+    switch( result )
+    {
+      case KDialogBase::Yes:
+         return Yes;
+
+      case KDialogBase::No:
+         return No;
+      
+      case KDialogBase::Cancel:
+         return Cancel;
+
+      default: // Huh?
+         break;
+    }
+
+    return Cancel; // Default
 }
 
 void
 KMessageBox::error(QWidget *parent,  const QString &text,
                    const QString &caption)
 {
-    QMessageBox *box = new QMessageBox(
-      kapp->makeStdCaption(caption.isEmpty() ? i18n("Error") : caption),
-      text,
-      QMessageBox::Critical,
-      QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-      0, 0, parent, "critical" );
- 
-    box->setButtonText(QMessageBox::Ok, i18n("&OK"));
-    box->adjustSize();
-    box->setFixedSize(box->size());
+    KDialogBase dialog(caption.isEmpty() ? i18n("Error") : caption,
+                       KDialogBase::Yes,
+                       KDialogBase::Yes, KDialogBase::Yes,
+                       parent, "error", true, true,
+                       i18n("&OK"));
 
-    box->exec();
-    delete box;
-    return;
+    QHBox *contents = new QHBox(&dialog);
+    contents->setSpacing(KDialog::spacingHint()*2);
+    contents->setMargin(KDialog::marginHint()*2);
+
+    QLabel *label1 = new QLabel( contents);
+    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Critical, kapp->style().guiStyle()));
+
+    new QLabel(text, contents);
+
+    dialog.setMainWidget(contents);
+    dialog.enableButtonSeparator(false);
+ 
+    dialog.exec();
 }
 
 void
 KMessageBox::sorry(QWidget *parent, const QString &text,
                    const QString &caption)
 {
-    QMessageBox *box = new QMessageBox( 
-      kapp->makeStdCaption(caption.isEmpty() ? i18n("Sorry") : caption),
-      text,
-      QMessageBox::Warning,
-      QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-      0, 0, parent, "warning" );
- 
-    box->setButtonText(QMessageBox::Ok, i18n("&OK"));
-    box->adjustSize();
-    box->setFixedSize(box->size());
+    KDialogBase dialog(caption.isEmpty() ? i18n("Sorry") : caption,
+                       KDialogBase::Yes,
+                       KDialogBase::Yes, KDialogBase::Yes,
+                       parent, "sorry", true, true,
+                       i18n("&OK"));
 
-    box->exec();
-    delete box;
-    return;
+    QHBox *contents = new QHBox(&dialog);
+    contents->setSpacing(KDialog::spacingHint()*2);
+    contents->setMargin(KDialog::marginHint()*2);
+
+    QLabel *label1 = new QLabel( contents);
+    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Warning, kapp->style().guiStyle()));
+
+    new QLabel(text, contents);
+
+    dialog.setMainWidget(contents);
+    dialog.enableButtonSeparator(false);
+ 
+    dialog.exec();
 }
 
 void
 KMessageBox::information(QWidget *parent,const QString &text,
-                   const QString &caption)
+                   const QString &caption, const QString &dontShowAgainName)
 {
-    QMessageBox *box = new QMessageBox( 
-      kapp->makeStdCaption(caption.isEmpty() ? i18n("Information") : caption),
-      text,
-      QMessageBox::Information,
-      QMessageBox::Ok | QMessageBox::Default | QMessageBox::Escape,
-      0, 0, parent, "information" );
+    KConfig *config = 0;
+    bool showMsg = true;
+    QString originalConfigGroup;
+    QCheckBox *checkbox = 0;
+    
+    if (!dontShowAgainName.isEmpty())
+    {
+       config = kapp->config();
+       originalConfigGroup = config->group();
+       config->setGroup("Notification Messages");
+       showMsg = config->readBoolEntry( dontShowAgainName, true);
+       if (!showMsg)
+       {
+          config->setGroup(originalConfigGroup);
+          return;
+       }
+    }
 
-    box->setButtonText(QMessageBox::Ok, i18n("&OK"));
-    box->adjustSize();
-    box->setFixedSize(box->size());
+    KDialogBase dialog(caption.isEmpty() ? i18n("Information") : caption,
+                       KDialogBase::Yes,
+                       KDialogBase::Yes, KDialogBase::Yes,
+                       parent, "information", true, true,
+                       i18n("&OK"));
 
-    box->exec();
-    delete box;
+    QVBox *contents = new QVBox(&dialog);
+    contents->setSpacing(KDialog::spacingHint()*2);
+    contents->setMargin(KDialog::marginHint()*2);
+
+    QHBox *info = new QHBox(contents);
+    info->setSpacing(KDialog::spacingHint()*2);
+    info->setMargin(0);
+
+    QLabel *label1 = new QLabel( info);
+    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
+
+    new QLabel(text, info);
+
+    if (!dontShowAgainName.isEmpty())
+    {
+       checkbox = new QCheckBox(i18n("Do not show this message again"), contents);
+    }
+
+    dialog.setMainWidget(contents);
+    dialog.enableButtonSeparator(false);
+ 
+    dialog.exec();
+
+    if (!dontShowAgainName.isEmpty())
+    {
+       showMsg = !checkbox->isChecked(); 
+       if (!showMsg)
+       {
+          config->writeEntry( dontShowAgainName, showMsg);
+       }
+       config->setGroup(originalConfigGroup);
+       config->sync();
+    }
+
     return;
+}
+
+void
+KMessageBox::enableAllMessages()
+{
+   KConfig *config = kapp->config();
+   QString originalConfigGroup = config->group();
+   if (!config->hasGroup("Notification Messages"))
+      return;
+
+   config->setGroup("Notification Messages");
+
+   typedef QMap<QString, QString> configMap;
+   
+   configMap map = config->entryMap("Notification Messages");
+
+   configMap::Iterator it;
+   for (it = map.begin(); it != map.end(); ++it)
+      config->writeEntry( it.key(), true);
+   config->setGroup(originalConfigGroup);
+   config->sync();
 }
 
 void
