@@ -281,10 +281,15 @@ void KMenuBar::selectionTimeout()
         int screen = xineramaConfig.readNumEntry("MenubarScreen",
             QApplication::desktop()->screenNumber(QPoint(0,0)) );
         QRect area = QApplication::desktop()->screenGeometry(screen);
-	move(area.left(), area.top()-frameWidth()); 
-        setFixedSize(area.width(), heightForWidth( area.width() ) );
+#if QT_VERSION < 0x030200
+        int margin = frameWidth() + 2;
+#else  // hopefully I'll manage to persuade TT on Fitts' Law for QMenuBar for Qt-3.2
+        int margin = 0;
+#endif
+	move(area.left() - margin, area.top() - margin); 
+        setFixedSize(area.width() + 2* margin , heightForWidth( area.width() + 2 * margin ) );
 #ifndef Q_WS_QWS //FIXME
-        int strut_height = height()-frameWidth();
+        int strut_height = height() - margin;
         if( strut_height < 0 )
             strut_height = 0;
         KWin::setStrut( winId(), 0, 0, strut_height, 0 );
