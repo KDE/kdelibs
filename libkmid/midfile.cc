@@ -43,7 +43,6 @@ int decompressFile(char *gzname,char *tmpname)
 {
 char *cmd=new char[20+strlen(gzname)];
 sprintf(cmd, "gzip -dc \"%s\"",gzname);
-printf("(%s)\n",cmd);
 FILE *infile = popen( cmd, "r");
 if (infile==NULL)
 	{
@@ -53,6 +52,7 @@ char *tmp=tempnam(NULL,"KMid");
 if (tmp==NULL) 
 	{
 	pclose(infile);
+	delete cmd;
 	return 1;
 	};
 strcpy(tmpname,tmp);
@@ -60,6 +60,7 @@ FILE *outfile= fopen(tmpname,"wb");
 if (outfile==NULL)
 	{
 	pclose(infile);
+	delete cmd;
 	return 1;
 	};
 int n=getc(infile);
@@ -68,6 +69,7 @@ if (n==EOF)
 	pclose(infile);
 	fclose(outfile);
 	unlink(tmpname);
+	delete cmd;
 	return 1;
 	};
 fputc(n,outfile);
@@ -85,6 +87,7 @@ pclose(infile);
 // Is it right for pclose to always fail ?
 
 fclose(outfile);
+delete cmd;
 return 0;
 };
 

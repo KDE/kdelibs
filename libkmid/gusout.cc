@@ -519,8 +519,9 @@ for (i=0;i<nWaves;i++)
 
     offset = offset + sample.len;
 
-    };
-
+     };
+patchloaded[pgm]=1;
+ 
 fclose(fh);
 free(patch); // Shouldn't this 'free' be within the 'for' loop ?
 delete s;
@@ -532,6 +533,9 @@ return 0;
 
 void gusOut::setPatchesToUse(int *patchesused)
 {
+int k;
+for (k=0;k<256;k++) patchloaded[k]=0;
+
 int patchesordered[256]; //This holds the pgm used ordered by a method which
                // put first the patches more oftenly used, and then the least
                // In example, if a song only uses a piano and a splash cymbal,
@@ -540,7 +544,6 @@ getPatchesLoadingOrder(patchesused,patchesordered);
 
 // If above line doesn't work, perhaps you could try this ? :
 // for (int j=0;j<256;j++) patchesordered[j]=patchesused[j];
-int k;
 printf("Patches used : \n");
 for (k=0;k<256;k++)
     {
@@ -560,18 +563,41 @@ while (patchesordered[i]!=-1)
     i++;
     };
 };
+int compare_decreasing(const void *a,const void *b)
+{
+struct instr_gm
+   {
+   int used;
+   int pgm; 
+   };
+instr_gm *ai=(instr_gm *)a;
+instr_gm *bi=(instr_gm *)b;
+return ai->used<bi->used;
+};
 
 void gusOut::getPatchesLoadingOrder(int *patchesused,int *patchesordered)
 {
-int tempmelody[128];
-int tempdrums[128];
+struct instr_gm
+   {
+   int used;
+   int pgm; 
+   };
+
+instr_gm tempmelody[128];
+instr_gm tempdrums[128];
 int i,j;
 for (i=0,j=128;i<128;i++,j++) 
    {
-   tempmelody[i]=patchesused[i];
-   tempdrums[i]=patchesused[j];
+   tempmelody[i].used=patchesused[i];
+   tempmelody[i].pgm=i;
+   tempdrums[i].used=patchesused[j];
+   tempdrums[i].pgm=j;
    };
 /* SORT */ // Decreasing order (first most used patch, then less used patch)
+qsort(&tempmelody[0],128,sizeof(instr_gm),compare_decreasing);
+qsort(&tempdrums[0],128,sizeof(instr_gm),compare_decreasing);
+printf("sorted\n");
+
 /* Once they are sorted, the result is put on patchesordered in the following
   way : If tempmelody is : M0 M1 M2 M3 ... M127 and tempdrums is :
   D0 D1 D2 D3 ... D127, the result is :
@@ -579,43 +605,82 @@ for (i=0,j=128;i<128;i++,j++)
      P0 P1 P2 P3 P4 P5 P6 P7 P8 P9 P10 ...
 */
 
+#ifdef GUSOUTDEBUG
+for (int k=0;k<128;k++)
+    {
+    printf("%d - %d\n",tempmelody[k].used,tempmelody[k].pgm);
+    };
+for (int k=0;k<128;k++)
+    {
+    printf("%d : %d\n",tempdrums[k].used,tempdrums[k].pgm);
+    };
+#endif
+
 i=0;
 int totalmelody=0;
-while ((i<128)&&(tempmelody[i]!=0))
+while ((i<128)&&(tempmelody[i].used!=0))
    {
    totalmelody++;
    i++;
    };
 i=0;
 int totaldrums=0;
-while ((i<128)&&(tempdrums[i]!=0))
+while ((i<128)&&(tempdrums[i].used!=0))
    {
    totaldrums++;
    i++;
    };
-int c=0;
+printf("Totalmelody : %d,totaldrums : %d\n",totalmelody,totaldrums);
 int tgt=0;
-while (c<totalmelody)
-    {
-    patchesordered[tgt]=tempmelody[c];
-    if (c%2==0) tgt++;
-    tgt++;
-    c++;
-    };
-c=0;
-tgt=1;
-while (c<totaldrums)
-    {
-    patchesordered[tgt]=tempdrums[c];
-    tgt+=3;
-    c++;
-    };
+
+int tm=totalmelody;
+int td=totaldrums;
+int cm,cd;
+cm=cd=0;
+if ((tm!=0)&&(td!=0))
+   {
+   patchesordered[0]=tempmelody[0].pgm;
+   patchesordered[1]=tempdrums[0].pgm;
+   tm--;td--;
+   cm++;cd++;
+   tgt+=2;
+   while ((tm>0)&&(td>0))
+      {
+      if (((tgt-1)%3)==0) 
+	  {
+  	  patchesordered[tgt]=tempdrums[cd].pgm;
+	  cd++;
+	  td--;
+	  }
+	 else
+ 	  {
+  	  patchesordered[tgt]=tempmelody[cm].pgm;
+	  cm++;
+	  tm--;
+	  };
+      tgt++;	
+      };
+   };
+while (tm>0)
+   {
+   patchesordered[tgt]=tempmelody[cm].pgm;
+   tgt++;
+   cm++;
+   tm--;
+   };
+while (td>0)
+   {
+   patchesordered[tgt]=tempdrums[cd].pgm;
+   tgt++;
+   cd++;
+   td--;
+   };
+
 // Now we put as not used (-1) the rest of the array
-i=totalmelody+totaldrums;
-while (i<256)
+while (tgt<256)
     {
-    patchesordered[i]=-1;
-    i++;
+    patchesordered[tgt]=-1;
+    tgt++;
     };
 };
 
