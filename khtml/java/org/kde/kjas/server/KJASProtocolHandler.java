@@ -29,8 +29,7 @@ public class KJASProtocolHandler
     private KJASAppletRunner  runner;
 
     //Stream for reading in commands
-    private BufferedReader    commands;
-    private InputStreamReader input;
+    private PushbackInputStream commands;
 
     //Stream for writing out callbacks
     private PrintStream       signals;
@@ -43,8 +42,7 @@ public class KJASProtocolHandler
                                 KJASAppletRunner _runner,
                                 String password )
     {
-        input    = new InputStreamReader( _commands );
-        commands = new BufferedReader( input );
+        commands = new PushbackInputStream( _commands );
 
         signals = new PrintStream( _signals );
 
@@ -71,15 +69,31 @@ public class KJASProtocolHandler
             String length_str = new String( length );
 
             //read the whole command now that we know how long it is
-            int cmd_length = Integer.parseInt( length_str.trim() );
-            char[] cmd = new char[cmd_length];
-            for( int i = 0; i < cmd_length; i++ )
+            int cmd_length = 0;
+            try
             {
-                cmd[i] = (char) commands.read();
+                cmd_length = Integer.parseInt( length_str.trim() );
+                char[] cmd = new char[cmd_length];
+                for( int i = 0; i < cmd_length; i++ )
+                {
+                    cmd[i] = (char) commands.read();
+                }
+
+                //parse the rest of the command and execute it
+                processCommand( cmd );
+            }
+            catch( NumberFormatException e )
+            {
+                Main.kjas_err( "Could not parse out message length", e );
+
+                //read until the next character is a space, try to sync up the protocol
+                char curr = (char)commands.read();
+                while( curr != ' ' )
+                    curr = (char) commands.read();
+
+                commands.unread( curr );
             }
 
-            //parse the rest of the command and execute it
-            processCommand( cmd );
         }
     }
 
