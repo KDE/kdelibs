@@ -21,6 +21,8 @@
 #include <klistview.h>
 #include <kdebug.h>
 
+#include <qtimer.h>
+
 class KListViewSearchLine::KListViewSearchLinePrivate
 {
 public:
@@ -28,13 +30,15 @@ public:
         listView(0),
         caseSensitive(false),
         activeSearch(false),
-        keepParentsVisible(true) {}
+        keepParentsVisible(true),
+        queuedSearches(0) {}
     
     KListView *listView;
     bool caseSensitive;
     bool activeSearch;
     bool keepParentsVisible;
     QString search;
+    int queuedSearches;
     QValueList<int> searchColumns;
     QValueList<QListViewItem *> parents;
 };
@@ -51,7 +55,7 @@ KListViewSearchLine::KListViewSearchLine(QWidget *parent, KListView *listView, c
     d->listView = listView;
 
     connect(this, SIGNAL(textChanged(const QString &)),
-            this, SLOT(updateSearch(const QString &)));
+            this, SLOT(queueSearch(const QString &)));
 
     if(listView) {
         connect(listView, SIGNAL(destroyed()),
@@ -170,6 +174,25 @@ bool KListViewSearchLine::itemMatches(const QListViewItem *item, const QString &
     }
 
     return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// protected slots
+////////////////////////////////////////////////////////////////////////////////
+
+void KListViewSearchLine::queueSearch(const QString &search)
+{
+    d->queuedSearches++;
+    d->search = search;
+    QTimer::singleShot(200, this, SLOT(activateSearch()));
+}
+
+void KListViewSearchLine::activateSearch()
+{
+    d->queuedSearches--;
+
+    if(d->queuedSearches == 0)
+        updateSearch(d->search);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
