@@ -212,7 +212,7 @@ void KHTMLView::viewportPaintEvent ( QPaintEvent* pe  )
     {
 	QPainter p(viewport());
 
-	p.fillRect(r.x(), r.y(), ew, eh, kapp->palette().normal().brush(QColorGroup::Background));
+	p.fillRect(r.x(), r.y(), ew, eh, palette().normal().brush(QColorGroup::Background));
 	return;
     }
 //    kdDebug( 6000 ) << "viewportPaintEvent x=" << ex << ",y=" << ey << ",w=" << ew << ",h=" << eh << endl;

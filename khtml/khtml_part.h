@@ -205,7 +205,7 @@ public:
    *
    * All child frames and the old document are removed if you call this method.
    */	
-  virtual void begin( const KURL &url, int xOffset = 0, int yOffset = 0 );
+  virtual void begin( const KURL &url = KURL(), int xOffset = 0, int yOffset = 0 );
 
   /**
    * Writes another part of the HTML code to the widget. You may call
