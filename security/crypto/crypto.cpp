@@ -43,6 +43,7 @@
 #include <qpushbutton.h>
 #include <qfileinfo.h>
 #include <qcheckbox.h>
+#include <qcombobox.h>
 
 #include <kfiledialog.h>
 #include <klineedit.h>
@@ -181,7 +182,10 @@ QString whatstr;
   // The first is SSL and cipher related
   // The second is OpenSSL settings
   // The third is user's SSL certificate related
-  // The fourth is other SSL certificate related
+  // The fourth is certificate authentication related
+  // The fifth is other SSL certificate related
+  // The sixth is CA related
+  // The seventh is misc. settings related
   ///////////////////////////////////////////////////////////////////////////
 
   tabs = new QTabWidget(this);
@@ -452,6 +456,40 @@ QString whatstr;
   ///////////////////////////////////////////////////////////////////////////
   // FOURTH TAB
   ///////////////////////////////////////////////////////////////////////////
+  tabAuth = new QFrame(this);
+
+#ifdef HAVE_SSL
+  grid = new QGridLayout(tabAuth, 20, 6, KDialog::marginHint(), KDialog::spacingHint());
+
+  grid->addMultiCellWidget(new QLabel(i18n("Default Authentication Certificate"), tabAuth), 0, 0, 0, 2);
+  defCertBG = new QVButtonGroup(i18n("Default Action..."), tabAuth);
+  defSend = new QRadioButton(i18n("&Send"), defCertBG);
+  defPrompt = new QRadioButton(i18n("&Prompt"), defCertBG);
+  defDont = new QRadioButton(i18n("&Don't Send"), defCertBG);
+  grid->addMultiCellWidget(defCertBG, 1, 3, 0, 2);
+  grid->addMultiCellWidget(new QLabel(i18n("Default Certificate:"), tabAuth), 1, 1, 3, 5);
+  defCertBox = new QComboBox(false, tabAuth);
+  grid->addMultiCellWidget(defCertBox, 2, 2, 3, 5);
+  
+  grid->addMultiCellWidget(new KSeparator(KSeparator::HLine, tabAuth), 4, 4, 0, 5);
+
+
+  grid->addMultiCellWidget(new QLabel(i18n("Host Authentication"), tabAuth), 5, 5, 0, 1);
+  hostAuthList = new QListView(tabAuth);
+  grid->addMultiCellWidget(hostAuthList, 6, 13, 0, 3);
+
+#else
+  nossllabel = new QLabel(i18n("SSL certificates cannot be managed"
+                               " because this module was not linked"
+                               " with OpenSSL."), tabAuth);
+  grid->addMultiCellWidget(nossllabel, 3, 3, 0, 5);
+#endif
+
+
+
+  ///////////////////////////////////////////////////////////////////////////
+  // FIFTH TAB
+  ///////////////////////////////////////////////////////////////////////////
   tabOtherSSLCert = new QFrame(this);
 
 #ifdef HAVE_SSL
@@ -556,7 +594,7 @@ QString whatstr;
 
 #if 0
   ///////////////////////////////////////////////////////////////////////////
-  // FIFTH TAB
+  // SIXTH TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSLCA = new QFrame(this);
 
@@ -595,7 +633,7 @@ QString whatstr;
 #endif
 
   ///////////////////////////////////////////////////////////////////////////
-  // SIXTH TAB
+  // SEVENTH TAB
   ///////////////////////////////////////////////////////////////////////////
   tabSSLCOpts = new QFrame(this);
 
@@ -651,6 +689,7 @@ QString whatstr;
   tabs->addTab(tabOSSL, i18n("OpenSSL"));
 #endif
   tabs->addTab(tabYourSSLCert, i18n("Your Certificates"));
+//  tabs->addTab(tabAuth, i18n("Authentication"));
   tabs->addTab(tabOtherSSLCert, i18n("Peer SSL Certificates"));
 
 #if 0

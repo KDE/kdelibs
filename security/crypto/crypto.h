@@ -43,6 +43,7 @@ class KCryptoConfig;
 class QGridLayout;
 class KSSLCertBox;
 class QVButtonGroup;
+class QComboBox;
 
 class CipherItem : public QCheckListItem
 {
@@ -183,7 +184,7 @@ private:
   QTabWidget *tabs;
   QWidget *tabSSL, *tabOSSL;
 
-  QWidget *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts;
+  QWidget *tabYourSSLCert, *tabOtherSSLCert, *tabSSLCA, *tabSSLCOpts, *tabAuth;
 
   QListView *SSLv2Box, *SSLv3Box;
   QCheckBox *mUseTLS, *mUseSSLv2, *mUseSSLv3;
@@ -220,13 +221,20 @@ private:
   QLabel *yValidFrom, *yValidUntil;
   KURLLabel *untilDate;
 
-  /* OpenSSL tab */
   QLabel    *oInfo;
   QLineEdit *oPath;
   QPushButton *oFind;
   QPushButton *oTest;
   QList<OtherCertItem> otherCertDelList;
   QList<YourCertItem> yourCertDelList;
+
+  /* Personal Cert Policies tab */
+  QComboBox *defCertBox;
+  QComboBox *hostCertBox;
+  QVButtonGroup *defCertBG, *hostCertBG;
+  QRadioButton *defSend, *defPrompt, *defDont;
+  QListView *hostAuthList;
+
 
   KConfig *config;
   KSimpleConfig *policies, *pcerts;
