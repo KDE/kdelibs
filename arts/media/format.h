@@ -35,7 +35,7 @@ class Format : public map<string, string>
 	{
 	    Format::iterator p = find( key );
 	    return p!=end() && p.length()>0;
-	}
+	};
 };
 
 };

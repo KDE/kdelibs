@@ -36,21 +36,21 @@ interface MediaModule : SynthModule {
     /* ask module whether the format is supported
      * returns true if supported
      */ 
-    boolean isSupported( format fmt, string s );
+    boolean isSupported( format fmt, string strm );
 
     /* let module propose a format by setting all still unset parameters    
      */
-    format proposeFormat( format proposal, string s );
+    format proposeFormat( format proposal, string strm );
 
     /* fixate format
      * return true if successfull
      */
-    boolean setFormat( format fmt, string s );
+    boolean setFormat( format fmt, string strm );
 
     /* get set format
      * returns an empty or incomplete format if it isn't set yet 
      */
-    format getFormat( string s );    
+    format getFormat( string strm );    
 };
 
 };
