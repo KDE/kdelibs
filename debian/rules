@@ -66,9 +66,9 @@ debian-clean:
 
 clean: debian-clean
 	-rm -rf debian/debiandirs debian/install-tmp debian/alsa-tmp
-	if test -d CVS; then \
-	  $(MAKE) -f admin/Makefile.common cvs-clean ;\
-	fi
+	#if test -d CVS; then \
+	#  $(MAKE) -f admin/Makefile.common cvs-clean ;\
+	#fi
 	-$(MAKE) distclean
 
 binary-indep:	build-stamp alsa-stamp indep-stamp
@@ -148,7 +148,7 @@ binary-arch:  build install
 	dh_installman -a
 	dh_installmenu -a
 	dh_installdebconf -a
-	# music chairs
+	# musical chairs
 	dh_movefiles -plibarts --sourcedir=debian/kdelibs3
 	dh_movefiles -plibarts-dev --sourcedir=debian/kdelibs3
 	dh_movefiles -plibkmid --sourcedir=debian/kdelibs3

@@ -1,3 +1,10 @@
+kdelibs (4:2.2.1-6) unstable; urgency=low
+
+  * let this puppy build with automake 1.5
+  * Various other upstream fixes
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 02 Sep 2001 01:00:00 -0700
+
 kdelibs (4:2.2.1-5) unstable; urgency=low
 
   * arts updates ... this should fix some of the arts related problems
