@@ -49,7 +49,7 @@ public:
      * not fit into the constraining rectangle.
      * @since 3.2
      */
-    enum { FadeOut = 0x10000000 };
+    enum { FadeOut = 0x10000000, Truncate = 0x20000000 };
 
     /**
      * Main method for wrapping text.
@@ -118,6 +118,20 @@ public:
      */
     static void drawFadeoutText( QPainter *p, int x, int y, int maxW,
                                  const QString &t );
+
+    /**
+     * Draws the string @p t at the given coordinates, if it does not
+     * @p fit into @p maxW the text will be truncated.
+     * @param p the painter to use
+     * @param x the horizontal position of the text
+     * @param y the vertical position of the text
+     * @param maxW the maximum width of the text (including the '...')
+     * @param t the text to draw
+     * @since 3.3
+     */
+    static void drawTruncateText( QPainter *p, int x, int y, int maxW,
+                                  const QString &t );
+
 private:
     KWordWrap( const QRect & r );
     QValueList<int> m_breakPositions;

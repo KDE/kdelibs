@@ -116,7 +116,10 @@ KWordWrap* KWordWrap::formatText( QFontMetrics &fm, const QRect & r, int /*flags
     kw->m_lineWidths.append( x );
     y += height;
     //kdDebug() << "KWordWrap::formatText boundingRect:" << r.x() << "," << r.y() << " " << textwidth << "x" << y << endl;
-    kw->m_boundingRect.setRect( 0, 0, textwidth, y );
+    if ( r.height() >= 0 && y > r.height() )
+        textwidth = r.width();
+    kw->m_boundingRect.setRect( 0, 0, textwidth,
+                                r.height() < 0 ? y : QMIN( y, r.height() ) );
     return kw;
 }
 
@@ -193,6 +196,26 @@ void KWordWrap::drawFadeoutText(QPainter *p, int x, int y, int maxW,
         p->drawText( x, y, t );
 }
 
+void KWordWrap::drawTruncateText(QPainter *p, int x, int y, int maxW,
+                                 const QString &t) {
+    QFontMetrics fm = p->fontMetrics();
+    
+    // partially copied from QIconView::calcTmpText()
+    QString tmpText;
+    if ( fm.width( t ) <= maxW )
+        tmpText = t;
+    else {
+        tmpText = "...";
+        int i = 0;
+        while ( fm.width( tmpText + t[ i ] ) < maxW )
+            tmpText += t[ i++ ];
+        tmpText.remove( 0, 3 );
+        tmpText += "...";
+    }
+
+    p->drawText( x, y, tmpText );
+}
+
 void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) const
 {
     //kdDebug() << "KWordWrap::drawText text=" << wrappedString() << " x=" << textX << " y=" << textY << endl;
@@ -232,12 +255,15 @@ void KWordWrap::drawText( QPainter *painter, int textX, int textY, int flags ) c
 	if ( it == m_breakPositions.end() )
             painter->drawText( x, textY + y + ascent, m_text.mid( start ) );
 	else if (flags & FadeOut)
-	    drawFadeoutText( painter, x, textY + y + ascent,
-	                     d->m_constrainingRect.width() - x + textX,
+	    drawFadeoutText( painter, textX, textY + y + ascent,
+	                     d->m_constrainingRect.width(),
 			     m_text.mid( start ) );
+        else if (flags & Truncate)
+            drawTruncateText( painter, textX, textY + y + ascent,
+                              d->m_constrainingRect.width(),
+			      m_text.mid( start ) );
 	else
             painter->drawText( x, textY + y + ascent,
 	                       m_text.mid( start, (*it) - start + 1 ) );
     }
 }
-
