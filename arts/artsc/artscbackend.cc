@@ -480,7 +480,7 @@ extern "C" void arts_backend_close_stream(arts_stream_t stream)
 	if(!ArtsCApi::the()) return;
 
 	arts_backend_debug("arts_backend_close_stream");
-	return ArtsCApi::the()->close_stream(stream);
+	ArtsCApi::the()->close_stream(stream);
 }
 
 extern "C"int arts_backend_read(arts_stream_t, void *, int)

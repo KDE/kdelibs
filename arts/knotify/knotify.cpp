@@ -36,7 +36,7 @@
 #include <qmessagebox.h>
 #include <qfileinfo.h>
 #include <qiomanager.h>
-
+#include <iostream.h>
 #include <qtextstream.h>
 
 

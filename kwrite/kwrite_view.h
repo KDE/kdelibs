@@ -213,8 +213,10 @@ class KWriteView : public QWidget {
 
     bool HandleURIDrops;
 
+  public:
     enum DragState {diNone, diPending, diDragging};
 
+   protected:
     struct _dragInfo {
       DragState  state;
       QPoint     start;

@@ -45,8 +45,8 @@ private:
 	friend class VPortConnection;
 protected:
 	Port *port;
-	string _name;
-	list<VPortConnection *> incoming, outgoing;
+	std::string _name;
+	std::list<VPortConnection *> incoming, outgoing;
 
 	void makeTransport(VPortConnection *conn);
 	void removeTransport(VPortConnection *conn);

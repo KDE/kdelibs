@@ -124,10 +124,10 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class khtml::RenderPartObject;
   friend class KJS::WindowFunc;
   friend class KHTMLPartBrowserExtension;
-  Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript );
-  Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE enableJava );
-  Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE autoloadImages );
-  Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled );
+  Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript )
+  Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE enableJava )
+  Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE autoloadImages )
+  Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
 public:
   /**
    * Constructs a new KHTMLPart.

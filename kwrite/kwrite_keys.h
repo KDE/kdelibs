@@ -197,12 +197,12 @@ class KWCommandGroupData {
 class KWKeyData {
     friend KWCommandDispatcher;
 
+  public:
     struct Contains {
       KWCommandData *command;
       KWCommandGroupData *group;
     };
 
-  public:
     ~KWKeyData();
 
     int groupCount() {return m_count;}

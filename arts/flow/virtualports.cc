@@ -25,6 +25,7 @@
 #include <stdio.h>
 
 using namespace Arts;
+using namespace std;
 
 #undef VPORT_DEBUG
 

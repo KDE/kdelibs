@@ -251,7 +251,7 @@ public:
 class StdFlowSystem :public FlowSystem_impl
 {
 protected:
-	list<StdScheduleNode *> nodes;
+	std::list<StdScheduleNode *> nodes;
 	bool _suspended;
 public:
 	StdFlowSystem();

@@ -88,5 +88,7 @@ void Font::drawText(QPainter *p, int x, int y, const QString &str, bool complex)
 
 bool Font::complexText(const QString &text) const
 {
+	// TODO
+	return true;
 }
 
