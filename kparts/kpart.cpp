@@ -9,6 +9,7 @@
 #include <kio_job.h>
 
 #include <stdio.h>
+#include <unistd.h>
 
 KPart::KPart( QWidget* parent, const char* name )
     : QWidget( parent, name )
@@ -88,12 +89,13 @@ KPlugin* KPart::plugin( const char* libname )
 //////////////////////////////////////////////////
 
 KReadOnlyPart::KReadOnlyPart( QWidget *parent, const char *name )
- : KPart( parent, name )
+ : KPart( parent, name ), m_bTemp( false )
 {
 }
 
 KReadOnlyPart::~KReadOnlyPart()
 {
+  closeURL();
 }
 
 void KReadOnlyPart::init()
@@ -103,6 +105,7 @@ void KReadOnlyPart::init()
 bool KReadOnlyPart::openURL( const QString &url )
 {
   emit started();
+  closeURL();
   m_url = url;
   if ( m_url.isLocalFile() )
   {
@@ -113,6 +116,7 @@ bool KReadOnlyPart::openURL( const QString &url )
   }
   else
   {
+    m_bTemp = true;
     m_file = tmpnam(0);
     // We can't use mkstemp since we don't want to create the file here
     // KIOJob has to create it
@@ -126,7 +130,14 @@ bool KReadOnlyPart::openURL( const QString &url )
   }  
 }
 
-//TODO closeURL -> unlink( m_file.ascii() );  ??
+void KReadOnlyPart::closeURL()
+{
+  if ( m_bTemp )
+  {
+    unlink( m_file.ascii() );
+    m_bTemp = false;
+  }
+}
 
 void KReadOnlyPart::slotJobFinished( int /*_id*/ )
 {
@@ -149,6 +160,10 @@ KReadWritePart::KReadWritePart( QWidget *parent, const char *name )
 KReadWritePart::~KReadWritePart()
 {
 }
+
+// TODO closeURL : if ( isModified && m_bTemp) => uploads (asking confirmation first)
+
+//////////////////////////////////////////////////
 
 KPartGUIServant::KPartGUIServant( KPart *part )
   : QObject( part )

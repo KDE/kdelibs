@@ -60,11 +60,14 @@ protected slots:
 protected:
   // Reimplement this, to open m_file
   virtual bool openFile() = 0;
+  virtual void closeURL();
   
-  // Remote url
+  // Remote (or local) url
   KURL m_url;
   // Local file
   QString m_file;
+  // If true, m_file is a temp file that needs to be deleted later
+  bool m_bTemp;
 };
 
 class KReadWritePart : public KReadOnlyPart
