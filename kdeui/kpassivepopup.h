@@ -152,9 +152,10 @@ public:
 
 public slots:
     /**
-     * Sets the delay for the popup is removed automatically. Setting the delay to -1
+     * Sets the delay for the popup is removed automatically. Setting the delay to 0
      * disables the timeout, if you're doing this, you may want to connect the
      * @ref clicked() signal to the hide() slot.
+	 * Setting the delay to -1 makes it use the default value.
      */
     void setTimeout( int delay );
 
