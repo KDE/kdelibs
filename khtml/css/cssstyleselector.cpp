@@ -1826,12 +1826,14 @@ void CSSStyleSelector::applyRule( DOM::CSSProperty *prop )
             style->setPaletteColor(QPalette::Inactive, QColorGroup::Dark, col);
             break;
         case CSS_PROP_SCROLLBAR_TRACK_COLOR:
-            style->setPaletteColor(QPalette::Active, QColorGroup::Base, col);
-            style->setPaletteColor(QPalette::Inactive, QColorGroup::Base, col);
             style->setPaletteColor(QPalette::Active, QColorGroup::Mid, col);
             style->setPaletteColor(QPalette::Inactive, QColorGroup::Mid, col);
             style->setPaletteColor(QPalette::Active, QColorGroup::Background, col);
             style->setPaletteColor(QPalette::Inactive, QColorGroup::Background, col);
+            // fall through
+        case CSS_PROP_SCROLLBAR_BASE_COLOR:
+            style->setPaletteColor(QPalette::Active, QColorGroup::Base, col);
+            style->setPaletteColor(QPalette::Inactive, QColorGroup::Base, col);
             break;
         case CSS_PROP_SCROLLBAR_ARROW_COLOR:
             style->setPaletteColor(QPalette::Active, QColorGroup::ButtonText, col);

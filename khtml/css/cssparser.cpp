@@ -1607,6 +1607,7 @@ bool StyleBaseImpl::parseValue( const QChar *curP, const QChar *endP, int propId
       case CSS_PROP_SCROLLBAR_DARKSHADOW_COLOR:   // IE5.5
       case CSS_PROP_SCROLLBAR_TRACK_COLOR:        // IE5.5
       case CSS_PROP_SCROLLBAR_ARROW_COLOR:        // IE5.5
+      case CSS_PROP_SCROLLBAR_BASE_COLOR:         // IE5.5
 	{
 	  const QString val2( value.stripWhiteSpace() );
 	  //kdDebug(6080) << "parsing color " << val2 << endl;

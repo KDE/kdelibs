@@ -139,6 +139,7 @@ margin
 outline
 padding
 #pause
+scrollbar-base-color
 scrollbar-face-color
 scrollbar-shadow-color
 scrollbar-highlight-color

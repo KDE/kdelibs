@@ -178,10 +178,7 @@ void CSSStyleDeclarationImpl::setProperty ( const DOMString &propertyString)
     QPtrList<CSSProperty> *props = parseProperties(ppPropertyString.unicode(),
 						ppPropertyString.unicode()+ppPropertyString.length());
     if(!props || !props->count())
-    {
-	kdDebug( 6080 ) << "no properties returned!" << endl;
 	return;
-    }
 
     props->setAutoDelete(false);
 
