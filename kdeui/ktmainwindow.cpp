@@ -856,6 +856,7 @@ void KTMainWindow::createGUI( const QString &xmlfile )
   // means that we will be only using the global file
   if ( !xmlfile.isNull() )
     setXMLFile( xmlfile, true );
+  else
   {
     QString auto_file(instance()->instanceName() + "ui.rc");
     setXMLFile( auto_file, true );
