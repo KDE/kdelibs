@@ -21,7 +21,7 @@ QString getWin32RegistryValue(HKEY key, const QString& subKey, const QString& it
 	TCHAR *lszValue;
 	DWORD dwType=REG_SZ;
 	DWORD dwSize;
-	if (ERROR_SUCCESS!=RegOpenKeyEx(HKEY_CURRENT_USER, subKey.ucs2(), NULL, KEY_READ, &hKey))
+	if (ERROR_SUCCESS!=RegOpenKeyEx(key, subKey.ucs2(), NULL, KEY_READ, &hKey))
 		FAILURE;
 
 	if (ERROR_SUCCESS!=RegQueryValueEx(hKey, item.ucs2(), NULL, NULL, NULL, &dwSize))
@@ -55,3 +55,17 @@ bool showWin32FilePropertyDialog(const QString& fileName)
 	return ShellExecuteEx(&execInfo);
 }
 
+KDEWIN32_EXPORT
+QCString getWin32LocaleName()
+{
+	bool ok;
+	QString localeNumber = getWin32RegistryValue(HKEY_CURRENT_USER, "Control Panel\\International", 
+		"Locale", &ok);
+	if (!ok)
+		return QCString();
+	QString localeName = getWin32RegistryValue(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Keyboard Layout\\DosKeybCodes", 
+		localeNumber, &ok);
+	if (!ok)
+		return QCString();
+	return localeName.latin1();
+}

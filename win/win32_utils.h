@@ -50,7 +50,7 @@ KDEWIN32_EXPORT void win32_slashify(char *path, int maxlen);
 }
 
 /**
- Returns registry value from MS Windows native registry.
+ \return registry value from MS Windows native registry.
  @param key is usually one of HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE
         constants defined in WinReg.h. 
  @param subKey is a registry subkey defined as a path to a registry folder, eg.
@@ -69,6 +69,14 @@ KDEWIN32_EXPORT QString getWin32RegistryValue(HKEY key, const QString& subKey,
 */
 KDEWIN32_EXPORT
 bool showWin32FilePropertyDialog(const QString& fileName);
+
+/**
+ \return two-letter locale name (like "en" or "pl") taken from MS Windows native registry.
+ Useful when we don't want to rely on KSyCoCa.
+ Used e.g. by kbuildsycoca application.
+*/
+KDEWIN32_EXPORT
+QCString getWin32LocaleName();
 
 #endif //__cplusplus
 
