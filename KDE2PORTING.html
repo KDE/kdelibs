@@ -103,14 +103,13 @@ benefits only apply to applications available as KDEinit loadable module (KLM)
 </P>
 <H4>4. KRun</H4>
 <P>
-Generic way to open documents/applications/shell commands. Will use 
-startServiceBy.... where applicable (in the future). Offers the additional 
-benefit of startup-notification.
-</P>
-<P>
-Currently the difference between the roles of KRun and startServiceBy... are 
-not completely clear. KDE 1.x only had KRun and with KDE 2.0 a lot of the 
-functionality has migrated to startServiceBy....<BR>
+Generic way to open documents/applications/shell commands. Uses
+startServiceBy.... where applicable. Offers the additional 
+benefit of startup-notification.<BR>
+KRun can start any application, from the binary or the desktop file,
+it will determine the mimetype of a file before running the
+preferred handler for it, and it can also start shell commands.
+This makes KRun the recommended way to run another program in KDE 2.
 </P>
 
 <H4><P ALIGN="RIGHT"><A HREF="#TOC">Return to the Table of Contents</A></P></H4>
