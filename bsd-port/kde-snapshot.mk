@@ -1,5 +1,7 @@
 #$Id$
 
+OSVERSION!=     sysctl -n kern.osreldate
+
 CONFIGURE_ENV=	CXXFLAGS="$(CFLAGS)" \
 		install_root=$(INSTALL_ROOT) \
 		INSTALL_SCRIPT="install -c -m 555"
@@ -22,11 +24,24 @@ post-install:
 
 # This should finally work somewhat decently now
 make-plist:
+.if ${OSVERSION} >= 300000
+		cd ${INSTALL_ROOT}/${PREFIX} && \
+			find ./ -type f|sed 's,^\./,,'|sort > $(PLIST)
+		cd ${INSTALL_ROOT}/${PREFIX} && \
+			find ./ -type l|sed 's,^\./,,'|sort >> $(PLIST)
+		@echo "@exec /sbin/ldconfig -m %B" >> $(PLIST)
+		@echo "@exec /sbin/ldconfig -R" >> $(PLIST)
+		cd ${INSTALL_ROOT}/${PREFIX} && \
+			find ./ -type d|sed 's,^\./,@dirrm ,'|sort -r>> $(PLIST)
+		@echo "@unexec /sbin/ldconfig -R" >> $(PLIST)
+.else
 		cd ${INSTALL_ROOT}/${PREFIX} && \
 			find ./ -type f|sed 's,^\.//,,'|sort > $(PLIST)
 		cd ${INSTALL_ROOT}/${PREFIX} && \
 			find ./ -type l|sed 's,^\.//,,'|sort >> $(PLIST)
 		@echo "@exec /sbin/ldconfig -m %B" >> $(PLIST)
+		@echo "@exec /sbin/ldconfig -R" >> $(PLIST)
 		cd ${INSTALL_ROOT}/${PREFIX} && \
 			find ./ -type d|sed 's,^\.//,@dirrm ,'|sort -r>> $(PLIST)
 		@echo "@unexec /sbin/ldconfig -R" >> $(PLIST)
+.endif
