@@ -859,9 +859,6 @@ void RenderPartObject::layout( )
     KHTMLAssert( !layouted() );
     KHTMLAssert( minMaxKnown() );
 
-    short m_oldwidth = m_width;
-    int m_oldheight = m_height;
-
     calcWidth();
     calcHeight();
 
