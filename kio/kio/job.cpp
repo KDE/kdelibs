@@ -2090,7 +2090,7 @@ class CopyJob::CopyJobPrivate
 public:
     CopyJobPrivate() {
         m_defaultPermissions = false;
-        m_interactive = false;
+        m_interactive = true;
         m_bURLDirty = false;
     }
     // This is the dest URL that was initially given to CopyJob
