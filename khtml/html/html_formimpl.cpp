@@ -639,18 +639,18 @@ long HTMLInputElementImpl::tabIndex() const
 
 DOMString HTMLInputElementImpl::type() const
 {
-    // HTML DTD suggests this is supposed to be uppercase
+    // needs to be lowercase according to DOM spec
     switch (_type) {
-    case TEXT: return "TEXT";
-    case PASSWORD: return "PASSWORD";
-    case CHECKBOX: return "CHECKBOX";
-    case RADIO: return "RADIO";
-    case SUBMIT: return "SUBMIT";
-    case RESET: return "RESET";
-    case FILE: return "FILE";
-    case HIDDEN: return "HIDDEN";
-    case IMAGE: return "IMAGE";
-    case BUTTON: return "BUTTON";
+    case TEXT: return "text";
+    case PASSWORD: return "password";
+    case CHECKBOX: return "checkbox";
+    case RADIO: return "radio";
+    case SUBMIT: return "submit";
+    case RESET: return "reset";
+    case FILE: return "file";
+    case HIDDEN: return "hidden";
+    case IMAGE: return "image";
+    case BUTTON: return "button";
     default: return "";
     }
 }
@@ -1542,8 +1542,7 @@ ushort HTMLTextAreaElementImpl::id() const
 
 DOMString HTMLTextAreaElementImpl::type() const
 {
-    // ###
-    return DOMString();
+    return "textarea";
 }
 
 QString HTMLTextAreaElementImpl::state( )
