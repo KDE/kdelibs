@@ -47,7 +47,15 @@ public:
     // KIconLoader too
     enum Group { NoGroup=-1, Desktop=0, FirstGroup=Desktop, Toolbar,
         MainToolbar, Small, Panel, LastGroup, User };
-    enum StdSizes { SizeSmall=16, SizeMedium=32, SizeLarge=48 };
+
+    enum StdSizes {
+        /// small icons for menu entries
+        SizeSmall=16,
+        /// medium sized icons for the desktop
+        SizeMedium=32,
+        /// large sized icons for the panel
+        SizeLarge=48 };
+
     enum States { DefaultState, ActiveState, DisabledState, LastState };
     enum Overlays { LockOverlay=0x100, ZipOverlay=0x200, LinkOverlay=0x400,
             HiddenOverlay=0x800, ShareOverlay=0x1000, OverlayMask = ~0xff };
