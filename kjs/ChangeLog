@@ -1,5 +1,9 @@
 2003-11-17  Harri Porten  <harri@froglogic.com>
 
+	* internal.cpp (evaluate): lexical error means parse error
+
+	* lexer.cpp: removed stderr debug output
+
 	* object.h: renamed virtual get(), put(), hasProperty() and
 	deleteProperty() overloads accepting an int property to
 	getPropertyByIndex() etc. Not only cleaner C++ that makes

@@ -559,7 +559,6 @@ int Lexer::lex()
     break;
   case Bad:
     foundBad = true;
-    fprintf(stderr, "KJS: yylex: ERROR.\n");
     return -1;
   default:
     assert(!"unhandled numeration value in switch");
