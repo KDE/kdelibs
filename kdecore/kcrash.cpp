@@ -178,6 +178,9 @@ KCrash::defaultCrashHandler (int signal)
         // NULL terminated list
         argv[i++] = NULL;
 
+        setgid(getgid());
+        setuid(getuid());
+
         execvp("drkonqi", argv);
 
         // we could clean up here
