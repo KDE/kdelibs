@@ -1,5 +1,5 @@
 PUBLIC "-//KDE//ENTITIES Slovenian Documentation V1.0//SL"
-       "kde-prologue.entities"
+       "lang.entities"
 
 PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//SL"
        "entities/fdl-notice.docbook"

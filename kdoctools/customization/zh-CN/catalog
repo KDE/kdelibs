@@ -1,5 +1,5 @@
 PUBLIC "-//KDE//ENTITIES Continental Chinese Documentation V1.0//ZHCN"
-       "kde-prologue.entities"
+       "lang.entities"
 
 PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//ZHCN"
        "entities/fdl-notice.docbook"

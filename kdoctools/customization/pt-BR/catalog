@@ -1,5 +1,5 @@
 PUBLIC "-//KDE//ENTITIES Brasilian Portuguese Documentation V1.0//PTBR"
-       "kde-prologue.entities"
+       "lang.entities"
 
 PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//PTBR"
        "entities/fdl-notice.docbook"

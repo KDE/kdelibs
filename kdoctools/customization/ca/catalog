@@ -1,5 +1,5 @@
 PUBLIC "-//KDE//ENTITIES Catalan Documentation V1.0//CA"
-       "kde-prologue.entities"
+       "lang.entities"
 
 PUBLIC "-//KDE//DOCUMENT GNU Free Documentation Notice//CA"
        "entities/fdl-notice.docbook"
