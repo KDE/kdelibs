@@ -59,14 +59,14 @@ namespace khtml
      * to the RenderStyle.
      */
     enum Source {
-	Default,
-	User,
-	NonCSSHint,
-	Author,
-	Inline,
-	AuthorImportant,
-	InlineImportant,
-	UserImportant
+	Default = 0,
+	User = 1,
+	NonCSSHint = 2,
+	Author = 3,
+	Inline = 4,
+	AuthorImportant = 5,
+	InlineImportant = 6,
+	UserImportant =7
     };
 
     /**
@@ -178,7 +178,7 @@ namespace khtml
 	    : prop ( _prop ), pseudoId( RenderStyle::NOPSEUDO ), selector( _selector ),
 	      position( _position )
 	{
-	    priority = (!first << 31) | (source << 24) | specificity;
+	    priority = (!first << 30) | (source << 24) | specificity;
 	}
 	
 	DOM::CSSProperty *prop;
