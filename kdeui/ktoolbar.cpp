@@ -1297,8 +1297,8 @@ void KToolBar::paintEvent(QPaintEvent *)
 void KToolBar::rebuildLayout()
 {
     layoutTimer->stop();
-#if QT_VERSION < 300
     QApplication::sendPostedEvents( this, QEvent::ChildInserted );
+#if QT_VERSION < 300
     delete layout();
     QBoxLayout *bl = new QBoxLayout( this, orientation() == Vertical
 				     ? QBoxLayout::Down : QBoxLayout::LeftToRight, 2, 0 );
@@ -1333,6 +1333,43 @@ void KToolBar::rebuildLayout()
             bl->setStretchFactor( stretchableWidget, 10 );
     }
     bl->activate();
+#else
+    QBoxLayout *l = boxLayout();
+
+    // clear the old layout
+    QLayoutIterator it = l->iterator();
+    while ( it.current() )
+        it.deleteCurrent();
+
+     for ( QWidget *w = widgets.first(); w; w = widgets.next() ) {
+        if ( w == rightAligned )
+            continue;
+        if ( w->inherits( "KToolBarSeparator" ) &&
+             !( (KToolBarSeparator*)w )->showLine() ) {
+            l->addSpacing( 6 );
+            w->hide();
+            continue;
+        }
+        if ( w->inherits( "QPopupMenu" ) )
+            continue;
+        l->addWidget( w );
+    }
+    if ( rightAligned ) {
+        l->addStretch();
+        l->addWidget( rightAligned );
+    }
+
+    if ( fullSize() ) {
+        if ( !stretchableWidget && widgets.last() &&
+             !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
+            setStretchableWidget( widgets.last() );
+        if ( !rightAligned )
+            l->addStretch();
+        if ( stretchableWidget )
+            l->setStretchFactor( stretchableWidget, 10 );
+    }
+    l->activate();
+    
 #endif
 }
 
@@ -1438,6 +1475,7 @@ void KToolBar::show()
         ( (QMainWindow*)parentWidget() )->moveToolBar( this, d->realPos, d->realNl, d->realIndex, d->realOffset );
     }
     d->hasRealPos = FALSE;
+#if QT_VERSION < 300
     QObject *o = 0;
     QObjectListIt it( *children() );
     while ( ( o = it.current() ) ) {
@@ -1446,6 +1484,22 @@ void KToolBar::show()
             continue;
         ( (QWidget*)o )->show();
     }
+#else
+    // unlike in qt2 we don't want to iterate over all child widgets but
+    // instead we iterate over all items of the boxlayout. that easily
+    // allows us to exclude all the qdockwindow internal widgets without
+    // an inherits() check for each.
+    // I actually don't really understand why we show() all the items
+    // explicitly though. Reggie?
+    QLayoutIterator it = boxLayout()->iterator();
+    for (; it.current(); ++it )
+    {
+        QWidget *w = it.current()->widget();
+        if ( !w || w->inherits( "QPopupMenu" ) )
+            continue;
+        w->show();
+    }
+#endif
     QToolBar::show();
 }
 
