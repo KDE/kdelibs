@@ -38,6 +38,21 @@ KCatalogue::KCatalogue(const QString & name)
   d->name = name;
 }
 
+KCatalogue::KCatalogue(const KCatalogue & rhs)
+{
+  d = new KCataloguePrivate;
+
+  *this = rhs;
+}
+
+KCatalogue & KCatalogue::operator=(const KCatalogue & rhs)
+{
+  d->name = rhs.d->name;
+  setFileName( rhs.fileName() );
+
+  return *this;
+}
+
 KCatalogue::~KCatalogue()
 {
   doUnload();
@@ -52,20 +67,25 @@ QString KCatalogue::name() const
 
 void KCatalogue::setFileName( const QString & fileName )
 {
-  QCString newFileName = QFile::encodeName( fileName );
-
   // nothing to do if the file name is already the same
-  if ( newFileName == d->domain.filename ) return;
+  //  if ( this->fileName() == fileName ) return;
 
   doUnload();
+
+  QCString newFileName = QFile::encodeName( fileName );
 
   if ( !fileName.isEmpty() )
     {
       // set file name
       char *filename = new char[ newFileName.length() + 1 ];
-      qstrcpy( filename, newFileName );
+      ::strcpy( filename, newFileName );
       d->domain.filename = filename;
     }
+}
+
+QString KCatalogue::fileName() const
+{
+  return QFile::decodeName( d->domain.filename );
 }
 
 const char * KCatalogue::translate(const char * msgid) const
@@ -76,12 +96,12 @@ const char * KCatalogue::translate(const char * msgid) const
 void KCatalogue::doUnload()
 {
   // allocated by gettext using malloc!!!
-  if ( d->domain.data )
-    free( const_cast<void *>(d->domain.data) );
+  //  if ( d->domain.data )
+  //  free( const_cast<void *>(d->domain.data) );
   d->domain.data = 0;
 
   // free name
-  delete const_cast<char *>(d->domain.filename);
+  delete [] const_cast<char *>(d->domain.filename);
   d->domain.filename = 0;
 
   d->domain.decided = 0;

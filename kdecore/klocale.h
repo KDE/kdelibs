@@ -80,13 +80,25 @@ public:
    * configuration file.
    * If nothing is set there, it looks for the environment variable
    * $LANG. The format for LANG is de, if de (german) is your
-   * prefered language. If none of them can be find, the default (C)
+   * prefered language. If none of them can be find, the default (en_US)
    * will be used.
    *
    * @param catalogue The name of the main language file
    * @param useEnv True if we should use environment variables.
+   * @param config KLocale will use this config when reading the config
+   *               settings. 0 means global config.
    */
-  KLocale( const QString& catalogue, bool useEnv = true );
+  KLocale( const QString& catalogue, bool useEnv = true, KConfig *config = 0 );
+
+  /**
+   * Copy constructor.
+   */
+  KLocale( const KLocale& );
+
+  /**
+   * Assignment operator.
+   */
+  KLocale& operator= ( const KLocale& );
 
   /**
    * Destructor.
@@ -674,7 +686,7 @@ public:
    * that provides its own messages.
    *
    * If the catalogue does not exist for the chosen language,
-   * it will be ignored and C will be used.
+   * it will be ignored and en_US will be used.
    *
    * @param catalogue The catalogue to add.
    */
@@ -740,12 +752,6 @@ public:
   static void initInstance();
 
 private:
-  // Disallow assignment and copy-construction
-  // #### HPB: Implement this for KDE 3 and make it public!?
-  KLocale( const KLocale& );
-  KLocale& operator= ( const KLocale& );
-
-private:
   /**
    * @internal Init the localization part of the instance with the config
    * object.
@@ -776,6 +782,13 @@ private:
    * @param config The configuration object used for init
    */
   void initEncoding(KConfig * config);
+
+  /**
+   * @internal Figure out which catalogues to use.
+   * 
+   * @param catalogue The name of the main catalogue
+   */
+  void initCatalogue(const QString & catalogue);
 
   /**
    * @internal function used by readTime(const QString &) const.
@@ -809,7 +822,7 @@ private:
 			 const char ** original = 0) const;
 
   /**
-   * @internal function used to determine if we are using the C translation
+   * @internal function used to determine if we are using the en_US translation
    */
   bool useDefaultLanguage() const;
 

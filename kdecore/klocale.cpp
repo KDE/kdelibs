@@ -53,6 +53,7 @@ public:
   QList<KCatalogue> catalogues;
   QString encoding;
   QTextCodec * codecForEncoding;
+  KConfig * config;
 
   KLocalePrivate()
     : defaultsOnly(false)
@@ -62,16 +63,27 @@ public:
 
 extern void qt_set_locale_codec( QTextCodec *codec );
 
-KLocale::KLocale( const QString & catalogue, bool useEnv )
+KLocale::KLocale( const QString & catalogue, bool useEnv, KConfig * config )
 {
   d = new KLocalePrivate;
+  d->config = config;
   // make it the owner of the objecs in the list
   d->catalogues.setAutoDelete( true );
 
-  KConfig *config = KGlobal::instance()->config();
-  initCharset(config);
-  initEncoding(config);
+  KConfig *cfg = d->config;
+  if (!cfg) cfg = KGlobal::instance()->config();
 
+  ASSERT( cfg );
+
+  initCharset(cfg);
+  initEncoding(cfg);
+  initCatalogue(catalogue);
+
+  initLanguage(cfg, useEnv);
+}
+
+void KLocale::initCatalogue(const QString & catalogue)
+{
   // Use the first non-null string.
   QString mainCatalogue = catalogue;
   if (maincatalogue)
@@ -87,15 +99,10 @@ KLocale::KLocale( const QString & catalogue, bool useEnv )
 
   // always include kdelibs.mo
   d->catalogues.append( new KCatalogue( SYSTEM_MESSAGES ) );
-
-  initLanguage(config, useEnv);
 }
 
 void KLocale::initLanguage(KConfig * config, bool useEnv)
 {
-  if (!config)
-    return;
-
   KConfigGroupSaver saver(config, "Locale");
 
   m_country = config->readEntry( "Country" );
@@ -211,7 +218,9 @@ void KLocale::doBindInit()
 
 void KLocale::doFormatInit()
 {
-  KConfig *config = KGlobal::instance()->config();
+  KConfig *config = d->config;
+  if (!config) config = KGlobal::instance()->config();
+  ASSERT( config );
 
   kdDebug(173) << "KLocale::doFormatInit" << endl;
 
@@ -1554,9 +1563,12 @@ void KLocale::initEncoding(KConfig *config)
 
 void KLocale::initCatalogue( KCatalogue * catalogue )
 {
+  ASSERT( catalogue );
+
   QString str = QString::fromLatin1("%1/LC_MESSAGES/%2.mo")
     .arg( language() )
     .arg( catalogue->name() );
+
   str = locate("locale", str);
 
   catalogue->setFileName( str );
@@ -1701,4 +1713,57 @@ bool KLocale::setEncoding(int mibEnum)
     d->codecForEncoding = codec;
 
   return codec != 0;
+}
+
+KLocale::KLocale(const KLocale & rhs)
+{
+  d = new KLocalePrivate;
+  d->catalogues.setAutoDelete( true );
+
+  *this = rhs;
+}
+
+KLocale & KLocale::operator=(const KLocale & rhs)
+{
+  m_charset = rhs.m_charset;
+
+  m_weekStartsMonday = rhs.m_weekStartsMonday;
+
+  // Numbers and money
+  m_decimalSymbol = rhs.m_decimalSymbol;
+  m_thousandsSeparator = rhs.m_thousandsSeparator;
+  m_currencySymbol = rhs.m_currencySymbol;
+  m_monetaryDecimalSymbol = rhs.m_monetaryDecimalSymbol;
+  m_monetaryThousandsSeparator = rhs.m_monetaryThousandsSeparator;
+  m_positiveSign = rhs.m_positiveSign;
+  m_negativeSign = rhs.m_negativeSign;
+  m_fracDigits = rhs.m_fracDigits;
+  m_positivePrefixCurrencySymbol = rhs.m_positivePrefixCurrencySymbol;
+  m_negativePrefixCurrencySymbol = rhs.m_negativePrefixCurrencySymbol;
+  m_positiveMonetarySignPosition = rhs.m_positiveMonetarySignPosition;
+  m_negativeMonetarySignPosition = rhs.m_negativeMonetarySignPosition;
+
+  // Date and time
+  m_timeFormat = rhs.m_timeFormat;
+  m_dateFormat = rhs.m_dateFormat;
+  m_dateFormatShort = rhs.m_dateFormatShort;
+
+  m_country = rhs.m_country;
+
+  d->plural_form = rhs.d->plural_form;
+  d->defaultsOnly = rhs.d->defaultsOnly;
+  d->language = rhs.d->language;
+  d->languageList = rhs.d->languageList;
+
+  d->catalogues.clear();
+  for ( QListIterator<KCatalogue> it(rhs.d->catalogues);
+	it.current();
+	++it )
+    d->catalogues.append( new KCatalogue( *(*it) ) );
+
+  d->encoding = rhs.d->encoding;
+  d->codecForEncoding = rhs.d->codecForEncoding;
+  d->config = rhs.d->config;
+
+  return *this;
 }

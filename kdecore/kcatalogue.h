@@ -15,12 +15,13 @@ public:
 
   QString name() const;
   void setFileName( const QString & fileName );
+  QString fileName() const;
   const char * translate( const char * msgid ) const;
 
-private:
   KCatalogue(const KCatalogue &);
   KCatalogue & operator = ( const KCatalogue &);
 
+private:
   void doUnload();
 
 private:
