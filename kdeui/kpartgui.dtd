@@ -110,7 +110,7 @@
 <!-- Inserts a separator item into a menubar or toolbar -->
 <!ELEMENT Separator EMPTY>
 <!ATTLIST Separator
-  lineSeparator (true|false) "false"
+  lineSeparator (true|false) "true"
   group CDATA #IMPLIED
 >
 

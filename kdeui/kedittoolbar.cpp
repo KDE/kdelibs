@@ -251,7 +251,7 @@ public:
       QDomElement elem = n.toElement();
       if (elem.isNull())
         continue;
-        
+
       if (elem.tagName() == tagToolbar && elem.attribute( attrNoEdit ) != "true" )
         list.append(elem);
 
@@ -871,7 +871,7 @@ void KEditToolbarWidget::loadActionList(QDomElement& elem)
     if (it.tagName() == tagSeparator)
     {
       ToolbarItem *act = new ToolbarItem(m_activeList, tagSeparator, sep_name.arg(sep_num++), QString::null);
-      bool isLineSep = ( it.attribute(attrLineSeparator, "false").lower() == QString::fromLatin1("true") );
+      bool isLineSep = ( it.attribute(attrLineSeparator, "true").lower() == QString::fromLatin1("true") );
       if(isLineSep)
         act->setText(1, LINESEPARATORSTRING);
       else
@@ -1095,9 +1095,9 @@ void KEditToolbarWidget::insertActive(ToolbarItem *item, QListViewItem *before, 
   // let's handle the separator specially
   if (item->text(1) == LINESEPARATORSTRING) {
     new_item = domDocument().createElement(tagSeparator);
-    new_item.setAttribute(attrLineSeparator, "true");
   } else if (item->text(1) == SEPARATORSTRING) {
     new_item = domDocument().createElement(tagSeparator);
+    new_item.setAttribute(attrLineSeparator, "false");
   } else
     new_item = domDocument().createElement(tagAction);
   new_item.setAttribute(attrName, item->internalName());

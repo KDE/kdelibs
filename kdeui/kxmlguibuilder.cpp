@@ -317,7 +317,7 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
     {
       KToolBar *bar = static_cast<KToolBar *>( parent );
 
-      bool isLineSep = false;
+      bool isLineSep = true;
 
       QDomNamedNodeMap attributes = element.attributes();
       unsigned int i = 0;
@@ -326,9 +326,9 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
         QDomAttr attr = attributes.item( i ).toAttr();
 
         if ( attr.name().lower() == d->attrLineSeparator &&
-             attr.value().lower() == QString::fromLatin1("true") )
+             attr.value().lower() == QString::fromLatin1("false") )
         {
-          isLineSep = true;
+          isLineSep = false;
           break;
         }
       }
