@@ -88,7 +88,7 @@ static const char *xNames[CHARSETS_COUNT]={
     ""  // this will always return true...
 };
 
-static QFont::CharSet charsetsIds[CHARSETS_COUNT]={
+static const QFont::CharSet charsetsIds[CHARSETS_COUNT]={
     QFont::Unicode,
     QFont::ISO_8859_1,
     QFont::ISO_8859_2,

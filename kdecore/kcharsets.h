@@ -32,7 +32,7 @@ class KCharsetsPrivate;
 
 /**
  * Charset font and encoder/decoder handling.
- * 
+ *
  * This is needed, because Qt's font matching algorithm gives the font
  * family a higher priority than the charset.  For many applications
  * this is not acceptable, since it can totally obscure the output,
@@ -40,7 +40,7 @@ class KCharsetsPrivate;
  *
  * @author Lars Knoll <knoll@kde.org>
  * @version $Id$
- */ 
+ */
 class KCharsets
 {
     friend class KGlobal;
@@ -56,41 +56,41 @@ public:
     /** destructor */
     virtual ~KCharsets(){}
 
-    /** 
-     * converts an entity to a character. The string must contain only the 
+    /**
+     * converts an entity to a character. The string must contain only the
      * entity without the trailing ';'.
      *	@returns QChar::null if the entity could not be decoded.
      */
     QChar fromEntity(const QString &str) const;
-    /** 
+    /**
      * Overloaded member function. Tries to find an entity in the
-     * @ref QString str. 
+     * @ref QString str.
      * @returns a decoded entity if one could be found, @ref QChar::null
      * otherwise
-     * @param len is a return value, that gives the length of the decoded 
+     * @param len is a return value, that gives the length of the decoded
      * entity.
      */
     QChar fromEntity(const QString &str, int &len) const;
 
-    /** 
-     * converts a QChar to an entity. The returned string does already 
+    /**
+     * converts a QChar to an entity. The returned string does already
      * contain the leading '&' and the trailing ';'.
      */
     QString toEntity(const QChar &ch) const;
 
-    /** 
+    /**
      * lists all available charsets for a given family.
      * if family is omitted, it will return all charsets available.
      */
     QList<QFont::CharSet> availableCharsets(QString family = QString::null);
 
-    /** 
-     * as above, but returns the names of the charsets 
+    /**
+     * as above, but returns the names of the charsets
      */
     QStringList availableCharsetNames(QString family = QString::null);
 
-    /** 
-     * @returns a QFont, which can print the character given, and is closest 
+    /**
+     * @returns a QFont, which can print the character given, and is closest
      * to the font given. if no mathing font could be found, the returned font
      * will have the charset @ref QFont::Any.
      */
@@ -100,7 +100,7 @@ public:
     // or unicode...
 
     /**
-     * sets the @ref QFont f to the charset given in charset. 
+     * sets the @ref QFont f to the charset given in charset.
      * Opposed to @ref QFont's setCharset() function, this function will do
      * it's best to find a font which can display the given charset. It might
      * change the font's family for this purpose, but care is taken to find
@@ -147,12 +147,14 @@ public:
      */
     bool hasUnicode(QFont &font) const;
 
-    enum FixedType { FixedUnknown, Fixed, Proportional }; 
+    enum FixedType { FixedUnknown, Fixed, Proportional };
     enum WeightType { WeightUnknown, Medium, Bold };
     enum SlantType { SlantUnknown, Normal, Italic };
 
 protected:
     void getFontList(KFontStruct mask, KFontStructList& lst) const;
+
+public:
     QString xCharsetName(QFont::CharSet) const;
     QFont::CharSet nameToID(QString name) const;
     QFont::CharSet xNameToID(QString name) const;
