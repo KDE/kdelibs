@@ -558,8 +558,7 @@ bool KCookieJar::parseURL(const QString &_url,
     {
         return false;  // deny everything!!
     }
-    
-    kurl.cleanPath();
+
     _path = kurl.path();
     if (_path.isEmpty())
        _path = L1("/");
