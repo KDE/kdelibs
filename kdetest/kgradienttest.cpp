@@ -22,12 +22,12 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
     p.setPen(Qt::white);
 
     // draw once, so that the benchmarking be fair :-)
-    pix.gradientFill(ca, cb, KPixmap::Vertical);
+    KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::VerticalGradient);
 
     // vertical
     time.start();
     it = time.elapsed();
-    pix.gradientFill(ca, cb, KPixmap::Vertical);
+    KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::VerticalGradient);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Vertical";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -35,7 +35,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // horizontal
     it = time.elapsed();
-    pix.gradientFill(ca, cb, KPixmap::Horizontal);
+    KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::HorizontalGradient);
     ft = time.elapsed() ;
     say.setNum( ft - it); say += " ms, Horizontal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -43,8 +43,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // elliptic
     it = time.elapsed();
-    KPixmapEffect::advancedGradient(pix, ca, cb, 
-				    KPixmapEffect::EllipticGradient);
+    KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::EllipticGradient);
     ft = time.elapsed() ;
     say.setNum( ft - it); say += " ms, Elliptic";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -55,7 +54,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // diagonal
     it = time.elapsed();
-    pix.gradientFill(ca, cb, KPixmap::Diagonal);
+    KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::DiagonalGradient);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Diagonal";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -63,7 +62,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // crossdiagonal
     it = time.elapsed();
-    pix.gradientFill(ca, cb, KPixmap::CrossDiagonal);
+    KPixmapEffect::gradient(pix,ca, cb, KPixmapEffect::CrossDiagonalGradient);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, CrossDiagonal";
     p.drawPixmap(width()/cols, y*height()/rows, pix);
@@ -75,8 +74,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // pyramidal
     it = time.elapsed();
-    KPixmapEffect::advancedGradient(pix, ca, cb, 
-			 KPixmapEffect::PyramidGradient);
+    KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::PyramidGradient);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Pyramid";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -84,8 +82,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // rectangular
     it = time.elapsed();
-    KPixmapEffect::advancedGradient(pix, ca, cb, 
-			 KPixmapEffect::RectangleGradient);
+    KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::RectangleGradient);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, Rectangle";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
@@ -93,8 +90,7 @@ void KGradientWidget::paintEvent(QPaintEvent *ev)
 
     // crosspipe
     it = time.elapsed();
-    KPixmapEffect::advancedGradient(pix, ca, cb, 
-			 KPixmapEffect::PipeCrossGradient);
+    KPixmapEffect::gradient(pix, ca, cb, KPixmapEffect::PipeCrossGradient);
     ft = time.elapsed();
     say.setNum( ft - it); say += " ms, PipeCross";
     p.drawPixmap(x*width()/cols, y*height()/rows, pix);
