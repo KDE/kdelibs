@@ -120,7 +120,7 @@ void KMenuBar::ContextCallback( int index )
   if (position == Floating)
      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
   delete context;
-  warning ("KMenuBar Destructor: finished");
+  debug ("KMenuBar Destructor: finished");
 KMenuBar::~KMenuBar()
 {
 void KMenuBar::mousePressEvent ( QMouseEvent *m )

@@ -296,7 +296,7 @@ int KToolBar::insertLineSeparator( int index )
   for ( KToolBarItem *b = items.first(); b!=NULL; b=items.next() )
     items.remove();
   delete context;
-  warning ("KToolBar Destructor: finished");
+  debug ("KToolBar Destructor: finished");
 }
   if (position == Floating)
 void KToolBar::setMaxHeight (int h)
