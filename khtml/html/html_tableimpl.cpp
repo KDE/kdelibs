@@ -227,39 +227,45 @@ HTMLElementImpl *HTMLTableElementImpl::insertRow( long index, int &exceptioncode
     HTMLTableSectionElementImpl* section = 0L;
     HTMLTableSectionElementImpl* lastSection = 0L;
     NodeImpl *node = firstChild();
-    for ( ; node && index >=0 ; node = node->nextSibling() )
+    bool append = index == -1;
+    for ( ; node && (index>=0 || append) ; node = node->nextSibling() )
     {
         if ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY )
         {
             section = static_cast<HTMLTableSectionElementImpl *>(node);
             lastSection = section;
             //kdDebug(6030) << k_funcinfo << "section id=" << node->id() << " rows:" << section->numRows() << endl;
-            if ( section->numRows() > index )
-                break;
-            else
-                index -= section->numRows();
-            //kdDebug(6030) << "       index is now " << index << endl;
+            if ( !append )
+            {
+                int rows = section->numRows();
+                if ( rows > index )
+                    break;
+                else
+                    index -= rows;
+                //kdDebug(6030) << "       index is now " << index << endl;
+            }
         }
         // Note: we now can have both TR and sections (THEAD/TBODY/TFOOT) as children of a TABLE
         else if ( node->id() == ID_TR )
         {
             section = 0L;
             //kdDebug(6030) << k_funcinfo << "row" << endl;
-            if (!index)
+            if (!append && !index)
             {
                 // Insert row right here, before "node"
                 HTMLTableRowElementImpl* row = new HTMLTableRowElementImpl(docPtr());
                 insertBefore(row, node, exceptioncode );
                 return row;
             }
-            index--;
+            if ( !append )
+                index--;
             //kdDebug(6030) << "       index is now " << index << endl;
         }
         section = 0L;
     }
     // Index == 0 means "insert before first row in current section"
     // or "append after last row" (if there's no current section anymore)
-    if ( !section && index == 0 )
+    if ( !section && ( index == 0 || append ) )
     {
         section = lastSection;
         index = section ? section->numRows() : 0;
@@ -278,19 +284,28 @@ void HTMLTableElementImpl::deleteRow( long index, int &exceptioncode )
 {
     HTMLTableSectionElementImpl* section = 0L;
     NodeImpl *node = firstChild();
+    bool lastRow = index == -1;
+    HTMLTableSectionElementImpl* lastSection = 0L;
     for ( ; node ; node = node->nextSibling() )
     {
         if ( node->id() == ID_THEAD || node->id() == ID_TFOOT || node->id() == ID_TBODY )
         {
             section = static_cast<HTMLTableSectionElementImpl *>(node);
-            if ( section->numRows() > index )
-                break;
-            else
-                index -= section->numRows();
+            lastSection = section;
+            int rows = section->numRows();
+            if ( !lastRow )
+            {
+                if ( rows > index )
+                    break;
+                else
+                    index -= rows;
+            }
         }
         section = 0L;
     }
-    if ( section && index >= 0 && index < section->numRows() )
+    if ( lastRow )
+        lastSection->deleteRow( lastSection->numRows(), exceptioncode );
+    else if ( section && index >= 0 && index < section->numRows() )
         section->deleteRow( index, exceptioncode );
     else
         exceptioncode = DOMException::INDEX_SIZE_ERR;
@@ -582,13 +597,13 @@ HTMLElementImpl *HTMLTableSectionElementImpl::insertRow( long index, int& except
     NodeListImpl *children = childNodes();
     int numRows = children ? (int)children->length() : 0;
     //kdDebug(6030) << k_funcinfo << "index=" << index << " numRows=" << numRows << endl;
-    if ( index < 0 || index > numRows ) {
+    if ( index < -1 || index > numRows ) {
         exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
     }
     else
     {
         r = new HTMLTableRowElementImpl(docPtr());
-        if ( numRows == index )
+        if ( numRows == index || index == -1 )
             appendChild(r, exceptioncode);
         else {
             NodeImpl *n;
@@ -607,6 +622,7 @@ void HTMLTableSectionElementImpl::deleteRow( long index, int &exceptioncode )
 {
     NodeListImpl *children = childNodes();
     int numRows = children ? (int)children->length() : 0;
+    if ( index == -1 ) index = numRows - 1;
     if( index >= 0 && index < numRows )
         HTMLElementImpl::removeChild(children->item(index), exceptioncode);
     else
@@ -687,12 +703,12 @@ HTMLElementImpl *HTMLTableRowElementImpl::insertCell( long index, int &exception
     HTMLTableCellElementImpl *c = 0L;
     NodeListImpl *children = childNodes();
     int numCells = children ? children->length() : 0;
-    if ( index < 0 || index > numCells )
+    if ( index < -1 || index > numCells )
         exceptioncode = DOMException::INDEX_SIZE_ERR; // per the DOM
     else
     {
         c = new HTMLTableCellElementImpl(docPtr(), ID_TD);
-        if(numCells == index)
+        if(numCells == index || index == -1)
             appendChild(c, exceptioncode);
         else {
             NodeImpl *n;
@@ -711,6 +727,7 @@ void HTMLTableRowElementImpl::deleteCell( long index, int &exceptioncode )
 {
     NodeListImpl *children = childNodes();
     int numCells = children ? children->length() : 0;
+    if ( index == -1 ) index = numCells-1;
     if( index >= 0 && index < numCells )
         HTMLElementImpl::removeChild(children->item(index), exceptioncode);
     else
