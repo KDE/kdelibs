@@ -59,9 +59,6 @@ KMWBackend::KMWBackend(QWidget *parent, const char *name)
 	m_layout = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	m_layout->addStretch(1);
 	m_count = 0;
-
-	QWhatsThis::add( this,
-			i18n( "" ) );
 }
 
 bool KMWBackend::isValid(QString& msg)
