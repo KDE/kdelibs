@@ -44,7 +44,11 @@ VCardConverter::~VCardConverter()
 
 bool VCardConverter::vCardToAddressee( const QString &str, Addressee &addr, Version version )
 {
+
+kdDebug() << "VCardConvertor::vCardToAddressee: version = " << version << endl;
+
   if ( version == v2_1 ) {
+    kdDebug() << "Here" << endl;
     addr = d->vcard21parser.readFromString( str );
     return true;
   }

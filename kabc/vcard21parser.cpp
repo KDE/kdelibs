@@ -232,8 +232,10 @@ KABC::Addressee VCard21Parser::readFromString( const QString &data)
 
   // Check if parsing failed
   if (mVCard == 0)
+  {
+     kdDebug() << "Parsing failed" << endl;
      return addressee;
-           
+  }         
   //set the addressees name and formated name
   QStringList tmpList = mVCard->getValues(VCARD_N);
   QString formattedName = "";
@@ -407,110 +409,150 @@ KABC::Address VCard21Parser::readAddressFromQStringList ( const QStringList &dat
   return mAddress;
 }
 
+static QValueList<QString> tokenizeBy(const QString& str, const QRegExp& tok, bool keepEmpties = false) {
+QValueList<QString> tokens;
+unsigned int head, tail;
+unsigned int length = str.length();
+
+  if (length < 1) return tokens;
+
+  if (length == 1) {
+    tokens.append(str);
+    return tokens;
+  }
+
+  for(head = 0, tail = 0; tail < length-1; head = tail+1) {
+    QString thisline;
+
+    tail = str.find(tok, head);
+
+    if (tail > length)           // last token - none at end
+      tail = length;
+
+    if (tail-head > 0 || keepEmpties) {    // it has to be at least 1 long!
+      thisline = str.mid(head, tail-head);
+      tokens.append(thisline);
+    }
+  }
+return tokens;
+}
 
 
 
-VCard21ParserImpl* VCard21ParserImpl::parseVCard( const QString& vc, int *err )
+VCard21ParserImpl *VCard21ParserImpl::parseVCard(const QString& vc, int *err) 
 {
-  int _err = 0;
-  int _state = VC_STATE_BEGIN;
-  QValueList<VCardLine> *_vcdata;
-  QValueList<QString> lines;
+int _err = 0;
+int _state = VC_STATE_BEGIN;
+
+QValueList<VCardLine> *_vcdata;
+QValueList<QString> lines;
 
   _vcdata = new QValueList<VCardLine>;
 
-  lines = QStringList::split( "\r\n", vc );
-
-  // for each line in the vCard
-  for ( QStringList::Iterator j = lines.begin(); j != lines.end(); ++j ) {
+  // lines = tokenizeBy(vc, '\n');
+  lines = tokenizeBy(vc, QRegExp("[\x0d\x0a]"));
+  
+  
+  for (QValueListIterator<QString> j = lines.begin();
+                                   j != lines.end(); ++j) {
     VCardLine _vcl;
 
-    
     // take spaces off the end - ugly but necessary hack
-    for ( int g = (*j).length()-1; g > 0 && (*j)[g].isSpace(); --g )
+    for (int g = (*j).length()-1; g > 0 && (*j)[g].isSpace(); g++)
       (*j)[g] = 0;
 
-    // first token:
-    // verify state, update if necessary
-    if ( _state & VC_STATE_BEGIN) {
-      if ( !qstricmp( (*j).latin1(), VCARD_BEGIN ) ) {
+    //        first token:
+    //              verify state, update if necessary
+    if (_state & VC_STATE_BEGIN) {
+      if (!qstricmp((*j).latin1(), VCARD_BEGIN)) {
         _state = VC_STATE_BODY;
         continue;
       } else {
         _err = VC_ERR_NO_BEGIN;
         break;
       }
-    } else if ( _state & VC_STATE_BODY ) {
-      if ( !qstricmp( (*j).latin1(), VCARD_END ) ) {
+    } else if (_state & VC_STATE_BODY) {
+      if (!qstricmp((*j).latin1(), VCARD_END)) {
         _state |= VC_STATE_END;
         break;
       }
 
       // split into two tokens
-      int colon = (*j).find( ':' );
-      if ( colon < 0 ) {
+      // QValueList<QString> linetokens = tokenizeBy(*j, QRegExp(":"));
+      unsigned int tail = (*j).find(':', 0);
+      if (tail > (*j).length()) {  // invalid line - no ':'
         _err = VC_ERR_INVALID_LINE;
         break;
       }
 
-      QString key = (*j).left( colon );
-      QString value = (*j).mid( colon + 1 );
-    
+      QValueList<QString> linetokens;
+      QString tmplinetoken;
+      tmplinetoken = (*j);
+      tmplinetoken.truncate(tail);
+      linetokens.append(tmplinetoken);
+      tmplinetoken = (*j).mid(tail+1);
+      linetokens.append(tmplinetoken);
+
       // check for qualifiers and
       // set name, qualified, qualifier(s)
-      QStringList keyTokens = QStringList::split( QRegExp(";"), key );
+      //QValueList<QString> nametokens = tokenizeBy(linetokens[0], ';');
+      QValueList<QString> nametokens = tokenizeBy(linetokens[0], QRegExp(";"));
       bool qp = false, first_pass = true;
       bool b64 = false;
-    
-      if ( keyTokens.count() > 0 ) {
-        _vcl.qualified = false;
-        _vcl.name = keyTokens[ 0 ].lower();
 
-        for ( QStringList::Iterator z = keyTokens.begin(); z != keyTokens.end(); ++z ) {
+      if (nametokens.count() > 0) {
+        _vcl.qualified = false;
+        _vcl.name = nametokens[0];
+        _vcl.name = _vcl.name.lower();
+        for (QValueListIterator<QString> z = nametokens.begin();
+                                         z != nametokens.end();
+                                         ++z) {
           QString zz = (*z).lower();
           if (zz == VCARD_QUOTED_PRINTABLE || zz == VCARD_ENCODING_QUOTED_PRINTABLE) {
             qp = true;
           } else if (zz == VCARD_BASE64) {
             b64 = true;
-          } else if ( !first_pass ) {
+	  } else if (!first_pass) {
             _vcl.qualified = true;
-            _vcl.qualifiers.append( zz );
+            _vcl.qualifiers.append(zz);
           }
           first_pass = false;
-        }
+	}
       } else {
         _err = VC_ERR_INVALID_LINE;
       }
 
-      if ( _err != 0 )
-        break;
-     
-      if ( _vcl.name == VCARD_VERSION )
+      if (_err != 0) break;
+
+      if (_vcl.name == VCARD_VERSION)
         _state |= VC_STATE_HAVE_VERSION;
 
-      if ( _vcl.name == VCARD_N || _vcl.name == VCARD_FN )
+      if (_vcl.name == VCARD_N || _vcl.name == VCARD_FN)
         _state |= VC_STATE_HAVE_N;
 
       // second token:
       //    split into tokens by ;
       //    add to parameters vector
-      if ( b64 ) {
-        if ( value[ value.length() - 1 ] != '=' )
+      //_vcl.parameters = tokenizeBy(linetokens[1], ';');
+      if (b64) {
+        if (linetokens[1][linetokens[1].length()-1] != '=')
           do {
-            value += *( ++j );
-          } while ( (*j)[ (*j).length() - 1 ] != '=' );
+            linetokens[1] += *(++j);
+          } while ((*j)[(*j).length()-1] != '=');
       } else {
-        if ( qp ) { // join any split lines
-          while ( value[ value.length() - 1 ] == '=' ) {
-            value.remove( value.length() - 1, 1 );
-            value.append(*( ++j ));
+        if (qp) {        // join any split lines
+          while (linetokens[1][linetokens[1].length()-1] == '=') {
+            linetokens[1].remove(linetokens[1].length()-1, 1);
+            linetokens[1].append(*(++j));
           }
         }
-
-        _vcl.parameters = QStringList::split( QRegExp(";"), value, true );
-        if ( qp ) { // decode the quoted printable
-          for ( QStringList::Iterator z = _vcl.parameters.begin(); z != _vcl.parameters.end(); ++z )
-            _vcl.qpDecode( *z );
+        _vcl.parameters = tokenizeBy(linetokens[1], QRegExp(";"), true);
+        if (qp) {        // decode the quoted printable
+          for (QValueListIterator<QString> z = _vcl.parameters.begin();
+                                           z != _vcl.parameters.end();
+	                                   ++z) {
+            _vcl.qpDecode(*z);
+          }
         }
       }
     } else {
@@ -519,22 +561,22 @@ VCard21ParserImpl* VCard21ParserImpl::parseVCard( const QString& vc, int *err )
     }
 
     // validate VCardLine
-    if ( !_vcl.isValid() ) {
+    if (!_vcl.isValid()) {
       _err = VC_ERR_INVALID_LINE;
       break;
     }
 
     // add to vector
-    _vcdata->append( _vcl );
+    _vcdata->append(_vcl);
   }
 
   // errors to check at the last minute (exit state related)
-  if ( _err == 0 ) {
-    if ( !( _state & VC_STATE_END ) ) // we have to have an end!!
+  if (_err == 0) {
+    if (!(_state & VC_STATE_END))         // we have to have an end!!
       _err = VC_ERR_NO_END;
 
-    if ( !( _state & VC_STATE_HAVE_N ) || // we have to have the mandatories!
-        !( _state & VC_STATE_HAVE_VERSION ) )
+    if (!(_state & VC_STATE_HAVE_N) ||    // we have to have the mandatories!
+        !(_state & VC_STATE_HAVE_VERSION))
       _err = VC_ERR_MISSING_MANDATORY;
   }
 
@@ -550,8 +592,9 @@ VCard21ParserImpl* VCard21ParserImpl::parseVCard( const QString& vc, int *err )
   }
 
   return new VCard21ParserImpl(_vcdata);
-}
 
+  
+}
 
 VCard21ParserImpl::VCard21ParserImpl(QValueList<VCardLine> *_vcd) : _vcdata(_vcd)
 {
