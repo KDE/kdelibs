@@ -38,6 +38,7 @@
 #include "kdebug.h"
 #include "kextsock.h"
 #include "ksockaddr.h"
+#include "ksocks.h"
 
 #include "netsupp.h"
 
@@ -180,7 +181,7 @@ static QString pretty_sock(addrinfo *p)
   ret += sa->pretty();
   return ret;
 }
-      
+
 
 /*
  * class KExtendedSocket
@@ -374,32 +375,32 @@ bool KExtendedSocket::unsetBindPort()
  * returns the binding port
  */
 QString KExtendedSocket::bindPort() const
-{ 
-  return d->localservice; 
+{
+  return d->localservice;
 }
 
 /*
  * sets the binding address
  */
 bool KExtendedSocket::setBindAddress(const QString& host, int port)
-{ 
-  return setBindHost(host) && setBindPort(port); 
+{
+  return setBindHost(host) && setBindPort(port);
 }
 
 /*
  * same
  */
 bool KExtendedSocket::setBindAddress(const QString& host, const QString& service)
-{ 
-  return setBindHost(host) && setBindPort(service); 
+{
+  return setBindHost(host) && setBindPort(service);
 }
 
 /*
  * unsets binding address
  */
 bool KExtendedSocket::unsetBindAddress()
-{ 
-  return unsetBindHost() && unsetBindPort(); 
+{
+  return unsetBindHost() && unsetBindPort();
 }
 
 /*
@@ -578,7 +579,7 @@ int KExtendedSocket::listen(int N)
 	  continue;
 	}
 
-      if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+      if (KSocks::self()->bind(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	{
 	  kdDebug(170) << "Failed to bind: " << perror << endl;
 	  ::close(sockfd);
@@ -600,7 +601,7 @@ int KExtendedSocket::listen(int N)
   m_status = listening;
   setFlags(IO_Sequential | IO_Raw | IO_ReadWrite);
 
-  int retval = ::listen(sockfd, N);
+  int retval = KSocks::self()->listen(sockfd, N);
   if (retval == -1)
     setError(IO_ListenError, errno);
   return retval == -1 ? -1 : 0;
@@ -615,7 +616,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
   if (m_status < listening)
     if (listen() < 0)
       return -2;		// error!
-  
+
   // let's see
   // if we have a timeout in place, we have to place this socket in non-blocking
   // mode
@@ -634,7 +635,7 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
       kdDebug(170).form("Accepting on %d with %d.%06d second timeout\n",
 		     sockfd, d->timeout.tv_sec, d->timeout.tv_usec);
       // check if there is anything to accept now
-      int retval = select(sockfd + 1, &set, NULL, NULL, &d->timeout);
+      int retval = KSocks::self()->select(sockfd + 1, &set, NULL, NULL, &d->timeout);
       if (retval == -1)
 	{
 	  setError(IO_UnspecifiedError, errno);
@@ -648,12 +649,12 @@ int KExtendedSocket::accept(KExtendedSocket *&sock)
     }
 
   // it's common stuff here
-  int newfd = ::accept(sockfd, NULL, &len);
+  int newfd = KSocks::self()->accept(sockfd, NULL, &len);
 
   if (newfd == -1)
     {
       setError(IO_AcceptError, errno);
-      kdWarning() << "Error accepting on socket " << sockfd << ":" 
+      kdWarning() << "Error accepting on socket " << sockfd << ":"
 		  << perror << endl;
       return -1;
     }
@@ -736,7 +737,7 @@ int KExtendedSocket::connect()
 	  sockfd = ::socket(p->ai_family, p->ai_socktype, p->ai_protocol);
 	  if (sockfd == -1)
 	    continue;		// cannot create this socket
-	  if (::bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
+	  if (KSocks::self()->bind(sockfd, q->ai_addr, q->ai_addrlen) == -1)
 	    {
 	      kdDebug(170) << "Bind failed: " << perror << endl;
 	      ::close(sockfd);
@@ -763,7 +764,7 @@ int KExtendedSocket::connect()
 	  setBlockingMode(false);
 
 	  // now try and connect
-	  if (::connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+	  if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	    {
 	      // this could be EWOULDBLOCK
 	      if (errno != EWOULDBLOCK && errno != EINPROGRESS)
@@ -779,14 +780,14 @@ int KExtendedSocket::connect()
 	      FD_SET(sockfd, &rd);
 	      FD_SET(sockfd, &wr);
 
-	      int retval = select(sockfd + 1, &rd, &wr, NULL, &d->timeout);
+	      int retval = KSocks::self()->select(sockfd + 1, &rd, &wr, NULL, &d->timeout);
 	      if (retval == -1)
 		continue;	// system error
 	      else if (retval == 0)
 		{
 		  ::close(sockfd);
 		  sockfd = -1;
-		  kdDebug(170) << "Time out while trying to connect to " << 
+		  kdDebug(170) << "Time out while trying to connect to " <<
 		    pretty_sock(p) << endl;
 		  m_status = lookupDone;
 		  setError(IO_TimeOutError, 0);
@@ -813,7 +814,7 @@ int KExtendedSocket::connect()
 	      if (retval == -1 || errcode != 0)
 		{
 		  // socket did not connect
-		  kdDebug(170) << "Socket " << sockfd << " did not connect: " 
+		  kdDebug(170) << "Socket " << sockfd << " did not connect: "
 			    << strerror(errcode) << endl;
 		  ::close(sockfd);
 		  sockfd = -1;
@@ -840,7 +841,7 @@ int KExtendedSocket::connect()
       else
 	{
 	  // without timeouts
-	  if (::connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
+	  if (KSocks::self()->connect(sockfd, p->ai_addr, p->ai_addrlen) == -1)
 	    {
 	      kdDebug(170) << "Socket " << sockfd << " did not connect: " << perror << endl;
 	      ::close(sockfd);
@@ -922,7 +923,7 @@ int KExtendedSocket::readBlock(char *data, uint maxlen)
   if (sockfd == -1)
     return -2;
 
-  int retval = ::read(sockfd, data, maxlen);
+  int retval = KSocks::self()->read(sockfd, data, maxlen);
   if (retval == -1)
     setError(IO_ReadError, errno);
   return retval;
@@ -935,7 +936,7 @@ int KExtendedSocket::writeBlock(const char *data, uint len)
   if (sockfd == -1)
     return -2;
 
-  int retval = ::write(sockfd, data, len);
+  int retval = KSocks::self()->write(sockfd, data, len);
   if (retval == -1)
     setError(IO_WriteError, errno);
   return retval;
@@ -970,13 +971,13 @@ int KExtendedSocket::doLookup(const QString &host, const QString &serv, addrinfo
   int err;
 
   // FIXME! What is the encoding?
-  err = getaddrinfo(host.isNull() ? NULL : (const char*)host.utf8(), 
+  err = getaddrinfo(host.isNull() ? NULL : (const char*)host.utf8(),
 		    serv.isNull() ? NULL : (const char*)serv.utf8(),
 		    &hint, res);
   return err;
 }
 
-int KExtendedSocket::resolve(sockaddr *sock, ksocklen_t len, QString &host, 
+int KExtendedSocket::resolve(sockaddr *sock, ksocklen_t len, QString &host,
 			     QString &port, int flags)
 {
   int err;
@@ -1043,7 +1044,7 @@ KSocketAddress *KExtendedSocket::localAddress(int fd)
   ksize_t len = 0;
 
   /* find out the socket length, in advance */
-  if (getsockname(fd, sa, &len) == -1)
+  if (KSocks::self()->getsockname(fd, sa, &len) == -1)
     return NULL;
 
   /* now malloc the socket */
@@ -1051,7 +1052,7 @@ KSocketAddress *KExtendedSocket::localAddress(int fd)
   if (sa == NULL)
     return NULL;
 
-  if (getsockname(fd, sa, &len) == -1)
+  if (KSocks::self()->getsockname(fd, sa, &len) == -1)
     {
       free(sa);
       return NULL;
@@ -1070,7 +1071,7 @@ KSocketAddress *KExtendedSocket::peerAddress(int fd)
   ksize_t len = 0;
 
   /* find out the socket length, in advance */
-  if (getpeername(fd, sa, &len) == -1)
+  if (KSocks::self()->getpeername(fd, sa, &len) == -1)
     return NULL;
 
   /* now malloc the socket */
@@ -1078,7 +1079,7 @@ KSocketAddress *KExtendedSocket::peerAddress(int fd)
   if (sa == NULL)
     return NULL;
 
-  if (getpeername(fd, sa, &len) == -1)
+  if (KSocks::self()->getpeername(fd, sa, &len) == -1)
     {
       free(sa);
       return NULL;

@@ -42,6 +42,8 @@ extern "C" {
 #include "kextsock.h"
 #include "ksockaddr.h"
 
+#include "ksocks.h"
+
 extern "C" {
 #include <errno.h>
 #include <fcntl.h>
@@ -91,7 +93,7 @@ KSocket::KSocket( int _sock)
   // getsockname will fill in all the appropiate details, and
   // since sockaddr_in will exist everywhere and is somewhat compatible
   // with sockaddr_in6, we can use it to avoid needless ifdefs.
-  getsockname(_sock, (struct sockaddr *)&sin, &len);
+  KSocks::self()->getsockname(_sock, (struct sockaddr *)&sin, &len);
 
   // Now that we've got the domain, remember it
   domain = sin.sin_family;
