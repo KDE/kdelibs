@@ -134,9 +134,10 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLPartBrowserExtension;
   friend class KHTMLFontSizeAction;
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE enableJScript )
-  Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE enableJava )
+  Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
   Q_PROPERTY( bool autoloadImages READ autoloadImages WRITE setAutoloadImages )
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
+  Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 

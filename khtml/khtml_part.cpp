@@ -858,6 +858,11 @@ QVariant KHTMLPart::executeScheduledScript()
 
 void KHTMLPart::enableJava( bool enable )
 {
+  setJavaEnabled( enable );
+}
+
+void KHTMLPart::setJavaEnabled( bool enable )
+{
   d->m_bJavaForce = enable;
   d->m_bJavaOverride = true;
 }
