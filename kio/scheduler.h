@@ -31,6 +31,7 @@ namespace KIO {
 
     class Slave;
     class SlaveList;
+    struct AuthKey;
 
     class Scheduler : public QObject, virtual public DCOPObject {
 	Q_OBJECT
@@ -46,7 +47,7 @@ namespace KIO {
 		{ self()->_cancelJob(job); }
         static void jobFinished(KIO::SimpleJob *job, KIO::Slave *slave)
             	{ self()->_jobFinished(job, slave); }
-            	
+
         static void putSlaveOnHold(KIO::SimpleJob *job, const KURL &url)
         	{ self()->_putSlaveOnHold(job, url); }
 
@@ -68,6 +69,7 @@ namespace KIO {
     protected slots:
         void startStep();
         void slotCleanIdleSlaves();
+        void slotAuthenticationKey( const QCString&, const QCString& );
 
     protected:
         bool startStep(ProtocolInfo *protInfo);
@@ -100,12 +102,47 @@ namespace KIO {
 	 */
 	SlaveList *slaveList;
 	SlaveList *idleSlaves;
-	
+
 	ProtocolInfoDict *protInfoDict;
-	
+
 	Slave *slaveOnHold;
 	KURL urlOnHold;
-    };
+
+
+    typedef QList<AuthKey> AuthKeyList;
+    AuthKeyList cachedAuthKeys;
+
+    /**
+     * Checks whether the password daemon kdesud is
+     * running or if it can be started if it is not.
+     *
+     * @return true if password daemon is/can be started successfully.
+     */
+    bool pingCacheDaemon() const;
+
+    /**
+     * Increments the reference count for application using the
+     * give authorization key.
+     *
+     * The reference counting is used by @ref delCachedAuthentication
+     * to determine when it is safe to delete the key from the cache.
+     *
+     * A call to this function will fail, i.e. return false, if there
+     * is no entry for the given @p groupname value and/or the cache
+     * deamon, @p kdesud, cannot be contacted.
+     *
+     * @return true if the registration succeeds.
+     */
+    bool regCachedAuthKey( const QCString&, const QCString& );
+
+    /**
+     * Deletes any cached keys for the given group.
+     *
+     * @param grpname cached authentication key to be deleted.
+     */
+    void delCachedAuthKeys( AuthKeyList& grpname );
+
 };
 
+};
 #endif

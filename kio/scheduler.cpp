@@ -26,6 +26,7 @@
 #include <kprotocolmanager.h>
 #include <assert.h>
 #include <kstaticdeleter.h>
+#include <kdesu/client.h>
 
 //
 // Slaves may be idle for MAX_SLAVE_IDLE time before they are being returned
@@ -35,6 +36,33 @@
 using namespace KIO;
 
 Scheduler *Scheduler::instance = 0;
+
+/*
+* Structure to cache authorization info from io-slaves.
+*/
+struct KIO::AuthKey
+{
+  AuthKey() {}
+
+  AuthKey(const QCString& k, const QCString& g, bool p) {
+    key = k;
+    group = g;
+    persist = p;
+  }
+
+  bool isKeyMatch( const QCString& val ) {
+    return (val==key);
+  }
+
+  bool isGroupMatch( const QCString& val ) {
+    return (val==group);
+  }
+
+  QCString key;
+  QCString group;
+  bool persist;
+};
+
 
 class KIO::Scheduler::ProtocolInfo
 {
@@ -97,7 +125,13 @@ Scheduler::Scheduler()
 
 Scheduler::~Scheduler()
 {
-//fprintf(stderr, "Destructing KIO::Scheduler...\n");
+    //fprintf(stdout, "Destructing KIO::Scheduler...\n");
+
+    // Delete any stored authorization info now...
+    if( !cachedAuthKeys.isEmpty() )
+      delCachedAuthKeys( cachedAuthKeys );
+
+    cachedAuthKeys.setAutoDelete(true);
     protInfoDict->setAutoDelete(true);
     delete protInfoDict; protInfoDict = 0;
     delete idleSlaves; idleSlaves = 0;
@@ -265,9 +299,11 @@ bool Scheduler::startStep(ProtocolInfo *protInfo)
                 slaveList->append(slave);
                 idleSlaves->append(slave);
                 connect(slave, SIGNAL(slaveDied(KIO::Slave *)),
-			SLOT(slotSlaveDied(KIO::Slave *)));
+			            SLOT(slotSlaveDied(KIO::Slave *)));
                 connect(slave, SIGNAL(slaveStatus(pid_t,const QCString &,const QString &, bool)),
                         SLOT(slotSlaveStatus(pid_t,const QCString &, const QString &, bool)));
+                connect(slave,SIGNAL(authenticationKey(const QCString&, const QCString&)),
+                        SLOT(slotAuthenticationKey(const QCString&, const QCString&)));
              }
              else
              {
@@ -347,6 +383,101 @@ void Scheduler::_jobFinished(SimpleJob *job, Slave *slave)
     if (protInfo->joblist.count())
     {
        mytimer.start(0, true);
+    }
+}
+
+void Scheduler::slotAuthenticationKey( const QCString& key, const QCString& group )
+{
+    AuthKey* auth_key = cachedAuthKeys.first();
+    for( ; auth_key !=0 ; auth_key=cachedAuthKeys.next() )
+    {
+        kdDebug(7006) << "Cached: " << auth_key->key << " :" << endl
+                      << "New: " << key << " :" << endl;
+        if( auth_key->isKeyMatch(key) )
+            return ;
+    }
+
+    cachedAuthKeys.append( new AuthKey (key, group, false) );
+    regCachedAuthKey( key, group );
+}
+
+bool Scheduler::pingCacheDaemon() const
+{
+    KDEsuClient client;
+    int sucess = client.ping();
+    if( sucess == -1 )
+    {
+        //fprintf(stdout, "No running \"kdesu\" daemon found. Attempting to start one...\n");
+        sucess = client.startServer();
+        if( sucess == -1 )
+        {
+            //fprintf(stdout, "Cannot start a new \"kdesu\" deamon!!\n");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Scheduler::regCachedAuthKey( const QCString& key, const QCString& group )
+{
+    if( !pingCacheDaemon() )
+        return false;
+
+    bool ok;
+    KDEsuClient client;
+    QCString ref_key = key.copy() + "-refcount";
+    int count = client.getVar(ref_key).toInt( &ok );
+    kdDebug(7006) << "Register key: " << ref_key << endl;
+    if( ok )
+    {
+        QCString val;
+        val.setNum( count+1 );
+        kdDebug(7006) << "Setting reference count to: " << val << endl;
+        count = client.setVar( ref_key, val, 0, group);
+        if( count == -1 )
+            kdDebug(7006) << "Unable to increment reference count!" << endl;
+    }
+    else
+    {
+        kdDebug(7006) << "Setting reference count to: 1" << endl;
+        count = client.setVar( ref_key, "1", 0, group );
+        if( count == -1 )
+            kdDebug(7006) << "Unable to set reference count!" << endl;
+    }
+    return true;
+}
+
+void Scheduler::delCachedAuthKeys( AuthKeyList& list )
+{
+    if( !pingCacheDaemon() )
+        return;
+
+    bool ok;
+    int count;
+    QCString val, ref_key;
+    KDEsuClient client;
+    AuthKey* auth_key = list.first();
+    for( ; auth_key!=0 ; auth_key=list.next() )
+    {
+        // Do not delete passwords that are supposed
+        // to be persistent
+        if( auth_key->persist )
+            continue;
+
+        ref_key = auth_key->key.copy() + "-refcount";
+        count = client.getVar(ref_key).toInt( &ok );
+        if( ok )
+        {
+            if( count > 1 )
+            {
+                val.setNum(count-1);
+                client.setVar( ref_key, val, 0, auth_key->group );                
+            }
+            else
+            {
+	       client.delVars(auth_key->key);                
+            }
+        }
     }
 }
 
@@ -438,8 +569,9 @@ void Scheduler::_removeSlaveOnHold()
 static KStaticDeleter<Scheduler> ksds;
 
 Scheduler* Scheduler::self() {
-    if ( !instance )
-	instance = ksds.setObject(new Scheduler);
+    if ( !instance ) {
+	    instance = ksds.setObject(new Scheduler);
+    }
 
     return instance;
 }

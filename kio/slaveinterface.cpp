@@ -63,6 +63,7 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     int i;
     Q_INT8 b;
     unsigned long ul;
+	bool f;
 
     switch( _cmd ) {
     case MSG_DATA:
@@ -166,9 +167,8 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     case INF_NEED_PASSWD: {
 	kdDebug(7007) << "needs passwd\n";
 	QString user;
-	bool lockUserName;
-	stream >> str1 >> user >> lockUserName;
-	openPassDlg( str1, user, lockUserName);
+	stream >> str1 >> user >> f;
+	openPassDlg( str1, user, f);
 	break;
     }
     case INF_MESSAGEBOX: {
@@ -210,9 +210,11 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
         break;
     }
     case MSG_AUTH_KEY: {
-        stream >> str1;
-        kdDebug(7007) << "Got auth key: " << str1 << endl;
-        authKey( str1 );
+        QCString key, group;
+        stream >> key >> group;
+        kdDebug(7007) << "Got auth-key: " << key << ": and group-key: "
+                      << group << ":" << endl;
+        authenticationKey( key, group );
         break;
     }
     default:

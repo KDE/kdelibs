@@ -171,7 +171,7 @@ signals:
     void gettingFile( const QString & ) ; // ?
     void infoMessage( const QString & ) ;
     void connectFinished();
-    void authKey( const QString & );
+    void authenticationKey( const QCString &, const QCString & );
 
 protected:
     /////////////////

@@ -597,8 +597,11 @@ protected:
 
     /**
      * Internal function to transmit authentication key to the application.
+     *
+     * @param key       the authorization key matched or created
+     * @param group     the authorization group-key matched or created
      */
-    void sendAuthKey( const QString& key );
+    void sendAuthenticationKey( const QCString&, const QCString& );
 
     /**
      * Name of the protocol supported by this slave
