@@ -7,3 +7,9 @@ all:
 	automake
 	autoconf
 
+dist:
+	aclocal 
+	autoheader
+	automake --foreign --include-deps
+	autoconf
+
