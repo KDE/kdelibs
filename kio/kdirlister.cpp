@@ -177,17 +177,25 @@ void KDirLister::openURL( const KURL& _url, bool _showDotFiles, bool _keep )
 void KDirLister::stop()
 {
   // Stop all running jobs
+  uint dirs = m_lstDirs.count();
   KIO::ListJob* job;
   QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator it = d->jobs.begin();
   while ( it != d->jobs.end() )
   {
     job = it.key();
+    if ( dirs > 1 )
+      emit canceled( job->url() );
     job->disconnect( this );
     job->kill();
     ++it;
   }
 
-  d->jobs.clear();
+  if ( !d->jobs.isEmpty() )
+  {
+    emit canceled();
+    d->jobs.clear();
+  }
+
   m_job = 0L;
   m_bComplete = true;
 }
@@ -195,7 +203,7 @@ void KDirLister::stop()
 void KDirLister::stop( const KURL& _url )
 {
   // TODO: consider to stop all the "child jobs" of _url as well
-
+  bool jobsRunning = (!d->jobs.isEmpty());
   KIO::ListJob *job;
   QMap< KIO::ListJob *, QValueList<KIO::UDSEntry> >::Iterator it = d->jobs.begin();
   while ( it != d->jobs.end() )
@@ -209,6 +217,7 @@ void KDirLister::stop( const KURL& _url )
       d->jobs.remove( it );
       job->disconnect( this );
       job->kill();
+      emit canceled( _url );
       break;
     }
     else
@@ -216,7 +225,11 @@ void KDirLister::stop( const KURL& _url )
   }
 
   if ( d->jobs.isEmpty() )    // m_job already 0L
+  {
     m_bComplete = true;
+    if ( jobsRunning )  // we really killed a job
+      emit canceled();
+  }
   else if ( !m_job )
     m_job = d->jobs.begin().key();
 }
