@@ -101,44 +101,109 @@ HandlerImpl::rows() const
                         break;
                     }
                 case FIELD_TYPE_TIMESTAMP:
-                    // must be rewritten
-                    v.asDateTime();
-                    break;
+                    {
+                        kdDebug(20012) << "converting Timestamp value: " << v.toString()
+                                       << " of size " << len[i] << endl;
+                        int y = 0, m = 0, d = 0, h = 0, mm = 0, s = 0;
+                        QString str = v.toString();
+                        switch (len[i]) { // interpret values depending on length
+                        case 2:
+                        case 4:
+                            y = str.toInt();
+                            break;
+                        case 6:
+                            y = str.left(2).toInt();
+                            m = str.mid(2,2).toInt();
+                            d = str.right(2).toInt();
+                            break;
+                        case 8:
+                            y = str.left(4).toInt();
+                            m = str.mid(4,2).toInt();
+                            d = str.right(2).toInt();
+                            break;                            
+                        case 10:
+                            y = str.left(2).toInt();
+                            m = str.mid(2,2).toInt();
+                            d = str.mid(4,2).toInt();
+                            h = str.mid(6,2).toInt();
+                            mm = str.right(2).toInt();
+                        case 12:
+                            y = str.left(2).toInt();
+                            m = str.mid(2,2).toInt();
+                            d = str.mid(4,2).toInt();
+                            h = str.mid(6,2).toInt();
+                            mm = str.mid(8,2).toInt();
+                            s = str.right(2).toInt();
+                            break;
+                        case 14:
+                            y = str.left(4).toInt();
+                            m = str.mid(4,2).toInt();
+                            d = str.mid(6,2).toInt();
+                            h = str.mid(8,2).toInt();
+                            mm = str.mid(10,2).toInt();
+                            s = str.right(2).toInt();
+                            break;
+                        default:
+                            break;
+                        }
+                        v = Value (QDateTime(QDate(y,m,d),QTime(h,mm,s)));
+                        break;    
+                    } 
                 case FIELD_TYPE_DATE:
                     {
-                        QString str = v.toString();
-                        QStringList lst = QStringList::split("-",str);
+                        QStringList lst = QStringList::split("-",v.toString());
                         if (lst.count() == 3) { // date has correct format                            
                             int y = lst[0].toInt();
                             int m = lst[1].toInt();
                             int d = lst[2].toInt();
                             v = Value(QDate(y,m,d));
                         } else {
-                            v = Value(QString());
+                            v = Value(QDate());
                         }
                         break;
                     }
                 case FIELD_TYPE_TIME:
-                    // must be rewritten
-                    v.asTime();
-                    break;
+                    {
+                        QStringList lst = QStringList::split(":",v.toString());
+                        if (lst.count() == 3) { //time has correct format
+                            int h = lst[0].toInt();
+                            int m = lst[1].toInt();
+                            int s = lst[2].toInt();
+                            v = Value(QTime(h,m,s));
+                        } else {
+                            v = Value(QTime());
+                        }
+                        break;
+                    }
                 case FIELD_TYPE_DATETIME:
-                    // must be rewritten
-                    v.asDateTime();
-                    break;
+                    {
+                        kdDebug(20012) << "converting datetime value: " << v.toString() << endl;
+                        QStringList lst = QStringList::split(" ",v.toString());
+                        QStringList dt = QStringList::split("-",lst[0]);
+                        dt += QStringList::split(":",lst[1]);
+                        if (dt.count() == 6) { // values ok
+                            int y = lst[0].toInt();
+                            int m = lst[1].toInt();
+                            int d = lst[2].toInt();
+                            int h = lst[3].toInt();
+                            int mm = lst[4].toInt();
+                            int s = lst[5].toInt();
+                            v = Value(QDateTime(QDate(y,m,d),QTime(h,mm,s)));
+                        } else {
+                            v = Value(QDateTime());
+                        }
+                        break;
+                    }
                 case FIELD_TYPE_YEAR:
-                    v.asInt();
+                    v = QVariant(v.toString().toInt());
                     break;
                 case FIELD_TYPE_STRING:
                 case FIELD_TYPE_BLOB:
                     break;
                 case FIELD_TYPE_SET:
-                    // must be rewritten
-                    v.asStringList();
+                    v = QVariant(QStringList::split(",",v.toString()));
                     break;
                 case FIELD_TYPE_ENUM:
-                    // must be rewritten
-                    v.asStringList();
                     break;
                 default:
                     break;
