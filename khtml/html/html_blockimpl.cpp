@@ -259,20 +259,41 @@ void HTMLMarqueeElementImpl::parseAttribute(AttributeImpl *attr)
 HTMLLayerElementImpl::HTMLLayerElementImpl(DocumentPtr *doc, ushort _tagid)
     : HTMLDivElementImpl( doc, _tagid )
 {
-    if (_tagid == ID_LAYER)
-        addCSSProperty(CSS_PROP_POSITION, CSS_VAL_ABSOLUTE);
+    absolute = false;
+    fixed = false;
 }
 
 void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
 {
-//    HTMLElementImpl::parseAttribute(attr);
-
-    // layers are evil
+    // Layers are evil
+    // They are mainly implemented here to correctly parse the hidden attribute
     switch(attr->id()) {
         case ATTR_LEFT:
+            if (!absolute && id() == ID_LAYER) {
+                addCSSProperty(CSS_PROP_POSITION, CSS_VAL_ABSOLUTE);
+                absolute = true;
+            }
             addCSSProperty(CSS_PROP_LEFT, attr->value());
             break;
         case ATTR_TOP:
+            if (!absolute && id() == ID_LAYER) {
+                addCSSProperty(CSS_PROP_POSITION, CSS_VAL_ABSOLUTE);
+                absolute = true;
+            }
+            addCSSProperty(CSS_PROP_TOP, attr->value());
+            break;
+        case ATTR_PAGEX:
+            if (!fixed) {
+                addCSSProperty(CSS_PROP_POSITION, CSS_VAL_FIXED);
+                fixed = true;
+            }
+            addCSSProperty(CSS_PROP_LEFT, attr->value());
+            break;
+        case ATTR_PAGEY:
+            if (!fixed) {
+                addCSSProperty(CSS_PROP_POSITION, CSS_VAL_FIXED);
+                fixed = true;
+            }
             addCSSProperty(CSS_PROP_TOP, attr->value());
             break;
         case ATTR_WIDTH:
@@ -301,9 +322,11 @@ void HTMLLayerElementImpl::parseAttribute(AttributeImpl *attr)
             break;
         case ATTR_VISIBILITY:
             if (attr->value().lower() == "show")
-                addCSSProperty(CSS_PROP_VISIBILITY, "visible");
+                addCSSProperty(CSS_PROP_VISIBILITY, CSS_VAL_VISIBLE);
             else if (attr->value().lower() == "hide")
-                addCSSProperty(CSS_PROP_VISIBILITY, "hidden");
+                addCSSProperty(CSS_PROP_VISIBILITY, CSS_VAL_HIDDEN);
+            else if (attr->value().lower() == "inherit")
+                addCSSProperty(CSS_PROP_VISIBILITY, CSS_VAL_INHERIT);
             break;
         default:
             HTMLElementImpl::parseAttribute(attr);

@@ -91,6 +91,9 @@ public:
     HTMLLayerElementImpl( DocumentPtr *doc, ushort _tagid );
 
     virtual void parseAttribute(AttributeImpl *);
+private:
+    bool absolute;
+    bool fixed;
 };
 
 } //namespace
