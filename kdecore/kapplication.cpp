@@ -1685,7 +1685,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
     switch ( _event->type ) {
         case ClientMessage:
         {
-#if KDE_IS_VERSION( 3, 3, 91 )
+#if KDE_IS_VERSION( 3, 90, 90 )
 #warning This should be already in Qt, check.
 #endif
         // Workaround for focus stealing prevention not working when dragging e.g. text from KWrite
