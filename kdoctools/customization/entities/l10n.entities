@@ -511,8 +511,8 @@
 <!ENTITY % kde.i-default "IGNORE">
 ]]>
 
-<!ENTITY % Northern Sami "IGNORE">
-<![%Northern Sami;[
+<!ENTITY % Northern-Sami "IGNORE">
+<![%Northern-Sami;[
 <!ENTITY % kde.l10n.ents PUBLIC "-//KDE//ENTITIES Northern Sami Documentation V1.0//SE"
            "../se/lang.entities">
 %kde.l10n.ents;
