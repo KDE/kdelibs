@@ -83,7 +83,7 @@ KLocale::KLocale( const char *_catalogue )
     
     /* Set the text message domain.  */
     k_bindtextdomain ( catalogue , kapp->kdedir() + "/locale");
-    k_bindtextdomain ( SYSTEM_MESSAGES,  kapp->kdedir() + "/locale");
+    k_bindtextdomain ( SYSTEM_MESSAGES,  kapp->kdedir() + "/share/locale");
 
     enabled = 1;
 
