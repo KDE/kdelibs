@@ -32,7 +32,8 @@
 
 namespace KIO { class Job; class ListJob; }
 
-/** The dir lister deals with the kiojob used to list and update a directory,
+/**
+ * The dir lister deals with the kiojob used to list and update a directory,
  * handles the timer, and has signals for the user of this class (e.g.
  * konqueror view or kdesktop) to create/destroy its items when asked.
  *
@@ -114,11 +115,6 @@ public:
   KFileItem * rootItem() { return m_rootFileItem; }
 
   KIO::ListJob * job() { return m_job; }
-
-  /**
-   * @return true if koffice documents were listed since the last clear()
-   */
-  bool kofficeDocsFound() { return m_bKofficeDocs; }
 
   void setDirOnlyMode( bool dirsOnly ) { m_bDirOnlyMode = dirsOnly; }
   bool dirOnlyMode() { return m_bDirOnlyMode; }
@@ -228,9 +224,6 @@ protected:
 
   QStringList m_lstPendingUpdates;
 
-  /** Whether koffice documents were found */
-  bool m_bKofficeDocs;
-
   /** List only directories */
   bool m_bDirOnlyMode;
 
@@ -239,6 +232,8 @@ protected:
   /** a list of file-filters */
   QList<QRegExp> m_lstFilters;
 
+  class KDirListerPrivate;
+  KDirListerPrivate * d;
 };
 
 #endif
