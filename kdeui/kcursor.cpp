@@ -199,12 +199,11 @@ int KCursor::hideCursorDelay()
 
 KCursorPrivate * KCursorPrivate::s_self = 0L;
 
-KStaticDeleter<KCursorPrivate> sd;
-
 KCursorPrivate * KCursorPrivate::self()
 {
     if ( !s_self )
-        s_self = sd.setObject( new KCursorPrivate );
+        s_self = new KCursorPrivate;
+    // WABA: We never delete KCursorPrivate. Don't change.
 
     return s_self;
 }
@@ -226,13 +225,12 @@ KCursorPrivate::KCursorPrivate()
 
 KCursorPrivate::~KCursorPrivate()
 {
-    delete autoHideTimer;
 }
 
 void KCursorPrivate::start()
 {
     if ( !autoHideTimer ) {
-        autoHideTimer = new QTimer;
+        autoHideTimer = new QTimer(kapp);
         QObject::connect( autoHideTimer, SIGNAL( timeout() ),
                           this, SLOT( slotHideCursor() ));
     }

@@ -5,8 +5,6 @@
 #include <qobject.h>
 #include <qpoint.h>
 
-#include <kstaticdeleter.h>
-
 class QTimer;
 class QWidget;
 
@@ -19,7 +17,6 @@ class QWidget;
 class KCursorPrivate : public QObject
 {
     friend class KCursor; // to shut up the compiler
-    friend class KStaticDeleter<KCursorPrivate>;
     Q_OBJECT
 
 public:
