@@ -92,6 +92,8 @@
 <!ENTITY Enter   "<keycap>Enter</keycap>">
 <!ENTITY FAQ     "<abbrev>FAQ</abbrev>">
 <!ENTITY OS      "<abbrev>O.S.</abbrev>">
+<!ENTITY Mac     '<trademark class="registered">Mac</trademark>'>
+<!ENTITY cdrom   "<abbrev>cd-rom</abbrev>">
 
 <!-- Entities voor applicaties die niet dezelfde naam hebben -->
 <!-- hiervoor gebruik je beter de vertaalde naam -->
