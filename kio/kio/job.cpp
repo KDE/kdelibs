@@ -516,6 +516,8 @@ void SimpleJob::slotError( int error, const QString & errorText )
 {
     m_error = error;
     m_errorText = errorText;
+    if ((m_error == ERR_UNKNOWN_HOST) && m_url.host().isEmpty())
+       m_errorText = QString::null;
     // error terminates the job
     slotFinished();
 }

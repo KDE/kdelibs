@@ -222,7 +222,7 @@ QString KIO::buildErrorString(int errorCode, const QString &errorText)
       result = i18n( "A directory named %1 already exists." ).arg( errorText );
       break;
     case  KIO::ERR_UNKNOWN_HOST:
-      result = i18n( "Unknown host %1" ).arg( errorText );
+      result = errorText.isEmpty() ? i18n( "No hostname specified." ) : i18n( "Unknown host %1" ).arg( errorText );
       break;
     case  KIO::ERR_ACCESS_DENIED:
       result = i18n( "Access denied to %1" ).arg( errorText );
