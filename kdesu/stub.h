@@ -86,7 +86,9 @@ protected:
 
     /**
      * Notify the taskbar that a new application has been started.
+     * @obsolete
      */
+    // KDE4 remove
     void notifyTaskbar(const QString &suffix);
 
     /** 

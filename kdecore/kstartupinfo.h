@@ -65,6 +65,31 @@ class KStartupInfo
     {
     Q_OBJECT
     public:
+	enum {
+	    CleanOnCantDetect		= 1 << 0,
+	    DisableKWinModule		= 1 << 1,
+	    AnnounceSuspendChanges	= 1 << 2
+	    };
+	
+	/**
+	 * Creates an instance that will receive the startup notifications.
+	 * The various flags passed may be
+	 * @li CleanOnCantDetect - when a new unknown window appears, all startup
+	 *     notifications for applications that are not compliant with
+	 *     the startup protocol are removed
+	 * @li DisableKWinModule - KWinModule, which is normally used to detect
+	 *     new windows, is disabled. With this flag, checkStartup() must be
+	 *     called in order to check newly mapped windows
+	 * @li AnnounceSuspendChanges - normally, startup notifications are
+	 *     "removed" when they're suspended, and "recreated" when they're resumed.
+	 *     With this flag, the change is normally announced with gotStartupChange().
+	 *
+	 * @param flags OR-ed combination of flags
+	 * @param parent the parent of this QObject (can be 0 for no parent)
+	 * @param name the name of the QObject (can be 0 for no name)
+	 *
+	 */
+	KStartupInfo( int flags, QObject* parent = NULL, const char* name = NULL );
 	/**
 	 * Creates an instance that will receive the startup notifications.
 	 *
@@ -73,14 +98,17 @@ class KStartupInfo
 	 *  with the app startup protocol
 	 * @param parent the parent of this QObject (can be 0 for no parent)
 	 * @param name the name of the QObject (can be 0 for no name)
+	 *
+	 * @obsolete
 	 */
         KStartupInfo( bool clean_on_cantdetect, QObject* parent = 0, const char* name = 0 );
         /**
-         * @overload
          * This constructor allows disabling the usage of KWinModule, which is
          * internally used for detecting new application windows. With KWinModule
          * disabled, checkStartup() must be called in order to check newly
          * mapped windows.
+	 *
+	 * @obsolete
          */
         KStartupInfo( bool clean_on_cantdetect, bool disable_kwinmodule,
             QObject* parent, const char* name );
@@ -279,7 +307,7 @@ class KStartupInfo
         void window_added( WId w );
 	void slot_window_added( WId w );
     private:
-        void init( bool disable_kwinmodule_P );
+        void init( int flags );
         friend class KStartupInfoPrivate;
         void got_startup_info( const QString& msg_P, bool update_only_P );
         void got_remove_startup_info( const QString& msg_P );
@@ -300,7 +328,7 @@ class KStartupInfo
         static QCString get_window_hostname( WId w_P );
         void startups_cleanup_internal( bool age_P );
         void clean_all_noncompliant();
-        bool clean_on_cantdetect;
+        bool clean_on_cantdetect_; // KDE4 remove unused
         unsigned int timeout;
         KStartupInfoPrivate* d;
     };
@@ -495,10 +523,27 @@ class KStartupInfoData
 	 * @return the hostname
 	 */
         const QCString& hostname() const;
+	
+	enum TriState { Yes, No, Unknown };
+	
+	/**
+	 * Sets whether the visual feedback for this startup notification
+	 * should be temporarily suspended.
+	 * @since 3.1.1
+	 */
+	void setSuspend( TriState state );
+	
+	/**
+	 * Return the suspend status for the startup notification.
+	 * @return KStartupInfoData::Yes if visual feedback is suspended
+	 * @since 3.1.1
+	 */
+	TriState suspend() const;
+
 	/**
 	 * Updates the notification data from the given data. Some data, such as the desktop
 	 * or the name, won't be rewritten if already set.
-	 * @param data the data t update
+	 * @param data the data to update
 	 */
         void update( const KStartupInfoData& data );
 	/**

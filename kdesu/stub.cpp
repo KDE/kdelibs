@@ -136,9 +136,29 @@ int StubProcess::ConverseStub(int check)
 	} else if (line == "xwindows_only") {
 	    if (m_bXOnly) writeLine("no");
 	    else writeLine("yes");
-	} else if (line == "app_start_pid") {
+	} else if (line == "app_startup_id") {
+	    QCStringList env = environment();
+	    QCString tmp;
+	    for( QCStringList::ConstIterator it = env.begin();
+		 it != env.end();
+		 ++it )
+	    {
+		if( (*it).find( "KDE_STARTUP_ENV=" ) == 0 )
+		    tmp = (*it).mid( strlen( "KDE_STARTUP_ENV=" ));
+	    }
+	    if( tmp.isEmpty())
+		tmp = "0";
+	    writeLine(tmp);
+	} else if (line == "app_start_pid") { // obsolete
 	    tmp.setNum(getpid());
 	    writeLine(tmp);
+	} else if (line == "environment") { // additional env vars
+	    QCStringList env = environment();
+	    for( QCStringList::ConstIterator it = env.begin();
+		 it != env.end();
+		 ++it )
+		writeLine( *it );
+	    writeLine( "" );
 	} else if (line == "end") {
 	    return 0;
 	} else 
@@ -155,27 +175,7 @@ int StubProcess::ConverseStub(int check)
 
 void StubProcess::notifyTaskbar(const QString &suffix)
 {
-    QString exec, icon;
-    int sp = m_Command.find(" ");
-    if (sp != -1) 
-	exec = m_Command.left(sp);
-    else
-	exec = m_Command;
-    icon = exec;
-    if (!suffix.isEmpty())
-    {
-	exec += " ";
-	exec += suffix;
-    }
-
-    QByteArray params;
-    QDataStream stream(params, IO_WriteOnly);
-    stream << exec << icon << getpid();
-    DCOPClient *client = kapp->dcopClient();
-    if (!client->isAttached())
-	client->attach();
-    client->send( "kicker", "TaskbarApplet",
-	          "clientStarted(QString,QString,pid_t)", params );
+    kdWarning(900) << "Obsolete StubProcess::notifyTaskbar() called!" << endl;
 }
 
 void StubProcess::virtual_hook( int id, void* data )
