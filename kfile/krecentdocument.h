@@ -34,17 +34,17 @@
  * Manage the "Recent Document Menu" entries displayed by
  * applications such as Kicker and Konqueror.
  *
- * These entries are automatically
- * generated .desktop files pointing to the current application and document.
- * You should call the static @ref add() method whenever the user opens or saves a
- * new document if you want it to show up in the menu.
+ * These entries are automatically generated .desktop files pointing
+ * to the current application and document.  You should call the
+ * static @ref add() method whenever the user opens or saves a new
+ * document if you want it to show up in the menu.
  *
- * You don't have to worry about this if you are using any @ref KFileBaseDialog
- * derived class to open and save documents, as it already calls this class.
- * User defined limits on the maximum number of documents to save, etc... are
- * all automatically handled.
+ * You don't have to worry about this if you are using any @ref
+ * KFileBaseDialog derived class to open and save documents, as it
+ * already calls this class.  User defined limits on the maximum
+ * number of documents to save, etc... are all automatically handled.
  *
- * @author Daniel M. Duley <mosfet@kde.org>
+ * @author Daniel M. Duley <mosfet@kde.org> 
  */
 class KRecentDocument
 {
@@ -56,7 +56,7 @@ public:
      *
      * @param isURL Local files and URL .desktop files are encoded differently
      * in order for the filename to be easier for Konqueror users to read. Set
-     * to @p true if @p documentStr is an URL and not a local file path.
+     * to @tt true if @p documentStr is an URL and not a local file path.
      */
     static void add(const QString &documentStr, bool isURL = false);
     /**

@@ -58,12 +58,12 @@ public:
   bool save();
 
   /**
-   * Get the name of the local copy.
+   * Retrieve the name of the local copy.
    */
   const char *tempName();
 
   /**
-   * Get the url it came from.
+   * Retrieve the URL it came from.
    */
   const char *url();
 
