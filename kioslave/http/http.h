@@ -273,7 +273,7 @@ protected:
   void rewind();
 
   /**
-    * Add an encoding on to the appropiate stack this
+    * Add an encoding on to the appropriate stack this
     * is nececesary because transfer encodings and
     * content encodings must be handled separately.
     */
