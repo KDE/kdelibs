@@ -21,8 +21,7 @@
 
 #include <dcopobject.h>
 #include <kio/global.h>
-
-class KURL;
+#include <kurl.h>
 
 /**
  * @short Graphical server for progress information
@@ -56,6 +55,12 @@ k_dcop:
   void speed( int id, unsigned long bytes_per_second );
 
   void canResume( int id, unsigned int can_resume );
+
+  void copying( int id, KURL from, KURL to );
+  void moving( int id, KURL from, KURL to );
+  void deleting( int id, KURL from );
+  void renaming( int id, KURL old_name, KURL new_name );
+  void creatingDir( int id, KURL dir );
 
 private:
   static int s_jobId;

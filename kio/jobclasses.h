@@ -78,6 +78,11 @@ namespace KIO {
         int error() { return m_error; }
 
         /**
+         * @return the progress id for this job, as returned by uiserver
+         */
+        int progressId() { return m_progressId; }
+
+        /**
          * @return a string to help understand the error, usually the url
          * related to the error.
          * Only call if @ref error is not 0.
@@ -149,7 +154,7 @@ namespace KIO {
         int m_error;
         QString m_errorText;
         unsigned long m_percent;
-        int id; // for uiserver
+        int m_progressId; // for uiserver
     };
 
     /**
@@ -453,7 +458,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        CopyJob( const KURL::List& src, const KURL& dest, bool move = false, bool observe = true );
+        CopyJob( const KURL::List& src, const KURL& dest, bool move = false, bool showProgressInfo = true );
 
     signals:
 
@@ -526,7 +531,7 @@ namespace KIO {
     Q_OBJECT
 
     public:
-        DeleteJob( const KURL::List& src, bool shred, bool observe = true );
+        DeleteJob( const KURL::List& src, bool shred, bool showProgressInfo = true );
 
     signals:
 

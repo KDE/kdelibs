@@ -66,10 +66,10 @@ Job::Job(bool showProgressInfo) : QObject(0, "job"), m_error(0), m_percent(0)
 {
     // All jobs delete themselves after emiting 'result'.
 
-    // Notify the UI Server and get an id
+    // Notify the UI Server and get a progress id
     if (showProgressInfo)
     {
-        id = Observer::self()->newJob( this );
+        m_progressId = Observer::self()->newJob( this );
         // Connect global progress info signal
         connect( this, SIGNAL( percent( KIO::Job*, unsigned long ) ),
                  Observer::self(), SLOT( slotPercent( KIO::Job*, unsigned long ) ) );

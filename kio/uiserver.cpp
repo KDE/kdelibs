@@ -115,3 +115,28 @@ void UIServer::canResume( int id, unsigned int can_resume )
 {
     kdDebug() << "UIServer::canResume " << id << " " << can_resume << endl;
 }
+
+void UIServer::copying( int id, KURL from, KURL to )
+{
+  kdDebug() << "UIServer::copying " << id << " " << from.path() << "  " << to.path() << endl;
+}
+
+void UIServer::moving( int id, KURL from, KURL to )
+{
+  kdDebug() << "UIServer::moving " << id << " " << from.path() << "  " << to.path() << endl;
+}
+
+void UIServer::deleting( int id, KURL from )
+{
+  kdDebug() << "UIServer::deleting " << id << " " << from.path() << endl;
+}
+
+void UIServer::renaming( int id, KURL old_name, KURL new_name )
+{
+  kdDebug() << "UIServer::renaming " << id << " " << old_name.path() << "  " << new_name.path() << endl;
+}
+
+void UIServer::creatingDir( int id, KURL dir )
+{
+    kdDebug() << "UIServer::creatingDir " << id << " " << dir.path() << endl;
+}
