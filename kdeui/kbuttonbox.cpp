@@ -262,7 +262,7 @@ QSize KButtonBox::buttonSizeHint(QPushButton *b) const {
   if(ms.width() > s.width())
     s.setWidth(ms.width());
   if(ms.height() > s.height())
-    s.setWidth(ms.height());
+    s.setHeight(ms.height());
   
   return s;
 }
