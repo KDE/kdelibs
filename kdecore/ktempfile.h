@@ -57,12 +57,10 @@ class KTempFile
 public:
    /**
     * Create a temporary file with the name:
-    *  <filePrefix><some number><fileExtension>
+    *  <filePrefix><six letters><fileExtension>
     *
     * The default @p filePrefix is "$KDEHOME/tmp-$HOST/appname"
     * The default @p fileExtension is ".tmp"
-    *
-    * Note that the use of 'X' is forbidden in @p fileExtension
     **/
    KTempFile(QString filePrefix=QString::null, 
              QString fileExtension=QString::null, 
