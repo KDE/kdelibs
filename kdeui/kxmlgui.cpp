@@ -525,6 +525,8 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
   // call the finalizeGUI method, to fix up the positions of toolbars for example.
   // ### FIXME : obey client builder
+  // --- Well, toolbars have a bool "positioned", so it doesn't really matter,
+  // if we call positionYourself on all of them each time. (David)
   m_builder->finalizeGUI( m_client );
 
   // reset some variables, for safety

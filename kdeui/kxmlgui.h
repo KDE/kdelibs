@@ -124,7 +124,7 @@ class KXMLGUIFactory : public QObject
   void reset();
 
   /**
-   * Use this method to free all memory allocated by the KXMLGUIFActory for a specific container, including
+   * Use this method to free all memory allocated by the KXMLGUIFactory for a specific container, including
    * all child containers and actions. This deletes the internal node subtree for the specified container. The
    * actual GUI is not touched, no containers are deleted or any actions unplugged. Use this method only if you
    * know what you are doing :-)
