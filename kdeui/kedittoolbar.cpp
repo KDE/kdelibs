@@ -268,11 +268,11 @@ void KEditToolbarWidget::setupLayout()
   button_layout->addWidget(m_insertAction, 2, 2);
   button_layout->addWidget(m_downAction, 3, 1);
 
-  inactive_layout->addWidget(inactive_label, 1);
-  inactive_layout->addWidget(m_inactiveList);
+  inactive_layout->addWidget(inactive_label);
+  inactive_layout->addWidget(m_inactiveList, 1);
 
-  active_layout->addWidget(active_label, 1);
-  active_layout->addWidget(m_activeList);
+  active_layout->addWidget(active_label);
+  active_layout->addWidget(m_activeList, 1);
 
   list_layout->addLayout(inactive_layout);
   list_layout->addLayout(button_layout);
