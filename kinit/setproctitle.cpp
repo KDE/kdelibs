@@ -30,6 +30,12 @@
 #include <string.h>
 #include <unistd.h>
 
+#if defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
+# include <sys/time.h>
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
+#endif
+
 /* _PATH_KMEM should be defined in <paths.h> */
 #ifndef _PATH_KMEM
 # define _PATH_KMEM	"/dev/kmem"
@@ -133,7 +139,9 @@ void
 kdeinit_initsetproctitle(int argc, char **argv, char **envp)
 {
 	register int i, envpsize = 0;
+#if !defined(HAVE_NSGETENVIRON) || !defined(HAVE_CRT_EXTERNS_H)
 	extern char **environ;
+#endif
 
 	/*
 	**  Move the environment so setproctitle can use the space at

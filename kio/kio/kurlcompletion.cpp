@@ -20,6 +20,7 @@
    Boston, MA 02111-1307, USA.
 */
 
+#include <config.h>
 #include <stdlib.h>
 #include <assert.h>
 
@@ -49,6 +50,11 @@
 #include <time.h>
 
 #include "kurlcompletion.h"
+
+#if defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
+# include <crt_externs.h>
+# define environ (*_NSGetEnviron())
+#endif
 
 static bool expandTilde(QString &);
 static bool expandEnv(QString &);

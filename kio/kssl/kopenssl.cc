@@ -263,6 +263,9 @@ KConfig *cfg;
              << "libssl.sl"
              #elif defined(_AIX)
              << "libssl.a(libssl.so.0)"
+	     #elif defined(__APPLE__)
+	     << "libssl.dylib"
+	     << "libssl.0.9.dylib"
              #else
              << "libssl.so"
 	     << "libssl.so.0"
@@ -277,6 +280,9 @@ KConfig *cfg;
              << "libcrypto.sl"
              #elif defined(_AIX)
              << "libcrypto.a(libcrypto.so.0)"
+	     #elif defined(__APPLE__)
+	     << "libcrypto.dylib"
+	     << "libcrypto.0.9.dylib"
 	     #else
              << "libcrypto.so"
 	     << "libcrypto.so.0"
