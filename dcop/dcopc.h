@@ -8,6 +8,10 @@
 #ifndef __dcopc_h__
 #define __dcopc_h__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef Bool
 #define Bool int
 #define True 1
@@ -26,7 +30,7 @@ typedef void (*dcop_callback_t)(
  * This registers you as anonymous-pid - you may then register with a 'real'
  * name with dcop_register().
  */
-Bool dcop_attach();
+Bool dcop_attach(void);
 
 /**
  * Register as app 'app_name'.
@@ -43,7 +47,7 @@ char * dcop_register(const char * app_name, Bool add_pid);
 /**
  * Detach from the DCOP server.
  */
-Bool dcop_detach();
+Bool dcop_detach(void);
 
 /**
  * Register the callback function for an object id.
@@ -98,5 +102,9 @@ Bool dcop_call(
   char ** reply_data,
   int * reply_data_length
 );
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __dcopc_h__ */

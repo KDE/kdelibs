@@ -64,9 +64,9 @@ dcop_process_message(
 );
 
 Bool dcop_attach_internal(Bool register_as_anonymous);
-Bool dcop_ice_register();
-Bool dcop_connect();
-Bool dcop_protocol_setup();
+Bool dcop_ice_register(void);
+Bool dcop_connect(void);
+Bool dcop_protocol_setup(void);
 
 char * dcop_write_int     (char * buf, int i);
 char * dcop_read_int      (char * buf, int * i);
@@ -412,6 +412,9 @@ dcop_call(
   Bool    success           = False;
   Bool    readyRet          = False;
   unsigned long replyStatus = (unsigned long)-1;
+
+  /* silence gcc warning */
+  replyStatus = replyStatus;
 
   fprintf(stderr, "dcop_call() ...\n");
 
