@@ -1,17 +1,25 @@
 // $Id$
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "kio_connection.h"
 
-#include <stdio.h>
-#include <errno.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
+#include <sys/types.h>
 #include <sys/signal.h>
 #include <sys/time.h>
-#include <sys/types.h>
+
+#include <errno.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
+#ifdef HAVE_VFORK_H
+#include <vfork.h>
+#endif
 
 #include <iostream.h>
 
@@ -145,7 +153,7 @@ Slave::Slave( const char *_cmd ) : Connection()
   if( !buildPipe( &recv_in, &send_in ) ) return;
   if( !buildPipe( &recv_out, &send_out ) ) return;
 
-  m_pid = fork();
+  m_pid = vfork();
   if( m_pid == 0 )
   {
     dup2( recv_in, 0 );	fcntl(0,F_SETFD,0);
@@ -161,7 +169,7 @@ Slave::Slave( const char *_cmd ) : Connection()
     execv( argv[0], argv );
     cerr << "Slave: exec failed...!" << endl;
     cerr << "Have you installed kdebase?" << endl;
-    exit( 0 );
+    _exit( 0 );
   }
   close( recv_in );
   close( send_out );
