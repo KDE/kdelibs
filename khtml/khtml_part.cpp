@@ -2508,6 +2508,14 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     return;
   }
 
+  QString urlstring = u.url();
+
+  if ( urlstring.find( QString::fromLatin1( "javascript:" ), 0, false ) == 0 ) {
+      urlstring = KURL::decode_string(urlstring);
+      executeScript( urlstring.right( urlstring.length() - 11) );
+      return;
+  }
+
   if (!checkLinkSecurity(u))
     return;
 
