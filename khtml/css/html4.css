@@ -381,11 +381,7 @@ INPUT { color: windowtext;
         font-family: sans-serif;
         font-size: medium;
         margin: 0__qem;
-        text-align: left;
-}
-
-INPUT[dir="rtl"] {
-        text-align: right;
+        text-align: -khtml-auto;
 }
 
 INPUT[type="hidden"] {
