@@ -228,9 +228,10 @@ must have created a KApplication object before the methods can be used.
 KIconLoader in 1.1 used to mix icons for applications and for toolbars.
 This has changed, so you may notice that your application doesn't find
 the right icons. loadIcon (used by BarIcon) returns only toolbar icons.
-If you need icons for applications, use loadApplicationIcon or
-loadApplicationMiniIcon. loadMiniIcon has been removed as it did the
-same as loadApplicationMiniIcon.
+If you need icons for applications, use loadApplicationIcon.
+loadMiniIcon and loadApplicationMiniIcon have been removed, instead
+loadApplicationIcon now takes a "size" argument where you can specify the
+size of the icon (small, medium, large).
 The other big change you may notice, is that ICON and Icon have been
 removed as they caused big confusion for not loading application icons
 (see above). For this we added BarIcon which does the same as ICON before.
