@@ -65,6 +65,63 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
     QString tmpStr;
     warning("KThemeStyle: Reading theme settings.");
     KConfig config("kstylerc", true, false);
+
+    // Read in misc settings
+    config.setGroup("Misc");
+    tmpStr = config.readEntry(optionEntries[OptSButtonType]);
+    if(tmpStr == "BottomLeft")
+        sbPlacement = SBBottomLeft;
+    else if(tmpStr == "BottomRight")
+        sbPlacement = SBBottomRight;
+    else{
+        if(tmpStr != "Opposite" && !tmpStr.isEmpty())
+            warning("KThemeStyle: Unrecognized sb button option %s, using Opposite.",
+                    tmpStr.ascii());
+        sbPlacement = SBOpposite;
+    }
+    tmpStr = config.readEntry(optionEntries[OptArrowType]);
+    if(tmpStr == "Small")
+        arrowStyle = SmallArrow;
+    else if(tmpStr == "3D")
+        arrowStyle = MotifArrow;
+    else{
+        if(tmpStr != "Normal" && !tmpStr.isEmpty())
+            warning("KThemeStyle: Unrecognized arrow option %s, using Windows.",
+                    tmpStr.ascii());
+        arrowStyle = LargeArrow;
+    }
+    tmpStr = config.readEntry(optionEntries[OptShadeStyle]);
+    if(tmpStr == "Motif")
+        shading = Motif;
+    else if(tmpStr == "Next")
+        shading = Next;
+    else
+        shading = Windows;
+    smallGroove = config.
+        readBoolEntry(optionEntries[OptSmallGroove], false);
+    roundedButton = config.
+        readBoolEntry(optionEntries[OptRoundButton], false);
+    roundedCombo = config.
+        readBoolEntry(optionEntries[OptRoundCombo], false);
+    roundedSlider = config.
+        readBoolEntry(optionEntries[OptRoundSlider], false);
+    focus3D = config.
+        readBoolEntry(optionEntries[Opt3DFocus], false);
+    focus3DOffset = config.
+        readNumEntry(optionEntries[OptFocusOffset], 0);
+    defaultFrame = config.
+        readNumEntry(optionEntries[OptFrameWidth], 2);
+    btnXShift = config.
+        readNumEntry(optionEntries[OptButtonXShift], 0);
+    btnYShift = config.
+        readNumEntry(optionEntries[OptButtonYShift], 0);
+    sliderLen = config.
+        readNumEntry(optionEntries[OptSliderLength], 30);
+    splitterWidth = config.
+        readNumEntry(optionEntries[OptSplitterHandle], 10);
+    cacheSize = config.
+        readNumEntry(optionEntries[OptCacheSize], 1024);
+
     // Read in the scale hints
     config.setGroup(wGroupEntries[WScale]);
     for(i=0; i < WIDGETS; ++i){
@@ -192,61 +249,6 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             }
         }
     }
-    // Read in misc settings
-    config.setGroup("Misc");
-    tmpStr = config.readEntry(optionEntries[OptSButtonType]);
-    if(tmpStr == "BottomLeft")
-        sbPlacement = SBBottomLeft;
-    else if(tmpStr == "BottomRight")
-        sbPlacement = SBBottomRight;
-    else{
-        if(tmpStr != "Opposite" && !tmpStr.isEmpty())
-            warning("KThemeStyle: Unrecognized sb button option %s, using Opposite.",
-                    tmpStr.ascii());
-        sbPlacement = SBOpposite;
-    }
-    tmpStr = config.readEntry(optionEntries[OptArrowType]);
-    if(tmpStr == "Small")
-        arrowStyle = SmallArrow;
-    else if(tmpStr == "3D")
-        arrowStyle = MotifArrow;
-    else{
-        if(tmpStr != "Normal" && !tmpStr.isEmpty())
-            warning("KThemeStyle: Unrecognized arrow option %s, using Windows.",
-                    tmpStr.ascii());
-        arrowStyle = LargeArrow;
-    }
-    tmpStr = config.readEntry(optionEntries[OptShadeStyle]);
-    if(tmpStr == "Motif")
-        shading = Motif;
-    else if(tmpStr == "Next")
-        shading = Next;
-    else
-        shading = Windows;
-    smallGroove = config.
-        readBoolEntry(optionEntries[OptSmallGroove], false);
-    roundedButton = config.
-        readBoolEntry(optionEntries[OptRoundButton], false);
-    roundedCombo = config.
-        readBoolEntry(optionEntries[OptRoundCombo], false);
-    roundedSlider = config.
-        readBoolEntry(optionEntries[OptRoundSlider], false);
-    focus3D = config.
-        readBoolEntry(optionEntries[Opt3DFocus], false);
-    focus3DOffset = config.
-        readNumEntry(optionEntries[OptFocusOffset], 0);
-    defaultFrame = config.
-        readNumEntry(optionEntries[OptFrameWidth], 2);
-    btnXShift = config.
-        readNumEntry(optionEntries[OptButtonXShift], 0);
-    btnYShift = config.
-        readNumEntry(optionEntries[OptButtonYShift], 0);
-    sliderLen = config.
-        readNumEntry(optionEntries[OptSliderLength], 30);
-    splitterWidth = config.
-        readNumEntry(optionEntries[OptSplitterHandle], 10);
-    cacheSize = config.
-        readNumEntry(optionEntries[OptCacheSize], 1024);
     
 #ifdef KSTYLE_DEBUG
     for(existing=0, i=0; i < WIDGETS; ++i)
@@ -354,9 +356,9 @@ void KThemeBase::applyConfigFile(const QString &inFile)
 }
 
 QColorGroup* KThemeBase::makeColorGroup(QColor &fg, QColor &bg,
-                                        Qt::GUIStyle style)
+                                        Qt::GUIStyle)
 {
-    if(style == Qt::MotifStyle){
+    if(shading == Motif){
         int highlightVal, lowlightVal;
         highlightVal=100+(2*kapp->contrast()+4)*16/10;
         lowlightVal=100+(2*kapp->contrast()+4)*10;
