@@ -1707,7 +1707,10 @@ bool HTTPProtocol::readHeader()
      }
      else if ( m_strMimeType == "text/html" ||
                (m_strMimeType.startsWith("text/") &&
-                m_request.url.path().right(3) != ".gz") )
+                m_request.url.path().right(3) != ".gz") ||
+               (m_strMimeType.startsWith("image/") &&
+                m_request.url.path().right(3) != ".gz")
+                )
      {
         // Unzip!
      }
