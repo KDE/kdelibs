@@ -56,7 +56,7 @@ class CustomNodeFilterImpl;
  * interface.
  *
  */
-class NodeIterator
+class KHTML_EXPORT NodeIterator
 {
     friend class NodeIteratorImpl;
     friend class Document;
@@ -180,7 +180,7 @@ protected:
  * an instance of it to the NodeFilter. For more details see the
  * CustomNodeFilter class
  */
-class NodeFilter
+class KHTML_EXPORT NodeFilter
 {
     friend class NodeIterator;
     friend class NodeIteratorImpl;
@@ -291,7 +291,7 @@ protected:
  *
  */
 
-class CustomNodeFilter : public DomShared {
+class KHTML_EXPORT CustomNodeFilter : public DomShared {
 public:
     CustomNodeFilter();
     virtual ~CustomNodeFilter();
