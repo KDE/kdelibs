@@ -50,7 +50,6 @@ namespace KJS {
   const double NaN = *(const double*) NaN_Bytes;
   const double Inf = *(const double*) Inf_Bytes;
   const double D16 = 65536.0;
-  const double D31 = 2147483648.0; 	/* TODO: remove in next version */
   const double D32 = 4294967296.0;
 
   // TODO: -0
