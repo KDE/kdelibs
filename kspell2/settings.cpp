@@ -222,7 +222,7 @@ void Settings::loadConfig()
         "skipRunTogether", true );
 
     d->backgroundCheckerEnabled = conf.readBoolEntry(
-        "backgroundCheckerEnabled", false );
+        "backgroundCheckerEnabled", true );
 
     readIgnoreList();
 }
