@@ -623,6 +623,7 @@ void HTMLFormElementImpl::submit(  )
     }
 
     m_walletMap.clear(); // done with it
+    m_havePassword = m_haveTextarea= false;
     m_doingsubmit = m_insubmit = false;
 }
 
