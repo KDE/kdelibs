@@ -88,6 +88,7 @@ debian/tmp/usr/lib/libkdecore.so.*
 debian/tmp/usr/lib/libkdefakes.so.*
 debian/tmp/usr/lib/libkdefx.so.*
 debian/tmp/usr/lib/libkdeprint.so.*
+debian/tmp/usr/lib/libkdeprint_management.la
 debian/tmp/usr/lib/libkdeprint_management.so.*
 debian/tmp/usr/lib/libkdesasl.so.*
 debian/tmp/usr/lib/libkdesu.so.*
