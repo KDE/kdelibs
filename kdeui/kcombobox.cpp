@@ -407,6 +407,8 @@ bool KComboBox::eventFilter( QObject* o, QEvent* ev )
                 setCompletionMode( KGlobalSettings::CompletionMan );
             else if( result == ShellCompletion )
                 setCompletionMode( KGlobalSettings::CompletionShell );
+            else if( result == PopupCompletion )
+                setCompletionMode( KGlobalSettings::CompletionPopup );
 
             if ( oldMode != completionMode() ) {
                 if ( oldMode == KGlobalSettings::CompletionPopup &&
