@@ -344,3 +344,25 @@ QString KRootProp::writeEntry( const QString& rKey, const QColor& rColor )
 
   return writeEntry( rKey, aValue );
 }
+
+QString KRootProp::removeEntry(const QString& rKey)
+{
+    if (propDict.contains(rKey)) {
+	dirty = TRUE;
+	QString aValue = propDict[rKey];
+	propDict.remove(rKey);
+	return aValue;
+    } else
+	return QString::null;
+}
+  
+QStringList KRootProp::listEntries() const
+{
+    QMap<QString,QString>::ConstIterator it;
+    QStringList list;
+
+    for (it=propDict.begin(); it!=propDict.end(); it++)
+	list += it.key();
+	
+    return list;
+}

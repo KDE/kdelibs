@@ -25,6 +25,7 @@
 #include <X11/Xatom.h>
 
 #include <qmap.h>
+#include <qstringlist.h>
 
 /**
 * Access to KDE desktop resources stored on the root window.
@@ -174,6 +175,20 @@ public:
 *  exist, a null string is returned.	
 */
   QString writeEntry( const QString& rKey, const QColor& rColor );
+
+/**
+* Remove an entry.
+* @param rKey The key to remove.
+* @return The old value for this key. If this key did not
+*  exist, a null string is returned.
+*/
+  QString removeEntry(const QString& rKey);
+
+/**
+* Get a list of all keys.
+* @return A QStringList containing all the keys.
+*/
+  QStringList listEntries() const;
 
 /** Flush the entry cache.
 * Write back dirty configuration entries to the current property,
