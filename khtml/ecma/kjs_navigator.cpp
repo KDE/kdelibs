@@ -37,6 +37,8 @@ using namespace KJS;
 
 namespace KJS {
 
+    // All objects that need plugin info must inherit from PluginBase
+    // Its ctor and dtor take care of the refcounting on the static lists.
     class PluginBase : public ObjectImp {
     public:
         PluginBase(ExecState *exec);
@@ -89,10 +91,10 @@ namespace KJS {
     const ClassInfo MimeTypes::info = { "MimeTypeArray", 0, 0, 0 };
 
 
-    class Plugin : public ObjectImp {
+    class Plugin : public PluginBase {
     public:
         Plugin( ExecState *exec, PluginBase::PluginInfo *info )
-          : ObjectImp(exec->interpreter()->builtinObjectPrototype() )
+          : PluginBase( exec )
         { m_info = info; };
         virtual Value get(ExecState *exec, const UString &propertyName) const;
         virtual const ClassInfo* classInfo() const { return &info; }
@@ -103,10 +105,10 @@ namespace KJS {
     const ClassInfo Plugin::info = { "Plugin", 0, 0, 0 };
 
 
-    class MimeType : public ObjectImp {
+    class MimeType : public PluginBase {
     public:
         MimeType( ExecState *exec, PluginBase::MimeClassInfo *info )
-          : ObjectImp(exec->interpreter()->builtinObjectPrototype() )
+          : PluginBase( exec )
         { m_info = info; };
         virtual Value get(ExecState *exec, const UString &propertyName) const;
         virtual const ClassInfo* classInfo() const { return &info; }
