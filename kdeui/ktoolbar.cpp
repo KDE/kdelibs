@@ -219,12 +219,10 @@ int KToolBar::insertButton(const QString& icon, int id, bool enabled,
                             const QString& text, int index, KInstance *_instance )
 {
     KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text, _instance );
-    inserted.removeRef( button );
     insertWidgetInternal( button, index, id );
-    inserted.append( button );
     button->setEnabled( enabled );
     doConnections( button );
-    return *widget2id.find( button );
+    return index;
 }
 
 
@@ -233,9 +231,7 @@ int KToolBar::insertButton(const QString& icon, int id, const char *signal,
                             bool enabled, const QString& text, int index, KInstance *_instance )
 {
     KToolBarButton *button = new KToolBarButton( icon, id, this, 0, text, _instance);
-    inserted.removeRef( button );
     insertWidgetInternal( button, index, id );
-    inserted.append( button );
     button->setEnabled( enabled );
     connect( button, signal, receiver, slot );
     doConnections( button );
@@ -247,9 +243,7 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, bool enabled,
                             const QString& text, int index )
 {
     KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0, text);
-    inserted.removeRef( button );
     insertWidgetInternal( button, index, id );
-    inserted.append( button );
     button->setEnabled( enabled );
     doConnections( button );
     return index;
@@ -262,9 +256,7 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, const char *signal,
                             int index )
 {
     KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0, text);
-    inserted.removeRef( button );
     insertWidgetInternal( button, index, id );
-    inserted.append( button );
     button->setEnabled( enabled );
     connect( button, signal, receiver, slot );
     doConnections( button );
@@ -276,9 +268,7 @@ int KToolBar::insertButton(const QPixmap& pixmap, int id, QPopupMenu *popup,
                             bool enabled, const QString &text, int index )
 {
     KToolBarButton *button = new KToolBarButton( pixmap, id, this, 0, text );
-    inserted.removeRef( button );
     insertWidgetInternal( button, index, id );
-    inserted.append( button );
     button->setEnabled( enabled );
     button->setPopup( popup );
     doConnections( button );
@@ -298,9 +288,7 @@ int KToolBar::insertLined (const QString& text, int id,
         QToolTip::add( lined, toolTipText );
     if ( size > 0 )
         lined->setMinimumWidth( size );
-    inserted.removeRef( lined );
     insertWidgetInternal( lined, index, id );
-    inserted.append( lined );
     connect( lined, signal, receiver, slot );
     lined->setText(text);
     lined->setEnabled( enabled );
@@ -321,9 +309,7 @@ int KToolBar::insertCombo (QStrList *list, int id, bool writable,
     combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
 				       QSizePolicy::Fixed ));
 
-    inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
-    inserted.append( combo );
     combo->insertStrList (list);
     combo->setEnabled( enabled );
     if ( !tooltiptext.isEmpty() )
@@ -351,9 +337,7 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
     combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
 				       QSizePolicy::Fixed ));
 
-    inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
-    inserted.append( combo );
     combo->insertStringList (list);
     combo->setInsertionPolicy(policy);
     combo->setEnabled( enabled );
@@ -381,9 +365,7 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
     combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
 				       QSizePolicy::Fixed ));
 
-    inserted.removeRef( combo );
     insertWidgetInternal( combo, index, id );
-    inserted.append( combo );
     combo->insertItem (text);
     combo->setInsertionPolicy(policy);
     combo->setEnabled( enabled );
@@ -401,7 +383,6 @@ int KToolBar::insertSeparator(int index)
 {
     QWidget *w = new KToolBarSeparator( orientation(), FALSE, this, "tool bar separator" );
     insertWidgetInternal( w, index, -1 );
-    inserted.append( w );
     return index;
 }
 
@@ -410,16 +391,14 @@ int KToolBar::insertLineSeparator(int index)
 {
     QWidget *w = new KToolBarSeparator( orientation(), TRUE, this, "tool bar separator" );
     insertWidgetInternal( w, index, -1 );
-    inserted.append( w );
     return index;
 }
 
 
 int KToolBar::insertWidget(int id, int /*width*/, QWidget *widget, int index)
 {
-    inserted.removeRef( widget );
+    removeWidgetInternal( widget ); // in case we already have it ?
     insertWidgetInternal( widget, index, id );
-    inserted.append( widget );
     return index;
 }
 
@@ -428,14 +407,12 @@ int KToolBar::insertAnimatedWidget(int id, QObject *receiver, const char *slot,
                                     const QStringList& icons, int index )
 {
     KAnimWidget *anim = new KAnimWidget( icons, d->m_iconSize, this );
-    inserted.removeRef( anim );
     insertWidgetInternal( anim, index, id );
-    inserted.append( anim );
 
     if ( receiver )
         connect( anim, SIGNAL(clicked()), receiver, slot);
 
-    return *widget2id.find( anim );
+    return index;
 
 }
 
@@ -443,14 +420,12 @@ int KToolBar::insertAnimatedWidget(int id, QObject *receiver, const char *slot,
                                     const QString& icons, int index )
 {
     KAnimWidget *anim = new KAnimWidget( icons, d->m_iconSize, this );
-    inserted.removeRef( anim );
     insertWidgetInternal( anim, index, id );
-    inserted.append( anim );
 
     if ( receiver )
         connect( anim, SIGNAL(clicked()), receiver, slot);
 
-    return *widget2id.find( anim );
+    return index;
 }
 
 KAnimWidget *KToolBar::animatedWidget( int id )
@@ -775,7 +750,6 @@ void KToolBar::removeItem (int id)
     id2widget.remove( id );
     widget2id.remove( w );
     widgets.removeRef( w );
-    inserted.removeRef( w );
     delete w;
 }
 
@@ -1345,15 +1319,23 @@ void KToolBar::rebuildLayout()
 
 void KToolBar::childEvent( QChildEvent *e )
 {
-    int dummy = -1;
     if ( e->child()->isWidgetType() ) {
+        QWidget * w = (QWidget*)e->child();
 	if ( e->type() == QEvent::ChildInserted ) {
 	    if ( !e->child()->inherits( "QPopupMenu" ) ) {
-		insertWidgetInternal( (QWidget*)e->child(), dummy, -1 );
-		( (QWidget*)e->child() )->show();
+
+                // prevent items that have been explicitly inserted by insert*() from
+                // being inserted again
+                if ( !widget2id.contains( w ) )
+                {
+                    int dummy = -1;
+                    insertWidgetInternal( w, dummy, -1 );
+                    w->show();
+                }
 	    }
 	} else {
-	    widgets.removeRef( (QWidget*)e->child() );
+            widgets.removeRef(w);
+            //removeWidgetInternal( w );
 	}
 	if ( isVisibleTo( 0 ) )
 	    layoutTimer->start( 0, TRUE );
@@ -1363,13 +1345,8 @@ void KToolBar::childEvent( QChildEvent *e )
 
 void KToolBar::insertWidgetInternal( QWidget *w, int &index, int id )
 {
-    // prevent items that have been explicitly inserted by insert*() from
-    // being inserted again
-    if ( !w || inserted.findRef( w ) != -1 )
-        return;
-
-    if ( widgets.findRef( w ) != -1 )
-            widgets.removeRef( w );
+    // we can't have it in widgets, or something is really wrong
+    //widgets.removeRef( w );
 
     connect( w, SIGNAL( destroyed() ),
 	     this, SLOT( widgetDestroyed() ) );
@@ -2044,12 +2021,17 @@ void KToolBar::slotContextAboutToShow()
 
 void KToolBar::widgetDestroyed()
 {
-  widgets.removeRef( (QWidget*)sender() );
-  QMap< QWidget*, int >::Iterator it = widget2id.find( (QWidget*)sender());
-  if ( it == widget2id.end() )
-    return;
-  widget2id.remove( it );
-  id2widget.remove( *it );
+    removeWidgetInternal( (QWidget*)sender() );
+}
+
+void KToolBar::removeWidgetInternal( QWidget * w )
+{
+    widgets.removeRef( w );
+    QMap< QWidget*, int >::Iterator it = widget2id.find( w );
+    if ( it == widget2id.end() )
+        return;
+    widget2id.remove( it );
+    id2widget.remove( *it );
 }
 
 #include "ktoolbar.moc"

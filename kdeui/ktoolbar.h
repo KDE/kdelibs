@@ -1043,6 +1043,7 @@ private:
     void init( bool readConfig = true, bool honorStyle = false );
     void doConnections( KToolBarButton *button );
     void insertWidgetInternal( QWidget *w, int &index, int id );
+    void removeWidgetInternal( QWidget *w );
     void getAttributes( QString &position, QString &icontext, QString &index, QString &offset, QString &newLine );
     KPopupMenu *contextMenu();
 
@@ -1051,7 +1052,7 @@ private:
     Id2WidgetMap id2widget;
     KToolBarPrivate *d;
     KPopupMenu *context;
-    QList<QWidget> widgets, inserted;
+    QList<QWidget> widgets, inserted /*to be removed*/;
     QTimer *layoutTimer;
     QGuardedPtr<QWidget> stretchableWidget, rightAligned;
 
