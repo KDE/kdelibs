@@ -298,7 +298,7 @@ void RenderBox::updateSize()
     }
 
     if(m_minWidth > containingBlockWidth() || m_minWidth != oldMin ||
-    	m_maxWidth != oldMax)
+    	m_maxWidth != oldMax || isReplaced())
     {    	
 	setLayouted(false);
 	if(containingBlock() != this) containingBlock()->updateSize();

@@ -124,7 +124,8 @@ protected:
 	enum Type {
 	    FloatLeft,
 	    FloatRight,
-	    Positioned
+	    Positioned,
+	    RelPositioned
 	};
     	int startY;
 	int endY;

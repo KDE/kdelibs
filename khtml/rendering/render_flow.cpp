@@ -130,6 +130,10 @@ void RenderFlow::print(QPainter *p, int _x, int _y, int _w, int _h,
 				 int _tx, int _ty)
 {
 
+#ifdef DEBUG_LAYOUT
+    kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::print() x/y/w/h = ("  << xPos() << "/" << yPos() << "/" << width() << "/" << height()  << ")" << endl;
+#endif
+
     if(!isInline())
     {
 	_tx += m_x;
@@ -509,7 +513,10 @@ RenderFlow::insertPositioned(RenderObject *o)
     if (!f) f = new SpecialObject;
 
     f->noPaint=false;
-    f->type = SpecialObject::Positioned;
+    if (o->isRelPositioned())
+    	f->type = SpecialObject::RelPositioned;
+    else
+        f->type = SpecialObject::Positioned;
     f->node = o;
 
     specialObjects->append(f);
@@ -802,6 +809,10 @@ RenderFlow::clearFloats()
     }
 
     RenderObject *prev = m_previous;
+    
+    while (prev && prev->style()->flowAroundFloats())
+	    prev = prev->previousSibling();
+	    
     int offset = 0;
     if(prev)
     {

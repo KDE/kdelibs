@@ -156,9 +156,9 @@ void RenderRoot::updateHeight()
     if(m_height != oldHeight || m_height == m_view->visibleHeight())
     {
 //    	kdDebug( 6040 ) << "resizing " << m_width << "," << m_height << endl;
-    	m_view->resizeContents(m_width,m_height);
-    	m_view->repaintContents(0,0,m_width,m_height);	//sync repaint!
+    	m_view->resizeContents(m_width,m_height);    	
     }
+    m_view->repaintContents(0,0,1000000,1000000);	//sync repaint!
 }
 
 void RenderRoot::close()
@@ -166,7 +166,7 @@ void RenderRoot::close()
     setParsing(false);
     updateSize();
     m_view->repaintContents(0,0,1000000,1000000);
-    //printTree();
+//    printTree();
 }
 
 void RenderRoot::setSelection(RenderObject *s, int sp, RenderObject *e, int ep)
