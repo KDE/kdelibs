@@ -287,6 +287,10 @@ KSpellConfig::interpret (QString &fname, QString &lname,
   else if (fname=="belarusian") {  // waiting for post 2.2 to not dissapoint translators
     lname="be"; hname=i18n("Belarusian");
   }
+  else if( fname == "magyar" ) {
+    lname="hu"; hname=i18n("Hungarian");
+    sChangeEncoding(KS_E_LATIN2);
+  }
   else {
     lname=""; hname=i18n("Unknown ispell dictionary", "Unknown");
   }
@@ -361,6 +365,11 @@ void KSpellConfig::getAvailDictsIspell () {
     dir.setFile ("/usr/local/share/ispell");
   if (!dir.exists() || !dir.isDir())
     dir.setFile ("/usr/share/ispell");
+  /* TODO get them all instead of just one of them.
+   * If /usr/local/lib exists, it skips the rest 
+  if (!dir.exists() || !dir.isDir())
+    dir.setFile ("/usr/local/lib");
+  */
   if (!dir.exists() || !dir.isDir()) return;
 
   kdDebug(750) << "KSpellConfig::getAvailDictsIspell "
