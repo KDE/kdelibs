@@ -19,6 +19,7 @@
  */
 
 #include "kwallet.h"
+#include <kconfig.h>
 #include <kdebug.h>
 #include <dcopclient.h>
 #include <dcopref.h>
@@ -32,13 +33,20 @@ using namespace KWallet;
 
 
 const QString Wallet::LocalWallet() {
-// FIXME: observe preferences to store local+network together
-return "kdewallet";
+	KConfig cfg("kwalletrc");
+	cfg.setGroup("Wallet");
+	if (!cfg.readBoolEntry("Use One Wallet", true)) {
+		return cfg.readEntry("Local Wallet", "localwallet");
+	}
+
+return cfg.readEntry("Default Wallet", "kdewallet");
 }
 
 const QString Wallet::NetworkWallet() {
-// FIXME: observe preferences to store local+network together
-return "kdewallet";
+	KConfig cfg("kwalletrc");
+	cfg.setGroup("Wallet");
+
+return cfg.readEntry("Default Wallet", "kdewallet");
 }
 
 const QString Wallet::PasswordFolder("Passwords");
@@ -184,6 +192,21 @@ QStringList drc;
 		r.get(drc);
 	}
 return drc;
+}
+
+
+int Wallet::sync() {
+	if (_handle == -1) {
+		return -1;
+	}
+
+	DCOPReply r = _dcopRef->call("sync", _handle);
+	if (r.isValid()) {
+		int drc = -1;
+		r.get(drc);
+		return drc;
+	}
+	return -1;
 }
 
 

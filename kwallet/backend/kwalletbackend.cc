@@ -413,7 +413,7 @@ int Backend::open(const QByteArray& password) {
 }
 
 
-int Backend::close(const QByteArray& password) {
+int Backend::sync(const QByteArray& password) {
 	if (!_open) {
 		return -255;  // not open yet
 	}
@@ -562,6 +562,15 @@ int Backend::close(const QByteArray& password) {
 	wholeFile.fill(0);
 
 	_open = false;
+return 0;
+}
+
+
+int Backend::close(const QByteArray& password) {
+	int rc = sync(password);
+	if (rc != 0) {
+		return rc;
+	}
 	return close();
 }
 

@@ -121,11 +121,12 @@ class Wallet : public QObject, public DCOPObject {
 		 *  allow your application to open the wallet, and may be
 		 *  prompted for a password.
 		 *  @param name The name of the wallet to open.
-		 *  @param async If true, the call will return immediately with
-		 *               a non-null pointer to an invalid wallet.  You
-		 *               must immediately connect the walletOpened()
-		 *               signal to a slot so that you will know when it
-		 *               is opened, or when it fails.
+		 *  @param async If Asynchronous, the call will return
+		 *               immediately with a non-null pointer to an
+		 *               invalid wallet.  You must immediately connect
+		 *               the walletOpened() signal to a slot so that
+		 *               you will know when it is opened, or when it
+		 *               fails.
 		 *  @return Returns a pointer to the wallet if successful,
 		 *          or a null pointer on error or if rejected.
 		 */
@@ -165,6 +166,14 @@ class Wallet : public QObject, public DCOPObject {
 		 *  @param name The the wallet to change the password of.
 		 */
 		static void changePassword(const QString& name);
+
+		/**
+		 *  This syncs the wallet file on disk with what is in memory.
+		 *  You don't normally need to use this.  It happens
+		 *  automatically on close.
+		 *  @return Returns 0 on success, non-zero on error.
+		 */
+		virtual int sync();
 
 		/**
 		 *  This closes and locks the current wallet.  It will

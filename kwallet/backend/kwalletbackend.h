@@ -50,6 +50,9 @@ class Backend {
 		// Close the wallet, losing any changes.
 		int close();
 
+		// Write the wallet to disk
+		int sync(const QByteArray& password);
+
 		// Returns true if the current wallet is open.
 		bool isOpen() const;
 
