@@ -9,6 +9,7 @@ int main ( int argc, char **argv)
         //make a central widget to contain the other widgets
         QWidget * w = new QWidget( );
         KLineEdit *l = new KLineEdit( w, "mylineedit" );
+        l->enableCompletion();
         l->resize(500,30);
         l->setFocus();
         QPushButton * push = new QPushButton( "Exit", w );
