@@ -9,7 +9,8 @@ FLOWLIBS = $(LDFLAGS) $(top_builddir)/arts/flow/libartsflow.la
 
 check_PROGRAMS = helloserver helloclient referenceinfo \
   irdemo x11commtest streamsound hellomain flow artsctest \
-  dcasttest hellodynamic testasubsys testaggregation
+  dcasttest hellodynamic testasubsys testaggregation \
+  playtofile
 helloserver_SOURCES = hello.cc helloserver.cc hello_impl.cc
 helloclient_SOURCES = hello.cc helloclient.cc
 hellodynamic_SOURCES = hello.cc hellodynamic.cc hello_impl.cc
@@ -36,6 +37,12 @@ dcasttest_SOURCES = dcasttest.cc
 artsctest_LDFLAGS = $(top_builddir)/arts/artsc/libartsc.la
 artsctest_SOURCES = artsctest.c
 
+playtofile_SOURCES = playtofile.cc playtofile_impl.cc playtofile_main.cc
+
+playtofile_LDADD	= $(FLOWLIBS) \
+    $(top_builddir)/arts/soundserver/libsoundserver_idl.la \
+    $(top_builddir)/arts/soundserver/libkmedia2_idl.la
+
 DISTCLEANFILES = $(SRCMETA) hello.cc hello.h
 
 ####### Implicit rules
@@ -51,3 +58,8 @@ aggregation.h: $(top_srcdir)/arts/examples/aggregation.idl $(MCOPIDL)
 	$(MCOPIDL) $(top_srcdir)/arts/examples/aggregation.idl
 
 aggregation.cc: aggregation.h
+
+playtofile.cc: playtofile.h
+
+playtofile.h: $(srcdir)/playtofile.idl $(MCOPIDL)
+	$(MCOPIDL) -I$(includedir)/arts $(srcdir)/playtofile.idl
