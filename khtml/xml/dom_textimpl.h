@@ -78,7 +78,7 @@ public:
     virtual unsigned short nodeType() const;
     virtual ushort id() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
-    virtual bool childAllowed( NodeImpl *newChild );
+    virtual bool childTypeAllowed( unsigned short type );
 };
 
 // ----------------------------------------------------------------------------
@@ -114,7 +114,7 @@ public:
 
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
     virtual void recalcStyle();
-    virtual bool childAllowed( NodeImpl *newChild );
+    virtual bool childTypeAllowed( unsigned short type );
 };
 
 // ----------------------------------------------------------------------------
@@ -129,7 +129,7 @@ public:
     virtual const DOMString nodeName() const;
     virtual unsigned short nodeType() const;
     virtual NodeImpl *cloneNode(bool deep, int &exceptioncode);
-    virtual bool childAllowed( NodeImpl *newChild );
+    virtual bool childTypeAllowed( unsigned short type );
 };
 
 

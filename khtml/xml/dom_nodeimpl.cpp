@@ -571,6 +571,16 @@ void NodeImpl::defaultEventHandler(EventImpl */*evt*/)
 {
 }
 
+unsigned long NodeImpl::childNodeCount()
+{
+    return 0;
+}
+
+NodeImpl *NodeImpl::childNode(unsigned long /*index*/)
+{
+    return 0;
+}
+
 //--------------------------------------------------------------------
 
 NodeWParentImpl::NodeWParentImpl(DocumentImpl *doc) : NodeImpl(doc)
@@ -992,9 +1002,9 @@ bool NodeBaseImpl::checkIsChild( NodeImpl *oldChild, int &exceptioncode )
     return false;
 }
 
-bool NodeBaseImpl::childAllowed( NodeImpl */*newChild*/ )
+bool NodeBaseImpl::childAllowed( NodeImpl *newChild )
 {
-    return false;
+    return childTypeAllowed(newChild->nodeType());
 }
 
 NodeImpl *NodeBaseImpl::addChild(NodeImpl *newChild)
@@ -1243,6 +1253,24 @@ void NodeBaseImpl::setActive(bool down)
     NodeImpl::setActive(down);
     for(NodeImpl *it=_first;it;it=it->nextSibling())
         it->setActive(down);
+}
+
+unsigned long NodeBaseImpl::childNodeCount()
+{
+    unsigned long count = 0;
+    NodeImpl *n;
+    for (n = firstChild(); n; n = n->nextSibling())
+	count++;
+    return count;
+}
+
+NodeImpl *NodeBaseImpl::childNode(unsigned long index)
+{
+    unsigned long i;
+    NodeImpl *n = firstChild();
+    for (i = 0; i < index; i++)
+	n = n->nextSibling();
+    return n;
 }
 
 // ---------------------------------------------------------------------------

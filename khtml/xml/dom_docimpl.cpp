@@ -1200,7 +1200,12 @@ bool DocumentImpl::childAllowed( NodeImpl *newChild )
 {
 // ### maximum of one Element
 // ### maximum of one DocumentType
-    switch (newChild->nodeType()) {
+    return childTypeAllowed(newChild->nodeType());
+}
+
+bool DocumentImpl::childTypeAllowed( unsigned short type )
+{
+    switch (type) {
 	case Node::ELEMENT_NODE:
 	case Node::PROCESSING_INSTRUCTION_NODE:
 	case Node::COMMENT_NODE:
@@ -1211,6 +1216,7 @@ bool DocumentImpl::childAllowed( NodeImpl *newChild )
 	    return false;
     }
 }
+
 
 NodeImpl *DocumentImpl::cloneNode ( bool /*deep*/, int &exceptioncode )
 {
@@ -1395,9 +1401,9 @@ unsigned short DocumentFragmentImpl::nodeType() const
 }
 
 // DOM Section 1.1.1
-bool DocumentFragmentImpl::childAllowed( NodeImpl *newChild )
+bool DocumentFragmentImpl::childTypeAllowed( unsigned short type )
 {
-    switch (newChild->nodeType()) {
+    switch (type) {
 	case Node::ELEMENT_NODE:
 	case Node::PROCESSING_INSTRUCTION_NODE:
 	case Node::COMMENT_NODE:
@@ -1463,7 +1469,7 @@ unsigned short DocumentTypeImpl::nodeType() const
 }
 
 // DOM Section 1.1.1
-bool DocumentTypeImpl::childAllowed( NodeImpl */*newChild*/ )
+bool DocumentTypeImpl::childTypeAllowed( unsigned short /*type*/ )
 {
     return false;
 }

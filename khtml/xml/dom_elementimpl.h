@@ -70,6 +70,7 @@ public:
     virtual bool deleteMe();
     DOMStringImpl *val() { return _value; }
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual bool childTypeAllowed( unsigned short type );
 
 protected:
     AttrImpl(const DOMString &name, const DOMString &value, DocumentImpl *doc);
@@ -156,6 +157,7 @@ public:
                                                    DOM::Node & node, int & offset );
     virtual bool isSelectable() const;
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual bool childTypeAllowed( unsigned short type );
 
     virtual short tabIndex() const;
     virtual void setTabIndex( short );

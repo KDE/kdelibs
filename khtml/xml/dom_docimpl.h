@@ -223,6 +223,7 @@ public:
 				    MouseEvent *ev );
 
     virtual bool childAllowed( NodeImpl *newChild );
+    virtual bool childTypeAllowed( unsigned short nodeType );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
     unsigned short elementId(DOMStringImpl *_name);
@@ -304,7 +305,7 @@ public:
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
 protected:
-    virtual bool childAllowed( NodeImpl *newChild );
+    virtual bool childTypeAllowed( unsigned short type );
 };
 
 
@@ -322,7 +323,7 @@ public:
 
     GenericRONamedNodeMapImpl *m_entities;
     GenericRONamedNodeMapImpl *m_notations;
-    virtual bool childAllowed( NodeImpl *newChild );
+    virtual bool childTypeAllowed( unsigned short type );
     virtual NodeImpl *cloneNode ( bool deep, int &exceptioncode );
 
 };

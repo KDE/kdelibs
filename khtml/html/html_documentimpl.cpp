@@ -177,6 +177,7 @@ void HTMLDocumentImpl::slotFinishedParsing()
 
 bool HTMLDocumentImpl::childAllowed( NodeImpl *newChild )
 {
+    // ### support comments. etc as a child
     return (newChild->id() == ID_HTML || newChild->id() == ID_COMMENT);
 }
 

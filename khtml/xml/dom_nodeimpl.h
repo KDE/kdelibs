@@ -264,6 +264,10 @@ public:
      * Perform the default action for an event e.g. submitting a form
      */
     virtual void defaultEventHandler(EventImpl *evt);
+    bool readOnly() { return false; }
+    virtual bool childTypeAllowed( unsigned short /*type*/ ) { return false; }
+    virtual unsigned long childNodeCount();
+    virtual NodeImpl *childNode(unsigned long index);
 	
 protected:
     DocumentImpl *document;
@@ -361,6 +365,8 @@ public:
     virtual void setFocus(bool=true);
     virtual void setActive(bool=true);
     virtual void applyChanges(bool top = true, bool force = true);
+    virtual unsigned long childNodeCount();
+    virtual NodeImpl *childNode(unsigned long index);
 
 protected:
     NodeImpl *_first;

@@ -65,7 +65,6 @@ public:
     DOMString toHTML (  );
     void detach ( int &exceptioncode );
     bool isDetached() const;
-    DocumentFragmentImpl *masterTraverse(bool contentExtract, int &exceptioncode);
     RangeImpl *cloneRange(int &exceptioncode);
 
     void setStartAfter( NodeImpl *refNode, int &exceptioncode );
@@ -82,6 +81,8 @@ public:
 	CLONE_CONTENTS
     };
     DocumentFragmentImpl *processContents ( ActionType action, int &exceptioncode );
+
+    bool readOnly() { return false; }
 
 protected:
     DocumentImpl *m_ownerDocument;

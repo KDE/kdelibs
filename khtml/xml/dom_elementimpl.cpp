@@ -231,7 +231,12 @@ bool AttrImpl::childAllowed( NodeImpl *newChild )
     if(!newChild)
 	return false;
 
-    switch (newChild->nodeType()) {
+    return childTypeAllowed(newChild->nodeType());
+}
+
+bool AttrImpl::childTypeAllowed( unsigned short type )
+{
+    switch (type) {
 	case Node::TEXT_NODE:
 	case Node::ENTITY_REFERENCE_NODE:
 	    return true;
@@ -240,7 +245,6 @@ bool AttrImpl::childAllowed( NodeImpl *newChild )
 	    return false;
     }
 }
-
 
 // -------------------------------------------------------------------------
 
@@ -762,18 +766,26 @@ bool ElementImpl::isSelectable() const
 // DOM Section 1.1.1
 bool ElementImpl::childAllowed( NodeImpl *newChild )
 {
-    switch (newChild->nodeType()) {
+    if (!childTypeAllowed(newChild->nodeType()))
+	return false;
+
+    // ### check xml element allowedness according to DTD
+    if (id() && newChild->id()) // if one if these is 0 then it is an xml element and we allow it anyway
+	return checkChild(id(), newChild->id());
+    else
+	return true;
+}
+
+bool ElementImpl::childTypeAllowed( unsigned short type )
+{
+    switch (type) {
 	case Node::ELEMENT_NODE:
 	case Node::TEXT_NODE:
 	case Node::COMMENT_NODE:
 	case Node::PROCESSING_INSTRUCTION_NODE:
 	case Node::CDATA_SECTION_NODE:
 	case Node::ENTITY_REFERENCE_NODE:
-	    // ### check xml element allowedness according to DTD
-	    if (id() && newChild->id()) // if one if these is 0 then it is an xml element and we allow it anyway
-		return checkChild(id(), newChild->id());
-	    else
-		return true;
+	    return true;
 	    break;
 	default:
 	    return false;

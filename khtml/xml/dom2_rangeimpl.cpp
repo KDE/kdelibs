@@ -35,7 +35,6 @@
 #include "dom2_traversalimpl.h"
 #include "dom_textimpl.h"
 #include "dom_xmlimpl.h"
-#include <qstring.h>
 
 using namespace DOM;
 
@@ -667,32 +666,69 @@ void RangeImpl::insertNode( NodeImpl *newNode, int &exceptioncode )
 	return;
     }
 
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if an ancestor container of either boundary-point of
+    // the Range is read-only.
+    NodeImpl *n = m_startContainer;
+    while (n && !n->readOnly())
+	n = n->parentNode();
+    if (n) {
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	return;
+    }
+
+    n = m_endContainer;
+    while (n && !n->readOnly())
+	n = n->parentNode();
+    if (n) {
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	return;
+    }
+
+    // WRONG_DOCUMENT_ERR: Raised if newParent and the container of the start of the Range were
+    // not created from the same document.
+    if (newNode->getDocument() != m_startContainer->getDocument()) {
+	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+	return;
+    }
+
+
+    // HIERARCHY_REQUEST_ERR: Raised if the container of the start of the Range is of a type that
+    // does not allow children of the type of newNode or if newNode is an ancestor of the container.
+    if (!m_startContainer->childTypeAllowed(newNode->nodeType())) {
+	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	return;
+    }
+
+    for (n = m_startContainer; n; n = n->parentNode()) {
+	if (n == newNode) {
+	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	    return;
+	}
+    }
+
+    // INVALID_NODE_TYPE_ERR: Raised if newNode is an Attr, Entity, Notation, or Document node.
     if( newNode->nodeType() == Node::ATTRIBUTE_NODE ||
         newNode->nodeType() == Node::ENTITY_NODE ||
         newNode->nodeType() == Node::NOTATION_NODE ||
-        newNode->nodeType() == Node::DOCUMENT_NODE ||
-        newNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE) {
+        newNode->nodeType() == Node::DOCUMENT_NODE) {
         exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
         return;
     }
 
-    if( newNode->ownerDocument() != m_startContainer->ownerDocument() ) {
-        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
-        return;
-    }
-
-    if( m_startContainer->nodeType() == Node::TEXT_NODE )
+    if( m_startContainer->nodeType() == Node::TEXT_NODE ||
+	m_startContainer->nodeType() == Node::CDATA_SECTION_NODE )
     {
-        TextImpl *newText;
-        NodeImpl *newParent = newNode->parentNode();
-        TextImpl *textNode = static_cast<TextImpl*>(m_startContainer);
-        newText = textNode->splitText(m_startOffset,exceptioncode);
+        TextImpl *newText = static_cast<TextImpl*>(m_startContainer)->splitText(m_startOffset,exceptioncode);
         if (exceptioncode)
 	    return;
-        newParent->insertBefore( newNode, newText, exceptioncode );
+	if (!m_startContainer->parentNode()) {
+	    exceptioncode = DOMException::NOT_SUPPORTED_ERR; // ### what are we supposed to do here?
+	    return;
+	}
+        m_startContainer->parentNode()->insertBefore( newNode, newText, exceptioncode );
     }
     else {
-        m_startContainer->insertBefore( newNode, m_startContainer->childNodes()->item( m_startOffset ), exceptioncode );
+        m_startContainer->insertBefore( newNode, m_startContainer->childNode( m_startOffset ), exceptioncode );
     }
 }
 
@@ -703,34 +739,35 @@ DOMString RangeImpl::toString( int &exceptioncode )
 	return 0;
     }
 
-    // ###
-/*    NodeIteratorImpl iterator( m_startContainer.childNodes().item( m_startOffset ) );
-    DOMString _string;
-    Node _node = iterator.nextNode();
-
-    while( !_node.isNull() )
-    {
-        printf( "\nNodetype: %s\n", _node.nodeName().string().ascii() );
-        if( _node.nodeType() == Node::TEXT_NODE )
-        {
-            QString str = _node.nodeValue().string();
-            if( _node == m_startContainer && _node == m_endContainer )
-                _string = str.mid( m_startOffset, m_endOffset - m_startOffset );
-            else if( _node == m_startContainer )
-                _string = str.mid( m_startOffset );
-            else if( _node == m_endContainer )
-                _string += str.left( m_startOffset );
-            else
-                _string += str;
-        }
-        else if( _node.nodeName() == "BR" )  _string += "\n";
-        else if( _node.nodeName() == "P" || _node.nodeName() == "TD" )  _string += "\n\n";
-        else  _string += " ";
-
-        _node = iterator.nextNode();
+    DOMString text = "";
+    NodeImpl *n = m_startContainer;
+    while(n) {
+	if(n->nodeType() == DOM::Node::TEXT_NODE ||
+	   n->nodeType() == DOM::Node::CDATA_SECTION_NODE) {
+	
+	    DOMString str = static_cast<TextImpl *>(n)->data().copy();
+	    if (n == m_endContainer)
+		str.truncate(m_endOffset);
+	    if (n == m_startContainer)
+		str.remove(0,m_startOffset);
+	    text += str;
+	    if (n == m_endContainer)
+		break;
+	}
+	else if (n->parentNode() == m_endContainer && !n->nextSibling()) {
+	    break;
+	}
+	//if (n == m_endContainer) break;
+	NodeImpl *next = n->firstChild();
+	if (!next) next = n->nextSibling();
+	
+	while( !next && n->parentNode() ) {
+	    n = n->parentNode();
+	    next = n->nextSibling();
+	}
+	n = next;
     }
-    return _string;*/
-    return DOMString("");
+    return text;
 }
 
 DOMString RangeImpl::toHTML(  )
@@ -762,306 +799,6 @@ bool RangeImpl::isDetached() const
 {
     return m_detached;
 }
-
-DocumentFragmentImpl *RangeImpl::masterTraverse(bool contentExtract, int &exceptioncode)
-{
-    /* function description easy case, m_startContainer == m_endContainer
-     * If we have a text node simply clone/extract the contents between
-     * start & end and put them into the fragment
-     * If we don't have a text node, find the offset and copy/clone the content
-     * between the two offsets
-     * We end with returning the fragment of course
-     */
-    NodeImpl *_clone;
-    DocumentFragmentImpl *_endFragment = m_ownerDocument->createDocumentFragment(); // ### check this gets deleted where necessary
-
-    if(m_startContainer == m_endContainer)
-    {
-        if(m_startOffset == m_endOffset)            // we have a collapsed range
-            return 0;
-
-        // TODO: we need to delete the text Node if a whole text is selected!!
-        if( m_startContainer->nodeType() == Node::TEXT_NODE )    // we have a text node.. special :)
-        {
-            _clone = m_startContainer->cloneNode(false,exceptioncode);
-            if (exceptioncode)
-		return 0;
-            _clone->nodeValue().remove(0, m_startOffset);  // we need to get the SUBSTRING
-            _clone->nodeValue().remove(m_endOffset, _clone->nodeValue().length() - m_endOffset);
-            if(contentExtract)
-            {
-                // full trim :)
-                m_startContainer->nodeValue().remove(m_startOffset, m_endOffset - m_startOffset);
-            }
-            _endFragment->appendChild(_clone,exceptioncode);
-            if (exceptioncode)
-		return 0;
-        }
-        else  // we have the same container class but we are not a text node
-        {
-            NodeImpl *_tempCurrent = m_startContainer->firstChild();
-            unsigned int i;
-
-            for(i=0; i < m_startOffset; i++)    // get the node given by the offset
-                _tempCurrent = _tempCurrent->nextSibling();
-
-            /* now copy (or move) all the nodes in the range into the document fragment */
-            unsigned int range = m_endOffset - m_startOffset;
-            NodeImpl *_nextCurrent = _tempCurrent;                  // to keep track of which node to take next
-            for(i=0; i<range && _tempCurrent; i++)   // check of isNull in case of strange errors
-            {
-                _nextCurrent = _tempCurrent->nextSibling();
-
-                if(contentExtract)
-                {
-                    _endFragment->appendChild(_tempCurrent,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                }
-                else
-                {
-                    _clone = _tempCurrent->cloneNode(true,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                    _endFragment->appendChild(_clone,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                }
-
-                _tempCurrent = _nextCurrent;
-            }
-        }
-        return _endFragment;
-    }// END COMMON CONTAINER HERE!!!
-
-
-    /* Ok here we go for the harder part, first a general desription:
-     * First we copy all the border nodes (the have to be copied as long
-     * as they are partially selected) from the m_startContainer to the CmnAContainer. Then we do
-     * the same for the m_endContainer. After this we add all fully selected
-     * nodes that are between these two!
-     */
-
-    NodeImpl *_cmnRoot = commonAncestorContainer(exceptioncode);
-    NodeImpl *_tempCurrent = m_startContainer;
-    NodeImpl *_tempPartial = 0;
-    // we still have Node _clone!!
-
-    // Special case text is first:
-    if( _tempCurrent->nodeType() == Node::TEXT_NODE )
-    {
-        _clone = _tempCurrent->cloneNode(false,exceptioncode);
-        if (exceptioncode)
-	    return 0;
-        _clone->nodeValue().remove(0, m_startOffset);
-        if(contentExtract)
-        {
-            m_startContainer->nodeValue().split(m_startOffset);
-        }
-    }
-    else
-    {
-        _tempCurrent = _tempCurrent->firstChild();
-        unsigned int i;
-        for(i=0; i < m_startOffset; i++)
-            _tempCurrent = _tempCurrent->nextSibling();
-
-        if(contentExtract) {
-            _clone = _tempCurrent->cloneNode(true,exceptioncode);
-            if (exceptioncode)
-		return 0;
-        }
-        else
-            _clone = _tempCurrent;
-    }
-
-    NodeImpl *_tempParent;                       // we use this to traverse upwords trough the tree
-    NodeImpl *_cloneParent;                      // this one is used to copy the current parent
-    NodeImpl *_fragmentRoot = 0;                 // this is eventually becomming the root of the DocumentFragment
-
-
-    while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
-    {                                    // all these node must be cloned as they are partially selected
-        _tempParent = _tempCurrent->parentNode();
-
-        if(_tempParent == _cmnRoot)
-        {
-            _cloneParent = _endFragment;
-            _fragmentRoot = _tempCurrent;
-        }
-        else
-        {
-            _cloneParent = _tempParent->cloneNode(false,exceptioncode);
-            if (exceptioncode)
-		return 0;
-            if( !_tempPartial && _tempParent != _cmnRoot )
-            {
-                _tempPartial = _tempParent;
-                // TODO: this means we should collapse after I think... :))
-            }
-        }
-
-        // we must not forget to grab with us the rest of this nodes siblings
-        NodeImpl *_nextCurrent;
-
-        _tempCurrent = _tempCurrent->nextSibling();
-        _cloneParent->appendChild( _clone, exceptioncode );
-        if (exceptioncode)
-	    return 0;
-        while( _tempCurrent )
-        {
-            _nextCurrent = _tempCurrent->nextSibling();
-            if( _tempCurrent && _tempParent != _cmnRoot) // the isNull() part should be unessesary
-            {
-                if(contentExtract)
-                {
-                    _cloneParent->appendChild(_tempCurrent,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                }
-                else
-                {
-                    _clone = _tempCurrent->cloneNode(true,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                    _cloneParent->appendChild(_clone,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                }
-            }
-            _tempCurrent = _nextCurrent;
-        }
-        _tempCurrent = _tempParent;
-        _clone = _cloneParent;
-    }
-
-    //****** we should now be FINISHED with m_startContainer **********
-    _tempCurrent = m_endContainer;
-    NodeImpl *_tempEnd = 0;
-    // we still have Node _clone!!
-
-    // Special case text is first:
-    if( _tempCurrent->nodeType() == Node::TEXT_NODE )
-    {
-        _clone = _tempCurrent->cloneNode(false,exceptioncode);
-        if (exceptioncode)
-	    return 0;
-        _clone->nodeValue().split(m_endOffset);
-        if(contentExtract)
-        {
-            m_endContainer->nodeValue().remove(m_endOffset, m_endContainer->nodeValue().length() - m_endOffset );
-        }
-    }
-    else
-    {
-        if(m_endOffset == 0)
-            _tempCurrent = m_endContainer;
-        else
-        {
-            _tempCurrent = _tempCurrent->firstChild();
-            unsigned int i;
-            for(i=0; i< m_endOffset; i++)
-                _tempCurrent = _tempCurrent->nextSibling();
-        }
-        if(contentExtract)
-            _clone = _tempCurrent;
-        else {
-            _clone = _tempCurrent->cloneNode(true,exceptioncode);
-            if (exceptioncode)
-		return 0;
-        }
-    }
-
-
-
-
-    while( _tempCurrent != _cmnRoot )    // traversing from the Container, all the way up to the commonAncestor
-    {                                  //  all these node must be cloned as they are partially selected
-        _tempParent = _tempCurrent->parentNode();
-
-        if(_tempParent == _cmnRoot)
-        {
-            _cloneParent = _endFragment;
-            _fragmentRoot = _tempCurrent;
-        }
-        else
-        {
-            _cloneParent = _tempParent->cloneNode(false,exceptioncode);
-            if (exceptioncode)
-		return 0;
-            if( !_tempPartial && _tempParent != _cmnRoot )
-            {
-                _tempPartial = _tempParent;
-                // ### TODO: this means we should collapse before I think... :))
-            }
-        }
-
-        // we must not forget to grab with us the rest of this nodes siblings
-        NodeImpl *_nextCurrent;
-        NodeImpl *_stopNode = _tempCurrent;
-        _tempCurrent = _tempParent->firstChild();
-
-
-        _cloneParent->appendChild(_clone,exceptioncode);
-        if (exceptioncode)
-	    return 0;
-
-        while( _tempCurrent != _stopNode && _tempCurrent )
-        {
-            _nextCurrent = _tempCurrent->nextSibling();
-            if( _tempCurrent && _tempParent != _cmnRoot) // the isNull() part should be unessesary
-            {
-                if(contentExtract)
-                {
-                    _cloneParent->appendChild(_tempCurrent,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                }
-                else
-                {
-                    _clone = _tempCurrent->cloneNode(true,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                    _cloneParent->appendChild(_clone,exceptioncode);
-                    if (exceptioncode)
-			return 0;
-                }
-            }
-            _tempCurrent = _nextCurrent;
-        }
-        _tempCurrent = _tempParent;
-        _clone = _cloneParent;
-    }
-    // To end the balade we grab with us any nodes that are between the two topmost parents under
-    // the commonRoot
-
-    NodeImpl *_clonePrevious = _endFragment->lastChild();
-    _tempCurrent = _tempEnd->previousSibling(); // ### _tempEnd is always 0
-    NodeImpl *_nextCurrent = 0;
-
-    while( (_nextCurrent != _fragmentRoot) && _tempCurrent )
-    {
-        _nextCurrent = _tempCurrent->previousSibling();
-
-        if(contentExtract) {
-            _clone = _tempCurrent->cloneNode(true,exceptioncode);
-            if (exceptioncode)
-		return 0;
-        }
-        else
-            _clone = _tempCurrent;
-
-        _endFragment->insertBefore(_clone, _clonePrevious, exceptioncode);
-        if (exceptioncode)
-	    return 0;
-
-        _tempCurrent = _nextCurrent;
-        _clonePrevious = _tempCurrent;
-    }
-    // WHAT ABOUT THE COLLAPSES??
-    return _endFragment;
-}
-
 
 void RangeImpl::checkCommon(int &exceptioncode) const
 {
@@ -1118,10 +855,8 @@ void RangeImpl::checkNodeWOffset( NodeImpl *n, int offset, int &exceptioncode) c
 		exceptioncode = DOMException::INDEX_SIZE_ERR;
 	    break;
 	default:
-	    NodeListImpl *cn = n->childNodes();
-	    if ( (unsigned long)offset >= cn->length() )
+	    if ( (unsigned long)offset > n->childNodeCount() )
 		exceptioncode = DOMException::INDEX_SIZE_ERR;
-	    delete cn;
 	    break;
     }
 }
@@ -1231,9 +966,34 @@ void RangeImpl::selectNode( NodeImpl *refNode, int &exceptioncode )
 	return;
     }
 
-    checkNodeBA( refNode, exceptioncode );
-    if (exceptioncode)
+    if (!refNode) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
 	return;
+    }
+
+    // INVALID_NODE_TYPE_ERR: Raised if an ancestor of refNode is an Entity, Notation or
+    // DocumentType node or if refNode is a Document, DocumentFragment, Attr, Entity, or Notation
+    // node.
+    NodeImpl *anc;
+    for (anc = refNode->parentNode(); anc; anc = anc->parentNode()) {
+	if (anc->nodeType() == Node::ENTITY_NODE ||
+	    anc->nodeType() == Node::NOTATION_NODE ||
+	    anc->nodeType() == Node::DOCUMENT_TYPE_NODE) {
+	
+	    exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
+	    return;
+	}
+    }
+
+    if (refNode->nodeType() == Node::DOCUMENT_NODE ||
+	refNode->nodeType() == Node::DOCUMENT_FRAGMENT_NODE ||
+	refNode->nodeType() == Node::ATTRIBUTE_NODE ||
+	refNode->nodeType() == Node::ENTITY_NODE ||
+	refNode->nodeType() == Node::NOTATION_NODE) {
+	
+	exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
+	return;
+    }
 
     setStartBefore( refNode, exceptioncode );
     if (exceptioncode)
@@ -1248,14 +1008,28 @@ void RangeImpl::selectNodeContents( NodeImpl *refNode, int &exceptioncode )
 	return;
     }
 
-    checkNode( refNode, exceptioncode );
-    if (exceptioncode)
+    if (!refNode) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
 	return;
+    }
 
-    setStartBefore( refNode->firstChild(), exceptioncode );
-    if (exceptioncode)
-	return;
-    setEndAfter( refNode->lastChild(), exceptioncode );
+    // INVALID_NODE_TYPE_ERR: Raised if refNode or an ancestor of refNode is an Entity, Notation
+    // or DocumentType node.
+    NodeImpl *n;
+    for (n = refNode; n; n = n->parentNode()) {
+	if (n->nodeType() == Node::ENTITY_NODE ||
+	    n->nodeType() == Node::NOTATION_NODE ||
+	    n->nodeType() == Node::DOCUMENT_TYPE_NODE) {
+	
+	    exceptioncode = RangeException::INVALID_NODE_TYPE_ERR + RangeException::_EXCEPTION_OFFSET;
+	    return;
+	}
+    }
+
+    setStartContainer(refNode);
+    m_startOffset = 0;
+    setEndContainer(refNode);
+    m_endOffset = refNode->childNodeCount();
 }
 
 void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
@@ -1265,15 +1039,13 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
 	return;
     }
 
-    if( !newParent )
-        return; // ### are we supposed to throw an exception here?
-
-    NodeImpl *start = m_startContainer;
-    if( newParent->ownerDocument() != start->ownerDocument() ) {
-        exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+    if( !newParent ) {
+	exceptioncode = DOMException::NOT_FOUND_ERR;
         return;
     }
 
+    // INVALID_NODE_TYPE_ERR: Raised if node is an Attr, Entity, DocumentType, Notation,
+    // Document, or DocumentFragment node.
     if( newParent->nodeType() == Node::ATTRIBUTE_NODE ||
         newParent->nodeType() == Node::ENTITY_NODE ||
         newParent->nodeType() == Node::NOTATION_NODE ||
@@ -1284,14 +1056,74 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
         return;
     }
 
-    // ### revisit: if you set a range without optimizing it (trimming) the following exception might be
-    // thrown incorrectly
-    NodeImpl *realStart = (start->nodeType() == Node::TEXT_NODE)? start->parentNode() : start;
-    NodeImpl *end = m_endContainer;
-    NodeImpl *realEnd = (end->nodeType() == Node::TEXT_NODE)? end->parentNode() : end;
-    if( realStart != realEnd ) {
-        exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
-        return;
+    // NO_MODIFICATION_ALLOWED_ERR: Raised if an ancestor container of either boundary-point of
+    // the Range is read-only.
+    if (readOnly()) {
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	return;
+    }
+
+    NodeImpl *n = m_startContainer;
+    while (n && !n->readOnly())
+	n = n->parentNode();
+    if (n) {
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	return;
+    }
+
+    n = m_endContainer;
+    while (n && !n->readOnly())
+	n = n->parentNode();
+    if (n) {
+	exceptioncode = DOMException::NO_MODIFICATION_ALLOWED_ERR;
+	return;
+    }
+
+    // WRONG_DOCUMENT_ERR: Raised if newParent and the container of the start of the Range were
+    // not created from the same document.
+    if (newParent->getDocument() != m_startContainer->getDocument()) {
+	exceptioncode = DOMException::WRONG_DOCUMENT_ERR;
+	return;
+    }
+
+    // HIERARCHY_REQUEST_ERR: Raised if the container of the start of the Range is of a type that
+    // does not allow children of the type of newParent or if newParent is an ancestor of the container
+    // or if node would end up with a child node of a type not allowed by the type of node.
+    if (!m_startContainer->childTypeAllowed(newParent->nodeType())) {
+	exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	return;
+    }
+
+    for (n = m_startContainer; n; n = n->parentNode()) {
+	if (n == newParent) {
+	    exceptioncode = DOMException::HIERARCHY_REQUEST_ERR;
+	    return;
+	}
+    }
+
+    // ### check if node would end up with a child node of a type not allowed by the type of node
+
+    // BAD_BOUNDARYPOINTS_ERR: Raised if the Range partially selects a non-text node.
+    if (m_startContainer->nodeType() != Node::TEXT_NODE &&
+	m_startContainer->nodeType() != Node::COMMENT_NODE &&
+	m_startContainer->nodeType() != Node::CDATA_SECTION_NODE &&
+	m_startContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
+	
+	if (m_startOffset > 0 && m_startOffset < m_startContainer->childNodeCount()) {
+	    exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
+	    return;
+	}
+    }
+
+    if (m_endContainer->nodeType() != Node::TEXT_NODE &&
+	m_endContainer->nodeType() != Node::COMMENT_NODE &&
+	m_endContainer->nodeType() != Node::CDATA_SECTION_NODE &&
+	m_endContainer->nodeType() != Node::PROCESSING_INSTRUCTION_NODE) {
+	
+	if (m_endOffset > 0 && m_endOffset < m_endContainer->childNodeCount()) {
+	    exceptioncode = RangeException::BAD_BOUNDARYPOINTS_ERR + RangeException::_EXCEPTION_OFFSET;
+	    return;
+	}
     }
 
     DocumentFragmentImpl *fragment = extractContents(exceptioncode);
@@ -1300,9 +1132,7 @@ void RangeImpl::surroundContents( NodeImpl *newParent, int &exceptioncode )
     insertNode( newParent, exceptioncode );
     if (exceptioncode)
 	return;
-    // BIC: to avoid this const_cast newParent shouldn't be const
-    //(const_cast<Node>(newParent)).appendChild( fragment );
-    ((NodeImpl*)(newParent))->appendChild( fragment, exceptioncode );
+    newParent->appendChild( fragment, exceptioncode );
     if (exceptioncode)
 	return;
     selectNode( newParent, exceptioncode );

@@ -101,9 +101,9 @@ DOMString EntityImpl::notationName() const
 }
 
 // DOM Section 1.1.1
-bool EntityImpl::childAllowed( NodeImpl *newChild )
+bool EntityImpl::childTypeAllowed( unsigned short type )
 {
-    switch (newChild->nodeType()) {
+    switch (type) {
 	case Node::ELEMENT_NODE:
 	case Node::PROCESSING_INSTRUCTION_NODE:
 	case Node::COMMENT_NODE:
@@ -154,9 +154,9 @@ unsigned short EntityReferenceImpl::nodeType() const
 }
 
 // DOM Section 1.1.1
-bool EntityReferenceImpl::childAllowed( NodeImpl *newChild )
+bool EntityReferenceImpl::childTypeAllowed( unsigned short type )
 {
-    switch (newChild->nodeType()) {
+    switch (type) {
 	case Node::ELEMENT_NODE:
 	case Node::PROCESSING_INSTRUCTION_NODE:
 	case Node::COMMENT_NODE:
@@ -233,7 +233,7 @@ DOMString NotationImpl::systemId() const
 }
 
 // DOM Section 1.1.1
-bool NotationImpl::childAllowed( NodeImpl */*newChild*/ )
+bool NotationImpl::childTypeAllowed( unsigned short /*type*/ )
 {
     return false;
 }
@@ -305,7 +305,7 @@ void ProcessingInstructionImpl::setData( const DOMString &_data )
 }
 
 // DOM Section 1.1.1
-bool ProcessingInstructionImpl::childAllowed( NodeImpl */*newChild*/ )
+bool ProcessingInstructionImpl::childTypeAllowed( unsigned short /*type*/ )
 {
     return false;
 }
