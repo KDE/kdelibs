@@ -33,12 +33,28 @@
 #include <sys/soundcard.h>
 
 #include <artsc.h>
+#include <dlfcn.h>
 
-extern int __open (const char *pathname, int flags, mode_t mode);
-extern int __close (int fd);
-extern int __ioctl (int fd, int request, ...);
 
-extern ssize_t __write (int fd, const void *buf, size_t count);
+/*
+ * original C library functions
+ */
+static int (*orig_open)(const char *pathname, int flags, mode_t mode);
+static int (*orig_close)(int fd);
+static int (*orig_ioctl)(int fd, int request, ...);
+static ssize_t (*orig_write)(int fd, const void *buf, size_t count);
+static int orig_init = 0;
+
+#define CHECK_INIT()                            \
+  {                                             \
+	if(!orig_init) {                            \
+	  orig_init = 1;                            \
+	  orig_open = dlsym(RTLD_NEXT,"open");      \
+	  orig_close = dlsym(RTLD_NEXT,"close");    \
+	  orig_write = dlsym(RTLD_NEXT,"write");    \
+	  orig_ioctl = dlsym(RTLD_NEXT,"ioctl");    \
+    }                                           \
+  }
 
 /*
  * NOTE:
@@ -85,22 +101,24 @@ void artsdspdebug(const char *fmt,...)
 
 int open (const char *pathname, int flags, mode_t mode)
 {
+  CHECK_INIT();
+
   if (strcmp(pathname,"/dev/dsp"))    /* original open for anything but sound */
-    return __open (pathname, flags, mode);
+    return orig_open (pathname, flags, mode);
 
   settings = 0;
   stream = 0;
 
   artsdspdebug ("aRts: hijacking /dev/dsp open...\n");
 
-  sndfd = __open("/dev/null",flags,mode);
+  sndfd = orig_open("/dev/null",flags,mode);
   if(sndfd >= 0)
   {
     int rc = arts_init();
     if(rc < 0)
     {
       artsdspdebug("error on aRts init: %s\n", arts_error_text(rc));
-      __close(sndfd);
+      orig_close(sndfd);
       return -1;
     }
   }
@@ -115,8 +133,10 @@ int ioctl (int fd, int request, void *argp)
   static int bits;
   static int speed;
 
+  CHECK_INIT();
+
   if (fd != sndfd)
-    return __ioctl (fd, request, argp);
+    return orig_ioctl (fd, request, argp);
   else if (sndfd != -1)
     {
       int *arg = (int *) argp;
@@ -173,8 +193,10 @@ int ioctl (int fd, int request, void *argp)
 
 int close(int fd)
 {
+  CHECK_INIT();
+
   if (fd != sndfd)
-    return __close (fd);
+    return orig_close (fd);
   else if (sndfd != -1)
     {
       artsdspdebug ("aRts: /dev/dsp close...\n");
@@ -183,7 +205,7 @@ int close(int fd)
 
       arts_free();
 
-      __close(sndfd);
+      orig_close(sndfd);
       sndfd = -1;
     }
   return 0;
@@ -191,8 +213,10 @@ int close(int fd)
 
 ssize_t write (int fd, const void *buf, size_t count)
 {
+  CHECK_INIT();
+
   if(fd != sndfd)
-    return __write(fd,buf,count);
+    return orig_write(fd,buf,count);
   else if(sndfd != -1)
   {
     artsdspdebug ("aRts: /dev/dsp write...\n");
