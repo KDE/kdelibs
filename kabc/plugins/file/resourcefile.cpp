@@ -177,8 +177,13 @@ bool ResourceFile::doOpen()
 
     return ok;
   } else {
-    if ( !file.open( IO_ReadWrite ) )
-      return false;
+    if ( readOnly() ) {
+      if ( !file.open( IO_ReadOnly ) )
+        return false;
+    } else {
+      if ( !file.open( IO_ReadWrite ) )
+        return false;
+    }
 
     if ( file.size() == 0 ) {
       file.close();
