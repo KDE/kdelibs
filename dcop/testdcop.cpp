@@ -122,6 +122,19 @@ int main(int argc, char **argv)
   qDebug("findObject: result = %s, %s, %s\n", boolResult ? "true" : "false",
 	foundApp.data(), foundObj.data());
 
+  DCOPClient *client2 = new DCOPClient();
+  client2->registerAs(app.name(), false);
+  qDebug("I2 registered as '%s'", client2->appId().data() );
+
+qDebug("Sending to object1");
+  client2->send(app.name(), "object1", "aFunction(QString,int)", data );
+
+qDebug("Calling object1");
+  if (!client2->call(app.name(), "object1", "aFunction(QString,int)", data, replyType, reply))
+    qDebug("I couldn't call myself");
+  else
+      qDebug("return type was '%s'", replyType.data() ); 
+
   return app.exec();
 
   client->detach();

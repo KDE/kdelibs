@@ -68,6 +68,46 @@ extern "C" {
 
 extern QMap<QCString, DCOPObject *> *dcopObjMap; // defined in dcopobject.cpp
 
+/*********************************************
+ * Keep track of local clients
+ *********************************************/
+typedef QAsciiDict<DCOPClient> client_map_t;
+
+static
+client_map_t *cliMap()
+{
+    static client_map_t *dcopCliMap = new client_map_t;
+    return dcopCliMap;
+}
+
+static
+DCOPClient *findLocalClient( const QCString &_appId )
+{
+    return cliMap()->find(_appId.data());
+}
+    
+static
+void registerLocalClient( const QCString &_appId, DCOPClient *client )
+{
+    cliMap()->replace(_appId.data(), client);
+    int c = _appId.find( '-' );
+    if ( c > 0 )
+       cliMap()->replace(_appId.left(c).data(), client);
+}
+
+static
+void unregisterLocalClient( const QCString &_appId )
+{
+    client_map_t *map = cliMap();
+    map->remove(_appId.data());
+    int c = _appId.find( '-' );
+    if ( c > 0 )
+    {
+       map->remove(_appId.left(c).data());
+    }
+}
+/////////////////////////////////////////////////////////
+
 template class QList<DCOPObjectProxy>;
 template class QList<DCOPClientTransaction>;
 template class QList<_IceConn>;
@@ -409,6 +449,9 @@ DCOPClient::~DCOPClient()
 	if (IceConnectionStatus(d->iceConn) == IceConnectAccepted)
 	    detach();
 
+    if (d->registered)
+       unregisterLocalClient( d->appId );
+
     delete d->notifier;
     delete d->transactionList;
     delete d;
@@ -579,6 +622,10 @@ bool DCOPClient::detach()
 	else
 	    d->iceConn = 0L;
     }
+
+    if (d->registered)
+       unregisterLocalClient(d->appId);
+
     delete d->notifier;
     d->notifier = 0L;
     d->registered = false;
@@ -626,8 +673,13 @@ QCString DCOPClient::registerAs( const QCString &appId, bool addPID )
 	QDataStream reply( replyData, IO_ReadOnly );
 	reply >> result;
     }
+
     d->appId = result;
     d->registered = !result.isNull();
+
+    if (d->registered)
+       registerLocalClient( d->appId, this );
+
     return result;
 }
 
@@ -695,10 +747,12 @@ bool DCOPClient::send(const QCString &remApp, const QCString &remObjId,
 		      const QCString &remFun, const QByteArray &data,
 		      bool)
 {
-    if ( remApp == appId() ) {
+    DCOPClient *localClient = findLocalClient( remApp );
+
+    if ( localClient  ) {
 	QCString replyType;
 	QByteArray replyData;
-	bool b = receive(  remApp, remObjId, remFun, data, replyType, replyData );
+	bool b = localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
 	if ( !b )
 	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
 
@@ -1301,13 +1355,15 @@ bool DCOPClient::call(const QCString &remApp, const QCString &remObjId,
 		      QCString& replyType, QByteArray &replyData,
                       bool useEventLoop, bool fast)
 {
-    if ( remApp == appId() ) {
-	bool b = receive(  remApp, remObjId, remFun, data, replyType, replyData );
+    DCOPClient *localClient = findLocalClient( remApp );
+
+    if ( localClient ) {
+	bool b = localClient->receive(  remApp, remObjId, remFun, data, replyType, replyData );
 	if ( !b )
 	    qWarning("DCOP failure in app %s:\n   object '%s' has no function '%s'", remApp.data(), remObjId.data(), remFun.data() );
 	return b;
     }
-
+		
     return callInternal(remApp, remObjId, remFun, data,
                          replyType, replyData, useEventLoop, fast, DCOPCall);
 }
@@ -1570,6 +1626,7 @@ DCOPClient::disconnectDCOPSignal( const QCString &sender, const QCString &signal
 {
   return disconnectDCOPSignal( sender, 0, signal, receiverObj, slot);
 }
+
 
 #include <dcopclient.moc>
 
