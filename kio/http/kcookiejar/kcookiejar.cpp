@@ -718,7 +718,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
     extractDomains(cookiePtr->host(), domains);
 
     QString domain = cookiePtr->domain();
-    if ( domain.isEmpty() )
+    if ( !domain.isEmpty() )
     {
        // Cookie specifies a domain. Check whether it is valid.
        bool valid = false;
