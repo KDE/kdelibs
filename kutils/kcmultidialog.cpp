@@ -71,6 +71,8 @@ void KCMultiDialog::slotApply()
     for (; it.current(); ++it)
       (*it)->save();
     clientChanged(false);
+
+    emit applyClicked();
 }
 
 
@@ -80,6 +82,8 @@ void KCMultiDialog::slotOk()
     for (; it.current(); ++it)
       (*it)->save();
     accept();
+
+    emit okClicked();
 }
 
 void KCMultiDialog::slotHelp()
