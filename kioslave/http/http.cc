@@ -286,17 +286,17 @@ HTTPProtocol::HTTPProtocol( Connection *_conn ) : IOProtocol( _conn )
 
   m_bCanResume = true; // most of http servers support resuming ?
 
-  m_bUseProxy = KProtocolManager::self().getUseProxy();
+  m_bUseProxy = KProtocolManager::self().useProxy();
 
   if ( m_bUseProxy ) {
-    KURL ur ( KProtocolManager::self().getHttpProxy().data() );
+    KURL ur ( KProtocolManager::self().httpProxy().data() );
 
     m_strProxyHost = ur.host();
     m_strProxyPort = ur.port();
     m_strProxyUser = ur.user();
     m_strProxyPass = ur.pass();
 
-    m_strNoProxyFor = KProtocolManager::self().getNoProxyFor().data();
+    m_strNoProxyFor = KProtocolManager::self().noProxyFor().data();
   }
 
   m_bEOF=false;
@@ -1285,7 +1285,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 	  RenameDlg_Result r;
 	  QString n;
 
-	  if ( KProtocolManager::self().getAutoResume() && m_bCanResume &&
+	  if ( KProtocolManager::self().autoResume() && m_bCanResume &&
 	       currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
 	    r = R_RESUME_ALL;
 	  }
@@ -1379,7 +1379,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     char buffer[ 2048 ];
     int read_size = 0;
     while( !feof( m_fsocket ) ) {
-      setup_alarm( KProtocolManager::self().getReadTimeout() ); // start timeout
+      setup_alarm( KProtocolManager::self().readTimeout() ); // start timeout
       long n = fread( buffer, 1, 2048, m_fsocket );
 
       // !!! slow down loop for local testing

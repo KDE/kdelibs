@@ -684,7 +684,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
 	  RenameDlg_Result r;
 	  QString n;
 
-	  if ( KProtocolManager::self().getAutoResume() && m_bCanResume &&
+	  if ( KProtocolManager::self().autoResume() && m_bCanResume &&
 		    currentError != ERR_DOES_ALREADY_EXIST_FULL ) {
 	    r = R_RESUME_ALL;
 	  }
@@ -804,7 +804,7 @@ void FtpProtocol::doCopy( list<string>& _source, const char *_dest, bool _rename
     int n;
     int read_size = 0;
     do {
-      setup_alarm( KProtocolManager::self().getReadTimeout() ); // start timeout
+      setup_alarm( KProtocolManager::self().readTimeout() ); // start timeout
       n = ftp.read( buffer, 2048 );
 
       // !!! slow down loop for local testing
@@ -1021,7 +1021,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
   KURL udest_orig( url_orig.c_str() );
   KURL udest_part( url_part.c_str() );
 
-  bool m_bMarkPartial = KProtocolManager::self().getMarkPartial();
+  bool m_bMarkPartial = KProtocolManager::self().markPartial();
 
   if ( udest_orig.isMalformed() )
   {
@@ -1175,7 +1175,7 @@ void FtpProtocol::slotPut( const char *_url, int _mode, bool _overwrite, bool _r
       }
 
     } // if the size is less then minimum -> delete the file
-    else if ( e->size < KProtocolManager::self().getMinimumKeepSize() ) {
+    else if ( e->size < KProtocolManager::self().minimumKeepSize() ) {
 	ftp.ftpDelete( udest.path() );
     }
   }

@@ -183,7 +183,7 @@ bool Ftp::ftpConnect( KURL& _url )
  */
 bool Ftp::ftpConnect( const char *_host, int _port, const char *_user, const char *_pass, string& _path )
 {
-  m_bPersistent = KProtocolManager::self().getPersistent();
+  m_bPersistent = KProtocolManager::self().persistentConnections();
 
   if ( m_bLoggedOn )
     if ( m_bPersistent ) {
