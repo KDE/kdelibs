@@ -142,9 +142,8 @@ void KMUiManager::setupPropertyDialog(KPrinterPropertyDialog *dlg)
 
 		// retrieve the KPrinter object
 		KPrinter	*prt(0);
-		KPrintDialog	*parentDlg = static_cast<KPrintDialog*>(dlg->parent());
-		if (parentDlg)
-			prt = parentDlg->printer();
+		if (dlg->parent() && dlg->parent()->isA("KPrintDialog"))
+			prt = static_cast<KPrintDialog*>(dlg->parent())->printer();
 
 		// add margin page
 		//if (prt && !prt->fullPage() && prt->applicationType() == KPrinter::Dialog)
