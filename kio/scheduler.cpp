@@ -825,21 +825,26 @@ Scheduler::slotSlaveError(int errorNr, const QString &errorMsg)
 bool 
 Scheduler::_assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 {
-    if (slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url().protocol() ))
+    if ((slave->slaveProtocol() != KProtocolManager::slaveProtocol( job->url().protocol() ))
+        ||     
+        (!newJobs.removeRef(job)))
+    {
+        job->kill();
         return false;
-
-    if (!newJobs.removeRef(job))
-        return false;
+    }
 
     JobList *list = coSlaves.find(slave);
     assert(list);
     if (!list)
+    {
+        job->kill();
         return false;
+    }
 
     list->append(job);
     coSlaveTimer.start(0, true); // Start job on timer event
 
-    return false;
+    return true;
 }
 
 bool 
