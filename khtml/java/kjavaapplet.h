@@ -15,6 +15,10 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.1.1.1  1999/07/22 17:28:06  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
  * </PRE>
  *
  * @version $Id$
@@ -34,34 +38,34 @@ public:
    /**
     * Specify the name of the class file to run. For example 'Lake.class'.
     */
-   void setAppletClass( QString clazzName );
-   QString appletClass();
+   void setAppletClass( const QString clazzName );
+   const QString appletClass();
 
    /**
     * Specify the location of the jar file containing the class.
     * (unimplemented)
     */
-   void setJARFile( QString jar );
-   QString jarFile();
+   void setJARFile( const QString jar );
+   const QString jarFile();
 
    /**
     * Specify a parameter to be passed to the applet.
     */
-   void setParameter( QString name, QString value );
+   void setParameter( const QString name, const QString value );
 
    /**
     * Set the URL of the document embedding the applet.
     */
-   void setBaseURL( QString base );
-   QString baseURL();
+   void setBaseURL( const QString base );
+   const QString baseURL();
 
-    void setAppletName( QString name );
-    QString appletName();
+    void setAppletName( const QString name );
+    const QString appletName();
 
    void create();
     bool isCreated();
 
-   void show( QString title );
+   void show( const QString title );
 
    /**
     * Run the applet.
@@ -80,7 +84,7 @@ private:
    // Applet info
     bool reallyExists;
    QString clazzName;
-    QString appName;
+   QString appName;
    QString jar;
    QString base;
    QDict<char> params;

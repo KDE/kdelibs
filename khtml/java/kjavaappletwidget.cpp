@@ -2,24 +2,30 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <qtimer.h>
-#include <kwmmapp.h>
+#include <kwinmodule.h>
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext *context,
-                                      QWidget *parent=0, const char *name=0 )
+                                      QWidget *parent, const char *name )
    : QWidget( parent, name )
 {
    applet = new KJavaApplet( context );
    CHECK_PTR( applet );
+
+   kwm = new KWinModule( this );
+   CHECK_PTR( kwm );
 
    uniqueTitle();
    shown = false;
 }
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaApplet *applet,
-                                      QWidget *parent=0, const char *name=0 )
+                                      QWidget *parent, const char *name )
    : QWidget( parent, name )
 {
    this->applet = applet;
+
+   kwm = new KWinModule( this );
+   CHECK_PTR( kwm );
 
    uniqueTitle();
    shown = false;
@@ -33,6 +39,9 @@ KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
    applet = new KJavaApplet( context );
    CHECK_PTR( applet );
 
+   kwm = new KWinModule( this );
+   CHECK_PTR( kwm );
+
    uniqueTitle();
    shown = false;
 }
@@ -44,7 +53,6 @@ void KJavaAppletWidget::create()
 
 void KJavaAppletWidget::show()
 {
-
     if (!shown) {
 	if ( !applet->isCreated() )
 	    applet->create();
@@ -60,52 +68,52 @@ void KJavaAppletWidget::show()
     QWidget::show();
 }
 
-void KJavaAppletWidget::setAppletClass( QString clazzName )
+void KJavaAppletWidget::setAppletClass( const QString clazzName )
 {
    applet->setAppletClass( clazzName );
 }
 
-QString KJavaAppletWidget::appletClass()
+const QString KJavaAppletWidget::appletClass()
 {
    return applet->appletClass();
 }
 
-void KJavaAppletWidget::setAppletName( QString name )
+void KJavaAppletWidget::setAppletName( const QString name )
 {
     applet->setAppletName( name );
 }
 
-QString KJavaAppletWidget::appletName()
+const QString KJavaAppletWidget::appletName()
 {
     return applet->appletName();
 }
 
-void KJavaAppletWidget::setJARFile( QString jar )
+void KJavaAppletWidget::setJARFile( const QString jar )
 {
    applet->setJARFile( jar );
 }
 
-QString KJavaAppletWidget::jarFile()
+const QString KJavaAppletWidget::jarFile()
 {
    return applet->jarFile();
 }
 
-void KJavaAppletWidget::setParameter( QString name, QString value )
+void KJavaAppletWidget::setParameter( const QString name, const QString value )
 {
    applet->setParameter( name, value );
 }
 
-QString KJavaAppletWidget::parameter( QString name )
+const QString KJavaAppletWidget::parameter( const QString name )
 {
     //   return applet->parameter( name );
 }
 
-void KJavaAppletWidget::setBaseURL( QString base )
+void KJavaAppletWidget::setBaseURL( const QString base )
 {
    applet->setBaseURL( base );
 }
 
-QString KJavaAppletWidget::baseURL()
+const QString KJavaAppletWidget::baseURL()
 {
    return applet->baseURL();
 }
@@ -119,14 +127,13 @@ void KJavaAppletWidget::uniqueTitle()
 
 void KJavaAppletWidget::showApplet()
 {
-    // Avoid flickering a la kwm! (ettrich)
-    KWM::doNotManage( swallowTitle );
+   // Avoid flickering a la kwm! (ettrich)
+   KWM::doNotManage( swallowTitle );
 
-    // connect to KWM events to get notification if window appears
- connect( kapp, SIGNAL( windowAdd( Window ) ),
-	  this, SLOT( setWindow( Window ) ) );
+   connect( kwm, SIGNAL( windowAdd( Window ) ),
+	    this, SLOT( setWindow( Window ) ) ); 
 
-    applet->show( swallowTitle );
+   applet->show( swallowTitle );
 }
 
 void KJavaAppletWidget::start()
@@ -151,7 +158,7 @@ void KJavaAppletWidget::setWindow( Window w )
          //setFocus(); //workaround (ettrich)
 	   
          // disconnect from KWM events
-         disconnect( kapp, SIGNAL( windowAdd( Window ) ),
+         disconnect( kwm, SIGNAL( windowAdd( Window ) ),
                      this, SLOT( setWindow( Window ) ) );
          //QTimer *t = new QTimer(this);
          //connect(t, SIGNAL(timeout()), SLOT(slotSave()));

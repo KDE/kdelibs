@@ -4,10 +4,11 @@
 #define KJAVAAPPLETWIDGET_H
 
 #include <qwidget.h>
-#include <kwmmapp.h> 
-#include <kwm.h>
 #include <kjavaappletcontext.h>
 #include <kjavaapplet.h>
+#include <kwm.h>
+
+class KWinModule;
 
 /**
  * @short A widget for displaying Java applets
@@ -51,6 +52,10 @@
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.1.1.1  1999/07/22 17:28:07  rich
+ * This is a current snapshot of my work on adding Java support
+ * to KDE. Applets now work!
+ *
  * </PRE>
  *
  * @version $Id$
@@ -73,56 +78,60 @@ public:
    // Stuff to do with the applet
    //
 
-   void setAppletName( QString appletName );
-   QString appletName();
+   void setAppletName( const QString appletName );
+   const QString appletName();
 
    /**
     * Specify the name of the class file to run. For example 'Lake.class'.
     */
-   void setAppletClass( QString clazzName );
+   void setAppletClass( const QString clazzName );
 
    /**
     * Get the name of the class file to run. For example 'Lake.class'.
     */
-   QString appletClass();
+   const QString appletClass();
 
    /**
     * Specify the location of the jar file containing the class.
     * (unimplemented)
     */
-   void setJARFile( QString jar );
+   void setJARFile( const QString jar );
 
    /**
     * Get the location of the jar file containing the class.
     * (unimplemented)
     */
-   QString jarFile();
+   const QString jarFile();
 
    /**
     * Specify a parameter to be passed to the applet.
     */
-   void setParameter( QString name, QString value );
+   void setParameter( const QString name, const QString value );
 
    /**
     * Get the value of a parameter to be passed to the applet.
     */
-   QString parameter( QString name );
+   const QString parameter( const QString name );
 
    /**
     * Set the URL of the document embedding the applet.
     */
-   void setBaseURL( QString base );
+   void setBaseURL( const QString base );
 
    /**
     * Get the URL of the document embedding the applet.
     */
-   QString baseURL();
+   const QString baseURL();
 
    /**
     * Create the applet.
     */
    void create();
-    virtual void show();
+
+   /**
+    * Overridden to make sure the applet is created.
+    */
+   virtual void show();
 
    /**
     * Run the applet.
@@ -134,12 +143,12 @@ public:
     */
    void stop();
 
-   //
-   // Stuff to do with swallowing the applets Frame
-   //
-
 protected slots:
-   void setWindow( Window w );
+    //
+    // Stuff to do with swallowing the applets Frame
+    //
+
+    void setWindow( Window w );
     void showApplet();
 
 protected:
@@ -151,13 +160,16 @@ protected:
    void uniqueTitle();
 
 private:
-   // Applet info
-   KJavaApplet *applet;
+    // Applet info
+    KJavaApplet *applet;
     bool shown;
 
-   // Swallowing info
-   Window window;
-   QString swallowTitle;
+    /** Used to find out when the applet window is mapped. */
+    KWinModule *kwm;
+
+    // Swallowing info
+    Window window;
+    QString swallowTitle;
 };
 
 #endif // KJAVAAPPLETWIDGET_H

@@ -42,7 +42,7 @@ void KJavaProcess::setJVMPath( QString path )
    jvmPath = path;
 }
 
-void KJavaProcess::setJVMVersion( int major, int minor = 0, int patch = 0 )
+void KJavaProcess::setJVMVersion( int major, int minor, int patch )
 {
    versionMajor = major;
    versionMinor = minor;

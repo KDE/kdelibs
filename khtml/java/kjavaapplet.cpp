@@ -15,47 +15,47 @@ bool KJavaApplet::isCreated()
     return reallyExists;
 }
 
-void KJavaApplet::setAppletClass( QString clazzName )
+void KJavaApplet::setAppletClass( const QString clazzName )
 {
    this->clazzName = clazzName;
 }
 
-QString KJavaApplet::appletClass()
+const QString KJavaApplet::appletClass()
 {
    return clazzName;
 }
 
-void KJavaApplet::setJARFile( QString jar )
+void KJavaApplet::setJARFile( const QString jar )
 {
    this->jar = jar;
 }
 
-QString KJavaApplet::jarFile()
+const QString KJavaApplet::jarFile()
 {
    return jar;
 }
 
-void KJavaApplet::setParameter( QString name, QString value )
+void KJavaApplet::setParameter( const QString name, const QString value )
 {
   context->setParameter( this, name, value );
 }
 
-void KJavaApplet::setBaseURL( QString base )
+void KJavaApplet::setBaseURL( const QString base )
 {
    this->base = base;
 }
 
-QString KJavaApplet::baseURL()
+const QString KJavaApplet::baseURL()
 {
    return base;
 }
 
-void KJavaApplet::setAppletName( QString name )
+void KJavaApplet::setAppletName( const QString name )
 {
     appName = name;
 }
 
-QString KJavaApplet::appletName()
+const QString KJavaApplet::appletName()
 {
     return appName;
 }
@@ -66,7 +66,7 @@ void KJavaApplet::create( )
   reallyExists = true;
 }
 
-void KJavaApplet::show( QString title )
+void KJavaApplet::show( const QString title )
 {
     context->show( this, title );
 }
