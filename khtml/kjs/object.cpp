@@ -23,6 +23,10 @@
 #include <stdio.h>
 #include <iostream.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "kjs.h"
 #include "object.h"
 #include "nodes.h"
@@ -30,8 +34,17 @@
 #include "html_object.h"
 
 namespace KJS {
-  const double NaN = 0.0/0.;
-  const double Inf = 1.0/.0;
+
+#ifdef WORDS_BIGENDIAN
+  unsigned char NaN_Bytes[] = { 0x7f, 0xf8, 0, 0, 0, 0, 0, 0 };
+  unsigned char Inf_Bytes[] = { 0x7f, 0xf0, 0, 0, 0, 0, 0, 0 };
+#else
+  unsigned char NaN_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf8, 0x7f };
+  unsigned char Inf_Bytes[] = { 0, 0, 0, 0, 0, 0, 0xf0, 0x7f };
+#endif
+
+  const double NaN = *(const double*) NaN_Bytes;
+  const double Inf = *(const double*) Inf_Bytes;
   // TODO: -0
   const double D16 = 65536.0;
   const double D31 = 2147483648.0;

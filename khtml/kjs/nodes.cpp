@@ -149,7 +149,8 @@ KJSO *AccessorNode2::evaluate()
 // ECMA 11.2.2
 KJSO *NewExprNode::evaluate()
 {
-  KJSO *v = expr->evaluate()->getValue();
+  Ptr e = expr->evaluate();
+  Ptr v = e->getValue();
 
   KJSO *a;
   if (args)
