@@ -45,7 +45,7 @@ bool VCardFormatImpl::load( Addressee &addressee, QFile *file )
   VCardListIterator it( e.cardList() );
 
   if ( it.current() ) {
-    VCard v(*it.current());
+    VCARD::VCard v(*it.current());
     loadAddressee( addressee, v );
     return true;
   }
@@ -65,7 +65,7 @@ bool VCardFormatImpl::loadAll( AddressBook *addressBook, Resource *resource, QFi
   VCardListIterator it( e.cardList() );
 
   for (; it.current(); ++it) {
-    VCard v(*it.current());
+    VCARD::VCard v(*it.current());
     Addressee addressee;
     loadAddressee( addressee, v );
     addressee.setResource( resource );
@@ -81,7 +81,7 @@ void VCardFormatImpl::save( const Addressee &addressee, QFile *file )
   VCardList vcardlist;
   vcardlist.setAutoDelete( true );
 
-  VCard *v = new VCard;
+  VCARD::VCard *v = new VCARD::VCard;
 
   saveAddressee( addressee, v, false );
 
@@ -101,7 +101,7 @@ void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file 
   AddressBook::Iterator it;
   for ( it = ab->begin(); it != ab->end(); ++it ) {
     if ( (*it).resource() == resource ) {
-      VCard *v = new VCard;
+      VCARD::VCard *v = new VCARD::VCard;
       saveAddressee( (*it), v, false );
       (*it).setChanged( false );
       vcardlist.append( v );
@@ -114,7 +114,7 @@ void VCardFormatImpl::saveAll( AddressBook *ab, Resource *resource, QFile *file 
   file->writeBlock( (const char*)vcardData, vcardData.length() );
 }
 
-bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
+bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCARD::VCard &v )
 {
   QPtrList<ContentLine> contentLines = v.contentLineList();
   ContentLine *cl;
@@ -271,7 +271,7 @@ bool VCardFormatImpl::loadAddressee( Addressee& addressee, VCard &v )
   return true;
 }
 
-void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v, bool intern )
+void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCARD::VCard *v, bool intern )
 {
   ContentLine cl;
   QString value;
@@ -341,7 +341,7 @@ void VCardFormatImpl::saveAddressee( const Addressee &addressee, VCard *v, bool 
   addSoundValue( v, addressee.sound(), addressee, intern );
 }
 
-void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )
+void VCardFormatImpl::addCustomValue( VCARD::VCard *v, const QString &txt )
 {
   if ( txt.isEmpty() ) return;
 
@@ -354,7 +354,7 @@ void VCardFormatImpl::addCustomValue( VCard *v, const QString &txt )
   v->add(cl);
 }
 
-void VCardFormatImpl::addTextValue( VCard *v, EntityType type, const QString &txt )
+void VCardFormatImpl::addTextValue( VCARD::VCard *v, EntityType type, const QString &txt )
 {
   if ( txt.isEmpty() ) return;
 
@@ -364,7 +364,7 @@ void VCardFormatImpl::addTextValue( VCard *v, EntityType type, const QString &tx
   v->add(cl);
 }
 
-void VCardFormatImpl::addDateValue( VCard *vcard, EntityType type,
+void VCardFormatImpl::addDateValue( VCARD::VCard *vcard, EntityType type,
                                     const QDate &date )
 {
   if ( !date.isValid() ) return;
@@ -377,7 +377,7 @@ void VCardFormatImpl::addDateValue( VCard *vcard, EntityType type,
   vcard->add(cl);
 }
 
-void VCardFormatImpl::addDateTimeValue( VCard *vcard, EntityType type,
+void VCardFormatImpl::addDateTimeValue( VCARD::VCard *vcard, EntityType type,
                                     const QDateTime &dateTime )
 {
   if ( !dateTime.isValid() ) return;
@@ -390,7 +390,7 @@ void VCardFormatImpl::addDateTimeValue( VCard *vcard, EntityType type,
   vcard->add(cl);
 }
 
-void VCardFormatImpl::addAddressValue( VCard *vcard, const Address &a )
+void VCardFormatImpl::addAddressValue( VCARD::VCard *vcard, const Address &a )
 {
   if ( a.isEmpty() )
     return;
@@ -413,7 +413,7 @@ void VCardFormatImpl::addAddressValue( VCard *vcard, const Address &a )
   vcard->add( cl );
 }
 
-void VCardFormatImpl::addLabelValue( VCard *vcard, const Address &a )
+void VCardFormatImpl::addLabelValue( VCARD::VCard *vcard, const Address &a )
 {
   if ( a.label().isEmpty() ) return;
 
@@ -439,7 +439,7 @@ void VCardFormatImpl::addAddressParam( ContentLine *cl, int type )
   cl->setParamList( params );
 }
 
-void VCardFormatImpl::addGeoValue( VCard *vcard, const Geo &geo )
+void VCardFormatImpl::addGeoValue( VCARD::VCard *vcard, const Geo &geo )
 {
   if ( !geo.isValid() ) return;
 
@@ -454,7 +454,7 @@ void VCardFormatImpl::addGeoValue( VCard *vcard, const Geo &geo )
   vcard->add(cl);
 }
 
-void VCardFormatImpl::addUTCValue( VCard *vcard, const TimeZone &tz )
+void VCardFormatImpl::addUTCValue( VCARD::VCard *vcard, const TimeZone &tz )
 {
   if ( !tz.isValid() ) return;
 
@@ -471,7 +471,7 @@ void VCardFormatImpl::addUTCValue( VCard *vcard, const TimeZone &tz )
   vcard->add(cl);
 }
 
-void VCardFormatImpl::addClassValue( VCard *vcard, const Secrecy &secrecy )
+void VCardFormatImpl::addClassValue( VCARD::VCard *vcard, const Secrecy &secrecy )
 {
   ContentLine cl;
   cl.setName( EntityTypeToParamName( EntityClass ) );
@@ -530,7 +530,7 @@ int VCardFormatImpl::readAddressParam( ContentLine *cl )
   return type;
 }
 
-void VCardFormatImpl::addNValue( VCard *vcard, const Addressee &a )
+void VCardFormatImpl::addNValue( VCARD::VCard *vcard, const Addressee &a )
 {
   ContentLine cl;
   cl.setName(EntityTypeToParamName( EntityN ) );
@@ -555,7 +555,7 @@ void VCardFormatImpl::readNValue( ContentLine *cl, Addressee &a )
   a.setSuffix( QString::fromUtf8( v->suffix() ) );
 }
 
-void VCardFormatImpl::addTelephoneValue( VCard *v, const PhoneNumber &p )
+void VCardFormatImpl::addTelephoneValue( VCARD::VCard *v, const PhoneNumber &p )
 {
   if ( p.number().isEmpty() )
     return;
@@ -970,7 +970,7 @@ bool VCardFormatImpl::readFromString( const QString &vcard, Addressee &addressee
   VCardListIterator it( e.cardList() );
 
   if ( it.current() ) {
-    VCard v(*it.current());
+    VCARD::VCard v(*it.current());
     loadAddressee( addressee, v );
     return true;
   }
@@ -984,7 +984,7 @@ bool VCardFormatImpl::writeToString( const Addressee &addressee, QString &vcard 
   VCardList vcardlist;
   vcardlist.setAutoDelete( true );
 
-  VCard *v = new VCard;
+  VCARD::VCard *v = new VCARD::VCard;
 
   saveAddressee( addressee, v, true );
 
