@@ -16,6 +16,7 @@ noinst_HEADERS = kproxybindings.h kpac_impl.h kpac_downloader.h \
 METASOURCES = AUTO
 
 kpac_dhcp_helper_SOURCES = kpac_dhcp_helper.c
+kpac_dhcp_helper_LDADD = $(LIBSOCKET)
 
 install-exec-local:
 	@(chown root $(bindir)/kpac_dhcp_helper && chmod 4755 $(bindir)/kpac_dhcp_helper) || echo "Please make kpac_dhcp_helper setuid root"
