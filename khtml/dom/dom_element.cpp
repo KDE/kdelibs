@@ -119,7 +119,6 @@ Element &Element::operator = (const Element &other)
 
 Element::~Element()
 {
-    if(impl) impl->deref();
 }
 
 DOMString Element::tagName() const
