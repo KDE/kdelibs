@@ -470,6 +470,9 @@ void KJanusWidget::addPageWidget( QFrame *page, const QStringList &items,
       mIconListToPageStack.insert(item, page);
       mIconList->invalidateHeight();
       mIconList->invalidateWidth();
+
+      if (mIconList->isVisible())
+        mIconList->updateWidth();
     }
 
     //
