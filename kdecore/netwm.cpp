@@ -118,8 +118,9 @@ static char *nstrdup(const char *s1) {
 static char *nstrndup(const char *s1, int l) {
     if (! s1 || l == 0) return (char *) 0;
 
-    char *s2 = new char[l];
+    char *s2 = new char[l+1];
     strncpy(s2, s1, l);
+    s2[l] = '\0';
     return s2;
 }
 
@@ -951,7 +952,7 @@ void NETRootInfo::setSupported(unsigned long pr) {
 		    (unsigned char *) &(p->supportwindow), 1);
     XChangeProperty(p->display, p->supportwindow, net_wm_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->name,
-		    strlen(p->name) + 1);
+		    strlen(p->name));
 }
 
 
@@ -1517,9 +1518,6 @@ void NETRootInfo::update(unsigned long dirty) {
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
 	    if (type_ret == UTF8_STRING && format_ret == 8) {
-		// force the last element in the data array to be NUL
-		data_ret[nitems_ret - 1] = '\0';
-
 		const char *d = (const char *) data_ret;
 		unsigned int s, n, index;
 
@@ -1601,7 +1599,7 @@ void NETRootInfo::update(unsigned long dirty) {
 				       &nitems_ret, &unused, &name_ret)
 		    == Success) {
 		    if (type_ret == UTF8_STRING && format_ret == 8)
-			p->name = nstrdup((const char *) name_ret);
+			p->name = nstrndup((const char *) name_ret, nitems_ret);
 
 		    if ( name_ret )
 			XFree(name_ret);
@@ -2111,7 +2109,7 @@ void NETWinInfo::setName(const char *name) {
     p->name = nstrdup(name);
     XChangeProperty(p->display, p->window, net_wm_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->name,
-		    strlen(p->name) + 1);
+		    strlen(p->name));
 }
 
 
@@ -2122,7 +2120,7 @@ void NETWinInfo::setVisibleName(const char *visibleName) {
     p->visible_name = nstrdup(visibleName);
     XChangeProperty(p->display, p->window, net_wm_visible_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->visible_name,
-		    strlen(p->visible_name) + 1);
+		    strlen(p->visible_name));
 }
 
 
@@ -2133,7 +2131,7 @@ void NETWinInfo::setIconName(const char *iconName) {
     p->icon_name = nstrdup(iconName);
     XChangeProperty(p->display, p->window, net_wm_icon_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->icon_name,
-		    strlen(p->icon_name) + 1);
+		    strlen(p->icon_name));
 }
 
 
@@ -2144,7 +2142,7 @@ void NETWinInfo::setVisibleIconName(const char *visibleIconName) {
     p->visible_icon_name = nstrdup(visibleIconName);
     XChangeProperty(p->display, p->window, net_wm_visible_icon_name, UTF8_STRING, 8,
 		    PropModeReplace, (unsigned char *) p->visible_icon_name,
-		    strlen(p->visible_icon_name) + 1);
+		    strlen(p->visible_icon_name));
 }
 
 
@@ -2570,8 +2568,7 @@ void NETWinInfo::update(unsigned long dirty) {
 			       (long) BUFSIZE, False, UTF8_STRING, &type_ret,
 			       &format_ret, &nitems_ret, &unused, &data_ret)
 	    == Success) {
-	    if (type_ret == UTF8_STRING && format_ret == 8 &&
-		nitems_ret > 0) {
+	    if (type_ret == UTF8_STRING && format_ret == 8 && nitems_ret > 0) {
 		if (p->visible_name) delete [] p->visible_name;
 		p->visible_name = nstrndup((const char *) data_ret, nitems_ret);
 	    }
