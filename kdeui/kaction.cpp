@@ -353,10 +353,11 @@ bool KAction::setShortcut( const KShortcut& cut )
   else
     d->m_kaccel->setShortcut( name(), cut );
 
-  int len = containerCount();
-  for( int i = 0; i < len; ++i )
-    updateShortcut( i );
-
+  if( !d->m_cut.isNull() ) {
+      int len = containerCount();
+      for( int i = 0; i < len; ++i )
+          updateShortcut( i );
+  }
   return true;
 }
 
@@ -404,7 +405,7 @@ void KAction::updateShortcut( QPopupMenu* menu, int id )
     // This is a fall-hack in case the KAction is missing a proper parent collection.
     //  It should be removed eventually. --ellis
     menu->setAccel( d->m_cut.keyCodeQt(), id );
-    kdWarning(125) << "KAction::updateShortcut(): d->m_kaccel = 0" << endl;
+    kdWarning(129) << "KAction::updateShortcut(): " << name() << ". No KAccel, probably missing a parent collection." << endl;
   }
 }
 
@@ -499,7 +500,7 @@ int KAction::plug( QWidget *w, int index )
   // hiding the menubar.
   //if (!d->m_kaccel && !d->m_cut.isNull()) // only if not already plugged into a kaccel, and only if there is a shortcut !
   //  plugMainWindowAccel( w );
-  
+
   // Application actions should be plugged into an accel upon construction,
   //  but for KParts actions, they should only be connected when they are
   //  either explicitly given a K
@@ -538,7 +539,7 @@ int KAction::plug( QWidget *w, int index )
     if ( d->m_kaccel )
         updateShortcut( menu, id );
     else if ( !d->m_cut.isNull() )
-        kdWarning(125) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
+        kdWarning(129) << "KAction::plug(): has no KAccel object; this = " << this << " name = " << name() << " parentCollection = " << m_parentCollection << endl; // ellis
 
     // call setItemEnabled only if the item really should be disabled,
     // because that method is slow and the item is per default enabled
@@ -629,6 +630,7 @@ void KAction::unplug( QWidget *w )
 
 void KAction::plugAccel(KAccel *kacc, bool configurable)
 {
+  //kdDebug(129) << "KAction::plugAccel( kacc = " << kacc << " ): name \"" << name() << "\"" << endl;
   if ( d->m_kaccel )
     unplugAccel();
 
@@ -649,7 +651,7 @@ void KAction::plugAccel(KAccel *kacc, bool configurable)
     connect(d->m_kaccel, SIGNAL(keycodeChanged()), this, SLOT(slotKeycodeChanged()));
   }
   else
-    kdWarning(125) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
+    kdWarning(129) << "KAction::plugAccel( kacc = " << kacc << " ): KAccel object already contains an action name \"" << name() << "\"" << endl; // -- ellis
 }
 
 void KAction::unplugAccel()
@@ -860,6 +862,7 @@ QString KAction::whatsThisWithIcon() const
 
 QWidget* KAction::container( int index ) const
 {
+  assert( index < containerCount() );
   return d->m_containers[ index ].m_container;
 }
 
@@ -1092,6 +1095,7 @@ void KToggleAction::setChecked( bool c )
 {
   if ( c == d->m_checked )
     return;
+  //kdDebug(129) << "KToggleAction::setChecked(" << c << ") " << this << " " << name() << endl;
 
   d->m_checked = c;
 
@@ -2696,7 +2700,7 @@ void KActionCollection::setWidget( QWidget* w )
       d->m_kaccel = new KAccel( w, "KActionCollection-KAccel" );
   }
   else
-    kdWarning(125) << "KActionCollection::setWidget( " << w << " ): d->m_kaccel already set to " << d->m_kaccel << endl;
+    kdWarning(129) << "KActionCollection::setWidget( " << w << " ): d->m_kaccel already set to " << d->m_kaccel << endl;
 }
 
 void KActionCollection::findMainWindow( QWidget *w )
