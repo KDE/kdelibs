@@ -467,16 +467,16 @@ protected:
      * @ref KMainWindow uses one group for each window.  Please
      * reimplement these function in childclasses.
      *
-     * Note: Noo user interaction is allowed
+     * Note: No user interaction is allowed
      * in this function!
      *
      */
-    virtual void saveProperties( KConfig *kconfig ){};
+    virtual void saveProperties( KConfig* ) {}
 
    /**
     * Read your instance-specific properties.
     */
-    virtual void readProperties( KConfig* ){};
+    virtual void readProperties( KConfig* ) {}
 
    /**
      * Save your application-wide properties. The function is
