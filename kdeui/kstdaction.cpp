@@ -566,7 +566,7 @@ KAction *KStdAction::findNext(const QObject *recvr, const char *slot,
 KAction *KStdAction::findPrev(const QObject *recvr, const char *slot,
                               QObject *parent, const char *name )
 {
-    return new KAction(i18n("Find &Previous"), "prev",
+    return new KAction(i18n("Find &Previous"), "previous",
                        KStdAccel::key(KStdAccel::FindPrev),
                        recvr, slot, parent, name ? name : stdName(FindPrev));
 }
