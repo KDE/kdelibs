@@ -31,7 +31,6 @@
 
 #include "errorhandler.h"
 #include "resource.h"
-#include "resourcedlg.h"
 
 #include "addressbook.h"
 #include "addressbook.moc"

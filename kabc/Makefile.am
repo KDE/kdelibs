@@ -1,7 +1,7 @@
 SUBDIRS = vcard . plugins
 
-INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated -I$(top_srcdir)/kabc \
-  -I$(top_srcdir)/kab $(all_includes)
+INCLUDES = -I$(srcdir)/vcard/include -I$(srcdir)/vcard/include/generated \
+  -I$(top_srcdir)/kabc -I$(top_srcdir)/kab $(all_includes)
 
 lib_LTLIBRARIES   = libkabc.la
 libkabc_la_LDFLAGS = $(all_libraries) -no-undefined -version-info 2:0:1 -module
@@ -13,7 +13,7 @@ libkabc_la_SOURCES = \
   addresseedialog.cpp distributionlist.cpp \
   distributionlisteditor.cpp resource.cpp \
   vcard21parser.cpp field.cpp resourcefactory.cpp \
-  resourceconfigwidget.cpp resourcedlg.cpp errorhandler.cpp \
+  resourceconfigwidget.cpp resourceselectdialog.cpp errorhandler.cpp \
   resourcefile.cpp resourcefileconfig.cpp \
   format.cpp binaryformat.cpp \
   vcardformat.cpp vcardformatimpl.cpp
@@ -24,7 +24,7 @@ kabcinclude_HEADERS = address.h addressbook.h addressee.h addresseedialog.h \
   distributionlist.h distributionlisteditor.h geo.h phonenumber.h \
   stdaddressbook.h timezone.h resource.h resourcefile.h \
   vcard21parser.h field.h resourcefactory.h \
-  resourceconfigwidget.h resourcedlg.h errorhandler.h \
+  resourceconfigwidget.h resourceselectdialog.h errorhandler.h \
   binaryformat.h \
   vcardformat.h \
   vcardformatimpl.h

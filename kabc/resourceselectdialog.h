@@ -18,8 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
-#ifndef RESOURCEDLG_H
-#define RESOURCEDLG_H
+#ifndef RESOURCESELECTDIALOG_H
+#define RESOURCESELECTDIALOG_H
 
 #include <qmap.h>
 
@@ -32,45 +32,47 @@
 namespace KABC {
 
 /**
- * Frontend for selecting a resource.
+ * Dialog for selecting a resource.
  * 
  * Example:
  *
  * <pre>
- * KABC::ResourceDialog dlg( KABC::StdAddressBook::self(), this );
- *
- * KABC::Resource *res;
- * if ( !( res = dlg.exec() ) ) {
+ * KABC::Resource *res = KABC::ResourceSelectDialog::getResource;
+ * if ( !( res ) ) {
  *   // no resource selected
  * } else {
  *   // do something with resource
  * }
  * </pre>
  */
-class ResourceDlg : KDialog
+class ResourceSelectDialog : KDialog
 {
-  Q_OBJECT
-public:
-  /**
-   * Constructor.
-   *
-   * @param ab     The address book you want to select the resource from
-   * @param parent The parent widget
-   * @param name   The name of the dialog
+    Q_OBJECT
+  public:
+    /**
+      Constructor.
+      @param ab     The address book you want to select the resource from
+      @param parent The parent widget
+      @param name   The name of the dialog
    */
-  ResourceDlg( AddressBook *ab, QWidget *parent = 0, const char *name = 0);
+    ResourceSelectDialog( AddressBook *ab, QWidget *parent = 0,
+                          const char *name = 0);
 
-public slots:
-  Resource *exec();
+    /**
+      Return selected resource.
+    */
+    Resource *resource();
 
-protected slots:
-  void accept();
+    /**
+      Open a dialog showing the available resources and return the resource the
+      user has selected. Returns 0, if the dialog was canceled.
+    */
+    static Resource *getResource( AddressBook *ab, QWidget *parent = 0 );
 
-private:
-  KListBox *mResourceId;
+  private:
+    KListBox *mResourceId;
 
-  QMap<int, Resource*> mResourceMap;
-  Resource *mResource;
+    QMap<int, Resource*> mResourceMap;
 };
 
 }
