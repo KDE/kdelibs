@@ -146,7 +146,7 @@ static void kDebugBackend( unsigned short nLevel, unsigned short nArea, const ch
 {
   if ( !debug_Config && KGlobal::_instance )
   {
-      debug_Config = pcd.setObject(new KConfig( "kdebugrc", false ));
+      debug_Config = pcd.setObject(new KConfig( "kdebugrc", false, false ));
       debug_Config->setGroup("0");
   }
 
