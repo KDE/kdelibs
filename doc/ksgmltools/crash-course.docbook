@@ -66,6 +66,13 @@
 <authorinitials>EB</authorinitials>
 <revremark>Put all tags lower case. Introduced new headers, fixed other details.</revremark>
 </revision>
+<revision>
+<revnumber>0.9</revnumber>
+<date>June 14, 2000</date>
+<authorinitials>EB</authorinitials>
+<revremark>"minimal" document example now really minimal. Added explanations about the
+document type declaration. Updated the tools installation and usage instructions.</revremark>
+</revision>
 </revhistory>
 
 <abstract>
@@ -170,14 +177,15 @@ DocBook SGML files into HTML files for use in khelpcenter or Postscript files
 (by way of the JadeTeX TeX macros):
 
 <itemizedlist>
-<listitem><para>Jade/nsgmls - an SGML stylesheet engine</para></listitem>
+<listitem><para>SGML-common basic declarations</para></listitem>
+<listitem><para>Jade - an SGML and stylesheet engine</para></listitem>
 <listitem><para>DocBook 3.1 DTD</para></listitem>
 <listitem><para>Norman Walsh's DocBook Stylesheets</para></listitem>
-<listitem><para>KDE DocBook DTD extensions</para></listitem>
-<listitem><para>KDE DocBook Stylesheet customization files</para></listitem>
+<listitem><para>Docbook-utils helper shell scripts</para></listitem>
+<listitem><para>KDE DocBook DTD extensions and stylesheet customization files</para></listitem>
 </itemizedlist>
 For instructions on installing all of these components, please refer to the
-<filename>ksgmltools/INSTALL</filename> file from the kdesdk package, on
+<filename>ksgmltools/INSTALL</filename> file from the kdelibs package, on
 <ulink url="ftp://ftp.kde.org/pub/kde/unstable/CVS/snapshots/current">KDE FTP server</ulink>
 or one of its mirrors listed on <ulink url="http://www.kde.org/mirrors.html">KDE mirrors list</ulink>.
 </para>
@@ -188,31 +196,41 @@ or one of its mirrors listed on <ulink url="http://www.kde.org/mirrors.html">KDE
 <title>Running the Tools</title>
 
 <para>
-To convert files from DocBook format to HTML format, use the command :</para>
-<para>
-<command>db2html <option>-c /usr/lib/sgml/kde-0.1/kde.cat</option>
-                 <option>-d /usr/lib/sgml/kde-0.1/stylesheets/kde.dsl#html</option>
-                 <replaceable>mydocs.docbook</replaceable></command>
+To convert files from DocBook format to HTML format, use the command:
 </para>
+
+<para>
+<screen>
+<command>jw	<option>-o HTML</option>
+		<option>-c /usr/share/apps/ksgmltools/catalog</option>
+                <option>-d /usr/share/apps/ksgmltools/stylesheets/kde.dsl#html</option>
+                <replaceable>index.docbook</replaceable></command>
+</screen>
+</para>
+
 <para>
 Jade will chug away, and if your document has no errors you will get a set of HMTL files
-named after the Chapters in your document. To get a good feel for how this tool
-works, try using the <command>db2html</command> tool on the source file for
+named after the chapters in your document. To get a good feel for how this tool
+works, try using the <command>jw</command> Jade wrapper on the source file for
 this document (<filename>crash-course.docbook</filename>) and on the
-documentation template (<filename>template.docbook</filename>).</para>
-<para> If you do get errors, read through the error log and correct errors from
+documentation template (<filename>template.docbook</filename>).
+</para>
+
+<para>
+If you do get errors, read through the error log and correct errors from
 the beginning of the list first. Often, an early error such as an unclosed tag
-will cause a lot more errors to occur later in the document.</para>
-<para>Other tools may let you convert docbook files to other formats:
+will cause a lot more errors to occur later in the document.
+</para>
+
+<para>Other options of jw may let you convert docbook files to other formats, among them:
 </para>
 <para>
 <itemizedlist>
-<listitem><para><command>db2ps</command> =&gt; PostScript</para></listitem>
-<listitem><para><command>db2pdf</command> =&gt; PDF</para></listitem>
-<listitem><para><command>db2rtf</command> =&gt; Rich Text Format</para></listitem>
-<listitem><para><command>db2dvi</command> =&gt; TeX DVI</para></listitem>
+<listitem><para><command>jw <option>-b ps</option></command> =&gt; PostScript</para></listitem>
+<listitem><para><command>jw <option>-b pdf</option></command> =&gt; PDF</para></listitem>
+<listitem><para><command>jw <option>-b rtf</option></command> =&gt; Rich Text Format</para></listitem>
 </itemizedlist>
-(use #print for these ones instead of #html).
+(use #print for these ones instead of #html to specify the right part of the KDE stylesheets to use).
 </para>
 
 </sect1>
@@ -276,12 +294,16 @@ The tags covered in this section are listed below.
 <!DOCTYPE book PUBLIC  "-//KDE//DTD DocBook V3.1-Based Variant V1.0//EN">
 
 <book lang="en">
+
 <bookinfo>
 <title>The Kapp Handbook</title>
 </bookinfo>
+
 <chapter id="introduction">
 <title>Introduction</title>
+
 <para></para>
+
 </chapter>
 </book>
 ]]>
@@ -373,25 +395,27 @@ In "real life", the document type declaration is slightly more complicated than
 the single ligne presented in the document skeleton in the previous section.
 </para>
 
-<para>First you find there an "entity definition" that makes <markup>&amp;kapp;</markup>
+<para>
+Then you find there an "entity definition" that makes <markup>&amp;kapp;</markup>
 a synonymous for the name of the "Kapp" application, marked up as
 <markup>&lt;application&gt;Kapp&lt;/application&gt;</markup>.
 </para>
 
 <para>
-Then "&amp;kappname;" is defined as the name of the application. This symbol is always
-provided, should the real name of the application be iobtained through "&amp;kshisen;",
-"&amp;konqueror;", or "&amp;kapp;" like in our example.
+Then comes another "entity definition". <markup>&amp;kappname;</markup> is defined as
+the name of the application. This symbol is always provided, should the real name of
+the application be iobtained through <markup>&amp;kshisen;</markup>,
+<markup>&amp;konqueror;</markup>, or <markup>&amp;kapp;</markup> like in our example.
 </para> 
 
 <para>
 Then other entities depending on this application name are included. For example,
-this makes "&amp;FDL;" available as a shortcut for the Free Documentation Licence
-notice.
+this makes <markup>&amp;FDL;</markup> available as a shortcut for the Free
+Documentation Licence notice.
 </para>
 
 <para>
-Finally, it is said that by default, no index is generated.
+Finally, it is said that, by default, no index is generated.
 </para>
 
 </sect1>
