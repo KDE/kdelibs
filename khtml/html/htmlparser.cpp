@@ -557,7 +557,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
             {
             case ID_TABLE:
                 popBlock(ID_TABLE); // end the table
-                handled = true;      // ...and start a new one
+                handled = checkChild( current->id(), id);
                 break;
             case ID_TEXT:
             {
@@ -592,8 +592,7 @@ bool KHTMLParser::insertNode(NodeImpl *n, bool flat)
 			)
 		    )
                 {
-                    while ( node->id() != ID_TABLE )
-			node = node->parentNode();
+                    while ( node->id() != ID_TABLE ) node = node->parentNode();
                     NodeImpl *parent = node->parentNode();
                     int exceptioncode = 0;
                     NodeImpl *container = new HTMLGenericElementImpl( document, ID__KONQBLOCK );
