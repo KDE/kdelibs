@@ -364,12 +364,12 @@ TEXTAREA {
 	font-family: monospace;
 }
 
-INPUT {
-	vertical-align: middle;
-}
-      
 INPUT[type="hidden"] {
 	display: none; 
+}
+
+INPUT[type="radio"], INPUT[type="checkbox"] {
+        margin: 0 0.5ex;
 }
       
 OPTION, 
