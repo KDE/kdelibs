@@ -499,6 +499,13 @@ protected:
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
+    * See QLineEdit::contextMenuEvent().
+    */
+    virtual void contextMenuEvent( QContextMenuEvent * );
+
+    /**
+    * Re-implemented for internal reasons.  API not affected.
+    *
     * See QLineEdit::createPopupMenu().
     */
     virtual QPopupMenu *createPopupMenu();
