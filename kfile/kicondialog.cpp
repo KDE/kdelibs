@@ -335,6 +335,12 @@ void KIconButton::setIcon(QString icon)
     setPixmap(mpLoader->loadIcon(mIcon, mGroup));
 }
 
+void KIconButton::resetIcon()
+{
+    mIcon = QString::null;
+    setPixmap(QPixmap());
+}
+
 void KIconButton::slotChangeIcon()
 {
     if (!mpDialog)

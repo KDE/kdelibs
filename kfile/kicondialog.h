@@ -152,6 +152,9 @@ public:
     /** Set the button's initial icon. */
     void setIcon(QString icon);
 
+    /** Reset the icon (reverts to an empty button) */
+    void resetIcon();
+
     /** Returns the selected icon name. */
     const QString icon() { return mIcon; }
 
