@@ -364,11 +364,13 @@ Value KJS::getLiveConnectValue(KParts::LiveConnectExtension *lc, const QString &
   }
 }
 
-KDE_NO_EXPORT EmbedLiveConnect::EmbedLiveConnect(KParts::LiveConnectExtension *lc, UString n, KParts::LiveConnectExtension::Type t, int id)
+/* only with gcc > 3.4 KDE_NO_EXPORT */
+EmbedLiveConnect::EmbedLiveConnect(KParts::LiveConnectExtension *lc, UString n, KParts::LiveConnectExtension::Type t, int id)
   : m_liveconnect (lc), name(n), objtype(t), objid(id)
 {}
 
-KDE_NO_EXPORT EmbedLiveConnect::~EmbedLiveConnect() {
+/* only with gcc > 3.4 KDE_NO_EXPORT */
+EmbedLiveConnect::~EmbedLiveConnect() {
   if (m_liveconnect)
     m_liveconnect->unregister(objid);
 }
