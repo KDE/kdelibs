@@ -304,6 +304,7 @@ RenderSubmitButton::RenderSubmitButton(RenderStyle *style, QScrollView *view,
 {
     QPushButton *p = new QPushButton(view->viewport());
     m_widget = p;
+    m_widget->setFont(m_style->font());
 
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
     m_clicked = false;
@@ -429,6 +430,7 @@ RenderLineEdit::RenderLineEdit(RenderStyle *style, QScrollView *view, HTMLFormEl
 
     m_size = size;
     m_widget = edit;
+    m_widget->setFont(m_style->font());
 }
 
 void RenderLineEdit::slotReturnPressed()
@@ -509,6 +511,7 @@ RenderFileButton::RenderFileButton(RenderStyle *style, QScrollView *view,
     QLineEdit *edit = new QLineEdit(view);
 
     m_widget = edit;
+    m_widget->setFont(m_style->font());
 }
 
 RenderFileButton::~RenderFileButton()
@@ -583,6 +586,7 @@ RenderSelect::RenderSelect(int size, bool multiple, RenderStyle *style,
         m_size = 1;
         m_widget = w;
     }
+    m_widget->setFont(m_style->font());
 }
 
 void RenderSelect::layout( bool )
@@ -789,6 +793,7 @@ RenderTextArea::RenderTextArea(int wrap, RenderStyle *style, QScrollView *view,
     TextAreaWidget *edit = new TextAreaWidget(wrap, view);
 
     m_widget = edit;
+    m_widget->setFont(m_style->font());
 }
 
 void RenderTextArea::layout( bool )

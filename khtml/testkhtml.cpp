@@ -25,6 +25,7 @@
 #include <qpushbutton.h>
 #include <qscrollview.h>
 #include <qwidget.h>
+#include <qvaluelist.h>
 #include "dom/dom2_range.h"
 #include "dom/html_document.h"
 #include "dom/dom_exception.h"
@@ -38,7 +39,18 @@ int main(int argc, char *argv[])
     KHTMLPart *doc = new KHTMLPart;
     doc->widget()->resize(800,500);
 //    doc->widget()->resize(500,300);
-//    doc->enableJScript(true);
+    QValueList<int> fontSizes = doc->fontSizes();
+    fontSizes[0] = 14;
+    fontSizes[1] = 18;
+    fontSizes[2] = 20;
+    fontSizes[3] = 24;
+    fontSizes[4] = 28;
+    fontSizes[5] = 32;
+    fontSizes[6] = 38;
+    fontSizes[7] = 44;
+    doc->setFontSizes(fontSizes);
+
+    doc->enableJScript(true);
     doc->enableJava(true);
     doc->setCharset("unicode");
 
