@@ -323,7 +323,7 @@ void KTopLevelWidget::updateRects()
                         bo = 0;
                         b += toolbar->height();
                     }
-                    toolbar->move(bo, h+b-toolbar->height());
+                    toolbar->move(bo, h+b+t-toolbar->height());
                     bo += toolbar->width();
                 }
             
@@ -331,7 +331,7 @@ void KTopLevelWidget::updateRects()
             if ( kstatusbar && kstatusbar->isVisible() )
             {
                 b += kstatusbar->height();
-                kstatusbar->setGeometry(0, h+b-kstatusbar->height(), w, kstatusbar->height());
+                kstatusbar->setGeometry(0, h+b+t-kstatusbar->height(), w, kstatusbar->height());
             }
 
             // menubar if on bottom
@@ -339,7 +339,7 @@ void KTopLevelWidget::updateRects()
                 if (kmenubar->menuBarPos() == KMenuBar::Bottom)
                 {
                     b+=kmenubar->height();
-                    kmenubar->setGeometry(0, h+b-kmenubar->height(), w, kmenubar->height());
+                    kmenubar->setGeometry(0, h+b+t-kmenubar->height(), w, kmenubar->height());
                 }
             freeHeight = h;
         }
