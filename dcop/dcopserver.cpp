@@ -583,7 +583,8 @@ static void sighandler(int sig)
 	return;
     }
 
-    delete the_server;
+    if (the_server) delete the_server;
+    the_server = 0;
     qApp->quit();
     //exit(0);
 }
@@ -779,6 +780,7 @@ void DCOPServer::removeConnection( void* data )
 	    }
 	}
     }
+    //_IceFreeConnection(conn->iceConn);
     delete conn;
 }
 
@@ -989,11 +991,12 @@ int main( int argc, char* argv[] )
     QApplication a( argc, argv, false );
 
     IceSetIOErrorHandler (IoErrorHandler );
-    DCOPServer *server = new DCOPServer();
+    DCOPServer *server = new DCOPServer(); // this sets the_server
 
     setjmp (JumpHere);
     a.exec();
-    delete server;
+    if (the_server) delete the_server;
+    the_server = 0;
 }
 
 #include "dcopserver.moc"
