@@ -179,10 +179,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
 		    << " nonCSSHint=" << _nonCSSHint << " value='" << string.string() << "'" << endl;
 #endif
 
-    StyleBaseImpl *b = declaration;
-    while(b && !b->isStyleSheet())
-        b = b->parent();
-    styleElement = static_cast<StyleSheetImpl *>(b);
+    styleElement = declaration->stylesheet();
     
     const char konq_value[] = "@-konq-value{";
     int length = string.length() + 4 + strlen(konq_value);
@@ -229,6 +226,9 @@ bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, con
     kdDebug( 6080 ) << "CSSParser::parseDeclaration: nonCSSHint=" << nonCSSHint
 		    << " value='" << string.string() << "'" << endl;
 #endif
+
+    styleElement = declaration->stylesheet();
+
     const char konq_decls[] = "@-konq-decls{";
     int length = string.length() + 4 + strlen(konq_decls);
     data = (unsigned short *)malloc( length *sizeof( unsigned short ) );
@@ -602,7 +602,7 @@ bool CSSParser::parseValue( int propId, bool important )
 	    if ( invalid )
 		break;
 	    value = valueList->next();
-	    if ( value->unit == CSSPrimitiveValue::CSS_IDENT )
+	    if ( value && value->unit == CSSPrimitiveValue::CSS_IDENT )
 		id = value->iValue;
 	    else
 		id = 0;

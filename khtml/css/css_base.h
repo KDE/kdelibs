@@ -184,6 +184,8 @@ namespace DOM {
 
 	void setStrictParsing( bool b ) { strictParsing = b; }
 	bool useStrictParsing() const { return strictParsing; }
+	
+	StyleSheetImpl* stylesheet();
 
     protected:
 	bool hasInlinedDecl : 1;

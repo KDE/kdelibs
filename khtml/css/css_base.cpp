@@ -42,18 +42,24 @@ void StyleBaseImpl::checkLoaded()
     if(m_parent) m_parent->checkLoaded();
 }
 
+StyleSheetImpl* StyleBaseImpl::stylesheet()
+{
+    StyleBaseImpl *b = this;
+    while(b && !b->isStyleSheet())
+        b = b->m_parent;
+    return static_cast<StyleSheetImpl *>(b);	
+}
+
 DOMString StyleBaseImpl::baseURL()
 {
     // try to find the style sheet. If found look for its url.
     // If it has none, look for the parentsheet, or the parentNode and
     // try to find out about their url
-    StyleBaseImpl *b = this;
-    while(b && !b->isStyleSheet())
-        b = b->m_parent;
 
-    if(!b) return DOMString();
+    StyleSheetImpl *sheet = stylesheet();
 
-    StyleSheetImpl *sheet = static_cast<StyleSheetImpl *>(b);
+    if(!sheet) return DOMString();
+
     if(!sheet->href().isNull())
         return sheet->href();
 
