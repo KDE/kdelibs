@@ -399,6 +399,9 @@
 0	string		\<!doctype\ html	text/html
 0	string		\<!DOCTYPE\ html	text/html
 
+# PHP (offset should be "between 0 and 64"...)
+0	string		\<?php	application/x-php
+
 # Docbook
 0	string		\<!doctype\ book\ public\ "-//OASIS//DTD\ DocBook 	text/docbook
 # Hack: <?xml (with version but no encoding etc.) with a docbook mimetype afterwards.
