@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.86  1998/11/06 16:48:20  radej
+// sven: nicer docking, some bugfixes
+//
 // Revision 1.85  1998/11/06 15:08:48  radej
 // sven: finished handles. Comments?
 //
@@ -509,7 +512,42 @@ void KToolBarButton::drawButton( QPainter *_painter )
       _painter->drawText(dx, dy, width()-dx, height(), tf, btext);
     }
   }
-#warning What about Icontext=3
+  else if (icontext == 3)
+  {
+    if (pixmap())
+    {
+      dx = (width() - pixmap()->width()) / 2;
+      dy = 1;
+      if ( isDown() && style() == WindowsStyle )
+      {
+        ++dx;
+        ++dy;
+      }
+      _painter->drawPixmap( dx, dy, *pixmap() );
+    }
+
+    if (!btext.isNull())
+    {
+      int tf = AlignBottom|AlignLeft;
+      if (!isEnabled())
+        _painter->setPen(palette().disabled().dark());
+      dy= pixmap()->height();
+      dx = 2;
+      
+      if ( isDown() && style() == WindowsStyle )
+      {
+        ++dx;
+        ++dy;
+      }
+      
+      if (toolBarButton)
+        _painter->setFont(buttonFont);
+      if(raised)
+        _painter->setPen(blue);
+      _painter->drawText(0, 0, width(), height()-4, tf, btext);
+    }
+  }
+//#warning What about Icontext=3
   
   if (myPopup)
   {
@@ -583,6 +621,31 @@ void KToolBarButton::modeChange()
 */
   
   highlight=parentWidget->highlight;
+  switch (icontext)
+  {
+  case 0:
+    QToolTip::remove(this);
+    QToolTip::add(this, btext);
+    resize (myWidth, _size-2);
+    break;
+    
+  case 1:
+    QToolTip::remove(this);
+    resize (fm.width(btext)+myWidth, _size-2); // +2+_size-2
+    break;
+    
+  case 2:
+    QToolTip::remove(this);
+    resize (fm.width(btext)+6, _size-2); // +2+_size-2
+    break;
+    
+  case 3:
+    QToolTip::remove(this);
+    resize (fm.width(btext)+6, _size-2); // +2+_size-2
+    break;
+  }
+}
+  /*
   if (icontext > 0) //Calculate my size
   {
     QToolTip::remove(this);
@@ -594,6 +657,8 @@ void KToolBarButton::modeChange()
     QToolTip::add(this, btext);
     resize (myWidth, _size-2);
   }
+  */
+  
 }
 
 void KToolBarButton::makeDisabledPixmap()
@@ -803,6 +868,8 @@ void KToolBar::slotReadConfig()
 
   if (icontext != icon_text)
   {
+    if (icontext==3)
+      item_size = (item_size<40)?40:item_size;
     icon_text=icontext;
     doUpdate=true;
   }
