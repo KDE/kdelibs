@@ -49,14 +49,14 @@ public:
   virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
 			    Completion *completion = 0);
   virtual void clear();
-  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, int firstLine,
-						     int lastLine, QString code);
+  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code);
   virtual void finishedWithEvent(const DOM::Event &event);
   virtual KJS::Interpreter *interpreter();
 
   virtual void setDebugEnabled(bool enabled);
   virtual void showDebugWindow(bool show=true);
   virtual bool paused() const;
+  virtual void dataReceived();
 
   void initScript();
   void applyUserAgent();
@@ -221,11 +221,11 @@ void KJSProxyImpl::clear() {
   }
 }
 
-DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString name, int firstLine,
-							 int lastLine, QString code)
+DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QString name, QString code)
 {
 #ifdef KJS_DEBUGGER
   if (KJSDebugWin::debugWindow())
+    KJSDebugWin::debugWindow()->attach(m_script);
     KJSDebugWin::debugWindow()->setNextSourceInfo(sourceUrl,m_handlerLineno);
 #else
   Q_UNUSED(sourceUrl);
@@ -247,8 +247,6 @@ DOM::EventListener *KJSProxyImpl::createHTMLEventHandler(QString sourceUrl, QStr
 
   DeclaredFunctionImp *declFunc = static_cast<DeclaredFunctionImp*>(handlerFunc.imp());
   declFunc->setName(name);
-  declFunc->setFirstLine(firstLine);
-  declFunc->setLastLine(lastLine);
   return KJS::Window::retrieveWindow(m_part)->getJSEventListener(handlerFunc,true);
 }
 
@@ -306,6 +304,14 @@ bool KJSProxyImpl::paused() const
     return KJSDebugWin::debugWindow()->inSession();
 #endif
   return false;
+}
+
+void KJSProxyImpl::dataReceived()
+{
+#ifdef KJS_DEBUGGER
+  if (KJSDebugWin::debugWindow())
+    KJSDebugWin::debugWindow()->sourceChanged(m_script,m_part->url().url());
+#endif
 }
 
 void KJSProxyImpl::initScript()

@@ -1258,6 +1258,8 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
   KHTMLPageCache::self()->addData(d->m_cacheId, data);
   write( data.data(), data.size() );
+  if (d->m_jscript)
+    d->m_jscript->dataReceived();
 }
 
 void KHTMLPart::slotRestoreData(const QByteArray &data )
@@ -1424,6 +1426,8 @@ void KHTMLPart::slotFinished( KIO::Job * job )
   //kdDebug( 6050 ) << "slotFinished" << endl;
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
+  if (d->m_jscript)
+    d->m_jscript->dataReceived();
 
   if ( d->m_doc && d->m_doc->docLoader()->expireDate() && m_url.protocol().lower().startsWith("http"))
       KIO::http_update_cache(m_url, false, d->m_doc->docLoader()->expireDate());
@@ -5214,14 +5218,14 @@ DOM::Node KHTMLPart::activeNode() const
     return DOM::Node(d->m_doc?d->m_doc->focusNode():0);
 }
 
-DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString name, int firstLine, int lastLine )
+DOM::EventListener *KHTMLPart::createHTMLEventListener( QString code, QString name )
 {
   KJSProxy *proxy = jScript();
 
   if (!proxy)
     return 0;
 
-  return proxy->createHTMLEventHandler( m_url.url(), name, firstLine, lastLine, code );
+  return proxy->createHTMLEventHandler( m_url.url(), name, code );
 }
 
 KHTMLPart *KHTMLPart::opener()

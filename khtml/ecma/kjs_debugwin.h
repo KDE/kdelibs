@@ -146,6 +146,7 @@ namespace KJS {
 
     void setSourceLine(int sourceId, int lineno);
     void setNextSourceInfo(QString url, int baseLine);
+    void sourceChanged(Interpreter *interpreter, QString url);
     bool inSession() const { return !m_execStates.isEmpty(); }
     void setMode(Mode m) { m_mode = m; }
     void clearInterpreter(Interpreter *interpreter);
@@ -187,7 +188,7 @@ namespace KJS {
     void checkBreak(ExecState *exec);
     void enterSession(ExecState *exec);
     void leaveSession();
-    void displaySourceFile(SourceFile *sourceFile);
+    void displaySourceFile(SourceFile *sourceFile, bool forceRefresh);
     void updateContextList();
 
     QString contextStr(const Context &ctx);

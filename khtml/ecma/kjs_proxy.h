@@ -53,14 +53,14 @@ public:
   virtual QVariant evaluate(QString filename, int baseLine, const QString &, const DOM::Node &n,
 			    KJS::Completion *completion = 0) = 0;
   virtual void clear() = 0;
-  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, int firstLine,
-						     int lastLine, QString code) = 0;
+  virtual DOM::EventListener *createHTMLEventHandler(QString sourceUrl, QString name, QString code) = 0;
   virtual void finishedWithEvent(const DOM::Event &event) = 0;
   virtual KJS::Interpreter *interpreter() = 0;
 
   virtual void setDebugEnabled(bool enabled) = 0;
   virtual void showDebugWindow(bool show=true) = 0;
   virtual bool paused() const = 0;
+  virtual void dataReceived() = 0;
 
   void setEventHandlerLineno(int lineno) { m_handlerLineno = lineno; }
 

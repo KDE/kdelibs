@@ -426,8 +426,7 @@ void KJSDebugWin::slotSourceSelected(int sourceSelIndex)
   if (sourceSelIndex < 0 || sourceSelIndex >= (int)m_sourceSel->count())
     return;
   SourceFile *sourceFile = m_sourceSelFiles.at(sourceSelIndex);
-  m_curSourceFile = 0; // force refresh
-  displaySourceFile(sourceFile);
+  displaySourceFile(sourceFile,true);
 
   // If the currently selected context is in the current source file, then hilight
   // the line it's on.
@@ -584,8 +583,7 @@ bool KJSDebugWin::sourceParsed(KJS::ExecState *exec, int sourceId,
     m_sourceSel->setCurrentItem(index);
 
   if (m_sourceSel->currentItem() == index) {
-    m_curSourceFile = 0; // force refresh
-    displaySourceFile(sourceFile);
+    displaySourceFile(sourceFile,true);
   }
 
   m_nextSourceBaseLine = 1;
@@ -735,9 +733,9 @@ bool KJSDebugWin::exitContext(ExecState *exec, const Completion &/*completion*/)
   return (m_mode != Stop);
 }
 
-void KJSDebugWin::displaySourceFile(SourceFile *sourceFile)
+void KJSDebugWin::displaySourceFile(SourceFile *sourceFile, bool forceRefresh)
 {
-  if (m_curSourceFile == sourceFile)
+  if (m_curSourceFile == sourceFile && !forceRefresh)
     return;
   QString code = sourceFile->getCode();
   const QChar *chars = code.unicode();
@@ -790,11 +788,11 @@ void KJSDebugWin::setSourceLine(int sourceId, int lineno)
       for (int i = 0; i < m_sourceSel->count(); i++)
 	if (m_sourceSelFiles.at(i) == sourceFile)
 	  m_sourceSel->setCurrentItem(i);
-      displaySourceFile(sourceFile);
+      displaySourceFile(sourceFile,false);
   }
   if (lineno > 0) {
     m_sourceDisplay->setSelected(source->baseLine+lineno-2,true);
-    m_sourceDisplay->ensureCurrentVisible();
+    m_sourceDisplay->centerCurrentItem();
   }
   else {
     m_sourceDisplay->clearSelection();
@@ -805,6 +803,13 @@ void KJSDebugWin::setNextSourceInfo(QString url, int baseLine)
 {
   m_nextSourceUrl = url;
   m_nextSourceBaseLine = baseLine;
+}
+
+void KJSDebugWin::sourceChanged(Interpreter *interpreter, QString url)
+{
+  SourceFile *sourceFile = getSourceFile(interpreter,url);
+  if (sourceFile && m_curSourceFile == sourceFile)
+    displaySourceFile(sourceFile,true);
 }
 
 void KJSDebugWin::clearInterpreter(Interpreter *interpreter)
@@ -906,7 +911,7 @@ void KJSDebugWin::updateContextList()
 
   m_contextList->clear();
   for (int i = 0; i < m_execsCount; i++)
-    m_contextList->insertItem(contextStr(m_execs[i]->context()),0);
+    m_contextList->insertItem(contextStr(m_execs[i]->context()));
 
   if (m_execsCount > 0) {
     m_contextList->setSelected(m_execsCount-1, true);
