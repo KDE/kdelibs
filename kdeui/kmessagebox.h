@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  1999/08/15 15:41:47  porten
+ * fixed documentation typos
+ *
  * Revision 1.3  1999/08/15 14:03:00  porten
  * capitalize "OK" in documentation as well.
  *
@@ -51,6 +54,7 @@ class QWidget;
 class KMessageBox
 {
 public:
+ enum { Ok = 1, Cancel = 2, Yes = 3, No = 4 };
  /**
   * Displays a simple "question" dialog. 
   *
@@ -65,7 +69,7 @@ public:
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
   *
-  * @return  0 is returned if the Yes-button is pressed. 1 is returned
+  * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
   * 
   * To be used for conmfirmation on questions like "Shall I do xyz?"
@@ -93,7 +97,7 @@ public:
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
   *
-  * @return  0 is returned if the Yes-button is pressed. 1 is returned
+  * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
   *          if the No-button is pressed.
   *
   * To be used for questions "Are you sure you want to do this?"
@@ -121,8 +125,8 @@ public:
   * @param buttonNo  The text for the second button. 
   *                  The default is i18n("&No").
   *
-  * @return  0 is returned if the Yes-button is pressed. 1 is returned
-  *          if the No-button is pressed. 2 is retunred if the Cancel-
+  * @return  'Yes' is returned if the Yes-button is pressed. 'No' is returned
+  *          if the No-button is pressed. 'Cancel' is retunred if the Cancel-
   *          button is pressed.
   *
   * To be used for questions "Do you want to save your changes?"
