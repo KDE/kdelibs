@@ -95,7 +95,7 @@ namespace
      *
      * If it's not defined, we have to choose between the non-reentrant
      * gethostbyname2 and the reentrant but IPv4-only gethostbyname_r:
-     * we will choose gethostbyname2 if AF_INET is defined.
+     * we will choose gethostbyname2 if AF_INET6 is defined.
      *
      * Lastly, gethostbyname will be used if nothing else is present.
      */
@@ -113,7 +113,7 @@ namespace
     int res;
     int my_h_errno;
     char *buf = 0L;
- 
+
     // qDebug("ResolveThread::run(): started threaded gethostbyname for %s (af = %d)", 
     //	   m_hostname.data(), m_af);
     do
@@ -714,13 +714,19 @@ bool KStandardWorker::run()
 #endif
   };
   int familyCount = sizeof(families)/sizeof(families[0]);
+  bool skipIPv6 = false;
   if (getenv("KDE_NO_IPV6"))
-     familyCount--;
+    skipIPv6 = true;
   resultList.setAutoDelete(true);
 
   for (int i = 0; i < familyCount; i++)
     if (familyMask() & families[i].mask)
       {
+#ifdef AF_INET6
+	if (skipIPv6 && families[i].af == AF_INET6)
+	  continue;
+#endif
+
 	KResolverWorkerBase *worker;
 	KResolverResults *res = new KResolverResults;
 	resultList.append(res);
