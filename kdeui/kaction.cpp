@@ -523,6 +523,16 @@ void KSelectAction::setCurrentItem( int id )
     emit activate();
 }
 
+void KSelectAction::setItems( const QStringList &lst )
+{ 
+    QSelectAction::setItems( lst); 
+}
+
+void KSelectAction::clear()
+{ 
+    QSelectAction::clear(); 
+}
+
 void KSelectAction::setCurrentItem( int id, int index )
 {
   QWidget* w = container( id );

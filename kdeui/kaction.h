@@ -513,6 +513,10 @@ public:
      */
     virtual void setCurrentItem( int index );	
 
+    virtual void setItems( const QStringList &lst );
+
+    virtual void clear();
+
 protected slots:
 
     void slotActivated( const QString &text );
@@ -523,7 +527,9 @@ signals:
 
 protected:
     virtual void setCurrentItem( int id, int index );
+    
     virtual void setItems( int id, const QStringList &lst );
+    	
     virtual void clear( int id );
 
 private:
