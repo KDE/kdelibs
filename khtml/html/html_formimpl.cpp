@@ -290,6 +290,7 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
     {
         m_enctype = "multipart/form-data";
         m_multipart = true;
+        m_post = true;
     }
     else
     {
