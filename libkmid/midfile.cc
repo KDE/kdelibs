@@ -197,6 +197,12 @@ ulong tempo=1000000;
 printf("Parsing 1 ...\n");
 #endif
 
+int pgminchannel[16];
+for (i=0;i<16;i++) 
+   {
+   pgminchannel[i]=0;
+   };
+
 int j;
 for (i=0;i<info->ntracks;i++)
     {
@@ -242,20 +248,28 @@ while (parsing)
     trk=minTrk;
     Tracks[trk]->readEvent(ev);
 
-    if (ev->command==MIDI_SYSTEM_PREFIX)
+    switch (ev->command)
         {
-        if (((ev->command|ev->chn)==META_EVENT)&&(ev->d1==ME_SET_TEMPO))
-            {
-            if (tempoToMetronomeTempo(tmp=((ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2])))>=8)
-               {
-               tempo=tmp;
+        case (MIDI_NOTEON) : 
+              if (ev->chn!=PERCUSSION_CHANNEL)
+                  info->patchesUsed[pgminchannel[ev->chn]]++;
+                 else
+                  info->patchesUsed[ev->note+128]++;
+              break;
+        case (MIDI_PGM_CHANGE) :
+              pgminchannel[ev->chn]=(ev->patch);
+              break;
+        case (MIDI_SYSTEM_PREFIX) :
+              if (((ev->command|ev->chn)==META_EVENT)&&(ev->d1==ME_SET_TEMPO))
+              {
+                 tempo=(ev->data[0]<<16)|(ev->data[1]<<8)|(ev->data[2]);
 //               printf("setTempo %ld\n",tempo);
-               for (j=0;j<info->ntracks;j++)
-                   {
-                   Tracks[j]->changeTempo(tempo);
-                   };
-               };
-            };
+                 for (j=0;j<info->ntracks;j++)
+                 {
+                    Tracks[j]->changeTempo(tempo);
+                 };
+              };
+	      break;
         };
     };
 

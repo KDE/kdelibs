@@ -375,13 +375,14 @@ delete_FM_patches_directory=1;
 
 void fmOut::setVolumePercentage    ( int i )
 {
-    volumepercentage=i;
     int fd=open("/dev/mixer0",O_RDWR,0);
+    if (fd==-1) return;
     int a=i*255/100;
     if (a>255) a=255;
     a=(a<<8) | a;
     if (ioctl(fd,MIXER_WRITE(SOUND_MIXER_SYNTH),&a)==-1) printf("ERROR writing to mixer\n");
     close(fd);
+    volumepercentage=i;
 };
 
 

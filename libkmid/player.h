@@ -97,10 +97,13 @@ DeviceManager *midi;
 midifileinfo *info;
 track **tracks;
 SpecialEvent *spev;
+NoteArray *na;
 
 int songLoaded;
 
 PlayerController *ctl;
+
+bool parseSong;
 
 void removeSpecialEvents(void);
 void parseSpecialEvents(void);
@@ -114,13 +117,15 @@ player(DeviceManager *midi_,PlayerController *pctl);
 int loadSong(char *filename);
 void removeSong(void); // Unload the current song, so that everything is empty
 
-int isSongLoaded(void) {return songLoaded;};
-SpecialEvent *takeSpecialEvents() {return spev;};
+int isSongLoaded(void) { return songLoaded; };
+SpecialEvent *takeSpecialEvents() { return spev; };
 void writeSPEV(void);
-NoteArray *parseNotes(void);
+//NoteArray *parseNotes(void);
+NoteArray *getNoteArray(void) { return na; };
 
 void play(int calloutput,void output(void));
 
+void setParseSong(bool b);
 
 midifileinfo *Info(void) {return info;};
 

@@ -70,7 +70,8 @@ char *getActiveSongName(void)
 char *getName(int id); // Returns the name of the song with id id
 
 void previous(void);
-void next(void);
+int next(void); // returns 1 if evrything is ok, and 0 if it was the last element
+                // (but leaves active the last element instead of NULL)
 
 void iteratorStart(void);
 void iteratorNext(void);

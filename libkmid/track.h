@@ -57,7 +57,8 @@ private:
 	uchar  *data;
 	uchar  *ptrdata;
 	
-	ulong	current_ticks; // Total number of ticks since beggining of song
+        bool    note[16][128]; // Notes that are set on or off by this track
+        ulong	current_ticks; // Total number of ticks since beggining of song
 	ulong    delta_ticks;   // Delta ticks from previous event to next event
 	ulong    wait_ticks;    // Wait ticks from previous event in other track
 					// to next event in this track
