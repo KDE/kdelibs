@@ -348,6 +348,7 @@ void KMultiPart::slotJobFinished( KIO::Job *job )
 
         //QTimer::singleShot( 0, this, SLOT( updateWindowCaption() ) );
     }
+    m_job = 0L;
 }
 
 KAboutData* KMultiPart::createAboutData()
