@@ -164,7 +164,7 @@ KJSO Navigator::get(const UString &p) const
     return String((userAgent.find(QString::fromLatin1("Win"),0,false)==-1) ?
            QString::fromLatin1("X11") : QString::fromLatin1("Win32"));
   } else if (p == "plugins") {
-      kdDebug() << "navigator.plugins" << endl;
+      kdDebug(6070) << "navigator.plugins" << endl;
       return KJSO(new Plugins());
   } else if (p == "mimeTypes") {
       return KJSO(new MimeTypes());
@@ -186,7 +186,7 @@ PluginBase::PluginBase()
         // read configuration
         KConfig c(KGlobal::dirs()->saveLocation("data","nsplugins")+"/pluginsinfo");
         unsigned num = (unsigned int)c.readNumEntry("number");
-        kdDebug() << "plugins.length = " << num << endl;
+        kdDebug(6070) << "plugins.length = " << num << endl;
         for ( unsigned n=0; n<num; n++ ) {
 
             c.setGroup( QString::number(n) );
@@ -196,7 +196,7 @@ PluginBase::PluginBase()
             plugin->file = c.readEntry("file");
             plugin->desc = c.readEntry("description");
 
-            //kdDebug() << "plugin : " << plugin->name << " - " << plugin->desc << endl;
+            //kdDebug(6070) << "plugin : " << plugin->name << " - " << plugin->desc << endl;
 
             plugins->append( plugin );
 
@@ -212,7 +212,7 @@ PluginBase::PluginBase()
 
                 token = tokens.begin();
                 mime->type = (*token).lower();
-                //kdDebug() << "mime->type=" << mime->type << endl;
+                //kdDebug(6070) << "mime->type=" << mime->type << endl;
                 ++token;
 
                 mime->suffixes = *token;
@@ -287,9 +287,9 @@ KJSO MimeTypes::get(const UString &p) const
             return KJSO( new MimeType( mimes->at(i) ) );
 
         // mimeTypes[name]
-        //kdDebug() << "MimeTypes[" << p.ascii() << "]" << endl;
+        //kdDebug(6070) << "MimeTypes[" << p.ascii() << "]" << endl;
         for ( MimeTypeInfo *m=mimes->first(); m!=0; m=mimes->next() ) {
-            //kdDebug() << "m->type=" << m->type.ascii() << endl;
+            //kdDebug(6070) << "m->type=" << m->type.ascii() << endl;
             if ( m->type==p )
                 return KJSO( new MimeType( m ) );
         }
@@ -317,10 +317,10 @@ KJSO Plugin::get(const UString &p) const
         // plugin[#]
         bool ok;
         unsigned int i = p.toULong(&ok);
-        //kdDebug() << "Plugin::get plugin[" << i << "]" << endl;
+        //kdDebug(6070) << "Plugin::get plugin[" << i << "]" << endl;
         if( ok && i<m_info->mimes.count() )
         {
-            //kdDebug() << "returning mimetype " << m_info->mimes.at(i)->type << endl;
+            //kdDebug(6070) << "returning mimetype " << m_info->mimes.at(i)->type << endl;
             return KJSO( new MimeType( m_info->mimes.at(i) ) );
         }
 
