@@ -73,14 +73,14 @@ namespace KIO {
         virtual ~Job();
 
         /**
-        * Abort this job.
-        * This kills all subjobs and deletes the job
-        * @param quietly if false, Job will emit signal @ref result
-        * and ask kio_uiserver to close the progress window.
-        * @p quietly is set to true for subjobs. Whether applications
-        * should call with true or false depends on whether they rely
-        * on result being emitted or not.
-        */
+         * Abort this job.
+         * This kills all subjobs and deletes the job.
+         * @param quietly if false, Job will emit signal @ref result
+         * and ask kio_uiserver to close the progress window.
+         * @p quietly is set to true for subjobs. Whether applications
+         * should call with true or false depends on whether they rely
+         * on result being emitted or not.
+         */
         virtual void kill( bool quietly = true );
 
         /**
@@ -125,7 +125,7 @@ namespace KIO {
         void showErrorDialog( QWidget * parent = 0L );
 
         /**
-         * Associate this job with a window given by @p window
+         * Associate this job with a window given by @p window.
          */
         void setWindow(QWidget *window);
 
@@ -166,7 +166,7 @@ namespace KIO {
         /**
          * Progress signal showing the overall progress of the job
          * This is valid for any kind of job, and allows using a
-         * a progress bar very easily (see @ref KProgress)
+         * a progress bar very easily. (see @ref KProgress)
          */
         void percent( KIO::Job *job, unsigned long percent );
 
@@ -197,16 +197,16 @@ namespace KIO {
         virtual void slotResult( KIO::Job *job );
 
         /**
-         * Forward signal from subjob
+         * Forward signal from subjob.
          */
         void slotSpeed( KIO::Job*, unsigned long bytes_per_second );
         /**
-         * Forward signal from subjob
+         * Forward signal from subjob.
          */
         void slotInfoMessage( KIO::Job*, const QString & );
 
         /**
-         * Remove speed information
+         * Remove speed information.
          */
         void slotSpeedTimeout();
 
@@ -255,7 +255,7 @@ namespace KIO {
     };
 
     /**
-     * A simple job (one url and one command)
+     * A simple job (one url and one command).
      * This is the base class for all jobs that are scheduled.
      * Other jobs are high-level jobs (CopyJob, DeleteJob, FileCopyJob...)
      * that manage subjobs but aren't scheduled directly.
@@ -272,8 +272,8 @@ namespace KIO {
         const KURL& url() const { return m_url; }
 
         /**
-         * Abort job
-         * This kills all subjobs and deletes the job
+         * Abort job.
+         * This kills all subjobs and deletes the job.
          * @param quietly if true, Job will emit signal @ref result
          * Should only be set to false when the user kills the job
          * (from kio_uiserver), not when you want to abort a job.
@@ -281,13 +281,13 @@ namespace KIO {
         virtual void kill( bool quietly = true );
 
         /**
-         * Abort job
+         * Abort job.
          * Suspends slave to be reused by another job for the same request.
          */
         virtual void putOnHold();
 
         /**
-         * Discard suspended slave
+         * Discard suspended slave.
          */
         static void removeOnHold();
 
@@ -306,7 +306,7 @@ namespace KIO {
 
         /**
          * @internal
-         * Slave in use by this job
+         * Slave in use by this job.
          */
         Slave *slave() { return m_slave; }
 
@@ -324,17 +324,17 @@ namespace KIO {
 
         /**
          * @internal
-         * Called on a slave's warning
+         * Called on a slave's warning.
          */
         void slotWarning( const QString & );
 
         /**
-         * Called on a slave's info message
+         * Called on a slave's info message.
          */
         void slotInfoMessage( const QString & );
 
         /**
-         * Called on a slave's connected signal
+         * Called on a slave's connected signal.
          */
         void slotConnected();
 
@@ -354,8 +354,8 @@ namespace KIO {
     public slots:
         /**
          * @internal
-         * Called on a slave's error
-         * Made public for the scheduler
+         * Called on a slave's error.
+         * Made public for the scheduler.
          */
         virtual void slotError( int , const QString & );
 
@@ -396,9 +396,9 @@ namespace KIO {
 
     signals:
         /**
-         * Signals a redirection
-         * Use to update the URL shown to the user
-         * The redirection itself is handled internally
+         * Signals a redirection.
+         * Use to update the URL shown to the user.
+         * The redirection itself is handled internally.
          */
         void redirection( KIO::Job *, const KURL &url );
 
@@ -450,12 +450,12 @@ namespace KIO {
         void setMetaData( const KIO::MetaData &);
 
         /**
-         * Add key/value pair to the meta data that is sent to the slave
+         * Add key/value pair to the meta data that is sent to the slave.
          */
         void addMetaData(const QString &key, const QString &value);
 
         /**
-         * Add key/value pairs to the meta data that is sent to the slave
+         * Add key/value pairs to the meta data that is sent to the slave.
          */
         void addMetaData(const QMap<QString,QString> &values);
 
@@ -487,7 +487,7 @@ namespace KIO {
     signals:
         /**
          * Data from the slave has arrived.
-         * @param data data received from the slave
+         * @param data data received from the slave.
          * End of data (EOD) has been reached if data.size() == 0
          */
         void data( KIO::Job *, const QByteArray &data);
@@ -502,9 +502,9 @@ namespace KIO {
         void dataReq( KIO::Job *, QByteArray &data);
 
         /**
-         * Signals a redirection
-         * Use to update the URL shown to the user
-         * The redirection itself is handled internally
+         * Signals a redirection.
+         * Use to update the URL shown to the user.
+         * The redirection itself is handled internally.
          */
         void redirection( KIO::Job *, const KURL &url );
 
@@ -660,9 +660,9 @@ namespace KIO {
         void entries( KIO::Job *, const KIO::UDSEntryList& );
 
         /**
-         * Signals a redirection
-         * Use to update the URL shown to the user
-         * The redirection itself is handled internally
+         * Signals a redirection.
+         * Use to update the URL shown to the user.
+         * The redirection itself is handled internally.
          */
         void redirection( KIO::Job *, const KURL &url );
 
