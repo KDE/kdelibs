@@ -269,6 +269,9 @@ int KToggleAction::plug( QWidget* widget )
 
 void KToggleAction::setChecked( bool c )
 {
+    if ( c == checked )
+	return;
+    
     checked = c;
 
     int len = containerCount();
@@ -285,6 +288,23 @@ void KToggleAction::setChecked( bool c )
 	    ((KMenuBar*)w)->setItemChecked( menuId( i ), checked );
 	else if ( w->inherits( "KActionWidget" ) )
 	    ((QActionWidget*)w)->updateAction( this );	
+    }
+
+    // Uncheck all the other toggle actions in the same group
+    if ( parent() && !exclusiveGroup().isEmpty() && checked )
+    {
+	const QObjectList *list = parent()->children();
+	if ( list )
+	{
+	    QObjectListIt it( *list );
+	    for( ; it.current(); ++it )
+	    {
+		if ( it.current()->inherits( "QToggleAction" ) &&
+		     ((QToggleAction*)it.current())->exclusiveGroup() == exclusiveGroup() &&
+		     it.current() != this )
+		    ((QToggleAction*)it.current())->setChecked( FALSE );
+	    }
+	}
     }
 
     emit activated();
@@ -568,13 +588,13 @@ KFontAction::KFontAction( QObject* parent, const char* name )
 
 void KFontAction::setFont( const QString &family )
 {
-    int i = fonts.findIndex( family );
+    int i = fonts.findIndex( family.lower() );
     if ( i != -1 )
 	setCurrentItem( i );
 }
 
 
-KFontSizeAction::KFontSizeAction( const QString& text, int accel, 
+KFontSizeAction::KFontSizeAction( const QString& text, int accel,
 				  QObject* parent, const char* name )
     : KSelectAction( text, accel, parent, name )
 {
@@ -582,7 +602,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, int accel,
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, int accel,
-				  QObject* receiver, const char* slot, QObject* parent, 
+				  QObject* receiver, const char* slot, QObject* parent,
 				  const char* name )
     : KSelectAction( text, accel, receiver, slot, parent, name )
 {
@@ -597,7 +617,7 @@ KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int 
 }
 
 KFontSizeAction::KFontSizeAction( const QString& text, const QIconSet& pix, int accel,
-				  QObject* receiver, const char* slot, QObject* parent, 
+				  QObject* receiver, const char* slot, QObject* parent,
 				  const char* name )
     : KSelectAction( text, pix, accel, receiver, slot, parent, name )
 {
@@ -618,7 +638,7 @@ void KFontSizeAction::init()
     QStringList lst;
     for ( unsigned int i = 0; i < 100; ++i )
 	lst.append( QString( "%1" ).arg( i + 1 ) );
-    
+
     setItems( lst );
 }
 
