@@ -6,7 +6,8 @@
      names (which if they occur will cost you a _lot_ of time)
  -->
 
-<!-- ROLES_OF_TRANSLATORS -->
+<!-- ROLES OF TRANSLATORS -->
+
 <!ENTITY traducteurEricBischoff       '<othercredit role="translator"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Traduction française</contrib></othercredit>'>
 <!ENTITY relecteurEricBischoff        '<othercredit role="reviewer"><firstname>Éric</firstname><surname>Bischoff</surname><affiliation><address><email>e.bischoff@noos.fr</email></address></affiliation><contrib>Relecture de la documentation française</contrib></othercredit>'>
 
@@ -122,7 +123,9 @@
 <!ENTITY ChristopheRolland 'Christophe Rolland <email>crolland@freesurf.fr</email>'>
 <!ENTITY GillesThioliere   'Gilles Thiolière <email>zhovirax@wanadoo.fr</email>'>
 
+
 <!-- OTHER USER ENTITIES -->
+
 <!ENTITY Alt			"<keycap>Alt</keycap>">
 <!ENTITY Correction     	"<keycap>Correction</keycap>">                            <!-- English: &Backspace; -->	
 <!ENTITY BGS            	"bouton <mousebutton>gauche</mousebutton> de la souris">  <!-- English: &LMB; -->
