@@ -1,0 +1,12 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=Ruby Program
+# A source_rb icon is missing...
+Icon=source_pl
+Type=MimeType
+MimeType=application/x-ruby
+Patterns=*.rb;*.RB;*.ruby;*.RUBY
+
+[Property::X-KDE-text]
+Type=bool
+Value=true
