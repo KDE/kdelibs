@@ -7,7 +7,8 @@
 	OFS=""
 	
 	print "// XXX Automatically generated. DO NOT EDIT! XXX //\n" > outfile
-	
+	print "// WARNING! All changes made in this file will be lost!\n" > outfile
+
 	if ($2 == "v") { pre = "virtual " } else { pre = "" }
 	
 	print "public:" >> outfile
