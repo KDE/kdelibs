@@ -22,7 +22,9 @@
 #include <qdatetime.h>
 
 #include <kapp.h>
+#include <kdebug.h>
 #include <kdialog.h>
+#include <kstringhandler.h>
 #include <kglobal.h>
 #include <klocale.h>
 
@@ -34,8 +36,8 @@ DefaultProgress::DefaultProgress( bool showNow )
   : ProgressBase( 0 ) {
 
   QVBoxLayout *topLayout = new QVBoxLayout( this, KDialog::marginHint(),
-					    KDialog::spacingHint() );
-  topLayout->addStrut( 360 );	// makes dlg at least that wide
+                                            KDialog::spacingHint() );
+  topLayout->addStrut( 360 );   // makes dlg at least that wide
 
   QGridLayout *grid = new QGridLayout(3, 3);
   topLayout->addLayout(grid);
@@ -85,6 +87,9 @@ DefaultProgress::DefaultProgress( bool showNow )
   hBox->addWidget( pb );
 
   resize( sizeHint() );
+  setMaximumSize( sizeHint().width()+50, sizeHint().height()+30 );
+  kdDebug() << "DefaultProgress: max size: " << sizeHint().width()+50 << "," << sizeHint().height()+30 << endl;
+  kdDebug() << "DefaultProgress: size: " << width() << "," << height() << endl;
 
   if ( showNow ) {
     show();
@@ -187,9 +192,9 @@ void DefaultProgress::slotCopying( KIO::Job*, const KURL& from, const KURL& to )
 {
   setCaption(i18n("Copy file(s) progress"));
   mode = Copy;
-  sourceLabel->setText( from.prettyURL() );
+  sourceLabel->setText( KStringHandler::csqueeze(from.prettyURL()) );
   setDestVisible( true );
-  destLabel->setText( to.prettyURL() );
+  destLabel->setText( KStringHandler::csqueeze(to.prettyURL()) );
 }
 
 
@@ -197,9 +202,9 @@ void DefaultProgress::slotMoving( KIO::Job*, const KURL& from, const KURL& to )
 {
   setCaption(i18n("Move file(s) progress"));
   mode = Move;
-  sourceLabel->setText( from.prettyURL() );
+  sourceLabel->setText( KStringHandler::csqueeze(from.prettyURL()) );
   setDestVisible( true );
-  destLabel->setText( to.prettyURL() );
+  destLabel->setText( KStringHandler::csqueeze(to.prettyURL()) );
 }
 
 
@@ -207,7 +212,7 @@ void DefaultProgress::slotCreatingDir( KIO::Job*, const KURL& dir )
 {
   setCaption(i18n("Creating directory"));
   mode = Create;
-  sourceLabel->setText( dir.prettyURL() );
+  sourceLabel->setText( KStringHandler::csqueeze(dir.prettyURL()) );
   setDestVisible( false );
 }
 
@@ -216,14 +221,14 @@ void DefaultProgress::slotDeleting( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Delete file(s) progress"));
   mode = Delete;
-  sourceLabel->setText( url.prettyURL() );
+  sourceLabel->setText( KStringHandler::csqueeze(url.prettyURL()) );
   setDestVisible( false );
 }
 
 void DefaultProgress::slotStating( KIO::Job*, const KURL& url )
 {
   setCaption(i18n("Examining file progress"));
-  sourceLabel->setText( url.prettyURL() );
+  sourceLabel->setText( KStringHandler::csqueeze(url.prettyURL()) );
   setDestVisible( false );
 }
 
@@ -266,4 +271,3 @@ void DefaultProgress::setDestVisible( bool visible )
 }
 
 #include "defaultprogress.moc"
-
