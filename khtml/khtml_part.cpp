@@ -77,6 +77,8 @@ using namespace DOM;
 #if !defined(QT_NO_DRAGANDDROP)
 #include <kmultipledrag.h>
 #endif
+#include "../kutils/kfinddialog.h"
+#include "../kutils/kfind.h"
 
 #include <ksslcertchain.h>
 #include <ksslinfodlg.h>
@@ -230,7 +232,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
            this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
   connect( khtml::Cache::loader(), SIGNAL( requestFailed( khtml::DocLoader*, khtml::CachedObject *) ),
            this, SLOT( slotLoaderRequestDone( khtml::DocLoader*, khtml::CachedObject *) ) );
-	   
+
   connect ( &d->m_progressUpdateTimer, SIGNAL( timeout() ), this, SLOT( slotProgressUpdate() ) );
 
   findTextBegin(); //reset find variables
@@ -244,16 +246,11 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // removing this catalogue from KGlobal::locale() prevents problems
   // with changing the language in applications at runtime -Thomas Reitelbach
   KGlobal::locale()->removeCatalogue("khtml");
-
 }
 
 KHTMLPart::~KHTMLPart()
 {
   //kdDebug(6050) << "KHTMLPart::~KHTMLPart " << this << endl;
-  if ( d->m_findDialog )
-      disconnect( d->m_findDialog, SIGNAL( destroyed() ),
-                  this, SLOT( slotFindDialogDestroyed() ) );
-
   if ( d->m_manager )
   {
     d->m_manager->setActivePart( 0 );
@@ -463,7 +460,7 @@ bool KHTMLPart::openURL( const KURL &url )
 
   connect( d->m_job, SIGNAL( percent( KIO::Job*, unsigned long ) ),
            this, SLOT( slotJobPercent( KIO::Job*, unsigned long ) ) );
-	   
+
   connect( d->m_job, SIGNAL( result( KIO::Job* ) ),
            this, SLOT( slotJobDone( KIO::Job* ) ) );
 
@@ -1486,12 +1483,12 @@ void KHTMLPart::slotProgressUpdate()
     percent = d->m_jobPercent / 4 + ( d->m_loadedObjects*300 ) / ( 4*d->m_totalObjectCount );
   else
     percent = d->m_jobPercent;
-    
+
   if( percent == 100 ) // never set 100% here
     percent = 99;
   if( d->m_bComplete ) // only if it's really complete
     percent = 100;
-        
+
   if( d->m_bComplete )
     emit d->m_extension->infoMessage( i18n( "Page loaded." ));
   else if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
@@ -1909,6 +1906,177 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
         d->m_findNode = next;
         if(!d->m_findNode) return false;
     }
+}
+
+
+void KHTMLPart::slotFind()
+{
+  KParts::ReadOnlyPart *part = currentFrame();
+  if (!part)
+    return;
+  if (!part->inherits("KHTMLPart") )
+  {
+      kdError(6000) << "slotFind: part is a " << part->className() << ", can't do a search into it" << endl;
+      return;
+  }
+  static_cast<KHTMLPart *>( part )->findText();
+}
+
+void KHTMLPart::slotFindDone()
+{
+  // ### remove me
+}
+
+void KHTMLPart::slotFindDialogDestroyed()
+{
+  // ### remove me
+}
+
+void KHTMLPart::findText()
+{
+  // First do some init to make sure we can search in this frame
+  if ( !d->m_doc )
+    return;
+
+  // Now show the dialog in which the user can choose options.
+  KFindDialog optionsDialog( widget(), "khtmlfind" );
+  optionsDialog.setHasSelection( hasSelection() );
+
+  // TODO? optionsDialog.setPattern( d->m_lastFindState.text );
+  optionsDialog.setFindHistory( d->m_lastFindState.history );
+  optionsDialog.setOptions( d->m_lastFindState.options );
+
+  if ( optionsDialog.exec() != QDialog::Accepted )
+      return;
+
+  // Save for next time
+  //d->m_lastFindState.text = optionsDialog.pattern();
+  int options = optionsDialog.options();
+  d->m_lastFindState.options = options;
+  d->m_lastFindState.history = optionsDialog.findHistory();
+
+  // Create the KFind object (which is both the 'find next' dialog and
+  // the class that does the actual search-in-string).
+  KFind *findDialog = new KFind( optionsDialog.pattern(), options );
+  connect(findDialog, SIGNAL( highlight( const QString &, int, int, const QRect & ) ),
+          this, SLOT( slotHighlight( const QString &, int, int, const QRect & ) ) );
+
+  khtml::RenderObject* start;
+  khtml::RenderObject* end;
+  if ( options & KFindDialog::SelectedText )
+  {
+    Q_ASSERT( hasSelection() );
+    start = d->m_selectionStart.handle()->renderer();
+    end = d->m_selectionEnd.handle()->renderer();
+    Q_ASSERT( start );
+    Q_ASSERT( end );
+  } else {
+   start = d->m_doc->renderer();
+   end = 0;
+  }
+  khtml::RenderObject* obj = start;
+  while( obj && obj != end )
+  {
+    // First make up the QString for the current 'line' (i.e. up to \n)
+    // We also want to remember the DOMNode for every portion of the string.
+    // We store this in an index->node list.
+
+    int newLinePos = -1;
+    QString str;
+    DOM::NodeImpl* lastNode = 0L;
+    while ( obj && obj != end && newLinePos == -1 )
+    {
+      // Grab text from render object
+      QString s;
+      if ( obj->isText() )
+        s = static_cast<khtml::RenderText *>(obj)->data().string();
+      else if ( obj->isBR() )
+        s = '\n';
+      else if ( !obj->isInline() && !str.isEmpty() )
+        s = '\n';
+      if ( !s.isEmpty() )
+      {
+        newLinePos = s.find( '\n' ); // did we just get a newline?
+        int index = str.length();
+        if ( newLinePos != -1 )
+          newLinePos += index;
+        str += s;
+        DOM::NodeImpl* node = obj->element();
+        if (!node)
+          node = lastNode;
+        else
+          lastNode = node;
+        //kdDebug(6050) << "StringPortion: " << index << "-" << index+s.length()-1 << " -> " << node << endl;
+        d->m_stringPortions.append( KHTMLPartPrivate::StringPortion( index, node ) );
+      }
+      if ( newLinePos == -1 )
+        obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
+    }
+
+    if ( options & KFindDialog::SelectedText )
+    {
+      // TODO cut first and last string as appropriate
+    }
+
+    //kdDebug(6050) << "str=" << str << endl;
+
+    // Let KFind inspect the text fragment, and display a dialog if a match is found
+    if ( !findDialog->find( str, QRect() ) )
+      break; // if cancelled by user
+
+    d->m_stringPortions.clear();
+    if ( obj )
+      obj = (options & KFindDialog::FindBackwards) ? obj->objectAbove() : obj->objectBelow();
+  }
+
+  delete findDialog;
+}
+
+void KHTMLPart::slotHighlight( const QString &, int index, int length, const QRect & )
+{
+  //kdDebug(6050) << "slotHighlight index=" << index << " length=" << length << endl;
+  QValueList<KHTMLPartPrivate::StringPortion>::Iterator it = d->m_stringPortions.begin();
+  QValueList<KHTMLPartPrivate::StringPortion>::Iterator prev = it;
+  // We stop at the first portion whose index is 'greater than', and then use the previous one
+  while ( it != d->m_stringPortions.end() && (*it).index <= index )
+  {
+    prev = it;
+    ++it;
+  }
+  Q_ASSERT ( prev != d->m_stringPortions.end() );
+  DOM::NodeImpl* node = (*prev).node;
+  Q_ASSERT( node );
+  Q_ASSERT( node->renderer() );
+
+  if ( node->renderer() )
+  {
+    int x = 0, y = 0;
+    static_cast<khtml::RenderText *>(node->renderer())
+      ->posOfChar(d->m_findPos, x, y);
+    d->m_view->setContentsPos(x-50, y-50);
+  }
+
+  d->m_selectionStart = node;
+  d->m_startOffset = index - (*prev).index;
+
+  // Now look for end node
+  it = prev; // no need to start from beginning again
+  while ( it != d->m_stringPortions.end() && (*it).index <= index + length )
+  {
+    prev = it;
+    ++it;
+  }
+  Q_ASSERT ( prev != d->m_stringPortions.end() );
+
+  d->m_selectionEnd = (*prev).node;
+  d->m_endOffset = index + length - (*prev).index;
+  d->m_startBeforeEnd = true;
+
+  //kdDebug(6050) << "slotHighlight: " << d->m_selectionStart.handle() << "," << d->m_startOffset << " - " <<
+  //  d->m_selectionEnd.handle() << "," << d->m_endOffset << endl;
+  d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
+                          d->m_selectionEnd.handle(), d->m_endOffset );
+  emitSelectionChanged();
 }
 
 QString KHTMLPart::selectedText() const
@@ -4321,63 +4489,6 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
         plugActionList( "loadImages", lst );
     }
   }
-}
-
-void KHTMLPart::slotFind()
-{
-  KHTMLPart *part = static_cast<KHTMLPart *>( currentFrame() );
-  if (!part)
-    return;
-
-  if (!part->inherits("KHTMLPart") )
-  {
-      kdError(6000) << "slotFind: part is a " << part->className() << ", can't do a search into it" << endl;
-      return;
-  }
-
-  // use the part's (possibly frame) widget as parent widget, so that it gets
-  // properly destroyed when the (possible) frame dies
-  if ( !d->m_findDialog ) {
-      d->m_findDialog = new KHTMLFind( part, part->widget(), "khtmlfind" );
-      connect( d->m_findDialog, SIGNAL( done() ),
-               this, SLOT( slotFindDone() ) );
-      connect( d->m_findDialog, SIGNAL( destroyed() ),
-               this, SLOT( slotFindDialogDestroyed() ) );
-  }
-
-  d->m_findDialog->setPart( part );
-  d->m_findDialog->setText( part->d->m_lastFindState.text );
-  d->m_findDialog->setCaseSensitive( part->d->m_lastFindState.caseSensitive );
-  d->m_findDialog->setDirection( part->d->m_lastFindState.direction );
-
-  d->m_findDialog->show();
-
-  d->m_paFind->setEnabled( false );
-}
-
-void KHTMLPart::slotFindDone()
-{
-    assert( d->m_findDialog );
-
-    KHTMLPart *part = d->m_findDialog->part();
-
-    // this code actually belongs into some saveState() method in
-    // KHTMLFind, but as we're saving into the private data section of
-    // the part we have to do it here (no way to access it from the outside
-    // as it is defined only in khtml_part.cpp) (Simon)
-    part->d->m_lastFindState.text = d->m_findDialog->getText();
-    part->d->m_lastFindState.caseSensitive = d->m_findDialog->case_sensitive();
-    part->d->m_lastFindState.direction = d->m_findDialog->get_direction();
-
-    d->m_paFind->setEnabled( true );
-}
-
-void KHTMLPart::slotFindDialogDestroyed()
-{
-  assert( sender() == d->m_findDialog );
-
-  d->m_findDialog = 0;
-  d->m_paFind->setEnabled( true );
 }
 
 void KHTMLPart::slotPrintFrame()

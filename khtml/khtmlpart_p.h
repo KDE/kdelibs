@@ -33,7 +33,7 @@
 #include <qtimer.h>
 
 #include "khtml_run.h"
-#include "khtml_find.h"
+#include "../kutils/kfind.h"
 #include "khtml_factory.h"
 #include "khtml_events.h"
 #include "khtml_ext.h"
@@ -117,7 +117,7 @@ public:
     m_jobPercent = 0;
     m_haveEncoding = false;
     m_activeFrame = 0L;
-    m_findDialog = 0;
+    //m_findDialog = 0;
     m_ssl_in_use = false;
 #ifndef Q_WS_QWS
     m_javaContext = 0;
@@ -289,9 +289,6 @@ public:
 
   int m_zoomFactor;
 
-  int m_findPos;
-  DOM::NodeImpl *m_findNode;
-
   QString m_strSelectedURL;
   QString m_strSelectedURLTarget;
   QString m_referrer;
@@ -340,21 +337,48 @@ public:
   unsigned long m_loadedObjects;
   unsigned long m_totalObjectCount;
   unsigned int m_jobPercent;
-  
+
   QTimer m_progressUpdateTimer;
 
-  KHTMLFind *m_findDialog;
+  /////////// 'Find' feature
+  struct StringPortion
+  {
+      // Just basic ref/deref on our node to make sure it doesn't get deleted
+      StringPortion( int i, DOM::NodeImpl* n ) : index(i), node(n) { if (node) node->ref(); }
+      StringPortion() : index(0), node(0) {} // for QValueList
+      StringPortion( const StringPortion& other ) : node(0) { operator=(other); }
+      StringPortion& operator=( const StringPortion& other ) {
+          index=other.index;
+          if (other.node) other.node->ref();
+          if (node) node->deref();
+          node=other.node;
+          return *this;
+      }
+      ~StringPortion() { if (node) node->deref(); }
+
+      int index;
+      DOM::NodeImpl *node;
+  };
+  QValueList<StringPortion> m_stringPortions;
+
+  //KFind *m_findDialog;
 
   struct findState
   {
     findState()
-    { caseSensitive = false; direction = false; }
+    { options = 0; }
+    QStringList history;
     QString text;
-    bool caseSensitive;
-    bool direction;
+    int options;
   };
 
   findState m_lastFindState;
+
+  // This is for the old find feature, the one in findTextBegin/findTextNext.
+  // Not used by khtml anymore, but kept so that the API calls still work.
+  int m_findPos;
+  DOM::NodeImpl *m_findNode;
+  /////////
 
   //QGuardedPtr<KParts::Part> m_activeFrame;
   KParts::Part * m_activeFrame;

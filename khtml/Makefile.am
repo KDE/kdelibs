@@ -30,14 +30,14 @@ lib_LTLIBRARIES = libkhtml.la
 kde_module_LTLIBRARIES = khtmlimagepart.la
 
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
-		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc \
+		      khtml_events.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc \
 		      khtml_printsettings.cpp htmlpageinfo.ui
 
 libkhtml_la_METASOURCES = AUTO
 
 include_HEADERS = khtmlview.h khtml_part.h khtml_events.h khtml_settings.h khtmldefaults.h
 
-noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_find.h khtml_ext.h \
+noinst_HEADERS = design.h testkhtml.h testrender.h test_regression.h khtml_ext.h \
 		 khtml_pagecache.h khtmlimage.h khtmlpart_p.h khtml_printsettings.h
 
 libkhtml_la_LDFLAGS = -version-info 5:0:1 -module -no-undefined $(all_libraries)
@@ -46,7 +46,8 @@ libkhtml_la_LIBADD = ./xml/libkhtmlxml.la ./html/libkhtmlhtml.la \
 	./misc/libkhtmlmisc.la ./dom/libkhtmldom.la $(LIBKJAVA) \
 	$(LIB_KIO) \
 	$(LIB_KPARTS) \
-	$(top_builddir)/kdeprint/libkdeprint.la 
+	$(top_builddir)/kdeprint/libkdeprint.la  \
+	$(top_builddir)/kutils/libkutils.la 
 
 khtmlimagepart_la_SOURCES = khtmlimage.cpp
 khtmlimagepart_la_LDFLAGS = -module $(KDE_PLUGIN) $(all_libraries)

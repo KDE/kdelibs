@@ -905,8 +905,10 @@ private slots:
   virtual void slotUseStylesheet();
 
   virtual void slotFind();
-  virtual void slotFindDone();
+  virtual void slotFindDone(); // ### remove me
   virtual void slotFindDialogDestroyed();
+
+  void findText();
 
   void slotIncZoom();
   void slotDecZoom();
@@ -1003,6 +1005,11 @@ private slots:
    */
   void slotZoomView( int );
 
+  /**
+   * @internal
+   */
+  void slotHighlight( const QString &, int index, int length, const QRect & );
+
 private:
 
   enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };
@@ -1043,7 +1050,6 @@ private:
    * @internal
    */
   void popupMenu( const QString &url );
-
 
   void init( KHTMLView *view, GUIProfile prof );
 
