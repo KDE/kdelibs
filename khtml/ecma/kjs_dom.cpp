@@ -756,7 +756,9 @@ Value DOMDocumentProtoFunc::tryCall(ExecState *exec, Object &thisObj, const List
     }
     break;
 // case DOMDocument::DefaultView // TODO
-// case DOMDocument::StyleSheets // TODO
+  case DOMDocument::StyleSheets:
+    result = getDOMStyleSheetList(exec, doc.styleSheets());
+    break;
   default:
     result = Undefined();
     break;
