@@ -22,7 +22,7 @@
 #include <qcheckbox.h>
 #include <kurlrequester.h>
 #include <klocale.h>
-#include <kfiledialog.h>
+#include <kdialog.h>
 #include <kconfig.h>
 #include <qgroupbox.h>
 #include <qlayout.h>
@@ -35,16 +35,16 @@ KMConfigCupsDir::KMConfigCupsDir(QWidget *parent)
 	setPageHeader(i18n("CUPS Directory Settings"));
 	setPagePixmap("folder");
 
-	QGroupBox	*m_dirbox = new QGroupBox(0, Qt::Vertical, i18n("Installation Directory"), this);
+	QGroupBox *m_dirbox = new QGroupBox(0, Qt::Vertical, i18n("Installation Directory"), this);
 	m_installdir = new KURLRequester(m_dirbox);
 	m_installdir->setMode((KFile::Mode)(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly));
 	m_stddir = new QCheckBox(i18n("Standard installation (/)"), m_dirbox);
 	m_stddir->setCursor(KCursor::handCursor());
 
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout *lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	lay0->addWidget(m_dirbox);
 	lay0->addStretch(1);
-	QVBoxLayout	*lay1 = new QVBoxLayout(m_dirbox->layout(), 10);
+	QVBoxLayout *lay1 = new QVBoxLayout(m_dirbox->layout(), 10);
 	lay1->addWidget(m_stddir);
 	lay1->addWidget(m_installdir);
 

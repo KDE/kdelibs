@@ -22,6 +22,8 @@
 
 #include <klocale.h>
 #include <kconfig.h>
+#include <kdialog.h>
+
 #include <qlayout.h>
 
 KMConfigCups::KMConfigCups(QWidget *parent)
@@ -33,7 +35,7 @@ KMConfigCups::KMConfigCups(QWidget *parent)
 
 	m_widget = new KMCupsConfigWidget(this);
 
-	QVBoxLayout	*lay0 = new QVBoxLayout(this, 5, 10);
+	QVBoxLayout *lay0 = new QVBoxLayout(this, 0, KDialog::spacingHint());
 	lay0->addWidget(m_widget);
 	lay0->addStretch(1);
 }
