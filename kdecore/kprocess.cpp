@@ -602,25 +602,29 @@ int KProcess::commSetupDoneC()
   int ok = 1;
   struct linger so;
 
-  if (communication != NoCommunication) {
-        if (communication & Stdin)
-          close(in[1]);
-        if (communication & Stdout)
-          close(out[0]);
-        if (communication & Stderr)
-          close(err[0]);
+  if (communication & Stdin)
+    close(in[1]);
+  if (communication & Stdout)
+    close(out[0]);
+  if (communication & Stderr)
+    close(err[0]);
 
-        if (communication & Stdin)
-          ok &= dup2(in[0],  STDIN_FILENO) != -1;
-        if (communication & Stdout) {
-          ok &= dup2(out[1], STDOUT_FILENO) != -1;
-          ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
-        }
-        if (communication & Stderr) {
-          ok &= dup2(err[1], STDERR_FILENO) != -1;
-          ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
-        }
+  if (communication & Stdin)
+    ok &= dup2(in[0],  STDIN_FILENO) != -1;
+  else
+    ok &= dup2( open( "/dev/null", O_RDONLY ), STDIN_FILENO ) != -1;
+  if (communication & Stdout) {
+    ok &= dup2(out[1], STDOUT_FILENO) != -1;
+    ok &= !setsockopt(out[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
   }
+  else
+    ok &= dup2( open( "/dev/null", O_WRONLY ), STDOUT_FILENO ) != -1;
+  if (communication & Stderr) {
+    ok &= dup2(err[1], STDERR_FILENO) != -1;
+    ok &= !setsockopt(err[1], SOL_SOCKET, SO_LINGER, (char*)&so, sizeof(so));
+  }
+  else
+    ok &= dup2( open( "/dev/null", O_WRONLY ), STDERR_FILENO ) != -1;
   return ok;
 }
 
