@@ -901,6 +901,10 @@ void KToolBar::setIconText(IconText icontext, bool update)
     if (icontext != d->m_iconText) {
         d->m_iconText = icontext;
         doUpdate=true;
+        //kdDebug(220) << "  icontext has changed, doUpdate=true" << endl;
+    }
+    else {
+        //kdDebug(220) << "  icontext hasn't changed, doUpdate=false" << endl;
     }
 
     if (update == false)
@@ -1113,10 +1117,18 @@ void KToolBar::saveSettings(KConfig *config, const QString &_configGroup)
     else
       config->writeEntry("Position", position);
 
+    //kdDebug(220) << "KToolBar::saveSettings " << name() << " icontext=" << icontext << " hasDefault:" << config->hasDefault( "IconText" ) << " d->IconTextDefault=" << d->IconTextDefault << endl;
+
     if(!config->hasDefault("IconText") && icontext == d->IconTextDefault )
+    {
+      //kdDebug(220) << "reverting icontext to default" << endl;
       config->revertToDefault("IconText");
+    }
     else
+    {
+      //kdDebug(220) << "writing icontext " << icontext << endl;
       config->writeEntry("IconText", icontext);
+    }
 
     if(!config->hasDefault("IconSize") && iconSize() == d->IconSizeDefault )
       config->revertToDefault("IconSize");
@@ -1506,32 +1518,29 @@ KToolBar::IconText KToolBar::iconTextSetting()
 void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGroup, bool forceGlobal)
 {
     QString configGroup = _configGroup.isEmpty() ? settingsGroup() : _configGroup;
-    //kdDebug(220) << "KToolBar::applyAppearanceSettings: configGroup=" << configGroup << endl;
-    // We have application-specific settings in the XML file,
-    // and nothing in the application's config file
-    // -> don't apply the global defaults, the XML ones are preferred
-    // See applySettings for a full explanation
-    if ( d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty() &&
-           !config->hasGroup(configGroup) )
-    {
-        //kdDebug(220) << "skipping global defaults, using XML ones instead" << endl;
-        return;
-    }
+    //kdDebug(220) << "KToolBar::applyAppearanceSettings: configGroup=" << configGroup << " forceGlobal=" << forceGlobal << endl;
+
+    // If we have application-specific settings in the XML file,
+    // and nothing in the application's config file, then
+    // we don't apply the global defaults, the XML ones are preferred
+    // (see applySettings for a full explanation)
+    // This is the reason for the xmlgui tests below.
+    bool xmlgui = d->m_xmlguiClient && !d->m_xmlguiClient->xmlFile().isEmpty();
 
     KConfig *gconfig = KGlobal::config();
 
     static const QString &attrIconText  = KGlobal::staticQString("IconText");
     static const QString &attrHighlight = KGlobal::staticQString("Highlighting");
     static const QString &attrTrans     = KGlobal::staticQString("TransparentMoving");
-    static const QString &attrSize      = KGlobal::staticQString("IconSize");
+    static const QString &attrIconSize  = KGlobal::staticQString("IconSize");
 
     // we actually do this in two steps.
     // First, we read in the global styles [Toolbar style] (from the KControl module).
     // Then, if the toolbar is NOT 'mainToolBar', we will also try to read in [barname Toolbar style]
     bool highlight;
     int transparent;
-    QString icontext;
-    int iconsize = 0;
+    bool applyIconText = !xmlgui; // if xmlgui is used, global defaults won't apply
+    bool applyIconSize = !xmlgui;
 
     // this is the first iteration
     QString grpToolbar(QString::fromLatin1("Toolbar style"));
@@ -1550,7 +1559,7 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             d->IconTextDefault = "IconOnly";
 
         // Use the default icon size for toolbar icons.
-        d->IconSizeDefault = gconfig->readNumEntry(attrSize, d->IconSizeDefault);
+        d->IconSizeDefault = gconfig->readNumEntry(attrIconSize, d->IconSizeDefault);
 
         if ( !forceGlobal && config->hasGroup(configGroup) )
         {
@@ -1559,18 +1568,19 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
             // first, get the generic settings
             highlight   = config->readBoolEntry(attrHighlight, highlight);
             transparent = config->readBoolEntry(attrTrans, transparent);
-            // now we always read in the IconText property
-            icontext = config->readEntry(attrIconText, d->IconTextDefault);
+
+            // read in the IconText property
+            if ( config->hasKey( attrIconText ) ) {
+                d->IconTextDefault = config->readEntry(attrIconText);
+                applyIconText = true;
+                kdDebug(220) << "read icontext=" << d->IconTextDefault << ", that will be the default" << endl;
+            }
 
             // now get the size
-            iconsize = config->readNumEntry(attrSize, d->IconSizeDefault);
-            d->IconSizeDefault = iconsize;
-            d->IconTextDefault = icontext;
-        }
-        else
-        {
-            iconsize = d->IconSizeDefault;
-            icontext = d->IconTextDefault;
+            if ( config->hasKey( attrIconSize ) ) {
+                d->IconSizeDefault = config->readNumEntry(attrIconSize);
+                applyIconSize = true;
+            }
         }
 
         // revert back to the old group
@@ -1579,25 +1589,25 @@ void KToolBar::applyAppearanceSettings(KConfig *config, const QString &_configGr
     bool doUpdate = false;
 
     IconText icon_text;
-    if ( icontext == "IconTextRight" )
+    if ( d->IconTextDefault == "IconTextRight" )
         icon_text = IconTextRight;
-    else if ( icontext == "IconTextBottom" )
+    else if ( d->IconTextDefault == "IconTextBottom" )
         icon_text = IconTextBottom;
-    else if ( icontext == "TextOnly" )
+    else if ( d->IconTextDefault == "TextOnly" )
         icon_text = TextOnly;
     else
         icon_text = IconOnly;
 
     // check if the icon/text has changed
-    if (icon_text != d->m_iconText) {
+    if (icon_text != d->m_iconText && applyIconText) {
         //kdDebug(220) << "KToolBar::applyAppearanceSettings setIconText " << icon_text << endl;
         setIconText(icon_text, false);
         doUpdate = true;
     }
 
     // ...and check if the icon size has changed
-    if (iconsize != d->m_iconSize) {
-        setIconSize(iconsize, false);
+    if (d->IconSizeDefault != d->m_iconSize && applyIconSize) {
+        setIconSize(d->IconSizeDefault, false);
         doUpdate = true;
     }
 
@@ -1634,13 +1644,14 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
 
       So in the first case, we simply read everything from KConfig as below,
       but in the second case we don't do anything here if there is no app-specific config,
-      and the XMLGUI uses the static methods of this class to get the global defaults.
+      and the XMLGUI-related code (loadState()) uses the static methods of this class
+      to get the global defaults.
 
       Global config doesn't include position (index, offset, newline and hidden/shown).
     */
 
     // First the appearance stuff - the one which has a global config
-    applyAppearanceSettings( config, _configGroup );
+    applyAppearanceSettings( config, configGroup );
 
     // ...and now the position stuff
     if ( config->hasGroup(configGroup) )
@@ -1694,7 +1705,7 @@ void KToolBar::applySettings(KConfig *config, const QString &_configGroup)
             //kdDebug(220) << "KToolBar::applySettings " << name() << " moveDockWindow with pos=" << pos << " newLine=" << newLine << " idx=" << index << " offs=" << offset << endl;
             if ( doHide )
                 hide();
-            // Get the possably new default index value
+            // Get the possibly new default index value
             QString tempDock;
             QString tempIconText;
             getAttributes( tempDock, tempIconText, d->IndexDefault );
@@ -1799,8 +1810,11 @@ void KToolBar::loadState( const QDomElement &element )
             else if ( attrIconText == "icononly" )
                 setIconText( KToolBar::IconOnly );
         } else
+	{
+	    //kdDebug(220) << "KToolBar::loadState no iconText attribute in XML, using iconTextSetting=" << iconTextSetting() << endl;
             // Use global setting
             setIconText( iconTextSetting() );
+	}
     }
 
     {
@@ -1852,6 +1866,7 @@ void KToolBar::loadState( const QDomElement &element )
         show();
 
     getAttributes( d->PositionDefault, d->IconTextDefault, d->IndexDefault );
+    //kdDebug(220) << "KToolBar::loadState IconTextDefault=" << d->IconTextDefault << endl;
 }
 
 void KToolBar::getAttributes( QString &position, QString &icontext, int &index )
@@ -1901,6 +1916,7 @@ void KToolBar::getAttributes( QString &position, QString &icontext, int &index )
         icontext = "IconOnly";
         break;
     }
+    //kdDebug(220) << "getAttributes: icontext=" << icontext << endl;
 }
 
 void KToolBar::saveState( QDomElement &current )
@@ -1918,6 +1934,7 @@ void KToolBar::saveState( QDomElement &current )
     if ( isHidden() )
         current.setAttribute( "hidden", "true" );
     d->modified = true;
+    //kdDebug(220) << "saveState: saving iconText=" << icontext << endl;
 }
 
 void KToolBar::positionYourself( bool force )
