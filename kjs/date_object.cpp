@@ -144,7 +144,7 @@ KJSO DateObject::get(const UString &p) const
     id = DateObjectFunc::Parse;
   else if (p == "UTC")
     id = DateObjectFunc::UTC;
-  else 
+  else
     return Imp::get(p);
 
   return Function(new DateObjectFunc(id));
@@ -251,7 +251,7 @@ KJSO DatePrototype::get(const UString &p) const
   return Function(new DateProtoFunc(id, utc));
 }
 
-DateProtoFunc::DateProtoFunc(int i, bool u) : id(i), utc(u) 
+DateProtoFunc::DateProtoFunc(int i, bool u) : id(i), utc(u)
 {
 }
 
@@ -304,10 +304,6 @@ Completion DateProtoFunc::execute(const List &args)
     break;
   case ToLocaleTimeString:
     strftime(timebuffer, bufsize, "%X", t);
-    result = String(timebuffer);
-    break;
-  case ToGMTString:
-    strftime(timebuffer, bufsize, "%a, %d-%b-%y %H:%M:%S %Z", t);
     result = String(timebuffer);
     break;
   case ValueOf:
