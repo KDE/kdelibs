@@ -37,6 +37,7 @@
 #include <kdrawutil.h>
 #include <klocale.h>
 #include <kiconloader.h>
+#include <kdebug.h>
 
 #include "webstyle.h"
 
@@ -56,9 +57,11 @@ static QColor contrastingForeground(const QColor & fg, const QColor & bg)
   bg.hsv(&h, &s, &vbg);
   fg.hsv(&h, &s, &vfg);
 
-  if ((vbg - vfg > -72) && ((vbg - vfg) < 72))
+  int diff(vbg - vfg);
+
+  if ((diff > -72) && (diff < 72))
   {
-    return (vbg < 72) ? Qt::white : Qt::black;
+    return (vbg < 128) ? Qt::white : Qt::black;
   }
   else
   {
@@ -1002,7 +1005,7 @@ WebStyle::drawKMenuBar
 {
   p->save();
   p->setPen(g.mid());
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  p->setBrush(g.background());
   p->drawRect(x, y, w, h);
   p->restore();
 }
@@ -1540,19 +1543,33 @@ WebStyle::drawKickerTaskButton
  const QString & text,
  bool active,
  QPixmap * icon,
- QBrush * fill
+ QBrush * /* fill */
 )
 {
   p->save();
 
-  p->setPen(active ? g.highlight() : g.mid());
+  QColor bg;
 
-  p->setBrush(0 == fill ? NoBrush : *fill);
+  if (active)
+  {
+    p->setPen(g.light());
+    bg = g.highlight();
+  }
+  else
+  {
+    p->setPen(g.mid());
+    bg = g.button();
+  }
+
+  p->setBrush(bg);
 
   p->drawRect(x, y, w, h);
 
-  if (text.isNull() && 0 == icon)
+  if (text.isEmpty() && 0 == icon)
+  {
+    p->restore();
     return;
+  }
 
   const int pxWidth = 20;
 
@@ -1602,7 +1619,16 @@ WebStyle::drawKickerTaskButton
       s.append("...");
     }
 
-    p->setPen(active ? g.brightText() : g.buttonText());
+    if (active)
+    {
+      p->setPen(contrastingForeground(g.buttonText(), bg));
+    }
+    else
+    {
+      p->setPen(contrastingForeground(g.text(), bg));
+    }
+
+    p->setPen(Qt::white);
 
     p->drawText
       (
@@ -1616,5 +1642,36 @@ WebStyle::drawKickerTaskButton
   }
 
   p->restore();
+  p->setPen(Qt::white);
+}
+
+  int
+WebStyle::popupMenuItemHeight(bool, QMenuItem * i, const QFontMetrics & fm)
+{
+  if (i->isSeparator())
+    return 1;
+
+  int h = 0;
+
+  if (0 != i->pixmap())
+  {
+    h = i->pixmap()->height();
+  }
+
+  if (0 != i->iconSet())
+  {
+    h = QMAX
+      (
+       i->iconSet()->pixmap(QIconSet::Small, QIconSet::Normal).height(),
+       h
+      );
+  }
+
+  h = QMAX(fm.height() + 4, h);
+
+  h = QMAX(18, h);
+
+  return h;
+
 }
 

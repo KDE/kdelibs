@@ -404,6 +404,8 @@ class WebStyle : public KStyle
        QBrush *
       );
 
+    int popupMenuItemHeight(bool, QMenuItem *, const QFontMetrics &);
+
     GUIStyle guiStyle() const { return Qt::MotifStyle; }
 
     bool eventFilter(QObject *, QEvent *);
