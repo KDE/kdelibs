@@ -103,7 +103,7 @@ void KDockSplitter::activate(QWidget *c0, QWidget *c1)
 /*
 void KDockSplitter::delayedResize()
 {
-	kdDebug()<<"*********************** DELAYED RESIZE !!!!!!!!!!!!!!!"<<endl;
+	kdDebug(282)<<"*********************** DELAYED RESIZE !!!!!!!!!!!!!!!"<<endl;
 	resizeEvent(0);
 }*/
 
@@ -118,7 +118,7 @@ void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int w)
 		setSeparatorPos(w*factor/width(),true);
 
 //		setupMinMaxSize();
-//		kdDebug()<<"Set forced fixed width for widget 0 :"<<w<<endl;
+//		kdDebug(282)<<"Set forced fixed width for widget 0 :"<<w<<endl;
 	}
         else
 	{
@@ -126,8 +126,8 @@ void KDockSplitter::setForcedFixedWidth(KDockWidget *dw,int w)
 		if (w==fixedWidth1) return;
                 fixedWidth1=w;
 		setSeparatorPos((width()-w)*factor/width(),true);
-//		kdDebug()<<"Set forced fixed width for widget 1 :"<<w<<endl;
-//		kdDebug()<<"Width() :"<<width()<<endl;
+//		kdDebug(282)<<"Set forced fixed width for widget 1 :"<<w<<endl;
+//		kdDebug(282)<<"Width() :"<<width()<<endl;
 	}
 	setupMinMaxSize();
 }
@@ -142,7 +142,7 @@ void KDockSplitter::setForcedFixedHeight(KDockWidget *dw,int h)
                 fixedHeight0=h;
 //		setupMinMaxSize();
 		setSeparatorPos(h*factor/height(),true);
-//		kdDebug()<<"Set forced fixed width for widget 0 :"<<h<<endl;
+//		kdDebug(282)<<"Set forced fixed width for widget 0 :"<<h<<endl;
 	}
         else
 	{
@@ -150,7 +150,7 @@ void KDockSplitter::setForcedFixedHeight(KDockWidget *dw,int h)
 		if (h==fixedHeight1) return;
                 fixedHeight1=h;
 		setSeparatorPos((height()-h)*factor/height(),true);
-//		kdDebug()<<"Set forced fixed height for widget 1 :"<<h<<endl;
+//		kdDebug(282)<<"Set forced fixed height for widget 1 :"<<h<<endl;
 	}
 	setupMinMaxSize();
 }
@@ -229,13 +229,13 @@ int KDockSplitter::separatorPos() const
 
 void KDockSplitter::resizeEvent(QResizeEvent *ev)
 {
-//  kdDebug()<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<
+//  kdDebug(282)<<"ResizeEvent :"<< ((initialised) ? "initialised":"not initialised")<<", "<< ((ev) ? "real event":"")<<
 //	", "<<(isVisible() ?"visible":"")<<endl;
   if (initialised){
     double factor = (mHighResolution)? 10000.0:100.0;
     // real resize event, recalculate xpos
     if (ev && mKeepSize && isVisible()) {
-//	kdDebug()<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+//	kdDebug(282)<<"mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
 
       if (ev->oldSize().width() != ev->size().width())
       {
@@ -249,7 +249,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
       }
           else
           {
-//	kdDebug()<<"!mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
+//	kdDebug(282)<<"!mKeepSize : "<< ((m_orientation == Horizontal) ? "Horizontal":"Vertical") <<endl;
 	if (/*ev &&*/ isVisible()) {
 		if (m_orientation == Horizontal) {
 		/*	if (ev->oldSize().height() != ev->size().height())*/
@@ -277,7 +277,7 @@ void KDockSplitter::resizeEvent(QResizeEvent *ev)
 			}
 		}
 	}
-//	else kdDebug()<<"Something else happened"<<endl;
+//	else kdDebug(282)<<"Something else happened"<<endl;
    }
 
     KDockContainer *dc;

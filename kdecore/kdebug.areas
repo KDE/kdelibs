@@ -33,6 +33,7 @@
 270        kdeui (KRootPixmap)
 280        kdeui (KSharedPixmap)
 281        kdeui (KCModule)
+282        kdeui (KDockWidget)
 290        kdeui (KPixmapIO)
 291        kdeui (KAboutDialog)
 292        kdeui (KComboBox)
