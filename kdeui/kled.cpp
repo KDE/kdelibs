@@ -480,9 +480,7 @@ KLed::setState( State state )
 void
 KLed::toggleState()
 {
-  led_state = (led_state == On) ? Off : On;
-  // setColor(led_color);
-  update();
+  toggle();
 }
 
 void
@@ -534,7 +532,9 @@ KLed::setLook( Look look )
 void
 KLed::toggle()
 {
-  toggleState();
+  led_state = (led_state == On) ? Off : On;
+  // setColor(led_color);
+  update();
 }
 
 void
