@@ -95,6 +95,11 @@ bool KDesktopFile::hasApplicationType()
   return readEntry("Type") == "Application";
 }
 
+bool KDesktopFile::hasMimeTypeType()
+{
+  return readEntry("Type") == "MimeType";
+}
+
 bool KDesktopFile::hasDeviceType()
 {
   return readEntry("Type") == "FSDev";

@@ -108,6 +108,11 @@ public:
   bool hasApplicationType();
 
   /**
+   * Returns true if there is an entry "Type=MimeType".
+   */
+  bool hasMimeTypeType(); // funny name :)
+
+  /**
    * Returns true if there is an entry "Type=FSDev".
    */
   bool hasDeviceType();
