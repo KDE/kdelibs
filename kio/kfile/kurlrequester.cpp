@@ -194,8 +194,8 @@ void KURLRequester::init()
     myButton = new KURLDragPushButton( this, "kfile button");
     QIconSet iconSet = SmallIconSet(QString::fromLatin1("fileopen"));
     QPixmap pixMap = iconSet.pixmap( QIconSet::Small, QIconSet::Normal );
-    myButton->setPixmap( pixMap );
-    myButton->setFixedSize( pixMap.width()+10, pixMap.height()+10 );
+    myButton->setIconSet( iconSet );
+    myButton->setFixedSize( pixMap.width()+8, pixMap.height()+8 );
     QToolTip::add(myButton, i18n("Open File Dialog"));
 
     connect( myButton, SIGNAL( pressed() ), SLOT( slotUpdateURL() ));
