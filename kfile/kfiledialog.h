@@ -79,9 +79,9 @@ public:
       * @param acceptURLs If set to false, kfiledialog will just accept
       * files on the local filesystem.
       */
-    KFileBaseDialog(const QString& dirName, const QString& filter= QString::null,
-		QWidget *parent= 0, const char *name= 0,
-		bool modal = false, bool acceptURLs = true);
+    KFileBaseDialog(const QString& dirName, const QString& filter,
+		QWidget *parent, const char *name,
+		bool modal, bool acceptURLs);
 
 
     /**
