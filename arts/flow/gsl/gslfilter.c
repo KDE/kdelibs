@@ -217,7 +217,7 @@ gsl_filter_tscheb2 (unsigned int iorder,
   for (i = 1; i <= iorder; i++)
     {
       double t = (i << 1) - 1;
-      GslComplex root = { 0, cos (t * beta_mul) };
+      GslComplex root = gsl_complex (0, cos (t * beta_mul));
       
       if (fabs (root.im) > 1e-14)
 	{

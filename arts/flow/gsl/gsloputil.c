@@ -40,7 +40,7 @@ op_free_node (OpNode *node)
   
   gsl_rec_mutex_destroy (&node->rec_mutex);
   if (OP_NODE_N_OSTREAMS (node))
-    gsl_delete_struct (GslOStream, OP_NODE_N_OSTREAMS (node), node->module.ostreams); // FIXME: free ostream buffers
+    gsl_delete_struct (GslOStream, OP_NODE_N_OSTREAMS (node), node->module.ostreams); /* FIXME: free ostream buffers */
   if (OP_NODE_N_ISTREAMS (node))
     gsl_delete_struct (GslIStream, OP_NODE_N_ISTREAMS (node), node->module.istreams);
   if (node->inputs)
@@ -136,7 +136,7 @@ _op_alloc_ostreams (guint n)
       streams = gsl_new_struct0 (GslOStream, n);
       
       for (i = 0; i < n; i++)
-	streams[i].values = g_new (gfloat, GSL_STREAM_MAX_VALUES); // FIXME
+	streams[i].values = g_new (gfloat, GSL_STREAM_MAX_VALUES); /* FIXME */
     }
   else
     streams = NULL;
@@ -151,7 +151,7 @@ typedef struct
   guint    n_nodes;
   gfloat **nodes;
 } ConstValuesArray;
-static const gfloat CONST_VALUES_EPSILON = 1e-5;	// FIXME: assuming 16bit significant bits
+static const gfloat CONST_VALUES_EPSILON = 1e-5;	/* FIXME: assuming 16bit significant bits */
 
 static inline gfloat*
 const_values_lookup (ConstValuesArray *array,

@@ -153,7 +153,7 @@ gsl_free_node_list (gpointer mem,
   g_return_if_fail (node != NULL);
   g_return_if_fail (node_size >= 2 * sizeof (gpointer));
 
-  // FIXME: this can be optimized to an O(1) operation with T-style links in mem-caches
+  /* FIXME: this can be optimized to an O(1) operation with T-style links in mem-caches */
   do
     {
       tmp = node->next;

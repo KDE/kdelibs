@@ -375,7 +375,7 @@ gsl_data_cache_ref_node (GslDataCache *dcache,
 	    while (!node->data)
 	      gsl_cond_wait (dcache_cond_node_filled, &dcache->mutex);
 	  GSL_SPIN_UNLOCK (&dcache->mutex);
-	  // g_print("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size);
+	  /* g_print("hit: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
 
 	  if (rejuvenate_node)
 	    {
@@ -389,7 +389,7 @@ gsl_data_cache_ref_node (GslDataCache *dcache,
       insertion_pos = NODEP_INDEX (dcache, node_p);	/* insert before neighbour */
       if (offset > node->offset)			/* insert after neighbour */
 	insertion_pos += 1;
-      // g_print("mis: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size);
+      /* g_print("mis: %d :%d: %d\n", node->offset, offset, node->offset + dcache->node_size); */
     }
   else
     insertion_pos = 0;	/* insert at start */

@@ -28,7 +28,7 @@ extern "C" {
 
 
 /* --- constants --- */
-#define	GSL_STREAM_MAX_VALUES		   (16384)	// FIXME
+#define	GSL_STREAM_MAX_VALUES		   (16384)	/* FIXME */
 #define	GSL_MODULE_N_OSTREAMS(module)	   ((module)->klass->n_ostreams)
 #define	GSL_MODULE_N_ISTREAMS(module)	   ((module)->klass->n_istreams)
 #define	GSL_MODULE_OBUFFER(module, stream) ((module)->ostreams[(stream)].values)
@@ -64,8 +64,8 @@ struct _GslClass
   guint		    n_istreams;
   guint		    n_jstreams;
   guint		    n_ostreams;
-  GslProcessFunc    process;	// EngineThread
-  GslModuleFreeFunc free;	// UserThread
+  GslProcessFunc    process;	/* EngineThread */
+  GslModuleFreeFunc free;	/* UserThread */
   GslModuleFlags    mflags;
 };
 /* module, constructed by engine */
@@ -112,9 +112,9 @@ GslJob*		gsl_job_disconnect	(GslModule	 *dest_module,
 GslJob*		gsl_job_integrate	(GslModule	 *module);
 GslJob*		gsl_job_discard		(GslModule	 *module);
 GslJob*		gsl_job_access		(GslModule	 *module,
-					 GslAccessFunc	  access_func,	// EngineThread
+					 GslAccessFunc	  access_func,	/* EngineThread */
 					 gpointer	  data,
-					 GslFreeFunc	  free_func);	// UserThread
+					 GslFreeFunc	  free_func);	/* UserThread */
 GslJob*		gsl_job_debug		(const gchar	 *debug);
 GslJob*		gsl_job_add_poll	(GslPollFunc	  poll_func,
 					 gpointer	  data,

@@ -202,7 +202,7 @@ master_process_job (GslJob *job)
       break;
     case OP_JOB_DEBUG:
       OP_DEBUG (JOBS, "debug");
-      g_print ("JOB-DEBUG: %s\n", job->data.debug); // FIXME: stderr
+      g_print ("JOB-DEBUG: %s\n", job->data.debug); /* FIXME: stderr */
       break;
     case OP_JOB_ADD_POLL:
       OP_DEBUG (JOBS, "add poll %p(%p,%u)", job->data.poll.poll_func, job->data.poll.data, job->data.poll.n_fds);
@@ -213,7 +213,7 @@ master_process_job (GslJob *job)
       poll->poll_func = job->data.poll.poll_func;
       poll->data = job->data.poll.data;
       poll->free_func = job->data.poll.free_func;
-      job->data.poll.free_func = NULL;		// don't free data this round
+      job->data.poll.free_func = NULL;		/* don't free data this round */
       poll->n_fds = job->data.poll.n_fds;
       poll->fds = poll->n_fds ? master_pollfds + master_n_pollfds : master_pollfds;
       master_n_pollfds += poll->n_fds;
@@ -236,7 +236,7 @@ master_process_job (GslJob *job)
 	  }
       if (poll)
 	{
-	  job->data.poll.free_func = poll->free_func;	// free data with job
+	  job->data.poll.free_func = poll->free_func;	/* free data with job */
 	  poll_last = poll;
 	  if (poll_last->n_fds)
 	    {

@@ -47,6 +47,8 @@ struct _GslComplex
 
 
 /* --- complex numbers --- */
+static inline GslComplex gsl_complex		(double		re,
+						 double		im);
 static inline GslComplex gsl_complex_add	(GslComplex	c1,
 						 GslComplex	c2);
 static inline GslComplex gsl_complex_add3	(GslComplex	c1,
@@ -77,8 +79,6 @@ static inline GslComplex gsl_complex_tan	(GslComplex     c);
 static inline GslComplex gsl_complex_sinh	(GslComplex     c);
 static inline GslComplex gsl_complex_cosh	(GslComplex     c);
 static inline GslComplex gsl_complex_tanh	(GslComplex     c);
-static inline GslComplex gsl_complex		(double		re,
-						 double		im);
 char*			 gsl_complex_str	(GslComplex	c);
 char*			 gsl_complex_list	(unsigned int	n_points,
 						 GslComplex    *points,
@@ -158,48 +158,51 @@ GslComplex		 gsl_complex_ellip_sn	(GslComplex 	u,
 
 /* --- implementations --- */
 static inline GslComplex
+gsl_complex (double re,
+	     double im)
+{
+  GslComplex r;
+  r.re = re;
+  r.im = im;
+  return r;
+}
+static inline GslComplex
 gsl_complex_add	(GslComplex c1,
 		 GslComplex c2)
 {
-  GslComplex r = { c1.re + c2.re, c1.im + c2.im };
-  return r;
+  return gsl_complex (c1.re + c2.re, c1.im + c2.im);
 }
 static inline GslComplex
 gsl_complex_add3 (GslComplex c1,
 		  GslComplex c2,
 		  GslComplex c3)
 {
-  GslComplex r = { c1.re + c2.re + c3.re, c1.im + c2.im + c3.im };
-  return r;
+  return gsl_complex (c1.re + c2.re + c3.re, c1.im + c2.im + c3.im);
 }
 static inline GslComplex
 gsl_complex_sub	(GslComplex c1,
 		 GslComplex c2)
 {
-  GslComplex r = { c1.re - c2.re, c1.im - c2.im };
-  return r;
+  return gsl_complex (c1.re - c2.re, c1.im - c2.im);
 }
 static inline GslComplex
 gsl_complex_sub3 (GslComplex c1,
 		  GslComplex c2,
 		  GslComplex c3)
 {
-  GslComplex r = { c1.re - c2.re - c3.re, c1.im - c2.im - c3.im };
-  return r;
+  return gsl_complex (c1.re - c2.re - c3.re, c1.im - c2.im - c3.im);
 }
 static inline GslComplex
 gsl_complex_scale (GslComplex c1,
 		   double     scale)
 {
-  GslComplex r = { c1.re * scale, c1.im * scale };
-  return r;
+  return gsl_complex (c1.re * scale, c1.im * scale);
 }
 static inline GslComplex
 gsl_complex_mul (GslComplex c1,
 		 GslComplex c2)
 {
-  GslComplex r = { c1.re * c2.re - c1.im * c2.im, c1.re * c2.im + c1.im * c2.re };
-  return r;
+  return gsl_complex (c1.re * c2.re - c1.im * c2.im, c1.re * c2.im + c1.im * c2.re);
 }
 static inline GslComplex
 gsl_complex_mul3 (GslComplex c1,
@@ -214,8 +217,8 @@ gsl_complex_mul3 (GslComplex c1,
   double bce = c1.im * c2.re * c3.re;
   double acf = c1.re * c2.re * c3.im;
   double bdf = c1.im * c2.im * c3.im;
-  GslComplex r = { aec - bde - adf - bcf, ade + bce + acf - bdf };
-  return r;
+
+  return gsl_complex (aec - bde - adf - bcf, ade + bce + acf - bdf);
 }
 static inline GslComplex
 gsl_complex_div	(GslComplex a,
@@ -271,14 +274,12 @@ gsl_complex_sqrt (GslComplex z)
 static inline GslComplex
 gsl_complex_conj (GslComplex c)
 {
-  GslComplex r = { c.re, -c.im };
-  return r;
+  return gsl_complex (c.re, -c.im);
 }
 static inline GslComplex
 gsl_complex_inv (GslComplex c)
 {
-  GslComplex r = { -c.re, -c.im };
-  return r;
+  return gsl_complex (-c.re, -c.im);
 }
 static inline double
 gsl_complex_abs (GslComplex c)
@@ -296,13 +297,6 @@ gsl_complex_arg (GslComplex c)
 {
   double a = atan2 (c.im, c.re);
   return a;
-}
-static inline GslComplex
-gsl_complex (double re,
-	     double im)
-{
-  GslComplex r = { re, im };
-  return r;
 }
 static inline GslComplex
 gsl_complex_sin (GslComplex c)
@@ -439,7 +433,7 @@ gsl_trans_s2z (GslComplex s)
    */
   GslComplex one = { 1, 0 };
   return gsl_complex_div (gsl_complex_add (one, s), gsl_complex_sub (one, s));
-  // return gsl_complex_div (gsl_complex_sub (s, one), gsl_complex_add (s, one));
+  /* return gsl_complex_div (gsl_complex_sub (s, one), gsl_complex_add (s, one)); */
 }
 static inline double
 gsl_trans_freq2s (double w)

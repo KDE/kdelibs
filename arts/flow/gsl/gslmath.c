@@ -24,7 +24,7 @@
 
 
 #define RING_BUFFER_LENGTH	(16)
-#define	PRINTF_DIGITS		"12" // "1270"
+#define	PRINTF_DIGITS		"12" /* "1270" */
 #define	FLOAT_STRING_SIZE	(2048)
 
 
@@ -274,7 +274,7 @@ gsl_cpoly_from_roots (unsigned int degree,
   /* monomial factor multiplication */
   for (i = 1; i < degree; i++)
     {
-      GslComplex r = { -roots[i].re, -roots[i].im };
+      GslComplex r = gsl_complex (-roots[i].re, -roots[i].im);
       unsigned int j;
 
       c[i + 1] = c[i];
@@ -438,47 +438,47 @@ hqr (double **a, int n, double wr[], double wi[])
 {
   int nn,m,l,k,j,its,i,mmin;
   double z,y,x,w,v,u,t,s,r,q,p,anorm;
-  r=q=p=0; // TIMJ: silence compiler
+  r=q=p=0; /* TIMJ: silence compiler */
   
-  anorm=0.0;                                  // Compute matrix norm for possible use in lo-
-  for (i=1;i<=n;i++)                          // cating single small subdiagonal element.
+  anorm=0.0;                                  /* Compute matrix norm for possible use in lo- */
+  for (i=1;i<=n;i++)                          /* cating single small subdiagonal element. */
     for (j=IMAX (i-1,1);j<=n;j++)
       anorm += fabs (a[i][j]);
   nn=n;
-  t=0.0;                                      // Gets changed only by an exceptional shift.
-  while (nn >= 1) {                           // Begin search for next eigenvalue.
+  t=0.0;                                      /* Gets changed only by an exceptional shift. */
+  while (nn >= 1) {                           /* Begin search for next eigenvalue. */
     its=0;
-    do {for (l=nn;l>=2;l--) {                 // Begin iteration: look for single small subdi-
-      s=fabs (a[l-1][l-1])+fabs (a[l][l]);      // agonal element.
+    do {for (l=nn;l>=2;l--) {                 /* Begin iteration: look for single small subdi- */
+      s=fabs (a[l-1][l-1])+fabs (a[l][l]);      /* agonal element. */
       if (s == 0.0) s=anorm;
       if ((double)(fabs (a[l][l-1]) + s) == s) break;
     }
     x=a[nn][nn];
-    if (l == nn) {                    // One root found.
+    if (l == nn) {                    /* One root found. */
       wr[nn]=x+t;
       wi[nn--]=0.0;
     } else {
       y=a[nn-1][nn-1];
       w=a[nn][nn-1]*a[nn-1][nn];
-      if (l == (nn-1)) {            // Two roots found...
+      if (l == (nn-1)) {            /* Two roots found... */
 	p=0.5*(y-x);
 	q=p*p+w;
 	z=sqrt (fabs (q));
 	x += t;
-	if (q >= 0.0) {           // ...a real pair.
+	if (q >= 0.0) {           /* ...a real pair. */
 	  z=p+SIGN (z,p);
 	  wr[nn-1]=wr[nn]=x+z;
 	  if (z) wr[nn]=x-w/z;
 	  wi[nn-1]=wi[nn]=0.0;
-	} else {                  // ...a complex pair.
+	} else {                  /* ...a complex pair. */
 	  wr[nn-1]=wr[nn]=x+p;
 	  wi[nn-1]= -(wi[nn]=z);
 	}
 	nn -= 2;
-      } else {                      // No roots found. Continue iteration.
+      } else {                      /* No roots found. Continue iteration. */
 	if (its == MAX_ITER_BASE * MAX_ITER_FAC)
 	  nrerror ("Too many iterations in hqr");
-	if (its && !(its%MAX_ITER_FAC)) {                // Form exceptional shift.
+	if (its && !(its%MAX_ITER_FAC)) {                /* Form exceptional shift. */
 	  t += x;
 	  for (i=1;i<=nn;i++) a[i][i] -= x;
 	  s=fabs (a[nn][nn-1])+fabs (a[nn-1][nn-2]);
@@ -486,22 +486,22 @@ hqr (double **a, int n, double wr[], double wi[])
 	  w = -0.4375*s*s;
 	}
 	++its;
-	for (m=(nn-2);m>=l;m--) {                    // Form shift and then look for
-	  z=a[m][m];                                 // 2 consecutive small sub-
-	  r=x-z;                                     // diagonal elements.
+	for (m=(nn-2);m>=l;m--) {                    /* Form shift and then look for */
+	  z=a[m][m];                                 /* 2 consecutive small sub- */
+	  r=x-z;                                     /* diagonal elements. */
 	  s=y-z;
-	  p=(r*s-w)/a[m+1][m]+a[m][m+1];           // Equation (11.6.23).
+	  p=(r*s-w)/a[m+1][m]+a[m][m+1];           /* Equation (11.6.23). */
 	  q=a[m+1][m+1]-z-r-s;
 	  r=a[m+2][m+1];
-	  s=fabs (p)+fabs (q)+fabs (r);             // Scale to prevent overflow or
-	  p /= s;                                    // underflow.
+	  s=fabs (p)+fabs (q)+fabs (r);             /* Scale to prevent overflow or */
+	  p /= s;                                    /* underflow. */
 	  q /= s;
 	  r /= s;
 	  if (m == l) break;
 	  u=fabs (a[m][m-1])*(fabs (q)+fabs (r));
 	  v=fabs (p)*(fabs (a[m-1][m-1])+fabs (z)+fabs (a[m+1][m+1]));
 	  if ((double)(u+v) == v)
-	    break;          // Equation (11.6.26).
+	    break;          /* Equation (11.6.26). */
 	}
 	for (i=m+2;i<=nn;i++) {
 	  a[i][i-2]=0.0;
@@ -509,15 +509,15 @@ hqr (double **a, int n, double wr[], double wi[])
 	    a[i][i-3]=0.0;
 	}
 	for (k=m;k<=nn-1;k++) {
-	  // Double QR step on rows l to nn and columns m to nn.
+	  /* Double QR step on rows l to nn and columns m to nn. */
 	  if (k != m) {
-	    p=a[k][k-1];                      // Begin setup of Householder
-	    q=a[k+1][k-1];                    // vector.
+	    p=a[k][k-1];                      /* Begin setup of Householder */
+	    q=a[k+1][k-1];                    /* vector. */
 	    r=0.0;
 	    if (k != (nn-1)) r=a[k+2][k-1];
 	    if ((x=fabs (p)+fabs (q)+fabs (r)) != 0.0) {
-	      p /= x;                     // Scale to prevent overflow or
-	      q /= x;                     // underflow.
+	      p /= x;                     /* Scale to prevent overflow or */
+	      q /= x;                     /* underflow. */
 	      r /= x;
 	    }
 	  }
@@ -527,13 +527,13 @@ hqr (double **a, int n, double wr[], double wi[])
 		a[k][k-1] = -a[k][k-1];
 	    } else
 	      a[k][k-1] = -s*x;
-	    p += s;                           // Equations (11.6.24).
+	    p += s;                           /* Equations (11.6.24). */
 	    x=p/s;
 	    y=q/s;
 	    z=r/s;
 	    q /= p;
 	    r /= p;
-	    for (j=k;j<=nn;j++) {             // Row modification.
+	    for (j=k;j<=nn;j++) {             /* Row modification. */
 	      p=a[k][j]+q*a[k+1][j];
 	      if (k != (nn-1)) {
 		p += r*a[k+2][j];
@@ -543,7 +543,7 @@ hqr (double **a, int n, double wr[], double wi[])
 	      a[k][j] -= p*x;
 	    }
 	    mmin = nn<k+3 ? nn : k+3;
-	    for (i=l;i<=mmin;i++) {           // Column modification.
+	    for (i=l;i<=mmin;i++) {           /* Column modification. */
 	      p=x*a[i][k]+y*a[i][k+1];
 	      if (k != (nn-1)) {
 		p += z*a[i][k+2];
@@ -814,7 +814,7 @@ sncndn (double uu, double emmc, double *sn_p, double *cn_p, double *dn_p)
   double a,b,c,d,emc,u,sn,cn,dn;
   double em[14],en[14];
   int i,ii,l,bo;
-  d=0; // TIMJ: shutup compiler
+  d=0; /* TIMJ: shutup compiler */
   
   emc=emmc;
   u=uu;
@@ -877,9 +877,9 @@ sncndnC (GslComplex uu, GslComplex emmc, GslComplex *sn_p, GslComplex *cn_p, Gsl
   
   emc=emmc;
   u=uu;
-  if (emc.re || emc.im) // gsl_complex_abs (emc))
+  if (emc.re || emc.im) /* gsl_complex_abs (emc)) */
     {
-      // bo=gsl_complex_abs (emc) < 0.0;
+      /* bo=gsl_complex_abs (emc) < 0.0; */
       bo=emc.re < 0.0;
       if (bo) {
 	d=gsl_complex_sub (ONE, emc);
@@ -903,7 +903,7 @@ sncndnC (GslComplex uu, GslComplex emmc, GslComplex *sn_p, GslComplex *cn_p, Gsl
       u = gsl_complex_mul (u, c);
       sn = gsl_complex_sin (u);
       cn = gsl_complex_cos (u);
-      if (sn.re) // gsl_complex_abs (sn))
+      if (sn.re) /* gsl_complex_abs (sn)) */
 	{
 	  a= gsl_complex_div (cn, sn);
 	  c = gsl_complex_mul (c, a);
@@ -915,7 +915,7 @@ sncndnC (GslComplex uu, GslComplex emmc, GslComplex *sn_p, GslComplex *cn_p, Gsl
 	    a = gsl_complex_div (c, b);
 	  }
 	  a = gsl_complex_div (ONE, gsl_complex_sqrt (gsl_complex_add (ONE, gsl_complex_mul (c, c))));
-	  if (sn.re >= 0.0) // gsl_complex_arg (sn) >= 0.0)
+	  if (sn.re >= 0.0) /* gsl_complex_arg (sn) >= 0.0) */
 	    sn = a;
 	  else
 	    {
@@ -1021,7 +1021,7 @@ rfC (GslComplex x, GslComplex y, GslComplex z)
     delx =  gsl_complex_div (gsl_complex_sub (ave, xt), ave);
     dely =  gsl_complex_div (gsl_complex_sub (ave, yt), ave);
     delz =  gsl_complex_div (gsl_complex_sub (ave, zt), ave);
-    // } while (DMAX (DMAX (fabs (delx.re), fabs (dely.re)), fabs (delz.re)) > RF_ERRTOL);
+    /* } while (DMAX (DMAX (fabs (delx.re), fabs (dely.re)), fabs (delz.re)) > RF_ERRTOL); */
   } while (DMAX (DMAX (gsl_complex_abs (delx), gsl_complex_abs (dely)), gsl_complex_abs (delz)) > RF_ERRTOL);
   e2 = gsl_complex_sub (gsl_complex_mul (delx, dely), gsl_complex_mul (delz, delz));
   e3 = gsl_complex_mul3 (delx, dely, delz);

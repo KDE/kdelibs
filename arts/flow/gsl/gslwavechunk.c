@@ -162,7 +162,7 @@ create_block_for_offset (GslWaveChunk *wchunk,
   if (j >= 0)
     {
       k = j / loop_width;
-      // g_print ("endoffset-setup: j=%ld %%=%ld, k=%ld, k&1=%ld\n", j, j % loop_width, k, k & 1);
+      /* g_print ("endoffset-setup: j=%ld %%=%ld, k=%ld, k&1=%ld\n", j, j % loop_width, k, k & 1); */
       j %= loop_width;
       if (wchunk->loop_type == GSL_WAVE_LOOP_PINGPONG)
 	{
@@ -495,7 +495,7 @@ gsl_wave_chunk_use_block (GslWaveChunk      *wchunk,
 	    offset = iter.lbound + iter.rel_pos;
 	  max_length = reverse ? offset - iter.lbound : iter.ubound - offset;
 	  offset += wchunk->offset;
-	  dnode = gsl_data_cache_ref_node (wchunk->dcache, offset, TRUE); // FIXME: demand_load
+	  dnode = gsl_data_cache_ref_node (wchunk->dcache, offset, TRUE); /* FIXME: demand_load */
 	  offset -= dnode->offset;
 	  block->start = dnode->data + offset;
 	  if (reverse)
@@ -701,7 +701,7 @@ wave_chunk_set_loop (GslWaveChunk   *wchunk,
       wchunk->loop_count = (G_MAXINT - wchunk->loop_end - one) / (wchunk->loop_end - wchunk->loop_start);
       wchunk->loop_count = MIN (wchunk->loop_count, loop_count);
       wchunk->wave_length = wchunk->loop_end + one + (wchunk->loop_end - wchunk->loop_start) * wchunk->loop_count;
-      if (wchunk->loop_count & 1)	// FIXME
+      if (wchunk->loop_count & 1)	/* FIXME */
 	wchunk->wave_length += wchunk->loop_start;
       else
 	wchunk->wave_length += wchunk->length - one - wchunk->loop_end;

@@ -128,9 +128,15 @@ typedef struct _GString GString;
 #define	g_return_if_fail(foo)		do { if (!(foo)) g_message (G_STRLOC ": assertion failed `%s'", #foo); } while (0)
 #define	g_return_val_if_fail(foo,v)		do { if (!(foo)) { g_message (G_STRLOC ": assertion failed `%s'", #foo); return(v);}} while (0)
 
-
-
 /* --- inline functions --- */
+
+/* needs inline configure check */
+#if defined(__GNUC__)
+#define inline __inline__
+#else
+#define inline /* no inline */
+#endif
+
 void
 gsl_g_log (const gchar*msg,const char *format, va_list ap);
 static inline void
@@ -334,7 +340,7 @@ gchar * g_stpcpy (gchar       *dest, 	  const gchar *src);
 /* --- configure stuff!!! --- */
 #define	G_BYTE_ORDER G_LITTLE_ENDIAN
 #define G_MAXINT 2147483647
-// #define	GLIB_HAVE_STPCPY	1
+/* #define	GLIB_HAVE_STPCPY	1 */
 /* Define G_VA_COPY() to do the right thing for copying va_list variables.
  * glibconfig.h may have already defined G_VA_COPY as va_copy or __va_copy.
  */
@@ -347,9 +353,6 @@ gchar * g_stpcpy (gchar       *dest, 	  const gchar *src);
 #    define G_VA_COPY(ap1, ap2)   ((ap1) = (ap2))
 #  endif /* va_list is a pointer */
 #endif /* !G_VA_COPY */
-
-
-
 
 /* subtract from biased_exponent to form base2 exponent (normal numbers) */
 typedef union  _GDoubleIEEE754  GDoubleIEEE754;
