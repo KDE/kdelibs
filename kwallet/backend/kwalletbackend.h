@@ -31,6 +31,8 @@
 
 namespace KWallet {
 
+/* @internal
+ */
 class Backend {
 	public:
 		Backend(const QString& name = "kdewallet");

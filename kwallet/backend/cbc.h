@@ -24,7 +24,7 @@
 
 #include "blockcipher.h"
 
-/*
+/* @internal
  *   Initialize this class with a pointer to a valid, uninitialized BlockCipher
  *   and it will apply that cipher using CBC.  You may want to make the
  *   initial block a full block of random data.  Do not change the block size

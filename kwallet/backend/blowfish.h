@@ -23,6 +23,8 @@
 #include "blockcipher.h"
 
 
+/* @internal
+ */
 class BlowFish : public BlockCipher {
    public:
      BlowFish();

@@ -23,6 +23,8 @@
 #define __sha1__ko__h
 
 
+/* @internal
+ */
 class SHA1 {
    public:
      SHA1();

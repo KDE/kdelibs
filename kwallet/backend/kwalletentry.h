@@ -29,6 +29,8 @@
 
 namespace KWallet {
 
+/* @internal
+ */
 class Entry {
 	public:
 		Entry();

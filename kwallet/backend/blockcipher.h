@@ -22,6 +22,8 @@
 #define __bcipher__ko__h
 
 
+/* @internal
+ */
 class BlockCipher {
    public:
      BlockCipher();

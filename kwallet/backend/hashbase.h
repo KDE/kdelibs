@@ -22,6 +22,8 @@
 #define __hashbase__ko__h
 
 
+/* @internal
+ */
 class HashBase {
    public:
      HashBase();
