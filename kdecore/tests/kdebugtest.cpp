@@ -46,6 +46,11 @@ public:
     sl << "hi" << "this" << "list" << "is" << "short";
     kdDebug() << sl << endl;
 
+    QValueList<int> il;
+    kdDebug() << "Empty QValueList<int>: " << il << endl;
+    il << 1 << 2 << 3 << 4 << 5;
+    kdDebug() << "QValueList<int> filled: " << il << endl;
+
     Q_LLONG big = 65536LL*65536*500;
     kdDebug() << big << endl;
   }

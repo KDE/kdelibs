@@ -339,6 +339,7 @@ class kdbgstream {
      * @param list the stringlist to print
      * @return this stream
      */
+    // ### KDE4: Remove in favor of template operator for QValueList<T> below
     kdbgstream& operator << ( const QStringList& list);
 
     /**
@@ -363,6 +364,14 @@ class kdbgstream {
      */
     kdbgstream& operator << ( const QBrush& brush );
 
+    /**
+     * Prints the given value
+     * @param list the list to print
+     * @return this stream
+     * @since 3.3
+     */
+    template <class T>
+    kdbgstream& operator << ( const QValueList<T> &list );
 
  private:
     QString output;
@@ -370,6 +379,21 @@ class kdbgstream {
     bool print;
     kdbgstreamprivate* d;
 };
+
+template <class T>
+kdbgstream &kdbgstream::operator<<( const QValueList<T> &list )
+{
+    *this << "(";
+    typename QValueList<T>::ConstIterator it = list.begin();
+    if ( !list.isEmpty() ) {
+      *this << *it++;
+    }
+    for ( ; it != list.end(); ++it ) {
+      *this << "," << *it;
+    }
+    *this << ")";
+    return *this;
+}
 
 /**
  * \relates KGlobal
