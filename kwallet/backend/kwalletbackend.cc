@@ -692,6 +692,11 @@ bool Backend::createFolder(const QString& f) {
 	}
 
 	_entries.insert(f, EntryMap());
+
+	KMD5 folderMd5;
+	folderMd5.update(f.utf8());
+	_hashes.insert(MD5Digest(folderMd5.rawDigest()), QValueList<MD5Digest>());
+
 return true;
 }
 
@@ -705,6 +710,18 @@ EntryMap::Iterator ni = emap.find(newName);
 		Entry *e = oi.data();
 		emap.remove(oi);
 		emap[newName] = e;
+
+		KMD5 folderMd5;
+		folderMd5.update(_folder.utf8());
+
+		HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+		if (i != _hashes.end()) {
+			KMD5 oldMd5, newMd5;
+			oldMd5.update(oldName.utf8());
+			newMd5.update(newName.utf8());
+			i.data().remove(MD5Digest(oldMd5.rawDigest()));
+			i.data().append(MD5Digest(newMd5.rawDigest()));
+		}
 		return 0;
 	}
 
@@ -720,6 +737,16 @@ void Backend::writeEntry(Entry *e) {
 		_entries[_folder][e->key()] = new Entry;
 	}
 	_entries[_folder][e->key()]->copy(e);
+
+	KMD5 folderMd5;
+	folderMd5.update(_folder.utf8());
+
+	HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+	if (i != _hashes.end()) {
+		KMD5 md5;
+		md5.update(e->key().utf8());
+		i.data().append(MD5Digest(md5.rawDigest()));
+	}
 }
 
 
@@ -739,6 +766,15 @@ bool Backend::removeEntry(const QString& key) {
 	if (fi != _entries.end() && ei != fi.data().end()) {
 		delete ei.data();
 		fi.data().remove(ei);
+		KMD5 folderMd5;
+		folderMd5.update(_folder.utf8());
+
+		HashMap::iterator i = _hashes.find(MD5Digest(folderMd5.rawDigest()));
+		if (i != _hashes.end()) {
+			KMD5 md5;
+			md5.update(key.utf8());
+			i.data().remove(MD5Digest(md5.rawDigest()));
+		}
 		return true;
 	}
 
@@ -763,6 +799,10 @@ bool Backend::removeFolder(const QString& f) {
 		}
 
 		_entries.remove(fi);
+
+		KMD5 folderMd5;
+		folderMd5.update(f.utf8());
+		_hashes.erase(MD5Digest(folderMd5.rawDigest()));
 		return true;
 	}
 
