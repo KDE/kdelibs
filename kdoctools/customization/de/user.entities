@@ -17,3 +17,7 @@
 <!ENTITY kde "K-Arbeitsumgebung" ><!-- kde -->
 <!ENTITY kcontrolcenter "<application>&kde;-Kontrollzentrum</application>">
 
+<!ENTITY dpi	'<acronym>dpi</acronym>'>
+<!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY FAQ	'<acronym>FAQ</acronym>'>
+<!ENTITY dh     "<abbrev>d.h.</abbrev>">
