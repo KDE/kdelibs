@@ -1791,9 +1791,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
     if ( !query.isEmpty() )
       query = query + "&";
 
-    query.append( QString::fromLatin1( formData ) ); // HTMLFormElementImpl calls formData.latin1(), so I assume that this
-                                                     // conversion is ok
-
+    query.append( QString::fromLatin1( formData.data(), formData.size() ) ); 
     u.setQuery( query );
 
     KParts::URLArgs args;
@@ -1803,7 +1801,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   else
   {
     KParts::URLArgs args;
-    args.postData = formData.copy();
+    args.postData = formData;
     args.frameName = target;
 
     // construct some user headers if necessary
