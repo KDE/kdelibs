@@ -182,8 +182,12 @@ public:
    */
   bool jScriptEnabled() const;
 
-  KJSProxy *jScript();
-  void executeScript( const QString &script );
+  /**
+   * Execute the specified snippet of JavaScript code.
+   * Returns true if JavaScript was enabled, no error occured
+   * and the code returned true itself. False otherwise.
+   */
+  bool executeScript( const QString &script );
 
   void setDNDEnabled( bool b );
   bool dndEnabled() const;
@@ -631,6 +635,11 @@ private:
   khtml::ChildFrame *frame( const QObject *obj );
 
   khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true );
+
+  /**
+   * @internal
+   */
+  KJSProxy *jScript();
 
   KHTMLPartPrivate *d;
 };

@@ -42,7 +42,7 @@
 
 #include "khtmlview.h"
 #include "decoder.h"
-#include "kjs.h"
+#include "ecma/kjs_proxy.h"
 #include "khtml_settings.h"
 
 #include <assert.h>
@@ -444,12 +444,11 @@ KJSProxy *KHTMLPart::jScript()
   return d->m_jscript;
 }
 
-void KHTMLPart::executeScript( const QString &script )
+bool KHTMLPart::executeScript( const QString &script )
 {
-  if ( !d->m_bJScriptEnabled )
-    return;
+  KJSProxy *proxy = jScript();
 
-  jScript()->evaluate( script.unicode(), script.length() );
+  return proxy ? proxy->evaluate( script.unicode(), script.length() ) : false;
 }
 
 void KHTMLPart::enableJava( bool enable )

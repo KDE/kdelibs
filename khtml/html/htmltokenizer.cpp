@@ -224,10 +224,8 @@ void HTMLTokenizer::parseListing( DOMStringIt &src)
 	    if (script)
 	    {
 	        /* Parse scriptCode containing <script> info */
-		// ### use KHTMLView::executeScript...
-	    	KJSProxy *jscript = view->part()->jScript();
 		kdDebug( 6036 ) << "scriptcode is: " << QString(scriptCode, scriptCodeSize) << endl;
-	  	if(jscript) jscript->evaluate(scriptCode, scriptCodeSize);
+	  	view->part()->executeScript(QString(scriptCode, scriptCodeSize));
 	    }
 	    else if (style)
 	    {
