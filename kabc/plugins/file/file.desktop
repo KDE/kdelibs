@@ -1,6 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Name=File
+Name[ar]=ملفّ
 Name[az]=Fayl
 Name[be]=Файл
 Name[bg]=Файл
@@ -22,7 +23,9 @@ Name[fr]=Fichier
 Name[ga]=Comhad
 Name[gl]=Ficheiro
 Name[he]=קובץ
-Name[hi]=फाइल
+Name[hi]=फ़ाइल
+Name[hr]=Datoteka
+Name[hsb]=Dataja
 Name[hu]=Fájl
 Name[id]=Berkas
 Name[is]=Skrá
