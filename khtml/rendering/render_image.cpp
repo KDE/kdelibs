@@ -97,7 +97,8 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
     {
         pix = p;
         resizeCache = QPixmap(); // for scaled animations
-        repaintRectangle(r.x(), r.y(), r.width(), r.height());
+        repaintRectangle(r.x() + borderLeft() + paddingLeft(), r.y() + borderTop() + paddingTop(),
+                         r.width(), r.height());
     }
 }
 
@@ -111,27 +112,32 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
     int cHeight = contentHeight();
     int leftBorder = borderLeft();
     int topBorder = borderTop();
+    int leftPad = paddingLeft();
+    int topPad = paddingTop();
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
     if ( pix.isNull() )
     {
-        QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
-                              Qt::black, Qt::white );
-        //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
-        qDrawShadePanel( p, _tx + leftBorder, _ty + topBorder, cWidth, cHeight,
-                         colorGrp, true, 1 );
-        if(!alt.isEmpty())
+        if(cWidth > 0 && cHeight > 0)
         {
-            QString text = alt.string();
-            p->setFont(style()->font());
-            p->setPen( style()->color() );
-            int ax = _tx + leftBorder + 5;
-            int ay = _ty + topBorder + 5;
-            int ah = cHeight - 10;
-            int aw = cWidth - 10;
-            QFontMetrics fm(style()->font());
-            if (aw>15 && ah>fm.height())
-                p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
+            QColorGroup colorGrp( Qt::black, Qt::lightGray, Qt::white, Qt::darkGray, Qt::gray,
+                                  Qt::black, Qt::white );
+            //qDebug("qDrawShadePanel %d/%d/%d/%d", _tx + leftBorder, _ty + topBorder, cWidth, cHeight);
+            qDrawShadePanel( p, _tx + leftBorder + leftPad, _ty + topBorder + topPad, cWidth, cHeight,
+                             colorGrp, true, 1 );
+            if(!alt.isEmpty())
+            {
+                QString text = alt.string();
+                p->setFont(style()->font());
+                p->setPen( style()->color() );
+                int ax = _tx + leftBorder + QMAX(5, leftPad);
+                int ay = _ty + topBorder + QMAX(5, topPad);
+                int ah = cHeight - QMAX(10, leftPad + paddingRight());
+                int aw = cWidth - QMAX(10, topPad + paddingBottom());
+                QFontMetrics fm(style()->font());
+                if (aw>15 && ah>fm.height())
+                    p->drawText(ax, ay, aw, ah , Qt::WordBreak, text );
+            }
         }
     }
     else if (image && !image->isTransparent())
@@ -139,19 +145,19 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
         if ( (cWidth != pixSize.width() ||  cHeight != pixSize.height() ) &&
              pix.width() && pix.height() && image->valid_rect().isValid())
         {
-            QRect scaledrect(image->valid_rect());
-            //scaling does not work if w or h is 1
-            if (scaledrect.width()==1) scaledrect.setWidth(2);
-            if (scaledrect.height()==1) scaledrect.setHeight(2);
-
             if (resizeCache.isNull() || QSize(cWidth, cHeight) != resizeCache.size())
             {
-                //kdDebug( 6040 ) << "have to scale: " << endl;
-                //qDebug("cw=%d ch=%d  pw=%d ph=%d  rcw=%d, rch=%d",
-                //       cWidth, cHeight, pixSize.width(), pixSize.height(), resizeCache.width(), resizeCache.height());
+                QRect scaledrect(image->valid_rect());
+                //scaling does not work if w or h is 1
+                if (scaledrect.width()==1) scaledrect.setWidth(2);
+                if (scaledrect.height()==1) scaledrect.setHeight(2);
+
+//                 kdDebug( 6040 ) << "have to scale: " << endl;
+//                 qDebug("cw=%d ch=%d  pw=%d ph=%d  rcw=%d, rch=%d",
+//                        cWidth, cHeight, pixSize.width(), pixSize.height(), resizeCache.width(), resizeCache.height());
                 QWMatrix matrix;
                 matrix.scale( (float)(cWidth)/pixSize.width(),
-                        (float)(cHeight)/pixSize.height() );
+                              (float)(cHeight)/pixSize.height() );
                 resizeCache = pix.xForm( matrix );
                 scaledrect = matrix.map(scaledrect);
                 // sometimes scaledrect.width/height are off by one because
@@ -162,10 +168,11 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
                     s = QSize(cWidth, cHeight);
                 if(resizeCache.size() != s)
                     resizeCache.resize(s);
+                p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad),
+                               resizeCache, scaledrect );
             }
-            //qDebug("scaled paint rect %d/%d/%d/%d", scaledrect.x(), scaledrect.y(), scaledrect.width(), scaledrect.height());
-            p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), resizeCache, scaledrect );
-
+            else
+                p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), resizeCache );
         }
         else
         {
@@ -175,30 +182,32 @@ void RenderImage::printReplaced(QPainter *p, int _tx, int _ty)
             // ### maybe no progressive loading for the second image ?
             QRect rect(image->valid_rect().isValid() ? image->valid_rect() : QRect(0, 0, pixSize.width(), pixSize.height())) ;
             //qDebug("normal paint rect %d/%d/%d/%d", rect.x(), rect.y(), rect.width(), rect.height());
-            p->drawPixmap( QPoint( _tx + leftBorder, _ty + topBorder ), pix, rect );
+            p->drawPixmap( QPoint( _tx + leftBorder + leftPad, _ty + topBorder + topPad), pix, rect );
         }
     }
     if (hasKeyboardFocus!=DOM::ActivationOff)
-      {
+    {
         if (hasKeyboardFocus==DOM::ActivationPassive)
-          p->setPen(QColor("green"));
+            p->setPen(QColor("green"));
         else
-          p->setPen(QColor("blue"));
+            p->setPen(QColor("blue"));
         p->drawRect( _tx + leftBorder, _ty + topBorder-1, cWidth, cHeight+2);
         p->drawRect( _tx + leftBorder-1, _ty + topBorder, cWidth+2, cHeight);
-      }
+    }
 }
 
 void RenderImage::calcMinMaxWidth()
 {
+//    if(minMaxKnown())
+//        return;
+
 #ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << "Image::calcMinMaxWidth() known=" << minMaxKnown() << endl;
 #endif
     short oldwidth = m_width;
-
     calcWidth();
 
-    if (oldwidth != m_width)
+    if(m_width != oldwidth)
         resizeCache = QPixmap();
 
     m_maxWidth = m_minWidth = m_width;
@@ -208,15 +217,15 @@ void RenderImage::calcMinMaxWidth()
 void RenderImage::layout()
 {
     if(layouted())
-    {
-#ifdef DEBUG_LAYOUT
-        qDebug("should not be called");
-#endif
         return;
-    }
 
     calcMinMaxWidth();
+
+    int oldheight = m_height;
     calcHeight();
+
+    if(oldheight != m_height)
+        resizeCache = QPixmap();
 
     setLayouted();
 }
