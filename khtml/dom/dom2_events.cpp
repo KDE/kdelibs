@@ -70,6 +70,7 @@ Event::Event(EventImpl *i)
 
 Event::~Event()
 {
+    if (impl) impl->deref();
 }
 
 Event &Event::operator = (const Event &other)
