@@ -29,6 +29,7 @@ namespace KTextEditor { class Mark; }
 
 class KAction;
 class KActionCollection;
+class QPopupMenu;
 
 class KateBookmarks : public QObject
 {
@@ -43,8 +44,9 @@ class KateBookmarks : public QObject
 
     KateBookmarks::Sorting sorting() { return m_sorting; };
     void setSorting( Sorting s ) { m_sorting = s; };
+
   protected:
-    bool eventFilter( QObject *, class QEvent * );
+    bool eventFilter( QObject *, class QEvent* );
 
   private slots:
     void toggleBookmark();
@@ -58,6 +60,7 @@ class KateBookmarks : public QObject
 
     void marksChanged ();
     void connectMenuAndDisConnectAgain();
+
   private:
     KateView*                    m_view;
     KAction*                     m_bookmarkToggle;
@@ -65,6 +68,7 @@ class KateBookmarks : public QObject
     KAction*                     m_goNext;
     KAction*                     m_goPrevious;
     Sorting                      m_sorting;
+    QPopupMenu*          m_bookmarksMenu;
 
     int _tries; // menu connection hack
 };
