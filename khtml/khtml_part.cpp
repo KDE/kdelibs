@@ -1458,7 +1458,7 @@ void KHTMLPart::checkCompleted()
     kdDebug( 6050 ) << "                           complete: " << d->m_bComplete << endl;
 
   // restore the cursor position
-  if (!d->m_bParsing && !d->m_focusNodeRestored)
+  if (d->m_doc && !d->m_bParsing && !d->m_focusNodeRestored)
   {
       int focusNodeNumber;
       if ((focusNodeNumber = d->m_focusNodeNumber))
