@@ -507,14 +507,12 @@ void KAction::setIcon( const QString &icon )
 {
   d->m_iconName = icon;
 
-  // ugly hack.  by default, we will just set the small pixmap as the
-  // icon and assume that setIcon(int, QString) will take care of
-  // more specific implementations.
+  // We load the "Small" icon as the main one (for menu items)
+  // and we let setIcon( int, QString ) deal with toolbars
   if ( parent() && parent()->inherits( "KActionCollection" ) )
-    setIconSet( BarIcon( icon, KIconLoader::Small,
-                static_cast<KActionCollection*>(parent())->instance() ) );
+    setIconSet( SmallIcon( icon, static_cast<KActionCollection*>(parent())->instance() ) );
   else
-    setIconSet( BarIcon( icon, KIconLoader::Small ) );
+    setIconSet( SmallIcon( icon ) );
 
   // now handle any toolbars
   int len = containerCount();
@@ -1744,7 +1742,7 @@ KFontSizeAction::KFontSizeAction( QObject* parent, const char* name )
 
 KFontSizeAction::~KFontSizeAction()
 {
-    delete d; 
+    delete d;
     d = 0;
 }
 
@@ -1755,9 +1753,9 @@ void KFontSizeAction::init()
     setEditable( TRUE );
     QValueList<int> sizes = get_standard_font_sizes();
     QStringList lst;
-    for ( QValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it ) 
+    for ( QValueList<int>::Iterator it = sizes.begin(); it != sizes.end(); ++it )
 	lst.append( QString::number( *it ) );
-    
+
     setItems( lst );
 }
 
@@ -1767,12 +1765,12 @@ void KFontSizeAction::setFontSize( int size )
 	setCurrentItem( items().findIndex( QString::number( size ) ) );
 	return;
     }
-    
+
     if ( size < 1 || size > 128 ) {
 	qDebug( "KFontSizeAction: Size %i is out of range", size );
 	return;
     }
-  
+
     int index = items().findIndex( QString::number( size ) );
     if ( index == -1 ) {
 	QStringList lst = items();
@@ -1785,7 +1783,7 @@ void KFontSizeAction::setFontSize( int size )
     else
 	setCurrentItem( index );
 
-  
+
     emit KAction::activated();
     emit activated( index );
     emit activated( QString::number( size ) );
