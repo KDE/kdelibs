@@ -1063,7 +1063,6 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 
         case SUBMIT:
 
-//            if (m_render && static_cast<RenderSubmitButton*>(m_render)->clicked())
 	    if (m_activeSubmit)
             {
                 QString enc_str = m_value.isNull() ?
@@ -1220,9 +1219,14 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 	m_clicked = true;
         if(m_type == RESET)
             m_form->prepareReset();
-        else if (!m_form->prepareSubmit()) {
-	    xPos = 0;
-	    yPos = 0;
+        else {
+            m_activeSubmit = true;
+	    bool ret = m_form->prepareSubmit();
+	    m_activeSubmit = false; // in case we were canceled
+            if (!ret) {
+                xPos = 0;
+                yPos = 0;
+            }
         }
     }
 }
