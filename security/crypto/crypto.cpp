@@ -443,7 +443,7 @@ QString whatstr;
   yourSSLBox->addColumn(i18n("Email Address"));
   connect(yourSSLBox, SIGNAL(selectionChanged()), SLOT(slotYourCertSelect()));
 
-  yourSSLImport = new QPushButton(i18n("&Import..."), tabYourSSLCert);
+  yourSSLImport = new QPushButton(i18n("I&mport..."), tabYourSSLCert);
   connect(yourSSLImport, SIGNAL(clicked()), SLOT(slotYourImport()));
   grid->addWidget(yourSSLImport, 0, 5);
 
@@ -705,7 +705,7 @@ QString whatstr;
   caList->addColumn(i18n("Common Name"));
   connect(caList, SIGNAL(selectionChanged()), SLOT(slotCAItemChanged()));
 
-  caSSLImport = new QPushButton(i18n("&Import..."), tabSSLCA);
+  caSSLImport = new QPushButton(i18n("I&mport..."), tabSSLCA);
   connect(caSSLImport, SIGNAL(clicked()), SLOT(slotCAImport()));
   grid->addWidget(caSSLImport, 0, 7);
 
@@ -714,7 +714,7 @@ QString whatstr;
   grid->addWidget(caSSLRemove, 1, 7);
   caSSLRemove->setEnabled(false);
 
-  caSSLRestore = new QPushButton(i18n("R&estore"), tabSSLCA);
+  caSSLRestore = new QPushButton(i18n("Res&tore"), tabSSLCA);
   connect(caSSLRestore, SIGNAL(clicked()), SLOT(slotCARestore()));
   grid->addWidget(caSSLRestore, 2, 7);
 
