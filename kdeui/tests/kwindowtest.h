@@ -56,7 +56,7 @@ protected:
     QPopupMenu *toolBarMenu;
     KStatusBar *statusBar;
     KHelpMenu *helpMenu;
-    KToolBar *toolBar;
+    KToolBar *tb;
     KToolBar *tb1;
     bool lineL;
     bool exitB;
