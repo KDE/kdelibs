@@ -34,7 +34,7 @@ KHTMLPrintSettings::KHTMLPrintSettings(QWidget *parent, const char *name)
 		"If this checkbox is enabled, images contained in the HTML page will "
 		"be printed. Printing may take longer and use more ink or toner."
 		"</p>"
-		"p>"
+		"<p>"
 		"If this checkbox is disabled, only the text of the HTML page will be "
 		"printed, without the included images. Printing will be faster and use "
 		"less ink or toner."
