@@ -19,6 +19,12 @@
 // $Id$
 //
 // $Log$
+// Revision 1.11  1998/01/18 14:38:44  kulow
+// reverted the changes, Jacek commited.
+// Only the RCS comments were affected, but to keep them consistent, I
+// thought, it's better to revert them.
+// I checked twice, that only comments are affected ;)
+//
 // Revision 1.9  1997/12/27 22:57:26  kulow
 // I was a little bit nerved by the QFile warnings caused by the KApplication
 // constructor, so I investigated a little bit ;) Fixed now
@@ -69,6 +75,26 @@ static char* aConfigFileName[] =
 };
 
 const int CONFIGFILECOUNT = 5; // number of entries in aConfigFileName[]
+
+
+static QString stringToPrintable(const QString& s){
+  QString result;
+  unsigned int i;
+  for (i=0;i<s.length();i++){
+    if (s[i] == '\n')
+      result.append("\\n");
+    else if (s[i] == '\t')
+      result.append("\\t");
+    else if (s[i] == '\r')
+      result.append("\\r");
+    else if (s[i] == '\\')
+      result.append("\\\\");
+    else
+      result.insert(result.length(), s[i]);
+  }
+  return result;
+}
+
 
 KConfig::KConfig( const char* pGlobalAppFile, const char* pLocalAppFile )
 {
@@ -244,11 +270,11 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 			// not yet localized, but should be
 			*pStream << aWriteInnerIt.currentKey() << '[' 
 					 << data()->aLocaleString << ']' << "=" 
-					 << aWriteInnerIt.current()->aValue << '\n';
+					 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
 		  else
 			// need not be localized or already is
 			*pStream << aWriteInnerIt.currentKey() << "=" 
-					 << aWriteInnerIt.current()->aValue << '\n';
+					 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
 		  ++aWriteInnerIt;
 		}
 	}
@@ -268,11 +294,11 @@ bool KConfig::writeConfigFile( QFile& rConfigFile, bool bGlobal )
 				// not yet localized, but should be
 				*pStream << aWriteInnerIt.currentKey() << '[' 
 						 << data()->aLocaleString << ']' << "=" 
-						 << aWriteInnerIt.current()->aValue << '\n';
+						 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
 			  else
 				// need not be localized or already is
 				*pStream << aWriteInnerIt.currentKey() << "="
-						 << aWriteInnerIt.current()->aValue << '\n';
+						 << stringToPrintable(aWriteInnerIt.current()->aValue) << '\n';
 			  ++aWriteInnerIt;
 			}
 		}

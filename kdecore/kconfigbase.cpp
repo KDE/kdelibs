@@ -19,6 +19,16 @@
 // $Id$
 //
 // $Log$
+// Revision 1.29  1998/04/12 08:52:40  jacek
+//
+// * Updtated KCharset class documentation.
+//
+// * Chnged font entry in config files to store charset as string, not numerical
+//   id (which worked only for iso-8859-* charsets)
+//
+// * added KCharset::xCharset method for getting charset name to use for X font
+//   names.
+//
 // Revision 1.28  1998/03/31 10:13:29  mark
 // MD: The Qt default font has rawMode set and KConfigBase::readFontEntry()
 // never turned this setting off. Fixed this oversight and added a little more
@@ -130,6 +140,37 @@
 #include "kapp.h"
 #include "kcharsets.h"
 
+static QString printableToString(const QString& s){
+  if (!s.contains('\\'))
+    return s;
+  QString result="";
+  unsigned int i = 0;
+  if (s.length()>1){ // remember: s.length() is unsigned....
+    for (i=0;i<s.length()-1;i++){
+      if (s[i] == '\\'){
+	i++;
+	if (s[i] == '\\')
+	  result.insert(result.length(), s[i]);
+	else if (s[i] == 'n')
+	  result.append("\n");
+	else if (s[i] == 't')
+	  result.append("\t");
+	else if (s[i] == 'r')
+	  result.append("\r");
+	else {
+	  result.append("\\");
+	  result.insert(result.length(), s[i]);
+	}
+      }
+      else
+	result.insert(result.length(), s[i]);
+    }
+  }
+  if (i<s.length())
+    result.insert(result.length(), s[i]);
+  return result;
+}
+
 KConfigBase::KConfigBase()
 {
   pData = new KConfigBaseData();
@@ -224,7 +265,8 @@ void KConfigBase::parseOneConfigFile( QFile& rFile,
       // insert the key/value line into the current dictionary
 	  KEntryDictEntry* pEntry = new KEntryDictEntry;
 	  pEntry->aValue = 
-		aCurrentLine.right( aCurrentLine.length()-nEqualsPos-1 ).stripWhiteSpace(); 
+	    printableToString(aCurrentLine.right( aCurrentLine.length()-nEqualsPos-1 )
+			      ).stripWhiteSpace(); 
 	  pEntry->bDirty = false;
 	  pEntry->bGlobal = bGlobal;
 	  pEntry->bNLS = false;
