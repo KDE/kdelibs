@@ -364,10 +364,10 @@ public:
 		return *this;
 	}
 	inline InterfaceRepo(InterfaceRepo_var target) : _InterfaceRepo_redirect(0) {
-		_assign_InterfaceRepo_base(target->_copy());
+		if ((InterfaceRepo_base *)target) _assign_InterfaceRepo_base(target->_copy());
 	}
 	inline InterfaceRepo& operator=(InterfaceRepo_var target) {
-		_assign_InterfaceRepo_base(target->_copy());
+		if ((InterfaceRepo_base *)target) _assign_InterfaceRepo_base(target->_copy());
 		return *this;
 	}
 	inline std::string toString() {return _InterfaceRepo_base()->_toString();}
@@ -463,10 +463,10 @@ public:
 		return *this;
 	}
 	inline FlowSystemSender(FlowSystemSender_var target) : _FlowSystemSender_redirect(0) {
-		_assign_FlowSystemSender_base(target->_copy());
+		if ((FlowSystemSender_base *)target) _assign_FlowSystemSender_base(target->_copy());
 	}
 	inline FlowSystemSender& operator=(FlowSystemSender_var target) {
-		_assign_FlowSystemSender_base(target->_copy());
+		if ((FlowSystemSender_base *)target) _assign_FlowSystemSender_base(target->_copy());
 		return *this;
 	}
 	inline std::string toString() {return _FlowSystemSender_base()->_toString();}
@@ -559,10 +559,10 @@ public:
 		return *this;
 	}
 	inline FlowSystemReceiver(FlowSystemReceiver_var target) : _FlowSystemReceiver_redirect(0) {
-		_assign_FlowSystemReceiver_base(target->_copy());
+		if ((FlowSystemReceiver_base *)target) _assign_FlowSystemReceiver_base(target->_copy());
 	}
 	inline FlowSystemReceiver& operator=(FlowSystemReceiver_var target) {
-		_assign_FlowSystemReceiver_base(target->_copy());
+		if ((FlowSystemReceiver_base *)target) _assign_FlowSystemReceiver_base(target->_copy());
 		return *this;
 	}
 	inline std::string toString() {return _FlowSystemReceiver_base()->_toString();}
@@ -665,10 +665,10 @@ public:
 		return *this;
 	}
 	inline FlowSystem(FlowSystem_var target) : _FlowSystem_redirect(0) {
-		_assign_FlowSystem_base(target->_copy());
+		if ((FlowSystem_base *)target) _assign_FlowSystem_base(target->_copy());
 	}
 	inline FlowSystem& operator=(FlowSystem_var target) {
-		_assign_FlowSystem_base(target->_copy());
+		if ((FlowSystem_base *)target) _assign_FlowSystem_base(target->_copy());
 		return *this;
 	}
 	inline std::string toString() {return _FlowSystem_base()->_toString();}
@@ -771,10 +771,10 @@ public:
 		return *this;
 	}
 	inline GlobalComm(GlobalComm_var target) : _GlobalComm_redirect(0) {
-		_assign_GlobalComm_base(target->_copy());
+		if ((GlobalComm_base *)target) _assign_GlobalComm_base(target->_copy());
 	}
 	inline GlobalComm& operator=(GlobalComm_var target) {
-		_assign_GlobalComm_base(target->_copy());
+		if ((GlobalComm_base *)target) _assign_GlobalComm_base(target->_copy());
 		return *this;
 	}
 	inline std::string toString() {return _GlobalComm_base()->_toString();}
@@ -868,10 +868,10 @@ public:
 		return *this;
 	}
 	inline TmpGlobalComm(TmpGlobalComm_var target) : GlobalComm(), _TmpGlobalComm_redirect(0) {
-		_assign_TmpGlobalComm_base(target->_copy());
+		if ((TmpGlobalComm_base *)target) _assign_TmpGlobalComm_base(target->_copy());
 	}
 	inline TmpGlobalComm& operator=(TmpGlobalComm_var target) {
-		_assign_TmpGlobalComm_base(target->_copy());
+		if ((TmpGlobalComm_base *)target) _assign_TmpGlobalComm_base(target->_copy());
 		return *this;
 	}
 	inline std::string toString() {return _TmpGlobalComm_base()->_toString();}

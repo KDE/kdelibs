@@ -938,6 +938,7 @@ vector<std::string> InterfaceRepo::defaultPortsIn() {
 	vector<std::string> ret;
 	return ret;
 }
+
 vector<std::string> InterfaceRepo::defaultPortsOut() {
 	vector<std::string> ret;
 	return ret;
@@ -1045,6 +1046,7 @@ vector<std::string> FlowSystemSender::defaultPortsIn() {
 	vector<std::string> ret;
 	return ret;
 }
+
 vector<std::string> FlowSystemSender::defaultPortsOut() {
 	vector<std::string> ret;
 	return ret;
@@ -1159,6 +1161,7 @@ vector<std::string> FlowSystemReceiver::defaultPortsIn() {
 	vector<std::string> ret;
 	return ret;
 }
+
 vector<std::string> FlowSystemReceiver::defaultPortsOut() {
 	vector<std::string> ret;
 	return ret;
@@ -1450,6 +1453,7 @@ vector<std::string> FlowSystem::defaultPortsIn() {
 	vector<std::string> ret;
 	return ret;
 }
+
 vector<std::string> FlowSystem::defaultPortsOut() {
 	vector<std::string> ret;
 	return ret;
@@ -1624,6 +1628,7 @@ vector<std::string> GlobalComm::defaultPortsIn() {
 	vector<std::string> ret;
 	return ret;
 }
+
 vector<std::string> GlobalComm::defaultPortsOut() {
 	vector<std::string> ret;
 	return ret;
@@ -1717,16 +1722,11 @@ void TmpGlobalComm::_create() {
 TmpGlobalComm::~TmpGlobalComm() { _assign_TmpGlobalComm_base(0); }
 vector<std::string> TmpGlobalComm::defaultPortsIn() {
 	vector<std::string> ret;
-	vector<std::string> ports;
-	ports = GlobalComm::defaultPortsIn();
-	ret.insert(ret.end(),ports.begin(),ports.end());
 	return ret;
 }
+
 vector<std::string> TmpGlobalComm::defaultPortsOut() {
 	vector<std::string> ret;
-	vector<std::string> ports;
-	ports = GlobalComm::defaultPortsOut();
-	ret.insert(ret.end(),ports.begin(),ports.end());
 	return ret;
 }
 

@@ -1334,14 +1334,18 @@ void doInterfacesHeader(FILE *header)
 		/* constructor from var object */
 		fprintf(header,"\tinline %s(%s_var target)%s {\n",
 			d->name.c_str(), d->name.c_str(), parentConstructorsInit.c_str());
-		fprintf(header,"\t\t_assign_%s_base(target->_copy());\n",
+		fprintf(header,"\t\tif ((%s_base *)target)", // NB: Watch that potential segfault!
+			d->name.c_str());
+		fprintf(header," _assign_%s_base(target->_copy());\n",
 			d->name.c_str());
 		fprintf(header,"\t}\n");
 
 		/* assigment from var object */
 		fprintf(header,"\tinline %s& operator=(%s_var target) {\n",
 			d->name.c_str(), d->name.c_str());
-		fprintf(header,"\t\t_assign_%s_base(target->_copy());\n",
+		fprintf(header,"\t\tif ((%s_base *)target)", // NB: Watch that potential segfault!
+			d->name.c_str());
+		fprintf(header," _assign_%s_base(target->_copy());\n",
 			d->name.c_str());
 		fprintf(header,"\t\treturn *this;\n");
 		fprintf(header,"\t}\n");
@@ -1437,6 +1441,122 @@ void doInterfacesHeader(FILE *header)
 		}
 		fprintf(header,"};\n\n");
 	}
+}
+
+enum DefaultDirection {defaultIn, defaultOut};
+bool addParentDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultDirection dir);
+bool lookupParentPort(InterfaceDef& iface, string port, vector<std::string>& ports, DefaultDirection dir);
+
+bool addDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultDirection dir)
+{
+	vector<AttributeDef *>::iterator ai;
+	vector<std::string>::iterator di;
+	bool hasDefault = false;
+	// Go through the default ports of this interface
+	for (di = iface.defaultPorts.begin(); di != iface.defaultPorts.end(); di++) {
+		bool foundIn = false, foundOut = false;
+		// Find the corresponding attribute definition
+		for (ai = iface.attributes.begin(); ai != iface.attributes.end(); ai++) {
+			if (((*ai)->flags & attributeStream) && ((*di)==(*ai)->name)) {
+				// Add this port to the list
+				if ((*ai)->flags & streamIn) {
+					foundIn=true;
+					if (dir==defaultIn) ports.push_back(*di);
+				}
+				// Add this port to the list
+				if ((*ai)->flags & streamOut) {
+					foundOut=true;
+					if (dir==defaultOut) ports.push_back(*di);
+				}
+			}
+		}
+		bool found = false;
+		// Not found, might come from a parent
+		if (!(foundIn || foundOut)) {
+			found = lookupParentPort(iface, *di, ports, dir);
+		}
+		if ((found) || (foundIn && (dir==defaultIn)) || (foundOut && (dir==defaultOut)))
+			hasDefault = true;
+	}
+	// If no default was specified, then try to inherit some
+	if (!hasDefault)
+		hasDefault = addParentDefaults(iface, ports, dir);
+	
+	// Still have no default?
+	// If we have only one stream in a given direction, make it default.
+	if (!hasDefault) {
+		vector<AttributeDef *>::iterator foundPos;
+		int found = 0;
+		for (ai = iface.attributes.begin(); ai != iface.attributes.end(); ai++) {
+			if ((*ai)->flags & attributeStream) {
+				if (((*ai)->flags & streamIn) && (dir == defaultIn)) {
+					found++; foundPos=ai;
+				}
+				if (((*ai)->flags & streamOut) && (dir == defaultOut)) {
+					found++; foundPos=ai;
+				}
+			}
+		}
+		if (found == 1) {hasDefault=true; ports.push_back((*foundPos)->name);}
+	}
+	return hasDefault;
+}
+
+
+bool addParentDefaults(InterfaceDef& iface, vector<std::string>& ports, DefaultDirection dir)
+{
+	list<InterfaceDef *>::iterator interIt;
+	vector<std::string>::iterator si;
+	bool hasDefault = false;
+	// For all inherited interfaces
+	for (si = iface.inheritedInterfaces.begin(); si != iface.inheritedInterfaces.end(); si++)
+	{
+		// Find the corresponding interface definition
+		for (interIt=interfaces.begin(); interIt!=interfaces.end(); interIt++) {
+			InterfaceDef *parent = *interIt;
+			if (parent->name == (*si)) {
+				// Now add the default ports of this parent
+				bool b = addDefaults(*parent, ports, dir);
+				if (b) hasDefault = true;
+				break;
+			}
+		}
+	}
+	return hasDefault;
+}
+
+bool lookupParentPort(InterfaceDef& iface, string port, vector<std::string>& ports, DefaultDirection dir)
+{
+	list<InterfaceDef *>::iterator interIt;
+	vector<AttributeDef *>::iterator ai;
+	vector<std::string>::iterator si, di;
+	// For all inherited interfaces
+	for (si = iface.inheritedInterfaces.begin(); si != iface.inheritedInterfaces.end(); si++)
+	{
+		// Find the corresponding interface definition
+		for (interIt=interfaces.begin(); interIt!=interfaces.end(); interIt++) {
+			InterfaceDef *parent = *interIt;
+			if (parent->name == (*si)) {
+				// Now look at the ports of this parent
+				vector<AttributeDef *>::iterator foundPos;
+				bool found = false;
+				for (ai = parent->attributes.begin(); ai != parent->attributes.end(); ai++) {
+					if (((*ai)->flags & attributeStream) && ((*ai)->name==port)){
+						if ((((*ai)->flags & streamIn) && (dir == defaultIn))
+						|| (((*ai)->flags & streamOut) && (dir == defaultOut))) {
+							found = true; foundPos=ai; break;
+						}
+					}
+				}
+				if (found) {ports.push_back(port); return true;}
+				// Not found, look recursively at the parent ancestors
+				bool b = lookupParentPort(*parent, port, ports, dir);
+				if (b) return true; // done
+				break;
+			}
+		}
+	}
+	return false;
 }
 
 void doInterfacesSource(FILE *source)
@@ -1743,102 +1863,48 @@ void doInterfacesSource(FILE *source)
 			d->name.c_str(), d->name.c_str(), d->name.c_str());
 		
 		// Default I/O info
+		vector<std::string> portsIn, portsOut;
+		vector<std::string>::iterator si, di;
+		addDefaults(*d, portsIn, defaultIn);
+		addDefaults(*d, portsOut, defaultOut);
+		
+		vector<std::string> done; // don't repeat values
 		fprintf(source,"vector<std::string> %s::defaultPortsIn() {\n",d->name.c_str());
 		fprintf(source,"\tvector<std::string> ret;\n");
-		vector<std::string>::iterator si;
-		int defaultPortsCount = 0;
-		for (si = d->defaultPorts.begin(); si != d->defaultPorts.end(); si++)
+		// Loop through all the values
+		for (si = portsIn.begin(); si != portsIn.end(); si++)
 		{
-			// look if an attribute corresponds
-			for (ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
-				if (((*ai)->flags & attributeStream) && ((*ai)->flags & streamIn)
-				&& ((*si)==(*ai)->name))
-				{
-					(*ai)->flags = (AttributeType)((int)(*ai)->flags | (int)streamDefault);
-					fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
-					defaultPortsCount++;
-					break;
-				}
-		}
-		// No default, but only one stream => it is the default
-		if (defaultPortsCount==0) {
-			// look if an attribute corresponds
-			vector<AttributeDef *>::iterator foundPos;
-			int found = 0;
-			for (ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
-				if (((*ai)->flags & attributeStream) && ((*ai)->flags & streamIn))
-				{
-					found++; foundPos=ai;
-				}
-			if (found==1) {
-				(*foundPos)->flags = (AttributeType)((int)(*foundPos)->flags | (int)streamDefault);
-				fprintf(source,"\tret.push_back(\"%s\");\n",(*foundPos)->name.c_str());
+			// repeated value? (virtual public like merging...)
+			bool skipIt = false;
+			for (di = done.begin(); di != done.end(); di++) {
+				if ((*di)==(*si)) {skipIt = true; break;}
 			}
+			if (skipIt) continue;
+			fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
+			done.push_back(*si);
 		}
-		if (!d->inheritedInterfaces.empty()) {
-			fprintf(source,"\tvector<std::string> ports;\n");
-		}
-		for (si=d->inheritedInterfaces.begin(); si!=d->inheritedInterfaces.end(); si++)
-		{
-			// Parent default ports will be inserted after, in order
-			// => the first default ports are always those declared in our own
-			// interface
-			// But the parents are taken in the order they were declared.
-			fprintf(source,"\tports = %s::defaultPortsIn();\n",(*si).c_str());
-			fprintf(source,"\tret.insert(ret.end(),ports.begin(),ports.end());\n");
-		}
-		fprintf(source,"\treturn ret;\n}\n");
+		fprintf(source,"\treturn ret;\n}\n\n");
 		
+		done.clear();
 		fprintf(source,"vector<std::string> %s::defaultPortsOut() {\n",d->name.c_str());
 		fprintf(source,"\tvector<std::string> ret;\n");
-		defaultPortsCount = 0;
-		for (si = d->defaultPorts.begin(); si != d->defaultPorts.end(); si++)
+		// Loop through all the values
+		for (si = portsOut.begin(); si != portsOut.end(); si++)
 		{
-			// look if an attribute corresponds
-			for (ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
-				if (((*ai)->flags & attributeStream) && ((*ai)->flags & streamOut)
-				&& ((*si)==(*ai)->name))
-				{
-					(*ai)->flags = (AttributeType)((int)(*ai)->flags | (int)streamDefault);
-					fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
-					defaultPortsCount++;
-					break;
-				}
-		}
-		// No default, but only one stream => it is the default
-		if (defaultPortsCount==0) {
-			// look if an attribute corresponds
-			vector<AttributeDef *>::iterator foundPos;
-			int found = 0;
-			for (ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
-				if (((*ai)->flags & attributeStream) && ((*ai)->flags & streamOut))
-				{
-					found++; foundPos=ai;
-				}
-			if (found==1) {
-				(*foundPos)->flags = (AttributeType)((int)(*foundPos)->flags | (int)streamDefault);
-				fprintf(source,"\tret.push_back(\"%s\");\n",(*foundPos)->name.c_str());
+			// repeated value? (virtual public like merging...)
+			bool skipIt = false;
+			for (di = done.begin(); di != done.end(); di++) {
+				if ((*di)==(*si)) {skipIt = true; break;}
 			}
+			if (skipIt) continue;
+			fprintf(source,"\tret.push_back(\"%s\");\n",(*si).c_str());
+			done.push_back(*si);
 		}
-		if (!d->inheritedInterfaces.empty()) {
-			fprintf(source,"\tvector<std::string> ports;\n");
-		}
-		for (si=d->inheritedInterfaces.begin(); si!=d->inheritedInterfaces.end(); si++)
-		{
-			// Parent default ports will be inserted after, in order
-			// => the first default ports are always those declared in our own
-			// interface
-			// But the parents are taken in the order they were declared.
-			fprintf(source,"\tports = %s::defaultPortsOut();\n",(*si).c_str());
-			fprintf(source,"\tret.insert(ret.end(),ports.begin(),ports.end());\n");
-		}
-		fprintf(source,"\treturn ret;\n}\n");
-		fprintf(source,"\n");
+		fprintf(source,"\treturn ret;\n}\n\n");
 		
 		if (haveStreams(d)) {
 			// Component virtual
-			fprintf(source,"ScheduleNode *%s::node()"
-				" {return _%s_base()->_node();}\n\n",
+			fprintf(source,"ScheduleNode *%s::node() {return _%s_base()->_node();}\n\n",
 					d->name.c_str(),d->name.c_str());
 		}
 		fprintf(source,"\n");
