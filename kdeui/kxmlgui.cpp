@@ -27,6 +27,7 @@
 #include <qfile.h>
 #include <kdebug.h>
 #include <qtextstream.h>
+#include <qwidget.h>
 #include <kaccel.h>
 #include <kinstance.h>
 #include <kglobal.h>
