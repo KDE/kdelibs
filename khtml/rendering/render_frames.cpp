@@ -823,9 +823,14 @@ void RenderPartObject::slotPartLoadingErrorNotify()
             {
                 // Display vendor download page
                 ext->createNewWindow( pluginPageURL );
+                return;
             }
         }
     }
+
+    // didn't work, render alternative content.
+    if ( element() && element()->id() == ID_OBJECT )
+        static_cast<HTMLObjectElementImpl*>( element() )->renderAlternative();
 }
 
 void RenderPartObject::layout( )
