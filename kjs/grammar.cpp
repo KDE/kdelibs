@@ -132,7 +132,7 @@ typedef union {
   ParameterNode       *param;
   FunctionBodyNode    *body;
   FuncDeclNode        *func;
-  FunctionBodyNode         *prog;
+  FunctionBodyNode    *prog;
   AssignExprNode      *init;
   SourceElementsNode  *srcs;
   StatListNode        *slist;
