@@ -484,6 +484,11 @@ public:
    */
   bool verify( const KMD5::Digest& digest);
 
+  /**
+   * @overload
+   */
+  bool verify(const QCString&);
+
 protected:
   /**
    *  Performs the real update work.  Note

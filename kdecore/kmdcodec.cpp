@@ -871,6 +871,12 @@ bool KMD5::verify( const KMD5::Digest& digest)
     return (0 == memcmp(rawDigest(), digest, sizeof(KMD5::Digest)));
 }
 
+bool KMD5::verify( const QCString& hexdigest)
+{
+    finalize();
+    return (0 == strcmp(hexDigest().data(), hexdigest));
+}
+
 const KMD5::Digest& KMD5::rawDigest()
 {
     finalize();
