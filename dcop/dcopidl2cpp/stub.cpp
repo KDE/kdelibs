@@ -64,7 +64,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 
     str << "#include <dcopstub.h>" << endl;
 
-    QStringList includeslist;
+    QStringList includeslist, all_includes;
     QDomElement e = de.firstChild().toElement();
     for( ; !e.isNull(); e = e.nextSibling().toElement() ) {
 	if ( e.tagName() == "INCLUDE" ) {
@@ -76,8 +76,10 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
         if( !includeslist.empty()) {
             for( QStringList::ConstIterator it = includeslist.begin();
                  it != includeslist.end();
-                 ++it )
+                 ++it ) {
     	        str << "#include <" << ( *it ) << ">" << endl;
+                all_includes.append( *it );
+            }
             includeslist.clear();
         }
         if ( e.tagName() == "CLASS" ) {
@@ -95,6 +97,23 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 		if ( s.tagName() == "SUPER" )
 		    DCOPParent = s.firstChild().toText().data();
 	    }
+            
+            if( DCOPParent != "DCOPObject" ) { // we need to include the .h file for the base stub
+                if( all_includes.contains( DCOPParent + ".h" ))
+                    str << "#include <" << DCOPParent << "_stub.h>" << endl;
+                else if( all_includes.contains( DCOPParent.lower() + ".h" ))
+                    str << "#include <" << DCOPParent.lower() << "_stub.h>" << endl;
+                else {// damn ... let's assume it's the last include
+                    QString stub_h = all_includes.last();
+                    unsigned int pos = stub_h.find( ".h" );
+                    if( pos > 0 ) {
+                        stub_h = stub_h.remove( pos, 100000 );
+                        str << "#include <" << stub_h << "_stub.h>" << endl;
+                    }
+                    else
+                        str << "#include <" << stub_h << ">" << endl;
+                }
+            }
 
             QString classNameFull = className; // class name with possible namespaces prepended
                                                // namespaces will be removed from className now
@@ -138,7 +157,7 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 		if (s.tagName() == "FUNC") {
 		    QDomElement r = s.firstChild().toElement();
 		    Q_ASSERT( r.tagName() == "TYPE" );
-		    str << "    virtual ";
+		    str << "    ";
 		    if ( r.hasAttribute( "qleft" ) )
 			str << r.attribute("qleft") << " ";
 		    str << r.firstChild().toText().data();
@@ -182,6 +201,10 @@ void generateStub( const QString& idl, const QString& filename, QDomElement de)
 		    str << ";" << endl;
 		}
 	    }
+
+            // needed for inherited stubs
+	    str << "protected:" << endl;
+            str << "    " << className << "() {};" << endl;
 
 	    str << "};" << endl;
 	    str << endl;

@@ -92,14 +92,6 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
   	    QString classNameBase = n.firstChild().toText().data();
   	    QString className_stub = classNameBase + "_stub";
 	
-	    // find dcop parent ( rightmost super class )
-	    QString DCOPParent;
-	    QDomElement s = n.nextSibling().toElement();
-	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
-		if ( s.tagName() == "SUPER" )
-		    DCOPParent = s.firstChild().toText().data();
-	    }
-	
             QString classNameFull = className_stub; // class name with possible namespaces prepended
                                                // namespaces will be removed from className now
             int namespace_count = 0;
@@ -122,11 +114,10 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
             // Write constructors
             str << className_stub << "::" << className_stub << "( const QCString& app, const QCString& obj )" << endl;
             str << "  : ";
-           
-            if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
-                str << "DCOPStub( app, obj )" << endl;
-            else
-                str << DCOPParent << "( app, obj )" << endl;
+
+            // Always explicitly call DCOPStub constructor, because it's virtual base class.           
+            // Calling other ones doesn't matter, as they don't do anything important.
+            str << "DCOPStub( app, obj )" << endl;
 
             str << "{" << endl;
             str << "}" << endl << endl;
@@ -134,16 +125,13 @@ void generateStubImpl( const QString& idl, const QString& header, const QString&
             str << className_stub << "::" << className_stub << "( DCOPClient* client, const QCString& app, const QCString& obj )" << endl;
             str << "  : ";
         
-            if ( DCOPParent.isEmpty() || DCOPParent == "DCOPObject" )
-                str << "DCOPStub( client, app, obj )" << endl;
-            else
-                str << DCOPParent << "(  client, app, obj )" << endl;
+            str << "DCOPStub( client, app, obj )" << endl;
 
             str << "{" << endl;
             str << "}" << endl << endl;
 
 	    // Write marshalling code
-	    s = e.firstChild().toElement();
+	    QDomElement s = e.firstChild().toElement();
 	    for( ; !s.isNull(); s = s.nextSibling().toElement() ) {
 		if (s.tagName() == "FUNC") {
 		    QDomElement r = s.firstChild().toElement();
