@@ -139,14 +139,17 @@ static void close_fds()
    if (d.wrapper)
    {
       close(d.wrapper);
+      d.wrapper = 0;
    }
    if (X11fd >= 0)
    {
       close(X11fd);
+      X11fd = -1;
    }
    if (X11_startup_notify_fd >= 0 && X11_startup_notify_fd != X11fd )
    {
       close(X11_startup_notify_fd);
+      X11_startup_notify_fd = -1;
    }
 
    signal(SIGCHLD, SIG_DFL);
