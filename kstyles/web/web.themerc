@@ -1,6 +1,7 @@
 [Misc]
 Name=Web style
 Name[az]=Veb tərzi
+Name[cs]=Webový styl
 Name[da]=Netsidestil
 Name[de]=Webstil
 Name[eo]=TTT-stilo
@@ -21,8 +22,10 @@ Name[sk]=Web štýl
 Name[sl]=Spletni slog
 Name[sv]=Webbstil
 Name[tr]=A� stili
+Name[uk]=Стиль а ля 'Web'
 Comment=Web widget style
 Comment[az]=Veb pəncərəcik tərzi
+Comment[cs]=Styl prvků webu
 Comment[da]=Netside dims-stil
 Comment[de]=Web-ähnlicher Stil für Bedienelemente
 Comment[eo]=TTT-speca stilo

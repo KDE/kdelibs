@@ -2,6 +2,7 @@
 PrintSystem=rlpr
 Comment=RLPR environment (Remote LPD servers)
 Comment[az]=RLPR vasitəsi (Uzaq LPD vericiləri)
+Comment[cs]=Prostředí RLPR (Vzdálené LPD servery)
 Comment[da]=RLPR miljø (Fjerne LPD servere)
 Comment[de]=RLPR-Umgebung (entfernte LPD-Server)
 Comment[el]=περιβάλλον RLPR (Απομακρυσμένοι εξυπηρετητές LPD)

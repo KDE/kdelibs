@@ -954,6 +954,7 @@ default_sound=KDE_Logout.wav
 [printerror]
 Name=Print error
 Name[az]=Çap Edici xətası
+Name[cs]=Chyba tisku
 Name[da]=Udskriftsfejl
 Name[de]=Fehler beim Druck
 Name[el]=Σφάλμα εκτύπωσης
@@ -981,6 +982,7 @@ Name[tr]=Yazd�rma hatas�
 Name[uk]=Помилка друку
 Comment=A print error has occured
 Comment[az]=Çap Edici xətasi oldu
+Comment[cs]=Došlo k chybě tisku
 Comment[da]=Der opstod en fejl ved udskriften
 Comment[de]=Beim Drucken ist ein Fehler aufgetreten
 Comment[el]=Προέκυψε ένα σφάλμα εκτύπωσης

@@ -2,6 +2,7 @@
 PrintSystem=lpdunix
 Comment=Generic UNIX LPD print system (default)
 Comment[az]=Ümumi UNİX LPD Çap Etmə Sistemi (əsas)
+Comment[cs]=Obecný UNIXový tiskový systém LPD (implicitní)
 Comment[da]=Generisk UNIX LPD udskriftssystem (standard)
 Comment[de]=UNIX-LPD-Drucksystem (Voreinstellung)
 Comment[el]=Γενικό σύστημα εκτύπωσης UNIX LPD (προκαθ.)

@@ -2,6 +2,7 @@
 PrintSystem=ext
 Comment=Print through an external program (generic)
 Comment[az]=Xarici proqram üstündən çap et (generik)
+Comment[cs]=Tisk pomocí externího programu (obecné)
 Comment[da]=Udskriv gennem et eksternt program (generisk)
 Comment[de]=Druck über ein externes Programm
 Comment[el]=Εκτυπωση μέσω εξωτερικού προγράμματος (generic)
