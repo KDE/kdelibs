@@ -24,12 +24,11 @@ kspell_LIBS = -lkdecore -lkdeui -lqt
 jscript_FILES = *.h
 jscript_LIBS = -lqt
 
-#khtml_FILES = khtml.h khtmlview.h
 khtml_FILES = *.h
 khtml_LIBS = -ljscript -lkdecore -lkdeui -lkimgio -lqt
 
 kio_FILES = *.h
-kio_LIBS = -lkdecore -lqt
+kio_LIBS = -lkdecore -lkdeui -lqt
 
 kimgio_FILES = kimgio.h
 kimgio_LIBS = -lqt
