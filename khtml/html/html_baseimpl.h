@@ -110,7 +110,7 @@ protected:
 
 class HTMLFrameSetElementImpl : public HTMLElementImpl
 {
-    friend class RenderFrameSet;
+    friend class khtml::RenderFrameSet;
 public:
     HTMLFrameSetElementImpl(DocumentImpl *doc);
 
