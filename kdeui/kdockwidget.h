@@ -386,6 +386,13 @@ public:
   void setWidget( QWidget* w);
 
   /**
+   * Get the embedded widget.
+   *
+   * @return the pointer to the dockwidget's child widget, 0L if there´s no such child
+   */
+  QWidget* getWidget() { return widget; };
+
+  /**
    * Set the header of this dockwidget. A QLayout takes care about proper resizing, automatically.
    * The header contains the drag panel, the close button and the stay button.
    *
