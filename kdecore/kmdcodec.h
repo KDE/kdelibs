@@ -570,4 +570,173 @@ private:
 
   KMD5Private* d;
 };
+
+class KDECORE_EXPORT KMD4
+{
+public:
+
+  typedef unsigned char Digest[16];
+
+  KMD4();
+
+  /**
+   * Constructor that updates the digest for the given string.
+   *
+   * @param in   C string or binary data
+   * @param len  if negative, calculates the length by using
+   *             strlen on the first parameter, otherwise
+   *             it trusts the given length (does not stop on NUL byte).
+   */
+  KMD4(const char* in, int len = -1);
+
+  /**
+   * @overload
+   *
+   * Same as above except it accepts a QByteArray as its argument.
+   */
+  KMD4(const QByteArray& a );
+
+  /**
+   * @overload
+   *
+   * Same as above except it accepts a QByteArray as its argument.
+   */
+  KMD4(const QCString& a );
+
+  /**
+   * Updates the message to be digested. Be sure to add all data
+   * before you read the digest. After reading the digest, you
+   * can <b>not</b> add more data!
+   *
+   * @param in     message to be added to digest
+   * @param len    the length of the given message.
+   */
+  void update(const char* in, int len = -1) { update(reinterpret_cast<const unsigned char*>(in), len); }
+
+  /**
+   * @overload
+   */
+  void update(const unsigned char* in, int len = -1);
+
+  /**
+   * @overload
+   *
+   * @param in     message to be added to the digest (QByteArray).
+   */
+  void update(const QByteArray& in );
+
+  /**
+   * @overload
+   *
+   * @param in     message to be added to the digest (QByteArray).
+   */
+  void update(const QCString& in );
+
+  /**
+   * @overload
+   *
+   * reads the data from an I/O device, i.e. from a file (QFile).
+   *
+   * NOTE that the file must be open for reading.
+   *
+   * @param file       a pointer to FILE as returned by calls like f{d,re}open
+   *
+   * @returns false if an error occurred during reading.
+   */
+  bool update(QIODevice& file);
+
+  /**
+   * Calling this function will reset the calculated message digest.
+   * Use this method to perform another message digest calculation
+   * without recreating the KMD5 object.
+   */
+  void reset();
+
+  /**
+   * @return the raw representation of the digest
+   */
+  const Digest& rawDigest ();
+
+  /**
+   * Fills the given array with the binary representation of the
+   * message digest.
+   *
+   * Use this method if you do not want to worry about making
+   * copy of the digest once you obtain it.
+   *
+   * @param bin an array of 16 characters ( char[16] )
+   */
+  void rawDigest( KMD5::Digest& bin );
+
+  /**
+   * Returns the value of the calculated message digest in
+   * a hexadecimal representation.
+   */
+  QCString hexDigest ();
+
+  /**
+   * @overload
+   */
+  void hexDigest(QCString&);
+
+  /**
+   * Returns the value of the calculated message digest in
+   * a base64-encoded representation.
+   */
+  QCString base64Digest ();
+
+  /**
+   * returns true if the calculated digest for the given
+   * message matches the given one.
+   */
+  bool verify( const KMD5::Digest& digest);
+
+  /**
+   * @overload
+   */
+  bool verify(const QCString&);
+
+protected:
+  /**
+   *  Performs the real update work.  Note
+   *  that length is implied to be 64.
+   */
+  void transform( Q_UINT32 buf[4], Q_UINT32 const in[16] );
+
+  /**
+   * finalizes the digest
+   */
+  void finalize();
+
+private:
+  KMD4(const KMD5& u);
+  KMD4& operator=(const KMD4& md);
+
+  void init();
+
+  void byteReverse( unsigned char *buf, Q_UINT32 len );
+
+  Q_UINT32 rotate_left( Q_UINT32 x, Q_UINT32 n );
+  Q_UINT32 F( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
+  Q_UINT32 G( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
+  Q_UINT32 H( Q_UINT32 x, Q_UINT32 y, Q_UINT32 z );
+  void FF( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d, Q_UINT32 x,
+               Q_UINT32  s );
+  void GG( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d, Q_UINT32 x,
+                Q_UINT32 s );
+  void HH( Q_UINT32& a, Q_UINT32 b, Q_UINT32 c, Q_UINT32 d, Q_UINT32 x,
+                Q_UINT32 s );
+
+private:
+  Q_UINT32 m_state[4];
+  Q_UINT32 m_count[2];
+  Q_UINT8 m_buffer[64];
+  Digest m_digest;
+  bool m_finalized;
+
+  class KMD4Private;
+  KMD4Private* d;
+};
+
+
 #endif
