@@ -722,7 +722,7 @@ kdelibs (4:2.0-20000829-0) unstable; urgency=low
  
   * More Upstream fixes
   * Committing most package updates to CVS tree
-  * No GPL/QT conflictions
+  * No GPL/Qt conflictions
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 29 Aug 2000 21:15:00 -0700
 
