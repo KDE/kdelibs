@@ -47,6 +47,7 @@ public:
 
     QString tagSeparator;
     QString tagTearOffHandle;
+    QString tagMenuTitle;
 
     QString attrName;
     QString attrLineSeparator;
@@ -81,6 +82,7 @@ KXMLGUIBuilder::KXMLGUIBuilder( QWidget *widget )
 
   d->tagSeparator = QString::fromLatin1( "separator" );
   d->tagTearOffHandle = QString::fromLatin1( "tearoffhandle" );
+  d->tagMenuTitle = QString::fromLatin1( "title" );
 
   d->attrName = QString::fromLatin1( "name" );
   d->attrLineSeparator = QString::fromLatin1( "lineseparator" );
@@ -268,7 +270,7 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
 QStringList KXMLGUIBuilder::customTags() const
 {
   QStringList res;
-  res << d->tagSeparator << d->tagTearOffHandle;
+  res << d->tagSeparator << d->tagTearOffHandle << d->tagMenuTitle;
   return res;
 }
 
@@ -314,6 +316,38 @@ int KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const QDomE
   {
     if ( parent->inherits( "QPopupMenu" ) )
       return static_cast<QPopupMenu *>(parent)->insertTearOffHandle( -1, index );
+  }
+  else if ( element.tagName().lower() == d->tagMenuTitle )
+  {
+    if ( parent->inherits( "KPopupMenu" ) )
+    {
+      QString i18nText;
+      QCString text = element.namedItem( d->attrText1 ).toElement().text().utf8();
+      if ( text.isEmpty() ) // try with capital T
+        text = element.namedItem( d->attrText2 ).toElement().text().utf8();
+
+      if ( text.isEmpty() )
+        i18nText = i18n( "No text!" );
+      else
+        i18nText = i18n( text );
+
+      QString icon = element.attribute( d->attrIcon );
+      QPixmap pix;
+
+      if ( !icon.isEmpty() )
+      {
+        KInstance *instance = d->m_instance;
+        if ( !instance )
+          instance = KGlobal::instance();
+
+        pix = SmallIcon( icon, instance );
+      }
+
+      if ( !icon.isEmpty() )
+        return static_cast<KPopupMenu *>(parent)->insertTitle( pix, i18nText, -1, index );
+      else
+        return static_cast<KPopupMenu *>(parent)->insertTitle( i18nText, -1, index );
+    }
   }
   return 0;
 }

@@ -57,7 +57,7 @@
 >
 
 <!-- A Menu such as the "File" or "Edit" menu. Can be used to define popup menus as well. -->
-<!ELEMENT Menu (text?, (Action | ActionList | Separator | TearOffHandle | Merge | MergeLocal | DefineGroup | Menu )*)>
+<!ELEMENT Menu (text?, (Title | Action | ActionList | Separator | TearOffHandle | Merge | MergeLocal | DefineGroup | Menu )*)>
 <!ATTLIST Menu
   name CDATA #REQUIRED
   group CDATA #IMPLIED
@@ -90,6 +90,12 @@
 <!ELEMENT TearOffHandle EMPTY>
 <!ATTLIST TearOffHandle
   group CDATA #IMPLIED
+>
+
+<!-- Used to insert titles, only for popup menus -->
+<!ELEMENT Title (text?)>
+<!ATTLIST Title
+  icon CDATA #IMPLIED
 >
 
 <!-- Used to name a menu, the first letter in is generally preceded by an '&' to specify
