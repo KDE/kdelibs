@@ -75,6 +75,14 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
 
     if(!m_render) return false;
 
+    if(m_render->parent() && m_render->parent()->isAnonymousBox())
+    {
+	//printf("parent is anonymous!\n");
+	// we need to add the offset of the anonymous box
+	_tx += m_render->parent()->xPos();
+	_ty += m_render->parent()->yPos();
+    }
+
     if(!m_render->isInline() || !m_render->firstChild() || m_render->isFloating())
     {
 	_tx += m_render->xPos();
@@ -90,13 +98,6 @@ bool HTMLElementImpl::mouseEvent( int _x, int _y, int button, MouseEventType typ
         }
 
 
-    }
-    else if(m_render->isInline() && m_render->parent()->isAnonymousBox())
-    {
-	//printf("parent is anonymous!\n");
-	// we need to add the offset of the anonymous box
-	_tx += m_render->parent()->xPos();
-	_ty += m_render->parent()->yPos();
     }
 
     NodeImpl *child = firstChild();

@@ -86,9 +86,17 @@ bool HTMLImageElementImpl::mouseEvent( int _x, int _y, int button, MouseEventTyp
                                        int _tx, int _ty, DOMString &url,
                                        NodeImpl *&innerNode, long &offset)
 {
-    //printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _y, _tx, _ty);
+    //printf("_x=%d _tx=%d _y=%d, _ty=%d\n", _x, _tx, _y, _ty);
     if (usemap.length()>0)
     {
+	if(m_render->parent()->isAnonymousBox())
+	{
+	    //printf("parent is anonymous!\n");
+	    // we need to add the offset of the anonymous box
+	    _tx += m_render->parent()->xPos();
+	    _ty += m_render->parent()->yPos();
+	}
+
         //cout << "usemap: " << usemap.string() << endl;
         HTMLMapElementImpl* map;
     	if ( (map = HTMLMapElementImpl::getMap(usemap))!=0)
@@ -208,6 +216,7 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
     	int button_, MouseEventType type_, DOMString& url_)
 {
     //cout << "map:mapMouseEvent " << endl;
+    //cout << x_ << " " << y_ <<" "<< width_ <<" "<< height_ << endl;
     bool inside = false;
 
     QStack<NodeImpl> nodeStack;
@@ -222,7 +231,10 @@ HTMLMapElementImpl::mapMouseEvent(int x_, int y_, int width_, int height_,
 	    current = current->nextSibling();
 	    continue;
 	}
-	if(current->id()==ID_AREA || current->id()==ID_P)
+	// ### What is the ID_P supposed to do here? This can
+	// only lead to memory corruption or a segfault, since P does
+	// not inherit form Area!
+	if(current->id()==ID_AREA)// || current->id()==ID_P)
 	{
 	    //cout << "area found " << endl;
 	    HTMLAreaElementImpl* area=static_cast<HTMLAreaElementImpl*>(current);
