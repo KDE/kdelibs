@@ -237,7 +237,7 @@ public:
   
   /*obsolete, will disappear (Matthias) */
   void registerTopWidget();
-  /* obsolete, will dissappear (Matthias) */
+  /* obsolete, will disappear (Matthias) */
   void unregisterTopWidget();
 
   /** 
@@ -434,7 +434,7 @@ public:
   /** Get a file name in order to make a temporary copy of your
 	* document.
 	*
-	* @param pFilename The full path to the current file opf your
+	* @param pFilename The full path to the current file of your
 	* document.
 	* @return A new filename for auto-saving. You have to free() this
 	* yourself, otherwise you have a memory leak!
@@ -494,7 +494,7 @@ public:
 	*/
   virtual void removeDropZone( KDNDDropZone *_z ) { dropZones.remove( _z ); }
   /**
-	* Set the DropZone which reveives root drop events.
+	* Set the DropZone which receives root drop events.
 	*/
   virtual void setRootDropZone( KDNDDropZone *_z ) { rootDropZone = _z; }
 
@@ -579,7 +579,7 @@ private:
   static QStrList* pSearchPaths;
   KIconLoader* pIconLoader; // the application's own icon loader
   KLocale* pLocale;  
-  static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compability 
+  static KCharsets* pCharsets;  // it shouldn't be static, but you would loose binary compatibility 
   void* dummy2; // do not use these without asking kalle@kde.org
   void* dummy3;
   void* dummy4;
@@ -659,7 +659,7 @@ public:
   /** 
 	* KApplication has changed either its GUI style, its font or its palette
 	* due to a kdisplay request. Normally, widgets will update their styles
-	* automatically, but yout should connect to this to program special
+	* automatically, but you should connect to this to program special
 	* behavior. */
   void appearanceChanged();
 
@@ -715,3 +715,7 @@ private:
 #endif
 
 // $Log$
+// Revision 1.59  1998/12/06 08:43:47  garbanzo
+// Oh hell, it looks ok at the bottom.  I hope nobody gets their tighty
+// whitites in a knot.
+//

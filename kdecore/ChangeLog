@@ -1,3 +1,8 @@
+1998-12-05  Alex Zepeda  <garbanzo@hooked.net>
+
+	* kapp.h: Moved the Log tag thingy to the end, and fixed a few
+	more typos.
+
 1998-11-22  Alex Zepeda  <garbanzo@hooked.net>
 
 	* kconfigbase.h (class KConfigBase): Fixed some comments that referred
