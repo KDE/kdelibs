@@ -58,7 +58,6 @@
 #include <kdatastream.h>
 #include <klibloader.h>
 #include <kmimesourcefactory.h>
-#include <ktempfile.h>
 #include <kstdaccel.h>
 #include <kaccel.h>
 #include <qobjectlist.h>
@@ -1622,7 +1621,7 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
    config.setGroup("ClientInfo");
    QString command = config.readEntry("EmailClient");
    if (command.isEmpty() || command == QString::fromLatin1("kmail"))
-     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b %t");
+     command = QString::fromLatin1("kmail --composer -s %s -c %c -b %b --body %B %t");
 
    // TODO: Take care of the preferred terminal app (instead of hardcoding
    // Konsole), this will probably require a rewrite of the configurable
@@ -1672,26 +1671,12 @@ void KApplication::invokeMailer(const KURL &mailtoURL)
      if ((*it).find("%B") >= 0)
        (*it).replace(QRegExp("%B"), body);
 
-   KTempFile * tempFile = 0L;
-   // Special case for passing message body to kmail
-   if ( cmd == "kmail" && !body.isEmpty() )
-   {
-       tempFile = new KTempFile;
-       // We can't delete the temp file, because kmail is launched async....
-       //tempFile->setAutoDelete(true);
-       (*tempFile->textStream()) << body;
-       kdDebug() << "body=" << body << endl;
-       cmdTokens.append("--msg");
-       cmdTokens.append(tempFile->name());
-       tempFile->close();
-   }
    QString error;
 
    if (kdeinitExec(cmd, cmdTokens, &error))
    {
       qWarning("Could not launch mail client:\n%s\n", error.local8Bit().data());
    }
-   delete tempFile;
 }
 
 
