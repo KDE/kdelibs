@@ -456,7 +456,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KURL& url, bool noti
           emit lister->canceled();
         }
       }
-      
+
       if ( notify )
       {
         lister->d->lstDirs.remove( url.url() );
@@ -1429,6 +1429,7 @@ KDirLister::~KDirLister()
   stop();
   s_pCache->forgetDirs( this );
 
+  d->lstFilters.clear();
   delete d;
 }
 
