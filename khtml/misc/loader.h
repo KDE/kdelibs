@@ -414,7 +414,7 @@ namespace khtml
 
 	/**
 	 * Ask the cache for some url. Will return a cachedObject, and
-	 * load the requested data in case it's not cahced
+	 * load the requested data in case it's not cached
 	 */
 	static CachedCSSStyleSheet *requestStyleSheet( DocLoader* l, const DOM::DOMString &url, bool reload=false, int _expireDate=0, const QString& charset = QString::null);
 
