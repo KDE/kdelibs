@@ -41,7 +41,7 @@ BODY { background-color: rgb(255,255,255);
 /* :visited { color: rgb(170,0,0); } what is KDE value?*/
 
 /* Lauri */
-TABLE { padding: 5px; }
+TABLE { padding: 5px; } 
 
 TABLE.programlisting
 TABLE.screen { border-style: none;
@@ -61,7 +61,8 @@ TABLE[class~=screen] { border-style: none;
 */
 
 /* Lauri */
-LI { padding-bottom: -2em; }
+/* Removed 7/30/00 - Mike McBride*/
+/* LI { padding-bottom: -2em; } */
 
 P { text-align: justify; }
 
