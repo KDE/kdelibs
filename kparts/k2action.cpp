@@ -40,14 +40,15 @@ int K2Action::plug( QWidget *w )
   {
     KToolBar *bar = (KToolBar *)w;
 
-    int id = bar->insertButton( iconSet().pixmap(), 0, SIGNAL( activated() ), this, SLOT( slotActivated() ),
-                                isEnabled(), text() );
+    int id_ = containerCount();
+    bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
+		       isEnabled(), text() );
 
-    KToolBarButton *but = bar->getButton( id );
-    
+    KToolBarButton *but = bar->getButton( id_ );
+
     connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
 
-    addContainer( bar, id );
+    addContainer( bar, id_ );
 
     connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
 
@@ -147,7 +148,26 @@ int K2ToggleAction::plug( QWidget* widget )
 	return -1;	
     }
 
-    int index = QToggleAction::plug( widget );
+    int index = -1;
+    if ( widget->inherits( "KToolBar" ) ) {
+	KToolBar *bar = (KToolBar *)widget;
+
+	int id_ = containerCount();
+	bar->insertButton( iconSet().pixmap(), id_, SIGNAL( clicked() ), this, SLOT( slotActivated() ),
+			   isEnabled(), text() );
+
+	KToolBarButton *but = bar->getButton( id_ );
+
+	connect( but, SIGNAL( clicked( int ) ), this, SLOT( slotActivated() ) );
+
+	addContainer( bar, id_ );
+	
+	connect( bar, SIGNAL( destroyed() ), this, SLOT( slotDestroyed() ) );
+
+	index =  containerCount() - 1;
+  } else
+      index = QAction::plug( widget );
+
     if ( index == -1 )
 	return index;
 
@@ -162,7 +182,8 @@ int K2ToggleAction::plug( QWidget* widget )
     }
     else if ( widget->inherits("KToolBar") )
     {
-	KToolBarButton* b = (KToolBarButton*)representative( index );
+	KToolBar *bar = (KToolBar*)container( index );
+	KToolBarButton* b = bar->getButton( menuId( index ) );
 	b->beToggle( TRUE );
 	b->on( isChecked() );
     }
@@ -175,11 +196,12 @@ void K2ToggleAction::setChecked( bool checked )
     int len = containerCount();
     for( int i = 0; i < len; ++i )
     {
-	QWidget* w = container( i );
-	QWidget* r = representative( i );
-	if ( w->inherits( "KToolBar" ) && r->inherits( "KToolBarButton" ) )
-	    ((KToolBarButton*)r)->on( checked );
-	else if ( w->inherits( "QPopupMenu" ) )
+	QWidget *w = container( i );
+	if ( w->inherits( "KToolBar" ) ) {
+	    	QWidget* r = ( (KToolBar*)w )->getButton( menuId( i ) );
+		if ( r->inherits( "KToolBarButton" ) )
+		    ((KToolBarButton*)r)->on( checked );
+	} else if ( w->inherits( "QPopupMenu" ) )
 	    ((QPopupMenu*)w)->setItemChecked( menuId( i ), checked );
 	else if ( w->inherits( "KMenuBar" ) )
 	    ((KMenuBar*)w)->setItemChecked( menuId( i ), checked );
@@ -204,7 +226,7 @@ void K2ToggleAction::setChecked( bool checked )
     }
 
     QToggleAction::setChecked( checked );
-    
+
     emit activated();
     emit toggled( isChecked() );
 }
