@@ -95,7 +95,7 @@ bool KIOCacheEntry::storeData()
     return false;
   if ( !data.buffer().isEmpty() )
     // Dont save the trailing 0
-    if ( content_file.writeBlock( data.buffer().data(), data.buffer().size() - 1 ) != data.buffer().size() - 1 )
+    if ( content_file.writeBlock( data.buffer().data(), data.buffer().size() - 1 ) != (int)data.buffer().size() - 1 )
     {
       content_file.close();
       return false;
@@ -309,7 +309,7 @@ QString KIOCache::storeIndex()
   
   cerr << "WRITING INDEX 2" << endl;
 
-  if ( index_file.writeBlock( html.data(), html.size() ) != html.size() )
+  if ( index_file.writeBlock( html.data(), html.size() ) != (int)html.size() )
   {
     index_file.close();
     return QString();
