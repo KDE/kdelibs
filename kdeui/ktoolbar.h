@@ -153,7 +153,7 @@ protected:
  * is displayed. It will updte itself.
  * Then set their propperties (see @ref #alignItemRight, @ref #setItemAutoSized,
  * @ref #setToggle ...) After that set the toolbar itself (see @ref #setFullWidth,
- * @ref #enable, @ref #setPos ...). Then simply do addToolbar (toolbar),
+ * @ref #enable, @ref #setBarPos ...). Then simply do addToolbar (toolbar),
  * and you're on. See how it's done in testtoolbar.
  * @short KDE Toolbar widget
  */
@@ -164,7 +164,7 @@ class KToolBar : public QFrame
 
 public:
   enum BarStatus{Toggle, Show, Hide};
-  enum Position{Top, Left, Bottom, Right, Floating};
+  enum BarPosition{Top, Left, Bottom, Right, Floating};
 
   /**
 	* Constructor
@@ -419,18 +419,13 @@ public:
 	* Sets position of toolbar
 	* @see #Position
 	*/
-  void setPos (Position pos);
+  void setBarPos (BarPosition pos);
 
   /**
 	* Returns position of toolbar
 	*/
-  Position pos() {return position;};
+  BarPosition barPos() {return position;}
 
-  /**
-	* Also returns position of toolbar
-	*/
-  Position Pos() {return position;};
-   
   /**
 	* This shows, hides, or toggles toolbar. If toolbar floats,
 	* hiding means minimizing.
@@ -465,7 +460,7 @@ public:
 	* Enables or disables floating.
 	* Floating is enabled by default.
 	* This only disables menu entry Floating in popup menu, so
-	* toolbar can still be moved by @ref #setPos
+	* toolbar can still be moved by @ref #setBarPos
 	*/
   void enableFloating (bool arrrrrrgh);
 
@@ -564,7 +559,7 @@ public:
 	* to SEGV signal.
 	* @see #updateRects
 	*/
-  void moved( Position );
+  void moved( BarPosition );
   
 private:
   QList <QWidget> items;
@@ -575,7 +570,7 @@ private:
 
   const char *title;
   bool fullWidth;
-  Position position;
+  BarPosition position;
   bool moving;
   QWidget *Parent;
   int toolbarWidth;
@@ -588,7 +583,7 @@ private:
   int max_width;
   int max_height;
   
-  Position lastPosition;
+  BarPosition lastPosition;
   
 protected:
   QPopupMenu *context;

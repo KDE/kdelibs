@@ -39,9 +39,9 @@ public slots:
 protected:
   void drawContents(QPainter *);
 private:
-  const int width= 28;
-  const int height= 7;
-  const int dx= 4;
+  const int width;
+  const int height;
+  const int dx;
   State s;
 };
 

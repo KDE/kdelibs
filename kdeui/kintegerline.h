@@ -51,7 +51,7 @@ enum KEditLineType{
   */
 class KIntegerLine : public KRestrictedLine
 {
-  Q_OBJECT;
+  Q_OBJECT
   
 public:
   /**@name methods */

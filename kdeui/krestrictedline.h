@@ -38,7 +38,7 @@
   */
 class KRestrictedLine : public QLineEdit
 {
-  Q_OBJECT;
+  Q_OBJECT
   
 public:
   /**@name methods */

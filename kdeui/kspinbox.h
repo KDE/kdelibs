@@ -34,7 +34,7 @@
 */
 class KSpinBox : public QWidget
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
   /** construct a KSpinBox Widget */
@@ -84,7 +84,7 @@ protected:
 
 private:
   bool _editable;
-  QTimer *_incrTimer,*_decrTimer;;
+  QTimer *_incrTimer,*_decrTimer;
   int _align;
 	
 };
@@ -105,7 +105,7 @@ private:
 
 class KNumericSpinBox : public KSpinBox
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
   /** called if you create a KNumericSpinBox widget */
@@ -152,7 +152,7 @@ private:
 
 class KListSpinBox : public KSpinBox
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
   /** called if you create a KListSpinBox widget */

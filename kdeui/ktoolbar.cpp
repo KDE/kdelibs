@@ -244,22 +244,22 @@ void KToolBar::ContextCallback( int index )
 {
   switch ( index ) {
   case CONTEXT_LEFT:
-	setPos( Left );
+	setBarPos( Left );
 	break;
   case CONTEXT_RIGHT:
-	setPos( Right );
+	setBarPos( Right );
 	break;
   case CONTEXT_TOP:
-	setPos( Top );
+	setBarPos( Top );
 	break;
   case CONTEXT_BOTTOM:
-	setPos( Bottom );
+	setBarPos( Bottom );
 	break;
   case CONTEXT_FLOAT:
 	if (position == Floating)
-	  setPos (lastPosition);
+	  setBarPos (lastPosition);
 	else
-	  setPos( Floating );
+	  setBarPos( Floating );
     break;
   }
 }
@@ -1167,7 +1167,7 @@ void KToolBar::enableMoving(bool flag)
   moving = flag; 
 }
 
-void KToolBar::setPos(Position pos)
+void KToolBar::setBarPos(BarPosition pos)
 {
   if (position != pos)
 	{

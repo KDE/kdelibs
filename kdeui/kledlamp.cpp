@@ -10,7 +10,8 @@
 #include "kledlamp.h"
 #include "kledlamp.moc"
 
-KLedLamp::KLedLamp(QWidget *parent) : QFrame(parent)
+KLedLamp::KLedLamp(QWidget *parent) : QFrame(parent),
+  width( 28 ), height( 7 ), dx( 4 )
 {
   // Make sure we're in a sane state
   s= Off;
