@@ -291,6 +291,7 @@ public:
    */
   KParts::BrowserExtension *browserExtension() const;
   KParts::LiveConnectExtension *liveConnectExtension( const khtml::RenderPart *) const;
+  KParts::BrowserHostExtension *browserHostExtension() const;
 
   /**
    * Returns a pointer to the HTML document's view.
@@ -851,6 +852,15 @@ public:
    * Finds a frame by name. Returns 0L if frame can't be found.
    */
   KHTMLPart *findFrame( const QString &f );
+
+  /**
+   * Recursively finds the part containing the frame with name @p f 
+   * and checks if it is accessible by @p callingPart
+   * Returns 0L if no suitable frame can't be found.
+   * Returns parent part if a suitable frame was found and
+   * frame info in @p *childFrame
+   */
+  KHTMLPart *findFrameParent( KParts::ReadOnlyPart *callingPart, const QString &f, khtml::ChildFrame **childFrame=0 );
 
   /**
    * Return the current frame (the one that has focus)
@@ -1433,6 +1443,8 @@ private:
 
   bool restoreURL( const KURL &url );
   void emitSelectionChanged();
+  // Returns whether callingHtmlPart may access this part
+  bool checkFrameAccess(KHTMLPart *callingHtmlPart);
   bool openURLInFrame( const KURL &url, const KParts::URLArgs &urlArgs );
   void startAutoScroll();
   void stopAutoScroll();
@@ -1491,7 +1503,7 @@ private:
   DOM::DocumentImpl *xmlDocImpl() const;
   khtml::ChildFrame *frame( const QObject *obj );
 
-  khtml::ChildFrame *recursiveFrameRequest( const KURL &url, const KParts::URLArgs &args, bool callParent = true );
+  khtml::ChildFrame *recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KURL &url, const KParts::URLArgs &args, bool callParent = true );
 
   bool checkLinkSecurity( const KURL &linkURL,const QString &message = QString::null, const QString &button = QString::null );
   QVariant executeScript( const QString& filename, int baseLine, const DOM::Node &n, const QString& script );

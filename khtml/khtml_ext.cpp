@@ -744,6 +744,20 @@ bool KHTMLPartBrowserHostExtension::openURLInFrame( const KURL &url, const KPart
   return m_part->openURLInFrame( url, urlArgs );
 }
 
+void KHTMLPartBrowserHostExtension::virtual_hook( int id, void *data )
+{ 
+  if (id == VIRTUAL_FIND_FRAME_PARENT)
+  {
+    FindFrameParentParams *param = static_cast<FindFrameParentParams*>(data);
+    KHTMLPart *parentPart = m_part->findFrameParent(param->callingPart, param->frame);
+    if (parentPart)
+       param->parent = parentPart->browserHostExtension();
+    return;
+  }
+  BrowserHostExtension::virtual_hook( id, data );
+}
+
+
 // defined in khtml_part.cpp
 extern const int KDE_NO_EXPORT fastZoomSizes[];
 extern const int KDE_NO_EXPORT fastZoomSizeCount;
