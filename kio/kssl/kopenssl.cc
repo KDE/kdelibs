@@ -497,14 +497,14 @@ KConfig *cfg;
       void *x;
       x = _sslLib->symbol("SSL_library_init");
       if (_cryptoLib) {
-         if (x)((int (*)())x)();
+         if (x) ((int (*)())x)();
          x = _cryptoLib->symbol("OpenSSL_add_all_algorithms");
          if (x) {
-           ((int (*)())x)();
+           ((void (*)())x)();
          } else {
            x = _cryptoLib->symbol("OpenSSL_add_all_algorithms_conf");
            if (x) {
-             ((int (*)())x)();
+             ((void (*)())x)();
            } else {
              x = _cryptoLib->symbol("OpenSSL_add_all_algorithms_noconf");
              if (x)
