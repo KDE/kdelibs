@@ -155,10 +155,23 @@ namespace KWallet
  * the @p char @p * argument does an additional decoding step to convert the
  * written data to Unicode.
  *
+ * It is also possible to write content to the HTML part using the
+ * standard streaming API from KParts::ReadOnlyPart. The usage of
+ * the API is similar to that of the begin(), write(), end() process
+ * described above as the following example shows:
+ *
+ * \code
+ * KHTMLPart *doc = new KHTMLPart();
+ * doc->openStream( "text/html", KURL() );
+ * doc->writeStream( QCString( "<html><body><p>KHTML Rocks!</p></body></html>" ) );
+ * doc->closeStream();
+ * \endcode
+ *
  * @short HTML Browser Widget
  * @author Lars Knoll (knoll@kde.org)
  * @version $Id$
- * */
+ * 
+ */
 class KHTMLPart : public KParts::ReadOnlyPart
 {
   Q_OBJECT
@@ -964,8 +977,19 @@ protected:
   enum PageSecurity { NotCrypted, Encrypted, Mixed };
   void setPageSecurity( PageSecurity sec );
 
+  /**
+   * Implements the streaming API of KParts::ReadOnlyPart. 
+   */
   virtual bool doOpenStream( const QString& mimeType );
+
+  /**
+   * Implements the streaming API of KParts::ReadOnlyPart. 
+   */
   virtual bool doWriteStream( const QByteArray& data );
+
+  /**
+   * Implements the streaming API of KParts::ReadOnlyPart. 
+   */
   virtual bool doCloseStream();
 
 public slots:
