@@ -4,14 +4,14 @@
  The Loki Library
  Copyright (c) 2001 by Andrei Alexandrescu
  This code accompanies the book:
- Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+ Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
      Patterns Applied". Copyright (c) 2001. Addison-Wesley.
- Permission to use, copy, modify, distribute and sell this software for any 
-     purpose is hereby granted without fee, provided that the above copyright 
-     notice appear in all copies and that both that copyright notice and this 
+ Permission to use, copy, modify, distribute and sell this software for any
+     purpose is hereby granted without fee, provided that the above copyright
+     notice appear in all copies and that both that copyright notice and this
      permission notice appear in supporting documentation.
- The author or Addison-Welsey Longman make no representations about the 
-     suitability of this software for any purpose. It is provided "as is" 
+ The author or Addison-Welsey Longman make no representations about the
+     suitability of this software for any purpose. It is provided "as is"
      without express or implied warranty.
  ----
 
@@ -352,7 +352,7 @@ namespace KDE
 
 /**
  * The building block of typelists of any length.
- * Use it through the K_TYPELIST_NN macros. 
+ * Use it through the K_TYPELIST_NN macros.
  * Defines nested types:
  *   @li Head (first element, a non-typelist type by convention)
  *   @li Tail (second element, can be another typelist)
@@ -364,7 +364,7 @@ struct KTypeList
    typedef T Head;
   /// second element, can be another typelist
    typedef U Tail;
-}; 
+};
 
 // forward decl.
 template <class TList> struct KTypeListLength;
@@ -391,5 +391,36 @@ struct KTypeListLength< KTypeList<T, U> >
     enum { Value = 1 + KTypeListLength<U>::Value };
 };
 
-#endif 
+///////////////////////////////////////////////////////////////////////////////
+// class template IndexOf
+// Finds the index of a type in a typelist
+// Invocation (TList is a typelist and T is a type):
+// IndexOf<TList, T>::value
+// returns the position of T in TList, or NullType if T is not found in TList
+////////////////////////////////////////////////////////////////////////////////
+
+template <class TList, class T> struct KTypeListIndexOf;
+
+template <class T>
+struct KTypeListIndexOf<KDE::NullType, T>
+{
+    enum { value = -1 };
+};
+
+template <class T, class Tail>
+struct KTypeListIndexOf< KTypeList<T, Tail>, T >
+{
+    enum { value = 0 };
+};
+
+template <class Head, class Tail, class T>
+struct KTypeListIndexOf< KTypeList<Head, Tail>, T >
+{
+private:
+    enum { temp = KTypeListIndexOf<Tail, T>::value };
+public:
+    enum { value = (temp == -1 ? -1 : 1 + temp) };
+};
+
+#endif
 
