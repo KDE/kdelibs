@@ -253,23 +253,17 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
         QFile::remove( cacheFilename );
     }
     
-    QCString cstr;
-
     KSaveFile file( filename );
+    if ( file.status() == 0 ) 
+    {
+        file.backupFile( file.name(), QString::null, ".bak" );
+        QCString cstr;
+        cstr = internalDocument().toCString(); // is in UTF8
+        file.file()->writeBlock( cstr.data(), cstr.length() );
+        if ( file.close() )
+            return true;
+    }
 
-    if ( file.status() != 0 )
-        goto failure;
-
-    file.backupFile( file.name(), QString::null, ".bak" );
-
-    cstr = internalDocument().toCString(); // is in UTF8
-    file.file()->writeBlock( cstr.data(), cstr.length() );
-    if (!file.close())
-        goto failure;
-
-    return true;
-
-failure:
     static int hadSaveError = false;
     file.abort();
     if ( !hadSaveError )
