@@ -3068,9 +3068,6 @@ bool KHTMLView::moveCaretTo(NodeImpl *node, long offset, bool clearSel)
   sanitizeCaretState(node, offset, VisibleFlows, base);
   if (!node) return false;
 
-  // crashes on every click. 
-  return false;
-
   // need to find out the node's inline box. If there is none, this function
   // will snap to the next node that has one. This is necessary to make the
   // caret visible in any case.
