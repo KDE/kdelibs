@@ -152,6 +152,12 @@ KTipDialog::KTipDialog(KTipDatabase *db, QWidget *parent, const char *name)
 
     _baseColor = KGlobalSettings::alternateBackgroundColor();
     _textColor = KGlobalSettings::textColor();
+    int h,s,v;
+    _baseColor.hsv(&h,&s,&v);
+    _baseColor.setHsv(h,s*(10/6.0),v*(93/99.0));
+    _blendedColor.hsv(&h,&s,&v);
+    _blendedColor.setHsv(h,s*(71/76.0),v*(67/93.0));
+    
 	
     _database = db;
 
