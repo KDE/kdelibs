@@ -752,7 +752,7 @@ void KHTMLView::print()
     KPrinter *printer = new KPrinter;
     if(printer->setup(this)) {
         QApplication::setOverrideCursor( waitCursor );
-        // set up QPrinter
+        // set up KPrinter
         printer->setFullPage(false);
         printer->setCreator("KDE 2.1 HTML Library");
         QString docname = m_part->xmlDocImpl()->URL().string();
