@@ -49,11 +49,7 @@ public:
   /**
    * Retrieve the mimetype (e.g. "text/html") of the file or buffer parsed.
    */
-  const QString mimeType() { return m_strMimeType; }
-  /**
-   * @deprecated
-   */
-  const QString encoding() { return QString::null; }
+  QString mimeType() { return m_strMimeType; }
   /**
    * Retrieve the accuracy of the matching.
    */
@@ -69,11 +65,6 @@ public:
   void setMimeType( const QString& _mime ) { m_strMimeType = _mime; }
   void setAccuracy( int _accuracy ) { m_iAccuracy = _accuracy; }
   void setInvalid() { m_strMimeType = QString::null; }
-
-  /////////////////
-  // Obsolete, backwards compatibility only. Remove in KDE 3.0
-  /////////////////
-  void setEncoding( const QString&) { }
 
 protected:
   QString m_strMimeType;
