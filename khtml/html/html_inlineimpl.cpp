@@ -207,7 +207,6 @@ void HTMLBRElementImpl::attach()
           parentNode()->renderer()->addChild( m_render, nextRenderer() );
         }
         style->deref();
-        parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
     NodeImpl::attach();
 }
