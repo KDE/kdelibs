@@ -182,6 +182,8 @@ void KURLLabel::setUseCursor (bool on, QCursor* cursor)
       else
         setCursor (KCursor::handCursor());
     }
+  else
+    unsetCursor();
 }
 
 bool KURLLabel::useCursor () const
