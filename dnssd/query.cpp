@@ -42,7 +42,6 @@ public:
 	{};
 	bool m_finished;
 	QString m_domain;
-	bool m_local;
 	QTimer timeout;
 	QString m_type;
 };
@@ -50,7 +49,6 @@ public:
 Query::Query(const QString& type, const QString& domain)
 {
 	d = new QueryPrivate(type,domain);
-	d->m_local=(domain.section('.',-1,-1).lower()=="local");
 	connect(&d->timeout,SIGNAL(timeout()),this,SLOT(timeout()));
 }
 
@@ -81,12 +79,12 @@ void Query::startQuery()
 	d->m_finished = false;
 	DNSServiceRef ref;
 #ifdef HAVE_DNSSD
-	if (DNSServiceBrowse(&ref,0,0, d->m_type.utf8(), 
-	    d->m_domain.utf8(),query_callback,reinterpret_cast<void*>(this))
+	if (DNSServiceBrowse(&ref,0,0, d->m_type.ascii(), 
+	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(this))
 		   == kDNSServiceErr_NoError) d->setRef(ref);
 #endif
 	if (!d->isRunning()) emit finished();
-		else d->timeout.start(d->m_local ? TIMEOUT_LAN : TIMEOUT_WAN,true);
+		else d->timeout.start(domainIsLocal(d->m_domain) ? TIMEOUT_LAN : TIMEOUT_WAN,true);
 }
 void Query::virtual_hook(int, void*)
 {
@@ -128,7 +126,7 @@ void query_callback (DNSServiceRef, DNSServiceFlags flags, uint32_t, DNSServiceE
 	} else {
 		AddRemoveEvent arev((flags & kDNSServiceFlagsAdd) ? AddRemoveEvent::Add :
 			AddRemoveEvent::Remove, QString::fromUtf8(serviceName), regtype, 
-			QString::fromUtf8(replyDomain), !(flags & kDNSServiceFlagsMoreComing));
+			DNSToDomain(replyDomain), !(flags & kDNSServiceFlagsMoreComing));
 		QApplication::sendEvent(obj, &arev);
 	}
 }

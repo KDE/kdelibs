@@ -82,8 +82,8 @@ void RemoteService::resolveAsync()
 	DNSServiceRef ref;
 	kdDebug() << this << ":Starting resolve of : " << m_serviceName << " " << m_type << " " << m_domain << "\n";
 #ifdef HAVE_DNSSD
-	if (DNSServiceResolve(&ref,0,0,m_serviceName.utf8(), m_type.utf8(), 
-		m_domain.utf8(),resolve_callback,reinterpret_cast<void*>(this))
+	if (DNSServiceResolve(&ref,0,0,m_serviceName.utf8(), m_type.ascii(), 
+		domainToDNS(m_domain),resolve_callback,reinterpret_cast<void*>(this))
 		== kDNSServiceErr_NoError) d->setRef(ref);
 #endif
 	kdDebug() << "REF is " << ref << ", running: " << d->isRunning() << "\n";
@@ -145,7 +145,7 @@ void resolve_callback    (    DNSServiceRef,
 		reinterpret_cast<const void **>(&value)) == kDNSServiceErr_NoError) 
 		if (value) map[QString::fromUtf8(key)]=QString::fromUtf8(value,valueLen);
 			else map[QString::fromUtf8(key)]=QString::null;
-	ResolveEvent rev(QString::fromUtf8(hosttarget),ntohs(port),map);
+	ResolveEvent rev(DNSToDomain(hosttarget),ntohs(port),map);
 	QApplication::sendEvent(obj, &rev);
 }
 #endif

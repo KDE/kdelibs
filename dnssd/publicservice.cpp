@@ -136,7 +136,7 @@ void PublicService::publishAsync()
 		}
 	}
 	DNSServiceRef ref;
-	if (DNSServiceRegister(&ref,0,0,m_serviceName.utf8(),m_type.utf8(),m_domain.utf8(),NULL,
+	if (DNSServiceRegister(&ref,0,0,m_serviceName.utf8(),m_type.ascii(),domainToDNS(m_domain),NULL,
 	    htons(m_port),TXTRecordGetLength(&txt),TXTRecordGetBytesPtr(&txt),publish_callback,
 	    reinterpret_cast<void*>(this)) == kDNSServiceErr_NoError) d->setRef(ref);
 	TXTRecordDeallocate(&txt);

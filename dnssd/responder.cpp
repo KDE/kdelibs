@@ -20,7 +20,11 @@
 
 #include "responder.h"
 #include <qapplication.h>
+#include <kidna.h>
 
+// dns_sd.h API should care about proper encoding of non-latin1 characters
+// but for now it does not
+#define IDN_BROKEN_IN_MDNSRESPONDER
 
 namespace DNSSD
 {
@@ -73,6 +77,32 @@ bool Responder::isRunning() const
 {
 	return m_running;
 }
+
+bool domainIsLocal(const QString& domain)
+{
+	return domain.section('.',-1,-1).lower()=="local";
+}
+
+QCString domainToDNS(const QString &domain)
+{
+#ifdef IDN_BROKEN_IN_MDNSRESPONDER
+	if (domainIsLocal(domain)) return domain.utf8();
+		else return KIDNA::toAsciiCString(domain);
+#else
+	return domain.utf8();       
+#endif
+}
+
+QString DNSToDomain(const char* domain)
+{
+#ifdef IDN_BROKEN_IN_MDNSRESPONDER
+	if (domainIsLocal(domain)) return QString::fromUtf8(domain);
+		else return KIDNA::toUnicode(domain);
+#else
+	return QString::fromUtf8(domain);
+#endif
+}
+
 
 }
 #include "responder.moc"

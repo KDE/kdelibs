@@ -38,7 +38,7 @@ namespace DNSSD
 This class should not be used directly.
  
 @author Jakub Stachowski
-@short Internal class wrapping libhowl interface
+@short Internal class wrapping dns_sd.h interface
  */
 class Responder : public QObject
 {
@@ -63,6 +63,13 @@ protected:
 	bool m_running;
 	QSocketNotifier *m_socket;
 };
+
+/* Utils functions */
+
+bool domainIsLocal(const QString& domain);
+// Encodes domain name using utf8() or IDN 
+QCString domainToDNS(const QString &domain);
+QString DNSToDomain(const char* domain);
 
 };
 
