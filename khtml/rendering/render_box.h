@@ -73,7 +73,7 @@ public:
     virtual void setWidth( int width );
     virtual void setHeight( int height );
 
-    virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
+    virtual void position(InlineBox* box, int from, int len, bool reverse, int);
 
     virtual int lowestPosition() const;
     virtual int rightmostPosition() const;
@@ -97,6 +97,8 @@ public:
     void calcVerticalMargins();
 
     virtual RenderLayer* layer() const { return m_layer; }
+
+    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
 
 protected:
     virtual void paintBoxDecorations(QPainter *p,int _x, int _y,

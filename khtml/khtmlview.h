@@ -60,6 +60,7 @@ namespace khtml {
     class RenderWidget;
     class CSSStyleSelector;
     class LineEditWidget;
+    class InlineBox;
     void applyRule(DOM::CSSProperty *prop);
 }
 
@@ -174,6 +175,7 @@ protected:
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
     virtual void drawContents( QPainter* );
     virtual void viewportMousePressEvent( QMouseEvent * );
+    virtual void focusInEvent( QFocusEvent * );
     virtual void focusOutEvent( QFocusEvent * );
     virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
     virtual void viewportMouseMoveEvent(QMouseEvent *);
@@ -252,6 +254,198 @@ private:
 			    int mouseEventType);
 
     void complete();
+
+    // -- caret-related member functions (for caretMode as well as designMode)
+
+    /** initializes the caret if it hasn't been initialized yet.
+     *
+     * This method determines a suitable starting position, initializes
+     * the internal structures, and calculates the caret's coordinates ready
+     * for display.
+     *
+     * To "deinitialize" the caret, call @ref caretOff
+     */
+    void initCaret();
+    /** returns whether the text under the caret will be overridden.
+      */
+    bool caretOverrides();
+    /** ensures that the given element is properly focused.
+     *
+     * If not in caret mode or design mode, keyboard events are only regarded for
+     * focused nodes. Therefore, the function ensured that the focus will be
+     * properly set on unfocused nodes (or on a suitable ancestor).
+     * @param node node to focus
+     */
+    void ensureNodeHasFocus(DOM::NodeImpl *node);
+    /** inquires the current caret position and stores it in the caret view
+     * context. Also resets the blink frequency timer. It will not display
+     * the caret on the canvas.
+     */
+    void recalcAndStoreCaretPos();
+    /** displays the caret and reinitializes the blink frequency timer. */
+    void caretOn();
+    /** hides the caret and kills the blink frequency timer. */
+    void caretOff();
+    /** makes the caret visible, but does not influence the frequency timer.
+     * That means it probably won't get visible immediately.
+     */
+    void showCaret();
+    /** makes the caret invisible, but does not influence the frequency timer.
+     * The caret is immediately hidden.
+     */
+    void hideCaret();
+
+    /** folds the selection to the current caret position.
+     *
+     * Whatever selection has existed before will be removed by the invocation
+     * of this method. Updates are only done if an actual selection has
+     * been folded. After the call of this method, no selection will exist
+     * any more.
+     *
+     * No validity checking is done on the parameters. Note that the parameters
+     * refer to the old selection, the current caret may be way off.
+     * @param startNode starting node of selection
+     * @param startOffset offset within the start node.
+     * @param endNode ending node of selection
+     * @param endOffset offset within the end node.
+     * @return @p true if there had been a selection, and it was folded.
+     */
+    bool foldSelectionToCaret(DOM::NodeImpl *startNode, long startOffset,
+    				DOM::NodeImpl *endNode, long endOffset);
+
+    /** places the caret on the current position.
+     *
+     * The caret is switched off, the position recalculated with respect to
+     * the new position. The caret will only be redisplayed if it is on an
+     * editable node, in design mode, or in caret mode.
+     * @return @p true if the caret has been displayed.
+     */
+    bool placeCaret();
+
+    // -- caret event handler
+
+    /**
+     * Evaluates key presses on editable nodes.
+     */
+    void caretKeyPressEvent(QKeyEvent *);
+
+    // -- caret navigation member functions
+
+    /** moves the caret to the given position and displays it.
+     *
+     * If the node is an invalid place, the function sets the caret to an
+     * nearby node that is valid.
+     *
+     * @param node node to be set to
+     * @param offset zero-based offset within this node
+     * @param clearSelection @p true if any the selection should be cleared
+     *	as well. It is ignored if @p thoroughly is false.
+     * @return @p true if a previously existing selection has been cleared.
+     */
+    bool moveCaretTo(DOM::NodeImpl *node, long offset, bool clearSelection);
+
+    /**
+     * Movement enumeration
+     * @li CaretByCharacter move caret character-wise
+     * @li CaretByWord move caret word-wise
+     */
+    enum CaretMovement { CaretByCharacter, CaretByWord };
+
+    /** moves the caret.
+     *
+     * @param next @p true, move towards the following content, @p false,
+     *		move towards the previous
+     * @param cmv CaretMovement operation
+     * @param n count the CaretMovement has to be carried out.
+     * For latin documents, a positive number means moving the caret
+     * these many characters to the right/downwards, a negative number
+     * to the left/upwards. For RTL documents, the opposite applies.
+     */
+    void moveCaretBy(bool next, CaretMovement cmv, int n);
+
+    /** moves the caret by line.
+     * @internal only meant to be called from within moveCaretBy
+     */
+    void moveCaretByLine(bool next, int n);
+
+    /** moves the caret to the given line boundary.
+     * @param end @p true if the caret is to be moved to the end of the line,
+     *		otherwise to the beginning.
+     */
+    void moveCaretToLineBoundary(bool end);
+
+    /** moves the caret to the given document boundary.
+     * @param end @p true if the caret is to be moved to the end of the
+     *		document, otherwise to the beginning.
+     */
+    void moveCaretToDocumentBoundary(bool end);
+
+    /** does the actual caret placement so that it becomes visible at
+     * the new position.
+     *
+     * This method is only suitable if the new caret position has already been
+     * determined.
+     */
+    void placeCaretOnChar();
+
+    /** does the actual caret placement so that it becomes visible at
+     * the new position.
+     *
+     * Additionally, it calculates the new caret position from the given
+     * box and coordinates.
+     *
+     * @param caretBox inline box serving as a measurement point for offset.
+     * @param x x-coordinate relative to containing block. The offset will
+     *		be approximated as closely as possible to this coordinate,
+     *		but never less than caretBox->xPos() and greater than
+     *		caretBox->xPos() + caretBox->width()
+     * @param absx absolute x-coordinate of containing block, needed for
+     *		calculation of final caret position
+     * @param absy absolute y-coordinate of containing block, needed for
+     *		calculation of final caret position
+     */
+    void placeCaretOnLine(khtml::InlineBox *caretBox, int x, int absx, int absy);
+
+    /** moves the caret by a page length.
+     * @param next @p true, move down, @p false, move up.
+     */
+    void moveCaretByPage(bool next);
+
+    /** moves the caret to the beginning of the previous word.
+     */
+    void moveCaretPrevWord();
+
+    /** moves the caret to the beginning of the next word.
+     */
+    void moveCaretNextWord();
+
+    /** moves the caret to the previous line.
+     *
+     * @param n number of lines to move caret
+     */
+    void moveCaretPrevLine(int n = 1);
+
+    /** moves the caret to the following line.
+     *
+     * @param n number of lines to move caret
+     */
+    void moveCaretNextLine(int n = 1);
+    
+    /** moves the caret to the previous page
+     */
+    void moveCaretPrevPage();
+    
+    /** moves the caret to the next page
+     */
+    void moveCaretNextPage();
+
+    /** moves the caret to the beginning of the current line.
+     */
+    void moveCaretToLineBegin();
+
+    /** moves the caret to the end of the current line.
+     */
+    void moveCaretToLineEnd();
 
     // ------------------------------------- member variables ------------------------------------
  private:

@@ -37,6 +37,7 @@
 #include "khtmlview.h"
 #include "render_arena.h"
 #include "render_layer.h"
+#include "render_line.h"
 
 #include <assert.h>
 using namespace DOM;
@@ -966,9 +967,11 @@ bool RenderObject::absolutePosition(int &xPos, int &yPos, bool f)
     }
 }
 
-void RenderObject::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
+void RenderObject::caretPos(int /*offset*/, bool /*override*/, int &_x, int &_y, int &width, int &height)
 {
     _x = _y = height = -1;
+    width = 1;	// the caret has a default width of one pixel. If you want
+    		// to check for validity, only test the x-coordinate for >= 0.
 }
 
 int RenderObject::paddingTop() const
@@ -1349,3 +1352,9 @@ void RenderObject::scheduleRelayout(bool repaint)
 void RenderObject::removeLeftoverAnonymousBoxes()
 {
 }
+
+InlineBox* RenderObject::createInlineBox(bool makePlaceHolderBox)
+{
+    return new (renderArena()) InlineBox(this);
+}
+

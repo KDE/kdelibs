@@ -106,7 +106,7 @@ public:
 
     virtual void setCellWidths( );
 
-    virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
+    virtual void position(InlineBox *, int from, int len, bool reverse, int);
 
     virtual void calcWidth();
 
@@ -160,6 +160,8 @@ public:
     void setNeedSectionRecalc() { needSectionRecalc = true; }
 
     virtual RenderObject* removeChildNode(RenderObject* child);
+    
+    RenderTableSection *firstBodySection() const { return firstBody; }
 
 protected:
 

@@ -38,6 +38,8 @@
 #include "css/css_valueimpl.h"
 #include "css/css_stylesheetimpl.h"
 #include "css/cssstyleselector.h"
+#include "css/cssvalues.h"
+#include "css/cssproperties.h"
 #include "xml/dom_xmlimpl.h"
 
 #include <qtextstream.h>
@@ -559,7 +561,10 @@ void ElementImpl::recalcStyle( StyleChange change )
 
 bool ElementImpl::isSelectable() const
 {
-    return false;
+    // Only make editable elements selectable if its parent element
+    // is not editable. FIXME: this is not 100% right as non-editable elements
+    // within editable elements are focusable too.
+    return contentEditable() && (!parentNode() || !parentNode()->contentEditable());
 }
 
 // DOM Section 1.1.1
@@ -621,6 +626,37 @@ void ElementImpl::dispatchAttrAdditionEvent(NodeImpl::Id /*id*/, DOMStringImpl *
    //int exceptioncode = 0;
    //dispatchEvent(new MutationEventImpl(EventImpl::DOMATTRMODIFIED_EVENT,true,false,attr,attr->value(),
    //attr->value(),getDocument()->attrName(attr->id()),MutationEvent::ADDITION),exceptioncode);
+}
+
+bool ElementImpl::contentEditable() const {
+#if 0
+    DOM::CSSPrimitiveValueImpl *val = static_cast<DOM::CSSPrimitiveValueImpl *>
+    		(const_cast<ElementImpl *>(this)->styleRules()
+		->getPropertyCSSValue(CSS_PROP__KONQ_USER_INPUT));
+//    kdDebug() << "val" << val << endl;
+    return val ? val->getIdent() == CSS_VAL_ENABLED : false;
+#endif
+    return NodeImpl::contentEditable();
+}
+
+void ElementImpl::setContentEditable(bool enabled) {
+    // FIXME: the approach is flawed, better use an enum instead of bool
+    int value;
+    if (enabled)
+        value = CSS_VAL_ENABLED;
+    else {
+        // Intelligently use "none" or "disabled", depending on the type of
+        // element
+	// FIXME: intelligence not impl'd yet
+	value = CSS_VAL_NONE;
+
+        // FIXME: reset caret if it is in this node or a child
+    }/*end if*/
+    // FIXME: use addCSSProperty when I get permission to move it here
+//    kdDebug(6000) << "CSS_PROP__KONQ_USER_INPUT: "<< value << endl;
+    styleRules()->setProperty(CSS_PROP__KONQ_USER_INPUT, value, false, true);
+    setChanged();
+
 }
 
 // -------------------------------------------------------------------------

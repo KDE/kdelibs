@@ -307,6 +307,7 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 
     // NonVisible:
 // 	ECursor _cursor_style : 4;
+//	EUserInput _user_input : 2;	as long as :enabled is not impl'd
 
 // ### this needs work to know more exactly if we need a relayout
 //     or just a repaint

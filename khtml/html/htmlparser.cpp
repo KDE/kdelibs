@@ -1048,6 +1048,7 @@ NodeImpl *KHTMLParser::getElement(Token* t)
         break;
 // text
     case ID_TEXT:
+//        kdDebug(6035) << "ID_TEXT: \"" << DOMString(t->text).string() << "\"" << endl;
         n = new TextImpl(document, t->text);
         break;
     case ID_COMMENT:

@@ -195,6 +195,9 @@ public:
     void dispatchAttrRemovalEvent(NodeImpl::Id id, DOMStringImpl *value);
     void dispatchAttrAdditionEvent(NodeImpl::Id id, DOMStringImpl *value);
 
+    virtual bool contentEditable() const;
+    void setContentEditable(bool enabled);
+
 protected:
     void createAttributeMap() const;
     void createDecl();

@@ -413,7 +413,8 @@ void Node::applyChanges()
 void Node::getCursor(int offset, int &_x, int &_y, int &height)
 {
     if (!impl) throw DOMException(DOMException::NOT_FOUND_ERR);
-    impl->getCursor(offset, _x, _y, height);
+    int dummy;
+    impl->getCaret(offset, false, _x, _y, dummy, height);
 }
 
 QRect Node::getRect()

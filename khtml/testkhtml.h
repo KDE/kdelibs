@@ -1,6 +1,8 @@
 #ifndef TESTKHTML_H
 #define TESTKHTML_H
 
+#include <kdebug.h>
+
 /**
  * @internal
  */
@@ -21,6 +23,17 @@ private slots:
       KParts::URLArgs args; args.reload = true;
       m_part->browserExtension()->setURLArgs( args );
       m_part->openURL( m_part->url() );
+  }
+  
+  void toggleNavigable(bool s)
+  {
+      m_part->setCaretMode(s);
+  }
+
+  void toggleEditable(bool s)
+  {
+  kdDebug() << "editable: " << s << endl;
+      m_part->setEditable(s);
   }
 
 private:

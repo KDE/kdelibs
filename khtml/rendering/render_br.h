@@ -55,7 +55,19 @@ public:
     virtual short maxWidth() const { return 0; }
 
     virtual bool isBR() const { return true; }
-    virtual void cursorPos(int offset, int &_x, int &_y, int &height);
+    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
+    /** returns the lowest possible value the caret offset may have to
+     * still point to a valid position.
+     *
+     * Returns 0.
+     */
+    virtual long minOffset() const { return 0; }
+    /** returns the highest possible value the caret offset may have to
+     * still point to a valid position.
+     *
+     * Returns also 0, as BRs have no width.
+     */
+    virtual long maxOffset() const { return 0; }
 };
 
 }

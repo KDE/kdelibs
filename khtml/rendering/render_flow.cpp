@@ -72,6 +72,54 @@ RenderFlow::RenderFlow(DOM::NodeImpl* node)
     m_overflowHeight = 0;
 
     m_continuation = 0;
+    m_firstLineBox = 0;
+    m_lastLineBox = 0;
+}
+
+void RenderFlow::deleteLineBoxes(RenderArena* arena)
+{
+    if (m_firstLineBox) {
+        if (!arena)
+            arena = renderArena();
+        InlineRunBox *curr=m_firstLineBox, *next=0;
+        while (curr) {
+            next = curr->nextLineBox();
+            curr->detach(arena);
+            curr = next;
+        }
+        m_firstLineBox = 0;
+        m_lastLineBox = 0;
+    }
+}
+
+void RenderFlow::detach(RenderArena* renderArena)
+{
+    deleteLineBoxes(renderArena);
+    RenderBox::detach(renderArena);
+}
+
+InlineBox* RenderFlow::createInlineBox(bool makePlaceHolderBox)
+{
+    if (isReplaced() || makePlaceHolderBox)          // Inline tables and inline blocks
+        return RenderBox::createInlineBox(false);    // (or positioned element placeholders).
+
+    InlineFlowBox* flowBox = 0;
+    // FIXME: cannot be decided before full merge has been done, simply treat
+    // it as an InlineFlowBox b/c it's irrelevant in the old code (LS)
+//    if (isInlineFlow())
+        flowBox = new (renderArena()) InlineFlowBox(this);
+//    else
+//        flowBox = new (renderArena()) RootInlineBox(this);
+
+    if (!m_firstLineBox)
+        m_firstLineBox = m_lastLineBox = flowBox;
+    else {
+        m_lastLineBox->setNextLineBox(flowBox);
+        flowBox->setPreviousLineBox(m_lastLineBox);
+        m_lastLineBox = flowBox;
+    }
+
+    return flowBox;
 }
 
 void RenderFlow::setStyle(RenderStyle *_style)
@@ -1841,6 +1889,54 @@ bool RenderFlow::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
     inBox |= RenderBox::nodeAtPoint(info, _x, _y, _tx, _ty);
     return inBox;
+}
+
+void RenderFlow::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height)
+{
+  // This is only needed for a special case:
+  // The element is not an inline element, and it's empty. So we have to
+  // calculate a fake position to indicate where objects are to be inserted.
+
+  RenderStyle *st = style();
+  if (firstChild()
+    || st->display() == INLINE) { // ### hmm, what else inlinish stuff can a render flow represent?
+    RenderBox::caretPos(offset, override, _x, _y, width, height);
+    return;
+  }/*end if*/
+
+  // FIXME: this does neither take into regard :first-line nor :first-letter
+  // However, as soon as some content is entered, the line boxes will be
+  // constructed properly and this kludge is not called any more. So only
+  // the caret size of an empty :first-line'd block is wrong, but I think we
+  // can live with that.
+  height = st->fontMetrics().height();
+  width = 1;
+
+  // ### regard direction
+  int w = this->width();
+  switch (st->textAlign()) {
+    case LEFT:
+    case TAAUTO:	// ### find out what this does
+    case JUSTIFY:
+      _x = 0;
+      break;
+    case CENTER:
+    case KONQ_CENTER:
+      _x = w / 2;
+      break;
+    case RIGHT:
+      _x = w;
+      break;
+  }/*end switch*/
+
+  _y = 0;
+//  kdDebug(6040) << "RenderFlow::caretPos: x=" << _x << " y = " << _y << endl;
+
+  int absx, absy;
+  absolutePosition(absx, absy, false);
+  _x += absx;
+  _y += absy;
+//  kdDebug(6040) << "RenderFlow::caretPos(2): x=" << _x << " y = " << _y << endl;
 }
 
 #ifndef NDEBUG

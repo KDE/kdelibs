@@ -84,9 +84,31 @@ public:
 
     void drawText( QPainter *p, int x, int y, QChar *str, int slen, int pos, int len, int width,
                    QPainter::TextDirection d, int from=-1, int to=-1, QColor bg=QColor() ) const;
-
+            
+    /** returns the width of the given string chunk in pixels.
+     *
+     * The method also considers various styles like text-align and font-variant
+     * @param str pointer to string
+     * @param slen total length of string
+     * @param pos zero-based position in string where to start measuring
+     * @param len count of characters up to which the width should be determined
+     */
     int width( QChar *str, int slen, int pos, int len ) const;
-    int width( QChar *str, int slen, int pos ) const;
+    /** return the width of the given char in pixels.
+     *
+     * The method also considers various styles like text-align and font-variant
+     * @param str pointer to string
+     * @param slen total length of string
+     * @param pos zero-based position of char in string
+     */
+    int width( QChar *str, int slen, int pos) const;
+    
+    /** returns letter spacing
+     */
+    int getLetterSpacing() const { return letterSpacing; }
+    /** returns word spacing
+     */
+    int getWordSpacing() const { return wordSpacing; }
 
 private:
     FontDef fontDef;

@@ -315,6 +315,10 @@ underline
 # CSS_PROP__KONQ_FLOW_MODE
 -konq-normal
 -konq-around-floats
+# CSS_PROP__KONQ_USER_INPUT
+enabled
+disabled
+#none
 #
 # Not supported CSS 2 Aural values
 #

@@ -870,6 +870,26 @@ public:
      * otherwise false.
      */
     void loadXML( const DOMString &source );
+    
+    /**
+     * not part of the official DOM
+     *
+     * Documents are read-only by default, but they can be made editable by
+     * entering "design mode".
+     *
+     * @return whether this document is in design mode.
+     * @since 3.2
+     */
+    bool designMode() const;
+    
+    /**
+     * not part of the official DOM
+     *
+     * @param enable @p true to enable design mode, @p false to disable.
+     * @see designMode
+     * @since 3.2
+     */
+    void setDesignMode(bool enable);
 
     /**
      * not part of the DOM

@@ -66,6 +66,9 @@ public:
     DOMString data() const { return str; }
 
     virtual void checkCharDataOperation( const unsigned long offset, int &exceptioncode );
+                    
+    virtual long minOffset() const;
+    virtual long maxOffset() const;
 
 protected:
     // note: since DOMStrings are shared, str should always be copied when making

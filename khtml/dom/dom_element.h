@@ -536,6 +536,38 @@ public:
      * The style attribute
      */
     CSSStyleDeclaration style (  );
+    
+    /**
+     * not part of the official DOM
+     *
+     * This method will always reflect the editability setting of this
+     * element as specified by a direct or indirect (that means, inherited)
+     * assignment to contentEditable or the respective CSS rule, even if
+     * design mode is active.
+     *
+     * @return whether this element is editable.
+     * @since 3.2
+     * @see setContentEditable
+     */
+    bool contentEditable() const;
+
+    /**
+     * not part of the official DOM
+     *
+     * This element can be made editable by setting its contentEditable
+     * property to @p true. The setting will be inherited to its children
+     * as well.
+     *
+     * Setting or clearing contentEditable when design mode is active will
+     * take no effect. However, its status will still be propagated to all
+     * child elements.
+     *
+     * @param enabled @p true to make this element editable, @p false
+     * otherwise.
+     * @see DOM::Document::designMode
+     * @since 3.2
+     */
+    void setContentEditable(bool enabled);
 
     /**
      * @internal

@@ -963,6 +963,12 @@ bool CSSParser::parseValue( int propId, bool important )
 	    valid_primitive = true;
 	break;
 
+    case CSS_PROP__KONQ_USER_INPUT:	// none | enabled | disabled | inherit
+	if ( id == CSS_VAL_NONE || id == CSS_VAL_ENABLED || id == CSS_VAL_DISABLED )
+	    valid_primitive = true;
+//	kdDebug(6080) << "CSS_PROP__KONQ_USER_INPUT: " << valid_primitive << endl;
+	break;
+
 	/* shorthand properties */
     case CSS_PROP_BACKGROUND:
     	// ['background-color' || 'background-image' ||'background-repeat' ||

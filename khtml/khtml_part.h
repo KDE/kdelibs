@@ -98,7 +98,7 @@ namespace KParts
  * This class is khtml's main class. It features an almost complete
  * web browser, and html renderer.
  *
- * The easiest way to use this class (if you just want to display a an HTML
+ * The easiest way to use this class (if you just want to display an HTML
  * page at some URL) is the following:
  *
  * \code
@@ -373,9 +373,45 @@ public:
   void setOnlyLocalReferences( bool enable );
 
   /**
-   * Returnd whether references should be loaded ( default false )
+   * Returns whether references should be loaded ( default false )
    **/
   bool onlyLocalReferences() const;
+
+  /**
+   * Enables/disables caret mode.
+   *
+   * Enabling caret mode displays a caret which can be used to navigate
+   * the document using the keyboard only. Caret mode is switched off by
+   * default.
+   *
+   * @param enable @p true to enable, @p false to disable caret mode.
+   * @since 3.2 (pending, do not use)
+   */
+  void setCaretMode(bool enable);
+
+  /** Returns whether caret mode is on/off.
+   * @since 3.2
+   */
+  bool isCaretMode() const;
+
+  /**
+   * Makes the document editable.
+   *
+   * Setting this property to @p true makes the document, and its
+   * subdocuments (such as frames, iframes, objects) editable as a whole.
+   * FIXME: insert more information about navigation, features etc. as seen fit
+   *
+   * @param enable @p true to set document editable, @p false to set it
+   *	read-only.
+   * @since 3.2 (pending, do not use)
+   */
+  void setEditable(bool enable);
+
+  /**
+   * Returns @p true if the document is editable, @p false otherwise.
+   * @since 3.2
+   */
+  bool isEditable() const;
 
 #ifndef KDE_NO_COMPAT
   void enableJScript( bool e ) { setJScriptEnabled(e); }
@@ -785,6 +821,19 @@ signals:
   /**
    * @internal */
   void docCreated();
+  
+  /**
+   * This signal is emitted whenever the caret position has been changed.
+   *
+   * The signal transmits the position the DOM::Range way, the node and
+   * the zero-based offset within this node.
+   * @param node node which the caret is in. This can be null if the caret
+   *	has been deactivated.
+   * @param offset offset within the node. If the node is null, the offset
+   *	is meaningless.
+   * @since 3.2
+   */
+  void caretPositionChanged(const DOM::Node &node, long offset);
 
 protected:
 
@@ -1179,6 +1228,8 @@ private:
    * generic zoom out
    */
   void zoomOut(const int stepping[], int count);
+
+  void emitCaretPositionChanged(const DOM::Node &node, long offset);
 
   KHTMLPartPrivate *d;
   friend class KHTMLPartPrivate;

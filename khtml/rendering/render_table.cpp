@@ -33,6 +33,7 @@
 #include "html/html_tableimpl.h"
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
+#include "rendering/render_line.h"
 
 #include <kglobal.h>
 
@@ -103,11 +104,11 @@ void RenderTable::setStyle(RenderStyle *_style)
     }
 }
 
-void RenderTable::position(int x, int y, int, int, int, bool, bool, int)
+void RenderTable::position(InlineBox *box, int, int, bool, int)
 {
     //for inline tables only
-    m_x = x + marginLeft();
-    m_y = y + marginTop();
+    m_x = box->xPos() + marginLeft();
+    m_y = box->yPos() + marginTop();
 }
 
 short RenderTable::lineHeight(bool b) const

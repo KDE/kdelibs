@@ -3,7 +3,7 @@
  *
  * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
  *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
- *           (C) 2002 Apple Computer, Inc.
+ *           (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -42,38 +42,38 @@ using namespace khtml;
 using namespace DOM;
 
 #ifndef NDEBUG
-static bool inTextSlaveDetach;
+static bool inInlineTextBoxDetach;
 #endif
 
-void TextSlave::detach(RenderArena* renderArena)
+void InlineTextBox::detach(RenderArena* renderArena)
 {
 #ifndef NDEBUG
-    inTextSlaveDetach = true;
+    inInlineTextBoxDetach = true;
 #endif
     delete this;
 #ifndef NDEBUG
-    inTextSlaveDetach = false;
+    inInlineTextBoxDetach = false;
 #endif
 
     // Recover the size left there for us by operator delete and free the memory.
     renderArena->free(*(size_t *)this, this);
 }
 
-void* TextSlave::operator new(size_t sz, RenderArena* renderArena) throw()
+void* InlineTextBox::operator new(size_t sz, RenderArena* renderArena) throw()
 {
     return renderArena->allocate(sz);
 }
 
-void TextSlave::operator delete(void* ptr, size_t sz)
+void InlineTextBox::operator delete(void* ptr, size_t sz)
 {
-    assert(inTextSlaveDetach);
+    assert(inInlineTextBoxDetach);
 
     // Stash size where detach can find it.
     *(size_t *)ptr = sz;
 }
 
 
-void TextSlave::paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
+void InlineTextBox::paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos)
 {
     if(startPos > m_len) return;
     if(startPos < 0) startPos = 0;
@@ -83,12 +83,12 @@ void TextSlave::paintSelection(const Font *f, RenderText *text, QPainter *p, Ren
 
     ty += m_baseline;
 
-    //kdDebug( 6040 ) << "textSlave::painting(" << s.string() << ") at(" << x+_tx << "/" << y+_ty << ")" << endl;
+    //kdDebug( 6040 ) << "textRun::painting(" << QConstString(text->str->s + m_start, m_len).string() << ") at(" << m_x+tx << "/" << m_y+ty << ")" << endl;
     f->drawText(p, m_x + tx, m_y + ty, text->str->s, text->str->l, m_start, m_len,
 		m_toAdd, m_reversed ? QPainter::RTL : QPainter::LTR, startPos, endPos, c);
 }
 
-void TextSlave::paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int deco, bool begin, bool end)
+void InlineTextBox::paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int deco, bool begin, bool end)
 {
     _tx += m_x;
     _ty += m_y;
@@ -114,7 +114,7 @@ void TextSlave::paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, 
     // support it. Lars
 }
 
-void TextSlave::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
+void InlineTextBox::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText *p, int _tx, int _ty, bool begin, bool end)
 {
     int topExtra = p->borderTop() + p->paddingTop();
     int bottomExtra = p->borderBottom() + p->paddingBottom();
@@ -151,9 +151,26 @@ void TextSlave::paintBoxDecorations(QPainter *pt, RenderStyle* style, RenderText
         p->paintBorder(pt, _tx, _ty, width, height, style, begin, end);
 }
 
-FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineHeight)
+/**
+ * Distributes pixels to a justified text.
+ * @param numSpaces spaces left, will be decremented by one
+ * @param toAdd number of pixels left to be distributes, will have the
+ *	amount of pixels distributed in this call subtracted.
+ * @return number of pixels to distribute
+ */
+inline int justifyWidth(int &numSpaces, int &toAdd) {
+  int a = 0;
+  if ( numSpaces ) {
+    a = toAdd/numSpaces;
+    toAdd -= a;
+    numSpaces--;
+  }/*end if*/
+  return a;
+}
+
+FindSelectionResult InlineTextBox::checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineHeight)
 {
-//       kdDebug(6040) << "TextSlave::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
+//       kdDebug(6040) << "InlineTextBox::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                     << " _tx+m_x=" << _tx+m_x << " _ty+m_y=" << _ty+m_y << endl;
     offset = 0;
 
@@ -176,13 +193,27 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
         return m_reversed ? SelectionPointAfterInLine : SelectionPointBeforeInLine;
     }
 
+    // consider spacing for justified text
+    int toAdd = m_toAdd;
+    bool justified = text->style()->textAlign() == JUSTIFY && toAdd > 0;
+    int numSpaces = 0;
+    if (justified) {
+
+        for( int i = 0; i < m_len; i++ )
+            if ( text->str->s[m_start+i].direction() == QChar::DirWS )
+	        numSpaces++;
+
+    }/*end if*/
+
     int delta = _x - (_tx + m_x);
-    //kdDebug(6040) << "TextSlave::checkSelectionPoint delta=" << delta << endl;
+    //kdDebug(6040) << "InlineTextBox::checkSelectionPoint delta=" << delta << endl;
     int pos = 0;
     if ( m_reversed ) {
 	delta -= m_width;
 	while(pos < m_len) {
 	    int w = f->width( text->str->s, text->str->l, m_start + pos);
+	    if (justified && text->str->s[m_start + pos].isSpace())
+	        w += justifyWidth(numSpaces, toAdd);
 	    int w2 = w/2;
 	    w -= w2;
 	    delta += w2;
@@ -193,6 +224,8 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
     } else {
 	while(pos < m_len) {
 	    int w = f->width( text->str->s, text->str->l, m_start + pos);
+	    if (justified && text->str->s[m_start + pos].isSpace())
+	        w += justifyWidth(numSpaces, toAdd);
 	    int w2 = w/2;
 	    w -= w2;
 	    delta -= w2;
@@ -206,23 +239,115 @@ FindSelectionResult TextSlave::checkSelectionPoint(int _x, int _y, int _tx, int 
     return SelectionPointInside;
 }
 
+int InlineTextBox::offsetForPoint(int _x, int &ax) const
+{
+  const RenderText *t = renderText();
+
+  // Do binary search for finding out offset, saves some time for long
+  // runs.
+  int start = 0;
+  int end = m_len;
+  ax = m_x;
+  int offset = (start + end) / 2;
+  while (end - start > 0) {
+    // always snap to the right column. This makes up for "jumpy" vertical
+    // navigation.
+    if (end - start == 1) start = end;
+
+    offset = (start + end) / 2;
+    ax = m_x + width(offset);
+    if (ax > _x) end = offset;
+    else if (ax < _x) start = offset;
+    else break;
+  }/*wend*/
+  return m_start + offset;
+}
+
+int InlineTextBox::width(int pos) const
+{
+  // gasp! sometimes pos is i < 0 which crashes Font::width
+  pos = QMAX(pos, 0);
+
+  const RenderText *t = renderText();
+  Q_ASSERT(t->isText());
+  const Font *f = t->htmlFont(m_firstLine);
+  const QFontMetrics &fm = t->fontMetrics(m_firstLine);
+
+  int numSpaces = 0;
+  // consider spacing for justified text
+  bool justified = t->style()->textAlign() == JUSTIFY;
+  //kdDebug(6000) << "InlineTextBox::width(int)" << endl;
+  if (justified && m_toAdd > 0) do {
+    //kdDebug(6000) << "justify" << endl;
+
+//    QConstString cstr = QConstString(t->str->s + m_start, m_len);
+    for( int i = 0; i < m_len; i++ )
+      if ( t->str->s[m_start+i].direction() == QChar::DirWS )
+	numSpaces++;
+    if (numSpaces == 0) break;
+
+    int toAdd = m_toAdd;
+    int w = 0;		// accumulated width
+    int start = 0;	// start of non-space sequence
+    int current = 0;	// current position
+    while (current < pos) {
+      // add spacing
+      while (current < pos && t->str->s[m_start + current].isSpace()) {
+	w += f->getWordSpacing();
+	w += f->getLetterSpacing();
+	w += justifyWidth(numSpaces, toAdd);
+        w += fm.width(' ');	// ### valid assumption? (LS)
+        current++; start++;
+      }/*wend*/
+      if (current >= pos) break;
+
+      // seek next space
+      while (current < pos && !t->str->s[m_start + current].isSpace())
+        current++;
+
+      // check run without spaces
+      w += f->width(t->str->s + m_start, m_len, start, current - start);
+      start = current;
+
+    }/*wend*/
+
+    return w;
+
+  } while(false);/*end if*/
+
+  //kdDebug(6000) << "default" << endl;
+  // else use existing width function
+  return f->width(t->str->s + m_start, m_len, 0, pos);
+
+}
+
+long InlineTextBox::minOffset() const
+{
+  return m_start;
+}
+
+long InlineTextBox::maxOffset() const
+{
+  return m_start + m_len;
+}
+
 // -----------------------------------------------------------------------------
 
-TextSlaveArray::TextSlaveArray()
+InlineTextBoxArray::InlineTextBoxArray()
 {
     setAutoDelete(false);
 }
 
-int TextSlaveArray::compareItems( Item d1, Item d2 )
+int InlineTextBoxArray::compareItems( Item d1, Item d2 )
 {
     assert(d1);
     assert(d2);
 
-    return static_cast<TextSlave*>(d1)->m_y - static_cast<TextSlave*>(d2)->m_y;
+    return static_cast<InlineTextBox*>(d1)->m_y - static_cast<InlineTextBox*>(d2)->m_y;
 }
 
 // remove this once QVector::bsearch is fixed
-int TextSlaveArray::findFirstMatching(Item d) const
+int InlineTextBoxArray::findFirstMatching(Item d) const
 {
     int len = count();
 
@@ -297,18 +422,18 @@ void RenderText::setStyle(RenderStyle *_style)
 
 RenderText::~RenderText()
 {
-    deleteSlaves( renderArena() );
+    deleteTextBoxes( renderArena() );
     if(str) str->deref();
 }
 
 
 void RenderText::detach(RenderArena* renderArena)
 {
-    deleteSlaves(renderArena);
+    deleteTextBoxes(renderArena);
     RenderObject::detach(renderArena);
 }
 
-void RenderText::deleteSlaves(RenderArena *arena)
+void RenderText::deleteTextBoxes(RenderArena *arena)
 {
     // this is a slight variant of QArray::clear().
     // We don't delete the array itself here because its
@@ -319,7 +444,7 @@ void RenderText::deleteSlaves(RenderArena *arena)
         if (!arena)
             arena = renderArena();
         for(unsigned int i=0; i < len; i++) {
-            TextSlave* s = m_lines.at(i);
+            InlineTextBox* s = m_lines.at(i);
             if (s)
                 s->detach(arena);
         m_lines.remove(i);
@@ -329,26 +454,45 @@ void RenderText::deleteSlaves(RenderArena *arena)
     KHTMLAssert(m_lines.count() == 0);
 }
 
-TextSlave * RenderText::findTextSlave( int offset, int &pos )
+InlineTextBox * RenderText::findInlineTextBox( int offset, int &pos )
 {
-    // The text slaves point to parts of the rendertext's str string
+    // The text boxes point to parts of the rendertext's str string
     // (they don't include '\n')
-    // Find the text slave that includes the character at @p offset
-    // and return pos, which is the position of the char in the slave.
+    // Find the text box that includes the character at @p offset
+    // and return pos, which is the position of the char in the run.
+
+    // FIXME: make this use binary search? Dirk says it won't work :-( (LS)
 
     if ( m_lines.isEmpty() )
         return 0L;
 
-    TextSlave* s = m_lines[0];
+    // The text boxes don't resemble a contiguous coverage of the text, there
+    // may be holes. Therefore, we snap to the nearest previous text box if
+    // the given offset happens to point to such a hole.
+
+    InlineTextBox* s = m_lines[0];
+    uint count = m_lines.count();
     uint si = 0;
-    int off = s->m_len;
-    while(offset > off && ++si < m_lines.count())
+    uint nearest_idx = 0;		// index of nearest text box
+    int nearest = INT_MAX;		// nearest distance
+//kdDebug(6040) << "s[" << si << "] m_start " << s->m_start << " m_end " << (s->m_start + s->m_len) << endl;
+    while(!(offset >= s->m_start && offset <= s->m_start + s->m_len)
+    		&& ++si < count)
     {
+        int dist = offset - (s->m_start + s->m_len);
+//kdDebug(6040) << "dist " << dist << " nearest " << nearest << endl;
+	if (dist >= 0 && dist <= nearest) {
+	    nearest = dist;
+	    nearest_idx = si - 1;
+	}/*end if*/
         s = m_lines[si];
-        off = s->m_start + s->m_len;
+//kdDebug(6040) << "s[" << si << "] m_start " << s->m_start << " m_end " << (s->m_start + s->m_len) << endl;
     }
-    // we are now in the correct text slave
-    pos = (offset > off ? s->m_len : offset - s->m_start );
+//kdDebug(6040) << "nearest_idx " << nearest_idx << " count " << count << endl;
+    if (si >= count) s = m_lines[nearest_idx];
+    // we are now in the correct text box
+    pos = QMIN(offset - s->m_start, s->m_len);
+    kdDebug(6040) << "offset=" << offset << " s->m_start=" << s->m_start << endl;
     return s;
 }
 
@@ -364,7 +508,7 @@ bool RenderText::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
     bool inside = false;
     if (style()->visibility() != HIDDEN) {
-        TextSlave *s = m_lines.count() ? m_lines[0] : 0;
+        InlineTextBox *s = m_lines.count() ? m_lines[0] : 0;
         int si = 0;
         while(s) {
             if((_y >=_ty + s->m_y) && (_y < _ty + s->m_y + height) &&
@@ -405,24 +549,24 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
 {
 //       kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " _x=" << _x << " _y=" << _y
 //                     << " _tx=" << _tx << " _ty=" << _ty << endl;
-    TextSlave *lastPointAfterInline=0;
+    InlineTextBox *lastPointAfterInline=0;
 
     for(unsigned int si = 0; si < m_lines.count(); si++)
     {
-        TextSlave* s = m_lines[si];
+        InlineTextBox* s = m_lines[si];
         int result;
         const Font *f = htmlFont( si==0 );
         result = s->checkSelectionPoint(_x, _y, _tx, _ty, f, this, offset, m_lineHeight);
 
 //         kdDebug(6040) << "RenderText::checkSelectionPoint " << this << " line " << si << " result=" << result << " offset=" << offset << endl;
-        if ( result == SelectionPointInside ) // x,y is inside the textslave
+        if ( result == SelectionPointInside ) // x,y is inside the textrun
         {
             offset += s->m_start; // add the offset from the previous lines
             //kdDebug(6040) << "RenderText::checkSelectionPoint inside -> " << offset << endl;
             node = element();
             return SelectionPointInside;
         } else if ( result == SelectionPointBefore || result == SelectionPointBeforeInLine ) {
-            // x,y is before the textslave -> stop here
+            // x,y is before the textrun -> stop here
             if ( si > 0 && lastPointAfterInline ) {
                 offset = lastPointAfterInline->m_start + lastPointAfterInline->m_len;
                 //kdDebug(6040) << "RenderText::checkSelectionPoint before -> " << offset << endl;
@@ -447,23 +591,35 @@ FindSelectionResult RenderText::checkSelectionPoint(int _x, int _y, int _tx, int
     return SelectionPointAfter;
 }
 
-void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
+void RenderText::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height)
 {
   if (!m_lines.count()) {
     _x = _y = height = -1;
+    width = 1;
     return;
   }
 
   int pos;
-  TextSlave * s = findTextSlave( offset, pos );
+  InlineTextBox * s = findInlineTextBox( offset, pos );
+//  kdDebug(6040) << "offset="<<offset << " pos="<<pos << endl;
   _y = s->m_y;
-  height = m_lineHeight; // ### firstLine!!! s->m_height;
 
-  const QFontMetrics &fm = metrics( false ); // #### wrong for first-line!
-  QString tekst(str->s + s->m_start, s->m_len);
-  _x = s->m_x + (fm.boundingRect(tekst, pos)).right();
-  if(pos)
-      _x += fm.rightBearing( *(str->s + s->m_start + pos - 1 ) );
+  const QFontMetrics &fm = metrics( s->m_firstLine );
+  height = fm.height(); // s->m_height;
+
+//  QConstString tekst(str->s + s->m_start, s->m_len);
+//  _x = s->m_x + (fm.boundingRect(tekst, pos)).right();
+//  if(pos)
+//      _x += fm.rightBearing( *(str->s + s->m_start + pos - 1 ) );
+  //_x = s->m_x + fm.width(tekst.string(), pos);
+  _x = s->m_x + s->width(pos);
+  width = 1;
+  if (override) {
+    width = offset < maxOffset() ? fm.width(str->s[offset]) : 1;
+  }/*end if*/
+  kdDebug(6040) << "_x="<<_x << " s->m_x="<<s->m_x
+  		<< " s->m_start"<<s->m_start
+		<< " s->m_len"<<s->m_len << endl;
 
   int absx, absy;
 
@@ -471,13 +627,37 @@ void RenderText::cursorPos(int offset, int &_x, int &_y, int &height)
 
   if (cb && cb != this && cb->absolutePosition(absx,absy))
   {
+    //kdDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
     _x += absx;
     _y += absy;
   } else {
-    // we don't know our absolute position, and there is not point returning
+    // we don't know our absolute position, and there is no point returning
     // just a relative one
     _x = _y = -1;
   }
+}
+
+long RenderText::minOffset() const
+{
+  if (!m_lines.count()) return 0;
+  // FIXME: it is *not* guaranteed that the first run contains the lowest offset
+  // Either make this a linear search (slow),
+  // or maintain an index (needs much mem),
+  // or calculate and store it in bidi.cpp (needs calculation even if not needed)
+  // (LS)
+  return m_lines[0]->m_start;
+}
+
+long RenderText::maxOffset() const
+{
+  int count = m_lines.count();
+  if (!count) return str->l;
+  // FIXME: it is *not* guaranteed that the last run contains the highest offset
+  // Either make this a linear search (slow),
+  // or maintain an index (needs much mem),
+  // or calculate and store it in bidi.cpp (needs calculation even if not needed)
+  // (LS)
+  return m_lines[count - 1]->m_start + m_lines[count - 1]->m_len;
 }
 
 bool RenderText::absolutePosition(int &xPos, int &yPos, bool)
@@ -500,7 +680,7 @@ bool RenderText::posOfChar(int chr, int &x, int &y)
     parent()->absolutePosition( x, y, false );
 
     int pos;
-    TextSlave * s = findTextSlave( chr, pos );
+    InlineTextBox * s = findInlineTextBox( chr, pos );
 
     if ( s ) {
         // s is the line containing the character
@@ -526,7 +706,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
     int ow = style()->outlineWidth();
     RenderStyle* pseudoStyle = hasFirstLine() ? style()->getPseudoStyle(RenderStyle::FIRST_LINE) : 0;
     int d = style()->textDecoration();
-    TextSlave f(0, y-ty);
+    InlineTextBox f(0, y-ty);
     int si = m_lines.findFirstMatching(&f);
     // something matching found, find the first one to paint
     bool isPrinting = (p->device()->devType() == QInternal::Printer);
@@ -554,7 +734,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
             //kdDebug(6040) << this << " Selection from " << startPos << " to " << endPos << endl;
         }
 
-        TextSlave* s;
+        InlineTextBox* s;
         int minx =  1000000;
         int maxx = -1000000;
         int outlinebox_y = m_lines[si]->m_y;
@@ -607,6 +787,7 @@ void RenderText::paintObject( QPainter *p, int /*x*/, int y, int /*w*/, int h,
                 p->setPen(_style->color());
 
 	    if (s->m_len > 0)
+	        //kdDebug( 6040 ) << "RenderObject::paintObject(" << QConstString(str->s + s->m_start, s->m_len).string() << ") at(" << s->m_x+tx << "/" << s->m_y+ty << ")" << endl;
 		font->drawText(p, s->m_x + tx, s->m_y + ty + s->m_baseline, str->s, str->l, s->m_start, s->m_len,
 			       s->m_toAdd, s->m_reversed ? QPainter::RTL : QPainter::LTR);
 
@@ -853,33 +1034,46 @@ short RenderText::baselinePosition( bool firstLine ) const
         ( lineHeight( firstLine ) - fm.height() ) / 2;
 }
 
-void RenderText::position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int spaceAdd)
+InlineBox* RenderText::createInlineBox(bool)
 {
+    // FIXME: Either ditch the array or get this object into it.
+    return new (renderArena()) InlineTextBox(this);
+}
+
+void RenderText::position(InlineBox* box, int from, int len, bool reverse, int spaceAdd)
+{
+//kdDebug(6040) << "position: from="<<from<<" len="<<len<<endl;
     // ### should not be needed!!!
     // asserts sometimes with pre (that unibw-hamburg testcase). ### find out why
     //KHTMLAssert(!(len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ));
-    if (len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ) return;
+    // It is now needed. BRs need text boxes too otherwise caret navigation
+    // gets stuck (LS)
+    //if (len == 0 || (str->l && len == 1 && *(str->s+from) == '\n') ) return;
 
     reverse = reverse && !style()->visuallyOrdered();
 
     // ### margins and RTL
     if(from == 0 && parent()->isInline() && parent()->firstChild()==this)
     {
-        x += paddingLeft() + borderLeft() + marginLeft();
-        width -= marginLeft();
+        box->m_x += paddingLeft() + borderLeft() + marginLeft();
+        box->m_width -= marginLeft();
     }
 
     if(from + len >= int(str->l) && parent()->isInline() && parent()->lastChild()==this)
-        width -= marginRight();
+        box->m_width -= marginRight();
 
 #ifdef DEBUG_LAYOUT
     QChar *ch = str->s+from;
     QConstString cstr(ch, len);
 #endif
 
-    TextSlave *s = new (renderArena()) TextSlave(x, y, from, len,
-                                 baselinePosition( firstLine ),
-                                 width, reverse, spaceAdd, firstLine);
+    KHTMLAssert(box->isInlineTextBox());
+    InlineTextBox *s = static_cast<InlineTextBox *>(box);
+    s->m_start = from;
+    s->m_len = len;
+    s->m_reversed = reverse;
+    s->m_toAdd = spaceAdd;
+    //kdDebug(6040) << "m_start: " << s->m_start << " m_len: " << s->m_len << endl;
 
     if(m_lines.count() == m_lines.size())
         m_lines.resize(m_lines.size()*2+1);
@@ -937,7 +1131,7 @@ short RenderText::width() const
     int maxx = 0;
     // slooow
     for(unsigned int si = 0; si < m_lines.count(); si++) {
-        TextSlave* s = m_lines[si];
+        InlineTextBox* s = m_lines[si];
         if(s->m_x < minx)
             minx = s->m_x;
         if(s->m_x + s->m_width > maxx)

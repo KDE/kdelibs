@@ -29,6 +29,7 @@ namespace khtml {
     class RenderFlow;
     class RenderObject;
     class RenderArena;
+    class InlineBox;
 
     class BidiContext {
     public:
@@ -52,8 +53,8 @@ namespace khtml {
 
     struct BidiRun {
 	BidiRun(int _start, int _stop, RenderObject *_obj, BidiContext *context, QChar::Direction dir)
-	    :  vertical( 0 ), baseline( 0 ), height( 0 ), width( 0 ),
-	       start( _start ), stop( _stop ), obj( _obj )
+	    :  vertical( 0 ),
+	       start( _start ), stop( _stop ), obj( _obj ), box(0)
 	{
 	    if(dir == QChar::DirON) dir = context->dir;
 
@@ -72,13 +73,11 @@ namespace khtml {
 	}
 
 	int vertical;
-	short baseline;
-	short height;
-	int width;
 
 	int start;
 	int stop;
 	RenderObject *obj;
+        InlineBox* box;
 
 	// explicit + implicit levels here
 	uchar level;

@@ -3,6 +3,7 @@
  *
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * (C) 2000-2003 Dirk Mueller (mueller@kde.org)
+ * (C) 2003 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -28,6 +29,7 @@
 #include "xml/dom_stringimpl.h"
 #include "xml/dom_textimpl.h"
 #include "rendering/render_object.h"
+#include "rendering/render_line.h"
 
 #include <qptrvector.h>
 #include <assert.h>
@@ -40,22 +42,12 @@ namespace khtml
     class RenderText;
     class RenderStyle;
 
-class TextSlave
+class InlineTextBox : public InlineBox
 {
 public:
-    TextSlave(int x, int y, int start, int len,
-	      int baseline, int width,
-              bool reversed = false, unsigned toAdd = 0, bool firstLine = false)
+    InlineTextBox(RenderObject *obj)
+    :InlineBox(obj)
     {
-        m_x = x;
-        m_y = y;
-        m_start = start;
-        m_len = len;
-        m_baseline = baseline;
-        m_width = width;
-        m_reversed = reversed;
-        m_firstLine = firstLine;
-        m_toAdd = toAdd;
     }
 
     void detach(RenderArena* renderArena);
@@ -73,6 +65,8 @@ private:
 
 public:
 
+    virtual bool isInlineTextBox() const { return true; }
+
     void paintDecoration( QPainter *pt, RenderText* p, int _tx, int _ty, int decoration, bool begin, bool end);
     void paintBoxDecorations(QPainter *p, RenderStyle* style, RenderText *parent, int _tx, int _ty, bool begin, bool end);
     void paintSelection(const Font *f, RenderText *text, QPainter *p, RenderStyle* style, int tx, int ty, int startPos, int endPos);
@@ -81,26 +75,58 @@ public:
     FindSelectionResult checkSelectionPoint(int _x, int _y, int _tx, int _ty, const Font *f, RenderText *text, int & offset, short lineheight);
 
     /**
-     * if this textslave was rendered _ty pixels below the upper edge
-     * of a view, would the _y -coordinate be inside the vertical range
+     * if this text box was rendered @ref _ty pixels below the upper edge
+     * of a view, would the @ref _y -coordinate be inside the vertical range
      * of this object's representation?
      */
     bool checkVerticalPoint(int _y, int _ty, int _h, int height)
     { if((_ty + m_y > _y + _h) || (_ty + m_y + m_baseline + height < _y)) return false; return true; }
 
+    /**
+     * determines the offset into the DOMString of the charater the given
+     * coordinate points to.
+     * The returned offset is never out of range.
+     * @param _x given coordinate (relative to containing block)
+     * @param ax returns exact coordinate the offset corresponds to
+     *		(relative to containing block)
+     * @return the offset (relative to the RenderText object, not to this run)
+     */
+    int offsetForPoint(int _x, int &ax) const;
+         
+    /**
+     * calculates the with of the specified chunk in this text box.
+     * @param pos zero-based position within the text box up to which
+     *	the width is to be determined
+     * @return the width in pixels
+     */
+    int width(int pos) const;
+
+    /** returns the lowest possible value the caret offset may have to
+     * still point to a valid position.
+     */
+    virtual long minOffset() const;
+    /** returns the highest possible value the caret offset may have to
+     * still point to a valid position.
+     */
+    virtual long maxOffset() const;
+    
+    /** returns the associated render text
+     */
+    const RenderText *renderText() const
+    { return reinterpret_cast<RenderText *>(const_cast<InlineTextBox *>(this)->object()); }
+    /** returns the associated render text
+     */
+    RenderText *renderText() { return reinterpret_cast<RenderText *>(object()); }
+
     int m_start;
-    int m_y;
     unsigned short m_len;
-    short m_x;
-    short m_baseline;
-    unsigned short m_width;
 
     bool m_reversed : 1;
-    bool m_firstLine : 1;
     unsigned m_toAdd : 14; // for justified text
 private:
     // this is just for QVector::bsearch. Don't use it otherwise
-    TextSlave(int _x, int _y)
+    InlineTextBox(int _x, int _y)
+        :InlineBox(0)
     {
         m_x = _x;
         m_y = _y;
@@ -109,12 +135,12 @@ private:
     friend class RenderText;
 };
 
-class TextSlaveArray : public QPtrVector<TextSlave>
+class InlineTextBoxArray : public QPtrVector<InlineTextBox>
 {
 public:
-    TextSlaveArray();
+    InlineTextBoxArray();
 
-    TextSlave* first();
+    InlineTextBox* first();
 
     int	  findFirstMatching( Item ) const;
     virtual int compareItems( Item, Item );
@@ -122,7 +148,7 @@ public:
 
 class RenderText : public RenderObject
 {
-    friend class TextSlave;
+    friend class InlineTextBox;
 
 public:
     RenderText(DOM::NodeImpl* node, DOM::DOMStringImpl *_str);
@@ -139,11 +165,13 @@ public:
     virtual void paintObject( QPainter *, int x, int y, int w, int h,
                         int tx, int ty, PaintAction paintPhase);
 
-    void deleteSlaves( RenderArena * );
+    void deleteTextBoxes( RenderArena * );
     void detach( RenderArena * );
 
     DOM::DOMString data() const { return str; }
     DOM::DOMStringImpl *string() const { return str; }
+
+    virtual InlineBox* createInlineBox(bool);
 
     virtual void layout() {assert(false);}
 
@@ -156,7 +184,7 @@ public:
     unsigned int length() const { return str->l; }
     QChar *text() const { return str->s; }
     unsigned int stringLength() const { return str->l; } // non virtual implementation of length()
-    virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int spaceAdd);
+    virtual void position(InlineBox* box, int from, int len, bool reverse, int spaceAdd);
 
     virtual unsigned int width(unsigned int from, unsigned int len, const Font *f) const;
     virtual unsigned int width(unsigned int from, unsigned int len, bool firstLine = false) const;
@@ -175,7 +203,7 @@ public:
     ushort startMin() const { return m_startMin; }
     ushort endMin() const { return m_endMin; }
 
-    // returns the minimum x position of all slaves relative to the parent.
+    // returns the minimum x position of all runs relative to the parent.
     // defaults to 0.
     int minXPos() const;
 
@@ -193,7 +221,7 @@ public:
 
     virtual SelectionState selectionState() const {return m_selectionState;}
     virtual void setSelectionState(SelectionState s) {m_selectionState = s; }
-    virtual void cursorPos(int offset, int &_x, int &_y, int &height);
+    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
     virtual bool absolutePosition(int &/*xPos*/, int &/*yPos*/, bool f = false);
     bool posOfChar(int ch, int &x, int &y);
 
@@ -211,15 +239,24 @@ public:
     DOM::TextImpl *element() const
     { return static_cast<DOM::TextImpl*>(RenderObject::element()); }
 
+    /** returns the lowest possible value the caret offset may have to
+     * still point to a valid position.
+     */
+    virtual long minOffset() const;
+    /** returns the highest possible value the caret offset may have to
+     * still point to a valid position.
+     */
+    virtual long maxOffset() const;
+
 protected:
     void paintTextOutline(QPainter *p, int tx, int ty, const QRect &prevLine, const QRect &thisLine, const QRect &nextLine);
 
-    // Find the text slave that includes the character at @p offset
-    // and return pos, which is the position of the char in the slave.
-    TextSlave * findTextSlave( int offset, int &pos );
+    // Find the text box that includes the character at @p offset
+    // and return pos, which is the position of the char in the run.
+    InlineTextBox * findInlineTextBox( int offset, int &pos );
 
 protected: // members
-    TextSlaveArray m_lines;
+    InlineTextBoxArray m_lines;
     DOM::DOMStringImpl *str; //
 
     short m_lineHeight;

@@ -35,21 +35,25 @@ RenderBR::~RenderBR()
 {
 }
 
-void RenderBR::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
+void RenderBR::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height)
 {
+  RenderText::caretPos(offset,override,_x,_y,width,height);
+  return;
+#if 0
     if (previousSibling() && !previousSibling()->isBR() && !previousSibling()->isFloating()) {
         int offset = 0;
         if (previousSibling()->isText())
-            offset = static_cast<RenderText*>(previousSibling())->length();
+            offset = static_cast<RenderText*>(previousSibling())->maxOffset();
 
-        previousSibling()->cursorPos(offset,_x,_y,height);
+	// FIXME: this won't return a big width in override mode (LS)
+        previousSibling()->caretPos(offset,override,_x,_y,width,height);
         return;
     }
 
     int absx, absy;
     absolutePosition(absx,absy);
     if (absx == -1) {
-        // we don't know out absoluate position, and there is not point returning
+        // we don't know out absolute position, and there is no point returning
         // just a relative one
         _x = _y = -1;
     }
@@ -58,6 +62,7 @@ void RenderBR::cursorPos(int /*offset*/, int &_x, int &_y, int &height)
         _y += absy;
     }
     height = RenderText::verticalPositionHint( false );
-
+    width = override ? height / 2 : 1;
+#endif
 }
 

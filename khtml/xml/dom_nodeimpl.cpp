@@ -317,10 +317,10 @@ QString NodeImpl::recursive_toHTML(bool start) const
     return me;
 }
 
-void NodeImpl::getCursor(int offset, int &_x, int &_y, int &height)
+void NodeImpl::getCaret(int offset, bool override, int &_x, int &_y, int &width, int &height)
 {
-    if(m_render) m_render->cursorPos(offset, _x, _y, height);
-    else _x = _y = height = -1;
+    if(m_render) m_render->caretPos(offset, override, _x, _y, width, height);
+    else _x = _y = height = -1, width = 1;
 }
 
 QRect NodeImpl::getRect() const
@@ -953,6 +953,85 @@ RenderObject * NodeImpl::nextRenderer()
             return n->renderer();
     }
     return 0;
+}
+
+bool NodeImpl::contentEditable() const
+{
+    RenderObject *r = renderer();
+    if (!r) return false;
+    return r->style()->userInput() == UI_ENABLED;
+}
+
+NodeImpl *NodeImpl::prevLeafNode() const
+{
+  const NodeImpl *r = this;
+  const NodeImpl *n = firstChild();
+  if (n) {
+    while (n) { r = n; n = n->firstChild(); }
+    return const_cast<NodeImpl *>(r);
+  }/*end if*/
+  n = r->previousSibling();
+  if (n) {
+    r = n;
+    while (n) { r = n; n = n->firstChild(); }
+    return const_cast<NodeImpl *>(r);
+  }/*end if*/
+
+  n = r->parentNode();
+  while (n) {
+    r = n;
+    n = r->previousSibling();
+    if (n) {
+      r = n;
+      n = r->lastChild();
+      while (n) { r = n; n = n->lastChild(); }
+      return const_cast<NodeImpl *>(r);
+    }/*end if*/
+    n = r->parentNode();
+  }/*wend*/
+  return 0;
+}
+
+NodeImpl *NodeImpl::nextLeafNode() const
+{
+  const NodeImpl *r = this;
+  const NodeImpl *n = firstChild();
+  if (n) {
+    while (n) { r = n; n = n->firstChild(); }
+    return const_cast<NodeImpl *>(r);
+  }/*end if*/
+  n = r->nextSibling();
+  if (n) {
+    r = n;
+    while (n) { r = n; n = n->firstChild(); }
+    return const_cast<NodeImpl *>(r);
+  }/*end if*/
+
+  n = r->parentNode();
+  while (n) {
+    r = n;
+    n = r->nextSibling();
+    if (n) {
+      r = n;
+      n = r->firstChild();
+      while (n) { r = n; n = n->firstChild(); }
+      return const_cast<NodeImpl *>(r);
+    }/*end if*/
+    n = r->parentNode();
+  }/*wend*/
+  return 0;
+}
+
+long NodeImpl::minOffset() const
+{
+  // Arrgh! You'd think *every* offset starts at zero, but loo,
+  // therefore we need this method
+  return renderer() ? renderer()->minOffset() : 0;
+}
+
+long NodeImpl::maxOffset() const
+{
+  return renderer() ? renderer()->maxOffset() : 1;
 }
 
 //-------------------------------------------------------------------------

@@ -82,11 +82,17 @@ namespace khtml {
     class RenderStyle;
     class RenderTable;
     class CachedObject;
+    class RenderObject;
     class RenderRoot;
     class RenderText;
     class RenderFrameSet;
     class RenderArena;
     class RenderLayer;
+    class InlineBox;
+    class InlineFlowBox;
+
+    // caret navigation
+    static RenderFlow *generateDummyBlock(RenderArena *, RenderObject *);
 
 /**
  * Base Class for all rendering tree objects.
@@ -255,6 +261,8 @@ public:
     void setIsSelectionBorder(bool b=true) { m_isSelectionBorder = b; }
 
     void scheduleRelayout(bool repaint);
+
+    virtual InlineBox* createInlineBox(bool makePlaceHolderBox);
 
     // for discussion of lineHeight see CSS2 spec
     virtual short lineHeight( bool firstLine ) const;
@@ -463,7 +471,8 @@ public:
     virtual bool hasOverhangingFloats() { return false; }
 
     // positioning of inline childs (bidi)
-    virtual void position(int, int, int, int, int, bool, bool, int) {}
+    virtual void position(InlineBox*, int, int, bool, int) {}
+//    virtual void position(int, int, int, int, int, bool, bool, int) {}
 
     enum SelectionState {
         SelectionNone,
@@ -476,7 +485,18 @@ public:
     virtual SelectionState selectionState() const { return SelectionNone;}
     virtual void setSelectionState(SelectionState) {}
 
-    virtual void cursorPos(int /*offset*/, int &/*_x*/, int &/*_y*/, int &/*height*/);
+    /**
+     * Returns the content coordinates of the caret within this render object.
+     * @param offset zero-based offset determining position within the render object.
+     * @param override @p true if input overrides existing characters,
+     *		@p false if it inserts them. The width of the caret depends on
+     *		this one.
+     * @param _x returns the left coordinate
+     * @param _y returns the top coordinate
+     * @param width returns the caret's width
+     * @param height returns the caret's height
+     */
+    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
 
     // returns the lowest position of the lowest object in that particular object.
     // This 'height' is relative to the topleft of the margin box of the object.
@@ -500,6 +520,21 @@ public:
     const QFontMetrics &fontMetrics(bool firstLine) const {
 	return style( firstLine )->fontMetrics();
     }
+
+    /** returns the lowest possible value the caret offset may have to
+     * still point to a valid position.
+     *
+     * Returns 0 by default.
+     */
+    virtual long minOffset() const { return 0; }
+    /** returns the highest possible value the caret offset may have to
+     * still point to a valid position.
+     *
+     * Returns 0 by default, as generic elements are considered to have no
+     * width.
+     */
+    virtual long maxOffset() const { return 0; }
+
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
@@ -556,6 +591,8 @@ private:
     friend class RenderListItem;
     friend class RenderContainer;
     friend class RenderRoot;
+
+    friend RenderFlow *generateDummyBlock(RenderArena *, RenderObject *);
 };
 
 

@@ -477,6 +477,20 @@ void Document::loadXML( const DOMString &source )
     static_cast<DocumentImpl*>( impl )->loadXML( source );
 }
 
+bool Document::designMode() const {
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    return static_cast<DocumentImpl*>( impl )->designMode();
+}
+
+void Document::setDesignMode(bool enable) {
+    if (!impl)
+        throw DOMException(DOMException::INVALID_STATE_ERR);
+
+    static_cast<DocumentImpl*>( impl )->setDesignMode( enable );
+}
+
 DOMString Document::completeURL(const DOMString& url)
 {
     if ( !impl ) return url;

@@ -430,22 +430,26 @@ int RenderImage::calcReplacedHeight() const
     return RenderReplaced::calcReplacedHeight();
 }
 
-void RenderImage::cursorPos(int offset, int &_x, int &_y, int &height) {
+void RenderImage::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height) {
+  RenderReplaced::caretPos(offset, override, _x, _y, width, height);
+#if 0	// doesn't work reliably
   height = intrinsicHeight();
+  width = override && offset == 0 ? intrinsicWidth() : 0;
   _x = xPos();
   _y = yPos();
   if (offset > 0) _x += intrinsicWidth();
 
   RenderObject *cb = containingBlock();
-                                                  
+
   int absx, absy;
   if (cb && cb != this && cb->absolutePosition(absx,absy))
   {
     _x += absx;
     _y += absy;
   } else {
-    // we don't know our absolute position, and there is not point returning
+    // we don't know our absolute position, and there is no point returning
     // just a relative one
     _x = _y = -1;
   }
+#endif
 }

@@ -330,7 +330,7 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
 
     m_view = v;
     m_renderArena = 0;
-
+                   
     if ( v ) {
         m_docLoader = new DocLoader(v->part(), this );
         setPaintDevice( m_view );
@@ -1916,6 +1916,17 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
     }
 
     return true;
+}
+
+void DocumentImpl::setDesignMode(bool b)
+{
+    if (m_view)
+         m_view->part()->setEditable(b);
+}
+
+bool DocumentImpl::designMode() const
+{
+    return m_view ? m_view->part()->isEditable() : false;
 }
 
 EventImpl *DocumentImpl::createEvent(const DOMString &eventType, int &exceptioncode)

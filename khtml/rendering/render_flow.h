@@ -30,6 +30,7 @@
 #include "bidi.h"
 
 namespace khtml {
+  class InlineFlowBox;
 
 /**
  * all geometry managing stuff is only in the block elements.
@@ -71,7 +72,15 @@ public:
 
     void makeChildrenNonInline(RenderObject *box2Start = 0);
 
+    void deleteLineBoxes(RenderArena* arena=0);
+    virtual void detach(RenderArena* arena);
+
+    InlineFlowBox* firstLineBox() const { return m_firstLineBox; }
+    InlineFlowBox* lastLineBox() const { return m_lastLineBox; }
+
     // overrides RenderObject
+
+    virtual InlineBox* createInlineBox(bool makePlaceHolderBox);
 
     virtual void paint( QPainter *, int x, int y, int w, int h,
                         int tx, int ty, PaintAction paintPhase);
@@ -114,6 +123,8 @@ public:
 
     virtual bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
+    virtual void caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height);
+
 protected:
 
     virtual void newLine();
@@ -143,6 +154,11 @@ public:
     // implementation of the following functions is in bidi.cpp
     void bidiReorderLine(const BidiIterator &start, const BidiIterator &end);
     BidiIterator findNextLineBreak(BidiIterator &start);
+    InlineFlowBox* constructLine(const BidiIterator& start, const BidiIterator& end);
+    InlineFlowBox* createLineBoxes(RenderObject* obj);
+    // FIXME: should be split into computeHorizontal-/-Vertical... like in
+    // WebCore but as it'll get merged anyway it's not worth it
+    void computePositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed);
 
     // The height (and width) of a block when you include overflow
     // spillage out of the bottom of the block (e.g., a <div
@@ -204,6 +220,12 @@ private:
     // split into a sequence of inlines and blocks.  The continuation will either be
     // an anonymous block (that houses other blocks) or it will be an inline flow.
     RenderFlow* m_continuation;
+
+    // For block flows, each box represents the root inline box for a line in the
+    // paragraph.
+    // For inline flows, each box represents a portion of that inline.
+    InlineFlowBox* m_firstLineBox;
+    InlineFlowBox* m_lastLineBox;
 };
 
 

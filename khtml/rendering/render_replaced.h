@@ -57,6 +57,20 @@ public:
 
     virtual void position(int x, int y, int from, int len, int width, bool reverse, bool firstLine, int);
 
+    /** returns the lowest possible value the caret offset may have to
+     * still point to a valid position.
+     *
+     * Returns 0.
+     */
+    virtual long minOffset() const { return 0; }
+    /** returns the highest possible value the caret offset may have to
+     * still point to a valid position.
+     *
+     * Returns 1 as replaced elements are considered to be an entity that
+     * can have the caret positioned at their beginning (0), and at their end (1).
+     */
+    virtual long maxOffset() const { return 1; }
+
 protected:
     short m_intrinsicWidth;
     short m_intrinsicHeight;

@@ -423,6 +423,8 @@ RenderStyle *CSSStyleSelector::styleForElement(ElementImpl *e)
 		    fontDirty = false;
 		}
 		DOM::CSSProperty *prop = propsToApply[i]->prop;
+//		if (prop->m_id == CSS_PROP__KONQ_USER_INPUT) kdDebug(6080) << "El: "<<e->nodeName().string() << " user-input: "<<((CSSPrimitiveValueImpl *)prop->value())->getIdent() << endl;
+//		if (prop->m_id == CSS_PROP_TEXT_TRANSFORM) kdDebug(6080) << "El: "<<e->nodeName().string() << endl;
                 applyRule( prop->m_id, prop->value() );
 	    }
 	    if ( fontDirty ) {
@@ -3006,6 +3008,23 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             return;
         }
         break;
+    case CSS_PROP__KONQ_USER_INPUT: {
+        if(value->cssValueType() == CSSValue::CSS_INHERIT)
+        {
+            if(!parentNode) return;
+            style->setUserInput(parentStyle->userInput());
+//	    kdDebug() << "UI erm" << endl;
+            return;
+        }
+        if(!primitiveValue) return;
+        int id = primitiveValue->getIdent();
+	if (id == CSS_VAL_NONE)
+	    style->setUserInput(UI_NONE);
+	else
+	    style->setUserInput(EUserInput(id - CSS_VAL_ENABLED));
+//	kdDebug(6080) << "userInput: " << style->userEdit() << endl;
+	return;
+    }
 //     case CSS_PROP_VOICE_FAMILY:
 //         // list of strings and i
 //         break;

@@ -237,7 +237,9 @@ DOM::DOMString getValueName(unsigned short id);
 #define CSS_VAL__KONQ_NOWRAP 226
 #define CSS_VAL__KONQ_NORMAL 227
 #define CSS_VAL__KONQ_AROUND_FLOATS 228
+#define CSS_VAL_ENABLED 229
+#define CSS_VAL_DISABLED 230
 
-#define CSS_VAL_TOTAL 229
+#define CSS_VAL_TOTAL 231
 #endif
 

@@ -36,6 +36,7 @@
 #include "render_layer.h"
 #include "misc/htmlhashes.h"
 #include "xml/dom_nodeimpl.h"
+#include "render_line.h"
 
 #include <khtmlview.h>
 #include <kdebug.h>
@@ -415,10 +416,10 @@ bool RenderBox::absolutePosition(int &xPos, int &yPos, bool f)
     }
 }
 
-void RenderBox::position(int x, int y, int, int, int, bool, bool, int)
+void RenderBox::position(InlineBox* box, int /*from*/, int /*len*/, bool /*reverse*/, int)
 {
-    m_x = x + marginLeft();
-    m_y = y;
+    m_x = box->xPos() + marginLeft();
+    m_y = box->yPos();
     // ### paddings
     //m_width = width;
 }
@@ -1008,6 +1009,47 @@ int RenderBox::rightmostPosition() const
     if ( m_layer )
 	right = QMAX( right, m_layer->width() );
     return m_width;
+}
+
+void RenderBox::caretPos(int offset, bool override, int &_x, int &_y, int &width, int &height)
+{
+    _x = -1;
+
+    // propagate it downwards to its children, someone will feel responsible
+    RenderObject *child = firstChild();
+    if (child) kdDebug(6040) << "delegating caretPos to " << child->renderName() << endl;
+    if (child) child->caretPos(offset, override, _x, _y, width, height);
+
+    // if not, use the extents of this box. offset 0 means left, offset 1 means
+    // right
+    if (_x == -1) {
+        kdDebug(6040) << "no delegation" << endl;
+        _x = xPos() + (offset == 0 ? 0 : m_width);
+	_y = yPos();
+	height = m_height;
+	width = override && offset == 0 ? m_width : 1;
+	
+	// If height of box is smaller than font height, use the latter one,
+	// otherwise the caret might become invisible.
+	// FIXME: ignoring :first-line, missing good reason to take care of
+	int fontHeight = style()->fontMetrics().height();
+	if (fontHeight > height)
+	  height = fontHeight;
+
+        int absx, absy;
+
+        RenderObject *cb = containingBlock();
+
+        if (cb && cb != this && cb->absolutePosition(absx,absy)) {
+            //kdDebug(6040) << "absx=" << absx << " absy=" << absy << endl;
+            _x += absx;
+            _y += absy;
+        } else {
+            // we don't know our absolute position, and there is no point returning
+            // just a relative one
+            _x = _y = -1;
+        }/*end if*/
+    }/*end if*/
 }
 
 #undef DEBUG_LAYOUT

@@ -126,6 +126,7 @@ public:
     m_bDnd = true;
     m_startOffset = m_endOffset = 0;
     m_startBeforeEnd = true;
+    m_extendAtEnd = true;
     m_linkCursor = KCursor::handCursor();
     m_loadedObjects = 0;
     m_totalObjectCount = 0;
@@ -154,6 +155,9 @@ public:
     m_bPluginsOverride = false;
     m_onlyLocalReferences = false;
 
+    m_caretMode = false;
+    m_designMode = false;
+
     m_metaRefreshEnabled = true;
     m_statusMessagesEnabled = true;
 
@@ -177,6 +181,8 @@ public:
             // Same for SSL settings
             m_ssl_in_use = part->d->m_ssl_in_use;
             m_onlyLocalReferences = part->d->m_onlyLocalReferences;
+            m_caretMode = part->d->m_caretMode;
+            m_designMode = part->d->m_designMode;
             m_zoomFactor = part->d->m_zoomFactor;
             m_autoDetectLanguage = part->d->m_autoDetectLanguage;
         }
@@ -335,6 +341,14 @@ public:
   bool m_bRightMousePressed;
   DOM::Node m_mousePressNode; //node under the mouse when the mouse was pressed (set in the mouse handler)
 
+  // simply using the selection limits for the caret position does not suffice
+  // as we need to know on which side to extend the selection
+//  DOM::Node m_caretNode;	// node containing the caret
+//  long m_caretOffset;		// offset within this node (0-based)
+
+  // the caret uses the selection variables for its position. If m_extendAtEnd
+  // is true, m_selectionEnd and m_endOffset contain the mandatory caret
+  // position, otherwise it's m_selectionStart and m_startOffset.
   DOM::Node m_selectionStart;
   long m_startOffset;
   DOM::Node m_selectionEnd;
@@ -343,6 +357,7 @@ public:
   QString m_overURLTarget;
 
   bool m_startBeforeEnd:1;
+  bool m_extendAtEnd:1;		// true if selection is to be extended at its end
   bool m_bDnd:1;
   bool m_bFirstData:1;
   bool m_bClearing:1;
@@ -356,6 +371,9 @@ public:
 #ifdef KHTML_NO_SELECTION
   QPoint m_dragLastPos;
 #endif
+
+  bool m_designMode;
+  bool m_caretMode;
 
   QCursor m_linkCursor;
   QTimer m_scrollTimer;
@@ -418,6 +436,17 @@ public:
   khtml::Decoder::AutoDetectLanguage m_autoDetectLanguage;
   KPopupMenu *m_automaticDetection;
   KSelectAction *m_manualDetection;
+
+  void setFlagRecursively(bool KHTMLPartPrivate::*flag, bool value);
+  /** returns the caret node */
+  DOM::Node &caretNode() {
+    return m_extendAtEnd ? m_selectionEnd : m_selectionStart;
+  }
+  /** returns the caret offset */
+  long &caretOffset() {
+    return m_extendAtEnd ? m_endOffset : m_startOffset;
+  }
+
 };
 
 #endif

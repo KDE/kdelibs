@@ -111,6 +111,7 @@ public:
     virtual bool isXMLElementNode() const { return false; }
     virtual bool isGenericFormElement() const { return false; }
     virtual bool containsOnlyWhitespace() const { return false; }
+    virtual bool contentEditable() const;
 
     // helper functions not being part of the DOM
     // Attention: they assume that the caller did the consistency checking!
@@ -119,6 +120,24 @@ public:
 
     virtual void setFirstChild(NodeImpl *child);
     virtual void setLastChild(NodeImpl *child);
+
+    /** (Not part of the official DOM)
+     * Returns the next leaf node.
+     *
+     * Using this function delivers leaf nodes as if the whole DOM tree
+     * were a linear chain of its leaf nodes.
+     * @return next leaf node or 0 if there are no more.
+     */
+    NodeImpl *nextLeafNode() const;
+
+    /** (Not part of the official DOM)
+     * Returns the previous leaf node.
+     *
+     * Using this function delivers leaf nodes as if the whole DOM tree
+     * were a linear chain of its leaf nodes.
+     * @return previous leaf node or 0 if there are no more.
+     */
+    NodeImpl *prevLeafNode() const;
 
     // used by the parser. Doesn't do as many error checkings as
     // appendChild(), and returns the node into which will be parsed next.
@@ -203,7 +222,7 @@ public:
     virtual QString toHTML() const;
     QString recursive_toHTML(bool start = false) const;
 
-    virtual void getCursor(int offset, int &_x, int &_y, int &height);
+    virtual void getCaret(int offset, bool override, int &_x, int &_y, int &width, int &height);
     virtual QRect getRect() const;
 
     enum StyleChange { NoChange, NoInherit, Inherit, Force };
@@ -272,6 +291,21 @@ public:
     bool isAncestor( NodeImpl *other );
     virtual bool childAllowed( NodeImpl *newChild );
 
+    /**
+     * Returns the minimum caret offset that is allowed for this node.
+     *
+     * This default implementation always returns 0. Textual child nodes
+     * may return other values.
+     */
+    virtual long minOffset() const;
+    /**
+     * Returns the maximum caret offset that is allowed for this node.
+     *
+     * This default implementation always returns 1. Textual child nodes
+     * return the character count instead.
+     */
+    virtual long maxOffset() const;
+
     // -----------------------------------------------------------------------------
     // Integration with rendering tree
 
@@ -289,7 +323,7 @@ public:
     virtual void detach();
 
     void closeRenderer();
-    
+
     // -----------------------------------------------------------------------------
     // Methods for maintaining the state of the element between history navigation
 

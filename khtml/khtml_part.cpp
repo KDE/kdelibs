@@ -1521,6 +1521,9 @@ void KHTMLPart::begin( const KURL &url, int xOffset, int yOffset )
     d->m_doc = DOMImplementationImpl::instance()->createDocument( d->m_view );
   else
     d->m_doc = DOMImplementationImpl::instance()->createHTMLDocument( d->m_view );
+#ifndef KHTML_NO_CARET
+//  d->m_view->initCaret();
+#endif
 
   d->m_doc->ref();
   d->m_doc->setURL( m_url.url() );
@@ -2095,6 +2098,67 @@ void KHTMLPart::setOnlyLocalReferences(bool enable)
   d->m_onlyLocalReferences = enable;
 }
 
+void KHTMLPartPrivate::setFlagRecursively(
+	bool KHTMLPartPrivate::*flag, bool value)
+{
+  // first set it on the current one
+  this->*flag = value;
+
+  // descend into child frames recursively
+  QValueList<khtml::ChildFrame>::Iterator it = m_frames.begin();
+  for (; it != m_frames.end(); ++it) {
+    KHTMLPart *part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it).m_part);
+    if (part->inherits("KHTMLPart"))
+      part->d->setFlagRecursively(flag, value);
+  }/*next it*/
+
+  // do the same again for objects
+  it = m_objects.begin();
+  for (; it != m_objects.end(); ++it) {
+    KHTMLPart *part = static_cast<KHTMLPart *>((KParts::ReadOnlyPart *)(*it).m_part);
+    if (part->inherits("KHTMLPart"))
+      part->d->setFlagRecursively(flag, value);
+  }/*next it*/
+}
+
+void KHTMLPart::setCaretMode(bool enable)
+{
+#ifndef KHTML_NO_CARET
+  d->setFlagRecursively(&KHTMLPartPrivate::m_caretMode, enable);
+  // FIXME: this won't work on frames as expected
+  if (!isEditable()) {
+    if (enable)
+      view()->initCaret();
+    else
+      view()->caretOff();
+  }/*end if*/
+#endif // KHTML_NO_CARET
+}
+
+bool KHTMLPart::isCaretMode() const
+{
+  return d->m_caretMode;
+}
+
+void KHTMLPart::setEditable(bool enable)
+{
+#ifndef KHTML_NO_CARET
+  d->setFlagRecursively(&KHTMLPartPrivate::m_designMode, enable);
+  // FIXME: this won't work on frames as expected
+  if (!isCaretMode()) {
+    if (enable)
+      view()->initCaret();
+    else
+      view()->caretOff();
+  }/*end if*/
+#endif // KHTML_NO_CARET
+}
+
+bool KHTMLPart::isEditable() const
+{
+  return d->m_designMode;
+}
+
 void KHTMLPart::findTextBegin()
 {
   d->m_findPos = -1;
@@ -2519,7 +2583,7 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
       {
         int dummy;
         static_cast<khtml::RenderText *>(node->renderer())
-          ->cursorPos( d->m_startOffset, x, y, dummy ); // more precise than posOfChar
+          ->caretPos( d->m_startOffset, false, x, y, dummy, dummy ); // more precise than posOfChar
         //kdDebug(6050) << "topleft: " << x << "," << y << endl;
         if ( x != -1 || y != -1 )
         {
@@ -2564,9 +2628,9 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
                             d->m_selectionEnd.handle(), d->m_endOffset );
     if (d->m_selectionEnd.handle()->renderer() )
     {
-      int x, y, height;
+      int x, y, height, dummy;
       static_cast<khtml::RenderText *>(d->m_selectionEnd.handle()->renderer())
-          ->cursorPos( d->m_endOffset, x, y, height ); // more precise than posOfChar
+          ->caretPos( d->m_endOffset, false, x, y, dummy, height ); // more precise than posOfChar
       //kdDebug(6050) << "bottomright: " << x << "," << y+height << endl;
       if ( x != -1 || y != -1 )
       {
@@ -2732,18 +2796,32 @@ void KHTMLPart::setSelection( const DOM::Range &r )
     d->m_endOffset = r.endOffset();
     d->m_doc->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
                            d->m_selectionEnd.handle(),d->m_endOffset);
+#ifndef KHTML_NO_CARET
+    bool v = d->m_view->placeCaret();
+    emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+#endif
 }
 
 void KHTMLPart::slotClearSelection()
 {
     bool hadSelection = hasSelection();
+#ifndef KHTML_NO_CARET
+    kdDebug(6000) << "d->m_selectionStart " << d->m_selectionStart.handle()
+    		<< " d->m_selectionEnd " << d->m_selectionEnd.handle() << endl;
+    // nothing, leave selection parameters as is
+#else
     d->m_selectionStart = 0;
     d->m_startOffset = 0;
     d->m_selectionEnd = 0;
     d->m_endOffset = 0;
+#endif
     if ( d->m_doc ) d->m_doc->clearSelection();
     if ( hadSelection )
       emitSelectionChanged();
+#ifndef KHTML_NO_CARET
+    bool v = d->m_view->placeCaret();
+    emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+#endif
 }
 
 void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shiftPressed*/ )
@@ -4767,7 +4845,6 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
           innerNode.handle()->renderer()->checkSelectionPoint( event->x(), event->y(),
                                                                event->absX()-innerNode.handle()->renderer()->xPos(),
                                                                event->absY()-innerNode.handle()->renderer()->yPos(), node, offset);
-
           d->m_selectionStart = node;
           d->m_startOffset = offset;
           //if ( node )
@@ -4778,11 +4855,19 @@ void KHTMLPart::khtmlMousePressEvent( khtml::MousePressEvent *event )
           d->m_selectionEnd = d->m_selectionStart;
           d->m_endOffset = d->m_startOffset;
           d->m_doc->clearSelection();
+#ifndef KHTML_NO_CARET
+          bool v = d->m_view->placeCaret();
+          emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+#endif
       }
       else
       {
+#ifndef KHTML_NO_CARET
+        // simply leave it. Is this a good idea?
+#else
         d->m_selectionStart = DOM::Node();
         d->m_selectionEnd = DOM::Node();
+#endif
       }
       emitSelectionChanged();
       startAutoScroll();
@@ -4838,6 +4923,10 @@ void KHTMLPart::khtmlMouseDoubleClickEvent( khtml::MouseDoubleClickEvent *event 
         d->m_doc
           ->setSelection(d->m_selectionStart.handle(),d->m_startOffset,
                          d->m_selectionEnd.handle(),d->m_endOffset);
+#ifndef KHTML_NO_CARET
+        bool v = d->m_view->placeCaret();
+        emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+#endif
       }
     }
   }
@@ -4904,6 +4993,55 @@ void KHTMLPart::extendSelection( DOM::NodeImpl* node, long offset, DOM::Node& se
     ch = str[ offset ];
     //kdDebug() << " offset=" << offset << " ch=" << QString(ch) << endl;
   } while ( selectParagraph || (!ch.isSpace() && !ch.isPunct()) );
+}
+
+// This is not static because it's used in khtmlview.cpp, too
+/** Determines whether @p start_sp appears before @p end_sp in document order
+ */
+bool isBeforeNode(DOM::Node start_sp, DOM::Node end_sp) {
+  if ( start_sp.isNull() || end_sp.isNull() ) return true;
+  
+  bool result = false;
+  int start_depth=0, end_depth=0;
+  // First we find the depths of the two nodes in the tree (start_depth, end_depth)
+  DOM::Node n = start_sp;
+  while( !n.parentNode().isNull() ){
+    n = n.parentNode();
+    start_depth++;
+  }
+  n = end_sp;
+  while( !n.parentNode().isNull() ){
+    n = n.parentNode();
+    end_depth++;
+  }
+  // start_sp and end_sp initially point to selectionStart and selectionEnd
+  // here we climb up the tree with the deeper node, until both nodes have equal depth
+  while( end_depth > start_depth ){
+    end_sp = end_sp.parentNode();
+    end_depth--;
+  }
+  while( start_depth > end_depth ){
+    start_sp = start_sp.parentNode();
+    start_depth--;
+  }
+  // Climb the tree with both start_sp and end_sp until they have the same parent
+  while( start_sp.parentNode() != end_sp.parentNode() ){
+    start_sp = start_sp.parentNode();
+    end_sp = end_sp.parentNode();
+  }
+  // Now we iterator through the parent's children until we find start_sp or end_sp
+  n = start_sp.parentNode().firstChild();
+  while( !n.isNull() ){
+    if( n == start_sp ){
+      result=true;
+      break;
+    }else if( n == end_sp ){
+      result=false;
+      break;
+    }
+    n = n.nextSibling();
+  }
+  return result;
 }
 
 void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
@@ -5030,6 +5168,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
       //kdDebug( 6000 ) << "setting end of selection to " << d->m_selectionEnd.handle() << "/" << d->m_endOffset << endl;
 
       // we have to get to know if end is before start or not...
+#if 0
       DOM::Node n = d->m_selectionStart;
       d->m_startBeforeEnd = false;
       while(!n.isNull()) {
@@ -5046,6 +5185,9 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
         n = next;
         //d->m_view->viewport()->repaint(false);
       }
+#else
+      d->m_startBeforeEnd = isBeforeNode(d->m_selectionStart, d->m_selectionEnd);
+#endif
 
       if ( !d->m_selectionStart.isNull() && !d->m_selectionEnd.isNull() )
       {
@@ -5062,6 +5204,11 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
             ->setSelection(d->m_selectionEnd.handle(),d->m_endOffset,
                            d->m_selectionStart.handle(),d->m_startOffset);
       }
+#ifndef KHTML_NO_CARET
+      bool v = d->m_view->placeCaret();
+      emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+#endif
+
 #else
       if ( d->m_doc && d->m_view ) {
         QPoint diff( _mouse->globalPos() - d->m_dragLastPos );
@@ -5110,19 +5257,25 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
 #ifndef KHTML_NO_SELECTION
   // delete selection in case start and end position are at the same point
   if(d->m_selectionStart == d->m_selectionEnd && d->m_startOffset == d->m_endOffset) {
+#ifndef KHTML_NO_CARET
+    d->m_extendAtEnd = true;
+#else
     d->m_selectionStart = 0;
     d->m_selectionEnd = 0;
     d->m_startOffset = 0;
     d->m_endOffset = 0;
+#endif
     emitSelectionChanged();
   } else {
     // we have to get to know if end is before start or not...
     DOM::Node n = d->m_selectionStart;
     d->m_startBeforeEnd = false;
+    d->m_extendAtEnd = true;
     if( d->m_selectionStart == d->m_selectionEnd ) {
       if( d->m_startOffset < d->m_endOffset )
         d->m_startBeforeEnd = true;
     } else {
+#if 0
       while(!n.isNull()) {
         if(n == d->m_selectionEnd) {
           d->m_startBeforeEnd = true;
@@ -5136,6 +5289,9 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
         }
         n = next;
       }
+#else
+      d->m_startBeforeEnd = isBeforeNode(d->m_selectionStart, d->m_selectionEnd);
+#endif
     }
     if(!d->m_startBeforeEnd)
     {
@@ -5146,11 +5302,16 @@ void KHTMLPart::khtmlMouseReleaseEvent( khtml::MouseReleaseEvent *event )
       d->m_selectionEnd = tmpNode;
       d->m_endOffset = tmpOffset;
       d->m_startBeforeEnd = true;
+      d->m_extendAtEnd = false;
     }
+#ifndef KHTML_NO_CARET
+    bool v = d->m_view->placeCaret();
+    emitCaretPositionChanged(v ? d->caretNode() : 0, d->caretOffset());
+#endif
     // get selected text and paste to the clipboard
 #ifndef QT_NO_CLIPBOARD
     QString text = selectedText();
-    text.replace(QRegExp(QChar(0xa0)), " ");
+    text.replace(QChar(0xa0), ' ');
     disconnect( kapp->clipboard(), SIGNAL( selectionChanged()), this, SLOT( slotClearSelection()));
     kapp->clipboard()->setText(text,QClipboard::Selection);
     connect( kapp->clipboard(), SIGNAL( selectionChanged()), SLOT( slotClearSelection()));
@@ -5575,6 +5736,10 @@ khtml::Decoder *KHTMLPart::createDecoder()
 
   dec->setAutoDetectLanguage( d->m_autoDetectLanguage );
   return dec;
+}
+
+void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
+  emit caretPositionChanged(node, offset);
 }
 
 using namespace KParts;

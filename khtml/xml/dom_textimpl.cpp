@@ -229,6 +229,18 @@ void CharacterDataImpl::checkCharDataOperation( const unsigned long offset, int 
     }
 }
 
+long CharacterDataImpl::minOffset() const {
+  RenderText *r = static_cast<RenderText *>(renderer());
+  if (!r || !r->isText()) return 0;
+  return r->minOffset();
+}
+
+long CharacterDataImpl::maxOffset() const {
+  RenderText *r = static_cast<RenderText *>(renderer());
+  if (!r || !r->isText()) return (long)length();
+  return r->maxOffset();
+}
+
 // ---------------------------------------------------------------------------
 
 DOMString CommentImpl::nodeName() const

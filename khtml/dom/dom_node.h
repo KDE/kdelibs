@@ -869,6 +869,9 @@ public:
     unsigned long index() const;
     QString toHTML();
     void applyChanges();
+    /**
+     * @deprecated without substitution since 3.2
+     */
     void getCursor(int offset, int &_x, int &_y, int &height);
     /**
      * not part of the DOM.

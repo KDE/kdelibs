@@ -329,7 +329,7 @@ protected:
     int scriptStartLineno;
     int tagStartLineno;
 
-#define CBUFLEN 14
+#define CBUFLEN 20
     char cBuffer[CBUFLEN+2];
     unsigned int cBufferPos;
 

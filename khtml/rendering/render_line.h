@@ -53,14 +53,14 @@ public:
 private:
     // The normal operator new is disallowed.
     void* operator new(size_t sz) throw();
-    
+
 public:
-    virtual bool isInlineBox() { return false; }
-    virtual bool isInlineFlowBox() { return false; }
-    virtual bool isContainer() { return false; }
-    virtual bool isTextRun() { return false; }
-    virtual bool isRootInlineBox() { return false; }
-    
+    virtual bool isInlineBox() const { return false; }
+    virtual bool isInlineFlowBox() const { return false; }
+    virtual bool isContainer() const { return false; }
+    virtual bool isInlineTextBox() const { return false; }
+    virtual bool isRootInlineBox() const { return false; }
+
     bool isConstructed() { return m_constructed; }
     virtual void setConstructed() {
         m_constructed = true;
@@ -78,25 +78,32 @@ public:
     void setParent(InlineFlowBox* par) { m_parent = par; }
 
     void setWidth(short w) { m_width = w; }
-    short width() { return m_width; }
+    short width() const { return m_width; }
 
     void setXPos(short x) { m_x = x; }
-    short xPos() { return m_x; }
+    short xPos() const { return m_x; }
 
     void setYPos(int y) { m_y = y; }
-    int yPos() { return m_y; }
+    int yPos() const { return m_y; }
 
     void setHeight(int h) { m_height = h; }
-    int height() { return m_height; }
-    
+    int height() const { return m_height; }
+
     void setBaseline(int b) { m_baseline = b; }
-    int baseline() { return m_baseline; }
+    int baseline() const { return m_baseline; }
 
-    virtual bool hasTextChildren() { return true; }
+    virtual bool hasTextChildren() const { return true; }
 
-    virtual int topOverflow() { return yPos(); }
-    virtual int bottomOverflow() { return yPos()+height(); }
-    
+    virtual int topOverflow() const { return yPos(); }
+    virtual int bottomOverflow() const { return yPos()+height(); }
+
+    /** Returns the minimum offset this inline box contains. Defaults to 0.
+     */
+    virtual long minOffset() const { return 0; }
+    /** Returns the maximum offset this inline box contains. Defaults to 1.
+     */
+    virtual long maxOffset() const { return 1; }
+
 public: // FIXME: Would like to make this protected, but methods are accessing these
         // members over in the part.
     RenderObject* m_object;
@@ -106,7 +113,7 @@ public: // FIXME: Would like to make this protected, but methods are accessing t
     short m_width;
     int m_height;
     int m_baseline;
-    
+
     bool m_firstLine : 1;
     bool m_constructed : 1;
 
@@ -131,11 +138,11 @@ public:
     void setNextLineBox(InlineRunBox* n) { m_nextLine = n; }
     void setPreviousLineBox(InlineRunBox* p) { m_prevLine = p; }
 
-    virtual void paintBackgroundAndBorder(QPainter *p, int _x, int _y,
-                       int _w, int _h, int _tx, int _ty, int xOffsetOnLine) {};
-    virtual void paintDecorations(QPainter *p, int _x, int _y,
-                       int _w, int _h, int _tx, int _ty) {};
-    
+    virtual void paintBackgroundAndBorder(QPainter */*p*/, int /*_x*/, int /*_y*/,
+                       int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/, int /*xOffsetOnLine*/) {};
+    virtual void paintDecorations(QPainter */*p*/, int /*_x*/, int /*_y*/,
+                       int /*_w*/, int /*_h*/, int /*_tx*/, int /*_ty*/) {};
+
 protected:
     InlineRunBox* m_prevLine;  // The previous box that also uses our RenderObject
     InlineRunBox* m_nextLine;  // The next box that also uses our RenderObject
@@ -153,11 +160,11 @@ public:
         m_hasTextChildren = false;
     }
 
-    virtual bool isInlineFlowBox() { return true; }
+    virtual bool isInlineFlowBox() const { return true; }
 
     InlineBox* firstChild() { return m_firstChild; }
     InlineBox* lastChild() { return m_lastChild; }
-    
+
     virtual void setConstructed() {
         InlineBox::setConstructed();
         if (m_firstChild)
@@ -173,7 +180,7 @@ public:
         }
         child->setFirstLineStyleBit(m_firstLine);
         child->setParent(this);
-        if (child->isTextRun())
+        if (child->isInlineTextBox())
             m_hasTextChildren = true;
     }
 
@@ -181,7 +188,7 @@ public:
                        int _w, int _h, int _tx, int _ty, int xOffsetOnLine);
     virtual void paintDecorations(QPainter *p, int _x, int _y,
                        int _w, int _h, int _tx, int _ty);
-    
+
     int marginBorderPaddingLeft();
     int marginBorderPaddingRight();
     int marginLeft();
@@ -190,14 +197,14 @@ public:
     int borderRight() { if (includeRightEdge()) return object()->borderRight(); return 0; }
     int paddingLeft() { if (includeLeftEdge()) return object()->paddingLeft(); return 0; }
     int paddingRight() { if (includeRightEdge()) return object()->paddingRight(); return 0; }
-    
+
     bool includeLeftEdge() { return m_includeLeftEdge; }
     bool includeRightEdge() { return m_includeRightEdge; }
     void setEdges(bool includeLeft, bool includeRight) {
         m_includeLeftEdge = includeLeft;
         m_includeRightEdge = includeRight;
     }
-    virtual bool hasTextChildren() { return m_hasTextChildren; }
+    virtual bool hasTextChildren() const { return m_hasTextChildren; }
 
     // Helper functions used during line construction and placement.
     void determineSpacingForFlowBoxes(bool lastLine, RenderObject* endObject);
@@ -214,9 +221,9 @@ public:
     void placeBoxesVertically(int y, int maxHeight, int maxAscent, bool strictMode,
                               int& topPosition, int& bottomPosition);
     void shrinkBoxesWithNoTextChildren(int topPosition, int bottomPosition);
-    
-    virtual void setOverflowPositions(int top, int bottom) {}
-    
+
+    virtual void setOverflowPositions(int /*top*/, int /*bottom*/) {}
+
 protected:
     InlineBox* m_firstChild;
     InlineBox* m_lastChild;
@@ -233,10 +240,10 @@ public:
     {
         m_topOverflow = m_bottomOverflow = 0;
     }
-    
-    virtual bool isRootInlineBox() { return true; }
-    virtual int topOverflow() { return m_topOverflow; }
-    virtual int bottomOverflow() { return m_bottomOverflow; }
+
+    virtual bool isRootInlineBox() const { return true; }
+    virtual int topOverflow() const { return m_topOverflow; }
+    virtual int bottomOverflow() const { return m_bottomOverflow; }
     virtual void setOverflowPositions(int top, int bottom) { m_topOverflow = top; m_bottomOverflow = bottom; }
 
 protected:

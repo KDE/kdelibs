@@ -4,7 +4,6 @@
 #ifndef CSSPROPERTIES_H
 #define CSSPROPERTIES_H
 
-DOM::DOMString getPropertyName(unsigned short id);
 
 #define CSS_PROP_INVALID 0
 #define CSS_PROP_MIN 1
@@ -117,8 +116,9 @@ DOM::DOMString getPropertyName(unsigned short id);
 #define CSS_PROP_SCROLLBAR_TRACK_COLOR 107
 #define CSS_PROP_SCROLLBAR_ARROW_COLOR 108
 #define CSS_PROP__KONQ_FLOW_MODE 109
+#define CSS_PROP__KONQ_USER_INPUT 110
 
 #define CSS_PROP_MAX CSS_PROP_Z_INDEX
-#define CSS_PROP_TOTAL 110
+#define CSS_PROP_TOTAL 111
 #endif
 

@@ -391,6 +391,86 @@ static void embed( QChar::Direction d )
     adjustEmbeddding = b;
 }
 
+InlineFlowBox* RenderFlow::createLineBoxes(RenderObject* obj)
+{
+    // See if we have an unconstructed line box for this object that is also
+    // the last item on the line.
+    KHTMLAssert(obj->isFlow() || obj == this);
+    RenderFlow* flow = static_cast<RenderFlow*>(obj);
+
+    // Get the last box we made for this render object.
+    InlineFlowBox* box = flow->lastLineBox();
+
+    // If this box is constructed then it is from a previous line, and we need
+    // to make a new box for our line.  If this box is unconstructed but it has
+    // something following it on the line, then we know we have to make a new box
+    // as well.  In this situation our inline has actually been split in two on
+    // the same line (this can happen with very fancy language mixtures).
+    if (!box || box->isConstructed() || box->nextOnLine()) {
+        // We need to make a new box for this render object.  Once
+        // made, we need to place it at the end of the current line.
+        InlineBox* newBox = obj->createInlineBox(false);
+        KHTMLAssert(newBox->isInlineFlowBox());
+        box = static_cast<InlineFlowBox*>(newBox);
+	// FIXME: not ported yet, it is set explicitly in computePositions...
+//        box->setFirstLineStyleBit(m_firstLine);
+
+        // We have a new box. Append it to the inline box we get by constructing our
+        // parent.  If we have hit the block itself, then |box| represents the root
+        // inline box for the line, and it doesn't have to be appended to any parent
+        // inline.
+        if (obj != this) {
+            InlineFlowBox* parentBox = createLineBoxes(obj->parent());
+            parentBox->addToLine(box);
+        }
+    }
+
+    return box;
+}
+
+InlineFlowBox* RenderFlow::constructLine(const BidiIterator &start, const BidiIterator &end)
+{
+    if (!sruns)
+        return 0; // We had no runs. Don't make a root inline box at all. The line is empty.
+
+    InlineFlowBox* parentBox = 0;
+    QPtrListIterator<BidiRun> it(*sruns);
+    for (BidiRun *r; (r = it.current()); ++it) {
+        // Create a box for our object.
+        r->box = r->obj->createInlineBox(r->obj->isPositioned());
+
+        // If we have no parent box yet, or if the run is not simply a sibling,
+        // then we need to construct inline boxes as necessary to properly enclose the
+        // run's inline box.
+        if (!parentBox || (parentBox->object() != r->obj->parent()))
+            // Create new inline boxes all the way back to the appropriate insertion point.
+            parentBox = createLineBoxes(r->obj->parent());
+
+        // Append the inline box to this line.
+        parentBox->addToLine(r->box);
+    }
+
+    // We should have a root inline box.  It should be unconstructed and
+    // be the last continuation of our line list.
+    KHTMLAssert(lastLineBox() && !lastLineBox()->isConstructed());
+
+    // Set bits on our inline flow boxes that indicate which sides should
+    // paint borders/margins/padding.  This knowledge will ultimately be used when
+    // we determine the horizontal positions and widths of all the inline boxes on
+    // the line.
+    RenderObject* endObject = 0;
+    bool lastLine = !end.obj;
+    if (end.obj && end.pos == 0)
+        endObject = end.obj;
+    // FIXME: this is a dummy call, the function has no implementation
+    lastLineBox()->determineSpacingForFlowBoxes(lastLine, endObject);
+
+    // Now mark the line boxes as being constructed.
+    lastLineBox()->setConstructed();
+
+    // Return the last line.
+    return lastLineBox();
+}
 
 // collects one line of the paragraph and transforms it to visual order
 void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &end)
@@ -404,10 +484,6 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 #if BIDI_DEBUG > 1
     kdDebug(6041) << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos << endl;
 #endif
-
-    QPtrList<BidiRun> runs;
-    runs.setAutoDelete(true);
-    sruns = &runs;
 
     //    context->ref();
 
@@ -793,7 +869,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     // first find highest and lowest levels
     uchar levelLow = 128;
     uchar levelHigh = 0;
-    BidiRun *r = runs.first();
+    BidiRun *r = sruns->first();
 
     while ( r ) {
         //paintf("level = %d\n", r->level);
@@ -801,7 +877,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
             levelHigh = r->level;
         if ( r->level < levelLow )
             levelLow = r->level;
-        r = runs.next();
+        r = sruns->next();
     }
 
     // implements reordering of the line (L2 according to Bidi spec):
@@ -820,17 +896,17 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
         kdDebug(6041) << "    " << r2 << "  start=" << r2->start << "  stop=" << r2->stop << "  level=" << (uint)r2->level << endl;
 #endif
 
-    int count = runs.count() - 1;
+    int count = sruns->count() - 1;
 
     // do not reverse for visually ordered web sites
     if(!style()->visuallyOrdered()) {
         while(levelHigh >= levelLow) {
             int i = 0;
             while ( i < count ) {
-                while(i < count && runs.at(i)->level < levelHigh)
+                while(i < count && sruns->at(i)->level < levelHigh)
                     i++;
                 int start = i;
-                while(i <= count && runs.at(i)->level >= levelHigh)
+                while(i <= count && sruns->at(i)->level >= levelHigh)
                     i++;
                 int end = i-1;
 
@@ -838,10 +914,10 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
                     //kdDebug(6041) << "reversing from " << start << " to " << end << endl;
                     for(int j = 0; j < (end-start+1)/2; j++)
                         {
-                            BidiRun *first = runs.take(start+j);
-                            BidiRun *last = runs.take(end-j-1);
-                            runs.insert(start+j, last);
-                            runs.insert(end-j, first);
+                            BidiRun *first = sruns->take(start+j);
+                            BidiRun *last = sruns->take(end-j-1);
+                            sruns->insert(start+j, last);
+                            sruns->insert(end-j, first);
                         }
                 }
                 i++;
@@ -860,47 +936,54 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
         kdDebug(6041) << "    " << r3 << endl;
     }
 #endif
+}
 
+void RenderFlow::computePositionsForLine(InlineFlowBox* lineBox, BidiContext* endEmbed)
+{
     int maxPositionTop = 0;
     int maxPositionBottom = 0;
     int maxAscent = 0;
     int maxDescent = 0;
-    r = runs.first();
+    BidiRun *r = sruns->first();
     while ( r ) {
-        r->height = r->obj->lineHeight( firstLine );
-	r->baseline = r->obj->baselinePosition( firstLine );
+        int height = r->obj->lineHeight( firstLine );
+	int baseline = r->obj->baselinePosition( firstLine );
+        r->box->setHeight(height);
+	r->box->setBaseline(baseline);
 // 	if ( r->baseline > r->height )
 // 	    r->baseline = r->height;
+	// FIXME: where did this go in WebCore?
         r->vertical = r->obj->verticalPositionHint( firstLine );
         //kdDebug(6041) << "object="<< r->obj << " height="<<r->height<<" baseline="<< r->baseline << " vertical=" << r->vertical <<endl;
         //int ascent;
         if ( r->vertical == PositionTop ) {
-            if ( maxPositionTop < r->height ) maxPositionTop = r->height;
+            if ( maxPositionTop < height ) maxPositionTop = height;
         }
         else if ( r->vertical == PositionBottom ) {
-            if ( maxPositionBottom < r->height ) maxPositionBottom = r->height;
+            if ( maxPositionBottom < height ) maxPositionBottom = height;
         }
         else {
-            int ascent = r->baseline - r->vertical;
-            int descent = r->height - ascent;
+            int ascent = baseline - r->vertical;
+            int descent = height - ascent;
             if(maxAscent < ascent) maxAscent = ascent;
             if(maxDescent < descent) maxDescent = descent;
         }
-        r = runs.next();
+        r = sruns->next();
     }
     if ( maxAscent+maxDescent < QMAX( maxPositionTop, maxPositionBottom ) ) {
         // now the computed lineheight needs to be extended for the
         // positioned elements
         // see khtmltests/rendering/html_align.html
         // ### only iterate over the positioned ones!
-        for ( r = runs.first(); r; r = runs.next() ) {
+        for ( r = sruns->first(); r; r = sruns->next() ) {
+	    int height = r->box->height();
             if ( r->vertical == PositionTop ) {
-                if ( maxAscent + maxDescent < r->height )
-                    maxDescent = r->height - maxAscent;
+                if ( maxAscent + maxDescent < height )
+                    maxDescent = height - maxAscent;
             }
             else if ( r->vertical == PositionBottom ) {
-                if ( maxAscent + maxDescent < r->height )
-                    maxAscent = r->height - maxDescent;
+                if ( maxAscent + maxDescent < height )
+                    maxAscent = height - maxDescent;
             }
             else
                 continue;
@@ -913,7 +996,7 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     int maxHeight = maxAscent + maxDescent;
     // CSS2: 10.8.1: line-height on the block level element specifies the *minimum*
     // height of the generated line box
-    r = runs.first();
+    r = sruns->first();
     // ### we have no reliable way of detecting empty lineboxes - which
     // are not allowed to have any height. sigh.(Dirk)
 //     if ( r ) {
@@ -926,30 +1009,32 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
     kdDebug( 6040 ) << "starting run.." << endl;
 #endif
     while ( r ) {
+        int width;
         if(r->vertical == PositionTop)
             r->vertical = m_height;
         else if(r->vertical == PositionBottom)
-            r->vertical = m_height + maxHeight - r->height;
+            r->vertical = m_height + maxHeight - r->box->height();
         else
-            r->vertical += m_height + maxAscent - r->baseline;
+            r->vertical += m_height + maxAscent - r->box->baseline();
 
         if(r->obj->isText())
-            r->width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start, firstLine);
+            width = static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start, firstLine);
         else {
             r->obj->calcWidth();
-            r->width = r->obj->width()+r->obj->marginLeft()+r->obj->marginRight();
+            width = r->obj->width()+r->obj->marginLeft()+r->obj->marginRight();
         }
+	r->box->setWidth(width);
 #if BIDI_DEBUG > 0
 	kdDebug(6040) << "object="<< r->obj << " placing at vertical=" << r->vertical <<" width=" << r->width <<endl;
 #endif
-        totWidth += r->width;
-        r = runs.next();
+        totWidth += width;
+        r = sruns->next();
     }
     //kdDebug(6040) << "yPos of line=" << m_height << "  lineBoxHeight=" << maxHeight << endl;
 
     // now construct the reordered string out of the runs...
 
-    r = runs.first();
+    r = sruns->first();
     int x = leftOffset(m_height);
     int availableWidth = lineWidth(m_height);
     switch(style()->textAlign()) {
@@ -995,16 +1080,22 @@ void RenderFlow::bidiReorderLine(const BidiIterator &start, const BidiIterator &
 		totWidth += spaceAdd;
 	    }
 	}
-        r->obj->position(x, r->vertical, r->start, r->stop - r->start, r->width, r->level%2, firstLine, spaceAdd);
-        x += r->width + spaceAdd;
-        r = runs.next();
+	r->box->setXPos(x);
+	r->box->setYPos(r->vertical);
+	// FIXME: this assignment is probably redundant
+//	r->box->setBaseline(baselinePosition( firstLine ));
+	r->box->setFirstLineStyleBit(firstLine);
+//	kdDebug(6040) << "start: " << r->start << " stop: " << r->stop << endl;
+        r->obj->position(r->box, r->start, r->stop - r->start, r->level%2, spaceAdd);
+        x += r->box->width() + spaceAdd;
+	if (r->box->isInlineTextBox())
+	    r->box->setWidth(r->box->width() + spaceAdd);
+        r = sruns->next();
     }
 
     m_height += maxHeight;
 
-    sruns = 0;
 }
-
 
 void RenderFlow::layoutInlineChildren( bool relayoutChildren )
 {
@@ -1025,6 +1116,9 @@ void RenderFlow::layoutInlineChildren( bool relayoutChildren )
     m_height += paddingTop();
     toAdd += paddingBottom();
 
+    // Clear out our line boxes.
+    deleteLineBoxes();
+
     if(firstChild()) {
         // layout replaced elements
         RenderObject *o = first( this );
@@ -1037,7 +1131,9 @@ void RenderFlow::layoutInlineChildren( bool relayoutChildren )
                     o->layout();
             }
             else if(o->isText())
-                static_cast<RenderText *>(o)->deleteSlaves( renderArena() );
+                static_cast<RenderText *>(o)->deleteTextBoxes( renderArena() );
+            else if (o->isFlow()/* && !endOfInline*/)
+                static_cast<RenderFlow*>(o)->deleteLineBoxes();
             o = Bidinext( this, o );
         }
 
@@ -1060,11 +1156,32 @@ void RenderFlow::layoutInlineChildren( bool relayoutChildren )
 
         firstLine = true;
         while( !end.atEnd() ) {
+            QPtrList<BidiRun> runs;
+            runs.setAutoDelete(true);
+            sruns = &runs;
+
             start = end;
 
             end = findNextLineBreak(start);
             if( start.atEnd() ) break;
 	    bidiReorderLine(start, end);
+
+	    {
+                if (sruns && sruns->count() > 0) {
+                    InlineFlowBox* lineBox = constructLine(start, end);
+                    if (lineBox) {
+                        // Now we position all of our text boxes horizontally.
+//                        computeHorizontalPositionsForLine(lineBox, context);
+
+                        // Now position our text boxes vertically.
+//                        computeVerticalPositionsForLine(lineBox);
+			computePositionsForLine(lineBox, context);
+
+			// FIXME: needs porting of sruns to s*BidiRun stuff
+                        //deleteBidiRuns(renderArena());
+                    }
+                }
+	    }
 
             if( end == start || (end.obj && end.obj->isBR() && !start.obj->isBR() ) ) {
 		adjustEmbeddding = true;
@@ -1079,6 +1196,7 @@ void RenderFlow::layoutInlineChildren( bool relayoutChildren )
             newLine();
             firstLine = false;
         }
+	sruns = 0;
 
 	// clean up
 	while ( context ) {
@@ -1150,7 +1268,7 @@ BidiIterator RenderFlow::findNextLineBreak(BidiIterator &start)
 
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
-        kdDebug(6041) << "new object "<< o <<" width = " << w <<" tmpw = " << tmpW << endl;
+        kdDebug(6041) << "new "<< o->renderName() << "@"<< o <<" width = " << w <<" tmpw = " << tmpW << endl;
 #endif
         if(o->isBR()) {
             if( w + tmpW <= width ) {

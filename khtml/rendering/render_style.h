@@ -445,6 +445,10 @@ enum ECursor {
     CURSOR_S_RESIZE, CURSOR_W_RESIZE, CURSOR_TEXT, CURSOR_WAIT, CURSOR_HELP
 };
 
+enum EUserInput {
+    UI_ENABLED, UI_DISABLED, UI_NONE
+};
+
 enum ContentType {
     CONTENT_NONE, CONTENT_OBJECT, CONTENT_TEXT,
     CONTENT_ATTR
@@ -513,7 +517,7 @@ protected:
                 // non CSS2 inherited
                 bool _visuallyOrdered : 1;
                 bool _htmlHacks :1;
-                int _unused : 2;
+                EUserInput _user_input : 2;
             } f;
             Q_UINT32 _iflags;
         };
@@ -590,7 +594,7 @@ protected:
 	inherited_flags.f._white_space = NORMAL;
 	inherited_flags.f._visuallyOrdered = false;
 	inherited_flags.f._htmlHacks=false;
-	inherited_flags.f._unused = 0;
+	inherited_flags.f._user_input = UI_NONE;
 
 	noninherited_flags.f._display = INLINE;
 	noninherited_flags.f._bg_repeat = REPEAT;
@@ -748,6 +752,8 @@ public:
 
     ECursor cursor() const { return inherited_flags.f._cursor_style; }
 
+    EUserInput userInput() const { return inherited_flags.f._user_input; }
+
 // attribute setter methods
 
     void setDisplay(EDisplay v) {  noninherited_flags.f._display = v; }
@@ -853,6 +859,8 @@ public:
     void setPaddingRight(Length v)  {  SET_VAR(surround,padding.right,v) }
 
     void setCursor( ECursor c ) { inherited_flags.f._cursor_style = c; }
+    
+    void setUserInput(EUserInput ui) { inherited_flags.f._user_input = ui; }
 
     bool htmlHacks() const { return inherited_flags.f._htmlHacks; }
     void setHtmlHacks(bool b=true) { inherited_flags.f._htmlHacks = b; }

@@ -321,6 +321,9 @@ public:
     void setTextColor( QColor color ) { m_textColor = color; }
     QColor textColor() const { return m_textColor; }
 
+    void setDesignMode(bool b);
+    bool designMode() const;
+
     // internal
     NodeImpl *findElement( Id id );
 

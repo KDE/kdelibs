@@ -80,6 +80,12 @@ int main(int argc, char *argv[])
     viewMenu.appendChild( e );
     QDomElement toolBar = d.documentElement().firstChild().nextSibling().toElement();
     e = d.createElement( "action" );
+    e.setAttribute( "name", "editable" );
+    toolBar.insertBefore( e, toolBar.firstChild() );
+    e = d.createElement( "action" );
+    e.setAttribute( "name", "navigable" );
+    toolBar.insertBefore( e, toolBar.firstChild() );
+    e = d.createElement( "action" );
     e.setAttribute( "name", "reload" );
     toolBar.insertBefore( e, toolBar.firstChild() );
     e = d.createElement( "action" );
@@ -89,7 +95,12 @@ int main(int argc, char *argv[])
     (void)new KAction( "Reload", "reload", Qt::Key_F5, dummy, SLOT( reload() ), doc->actionCollection(), "reload" );
     KAction* kprint = new KAction( "Print", "print", 0, doc->browserExtension(), SLOT( print() ), doc->actionCollection(), "print" );
     kprint->setEnabled(true);
-
+    KToggleAction *ta = new KToggleAction( "Navigable", "editclear", 0, doc->actionCollection(), "navigable" );
+    ta->setChecked(doc->isCaretMode());
+    QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleNavigable(bool) ));
+    ta = new KToggleAction( "Editable", "edit", 0, doc->actionCollection(), "editable" );
+    ta->setChecked(doc->isEditable());
+    QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT( toggleEditable(bool) ));
     toplevel->guiFactory()->addClient( doc );
 
     doc->setJScriptEnabled(true);

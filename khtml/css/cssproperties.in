@@ -144,4 +144,6 @@ scrollbar-3dlight-color
 scrollbar-darkshadow-color
 scrollbar-track-color
 scrollbar-arrow-color
+# konqueror internals
 -konq-flow-mode
+-konq-user-input

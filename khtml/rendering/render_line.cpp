@@ -32,13 +32,13 @@
 #include "xml/dom_nodeimpl.h"
 #include "xml/dom_docimpl.h"
 #include "html/html_formimpl.h"
-#include "render_inline.h"
-#include "render_block.h"
+//#include "render_inline.h"
+//#include "render_block.h"
 #include "render_arena.h"
 #include "render_line.h"
 
 #include "khtmlview.h"
-#include "htmltags.h"
+#include "misc/htmltags.h"
 
 using namespace DOM;
 using namespace khtml;
@@ -79,11 +79,11 @@ int InlineFlowBox::marginLeft()
 {
     if (!includeLeftEdge())
         return 0;
-    
+
     RenderStyle* cstyle = object()->style();
     Length margin = cstyle->marginLeft();
-    if (margin.type != Variable)
-        return (margin.type == Fixed ? margin.value : object()->marginLeft());
+    if (margin.type() != Variable)
+        return (margin.type() == Fixed ? margin.value() : object()->marginLeft());
     return 0;
 }
 
@@ -94,8 +94,8 @@ int InlineFlowBox::marginRight()
     
     RenderStyle* cstyle = object()->style();
     Length margin = cstyle->marginRight();
-    if (margin.type != Variable)
-        return (margin.type == Fixed ? margin.value : object()->marginRight());
+    if (margin.type() != Variable)
+        return (margin.type() == Fixed ? margin.value() : object()->marginRight());
     return 0;
 }
 
@@ -143,9 +143,10 @@ bool InlineFlowBox::prevOnLineExists()
 
 bool InlineFlowBox::onEndChain(RenderObject* endObject)
 {
+#if 0	// FIXME: needs merge
     if (!endObject)
         return false;
-    
+
     if (endObject == object())
         return true;
 
@@ -159,22 +160,24 @@ bool InlineFlowBox::onEndChain(RenderObject* endObject)
     }
 
     return true;
+#endif
 }
 
 void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* endObject)
 {
+#if 0	// FIXME: needs merge
     // All boxes start off open.  They will not apply any margins/border/padding on
     // any side.
     bool includeLeftEdge = false;
     bool includeRightEdge = false;
 
     RenderFlow* flow = static_cast<RenderFlow*>(object());
-    
+
     if (!flow->firstChild())
         includeLeftEdge = includeRightEdge = true; // Empty inlines never split across lines.
     else if (parent()) { // The root inline box never has borders/margins/padding.
         bool ltr = flow->style()->direction() == LTR;
-        
+
         // Check to see if all initial lines are unconstructed.  If so, then
         // we know the inline began on this line.
         if (!flow->firstLineBox()->isConstructed()) {
@@ -217,10 +220,12 @@ void InlineFlowBox::determineSpacingForFlowBoxes(bool lastLine, RenderObject* en
             currFlow->determineSpacingForFlowBoxes(lastLine, endObject);
         }
     }
+#endif
 }
 
 int InlineFlowBox::placeBoxesHorizontally(int x)
 {
+#if 0	// FIXME: needs merge
     // Set our x position.
     setXPos(x);
 
@@ -229,7 +234,7 @@ int InlineFlowBox::placeBoxesHorizontally(int x)
     
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         if (curr->object()->isText()) {
-            TextRun* text = static_cast<TextRun*>(curr);
+            InlineTextBox* text = static_cast<InlineTextBox*>(curr);
             text->setXPos(x);
             x += text->width();
         }
@@ -257,10 +262,14 @@ int InlineFlowBox::placeBoxesHorizontally(int x)
     x += borderRight() + paddingRight();
     setWidth(x-startX);
     return x;
+#else
+  return 0;
+#endif
 }
 
 void InlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
 {
+#if 0	// FIXME: needs merge
     int maxPositionTop = 0;
     int maxPositionBottom = 0;
     int maxAscent = 0;
@@ -271,7 +280,7 @@ void InlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
     while (curr && !curr->element())
         curr = curr->container();
     bool strictMode = (curr && curr->element()->getDocument()->inStrictMode());
-    
+
     computeLogicalBoxHeights(maxPositionTop, maxPositionBottom, maxAscent, maxDescent, strictMode);
 
     if (maxAscent + maxDescent < QMAX(maxPositionTop, maxPositionBottom))
@@ -289,6 +298,7 @@ void InlineFlowBox::verticallyAlignBoxes(int& heightOfBlock)
         shrinkBoxesWithNoTextChildren(topPosition, bottomPosition);
     
     heightOfBlock += maxHeight;
+#endif
 }
 
 void InlineFlowBox::adjustMaxAscentAndDescent(int& maxAscent, int& maxDescent,
@@ -319,6 +329,7 @@ void InlineFlowBox::adjustMaxAscentAndDescent(int& maxAscent, int& maxDescent,
 void InlineFlowBox::computeLogicalBoxHeights(int& maxPositionTop, int& maxPositionBottom,
                                              int& maxAscent, int& maxDescent, bool strictMode)
 {
+#if 0	// FIXME: needs merge
     if (isRootInlineBox()) {
         // Examine our root box.
         setHeight(object()->lineHeight(m_firstLine));
@@ -338,7 +349,7 @@ void InlineFlowBox::computeLogicalBoxHeights(int& maxPositionTop, int& maxPositi
                 maxDescent = descent;
         }
     }
-    
+
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         curr->setHeight(curr->object()->lineHeight(m_firstLine));
         curr->setBaseline(curr->object()->baselinePosition(m_firstLine));
@@ -363,6 +374,7 @@ void InlineFlowBox::computeLogicalBoxHeights(int& maxPositionTop, int& maxPositi
         if (curr->isInlineFlowBox())
             static_cast<InlineFlowBox*>(curr)->computeLogicalBoxHeights(maxPositionTop, maxPositionBottom, maxAscent, maxDescent, strictMode);
     }
+#endif
 }
 
 void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bool strictMode,
@@ -370,7 +382,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
 {
     if (isRootInlineBox())
         setYPos(y + maxAscent - baseline());// Place our root box.
-    
+
     for (InlineBox* curr = firstChild(); curr; curr = curr->nextOnLine()) {
         // Adjust boxes to use their real box y/height and not the logical height (as dictated by
         // line-height).
@@ -392,7 +404,7 @@ void InlineFlowBox::placeBoxesVertically(int y, int maxHeight, int maxAscent, bo
         int newY = curr->yPos();
         int newHeight = curr->height();
         int newBaseline = curr->baseline();
-        if (curr->isTextRun() || curr->isInlineFlowBox()) {
+        if (curr->isInlineTextBox() || curr->isInlineFlowBox()) {
             const QFontMetrics &fm = curr->object()->fontMetrics( m_firstLine );
             newBaseline = fm.ascent();
             newY += curr->baseline() - newBaseline;
@@ -457,10 +469,11 @@ void InlineFlowBox::shrinkBoxesWithNoTextChildren(int topPos, int bottomPos)
 void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
                                              int _w, int _h, int _tx, int _ty, int xOffsetOnLine)
 {
+#if 0	// FIXME: needs merge
     // Move x/y to our coordinates.
     _tx += m_x;
     _ty += m_y;
-    
+
     int w = width();
     int h = height();
 
@@ -509,10 +522,12 @@ void InlineFlowBox::paintBackgroundAndBorder(QPainter *p, int _x, int _y,
         if (parent() && object()->style()->hasBorder())
             object()->paintBorder(p, _tx, _ty, w, h, object()->style(), includeLeftEdge(), includeRightEdge());
     }
+#endif
 }
 
 static bool shouldDrawDecoration(RenderObject* obj)
 {
+#if 0	// FIXME: needs merge
     bool shouldDraw = false;
     for (RenderObject* curr = obj->firstChild();
          curr; curr = curr->nextSibling()) {
@@ -524,14 +539,16 @@ static bool shouldDrawDecoration(RenderObject* obj)
                  !curr->element() || !curr->element()->containsOnlyWhitespace())) {
             shouldDraw = true;
             break;
-        }	
+        }
     }
     return shouldDraw;
+#endif
 }
 
 void InlineFlowBox::paintDecorations(QPainter *p, int _x, int _y,
                                      int _w, int _h, int _tx, int _ty)
 {
+#if 0	// FIXME: needs merge
     // Now paint our text decorations. We only do this if we aren't in quirks mode (i.e., in
     // almost-strict mode or strict mode).
     _tx += m_x;
@@ -559,4 +576,5 @@ void InlineFlowBox::paintDecorations(QPainter *p, int _x, int _y,
             p->drawLineForText(_tx, _ty, 2*m_baseline/3, w);
         }
     }
+#endif
 }

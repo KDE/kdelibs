@@ -44,6 +44,7 @@ cols, ATTR_COLS
 colspan, ATTR_COLSPAN
 compact, ATTR_COMPACT
 content, ATTR_CONTENT
+contenteditable, ATTR_CONTENTEDITABLE
 coords, ATTR_COORDS
 data, ATTR_DATA
 datetime, ATTR_DATETIME
