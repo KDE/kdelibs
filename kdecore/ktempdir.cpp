@@ -58,6 +58,7 @@ KTempDir::KTempDir(QString directoryPrefix, int mode)
 {
    bAutoDelete = false;
    bExisting = false;
+   mError=0;
    if (directoryPrefix.isEmpty())
    {
       directoryPrefix = locateLocal("tmp", KGlobal::instance()->instanceName());
