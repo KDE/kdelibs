@@ -17,8 +17,16 @@
     Boston, MA 02111-1307, USA.
 */
 
+/*************************************************************************
+ * $Id$
+ *
+ * $Log$
+ *
+ *************************************************************************/
+
 #define PAINT_BENCH
 #undef PAINT_BENCH
+
 #ifdef PAINT_BENCH
 #include <qdatetm.h>
 #include <stdio.h>
@@ -27,7 +35,7 @@
 #include <qpainter.h>
 #include <qcolor.h>
 #include "kled.h"
-#include "kled.h"
+#include "kled.h" // whats this use for ?? (jha)
 
 const QRgb
   KLed::lightcolor[]={ 0x00FFFF, 0x00A5FF, 0x0000FF, 0x00FF00, 0xFF0000 },
