@@ -400,7 +400,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 	// and attach to them.
 	QString dcopSrv;
 	dcopSrv = ::getenv("DCOPSERVER");
-	if (dcopSrv.isNull()) {
+	if (dcopSrv.isEmpty()) {
 	    QString fName = ::getenv("HOME");
 	    fName += "/.DCOPserver";
 	    QFile f(fName);
