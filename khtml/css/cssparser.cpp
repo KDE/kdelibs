@@ -2419,14 +2419,7 @@ QPtrList<QChar> StyleBaseImpl::splitShorthandProperties(const QChar *curP, const
     bool last = false;
     QPtrList<QChar> list;
     while(!last) {
-        const QChar *nextP = curP;
-        while(!(nextP->isSpace())) {
-            nextP++;
-            if(nextP >= endP) {
-                last = true;
-                break;
-            }
-        }
+        const QChar *nextP = getNext(curP, endP, last);
         list.append(curP);
         list.append(nextP);
         if ( last ) break;
