@@ -62,7 +62,7 @@ class KCmdLineArgsPrivate;
  *  int main(int argc, char *argv[])
  *  {
  *     // Initialize command line args
- *     KCmdLineArgs::init(argc, argv, appName, description, version);
+ *     KCmdLineArgs::init(argc, argv, appName, programName, description, version);
  *
  *     // Tell which options are supported
  *     KCmdLineArgs::addCmdLineOptions( options );
@@ -109,7 +109,7 @@ class KCmdLineArgsPrivate;
  *  options are defined as follow
  *
  *  \code
- *  static KCmdLineOptions options[] =
+ *  static const KCmdLineOptions options[] =
  *  {
  *     { "a", I18N_NOOP("A short binary option."), 0 },
  *     { "b \<file>", I18N_NOOP("A short option which takes an argument."), 0 },
@@ -204,10 +204,18 @@ public:
    * @param _argv As passed to @p main(...).
    * @param _appname The untranslated name of your application. This should
    *                match with @p argv[0].
+   * @param programName A displayable program name string. This string
+   *        should be marked for translation. Example: I18N_NOOP("KEdit")
    * @param _description A short description of what your application is about.
    * @param _version A version.
    * @param noKApp Don't add commandline options for @ref QApplication/@ref KApplication
    */
+   static void init(int _argc, char **_argv, const char *_appname,
+                    const char* programName, const char *_description,
+                    const char *_version, bool noKApp = false);
+   /**
+    * @deprecated
+    */
   static void init(int _argc, char **_argv,
                    const char *_appname, const char *_description,
                    const char *_version, bool noKApp = false);

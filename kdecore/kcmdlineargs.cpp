@@ -119,6 +119,15 @@ bool KCmdLineArgs::ignoreUnknown = false;
 //
 
 void
+KCmdLineArgs::init(int _argc, char **_argv, const char *_appname, const char* programName,
+                   const char *_description, const char *_version, bool noKApp)
+{
+   init(_argc, _argv,
+        new KAboutData(_appname, programName, _version, _description),
+        noKApp);
+}
+
+void
 KCmdLineArgs::init(int _argc, char **_argv, const char *_appname,
                    const char *_description, const char *_version, bool noKApp)
 {
