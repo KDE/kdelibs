@@ -155,7 +155,6 @@ protected:
     virtual bool focusNextPrevChild( bool next );
     virtual void drawContents ( QPainter * p, int clipx, int clipy, int clipw, int cliph );
     virtual void drawContents( QPainter* );
-
     virtual void viewportMousePressEvent( QMouseEvent * );
     virtual void focusOutEvent( QFocusEvent * );
     virtual void viewportMouseDoubleClickEvent( QMouseEvent * );
@@ -182,8 +181,6 @@ private slots:
     void tripleClickTimeout();
 
 private:
-    void resetCursor();
-
     void scheduleRelayout();
 
     void scheduleRepaint(int x, int y, int w, int h);

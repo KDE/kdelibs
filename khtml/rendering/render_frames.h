@@ -56,10 +56,13 @@ public:
   void positionFrames( );
 
   bool resizing() const { return m_resizing; }
+  bool noResize() const { return element()->noResize(); }
 
   bool userResize( DOM::MouseEventImpl *evt );
   bool canResize( int _x, int _y);
   void setResizing(bool e);
+
+  Qt::CursorShape cursorShape() const { return m_cursor; }
 
   bool nodeAtPoint(NodeInfo& info, int x, int y, int tx, int ty);
 
@@ -71,6 +74,7 @@ public:
 #endif
 
 private:
+    Qt::CursorShape m_cursor;
     int m_oldpos;
     int m_gridLen[2];
     int* m_gridDelta[2];

@@ -65,6 +65,8 @@ RenderFrameSet::RenderFrameSet( HTMLFrameSetElementImpl *frameSet)
 
   m_resizing = m_clientresizing= false;
 
+  m_cursor = Qt::ArrowCursor;
+
   m_hSplit = -1;
   m_vSplit = -1;
 
@@ -379,32 +381,24 @@ bool RenderFrameSet::userResize( MouseEventImpl *evt )
 #ifdef DEBUG_LAYOUT
     kdDebug( 6031 ) << m_hSplit << "/" << m_vSplit << endl;
 #endif
+  }
 
-    QCursor cursor;
-    if(m_hSplit != -1 && m_vSplit != -1)
-    {
-      cursor = Qt::sizeAllCursor;
-    }
-    else if( m_vSplit != -1 )
-    {
-      cursor = Qt::sizeHorCursor;
-    }
-    else if( m_hSplit != -1 )
-    {
-      cursor = Qt::sizeVerCursor;
-    }
 
-    if(evt->id() == EventImpl::MOUSEDOWN_EVENT)
-    {
-        setResizing(true);
-      KApplication::setOverrideCursor(cursor);
+  m_cursor = Qt::ArrowCursor;
+  if(m_hSplit != -1 && m_vSplit != -1)
+      m_cursor = Qt::SizeAllCursor;
+  else if( m_vSplit != -1 )
+      m_cursor = Qt::SizeHorCursor;
+  else if( m_hSplit != -1 )
+      m_cursor = Qt::SizeVerCursor;
+
+  if(!m_resizing && evt->id() == EventImpl::MOUSEDOWN_EVENT)
+  {
+      setResizing(true);
+      KApplication::setOverrideCursor(QCursor(m_cursor));
       m_vSplitPos = _x;
       m_hSplitPos = _y;
       m_oldpos = -1;
-    }
-    else
-        root()->view()->viewport()->setCursor(cursor);
-
   }
 
   // ### check the resize is not going out of bounds.

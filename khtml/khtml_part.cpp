@@ -2611,6 +2611,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     return;
   }
 
+  view()->viewport()->unsetCursor();
   emit d->m_extension->openURLRequest( cURL, args );
 }
 
