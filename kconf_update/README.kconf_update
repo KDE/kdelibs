@@ -92,6 +92,10 @@ Specifies that configuration information is read from the group <oldgroup>
 and written to <newgroup>. If you only specify <oldgroup>, the information
 is read from as well as written to <oldgroup>.
 
+RemoveGroup=<oldgroup>
+
+Specifies that <oldgroup> is removed entirely. This can be used
+to remove obsolete entries or to force a revert to default values.
 
 Options=<option1>, <option2>, ....
 
@@ -106,8 +110,8 @@ With this entry you can specify options that apply to the next
          configuration item will overwrite any existing item.
 
 
-Key=oldkey,newkey
-Key=oldkey
+Key=<oldkey>,<newkey>
+Key=<oldkey>
 
 Specifies that configuration information is read from the key <oldkey>
 and written to <newkey>. If you only specify <oldkey>, the information
@@ -119,6 +123,11 @@ AllKeys
 Specifies that all configuration information in the selected group should
 be moved (All keys).
 
+
+RemoveKey=<oldkey>
+
+Specifies that <oldkey> is removed from the selected group. This can be used
+to remove obsolete entries or to force a revert to default values.
 
 
 Example update file
@@ -136,6 +145,7 @@ Key=MaxCacheSize
 Key=UseCache
 Group=UserAgent
 AllKeys
+RemoveGroup=KDE
 # End of file
 
 
@@ -152,8 +162,10 @@ It also reads the keys "MaxCacheSize" and "UseCache" from the group
 keys "MaxCacheSize" and "UseCache" in the group "Cache" (!) in the 
 "kio_httprc" file.
 
-Finally it takes all keys in the "UserAgent" group of the file "kioslaverc" 
+Then it takes all keys in the "UserAgent" group of the file "kioslaverc" 
 and moves then to the "UserAgent" group in the "kio_httprc" file.
+
+Finally it removes the entire "KDE" group in the kioslaverc file.
 
 Have fun,
 Waldo

@@ -54,7 +54,9 @@ public:
    void gotId(const QString &_id);
    void gotFile(const QString &_file);
    void gotGroup(const QString &_group);
+   void gotRemoveGroup(const QString &_group);
    void gotKey(const QString &_key);
+   void gotRemoveKey(const QString &_key);
    void gotAllKeys();
    void gotOptions(const QString &_options);
    void gotScript(const QString &_script);
@@ -152,10 +154,12 @@ QStringList KonfUpdate::findDirtyUpdateFiles()
  * Id=id
  * File=oldfile[,newfile]
  * Group=oldgroup[,newgroup]
+ * RemoveGroup=oldgroup
  * Options=[copy,][overwrite,]
  * Key=oldkey[,newkey]
+ * RemoveKey=ldkey
  * AllKeys
- * Keys= [Options](AllKeys|Keys*)
+ * Keys= [Options](AllKeys|(Key|RemoveKey)*)
  * Script=scriptfile[,interpreter]
  *
  * Sequence:
@@ -192,6 +196,11 @@ bool KonfUpdate::updateFile(const QString &filename)
          gotFile(line.mid(5));
       else if (line.startsWith("Group="))
          gotGroup(line.mid(6));
+      else if (line.startsWith("RemoveGroup="))
+      {
+         gotRemoveGroup(line.mid(12));
+         resetOptions();
+      }
       else if (line.startsWith("Script="))
       {
          gotScript(line.mid(7));
@@ -200,6 +209,11 @@ bool KonfUpdate::updateFile(const QString &filename)
       else if (line.startsWith("Key="))
       {
          gotKey(line.mid(4));
+         resetOptions();
+      }
+      else if (line.startsWith("RemoveKey="))
+      {
+         gotRemoveKey(line.mid(10));
          resetOptions();
       }
       else if (line == "AllKeys")
@@ -326,6 +340,24 @@ void KonfUpdate::gotGroup(const QString &_group)
    }
 }
 
+void KonfUpdate::gotRemoveGroup(const QString &_group)
+{
+   oldGroup = _group.stripWhiteSpace();
+
+   if (!oldConfig1)
+   {
+      qWarning("RemoveGroup without file specification.");
+      return;
+   }
+
+   if (!oldConfig1->hasGroup(oldGroup))
+      return;
+   // Delete group.
+   oldConfig2->deleteGroup(oldGroup, true);
+   qWarning("Removing group %s (FORCED)", oldGroup.latin1());
+}
+
+
 void KonfUpdate::gotKey(const QString &_key)
 {
    int i = _key.find(',');
@@ -374,7 +406,35 @@ qWarning("Write %s -> %s", newKey.latin1(), value.latin1());
    oldConfig2->setGroup(oldGroup);
    oldConfig2->deleteEntry(oldKey, false);
    if (oldConfig2->deleteGroup(oldGroup, false)) // Delete group if empty.
-      qWarning("Deleting group %s", oldGroup.latin1());
+      qWarning("Removing group %s", oldGroup.latin1());
+}
+
+void KonfUpdate::gotRemoveKey(const QString &_key)
+{
+   oldKey = _key.stripWhiteSpace();
+
+   if (oldKey.isEmpty())
+   {
+      qWarning("Invalid key.");
+      return;
+   }
+
+   if (!oldConfig1)
+   {
+      qWarning("RemoveKey without file specification.");
+      return;
+   }
+
+   oldConfig1->setGroup(oldGroup);
+   if (!oldConfig1->hasKey(oldKey))
+      return;
+qWarning("Remove Key '%s'/'%s'", oldGroup.latin1(), oldKey.latin1());
+
+   // Delete old entry
+   oldConfig2->setGroup(oldGroup);
+   oldConfig2->deleteEntry(oldKey, false);
+   if (oldConfig2->deleteGroup(oldGroup, false)) // Delete group if empty.
+      qWarning("Removing group %s", oldGroup.latin1());
 }
 
 void KonfUpdate::gotAllKeys()
@@ -447,9 +507,9 @@ void KonfUpdate::gotScript(const QString &_script)
    }
 
    KTempFile tmp1;
-   // tmp1.setAutoDelete(true);
+   tmp1.setAutoDelete(true);
    KTempFile tmp2;
-   // tmp2.setAutoDelete(true);
+   tmp2.setAutoDelete(true);
    KSimpleConfig cfg(tmp1.name());
 
    if (oldGroup.isEmpty())
@@ -511,7 +571,7 @@ void KonfUpdate::gotScript(const QString &_script)
             oldConfig2->setGroup(group);
             oldConfig2->deleteEntry(key, false);
             if (oldConfig2->deleteGroup(group, false)) // Delete group if empty.
-               qWarning("Deleting group %s", group.latin1());
+               qWarning("Removing group %s", group.latin1());
          }
          else if (line.startsWith("# DELETEGROUP"))
          {
@@ -525,7 +585,7 @@ void KonfUpdate::gotScript(const QString &_script)
                }
             }
             if (oldConfig2->deleteGroup(group, true)) // Delete group
-               qWarning("Deleting group %s (FORCED)", group.latin1());
+               qWarning("Removing group %s (FORCED)", group.latin1());
           }
        }
      }
@@ -569,7 +629,7 @@ void KonfUpdate::resetOptions()
 int main(int argc, char **argv)
 {
    KAboutData aboutData("kconf_update", I18N_NOOP("KConf Update"),
-                        "1.0.1",
+                        "1.0.2",
                         I18N_NOOP("KDE Tool for updating user configuration files"),
                         KAboutData::License_GPL,
                         "(c) 2001, Waldo Bastian");
