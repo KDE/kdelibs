@@ -576,10 +576,6 @@ private:
   QPushButton *addExtensionButton;
   QPushButton *delExtensionButton;
 
-  QString nameStr;
-  QStringList extensions;
-  QString commentStr;
-
   class KApplicationPropsPluginPrivate;
   KApplicationPropsPluginPrivate *d;
 };

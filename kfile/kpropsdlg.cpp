@@ -1763,9 +1763,13 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
 
   KSimpleConfig config( path );
   config.setDesktopGroup();
-  commentStr = config.readEntry( QString::fromLatin1("Comment") );
-  extensions = config.readListEntry( QString::fromLatin1("MimeType"), ';' );
-  nameStr = config.readEntry( QString::fromLatin1("Name") );
+  QString commentStr = config.readEntry( QString::fromLatin1("Comment") );
+
+  QStringList selectedTypes = config.readListEntry( "ServiceTypes" );
+  // For compatibility with KDE 1.x
+  selectedTypes += config.readListEntry( "MimeType", ';' );
+
+  QString nameStr = config.readEntry( QString::fromLatin1("Name") );
   if ( nameStr.isEmpty() ) {
     // We'll use the file name if no name is specified
     // because we _need_ a Name for a valid file.
@@ -1773,21 +1777,19 @@ KApplicationPropsPlugin::KApplicationPropsPlugin( KPropertiesDialog *_props )
     setDirty();
   }
 
-  if ( !commentStr.isNull() )
-    commentEdit->setText( commentStr );
-  if ( !nameStr.isNull() )
-    nameEdit->setText( nameStr );
+  commentEdit->setText( commentStr );
+  nameEdit->setText( nameStr );
 
-  extensions.sort();
-  QStringList::Iterator sit = extensions.begin();
-  for( ; sit != extensions.end(); ++sit ) {
+  selectedTypes.sort();
+  QStringList::Iterator sit = selectedTypes.begin();
+  for( ; sit != selectedTypes.end(); ++sit ) {
     if ( !((*sit).isEmpty()) )
       extensionsList->insertItem( *sit );
   }
 
-  KMimeType::List mimeTypes = KMimeType::allMimeTypes();
-  QValueListIterator<KMimeType::Ptr> it2 = mimeTypes.begin();
-  for ( ; it2 != mimeTypes.end(); ++it2 )
+  KServiceType::List serviceTypes = KServiceType::allServiceTypes();
+  QValueListIterator<KServiceType::Ptr> it2 = serviceTypes.begin();
+  for ( ; it2 != serviceTypes.end(); ++it2 )
     addMimeType ( (*it2)->name() );
 
   connect( availableExtensionsList, SIGNAL( selected( int ) ),
@@ -1854,7 +1856,14 @@ void KApplicationPropsPlugin::applyChanges()
   config.writeEntry( QString::fromLatin1("Type"), QString::fromLatin1("Application"));
   config.writeEntry( QString::fromLatin1("Comment"), commentEdit->text(), true, false, true );
 
-  config.writeEntry( QString::fromLatin1("MimeType"), extensions, ';' );
+  QStringList selectedTypes;
+  for ( uint i = 0; i < extensionsList->count(); i++ )
+    selectedTypes.append( extensionsList->text( i ) );
+
+  config.writeEntry( QString::fromLatin1("MimeType"), selectedTypes, ';' );
+  config.writeEntry( QString::fromLatin1("ServiceTypes"), "" );
+  // hmm, actually it should probably be the contrary (but see also typeslistitem.cpp)
+
   QString nameStr = nameEdit->text();
   if ( nameStr.isEmpty() )
   {
