@@ -29,13 +29,14 @@
 #include <klocale.h>
 #include <kapplication.h>
 #include <klineedit.h>
+#include <kstdguiitem.h>
 
 #include "klineeditdlg.h"
 
 KLineEditDlg::KLineEditDlg( const QString&_text, const QString& _value,
 			    QWidget *parent )
   : KDialogBase( Plain, QString::null, Ok|Cancel|User1, Ok, parent, 0L, true,
-		 true, i18n("C&lear") )
+		 true, KStdGuiItem::clear() )
 {
   QVBoxLayout *topLayout = new QVBoxLayout( plainPage(), 0, spacingHint() );
   QLabel *label = new QLabel(_text, plainPage() );

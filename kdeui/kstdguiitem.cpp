@@ -38,6 +38,7 @@ KGuiItem KStdGuiItem::guiItem ( StdItem ui_enum )
   case DontSave : return dontSave();
   case SaveAs   : return saveAs();
   case Apply    : return apply();
+  case Clear    : return clear();
   default       : return KGuiItem();
   };
 }
@@ -54,9 +55,11 @@ QString KStdGuiItem::stdItem( StdItem ui_enum )
   case DontSave : return QString::fromLatin1("dontSave");
   case SaveAs   : return QString::fromLatin1("saveAs");
   case Apply    : return QString::fromLatin1("apply");
+  case Clear    : return QString::fromLatin1("clear");
   default       : return QString::null;
   };
 }
+
 KGuiItem KStdGuiItem::ok()
 {
   return KGuiItem(i18n("&OK"), KConfigGroup( KGlobal::config(), "KDE").readBoolEntry("showIcons", false)  ? SmallIconSet("ok" ) : QIconSet()  , "ok",
@@ -116,6 +119,21 @@ KGuiItem KStdGuiItem::apply()
           i18n(""
                "When clicking <b>Apply<b>, the settings will be\n"
                "handed over to the program, but the dialog\n"
-               "will no be closed. "
+               "will not be closed. "
                "Use this to try different settings. " ) );
 }
+
+KGuiItem KStdGuiItem::clear()
+{
+  QIconSet icon;
+  
+  if( KConfigGroup( KGlobal::config(), "KDE" ).
+                    readBoolEntry( "showIcons", false ) )
+    icon = SmallIconSet( "locationbar_erase" );
+    
+  return KGuiItem( i18n( "C&lear" ), icon, "clear", i18n("Clear input"),
+                   i18n( "Clear the input in the edit field" ) );
+}
+
+/* vim: set ts=2 sts=2 sw=2 et: */
+
