@@ -67,7 +67,7 @@ public:
    */
   KRun( const QString& _url, mode_t _mode = 0, 
 	bool _is_local_file = false, bool _auto_delete = true );
-  ~KRun();
+  virtual ~KRun();
   
   bool hasError() { return m_bFault; }
   bool hasFinished() { return m_bFinished; }
