@@ -3,6 +3,7 @@ Comment=Block Device
 Comment[ca]=Dispositiu de bloc
 Comment[cs]=Blokové zaøízení
 Comment[da]=blokenhed
+Comment[de]=Blockorientiertes Gerät
 Comment[eo]=blokaparato
 Comment[es]=Dispositivo de Bloques
 Comment[fi]=Blokkilaite
@@ -25,5 +26,5 @@ Comment[sr]=Comment=Izgradite molekule iz ¹to manje pokreta
 Comment[sv]=Enhet av blocktyp (t ex hårddisk)
 Icon=blockdevice
 Type=MimeType
-MimeType=inode/blockdevice
+MimeType=mimetypes/blockdevice
 Patterns=
