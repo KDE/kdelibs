@@ -1,6 +1,9 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// Revision 1.16  1997/07/27 13:43:57  kalle
+// Even more SGI and SCC patches, security patch for kapp, various fixes for ksock
+//
 // Revision 1.15  1997/07/25 19:46:41  kalle
 // SGI changes
 //
@@ -591,10 +594,7 @@ void KApplication::applyGUIStyle(GUIStyle newstyle) {
 
 QString KApplication::findFile( const char *file )
 {
-  // add KDEDIR environment variable path
-  const char *kdeDirEnv = getenv( "KDEDIR" );
-  if ( kdeDirEnv )
-	  appendSearchPath( kdeDirEnv );
+  QString fullPath;
   QStrListIterator it( *pSearchPaths );
 
   while ( it.current() )
