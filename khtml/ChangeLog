@@ -1,5 +1,12 @@
 2004-12-08  Allan Sandfeld Jensen <kde@carewolf.com>
 
+        Merge encoding detection from WebCore
+
+        * misc/decoder.{h,cpp}: Detect XML-encoding, comments in headers and other merges
+        * khtml_part.cpp: Frames inherits parents encoding as their default
+
+2004-12-08  Allan Sandfeld Jensen <kde@carewolf.com>
+
         Merge :target pseudo-class from WebCore
 
         * css/cssstyleselector.cpp: Uncomment :target handling

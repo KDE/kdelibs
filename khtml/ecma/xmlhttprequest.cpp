@@ -537,7 +537,7 @@ void XMLHttpRequest::slotData(KIO::Job*, const QByteArray &_data)
   if ( decoder == NULL ) {
     decoder = new Decoder;
     if (!encoding.isNull())
-      decoder->setEncoding(encoding.latin1());
+      decoder->setEncoding(encoding.latin1(), Decoder::EncodingFromHTTPHeader);
     else {
       // FIXME: Inherit the default encoding from the parent document?
     }

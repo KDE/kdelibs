@@ -54,10 +54,10 @@ Decoder::Decoder()
     m_codec = QTextCodec::codecForMib(4);
     m_decoder = m_codec->makeDecoder();
     enc = 0;
+    m_type = DefaultEncoding;
     body = false;
     beginning = true;
     visualRTL = false;
-    haveEncoding = false;
     m_autoDetectLanguage = SemiautomaticDetection;
     kc = NULL;
 }
@@ -69,14 +69,12 @@ Decoder::~Decoder()
         delete kc;
 }
 
-void Decoder::setEncoding(const char *_encoding, bool force)
+void Decoder::setEncoding(const char *_encoding, EncodingType type)
 {
 #ifdef DECODE_DEBUG
     kdDebug(6005) << "setEncoding " << _encoding << " " << force << endl;
 #endif
     enc = _encoding;
-
-    QTextCodec *old = m_codec;
 #ifdef DECODE_DEBUG
     kdDebug(6005) << "old encoding is:" << m_codec->name() << endl;
 #endif
@@ -86,23 +84,38 @@ void Decoder::setEncoding(const char *_encoding, bool force)
 #endif
     if(enc.isNull() || enc.isEmpty())
         return;
+
+#ifdef APPLE_CHANGES
+    QTextCodec *codec = (type == EncodingFromMetaTag || type == EncodingFromXMLHeader)
+        ? QTextCodec::codecForNameEightBitOnly(enc)
+        : QTextCodec::codecForName(enc);
+    if (codec) {
+        enc = codec->name();
+        visualRTL = codec->usesVisualOrdering();
+    }
+#else
     if(enc == "visual") // hebrew visually ordered
         enc = "iso8859-8";
     bool b;
-    m_codec = KGlobal::charsets()->codecForName(enc, b);
-    if(m_codec->mibEnum() == 11)  {
-        // iso8859-8 (visually ordered)
-        m_codec = QTextCodec::codecForName("iso8859-8-i");
+    QTextCodec *codec = KGlobal::charsets()->codecForName(enc, b);
+    if (!b)
+        codec = 0;
+
+    if (codec && codec->mibEnum() == 11)  {
+        // visually ordered unless one of the following
+        if( !(enc == "iso-8859-8-i" || enc == "iso_8859-8-i"
+                || enc == "csiso88598i" || enc == "logical") )
         visualRTL = true;
     }
-    if( !b ) // in case the codec didn't exist, we keep the old one (fixes some sites specifying invalid codecs)
-	m_codec = old;
-    else
-	haveEncoding = force;
-    delete m_decoder;
-    m_decoder = m_codec->makeDecoder();
-    if (m_codec->mibEnum() == 1000) // utf 16
-        haveEncoding = false; // force auto detection
+#endif
+
+    if( codec ) { // in case the codec didn't exist, we keep the old one (fixes some sites specifying invalid codecs)
+        m_codec = codec;
+        m_type = type;
+        delete m_decoder;
+        m_decoder = m_codec->makeDecoder();
+    }
+
 #ifdef DECODE_DEBUG
     kdDebug(6005) << "Decoder::encoding used is" << m_codec->name() << endl;
 #endif
@@ -113,26 +126,127 @@ const char *Decoder::encoding() const
     return enc;
 }
 
+// Other browsers allow comments in the head section, so we need to also.
+// It's important not to look for tags inside the comments.
+static void skipComment(const char *&ptr, const char *pEnd)
+{
+    const char *p = ptr;
+    // Allow <!-->; other browsers do.
+    if (*p == '>') {
+        p++;
+    } else {
+        while (p != pEnd) {
+            if (*p == '-') {
+                // This is the real end of comment, "-->".
+                if (p[1] == '-' && p[2] == '>') {
+                    p += 3;
+                    break;
+                }
+                // This is the incorrect end of comment that other browsers allow, "--!>".
+                if (p[1] == '-' && p[2] == '!' && p[3] == '>') {
+                    p += 4;
+                    break;
+                }
+            }
+            p++;
+        }
+    }
+    ptr = p;
+}
+
+// Returns the position of the encoding string.
+static int findXMLEncoding(const QCString &str, int &encodingLength)
+{
+    int len = str.length();
+
+    int pos = str.find("encoding");
+    if (pos == -1)
+        return -1;
+    pos += 8;
+
+    // Skip spaces and stray control characters.
+    while (str[pos] <= ' ' && pos != len)
+        ++pos;
+
+    // Skip equals sign.
+    if (str[pos] != '=')
+        return -1;
+    ++pos;
+
+    // Skip spaces and stray control characters.
+    while (str[pos] <= ' ' && pos != len)
+        ++pos;
+
+    // Skip quotation mark.
+    char quoteMark = str[pos];
+    if (quoteMark != '"' && quoteMark != '\'')
+        return -1;
+    ++pos;
+
+    // Find the trailing quotation mark.
+    int end = pos;
+    while (str[end] != quoteMark)
+        ++end;
+
+    if (end == len)
+        return -1;
+
+    encodingLength = end - pos;
+    return pos;
+}
+
 QString Decoder::decode(const char *data, int len)
 {
+    // Check for UTF-16 or UTF-8 BOM mark at the beginning, which is a sure sign of a Unicode encoding.
+    int bufferLength = buffer.length();
+    const int maximumBOMLength = 3;
+    if (beginning && bufferLength + len >= maximumBOMLength) {
+        if (m_type != UserChosenEncoding) {
+            // Extract the first three bytes.
+            // Handle the case where some of bytes are already in the buffer.
+            // The last byte is always guaranteed to not be in the buffer.
+            const uchar *udata = (const uchar *)data;
+            uchar c1 = bufferLength >= 1 ? (uchar)buffer[0] : *udata++;
+            uchar c2 = bufferLength >= 2 ? (uchar)buffer[1] : *udata++;
+            assert(bufferLength < 3);
+            uchar c3 = *udata;
+
+            // Check for the BOM.
+            const char *autoDetectedEncoding;
+            if ((c1 == 0xFE && c2 == 0xFF) || (c1 == 0xFF && c2 == 0xFE)) {
+                autoDetectedEncoding = "ISO-10646-UCS-2";
+            } else if (c1 == 0xEF && c2 == 0xBB && c3 == 0xBF) {
+                autoDetectedEncoding = "UTF-8";
+            } else {
+                autoDetectedEncoding = 0;
+            }
+
+            // If we found a BOM, use the encoding it implies.
+            if (autoDetectedEncoding != 0) {
+                m_type = AutoDetectedEncoding;
+                m_codec = QTextCodec::codecForName(autoDetectedEncoding);
+                assert(m_codec);
+                enc = m_codec->name();
+                delete m_decoder;
+                m_decoder = m_codec->makeDecoder();
+            }
+        }
+        beginning = false;
+    }
+
     // this is not completely efficient, since the function might go
     // through the html head several times...
 
-    if(!haveEncoding && !body) {
+    bool lookForMetaTag = m_type == DefaultEncoding && !body;
+
+    if (lookForMetaTag) {
 #ifdef DECODE_DEBUG
         kdDebug(6005) << "looking for charset definition" << endl;
 #endif
-        // check for UTF-16
-        uchar * uchars = (uchar *) data;
-        if( uchars[0] == 0xfe && uchars[1] == 0xff ||
-            uchars[0] == 0xff && uchars[1] == 0xfe ) {
-            enc = "ISO-10646-UCS-2";
-            haveEncoding = true;
-            m_codec = QTextCodec::codecForMib(1000);
-            delete m_decoder;
-            m_decoder = m_codec->makeDecoder();
-        } else {
-
+        { // extra level of braces to keep indenting matching original for better diff'ing
+#ifdef APPLE_CHANGES
+            buffer.append(data, len);
+#else
             if(m_codec->mibEnum() != 1000) {  // utf16
                 // replace '\0' by spaces, for buggy pages
                 char *d = const_cast<char *>(data);
@@ -143,17 +257,47 @@ QString Decoder::decode(const char *data, int len)
                 }
             }
             buffer += QCString(data, len+1);
-
+#endif
             // we still don't have an encoding, and are in the head
             // the following tags are allowed in <head>:
             // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
 
+#ifdef APPLE_CHANGES
+            const char *ptr = buffer.latin1();
+            const char *pEnd = ptr + buffer.length();
+#else
             const char *ptr = buffer.data();
-            while(*ptr != '\0')
+            const char *pEnd = ptr + buffer.length();
+#endif
+            while(ptr != pEnd)
             {
                 if(*ptr == '<') {
                     bool end = false;
                     ptr++;
+
+                    // Handle comments.
+                    if (ptr[0] == '!' && ptr[1] == '-' && ptr[2] == '-') {
+                        ptr += 3;
+                        skipComment(ptr, pEnd);
+                        continue;
+                    }
+
+                    // Handle XML header, which can have encoding in it.
+                    if (ptr[0] == '?' && ptr[1] == 'x' && ptr[2] == 'm' && ptr[3] == 'l') {
+                        const char *end = ptr;
+                        while (*end != '>' && *end != '\0') end++;
+                        if (*end == '\0')
+                            break;
+                        QCString str(ptr, end - ptr);
+                        int len;
+                        int pos = findXMLEncoding(str, len);
+                        if (pos != -1) {
+                            setEncoding(str.mid(pos, len), EncodingFromXMLHeader);
+                            if (m_type == EncodingFromXMLHeader)
+                                goto found;
+                        }
+                    }
+
                     if(*ptr == '/') ptr++, end=true;
                     char tmp[20];
                     int len = 0;
@@ -206,8 +350,8 @@ QString Decoder::decode(const char *data, int len)
 #ifdef DECODE_DEBUG
 			    kdDebug( 6005 ) << "Decoder: found charset: " << enc.data() << endl;
 #endif
-			    setEncoding(enc, true);
-			    if( haveEncoding ) goto found;
+			    setEncoding(enc, EncodingFromMetaTag);
+			    if( m_type == EncodingFromMetaTag ) goto found;
 
                             if ( endpos >= str.length() || str[endpos] == '/' || str[endpos] == '>' ) break;
 
@@ -249,7 +393,8 @@ QString Decoder::decode(const char *data, int len)
     }
 
  found:
-    if ( !haveEncoding ) {
+    if (m_type == DefaultEncoding)
+    {
 #ifdef DECODE_DEBUG
 	kdDebug( 6005 ) << "Decoder: use auto-detect (" << strlen(data) << ")" << endl;
 #endif
@@ -296,7 +441,7 @@ QString Decoder::decode(const char *data, int len)
         kdDebug( 6005 ) << "Decoder: auto detect encoding is " << enc.data() << endl;
 #endif
         if ( !enc.isEmpty() )
-            setEncoding( enc.data(), true );
+            setEncoding( enc.data(), AutoDetectedEncoding);
     }
 
 

@@ -36,10 +36,19 @@ class JapaneseCode;
 class Decoder
 {
 public:
+    enum EncodingType {
+        DefaultEncoding,
+        AutoDetectedEncoding,
+        EncodingFromXMLHeader,
+        EncodingFromMetaTag,
+        EncodingFromHTTPHeader,
+        UserChosenEncoding
+    };
+
     Decoder();
     ~Decoder();
 
-    void setEncoding(const char *encoding, bool force = false);
+    void setEncoding(const char *encoding, EncodingType type);
     const char *encoding() const;
 
     QString decode(const char *data, int len);
@@ -89,13 +98,13 @@ private:
     QTextCodec *m_codec;
     QTextDecoder *m_decoder; // only used for utf16
     QCString enc;
+    EncodingType m_type;
 
     QCString buffer;
 
     bool body;
     bool beginning;
     bool visualRTL;
-    bool haveEncoding;
 
     AutoDetectLanguage m_autoDetectLanguage;
 

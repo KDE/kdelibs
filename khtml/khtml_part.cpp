@@ -6628,14 +6628,22 @@ void KHTMLPart::slotAutomaticDetectionLanguage( int _id )
 
 khtml::Decoder *KHTMLPart::createDecoder()
 {
-  khtml::Decoder *dec = new khtml::Decoder();
-  if( !d->m_encoding.isNull() )
-    dec->setEncoding( d->m_encoding.latin1(), true );
-  else
-    dec->setEncoding( defaultEncoding().latin1(), d->m_haveEncoding );
-
-  dec->setAutoDetectLanguage( d->m_autoDetectLanguage );
-  return dec;
+    khtml::Decoder *dec = new khtml::Decoder();
+    if( !d->m_encoding.isNull() )
+        dec->setEncoding( d->m_encoding.latin1(),
+            d->m_haveEncoding ? khtml::Decoder::UserChosenEncoding : khtml::Decoder::EncodingFromHTTPHeader);
+    else {
+        // Inherit the default encoding from the parent frame if there is one.
+        const char *defaultEncoding = (parentPart() && parentPart()->d->m_decoder)
+            ? parentPart()->d->m_decoder->encoding() : settings()->encoding().latin1();
+        dec->setEncoding(defaultEncoding, khtml::Decoder::DefaultEncoding);
+    }
+#ifdef APPLE_CHANGES
+    if (d->m_doc)
+        d->m_doc->setDecoder(d->m_decoder);
+#endif
+    dec->setAutoDetectLanguage( d->m_autoDetectLanguage );
+    return dec;
 }
 
 void KHTMLPart::emitCaretPositionChanged(const DOM::Node &node, long offset) {
