@@ -43,7 +43,7 @@ KPushButton::KPushButton( const QIconSet &icon, const QString &text,
       m_dragEnabled( false )
 {
     KConfigGroup cg ( KGlobal::config(), "KDE" );
-    if( cg.readBoolEntry( "showIconsOnPushButtons", true ) )
+    if( cg.readBoolEntry( "showIconsOnPushButtons", false ) )
         setIconSet( icon );
 }
 
@@ -54,7 +54,7 @@ KPushButton::KPushButton( const KGuiItem &item, QWidget *parent,
 {
     KConfigGroup cg ( KGlobal::config(), "KDE" );
     if( item.hasIconSet() &&
-                        cg.readBoolEntry( "showIconsOnPushButtons", true ) )
+                        cg.readBoolEntry( "showIconsOnPushButtons", false ) )
     {
         setIconSet( item.iconSet() );
     }
