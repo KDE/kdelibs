@@ -32,7 +32,7 @@ class KLegacyStylePrivate;
 
 
 class Q_EXPORT KLegacyStyle : public KStyle {
-    Q_OBJECT;
+    Q_OBJECT
 public:
     KLegacyStyle(void);
     virtual ~KLegacyStyle(void);

@@ -23,6 +23,7 @@
  */
 
 #include "klegacystyle.h"
+#include "klegacystyle.moc"
 #include <klocale.h>
 #include <kiconloader.h>
 
