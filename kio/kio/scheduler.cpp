@@ -123,9 +123,9 @@ KIO::Scheduler::ProtocolInfoDict::get(const QString &protocol)
 Scheduler::Scheduler()
           :QObject(kapp, "scheduler"),
            DCOPObject( "KIO::Scheduler" ),
-           slaveTimer(this, "Scheduler::slaveTimer"),
-           coSlaveTimer(this, "Scheduler::coSlaveTimer"),
-           cleanupTimer(this, "Scheduler::cleanupTimer")
+           slaveTimer(0, "Scheduler::slaveTimer"),
+           coSlaveTimer(0, "Scheduler::coSlaveTimer"),
+           cleanupTimer(0, "Scheduler::cleanupTimer")
 {
     checkOnHold = true; // !! Always check with KLauncher for the first request.
     slaveOnHold = 0;
