@@ -109,7 +109,8 @@ void KCompletion::addItemInternal( const QString& item, bool weighted )
 	    node->confirm( weight -1 ); // node->insert() sets weighting to 1
     }
 
-    node->insert( 0x0, true ); // add 0x0-item as delimiter with evtl. weight
+    // add 0x0-item as delimiter with evtl. weight
+    node = node->insert( 0x0, true );
     if ( weighted )
 	node->confirm( weight -1 );
 }
@@ -366,7 +367,7 @@ const QStringList& KCompletion::findAllCompletions( const QString& string )
         node = node->firstChild();
 	if ( !node->isNull() )
 	    completion += *node;
-	// debug("-> %s, %c", completion.ascii(), node->latin1());
+	// qDebug("-> %s, %c", completion.ascii(), node->latin1());
     }
 
 
@@ -393,34 +394,34 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
     if ( !node || !matches )
         return;
 
-    // debug("Beginning: %s", beginning.ascii());
+    // qDebug("Beginning: %s", beginning.ascii());
     KCompTreeChildren::ConstIterator it;
     const KCompTreeChildren *list = node->children();
     QString string;
     QString w;
-    
+
     // loop thru all children
     for ( it = list->begin(); it != list->end(); ++it ) {
         string = beginning;
         node = *it;
-	string += *node;
+	if ( !node->isNull() )
+	    string += *node;
 
 	while ( node && node->childrenCount() == 1 ) {
 	    node = node->firstChild();
+	    if ( node->isNull() )
+		break;
+	    string += *node;
+	}
 
-	    if ( !node->isNull() )
-	        string += *node;
-
-	    else { // we found a leaf
-		if ( addWeight ) {
-		    // add ":num" to the string to store the weighting
-		    string += ':';
-		    w.setNum( node->weight() );
-		    string.append( w );
-		}
-	        matches->append( string );
-		// debug( " -> found match: %s", debugString( string ));
+	if ( node && node->isNull() ) { // we found a leaf
+	    if ( addWeight ) {
+		// add ":num" to the string to store the weighting
+		string += ':';
+		w.setNum( node->weight() );
+		string.append( w );
 	    }
+	    matches->append( string );
 	}
 
 	// recursively find all other strings.
