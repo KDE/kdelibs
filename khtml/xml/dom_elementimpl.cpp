@@ -388,6 +388,10 @@ void ElementImpl::applyChanges(bool top)
 	n->applyChanges(false);
 	n = n->nextSibling();
     }
+    
+    // calc min and max widths starting from leafs
+    // might belong to renderer, but this is simple to do here
+    m_render->calcMinMaxWidth();
 
     if(top) {
 	// force a relayout of this part of the document

@@ -113,7 +113,25 @@ void RenderFlow::setStyle(RenderStyle *style)
 	setBasicDirection(QChar::DirL);
     else
 	setBasicDirection(QChar::DirR);
-
+	
+    if (haveAnonymousBox())
+    {
+	RenderObject *child = firstChild();
+	while(child != 0)
+	{
+	    if(child->isAnonymousBox())
+	    {
+	    	if (child->style())
+		    delete child->style();
+		RenderStyle* newStyle = new RenderStyle(style);
+		newStyle->setDisplay(BLOCK);
+		child->setStyle(newStyle);
+		child->setIsAnonymousBox(true);
+	    }
+	    child = child->nextSibling();
+	}
+        
+    }
     m_isAnonymous = false;
 }
 
@@ -246,17 +264,16 @@ void RenderFlow::layout( bool deep )
     // floats for some reason
 
     if (specialObjects==0)
-    	if (oldWidth == m_width && layouted()
+    	if (oldWidth == m_width && layouted() && !isAnonymousBox()
 	    && !containsPositioned() && !isPositioned()) return;
     else
     	if (nextSibling())
 	    nextSibling()->setLayouted(false);
-
-#ifdef DEBUG_LAYOUT
+//#ifdef DEBUG_LAYOUT
     kdDebug( 6040 ) << renderName() << "(RenderFlow) " << this << " ::layout(" << deep << ") width=" << m_width << ", layouted=" << layouted() << endl;
     if(containingBlock() == static_cast<RenderObject *>(this))
     	kdDebug( 6040 ) << renderName() << ": containingBlock == this" << endl;
-#endif
+//#endif
 
     if(m_width<=0) {
 	if(m_y < 0) m_y = 0;
@@ -270,7 +287,7 @@ void RenderFlow::layout( bool deep )
     m_height = 0;
     m_clearStatus = CNONE;
 
-//    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
+    kdDebug( 6040 ) << "childrenInline()=" << childrenInline() << endl;
     if(childrenInline())
 	layoutInlineChildren();
     else
