@@ -451,6 +451,7 @@ int HTMLDocumentImpl::findHighestTabIndex()
 	n=n->nextSibling();
       else
 	{
+	  next=0;
 	  while(!next)
 	    {
 	      n=n->parentNode();
