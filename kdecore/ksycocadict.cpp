@@ -287,7 +287,7 @@ KSycocaDict::save(QDataStream &str)
    // use "almost prime" number for sz (to calculate diversity) and later
    // for the table size of big tables
    // int sz = d->count()*5-1;
-   register int sz = count()*4 + 1;
+   register unsigned int sz = count()*4 + 1;
    while(!(((sz % 3) && (sz % 5) && (sz % 7) && (sz % 11) && (sz % 13)))) sz+=2;
 
    int maxDiv = 0;
@@ -354,7 +354,7 @@ KSycocaDict::save(QDataStream &str)
    hashtable_entry *hashTable = new hashtable_entry[ sz ];
 
    //kdDebug(7011) << "Clearing hashtable..." << endl;
-   for(int i=0; i < sz; i++)
+   for (unsigned int i=0; i < sz; i++)
    {
       hashTable[i].entry = 0;
       hashTable[i].duplicates = 0;
