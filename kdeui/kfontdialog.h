@@ -39,12 +39,13 @@ class QStringList;
 class KListBox;
 class KIntNumInput;
 /**
+ * @short A font selection widget.
+ *
  * While KFontChooser as an ordinary widget can be embedded in
  * custom dialogs and therefore is very flexible, in most cases
  * it is preferable to use the convenience functions in
  * KFontDialog.
  *
- * @short A font selection widget.
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  * @version $Id$
  */
@@ -52,7 +53,7 @@ class KDEUI_EXPORT KFontChooser : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QFont font READ font WRITE setFont )
-  
+
 public:
   /**
    *  @li @p FamilyList - Identifies the family (leftmost) list.
@@ -299,6 +300,8 @@ private:
 };
 
 /**
+ * @short A font selection dialog.
+ *
  * The KFontDialog provides a dialog for interactive font selection.
  * It is basically a thin wrapper around the KFontChooser widget,
  * which can also be used standalone. In most cases, the simplest
@@ -317,7 +320,6 @@ private:
  *
  * \image html kfontdialog.png "KDE Font Dialog"
  *
- * @short A font selection dialog.
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  * @version $Id$
  */
