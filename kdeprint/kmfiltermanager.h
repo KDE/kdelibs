@@ -22,7 +22,7 @@
 
 #include <qobject.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qdict.h>
 
 class KPrintFilter;

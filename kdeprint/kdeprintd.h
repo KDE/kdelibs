@@ -21,7 +21,7 @@
 #define KDEPRINTD_H
 
 #include <kdedmodule.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstringlist.h>
 #include <qptrdict.h>
 

@@ -24,7 +24,7 @@
 
 #include <qstring.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <kurl.h>
 #include <qmap.h>
 #include <kdeprint/kmobject.h>

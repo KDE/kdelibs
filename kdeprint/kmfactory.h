@@ -25,7 +25,7 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 #include <qstringlist.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class KMManager;
 class KMJobManager;

@@ -23,7 +23,7 @@
 #define KMUIMANAGER_H
 
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 #include "kprinter.h"
 

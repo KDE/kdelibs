@@ -26,7 +26,7 @@
 
 #include <qobject.h>
 #include <qstring.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 class DrMain;
 class KMDBEntry;

@@ -23,7 +23,7 @@
 #define KMJOBMANAGER_H
 
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
 #include <qstringlist.h>
 
 class KMJob;
