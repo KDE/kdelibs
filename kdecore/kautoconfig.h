@@ -218,5 +218,5 @@ private:
 
 };
 
-#endif
+#endif // KAUTOCONFIG_H
 
