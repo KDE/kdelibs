@@ -58,22 +58,21 @@ binary-arch:  build
 
 	perl -w admin/debianrules kdelibs3-cvs
 
-#	if test -f /usr/bin/qt2kdoc; then \
-#	(mkdir -p debian/tmp/usr/share/kdoc/index) ; \
-#	(mkdir -p debian/tmp/usr/doc/kdelibs-cvs-doc/html) ; \
-#	qt2kdoc --url=/usr/doc/qt2-doc/html \
-#	--outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
-#	--compress \
-#	/usr/doc/qt2-doc/html ; \
-#	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
-#	--outputdir=`pwd`/debian/tmp/usr/doc/kdelibs-cvs-doc/html ; \
-#	fi
+	if test -f /usr/bin/qt2kdoc; then \
+	(mkdir -p debian/tmp/usr/share/kdoc/index) ; \
+	(mkdir -p debian/kdelibs-doc-cvs/usr/doc/kdelibs-doc-cvs/html) ; \
+	qt2kdoc --url=/usr/doc/qt2-doc/doc \
+	--outdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	--compress \
+	/usr/doc/qt2-doc/doc ; \
+	makekdedoc --libdir=`pwd`/debian/tmp/usr/share/kdoc/index \
+	--outputdir=`pwd`/debian/kdelibs-doc-cvs/usr/doc/kdelibs-doc-cvs/html ; \
+	dh_movefiles -pkdelibs-doc-cvs /usr/share/kdoc ; \
+	fi
 
 # libraries not starting with lib are modules
-	dh_movefiles -pkdelibs3-cvs-dev $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.la $(kde_libdir)/lib*.a
-#	dh_movefiles -pkdelibs-cvs-doc $(kde_htmldir) usr/doc/kdelibs3-cvs usr/share/kdoc usr/doc/kdelibs-cvs-doc
+	dh_movefiles -pkdelibs3-dev-cvs $(kde_includedir) $(kde_libdir)/lib*.so $(kde_libdir)/lib*.la $(kde_libdir)/lib*.a
 	dh_installchangelogs
-	dh_installdocs -pkdelibs-doc-cvs debian/tmp/usr/doc debian/tmp/$(kde_prefix)/doc 
 	dh_undocumented
 	dh_strip 
 	dh_compress 

@@ -1,3 +1,15 @@
+kdelibs-cvs (4:2.0-19990820-1) experimental; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Fri, 20 Aug 1999 11:00:28 -0400
+
+kdelibs-cvs (4:2.0-19990720-1) experimental; urgency=low
+
+  * New upstream CVS version
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Tue, 20 Jul 1999 07:45:28 -0400
+
 kdelibs-cvs (4:2.0-19990626-2) experimental; urgency=low
 
   * back to using the paths out of debianrules with some dependency trick
