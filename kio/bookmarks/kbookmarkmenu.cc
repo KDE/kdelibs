@@ -109,7 +109,10 @@ KBookmarkMenu::KBookmarkMenu( KBookmarkManager* mgr,
     {
       (void) _parentMenu->contextMenu();
       connect( _parentMenu, SIGNAL( aboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ),
-                this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ));
+               this, SLOT( slotAboutToShowContextMenu(KPopupMenu*, int, QPopupMenu*) ));
+      disconnect( m_actionCollection, SIGNAL( actionHighlighted( KAction * ) ), 0, 0 );
+      connect( m_actionCollection, SIGNAL( actionHighlighted( KAction * ) ),
+               this, SLOT( slotActionHighlighted( KAction * ) ) );
     }
 
     if ( m_bIsRoot )
@@ -147,7 +150,6 @@ void KBookmarkMenu::ensureUpToDate()
   slotAboutToShow();
 }
 
-
 void KBookmarkMenu::slotAboutToShow()
 {
   // Did the bookmarks change since the last time we showed them ?
@@ -158,45 +160,26 @@ void KBookmarkMenu::slotAboutToShow()
   }
 }
 
-QString KBookmarkMenu::contextMenuItemAddress()
+QString KBookmarkMenu::s_highlightedAddress;
+
+void KBookmarkMenu::slotActionHighlighted( KAction* action )
 {
-  // calc parentgroup size
-  KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
-  Q_ASSERT(!parentBookmark.isNull());
-  int length = 0;
-  for ( KBookmark bm = parentBookmark.first(); !bm.isNull(); bm = parentBookmark.next(bm) ) 
-    length++;
-
-  // find relative id
-  int idx = 0 - (KPopupMenu::contextMenuFocusItem() - m_parentMenu->idAt(0));
-  // kdDebug(7043) << m_parentMenu->text(KPopupMenu::contextMenuFocusItem()) << endl;
-  // kdDebug(7043) << (m_parentMenu->text(KPopupMenu::contextMenuFocusItem() - m_parentMenu->count())) << endl;
-
-  // take into account the menu items and seperator in main bookmarks menu
-  if ( (m_parentMenu->count() - length) == 3 )
-    idx = idx - 3;
-
-  // bounds checks
-  if ( idx >= 0 && idx <= length )
-    return QString("%1/%2").arg(m_parentAddress).arg(idx);
-  else 
-    return QString::null;
+  s_highlightedAddress = action->property("address").toString();
 }
 
 void KBookmarkMenu::slotAboutToShowContextMenu( KPopupMenu* menu, int, QPopupMenu* contextMenu )
 {
-  QString address = contextMenuItemAddress();
-  kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << address << endl;
-  if (address.isNull()) {
+  kdDebug(7043) << "KBookmarkMenu::slotAboutToShowContextMenu" << s_highlightedAddress << endl;
+  if (s_highlightedAddress.isNull()) {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
-  showContextMenu( menu, contextMenu, address );
+  fillContextMenu( menu, contextMenu );
 }
 
-void KBookmarkMenu::showContextMenu( KPopupMenu* menu, QPopupMenu* contextMenu, const QString & address )
+void KBookmarkMenu::fillContextMenu( KPopupMenu* menu, QPopupMenu* contextMenu )
 {
-  KBookmark bookmark = m_pManager->findByAddress( address );
+  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
   
   contextMenu->clear();
@@ -216,27 +199,25 @@ void KBookmarkMenu::showContextMenu( KPopupMenu* menu, QPopupMenu* contextMenu, 
 
 void KBookmarkMenu::slotRMBActionEditAt()
 {
-  QString address = contextMenuItemAddress();
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << address << endl;
-  if (address.isNull()) {
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionEditAt" << s_highlightedAddress << endl;
+  if (s_highlightedAddress.isNull()) {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
-  KBookmark bookmark = m_pManager->findByAddress( address );
+  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
 
-  emit m_pManager->slotEditBookmarksAtAddress( address );
+  emit m_pManager->slotEditBookmarksAtAddress( s_highlightedAddress );
 }
 
 void KBookmarkMenu::slotRMBActionRemove()
 {
-  QString address = contextMenuItemAddress();
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << address << endl;
-  if (address.isNull()) {
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionRemove" << s_highlightedAddress << endl;
+  if (s_highlightedAddress.isNull()) {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
-  KBookmark bookmark = m_pManager->findByAddress( address );
+  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
 
   KBookmarkGroup parentBookmark = m_pManager->findByAddress( m_parentAddress ).toGroup();
@@ -248,13 +229,12 @@ void KBookmarkMenu::slotRMBActionRemove()
 
 void KBookmarkMenu::slotRMBActionOpen()
 {
-  QString address = contextMenuItemAddress();
-  kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << address << endl;
-  if (address.isNull()) {
+  kdDebug(7043) << "KBookmarkMenu::slotRMBActionOpen" << s_highlightedAddress << endl;
+  if (s_highlightedAddress.isNull()) {
     KPopupMenu::contextMenuFocus()->cancelContextMenuShow();
     return; 
   }
-  KBookmark bookmark = m_pManager->findByAddress( address );
+  KBookmark bookmark = m_pManager->findByAddress( s_highlightedAddress );
   Q_ASSERT(!bookmark.isNull());
 
   if ( !bookmark.isGroup() )

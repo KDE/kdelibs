@@ -123,6 +123,7 @@ public slots: // public for bookmark bar
 protected slots:
   void slotAboutToShow();
   void slotAboutToShowContextMenu( KPopupMenu *, int, QPopupMenu * );
+  void slotActionHighlighted( KAction * );
   void slotRMBActionRemove();
   void slotRMBActionOpen();
   //void slotRMBActionEdit();
@@ -142,8 +143,7 @@ protected:
   void addEditBookmarks();
   void addNewFolder();
 
-  void showContextMenu( KPopupMenu *, QPopupMenu *, const QString & );
-  QString contextMenuItemAddress();
+  void fillContextMenu( KPopupMenu *, QPopupMenu * );
 
   bool m_bIsRoot:1;
   bool m_bAddBookmark:1;
@@ -171,6 +171,8 @@ protected:
    * Parent bookmark for this menu.
    */
   QString m_parentAddress;
+
+  static QString s_highlightedAddress;
 };
 
 
