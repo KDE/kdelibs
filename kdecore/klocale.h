@@ -37,13 +37,6 @@ class KCatalogue;
 #define I18N_NOOP(x) (x)
 #endif
 
-// Qt3's uic generates i18n( "msg", "comment" ) calls which conflict
-// with our i18n method. we use uic -tr QT_KDE_I18N to redirect
-// to the right i18n() function
-#ifndef QT_KDE_I18N
-#define QT_KDE_I18N( message, comment ) i18n( message )
-#endif
-
 /**
  *  i18n is the function that does everything you need to translate
  *  a string. You just wrap around every user visible string a i18n
@@ -66,6 +59,13 @@ QString i18n(const char *index, const char *text);
  *  @see translate
  **/
 QString i18n(const char *singular, const char *plural, unsigned long n);
+
+// Qt3's uic generates i18n( "msg", "comment" ) calls which conflict
+// with our i18n method. we use uic -tr tr2i18n to redirect
+// to the right i18n() function
+inline QString tr2i18n(const char* message, const char* =0) {
+  return i18n( message); 
+}
 
 /**
   *
