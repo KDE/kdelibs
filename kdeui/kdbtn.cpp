@@ -21,6 +21,7 @@
 #include <qbutton.h>
 #include <qpainter.h>
 #include <qpen.h>
+#include <qpointarray.h>
 #include <qdrawutil.h>
 
 
@@ -49,97 +50,195 @@ KDirectionButton::~KDirectionButton()
 
 void KDirectionButton::drawButton( QPainter *p)
 {
-  // This is still only implemented in Motif style.
   // I abandoned qDrawArrow(...) 'cause the result was totally unpredictable :-(
 
   int style = kapp->applicationStyle;
   int wm = width()/2, hm = height()/2;
   QColorGroup g = QWidget::colorGroup();
+  QPen lightPen, darkPen;
+  QColor lightColor, darkColor;
 
-  QPen lightPen(g.light(), 1), darkPen(g.dark(), 1);
-
-  if(style != MotifStyle)
+  if(isEnabled())
   {
-#if defined(CHECK_RANGE)
-      warning( "KDirectionButton: Windows style not yet supported" );
-#endif
+    lightColor = g.midlight();
+    darkColor = g.dark();
   }
+  else
+  {
+    lightColor = g.midlight();
+    darkColor = g.mid();
+  }
+
+  lightPen.setColor(lightColor);
+  darkPen.setColor(darkColor);
 
   switch (direct)
   {
     case LeftArrow:
-      if(isDown())
+      if(style == MotifStyle)
       {
-        p->setPen(darkPen);
-        p->drawLine(2, hm, (2*wm)-4, 2);
-        p->setPen(lightPen);
-        p->drawLine((2*wm)-4, 2, (2*wm)-4, (2*hm)-4);
-        p->drawLine((2*wm)-4, (2*hm)-4, 2, hm);
+        if(isDown())
+        {
+          p->setPen(darkPen);
+          p->drawLine(2, hm, (2*wm)-4, 2);
+          p->setPen(lightPen);
+          p->drawLine((2*wm)-4, 2, (2*wm)-4, (2*hm)-4);
+          p->drawLine((2*wm)-4, (2*hm)-4, 2, hm);
+        }
+        else
+        {
+          p->setPen(lightPen);
+          p->drawLine(2, hm, (2*wm)-4, 2);
+          p->setPen(darkPen);
+          p->drawLine((2*wm)-4, 2, (2*wm)-4, (2*hm)-4);
+          p->drawLine((2*wm)-4, (2*hm)-4, 2, hm);
+        }
       }
       else
       {
-        p->setPen(lightPen);
-        p->drawLine(2, hm, (2*wm)-4, 2);
+        p->setBrush(darkColor);
         p->setPen(darkPen);
-        p->drawLine((2*wm)-4, 2, (2*wm)-4, (2*hm)-4);
-        p->drawLine((2*wm)-4, (2*hm)-4, 2, hm);
+        QPointArray a(3);
+        if(isDown())
+        {
+          a.setPoint(0, (2*wm)-2, 2);
+          a.setPoint(1, (2*wm)-2, (2*hm)-4);
+          a.setPoint(2, 4, hm);
+          p->drawPolygon(a);
+        }
+        else
+        {
+          a.setPoint(0, (2*wm)-4, 2);
+          a.setPoint(1, (2*wm)-4, (2*hm)-4);
+          a.setPoint(2, 2, hm);
+          p->drawPolygon(a);
+        }
       }
       break;
 
     case RightArrow:
-      if(isDown())
+      if(style == MotifStyle)
       {
-        p->setPen(darkPen);
-        p->drawLine(2, (2*hm)-4, 2, 2);
-        p->drawLine(2, 2, (2*wm)-4, hm);
-        p->setPen(lightPen);
-        p->drawLine((2*wm)-4, hm, 2, (2*hm)-4);
+        if(isDown())
+        {
+          p->setPen(darkPen);
+          p->drawLine(2, (2*hm)-4, 2, 2);
+          p->drawLine(2, 2, (2*wm)-4, hm);
+          p->setPen(lightPen);
+          p->drawLine((2*wm)-4, hm, 2, (2*hm)-4);
+        }
+        else
+        {
+          p->setPen(lightPen);
+          p->drawLine(2, (2*hm)-4, 2, 2);
+          p->drawLine(2, 2, (2*wm)-4, hm);
+          p->setPen(darkPen);
+          p->drawLine((2*wm)-4, hm, 2, (2*hm)-4);
+        }
       }
       else
       {
-        p->setPen(lightPen);
-        p->drawLine(2, (2*hm)-4, 2, 2);
-        p->drawLine(2, 2, (2*wm)-4, hm);
+        p->setBrush(darkColor);
         p->setPen(darkPen);
-        p->drawLine((2*wm)-4, hm, 2, (2*hm)-4);
+        QPointArray a(3);
+        if(isDown())
+        {
+          a.setPoint(0, 0, 2);
+          a.setPoint(1, 0, (2*hm)-4);
+          a.setPoint(2, (2*wm)-6, hm);
+          p->drawPolygon(a);
+        }
+        else
+        {
+          a.setPoint(0, 2, 2);
+          a.setPoint(1, 2, (2*hm)-4);
+          a.setPoint(2, (2*wm)-4, hm);
+          p->drawPolygon(a);
+        }
       }
       break;
 
     case UpArrow:
-      if(isDown())
+      if(style == MotifStyle)
       {
-        p->setPen(lightPen);
-        p->drawLine(2, (2*hm)-4, (2*wm)-4, (2*hm)-4);
-        p->drawLine((2*wm)-4, (2*hm)-4, wm, 2);
-        p->setPen(darkPen);
-        p->drawLine(wm, 2, 2, (2*hm)-4);
+        if(isDown())
+        {
+          p->setPen(lightPen);
+          p->drawLine(2, (2*hm)-4, (2*wm)-4, (2*hm)-4);
+          p->drawLine((2*wm)-4, (2*hm)-4, wm, 2);
+          p->setPen(darkPen);
+          p->drawLine(wm, 2, 2, (2*hm)-4);
+        }
+        else
+        {
+          p->setPen(darkPen);
+          p->drawLine(2, (2*hm)-4, (2*wm)-4, (2*hm)-4);
+          p->drawLine((2*wm)-4, (2*hm)-4, wm, 2);
+          p->setPen(lightPen);
+          p->drawLine(wm, 2, 2, (2*hm)-4);
+        }
       }
       else
       {
+        p->setBrush(darkColor);
         p->setPen(darkPen);
-        p->drawLine(2, (2*hm)-4, (2*wm)-4, (2*hm)-4);
-        p->drawLine((2*wm)-4, (2*hm)-4, wm, 2);
-        p->setPen(lightPen);
-        p->drawLine(wm, 2, 2, (2*hm)-4);
+        QPointArray a(3);
+        if(isDown())
+        {
+          a.setPoint(0, 2, (2*hm)-2);
+          a.setPoint(1, (2*wm)-4, (2*hm)-2);
+          a.setPoint(2, wm, 4);
+          p->drawPolygon(a);
+        }
+        else
+        {
+          a.setPoint(0, 2, (2*hm)-4);
+          a.setPoint(1, (2*wm)-4, (2*hm)-4);
+          a.setPoint(2, wm, 2);
+          p->drawPolygon(a);
+        }
       }
       break;
 
     case DownArrow:
-      if(isDown())
+      if(style == MotifStyle)
       {
-        p->setPen(darkPen);
-        p->drawLine(wm, (2*hm)-4, 2, 2);
-        p->drawLine(2, 2, (2*wm)-4, 2);
-        p->setPen(lightPen);
-        p->drawLine((2*wm)-4, 2, wm, (2*hm)-4);
+        if(isDown())
+        {
+          p->setPen(darkPen);
+          p->drawLine(wm, (2*hm)-4, 2, 2);
+          p->drawLine(2, 2, (2*wm)-4, 2);
+          p->setPen(lightPen);
+          p->drawLine((2*wm)-4, 2, wm, (2*hm)-4);
+        }
+        else
+        {
+          p->setPen(lightPen);
+          p->drawLine(wm, (2*hm)-4, 2, 2);
+          p->drawLine(2, 2, (2*wm)-4, 2);
+          p->setPen(darkPen);
+          p->drawLine((2*wm)-4, 2, wm, (2*hm)-4);
+        }
       }
       else
       {
-        p->setPen(lightPen);
-        p->drawLine(wm, (2*hm)-4, 2, 2);
-        p->drawLine(2, 2, (2*wm)-4, 2);
+        p->setBrush(darkColor);
         p->setPen(darkPen);
-        p->drawLine((2*wm)-4, 2, wm, (2*hm)-4);
+        QPointArray a(3);
+        if(isDown())
+        {
+          a.setPoint(0, 2, 0);
+          a.setPoint(1, (2*wm)-4, 0);
+          a.setPoint(2, wm, (2*hm)-6);
+          p->drawPolygon(a);
+        }
+        else
+        {
+          a.setPoint(0, 2, 2);
+          a.setPoint(1, (2*wm)-4, 2);
+          a.setPoint(2, wm, (2*hm)-4);
+          p->drawPolygon(a);
+        }
       }
       break;
 
