@@ -1,0 +1,307 @@
+The KDE Address Book Framework
+===============================
+
+The KDE address book framework tries to provide an easy to use and powerfull
+mechanism to handle contacts in all KDE applications.
+If you want to make use of it, maybe this small introduction of programming
+with libkabc is helpful.
+
+
+General Concepts
+=================
+
+In libkabc the storage and management of contacts is devided in 2 layers.
+
+******************
+Management Layer *
+******************
+
+     .-------------------.
+     | KABC::AddressBook |
+    .--------------------------------.
+    | KABC::Addressee                |  => Iterators
+    | KABC::Addressee                |
+    | KABC::Addressee                |  => Search functions
+    | ...                            |
+    `--------------------------------'
+                       |
+ - - - - - - - - - - - | - - - - - - - - - - - - -
+                       |
+***************        |
+Storage Layer *        |
+***************        |  .......................
+                       |  .                     . - Network
+  .---------------.    |  .  .---------------.  .
+  | ResourceFile  |----+-----| ResourceLDAP  |  .
+  `---------------'    |  .  `---------------'  .
+  .---------------.    |  .  .---------------.  .
+  | ResourceDir   |----+-----| ResourceNet   |  .
+  `---------------'       .  `---------------'  .
+                          .                     .
+                          .......................
+
+
+The Management Layer
+---------------------
+The Management Layer consists of the two classes KABC::AddressBook and 
+KABC::Addressee. KABC::AddressBook is a container for KABC::Addressee objects
+and provides 2 kinds of access methods.
+1) Iterators
+    With iterators you can iterate over all contacts of the address book and
+    do some actions on it
+
+2) Search functions
+    With search functions you can search for contacts with special attributes
+    like "all contacts with the name 'Harald'"
+
+The class KABC::Addressee represents a single contact and contains all data
+a vCard could store (like specified in RFC 2426).
+
+The Storage Layer
+------------------
+The Storage Layer consists of the class KABC::Resource and it's derived classes.
+These classes are used by KABC::AddressBook to load and store the contacts to
+the single backends.
+At the moment libkabc provides 4 types of resources:
+1) ResourceFile
+  - stores all contacts in a single file
+
+2) ResourceDir
+  - stores every contact in its own file with the unique identifier of the 
+    contact as filename, all together in one directory
+
+3) ResourceLDAP
+  - stores all contacts on a LDAP server
+
+4) ResourceNet
+  - stores all contacts in a single file, which can be accessable via HTTP, 
+    FTP, Fish, WebDAV, POP3, IMAP or whatever the KIO frame work supports
+
+In general the developer don't have to take how to save the single contacts. He
+just has to plug one of the above mentioned resources into KABC::AddressBook 
+and perform a save action.
+
+Examples
+=========
+Because C/C++ code often can say more than 1000 words I'd like to give you a 
+lot of examples now, how to use libkabc for several tasks:
+
+
+Using KABC::StdAddressBook and Iterators
+-----------------------------------------
+Normally you have to plugin the resources manually into the addressbook object
+and call the load() function before you can access the contacts, but there is
+a special class KABC::StdAddressBook, which loads all resources of the standard 
+address book of the user automatically. You can use it the following way:
+
+
+     #include <kabc/stdaddressbook.h>
+
+ 1:  KABC::AddressBook *ab = KABC::StdAddressBook::self();
+ 2:  KABC::AddressBook::Iterator it;
+ 3:  for ( it = ab->begin(); it != ab->end(); ++it ) {
+ 4:    KABC::Addressee addr = (*it);
+ 5:
+ 6:    kdDebug() << "Name = " << addr.formattedName() << endl;
+ 7:  }
+
+The above example prints out the names of all contacts in the users address 
+book. In line 1 you retrive a pointer to the users standard address book
+(provided by KABC::StdAddressBook via a singleton design pattern).
+In line 2 an iterator is defined, which is used in line 3 to iterate over the
+whole address book. The assignment in line 4 is just for the better 
+understanding of iterators, you could also use (*it).formattedName() directly.
+In line 6 the formatted name of the current contact is printed out to stderr.
+You see thats all magic, and it's quite easy ;)
+
+
+Using KABC::AddressBook manually
+---------------------------------
+In some cases you don't want to load the users standard address book, but
+just a single vCard file for example. For this purpose you have to use
+the class KABC::AddressBook and handle the resource stuff manually.
+The following code will create a file resource and save a contact into it:
+
+
+     #include <kabc/addressbook.h>
+     #include <kabc/resourcefile.h>
+
+ 1:  KABC::AddressBook ab;
+ 2:
+ 3:  // create a file resource
+ 4:  KABC::Resource *res = new KABC::ResourceFile( "/home/user/myvcard.vcf", "vcard" );
+ 5:
+ 6:  if ( !ab.addResource( res ) ) {
+ 7:    kdDebug() << "Unable to open resource" << endl;
+ 8:    return 1;
+ 9:  }
+10:
+11:  if ( !ab.load() ) {
+12:    kdDebug() << "Unable to load address book!" << endl;
+13:    return 2;
+14:  }
+15:
+16:  KABC::Addressee addr;
+17:  addr.setNameFromString( "Otto Harald Meyer" );
+18:  addr.setBirthday( QDate( 1982, 07, 19 ) );
+19:  addr.setNickName( "otto" );
+20:  addr.setMailer( "kmail" );
+21:
+22:  // TZ
+23:  KABC::TimeZone tz( 60 );  // takes time shift in minutes as argument
+24:  addr.setTimeZone( tz );
+25:
+26:  // GEO
+27:  KABC::Geo geo( 52.5, 13.36 ); // takes latitude and longitude as argument
+28:  addr.setGeo( geo );
+29:
+30:  addr.setTitle( "dude, the" );
+31:  addr.setRole( "developer" );
+32:  addr.setOrganization( "KDE e.V." );
+33:  addr.setNote( "Yet another senseless note..." );
+34:  addr.setUrl( KURL( "http://kaddressbook.org" ) );
+35:
+36:  // CLASS
+37:  KABC::Secrecy secrecy( KABC::Secrecy::Confidential );
+38:  addr.setSecrecy( secrecy );
+39:
+40:  // PHOTO or LOGO
+41:  KABC::Picture photo;
+42:  QImage img;
+43:  if ( img.load( "face.png", "PNG" ) ) {
+44:    photo.setData( img );
+45:    photo.setType( "image/png" );
+46:    addr.setPhoto( photo );
+47:  }
+48:
+49:  addr.insertEmail( "otto@kde.se", true );  // preferred email
+50:  addr.insertEmail( "otti@yahoo.com", false );
+51:
+52:  // TEL
+53:  KABC::PhoneNumber phoneHome( "0351 5466738", KABC::PhoneNumber::Home );
+54:  KABC::PhoneNumber phoneWork( "0351 2335411", KABC::PhoneNumber::Work );
+55:  addr.insertPhoneNumber( phoneHome );
+56:  addr.insertPhoneNumber( phoneWork );
+57:
+58:  // ADR
+59:  KABC::Address homeAddr( KABC::Address::Home );
+60:  homeAddr.setStreet( "Milliwaystreet 42" );
+61:  homeAddr.setLocality( "London" );
+62:  homeAddr.setRegion( "Saxony" );
+63:  homeAddr.setPostalCode( "43435" );
+64:  homeAddr.setCountry( "Germany" );
+65:  addr.insertAddress( homeAddr );
+66:
+67:  addr.insertCategory( "LUG-Dresden-Members" );
+68:
+69:  addr.insertCustom( "KADDRESSBOOK", "X-Anniversary", "21.04.2009" );
+70:
+71:  ab.insertAddressee( addr ); // will be assigned to the standard resource
+72:                              // automatically
+73:
+74:  KABC::Ticket *ticket = ab.requestSaveTicket( res );
+75:  if ( !ticket ) {
+76:    kdError() << "Resource is locked by other application!" << endl;
+77:  } else {
+78:    if ( !ab.save( ticket ) ) {
+79:      kdError() << "Saving failed!" << endl;
+81:    }
+82:
+83:    ab.releaseSaveTicket( ticket );
+84:  }
+85:
+86:  return 0;
+
+In line 1 the KABC::AddressBook is created, in line 4 the KABC::ResourceFile which
+will handle the loading/saving. The resource takes 2 arguments, the first is 
+the file name and the second one the file format. At the moment libkabc 
+supports two file formats:
+1) vCard, like specified in RFC 2426
+2) Binary, which increases performance during loading and saving
+
+In line 6 we try to plug the resource into the addressbook. The addressbook 
+class tries to open the resource immediately and returns whether opening was
+successful. We add here only one resource, but you can add as much resources as
+you want.
+
+In line 11 we try to load all contacts from the backends into the address book.
+The return value is again whether the loading fails or not.
+
+In line 16 a KABC::Addressee is created, which we will fill now with data, 
+before inserting it into the KABC::AddressBook.
+The setNameFromString() function in the following line takes a string as 
+argument and tries to parse it into the single name components like given name,
+family name, additional names, honoric prefix and honoric suffix. You can set
+these values manually as well by calling
+  addr.setGivenName( "Otto" );
+and
+  addr.setFamilyName( "Meyer" );
+etc. etc.
+
+In line 23 we use the class KABC::TimeZone to store the timezone. This class 
+takes the time shift in minutes.
+
+In line 27 class the KABC::Geo class is used for storing the geographical 
+information. The arguments are the latitude and longitude as float values.
+
+KABC::Secrecy in line 37 represents the CLASS entity of a vCard and can take
+KABC::Secrecy::Public, KABC::Secrecy::Private or KABC::Secrecy::Confidential
+as argument.
+
+In line 41 we make use of KABC::Picture class to store the photo of the 
+contact. This class can contain either an URL or the raw image data in form
+of a QImage, in this case we use the latter.
+
+In line 43 we try to load the image "face.png" from the local directory and 
+assign this QImage to the KABC::Picture class via the setData() function. 
+Additionally we set the type of the picture to "image/png".
+
+From 49 - 50 we insert 2 email addresses with the first one as preferred
+(second argument is true).
+
+In 53 and the following 3 lines we add two telephone numbers. For this purpose 
+libkabc provides the KABC::PhoneNumber class, which takes the phone number in
+string representation as first argument and the type as second. The types can 
+be combined, so 'KABC::PhoneNumber::Home | KABC::PhoneNumber::Fax' would be
+the Home Fax.
+
+In line 59 we create a KABC::Address object and set the single parts in the 
+following lines.
+
+In line 67 we assign the contact to a special category.
+
+A contact can also contain custom entries, which are not specified in the API,
+so you can add custom values with insertCustom() like done in line 69.
+The first argument of this function should be the name of the application, so
+2 applications which use the same custom entry accidentally do not overwrite 
+the data each other. The second argument contains the name of the custom entry
+and the third argument the value in string representation.
+
+In line 71 we finally insert the KABC::Addressee object into the 
+KABC::AddressBook. Since we have only one resource loaded, the contact is 
+automatically assigned to this resource. If you have several writeable 
+resources loaded, you should ask the user which resource the contact shall 
+belong to and assign the selected resource to the contact with
+  KABC::Addressee.setResource( KABC::Resource *resource );
+before inserting it into the address book.
+
+To prevent multiple access to one resource and possible resulting data loss
+we have to lock the resource before saving our changes.
+For this purpose KABC::AddressBook provides the function
+  requestSaveTicket( KABC::Resource* )
+which takes a pointer to the resource which shall be saved as argument and 
+returns a so called 'Save Ticket' if locking succeeded or a null pointer
+if the resource is already locked by another application.
+
+So when we retrived a valid ticket in line 74, we try to save our changes in
+line 78.
+The KABC::AddressBook::save() function takes the save ticket as argument and 
+returns whether saving succeeded.
+
+Important!
+You have to release the save ticket after saving like done in line 83, 
+otherwise possible locks, created by the resources, won't be removed.
+
+You see using the KABC::AddressBook class and the ResourceFile manually isn't
+that hard as well. For more information about the API of KABC::Addressee please
+take a look at the official API documentation or the header files.
