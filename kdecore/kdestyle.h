@@ -1,6 +1,9 @@
 #ifndef B2STYLE_H
 #define B2STYLE_H
 
+#include <qglobal.h>
+#if QT_VERSION < 300
+
 #include <kstyle.h>
 #include <qpainter.h>
 #include <qdrawutil.h>
@@ -171,5 +174,7 @@ private:
 
     KDEStylePrivate *d;
 };
+
+#endif // QT_VERSION < 300
 
 #endif

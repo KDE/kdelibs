@@ -30,6 +30,10 @@
 #include <limits.h>
 #endif
 
+#include <qglobal.h>
+
+#if QT_VERSION < 300
+
 #include <qmenudata.h>
 #include "kdestyle.h"
 #include <kapp.h>
@@ -1479,4 +1483,5 @@ void KDEStyle::drawKickerAppletHandle(QPainter *p, int x, int y, int w, int h,
 
 #include "kdestyle.moc"
 
+#endif // QT_VERSION < 300
 
