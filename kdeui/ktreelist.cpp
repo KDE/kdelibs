@@ -1210,8 +1210,8 @@ bool KTreeList::checkItemPath(const KPath *path) const
   bool isValid = TRUE;
   if(!path) 
     isValid = FALSE;
-// if(path->isEmpty())
-//   isValid = FALSE; 
+  if(path->isEmpty())
+    isValid = FALSE; 
   return isValid;
 }
 
