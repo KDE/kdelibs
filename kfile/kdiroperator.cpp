@@ -330,17 +330,12 @@ void KDirOperator::mkdir()
 
 bool KDirOperator::mkdir( const QString& directory, bool enterDirectory )
 {
-    //kdDebug() << "directory is: " << directory << endl;
     bool writeOk = false;
-    KURL url( dir->url(), QFile::encodeName(directory) );
-    //kdDebug() << "kurl is: " << url.url() << endl;
+    KURL url( dir->url());
+    url.addPath(directory);
+
     if ( url.isLocalFile() ) {
         // check if we are allowed to create local directories
-
-        //kdDebug() << "kurl.path() is: " << url.path() << endl;
-        //kdDebug() << "kurl.prettyURL() is: " << url.prettyURL() << endl;
-        //kdDebug() << "encoded path is: " << QFile::encodeName(url.path()) << endl;
-
         writeOk = checkAccess( url.path(), W_OK );
         if ( writeOk )
             writeOk = QDir().mkdir( url.path() );
