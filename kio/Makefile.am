@@ -69,7 +69,7 @@ libkio_la_SOURCES = \
 #listprogressdlg.cpp
 
 
-kio_uiserver_SOURCES = dummy.cc
+kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
 kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
@@ -103,8 +103,8 @@ parserfiles = yacc.y lex.l
 
 EXTRA_DIST = $(kde_mime_DATA) $(parserfiles)
 
-dummy.cc:
-	echo > dummy.cc
+dummy.cpp:
+	echo > dummy.cpp
 
 parser: $(parserfiles)
 	cd $(srcdir) ;\
