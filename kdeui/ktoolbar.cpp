@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.88  1998/11/09 17:58:34  radej
+// sven: Fix for IconText=3 (pixmap wider then text; kfm's wheel)
+// sven: windows-style handle smaller
 // Revision 1.87  1998/11/09 00:29:16  radej
 // sven: IconText 3 (text under pixmap)
 //
@@ -1371,7 +1374,7 @@ void KToolBar::paintEvent(QPaintEvent *)
       }
       else // Windows style handle
       {
-        int w = 9;
+        int w = 6;
         int h = toolbarHeight;
         paint->setClipRect(0, 2, w, h-4);
         
@@ -1428,7 +1431,7 @@ void KToolBar::paintEvent(QPaintEvent *)
         int w = toolbarWidth;
         int h = 15;
 
-        paint->setClipRect(2, 0, w-4, 9);
+        paint->setClipRect(2, 0, w-4, 6);
 
         qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
                          g.mid(), 0, &b);

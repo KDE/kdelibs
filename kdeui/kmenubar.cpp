@@ -42,6 +42,9 @@
 // $Id$
 // $Log$
 //
+// Revision 1.43  1998/11/10 14:12:47  radej
+// sven: windows-style handle smaller
+//
 // Revision 1.42  1998/11/07 22:39:13  radej
 // sven: Fixed QAccel too (unrepaired what repairEventFilter messed)
 //
@@ -447,8 +450,9 @@ void KMenuBar::leaveEvent (QEvent *e){
           paint.drawPoint( 5, stipple_height);
           stipple_height+=3;
         }
-        qDrawPlainRect ( &paint, 0, 0, 9, handle->height(),
+          }
          return true;
+        }
 
                          g.mid(), 0, &b);
         w=6;
