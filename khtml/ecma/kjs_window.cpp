@@ -1511,7 +1511,8 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
     if(policy == KHTMLSettings::KJSWindowFocusAllow && widget) {
       widget->topLevelWidget()->raise();
       widget->setActiveWindow();
-	}
+      emit part->browserExtension()->requestFocus(part);
+    }
     return Undefined();
   }
   case Window::Blur:
