@@ -36,7 +36,7 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
+    : KListBox( 0L, name, WStyle_Customize | WStyle_Tool | WStyle_NoBorder )
 {
     d = new KCompletionBoxPrivate;
     d->m_parent = parent;
