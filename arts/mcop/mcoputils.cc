@@ -129,7 +129,11 @@ string MCOPUtils::getFullHostname()
 	else
 		return "localhost";
 
-	if((hp = gethostbyname(buffer)) != 0)
+	/*
+	 * if gethostname() isn't a FQDN (guess that by checking whether it
+	 * contains a dot), try to look it up to ensure it is
+	 */
+	if(result.find('.') == string::npos && (hp = gethostbyname(buffer)) != 0)
 		result = hp->h_name;
 	
 	return result;
