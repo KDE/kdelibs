@@ -67,7 +67,7 @@ public:
 };
 
 inline void KPixmapEffect::intensity(KPixmap &pixmap, float percent,
-                                     bool brighten = true)
+                                     bool brighten)
 {
     QImage image = pixmap.convertToImage();
     intensity(image, percent, brighten);
@@ -76,7 +76,7 @@ inline void KPixmapEffect::intensity(KPixmap &pixmap, float percent,
 
 inline void KPixmapEffect::channelIntensity(KPixmap &pixmap, float percent,
                                             RGBComponent channel,
-                                            bool brighten = true)
+                                            bool brighten)
 {
     QImage image = pixmap.convertToImage();
     channelIntensity(image, percent, channel, brighten);

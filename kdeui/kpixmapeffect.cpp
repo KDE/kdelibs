@@ -13,250 +13,277 @@ void KPixmapEffect::gradient(KPixmap &pixmap, const QColor &ca,
 {
     int rDiff, gDiff, bDiff;
     int rca, gca, bca, rcb, gcb, bcb;
-
+    
     QImage image;
-
-    register unsigned int x, y;
-
+    
+    register int x, y;
+    
     rDiff = (rcb = cb.red())   - (rca = ca.red());
     gDiff = (gcb = cb.green()) - (gca = ca.green());
     bDiff = (bcb = cb.blue())  - (bca = ca.blue());
-
-    if( eff == VerticalGradient ){
+    
+    if( eff == VerticalGradient || eff == HorizontalGradient ){
         QPixmap pmCrop;
-        QColor cRow;
-
+        
         uint *p;
-        uint rgbRow;
-	float rat;
+        uint rgb;
 
-        pmCrop.resize( 30, pixmap.height() );
-        QImage image( 30, pixmap.height(), 32 );
+        pmCrop.resize((eff == HorizontalGradient ? pixmap.width()  : 30),
+                      (eff == HorizontalGradient ? 30 : pixmap.height()));
+        QImage image( (eff == HorizontalGradient ? pixmap.width()  : 30),
+                      (eff == HorizontalGradient ? 30 : pixmap.height()), 32 );
 
-        for ( y = 0; y < pixmap.height(); y++ ) {
-            p = (uint *) image.scanLine(y);
-            rat = (float)y / pixmap.height();
+        register int rl = rca << 16;
+        register int gl = gca << 16;
+        register int bl = bca << 16;
+        
+        if( eff == VerticalGradient ) {
 
-            cRow.setRgb( rca + (int) ( rDiff * rat ),
-                         gca + (int) ( gDiff * rat ),
-                         bca + (int) ( bDiff * rat ) );
+            int rcdelta = ((1<<16) / pixmap.height()) * rDiff;
+            int gcdelta = ((1<<16) / pixmap.height()) * gDiff;
+            int bcdelta = ((1<<16) / pixmap.height()) * bDiff;
+            
+            for ( y = 0; y < pixmap.height(); y++ ) {
+                p = (uint *) image.scanLine(y);
+                
+                rl += rcdelta;
+                gl += gcdelta;
+                bl += bcdelta;
+                
+                rgb = qRgb( (rl>>16), (gl>>16), (bl>>16) );
+                
+                for( x = 0; x < 30; x++ ) {
+                    *p = rgb;
+                    p++;
+                }
+            }
+            
+        }
+        else {                  // must be HorizontalGradient
+            
+            unsigned int *o_src = (unsigned int *)image.scanLine(0);
+            unsigned int *src = o_src;
 
-            rgbRow = cRow.rgb();
+            int rcdelta = ((1<<16) / pixmap.width()) * rDiff;
+            int gcdelta = ((1<<16) / pixmap.width()) * gDiff;
+            int bcdelta = ((1<<16) / pixmap.width()) * bDiff;
 
-            for( x = 0; x < 30; x++ ) {
-                *p = rgbRow;
-                p++;
+            for( x = 0; x < pixmap.width(); x++) {
+                
+                rl += rcdelta;
+                gl += gcdelta;
+                bl += bcdelta;
+                
+                *src++ = qRgb( (rl>>16), (gl>>16), (bl>>16));
+            }
+            
+            src = o_src;
+            
+            // Believe it or not, manually copying in a for loop is faster
+            // than calling memcpy for each scanline (on the order of ms...).
+            // I think this is due to the function call overhead (mosfet).
+            
+            for(y = 1; y < 30; ++y) {
+                
+                p = (unsigned int *)image.scanLine(y);
+                src = o_src;
+                for(x=0; x < pixmap.width(); ++x)
+                    *p++ = *src++;
             }
         }
+        
+        if(pmCrop.depth() < 15 ) {
+            if ( ncols < 2 || ncols > 256 )
+                ncols = 3;
+            QColor *dPal = new QColor[ncols];
+            for (int i=0; i<ncols; i++) {
+                dPal[i].setRgb ( rca + rDiff * i / ( ncols - 1 ),
+                                 gca + gDiff * i / ( ncols - 1 ),
+                                 bca + bDiff * i / ( ncols - 1 ) );
+            }
+            kFSDither dither(dPal, ncols);
+            image = dither.dither(image);
+            pmCrop.convertFromImage(image);
+            delete [] dPal;
+        }
+        else
+            pmCrop.convertFromImage( image );
 
-	if(pmCrop.depth() < 16 ) {
-	  if ( ncols < 2 || ncols > 256 )
-	    ncols = 3;
-	  QColor *dPal = new QColor[ncols];
-	  for (int i=0; i<ncols; i++) {
-	    dPal[i].setRgb ( rca + rDiff * i / ( ncols - 1 ),
-			     gca + gDiff * i / ( ncols - 1 ),
-			     bca + bDiff * i / ( ncols - 1 ) );
-	  }
-	  kFSDither dither(dPal, ncols);
-	  image = dither.dither(image);
-	  pmCrop.convertFromImage(image);
-	  delete [] dPal;
-	}
-	else
-	  pmCrop.convertFromImage( image );
-	
         // Copy the cropped pixmap into the KPixmap.
         // Extract only a central column from the cropped pixmap
         // to avoid edge effects.
-
+        
         int sSize = 20;
         int sOffset = 5;
-
-	int s = pixmap.width() / sSize + 1;
-
+        
+        int s = ((eff == HorizontalGradient ? pixmap.height() : pixmap.width()) / sSize) + 1;
+        
         QPainter paint;
         paint.begin( &pixmap );
 
-	for( int i=0; i<s; i++ )
-	  paint.drawPixmap( sSize*i, 0, 
-			    pmCrop, sOffset, 0 , sSize, pixmap.height() );
+        if(eff == HorizontalGradient) {
+            for( int i=0; i<s; i++)
+                paint.drawPixmap(0, sSize*i, pmCrop, 0, sOffset);
+        }
+        else  {
+            for( int i=0; i<s; i++ )
+                paint.drawPixmap( sSize*i, 0, pmCrop, sOffset, 0 , sSize, pixmap.height() );
+        }
+        
         paint.end();
-
+        
     }
     
     else {
-	float rfd, gfd, bfd;
-	float rd = rca, gd = gca, bd = bca;
-	
-	QImage image(pixmap.width(), pixmap.height(), 32);
-	unsigned char xtable[pixmap.width()][3], ytable[pixmap.height()][3];
+        
+        float rfd, gfd, bfd;
+        float rd = rca, gd = gca, bd = bca;
 
-	unsigned int *scanline;
-
-	if(eff == HorizontalGradient){
-
-	  rfd = (float)rDiff / pixmap.width();
-	  gfd = (float)gDiff / pixmap.width();
-	  bfd = (float)bDiff / pixmap.width();
-	  
-	  unsigned int *src = (unsigned int *)image.scanLine(0);
-	  for(x = 0; x < pixmap.width(); x++, rd+=rfd, gd+=gfd, bd+=bfd )
-            src[x] = qRgb((int)rd, (int)gd, (int)bd);
-	  
-	  // Believe it or not, manually copying in a for loop is faster
-	  // than calling memcpy for each scanline (on the order of ms...).
-	  // I think this is due to the function call overhead (mosfet).
-	  
-	  for(y = 1; y < pixmap.height(); ++y)
-	    {
-	      scanline = (unsigned int *)image.scanLine(y);
-	      for(x=0; x < pixmap.width(); ++x)
-		scanline[x] = src[x];
-	    }
-	}
-
-	else if ( eff == DiagonalGradient || eff == CrossDiagonalGradient) 
-	  {
-	    // Diagonal dgradient code inspired by BlackBox (mosfet)
-	    // BlackBox dgradient is (C) Brad Hughes, <bhughes@tcac.net> and
-	    // Mike Cole <mike@mydot.com>.
-	    
-	    unsigned int w = pixmap.width() * 2, h = pixmap.height() * 2;
-	    
-	    rfd = (float)rDiff/w;
-	    gfd = (float)gDiff/w;
-	    bfd = (float)bDiff/w;
-	    
-	    int dir;
-	    for (x = 0; x < pixmap.width(); x++, rd+=rfd, gd+=gfd, bd+=bfd) {
-	      dir = eff == DiagonalGradient? x : pixmap.width() - x - 1;
-	      xtable[dir][0] = (unsigned char) rd;
-	      xtable[dir][1] = (unsigned char) gd;
-	      xtable[dir][2] = (unsigned char) bd;
-	    }
-	    rfd = (float)rDiff/h;
-	    gfd = (float)gDiff/h;
-	    bfd = (float)bDiff/h;
-	    
-	    rd = gd = bd = 0;
-	    for (y = 0; y < pixmap.height(); y++, rd+=rfd, gd+=gfd, bd+=bfd) {
-	      ytable[y][0] = (unsigned char) rd;
-	      ytable[y][1] = (unsigned char) gd;
-	      ytable[y][2] = (unsigned char) bd;
-	    }
-	    
-	    for (y = 0; y < pixmap.height(); y++) {
-	      unsigned int *scanline = (unsigned int *)image.scanLine(y);
-	      for (x = 0; x < pixmap.width(); x++) {
-                scanline[x] = qRgb(xtable[x][0] + ytable[y][0],
-                                   xtable[x][1] + ytable[y][1],
-                                   xtable[x][2] + ytable[y][2]);
-	      }
-	    }
-	  }
-
-	else if (eff == RectangleGradient || 
-		 eff == PyramidGradient ||
-		 eff == PipeCrossGradient ||
-		 eff == EllipticGradient)
-	  {
-	    int rSign = rDiff>0? 1: -1;
-	    int gSign = gDiff>0? 1: -1;
-	    int bSign = bDiff>0? 1: -1;
-    
-	    rfd = (float)rDiff / pixmap.width();
-	    gfd = (float)gDiff / pixmap.width();
-	    bfd = (float)bDiff / pixmap.width();
-    
-	    rd = (float)rDiff/2;
-	    gd = (float)gDiff/2;
-	    bd = (float)bDiff/2;
-    
-	    for (x = 0; x < pixmap.width(); x++, rd-=rfd, gd-=gfd, bd-=bfd) 
-	      {
-		xtable[x][0] = (unsigned char) abs((int)rd);
-		xtable[x][1] = (unsigned char) abs((int)gd);
-		xtable[x][2] = (unsigned char) abs((int)bd);
-	      }
-	    
-	    rfd = (float)rDiff/pixmap.height();
-	    gfd = (float)gDiff/pixmap.height();
-	    bfd = (float)bDiff/pixmap.height();
-    
-	    rd = (float)rDiff/2;
-	    gd = (float)gDiff/2;
-	    bd = (float)bDiff/2;
-	    
-	    for (y = 0; y < pixmap.height(); y++, rd-=rfd, gd-=gfd, bd-=bfd) 
-	      {
-		ytable[y][0] = (unsigned char) abs((int)rd);
-		ytable[y][1] = (unsigned char) abs((int)gd);
-		ytable[y][2] = (unsigned char) abs((int)bd);
-	      }
-	    
-	    for (y = 0; y < pixmap.height(); y++) {
-	      unsigned int *scanline = (unsigned int *)image.scanLine(y);
-	      for (x = 0; x < pixmap.width(); x++) {
-		if (eff == PyramidGradient)
-		  {
-		    scanline[x] = qRgb(rcb-rSign*(xtable[x][0]+ytable[y][0]),
-				       gcb-gSign*(xtable[x][1]+ytable[y][1]),
-				       bcb-bSign*(xtable[x][2]+ytable[y][2]));
-		  }
-		if (eff == RectangleGradient)
-		  {
-		    scanline[x] = qRgb(rcb - rSign * 
-				       QMAX(xtable[x][0], ytable[y][0]) * 2,
-				       gcb - gSign *
-				       QMAX(xtable[x][1], ytable[y][1]) * 2,
-				       bcb - bSign *
-				       QMAX(xtable[x][2], ytable[y][2]) * 2);
-		  }
-		if (eff == PipeCrossGradient)
-		  {
-		    scanline[x] = qRgb(rcb - rSign * 
-				       QMIN(xtable[x][0], ytable[y][0]) * 2,
-				       gcb - gSign *
-				       QMIN(xtable[x][1], ytable[y][1]) * 2,
-				       bcb - bSign *
-				       QMIN(xtable[x][2], ytable[y][2]) * 2);
-		  }
-		if (eff == EllipticGradient)
-		  {
-		    scanline[x] = qRgb(rcb - rSign * 
-				      (int)sqrt((xtable[x][0]*xtable[x][0] +
-						 ytable[y][0]*ytable[y][0])*2),
-				       gcb - gSign *
-				      (int)sqrt((xtable[x][1]*xtable[x][1] +
-						 ytable[y][1]*ytable[y][1])*2),
-				       bcb - bSign *
-				     (int)sqrt((xtable[x][2]*xtable[x][2] +
-						ytable[y][2]*ytable[y][2])*2));
-		  }
-	      }
-	    }
-	  }
-	
-	if(pixmap.depth() < 16 ) {
-	  if ( ncols < 2 || ncols > 256 )
-	    ncols = 3;
-	  QColor *dPal = new QColor[ncols];
-	  for (int i=0; i<ncols; i++) {
-	    dPal[i].setRgb ( rca + rDiff * i / ( ncols - 1 ),
-			     gca + gDiff * i / ( ncols - 1 ),
-			     bca + bDiff * i / ( ncols - 1 ) );
-	  }
-	  kFSDither dither(dPal, ncols);
-	  image = dither.dither(image);
-	  pixmap.convertFromImage(image);
-	  delete [] dPal;
-	}
-	else
-	  pixmap.convertFromImage(image);
+        QImage image(pixmap.width(), pixmap.height(), 32);
+        unsigned char xtable[pixmap.width()][3], ytable[pixmap.height()][3];
+        
+        unsigned int *scanline;
+        
+        if ( eff == DiagonalGradient || eff == CrossDiagonalGradient) {
+            // Diagonal dgradient code inspired by BlackBox (mosfet)
+            // BlackBox dgradient is (C) Brad Hughes, <bhughes@tcac.net> and
+            // Mike Cole <mike@mydot.com>.
+            
+            unsigned int w = pixmap.width() * 2, h = pixmap.height() * 2;
+            
+            rfd = (float)rDiff/w;
+            gfd = (float)gDiff/w;
+            bfd = (float)bDiff/w;
+            
+            int dir;
+            for (x = 0; x < pixmap.width(); x++, rd+=rfd, gd+=gfd, bd+=bfd) {
+                dir = eff == DiagonalGradient? x : pixmap.width() - x - 1;
+                xtable[dir][0] = (unsigned char) rd;
+                xtable[dir][1] = (unsigned char) gd;
+                xtable[dir][2] = (unsigned char) bd;
+            }
+            rfd = (float)rDiff/h;
+            gfd = (float)gDiff/h;
+            bfd = (float)bDiff/h;
+            
+            rd = gd = bd = 0;
+            for (y = 0; y < pixmap.height(); y++, rd+=rfd, gd+=gfd, bd+=bfd) {
+                ytable[y][0] = (unsigned char) rd;
+                ytable[y][1] = (unsigned char) gd;
+                ytable[y][2] = (unsigned char) bd;
+            }
+            
+            for (y = 0; y < pixmap.height(); y++) {
+                unsigned int *scanline = (unsigned int *)image.scanLine(y);
+                for (x = 0; x < pixmap.width(); x++) {
+                    scanline[x] = qRgb(xtable[x][0] + ytable[y][0],
+                                       xtable[x][1] + ytable[y][1],
+                                       xtable[x][2] + ytable[y][2]);
+                }
+            }
+        }
+        
+        else if (eff == RectangleGradient || 
+                 eff == PyramidGradient ||
+                 eff == PipeCrossGradient ||
+                 eff == EllipticGradient)
+        {
+            int rSign = rDiff>0? 1: -1;
+            int gSign = gDiff>0? 1: -1;
+            int bSign = bDiff>0? 1: -1;
+            
+            rfd = (float)rDiff / pixmap.width();
+            gfd = (float)gDiff / pixmap.width();
+            bfd = (float)bDiff / pixmap.width();
+            
+            rd = (float)rDiff/2;
+            gd = (float)gDiff/2;
+            bd = (float)bDiff/2;
+            
+            for (x = 0; x < pixmap.width(); x++, rd-=rfd, gd-=gfd, bd-=bfd) 
+            {
+                xtable[x][0] = (unsigned char) abs((int)rd);
+                xtable[x][1] = (unsigned char) abs((int)gd);
+                xtable[x][2] = (unsigned char) abs((int)bd);
+            }
+            
+            rfd = (float)rDiff/pixmap.height();
+            gfd = (float)gDiff/pixmap.height();
+            bfd = (float)bDiff/pixmap.height();
+            
+            rd = (float)rDiff/2;
+            gd = (float)gDiff/2;
+            bd = (float)bDiff/2;
+            
+            for (y = 0; y < pixmap.height(); y++, rd-=rfd, gd-=gfd, bd-=bfd) 
+            {
+                ytable[y][0] = (unsigned char) abs((int)rd);
+                ytable[y][1] = (unsigned char) abs((int)gd);
+                ytable[y][2] = (unsigned char) abs((int)bd);
+            }
+            
+            for (y = 0; y < pixmap.height(); y++) {
+                unsigned int *scanline = (unsigned int *)image.scanLine(y);
+                for (x = 0; x < pixmap.width(); x++) {
+                    if (eff == PyramidGradient)
+                    {
+                        scanline[x] = qRgb(rcb-rSign*(xtable[x][0]+ytable[y][0]),
+                                           gcb-gSign*(xtable[x][1]+ytable[y][1]),
+                                           bcb-bSign*(xtable[x][2]+ytable[y][2]));
+                    }
+                    if (eff == RectangleGradient)
+                    {
+                        scanline[x] = qRgb(rcb - rSign * 
+                                           QMAX(xtable[x][0], ytable[y][0]) * 2,
+                                           gcb - gSign *
+                                           QMAX(xtable[x][1], ytable[y][1]) * 2,
+                                           bcb - bSign *
+                                           QMAX(xtable[x][2], ytable[y][2]) * 2);
+                    }
+                    if (eff == PipeCrossGradient)
+                    {
+                        scanline[x] = qRgb(rcb - rSign * 
+                                           QMIN(xtable[x][0], ytable[y][0]) * 2,
+                                           gcb - gSign *
+                                           QMIN(xtable[x][1], ytable[y][1]) * 2,
+                                           bcb - bSign *
+                                           QMIN(xtable[x][2], ytable[y][2]) * 2);
+                    }
+                    if (eff == EllipticGradient)
+                    {
+                        scanline[x] = qRgb(rcb - rSign * 
+                                           (int)sqrt((xtable[x][0]*xtable[x][0] +
+                                                      ytable[y][0]*ytable[y][0])*2),
+                                           gcb - gSign *
+                                           (int)sqrt((xtable[x][1]*xtable[x][1] +
+                                                      ytable[y][1]*ytable[y][1])*2),
+                                           bcb - bSign *
+                                           (int)sqrt((xtable[x][2]*xtable[x][2] +
+                                                      ytable[y][2]*ytable[y][2])*2));
+                    }
+                }
+            }
+        }
+        
+        if(pixmap.depth() < 15 ) {
+            if ( ncols < 2 || ncols > 256 )
+                ncols = 3;
+            QColor *dPal = new QColor[ncols];
+            for (int i=0; i<ncols; i++) {
+                dPal[i].setRgb ( rca + rDiff * i / ( ncols - 1 ),
+                                 gca + gDiff * i / ( ncols - 1 ),
+                                 bca + bDiff * i / ( ncols - 1 ) );
+            }
+            kFSDither dither(dPal, ncols);
+            image = dither.dither(image);
+            pixmap.convertFromImage(image);
+            delete [] dPal;
+        }
+        else
+            pixmap.convertFromImage(image);
     }
 }
-    
+
 
 //CT this is merely the same code as in the above method, but it's supposedly
 //   way less performant since it introduces a lot of supplementary tests
@@ -280,7 +307,7 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 
     QImage image;
 
-    register unsigned int x, y;
+    register int x, y;
 
     rDiff = (rcb = cb.red())   - (rca = ca.red());
     gDiff = (gcb = cb.green()) - (gca = ca.green());
@@ -313,7 +340,7 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
             }
         }
 
-	if(pmCrop.depth() < 16 ) {
+	if(pmCrop.depth() < 15 ) {
 	  if ( ncols < 2 || ncols > 256 )
 	    ncols = 3;
 	  QColor *dPal = new QColor[ncols];
@@ -485,7 +512,7 @@ void KPixmapEffect::unbalancedGradient(KPixmap &pixmap, const QColor &ca,
 	    }
 	  }
 	
-	if(pixmap.depth() < 16 ) {
+	if(pixmap.depth() < 15 ) {
 	  if ( ncols < 2 || ncols > 256 )
 	    ncols = 3;
 	  QColor *dPal = new QColor[ncols];
