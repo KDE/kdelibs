@@ -71,7 +71,7 @@ class KStreamSocketPrivate;
  *                     this, SLOT(slotSocketReadyToWrite()));
  *
  *    // set non-blocking mode in order to work asynchronously
- *    socket.setBlockingMode(false);
+ *    socket.setBlocking(false);
  *
  *    // turn on signal emission
  *    socket.enableRead(true);
