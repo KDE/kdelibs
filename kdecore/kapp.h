@@ -567,6 +567,11 @@ public:
   int xioErrhandler();
 
   /**
+   * @internal
+   */
+  static bool loadedByKdeinit;
+
+  /**
    * Valid values for the settingsChanged signal
    */
   enum SettingsCategory { SETTINGS_MOUSE, SETTINGS_COMPLETION, SETTINGS_PATHS, 
@@ -743,6 +748,9 @@ public:
 #endif
 
 // $Log$
+// Revision 1.161  2000/06/08 06:00:51  hoelzer
+// Adjusted versions.
+//
 // Revision 1.160  2000/06/06 22:53:35  gehrmab
 // Beauty and wellness for the API documentation
 //

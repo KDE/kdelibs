@@ -40,6 +40,7 @@
 #include <kinstance.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
+#include <kapp.h>
 
 #include <X11/Xlib.h>
 
@@ -124,7 +125,10 @@ KCrash::defaultCrashHandler (int signal)
 
       // we have already tested this
       argv[i++] = qstrdup("--appname");
-      argv[i++] = qstrdup(appName->latin1());
+      if (!KApplication::loadedByKdeinit)
+        argv[i++] = qstrdup(appName->latin1());
+      else
+        argv[i++] = qstrdup("kdeinit");
 
       // only add apppath if it's not NULL
       if (appPath) {

@@ -104,6 +104,8 @@ const int XKeyRelease = KeyRelease;
 #endif
 
 KApplication* KApplication::KApp = 0L;
+bool KApplication::loadedByKdeinit = false;
+
 //extern bool bAreaCalculated;
 
 template class QList<KSessionManaged>;
