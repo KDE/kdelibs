@@ -163,8 +163,10 @@ void HTMLTokenizer::addListing(HTMLString list)
 	{
             skipLF = false;
 	    ++list;
-	} 
-	else if (( list[0] == QChar('\n') ) || ( list[0] == QChar('\r') ))
+	}
+	// QChar -> char conversion caching
+	else if ( (chr = list[0].latin1()) &&
+		  (( chr == '\n' ) || ( chr == '\r' )))
 	{
 	    if (discard == LFDiscard) 
 	    {
@@ -185,7 +187,9 @@ void HTMLTokenizer::addListing(HTMLString list)
 	    }
 	    ++list;
 	}
-	else if (( list[0] == QChar(' ') ) || ( list[0] == QChar('\t')))
+	// QChar -> char conversion caching
+	else if ( (chr = list[0].latin1()) &&
+		  (( chr  == ' ' ) || ( chr == '\t')))
 	{
 	    if (pending)
 	        addPending();
@@ -375,7 +379,9 @@ void HTMLTokenizer::parseText(HTMLString &src)
             skipLF = false;
 	    ++src;
 	} 
-	else if (( src[0] == QChar('\n') ) || ( src[0] == QChar('\r') ))
+	// QChar -> char conversion caching
+	else if ( (chr = src[0].latin1()) &&
+		  (( chr == '\n' ) || ( chr == '\r' )))
 	{
 	    if ( dest > buffer )
 	    {
@@ -420,10 +426,12 @@ void HTMLTokenizer::parseEntity(HTMLString &src, bool start)
 	    charEntity = false;
 	    return;
 	}
-	if( (src[0] >= QChar('A') && src[0] <= QChar('Z')) || 
-	    (src[0] >= QChar('a') && src[0] <= QChar('z')) || 
-	    (src[0] >= QChar('0') && src[0] <= QChar('9')) ||
-	    src[0] == QChar('#') ) 
+	// QChar -> char conversion caching
+	if( (chr = src[0].latin1()) &&
+	    ((chr >= 'A' && chr <= 'Z') || 
+	     (chr >= 'a' && chr <= 'z') || 
+	     (chr >= '0' && chr <= '9') ||
+	     chr == '#' ))
 	{
 	    entityBuffer[entityPos] = src[0];
 	    entityPos++;
@@ -475,7 +483,9 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 	checkBuffer();
 
 	// decide if quoted or not....
-	if ( src[0] == QChar('\"') || src[0] == QChar('\'') )
+	// QChar -> char conversion caching
+	if ( (chr = src[0].latin1()) &&
+	     ( chr == '\"' || chr == '\'' ))
 	{ // we treat " & ' the same in tags
 	    if ( !tquote )
 	    {
@@ -488,8 +498,10 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		else
 		    tquote = DoubleQuote;
 	    }
-	    else if ( (( tquote == SingleQuote )&&( src[0] == QChar('\''))) ||
-		      (( tquote == DoubleQuote )&&( src[0] == QChar('\"'))) )
+	    // QChar -> char conversion caching
+	    else if ( (chr = src[0].latin1()) &&
+		      (( tquote == SingleQuote )&&(( chr == '\'')) ||
+		       (( tquote == DoubleQuote )&&( chr == '\"'))))
 	    {
 		tquote = NoQuote;
 		pending = NonePending; // remove space at the end of value
@@ -500,9 +512,11 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 	    }
 	    ++src;
 	} 
-	else if ( discard != NoneDiscard &&
-		  ( src[0] == QChar(' ') || src[0] == QChar('\t') ||
-		    src[0] == QChar('\n') || src[0] == QChar('\r') ) )
+	// QChar -> char conversion caching
+	else if ( (chr = src[0].latin1()) &&
+		  ( discard != NoneDiscard &&
+		    ( chr == ' ' || chr == '\t' ||
+		      chr == '\n' || chr == '\r' )))
 	{
 	    pending = SpacePending;
 	    ++src;
@@ -544,10 +558,12 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 			searchCount = 0; // Stop looking for '<!--' sequence
 		    }  
 		}
-		if( ((src[0] >= QChar('a')) && (src[0] <= QChar('z'))) ||
-		    ((src[0] >= QChar('A')) && (src[0] <= QChar('Z'))) ||
-		    ((src[0] >= QChar('0')) && (src[0] <= QChar('9'))) ||
-		    src[0] == QChar('/') ) 
+		// QChar -> char conversion caching
+		if( (chr = src[0].latin1()) &&
+		    (((chr >= 'a') && (chr <= 'z')) ||
+		     ((chr >= 'A') && (chr <= 'Z')) ||
+		     ((chr >= '0') && (chr <= '9')) ||
+		     chr == '/' ))
 		{
 		    *dest = src[0].lower();
 		    dest++;
@@ -577,7 +593,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		    const struct tags *tagPtr = findTag(tmp.string().ascii(), len);
 		    if (!tagPtr) {
 			printf("Unknown tag: \"%s\"\n", tmp.string().ascii());
-			dest = buffer;
+			dest = buffer;  // ignore the previous part of this tag
 			tag = SearchEnd; // ignore the tag
 		    }
 		    else
@@ -617,11 +633,12 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		    ++src;
 		    break;
 		}
-		char c = src[0].cell();
-		if( ((c >= QChar('a')) && (c <= QChar('z'))) ||
-		    ((c >= QChar('A')) && (c <= QChar('Z'))) ||
-		    ((c >= QChar('0')) && (c <= QChar('9'))) ||
-		    c == QChar('-') )
+		// QChar -> char conversion caching
+		if( (chr = src[0].latin1()) &&
+		    ((( chr >= 'a') && (chr <= 'z')) ||
+		     ((chr >= 'A') && (chr <= 'Z')) ||
+		     ((chr >= '0') && (chr <= '9')) ||
+		     chr == '-' ))
 		{
 		    tag = AttributeName;
 		    discard = NoneDiscard;
@@ -632,10 +649,12 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 	    }
 	    case AttributeName:
 	    {
-		if( (((src[0] >= QChar('a')) && (src[0] <= QChar('z'))) ||
-		    ((src[0] >= QChar('A')) && (src[0] <= QChar('Z'))) ||
-		    ((src[0] >= QChar('0')) && (src[0] <= QChar('9'))) ||
-		    src[0] == QChar('-')) && !tquote ) 
+	        // QChar -> char conversion caching
+	        if( (chr = src[0].latin1()) &&
+		    (((( chr >= 'a') && (chr <= 'z')) ||
+		      ((chr >= 'A') && (chr <= 'Z')) ||
+		      ((chr >= '0') && (chr <= '9')) ||
+		      chr == '-') && !tquote ))
 		{
 		    *dest = src[0].lower();
 		    dest++;
@@ -647,7 +666,7 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		    int len = 0;
 		    QChar *ptr = dest-1;
 		    while(*ptr != QChar(TAG_ESCAPE) ) ptr--, len++;
-		    
+
 		    QConstString tmp(ptr+1, len); 
 		    const struct attrs *a = findAttr(tmp.string().ascii(),len);
 		    if (!a) {
@@ -772,6 +791,9 @@ void HTMLTokenizer::parseTag(HTMLString &src)
 		tag = NoTag;
 		pending = NonePending; // Ignore pending spaces
 		++src;
+
+		if ( dest == buffer ) // Stop if tag is unknown
+		  break;
 
 		if( *(dest-1) == QChar(TAG_ESCAPE) ) dest--; 
 
@@ -1029,8 +1051,10 @@ void HTMLTokenizer::write( const char *str)
 		if (pending == LFPending)
 		    pending = NonePending; // Ignore leading LFs
 	    }
-	    else if ( ((src[0] >= QChar('a')) && (src[0] <= QChar('z'))) || 
-	    	      ((src[0] >= QChar('A')) && (src[0] <= QChar('Z'))) )	    	    
+	    // QChar -> char conversion caching
+	    else if ( (chr = src[0].latin1()) &&
+		      ((( chr >= 'a') && (chr <= 'z')) || 
+		       ((chr >= 'A') && (chr <= 'Z'))))
 	    {
 		// Start of a Start-Tag
 	    }
@@ -1085,7 +1109,9 @@ void HTMLTokenizer::write( const char *str)
 	    startTag = true;
 	    discard = NoneDiscard;
 	}
-	else if (( src[0] == QChar('\n') ) || ( src[0] == QChar('\r') ))
+	// QChar -> char conversion caching
+	else if ( (chr = src[0].latin1()) &&
+		  (( chr == '\n' ) || ( chr == '\r' )))
 	{
 	    if ( pre || textarea)
 	    {
@@ -1123,7 +1149,9 @@ void HTMLTokenizer::write( const char *str)
 	    }
 	    ++src;
 	}
-	else if (( src[0] == QChar(' ') ) || ( src[0] == QChar('\t') ))
+	// QChar -> char conversion caching
+	else if ( (chr = src[0].latin1()) &&
+		  (( chr == ' ' ) || ( chr == '\t' )))
 	{
 	    if ( pre || textarea)
 	    {
@@ -1375,11 +1403,12 @@ void StringTokenizer::tokenize( HTMLString str, const QChar *_separators )
 
     end = buffer;
     bool quoted = false;
-    
-    for ( ; str.length(); ++str )
+    QChar quoteChar('\"');
+
+    for (int count = 0; count < strLength - 1; ++str, ++count )
     {
 	QChar *x = ustrchr( _separators, str[0] );
-	if ( str[0] == QChar('\"') )
+	if ( str[0] == quoteChar )
 	    quoted = !quoted;
 	else if ( x && !quoted )
 	    *end++ = 0;
@@ -1411,7 +1440,7 @@ HTMLString StringTokenizer::nextToken()
 
 StringTokenizer::~StringTokenizer()
 {
-    if ( buffer != 0 )
+    if ( bufLen > 0 )
 	delete [] buffer;
 }
 

@@ -2029,10 +2029,10 @@ void KHTMLParser::parseTagInput(void)
 		radio->setForm( form );
 		form->addElement( radio );
 		flow->append( radio );
-		QObject::connect(radio,SIGNAL(radioSelected(const QChar *,const QChar *)),
-		    form, SLOT(slotRadioSelected(const QChar *, const QChar *)));
-		QObject::connect(form,SIGNAL( radioSelected(const QChar*,const QChar *) ),
-		    radio, SLOT(slotRadioSelected(const QChar *, const QChar *)));
+		QObject::connect(radio,SIGNAL(radioSelected(QString,QString)),
+		    form, SLOT(slotRadioSelected(QString, QString)));
+		QObject::connect(form,SIGNAL( radioSelected(QString,QString) ),
+		    radio, SLOT(slotRadioSelected(QString, QString)));
 	    }
 	    break;
 

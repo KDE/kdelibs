@@ -162,6 +162,9 @@ protected:
     QChar *buffer;
     QChar *dest;
 
+    // QChar -> char conversion cache
+    char chr;
+
     // the size of buffer
     int size;
 
