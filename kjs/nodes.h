@@ -83,6 +83,7 @@ namespace KJS {
      */
     virtual Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
 
     UString toCode() const;
     virtual void streamTo(SourceStream &s) const = 0;
@@ -145,6 +146,7 @@ namespace KJS {
     NullNode() {}
     Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   };
 
@@ -153,6 +155,7 @@ namespace KJS {
     BooleanNode(bool v) : val(v) {}
     Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     bool val;
@@ -163,6 +166,7 @@ namespace KJS {
     NumberNode(double v) : val(v) { }
     virtual Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     double val;
@@ -173,6 +177,7 @@ namespace KJS {
     StringNode(const UString *v) : val(*v) { }
     Value value(ExecState *exec) const;
     virtual bool toBoolean(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     UString val;
@@ -225,6 +230,7 @@ namespace KJS {
     virtual bool deref();
     virtual ~ElisionNode();
     virtual Value value(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     ElisionNode *elision;
@@ -450,6 +456,7 @@ namespace KJS {
     virtual bool deref();
     virtual ~UnaryPlusNode();
     virtual Value value(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;
@@ -462,6 +469,7 @@ namespace KJS {
     virtual bool deref();
     virtual ~NegateNode();
     virtual Value value(ExecState *exec) const;
+    virtual double toNumber(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
     Node *expr;

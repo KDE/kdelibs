@@ -122,6 +122,12 @@ bool Node::toBoolean(ExecState *exec) const
   return value(exec).toBoolean(exec);
 }
 
+double Node::toNumber(ExecState *exec) const
+{
+//   fprintf(stderr, "Node(%s)::toNumber()\n", typeid(*this).name());
+  return value(exec).toNumber(exec);
+}
+
 #ifdef KJS_DEBUG_MEM
 void Node::finalCheck()
 {
@@ -193,6 +199,11 @@ bool NullNode::toBoolean(ExecState *) const
   return false;
 }
 
+double NullNode::toNumber(ExecState *) const
+{
+  return 0.0;
+}
+
 // ----------------------------- BooleanNode ----------------------------------
 
 Value BooleanNode::value(ExecState *) const
@@ -203,6 +214,11 @@ Value BooleanNode::value(ExecState *) const
 bool BooleanNode::toBoolean(ExecState *) const
 {
   return val;
+}
+
+double BooleanNode::toNumber(ExecState *) const
+{
+  return val ? 0.0 : 1.0;
 }
 
 // ----------------------------- NumberNode -----------------------------------
@@ -217,6 +233,11 @@ bool NumberNode::toBoolean(ExecState *) const
   return !((val == 0) /* || (iVal() == N0) */ || isNaN(val));
 }
 
+double NumberNode::toNumber(ExecState *) const
+{
+  return val;
+}
+
 // ----------------------------- StringNode -----------------------------------
 
 Value StringNode::value(ExecState *) const
@@ -227,6 +248,11 @@ Value StringNode::value(ExecState *) const
 bool StringNode::toBoolean(ExecState *) const
 {
   return !val.isEmpty();
+}
+
+double StringNode::toNumber(ExecState *) const
+{
+  return val.toDouble();
 }
 
 // ----------------------------- RegExpNode -----------------------------------
@@ -353,9 +379,15 @@ bool ElisionNode::deref()
 Value ElisionNode::value(ExecState *exec) const
 {
   if (elision)
-    return Number(elision->value(exec).toNumber(exec) + 1);
+    return Number(elision->toNumber(exec) + 1);
   else
     return Number(1);
+}
+
+// ECMA 11.1.4
+double ElisionNode::toNumber(ExecState *exec) const
+{
+  return elision ? elision->toNumber(exec) + 1.0 : 1.0;
 }
 
 // ----------------------------- ElementNode ----------------------------------
@@ -1063,6 +1095,12 @@ bool UnaryPlusNode::deref()
 }
 
 // ECMA 11.4.6
+double UnaryPlusNode::toNumber(ExecState *exec) const
+{
+  return expr->toNumber(exec);
+}
+
+// could go
 Value UnaryPlusNode::value(ExecState *exec) const
 {
   Value v = expr->value(exec);
@@ -1092,6 +1130,11 @@ bool NegateNode::deref()
 }
 
 // ECMA 11.4.7
+double NegateNode::toNumber(ExecState *exec) const
+{
+  return -expr->toNumber(exec);
+}
+
 Value NegateNode::value(ExecState *exec) const
 {
   Value v = expr->value(exec);
