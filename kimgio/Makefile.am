@@ -73,7 +73,7 @@ staticmodules: $(PNG_MODULE) $(JPEG_MODULE) $(TIFF_MODULE)
 CLEANFILES = staticmodules kimgio-config.h
 
 libkimgio_la_LDFLAGS = -version-info 3:0 --export-dynamic
-libkimgio_la_LIBADD = `cat staticmodules` $(LIB_KDECORE) 
+libkimgio_la_LIBADD = `cat staticmodules` $(LIBQIMGIO) $(LIB_KDECORE) 
 libkimgio_la_DEPENDENCIES = staticmodules 
 libkimgio_la_SOURCES = kimgio.cpp
 $(srcdir)/kimgio.cpp: kimgio-config.h

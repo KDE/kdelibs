@@ -52,6 +52,7 @@ AC_CHECK_LIB(compat, main, [LIBCOMPAT="-lcompat"]) dnl for FreeBSD
 
 dnl Image libraries
 KDE_CREATE_LIBS_ALIASES
+AC_FIND_QIMGIO
 KDE_CHECK_KIMGIO
 
 AM_CONDITIONAL(HAVE_LIBJPEG, test -n "$LIBJPEG" )

@@ -37,6 +37,10 @@ extern "C" void kimgio_init_tiff();
 
 extern "C" void kimgio_init_krl();
 
+#ifdef HAVE_QIMGIO
+#include <qimageio.h>
+#endif
+
 void kimgioRegister(void)
 {
 	if( registered ) {
@@ -96,6 +100,10 @@ void kimgioRegister(void)
 
 #ifdef LINKED_tiff
 	kimgio_init_tiff();
+#endif
+
+#ifdef HAVE_QIMGIO
+        qInitImageIO();
 #endif
 
 }
