@@ -479,7 +479,7 @@ bool ReadWritePart::saveToURL()
   }
   else
   {
-    KIO::Job * job = KIO::file_copy( m_file, m_url );
+    KIO::Job * job = KIO::file_copy( m_file, m_url, -1, true /*overwrite*/ );
     connect( job, SIGNAL( result( KIO::Job * ) ), this, SLOT( slotUploadFinished (KIO::Job *) ) );
     return true;
   }
