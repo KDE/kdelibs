@@ -123,7 +123,7 @@ QValueList<KBookmark> KBookmarkDrag::decode( const QMimeSource * e )
         QDomNodeList children = elem.childNodes();
         for ( uint childno = 0; childno < children.count(); childno++) 
         {
-           bookmarks.append( KBookmark( children.item(childno).toElement() ));
+           bookmarks.append( KBookmark( children.item(childno).cloneNode(true).toElement() ));
         }
         return bookmarks;
     }
