@@ -609,6 +609,14 @@ long StdScheduleNode::request(long amount)
 	unsigned long in;
 	int have_in,need_more,have_done,have_done_total = 0;
 
+	if(!running)
+	{
+		arts_fatal("Calculating data on a module which was not started!\n"
+					"Start modules by calling module.start() "
+					"before connecting them to avoid this.");
+		// not reached
+	}
+
 	if(Busy) { BusyHit++; return(-1); }
 
 	Busy = 1;
