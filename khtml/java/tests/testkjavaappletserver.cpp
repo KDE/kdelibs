@@ -10,25 +10,24 @@
 
 int main(int argc, char **argv)
 {
-  KCmdLineArgs::init( argc, argv, "testKJASSever", "test program", "0.0" );
-  KApplication app;
+    KCmdLineArgs::init( argc, argv, "testKJASSever", "test program", "0.0" );
+    KApplication app;
 
-  KJavaAppletContext* context = new KJavaAppletContext();
-  
-  KJavaAppletWidget *applet = new KJavaAppletWidget( context );
-  CHECK_PTR( applet );
+    QString path_to_kdelibs( argv[1] );
+    
+    KJavaAppletContext* context = new KJavaAppletContext();
+    KJavaAppletWidget *applet = new KJavaAppletWidget( context );
 
-//  applet->resize( 240, 630 );
-  applet->show();
+    applet->show();
 
-  applet->setBaseURL( "file:/build/kde-src/kdelibs/khtml/test/" ); 
-  applet->setAppletName( "Lake" );
-  applet->setAppletClass( "lake.class" );
-  applet->setParameter( "image", "konqi.gif" );
+    applet->setBaseURL( "file:" + path_to_kdelibs + "/kdelibs/khtml/test/" );
+    applet->setAppletName( "Lake" );
+    applet->setAppletClass( "lake.class" );
+    applet->setParameter( "image", "konqi.gif" );
 
-  applet->create();
-  applet->showApplet();
-  applet->start();
+    applet->create();
+    applet->showApplet();
+    applet->start();
 
-  app.exec();
+    app.exec();
 }

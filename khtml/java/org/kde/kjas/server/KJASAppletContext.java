@@ -97,15 +97,18 @@ public class KJASAppletContext implements AppletContext
 
             Class appletClass = loader.loadClass( className );
 
-            // Load and instantiate applet
-            Applet app = (Applet) appletClass.newInstance();
-            app.setSize( size );
+            if( appletClass != null )
+            {
+                // Load and instantiate applet
+                Applet app = (Applet) appletClass.newInstance();
+                app.setSize( size );
 
-            KJASAppletStub stub = new KJASAppletStub( this, appletID, app, codeBase, docBase, name );
+                KJASAppletStub stub = new KJASAppletStub( this, appletID, app, codeBase, docBase, name );
 
-            appletNames.put( name, app );
-            appletIDs.put( appletID, app );
-            stubs.put( appletID, stub );
+                appletNames.put( name, app );
+                appletIDs.put( appletID, app );
+                stubs.put( appletID, stub );
+            }
         }
         catch ( ClassNotFoundException e )
         {
@@ -136,7 +139,14 @@ public class KJASAppletContext implements AppletContext
         if( app == null )
             Main.kjas_debug( "could not destroy applet: " + appletID );
         else
+        {
+            Main.kjas_debug( "stopping applet: " + appletID );
             app.stop();
+
+            appletIDs.remove( appletID );
+            appletNames.remove( appletID );
+            stubs.remove( appletID );
+        }
     }
 
     public void showApplet( String appletID, String title )

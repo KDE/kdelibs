@@ -62,8 +62,13 @@ KJavaProcess::KJavaProcess()
 
 KJavaProcess::~KJavaProcess()
 {
+    kdDebug() << "KJavaProcess::~KJavaProcess" << endl;
+
     if ( d->ok && isRunning() )
+    {
+        kdDebug() << "stopping java process" << endl;
         stopJava();
+    }
 
     delete javaProcess;
     delete d;
@@ -146,7 +151,7 @@ void KJavaProcess::send( const QString& /*command*/ )
 
 void KJavaProcess::send( char cmd_code, const QStringList& args )
 {
-    kdDebug() << "KJavaProcess::send( the new one)" << endl;
+    kdDebug() << "KJavaProcess::send" << endl;
 
     //the buffer to store stuff, etc.
     QByteArray* buff = new QByteArray();

@@ -2,6 +2,7 @@
 
 #include <kwinmodule.h>
 #include <kwin.h>
+#include <kdebug.h>
 
 #include <qtimer.h>
 #include <qapplication.h>
@@ -26,7 +27,7 @@ KJavaAppletWidget::KJavaAppletWidget( KJavaAppletContext* context,
 }
 
 KJavaAppletWidget::KJavaAppletWidget( KJavaApplet* _applet,
-                                      QWidget *parent, const char *name )
+                                      QWidget* parent, const char* name )
    : QXEmbed( parent, name )
 {
     applet = _applet;
@@ -34,7 +35,7 @@ KJavaAppletWidget::KJavaAppletWidget( KJavaApplet* _applet,
     init();
 }
 
-KJavaAppletWidget::KJavaAppletWidget( QWidget *parent, const char *name )
+KJavaAppletWidget::KJavaAppletWidget( QWidget* parent, const char* name )
    : QXEmbed( parent, name )
 {
     KJavaAppletContext* context = KJavaAppletContext::getDefaultContext();
@@ -60,8 +61,9 @@ void KJavaAppletWidget::init()
 
     //remove event filters in qApp, topLevelWidget
     //this helps keyboard focus sometimes???
-//    qApp->removeEventFilter( this );
-//    topLevelWidget()->removeEventFilter( this );
+    qApp->removeEventFilter( this );
+    topLevelWidget()->removeEventFilter( this );
+    setAutoDelete( true );
 }
 
 void KJavaAppletWidget::create()
@@ -165,8 +167,10 @@ void KJavaAppletWidget::setWindow( WId w )
     KWin::Info w_info = KWin::info( w );
 
     if ( swallowTitle == w_info.name ||
-	 swallowTitle == w_info.visibleName )
-      {
+         swallowTitle == w_info.visibleName )
+    {
+        kdDebug() << "swallowing our window: " << swallowTitle << endl;
+
         // disconnect from KWM events
         disconnect( kwm, SIGNAL( windowAdded( WId ) ),
                     this, SLOT( setWindow( WId ) ) );

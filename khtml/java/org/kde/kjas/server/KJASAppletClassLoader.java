@@ -62,6 +62,11 @@ public class KJASAppletClassLoader
             Main.kjas_debug( "super couldn't load class: " + name + ", exception = " + e );
             throw e;
         }
+        catch( ClassFormatError e )
+        {
+            Main.kjas_debug( "Class format error: " + e );
+            return null;
+        }
     }
 
 

@@ -84,7 +84,10 @@ public class KJASProtocolHandler
             }
             catch( NumberFormatException e )
             {
-                Main.kjas_err( "Could not parse out message length", e );
+                Main.kjas_err( "Could not parse out message length from : " + length_str, e );
+
+                System.exit( 1 );
+
 
                 //read until the next character is a space, try to sync up the protocol
                 char curr = (char)commands.read();
@@ -207,8 +210,7 @@ public class KJASProtocolHandler
         {
             Main.kjas_debug( "shutDownServer" );
 
-            //0 arguments
-            //shut this down somehow...
+            System.exit( 1 );
         }
         else
         {
