@@ -13,7 +13,7 @@ include_HEADERS = kjavaapplet.h kjavaappletcontext.h \
 libkjava_la_LDFLAGS = -version-info 1:0 -no-undefined
 libkjava_la_LIBADD = $(LIB_KDECORE) $(LIB_KIO)
 
-INCLUDES = $(all_includes) -I$(top_srcdir)
+INCLUDES = -I$(top_srcdir) $(all_includes) 
 
 data_DATA = kjava.jar kjava.policy
 datadir = $(kde_datadir)/kjava/
