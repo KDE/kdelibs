@@ -27,73 +27,98 @@
 #include <ktoolbar.h>
 
 /**
- * KHTBLayout is a specialized version of QHBoxLayout. It can be used when
- * you want to manage horizontally aligned widgets that consist of one main
- * widget and other toolbar-like widgets. The toolbar like widgets must have
- * a fixed width that can depend on their height. The main widget takes the
- * rest of the space. The toolbars must define a widthForHeight(int) function.
- * The most prominent user of this class is KTMainWidget.
+ * KTMLayout is layout manager for KTMainWidget. It is customized
+ * specifically for KTMainWidget's layout. You can use it for your own
+ * widgets but there is probably little use for it. So this class can
+ * be regarded as a kdeui internal class.
  *
  * @see KTMainWindow
- * @short Special layout managers for use with toolbar-like widgets.
- * @author Chris Schlaeger (cs@kde.org)
+ * @short Special layout manager for KTMainWidget.
+ * @author Chris Schlaeger (cs@kde.org) 
  */
+
 class KTMLayout : public QLayout
 {
 public:
+	/**
+	 * The constructor. It probably makes no use to call this version. */
 	KTMLayout()
 	{
+		topMenuBar = bottomMenuBar = statusBar = 0;
 		mainItem = 0;
 	}
+	/**
+	 * The constructor. */
 	KTMLayout(QWidget *parent, int border = 0, int space = -1,
-			   const char *name = 0);
+			  const char *name = 0);
 
 	~KTMLayout() { }
 
+	/**
+	 * Register the top menu bar. There can only be one.  */
 	void addTopMenuBar(QWidget* w)
 	{
 		topMenuBar = w;
 	}
 
+	/**
+	 * Register the bottom menu bar. There can only be one.  */
 	void addBottomMenuBar(QWidget* w)
 	{
 		bottomMenuBar = w;
 	}
 
+	/**
+	 * Call this function to register all bars that are
+	 * flattened. This can tool bars as well as menu bars.  */
 	void addFlatBar(QWidget* w)
 	{
 		flatBars.append(w);
 	}
 
+	/**
+	 * Register top tool bars. There is no limit in the number of tool
+	 * bars that you can register.  */
 	void addTopToolBar(KToolBar* w)
 	{
 		topToolBars.append(w);
 	}
 
+	/**
+	 * Register left hand side tool bars. There is no limit in the
+	 * number of tool bars that you can register.  */
 	void addLeftToolBar(KToolBar* w)
 	{
 		leftToolBars.append(w);
 	}
 
+	/**
+	 * Register right hand side tool bars. There is no limit in the
+	 * number of tool bars that you can register.  */
 	void addRightToolBar(KToolBar* w)
 	{
 		rightToolBars.append(w);
 	}
 
+	/**
+	 * Register bottom tool bars. There is no limit in the number of
+	 * tool bars that you can register.  */
 	void addBottomToolBar(KToolBar* w)
 	{
 		bottomToolBars.append(w);
 	}
 
 	/**
-	 * Use this function to add the main widget. All toolbars can be added
-	 * with addItem(). There must be exactly one main widget!
-	 */
+	 * Use this function to register the main widget. There must be
+	 * exactly one main widget!  */
 	void addMainItem(QWidget* w)
 	{
 		mainItem = w;
 	}
 
+	/**
+	 * Use this function to register the status bar. There can only be
+	 * one. */
 	void addStatusBar(QWidget* w)
 	{
 		statusBar = w;
@@ -101,14 +126,25 @@ public:
 
 
 	/**
-	 * This function arranges the widgets. It determines the necessary space
-	 * for the toolbars and assignes the remainder to the main widget.
-	 */
+	 * This function arranges the widgets. It determines the necessary
+	 * space for the toolbars and assignes the remainder to the main
+	 * widget.  */
 	void setGeometry(const QRect& rect);
 
+	/**
+	 * Returns the preferred size of the layout. */
 	QSize sizeHint(void) const;
+
+	/**
+	 * Returns the minimum required size of the layout. */
 	QSize minimumSize(void) const;
+
+	/**
+	 * Never use this function. It is provided to be compliant with Qt. */
 	void addItem(QLayoutItem* item);
+
+	/**
+	 * Never use this function. It is provided to be compliant with Qt. */
 	QLayoutIterator iterator();
 	
 private:
@@ -125,8 +161,13 @@ private:
 	void flatBarLayout(const QRect& rect, int& currY,
 					   const QList<QWidget>& fbl);
 
+	/**
+	 * This is only provided to support a Qt compliant interface. */
 	QList<QLayoutItem> list;
 
+	/**
+	 * The following variables store the references to the items that are 
+	 * managed by this layout manager. */
 	QWidget* topMenuBar;
 	QWidget* bottomMenuBar;
 
@@ -141,6 +182,9 @@ private:
 	QWidget* statusBar;
 } ;
 
+/**
+ * Auxillary class for KTMLayout.
+ */
 class KTMLayoutIterator :public QGLayoutIterator
 {
 public:

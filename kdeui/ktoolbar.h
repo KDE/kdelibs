@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.60  1999/06/09 21:52:27  cschlaeg
+// serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
+//
 // Revision 1.59  1999/06/07 21:11:05  cschlaeg
 // more work done for layout management integration; setFullWidth(false) still does not work; will work on this tomorrow
 //
@@ -743,11 +746,27 @@ public:
   void setMaxHeight (int h);  // Set max height for vertical toolbars
 
   /**
+   * Returns the value that was set with @ref setMaxHeight().
+   */
+  int maxHeight(void)
+  {
+	  return (maxVerHeight);
+  }
+
+  /**
    * Sets maximal width of horizontal (top or bottom) toolbar. This works
    * only for horizontal toolbars (at Top or Bottom), and has no effect
    * otherwise. Has no effect when toolbar is floating.
    */
   void setMaxWidth (int dw);
+
+  /**
+   * Return the value that was set with @ref setMaxWidth().
+   */
+  int maxWidth(void)
+  {
+	  return (maxHorWidth);
+  }
 
   /**
    * Sets title for toolbar when it floats. Titles are however not (yet)
@@ -913,8 +932,8 @@ private:
   int min_width;
   int min_height;
 
-  int maxWidth;
-  int maxHeight;
+  int maxHorWidth;
+  int maxVerHeight;
 
   BarPosition lastPosition; // Where was I last time I was?
   BarPosition movePos;      // Where was I moved to?
@@ -938,8 +957,8 @@ protected:
   void mouseMoveEvent ( QMouseEvent *);
   void mouseReleaseEvent ( QMouseEvent *);
   void init();
-  void layoutVertical(int maxHeight);
-  void layoutHorizontal(int maxWidth);
+  void layoutVertical(int maxVerHeight);
+  void layoutHorizontal(int maxHorWidth);
   void leaveEvent (QEvent *e);
 
 

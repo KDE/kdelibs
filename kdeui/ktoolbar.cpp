@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.117  1999/06/10 13:05:57  cschlaeg
+// fix for KOffice horizontal toolbar problem
+//
 // Revision 1.116  1999/06/09 21:52:26  cschlaeg
 // serveral fixes for recently implemented layout management; removed segfault on close; removed segfault for no menubar apps; setFullWidth(false) is working again; floating a bar does not segfault any more but still does not work properly; I will look into this again.
 //
@@ -909,7 +912,7 @@ KToolBar::KToolBar(QWidget *parent, const char *name, int _item_size)
   fixed_size =  (item_size > 0);
   if (!fixed_size)
   item_size = 26;
-  maxWidth = maxHeight = -1;
+  maxHorWidth = maxVerHeight = -1;
   init();
   Parent = parent;        // our father
   mouseEntered=false;
@@ -1074,13 +1077,13 @@ KToolBar::~KToolBar()
 
 void KToolBar::setMaxHeight (int h)
 {
-	maxHeight = h;
+	maxVerHeight = h;
 	updateRects(true);
 }
 
 void KToolBar::setMaxWidth (int w)
 {
-	maxWidth = w;
+	maxHorWidth = w;
 	updateRects(true);
 }
 
@@ -1371,42 +1374,54 @@ KToolBar::updateRects(bool res)
 		break;
 
 	case Floating:
-		if ((items.count() == 0) || (width() >= height() + 10))
+		printf("updateRects(%d) %d, %d, %d, %d\n", res, x(), y(), width(), height());
+		if (width() >= height())
 		{
-			if (maxWidth == -1)
-				maxWidth = maximumSizeHint().width();
-			layoutHorizontal(maxWidth);
+			layoutHorizontal(width());
 		}
 		else
 		{
-			if (maxHeight == -1)
-				maxHeight = maximumSizeHint().height();
-			layoutVertical(maxHeight);
+			layoutVertical(height());
 		}
 		break;
 
 	case Top:
 	case Bottom:
-		/* If we are not in full size mode and the user has not
-		 * defined a maximum width then we have to define it
-		 * ourselves. */
-		layoutHorizontal(!fullSize ?
-						 (maxWidth == -1 ?
-						  maximumSizeHint().width() : maxWidth) :
-						 width());
+	{
+		int mw = width();
+		if (!fullSize)
+		{
+			/* If we are not in fullSize mode and the user has requested a
+			 * certain width, this will be used. If no size has been requested
+			 * and the parent width is larger than the maximum width, we use
+			 * the maximum width. */
+			if (maxHorWidth != -1)
+				mw = maxHorWidth;
+			else if (width() > maximumSizeHint().width())
+				mw = maximumSizeHint().width();
+		}	
+		layoutHorizontal(mw);
 		break;
+	}
 
 	case Left:
 	case Right:
-		/* If we are not in full size mode and the user has not
-		 * defined a maximum height then we have to define it
-		 * ourselves. */
-		layoutVertical(!fullSize ? 
-					   (maxHeight == -1 ?
-						maximumSizeHint().height() : maxHeight) :
-					   height());
+	{
+		int mh = height();
+		if (!fullSize)
+		{
+			/* If we are not in fullSize mode and the user has requested a
+			 * certain height, this will be used. If no size has been requested
+			 * and the parent height is larger than the maximum height, we use
+			 * the maximum height. */
+			if (maxVerHeight != -1)
+				mh = maxVerHeight;
+			else if (height() > maximumSizeHint().height())
+				mh = maximumSizeHint().height();
+		}
+		layoutVertical(mh);
 		break;
-
+	}
 	default:
 		return;
 	}
@@ -1424,28 +1439,26 @@ KToolBar::sizeHint() const
 {
 	switch (position)
 	{
+	case Floating:
+		printf("sizeHint()\n");
+		break;
+
 	case Top:
 	case Bottom:
-		if (!fullSize)
+		if (!fullSize && (maxHorWidth != -1))
 		{
-			int mw = maxWidth;
-			/* If we are not in full size mode and the user has not defined
-			 * a maximum width then we have to define it ourselves. */
-			if (mw == -1)
-				mw = maximumSizeHint().width();
-			return (QSize(mw, min_height));
+			/* If fullSize mode is disabled and the user has requested a
+			 * specific width, then we use this value. */
+			return (QSize(maxHorWidth, min_height));
 		}
 		break;
 	case Right:
 	case Left:
-		if (!fullSize)
+		if (!fullSize && (maxVerHeight != -1))
 		{
-			int mh = maxHeight;
-			/* If we are not in full size mode and the user has not defined
-			 * a maximum height then we have to define it ourselves. */
-			if (mh == -1)
-				mh = maximumSizeHint().height();
-			return (QSize(min_width, mh));
+			/* If fullSize mode is disabled and the user has requested a
+			 * specific height, then we use this value. */
+			return (QSize(min_width, maxVerHeight));
 		}
 		break;
 	default:
@@ -1520,7 +1533,7 @@ KToolBar::maximumSizeHint() const
 QSize 
 KToolBar::minimumSizeHint() const
 {
-	return (QSize(min_width, min_height));
+	return (sizeHint());
 }
 
 QSizePolicy 
@@ -1769,16 +1782,29 @@ void KToolBar::slotHotSpot(int hs)
 
 void KToolBar::resizeEvent(QResizeEvent*)
 {
+	/*
+	 * The resize can affect the arrangement of the toolbar items so
+	 * we have to call updateRects(). But we need not trigger another
+	 * resizeEvent!  */
+	updateRects();
+
 	if (position == Floating)
-		resize(min_width, min_height);
-	else
 	{
-		/*
-		 * The resize can affect the arrangement of the toolbar items so we
-		 * have to call updateRects(). But we need not trigger another
-		 * resizeEvent!
-		 */
-		updateRects();
+		/* It's flicker time again. If the size is under direct control of
+		 * the WM we have to force the height to make the heightForWidth
+		 * feature work. */
+		if (width() > height())
+		{
+			/* horizontal bar */
+			if (height() != heightForWidth(width()))
+				resize(width(), heightForWidth(width()));
+		}
+		else
+		{
+			/* vertical bar */
+			if (width() != widthForHeight(height()))
+				resize(height(), widthForHeight(height()));
+		}
 	}
 }
 
@@ -2603,6 +2629,7 @@ void KToolBar::setBarPos(BarPosition bpos)
 			parentOffset = pos();
 			hide();
 			emit moved (bpos);  // this sets up KTW but not toolbar which floats
+//			updateRects(false); // we need this to set us up
 			recreate(0, 0, p, false);
 			XSetTransientForHint( qt_xdisplay(), winId(), Parent->topLevelWidget()->winId());
 			KWM::setDecoration(winId(), 2);
@@ -2619,7 +2646,6 @@ void KToolBar::setBarPos(BarPosition bpos)
 			context->setItemEnabled (CONTEXT_FLAT, FALSE);
 			setMouseTracking(true);
 			mouseEntered=false;
-			updateRects(true); // we need this to set us up
 			return;
 		}
 		else if (position == Floating) // was floating
