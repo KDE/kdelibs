@@ -21,7 +21,7 @@
 #include <qstringlist.h>
 #include <kapp.h>
 
-#define DEFAULT_USERAGENT_STRING    QString("Mozilla/4.0 (compatible; Konqueror/")+KDE_VERSION_STRING+QString("; X11)")
+#define DEFAULT_USERAGENT_STRING    QString("Mozilla/5.0 (compatible; Konqueror/")+KDE_VERSION_STRING+QString("; X11)")
 
 
 class KConfig;
