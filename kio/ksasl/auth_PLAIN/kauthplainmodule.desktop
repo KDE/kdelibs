@@ -1,0 +1,7 @@
+[Desktop Entry]
+Icon=
+InitialPreference=5
+Name=PlainAuth
+ServiceTypes=KSASL/Module
+Type=Service
+X-KDE-Library=ksasl_auth_plain
