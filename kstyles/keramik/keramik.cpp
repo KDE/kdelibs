@@ -45,9 +45,11 @@
 #include <qpointarray.h>
 #include <qprogressbar.h>
 #include <qpushbutton.h>
+#include <qsettings.h>
 #include <qslider.h>
 #include <qstyleplugin.h>
 #include <qtabbar.h>
+#include <qtimer.h>
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
 
@@ -76,15 +78,14 @@ public:
 	QStringList keys() const
 	{
 		if (QPixmap::defaultDepth() > 8)
-			return QStringList() << "Keramik"<<"Keramik/II";
+			return QStringList() << "Keramik";
 		else
 			return QStringList();
 	}
 
 	QStyle* create( const QString& key )
 	{
-		if ( key == "keramik" ) return new KeramikStyle(1);
-		if ( key == "keramik/ii" ) return new KeramikStyle(2);
+		if ( key == "keramik" ) return new KeramikStyle();
 		return 0;
 	}
 };
@@ -272,15 +273,31 @@ QPixmap KeramikStyle::stylePixmap(StylePixmap stylepixmap,
 
 
 
-KeramikStyle::KeramikStyle(int version)
-	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), versionMode(version), maskMode(false),
+KeramikStyle::KeramikStyle()
+	:KStyle( AllowMenuTransparency | FilledFrameWorkaround, ThreeButtonScrollBar ), maskMode(false),
 		toolbarBlendWidget(0), titleBarMode(None), flatMode(false), customScrollMode(false), kickerMode(false)
 {
-	if (versionMode == 1)
-		tabHeightAdjust = 4;
-	else
-		tabHeightAdjust = 3;
 	hoverWidget = 0;
+	progAnimShift = 0;
+
+	QSettings settings;
+
+	highlightLineEdits = settings.readBoolEntry("/keramik/Settings/highlightLineEdits", false);
+	animateProgressBar = settings.readBoolEntry("/keramik/Settings/animateProgressBar", false);
+
+	if (animateProgressBar)
+	{
+		QTimer* timer = new QTimer( this );
+		timer->start(50, false);
+		connect(timer, SIGNAL(timeout()), this, SLOT(updateProgressPos()));
+	}
+}
+
+void KeramikStyle::updateProgressPos()
+{
+	progAnimShift++;
+	if (progAnimShift == 28)
+		progAnimShift = 0;
 }
 
 KeramikStyle::~KeramikStyle()
@@ -324,6 +341,13 @@ void KeramikStyle::polish(QWidget* widget)
 		widget->installEventFilter(this);
 	}
 
+	if (animateProgressBar && widget->inherits("QProgressBar"))
+	{
+		QTimer* timer = new QTimer(widget);
+		timer->start(50);
+		connect(timer, SIGNAL(timeout()), widget, SLOT(update()));
+	}
+
 	KStyle::polish(widget);
 }
 
@@ -333,9 +357,7 @@ void KeramikStyle::unPolish(QWidget* widget)
 	{
 		if ( widget->inherits( "QComboBox" ) )
 			widget->setBackgroundMode( PaletteButton );
-
 		widget->removeEventFilter(this);
-
 	}
 	else if ( widget->inherits( "QMenuBar" ) || widget->inherits( "QPopupMenu" ) )
 		widget->setBackgroundMode( PaletteBackground );
@@ -770,7 +792,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			// line edit frame
 		case PE_PanelLineEdit:
 		{
-			if ( versionMode == 1 )
+			if ( !highlightLineEdits )
 			{
 				p->setPen( cg.dark() );
 				p->drawLine( x, y, x + w - 1, y );
@@ -786,7 +808,7 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				p->drawLine( x + 1, y + h - 2, x + w - 2, y + h - 2);
 
 			}
-			else //Keramik/II
+			else
 			{
 				if ( (flags & Style_HasFocus) && (flags & QStyle::Style_Enabled) )
 				{
@@ -1371,10 +1393,7 @@ void KeramikStyle::drawControl( ControlElement element,
 			              tabBar->shape() == QTabBar::TriangularBelow;
 
 			if ( flags & Style_Selected )
-				if (versionMode == 1)
-					Keramik::ActiveTabPainter( bottom ).draw( p, r, cg.button(), cg.background(), !tabBar->isEnabled(), pmode());
-				else //Keramik/II makes active tabs lighter
-					Keramik::ActiveTabPainter( bottom ).draw( p, r, cg.button().light(110), cg.background(), !tabBar->isEnabled(), pmode());
+				Keramik::ActiveTabPainter( bottom ).draw( p, r, cg.button().light(110), cg.background(), !tabBar->isEnabled(), pmode());
 
 			else
 			{
@@ -1386,13 +1405,13 @@ void KeramikStyle::drawControl( ControlElement element,
 
 				if ( bottom )
 				{
-					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y, w, h - tabHeightAdjust, cg.button(), cg.background(), disabled, pmode() );
+					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y, w, h - 3, cg.button(), cg.background(), disabled, pmode() );
 					p->setPen( cg.dark() );
 					p->drawLine( x, y, x + w, y );
 				}
 				else
 				{
-					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y + tabHeightAdjust, w, h - tabHeightAdjust, cg.button(), cg.background(), disabled, pmode() );
+					Keramik::InactiveTabPainter( mode, bottom ).draw( p, x, y + 3, w, h - 3, cg.button(), cg.background(), disabled, pmode() );
 					p->setPen( cg.light() );
 					p->drawLine( x, y + h - 1, x + w, y + h - 1 );
 				}
@@ -1702,21 +1721,39 @@ void KeramikStyle::drawControl( ControlElement element,
 						pstep = - (pstep - 2 * remWidth );
 					}
 
+					//Store the progress rect.
+					QRect progressRect;
 					if (reverse)
-						Keramik::RowPainter(keramik_progressbar).draw(p, cr.x() + cr.width() - width - pstep, cr.y(), width, cr.height(),
-									 cg.highlight(), cg.background() );
+						progressRect = QRect(cr.x() + cr.width() - width - pstep, cr.y(),
+										width, cr.height());
 					else
-						Keramik::RowPainter(keramik_progressbar).draw(p, cr.x() + pstep, cr.y(), width, cr.height(),
-									cg.highlight(), cg.background() );
+						progressRect = QRect(cr.x() + pstep, cr.y(), width, cr.height());
 
+					Keramik::RowPainter(keramik_progressbar).draw(p, progressRect,
+									 cg.highlight(), cg.background() );
 					return;
 				}
 
+				QRect progressRect;
 
 				if (reverse)
-					Keramik::ProgressBarPainter(keramik_progressbar, reverse).draw( p, cr.x()+(cr.width()-width), cr.y(), width, cr.height(), cg.highlight(), cg.background());
+					progressRect = QRect(cr.x()+(cr.width()-width), cr.y(), width, cr.height());
 				else
-					Keramik::ProgressBarPainter(keramik_progressbar, reverse).draw( p, cr.x(), cr.y(), width, cr.height(), cg.highlight(), cg.background());
+					progressRect = QRect(cr.x(), cr.y(), width, cr.height());
+
+				//### RTL
+				//Apply the animation rectangle.
+
+				//Clip to the old rectangle
+				p->setClipRect(progressRect, QPainter::CoordPainter);
+
+				//Expand
+				progressRect.setLeft(progressRect.x() - 28 + progAnimShift);
+
+
+
+				Keramik::ProgressBarPainter(keramik_progressbar, reverse).draw( p,
+							progressRect , cg.highlight(), cg.background());
 			}
 			break;
 		}
@@ -2151,8 +2188,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
                         loader.size( keramik_scrollbar_vbar + KeramikSlider3 ).height();
 
 		case PM_DefaultFrameWidth:
-			//#### Other frames with the right style? <sigh>
-			if (versionMode == 2 && widget && widget->inherits("QLineEdit"))
+			if (highlightLineEdits && widget && widget->inherits("QLineEdit"))
 				return 2;
 			return 1;
 
@@ -2160,7 +2196,7 @@ int KeramikStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 13;
 
 		case PM_TabBarTabVSpace:
-			return 8 + tabHeightAdjust;
+			return 11;
 
 		case PM_TitleBarHeight:
 			return titleBarH;

@@ -4,7 +4,7 @@
    based on the KDE3 HighColor Style
 
    Copyright (C) 2001-2002 Karol Szwed      <gallium@kde.org>
-             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org> 
+             (C) 2001-2002 Fredrik Höglund  <fredrik@kde.org>
 
    Drawing routines adapted from the KDE2 HCStyle,
    Copyright (C) 2000 Daniel M. Duley       <mosfet@kde.org>
@@ -42,7 +42,7 @@ class KeramikStyle : public KStyle
 	Q_OBJECT
 
 public:
-	KeramikStyle(int versionMode);
+	KeramikStyle();
 	virtual ~KeramikStyle();
 
 	void renderMenuBlendPixmap( KPixmap& pix, const QColorGroup &cg, const QPopupMenu* ) const;
@@ -60,7 +60,7 @@ public:
 	                          const QColorGroup& cg,
 	                          SFlags flags = Style_Default,
 	                          const QStyleOption& = QStyleOption::Default ) const;
-		
+
 	void drawPrimitive( PrimitiveElement pe,
 	                    QPainter* p,
 	                    const QRect& r,
@@ -99,7 +99,7 @@ public:
 	                             const QStyleOption& = QStyleOption::Default ) const;
 
 	int pixelMetric( PixelMetric m, const QWidget* widget = 0 ) const;
-		
+
 	QSize sizeFromContents( ContentsType contents,
 	                        const QWidget* widget,
 	                        const QSize& contentSize,
@@ -114,18 +114,20 @@ public:
 	                              const QWidget* widget,
 	                              SubControl subcontrol,
 	                              const QStyleOption& opt = QStyleOption::Default ) const;
-	// Fix Qt3's wacky image positions
-/*	QPixmap stylePixmap( StylePixmap stylepixmap,
-					const QWidget* widget = 0,
-					const QStyleOption& = QStyleOption::Default ) const;*/
+
+public slots:
+	void updateProgressPos();
 
 protected:
-	int     tabHeightAdjust; //Height adjustment for inactive tabs
-							 //It's 4 for Keramik, 3 for Keramik/II
+	///Configuration settings
+	bool highlightLineEdits;
+	bool animateProgressBar;
 
-	int     versionMode;     //1=Keramik, 2 = Keramik/II
+protected:
 	mutable bool maskMode;   //Ugly round trip flag to permit masking with little code;
 	mutable const QWidget* toolbarBlendWidget;  //Ditto for blending with toolbars
+
+	int                        progAnimShift;
 
 	enum TitleBarMode
 	{
@@ -155,7 +157,6 @@ protected:
 	{
 		return maskMode?Keramik::TilePainter::PaintMask : Keramik::TilePainter::PaintFullBlend;
 	}
-
 
 	QWidget* hoverWidget;
 private:
