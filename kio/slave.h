@@ -161,8 +161,8 @@ namespace KIO {
          * @returns Whether the slave is connencted 
          * (Connection oriented slaves only)
          */
-        bool isConnected() { return !contacted; }
-        void setConnected(bool c) { contacted = !c; }
+        bool isConnected() { return contacted; }
+        void setConnected(bool c) { contacted = c; }
 
         Connection *connection() { return &slaveconn; }
         
