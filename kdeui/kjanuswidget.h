@@ -434,6 +434,9 @@ class KJanusWidget : public QWidget
      **/
     virtual void setFolderIcon(const QStringList &path, const QPixmap &pixmap);
 
+  signals:
+    void aboutToShowPage(QWidget *page);
+
   public slots:
     /**
      * Give the keyboard input focus to the widget.

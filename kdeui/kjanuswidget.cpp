@@ -142,6 +142,8 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
     vbox->addWidget( mTitleSep );
 
     mPageStack = new QWidgetStack( page );
+    connect(mPageStack, SIGNAL(aboutToShow(QWidget *)),
+            this, SIGNAL(aboutToShowPage(QWidget *)));
     vbox->addWidget( mPageStack, 10 );
   }
   else if( mFace == Tabbed )
