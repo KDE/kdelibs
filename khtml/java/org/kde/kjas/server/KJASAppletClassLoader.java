@@ -10,12 +10,20 @@ import java.security.*;
  * ClassLoader used to download and instantiate Applets.
  * <P>
  * <FONT COLOR="red">Warning: No security implemented - do not use unless
- * you *really* know what you're doing.</FONT> 
+ * you *really* know what you're doing.</FONT>
  * It should work ok with both Java 1.1 and Java 2.
  *
  * <H3>Change Log</H3>
  * <PRE>
  * $Log$
+ * Revision 1.10  2000/11/15 19:54:48  wynnw
+ * This update:
+ * * Updates the parsing to handle the new KJAS protocol
+ * * changes the classloading to use the URLClassLoader
+ * * encapsulates callbacks in the KJASProtocolHandler class
+ * * adds more debug functionality
+ * * fixed the callbacks to use the original PrintStream of stdout
+ *
  * Revision 1.9  2000/09/16 03:09:20  rogozin
  * Fix #9558 and probably #9061
  *
@@ -151,6 +159,33 @@ public class KJASAppletClassLoader
 
         if( !inthere )
             addURL( url );
+    }
+
+    public static void main( String[] args )
+    {
+        System.out.println( "num args = " + args.length );
+        System.out.println( "args[0] = " + args[0] );
+        System.out.println( "args[1] = " + args[1] );
+
+        try
+        {
+            URL location = new URL( args[0] );
+            if( location.getFile() == null )
+            {
+                System.out.println( "getFile returned null" );
+            }
+
+            KJASAppletClassLoader loader = KJASAppletClassLoader.createLoader( new URL(args[0]) );
+            Class foo = loader.loadClass( args[1] );
+
+            if( foo == null )
+                System.out.println( "couldn't load class: " + args[1] );
+            else
+                System.out.println( "loaded class: " + foo );
+        } catch( Exception e )
+        {
+            System.out.println( "Caught exception: " + e );
+        }
     }
 
 }
