@@ -393,7 +393,13 @@ void KPropertiesDialog::insertPages()
   if ( mimetype.isEmpty() )
     return;
 
-  KTrader::OfferList offers = KTrader::self()->query( mimetype, QString::fromLatin1( "'KPropsDlg/Plugin' in ServiceTypes" ) );
+  QString query = QString::fromLatin1(
+      "('KPropsDlg/Plugin' in ServiceTypes) and "
+      "((not exist X-KDE-Protocol) or "
+      " (X-KDE-Protocol == '%1'  )   )"          ).arg(item->url().protocol());
+
+  kdDebug( 250 ) << "trader query: " << query << endl;
+  KTrader::OfferList offers = KTrader::self()->query( mimetype, query );
   KTrader::OfferList::ConstIterator it = offers.begin();
   KTrader::OfferList::ConstIterator end = offers.end();
   for (; it != end; ++it )
@@ -402,6 +408,8 @@ void KPropertiesDialog::insertPages()
 
     if ( libName.isEmpty() )
       continue;
+
+    kdDebug( 250 ) << "query result: " << libName << endl;
 
     KLibrary *lib = KLibLoader::self()->library( libName.local8Bit() );
 

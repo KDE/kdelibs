@@ -10,6 +10,7 @@ Comment[el]=Πρόσθετο για το Διάλογο Ιδιοτήτων
 Comment[eo]=Internaĵo por la Eco-dialogo
 Comment[es]=Plugin para el Diálogo de Propiedades
 Comment[et]=Plugina omaduste dialoog
+Comment[eu]=Ezaugarrien Elkarrizketarako Plugina
 Comment[fi]=Sovelma asetusikkunalle
 Comment[fr]=Module pour la boîte de dialogue des Propriétés
 Comment[gl]=Plugin para o Diálogo de Propiedades
@@ -19,6 +20,7 @@ Comment[is]=Íhlutur fyrir stillingarforritið
 Comment[it]=Plugin per la finestra delle proprietà
 Comment[ja]=設定ダイアログプラグイン
 Comment[ko]=대화창 특성을 위한 플러그인
+Comment[lt]=Priedas savybių dialogui
 Comment[lv]=Īpašibu Dialoga Iespraudnis
 Comment[mk]=Плагин за дијалогот за параметри
 Comment[nl]=Plugin voor het 'Eigenschappen'-dialoog
@@ -40,3 +42,5 @@ Comment[uk]=Додаток для діалогу властивостей
 Comment[zh_CN.GB2312]=属性对话的插件
 Comment[zh_TW.Big5]=外掛內容對話框
 
+[PropertyDef::X-KDE-Protocol]
+Type=QString
