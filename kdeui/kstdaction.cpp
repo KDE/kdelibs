@@ -737,22 +737,35 @@ KAction *KStdAction::spelling(const QObject *recvr, const char *slot,
 KToggleAction *KStdAction::showMenubar(const QObject *recvr, const char *slot,
 				       QObject *parent, const char *name )
 {
-    return new KToggleAction(i18n("Show &Menubar"), 0, recvr, slot, parent,
-                             name ? name : stdName(ShowMenubar));
+    KToggleAction *ret;
+    ret = new KToggleAction(i18n("Show &Menubar"), 0, 0, 0, parent,
+                            name ? name : stdName(ShowMenubar));
+    ret->setChecked(true);
+    QObject::connect(ret, SIGNAL(activated()), recvr, slot);
+    return ret;
 }
 
 KToggleAction *KStdAction::showToolbar(const QObject *recvr, const char *slot,
 				       QObject *parent, const char *name )
 {
-    return new KToggleAction(i18n("Show &Toolbar"), 0, recvr, slot, parent,
-                             name ? name : stdName(ShowToolbar));
+    KToggleAction *ret;
+    ret = new KToggleAction(i18n("Show &Toolbar"), 0, 0, 0, parent,
+                            name ? name : stdName(ShowToolbar));
+    ret->setChecked(true);
+    QObject::connect(ret, SIGNAL(activated()), recvr, slot);
+    return ret;
+
 }
 
 KToggleAction *KStdAction::showStatusbar(const QObject *recvr, const char *slot,
 					 QObject *parent, const char *name )
 {
-    return new KToggleAction(i18n("Show St&atusbar"), 0, recvr, slot, parent,
-                             name ? name : stdName(ShowStatusbar));
+    KToggleAction *ret;
+    ret = new KToggleAction(i18n("Show St&atusbar"), 0, 0, 0, parent,
+                            name ? name : stdName(ShowStatusbar));
+    ret->setChecked(true);
+    QObject::connect(ret, SIGNAL(activated()), recvr, slot);
+    return ret;
 }
 
 KAction *KStdAction::saveOptions(const QObject *recvr, const char *slot,
