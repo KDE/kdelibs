@@ -678,8 +678,11 @@ dcop_connect()
       return False;
     }
 
-    if (gethostname(hostName, 255))
+    hostName[0] = '\0';
+    if (gethostname(hostName, sizeof(hostName)))
 	    strcpy(hostName, "localhost");
+    else
+	    hostName[sizeof(hostName)-1] = '\0';
 
     snprintf(fileName, sizeof(fileName), ".DCOPserver_%s_%s", hostName, displayName);
     f = fopen(fileName, "r");

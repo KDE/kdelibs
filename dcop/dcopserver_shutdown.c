@@ -94,6 +94,7 @@ static void getDCOPFile(char *dcop_file, char *dcop_file_old, int max_length)
      dcop_file[0] = '\0';
      return;
   }
+  dcop_file[max_length] = '\0';
   n = max_length - strlen(dcop_file);
 
   strncat(dcop_file, "_", n);
