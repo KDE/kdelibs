@@ -270,21 +270,24 @@ QStringList KIconTheme::queryIconsByContext(int size, int context) const
 
     // We want all the icons for a given context, but we prefer icons
     // of size size . Note that this may (will) include duplicate icons
-    QStringList iconlistExact;
-    QStringList iconlistNear;
-    QStringList iconlistFar;
+    QStringList iconlist[34]; // 33 == 48-16+1
+    // Usually, only the 0, 6 (22-16), 10 (32-22), 16 (48-32 or 32-16),
+    // 26 (48-22) and 32 (48-16) will be used, but who knows if someone
+    // will make icon themes with different icon sizes.
+
     for ( ; dirs.current(); ++dirs)
     {
         dir = dirs.current();
         if ((context != KIcon::Any) && (context != dir->context()))
             continue;
         dw = abs(dir->size() - size);
-        if (dw == 0) iconlistExact+=dir->iconList(); 
-        else if (dw <= 6) iconlistNear+=dir->iconList();
-        else iconlistFar+=dir->iconList();
+        iconlist[(dw<33)?dw:33]+=dir->iconList();
     }
 
-    return iconlistExact + iconlistNear + iconlistFar;
+    QStringList iconlistResult;
+    for (int i=0; i<34; i++) iconlistResult+=iconlist[i];
+
+    return iconlistResult;
 }
 
 KIcon KIconTheme::iconPath(const QString& name, int size, int match) const
