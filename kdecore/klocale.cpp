@@ -659,7 +659,7 @@ QString KLocale::translate( const char *index, const char *fallback) const
   return r;
 }
 
-QString put_n_in(const QString &orig, unsigned long n)
+static QString put_n_in(const QString &orig, unsigned long n)
 {
   QString ret = orig;
   int index = ret.find("%n");
