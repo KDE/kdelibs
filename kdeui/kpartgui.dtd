@@ -11,7 +11,7 @@
 -->
 
 <!--The root element that must enclose all other tags in the document. -->
-<!ELEMENT kpartgui ((ActionProperties | MenuBar | ToolBar | Merge | DefineGroup | MainWindow | StatusBar | Menu)*)>
+<!ELEMENT kpartgui ((ActionProperties | MenuBar | ToolBar | Merge | MergeLocal | DefineGroup | MainWindow | StatusBar | Menu)*)>
 <!ATTLIST kpartgui
   name CDATA #REQUIRED
   version CDATA #REQUIRED
@@ -22,7 +22,7 @@
 <!ELEMENT ActionProperties (Action+)>
 
 <!-- A menu bar -->
-<!ELEMENT MenuBar ((Menu | Separator | Action | ActionList | Merge | DefineGroup )*)>
+<!ELEMENT MenuBar ((Menu | Separator | Action | ActionList | Merge | MergeLocal | DefineGroup )*)>
 <!ATTLIST MenuBar
   name CDATA #IMPLIED
   group CDATA #IMPLIED
@@ -41,7 +41,7 @@
   --             hidden: if true, the toolbar is initially hidden. There should be a menu entry for showing it.
   --             noEdit: if true, the toolbar won't appear in the toolbar editor
   -->
-<!ELEMENT ToolBar ((Action | Separator | ActionList | Merge | DefineGroup)*)>
+<!ELEMENT ToolBar ((Action | Separator | ActionList | Merge | MergeLocal | DefineGroup)*)>
 <!ATTLIST ToolBar
   name CDATA #REQUIRED
   fullWidth (true|false) "true"
@@ -57,7 +57,7 @@
 >
 
 <!-- A Menu such as the "File" or "Edit" menu. Can be used to define popup menus as well. -->
-<!ELEMENT Menu (text?, (Action | ActionList | Separator | TearOffHandle | Merge | DefineGroup | Menu )*)>
+<!ELEMENT Menu (text?, (Action | ActionList | Separator | TearOffHandle | Merge | MergeLocal | DefineGroup | Menu )*)>
 <!ATTLIST Menu
   name CDATA #REQUIRED
   group CDATA #IMPLIED
@@ -111,6 +111,14 @@
 <!-- Specifies the entry index for merging in a gui client -->
 <!ELEMENT Merge EMPTY>
 <!ATTLIST Merge
+  name CDATA #IMPLIED
+>
+
+<!-- Specifies an entry index for merging application defined actions into
+     those with positions fixed by the style guide and ui_standards.rc. This
+     tag should not be used anywhere except ui_standards.rc. -->
+<!ELEMENT MergeLocal EMPTY>
+<!ATTLIST MergeLocal
   name CDATA #IMPLIED
 >
 
