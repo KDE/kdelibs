@@ -78,7 +78,7 @@ public:
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 	    int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *_p, HTMLChain *, int _x, int _h, int _w,
-	    int _h, int _tx, int _ty);
+	    int _h2, int _tx, int _ty);
     /// Prints a special object only
     /**
      * This function is for example used to redraw an image that had to be

@@ -16,11 +16,13 @@ ktmp(KLed *l) : led(l), ledcolor(l->getColor()), ledlook(l->getLook()) {};
 
  public slots:
  void nextColor() {
-   ledcolor=(KLed::Color)((++(int)ledcolor)%5);
+   register int tmp = (static_cast<int>(ledcolor) + 1) % 5;
+   ledcolor=static_cast<KLed::Color>(tmp);
    led->setColor(ledcolor);
    led->repaint(); }
   void nextLook() { 
-    ledlook = (KLed::Look)((++(int)ledlook)%3);
+    register int tmp = (static_cast<int>(ledcolor) + 1) % 3;
+    ledlook = static_cast<KLed::Color>(tmp);
     led->setLook(ledlook);
     led->repaint(); }
 

@@ -19,6 +19,10 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.16  1999/01/19 13:36:15  kulow
+ * removed explicit settings of DISTCLEANFILES, where the only sense was
+ * to remove the MOC files
+ *
  * Revision 1.15  1999/01/15 08:59:16  kulow
  * use seperate moc.cpp files - did you know that most header files herein are
  * complete hacks? ;)
@@ -149,7 +153,7 @@
 //
 // adapted from Qt widgets demo
 
-
+#include <stdlib.h>
 #include <kapp.h>
 #include <qdialog.h>
 #include <qfile.h>
