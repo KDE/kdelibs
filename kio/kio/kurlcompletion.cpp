@@ -880,7 +880,7 @@ bool KURLCompletion::fileCompletion(const MyURL &url, QString *match)
            }
         }
         
-        kdDebug() << "fileCompletion " << url.url() << ":" << dir << endl;
+//        kdDebug() << "fileCompletion " << url.url() << ":" << dir << endl;
 
 	dir = unescape( dir ); // remove escapes
 
