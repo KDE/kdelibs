@@ -22,7 +22,7 @@
 
 # serial 1 AC_LIB_LTDL
 
-AC_DEFUN(AC_LIB_LTDL,
+AC_DEFUN([AC_LIB_LTDL],
 [AC_PREREQ(2.13)dnl
 AC_REQUIRE([AC_PROG_CC])dnl
 AC_REQUIRE([AC_C_CONST])dnl
@@ -30,13 +30,13 @@ AC_REQUIRE([AC_C_INLINE])dnl
 AC_REQUIRE([AC_LIB_LTDL_COMMON])dnl
 ])
 
-AC_DEFUN(KDE_LIB_LTDL,
+AC_DEFUN([KDE_LIB_LTDL],
 [AC_PREREQ(2.13)dnl
 AC_REQUIRE([AC_PROG_CC])dnl
 AC_REQUIRE([AC_LIB_LTDL_COMMON])dnl
 ])
 
-AC_DEFUN(AC_LIB_LTDL_COMMON,
+AC_DEFUN([AC_LIB_LTDL_COMMON],
 [dnl
 dnl AC_LIB_LTDL must perform all the checks necessary for compilation
 dnl of the ltdl objects -- including compiler checks (above) and header
@@ -62,7 +62,7 @@ AC_REQUIRE([AC_LTDL_DLSYM_USCORE])dnl
 AC_REQUIRE([AC_LTDL_SYS_DLOPEN_DEPLIBS])dnl
 ])
 
-AC_DEFUN(AC_LTDL_ENABLE_INSTALL,
+AC_DEFUN([AC_LTDL_ENABLE_INSTALL],
 [AC_ARG_ENABLE(ltdl-install,
 [  --enable-ltdl-install   install libltdl])
 
@@ -71,7 +71,7 @@ AM_CONDITIONAL(CONVENIENCE_LTDL, test x"${enable_ltdl_convenience-no}" != xno)
 ])])
 
 
-AC_DEFUN(AC_LTDL_SNARF_CONFIG,
+AC_DEFUN([AC_LTDL_SNARF_CONFIG],
 [# Read the libtool configuration
 rm -f conftest
 ./libtool --config > conftest
@@ -81,7 +81,7 @@ rm -f conftest
 
 # AC_LTDL_SYS_DLOPEN_DEPLIBS
 # --------------------------
-AC_DEFUN(AC_LTDL_SYS_DLOPEN_DEPLIBS,
+AC_DEFUN([AC_LTDL_SYS_DLOPEN_DEPLIBS],
 [AC_REQUIRE([AC_CANONICAL_HOST])
 AC_CACHE_CHECK([whether deplibs are loaded by dlopen],
 	libltdl_cv_sys_dlopen_deplibs, [dnl
@@ -111,7 +111,7 @@ if test "$libltdl_cv_sys_dlopen_deplibs" != yes; then
 fi
 ])# AC_LTDL_SYS_DLOPEN_DEPLIBS
 
-AC_DEFUN(AC_LTDL_SHLIBEXT,
+AC_DEFUN([AC_LTDL_SHLIBEXT],
 [AC_REQUIRE([AC_LTDL_SNARF_CONFIG])dnl
 AC_CACHE_CHECK([which extension is used for shared libraries],
   libltdl_cv_shlibext, [dnl
@@ -133,7 +133,7 @@ if test -n "$libltdl_cv_shlibext"; then
 fi
 ])
 
-AC_DEFUN(AC_LTDL_SHLIBPATH,
+AC_DEFUN([AC_LTDL_SHLIBPATH],
 [AC_REQUIRE([AC_LTDL_SNARF_CONFIG])dnl
 AC_CACHE_CHECK([which variable specifies run-time library path],
   libltdl_cv_shlibpath_var, [libltdl_cv_shlibpath_var="$shlibpath_var"])
@@ -143,7 +143,7 @@ if test -n "$libltdl_cv_shlibpath_var"; then
 fi
 ])
 
-AC_DEFUN(AC_LTDL_SYSSEARCHPATH,
+AC_DEFUN([AC_LTDL_SYSSEARCHPATH],
 [AC_REQUIRE([AC_LTDL_SNARF_CONFIG])dnl
 AC_CACHE_CHECK([for the default library search path],
   libltdl_cv_sys_search_path, [libltdl_cv_sys_search_path="$sys_lib_dlsearch_path_spec"])
@@ -165,7 +165,7 @@ if test -n "$libltdl_cv_sys_search_path"; then
 fi
 ])
 
-AC_DEFUN(AC_LTDL_OBJDIR,
+AC_DEFUN([AC_LTDL_OBJDIR],
 [AC_CACHE_CHECK([for objdir],
   libltdl_cv_objdir, [libltdl_cv_objdir="$objdir"
 if test -n "$objdir"; then
@@ -185,7 +185,7 @@ AC_DEFINE_UNQUOTED(LTDL_OBJDIR, "$libltdl_cv_objdir/",
   [Define to the sub-directory in which libtool stores uninstalled libraries. ])
 ])
 
-AC_DEFUN(AC_LTDL_DLPREOPEN,
+AC_DEFUN([AC_LTDL_DLPREOPEN],
 [AC_REQUIRE([AC_LTDL_GLOBAL_SYMBOL_PIPE])dnl
 AC_CACHE_CHECK([whether libtool supports -dlopen/-dlpreopen],
        libltdl_cv_preloaded_symbols, [dnl
@@ -201,7 +201,7 @@ if test x"$libltdl_cv_preloaded_symbols" = x"yes"; then
 fi
 ])
 
-AC_DEFUN(AC_LTDL_DLLIB,
+AC_DEFUN([AC_LTDL_DLLIB],
 [LIBADD_DL=
 AC_CHECK_LIB(dl, dlopen, [AC_DEFINE(HAVE_LIBDL, 1,
    [Define if you have the libdl library or equivalent. ]) LIBADD_DL="-ldl"],
@@ -230,7 +230,7 @@ if test "x$ac_cv_func_dlopen" = xyes || test "x$ac_cv_lib_dl_dlopen" = xyes; the
 fi
 ])
 
-AC_DEFUN(AC_LTDL_GLOBAL_SYMBOL_PIPE,
+AC_DEFUN([AC_LTDL_GLOBAL_SYMBOL_PIPE],
 [dnl Check for command to grab the raw symbol name followed
 dnl by C symbol name from nm.
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
@@ -401,7 +401,7 @@ fi
 AC_MSG_RESULT($ac_result)
 ])
 
-AC_DEFUN(AC_LTDL_SYMBOL_USCORE,
+AC_DEFUN([AC_LTDL_SYMBOL_USCORE],
 [dnl does the compiler prefix global symbols with an underscore?
 AC_REQUIRE([AC_LTDL_GLOBAL_SYMBOL_PIPE])dnl
 AC_MSG_CHECKING([for _ prefix in compiled symbols])
@@ -437,7 +437,7 @@ rm -rf conftest*
 AC_MSG_RESULT($ac_cv_sys_symbol_underscore)
 ])
 
-AC_DEFUN(AC_LTDL_DLSYM_USCORE,
+AC_DEFUN([AC_LTDL_DLSYM_USCORE],
 [AC_REQUIRE([AC_LTDL_SYMBOL_USCORE])dnl
 if test x"$ac_cv_sys_symbol_underscore" = xyes; then
   if test x"$ac_cv_func_dlopen" = xyes ||
