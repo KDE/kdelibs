@@ -159,7 +159,15 @@ void KHTMLImage::slotImageJobFinished( KIO::Job *job )
         emit canceled( job->errorString() );
     }
     else
+    {
+        if ( m_khtml->view()->contentsY() == 0 )
+        {
+            KParts::URLArgs args = m_ext->urlArgs();
+            m_khtml->view()->setContentsPos( args.xOffset, args.yOffset );
+        }
+
         emit completed();
+    }
 }
 
 KHTMLImageBrowserExtension::KHTMLImageBrowserExtension( KHTMLImage *parent, const char *name )
