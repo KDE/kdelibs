@@ -98,6 +98,12 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
             addCSSProperty( CSS_PROP_BORDER_RIGHT_STYLE, CSS_VAL_SOLID );
             addCSSProperty( CSS_PROP_BORDER_BOTTOM_STYLE, CSS_VAL_SOLID );
             addCSSProperty( CSS_PROP_BORDER_LEFT_STYLE, CSS_VAL_SOLID );
+        } else {
+             removeCSSProperty( CSS_PROP_BORDER_WIDTH );
+             removeCSSProperty( CSS_PROP_BORDER_TOP_STYLE );
+             removeCSSProperty( CSS_PROP_BORDER_RIGHT_STYLE );
+             removeCSSProperty( CSS_PROP_BORDER_BOTTOM_STYLE );
+             removeCSSProperty( CSS_PROP_BORDER_LEFT_STYLE );                                          
         }
         break;
     case ATTR_VSPACE:
