@@ -424,6 +424,9 @@ void RenderTable::addColInfo(int _startCol, int _colSpan,
     kdDebug( 6040 ) << "    min=" << _minSize << " max=" << _maxSize << endl;
     kdDebug( 6040 ) << "    totalCols=" << totalCols << endl;
 #endif
+    // Netscape ignores width values of "0" or "0%"
+    if ( style()->htmlHacks() && _width.value == 0 && (_width.type == Percent || _width.type == Fixed) )
+	    _width = Length();
 
     if (_startCol + _colSpan > (int) totalCols)
         addColumns(totalCols - _startCol + _colSpan);
