@@ -196,7 +196,7 @@ void AlsaOut::eventInit(snd_seq_event_t *ev)
 
 void AlsaOut::eventSend(snd_seq_event_t *ev)
 {
-    int err = snd_seq_event_output(di->handle, ev);
+    /*int err = */ snd_seq_event_output(di->handle, ev);
 /*        if (err < 0)
                 return;
 */
@@ -413,10 +413,10 @@ printf("tempo _ : _ : _ : %d\n",v);
 #endif
 #ifdef HAVE_LIBASOUND
   snd_seq_queue_tempo_t ev;
-  ev.queue=queue;
+  ev.queue=di->queue;
   ev.tempo=v;
   ev.ppq=di->tPCN;
-  snd_seq_set_queue_tempo(di->handle,queue,&ev);
+  snd_seq_set_queue_tempo(di->handle,di->queue,&ev);
 #endif
 }
 
@@ -436,7 +436,7 @@ void AlsaOut::sync(int i)
 
   eventInit(di->ev);
   di->ev->dest = *di->src;
-  eventSend(ev);
+  eventSend(di->ev);
   snd_seq_flush_output(di->handle);
   printf("Alsa 2\n");
   snd_seq_event_input(di->handle,&di->ev);
