@@ -903,7 +903,8 @@ QCString KResolver::domainToAscii(const QString& unicodeDomain)
 
   // 4) for each label, apply ToASCII
   QStringList::Iterator it = input.begin();
-  for ( ; it != input.end(); ++it)
+  const QStringList::Iterator end = input.end();
+  for ( ; it != end; ++it)
     {
       QCString cs = ToASCII(*it);
       if (cs.isNull())
@@ -944,7 +945,8 @@ QString KResolver::domainToUnicode(const QString& asciiDomain)
 
   // 4) for each label, apply ToUnicode
   QStringList::Iterator it;
-  for (it = input.begin(); it != input.end(); ++it)
+  const QStringList::Iterator end = input.end();
+  for (it = input.begin(); it != end; ++it)
     {
       QString label = ToUnicode(*it).lower();
 
