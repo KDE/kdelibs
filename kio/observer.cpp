@@ -204,20 +204,13 @@ void Observer::unmounting( KIO::Job* job, const QString & point )
 }
 
 bool Observer::openPassDlg( const QString& prompt, QString& user, 
-			    QString& pass, const QString& caption,
-			    const QString& comment, const QString& label,
-			    bool readOnly, bool* keep )
+			    QString& pass, bool readOnly )
 {
    AuthInfo info;
    info.prompt = prompt;
    info.username = user;
    info.password = pass;
-   info.caption = caption;
-   info.comment = comment;
-   info.commentLabel = label;
    info.readOnly = readOnly;
-   if ( keep )
-     info.keepPassword = (*keep);
    bool result = openPassDlg ( info );
    if ( result )
    {

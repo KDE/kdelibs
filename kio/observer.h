@@ -81,8 +81,7 @@ public:
    * @deprecated.
    */
   bool openPassDlg( const QString& prompt, QString& user, QString& pass,
-                    const QString& caption, const QString& comment,
-                    const QString& label, bool readOnly, bool* keep = 0L );
+                    bool readOnly );
 
   bool openPassDlg( KIO::AuthInfo& info );
 
