@@ -31,7 +31,7 @@ KCombo::KCombo( bool readWrite, QWidget* parent, const char* name, WFlags f ) :
 	tf = AlignCenter | ExpandTabs | WordBreak;
 	setFrameStyle( QFrame::Panel | QFrame::Raised );
 	setLineWidth( 2 ); setFocusPolicy( StrongFocus );
-	connect( listBox, SIGNAL(highlighted(int)), SLOT(select(int)) );
+       connect( listBox, SIGNAL(highlighted(int)), SLOT(selectQuiet(int)) );
 	connect( listBox, SIGNAL(selected(int)), SLOT(selectHide(int)) );
 	connect( listBox, SIGNAL(highlighted(const char*)), SIGNAL(highlighted(const char*)) );
 	connect( listBox, SIGNAL(highlighted(int)), SIGNAL(highlighted(int)) );
@@ -79,15 +79,20 @@ void KCombo::complete()
 	}
 }
 
+void KCombo::selectLoud( int item )
+{
+       selectQuiet( item );
+       emit activated( item );
+       if( currentText() ) emit activated( currentText() );
+}
+
 void KCombo::select( int item )
 {
 	// don't emit anything if the selection hasn't changed. This fixes the
 	// problem caused by listBox->setCurrentItem emitting highlighted(), thus
 	// triggering another select() call.
 	if( selected != item ) {
-		selectQuiet( item );
-		emit activated( item );
-		if( currentText() ) emit activated( currentText() );
+               selectLoud( item );
 	} else {
 		selectQuiet( item );
 	}
@@ -105,7 +110,7 @@ void KCombo::selectHide( int item )
 {
 	if( popup ) popup->hide();
 	else if( listBox ) listBox->hide();
-	select( item );
+       selectLoud( item );
 }
 
 void KCombo::selectTyped()
@@ -160,10 +165,12 @@ bool KCombo::eventFilter( QObject* o, QEvent* e )
 		if( e->type() == Event_MouseButtonRelease ) {
 			if( listBox->rect().contains( ((QMouseEvent*)e)->pos() ) ) {
 				listBox->hide();
+				selectLoud( selected );
 			}
 		} else if( e->type() == Event_MouseButtonPress ) {
 			if( !listBox->rect().contains( ((QMouseEvent*)e)->pos() ) ) {
 				listBox->hide();
+				selectLoud( selected );
 				return TRUE; //ignore this press! (Matthias)
 			}
 		}
@@ -175,7 +182,8 @@ bool KCombo::eventFilter( QObject* o, QEvent* e )
 void KCombo::keyPressEvent( QKeyEvent* e )
 {
 	// allow a closed combo to be scrolled by user, and dropped down with
-	// space bar.
+       // space bar. We NEVER get these events for an open list box or popup
+       // menu.
 	
 	e->ignore();
 	if( e->key() == Key_Down && selected < ( count() -1 ) ) {

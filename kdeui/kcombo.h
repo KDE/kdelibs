@@ -78,10 +78,12 @@ public slots:
 protected slots:
 	virtual void complete();
 	virtual void rotate();
-	void select( int item );
-	void selectHide( int item );
-	void selectQuiet( int item );
-	void selectTyped();
+       void select( int item );                // select, don't emit signal if selection
+                                                                       // not changed.
+       void selectHide( int item );    // hide list box then select()
+       void selectQuiet( int item );   // select, never emit signals
+       void selectTyped();                             // emit signals for editable combo
+       void selectLoud( int item );    // select, always emit signals
 
 protected:
 	virtual void drawContents( QPainter* paint );
