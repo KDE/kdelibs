@@ -36,7 +36,7 @@
 
 
 #include "kaccelmanager_private.h"
-#include "../kdeui/kstdaction_private.h"
+#include "../kdeui/kstdaction_p.h"
 
 #include "kaccelmanager.h"
 
