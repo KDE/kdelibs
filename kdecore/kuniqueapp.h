@@ -138,6 +138,17 @@ private:
    */
   virtual int newInstance(QValueList<QCString>);
 
+  /**
+   * Delay the processing of a DCOP request.
+   */
+  void delayRequest(const QCString &fun, const QByteArray &data);
+
+private slots:
+  /**
+   * Delayed processing of DCOP requests.
+   */
+  void processDelayed();
+
 private:
   static DCOPClient *s_DCOPClient;
 

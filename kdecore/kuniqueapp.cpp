@@ -30,6 +30,8 @@
 #include <unistd.h>
 
 #include <qfile.h>
+#include <qlist.h>
+#include <qtimer.h>
 
 #include <dcopclient.h>
 #include <kcmdlineargs.h>
@@ -45,6 +47,18 @@ static KCmdLineOptions kunique_options[] =
 {
   { "nofork", "Don't run in the background.", 0 },
   { 0, 0, 0 }
+};
+
+struct DCOPRequest {
+   QCString fun;
+   QByteArray data;
+   DCOPClientTransaction *transaction;
+};
+
+class KUniqueApplicationPrivate {
+public:
+   QList <DCOPRequest> requestList;
+   bool processingRequest;
 };
 
 DCOPClient *
@@ -240,32 +254,69 @@ KUniqueApplication::KUniqueApplication(bool allowStyles, bool GUIenabled)
      }
   }
   s_DCOPClient->bindToApp(); // Make sure we get events from the DCOPClient.
+  d = new KUniqueApplicationPrivate;
+  d->processingRequest = false;
 }
 
 KUniqueApplication::~KUniqueApplication()
 {
+  delete d;
 }
 
 bool KUniqueApplication::process(const QCString &fun, const QByteArray &data,
-				 QCString &replyType, QByteArray &replyData)
+				 QCString &, QByteArray &)
 {
-  if (fun == "newInstance()") {
-    QDataStream ds(data, IO_ReadOnly);
-    KCmdLineArgs::loadAppArgs(ds);
-    int exitCode = newInstance();
-    QDataStream rs(replyData, IO_WriteOnly);
-    rs << exitCode;
-    replyType = "int";
-    return true;
-  } else
-  if (fun == "newInstanceNoFork()") {
-    int exitCode = newInstance();
-    QDataStream rs(replyData, IO_WriteOnly);
-    rs << exitCode;
-    replyType = "int";
+  if ((fun == "newInstance()") ||
+      (fun == "newInstanceNoFork()")) 
+  {
+    delayRequest(fun, data);
     return true;
   } else
     return false;
+}
+
+void
+KUniqueApplication::delayRequest(const QCString &fun, const QByteArray &data)
+{
+  DCOPRequest *request = new DCOPRequest;
+  request->fun = fun;
+  request->data = data;
+  request->transaction = dcopClient()->beginTransaction();
+  d->requestList.append(request);
+  if (!d->processingRequest)
+  {
+     QTimer::singleShot(0, this, SLOT(processDelayed()));
+  }
+}
+
+void
+KUniqueApplication::processDelayed()
+{
+  d->processingRequest = true;
+  while( !d->requestList.isEmpty() )
+  {
+     DCOPRequest *request = d->requestList.take(0);
+     QByteArray replyData;
+     QCString replyType;
+     if (request->fun == "newInstance()") {
+       QDataStream ds(request->data, IO_ReadOnly);
+       KCmdLineArgs::loadAppArgs(ds);
+       int exitCode = newInstance();
+       QDataStream rs(replyData, IO_WriteOnly);
+       rs << exitCode;
+       replyType = "int";
+     } else
+     if (request->fun == "newInstanceNoFork()") {
+       int exitCode = newInstance();
+       QDataStream rs(replyData, IO_WriteOnly);
+       rs << exitCode;
+       replyType = "int";
+     }
+     dcopClient()->endTransaction( request->transaction, replyType, replyData);
+     delete request;
+  }
+
+  d->processingRequest = false;
 }
 
 int KUniqueApplication::newInstance()
