@@ -46,6 +46,8 @@ class StdAddressBook : public AddressBook
     */
     static bool save();
 
+    static QString fileName();
+
     QString identifier();
     
   protected:

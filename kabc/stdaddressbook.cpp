@@ -34,6 +34,12 @@ using namespace KABC;
 
 AddressBook *StdAddressBook::mSelf = 0;
 
+QString StdAddressBook::fileName()
+{
+	// dummy value
+	return locateLocal( "data", "kabc/std.vcf" );
+}
+
 AddressBook *StdAddressBook::self()
 {
   kdDebug(5700) << "StdAddressBook::self()" << endl;
@@ -101,5 +107,5 @@ StdAddressBook::~StdAddressBook()
 
 QString StdAddressBook::identifier()
 {
-  return mIdentifier;
+  return fileName();
 }
