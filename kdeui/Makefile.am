@@ -24,7 +24,7 @@ SUBDIRS = . tests
 
 INCLUDES= $(all_includes)
 
-EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker
+EXTRA_DIST = CHANGES.kdatepicker USERS.kdatepicker kpixmapio-perf.png
 
 lib_LTLIBRARIES = libkdeui.la
 libkdeui_la_LDFLAGS = -no-undefined -version-info 3:0

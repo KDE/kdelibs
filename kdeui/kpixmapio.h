@@ -1,6 +1,6 @@
 /* vi: ts=8 sts=4 sw=4
  *
- * $Id: $
+ * $Id$
  *
  * This file is part of the KDE project, module kdeui.
  * Copyright (C) 2000 Geert Jansen <jansen@kde.org>
@@ -39,10 +39,13 @@ class KPixmapIOData;
  *
  * @sect KPixmapIO vs. Qt speed comparison
  *
- * Speed measurements that were taken show that usage of KPixmapIO for
- * images up to a certain threshold size, offers no speed advantage over Qt. 
+ * Speed measurements were taken. These show that usage of KPixmapIO for 
+ * images up to a certain threshold size, offers no speed advantage over 
+ * the Qt routines. Below you can see a plot of these measurements.
  *
- * This threshold size, amongst other causes, is determined by the shared 
+ * @image kpixmapio-perf.png Ignored_But_Necessary_Word_For_Kdoc
+ *
+ * The threshold size, amongst other causes, is determined by the shared 
  * memory allocation policy. If the policy is @em ShmDontKeep, the 
  * shared memory segment is discarded right after usage, and thus needs to 
  * be allocated before each transfer. This introduces a a setup penalty not 
