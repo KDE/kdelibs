@@ -47,16 +47,6 @@ using namespace DOM;
 using namespace khtml;
 
 
-static inline int MAX(int a, int b)
-{
-    return a > b ? a : b;
-}
-
-static inline int MIN(int a, int b)
-{
-    return a < b ? a : b;
-}
-
 static inline int collapseMargins(int a, int b)
 {
     if(a >= 0 && b >= 0) return (a > b ? a : b );
