@@ -248,7 +248,7 @@ int /*_h*/, int _tx, int _ty, PaintAction paintAction)
         if ( (cWidth != intrinsicWidth() ||  cHeight != intrinsicHeight()) &&
              pix.width() > 0 && pix.height() > 0 && i->valid_rect().isValid())
         {
-            if (resizeCache.isNull() && cWidth && cHeight)
+            if (resizeCache.isNull() && cWidth && cHeight && intrinsicWidth() && intrinsicHeight())
             {
                 QRect scaledrect(i->valid_rect());
 //                 kdDebug(6040) << "time elapsed: " << dt->elapsed() << endl;
