@@ -1,7 +1,6 @@
 #ifndef __kregexpeditorinterface_h__
 #define __kregexpeditorinterface_h__
 
-#include <qobject.h>
 #include <qstring.h>
 
 /**
@@ -78,7 +77,9 @@ public:
    */
   virtual QString regExp() const = 0;
 
-signals:
+protected:
+// These are signals: in classes that actually implement the interface.
+
   /**
    * This signal tells whether undo is available.
    */
@@ -97,7 +98,9 @@ signals:
    */
   virtual void changes( bool ) = 0;
 
-public slots:
+public:
+// These are public slots: in classes that implement the interface.
+
  /**
   * Set the regular expression for the editor. The syntax must be Qt3
   * QRegExp syntax.
