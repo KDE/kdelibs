@@ -93,7 +93,7 @@
 # Detects Ogg Vorbis compressed audio files.
 # Needs to be adapted to only detect Vorbis files, not all Ogg files,
 # but whether this is possible, I don't know.
-0       string          OggS            audio/x-ogg
+0       string          OggS            application/x-ogg
 
 #------------------------------------------------------------------------------
 # KSysV stuff: logfiles and packages belonging to KSysV
