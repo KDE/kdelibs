@@ -3,6 +3,7 @@
  *  This file is part of the KDE libraries
  *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
  *  Copyright (C) 2001 Peter Kelly (pmk@post.com)
+ *  Copyright (C) 2002 Apple Computer, Inc.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -49,9 +50,6 @@ namespace KJS {
 
   class UndefinedImp : public ValueImp {
   public:
-    UndefinedImp() {}
-    virtual ~UndefinedImp() { }
-
     Type type() const { return UndefinedType; }
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
@@ -63,11 +61,10 @@ namespace KJS {
     static UndefinedImp *staticUndefined;
   };
 
+  inline Undefined::Undefined(UndefinedImp *imp) : Value(imp) { }
+
   class NullImp : public ValueImp {
   public:
-    NullImp() {}
-    virtual ~NullImp() { }
-
     Type type() const { return NullType; }
 
     Value toPrimitive(ExecState *exec, Type preferred = UnspecifiedType) const;
@@ -79,9 +76,10 @@ namespace KJS {
     static NullImp *staticNull;
   };
 
+  inline Null::Null(NullImp *imp) : Value(imp) { }
+
   class BooleanImp : public ValueImp {
   public:
-    virtual ~BooleanImp() { }
     BooleanImp(bool v = false) : val(v) { }
     bool value() const { return val; }
 
@@ -99,10 +97,11 @@ namespace KJS {
     bool val;
   };
 
+  inline Boolean::Boolean(BooleanImp *imp) : Value(imp) { }
+
   class StringImp : public ValueImp {
   public:
-    StringImp(const UString& v);
-    virtual ~StringImp() { }
+    StringImp(const UString& v) : val(v) { }
     UString value() const { return val; }
 
     Type type() const { return StringType; }
@@ -117,10 +116,11 @@ namespace KJS {
     UString val;
   };
 
+  inline String::String(StringImp *imp) : Value(imp) { }
+
   class NumberImp : public ValueImp {
   public:
     NumberImp(double v);
-    virtual ~NumberImp() { }
     double value() const { return val; }
 
     Type type() const { return NumberType; }

@@ -338,10 +338,6 @@ Undefined::Undefined() : Value(UndefinedImp::staticUndefined)
 Undefined::~Undefined() {
 }
 
-Undefined::Undefined(UndefinedImp *v) : Value(v)
-{
-}
-
 Undefined::Undefined(const Undefined &v) : Value(v)
 {
 }
@@ -369,10 +365,6 @@ Null::Null() : Value(NullImp::staticNull)
 Null::~Null() {
 }
 
-
-Null::Null(NullImp *v) : Value(v)
-{
-}
 
 Null::Null(const Null &v) : Value(v)
 {
@@ -402,10 +394,6 @@ Boolean::Boolean(bool b)
 Boolean::~Boolean() { }
 
 
-
-Boolean::Boolean(BooleanImp *v) : Value(v)
-{
-}
 
 Boolean::Boolean(const Boolean &v) : Value(v)
 {
@@ -439,10 +427,6 @@ String::String(const UString &s) : Value(new StringImp(UString(s)))
 }
 
 String::~String() { }
-
-String::String(StringImp *v) : Value(v)
-{
-}
 
 String::String(const String &v) : Value(v)
 {

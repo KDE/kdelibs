@@ -164,11 +164,6 @@ Object BooleanImp::toObject(ExecState *exec) const
 
 // ------------------------------ StringImp ------------------------------------
 
-StringImp::StringImp(const UString& v)
-  : val(v)
-{
-}
-
 Value StringImp::toPrimitive(ExecState */*exec*/, Type) const
 {
   return Value((ValueImp*)this);
