@@ -331,6 +331,8 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_view = v;
     m_renderArena = 0;
 
+    KHTMLFactory::ref();
+
     if ( v ) {
         m_docLoader = new DocLoader(v->part(), this );
         setPaintDevice( m_view );
@@ -378,8 +380,6 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_docLoading = false;
     m_inSyncLoad = false;
     m_loadingXMLDoc = 0;
-
-    KHTMLFactory::ref();
 }
 
 DocumentImpl::~DocumentImpl()
