@@ -165,13 +165,11 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains, const Q
     }
     else if (!domains.contains(mDomain))
     {
-        if (mDomain[0] == '.')
-            return false;
-
         // Maybe the domain needs an extra dot.
         QString domain = "." + mDomain;
         if ( !domains.contains( domain ) )
-            return false;   // Domain of cookie does not match with host of URL
+            if ( fqdn != mDomain )
+                return false;
     }
 
     // Cookie path match check
