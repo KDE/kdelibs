@@ -25,6 +25,7 @@
 #include "kapplication.h"
 #include "klocale.h"
 #include <kwin.h>
+#include <kwinmodule.h>
 #include <kiconloader.h>
 
 #include <qapplication.h>
@@ -78,8 +79,8 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     if (parentWidget())
     {
         connect(quitAction, SIGNAL(activated()), parentWidget(), SLOT(close()));
-        new KAction(i18n("Minimize"), KShortcut(), 
-                    this, SLOT( toggleMinimizeRestore() ), 
+        new KAction(i18n("Minimize"), KShortcut(),
+                    this, SLOT( toggleMinimizeRestore() ),
                     d->actionCollection, "minimizeRestore");
     }
     else
@@ -179,21 +180,44 @@ void KSystemTray::contextMenuAboutToShow( KPopupMenu* )
 
 void KSystemTray::toggleMinimizeRestore()
 {
-    if ( !parentWidget() )
+    QWidget *pw = parentWidget();
+
+    if ( !pw )
 	return;
-    if ( !parentWidget()->isVisible() ) {
-	parentWidget()->hide(); // KWin::setOnDesktop( parentWidget()->winId(), KWin::currentDesktop() );
+
+    KWin::Info info = KWin::info( pw->winId() );
+    bool visible = (info.mappingState == NET::Visible);
+    if ( visible && !pw->isActiveWindow() ) // may be obscured -> raise it
+    {
+        KWinModule mod;
+        if ( mod.stackingOrder().last() != pw->winId() )
+        {
+            if ( info.desktop == KWin::currentDesktop() )
+            {
+                KWin::setActiveWindow( pw->winId() );
+                return;
+            }
+            else
+                visible = false;
+        }
+    }
+
+    if ( !visible )
+    {
+        if ( info.mappingState != NET::Iconic )
+        {
+            pw->hide(); // KWin::setOnDesktop( parentWidget()->winId(), KWin::currentDesktop() );
 #ifndef Q_WS_QWS //FIXME
-	KWin::Info info = KWin::info( parentWidget()->winId() );
-	parentWidget()->move( info.geometry.topLeft() );
+            pw->move( info.geometry.topLeft() );
 #endif
-	parentWidget()->show();
+            pw->show();
 #ifndef Q_WS_QWS //FIXME
-        KWin::deIconifyWindow( parentWidget()->winId() );
-	KWin::setActiveWindow( parentWidget()->winId() );
+        }
+        KWin::deIconifyWindow( pw->winId() );
+	KWin::setActiveWindow( pw->winId() );
 #endif
     } else {
-	parentWidget()->hide();
+	pw->hide();
     }
 }
 
