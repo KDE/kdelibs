@@ -84,7 +84,7 @@ Description: aRts Sound system (midi/kmedia support libraries with alsa)
  signals, perform effects like delay/flanger/chorus, or output the data to
  the soundcard.
  .
- This package contains the midi and kmdedia support files for aRts as well as 
+ This package contains the midi and kmedia support files for aRts as well as 
  knotify
 
 Package: libarts-alsa

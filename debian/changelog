@@ -3,6 +3,7 @@ kdelibs (4:2.2.2-9) unstable; urgency=low
   * Move all non-module .la files from /usr/lib into -dev package.  We leave 
     all the .la files out of /usr/lib/kde2 and those that may not be normal
     libraries out of /usr/lib
+  * Fix spelling error (Closes: #124989)
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 17 Dec 2001 13:52:00 -0700
 
