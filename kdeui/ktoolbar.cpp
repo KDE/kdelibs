@@ -331,11 +331,6 @@ int KToolBar::insertCombo (const QStringList &list, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
-    // make the combo shrinkable even if the contents are longer than the
-    // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
-				       QSizePolicy::Fixed ));
-
     insertWidgetInternal( combo, index, id );
     combo->insertStringList (list);
     combo->setInsertionPolicy(policy);
@@ -361,11 +356,6 @@ int KToolBar::insertCombo (const QString& text, int id, bool writable,
                             QComboBox::Policy policy )
 {
     KComboBox *combo = new KComboBox ( writable, this );
-    // make the combo shrinkable even if the contents are longer than the
-    // combo width
-    combo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding,
-				       QSizePolicy::Fixed ));
-
     insertWidgetInternal( combo, index, id );
     combo->insertItem (text);
     combo->setInsertionPolicy(policy);
@@ -1184,9 +1174,6 @@ void KToolBar::rebuildLayout()
     }
 
     if ( fullSize() ) {
-        if ( !stretchableWidget && widgets.last() &&
-             !widgets.last()->inherits( "QButton" ) && !widgets.last()->inherits( "KAnimWidget" ) )
-            setStretchableWidget( widgets.last() );
         if ( !rightAligned )
             l->addStretch();
         if ( stretchableWidget )
