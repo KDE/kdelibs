@@ -6,33 +6,46 @@
 	* the complete API documentation.  Additionally, you can subscribe or
 	* read the mailing lists for any additions and/or modifications to the API.
 	*
-	* - <a href="kdecore/html/index.html"><b>kdecore</b></a>\n
+	* - <a href="kdecore/html/index.html"><b>kdecore</b></a>
+        *   (<a href="kdecore/html/classes.html">classes</a>)\n
 	*   <i>Core KDE classes that are not related to the user interface.</i>
-	* - <a href="kdeui/html/index.html"><b>kdeui</b></a>\n
+	* - <a href="kdeui/html/index.html"><b>kdeui</b></a>
+        *   (<a href="kdeui/html/classes.html">classes</a>)\n
 	*   <i>KDE User interface classes such as widgets.</i>
-	* - <a href="khtml/html/index.html"><b>khtml</b></a>\n
+	* - <a href="khtml/html/index.html"><b>khtml</b></a>
+        *   (<a href="khtml/html/classes.html">classes</a>)\n
 	*   <i>The KDE HTML component.</i>
-	* - <a href="kjs/html/index.html"><b>kjs</b></a>\n
+	* - <a href="kjs/html/index.html"><b>kjs</b></a>
+        *   (<a href="kjs/html/classes.html">classes</a>)\n
 	*   <i>Javascript (aka. ECMAScript and JScript) support.</i>
-	* - <a href="kio/html/index.html"><b>kio</b></a>\n
+	* - <a href="kio/html/index.html"><b>kio</b></a>
+        *   (<a href="kio/html/classes.html">classes</a>)\n
 	*   <i>Low level access to network files. Also provides access to facilities
 	*   such as KDirWatcher which monitors directories for changes.</i>
-	* - <a href="kparts/html/index.html"><b>kparts</b></a>\n
+	* - <a href="kparts/html/index.html"><b>kparts</b></a>
+        *   (<a href="kparts/html/classes.html">classes</a>)\n
 	*   <i>Support for re-usable, embeddable, extendable applications.</i>
-	* - <a href="dcop/html/index.html"><b>dcop</b></a>\n
+	* - <a href="dcop/html/index.html"><b>dcop</b></a>
+        *   (<a href="dcop/html/classes.html">classes</a>)\n
 	*   <i>The DCOP communications library.</i>
-	* - <a href="kdefx/html/index.html"><b>kdefx</b></a>\n
+	* - <a href="kdefx/html/index.html"><b>kdefx</b></a>
+        *   (<a href="kdefx/html/classes.html">classes</a>)\n
 	*   <i>A library with pixmap effects.</i>
-	* - <a href="kspell/html/index.html"><b>kspell</b></a>\n
+	* - <a href="kspell/html/index.html"><b>kspell</b></a>
+        *   (<a href="kspell/html/classes.html">classes</a>)\n
 	*   <i>Easy access to the spell checker.</i>
-	* - <a href="libkmid/html/index.html"><b>libkmid</b></a>\n
+	* - <a href="libkmid/html/index.html"><b>libkmid</b></a>
+        *   (<a href="libkmid/html/classes.html">classes</a>)\n
 	*   <i>Midi library.</i>
-	* - <a href="interfaces/html/index.html"><b>interfaces</b></a>\n
+	* - <a href="interfaces/html/index.html"><b>interfaces</b></a>
+        *   (<a href="interfaces/html/classes.html">classes</a>)\n
 	*   <i>Defines interfaces for common components so that new implementations
 	*   can be dropped in.</i>
-	* - <a href="kabc/html/index.html"><b>kabc</b></a>\n
+	* - <a href="kabc/html/index.html"><b>kabc</b></a>
+        *   (<a href="kabc/html/classes.html">classes</a>)\n
 	*   <i>Access to the KDE address book.</i>
-	* - <a href="kutils/html/index.html"><b>kutils</b></a>\n
+	* - <a href="kutils/html/index.html"><b>kutils</b></a>
+        *   (<a href="kutils/html/classes.html">classes</a>)\n
 	*   <i>High-level utils, like search/replace support.</i>
 	*
 	* More information about the KDE architecture in form of tutorials, HOWTOs,
