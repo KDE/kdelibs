@@ -1,7 +1,8 @@
 /*  This file is part of the KDE libraries
     
-    Copyright (C) 1997 Torben Weis (weis@stud.uni-frankfurt.de)
-    Copyright (C) 1999 Dirk A. Mueller (dmuell@gmx.net)
+    Copyright (C) 1997 Torben Weis <weis@stud.uni-frankfurt.de>
+    Copyright (C) 1999 Dirk A. Mueller <dmuell@gmx.net>
+    Portions copyright (C) 1999 Preston Brown <pbrown@kde.org>
  
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -21,7 +22,6 @@
 
 // $Id$
 
-#include <qapplication.h>
 #include <qfile.h>
 #include <qdir.h>
 #include <qdialog.h>
@@ -32,6 +32,8 @@
 #include <qpushbutton.h>
 #include <qcheckbox.h>
 
+#include <kapp.h>
+#include <kdesktopfile.h>
 #include <kbuttonbox.h>
 #include <kglobal.h>
 #include <klined.h>
@@ -39,6 +41,7 @@
 #include <kiconloader.h>
 #include <kmimemagic.h>
 #include <kstddirs.h>
+#include <dcopclient.h>
 
 #include "kio_openwith.h"
 #include "krun.h"
@@ -315,9 +318,17 @@ void KApplicationTree::resizeEvent( QResizeEvent * e)
  *
  ***************************************************************/
 
-KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text, const QString& _value, QWidget *parent)
+KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text, 
+			    const QString& _value, QWidget *parent)
     : QDialog( parent, 0L, true )
 {
+
+    
+    KMimeMagicResult *result = KMimeMagic::self()->findFileType(_url.first().utf8());
+
+    if (result->mimeType() != "")
+      qServiceType = result->mimeType();
+
     m_pTree = 0L;
     m_pService = 0L;
     haveApp = false;
@@ -343,12 +354,18 @@ KOpenWithDlg::KOpenWithDlg( const QStringList& _url, const QString&_text, const 
 
     terminal = new QCheckBox( i18n("Run in terminal"), this );
     l->addWidget(terminal);
-    
+        
     m_pTree = new KApplicationTree( this );
     topLayout->addWidget(m_pTree);
         
     connect( m_pTree, SIGNAL( selected( const QString&, const QString& ) ), this, SLOT( slotSelected( const QString&, const QString& ) ) );
     connect( m_pTree, SIGNAL( highlighted( const QString&, const QString& ) ), this, SLOT( slotHighlighted( const QString&, const QString& ) ) );
+
+    if (!qServiceType.isNull()) {
+      remember = new QCheckBox(i18n("Remember application association for this file"), this);
+      remember->setChecked(true);
+      topLayout->addWidget(remember);
+    }
 
     // Use KButtonBox for the aligning pushbuttons nicely
     KButtonBox* b = new KButtonBox(this);
@@ -408,21 +425,78 @@ void KOpenWithDlg::slotHighlighted( const QString& _name, const QString& )
 
 void KOpenWithDlg::slotOK()
 {
-    if( haveApp ) 
-        m_pService = KService::service( qName );
-
-    if( terminal->isChecked() ) {
-        KConfig conf("konquerorrc", true, false);
-        conf.setGroup("Misc Defaults");
-        QString t = conf.readEntry("Terminal", "konsole");
-
-        t += " -e ";
-        t += edit->text();
-        edit->setText(t);
-    }
-
+  if (haveApp) 
+    m_pService = KService::service( qName );
+  else {
+    m_pService = 0L;
+    // no service was found, maybe they typed the name into the text field
+    KService::List sList = KService::allServices();
+    QValueListIterator<KService::Ptr> it(sList.begin());
+    for (; it != sList.end(); ++it)
+      if ((*it)->exec() == edit->text() || 
+	  (*it)->name().lower() == edit->text().lower())
+	m_pService = *it;
+    if (m_pService)
+      edit->setText(m_pService->exec());
+  }
+  
+  if (terminal->isChecked()) {
+    KSimpleConfig conf("konquerorrc", true);
+    conf.setGroup("Misc Defaults");
+    QString t = conf.readEntry("Terminal", "konsole");
+      
+    t += " -e ";
+    t += edit->text();
+    edit->setText(t);
+  }
+  
+  if (m_pService) {
     haveApp = false;
     accept();
+    return;
+  }
+  
+  // if we got here, we can't seem to find a service for what they
+  // wanted.  Create a new service.
+  QString serviceName;
+  if (edit->text().contains('/'))
+    serviceName = edit->text().right(edit->text().length() - 
+				     edit->text().findRev('/') + 1);
+  else
+    serviceName = edit->text();
+  
+  QString path;
+  if (serviceName.contains(".desktop"))
+    path = locateLocal("apps", serviceName);
+  else
+    path = locateLocal("apps", serviceName + ".desktop");
+
+  int counter = 1;
+  while (QFile::exists(path))
+    path.insert(path.length() - 8, QString().setNum(counter++));
+
+  KDesktopFile desktop(path);
+  desktop.writeEntry("Type", "Application");
+  desktop.writeEntry("Name", serviceName);
+  desktop.writeEntry("Exec", edit->text());
+  if (!qServiceType.isNull() && remember->isChecked())
+    desktop.writeEntry("MimeType", qServiceType +  ';');
+  
+  // write it all out to the file
+  desktop.sync();
+
+  // rebuild the database
+  DCOPClient *dcc = kapp->dcopClient();
+  QByteArray replyData;
+  QCString retType;
+  dcc->call("kded", "kbuildsycoca", "recreate()", QByteArray(), 
+	    retType, replyData);
+
+  // get the new service pointer
+  m_pService = KService::service( serviceName );
+
+  haveApp = false;
+  accept();
 }
 
 #include "kio_openwith.moc"

@@ -35,8 +35,8 @@ public:
      * Create a dialog that asks for a application to open a given URL(s) with. _
      *
      * @param _url   is the list of URLs that should be opened
-     * @param _value is the initial value of the line
      * @param _text  appears as a label on top of the entry box.  
+     * @param _value is the initial value of the line
      */
     
     KOpenWithDlg( const QStringList& _url, const QString&_text, const QString&_value, QWidget *parent );
@@ -64,9 +64,9 @@ protected:
     KApplicationTree* m_pTree;
     QLabel *label;
 
-    QString qName;
+    QString qName, qServiceType;
     bool  haveApp;
-    QCheckBox   *terminal;
+    QCheckBox   *terminal, *remember;
     QPushButton *ok;
     QPushButton *clear;
     QPushButton *cancel;
