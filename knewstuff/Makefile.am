@@ -16,7 +16,7 @@ ghns_LDFLAGS = $(all_libraries)
 ghns_LDADD   = libknewstuff.la
 ghns_SOURCES = ghns.cpp
 
-khotnewstuff_LDFLAGS = $(all_libraries)
+khotnewstuff_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 khotnewstuff_LDADD = libknewstuff.la
 khotnewstuff_SOURCES = khotnewstuff.cpp
 
