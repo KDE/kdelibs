@@ -38,26 +38,6 @@ class QString;
 
 namespace KParts {
 
-class OpenURLEvent : public Event
-{
-public:
-  OpenURLEvent( ReadOnlyPart *part, const KURL &url )
-  : Event( s_strOpenURLEvent ), m_part( part ), m_url( url ) {}
-
-  ReadOnlyPart *part() const { return m_part; }
-  KURL url() const { return m_url; }
-
-  static bool test( const QEvent *event ) { return Event::test( event, s_strOpenURLEvent ); }
-
-private:
-  static const char *s_strOpenURLEvent;
-  ReadOnlyPart *m_part;
-  KURL m_url;
-
-  class OpenURLEventPrivate;
-  OpenURLEventPrivate *d;
-};
-
 struct URLArgsPrivate;
 
 struct URLArgs
@@ -69,8 +49,7 @@ struct URLArgs
   URLArgs( bool reload, int xOffset, int yOffset, const QString &serviceType = QString::null );
   virtual ~URLArgs();
 
-  QStringList docState() const;
-  void setDocState(const QStringList &);
+  QStringList docState;
 
   bool reload;
   int xOffset;
@@ -81,6 +60,28 @@ struct URLArgs
   QString frameName;
 
   URLArgsPrivate *d;
+};
+
+class OpenURLEvent : public Event
+{
+public:
+  OpenURLEvent( ReadOnlyPart *part, const KURL &url, const URLArgs &args = URLArgs() );
+  virtual ~OpenURLEvent();
+
+  ReadOnlyPart *part() const { return m_part; }
+  KURL url() const { return m_url; }
+  URLArgs args() const { return m_args; }
+
+  static bool test( const QEvent *event ) { return Event::test( event, s_strOpenURLEvent ); }
+
+private:
+  static const char *s_strOpenURLEvent;
+  ReadOnlyPart *m_part;
+  KURL m_url;
+  URLArgs m_args;
+
+  class OpenURLEventPrivate;
+  OpenURLEventPrivate *d;
 };
 
 class BrowserExtensionPrivate;
@@ -247,6 +248,8 @@ signals:
    * @see loadingProgress
    */
   void speedProgress( int bytesPerSecond );
+
+  void infoMessage( const QString & );
 
   /**
    * Emit this to make the browser show a standard popup menu

@@ -23,6 +23,28 @@ using namespace KParts;
 
 const char *OpenURLEvent::s_strOpenURLEvent = "KParts/BrowserExtension/OpenURLevent";
 
+class OpenURLEvent::OpenURLEventPrivate
+{
+public:
+  OpenURLEventPrivate()
+  {
+  }
+  ~OpenURLEventPrivate()
+  {
+  }
+};
+
+OpenURLEvent::OpenURLEvent( ReadOnlyPart *part, const KURL &url, const URLArgs &args )
+: Event( s_strOpenURLEvent ), m_part( part ), m_url( url ), m_args( args )
+{
+//  d = new OpenURLEventPrivate(); 
+}
+
+OpenURLEvent::~OpenURLEvent()
+{
+//  delete d; 
+} 
+
 namespace KParts
 {
 
@@ -59,12 +81,11 @@ URLArgs &URLArgs::operator=(const URLArgs &args)
   serviceType = args.serviceType;
   postData = args.postData;
   frameName = args.frameName;
-
+  /*
   if ( args.d )
   {
      d = new URLArgsPrivate;
-     d->docState  = args.d->docState;
-  }
+  }*/
   return *this;
 }
 
@@ -81,20 +102,6 @@ URLArgs::URLArgs( bool _reload, int _xOffset, int _yOffset, const QString &_serv
 URLArgs::~URLArgs()
 {
   delete d; d = 0;
-}
-
-void URLArgs::setDocState(const QStringList &state)
-{
-  if (!d)
-     d = new URLArgsPrivate;
-  d->docState = state;
-}
-
-QStringList URLArgs::docState() const
-{
-  if (d)
-     return d->docState;
-  return QStringList();
 }
 
 namespace KParts

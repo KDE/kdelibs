@@ -281,7 +281,7 @@ public:
   virtual ~ReadOnlyPart();
 
   /**
-   * Call this to turn off the progress info dialog used by 
+   * Call this to turn off the progress info dialog used by
    * the internal KIO job. Use this if you provide another way
    * of displaying progress info (e.g. a statusbar), using the
    * signals emitted by this class, and/or those emitted by
@@ -418,7 +418,7 @@ public:
   /**
    * @return true if the part is in read-write mode
    */
-  virtual bool isReadWrite() { return m_bReadWrite; }
+  virtual bool isReadWrite() const { return m_bReadWrite; }
 
   /**
    * Changes the behaviour of this part to readonly or readwrite.
