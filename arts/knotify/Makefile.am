@@ -17,7 +17,7 @@ knotifyclient_LDFLAGS	= $(all_libraries) $(KDE_RPATH)
 noinst_HEADERS	=  knotify.h
 
 messages:
-	$(XGETTEXT) -C -ki18n -x $(includedir)/kde.pot $(knotify_SOURCES) && mv messages.po $(podir)/knotify.pot
+	$(XGETTEXT) $(knotify_SOURCES) -o $(podir)/knotify.pot
 
 edit:
 	xemacs $(knotify_SOURCES) $(noinst_HEADERS) &
