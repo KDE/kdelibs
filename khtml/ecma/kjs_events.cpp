@@ -78,15 +78,7 @@ void JSEventListener::handleEvent(DOM::Event &evt)
 
     // Set "this" to the event's current target
     Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
-    ScopeChain oldScope = listener.scope();
-    if ( thisObj.isValid() ) {
-      ScopeChain scope = oldScope;
-      // Add the event's target element to the scope
-      // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
-      static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
-      listener.setScope( scope );
-    }
-    else {
+    if ( !thisObj.isValid() ) {
       if ( m_hackThisObj.isValid() ) { // special hack for Image
         thisObj = m_hackThisObj;
       }
@@ -108,8 +100,6 @@ void JSEventListener::handleEvent(DOM::Event &evt)
     guard.start();
     Value retval = listener.call(exec, thisObj, args);
     guard.stop();
-
-    listener.setScope( oldScope );
 
     window->setCurrentEvent( 0 );
     interpreter->setCurrentEvent( 0 );
@@ -157,7 +147,28 @@ void JSLazyEventListener::handleEvent(DOM::Event &evt)
 {
   parseCode();
   if (!listener.isNull()) {
+
+    KHTMLPart *part = ::qt_cast<KHTMLPart *>(static_cast<Window*>(win.imp())->part());
+    KJSProxy *proxy = 0;
+    if (part)
+      proxy = part->jScript();
+    KJS::ScriptInterpreter *interpreter = static_cast<KJS::ScriptInterpreter *>(proxy->interpreter());
+    ExecState *exec = interpreter->globalExec();
+    ScopeChain oldScope = listener.scope();
+    Object thisObj = Object::dynamicCast(getDOMNode(exec,evt.currentTarget()));
+    if ( thisObj.isValid() ) {
+      ScopeChain scope = oldScope;
+      // Add the event's target element to the scope
+      // (and the document, and the form - see KJS::HTMLElement::eventHandlerScope)
+      // ### we could do this in parseCode, once and for all, if only we
+      // had the node in the constructor (would require passing it through KHTMLPart)
+      static_cast<DOMNode*>(thisObj.imp())->pushEventHandlerScope(exec, scope);
+      listener.setScope( scope );
+    }
+
     JSEventListener::handleEvent(evt);
+
+    listener.setScope( oldScope );
   }
 }
 

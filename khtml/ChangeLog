@@ -1,3 +1,11 @@
+2005-03-10  David Faure  <faure@kde.org>
+
+        * ecma/kjs_events.cpp (handleEvent): Move "pushing element/form/doc onto the scope"
+        from JSEventListener::handleEvent to JSLazyEventListener::handleEvent so that
+        it only happens with listeners set from html attributes, not from JS - in which
+        case the function already got a correct scope when created.
+        Testcase events/eventhandlerscope.{html,js}
+
 2005-03-04  Allan Sandfeld Jensen <kde@carewolf.com>
 
         Merge table padding from WebCore
