@@ -939,7 +939,7 @@ Value WindowFunc::tryCall(ExecState *exec, Object &thisObj, const List &args)
   switch (id) {
   case Window::Alert:
     part->xmlDocImpl()->updateRendering();
-    KMessageBox::error(widget, QStyleSheet::convertFromPlainText(str), "JavaScript");
+    KMessageBox::error(NULL, QStyleSheet::convertFromPlainText(str), "JavaScript");
     return Undefined();
   case Window::Confirm:
     part->xmlDocImpl()->updateRendering();
