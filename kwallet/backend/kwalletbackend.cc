@@ -561,13 +561,13 @@ int Backend::sync(const QByteArray& password) {
 
 	wholeFile.fill(0);
 
-	_open = false;
 return 0;
 }
 
 
 int Backend::close(const QByteArray& password) {
 	int rc = sync(password);
+	_open = false;
 	if (rc != 0) {
 		return rc;
 	}
