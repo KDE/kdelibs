@@ -262,10 +262,12 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 				kDrawBeButton( p, x, y, w, h, cg, true,
 						&cg.brush(QColorGroup::Mid) );
 			
-			else if ( flags & Style_MouseOver )
-				kDrawBeButton( p, x, y, w, h, cg, false,
-						&cg.brush(QColorGroup::Midlight) );
-			
+			else if ( flags & Style_MouseOver ) {
+				QBrush brush(cg.button().light(110));
+				kDrawBeButton( p, x, y, w, h, cg, false, &brush );
+			}
+
+			// "Flat" button
 			else if (!(flags & (Style_Raised | Style_Sunken)))
 				p->fillRect(r, cg.button());
 			
@@ -485,7 +487,8 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 			p->drawLine(x2-1, y+2, x2-1, y2-1);
 			p->drawLine(x+2, y2-1, x2-1, y2-1);
 
-			p->fillRect(x+2, y+2, w-4, h-4, cg.base());
+			p->fillRect(x+2, y+2, w-4, h-4, 
+						down ? cg.background(): cg.light());
 
 			if (!(flags & Style_Off)) {
 				if(on) {
@@ -510,18 +513,13 @@ void HighColorStyle::drawPrimitive( PrimitiveElement pe,
 		case PE_ExclusiveIndicator: {
 			if (lightBmp.isNull()) {
 				lightBmp = QBitmap(13, 13, radiooff_light_bits, true);
-				lightBmp.setMask(lightBmp);
 				grayBmp  = QBitmap(13, 13, radiooff_gray_bits,  true);
 				dgrayBmp = QBitmap(13, 13, radiooff_dgray_bits, true);
 			}
 
 			p->fillRect(r, cg.brush(QColorGroup::Background));
-			kColorBitmaps(p, cg, r.x(), r.y(), NULL , &grayBmp,
+			kColorBitmaps(p, cg, r.x(), r.y(), &lightBmp , &grayBmp,
 						  NULL, &dgrayBmp);
-
-			// Draw the lightbits with the base color
-			p->setPen(cg.base());
-			p->drawPixmap(r.x(), r.y(), lightBmp);
 
 			if(on || down) {
 				p->setPen(Qt::black);
@@ -796,45 +794,48 @@ void HighColorStyle::drawControl( ControlElement element,
 		// PUSHBUTTON LABEL
 		// ----------------------------------------------------------------------------------
 		case CE_PushButtonLabel: {
-			const QPushButton *button = (const QPushButton *)widget;
+			const QPushButton* button = (const QPushButton*)widget;
 			bool active = button->isOn() || button->isDown();
 			int x, y, w, h;
 			r.rect( &x, &y, &w, &h );
 
-			if ( active )
-				x++, y++;
+			if ( active ) {
+				x += pixelMetric(PM_ButtonShiftHorizontal, widget); 
+				y += pixelMetric(PM_ButtonShiftVertical, widget);
+			}
 
 			// Does the button have a popup menu?
 			if ( button->isMenuButton() ) {
+				SFlags arrow_flags = Style_Default;
 				int dx = pixelMetric( PM_MenuButtonIndicator, widget );
 				int xx = x + w - dx - 4;
 				int yy = y - 3;
 				int hh = h + 6;
-				SFlags flags = Style_Default;
 
-				// Draw an arrow on the button
-				if ( ! active ) {
+				// Draw a seperator line between the button contents and the arrow
+				if ( !active ) {
 					p->setPen( cg.light() );
 					p->drawLine( xx + 1, yy + 5, xx + 1, yy + hh - 6 );
 					p->setPen( cg.mid() );
 					p->drawLine( xx, yy + 6, xx, yy + hh - 6 );
-				}
-				else {
+				} else {
 					p->setPen( cg.button() );
 					p->drawLine( xx, yy + 4, xx, yy + hh - 4 );
 				}
 				drawPrimitive( PE_ArrowDown, p, QRect(x + w - dx - 2, y + 2, dx, h - 4),
-						cg, flags, opt );
+							   cg, arrow_flags, opt );
 				w -= dx;
 			}
 
 			// Draw the icon if there is one
-			if ( button->iconSet() && ! button->iconSet()->isNull() ) {
-				QIconSet::Mode mode = button->isEnabled() ?
-					QIconSet::Normal : QIconSet::Disabled;
+			if ( button->iconSet() && !button->iconSet()->isNull() ) {
+				QIconSet::Mode mode = QIconSet::Disabled;
 
-				if ( mode == QIconSet::Normal && button->hasFocus() )
-					mode = QIconSet::Active;
+				if (button->isEnabled())
+					if (button->hasFocus())
+						mode = QIconSet::Active;
+					else
+						mode = QIconSet::Normal;
 
 				QPixmap pixmap = button->iconSet()->pixmap( QIconSet::Small, mode );
 				int pixw = pixmap.width();
@@ -858,12 +859,10 @@ void HighColorStyle::drawControl( ControlElement element,
 				drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
 						button->isEnabled(), button->pixmap(), button->text(), -1,
 						active ? &button->colorGroup().light() : &button->colorGroup().text() );
-			}
-			else {
-				drawItem( p, QRect(x + ( active ? 1 : 0 ), y + ( active ? 1 : 0 ), w, h),
-						AlignCenter | ShowPrefix, button->colorGroup(), button->isEnabled(),
-						button->pixmap(), button->text(), -1, active ? &button->colorGroup().light() :
-						&button->colorGroup().buttonText() );
+			} else {
+				drawItem( p, QRect(x, y, w, h), AlignCenter | ShowPrefix, button->colorGroup(),
+						button->isEnabled(), button->pixmap(), button->text(), -1,
+						active ? &button->colorGroup().light() : &button->colorGroup().buttonText() );
 			}
 
 			// Draw a focus rect if the button has focus
@@ -1493,28 +1492,6 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 {
 	switch(m)
 	{
-		// TABS
-		// --------------------------------------------------------------------
-		case PM_TabBarTabHSpace:
-			return 24;
-
-		case PM_TabBarTabVSpace: {
-			const QTabBar * tb = (const QTabBar *) widget;
-			if ( tb->shape() == QTabBar::RoundedAbove ||
-				 tb->shape() == QTabBar::RoundedBelow )
-				return 10;
-			else
-				return 0;
-		}
-
-		case PM_TabBarTabOverlap: {
-			const QTabBar* tb = (const QTabBar*)widget;
-			if (tb->shape() != QTabBar::RoundedAbove)
-				return 3;					// Leave standard size alone
-			else
-				return 0;					// Change size for our tabs only
-		}
-
 		// BUTTONS
 		// -------------------------------------------------------------------
 		case PM_ButtonMargin:				// Space btw. frame and label
@@ -1536,6 +1513,28 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 			return 13;						// 13x13
 		}
 
+		// TABS
+		// --------------------------------------------------------------------
+		case PM_TabBarTabHSpace:
+			return 24;
+
+		case PM_TabBarTabVSpace: {
+			const QTabBar * tb = (const QTabBar *) widget;
+			if ( tb->shape() == QTabBar::RoundedAbove ||
+				 tb->shape() == QTabBar::RoundedBelow )
+				return 10;
+			else
+				return 0;
+		}
+
+		case PM_TabBarTabOverlap: {
+			const QTabBar* tb = (const QTabBar*)widget;
+			if (tb->shape() != QTabBar::RoundedAbove)
+				return 3;					// Leave standard size alone
+			else
+				return 0;					// Change size for our tabs only
+		}
+		
 		// SLIDER
 		// -------------------------------------------------------------------
 		case PM_SliderLength:
@@ -1551,6 +1550,11 @@ int HighColorStyle::pixelMetric(PixelMetric m, const QWidget *widget) const
 		case PM_MenuBarFrameWidth:
 			return 1;
 
+		// GENERAL
+		// -------------------------------------------------------------------
+		case PM_MaximumDragDistance:
+			return -1;
+			
 		default:
 			return winstyle->pixelMetric(m, widget);
 	}
@@ -1572,20 +1576,15 @@ QSize HighColorStyle::sizeFromContents( ContentsType contents,
 			int bm = pixelMetric( PM_ButtonMargin, widget );
 			int fw = pixelMetric( PM_DefaultFrameWidth, widget ) * 2;
 
-			w += bm + fw;
+			w += bm + fw + 6;	// ### Add 6 to make way for bold font.
 			h += bm + fw;
 
-			if ( button->isDefault() || button->autoDefault() ) {
-				if ( w < 85 && ! button->pixmap() )
+			// Only affect the widgt if its not a (small) button with a pixmap.
+			if ( w < 80 && !button->pixmap() )
 					w = 80;
-				if ( h < 22 )
+			// Ensure we stick to standard height.
+			if ( h < 22 )
 					h = 22;
-			}
-			else {
-				w += 4;
-				if ( h < 22 )
-					h = 22;
-			}
 
 			return QSize( w, h );
 		}
