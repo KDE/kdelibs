@@ -129,7 +129,6 @@ public:
     int majorOpcode; // major opcode negotiated w/server and used to tag all comms.
 
     int majorVersion, minorVersion; // protocol versions negotiated w/server
-    char *vendor, *release; // information from server
 
     static const char* serverAddr; // location of server in ICE-friendly format.
     QSocketNotifier *notifier;
@@ -687,11 +686,16 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     IceSetShutdownNegotiation(d->iceConn, False);
 
     int setupstat;
+    char* vendor = 0;
+    char* release = 0;
     setupstat = IceProtocolSetup(d->iceConn, d->majorOpcode,
 				 static_cast<IcePointer>(d),
 				 False, /* must authenticate */
 				 &(d->majorVersion), &(d->minorVersion),
-				 &(d->vendor), &(d->release), 1024, errBuf);
+				 &vendor, &release, 1024, errBuf);
+
+    if (vendor) free(vendor);
+    if (release) free(release);
 
 
     if (setupstat == IceProtocolSetupFailure ||

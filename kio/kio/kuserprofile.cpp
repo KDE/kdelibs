@@ -49,7 +49,7 @@ void KServiceTypeProfile::initStatic()
 
   s_lstProfiles = new QPtrList<KServiceTypeProfile>;
 
-  KSimpleConfig config( "profilerc");
+  KConfig config( "profilerc", true, false);
 
   static const QString & defaultGroup = KGlobal::staticQString("<default>");
 

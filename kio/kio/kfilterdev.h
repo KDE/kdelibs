@@ -43,10 +43,19 @@ public:
     KFilterDev( KFilterBase * filter, bool autodeleteFilterBase = false );
     /**
      * Destructs the KFilterDev.
+     * Calls close() if the filter device is still open.
      */
     virtual ~KFilterDev();
 
+    /**
+     * Open for reading or writing.
+     * If the KFilterBase's device is not opened, it will be opened.
+     */
     virtual bool open( int mode );
+    /**
+     * Close after reading or writing.
+     * If the KFilterBase's device was opened by open(), it will be closed.
+     */
     virtual void close();
     virtual void flush();
 

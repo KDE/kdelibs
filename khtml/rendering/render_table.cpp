@@ -59,13 +59,14 @@ RenderTable::RenderTable(DOM::NodeImpl* node)
     frame = Void;
     has_col_elems = false;
     needSectionRecalc = false;
+    padding = 0;
 
     columnPos.resize( 2 );
     columnPos.fill( 0 );
     columns.resize( 1 );
     columns.fill( ColumnStruct() );
 
-    columnPos[0] = spacing;
+    columnPos[0] = 0;
 }
 
 RenderTable::~RenderTable()
@@ -84,6 +85,7 @@ void RenderTable::setStyle(RenderStyle *_style)
     setReplaced(style()->display()==INLINE_TABLE);
 
     spacing = style()->borderSpacing();
+    columnPos[0] = spacing;
 
     if ( !tableLayout || style()->tableLayout() != oldTableLayout ) {
 	delete tableLayout;
@@ -179,8 +181,8 @@ void RenderTable::calcWidth()
     RenderObject *cb = containingBlock();
     int availableWidth = cb->contentWidth();
 
-    LengthType widthType = style()->width().type;
-    if(widthType > Relative && style()->width().value > 0) {
+    LengthType widthType = style()->width().type();
+    if(widthType > Relative && style()->width().value() > 0) {
 	// Percent or fixed table
         m_width = style()->width().minWidth( availableWidth );
         if(m_minWidth > m_width) m_width = m_minWidth;
@@ -192,7 +194,7 @@ void RenderTable::calcWidth()
     // restrict width to what we really have in case we flow around floats
     if ( style()->flowAroundFloats() && cb->isFlow() ) {
 	availableWidth = static_cast<RenderFlow *>(cb)->lineWidth( m_y );
-	m_width = QMIN( availableWidth, m_width );
+	m_width = KMIN( short( availableWidth ), m_width );
     }
 
     m_width = KMAX (m_width, m_minWidth);
@@ -255,11 +257,11 @@ void RenderTable::layout()
     Length h = style()->height();
     int th=0;
     if (h.isFixed())
-        th = h.value;
+        th = h.value();
     else if (h.isPercent()) {
         Length ch = containingBlock()->style()->height();
         if (ch.isFixed())
-            th = h.width(ch.value);
+            th = h.width(ch.value());
         else {
             // check we or not inside a table
             RenderObject* ro = parent();
@@ -345,7 +347,7 @@ void RenderTable::setCellWidths()
     }
 }
 
-void RenderTable::print( QPainter *p, int _x, int _y,
+void RenderTable::paint( QPainter *p, int _x, int _y,
                                   int _w, int _h, int _tx, int _ty)
 {
 
@@ -360,7 +362,7 @@ void RenderTable::print( QPainter *p, int _x, int _y,
 
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << "RenderTable::print() w/h = (" << width() << "/" << height() << ")" << endl;
+    kdDebug( 6040 ) << "RenderTable::paint() w/h = (" << width() << "/" << height() << ")" << endl;
 #endif
     if (!overhangingContents() && !isRelPositioned() && !isPositioned())
     {
@@ -376,21 +378,21 @@ void RenderTable::print( QPainter *p, int _x, int _y,
     }
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << "RenderTable::print(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
+    kdDebug( 6040 ) << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")" << endl;
 #endif
 
     if(style()->visibility() == VISIBLE)
-	printBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
+	paintBoxDecorations(p, _x, _y, _w, _h, _tx, _ty);
 
     RenderObject *child = firstChild();
     while( child ) {
 	if ( child->isTableSection() || child == tCaption )
-	    child->print( p, _x, _y, _w, _h, _tx, _ty );
+	    child->paint( p, _x, _y, _w, _h, _tx, _ty );
 	child = child->nextSibling();
     }
 
     if ( specialObjects )
-	printSpecialObjects( p, _x, _y, _w, _h, _tx, _ty);
+	paintSpecialObjects( p, _x, _y, _w, _h, _tx, _ty);
 
 
     // overflow: hidden
@@ -564,7 +566,7 @@ void RenderTable::recalcSections()
 	case TABLE_COLUMN:
 	case TABLE_COLUMN_GROUP:
 	    has_col_elems = true;
-	    return;
+            break;
 	case TABLE_HEADER_GROUP: {
 	    RenderTableSection *section = static_cast<RenderTableSection *>(child);
 	    if ( !head )
@@ -688,6 +690,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 		row = new RenderTableRow(0 /* anonymous table */);
 		RenderStyle *newStyle = new RenderStyle();
 		newStyle->inheritFrom(style());
+		newStyle->setDisplay( TABLE_ROW );
 		row->setStyle(newStyle);
 		row->setIsAnonymousBox(true);
 		addChild(row, beforeChild);
@@ -699,7 +702,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
         return;
     }
 
-    if (beforeChild)
+    if (beforeChild) 
 	setNeedCellRecalc();
 
     cRow++;
@@ -709,7 +712,7 @@ void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild
 
     if (!beforeChild) {
         grid[cRow].height = child->style()->height();
-        if ( grid[cRow].height.type == Relative )
+        if ( grid[cRow].height.isRelative() )
             grid[cRow].height = Length();
     }
 
@@ -775,17 +778,17 @@ void RenderTableSection::addCell( RenderTableCell *cell )
     if ( rSpan == 1 ) {
 	// we ignore height settings on rowspan cells
 	Length height = cell->style()->height();
-	if ( height.value > 0 || (height.type == Relative && height.value >= 0) ) {
+	if ( height.value() > 0 || (height.isRelative() && height.value() >= 0) ) {
 	    Length cRowHeight = grid[cRow].height;
-	    switch( height.type ) {
+	    switch( height.type() ) {
 	    case Percent:
-		if ( !(cRowHeight.type == Percent) ||
-		     ( cRowHeight.type == Percent && cRowHeight.value < height.value ) )
+		if ( !cRowHeight.isPercent() ||
+		     (cRowHeight.isPercent() && cRowHeight.value() < height.value() ) )
 		    grid[cRow].height = height;
 		     break;
 	    case Fixed:
-		if ( cRowHeight.type < Percent ||
-		     ( cRowHeight.type == Fixed && cRowHeight.value < height.value ) )
+		if ( cRowHeight.type() < Percent ||
+		     ( cRowHeight.isFixed() && cRowHeight.value() < height.value() ) )
 		    grid[cRow].height = height;
 		break;
 	    case Relative:
@@ -968,10 +971,10 @@ int RenderTableSection::layoutRows( int toAdd )
 	int totalPercent = 0;
 	int numVariable = 0;
 	for ( int r = 0; r < totalRows; r++ ) {
-	    if ( grid[r].height.type == Variable )
+	    if ( grid[r].height.isVariable() )
 		numVariable++;
-	    else if ( grid[r].height.type == Percent )
-		totalPercent += grid[r].height.value;
+	    else if ( grid[r].height.isPercent() )
+		totalPercent += grid[r].height.value();
 	}
 	if ( totalPercent ) {
 // 	    qDebug("distributing %d over percent rows totalPercent=%d", dh,  totalPercent );
@@ -979,13 +982,17 @@ int RenderTableSection::layoutRows( int toAdd )
 	    int add = 0;
 	    if ( totalPercent > 100 )
 		totalPercent = 100;
+	    int rh = rowPos[1]-rowPos[0];
 	    for ( int r = 0; r < totalRows; r++ ) {
-		if ( totalPercent > 0 && grid[r].height.type == Percent ) {
-		    int toAdd = QMIN( dh, totalHeight * grid[r].height.value / 100 );
+		if ( totalPercent > 0 && grid[r].height.isPercent() ) {
+		    int toAdd = QMIN( dh, (totalHeight * grid[r].height.value() / 100)-rh );
 		    add += toAdd;
 		    dh -= toAdd;
-		    totalPercent -= grid[r].height.value;
+		    totalPercent -= grid[r].height.value();
+// 		    qDebug( "adding %d to row %d", toAdd, r );
 		}
+		if ( r < totalRows-1 )
+		    rh = rowPos[r+2] - rowPos[r+1];
                 rowPos[r+1] += add;
 	    }
 	}
@@ -994,7 +1001,7 @@ int RenderTableSection::layoutRows( int toAdd )
 // 	    qDebug("distributing %d over variable rows numVariable=%d", dh,  numVariable );
 	    int add = 0;
 	    for ( int r = 0; r < totalRows; r++ ) {
-		if ( numVariable > 0 && grid[r].height.type == Variable ) {
+		if ( numVariable > 0 && grid[r].height.isVariable() ) {
 		    int toAdd = dh/numVariable;
 		    add += toAdd;
 		    dh -= toAdd;
@@ -1086,7 +1093,7 @@ int RenderTableSection::layoutRows( int toAdd )
 }
 
 
-void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
+void RenderTableSection::paint( QPainter *p, int x, int y, int w, int h,
 				int tx, int ty)
 {
     unsigned int totalRows = grid.size();
@@ -1095,7 +1102,7 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
     tx += m_x;
     ty += m_y;
 
-    // check which rows and cols are visible and only print these
+    // check which rows and cols are visible and only paint these
     // ### fixme: could use a binary search here
     unsigned int startrow = 0;
     unsigned int endrow = totalRows;
@@ -1134,9 +1141,9 @@ void RenderTableSection::print( QPainter *p, int x, int y, int w, int h,
 		    continue;
 
 #ifdef TABLE_PRINT
-		kdDebug( 6040 ) << "printing cell " << r << "/" << c << endl;
+		kdDebug( 6040 ) << "painting cell " << r << "/" << c << endl;
 #endif
-		cell->print( p, x, y, w, h, tx, ty);
+		cell->paint( p, x, y, w, h, tx, ty);
 	    }
 	}
     }
@@ -1240,6 +1247,7 @@ void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 	    cell = new RenderTableCell(0 /* anonymous object */);
 	    RenderStyle *newStyle = new RenderStyle();
 	    newStyle->inheritFrom(style());
+	    newStyle->setDisplay( TABLE_CELL );
 	    cell->setStyle(newStyle);
 	    cell->setIsAnonymousBox(true);
 	    addChild(cell, beforeChild);
@@ -1409,12 +1417,12 @@ static void outlineBox(QPainter *p, int _tx, int _ty, int w, int h)
 }
 #endif
 
-void RenderTableCell::print(QPainter *p, int _x, int _y,
+void RenderTableCell::paint(QPainter *p, int _x, int _y,
                                        int _w, int _h, int _tx, int _ty)
 {
 
 #ifdef TABLE_PRINT
-    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::print() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
+    kdDebug( 6040 ) << renderName() << "(RenderTableCell)::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << _y << "/" << _h << endl;
 #endif
 
     if (!layouted()) return;
@@ -1426,7 +1434,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
     if(!overhangingContents() && ((_ty-_topExtra > _y + _h)
         || (_ty + m_height+_topExtra+_bottomExtra < _y))) return;
 
-    printObject(p, _x, _y, _w, _h, _tx, _ty);
+    paintObject(p, _x, _y, _w, _h, _tx, _ty);
 
 #ifdef BOX_DEBUG
     ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
@@ -1434,7 +1442,7 @@ void RenderTableCell::print(QPainter *p, int _x, int _y,
 }
 
 
-void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
+void RenderTableCell::paintBoxDecorations(QPainter *p,int, int _y,
                                        int, int _h, int _tx, int _ty)
 {
     int w = width();
@@ -1485,10 +1493,10 @@ void RenderTableCell::printBoxDecorations(QPainter *p,int, int _y,
     int mh = end - my;
 
     if ( bg || c.isValid() )
-	printBackground(p, c, bg, my, mh, _tx, _ty, w, h);
+	paintBackground(p, c, bg, my, mh, _tx, _ty, w, h);
 
     if(style()->hasBorder())
-        printBorder(p, _tx, _ty, w, h, style());
+        paintBorder(p, _tx, _ty, w, h, style());
 }
 
 

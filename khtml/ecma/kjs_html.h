@@ -36,7 +36,7 @@ namespace KJS {
 
   class HTMLDocument : public DOMDocument {
   public:
-    HTMLDocument(ExecState *exec, DOM::HTMLDocument d) : DOMDocument(exec, d) { }
+    HTMLDocument(ExecState *exec, const DOM::HTMLDocument& d);
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
     void putValueProperty(ExecState *exec, int token, const Value& value, int /*attr*/);
@@ -45,7 +45,7 @@ namespace KJS {
     static const ClassInfo info;
     enum { Title, Referrer, Domain, URL, Body, Location, Cookie,
            Images, Applets, Links, Forms, Anchors, Scripts, All, Clear, Open, Close,
-           Write, WriteLn, GetElementsByName,
+           Write, WriteLn, GetElementsByName, CaptureEvents, ReleaseEvents,
            BgColor, FgColor, AlinkColor, LinkColor, VlinkColor, LastModified,
            Height, Width, Dir, Frames };
     DOM::Document toDocument() const { return static_cast<DOM::Document>( node ); }
@@ -53,7 +53,7 @@ namespace KJS {
 
   class HTMLElement : public DOMElement {
   public:
-    HTMLElement(ExecState *exec, DOM::HTMLElement e) : DOMElement(exec, e) { }
+    HTMLElement(ExecState *exec, const DOM::HTMLElement& e) : DOMElement(exec, e) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     Value getValueProperty(ExecState *exec, int token) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
@@ -111,7 +111,7 @@ namespace KJS {
            AnchorRev, AnchorTabIndex, AnchorTarget, AnchorText, AnchorBlur,
            ImageName, ImageAlign, ImageHspace, ImageVspace, ImageUseMap, ImageAlt,
            ImageLowSrc, ImageWidth, ImageIsMap, ImageBorder, ImageHeight,
-           ImageLongDesc, ImageSrc, ImageComplete, ObjectHspace, ObjectHeight, ObjectAlign,
+           ImageLongDesc, ImageSrc, ImageX, ImageY, ImageComplete, ObjectHspace, ObjectHeight, ObjectAlign,
            ObjectBorder, ObjectCode, ObjectType, ObjectVspace, ObjectArchive,
            ObjectDeclare, ObjectForm, ObjectCodeBase, ObjectCodeType, ObjectData,
            ObjectName, ObjectStandby, ObjectTabIndex, ObjectUseMap, ObjectWidth, ObjectContentDocument,
@@ -160,7 +160,7 @@ namespace KJS {
 
   class HTMLCollection : public DOMObject {
   public:
-    HTMLCollection(ExecState *exec, DOM::HTMLCollection c);
+    HTMLCollection(ExecState *exec, const DOM::HTMLCollection& c);
     ~HTMLCollection();
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual Value call(ExecState *exec, Object &thisObj, const List&args);
@@ -179,7 +179,7 @@ namespace KJS {
 
   class HTMLSelectCollection : public HTMLCollection {
   public:
-    HTMLSelectCollection(ExecState *exec, DOM::HTMLCollection c, DOM::HTMLSelectElement e)
+    HTMLSelectCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e)
       : HTMLCollection(exec, c), element(e) { }
     virtual Value tryGet(ExecState *exec, const UString &propertyName) const;
     virtual void tryPut(ExecState *exec, const UString &propertyName, const Value& value, int attr = None);
@@ -229,8 +229,8 @@ namespace KJS {
     JSEventListener *m_onLoadListener;
   };
 
-  Value getHTMLCollection(ExecState *exec, DOM::HTMLCollection c);
-  Value getSelectHTMLCollection(ExecState *exec, DOM::HTMLCollection c, DOM::HTMLSelectElement e);
+  Value getHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c);
+  Value getSelectHTMLCollection(ExecState *exec, const DOM::HTMLCollection& c, const DOM::HTMLSelectElement& e);
 
 
 }; // namespace

@@ -33,6 +33,7 @@
 // $Id$
 
 #include <qbitmap.h>
+#include <qcheckbox.h>
 #include <qcombobox.h>
 #include <qdrawutil.h>
 #include <qframe.h>
@@ -209,6 +210,27 @@ QRect KeramikStyle::subRect(SubRect r, const QWidget *widget) const
 			return querySubControlMetrics( CC_ComboBox, widget, SC_ComboBoxEditField );
 		}
 
+		case SR_CheckBoxFocusRect:
+		{
+			const QCheckBox* cb = static_cast<const QCheckBox*>(widget);
+
+			//Only checkbox, no label
+			if (cb->text().isEmpty() && (cb->pixmap() == 0) )
+			{
+				QRect bounding = cb->rect();
+				QSize checkDim = Keramik::PixmapLoader::the().size( keramik_checkbox_on);
+				int   cw = checkDim.width();;
+				int   ch = checkDim.height();
+
+				QRect checkbox(bounding.x() + 1, bounding.y() + 1 + (bounding.height() - ch)/2,
+								cw - 3, ch - 4);
+
+				return checkbox;
+			}
+
+			//Fallthrough intentional
+		}
+
 		default:
 			return KStyle::subRect( r, widget );
 	}
@@ -348,6 +370,9 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 	int  x, y, w, h;
 	r.rect(&x, &y, &w, &h);
 
+	int x2 = x+w-1;
+	int y2 = y+h-1;
+
 	switch(pe)
 	{
 		// BUTTONS
@@ -401,9 +426,6 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 				return;
 			}
 
-			int x2 = x+w-1;
-			int y2 = y+h-1;
-
 			if (on)
 			{
 				Keramik::RectTilePainter(keramik_toolbar_clk).draw(p, r, cg.button(), cg.background());
@@ -420,13 +442,13 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 					QRect(r.x(), 0, r.width(), r.height()),
 					Keramik::ColorUtil::lighten(cg.button(), 115), flags & Style_Horizontal, false );
 
-                                p->setPen(cg.button().light(70));
+				p->setPen(cg.button().light(70));
 				p->drawLine(x, y, x2-1, y);
 				p->drawLine(x, y, x, y2-1);
 				p->drawLine(x+2, y2-1, x2-1, y2-1);
 				p->drawLine(x2-1, y+2, x2-1, y2-2);
 
-                                p->setPen(Keramik::ColorUtil::lighten(cg.button(), 115) );
+				p->setPen(Keramik::ColorUtil::lighten(cg.button(), 115) );
 				p->drawLine(x+1, y+1, x2-1, y+1);
 				p->drawLine(x+1, y+1, x+1, y2);
 				p->drawLine(x, y2, x2, y2);
@@ -497,9 +519,17 @@ void KeramikStyle::drawPrimitive( PrimitiveElement pe,
 			}
 			else if (!flatMode)
 				Keramik::RectTilePainter( name, false ).draw(p, r, cg.button(), cg.background(), disabled, pmode() );
-			else
+			else {
 				Keramik::ScaledPainter( name + KeramikTileCC, Keramik::ScaledPainter::Vertical).draw(
 					p, r, cg.button(), cg.background(), disabled, pmode() );
+				
+				p->setPen(cg.button().light(75));
+				
+				p->drawLine(x, y, x2, y);
+				p->drawLine(x, y, x, y2);
+				p->drawLine(x, y2, x2, y2);
+				p->drawLine(x2, y, x2, y2);
+			}
 
 			break;
 

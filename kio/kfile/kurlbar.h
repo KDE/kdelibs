@@ -328,6 +328,11 @@ public:
     bool isModified() const             { return m_isModified; }
 
     /**
+     * @returns true when the urlbar may not be modified by the user
+     */
+    bool isImmutable() const             { return m_isImmutable; }
+
+    /**
      * @returns true if the bar is in vertical mode.
      */
     bool isVertical() const { return orientation() == Vertical; }
@@ -382,6 +387,12 @@ protected:
      * editing/adding/removing an item).
      */
     bool m_isModified :1;
+
+    /**
+     * Whether the urlbar may be modified by the user.
+     * If immutable is true, the urlbar can not be modified.
+     */
+    bool m_isImmutable :1;
 
 protected slots:
     /**

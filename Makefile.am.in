@@ -106,3 +106,8 @@ install-apidox-kdelibs:
 		echo $(INSTALL_DATA) $(top_builddir)/apidocs/qt/qt.tag $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt; \
 		$(INSTALL_DATA) $(top_builddir)/apidocs/qt/qt.tag $(DESTDIR)$(kde_htmldir)/en/$(PACKAGE)-apidocs/qt; \
 	fi
+
+clean-generic:
+	if test -f $(top_builddir)/apidocs; then \
+		rm -rf $(top_builddir)/apidocs; \
+	fi

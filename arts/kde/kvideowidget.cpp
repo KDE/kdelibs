@@ -109,6 +109,11 @@ void KVideoWidget::init(void)
     ((KToggleAction *)action( "half_size" ))->setExclusiveGroup( "KVideoWidget::zoom" );
     ((KToggleAction *)action( "normal_size" ))->setExclusiveGroup( "KVideoWidget::zoom" );
     ((KToggleAction *)action( "double_size" ))->setExclusiveGroup( "KVideoWidget::zoom" );
+
+    action("double_size")->setEnabled(false);
+    action("half_size")->setEnabled(false);
+    action("normal_size")->setEnabled(false);
+    action("fullscreen_mode")->setEnabled(false);
 }
 
 KVideoWidget::~KVideoWidget()
@@ -127,6 +132,7 @@ KVideoWidget::~KVideoWidget()
 
 void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 {
+    bool enable;
     if (vpo.isNull())
     {
 	if (isEmbedded())
@@ -144,6 +150,9 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 
 	if (isHalfSize() || isNormalSize() || isDoubleSize())
 	    emit adaptSize( 0, 0 );
+
+        enable = false;
+	updateGeometry();
     }
     else
     {
@@ -167,7 +176,12 @@ void KVideoWidget::embed( Arts::VideoPlayObject vpo )
 	    poVideo.x11WindowId( winId() );
 	    setBackgroundMode( NoBackground );
 	}
+        enable = true;
     }
+    action("double_size")->setEnabled(enable);
+    action("half_size")->setEnabled(enable);
+    action("normal_size")->setEnabled(enable);
+    action("fullscreen_mode")->setEnabled(enable);
 }
 
 QImage KVideoWidget::snapshot( Arts::VideoPlayObject vpo )
@@ -319,6 +333,8 @@ void KVideoWidget::resizeNotify( int width, int height )
 	emit adaptSize( videoWidth, videoHeight );
     else if (isDoubleSize())
 	emit adaptSize( (2 * videoWidth), (2 * videoHeight) );
+
+    updateGeometry();
 }
 
 bool KVideoWidget::x11Event( XEvent *event )

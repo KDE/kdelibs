@@ -26,6 +26,9 @@
 
 #include <qtextstream.h>
 #include <qmap.h>
+
+#include <config.h>
+
 #include <unistd.h>
 #include <qptrlist.h>
 #include <sys/time.h>
@@ -44,6 +47,7 @@ private:
     QString classArgs;
     QPtrList<QByteArray> BufferList;
     QMap<QString, QString> systemProps;
+    QValueList<int> tickets;
     bool processKilled;
     int sync_count;
 };
@@ -176,13 +180,13 @@ void KJavaProcess::storeSize( QByteArray* buff )
 void KJavaProcess::sendBuffer( QByteArray* buff )
 {
     d->BufferList.append( buff );
-    if( d->BufferList.count() == 1 )
+    if( d->BufferList.count() == 1 && d->sync_count == 0)
     {
         popBuffer();
     }
 }
 
-void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
+void KJavaProcess::sendSync( int ticket, char cmd_code, const QStringList& args ) {
     kdDebug(6100) << ">KJavaProcess::sendSync " << d->sync_count << endl;
     if (d->sync_count++ == 0)
         javaProcess->suspend();
@@ -192,6 +196,9 @@ void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
     int current_sync_count;
     int size = buff->size();
     char *data = buff->data();
+
+    d->tickets.append( ticket );
+
     fd_set fds;
     timeval tv;
     do {
@@ -208,6 +215,8 @@ void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
             goto bail_out;
         } else if (KProcess::input_data) {
             KProcess::slotSendData(dummy);
+        } else if( d->BufferList.count() > 0) {
+            popBuffer();
         } else {
             int nr = ::write(in[1], data, size);
             size -= nr;
@@ -218,7 +227,7 @@ void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
     do {
         FD_ZERO(&fds);
         FD_SET(out[0], &fds);
-        tv.tv_sec = 5;
+        tv.tv_sec = 15;
         tv.tv_usec = 0;
         kdDebug(6100) << "KJavaProcess::sendSync bf read" << endl;
         int retval = select(out[0]+1, &fds, 0L, 0L, &tv);
@@ -226,27 +235,27 @@ void KJavaProcess::sendSync( char cmd_code, const QStringList& args ) {
         if (retval < 0 && errno == EINTR) {
             continue;
         } else if (retval <= 0) {
-            kdError(6100) << "KJavaProcess::sendSync timeout" <<endl;
-            d->sync_count--;
+            kdError(6100) << "KJavaProcess::sendSync timeout " << retval<< endl;
             break;
         } else {
             slotReceivedData(out[0], dummy);
         }
-        if (d->sync_count < current_sync_count)
+        QValueList<int>::iterator it = d->tickets.find(ticket);
+        if (it == d->tickets.end())
             break;
     } while(true);
 bail_out:
     delete buff;
-    if (d->sync_count == 0)
+    if (--d->sync_count <= 0) {
         javaProcess->resume();
+        if ( d->BufferList.count() > 0 )
+            popBuffer();
+    }
     kdDebug(6100) << "<KJavaProcess::sendSync " << d->sync_count << endl;
 }
 
-void KJavaProcess::syncCommandReceived() {
-    if (--d->sync_count < 0) {
-        kdError(6100) << "syncCommandReceived() sync_count below zero" << endl;
-        d->sync_count = 0;
-    }
+void KJavaProcess::syncCommandReceived(int ticket) {
+    d->tickets.remove( ticket );
 }
 
 void KJavaProcess::send( char cmd_code, const QStringList& args )
@@ -255,6 +264,7 @@ void KJavaProcess::send( char cmd_code, const QStringList& args )
     {
         QByteArray* buff = addArgs( cmd_code, args );
         storeSize( buff );
+        kdDebug(6100) << "<KJavaProcess::send " << (int)cmd_code << endl;
         sendBuffer( buff );
     }
 }
@@ -310,7 +320,7 @@ void KJavaProcess::slotWroteData( )
     d->BufferList.removeFirst();  //this should delete it since we setAutoDelete(true)
     kdDebug(6100) << "slotWroteData " << d->BufferList.count() << endl;
 
-    if ( d->BufferList.count() >= 1 )
+    if ( d->BufferList.count() >= 1 && d->sync_count == 0 )
     {
         popBuffer();
     }
@@ -357,7 +367,7 @@ bool KJavaProcess::invokeJVM()
 
     *javaProcess << d->mainClass;
 
-    if ( d->classArgs != QString::null )
+    if ( !d->classArgs.isNull() )
         *javaProcess << d->classArgs;
 
     kdDebug(6100) << "Invoking JVM now...with arguments = " << endl;
@@ -374,6 +384,8 @@ bool KJavaProcess::invokeJVM()
     bool rval = javaProcess->start( KProcess::NotifyOnExit, flags );
     if( rval )
         javaProcess->resume(); //start processing stdout on the java process
+    else
+        killJVM();
 
     return rval;
 }

@@ -452,12 +452,8 @@ bool DateObjectFuncImp::implementsCall() const
 Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &args)
 {
   if (id == Parse) {
-    if (args[0].type() == StringType)
-      return parseDate(args[0].toString(exec));
-    else
-      return Undefined();
-  }
-  else { // UTC
+    return parseDate(args[0].toString(exec));
+  } else { // UTC
     struct tm t;
     memset(&t, 0, sizeof(t));
     int n = args.size();
@@ -477,9 +473,8 @@ Value DateObjectFuncImp::call(ExecState *exec, Object &/*thisObj*/, const List &
 // -----------------------------------------------------------------------------
 
 
-Value KJS::parseDate(const String &s)
+Value KJS::parseDate(const UString &u)
 {
-  UString u = s.value();
 #ifdef KJS_VERBOSE
   fprintf(stderr,"KJS::parseDate %s\n",u.ascii());
 #endif
@@ -501,10 +496,7 @@ Value KJS::parseDate(const String &s)
   }
 #endif
 
-  if ( seconds == -1 )
-    return Undefined();
-  else
-    return Number(seconds * 1000.0);
+  return Number(seconds == -1 ? NaN : seconds * 1000.0);
 }
 
 ///// Awful duplication from krfcdate.cpp - we don't link to kdecore
@@ -576,7 +568,7 @@ double KJS::KRFCDate_parseDate(const UString &_date)
      //
      // We ignore the weekday
      //
-     double result = 0;
+     double result = -1;
      int offset = 0;
      bool have_tz = false;
      char *newPosStr;

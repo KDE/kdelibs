@@ -34,7 +34,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
-
+#include <sys/resource.h>
+                   
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -461,12 +462,15 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *tmp;
 
-    sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
+    snprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
     tmp = (char *) mktemp (tempFile);
     if (tmp)
 	{
 	    char *ptr = (char *) malloc (strlen (tmp) + 1);
-	    strcpy (ptr, tmp);
+        if (ptr != NULL)
+        {
+	        strcpy (ptr, tmp);
+        }
 	    return (ptr);
 	}
     else
@@ -476,7 +480,7 @@ static char *unique_filename (const char *path, const char *prefix, int *pFd)
     char tempFile[PATH_MAX];
     char *ptr;
 
-    sprintf (tempFile, "%s/%sXXXXXX", path, prefix);
+    snprintf (tempFile, PATH_MAX, "%s/%sXXXXXX", path, prefix);
     ptr = static_cast<char *>(malloc(strlen(tempFile) + 1));
     if (ptr != NULL)
 	{
@@ -526,7 +530,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
     FILE        *addfp = NULL;
     const char  *path;
     int         original_umask;
-    char        command[256];
+    char        command[PATH_MAX + 32];
     int         i;
 #ifdef HAVE_MKSTEMP
     int         fd;
@@ -585,7 +589,7 @@ SetAuthentication (int count, IceListenObj *_listenObjs,
 
     umask (original_umask);
 
-    sprintf (command, "iceauth source %s", addAuthFile);
+    snprintf (command, PATH_MAX + 32, "iceauth source %s", addAuthFile);
     system (command);
 
     unlink(addAuthFile);
@@ -1103,6 +1107,14 @@ void DCOPServer::newClient( int /*socket*/ )
 {
     IceAcceptStatus status;
     IceConn iceConn = IceAcceptConnection( static_cast<const  DCOPListener*>(sender())->listenObj, &status);
+    if (!iceConn) {
+      if (status == IceAcceptBadMalloc)
+	 qWarning("Failed to alloc connection object!\n");
+      else // IceAcceptFailure
+         qWarning("Failed to accept ICE connection!\n");
+      return;
+    }
+
     IceSetShutdownNegotiation( iceConn, False );
 
     IceConnectStatus cstatus;
@@ -1518,6 +1530,9 @@ static bool isRunning(const QCString &fName, bool printNetworkId = false)
 	    // remove lockfile and continue
 	    unlink(fName.data());
 	}
+    } else if (errno != ENOENT) {
+        // remove lockfile and continue
+        unlink(fName.data());
     }
     return false;
 }
@@ -1576,6 +1591,24 @@ int main( int argc, char* argv[] )
        return 0;
     }
 
+    struct rlimit limits; 
+     
+    int retcode = getrlimit(RLIMIT_NOFILE, &limits); 
+    if (!retcode) { 
+       if (limits.rlim_max > 512 && limits.rlim_cur < 512)
+       {
+          int cur_limit = limits.rlim_cur;
+          limits.rlim_cur = 512; 
+          retcode = setrlimit(RLIMIT_NOFILE, &limits); 
+
+          if (retcode != 0)
+          {
+             qWarning("dcopserver: Could not raise limit on number of open files.");
+             qWarning("dcopserver: Current limit = %d", cur_limit);
+          }
+       }
+    }
+
     pipe(ready);
 
     if (!nofork) {
@@ -1591,10 +1624,7 @@ int main( int argc, char* argv[] )
                // Test whether we are functional.
                DCOPClient client;
                if (client.attach())
-               {
-                  qWarning("DCOPServer up and running.");
                   return 0;
-               }
             }
             qWarning("DCOPServer self-test failed.");
             system(findDcopserverShutdown()+" --kill");

@@ -73,6 +73,7 @@ public:
         onlyDoubleClickSelectsFiles = false;
         progressDelayTimer = 0L;
         dirHighlighting = false;
+        config = 0L;
     }
 
     ~KDirOperatorPrivate() {
@@ -83,6 +84,10 @@ public:
     QString lastURL; // used for highlighting a directory on cdUp
     bool onlyDoubleClickSelectsFiles;
     QTimer *progressDelayTimer;
+    KActionSeparator *viewActionSeparator;
+
+    KConfig *config;
+    QString configGroup;
 };
 
 KDirOperator::KDirOperator(const KURL& _url,
@@ -141,8 +146,15 @@ KDirOperator::KDirOperator(const KURL& _url,
 KDirOperator::~KDirOperator()
 {
     resetCursor();
+    if ( m_fileView )
+    {
+        if ( d->config )
+            m_fileView->writeConfig( d->config, d->configGroup );
+        
     delete m_fileView;
     m_fileView = 0L;
+    }
+    
     delete myPreview;
     delete dir;
     delete d;
@@ -165,25 +177,55 @@ void KDirOperator::resetCursor()
 
 void KDirOperator::insertViewDependentActions()
 {
-    // If we have a new view actionCollection(), insert its actions
-    //  into viewActionMenu.
+   // If we have a new view actionCollection(), insert its actions
+   // into viewActionMenu.
+  
+   if( !m_fileView )
+      return;
+       
+   if ( (viewActionMenu->popupMenu()->count() == 0) || 			// Not yet initialized or...
+        (viewActionCollection != m_fileView->actionCollection()) )	// ...changed since.
+   {
+      if (viewActionCollection)
+      {
+         disconnect( viewActionCollection, SIGNAL( inserted( KAction * )),
+               this, SLOT( slotViewActionAdded( KAction * )));
+         disconnect( viewActionCollection, SIGNAL( removed( KAction * )),
+               this, SLOT( slotViewActionRemoved( KAction * )));
+      }
+    
+      viewActionMenu->popupMenu()->clear();
+//      viewActionMenu->insert( shortAction );
+//      viewActionMenu->insert( detailedAction );
+//      viewActionMenu->insert( actionSeparator );
+      viewActionMenu->insert( myActionCollection->action( "short view" ) );
+      viewActionMenu->insert( myActionCollection->action( "detailed view" ) );
+      viewActionMenu->insert( actionSeparator );
+      viewActionMenu->insert( showHiddenAction );
+//      viewActionMenu->insert( myActionCollection->action( "single" ));
+      viewActionMenu->insert( separateDirsAction );
+      // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
+      // when you add/remove actions here!
 
-    if( m_fileView && viewActionCollection != m_fileView->actionCollection() ) {
-        viewActionCollection = m_fileView->actionCollection();
+      viewActionCollection = m_fileView->actionCollection();
+      if (!viewActionCollection)
+         return;
 
-        if ( !viewActionCollection->isEmpty() ) {
-            viewActionMenu->insert( actionSeparator );
-            for ( uint i = 0; i < viewActionCollection->count(); i++ )
-                viewActionMenu->insert( viewActionCollection->action( i ));
-        }
+      if ( !viewActionCollection->isEmpty() ) 
+      {
+         viewActionMenu->insert( d->viewActionSeparator );
 
-        connect( viewActionCollection, SIGNAL( inserted( KAction * )),
-                 SLOT( slotViewActionAdded( KAction * )));
-        connect( viewActionCollection, SIGNAL( removed( KAction * )),
-                 SLOT( slotViewActionRemoved( KAction * )));
-    }
+         for ( uint i = 0; i < viewActionCollection->count(); i++ )
+            viewActionMenu->insert( viewActionCollection->action( i ));
+      }
+
+      connect( viewActionCollection, SIGNAL( inserted( KAction * )),
+               SLOT( slotViewActionAdded( KAction * )));
+      connect( viewActionCollection, SIGNAL( removed( KAction * )),
+               SLOT( slotViewActionRemoved( KAction * )));
+   }
 }
-
+  
 void KDirOperator::activatedMenu( const KFileItem *, const QPoint& pos )
 {
     updateSelectionDependentActions();
@@ -378,7 +420,7 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
     QStringList files;
     KFileItemListIterator it( items );
 
-    for ( ; it; ++it ) {
+    for ( ; it.current(); ++it ) {
         KURL url = (*it)->url();
         urls.append( url );
         if ( url.isLocalFile() )
@@ -406,8 +448,11 @@ KIO::DeleteJob * KDirOperator::del( const KFileItemList& items,
         doIt = (ret == KMessageBox::Continue);
     }
 
-    if ( doIt )
-        return KIO::del( urls, false, showProgress );
+    if ( doIt ) {
+        KIO::DeleteJob *job = KIO::del( urls, false, showProgress );
+        job->setAutoErrorHandlingEnabled( true, parent );
+        return job;
+    }
 
     return 0L;
 }
@@ -830,6 +875,12 @@ void KDirOperator::connectView(KFileView *view)
         view->setSelectionMode( KFile::Single );
 
     if (m_fileView) {
+        if ( d->config ) // save and restore coniguration the views' config
+        {
+            m_fileView->writeConfig( d->config, d->configGroup );
+            view->readConfig( d->config, d->configGroup );
+        }
+
         // transfer the state from old view to new view
         view->clear();
         view->addItemList( *m_fileView->items() );
@@ -854,6 +905,12 @@ void KDirOperator::connectView(KFileView *view)
 
         m_fileView->widget()->hide();
         delete m_fileView;
+    }
+
+    else
+    {
+        if ( d->config )
+            view->readConfig( d->config, d->configGroup );
     }
 
     m_fileView = view;
@@ -1064,6 +1121,8 @@ void KDirOperator::setupActions()
     homeAction->setText(i18n("Home Directory"));
     reloadAction = KStdAction::redisplay( this, SLOT(rereadDir()), myActionCollection, "reload" );
     actionSeparator = new KActionSeparator( myActionCollection, "separator" );
+    d->viewActionSeparator = new KActionSeparator( myActionCollection,
+                                                   "viewActionSeparator" );
     mkdirAction = new KAction( i18n("New Directory..."), 0,
                                  this, SLOT( mkdir() ), myActionCollection, "mkdir" );
     new KAction( i18n( "Delete" ), "editdelete", Key_Delete, this,
@@ -1161,19 +1220,6 @@ void KDirOperator::setupMenu(int whichActions)
     sortActionMenu->insert( reverseAction );
     sortActionMenu->insert( dirsFirstAction );
     sortActionMenu->insert( caseInsensitiveAction );
-
-    viewActionMenu->popupMenu()->clear();
-//     viewActionMenu->insert( shortAction );
-//     viewActionMenu->insert( detailedAction );
-//     viewActionMenu->insert( actionSeparator );
-    viewActionMenu->insert( myActionCollection->action( "short view" ) );
-    viewActionMenu->insert( myActionCollection->action( "detailed view" ) );
-    viewActionMenu->insert( actionSeparator );
-    viewActionMenu->insert( showHiddenAction );
-//    viewActionMenu->insert( myActionCollection->action( "single" ));
-    viewActionMenu->insert( separateDirsAction );
-    // Warning: adjust slotViewActionAdded() and slotViewActionRemoved()
-    // when you add/remove actions here!
 
     // now plug everything into the popupmenu
     actionMenu->popupMenu()->clear();
@@ -1438,7 +1484,7 @@ void KDirOperator::clearHistory()
 void KDirOperator::slotViewActionAdded( KAction *action )
 {
     if ( viewActionMenu->popupMenu()->count() == 5 ) // need to add a separator
-	viewActionMenu->insert( actionSeparator );
+	viewActionMenu->insert( d->viewActionSeparator );
 
     viewActionMenu->insert( action );
 }
@@ -1448,7 +1494,7 @@ void KDirOperator::slotViewActionRemoved( KAction *action )
     viewActionMenu->remove( action );
 
     if ( viewActionMenu->popupMenu()->count() == 6 ) // remove the separator
-	viewActionMenu->remove( actionSeparator );
+	viewActionMenu->remove( d->viewActionSeparator );
 }
 
 void KDirOperator::slotViewSortingChanged( QDir::SortSpec sort )
@@ -1520,6 +1566,21 @@ void KDirOperator::slotRefreshItems( const KFileItemList& items )
         m_fileView->updateView( it.current() );
 }
 
+void KDirOperator::setViewConfig( KConfig *config, const QString& group )
+{
+    d->config = config;
+    d->configGroup = group;
+}
+
+KConfig * KDirOperator::viewConfig()
+{
+    return d->config;
+}
+
+QString KDirOperator::viewConfigGroup() const
+{
+    return d->configGroup;
+}
 
 void KDirOperator::virtual_hook( int, void* )
 { /*BASE::virtual_hook( id, data );*/ }

@@ -113,7 +113,7 @@ Two new methods will be added to KApplication:
 
 - bool authorize(QString action); // Generic actions
 - bool authorizeKAction(QString action); // For KActions exclusively
-- bool authorizeURLAction(QString, referringURL, destinationURL) // Not yet implemented
+- bool authorizeURLAction(QString, referringURL, destinationURL) // URL Handling
 
 KDE3 Action Restrictions
 ========================
@@ -182,15 +182,84 @@ action/options_show_toolbar
 action/options_show_statusbar
 action/options_save_options
 action/options_configure_keybinding
-action/options_configure
+action/options_configure_notifications
 action/options_configure_toolbars
-action/help
+action/options_configure
 action/help_contents
 action/help_whats_this
 action/help_report_bug
 action/help_about_app
 action/help_about_kde
 action/fullscreen
+
+Konqueror & KDesktop related:
+action/editfiletype
+action/properties
+action/openwith
+action/openintab
+action/openintabfront
+
+Konsole related:
+action/konsole_rmb // RMB context menu
+
+action/settings // Entire settings menu
+action/show_menubar
+action/show_toolbar
+action/scrollbar
+action/fullscreen
+action/bell
+action/font
+action/keyboard
+action/schema
+action/size
+action/history
+action/save_default
+action/save_sessions_profile
+action/options_configure_notifications
+action/options_configure_keybinding
+action/options_configure
+
+action/send_signal 
+action/bookmarks
+action/add_bookmark
+action/edit_bookmarks
+action/clear_terminal
+action/reset_clear_terminal
+action/find_history
+action/find_next
+action/find_previous
+action/save_history
+action/clear_history
+action/clear_all_histories
+action/detach_session
+action/rename_session
+action/monitor_activity
+action/monitor_silence
+action/send_input_to_all_sessions
+action/close_session
+action/new_session
+action/activate_menu
+action/list_sessions
+action/move_session_left
+action/move_session_right
+action/previous_session
+action/next_session
+action/switch_to_session_1
+action/switch_to_session_2
+action/switch_to_session_3
+action/switch_to_session_4
+action/switch_to_session_5
+action/switch_to_session_6
+action/switch_to_session_7
+action/switch_to_session_8
+action/switch_to_session_9
+action/switch_to_session_10
+action/switch_to_session_11
+action/switch_to_session_12
+action/bigger_font
+action/smaller_font
+
+
 
 Notes:
 * action/options_show_toolbar will also disable the "Toolbars" submenu
@@ -225,44 +294,93 @@ execute arbitrary commands. This raises the question whether such features
 should be disabled as part of the "shell_access" action or whether it should 
 get its own action definition, e.g. "custom .desktop files".
 
+Printing related action restrictions:
+
+print/system
+        - disables the option to select the printing system (backend). It is 
+          recommended to  disable this option once the correct printing 
+          system has been configured.
+
+print/options
+        - disables the button to select additional print options.
+
+print/copies
+        - disables the panel that allows users to make more than one copy.
+
+print/selection
+        - disables the options that allows selecting a (pseudo) printer or 
+          change any of the printer properties. Make sure that a proper
+          default printer has been selected before disabling this option.
+          Disabling this option also disables print/system and print/options.
+
+print/dialog
+        - disables the complete print dialog. Selecting the print option will
+          immediate print the selected document using default settings.
+          Make sure that a system wide default printer has been selected.
+          No application specific settings are honoured.
+
 Other defined actions:
 
 shell_access 
         - defines whether a shell suitable for entering random commands 
           may be started. This also determines whether the "Run Command"
-          option (Alt-F2) accepts shell-commands or not.
+          option (Alt-F2) can be used to run shell-commands and arbitrary  
+          executables. Likewise, executables placed in the user's
+          Autostart folder will no longer be executed. Applications can
+          still be autostarted by placing .desktop files in the $KDEHOME/Autostart
+          or $KDEDIR/share/autostart directory.
           See also run_desktop_files.
+
 custom_config 
         - defines whether the --config command line option should be honored.
           The --config command line option can be used to circumvent 
           locked-down configuration files.
+
 logout
         - defines whether the user will be able to logout from KDE.
+
 lock_screen
         - defines whether the user will be able to lock the screen.
+
 run_command
         - defines whether the "Run Command" (Alt-F2) option is available.
+
 movable_toolbars
         - define whether toolbars may be moved around by the user.
           See also action/options_show_toolbar.
+
+editable_desktop_icons
+        - define whether icons on the desktop can be moved, renamed, 
+          deleted or added. You might want to set the path for
+          the Desktop to some read-only directory as well.
+          (Instead of $HOME/Desktop)
+
 run_desktop_files
         - defines whether users may execute desktop files that are not
-          part of the default desktop, KDE menu or registered services.
-          The default desktop includes the files under 
-          $KDEDIR/share/kdesktop/Desktop but _NOT_ the files under
-          $HOME/Desktop. The KDE menu includes all files under
-          $KDEDIR/share/applnk. Registered services includes all files 
-          under $KDEDIR/share/services.
+          part of the default desktop, KDE menu, registered services and
+          autostarting services.
+          * The default desktop includes the files under 
+            $KDEDIR/share/kdesktop/Desktop but _NOT_ the files under
+            $HOME/Desktop. 
+          * The KDE menu includes all files under $KDEDIR/share/applnk. 
+          * Registered services includes all files under $KDEDIR/share/services. 
+          * Autostarting services include all files under $KDEDIR/share/autostart 
+            but _NOT_ the files under $KDEHOME/Autostart
 
           You probably also want to activate the following resource
           restictions:
           "appdata_kdesktop" - To restrict the default desktop.
           "applnk" - To restrict the KDE menu.
           "services" - To restrict registered services.
+          "autostart" - To restrict autostarting services.
           Otherwise users can still execute .desktop files by placing them
           in e.g. $KDEHOME/share/kdesktop/Desktop
-          
 
+lineedit_text_completion
+        - defines whether input lines should have the potential to remember 
+          any previously entered data and make suggestions based on this 
+          when typing. When a single account is shared by multiple people you
+          may wish to disable this out of privacy concerns.
 
 Another interesting question is what the exact scope of a certain action should
 be. Looking at the "custom .desktop files" action there are two ways to prevent
@@ -296,6 +414,41 @@ automatic ksycoca update you need to force an update manually.
 To force an update of the ksycoca database touch the file 
 .../share/services/update_ksycoca. This will force a user's sycoca database
 to be rebuild the next time the user logs in.
+
+KDE3 URL Restrictions
+=====================
+
+It is also possible to restrict URL related actions. The restriction framework 
+can disable URL actions based on the action, the URL in question and in some cases 
+the referring URL. URLs can be matched based on protocol, host and path.
+
+The syntax for adding URL action restrictions to kdeglobals is as follows:
+
+[KDE URL Restrictions]
+rule_count=<N>
+rule_1=<action>,<referingURL_protocol>,<referingURL_host>,<referingURL_path>,<URL_protocol>,<URL_host>,<URL_path>,<enabled>
+...
+rule_N=<action>,<referingURL_protocol>,<referingURL_host>,<referingURL_path>,<URL_protocol>,<URL_host>,<URL_path>,<enabled>
+
+The following actions are supported:
+list     - This controls which directories can be browsed with KDE's file-dialogs. If a user
+           should only be able to browse files under home directory one could use:
+              rule_1=list,,,,file,,,false
+              rule_2=list,,,,file,,$HOME,true
+           The first rule disables browing any directories on the local filesystem. The second rule
+           then enables browsing the users home directory.
+
+Some remarks:
+* empty entries match everything
+* host names may start with a wildcard, e.g. "*.acme.com"
+* a protocol also matches similar protocols that start with the same name, 
+  e.g. "http" matches both http and https. You can use "http!" if you only want to
+  match http (and not https)
+* specifying a path matches all URLs that start with the same path. For better results
+  you should not include a trailing slash. If you want to specify one specific path, you can 
+  add an exclamation mark. E.g. "/srv" matches both "/srv" and "/srv/www" but "/srv!" only
+  matches "/srv" and not "/srv/www".
+
 
 KDE3 Resource Restrictions
 ==========================

@@ -1491,7 +1491,8 @@ void KDialogBase::keyPressEvent( QKeyEvent *e )
   // accept the dialog when Ctrl-Return is pressed
   else if ( e->state() == ControlButton &&
             qApp->focusWidget() &&
-            qApp->focusWidget()->inherits( "QTextEdit" ) &&
+            (qApp->focusWidget()->inherits( "QTextEdit" ) ||
+             qApp->focusWidget()->inherits( "QLineEdit" )) &&
             (e->key() == Key_Return || e->key() == Key_Enter) )
   {
     QPushButton *pb = actionButton( Ok );
@@ -1525,7 +1526,7 @@ void KDialogBase::hideEvent( QHideEvent *ev )
 void KDialogBase::closeEvent( QCloseEvent *e )
 {
     QPushButton *pb = actionButton( mEscapeButton );
-    if( pb != 0 ) {
+    if( pb != 0 && isShown() ) {
 	pb->animateClick();
     } else {
 	QDialog::closeEvent( e );

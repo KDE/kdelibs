@@ -21,7 +21,7 @@
 
 #include <qstring.h>
 #include <kurl.h>
-#include <qarray.h>
+#include <qmemarray.h>
 
 namespace KIO {
   class Job;

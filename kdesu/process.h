@@ -116,6 +116,8 @@ public:
     int pid() {return m_Pid;};
 
 protected:
+    const QCStringList& environment() const;
+
     bool m_bErase, m_bTerminal;
     int m_Pid, m_Fd;
     QCString m_Command, m_Exit;

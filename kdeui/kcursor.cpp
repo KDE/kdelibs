@@ -69,6 +69,9 @@ QCursor KCursor::handCursor()
                         QBitmap hand_bitmap(22, 22, HAND_BITS, true);
                         QBitmap hand_mask(22, 22, HAND_MASK_BITS, true);
                         hand_cursor = new QCursor(hand_bitmap, hand_mask, 7, 0);
+                        // Hack to force QCursor to call XCreatePixmapCursor() immediately
+                        // so the bitmaps don't get pushed out of the Xcursor LRU cache.
+                        hand_cursor->handle();
                 }
                 else
                         hand_cursor = new QCursor(PointingHandCursor);
@@ -126,6 +129,9 @@ QCursor KCursor::workingCursor()
         {
             QPixmap pm( const_cast< const char** >( working_cursor_xpm ));
             working_cursor = new QCursor( pm, 1, 1 );
+            // Hack to force QCursor to call XCreatePixmapCursor() immediately
+            // so the bitmaps don't get pushed out of the Xcursor LRU cache.
+            working_cursor->handle();
         }
 
         Q_CHECK_PTR(working_cursor);
@@ -226,11 +232,10 @@ void KCursor::setAutoHideCursor( QWidget *w, bool enable,
     if ( enable ) {
         kp->start();
         w->setMouseTracking( true );
+        w->removeEventFilter( kp ); // safety
 
 	if ( !customEventFilter )
 	    w->installEventFilter( kp );
-	else // safety
-	    w->removeEventFilter( kp );
     }
 
     else {
@@ -350,18 +355,21 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     if ( !enabled || !o->isWidgetType() )
         return false;
 
-    int t = e->type();
-    
+    QEvent::Type t = e->type();
+
     // If it is not one of the events we respond to, ignore it.
-    if( ! ( (t >= QEvent::MouseButtonPress && t <= QEvent::Leave) ||
-            (t >= QEvent::Destroy && t <= QEvent::Hide) ||
+    if ( ! ( (t >= QEvent::MouseButtonPress && t <= QEvent::Leave) ||
+             (t >= QEvent::Destroy && t <= QEvent::Hide) ||
              t == QEvent::AccelOverride ||
-             t == QEvent::Wheel ) )
-      return false;
-    
+             t == QEvent::Wheel ||
+             t == QEvent::WindowDeactivate) )
+        return false;
+
     // disconnect() and connect() on events for a new widget
-    if ( o != hideWidget ) {
-        if ( hideWidget ) {
+    if ( o != hideWidget )
+    {
+        if ( hideWidget )
+        {
             disconnect( hideWidget, SIGNAL( destroyed() ),
                         this, SLOT( slotWidgetDestroyed()));
         }
@@ -370,9 +378,11 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
     }
 
     QWidget *w = static_cast<QWidget *>( o );
-    hideWidget = w;
 
-    if ( t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy) {
+    if ( hideWidget == w &&
+        (t == QEvent::Leave || t == QEvent::FocusOut || t == QEvent::Destroy ||
+         t == QEvent::WindowDeactivate) )
+    {
 	if ( autoHideTimer )
             autoHideTimer->stop();
 
@@ -381,6 +391,8 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
 
         return false;
     }
+
+    hideWidget = w;
 
     if ( t == QEvent::Create ) // Qt steals mouseTracking on create()
         w->setMouseTracking( true );
@@ -394,16 +406,18 @@ bool KCursorPrivate::eventFilter( QObject *o, QEvent *e )
  	return false;
     }
 
-    else if ( t == QEvent::Enter ) {
+    else if ( t == QEvent::Enter )
+    {
         if ( isCursorHidden )
             unhideCursor( w );
         if ( autoHideTimer )
             autoHideTimer->start( hideCursorDelay, true );
     }
 
-    else { // other than enter/leave/focus events
-        
-        if ( isCursorHidden ) {
+    else // other than enter/leave/focus events
+    {
+        if ( isCursorHidden )
+        {
             if ( t == QEvent::MouseButtonPress ||
                  t == QEvent::MouseButtonRelease ||
                  t == QEvent::MouseButtonDblClick || t == QEvent::MouseMove ||

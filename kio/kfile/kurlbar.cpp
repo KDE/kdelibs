@@ -230,6 +230,7 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
       m_activeItem( 0L ),
       m_useGlobal( useGlobalItems ),
       m_isModified( false ),
+      m_isImmutable( false ),
       m_listBox( 0L ),
       m_iconSize( KIcon::SizeMedium )
 {
@@ -451,6 +452,7 @@ KURL KURLBar::currentURL() const
 
 void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
 {
+    m_isImmutable = appConfig->groupIsImmutable( itemGroup );
     KConfigGroupSaver cs( appConfig, itemGroup );
     m_iconSize = appConfig->readNumEntry( "Speedbar IconSize", m_iconSize );
 
@@ -470,11 +472,31 @@ void KURLBar::readConfig( KConfig *appConfig, const QString& itemGroup )
     }
 }
 
+static KURL kurlbar_readURLEntry( KConfig *config, const QString& key )
+{
+    // This looks a bit complex to just read a URL, but we have our reasons:
+    // Until KDE 3.1.1, the url was written as prettyURL(), so it included the file:/
+    // prefix. Now we use KConfig::writePathEntry( url.path() ) in case it's a local
+    // file, so readEntry() may return e.g. either file:/foo, /foo or $HOME
+
+    QString urlEntry = config->readEntry( key );
+    bool isPath = !urlEntry.isEmpty() && (urlEntry[0] == '/' || urlEntry[0] == '$');
+    // if it's local, try dollar expansion
+    if ( !urlEntry.isEmpty() && (isPath || urlEntry.startsWith("file:/") ))
+        urlEntry = config->readPathEntry( key );
+    KURL url;
+    if ( isPath )
+        url.setPath( urlEntry );
+    else
+        url = urlEntry;
+
+    return url;
+}
+
 void KURLBar::readItem( int i, KConfig *config, bool applicationLocal )
 {
     QString number = QString::number( i );
-
-    const KURL& url = config->readEntry( QString("URL_") + number );
+    KURL url = kurlbar_readURLEntry( config, QString("URL_") + number );
     if ( url.isMalformed() || !KProtocolInfo::isKnownProtocol( url ))
         return; // nothing we could do.
 
@@ -541,7 +563,11 @@ void KURLBar::writeItem( KURLBarItem *item, int i, KConfig *config,
     QString IconGroup = "IconGroup_";
 
     QString number = QString::number( i );
+    if ( item->url().isLocalFile() )
+        config->writePathEntry( URL + number, item->url().path(), true, global );
+    else
     config->writeEntry( URL + number, item->url().prettyURL(), true, global );
+
     config->writeEntry( Description + number, item->description(),true,global);
     config->writeEntry( Icon + number, item->icon(), true, global );
     config->writeEntry( IconGroup + number, item->iconGroup(), true, global );
@@ -574,6 +600,8 @@ void KURLBar::slotDropped( QDropEvent *e )
 
 void KURLBar::slotContextMenuRequested( QListBoxItem *item, const QPoint& pos )
 {
+    if (m_isImmutable) return;
+
     static const int IconSize   = 10;
     static const int AddItem    = 20;
     static const int EditItem   = 30;

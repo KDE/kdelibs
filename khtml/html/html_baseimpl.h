@@ -1,9 +1,11 @@
 /*
  * This file is part of the DOM implementation for KDE.
  *
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
+ * Copyright (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ *           (C) 2000-2003 Dirk Mueller (mueller@kde.org)
  *           (C) 1999 Antti Koivisto (koivisto@kde.org)
  *           (C) 2000 Simon Hausmann <hausmann@kde.org>
+ * Copyright (C) 2002 Apple Computer, Inc.
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -20,7 +22,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 
 #ifndef HTML_BASEIMPL_H
@@ -86,7 +87,6 @@ public:
 
     virtual void parseAttribute(AttributeImpl *);
     virtual void attach();
-    virtual void detach();
 
     bool noResize() { return noresize; }
     void setLocation( const DOMString& str );
@@ -96,10 +96,8 @@ public:
 
     DocumentImpl* contentDocument() const;
 
-protected:
     DOMString url;
     DOMString name;
-    KHTMLView *parentWidget;
 
     int marginWidth;
     int marginHeight;
@@ -156,9 +154,8 @@ protected:
 class HTMLHeadElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHeadElementImpl(DocumentPtr *doc);
-
-    ~HTMLHeadElementImpl();
+    HTMLHeadElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
 };
@@ -168,8 +165,8 @@ public:
 class HTMLHtmlElementImpl : public HTMLElementImpl
 {
 public:
-    HTMLHtmlElementImpl(DocumentPtr *doc);
-    ~HTMLHtmlElementImpl();
+    HTMLHtmlElementImpl(DocumentPtr *doc)
+        : HTMLElementImpl(doc) {}
 
     virtual Id id() const;
     virtual void attach();

@@ -25,6 +25,7 @@
 #include "kapplication.h"
 #include "klocale.h"
 #include <kwin.h>
+#include <kwinmodule.h>
 #include <kiconloader.h>
 
 #include <qapplication.h>
@@ -56,6 +57,7 @@ public:
     }
 
     KActionCollection* actionCollection;
+    bool on_all_desktops; // valid only when the parent widget was hidden
 };
 
 KSystemTray::KSystemTray( QWidget* parent, const char* name )
@@ -79,12 +81,15 @@ KSystemTray::KSystemTray( QWidget* parent, const char* name )
     {
         connect(quitAction, SIGNAL(activated()), parentWidget(), SLOT(close()));
         new KAction(i18n("Minimize"), KShortcut(), 
-                    this, SLOT( toggleMinimizeRestore() ), 
+                    this, SLOT( minimizeRestoreAction() ),
                     d->actionCollection, "minimizeRestore");
+	KWin::Info info = KWin::info( parentWidget()->winId());
+	d->on_all_desktops = info.onAllDesktops;
     }
     else
     {
         connect(quitAction, SIGNAL(activated()), qApp, SLOT(closeAllWindows()));
+	d->on_all_desktops = false;
     }
 }
 
@@ -144,7 +149,7 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
 
     switch ( e->button() ) {
     case LeftButton:
-        toggleMinimizeRestore();
+        activateOrHide();
 	break;
     case MidButton:
 	// fall through
@@ -165,8 +170,6 @@ void KSystemTray::mousePressEvent( QMouseEvent *e )
     }
 }
 
-
-
 void KSystemTray::mouseReleaseEvent( QMouseEvent * )
 {
 }
@@ -177,23 +180,61 @@ void KSystemTray::contextMenuAboutToShow( KPopupMenu* )
 }
 
 
-void KSystemTray::toggleMinimizeRestore()
+// called from the popup menu - always do what the menu entry says,
+// i.e. if the window is shown, no matter if active or not, the menu
+// entry is "minimize", otherwise it's "restore"
+void KSystemTray::minimizeRestoreAction()
 {
-    if ( !parentWidget() )
+    if ( parentWidget() ) {
+        bool restore = !( parentWidget()->isVisible() );
+	minimizeRestore( restore );
+    }
+}
+
+// called when left-clicking the tray icon
+// if the window is not the active one, show it if needed, and activate it
+// (just like taskbar); otherwise hide it
+void KSystemTray::activateOrHide()
+{
+    QWidget *pw = parentWidget();
+
+    if ( !pw )
 	return;
-    if ( !parentWidget()->isVisible() ) {
-	parentWidget()->hide(); // KWin::setOnDesktop( parentWidget()->winId(), KWin::currentDesktop() );
+
+    KWin::Info info = KWin::info( pw->winId() );
+    // mapped = not hidden by calling hide()
+    bool mapped = (info.mappingState != NET::Withdrawn);
+    // SELI using !pw->isActiveWindow() should be enough here,
+    // but it doesn't work - e.g. with kscd, the "active" window
+    // is the widget docked in Kicker
+    if ( mapped && ( KWinModule().activeWindow() != pw->winId() )) // visible not active -> activate
+    {
+        KWin::setActiveWindow( pw->winId() );
+        return;
+    }
+    minimizeRestore( !mapped );
+}
+
+void KSystemTray::minimizeRestore( bool restore )
+{
+    QWidget* pw = parentWidget();
+    if( !pw )
+	return;
+    KWin::Info info = KWin::info( pw->winId() );
+    if ( restore )
+    {
 #ifndef Q_WS_QWS //FIXME
-	KWin::Info info = KWin::info( parentWidget()->winId() );
-	parentWidget()->move( info.geometry.topLeft() );
-#endif
-	parentWidget()->show();
-#ifndef Q_WS_QWS //FIXME
-        KWin::deIconifyWindow( parentWidget()->winId() );
-	KWin::setActiveWindow( parentWidget()->winId() );
+	if( d->on_all_desktops )
+	    KWin::setOnAllDesktops( pw->winId(), true );
+	else
+	    KWin::setOnDesktop( pw->winId(), KWin::currentDesktop());
+        pw->move( info.geometry.topLeft() ); // avoid placement policies
+        pw->show();
+	KWin::setActiveWindow( pw->winId() );
 #endif
     } else {
-	parentWidget()->hide();
+	d->on_all_desktops = info.onAllDesktops;
+	pw->hide();
     }
 }
 

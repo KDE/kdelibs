@@ -58,7 +58,7 @@
 
 #include <qbuttongroup.h>
 #include <qcheckbox.h>
-#include <qcollection.h>
+#include <qptrcollection.h>
 #include <qdialog.h>
 #include <qgrid.h>
 #include <qgroupbox.h>

@@ -2,6 +2,7 @@
 #define __kparts_componentfactory_h__
 
 #include <kparts/factory.h>
+#include <kparts/part.h>
 #include <ktrader.h>
 #include <qmetaobject.h>
 

@@ -115,7 +115,8 @@ KHttpCookie::KHttpCookie(const QString &_host,
                  const QString &_value,
                  time_t _expireDate,
                  int _protocolVersion,
-                 bool _secure) :
+                 bool _secure,
+                 bool _httpOnly) :
        mHost(_host),
        mDomain(_domain),
        mPath(_path),
@@ -123,7 +124,8 @@ KHttpCookie::KHttpCookie(const QString &_host,
        mValue(_value),
        mExpireDate(_expireDate),
        mProtocolVersion(_protocolVersion),
-       mSecure(_secure)
+       mSecure(_secure),
+       mHttpOnly(_httpOnly)
 {
 }
 
@@ -184,10 +186,23 @@ bool KHttpCookie::match(const QString &fqdn, const QStringList &domains,
     }
 
     // Cookie path match check
-    if( !path.isEmpty() && !path.startsWith(mPath) )
-        return false; // Path of URL does not start with cookie-path
+    if (mPath.isEmpty())
+        return true;
 
-    return true;
+    // According to the netscape spec both http://www.acme.com/foobar,
+    // http://www.acme.com/foo.bar and http://www.acme.com/foo/bar 
+    // match http://www.acme.com/foo.
+    // We only match http://www.acme.com/foo/bar
+    
+    if( path.startsWith(mPath) &&
+        (
+         (path.length() == mPath.length() ) || 	// Paths are exact match
+         (path[mPath.length()-1] == '/') || 	// mPath ended with a slash
+         (path[mPath.length()] == '/')		// A slash follows.
+         ))
+        return true; // Path of URL starts with cookie-path
+
+    return false;
 }
 
 // KHttpCookieList
@@ -198,9 +213,9 @@ int KHttpCookieList::compareItems( void * item1, void * item2)
     int pathLen1 = ((KHttpCookie *)item1)->path().length();
     int pathLen2 = ((KHttpCookie *)item2)->path().length();
     if (pathLen1 > pathLen2)
-        return 1;
-    if (pathLen1 < pathLen2)
         return -1;
+    if (pathLen1 < pathLen2)
+        return 1;
     return 0;
 }
 
@@ -276,6 +291,20 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
 
           if( cookie->isSecure() && !secureRequest )
              continue;
+
+          if( cookie->isHttpOnly() && useDOMFormat )
+             continue;
+             
+          // Do not send expired cookies.
+          if ( cookie->isExpired (time(0)) )
+          {
+             // Note there is no need to actually delete the cookie here
+             // since the cookieserver will invoke ::saveCookieJar because
+             // of the state change below. This will then do the job of 
+             // deleting the cookie for us.
+             m_cookiesChanged = true;
+             continue;
+          }
 
           if (windowId && (cookie->windowIds().find(windowId) == cookie->windowIds().end()))
           {
@@ -503,6 +532,14 @@ void KCookieJar::extractDomains(const QString &_fqdn,
           QCString t = partList[0].lower().utf8();
           if ((t == "com") || (t == "net") || (t == "org") || (t == "gov") || (t == "edu") || (t == "mil") || (t == "int")) 
               break;
+              
+          // The .name domain uses <name>.<surname>.name
+          // Although the TLD is striclty speaking .name, for our purpose
+          // it should be <surname>.name since people should not be able
+          // to set cookies for everyone with the same surname.
+          // Matches <surname>.name
+          if (partList[1].lower() == "name")
+              break;
        }
        QString domain = partList.join(".");
        _domains.append("." + domain);
@@ -548,6 +585,10 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         // Error parsing _url
         return KHttpCookieList();
     }
+    QString defaultPath;
+    int i = path.findRev('/');
+    if (i > 0)
+       defaultPath = path.left(i);
 
     //  The hard stuff :)
     for(;;)
@@ -564,8 +605,9 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
 
             // Host = FQDN
             // Default domain = ""
-            // Default path = ""
-            KHttpCookie *cookie = new KHttpCookie(fqdn, "", "", Name, Value);
+            // Default path according to rfc2109
+            
+            KHttpCookie *cookie = new KHttpCookie(fqdn, "", defaultPath, Name, Value);
             if (windowId)
                cookie->mWindowIds.append(windowId);
             cookie->mCrossDomain = crossDomain;
@@ -576,9 +618,11 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
         }
         else if (lastCookie && (strncasecmp(cookieStr, "Set-Cookie2:", 12) == 0))
         {
-            // What the fuck is this?
             // Does anyone invent his own headers these days?
             // Read the fucking RFC guys! This header is not there!
+            //
+            // Update: rfc2965 defines Set-Cookie2: You wonder why they
+            // didn't use the version field instead.
             cookieStr +=12;
             // Continue with lastCookie
         }
@@ -634,6 +678,11 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                      (Name.isEmpty() && Value.lower() == "secure"))
             {
                 lastCookie->mSecure = true;
+            }
+            else if ((Name == "httponly") || 
+                     (Name.isEmpty() && Value.lower() == "httponly"))
+            {
+                lastCookie->mHttpOnly = true;
             }
         }
 
@@ -821,7 +870,7 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookiePtr cookiePtr)
           cookiePtr->fixDomain(QString::null);
        }
     }
-
+    
     KCookieAdvice advice = KCookieDunno;
 
     QStringList::Iterator it = domains.fromLast(); // Start with FQDN which is last in the list.
@@ -874,7 +923,7 @@ void KCookieJar::setDomainAdvice(const QString &_domain, KCookieAdvice _advice)
 
     if (cookieList)
     {
-        if (cookieList->getAdvice() != _advice);
+        if (cookieList->getAdvice() != _advice)
         {
            m_configChanged = true;
            // domain is already known
@@ -1108,7 +1157,8 @@ bool KCookieJar::saveCookies(const QString &_filename)
                         cookie->host().local8Bit().data(), domain.local8Bit().data(),
                         path.local8Bit().data(), (unsigned long) cookie->expireDate(),
                         cookie->protocolVersion()+200, cookie->name().local8Bit().data(), 
-                        cookie->isSecure(), cookie->value().local8Bit().data());
+                        (cookie->isSecure() ? 1 : 0) + (cookie->isHttpOnly() ? 2 : 0),
+                        cookie->value().local8Bit().data());
                 cookie = cookieList->next();
             }
             else
@@ -1197,11 +1247,14 @@ bool KCookieJar::loadCookies(const QString &_filename)
             const char *name( parseField(line) );
             bool keepQuotes = false;
             bool secure = false;
+            bool httpOnly = false;
             const char *value = 0;
             if (protVer >= 200)
             {
                 protVer -= 200;
-                secure = atoi( parseField(line) );
+                int i = atoi( parseField(line) );
+                secure = i & 1;
+                httpOnly = i & 2;
                 line[strlen(line)-1] = '\0'; // Strip LF.
                 value = line;
             }
@@ -1225,7 +1278,7 @@ bool KCookieJar::loadCookies(const QString &_filename)
 
             KHttpCookie *cookie = new KHttpCookie(host, domain, path, name,
                                                   value, expDate, protVer,
-                                                  secure);
+                                                  secure, httpOnly);
             addCookie(cookie);
         }
     }

@@ -712,11 +712,11 @@ int main(int argc, char *argv[])
 
      Kded *kded = new Kded(bCheckSycoca); // Build data base
 
-     kded->recreate();
-
      signal(SIGTERM, sighandler);
      signal(SIGHUP, sighandler);
      KDEDApplication k;
+
+     kded->recreate();
 
      if (bCheckUpdates)
         (void) new KUpdateD; // Watch for updates

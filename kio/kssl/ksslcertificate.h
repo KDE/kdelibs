@@ -49,11 +49,9 @@ class QDateTime;
 class KSSLCertChain;
 class KSSLX509V3;
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+#include "ksslconfig.h"
 
-#ifdef HAVE_SSL
+#ifdef KSSL_HAVE_SSL
 typedef struct x509_st X509;
 #else
 class X509;
@@ -85,6 +83,9 @@ public:
                         Revoked, Untrusted, SignatureFailed,
                         Rejected, PrivateKeyFailed };
 
+  enum KSSLPurpose { None=0, SSLServer=1, SSLClient=2, 
+			SMIMESign=3, SMIMEEncrypt=4, Any=5 };
+
   QString toString();
 
   QString getSubject() const;
@@ -109,8 +110,11 @@ public:
   QString getSignatureText() const;
 
   bool isValid();
+  bool isValid(KSSLPurpose p);
   KSSLValidation validate();
+  KSSLValidation validate(KSSLPurpose p);
   KSSLValidation revalidate();
+  KSSLValidation revalidate(KSSLPurpose p);
   KSSLCertChain& chain();
 
   static QString verifyText(KSSLValidation x);
@@ -129,6 +133,7 @@ public:
 
 private:
   KSSLCertificatePrivate *d;
+  int purposeToOpenSSL(KSSLPurpose p) const; 
 
 
 protected:

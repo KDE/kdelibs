@@ -253,27 +253,22 @@ QString KProtocolManager::noProxyFor()
 
 QString KProtocolManager::proxyFor( const QString& protocol )
 {
+  QString scheme = protocol;
+  if (scheme.find ("webdav", 0, false) == 0)
+  {
+    if (scheme == "webdav")
+      scheme = "http";
+    else
+      scheme = "https";
+  }
+
   KConfig *cfg = config();
   cfg->setGroup( "Proxy Settings" );
-  return cfg->readEntry( protocol.lower() + "Proxy" );
+  return cfg->readEntry( scheme.lower() + "Proxy" );
 }
 
 QString KProtocolManager::proxyForURL( const KURL &url )
 {
-  if (url.protocol().find("webdav",0,false) == 0)
-  {
-     KURL u(url);
-     if (url.protocol().lower() == "webdav")
-        u.setProtocol("http");
-     else
-        u.setProtocol("https");
-
-     QString result = proxyForURL(u);
-     if (result.startsWith("http"))
-        result.replace(0, 4, "webdav");
-     return result;
-  }
-
   QString proxy;
   ProxyType pt = proxyType();
 
@@ -380,20 +375,17 @@ QString KProtocolManager::slaveProtocol(const KURL &url, QString &proxy)
 
         if ( (!useRevProxy && !isRevMatch) || (useRevProxy && isRevMatch) )
         {
-           // Let's not assume all proxying is done through
-           // the http io-slave.  Instead attempt to determine
-           // the protocol to use from the proxy URL itself.
-           // If the proxy URL is then determined to be invalid,
-           // bypass it all together.
            d->url = proxy;
            if ( d->url.isValid() )
            {
-              d->protocol = d->url.protocol();
-              // HACK: This will be removed once kio_http
-              // gets ported over to TCPSlaveBase!!
-              if ( url.protocol() == QString::fromLatin1("https") &&
-                   d->protocol == QString::fromLatin1("http") )
-                d->protocol = url.protocol();
+              // The idea behind slave protocols is not applicable to http
+              // or any of its extensions like webdav.
+              QString protocol = url.protocol().lower();
+              if (protocol.startsWith("http") || protocol.startsWith("webdav"))
+                d->protocol = protocol;
+              else
+                d->protocol = d->url.protocol();
+
               d->url = url;
               d->proxy = proxy;
               return d->protocol;

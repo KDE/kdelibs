@@ -68,7 +68,7 @@ void KEdit::search(){
   string = srchdialog->getText();
   srchdialog->setText(string.isEmpty() ? pattern : string);
 
-  this->deselect();
+  deselect();
   last_search = NONE;
 
   srchdialog->show();
@@ -139,7 +139,7 @@ void KEdit::searchdone_slot(){
     return;
 
   srchdialog->hide();
-  this->setFocus();
+  setFocus();
   last_search = NONE;
 
 }
@@ -232,7 +232,7 @@ bool KEdit::repeatSearch() {
 
   search_slot();
 
-  this->setFocus();
+  setFocus();
   return true;
 
 }
@@ -264,7 +264,7 @@ void KEdit::replace()
   replace_dialog->setText(string.isEmpty() ? pattern : string);
 
 
-  this->deselect();
+  deselect();
   last_replace = NONE;
 
   replace_dialog->show();
@@ -295,11 +295,22 @@ void KEdit::replace_slot(){
   setModified(true);
   can_replace = FALSE;
 
-  setCursorPosition(line,col);
-  for( int k = 0; k < length; k++){
-    cursorRight(TRUE);
+  if (replace_dialog->get_direction())
+  {
+    // Backward
+    setCursorPosition(line,col+length);
+    for( int k = 0; k < length; k++){
+      cursorLeft(TRUE);
+    }
   }
-
+  else
+  {
+    // Forward
+    setCursorPosition(line,col);
+    for( int k = 0; k < length; k++){
+      cursorRight(TRUE);
+    }
+  }
 }
 
 void KEdit::replace_all_slot(){
@@ -308,12 +319,35 @@ void KEdit::replace_all_slot(){
     return;
 
   QString to_find_string = replace_dialog->getText();
-  getCursorPosition(&replace_all_line,&replace_all_col);
+
+  int lineFrom, lineTo, colFrom, colTo;
+  getSelection(&lineFrom, &colFrom, &lineTo, &colTo);
 
   // replace_dialog->get_direction() is true if searching backward
-
-  if (last_replace != NONE && replace_dialog->get_direction()){
-    replace_all_col = replace_all_col  - pattern.length() - 1 ;
+  if (replace_dialog->get_direction())
+  {
+    if (colTo != -1)
+    {
+      replace_all_col = colTo - to_find_string.length();
+      replace_all_line = lineTo;
+    }
+    else
+    {
+      getCursorPosition(&replace_all_line,&replace_all_col);
+      replace_all_col--;
+    }
+  }
+  else
+  {
+    if (colFrom != -1)
+    {
+      replace_all_col = colFrom;
+      replace_all_line = lineFrom;
+    }
+    else
+    {
+      getCursorPosition(&replace_all_line,&replace_all_col);
+    }
   }
 
   deselect();
@@ -376,39 +410,38 @@ void KEdit::replace_search_slot(){
     return;
 
   QString to_find_string = replace_dialog->getText();
-  getCursorPosition(&line,&col);
+
+  int lineFrom, lineTo, colFrom, colTo;
+  getSelection(&lineFrom, &colFrom, &lineTo, &colTo);
 
   // replace_dialog->get_direction() is true if searching backward
-
-  //printf("col %d length %d\n",col, pattern.length());
-
-  if (last_replace != NONE && replace_dialog->get_direction()){
-    col = col  - pattern.length() -1;
-    if (col < 0 ) {
-      if(line !=0){
-	col = textLine(line - 1).length();
-	line --;
-      }
-      else{
-
-        int query = KMessageBox::questionYesNo(
-			replace_dialog,
-                        i18n("Beginning of document reached.\n"\
-                             "Continue from the end?"),
-                        i18n("Replace"));
-        if (query == KMessageBox::Yes){
-	  QString string = textLine( numLines() - 1 );
-	  line = numLines() - 1;
-	  col  = string.length();
-	  last_replace = BACKWARD;
-	}
-      }
+  if (replace_dialog->get_direction())
+  {
+    if (colFrom != -1)
+    {
+      col = colFrom - to_find_string.length();
+      line = lineFrom;
+    }
+    else
+    {
+      getCursorPosition(&line,&col);
+      col--;
+    }
+  }
+  else
+  {
+    if (colTo != -1)
+    {
+      col = colTo;
+      line = lineTo;
+    }
+    else
+    {
+      getCursorPosition(&line,&col);
     }
   }
 
 again:
-
-  //  printf("Col %d \n",col);
 
   int  result = doReplace(to_find_string, replace_dialog->case_sensitive(),
 			 FALSE, (!replace_dialog->get_direction()), line, col, FALSE );
@@ -459,7 +492,7 @@ void KEdit::replacedone_slot(){
   replace_dialog->hide();
   //  replace_dialog->clearFocus();
 
-  this->setFocus();
+  setFocus();
 
   last_replace = NONE;
   can_replace  = FALSE;
@@ -491,7 +524,6 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 
     while (line_counter < num_lines){
 
-      string = "";
       string = textLine(line_counter);
 
       if (replace_all){
@@ -502,7 +534,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
       }
 
       if (pos == -1 ){
-	line_counter ++;
+	line_counter++;
 	replace_all_col = 0;
 	replace_all_line = line_counter;
       }
@@ -519,7 +551,7 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  removeLine(line_counter);
 	  insertLine(stringnew,line_counter);
 
-	  replace_all_col = replace_all_col + replacement.length();
+	  replace_all_col = pos + replacement.length();
 	  replace_all_line = line_counter;
 
 	  setModified(true);
@@ -548,24 +580,29 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 
     while(line_counter >= 0){
 
-      string = "";
       string = textLine(line_counter);
 
       int line_length = string.length();
 
       if( replace_all ){
-      	pos = string.findRev(s_pattern, replace_all_col , case_sensitive);
+        if (replace_all_col < 0)
+          pos = -1;
+        else
+          pos = string.findRev(s_pattern, replace_all_col , case_sensitive);
       }
       else{
-	pos = string.findRev(s_pattern,
+        if ((line == line_counter) && (col < 0))
+          pos = -1;
+        else 
+          pos = string.findRev(s_pattern,
 			   line == line_counter ? col : line_length , case_sensitive);
       }
 
       if (pos == -1 ){
-	line_counter --;
+	line_counter--;
 
+        replace_all_col = 0;
 	if(line_counter >= 0){
-	  string = "";
 	  string = textLine(line_counter);
 	  replace_all_col = string.length();
 
@@ -585,24 +622,33 @@ int KEdit::doReplace(QString s_pattern, bool case_sensitive,
 	  removeLine(line_counter);
 	  insertLine(stringnew,line_counter);
 
-	  replace_all_col = replace_all_col - replacement.length();
+	  replace_all_col = pos-length;
 	  replace_all_line = line_counter;
+	  if (replace_all_col < 0)
+	  {
+             line_counter--;
+
+             if(line_counter >= 0){
+                string = textLine(line_counter);
+                replace_all_col = string.length();
+             }
+             replace_all_line = line_counter;
+	  }
 
 	  setModified(true);
-
 	}
 	else{ // interactive
 
 	  //	  printf("line_counter %d pos %d col %d\n",line_counter, pos,col);
 	  if( ! (line == line_counter && pos > col ) ){
 
-	    setCursorPosition(line_counter ,pos ,FALSE );
+	    setCursorPosition(line_counter, pos + length ,FALSE );
 
 	    for(int l = 0 ; l < length; l++){
-	      cursorRight(TRUE);
+	      cursorLeft(TRUE);
 	    }
 
-	    setCursorPosition(line_counter ,pos + length ,TRUE );
+	    setCursorPosition(line_counter, pos ,TRUE );
 	    pattern = s_pattern;
 
 	    last_replace = BACKWARD;
@@ -932,6 +978,7 @@ KEdGotoLine::KEdGotoLine( QWidget *parent, const char *name, bool modal )
   topLayout->addWidget( lineNum );
 
   topLayout->addStretch(10);
+  lineNum->setFocus();
 }
 
 

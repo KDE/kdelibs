@@ -256,7 +256,7 @@ KUniqueApplication::start()
      QCString replyType;
      if (!dc->call(appName, KCmdLineArgs::about->appName(), "newInstance()", data, replyType, reply))
      {
-        kdError() << "KUniqueApplication: DCOP communication error!" << endl;
+        kdError() << "Communication problem with " << KCmdLineArgs::about->appName() << ", it probably crashed." << endl;
         delete dc;	// Clean up DCOP commmunication
         ::exit(255);
      }

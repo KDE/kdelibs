@@ -844,7 +844,7 @@ QString KIconLoader::moviePath(const QString& name, KIcon::Group group, int size
 {
     if (!d->mpGroups) return QString::null;
 
-    if ((group < -1) || (group >= KIcon::LastGroup))
+    if ( ((group < -1) || (group >= KIcon::LastGroup)) && (group != KIcon::User) )
     {
 	kdDebug(264) << "Illegal icon group: " << group << "\n";
 	group = KIcon::Desktop;

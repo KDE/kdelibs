@@ -1,9 +1,53 @@
-kdelibs (4:3.0.9) unstable; urgency=low
+kdelibs (4:3.1.1-1) unstable; urgency=low
+
+  * New upstream release. (Closes: #181547, #181870)
+  * Correct imagetops manpage description. (Closes: #180868)
+
+ -- Christopher L Cheney <ccheney@debian.org>  Tue, 11 Mar 2003 19:00:00 -0600
+
+kdelibs (4:3.1.0-2) unstable; urgency=low
+
+  * Add 'chmod +x configure' to rules.
+
+ -- Christopher L Cheney <ccheney@debian.org>  Wed,  5 Feb 2003 12:00:00 -0600
+
+kdelibs (4:3.1.0-1) unstable; urgency=low
 
   * New Upstream.
   * Rebuilt debian dir.
+  * Split arts out of kdelibs source.
 
- -- Christopher L Cheney <ccheney@debian.org>  Mon, 28 Oct 2002 14:00:00 -0600
+ -- Christopher L Cheney <ccheney@debian.org>  Sat, 01 Feb 2003 01:00:00 -0600
+
+kdelibs (4:2.2.2-13.woody.6) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Applied upstream patches to fix several potential vulnerabilities.
+    http://www.kde.org/info/security/advisory-20021220-1.txt
+
+ -- Martin Schulze <joey@infodrom.org>  Mon,  6 Jan 2003 08:20:04 +0100
+
+kdelibs (4:2.2.2-13.woody.5) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Second (or third, since the first one burnt together with satie and
+    the entire building around it) injection into the security build
+    network since 8 buildds refuse to upload the binary packages and the
+    maintainer refuses to answer.  *sigh*
+
+ -- Martin Schulze <joey@infodrom.org>  Sat, 30 Nov 2002 18:25:33 +0100
+
+kdelibs (4:2.2.2-13.woody.4) stable-security; urgency=high
+
+  * Non-maintainer upload by the Security Team
+  * Remove rlogin.protocol and telnet.protocol to fix URL KIO
+    vulnerability (as reported by the KDE team)
+  * Add special detection routine for big/little endianess on MIPS since
+    the line "byteorder  : {big|little} endian" from /proc/cpuinfo was
+    removed as of Linux 2.4.20, resulting in the mipsel buildd being
+    unable to build this package.
+
+ -- Martin Schulze <joey@infodrom.org>  Fri, 22 Nov 2002 11:42:59 +0100
 
 kdelibs (4:2.2.2-14) unstable; urgency=low
 

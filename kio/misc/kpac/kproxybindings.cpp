@@ -148,7 +148,9 @@ Value KProxyFunc::call(ExecState *exec, Object &/*thisObj*/, const List &args)
             if (args.size() == 0)
             {
                 char hostname[256];
-                gethostname(hostname, 255);
+		hostname[0] = '\0';
+                if(!gethostname(hostname, sizeof(hostname)))
+		    hostname[sizeof(hostname)-1] = '\0';
                 UString addr = dnsResolve(hostname);
                 if (addr.isNull())
                     result = Undefined();

@@ -129,7 +129,7 @@ KSpell::KSpell (QWidget *_parent, const QString &_caption,
       codec = QTextCodec::codecForName("ISO 8859-7");
       break;
   case KS_E_LATIN8:
-      codec = QTextCodec::codecForName("ISO 8859-8");
+      codec = QTextCodec::codecForName("ISO 8859-8-i");
       break;
   case KS_E_LATIN9:
       codec = QTextCodec::codecForName("ISO 8859-9");
@@ -216,8 +216,14 @@ KSpell::startIspell()
       *proc << "aspell";
       kdDebug(750) << "Using aspell" << endl;
       break;
+    case KS_CLIENT_HSPELL:
+      *proc << "hspell";
+      kdDebug(750) << "Using hspell" << endl;
+      break;
     }
   // TODO: add option -h to ignore HTML (XML) code
+  if (ksconfig->client() == KS_CLIENT_ISPELL || ksconfig->client() == KS_CLIENT_ASPELL)
+  {
   *proc << "-a" << "-S";
   if (ksconfig->noRootAffix())
     {
@@ -298,6 +304,10 @@ KSpell::startIspell()
 
   // -a : pipe mode
   // -S : sort suggestions by probable correctness
+  } 
+  else       // hspell doesn't need all the rest of the options
+    *proc << "-a";
+
   if (trystart==0) //don't connect these multiple times
     {
       connect (proc, SIGNAL (  receivedStderr (KProcess *, char *, int)),
@@ -772,7 +782,7 @@ void KSpell::checkList3a (KProcIO *)
 		  // inform application
 		  emit corrected (old, *(--wlIt), lastpos); ++wlIt;
 		}
-	      else
+	      else if( usedialog )
 		{
 		  cwword=word;
 		  dlgon=TRUE;
@@ -780,6 +790,10 @@ void KSpell::checkList3a (KProcIO *)
 		  dialog (word, sugg, SLOT (checkList4()));
 		  return;
 		}
+	      else
+		{
+		  emit misspelling (word, sugg, lastpos);
+ 		}
 	    }
 
 	}

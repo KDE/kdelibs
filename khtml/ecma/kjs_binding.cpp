@@ -1,7 +1,8 @@
 // -*- c-basic-offset: 2 -*-
 /*
  *  This file is part of the KDE libraries
- *  Copyright (C) 1999-2001 Harri Porten (porten@kde.org)
+ *  Copyright (C) 1999-2003 Harri Porten (porten@kde.org)
+ *  Copyright (C) 2001-2003 David Faure (faure@kde.org)
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -20,13 +21,14 @@
 
 #include "kjs_binding.h"
 #include "kjs_dom.h"
-#include <kjs/internal.h> // for InterpreterImp
 
 #include "dom/dom_exception.h"
 #include "dom/dom2_range.h"
 #include "xml/dom2_eventsimpl.h"
 
 #include <kdebug.h>
+
+#include <assert.h>
 
 using namespace KJS;
 
@@ -134,13 +136,19 @@ Value DOMFunction::call(ExecState *exec, Object &thisObj, const List &args)
   return val;
 }
 
+typedef QPtrList<ScriptInterpreter> InterpreterList;
+static InterpreterList *interpreterList;
+
 ScriptInterpreter::ScriptInterpreter( const Object &global, KHTMLPart* part )
   : Interpreter( global ), m_part( part ), m_domObjects(1021),
-    m_evt( 0L ), m_inlineCode(false)
+    m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_part << endl;
 #endif
+  if ( !interpreterList )
+    interpreterList = new InterpreterList;
+  interpreterList->append( this );
 }
 
 ScriptInterpreter::~ScriptInterpreter()
@@ -148,18 +156,22 @@ ScriptInterpreter::~ScriptInterpreter()
 #ifdef KJS_VERBOSE
   kdDebug(6070) << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_part << endl;
 #endif
+  assert( interpreterList && interpreterList->contains( this ) );
+  interpreterList->remove( this );
+  if ( interpreterList->isEmpty() ) {
+    delete interpreterList;
+    interpreterList = 0;
+  }
 }
 
 void ScriptInterpreter::forgetDOMObject( void* objectHandle )
 {
-  InterpreterImp *first = InterpreterImp::firstInterpreter();
-  if (first) {
-    InterpreterImp *scr = first;
-    do {
-      if ( scr->interpreter()->rtti() == 1 )
-        static_cast<ScriptInterpreter *>(scr->interpreter())->deleteDOMObject( objectHandle );
-      scr = scr->nextInterpreter();
-    } while (scr != first);
+  if( !interpreterList ) return;
+
+  QPtrListIterator<ScriptInterpreter> it( *interpreterList );
+  while ( it.current() ) {
+    (*it)->deleteDOMObject( objectHandle );
+    ++it;
   }
 }
 
@@ -180,9 +192,9 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
   {
     int id = m_evt->handle()->id();
     bool eventOk = ( // mouse events
-      id == DOM::EventImpl::CLICK_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
-      id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::KHTML_DBLCLICK_EVENT ||
-      id == DOM::EventImpl::KHTML_CLICK_EVENT ||
+      id == DOM::EventImpl::CLICK_EVENT ||
+      id == DOM::EventImpl::MOUSEUP_EVENT || id == DOM::EventImpl::MOUSEDOWN_EVENT ||
+      id == DOM::EventImpl::KHTML_ECMA_CLICK_EVENT || id == DOM::EventImpl::KHTML_ECMA_DBLCLICK_EVENT ||
       // keyboard events
       id == DOM::EventImpl::KHTML_KEYDOWN_EVENT || id == DOM::EventImpl::KHTML_KEYPRESS_EVENT ||
       id == DOM::EventImpl::KHTML_KEYUP_EVENT ||
@@ -194,13 +206,13 @@ bool ScriptInterpreter::isWindowOpenAllowed() const
       return true;
   } else // no event
   {
-    if ( m_inlineCode )
+    if ( m_inlineCode && !m_timerCallback )
     {
       // This is the <a href="javascript:window.open('...')> case -> we let it through
       return true;
       kdDebug(6070) << "Window.open, smart policy, no event, inline code -> ok" << endl;
     }
-    else // This is the <script>window.open(...)</script> case -> block it
+    else // This is the <script>window.open(...)</script> case or a timer callback -> block it
       kdDebug(6070) << "Window.open, smart policy, no event, <script> tag -> refused" << endl;
   }
   return false;

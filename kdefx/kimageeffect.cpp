@@ -27,8 +27,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 */
 
-// $Id$
-
 #include <math.h>
 
 #include <qimage.h>
@@ -1958,11 +1956,16 @@ bool KImageEffect::blendOnLower(
     --b; --i;
     do
     {
+#ifndef WORDS_BIGENDIAN
       while ( !(a=*i) && k>0 )
+#else
+      while ( !(a=*(i-3)) && k>0 )
+#endif
       {
         i-=4; b-=4; k--;
       };
 
+#ifndef WORDS_BIGENDIAN
       --i; --b;
       *b += ( ((*i - *b) * a) >> 8 );
       --i; --b;
@@ -1970,6 +1973,14 @@ bool KImageEffect::blendOnLower(
       --i; --b;
       *b += ( ((*i - *b) * a) >> 8 );
       --i; --b;
+#else
+      *b += ( ((*i - *b) * a) >> 8 );
+      --i; --b;
+      *b += ( ((*i - *b) * a) >> 8 );
+      --i; --b;
+      *b += ( ((*i - *b) * a) >> 8 );
+      i -= 2; b -= 2;
+#endif
     } while (k--);
   }
 

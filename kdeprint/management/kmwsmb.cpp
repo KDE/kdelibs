@@ -85,9 +85,9 @@ void KMWSmb::updatePrinter(KMPrinter *printer)
 {
 	KURL	url;
 	if (m_work->text().isEmpty())
-		url = QString::fromLatin1("smb://%1/%2").arg(m_server->text()).arg(m_printer->text());
+		url = QString::fromLatin1("smb://%1/%2").arg(m_server->text()).arg(KURL::encode_string(m_printer->text()));
 	else
-		url = QString::fromLatin1("smb://%1/%2/%3").arg(m_work->text()).arg(m_server->text()).arg(m_printer->text());
+		url = QString::fromLatin1("smb://%1/%2/%3").arg(m_work->text()).arg(m_server->text()).arg(KURL::encode_string(m_printer->text()));
 	if (!printer->option("kde-login").isEmpty())
 	{
 		url.setUser(printer->option("kde-login"));

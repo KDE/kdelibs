@@ -58,7 +58,7 @@ LDFLAGS: -module $(KDE_PLUGIN)
 Kicker Applet
 =============
 Name: <appletname>_panelapplet.la
-LDFLAGS: -module -no-undefined
+LDFLAGS: -module $(KDE_PLUGIN)
 
 
 The last seven (not kdeinit modules) should be defined with 

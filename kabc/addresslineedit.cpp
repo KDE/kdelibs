@@ -170,9 +170,8 @@ void AddressLineEdit::keyPressEvent(QKeyEvent *e)
                 stopLDAPLookup();
 	    *s_LDAPText = text();
 	    s_LDAPLineEdit = this;
-	    s_LDAPTimer->start( 1000, true );
+	    s_LDAPTimer->start( 500, true );
 	}
-	m_typedText = text();
     }
 }
 
@@ -275,7 +274,7 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     if ( !m_useCompletion )
         return;
 
-    QString s(m_typedText);
+    QString s(text());
     QString prevAddr;
     int n = s.findRev(',');
     if (n>= 0)
@@ -297,30 +296,9 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     if ( s_addressesDirty )
         loadAddresses();
 
-    QString match;
-    int curPos = cursorPosition();
-    if ( mode != KGlobalSettings::CompletionNone )
-    {
-        match = s_completion->makeCompletion( s );
-        if (match.isNull() && mode == KGlobalSettings::CompletionPopup)
-          match = s_completion->makeCompletion( "\"" + s );
-        if (match.isNull() && mode == KGlobalSettings::CompletionPopup)
-          match = s_completion->makeCompletion( "$$" + s );
-    }
-
-    kdDebug() << "** completion for: " << s << " : " << match << endl;
-
     if ( ctrlT )
     {
-        QStringList addresses = s_completion->items();
-        QStringList::Iterator it = addresses.begin();
-        QStringList completions;
-        for (; it != addresses.end(); ++it)
-        {
-            if ((*it).find(s,0,false) >= 0)
-                completions.append( *it );
-        }
-
+        QStringList completions = s_completion->substringCompletion( s );
         if (completions.count() > 1) {
             m_previousAddresses = prevAddr;
             box->setItems( completions );
@@ -340,36 +318,45 @@ void AddressLineEdit::doCompletion(bool ctrlT)
     {
         case KGlobalSettings::CompletionPopup:
         {
-            if ( !match.isNull() )
-            {
                 m_previousAddresses = prevAddr;
 		QStringList items = s_completion->allMatches( s );
                 items += s_completion->allMatches( "\"" + s );
 		items += s_completion->substringCompletion( '<' + s );
+            uint beforeDollarCompletionCount = items.count();
+            
 		if( !s.contains( ' ' )) // one word, possibly given name
 		    items += s_completion->allMatches( "$$" + s );
+            
+            if ( items.isEmpty() )
+                box->hide();
+            else
+            {
+                if ( items.count() > beforeDollarCompletionCount )
+                {
+                    // remove the '$$whatever$' part                    
     		for( QStringList::Iterator it = items.begin();
 		     it != items.end();
 		     ++it )
-		{ // remove the '$$whatever$' part
+                    { 
 		    int pos = (*it).find( '$', 2 );
 		    if( pos < 0 ) // ???
 		        continue;
 		    (*it)=(*it).mid( pos + 1 );
 		}
+                }
+                
 		items = removeMailDupes( items );
 		box->setItems( items );
                 box->setCancelledText( text() );
                 box->popup();
             }
-            else
-                box->hide();
 
             break;
         }
 
         case KGlobalSettings::CompletionShell:
         {
+            QString match = s_completion->makeCompletion( s );
             if ( !match.isNull() && match != s )
             {
                 slotSetTextAsEdited( prevAddr + match );
@@ -381,9 +368,11 @@ void AddressLineEdit::doCompletion(bool ctrlT)
         case KGlobalSettings::CompletionMan: // Short-Auto in fact
         case KGlobalSettings::CompletionAuto:
         {
+            QString match = s_completion->makeCompletion( s );
             if ( !match.isNull() && match != s )
             {
                 QString adds = prevAddr + match;
+                int curPos = cursorPosition();
                 validateAndSet( adds, curPos, curPos, adds.length() );
             }
             break;
@@ -418,6 +407,14 @@ void AddressLineEdit::loadAddresses()
 void AddressLineEdit::addAddress( const QString& adr )
 {
     s_completion->addItem( adr );
+    int pos = adr.find( '<' );
+    if( pos >= 0 )
+    {
+        ++pos;
+        int pos2 = adr.find( pos, '>' );
+        if( pos2 >= 0 )
+            s_completion->addItem( adr.mid( pos, pos2 - pos ));
+    }
 }
 
 void AddressLineEdit::slotStartLDAPLookup()
@@ -458,7 +455,13 @@ void AddressLineEdit::slotLDAPSearchData( const QStringList& adrs )
 	 it != adrs.end();
 	 ++it )
 	addAddress( *it );
-    doCompletion( false );
+    if( hasFocus() || completionBox()->hasFocus())
+    {
+        if( completionMode() != KGlobalSettings::CompletionNone )
+        {
+            doCompletion( false );
+        }
+    }
 }
 
 void AddressLineEdit::slotSetTextAsEdited( const QString& text )

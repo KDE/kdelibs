@@ -127,6 +127,9 @@ public:
     bool isFormCompletionEnabled() const;
     int maxFormCompletionItems() const;
 
+    // Meta refresh/redirect (http-equiv)
+    bool isAutoDelayedActionsEnabled () const;
+
 private:
     friend class KHTMLFactory;
     QString lookupFont(int i) const;

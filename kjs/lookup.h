@@ -25,6 +25,8 @@
 
 #include "ustring.h"
 #include "value.h"
+#include "object.h"
+#include "interpreter.h"
 #include <stdio.h>
 
 namespace KJS {

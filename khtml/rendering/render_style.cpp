@@ -233,9 +233,9 @@ bool RenderStyle::operator==(const RenderStyle& o) const
 RenderStyle* RenderStyle::getPseudoStyle(PseudoId pid)
 {
     RenderStyle *ps = 0;
-    if (noninherited_flags._styleType==NOPSEUDO)
+    if (noninherited_flags.f._styleType==NOPSEUDO)
         for (ps = pseudoStyle; ps; ps = ps->pseudoStyle)
-            if (ps->noninherited_flags._styleType==pid)
+            if (ps->noninherited_flags.f._styleType==pid)
 		break;
     return ps;
 }
@@ -248,7 +248,7 @@ RenderStyle* RenderStyle::addPseudoStyle(PseudoId pid)
     {
             ps = new RenderStyle(*this); // use the real copy constructor to get an identical copy
         ps->ref();
-        ps->noninherited_flags._styleType = pid;
+        ps->noninherited_flags.f._styleType = pid;
         ps->pseudoStyle = pseudoStyle;
 
         pseudoStyle = ps;
@@ -263,7 +263,7 @@ void RenderStyle::removePseudoStyle(PseudoId pid)
     RenderStyle *prev = this;
 
     while (ps) {
-        if (ps->noninherited_flags._styleType==pid) {
+        if (ps->noninherited_flags.f._styleType==pid) {
             prev->pseudoStyle = ps->pseudoStyle;
             ps->deref();
             return;
@@ -338,16 +338,16 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     ETableLayout _table_layout : 1;
 //     EPosition _position : 2;
 //     EFloat _floating : 2;
-    if ( ((int)noninherited_flags._display) >= TABLE ) {
+    if ( ((int)noninherited_flags.f._display) >= TABLE ) {
 	// Stupid gcc gives a compile error on
 	// a != other->b if a and b are bitflags. Using
 	// !(a== other->b) instead.
-	if ( !(inherited_flags._border_collapse == other->inherited_flags._border_collapse) ||
-	     !(inherited_flags._empty_cells == other->inherited_flags._empty_cells) ||
-	     !(inherited_flags._caption_side == other->inherited_flags._caption_side) ||
-	     !(noninherited_flags._table_layout == other->noninherited_flags._table_layout) ||
-	     !(noninherited_flags._position == other->noninherited_flags._position) ||
-	     !(noninherited_flags._floating == other->noninherited_flags._floating) )
+	if ( !(inherited_flags.f._border_collapse == other->inherited_flags.f._border_collapse) ||
+	     !(inherited_flags.f._empty_cells == other->inherited_flags.f._empty_cells) ||
+	     !(inherited_flags.f._caption_side == other->inherited_flags.f._caption_side) ||
+	     !(noninherited_flags.f._table_layout == other->noninherited_flags.f._table_layout) ||
+	     !(noninherited_flags.f._position == other->noninherited_flags.f._position) ||
+	     !(noninherited_flags.f._floating == other->noninherited_flags.f._floating) )
 
 	    d = CbLayout;
     }
@@ -355,9 +355,9 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 // only for lists:
 // 	EListStyleType _list_style_type : 5 ;
 // 	EListStylePosition _list_style_position :1;
-    if (noninherited_flags._display == LIST_ITEM ) {
-	if ( !(inherited_flags._list_style_type == other->inherited_flags._list_style_type) ||
-	     !(inherited_flags._list_style_position == other->inherited_flags._list_style_position) )
+    if (noninherited_flags.f._display == LIST_ITEM ) {
+	if ( !(inherited_flags.f._list_style_type == other->inherited_flags.f._list_style_type) ||
+	     !(inherited_flags.f._list_style_position == other->inherited_flags.f._list_style_position) )
 	    d = Layout;
     }
 
@@ -371,20 +371,20 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 // 	EWhiteSpace _white_space : 2;
 // 	EFontVariant _font_variant : 1;
 //     EClear _clear : 2;
-    if ( !(inherited_flags._text_align == other->inherited_flags._text_align) ||
-	 !(inherited_flags._text_transform == other->inherited_flags._text_transform) ||
-	 !(inherited_flags._direction == other->inherited_flags._direction) ||
-	 !(inherited_flags._white_space == other->inherited_flags._white_space) ||
-	 !(inherited_flags._font_variant == other->inherited_flags._font_variant) ||
-	 !(noninherited_flags._clear == other->noninherited_flags._clear)
+    if ( !(inherited_flags.f._text_align == other->inherited_flags.f._text_align) ||
+	 !(inherited_flags.f._text_transform == other->inherited_flags.f._text_transform) ||
+	 !(inherited_flags.f._direction == other->inherited_flags.f._direction) ||
+	 !(inherited_flags.f._white_space == other->inherited_flags.f._white_space) ||
+	 !(inherited_flags.f._font_variant == other->inherited_flags.f._font_variant) ||
+	 !(noninherited_flags.f._clear == other->noninherited_flags.f._clear)
 	)
 	d = Layout;
 
 // only for inline:
 //     EVerticalAlign _vertical_align : 4;
 
-    if ( !(noninherited_flags._display == INLINE) ) {
-	if ( !(noninherited_flags._vertical_align == other->noninherited_flags._vertical_align))
+    if ( !(noninherited_flags.f._display == INLINE) ) {
+	if ( !(noninherited_flags.f._vertical_align == other->noninherited_flags.f._vertical_align))
 	    d = Layout;
     }
 
@@ -399,12 +399,12 @@ RenderStyle::Diff RenderStyle::diff( const RenderStyle *other ) const
 //     bool _bg_attachment : 1;
 // 	int _text_decoration : 4;
 //     DataRef<StyleBackgroundData> background;
-    if ( !(inherited_flags._visibility == other->inherited_flags._visibility) ||
-	 !(noninherited_flags._overflow == other->noninherited_flags._overflow) ||
-	 !(noninherited_flags._bg_repeat == other->noninherited_flags._bg_repeat) ||
-	 !(noninherited_flags._bg_attachment == other->noninherited_flags._bg_attachment) ||
-	 !(noninherited_flags._clipSpecified == other->noninherited_flags._clipSpecified) ||
-	 !(inherited_flags._text_decoration == other->inherited_flags._text_decoration) ||
+    if ( !(inherited_flags.f._visibility == other->inherited_flags.f._visibility) ||
+	 !(noninherited_flags.f._overflow == other->noninherited_flags.f._overflow) ||
+	 !(noninherited_flags.f._bg_repeat == other->noninherited_flags.f._bg_repeat) ||
+	 !(noninherited_flags.f._bg_attachment == other->noninherited_flags.f._bg_attachment) ||
+	 !(noninherited_flags.f._clipSpecified == other->noninherited_flags.f._clipSpecified) ||
+	 !(inherited_flags.f._text_decoration == other->inherited_flags.f._text_decoration) ||
 	 *background.get() != *other->background.get()
 	)
 	d = Visible;

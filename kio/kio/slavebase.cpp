@@ -160,34 +160,38 @@ SlaveBase::SlaveBase( const QCString &protocol,
       mAppSocket( QFile::decodeName(app_socket))
 {
     if (!getenv("KDE_DEBUG"))
+    {
         KCrash::setCrashHandler( sigsegv_handler );
-    signal( SIGPIPE, sigpipe_handler );
-
-   signal(SIGINT,&genericsig_handler);
-	signal(SIGQUIT,&genericsig_handler);
-	signal(SIGILL,&genericsig_handler);
-	signal(SIGTRAP,&genericsig_handler);
-	signal(SIGABRT,&genericsig_handler);
-	signal(SIGBUS,&genericsig_handler);
-	signal(SIGALRM,&genericsig_handler);
-	signal(SIGTERM,&genericsig_handler);
-	signal(SIGFPE,&genericsig_handler);
+        signal(SIGILL,&sigsegv_handler);
+        signal(SIGTRAP,&sigsegv_handler);
+        signal(SIGABRT,&sigsegv_handler);
+        signal(SIGBUS,&sigsegv_handler);
+        signal(SIGALRM,&sigsegv_handler);
+        signal(SIGFPE,&sigsegv_handler);
 #ifdef SIGPOLL
-   signal(SIGPOLL, &genericsig_handler);
+        signal(SIGPOLL, &sigsegv_handler);
 #endif
 #ifdef SIGSYS
-   signal(SIGSYS, &genericsig_handler);
+        signal(SIGSYS, &sigsegv_handler);
 #endif
 #ifdef SIGVTALRM
-   signal(SIGVTALRM, &genericsig_handler);
+        signal(SIGVTALRM, &sigsegv_handler);
 #endif
 #ifdef SIGXCPU
-   signal(SIGXCPU, &genericsig_handler);
+        signal(SIGXCPU, &sigsegv_handler);
 #endif
 #ifdef SIGXFSZ
-   signal(SIGXFSZ, &genericsig_handler);
+        signal(SIGXFSZ, &sigsegv_handler);
 #endif
-   globalSlave=this;
+    }
+        
+    signal( SIGPIPE, sigpipe_handler );
+
+    signal(SIGINT,&genericsig_handler);
+    signal(SIGQUIT,&genericsig_handler);
+    signal(SIGTERM,&genericsig_handler);
+
+    globalSlave=this;
 
     appconn = new Connection();
     listEntryCurrentSize = 100;
@@ -279,7 +283,7 @@ void SlaveBase::dispatchLoop()
           }
         }
     }
-    else if (retval<0)
+    else if ((retval<0) && (errno != EINTR))
     {
        kdDebug(7019) << "dispatchLoop(): select returned " << retval << " "
           << (errno==EBADF?"EBADF":errno==EINTR?"EINTR":errno==EINVAL?"EINVAL":errno==ENOMEM?"ENOMEM":"unknown")
@@ -657,12 +661,14 @@ void SlaveBase::delCachedAuthentication( const QString& key )
     m_pConnection->send( MSG_DEL_AUTH_KEY, data );
 }
 
-void SlaveBase::sigsegv_handler (int)
+void SlaveBase::sigsegv_handler(int sig)
 {
-    signal(SIGSEGV,SIG_IGN);
+    signal(sig,SIG_DFL); // Next one kills
     // Debug and printf should be avoided because they might
     // call malloc.. and get in a nice recursive malloc loop
-    write(2, "kioslave : ###############SEG FAULT#############\n", 49);
+    char buffer[80];
+    snprintf(buffer, sizeof(buffer), "kioslave: ####### CRASH ###### pid = %d signal = %d\n", getpid(), sig);
+    write(2, buffer, strlen(buffer));
     ::exit(1);
 }
 
@@ -757,7 +763,11 @@ bool SlaveBase::openPassDlg( AuthInfo& info, const QString &errorMsg )
     (void) dcopClient(); // Make sure to have a dcop client.
             
     QDataStream stream(params, IO_WriteOnly);
-    stream << info << errorMsg << windowId << s_seqNr;
+    
+    if (metaData("no-auth-prompt").lower() == "true")
+       stream << info << QString("<NoAuthPrompt>") << windowId << s_seqNr;
+    else
+       stream << info << errorMsg << windowId << s_seqNr;
             
     if (!d->dcopClient->call( "kded", "kpasswdserver", "queryAuthInfo(KIO::AuthInfo, QString, long int, long int)",
                                params, replyType, reply ) )

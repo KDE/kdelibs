@@ -184,6 +184,7 @@ void KPTextPage::slotColumnsChanged(int c)
 void KPTextPage::initPageSize(bool landscape)
 {
 	QSize	sz(-1, -1), mg(18, 36);
+	QRect r;
 	if (driver())
 	{
 		if (m_currentps.isEmpty())
@@ -199,12 +200,16 @@ void KPTextPage::initPageSize(bool landscape)
 			{
 				mg = ps->margins();
 				sz = ps->pageSize();
+				r = ps->pageRect();
 			}
 		}
 	}
 	m_margin->setPageSize(sz.width(), sz.height());
 	m_margin->setOrientation(landscape ? KPrinter::Landscape : KPrinter::Portrait);
-	m_margin->setDefaultMargins(mg.height(), mg.height(), mg.width(), mg.width());
+	if ( r.isValid() && sz.isValid() )
+		m_margin->setDefaultMargins( r.top(), sz.height() - r.bottom() - 1, r.left(), sz.width() - r.right() - 1 );
+	else
+		m_margin->setDefaultMargins(mg.height(), mg.height(), mg.width(), mg.width());
 	m_margin->setCustomEnabled(false);
 }
 

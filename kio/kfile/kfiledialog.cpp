@@ -76,7 +76,7 @@
 #include <kdiroperator.h>
 #include <kimagefilepreview.h>
 
-#include <kurlbar.h>
+#include <kfilespeedbar.h>
 #include <kfilebookmarkhandler.h>
 
 enum Buttons { HOTLIST_BUTTON,
@@ -84,8 +84,10 @@ enum Buttons { HOTLIST_BUTTON,
 
 template class QPtrList<KIO::StatJob>;
 
+namespace {
 static void silenceQToolBar(QtMsgType, const char *)
 {
+}
 }
 
 struct KFileDialogPrivate
@@ -113,7 +115,7 @@ struct KFileDialogPrivate
     QLabel *filterLabel;
     KURLComboBox *pathCombo;
     KPushButton *okButton, *cancelButton;
-    KURLBar *urlBar;
+    KFileSpeedBar *urlBar;
     QHBoxLayout *urlBarLayout;
     QWidget *customWidget;
 
@@ -175,18 +177,8 @@ KFileDialog::~KFileDialog()
     KConfig *config = KGlobal::config();
 
     if (d->urlBar)
-    {
-        if ( d->initializeSpeedbar && d->urlBar->isModified() )
-        {
-            QString oldGroup = config->group();
-            config->setGroup( ConfigGroup );
-            // write to kdeglobals
-            config->writeEntry( "Set speedbar defaults", false, true, true );
-            config->setGroup( oldGroup );
-        }
+        d->urlBar->save( config );
 
-        d->urlBar->writeConfig( config, "KFileDialog Speedbar" );
-    }
     config->sync();
 
     delete ops;
@@ -200,14 +192,26 @@ void KFileDialog::setLocationLabel(const QString& text)
 
 void KFileDialog::setFilter(const QString& filter)
 {
-    if ( filter.contains( '/' )) { // mimetype filter!
+    int pos = filter.find('/');
+
+    // Check for an un-escaped '/', if found
+    // interpret as a MIME filter.
+
+    if (pos > 0 && filter[pos - 1] != '\\') {
         QStringList filters = QStringList::split( " ", filter );
         setMimeFilter( filters );
         return;
     }
 
+    // Strip the escape characters from
+    // escaped '/' characters.
+
+    QString copy (filter);
+    for (pos = 0; (pos = copy.find("\\/", pos)) != -1; ++pos)
+        copy.remove(pos, 1);
+
     ops->clearFilter();
-    filterWidget->setFilter(filter);
+    filterWidget->setFilter(copy);
     ops->setNameFilter(filterWidget->currentFilter());
     d->hasDefaultFilter = false;
     filterWidget->setEditable( true );
@@ -391,6 +395,7 @@ void KFileDialog::slotOk()
             {
                 selectedURL = ops->url();
                 selectedURL.addPath( text ); // works for filenames and relative paths
+                selectedURL.cleanPath (); // fix "dir/../"
             }
         } else // complete URL
             selectedURL = text;
@@ -480,6 +485,13 @@ void KFileDialog::slotOk()
             return;
     }
 
+    if (!kapp->authorizeURLAction("open", KURL(), d->url))
+    {
+        QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyURL());
+        KMessageBox::error( d->mainWidget, msg);
+        return;
+    }
+
     KIO::StatJob *job = 0L;
     d->statJobs.clear();
     d->filenames = locationEdit->currentText();
@@ -488,8 +500,19 @@ void KFileDialog::slotOk()
          !locationEdit->currentText().contains( '/' )) {
         kdDebug(kfile_area) << "Files\n";
         KURL::List list = parseSelectedURLs();
-        KURL::List::ConstIterator it = list.begin();
-        for ( ; it != list.end(); ++it ) {
+        for ( KURL::List::ConstIterator it = list.begin();
+              it != list.end(); ++it ) 
+        {
+            if (!kapp->authorizeURLAction("open", KURL(), *it))
+            {
+                QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, (*it).prettyURL());
+                KMessageBox::error( d->mainWidget, msg);
+                return;
+            }
+        }
+        for ( KURL::List::ConstIterator it = list.begin();
+              it != list.end(); ++it ) 
+        {
             job = KIO::stat( *it, !(*it).isLocalFile() );
             KIO::Scheduler::scheduleJob( job );
             d->statJobs.append( job );
@@ -691,7 +714,9 @@ void KFileDialog::multiSelectionChanged()
 
 void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* widget)
 {
+    initStatic();
     d = new KFileDialogPrivate();
+    
     d->boxLayout = 0;
     d->keepLocation = false;
     d->operationMode = Opening;
@@ -757,42 +782,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
     u.setPath( "/tmp" );
 
-    if (!lastDirectory)
-    {
-        lastDirectory = ldd.setObject(new KURL());
-    }
-
-    bool defaultStartDir = startDir.isEmpty();
-    if ( !defaultStartDir )
-        if (startDir[0] == ':')
-        {
-            d->fileClass = startDir;
-            d->url = KRecentDirs::dir(d->fileClass);
-        }
-        else
-        {
-            d->url = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
-            // If we won't be able to list it (e.g. http), then use default
-            if ( !KProtocolInfo::supportsListing( d->url.protocol() ) )
-                defaultStartDir = true;
-        }
-
-    if ( defaultStartDir )
-    {
-        if (lastDirectory->isEmpty()) {
-            *lastDirectory = KGlobalSettings::documentPath();
-            KURL home;
-            home.setPath( QDir::homeDirPath() );
-            // if there is no docpath set (== home dir), we prefer the current
-            // directory over it. We also prefer the homedir when our CWD is
-            // different from our homedirectory
-            if ( lastDirectory->path(+1) == home.path(+1) ||
-                 QDir::currentDirPath() != QDir::homeDirPath() )
-                *lastDirectory = QDir::currentDirPath();
-        }
-        d->url = *lastDirectory;
-    }
-
+    d->url = getStartURL( startDir, d->fileClass );
     d->selection = d->url.url();
 
     // If local, check it exists. If not, go up until it exists.
@@ -989,6 +979,7 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
     // we set the completionLock to avoid entering pathComboChanged() when
     // inserting the list of URLs into the combo.
     d->completionLock = true;
+    ops->setViewConfig( config, ConfigGroup );
     readConfig( config, ConfigGroup );
     setSelection(d->selection);
     d->completionLock = false;
@@ -996,47 +987,14 @@ void KFileDialog::init(const QString& startDir, const QString& filter, QWidget* 
 
 void KFileDialog::initSpeedbar()
 {
-    d->urlBar = new KURLBar( true, d->mainWidget, "url bar" );
+    d->urlBar = new KFileSpeedBar( d->mainWidget, "url bar" );
     connect( d->urlBar, SIGNAL( activated( const KURL& )),
              SLOT( enterURL( const KURL& )) );
-
-    d->urlBar->readConfig( KGlobal::config(), "KFileDialog Speedbar" );
-
-    if ( d->initializeSpeedbar ) {
-        KURL u;
-        u.setPath( KGlobalSettings::desktopPath() );
-        d->urlBar->insertItem( u, i18n("Desktop"), false );
-
-        if (KGlobalSettings::documentPath() != QDir::homeDirPath())
-        {
-            u.setPath( KGlobalSettings::documentPath() );
-            d->urlBar->insertItem( u, i18n("Documents"), false, "document" );
-        }
-
-        u.setPath( QDir::homeDirPath() );
-        d->urlBar->insertItem( u, i18n("Home Directory"), false,
-                               "folder_home" );
-        u = "floppy:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Floppy"), false,
-                                   KProtocolInfo::icon( "floppy" ) );
-        QStringList tmpDirs = KGlobal::dirs()->resourceDirs( "tmp" );
-        u.setProtocol( "file" );
-        u.setPath( tmpDirs.isEmpty() ? QString("/tmp") : tmpDirs.first() );
-        d->urlBar->insertItem( u, i18n("Temporary Files"), false,
-                               "file_temporary" );
-        u = "lan:/";
-        if ( KProtocolInfo::isKnownProtocol( u ) )
-            d->urlBar->insertItem( u, i18n("Network"), false,
-                                   "network_local" );
-    }
-
 
     // need to set the current url of the urlbar manually (not via urlEntered()
     // here, because the initial url of KDirOperator might be the same as the
     // one that will be set later (and then urlEntered() won't be emitted).
     // ### REMOVE THIS when KDirOperator's initial URL (in the c'tor) is gone.
-    if ( d->urlBar )
         d->urlBar->setCurrentItem( d->url );
 
     d->urlBarLayout->insertWidget( 0, d->urlBar );
@@ -1210,6 +1168,12 @@ void KFileDialog::urlEntered(const KURL& url)
 
 void KFileDialog::locationActivated( const QString& url )
 {
+    // This guard prevents any URL _typed_ by the user from being interpreted
+    // twice (by returnPressed/slotOk and here, activated/locationActivated)
+    // after the user presses Enter.  Without this, _both_ setSelection and
+    // slotOk would "u.addPath( url )" ...so instead we leave it up to just
+    // slotOk....
+    if (!locationEdit->lineEdit()->edited())
     setSelection( url );
 }
 
@@ -1813,7 +1777,7 @@ bool KFileDialog::keepsLocation() const
 void KFileDialog::setOperationMode( OperationMode mode )
 {
     d->operationMode = mode;
-    d->keepLocation = true;
+    d->keepLocation = (mode == Saving);
     filterWidget->setEditable( !d->hasDefaultFilter || mode != Saving );
     d->okButton->setGuiItem( (mode == Saving) ? KStdGuiItem::save() : KStdGuiItem::ok() );
 }
@@ -1889,6 +1853,60 @@ void KFileDialog::toggleSpeedbar( bool show )
 int KFileDialog::pathComboIndex()
 {
     return d->m_pathComboIndex;
+}
+
+// static
+void KFileDialog::initStatic()
+{
+    if ( lastDirectory )
+        return;
+
+    lastDirectory = ldd.setObject(new KURL());
+}
+
+// static
+KURL KFileDialog::getStartURL( const QString& startDir,
+                               QString& recentDirClass )
+{
+    initStatic();
+    
+    recentDirClass = QString::null;
+    KURL ret;
+
+    bool useDefaultStartDir = startDir.isEmpty();
+    if ( !useDefaultStartDir )
+    {
+        if (startDir[0] == ':')
+        {
+            recentDirClass = startDir;
+            ret = KURL::fromPathOrURL( KRecentDirs::dir(recentDirClass) );
+        }
+        else
+        {
+            ret = KCmdLineArgs::makeURL( QFile::encodeName(startDir) );
+            // If we won't be able to list it (e.g. http), then use default
+            if ( !KProtocolInfo::supportsListing( ret.protocol() ) )
+                useDefaultStartDir = true;
+        }
+    }
+
+    if ( useDefaultStartDir )
+    {
+        if (lastDirectory->isEmpty()) {
+            *lastDirectory = KGlobalSettings::documentPath();
+            KURL home;
+            home.setPath( QDir::homeDirPath() );
+            // if there is no docpath set (== home dir), we prefer the current
+            // directory over it. We also prefer the homedir when our CWD is
+            // different from our homedirectory
+            if ( lastDirectory->path(+1) == home.path(+1) ||
+                 QDir::currentDirPath() != QDir::homeDirPath() )
+                *lastDirectory = QDir::currentDirPath();
+        }
+        ret = *lastDirectory;
+    }
+
+    return ret;
 }
 
 void KFileDialog::virtual_hook( int id, void* data )

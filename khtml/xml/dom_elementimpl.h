@@ -82,6 +82,7 @@ private:
         if (_prefix) _prefix->ref();
     }
     void allocateImpl(ElementImpl* e);
+    void detachImpl();
 
 protected:
     NodeImpl::Id m_id;

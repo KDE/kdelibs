@@ -297,6 +297,7 @@ public:
   QString m_strSelectedURL;
   QString m_strSelectedURLTarget;
   QString m_referrer;
+  QString m_pageReferrer;
 
   struct SubmitForm
   {

@@ -131,7 +131,8 @@ void KFileList::addFiles(const QStringList& files)
 		for (QStringList::ConstIterator it=files.begin(); it!=files.end(); ++it)
 			if (KIO::NetAccess::download(KURL(*it), downloaded))
 			{
-				KURL	url(downloaded);
+				KURL	url;
+				url.setPath(downloaded);
 				KMimeType::Ptr	mime = KMimeType::findByURL(url, 0, true, false);
 				item = new QListViewItem(m_files, item, url.fileName(), mime->comment(), downloaded);
 				item->setPixmap(0, mime->pixmap(url, KIcon::Small));
@@ -162,7 +163,7 @@ QStringList KFileList::fileList() const
 	QListViewItem	*item = m_files->firstChild();
 	while (item)
 	{
-		l << item->text(2);
+		l << KURL::encode_string( item->text(2) );
 		item = item->nextSibling();
 	}
 	return l;
@@ -231,7 +232,7 @@ void KFileList::slotUp()
 	selection(l);
 	if (l.count() == 1 && l.first()->itemAbove())
 	{
-		QListViewItem	*item(l.first()), *clone(0);
+		QListViewItem	*item(l.first()), *clone;
 		clone = new QListViewItem(m_files, item->itemAbove()->itemAbove(), item->text(0), item->text(1), item->text(2));
 		clone->setPixmap(0, *(item->pixmap(0)));
 		delete item;
@@ -246,7 +247,7 @@ void KFileList::slotDown()
 	selection(l);
 	if (l.count() == 1 && l.first()->itemBelow())
 	{
-		QListViewItem	*item(l.first()), *clone(0);
+		QListViewItem	*item(l.first()), *clone;
 		clone = new QListViewItem(m_files, item->itemBelow(), item->text(0), item->text(1), item->text(2));
 		clone->setPixmap(0, *(item->pixmap(0)));
 		delete item;

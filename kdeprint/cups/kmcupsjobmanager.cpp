@@ -233,6 +233,7 @@ void KMCupsJobManager::parseListAnswer(IppRequest& req, KMPrinter *pr)
 
 		attr = attr->next;
 	}
+	delete job;
 }
 
 bool KMCupsJobManager::doPluginAction(int ID, const QPtrList<KMJob>& jobs)

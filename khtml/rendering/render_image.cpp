@@ -42,6 +42,7 @@
 #include "html/dtd.h"
 #include "xml/dom2_eventsimpl.h"
 #include "html/html_documentimpl.h"
+#include "html/html_objectimpl.h"
 #include <math.h>
 
 using namespace DOM;
@@ -70,7 +71,7 @@ void RenderImage::setStyle(RenderStyle* _style)
     RenderReplaced::setStyle(_style);
     // init RenderObject attributes
     setInline( style()->display()==INLINE );
-    setOverhangingContents(style()->height().isPercent());
+    //setOverhangingContents(style()->height().isPercent());
     setSpecialObjects(true);
 
     CachedObject* co = style()->contentObject();
@@ -111,6 +112,10 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
         if ( ih != intrinsicHeight() ) {
             setIntrinsicHeight( ih );
             iwchanged = true;
+        }
+        if ( element() && element()->id() == ID_OBJECT ) {
+            static_cast<HTMLObjectElementImpl*>(  element() )->renderAlternative();
+            return;
         }
     }
     berrorPic = o->isErrorImage();
@@ -175,7 +180,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o)
     }
 }
 
-void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, int /*_h*/, int _tx, int _ty)
+void RenderImage::paintObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, int /*_h*/, int _tx, int _ty)
 {
     // add offset for relative positioning
     if(isRelPositioned())
@@ -188,7 +193,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
     int leftPad = paddingLeft();
     int topPad = paddingTop();
 
-    if (khtml::printpainter && !root()->printImages())
+    if (khtml::printpainter && !root()->paintImages())
         return;
 
     //kdDebug( 6040 ) << "    contents (" << contentWidth << "/" << contentHeight << ") border=" << borderLeft() << " padding=" << paddingLeft() << endl;
@@ -285,7 +290,7 @@ void RenderImage::printObject(QPainter *p, int /*_x*/, int /*_y*/, int /*_w*/, i
         }
     }
     if(style()->outlineWidth())
-        printOutline(p, _tx, _ty, width(), height(), style());
+        paintOutline(p, _tx, _ty, width(), height(), style());
 }
 
 void RenderImage::layout()
@@ -325,7 +330,9 @@ void RenderImage::notifyFinished(CachedObject *finishedObj)
 {
     if (image == finishedObj && !loadEventSent && element()) {
         loadEventSent = true;
-        element()->dispatchHTMLEvent(EventImpl::LOAD_EVENT,false,false);
+        element()->dispatchHTMLEvent(
+            image->isErrorImage() ? EventImpl::ERROR_EVENT : EventImpl::LOAD_EVENT,
+            false,false);
     }
 }
 
@@ -353,9 +360,12 @@ bool RenderImage::nodeAtPoint(NodeInfo& info, int _x, int _y, int _tx, int _ty)
 
 void RenderImage::updateFromElement()
 {
-    if (!element()->getAttribute(ATTR_SRC).isEmpty()) {
+    DOMString u = element()->id() == ID_OBJECT ?
+                  element()->getAttribute(ATTR_DATA) : element()->getAttribute(ATTR_SRC);
+
+    if (!u.isEmpty()) {
         CachedImage *new_image = element()->getDocument()->docLoader()->
-                                 requestImage(khtml::parseURL(element()->getAttribute(ATTR_SRC)));
+                                 requestImage(khtml::parseURL(u));
 
         if(new_image && new_image != image && (!style() || !style()->contentObject())) {
             loadEventSent = false;
@@ -378,4 +388,31 @@ bool RenderImage::complete() const
     // "complete" means that the image has been loaded
     // but also that its width/height (contentWidth(),contentHeight()) have been calculated.
     return !pix.isNull() && layouted();
+}
+
+short RenderImage::calcReplacedWidth() const
+{
+    const Length w = style()->width();
+
+    if (w.isVariable()) {
+        const Length h = style()->height();
+        if ( m_intrinsicHeight > 0 && ( h.isPercent() || h.isFixed() ) )
+            return ( ( h.isPercent() ? calcReplacedHeight() : h.value() )*intrinsicWidth() ) / m_intrinsicHeight;
+    }
+
+    return RenderReplaced::calcReplacedWidth();
+}
+
+int RenderImage::calcReplacedHeight() const
+{
+    const Length h = style()->height();
+
+    if (h.isVariable()) {
+        const Length w = style()->width();
+        if( m_intrinsicWidth > 0 && ( w.isFixed() || w.isPercent() ))
+            return (( w.isPercent() ? calcReplacedWidth() : w.value() ) * intrinsicHeight()) / m_intrinsicWidth;
+
+    }
+
+    return RenderReplaced::calcReplacedHeight();
 }

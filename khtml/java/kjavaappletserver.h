@@ -24,7 +24,7 @@
 #ifndef KJAVAAPPLETSERVER_H
 #define KJAVAAPPLETSERVER_H
 
-#include <kjavaprocess.h>
+#include "kjavaprocess.h"
 #include <qobject.h>
 #include <qmap.h>
 
@@ -85,12 +85,13 @@ public:
      * Create an applet in the specified context with the specified id. The applet
      * name, class etc. are specified in the same way as in the HTML APPLET tag.
      */
-    void createApplet( int contextId, int appletId,
-                       const QString name, const QString clazzName,
-                       const QString baseURL, const QString codeBase,
-                       const QString jarFile, QSize size,
-                       const QMap<QString, QString>& params,
-                       const QString windowTitle );
+    bool createApplet( int contextId, int appletId,
+                       const QString & name, const QString & clazzName,
+                       const QString & baseURL, const QString & user,
+                       const QString & password, const QString & authname,
+                       const QString & codeBase, const QString & jarFile,
+                       QSize size, const QMap<QString, QString>& params,
+                       const QString & windowTitle );
 
     /**
      * This should be called by the KJavaAppletWidget

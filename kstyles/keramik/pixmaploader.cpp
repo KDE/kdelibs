@@ -1,6 +1,6 @@
-/* 
+/*
    Copyright (c) 2002 Malte Starostik <malte@kde.org>
-                 (c) 2002 Maksim Orlovich <mo002j@mail.rochester.edu>
+                 (c) 2002,2003 Maksim Orlovich <mo002j@mail.rochester.edu>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -39,22 +39,20 @@ PixmapLoader* PixmapLoader::s_instance = 0;
 
 PixmapLoader::PixmapLoader():  m_pixmapCache(327680, 2017)
 													
-{ 
-//	QPixmapCache::setCacheLimit( 128 );
+{
 	m_pixmapCache.setAutoDelete(true);
-	
+
 	for (int c=0; c<256; c++)
 		clamp[c]=static_cast<unsigned char>(c);
-		
+
 	for (int c=256; c<540; c++)
 		clamp[c] = 255;
-		
+
 }
 
 void PixmapLoader::clear()
 {
 	//m_cache.clear();
-	QPixmapCache::clear();
 }
 
 QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& back, bool blend)
@@ -62,12 +60,12 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	KeramikEmbedImage* edata = KeramikGetDbImage(name);
 	if (!edata)
 		return 0;
-		
+
 	//Like getColored, but desaturate a bit, and lower gamma..
 
 	//Create a real image...
 	QImage* img = new QImage(edata->width, edata->height, 32);
-	
+
 
 
 	//OK, now, fill it in, using the color..
@@ -76,9 +74,9 @@ QImage* PixmapLoader::getDisabled(int name, const QColor& color, const QColor& b
 	r = (3*color.red()+i)>>2;
 	g= (3*color.green()+i)>>2;
 	b = (3*color.blue()+i)>>2;
-	
+
 	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
-	
+
 
 	if (edata->haveAlpha)
 	{
@@ -166,7 +164,7 @@ QImage* PixmapLoader::getColored(int name, const QColor& color, const QColor& ba
 	b = color.blue() + 2;
 	
 //	int i = qGray(color.rgb());
-	
+
 	Q_UINT32 br = back.red(), bg = back.green(), bb = back.blue();
 	
 	if (edata->haveAlpha)
@@ -254,7 +252,7 @@ QPixmap PixmapLoader::pixmap( int name, const QColor& color, const QColor& bg, b
 	KeramikCacheEntry entry(name, color, bg, disabled, blend);
 	KeramikCacheEntry* cacheEntry;
 	
-	int key =entry.key();
+	int key = entry.key();
 	
 	if ((cacheEntry = m_pixmapCache.find(key, false)))
 	{
@@ -263,25 +261,27 @@ QPixmap PixmapLoader::pixmap( int name, const QColor& color, const QColor& bg, b
 			m_pixmapCache.find(key, true); 
 			return *cacheEntry->m_pixmap;
 		}
+		else //Remove old entry in case of a conflict!
+			m_pixmapCache.remove(key);
 	}
-	
 
-	QImage* img = 0;	
+
+	QImage* img = 0;
 	QPixmap* result = 0;
-		if (disabled)
-			img = getDisabled(name, color, bg, blend);
-		else
-			img = getColored(name, color, bg, blend);
-		if ( !img )
-		{
-			KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
-			toAdd->m_pixmap = new QPixmap();
-			m_pixmapCache.insert(key, toAdd, 16);
-			return QPixmap();
-		}
+	if (disabled)
+		img = getDisabled(name, color, bg, blend);
+	else
+		img = getColored(name, color, bg, blend);
+	if ( !img )
+	{
+		KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
+		toAdd->m_pixmap = new QPixmap();
+		m_pixmapCache.insert(key, toAdd, 16);
+		return QPixmap();
+	}
 
-	
-		result = new QPixmap( *img );
+
+	result = new QPixmap( *img );
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
 	
@@ -295,40 +295,42 @@ QPixmap PixmapLoader::scale( int name, int width, int height, const QColor& colo
 {
 	KeramikCacheEntry entry(name, color, disabled, blend, width, height);
 	KeramikCacheEntry* cacheEntry;
-	
-	int key =entry.key();
-	
+
+	int key = entry.key();
+
 	if ((cacheEntry = m_pixmapCache.find(key, false)))
 	{
 		if (entry == *cacheEntry) //True match!
 		{
-			m_pixmapCache.find(key, true); 
+			m_pixmapCache.find(key, true);
 			return *cacheEntry->m_pixmap;
 		}
+		else //Remove old entry in case of a conflict!
+			m_pixmapCache.remove(key);
 	}
-	
-	
-	QImage* img = 0;	
+
+
+	QImage* img = 0;
 	QPixmap* result = 0;
 	
-		if (disabled)
-			img = getDisabled(name, color, bg, blend);
-		else
-			img = getColored(name, color, bg, blend);
+	if (disabled)
+		img = getDisabled(name, color, bg, blend);
+	else
+		img = getColored(name, color, bg, blend);
 
-		if ( !img )
-		{
-			KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
-			toAdd->m_pixmap = new QPixmap();
-			m_pixmapCache.insert(key, toAdd, 16);
-			return QPixmap();
-		}
-		
+	if ( !img )
+	{
+		KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
+		toAdd->m_pixmap = new QPixmap();
+		m_pixmapCache.insert(key, toAdd, 16);
+		return QPixmap();
+	}
+
 	result = new QPixmap ( img->scale( width ? width : img->width(), height ? height: img->height() ) );
 
 	KeramikCacheEntry* toAdd = new KeramikCacheEntry(entry);
 	toAdd->m_pixmap = result;
-	
+
 	m_pixmapCache.insert(key, toAdd, result->width()*result->height()*result->depth()/8);
 
 	delete img;	

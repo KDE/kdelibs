@@ -997,6 +997,13 @@ static void handle_launcher_request(int sock = -1)
          startup_id_str = arg_n;
          arg_n += strlen( startup_id_str ) + 1;
      }
+     
+     if ((request_header.arg_length > (arg_n - request_data)) &&
+         (request_header.cmd == LAUNCHER_EXT_EXEC || request_header.cmd == LAUNCHER_EXEC_NEW ))
+     {
+         // Optional cwd
+         cwd = arg_n; arg_n += strlen(cwd) + 1;
+     }
 
      if ((arg_n - request_data) != request_header.arg_length)
      {
@@ -1273,9 +1280,12 @@ static void kdeinit_library_path()
    strcpy(sock_file, socketName.data());
 }
 
-int kdeinit_xio_errhandler( Display * )
+int kdeinit_xio_errhandler( Display *disp )
 {
-    qWarning( "kdeinit: Fatal IO error: client killed" );
+    // disp is 0L when KDE shuts down. We don't want those warnings then.
+
+    if ( disp )
+        qWarning( "kdeinit: Fatal IO error: client killed" );
 
     if (sock_file[0])
     {
@@ -1283,7 +1293,8 @@ int kdeinit_xio_errhandler( Display * )
       unlink(sock_file);
     }
 
-    qWarning( "kdeinit: sending SIGHUP to children." );
+    if ( disp )
+        qWarning( "kdeinit: sending SIGHUP to children." );
 
     /* this should remove all children we started */
     signal(SIGHUP, SIG_IGN);
@@ -1291,13 +1302,15 @@ int kdeinit_xio_errhandler( Display * )
 
     sleep(2);
 
-    qWarning( "kdeinit: sending SIGTERM to children." );
+    if ( disp )
+        qWarning( "kdeinit: sending SIGTERM to children." );
 
     /* and if they don't listen to us, this should work */
     signal(SIGTERM, SIG_IGN);
     kill(0, SIGTERM);
 
-    qWarning( "kdeinit: Exit." );
+    if ( disp )
+        qWarning( "kdeinit: Exit." );
 
     exit( 1 );
     return 0;
