@@ -101,14 +101,14 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" </qt>" );
 	QString whatsThisPrinterState = i18n(   " <qt> The <em>State</em> indicates the state of the"
 						" print queue on the print server (which could be your localhost). The"
-						" state may be 'Idle'. 'Processing', 'Stopped', 'Paused' or similar."
+						" state may be 'Idle', 'Processing', 'Stopped', 'Paused' or similar."
 						" </qt>" );
 	QString whatsThisPrinterComment = i18n( " <qt> The <em>Comment</em> may describe the selected"
 						" printer. This comment is created by the admin of the"
 						" print system (or may be left empty)."
 						" </qt>" );
-	QString whatsThisPrinterSelect = i18n(  " <qt>Use this combo box to select the printer you want to print"
-						" to. If you only find the <em>KDE special printers</em> -- which save"
+	QString whatsThisPrinterSelect = i18n(  " <qt>Use this combo box to select the printer to which you want to print."
+						" If you only find the <em>KDE special printers</em> -- which save"
 						" jobs to disk (as PostScript- or PDF-files), or deliver jobs via"
 						" e-Mail (as a PDF"
 						" attachment) -- but are missing a real printer, you need to..."
@@ -116,11 +116,11 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" <li>...either create a local printer with the help of the <em>KDE"
 						" Add Printer Wizard</em> (available for the CUPS and RLPR printing"
 						" systems (click button to the left of the 'Properties' button),</li>"
-						" <li>...or, if you use CUPS, you can try and connect to a remote"
-						" CUPS print server (clicking the <em>System Options...</em> button"
-						" below. A new dialog opens: here click on the <em>CUPS server</em>"
+						" <li>...or you can try to connect to a remote"
+						" CUPS print server by clicking the <em>System Options...</em> button"
+						" below. A new dialog opens: click on the <em>CUPS server</em>"
 						" icon and fill in the information required to use the remote"
-						" CUPS server.</li>"
+						"  server.</li>"
 						" </ul>"
 						" </qt>" );
 	QString whatsThisPrintJobProperties = i18n( " <qt> This button beams you to the place where you"
@@ -215,7 +215,7 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" list of to-be-printed files."
 					        " </qt>" );
 
-	QString whatsThisOpenFileButton = i18n( " <qt> This button tries to open the hightlighted file, so"
+	QString whatsThisOpenFileButton = i18n( " <qt> This button tries to open the highlighted file, so"
 						" you can view or edit it before you send it to the printing"
 						" system."
 					        " </qt>" );
@@ -230,9 +230,9 @@ KPrintDialog::KPrintDialog(QWidget *parent, const char *name)
 						" of the files' printout."
 					        " </qt>" );
 
-	QString whatsThisPreviewCheckBox = i18n(" <qt> Enable this checkbox if you want to peak a preview of"
-						" your printout. A preview lets you check if for instance your"
- 						" your intended \"poster\" or \"pamphlet\" layout imposition"
+	QString whatsThisPreviewCheckBox = i18n(" <qt> Enable this checkbox if you want to see a preview of"
+						" your printout. A preview lets you check if, for instance,"
+ 						" your intended \"poster\" or \"pamphlet\" layout"
 						" looks like you intended, without wasting paper first, and it"
 						" also lets you cancel the job if something looks wrong. "
 					        " </qt>" );
