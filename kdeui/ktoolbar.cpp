@@ -23,6 +23,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.118  1999/06/10 21:47:50  cschlaeg
+// setFullWidth(false) ignore feature re-implemented; floating resize bug fixed; layout manager documented; resizing floating bars still does not work properly
+//
 // Revision 1.117  1999/06/10 13:05:57  cschlaeg
 // fix for KOffice horizontal toolbar problem
 //
@@ -1374,7 +1377,7 @@ KToolBar::updateRects(bool res)
 		break;
 
 	case Floating:
-		printf("updateRects(%d) %d, %d, %d, %d\n", res, x(), y(), width(), height());
+		debug("updateRects(%d) %d, %d, %d, %d", res, x(), y(), width(), height());
 		if (width() >= height())
 		{
 			layoutHorizontal(width());
@@ -1440,7 +1443,7 @@ KToolBar::sizeHint() const
 	switch (position)
 	{
 	case Floating:
-		printf("sizeHint()\n");
+		debug("sizeHint()");
 		break;
 
 	case Top:
