@@ -7,7 +7,7 @@
 
 class PreviewShell : public KParts::MainWindow
 {
-	Q_OBJECT;
+	Q_OBJECT
 public:
 	PreviewShell(QWidget *parent = 0);
 	~PreviewShell();
