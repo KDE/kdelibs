@@ -1607,13 +1607,11 @@ QSize KDialogBase::configDialogSize( const QString& groupName ) const
 
    KConfig *kc = KGlobal::config();
 
-   if( kc && desk )
+   if( kc )
    {
-      QString oldGroup = kc->group();
+      KConfigGroupSaver cs(kc, groupName);
       w = kc->readNumEntry( QString::fromLatin1("Width %1").arg( desk->width()), w );
       h = kc->readNumEntry( QString::fromLatin1("Height %1").arg( desk->height()), h );
-
-      kc->setGroup( oldGroup );
    }
    return( QSize( w, h ) );
 }
@@ -1621,23 +1619,18 @@ QSize KDialogBase::configDialogSize( const QString& groupName ) const
 
 void KDialogBase::saveDialogSize( const QString& groupName, bool global )
 {
-   int w, h;
    QWidget *desk = QApplication::desktop();
    KConfig *kc = KGlobal::config();
    
-   if( kc && desk )
+   if( kc )
    {
-      QString oldGroup = kc->group();
+      KConfigGroupSaver cs(kc, groupName);
       QSize sizeToSave = size();
-      
-      kc->setGroup( groupName );
       
       kc->writeEntry( QString::fromLatin1("Width %1").arg( desk->width()),
 		      QString::number( sizeToSave.width()), true, global);
       kc->writeEntry( QString::fromLatin1("Height %1").arg( desk->height()),
 		      QString::number( sizeToSave.height()), true, global);
-      
-      kc->setGroup( oldGroup );
    }
 }
 
