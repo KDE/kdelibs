@@ -127,9 +127,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	int datalen = ba.size();
 	pMsg->length += datalen;
-	//IceWriteData( target->iceConn, datalen, (char *) ba.data());
 	IceSendData(target->iceConn, datalen, (char *) ba.data());
-	//IceFlush( target->iceConn );
       } else if ( app == "DCOPServer" ) {
 	QCString obj, fun;
 	QByteArray data;
@@ -138,6 +136,16 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	QByteArray replyData;
 	if ( !receive( app, obj, fun, data, replyType, replyData, iceConn ) ) {
 	    qWarning("%s failure: object '%s' has no function '%s'", app.data(), obj.data(), fun.data() );
+	}
+      } else if ( app == "*") {
+	// handle a broadcast.
+	QDictIterator<DCOPConnection> aIt(appIds);
+	while (aIt.current()) {
+	  IceGetHeader(aIt.current()->iceConn, majorOpcode, DCOPSend,
+		       sizeof(DCOPMsg), DCOPMsg, pMsg);
+	  int datalen = ba.size();
+	  pMsg->length += datalen;
+	  IceSendData(aIt.current()->iceConn, datalen, (char *) ba.data());
 	}
       }
     }
@@ -158,9 +166,7 @@ void DCOPServer::processMessage( IceConn iceConn, int opcode,
 	IceGetHeader( target->iceConn, majorOpcode, DCOPCall,
 		     sizeof(DCOPMsg), DCOPMsg, pMsg );
 	pMsg->length += datalen;
-	//IceWriteData( target->iceConn, datalen, (char *) ba.data());
 	IceSendData(target->iceConn, datalen, (char *) ba.data());
-	//IceFlush( target->iceConn );
       } else {
 	QCString replyType;
 	QByteArray replyData;
