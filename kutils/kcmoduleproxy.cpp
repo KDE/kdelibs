@@ -61,7 +61,7 @@ class KCModuleProxy::KCModuleProxyPrivate
 		KCModuleProxyPrivate( const KCModuleInfo & info )
 			: args( 0 )
 			, kcm( 0 )
-			, view( 0 )
+			//, view( 0 )
 			, embedWidget( 0 )
 			, rootProcess ( 0 )
 			, embedFrame ( 0 )
@@ -87,20 +87,17 @@ class KCModuleProxy::KCModuleProxyPrivate
 			delete rootCommunicator;
 			delete rootProcess;
 			delete rootInfo;
-			delete view;
 			delete kcm;
 		}
 
 		QStringList							args;
 		KCModule							*kcm;
-		QScrollView							*view;
 		QXEmbed								*embedWidget;
 		KProcess							*rootProcess;
 		QVBox								*embedFrame;
 		KCModuleProxyIfaceImpl  			*dcopObject;
 		DCOPClient							*dcopClient;
 		QVBoxLayout							*topLayout; /* Contains QScrollView view, and root stuff */
-		QVBoxLayout							*viewBoxLayout; /* Manages children of view */
 		KCModuleProxyRootCommunicatorImpl	*rootCommunicator;
 		QLabel								*rootInfo;
 		QCString							dcopName;
@@ -167,12 +164,6 @@ KCModule * KCModuleProxy::realModule() const
   		d->dcopName = moduleInfo().handle().prepend("KCModuleProxy-").utf8();
 		d->topLayout = new QVBoxLayout( that, 0, 0, "topLayout" );
 
-		d->view = new QScrollView( that, "view" );
-		d->view->setResizePolicy(QScrollView::Manual);
-		d->view->setFrameStyle( QScrollView::NoFrame );
-		d->topLayout->addWidget( d->view );
-
-		d->viewBoxLayout = new QVBoxLayout( d->view->viewport(), 0, 0, "viewBoxLayout" );
 		d->isInitialized = true;
 	}
 
@@ -192,7 +183,7 @@ KCModule * KCModuleProxy::realModule() const
 		d->dcopObject = new KCModuleProxyIfaceImpl( d->dcopName, that );
 
 		d->kcm = KCModuleLoader::loadModule( moduleInfo(), KCModuleLoader::Inline, d->withFallback,
-			d->view->viewport(), name(), d->args );
+			that, name(), d->args );
 
 		connect( d->kcm, SIGNAL( changed( bool ) ),
 				SLOT(moduleChanged(bool)) );
@@ -202,23 +193,15 @@ KCModule * KCModuleProxy::realModule() const
 				SIGNAL(quickHelpChanged()));
 		QWhatsThis::add( that, d->kcm->quickHelp() );
 
-		d->viewBoxLayout->addWidget( d->kcm );
-
-		d->view->addChild( d->kcm );
-
-		/* KDE 4. These two lines which disables d->view needs 
-		 * either to be removed or d->view to be removed. */
-		d->kcm->resize(d->kcm->minimumSizeHint());
-		that->setMinimumSize(d->view->size());
+		d->topLayout->addWidget( d->kcm );
 
 		if ( !d->rootInfo && /* If it's already done */
 				moduleInfo().needsRootPrivileges() /* root, anyone? */ && 
 				!KUser().isSuperUser() ) /* Not necessary if we're root */
 		{
 
-			d->rootInfo = new QLabel( d->view->viewport(), "rootInfo" );
-			d->viewBoxLayout->insertWidget( 0, d->rootInfo );
-			d->view->addChild( d->rootInfo );
+			d->rootInfo = new QLabel( that, "rootInfo" );
+			d->topLayout->insertWidget( 0, d->rootInfo );
 
 			d->rootInfo->setFrameShape(QFrame::Box);
 			d->rootInfo->setFrameShadow(QFrame::Raised);
@@ -266,10 +249,9 @@ KCModule * KCModuleProxy::realModule() const
 
 			d->kcm = KCModuleLoader::reportError( KCModuleLoader::Inline, 
 					i18n( "Argument is application name", "This configuration section is "
-						"already opened in %1" ).arg( result ), " ", d->view->viewport() );
+						"already opened in %1" ).arg( result ), " ", that );
 
-			d->viewBoxLayout->addWidget( d->kcm );
-			d->view->addChild( d->kcm );
+			d->topLayout->addWidget( d->kcm );
 		}
 		else
 		{
@@ -310,6 +292,7 @@ void KCModuleProxy::showEvent( QShowEvent * ev )
 		d->kcm->show();
 
 	QWidget::showEvent( ev );
+
 }
 
 void KCModuleProxy::runAsRoot()
@@ -328,7 +311,7 @@ void KCModuleProxy::runAsRoot()
 
 	QPalette pal( red );
 	pal.setColor( QColorGroup::Background, 
-		d->view->parentWidget()->colorGroup().background() );
+		colorGroup().background() );
 	d->embedFrame->setPalette( pal );
 	d->embedFrame->setLineWidth( 2 );
 	d->embedFrame->setMidLineWidth( 2 );
@@ -336,7 +319,6 @@ void KCModuleProxy::runAsRoot()
 
 	d->embedWidget = new QXEmbed( d->embedFrame, "embedWidget" );
 
-	d->view->hide();
 	d->embedFrame->show();
 
 	QLabel *lblBusy = new QLabel(i18n("<big>Loading...</big>"), d->embedWidget, "lblBusy" );
@@ -410,7 +392,6 @@ void KCModuleProxy::runAsRoot()
 	d->embedWidget = 0;
 	delete lblBusy;
 
-	d->view->show();
 	QApplication::restoreOverrideCursor();
 }
 
@@ -436,7 +417,6 @@ void KCModuleProxy::rootExited()
 	/* Such that the "ordinary" module loads again */
 	d->rootMode = false;
 
-	d->view->show();
 	d->topLayout->invalidate();
 
 	QShowEvent ev;
@@ -659,13 +639,15 @@ QCString KCModuleProxy::dcopName() const
 	return d->dcopName;
 }
 
-QSize KCModuleProxy::sizeHint() const {
+QSize KCModuleProxy::sizeHint() const
+{
+
 	if(!d->isInitialized || (!d->kcm && !d->embedWidget))
 		return QWidget::sizeHint();
 	
 	QSize wSizeHint = QWidget::sizeHint();
-	QSize vSizeHint = d->view->sizeHint();
 	QSize rSizeHint;
+
 	if(d->embedWidget)
 		rSizeHint = d->embedWidget->minimumSizeHint();
 	else
@@ -673,8 +655,9 @@ QSize KCModuleProxy::sizeHint() const {
 
 	if(d->rootInfo)
 		rSizeHint += d->rootInfo->minimumSizeHint();
-	wSizeHint.setWidth(wSizeHint.width() - vSizeHint.width() + rSizeHint.width() );
-	wSizeHint.setHeight(wSizeHint.height() - vSizeHint.height() + rSizeHint.height() );
+
+	wSizeHint.setWidth(wSizeHint.width() + rSizeHint.width() );
+	wSizeHint.setHeight(wSizeHint.height() + rSizeHint.height() );
 	return wSizeHint;
 }
 
