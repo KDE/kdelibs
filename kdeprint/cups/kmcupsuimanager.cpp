@@ -144,7 +144,7 @@ void KMCupsUiManager::setupPrinterPropertyDialog(KPrinterPropertyDialog *dlg)
 {
 	// add general page
 	dlg->addPage(new KPGeneralPage(dlg->printer(),dlg->driver(),dlg,"GeneralPage"));
-	if (KMFactory::self()->settings()->application == KPrinter::StandAlone)
+	if (KMFactory::self()->settings()->application != KPrinter::Dialog)
 	{
 		dlg->addPage(new KPImagePage(dlg->driver(), dlg, "ImagePage"));
 		dlg->addPage(new KPTextPage(dlg->driver(), dlg, "TextPage"));

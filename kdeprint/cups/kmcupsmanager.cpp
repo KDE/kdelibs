@@ -818,9 +818,9 @@ QStringList KMCupsManager::detectLocalPrinters()
 
 void KMCupsManager::createPluginActions(KActionCollection *coll)
 {
-	KAction	*act = new KAction(i18n("&Export Driver..."), "up", 0, this, SLOT(exportDriver()), coll, "plugin_export_driver");
+	KAction	*act = new KAction(i18n("&Export Driver..."), "kdeprint_uploadsmb", 0, this, SLOT(exportDriver()), coll, "plugin_export_driver");
 	act->setGroup("plugin");
-	act = new KAction(i18n("&Printer IPP Report..."), "editpaste", 0, this, SLOT(printerIppReport()), coll, "plugin_printer_ipp_report");
+	act = new KAction(i18n("&Printer IPP Report..."), "kdeprint_report", 0, this, SLOT(printerIppReport()), coll, "plugin_printer_ipp_report");
 	act->setGroup("plugin");
 }
 
