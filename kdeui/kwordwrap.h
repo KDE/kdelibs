@@ -48,7 +48,7 @@ public:
      * Use this flag in @ref drawText() if you want to fade out the text if it does
      * not fit into the constraining rectangle.
      */
-     static const int FadeOut = 0x10000000;
+     static const int FadeOut;
 
     /**
      * Main method for wrapping text.
