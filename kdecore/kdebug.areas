@@ -38,6 +38,8 @@
 7013    kio (KPing)
 7014    kio (KFind)
 7015    kio (KAutoMount)
+7016    kio (KIOSlave)
+7017    kio (KIOConnection)
 7020    kded
 
 # 710x  are for kioslaves
