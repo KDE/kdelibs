@@ -1,0 +1,7 @@
+[Desktop Entry]
+Encoding=UTF-8
+Comment=File List for the (Kate File List Loader Plugin)
+Icon=unknown
+Type=MimeType
+MimeType=text/x-katefilelist
+Patterns=*.katefl;
