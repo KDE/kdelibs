@@ -192,6 +192,7 @@ void DefaultProgress::slotPercent( KIO::Job*, unsigned long percent )
 void DefaultProgress::slotInfoMessage( KIO::Job*, const QString & msg )
 {
   speedLabel->setText( msg );
+  speedLabel->setAlignment( speedLabel->alignment() & ~Qt::WordBreak );
 }
 
 
