@@ -614,12 +614,12 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
 					static_cast<IcePointer>(this), False, d->majorOpcode,
 					sizeof(errBuf), errBuf)) == 0L) {
         qDebug("DCOPClient::attachInternal. Attach failed %s", errBuf ? errBuf : "");
+	d->iceConn = 0;
         if (bClearServerAddr) {
            delete [] d->serverAddr;
            d->serverAddr = 0;
         }
 	emit attachFailed(QString::fromLatin1( errBuf ));
-	d->iceConn = 0;
 	return false;
     }
 
@@ -636,6 +636,7 @@ bool DCOPClient::attachInternal( bool registerAsAnonymous )
     if (setupstat == IceProtocolSetupFailure ||
 	setupstat == IceProtocolSetupIOError) {
 	IceCloseConnection(d->iceConn);
+        d->iceConn = 0;
         if (bClearServerAddr) {
            delete [] d->serverAddr;
            d->serverAddr = 0;
@@ -1502,12 +1503,14 @@ bool DCOPClient::callInternal(const QCString &remApp, const QCString &remObjId,
 		}
 	    }
 	}
+        if (!d->iceConn)
+            return false;
 
 	// something is available
 	s = IceProcessMessages(d->iceConn, &waitInfo,
 			       &readyRet);
 	if (s == IceProcessMessagesIOError) {
-	    IceCloseConnection(d->iceConn);
+            detach();
 	    d->currentKey = oldCurrentKey;
 	    return false;
 	}
@@ -1533,7 +1536,7 @@ void DCOPClient::processSocketData(int)
     IceProcessMessagesStatus s =  IceProcessMessages(d->iceConn, 0, 0);
 
     if (s == IceProcessMessagesIOError) {
-	IceCloseConnection(d->iceConn);
+        detach();
 	qWarning("received an error processing data from the DCOP server!");
 	return;
     }
