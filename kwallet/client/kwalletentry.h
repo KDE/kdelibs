@@ -23,7 +23,6 @@
 #define _KWALLETENTRY_H
 
 #include <qstring.h>
-#include <qmap.h>
 #include <qdatastream.h>
 
 #include "kwallet.h"
@@ -38,11 +37,10 @@ class Entry {
 		const QString& key() const;
 		const QByteArray& value() const;
 		QString password() const;
-		QMap<QString,QString> map() const;
+		const QByteArray& map() const { return value(); }
 
 		void setValue(const QByteArray& val);
 		void setValue(const QString& val);
-		void setValue(const QMap<QString,QString>& val);
 		void setKey(const QString& key);
 
 		Wallet::EntryType type() const;

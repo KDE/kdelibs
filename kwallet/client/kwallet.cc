@@ -26,6 +26,8 @@
 #include <assert.h>
 
 
+inline const char* dcopTypeName(const QByteArray&) { return "QByteArray"; }
+
 using namespace KWallet;
 
 
@@ -342,7 +344,12 @@ int rc = -1;
 
 	DCOPReply r = _dcopRef->call("readMap", _handle, _folder, key);
 	if (r.isValid()) {
-		r.get(value);
+		QByteArray v;
+		r.get(v);
+		if (!v.isEmpty()) {
+			QDataStream ds(v, IO_ReadOnly);
+			ds >> value;
+		}
 		rc = 0;
 	}
 
@@ -390,7 +397,10 @@ int rc = -1;
 		return rc;
 	}
 
-	DCOPReply r = _dcopRef->call("writeMap", _handle, _folder, key, value);
+	QByteArray a;
+	QDataStream ds(a, IO_WriteOnly);
+	ds << value;
+	DCOPReply r = _dcopRef->call("writeMap", _handle, _folder, key, a);
 	if (r.isValid()) {
 		r.get(rc);
 	}

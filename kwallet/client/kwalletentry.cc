@@ -49,14 +49,6 @@ QString x;
 }
 
 
-QMap<QString,QString> Entry::map() const {
-QMap<QString,QString> x;
-	QDataStream qds(_value, IO_ReadOnly);
-	qds >> x;
-	return x;
-}
-
-
 void Entry::setValue(const QByteArray& val) {
 	// do a direct copy from one into the other without
 	// temporary variables
@@ -66,13 +58,6 @@ void Entry::setValue(const QByteArray& val) {
 
 
 void Entry::setValue(const QString& val) {
-	_value.fill(0);
-	QDataStream qds(_value, IO_WriteOnly);
-	qds << val;
-}
-
-
-void Entry::setValue(const QMap<QString,QString>& val) {
 	_value.fill(0);
 	QDataStream qds(_value, IO_WriteOnly);
 	qds << val;
