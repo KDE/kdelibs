@@ -30,7 +30,6 @@
 #include <kglobal.h>
 #include <kstddirs.h>
 #include <kiconloader.h>
-#include <kglobal.h>
 #include <kprogress.h>
 #include <kiconview.h>
 #include <kfiledialog.h>

@@ -37,7 +37,6 @@
 #include <kdebug.h>
 #include <kmessagebox.h>
 #include <klocale.h>
-#include <kstddirs.h>
 #include <ksimpleconfig.h>
 #include <kstaticdeleter.h>
 

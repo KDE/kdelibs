@@ -28,7 +28,6 @@
 #include <qlineedit.h>
 #include <qobjectlist.h>
 #include <qfileinfo.h>
-#include <qfile.h>
 #include <qdatastream.h>
 #include <kprinter.h>
 #include <qsimplerichtext.h>

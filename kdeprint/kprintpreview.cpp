@@ -24,7 +24,6 @@
 
 #include <klibloader.h>
 #include <ktrader.h>
-#include <ktrader.h>
 #include <kapp.h>
 #include <kstddirs.h>
 #include <klocale.h>

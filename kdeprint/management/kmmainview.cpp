@@ -30,7 +30,6 @@
 #include "driver.h"
 #include "kmdriverdialog.h"
 #include "kmwizard.h"
-#include "kmvirtualmanager.h"
 #include "kmconfigdialog.h"
 #include "kmspecialprinterdlg.h"
 #include "plugincombobox.h"

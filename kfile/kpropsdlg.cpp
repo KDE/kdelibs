@@ -82,7 +82,6 @@ extern "C" {
 #include <kmimetype.h>
 #include <kmessagebox.h>
 #include <kservice.h>
-#include <kglobal.h>
 #include <kcompletion.h>
 #include <klineedit.h>
 #include <kseparator.h>

@@ -26,7 +26,6 @@
 #include <qbitmap.h>
 #include <qtabbar.h>
 #include <qpointarray.h>
-#include <qtabbar.h>
 #include <qscrollbar.h>
 #include <qframe.h>
 #include <qpushbutton.h>

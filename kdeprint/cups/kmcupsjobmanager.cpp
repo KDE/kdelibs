@@ -23,7 +23,6 @@
 #include "kmjob.h"
 #include "cupsinfos.h"
 #include "ipprequest.h"
-#include "kmjob.h"
 
 KMCupsJobManager::KMCupsJobManager(QObject *parent, const char *name)
 : KMJobManager(parent,name)
