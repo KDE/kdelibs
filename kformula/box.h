@@ -39,7 +39,7 @@
 #define MAX_REFERENCES 1000 //maximum references per formula
 #define REFERENCE_ABOVE (SYMBOL_ABOVE - MAX_REFERENCES)
 inline bool IS_REFERENCE(int r) { return (r >= REFERENCE_ABOVE && r < SYMBOL_ABOVE); }
-inline bool REFERENCE_NUM(int r) { return (r < MAX_REFERENCES ? r + REFERENCE_ABOVE : /*error*/ 0); }
+inline int REFERENCE_NUM(int r) { return (r < MAX_REFERENCES ? r + REFERENCE_ABOVE : /*error*/ 0); }
 
 //can be set to 0 if you want to print the string out somewhere.
 //UNUSED_OFFSET is only used in this file.
