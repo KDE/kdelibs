@@ -858,7 +858,7 @@ bool KWin::allowedActionsSupported()
     return wm_supports_allowed_actions == yes;
 }
 
-QString KWin::readNameProperty( WId win, Atom atom )
+QString KWin::readNameProperty( WId win, unsigned long atom )
 {
     XTextProperty tp;
     char **text = NULL;
