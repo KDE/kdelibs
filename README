@@ -10,10 +10,13 @@ In this file:
 
 About kdelibs
 -------------
-This is version 2.1 of the KDE libraries. This package includes libraries
-that are central to the development and execution of a KDE program, as well as
-internationalization files for these libraries, misc HTML documentation, theme
-modules, and regression tests. Here is a list:
+This is version 2.2alpha1 of the KDE libraries. "alpha" indicates that this is
+a technology preview, but we don't pretend its stable in any way.
+
+This package includes libraries that are central to the development and 
+execution of a KDE program, as well as internationalization files for these 
+libraries, misc HTML documentation, theme modules, and regression tests. 
+Here is a list:
 
 * kdecore
     This is the core collection of KDE stuff. Non GUI classes reside here.
@@ -83,8 +86,7 @@ modules, and regression tests. Here is a list:
     kparts interface for text editors
 
 * kdedb
-    This is work-in-progress and not (yet) part of kdelibs. Basically we
-    have kioslaves for databases as well as database aware dialog widgets.
+    kioslaves for databases as well as database aware dialog widgets.
 
 * libtldl
     System independed dlopen() handler.
@@ -115,7 +117,7 @@ headings and other identifying marks.
 Common Mistakes
 ---------------
 If configure claims Qt cannot be found, have a look at http://www.troll.no
-to get a copy of Qt, version 2.2.1 or newer. If you have peeked there
+to get a copy of Qt, version 2.2.3 or newer. If you have peeked there
 already, grab the CVS module qt-copy from anoncvs.kde.org, or a snapshot
 thereof.
 
