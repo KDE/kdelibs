@@ -1,0 +1,17 @@
+#%PAM-1.0
+
+auth       required     pam_pwdb.so shadow nullok
+auth       required     pam_nologin.so
+account    required     pam_pwdb.so
+password   required     pam_cracklib.so
+password   required     pam_pwdb.so shadow nullok use_authtok
+session    required     pam_pwdb.so
+
+# Alternate strength checking for password. Note that this
+# requires the libpam-cracklib package to be installed.
+# You will need to comment out the password lines above and
+# uncomment the next two in order to use this.
+#
+# password required       pam_cracklib.so retry=3 minlen=6 difok=3
+# password required       pam_pwdb.so use_authtok nullok md5
+
