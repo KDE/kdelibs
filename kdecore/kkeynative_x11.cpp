@@ -87,7 +87,6 @@ bool KKeyNative::init( const XEvent* pEvent )
 	return true;
 }
 
-// TODO: Avoid call to XKeysymToKeycode here by creating a method in KKeyServer.
 bool KKeyNative::init( const KKey& key )
 {
 	// Get any extra mods required by the sym.
@@ -101,7 +100,6 @@ bool KKeyNative::init( const KKey& key )
 		return false;
 	}
 
-	// TODO: create a keysym to keycode function in KKeyServer
 	// FIXME: Accomadate non-standard layouts
 	// XKeysymToKeycode returns the wrong keycode for XK_Print and XK_Break.
 	// Specifically, it returns the code for SysReq instead of Print
