@@ -44,7 +44,7 @@ KCModule::KCModule(QWidget *parent, const char *name, const QStringList &)
 		d->_instance = new KInstance(name);
 		KGlobal::locale()->insertCatalogue(name);
 	} else
-		d->_instance = new KInstance("kcontrol");
+		d->_instance = new KInstance("kcmunnamed");
     d->_hasOwnInstance = true;
     KGlobal::setActiveInstance(this->instance());
 }
