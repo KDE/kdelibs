@@ -106,7 +106,7 @@ void Observer::slotTotalDirs( KIO::Job* job, unsigned long dirs )
 
 void Observer::slotProcessedSize( KIO::Job* job, unsigned long size )
 {
-  kdDebug() << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << size << endl;
+//   kdDebug() << "** Observer::slotProcessedSize " << job << " " << job->progressId() << " " << size << endl;
   m_uiserver->processedSize( job->progressId(), size );
 }
 
@@ -171,6 +171,7 @@ void Observer::slotCanResume( KIO::Job* job, bool can_resume )
 
 bool Observer::authorize( QString& user, QString& pass ,const QString& head, const QString& key )
 {
+//   kdDebug() << "** Observer::authorize " << endl;
   QByteArray resultArgs = m_uiserver->authorize( user, head, key );
   if ( m_uiserver->ok() )
   {
