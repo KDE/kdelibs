@@ -66,7 +66,7 @@ class QDateTime; inline const char* dcopTypeName( const QDateTime& ) { return "Q
 class QBitArray; inline const char* dcopTypeName( const QBitArray& ) { return "QBitArray"; }
 class QKeySequence; inline const char* dcopTypeName( const QKeySequence& ) { return "QKeySequence"; }
 class QVariant; inline const char* dcopTypeName( const QVariant& ) { return "QVariant"; }
-class QByteArray; inline const char* dcopTypeName( const QByteArray& ) { return "QByteArray"; }
+template class QMemArray<char>; inline const char* dcopTypeName( const QMemArray<char>& ) { return "QByteArray"; }
 
 // And some KDE types
 class KURL; inline const char* dcopTypeName( const KURL& ) { return "KURL"; }
