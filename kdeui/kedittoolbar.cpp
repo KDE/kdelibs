@@ -427,6 +427,7 @@ void KEditToolbarWidget::setupLayout()
   m_activeList->header()->hide();
   m_activeList->addColumn("");
   m_activeList->addColumn("");
+  m_activeList->setSorting (-1);
   active_label->setBuddy(m_activeList);
   connect(m_activeList, SIGNAL(selectionChanged(QListViewItem *)),
           this,         SLOT(slotActiveSelected(QListViewItem *)));
