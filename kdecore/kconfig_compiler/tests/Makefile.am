@@ -5,7 +5,8 @@ check_PROGRAMS = test1 test2 test3 test4
 CLEANFILES = test1.cpp test1.h \
              test2.cpp test2.h \
              test3.cpp test3.h \
-             test4.cpp test4.h
+             test4.cpp test4.h \
+             md5sums
 
 test1_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 test1_LDADD = $(LIB_KDECORE)
@@ -46,4 +47,10 @@ test4main.o test4.o: test4.h
 test4.cpp: test4.h
 test4.cpp test4.h: $(srcdir)/test4.kcfg ../kconfig_compiler $(srcdir)/test4.kcfgc
 	../kconfig_compiler $(srcdir)/test4.kcfg $(srcdir)/test4.kcfgc
+
+md5sums:
+	md5sum $(srcdir)/test*.ref | sed -e "s,$(srcdir)/,,; s,\.ref$$,," > md5sums
+
+md5check: test1.cpp test2.cpp test3.cpp test4.cpp md5sums
+	md5sum --check md5sums
 
