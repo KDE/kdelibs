@@ -311,22 +311,8 @@ static const char * parseNameValue(const char *header,
 {
     const char *s = header;
 
-    // Skip any whitespace
-    for(; (*s == ' ') || (*s == '\t'); s++)
-    {
-        if ((*s=='\0') || (*s==';') || (*s=='\n'))
-        {
-            // End of header
-            Name = "";
-            Value = "";
-            return (s);
-        }
-    }
-
-    header = s;
-
     // Parse 'my_name' part
-    for(; (*s != '=') && (*s != ' ') && (*s != '\t'); s++)
+    for(; (*s != '='); s++)
     {
         if ((*s=='\0') || (*s==';') || (*s=='\n'))
         {
@@ -334,23 +320,14 @@ static const char * parseNameValue(const char *header,
             Value = "";
             Name = header;
             Name.truncate( s - header );
+            Name = Name.stripWhiteSpace();
             return (s);
         }
     }
 
     Name = header;
     Name.truncate( s - header );
-
-    // Skip any whitespace
-    for(; (*s != '='); s++)
-    {
-        if ((*s=='\0') || (*s==';') || (*s=='\n'))
-        {
-            // End of Name
-            Value = "";
-            return (s);
-        }
-    }
+    Name = Name.stripWhiteSpace();
 
     // *s == '='
     s++;
