@@ -255,8 +255,8 @@ void KConfigINIBackEnd::parseSingleConfigFile(QFile &rFile,
 
    //using kdDebug() here leads to an infinite loop
    //remove this for the release, aleXXX
-   qWarning("Parsing %s, global = %s default = %s",
-              rFile.name().latin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");
+   //qWarning("Parsing %s, global = %s default = %s",
+   //           rFile.name().latin1(), bGlobal ? "true" : "false", bDefault ? "true" : "false");
 
    QCString aCurrentGroup("<default>");
 
