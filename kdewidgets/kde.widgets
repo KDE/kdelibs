@@ -33,7 +33,6 @@ ToolTip=Date preview (KDE)
 Group=Input (KDE)
 
 [KDatePicker]
-IncludeFile=kdatepik.h
 ToolTip=A date selection widget (KDE)
 WhatsThis=Provides a widget for calendar date input
 ConstructorArgs=(parent, QDate(), name)
@@ -46,7 +45,6 @@ ToolTip=Class for simple Dialogs (KDE)
 Group=Container (KDE)
 
 [KDualColorButton]
-IncludeFile=kdualcolorbtn.h
 ToolTip=A widget for selecting two related colors (KDE)
 Group=Graphics (KDE)
 
