@@ -610,9 +610,9 @@ public:
 
     /**
      * Extracts all entries in this archive directory to the directory
-     * @p dest. If @p recursive is true, subdirectories are extracted
-     * as well.
+     * @p dest.
      * @param dest the directory to extract to
+     * @param recursive if set to true, subdirectories are extracted as well
      * @since 3.1
      */
      void copyTo(const QString& dest, bool recursive = true) const;

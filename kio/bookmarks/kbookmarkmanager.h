@@ -149,6 +149,7 @@ public:
 
     /**
      * @return the bookmark designated by @p address
+     * @param address the address belonging to the bookmark you're looking for
      * @param tolerate when true tries to find the most tolerable bookmark position
      * @see KBookmark::address
      */

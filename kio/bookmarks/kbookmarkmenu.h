@@ -87,6 +87,7 @@ public:
    * (one instance of KBookmarkMenu is created for the toplevel menu,
    *  but also one per submenu).
    *
+   * @param mgr The bookmark manager to use (i.e. for reading and writing)
    * @param owner implementation of the KBookmarkOwner callback interface.
    * @param parentMenu menu to be filled
    * @param collec parent collection for the KActions. 

@@ -380,6 +380,7 @@ namespace KJS {
     /**
      * Attempts an conversion to an unsigned long integer. ok will be set
      * according to the success.
+     @ @param ok make this point to a bool in case you need to know whether the conversion succeeded.
      * @param tolerateEmptyString if false, toULong will return false for *ok for an empty string.
      */
     unsigned long toULong(bool *ok, bool tolerateEmptyString) const;
