@@ -210,11 +210,16 @@ void RenderFlow::layout( bool deep )
     else
 	layoutBlockChildren(deep);
 
-    if(floatBottom() > m_height && m_next)
+    if(floatBottom() > m_height)	
     {
-	assert(!m_next->isInline());
-	m_next->setLayouted(false);
-	m_next->layout();
+	if(isTableCell())
+	    m_height = floatBottom();
+	else if( m_next)
+	{
+	    assert(!m_next->isInline());
+	    m_next->setLayouted(false);
+	    m_next->layout();
+	}
     }
     setLayouted();
 }
@@ -541,7 +546,7 @@ RenderFlow::clearFloats()
     }
 
     // add overhanging special objects from the previous RenderFlow
-    if(m_previous && m_previous->isFlow())
+    if(m_previous && m_previous->isFlow() && !m_previous->isTableCell())
     {
 	RenderFlow * flow = static_cast<RenderFlow *>(m_previous);
 	int offset = m_previous->height() + MAX(flow->marginBottom(), marginTop());

@@ -175,8 +175,8 @@ protected:
 
     // calculates the height of each row
     void calcRowHeight(int r);
-    
-    void layoutRow(int r);    
+
+    void layoutRow(int r);
     void refreshRow(int r);
 
     void setCells( unsigned int r, unsigned int c, RenderTableCell *cell );
@@ -328,6 +328,7 @@ public:
     ~RenderTableCell();
 
     virtual const char *renderName() const { return "RenderTableCell"; }
+    virtual bool isTableCell() const { return true; }
 
     // ### FIX these two...
     long cellIndex() const { return 0; }
@@ -353,9 +354,9 @@ public:
     void setRowHeight(int h) { rowHeight = h; }
 
     void setRowImpl(RenderTableRow *r) { rowimpl = r; }
-    
+
     void setCellTopExtra(int p) { _topExtra = p; }
-    void setCellBottomExtra(int p) { _bottomExtra = p; }    
+    void setCellBottomExtra(int p) { _bottomExtra = p; }
 
     // ### FIXME
     //void setAscent(int asc) { m_ascent = asc; }
@@ -382,10 +383,10 @@ protected:
     int m_availableWidth;
     int _topExtra;
     int _bottomExtra;
-    
+
     virtual int cellTopExtra() { return _topExtra; }
     virtual int cellBottomExtra() { return _bottomExtra; }
-    
+
 
     RenderTableRow *rowimpl;
 };

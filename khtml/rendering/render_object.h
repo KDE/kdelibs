@@ -90,7 +90,8 @@ public:
     virtual bool isListItem() const { return false; }
     virtual bool isRoot() const { return false; }
     virtual bool isBR() const { return false; }
-
+    virtual bool isTableCell() const { return false; }
+    
     virtual bool isAnonymousBox() const { return false; }
     virtual void setIsAnonymousBox(bool) { }
 
