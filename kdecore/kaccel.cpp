@@ -188,11 +188,6 @@ bool KAccel::insertItem( const char * action, uint keyCode,
     insertItem(action, action, keyCode, configurable);
 }
 
-bool KAccel::insertItem( const char * action,
-			 const char * keyCode, bool configurable )
-{
-    insertItem(action, action, keyCode, configurable);
-}
 
 void KAccel::changeMenuAccel ( QPopupMenu *menu, int id,
 	const char *action )

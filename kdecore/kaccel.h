@@ -278,14 +278,6 @@ class KAccel
 	bool insertItem( const char * action, uint defaultKeyCode,
 				 bool configurable = TRUE );
 
-	/**
-	 * Convenience function without the need to specify a
-	 * localized function name for the user. This is useful if the accelerator is
-	 * only used internally, without appearing in a menu or a keybinding editor.
-	 */
-	bool insertItem( const char * action, const char * defaultKeyCode,
-				 bool configurable = TRUE );
-
 
 	/**
 	 * Often (usually?) shortcuts should be visible in the menu
