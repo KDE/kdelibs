@@ -29,8 +29,8 @@
 #include <qfile.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kstddirs.h>
-#include <krun.h>
+//#include <kstddirs.h>
+//#include <krun.h>
 
 
 KSSLInfoDlg::KSSLInfoDlg(bool secureConnection, QWidget *parent, const char *name) 
@@ -277,7 +277,7 @@ grid->addWidget(button, 17, 5);
 
 
 void KSSLInfoDlg::launchConfig() {
-  KRun::runCommand("kcmshell crypto", "kcmshell", "");
+//  KRun::runCommand("kcmshell crypto", "kcmshell", "");
 }
 
 
