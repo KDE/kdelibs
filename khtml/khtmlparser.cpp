@@ -136,7 +136,7 @@ const unsigned short tagPriority[] = {
     1, // ID_KBD
     1, // ID_LABEL
     1, // ID_LEGEND
-    1, // ID_LI
+    2, // ID_LI
     0, // ID_LINK
     1, // ID_LISTING
     1, // ID_MAP
@@ -358,6 +358,16 @@ void KHTMLParser::insertNode(NodeImpl *n)
 	// error handling...
 	HTMLElementImpl *e;
 	bool ignore = false;
+
+	switch(n->id())
+	{
+	case ID_LI:
+	    e = new HTMLUListElementImpl(document);
+	    insertNode(e);
+	    return;
+	default:
+	    break;
+	}
 
 	switch(current->id())
 	{
@@ -591,6 +601,7 @@ NodeImpl *KHTMLParser::getElement(Token *t)
 	n = new HTMLMenuElementImpl(document);
 	break;
     case ID_LI:
+	popBlock(ID_LI);
 	n = new HTMLLIElementImpl(document);
 	break;
 
