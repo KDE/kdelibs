@@ -20,6 +20,15 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.16  1999/03/02 16:22:28  kulow
+ * i18n is no longer a macro, but a function defined in klocale.h. So you
+ * don't need to include kapp.h when you want to use i18n. I see klocale->translate
+ * as obsolute (actually I seded it all over KDE :)
+ * I wanted to remove the #include <klocale.h> from kapp.h, but this broke
+ * too much, so I readded it after fixing half of kdeui. I guess I will
+ * write a script once that fixed compilation problems (I like the qt20fix way :),
+ * but for now it's only important to know that i18n works without kapp.h
+ *
  * Revision 1.15  1999/03/01 23:34:53  kulow
  * CVS_SILENT ported to Qt 2.0
  *
@@ -240,7 +249,7 @@ KMsgBox::KMsgBox( QWidget *parent, const QString& caption,
 	bbox->layout();
 	topLayout->addWidget( bbox );
 	
-    topLayout->freeze();
+        setFixedSize(sizeHint());
 }
 
 KMsgBox::~KMsgBox() 

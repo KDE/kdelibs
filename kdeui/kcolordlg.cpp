@@ -340,7 +340,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	// add buttom for adding colors
 	button = new QPushButton( i18n("Add to Custom Colors"),
 				  this );
-	button->setMinimumSize(button->sizeHint());
 	l_left->addWidget(button, 0);
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( slotAddToCustom() ) );
@@ -380,7 +379,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	
 	// add the HSV fields
 	label = new QLabel( "H:", this );
-	label->setMinimumSize(label->sizeHint());
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 0, 2);
 	hedit = new QLineEdit( this );
@@ -390,7 +388,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 		 SLOT( slotHSVChanged() ) );
 	
 	label = new QLabel( "S:", this );
-	label->setMinimumSize(label->sizeHint());
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 1, 2);
 	sedit = new QLineEdit( this );
@@ -400,7 +397,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 		 SLOT( slotHSVChanged() ) );
 	
 	label = new QLabel( "V:", this );
-	label->setMinimumSize(label->sizeHint());
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 2, 2);
 	vedit = new QLineEdit( this );
@@ -412,7 +408,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	
 	// add the RGB fields
 	label = new QLabel( "R:", this );
-	label->setMinimumSize(label->sizeHint());
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 0, 4);
 	redit = new QLineEdit( this );
@@ -422,7 +417,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 		 SLOT( slotRGBChanged() ) );
 	
 	label = new QLabel( "G:", this );
-	label->setMinimumSize(label->sizeHint());
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 1, 4);
 	gedit = new QLineEdit( this );
@@ -432,7 +426,6 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 		 SLOT( slotRGBChanged() ) );
 	
 	label = new QLabel( "B:", this );
-	label->setMinimumSize(label->sizeHint());
 	label->setAlignment(AlignRight | AlignVCenter);
 	l_rbot->addWidget(label, 2, 4);
 	bedit = new QLineEdit( this );
@@ -472,14 +465,13 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
 	connect( button, SIGNAL( clicked() ), 
 		 SLOT( reject() ) );
 	bbox->layout();
-	bbox->setMinimumSize(bbox->sizeHint());
 
         tl_layout->addMultiCellWidget(bbox, 2, 2, 0, 2);
 	tl_layout->setRowStretch(0, 1);
 	tl_layout->setRowStretch(1, 0);
 	tl_layout->setRowStretch(2, 0);
 	tl_layout->activate();
-	tl_layout->freeze();
+        setFixedSize(sizeHint());
 	
 	readSettings();
 	
