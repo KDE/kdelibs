@@ -1314,8 +1314,10 @@ QSize KToolBar::sizeHint() const
 {
     QSize minSize(0,0);
     KToolBar *this_too = (KToolBar *)this;
-    if (orientation() == Horizontal)
+    switch( barPos())
     {
+     case KToolBar::Top:
+     case KToolBar::Bottom:
        for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() ) 
        {
           if ( w->inherits( "KToolBarSeparator" ) &&
@@ -1331,9 +1333,11 @@ QSize KToolBar::sizeHint() const
           }
        }
        minSize += QSize(kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ), 0);
-    }
-    else
-    {
+       minSize += QSize(2, 2);
+       break;
+       
+     case KToolBar::Left:
+     case KToolBar::Right:
        for ( QWidget *w = this_too->widgets.first(); w; w = this_too->widgets.next() ) 
        {
           if ( w->inherits( "KToolBarSeparator" ) &&
@@ -1349,8 +1353,13 @@ QSize KToolBar::sizeHint() const
           }
        }
        minSize += QSize(0, kapp->style().pixelMetric( QStyle::PM_DockWindowHandleExtent ));
+       minSize += QSize(2, 2);
+       break;       
+
+     default:
+       minSize = QToolBar::sizeHint();
+       break;
     }
-    minSize += QSize(2, 2);
     return minSize;
 }
 
