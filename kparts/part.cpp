@@ -325,14 +325,16 @@ bool ReadOnlyPart::openURL( const KURL &url )
   if ( !closeURL() )
     return false;
   m_url = url;
-  emit setWindowCaption( m_url.prettyURL() );
   if ( m_url.isLocalFile() )
   {
     emit started( 0 );
     m_file = m_url.path();
     bool ret = openFile();
     if (ret)
+    {
         emit completed();
+        emit setWindowCaption( m_url.prettyURL() );
+    };
     return ret;
   }
   else
@@ -391,7 +393,8 @@ void ReadOnlyPart::slotJobFinished( KIO::Job * job )
     emit canceled( job->errorString() );
   else
   {
-    openFile();
+    if ( openFile() )
+      emit setWindowCaption( m_url.prettyURL() );
     emit completed();
   }
 }
