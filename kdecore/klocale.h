@@ -537,6 +537,11 @@ protected:
     QTime readTime(const QString &str, bool seconds) const;
 
     /**
+     * @internal function used by readDate(const QString &) const.
+     */
+    QDate readDate(const QString &str, bool shortfmt) const;
+
+    /**
      * @internal function used by the constructor.
      */
     void setEncodingLang(const QString &_lang);

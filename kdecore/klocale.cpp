@@ -708,9 +708,16 @@ static int readInt(const QString &str, uint &pos)
 
 QDate KLocale::readDate(const QString &intstr) const
 {
-	QDate date;
+  QDate _date;
+  _date = readDate(intstr, true);
+  if (_date.isValid()) return _date;
+  return readDate(intstr, false);
+}
+
+QDate KLocale::readDate(const QString &intstr, bool shortfmt) const
+{
 	QString str = intstr.simplifyWhiteSpace().lower();
-	QString fmt = _datefmtshort.simplifyWhiteSpace();
+	QString fmt = (shortfmt ? _datefmtshort : _datefmt).simplifyWhiteSpace();
 
 	int day = -1, month = -1, year = -1;
 	uint strpos = 0;
@@ -783,11 +790,9 @@ QDate KLocale::readDate(const QString &intstr) const
 			break;
 		}
 	}
+	return QDate(year, month, day);
 error:
-	date.setYMD(year, month, day);
-
-        // if there was an error date will be zero, if not it would be ok
-	return date;
+	return QDate(-1, -1, -1);
 }
 
 QTime KLocale::readTime(const QString &intstr) const
@@ -800,7 +805,6 @@ QTime KLocale::readTime(const QString &intstr) const
 
 QTime KLocale::readTime(const QString &intstr, bool seconds) const
 {
-  QTime _time;
   QString str = intstr.simplifyWhiteSpace().lower();
   QString fmt = _timefmt.simplifyWhiteSpace();
   if (!seconds)
