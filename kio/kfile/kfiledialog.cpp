@@ -204,7 +204,7 @@ KFileDialog::KFileDialog(const QString& startDir, const QString& filter,
             d->urlBar->insertItem( u, i18n("Network"), false, "network_local" );
     }
 
-    d->urlBar->setFixedWidth( d->urlBar->sizeHint().width() );
+//     d->urlBar->setFixedWidth( d->urlBar->sizeHint().width() );
 
     d->completionLock = false;
     d->myStatusLine = 0;

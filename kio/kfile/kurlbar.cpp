@@ -16,6 +16,7 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include <qapplication.h>
 #include <qcheckbox.h>
 #include <qdrawutil.h>
 #include <qfontmetrics.h>
@@ -227,6 +228,8 @@ KURLBar::KURLBar( bool useGlobalItems, QWidget *parent, const char *name, WFlags
       m_iconSize( KIcon::SizeMedium )
 {
     setListBox( 0L );
+    setSizePolicy( QSizePolicy( isVertical() ? QSizePolicy::Maximum   : QSizePolicy::Preferred,
+                                isVertical() ? QSizePolicy::Preferred : QSizePolicy::Maximum ));
 }
 
 KURLBar::~KURLBar()
@@ -246,6 +249,8 @@ KURLBarItem * KURLBar::insertItem(const KURL& url, const QString& description,
 void KURLBar::setOrientation( Qt::Orientation orient )
 {
     m_listBox->setOrientation( orient );
+    setSizePolicy( QSizePolicy( isVertical() ? QSizePolicy::Maximum   : QSizePolicy::Preferred,
+                                isVertical() ? QSizePolicy::Preferred : QSizePolicy::Maximum ));
 }
 
 Qt::Orientation KURLBar::orientation() const
@@ -299,6 +304,8 @@ void KURLBar::setIconSize( int size )
         item->setIcon( item->icon(), item->iconGroup() );
         item = static_cast<KURLBarItem*>( item->next() );
     }
+
+    updateGeometry();
 }
 
 void KURLBar::clear()
@@ -513,6 +520,7 @@ void KURLBar::slotDropped( QDropEvent *e )
                                                     this ) ) {
                 (void) insertItem( url, description, appLocal, icon );
                 m_isModified = true;
+                updateGeometry();
             }
         }
     }
@@ -598,6 +606,7 @@ bool KURLBar::editItem( KURLBarItem *item )
         item->setApplicationLocal( appLocal );
         m_listBox->triggerUpdate( true );
         m_isModified = true;
+        updateGeometry();
         return true;
     }
 
