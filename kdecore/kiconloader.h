@@ -20,6 +20,26 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.17  1999/03/09 07:40:26  antlarr
+   Added the getIconPath function that returns the full path to a icon filename,
+   it can be useful for many applications. Changed loadInternal to use it.
+
+   Revision 1.16  1999/03/02 00:09:43  dfaure
+   Fix for ICON() when icon not found. Now returns a default pixmap, unknown.xpm,
+   instead of 0L. Will prevent koffice apps and some others from crashing when
+   not finding an icon. Approved by Reggie.
+
+   loadIcon not changed, since I tried and it broke kpanel (which uses loadIcon
+   even on empty string in configuration item). This means loadIcon and ICON are
+   no longer equivalent : loadIcon is for apps that want to do complex things
+   with icons, based on whether they're installed or not, ICON() is for apps
+   that just want an Icon and don't want to care about it !
+
+   Of course, unknown.xpm is WAYS to big for a toolbar - that's the point :
+   you easily see that the icon is missing....   :)))
+
+   Not tested with Qt2.0, of course, but it's time for binary incompat changes...
+
    Revision 1.15  1998/11/02 10:08:35  ettrich
    new reload method for kiconloader (Rene Beutler)
 
@@ -177,6 +197,15 @@ public:
   bool insertDirectory( int index, const QString &dir_name ) {
     return pixmap_dirs.insert( index, dir_name ); }
   QStrList* getDirList() { return &pixmap_dirs; }
+
+  /// Get the complete path for an icon filename
+  /**
+      Set always_valid to true if you want this function to return a valid
+      pixmap is your wishes cannot be satisfied (Be aware, that if unknown.xpm
+      is not found you will receive a null string)
+  */
+  QString KIconLoader::getIconPath( const QString &name, bool always_valid=false);
+
 
   /// Flush cache
   /**

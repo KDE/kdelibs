@@ -20,6 +20,13 @@
    Boston, MA 02111-1307, USA.
    
    $Log$
+   Revision 1.30  1999/03/09 07:40:26  antlarr
+   Added the getIconPath function that returns the full path to a icon filename,
+   it can be useful for many applications. Changed loadInternal to use it.
+			+ kapp->appName() + "/pics" ); 
+   Revision 1.29  1999/03/02 15:56:26  kulow
+   CVS_SILENT replacing klocale->translate with i18n
+	if ( large )
    Revision 1.28  1999/03/02 00:09:42  dfaure
    Fix for ICON() when icon not found. Now returns a default pixmap, unknown.xpm,
    instead of 0L. Will prevent koffice apps and some others from crashing when
@@ -255,20 +262,11 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString &name, int w, int h
 
 }
 	pixmap_dirs.insert( pixmap_dirs.at(index), dir_name ); 
-
-QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
-
-  QPixmap *pix;
-  KPixmap new_xpm;
-
-  int index;
-
-  if ( (index = name_list.find(name)) < 0){
-
+QString KIconLoader::getIconPath( const QString &name, bool always_valid)
+}
     QString full_path;
     QFileInfo finfo;
-    
-    pix = new QPixmap;
+
     if( name.left(1) == "/" ){
       full_path = name;
     }
@@ -284,8 +282,27 @@ QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
 	      break;
 	++it;
       }
+      if ( (always_valid) && (!it.current()) ){
+  // Let's be recursive (but just once at most)
+        full_path = getIconPath( "unknown.xpm" , false); 
+      }
     }
-    new_xpm.load( full_path, QString::null, KPixmap::LowColor );
+
+
+    return full_path;
+}
+
+QPixmap KIconLoader::loadInternal ( const QString &name, int w,  int h ){
+
+  QPixmap *pix;
+  KPixmap new_xpm;
+
+  int index;
+
+  if ( (index = name_list.find(name)) < 0){
+    
+    pix = new QPixmap;
+    new_xpm.load( getIconPath(name), QString::null, KPixmap::LowColor );
     *pix = new_xpm;
     
     if( !(pix->isNull()) ){
