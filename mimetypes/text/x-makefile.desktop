@@ -11,3 +11,4 @@ Comment[ro]=Fiºier Makefile
 DefaultApp=kwrite
 Type=MimeType
 Patterns=Makefile*;makefile*;
+Icon=mimetypes/make
