@@ -2321,13 +2321,13 @@ bool HTTPProtocol::readHeader()
     while( *buf == ' ' )
         buf++;
 
+    // Store the the headers so they can be passed to the
+    // calling application later.
+    if (propagateHeader)
+      responseHeader << QString::fromLatin1(buf);
+
     if (strncasecmp(buf, "HTTP/", 5) == 0)
     {
-      // Store the the headers so they can be passed to the
-      // calling application later
-      if (propagateHeader)
-        responseHeader << QString::fromLatin1(buf);
-
       if (strncmp((buf + 5), "1.0",3) == 0)
       {
         m_HTTPrev = HTTP_10;
@@ -3042,11 +3042,11 @@ bool HTTPProtocol::readHeader()
   // this method is somewhat recursive....
   if ( !mediaAttribute.isEmpty() )
     setMetaData(mediaAttribute, mediaValue);
-    
+
   // Send the response header if it was requested
   if (!responseHeader.isEmpty())
   {
-    kdDebug(7113) << "(" << m_pid << ") Setting HTTP-Headers: " 
+    kdDebug(7113) << "(" << m_pid << ") Setting HTTP-Headers: " << endl
                   << responseHeader.join("\n") << endl;
     setMetaData("HTTP-Headers", responseHeader.join("\n"));
   }
