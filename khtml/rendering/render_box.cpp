@@ -201,7 +201,7 @@ void RenderBox::setPixmap(const QPixmap &, CachedObject *, bool *)
 void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
 				       int, int _h, int _tx, int _ty)
 {
-    //kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
+    kdDebug( 6040 ) << renderName() << "::printDecorations()" << endl;
 
     QColor c = m_style->backgroundColor();
 
@@ -217,7 +217,7 @@ void RenderBox::printBoxDecorations(QPainter *p,int, int _y,
     	mh = MIN(_h,h);
 
     if(c.isValid()) {
-	//kdDebug( 6040 ) << "printing bgcolor" << endl;
+	kdDebug( 6040 ) << "printing bgcolor" << endl;
 	p->fillRect(_tx, my, w, mh, c);
     }
     if(m_bgImage) {

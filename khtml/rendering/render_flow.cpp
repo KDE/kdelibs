@@ -327,7 +327,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	
     while( child != 0 )
     {
-    	kdDebug( 6040 ) << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
+    	//kdDebug( 6040 ) << child->renderName() << " loop " << child << ", " << child->isInline() << ", " << child->layouted() << endl;
 	// ### might be some layouts are done two times... FIX that.
 	
     	if (child->isPositioned())
@@ -338,7 +338,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	    continue;
 	} else if ( child->isReplaced() )
 	    child->layout(true);
-	    
+	
 	if(checkClear(child)) prevMargin = 0; // ### should only be 0
 	// if oldHeight+prevMargin < newHeight
 	int margin = child->marginTop();
@@ -347,7 +347,7 @@ void RenderFlow::layoutBlockChildren(bool deep)
 	
 	m_height += margin;
 	
-	kdDebug(0) << "margin = " << margin << " yPos = " << m_height << endl;
+	//kdDebug(0) << "margin = " << margin << " yPos = " << m_height << endl;
 	
 	child->setYPos(m_height);
 

@@ -125,11 +125,19 @@ void HTMLBodyElementImpl::parseAttribute(AttrImpl *attr)
 
 void HTMLBodyElementImpl::attach(KHTMLView *w)
 {
-    static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, bgImage, false);
-    static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_COLOR, bgColor, false);
-    parentNode()->recalcStyle();
+    bool recalc = false;
+    if(!bgImage.isEmpty()) {
+	static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_IMAGE, bgImage, false);
+	recalc = true;
+    }
+    if(!bgColor.isEmpty()) {
+	static_cast<HTMLElementImpl *>(parentNode())->addCSSProperty(CSS_PROP_BACKGROUND_COLOR, bgColor, false);
+	recalc = true;
+    }
+    if ( recalc )
+	parentNode()->recalcStyle();
 
-    
+
     if(w->marginWidth() != -1) {
 	QString str;
 	str.sprintf("%dpx",w->marginWidth());
