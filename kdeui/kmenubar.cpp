@@ -39,6 +39,10 @@
 
 // $Id$
 // $Log$
+//
+// Revision 1.36  1998/11/05 18:23:32  radej
+// sven: new look for *Bar handles (unfinished)
+//
 // Revision 1.35  1998/10/05 15:09:52  kulow
 // purify (and me) likes initialized members, so I choose one (like the compiler
 // would do :)
@@ -371,34 +375,61 @@ void KMenuBar::leaveEvent (QEvent *e){
       }
 
 
-	  QBrush b;
-	  if (ev->type() == Event_Enter && highlight) // highlight? - sven
-               b = kapp->selectColor; // this is much more logical then
-                                      // the hardwired value used before!!
-	  else
-		b = QWidget::backgroundColor();
-      if (style() == MotifStyle)
-        qDrawShadePanel( &paint, 0, 0, 9, handle->height(),
-                         g , FALSE, 1, &b );
+      QBrush b;
+      if (ev->type() == Event_Enter && highlight) // highlight? - sven
+        b = kapp->selectColor; // this is much more logical then
+      // the hardwired value used before!!
       else
-        qDrawPlainRect ( &paint, 0, 0, 9, handle->height(),
-                         g.mid(), 1, &b);
+        b = QWidget::backgroundColor();
+      if (ev->type() == QEvent::Enter && highlight) // highlight? - sven
+        b = colorGroup().highlight();  // this is much more logical then
+      
 
-      paint.setPen( g.light() );
-      stipple_height = 3;
-     while ( stipple_height < handle->height()-4 ) {
-	paint.drawPoint( 1, stipple_height+1);
-	paint.drawPoint( 4, stipple_height);
-	stipple_height+=3;
+          return(true);
+	  }
+                         g , FALSE, 1, &b );
+          return true;
+        qDrawShadePanel( &paint, 0, 0, 9, h,
+                           g , FALSE, 1, &b );
+
+
+        paint.setPen( g.light() );
+        stipple_height = 3;
+        while ( stipple_height < h-4 ) {
+          paint.drawPoint( 1, stipple_height+1);
+          paint.drawPoint( 4, stipple_height);
+          stipple_height+=3;
+        }
+        paint.setPen( g.dark() );
+        stipple_height = 4;
+        while ( stipple_height < h-4 ) {
+          paint.drawPoint( 2, stipple_height+1);
+          paint.drawPoint( 5, stipple_height);
+          stipple_height+=3;
+        }
+        qDrawPlainRect ( &paint, 0, 0, 9, handle->height(),
+         return true;
+        
+                         g.mid(), 0, &b);
+        w=6;
+        paint.setClipRect(0, 2, w, h-4);
+
+        paint.setPen( g.light() );
+          //paint.drawLine(0, h-a+1, h, 0-a+1);
+          a +=4;
+        {
+          paint.drawLine(0, h-a, h, 0-a);
+          paint.drawLine(0, h-a+1, h, 0-a+1);
+          a +=6;
+        }
+        a=0-w;
+          //paint.drawLine(0, h-a+3, h, 0-a+3);
+          a +=4;
+        {
+
+
+          paint.drawLine(0, h-a+2, h, 0-a+2);
           paint.drawLine(0, h-a+3, h, 0-a+3);
-      paint.setPen( g.dark() );
-      stipple_height = 4;
-      while ( stipple_height < handle->height()-4 ) {
-	paint.drawPoint( 2, stipple_height+1);
-	paint.drawPoint( 5, stipple_height);
-	stipple_height+=3;
-      }
-      return TRUE;
           a +=6;
         }
         return TRUE;

@@ -22,6 +22,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.82  1998/10/10 11:28:53  radej
+// sven: Fixed popup position (if too close to bottom of screen, pops above)
+//
 // Revision 1.81  1998/10/09 12:42:19  radej
 // Revision 1.83  1998/11/05 18:23:31  radej
 // sven: new look for *Bar handles (unfinished)
@@ -1222,31 +1225,58 @@ void KToolBar::paintEvent(QPaintEvent *)
     if (horizontal)
     {
       if (style() == MotifStyle)
+      {
         qDrawShadePanel( paint, 0, 0, 9, toolbarHeight,
                          g , false, 1, &b);
-      else
-        qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
-                         g.mid(), 1, &b);
-
-      paint->setPen( g.light() );
-      if (style() == MotifStyle)
-        paint->drawLine( 9, 0, 9, toolbarHeight);
-      stipple_height = 3;
-      while ( stipple_height < toolbarHeight-4 ) {
-        paint->drawPoint( 1, stipple_height+1);
-        paint->drawPoint( 4, stipple_height);
-        stipple_height+=3;
+        paint->setPen( g.light() );
+        if (style() == MotifStyle)
+          paint->drawLine( 9, 0, 9, toolbarHeight);
+        stipple_height = 3;
+        while ( stipple_height < toolbarHeight-4 ) {
+          paint->drawPoint( 1, stipple_height+1);
+          paint->drawPoint( 4, stipple_height);
+          stipple_height+=3;
+        }
+        paint->setPen( g.dark() );
+        stipple_height = 4;
+        while ( stipple_height < toolbarHeight-4 ) {
+          paint->drawPoint( 2, stipple_height+1);
+          paint->drawPoint( 5, stipple_height);
+          stipple_height+=3;
+        }
       }
-      paint->setPen( g.dark() );
-      stipple_height = 4;
-      while ( stipple_height < toolbarHeight-4 ) {
-        paint->drawPoint( 2, stipple_height+1);
-        paint->drawPoint( 5, stipple_height);
-        stipple_height+=3;
+      else // Windows style handle
+      {
+        int w = 9;
+        int h = toolbarHeight;
+        paint->setClipRect(0, 0, w, h);
+        
+        qDrawPlainRect ( paint, 0, 0, 9, toolbarHeight,
+                         g.mid(), 0, &b);
+
+        paint->setPen( g.light() );
+        int a=0-w;
+        while (a <= h+5)
+        {
+          paint->drawLine(0, h-a, h, 0-a);
+          //paint.drawLine(0, h-a+1, h, 0-a+1);
+          a +=4;
+        }
+        a=0-w;
+        paint->setPen( g.dark() );
+        while (a <= h+5)
+        {
+          paint->drawLine(0, h-a+2, h, 0-a+2);
+          //paint.drawLine(0, h-a+3, h, 0-a+3);
+          a +=4;
+        }
+
+
+        
       }
 
     }
-    else
+    else // vertical
     {
       if (style() == MotifStyle)
         qDrawShadePanel( paint, 0, 0, toolbarWidth, 9,
