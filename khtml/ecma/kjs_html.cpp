@@ -2123,11 +2123,11 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
         bool block = false;
 
         if ( policy != KHTMLSettings::KJSWindowOpenAllow ) {
-	
           block = true;
-	
-          // if this is a form without a target, don't block
-          if( form.target().isEmpty() )
+
+         // if this is a form without a target, or a special target, don't block
+          if( form.target().isEmpty() || form.target() == "_top" ||
+              form.target() == "_self" || form.target() == "_parent")
             block = false;
 
           // if there is a frame with the target name, don't block
