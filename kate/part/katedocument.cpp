@@ -2379,6 +2379,11 @@ bool KateDocument::openFile(KIO::Job * job)
   //
   if (success)
   {
+    if (m_highlight && !m_url.isLocalFile()) {
+      // The buffer's highlighting gets nuked by KateBuffer::clear()
+      buffer->setHighlight(m_highlight);
+    }
+    
     // update our hl type if needed
     if (!hlSetByUser)
     {
@@ -2387,11 +2392,8 @@ bool KateDocument::openFile(KIO::Job * job)
       if (hl >= 0)
         internalSetHlMode(hl);
     
-    } else {
-      // The buffer's highlighting gets nuked by KateBuffer::clear()
-      buffer->setHighlight(m_highlight);
     }
-    
+        
     // update file type
     updateFileType (KateFactory::self()->fileTypeManager()->fileType (this));
 
@@ -2639,7 +2641,9 @@ bool KateDocument::closeURL()
   // update all our views
   for (KateView * view = m_views.first(); view != 0L; view = m_views.next() )
   {
-    view->setCursorPositionReal (0,0);
+    // Explicitly call the internal version because we don't want this to look like
+    // an external request (and thus have the view not QWidget::scroll()ed.
+    view->setCursorPositionInternal(0, 0, 1, false);
     view->updateView(true);
   }
 
