@@ -303,7 +303,6 @@ QRect KCompletionBox::calculateGeometry() const
     int x = 0, y = 0;
     int ih = itemHeight() +1;
     int h = QMIN( 15 * ih, (int) count() * ih ) +2;
-    h = QMAX( h, KListBox::minimumSizeHint().height() );
 
     int w = (d->m_parent) ? d->m_parent->width() : KListBox::minimumSizeHint().width();
     w = QMAX( KListBox::minimumSizeHint().width(), w );
