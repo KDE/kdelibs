@@ -1,3 +1,8 @@
+2003-10-06  David Faure  <faure@kde.org>
+
+	* ecma/kjs_html.cpp: Fixed crash due to onload=null in the onload event 
+	handler (#57195).
+
 2003-10-06  Dirk Mueller  <mueller@kde.org>
 
 	* khtml_part.cpp (jScript): remove broken #ifdef'ery.
