@@ -1,34 +1,29 @@
     /*
 
-    Copyright (C) 1999 Stefan Westerfeld
-                       stefan@space.twc.de
+    Copyright (C) 1999-2001 Stefan Westerfeld
+                            stefan@space.twc.de
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+  
+    This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-    Permission is also granted to link this program with the Qt
-    library, treating Qt like a library that normally accompanies the
-    operating system kernel, whether or not that is in fact the case.
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Library General Public License for more details.
+   
+    You should have received a copy of the GNU Library General Public License
+    along with this library; see the file COPYING.LIB.  If not, write to
+    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
 
     */
 
 /*
- * BC - Status (2000-09-30): QIOWatch, QTimeWatch, QIOManager.
+ * BC - Status (2001-02-23): QIOManager.
  *
- * WARNING: these classes are supplied, if you want to *experiment* with them.
- * However, they are probably *NOT STABLE*, and will not stay binary
- * compatible, maybe not even stay present in further versions.
+ * QIOManager is kept binary compatible.
  */
 
 #ifndef QIOMANAGER_H
@@ -42,40 +37,34 @@
 
 namespace Arts {
 
-class QIOWatch : public QObject {
-	Q_OBJECT
-protected:
-	QSocketNotifier *qsocketnotify;
-	IONotify *_client;
-	int fd;
-	int _type;
+class QIOWatch;
+class QTimeWatch;
 
-public:
-	QIOWatch(int fd, int type, IONotify *notify, QSocketNotifier::Type qtype);
-
-	inline IONotify *client() { return _client; }
-	inline int type() { return _type; }
-public slots:
-	void notify(int socket);
-};
-
-class QTimeWatch : public QObject {
-	Q_OBJECT
-protected:
-	QTimer *timer;
-	TimeNotify *_client;
-public:
-	QTimeWatch(int milliseconds, TimeNotify *notify);
-
-	inline TimeNotify *client() { return _client; }
-public slots:
-	void notify();
-};
+/**
+ * QIOManager performs MCOP I/O inside the Qt event loop. This way, you will
+ * be able to receive requests and notifications inside Qt application. The
+ * usual way to set it up is:
+ *
+ * <pre>
+ * KApplication app(argc, argv);    // as usual
+ *
+ * Arts::QIOManager qiomanager;
+ * Arts::Dispatcher dispatcher(&qiomanager);
+ * ...
+ * return app.exec();               // as usual
+ * </pre>
+ */
 
 class QIOManager : public IOManager {
 protected:
+	friend class QIOWatch;
+	friend class QTimeWatch;
+
 	std::list<QIOWatch *> fdList;
 	std::list<QTimeWatch *> timeList;
+
+	void dispatch(QIOWatch *ioWatch);
+	void dispatch(QTimeWatch *timeWatch);
 
 public:
 	QIOManager();
@@ -88,6 +77,27 @@ public:
 	void remove(IONotify *notify, int types);
 	void addTimer(int milliseconds, TimeNotify *notify);
 	void removeTimer(TimeNotify *notify);
+
+	/**
+	 * This controls what QIOManager will do while waiting for the result
+	 * of an MCOP request, the possibilities are:
+	 *
+	 * @li block until the request is completed (true)
+	 * @li open a local event loop (false)
+	 *
+	 * It is much easier to write working and reliable code with blocking
+	 * enabled, so this is the default. If you disable blocking, you have
+	 * to deal with the fact that timers, user interaction and similar
+	 * "unpredictable" things will possibly influence your code in all
+	 * places where you make a remote MCOP call (which is quite often in
+	 * MCOP applications).
+	 */
+	void setBlocking(bool blocking);
+
+	/**
+	 * Query whether blocking is enabled.
+	 */
+	bool blocking();
 };
 
 };
