@@ -344,8 +344,7 @@ signals:
   void clear( const KURL& _url );
 
   /**
-   * Signal new items, @p complete is true when the directory loading has
-   * finished
+   * Signal new items.
    */
   void newItems( const KFileItemList& items );
 
