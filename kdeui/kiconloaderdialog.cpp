@@ -52,7 +52,7 @@ KIconLoaderCanvas::~KIconLoaderCanvas()
 {
   delete timer;
   name_list.clear();
-  pixmap_list.clear(); 
+  pixmap_list.clear();
 }
 
 void KIconLoaderCanvas::loadDir( QString dirname, QString filter )
@@ -66,6 +66,7 @@ void KIconLoaderCanvas::loadDir( QString dirname, QString filter )
   QDir d(dir_name);
   name_list.clear();
   pixmap_list.clear();
+  file_list.clear();
   if( !filter.isEmpty() )
     {
       d.setNameFilter(filter);
@@ -101,7 +102,7 @@ void KIconLoaderCanvas::process()
   for( int i = 0; i < 10 && current != file_list.end(); i++, curr_indx++ )
     {
       new_xpm = new KPixmap;
-      new_xpm->load( dir_name + '/' + *current, 0, KPixmap::LowColor );
+      new_xpm->load( /*dir_name + '/' + */ *current, 0, KPixmap::LowColor );
       if( new_xpm->isNull() )
         {
           delete new_xpm;
@@ -122,9 +123,14 @@ void KIconLoaderCanvas::process()
 	       if ( tmp_xpm.mask() )
 		   new_xpm->setMask( *tmp_xpm.mask() );
 	 }
+
        max_width  = ( max_width  > new_xpm->width()  ? max_width  : new_xpm->width() );
        max_height = ( max_height > new_xpm->height() ? max_height : new_xpm->height() );
-       name_list.append( *current );
+
+       QString name = *current;
+       name.remove(0,dir_name.length() + 1);
+       
+       name_list.append( name );
        pixmap_list.append(new_xpm);
        ++current;
     }
@@ -134,7 +140,7 @@ void KIconLoaderCanvas::process()
       QApplication::restoreOverrideCursor();
       file_list.clear();
     }
-  else
+  else 
       timer->start( 0, true );
 
   // progressive display is nicer if these don't change too often
@@ -298,7 +304,7 @@ KIconLoaderDialog::~KIconLoaderDialog()
 
 void KIconLoaderDialog::reject()
 {
-  canvas->cancelLoad(); 
+  canvas->cancelLoad();
   QDialog::reject();
 }
 
@@ -384,7 +390,7 @@ void KIconLoaderButton::slotChangeIcon()
 	setPixmap(pix);
 	iconStr = name.data();
 	emit iconChanged( iconStr );
-    }    
+    }
 }
 
 void KIconLoaderButton::setIcon(const QString& _icon)
@@ -395,7 +401,7 @@ void KIconLoaderButton::setIcon(const QString& _icon)
     setPixmap( KApplication::getKApplication()->getIconLoader()->loadApplicationIcon( iconStr.ascii() ) );
 }
 
-KIconLoaderButton::~KIconLoaderButton() 
+KIconLoaderButton::~KIconLoaderButton()
 {
     if ( loaderDialog )
 	delete loaderDialog;
