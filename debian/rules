@@ -23,7 +23,7 @@ build-stamp:
 	fi
 	version=`head -1 debian/changelog | sed -e "s#.*(\([^)]*\)).*#Debian Package \1#"` ;\
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
-	--includedir=/usr/include/kde --without-ssl
+	--includedir=/usr/include/kde --without-ssl --without-alsa
 
 	make
 
@@ -85,9 +85,14 @@ binary-arch:  build
 	install -d debian/tmp/etc/kde2
 	install -d debian/tmp/usr/share/lintian/overrides
 	make DESTDIR=`pwd`/debian/tmp/ install
+	make -C arts/ clean
+	./configure $(configkde) --with-alsa --without-ssl \
+		--includedir=/usr/include/kde
+	make -C arts/ DESTDIR=`pwd`/debian/libarts-alsa/ install
 	-rm -f debian/tmp/usr/share/doc/kde/HTML/default
 	cp debian/kdelibs3.override debian/tmp/usr/share/lintian/overrides/kdelibs3
 	cp debian/libarts.override debian/tmp/usr/share/lintian/overrides/libarts
+	cp debian/libarts-alsa.override debian/tmp/usr/share/lintian/overrides/libarts-alsa
 	debianrc=debian/tmp/etc/kde2/system.kdeglobals ;\
 	install -d `dirname $$debianrc` ;\
 	echo "[Directories]" > $$debianrc ;\
@@ -124,6 +129,7 @@ binary-arch:  build
 	dh_fixperms -a
 	chmod 644 debian/tmp/etc/pam.d/kde debian/tmp/usr/share/lintian/overrides/*
 	chmod 4755 debian/libarts/usr/bin/artswrapper
+	chmod 4755 debian/libarts-alsa/usr/bin/artswrapper
 	dh_makeshlibs -a -V
 	dh_installdeb -a
 	dh_shlibdeps -a

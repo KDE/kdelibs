@@ -1,0 +1,2 @@
+# suid
+libarts-alsa: setuid-binary usr/bin/artswrapper 4755 root/root
