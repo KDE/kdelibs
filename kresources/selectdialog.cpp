@@ -119,4 +119,4 @@ Resource *SelectDialog::getResource( QPtrList<Resource> list, QWidget *parent )
   else return 0;
 }
 
-#include "selectdialog.moc"
+// #include "selectdialog.moc"
