@@ -428,7 +428,7 @@ int ioctl (int fd, ioctl_request_t request, ...)
 		  space = arts_stream_get(stream, ARTS_P_BUFFER_SPACE);
 		  size = arts_stream_get(stream, ARTS_P_BUFFER_SIZE);
 		  latency = arts_stream_get(stream, ARTS_P_SERVER_LATENCY);
-		  odelay = size - space + (latency * speed) / 1000;
+		  odelay = size - space + (latency * speed * bits * channels) / 8000;
 		  artsdspdebug("aRts: SNDCTL_DSP_GETODELAY returning %d\n", odelay);
 		  *arg = odelay;
 		  break;
