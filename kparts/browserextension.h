@@ -197,6 +197,10 @@ signals:
 
   void popupMenu( const QPoint &global, const KURL &url, const QString &mimeType, mode_t mode = -1 );
 
+  void selectionInfo( const KonqFileItemList &items );
+  void selectionInfo( const QString &text );
+  void selectionInfo( const KURL::List &urls );
+
 private slots:
   void slotCompleted();
 
