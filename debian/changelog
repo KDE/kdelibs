@@ -4,7 +4,7 @@ kdelibs (4:2.2.2-10) unstable; urgency=low
   * Change nas-dev suggests to depends
   * A Couple upstream fixes
 
- -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 27 Dec 2001 17:26:00 -0700
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 27 Dec 2001 23:20:00 -0700
 
 kdelibs (4:2.2.2-9) unstable; urgency=low
 
