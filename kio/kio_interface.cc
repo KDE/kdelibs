@@ -56,7 +56,7 @@ bool ConnectionSignals::getSize( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool _resume, unsigned int _size )
+bool ConnectionSignals::put( const char *_url, int _mode, bool _overwrite, bool _resume, int _size )
 {
   assert( m_pConnection );
 
@@ -85,23 +85,23 @@ bool ConnectionSignals::copy( list<string>& _source, const char *_dest )
     if ( !source( it->c_str() ) )
       return false;
   
-  m_pConnection->send( CMD_COPY, _dest, l + 1 );
+  m_pConnection->send( CMD_MCOPY, _dest, l + 1 );
   return true;
 }
 
-bool ConnectionSignals::copy( const char *_from, const char *_to )
+bool ConnectionSignals::copy( const char *_source, const char *_dest )
 {
   assert( m_pConnection );
 
-  int l1 = strlen( _from );
-  int l2 = strlen( _to );
+  int l1 = strlen( _source );
+  int l2 = strlen( _dest );
   if ( l1 + 1 + l2 + 1 >= 0xFFFF )
     return false;
   
-  memcpy( m_pConnection->buffer(), _from, l1 + 1 );
-  memcpy( m_pConnection->buffer() + l1 + 1, _to, l2 + 1 );
+  memcpy( m_pConnection->buffer(), _source, l1 + 1 );
+  memcpy( m_pConnection->buffer() + l1 + 1, _dest, l2 + 1 );
   
-  m_pConnection->send( CMD_COPY_SINGLE, m_pConnection->buffer(), l1 + 1 + l2 + 1 );
+  m_pConnection->send( CMD_COPY, m_pConnection->buffer(), l1 + 1 + l2 + 1 );
   return true;
 }
 
@@ -117,27 +117,65 @@ bool ConnectionSignals::source( const char *_url )
   return true;
 }
 
-bool ConnectionSignals::move( const char *_source, const char *_dest )
-{
-  assert( m_pConnection );
-  return true;
-}
-
 bool ConnectionSignals::move( list<string>& _source, const char *_dest )
 {
   assert( m_pConnection );
+
+  int l = strlen( _dest );
+  if ( l >= 0xFFFF )
+    return false;
+  
+  list<string>::iterator it = _source.begin();
+  for( ; it != _source.end(); ++it )
+    if ( !source( it->c_str() ) )
+      return false;
+  
+  m_pConnection->send( CMD_MMOVE, _dest, l + 1 );
+
   return true;
 }
 
-bool ConnectionSignals::del( const char *_url )
+bool ConnectionSignals::move( const char *_source, const char *_dest )
 {
   assert( m_pConnection );
+
+  int l1 = strlen( _source );
+  int l2 = strlen( _dest );
+  if ( l1 + 1 + l2 + 1 >= 0xFFFF )
+    return false;
+  
+  memcpy( m_pConnection->buffer(), _source, l1 + 1 );
+  memcpy( m_pConnection->buffer() + l1 + 1, _dest, l2 + 1 );
+  
+  m_pConnection->send( CMD_MOVE, m_pConnection->buffer(), l1 + 1 + l2 + 1 );
+
   return true;
 }
 
 bool ConnectionSignals::del( list<string>& _source )
 {
   assert( m_pConnection );
+
+  list<string>::iterator it = _source.begin();
+  for( ; it != _source.end(); ++it )
+    if ( !source( it->c_str() ) )
+      return false;
+  
+  m_pConnection->send( CMD_MDEL, "", 0 );
+
+  return true;
+}
+
+bool ConnectionSignals::del( const char *_url )
+{
+  assert( m_pConnection );
+
+  int l = strlen( _url );
+  if ( l >= 0xFFFF )
+    return false;
+  
+  m_pConnection->send( CMD_DEL, static_cast<const char*>(_url), l + 1 );
+
   return true;
 }
 
@@ -526,18 +564,43 @@ void ConnectionSlots::dispatch( int _cmd, void *_p, int _len )
 	slotMount( ro, fstype, dev, point );
       }
       break;
-    case CMD_COPY:
+    case CMD_MCOPY:
       {	
 	const char* arg = (const char*)_p;
 	slotCopy( m_lstSource, arg );
 	m_lstSource.clear();
       }
       break;
-    case CMD_COPY_SINGLE:
+    case CMD_COPY:
       {	
 	const char* arg1 = (const char*)_p;
 	const char* arg2 = (const char*)_p + strlen( arg1 ) + 1;
 	slotCopy( arg1, arg2 );
+      }
+      break;
+    case CMD_MMOVE:
+      {	
+	const char* arg = (const char*)_p;
+	slotMove( m_lstSource, arg );
+	m_lstSource.clear();
+      }
+      break;
+    case CMD_MOVE:
+      {	
+	const char* arg1 = (const char*)_p;
+	const char* arg2 = (const char*)_p + strlen( arg1 ) + 1;
+	slotMove( arg1, arg2 );
+      }
+      break;
+    case CMD_MDEL:
+      {	
+	slotDel( m_lstSource );
+	m_lstSource.clear();
+      }
+      break;
+    case CMD_DEL:
+      {	
+	slotDel( (const char*)(_p) );
       }
       break;
     case CMD_PUT:

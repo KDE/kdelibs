@@ -47,7 +47,7 @@ bool IOJob::testDir( const char *_url )
 bool IOJob::copy( list<string>& _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
-  m_cmd = CMD_COPY;
+  m_cmd = CMD_MCOPY;
   
   m_bIsReady = false;
   m_bError = false;
@@ -58,12 +58,56 @@ bool IOJob::copy( list<string>& _source, const char *_dest )
 bool IOJob::copy( const char* _source, const char *_dest )
 {
   assert( m_cmd == CMD_NONE );
-  m_cmd = CMD_COPY_SINGLE;
+  m_cmd = CMD_COPY;
   
   m_bIsReady = false;
   m_bError = false;
   
   return ConnectionSignals::copy( _source, _dest );
+}
+
+bool IOJob::move( list<string>& _source, const char *_dest )
+{
+  assert( m_cmd == CMD_NONE );
+  m_cmd = CMD_MMOVE;
+  
+  m_bIsReady = false;
+  m_bError = false;
+  
+  return ConnectionSignals::move( _source, _dest );
+}
+
+bool IOJob::move( const char* _source, const char *_dest )
+{
+  assert( m_cmd == CMD_NONE );
+  m_cmd = CMD_MOVE;
+  
+  m_bIsReady = false;
+  m_bError = false;
+  
+  return ConnectionSignals::move( _source, _dest );
+}
+
+bool IOJob::del( list<string>& _source )
+{
+  assert( m_cmd == CMD_NONE );
+  m_cmd = CMD_MDEL;
+  
+  m_bIsReady = false;
+  m_bError = false;
+
+  return ConnectionSignals::del( _source );
+}
+
+bool IOJob::del( const char *_url )
+{
+  assert( m_cmd == CMD_NONE );
+  m_cmd = CMD_DEL;
+  
+  m_bIsReady = false;
+  m_bError = false;
+
+  return ConnectionSignals::del( _url );
 }
 
 bool IOJob::listDir( const char *_url )
@@ -99,7 +143,7 @@ bool IOJob::getSize( const char* _url )
   return ConnectionSignals::getSize( _url );
 }
 
-bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume, unsigned int _size )
+bool IOJob::put( const char *_url, int _mode, bool _overwrite, bool _resume, int _size )
 {
   assert( m_cmd == CMD_NONE );
   m_cmd = CMD_PUT;

@@ -126,8 +126,6 @@ void KIOJob::clean()
     m_pCopyProgressDlg = 0L;
   }
 
-  cerr << "clean()\n";
-
   // Do not putback the slave into the pool because we may have
   // died in action. This means that the slave is in an undefined
   // state. If the job has finished successfully then
@@ -530,7 +528,6 @@ void KIOJob::slotFinished()
 
 void KIOJob::slotError( int _errid, const char *_txt )
 {
-  cerr << "KIOJob::slotError " << _errid << "   " << _txt << endl;
   IOJob::slotError( _errid, _txt );
   
   // If someone tries to delete us because we emitted sigError
@@ -590,7 +587,7 @@ void KIOJob::slotCanResume( bool _resume )
 void KIOJob::slotTotalSize( unsigned long _bytes )
 {
   m_iTotalSize = _bytes;
-  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_COPY_SINGLE || m_cmd == CMD_GET )
+  if ( ( m_cmd == CMD_MCOPY || m_cmd == CMD_COPY || m_cmd == CMD_GET )
        && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalSize( _bytes );
   
@@ -602,7 +599,7 @@ void KIOJob::slotTotalSize( unsigned long _bytes )
 void KIOJob::slotTotalFiles( unsigned long _files )
 {
   m_iTotalFiles = _files;
-  if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
+  if ( m_cmd == CMD_MCOPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalFiles( _files );
 
   emit sigTotalFiles( m_id, _files );
@@ -613,7 +610,7 @@ void KIOJob::slotTotalFiles( unsigned long _files )
 void KIOJob::slotTotalDirs( unsigned long _dirs )
 {
   m_iTotalDirs = _dirs;
-  if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
+  if ( m_cmd == CMD_MCOPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->totalDirs( _dirs );
 
   emit sigTotalDirs( m_id, _dirs );
@@ -624,7 +621,7 @@ void KIOJob::slotTotalDirs( unsigned long _dirs )
 void KIOJob::slotProcessedSize( unsigned long _bytes )
 {
   m_iProcessedSize = _bytes;
-  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_COPY_SINGLE || m_cmd == CMD_GET )
+  if ( ( m_cmd == CMD_MCOPY || m_cmd == CMD_COPY || m_cmd == CMD_GET )
        && m_pCopyProgressDlg )
     m_pCopyProgressDlg->processedSize( _bytes );
 
@@ -635,7 +632,7 @@ void KIOJob::slotProcessedSize( unsigned long _bytes )
 
 void KIOJob::slotProcessedFiles( unsigned long _files )
 {
-  if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
+  if ( m_cmd == CMD_MCOPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->processedFiles( _files );
 
   emit sigProcessedFiles( m_id, _files );
@@ -645,7 +642,7 @@ void KIOJob::slotProcessedFiles( unsigned long _files )
 
 void KIOJob::slotProcessedDirs( unsigned long _dirs )
 {
-  if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
+  if ( m_cmd == CMD_MCOPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->processedDirs( _dirs );
 
   emit sigProcessedDirs( m_id, _dirs );
@@ -655,7 +652,7 @@ void KIOJob::slotProcessedDirs( unsigned long _dirs )
 
 void KIOJob::slotScanningDir( const char *_dir )
 {
-  if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
+  if ( m_cmd == CMD_MCOPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->scanningDir( _dir );
 
   cerr << "ScanningDir " << _dir << endl;
@@ -664,7 +661,7 @@ void KIOJob::slotScanningDir( const char *_dir )
 
 void KIOJob::slotSpeed( unsigned long _bytes_per_second )
 {
-  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_COPY_SINGLE || m_cmd == CMD_GET )
+  if ( ( m_cmd == CMD_MCOPY || m_cmd == CMD_COPY || m_cmd == CMD_GET )
        && m_pCopyProgressDlg )
     m_pCopyProgressDlg->speed( _bytes_per_second );
 
@@ -678,7 +675,7 @@ void KIOJob::slotCopyingFile( const char *_from, const char *_to )
   m_strFrom = _from;
   m_strTo = _to;
 
-  if ( ( m_cmd == CMD_COPY || m_cmd == CMD_COPY_SINGLE ) && m_pCopyProgressDlg )
+  if ( ( m_cmd == CMD_MCOPY || m_cmd == CMD_COPY ) && m_pCopyProgressDlg )
     m_pCopyProgressDlg->copyingFile( _from, _to );
 
   emit sigCopying( m_id, _from, _to );
@@ -688,7 +685,7 @@ void KIOJob::slotCopyingFile( const char *_from, const char *_to )
 
 void KIOJob::slotMakingDir( const char *_dir )
 {
-  if ( m_cmd == CMD_COPY && m_pCopyProgressDlg )
+  if ( m_cmd == CMD_MCOPY && m_pCopyProgressDlg )
     m_pCopyProgressDlg->makingDir( _dir );
 
   cerr << "MakingDir " << _dir << endl;

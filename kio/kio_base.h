@@ -12,16 +12,26 @@ public:
   IOJob( Connection *_conn );
   virtual ~IOJob() { }
   
-  virtual bool put( const char *_url, int _mode,
-		    bool _overwrite, bool _resume,
-		    unsigned int _size );
   virtual bool get( const char *_url );
   virtual bool getSize( const char *_url );
+
+  /**
+   * @param _mode may be -1. In this case no special permission mode is set.
+   */
+  virtual bool put( const char *_url, int _mode,
+		    bool _overwrite, bool _resume, int _size );
   virtual bool mkdir( const char *_url, int _mode );
-  virtual bool listDir( const char *_url );
+
   virtual bool copy( const char* _source, const char *_dest );
   virtual bool copy( list<string>& _source, const char *_dest );
+  virtual bool move( const char* _source, const char *_dest );
+  virtual bool move( list<string>& _source, const char *_dest );
+  virtual bool del( const char *_url );
+  virtual bool del( list<string>& _source );
+
   virtual bool testDir( const char *_url );
+  virtual bool listDir( const char *_url );
+
   virtual bool unmount( const char *_point );
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
   

@@ -24,8 +24,7 @@
 // Used to transfer the sources of an upcoming CMD_COPY call
 // This hack is needed, since a parameter can not be as big as it wants to.
 #define CMD_SOURCE 14 
-#define CMD_COPY_SINGLE 15
-#define CMD_GET_SIZE 16
+#define CMD_GET_SIZE 15
 
 #define INF_TOTAL_SIZE 50
 #define INF_TOTAL_COUNT_OF_FILES 51
@@ -97,6 +96,7 @@
 #define ERR_COULD_NOT_READSIZE 40
 #define ERR_CANNOT_RENAME 41
 #define ERR_CANNOT_DELETE 42
+#define ERR_DOES_ALREADY_EXIST_FULL 43
 
 /************
  *
@@ -158,20 +158,18 @@ public:
    */
 
   virtual bool put( const char *_url, int _mode,
-		    bool _overwrite, bool _resume,
-		    unsigned int _size );
+		    bool _overwrite, bool _resume, int _size );
+  virtual bool mkdir( const char *_url, int _mode );
+
   virtual bool copy( const char* _source, const char *_dest );
   virtual bool copy( list<string>&_source, const char *_dest );
   virtual bool move( const char *_source, const char *_dest );
   virtual bool move( list<string>& _source, const char *_dest );
   virtual bool del( const char *_url );
   virtual bool del( list<string>& _source );
-  virtual bool listDir( const char *_url );
-  /**
-   * @param _mode may be -1. In this case no special permission mode is set.
-   */
-  virtual bool mkdir( const char *_url, int _mode );
+
   virtual bool testDir( const char *_url );
+  virtual bool listDir( const char *_url );
 
   virtual bool unmount( const char *_point );
   virtual bool mount( bool _ro, const char *_fstype, const char* _dev, const char *_point );
@@ -232,7 +230,7 @@ public:
   virtual void slotGet( const char *_url ) { };
   virtual void slotGetSize( const char *_url ) { };
   virtual void slotPut( const char *_url, int _mode,
-			bool _overwrite, bool _resume, unsigned int _size) { };
+			bool _overwrite, bool _resume, int _size) { };
   virtual void slotCopy( const char* _source, const char *_dest ) { };
   virtual void slotCopy( list<string>& _source, const char *_dest ) { };
   virtual void slotMove( const char *_source, const char *_dest ) { };
