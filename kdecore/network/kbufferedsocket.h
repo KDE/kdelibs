@@ -51,8 +51,10 @@ public:
   /**
    * Default constructor.
    *
-   * @param node	destination host
+   * @param host	destination host
    * @param service	destination service to connect to
+   * @param parent      the parent object for this object
+   * @param name        the internal name for this object
    */
   KBufferedSocket(const QString& host = QString::null, const QString& service = QString::null,
 		  QObject* parent = 0L, const char *name = 0L);
