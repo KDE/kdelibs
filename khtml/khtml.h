@@ -41,9 +41,9 @@
 
 class QPainter;
 class KBrowser;
+class KHTMLDecoder;
 
 #include "html_document.h"
-#include "khtmldecoder.h"
 #include "khtmlio.h"
 
 namespace DOM {
@@ -491,7 +491,7 @@ protected:
 public:
     void layout();
 protected:
-    
+
     void urlSelected( const QString &_url, int _button, const QString & _target );
 
     /**

@@ -34,6 +34,7 @@
 #include <klocale.h>
 #include <kimgio.h>
 
+#include "khtmldecoder.h"
 #include "html_documentimpl.h"
 
 #include "khtmlio.h"
@@ -223,7 +224,7 @@ void KHTMLWidget::begin( const QString &_url, int _x_offset, int _y_offset )
     resizeContents(0, 0);
     setBackgroundMode(PaletteBackground);
     viewport()->repaint(true);
-    
+
     // ###
     //emit documentStarted();
 
