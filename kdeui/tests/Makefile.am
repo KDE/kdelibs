@@ -36,7 +36,7 @@ check_PROGRAMS = kaboutdialogtest kblendtest kbuttonboxtest kcharselecttest \
 	kpalettetest \
 	kpopuptest kprogresstest krulertest kseparatortest \
 	kstatusbartest ktabctltest \
-	kunbalancedgrdtest kwindowtest kwizardtest
+	kunbalancedgrdtest kwindowtest kwizardtest panelmenutest
 
 noinst_HEADERS = \
 		ktabctltest.h kiconloadertestmain.h	\
@@ -44,7 +44,7 @@ noinst_HEADERS = \
 		kledtest.h kcontainertest.h \
 		krulertest.h knewgradienttest.h kgradienttest.h \
 		kcolortest.h kunbalancedgrdtest.h kblendtest.h \
-		kdualcolortest.h khashtest.h knuminputtest.h
+		kdualcolortest.h khashtest.h knuminputtest.h panelmenutest.h
 
 METASOURCES = AUTO
 
@@ -81,3 +81,4 @@ ktabctltest_SOURCES = ktabctltest.cpp
 kunbalancedgrdtest_SOURCES = kunbalancedgrdtest.cpp
 kwindowtest_SOURCES = kwindowtest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
+panelmenutest_SOURCES = panelmenutest.cpp
