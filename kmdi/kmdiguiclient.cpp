@@ -208,7 +208,7 @@ void KMDIGUIClient::setupActions()
       else
         addList.append(m_toolMenu);
       if (m_mdiMode==KMdi::IDEAlMode) addList.append(m_gotoToolDockMenu);
-      addList.append(m_mdiModeAction);
+      //addList.append(m_mdiModeAction);
       kdDebug()<<"KMDIGUIClient::setupActions: plugActionList"<<endl;
       plugActionList( actionListName, addList );
 
