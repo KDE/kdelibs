@@ -104,7 +104,7 @@ public class JSObject extends netscape.javascript.JSObject {
             return null;
         }
         /* Is it a Java object then? */
-        if (value.startsWith("[object ")) {
+        if (value.startsWith("[object ") && value.indexOf("ref=") > 0) {
             int p1 = value.indexOf("ref=");
             int p2 = value.indexOf(']', p1+4);
             int objecthashcode = Integer.parseInt(value.substring(p1+4, p2));

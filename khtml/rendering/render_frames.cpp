@@ -599,7 +599,7 @@ void RenderPartObject::updateWidget()
   setLayouted(false);
 
   // ### this should be constant true - move iframe to somewhere else
-  if (element()->id() == ID_OBJECT || element()->id() == ID_EMBED) {
+  if (element()->id() == ID_OBJECT || element()->id() == ID_EMBED || element()->id() == ID_APPLET) {
 
       for (NodeImpl* child = element()->firstChild(); child; child=child->nextSibling()) {
           if ( child->id() == ID_PARAM ) {
@@ -614,12 +614,24 @@ void RenderPartObject::updateWidget()
       }
       params.append( QString::fromLatin1("__KHTML__PLUGINEMBED=\"YES\"") );
       params.append( QString::fromLatin1("__KHTML__PLUGINBASEURL=\"%1\"").arg( part->url().url() ) );
+      if (element()->id() != ID_OBJECT) {
+          // add all attributes set on the embed object
+          HTMLElementImpl *o = static_cast<HTMLElementImpl *>(element());
+          NamedAttrMapImpl* a = o->attributes();
+          if (a) {
+              for (unsigned long i = 0; i < a->length(); ++i) {
+                  NodeImpl::Id id = a->idAt(i);
+                  DOMString value = a->valueAt(i);
+              params.append(o->getDocument()->attrNames()->getName(id).string() + "=\"" + value.string() + "\"");
+              }
+          }
+      }
   }
 
-  if(element()->id() == ID_OBJECT) {
+  if(element()->id() == ID_OBJECT || element()->id() == ID_APPLET) {
 
       // check for embed child object
-      HTMLObjectElementImpl *o = static_cast<HTMLObjectElementImpl *>(element());
+      HTMLObjectBaseElementImpl *o = static_cast<HTMLObjectBaseElementImpl *>(element());
       HTMLEmbedElementImpl *embed = 0;
       for (NodeImpl *child = o->firstChild(); child; child = child->nextSibling())
           if ( child->id() == ID_EMBED ) {
@@ -713,16 +725,8 @@ void RenderPartObject::updateWidget()
 #endif
           return;
       }
-      // add all attributes set on the embed object
-      NamedAttrMapImpl* a = o->attributes();
-      if (a) {
-          for (unsigned long i = 0; i < a->length(); ++i) {
-	      NodeImpl::Id id = a->idAt(i);
-	      DOMString value = a->valueAt(i);
-              params.append(o->getDocument()->attrNames()->getName(id).string() + "=\"" + value.string() + "\"");
-          }
-      }
       part->requestObject( this, url, serviceType, params );
+      o->setLiveConnect(part->liveConnectExtension(this));
   } else {
       assert(element()->id() == ID_IFRAME);
       HTMLIFrameElementImpl *o = static_cast<HTMLIFrameElementImpl *>(element());
@@ -736,7 +740,7 @@ void RenderPartObject::updateWidget()
 // ugly..
 void RenderPartObject::close()
 {
-    if ( element()->id() == ID_OBJECT )
+    if ( element()->id() == ID_EMBED || element()->id() == ID_OBJECT || element()->id() == ID_APPLET )
         updateWidget();
     RenderPart::close();
 }

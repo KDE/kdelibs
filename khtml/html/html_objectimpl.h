@@ -26,13 +26,10 @@
 
 #include "html_elementimpl.h"
 #include "xml/dom_stringimpl.h"
-#include "java/kjavaapplet.h"
 #include <kparts/browserextension.h>
 #include <qstringlist.h>
 
 class KHTMLView;
-class QTimer;
-class KJavaApplet;
 
 // -------------------------------------------------------------------------
 namespace DOM {
@@ -40,11 +37,16 @@ namespace DOM {
 class HTMLFormElementImpl;
 class DOMStringImpl;
 
-class LiveConnectElementImpl : public QObject, public HTMLElementImpl
+class HTMLObjectBaseElementImpl : public QObject, public HTMLElementImpl
 {
     Q_OBJECT
 public:
-    LiveConnectElementImpl(DocumentPtr *doc);
+    HTMLObjectBaseElementImpl(DocumentPtr *doc);
+
+    virtual void parseAttribute(AttributeImpl *attr);
+    virtual void detach();
+
+    virtual void recalcStyle( StyleChange ch );
 
     bool get(const unsigned long, const QString &, KParts::LiveConnectExtension::Type &, unsigned long &, QString &);
     bool put(const unsigned long, const QString &, const QString &);
@@ -53,23 +55,21 @@ public:
 
     void setLiveConnect(KParts::LiveConnectExtension * lc);
 
-    virtual void detach();
+    QString url;
+    QString classId;
+    QString serviceType;
+    bool needWidgetUpdate;
 
 protected slots:
     void liveConnectEvent(const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList&);
 
-private slots:
-    void timerDone();
-
 private:
     KParts::LiveConnectExtension *liveconnect;
-    QTimer *timer;
-    QString script;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLAppletElementImpl : public LiveConnectElementImpl
+class HTMLAppletElementImpl : public HTMLObjectBaseElementImpl
 {
 public:
     HTMLAppletElementImpl(DocumentPtr *doc);
@@ -81,14 +81,13 @@ public:
     virtual void parseAttribute(AttributeImpl *token);
     virtual void attach();
 
-    KJavaApplet* applet() const;
 protected:
     khtml::VAlign valign;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLEmbedElementImpl : public LiveConnectElementImpl
+class HTMLEmbedElementImpl : public HTMLObjectBaseElementImpl
 {
 public:
     HTMLEmbedElementImpl(DocumentPtr *doc);
@@ -99,15 +98,13 @@ public:
     virtual void parseAttribute(AttributeImpl *attr);
     virtual void attach();
 
-    QString url;
     QString pluginPage;
-    QString serviceType;
     bool hidden;
 };
 
 // -------------------------------------------------------------------------
 
-class HTMLObjectElementImpl : public LiveConnectElementImpl
+class HTMLObjectElementImpl : public HTMLObjectBaseElementImpl
 {
 public:
     HTMLObjectElementImpl(DocumentPtr *doc);
@@ -123,16 +120,10 @@ public:
     virtual void attach();
     virtual void detach();
 
-    virtual void recalcStyle( StyleChange ch );
-
     DocumentImpl* contentDocument() const;
 
     void renderAlternative();
 
-    QString serviceType;
-    QString url;
-    QString classId;
-    bool needWidgetUpdate;
     bool m_renderAlternative;
 };
 

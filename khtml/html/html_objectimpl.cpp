@@ -42,60 +42,89 @@
 #include "rendering/render_image.h"
 #include "xml/dom2_eventsimpl.h"
 
-#ifndef Q_WS_QWS // We don't have Java in Qt Embedded
-#include "java/kjavaappletwidget.h"
-#include "java/kjavaappletcontext.h"
-#endif
-
 using namespace DOM;
 using namespace khtml;
 
 // -------------------------------------------------------------------------
-LiveConnectElementImpl::LiveConnectElementImpl(DocumentPtr *doc)
-  : HTMLElementImpl(doc), liveconnect(0L), timer (new QTimer(this)) {
-    connect(timer, SIGNAL(timeout()), this, SLOT(timerDone()));
+HTMLObjectBaseElementImpl::HTMLObjectBaseElementImpl(DocumentPtr *doc)
+    : HTMLElementImpl(doc), liveconnect(0L)
+{
+    needWidgetUpdate = false;
 }
 
-bool LiveConnectElementImpl::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
+void HTMLObjectBaseElementImpl::parseAttribute(AttributeImpl *attr)
+{
+    DOM::DOMStringImpl *stringImpl = attr->val();
+    QString val = QConstString( stringImpl->s, stringImpl->l ).string();
+    int pos;
+    switch ( attr->id() )
+    {
+        case ATTR_TYPE:
+        case ATTR_CODETYPE:
+            serviceType = val.lower();
+            pos = serviceType.find( ";" );
+            if ( pos!=-1 )
+                serviceType = serviceType.left( pos );
+            needWidgetUpdate = true;
+            break;
+        case ATTR_WIDTH:
+            addCSSLength( CSS_PROP_WIDTH, attr->value());
+            break;
+        case ATTR_HEIGHT:
+            addCSSLength( CSS_PROP_HEIGHT, attr->value());
+            break;
+        default:
+            HTMLElementImpl::parseAttribute( attr );
+    }
+}
+
+void HTMLObjectBaseElementImpl::recalcStyle( StyleChange ch )
+{
+    if (needWidgetUpdate) {
+        if(m_render && strcmp( m_render->renderName(),  "RenderPartObject" ) == 0 )
+            static_cast<RenderPartObject*>(m_render)->updateWidget();
+        needWidgetUpdate = false;
+    }
+    HTMLElementImpl::recalcStyle( ch );
+}
+
+bool HTMLObjectBaseElementImpl::get(const unsigned long objid, const QString & field, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
     if (!liveconnect)
         return false;
     return liveconnect->get(objid, field, type, retobjid, value);
 }
 
-bool LiveConnectElementImpl::put(const unsigned long objid, const QString & field, const QString & value) {
+bool HTMLObjectBaseElementImpl::put(const unsigned long objid, const QString & field, const QString & value) {
     if (!liveconnect)
         return false;
     return liveconnect->put(objid, field, value);
 }
 
-bool LiveConnectElementImpl::call(const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
+bool HTMLObjectBaseElementImpl::call(const unsigned long objid, const QString & func, const QStringList & args, KParts::LiveConnectExtension::Type & type, unsigned long & retobjid, QString & value) {
     if (!liveconnect)
         return false;
     return liveconnect->call(objid, func, args, type, retobjid, value);
 }
 
-void LiveConnectElementImpl::unregister(const unsigned long objid) {
+void HTMLObjectBaseElementImpl::unregister(const unsigned long objid) {
     if (!liveconnect)
         return;
     liveconnect->unregister(objid);
 }
 
-void LiveConnectElementImpl::setLiveConnect(KParts::LiveConnectExtension * lc) {
+void HTMLObjectBaseElementImpl::setLiveConnect(KParts::LiveConnectExtension * lc) {
     liveconnect = lc;
     if (lc)
-        connect(lc, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), static_cast<LiveConnectElementImpl*>(this), SLOT(liveConnectEvent( const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
+        connect(lc, SIGNAL(partEvent(const unsigned long, const QString &, const KParts::LiveConnectExtension::ArgList &)), static_cast<HTMLObjectBaseElementImpl*>(this), SLOT(liveConnectEvent( const unsigned long, const QString&, const KParts::LiveConnectExtension::ArgList &)));
 }
 
-void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args)
+void HTMLObjectBaseElementImpl::liveConnectEvent(const unsigned long, const QString & event, const KParts::LiveConnectExtension::ArgList & args)
 {
     if (!liveconnect)
         // not attached
         return;
 
-    if (timer->isActive()) {
-        timerDone();
-        timer->stop();
-    }
+    QString script;
     script.sprintf("%s(", event.latin1());
     KParts::LiveConnectExtension::ArgList::const_iterator i = args.begin();
     for ( ; i != args.end(); i++) {
@@ -110,20 +139,12 @@ void LiveConnectElementImpl::liveConnectEvent(const unsigned long, const QString
     }
     script += ")";
 
-    kdDebug(6036) << "LiveConnectElementImpl::liveConnectEvent " << script << endl;
-    KHTMLView* w = getDocument()->view();
-    w->part()->executeScript(this, script);
-    //timer->start(0, true);
-}
-
-void LiveConnectElementImpl::timerDone() {
+    kdDebug(6036) << "HTMLObjectBaseElementImpl::liveConnectEvent " << script << endl;
     KHTMLView* w = getDocument()->view();
     w->part()->executeScript(this, script);
 }
 
-void LiveConnectElementImpl::detach() {
-    if (timer->isActive())
-        timer->stop();
+void HTMLObjectBaseElementImpl::detach() {
     setLiveConnect(0L);
 
     HTMLElementImpl::detach();
@@ -132,8 +153,10 @@ void LiveConnectElementImpl::detach() {
 // -------------------------------------------------------------------------
 
 HTMLAppletElementImpl::HTMLAppletElementImpl(DocumentPtr *doc)
-  : LiveConnectElementImpl(doc)
+  : HTMLObjectBaseElementImpl(doc)
 {
+    serviceType = "application/x-java-applet";
+    needWidgetUpdate = true;
 }
 
 HTMLAppletElementImpl::~HTMLAppletElementImpl()
@@ -143,14 +166,6 @@ HTMLAppletElementImpl::~HTMLAppletElementImpl()
 NodeImpl::Id HTMLAppletElementImpl::id() const
 {
     return ID_APPLET;
-}
-
-KJavaApplet* HTMLAppletElementImpl::applet() const
-{
-    if (!m_render || !m_render->isApplet())
-        return 0L;
-
-    return static_cast<KJavaAppletWidget*>(static_cast<RenderApplet*>(m_render)->widget())->applet();
 }
 
 void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
@@ -165,28 +180,28 @@ void HTMLAppletElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ID:
     case ATTR_NAME:
         break;
-    case ATTR_WIDTH:
-        addCSSLength(CSS_PROP_WIDTH, attr->value());
-        break;
-    case ATTR_HEIGHT:
-        addCSSLength(CSS_PROP_HEIGHT, attr->value());
-        break;
     case ATTR_ALIGN:
 	addHTMLAlignment( attr->value() );
 	break;
     default:
-        HTMLElementImpl::parseAttribute(attr);
+        HTMLObjectBaseElementImpl::parseAttribute(attr);
     }
 }
 
 void HTMLAppletElementImpl::attach()
 {
+    assert(!attached());
+    assert(!m_render);
+
+    KHTMLView* w = getDocument()->view();
+
     if (!parentNode()->renderer() || getAttribute(ATTR_CODE).isNull()) {
         NodeBaseImpl::attach();
         return;
     }
 
-    KHTMLView *view = getDocument()->view();
+    RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
+    _style->ref();
 
 #ifndef Q_WS_QWS // FIXME?
     KURL url = getDocument()->baseURL();
@@ -197,45 +212,27 @@ void HTMLAppletElementImpl::attach()
     if ( !code.isEmpty() )
         url = KURL( url, code.string() );
 
-    if( view->part()->javaEnabled() && getDocument()->isURLAllowed( url.url() ) )
+    if (w->part()->javaEnabled() &&
+        getDocument()->isURLAllowed( url.url() ) &&
+        parentNode()->renderer() && 
+        _style->display() != NONE) 
     {
-	QMap<QString, QString> args;
+        needWidgetUpdate=false;
+        m_render = new (getDocument()->renderArena()) RenderPartObject(this);
 
-	args.insert( "code", code.string());
-	if(!codeBase.isNull())
-	    args.insert( "codeBase", codeBase.string() );
-	DOMString name = getDocument()->htmlMode() != DocumentImpl::XHtml ?
-			 getAttribute(ATTR_NAME) : getAttribute(ATTR_ID);
-        if (name.isNull())
-            setAttribute(ATTR_ID, code.string());
-        else
-	    args.insert( "name", name.string() );
-	DOMString archive = getAttribute(ATTR_ARCHIVE);
-	if(!archive.isNull())
-	    args.insert( "archive", archive.string() );
-
-        RenderStyle* _style = getDocument()->styleSelector()->styleForElement(this);
-        _style->ref();
-        if ( _style->display() != NONE ) {
-  	    args.insert( "baseURL", getDocument()->baseURL() );
-            m_render = new (getDocument()->renderArena()) RenderApplet(this, args);
-            setLiveConnect(applet()->getLiveConnectExtension());
-
-            m_render->setStyle(_style);
-            parentNode()->renderer()->addChild(m_render, nextRenderer());
-        }
-        _style->deref();
-        NodeBaseImpl::attach();
+        m_render->setStyle(_style);
+        parentNode()->renderer()->addChild(m_render, nextRenderer());
     }
-    else
+
 #endif
-        ElementImpl::attach();
+    _style->deref();
+    NodeBaseImpl::attach();
 }
 
 // -------------------------------------------------------------------------
 
 HTMLEmbedElementImpl::HTMLEmbedElementImpl(DocumentPtr *doc)
-    : LiveConnectElementImpl(doc)
+    : HTMLObjectBaseElementImpl(doc)
 {
 }
 
@@ -254,25 +251,13 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
   QConstString cv( stringImpl->s, stringImpl->l );
   QString val = cv.string();
 
-  int pos;
   switch ( attr->id() )
   {
-     case ATTR_TYPE:
-        serviceType = val.lower();
-        pos = serviceType.find( ";" );
-        if ( pos!=-1 )
-            serviceType = serviceType.left( pos );
-        break;
      case ATTR_CODE:
      case ATTR_SRC:
          url = khtml::parseURL(attr->val()).string();
+         needWidgetUpdate = true;
          break;
-     case ATTR_WIDTH:
-        addCSSLength( CSS_PROP_WIDTH, attr->value() );
-        break;
-     case ATTR_HEIGHT:
-        addCSSLength( CSS_PROP_HEIGHT, attr->value());
-        break;
      case ATTR_BORDER:
         addCSSLength(CSS_PROP_BORDER_WIDTH, attr->value());
         addCSSProperty( CSS_PROP_BORDER_TOP_STYLE, CSS_VAL_SOLID );
@@ -305,7 +290,7 @@ void HTMLEmbedElementImpl::parseAttribute(AttributeImpl *attr)
            hidden = false;
         break;
      default:
-        HTMLElementImpl::parseAttribute( attr );
+        HTMLObjectBaseElementImpl::parseAttribute( attr );
   }
 }
 
@@ -321,11 +306,10 @@ void HTMLEmbedElementImpl::attach()
 
         if (w->part()->pluginsEnabled() && getDocument()->isURLAllowed( url ) &&
             parentNode()->id() != ID_OBJECT && _style->display() != NONE ) {
+            needWidgetUpdate=false;
             m_render = new (getDocument()->renderArena()) RenderPartObject(this);
             m_render->setStyle(_style );
             parentNode()->renderer()->addChild(m_render, nextRenderer());
-            static_cast<RenderPartObject*>(m_render)->updateWidget();
-            setLiveConnect(w->part()->liveConnectExtension(static_cast<RenderPartObject*>(m_render)));
         }
         _style->deref();
     }
@@ -336,9 +320,8 @@ void HTMLEmbedElementImpl::attach()
 // -------------------------------------------------------------------------
 
 HTMLObjectElementImpl::HTMLObjectElementImpl(DocumentPtr *doc)
-    : LiveConnectElementImpl(doc)
+    : HTMLObjectBaseElementImpl(doc)
 {
-    needWidgetUpdate = false;
     m_renderAlternative = false;
 }
 
@@ -360,26 +343,11 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
 {
   DOM::DOMStringImpl *stringImpl = attr->val();
   QString val = QConstString( stringImpl->s, stringImpl->l ).string();
-  int pos;
   switch ( attr->id() )
   {
-    case ATTR_TYPE:
-    case ATTR_CODETYPE:
-      serviceType = val.lower();
-      pos = serviceType.find( ";" );
-      if ( pos!=-1 )
-          serviceType = serviceType.left( pos );
-      needWidgetUpdate = true;
-      break;
     case ATTR_DATA:
       url = khtml::parseURL( val ).string();
       needWidgetUpdate = true;
-      break;
-    case ATTR_WIDTH:
-      addCSSLength( CSS_PROP_WIDTH, attr->value());
-      break;
-    case ATTR_HEIGHT:
-      addCSSLength( CSS_PROP_HEIGHT, attr->value());
       break;
     case ATTR_CLASSID:
       classId = val;
@@ -394,7 +362,7 @@ void HTMLObjectElementImpl::parseAttribute(AttributeImpl *attr)
 	    getDocument()->createHTMLEventListener(attr->value().string(),"onunload"));
         break;
     default:
-      HTMLElementImpl::parseAttribute( attr );
+      HTMLObjectBaseElementImpl::parseAttribute( attr );
   }
 }
 
@@ -415,7 +383,7 @@ void HTMLObjectElementImpl::attach()
 
     KHTMLView* w = getDocument()->view();
     if ( !w->part()->pluginsEnabled() ||
-         ( url.isEmpty() && classId.isEmpty() ) ||
+         ( url.isEmpty() && classId.isEmpty() && id() != ID_APPLET) ||
          m_renderAlternative || !getDocument()->isURLAllowed( url ) ) {
         // render alternative content
         ElementImpl::attach();
@@ -456,7 +424,7 @@ void HTMLObjectElementImpl::detach()
         // ### do this when we are actualy removed from document instead
         dispatchHTMLEvent(EventImpl::UNLOAD_EVENT,false,false);
 
-  HTMLElementImpl::detach();
+    HTMLObjectBaseElementImpl::detach();
 }
 
 void HTMLObjectElementImpl::renderAlternative()
@@ -471,16 +439,6 @@ void HTMLObjectElementImpl::renderAlternative()
     m_renderAlternative = true;
 
     attach();
-}
-
-void HTMLObjectElementImpl::recalcStyle( StyleChange ch )
-{
-    if (needWidgetUpdate) {
-        if(m_render && strcmp( m_render->renderName(),  "RenderPartObject" ) == 0 )
-            static_cast<RenderPartObject*>(m_render)->updateWidget();
-        needWidgetUpdate = false;
-    }
-    HTMLElementImpl::recalcStyle( ch );
 }
 
 // -------------------------------------------------------------------------

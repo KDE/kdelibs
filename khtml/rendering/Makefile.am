@@ -27,7 +27,7 @@ libkhtmlrender_la_SOURCES = \
 	render_flow.cpp render_text.cpp \
 	render_image.cpp render_table.cpp table_layout.cpp \
 	render_replaced.cpp render_form.cpp render_list.cpp \
-	render_root.cpp render_frames.cpp render_br.cpp render_applet.cpp \
+	render_root.cpp render_frames.cpp render_br.cpp \
 	render_html.cpp render_body.cpp font.cpp 
 
 libkhtmlrender_la_METASOURCES = AUTO

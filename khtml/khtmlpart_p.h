@@ -41,12 +41,12 @@
 #include "khtml_iface.h"
 #include "khtml_settings.h"
 #include "misc/decoder.h"
-#include "java/kjavaappletcontext.h"
 #include "ecma/kjs_proxy.h"
 
 class KPopupMenu;
 class KSelectAction;
 class KURLLabel;
+class KJavaAppletContext;
 
 namespace KIO
 {
@@ -197,7 +197,7 @@ public:
     if ( m_kjs_lib)
        m_kjs_lib->unload();
 #ifndef Q_WS_QWS
-    delete m_javaContext;
+    //delete m_javaContext;
 #endif
   }
 

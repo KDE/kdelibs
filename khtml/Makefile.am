@@ -21,7 +21,7 @@ KDE_CXXFLAGS = $(WOVERLOADED_VIRTUAL)
 
 if DOJAVA
 JAVA_SUBDIR=java
-LIBKJAVA=./java/libkjava.la
+LIBKJAVA=
 endif
 
 SUBDIRS = misc dom css xml html rendering pics $(JAVA_SUBDIR) ecma . kmultipart

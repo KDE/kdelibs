@@ -862,30 +862,12 @@ bool KHTMLPart::javaEnabled() const
 
 KJavaAppletContext *KHTMLPart::javaContext()
 {
-#ifndef Q_WS_QWS
-  return d->m_javaContext;
-#else
   return 0;
-#endif
 }
 
 KJavaAppletContext *KHTMLPart::createJavaContext()
 {
-#ifndef Q_WS_QWS
-  if ( !d->m_javaContext ) {
-      d->m_javaContext = new KJavaAppletContext();
-      connect( d->m_javaContext, SIGNAL(showStatus(const QString&)),
-               this, SIGNAL(setStatusBarText(const QString&)) );
-      connect( d->m_javaContext, SIGNAL(showDocument(const QString&, const QString&)),
-               this, SLOT(slotShowDocument(const QString&, const QString&)) );
-      connect( d->m_javaContext, SIGNAL(appletLoaded()),
-               this, SLOT(checkCompleted()) );
-  }
-
-  return d->m_javaContext;
-#else
   return 0;
-#endif
 }
 
 void KHTMLPart::setPluginsEnabled( bool enable )
@@ -1084,14 +1066,6 @@ void KHTMLPart::clear()
 
   d->m_frames.clear();
   d->m_objects.clear();
-
-#ifndef Q_WS_QWS
-  if( d->m_javaContext )
-  {
-    d->m_javaContext->deleteLater();
-    d->m_javaContext = 0;
-  }
-#endif
 
   d->m_delayRedirect = 0;
   d->m_redirectURL = QString::null;
@@ -1751,11 +1725,6 @@ void KHTMLPart::checkCompleted()
   if ( requests > 0 )
     return;
 
-#ifndef Q_WS_QWS
-  if (d->m_javaContext && !d->m_javaContext->appletsLoaded())
-      return;
-#endif
-
   // OK, completed.
   // Now do what should be done when we are really completed.
   d->m_bComplete = true;
@@ -1829,10 +1798,6 @@ void KHTMLPart::checkEmitLoadEvent()
     if ( !(*it).m_bCompleted ) // still got a object running -> too early
       return;
 
-#ifndef Q_WS_QWS
-  if (d->m_javaContext && !d->m_javaContext->appletsLoaded())
-      return;
-#endif
   // Still waiting for images/scripts from the loader ?
   // (onload must happen afterwards, #45607)
   // ## This makes this method very similar to checkCompleted. A brave soul should try merging them.

@@ -49,8 +49,6 @@
 #include "ecma/kjs_window.h"
 #include "ecma/kjs_html.lut.h"
 
-#include "java/kjavaappletcontext.h"
-
 #include "misc/htmltags.h"
 #include "misc/htmlattrs.h"
 #include "rendering/render_object.h"
@@ -1098,7 +1096,7 @@ public:
     EmbedLiveConnect(const DOM::HTMLElement& elm, UString n, KParts::LiveConnectExtension::Type t, int id)
         : element (elm), name(n), objtype(t), objid(id) {}
     ~EmbedLiveConnect() {
-        DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
+        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
         if (elm)
             elm->unregister(objid);
     }
@@ -1134,7 +1132,7 @@ public:
         }
     }
     virtual Value get(ExecState *, const Identifier & prop) const {
-        DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
+        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
         KParts::LiveConnectExtension::Type rettype;
         QString retvalue;
         unsigned long retobjid;
@@ -1143,7 +1141,7 @@ public:
         return Undefined();
     }
     virtual void put(ExecState * exec, const Identifier &prop, const Value & value, int=None) {
-        DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
+        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
         if (elm)
             elm->put(objid, prop.qstring(), value.toString(exec).qstring());
     }
@@ -1151,7 +1149,7 @@ public:
         return objtype == KParts::LiveConnectExtension::TypeFunction;
     }
     virtual Value call(ExecState * exec, Object &, const List &args) {
-        DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
+        DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
         QStringList qargs;
         for (ListIterator i = args.begin(); i != args.end(); i++)
             qargs.append((*i).toString(exec).qstring());
@@ -1213,7 +1211,7 @@ Value KJS::HTMLElement::tryGet(ExecState *exec, const Identifier &propertyName) 
   case ID_APPLET:
   case ID_OBJECT:
   case ID_EMBED: {
-      DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
+      DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
       QString retvalue;
       KParts::LiveConnectExtension::Type rettype;
       unsigned long retobjid;
@@ -1995,7 +1993,7 @@ UString KJS::HTMLElement::toString(ExecState *exec) const
     return UString(static_cast<const DOM::HTMLAnchorElement&>(node).href());
   if (node.elementId() == ID_APPLET)
   {
-    DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(node.handle());
+    DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(node.handle());
     QStringList qargs;
     QString retvalue;
     KParts::LiveConnectExtension::Type rettype;
@@ -2205,7 +2203,7 @@ void KJS::HTMLElement::tryPut(ExecState *exec, const Identifier &propertyName, c
     case ID_APPLET:
     case ID_OBJECT:
     case ID_EMBED: {
-      DOM::LiveConnectElementImpl * elm = static_cast<DOM::LiveConnectElementImpl*>(element.handle());
+      DOM::HTMLObjectBaseElementImpl * elm = static_cast<DOM::HTMLObjectBaseElementImpl*>(element.handle());
       if (elm && elm->put(0, propertyName.qstring(),
                           value.toString(exec).qstring()))
           return;
