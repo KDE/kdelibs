@@ -5,12 +5,12 @@
 <shortcut>
 <keycombo action="simul"><keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>Contents...</guimenuitem>
+<guimenu>Pomocník</guimenu>
+<guimenuitem>Obsah...</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Invokes the KDE Help system</action> starting at the
-&kappname; help pages. (this document).</para></listitem>
+<listitem><para><action>Spustí systém Pomocník KDE</action> a zobrazí manuál pre
+&kappname;. (tento dokument).</para></listitem>
 </varlistentry>
 
 <varlistentry>
@@ -18,41 +18,39 @@
 <shortcut>
 <keycombo action="simul">&Shift;<keycap>F1</keycap></keycombo>
 </shortcut>
-<guimenu>Help</guimenu>
-<guimenuitem>What's This?</guimenuitem>
+<guimenu>Pomocník</guimenu>
+<guimenuitem>Čo je to?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Changes the mouse cursor to a combination arrow and
-question mark.</action>  Clicking on items within &kappname; will open a help
-window (if one exists for the particular item) explaining the item's
-function.</para></listitem>
+<listitem><para><action>Zmení kurzor myši na kombináciu šipky a
+otáznika.</action>  Kliknutím na položky v &kappname; zobrazíte okno
+s krátkym popisom (ak pre dané miesto existuje), kde je vysvetlená funkcia
+daného miesta.</para></listitem>
 </varlistentry>
 
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>Report Bug...</guimenuitem>
+<guimenu>Pomocník</guimenu>
+<guimenuitem>Poslať správu o chybe...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Opens the Bug report dialog</action> where you can
-report a bug or request a <quote>wishlist</quote> feature.</para></listitem>
+<listitem><para><action>Zobrazí dialóg pre správu o chybe</action>, kde môžete
+poslať správu o chybe alebo požiadavku na <quote>novú funkciu</quote>.</para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About &kappname;</guimenuitem>
+<guimenu>Pomocník</guimenu>
+<guimenuitem>O &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This will display version and author
-information.</action></para></listitem>
+<listitem><para><action>Toto zobrazí informáciu o verzii a autorovi aplikácie.</action></para></listitem>
 </varlistentry>
 
 <varlistentry>
 <term><menuchoice>
-<guimenu>Help</guimenu>
-<guimenuitem>About KDE</guimenuitem>
+<guimenu>Pomocník</guimenu>
+<guimenuitem>O KDE</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>This displays the KDE version and other basic
-information.</action></para></listitem>
+<listitem><para><action>Toto zobrazí verziu KDE a iné základné informácie.</action></para></listitem>
 </varlistentry>
 </variablelist>
