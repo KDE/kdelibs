@@ -285,6 +285,7 @@ kde_addrinfo* KExtendedSocketLookup::results()
     v6 = dnsIpv6.addresses();
   addrinfo *p = NULL;
   kde_addrinfo *res = new kde_addrinfo;
+  res->origin = KAI_QDNS;
   QValueList<QHostAddress>::Iterator it;
   unsigned short port;
 
