@@ -1,0 +1,48 @@
+
+KDE Image I/O library.
+
+This library allows applications that use the Qt library to read and
+write images in extra formats. Current formats include:
+
+JPEG	<read>
+XV	<read> <write>
+EPS	<read>
+NETPBM	<incomplete>
+
+To use these formats, you must 
+
+1. link the application with the libkimgio library
+2. Include the <kimgio.h> header
+3. call kimgioRegister() once, somewhere in your code
+   before you load an image.
+
+Writing handlers
+----------------
+
+Please read the documentation for the QImageIO class in the Qt
+documentation.
+
+1. When writing handlers, there is a function naming convention;
+suppose, for example, we were writing PNG read and write handlers,
+we would name them
+
+void kimgio_png_read ( QImageIO * );
+void kimgio_png_write( QImageIO * );
+
+ie
+
+kimgio_<format>_<read/write>
+
+This should reduce the chance of identifier clashes with other code.
+
+2. If you only have either a reader or the writer for a particular
+format, don't use NULL in QImageIO::defineIOHandler. Instead, write
+a stub function for the unimplemented handler which displays a message
+on standard output. This prevents kimgio-using programs dumping core
+when attempting to call the unimplemented handler.
+
+Yours in good faith and pedantry,
+
+Sirtaj Singh Kang <taj@kde.org>, 23 September 1998.
+
+$Id$
