@@ -1750,13 +1750,13 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
                                 conly = 0;
                             else
                                 jonly = 0;
-			if (jonly) {
-				// A java-only token has matched
+			if (jonly > 1) {
+				// At least two java-only tokens have matched
 				resultBuf = QString(types[P_JAVA].type);
 				return 1;
 			}
-			if (jconly) {
-				// A non-C (only C++ or Java) token has matched.
+			if (jconly > 1) {
+				// At least two non-C (only C++ or Java) token have matched.
 				if (typecount[P_JAVA] > typecount[P_CPP])
 				  resultBuf = QString(types[P_JAVA].type);
 				else
@@ -1795,12 +1795,13 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		    mostaccurate = i;
 		  }
 #ifdef DEBUG_MIMEMAGIC
-		  kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
+		  //kdDebug(7018) << "" << types[i].type << " has " << typecount[i] << " hits, " << types[i].kwords << " kw, weight " << types[i].weight << ", " << pct << " -> max = " << maxpct << "\n" << endl;
 #endif
 	  }
 	}
-	if (mostaccurate >= 0.0) {
+	if (mostaccurate >= 0 && pcts[mostaccurate] > 0.1) { // a single java word shouldn't be enough
 		accuracy = (int)(pcts[mostaccurate] / pctsum * 60);
+                //kdDebug(7018) << "mostaccurate=" << mostaccurate << " pcts=" << pcts[mostaccurate] << " pctsum=" << pctsum << " accuracy=" << accuracy << endl;
 		resultBuf = QString(types[mostaccurate].type);
 		return 1;
 	}
