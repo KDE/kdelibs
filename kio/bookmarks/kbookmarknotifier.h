@@ -1,5 +1,5 @@
 /* This file is part of the KDE libraries
-   Copyright (C) 2001 Alexander Kellett <lypanov@kde.org>
+   Copyright (C) 2001, 2003 Alexander Kellett <lypanov@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -36,6 +36,7 @@ public:
 k_dcop_signals:
   void addedBookmark( QString filename, QString url, QString text, QString address, QString icon );
   void createdNewFolder( QString filename, QString text, QString address );
+  void updatedAccessMetadata( QString filename, QString checkUrl, QString address );
 
 };
 
