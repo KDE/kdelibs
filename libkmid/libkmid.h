@@ -27,6 +27,8 @@
 
 #ifdef __cplusplus
 
+#include <kdelibs_export.h>
+
 /**
  * Simple API covering most of the uses of libkmid.
  *
