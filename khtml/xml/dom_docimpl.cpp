@@ -1316,7 +1316,7 @@ void DocumentImpl::setFocusNode(ElementImpl *n)
 	kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
 	if (n)
 	{
-	    n->setPressed(false);
+	    n->setActive(false);
 	    n->setFocus();
 	}
     }

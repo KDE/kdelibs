@@ -690,7 +690,7 @@ void ElementImpl::setFocus(bool received)
     NodeBaseImpl::setFocus(received);
 }
 
-void ElementImpl::setPressed(bool down)
+void ElementImpl::setActive(bool down)
 {
     if (!m_render)
 	return;
@@ -704,7 +704,7 @@ void ElementImpl::setPressed(bool down)
     RenderObject *cb = m_render->containingBlock();
     cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
 
-    NodeBaseImpl::setPressed(down);
+    NodeBaseImpl::setActive(down);
 }
 
 khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )

@@ -193,6 +193,7 @@ public:
     bool hasStyle() const   { return m_hasStyle; }
     bool hasTooltip() const { return m_hasTooltip; }
     bool pressed() const    { return m_pressed; }
+    bool active() const     { return m_active; }
     bool mouseInside() const { return m_mouseInside; }
     bool attached() const   { return m_attached; }
     bool changed() const    { return m_changed; }
@@ -207,6 +208,7 @@ public:
     void setMouseInside(bool b=true) { m_mouseInside = b; }
     void setAttached(bool b=true) { m_attached = b; }
     virtual void setFocus(bool b=true) { m_focused = b; }
+    virtual void setActive(bool b=true) { m_active = b; }
     virtual void setChanged(bool b=true);
 
     /**
@@ -254,6 +256,7 @@ protected:
     bool m_changed : 1;
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
+    bool m_active : 1;
 private:
     static const QChar LESSTHAN;
     static const QChar MORETHAN;

@@ -481,7 +481,7 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	    {
 		ElementImpl *e = m_part->xmlDocImpl()->focusNode();
 		if (e)
-		    e->setPressed();
+		    e->setActive();
 		d->originalNode = e;
 	    }
             break;
@@ -515,7 +515,7 @@ void KHTMLView::keyReleaseEvent( QKeyEvent *_ke )
 					  a->targetRef().string() );
 	    }
             if (e)
-	        e->setPressed(false);
+	        e->setActive(false);
 	}
         return;
       break;

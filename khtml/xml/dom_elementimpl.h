@@ -158,7 +158,7 @@ public:
 			     int _tx, int _ty,
 			     MouseEvent *ev);
     virtual void setFocus(bool = true);
-    virtual void setPressed(bool = true);
+    virtual void setActive(bool = true);
     virtual void mouseEventHandler( MouseEvent */*ev*/, bool /*inside*/ ) {};
     virtual khtml::FindSelectionResult findSelectionNode( int _x, int _y, int _tx, int _ty,
                                                    DOM::Node & node, int & offset );
