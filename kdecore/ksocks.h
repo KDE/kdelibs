@@ -26,7 +26,7 @@
 class KSocksTable;
 class KSocksPrivate;
 class KLibrary;
-class KConfig;
+class KConfigBase;
 struct sockaddr;
 
 
@@ -100,8 +100,14 @@ public:
     */
    static void disable();
 
+   /*
+    *  Set this before the first call to KSocks::self() and it will use
+    *  @p config to read its configuration from.
+    */
+   static void setConfig(KConfigBase *config);
+
 private:
-   KSocks();
+   KSocks(KConfigBase *config);
    ~KSocks();
 
    void stopSocks();
@@ -116,7 +122,6 @@ private:
 
    KSocksTable *_st;
    KSocksPrivate *d;
-   KConfig *cfg;
 };
 
 

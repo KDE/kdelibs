@@ -30,6 +30,7 @@
 #include "klibloader.h"
 #include "kstaticdeleter.h"
 #include <kconfig.h>
+#include <kapplication.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -191,25 +192,50 @@ KSocks *KSocks::_me = 0;
 bool KSocks::_disabled = false;
 static KStaticDeleter<KSocks> med;
 
-void KSocks::disable() { _disabled = true; }
+void KSocks::disable() 
+{ 
+   if (!_me) _disabled = true; 
+}
 
 KSocks *KSocks::self() {
   if (!_me) {
-    _me = med.setObject(new KSocks);
+    if (kapp)
+    {
+       KConfigGroup cfg(kapp->config(), "Socks");
+       _me = med.setObject(new KSocks(&cfg));
+    }
+    else
+    {
+       _disabled = true;
+       _me = med.setObject(new KSocks(0));
+    }
   }
   return _me;
 }
 
+void KSocks::setConfig(KConfigBase *config)
+{
+  // We can change the config from disabled to enabled
+  // but not the other way around.
+  if (_me && _disabled) 
+  { 
+     delete _me;
+     _me = 0;
+     _disabled = false;
+  }
+  if (_me) return;
+  _me = med.setObject(new KSocks(config));
+}
 
 bool KSocks::activated() { return (_me != NULL); }
 
 
-KSocks::KSocks() : _socksLib(NULL), _st(NULL), cfg(0) {
+KSocks::KSocks(KConfigBase *config) : _socksLib(NULL), _st(NULL) {
+   _hasSocks = false;
+   _useSocks = false;
 
-   if (_disabled) {
-      _hasSocks = _useSocks = false;
+   if (_disabled || !config)
       return;
-   }
 
    _libPaths << ""
              << "/usr/lib/"
@@ -220,10 +246,16 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL), cfg(0) {
              << "libsocks5.so"                 // ?
              << "libsocks5_sh.so";             // NEC
 
-   cfg = new KConfig("ksocksrc", true, false);
+
+
+   if (!(config->readBoolEntry("SOCKS_enable", false))) 
+   {
+      _disabled = true;
+      return;
+   }
 
    // Add the custom library paths here
-   QStringList newlibs = cfg->readListEntry("Lib Path");
+   QStringList newlibs = config->readListEntry("SOCKS_lib_path");
 
    for (QStringList::Iterator it = newlibs.begin();
                               it != newlibs.end();
@@ -237,19 +269,15 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL), cfg(0) {
    // Load the proper libsocks and KSocksTable
    KLibLoader *ll = KLibLoader::self();
    
-   _hasSocks = false;
-   _useSocks = false;
 
-   if (!(cfg->readBoolEntry("Enable SOCKS", false))) return;
-
-   int _meth = cfg->readNumEntry("SOCKS Method", 1);
+   int _meth = config->readNumEntry("SOCKS_method", 1);
          /****       Current methods
           *   1) Autodetect (read: any)     2) NEC
           *   3) Dante                      4) Custom
           */
 
    if (_meth == 4) {         // try to load^H^H^H^Hguess at a custom library
-      _socksLib = ll->library(cfg->readEntry("Custom Lib", "").latin1());
+      _socksLib = ll->library(config->readEntry("SOCKS_lib", "").latin1());
       if (_socksLib && _socksLib->symbol("Rconnect")) {  // Dante compatible?
          _st = new KDanteSocksTable;       
          _useSocks = true;
@@ -376,7 +404,6 @@ KSocks::KSocks() : _socksLib(NULL), _st(NULL), cfg(0) {
 
 KSocks::~KSocks() {
   stopSocks();
-  delete cfg;
   _me = med.setObject(0);
 }
 
