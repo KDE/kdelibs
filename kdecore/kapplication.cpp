@@ -2882,6 +2882,11 @@ QCString KApplication::startupId() const
 
 void KApplication::setStartupId( const QCString& startup_id )
 {
+    if( startup_id == d->startup_id )
+        return;
+#if defined Q_WS_X11
+    KStartupInfo::handleAutoAppStartedSending(); // finish old startup notification if needed
+#endif
     if( startup_id.isEmpty())
         d->startup_id = "0";
     else
