@@ -359,7 +359,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
           while(runs)
           {
              KProcessController::theKProcessController->
-                  slotDoHousekeeping(0);
+                  waitForProcessExit(10);
           }
           emit processExited(this);
         }

@@ -27,8 +27,10 @@
 
 #include <config.h>
 
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <errno.h>
 #include <fcntl.h>
@@ -52,6 +54,8 @@ KProcessController::KProcessController()
 
   if (0 > pipe(fd))
 	printf(strerror(errno));
+
+  fcntl(fd[0], F_SETFL, O_NONBLOCK);
 
   notifier = new QSocketNotifier(fd[0], QSocketNotifier::Read);
   notifier->setEnabled(true);
@@ -182,21 +186,23 @@ void KProcessController::theSigCHLDHandler(int arg)
 
 void KProcessController::slotDoHousekeeping(int )
 {
+  // NOTE: It can happen that QSocketNotifier fires while
+  // we have already read from the socket. Deal with it.
   unsigned int bytes_read = 0;
-  unsigned int errcnt=0;
   // read pid and status from the pipe.
   struct waitdata wd;
-  while ((bytes_read < sizeof(wd)) && (errcnt < 50)) {
-    int r = ::read(fd[0], ((char *)&wd) + bytes_read, sizeof(wd) - bytes_read);
-      if (r > 0) bytes_read += r;
-      else if (r < 0) errcnt++;
-  }
-  if (errcnt >= 50) {
+  do {
+    bytes_read = ::read(fd[0], ((char *)&wd), sizeof(wd));
+    if ((bytes_read == -1) && (errno == EAGAIN)) return;
+    if ((bytes_read == -1) && (errno != EINTR))
+    {
 	fprintf(stderr,
-	       "Error: Max. error count for pipe read "
-               "exceeded in KProcessController::slotDoHousekeeping\n");
+	       "Error: pipe read returned errno=%d "
+               "in KProcessController::slotDoHousekeeping\n", errno);
 	return;           // it makes no sense to continue here!
-  }
+    }
+  } while (bytes_read <= 0);
+
   if (bytes_read != sizeof(wd)) {
 	fprintf(stderr,
 	       "Error: Could not read info from signal handler %d <> %d!\n",
@@ -204,7 +210,7 @@ void KProcessController::slotDoHousekeeping(int )
 	return;           // it makes no sense to continue here!
   }
   if (wd.pid==0) { // special case, see delayedChildrenCleanup()
-      delayedChildrenCleanupTimer.start( 1000, true );
+      delayedChildrenCleanupTimer.start( 100, true );
       return;
   }
 
@@ -260,6 +266,47 @@ KProcessController::~KProcessController()
 
   delete notifier;
   theKProcessController = 0;
+}
+
+bool
+KProcessController::waitForProcessExit(int timeout)
+{
+  // Due to a race condition the signal handler may have
+  // failed to detect that a pid belonged to a KProcess
+  // and defered handling to delayedChildrenCleanup()
+  // Make sure to handle that first.
+  if (delayedChildrenCleanupTimer.isActive())
+  {
+     delayedChildrenCleanupTimer.stop();
+     KProcessController::delayedChildrenCleanup();
+  }
+  do 
+  {
+    struct timeval tv;
+    tv.tv_sec = timeout;
+    tv.tv_usec = 0;
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(fd[0], &fds);
+    int result = select(fd[0]+1, &fds, 0, 0, &tv);
+    if (result == 0)
+    {
+       return false;
+    }
+    else if (result < 0)
+    {
+       int error = errno;
+       if ((error == ECHILD) || (error == EINTR))
+         continue;
+       return false;
+    }
+    else 
+    {
+       slotDoHousekeeping(fd[0]);
+       break;
+    }
+  } while (true);
+  return true;
 }
 
 #include "kprocctrl.moc"
