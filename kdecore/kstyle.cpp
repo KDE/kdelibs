@@ -16,6 +16,8 @@
    Boston, MA 02111-1307, USA.
 */
 #include <kstyle.h>
+#include <klocale.h>
+#include <kiconloader.h>
 #include <qapplication.h>
 #include <qdrawutil.h>
 
@@ -271,50 +273,91 @@ void KStyle::drawKickerTaskButton(QPainter *p, int x, int y, int w, int h,
                                   const QString &text, bool sunken,
                                   QPixmap *pixmap, QBrush *)
 {
-    int x2 = x+w-1;
-    int y2 = y+h-1;
-    p->fillRect(x+1, y+1, w-2, h-2, sunken ? g.brush(QColorGroup::Mid) :
-                g.brush(QColorGroup::Button));
-    p->setPen(sunken ? Qt::black : g.light());
-    p->drawLine(x, y, x2-1, y);
-    p->drawLine(x, y, x, y2-1);
-    p->setPen(sunken ? g.midlight() : g.mid());
-    p->drawLine(x+1, y2-1, x2-1, y2-1);
-    p->drawLine(x2-1, y+1, x2-1, y2-1);
-    p->setPen(sunken ? g.light() : Qt::black);
-    p->drawLine(x, y2, x2, y2);
-    p->drawLine(x2, y, x2, y2);
+  qDebug("drawKickerTaskButton(%s)", text.ascii());
+  int x2 = x + w - 1;
+  int y2 = y + h - 1;
 
-    const int pxWidth = 20;
-    QRect br(buttonRect(x, y, w, h));
+  p->fillRect(
+    x + 1, y + 1,
+    w - 2, h - 2,
+    sunken ? g.brush(QColorGroup::Mid) : g.brush(QColorGroup::Button)
+  );
 
-    if ( pixmap && !pixmap->isNull() ) {
-        int dx = ( pxWidth - pixmap->width() ) / 2;
-        int dy = ( h - pixmap->height() ) / 2;
-        if (sunken) {
-            dx++;
-            dy++;
-        }
-        p->drawPixmap( br.x()+dx, dy, *pixmap );
+  p->setPen(sunken ? Qt::black : g.light());
+  p->drawLine(x, y, x2 - 1, y);
+  p->drawLine(x, y,      x, y2 - 1);
+
+  p->setPen(sunken ? g.midlight() : g.mid());
+  p->drawLine(x  + 1, y2 - 1, x2 - 1, y2 - 1);
+  p->drawLine(x2 - 1, y  + 1, x2 - 1, y2 - 1);
+
+  p->setPen(sunken ? g.light() : Qt::black);
+  p->drawLine(x, y2, x2, y2);
+  p->drawLine(x2, y, x2, y2);
+
+  const int pxWidth = 20;
+  int textPos = pxWidth;
+
+  QRect br(buttonRect(x, y, w, h));
+  
+  if ((NULL != pixmap) && (!pixmap->isNull())) {
+
+    int dx = (pxWidth - pixmap->width())  / 2;
+    int dy = (h - pixmap->height())       / 2;
+
+    if (sunken) {
+      dx++;
+      dy++;
     }
-    if(sunken)
-        p->setPen(g.light());
-    else
-        p->setPen(g.buttonText());
 
-    if (!text.isNull()){
-        QString s2 = text;
-        if (p->fontMetrics().width(s2) > br.width()-pxWidth){
-            while (s2.length()>0 &&
-                   p->fontMetrics().width(s2) > br.width() - pxWidth
-                   - p->fontMetrics().width("...")) {
-                s2.truncate( s2.length() - 1 );
-            }
-            s2.append("...");
-        }
-        p->drawText(br.x()+ pxWidth, 0, w-pxWidth, h,
-                    AlignLeft|AlignVCenter, s2);
+    p->drawPixmap(br.x() + dx, dy, *pixmap);
+  }
+
+  QString s(text);
+
+  static QString modStr =
+    QString::fromUtf8("[") + i18n("modified") + QString::fromUtf8("]");
+  
+  int modStrPos = s.find(modStr);
+
+  if (-1 != modStrPos) {
+
+    // 11 because we include a space after the closing brace.
+    s.remove(modStrPos, 11);
+
+    QPixmap modPixmap = SmallIcon("modified");
+
+    int dx = (pxWidth - modPixmap.width())  / 2;
+    int dy = (h       - modPixmap.height()) / 2;
+
+    p->drawPixmap(br.x() + textPos + dx, dy, modPixmap);
+
+    textPos += pxWidth;
+  }
+
+  qDebug("textPos == %d", textPos);
+
+  if (!s.isEmpty())
+  {
+    if (p->fontMetrics().width(s) > br.width() - textPos) {
+    
+      int maxLen = br.width() - textPos - p->fontMetrics().width("...");
+
+      while ((!s.isEmpty()) && (p->fontMetrics().width(s) > maxLen))
+        s.truncate(s.length() - 1);
+
+      s.append("...");
     }
+
+    p->setPen(sunken ? g.light() : g.buttonText());
+
+    p->drawText(
+      br.x() + textPos, 0,
+      w - textPos, h,
+      AlignLeft | AlignVCenter,
+      s
+    );
+  }
 }
 
 void KStyle::getKickerBackground(int, int, Orientation,
