@@ -43,6 +43,7 @@
 7016	kio (KIOSlave)
 7017	kio (KIOConnection)
 7020	kded
+7021    kbuildsycoca
 
 # 710x	are for kioslaves
 7101	kio_file
