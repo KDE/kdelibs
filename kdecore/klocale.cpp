@@ -166,8 +166,6 @@ QString KLocale::weekDayName (int i, bool _short) const
   return QString::null;
 }
 
-#ifdef ENABLE_NLS
-
 KLocale::KLocale( const QString& _catalogue )
   : _inited(false), _codec( 0 )
 {
@@ -635,9 +633,6 @@ QString KLocale::formatDate(const QDate &pDate, bool shortfmt) const
 
     return rst;
 }
-#endif
-
-////// Those methods don't depend on ENABLE_NLS /////
 
 void KLocale::setMainCatalogue(const char *catalogue)
 {
@@ -797,8 +792,6 @@ error:
 	return date;
 }
 
-#ifdef ENABLE_NLS
-
 QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
 {
   QString rst(_timefmt);
@@ -854,156 +847,6 @@ QStringList KLocale::languageList() const
   return QStringList::split(':', languages());
 }
 
-#else /* ENABLE_NLS */
-
-KLocale::KLocale( const QString & ) : _inited(true), lang(0)
-{
-  _datefmtshort = QString::fromLatin1("%m/%d/%y");
-}
-
-KLocale::~KLocale()
-{
-}
-
-QString KLocale::translate(const char* index, const char* fallback) const
-{
-  return QString::fromUtf8(fallback);
-}
-
-QString KLocale::translate(const char* msgid) const
-{
-  return QString::fromUtf8(msgid);
-}
-
-bool KLocale::weekStartsMonday() const
-{
-  return TRUE;
-}
-
-QString KLocale::decimalSymbol() const
-{
-  return QString::fromLatin1(".");
-}
-
-QString KLocale::thousandsSeparator() const
-{
-  return QString::fromLatin1(",");
-}
-
-QString KLocale::currencySymbol() const
-{
-  return QString::fromLatin1("$");
-}
-
-QString KLocale::monetaryDecimalSymbol() const
-{
-  return QString::fromLatin1(".");
-}
-
-QString KLocale::monetaryThousandsSeparator() const
-{
-  return QString::fromLatin1(",");
-}
-
-QString KLocale::positiveSign() const
-{
-  return QString::null;
-}
-
-QString KLocale::negativeSign() const
-{
-  return QString::fromLatin1("-");
-}
-
-int KLocale::fracDigits() const
-{
-  return 2;
-}
-
-bool KLocale::positivePrefixCurrencySymbol() const
-{
-  return true;
-}
-
-bool KLocale::negativePrefixCurrencySymbol() const
-{
-  return true;
-}
-
-KLocale::SignPosition KLocale::positiveMonetarySignPosition() const
-{
-  return BeforeQuantityMoney;
-}
-
-KLocale::SignPosition KLocale::negativeMonetarySignPosition() const
-{
-  return ParensAround;
-}
-
-QString KLocale::formatMoney(double num, const QString &symbol, int digits) const
-{
-  QString str = QString::number( num, 'f', digits==-1?2:digits );
-  if (!symbol.isNull())
-    str.prepend(symbol);
-
-  return str;
-}
-
-QString KLocale::formatMoney(const QString &numStr) const
-{
-  return numStr;
-}
-
-QString KLocale::formatNumber(double num, int precision) const
-{
-  return QString::number( num, 'f', precision==-1?2:precision);
-}
-
-QString KLocale::formatNumber(const QString &numStr) const
-{
-  return numStr;
-}
-
-QString KLocale::formatDate(const QDate &pDate, bool) const
-{
-  QString buf;
-  buf.sprintf("%.2d/%.2d/%.2d", pDate.month(), pDate.day(), pDate.year() % 100);
-  return buf;
-}
-
-QString KLocale::formatTime(const QTime &pTime, bool includeSecs) const
-{
-  QString result = pTime.toString();
-  if (!includeSecs)
-     result = result.left(5);
-  return result;
-}
-
-bool KLocale::use12Clock() const
-{
-  return true;
-}
-
-QString KLocale::languages() const
-{
-  return QString::fromLatin1("C");
-}
-
-QStringList KLocale::languageList() const
-{
-    return QStringList(languages());
-}
-
-void KLocale::insertCatalogue( const QString& )
-{
-}
-
-void KLocale::setLanguage(const QString & /* _lang */)
-{
-}
-
-#endif /* ENABLE_NLS */
-
 QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 {
   return formatDate(pDateTime.date()) + ' ' + formatTime(pDateTime.time());
@@ -1011,21 +854,17 @@ QString KLocale::formatDateTime(const QDateTime &pDateTime) const
 
 QString i18n(const char* text)
 {
-#ifdef ENABLE_NLS
   register KLocale *instance = KGlobal::locale();
   if (instance)
      return instance->translate(text);
-#endif
   return QString::fromUtf8(text);
 }
 
 QString i18n(const char* index, const char *text)
 {
-#ifdef ENABLE_NLS
   register KLocale *instance = KGlobal::locale();
   if (instance)
      return instance->translate(index, text);
-#endif
   return QString::fromUtf8(text);
 }
 
