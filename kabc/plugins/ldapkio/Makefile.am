@@ -24,3 +24,5 @@ kabcinclude_HEADERS = resourceldapkio.h
 
 servicedir = $(kde_servicesdir)/kresources/kabc
 service_DATA = ldapkio.desktop
+
+resourceldapkioplugin.lo: ../../addressee.h

@@ -24,3 +24,5 @@ kabcinclude_HEADERS = resourcedir.h
 
 servicedir = $(kde_servicesdir)/kresources/kabc
 service_DATA = dir.desktop
+
+resourcedirplugin.lo: ../../addressee.h
