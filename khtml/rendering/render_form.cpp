@@ -891,8 +891,6 @@ void RenderSelect::updateFromElement()
     if (oldMultiple != m_multiple || oldSize != m_size) {
         if (m_useListBox != oldListbox) {
             // type of select has changed
-            delete m_widget;
-
             if(m_useListBox)
                 setQWidget(createListBox());
             else
@@ -900,7 +898,7 @@ void RenderSelect::updateFromElement()
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
-            static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? QListBox::Multi : QListBox::Single);
+            static_cast<KListBox*>(m_widget)->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
         }
         m_selectionChanged = true;
         m_optionsChanged = true;
