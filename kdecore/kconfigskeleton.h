@@ -823,13 +823,15 @@ public:
   /**
    * Register a custom @ref KConfigSkeletonItem with a given name. If the name
    * parameter is null, take the name from KConfigSkeletonItem::key().
+   * Note that all names must be unique but that multiple entries can have
+   * the same key if they reside in different groups. 
    */
   void addItem(KConfigSkeletonItem *, const QString & name = QString::null );
 
   /**
    * Register an item of type QString.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file 
@@ -846,7 +848,7 @@ public:
    * encrypted to the config file. Note that the current encryption scheme 
    * is very weak.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -863,7 +865,7 @@ public:
    * as a path. This means, dollar expension is activated for this value, so
    * that e.g. $HOME gets expanded. 
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -880,7 +882,7 @@ public:
    * QVariant types are allowed: String, StringList, Font, Point, Rect, Size,
    * Color, Int, UInt, Bool, Double, DateTime and Date.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -894,7 +896,7 @@ public:
   /**
    * Register an item of type bool.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -909,7 +911,7 @@ public:
   /**
    * Register an item of type int.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -923,7 +925,7 @@ public:
   /**
    * Register an item of type unsigned int.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -938,7 +940,7 @@ public:
   /**
    * Register an item of type long.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -953,7 +955,7 @@ public:
   /**
    * Register an item of type unsigned long.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -968,7 +970,7 @@ public:
   /**
    * Register an item of type Q_INT64.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -983,7 +985,7 @@ public:
   /**
    * Register an item of type Q_UINT64
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -998,7 +1000,7 @@ public:
   /**
    * Register an item of type double.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -1013,7 +1015,7 @@ public:
   /**
    * Register an item of type QColor.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -1028,7 +1030,7 @@ public:
   /**
    * Register an item of type QFont.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -1044,7 +1046,7 @@ public:
   /**
    * Register an item of type QRect.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -1059,7 +1061,7 @@ public:
   /**
    * Register an item of type QPoint.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -1074,7 +1076,7 @@ public:
   /**
    * Register an item of type QSize.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -1089,7 +1091,7 @@ public:
   /**
    * Register an item of type QDateTime.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -1104,7 +1106,7 @@ public:
   /**
    * Register an item of type QStringList.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
@@ -1119,7 +1121,7 @@ public:
   /**
    * Register an item of type QValueList<int>.
    * 
-   * @param name Name used to indentify this setting
+   * @param name Name used to indentify this setting. Names must be unique.
    * @param reference Pointer to the variable, which is set by readConfig()
    * calls and read by writeConfig() calls.
    * @param defaultValue Default value, which is used when the config file
