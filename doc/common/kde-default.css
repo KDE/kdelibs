@@ -77,7 +77,7 @@ body {
 
 /* Links in Navigation */
 
-.navLeft a:link, .navCenter :link, .navRight :link, .header a:link, .header a:visited, .bottom-nav a:link, .bottom-nav a:visited {
+.navLeft a:link, .navCenter a:link, .navRight a:link, .header a:link, .header a:visited, .bottom-nav a:link, .bottom-nav a:visited {
   color: #41597A;
   background: white none;
   font-weight: bold;
@@ -98,7 +98,7 @@ body {
 
 .navLeft {
   position: absolute; 
-  left: 0px;
+  left: 20px;
 }
 
 .navRight {
