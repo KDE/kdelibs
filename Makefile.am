@@ -28,9 +28,6 @@ $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/ad
 AUTOMAKE_OPTIONS = foreign 1.4
 
 messages:
-	make -f admin/Makefile.common package-messages
-
-messages-local:
 	$(XGETTEXT) -C -ktranslate -ki18n -x qt-messages.pot common_texts.cpp */*.cpp */*.cc && cat messages.po qt-messages.pot > po/kdelibs.pot; rm messages.po
 	$(XGETTEXT) -C -ktranslate -ki18n common_texts.cpp && mv messages.po po/kde.pot
 
