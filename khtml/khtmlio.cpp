@@ -102,7 +102,8 @@ void HTMLURLRequestJob::slotFinished( int /*_id*/ )
   m_jobId = 0;
 
   kdebug(0,1202,"BROWSER JOB FINISHED %s\n", m_req->m_strURL.ascii());
-  //m_pBrowser->data( this, "", 0, true );
+  m_pBrowser->data( this, "", 0, true ); //lars, why was this commented out?
+    	    	    	    	    	 //it broke jpegs!
   m_pBrowser->urlRequestFinished( this );
 }
 
