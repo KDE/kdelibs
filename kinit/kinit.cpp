@@ -204,10 +204,10 @@ fprintf(stderr, "arg[%d] = %s (%p)\n", i, args, args);
 
      if (!launcher)
      {
-        d.sym = lt_dlsym( d.handle, "main");
+        d.sym = lt_dlsym( d.handle, "kdemain");
         if (!d.sym )
         {
-           d.sym = lt_dlsym( d.handle, "kdemain");
+           d.sym = lt_dlsym( d.handle, "main");
            if (!d.sym )
            {
               fprintf(stderr, "Could not find main: %s\n", lt_dlerror());
