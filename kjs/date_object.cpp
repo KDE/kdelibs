@@ -412,12 +412,13 @@ Completion DateProtoFunc::execute(const List &args)
     break;
   case GetTimezoneOffset:
 #if defined BSD && !defined(__APPLE__)
-    result = Number(-t->tm_gmtoff);
+    result = Number(-( t->tm_gmtoff / 60 ) + ( t->tm_isdst ? 60 : 0 ));
 #else
 #  if defined(__BORLANDC__)
-    result = Number(_timezone / 3600);
+#error please add daylight savings offset here!
+    result = Number(_timezone / 60);
 #  else
-    result = Number(timezone / 3600);
+    result = Number(( timezone / 60 - ( daylight ? 60 : 0 )));
 #  endif
 #endif
     break;
