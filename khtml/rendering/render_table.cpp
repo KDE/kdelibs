@@ -419,7 +419,7 @@ void RenderTable::addColInfo(RenderTableCol *colel)
     int span = colel->span();
     int _minSize=0;
     int _maxSize=0;
-    Length _width = colel->width();
+    Length _width = colel->style()->width();
     if (_width.type==Fixed) {
         _maxSize=_width.value;
 	_minSize=_width.value;
@@ -2237,11 +2237,6 @@ void RenderTableCol::addChild(RenderObject *child, RenderObject *beforeChild)
         table->addColInfo(colel);
         _currentCol++;
     }
-}
-
-Length RenderTableCol::width()
-{
-    return style()->width();
 }
 
 #ifndef NDEBUG
