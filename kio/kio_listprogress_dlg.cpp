@@ -110,6 +110,7 @@ void KIOListViewItem::update() {
 
 void KIOListViewItem::slotTotalSize( int, unsigned long _bytes ) {
   m_iTotalSize = _bytes;
+  setText( listView->lv_total, KIOJob::convertSize( m_iTotalSize ) );
 }
 
 
@@ -284,11 +285,7 @@ KIOListProgressDlg::KIOListProgressDlg() : KTMainWindow( "" ) {
 			  SIGNAL(clicked()), this,
 			  SLOT(cancelCurrent()), FALSE, i18n("Cancel"));
 
-  toolBar()->insertButton(BarIcon("bottom"), TOOL_DOCK,
-			  SIGNAL(clicked()), this,
-			  SLOT(toggleDocking()), TRUE, i18n("Dock"));
-  toolBar()->setToggle(TOOL_DOCK, true);
-  ((KToolBarButton*)toolBar()->getButton(TOOL_DOCK))->on( false ); // default is undocked
+  toolBar()->setBarPos( KToolBar::Left );
 
   // setup statusbar
   statusBar()->setInsertOrder(KStatusBar::LeftToRight);
@@ -428,10 +425,6 @@ void KIOListProgressDlg::cancelCurrent() {
       it++; // update counts
     }
   }
-}
-
-
-void KIOListProgressDlg::toggleDocking() {
 }
 
 

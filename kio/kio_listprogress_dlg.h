@@ -127,7 +127,7 @@ public:
   ~KIOListProgressDlg();
 
   // ToolBar field IDs
-  enum { TOOL_CANCEL, TOOL_DOCK };
+  enum { TOOL_CANCEL };
 
   // StatusBar field IDs
   enum { ID_TOTAL_FILES = 1, ID_TOTAL_SIZE, ID_TOTAL_TIME, ID_TOTAL_SPEED };
@@ -145,8 +145,6 @@ protected:
   KToolBar::BarPosition toolbarPos;
   QString properties;
 
-  bool b_dockWindow;
-
   void readSettings();
   void writeSettings();
 
@@ -155,7 +153,6 @@ protected slots:
   void slotUpdate();
 
   void cancelCurrent();
-  void toggleDocking();
 
   void slotOpenSimple( QListViewItem * );
   void slotSelection();
