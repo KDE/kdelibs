@@ -1,0 +1,51 @@
+Since kab uses the STL, and there are at least two versions 
+around that are not compatible, it can be really hard to get 
+kab compiled. Additionally, there are some problems with X 
+headers that define macros like "O" that really confuse the 
+compiler.
+In the current sources, the STL version is determined auto-
+matically, if yours is supported. This should solve most of 
+the errors that happened before. Please note that the STL is
+usually provided by the C++ compiler you use. Using gcc or 
+egcs, you should not have problems.
+In this file I collect some solutions for solving compilation 
+problems.
+-------------------------------------------------------------
+1.) The compiler complains about something like this
+>keyvaluemap.cc: In method `bool KeyValueMap::insertLine
+>(class basic_string<char,string_char_traits<char>,
+>__default_alloc_template<true,0> >, 
+>bool = false, bool = false, bool = true)':
+>keyvaluemap.cc:476: no matching function for call to 
+>`basic_string<char,string_char_traits<char>,
+>__default_alloc_template<true,0> >::remove 
+>(unsigned int &, int)'.
+
+Solution: Set the STL version you use in the file 
+libkab/stl_headers.h. Use HP STL for libg++ < 2.8, SGI STL for
+libg++ >=2.8.
+With this error message, you probably have a copy of the 
+SGI STL.
+
+2.) The compiler complains in the same way like before, but
+it says something about "erase" instead of "remove?
+
+Solution: This is the same problem as before, but you need to 
+select the HP STL.
+
+3.) The compiler says:
+    >The STL version has not been selected. You need to
+    >choose the STL version you use manually. 
+    >Read the file COMPILE_PROBLEMS_FAQ.   
+
+Solution: The configure script did not find any supported STL
+version on your system. Possibly you will not get kab's sources
+compiled. Contact Mirko Sucker (mirko@kde.org) and mail him you 
+system configuration and possible solutions you find. Do not 
+mind if you only report the problem...
+
+99.) The compiler complains about anything else.
+
+Solution: mail the error to
+  mirko@kde.org
+.

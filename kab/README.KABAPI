@@ -1,0 +1,21 @@
+The KDE addressbook
+================================================================================
+The  kab API  is a binary interface for  application developers that want to use
+the users addressbook in their own applications. To use it, you have to link the
+binary of your program against "libkab.so",  a DLL that exports kab's functions,
+and to include the header file "kabapi.h" in the KDE include directory into your
+sources.
+The documentation of the kab API is contained in the header file (kabapi.h), you
+can extract it by parsing the file with kdoc. The kab binary source directory in
+the  kdeutils package contains a sample program that tries to explain some basic
+functions of the API.
+It is important that you report any bugs you find in the  API  or in the rest of
+kab to
+	mirko@kde.org
+, since it is used in different other applications, and I cannot imagine all the
+possible situations that might occur.
+Read the file README for some details about the compiler environment you need to
+get this sources compiled.  Most of the possible problems  should by now already
+be solved automatically by the automake script, but you need, for example, a C++
+compiler that handles templates properly.
+                                                    Mirko Sucker, September 1998.
