@@ -93,6 +93,7 @@ AC_CHECK_FUNCS(socket vsnprintf)
 AC_CHECK_USLEEP
 AC_CHECK_SETENV
 AC_CHECK_GETDOMAINNAME
+AC_CHECK_GETHOSTNAME
 AC_CHECK_KSIZE_T
 
 dnl Perform program name transformation
