@@ -133,6 +133,9 @@ zh      Chinese
      me know.  It's easy to add them on again.  -->
 <!ENTITY % effectivity.attrib "">
 
+<!-- Not used -->
+<!ENTITY % revisionflag.attrib "">
+
 <!ENTITY % othercredit.role.attrib
         "Role   (Translator|Developer|Reviewer|Graphist|Musician)
                 #REQUIRED">
