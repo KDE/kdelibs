@@ -181,6 +181,7 @@ int KJS::relation(ExecState *exec, const Value& v1, const Value& v2)
   Value p2 = v2.toPrimitive(exec,NumberType);
 
   // When comparing a string and a number, we want to use a string comparison
+  // That's in fact a violation of the spec (see 11.8.5), we only do this to be compatible with other browsers
   if (p1.type() == StringType || p2.type() == StringType)
     return p1.toString(exec) < p2.toString(exec) ? 1 : 0;
 
