@@ -18,7 +18,7 @@
 */
 
 #include "kbookmark.h"
-#include <qptrstack.h>
+#include <qvaluestack.h>
 #include <kdebug.h>
 #include <kmimetype.h>
 #include <kstringhandler.h>
@@ -374,37 +374,40 @@ void KBookmark::updateAccessMetadata()
 void KBookmarkGroupTraverser::traverse(const KBookmarkGroup &root)
 {
     // non-recursive bookmark iterator
-    QPtrStack<KBookmarkGroup> stack;
-    stack.push(&root);
-    KBookmark bk = stack.current()->first();
+    QValueStack<KBookmarkGroup> stack;
+    stack.push(root);
+    KBookmark bk = stack.top().first();
     for (;;) {
+        if (bk.isNull())
+        {
+            if (stack.isEmpty()) 
+                return;
+            if (stack.count() > 1)
+                visitLeave(stack.top());
+            bk = stack.pop();
+            bk = stack.top().next(bk);
+            if (bk.isNull()) {
+                continue;
+            }
+        } 
+
         if (bk.isGroup()) 
         {
             KBookmarkGroup gp = bk.toGroup();
             visitEnter(gp);
             if (!gp.first().isNull()) 
             {
-                 stack.push(&gp);
-                 bk = gp.first();
-                 continue;
+                stack.push(gp);
+                bk = gp.first();
+                continue;
             }
-            // empty group, therefore, leave already
+            // empty group
             visitLeave(gp);
         } 
-        else visit(bk);
+        else 
+            visit(bk);
 
-        // find next bookmark, finishing off groups as needed
-        KBookmark next;
-        while (next = stack.current()->next(bk), next.isNull()) 
-        {
-            // if an empty stack and no next we are done
-            if (stack.isEmpty()) 
-                return;
-            if (stack.count() > 1)
-                visitLeave(*stack.current());
-            bk = *(stack.pop());
-        }
-        bk = next;
+        bk = stack.top().next(bk);
     }
 
     // never reached
