@@ -522,6 +522,8 @@ void ElementImpl::applyChanges(bool top, bool force)
     // ### find a better way to handle non-css attributes
     setChanged(false);
 
+    int ow = (m_style?m_style->outlineWidth():0);
+
     if (top)
 	recalcStyle();   
 
@@ -542,12 +544,23 @@ void ElementImpl::applyChanges(bool top, bool force)
 	m_render->calcMinMaxWidth();
 
     if(top) {
-	// force a relayout of this part of the document
-	m_render->updateSize();
-	// force a repaint of this part.
-	// ### if updateSize() changes any size, it will already force a
-	// repaint, so we might do double work here...
-	m_render->repaint();
+	if (force)
+	{
+	    // force a relayout of this part of the document
+	    m_render->updateSize();
+	    // force a repaint of this part.
+	    // ### if updateSize() changes any size, it will already force a
+	    // repaint, so we might do double work here...
+	    m_render->repaint();
+	}
+	else
+	{
+	    if (m_style)
+		ow = QMAX(ow, m_style->outlineWidth());
+	    RenderObject *cb = m_render->containingBlock();
+	    if (cb)
+		cb->repaintRectangle(-ow, -ow, cb->width()+2*ow, cb->height()+2*ow);
+	}
     }
     setChanged(false);
 }
@@ -700,29 +713,13 @@ bool ElementImpl::mouseEvent( int _x, int _y,
 void ElementImpl::setFocus(bool received)
 {
     NodeBaseImpl::setFocus(received);
-
-    if (!m_render)
-	return;
-
     applyChanges(true,false);
-
-    RenderObject *cb = m_render->containingBlock();
-    cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
-
 }
 
 void ElementImpl::setActive(bool down)
 {
     NodeBaseImpl::setActive(down);
-
-    if (!m_render)
-	return;
-
     applyChanges(true,false);
-
-    RenderObject *cb = m_render->containingBlock();
-    cb->repaintRectangle(-3, -1, cb->width()+5, cb->height()+3);
-
 }
 
 khtml::FindSelectionResult ElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty, DOM::Node & node, int & offset )
