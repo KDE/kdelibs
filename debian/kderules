@@ -113,6 +113,10 @@ if (! -d "debian/tmp/usr/X11R6/include/X11/pixmaps") {
 if (@docs) {
        chdir($origPwd);
        cp( "-aP", @docs, "debian/tmp/usr/doc/$package") ;
+       if (-f "debian/tmp/usr/doc/$package/ChangeLog") {
+	  mv("debian/tmp/usr/doc/$package/ChangeLog", 
+		"debian/tmp/usr/doc/$package/changelog");
+	}
 }
 
 # Create debian/menu files
@@ -121,8 +125,8 @@ sub findkdelnk {
 	/\.kdelnk$/ && push @lnkfiles, "$File::Find::dir/$_" ;
 }
 
-if (-d "debian/tmp/usr/share/applnk") {
-	find(\&findkdelnk,"debian/tmp/usr/share/applnk");
+if (-d "debian/tmp/opt/kde2pre/share/applnk") {
+	find(\&findkdelnk,"debian/tmp/opt/kde2pre/share/applnk");
 }
 
 if (-e "debian/menu.in") {
@@ -190,15 +194,15 @@ foreach $file (@lnkfiles) {
 	if ($sect{$prog} eq "NONE") { next ; }
 	$icon="";
 	if (not defined $kdelnk{"Name"}) {
-		print STDERR "No Name : $package $kdelnk";
+		print STDERR "No Name : $package $kdelnk\n";
 		next ;
 	}
 	if (defined $kdelnk{"Icon"}) {
    	        $icon=$kdelnk{"Icon"} ;
-		if (! -f "debian/tmp/usr/share/icons/$icon" ) {
+		if (! -f "debian/tmp/opt/kde2pre/share/icons/$icon" ) {
                    $icon="";
 	        } else {
-	          system("/usr/bin/X11/convert -map /usr/X11R6/include/X11/pixmaps/cmap.xpm debian/tmp/usr/share/icons/$icon debian/tmp/usr/X11R6/include/X11/pixmaps/$icon");
+	          system("/usr/bin/X11/convert -map /usr/X11R6/include/X11/pixmaps/cmap.xpm debian/tmp/opt/kde2pre/share/icons/$icon debian/tmp/usr/X11R6/include/X11/pixmaps/$icon");
 	  	  $icon="/usr/X11R6/include/X11/pixmaps/" . $icon ;
                }
 	}
