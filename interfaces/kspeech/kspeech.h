@@ -51,6 +51,9 @@
  *     Jobs may be created, started, stopped, paused, resumed, and deleted.
  *   - Speak contents of clipboard.
  *   - Speak KDE notifications.
+ *   - Plugin-based text job filtering permits substitution for misspoken words,
+ *     abbrebiations, etc., transformation of XML or XHTML to SSML, and automatic
+ *     choice of appropriate synthesis engine.
  *
  * @section Requirements
  *
@@ -489,8 +492,7 @@
  * Applications can implement their own talker-matching algorithm by
  * calling @ref getTalkers, then finding the desired talker from the returned
  * list.  When the full talker code is passed in, %KKTSD will find an exact
- * match and use the specified talker.  Applications can also determine what
- * the user preferences are for attributes by calling @ref userTalkerPreferences.
+ * match and use the specified talker.
  *
  * If an application requires a configuration that user has not created,
  * it should display a message to user instructing them to run kttsmgr and
@@ -563,22 +565,22 @@
  * @ref appendText methods into sentences and sends the sentences to the speech
  * plugin one at a time.  In this way, should the user wish to stop the speech
  * output, they can do so, and the worst that will happen is that the last sentence
- * will be completed.
+ * will be completed.  This is called Sentence Boundary Detection (SBD).
  *
- * Sentence parsing also permits the user to rewind by sentences.
+ * Sentence Boundary Detection also permits the user to rewind by sentences.
  *
  * The default sentence delimiter used for plain text is as follows:
  *
  *   - A period (.), question mark (?), exclamation mark (!), colon (:), or
  *     semi-colon (;) followed by whitespace (including newline), or
- *   - Two newlines in a row separated by optional whitespace.
+ *   - Two newlines in a row separated by optional whitespace, or
+ *   - The end of the text.
  *
  * When given text containing speech markup, %KTTSD automatically determines the markup type
  * and parses based on the sentence semantics of the markup language.
- * TODO: ISSUE: Can this be reasonably done?
  *
  * An application may change the sentence delimiter by calling @ref setSentenceDelimiter
- * prior to calling @ref setText.  Changing the delimeter does not affect other
+ * prior to calling @ref setText.  Changing the delimiter does not affect other
  * applications.
  *
  * Text given to %KTTSD via the @ref sayWarning, @ref sayMessage, and @ref sayScreenReaderOutput
@@ -695,7 +697,7 @@ class KSpeech : virtual public DCOPObject {
         *
         * The default sentence delimiter is
           @verbatim
-              ([\\.\\?\\!\\:\\;]\\s)|(\\n *\\n)
+              ([\\.\\?\\!\\:\\;])(\\s|$|(\\n *\\n))
           @endverbatim
         *
         * Note that backward slashes must be escaped.
@@ -703,7 +705,7 @@ class KSpeech : virtual public DCOPObject {
         * with a single space, and then replaces the sentence delimiters using
         * the following statement:
           @verbatim
-              temp.replace(sentenceDelimiter, "\\1\t");
+              QString::replace(sentenceDelimiter, "\\1\t");
           @endverbatim
         *
         * which replaces all sentence delimiters with a tab, but
