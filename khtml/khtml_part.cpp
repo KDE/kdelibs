@@ -3728,18 +3728,22 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   {
     // Before attempting to load a part, check if the user wants that.
     // Many don't like getting ZIP files embedded.
-    KParts::BrowserRun::AskSaveResult res = KParts::BrowserRun::askEmbedOrSave(
-      url, mimetype/*, suggestedFilename */ );
-    switch( res ) {
-    case KParts::BrowserRun::Save:
-      KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString::null, 0 /*, suggestedFilename */ );
-      // fall-through
-    case KParts::BrowserRun::Cancel:
-      child->m_bCompleted = true;
-      checkCompleted();
-      return true; // done
-    default: // Open
-      break;
+    // However we don't want to ask for flash and other plugin things..
+    if ( child->m_type != khtml::ChildFrame::Object )
+    {
+      KParts::BrowserRun::AskSaveResult res = KParts::BrowserRun::askEmbedOrSave(
+        url, mimetype/*, suggestedFilename */ );
+      switch( res ) {
+      case KParts::BrowserRun::Save:
+        KHTMLPopupGUIClient::saveURL( widget(), i18n( "Save As" ), url, child->m_args.metaData(), QString::null, 0 /*, suggestedFilename */ );
+        // fall-through
+      case KParts::BrowserRun::Cancel:
+        child->m_bCompleted = true;
+        checkCompleted();
+        return true; // done
+      default: // Open
+        break;
+      }
     }
 
     QStringList dummy; // the list of servicetypes handled by the part is now unused.
