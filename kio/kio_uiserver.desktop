@@ -1,13 +1,11 @@
 [Desktop Entry]
 Type=Service
 Name=kio_uiserver
-Name[af]=KIO_UI-BEDIENER
 Name[de]=Server der graphischen Oberfläche
 Name[es]=Servidor UI de KIO
 Name[ja]=kio_uiサーバ
 Exec=kio_uiserver
 Comment=KDE's Progress Info UI server
-Comment[af]=KDE's VORDERING INLIGTING UI BEDIENER
 Comment[az]=KDE'nin İrəliləmə Bilgisi İstifadaçi Ara Üz Vericisi
 Comment[br]=Servijer stlenn EA Progress KDE
 Comment[bs]=KDEov Progess Info UI poslužitelj
@@ -46,8 +44,8 @@ Comment[ta]=KDEÂ¢ý Óý§ÉüÈ ¾¸Åø Ó¸ôÒô ÀÃ¢Á¡È¢
 Comment[tr]=KDE'nin İlerleme Bilgisi arayüz sunucusu
 Comment[uk]=Сервер графічного інтерфейсу інформації про розвиток KDE
 Comment[vi]=Máy chủ xem tiến trình các thông tin vềEUI của KDE 
+Comment[xh]=Uqhubekeko lolwazi lwe KDE lomncedisi we UI
 Comment[zh_CN.GB2312]=KDE 的进度信息用户接口服务器
-Comment[zh_TW.Big5]=KDE's 程序資訊 UI 伺服器
 ServiceTypes=
 # It is a server
 X-DCOP-ServiceType=Unique

@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/rdf
 Comment=Resource Description Framework (RDF) file
-Comment[af]=HULPBRON BESKRYWING RAAMWERK (RDF) LêER
 Comment[az]=Mənbə Tanımlama Şərşivə (RDF) Faylı
 Comment[bg]=Файл за описание на ресурси (RDF)
 Comment[cs]=Definiční soubor zdroje (RDF)
@@ -21,9 +20,10 @@ Comment[lt]=Resource Description Framework (RDF) byla
 Comment[lv]=Resource Description Framework (RDF) fails
 Comment[mt]=Fajl Resource Description Framework (RDF)
 Comment[nl]=Ressource Definition Framwork-bestand (RDF)
+Comment[no]=Resource Description Framework (RDF)-fil
 Comment[no_NY]='Resource Description Framework'-fil (RDF)
 Comment[pl]=Plik definicji zasobów (RDF)
-Comment[pt_BR]=Ficheiro de descrição de recursos (RDF)
+Comment[pt_BR]=Arquivo de descrição de recursos (RDF)
 Comment[pt]=Ficheiro de descrição de recursos (RDF)
 Comment[ru]=файл описания ресурсов (RDF)
 Comment[sk]=Definičný súbor zdroja (RDF)
@@ -34,6 +34,7 @@ Comment[ta]=ÅÇ Å¢ÀÃì ¸ð¼¨ÁôÒì (RDF) §¸¡ôÒ
 Comment[tr]=Kaynak Tanım İskelet (RDF) Dosyası
 Comment[uk]=Файл структури опису ресурсів (RDF)
 Comment[vi]=File RDF (Resource Description Framework ) 
+Comment[xh]=Ifayile yenkcazelo yecebo lomsebenzi wesiseko (RDF)
 Comment[zh_CN.GB2312]=资源描述框架(RDF)文件
 Icon=news
 Type=MimeType

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Python sources
-Comment[af]=PYTHON BRONKODES
 Comment[az]=Python mənbə kodları
 Comment[bg]=Програма на Python
 Comment[bs]=Python izvorni kod
@@ -42,8 +41,8 @@ Comment[ta]=¨À¾¡ý ãÄí¸û
 Comment[tr]=Python kaynak kodları
 Comment[uk]=Вихідний файл Python
 Comment[vi]=Mã nguồn Python 
+Comment[xh]=Iimvelaphi zenyoka enkulu engenatyhefu ebulala ixhoba ngokulisonga
 Comment[zh_CN.GB2312]=Python 源文件
-Comment[zh_TW.Big5]=Python 原始碼
 Icon=source_py
 Type=MimeType
 MimeType=text/x-python

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Troff document
-Comment[af]=TROFF DOKUMENT
 Comment[az]=Troff sənədi
 Comment[bg]=Документ на Troff
 Comment[br]=Teul troff
@@ -45,8 +44,8 @@ Comment[tr]=Troff belgesi
 Comment[uk]=Документ Troff
 Comment[vi]=Tài liệu Troff 
 Comment[wa]=Documint troff
+Comment[xh]=Uxwebhu lwe Troff
 Comment[zh_CN.GB2312]=Troff 文档
-Comment[zh_TW.Big5]=Troff 文件
 Icon=man
 Type=MimeType
 MimeType=application/x-troff

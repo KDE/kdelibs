@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=application/x-lha
 Comment=Lha Archives
-Comment[af]=LHA ARGIEWE
 Comment[az]=Lha Arxivləri
 Comment[bg]=Архив на Lha
 Comment[br]=Diell lha
@@ -47,8 +46,8 @@ Comment[tr]=Lha Arşivleri
 Comment[uk]=Архів LHA
 Comment[vi]=Nén Lha 
 Comment[wa]=Årtchive LHA
+Comment[xh]=Ushicilelo lukawonke-wonke nexwebhu leMbali le Lha
 Comment[zh_CN.GB2312]=Lha 归档文件
-Comment[zh_TW.Big5]=Lha 檔案館
 Icon=tgz
 Type=MimeType
 Patterns=*.lha;*.lzh;*.LHA;*.LZH;

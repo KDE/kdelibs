@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Bzipped Tar Archives
-Comment[af]=BZIP GEKOMPAKTEERDE TAR ARGIEWE
 Comment[az]=Bzip'lənmiş Tar Arxivləri
 Comment[bg]=Компресиран с bzip архив на tar
 Comment[br]=Diell tar bzippet
@@ -24,7 +23,7 @@ Comment[is]=Bzip-þjappað tar-safn
 Comment[it]=Archivio Tar-Bzip
 Comment[ja]=BzipされたTarアーカイブ
 Comment[ko]=Bzip으로 압축된 Tar 파일
-Comment[lt]=Tar Archyvai, suglaudinti su Bzip
+Comment[lt]=Tar Archyvai, suspausti su Bzip
 Comment[lv]=Bzipped Tar Arhīvi
 Comment[mi]=Takotoranga Tar Bzip
 Comment[mk]=Bzip-Tar архива
@@ -45,8 +44,8 @@ Comment[ta]=Bzip ¦ºö¾ Tar ¸¡ôÀ¸í¸û
 Comment[tr]=Bzip'lenmiş Tar Arşivleri
 Comment[uk]=Архів Tar, стиснутий bzip
 Comment[vi]=File nén Bzipped tar 
+Comment[xh]=Ushicilelo lukawonke-wonke namaxwebhu eMbali le Bzipped Tar
 Comment[zh_CN.GB2312]=Bzip 压缩的 Tar 归档文件
-Comment[zh_TW.Big5]=Bzipped Tar 檔案館
 MimeType=application/x-tbz
 Icon=tgz
 Type=MimeType

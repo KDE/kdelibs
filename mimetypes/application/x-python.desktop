@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Python program
-Comment[af]=PYTHON PROGRAM
 Comment[az]=Python proqramı
 Comment[bg]=Програма на Python
 Comment[br]=Goulev Python
@@ -41,8 +40,8 @@ Comment[tr]=Python programı
 Comment[uk]=Програма Python
 Comment[vi]=Chương trình Python 
 Comment[wa]=Programe è python
+Comment[xh]=Udweliso lwenkqubo lwenyoka enkulu engenancidi inityhefu ebulala ixhoba ngokulisonga
 Comment[zh_CN.GB2312]=Python 程序
-Comment[zh_TW.Big5]=Python 程式
 Type=MimeType
 MimeType=application/x-python
 Patterns=*.py;

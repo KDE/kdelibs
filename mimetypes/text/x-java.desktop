@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Java sources
-Comment[af]=JAVA BRONKODES
 Comment[az]=Java mənbə kodları
 Comment[bg]=Програма на Java
 Comment[br]=Tarzh Java
@@ -45,8 +44,8 @@ Comment[ta]=Java ãÄí¸û
 Comment[tr]=Java kaynak kodları
 Comment[uk]=Вихідний файл Java
 Comment[vi]=Mã của Java 
+Comment[xh]=iimvelaphi ze Java
 Comment[zh_CN.GB2312]=Java 源代码
-Comment[zh_TW.Big5]=Java 原始碼
 Icon=source_java
 Type=MimeType
 MimeType=text/x-java

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Perl sources
-Comment[af]=PERL BRONKODES
 Comment[az]=Perl mənbə kodları
 Comment[bg]=Програма на Perl
 Comment[bs]=Perl izvorni kod
@@ -42,8 +41,8 @@ Comment[ta]=Perl ãÄí¸û
 Comment[tr]=Perl kaynak kodları
 Comment[uk]=Вихідний файл Perl
 Comment[vi]=Mã nguồn Perl 
+Comment[xh]=Iimvelaphi ze Perl
 Comment[zh_CN.GB2312]=Perl 源文件
-Comment[zh_TW.Big5]=Perl 原始碼
 Icon=source
 Type=MimeType
 MimeType=text/x-perl

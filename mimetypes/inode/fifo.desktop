@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Pipe
-Comment[af]=PYP
 Comment[az]=Boru
 Comment[bg]=Именуван канал
 Comment[br]=Korzenn gehentiÃ±
@@ -41,8 +40,8 @@ Comment[tr]=Boru
 Comment[uk]=Канал (Pipe)
 Comment[vi]=Ống dẫn (pipe) 
 Comment[wa]=Bûze
+Comment[xh]=Umbhobho
 Comment[zh_CN.GB2312]=管道
-Comment[zh_TW.Big5]=管道
 Icon=pipe
 Type=MimeType
 MimeType=inode/fifo

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=C++ sources
-Comment[af]=C++ BRONKODES
 Comment[az]=C++ mənbə kodları
 Comment[bg]=Файл на C++
 Comment[br]=Tarzh C++
@@ -45,8 +44,8 @@ Comment[ta]=C++ ãÄí¸û
 Comment[tr]=C++ kaynak kodları
 Comment[uk]=Вихідний файл C++
 Comment[vi]=File nguồn C++ 
+Comment[xh]=C++ iimvelaphi
 Comment[zh_CN.GB2312]=C++ 源代码
-Comment[zh_TW.Big5]=C++ 原始碼
 Icon=source_cpp
 Type=MimeType
 MimeType=text/x-c++src

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Directory
-Comment[af]=GIDS
 Comment[az]=Cərgə
 Comment[bg]=Директория
 Comment[br]=Renkell
@@ -45,8 +44,8 @@ Comment[tr]=Dizin
 Comment[uk]=Каталог
 Comment[vi]=Thư mục 
 Comment[wa]=Ridant
+Comment[xh]=Ulawulo
 Comment[zh_CN.GB2312]=目录
-Comment[zh_TW.Big5]=目錄
 Icon=folder
 Type=MimeType
 MimeType=inode/directory

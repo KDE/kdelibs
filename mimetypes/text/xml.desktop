@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=eXtensible Markup Language document
-Comment[af]=UITBREIBARE OPMERK TAAL DOKUMENT
 Comment[az]=Genişlədilmiş Şəkilləmə Dili sənədi
 Comment[bg]=Файл на XML
 Comment[cs]=Dokument ve formátu XML
@@ -35,6 +34,7 @@ Comment[ta]=eXtended Markup Language ¬Å½õ
 Comment[tr]=Genişletilmiş Biçimleme Dili (XML) belgesi
 Comment[uk]=Документ XML (eXtensible Markup Language)
 Comment[vi]=Tài liệu XML (eXtensible Markup Language) 
+Comment[xh]=Uxwebhu lolwimi oluphawulweyo olokhulu
 Comment[zh_CN.GB2312]=可扩展标记语言文档
 Icon=html
 Type=MimeType

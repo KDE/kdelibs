@@ -2,7 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=KScan/KScanDialog
 Name=KScan
-Name[af]=KSKANDEER
 Name[bg]=Скенер
 Name[eo]=Bildciferecigo
 Name[fr]=kScan
@@ -11,3 +10,4 @@ Name[ko]=K스캔
 Name[pl]=Skan
 Name[ru]=Сканер
 Name[sv]=Kscan
+Name[xh]=Imita yovavanyo ye K

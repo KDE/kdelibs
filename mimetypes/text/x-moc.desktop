@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/x-moc
 Comment=Qt Meta Object File
-Comment[af]=QT META VOORWERP LêER
 Comment[az]=Qt Meta Cism Faylı
 Comment[bg]=Файл-метаобекти на Qt
 Comment[br]=Restr Qt Meta Object
@@ -43,8 +42,8 @@ Comment[ta]=Qt Meta Object §¸¡ôÒ
 Comment[tr]=Qt Meta Nesne Dosyası
 Comment[uk]=Файл з метаоб'єктами Qt
 Comment[vi]=File siêu đối tượng của Qt(meta object file) 
+Comment[xh]=Qt Meta Ifayile yenjongo
 Comment[zh_CN.GB2312]=Qt 元目标文件
-Comment[zh_TW.Big5]=Qt Meta 物件檔案
 Type=MimeType
 Patterns=*.moc;
 Icon=source_moc

@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=MimeType
 Comment=ULAW (Sun) audio
-Comment[af]=ULAW (SUN) AUDIO
 Comment[az]=ULAW (Sun) səsləri
 Comment[bg]=Звуков файл ULAW (Sun)
 Comment[br]=Klevet ULAW (Sun)
@@ -36,8 +35,8 @@ Comment[sv]=ULAW-ljud (Sun)
 Comment[ta]=ULAW (Sun) ´Ä¢
 Comment[tr]=ULAW (Sun) sesleri
 Comment[uk]=Аудіо-дані ULAW (Sun)
+Comment[xh]=ULAW (Ilanga) evakalayo
 Comment[zh_CN.GB2312]=ULAW (Sun) 音频文件
-Comment[zh_TW.Big5]=ULAW (Sun) 音效
 MimeType=audio/basic
 Icon=sound
 Patterns=*.au;*.AU;*.snd;*.SND

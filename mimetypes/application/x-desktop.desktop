@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Desktop config file
-Comment[af]=WERKSKERM OPSTELLING LêER
 Comment[az]=Masa üstü quraşdırma faylı
 Comment[bg]=Файл за настройка на работно място
 Comment[br]=Restr kefluniaÃ± ar gorretaol
@@ -8,7 +7,7 @@ Comment[bs]=Datoteka sa postavkama radne površine
 Comment[ca]=Fitxer de configuració de l'escriptori
 Comment[cs]=Konfigurační soubor pracovní plochy
 Comment[da]=Skrivebords indstillingsfil
-Comment[de]=Konfigurationsdatei für die Arbeitsfläche
+Comment[de]=Einstellungen für die Arbeitsfläche
 Comment[el]=Αρχείο Ρυθμίσεων Επ. Εργασίας
 Comment[eo]=Tabula agordo-dosiero
 Comment[es]=Archivo de configuración del escritorio
@@ -45,8 +44,8 @@ Comment[ta]=§Á¨º ÅÊÅ¨Á §¸¡ôÒ
 Comment[tr]=Masaüstü yapılandırma dosyası
 Comment[uk]=Файл конфігурації стільниць
 Comment[vi]=File cấu hình Desktop 
+Comment[xh]=Ifayile yoqwalaselo lwe Desktop
 Comment[zh_CN.GB2312]=桌面配置文件
-Comment[zh_TW.Big5]=桌面設定檔案
 Icon=exec
 Type=MimeType
 MimeType=application/x-desktop

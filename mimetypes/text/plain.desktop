@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/plain
 Comment=Plain Text
-Comment[af]=EENVOUDIG TEKS
 Comment[az]=Düz Mətn
 Comment[bg]=Обичаен текст
 Comment[br]=Skrid eeun
@@ -47,8 +46,8 @@ Comment[tr]=Düz Metin
 Comment[uk]=Звичайний текст
 Comment[vi]=Văn bản thuần tuý(plain text) 
 Comment[wa]=Peur tecse
+Comment[xh]=Umongo owodwa
 Comment[zh_CN.GB2312]=普通文本
-Comment[zh_TW.Big5]=純文字
 Icon=txt
 Type=MimeType
 Patterns=*.txt;

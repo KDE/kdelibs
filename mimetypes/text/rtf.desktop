@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/rtf
 Comment=Rich Text Format
-Comment[af]=RYK TEKS FORMAAT
 Comment[az]=Zəngin Mətn Şəkli
 Comment[bg]=Документ на RTF
 Comment[br]=Furmad skrid pinvidik
@@ -35,8 +34,8 @@ Comment[sv]=Dokument i RTF-format (Rich Text)
 Comment[ta]=¿¢¨È×¨Ã ÅÊÅõ
 Comment[tr]=Zengin Metin Biçimi
 Comment[vi]=RTF(Rich Text Format) 
+Comment[xh]=Ifomati yokubhaliweyo okutyebileyo
 Comment[zh_CN.GB2312]=Rich 文本格式
-Comment[zh_TW.Big5]=多重文字檔式
 Icon=wordprocessing
 Type=MimeType
 Patterns=*.rtf;*.RTF;

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Name=Notepad (example)
-Name[af]=NOTABLOK (VOORBEELD)
 Name[az]=Qeyd dəftəri (misal)
 Name[bg]=Notepad (пример)
 Name[br]=Skrabvloc'h (skouer)
@@ -44,8 +43,8 @@ Name[ta]=ÌÈ¢ôÀð¨¼ (¯¾¡Ã½õ)
 Name[tr]=Not defteri (örnek)
 Name[uk]=Записна книжка (приклад)
 Name[vi]=notepad(ví dụ) 
+Name[xh]=Inkatha yomakuqwalaselwe (umzekelo)
 Name[zh_CN.GB2312]=记事本(例子)
-Name[zh_TW.Big5]=筆記本(範例)
 MimeType=text/english;text/plain;text/x-makefile;text/x-c++hdr;text/x-c++src;text/x-chdr;text/x-csrc;text/x-java;text/x-moc;text/x-pascal;text/x-tcl;text/x-tex;application/x-shellscript;text/x-c;text/x-c++;
 ServiceTypes=KParts/ReadOnlyPart
 X-KDE-Library=libnotepadpart

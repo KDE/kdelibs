@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=MimeType
 Comment=PCM audio
-Comment[af]=PCM AUDIO
 Comment[az]=PCM səsləri
 Comment[bg]=Звуков файл на PCM
 Comment[br]=Klevet PCM
@@ -37,8 +36,8 @@ Comment[ta]=PCM ´Ä¢
 Comment[tr]=PCM sesleri
 Comment[uk]=PCM-аудіо
 Comment[vi]=Audio PCM 
+Comment[xh]=PCM evakalayo
 Comment[zh_CN.GB2312]=PCM 音频文件
-Comment[zh_TW.Big5]=PCM 音效
 MimeType=audio/x-adpcm
 Icon=sound
 Patterns=;

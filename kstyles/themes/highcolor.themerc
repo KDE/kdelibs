@@ -1,6 +1,5 @@
 [Misc]
 Name=HighColor Default
-Name[af]=HOë-KLEUR VERSTEK
 Name[az]=Əsas Yüksək Rəngli
 Name[bg]=HiColor по подразбиране
 Name[br]=LivioÃ¹ uhel dre ziouer
@@ -46,7 +45,6 @@ Name[vi]=Mặc định Màu sáng
 Name[xh]=Umbala ophezulu ongagqibekanga
 Name[zh_CN.GB2312]=默认的高色彩
 Comment=Highcolor version of the default style
-Comment[af]=HOë-KLEUR WEERGAWE VAN DIE VERSTEK STYL
 Comment[az]=Əsas tərzin yüksək rəngli buraxılışı
 Comment[bg]=Стил по подразбиране с много цветове
 Comment[br]=Stumm livioÃ¹ uhel ar c'hiz dre ziouer
@@ -91,6 +89,5 @@ Comment[uk]=Версія типового стилю для 64К кольорі�
 Comment[vi]=Kiểu mặc định cho phiên bản sáng màu 
 Comment[xh]=Uguqulelo oluthile lombala ophezulu lohlobo olungagqibekanga
 Comment[zh_CN.GB2312]=默认风格的高色彩版本
-Comment[zh_TW.Big5]=預設風格的高彩版本
 [KDE]
 widgetStyle=hcstyle.la

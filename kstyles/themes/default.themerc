@@ -1,6 +1,5 @@
 [Misc]
 Name=KDE default
-Name[af]=KDE VERSTEK
 Name[az]=KDE əsas
 Name[bg]=KDE
 Name[br]=KDE dre ziouer
@@ -49,7 +48,6 @@ Name[wa]=Prémetaedje KDE
 Name[xh]=KDE engagqibekanga
 Name[zh_CN.GB2312]=KDE 默认
 Comment=Default KDE style
-Comment[af]=VERSTEK KDE STYL
 Comment[az]=Əsas KDE tərzi
 Comment[bg]=Стил на KDE по подразбиране
 Comment[br]=Giz KDE dre ziouer
@@ -94,7 +92,6 @@ Comment[tr]=Öntanımlı KDE stili
 Comment[uk]=Типовий стиль KDE
 Comment[xh]=Uhlobo olungagqibekanga lwe KDE
 Comment[zh_CN.GB2312]=默认的 KDE 风格
-Comment[zh_TW.Big5]=預設的 KDE 風格
 Highcolor=hcstyle.la
 InactiveShading=true
 [KDE]

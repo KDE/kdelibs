@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=C headers
-Comment[af]=C OPSKRIFTE
 Comment[az]=C başlıq faylları
 Comment[bg]=Файл-заглавия на C
 Comment[br]=Reollin C
@@ -45,7 +44,6 @@ Comment[tr]=C başlık dosyaları
 Comment[uk]=Файли заголовків C
 Comment[vi]=Header của file C 
 Comment[zh_CN.GB2312]=C 头文件
-Comment[zh_TW.Big5]=C 表頭
 Icon=source_h
 Type=MimeType
 MimeType=text/x-chdr

@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=application/x-egon
 Comment=Egon Animator
-Comment[af]=EGON ANIMEERDER
 Comment[az]=Egon Animasiya Vasitəsi
 Comment[bg]=Аниматор на Egon
 Comment[cs]=Egon animátor
@@ -30,6 +29,7 @@ Comment[ta]=Egon «¨ºçðÊ
 Comment[tr]=Egon Animasyon Aracı
 Comment[uk]=Аніматор Egon
 Comment[vi]=Hoạt hoạ Egon 
+Comment[xh]=Umphilisi we-Egon
 Icon=unknown
 Type=MimeType
 Patterns=*.egon;

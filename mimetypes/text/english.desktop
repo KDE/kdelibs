@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/english
 Comment=English Text
-Comment[af]=ENGELS TEKS
 Comment[az]=İngliscə Mətn
 Comment[bg]=Английски текст
 Comment[br]=Skrid saozneg
@@ -47,8 +46,8 @@ Comment[tr]=İngilizce Metin
 Comment[uk]=Англійський Текст
 Comment[vi]=Văn bản tiếng Anh 
 Comment[wa]=Tecse èn inglès
+Comment[xh]=Okubhaliweyo kwesiNgesi
 Comment[zh_CN.GB2312]=英文文本
-Comment[zh_TW.Big5]=英文字
 Icon=txt
 Type=MimeType
 Patterns=README;

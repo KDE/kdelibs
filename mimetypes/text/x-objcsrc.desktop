@@ -1,7 +1,6 @@
 # KDE Config File
 [KDE Desktop Entry]
 Comment=Objective-C sources
-Comment[af]=OBJEK-C BRONKODES
 Comment[az]=Objective-C mənbə kodları
 Comment[bg]=Програма на Objective-C
 Comment[br]=Tarzh Objective-C
@@ -46,8 +45,8 @@ Comment[ta]=Objective-C ãÄí¸û
 Comment[tr]=Objective-C kaynak kodları
 Comment[uk]=Вихідний файл Objective-C
 Comment[vi]=Mã nguồn của file đối tượng C 
+Comment[xh]=Inenjongo-C iimvelaphi
 Comment[zh_CN.GB2312]=Objective-C 源代码
-Comment[zh_TW.Big5]=Objective-C 原始碼
 Icon=source_c
 Type=MimeType
 MimeType=text/x-objcsrc

@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=MimeType
 Comment=Ogg Vorbis audio
-Comment[af]=OGG VORBIS AUDIO
 Comment[az]=Ogg Vorbis səsi
 Comment[bg]=Звуков файл Ogg Vorbis
 Comment[br]=Klevet Ogg Vorbis
@@ -35,8 +34,8 @@ Comment[ta]=Ogg Vorbis ´Ä¢
 Comment[tr]=Ogg Vorbis sesi
 Comment[uk]=Аудіо Ogg Vorbis
 Comment[vi]=Audio Ogg Vorbis 
+Comment[xh]=Ogg Vorbis ebonakalayo
 Comment[zh_CN.GB2312]=Ogg Vorbis 音频文件
-Comment[zh_TW.Big5]=Ogg Vorbis 音效
 MimeType=application/x-ogg
 Icon=sound
 Patterns=*.ogg;*.OGG;

@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=Service
 Name=GZip Filter
-Name[af]=GZIP FILTER
 Name[az]=GZip Süzgəci
 Name[bg]=gzip филтър
 Name[cs]=Filtr GZip2
@@ -37,6 +36,6 @@ Name[ta]=GZip ÅÊ¸ðÊ
 Name[tr]=GZip Filtresi
 Name[uk]=Фільтр GZip
 Name[vi]=Trình lọc Gzip 
-Name[zh_TW.Big5]=GZip 過濾器
+Name[xh]=GZip Icebo lokucoca ulwelo
 X-KDE-Library=kgzipfilter
 ServiceTypes=KDECompressionFilter,application/x-gzip,application/x-tgz

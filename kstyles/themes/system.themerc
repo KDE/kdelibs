@@ -244,7 +244,6 @@ Name[tr]=Sistem++
 Name[xh]=Indlela esetyenziswayo++
 Name[zh_TW.Big5]=系統++
 Comment=System themed style
-Comment[af]=STELSEL GETEMADE STYL
 Comment[az]=Sistem örtülü tərz
 Comment[bg]=Системен сти с тема
 Comment[br]=Giz reizhiad gwisket
@@ -286,7 +285,6 @@ Comment[uk]=Системний стиль
 Comment[vi]=Kiểu hềEthống đã dùng theme 
 Comment[xh]=Uhlobo lwendlela yokusebenza enomxholo wokuxoxwa
 Comment[zh_CN.GB2312]=系统主题风格
-Comment[zh_TW.Big5]=主題式的系統風格
 
 [General]
 foreground=0,0,0

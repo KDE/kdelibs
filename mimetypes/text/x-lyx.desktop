@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=LyX - document
-Comment[af]=LYX - DOKUMENT
 Comment[az]=LyX - sənəd
 Comment[cs]=Dokument LyXu
 Comment[da]=LyX - dokument
@@ -18,6 +17,7 @@ Comment[ja]=Lyxドキュメント
 Comment[lt]=LyX dokumentas
 Comment[lv]=LyX - dokuments
 Comment[mt]=Dokument Lyx
+Comment[no]=Lyx-dokument
 Comment[no_NY]=LyX-dokument
 Comment[pl]=Dokument LyXa
 Comment[pt_BR]=Documento do LyX
@@ -25,10 +25,12 @@ Comment[pt]=Documento do LyX
 Comment[ru]=Документ LyX
 Comment[sk]=LyX dokument
 Comment[sl]=Dokument za LyX
+Comment[sr]=LyX - dokument
 Comment[sv]=Lyx-dokument
 Comment[ta]=LyX - ¬Å½õ
 Comment[tr]=Lyx - belgesi
 Comment[uk]=Документ LyX
+Comment[xh]=uxwebhu lwe - LyX
 Comment[zh_CN.GB2312]=LyX - 文档
 Hidden=false
 Icon=dvi

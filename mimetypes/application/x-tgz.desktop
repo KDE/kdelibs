@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Gzipped Tar Archive
-Comment[af]=GZIP GEKOMPAKTEERDE TAR ARGIEF
 Comment[az]=Gzip'lənmiş Tar Arxivi
 Comment[bg]=Компресиран с gzip архив на tar
 Comment[br]=Diell tar gzippet
@@ -24,7 +23,7 @@ Comment[is]=Gzip-þjappað tar-safn
 Comment[it]=Archivio Tar-Gzip
 Comment[ja]=GzipされたTarアーカイブ
 Comment[ko]=Gzip으로 압축된 Tar 파일
-Comment[lt]=Tar Archyvas, suglaudintas su Gzip
+Comment[lt]=Tar Archyvas, suspaustas su Gzip
 Comment[lv]=Gzipots Tar Arhīvs
 Comment[mi]=Takotoranga Tar Gzip
 Comment[mk]=Gzip-Tar архива
@@ -45,8 +44,8 @@ Comment[ta]=Gzip ¦ºö¾ Tar ¸¡ôÀ¸õ
 Comment[tr]=Gzip'lenmiş Tar Arşivi
 Comment[uk]=Архів tar стиснутий gzip
 Comment[vi]=File nén gzipped tar 
+Comment[xh]=Ushicilelo lukawonke-wonke nexwebhu leMbali le Gzipped Tar
 Comment[zh_CN.GB2312]=Gzip 压缩的 Tar 归档文件
-Comment[zh_TW.Big5]=Gzipped Tar 檔案館
 MimeType=application/x-tgz
 Icon=tgz
 Type=MimeType

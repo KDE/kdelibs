@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=application/x-tarz
 Comment=Compressed Tar Archive
-Comment[af]=SAAMGEPERSDE TAR ARGIEF
 Comment[az]=Sıxışdırılmış Tar Arxivi
 Comment[bg]=Комресиран архив на tar
 Comment[br]=Diell tar gwasket
@@ -25,7 +24,7 @@ Comment[is]=Þjappað tar-safn
 Comment[it]=Archivio Tar compresso
 Comment[ja]=CompressされたTarアーカイブ
 Comment[ko]=기본 압축된 Tar 파일
-Comment[lt]=Suglaudintas Tar Archyvas
+Comment[lt]=Suspaustas Tar Archyvas
 Comment[lv]=Saspiests Tar Arhīvs
 Comment[mk]=Компримирана Tar-архива
 Comment[mt]=Arkivju Tar Kompressat
@@ -45,8 +44,8 @@ Comment[ta]=«Øò¾¢Â Tar ¸¡ôÀ¸õ
 Comment[tr]=Sıkıştırılmış Tar Arşivi
 Comment[uk]=Стиснутий архів tar
 Comment[vi]=File nén compressed tar 
+Comment[xh]=Ushicilelo lukawonke-wonke nexwebhu leMbali uludityanisiweyo lwe Tar
 Comment[zh_CN.GB2312]=压缩的 Tar 归档文件
-Comment[zh_TW.Big5]=壓縮的 Tar 檔案館
 Icon=tgz
 Type=MimeType
 Patterns=*.tar.Z;

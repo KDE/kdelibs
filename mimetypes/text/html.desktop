@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=HTML Page
-Comment[af]=HTML BLADSY
 Comment[az]=HTML Səhifəsi
 Comment[bg]=HTML страница
 Comment[br]=Pajenn HTML
@@ -46,8 +45,8 @@ Comment[tr]=HTML Sayfası
 Comment[uk]=Сторінка HTML
 Comment[vi]=Trang HTML 
 Comment[wa]=Pådje HTML
+Comment[xh]=Iphepha le HTML
 Comment[zh_CN.GB2312]=HTML 页面
-Comment[zh_TW.Big5]=HTML 網頁
 Icon=html
 Type=MimeType
 MimeType=text/html

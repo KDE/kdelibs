@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=PERL program
-Comment[af]=PERL PROGRAM
 Comment[az]=PERL proqramı
 Comment[bg]=Програма на Perl
 Comment[br]=Goulev PERL
@@ -41,8 +40,8 @@ Comment[ta]=PERL ¿¢Ãø
 Comment[tr]=PERL programı
 Comment[uk]=Програма Perl
 Comment[vi]=Chương trình PERL 
+Comment[xh]=Udweliso lwenkqubo lwe PERL
 Comment[zh_CN.GB2312]=PERL 程序
-Comment[zh_TW.Big5]=PERL 程式
 Icon=source_pl
 Type=MimeType
 MimeType=application/x-perl

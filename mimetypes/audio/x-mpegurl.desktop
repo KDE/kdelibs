@@ -1,7 +1,6 @@
 [Desktop Entry]
 Type=MimeType
 Comment=Streaming MPEG layer 3 audio
-Comment[af]=STROOMENDE MPEG LAAG 3 AUDIO
 Comment[az]=Axışqan MPEG layer 3 səsi
 Comment[bg]=Потоков аудиофайл MPEG Layer 3
 Comment[br]=Klevet lanv MPEG gwelead 3
@@ -42,8 +41,8 @@ Comment[ta]=À¡Ôõ MPEG «ÎìÌ 3 ´Ä¢
 Comment[tr]=Duraksız MPEG layer 3 sesi
 Comment[uk]=MPEG Layer-3-аудіо
 Comment[vi]=Audio Streaming MPEG layer 3 
+Comment[xh]=Equkuqelayo i MPEG layer 3 evakalayo
 Comment[zh_CN.GB2312]=流式 MP3 音频文件
-Comment[zh_TW.Big5]=Streaming MPEG layer 3 音效
 MimeType=audio/x-mpegurl
 Icon=sound
 Patterns=*.m3u;*.M3U;

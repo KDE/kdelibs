@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Python bytecode
-Comment[af]=PYTHON BYTEKODE
 Comment[az]=Python bayt kodu
 Comment[bg]=Байт-код на Python
 Comment[br]=Kod-okted Python
@@ -44,8 +43,8 @@ Comment[ta]=Python ¨Àð ÌÈ¢Ó¨È
 Comment[tr]=Python baytkodu
 Comment[uk]=Байт-код Python
 Comment[vi]=Bytecode Python 
+Comment[xh]=Ikhowudi yebyte yenyoka enkulu engenancindi inetyhefu ebulala ixhoba ngokulisonga
 Comment[zh_CN.GB2312]=Python 字节码
-Comment[zh_TW.Big5]=Python 位元碼
 Type=MimeType
 MimeType=application/x-python-bytecode
 Patterns=*.pyc;

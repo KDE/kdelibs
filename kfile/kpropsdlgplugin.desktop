@@ -2,7 +2,6 @@
 Type=ServiceType
 X-KDE-ServiceType=KPropsDlg/Plugin
 Comment=Plugin for the Properties Dialog
-Comment[af]=INPLAK VIR DIE EIENSKAPPE DIALOOG
 Comment[az]=Seçənəklər Rabitə Qutusu Üçün Əlavə
 Comment[bg]=Plugin на диалога за настройки
 Comment[br]=Adveziant evit kendiviz ar perzhioÃ¹
@@ -39,14 +38,14 @@ Comment[pt]='Plugin' para o diálogo de propriedades
 Comment[ru]=Плагин для диалога настроек
 Comment[sk]=Zásuvný modul pre panel Nastavení
 Comment[sl]=Vstavek za pogovorno okno z lastnostmi
-Comment[sr]=Plugin za dijalog sa svojstvima
+Comment[sr]=Dodatak za dijalog sa svojstvima
 Comment[sv]=Insticksprogram för egenskapsdialogen
 Comment[ta]=¦º¡òÐì¸û ¯¨ÃÂ¡¼ü ¦ºÕ¸ø
 Comment[tr]=Özellikler İletişim Kutusu İçin Eklenti
 Comment[uk]=Додаток для діалогу властивостей
 Comment[vi]=Plugin cho tính chất của hộp thoại 
+Comment[xh]=Iplagi efakiweyo yempahla yencoko yababini
 Comment[zh_CN.GB2312]=属性对话的插件
-Comment[zh_TW.Big5]=外掛內容對話框
 
 [PropertyDef::X-KDE-Protocol]
 Type=QString

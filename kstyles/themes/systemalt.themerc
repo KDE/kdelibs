@@ -223,7 +223,6 @@ Pixmap=lightgray.png
 SButtonPosition=BottomRight
 ShadeStyle=Motif
 Name=System-Series
-Name[af]=STELSEL-REEKS
 Name[az]=Sistem Seriyaları
 Name[br]=Rummad Reizhiad
 Name[ca]=Sèries de sistema
@@ -263,7 +262,6 @@ Name[uk]=Родина системних стилів
 Name[xh]=Indlela yokusebenza-Uluhlu
 Name[zh_CN.GB2312]=系统序列
 Comment=System Style 001
-Comment[af]=STELSEL STYL 001
 Comment[az]=Sistem Tərzi 001
 Comment[br]=Giz reizhiad 001
 Comment[bs]=Stil sustava 001
@@ -307,7 +305,6 @@ Comment[uk]=Системний стиль 001
 Comment[vi]=Kiểu hềEthống 001 
 Comment[xh]=Uhlobolwendlela yokusebenza 001
 Comment[zh_CN.GB2312]=系统风格 001
-Comment[zh_TW.Big5]=系統風格 001
 ScrollBarExtent=14
 
 [General]

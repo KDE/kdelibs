@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=application/x-tzo
 Comment=Lzopped Tar Archive
-Comment[af]=LZOP GEKOMPAKTEERDE TAR ARGIEF
 Comment[az]=Lzop'lanmış Tar Arxivləri
 Comment[bg]=Компресиран с lzop архив на tar
 Comment[br]=Diell tar Lzoppet
@@ -24,7 +23,7 @@ Comment[is]=Lzop-þjappað tar-safn
 Comment[it]=Archivio Tar-Lz
 Comment[ja]=LzopされたTarアーカイブ
 Comment[ko]=Lzop으로 압축된 Tar 파일
-Comment[lt]=Tar Archyvas, suglaudintas su Lzo 
+Comment[lt]=Tar Archyvas, suspaustas su Lzo 
 Comment[lv]=Lzopped Tar Arhīvs
 Comment[mi]=Takotoranga Tar Lzop
 Comment[mk]=Lzop-Tar архива
@@ -45,8 +44,8 @@ Comment[ta]=Lzopped Tar ¸¡ôÀ¸õ
 Comment[tr]=Lzop'lanmış Tar Arşivleri
 Comment[uk]=Архів tar стиснутий lzop
 Comment[vi]=File nén Lzopped Tar 
+Comment[xh]=Ushicilelolukawonke-wonke nexwebhu leMbali le Lzopped Tar
 Comment[zh_CN.GB2312]=Lzop 压缩的 Tar 归档文件
-Comment[zh_TW.Big5]=Lzopped Tar 檔案館
 Icon=tgz
 Type=MimeType
 Patterns=*.tar.lzo;*.tzo;

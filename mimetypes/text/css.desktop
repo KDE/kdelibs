@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=text/css
 Comment=Cascading Style Sheet
-Comment[af]=GEKASKADE STYL STAAT
 Comment[az]=Pilləli Tərz Səhifəsi
 Comment[bg]=Файл на CSS
 Comment[br]=Folenn c'hiz ensoc'het
@@ -20,7 +19,6 @@ Comment[ko]=계단형 스타일 시트
 Comment[lt]=Pakopinis Lapo Stilius
 Comment[lv]=Kaskadētu Stilu Saraksts
 Comment[mk]=CSS (список на стилови)
-Comment[no]=Stilark
 Comment[no_NY]=Stilark
 Comment[pl]=Arkusz stylu kaskadowego (dla stron HTML)
 Comment[pt_BR]=Folha de estilo em cascata
@@ -32,6 +30,7 @@ Comment[ta]=«ÎìÌô À¡ó¾ò ¾¡û
 Comment[tr]=Kademeli Stil Sayfası
 Comment[uk]=Таблиця каскадного стилю (CSS)
 Comment[vi]=CSS(Cascading Style Sheet) 
+Comment[xh]=Uhlobo lwekhasi elingxangxazayo
 Comment[zh_CN.GB2312]=层叠样式单
 Icon=txt
 Type=MimeType

@@ -1,7 +1,6 @@
 [Desktop Entry]
 MimeType=application/x-archive
 Comment=Ar Archives
-Comment[af]=AR ARchives
 Comment[az]=Ar Arxivləri
 Comment[bg]=Архив на AR
 Comment[br]=Diell ar
@@ -47,8 +46,8 @@ Comment[tr]=Ar Arşivleri
 Comment[uk]=Архіви AR
 Comment[vi]=Kiểu nén Ar  
 Comment[wa]=Årtchive «ar»
+Comment[xh]=Ushicilelo lukawonke-wonke kunye namaxwebhu eMbali e Ar
 Comment[zh_CN.GB2312]=Ar 归档文件
-Comment[zh_TW.Big5]=Ar 檔案館
 Icon=tgz
 Type=MimeType
 Patterns=*.a;

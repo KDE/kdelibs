@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Pascal sources
-Comment[af]=PASCAL BRONKODES
 Comment[az]=Pascal mənbə kodları
 Comment[bg]=Програма на Паскал
 Comment[br]=Tarzh Pascal
@@ -45,8 +44,8 @@ Comment[ta]=Pascal ãÄí¸û
 Comment[tr]=Pascal kaynak kodları
 Comment[uk]=Вихідний файл Pascal
 Comment[vi]=Mã nguồn Pascal 
+Comment[xh]=Iimvelaphi ze Pascal
 Comment[zh_CN.GB2312]=Pascal 源代码
-Comment[zh_TW.Big5]=Pascal 原始碼
 Icon=source_p
 Type=MimeType
 MimeType=text/x-pascal

@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=Truetype Font
-Comment[af]=TRUETYPE SKRIF TIPE
 Comment[az]=Truetype Yazı növü
 Comment[bg]=Тruetype шрифт
 Comment[br]=Font Truetype
@@ -46,8 +45,8 @@ Comment[tr]=Truetype Yazıtipi
 Comment[uk]=Шрифт Truetype
 Comment[vi]=Phông TrueType 
 Comment[wa]=Fonte TrueType
+Comment[xh]=Umgca wohlobo oluyinyaniso
 Comment[zh_CN.GB2312]=Truetype 字体
-Comment[zh_TW.Big5]=Truetype 字型
 Icon=font_truetype
 Type=MimeType
 MimeType=application/x-truetype-font

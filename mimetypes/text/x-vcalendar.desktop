@@ -1,6 +1,5 @@
 [Desktop Entry]
 Comment=vCalendar interchange file
-Comment[af]=VCALENDAR UITRUIL LêER
 Comment[az]=vCalendar mübadilə faylı
 Comment[bg]=Файл на vCalendar
 Comment[br]=Restr eskemm vCalendar
@@ -45,8 +44,8 @@ Comment[ta]=vCalendar interchange §¸¡ôÒ
 Comment[tr]=vCalendar mübadele dosyası
 Comment[uk]=Файл обміну даних vCalendar
 Comment[vi]=File tráo đổi vCalendar 
+Comment[xh]=Ifayile etshintsha ngaphakathi ye vCalendar
 Comment[zh_CN.GB2312]=vCalendar 交换文件
-Comment[zh_TW.Big5]=vCalendar 交換檔案
 Icon=vcalendar
 Type=MimeType
 MimeType=text/x-vcalendar
