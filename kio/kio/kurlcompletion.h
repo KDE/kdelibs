@@ -23,10 +23,6 @@
 #ifndef KURLCOMPLETION_H
 #define KURLCOMPLETION_H
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
 #include <kcompletion.h>
 #include <kio/jobclasses.h>
 #include <qstring.h>
