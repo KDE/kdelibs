@@ -359,7 +359,8 @@ public:
      * groups in the config file and apply them.
      *
      * @param config Config file to read the settings from.
-     * @param groupName For internal use only.
+     * @param groupName Group name to use. If not specified, the last used 
+     * group name is used.
      */
     void applyMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
 
@@ -368,7 +369,8 @@ public:
      * groups in the config file @p config.
      *
      * @param config Config file to save the settings to.
-     * @param groupName For internal use only.
+     * @param groupName Group name to use. If not specified, the last used 
+     * group name is used
      */
     void saveMainWindowSettings(KConfig *config, const QString &groupName = QString::null);
 
