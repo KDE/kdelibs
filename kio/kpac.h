@@ -35,8 +35,9 @@ public:
     virtual QString proxyForURL(const KURL &url) = 0;
     /**
      * Loads the PAC-script
+     * @param url URL of the script
      */
-    virtual bool init() = 0;
+    virtual bool init(const KURL &url) = 0;
     /**
      * Marks @p proxy as down. If the config script returns
      * alternative proxies or allows a direct connection

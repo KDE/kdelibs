@@ -34,7 +34,7 @@ public:
     KPACImpl();
     virtual ~KPACImpl();
     virtual QString proxyForURL(const KURL &url);
-    virtual bool init();
+    virtual bool init(const KURL &url);
     virtual void badProxy(const QString &proxy);
 
 private:

@@ -25,6 +25,7 @@
 
 #include <qfile.h>
 
+#include <kdebug.h>
 #include <kinstance.h>
 #include <klibloader.h>
 #include <kurl.h>
@@ -32,6 +33,7 @@
 #include <kjs/types.h>
 #include <ksimpleconfig.h>
 #include <kstddirs.h>
+#include <kio/netaccess.h>
 
 #include "kproxybindings.h"
 #include "kpac_impl.h"
@@ -51,19 +53,29 @@ KPACImpl::~KPACImpl()
 
 QString KPACImpl::proxyForURL(const KURL &url)
 {
+    kdDebug(7025) << "KPACImpl::proxyForURL(), url=" << url.url() << endl;
     if (!m_configRead)
+    {
+        kdDebug(7025) << "KPACImpl::proxyForURL(): config not read, not using a proxy" << endl;
         return QString::null;
+    }
 
-    QString code = QString("FindProxyForURL('%1', '%2');").arg(url.url()).arg(url.host());
+    QString code = QString("return FindProxyForURL('%1', '%2');").arg(url.url()).arg(url.host());
     if (!m_kjs->evaluate(code.local8Bit()))
+    {
+        kdDebug(7025) << "KPACImpl::proxyForURL(): JS evaluation error, not using a proxy" << endl;
         return QString::null;
+    }
     
     KJS::Imp *retval = m_kjs->returnValue();
     if (retval)
     {
         QStringList proxies = QStringList::split(';', retval->toString().value().qstring());
         if (!proxies.count())
+        {
+            kdDebug(7025) << "KPACImpl::proxyForULR(): JS returned an empty string, not using a proxy" << endl;
             return QString::null;
+        }
         KSimpleConfig blackList(locate("tmp", "badproxies"));
         for (QStringList::ConstIterator it = proxies.begin(); it != proxies.end(); ++it)
         {
@@ -81,28 +93,37 @@ QString KPACImpl::proxyForURL(const KURL &url)
                     {
                         if (badMark)
                             blackList.deleteEntry(proxy, false);
+                        kdDebug(7025) << "KPACImpl::proxyForURL(): returning " << proxy << endl;
                         return proxy;
                     }
                 }
             }
             else if (proxy == "DIRECT")
+            {
+                kdDebug(7025) << "KPACImpl::proxyForURL(): returning DIRECT" << endl;
                 return proxy;
+            }
         }
     }
+    kdDebug(7025) << "KPACImpl::proxyForURL(): didn't find a proxy" << endl;
     return QString::null;
 }
 
-bool KPACImpl::init()
+bool KPACImpl::init(const KURL &url)
 {
+    kdDebug(7025) << "KPACImpl::init()" << endl;
     if (m_configRead)
     {
         m_kjs->clear();
         m_configRead = false;
     }
 
-    QString fileName = locateLocal("data", "kio_http/proxy.pac");
-    if (fileName.isEmpty())
+    QString fileName;
+    if (!KIO::NetAccess::download(url, fileName))
+    {
+        kdError(7025) << "KPACImpl::init(): couldn't download proxy config script " << url.url() << endl;
         return false;
+    }
         
     if (!m_kjs)
     {
@@ -113,21 +134,30 @@ bool KPACImpl::init()
         global.setPrototype(bindings);
     }
     QFile f(fileName);
-    if (!f.open(IO_ReadOnly))
+    if (f.open(IO_ReadOnly))
+    {
+        char *code = (char *)malloc(f.size() + 1);
+        f.readBlock(code, f.size());
+        code[f.size()] = 0;
+        if (!(m_configRead = m_kjs->evaluate(code)))
+        {
+            kdError(7025) << "KPACImpl::init(): JS error in config file" << endl;
+            m_kjs->clear();
+        }
+        free(code);
+        f.close();
         return false;
-    char *code = (char *)malloc(f.size() + 1);
-    f.readBlock(code, f.size());
-    code[f.size()] = 0;
-    if (!(m_configRead = m_kjs->evaluate(code)))
-        m_kjs->clear();
-        
-    free(code);
-    f.close();
+    }
+    else
+        kdError(7025) << "KPACImpl::init(): can't read config file, very strange" << endl;
+    KIO::NetAccess::removeTempFile(fileName);
+
     return m_configRead;
 }
 
 void KPACImpl::badProxy(const QString &proxy)
 {
+    kdDebug(7025) << "KPACImpl::badProxy(), proxy=" << proxy << endl;
     KSimpleConfig blackList(locateLocal("tmp", "badproxies"));
     blackList.writeEntry(proxy, time(0));
 }
@@ -136,6 +166,7 @@ extern "C"
 {
     void *create_pac()
     {
+        kdDebug(7025) << "create_pac() creating a KPACImpl" << endl;
         return new KPACImpl;
     }
 };
