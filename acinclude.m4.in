@@ -309,6 +309,8 @@ fi
 
 AC_SUBST(X_INCLUDES)
 AC_SUBST(X_LDFLAGS)
+AC_SUBST(x_libraries)
+AC_SUBST(x_includes)
 all_includes=$X_INCLUDES
 ])
 
