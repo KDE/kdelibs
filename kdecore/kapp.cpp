@@ -628,8 +628,15 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
 		  if( bSuccess ){
 			aConfigFile.close();
-  delete theKProcessController; // Stephan: "the can only be one" ;)
-  theKProcessController = 0L;
+			  bIsRestored = True;
+			}
+		  }
+		}
+      }
+      break;
+    case unknown:
+      i++;
+    }
 
     if ( parameter != unknown ) { // remove arguments
       
