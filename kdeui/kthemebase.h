@@ -183,11 +183,11 @@ public:
     /**
      * This provides a list of widget types that KThemeBase recognizes.
      */
-    enum WidgetType{HScrollGroove=0, VScrollGroove, Slider, SliderGroove,
-    IndicatorOn, IndicatorOff, Background, PushButton, ExIndicatorOn,
-    ExIndicatorOff, ComboBox, ScrollBarSlider, Bevel, ToolButton,
-    ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter, CheckMark,
-    MenuItemOn, MenuItemOff, MenuBar};
+     enum WidgetType{HScrollGroove=0, VScrollGroove, Slider, SliderGroove,
+     IndicatorOn, IndicatorOff, Background, PushButton, ExIndicatorOn,
+     ExIndicatorOff, ComboBox, ScrollBarSlider, Bevel, ToolButton,
+     ScrollButton, BarHandle, ToolBar, ScrollDeco, ComboDeco, Splitter, CheckMark,
+     MenuItemOn, MenuItemOff, MenuBar};
     /**
      * The scaling type specified by the KConfig file.
      *
@@ -358,6 +358,7 @@ protected:
                                 Qt::GUIStyle style = Qt::WindowsStyle);
     KThemePixmap* scale(int w, int h, WidgetType widget);
     KThemePixmap* gradient(int w, int h, WidgetType widget);
+    KThemePixmap* blend(WidgetType widget);
     /**
      * Attempts to load a pixmap from the default KThemeBase locations.
      */
@@ -414,17 +415,21 @@ private:
      */
     QColorGroup *colors[WIDGETS];
     /**
-     * Gradient low colors.
+     * Gradient low colors (or blend background).
      */
     QColor *grLowColors[WIDGETS];
     /**
-     * Gradient high colors
+     * Gradient high colors.
      */
     QColor *grHighColors[WIDGETS];
     /**
      * Gradient types.
      */
     Gradient gradients[WIDGETS];
+    /**
+     * Blend intensity factors
+     */
+    float blends[WIDGETS];
     /**
      * Duplicate pixmap entries (used during destruction).
      */

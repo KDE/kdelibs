@@ -27,6 +27,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 #include <qdir.h>
+#include <qpainter.h>
 
 static const char *widgetEntries[] = {"HorizScrollGroove", "VertScrollGroove",
 "Slider", "SliderGroove", "IndicatorOn", "IndicatorOff", "Background",
@@ -51,14 +52,16 @@ OptRoundButton, OptRoundCombo, OptRoundSlider, OptFrameWidth, OptButtonXShift,
 OptButtonYShift, OptSliderLength, OptSplitterHandle, OptName, OptDescription,
 OptCacheSize, OptSmallGroove, Opt3DFocus, OptFocusOffset};
 
-#define WGROUPS 9
+#define WGROUPS 10
 
 static const char *wGroupEntries[]={"Scale", "Gradients", "Gradient Lowcolor",
 "Gradient Highcolor", "Extended Background", "Extended Foreground", "Borders",
-"Highlights", "Pixmaps"};
+"Highlights", "Pixmaps", "Blend"};
 
 enum WGroupLabel{WScale=0, WGradients, WGradientLow, WGradientHigh,
-WExtBackground, WExtForeground, WBorders, WHighlights, WPixmaps};
+WExtBackground, WExtForeground, WBorders, WHighlights, WPixmaps, WBlend};
+
+
 
 // This is used to encode the keys. I used to use masks but I think this
 // bitfield is nicer :) I don't know why C++ coders don't use these more..
@@ -77,6 +80,13 @@ union kthemeKey{
 
 void KThemeBase::readConfig(Qt::GUIStyle style)
 {
+    
+    // Pixmap only widgets. These widgets aren't scaled and can be blended once
+    // on loading
+#define PREBLEND_ITEMS 8
+    static WidgetType preBlend[]={Slider, IndicatorOn, IndicatorOff,
+    ExIndicatorOn, ExIndicatorOff, ScrollDeco, ComboDeco, CheckMark};
+
     int i;
     QString tmpStr;
    // debug("KThemeStyle: Reading theme settings.");
@@ -178,10 +188,15 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
             gradients[i] = GrNone;
         }
     }
-    // Read in gradient low colors
+    // Read in blend intensity values
+    config.setGroup(wGroupEntries[WBlend]);
+    for(i=0; i < WIDGETS; ++i)
+        blends[i] = config.readDoubleNumEntry(widgetEntries[i], 0.0);
+
+    // Read in gradient low colors (or blend background)
     config.setGroup(wGroupEntries[WGradientLow]);
     for(i=0; i < WIDGETS; ++i){
-        if(gradients[i] != GrNone){
+        if(gradients[i] != GrNone || blends[i] != 0.0){
             grLowColors[i] =
                 new QColor(config.readColorEntry(widgetEntries[i],
                                                  &kapp->palette().normal().
@@ -240,15 +255,17 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
         pixmaps[i] = NULL;
         images[i] = NULL;
         if(!tmpStr.isEmpty()){
-            //scan for duplicate pixmaps
+            // Scan for duplicate pixmaps (if two identical pixmaps are both
+            // tile scale and not blended).
             for(existing=0; existing < i; ++existing){
                 if(tmpStr == pixnames[existing] && scaleHints[i] ==
-                   TileScale && scaleHints[existing] == TileScale){
+                   TileScale && scaleHints[existing] == TileScale
+                   && blends[existing] == 0.0 && blends[i] == 0.0){
                     pixmaps[i] = pixmaps[existing];
                     images[i] = NULL;
                     duplicate[i] = true;
-                    // warning("KThemeStyle: Marking %s as duplicate.",
-		    // pixnames[i].ascii());
+                    warning("KThemeStyle: Marking %s as duplicate.",
+                            pixnames[i].ascii());
                     break;
                 }
             }
@@ -259,7 +276,7 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                             widgetEntries[i]);
                 }
                 else{
-                    if(scaleHints[i] == TileScale){
+                    if(scaleHints[i] == TileScale && blends[i] == 0.0){
                         pixmaps[i] = loadPixmap(tmpStr);
                         images[i] = NULL;
                     }
@@ -270,6 +287,12 @@ void KThemeBase::readConfig(Qt::GUIStyle style)
                 }
             }
         }
+    }
+
+    // Handle preblend items
+    for(i=0; i < PREBLEND_ITEMS; ++i){
+        if(pixmaps[preBlend[i]] != NULL && blends[preBlend[i]] != 0.0)
+            blend(preBlend[i]);
     }
     
 #ifdef KSTYLE_DEBUG
@@ -434,6 +457,8 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
                 QImage tmpImg = images[widget]->smoothScale(w, h);
                 pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->convertFromImage(tmpImg);
+                if(blends[widget] != 0.0)
+                    blend(widget);
             }
         }
     }
@@ -451,6 +476,8 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
                     smoothScale(w, images[widget]->height());
                 pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->convertFromImage(tmpImg);
+                if(blends[widget] != 0.0)
+                    blend(widget);
             }
         }
     }
@@ -468,9 +495,62 @@ KThemePixmap* KThemeBase::scale(int w, int h, WidgetType widget)
                     images[widget]->smoothScale(images[widget]->width(), h);
                 pixmaps[widget] = new KThemePixmap;
                 pixmaps[widget]->convertFromImage(tmpImg);
+                if(blends[widget] != 0.0)
+                    blend(widget);
             }
         }
     }
+    // If blended tile here so the blend is scaled properly
+    else if(scaleHints[widget] == TileScale && blends[widget] != 0.0){
+        if(!pixmaps[widget] || pixmaps[widget]->width() != w ||
+           pixmaps[widget]->height() != h){
+            KThemePixmap *cachePix = cache->pixmap(w, h, widget);
+            if(cachePix){
+                cachePix = new KThemePixmap(*cachePix);
+                cache->insert(pixmaps[widget], KThemeCache::FullScale, widget);
+                pixmaps[widget] = cachePix;
+            }
+            else{
+                cache->insert(pixmaps[widget], KThemeCache::FullScale, widget);
+                QPixmap tile;
+                tile.convertFromImage(*images[widget]);
+                pixmaps[widget] = new KThemePixmap;
+                pixmaps[widget]->resize(w, h);
+                QPainter p(pixmaps[widget]);
+                p.drawTiledPixmap(0, 0, w, h, tile);
+                if(blends[widget] != 0.0)
+                    blend(widget);
+            }
+        }
+    }
+    return(pixmaps[widget]);
+}
+
+KThemePixmap* KThemeBase::blend(WidgetType widget)
+{
+    KPixmapEffect::GradientType g;
+    switch(gradients[widget]){
+    case GrHorizontal:
+        g = KPixmapEffect::HorizontalGradient;
+        break;
+    case GrVertical:
+        g = KPixmapEffect::VerticalGradient;
+        break;
+    case GrPyramid:
+        g = KPixmapEffect::PyramidGradient;
+        break;
+    case GrRectangle:
+        g = KPixmapEffect::RectangleGradient;
+        break;
+    case GrElliptic:
+        g = KPixmapEffect::EllipticGradient;
+        break;
+    default:
+        g = KPixmapEffect::DiagonalGradient;
+        break;
+    }
+    KPixmapEffect::blend(*pixmaps[widget], blends[widget], *grLowColors[widget],
+                         g, false);
     return(pixmaps[widget]);
 }
 
@@ -563,11 +643,11 @@ KThemePixmap* KThemeBase::gradient(int w, int h, WidgetType widget)
 KThemePixmap* KThemeBase::scalePixmap(int w, int h, WidgetType widget)
 {
 
-    if(gradients[widget])
+    if(gradients[widget] && blends[widget] == 0.0)
         return(gradient(w, h, widget));
+
     return(scale(w, h, widget));
 }
-
 
 KThemeCache::KThemeCache(int maxSize, QObject *parent, const char *name)
     : QObject(parent, name)
