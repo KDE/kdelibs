@@ -1888,13 +1888,13 @@ void KDockManager::slotMenuPopup()
 	  ++it;
     if ( obj->mayBeHide() )
     {
-      menu->insertItem( *obj->icon(), QString("Hide ") + obj->caption(), numerator++ );
+      menu->insertItem( obj->icon() ? *(obj->icon()) : QPixmap(), QString("Hide ") + obj->caption(), numerator++ );
       menuData->append( new MenuDockData( obj, true ) );
     }
 
     if ( obj->mayBeShow() )
     {
-      menu->insertItem( *obj->icon(), QString("Show ") + obj->caption(), numerator++ );
+      menu->insertItem( obj->icon() ? *(obj->icon()) : QPixmap(), QString("Show ") + obj->caption(), numerator++ );
       menuData->append( new MenuDockData( obj, false ) );
     }
   }
