@@ -23,7 +23,7 @@
 #include <errno.h>
 #include <stdio.h>
 #ifdef DO_SSL
-#include <ssl.h>
+#include <openssl/ssl.h>
 #endif
 #include <unistd.h>
 #include <netdb.h>

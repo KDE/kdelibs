@@ -8,11 +8,10 @@
 #define DO_GZIP
 #endif
 
-#ifdef HAVE_SSL_H
-//#define DO_SSL
+#ifdef HAVE_SSL
+#define DO_SSL
+#define DO_MD5
 #endif
-
-#undef DO_SSL
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -28,14 +27,12 @@
 #include <string>
 
 #ifdef DO_SSL
-#define MD5_CTX SSLeay_MD5_CTX
-#include <ssl.h>
-#include "/usr/local/include/err.h"
-#undef MD5_CTX
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #endif
 
 #ifdef DO_MD5
-#include <md5.h>
+#include <openssl/md5.h>
 #endif
 #include "extern_md5.h"
 
@@ -59,11 +56,11 @@ bool open_PassDlg( const QString& _head, QString& _user, QString& _pass );
 
 extern "C" {
   char *create_basic_auth (const char *header, const char *user, const char *passwd);
-  char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str);
+  const char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str);
   char *trimLead(char *);
   void sigalrm_handler(int);
 #ifdef DO_SSL
-  int verify_callback();
+  int verify_callback(int, X509_STORE_CTX *);
 #endif
 };
 
@@ -107,7 +104,7 @@ void setup_alarm(unsigned int timeout)
 }
 
 #ifdef DO_MD5
-char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str)
+const char *create_digest_auth (const char *header, const char *user, const char *passwd, const char *auth_str)
 {
   string domain, realm, algorithm, nonce, opaque, qop;
   const char *p=auth_str;
@@ -204,7 +201,7 @@ char *create_digest_auth (const char *header, const char *user, const char *pass
   return strdup(t1.data());
 }
 #else
-char *create_digest_auth (const char *, const char *, const char *, const char *)
+const char *create_digest_auth (const char *, const char *, const char *, const char *)
 {
   //error(ERR_COULD_NOT_AUTHENTICATE, "digest");
   return strdup("\r\n");
@@ -217,8 +214,8 @@ char *create_basic_auth (const char *header, const char *user, const char *passw
   if (user && passwd) {
     char *t1, *t2;
 
-    t1 = (char *)malloc(strlen(user) +1+strlen(passwd));
-    memset(t1, 0, strlen(user)+1+strlen(passwd));
+    t1 = (char *)malloc(strlen(user)+strlen(passwd)+2);
+    memset(t1, 0, strlen(user)+strlen(passwd)+2);
     sprintf(t1, "%s:%s", user, passwd);
     t2 = base64_encode_line(t1);
     free(t1);
@@ -268,7 +265,7 @@ bool revmatch(const char *host, const char *nplist)
 // If I (or someone else) feels motivated enough to do some
 // real verification a la OpenSSL, then this might be a
 // more useful function.
-int verify_callback ()
+int verify_callback (int, X509_STORE_CTX *)
 {
   return 1;
 }
@@ -318,7 +315,6 @@ HTTPProtocol::HTTPProtocol( KIOConnection *_conn ) : KIOProtocol( _conn )
 #ifdef DO_SSL
 void HTTPProtocol::initSSL() {
   m_bUseSSL2=true; m_bUseSSL3=true; m_bUseTLS1=false;
-  m_bUseSSL=false;
   if (m_bUseSSL2 && m_bUseSSL3)
     meth=SSLv23_client_method();
   else if (m_bUseSSL3)
@@ -341,6 +337,7 @@ void HTTPProtocol::initSSL() {
 int HTTPProtocol::openStream() {
 #ifdef DO_SSL
   if (m_bUseSSL) {
+    initSSL();
     SSL_set_fd(hand, m_sock);
     if (SSL_connect(hand)== -1)
       return false;
@@ -788,6 +785,8 @@ bool HTTPProtocol::readHeader()
     u.setUser(user);
     u.setPass(pass);
 
+    m_qContentEncodings.clear();    // clear encodings of last try
+    m_qTransferEncodings.clear(); 
     if ( !http_open(u, m_state.postDataSize, m_state.reload, m_state.offset) )
       return false;
 
@@ -872,8 +871,9 @@ void HTTPProtocol::configAuth(const char *p, bool b)
     if ( strncasecmp( p, "realm=\"", 7 ) == 0 ) {
       p += 7;
       while( p[i] != '"' ) i++;
-      assign=(char *)malloc(i);
+      assign=(char *)malloc(i+1);
       memcpy((void *)assign, (const void *)p, i);
+      assign[i]=0;
       m_strRealm=assign;
       free(assign);
     }
@@ -1163,7 +1163,7 @@ size_t HTTPProtocol::sendData( HTTPIOJob *job )
   // the IPC stuff can't handle
   // chunks much larger than 2048.
 
-  KIOProtocol *ioJob = job ? job:this;
+  KIOProtocol *ioJob = job ? (KIOProtocol *) job: (KIOProtocol *) this;
 
   size_t sent=0;
   size_t bufferSize = 2048;
@@ -1236,20 +1236,14 @@ void HTTPProtocol::slotCopy( QStringList& _source, const char *_dest )
   
   HTTPIOJob job( &slave, this );
 
-  int processed_size = 0;
-    
   /*****
    * Copy files
    *****/
-
-  time_t t_start = time( 0L );
-  time_t t_last = t_start;
 
   bool overwrite_all = false;
   bool auto_skip = false;
   bool resume_all = false;
 
-  int processed_files = 0;
   totalDirs( 0 );
   totalFiles( _source.count() );
 
@@ -1529,7 +1523,7 @@ void HTTPProtocol::slotData(void *_p, int _len)
  */
 void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 {
-        KIOProtocol *ioJob = job ? job:this;
+        KIOProtocol *ioJob = job ? (KIOProtocol *) job: (KIOProtocol *) this;
 
 	// Check if we need to decode the data.
 	// If we are in copy mode the use only transfer decoding.
@@ -1552,7 +1546,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 	char buffer[2048];
 #ifdef DO_MD5
 	MD5_CTX context;
-	MD5Init(&context);
+	MD5_Init(&context);
 #endif
 	// this is the main incoming loop.  gather everything while we can...
 	while (!eof()) {
@@ -1575,9 +1569,9 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 
 		// check on the encoding.  can we get away with it as is?
 		if ( !decode ) {
-#if DO_MD5
+#ifdef DO_MD5
 			if (useMD5)
-				MD5Update(&context, (const unsigned char*)buffer, nbytes);
+				MD5_Update(&context, (const unsigned char*)buffer, nbytes);
 #endif
 			// yep, let the world know that we have some data
 			ioJob->data(buffer, nbytes);
@@ -1622,7 +1616,7 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 		// received with a transfer-encoding, that encoding MUST be removed
 		// prior to checking the Content-MD5 value against the received entity.
 #ifdef DO_MD5
-		MD5Update(&context, (const unsigned char*)big_buffer.data(),
+		MD5_Update(&context, (const unsigned char*)big_buffer.data(),
 		          big_buffer.size());
 #endif
 		
@@ -1642,15 +1636,16 @@ void HTTPProtocol::slotDataEnd( HTTPIOJob *job )
 
 	// this block is all final MD5 stuff
 #ifdef DO_MD5
-	char buf[18], *enc_digest;
-	MD5Final((unsigned char*)buf, &context); // Wrap everything up
-	enc_digest = base64_encode_string(buf, 18);
+	char buf[16], *enc_digest;
+	MD5_Final((unsigned char*)buf, &context); // Wrap everything up
+	enc_digest = base64_encode_string(buf, 16);
 	if ( useMD5 ) {
 		int f;
 		if ((f = m_sContentMD5.find("=")) <= 0)
 			f = m_sContentMD5.length();
 
 		if (m_sContentMD5.left(f) != enc_digest) {
+			fprintf(stderr, "MD5 checksum mismatch : got %s , calculated %s\n",m_sContentMD5.left(f).data(),enc_digest);
 			error(ERR_CHECKSUM_MISMATCH, m_state.url.url());
 		} else {
 			fprintf(stderr, "MD5 checksum present, and hey it matched what I calculated.\n");

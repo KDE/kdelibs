@@ -2,10 +2,18 @@
  * $Id$
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <sys/types.h>
 
+#ifdef HAVE_SSL
+#define DO_MD5
+#endif
+
 #ifdef DO_MD5
-#include <md5.h>
+#include <openssl/md5.h>
 #endif
 #include <stdlib.h>
 #include <string.h>
@@ -35,27 +43,48 @@ char *base64_encode_line(const char *s)
  * OF THIS MATERIAL FOR ANY PURPOSE.  IT IS PROVIDED "AS IS",
  * WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES. 
  */
-char* base64_encode_string( const char *_buf, unsigned int len )
+char* base64_encode_string( const char *buf, unsigned int len )
 {
-  unsigned char buf[len];
-  unsigned char *ext, *p;
-  int i;
   char basis_64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  memset(buf, 0, sizeof(buf));
-  memcpy(buf, _buf, strlen(_buf));
-  ext=(char *)malloc(25 * sizeof(char));
-  memset(ext, 0, (25*sizeof(char)));
-  p=ext;
-  for (i = 0; i < sizeof(buf); i += 3) {
-    *p++ = basis_64[buf[i] >> 2];
-    *p++ = basis_64[((buf[i] & 0x3) << 4) | ((int) (buf[i + 1] & 0xF0) >> 4)];
-    *p++ = basis_64[((buf[i + 1] & 0xF) << 2) | ((int) (buf[i + 2] & 0xC0) >> 6)];
-    *p++ = basis_64[buf[i + 2] & 0x3F];
+  char * out;
+  int inPos  = 0;
+  int outPos = 0;
+  int c1, c2, c3,i;
+  
+  out=malloc( (len*4/3)+8 );
+  
+  /* Get three characters at a time and encode them. */
+  for (i=0; i < len/3; ++i) {
+      c1 = buf[inPos++] & 0xFF;
+      c2 = buf[inPos++] & 0xFF;
+      c3 = buf[inPos++] & 0xFF;
+      out[outPos++] = basis_64[(c1 & 0xFC) >> 2];
+      out[outPos++] = basis_64[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
+      out[outPos++] = basis_64[((c2 & 0x0F) << 2) | ((c3 & 0xC0) >> 6)];
+      out[outPos++] = basis_64[c3 & 0x3F];
   }
-  *p-- = '\0';
-  *p-- = '='; // Basic authorization only expects one trailing "=" !!
-  return ext;
+
+  /* Encode the remaining one or two characters. */
+    
+  switch (len % 3) {
+      case 0:
+          break;
+      case 1:
+          c1 = buf[inPos] & 0xFF;
+          out[outPos++] = basis_64[(c1 & 0xFC) >> 2];
+          out[outPos++] = basis_64[((c1 & 0x03) << 4)];
+          break;
+      case 2:
+          c1 = buf[inPos++] & 0xFF;
+          c2 = buf[inPos] & 0xFF;
+          out[outPos++] = basis_64[(c1 & 0xFC) >> 2];
+          out[outPos++] = basis_64[((c1 & 0x03) << 4) | ((c2 & 0xF0) >> 4)];
+          out[outPos++] = basis_64[((c2 & 0x0F) << 2)];
+          break;
+  }
+  out[outPos] = 0;
+  return out;
 }
 
 
@@ -99,21 +128,21 @@ void DigestCalcHA1(
       MD5_CTX Md5Ctx;
       HASH HA1;
 
-      MD5Init(&Md5Ctx);
-      MD5Update(&Md5Ctx, pszUserName, strlen(pszUserName));
-      MD5Update(&Md5Ctx, ":", 1);
-      MD5Update(&Md5Ctx, pszRealm, strlen(pszRealm));
-      MD5Update(&Md5Ctx, ":", 1);
-      MD5Update(&Md5Ctx, pszPassword, strlen(pszPassword));
-      MD5Final(HA1, &Md5Ctx);
+      MD5_Init(&Md5Ctx);
+      MD5_Update(&Md5Ctx, pszUserName, strlen(pszUserName));
+      MD5_Update(&Md5Ctx, ":", 1);
+      MD5_Update(&Md5Ctx, pszRealm, strlen(pszRealm));
+      MD5_Update(&Md5Ctx, ":", 1);
+      MD5_Update(&Md5Ctx, pszPassword, strlen(pszPassword));
+      MD5_Final(HA1, &Md5Ctx);
       if (strcmp(pszAlg, "md5-sess") == 0) {
-            MD5Init(&Md5Ctx);
-            MD5Update(&Md5Ctx, HA1, HASHLEN);
-            MD5Update(&Md5Ctx, ":", 1);
-            MD5Update(&Md5Ctx, pszNonce, strlen(pszNonce));
-            MD5Update(&Md5Ctx, ":", 1);
-            MD5Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
-            MD5Final(HA1, &Md5Ctx);
+            MD5_Init(&Md5Ctx);
+            MD5_Update(&Md5Ctx, HA1, HASHLEN);
+            MD5_Update(&Md5Ctx, ":", 1);
+            MD5_Update(&Md5Ctx, pszNonce, strlen(pszNonce));
+            MD5_Update(&Md5Ctx, ":", 1);
+            MD5_Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
+            MD5_Final(HA1, &Md5Ctx);
       };
       CvtHex(HA1, SessionKey);
 };
@@ -137,33 +166,33 @@ void DigestCalcResponse(
        HASHHEX HA2Hex;
 
       // calculate H(A2)
-      MD5Init(&Md5Ctx);
-      MD5Update(&Md5Ctx, pszMethod, strlen(pszMethod));
-      MD5Update(&Md5Ctx, ":", 1);
-      MD5Update(&Md5Ctx, pszDigestUri, strlen(pszDigestUri));
+      MD5_Init(&Md5Ctx);
+      MD5_Update(&Md5Ctx, pszMethod, strlen(pszMethod));
+      MD5_Update(&Md5Ctx, ":", 1);
+      MD5_Update(&Md5Ctx, pszDigestUri, strlen(pszDigestUri));
       if (strcmp(pszQop, "auth-int") == 0) {
-            MD5Update(&Md5Ctx, ":", 1);
-            MD5Update(&Md5Ctx, HEntity, HASHHEXLEN);
+            MD5_Update(&Md5Ctx, ":", 1);
+            MD5_Update(&Md5Ctx, HEntity, HASHHEXLEN);
       };
-      MD5Final(HA2, &Md5Ctx);
+      MD5_Final(HA2, &Md5Ctx);
        CvtHex(HA2, HA2Hex);
 
       // calculate response
-      MD5Init(&Md5Ctx);
-      MD5Update(&Md5Ctx, HA1, HASHHEXLEN);
-      MD5Update(&Md5Ctx, ":", 1);
-      MD5Update(&Md5Ctx, pszNonce, strlen(pszNonce));
-      MD5Update(&Md5Ctx, ":", 1);
+      MD5_Init(&Md5Ctx);
+      MD5_Update(&Md5Ctx, HA1, HASHHEXLEN);
+      MD5_Update(&Md5Ctx, ":", 1);
+      MD5_Update(&Md5Ctx, pszNonce, strlen(pszNonce));
+      MD5_Update(&Md5Ctx, ":", 1);
       if (*pszQop) {
-          MD5Update(&Md5Ctx, pszNonceCount, strlen(pszNonceCount));
-          MD5Update(&Md5Ctx, ":", 1);
-          MD5Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
-          MD5Update(&Md5Ctx, ":", 1);
-          MD5Update(&Md5Ctx, pszQop, strlen(pszQop));
-          MD5Update(&Md5Ctx, ":", 1);
+          MD5_Update(&Md5Ctx, pszNonceCount, strlen(pszNonceCount));
+          MD5_Update(&Md5Ctx, ":", 1);
+          MD5_Update(&Md5Ctx, pszCNonce, strlen(pszCNonce));
+          MD5_Update(&Md5Ctx, ":", 1);
+          MD5_Update(&Md5Ctx, pszQop, strlen(pszQop));
+          MD5_Update(&Md5Ctx, ":", 1);
       };
-      MD5Update(&Md5Ctx, HA2Hex, HASHHEXLEN);
-      MD5Final(RespHash, &Md5Ctx);
+      MD5_Update(&Md5Ctx, HA2Hex, HASHHEXLEN);
+      MD5_Final(RespHash, &Md5Ctx);
       CvtHex(RespHash, Response);
 };
 

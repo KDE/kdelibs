@@ -1,8 +1,8 @@
 # $Id$
 # Makefile.am of kdebase/kioslave/http
 
-INCLUDES=	$(all_includes)
-LDFLAGS =       $(all_libraries) $(KDE_RPATH)
+INCLUDES=	$(all_includes) $(SSL_INCLUDES)
+LDFLAGS =       $(all_libraries) $(SSL_LDFLAGS) $(KDE_RPATH)
 LDADD	=	$(LIB_KIO) $(LIBZ) $(LIBSSL)
 
 ####### Files
