@@ -9,7 +9,7 @@ data_DATA = x-dvi.desktop x-tex-gf.desktop x-gzip.desktop \
 	x-executable.desktop x-archive.desktop x-lha.desktop \
 	x-tbz.desktop x-tgz.desktop x-awk.desktop \
 	x-perl.desktop x-compress.desktop x-cpio.desktop \
-	x-rpm.desktop msword.desktop x-sharedlib.desktop \
+	x-rpm.desktop msword.desktop msword2.desktop x-sharedlib.desktop \
 	wordperfect.desktop x-troff.desktop x-troff-man.desktop \
 	x-python.desktop x-python-bytecode.desktop \
 	x-bzip.desktop x-bzip2.desktop mspowerpoint.desktop \
