@@ -156,7 +156,7 @@ public:
 
   /**
    * Returns the profile for the requested service type.
-   * @param serviceType the service type (e.g. a MIME type)
+   * @param servicetype the service type (e.g. a MIME type)
    * @param genericServiceType the generic service type (e.g. "Application"
    *                           or "KParts/ReadOnlyPart"). Can be QString::null,
    *                           then the "Application" generic type will be used
@@ -177,7 +177,7 @@ public:
    * getting the list of embeddable components that can handle a given mimetype.
    * In that case, @p servicetype is the mimetype and @p genericServiceType is "KParts/ReadOnlyPart".
    *
-   * @param serviceType the service type (e.g. a MIME type)
+   * @param servicetype the service type (e.g. a MIME type)
    * @param genericServiceType the generic service type (e.g. "Application"
    *                           or "KParts/ReadOnlyPart"). Can be QString::null,
    *                           then all generic types will be included

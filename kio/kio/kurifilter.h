@@ -47,7 +47,8 @@ class KCModule;
 * have the plugins fill out all possible information about the
 * URI.
 *
-* \paragraph example Example
+* \b Example
+*
 * \code
 *   QString text = "kde.org";
 *   KURIFilterData d = text;
@@ -469,7 +470,7 @@ private:
  * @p KURIFilter::self() and use any of the public member functions to
  * preform the filtering.
  *
- * \paragraph example Example
+ * \b Example
  *
  * To simply filter a given string:
  *

@@ -32,7 +32,7 @@
  * and/or path of the application.  It is mostly used when you want to
  * do complex queries that @ref KServiceTypeProfile can't handle.
  *
- * @sect Examples
+ * \paragraph examples Examples
  *
  * A few examples will make this a lot more clear.
  *

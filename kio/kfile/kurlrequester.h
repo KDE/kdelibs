@@ -174,7 +174,6 @@ public slots:
     void setURL( const QString& url );
 
     /**
-     * @reimp
      * Sets the caption of the file dialog.
      * @since 3.1
      */

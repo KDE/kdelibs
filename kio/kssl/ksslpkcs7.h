@@ -91,7 +91,7 @@ public:
 
 	/**
 	 *  Raw set the PKCS7 object.
-	 *  @param the PKCS7 object
+	 *  @param c the PKCS7 object
 	 *  @internal
 	 */
 	void setCert(PKCS7 *c);
@@ -112,7 +112,7 @@ public:
 
 	/**
 	 *  Write the PKCS#7 to a file in raw mode.
-	 *  @param the filename to write
+	 *  @param filename the filename to write
 	 *  @return true on success
 	 */
 	bool toFile(QString filename);

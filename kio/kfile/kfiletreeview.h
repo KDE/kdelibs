@@ -115,7 +115,7 @@ public:
 
    /**
     *  @returns a pointer to the @ref KFileTreeBranch in the KFileTreeView or zero on failure.
-    *  @param branchno is the name of a branch
+    *  @param searchName is the name of a branch
     */
    KFileTreeBranch *branch( const QString& searchName );
 
@@ -129,7 +129,7 @@ public:
     *  set the directory mode for branches. If true is passed, only directories will be loaded.
     *  @param branch is a pointer to a @ref KFileTreeBranch
     */
-   virtual void setDirOnlyMode( KFileTreeBranch *brnch, bool );
+   virtual void setDirOnlyMode( KFileTreeBranch *branch, bool );
 
    /**
     * searches a branch for a @ref KFileTreeViewItem identified by the relative url given as

@@ -232,7 +232,7 @@ namespace KIO
    * (the request URL), and the ioslave @p method .
    * @param errorCode the error code
    * @param errorText the additional error text
-   * @param reqURL the request URL
+   * @param reqUrl the request URL
    * @param method the ioslave method
    * @return the created error string
    */
@@ -246,7 +246,7 @@ namespace KIO
    *
    * @param errorCode the error code
    * @param errorText the additional error text
-   * @param reqURL the request URL
+   * @param reqUrl the request URL
    * @param method the ioslave method
    * @return the following data:
    * @li QString errorName - the name of the error
@@ -357,7 +357,7 @@ namespace KIO
    * Returns the mount point on which resides @p filename.
    * For instance if /home is a separate partition, findPathMountPoint("/home/user/blah")
    * will return /home
-   * @param the file name to check
+   * @param filename the file name to check
    * @return the mount point of the given @p filename
    */
   QString findPathMountPoint( const QString & filename );

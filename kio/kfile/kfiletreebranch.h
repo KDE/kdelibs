@@ -73,7 +73,7 @@ public:
     * sets a @ref KFileTreeViewItem as root widget for the branch.
     * That must be created outside of the branch. All KFileTreeViewItems
     * the branch is allocating will become children of that object.
-    * @param the KFileTreeViewItem to become the root item.
+    * @param r the KFileTreeViewItem to become the root item.
     */
    virtual void 	setRoot( KFileTreeViewItem *r ){ m_root = r; };
 

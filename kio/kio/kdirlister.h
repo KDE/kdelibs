@@ -481,7 +481,7 @@ signals:
    *            is holding was deleted and you HAVE to release especially the
    *            @ref rootItem() of this lister, otherwise your app will CRASH!!
    *            The @ref clear() signals have been emitted already.
-   * @param the fileItem to delete
+   * @param _fileItem the fileItem to delete
    */
   void deleteItem( KFileItem *_fileItem );
 

@@ -343,10 +343,10 @@ namespace KIO {
     CopyJob *copy( const KURL& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
-     * Copy a file or directory @p src into the destination @dest,
+     * Copy a file or directory @p src into the destination @p dest,
      * which is the destination name in any case, even for a directory.
      *
-     * As opposed to @ref #copy, this doesn't emulate cp, but is the only
+     * As opposed to copy(), this doesn't emulate cp, but is the only
      * way to copy a directory, giving it a new name and getting an error
      * box if a directory already exists with the same name.
      *
@@ -368,7 +368,7 @@ namespace KIO {
     CopyJob *copy( const KURL::List& src, const KURL& dest, bool showProgressInfo = true );
 
     /**
-     * Moves a file or directory @src to the given destination @p dest.
+     * Moves a file or directory @p src to the given destination @p dest.
      *
      * @param src the file or directory to copy
      * @param dest the destination
@@ -379,7 +379,7 @@ namespace KIO {
      */
     CopyJob *move( const KURL& src, const KURL& dest, bool showProgressInfo = true );
     /**
-     * Moves a file or directory @src to the given destination @p dest. Unlike @ref move()
+     * Moves a file or directory @p src to the given destination @p dest. Unlike move()
      * this operation will fail when the directory already exists.
      *
      * @param src the file or directory to copy

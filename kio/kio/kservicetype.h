@@ -71,7 +71,7 @@ public:
 
   /**
    * Construct a service type and take all informations from a deskop file.
-   * @para config the configuration file
+   * @param config the configuration file
    */
   KServiceType( KDesktopFile *config);
 
@@ -89,7 +89,7 @@ public:
    *         example an URL and returns a special icon for this
    *         URL. An example is @ref KMimeType, @ref KFolderType and
    *         others.
-   * @param the name of the icon, can be QString::null.
+   * @return the name of the icon, can be QString::null.
    */
   QString icon() const { return m_strIcon; }
 

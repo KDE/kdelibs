@@ -369,9 +369,7 @@ protected:
      * changed.
      */
     virtual bool editItem( KURLBarItem *item );
-    /**
-     * @reimpl
-     */
+
     virtual void resizeEvent( QResizeEvent * );
 
     /**
@@ -484,13 +482,8 @@ protected:
      * @returns a suitable @ref QDragObject when an item is dragged.
      */
     virtual QDragObject * dragObject();
-    /**
-     * @reimpl
-     */
+
     virtual void contentsDragEnterEvent( QDragEnterEvent * );
-    /**
-     * @reimpl
-     */
     virtual void contentsDropEvent( QDropEvent * );
 
 private:

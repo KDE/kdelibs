@@ -199,7 +199,6 @@ protected:
      * Creates a new KScanDialogFactory.
      * @param parent the QWidget's parent, or 0
      * @param name the name of the QObject, can be 0
-     * @param modal if true the dialog is model
      */
     KScanDialogFactory( QObject *parent=0, const char *name=0 );
 

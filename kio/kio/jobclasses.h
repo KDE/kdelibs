@@ -132,7 +132,7 @@ namespace KIO {
          * Converts an error code and a non-i18n error message into i18n
          * strings suitable for presentation in a detailed error message box.
          *
-         * @parem reqUrl the request URL that generated this error message
+         * @param reqUrl the request URL that generated this error message
          * @param method the method that generated this error message
          * (unimplemented)
          * @return the following strings: caption, error + description, 
@@ -565,7 +565,7 @@ namespace KIO {
         void slotProcessedSize( KIO::filesize_t data_size );
         /**
          * Forward signal from the slave. 
-	 * @param byte_per_second the speed in bytes/s
+	 * @param bytes_per_second the speed in bytes/s
 	 * @see speed()
          */
         void slotSpeed( unsigned long bytes_per_second );
@@ -1316,7 +1316,7 @@ namespace KIO {
         /**
          * The job is creating a symbolic link.
 	 * @param job the job that emitted this signal
-	 * @param from the URl of the file or directory that is currently
+	 * @param target the URl of the file or directory that is currently
 	 *             being linked
 	 * @param to the destination of the current operation
          */

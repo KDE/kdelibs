@@ -100,8 +100,8 @@ namespace KIO {
 
         /** 
 	 * Sends the given command immediately.
-	 * @param cmd the command to set
-	 * @param arr the bytes to send
+	 * @param _cmd the command to set
+	 * @param data the bytes to send
 	 * @return true if successful, false otherwise
 	 */
 	bool sendnow( int _cmd, const QByteArray &data );

@@ -40,7 +40,7 @@ namespace KIO {
  * prompt for password you only need to optionally set the prompt,
  * username (if already supplied), comment and commentLabel fields.
  *
- * <u>SPECIAL NOTE:</u> If you extend this class to add additional
+ * <em>SPECIAL NOTE:</em> If you extend this class to add additional
  * parameters do not forget to overload the stream insertion and
  * extraction operators ("<<" and ">>") so that the added data can
  * be correctly serialzed.

@@ -111,8 +111,6 @@ public:
                       which files to display.
       * See @ref setFilter() for details on how to use this argument.
       *
-      * @param acceptURLs If set to @p false, the dialog will
-      * just accept files on the local filesystem.
       */
     KFileDialog(const QString& startDir, const QString& filter,
 		QWidget *parent, const char *name,
@@ -291,9 +289,6 @@ public:
     /**
      * Returns the current filter as entered by the user or one of the
      * predefined set via @ref setFilter().
-     *
-     * @param filter Contains the new filter (only the extension part,
-     * not the explanation), for example, "*.cpp" or "*.cpp *.cc".
      *
      * @see setFilter()
      * @see filterChanged()

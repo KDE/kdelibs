@@ -35,7 +35,7 @@ class KGWizardPage2;
  * KDE Key Generation dialog
  *
  * This is used to display a key generation dialog for cases such as the
- * html <keygen> tag.  It also does the certificate signing request generation.
+ * html \<keygen\> tag.  It also does the certificate signing request generation.
  *
  * @author George Staikos <staikos@kde.org>
  * @see KSSL, KSSLCertificate, KSSLPKCS12
