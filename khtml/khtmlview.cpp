@@ -197,6 +197,9 @@ public:
 	  m_caretViewContext->keyReleasePending = false;
         }/*end if*/
 #endif // KHTML_NO_CARET
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+        typeAheadActivated = false;
+#endif // KHTML_NO_TYPE_AHEAD_FIND
     }
     void newScrollTimer(QWidget *view, int tid)
     {
@@ -305,6 +308,12 @@ public:
     CaretViewContext *m_caretViewContext;
     EditorContext *m_editorContext;
 #endif // KHTML_NO_CARET
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+    QString findString;
+    QTimer timer;
+    bool findLinksOnly;
+    bool typeAheadActivated;
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -353,6 +362,10 @@ KHTMLView::KHTMLView( KHTMLPart *part, QWidget *parent, const char *name)
 #ifndef QT_NO_TOOLTIP
     d->tooltip = new KHTMLToolTip( this, d );
 #endif
+
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+    connect(&d->timer, SIGNAL(timeout()), this, SLOT(findTimeout()));
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 
     init();
 
@@ -1033,6 +1046,112 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
         return;
     }
 
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+	if(d->typeAheadActivated)
+	{
+		// type-ahead find aka find-as-you-type
+		QString status;
+		if(_ke->key() >= Key_Space && _ke->key() <= Key_AsciiTilde)
+		{
+			QString newFindString = d->findString + _ke->text();
+			if(d->findLinksOnly)
+			{
+				m_part->findText(newFindString, KHTMLPart::FindNoPopups |
+				                 KHTMLPart::FindLinksOnly, this);
+				if(m_part->findTextNext())
+				{
+					d->findString = newFindString;
+					status = i18n("Link found: \"%1\".");
+				}
+				else
+				{
+					status = i18n("Link not found: \"%1\".");
+				}
+			}
+			else
+			{
+				m_part->findText(newFindString, KHTMLPart::FindNoPopups,
+				                 this);
+				if(m_part->findTextNext())
+				{
+					d->findString = newFindString;
+					status = i18n("Text found: \"%1\".");
+				}
+				else
+				{
+					status = i18n("Text not found: \"%1\".");
+				}
+			}
+			m_part->setStatusBarText(status.arg(newFindString.lower()),
+			                         KHTMLPart::BarDefaultText);
+
+			d->timer.start(3000, true);
+			_ke->accept();
+			return;
+		}
+		else if(_ke->key() == Key_BackSpace)
+		{
+			d->findString = d->findString.left(d->findString.length() - 1);
+
+			if(!d->findString.isEmpty())
+			{
+				if(d->findLinksOnly)
+				{
+					m_part->findText(d->findString, KHTMLPart::FindNoPopups |
+					                 KHTMLPart::FindLinksOnly, this);
+					status = i18n("Link found: \"%1\".");
+				}
+				else
+				{
+					m_part->findText(d->findString, KHTMLPart::FindNoPopups,
+					                 this);
+					status = i18n("Text found: \"%1\".");
+				}
+
+				m_part->findTextNext();
+				m_part->setStatusBarText(status.arg(d->findString.lower()),
+				                         KHTMLPart::BarDefaultText);
+			}
+			else
+			{
+				findTimeout();
+			}
+
+			d->timer.start(3000, true);
+			_ke->accept();
+			return;
+		}
+		else if(_ke->key() == Key_Escape)
+		{
+			findTimeout();
+
+			_ke->accept();
+			return;
+		}
+	}
+	else if(_ke->key() == '\'' || _ke->key() == '/')
+	{
+		if(_ke->key() == '\'')
+		{
+			d->findLinksOnly = true;
+			m_part->setStatusBarText(i18n("Starting -- find links as you type"),
+			                         KHTMLPart::BarDefaultText);
+		}
+		else if(_ke->key() == '/')
+		{
+			d->findLinksOnly = false;
+			m_part->setStatusBarText(i18n("Starting -- find text as you type"),
+			                         KHTMLPart::BarDefaultText);
+		}
+
+		m_part->findTextBegin();
+		d->typeAheadActivated = true;
+		d->timer.start(3000, true);
+		_ke->accept();
+		return;
+	}
+#endif // KHTML_NO_TYPE_AHEAD_FIND
+
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
     if (_ke->state() & Qt::ShiftButton)
       switch(_ke->key())
@@ -1179,8 +1298,20 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	    _ke->ignore();
             return;
         }
+
     _ke->accept();
 }
+
+#ifndef KHTML_NO_TYPE_AHEAD_FIND
+
+void KHTMLView::findTimeout()
+{
+	d->typeAheadActivated = false;
+	d->findString = "";
+	m_part->setStatusBarText(i18n("Find stopped."), KHTMLPart::BarDefaultText);
+}
+
+#endif // KHTML_NO_TYPE_AHEAD_FIND
 
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
