@@ -651,7 +651,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
   m_bFromTemplate = false;
 
   // And those only to 'multiple' mode
-  uint iDirCount = S_ISDIR(mode) ? 1 : 0;
+  uint iDirCount = hasDirs ? 1 : 0;
   uint iFileCount = 1-iDirCount;
 
   d->m_frame = properties->addPage (i18n("&General"));
