@@ -642,7 +642,7 @@ void KInetSocketAddress::fromV4()
 
   // data == KSocketAddress::data
   data = (sockaddr*)&d->sin;
-  datasize = sizeof( sockaddr_in );
+  // set datasize to ?	
 }
 
 void KInetSocketAddress::fromV6()
@@ -661,7 +661,7 @@ void KInetSocketAddress::fromV6()
     }
 
   data = (sockaddr*)&d->sin6;
-  datasize = sizeof( sockaddr_in6 );
+  //datasize = sizeof( sockaddr_in6 );
 #endif
 }
 
