@@ -46,6 +46,9 @@ KLibrary::KLibrary( const QString& libname, const QString& filename, lt_dlhandle
 
 KLibrary::~KLibrary()
 {
+    if ( m_timer && m_timer->isActive() )
+      m_timer->stop();
+ 
     if ( m_factory )
       delete m_factory;
 
@@ -154,6 +157,14 @@ KLibLoader* KLibLoader::self()
     return s_self;
 }
 
+void KLibLoader::cleanUp()
+{
+  if ( !s_self )
+    return;
+  
+  delete s_self;
+} 
+
 KLibLoader::KLibLoader( QObject* parent, const char* name )
     : QObject( parent, name )
 {
@@ -163,13 +174,13 @@ KLibLoader::KLibLoader( QObject* parent, const char* name )
 KLibLoader::~KLibLoader()
 {
     m_libs.setAutoDelete( TRUE );
-    
+
     QAsciiDictIterator<KLibrary> it( m_libs );
     for (; it.current(); ++it )
       disconnect( it.current(), SIGNAL( destroyed() ),
 	 	  this, SLOT( slotLibraryDestroyed() ) );
-      
-    
+
+
 }
 
 KLibrary* KLibLoader::library( const char *name )
@@ -219,7 +230,7 @@ KLibrary* KLibLoader::library( const char *name )
 
     connect( lib, SIGNAL( destroyed() ),
 	     this, SLOT( slotLibraryDestroyed() ) );
-    
+
     return lib;
 }
 
@@ -233,10 +244,10 @@ void KLibLoader::unloadLibrary( const char *libname )
   kdDebug(150) << "closing library " << libname << endl;
 
   m_libs.remove( libname );
-  
+
   disconnect( lib, SIGNAL( destroyed() ),
 	      this, SLOT( slotLibraryDestroyed() ) );
-  
+
   delete lib;
 }
 
@@ -252,7 +263,7 @@ KLibFactory* KLibLoader::factory( const char* name )
 void KLibLoader::slotLibraryDestroyed()
 {
   const KLibrary *lib = static_cast<const KLibrary *>( sender() );
-  
+
   QAsciiDictIterator<KLibrary> it( m_libs );
   for (; it.current(); ++it )
     if ( it.current() == lib )
@@ -260,6 +271,6 @@ void KLibLoader::slotLibraryDestroyed()
       m_libs.remove( it.currentKey() );
       return;
     }
-} 
+}
 
 #include "klibloader.moc"

@@ -52,6 +52,7 @@
 #include <kipc.h>
 #include <kcrash.h>
 #include <kdatastream.h>
+#include <klibloader.h>
 
 #include <kstyle.h>
 #include <qplatinumstyle.h>
@@ -824,6 +825,9 @@ QPixmap KApplication::miniIcon() const
 }
 KApplication::~KApplication()
 {
+  // cleanup in the library loader: destruct all factories and unload the libraries (Simon)
+  KLibLoader::cleanUp();
+ 
   delete smw;
 
   // close down IPC
@@ -1188,7 +1192,7 @@ QString KApplication::makeStdCaption( const QString &userCaption,
 void KApplication::kdisplaySetPalette()
 {
     int contrast_ = KGlobalSettings::contrast();
-    
+
     // the following is temporary and will soon dissappear (Matthias, 3.August 1999 )
     KConfigBase* config = KGlobal::config();
     KConfigGroupSaver saver( config, "General" );
@@ -1273,7 +1277,7 @@ void KApplication::propagateSettings(SettingsCategory arg)
 {
     KConfigBase* config = KGlobal::config();
     KConfigGroupSaver saver( config, "General" );
-    
+
     int num = config->readNumEntry("cursorBlinkRate", QApplication::cursorFlashTime());
     if (num < 200)
 	num = 200;

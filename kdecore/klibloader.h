@@ -205,6 +205,11 @@ public:
      */
     static KLibLoader* self();
 
+    /**
+     * @internal method, called by the KApplication destructor
+     */
+    static void cleanUp();
+
 protected:
     KLibLoader( QObject* parent = 0, const char* name = 0 );
 
