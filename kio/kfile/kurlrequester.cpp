@@ -25,6 +25,7 @@
 
 #include <kaccel.h>
 #include <kcombobox.h>
+#include <kdebug.h>
 #include <kdialog.h>
 #include <kfiledialog.h>
 #include <kglobal.h>
@@ -200,7 +201,7 @@ void KURLRequester::init()
 
     QWidget *widget = d->combo ? (QWidget*) d->combo : (QWidget*) d->edit;
     setFocusProxy( widget );
-    
+
     // This is really weird, but seems to be the only way to get the button
     // to not grow to some weird big size and the lineedit take the same
     // height. Note: order is important here. As I said, weird.
@@ -328,6 +329,21 @@ void KURLRequester::slotUpdateURL()
 KPushButton * KURLRequester::button() const
 {
     return myButton;
+}
+
+KEditListBox::CustomEditor KURLRequester::customEditor()
+{
+    KLineEdit *edit = d->edit;
+    if ( !edit && d->combo )
+        edit = dynamic_cast<KLineEdit*>( d->combo->lineEdit() );
+    
+#ifndef NDEBUG
+    if ( !edit )
+        kdWarning() << "KURLRequester's lineedit is not a KLineEdit!??\n";
+#endif
+    
+    KEditListBox::CustomEditor editor( this, edit );
+    return editor;
 }
 
 void KURLRequester::virtual_hook( int, void* )

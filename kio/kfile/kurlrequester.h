@@ -22,6 +22,7 @@
 
 #include <qhbox.h>
 
+#include <keditlistbox.h>
 #include <kfile.h>
 #include <kpushbutton.h>
 #include <kurl.h>
@@ -146,6 +147,18 @@ public:
      * @returns the KURLCompletion object used in the lineedit/combobox.
      */
     KURLCompletion *completionObject() const { return myCompletion; }
+
+    /**
+     * @returns an object, suitable for use with KEditListBox. It allows you
+     * to put this KURLRequester into a KEditListBox.
+     * Basically, do it like this:
+     * <pre>
+     * KURLRequester *req = new KURLRequester( someWidget );
+     * [...]
+     * KEditListBox *editListBox = new KEditListBox( i18n("Some Title"), req->customEditor(), someWidget );
+     * </pre>
+     */
+    KEditListBox::CustomEditor customEditor();
 
 public slots:
     /**
