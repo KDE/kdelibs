@@ -1626,6 +1626,8 @@ void HTMLSelectElementImpl::attach()
     khtml::RenderObject *r = _parent->renderer();
     if(r && m_style->display() != NONE)
     {
+        if ( m_listItems.isEmpty() )
+            recalcListItems(); // useful if we already have contents (e.g. setInnerHTML instead of normal parsing)
         RenderSelect *f = new RenderSelect(view, this);
         if (f)
         {
