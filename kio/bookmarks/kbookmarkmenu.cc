@@ -429,10 +429,9 @@ void KBookmarkMenu::fillBookmarkMenu()
       else
       {
         // kdDebug(7043) << "Creating URL bookmark menu item for " << bm.text() << endl;
-        // create a normal URL item, with ID as a name
         KAction * action = new KAction( text, bm.icon(), 0,
                                         this, SLOT( slotBookmarkSelected() ),
-                                        m_actionCollection, bm.url().url().utf8() );
+                                        m_actionCollection, bm.address().utf8() );
 
         action->setToolTip( bm.url().prettyURL() );
 
@@ -546,8 +545,12 @@ void KBookmarkMenu::slotBookmarkSelected()
 {
   //kdDebug(7043) << "KBookmarkMenu::slotBookmarkSelected()" << endl;
   if ( !m_pOwner ) return; // this view doesn't handle bookmarks...
-  // The name of the action is the URL to open
-  m_pOwner->openBookmarkURL( QString::fromUtf8(sender()->name()) );
+
+  KBookmark bookmark = m_pManager->findByAddress( QString::fromUtf8(sender()->name()) );
+  Q_ASSERT(!bookmark.isNull());
+  Q_ASSERT(!bookmark.isGroup());
+
+  m_pOwner->openBookmarkURL( bookmark.url().url() );
 }
 
 // -----------------------------------------------------------------------------
