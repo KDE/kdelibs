@@ -23,6 +23,9 @@ ifeq ($(ARCH),hppa)
 else
   XINERAMA=--with-xinerama
 endif
+ifeq ($(ARCH),i386)
+  OBJPRELINK=--enable-objprelink
+endif
 
 tmp = $(shell pwd)/debian/kdelibs3
 alsa-tmp = $(shell pwd)/debian/alsa-tmp
@@ -43,7 +46,7 @@ build-stamp:
 	$(COMPILER_FLAGS) \
 	./configure $(configkde) --with-distribution="$$version (`cat /etc/debian_version`)" \
 	--includedir=/usr/include/kde --without-ssl --without-alsa \
-	--disable-cups $(XINERAMA)
+	--disable-cups $(XINERAMA) $(OBJPRELINK)
 
 	$(MAKE)
 	$(MAKE) DESTDIR=`pwd`/debian/install-tmp/ install
