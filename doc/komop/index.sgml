@@ -500,6 +500,61 @@ re-implement <tt>start()</tt> and/or <tt>restore()</tt> , which will be called
 restoring objects. For further information about KOMApplication's API see
 <cdx/komApplication.h/ .
 
+<sect1><idx/KOMShutdownManager/
+<p>
+
+When working with KOM objects which run in different processes, KDE provides you
+tools to launch these processes automatically, on demand, to minimize resource 
+usage. The KDE Daemon provides this functionality. However the same way you want
+other processes to start on-demand, you might want them to shut down when they're
+not used anymore. As CORBA does not define any standards for this, we had to
+introduce our own mechanism. 
+
+So the basic question is: When can we be sure the that all objects in our process
+are dead? If we can answer this question, we know when to shut down the ORB and
+therefore our process.
+
+The first step towards this is to know when a specific object is dead. And this
+is very simple to answer: When an object is not referenced anymore, the object's
+reference counter drops down to zero and the objects gets released.
+
+So KOM's approach to find out when a server process has become "unused" is to
+see whether all KOMBase objects are dead, since this object implements the
+server-sided reference counter which is responsible for the lifecycle of the 
+object.
+
+The KOMShutdownManager class is the helper class to implement this approach.
+It is a one-instance class, accessed via KOMShutdownManager::self() , so you
+never have to care about creating or deleting it.
+
+So if you want to make your server application shutdown itself automatically
+when it is not needed anymore, using KOMShutdownManager is the way go:
+
+You have to tell this class about all objects it should watch, and when all
+watched objects died, it will start a timer (with a default timeout value of
+one minute, but this is configurable) . On timeout the ORBs gets shutted
+down and the application quits.
+
+So at all places in your application where objects for remote clients are
+created (usually in factories) you might want to add one simple single line,
+just like this:
+<verb>
+... (somewhere in your code)
+//now we create the basic object
+MyFooObject *obj = new MyFooObject;
+
+//tell KOMShutdownManager to watch this object
+KOMShutdownManager::self()->watchObject( obj );
+...
+</verb>
+
+Pretty self-explaining I think, or? :-) As reference you might also have a look
+at the kded examples in kdelibs/corba/tutorials/kded , KOMShutdownManager is
+used there, too.
+
+(BTW, please feel free to bomb me with questions if anything is explained bad
+or hard to understand! Just drop me a short mail at <htmlurl url="mailto:hausmann@kde.org" name="<hausmann@kde.org>">
+
 <sect>OpenParts
 <p>
 
@@ -935,7 +990,6 @@ That's it! Have fun using KOM/OpenParts :-)
 
 TODO:
 <itemize>
-<item>KOMShutdownManager
 <item>AutoLoader template classes
 <item>OPApplication Interface + Factories
 </itemize>
