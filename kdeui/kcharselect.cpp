@@ -274,7 +274,7 @@ void KCharSelectTable::gotoLeft()
 //==================================================================
 void KCharSelectTable::gotoRight()
 {
-    if ( focusPos.x() < 31 ) {
+    if ( focusPos.x() < numCols()-1 ) {
 	QPoint oldPos = focusPos;
 
 	focusPos.setX( focusPos.x() + 1 );
@@ -310,7 +310,7 @@ void KCharSelectTable::gotoUp()
 //==================================================================
 void KCharSelectTable::gotoDown()
 {
-    if ( focusPos.y() < 7 ) {
+    if ( focusPos.y() < numRows()-1 ) {
 	QPoint oldPos = focusPos;
 
 	focusPos.setY( focusPos.y() + 1 );
