@@ -728,10 +728,22 @@ public:
         p.end();
         setMask(mask);
     }
+protected:
+    virtual void paintEvent(QPaintEvent *);
 
 private:
     RenderFileButton* m_owner;
 };
+
+void TransHBox::paintEvent(QPaintEvent *)
+{
+    QPainter p(this);
+    QWidget *w = m_owner->lineEdit();
+    RenderWidget::paintWidget(&p, w, 0, 0, width(), height(), w->x(), w->y());
+    w = const_cast<QPushButton *>(m_owner->pushButton());
+    RenderWidget::paintWidget(&p, w, 0, 0, width(), height(), w->x(), w->y());
+}
+
 
 RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     : RenderFormElement(element)
@@ -749,6 +761,7 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
 
     m_button = new QPushButton(i18n("Browse..."), w);
     m_button->setFocusPolicy(QWidget::ClickFocus);
+    connect(m_button,SIGNAL(clicked()), this, SLOT(slotClicked()));
 
     w->setStretchFactor(m_edit, 2);
     w->setFocusProxy(m_edit);
@@ -758,6 +771,8 @@ RenderFileButton::RenderFileButton(HTMLInputElementImpl *element)
     setQWidget(w);
     m_haveFocus = false;
 }
+
+
 
 void RenderFileButton::calcMinMaxWidth()
 {
@@ -805,6 +820,15 @@ void RenderFileButton::slotReturnPressed()
 {
     if (element()->form())
 	element()->form()->submitFromKeyboard();
+}
+
+void RenderFileButton::slotClicked()
+{
+    QString file_name = KFileDialog::getOpenFileName(QString::null, QString::null, 0, i18n("Browse..."));
+    if (!file_name.isNull()) {
+        element()->m_value = DOMString(file_name);
+        m_edit->setText(file_name);
+    }
 }
 
 void RenderFileButton::slotTextChanged(const QString &string)

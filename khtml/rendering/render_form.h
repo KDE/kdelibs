@@ -121,7 +121,7 @@ public:
     virtual void updateFromElement();
     virtual void calcMinMaxWidth();
 
-    virtual bool handleEvent(const DOM::EventImpl& ev) { return false; }
+    virtual bool handleEvent(const DOM::EventImpl&) { return false; }
 
     QCheckBox *widget() const { return static_cast<QCheckBox*>(m_widget); }
 
@@ -141,7 +141,7 @@ public:
     virtual void calcMinMaxWidth();
     virtual void updateFromElement();
 
-    virtual bool handleEvent(const DOM::EventImpl& ev) { return false; }
+    virtual bool handleEvent(const DOM::EventImpl&) { return false; }
 
     QRadioButton *widget() const { return static_cast<QRadioButton*>(m_widget); }
 };
@@ -307,8 +307,9 @@ public:
     const QPushButton* pushButton() const { return m_button; }
 
 public slots:
-    virtual void slotReturnPressed();
-    virtual void slotTextChanged(const QString &string);
+    void slotReturnPressed();
+    void slotTextChanged(const QString &string);
+    void slotClicked();
 
 protected:
     virtual void handleFocusOut();
