@@ -1,8 +1,6 @@
 # set the include path for X, qt and KDE
 INCLUDES = -I$(top_srcdir) $(all_includes)
 
-KCONFIG_COMPILER = $(top_builddir)/kdecore/kconfig_compiler/kconfig_compiler
-
 # these are the headers for your project
 noinst_HEADERS = sdevent.h
 
