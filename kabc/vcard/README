@@ -1,7 +1,7 @@
 libvcard (C) 1999 Rik Hemsley <rik@kde.org>
 Written for the KDE project.
 
-This software is licensed under the GPL.
+This software is licensed under the MIT license.
 
 A vCard 3.0 parser based on the same principles that librmm (from Empath) uses.
 
