@@ -68,10 +68,10 @@ QCursor KCursor::handCursor()
                                 0xff, 0x03, 0xc0, 0xff, 0x03, 0xc0, 0xff, 0x01, 0xc0, 0xff, 0x01};
                         QBitmap hand_bitmap(22, 22, HAND_BITS, true);
                         QBitmap hand_mask(22, 22, HAND_MASK_BITS, true);
-                        s_handCursor = kcursorsd.setObject( s_handCursor, new QCursor(hand_bitmap, hand_mask, 7, 0) );
+                        kcursorsd.setObject( s_handCursor, new QCursor(hand_bitmap, hand_mask, 7, 0) );
                 }
                 else
-                        s_handCursor = kcursorsd.setObject( s_handCursor, new QCursor(PointingHandCursor) );
+                        kcursorsd.setObject( s_handCursor, new QCursor(PointingHandCursor) );
         }
 
         CHECK_PTR(s_handCursor);
