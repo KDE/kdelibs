@@ -3194,7 +3194,16 @@ void KHTMLPart::slotHighlight( const QString& /*text*/, int index, int length )
 
 QString KHTMLPart::selectedTextAsHTML() const
 {
-  return selection().toHTML().string();
+  if(!hasSelection()) {
+    kdDebug() << "selectedTextAsHTML(): selection is not valid.  Returning empty selection" << endl;
+    return QString::null;
+  }
+  if(d->m_startOffset < 0 || d->m_endOffset <0) {
+    kdDebug() << "invalid values for end/startOffset " << d->m_startOffset << " " << d->m_endOffset << endl;
+    return QString::null;
+  }
+  return QString::null; //FIXME:  Disabled just for now.  selection() causes an exception the end of the selection is an image.  I don't know why.
+//  return selection().toHTML().string();
 }
 
 QString KHTMLPart::selectedText() const

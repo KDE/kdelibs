@@ -861,6 +861,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
     DOMString text = "";
     NodeImpl *n = m_startContainer;
     int num_tables=0;
+    bool in_li = false; //whether we have an li in the text, without an ol/ul
     int depth_difference = 0;
     int lowest_depth_difference = 0; 
     while(n) {
@@ -870,6 +871,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
             if(elementId == ID_TABLE) num_tables++;
 	    if(elementId == ID_BODY) hasBodyTag = true;
 	    if(elementId == ID_HTML) hasHtmlTag = true;
+	    if(elementId == ID_LI) in_li=true;
 	    if(num_tables==0 && ( elementId == ID_TD || elementId == ID_TR || elementId == ID_TH || elementId == ID_TBODY || elementId == ID_TFOOT || elementId == ID_THEAD)) num_tables++;
 	    if(!( !n->hasChildNodes() && (elementId == ID_H1 || elementId == ID_H2 || elementId == ID_H3 || elementId == ID_H4 || elementId ==ID_H5))) {  //Don't add <h1/>  etc.  Just skip these nodes just to make the output html a bit nicer.
 	       text += static_cast<ElementImpl *>(n)->openTagStartToString(true /*safely expand img urls*/); // adds "<tagname key=value"
@@ -909,6 +911,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	        depth_difference--;
 		if(lowest_depth_difference > depth_difference) lowest_depth_difference=depth_difference;
 	        if(num_tables==0 && ( elementId == ID_TD || elementId == ID_TR || elementId == ID_TH || elementId == ID_TBODY || elementId == ID_TFOOT || elementId == ID_THEAD)) num_tables--;
+	        if(elementId == ID_OL || elementId == ID_UL) in_li=false;
  	        text += ">";
 	    }
             next = n->nextSibling();
@@ -916,7 +919,7 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
         n = next;
     }
 
-    //We have the html in the selection.  But now we need to properly add the opening and closing tags.
+    	//We have the html in the selection.  But now we need to properly add the opening and closing tags.
     //For example say we have:   "Hello <b>Mr. John</b> How are you?"  and we select "John" or even
     //"John</b> How"  and copy.  We want to return "<b>John</b>" and "<b>John</b> How" respectively
 
@@ -949,6 +952,9 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	      case ID_HTML: 
 	         hasHtmlTag = true;
 		 break;
+	      case ID_LI:
+		 in_li = true;
+		 break;
 	  }
           text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text; // prepends "<tagname key=value>"
       }
@@ -960,11 +966,15 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 	  switch (static_cast<ElementImpl *>(n)->id()) {
 	      case ID_TABLE:
 		num_tables++;
-	      default:
-	         text += "</";
-	         text += static_cast<ElementImpl *>(n)->tagName();
- 	         text += ">";
+		break;
+	      case ID_OL:
+	      case ID_UL:
+		in_li=false;
+		break;
 	  }
+	  text += "</";
+	  text += static_cast<ElementImpl *>(n)->tagName();
+ 	  text += ">";
       }
       depth_difference--;
     }
@@ -1002,9 +1012,22 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
 
 		    }
 		    break;
+
+                case ID_LI:
+		    if(!in_li) break;
+                    text = static_cast<ElementImpl *>(n)->openTagStartToString(true /*expand img urls*/)+">" +text;
+		    text += "</";
+		    text += static_cast<ElementImpl *>(n)->tagName();
+		    text += ">";
+                    break;
+		    
+		case ID_UL:
+		case ID_OL:
+		    if(!in_li) break;
+		    in_li = false;
 		case ID_B:
 		case ID_I:
-		case ID_UL:
+		case ID_U:
 		case ID_FONT:
 		case ID_S:
 		case ID_STRONG:
@@ -1041,9 +1064,6 @@ DOMString RangeImpl::toHTML( int &exceptioncode )
     }
     text = DOMString("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"DTD/xhtml1-strict.dtd\">\n") + text;
 	    
-		    
-		    
-    
     return text;
 
 }
