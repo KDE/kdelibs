@@ -35,9 +35,10 @@ class KFileTreeView;
 /* --- KFileTreeViewToplevelItem --- */
 KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
                                   const QString& name,
-				  const QPixmap& pix, bool showHidden  )
+				  const QPixmap& pix, bool showHidden,
+				  KFileTreeViewItem *branchRoot )
     : KDirLister( false ),
-      m_root( 0L ),
+      m_root( branchRoot ),
       m_startURL( url ),
       m_name ( name ),
       m_rootIcon( pix ),
@@ -45,8 +46,11 @@ KFileTreeBranch::KFileTreeBranch( KFileTreeView *parent, const KURL& url,
       m_nextChild( 0L ),
       m_recurseChildren( false )
 {
-   m_root = createBranchRoot( parent, url );
-   
+   if(!m_root)
+       m_root = new KFileTreeViewItem( parent,
+                             new KFileItem( url, "inode/directory", S_IFDIR ),
+                             this );
+
    m_root->setPixmap( 0, pix );
    m_root->setText( 0, name );
    m_root->setOpen( true );
@@ -176,15 +180,6 @@ KFileTreeViewItem* KFileTreeBranch::createTreeViewItem( KFileTreeViewItem *paren
 				  fileItem,
 				  this ));
 }
-
-KFileTreeViewItem* KFileTreeBranch::createBranchRoot( KFileTreeView *parent, const KURL& url )
-{
-   return( new KFileTreeViewItem( parent,
-				  new KFileItem( url, "inode/directory",
-                                                  S_IFDIR  ),
-				  this ));
-}
-
 
 void KFileTreeBranch::setShowExtensions( bool visible )
 {

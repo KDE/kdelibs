@@ -55,9 +55,13 @@ public:
     * @param name the name of the branch, which is displayed in the first column of the treeview.
     * @param pix is a pixmap to display as an icon of the branch.
     * @param showHidden flag to make hidden files visible or not.
+    * @param branchRoot is the KFileTreeViewItem to use as the root of the
+    *        branch, with the default 0 meaning to let KFileTreeBranch create
+    *        it for you.
     */
    KFileTreeBranch( KFileTreeView*, const KURL& url, const QString& name,
-                    const QPixmap& pix, bool showHidden = false);
+                    const QPixmap& pix, bool showHidden = false,
+                    KFileTreeViewItem *branchRoot = 0);
 
    /**
     * @returns the root url of the branch.
