@@ -692,7 +692,9 @@ QString KFileItem::getToolTipText(int maxcount)
 
   if ( !S_ISDIR ( m_fileMode ) )
     tip += start + i18n("Size:") + mid +
-           KIO::convertSize( size() ) + end;
+           QString("%1 (%2)").arg(KIO::convertSize(size()))
+                             .arg(KGlobal::locale()->formatNumber(size(), 0)) +
+           end;
 
   tip += start + i18n("Modified:") + mid +
          timeString( KIO::UDS_MODIFICATION_TIME) + end
