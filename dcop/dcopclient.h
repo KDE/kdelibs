@@ -128,7 +128,7 @@ class DCOPClient : public QObject
    * If the application was already registered,
    * the registration will be re-done with the new @ref appId.
    *
-   * @p appId is a @em uniquie application/program id that the server
+   * @p appId is a @em unique application/program id that the server
    * will use to associate requests with. If there is already an application
    * registered with the same name, the server will add a number to the
    * id to unify it. If @p addPID is true, the PID of the current process
