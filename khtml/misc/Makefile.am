@@ -30,7 +30,7 @@ libkhtmlmisc_la_METASOURCES = AUTO
 #	khtmlio.h
 
 noinst_HEADERS = \
-	decoder.h      khtmlfont.h    khtmllayout.h \
+	decoder.h      khtmllayout.h \
 	khtmldata.h    stringit.h     htmlhashes.h    helper.h
 
 INCLUDES = -I$(top_srcdir)/kimgio -I$(top_srcdir) -I$(top_srcdir)/dcop \
