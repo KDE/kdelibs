@@ -38,7 +38,7 @@ Stylesheet.
 (define %kde-gentext-et-language% "&Estonian;")
 (define %kde-et-logo% "")
 (define %kde-gentext-et-date-phrase% "&LastUpdated;: ")
-(define %kde-gentext-et-author-phrase% "&by; ")
+(define %kde-gentext-et-author-phrase% "&By; ")
 (define %kde-gentext-et-releaseinfo-phrase% "&Version; ") 
 
    </STYLE-SPECIFICATION-BODY>

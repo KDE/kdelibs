@@ -36,7 +36,7 @@
 (define %kde-gentext-nl-language% "&Dutch;")
 (define %kde-nl-logo% "")
 (define %kde-gentext-nl-date-phrase% "&LastUpdated;: ")
-(define %kde-gentext-nl-author-phrase% "&by; ")
+(define %kde-gentext-nl-author-phrase% "&By; ")
 (define %kde-gentext-nl-releaseinfo-phrase% "&Version; ") 
 
    </STYLE-SPECIFICATION-BODY>
