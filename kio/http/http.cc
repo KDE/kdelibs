@@ -190,7 +190,7 @@ HTTPProtocol::HTTPProtocol( const QCString &protocol, const QCString &pool, cons
              :SlaveBase( (protocol=="ftp") ? QCString("ftp-proxy") : protocol , pool, app )
 {
   m_protocol = protocol;
-  kdDebug(7113) << "******* mProtocol=" << mProtocol << "     m_protocol=" << m_protocol << " ********" << endl;
+  kdDebug(7113) << "HTTPProtocol: mProtocol=" << mProtocol << " m_protocol=" << m_protocol << endl;
   m_maxCacheAge = 0;
   m_fsocket = 0L;
   m_sock = 0;
@@ -1125,6 +1125,7 @@ bool HTTPProtocol::http_open()
     }
     if (!sendOk)
     {
+       kdDebug(7103) << "http_open: sendOk==false. Connnection broken ! " << endl;
        error( ERR_CONNECTION_BROKEN, m_state.hostname );
        return false;
     }
@@ -1158,6 +1159,7 @@ bool HTTPProtocol::readHeader()
      if (!fgets(buffer, 4096, m_fcache) )
      {
         // Error, delete cache entry
+        kdDebug(7103) << "readHeader: Connnection broken ! " << endl;
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
@@ -1167,6 +1169,7 @@ bool HTTPProtocol::readHeader()
      if (!fgets(buffer, 4096, m_fcache) )
      {
         // Error, delete cache entry
+        kdDebug(7103) << "readHeader(2): Connnection broken ! " << endl;
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
@@ -1233,6 +1236,7 @@ bool HTTPProtocol::readHeader()
            mimeType(QString::fromLatin1("text/html"));
            return true;
         }
+        kdDebug(7103) << "readHeader(3): Connnection broken ! " << endl;
         error( ERR_CONNECTION_BROKEN, m_state.hostname );
         return false;
      }
@@ -1298,6 +1302,7 @@ bool HTTPProtocol::readHeader()
       // the true mime-type for the requested URI i.e. the content
       // type is only applicable to the actual message-body!!
       m_strMimeType = QString::fromLatin1(trimLead(buffer + 13)).lower();
+      kdDebug(7103) << "Content-type: " << m_strMimeType << endl;
 
       // This header can be something like "text/html; charset foo-blah"
       int semicolonPos = m_strMimeType.find( ';' );
@@ -1758,7 +1763,10 @@ bool HTTPProtocol::readHeader()
   // Do this only if there is no redirection. Buggy server implementations
   // incorrectly send Content-Type with a redirection response. (DA)
   if( locationStr.isEmpty() )
+  {
+     kdDebug(7103) << "Emitting mimetype " << m_strMimeType << endl;
      mimeType(m_strMimeType);
+  }
 
   // Set charset. Maybe charSet should be a class member, since
   // this method is somewhat recursive....
@@ -2599,6 +2607,7 @@ bool HTTPProtocol::readBody( )
     if (bytesReceived == -1)
     {
       // erg.  oh well, log an error and bug out
+      kdDebug(7103) << "readBody: bytesReceived==-1. Connnection broken ! " << endl;
       error(ERR_CONNECTION_BROKEN, m_state.hostname);
       return false;
     }
