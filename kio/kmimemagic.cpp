@@ -20,6 +20,7 @@
 #include <kapp.h>
 #include <qfile.h>
 #include <kstddirs.h>
+#include <cassert>
 
 KMimeMagic* KMimeMagic::s_pSelf = 0L;
 
@@ -1653,7 +1654,7 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 	int typeset, jonly, conly, jconly, cppcomm, ccomm;
 	int has_escapes = 0;
 	unsigned char *s;
-	char nbuf[HOWMANY + 1]; /* one extra for terminating '\0' */
+	char nbuf[HOWMANY + 2]; /* one extra for terminating '\0' */
 	char *token;
 	register struct names *p;
 	int typecount[NTYPES];
@@ -1683,6 +1684,7 @@ KMimeMagic::ascmagic(unsigned char *buf, int nbytes)
 		resultBuf += MIME_TEXT_FORTRAN;
 		return 1;
 	}
+	assert(nbytes < HOWMANY + 1);
 	/* look for tokens - this is expensive! */
 	/* make a copy of the buffer here because strtok() will destroy it */
 	s = (unsigned char *) memcpy(nbuf, buf, nbytes);
@@ -2048,8 +2050,8 @@ KMimeMagic::findBufferType(const QByteArray &array)
 	
 	int nbytes = array.size();
 
-        if (nbytes > HOWMANY)
-                nbytes = HOWMANY;
+        if (nbytes >= HOWMANY)
+                nbytes = HOWMANY - 1;
         memcpy(buf, array.data(), nbytes);
         if (nbytes == 0) {
                 resultBuf += MIME_BINARY_ZEROSIZE;
