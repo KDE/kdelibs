@@ -2,10 +2,14 @@
 dnl -----------------------------------------------------
 dnl XRender check
 dnl -----------------------------------------------------
-AC_MSG_CHECKING([for XRender X11/extensions/Xrender.h])
-FOUND_XRENDER=NO
-KDE_CHECK_HEADER(X11/extensions/Xrender.h,FOUND_XRENDER="YES",FOUND_XRENDER="NO")
-if test "$FOUND_XRENDER" = YES; then
-    AC_DEFINE_UNQUOTED(HAVE_XRENDER, 1, [Define if your system has Xrender support])
+KDE_CHECK_HEADER(X11/extensions/Xrender.h, [xrender_h=yes], [xrender_h=no])
+if test "$xrender_h" = yes; then
+  KDE_CHECK_LIB(Xrender, XRenderComposite, [
+    LIB_XRENDER=-lXrender
+    AC_DEFINE_UNQUOTED(HAVE_XRENDER, 1, [Defined if your system has XRender support])
+  ], [])
+else
+  LIB_XRENDER=
 fi
+AC_SUBST(LIB_XRENDER)
 
