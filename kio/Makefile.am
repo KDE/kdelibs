@@ -62,7 +62,7 @@ libkio_la_SOURCES = \
 	scheduler.cpp \
 	connection.cpp filter.cpp \
 	slaveinterface.cpp job.cpp  \
-	global.cpp renamedlg.cpp skipdlg.cpp \
+	global.cpp \
 	slave.cpp \
 	netaccess.cpp paste.cpp \
 	kmimemagic.cpp \
@@ -77,15 +77,16 @@ kio_uiserver_SOURCES = dummy.cpp
 kio_uiserver_LDADD = kio_uiserver.la
 kio_uiserver_LDFLAGS = $(KDE_RPATH) $(all_libraries)
 
-kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub
+kio_uiserver_la_SOURCES = uiserver.cpp uiserver.skel observer.stub \
+	renamedlg.cpp skipdlg.cpp
 kio_uiserver_la_LIBADD = libkio.la ../kdesu/libkdesu.la
 kio_uiserver_la_LDFLAGS = $(all_libraries) -module -avoid-version
 
 METASOURCES = AUTO
 
 kioincludedir = $(includedir)/kio
-kioinclude_HEADERS = connection.h renamedlg.h \
-        filter.h skipdlg.h slaveinterface.h \
+kioinclude_HEADERS = connection.h \
+        slaveinterface.h \
         global.h passdlg.h netaccess.h job.h \
         jobclasses.h paste.h slavebase.h \
 	progressbase.h defaultprogress.h \
@@ -95,7 +96,9 @@ kioinclude_HEADERS = connection.h renamedlg.h \
 noinst_HEADERS = ksycocafactory.h kservicetypefactory.h kservicefactory.h \
 	ksycocadict.h kmessageboxwrapper.h \
 	ktraderparse.h ktraderparsetree.h yacc.h \
-	uiserver.h observer.h kimageiofactory.h
+	uiserver.h observer.h kimageiofactory.h \
+	renamedlg.h skipdlg.h \
+	filter.h # old stuff
 
 kde_mime_DATA = magic
 kde_servicetypes_DATA = application.desktop kurifilterplugin.desktop
