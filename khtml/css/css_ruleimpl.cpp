@@ -117,7 +117,7 @@ CSSImportRuleImpl::CSSImportRuleImpl( StyleBaseImpl *parent,
 
     m_lstMedia = new MediaListImpl( this, media );
     m_lstMedia->ref();
-    
+
     m_strHref = href;
     m_styleSheet = 0;
 
@@ -208,12 +208,14 @@ CSSMediaRuleImpl::CSSMediaRuleImpl( StyleBaseImpl *parent, const QChar *&curP,
 
     // Parse CSS data
     while( curP < endP )
-    {   
+    {
         //kdDebug( 6080 ) << "Style rule: '" << QString( curP, endP - curP )
         //                << "'" << endl;
         CSSRuleImpl *rule = parseStyleRule( curP, endP );
-        rule->ref();
-        appendRule( rule );
+        if ( rule ) {
+            rule->ref();
+            appendRule( rule );
+        }
         while( curP < endP && *curP == QChar( ' ' ) )
             curP++;
     }
@@ -405,7 +407,7 @@ unsigned long CSSRuleListImpl::insertRule( CSSRuleImpl *rule,
         rule->ref();
         return index;
     }
-       
+
     // ### Should throw INDEX_SIZE_ERR exception instead! (TODO)
     return 0;
 }
