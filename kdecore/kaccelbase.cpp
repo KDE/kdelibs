@@ -1375,11 +1375,11 @@ bool KAccelBase::removeConnection( KAccelAction& action )
 	kdDebug(125) << "KAccelBase::removeConnection( " << &action << " = " << action.m_sName << " )  this = " << this << endl;
 	kdDebug(125) << "\tkeys = " << action.m_rgShortcuts.toString() << endl;
 
-	for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
-		kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
-
 	if( actions().dataReallocated() )
 		updateConnections();
+
+	//for( KKeyToActionMap::iterator it = m_mapKeyToAction.begin(); it != m_mapKeyToAction.end(); ++it )
+	//	kdDebug(125) << "\tKey: " << it.key().toString() << " => '" << (*it)->m_sName << "'" << " " << *it << endl;
 
 	for( KAccelShortcuts::iterator itShortcut = action.begin(); itShortcut != action.end(); ++itShortcut ) {
 		KAccelShortcut& shortcut = *itShortcut;
