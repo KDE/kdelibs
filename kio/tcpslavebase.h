@@ -189,18 +189,18 @@ protected:
      * Determines whether or not we are still connected
      * to the remote machine.
      *
-     * return @p true if the socket is still active or
-     *           false otherwise.
+     * return @p true if the socket is still active, false otherwise.
      */
     bool isConnectionValid();
 
     /**
      * Returns the status of the connection.
      *
-     * This function allows you to invoke @ref ConnectToHost
-     * with the @p sendError flag set to false so that you
-     * can send the appropriate error message back to the
-     * calling io-slave.
+     * This function allows to retrieve the result of a call
+     * to @ref ConnectToHost with the @p sendError flag set to
+     * false.  That way your io-slave instead of this class will
+     * send the appropriate error message back to the calling to
+     * the application that requested the service.
      *
      * @return the status code as returned by KExtendedSocket.
      */
@@ -251,11 +251,10 @@ protected:
     /**
      * Set up SSL tunneling mode.
      *
-     * Calling this function with a @p true argument will allow
-     * you to temprarly ignore the @p m_bIsSSL flag setting and
-     * make a non-SSL connection.  It is mostly useful for making
-     * connections to SSL sites through a non-transparent proxy
-     * server (i.e. most proxy servers out there).
+     * Call this function with a @p enable set to true to temprarly
+     * ignore the @p m_bIsSSL flag setting and make a non-SSL connection.
+     * It is mostly useful for making connections to SSL sites through
+     * a non-transparent proxy server (i.e. most proxy servers out there).
      *
      * Note that once you have successfully "tunneled" through the
      * proxy server you must call this function with its argument
@@ -276,7 +275,8 @@ protected:
 
     int m_iSock;
     bool m_bIsSSL;
-    unsigned short int m_iPort, m_iDefaultPort;
+    unsigned short int m_iPort;
+    unsigned short int m_iDefaultPort;
     QCString m_sServiceName;
     FILE *fp;
 
