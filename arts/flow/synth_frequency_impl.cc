@@ -29,7 +29,7 @@ class Synth_FREQUENCY_impl :public Synth_FREQUENCY_skel, StdSynthModule
 {
 	float fpos;
 public:
-	void initialize() {
+	void streamInit() {
 		fpos = 0;
 	}
 	void calculateBlock(unsigned long cycles) {

@@ -430,9 +430,8 @@ void StdScheduleNode::start()
 
 	//cout << "start" << endl;
 	accessModule();
-	module->firstInitialize();
-	module->initialize();
-	module->start();
+	module->streamInit();
+	module->streamStart();
 }
 
 void StdScheduleNode::stop()
@@ -441,7 +440,7 @@ void StdScheduleNode::stop()
 	running = false;
 
 	accessModule();
-	module->deInitialize();
+	module->streamEnd();
 }
 
 void StdScheduleNode::requireFlow()

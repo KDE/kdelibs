@@ -29,6 +29,7 @@
 #include "dispatcher.h"
 #include "iomanager.h"
 #include "flowsystem.h"
+#include "stdsynthmodule.h"
 #include <stdio.h>
 #include <iostream>
 
@@ -36,6 +37,7 @@ using namespace std;
 
 class Synth_PLAY_impl :	virtual public Synth_PLAY_skel,
 						virtual public ASProducer,
+						virtual public StdSynthModule,
 						virtual public IONotify
 {
 protected:
@@ -69,14 +71,10 @@ public:
 	 * functions from the SynthModule interface (which is inherited by
 	 * SynthPlay)
 	 */
-	void firstInitialize() {
-		//cout << "Synth_PLAY: firstInitialize() called." << endl;
-	}
-
-	void initialize() {
+	void streamInit() {
 		as = AudioSubSystem::the();
 
-		//cout << "Synth_PLAY: initialize() called." << endl;
+		//cout << "Synth_PLAY: streamInit() called." << endl;
 		channels = as->channels();
 		maxsamples = 0;
 		outblock = 0;
@@ -98,8 +96,8 @@ public:
 		}
 	}
 
-	void start() {
-		//cout << "Synth_PLAY: start() called." << endl;
+	void streamStart() {
+		//cout << "Synth_PLAY: streamStart() called." << endl;
 		if(audiofd >= 0)
 		{
 			IOManager *iom = Dispatcher::the()->ioManager();
@@ -107,8 +105,8 @@ public:
 		}
 	}
 
-	void deInitialize() {
-		cout << "Synth_PLAY: deInitialize() called." << endl;
+	void streamEnd() {
+		cout << "Synth_PLAY: streamEnd() called." << endl;
 
 		artsdebug("SynthGenericPlay: closing audio fd\n");
 		if(audiofd >= 0)
@@ -192,7 +190,7 @@ public:
 		inProgress = true;
 		as->handleIO(type);
 		inProgress = false;
-		if(restartIOHandling) start();
+		if(restartIOHandling) streamStart();
 	}
 
 	/**

@@ -31,20 +31,26 @@ StdSynthModule::StdSynthModule()
 	samplingRateFloat = (float)samplingRate;
 }
 
-void StdSynthModule::firstInitialize()
+void StdSynthModule::streamInit()
 {
 }
 
-void StdSynthModule::initialize()
+void StdSynthModule::streamStart()
+{
+}
+
+void StdSynthModule::streamEnd()
 {
 }
 
 void StdSynthModule::start()
 {
+	_node()->start();
 }
 
-void StdSynthModule::deInitialize()
+void StdSynthModule::stop()
 {
+	_node()->stop();
 }
 
 AutoSuspendState StdSynthModule::autoSuspend()

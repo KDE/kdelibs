@@ -86,16 +86,12 @@ public:
 	 * - where is stop? initialize?
 	 */
 
-	void firstInitialize() {
-		cout << "firstInitialize" << endl;
+	void streamInit() {
+		cout << "streamInit" << endl;
 	}
 
-	void initialize() {
-		cout << "initialize" << endl;
-	}
-
-	void start() {
-		cout << "start" << endl;
+	void streamStart() {
+		cout << "streamStart" << endl;
 	}
 
 	void calculateBlock(unsigned long samples) {
@@ -128,8 +124,8 @@ public:
 		}
 	}
 
-	void deInitialize() {
-		cout << "deInitialize" << endl;
+	void streamEnd() {
+		cout << "streamEnd" << endl;
 	}
 };
 

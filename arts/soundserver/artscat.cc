@@ -61,7 +61,7 @@ public:
 	long bits()         { return 16; }
 	bool finished()     { return (pfile == 0); }
 
-	void start()
+	void streamStart()
 	{
 		/*
 		 * start streaming

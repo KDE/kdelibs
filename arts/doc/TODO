@@ -8,32 +8,10 @@ as it was before on CORBA.
 One of the last big changes before the API is more or less frozen. This is
 currently mostly done. Remaining issues are:
 
-- Dispatcher stores a FlowSystem_impl (not a FlowSystem) internally, since
-  it wants to have addObject() and removeObject() methods - this leads to
-  slightly unlogic accesses from outside
-- name clash: FlowSystem functionality is called (see SynthModule)
-   - initialize()
-   - start()
-   - unInitialize()
-  SmartWrapper provides the following
-   - start()
-   - stop()
 - much functionality resides under Object_base, which isn't available if
   you use SmartWrappers now
-- code bloat through excessive inlining - probably ensuring that the whole
-  check creation stuff doesn't get inlined would be a good idea
 - writeObject/readObject need review/rewrite
 - maybe the two objects SmartWrapper and Object should be merged
-- perhaps move start() and stop() to Object, so that this funny stuff:
-  (flowsystem.cc)
-
-  void RemoteScheduleNode::stop()
-  {
-    nodeObject()._flowSystem().stopObject(nodeObject());
-  }
-
-  can be removed completely ;)
-
 - isEqual (and maybe others) would benefit a lot if everything inherited the
   Object wrapper (so that SmartWrapper would be merged), since for conversion
   to Object is currently non-const, which is the reason that (see
@@ -122,6 +100,9 @@ currently mostly done. Remaining issues are:
      not playing anything)
    - make an explicit call like "shutdown now" (esdctl off/esdctl on)
 - maybe fix crash when playing wav files without libaudiofile installed
+- Dispatcher stores a FlowSystem_impl (not a FlowSystem) internally, since
+  it wants to have addObject() and removeObject() methods - this leads to
+  slightly unlogic accesses from outside
 
 3. To have more fun
 

@@ -49,7 +49,7 @@ public:
 	bool finished()     { return _finished; }
 
 	static const int packetCount = 10, packetCapacity = 1024;
-	void start()
+	void streamStart()
 	{
 		/*
 		 * start streaming

@@ -187,7 +187,7 @@ public:
 	Synth_PLAY_WAV_impl();
 	~Synth_PLAY_WAV_impl();
 
-	void initialize();
+	void streamInit();
 	void calculateBlock(unsigned long samples);
 };
 
@@ -203,7 +203,7 @@ Synth_PLAY_WAV_impl::~Synth_PLAY_WAV_impl()
 	unload();
 }
 
-void Synth_PLAY_WAV_impl::initialize()
+void Synth_PLAY_WAV_impl::streamInit()
 {
 	_finished = false;
 }

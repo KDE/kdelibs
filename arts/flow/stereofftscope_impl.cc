@@ -65,7 +65,7 @@ public:
             if(i > SAMPLES/2) i = SAMPLES/2;
     	}
 	}
-	void initialize()
+	void streamInit()
 	{
 		unsigned long i;
 		for(i=0;i<SAMPLES;i++)
@@ -76,7 +76,7 @@ public:
 		}
 		do_fft();	// initialize so that we never return an empty scope
 	}
-	void start()
+	void streamStart()
 	{
 		inbufferpos = 0;
 	}

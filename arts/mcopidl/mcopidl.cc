@@ -1396,13 +1396,6 @@ void doInterfacesHeader(FILE *header)
 		InterfaceDef allMerged = mergeAllParents(*d);
 		d = &allMerged;
 
-		// start, stop
-		if (haveStreams(d)) {
-			fprintf(header,"\tinline void start() {return _cache?_cache->_node()->start():_method_call()->_node()->start();}\n");
-			fprintf(header,"\tinline void stop() {return _cache?_cache->_node()->stop():_method_call()->_node()->stop();}\n");
-			fprintf(header,"\n");
-		}
-
 		/* attributes */
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
 		{
@@ -1442,8 +1435,6 @@ void doInterfacesHeader(FILE *header)
 					"\t\t_cache->constructor(%s);\n\t}\n",
 					d->name.c_str(), params.c_str(), d->name.c_str(),
 					d->name.c_str(), d->name.c_str(), callparams.c_str());
-			} else if(md->name == "start") {
-				cout << "start collision - omitted" << endl;
 			} else {
 				fprintf(header,"\tinline %s %s(%s) {return _cache?_cache->%s(%s):_method_call()->%s(%s);}\n",
 					rc.c_str(),	md->name.c_str(), params.c_str(),

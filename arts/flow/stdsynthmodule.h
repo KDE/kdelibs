@@ -32,10 +32,12 @@ protected:
 public:
 	StdSynthModule();
 
-	void firstInitialize();
-	void initialize();
 	void start();
-	void deInitialize();
+	void stop();
+
+	void streamInit();
+	void streamStart();
+	void streamEnd();
 
 	AutoSuspendState autoSuspend();
 };

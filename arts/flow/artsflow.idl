@@ -229,31 +229,43 @@
 enum AutoSuspendState { asNoSuspend, asSuspend, asSuspendStop };
 
 interface SynthModule {
+	// interface for users of this module
+
 	/**
-	 * this initialization is called before anything is done with the module
+	 * This function starts the streaming (e.g. the module will start
+	 * producing samples) - if you write a module, do not reimplement this,
+	 * instead reimplement streamInit/streamStart
 	 */
-	void firstInitialize();
+	void start();
+
+	/**
+	 * This function stops the streaming - if you write a plugin, do not
+	 * reimplement this, instead reimplement streamEnd
+	 */
+	void stop();
+
+	// interface for people implementing modules
 
 	/**
 	 * this is supposed to be the initialization every module passes after
 	 * all attributes have been set up (e.g. you can see which file to open,
 	 * how to initialize your filter coefficients or whatever)
 	 */
-	void initialize();
+	void streamInit();
 
 	/**
 	 * starts the I/O of the module
 	 */
-	void start();
+	void streamStart();
 	/*
 	long readfd();
 	long writefd();
 	*/
 
 	/**
-	 * stop the thing again
+	 * stop the thing again, and free data possibly allocated in streamInit
 	 */
-	void deInitialize();
+	void streamEnd();
 
 	/**
 	 * autosuspend
