@@ -153,5 +153,6 @@ i18n( "Show &Toolbar");
 i18n( "Show &Statusbar");
 i18n( "Configure &Key Bindings...");
 i18n( "&Preferences...");
+i18n( "&Settings");
 i18n( "Do not show this message again");
 
