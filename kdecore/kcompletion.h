@@ -559,6 +559,14 @@ public:
     */
     KCompletion* completionObject( bool hsig = true );
 
+    // ### merge these two methods
+    /**
+     * Overloaded method to specify whether a completion-object should be
+     * created or not. If @p create is set to false and there is no
+     * completion-object yet, 0L will be returned.
+     */
+    KCompletion* completionObject( bool create, bool hsig );
+
     /**
     * Sets up the completion object to be used.
     *
