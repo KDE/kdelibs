@@ -139,8 +139,8 @@ void KHTMLView::init()
 
     if(!paintBuffer) paintBuffer = new QPixmap();
 
-//    setFocusPolicy(QWidget::StrongFocus);
-//  viewport()->setFocusPolicy( QWidget::WheelFocus );
+    setFocusPolicy(QWidget::StrongFocus);
+    viewport()->setFocusPolicy( QWidget::WheelFocus );
 
   _marginWidth = -1; // undefined
   _marginHeight = -1;
