@@ -1784,12 +1784,12 @@ void KTabListBoxTable::focusOutEvent(QFocusEvent*)
   // to a redraw() call per default.
 }
 
-inline KTabListBoxItem* KTabListBox :: getItem (int idx)
+KTabListBoxItem* KTabListBox :: getItem (int idx)
 {
     return ((idx>=0 && idx<maxItems) ? itemList[idx] : (KTabListBoxItem*)0L);
 }
  
-inline const KTabListBoxItem* KTabListBox :: getItem (int idx) const
+const KTabListBoxItem* KTabListBox :: getItem (int idx) const
 {
   return ((idx>=0 && idx<maxItems) ? itemList[idx] : (KTabListBoxItem*)0L);
 }
