@@ -35,7 +35,7 @@ class KRemoteEncodingPrivate;
  * URLs to its components.
  * 
  * Each KIO::SlaveBase has one object of this kind, even if it is not necessary.
- * It can be accessed through @ref SlaveBase::remoteEncoding.
+ * It can be accessed through @ref KIO::SlaveBase::remoteEncoding.
  *
  * @short A class for handling remote filenames
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
