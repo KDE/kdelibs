@@ -54,6 +54,10 @@
 #include "rendering/render_object.h"
 #include "rendering/render_root.h"
 
+#include "kmessagebox.h"
+#include <kstringhandler.h>
+#include <klocale.h>
+
 #include <kdebug.h>
 
 using namespace KJS;
@@ -2108,7 +2112,47 @@ Value KJS::HTMLElementFunction::tryCall(ExecState *exec, Object &thisObj, const 
     case ID_FORM: {
       DOM::HTMLFormElement form = element;
       if (id == KJS::HTMLElement::FormSubmit) {
-        form.submit();
+      
+        
+        DOM::HTMLDocument doc = element.ownerDocument();
+        KHTMLView *view = static_cast<DOM::DocumentImpl*>(doc.handle())->view();
+        KHTMLSettings::KJSWindowOpenPolicy policy =
+               view->part()->settings()->windowOpenPolicy(view->part()->url().host());
+
+        bool block = false;
+
+        if ( policy != KHTMLSettings::KJSWindowOpenAllow ) {
+	
+          block = true;
+	
+          // if this is a form without a target, don't block
+          if( form.target().isEmpty() )
+            block = false;
+
+          // if there is a frame with the target name, don't block
+          if ( (view && view->part() && view->part()->parentPart())   ) {
+            if( view->part()->parentPart()->frameExists( form.target().string() ) ) {
+	      block = false;
+            }
+          }
+
+          if ( block && policy == KHTMLSettings::KJSWindowOpenAsk ) {
+       
+            if ( KMessageBox::questionYesNo(view, form.action().isEmpty() ?
+                   i18n( "This site is submitting a form which will open up a new browser "
+                         "window via JavaScript.\n"
+                         "Do you want to allow the form to be submitted?" ) :
+                   i18n( "<qt>This site is submitting a form which will open <p>%1</p> in a new browser window via JavaScript.<br />"
+                         "Do you want to allow the form to be submitted?</qt>").arg(KStringHandler::csqueeze(form.action().string(),  100)),
+                   i18n( "Confirmation: JavaScript Popup" ) ) == KMessageBox::Yes ) 
+              block = false;
+	    
+          }
+        }
+
+        if( !block ) 
+	  form.submit();
+
         return Undefined();
       }
       else if (id == KJS::HTMLElement::FormReset) {
