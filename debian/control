@@ -24,6 +24,7 @@ Section: libs
 Replaces: kdelibs3 (<< 4:2.2-alpha1-2)
 Depends: ${shlibs:Depends}, kdebase-libs
 Enhances: kdebase
+Suggests: cupsomatic-ppd
 Conflicts: kdelibs3 (<< 4:2.2-alpha1-1)
 Description: KDE print system (CUPS support)
  This package contains the KDE printer bits which use CUPS. 

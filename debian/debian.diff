@@ -1,5 +1,94 @@
---- kdelibs-2.2-cvs20010507.orig/kssl/ksslinfodlg.cc
-+++ kdelibs-2.2-cvs20010507/kssl/ksslinfodlg.cc
+--- kdelibs-2.2-cvs20010602.orig/kdecore/kapp.cpp
++++ kdelibs-2.2-cvs20010602/kdecore/kapp.cpp
+@@ -1784,7 +1784,7 @@
+    // has to be executed by the terminal has to be supplied (e.g. something
+    // like '/opt/kde2/bin/konsole -e %p'). - Frerich
+    if (config.readBoolEntry("TerminalClient", false))
+-      command = "konsole -e " + command;
++      command = "x-terminal-emulator -e " + command;
+ 
+    QString address = KURL::decode_string(mailtoURL.path()), subject, cc, bcc, body, attach;
+    QStringList queries = QStringList::split('&', mailtoURL.query().mid(1));
+--- kdelibs-2.2-cvs20010602.orig/kfile/kopenwith.cpp
++++ kdelibs-2.2-cvs20010602/kfile/kopenwith.cpp
+@@ -502,7 +502,7 @@
+   if (terminal->isChecked()) {
+     KSimpleConfig conf(QString::fromLatin1("konquerorrc"), true);
+     conf.setGroup(QString::fromLatin1("Misc Defaults"));
+-    m_command = conf.readEntry(QString::fromLatin1("Terminal"), QString::fromLatin1("konsole"));
++    m_command = conf.readEntry(QString::fromLatin1("Terminal"), QString::fromLatin1("x-terminal-emulator"));
+ 
+     m_command += QString::fromLatin1(" -e ");
+     m_command += edit->url();
+--- kdelibs-2.2-cvs20010602.orig/kio/kmimetype.cpp
++++ kdelibs-2.2-cvs20010602/kio/kmimetype.cpp
+@@ -614,11 +614,11 @@
+   if (s.substituteUid() && !user.isEmpty())
+   {
+     if (s.terminal())
+-      cmd = QString("konsole %1 -e su %2 -c %3").arg(opts).arg(user).arg(cmd);
++      cmd = QString("x-terminal-emulator %1 -e su %2 -c %3").arg(opts).arg(user).arg(cmd);
+     else
+       cmd = QString("kdesu -u %1 -- %2").arg(user).arg(cmd);
+   } else if (s.terminal())
+-    cmd = QString("konsole %1 -e %2").arg(opts).arg(cmd);
++    cmd = QString("x-terminal-emulator %1 -e %2").arg(opts).arg(cmd);
+   else
+   {
+     // No special options, do straight run
+--- kdelibs-2.2-cvs20010602.orig/kio/krun.cpp
++++ kdelibs-2.2-cvs20010602/kio/krun.cpp
+@@ -109,12 +109,12 @@
+   if (_service.substituteUid() && !user.isEmpty())
+   {
+     if (_service.terminal())
+-      exec = QString("konsole %1 -e su %2 -c %3").arg(_service.terminalOptions()).arg(user).arg(exec);
++      exec = QString("x-terminal-emulator %1 -e su %2 -c %3").arg(_service.terminalOptions()).arg(user).arg(exec);
+     else
+       exec = QString("kdesu -u %1 -- %2").arg(user).arg(exec);
+   } else if (_service.terminal())
+      // Keep in mind that exec could include spaces. No quotes around %2, then.
+-     exec = QString("konsole %1 -e %2").arg(_service.terminalOptions()).arg(exec);
++     exec = QString("x-terminal-emulator %1 -e %2").arg(_service.terminalOptions()).arg(exec);
+   else
+   {
+   QString error;
+--- kdelibs-2.2-cvs20010602.orig/kio/rlogin.protocol
++++ kdelibs-2.2-cvs20010602/kio/rlogin.protocol
+@@ -1,5 +1,5 @@
+ [Protocol]
+-exec=konsole -e rlogin `echo %u | sed -e 's,rlogin:/*,,'`
++exec=x-terminal-emulator -e rlogin `echo %u | sed -e 's,rlogin:/*,,'`
+ protocol=rlogin
+ input=none
+ output=none
+--- kdelibs-2.2-cvs20010602.orig/kio/telnet.protocol
++++ kdelibs-2.2-cvs20010602/kio/telnet.protocol
+@@ -1,5 +1,5 @@
+ [Protocol]
+-exec=konsole -e telnet `echo %u | sed -e 's,telnet:/*,,' | sed -e 's,:\([0-9]*\), \1,'`
++exec=x-terminal-emulator -e telnet `echo %u | sed -e 's,telnet:/*,,' | sed -e 's,:\([0-9]*\), \1,'`
+ protocol=telnet
+ input=none
+ output=none
+--- kdelibs-2.2-cvs20010602.orig/kio/useragent.pl
++++ kdelibs-2.2-cvs20010602/kio/useragent.pl
+@@ -1,4 +1,4 @@
+-#!/bin/perl
++#!/usr/bin/perl
+ while(<>)
+ {
+     if (($key, $domain, $useragent, $comment) = ($_ =~ /(Entry\d)=\.?([^:]+)::([^:]+)::([^\n]+)/))
+--- kdelibs-2.2-cvs20010602.orig/kio/proxytype.pl
++++ kdelibs-2.2-cvs20010602/kio/proxytype.pl
+@@ -1,4 +1,4 @@
+-#!/bin/perl
++#!/usr/bin/perl
+ while(<>)
+ {
+     $useproxy = 1 if /UseProxy=true/;
+--- kdelibs-2.2-cvs20010602.orig/kssl/ksslinfodlg.cc
++++ kdelibs-2.2-cvs20010602/kssl/ksslinfodlg.cc
 @@ -68,7 +68,7 @@
          }
      } else {
@@ -9,9 +98,537 @@
      }
      d->m_layout->addRowSpacing( 0, 50 ); // give minimum height to look better
  
---- kdelibs-2.2-cvs20010507.orig/admin/acinclude.m4.in
-+++ kdelibs-2.2-cvs20010507/admin/acinclude.m4.in
-@@ -2116,7 +2116,7 @@
+--- kdelibs-2.2-cvs20010602.orig/pics/hicolor/hi16-app-debian.xpm
++++ kdelibs-2.2-cvs20010602/pics/hicolor/hi16-app-debian.xpm
+@@ -0,0 +1,157 @@
++/* XPM */
++static char * debian_16_xpm[] = {
++"16 16 138 2",
++"  	c None",
++". 	c #6C5964",
++"+ 	c #6C6364",
++"@ 	c #6C6C6B",
++"# 	c #726C6B",
++"$ 	c #726C71",
++"% 	c #787678",
++"& 	c #7F6371",
++"* 	c #7F6C78",
++"= 	c #7F7678",
++"- 	c #7F7F7E",
++"; 	c #85596B",
++"> 	c #857F7E",
++", 	c #858985",
++"' 	c #8B6C78",
++") 	c #8B7F85",
++"! 	c #8B8985",
++"~ 	c #914664",
++"{ 	c #91596B",
++"] 	c #915971",
++"^ 	c #917685",
++"/ 	c #91898C",
++"( 	c #919292",
++"_ 	c #98506B",
++": 	c #986C7E",
++"< 	c #989292",
++"[ 	c #989299",
++"} 	c #9E506B",
++"| 	c #9E6378",
++"1 	c #9E9B99",
++"2 	c #A45978",
++"3 	c #A47F8C",
++"4 	c #A49B9F",
++"5 	c #A4A59F",
++"6 	c #A4A5A6",
++"7 	c #AA466B",
++"8 	c #AA5071",
++"9 	c #AA5978",
++"0 	c #AA637E",
++"a 	c #AA768C",
++"b 	c #AAA5A6",
++"c 	c #AAA5AD",
++"d 	c #AAAEAD",
++"e 	c #B1466B",
++"f 	c #B14671",
++"g 	c #B16C8C",
++"h 	c #B1768C",
++"i 	c #B19BA6",
++"j 	c #B1AEAD",
++"k 	c #B1B8B3",
++"l 	c #B7336B",
++"m 	c #B74671",
++"n 	c #B75078",
++"o 	c #B7597E",
++"p 	c #B76385",
++"q 	c #B77F99",
++"r 	c #B7AEB3",
++"s 	c #B7B8BA",
++"t 	c #BD336B",
++"u 	c #BD3D6B",
++"v 	c #BD3D71",
++"w 	c #BD507E",
++"x 	c #BD6385",
++"y 	c #BD899F",
++"z 	c #BD9BAD",
++"A 	c #BDA5AD",
++"B 	c #BDAEB3",
++"C 	c #BDB8BA",
++"D 	c #C3336B",
++"E 	c #C34678",
++"F 	c #C36C92",
++"G 	c #C37F99",
++"H 	c #C392A6",
++"I 	c #C3C1C0",
++"J 	c #C3C1C7",
++"K 	c #CA336B",
++"L 	c #CA3D71",
++"M 	c #CA5985",
++"N 	c #CA6C92",
++"O 	c #CAA5B3",
++"P 	c #CACBC7",
++"Q 	c #CACBCD",
++"R 	c #D02164",
++"S 	c #D02A64",
++"T 	c #D0336B",
++"U 	c #D03371",
++"V 	c #D03D78",
++"W 	c #D0507E",
++"X 	c #D0638C",
++"Y 	c #D06C92",
++"Z 	c #D07F9F",
++"` 	c #D0C1C7",
++" .	c #D0CBCD",
++"..	c #D0D4D4",
++"+.	c #D63371",
++"@.	c #D63D78",
++"#.	c #D64678",
++"$.	c #D6598C",
++"%.	c #D67F9F",
++"&.	c #D67FA6",
++"*.	c #D689A6",
++"=.	c #D692AD",
++"-.	c #D69BB3",
++";.	c #D6B8C7",
++">.	c #D6D4DB",
++",.	c #DC467E",
++"'.	c #DC5085",
++").	c #DC6392",
++"!.	c #DC6C99",
++"~.	c #DC7FA6",
++"{.	c #DC89A6",
++"].	c #DC89AD",
++"^.	c #DC9BB3",
++"/.	c #DC9BBA",
++"(.	c #DCA5BA",
++"_.	c #DCDEDB",
++":.	c #E3A5C0",
++"<.	c #E3AEC0",
++"[.	c #E3AEC7",
++"}.	c #E3DEE1",
++"|.	c #E3E7E1",
++"1.	c #E3E7E8",
++"2.	c #E992B3",
++"3.	c #E9AEC7",
++"4.	c #E9B8CD",
++"5.	c #E9C1D4",
++"6.	c #E9CBD4",
++"7.	c #E9CBDB",
++"8.	c #E9E7E8",
++"9.	c #E9E7EE",
++"0.	c #EFCBDB",
++"a.	c #EFD4E1",
++"b.	c #EFDEE1",
++"c.	c #EFDEE8",
++"d.	c #EFE7EE",
++"e.	c #EFF1EE",
++"f.	c #EFF1F5",
++"g.	c #F5DEE8",
++"              3.                ",
++"          U R R R R '.c.        ",
++"      =.R l . $ - % ] R K       ",
++"      R R . = j Q Q < E R [.    ",
++"    R ^ 6       <.a.    S #     ",
++"    R =       *.        @.2     ",
++"    } d     N }.        N 0     ",
++"    )       W           M >     ",
++"    [       V J         z 1     ",
++"    0       ` j       #.6 >.    ",
++"    K :.      ..*.-.j 6         ",
++"    R x         d 6 5 ..        ",
++"    N R                         ",
++"      S M                       ",
++"      J R #.                    ",
++"        ..) x 6.                "};
+--- kdelibs-2.2-cvs20010602.orig/pics/hicolor/hi32-app-debian.xpm
++++ kdelibs-2.2-cvs20010602/pics/hicolor/hi32-app-debian.xpm
+@@ -0,0 +1,173 @@
++/* XPM */
++static char * debian_32_xpm[] = {
++"32 32 138 2",
++"  	c None",
++". 	c #6C5964",
++"+ 	c #6C6364",
++"@ 	c #6C6C6B",
++"# 	c #726C6B",
++"$ 	c #726C71",
++"% 	c #787678",
++"& 	c #7F6371",
++"* 	c #7F6C78",
++"= 	c #7F7678",
++"- 	c #7F7F7E",
++"; 	c #85596B",
++"> 	c #857F7E",
++", 	c #858985",
++"' 	c #8B6C78",
++") 	c #8B7F85",
++"! 	c #8B8985",
++"~ 	c #914664",
++"{ 	c #91596B",
++"] 	c #915971",
++"^ 	c #917685",
++"/ 	c #91898C",
++"( 	c #919292",
++"_ 	c #98506B",
++": 	c #986C7E",
++"< 	c #989292",
++"[ 	c #989299",
++"} 	c #9E506B",
++"| 	c #9E6378",
++"1 	c #9E9B99",
++"2 	c #A45978",
++"3 	c #A47F8C",
++"4 	c #A49B9F",
++"5 	c #A4A59F",
++"6 	c #A4A5A6",
++"7 	c #AA466B",
++"8 	c #AA5071",
++"9 	c #AA5978",
++"0 	c #AA637E",
++"a 	c #AA768C",
++"b 	c #AAA5A6",
++"c 	c #AAA5AD",
++"d 	c #AAAEAD",
++"e 	c #B1466B",
++"f 	c #B14671",
++"g 	c #B16C8C",
++"h 	c #B1768C",
++"i 	c #B19BA6",
++"j 	c #B1AEAD",
++"k 	c #B1B8B3",
++"l 	c #B7336B",
++"m 	c #B74671",
++"n 	c #B75078",
++"o 	c #B7597E",
++"p 	c #B76385",
++"q 	c #B77F99",
++"r 	c #B7AEB3",
++"s 	c #B7B8BA",
++"t 	c #BD336B",
++"u 	c #BD3D6B",
++"v 	c #BD3D71",
++"w 	c #BD507E",
++"x 	c #BD6385",
++"y 	c #BD899F",
++"z 	c #BD9BAD",
++"A 	c #BDA5AD",
++"B 	c #BDAEB3",
++"C 	c #BDB8BA",
++"D 	c #C3336B",
++"E 	c #C34678",
++"F 	c #C36C92",
++"G 	c #C37F99",
++"H 	c #C392A6",
++"I 	c #C3C1C0",
++"J 	c #C3C1C7",
++"K 	c #CA336B",
++"L 	c #CA3D71",
++"M 	c #CA5985",
++"N 	c #CA6C92",
++"O 	c #CAA5B3",
++"P 	c #CACBC7",
++"Q 	c #CACBCD",
++"R 	c #D02164",
++"S 	c #D02A64",
++"T 	c #D0336B",
++"U 	c #D03371",
++"V 	c #D03D78",
++"W 	c #D0507E",
++"X 	c #D0638C",
++"Y 	c #D06C92",
++"Z 	c #D07F9F",
++"` 	c #D0C1C7",
++" .	c #D0CBCD",
++"..	c #D0D4D4",
++"+.	c #D63371",
++"@.	c #D63D78",
++"#.	c #D64678",
++"$.	c #D6598C",
++"%.	c #D67F9F",
++"&.	c #D67FA6",
++"*.	c #D689A6",
++"=.	c #D692AD",
++"-.	c #D69BB3",
++";.	c #D6B8C7",
++">.	c #D6D4DB",
++",.	c #DC467E",
++"'.	c #DC5085",
++").	c #DC6392",
++"!.	c #DC6C99",
++"~.	c #DC7FA6",
++"{.	c #DC89A6",
++"].	c #DC89AD",
++"^.	c #DC9BB3",
++"/.	c #DC9BBA",
++"(.	c #DCA5BA",
++"_.	c #DCDEDB",
++":.	c #E3A5C0",
++"<.	c #E3AEC0",
++"[.	c #E3AEC7",
++"}.	c #E3DEE1",
++"|.	c #E3E7E1",
++"1.	c #E3E7E8",
++"2.	c #E992B3",
++"3.	c #E9AEC7",
++"4.	c #E9B8CD",
++"5.	c #E9C1D4",
++"6.	c #E9CBD4",
++"7.	c #E9CBDB",
++"8.	c #E9E7E8",
++"9.	c #E9E7EE",
++"0.	c #EFCBDB",
++"a.	c #EFD4E1",
++"b.	c #EFDEE1",
++"c.	c #EFDEE8",
++"d.	c #EFE7EE",
++"e.	c #EFF1EE",
++"f.	c #EFF1F5",
++"g.	c #F5DEE8",
++"                                                                ",
++"                      {.).R R W $.W W 2.                        ",
++"                      {.).R R W $.W W 2.                        ",
++"                  Y Y R R R R R R R R R R E E                   ",
++"              [.L R R R S . . . . . . & e R R R K               ",
++"          0.0.R R m m . . ! ! s C I I d 4 ' ' R R V V           ",
++"          0.0.R R m m . . ! ! s C I I d 4 ' ' R R V V           ",
++"          +.+.7 + @ @ c J                 }.}.3 D S S O         ",
++"          R R ; + 4 4                         J p n n [ _.      ",
++"        !.E E % >             a.Z :.:.          [.D D , J       ",
++"        !.E E % >             a.Z :.:.          [.D D , J       ",
++"      M R * * J           [.[.  I _._.            S S b         ",
++"      S R % % _.               . .                S S 1         ",
++"      R D / /           [.|.|.                    S S ( J       ",
++"      R D / /           [.|.|.                    S S ( J       ",
++"      R m c c           ^.C C                   5.n n 4         ",
++"      R m j j           ^.s s                   [.o o b         ",
++"      R S J J             g g                 W Z 1 1           ",
++"      R S J J             g g                 W Z 1 1           ",
++"      R R j j             j j             T T ;.r d d           ",
++"      E R 3 3             P P w ^.N N U L I I 6 d               ",
++"      ~.R R R                 J j B B b 6 j j                   ",
++"      ~.R R R                 J j B B b 6 j j                   ",
++"        X R R 1 >.                >.>.>.                        ",
++"        (.R R p k                                               ",
++"          S S K y                                               ",
++"          S S K y                                               ",
++"           . .u R G G                                           ",
++"              < u R R                                           ",
++"                I * * t K                                       ",
++"                I * * t K                                       ",
++"                      5 4 C C                                   "};
+--- kdelibs-2.2-cvs20010602.orig/pics/hicolor/hi48-app-debian.xpm
++++ kdelibs-2.2-cvs20010602/pics/hicolor/hi48-app-debian.xpm
+@@ -0,0 +1,189 @@
++/* XPM */
++static char * debian_48_xpm[] = {
++"48 48 138 2",
++"  	c None",
++". 	c #6C5964",
++"+ 	c #6C6364",
++"@ 	c #6C6C6B",
++"# 	c #726C6B",
++"$ 	c #726C71",
++"% 	c #787678",
++"& 	c #7F6371",
++"* 	c #7F6C78",
++"= 	c #7F7678",
++"- 	c #7F7F7E",
++"; 	c #85596B",
++"> 	c #857F7E",
++", 	c #858985",
++"' 	c #8B6C78",
++") 	c #8B7F85",
++"! 	c #8B8985",
++"~ 	c #914664",
++"{ 	c #91596B",
++"] 	c #915971",
++"^ 	c #917685",
++"/ 	c #91898C",
++"( 	c #919292",
++"_ 	c #98506B",
++": 	c #986C7E",
++"< 	c #989292",
++"[ 	c #989299",
++"} 	c #9E506B",
++"| 	c #9E6378",
++"1 	c #9E9B99",
++"2 	c #A45978",
++"3 	c #A47F8C",
++"4 	c #A49B9F",
++"5 	c #A4A59F",
++"6 	c #A4A5A6",
++"7 	c #AA466B",
++"8 	c #AA5071",
++"9 	c #AA5978",
++"0 	c #AA637E",
++"a 	c #AA768C",
++"b 	c #AAA5A6",
++"c 	c #AAA5AD",
++"d 	c #AAAEAD",
++"e 	c #B1466B",
++"f 	c #B14671",
++"g 	c #B16C8C",
++"h 	c #B1768C",
++"i 	c #B19BA6",
++"j 	c #B1AEAD",
++"k 	c #B1B8B3",
++"l 	c #B7336B",
++"m 	c #B74671",
++"n 	c #B75078",
++"o 	c #B7597E",
++"p 	c #B76385",
++"q 	c #B77F99",
++"r 	c #B7AEB3",
++"s 	c #B7B8BA",
++"t 	c #BD336B",
++"u 	c #BD3D6B",
++"v 	c #BD3D71",
++"w 	c #BD507E",
++"x 	c #BD6385",
++"y 	c #BD899F",
++"z 	c #BD9BAD",
++"A 	c #BDA5AD",
++"B 	c #BDAEB3",
++"C 	c #BDB8BA",
++"D 	c #C3336B",
++"E 	c #C34678",
++"F 	c #C36C92",
++"G 	c #C37F99",
++"H 	c #C392A6",
++"I 	c #C3C1C0",
++"J 	c #C3C1C7",
++"K 	c #CA336B",
++"L 	c #CA3D71",
++"M 	c #CA5985",
++"N 	c #CA6C92",
++"O 	c #CAA5B3",
++"P 	c #CACBC7",
++"Q 	c #CACBCD",
++"R 	c #D02164",
++"S 	c #D02A64",
++"T 	c #D0336B",
++"U 	c #D03371",
++"V 	c #D03D78",
++"W 	c #D0507E",
++"X 	c #D0638C",
++"Y 	c #D06C92",
++"Z 	c #D07F9F",
++"` 	c #D0C1C7",
++" .	c #D0CBCD",
++"..	c #D0D4D4",
++"+.	c #D63371",
++"@.	c #D63D78",
++"#.	c #D64678",
++"$.	c #D6598C",
++"%.	c #D67F9F",
++"&.	c #D67FA6",
++"*.	c #D689A6",
++"=.	c #D692AD",
++"-.	c #D69BB3",
++";.	c #D6B8C7",
++">.	c #D6D4DB",
++",.	c #DC467E",
++"'.	c #DC5085",
++").	c #DC6392",
++"!.	c #DC6C99",
++"~.	c #DC7FA6",
++"{.	c #DC89A6",
++"].	c #DC89AD",
++"^.	c #DC9BB3",
++"/.	c #DC9BBA",
++"(.	c #DCA5BA",
++"_.	c #DCDEDB",
++":.	c #E3A5C0",
++"<.	c #E3AEC0",
++"[.	c #E3AEC7",
++"}.	c #E3DEE1",
++"|.	c #E3E7E1",
++"1.	c #E3E7E8",
++"2.	c #E992B3",
++"3.	c #E9AEC7",
++"4.	c #E9B8CD",
++"5.	c #E9C1D4",
++"6.	c #E9CBD4",
++"7.	c #E9CBDB",
++"8.	c #E9E7E8",
++"9.	c #E9E7EE",
++"0.	c #EFCBDB",
++"a.	c #EFD4E1",
++"b.	c #EFDEE1",
++"c.	c #EFDEE8",
++"d.	c #EFE7EE",
++"e.	c #EFF1EE",
++"f.	c #EFF1F5",
++"g.	c #F5DEE8",
++"                                                                                                ",
++"                                        3.3.3.                                                  ",
++"                                5.{.).K R R K W $.W W W $.2.                                    ",
++"                                5.{.).K R R K W $.W W W $.2.                                    ",
++"                            ].].U R R R R R R R R R R R R R @.'.Y Y c.                          ",
++"                            Y Y R R R R R R R R R R R R R R R R E E a.                          ",
++"                      [.L R R R R R S _ . . . . . . . . @ & e R R R R R K -.                    ",
++"                    =.L R R R R l ~ { . + + $ % % - - - % $ # ] D D R R R K                     ",
++"                0.0.S R R R m m . . . $ ! ! 6 s C I I I C d 4 / ' ' L R R R V V                 ",
++"                0.0.S R R R m m . . . $ ! ! 6 s C I I I C d 4 / ' ' L R R R V V                 ",
++"                4.4.R R R R 8 8 . . . = < < j P Q Q Q Q Q s j < = = E R R R T T [.              ",
++"              4.+.+.R 7 + . @ @ ! c J }.                        }.}.I 3 D R S S #.O             ",
++"              X R R v ; + $ 4 4 J                                     J p R n n | [ _.          ",
++"            ~.R L L ^ $ = 6                   c./.<.4.4.a.              (.S t t # ! J           ",
++"            !.R E E ) % > j                   a.Z =.:.:.5.              [.T D D @ , J           ",
++"            !.R E E ) % > j                   a.Z =.:.:.5.              [.T D D @ , J           ",
++"          ^.R R : : = 4                 -.-.*.7.                          @.S S 2 <             ",
++"          M R e * * ! J               5.[.[.    I I _._.                  ,.S S 0 b             ",
++"          S R } % % 6 _.              Z        . .                        X S S 0 1             ",
++"          R R } % % d }.              N     }.Q ..                        N S S 0 [             ",
++"          R D ' / / ..              [.*.|.|.                              N S S | ( J           ",
++"          R D ' / / ..              [.*.|.|.                              N S S | ( J           ",
++"          R e ) 4 4                 ^.W P P                               M D D > ( >.          ",
++"          R m / c c                 ^.L C C                             5.+.n n ) 4             ",
++"          R m / j j                 ^.L s s                             [.T o o / b             ",
++"          R v [ s s                 0.V H H J                         [.W z 1 1 1 J             ",
++"          R S h J J                   =.g g C                       :.W Z j 1 1 k               ",
++"          R S h J J                   =.g g C                       :.W Z j 1 1 k               ",
++"          R R 0 r r                   ` i i j                   ).).#.-.r 6 b b >.              ",
++"          R R 9 j j                   P j j j                 [.T T +.;.r 5 d d }.              ",
++"          E R L 3 3                     P P q w ^.&.N N L U L N I I j 6 d J                     ",
++"          M R K m m :.                      ..y H *.Z Z -.z A j j j 6 k >.                      ",
++"          ~.R R R R F                         J j i B B j b 6 5 j j P                           ",
++"          ~.R R R R F                         J j i B B j b 6 5 j j P                           ",
++"          ].R R R R x ..                      P k d s s 6 5 5 5 k k ..                          ",
++"            X R R R K 1 >.                          >.>.>.>.                                    ",
++"            (.T R R R p k                                                                       ",
++"              N R R R U i                                                                       ",
++"              G S S R K y                                                                       ",
++"              G S S R K y                                                                       ",
++"                r r S R R M                                                                     ",
++"                 . .g u R R G G                                                                 ",
++"                    s < u R R R X                                                               ",
++"                    J [ m R R R #.                                                              ",
++"                        I < * * f t K %.                                                        ",
++"                        I < * * f t K %.                                                        ",
++"                          ..1 1 ) ) a x ^.^.6.g.                                                ",
++"                                s 5 4 b C C `                                                   "};
+--- kdelibs-2.2-cvs20010602.orig/admin/acinclude.m4.in
++++ kdelibs-2.2-cvs20010602/admin/acinclude.m4.in
+@@ -2204,7 +2201,7 @@
        fi
      else
        if test "$GCC" = "yes"; then
@@ -20,7 +637,7 @@
        else
          CFLAGS=""
        fi
-@@ -2225,7 +2225,7 @@
+@@ -2313,7 +2309,7 @@
        fi
      else
        if test "$GXX" = "yes"; then
@@ -29,8 +646,8 @@
        fi
        if test "$kde_use_debug_define" = "yes"; then
           CXXFLAGS="$CXXFLAGS -DNDEBUG"
---- kdelibs-2.2-cvs20010507.orig/admin/config.guess
-+++ kdelibs-2.2-cvs20010507/admin/config.guess
+--- kdelibs-2.2-cvs20010602.orig/admin/config.guess
++++ kdelibs-2.2-cvs20010602/admin/config.guess
 @@ -3,7 +3,7 @@
  #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
  #   Free Software Foundation, Inc.
@@ -180,8 +797,8 @@
  	# If we were able to find `uname', then EMX Unix compatibility
  	# is probably installed.
  	echo ${UNAME_MACHINE}-pc-os2-emx
---- kdelibs-2.2-cvs20010507.orig/admin/config.sub
-+++ kdelibs-2.2-cvs20010507/admin/config.sub
+--- kdelibs-2.2-cvs20010602.orig/admin/config.sub
++++ kdelibs-2.2-cvs20010602/admin/config.sub
 @@ -3,7 +3,7 @@
  #   Copyright (C) 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001
  #   Free Software Foundation, Inc.
