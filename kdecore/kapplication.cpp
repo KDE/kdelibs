@@ -862,6 +862,10 @@ void KApplication::disableSessionManagement() {
   bSessionManagement = false;
 }
 
+void KApplication::enableSessionManagement() {
+  bSessionManagement = true;
+}
+
 
 bool KApplication::requestShutDown(
     ShutdownConfirm confirm, ShutdownType sdtype, ShutdownMode sdmode )

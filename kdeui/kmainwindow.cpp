@@ -531,8 +531,6 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
 
         if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
             if ( queryExit() ) {            // Yes, Quit app?
-                // We saved the toolbars already
-                disconnect(kapp, SIGNAL(shutDown()), this, SLOT(shuttingDown()));
                 kapp->deref();             // ...and quit aplication.
             }  else {
                 // cancel closing, it's stupid to end up with no windows at all....
@@ -808,6 +806,11 @@ void KMainWindow::restoreWindowSize( KConfig * config )
 bool KMainWindow::initialGeometrySet() const
 {
     return d->care_about_geometry;
+}
+
+void KMainWindow::ignoreInitialGeometry()
+{
+    d->care_about_geometry = false;
 }
 
 void KMainWindow::setSettingsDirty()

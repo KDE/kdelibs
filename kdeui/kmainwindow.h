@@ -451,6 +451,12 @@ public:
      * and this is the first window created (the one on which this option applies)
      */
     bool initialGeometrySet() const;
+    
+    /**
+     * @internal
+     * Used from Konqueror when reusing the main window.
+     */
+    void ignoreInitialGeometry();
 
     /**
      * @return the size the mainwindow should have so that the central

@@ -205,6 +205,14 @@ public:
   void disableSessionManagement();
 
   /**
+   * Enables again session management for this application, formerly
+   * disabled by calling @ref disableSessionManagement(). You usually
+   * shouldn't call this function, as the session management is enabled
+   * by default.
+   */
+  void enableSessionManagement();
+  
+  /**
    * The possible values for the @p confirm parameter of requestShutDown().
    */
   enum ShutdownConfirm {
