@@ -244,16 +244,14 @@ void KPassivePopup::moveNear( QRect target )
     if ( (y + h) > r.height() )
 	y = r.height() - h;
 
+    if ( (x + w) > r.width() )
+	x = r.width() - w;
+
     if ( y < 0 )
         y = 0;
 
     if ( x < 0 )
 	x = 0;
-
-#ifdef OLD_BITS
-    if ( (x - w) >= 0  )
-	x = x - w;
-#endif
 
     move( x, y );
 }
