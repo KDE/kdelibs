@@ -1185,6 +1185,12 @@ void KHTMLWidget::viewportMousePressEvent( QMouseEvent *_mouse )
     {
     	pressed = TRUE;
     }
+
+    if( _mouse->button() == RightButton )
+    {
+	QPoint p(xm, ym);
+	emit popupMenu(m_strSelectedURL, p);
+    }
 #if 0
 	// deselect all currently selected text
 	if ( bIsTextSelected )
