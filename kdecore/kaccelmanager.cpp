@@ -161,8 +161,10 @@ KAcceleratorManagerPrivate::Item::~Item()
 
 void KAcceleratorManagerPrivate::Item::addChild(Item *item)
 {
-    if (!m_children)
+    if (!m_children) {
         m_children = new ItemList;
+	m_children->setAutoDelete(true);
+    }
 
     m_children->append(item);
 }
