@@ -442,7 +442,7 @@ ProgressItem* UIServer::findItem( int id )
 
 void UIServer::setItemVisible( ProgressItem * item, bool visible )
 {
-  kdDebug() << "setItemVisible " << visible << endl;
+  kdDebug(7024) << "setItemVisible " << visible << endl;
   item->setVisible( visible );
   // Check if we were the last one to be visible
   // or the first one
@@ -452,17 +452,18 @@ void UIServer::setItemVisible( ProgressItem * item, bool visible )
     for ( ; it.current(); ++it )
       if ( ((ProgressItem*)it.current())->isVisible() )
       {
-        kdDebug() << "show " << endl;
+        kdDebug(7024) << "show " << endl;
         listProgress->show();
         return;
       }
-    kdDebug() << "hide " << endl;
+    kdDebug(7024) << "hide " << endl;
     listProgress->hide();
   }
 }
 
 void UIServer::jobFinished( int id )
 {
+  kdDebug(7024) << "UIServer::jobFinished id=" << id << endl;
   ProgressItem *item = findItem( id );
 
   // remove item from the list and delete the corresponding defaultprogress
@@ -564,7 +565,7 @@ void UIServer::infoMessage( int id, const QString & msg )
 
 void UIServer::canResume( int id, unsigned long offset )
 {
-  kdDebug(7024) << "UIServer::canResume " << id << " " << offset << endl;
+  //kdDebug(7024) << "UIServer::canResume " << id << " " << offset << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -574,7 +575,7 @@ void UIServer::canResume( int id, unsigned long offset )
 
 void UIServer::copying( int id, KURL from, KURL to )
 {
-  kdDebug(7024) << "UIServer::copying " << id << " " << from.url() << "  " << to.url() << endl;
+  //kdDebug(7024) << "UIServer::copying " << id << " " << from.url() << "  " << to.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -584,7 +585,7 @@ void UIServer::copying( int id, KURL from, KURL to )
 
 void UIServer::moving( int id, KURL from, KURL to )
 {
-  kdDebug(7024) << "UIServer::moving " << id << " " << from.url() << "  " << to.url() << endl;
+  //kdDebug(7024) << "UIServer::moving " << id << " " << from.url() << "  " << to.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -594,7 +595,7 @@ void UIServer::moving( int id, KURL from, KURL to )
 
 void UIServer::deleting( int id, KURL url )
 {
-  kdDebug(7024) << "UIServer::deleting " << id << " " << url.url() << endl;
+  //kdDebug(7024) << "UIServer::deleting " << id << " " << url.url() << endl;
 
   ProgressItem *item = findItem( id );
   if ( item ) {
@@ -657,6 +658,7 @@ void UIServer::closeEvent( QCloseEvent * ){
 
 
 void UIServer::slotJobCanceled( ProgressItem *item ) {
+  kdDebug(7024) << "UIServer::slotJobCanceled appid=" << item->appId() << " jobid=" << item->jobId() << endl;
   // kill the corresponding job
   killJob( item->appId(), item->jobId() );
 
@@ -814,9 +816,9 @@ int UIServer::messageBox( int progressId, int type, const QString &text, const Q
                         KSSLCertificate::KSSLValidation(meta["ssl_cert_state"].toInt()),
                         meta["ssl_good_from"],
                         meta["ssl_good_until"] );
-            kdDebug() << "Showing SSL Info dialog" << endl;
+            kdDebug(7024) << "Showing SSL Info dialog" << endl;
             kid->exec();
-            kdDebug() << "SSL Info dialog closed" << endl;
+            kdDebug(7024) << "SSL Info dialog closed" << endl;
             return 1; // whatever
         }
         default:
@@ -923,7 +925,7 @@ int main(int argc, char **argv)
 
     if (!KUniqueApplication::start())
     {
-      kdDebug() << "kio_uiserver is already running!\n" << endl;
+      kdDebug(7024) << "kio_uiserver is already running!" << endl;
       return (0);
     }
 
