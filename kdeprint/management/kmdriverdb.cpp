@@ -70,8 +70,14 @@ void KMDriverDB::init(QWidget *parent)
 {
 	QFileInfo	dbfi(dbFile());
 	QString		dirname = KMFactory::self()->manager()->driverDirectory();
+	QStringList	dbDirs = QStringList::split(':', dirname, false);
+	bool	createflag(false);
 
-	if (!m_creator->checkDriverDB(dirname,dbfi.lastModified()))
+	for (QStringList::ConstIterator it=dbDirs.begin(); it!=dbDirs.end() && !createflag; ++it)
+		if (!m_creator->checkDriverDB(*it, dbfi.lastModified()))
+			createflag = true;
+
+	if (createflag)
 	{
 		// starts DB creation and wait for creator signal
 		if (!m_creator->createDriverDB(dirname,dbfi.absFilePath(),parent))

@@ -99,11 +99,19 @@ void KMWDriverTest::initPrinter(KMPrinter *p)
 	m_driver = 0;
 
 	QString	drfile = p->option("kde-driver");
+	bool	checkDriver(true);
 	if (!drfile.isEmpty() && drfile != "raw")
 		m_driver = KMFactory::self()->manager()->loadFileDriver(drfile);
 	else if (p->dbEntry() != NULL)
 		m_driver = KMFactory::self()->manager()->loadDbDriver(p->dbEntry());
+	else
+		checkDriver = false;
 
+	if (checkDriver && !m_driver)
+	{
+		KMessageBox::error(this, i18n("<qt>Unable to load the requested driver:<p>%1</p></qt>").arg(KMManager::self()->errorMsg()));
+		KMManager::self()->setErrorMsg(QString::null);
+	}
 	m_settings->setEnabled((m_driver != 0));
 }
 

@@ -29,6 +29,7 @@
 #include <klocale.h>
 #include <kapplication.h>
 #include <kstandarddirs.h>
+#include <kdebug.h>
 
 KMDBCreator::KMDBCreator(QObject *parent, const char *name)
 : QObject(parent,name)
@@ -83,10 +84,12 @@ bool KMDBCreator::createDriverDB(const QString& dirname, const QString& filename
 	m_firstflag = true;
 
 	// start the child process
+	kdDebug() << "1" << endl;
 	m_proc.clearArguments();
 	QString	exestr = KMFactory::self()->manager()->driverDbCreationProgram();
-	m_proc.setExecutable(exestr);
-	m_proc << dirname << filename;
+	kdDebug() << "2" << endl;
+	m_proc << exestr << dirname << filename;
+	kdDebug() << "3" << endl;
 	QString	msg;
 	if (exestr.isEmpty())
 		msg = i18n("No executable defined for the creation of the "
