@@ -109,6 +109,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget, const char *widgetName,
     // We probably need to use m_extension to get the urlArgs in openURL...
 
     m_part = 0L;
+    m_isHTMLPart = false;
     m_job = 0L;
     m_lineParser = new KLineParser;
     m_tempFile = 0L;
@@ -242,6 +243,9 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 {
                     Q_ASSERT( m_nextMimeType.isNull() );
                     m_nextMimeType = QString::fromLatin1( line.data() + 14 ).stripWhiteSpace();
+                    int semicolon = m_nextMimeType.find( ';' );
+                    if ( semicolon != -1 )
+                        m_nextMimeType = m_nextMimeType.left( semicolon );
                     kdDebug() << "m_nextMimeType=" << m_nextMimeType << endl;
                 }
                 // Empty line, end of headers (if we had any header line before)
