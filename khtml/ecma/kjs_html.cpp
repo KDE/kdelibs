@@ -36,6 +36,7 @@
 #include <dom/html_misc.h>
 #include <dom/html_table.h>
 #include <dom/html_object.h>
+#include <dom/dom_node.h>
 #include <dom_string.h>
 #include <dom_exception.h>
 
@@ -1075,7 +1076,16 @@ void KJS::HTMLElement::tryPut(const UString &p, const KJSO& v)
       DOM::HTMLOptionElement option = element;
       // read-only: form
       if (p == "defaultSelected")      { option.setDefaultSelected(v.toBoolean().value()); return; }
-      // read-only: text
+      // read-only: text  <--- According to the DOM, but JavaScript and JScript both allow changes.
+      // So, we'll do it here and not add it to our DOM headers.
+      else if (p == "text")            { DOM::NodeList nl(option.childNodes());
+                                         for (unsigned int i = 0; i < nl.length(); i++) {
+                                             if (nl.item(i).nodeType() == DOM::Node::TEXT_NODE) {
+                                                 static_cast<DOM::Text>(nl.item(i)).setData(str);
+                                                 return;
+                                             }
+                                         }
+                                         return;  }
       // read-only: index
       else if (p == "disabled")        { option.setDisabled(v.toBoolean().value()); return; }
       else if (p == "label")           { option.setLabel(str); return; }
