@@ -317,6 +317,11 @@ bool KSocket::initSockaddr (ksockaddr_in *server_name, const char *hostname, uns
   if (cachedHostname && (strcmp(hostname, cachedHostname) == 0))
   {
      memcpy( server_name, cachedServerName, sizeof(ksockaddr_in));
+#ifdef INET6
+     server_name->sin6_port = htons( port );
+#else
+     get_sin_pport(server_name) = htons( port );
+#endif
      return true;
   }
 
