@@ -460,3 +460,5 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * general: improved feedback to user when creating driver DB
   * CUPS: speed optimization when creating driver DB (simple hack to avoid
     to parse the entire PPD file each time => much better)
+  * kdeprintfax: added "-n" and "-f %email" by default for the Hylafax
+    system

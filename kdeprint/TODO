@@ -11,8 +11,6 @@ BUGS
   use with gpr)
 
 - kdeprintfax improvement related to Hylafax:
-	. -f %name doesn't make sense, it should be -f %email instead
-	. add -n to the default command
 	. think about possibility to schedule the fax sending using
 	  the -a <time> flag
 	. add the possibility to add fax numbers to the ab instead of
