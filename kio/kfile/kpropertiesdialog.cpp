@@ -176,6 +176,7 @@ KPropertiesDialog::KPropertiesDialog (KFileItemList _items,
                                       QWidget* parent, const char* name,
                                       bool modal, bool autoShow)
   : KDialogBase (KDialogBase::Tabbed,
+		 _items.count()>1 ? i18n( "Properties for %1 Selected Items" ).arg(_items.count()) :
 		 i18n( "Properties for %1" ).arg(KIO::decodeFileName(_items.first()->url().fileName())),
                  KDialogBase::Ok | KDialogBase::Cancel, KDialogBase::Ok,
                  parent, name, modal)
