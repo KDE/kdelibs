@@ -889,10 +889,12 @@ Object Error::createObject(ErrorType e, const char *m, int l)
       estruct++;
   }
 
+#ifndef NDEBUG
   if (l >= 0)
       fprintf(stderr, "JS: %s at line %d.\n", estr, l);
   else
       fprintf(stderr, "JS: %s.\n", estr);
+#endif  
   
   return err;
 }

@@ -223,7 +223,7 @@ namespace KJS {
   };
 
   class KJScriptImp {
-    friend class KJScript;
+    friend class ::KJScript;
     friend class Lexer;
     friend class Context;
     friend class Global;

@@ -460,7 +460,9 @@ bool KJScriptImp::evaluate(const QChar *code, unsigned int length, Imp *thisV)
   int parseError = kjsyyparse();
 
   if (parseError) {
+#ifndef NDEBUG      
     fprintf(stderr, "JavaScript parse error.\n");
+#endif    
     /* TODO: either clear everything or keep previously
        parsed function definitions */
     //    Node::deleteAllNodes();
