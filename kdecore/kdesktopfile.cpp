@@ -59,17 +59,25 @@ QString KDesktopFile::locateLocal(const QString &path)
   QString local;
   if (path.endsWith(".directory"))
   {
-    if (!path.startsWith("/"))
+    local = path;
+    if (local.startsWith("/"))
     {
-      local = ::locateLocal("apps", path); // Relative to apps
+      // Relative wrt apps?
+      local = KGlobal::dirs()->relativeLocation("apps", path);
+    }
+
+    if (!local.startsWith("/"))
+    {
+      local = ::locateLocal("apps", local); // Relative to apps
     }
     else
     {
       // XDG Desktop menu items come with absolute paths, we need to 
       // extract their relative path and then build a local path.
-      local = KGlobal::dirs()->relativeLocation("xdgdata-dirs", path);
+      local = KGlobal::dirs()->relativeLocation("xdgdata-dirs", local);
       if (local.startsWith("/"))
       {
+        // Hm, that didn't work...
         // What now? Use filename only and hope for the best.
         local = path.mid(path.findRev('/')+1);
       }
