@@ -185,7 +185,6 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
           this, SLOT( updateFallbackSize()));
       connect( d->selection, SIGNAL( lostOwner()),
           this, SLOT( updateFallbackSize()));
-      kapp->installX11EventFilter( this );
 #endif
       d->frameStyle = frameStyle();
       d->lineWidth = lineWidth();
@@ -207,7 +206,6 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
 #if defined Q_WS_X11 && ! defined K_WS_QTONLY
       delete d->selection;
       d->selection = NULL;
-      kapp->removeX11EventFilter( this );
 #endif
       setBackgroundMode( PaletteButton );
       setFrameStyle( d->frameStyle );
