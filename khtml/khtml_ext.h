@@ -87,6 +87,9 @@ public:
                        const QString &filter = QString::null, long cacheId = 0,
                        const QString &suggestedFilename = QString::null );
 
+  static void saveURL( const KURL &url, const KURL &destination,
+                       const QMap<QString, QString> &metaData = KIO::MetaData(),
+                       long cacheId = 0 );
 private slots:
   void slotSaveLinkAs();
   void slotSaveImageAs();

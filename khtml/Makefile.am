@@ -23,7 +23,7 @@ SUBDIRS = misc dom css xml html rendering pics $(DOJAVA) . ecma
 
 lib_LTLIBRARIES = libkhtml.la libkhtmlimage.la
 libkhtml_la_SOURCES = khtmlview.cpp khtml_part.cpp khtml_run.cpp khtml_factory.cpp khtml_settings.cc \
-		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp
+		      khtml_events.cpp khtml_find.cpp khtml_ext.cpp khtml_pagecache.cpp khtml_iface.skel khtml_iface.cc
 
 libkhtml_la_METASOURCES = AUTO
 

@@ -90,6 +90,8 @@ using namespace DOM;
 #include <qmetaobject.h>
 #include <private/qucomextra_p.h>
 
+#include "khtml_iface.h"
+
 namespace khtml
 {
   struct ChildFrame
@@ -127,6 +129,8 @@ public:
 
 typedef FrameList::ConstIterator ConstFrameIt;
 typedef FrameList::Iterator FrameIt;
+
+static int khtml_part_dcop_counter = 0;
 
 class KHTMLPartPrivate
 {
@@ -203,6 +207,8 @@ public:
     m_focusNodeRestored = false;
     m_opener = 0;
     m_openedByJS = false;
+    m_dcopobject = 0;
+    m_dcop_counter = ++khtml_part_dcop_counter;
   }
   ~KHTMLPartPrivate()
   {
@@ -244,6 +250,9 @@ public:
   bool m_metaRefreshEnabled :1;
   bool m_bPluginsOverride :1;
   int m_frameNameId;
+  int m_dcop_counter;
+  DCOPObject *m_dcopobject;
+
 #ifndef Q_WS_QWS
   KJavaAppletContext *m_javaContext;
 #endif
@@ -526,6 +535,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( &d->m_redirectionTimer, SIGNAL( timeout() ),
            this, SLOT( slotRedirect() ) );
 
+  d->m_dcopobject = new KHTMLPartIface(this);
 }
 
 KHTMLPart::~KHTMLPart()
@@ -2351,19 +2361,22 @@ void KHTMLPart::slotViewFrameSource()
   (void) KRun::runURL( url, QString::fromLatin1("text/plain") );
 }
 
-void KHTMLPart::slotSaveBackground()
+KURL KHTMLPart::backgroundURL() const
 {
   // ### what about XML documents? get from CSS?
   if (!d->m_doc || !d->m_doc->isHTMLDocument())
-    return;
+    return KURL();
 
   QString relURL = static_cast<HTMLDocumentImpl*>(d->m_doc)->body()->getAttribute( ATTR_BACKGROUND ).string();
 
-  KURL backgroundURL( m_url, relURL );
+  return KURL( m_url, relURL );
+}
 
+void KHTMLPart::slotSaveBackground()
+{
   KIO::MetaData metaData;
   metaData["referrer"] = d->m_referrer;
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n("Save background image as"), backgroundURL, metaData );
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n("Save background image as"), backgroundURL(), metaData );
 }
 
 void KHTMLPart::slotSaveDocument()
@@ -4366,6 +4379,18 @@ void KHTMLPart::preloadStyleSheet(const QString &url, const QString &stylesheet)
 void KHTMLPart::preloadScript(const QString &url, const QString &script)
 {
     khtml::Cache::preloadScript(url, script);
+}
+
+QCString KHTMLPart::dcopObjectId() const
+{
+  QCString id;
+  id.sprintf("html-widget%d", d->m_dcop_counter);
+  return id;
+}
+
+long KHTMLPart::cacheId() const
+{
+  return d->m_cacheId;
 }
 
 using namespace KParts;

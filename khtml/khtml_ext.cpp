@@ -430,47 +430,54 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
   if ( dlg->exec() )
   {
     KURL destURL( dlg->selectedURL() );
-    if ( !destURL.isMalformed() )
-    {
-      bool saved = false;
-      if (KHTMLPageCache::self()->isValid(cacheId))
-      {
-        if (destURL.isLocalFile())
-        {
-          KSaveFile destFile(destURL.path());
-          if (destFile.status() == 0)
-          {
-            KHTMLPageCache::self()->saveData(cacheId, destFile.dataStream());
-            saved = true;
-          }
-        }
-        else
-        {
-          // save to temp file, then move to final destination.
-          KTempFile destFile;
-          if (destFile.status() == 0)
-          {
-            KHTMLPageCache::self()->saveData(cacheId, destFile.dataStream());
-            destFile.close();
-            KURL url2 = KURL();
-            url2.setPath(destFile.name());
-            KIO::move(url2, destURL);
-            saved = true;
-          }
-        }
-      }
-      if(!saved)
-      {
-        KIO::Job *job = KIO::copy( url, destURL );
-#if KDE_VERSION > 290
-        job->setMetaData(metadata);
-        job->setAutoErrorHandlingEnabled( true );
-#endif
-      }
-    }
+    saveURL(url, destURL, metadata, cacheId);
   }
 
   delete dlg;
+}
+
+void KHTMLPopupGUIClient::saveURL( const KURL &url, const KURL &destURL,
+                                   const QMap<QString, QString> &metadata,
+                                   long cacheId )
+{
+    if ( !destURL.isMalformed() )
+    {
+        bool saved = false;
+        if (KHTMLPageCache::self()->isValid(cacheId))
+        {
+            if (destURL.isLocalFile())
+            {
+                KSaveFile destFile(destURL.path());
+                if (destFile.status() == 0)
+                {
+                    KHTMLPageCache::self()->saveData(cacheId, destFile.dataStream());
+                    saved = true;
+                }
+            }
+            else
+            {
+                // save to temp file, then move to final destination.
+                KTempFile destFile;
+                if (destFile.status() == 0)
+                {
+                    KHTMLPageCache::self()->saveData(cacheId, destFile.dataStream());
+                    destFile.close();
+                    KURL url2 = KURL();
+                    url2.setPath(destFile.name());
+                    KIO::move(url2, destURL);
+                    saved = true;
+                }
+            }
+        }
+        if(!saved)
+        {
+            KIO::Job *job = KIO::copy( url, destURL );
+#if KDE_VERSION > 290
+            job->setMetaData(metadata);
+            job->setAutoErrorHandlingEnabled( true );
+#endif
+        }
+    }
 }
 
 KHTMLPartBrowserHostExtension::KHTMLPartBrowserHostExtension( KHTMLPart *part )

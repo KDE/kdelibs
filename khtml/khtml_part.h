@@ -154,6 +154,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class HTMLTokenizer;
   friend class XMLTokenizer;
   friend class khtml::RenderWidget;
+  friend class KHTMLPartIface;
 
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
@@ -161,6 +162,8 @@ class KHTMLPart : public KParts::ReadOnlyPart
   Q_PROPERTY( bool dndEnabled READ dndEnabled WRITE setDNDEnabled )
   Q_PROPERTY( bool pluginsEnabled READ pluginsEnabled WRITE setPluginsEnabled )
   Q_PROPERTY( bool onlyLocalReferences READ onlyLocalReferences WRITE setOnlyLocalReferences )
+  Q_PROPERTY( QCString dcopObjectId READ dcopObjectId )
+
 public:
   enum GUIProfile { DefaultGUI, BrowserViewGUI /* ... */ };
 
@@ -353,6 +356,10 @@ public:
   QString baseTarget() const;
 #endif
 
+  /**
+   * Returns the URL for the background Image (used by save background)
+   */
+  KURL backgroundURL() const;
 
   /**
    * Schedules a redirection after @p delay seconds.
@@ -804,6 +811,8 @@ public slots:
    */
   void stopAnimations();
 
+  QCString dcopObjectId() const;
+
 private slots:
 
   /**
@@ -1034,6 +1043,7 @@ private:
   KJSProxy *jScript();
 
   KHTMLPart *opener();
+  long cacheId() const;
   void setOpener(KHTMLPart *_opener);
   bool openedByJS();
   void setOpenedByJS(bool _openedByJS);
