@@ -896,7 +896,7 @@ bool HTTPProtocol::http_open()
     header += "Pragma: no-cache\r\n"; /* for HTTP/1.0 caches */
     header += "Cache-control: no-cache\r\n"; /* for HTTP >=1.1 caches */
   }
-  
+
   if (m_bMustRevalidate) { /* conditional get */
     if (!m_etag.isEmpty())
        header += "If-None-Match: "+m_etag+"\r\n";
@@ -1192,7 +1192,7 @@ bool HTTPProtocol::readHeader()
         m_strMimeType = m_strMimeType.left( semicolonPos );
     }
 
-    // 
+    //
     else if (strncasecmp(buffer, "Date:", 5) == 0) {
       dateHeader = KRFCDate::parseDate(trimLead(buffer+5));
     }
@@ -1220,7 +1220,7 @@ bool HTTPProtocol::readHeader()
     else if (strncasecmp(buffer, "Warning:", 8) == 0) {
       warning(trimLead(buffer + 8));
     }
-    
+
     // Cache management (HTTP 1.0)
     else if (strncasecmp(buffer, "Pragma: no-cache", 16) == 0) {
       m_bCachedWrite = false; // Don't put in cache
@@ -1398,7 +1398,7 @@ bool HTTPProtocol::readHeader()
         maxAge = 0;
      expireDate = time(0) + maxAge;
   }
-  
+
   // DONE receiving the header!
   if (!cookieStr.isEmpty())
   {
@@ -1747,10 +1747,10 @@ void HTTPProtocol::buildURL()
 static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
 {
   HTTPProtocol::CacheControl _default = HTTPProtocol::CC_Verify;
-  if (cacheControl.isEmpty()) 
+  if (cacheControl.isEmpty())
      return _default;
-  
-  QString tmp = cacheControl.lower();   
+
+  QString tmp = cacheControl.lower();
   if (tmp == "cacheonly")
      return HTTPProtocol::CC_CacheOnly;
   if (tmp == "cache")
@@ -1759,8 +1759,8 @@ static HTTPProtocol::CacheControl parseCacheControl(const QString &cacheControl)
      return HTTPProtocol::CC_Verify;
   if (tmp == "reload")
      return HTTPProtocol::CC_Reload;
-     
-  return _default; 
+
+  return _default;
 }
 
 // Returns only the file size, that's all kio_http can guess.
@@ -2779,8 +2779,17 @@ void HTTPProtocol::reparseConfiguration()
   m_bUseCache = KProtocolManager::useCache();
   if (m_bUseCache)
   {
-     m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
-     m_maxCacheAge = KProtocolManager::maxCacheAge();
+    m_strCacheDir = KGlobal::dirs()->saveLocation("data", "kio_http/cache");
+    m_maxCacheAge = KProtocolManager::maxCacheAge();
   }
 
+  // Define language and charset settings from KLocale (David)
+  QStringList languageList = KGlobal::locale()->languageList();
+  QStringList::Iterator c = languageList.find( QString::fromLatin1("C") );
+  // HTTP servers don't understand "C", they understand "en" :)
+  if ( c != languageList.end() )
+    (*c) = QString::fromLatin1("en");
+  m_strLanguages = languageList.join( " " );
+  kdDebug() << "Languages list set to " << m_strLanguages << endl;
+  m_strCharsets = QString::fromLatin1("utf-8 ") + KGlobal::locale()->charset();
 }
