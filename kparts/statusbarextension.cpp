@@ -136,7 +136,7 @@ KStatusBar * StatusBarExtension::statusBar() const
     QWidget* w = static_cast<KParts::ReadOnlyPart*>(parent())->widget();
     KMainWindow* mw = dynamic_cast<KMainWindow *>( w->topLevelWidget() );
     if ( mw )
-      const_cast<StatusBarExtension *>(this)->m_statusBar = mw->statusBar();
+      m_statusBar = mw->statusBar();
   }
   return m_statusBar;
 }

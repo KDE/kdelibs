@@ -105,7 +105,7 @@ namespace KParts
     private:
 
      QValueList<StatusBarItem> m_statusBarItems; // Our statusbar items
-     KStatusBar* m_statusBar;
+     mutable KStatusBar* m_statusBar;
 
      // for future extensions
      class StatusBarExtensionPrivate;
