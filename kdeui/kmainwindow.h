@@ -543,6 +543,9 @@ public:
         /**
          * auto-saves (and loads) the toolbar/menubar/statusbar settings and
          * window size using the default name.  @see setAutoSaveSettings
+         * Make sure to call resize() <b>before</b> this setupGUI or else
+         * the size wont be saved properly and whatever is saved will be
+         * ignored.
          */
         Save = 8,
 
@@ -559,6 +562,9 @@ public:
      * off if desired through the params or if the prereqs don't exists.
      *
      * Typically this function replaces createGUI().
+     *
+     * Make sure to call resize() before this function when the option
+     * save is used.
      *
      * @see StandardWindowOptions
      *
