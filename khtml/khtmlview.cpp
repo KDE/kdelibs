@@ -225,12 +225,13 @@ public:
     void adjustScroller(QWidget *view, ScrollDirection direction, ScrollDirection oppositedir)
     {
         static const struct { int msec, pixels; } timings [] = {
-            {100,1}, {50,1}, {30,1}, {20,1}, {20,2}, {20,4}, {20,6}, {0,0}
+            {320,1}, {224,1}, {160,1}, {112,1}, {80,1}, {56,1}, {40,1},
+            {28,1}, {20,1}, {20,2}, {20,3}, {20,4}, {20,6}, {20,8}, {0,0}
         };
         if (!scrollTimerId ||
             (scrollDirection != direction &&
              scrollDirection != oppositedir)) {
-            scrollTiming = 2;
+            scrollTiming = 6;
             scrollBy = timings[scrollTiming].pixels;
             scrollDirection = direction;
             newScrollTimer(view, view->startTimer(timings[scrollTiming].msec));
@@ -242,8 +243,7 @@ public:
             if (scrollTiming) {
                 scrollBy = timings[--scrollTiming].pixels;
                 newScrollTimer(view, view->startTimer(timings[scrollTiming].msec));
-            } else
-                newScrollTimer(view, 0);
+            }
         }
     }
 
