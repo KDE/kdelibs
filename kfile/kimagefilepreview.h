@@ -39,7 +39,7 @@ class KImageFilePreview : public KPreviewWidgetBase
 	protected slots:
 		void showImage();
 		void updatePreview();
-		void toggleAuto(const bool);
+		void toggleAuto(bool);
 
 	protected:
 		virtual void resizeEvent(QResizeEvent *e);

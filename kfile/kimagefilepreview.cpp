@@ -80,7 +80,7 @@ void KImageFilePreview::updatePreview()
     timer->start( 0, true );
 }
 
-void KImageFilePreview::toggleAuto( const bool a )
+void KImageFilePreview::toggleAuto( bool a )
 {
     autoMode = a;
     if ( autoMode )
