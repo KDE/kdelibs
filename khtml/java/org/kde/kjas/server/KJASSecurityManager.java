@@ -73,29 +73,31 @@ public class KJASSecurityManager extends SecurityManager
             Class [] cls = getClassContext();
             for (int i = 1; i < cls.length; i++) {
                 Object[] objs = cls[i].getSigners();
-                if (objs != null && objs.length > 0)
+                if (objs != null && objs.length > 0) {
                     for (int j = 0; j < objs.length; j++)
-                        signers.add(objs[j]);
+                        if (objs[j] instanceof X509Certificate)
+                            signers.add( ((X509Certificate) objs[j]) );
+                }
             }
             Main.debug("Certificates " + signers.size() + " for " + perm);
 
             // Check granted/denied permission
+            if ( grantAllPermissions.contains(signers) )
+                return;
+            if ( rejectAllPermissions.contains(signers) )
+                throw se;
+            Permissions permissions = (Permissions) grantedPermissions.get(signers);
+            if (permissions != null && permissions.implies(perm))
+                return;
+
+            // Ok, ask user what to do
             String [] certs = new String[signers.size()];
             int certsnr = 0;
             for (Iterator i = signers.iterator(); i.hasNext(); ) {
-                Object cert = i.next();
-                if ( grantAllPermissions.contains(cert) )
-                    return;
-                if ( rejectAllPermissions.contains(cert) )
-                    throw se;
-                Permissions permissions = (Permissions) grantedPermissions.get(cert);
-                if (permissions != null && permissions.implies(perm))
-                    return;
-                if (cert instanceof X509Certificate) {
-                    try {
-                        certs[certsnr++] = encode64( ((X509Certificate) cert).getEncoded() );
-                    } catch (CertificateEncodingException cee) {}
-                }
+                try {
+                    certs[certsnr] = encode64( ((X509Certificate) i.next()).getEncoded() );
+                    certsnr++;
+                } catch (CertificateEncodingException cee) {}
             }
             if (certsnr == 0)
                 throw se;
@@ -108,20 +110,17 @@ public class KJASSecurityManager extends SecurityManager
             } catch (InterruptedException ie) {
                 if (((String) confirmRequests.get(id)).equals("yes")) {
                     granted = true;
-                    for (Iterator it = signers.iterator(); it.hasNext(); ) {
-                        Object cert = it.next();
-                        Permissions permissions = (Permissions) grantedPermissions.get(cert);
-                        if (permissions == null) {
-                            permissions = new Permissions();
-                            grantedPermissions.put(cert, permissions);
-                        }
-                        permissions.add(perm);
+                    permissions = (Permissions) grantedPermissions.get(signers);
+                    if (permissions == null) {
+                        permissions = new Permissions();
+                        grantedPermissions.put(signers, permissions);
                     }
+                    permissions.add(perm);
                 } else if (((String) confirmRequests.get(id)).equals("grant")) {
-                    grantAllPermissions.addAll( signers );
+                    grantAllPermissions.add( signers );
                     granted = true;
                 } else if (((String) confirmRequests.get(id)).equals("reject")) {
-                    rejectAllPermissions.addAll( signers );
+                    rejectAllPermissions.add( signers );
                 } // else "no", "nossl" or "invalid"
             } finally {
                 confirmRequests.remove(id);
