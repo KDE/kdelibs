@@ -487,8 +487,8 @@ bool KAccelBase::insertConnection( KAccelAction* pAction )
 					// TODO: make this more efficient where possible.
 					if( m_mapKeyToAction[key].pAction != pAction
 					    && m_mapKeyToAction[key].pAction != 0 ) {
-						kdDebug(125) << "Key conflict: call updateConnections():"
-							<< " key = " << key.key().toStringInternal() << endl;
+						kdDebug(125) << "Key conflict with action = " << m_mapKeyToAction[key].pAction->name() 
+							<< " key = " << key.key().toStringInternal() << " : call updateConnections()" << endl;
 						return updateConnections();
 					}
 				}
