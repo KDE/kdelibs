@@ -886,8 +886,11 @@ KJSO VarDeclNode::evaluate()
   if (init) {
       tmp = init->evaluate();
       val = tmp.getValue();
-  } else
+  } else {
+      if ( variable.hasProperty( ident ) ) // already declared ?
+          return KJSO();
       val = Undefined();
+  }
   variable.put(ident, val, DontDelete);
 
   // spec wants to return ident. But what for ? Will be ignored above.
