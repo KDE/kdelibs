@@ -30,7 +30,7 @@ namespace KJS {
 	      String,
 	      Object,
 	      Reference,
-	      ListType,
+	      List,
               Completion,
 	      // extended types
 	      Property,

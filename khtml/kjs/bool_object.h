@@ -35,7 +35,7 @@ namespace KJS {
   class BooleanConstructor : public KJSConstructor {
   public:
     BooleanConstructor(KJSGlobal *global);
-    KJSObject* construct(KJSArgList *);
+    KJSObject* construct(KJSList *);
   private:
     KJSGlobal *global;
   };

@@ -41,7 +41,7 @@ ArrayObject::ArrayObject(KJSGlobal *global)
 KJSO* ArrayObject::execute(KJSContext *context)
 {
   // equivalent to 'new Array(....)'
-  KJSArgList argList;
+  KJSList argList;
   Ptr length = context->activation->get("length");
   unsigned int numArgs = (unsigned int) length->dVal();
   for (unsigned int u = 0; u < numArgs; u++)
@@ -59,24 +59,22 @@ ArrayConstructor::ArrayConstructor(KJSGlobal *glob)
 }
 
 // ECMA 15.6.2
-KJSObject* ArrayConstructor::construct(KJSArgList *args)
+KJSObject* ArrayConstructor::construct(KJSList *args)
 {
   KJSObject *result = new KJSObject();
   result->setClass(ArrayClass);
   result->setPrototype(global->arrayProto);
 
   unsigned int len;
-  KJSArg *arg = args->firstArg();
+  KJSListIterator it = args->begin();
   // a single argument might denote the array size
-  if (args->count() == 1 && arg->object()->isA(Number))
-    len = toUInt32(arg->object());
+  if (args->size() == 1 && it.object()->isA(Number))
+    len = toUInt32(it.object());
   else {
     // initialize array
-    len = args->count();
-    for (unsigned int u = 0; u < len; u++) {
-      result->put(CString(u), arg->object());
-      arg = arg->nextArg();
-    }
+    len = args->size();
+    for (unsigned int u = 0; it != args->end(); it++, u++)
+      result->put(CString(u), it.object());
   }
 
   // array size

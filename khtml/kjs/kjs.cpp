@@ -53,6 +53,10 @@ KJSWorld::KJSWorld(KHTMLWidget *w)
   error = 0L;
 }
 
+KJSWorld::~KJSWorld()
+{
+}
+
 bool KJSWorld::evaluate(const char *code)
 {
   return evaluate(UString(code).unicode(), strlen(code));

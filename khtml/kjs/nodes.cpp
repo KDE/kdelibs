@@ -99,15 +99,16 @@ KJSO *ThisNode::evaluate()
 KJSO *ResolveNode::evaluate()
 {
   assert(KJSWorld::context);
-  KJSScope *scope = KJSWorld::context->firstScope();
+  const KJSScopeChain *chain = KJSWorld::context->pScopeChain();
+  KJSListIterator scope = chain->begin();
 
-  while (scope) {
-    KJSO *obj = scope->object;
+  while (scope != chain->end()) {
+    KJSO *obj = scope.object();
     if (obj->hasProperty(ident)) {
       //      cout << "Resolve: found '" << ident.ascii() << "'" << endl;
       return new KJSReference(obj, ident);
     }
-    scope = scope->next;
+    scope++;
   }
 
   // identifier not found
@@ -152,20 +153,18 @@ KJSO *NewExprNode::evaluate()
   Ptr e = expr->evaluate();
   Ptr v = e->getValue();
 
-  /* TODO: build argList on the stack */
-  KJSArgList *argList = args->evaluateList();
+  Ptr argList = args->evaluate();
 
   if (!v->isObject()) {
-    delete argList;
     return new KJSError(ErrExprNoObject, this);
   }
   if (!v->implementsConstruct()) {
-    delete argList;
     return new KJSError(ErrNoConstruct, this);
   }
 
-  KJSO *res = v->construct(argList);
-  delete argList;
+  KJSO *tmp = argList;
+  KJSList *tmp2 = static_cast<KJSList*>(tmp);
+  KJSO *res = v->construct(tmp2);
 
   if (!res->isObject())
     return new KJSError(ErrResNoObject, this);
@@ -178,7 +177,7 @@ KJSO *FunctionCallNode::evaluate()
 {
   Ptr e = expr->evaluate();
 
-  KJSArgList *argList = args->evaluateList();
+  Ptr argList = args->evaluate();
 
   Ptr v = e->getValue();
 
@@ -199,35 +198,38 @@ KJSO *FunctionCallNode::evaluate()
   if (o->isA(Activation))
     o = new KJSNull();
 
-  KJSO *result = v->executeCall(o, argList);
+  KJSO *tmp = argList;
+  KJSList *list = static_cast<KJSList*>(tmp);
+  KJSO *result = v->executeCall(o, list);
 
-  delete argList;
   return result;
 }
 
 // ECMA 11.2.4
-KJSArgList *ArgumentsNode::evaluateList()
+KJSO *ArgumentsNode::evaluate()
 {
   if (!list)
-    return new KJSArgList();
+    return new KJSList();
 
-  return list->evaluateList();
+  return list->evaluate();
 }
 
 // ECMA 11.2.4
-KJSArgList *ArgumentListNode::evaluateList()
+KJSO *ArgumentListNode::evaluate()
 {
   Ptr e = expr->evaluate();
   Ptr v = e->getValue();
 
   if (!list) {
-    KJSArgList *l = new KJSArgList();
-    return l->append(v);
+    KJSList *l = new KJSList();
+    l->append(v);
+    return l;
   }
 
-  KJSArgList *l = list->evaluateList();
+  KJSList *l = static_cast<KJSList*>(list->evaluate());
+  l->append(v);
 
-  return l->append(v);
+  return l;
 }
 
 // ECMA 11.8
@@ -767,9 +769,10 @@ KJSO *WithNode::evaluate()
   Ptr e = expr->evaluate();
   Ptr v = e->getValue();
   Ptr o = toObject(v);
-  /* TODO: prepend scope */
+  KJSWorld::context->pushScope(o);
   Ptr res = stat->evaluate();
-  /* TODO: remove scope */
+  KJSWorld::context->popScope();
+
   return res->ref();
 }
 

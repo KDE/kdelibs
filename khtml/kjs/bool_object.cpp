@@ -63,11 +63,11 @@ BooleanConstructor::BooleanConstructor(KJSGlobal *glob)
 }
 
 // ECMA 15.6.2
-KJSObject* BooleanConstructor::construct(KJSArgList *args)
+KJSObject* BooleanConstructor::construct(KJSList *args)
 {
   Ptr b;
-  if (args->count() > 0)
-    b = toBoolean(args->firstArg()->object());
+  if (args->size() > 0)
+    b = toBoolean(args->begin().object());
   else
     b = new KJSBoolean(false);
 

@@ -128,8 +128,7 @@ class ArgumentListNode : public Node {
 public:
   ArgumentListNode(Node *e);
   ArgumentListNode(ArgumentListNode *l, Node *e);
-  KJSO *evaluate() { return 0L; }
-  KJSArgList *evaluateList();
+  KJSO *evaluate();
 private:
   ArgumentListNode *list;
   Node *expr;
@@ -138,7 +137,7 @@ private:
 class ArgumentsNode : public Node {
 public:
   ArgumentsNode(ArgumentListNode *l);
-  KJSO *evaluate() { return 0L; }
+  KJSO *evaluate();
   KJSArgList *evaluateList();
 private:
   ArgumentListNode *list;

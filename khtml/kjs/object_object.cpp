@@ -51,7 +51,7 @@ KJSO *ObjectObject::execute(KJSContext *context)
   Ptr length = context->activation->get("length");
   int numArgs = (int) length->dVal();
 
-  KJSArgList argList;
+  KJSList argList;
   if (numArgs == 0) {
     result = construct(&argList);
   } else {
@@ -72,17 +72,17 @@ ObjectConstructor::ObjectConstructor(KJSGlobal *glob)
 }
 
 // ECMA 15.2.2
-KJSObject* ObjectConstructor::construct(KJSArgList *args)
+KJSObject* ObjectConstructor::construct(KJSList *args)
 {
   // if no arguments have been passed ...
-  if (args->count() == 0) {
+  if (args->size() == 0) {
     KJSObject *result = new KJSObject();
     result->setClass(ObjectClass);
     result->setPrototype(global->objProto);
     return result;
   }
 
-  KJSO *arg = args->firstArg()->object();
+  KJSO *arg = args->begin().object();
   if (arg->isA(Object)) {
     /* TODO: handle host objects */
     KJSObject *obj = static_cast<KJSObject*>(arg->ref());

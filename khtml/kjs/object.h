@@ -41,9 +41,9 @@ union Value {
 class KJSObject;
 class KJSPrototype;
 class KJSProperty;
-class KJSArgList;
 class KJSParamList;
 class KJSConstructor;
+class KJSList;
 class Node;
 class StatementNode;
 
@@ -109,14 +109,14 @@ public:
   bool implementsCall() const { return (type() == InternalFunction ||
 				  type() == DeclaredFunction ||
 				  type() == AnonymousFunction); }
-  KJSO *executeCall(KJSO *thisV, KJSArgList *args);
+  KJSO *executeCall(KJSO *thisV, KJSList *args);
   KJSO* (*call)(KJSO*);
 
   // constructor
   void setConstructor(KJSConstructor *c);
   KJSConstructor *constructor() const { return constr; }
   bool implementsConstruct() const { return (constr); }
-  KJSObject *construct(KJSArgList *args);
+  KJSObject *construct(KJSList *args);
 
 private:
   KJSPrototype *proto;
@@ -154,6 +154,56 @@ private:
 };
 
 KJSO *zeroRef(KJSO *obj);
+
+class KJSList;
+class KJSListIterator;
+
+class KJSListNode {
+  friend KJSList;
+  friend KJSListIterator;
+  KJSListNode(KJSO *obj, KJSListNode *p, KJSListNode *n)
+    : member(obj), prev(p), next(n) {};
+  ~KJSListNode() { if (member) member->deref(); }
+
+  KJSO *member;
+  KJSListNode *prev, *next;
+};
+
+class KJSListIterator {
+  friend KJSList;
+public:
+  KJSListIterator(KJSListNode *n) : node(n) { }
+
+  KJSO *object() const { return node->member; }
+  KJSListNode* operator++() { node = node->next; return node; }
+  KJSListNode* operator++(int) { KJSListNode *n = node; ++*this; return n; }
+  KJSListNode* operator--() { node = node->prev; return node; }
+  KJSListNode* operator--(int) { KJSListNode *n = node; --*this; return n; }
+  bool operator==(KJSListIterator i) const { return (node==i.node); }
+  bool operator!=(KJSListIterator i) const { return (node!=i.node); }
+private:
+  KJSListNode *node;
+};
+
+class KJSList : public KJSO {
+public:
+  KJSList();
+  ~KJSList();
+  Type type() const { return List; }
+  void append(KJSO *obj);
+  void prepend(KJSO *obj);
+  void removeFirst();
+  void removeLast();
+  void clear();
+  KJSListIterator begin() const { return KJSListIterator(hook->next); }
+  KJSListIterator end() const { return KJSListIterator(hook); }
+  bool isEmpty() const { return (hook->prev == hook); }
+  int size() const;
+private:
+  void erase(KJSListIterator it);
+private:
+  KJSListNode *hook;
+};
 
 class KJSProperty {
 public:
@@ -211,7 +261,7 @@ class KJSContext;
 class KJSFunction : public KJSO {
 public:
   KJSFunction() { attr = ImplicitNone; }
-  void processParameters(KJSArgList *);
+  void processParameters(KJSList *);
   virtual KJSO* execute(KJSContext *) = 0;
   virtual bool hasAttribute(FunctionAttribute a) const { return (attr & a); }
   virtual CodeType codeType() = 0;
@@ -249,7 +299,7 @@ public:
 class KJSConstructor : public KJSO {
 public:
   Type type() const { return Constructor; }
-  virtual KJSObject* construct(KJSArgList *args) = 0;
+  virtual KJSObject* construct(KJSList *args) = 0;
 };
 
 class KJSCompletion : public KJSO {
@@ -278,19 +328,11 @@ class KJSPrototype : public KJSObject {
   // for type safety
 };
 
-class KJSScope : public KJSO {
-public:
-  KJSScope(KJSO *o) : next(0L) { object = o->ref(); }
-  Type type() const { return Scope; }
-  void append(KJSO *o) { next = new KJSScope(o); next->next = 0L; }
-
-  Ptr object;
-  KJSScope *next;
-};
+typedef KJSList KJSScopeChain;
 
 class KJSActivation : public KJSO {
 public:
-  KJSActivation(KJSFunction *f, KJSArgList *args);
+  KJSActivation(KJSFunction *f, KJSList *args);
   virtual ~KJSActivation();
   Type type() const { return Object; }
 private:
@@ -299,18 +341,19 @@ private:
 
 class KJSArguments : public KJSO {
 public:
-  KJSArguments(KJSFunction *func, KJSArgList *args);
+  KJSArguments(KJSFunction *func, KJSList *args);
   Type type() const { return Object; }
 };
 
 class KJSContext {
 public:
   KJSContext(CodeType type = GlobalCode, KJSContext *callingContext = 0L,
-	     KJSFunction *func = 0L, KJSArgList *args = 0L, KJSO *thisV = 0L);
+	     KJSFunction *func = 0L, KJSList *args = 0L, KJSO *thisV = 0L);
   virtual ~KJSContext();
-  KJSScope *firstScope() const { return scopeChain; }
-  void insertScope(KJSO *s);
-  KJSScope *copyOfChain() { /* TODO */ return scopeChain; }
+  const KJSScopeChain *pScopeChain() const { return scopeChain; }
+  void pushScope(KJSO *s) { scopeChain->prepend(s); }
+  void popScope() { scopeChain->removeFirst(); }
+  KJSScopeChain *copyOfChain() { /* TODO */ return scopeChain; }
 
   KJSO *variableObject() const { return variable; }
 public:
@@ -318,7 +361,7 @@ public:
   KJSActivation *activation;
 private:
   KJSO *variable;
-  KJSScope *scopeChain;
+  KJSScopeChain *scopeChain;
 };
 
 class KJSGlobal : public KJSO {
@@ -326,30 +369,6 @@ public:
   KJSGlobal(KHTMLWidget *htmlw = 0L);
   Type type() const { return Object; }
   KJSPrototype *objProto, *funcProto, *arrayProto, *boolProto;
-};
-
-class KJSArgList;
-
-class KJSArg {
-  friend KJSArgList;
-public:
-  KJSArg(KJSO *o) : next(0L) { obj = o->ref(); }
-  KJSArg *nextArg() const { return next; }
-  KJSO *object() { return obj; }
-private:
-  Ptr obj;
-  KJSArg *next;
-};
-
-class KJSArgList {
-public:
-  KJSArgList() : first(0L) {}
-  ~KJSArgList();
-  KJSArgList *append(KJSO *o);
-  KJSArg *firstArg() const { return first; }
-  int count() const;
-private:
-  KJSArg *first;
 };
 
 class KJSParamList {

@@ -73,7 +73,7 @@ const char *typeName[] = {
   "String",
   "Object",
   "Reference",
-  "ListType",
+  "List",
   "Completion",
   "Property",
   "Scope",
@@ -138,7 +138,7 @@ KJSO::~KJSO()
 }
 
 // [[call]]
-KJSO *KJSO::executeCall(KJSO *thisV, KJSArgList *args)
+KJSO *KJSO::executeCall(KJSO *thisV, KJSList *args)
 {
   KJSFunction *func = static_cast<KJSFunction*>(this);
 
@@ -224,7 +224,7 @@ ErrorCode KJSO::putValue(KJSO *v)
 }
 
 // [[construct]] property
-KJSObject *KJSO::construct(KJSArgList *args)
+KJSObject *KJSO::construct(KJSList *args)
 {
   assert(constr);
   /* TODO: pass `undefined' arguments if needed */
@@ -251,10 +251,8 @@ KJSReference::~KJSReference()
 }
 
 // ECMA 10.1.7 (draft April 98, 10.1.6 previously)
-KJSActivation::KJSActivation(KJSFunction *f, KJSArgList *args)
+KJSActivation::KJSActivation(KJSFunction *f, KJSList *args)
 {
-  KJSArg *arg;
-
   func = f;
 
   /* TODO: solve deleting problem due to circular reference */
@@ -262,14 +260,11 @@ KJSActivation::KJSActivation(KJSFunction *f, KJSArgList *args)
   if (func->hasProperty("arguments"))
     put("OldArguments", func->get("arguments"));
   put("callee", func, DontEnum);
-
   if (args) {
-    int iarg = args->count();
-    put("length", iarg, DontEnum);
-    arg = args->firstArg();
-    for (int i = 0; i < iarg && i < 100; i++) {
-      put(CString(i), arg->object());
-      arg = arg->nextArg();
+    put("length", args->size(), DontEnum);
+    KJSListIterator arg = args->begin();
+    for (int i = 0; arg != args->end(); arg++, i++) {
+      put(CString(i), arg.object());
     }
   }
   /* TODO: solve deleting problem due to circular reference */
@@ -296,7 +291,7 @@ KJSArguments::KJSArguments(KJSFunction *func, KJSArgList *args)
   // put("Prototype", _Object.prototype_ );
   put("callee", func, DontEnum);
   if (args) {
-    int iarg = args->count();
+    int iarg = args->size();
     put("length", iarg, DontEnum);
     arg = args->firstArg();
     for (int i = 0; i < iarg && i < 100; i++) {
@@ -340,7 +335,7 @@ KJSGlobal::KJSGlobal(KHTMLWidget *htmlw)
 
 // ECMA 10.2
 KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
-		       KJSFunction *func, KJSArgList *args, KJSO *thisV)
+		       KJSFunction *func, KJSList *args, KJSO *thisV)
 {
   KJSGlobal *glob = KJSWorld::global;
   assert(glob);
@@ -364,13 +359,15 @@ KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
 	break;
       } // else same as GlobalCode
     case GlobalCode:
-      scopeChain = new KJSScope(glob);
+      scopeChain = new KJSScopeChain();
+      scopeChain->append(glob);
       variable = glob;
       thisValue = glob;
       break;
     case FunctionCode:
     case AnonymousCode:
-      scopeChain = new KJSScope(activation);
+      scopeChain = new KJSScopeChain();
+      scopeChain->append(activation);
       scopeChain->append(glob);
       variable = activation; /* TODO: DontDelete ? (ECMA 10.2.3) */
       if (thisV->isA(Object)) {
@@ -385,7 +382,8 @@ KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
       else
 	thisValue = glob;
       variable = activation; /* TODO: DonDelete (ECMA 10.2.4) */
-      scopeChain = new KJSScope(activation);
+      scopeChain = new KJSScopeChain();
+      scopeChain->append(activation);
       if (func->hasAttribute(ImplicitThis))
 	scopeChain->append(thisValue);
       if (func->hasAttribute(ImplicitParents)) {
@@ -398,30 +396,11 @@ KJSContext::KJSContext(CodeType type, KJSContext *callingContext,
 
 KJSContext::~KJSContext()
 {
-  KJSScope *s = scopeChain;
-  while (s) {
-    KJSScope *tmp = s;
-    s = s->next;
-    tmp->deref();
-  }
+  scopeChain->deref();
+
   if (activation)
     activation->deref();
     // delete activation;
-}
-
-void KJSContext::insertScope(KJSO *s)
-{
-  if (!scopeChain) {
-    // chain was empty so far
-    scopeChain = new KJSScope(s);
-    scopeChain->next = 0L;
-    return;
-  }
-
-  // insert at first position
-  KJSScope *scope = new KJSScope(s);
-  scope->next = scopeChain;
-  scopeChain = scope;
 }
 
 // debugging info
@@ -456,58 +435,19 @@ void KJSO::dump(int level)
     cout << "-------------------------" << endl;
 }
 
-KJSArgList::~KJSArgList()
-{
-  KJSArg *tmp, *a = first;
-  while (a) {
-    tmp = a;
-    a = a->nextArg();
-    delete tmp;
-  }
-}
-
-KJSArgList *KJSArgList::append(KJSO *o)
-{
-  if (!first) {
-    first = new KJSArg(o);
-    return this;
-  }
-
-  KJSArg *arg = first;
-  while (arg->next)
-     arg = arg->next;
-
-  arg->next = new KJSArg(o);
-
-  return this;
-}
-
-int KJSArgList::count() const
-{
-  if (!first)
-    return 0;
-
-  int num = 1;
-  KJSArg *arg = first;
-  while ((arg = arg->next))
-    num++;
-
-  return num;
-}
-
 // ECMA 10.1.3
-void KJSFunction::processParameters(KJSArgList *args)
+void KJSFunction::processParameters(KJSList *args)
 {
   KJSO *variable = KJSWorld::context->variableObject();
 
   assert(args);
 
   if (param) {
-    KJSArg *arg = args->firstArg();
+    KJSListIterator it = args->begin();
     for(int i = 0; i < param->count() && i < 100; i++)
-      if (arg) {
-	variable->put(param->at(i), arg->object());
-	arg = arg->nextArg();
+      if (it != args->end()) {
+	variable->put(param->at(i), it.object());
+	it++;
       } else
 	variable->put(param->at(i), zeroRef(new KJSUndefined()));
   }
@@ -554,4 +494,75 @@ KJSError::KJSError(ErrorCode e, KJSO *)
   }
 
   cerr << "Runtime error " << (int) e << endl;
+}
+
+KJSList::KJSList()
+{
+  hook = new KJSListNode(0L, 0L, 0L);
+  hook->next = hook;
+  hook->prev = hook;
+}
+
+KJSList::~KJSList()
+{
+  clear();
+  delete hook;
+}
+
+void KJSList::append(KJSO *obj)
+{
+  KJSListNode *n = new KJSListNode(obj->ref(), hook->prev, hook);
+  hook->prev->next = n;
+  hook->prev = n;
+}
+
+void KJSList::prepend(KJSO *obj)
+{
+  KJSListNode *n = new KJSListNode(obj->ref(), hook, hook->next);
+  hook->next->prev = n;
+  hook->next = n;
+}
+
+void KJSList::removeFirst()
+{
+  erase(begin());
+}
+
+void KJSList::removeLast()
+{
+  KJSListIterator it(end());
+  erase(--it);
+}
+
+void KJSList::clear()
+{
+  KJSListNode *n = hook->next;
+  while (n != hook) {
+    n = n->next;
+    delete n->prev;
+  }
+
+  hook->next = hook;
+  hook->prev = hook;
+}
+
+void KJSList::erase(KJSListIterator it)
+{
+  KJSListNode *n = it.node;
+
+  if (n != hook) {
+    n->next->prev = n->prev;
+    n->prev->next = n->next;
+    delete n;
+  }
+}
+
+int KJSList::size() const
+{
+  int s = 0;
+  KJSListNode *node = hook;
+  while ((node = node->next) != hook)
+    s++;
+
+  return s;
 }

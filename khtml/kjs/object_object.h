@@ -35,7 +35,7 @@ namespace KJS {
   class ObjectConstructor : public KJSConstructor {
   public:
     ObjectConstructor(KJSGlobal *global);
-    KJSObject* construct(KJSArgList *);
+    KJSObject* construct(KJSList *);
   private:
     KJSGlobal *global;
   };
