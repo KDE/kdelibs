@@ -338,7 +338,7 @@ KIcon KIconTheme::iconPath(const QString& name, int size, KIcon::MatchType match
 {
     KIcon icon;
     QString path;
-    int delta = 1000, dw;
+    int delta = -1000, dw;
     KIconThemeDir *dir;
 
     dw = 1000; // shut up, gcc
