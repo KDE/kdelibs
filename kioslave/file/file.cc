@@ -45,7 +45,7 @@
 	#include <volmgt.h>
 	#include <sys/mnttab.h>
 #else
-	#include <kstddirs.h>
+	#include <kstandarddirs.h>
 #endif
 
 #include <kio/ioslave_defaults.h>
