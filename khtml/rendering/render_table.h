@@ -109,12 +109,13 @@ public:
 			int tx, int ty);
     virtual void printBorders( QPainter *, int x, int y, int w, int h,
 			int tx, int ty);
-    virtual void layout(bool deep = false);
-    virtual void setAvailableWidth( int w = -1 );
+    virtual void layout(bool deep = false);    
     virtual void calcMinMaxWidth();
     virtual void close();
 
     virtual void updateSize();
+    
+    virtual void setCellWidths( );
 
     int getBaseline(int row) {return rowBaselines[row];}
 
@@ -245,6 +246,8 @@ protected:
     bool collapseBorders;
 
     short _htmlBorder;
+    
+    short _lastParentWidth;
 
     RenderTableCol *_oldColElem;
     int _currentCol; // keeps track of current col for col/colgroup stuff
@@ -358,11 +361,6 @@ public:
     void setCellTopExtra(int p) { _topExtra = p; }
     void setCellBottomExtra(int p) { _bottomExtra = p; }
 
-    // ### FIXME
-    //void setAscent(int asc) { m_ascent = asc; }
-    void setAvailableWidth(int w) { m_availableWidth = w; }
-    int availableWidth() { return m_availableWidth; }
-
     virtual void setTable(RenderTable *t) { table = t; }
 
     virtual void setContainingBlock();
@@ -391,7 +389,6 @@ protected:
     bool nWrap;
     int _id;
     int rowHeight;
-    int m_availableWidth;
     int _topExtra;
     int _bottomExtra;
 

@@ -98,6 +98,8 @@ RenderTable::RenderTable(RenderStyle *style)
     setParsing();
 
     _currentCol=0;
+    
+    _lastParentWidth = 0;
 
     columnPos.resize( 2 );
     colMaxWidth.resize( 1 );
@@ -633,7 +635,7 @@ void RenderTable::calcColMinMax()
     colMinWidth.fill(0);
     colMaxWidth.fill(0);		
 
-    int availableWidth = containingBlockWidth();
+    int availableWidth = containingBlockWidth() - marginLeft() - marginRight(); ;
 
     // PHASE 2, calculate simple minimums and maximums
 
@@ -1119,8 +1121,10 @@ void RenderTable::calcRowHeight(int r)
 
 void RenderTable::layout(bool deep)
 {
-//    if (layouted())
-//   	return;
+    if (layouted() && _lastParentWidth == containingBlockWidth())
+   	return;
+    
+    _lastParentWidth = containingBlockWidth();
 
     // ###
     deep = true;
@@ -1138,7 +1142,9 @@ void RenderTable::layout(bool deep)
     }
     END_FOR_EACH
 
-    setAvailableWidth();
+    calcColWidth();
+
+    setCellWidths();
 
     if(tCaption)
     {
@@ -1263,28 +1269,18 @@ void RenderTable::refreshRow(int r)
 	cell->calcMinMaxWidth();
     }
 
-    setAvailableWidth();
+    setCellWidths();
 
     layoutRow(r);
     repaint();
 }
 
-void RenderTable::setAvailableWidth(int w)
+void RenderTable::setCellWidths()
 {
 #ifdef DEBUG_LAYOUT
-    kdDebug(300) << renderName() << "(Table, this=0x" << this << ")::setAvailableWidth(" << w << ")" << endl;
+    kdDebug(300) << renderName() << "(Table, this=0x" << this << ")::setCellWidths()" << endl;
 #endif
 
-    int availableWidth = containingBlockWidth();
-
-    if (w == availableWidth)
-    	return;
-
-    setLayouted(false);	
-
-    if(w != -1) availableWidth = w;
-
-    calcColWidth();
 	
     int indx;
     FOR_EACH_CELL( r, c, cell)
@@ -1296,12 +1292,12 @@ void RenderTable::setAvailableWidth(int w)
 #ifdef TABLE_DEBUG
 	    kdDebug(300) << "0x" << this << ": setting width " << r << "/" << indx << "-" << c << " (0x" << cell << "): " << w << " " << endl;
 #endif
-	
-	    static_cast<RenderTableCell *>(cell)->setAvailableWidth( w );
+	    if (cell->width() != w)
+	    	cell->setLayouted(false);
+	    cell->setWidth( w );
 	}
     END_FOR_EACH
 
-    setMinMaxKnown(false);
 }
 
 void RenderTable::print( QPainter *p, int _x, int _y,
@@ -1531,7 +1527,6 @@ RenderTableCell::RenderTableCell(RenderStyle *style)
   rowHeight = 0;
   table = 0;
   rowimpl = 0;
-  m_availableWidth = 0;
   m_printSpecial=true;
 }
 
@@ -1563,7 +1558,6 @@ void RenderTableCell::calcMinMaxWidth()
 
 void RenderTableCell::calcWidth()
 {
-    m_width = m_availableWidth;
 }
 
 void RenderTableCell::setContainingBlock()

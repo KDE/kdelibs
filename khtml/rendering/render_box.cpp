@@ -265,7 +265,13 @@ void RenderBox::close()
     }
 }
 
-
+short RenderBox::containingBlockWidth() const
+{
+    if (style()->htmlHacks() && style()->flowAroundFloats() && containingBlock()->isFlow() ) 	
+    	return static_cast<RenderFlow*>(containingBlock())->lineWidth(m_y);
+    else
+    	return containingBlock()->contentWidth();
+}
 
 void RenderBox::absolutePosition(int &xPos, int &yPos)
 {

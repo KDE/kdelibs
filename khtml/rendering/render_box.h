@@ -106,6 +106,8 @@ public:
     virtual void repaintObject(RenderObject *o, int x, int y);
 
     virtual void setPixmap(const QPixmap &);
+    
+    virtual short containingBlockWidth() const;
 
 protected:
     virtual void printBoxDecorations(QPainter *p,int _x, int _y,

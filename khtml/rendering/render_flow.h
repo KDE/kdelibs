@@ -86,6 +86,9 @@ public:
     virtual void specialHandler(BiDiObject */*special*/);
 
     virtual short baselineOffset() const;
+    
+    // from BiDiParagraph    
+    virtual unsigned short lineWidth(int y) const;
 
 protected:
 
@@ -102,8 +105,7 @@ protected:
     inline int rightBottom();
     bool checkClear(RenderObject *child);
 
-    // from BiDiParagraph
-    virtual unsigned short lineWidth(int y) const;
+    // from BiDiParagraph    
     virtual void closeParagraph() { positionNewFloats(); }
 
     void insertFloat(RenderObject *child);

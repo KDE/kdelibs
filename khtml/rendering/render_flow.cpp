@@ -184,7 +184,9 @@ void RenderFlow::calcWidth()
     m_width = containingBlockWidth() - marginLeft() - marginRight();
     //assert(containingBlock() != this);
     m_width = w.width(m_width);
+   
     if(m_width < m_minWidth) m_width = m_minWidth;
+    
 
 #ifdef DEBUG_LAYOUT
     kdDebug(300) << "RenderFlow::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth() << endl;
