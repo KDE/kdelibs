@@ -4,6 +4,7 @@ Header=^\x01\x01\x01\x0C\x6A\x50
 Name=JPEG 2000 Image
 Name[be]=Малюнак JPEG 2000
 Name[da]=JPEG 2000-billede
+Name[es]=Imagen JPEG 2000
 Name[eu]=JPEG 2000 Irudia
 Name[ga]=Íomhá JPEG 2000
 Name[hu]=JPEG 2000 kép
