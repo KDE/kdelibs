@@ -851,7 +851,9 @@ void HTMLTableElementImpl::calcColMinMax()
 
 	    if (!col || col->span==0)
 		continue;
-
+#ifdef TABLE_DEBUG
+    	    printf(" s=%d c=%d min=%d value=%d\n",s,c,col->min,col->value);
+#endif	    
 	    calcSingleColMinMax(c, col);
 
 	}	
@@ -1067,7 +1069,7 @@ void HTMLTableElementImpl::calcColWidthII(void)
 #ifdef TABLE_DEBUG
     for(int i = 1; i <= (int)totalCols; i++)
     {
-	printf("Actual width col %d: %d\n", i, actColWidth[i-1]);
+	printf("Start->target %d: %d->%d\n", i, actColWidth[i-1],colMaxWidth[i-1]);
     }
 #endif
 
@@ -1090,7 +1092,6 @@ void HTMLTableElementImpl::calcColWidthII(void)
 
     int distrib = MIN(maxFixed - minFixed, tooAdd);
     tooAdd-=distributeWidth(distrib,Fixed,numFixed);
-
     distrib = MIN(maxPercent - minPercent, tooAdd);
     tooAdd-=distributeWidth(distrib,Percent,numPercent);
 
@@ -1155,6 +1156,8 @@ int HTMLTableElementImpl::distributeWidth(int distrib, LengthType type, int type
 	{
 	    int delta = MIN(distrib/typeCols,colMaxWidth[c]-actColWidth[c]);
 	    delta = MIN(tdis,delta);
+	    if (delta==0 && tdis && colMaxWidth[c]>actColWidth[c])
+	    	delta=1;
 	    actColWidth[c]+=delta;		
 	    tdis-=delta;
 	}

@@ -175,7 +175,7 @@ void  HTMLImageElementImpl::setPixmap( QPixmap *p )
     calcMinMaxWidth();
     setLayouted(false);
     if(_parent) _parent->updateSize();	
-
+    
     static_cast<HTMLDocumentImpl *>(document)->print(this);
 }
 
@@ -250,7 +250,7 @@ void HTMLImageElementImpl::printObject(QPainter *p, int, int _y,
 		QWMatrix matrix;
 		matrix.scale( (float)(width-border*2)/pixmap->width(),
 			(float)(getHeight()-border)/pixmap->height() );
-		resizeCache = QPixmap(pixmap->xForm( matrix ));
+		resizeCache = pixmap->xForm( matrix );
 	    }
 	    p->drawPixmap( QPoint( _tx + border,
 	       _ty - ascent + border ), resizeCache, rect );
