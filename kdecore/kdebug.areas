@@ -485,14 +485,15 @@
 38000        karbon
 39001        kformula
 40000        kformula
-40001	     krayon
-41000	     krayon
+40001        krayon
+41000        krayon
 42000        kplato
 43000        kivio
-44000	     KexiDB
-44001	     KexiDB (driver impl)
-44020	     Kexi (core)
-44021	     Kexi (plugins)
+44000        KexiDB
+44001        KexiDB (driver impl)
+44010        Kexi (general)
+44020        Kexi (core)
+44021        Kexi (plugins)
 
 # kdeextragear
 50001	kfortune
