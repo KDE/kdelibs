@@ -17,7 +17,7 @@
 #    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 #    Boston, MA 02111-1307, USA.
 
-INCLUDES = -I$(top_srcdir)/kdecore -I$(top_srcdir)/kdeui -I$(top_srcdir)/kio -I$(top_srcdir)/kfile $(all_includes)
+INCLUDES = $(all_includes)
 
 LDFLAGS = $(QT_LDFLAGS) $(X_LDFLAGS) $(KDE_RPATH)
 
@@ -28,7 +28,7 @@ check_PROGRAMS = kfstest kurlrequestertest kfiletreeviewtest \
 
 METASOURCES = AUTO
 
-LDADD = $(LIB_KFILE)
+LDADD = $(LIB_KIO)
 kurlrequestertest_SOURCES = kurlrequestertest.cpp
 kfstest_SOURCES = kfstest.cpp
 kfiletreeviewtest_SOURCES = kfiletreeviewtest.cpp
