@@ -158,14 +158,13 @@ namespace KJS {
 
 const struct HashEntry DOMTextEventTableEntries[] = {
    { "keyVal", DOMTextEvent::Key, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[2] },
-   { "virtKeyVal", DOMTextEvent::VirtKey, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[4] },
-   { "keyCode", DOMTextEvent::Key, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[3] },
+   { "virtKeyVal", DOMTextEvent::VirtKey, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[3] },
    { "outputString", DOMTextEvent::OutputString, DontDelete|ReadOnly, 0, 0 },
-   { "inputGenerated", DOMTextEvent::InputGenerated, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[5] },
+   { "inputGenerated", DOMTextEvent::InputGenerated, DontDelete|ReadOnly, 0, &DOMTextEventTableEntries[4] },
    { "numPad", DOMTextEvent::NumPad, DontDelete|ReadOnly, 0, 0 }
 };
 
-const struct HashTable DOMTextEventTable = { 2, 6, DOMTextEventTableEntries, 2 };
+const struct HashTable DOMTextEventTable = { 2, 5, DOMTextEventTableEntries, 2 };
 
 }; // namespace
 
