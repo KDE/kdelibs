@@ -289,13 +289,14 @@ static void readIcon(NETWinInfoPrivate *p) {
 
 	unsigned long s = (p->icons[j].size.width *
 			   p->icons[j].size.height * 4);
+	
 	if ( i + s - 1 > proplen ) {
 	    break;
 	}
 
 	if (p->icons[j].data) delete [] p->icons[j].data;
-	CARD32 *d = new CARD32[s/4];
-	p->icons[j].data = (unsigned char *) d; // new CARD32[ s/4 ];
+	CARD32 *data = new CARD32[s/4];
+	p->icons[j].data = (unsigned char *) data; // new CARD32[ s/4 ];
 	memcpy(p->icons[j].data, d, s);
 	i += s;
 	d += s/4;
