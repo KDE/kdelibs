@@ -24,6 +24,8 @@
 #include <qstringlist.h>
 #include <ksimpleconfig.h>
 
+#include "kbookmarkimporter_ns.h"
+
 /**
  * A class for importing the previous bookmarks (desktop files)
  * Separated from KBookmarkManager to save memory (we throw this one
@@ -42,57 +44,6 @@ private:
                         KSimpleConfig& _cfg, const QString &_group );
     QDomDocument * m_pDoc;
     QStringList m_lstParsedDirs;
-};
-
-/**
- * A class for importing NS bookmarks
- * KEditBookmarks uses it to insert bookmarks into its DOM tree,
- * and KActionMenu uses it to create actions directly.
- */
-class KNSBookmarkImporter : public QObject
-{
-    Q_OBJECT
-public:
-    KNSBookmarkImporter( const QString & fileName ) : m_fileName(fileName) {}
-    ~KNSBookmarkImporter() {}
-
-    // for compat reasons only
-    void parseNSBookmarks() { parseNSBookmarks(false); }
-    // go for it. Set utf8 to true for Mozilla, false for Netscape.
-    void parseNSBookmarks( bool utf8 );
-
-    // Usual place for NS bookmarks
-    static QString netscapeBookmarksFile( bool forSaving=false );
-    // Usual place for Mozilla bookmarks
-    static QString mozillaBookmarksFile( bool forSaving=false );
-
-signals:
-
-    /**
-     * Notify about a new bookmark
-     * Use "html" for the icon
-     */
-    void newBookmark( const QString & text, const QCString & url, const QString & additionalInfo );
-
-    /**
-     * Notify about a new folder
-     * Use "bookmark_folder" for the icon
-     */
-    void newFolder( const QString & text, bool open, const QString & additionalInfo );
-
-    /**
-     * Notify about a new separator
-     */
-    void newSeparator();
-
-    /**
-     * Tell the outside world that we're going down
-     * one menu
-     */
-    void endFolder();
-
-protected:
-    QString m_fileName;
 };
 
 #endif
