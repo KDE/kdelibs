@@ -401,6 +401,10 @@ bool  KLocale::numericLocaleEnabled()const{
 QStrList KLocale::languageList()const{
     return QStrList();
 }
+
+void KLocale::insertCatalogue( const char *catalogue) {
+}
+
 #endif /* ENABLE_NLS */
 
 
@@ -410,6 +414,7 @@ const QString KLocale::getAlias(long key) const
 }
 
 QString i18n(const char* text) {
+#ifdef ENABLE_NLS
   static KLocale *instance = 0;
   if (!instance) {
     KApplication *app = KApplication::getKApplication();
@@ -419,5 +424,8 @@ QString i18n(const char* text) {
       return text;
   }
   return instance->translate(text); 
+#else
+  return text;
+#endif
 }
 
