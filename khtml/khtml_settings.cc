@@ -422,6 +422,8 @@ void KHTMLSettings::setDefaultCharset( QFont::CharSet c, bool enforce )
 { 
     m_defaultCharset = c;
     enforceCharset = enforce;
+    if(enforce)
+        internalSetCharset(c);
 }
 
 void KHTMLSettings::resetCharset() 
