@@ -241,9 +241,10 @@ namespace KJS {
 
   class ElementNode : public Node {
   public:
-    ElementNode(int e, Node *n) : list(0L), elision(e), node(n) { }
+    // list is circular during construction. cracked in ArrayNode ctor
+    ElementNode(int e, Node *n) : list(this), elision(e), node(n) { }
     ElementNode(ElementNode *l, int e, Node *n)
-      : list(l), elision(e), node(n) { }
+      : list(l->list), elision(e), node(n) { l->list = this; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -259,15 +260,14 @@ namespace KJS {
   public:
     ArrayNode(int e) : element(0L), elision(e), opt(true) { }
     ArrayNode(ElementNode *ele)
-      : element(ele), elision(0), opt(false) { reverseElementList(); }
+      : element(ele->list), elision(0), opt(false) { ele->list = 0; }
     ArrayNode(int eli, ElementNode *ele)
-      : element(ele), elision(eli), opt(true) { reverseElementList(); }
+      : element(ele->list), elision(eli), opt(true) { ele->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    void reverseElementList();
     ElementNode *element;
     int elision;
     bool opt;
@@ -342,6 +342,7 @@ namespace KJS {
 
   class ArgumentListNode : public Node {
   public:
+    // list is circular during construction. cracked in ArgumentsNode ctor
     ArgumentListNode(Node *e) : list(this), expr(e) {}
     ArgumentListNode(ArgumentListNode *l, Node *e)
       : list(l->list), expr(e) { l->list = this; }
@@ -646,6 +647,7 @@ namespace KJS {
 
   class StatListNode : public StatementNode {
   public:
+    // list is circular during construction. cracked in CaseClauseNode ctor
     StatListNode(StatementNode *s);
     StatListNode(StatListNode *l, StatementNode *s);
     virtual void ref();
@@ -685,6 +687,7 @@ namespace KJS {
 
   class VarDeclListNode : public Node {
   public:
+    // list is circular until cracked in VarStatementNode/ForNode ctor
     VarDeclListNode(VarDeclNode *v) : list(this), var(v) {}
     VarDeclListNode(VarDeclListNode *l, VarDeclNode *v)
       : list(l->list), var(v) { l->list = this; }
@@ -861,7 +864,8 @@ namespace KJS {
 
   class CaseClauseNode: public Node {
   public:
-    CaseClauseNode(Node *e, StatListNode *l) : expr(e), list(l) { reverseList(); }
+    CaseClauseNode(Node *e, StatListNode *l)
+      : expr(e), list(l->list) { l->list = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -869,15 +873,16 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    void reverseList();
     Node *expr;
     StatListNode *list;
   };
 
   class ClauseListNode : public Node {
   public:
-    ClauseListNode(CaseClauseNode *c) : cl(c), nx(0L) { }
-    ClauseListNode(ClauseListNode *n, CaseClauseNode *c) : cl(c), nx(n) { }
+    // list is circular during construction. cracked in CaseBlockNode ctor
+    ClauseListNode(CaseClauseNode *c) : cl(c), nx(this) { }
+    ClauseListNode(ClauseListNode *n, CaseClauseNode *c)
+      : cl(c), nx(n->nx) { n->nx = this; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -893,8 +898,7 @@ namespace KJS {
 
   class CaseBlockNode: public Node {
   public:
-    CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d, ClauseListNode *l2)
-      : list1(l1), def(d), list2(l2) { reverseLists(); }
+    CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d, ClauseListNode *l2);
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -902,7 +906,6 @@ namespace KJS {
     virtual void processVarDecls(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    void reverseLists();
     ClauseListNode *list1;
     CaseClauseNode *def;
     ClauseListNode *list2;
@@ -988,8 +991,10 @@ namespace KJS {
 
   class ParameterNode : public Node {
   public:
-    ParameterNode(const Identifier &i) : id(i), next(0L) { }
-    ParameterNode(ParameterNode *list, const Identifier &i) : id(i), next(list) { }
+    // list is circular during construction. cracked in FuncDecl/ExprNode ctor.
+    ParameterNode(const Identifier &i) : id(i), next(this) { }
+    ParameterNode(ParameterNode *list, const Identifier &i)
+      : id(i), next(list->next) { list->next = this; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
@@ -1016,8 +1021,10 @@ namespace KJS {
 
   class FuncDeclNode : public StatementNode {
   public:
+    FuncDeclNode(const Identifier &i, FunctionBodyNode *b)
+      : ident(i), param(0), body(b) { }
     FuncDeclNode(const Identifier &i, ParameterNode *p, FunctionBodyNode *b)
-      : ident(i), param(p), body(b) { reverseParameterList(); }
+      : ident(i), param(p->next), body(b) { p->next = 0; }
     virtual void ref();
     virtual bool deref();
     Completion execute(ExecState* /*exec*/)
@@ -1025,7 +1032,6 @@ namespace KJS {
     void processFuncDecl(ExecState *exec);
     virtual void streamTo(SourceStream &s) const;
   private:
-    void reverseParameterList();
     Identifier ident;
     ParameterNode *param;
     FunctionBodyNode *body;
@@ -1034,13 +1040,12 @@ namespace KJS {
   class FuncExprNode : public Node {
   public:
     FuncExprNode(ParameterNode *p, FunctionBodyNode *b)
-	: param(p), body(b) { reverseParameterList(); }
+	: param(p->next), body(b) { p->next = 0; }
     virtual void ref();
     virtual bool deref();
     virtual Value evaluate(ExecState *exec) const;
     virtual void streamTo(SourceStream &s) const;
   private:
-    void reverseParameterList();
     ParameterNode *param;
     FunctionBodyNode *body;
   };
@@ -1048,6 +1053,7 @@ namespace KJS {
   // A linked list of source element nodes
   class SourceElementsNode : public StatementNode {
   public:
+    // list is circular until cracked in BlockNode/FunctionBodyNode ctor
     SourceElementsNode(StatementNode *s1);
     SourceElementsNode(SourceElementsNode *s1, StatementNode *s2);
     virtual void ref();

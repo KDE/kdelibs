@@ -345,33 +345,33 @@ static const short yyrline[] =
 /* YYTNAME[TOKEN_NUM] -- String name of the token TOKEN_NUM. */
 static const char *const yytname[] =
 {
-  "$", "error", "$undefined.", "NULLTOKEN", "TRUETOKEN", "FALSETOKEN", 
-  "STRING", "NUMBER", "BREAK", "CASE", "DEFAULT", "FOR", "NEW", "VAR", 
-  "CONTINUE", "FUNCTION", "RETURN", "VOID", "DELETE", "IF", "THIS", "DO", 
-  "WHILE", "ELSE", "IN", "INSTANCEOF", "TYPEOF", "SWITCH", "WITH", 
-  "RESERVED", "THROW", "TRY", "CATCH", "FINALLY", "EQEQ", "NE", "STREQ", 
-  "STRNEQ", "LE", "GE", "OR", "AND", "PLUSPLUS", "MINUSMINUS", "LSHIFT", 
-  "RSHIFT", "URSHIFT", "PLUSEQUAL", "MINUSEQUAL", "MULTEQUAL", "DIVEQUAL", 
-  "LSHIFTEQUAL", "RSHIFTEQUAL", "URSHIFTEQUAL", "ANDEQUAL", "MODEQUAL", 
-  "XOREQUAL", "OREQUAL", "IDENT", "AUTOPLUSPLUS", "AUTOMINUSMINUS", "'/'", 
-  "'('", "')'", "'{'", "'}'", "'['", "']'", "','", "':'", "'.'", "'+'", 
-  "'-'", "'~'", "'!'", "'*'", "'%'", "'<'", "'>'", "'&'", "'^'", "'|'", 
-  "'?'", "'='", "';'", "Literal", "PrimaryExpr", "ArrayLiteral", 
-  "ElementList", "ElisionOpt", "Elision", "PropertyNameAndValueList", 
-  "PropertyName", "MemberExpr", "NewExpr", "CallExpr", "Arguments", 
-  "ArgumentList", "LeftHandSideExpr", "PostfixExpr", "UnaryExpr", 
-  "MultiplicativeExpr", "AdditiveExpr", "ShiftExpr", "RelationalExpr", 
-  "EqualityExpr", "BitwiseANDExpr", "BitwiseXORExpr", "BitwiseORExpr", 
-  "LogicalANDExpr", "LogicalORExpr", "ConditionalExpr", "AssignmentExpr", 
-  "AssignmentOperator", "Expr", "Statement", "Block", "StatementList", 
-  "VariableStatement", "VariableDeclarationList", "VariableDeclaration", 
-  "Initializer", "EmptyStatement", "ExprStatement", "IfStatement", 
-  "IterationStatement", "ExprOpt", "ContinueStatement", "BreakStatement", 
-  "ReturnStatement", "WithStatement", "SwitchStatement", "CaseBlock", 
-  "CaseClausesOpt", "CaseClauses", "CaseClause", "DefaultClause", 
-  "LabelledStatement", "ThrowStatement", "TryStatement", "Catch", 
-  "Finally", "FunctionDeclaration", "FunctionDeclarationInternal", 
-  "FunctionExpr", "FormalParameterList", "FunctionBody", "Program", 
+  "$", "error", "$undefined.", "NULLTOKEN", "TRUETOKEN", "FALSETOKEN",
+  "STRING", "NUMBER", "BREAK", "CASE", "DEFAULT", "FOR", "NEW", "VAR",
+  "CONTINUE", "FUNCTION", "RETURN", "VOID", "DELETE", "IF", "THIS", "DO",
+  "WHILE", "ELSE", "IN", "INSTANCEOF", "TYPEOF", "SWITCH", "WITH",
+  "RESERVED", "THROW", "TRY", "CATCH", "FINALLY", "EQEQ", "NE", "STREQ",
+  "STRNEQ", "LE", "GE", "OR", "AND", "PLUSPLUS", "MINUSMINUS", "LSHIFT",
+  "RSHIFT", "URSHIFT", "PLUSEQUAL", "MINUSEQUAL", "MULTEQUAL", "DIVEQUAL",
+  "LSHIFTEQUAL", "RSHIFTEQUAL", "URSHIFTEQUAL", "ANDEQUAL", "MODEQUAL",
+  "XOREQUAL", "OREQUAL", "IDENT", "AUTOPLUSPLUS", "AUTOMINUSMINUS", "'/'",
+  "'('", "')'", "'{'", "'}'", "'['", "']'", "','", "':'", "'.'", "'+'",
+  "'-'", "'~'", "'!'", "'*'", "'%'", "'<'", "'>'", "'&'", "'^'", "'|'",
+  "'?'", "'='", "';'", "Literal", "PrimaryExpr", "ArrayLiteral",
+  "ElementList", "ElisionOpt", "Elision", "PropertyNameAndValueList",
+  "PropertyName", "MemberExpr", "NewExpr", "CallExpr", "Arguments",
+  "ArgumentList", "LeftHandSideExpr", "PostfixExpr", "UnaryExpr",
+  "MultiplicativeExpr", "AdditiveExpr", "ShiftExpr", "RelationalExpr",
+  "EqualityExpr", "BitwiseANDExpr", "BitwiseXORExpr", "BitwiseORExpr",
+  "LogicalANDExpr", "LogicalORExpr", "ConditionalExpr", "AssignmentExpr",
+  "AssignmentOperator", "Expr", "Statement", "Block", "StatementList",
+  "VariableStatement", "VariableDeclarationList", "VariableDeclaration",
+  "Initializer", "EmptyStatement", "ExprStatement", "IfStatement",
+  "IterationStatement", "ExprOpt", "ContinueStatement", "BreakStatement",
+  "ReturnStatement", "WithStatement", "SwitchStatement", "CaseBlock",
+  "CaseClausesOpt", "CaseClauses", "CaseClause", "DefaultClause",
+  "LabelledStatement", "ThrowStatement", "TryStatement", "Catch",
+  "Finally", "FunctionDeclaration", "FunctionDeclarationInternal",
+  "FunctionExpr", "FormalParameterList", "FunctionBody", "Program",
   "SourceElements", "SourceElement", 0
 };
 #endif
@@ -2153,7 +2153,7 @@ case 183:
     break;}
 case 184:
 #line 595 "grammar.y"
-{ yyval.func = new FuncDeclNode(*yyvsp[-3].ident, 0L, yyvsp[0].body); DBG(yyval.func,yylsp[-4],yylsp[-1]);
+{ yyval.func = new FuncDeclNode(*yyvsp[-3].ident, yyvsp[0].body); DBG(yyval.func,yylsp[-4],yylsp[-1]);
                                              delete yyvsp[-3].ident; ;
     break;}
 case 185:

@@ -459,18 +459,6 @@ Value ElementNode::evaluate(ExecState *exec) const
 
 // ----------------------------- ArrayNode ------------------------------------
 
-void ArrayNode::reverseElementList()
-{
-  ElementNode *head = 0;
-  ElementNode *next;
-  for (ElementNode *n = element; n; n = next) {
-    next = n->list;
-    n->list = head;
-    head = n;
-  }
-  element = head;
-}
-
 void ArrayNode::ref()
 {
   Node::ref();
@@ -1623,13 +1611,16 @@ Value CommaNode::evaluate(ExecState *exec) const
 
 // ----------------------------- StatListNode ---------------------------------
 
-StatListNode::StatListNode(StatementNode *s) : statement(s), list(0L)
+StatListNode::StatListNode(StatementNode *s)
+  : statement(s), list(this)
 {
   setLoc(s->firstLine(),s->lastLine(),s->code());
 }
 
-StatListNode::StatListNode(StatListNode *l, StatementNode *s) : statement(s), list(l)
+StatListNode::StatListNode(StatListNode *l, StatementNode *s)
+  : statement(s), list(l->list)
 {
+  l->list = this;
   setLoc(l->firstLine(),s->lastLine(),l->code());
 }
 
@@ -2382,18 +2373,6 @@ void WithNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- CaseClauseNode -------------------------------
 
-void CaseClauseNode::reverseList()
-{
-  StatListNode *head = 0;
-  StatListNode *next;
-  for (StatListNode *n = list; n; n = next) {
-    next = n->list;
-    n->list = head;
-    head = n;
-  }
-  list = head;
-}
-
 void CaseClauseNode::ref()
 {
   Node::ref();
@@ -2477,24 +2456,22 @@ void ClauseListNode::processVarDecls(ExecState *exec)
 
 // ----------------------------- CaseBlockNode --------------------------------
 
-void CaseBlockNode::reverseLists()
+CaseBlockNode::CaseBlockNode(ClauseListNode *l1, CaseClauseNode *d,
+                             ClauseListNode *l2)
 {
-  ClauseListNode *head = 0;
-  ClauseListNode *next;
-  for (ClauseListNode *n = list1; n; n = next) {
-    next = n->nx;
-    n->nx = head;
-    head = n;
+  def = d;
+  if (l1) {
+    list1 = l1->nx;
+    l1->nx = 0;
+  } else {
+    list1 = 0;
   }
-  list1 = head;
-
-  head = 0;
-  for (ClauseListNode *n = list2; n; n = next) {
-    next = n->nx;
-    n->nx = head;
-    head = n;
+  if (l2) {
+    list2 = l2->nx;
+    l2->nx = 0;
+  } else {
+    list2 = 0;
   }
-  list2 = head;
 }
 
 void CaseBlockNode::ref()
@@ -2907,18 +2884,6 @@ Completion FunctionBodyNode::execute(ExecState *exec)
 
 // ----------------------------- FuncDeclNode ---------------------------------
 
-void FuncDeclNode::reverseParameterList()
-{
-  ParameterNode *head = 0;
-  ParameterNode *next;
-  for (ParameterNode *n = param; n; n = next) {
-    next = n->next;
-    n->next = head;
-    head = n;
-  }
-  param = head;
-}
-
 void FuncDeclNode::ref()
 {
   StatementNode::ref();
@@ -2978,18 +2943,6 @@ void FuncDeclNode::processFuncDecl(ExecState *exec)
 }
 
 // ----------------------------- FuncExprNode ---------------------------------
-
-void FuncExprNode::reverseParameterList()
-{
-  ParameterNode *head = 0;
-  ParameterNode *next;
-  for (ParameterNode *n = param; n; n = next) {
-    next = n->next;
-    n->next = head;
-    head = n;
-  }
-  param = head;
-}
 
 void FuncExprNode::ref()
 {

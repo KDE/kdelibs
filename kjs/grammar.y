@@ -592,7 +592,7 @@ FunctionDeclaration:
 ;
 
 FunctionDeclarationInternal:
-    FUNCTION IDENT '(' ')' FunctionBody    { $$ = new FuncDeclNode(*$2, 0L, $5); DBG($$,@1,@4);
+    FUNCTION IDENT '(' ')' FunctionBody    { $$ = new FuncDeclNode(*$2, $5); DBG($$,@1,@4);
                                              delete $2; }
   | FUNCTION IDENT '(' FormalParameterList ')' FunctionBody
                                    { $$ = new FuncDeclNode(*$2, $4, $6); DBG($$,@1,@5);
