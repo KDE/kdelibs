@@ -200,6 +200,7 @@ public:
     bool attached() const   { return m_attached; }
     bool changed() const    { return m_changed; }
     bool hasChangedChild() const { return m_hasChangedChild; }
+    bool hasAnchor() const { return m_hasAnchor; }
     bool inDocument() const { return m_inDocument; }
     bool styleElement() const { return m_styleElement; }
     void setHasID(bool b=true) { m_hasId = b; }
@@ -401,12 +402,13 @@ protected:
     bool m_hasChangedChild : 1;
 
     bool m_inDocument : 1;
+    bool m_hasAnchor : 1;
     bool m_specified : 1; // used in AttrImpl. Accessor functions there
     bool m_focused : 1;
     bool m_active : 1;
     bool m_styleElement : 1; // contains stylesheet text
 
-    // 3 bits unused
+    // 2 bits unused
 };
 
 // this is the full Node Implementation with parents and children.

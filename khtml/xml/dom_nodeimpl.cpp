@@ -61,6 +61,7 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_changed( false ),
       m_hasChangedChild( false ),
       m_inDocument( false ),
+      m_hasAnchor( false ),
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
@@ -1254,6 +1255,10 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     if (exceptioncode)
         return 0;
 
+    // Remove from rendering tree
+    if (oldChild->attached())
+        oldChild->detach();
+
     // Remove the child
     NodeImpl *prev, *next;
     prev = oldChild->previousSibling();
@@ -1267,10 +1272,6 @@ NodeImpl *NodeBaseImpl::removeChild ( NodeImpl *oldChild, int &exceptioncode )
     oldChild->setPreviousSibling(0);
     oldChild->setNextSibling(0);
     oldChild->setParent(0);
-
-    // Remove from rendering tree
-    if (oldChild->attached())
-        oldChild->detach();
 
     setChanged(true);
 
@@ -1294,11 +1295,11 @@ void NodeBaseImpl::removeChildren()
     for( n = _first; n != 0; n = next )
     {
         next = n->nextSibling();
+        if (n->attached())
+	    n->detach();
         n->setPreviousSibling(0);
         n->setNextSibling(0);
         n->setParent(0);
-        if (n->attached())
-	    n->detach();
         if(n->deleteMe())
             delete n;
     }
