@@ -45,75 +45,39 @@ using namespace khtml;
 #include <kdebug.h>
 #include <klocale.h>
 
-namespace khtml {
-
-class KanjiCode
-{
-public:
-    enum Type {ASCII, JIS, EUC, SJIS, UNICODE, UTF8 };
-    static enum Type judge(const char *str, int length);
-    static const int ESC;
-    static const int _SS2_;
-    static const unsigned char kanji_map_sjis[];
-    static int ISkanji(int code)
-    {
-	if (code >= 0x100)
-		    return 0;
-	return (kanji_map_sjis[code & 0xff] & 1);
-    }
-
-    static int ISkana(int code)
-    {
-	if (code >= 0x100)
-		    return 0;
-	return (kanji_map_sjis[code & 0xff] & 2);
-    }
-
-};
-
-}
-
-const int KanjiCode::ESC = 0x1b;
-const int KanjiCode::_SS2_ = 0x8e;
-
-const unsigned char KanjiCode::kanji_map_sjis[] =
-{
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0
-};
-
 /*
- * EUC-JP is
- *     [0xa1 - 0xfe][0xa1 - 0xfe]
- *     0x8e[0xa1 - 0xfe](SS2)
- *     0x8f[0xa1 - 0xfe][0xa1 - 0xfe](SS3)
+ * JapaneseCode::guess_jp() is based on guess_jp() from gauche
+ *     http://www.shiro.dreamhost.com/scheme/gauche/index.html
  *
- * Shift_Jis is
- *     [0x81 - 0x9f, 0xe0 - 0xef(0xfe?)][0x40 - 0x7e, 0x80 - 0xfc]
+ * Copyright (c) 2000-2003 Shiro Kawai, All rights reserved.
  *
- * Shift_Jis Hankaku Kana is
- *     [0xa1 - 0xdf]
- */
-
-/*
- * KanjiCode::judge() is based on judge_jcode() from jvim
- *     http://hp.vector.co.jp/authors/VA003457/vim/
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
  *
- * Special Thanks to Kenichi Tsuchida
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *
+ *  3. Neither the name of the authors nor the names of its contributors
+ *     may be used to endorse or promote products derived from this
+ *     software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 /*
@@ -121,154 +85,427 @@ const unsigned char KanjiCode::kanji_map_sjis[] =
  * But it fails detection. It's not useful.
  */
 
-enum KanjiCode::Type KanjiCode::judge(const char *str, int length)
+namespace khtml {
+    class guess_arc {
+    public:
+        unsigned int next;          /* next state */
+        double score;               /* score */
+    };
+}
+
+static const signed char guess_eucj_st[4][256] = {
+ { /* state init */
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  1,  2,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,
+  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,
+  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,
+  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,
+  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,
+  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3, -1,
+ },
+ { /* state jis0201_kana */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ },
+ { /* state jis0213_1 */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, -1,
+ },
+ { /* state jis0213_2 */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6, -1,
+ },
+};
+
+static guess_arc guess_eucj_ar[7] = {
+ {  0, 1.0   }, /* init -> init */
+ {  1, 0.8   }, /* init -> jis0201_kana */
+ {  3, 0.95  }, /* init -> jis0213_2 */
+ {  2, 1.0   }, /* init -> jis0213_1 */
+ {  0, 1.0   }, /* jis0201_kana -> init */
+ {  0, 1.0   }, /* jis0213_1 -> init */
+ {  0, 1.0   }, /* jis0213_2 -> init */
+};
+
+static const signed char guess_sjis_st[2][256] = {
+ { /* state init */
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+ -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+ -1,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+ -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,
+ },
+ { /* state jis0213 */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, -1,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, -1, -1, -1,
+ },
+};
+
+static guess_arc guess_sjis_ar[6] = {
+ {  0, 1.0   }, /* init -> init */
+ {  1, 1.0   }, /* init -> jis0213 */
+ {  0, 0.8   }, /* init -> init */
+ {  1, 0.95  }, /* init -> jis0213 */
+ {  0, 0.8   }, /* init -> init */
+ {  0, 1.0   }, /* jis0213 -> init */
+};
+
+static const signed char guess_utf8_st[6][256] = {
+ { /* state init */
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
+  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,
+  3,  3,  3,  3,  3,  3,  3,  3,  4,  4,  4,  4,  5,  5, -1, -1,
+ },
+ { /* state 1byte_more */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ },
+ { /* state 2byte_more */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,
+  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,
+  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,
+  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ },
+ { /* state 3byte_more */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
+  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
+  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
+  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,  8,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ },
+ { /* state 4byte_more */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,
+  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,
+  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,
+  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,  9,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ },
+ { /* state 5byte_more */
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+ 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+ 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+ 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+ },
+};
+
+static guess_arc guess_utf8_ar[11] = {
+ {  0, 1.0   }, /* init -> init */
+ {  1, 1.0   }, /* init -> 1byte_more */
+ {  2, 1.0   }, /* init -> 2byte_more */
+ {  3, 1.0   }, /* init -> 3byte_more */
+ {  4, 1.0   }, /* init -> 4byte_more */
+ {  5, 1.0   }, /* init -> 5byte_more */
+ {  0, 1.0   }, /* 1byte_more -> init */
+ {  1, 1.0   }, /* 2byte_more -> 1byte_more */
+ {  2, 1.0   }, /* 3byte_more -> 2byte_more */
+ {  3, 1.0   }, /* 4byte_more -> 3byte_more */
+ {  4, 1.0   }, /* 5byte_more -> 4byte_more */
+};
+
+namespace khtml {
+
+    class guess_dfa {
+    public:
+        guess_arc *arcs;
+        int state;
+        double score;
+
+        guess_dfa () {
+            state = 0;
+            score = 1.0;
+        }
+    };
+
+    class guess_dfa_euc : public guess_dfa {
+    public:
+        const signed char (*states)[4][256];
+
+        guess_dfa_euc () {
+            states = &guess_eucj_st;
+            arcs = guess_eucj_ar;
+        }
+    };
+
+    class guess_dfa_sjis : public guess_dfa {
+    public:
+        const signed char (*states)[2][256];
+
+        guess_dfa_sjis() {
+            states = &guess_sjis_st;
+            arcs = guess_sjis_ar;
+        }
+    };
+
+    class guess_dfa_utf8 : public guess_dfa {
+    public:
+        const signed char (*states)[6][256];
+
+        guess_dfa_utf8() {
+            states = &guess_utf8_st;
+            arcs = guess_utf8_ar;
+        }
+    };
+
+    class JapaneseCode
+    {
+    public:
+        enum Type {ASCII, JIS, EUC, SJIS, UNICODE, UTF8 };
+        enum Type guess_jp(const char* buf, int buflen);
+
+        JapaneseCode () {
+            eucj = new guess_dfa_euc();
+            sjis = new guess_dfa_sjis();
+            utf8 = new guess_dfa_utf8();
+            last_JIS_escape = false;
+        }
+
+        ~JapaneseCode () {
+            if (eucj) delete eucj;
+            if (sjis) delete sjis;
+            if (utf8) delete utf8;
+        }
+
+    protected:
+        guess_dfa_euc  *eucj;
+        guess_dfa_sjis *sjis;
+        guess_dfa_utf8 *utf8;
+
+        bool last_JIS_escape;
+    };
+}
+
+#define DFA_NEXT(dfa, ch)                               \
+    do {                                                \
+        int arc__;                                      \
+        if (dfa->state >= 0) {                          \
+            arc__ = (*dfa->states)[dfa->state][ch];     \
+            if (arc__ < 0) {                            \
+                dfa->state = -1;                        \
+            } else {                                    \
+                dfa->state = dfa->arcs[arc__].next;     \
+                dfa->score *= dfa->arcs[arc__].score;   \
+            }                                           \
+        }                                               \
+    } while (0)
+
+#define DFA_ALIVE(dfa)  (dfa->state >= 0)
+
+enum JapaneseCode::Type JapaneseCode::guess_jp(const char *buf, int buflen)
 {
-    enum Type code;
     int i;
-    int bfr = false;		/* Kana Moji */
-    int bfk = 0;		/* EUC Kana */
-    int sjis = 0;
-    int euc = 0;
+    guess_dfa *top = NULL;
 
-    const unsigned char *ptr = (const unsigned char *) str;
+    for (i=0; i<buflen; i++) {
+        int c = (unsigned char)buf[i];
 
-    code = ASCII;
+        /* special treatment of jis escape sequence */
+        if (c == 0x1b || last_JIS_escape) {
+            if (i < buflen-1) {
+                if (last_JIS_escape)
+                    c = (unsigned char)buf[i];
+                else
+                    c = (unsigned char)buf[++i];
+                last_JIS_escape = false;
 
-    i = 0;
-    while (i < length) {
-	if (ptr[i] == ESC && (length- i >= 3)) {
-	    if ((ptr[i + 1] == '$' && ptr[i + 2] == 'B')
-	    || (ptr[i + 1] == '(' && ptr[i + 2] == 'B')) {
-		code = JIS;
-		goto breakBreak;
-	    } else if ((ptr[i + 1] == '$' && ptr[i + 2] == '@')
-		    || (ptr[i + 1] == '(' && ptr[i + 2] == 'J')) {
-		code = JIS;
-		goto breakBreak;
-	    } else if (ptr[i + 1] == '(' && ptr[i + 2] == 'I') {
-		code = JIS;
-		i += 3;
-	    } else if (ptr[i + 1] == ')' && ptr[i + 2] == 'I') {
-		code = JIS;
-		i += 3;
-	    } else {
-		i++;
-	    }
-	    bfr = false;
-	    bfk = 0;
-	} else {
-	    if (ptr[i] < 0x20) {
-		bfr = false;
-		bfk = 0;
-		/* ?? check kudokuten ?? && ?? hiragana ?? */
-		if ((i >= 2) && (ptr[i - 2] == 0x81)
-			&& (0x41 <= ptr[i - 1] && ptr[i - 1] <= 0x49)) {
-		    code = SJIS;
-		    sjis += 100;	/* kudokuten */
-		} else if ((i >= 2) && (ptr[i - 2] == 0xa1)
-			&& (0xa2 <= ptr[i - 1] && ptr[i - 1] <= 0xaa)) {
-		    code = EUC;
-		    euc += 100;		/* kudokuten */
-		} else if ((i >= 2) && (ptr[i - 2] == 0x82) && (0xa0 <= ptr[i - 1])) {
-		    sjis += 40;		/* hiragana */
-		} else if ((i >= 2) && (ptr[i - 2] == 0xa4) && (0xa0 <= ptr[i - 1])) {
-		    euc += 40;	/* hiragana */
-		}
-	    } else {
-		/* ?? check hiragana or katana ?? */
-		if ((length- i > 1) && (ptr[i] == 0x82) && (0xa0 <= ptr[i + 1])) {
-		    sjis++;	/* hiragana */
-		} else if ((length - i > 1) && (ptr[i] == 0x83)
-			 && (0x40 <= ptr[i + 1] && ptr[i + 1] <= 0x9f)) {
-		    sjis++;	/* katakana */
-		} else if ((length - i > 1) && (ptr[i] == 0xa4) && (0xa0 <= ptr[i + 1])) {
-		    euc++;	/* hiragana */
-		} else if ((length - i > 1) && (ptr[i] == 0xa5) && (0xa0 <= ptr[i + 1])) {
-		    euc++;	/* katakana */
-		}
-		if (bfr) {
-		    if ((i >= 1) && (0x40 <= ptr[i] && ptr[i] <= 0xa0) && ISkanji(ptr[i - 1])) {
-			code = SJIS;
-			goto breakBreak;
-		    } else if ((i >= 1) && (0x81 <= ptr[i - 1] && ptr[i - 1] <= 0x9f) && ((0x40 <= ptr[i] && ptr[i] < 0x7e) || (0x7e < ptr[i] && ptr[i] <= 0xfc))) {
-			code = SJIS;
-			goto breakBreak;
-		    } else if ((i >= 1) && (0xfd <= ptr[i] && ptr[i] <= 0xfe) && (0xa1 <= ptr[i - 1] && ptr[i - 1] <= 0xfe)) {
-			code = EUC;
-			goto breakBreak;
-		    } else if ((i >= 1) && (0xfd <= ptr[i - 1] && ptr[i - 1] <= 0xfe) && (0xa1 <= ptr[i] && ptr[i] <= 0xfe)) {
-			code = EUC;
-			goto breakBreak;
-		    } else if ((i >= 1) && (ptr[i] < 0xa0 || 0xdf < ptr[i]) && (0x8e == ptr[i - 1])) {
-			code = SJIS;
-			goto breakBreak;
-		    } else if (ptr[i] <= 0x7f) {
-			code = SJIS;
-			goto breakBreak;
-		    } else {
-			if (0xa1 <= ptr[i] && ptr[i] <= 0xa6) {
-			    euc++;	/* sjis hankaku kana kigo */
-			} else if (0xa1 <= ptr[i] && ptr[i] <= 0xdf) {
-			    ;	/* sjis hankaku kana */
-			} else if (0xa1 <= ptr[i] && ptr[i] <= 0xfe) {
-			    euc++;
-			} else if (0x8e == ptr[i]) {
-			    euc++;
-			} else if (0x20 <= ptr[i] && ptr[i] <= 0x7f) {
-			    sjis++;
-			}
-			bfr = false;
-			bfk = 0;
-		    }
-		} else if (0x8e == ptr[i]) {
-		    if (length - i <= 1) {
-			;
-		    } else if (0xa1 <= ptr[i + 1] && ptr[i + 1] <= 0xdf) {
-			/* EUC KANA or SJIS KANJI */
-			if (bfk == 1) {
-			    euc += 100;
-			}
-			bfk++;
-			i++;
-		    } else {
-			/* SJIS only */
-			code = SJIS;
-			goto breakBreak;
-		    }
-		} else if (0x81 <= ptr[i] && ptr[i] <= 0x9f) {
-		    /* SJIS only */
-		    code = SJIS;
-		    if ((length - i >= 1)
-			    && ((0x40 <= ptr[i + 1] && ptr[i + 1] <= 0x7e)
-			    || (0x80 <= ptr[i + 1] && ptr[i + 1] <= 0xfc))) {
-			goto breakBreak;
-		    }
-		} else if (0xfd <= ptr[i] && ptr[i] <= 0xfe) {
-		    /* EUC only */
-		    code = EUC;
-		    if ((length - i >= 1)
-			    && (0xa1 <= ptr[i + 1] && ptr[i + 1] <= 0xfe)) {
-			goto breakBreak;
-		    }
-		} else if (ptr[i] <= 0x7f) {
-		    ;
-		} else {
-		    bfr = true;
-		    bfk = 0;
-		}
-	    }
-	    i++;
-	}
+                if (c == '$' || c == '(') {
+                    return JapaneseCode::JIS;
+                }
+            } else {
+                last_JIS_escape = true;
+            }
+        }
+
+        if (DFA_ALIVE(eucj)) {
+            if (!DFA_ALIVE(sjis) && !DFA_ALIVE(utf8)) return JapaneseCode::EUC;
+            DFA_NEXT(eucj, c);
+        }
+        if (DFA_ALIVE(sjis)) {
+            if (!DFA_ALIVE(eucj) && !DFA_ALIVE(utf8)) return JapaneseCode::SJIS;
+            DFA_NEXT(sjis, c);
+        }
+        if (DFA_ALIVE(utf8)) {
+            if (!DFA_ALIVE(sjis) && !DFA_ALIVE(eucj)) return JapaneseCode::UTF8;
+            DFA_NEXT(utf8, c);
+        }
+
+        if (!DFA_ALIVE(eucj) && !DFA_ALIVE(sjis) && !DFA_ALIVE(utf8)) {
+            /* we ran out the possibilities */
+            return JapaneseCode::ASCII;
+        }
     }
-    if (code == ASCII) {
-	if (sjis > euc) {
-	    code = SJIS;
-	} else if (sjis < euc) {
-	    code = EUC;
-	}
+
+    /* Now, we have ambigous code.  Pick the highest score.  If more than
+       one candidate tie, pick the default encoding. */
+    if (DFA_ALIVE(eucj)) top = eucj;
+    if (DFA_ALIVE(utf8)) {
+        if (top) {
+            if (top->score <  utf8->score) top = utf8;
+        } else {
+            top = utf8;
+        }
     }
-breakBreak:
-    return (code);
+    if (DFA_ALIVE(sjis)) {
+        if (top) {
+            if (top->score <= sjis->score) top = sjis;
+        } else {
+            top = sjis;
+        }
+    }
+
+    if (top == eucj) return JapaneseCode::EUC;
+    if (top == utf8) return JapaneseCode::UTF8;
+    if (top == sjis) return JapaneseCode::SJIS;
+
+    return JapaneseCode::ASCII;
 }
 
 Decoder::Decoder()
@@ -282,10 +519,14 @@ Decoder::Decoder()
     visualRTL = false;
     haveEncoding = false;
     m_autoDetectLanguage = SemiautomaticDetection;
+    kc = NULL;
 }
+
 Decoder::~Decoder()
 {
     delete m_decoder;
+    if (kc)
+        delete kc;
 }
 
 void Decoder::setEncoding(const char *_encoding, bool force)
@@ -494,20 +735,7 @@ QString Decoder::decode(const char *data, int len)
             enc = automaticDetectionForHebrew( (const unsigned char*) data, len );
             break;
         case Decoder::Japanese:
-            switch ( KanjiCode::judge( data, len ) ) {
-                case KanjiCode::JIS:
-                    enc = "jis7";
-                    break;
-                case KanjiCode::EUC:
-                    enc = "eucjp";
-                    break;
-                case KanjiCode::SJIS:
-                    enc = "sjis";
-                    break;
-                default:
-                    enc = NULL;
-                    break;
-            }
+            enc = automaticDetectionForJapanese( (const unsigned char*) data, len );
             break;
         case Decoder::Turkish:
             enc = automaticDetectionForTurkish( (const unsigned char*) data, len );
@@ -700,6 +928,27 @@ QCString Decoder::automaticDetectionForHebrew( const unsigned char* ptr, int siz
     }
 
     return "iso-8859-8-i";
+}
+
+QCString Decoder::automaticDetectionForJapanese( const unsigned char* ptr, int size )
+{
+    if (!kc)
+        kc = new JapaneseCode();
+
+    switch ( kc->guess_jp( (const char*)ptr, size ) ) {
+    case JapaneseCode::JIS:
+        return "jis7";
+    case JapaneseCode::EUC:
+        return "eucjp";
+    case JapaneseCode::SJIS:
+        return "sjis";
+     case JapaneseCode::UTF8:
+        return "utf8";
+    default:
+        break;
+    }
+
+    return "";
 }
 
 QCString Decoder::automaticDetectionForTurkish( const unsigned char* ptr, int size )
