@@ -141,6 +141,7 @@
 7113	kio_http_debug
 7114	kio_nntp
 7115	kio_thumbnail
+7116	kio_imap
 
 # kdevelop
 9000	kdevelop (core)
