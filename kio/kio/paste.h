@@ -56,6 +56,16 @@ namespace KIO {
   CopyJob *pasteDataAsync( const KURL& _dest_url, const QByteArray& _data );
 
   /**
+   * Pastes the given @p _data to the
+   * given destination URL.
+   * @param _dest_url the URL to receive the data
+   * @param _data the data to copy
+   * @param text the text to show in the dialog
+   * @see pasteClipboard()
+   */
+  CopyJob *pasteDataAsync( const KURL& _dest_url, const QByteArray& _data, const QString& text ); // KDE4: merge with above
+
+  /**
    * Checks whether the clipboard is empty.
    * @return true if empty
    */

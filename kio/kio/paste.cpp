@@ -36,11 +36,13 @@
 #include <kmessagebox.h>
 #include <ktempfile.h>
 
-static KURL getNewFileName(const KURL &u)
+static KURL getNewFileName( const KURL &u, const QString& text )
 {
   bool ok;
-  QString file = KInputDialog::getText( QString::null,
-      i18n( "Filename for clipboard content:" ), QString::null, &ok );
+  QString dialogText( text );
+  if ( dialogText.isEmpty() )
+    dialogText = i18n( "Filename for clipboard content:" );
+  QString file = KInputDialog::getText( QString::null, dialogText, QString::null, &ok );
   if ( !ok ) 
      return KURL();
 
@@ -152,9 +154,9 @@ KIO::Job *KIO::pasteClipboard( const KURL& dest_url, bool move )
 
 void KIO::pasteData( const KURL& u, const QByteArray& _data )
 {
-    KURL new_url = getNewFileName(u);
+    KURL new_url = getNewFileName( u, QString::null );
     // We could use KIO::put here, but that would require a class
-    // for the slotData call. With NetAcess, we can do a synchronous call.
+    // for the slotData call. With NetAccess, we can do a synchronous call.
     
     if (new_url.isEmpty())
        return;
@@ -169,17 +171,20 @@ void KIO::pasteData( const KURL& u, const QByteArray& _data )
 
 KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data )
 {
-    KURL new_url = getNewFileName(u);
-    // We could use KIO::put here, but that would require a class
-    // for the slotData call. With NetAcess, we can do a synchronous call.
-    
+    return pasteDataAsync( u, _data, QString::null );
+}
+
+KIO::CopyJob* KIO::pasteDataAsync( const KURL& u, const QByteArray& _data, const QString& text )
+{
+    KURL new_url = getNewFileName( u, text );
+
     if (new_url.isEmpty())
        return 0;
-    
+
      KTempFile tempFile;
      tempFile.dataStream()->writeRawBytes( _data.data(), _data.size() );
      tempFile.close();
-  
+
      KURL orig_url;
      orig_url.setPath(tempFile.name());
 
