@@ -166,10 +166,7 @@ static Length parseLength(QChar *s, unsigned int l)
     if(ok) {
         return Length(v, Fixed);
     }
-    if(l == 4 && QConstString(s, l).string().contains("auto", false))
-        return Length(0, Variable);
-
-    return Length(0, Undefined);
+    return Length(0, Variable);
 }
 
 Length DOMStringImpl::toLength() const
