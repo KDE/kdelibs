@@ -325,3 +325,7 @@ Since 2.2 release, Michael Goffioul <goffioul@imec.be>
   * KPrinter: added the DocFileName feature (suggested by David) to define
     the default basename for output file.
   * test: updated to Qt3 and demonstrate the use of the DocFileName feature
+
+21/01/2002 Michael Goffioul <goffioul@imec.be>
+  * LPR: added basic implementation of a KPrinterImpl object -> plugin is
+    functional (though far from complete...)
