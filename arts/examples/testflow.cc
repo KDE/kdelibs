@@ -28,6 +28,8 @@
 #include "debug.h"
 #include <stdio.h>
 
+using namespace Arts;
+
 vector<long> connect(long l)
 {
 	vector<long> connseq;
@@ -55,7 +57,7 @@ int main()
 			new PortDesc(11,"pos",pt,true,false,connect(20),440.0,"")
 		);
 		mdseq.push_back(
-			new ModuleDesc(12,"Synth_FREQUENCY",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(12,"Arts::Synth_FREQUENCY",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -72,7 +74,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(22,"Synth_WAVE_SIN",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(22,"Arts::Synth_WAVE_SIN",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -94,7 +96,7 @@ int main()
 		);
 	
 		mdseq.push_back(
-			new ModuleDesc(4,"Synth_PLAY",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(4,"Arts::Synth_PLAY",pdseq,0,0,0,0,false,false)
 		);
 	}
 

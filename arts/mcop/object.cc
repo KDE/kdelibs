@@ -27,6 +27,7 @@
 #include <iostream.h>
 
 using namespace std;
+using namespace Arts;
 
 struct Object_base::ObjectStreamInfo {
 	string name;

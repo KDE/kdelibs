@@ -19,11 +19,7 @@
 */
 #include "core.h"
 
-// Object::null() returns a null object (and not just a reference to one)
-/*Object Object::null()
-{
-	return Object((Object_base*)0); // protected constructor!
-}*/
+using namespace Arts;
 
 // For technical reasons, this is here too: FlowSystem isn't declared when
 // the wrapper is already needed, so we can't make this function inline,

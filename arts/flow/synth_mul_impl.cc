@@ -23,6 +23,8 @@
 #include "artsflow.h"
 #include "stdsynthmodule.h"
 
+using namespace Arts;
+
 class Synth_MUL_impl :public Synth_MUL_skel, StdSynthModule
 {
 public:

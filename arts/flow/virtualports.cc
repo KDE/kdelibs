@@ -24,6 +24,8 @@
 #include <algorithm>
 #include <stdio.h>
 
+using namespace Arts;
+
 #undef VPORT_DEBUG
 
 /* virtual port connections */

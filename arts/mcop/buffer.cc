@@ -25,6 +25,7 @@
 #include <cassert>
 
 using namespace std;
+using namespace Arts;
 
 Buffer::Buffer() {
 	rpos = 0;

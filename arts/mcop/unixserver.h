@@ -26,6 +26,8 @@
 #include <string>
 #include "iomanager.h"
 
+namespace Arts {
+
 class Dispatcher;
 
 class UnixServer :public IONotify {
@@ -44,5 +46,7 @@ public:
 	std::string url();
 
 	void notifyIO(int fd, int types);
+};
+
 };
 #endif /* UNIXSERVER_H */

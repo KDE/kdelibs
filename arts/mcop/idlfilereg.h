@@ -26,6 +26,8 @@
 #include <string>
 #include "startupmanager.h"
 
+namespace Arts {
+
 class IDLFileReg : StartupClass {
 	long nr;
 	const char *_name, *_contents;
@@ -33,5 +35,6 @@ public:
 	IDLFileReg(const char *name, const char *contents);
 	void startup();
 	void shutdown();
+};
 };
 #endif /* IDLFILEREG_H */

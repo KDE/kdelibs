@@ -27,6 +27,8 @@
 #include <iostream.h>
 #include <stdio.h>
 
+using namespace Arts;
+
 int x = 0;
 int active_d_objects = 0;
 

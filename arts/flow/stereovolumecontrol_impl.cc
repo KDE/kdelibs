@@ -24,6 +24,8 @@
 #include "artsflow.h"
 #include "stdsynthmodule.h"
 
+using namespace Arts;
+
 class StereoVolumeControl_impl : virtual public StereoVolumeControl_skel,
 								 virtual public StdSynthModule
 {

@@ -25,6 +25,8 @@
 
 #include "artsflow.h"
 
+namespace Arts {
+
 class ExecRequest {
 	ArtsServer _Server;
 	std::vector<ModuleDesc *> _Modules;
@@ -49,5 +51,7 @@ public:
    	void deleteModules();
 
 	ArtsServer Server();
+};
+
 };
 #endif

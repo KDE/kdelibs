@@ -34,6 +34,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 class Synth_PLAY_impl :	virtual public Synth_PLAY_skel,
 						virtual public ASProducer,

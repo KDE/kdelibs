@@ -26,6 +26,7 @@
 #include "core.h"
 #include <stdio.h>
 
+using namespace Arts;
 
 int main(int argc, char **argv)
 {

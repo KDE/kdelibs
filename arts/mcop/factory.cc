@@ -23,6 +23,8 @@
 #include "factory.h"
 #include "objectmanager.h"
 
+using namespace Arts;
+
 void Factory::startup()
 {
 	ObjectManager::the()->registerFactory(this);

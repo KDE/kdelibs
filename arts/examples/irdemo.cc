@@ -30,6 +30,8 @@
 #include <vector>
 #include <string>
 
+using namespace Arts;
+
 static void printInterface(InterfaceDef *id)
 {
 	vector<MethodDef *>::iterator mi;

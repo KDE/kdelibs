@@ -5,33 +5,36 @@
 
 #include "common.h"
 
+namespace Arts {
 enum HeaderMagic {MCOP_MAGIC = 1347371853};
 enum MessageType {mcopInvocation = 1, mcopReturn = 2, mcopServerHello = 3, mcopClientHello = 4, mcopAuthAccept = 5, mcopOnewayInvocation = 6};
 enum MethodType {methodOneway = 1, methodTwoway = 2};
 enum AttributeType {streamIn = 1, streamOut = 2, streamMulti = 4, attributeStream = 8, attributeAttribute = 16, streamAsync = 32, streamDefault = 64};
-class Header : public Type {
+};
+namespace Arts {
+class Header : public Arts::Type {
 public:
 	Header();
-	Header(HeaderMagic magic, long messageLength, MessageType messageType);
-	Header(Buffer& stream);
+	Header(Arts::HeaderMagic magic, long messageLength, Arts::MessageType messageType);
+	Header(Arts::Buffer& stream);
 	Header(const Header& copyType);
 	Header& operator=(const Header& assignType);
 	virtual ~Header();
 
-	HeaderMagic magic;
+	Arts::HeaderMagic magic;
 	long messageLength;
-	MessageType messageType;
+	Arts::MessageType messageType;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class Invocation : public Type {
+class Invocation : public Arts::Type {
 public:
 	Invocation();
 	Invocation(long requestID, long objectID, long methodID);
-	Invocation(Buffer& stream);
+	Invocation(Arts::Buffer& stream);
 	Invocation(const Invocation& copyType);
 	Invocation& operator=(const Invocation& assignType);
 	virtual ~Invocation();
@@ -41,15 +44,15 @@ public:
 	long methodID;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class OnewayInvocation : public Type {
+class OnewayInvocation : public Arts::Type {
 public:
 	OnewayInvocation();
 	OnewayInvocation(long objectID, long methodID);
-	OnewayInvocation(Buffer& stream);
+	OnewayInvocation(Arts::Buffer& stream);
 	OnewayInvocation(const OnewayInvocation& copyType);
 	OnewayInvocation& operator=(const OnewayInvocation& assignType);
 	virtual ~OnewayInvocation();
@@ -58,15 +61,15 @@ public:
 	long methodID;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class ServerHello : public Type {
+class ServerHello : public Arts::Type {
 public:
 	ServerHello();
 	ServerHello(const std::string& serverID, const std::vector<std::string>& authProtocols, const std::string& authSeed);
-	ServerHello(Buffer& stream);
+	ServerHello(Arts::Buffer& stream);
 	ServerHello(const ServerHello& copyType);
 	ServerHello& operator=(const ServerHello& assignType);
 	virtual ~ServerHello();
@@ -76,15 +79,15 @@ public:
 	std::string authSeed;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class ClientHello : public Type {
+class ClientHello : public Arts::Type {
 public:
 	ClientHello();
 	ClientHello(const std::string& serverID, const std::string& authProtocol, const std::string& authData);
-	ClientHello(Buffer& stream);
+	ClientHello(Arts::Buffer& stream);
 	ClientHello(const ClientHello& copyType);
 	ClientHello& operator=(const ClientHello& assignType);
 	virtual ~ClientHello();
@@ -94,15 +97,15 @@ public:
 	std::string authData;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class ObjectReference : public Type {
+class ObjectReference : public Arts::Type {
 public:
 	ObjectReference();
 	ObjectReference(const std::string& serverID, long objectID, const std::vector<std::string>& urls);
-	ObjectReference(Buffer& stream);
+	ObjectReference(Arts::Buffer& stream);
 	ObjectReference(const ObjectReference& copyType);
 	ObjectReference& operator=(const ObjectReference& assignType);
 	virtual ~ObjectReference();
@@ -112,15 +115,15 @@ public:
 	std::vector<std::string> urls;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class ParamDef : public Type {
+class ParamDef : public Arts::Type {
 public:
 	ParamDef();
 	ParamDef(const std::string& type, const std::string& name);
-	ParamDef(Buffer& stream);
+	ParamDef(Arts::Buffer& stream);
 	ParamDef(const ParamDef& copyType);
 	ParamDef& operator=(const ParamDef& assignType);
 	virtual ~ParamDef();
@@ -129,72 +132,72 @@ public:
 	std::string name;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class MethodDef : public Type {
+class MethodDef : public Arts::Type {
 public:
 	MethodDef();
-	MethodDef(const std::string& name, const std::string& type, MethodType flags, const std::vector<ParamDef *>& signature);
-	MethodDef(Buffer& stream);
+	MethodDef(const std::string& name, const std::string& type, Arts::MethodType flags, const std::vector<Arts::ParamDef *>& signature);
+	MethodDef(Arts::Buffer& stream);
 	MethodDef(const MethodDef& copyType);
 	MethodDef& operator=(const MethodDef& assignType);
 	virtual ~MethodDef();
 
 	std::string name;
 	std::string type;
-	MethodType flags;
-	std::vector<ParamDef *> signature;
+	Arts::MethodType flags;
+	std::vector<Arts::ParamDef *> signature;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class AttributeDef : public Type {
+class AttributeDef : public Arts::Type {
 public:
 	AttributeDef();
-	AttributeDef(const std::string& name, const std::string& type, AttributeType flags);
-	AttributeDef(Buffer& stream);
+	AttributeDef(const std::string& name, const std::string& type, Arts::AttributeType flags);
+	AttributeDef(Arts::Buffer& stream);
 	AttributeDef(const AttributeDef& copyType);
 	AttributeDef& operator=(const AttributeDef& assignType);
 	virtual ~AttributeDef();
 
 	std::string name;
 	std::string type;
-	AttributeType flags;
+	Arts::AttributeType flags;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class InterfaceDef : public Type {
+class InterfaceDef : public Arts::Type {
 public:
 	InterfaceDef();
-	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<MethodDef *>& methods, const std::vector<AttributeDef *>& attributes, const std::vector<std::string>& defaultPorts);
-	InterfaceDef(Buffer& stream);
+	InterfaceDef(const std::string& name, const std::vector<std::string>& inheritedInterfaces, const std::vector<Arts::MethodDef *>& methods, const std::vector<Arts::AttributeDef *>& attributes, const std::vector<std::string>& defaultPorts);
+	InterfaceDef(Arts::Buffer& stream);
 	InterfaceDef(const InterfaceDef& copyType);
 	InterfaceDef& operator=(const InterfaceDef& assignType);
 	virtual ~InterfaceDef();
 
 	std::string name;
 	std::vector<std::string> inheritedInterfaces;
-	std::vector<MethodDef *> methods;
-	std::vector<AttributeDef *> attributes;
+	std::vector<Arts::MethodDef *> methods;
+	std::vector<Arts::AttributeDef *> attributes;
 	std::vector<std::string> defaultPorts;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class TypeComponent : public Type {
+class TypeComponent : public Arts::Type {
 public:
 	TypeComponent();
 	TypeComponent(const std::string& type, const std::string& name);
-	TypeComponent(Buffer& stream);
+	TypeComponent(Arts::Buffer& stream);
 	TypeComponent(const TypeComponent& copyType);
 	TypeComponent& operator=(const TypeComponent& assignType);
 	virtual ~TypeComponent();
@@ -203,32 +206,32 @@ public:
 	std::string name;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class TypeDef : public Type {
+class TypeDef : public Arts::Type {
 public:
 	TypeDef();
-	TypeDef(const std::string& name, const std::vector<TypeComponent *>& contents);
-	TypeDef(Buffer& stream);
+	TypeDef(const std::string& name, const std::vector<Arts::TypeComponent *>& contents);
+	TypeDef(Arts::Buffer& stream);
 	TypeDef(const TypeDef& copyType);
 	TypeDef& operator=(const TypeDef& assignType);
 	virtual ~TypeDef();
 
 	std::string name;
-	std::vector<TypeComponent *> contents;
+	std::vector<Arts::TypeComponent *> contents;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class EnumComponent : public Type {
+class EnumComponent : public Arts::Type {
 public:
 	EnumComponent();
 	EnumComponent(const std::string& name, long value);
-	EnumComponent(Buffer& stream);
+	EnumComponent(Arts::Buffer& stream);
 	EnumComponent(const EnumComponent& copyType);
 	EnumComponent& operator=(const EnumComponent& assignType);
 	virtual ~EnumComponent();
@@ -237,47 +240,49 @@ public:
 	long value;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class EnumDef : public Type {
+class EnumDef : public Arts::Type {
 public:
 	EnumDef();
-	EnumDef(const std::string& name, const std::vector<EnumComponent *>& contents);
-	EnumDef(Buffer& stream);
+	EnumDef(const std::string& name, const std::vector<Arts::EnumComponent *>& contents);
+	EnumDef(Arts::Buffer& stream);
 	EnumDef(const EnumDef& copyType);
 	EnumDef& operator=(const EnumDef& assignType);
 	virtual ~EnumDef();
 
 	std::string name;
-	std::vector<EnumComponent *> contents;
+	std::vector<Arts::EnumComponent *> contents;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
-class ModuleDef : public Type {
+class ModuleDef : public Arts::Type {
 public:
 	ModuleDef();
-	ModuleDef(const std::string& moduleName, const std::vector<ModuleDef *>& modules, const std::vector<EnumDef *>& enums, const std::vector<TypeDef *>& types, const std::vector<InterfaceDef *>& interfaces);
-	ModuleDef(Buffer& stream);
+	ModuleDef(const std::string& moduleName, const std::vector<Arts::ModuleDef *>& modules, const std::vector<Arts::EnumDef *>& enums, const std::vector<Arts::TypeDef *>& types, const std::vector<Arts::InterfaceDef *>& interfaces);
+	ModuleDef(Arts::Buffer& stream);
 	ModuleDef(const ModuleDef& copyType);
 	ModuleDef& operator=(const ModuleDef& assignType);
 	virtual ~ModuleDef();
 
 	std::string moduleName;
-	std::vector<ModuleDef *> modules;
-	std::vector<EnumDef *> enums;
-	std::vector<TypeDef *> types;
-	std::vector<InterfaceDef *> interfaces;
+	std::vector<Arts::ModuleDef *> modules;
+	std::vector<Arts::EnumDef *> enums;
+	std::vector<Arts::TypeDef *> types;
+	std::vector<Arts::InterfaceDef *> interfaces;
 
 // marshalling functions
-	void readType(Buffer& stream);
-	void writeType(Buffer& stream) const;
+	void readType(Arts::Buffer& stream);
+	void writeType(Arts::Buffer& stream) const;
 };
 
+};
+namespace Arts {
 class InterfaceRepo;
 class FlowSystemSender;
 class FlowSystemReceiver;
@@ -285,13 +290,13 @@ class FlowSystem;
 class GlobalComm;
 class TmpGlobalComm;
 
-class InterfaceRepo_base : virtual public Object_base {
+class InterfaceRepo_base : virtual public Arts::Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
-	static InterfaceRepo_base *_create(const std::string& subClass = "InterfaceRepo");
+	static InterfaceRepo_base *_create(const std::string& subClass = "Arts::InterfaceRepo");
 	static InterfaceRepo_base *_fromString(std::string objectref);
-	static InterfaceRepo_base *_fromReference(ObjectReference ref, bool needcopy);
+	static InterfaceRepo_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
 	inline InterfaceRepo_base *_copy() {
 		assert(_refCnt > 0);
@@ -304,39 +309,41 @@ public:
 
 	void *_cast(unsigned long iid);
 
-	virtual long insertModule(const ModuleDef& newModule) = 0;
+	virtual long insertModule(const Arts::ModuleDef& newModule) = 0;
 	virtual void removeModule(long moduleID) = 0;
-	virtual InterfaceDef* queryInterface(const std::string& name) = 0;
-	virtual TypeDef* queryType(const std::string& name) = 0;
+	virtual Arts::InterfaceDef* queryInterface(const std::string& name) = 0;
+	virtual Arts::TypeDef* queryType(const std::string& name) = 0;
 };
 
-class InterfaceRepo_stub : virtual public InterfaceRepo_base, virtual public Object_stub {
+class InterfaceRepo_stub : virtual public InterfaceRepo_base, virtual public Arts::Object_stub {
 protected:
 	InterfaceRepo_stub();
 
 public:
-	InterfaceRepo_stub(Connection *connection, long objectID);
+	InterfaceRepo_stub(Arts::Connection *connection, long objectID);
 
-	long insertModule(const ModuleDef& newModule);
+	long insertModule(const Arts::ModuleDef& newModule);
 	void removeModule(long moduleID);
-	InterfaceDef* queryInterface(const std::string& name);
-	TypeDef* queryType(const std::string& name);
+	Arts::InterfaceDef* queryInterface(const std::string& name);
+	Arts::TypeDef* queryType(const std::string& name);
 };
 
-class InterfaceRepo_skel : virtual public InterfaceRepo_base, virtual public Object_skel {
+class InterfaceRepo_skel : virtual public InterfaceRepo_base, virtual public Arts::Object_skel {
 public:
 	InterfaceRepo_skel();
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void dispatch(Buffer *request, Buffer *result,long methodID);
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
 
+};
 #include "reference.h"
-class InterfaceRepo : public Object {
+namespace Arts {
+class InterfaceRepo : public Arts::Object {
 private:
-	static Object_base* _Creator();
+	static Arts::Object_base* _Creator();
 	InterfaceRepo_base *_cache;
 	inline InterfaceRepo_base *_method_call() {
 		_pool->checkcreate();
@@ -352,12 +359,12 @@ protected:
 
 
 public:
-	inline InterfaceRepo() : Object(_Creator), _cache(0) {}
-	inline InterfaceRepo(const SubClass& s) :
-		Object(InterfaceRepo_base::_create(s.string())), _cache(0) {}
-	inline InterfaceRepo(const Reference &r) :
-		Object(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline InterfaceRepo(const DynamicCast& c) : _cache(0) {
+	inline InterfaceRepo() : Arts::Object(_Creator), _cache(0) {}
+	inline InterfaceRepo(const Arts::SubClass& s) :
+		Arts::Object(InterfaceRepo_base::_create(s.string())), _cache(0) {}
+	inline InterfaceRepo(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(InterfaceRepo_base::_fromString(r.string())):(InterfaceRepo_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline InterfaceRepo(const Arts::DynamicCast& c) : _cache(0) {
 		InterfaceRepo_base * ptr = (InterfaceRepo_base *)c.object()._base()->_cast(InterfaceRepo_base::_IID);
 		if (ptr) {
 			_pool->Dec();
@@ -366,8 +373,8 @@ public:
 			_cache = ptr;
 		}
 	}
-	inline InterfaceRepo(const InterfaceRepo& target) : Object(target._pool), _cache(target._cache) {}
-	inline InterfaceRepo(Object::Pool& p) : Object(p), _cache(0) {}
+	inline InterfaceRepo(const InterfaceRepo& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline InterfaceRepo(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static InterfaceRepo null() {return InterfaceRepo((InterfaceRepo_base*)0);}
 	inline static InterfaceRepo _from_base(InterfaceRepo_base* b) {return InterfaceRepo(b);}
 	inline InterfaceRepo& operator=(const InterfaceRepo& target) {
@@ -380,19 +387,19 @@ public:
 	}
 	inline InterfaceRepo_base* _base() {return _cache?_cache:_method_call();}
 
-	inline long insertModule(const ModuleDef& newModule) {return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);}
+	inline long insertModule(const Arts::ModuleDef& newModule) {return _cache?_cache->insertModule(newModule):_method_call()->insertModule(newModule);}
 	inline void removeModule(long moduleID) {return _cache?_cache->removeModule(moduleID):_method_call()->removeModule(moduleID);}
-	inline InterfaceDef* queryInterface(const std::string& name) {return _cache?_cache->queryInterface(name):_method_call()->queryInterface(name);}
-	inline TypeDef* queryType(const std::string& name) {return _cache?_cache->queryType(name):_method_call()->queryType(name);}
+	inline Arts::InterfaceDef* queryInterface(const std::string& name) {return _cache?_cache->queryInterface(name):_method_call()->queryInterface(name);}
+	inline Arts::TypeDef* queryType(const std::string& name) {return _cache?_cache->queryType(name):_method_call()->queryType(name);}
 };
 
-class FlowSystemSender_base : virtual public Object_base {
+class FlowSystemSender_base : virtual public Arts::Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
-	static FlowSystemSender_base *_create(const std::string& subClass = "FlowSystemSender");
+	static FlowSystemSender_base *_create(const std::string& subClass = "Arts::FlowSystemSender");
 	static FlowSystemSender_base *_fromString(std::string objectref);
-	static FlowSystemSender_base *_fromReference(ObjectReference ref, bool needcopy);
+	static FlowSystemSender_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
 	inline FlowSystemSender_base *_copy() {
 		assert(_refCnt > 0);
@@ -408,30 +415,32 @@ public:
 	virtual void processed() = 0;
 };
 
-class FlowSystemSender_stub : virtual public FlowSystemSender_base, virtual public Object_stub {
+class FlowSystemSender_stub : virtual public FlowSystemSender_base, virtual public Arts::Object_stub {
 protected:
 	FlowSystemSender_stub();
 
 public:
-	FlowSystemSender_stub(Connection *connection, long objectID);
+	FlowSystemSender_stub(Arts::Connection *connection, long objectID);
 
 	void processed();
 };
 
-class FlowSystemSender_skel : virtual public FlowSystemSender_base, virtual public Object_skel {
+class FlowSystemSender_skel : virtual public FlowSystemSender_base, virtual public Arts::Object_skel {
 public:
 	FlowSystemSender_skel();
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void dispatch(Buffer *request, Buffer *result,long methodID);
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
 
+};
 #include "reference.h"
-class FlowSystemSender : public Object {
+namespace Arts {
+class FlowSystemSender : public Arts::Object {
 private:
-	static Object_base* _Creator();
+	static Arts::Object_base* _Creator();
 	FlowSystemSender_base *_cache;
 	inline FlowSystemSender_base *_method_call() {
 		_pool->checkcreate();
@@ -447,12 +456,12 @@ protected:
 
 
 public:
-	inline FlowSystemSender() : Object(_Creator), _cache(0) {}
-	inline FlowSystemSender(const SubClass& s) :
-		Object(FlowSystemSender_base::_create(s.string())), _cache(0) {}
-	inline FlowSystemSender(const Reference &r) :
-		Object(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystemSender(const DynamicCast& c) : _cache(0) {
+	inline FlowSystemSender() : Arts::Object(_Creator), _cache(0) {}
+	inline FlowSystemSender(const Arts::SubClass& s) :
+		Arts::Object(FlowSystemSender_base::_create(s.string())), _cache(0) {}
+	inline FlowSystemSender(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(FlowSystemSender_base::_fromString(r.string())):(FlowSystemSender_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystemSender(const Arts::DynamicCast& c) : _cache(0) {
 		FlowSystemSender_base * ptr = (FlowSystemSender_base *)c.object()._base()->_cast(FlowSystemSender_base::_IID);
 		if (ptr) {
 			_pool->Dec();
@@ -461,8 +470,8 @@ public:
 			_cache = ptr;
 		}
 	}
-	inline FlowSystemSender(const FlowSystemSender& target) : Object(target._pool), _cache(target._cache) {}
-	inline FlowSystemSender(Object::Pool& p) : Object(p), _cache(0) {}
+	inline FlowSystemSender(const FlowSystemSender& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline FlowSystemSender(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystemSender null() {return FlowSystemSender((FlowSystemSender_base*)0);}
 	inline static FlowSystemSender _from_base(FlowSystemSender_base* b) {return FlowSystemSender(b);}
 	inline FlowSystemSender& operator=(const FlowSystemSender& target) {
@@ -478,13 +487,13 @@ public:
 	inline void processed() {return _cache?_cache->processed():_method_call()->processed();}
 };
 
-class FlowSystemReceiver_base : virtual public Object_base {
+class FlowSystemReceiver_base : virtual public Arts::Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
-	static FlowSystemReceiver_base *_create(const std::string& subClass = "FlowSystemReceiver");
+	static FlowSystemReceiver_base *_create(const std::string& subClass = "Arts::FlowSystemReceiver");
 	static FlowSystemReceiver_base *_fromString(std::string objectref);
-	static FlowSystemReceiver_base *_fromReference(ObjectReference ref, bool needcopy);
+	static FlowSystemReceiver_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
 	inline FlowSystemReceiver_base *_copy() {
 		assert(_refCnt > 0);
@@ -500,30 +509,32 @@ public:
 	virtual long receiveHandlerID() = 0;
 };
 
-class FlowSystemReceiver_stub : virtual public FlowSystemReceiver_base, virtual public Object_stub {
+class FlowSystemReceiver_stub : virtual public FlowSystemReceiver_base, virtual public Arts::Object_stub {
 protected:
 	FlowSystemReceiver_stub();
 
 public:
-	FlowSystemReceiver_stub(Connection *connection, long objectID);
+	FlowSystemReceiver_stub(Arts::Connection *connection, long objectID);
 
 	long receiveHandlerID();
 };
 
-class FlowSystemReceiver_skel : virtual public FlowSystemReceiver_base, virtual public Object_skel {
+class FlowSystemReceiver_skel : virtual public FlowSystemReceiver_base, virtual public Arts::Object_skel {
 public:
 	FlowSystemReceiver_skel();
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void dispatch(Buffer *request, Buffer *result,long methodID);
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
 
+};
 #include "reference.h"
-class FlowSystemReceiver : public Object {
+namespace Arts {
+class FlowSystemReceiver : public Arts::Object {
 private:
-	static Object_base* _Creator();
+	static Arts::Object_base* _Creator();
 	FlowSystemReceiver_base *_cache;
 	inline FlowSystemReceiver_base *_method_call() {
 		_pool->checkcreate();
@@ -539,12 +550,12 @@ protected:
 
 
 public:
-	inline FlowSystemReceiver() : Object(_Creator), _cache(0) {}
-	inline FlowSystemReceiver(const SubClass& s) :
-		Object(FlowSystemReceiver_base::_create(s.string())), _cache(0) {}
-	inline FlowSystemReceiver(const Reference &r) :
-		Object(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystemReceiver(const DynamicCast& c) : _cache(0) {
+	inline FlowSystemReceiver() : Arts::Object(_Creator), _cache(0) {}
+	inline FlowSystemReceiver(const Arts::SubClass& s) :
+		Arts::Object(FlowSystemReceiver_base::_create(s.string())), _cache(0) {}
+	inline FlowSystemReceiver(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(FlowSystemReceiver_base::_fromString(r.string())):(FlowSystemReceiver_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystemReceiver(const Arts::DynamicCast& c) : _cache(0) {
 		FlowSystemReceiver_base * ptr = (FlowSystemReceiver_base *)c.object()._base()->_cast(FlowSystemReceiver_base::_IID);
 		if (ptr) {
 			_pool->Dec();
@@ -553,8 +564,8 @@ public:
 			_cache = ptr;
 		}
 	}
-	inline FlowSystemReceiver(const FlowSystemReceiver& target) : Object(target._pool), _cache(target._cache) {}
-	inline FlowSystemReceiver(Object::Pool& p) : Object(p), _cache(0) {}
+	inline FlowSystemReceiver(const FlowSystemReceiver& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline FlowSystemReceiver(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystemReceiver null() {return FlowSystemReceiver((FlowSystemReceiver_base*)0);}
 	inline static FlowSystemReceiver _from_base(FlowSystemReceiver_base* b) {return FlowSystemReceiver(b);}
 	inline FlowSystemReceiver& operator=(const FlowSystemReceiver& target) {
@@ -570,13 +581,13 @@ public:
 	inline long receiveHandlerID() {return _cache?_cache->receiveHandlerID():_method_call()->receiveHandlerID();}
 };
 
-class FlowSystem_base : virtual public Object_base {
+class FlowSystem_base : virtual public Arts::Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
-	static FlowSystem_base *_create(const std::string& subClass = "FlowSystem");
+	static FlowSystem_base *_create(const std::string& subClass = "Arts::FlowSystem");
 	static FlowSystem_base *_fromString(std::string objectref);
-	static FlowSystem_base *_fromReference(ObjectReference ref, bool needcopy);
+	static FlowSystem_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
 	inline FlowSystem_base *_copy() {
 		assert(_refCnt > 0);
@@ -589,43 +600,45 @@ public:
 
 	void *_cast(unsigned long iid);
 
-	virtual void startObject(Object node) = 0;
-	virtual void stopObject(Object node) = 0;
-	virtual void connectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort) = 0;
-	virtual void disconnectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort) = 0;
-	virtual AttributeType queryFlags(Object node, const std::string& port) = 0;
-	virtual FlowSystemReceiver createReceiver(Object destObject, const std::string& destPort, FlowSystemSender sender) = 0;
+	virtual void startObject(Arts::Object node) = 0;
+	virtual void stopObject(Arts::Object node) = 0;
+	virtual void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) = 0;
+	virtual void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) = 0;
+	virtual Arts::AttributeType queryFlags(Arts::Object node, const std::string& port) = 0;
+	virtual Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender) = 0;
 };
 
-class FlowSystem_stub : virtual public FlowSystem_base, virtual public Object_stub {
+class FlowSystem_stub : virtual public FlowSystem_base, virtual public Arts::Object_stub {
 protected:
 	FlowSystem_stub();
 
 public:
-	FlowSystem_stub(Connection *connection, long objectID);
+	FlowSystem_stub(Arts::Connection *connection, long objectID);
 
-	void startObject(Object node);
-	void stopObject(Object node);
-	void connectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort);
-	void disconnectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort);
-	AttributeType queryFlags(Object node, const std::string& port);
-	FlowSystemReceiver createReceiver(Object destObject, const std::string& destPort, FlowSystemSender sender);
+	void startObject(Arts::Object node);
+	void stopObject(Arts::Object node);
+	void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort);
+	void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort);
+	Arts::AttributeType queryFlags(Arts::Object node, const std::string& port);
+	Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender);
 };
 
-class FlowSystem_skel : virtual public FlowSystem_base, virtual public Object_skel {
+class FlowSystem_skel : virtual public FlowSystem_base, virtual public Arts::Object_skel {
 public:
 	FlowSystem_skel();
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void dispatch(Buffer *request, Buffer *result,long methodID);
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
 
+};
 #include "reference.h"
-class FlowSystem : public Object {
+namespace Arts {
+class FlowSystem : public Arts::Object {
 private:
-	static Object_base* _Creator();
+	static Arts::Object_base* _Creator();
 	FlowSystem_base *_cache;
 	inline FlowSystem_base *_method_call() {
 		_pool->checkcreate();
@@ -641,12 +654,12 @@ protected:
 
 
 public:
-	inline FlowSystem() : Object(_Creator), _cache(0) {}
-	inline FlowSystem(const SubClass& s) :
-		Object(FlowSystem_base::_create(s.string())), _cache(0) {}
-	inline FlowSystem(const Reference &r) :
-		Object(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline FlowSystem(const DynamicCast& c) : _cache(0) {
+	inline FlowSystem() : Arts::Object(_Creator), _cache(0) {}
+	inline FlowSystem(const Arts::SubClass& s) :
+		Arts::Object(FlowSystem_base::_create(s.string())), _cache(0) {}
+	inline FlowSystem(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(FlowSystem_base::_fromString(r.string())):(FlowSystem_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline FlowSystem(const Arts::DynamicCast& c) : _cache(0) {
 		FlowSystem_base * ptr = (FlowSystem_base *)c.object()._base()->_cast(FlowSystem_base::_IID);
 		if (ptr) {
 			_pool->Dec();
@@ -655,8 +668,8 @@ public:
 			_cache = ptr;
 		}
 	}
-	inline FlowSystem(const FlowSystem& target) : Object(target._pool), _cache(target._cache) {}
-	inline FlowSystem(Object::Pool& p) : Object(p), _cache(0) {}
+	inline FlowSystem(const FlowSystem& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline FlowSystem(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static FlowSystem null() {return FlowSystem((FlowSystem_base*)0);}
 	inline static FlowSystem _from_base(FlowSystem_base* b) {return FlowSystem(b);}
 	inline FlowSystem& operator=(const FlowSystem& target) {
@@ -669,21 +682,21 @@ public:
 	}
 	inline FlowSystem_base* _base() {return _cache?_cache:_method_call();}
 
-	inline void startObject(Object node) {return _cache?_cache->startObject(node):_method_call()->startObject(node);}
-	inline void stopObject(Object node) {return _cache?_cache->stopObject(node):_method_call()->stopObject(node);}
-	inline void connectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort) {return _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline void disconnectObject(Object sourceObject, const std::string& sourcePort, Object destObject, const std::string& destPort) {return _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
-	inline AttributeType queryFlags(Object node, const std::string& port) {return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
-	inline FlowSystemReceiver createReceiver(Object destObject, const std::string& destPort, FlowSystemSender sender) {return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
+	inline void startObject(Arts::Object node) {return _cache?_cache->startObject(node):_method_call()->startObject(node);}
+	inline void stopObject(Arts::Object node) {return _cache?_cache->stopObject(node):_method_call()->stopObject(node);}
+	inline void connectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) {return _cache?_cache->connectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->connectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline void disconnectObject(Arts::Object sourceObject, const std::string& sourcePort, Arts::Object destObject, const std::string& destPort) {return _cache?_cache->disconnectObject(sourceObject, sourcePort, destObject, destPort):_method_call()->disconnectObject(sourceObject, sourcePort, destObject, destPort);}
+	inline Arts::AttributeType queryFlags(Arts::Object node, const std::string& port) {return _cache?_cache->queryFlags(node, port):_method_call()->queryFlags(node, port);}
+	inline Arts::FlowSystemReceiver createReceiver(Arts::Object destObject, const std::string& destPort, Arts::FlowSystemSender sender) {return _cache?_cache->createReceiver(destObject, destPort, sender):_method_call()->createReceiver(destObject, destPort, sender);}
 };
 
-class GlobalComm_base : virtual public Object_base {
+class GlobalComm_base : virtual public Arts::Object_base {
 public:
 	static unsigned long _IID; // interface ID
 
-	static GlobalComm_base *_create(const std::string& subClass = "GlobalComm");
+	static GlobalComm_base *_create(const std::string& subClass = "Arts::GlobalComm");
 	static GlobalComm_base *_fromString(std::string objectref);
-	static GlobalComm_base *_fromReference(ObjectReference ref, bool needcopy);
+	static GlobalComm_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
 	inline GlobalComm_base *_copy() {
 		assert(_refCnt > 0);
@@ -701,32 +714,34 @@ public:
 	virtual void erase(const std::string& variable) = 0;
 };
 
-class GlobalComm_stub : virtual public GlobalComm_base, virtual public Object_stub {
+class GlobalComm_stub : virtual public GlobalComm_base, virtual public Arts::Object_stub {
 protected:
 	GlobalComm_stub();
 
 public:
-	GlobalComm_stub(Connection *connection, long objectID);
+	GlobalComm_stub(Arts::Connection *connection, long objectID);
 
 	bool put(const std::string& variable, const std::string& value);
 	std::string get(const std::string& variable);
 	void erase(const std::string& variable);
 };
 
-class GlobalComm_skel : virtual public GlobalComm_base, virtual public Object_skel {
+class GlobalComm_skel : virtual public GlobalComm_base, virtual public Arts::Object_skel {
 public:
 	GlobalComm_skel();
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void dispatch(Buffer *request, Buffer *result,long methodID);
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
 
+};
 #include "reference.h"
-class GlobalComm : public Object {
+namespace Arts {
+class GlobalComm : public Arts::Object {
 private:
-	static Object_base* _Creator();
+	static Arts::Object_base* _Creator();
 	GlobalComm_base *_cache;
 	inline GlobalComm_base *_method_call() {
 		_pool->checkcreate();
@@ -742,12 +757,12 @@ protected:
 
 
 public:
-	inline GlobalComm() : Object(_Creator), _cache(0) {}
-	inline GlobalComm(const SubClass& s) :
-		Object(GlobalComm_base::_create(s.string())), _cache(0) {}
-	inline GlobalComm(const Reference &r) :
-		Object(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline GlobalComm(const DynamicCast& c) : _cache(0) {
+	inline GlobalComm() : Arts::Object(_Creator), _cache(0) {}
+	inline GlobalComm(const Arts::SubClass& s) :
+		Arts::Object(GlobalComm_base::_create(s.string())), _cache(0) {}
+	inline GlobalComm(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(GlobalComm_base::_fromString(r.string())):(GlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline GlobalComm(const Arts::DynamicCast& c) : _cache(0) {
 		GlobalComm_base * ptr = (GlobalComm_base *)c.object()._base()->_cast(GlobalComm_base::_IID);
 		if (ptr) {
 			_pool->Dec();
@@ -756,8 +771,8 @@ public:
 			_cache = ptr;
 		}
 	}
-	inline GlobalComm(const GlobalComm& target) : Object(target._pool), _cache(target._cache) {}
-	inline GlobalComm(Object::Pool& p) : Object(p), _cache(0) {}
+	inline GlobalComm(const GlobalComm& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline GlobalComm(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static GlobalComm null() {return GlobalComm((GlobalComm_base*)0);}
 	inline static GlobalComm _from_base(GlobalComm_base* b) {return GlobalComm(b);}
 	inline GlobalComm& operator=(const GlobalComm& target) {
@@ -775,13 +790,13 @@ public:
 	inline void erase(const std::string& variable) {return _cache?_cache->erase(variable):_method_call()->erase(variable);}
 };
 
-class TmpGlobalComm_base : virtual public GlobalComm_base {
+class TmpGlobalComm_base : virtual public Arts::GlobalComm_base {
 public:
 	static unsigned long _IID; // interface ID
 
-	static TmpGlobalComm_base *_create(const std::string& subClass = "TmpGlobalComm");
+	static TmpGlobalComm_base *_create(const std::string& subClass = "Arts::TmpGlobalComm");
 	static TmpGlobalComm_base *_fromString(std::string objectref);
-	static TmpGlobalComm_base *_fromReference(ObjectReference ref, bool needcopy);
+	static TmpGlobalComm_base *_fromReference(Arts::ObjectReference ref, bool needcopy);
 
 	inline TmpGlobalComm_base *_copy() {
 		assert(_refCnt > 0);
@@ -796,29 +811,31 @@ public:
 
 };
 
-class TmpGlobalComm_stub : virtual public TmpGlobalComm_base, virtual public GlobalComm_stub {
+class TmpGlobalComm_stub : virtual public TmpGlobalComm_base, virtual public Arts::GlobalComm_stub {
 protected:
 	TmpGlobalComm_stub();
 
 public:
-	TmpGlobalComm_stub(Connection *connection, long objectID);
+	TmpGlobalComm_stub(Arts::Connection *connection, long objectID);
 
 };
 
-class TmpGlobalComm_skel : virtual public TmpGlobalComm_base, virtual public GlobalComm_skel {
+class TmpGlobalComm_skel : virtual public TmpGlobalComm_base, virtual public Arts::GlobalComm_skel {
 public:
 	TmpGlobalComm_skel();
 
 	static std::string _interfaceNameSkel();
 	std::string _interfaceName();
 	void _buildMethodTable();
-	void dispatch(Buffer *request, Buffer *result,long methodID);
+	void dispatch(Arts::Buffer *request, Arts::Buffer *result,long methodID);
 };
 
+};
 #include "reference.h"
-class TmpGlobalComm : public Object {
+namespace Arts {
+class TmpGlobalComm : public Arts::Object {
 private:
-	static Object_base* _Creator();
+	static Arts::Object_base* _Creator();
 	TmpGlobalComm_base *_cache;
 	inline TmpGlobalComm_base *_method_call() {
 		_pool->checkcreate();
@@ -834,12 +851,12 @@ protected:
 
 
 public:
-	inline TmpGlobalComm() : Object(_Creator), _cache(0) {}
-	inline TmpGlobalComm(const SubClass& s) :
-		Object(TmpGlobalComm_base::_create(s.string())), _cache(0) {}
-	inline TmpGlobalComm(const Reference &r) :
-		Object(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
-	inline TmpGlobalComm(const DynamicCast& c) : _cache(0) {
+	inline TmpGlobalComm() : Arts::Object(_Creator), _cache(0) {}
+	inline TmpGlobalComm(const Arts::SubClass& s) :
+		Arts::Object(TmpGlobalComm_base::_create(s.string())), _cache(0) {}
+	inline TmpGlobalComm(const Arts::Reference &r) :
+		Arts::Object(r.isString()?(TmpGlobalComm_base::_fromString(r.string())):(TmpGlobalComm_base::_fromReference(r.reference(),true))), _cache(0) {}
+	inline TmpGlobalComm(const Arts::DynamicCast& c) : _cache(0) {
 		TmpGlobalComm_base * ptr = (TmpGlobalComm_base *)c.object()._base()->_cast(TmpGlobalComm_base::_IID);
 		if (ptr) {
 			_pool->Dec();
@@ -848,8 +865,8 @@ public:
 			_cache = ptr;
 		}
 	}
-	inline TmpGlobalComm(const TmpGlobalComm& target) : Object(target._pool), _cache(target._cache) {}
-	inline TmpGlobalComm(Object::Pool& p) : Object(p), _cache(0) {}
+	inline TmpGlobalComm(const TmpGlobalComm& target) : Arts::Object(target._pool), _cache(target._cache) {}
+	inline TmpGlobalComm(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}
 	inline static TmpGlobalComm null() {return TmpGlobalComm((TmpGlobalComm_base*)0);}
 	inline static TmpGlobalComm _from_base(TmpGlobalComm_base* b) {return TmpGlobalComm(b);}
 	inline TmpGlobalComm& operator=(const TmpGlobalComm& target) {
@@ -860,7 +877,7 @@ public:
 		_pool->Inc();
 		return *this;
 	}
-	inline operator GlobalComm() const { return GlobalComm(*_pool); }
+	inline operator Arts::GlobalComm() const { return Arts::GlobalComm(*_pool); }
 	inline TmpGlobalComm_base* _base() {return _cache?_cache:_method_call();}
 
 	inline bool put(const std::string& variable, const std::string& value) {return _cache?_cache->put(variable, value):_method_call()->put(variable, value);}
@@ -868,4 +885,5 @@ public:
 	inline void erase(const std::string& variable) {return _cache?_cache->erase(variable):_method_call()->erase(variable);}
 };
 
+};
 #endif /* CORE_H */

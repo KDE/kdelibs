@@ -24,6 +24,7 @@
 #include <fstream>
 
 using namespace std;
+using namespace Arts;
 
 MCOPConfig::MCOPConfig(const string& filename) :filename(filename)
 {

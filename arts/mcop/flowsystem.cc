@@ -22,6 +22,8 @@
 
 #include "flowsystem.h"
 
+using namespace Arts;
+
 //-------------- ScheduleNode -----------------
 
 ScheduleNode::ScheduleNode(Object_base *object) : _nodeObject(object)

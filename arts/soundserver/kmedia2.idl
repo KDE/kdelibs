@@ -28,6 +28,8 @@ to reuse a reverb effect to play midi, audio and video files.
 
 */
 
+module Arts {
+
 enum poState {
   posPlaying,
   posFinished,
@@ -119,4 +121,6 @@ interface PlayObjectFactory {
 	 * @param filename the name of the file to create a play object for
 	 */
 	PlayObject createPlayObject(string filename);
+};
+
 };

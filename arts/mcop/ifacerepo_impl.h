@@ -25,6 +25,8 @@
 
 #include "core.h"
 
+namespace Arts {
+
 class InterfaceRepo_impl : virtual public InterfaceRepo_skel {
 	class TypeEntry : public TypeDef {
 	public:
@@ -56,5 +58,5 @@ public:
 	InterfaceDef* queryInterface(const std::string& name);
 	TypeDef* queryType(const std::string& name);
 };
-
+};
 #endif /* IFACEREPO_H */

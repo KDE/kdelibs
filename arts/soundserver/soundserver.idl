@@ -1,6 +1,7 @@
 #include "artsflow.idl"
 #include "kmedia2.idl"
 
+module Arts {
 /**
  * Producer of byte sound
  *
@@ -82,4 +83,6 @@ interface SimpleSoundServer : PlayObjectFactory
 interface WavPlayObject : PlayObject, SynthModule
 {
 	out audio stream left,right;
+};
+
 };

@@ -23,6 +23,8 @@
 #ifndef TYPE_H
 #define TYPE_H
 
+namespace Arts {
+
 class Type {
 public:
 	// FIXME:
@@ -33,6 +35,8 @@ public:
 
 	virtual void readType(Buffer& stream) = 0;
 	virtual void writeType(Buffer& stream) const = 0;
+};
+
 };
 
 #endif

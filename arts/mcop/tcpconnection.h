@@ -25,9 +25,12 @@
 
 #include "socketconnection.h"
 
+namespace Arts {
+
 class TCPConnection :public SocketConnection {
 public:
 	TCPConnection(std::string url);
 };
 
+};
 #endif /* TCPCONNECTION_H */

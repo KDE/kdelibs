@@ -23,6 +23,10 @@
 #include "artsflow.h"
 #include "execrequest.h"
 
+using namespace Arts;
+
+namespace Arts {
+
 class ExecutionManager_impl :virtual public ExecutionManager_skel
 {
 protected:
@@ -40,6 +44,8 @@ public:
 	bool isExecuting(long id);
 	bool freeStructure(long id);
 	void forceTermination();
+};
+
 };
 
 REGISTER_IMPLEMENTATION(ExecutionManager_impl);

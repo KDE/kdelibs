@@ -39,6 +39,7 @@
 // defined in the .cc file.
 
 using namespace std;
+using namespace Arts;
 
 IOWatchFD::IOWatchFD(int fd, int types, IONotify *notify)
 {

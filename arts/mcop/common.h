@@ -41,6 +41,8 @@
 
 /* reference counting helper */
 
+namespace Arts {
+
 template<class T>
 class ReferenceHelper
 {
@@ -80,8 +82,11 @@ public:
 	}
 };
 
+};
+
 #include "core.h"
 
+namespace Arts {
 /* some marshalling helpers */
 
 template<class T>
@@ -150,4 +155,5 @@ void readObject(Buffer& stream, T*& result) {
 typedef unsigned char mcopbyte;
 #endif
 
+};
 #endif

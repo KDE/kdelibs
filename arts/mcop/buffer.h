@@ -26,6 +26,8 @@
 #include <string>
 #include <vector>
 
+namespace Arts {
+
 #ifndef MCOPBYTE_DEFINED
 #define MCOPBYTE_DEFINED
 typedef unsigned char mcopbyte;
@@ -77,6 +79,8 @@ public:
 
 	std::string toString(const std::string& name);
 	bool fromString(const std::string& data, const std::string& name);
+};
+
 };
 
 #endif

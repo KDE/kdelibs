@@ -26,6 +26,8 @@
 #include "pipebuffer.h"
 #include "startupmanager.h"
 
+namespace Arts {
+
 class ASProducer {
 public:
 	virtual void needMore() = 0;
@@ -132,6 +134,8 @@ public:
 	 * detachConsumer/detachProducer
 	 */
 	bool running();
+};
+
 };
 
 #endif /* AUDIOSUBSYS_H */

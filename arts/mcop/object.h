@@ -31,6 +31,7 @@
 #include <map>
 #include <list>
 
+namespace Arts {
 /* custom dispatching functions */
 
 typedef void (*DispatchFunction)(void *object, Buffer *request, Buffer *result);
@@ -282,5 +283,7 @@ public:
 	 */
 
 	bool _error();
+};
+
 };
 #endif

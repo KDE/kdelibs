@@ -29,6 +29,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+namespace Arts {
+
 class CachedWav : public CachedObject
 {
 protected:
@@ -59,6 +61,8 @@ public:
 	 * memory usage for the cache
 	 */
 	int memoryUsage();
+};
+
 };
 
 #endif /* HAVE_LIBAUDIOFILE */

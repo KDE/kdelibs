@@ -26,6 +26,8 @@
 #include "hello.h"
 #include <iostream.h>
 
+using namespace Arts;
+
 int main()
 {
 	Dispatcher dispatcher;

@@ -26,6 +26,8 @@
 
 #include <core.h>
 
+using namespace Arts;
+
 /*
  * Test program for X11GlobalComm (communication over X11 root window
  * properties), and since X11GlobalComm is an dynamically extension,
@@ -34,7 +36,7 @@
 int main(int argc, char **argv)
 {
 	Dispatcher dispatcher;
-	GlobalComm gcomm( SubClass("X11GlobalComm") );
+	GlobalComm gcomm( SubClass("Arts::X11GlobalComm") );
 	
 	if (gcomm.isNull()) {
 		cerr << "Cannot create a X11GlobalComm object" << endl;

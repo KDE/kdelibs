@@ -26,6 +26,8 @@
 #include "synthschedule.h"
 #include <list>
 
+namespace Arts {
+
 class VPortConnection {
 private:
 	friend class VPort;
@@ -69,4 +71,6 @@ public:
 	void virtualize(VPort *port);
 	void devirtualize(VPort *port);
 };
+};
+
 #endif /* VIRTUALPORTS_H */

@@ -32,6 +32,7 @@
 #include "synthschedule.h"
 
 using namespace std;
+using namespace Arts;
 
 extern "C" void stopServer(int)
 {

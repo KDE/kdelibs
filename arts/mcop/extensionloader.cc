@@ -25,6 +25,7 @@
 #include <cassert>
 
 using namespace std;
+using namespace Arts;
 
 ExtensionLoader::ExtensionLoader(const string& filename) :handle(0)
 {

@@ -26,7 +26,7 @@
 #include "artsflow.h"
 #include "connect.h"
 
-//using namespace MCOP;
+using namespace Arts;
 
 int main()
 {

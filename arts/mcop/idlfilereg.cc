@@ -22,6 +22,8 @@
 
 #include "core.h"
 
+using namespace Arts;
+
 IDLFileReg::IDLFileReg(const char *name, const char *contents)
 {
 	_name = name;

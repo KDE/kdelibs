@@ -8,6 +8,8 @@
 #include "convert.h"
 #include <iostream>
 
+using namespace Arts;
+
 class WavPlayObject_impl :public WavPlayObject_skel, public StdSynthModule {
 protected:
 	CachedWav *wav;

@@ -35,6 +35,7 @@
 #include "core.h"
 
 using namespace std;
+using namespace Arts;
 
 #ifndef KDE_USE_FINAL
 #include "yacc.cc.h"

@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+namespace Arts {
+
 // Acts as a string or ObjectReference, but enables a different constructor
 class Reference {
 private:
@@ -294,6 +296,8 @@ private:
 public:
 	inline explicit DynamicCast(const Object& o) : obj(o) {}
 	inline const Object& object() const {return obj;}
+};
+
 };
 
 #endif

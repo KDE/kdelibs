@@ -36,6 +36,8 @@
 #include <vector>
 #include <list>
 
+namespace Arts {
+
 template <class T>
 class Pool {
 	std::stack<unsigned long> freeIDs;
@@ -70,5 +72,7 @@ public:
 
 		return items;
 	}
+};
+
 };
 #endif /* POOL_H */

@@ -23,8 +23,7 @@
 #include <qobject.h>
 #include <knotifyclient.h>
 #include <dcopobject.h>
-
-class SimpleSoundServer_base;
+#include <soundserver.h>
 
 class KNotify : public QObject, DCOPObject
 {
@@ -54,7 +53,7 @@ public:
 	bool isGlobal(const QString &eventname);
 	
 private:
-	SimpleSoundServer_base *server;
+	Arts::SimpleSoundServer server;
 };
 
 

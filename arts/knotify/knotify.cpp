@@ -60,8 +60,8 @@ int main(int argc, char **argv)
 	
 	
 	// setup mcop communication
-	QIOManager qiomanager;
-	Dispatcher dispatcher(&qiomanager);
+	Arts::QIOManager qiomanager;
+	Arts::Dispatcher dispatcher(&qiomanager);
 
 
 	(void) new KNotify;
@@ -72,8 +72,8 @@ int main(int argc, char **argv)
 KNotify::KNotify() : QObject(), DCOPObject("Notify")
 {
 	// obtain an object reference to the soundserver
-	server = SimpleSoundServer_base::_fromString("global:Arts_SimpleSoundServer");
-	if(!server)
+	server = Arts::Reference("global:Arts_SimpleSoundServer");
+	if(server.isNull())
 		cerr << "artsd is not running, there will be no sound notifications.\n";
 }
 
@@ -127,7 +127,7 @@ bool KNotify::notifyBySound(const QString &sound)
 	if (QFileInfo(sound).isRelative())
 		f=locate("sounds", sound);
 
-	if(server) server->play((const char *)f);
+	if(!server.isNull()) server.play((const char *)f);
 	
 	return true;
 }

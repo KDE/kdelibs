@@ -36,6 +36,8 @@
 #include <vector>
 #include <list>
 
+namespace Arts {
+
 class ObjectReference;
 class FlowSystem_impl;
 class GlobalComm;
@@ -182,5 +184,5 @@ public:
 	 */
 	Connection *activeConnection();
 };
-
+};
 #endif

@@ -25,6 +25,8 @@
 
 #include "artsflow.h"
 
+namespace Arts {
+
 class StdSynthModule :virtual public SynthModule_base {
 protected:
 	long samplingRate;
@@ -40,5 +42,6 @@ public:
 	void streamEnd();
 
 	AutoSuspendState autoSuspend();
+};
 };
 #endif /* STDSYNTHMODULE_H */

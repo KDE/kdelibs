@@ -34,6 +34,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 class X11GlobalComm_impl : virtual public X11GlobalComm_skel {
 protected:

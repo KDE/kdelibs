@@ -22,8 +22,9 @@
 #define MCOP_CONNECT_H
 
 #include <string>
+
+namespace Arts {
 class Object;
-//namespace MCOP {
 
 // Connect function overloaded for components with default port
 void connect(const Object& src, const std::string& output, const Object& dest, const std::string& input);
@@ -42,6 +43,6 @@ void setValue(const Object& c, const float fvalue);
 //void setValue(const Object& c, const string& port, const string& svalue);
 //void setValue(const Object& c, const string& svalue);
 
-//}
+};
 
 #endif

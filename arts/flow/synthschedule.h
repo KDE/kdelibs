@@ -29,6 +29,8 @@
 #include <vector>
 #include <list>
 
+namespace Arts {
+
 class SynthBuffer
 {
 public:		// yes, bad style, but needs to be fast
@@ -274,6 +276,8 @@ public:
 
 	FlowSystemReceiver createReceiver(Object object, const std::string &port,
 										FlowSystemSender sender);
+};
+
 };
 
 #endif

@@ -32,6 +32,8 @@
 #include <sys/un.h>
 #include <errno.h>
 
+using namespace Arts;
+
 /*
  * These parameters impact the performance significantly. There are two sides:
  *

@@ -25,6 +25,8 @@
 
 #include <string>
 
+namespace Arts {
+
 class MCOPConfig {
 protected:
 	std::string filename;
@@ -36,4 +38,5 @@ public:
 								const std::string& defaultValue = "");
 };
 
+};
 #endif /* MCOPCONFIG_H */

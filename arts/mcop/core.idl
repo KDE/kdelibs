@@ -20,6 +20,7 @@
 
 */
 
+module Arts {
 // MCOP protocol
 
 enum HeaderMagic { MCOP_MAGIC = 0x504f434d }; /* gets marshalled as "MCOP" */
@@ -450,3 +451,4 @@ interface Object {
 };
 
 */
+};

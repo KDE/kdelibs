@@ -30,6 +30,8 @@
 #include "artsflow.h"
 #include <list>
 
+namespace Arts {
+
 class AttachedProducer {
 protected:
 	ByteSoundProducer _sender;
@@ -72,6 +74,8 @@ public:
 	PlayObject createPlayObject(const std::string& filename);
 	StereoEffectStack outstack();
 	Object createObject(const std::string& name);
+};
+
 };
 
 #endif /* SIMPLESOUNDSERVER_IMPL_H */

@@ -27,6 +27,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 class SynthPortWrapper {
 public:
@@ -109,10 +110,14 @@ REGISTER_IMPLEMENTATION(ArtsServer_impl);
 
 ArtsServer_impl *asReference = 0;
 
+namespace Arts {
+
 void artsServerRun()
 {
 	asReference->run();
 }
+
+};
 
 ArtsServer_impl::ArtsServer_impl()
 {
@@ -130,7 +135,8 @@ bool ArtsServer_impl::createModule(long mid, const ModuleDesc& desc)
 	Object_skel *object = ObjectManager::the()->create(desc.Name);
 	assert(object);
 
-	SynthModule_base *NewModule = (SynthModule_base *)object->_cast("SynthModule");
+	SynthModule_base *NewModule =
+		(SynthModule_base *)object->_cast("Arts::SynthModule");
 	assert(NewModule);
 
 	SynthExecNode *schedNode = new SynthExecNode(NewModule);

@@ -27,6 +27,8 @@
 #include "factory.h"
 #include <list>
 
+namespace Arts {
+
 class Object;
 
 class ObjectManager {
@@ -48,6 +50,8 @@ public:
 
 	void registerFactory(Factory *factory);
 	void removeFactory(Factory *factory);
+};
+
 };
 
 #endif /* OBJECTMANAGER_H */

@@ -50,6 +50,7 @@
 #define DEVICE_NAME "/dev/dsp"
 
 using namespace std;
+using namespace Arts;
 
 //--- automatic startup class
 

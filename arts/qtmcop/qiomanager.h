@@ -32,6 +32,8 @@
 #include <qsocketnotifier.h>
 #include <list>
 
+namespace Arts {
+
 class QIOWatch : public QObject {
 	Q_OBJECT
 protected:
@@ -77,6 +79,8 @@ public:
 	void remove(IONotify *notify, int types);
 	void addTimer(int milliseconds, TimeNotify *notify);
 	void removeTimer(TimeNotify *notify);
+};
+
 };
 
 #endif

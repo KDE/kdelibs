@@ -28,6 +28,7 @@
 #include <string>
 #include "startupmanager.h"
 
+namespace Arts {
 class Cache;
 
 class CachedObject
@@ -84,5 +85,5 @@ public:
 	void startup();
 	void shutdown();
 };
-
+};
 #endif

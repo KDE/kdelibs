@@ -23,6 +23,8 @@
 #include "notification.h"
 #include <assert.h>
 
+using namespace Arts;
+
 void NotificationClient::notify(const Notification&)
 {
 }

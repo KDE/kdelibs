@@ -29,6 +29,8 @@
 #include <list>
 #include <string>
 
+namespace Arts {
+
 class SocketConnection :public Connection, public IONotify {
 protected:
 	std::string serverID;
@@ -48,6 +50,8 @@ public:
 
 	void drop();
 	bool broken();
+};
+
 };
 
 #endif /* SOCKETCONNECTION_H */

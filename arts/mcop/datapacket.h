@@ -25,7 +25,7 @@
 
 #include "buffer.h"
 
-
+namespace Arts {
 /*
  * The GenericDataChannel interface is to be implemented by the flowsystem
  */
@@ -179,5 +179,5 @@ public:
 	void write(Buffer& stream);
 };
 
-
+};
 #endif

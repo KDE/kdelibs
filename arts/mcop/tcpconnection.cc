@@ -33,6 +33,7 @@
 #include <errno.h>
 
 using namespace std;
+using namespace Arts;
 
 static struct sockaddr_in *parse_tcp_url(const char *url)
 {

@@ -27,6 +27,7 @@
 #include "mcoputils.h"
 
 using namespace std;
+using namespace Arts;
 
 class TmpGlobalComm_impl : virtual public TmpGlobalComm_skel {
 public:

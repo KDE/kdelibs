@@ -30,6 +30,9 @@
 #include <vector>
 #include <string>
 
+using namespace std;
+using namespace Arts;
+
 int main()
 {
 	Dispatcher dispatcher(0,Dispatcher::startUnixServer);

@@ -25,6 +25,8 @@
 #include <stdio.h>
 #include <soundserver.h>
 
+using namespace Arts;
+
 /*
  * This is a little test program that illustrates remote dynamic casting.
  * Arts_SimpleSoundServer is a global object that is a SimpleSoundServer,

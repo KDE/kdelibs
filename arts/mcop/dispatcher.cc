@@ -36,7 +36,10 @@
 #include <signal.h>
 #include <iostream.h>
 
+
 /* Dispatcher private data class (to ensure binary compatibility) */
+
+namespace Arts {
 
 class DispatcherPrivate {
 public:
@@ -44,7 +47,10 @@ public:
 	InterfaceRepo interfaceRepo;
 };
 
+};
+
 using namespace std;
+using namespace Arts;
 
 Dispatcher *Dispatcher::_instance = 0;
 

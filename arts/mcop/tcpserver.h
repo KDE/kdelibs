@@ -26,6 +26,8 @@
 #include <string>
 #include "iomanager.h"
 
+namespace Arts {
+
 class Dispatcher;
 
 class TCPServer :public IONotify {
@@ -45,4 +47,7 @@ public:
 
 	void notifyIO(int fd, int types);
 };
+
+};
+
 #endif /* TCPSERVER_H */

@@ -24,6 +24,8 @@
 #include "stdsynthmodule.h"
 #include <math.h>
 
+using namespace Arts;
+
 class Synth_WAVE_SIN_impl : virtual public Synth_WAVE_SIN_skel,
 							virtual public StdSynthModule
 {

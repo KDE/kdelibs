@@ -26,6 +26,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 class StereoEffectStack_impl : public StereoEffectStack_skel,
 							   public StdSynthModule

@@ -26,6 +26,8 @@
 #include "synthschedule.h"
 #include "datapacket.h"
 
+namespace Arts {
+
 class ASyncNetSend : public FlowSystemSender_skel
 {
 protected:
@@ -97,4 +99,7 @@ public:
 	GenericAsyncStream *receiveNetCreateStream();
 	NotificationClient *receiveNetObject();
 };
+
+};
+
 #endif /* ASYNCSCHEDULE_H */

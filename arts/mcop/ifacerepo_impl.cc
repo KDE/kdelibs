@@ -23,6 +23,7 @@
 #include "ifacerepo_impl.h"
 
 using namespace std;
+using namespace Arts;
 
 InterfaceRepo_impl::InterfaceRepo_impl()
 {

@@ -28,6 +28,8 @@
 #include "debug.h"
 #include <stdio.h>
 
+using namespace Arts;
+
 vector<long> connect(long l)
 {
 	vector<long> connseq;
@@ -55,7 +57,7 @@ int main()
 			new PortDesc(11,"pos",pt,true,false,connect(20),440.0,"")
 		);
 		mdseq.push_back(
-			new ModuleDesc(12,"Synth_FREQUENCY",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(12,"Arts::Synth_FREQUENCY",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -72,7 +74,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(22,"Synth_WAVE_SIN",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(22,"Arts::Synth_WAVE_SIN",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -88,7 +90,7 @@ int main()
 			new PortDesc(31,"pos",pt,true,false,connect(40),0.0,"")
 		);
 		mdseq.push_back(
-			new ModuleDesc(32,"Synth_FREQUENCY",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(32,"Arts::Synth_FREQUENCY",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -105,7 +107,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(42,"Synth_WAVE_SIN",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(42,"Arts::Synth_WAVE_SIN",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -148,7 +150,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(53,"Synth_MULTI_ADD",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(53,"Arts::Synth_MULTI_ADD",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -168,7 +170,7 @@ int main()
 		);
 
 		mdseq.push_back(
-			new ModuleDesc(63,"Synth_MUL",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(63,"Arts::Synth_MUL",pdseq,0,0,0,0,false,false)
 		);
 	}
 
@@ -190,7 +192,7 @@ int main()
 		);
 	
 		mdseq.push_back(
-			new ModuleDesc(4,"Synth_PLAY",pdseq,0,0,0,0,false,false)
+			new ModuleDesc(4,"Arts::Synth_PLAY",pdseq,0,0,0,0,false,false)
 		);
 	}
 

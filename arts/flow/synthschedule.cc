@@ -32,6 +32,7 @@
 #include <stack>
 
 using namespace std;
+using namespace Arts;
 
 // well, this was tuneable once...
 
@@ -336,7 +337,7 @@ void StdScheduleNode::accessModule()
 {
 	if(module) return;
 
-	module = (SynthModule_base *)_object->_cast("SynthModule");
+	module = (SynthModule_base *)_object->_cast("Arts::SynthModule");
 	if(!module)
 	{
 		cerr << "Only SynthModule derived classes should carry streams."

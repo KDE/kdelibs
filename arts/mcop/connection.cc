@@ -24,6 +24,8 @@
 #include "dispatcher.h"
 #include <stdio.h>
 
+using namespace Arts;
+
 Connection::Connection() :_refCnt(1)
 {
 	_connState = unknown;

@@ -30,6 +30,7 @@
 #include <map>
 	
 using namespace std;
+using namespace Arts;
 
 string MCOPUtils::createFilePath(string name)
 {

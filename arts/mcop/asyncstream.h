@@ -26,6 +26,8 @@
 #include "buffer.h"
 #include "datapacket.h"
 
+namespace Arts {
+
 class GenericAsyncStream {
 public:
 	/**
@@ -79,6 +81,8 @@ class ByteAsyncStream : public AsyncStream<mcopbyte>
 public:
 	DataPacket<mcopbyte> *allocPacket(int capacity);
 	GenericAsyncStream *createNewStream();
+};
+
 };
 
 #endif /* ASYNCSTREAM_H */

@@ -29,6 +29,7 @@
 #include <list>
 #include <stack>
 
+namespace Arts {
 // constants:
 
 /**
@@ -174,6 +175,8 @@ public:
 	void remove(IONotify *notify, int types);
 	void addTimer(int milliseconds, TimeNotify *notify);
 	void removeTimer(TimeNotify *notify);
+};
+
 };
 
 #endif

@@ -23,6 +23,8 @@
 #include "datapacket.h"
 #include "buffer.h"
 
+using namespace Arts;
+
 /**** specific DataPacket types ****/
 
 void FloatDataPacket::read(Buffer& stream)

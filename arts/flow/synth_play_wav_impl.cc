@@ -50,6 +50,8 @@ extern "C" {
 #include <sys/stat.h>
 #include <unistd.h>
 
+using namespace Arts;
+
 
 CachedWav *CachedWav::load(Cache *cache, string filename)
 {

@@ -39,6 +39,7 @@
 #include "mcoputils.h"
 
 using namespace std;
+using namespace Arts;
 
 bool TCPServer::running()
 {

@@ -24,6 +24,8 @@
 #include "audiosubsys.h"
 #include "flowsystem.h"
 
+using namespace Arts;
+
 StdSynthModule::StdSynthModule()
 {
 	// TODO: maybe this should be handled over some other mechanism

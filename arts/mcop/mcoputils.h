@@ -25,6 +25,8 @@
 
 #include <string>
 
+namespace Arts {
+
 class MCOPUtils {
 public:
 	/**
@@ -59,4 +61,5 @@ public:
 	static unsigned long makeIID(const std::string& interfaceName);
 };
 
+};
 #endif /* MCOPUTILS_H */

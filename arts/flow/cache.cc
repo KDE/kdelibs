@@ -26,6 +26,7 @@
 #include <cassert>
 
 using namespace std;
+using namespace Arts;
 
 bool CachedObject::isValid()
 {

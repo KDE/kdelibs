@@ -25,6 +25,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 #define compose_16le(first,second) \
 	(((((second)+128)&0xff) << 8)+(first))

@@ -27,6 +27,8 @@
 #include "object.h"
 #include "startupmanager.h"
 
+namespace Arts {
+
 class Factory : public StartupClass {
 public:
 	void startup();
@@ -36,10 +38,11 @@ public:
 };
 
 #define REGISTER_IMPLEMENTATION(impl)                                      \
-  class impl ## _Factory : virtual public Factory {                        \
+  class impl ## _Factory : virtual public Arts::Factory {                  \
   public:                                                                  \
     std::string interfaceName() { return impl ## ::_interfaceNameSkel(); } \
-	Object_skel *createInstance() { return new impl ; }                    \
+	Arts::Object_skel *createInstance() { return new impl ; }              \
 } The_ ## impl ## _Factory;
+};
 
 #endif

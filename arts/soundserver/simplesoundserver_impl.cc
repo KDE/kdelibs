@@ -32,6 +32,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 AttachedProducer::AttachedProducer(ByteSoundProducer sender,
 										ByteStreamToAudio receiver)

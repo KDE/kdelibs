@@ -26,6 +26,8 @@
 #include "iomanager.h"
 #include "dispatcher.h"
 
+namespace Arts {
+
 class ReferenceClean : public TimeNotify {
 	Pool<Object_skel>& objectPool;
 public:
@@ -34,4 +36,5 @@ public:
 	virtual ~ReferenceClean();
 };
 
+};
 #endif

@@ -25,6 +25,8 @@
 
 #include "buffer.h"
 
+namespace Arts {
+
 class Connection {
 public:
 	enum ConnectionState {
@@ -74,6 +76,8 @@ public:
 
 	void _release();
 	void _copy();
+};
+
 };
 
 #endif

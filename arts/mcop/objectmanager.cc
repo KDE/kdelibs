@@ -30,6 +30,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 Object_skel *ObjectManager::create(string name)
 {
@@ -45,7 +46,20 @@ Object_skel *ObjectManager::create(string name)
 
 	/* second try: look if there is a suitable extension we could load */
 
-	MCOPConfig config(string(EXTENSION_DIR) + "/" + name + ".mcopclass");
+	string mcopclassName;
+
+	// for now don't care about namespaces when looking up .mcopclass files
+	string::iterator nameit;
+	for(nameit = name.begin(); nameit != name.end(); nameit++)
+	{
+		if(*nameit == ':')
+			mcopclassName = "";
+		else
+			mcopclassName += *nameit;
+	}
+	mcopclassName += ".mcopclass";
+
+	MCOPConfig config(string(EXTENSION_DIR) + "/" + mcopclassName);
 	string library = config.readEntry("Library");
 	if(library != "")
 	{

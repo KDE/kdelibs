@@ -33,6 +33,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 int idl_in_include;
 int idl_line_no;
@@ -271,9 +272,9 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_RESULT_SEQ)	result = "std::vector<float> *";
 		if(model==MODEL_STREAM)		result = "float *"+name;
 		if(model==MODEL_MSTREAM)	result = "float **"+name;
-		if(model==MODEL_ASTREAM)	result = "FloatAsyncStream "+name;
+		if(model==MODEL_ASTREAM)	result = "Arts::FloatAsyncStream "+name;
 		if(model==MODEL_AMSTREAM)	assert(false);
-		if(model==MODEL_ASTREAM_PACKETPTR) result = "DataPacket<float> *";
+		if(model==MODEL_ASTREAM_PACKETPTR) result = "Arts::DataPacket<float> *";
 		/*result = "float **"+name;*/
 
 		if(model==MODEL_READ)
@@ -337,12 +338,12 @@ string createTypeCode(string type, const string& name, long model,
 	}
 	else if(type == "byte")
 	{
-		if(model==MODEL_MEMBER)		result = "mcopbyte";
-		if(model==MODEL_MEMBER_SEQ) result = "std::vector<mcopbyte>";
-		if(model==MODEL_ARG)		result = "mcopbyte";
-		if(model==MODEL_ARG_SEQ)	result = "const std::vector<mcopbyte>&";
-		if(model==MODEL_RESULT)		result = "mcopbyte";
-		if(model==MODEL_RESULT_SEQ)	result = "std::vector<mcopbyte> *";
+		if(model==MODEL_MEMBER)		result = "Arts::mcopbyte";
+		if(model==MODEL_MEMBER_SEQ) result = "std::vector<Arts::mcopbyte>";
+		if(model==MODEL_ARG)		result = "Arts::mcopbyte";
+		if(model==MODEL_ARG_SEQ)	result = "const std::vector<Arts::mcopbyte>&";
+		if(model==MODEL_RESULT)		result = "Arts::mcopbyte";
+		if(model==MODEL_RESULT_SEQ)	result = "std::vector<Arts::mcopbyte> *";
 		if(model==MODEL_READ)
 			result = name+" = stream.readByte()";
 		if(model==MODEL_READ_SEQ)
@@ -350,12 +351,12 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_RES_READ)
 		{
 			result = indent + "if(!result) return 0; // error occured\n";
-			result += indent + "mcopbyte returnCode = result->readByte();\n";
+			result += indent + "Arts::mcopbyte returnCode = result->readByte();\n";
 			result += indent + "delete result;\n";
 			result += indent + "return returnCode;\n";
 		}
 		if(model==MODEL_REQ_READ)
-			result = indent + "mcopbyte "+name+" = request->readByte();\n";
+			result = indent + "Arts::mcopbyte "+name+" = request->readByte();\n";
 		if(model==MODEL_WRITE)
 			result = "stream.writeByte("+name+")";
 		if(model==MODEL_WRITE_SEQ)
@@ -365,8 +366,8 @@ string createTypeCode(string type, const string& name, long model,
 		if(model==MODEL_INVOKE)
 			result = indent + "result->writeByte("+name+");\n";
 		if(model==MODEL_ASTREAM)
-			result = "ByteAsyncStream "+name;
-		if(model==MODEL_ASTREAM_PACKETPTR) result = "DataPacket<mcopbyte> *";
+			result = "Arts::ByteAsyncStream "+name;
+		if(model==MODEL_ASTREAM_PACKETPTR) result = "Arts::DataPacket<Arts::mcopbyte> *";
 	}
 	else if(type == "long")
 	{
@@ -432,7 +433,7 @@ string createTypeCode(string type, const string& name, long model,
 	} else if(isPacketType(type)) {
 		if(model==MODEL_ASTREAM)
 			result = type+"AsyncStream "+name;
-		if(model==MODEL_ASTREAM_PACKETPTR) result = "DataPacket<"+type+"> *";
+		if(model==MODEL_ASTREAM_PACKETPTR) result = "Arts::DataPacket<"+type+"> *";
 	} else if(isStruct(type)) {
 		if(model==MODEL_MEMBER)
 			result = type;
@@ -510,7 +511,7 @@ string createTypeCode(string type, const string& name, long model,
 	} else if(isInterface(type)) {
 		// the "object class" is called Object
 		if(type == "object") {
-			type = "Object";
+			type = "Arts::Object";
 			wrapperMode = 0;
 		}
 
@@ -717,7 +718,7 @@ void doStructHeader(FILE *header)
 		nspace.setFromSymbol(d->name.c_str());
 		string tname = nspace.printableForm(d->name);
 
-		fprintf(header,"class %s : public Type {\n",tname.c_str());
+		fprintf(header,"class %s : public Arts::Type {\n",tname.c_str());
 		fprintf(header,"public:\n");
 
 		/** constructor without arguments **/
@@ -736,7 +737,7 @@ void doStructHeader(FILE *header)
 		fprintf(header,");\n");
 
 		/** constructor from stream **/
-		fprintf(header,"\t%s(Buffer& stream);\n",tname.c_str());
+		fprintf(header,"\t%s(Arts::Buffer& stream);\n",tname.c_str());
 
 		/** copy constructor (from same type) **/
 		fprintf(header,"\t%s(const %s& copyType);\n",
@@ -759,10 +760,10 @@ void doStructHeader(FILE *header)
 		fprintf(header,"\n// marshalling functions\n");
 
 		/** marshalling function for reading from stream **/
-		fprintf(header,"\tvoid readType(Buffer& stream);\n");
+		fprintf(header,"\tvoid readType(Arts::Buffer& stream);\n");
 
 		/** marshalling function for writing to stream **/
-		fprintf(header,"\tvoid writeType(Buffer& stream) const;\n");
+		fprintf(header,"\tvoid writeType(Arts::Buffer& stream) const;\n");
 		fprintf(header,"};\n\n");
 	}
 }
@@ -798,15 +799,15 @@ void doStructSource(FILE *source)
 		fprintf(source,"}\n\n");
 
 		/** constructor from stream **/
-		fprintf(source,"%s::%s(Buffer& stream)\n{\n",d->name.c_str(),tname.c_str());
+		fprintf(source,"%s::%s(Arts::Buffer& stream)\n{\n",d->name.c_str(),tname.c_str());
 		fprintf(source,"\treadType(stream);\n");
 		fprintf(source,"}\n\n");
 
 		/** copy constructor **/
 
-		fprintf(source,"%s::%s(const %s& copyType) : ::Type(copyType)\n{\n",
+		fprintf(source,"%s::%s(const %s& copyType) : Arts::Type(copyType)\n{\n",
 			d->name.c_str(),tname.c_str(),d->name.c_str());
-		fprintf(source,"\tBuffer buffer;\n");
+		fprintf(source,"\tArts::Buffer buffer;\n");
 		fprintf(source,"\tcopyType.writeType(buffer);\n");
 		fprintf(source,"\treadType(buffer);\n");
 		fprintf(source,"}\n\n");
@@ -814,7 +815,7 @@ void doStructSource(FILE *source)
 		/** assignment operator **/
 		fprintf(source,"%s& %s::operator=(const %s& assignType)\n{\n",
 			d->name.c_str(),d->name.c_str(),d->name.c_str());
-		fprintf(source,"\tBuffer buffer;\n");
+		fprintf(source,"\tArts::Buffer buffer;\n");
 		fprintf(source,"\tassignType.writeType(buffer);\n");
 		fprintf(source,"\treadType(buffer);\n");
 		fprintf(source,"\treturn *this;\n");
@@ -834,7 +835,7 @@ void doStructSource(FILE *source)
 		fprintf(source,"}\n\n");
 	
 		/** marshalling function for reading from stream **/
-		fprintf(source,"void %s::readType(Buffer& stream)\n{\n",d->name.c_str());
+		fprintf(source,"void %s::readType(Arts::Buffer& stream)\n{\n",d->name.c_str());
 		for(i=d->contents.begin();i != d->contents.end();i++)
 		{
 			string code = createTypeCode((*i)->type,(*i)->name,MODEL_READ);
@@ -843,7 +844,7 @@ void doStructSource(FILE *source)
 		fprintf(source,"}\n\n");
 
 		/** marshalling function for writing to stream **/
-		fprintf(source,"void %s::writeType(Buffer& stream) const\n{\n",d->name.c_str());
+		fprintf(source,"void %s::writeType(Arts::Buffer& stream) const\n{\n",d->name.c_str());
 		for(i=d->contents.begin();i != d->contents.end();i++)
 		{
 			string code = createTypeCode((*i)->type,(*i)->name,MODEL_WRITE);
@@ -908,13 +909,13 @@ void createStubCode(FILE *source, string iface, string method, MethodDef *md)
 	if(md->flags & methodTwoway)
 	{
 		fprintf(source,"\tlong requestID;\n");
-		fprintf(source,"\tBuffer *request, *result;\n");
-		fprintf(source,"\trequest = Dispatcher::the()->"
+		fprintf(source,"\tArts::Buffer *request, *result;\n");
+		fprintf(source,"\trequest = Arts::Dispatcher::the()->"
 				"createRequest(requestID,_objectID,methodID);\n");
 	}
 	else
 	{
-		fprintf(source,"\tBuffer *request = Dispatcher::the()->"
+		fprintf(source,"\tArts::Buffer *request = Arts::Dispatcher::the()->"
 				"createOnewayRequest(_objectID,methodID);\n");
 	}
 
@@ -931,7 +932,7 @@ void createStubCode(FILE *source, string iface, string method, MethodDef *md)
 	if(md->flags & methodTwoway)
 	{
 		fprintf(source,"\tresult = "
-			"Dispatcher::the()->waitForResult(requestID,_connection);\n");
+			"Arts::Dispatcher::the()->waitForResult(requestID,_connection);\n");
 
 		fprintf(source,"%s",
 			createTypeCode(md->type,"",MODEL_RES_READ,"\t").c_str());
@@ -981,16 +982,16 @@ void createDispatchFunction(FILE *source, long mcount,
 	string signature = "void *object, ";
 
 	if(md->signature.size() == 0)
-		signature += "Buffer *";
+		signature += "Arts::Buffer *";
 	else
-		signature += "Buffer *request";
+		signature += "Arts::Buffer *request";
 
 	if(md->flags & methodTwoway)
 	{
 		if(md->type == "void")
-			signature += ", Buffer *";
+			signature += ", Arts::Buffer *";
 		else
-			signature += ", Buffer *result";
+			signature += ", Arts::Buffer *result";
 	}
 	else
 	{
@@ -1137,7 +1138,7 @@ void doInterfacesHeader(FILE *header)
 
 		// create abstract interface
 		inherits = buildInheritanceList(*d,"_base");
-		if(inherits == "") inherits = "virtual public Object_base";
+		if(inherits == "") inherits = "virtual public Arts::Object_base";
 
 		nspace.setFromSymbol(d->name);
 		iname = nspace.printableForm(d->name);
@@ -1149,7 +1150,7 @@ void doInterfacesHeader(FILE *header)
 						" = \"%s\");\n", iname.c_str(),d->name.c_str());
 		fprintf(header,"\tstatic %s_base *_fromString(std::string objectref);\n",
 														iname.c_str());
-		fprintf(header,"\tstatic %s_base *_fromReference(ObjectReference ref,"
+		fprintf(header,"\tstatic %s_base *_fromReference(Arts::ObjectReference ref,"
 		                                " bool needcopy);\n\n",iname.c_str());
 
 		/* reference counting: _copy */
@@ -1204,7 +1205,7 @@ void doInterfacesHeader(FILE *header)
 		// create stub
 
 		inherits = buildInheritanceList(*d,"_stub");
-		if(inherits == "") inherits = "virtual public Object_stub";
+		if(inherits == "") inherits = "virtual public Arts::Object_stub";
 
 		fprintf(header,"class %s_stub : virtual public %s_base, %s {\n",
 			iname.c_str(), iname.c_str(),inherits.c_str());
@@ -1212,7 +1213,7 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t%s_stub();\n\n",iname.c_str());
 
 		fprintf(header,"public:\n");
-		fprintf(header,"\t%s_stub(Connection *connection, long objectID);\n\n",
+		fprintf(header,"\t%s_stub(Arts::Connection *connection, long objectID);\n\n",
 			iname.c_str());
 			/* attributes (not for streams) */
 		for(ai = d->attributes.begin();ai != d->attributes.end();ai++)
@@ -1250,7 +1251,7 @@ void doInterfacesHeader(FILE *header)
 		// create skeleton
 
 		inherits = buildInheritanceList(*d,"_skel");
-		if(inherits == "") inherits = "virtual public Object_skel";
+		if(inherits == "") inherits = "virtual public Arts::Object_skel";
 
 		fprintf(header,"class %s_skel : virtual public %s_base,"
 			" %s {\n",iname.c_str(),iname.c_str(),inherits.c_str());
@@ -1337,11 +1338,11 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\tstatic std::string _interfaceNameSkel();\n");
 		fprintf(header,"\tstd::string _interfaceName();\n");
 		fprintf(header,"\tvoid _buildMethodTable();\n");
-		fprintf(header,"\tvoid dispatch(Buffer *request, Buffer *result,"
+		fprintf(header,"\tvoid dispatch(Arts::Buffer *request, Arts::Buffer *result,"
 						"long methodID);\n");
 
 		if(haveAsyncStreams)
-		  fprintf(header,"\tvoid notify(const Notification& notification);\n");
+		  fprintf(header,"\tvoid notify(const Arts::Notification& notification);\n");
 
 		fprintf(header,"};\n\n");
 
@@ -1359,11 +1360,11 @@ void doInterfacesHeader(FILE *header)
 */
 		nspace.setFromSymbol(d->name);
 
-		inherits = ": public Object";
+		inherits = ": public Arts::Object";
 
 		fprintf(header,"class %s %s {\n",iname.c_str(),inherits.c_str());
 		fprintf(header,"private:\n");
-		fprintf(header,"\tstatic Object_base* _Creator();\n");
+		fprintf(header,"\tstatic Arts::Object_base* _Creator();\n");
 		fprintf(header,"\t%s_base *_cache;\n",iname.c_str());
 		fprintf(header,"\tinline %s_base *_method_call() {\n",iname.c_str());
 		fprintf(header,"\t\t_pool->checkcreate();\n");
@@ -1386,18 +1387,18 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\npublic:\n");
 
 		// empty constructor: specify creator for create-on-demand
-		fprintf(header,"\tinline %s() : Object(_Creator), _cache(0) {}\n",iname.c_str());
+		fprintf(header,"\tinline %s() : Arts::Object(_Creator), _cache(0) {}\n",iname.c_str());
 		
 		// constructors from reference and for subclass
-		fprintf(header,"\tinline %s(const SubClass& s) :\n"
-			"\t\tObject(%s_base::_create(s.string())), _cache(0) {}\n",
+		fprintf(header,"\tinline %s(const Arts::SubClass& s) :\n"
+			"\t\tArts::Object(%s_base::_create(s.string())), _cache(0) {}\n",
 			iname.c_str(),iname.c_str());
-		fprintf(header,"\tinline %s(const Reference &r) :\n"
-			"\t\tObject("
+		fprintf(header,"\tinline %s(const Arts::Reference &r) :\n"
+			"\t\tArts::Object("
 			"r.isString()?(%s_base::_fromString(r.string())):"
 			"(%s_base::_fromReference(r.reference(),true))), _cache(0) {}\n",
 			iname.c_str(),iname.c_str(), iname.c_str());
-		fprintf(header,"\tinline %s(const DynamicCast& c) : _cache(0) {\n",
+		fprintf(header,"\tinline %s(const Arts::DynamicCast& c) : _cache(0) {\n",
 			iname.c_str());
 		fprintf(header,"\t\t%s_base * ptr = (%s_base *)c.object()._base()->_cast(%s_base::_IID);\n",
 			iname.c_str(),iname.c_str(),iname.c_str());
@@ -1410,9 +1411,9 @@ void doInterfacesHeader(FILE *header)
 		fprintf(header,"\t}\n");
 
 		// copy constructors
-		fprintf(header,"\tinline %s(const %s& target) : Object(target._pool), _cache(target._cache) {}\n",
+		fprintf(header,"\tinline %s(const %s& target) : Arts::Object(target._pool), _cache(target._cache) {}\n",
 			iname.c_str(),iname.c_str());
-		fprintf(header,"\tinline %s(Object::Pool& p) : Object(p), _cache(0) {}\n",
+		fprintf(header,"\tinline %s(Arts::Object::Pool& p) : Arts::Object(p), _cache(0) {}\n",
 			iname.c_str());
 			
 		// null object
@@ -1506,7 +1507,7 @@ void doInterfacesHeader(FILE *header)
 			// map constructor methods to the real things
 			if (md->name == "constructor") {
 				fprintf(header,"\tinline %s(%s) : "
-					"Object(%s_base::_create()) {\n"
+					"Arts::Object(%s_base::_create()) {\n"
 					"\t\t_cache=(%s_base *)_pool->base->_cast(%s_base::_IID);\n"
 					"\t\tassert(_cache);\n"
 					"\t\t_cache->constructor(%s);\n\t}\n",
@@ -1659,8 +1660,8 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"%s_base *%s_base::_create(const std::string& subClass)\n",
 											d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\tObject_skel *skel = "
-							"ObjectManager::the()->create(subClass);\n");
+		fprintf(source,"\tArts::Object_skel *skel = "
+							"Arts::ObjectManager::the()->create(subClass);\n");
 		fprintf(source,"\tassert(skel);\n");
 		fprintf(source,"\t%s_base *castedObject = "
 							"(%s_base *)skel->_cast(%s_base::_IID);\n",
@@ -1673,24 +1674,24 @@ void doInterfacesSource(FILE *source)
 		fprintf(source,"%s_base *%s_base::_fromString(std::string objectref)\n",
 											d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\tObjectReference r;\n\n");
-		fprintf(source,"\tif(Dispatcher::the()->stringToObjectReference(r,objectref))\n");
+		fprintf(source,"\tArts::ObjectReference r;\n\n");
+		fprintf(source,"\tif(Arts::Dispatcher::the()->stringToObjectReference(r,objectref))\n");
 		fprintf(source,"\t\treturn %s_base::_fromReference(r,true);\n",
 															d->name.c_str());
 		fprintf(source,"\treturn 0;\n");
 		fprintf(source,"}\n\n");
 
-		fprintf(source,"%s_base *%s_base::_fromReference(ObjectReference r,"
+		fprintf(source,"%s_base *%s_base::_fromReference(Arts::ObjectReference r,"
 		               " bool needcopy)\n",d->name.c_str(),d->name.c_str());
 		fprintf(source,"{\n");
 		fprintf(source,"\t%s_base *result;\n",d->name.c_str());
 		fprintf(source,
-		"\tresult = (%s_base *)Dispatcher::the()->connectObjectLocal(r,\"%s\");\n",
+		"\tresult = (%s_base *)Arts::Dispatcher::the()->connectObjectLocal(r,\"%s\");\n",
 										d->name.c_str(),d->name.c_str());
 		fprintf(source,"\tif(!result)\n");
 		fprintf(source,"\t{\n");
-		fprintf(source,"\t\tConnection *conn = "
-							"Dispatcher::the()->connectObjectRemote(r);\n");
+		fprintf(source,"\t\tArts::Connection *conn = "
+							"Arts::Dispatcher::the()->connectObjectRemote(r);\n");
 		fprintf(source,"\t\tif(conn)\n");
 		fprintf(source,"\t\t{\n");
 		fprintf(source,"\t\t\tresult = new %s_stub(conn,r.objectID);\n",
@@ -1758,7 +1759,7 @@ void doInterfacesSource(FILE *source)
 			fprintf(source,"\tif(iid == %s_base::_IID) "
 							"return (%s_base *)this;\n",pc.c_str(),pc.c_str());
 		}
-		fprintf(source,"\tif(iid == Object_base::_IID) return (Object_base *)this;\n");
+		fprintf(source,"\tif(iid == Arts::Object_base::_IID) return (Arts::Object_base *)this;\n");
 		fprintf(source,"\treturn 0;\n");
 		fprintf(source,"}\n\n");
 
@@ -1771,7 +1772,7 @@ void doInterfacesSource(FILE *source)
 										" (don't use directly)\n");
 		fprintf(source,"}\n\n");
 
-		fprintf(source,"%s_stub::%s_stub(Connection *connection, "
+		fprintf(source,"%s_stub::%s_stub(Arts::Connection *connection, "
 						"long objectID)\n",d->name.c_str(),iname.c_str());
 		fprintf(source,"	: Object_stub(connection, objectID)\n");
 		fprintf(source,"{\n");
@@ -1883,7 +1884,7 @@ void doInterfacesSource(FILE *source)
 
 		fprintf(source,"void %s_skel::_buildMethodTable()\n",d->name.c_str());
 		fprintf(source,"{\n");
-		fprintf(source,"\tBuffer m;\n");
+		fprintf(source,"\tArts::Buffer m;\n");
 		fprintf(source,"\tm.fromString(\n");
 		fprintf(source,"%s,\n",methodTableString.c_str());
 		fprintf(source,"\t\t\"MethodTable\"\n");
@@ -1891,7 +1892,7 @@ void doInterfacesSource(FILE *source)
 
 		long i;
 		for(i=0;i<mcount;i++)
-			fprintf(source,"\t_addMethod(%s,this,MethodDef(m));\n",
+			fprintf(source,"\t_addMethod(%s,this,Arts::MethodDef(m));\n",
 							dispatchFunctionName(d->name,i).c_str());
 
 		vector<string>::iterator ii = d->inheritedInterfaces.begin();
@@ -1919,7 +1920,7 @@ void doInterfacesSource(FILE *source)
 		/** notification operation **/
 		if(haveAsyncStreams(d))
 		{
-			fprintf(source,"void %s_skel::notify(const Notification "
+			fprintf(source,"void %s_skel::notify(const Arts::Notification "
 			               "&notification)\n", d->name.c_str());
 			fprintf(source,"{\n");
 			for(ai = d->attributes.begin(); ai != d->attributes.end(); ai++)
@@ -1965,13 +1966,13 @@ void doInterfacesSource(FILE *source)
 		
 		// Smartwrapper statics
 		// _Creator
-		fprintf(source,"Object_base* %s::_Creator() {\n",d->name.c_str());
+		fprintf(source,"Arts::Object_base* %s::_Creator() {\n",d->name.c_str());
 		fprintf(source,"\treturn %s_base::_create();\n",d->name.c_str());
 		fprintf(source,"}\n\n");
 
 		// IID
 		fprintf(source,"unsigned long %s_base::_IID = "
-			"MCOPUtils::makeIID(\"%s\");\n\n",d->name.c_str(),d->name.c_str());
+			"Arts::MCOPUtils::makeIID(\"%s\");\n\n",d->name.c_str(),d->name.c_str());
 	}
 }
 
@@ -1983,7 +1984,7 @@ void doInterfaceRepoSource(FILE *source, string prefix)
 
 	string data = formatMultiLineString(b.toString("IDLFile"),"    ");
 
-	fprintf(source,"static IDLFileReg IDLFileReg_%s(\"%s\",\n%s\n);\n",
+	fprintf(source,"static Arts::IDLFileReg IDLFileReg_%s(\"%s\",\n%s\n);\n",
 		prefix.c_str(),prefix.c_str(),data.c_str());
 }
 

@@ -23,6 +23,8 @@
 #include "asyncstream.h"
 #include "datapacket.h"
 
+using namespace Arts;
+
 DataPacket<float> *FloatAsyncStream::allocPacket(int capacity)
 {
 	return new FloatDataPacket(capacity,channel);

@@ -23,6 +23,7 @@
 #include "referenceclean.h"
 
 using namespace std;
+using namespace Arts;
 
 ReferenceClean::ReferenceClean(Pool<Object_skel>& objectPool)
 	:objectPool(objectPool)

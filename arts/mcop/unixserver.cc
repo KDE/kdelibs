@@ -41,6 +41,7 @@
 #include <errno.h>
 
 using namespace std;
+using namespace Arts;
 
 bool UnixServer::running()
 {

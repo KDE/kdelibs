@@ -27,6 +27,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 class StereoFFTScope_impl : public StereoFFTScope_skel, public StdSynthModule {
 protected:

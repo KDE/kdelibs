@@ -28,6 +28,10 @@
 
 #include "artsflow.h"
 
+namespace Arts {
+
 void artsServerRun();
+
+};
 
 #endif /* ARTSSERVER_IMPL_H */

@@ -24,6 +24,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 #undef DEBUG_ASYNC_TRANSFER
 

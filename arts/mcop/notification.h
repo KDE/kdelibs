@@ -25,6 +25,8 @@
 
 #include <queue>
 
+namespace Arts {
+
 struct Notification {
 	class NotificationClient *receiver;
 	int ID;
@@ -65,6 +67,8 @@ public:
 		}
 		return true;
 	}
+};
+
 };
 
 #endif /* NOTIFICATION_H */

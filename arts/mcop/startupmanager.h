@@ -25,6 +25,8 @@
 
 #include <list>
 
+namespace Arts {
+
 class StartupClass {
 public:
 	StartupClass();
@@ -49,5 +51,7 @@ public:
 	 * present in the extension
 	 */
 	static void setExtensionLoader(class ExtensionLoader *extension);
+};
+
 };
 #endif /* STARTUPMANAGER_H */

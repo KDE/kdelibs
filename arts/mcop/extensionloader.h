@@ -27,6 +27,8 @@
 #include <list>
 #include <ltdl.h>
 
+namespace Arts {
+
 class ExtensionLoader {
 protected:
 	std::list<class StartupClass *> startupClasses;
@@ -39,5 +41,7 @@ public:
 	bool success();
 
 	void addStartupClass(class StartupClass *sc);
+};
+
 };
 #endif /* EXTENSIONLOADER_H */

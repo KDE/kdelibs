@@ -29,6 +29,7 @@
 #include <errno.h>
 
 using namespace std;
+using namespace Arts;
 
 static struct sockaddr_un *parse_unix_url(const char *url)
 {

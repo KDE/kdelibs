@@ -29,6 +29,7 @@
 #include <cassert>
 
 using namespace std;
+using namespace Arts;
 
 QIOWatch::QIOWatch(int fd, int type, IONotify *notify,
 	QSocketNotifier::Type qtype)

@@ -26,7 +26,7 @@
  * -   namespaces (module)
  */
 
-//module Arts {  // analog real time synthesizer
+module Arts {  // analog real time synthesizer
 	/*
 	 * incoming or outgoing port?
 	 */
@@ -249,7 +249,6 @@
 
 		void forceTermination();
 	};
-//};
 
 /**
  * new stuff (introduced in the MCOP version of aRts, done differently before)
@@ -488,4 +487,6 @@ interface StereoEffectStack : StereoEffect {
 	 * removes an effect again
 	 */
 	void remove(long ID);
+};
+
 };

@@ -25,9 +25,12 @@
 
 #include "socketconnection.h"
 
+namespace Arts {
+
 class UnixConnection :public SocketConnection {
 public:
 	UnixConnection(std::string url);
 };
 
+};
 #endif /* UNIXCONNECTION_H */

@@ -19,8 +19,12 @@
 
 #include <core.idl>
 
+module Arts {
+
 /**
  * global communication based on an X11 server property on the root window
  */
 interface X11GlobalComm : GlobalComm {
+};
+
 };

@@ -26,6 +26,8 @@
 #include "object.h"
 #include "core.h"
 
+namespace Arts {
+
 class Object_skel;
 class Object_stub;
 class RemoteScheduleNode;
@@ -114,6 +116,7 @@ public:
 	virtual bool suspended() = 0;
 	virtual void suspend() = 0;
 	virtual void restart() = 0;
+};
 };
 
 #endif

@@ -28,6 +28,7 @@
 #include "namespace.h"
 
 using namespace std;
+using namespace Arts;
 
 extern int idl_line_no;
 extern string idl_filename;
@@ -361,7 +362,15 @@ interfacelist:
 	  interfacelistelem { $$ = new vector<char *>; $$->push_back($1); }
 	| interfacelist T_COMMA interfacelistelem { $$ = $1; $$->push_back($3); }
 
-interfacelistelem: T_IDENTIFIER | T_QUALIFIED_IDENTIFIER;
+interfacelistelem: T_IDENTIFIER {
+		$$ = ModuleHelper::qualify($1);
+		free($1);
+	  }
+	| T_QUALIFIED_IDENTIFIER {
+		$$ = ModuleHelper::qualify($1);
+		free($1);
+	  }
+	;
 
 structbody: epsilon {
 		// is empty by default
@@ -391,10 +400,11 @@ type: simpletype
 	  {
 	  	// a sequence<long> is for instance coded as *long
 
-	    char *result = (char *)malloc(strlen($3)+1);
+		// alloc new size: add one for the null byte and one for the '*' char
+	    char *result = (char *)malloc(strlen($3)+2);
 		result[0] = '*';
 		strcpy(&result[1],$3);
-		free($3);
+		free($3);  /* fails */
 
 	  	$$ = result;
 	  };

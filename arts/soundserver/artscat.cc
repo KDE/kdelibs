@@ -32,6 +32,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace Arts;
 
 class Sender :	public ByteSoundProducer_skel,
 				public StdSynthModule,

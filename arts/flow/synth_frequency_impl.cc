@@ -25,6 +25,8 @@
 #include <math.h>
 #include <stdio.h>
 
+using namespace Arts;
+
 class Synth_FREQUENCY_impl :public Synth_FREQUENCY_skel, StdSynthModule
 {
 	float fpos;
