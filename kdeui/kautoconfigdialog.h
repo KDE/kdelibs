@@ -2,6 +2,7 @@
 #define KAUTOCONFIGDIALOG_H
 
 class KAutoConfig;
+class KConfig;
 #include <kdialogbase.h>
 #include <qasciidict.h>
 
@@ -82,6 +83,9 @@ public:
    * applications where there are more then one dialog.
    * 
    * @param type - Type used in creating the dialog.  @see KDialogBase
+   *
+   * @param kconfig - Specify specific config to use or NULL for the
+   * standard KGlobal::config(); 
    * 
    * @param model - Because of the features of @ref KAutoConfig,
    * KAutoConfigDialog does not have to be modal.  To prevent more then one
@@ -91,7 +95,7 @@ public:
    */ 
   KAutoConfigDialog( QWidget *parent=0, const char *name=0,
 		  KDialogBase::DialogType dialogType = KDialogBase::IconList,
-		  bool modal=false );
+		  KConfig *kconfig=NULL, bool modal=false );
   /**
    * Deconstructor, removes name from the list of open dialogs.
    * Deletes private class.

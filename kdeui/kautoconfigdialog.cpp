@@ -20,7 +20,7 @@ public:
 };
 
 KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
-		KDialogBase::DialogType dialogType, bool modal) :
+		KDialogBase::DialogType dialogType, KConfig *kconfig, bool modal) :
 		QObject(parent, name), d(new KAutoConfigDialogPrivate(dialogType)) {
 
   openDialogs.insert(name, this);
@@ -28,7 +28,9 @@ KAutoConfigDialog::KAutoConfigDialog(QWidget *parent,const char *name,
 	Qt::WStyle_DialogBorder | Qt::WDestructiveClose,
 	KDialogBase::Default | KDialogBase::Ok | KDialogBase::Apply | KDialogBase::Cancel | KDialogBase::Help );
 
-  kautoconfig = new KAutoConfig(kdialogbase, "kautoconfig");
+  if(!kconfig)
+    kconfig = KGlobal::config();
+  kautoconfig = new KAutoConfig(kconfig, kdialogbase, "kautoconfig");
   connect(kautoconfig, SIGNAL(settingsChanged()), this, SIGNAL(settingsChanged()));
   connect(kautoconfig, SIGNAL(settingsChanged()), this, SLOT(settingsChangedSlot()));
   connect(kautoconfig, SIGNAL(widgetModified()), this, SLOT(settingModified()));
