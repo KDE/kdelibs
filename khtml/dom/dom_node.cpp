@@ -360,7 +360,8 @@ void Node::addEventListener(const DOMString &type,
 			  const bool useCapture)
 {
     if (!impl) return;
-    impl->addEventListener(EventImpl::typeToId(type),listener,useCapture);
+    if (listener)
+        impl->addEventListener(EventImpl::typeToId(type),listener,useCapture);
 }
 
 void Node::removeEventListener(const DOMString &type,
