@@ -234,7 +234,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         if ( !rect().contains( ev->pos() )) // this widget
             hide();
 
-        if ( !d->emitSelected )
+        if ( !d->emitSelected && currentItem() )
         {
           emit highlighted( currentText() );
           hide();
