@@ -37,7 +37,8 @@ include_HEADERS = \
 		ksmimecrypto.h
 
 noinst_HEADERS = sslio.h			 \
-		sslserversocket.h
+		sslserversocket.h		 \
+		ksslcsessioncache.h
 
 
 libkssl_la_SOURCES	= \
@@ -65,7 +66,8 @@ libkssl_la_SOURCES	= \
 			keygenwizard.ui		  \
 			keygenwizard2.ui	  \
 			ksmimecrypto.cc		  \
-			sslio.cc
+			sslio.cc		  \
+			ksslcsessioncache.cc
 
 #			sslserversocket.cc
 
