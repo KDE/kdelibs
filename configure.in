@@ -244,6 +244,5 @@ AC_OUTPUT(Makefile \
 	dcop/Makefile \
 	dcop/dcopidl/Makefile \
 	dcop/dcopidl2cpp/Makefile \
-	dcop/ICE/Makefile )
-
-
+	dcop/ICE/Makefile \
+        kinit/Makefile )
