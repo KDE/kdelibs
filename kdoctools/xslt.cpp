@@ -6,6 +6,7 @@
 #include <kdebug.h>
 #include <kstddirs.h>
 #include <qdir.h>
+#include <qregexp.h>
 #include <xslt.h>
 #include <kinstance.h>
 #include "kio_help.h"

@@ -49,6 +49,7 @@
 #include <qdatetime.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
+#include <qregexp.h>
 #include <kinstance.h>
 #include <kstddirs.h>
 #include <kglobal.h>

@@ -16,6 +16,7 @@
 #include <kinstance.h>
 #include <xslt.h>
 #include <qfile.h>
+#include <qregexp.h>
 #include <kcmdlineargs.h>
 #include <klocale.h>
 #include <kaboutdata.h>
