@@ -351,28 +351,42 @@ void KIconEffect::toMonochrome(QImage &img, const QColor &black, const QColor &w
    int rb = black.red(), gb = black.green(), bb = black.blue();
    
    double values = 0, sum = 0;
+   bool grayscale = true;
    // Step 1: determine the average brightness
    for (i=0; i<pixels; i++) {
-      sum += qGray(data[i])*qAlpha(data[i]) + 255*(255-qAlpha(data[i]));
-      values += 255;
+       sum += qGray(data[i])*qAlpha(data[i]) + 255*(255-qAlpha(data[i]));
+       values += 255;
+       if ((qRed(data[i]) != qGreen(data[i]) ) || (qGreen(data[i]) != qBlue(data[i]) ))
+           grayscale = false;
    }
    double medium = sum/values;
 
    // Step 2: Modify the image
-   for (i=0; i<pixels; i++) {
-      if (qGray(data[i]) <= medium) {
-         rval = static_cast<int>(value*rb+(1.0-value)*qRed(data[i]));
-         gval = static_cast<int>(value*gb+(1.0-value)*qGreen(data[i]));
-         bval = static_cast<int>(value*bb+(1.0-value)*qBlue(data[i]));
-      }
-      else {
-         rval = static_cast<int>(value*rw+(1.0-value)*qRed(data[i]));
-         gval = static_cast<int>(value*gw+(1.0-value)*qGreen(data[i]));
-         bval = static_cast<int>(value*bw+(1.0-value)*qBlue(data[i]));
-      }
-      
-      alpha = qAlpha(data[i]);
-      data[i] = qRgba(rval, gval, bval, alpha);
+   if (grayscale) {
+       for (i=0; i<pixels; i++) {
+           float w = (255-qRed(data[i]))*value/255;
+           float b = qRed(data[i])*value/255;
+           rval = static_cast<int>(w*rw + b*rb + (1.0-value)*qRed(data[i]));
+           gval = static_cast<int>(w*gw + b*gb + (1.0-value)*qGreen(data[i]));
+           bval = static_cast<int>(w*bw + b*bb + (1.0-value)*qBlue(data[i]));
+       }
+   }
+   else {
+      for (i=0; i<pixels; i++) {
+         if (qGray(data[i]) <= medium) {
+            rval = static_cast<int>(value*rb+(1.0-value)*qRed(data[i]));
+            gval = static_cast<int>(value*gb+(1.0-value)*qGreen(data[i]));
+            bval = static_cast<int>(value*bb+(1.0-value)*qBlue(data[i]));
+         }
+         else {
+            rval = static_cast<int>(value*rw+(1.0-value)*qRed(data[i]));
+            gval = static_cast<int>(value*gw+(1.0-value)*qGreen(data[i]));
+            bval = static_cast<int>(value*bw+(1.0-value)*qBlue(data[i]));
+         }
+
+         alpha = qAlpha(data[i]);
+         data[i] = qRgba(rval, gval, bval, alpha);
+   }
    }
 }
 
