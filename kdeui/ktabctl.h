@@ -20,6 +20,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  1998/06/16 21:23:15  hoss
+ * *** empty log message ***
+ *
  * Revision 1.3  1997/10/16 11:15:54  torben
  * Kalle: Copyright headers
  * kdoctoolbar removed
@@ -95,10 +98,10 @@ protected:
 signals:
     void tabSelected(int);
     
-private slots:
+protected slots:
     void showTab(int i);
 
-private:
+protected:
     void setSizes();
     QRect getChildRect() const;
 
