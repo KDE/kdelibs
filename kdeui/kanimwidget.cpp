@@ -95,6 +95,17 @@ void KAnimWidget::setIcons( const QString& icons )
   updateIcons();
 }
 
+QString KAnimWidget::icons( ) const
+{
+   return d->icon_name;
+}
+
+int KAnimWidget::size( ) const
+{
+   return d->size;
+}
+
+
 void KAnimWidget::showEvent(QShowEvent* e)
 {
   if (!d->initDone)

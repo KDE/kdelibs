@@ -40,11 +40,7 @@ class KAnimWidgetPrivate;
  *
  * A quick example:
  * \code
- * QStringList icons;
- * icons.append("one");
- * icons.append("two");
- * icons.append("three");
- * KAnimWidget *anim = new KAnimWidget(icons, 0, this);
+ * KAnimWidget *anim = new KAnimWidget("kde", 0, this);
  * anim->start();
  * \endcode
  *
@@ -58,6 +54,9 @@ class KAnimWidgetPrivate;
 class KDEUI_EXPORT KAnimWidget : public QFrame
 {
   Q_OBJECT
+  Q_PROPERTY( int size READ size WRITE setSize )
+  Q_PROPERTY( QString icons READ icons WRITE setIcons )
+
 public:	
   /**
    * This is the most common constructor.  Pass along the name of the
@@ -82,6 +81,34 @@ public:
   virtual ~KAnimWidget();
 
   /**
+   * Sets the size of the icons.
+   *
+   * @param size The size of the icons
+   */
+  void setSize( int size );
+
+  /**
+  * Returns the current size.
+  * @since 3.4
+  */
+  int size() const;
+
+  /**
+  * Returns the current icons
+  * since 3.4
+  */
+  QString icons() const;
+  
+  /**
+   * Sets the name of the animated icons to load.  This will use the
+   * KIconLoader::loadAnimated method for the actual loading.
+   *
+   * @param icons The name of the icons to use for the animation
+   */
+  void setIcons( const QString& icons );
+
+public slots:
+  /**
    * Starts the animation from frame 1
    */
   void start();
@@ -90,21 +117,6 @@ public:
    * Stops the animation.  This will also reset the widget to frame 1.
    */
   void stop();
-
-  /**
-   * Sets the size of the icons.
-   *
-   * @param size The size of the icons
-   */
-  void setSize( int size );
-
-  /**
-   * Sets the name of the animated icons to load.  This will use the
-   * KIconLoader::loadAnimated method for the actual loading.
-   *
-   * @param icons The name of the icons to use for the animation
-   */
-  void setIcons( const QString& icons );
 
 signals:
   void clicked();
