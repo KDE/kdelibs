@@ -933,7 +933,8 @@ bool HTTPProtocol::http_open()
       header += create_digest_auth("Authorization", user, password,
                                    m_strAuthString);
     }
-    header+="\r\n";
+    // Don't do this as the authorization methods already add it!!!
+    // header+="\r\n";
   }
 
   // the proxy might need authorization of it's own. do that now
@@ -1856,14 +1857,15 @@ void HTTPProtocol::special( const QByteArray &data)
 void HTTPProtocol::decodeDeflate()
 {
 #ifdef DO_GZIP
-  // Okay all the code below can probably be replaced with
-  // the a single call to decompress(...) instead of a write
-  // to file and read to decompress, but I was not sure of
-  // how to estimate the size of the decompressed data which
-  // needs to be passed as a parameter to decompress function
-  // call.  Anyone want to try it out...
+  // Okay the code below can probably be replaced with
+  // the a single call to decompress(...) instead of a read/write
+  // to and from a temporary file, but I was not sure of how to
+  // estimate the size of the decompressed data which needs to be
+  // passed as a parameter to decompress function call.  Anyone
+  // want to try this approach or have a better experience with
+  // the cool zlib library ??? (DA)
   //
-  // TODO: Neither decompression completely checks for errors.
+  // TODO: Neither deflate nor gzip completely check for errors!!!
   z_stream z;
   QByteArray tmp_buf;
   const unsigned int max_len = 1024;
@@ -1879,7 +1881,9 @@ void HTTPProtocol::decodeDeflate()
   // Create the file
   int fd = mkstemp(filename);
 
-  // TODO: Gee no error checking when writing to HD ??
+  // TODO: Need sanity check here. Doing no error checking when writing
+  // to HD cannot be good :))  What if the target is full buddy or could
+  // not be written to for some reason ??
   ::write(fd, big_buffer.data(), big_buffer.size()); // Write data into file
   lseek(fd, 0, SEEK_SET);
   FILE* fin = fdopen( fd, "rb" );
@@ -1924,7 +1928,7 @@ void HTTPProtocol::decodeDeflate()
   }
   if( fin )
     ::fclose( fin );
-  ::unlink(filename); // Bye bye to beloved file :((
+  ::unlink(filename); // Bye bye to beloved temp file.  We will miss you!!
 
   // Replace big_buffer with the
   // "decoded" data.
