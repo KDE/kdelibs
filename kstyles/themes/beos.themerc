@@ -2,6 +2,8 @@
 Name=Beos
 Name[cs]=BeOS
 Name[eo]=BeOS
+Name[es]=BeOS
+Name[nl]=BeOS
 Name[no_NY]=BeOS
 Name[ro]=BeOS
 Comment=Unthemed Beos-like style
@@ -10,6 +12,7 @@ Comment[cs]=Styl podobný BeOS (bez motivu)
 Comment[da]=BeOSlignende stil uden tema
 Comment[de]=BeOS-Stil (kein komplettes Design)
 Comment[eo]=BeOS-simila stilo neetosa
+Comment[es]=Estilo BeOS sin tema
 Comment[et]=Beos'i laadne stiil
 Comment[fi]=Teemoittamaton Beos:n kaltainen tyyli
 Comment[fr]=Style sans thème similaire à BeOS
