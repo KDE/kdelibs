@@ -1136,16 +1136,14 @@ void KColorDialog::slotHtmlChanged( void )
 {
   if (d->bRecursion) return;
 
-  int red = -1;
-  int grn = -1;
-  int blu = -1;
+  unsigned int red = 256;
+  unsigned int grn = 256;
+  unsigned int blu = 256;
 
   if (sscanf(d->htmlName->text().latin1(), "#%02x%02x%02x", &red, &grn, &blu)!=3)
       return;
 
-  if ( red > 255 || red < 0 ) return;
-  if ( grn > 255 || grn < 0 ) return;
-  if ( blu > 255 || blu < 0 ) return;
+  if ( red > 255 || grn > 255 || blu > 255) return;
 
   KColor col;
   col.setRgb( red, grn, blu );
