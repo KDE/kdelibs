@@ -15,12 +15,10 @@
   <Action name="viewFrameInfo" />
  </Menu>
  <Separator weakSeparator="1" />
- <Menu name="image"><text>Image</text>
-  <Action name="saveimageas" />
-  <Action name="sendimage" />
-  <Action name="copyimagelocation" />
-  <Action name="viewimage" />
- </Menu>
+ <Action name="saveimageas" />
+ <Action name="sendimage" />
+ <Action name="copyimagelocation" />
+ <Action name="viewimage" />
  <Separator weakSeparator="1" />
  <Action name="security" />
  <Action name="setEncoding" />
