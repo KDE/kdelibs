@@ -28,7 +28,7 @@
 
 
 KCompletionBox::KCompletionBox( QWidget *parent, const char *name )
-    : KListBox( parent, name, WStyle_Customize | WStyle_Tool )
+    : KListBox( 0L, name, WStyle_Customize | WStyle_Tool )
 {
     m_parent = parent;
 
