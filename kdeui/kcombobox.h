@@ -503,7 +503,7 @@ protected:
 
 private:
     class KComboBoxPrivate;
-    KComboBoxPrivate *d;
+    KComboBoxPrivate* const d;
 };
 
 
@@ -767,7 +767,7 @@ protected:
     virtual void virtual_hook( int id, void* data );
 private:
     class KHistoryComboPrivate;
-    KHistoryComboPrivate *d;
+    KHistoryComboPrivate* const d;
 };
 
 

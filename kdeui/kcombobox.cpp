@@ -46,9 +46,8 @@
 class KComboBox::KComboBoxPrivate
 {
 public:
-    KComboBoxPrivate()
+    KComboBoxPrivate() : klineEdit(0L)
     {
-        klineEdit = 0L;
     }
     ~KComboBoxPrivate()
     {
@@ -58,13 +57,13 @@ public:
 };
 
 KComboBox::KComboBox( QWidget *parent, const char *name )
-    : QComboBox( parent, name )
+    : QComboBox( parent, name ), d(new KComboBoxPrivate)
 {
     init();
 }
 
 KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
-    : QComboBox( rw, parent, name )
+    : QComboBox( rw, parent, name ), d(new KComboBoxPrivate)
 {
     init();
 
@@ -78,13 +77,10 @@ KComboBox::KComboBox( bool rw, QWidget *parent, const char *name )
 KComboBox::~KComboBox()
 {
     delete d;
-    d = 0;
 }
 
 void KComboBox::init()
 {
-    d = new KComboBoxPrivate;
-
     // Permanently set some parameters in the parent object.
     QComboBox::setAutoCompletion( false );
 
@@ -99,7 +95,8 @@ bool KComboBox::contains( const QString& _text ) const
     if ( _text.isEmpty() )
         return false;
 
-    for (int i = 0; i < count(); i++ )
+    const int itemCount = count();
+    for (int i = 0; i < itemCount; ++i )
     {
         if ( text(i) == _text )
             return true;
@@ -165,7 +162,7 @@ void KComboBox::makeCompletion( const QString& text )
         if( text.isNull() || !listBox() )
             return;
 
-        int index = listBox()->index( listBox()->findItem( text ) );
+        const int index = listBox()->index( listBox()->findItem( text ) );
         if( index >= 0 )
             setCurrentItem( index );
     }
@@ -309,7 +306,8 @@ void KComboBox::setCurrentItem( const QString& item, bool insert, int index )
 {
     int sel = -1;
 
-    for (int i = 0; i < count(); ++i)
+    const int itemCount = count();
+    for (int i = 0; i < itemCount; ++i)
     {
         if (text(i) == item)
         {
@@ -348,7 +346,7 @@ void KComboBox::lineEditDeleted()
 
 // we are always read-write
 KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
-    : KComboBox( true, parent, name )
+    : KComboBox( true, parent, name ), d(0)
 {
     init( true ); // using completion
 }
@@ -356,7 +354,7 @@ KHistoryCombo::KHistoryCombo( QWidget *parent, const char *name )
 // we are always read-write
 KHistoryCombo::KHistoryCombo( bool useCompletion,
                               QWidget *parent, const char *name )
-    : KComboBox( true, parent, name )
+    : KComboBox( true, parent, name ), d(0)
 {
     init( useCompletion );
 }
@@ -393,8 +391,15 @@ void KHistoryCombo::setHistoryItems( QStringList items,
     KComboBox::clear();
 
     // limit to maxCount()
-    while ( (int) items.count() > maxCount() && !items.isEmpty() )
-        items.remove( items.begin() );
+    const int itemCount = items.count(); 
+    const int toRemove = itemCount - maxCount();
+
+    if (toRemove >= itemCount) {
+        items.clear();
+    } else {
+        for (int i = 0; i < toRemove; ++i) 
+            items.pop_front();
+    }
 
     insertItems( items );
 
@@ -412,7 +417,8 @@ void KHistoryCombo::setHistoryItems( QStringList items,
 QStringList KHistoryCombo::historyItems() const
 {
     QStringList list;
-    for ( int i = 0; i < count(); i++ )
+    const int itemCount = count();
+    for ( int i = 0; i < itemCount; ++i )
         list.append( text( i ) );
 
     return list;
@@ -420,7 +426,7 @@ QStringList KHistoryCombo::historyItems() const
 
 void KHistoryCombo::clearHistory()
 {
-    QString temp = currentText();
+    const QString temp = currentText();
     KComboBox::clear();
     if ( useCompletion() )
         completionObject()->clear();
@@ -470,17 +476,18 @@ void KHistoryCombo::addToHistory( const QString& item )
     if ( wasCurrent )
         setCurrentItem( 0 );
 
-    int last;
-    QString rmItem;
+    const bool useComp = useCompletion();
 
-    bool useComp = useCompletion();
-    while ( count() > maxCount() && count() > 0 ) {
+    const int last = count() - 1; // last valid index
+    const int mc = maxCount();
+    const int stopAt = QMAX(mc, 0);
+
+    for (int rmIndex = last; rmIndex >= stopAt; --rmIndex) {
         // remove the last item, as long as we are longer than maxCount()
         // remove the removed item from the completionObject if it isn't
         // anymore available at all in the combobox.
-        last = count() - 1;
-        rmItem = text( last );
-        removeItem( last );
+        const QString rmItem = text( rmIndex );
+        removeItem( rmIndex );
         if ( useComp && !contains( rmItem ) )
             completionObject()->removeItem( rmItem );
     }
@@ -521,13 +528,16 @@ void KHistoryCombo::rotateUp()
     if ( myIterateIndex == -1 )
         myText = currentText();
 
-    myIterateIndex++;
+    ++myIterateIndex;
 
     // skip duplicates/empty items
-    while ( myIterateIndex < count()-1 &&
-            (currentText() == text( myIterateIndex ) ||
+    const int last = count() - 1; // last valid index
+    const QString currText = currentText();
+
+    while ( myIterateIndex < last &&
+            (currText == text( myIterateIndex ) ||
              text( myIterateIndex ).isEmpty()) )
-        myIterateIndex++;
+        ++myIterateIndex;
 
     if ( myIterateIndex >= count() ) {
         myRotated = true;
@@ -549,13 +559,14 @@ void KHistoryCombo::rotateDown()
     if ( myIterateIndex == -1 )
         myText = currentText();
 
-    myIterateIndex--;
+    --myIterateIndex;
 
+    const QString currText = currentText();
     // skip duplicates/empty items
     while ( myIterateIndex >= 0 &&
-            (currentText() == text( myIterateIndex ) ||
+            (currText == text( myIterateIndex ) ||
              text( myIterateIndex ).isEmpty()) )
-        myIterateIndex--;
+        --myIterateIndex;
 
 
     if ( myIterateIndex < 0 ) {
@@ -599,7 +610,7 @@ void KHistoryCombo::keyPressEvent( QKeyEvent *e )
 void KHistoryCombo::wheelEvent( QWheelEvent *ev )
 {
     // Pass to poppable listbox if it's up
-    QListBox *lb = listBox();
+    QListBox* const lb = listBox();
     if ( lb && lb->isVisible() )
     {
         QApplication::sendEvent( lb, ev );
@@ -641,10 +652,11 @@ void KHistoryCombo::setPixmapProvider( KPixmapProvider *prov )
 
 void KHistoryCombo::insertItems( const QStringList& items )
 {
-    QStringList::ConstIterator it = items.begin();
-    QString item;
-    while ( it != items.end() ) {
-        item = *it;
+    QStringList::ConstIterator it = items.constBegin();
+    const QStringList::ConstIterator itEnd = items.constEnd();
+
+    while ( it != itEnd ) {
+        const QString item = *it;
         if ( !item.isEmpty() ) { // only insert non-empty items
             if ( myPixProvider )
                 insertItem( myPixProvider->pixmapFor(item, KIcon::SizeSmall),
