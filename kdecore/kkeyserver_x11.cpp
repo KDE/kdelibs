@@ -101,6 +101,8 @@ static const SymName g_rgSymNames[] = {
 	{ 0, 0 }
 };
 
+// TODO: Add Mac key names list: Key_Backspace => "Delete", Key_Delete => "Del"
+
 // These are the X equivalents to the Qt keycodes 0x1000 - 0x1026
 static const TransKey g_rgQtToSymX[] =
 {
