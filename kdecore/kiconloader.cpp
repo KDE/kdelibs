@@ -497,7 +497,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIcon::Group group, int size
     {
 	size = d->mpGroups[group].size;
     }
-    favIconOverlay = favIconOverlay && (size > 16);
+    favIconOverlay = favIconOverlay && (size > 22);
 
     // Generate a unique cache key for the icon.
 
