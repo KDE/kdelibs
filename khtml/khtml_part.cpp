@@ -1669,8 +1669,10 @@ void KHTMLPart::scheduleRedirection( int delay, const QString &url )
     {
        d->m_delayRedirect = delay;
        d->m_redirectURL = url;
-       if ( d->m_bComplete )
-          d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+       if ( d->m_bComplete ) {
+	   d->m_redirectionTimer.stop();
+	   d->m_redirectionTimer.start( 1000 * d->m_delayRedirect, true );
+       }
     }
 }
 
@@ -2858,7 +2860,7 @@ void KHTMLPart::popupMenu( const QString &url )
 
   KXMLGUIClient *client = new KHTMLPopupGUIClient( this, d->m_popupMenuXML, popupURL );
 
-  emit d->m_extension->popupMenu( client, QCursor::pos(), completedURL, 
+  emit d->m_extension->popupMenu( client, QCursor::pos(), completedURL,
                                   QString::fromLatin1( "text/html" ), mode );
 
   delete client;
