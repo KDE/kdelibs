@@ -257,7 +257,6 @@ Value DateProtoFuncImp::call(ExecState *exec, Object &thisObj, const List &args)
     break;
   case GetYear:
     // IE returns the full year even in getYear.
-    // Let's do that too, it's more sensible.
     if ( exec->interpreter()->compatMode() != Interpreter::IECompat )
       result = Number(t->tm_year);
     else
