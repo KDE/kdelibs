@@ -103,6 +103,7 @@ QString KStdAccel::action(StdAccel id)
      case Up:               return "Up";
      case Back:             return "Back";
      case Forward:          return "Forward";
+	case ShowMenubar:      return "ShowMenubar";
      case NB_STD_ACCELS:    return QString::null;
     }
     return QString::null;
@@ -147,6 +148,7 @@ uint KStdAccel::defaultKey(StdAccel id)
      case Up:               return Qt::ALT + Qt::Key_Up;
      case Back:             return Qt::ALT + Qt::Key_Left;
      case Forward:          return Qt::ALT + Qt::Key_Right;
+	case ShowMenubar:      return Qt::CTRL + Qt::Key_M;
      case NB_STD_ACCELS:    return 0;
     }
     
@@ -192,6 +194,7 @@ QString KStdAccel::description(StdAccel id)
      case Up:               return i18n("Up");
      case Back:             return i18n("Back");
      case Forward:          return i18n("Forward");
+	case ShowMenubar:      return i18n("Show Menu Bar");
      case NB_STD_ACCELS:    return QString::null;
     }
     return QString::null;
@@ -378,4 +381,9 @@ uint KStdAccel::back()
 uint KStdAccel::forward()
 {
   return key(Forward);
+}
+
+uint KStdAccel::showMenubar()
+{
+  return key(ShowMenubar);
 }
