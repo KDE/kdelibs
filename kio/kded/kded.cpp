@@ -60,7 +60,6 @@ Kded::Kded()
 {
   QString path = KGlobal::dirs()->saveLocation("config")+"ksycoca";
   QCString cPath = QFile::encodeName(path);
-  struct stat buff;
   m_pTimer = new QTimer(this);
   connect (m_pTimer, SIGNAL(timeout()), this, SLOT(recreate()));
 
@@ -125,7 +124,7 @@ void Kded::recreate()
    // database
 
    build(); // Update tree first, to be sure to miss nothing.
-    
+
    runBuildSycoca();
 }
 
