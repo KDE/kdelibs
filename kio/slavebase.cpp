@@ -783,15 +783,7 @@ bool SlaveBase::checkCachedAuthentication( AuthInfo& info )
     {
         AuthKeysList list = client.getKeys(grp_key);
         int count = list.count();
-        // Hmmm... if we have only one match for now, we use it
-        // and if it fails the user will be prompted afterwards...
-        if ( count == 1 )
-        {
-            kdDebug(7019) << "SINGLE matching entry found for: " << auth_key << endl;
-            auth_key = list.first();
-            found = true;
-        }
-        else if ( count > 1 )
+        if ( count > 0 )
         {
             // Deal with protection space based authentications, namely HTTP.
             // It has by far the most complex scheme in terms of password
