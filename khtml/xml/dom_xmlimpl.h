@@ -25,16 +25,19 @@
 #define _DOM_XmlImpl_h_
 
 #include "xml/dom_nodeimpl.h"
-#include "css/css_stylesheetimpl.h"
-#include "misc/loader.h"
 #include "misc/loader_client.h"
 
 #include <qxml.h>
 
+namespace khtml {
+class CachedCSSStyleSheet;
+};
+
 namespace DOM {
 
-    class DocumentImpl;
-
+class DocumentImpl;
+class CSSStyleSheetImpl;
+class StyleSheetImpl;
 class DOMString;
 
 class EntityImpl : public NodeBaseImpl

@@ -27,6 +27,7 @@
 #include "dom/dom_string.h"
 #include "xml/dom_stringimpl.h"
 #include "rendering/render_object.h"
+#include "misc/helper.h"
 
 #include <qptrvector.h>
 #include <assert.h>

@@ -33,13 +33,14 @@
 
 #ifndef Q_WS_QWS // We don't have Java in Qt Embedded
 
-#include <java/kjavaappletwidget.h>
-#include <misc/htmltags.h>
+#include "java/kjavaappletwidget.h"
+#include "misc/htmltags.h"
+#include "html/html_objectimpl.h"
 
 using namespace khtml;
 using namespace DOM;
 
-RenderApplet::RenderApplet(QScrollView *view,
+RenderApplet::RenderApplet(KHTMLView *view,
                            QMap<QString, QString> args, HTMLElementImpl *applet)
     : RenderWidget(view)
 {
@@ -140,7 +141,7 @@ void RenderApplet::processArguments(QMap<QString, QString> args)
     }
 }
 
-RenderEmptyApplet::RenderEmptyApplet(QScrollView *view)
+RenderEmptyApplet::RenderEmptyApplet(KHTMLView *view)
   : RenderWidget( view )
 {
     // init RenderObject attributes

@@ -580,7 +580,7 @@ void RenderFrameSet::dump(QTextStream *stream, QString ind) const
 
 /**************************************************************************************/
 
-RenderPart::RenderPart( QScrollView *view )
+RenderPart::RenderPart( KHTMLView *view )
     : RenderWidget( view )
 {
     // init RenderObject attributes
@@ -594,7 +594,7 @@ void RenderPart::setWidget( QWidget *widget )
 #ifdef DEBUG_LAYOUT
     kdDebug(6031) << "RenderPart::setWidget()" << endl;
 #endif
-    setQWidget( widget, false );
+    setQWidget( widget );
     if(widget->inherits("KHTMLView"))
         connect( widget, SIGNAL( cleared() ), this, SLOT( slotViewCleared() ) );
 
@@ -635,7 +635,7 @@ void RenderPart::slotViewCleared()
 
 /***************************************************************************************/
 
-RenderFrame::RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame )
+RenderFrame::RenderFrame( KHTMLView *view, DOM::HTMLFrameElementImpl *frame )
     : RenderPart( view ), m_element( frame )
 {
     setInline( false );
@@ -666,7 +666,7 @@ void RenderFrame::slotViewCleared()
 
 /****************************************************************************************/
 
-RenderPartObject::RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o )
+RenderPartObject::RenderPartObject( KHTMLView *view, DOM::HTMLElementImpl *o )
     : RenderPart( view )
 {
     // init RenderObject attributes

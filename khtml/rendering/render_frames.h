@@ -85,7 +85,7 @@ class RenderPart : public khtml::RenderWidget
 {
     Q_OBJECT
 public:
-    RenderPart( QScrollView *view );
+    RenderPart( KHTMLView *view );
 
     virtual const char *renderName() const { return "RenderPart"; }
 
@@ -117,7 +117,7 @@ class RenderFrame : public khtml::RenderPart
 {
     Q_OBJECT
 public:
-    RenderFrame( QScrollView *view, DOM::HTMLFrameElementImpl *frame );
+    RenderFrame( KHTMLView *view, DOM::HTMLFrameElementImpl *frame );
 
     virtual const char *renderName() const { return "RenderFrame"; }
 
@@ -135,7 +135,7 @@ class RenderPartObject : public khtml::RenderPart
 {
     Q_OBJECT
 public:
-    RenderPartObject( QScrollView *view, DOM::HTMLElementImpl *o );
+    RenderPartObject( KHTMLView *view, DOM::HTMLElementImpl *o );
 
     virtual const char *renderName() const { return "RenderPartObject"; }
 

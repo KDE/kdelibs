@@ -548,26 +548,26 @@ void HTMLInputElement::setValue( const DOMString &value )
 
 void HTMLInputElement::blur(  )
 {
-    if(impl && impl->ownerDocument() && impl->ownerDocument()->focusNode()==impl)
-        impl->ownerDocument()->setFocusNode(0);
+    if(impl)
+	((HTMLInputElementImpl*)impl)->blur();
 }
 
 void HTMLInputElement::focus(  )
 {
-    if(impl && impl->ownerDocument())
-        impl->ownerDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
+    if(impl)
+	((HTMLInputElementImpl*)impl)->focus();
 }
 
 void HTMLInputElement::select(  )
 {
     if(impl)
-        ((HTMLInputElementImpl *)impl)->select(  );
+	((HTMLInputElementImpl *)impl)->select(  );
 }
 
 void HTMLInputElement::click(  )
 {
     if(impl)
-        ((HTMLInputElementImpl *)impl)->click(  );
+	((HTMLInputElementImpl *)impl)->click(  );
 }
 
 // --------------------------------------------------------------------------
@@ -914,14 +914,14 @@ void HTMLSelectElement::remove( long index )
 
 void HTMLSelectElement::blur(  )
 {
-    if(impl && impl->ownerDocument() && impl->ownerDocument()->focusNode()==impl)
-        impl->ownerDocument()->setFocusNode(0);
+    if(impl)
+	((HTMLSelectElementImpl*)impl)->blur();
 }
 
 void HTMLSelectElement::focus(  )
 {
-    if(impl && impl->ownerDocument())
-        impl->ownerDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
+    if(impl)
+	((HTMLSelectElementImpl*)impl)->focus();
 }
 
 // --------------------------------------------------------------------------
@@ -1081,20 +1081,20 @@ void HTMLTextAreaElement::setValue( const DOMString &value )
 
 void HTMLTextAreaElement::blur(  )
 {
-    if(impl && impl->ownerDocument() && impl->ownerDocument()->focusNode()==impl)
-        impl->ownerDocument()->setFocusNode(0);
+    if(impl)
+	((HTMLTextAreaElementImpl*)impl)->blur();
 }
 
 void HTMLTextAreaElement::focus(  )
 {
-    if(impl && impl->ownerDocument())
-        impl->ownerDocument()->setFocusNode(static_cast<ElementImpl*>(impl));
+    if(impl)
+	((HTMLTextAreaElementImpl*)impl)->focus();
 }
 
 void HTMLTextAreaElement::select(  )
 {
     if(impl)
-        ((HTMLTextAreaElementImpl *)impl)->select(  );
+	((HTMLTextAreaElementImpl *)impl)->select(  );
 }
 
 // --------------------------------------------------------------------------

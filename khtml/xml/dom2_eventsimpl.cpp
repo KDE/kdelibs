@@ -24,8 +24,7 @@
 
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_stringimpl.h"
-
-
+#include "xml/dom_nodeimpl.h"
 
 using namespace DOM;
 
@@ -278,8 +277,25 @@ DOMString EventImpl::idToType(EventImpl::EventId id)
 	    return "resize";
 	case SCROLL_EVENT:
 	    return "scroll";
-	// ignore: KHTML_DBLCLICK_EVENT
-	// ignore: KHTML_CLICK_EVENT
+	// khtml extensions
+	case KHTML_DBLCLICK_EVENT:
+            return "khtml_dblclick";
+	case KHTML_CLICK_EVENT:
+            return "khtml_click";
+	case KHTML_DRAGDROP_EVENT:
+            return "khtml_dragdrop";
+	case KHTML_ERROR_EVENT:
+            return "khtml_error";
+	case KHTML_KEYDOWN_EVENT:
+            return "khtml_keydown";
+	case KHTML_KEYPRESS_EVENT:
+            return "khtml_keypress";
+	case KHTML_KEYUP_EVENT:
+            return "khtml_keyup";
+	case KHTML_MOVE_EVENT:
+            return "khtml_move";
+        case KHTML_ORIGCLICK_MOUSEUP_EVENT:
+            return "khtml_origclick_mouseup_event";
 	default:
 	    return DOMString();
 	    break;

@@ -764,20 +764,6 @@ AttrImpl *ElementImpl::getAttributeNode ( int index ) const
     return namedAttrMap ? namedAttrMap->getIdItem(index) : 0;
 }
 
-short ElementImpl::tabIndex() const
-{
-  if (m_hasTabindex)
-    return m_tabindex;
-  else
-    return -1;
-}
-
-void ElementImpl::setTabIndex( short _tabindex )
-{
-  m_hasTabindex=true;
-  m_tabindex=_tabindex;
-}
-
 NamedAttrMapImpl* ElementImpl::defaultMap() const
 {
     return 0;
@@ -792,7 +778,7 @@ void ElementImpl::attach()
 #if SPEED_DEBUG < 1
         if(_parent && _parent->renderer())
         {
-            m_render = khtml::RenderObject::createObject(this);
+            m_render = khtml::RenderObject::createObject(style());
             if(m_render)
             {
                 _parent->renderer()->addChild(m_render, nextRenderer());
@@ -1032,7 +1018,6 @@ XMLElementImpl::XMLElementImpl(DocumentPtr *doc, DOMStringImpl *_qualifiedName, 
 XMLElementImpl::~XMLElementImpl()
 {
 }
-
 
 DOMString XMLElementImpl::namespaceURI() const
 {

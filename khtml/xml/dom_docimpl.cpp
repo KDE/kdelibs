@@ -31,6 +31,7 @@
 
 #include "css/csshelper.h"
 #include "css/cssstyleselector.h"
+#include "css/css_stylesheetimpl.h"
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
 #include "ecma/kjs_proxy.h"
@@ -294,6 +295,8 @@ DocumentImpl::~DocumentImpl()
     delete [] m_namespaceURIs;
     m_defaultView->deref();
     m_styleSheets->deref();
+    if (m_focusNode)
+        m_focusNode->deref();
 }
 
 
@@ -759,7 +762,7 @@ RangeImpl *DocumentImpl::createRange()
 }
 
 NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                                   NodeFilter filter, bool entityReferenceExpansion,
+                                                   NodeFilter &filter, bool entityReferenceExpansion,
                                                    int &exceptioncode)
 {
     if (!root) {
@@ -770,9 +773,10 @@ NodeIteratorImpl *DocumentImpl::createNodeIterator(NodeImpl *root, unsigned long
     return new NodeIteratorImpl(root,whatToShow,filter,entityReferenceExpansion);
 }
 
-TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*/, NodeFilter /*filter*/,
+TreeWalkerImpl *DocumentImpl::createTreeWalker(Node /*root*/, unsigned long /*whatToShow*/, NodeFilter &/*filter*/,
                                 bool /*entityReferenceExpansion*/)
 {
+    // ###
     return new TreeWalkerImpl;
 }
 
@@ -1119,188 +1123,228 @@ NodeImpl *DocumentImpl::findElement( Id id )
     return 0;
 }
 
-ElementImpl *DocumentImpl::findSelectableElement(NodeImpl *start, bool forward)
+NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
 {
-    if (!start)
-        start = forward?_first:_last;
-    if (!start)
-        return 0;
-    if (forward)
-        while(1)
-        {
-            if (!start->isSelectable() && start->firstChild())
-                start = start->firstChild();
-            else if (start->nextSibling())
-                start = start->nextSibling();
-            else // find the next sibling of the first parent that has a nextSibling
-            {
-                NodeImpl *pa = start;
-                while (pa)
-                {
-                    pa = pa->parentNode();
-                    if (!pa)
-                        return 0;
-                    if (pa->nextSibling())
-                    {
-                        start = pa->nextSibling();
-                        pa = 0;
-                    }
-                }
-            }
-            if (start->isElementNode() && start->isSelectable())
-                return static_cast<ElementImpl*>(start);
-        }
-    else
-        while (1)
-        {
-            if (!start->isSelectable() && start->lastChild())
-                start = start->lastChild();
-            else if (start->previousSibling())
-                start = start->previousSibling();
-            else
-            {
-                NodeImpl *pa = start;
-                while (pa)
-                {
-                  // find the previous sibling of the first parent that has a prevSibling
-                    pa = pa->parentNode();
-                    if (!pa)
-                        return 0;
-                    if (pa->previousSibling())
-                    {
-                        start = pa->previousSibling();
-                        pa = 0;
-                        break;
-                    }
-                }
-            }
-            if (start->isElementNode() && start->isSelectable())
-                return static_cast<ElementImpl*>(start);
-        }
-    kdFatal(6000) << "some error in findElement\n";
-}
+    // Search through the document, starting from fromNode, for the next selectable element that comes after fromNode.
+    // The order followed is as specified in section 17.11.1 of the HTML4 spec, which is elements with tab indexes
+    // first (from lowest to highest), and then elements without tab indexes (in document order).
+    //
+    // See http://www.w3.org/TR/html4/interact/forms.html#h-17.11.1
 
+    unsigned short fromTabIndex;
 
-int DocumentImpl::findHighestTabIndex()
-{
-    NodeImpl *n=this;
-    NodeImpl *next=0;
-    ElementImpl *a;
-    int retval=-1;
-    int tmpval;
-    while(n)
-    {
-        //find out tabindex of current element, if availiable
-        if (n->isElementNode())
-        {
-            a=static_cast<ElementImpl *>(n);
-            tmpval=a->tabIndex();
-            if (tmpval>retval)
-                retval=tmpval;
-        }
-        //iterate to next element.
-        if (!n->isSelectable() && n->firstChild())
-            n=n->firstChild();
-        else if (n->nextSibling())
-            n=n->nextSibling();
-        else
-        {
-            next=0;
-            while(!next)
-            {
-                n=n->parentNode();
-                if (!n)
-                    return retval;
-                next=n->nextSibling();
-            }
-            n=next;
-        }
+    if (!fromNode) {
+	// No starting node supplied; begin with the top of the document
+	NodeImpl *n;
+
+	int lowestTabIndex = 65535;
+	for (n = this; n != 0; n = n->traverseNextNode()) {
+	    if (n->isSelectable()) {
+		if ((n->tabIndex() > 0) && (n->tabIndex() < lowestTabIndex))
+		    lowestTabIndex = n->tabIndex();
+	    }
+	}
+
+	if (lowestTabIndex == 65535)
+	    lowestTabIndex = 0;
+
+	// Go to the first node in the document that has the desired tab index
+	for (n = this; n != 0; n = n->traverseNextNode()) {
+	    if (n->isSelectable() && (n->tabIndex() == lowestTabIndex))
+		return n;
+	}
+
+	return 0;
     }
-    return retval;
-}
+    else {
+	fromTabIndex = fromNode->tabIndex();
+    }
 
-ElementImpl *DocumentImpl::findNextLink(ElementImpl *cur, bool forward)
-{
-    int curTabIndex = (cur?cur->tabIndex():(forward?1:-1));
+    if (fromTabIndex == 0) {
+	// Just need to find the next selectable node after fromNode (in document order) that doesn't have a tab index
+	NodeImpl *n = fromNode->traverseNextNode();
+	while (n && !(n->isSelectable() && n->tabIndex() == 0))
+	    n = n->traverseNextNode();
+	return n;
+    }
+    else {
+	// Find the lowest tab index out of all the nodes except fromNode, that is greater than or equal to fromNode's
+	// tab index. For nodes with the same tab index as fromNode, we are only interested in those that come after
+	// fromNode in document order.
+	// If we don't find a suitable tab index, the next focus node will be one with a tab index of 0.
+	unsigned short lowestSuitableTabIndex = 65535;
+	NodeImpl *n;
 
-    switch(curTabIndex)
-    {
-    case -1:
-        return notabindex(cur, forward);
-    case 0:
-        return tabindexzero(cur, forward);
-    default:
-        return intabindex(cur, forward);
+	bool reachedFromNode = false;
+	for (n = this; n != 0; n = n->traverseNextNode()) {
+	    if (n->isSelectable() &&
+		((reachedFromNode && (n->tabIndex() >= fromTabIndex)) ||
+		 (!reachedFromNode && (n->tabIndex() > fromTabIndex))) &&
+		(n->tabIndex() < lowestSuitableTabIndex) &&
+		(n != fromNode)) {
+
+		// We found a selectable node with a tab index at least as high as fromNode's. Keep searching though,
+		// as there may be another node which has a lower tab index but is still suitable for use.
+		lowestSuitableTabIndex = n->tabIndex();
+	    }
+
+	    if (n == fromNode)
+		reachedFromNode = true;
+	}
+
+	if (lowestSuitableTabIndex == 65535) {
+	    // No next node with a tab index -> just take first node with tab index of 0
+	    NodeImpl *n = this;
+	    while (n && !(n->isSelectable() && n->tabIndex() == 0))
+		n = n->traverseNextNode();
+	    return n;
+	}
+
+	// Search forwards from fromNode
+	for (n = fromNode->traverseNextNode(); n != 0; n = n->traverseNextNode()) {
+	    if (n->isSelectable() && (n->tabIndex() == lowestSuitableTabIndex))
+		return n;
+	}
+
+	// The next node isn't after fromNode, start from the beginning of the document
+	for (n = this; n != fromNode; n = n->traverseNextNode()) {
+	    if (n->isSelectable() && (n->tabIndex() == lowestSuitableTabIndex))
+		return n;
+	}
+
+	assert(false); // should never get here
+	return 0;
     }
 }
 
-ElementImpl *DocumentImpl::findLink(ElementImpl *n, bool forward, int tabIndexHint)
+NodeImpl *DocumentImpl::previousFocusNode(NodeImpl *fromNode)
 {
-    // tabIndexHint is the tabIndex that should be found.
-    // if tabIndex is -1, items containing tabIndex are skipped.
+    // Search through the document, starting from fromNode, for the previous selectable element (that comes _before_)
+    // fromNode. The order followed is as specified in section 17.11.1 of the HTML4 spec, which is elements with tab
+    // indexes first (from lowest to highest), and then elements without tab indexes (in document order).
+    //
+    // See http://www.w3.org/TR/html4/interact/forms.html#h-17.11.1
 
-    //  kdDebug(6000)<<"DocumentImpl:findLink: Node: "<<n<<" forward: "<<(forward?"true":"false")<<" tabIndexHint: "<<tabIndexHint<<"\n";
+    NodeImpl *lastNode = this;
+    while (lastNode->lastChild())
+	lastNode = lastNode->lastChild();
 
-    int maxTabIndex;
+    if (!fromNode) {
+	// No starting node supplied; begin with the very last node in the document
+	NodeImpl *n;
 
-    if (forward) maxTabIndex = findHighestTabIndex();
-    else maxTabIndex = -1;
+	int highestTabIndex = 0;
+	for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
+	    if (n->isSelectable()) {
+		if (n->tabIndex() == 0)
+		    return n;
+		else if (n->tabIndex() > highestTabIndex)
+		    highestTabIndex = n->tabIndex();
+	    }
+	}
 
-    do
-    {
-        n = findSelectableElement(n, forward);
-        // this is alright even for non-tabindex-searches,
-        // because DOM::NodeImpl::tabIndex() defaults to -1.
-    } while (n && (n->tabIndex()!=tabIndexHint));
+	// No node with a tab index of 0; just go to the last node with the highest tab index
+	for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
+	    if (n->isSelectable() && (n->tabIndex() == highestTabIndex))
+		return n;
+	}
+
+	return 0;
+    }
+    else {
+	unsigned short fromTabIndex = fromNode->tabIndex();
+
+	if (fromTabIndex == 0) {
+	    // Find the previous selectable node before fromNode (in document order) that doesn't have a tab index
+	    NodeImpl *n = fromNode->traversePreviousNode();
+	    while (n && !(n->isSelectable() && n->tabIndex() == 0))
+		n = n->traversePreviousNode();
+	    if (n)
+		return n;
+
+	    // No previous nodes with a 0 tab index, go to the last node in the document that has the highest tab index
+	    int highestTabIndex = 0;
+	    for (n = this; n != 0; n = n->traverseNextNode()) {
+		if (n->isSelectable() && (n->tabIndex() > highestTabIndex))
+		    highestTabIndex = n->tabIndex();
+	    }
+
+	    if (highestTabIndex == 0)
+		return 0;
+
+	    for (n = lastNode; n != 0; n = n->traversePreviousNode()) {
+		if (n->isSelectable() && (n->tabIndex() == highestTabIndex))
+		    return n;
+	    }
+
+	    assert(false); // should never get here
+	    return 0;
+	}
+	else {
+	    // Find the lowest tab index out of all the nodes except fromNode, that is less than or equal to fromNode's
+	    // tab index. For nodes with the same tab index as fromNode, we are only interested in those before
+	    // fromNode.
+	    // If we don't find a suitable tab index, then there will be no previous focus node.
+	    unsigned short highestSuitableTabIndex = 0;
+	    NodeImpl *n;
+
+	    bool reachedFromNode = false;
+	    for (n = this; n != 0; n = n->traverseNextNode()) {
+		if (n->isSelectable() &&
+		    ((!reachedFromNode && (n->tabIndex() <= fromTabIndex)) ||
+		     (reachedFromNode && (n->tabIndex() < fromTabIndex)))  &&
+		    (n->tabIndex() > highestSuitableTabIndex) &&
+		    (n != fromNode)) {
+
+		    // We found a selectable node with a tab index no higher than fromNode's. Keep searching though, as
+		    // there may be another node which has a higher tab index but is still suitable for use.
+		    highestSuitableTabIndex = n->tabIndex();
+		}
+
+		if (n == fromNode)
+		    reachedFromNode = true;
+	    }
+
+	    if (highestSuitableTabIndex == 0) {
+		// No previous node with a tab index. Since the order specified by HTML is nodes with tab index > 0
+		// first, this means that there is no previous node.
+		return 0;
+	    }
+
+	    // Search backwards from fromNode
+	    for (n = fromNode->traversePreviousNode(); n != 0; n = n->traversePreviousNode()) {
+		if (n->isSelectable() && (n->tabIndex() == highestSuitableTabIndex))
+		    return n;
+	    }
+	    // The previous node isn't before fromNode, start from the end of the document
+	    for (n = lastNode; n != fromNode; n = n->traversePreviousNode()) {
+		if (n->isSelectable() && (n->tabIndex() == highestSuitableTabIndex))
+		    return n;
+	    }
+
+	    assert(false); // should never get here
+	    return 0;
+	}
+    }
+}
+
+int DocumentImpl::nodeAbsIndex(NodeImpl *node)
+{
+    assert(node->getDocument() == this);
+
+    int absIndex = 0;
+    for (NodeImpl *n = node; n != this; n = n->traversePreviousNode())
+	absIndex++;
+    return absIndex;
+}
+
+NodeImpl *DocumentImpl::nodeWithAbsIndex(int absIndex)
+{
+    NodeImpl *n = this;
+    for (int i = 0; n && (i < absIndex); i++) {
+	n = n->traverseNextNode();
+    }
     return n;
-}
-
-ElementImpl *DocumentImpl::notabindex(ElementImpl *cur, bool forward)
-{
-    // REQ: n must be after the current node and its tabindex must be -1
-    if ((cur = findLink(cur, forward, -1)))
-        return cur;
-
-    if (forward)
-        return 0;
-    else
-        return tabindexzero(cur, forward);
-}
-
-ElementImpl *DocumentImpl::intabindex(ElementImpl *cur, bool forward)
-{
-    short tmptabindex;
-    short maxtabindex = findHighestTabIndex();
-    short increment=(forward?1:-1);
-    if (cur)
-    {
-        tmptabindex = cur->tabIndex();
-    }
-    else tmptabindex=(forward?1:maxtabindex);
-
-    while(tmptabindex>0 && tmptabindex<=maxtabindex)
-    {
-        if ((cur = findLink(cur, forward, tmptabindex)))
-            return cur;
-        tmptabindex+=increment;
-    }
-
-    if (forward)
-        return tabindexzero(cur, forward);
-    else
-        return 0;
-}
-
-ElementImpl *DocumentImpl::tabindexzero(ElementImpl *cur, bool forward)
-{
-    //REQ: tabindex of result must be 0 and it must be after the current node ;
-    if ((cur = findLink(cur, forward, 0)))
-        return cur;
-
-    if (forward)
-        return notabindex(cur, forward);
-    else
-        return intabindex(cur, forward);
 }
 
 bool DocumentImpl::prepareMouseEvent( int _x, int _y,
@@ -1536,48 +1580,40 @@ void DocumentImpl::updateStyleSelector()
     applyChanges(true,true);
 }
 
-void DocumentImpl::setFocusNode(ElementImpl *n)
+void DocumentImpl::setFocusNode(NodeImpl *newFocusNode)
 {
-    // ### add check for same Document
-    if (m_focusNode != n)
-    {
-        if (m_focusNode)
-        {
-            if (m_focusNode->active()) m_focusNode->setActive(false);
+    // Make sure newFocusNode is actually in this document
+    if (newFocusNode && (newFocusNode->getDocument() != this))
+        return;
+
+    if (m_focusNode != newFocusNode) {
+        // Remove focus from the existing focus node (if any)
+        if (m_focusNode) {
+            if (m_focusNode->active())
+                m_focusNode->setActive(false);
+
             m_focusNode->setFocus(false);
+	    m_focusNode->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
+	    m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSOUT_EVENT);
 
-	    int exceptioncode = 0;
-
-	    UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSOUT_EVENT,
-	                                      true,false,defaultView(),
-					      0);
-
-	    ue->ref();
-	    m_focusNode->dispatchEvent(ue,exceptioncode,true);
-	    ue->deref();
+            if ((m_focusNode == this) && m_focusNode->hasOneRef()) {
+                m_focusNode->deref(); // deletes this
+                return;
+            }
+	    else {
+                m_focusNode->deref();
+            }
         }
-        m_focusNode = n;
-        //kdDebug(6020)<<"DOM::DocumentImpl::setFocusNode("<<n<<")"<<endl;
-        if (n)
-	{
-	    int exceptioncode = 0;
 
-	    UIEventImpl *ue = new UIEventImpl(EventImpl::DOMFOCUSIN_EVENT,
-	                                      true,false,defaultView(),
-					      0);
-
-	    ue->ref();
-	    m_focusNode->dispatchEvent(ue,exceptioncode,true);
-	    ue->deref();
-
-            n->setFocus();
+        // Set focus on the new node
+        m_focusNode = newFocusNode;
+        if (m_focusNode) {
+	    m_focusNode->ref();
+	    m_focusNode->dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
+	    m_focusNode->dispatchUIEvent(EventImpl::DOMFOCUSIN_EVENT);
+            m_focusNode->setFocus();
 	}
     }
-}
-
-ElementImpl *DocumentImpl::focusNode()
-{
-    return m_focusNode;
 }
 
 void DocumentImpl::attachNodeIterator(NodeIteratorImpl *ni)

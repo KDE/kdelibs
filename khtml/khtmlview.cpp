@@ -30,6 +30,7 @@
 #include "rendering/render_object.h"
 #include "rendering/render_root.h"
 #include "rendering/render_style.h"
+#include "rendering/render_replaced.h"
 #include "xml/dom2_eventsimpl.h"
 #include "misc/htmlhashes.h"
 #include "misc/helper.h"
@@ -64,7 +65,7 @@ public:
         tp=0;
         paintBuffer=0;
         formCompletions=0;
-        prevScrollbarVisible = true;
+        prevScrollbarVisible = true;        
     }
     ~KHTMLViewPrivate()
     {
@@ -91,6 +92,7 @@ public:
         hmode = QScrollView::AlwaysOff;
 #endif
         scrollBarMoved = false;
+        ignoreEvents = false;
         ignoreWheelEvents = false;
 	borderX = 30;
 	borderY = 30;
@@ -100,6 +102,7 @@ public:
 	prevMouseY = -1;
 	clickCount = 0;
 	isDoubleClick = false;
+	scrollingSelf = false;
     }
 
     QPainter *tp;
@@ -107,7 +110,7 @@ public:
     NodeImpl *underMouse;
 
     // the node that was selected when enter was pressed
-    ElementImpl *originalNode;
+    NodeImpl *originalNode;
 
     bool borderTouched:1;
     bool borderStart:1;
@@ -118,6 +121,7 @@ public:
     bool prevScrollbarVisible;
     bool linkPressed;
     bool useSlowRepaints;
+    bool ignoreEvents;
     bool ignoreWheelEvents;
 
     int borderX, borderY;
@@ -127,6 +131,7 @@ public:
     bool isDoubleClick;
 
     int prevMouseX, prevMouseY;
+    bool scrollingSelf;
 };
 
 #ifndef QT_NO_TOOLTIP
@@ -350,6 +355,8 @@ void KHTMLView::layout(bool)
 
 void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 {
+    if (d->ignoreEvents)
+        return;
     if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
@@ -380,20 +387,24 @@ void KHTMLView::viewportMousePressEvent( QMouseEvent *_mouse )
 	d->clickY = ym;
     }
 
-    dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
-		       d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
+                                           d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed();
 
-    khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-    event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
-    QApplication::sendEvent( m_part, &event );
+    if (!swallowEvent) {
+	khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+	event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
+	QApplication::sendEvent( m_part, &event );
 
-    emit m_part->nodeActivated(mev.innerNode);
+	emit m_part->nodeActivated(mev.innerNode);
+    }
 }
 
 void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 {
+    if (d->ignoreEvents)
+        return;
     if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
@@ -417,23 +428,27 @@ void KHTMLView::viewportMouseDoubleClickEvent( QMouseEvent *_mouse )
 	d->clickX = xm;
 	d->clickY = ym;
     }
-    dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
-		       d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEDOWN_EVENT,mev.innerNode.handle(),true,
+                                           d->clickCount,_mouse,true,DOM::NodeImpl::MouseDblClick);
 
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed();
 
-    khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-    event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
-    QApplication::sendEvent( m_part, &event );
+    if (!swallowEvent) {
+	khtml::MouseDoubleClickEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+	event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
+	QApplication::sendEvent( m_part, &event );
 
-    // ###
-    //if ( url.length() )
-    //emit doubleClick( url.string(), _mouse->button() );
+	// ###
+	//if ( url.length() )
+	//emit doubleClick( url.string(), _mouse->button() );
+    }
 }
 
 void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 {
+    if (d->ignoreEvents)
+        return;
     if(!m_part->xmlDocImpl()) return;
 
     int xm, ym;
@@ -441,8 +456,8 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
 
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseMove );
     m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
-    dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
-		       0,_mouse,true,DOM::NodeImpl::MouseMove);
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEMOVE_EVENT,mev.innerNode.handle(),false,
+                                           0,_mouse,true,DOM::NodeImpl::MouseMove);
 
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() > QApplication::startDragDistance()) {
@@ -521,9 +536,11 @@ void KHTMLView::viewportMouseMoveEvent( QMouseEvent * _mouse )
     d->prevMouseX = xm;
     d->prevMouseY = ym;
 
-    khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-    event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
-    QApplication::sendEvent( m_part, &event );
+    if (!swallowEvent) {
+	khtml::MouseMoveEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+	event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
+	QApplication::sendEvent( m_part, &event );
+    }
 }
 
 void KHTMLView::resetCursor()
@@ -533,6 +550,8 @@ void KHTMLView::resetCursor()
 
 void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
 {
+    if (d->ignoreEvents)
+        return;
     if ( !m_part->xmlDocImpl() ) return;
 
     int xm, ym;
@@ -543,8 +562,8 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     DOM::NodeImpl::MouseEvent mev( _mouse->stateAfter(), DOM::NodeImpl::MouseRelease );
     m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
 
-    dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
-		       d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
+    bool swallowEvent = dispatchMouseEvent(EventImpl::MOUSEUP_EVENT,mev.innerNode.handle(),true,
+                                           d->clickCount,_mouse,false,DOM::NodeImpl::MouseRelease);
 
     if (d->clickCount > 0 &&
         QPoint(d->clickX-xm,d->clickY-ym).manhattanLength() <= QApplication::startDragDistance())
@@ -554,22 +573,21 @@ void KHTMLView::viewportMouseReleaseEvent( QMouseEvent * _mouse )
     if (mev.innerNode.handle())
 	mev.innerNode.handle()->setPressed(false);
 
-    khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
-    event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
-    QApplication::sendEvent( m_part, &event );
+    if (!swallowEvent) {
+	khtml::MouseReleaseEvent event( _mouse, xm, ym, mev.url, mev.innerNode );
+	event.setNodePos( mev.nodeAbsX, mev.nodeAbsY );
+	QApplication::sendEvent( m_part, &event );
+    }
 }
 
 void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 {
-    if (m_part->xmlDocImpl())
-    {
-        ElementImpl *e = m_part->xmlDocImpl()->focusNode();
-        if (e && e->dispatchKeyEvent(_ke))
-	  {
-	    //kdDebug(6010)<<"KHTMLView: key press event accepted by DOM."<<endl;
-	    _ke->accept();
-	    return;
-	  }
+    if (d->ignoreEvents)
+        return;
+
+    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()) {
+        if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
+            _ke->accept();
     }
 
     int offs = (clipper()->height() < 30) ? clipper()->height() : 30;
@@ -636,10 +654,10 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 	    // move this code to HTMLAnchorElementImpl::setPressed(false),
 	    // or even better to HTMLAnchorElementImpl::event()
             if (m_part->xmlDocImpl()) {
-		ElementImpl *e = m_part->xmlDocImpl()->focusNode();
-		if (e)
-		    e->setActive();
-		d->originalNode = e;
+		NodeImpl *n = m_part->xmlDocImpl()->focusNode();
+		if (n)
+		    n->setActive();
+		d->originalNode = n;
 	    }
             break;
         case Key_Home:
@@ -663,16 +681,57 @@ void KHTMLView::keyPressEvent( QKeyEvent *_ke )
 
 void KHTMLView::keyReleaseEvent(QKeyEvent *_ke)
 {
-  if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode() && m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
-      _ke->accept();
+    if (d->ignoreEvents)
+        return;
+
+    if (m_part->xmlDocImpl() && m_part->xmlDocImpl()->focusNode()) {
+        if (m_part->xmlDocImpl()->focusNode()->dispatchKeyEvent(_ke))
+            _ke->accept();
+    }
+}
+
+void KHTMLView::contentsContextMenuEvent ( QContextMenuEvent *_ce )
+{
+    if (d->ignoreEvents)
+        return;
+    int xm = _ce->x();
+    int ym = _ce->y();
+
+    DOM::NodeImpl::MouseEvent mev( _ce->state(), DOM::NodeImpl::MouseMove ); // ### not a mouse event!
+    m_part->xmlDocImpl()->prepareMouseEvent( xm, ym, 0, 0, &mev );
+
+    NodeImpl *targetNode = mev.innerNode.handle();
+    if (targetNode && targetNode->renderer() && targetNode->renderer()->isWidget()) {
+        int absx = 0;
+        int absy = 0;
+        targetNode->renderer()->absolutePosition(absx,absy);
+        QPoint pos(xm-absx,ym-absy);
+
+        QWidget *w = static_cast<RenderWidget*>(targetNode->renderer())->widget();
+        QContextMenuEvent cme(_ce->reason(),pos,_ce->globalPos(),_ce->state());
+        setIgnoreEvents(true);
+        QApplication::sendEvent(w,&cme);
+        setIgnoreEvents(false);
+    }
+
 }
 
 bool KHTMLView::focusNextPrevChild( bool next )
 {
-    if (focusWidget()!=this)
-        setFocus();
-    if (m_part->xmlDocImpl() && gotoLink(next))
+    if (d->ignoreEvents)
         return true;
+    // First make sure we actually have focus
+    if (focusWidget() != this)
+        setFocus();
+
+    // Now try to find the next child
+    if (m_part->xmlDocImpl()) {
+        focusNextPrevNode(next);
+        if (m_part->xmlDocImpl()->focusNode() != 0) // focus node found
+            return true;
+    }
+
+    // If we get here, there is no next/previous child to go to, so pass up to the next/previous child in our parent
     if (m_part->parentPart() && m_part->parentPart()->view())
         return m_part->parentPart()->view()->focusNextPrevChild(next);
     m_part->overURL(QString(), 0);
@@ -703,6 +762,8 @@ DOM::NodeImpl *KHTMLView::nodeUnderMouse() const
 
 bool KHTMLView::scrollTo(const QRect &bounds)
 {
+    d->scrollingSelf = true; // so scroll events get ignored
+
     int x, y, xe, ye;
     x = bounds.left();
     y = bounds.top();
@@ -767,108 +828,81 @@ bool KHTMLView::scrollTo(const QRect &bounds)
     if (scrollY<0)
         scrollY=-scrollY;
 
+    d->scrollingSelf = false;
+
     if ( (scrollX!=maxx) && (scrollY!=maxy) )
 	return true;
     else return false;
 
 }
 
-bool KHTMLView::gotoLink(bool forward)
+void KHTMLView::focusNextPrevNode(bool next)
 {
-  disconnect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(slotScrollBarMoved()));
-  bool retval = gotoLinkInternal(forward);
-  connect(this, SIGNAL(contentsMoving(int, int)), this, SLOT(slotScrollBarMoved()));
-  if (retval)
-      d->scrollBarMoved = false;
-  return retval;
-}
+    // Sets the focus node of the document to be the node after (or if next is false, before) the current focus node.
+    // Only nodes that are selectable (i.e. for which isSelectable() returns true) are taken into account, and the order
+    // used is that specified in the HTML spec (see DocumentImpl::nextFocusNode() and DocumentImpl::previousFocusNode()
+    // for details).
 
-bool KHTMLView::gotoLinkInternal(bool forward)
-{
-    if (!m_part->xmlDocImpl())
-        return false;
+    DocumentImpl *doc = m_part->xmlDocImpl();
+    NodeImpl *oldFocusNode = doc->focusNode();
+    NodeImpl *newFocusNode;
 
-    ElementImpl *currentNode = m_part->xmlDocImpl()->focusNode();
-    ElementImpl *nextTarget = m_part->xmlDocImpl()->findNextLink(currentNode, forward);
-
-    if (!currentNode && !d->borderTouched)
-    {
-	d->borderStart = forward;
-	d->borderTouched = true;
-
-	if (contentsY() != (forward?0:(contentsHeight()-visibleHeight())))
-        {
-
-            if (d->scrollBarMoved)
-            {
-                // jump to {top,left}most visible selectable element
-                // if the scrollbars were moved since the last gotoLink-call
-                // and the view is not at the end/beginning.
-                ElementImpl *candidate = 0;
-                while ((candidate = m_part->xmlDocImpl()->findNextLink(candidate, forward)))
-                {
-                    QRect candrect = candidate->getRect();
-                    if (candrect.left() > contentsX() && candrect.top() > contentsY() &&
-                        candrect.right() < contentsX() + visibleWidth() && candrect.bottom() < contentsY() + visibleHeight())
-                    {
-                        m_part->xmlDocImpl()->setFocusNode(candidate);
-                        emit m_part->nodeActivated(Node(candidate));
-                        return true;
-                    }
-                }
-                kdDebug() << "ARGL! no visible node available\n";
-	    }
-
-            setContentsPos(contentsX(), (forward?0:contentsHeight()));
-            if (!nextTarget)
-                return true;
-            else
-            {
-                QRect nextRect = nextTarget->getRect();
-                if (nextRect.top()  < contentsY() ||
-                    nextRect.bottom() > contentsY()+visibleHeight())
-                    return true;
-            }
-        }
-    }
-
-    if (!currentNode && d->borderStart != forward)
-	nextTarget = 0;
-
-    QRect nextRect;
-    if (nextTarget)
-	nextRect = nextTarget->getRect();
+    // Find the next/previous node from the current one
+    if (next)
+	newFocusNode = doc->nextFocusNode(oldFocusNode);
     else
-	nextRect = QRect(contentsX()+visibleWidth()/2, (forward?contentsHeight():0), 0, 0);
+	newFocusNode = doc->previousFocusNode(oldFocusNode);
 
-    //    kdDebug(6000)<<"scrolling to dest ("<<nextRect.left()<<";"<<nextRect.top()
-    //		 <<" : "<<nextRect.bottom()<<";"<<nextRect.right()<<")...\n";
-
-    if (scrollTo(nextRect))
-    {
-      //        kdDebug(6000)<<"   ...reached.\n";
- 	if (!nextTarget)
-	{
-	    if (m_part->xmlDocImpl()->focusNode()) m_part->xmlDocImpl()->setFocusNode(0);
-	    d->borderTouched = false;
-	    return false;
+    // If there was previously no focus node and the user has scrolled the document, then instead of picking the first
+    // focusable node in the document, use the first one that lies within the visible area (if possible).
+    if (!oldFocusNode) {
+	bool visible = false;
+	NodeImpl *toFocus = newFocusNode;
+	while (!visible) {
+	    QRect focusNodeRect = toFocus->getRect();
+	    if ((focusNodeRect.left() > contentsX()) && (focusNodeRect.right() < contentsX() + visibleWidth()) &&
+		(focusNodeRect.top() > contentsY()) && (focusNodeRect.bottom() < contentsY() + visibleHeight())) {
+		// toFocus is visible in the contents area
+		visible = true;
+	    }
+	    else {
+		// toFocus is _not_ visible in the contents area, pick the next node
+		if (next)
+		    toFocus = doc->nextFocusNode(toFocus);
+		else
+		    toFocus = doc->previousFocusNode(toFocus);
+	    }
 	}
-	else
-	{
-	    HTMLAnchorElementImpl *anchor = 0;
-	    if ( ( nextTarget->id() == ID_A || nextTarget->id() == ID_AREA ) )
-	        anchor = static_cast<HTMLAnchorElementImpl *>( nextTarget );
 
-	    if (anchor && !anchor->areaHref().isNull()) m_part->overURL(anchor->areaHref().string(), 0);
-	    else m_part->overURL(QString(), 0);
-
-	    //kdDebug(6000)<<"reached link:"<<nextTarget->nodeName().string()<<endl;
-
-	    m_part->xmlDocImpl()->setFocusNode(nextTarget);
-	    emit m_part->nodeActivated(Node(nextTarget));
-	}
+	if (toFocus)
+	    newFocusNode = toFocus;
     }
-    return true;
+
+    // Set focus node on the document
+    m_part->xmlDocImpl()->setFocusNode(newFocusNode);
+    emit m_part->nodeActivated(Node(newFocusNode));
+
+    if (newFocusNode) {
+	// Scroll the view as necessary to ensure that the new focus node is visible
+	scrollTo(newFocusNode->getRect());
+
+	// If the newly focussed node is a link, notify the part
+	HTMLAnchorElementImpl *anchor = 0;
+	if ((newFocusNode->id() == ID_A || newFocusNode->id() == ID_AREA))
+	    anchor = static_cast<HTMLAnchorElementImpl *>(newFocusNode);
+
+	if (anchor && !anchor->areaHref().isNull())
+	    m_part->overURL(anchor->areaHref().string(), 0);
+	else
+	    m_part->overURL(QString(), 0);
+    }
+    else {
+	// No new focus node, scroll to bottom or top depending on next
+	if (next)
+	    scrollTo(QRect(contentsX()+visibleWidth()/2,contentsHeight(),0,0));
+	else
+	    scrollTo(QRect(contentsX()+visibleWidth()/2,0,0,0));
+    }
 }
 
 void KHTMLView::setMediaType( const QString &medium )
@@ -1101,7 +1135,7 @@ void KHTMLView::addFormCompletionItem(const QString &name, const QString &value)
     d->formCompletions->writeEntry(name, items);
 }
 
-void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
+bool KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
 				   int detail,QMouseEvent *_mouse, bool setUnder,
 				   int mouseEventType)
 {
@@ -1159,7 +1193,6 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 		me->deref();
 	    }
 
-
 	    // send mouseover event to the new node
 	    if (targetNode) {
 		MouseEventImpl *me = new MouseEventImpl(EventImpl::MOUSEOVER_EVENT,
@@ -1178,6 +1211,8 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	}
     }
 
+    bool swallowEvent = false;
+
     if (targetNode) {
 	// send the actual event
 	MouseEventImpl *me = new MouseEventImpl(static_cast<EventImpl::EventId>(eventId),
@@ -1188,9 +1223,14 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	me->ref();
 	targetNode->dispatchEvent(me,exceptioncode,true);
 	bool defaultHandled = me->defaultHandled();
+        if (me->defaultHandled() || me->defaultPrevented())
+            swallowEvent = true;
 	me->deref();
 
-	// special case for HTML click & ondblclick handler
+	// Special case: If it's a click event, we also send the KHTML_CLICK or KHTML_DBLCLICK event. This is not part
+	// of the DOM specs, but is used for compatibility with the traditional onclick="" and ondblclick="" attributes,
+	// as there is no way to tell the difference between single & double clicks using DOM (only the click count is
+	// stored, which is not necessarily the same)
 	if (eventId == EventImpl::CLICK_EVENT) {
 	    me = new MouseEventImpl(d->isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT,
 				    true,cancelable,m_part->xmlDocImpl()->defaultView(),
@@ -1202,10 +1242,28 @@ void KHTMLView::dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool 
 	    if (defaultHandled)
 		me->setDefaultHandled();
 	    targetNode->dispatchEvent(me,exceptioncode,true);
+            if (me->defaultHandled() || me->defaultPrevented())
+                swallowEvent = true;
 	    me->deref();
+
+            if (targetNode->isSelectable())
+                m_part->xmlDocImpl()->setFocusNode(targetNode);
+            else
+                m_part->xmlDocImpl()->setFocusNode(0);
 	}
     }
 
+    return swallowEvent;
+}
+
+void KHTMLView::setIgnoreEvents(bool ignore)
+{
+    d->ignoreEvents = ignore;
+}
+
+bool KHTMLView::ignoreEvents()
+{
+    return d->ignoreEvents;
 }
 
 void KHTMLView::setIgnoreWheelEvents( bool e )
@@ -1240,5 +1298,6 @@ void KHTMLView::focusOutEvent( QFocusEvent *e )
 
 void KHTMLView::slotScrollBarMoved()
 {
-  d->scrollBarMoved = true;
+    if (!d->scrollingSelf)
+        d->scrollBarMoved = true;
 }

@@ -28,7 +28,6 @@
 #include "break_lines.h"
 
 #include "misc/loader.h"
-#include "misc/helper.h"
 
 #include <qpainter.h>
 #include <kdebug.h>

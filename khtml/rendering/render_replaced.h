@@ -25,8 +25,9 @@
 
 #include "render_box.h"
 
-#include <qwidget.h>
-class QScrollView;
+#include <qobject.h>
+class KHTMLView;
+class QWidget;
 
 namespace khtml {
 
@@ -70,7 +71,7 @@ class RenderWidget : public QObject, public RenderReplaced, public DOM::DomShare
 {
     Q_OBJECT
 public:
-    RenderWidget(QScrollView *view);
+    RenderWidget(KHTMLView *view);
     virtual ~RenderWidget();
 
     virtual void setStyle(RenderStyle *style);
@@ -79,21 +80,26 @@ public:
 
     virtual bool isWidget() const { return true; };
 
-    virtual void focus();
-    virtual void blur();
-
-    void placeWidget(int x, int y);
-
     virtual void detach();
-    
+
+    virtual bool eventFilter(QObject *o, QEvent *e);
+
+    virtual void handleDOMEvent(DOM::EventImpl *evt);
+
+    bool sendWidgetEvent(QEvent *event);
+    QWidget *widget() const { return m_widget; }
+
 public slots:
     void slotWidgetDestructed();
 
 protected:
-    void setQWidget(QWidget *widget, bool changeFocusPolicy = true);
-    QScrollView *m_view;
-public:
+    void setQWidget(QWidget *widget);
+    KHTMLView *m_view;
     QWidget *m_widget;
+
+    bool m_paintingSelf : 1;
+    bool m_ignorePaintEvents : 1;
+    bool m_widgetShown : 1;
 };
 
 };

@@ -99,12 +99,18 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
         QString utarget;
         QString url;
 
-        if ( e && e->button() == 2 ) return;
+        if ( e && e->button() == 2 ) {
+	    HTMLElementImpl::defaultEventHandler(evt);
+	    return;
+        }
 
 
 	if ( k )
 	{
-	    if (k->virtKeyVal() != KeyEventImpl::DOM_VK_ENTER) return;
+	    if (k->virtKeyVal() != KeyEventImpl::DOM_VK_ENTER) {
+		HTMLElementImpl::defaultEventHandler(evt);
+		return;
+            }
 	    if (k->qKeyEvent) k->qKeyEvent->accept();
 	}
 
@@ -130,7 +136,8 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 }
                 else {
                     evt->setDefaultHandled();
-                    return;
+		    HTMLElementImpl::defaultEventHandler(evt);
+		    return;
                 }
             }
         }
@@ -168,6 +175,7 @@ void HTMLAnchorElementImpl::defaultEventHandler(EventImpl *evt)
                 urlSelected( url, button, state, utarget );
         }
     }
+    HTMLElementImpl::defaultEventHandler(evt);
 }
 
 
@@ -314,7 +322,7 @@ void HTMLFontElementImpl::attach()
     {
         if(_parent->style()->display() != INLINE)
             m_style->setDisplay(BLOCK);
-        m_render = khtml::RenderObject::createObject(this);
+        m_render = khtml::RenderObject::createObject(style());
 
         if(m_render)
         {

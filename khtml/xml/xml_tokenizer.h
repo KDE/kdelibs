@@ -24,17 +24,25 @@
 #ifndef _XML_Tokenizer_h_
 #define _XML_Tokenizer_h_
 
-#include "html/htmltokenizer.h"
-
 #include <qxml.h>
 #include <qptrlist.h>
-#include <qvaluelist.h>
+#include <qobject.h>
+#include "misc/loader_client.h"
+
+class KHTMLView;
+
+namespace khtml {
+    class CachedObject;
+    class CachedScript;
+};
 
 namespace DOM {
     class DocumentImpl;
     class NodeImpl;
     class HTMLScriptElementImpl;
-}
+    class DocumentPtr;
+    class HTMLScriptElementImpl;
+};
 
 class XMLHandler : public QXmlDefaultHandler
 {
@@ -93,6 +101,24 @@ private:
     State state;
 };
 
+class Tokenizer : public QObject
+{
+    Q_OBJECT
+public:
+    virtual void begin() = 0;
+    // script output must be prepended, while new data
+    // received during executing a script must be appended, hence the
+    // extra bool to be able to distinguish between both cases. document.write()
+    // always uses false, while khtmlpart uses true
+    virtual void write( const QString &str, bool appendData) = 0;
+    virtual void end() = 0;
+    virtual void finish() = 0;
+    virtual void setOnHold(bool /*_onHold*/) {}
+
+signals:
+    void finishedParsing();
+
+};
 
 class XMLTokenizer : public Tokenizer, public khtml::CachedObjectClient
 {
@@ -109,15 +135,15 @@ public:
     void notifyFinished(khtml::CachedObject *finishedObj);
 
 protected:
-    DocumentPtr *m_doc;
+    DOM::DocumentPtr *m_doc;
     KHTMLView *m_view;
 
     void executeScripts();
     void addScripts(DOM::NodeImpl *n);
 
     QString m_xmlCode;
-    QPtrList<HTMLScriptElementImpl> m_scripts;
-    QPtrListIterator<HTMLScriptElementImpl> *m_scriptsIt;
+    QPtrList<DOM::HTMLScriptElementImpl> m_scripts;
+    QPtrListIterator<DOM::HTMLScriptElementImpl> *m_scriptsIt;
     khtml::CachedScript *m_cachedScript;
 };
 

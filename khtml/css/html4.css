@@ -384,6 +384,7 @@ INPUT[type="text"],
 INPUT[type="password"],
 TEXTAREA { 
 	font-family: monospace;
+	cursor: text;
 }
 
 INPUT[type="hidden"] {

@@ -28,6 +28,7 @@
 #include "dom/dom_misc.h"
 #include "dom/dom_string.h"
 #include "dom/dom_node.h"
+#include "misc/helper.h"
 
 // The namespace used for XHTML elements
 #define XHTML_NAMESPACE "http://www.w3.org/1999/xhtml"
@@ -43,11 +44,6 @@ class QTextStream;
 namespace khtml {
     class RenderStyle;
     class RenderObject;
-
-    //enumerator for findSelectionNode
-    enum FindSelectionResult { SelectionPointBefore,
-                               SelectionPointAfter,
-                               SelectionPointInside };
 };
 
 namespace DOM {
@@ -239,6 +235,9 @@ public:
     virtual void setActive(bool b=true) { m_active = b; }
     virtual void setChanged(bool b=true);
 
+    unsigned short tabIndex() const { return m_tabIndex; }
+    void setTabIndex(unsigned short _tabIndex) { m_tabIndex = _tabIndex; }
+
     /**
      * whether this node can receive the keyboard focus.
      */
@@ -301,7 +300,8 @@ public:
     virtual bool childTypeAllowed( unsigned short /*type*/ ) { return false; }
     virtual unsigned long childNodeCount();
     virtual NodeImpl *childNode(unsigned long index);
-    NodeImpl *traverseNextNode(NodeImpl *stayWithin = 0);
+    NodeImpl *traverseNextNode(NodeImpl *stayWithin = 0) const;
+    NodeImpl *traversePreviousNode() const;
 
     DocumentPtr *docPtr() const { return document; }
 
@@ -341,6 +341,8 @@ protected:
     bool m_focused : 1;
     bool m_active : 1;
     bool m_styleElement : 1; // contains stylesheet text
+
+    unsigned short m_tabIndex : 16;
 };
 
 // this class implements nodes, which can have a parent but no children:

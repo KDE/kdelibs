@@ -39,6 +39,7 @@
 #include "css/csshelper.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
+#include "khtml_ext.h"
 
 #include "rendering/render_form.h"
 
@@ -581,25 +582,15 @@ void HTMLGenericFormElementImpl::detach()
     HTMLElementImpl::detach();
 }
 
-void HTMLGenericFormElementImpl::onBlur()
-{
-    dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
-}
-
-void HTMLGenericFormElementImpl::onFocus()
-{
-    // ###:-| this is called from JS _and_ from event handlers.
-    // Split into two functions (BIC)
-    dispatchHTMLEvent(EventImpl::FOCUS_EVENT,false,false);
-}
-
 void HTMLGenericFormElementImpl::onSelect()
 {
+    // ### make this work with new form events architecture
     dispatchHTMLEvent(EventImpl::SELECT_EVENT,true,false);
 }
 
 void HTMLGenericFormElementImpl::onChange()
 {
+    // ### make this work with new form events architecture
     dispatchHTMLEvent(EventImpl::CHANGE_EVENT,true,false);
 }
 
@@ -608,26 +599,7 @@ void HTMLGenericFormElementImpl::setDisabled( bool _disabled )
     if ( m_disabled != _disabled ) {
         m_disabled = _disabled;
         if ( m_render && m_render->isWidget() && m_render->layouted() )
-            static_cast<RenderWidget *>(m_render)->m_widget->setEnabled( !m_disabled );
-    }
-}
-
-void HTMLGenericFormElementImpl::setFocus(bool received)
-{
-    HTMLElementImpl::setFocus(received);
-    // ### support focus for buttons & images
-    if (received)
-    {
-        if(m_render && m_render->isFormElement())
-            static_cast<RenderFormElement*>(m_render)->focus(); // will call onFocus()
-        onFocus();
-    }
-    else
-    {
-        if(m_render && m_render->isFormElement())
-            static_cast<RenderFormElement*>(m_render)->blur(); // will call onBlur()
-        else
-            onBlur();
+            static_cast<RenderWidget *>(m_render)->widget()->setEnabled( !m_disabled );
     }
 }
 
@@ -651,7 +623,8 @@ bool HTMLGenericFormElementImpl::isSelectable() const
 {
     if (m_disabled)
         return false;
-    return renderer()!=0;
+    else
+        return HTMLElementImpl::isSelectable();
 }
 
 void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
@@ -673,14 +646,37 @@ void HTMLGenericFormElementImpl::defaultEventHandler(EventImpl *evt)
 	      setActive(false);
         }
 
-        if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT ||
-            evt->id()==EventImpl::KHTML_KEYUP_EVENT)
-        {
-            KeyEventImpl * k = static_cast<KeyEventImpl *>(evt);
-            if (k->keyVal() == QChar('\n').unicode() && m_render && m_render->isWidget() && k->qKeyEvent)
-                QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->m_widget, k->qKeyEvent);
-        }
+	if (evt->id()==EventImpl::KHTML_KEYDOWN_EVENT ||
+	    evt->id()==EventImpl::KHTML_KEYUP_EVENT)
+	{
+	    KeyEventImpl * k = static_cast<KeyEventImpl *>(evt);
+	    if (k->keyVal() == QChar('\n').unicode() && m_render && m_render->isWidget() && k->qKeyEvent)
+		QApplication::sendEvent(static_cast<RenderWidget *>(m_render)->widget(), k->qKeyEvent);
+	}
+
+	// Report focus in/out changes to the browser extension (editable widgets only)
+	if (evt->id()==EventImpl::DOMFOCUSIN_EVENT && isEditable() && m_render->isWidget()) {
+	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
+	    QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
+	    if (ext)
+		ext->editableWidgetFocused(widget);
+	}
+	if (evt->id()==EventImpl::DOMFOCUSOUT_EVENT && isEditable() && m_render->isWidget()) {
+	    KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>(view->part()->browserExtension());
+	    QWidget *widget = static_cast<RenderWidget*>(m_render)->widget();
+	    if (ext)
+		ext->editableWidgetBlurred(widget);
+
+	    // ### Don't count popup as a valid reason for losing the focus (example: opening the options of a select
+	    // combobox shouldn't emit onblur)
+	}
     }
+    HTMLElementImpl::defaultEventHandler(evt);
+}
+
+bool HTMLGenericFormElementImpl::isEditable()
+{
+    return false;
 }
 
 // -------------------------------------------------------------------------
@@ -1346,6 +1342,17 @@ void HTMLInputElementImpl::setValue(DOMString val)
     }
 }
 
+void HTMLInputElementImpl::blur()
+{
+    if(ownerDocument()->focusNode() == this)
+	ownerDocument()->setFocusNode(0);
+}
+
+void HTMLInputElementImpl::focus()
+{
+    ownerDocument()->setFocusNode(this);
+}
+
 void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (evt->isMouseEvent() &&
@@ -1369,6 +1376,10 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
 	me->setDefaultHandled();
     }
 
+    // DOMActivate events cause the input to be "activated" - in the case of image and submit inputs, this means
+    // actually submitting the form. For reset inputs, the form is reset. These events are sent when the user clicks
+    // on the element, or presses enter while it is the active element. Javacsript code wishing to activate the element
+    // must dispatch a DOMActivate event - a click event will not do the job.
     if ((evt->id() == EventImpl::DOMACTIVATE_EVENT) &&
         (m_type == IMAGE || m_type == SUBMIT || m_type == RESET)){
 
@@ -1376,8 +1387,9 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
             return;
 
         m_clicked = true;
-        if(m_type == RESET)
+        if (m_type == RESET) {
             m_form->reset();
+        }
         else {
             m_activeSubmit = true;
             if (!m_form->prepareSubmit()) {
@@ -1390,6 +1402,13 @@ void HTMLInputElementImpl::defaultEventHandler(EventImpl *evt)
     HTMLGenericFormElementImpl::defaultEventHandler(evt);
 }
 
+bool HTMLInputElementImpl::isEditable()
+{
+    if ((m_type == TEXT) || (m_type == PASSWORD) || (m_type == ISINDEX) || (m_type == FILE))
+	return true;
+    else
+	return true;
+}
 
 // -------------------------------------------------------------------------
 
@@ -1548,6 +1567,17 @@ void HTMLSelectElementImpl::remove( long index )
     removeChild(m_listItems[listIndex], exceptioncode);
     if( !exceptioncode )
         recalcListItems();
+}
+
+void HTMLSelectElementImpl::blur()
+{
+    if(ownerDocument()->focusNode() == this)
+	ownerDocument()->setFocusNode(0);
+}
+
+void HTMLSelectElementImpl::focus()
+{
+    ownerDocument()->setFocusNode(this);
 }
 
 DOMString HTMLSelectElementImpl::value( )
@@ -1880,7 +1910,7 @@ bool HTMLKeygenElementImpl::encoding(const QTextCodec* codec, khtml::encodingLis
     encoded_values += enc_name;
 
     // pop up the fancy certificate creation dialog here
-    KSSLKeyGen *kg = new KSSLKeyGen(static_cast<RenderWidget *>(m_render)->m_widget, "Key Generator", true);
+    KSSLKeyGen *kg = new KSSLKeyGen(static_cast<RenderWidget *>(m_render)->widget(), "Key Generator", true);
 
     kg->setKeySize(0);
     successful = (QDialog::Accepted == kg->exec());
@@ -2279,6 +2309,22 @@ void HTMLTextAreaElementImpl::setDefaultValue(DOMString _defaultValue)
     }
     insertBefore(ownerDocument()->createTextNode(_defaultValue),firstChild(), exceptioncode);
     setValue(_defaultValue);
+}
+
+void HTMLTextAreaElementImpl::blur()
+{
+    if(ownerDocument()->focusNode() == this)
+	ownerDocument()->setFocusNode(0);
+}
+
+void HTMLTextAreaElementImpl::focus()
+{
+    ownerDocument()->setFocusNode(this);
+}
+
+bool HTMLTextAreaElementImpl::isEditable()
+{
+    return true;
 }
 
 // -------------------------------------------------------------------------

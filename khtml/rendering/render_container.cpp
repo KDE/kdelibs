@@ -173,19 +173,6 @@ void RenderContainer::removeChild(RenderObject *oldChild)
 {
     removeChildNode(oldChild);
     setLayouted(false);
-    if(containsWidget()) {
-        bool anotherone = false;
-        for(RenderObject* o = firstChild(); o; o = o->nextSibling()) {
-            if(o->isWidget() || o->containsWidget()) {
-                anotherone = true;
-                break;
-            }
-        }
-        if(!anotherone) {
-            setContainsWidget(false);
-            // ### propagate to parent!!
-        }
-    }
 }
 
 
@@ -246,16 +233,6 @@ void RenderContainer::appendChildNode(RenderObject* newChild)
         setFirstChild(newChild);
 
     setLastChild(newChild);
-
-    if(newChild->isWidget())
-    {
-        RenderObject* o = this;
-        while(o) {
-            o->setContainsWidget();
-            o = o->parent();
-        }
-    }
-        
 }
 
 void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeChild)
@@ -278,15 +255,6 @@ void RenderContainer::insertChildNode(RenderObject* child, RenderObject* beforeC
     child->setPreviousSibling(prev);
 
     child->setParent(this);
-
-    if(child->isWidget())
-    {
-        RenderObject* o = this;
-        while(o) {
-            o->setContainsWidget();
-            o = o->parent();
-        }
-    }
 }
 
 

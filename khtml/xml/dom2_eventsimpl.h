@@ -28,10 +28,15 @@
 #include "dom/dom2_events.h"
 #include "xml/dom2_viewsimpl.h"
 #include <qdatetime.h>
+#include <qevent.h>
 
 class KHTMLPart;
 
 namespace DOM {
+
+class AbstractViewImpl;
+class DOMStringImpl;
+class NodeImpl;
 
 // ### support user-defined events
 
@@ -80,7 +85,8 @@ public:
 	KHTML_KEYDOWN_EVENT,
 	KHTML_KEYPRESS_EVENT,
 	KHTML_KEYUP_EVENT,
-	KHTML_MOVE_EVENT
+	KHTML_MOVE_EVENT,
+	KHTML_ORIGCLICK_MOUSEUP_EVENT
     };
 
     EventImpl();

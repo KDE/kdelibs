@@ -65,6 +65,7 @@ namespace DOM {
     class HTMLDocumentImpl;
     class HTMLElementImpl;
     class NodeFilterImpl;
+    class NodeFilter;
     class NodeIteratorImpl;
     class NodeListImpl;
     class ProcessingInstructionImpl;
@@ -178,9 +179,9 @@ public:
     RangeImpl *createRange();
 
     NodeIteratorImpl *createNodeIterator(NodeImpl *root, unsigned long whatToShow,
-                                    NodeFilter filter, bool entityReferenceExpansion, int &exceptioncode);
+                                    NodeFilter &filter, bool entityReferenceExpansion, int &exceptioncode);
 
-    TreeWalkerImpl *createTreeWalker(Node root, unsigned long whatToShow, NodeFilter filter,
+    TreeWalkerImpl *createTreeWalker(Node root, unsigned long whatToShow, NodeFilter &filter,
                             bool entityReferenceExpansion);
 
     QPtrList<NodeImpl> changedNodes;
@@ -260,13 +261,6 @@ public:
     // internal
     NodeImpl *findElement( Id id );
 
-    /**
-     * find next link for keyboard traversal.
-     * @param start node to start search from
-     * @param forward whether to search forward or backward.
-     */
-    ElementImpl *findNextLink(ElementImpl *start, bool forward);
-
     // overrides NodeImpl
     virtual bool prepareMouseEvent( int x, int y,
                                     int _tx, int _ty,
@@ -283,8 +277,8 @@ public:
 
     StyleSheetListImpl* styleSheets();
 
-    ElementImpl *focusNode();
-    void setFocusNode(ElementImpl *);
+    NodeImpl *focusNode() const { return m_focusNode; }
+    void setFocusNode(NodeImpl *newFocusNode);
 
     virtual DocumentImpl* getDocument()
         { return this; }
@@ -323,18 +317,14 @@ public:
     virtual void removeWindowEventListener(int id);
     EventListener *createHTMLEventListener(QString code);
 
+    NodeImpl *nextFocusNode(NodeImpl *fromNode);
+    NodeImpl *previousFocusNode(NodeImpl *fromNode);
+
+    int nodeAbsIndex(NodeImpl *node);
+    NodeImpl *nodeWithAbsIndex(int absIndex);
 
 signals:
     void finishedParsing();
-
-
-private:
-    ElementImpl *findSelectableElement( NodeImpl *start, bool forward = true);
-    ElementImpl *findLink(ElementImpl *start, bool forward, int tabIndexHint=-1);
-    int findHighestTabIndex();
-    ElementImpl *notabindex(DOM::ElementImpl *cur, bool forward);
-    ElementImpl *intabindex(DOM::ElementImpl *cur, bool forward);
-    ElementImpl *tabindexzero(DOM::ElementImpl *cur, bool forward);
 
 protected:
     khtml::CSSStyleSelector *m_styleSelector;
@@ -367,11 +357,12 @@ protected:
     unsigned short m_elementNameAlloc;
     unsigned short m_elementNameCount;
 
+    NodeImpl *m_focusNode;
+
     DOMStringImpl** m_namespaceURIs;
     unsigned short m_namespaceURIAlloc;
     unsigned short m_namespaceURICount;
 
-    ElementImpl *m_focusNode;
     QPtrList<NodeIteratorImpl> m_nodeIterators;
     AbstractViewImpl *m_defaultView;
 

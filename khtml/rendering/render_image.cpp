@@ -35,6 +35,7 @@
 #include "misc/helper.h"
 #include "misc/htmlattrs.h"
 #include "html/html_elementimpl.h"
+#include "html/dtd.h"
 #include "xml/dom2_eventsimpl.h"
 
 using namespace DOM;

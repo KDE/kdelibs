@@ -53,6 +53,7 @@ class HTMLTokenizer;
 #include "misc/htmltags.h"
 #include "misc/stringit.h"
 #include "xml/dom_stringimpl.h"
+#include "xml/xml_tokenizer.h"
 #include "xml/dom_elementimpl.h"
 
 class KHTMLParser;
@@ -117,26 +118,6 @@ namespace khtml {
 
 // The count of spaces used for each tab.
 #define TAB_SIZE 8
-
-
-class Tokenizer : public QObject
-{
-    Q_OBJECT
-public:
-    virtual void begin() = 0;
-    // script output must be prepended, while new data
-    // received during executing a script must be appended, hence the
-    // extra bool to be able to distinguish between both cases. document.write()
-    // always uses false, while khtmlpart uses true
-    virtual void write( const QString &str, bool appendData) = 0;
-    virtual void end() = 0;
-    virtual void finish() = 0;
-    virtual void setOnHold(bool /*_onHold*/) {}
-
-signals:
-    void finishedParsing();
-
-};
 
 //-----------------------------------------------------------------------------
 

@@ -73,6 +73,7 @@ namespace khtml
   class MouseReleaseEvent;
   class DrawContentsEvent;
   class CachedObject;
+  class RenderWidget;
 };
 
 namespace KJS {
@@ -152,6 +153,7 @@ class KHTMLPart : public KParts::ReadOnlyPart
   friend class KHTMLPartBrowserHostExtension;
   friend class HTMLTokenizer;
   friend class XMLTokenizer;
+  friend class khtml::RenderWidget;
 
   Q_PROPERTY( bool javaScriptEnabled READ jScriptEnabled WRITE setJScriptEnabled )
   Q_PROPERTY( bool javaEnabled READ javaEnabled WRITE setJavaEnabled )
@@ -777,10 +779,15 @@ protected:
 public slots:
 
   /**
-   * Call this method to explicitly pass the focus to a certain element of the
-   * current document.
+   * Sets the focussed node of the document to the specified node. If the node is a form control, the control will
+   * receive focus in the same way that it would if the user had clicked on it or tabbed to it with the keyboard. For
+   * most other types of elements, there is no visul indiction of whether or not they are focussed.
+   *
+   * See @ref activeNode
+   *
+   * @param node The node to focus
    */
-  void setActiveNode(const DOM::Node &);
+  void setActiveNode(const DOM::Node &node);
 
   /**
    * Stops all animated images on the current and child pages

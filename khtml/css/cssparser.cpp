@@ -24,7 +24,7 @@
  * $Id$
  */
 
-#define CSS_DEBUG
+//#define CSS_DEBUG
 //#define CSS_AURAL
 //#define CSS_DEBUG_BCKGR
 

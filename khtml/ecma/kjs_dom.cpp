@@ -21,6 +21,8 @@
 #include <khtmlview.h>
 #include <xml/dom2_eventsimpl.h>
 #include <rendering/render_object.h>
+#include <xml/dom_nodeimpl.h>
+#include <xml/dom_docimpl.h>
 #include <kdebug.h>
 
 #include "kjs_dom.h"

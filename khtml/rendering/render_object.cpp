@@ -37,9 +37,8 @@
 using namespace DOM;
 using namespace khtml;
 
-RenderObject *RenderObject::createObject(DOM::NodeImpl *node)
+RenderObject *RenderObject::createObject(RenderStyle *style)
 {
-    RenderStyle *style = node->style();
     RenderObject *o = 0;
     switch(style->display())
     {
@@ -111,12 +110,12 @@ RenderObject::RenderObject()
     m_inline = true;
     m_replaced = false;
     m_visible = true;
-    m_containsWidget = false;
     m_containsOverhangingFloats = false;
     m_hasFirstLine = false;
     m_verticalPosition = PositionUndefined;
     m_isSelectionStart = false;
     m_isSelectionEnd = false;
+    m_isMousePressed = false;
 }
 
 RenderObject::~RenderObject()
@@ -535,7 +534,6 @@ void RenderObject::printTree(int indent) const
                  << " ps=" << (int)isPositioned()
                  << " cp=" << (int)containsPositioned()
                  << " lt=" << (int)layouted()
-                 << " cw=" << (int)containsWidget()
                  << " pa=" << (int)parsing()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();
@@ -561,8 +559,8 @@ void RenderObject::dump(QTextStream *stream, QString ind) const
     if (parsing()) { *stream << " parsing"; }
     if (minMaxKnown()) { *stream << " minMaxKnown"; }
     if (containsPositioned()) { *stream << " containsPositioned"; }
-    if (containsWidget()) { *stream << " containsWidget"; }
     if (hasFirstLine()) { *stream << " hasFirstLine"; }
+    if (isMousePressed()) { *stream << " isMousePressed"; }
     *stream << endl;
 
     RenderObject *child = firstChild();

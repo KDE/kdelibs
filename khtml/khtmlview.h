@@ -49,6 +49,7 @@ namespace khtml {
     class RenderStyle;
     class RenderLineEdit;
     class RenderPartObject;
+    class RenderWidget;
     void applyRule(RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 };
 
@@ -65,7 +66,6 @@ class KHTMLView : public QScrollView
     Q_OBJECT
 
     friend class DOM::HTMLDocumentImpl;
-    friend class DOM::HTMLElementImpl;
     friend class DOM::HTMLTitleElementImpl;
     friend class KHTMLPart;
     friend class khtml::RenderRoot;
@@ -73,6 +73,7 @@ class KHTMLView : public QScrollView
     friend class DOM::HTMLFormElementImpl;
     friend class khtml::RenderLineEdit;
     friend class khtml::RenderPartObject;
+    friend class khtml::RenderWidget;
     friend void khtml::applyRule(khtml::RenderStyle *style, DOM::CSSProperty *prop, DOM::ElementImpl *e);
 
 public:
@@ -189,6 +190,7 @@ protected:
 
     void keyPressEvent( QKeyEvent *_ke );
     void keyReleaseEvent ( QKeyEvent *_ke );
+    void contentsContextMenuEvent ( QContextMenuEvent *_ce );
     void doAutoScroll();
 
 protected slots:
@@ -202,16 +204,7 @@ private:
      */
     bool scrollTo(const QRect &);
 
-    /**
-     * move the view towards the next node
-     * or the last node from this one.
-     */
-    bool gotoLink(bool);
-
-    /**
-     * @internal
-     */
-    bool gotoLinkInternal(bool);
+    void focusNextPrevNode(bool next);
 
     void useSlowRepaints();
 
@@ -226,9 +219,12 @@ private:
     QStringList formCompletionItems(const QString &name) const;
     void addFormCompletionItem(const QString &name, const QString &value);
 
-    void dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
+    bool dispatchMouseEvent(int eventId, DOM::NodeImpl *targetNode, bool cancelable,
 			    int detail,QMouseEvent *_mouse, bool setUnder,
 			    int mouseEventType);
+
+    void setIgnoreEvents(bool ignore);
+    bool ignoreEvents();
 
     // ------------------------------------- member variables ------------------------------------
  private:

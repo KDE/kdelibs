@@ -29,14 +29,18 @@
 #include <qwidget.h>
 #include <qmap.h>
 
-class QScrollView;
+class KHTMLView;
+
+namespace DOM {
+    class HTMLElementImpl;
+};
 
 namespace khtml {
 
 class RenderApplet : public RenderWidget
 {
 public:
-  RenderApplet(QScrollView *view,
+  RenderApplet(KHTMLView *view,
                QMap<QString, QString> args, DOM::HTMLElementImpl *node);
     virtual ~RenderApplet();
 
@@ -55,7 +59,7 @@ private:
 class RenderEmptyApplet : public RenderWidget
 {
 public:
-    RenderEmptyApplet(QScrollView *view);
+    RenderEmptyApplet(KHTMLView *view);
 
     virtual const char *renderName() const { return "RenderEmptyApplet"; }
 

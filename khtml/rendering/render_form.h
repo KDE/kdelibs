@@ -30,7 +30,7 @@
 #include "render_flow.h"
 
 class QWidget;
-class QScrollView;
+class KHTMLView;
 class QLineEdit;
 class QListboxItem;
 
@@ -64,7 +64,7 @@ class RenderFormElement : public khtml::RenderWidget
 {
     Q_OBJECT
 public:
-    RenderFormElement(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
+    RenderFormElement(KHTMLView *view, DOM::HTMLGenericFormElementImpl *element);
     virtual ~RenderFormElement();
 
     virtual const char *renderName() const { return "RenderForm"; }
@@ -82,8 +82,6 @@ public:
 
     DOM::HTMLGenericFormElementImpl *element() { return m_element; }
 
-    virtual bool eventFilter(QObject*, QEvent*);
-
 public slots:
     virtual void slotClicked();
 
@@ -93,8 +91,6 @@ protected:
 
     virtual void handleFocusOut() {};
     
-    void handleMousePressed(QMouseEvent* e);
-
     DOM::HTMLGenericFormElementImpl *m_element;
     QPoint m_mousePos;
     int m_state;
@@ -103,7 +99,6 @@ protected:
     bool m_isDoubleClick;
 };
 
-
 // -------------------------------------------------------------------------
 
 // generic class for all buttons
@@ -111,7 +106,7 @@ class RenderButton : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderButton(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
+    RenderButton(KHTMLView *view, DOM::HTMLGenericFormElementImpl *element);
 
     virtual const char *renderName() const { return "RenderButton"; }
     virtual short baselinePosition( bool ) const;
@@ -126,7 +121,7 @@ class RenderCheckBox : public RenderButton
 {
     Q_OBJECT
 public:
-    RenderCheckBox(QScrollView *view, DOM::HTMLInputElementImpl *element);
+    RenderCheckBox(KHTMLView *view, DOM::HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderCheckBox"; }
     virtual void calcMinMaxWidth();
@@ -142,7 +137,7 @@ class RenderRadioButton : public RenderButton
 {
     Q_OBJECT
 public:
-    RenderRadioButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
+    RenderRadioButton(KHTMLView *view, DOM::HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderRadioButton"; }
 
@@ -160,7 +155,7 @@ public slots:
 class RenderSubmitButton : public RenderButton
 {
 public:
-    RenderSubmitButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
+    RenderSubmitButton(KHTMLView *view, DOM::HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderSubmitButton"; }
 
@@ -189,7 +184,7 @@ public:
 class RenderResetButton : public RenderSubmitButton
 {
 public:
-    RenderResetButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
+    RenderResetButton(KHTMLView *view, DOM::HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderResetButton"; }
 
@@ -201,7 +196,7 @@ public:
 class RenderPushButton : public RenderSubmitButton
 {
 public:
-    RenderPushButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
+    RenderPushButton(KHTMLView *view, DOM::HTMLInputElementImpl *element);
 
     virtual QString defaultLabel();
 };
@@ -212,7 +207,7 @@ class RenderLineEdit : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderLineEdit(QScrollView *view, DOM::HTMLInputElementImpl *element);
+    RenderLineEdit(KHTMLView *view, DOM::HTMLInputElementImpl *element);
 
     virtual void calcMinMaxWidth();
     virtual void layout();
@@ -247,7 +242,7 @@ protected:
 class RenderFieldset : public RenderFormElement
 {
 public:
-    RenderFieldset(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
+    RenderFieldset(KHTMLView *view, DOM::HTMLGenericFormElementImpl *element);
 
     virtual const char *renderName() const { return "RenderFieldSet"; }
 };
@@ -259,7 +254,7 @@ class RenderFileButton : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderFileButton(QScrollView *view, DOM::HTMLInputElementImpl *element);
+    RenderFileButton(KHTMLView *view, DOM::HTMLInputElementImpl *element);
 
     virtual const char *renderName() const { return "RenderFileButton"; }
     virtual void calcMinMaxWidth();
@@ -290,7 +285,7 @@ protected:
 class RenderLabel : public RenderFormElement
 {
 public:
-    RenderLabel(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
+    RenderLabel(KHTMLView *view, DOM::HTMLGenericFormElementImpl *element);
 
     virtual const char *renderName() const { return "RenderLabel"; }
 };
@@ -301,7 +296,7 @@ public:
 class RenderLegend : public RenderFormElement
 {
 public:
-    RenderLegend(QScrollView *view, DOM::HTMLGenericFormElementImpl *element);
+    RenderLegend(KHTMLView *view, DOM::HTMLGenericFormElementImpl *element);
 
     virtual const char *renderName() const { return "RenderLegend"; }
 };
@@ -324,7 +319,7 @@ class RenderSelect : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderSelect(QScrollView *view, DOM::HTMLSelectElementImpl *element);
+    RenderSelect(KHTMLView *view, DOM::HTMLSelectElementImpl *element);
 
     virtual const char *renderName() const { return "RenderSelect"; }
 
@@ -377,7 +372,7 @@ class RenderTextArea : public RenderFormElement
 {
     Q_OBJECT
 public:
-    RenderTextArea(QScrollView *view, DOM::HTMLTextAreaElementImpl *element);
+    RenderTextArea(KHTMLView *view, DOM::HTMLTextAreaElementImpl *element);
     ~RenderTextArea();
 
     virtual const char *renderName() const { return "RenderTextArea"; }

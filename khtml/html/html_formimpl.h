@@ -138,8 +138,6 @@ public:
 
     virtual void reset() {}
 
-    void onBlur();
-    void onFocus();
     void onSelect();
     void onChange();
 
@@ -164,10 +162,10 @@ public:
      */
     virtual bool encoding(const QTextCodec*, khtml::encodingList&, bool) { return false; }
 
-    virtual void setFocus(bool=true);
     virtual void setParent(NodeImpl *parent);
 
     virtual void defaultEventHandler(EventImpl *evt);
+    virtual bool isEditable();
 
 private:
     void init();
@@ -272,6 +270,9 @@ public:
     DOMString value() const;
     void setValue(DOMString val);
 
+    void blur();
+    void focus();
+
     DOMString filename() const { return m_filename; }
     void setFilename(DOMString _filename) { m_filename = _filename; }
 
@@ -295,6 +296,7 @@ public:
     int clickY() const { return yPos; }
 
     virtual void defaultEventHandler(EventImpl *evt);
+    virtual bool isEditable();
 
 protected:
 
@@ -382,6 +384,8 @@ public:
 
     void add ( const HTMLElement &element, const HTMLElement &before );
     void remove ( long index );
+    void blur();
+    void focus();
 
     DOMString value();
     void setValue(DOMStringImpl* value);
@@ -537,7 +541,10 @@ public:
     void setValue(DOMString _value);
     DOMString defaultValue();
     void setDefaultValue(DOMString _defaultValue);
+    void blur();
+    void focus();
 
+    virtual bool isEditable();
 
 protected:
     int m_rows;

@@ -343,12 +343,12 @@ void HTMLFrameElementImpl::setFocus(bool received)
 {
     HTMLElementImpl::setFocus(received);
     khtml::RenderFrame *renderFrame = static_cast<khtml::RenderFrame *>(m_render);
-    if (!renderFrame || !renderFrame->m_widget)
-        return;
+    if (!renderFrame || !renderFrame->widget())
+	return;
     if (received)
-        renderFrame->m_widget->setFocus();
+	renderFrame->widget()->setFocus();
     else
-        renderFrame->m_widget->clearFocus();
+	renderFrame->widget()->clearFocus();
 }
 
 DocumentImpl* HTMLFrameElementImpl::contentDocument() const
@@ -357,8 +357,8 @@ DocumentImpl* HTMLFrameElementImpl::contentDocument() const
 
     RenderPartObject* render = static_cast<RenderPartObject*>( m_render );
 
-    if(render->m_widget && render->m_widget->inherits("KHTMLView"))
-        return static_cast<KHTMLView*>( render->m_widget )->part()->xmlDocImpl();
+    if(render->widget() && render->widget()->inherits("KHTMLView"))
+        return static_cast<KHTMLView*>( render->widget() )->part()->xmlDocImpl();
 
     return 0;
 }
@@ -510,6 +510,7 @@ void HTMLFrameSetElementImpl::defaultEventHandler(EventImpl *evt)
 {
     if (evt->isMouseEvent())
         static_cast<khtml::RenderFrameSet *>(m_render)->userResize(static_cast<MouseEventImpl*>(evt));
+    HTMLElementImpl::defaultEventHandler(evt);
 }
 
 khtml::FindSelectionResult HTMLFrameSetElementImpl::findSelectionNode( int _x, int _y, int _tx, int _ty,

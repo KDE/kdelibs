@@ -24,6 +24,7 @@
 
 #include "xml/dom2_eventsimpl.h"
 #include "xml/dom_textimpl.h"
+#include "xml/dom_docimpl.h"
 
 #include "misc/htmlhashes.h"
 #include "rendering/render_text.h"

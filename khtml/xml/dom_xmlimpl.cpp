@@ -24,6 +24,8 @@
 #include "xml/dom_xmlimpl.h"
 #include "xml/dom_docimpl.h"
 #include "xml/dom_stringimpl.h"
+#include "css/css_stylesheetimpl.h"
+#include "misc/loader.h"
 
 using namespace DOM;
 

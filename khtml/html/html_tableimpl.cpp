@@ -746,7 +746,7 @@ void HTMLTableCellElementImpl::attach()
     khtml::RenderObject *r = _parent->renderer();
     if(r)
     {
-        m_render = khtml::RenderObject::createObject(this);
+        m_render = khtml::RenderObject::createObject(style());
         if(m_render && m_render->style()->display() == TABLE_CELL)
         {
             RenderTableCell *cell = static_cast<RenderTableCell *>(m_render);

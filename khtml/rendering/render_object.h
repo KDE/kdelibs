@@ -28,7 +28,6 @@
 #include <qcolor.h>
 #include <qrect.h>
 
-#include "xml/dom_nodeimpl.h"
 #include "misc/khtmllayout.h"
 #include "misc/loader_client.h"
 
@@ -42,6 +41,7 @@ class KHTMLView;
 namespace DOM {
     class DOMString;
     class NodeImpl;
+    class EventImpl;
 };
 
 namespace khtml {
@@ -93,7 +93,7 @@ public:
     virtual void printTree(int indent=0) const;
     virtual void dump(QTextStream *stream, QString ind = "") const;
 
-    static RenderObject *createObject(DOM::NodeImpl *node);
+    static RenderObject *createObject(RenderStyle *style);
 
     // some helper functions...
     virtual bool childrenInline() const { return false; }
@@ -128,10 +128,10 @@ public:
     bool parsing() const    { return m_parsing;     }
     bool minMaxKnown() const{ return m_minMaxKnown; }
     bool containsPositioned() const { return m_containsPositioned; }
-    bool containsWidget() const { return m_containsWidget; }
     bool hasFirstLine() const { return m_hasFirstLine; }
     bool isSelectionStart() const { return m_isSelectionStart; }
     bool isSelectionEnd() const { return m_isSelectionEnd; }
+    bool isMousePressed() const { return m_isMousePressed; }
     RenderRoot* root() const;
 
     /**
@@ -152,9 +152,9 @@ public:
     void setVisible(bool b=true) { m_visible = b; }
     void setRenderText() { m_isText = true; }
     void setReplaced(bool b=true) { m_replaced = b; }
-    void setContainsWidget(bool b=true) { m_containsWidget = b; }
     void setIsSelectionStart(bool b=true) { m_isSelectionStart = b; }
     void setIsSelectionEnd(bool b=true) { m_isSelectionEnd = b; }
+    void setIsMousePressed(bool b=true) { m_isMousePressed = b; }
 
     // for discussion of lineHeight see CSS2 spec
     virtual int lineHeight( bool firstLine ) const;
@@ -324,6 +324,8 @@ public:
 
     QFont font(bool firstLine) const;
 
+    virtual void handleDOMEvent(DOM::EventImpl */*evt*/) {}
+
 protected:
     virtual void selectionStartEnd(int& spos, int& epos);
 
@@ -364,11 +366,11 @@ private:
     bool m_isText                    : 1;
     bool m_inline                    : 1;
     bool m_replaced                  : 1;
-    bool m_containsWidget            : 1;
     bool m_containsOverhangingFloats : 1;
     bool m_hasFirstLine              : 1;
     bool m_isSelectionStart          : 1;
     bool m_isSelectionEnd            : 1;
+    bool m_isMousePressed            : 1;
 
     friend class RenderContainer;
     friend class RenderRoot;

@@ -41,10 +41,11 @@
 
 #include "khtmlview.h"
 #include "khtml_ext.h"
+#include "xml/dom_docimpl.h" // ### remove dependency
 
 using namespace khtml;
 
-RenderFormElement::RenderFormElement(QScrollView *view,
+RenderFormElement::RenderFormElement(KHTMLView *view,
                                      HTMLGenericFormElementImpl *element)
     : RenderWidget(view)
 {
@@ -168,96 +169,6 @@ void RenderFormElement::layout()
         setLayouted();
 }
 
-bool RenderFormElement::eventFilter(QObject* /*o*/, QEvent* e)
-{
-    if ( !m_element || !m_element->view || !m_element->view->part() ) return true;
-
-    ref();
-    m_element->ref();
-
-    switch(e->type()) {
-    case QEvent::FocusOut:
-        //static const char* const r[] = {"Mouse", "Tab", "Backtab", "ActiveWindow", "Popup", "Shortcut", "Other" };
-        //kdDebug() << "RenderFormElement::eventFilter FocusOut widget=" << m_widget << " reason:" << r[QFocusEvent::reason()] << endl;
-        // Don't count popup as a valid reason for losing the focus
-        // (example: opening the options of a select combobox shouldn't emit onblur)
-        if ( QFocusEvent::reason() != QFocusEvent::Popup )
-        {
-            m_element->dispatchHTMLEvent(EventImpl::BLUR_EVENT,false,false);
-            if ( isEditable() ) {
-                KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( m_element->view->part()->browserExtension() );
-
-                if ( ext )  ext->editableWidgetBlurred( m_widget );
-            }
-            handleFocusOut();
-        }
-        break;
-    case QEvent::FocusIn:
-        m_element->ownerDocument()->setFocusNode(m_element);
-        if ( isEditable() ) {
-            KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( m_element->view->part()->browserExtension() );
-            if ( ext )  ext->editableWidgetFocused( m_widget );
-        }
-        break;
-    case QEvent::MouseButtonPress:
-        handleMousePressed(static_cast<QMouseEvent*>(e));
-        break;
-    case QEvent::MouseButtonRelease:
-    {
-        int absX, absY;
-        absolutePosition(absX,absY);
-        QMouseEvent* _e = static_cast<QMouseEvent*>(e);
-        m_button = _e->button();
-        m_state  = _e->state();
-        QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
-
-        m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEUP_EVENT,m_clickCount);
-
-        if((m_mousePos - e2.pos()).manhattanLength() <= QApplication::startDragDistance()) {
-            // DOM2 Events section 1.6.2 says that a click is if the mouse was pressed
-            // and released in the "same screen location"
-            // As people usually can't click on the same pixel, we're a bit tolerant here
-            m_element->dispatchMouseEvent(&e2,EventImpl::CLICK_EVENT,m_clickCount);
-        }
-
-        if(!isRenderButton()) {
-            // ### DOMActivate is also dispatched for thigs like selects & textareas -
-            // not sure if this is correct
-            m_element->dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT,m_isDoubleClick ? 2 : 1);
-            m_element->dispatchMouseEvent(&e2, m_isDoubleClick ? EventImpl::KHTML_DBLCLICK_EVENT : EventImpl::KHTML_CLICK_EVENT, m_clickCount);
-            m_isDoubleClick = false;
-        }
-        else
-            // save position for slotClicked - see below -
-            m_mousePos = e2.pos();
-    }
-    break;
-    case QEvent::MouseButtonDblClick:
-    {
-        m_isDoubleClick = true;
-        handleMousePressed(static_cast<QMouseEvent*>(e));
-    }
-    break;
-    case QEvent::MouseMove:
-    {
-        int absX, absY;
-        absolutePosition(absX,absY);
-        QMouseEvent* _e = static_cast<QMouseEvent*>(e);
-        QMouseEvent e2(e->type(),QPoint(absX,absY)+_e->pos(),_e->button(),_e->state());
-        m_element->dispatchMouseEvent(&e2);
-        // ### change cursor like in KHTMLView?
-    }
-    break;
-    default: break;
-    };
-
-    m_element->deref();
-    bool deleted = hasOneRef();
-    deref();
-
-    return deleted;
-}
-
 void RenderFormElement::slotClicked()
 {
     if(isRenderButton()) {
@@ -272,25 +183,9 @@ void RenderFormElement::slotClicked()
     }
 }
 
-void RenderFormElement::handleMousePressed(QMouseEvent *e)
-{
-    int absX, absY;
-    absolutePosition(absX,absY);
-    QMouseEvent e2(e->type(),QPoint(absX,absY)+e->pos(),e->button(),e->state());
-
-    if((m_mousePos - e2.pos()).manhattanLength() > QApplication::startDragDistance()) {
-        m_mousePos = e2.pos();
-        m_clickCount = 1;
-    }
-    else
-        m_clickCount++;
-
-    m_element->dispatchMouseEvent(&e2,EventImpl::MOUSEDOWN_EVENT,m_clickCount);
-}
-
 // -------------------------------------------------------------------------
 
-RenderButton::RenderButton(QScrollView *view,
+RenderButton::RenderButton(KHTMLView *view,
                            HTMLGenericFormElementImpl *element)
     : RenderFormElement(view, element)
 {
@@ -303,7 +198,7 @@ short RenderButton::baselinePosition( bool f ) const
 
 // -------------------------------------------------------------------------------
 
-RenderCheckBox::RenderCheckBox(QScrollView *view,
+RenderCheckBox::RenderCheckBox(KHTMLView *view,
                                HTMLInputElementImpl *element)
     : RenderButton(view, element)
 {
@@ -311,7 +206,6 @@ RenderCheckBox::RenderCheckBox(QScrollView *view,
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
-    b->installEventFilter(this);
     connect(b,SIGNAL(stateChanged(int)),this,SLOT(slotStateChanged(int)));
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
@@ -347,7 +241,7 @@ void RenderCheckBox::slotStateChanged(int state)
 
 // -------------------------------------------------------------------------------
 
-RenderRadioButton::RenderRadioButton(QScrollView *view,
+RenderRadioButton::RenderRadioButton(KHTMLView *view,
                                      HTMLInputElementImpl *element)
     : RenderButton(view, element)
 {
@@ -355,7 +249,6 @@ RenderRadioButton::RenderRadioButton(QScrollView *view,
     b->setAutoMask(true);
     b->setMouseTracking(true);
     setQWidget(b);
-    b->installEventFilter(this);
     connect(b, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
@@ -398,13 +291,12 @@ void RenderRadioButton::layout()
 // -------------------------------------------------------------------------------
 
 
-RenderSubmitButton::RenderSubmitButton(QScrollView *view, HTMLInputElementImpl *element)
+RenderSubmitButton::RenderSubmitButton(KHTMLView *view, HTMLInputElementImpl *element)
     : RenderButton(view, element)
 {
     QPushButton* p = new QPushButton(view->viewport());
     setQWidget(p);
     p->setMouseTracking(true);
-    p->installEventFilter(this);
     connect(p, SIGNAL(clicked()), this, SLOT(slotClicked()));
 }
 
@@ -452,6 +344,7 @@ short RenderSubmitButton::baselinePosition( bool f ) const
 
 // -------------------------------------------------------------------------------
 
+// ### remove this class and just use RenderImage instead for <input type="image">
 RenderImageButton::RenderImageButton(HTMLInputElementImpl *element)
     : RenderImage(element)
 {
@@ -462,7 +355,7 @@ RenderImageButton::RenderImageButton(HTMLInputElementImpl *element)
 
 // -------------------------------------------------------------------------------
 
-RenderResetButton::RenderResetButton(QScrollView *view, HTMLInputElementImpl *element)
+RenderResetButton::RenderResetButton(KHTMLView *view, HTMLInputElementImpl *element)
     : RenderSubmitButton(view, element)
 {
 }
@@ -474,7 +367,7 @@ QString RenderResetButton::defaultLabel() {
 
 // -------------------------------------------------------------------------------
 
-RenderPushButton::RenderPushButton(QScrollView *view, HTMLInputElementImpl *element)
+RenderPushButton::RenderPushButton(KHTMLView *view, HTMLInputElementImpl *element)
     : RenderSubmitButton(view, element)
 {
 }
@@ -515,11 +408,10 @@ bool LineEditWidget::event( QEvent *e )
 
 // -----------------------------------------------------------------------------
 
-RenderLineEdit::RenderLineEdit(QScrollView *view, HTMLInputElementImpl *element)
+RenderLineEdit::RenderLineEdit(KHTMLView *view, HTMLInputElementImpl *element)
     : RenderFormElement(view, element)
 {
     LineEditWidget *edit = new LineEditWidget(view->viewport());
-    edit->installEventFilter(this);
     connect(edit,SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(edit,SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
 
@@ -557,6 +449,7 @@ void RenderLineEdit::slotReturnPressed()
 
 void RenderLineEdit::handleFocusOut()
 {
+    // ###
     LineEditWidget* edit = static_cast<LineEditWidget*>( m_widget );
     if ( edit && edit->edited() ) {
         m_element->onChange();
@@ -634,7 +527,7 @@ void RenderLineEdit::select()
 
 // ---------------------------------------------------------------------------
 
-RenderFieldset::RenderFieldset(QScrollView *view,
+RenderFieldset::RenderFieldset(KHTMLView *view,
                                HTMLGenericFormElementImpl *element)
     : RenderFormElement(view, element)
 {
@@ -642,14 +535,12 @@ RenderFieldset::RenderFieldset(QScrollView *view,
 
 // -------------------------------------------------------------------------
 
-RenderFileButton::RenderFileButton(QScrollView *view, HTMLInputElementImpl *element)
+RenderFileButton::RenderFileButton(KHTMLView *view, HTMLInputElementImpl *element)
     : RenderFormElement(view, element)
 {
     QHBox *w = new QHBox(view->viewport());
 
     m_edit = new LineEditWidget(w);
-
-    m_edit->installEventFilter(this);
 
     connect(m_edit, SIGNAL(returnPressed()), this, SLOT(slotReturnPressed()));
     connect(m_edit, SIGNAL(textChanged(const QString &)),this,SLOT(slotTextChanged(const QString &)));
@@ -748,7 +639,7 @@ void RenderFileButton::select()
 
 // -------------------------------------------------------------------------
 
-RenderLabel::RenderLabel(QScrollView *view,
+RenderLabel::RenderLabel(KHTMLView *view,
                          HTMLGenericFormElementImpl *element)
     : RenderFormElement(view, element)
 {
@@ -757,7 +648,7 @@ RenderLabel::RenderLabel(QScrollView *view,
 
 // -------------------------------------------------------------------------
 
-RenderLegend::RenderLegend(QScrollView *view,
+RenderLegend::RenderLegend(KHTMLView *view,
                            HTMLGenericFormElementImpl *element)
     : RenderFormElement(view, element)
 {
@@ -819,7 +710,7 @@ bool ComboBoxWidget::eventFilter(QObject *dest, QEvent *e)
 
 // -------------------------------------------------------------------------
 
-RenderSelect::RenderSelect(QScrollView *view, HTMLSelectElementImpl *element)
+RenderSelect::RenderSelect(KHTMLView *view, HTMLSelectElementImpl *element)
     : RenderFormElement(view, element)
 {
     m_ignoreSelectEvents = false;
@@ -993,7 +884,7 @@ void RenderSelect::close()
     HTMLSelectElementImpl* f = static_cast<HTMLSelectElementImpl*>(m_element);
 
     // Restore state
-    QString state = f->ownerDocument()->registerElement(f);
+    QString state = f->ownerDocument()->registerElement(f); // ### move this code to HTMLSelectElementImpl
     if ( !state.isEmpty())
         static_cast<HTMLSelectElementImpl*>(m_element)->restoreState( state );
 
@@ -1075,7 +966,6 @@ void RenderSelect::setOptionsChanged(bool _optionsChanged)
 KListBox* RenderSelect::createListBox()
 {
     KListBox *lb = new KListBox(m_view->viewport());
-    lb->installEventFilter(this);
     lb->setSelectionMode(m_multiple ? QListBox::Extended : QListBox::Single);
     // ### looks broken
     //lb->setAutoMask(true);
@@ -1089,7 +979,6 @@ KListBox* RenderSelect::createListBox()
 ComboBoxWidget *RenderSelect::createComboBox()
 {
     ComboBoxWidget *cb = new ComboBoxWidget(m_view->viewport());
-    cb->installEventFilter(this);
     connect(cb, SIGNAL(activated(int)), this, SLOT(slotSelected(int)));
     return cb;
 }
@@ -1173,12 +1062,11 @@ bool TextAreaWidget::event( QEvent *e )
 // ### allow contents to be manipulated via DOM - will require updating
 // of text node child
 
-RenderTextArea::RenderTextArea(QScrollView *view, HTMLTextAreaElementImpl *element)
+RenderTextArea::RenderTextArea(KHTMLView *view, HTMLTextAreaElementImpl *element)
     : RenderFormElement(view, element)
 {
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view);
     setQWidget(edit);
-    edit->installEventFilter(this);
 
     connect(edit,SIGNAL(textChanged()),this,SLOT(slotTextChanged()));
 }

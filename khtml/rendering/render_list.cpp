@@ -244,7 +244,7 @@ void RenderListItem::printObject(QPainter *p, int _x, int _y,
 // -----------------------------------------------------------
 
 RenderListMarker::RenderListMarker()
-    : RenderBox(), m_listImage(0), m_value(-1)
+    : RenderBox(), m_value(-1), m_listImage(0)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline

@@ -190,9 +190,6 @@ public:
     virtual bool childAllowed( NodeImpl *newChild );
     virtual bool childTypeAllowed( unsigned short type );
 
-    virtual short tabIndex() const;
-    virtual void setTabIndex( short );
-
     void createDecl();
     virtual DOM::CSSStyleDeclarationImpl *styleRules() {
       if (!m_styleDecls) createDecl();

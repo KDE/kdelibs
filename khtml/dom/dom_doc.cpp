@@ -26,6 +26,7 @@
 #include "dom/dom2_range.h"
 #include "dom/dom2_events.h"
 #include "dom/dom2_views.h"
+#include "dom/dom2_traversal.h"
 
 #include "xml/dom_docimpl.h"
 #include "xml/dom_elementimpl.h"

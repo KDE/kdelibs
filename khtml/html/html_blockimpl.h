@@ -28,7 +28,6 @@
 
 #include "html_elementimpl.h"
 #include "dtd.h"
-#include "rendering/render_style.h"
 
 namespace DOM {
 

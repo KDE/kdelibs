@@ -39,14 +39,12 @@
 #include "html/html_baseimpl.h"
 #include "html/html_miscimpl.h"
 #include "html/html_imageimpl.h"
-#include "html/htmltokenizer.h"
 #include "rendering/render_text.h"
-#include "rendering/render_image.h"
 #include "rendering/render_frames.h"
 #include "misc/htmlhashes.h"
 #include "misc/loader.h"
-#include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
+#include "xml/xml_tokenizer.h"
 #include "css/cssstyleselector.h"
 #include "java/kjavaappletcontext.h"
 using namespace DOM;
@@ -201,7 +199,7 @@ public:
         }
     }
 
-    m_focusNodeNumber = 0;
+    m_focusNodeNumber = -1;
     m_focusNodeRestored = false;
     m_opener = 0;
     m_openedByJS = false;
@@ -1607,22 +1605,10 @@ void KHTMLPart::checkCompleted()
   // restore the cursor position
   if (d->m_doc && !d->m_doc->parsing() && !d->m_focusNodeRestored)
   {
-      int focusNodeNumber;
-      if ((focusNodeNumber = d->m_focusNodeNumber))
-      {
-          DOM::ElementImpl *focusNode = 0;
-          while(focusNodeNumber--)
-          {
-              if ((focusNode = d->m_doc->findNextLink(focusNode, true))==0)
-                  break;
-          }
-          if (focusNode)
-          {
-              //QRect focusRect = focusNode->getRect();
-              //d->m_view->ensureVisible(focusRect.x(), focusRect.y());
-              d->m_doc->setFocusNode(focusNode);
-          }
-      }
+      if (d->m_focusNodeNumber >= 0)
+          d->m_doc->setFocusNode(d->m_doc->nodeWithAbsIndex(d->m_focusNodeNumber));
+      else
+          d->m_doc->setFocusNode(0);
       d->m_focusNodeRestored = true;
   }
 
@@ -1938,7 +1924,8 @@ bool KHTMLPart::findTextNext( const QString &str, bool forward, bool caseSensiti
     {
         if( (d->m_findNode->nodeType() == Node::TEXT_NODE || d->m_findNode->nodeType() == Node::CDATA_SECTION_NODE) && d->m_findNode->renderer() )
         {
-            DOMStringImpl *t = (static_cast<TextImpl *>(d->m_findNode))->string();
+            DOMString nodeText = d->m_findNode->nodeValue();
+            DOMStringImpl *t = nodeText.implementation();
             QConstString s(t->s, t->l);
 
             int matchLen = 0;
@@ -2015,7 +2002,7 @@ QString KHTMLPart::selectedText() const
   DOM::Node n = d->m_selectionStart;
   while(!n.isNull()) {
       if(n.nodeType() == DOM::Node::TEXT_NODE) {
-        QString str = static_cast<TextImpl *>(n.handle())->data().string();
+        QString str = n.nodeValue().string();
         if(n == d->m_selectionStart && n == d->m_selectionEnd)
           text = str.mid(d->m_startOffset, d->m_endOffset - d->m_startOffset);
         else if(n == d->m_selectionStart)
@@ -3255,22 +3242,11 @@ void KHTMLPart::saveState( QDataStream &stream )
   // save link cursor position
   int focusNodeNumber;
   if (!d->m_focusNodeRestored)
-  {
       focusNodeNumber = d->m_focusNodeNumber;
-  }
+  else if (d->m_doc->focusNode())
+      focusNodeNumber = d->m_doc->nodeAbsIndex(d->m_doc->focusNode());
   else
-  {
-      focusNodeNumber = 0;
-      if (d->m_doc)
-      {
-          DOM::ElementImpl *focusNode = d->m_doc->focusNode();
-          while( focusNode )
-          {
-              focusNodeNumber++;
-              focusNode = d->m_doc->findNextLink(focusNode, false);
-          }
-      }
-  }
+      focusNodeNumber = -1;
   stream << focusNodeNumber;
 
   // Save the doc's cache id.
@@ -3858,7 +3834,7 @@ void KHTMLPart::khtmlMouseMoveEvent( khtml::MouseMoveEvent *event )
         HTMLImageElementImpl *i = static_cast<HTMLImageElementImpl *>(innerNode.handle());
         if ( i && i->isServerMap() )
         {
-          khtml::RenderImage *r = static_cast<khtml::RenderImage *>(i->renderer());
+          khtml::RenderObject *r = i->renderer();
           if(r)
           {
             int absx, absy, vx, vy;
@@ -4248,7 +4224,7 @@ void KHTMLPart::selectAll()
   d->m_selectionStart = first;
   d->m_startOffset = 0;
   d->m_selectionEnd = last;
-  d->m_endOffset = static_cast<TextImpl *>( last )->string()->l;
+  d->m_endOffset = last->nodeValue().length();
   d->m_startBeforeEnd = true;
 
   d->m_doc->setSelection( d->m_selectionStart.handle(), d->m_startOffset,
@@ -4354,16 +4330,14 @@ void KHTMLPart::slotActiveFrameChanged( KParts::Part *part )
 
 void KHTMLPart::setActiveNode(const DOM::Node &node)
 {
-    if (!d->m_doc)
+    if (!d->m_doc || !d->m_view)
         return;
-    // at the moment, only element nodes can receive focus.
-    DOM::ElementImpl *e = static_cast<DOM::ElementImpl *>(node.handle());
-    if (node.isNull() || e->isElementNode())
-        d->m_doc->setFocusNode(e);
-    if (!d->m_view || !e || e->ownerDocument()!=d->m_doc)
-        return;
-    QRect rect  = e->getRect();
-    kdDebug(6050)<<"rect.x="<<rect.x()<<" rect.y="<<rect.y()<<" rect.width="<<rect.width()<<" rect.height="<<rect.height()<<endl;
+
+    // Set the document's active node
+    d->m_doc->setFocusNode(node.handle());
+
+    // Scroll the view if necessary to ensure that the new focus node is visible
+    QRect rect  = node.handle()->getRect();
     d->m_view->ensureVisible(rect.right(), rect.bottom());
     d->m_view->ensureVisible(rect.left(), rect.top());
 }

@@ -22,6 +22,7 @@
  */
 
 #include "dom/dom_exception.h"
+#include "dom/dom_string.h"
 #include "xml/dom2_traversalimpl.h"
 
 using namespace DOM;

@@ -25,8 +25,6 @@
 
 using namespace DOM;
 
-
-
 AbstractViewImpl::AbstractViewImpl(DocumentImpl *_document)
 {
     m_document = _document;

@@ -21,13 +21,15 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "xml/dom_nodeimpl.h"
+
 
 #include "dom/dom_exception.h"
 #include "misc/htmlattrs.h"
-
 #include "xml/dom_elementimpl.h"
 #include "xml/dom_textimpl.h"
 #include "xml/dom2_eventsimpl.h"
+#include "xml/dom_docimpl.h"
 
 #include <kglobal.h>
 #include <kdebug.h>
@@ -58,10 +60,9 @@ NodeImpl::NodeImpl(DocumentPtr *doc)
       m_specified( false ),
       m_focused( false ),
       m_active( false ),
-      m_styleElement( false )
+      m_styleElement( false ),
+      m_tabIndex( 0 )
 {
-    m_hasTabindex=false;
-    m_tabindex=0;
     if (document)
         document->ref();
 }
@@ -556,10 +557,9 @@ bool NodeImpl::dispatchEvent(EventImpl *evt, int &exceptioncode, bool tempEvent)
 
     bool ret = dispatchGenericEvent( evt, exceptioncode );
 
-    // If tempEvent is true, this means that the DOM implementation will not be storing
-    // a reference to the event, i.e. there is no way to retrieve it from javascript if a
-    // script does not already have a reference to it in a variable. So there is no need
-    // for the interpreter to keep the event in it's cache
+    // If tempEvent is true, this means that the DOM implementation will not be storing a reference to the event, i.e.
+    // there is no way to retrieve it from javascript if a script does not already have a reference to it in a variable.
+    // So there is no need for the interpreter to keep the event in it's cache
     if (tempEvent && view && view->part()->jScript())
         view->part()->jScript()->finishedWithEvent(evt);
 
@@ -624,6 +624,14 @@ bool NodeImpl::dispatchGenericEvent( EventImpl *evt, int &/*exceptioncode */)
         for (; it.current() && !evt->propagationStopped() && !evt->defaultPrevented() && !evt->defaultHandled(); --it)
             it.current()->defaultEventHandler(evt);
     }
+
+    // In the case of a mouse click, also send a DOMActivate event, which causes things like form submissions
+    // to occur. Note that this only happens for _real_ mouse clicks (for which we get a KHTML_CLICK_EVENT or
+    // KHTML_DBLCLICK_EVENT), not the standard DOM "click" event that could be sent from js code.
+    if (evt->id() == EventImpl::KHTML_CLICK_EVENT)
+        dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 1);
+    else if (evt->id() == EventImpl::KHTML_DBLCLICK_EVENT)
+        dispatchUIEvent(EventImpl::DOMACTIVATE_EVENT, 2);
 
     // copy this over into a local variable, as the following deref() calls might cause this to be deleted.
     DocumentPtr *doc = document;
@@ -795,8 +803,12 @@ void NodeImpl::handleLocalEvents(EventImpl *evt, bool useCapture)
 
 }
 
-void NodeImpl::defaultEventHandler(EventImpl */*evt*/)
+void NodeImpl::defaultEventHandler(EventImpl *evt)
 {
+    // Perform any special rendering updates as necessary for the event, e.g. passing appropriate QEvents to form
+    // controls
+    if (m_render)
+        m_render->handleDOMEvent(evt);
 }
 
 unsigned long NodeImpl::childNodeCount()
@@ -809,19 +821,36 @@ NodeImpl *NodeImpl::childNode(unsigned long /*index*/)
     return 0;
 }
 
-NodeImpl *NodeImpl::traverseNextNode(NodeImpl *stayWithin) {
+NodeImpl *NodeImpl::traverseNextNode(NodeImpl *stayWithin) const
+{
     if (firstChild())
 	return firstChild();
     else if (nextSibling())
 	return nextSibling();
     else {
-	NodeImpl *n = this;
+	const NodeImpl *n = this;
 	while (n && !n->nextSibling() && (!stayWithin || n->parentNode() != stayWithin))
 	    n = n->parentNode();
 	if (n && (!stayWithin || n->parentNode() != stayWithin))
 	    return n->nextSibling();
     }
     return 0;
+}
+
+NodeImpl *NodeImpl::traversePreviousNode() const
+{
+    if (previousSibling()) {
+        NodeImpl *n = previousSibling();
+        while (n->lastChild())
+            n = n->lastChild();
+        return n;
+    }
+    else if (parentNode()) {
+        return parentNode();
+    }
+    else {
+        return 0;
+    }
 }
 
 RenderObject *NodeImpl::nextRenderer()
@@ -947,8 +976,7 @@ void NodeImpl::dump(QTextStream *stream, QString ind) const
     if (m_active) { *stream << " active"; }
     if (m_styleElement) { *stream << " styleElement"; }
 
-    if (m_hasTabindex)
-	*stream << " tabindex=" << m_tabindex;
+    *stream << " tabIndex=" << m_tabIndex;
     if (m_regdListeners)
 	*stream << " #regdListeners=" << m_regdListeners->count(); // ### more detail
     *stream << endl;

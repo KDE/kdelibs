@@ -26,7 +26,8 @@
 #include "xml/dom_xmlimpl.h"
 #include "html/html_headimpl.h"
 #include "rendering/render_object.h"
-
+#include "misc/htmltags.h"
+#include "misc/loader.h"
 
 #include "khtmlview.h"
 #include "khtml_part.h"

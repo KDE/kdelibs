@@ -109,25 +109,6 @@ int RenderBox::contentHeight() const
 void RenderBox::setPos( int xPos, int yPos )
 {
     m_x = xPos; m_y = yPos;
-#if 1
-    if(m_x != xPos || m_y != yPos)
-    {
-        bool cw = containsWidget();
-        if ( !cw && parent() && parent()->containsWidget() )
-            cw = true;
-
-        if ( cw ) {
-            int x,y;
-            absolutePosition(x,y);
-
-            // propagate position change to childs
-            for(RenderObject *child = firstChild(); child; child = child->nextSibling()) {
-                if(child->isWidget())
-                    static_cast<RenderWidget*>(child)->placeWidget(x+child->xPos(),y+child->yPos());
-            }
-        }
-    }
-#endif
 }
 
 short RenderBox::width() const

@@ -20,7 +20,6 @@
 
 // See testrender.h for a description of this program
 
-// #include <iostream.h>
 #include <qlayout.h>
 #include <qlabel.h>
 #include <qprogressbar.h>

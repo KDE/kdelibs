@@ -44,6 +44,7 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include "xml/dom2_eventsimpl.h"
+#include "xml/dom_docimpl.h"
 
 using namespace KJS;
 

@@ -30,8 +30,6 @@ namespace DOM
     class HTMLBodyElementImpl;
 }
 
-class QScrollView;
-
 namespace khtml {
 
 class RenderBody : public RenderFlow
