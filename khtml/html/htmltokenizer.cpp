@@ -726,7 +726,7 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                             return; // Finished parsing tag!
                         }
                         // cuts of high part, is okay
-                        cBuffer[cBufferPos++] = (char) src->unicode();
+                        cBuffer[cBufferPos++] = src->cell();
                         ++src;
                         break;
                     }
@@ -737,13 +737,15 @@ void HTMLTokenizer::parseTag(DOMStringIt &src)
                 bool finish = false;
                 unsigned int ll = kMin(src.length(), CBUFLEN-cBufferPos);
                 while(ll--) {
-                    ushort cc = *src;
-                    if(cc <= ' ' || cc == '>') {
+                    ushort curchar = *src;
+                    if(curchar <= ' ' || curchar == '>') {
                         finish = true;
                         break;
                     }
                     // this will cut off the MSB, is okay
-                    cBuffer[cBufferPos++] = (char) cc;
+                    char cc = curchar;
+                    cBuffer[cBufferPos++] = (cc >= 'A' && cc <= 'Z') ?
+                                            cc +'a' - 'A' : cc;
                     ++src;
                 }
 
