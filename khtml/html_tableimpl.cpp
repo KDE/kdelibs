@@ -708,7 +708,7 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	bool out=false;
 	while (tt<=type && !out && tmin)
 	{
-	    tmin = distributeMinWidth(tmin,type,tt,col,span);
+	    tmin = distributeMinWidth(tmin,type,tt,col,span,true);
     	    switch (type)
 	    {
 	    case Undefined:
@@ -720,24 +720,24 @@ void HTMLTableElementImpl::spreadSpanMinMax(int col, int span, int distmin,
 	}
 	
 	// force spread rest of the minWidth
-	c=col;
-	int oldmin;
-	while(tmin)
+
+    	tt = Variable;
+    	out=false;
+	while (tt<=type && !out && tmin)
 	{
-	    oldmin=tmin;
-	    if (colType[c]<type)
+	    tmin = distributeMinWidth(tmin,type,tt,col,span,false);
+    	    switch (type)
 	    {
-		colMinWidth[c]+=1;
-		tmin--;
-	    }
-	    if (++c==col+span)
-	    {
-		if (oldmin==tmin)
-		    break;	
-		c=col;
+	    case Undefined:
+    	    case Variable: tt=Relative; break;	
+	    case Relative: tt=Percent; break;
+	    case Percent: tt=Fixed; break;
+	    case Fixed: out=true; break;
 	    }
 	}
-	
+
+
+
 	for (int c=col; c < col+span ; ++c)
 	    colMaxWidth[c]=MAX(colMinWidth[c],colMaxWidth[c]);	    	
 		
@@ -1232,7 +1232,7 @@ int HTMLTableElementImpl::distributeRest(int distrib, LengthType type, int divid
 }
 
 int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
-    	    LengthType toType, int start, int span )
+    	    LengthType toType, int start, int span, bool mlim )
 {
 //    printf("MINDIST, %d pixels of type %d"
 //    	"to type %d cols sp=%d \n", distrib, distType, toType,span);
@@ -1248,7 +1248,11 @@ int HTMLTableElementImpl::distributeMinWidth(int distrib, LengthType distType,
 	if (colType[c]==toType)
 	{
 	    int delta = distrib/span;
+	    if (mlim)
+	    	delta = MIN(delta,colMaxWidth[c]-colMinWidth[c]);
 	    delta = MIN(tdis,delta);
+	    if (delta==0 && tdis && (!mlim || colMaxWidth[c]>colMinWidth[c]))
+	    	delta=1;
 	    colMinWidth[c]+=delta;
 	    colType[c]=distType;
 	    tdis-=delta;

@@ -1388,7 +1388,8 @@ NodeImpl *HTMLBlockElementImpl::calcParagraph(NodeImpl *_start, bool pre)
 		case ID_P:
 		    // ### should be defined by style sheet...
 		    // ### add indent for next line acc to style
-		    lineDescent += 8;		
+		    if (current!=_start)
+		    	lineDescent += 8;		
 		    endOfLine = true;
 		    nextNode = true;
 		    break;
