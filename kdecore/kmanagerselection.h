@@ -45,7 +45,7 @@ class KSelectionOwnerPrivate;
  @since 3.2
  @short ICCCM manager selection owner
 */
-class KSelectionOwner
+class KDECORE_EXPORT KSelectionOwner
     : public QObject
     {
     Q_OBJECT

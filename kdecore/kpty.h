@@ -24,6 +24,8 @@
 #define __kpty_h__
 
 #include <qglobal.h>
+#include <kdelibs_export.h>
+
 #ifdef Q_OS_UNIX
 
 struct KPtyPrivate;
@@ -35,7 +37,7 @@ struct KPtyPrivate;
  *
  * @since 3.2
  **/
-class KPty {
+class KDECORE_EXPORT KPty {
 
 public:
 

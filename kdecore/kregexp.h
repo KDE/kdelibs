@@ -58,7 +58,7 @@ class KRegExpPrivate;
  * @author Torben Weis <weis@kde.org>
  * @version $Id$
  */
-class KDE_DEPRECATED KRegExp
+class KDECORE_EXPORT KDE_DEPRECATED KRegExp
 {
 public:
 
