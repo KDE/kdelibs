@@ -73,7 +73,7 @@ ResourceLDAPKIOConfig::ResourceLDAPKIOConfig( QWidget* parent,  const char* name
   mainLayout->addWidget( label, 3, 0 );
   mainLayout->addWidget( box, 3, 1 );
 
-  label = new QLabel( i18n( "Dn:" ), this );
+  label = new QLabel( i18n( "Distinguished Name", "DN:" ), this );
   mDn = new KLineEdit( this );
 
   mainLayout->addWidget( label, 4, 0 );

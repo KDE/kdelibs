@@ -223,7 +223,7 @@ void ResourceLDAPKIO::result( KIO::Job *job )
 
   if ( !ok ) {
     mErrorOccured = true;
-    mErrorMsg = i18n( "Error during parsing the LDIF file!" );
+    mErrorMsg = i18n( "Error while parsing the LDIF file." );
   } else {
     AddresseeList::Iterator it;
     for ( it = addrList.begin(); it != addrList.end(); ++it ) {
