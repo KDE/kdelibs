@@ -1,5 +1,5 @@
 /*
- * $Id$
+ * $Id $
  * 
  * KStyle
  * Copyright (C) 2001-2002 Karol Szwed <gallium@kde.org>
@@ -671,8 +671,33 @@ void KStyle::drawControl( ControlElement element,
 
 			// Draw progress bar
 			if (progress > 0 || steps == 0) {
-				double pg = (steps == 0) ? 1.0 : progress / steps;
+				double pg = (steps == 0) ? 0.1 : progress / steps;
 				int width = QMIN(cr.width(), (int)(pg * cr.width()));
+				if (steps == 0) { //Busy indicator
+				
+					if (width < 1) width = 1; //A busy indicator with width 0 is kind of useless
+					
+					int remWidth = cr.width() - width; //Never disappear completely
+					if (remWidth <= 0) remWidth = 1; //Do something non-crashy when too small...                                       
+					
+					int pstep =  int(progress) % ( 2 *  remWidth ); 
+					
+					if ( pstep > remWidth ) {
+						//Bounce about.. We're remWidth + some delta, we want to be remWidth - delta...                                           
+						// - ( (remWidth + some delta) - 2* remWidth )  = - (some deleta - remWidth) = remWidth - some delta..
+						pstep = - (pstep - 2 * remWidth );                                                                                      
+					}
+					
+					if (reverse)
+						p->fillRect(cr.x() + cr.width() - width - pstep, cr.y(), width, cr.height(),
+									cg.brush(QColorGroup::Highlight));                                       
+					else
+						p->fillRect(cr.x() + pstep, cr.y(), width, cr.height(),
+									cg.brush(QColorGroup::Highlight));
+					
+					return;                                       
+				}
+                                
 	
 				// Do fancy gradient for highcolor displays
 				if (d->highcolor) {
