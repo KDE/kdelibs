@@ -120,14 +120,16 @@ Completion ArrayProtoFunc::execute(const List &args)
     }
     // fall trough
   case Join:
-    if (!args[0].isA(UndefinedType))
-      separator = args[0].toString().value();
-    for (unsigned int k = 0; k < length; k++) {
-      if (k >= 1)
-	str += separator;
-      obj = thisObj.get(UString::from(k));
-      if (!obj.isA(UndefinedType) && !obj.isA(NullType))
-	str += obj.toString().value();
+    {
+      if (!args[0].isA(UndefinedType))
+	separator = args[0].toString().value();
+      for (unsigned int k = 0; k < length; k++) {
+	if (k >= 1)
+	  str += separator;
+	obj = thisObj.get(UString::from(k));
+	if (!obj.isA(UndefinedType) && !obj.isA(NullType))
+	  str += obj.toString().value();
+      }
     }
     result = String(str);
     break;
@@ -144,35 +146,39 @@ Completion ArrayProtoFunc::execute(const List &args)
     }
     break;
   case Push:
-    for (int n = 0; n < args.size(); n++)
-      thisObj.put(UString::from(length + n), args[n]);
-    length += args.size();
-    thisObj.put("length", length, DontEnum | DontDelete);
-    result = Number(length);
+    {
+      for (int n = 0; n < args.size(); n++)
+	thisObj.put(UString::from(length + n), args[n]);
+      length += args.size();
+      thisObj.put("length", length, DontEnum | DontDelete);
+      result = Number(length);
+    }
     break;
   case Reverse:
-    middle = length / 2;
-    for (unsigned int k = 0; k < middle; k++) {
-      str = UString::from(k);
-      str2 = UString::from(length - k - 1);
-      obj = thisObj.get(str);
-      obj2 = thisObj.get(str2);
-      if (thisObj.hasProperty(str2)) {
-	if (thisObj.hasProperty(str)) {
-	  thisObj.put(str, obj2);
-	  thisObj.put(str2, obj);
+    {
+      middle = length / 2;
+      for (unsigned int k = 0; k < middle; k++) {
+	str = UString::from(k);
+	str2 = UString::from(length - k - 1);
+	obj = thisObj.get(str);
+	obj2 = thisObj.get(str2);
+	if (thisObj.hasProperty(str2)) {
+	  if (thisObj.hasProperty(str)) {
+	    thisObj.put(str, obj2);
+	    thisObj.put(str2, obj);
+	  } else {
+	    thisObj.put(str, obj2);
+	    thisObj.deleteProperty(str2);
+	  }
 	} else {
-	  thisObj.put(str, obj2);
-	  thisObj.deleteProperty(str2);
-	}
-      } else {
-	if (thisObj.hasProperty(str)) {
-	  thisObj.deleteProperty(str);
-	  thisObj.put(str2, obj);
-	} else {
-	  // why delete something that's not there ? Strange.
-	  thisObj.deleteProperty(str);
-	  thisObj.deleteProperty(str2);
+	  if (thisObj.hasProperty(str)) {
+	    thisObj.deleteProperty(str);
+	    thisObj.put(str2, obj);
+	  } else {
+	    // why delete something that's not there ? Strange.
+	    thisObj.deleteProperty(str);
+	    thisObj.deleteProperty(str2);
+	  }
 	}
       }
     }
