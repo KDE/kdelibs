@@ -8,7 +8,7 @@
     Copyright (c) 1999 Preston Brown <pbrown@kde.org>
 
     Completely re-designed:
-    Copyright (c) 2000 Dawit Alemayehu <adawit@earthlink.net>
+    Copyright (c) 2000 Dawit Alemayehu <adawit@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -86,7 +86,7 @@
  * To enable the basic completion feature :
  *
  * <pre>
- * KLineEdit *edit = new KLineEdit( true, this, "mywidget" );
+ * KLineEdit *edit = new KLineEdit( this, "mywidget" );
  * KCompletion *comp = edit->completionObject();
  * // Connect to the return pressed signal - optional
  * connect(edit,SIGNAL(returnPressed(const QString&)),comp,SLOT(addItem(const QString&));
@@ -135,7 +135,6 @@ public:
     * @param string text to be shown in the edit widget
     * @param parent the parent object of this widget
     * @param name the name of this widget
-    * @param hsig determines if this widget automatically handles both signals internally.
     */
     KLineEdit( const QString &string, QWidget *parent, const char *name = 0 );
 
@@ -145,7 +144,6 @@ public:
     * @param string text to be shown in the edit widget
     * @param parent the parent object of this widget
     * @param name the name of this widget
-    * @param hsig determines if this widget automatically handles both signals internally.
     */
     KLineEdit ( QWidget *parent=0, const char *name=0 );
 
