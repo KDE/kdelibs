@@ -10,6 +10,8 @@ int main(int argc, char **argv)
   KStandardDirs t;
   KConfig config; // to add custom entries - a bit tricky :/
 
+  t.saveLocation("icon");
+
   QString s = t.findResource("icon", "xv.xpm");
   if (!s.isNull()) kdDebug() << s << endl;
 
