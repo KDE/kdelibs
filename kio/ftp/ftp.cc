@@ -1563,11 +1563,16 @@ void Ftp::get( const KURL & url )
         mimetypeBuffer.resize(0);
       }
     }
-    else
+    else if ( n > 0 )
     {
       array.setRawData(buffer, n);
       data( array );
       array.resetRawData(buffer, n);
+    }
+    else // unexpected eof. Happens when the daemon gets killed.
+    {
+      error( ERR_COULD_NOT_READ, url.path() );
+      return;
     }
 
     processed_size += n;
