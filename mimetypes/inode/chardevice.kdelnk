@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Character Device
+Comment[de]=Zeichen-Orientiertes Gerät
+Icon=char_dev.xpm
+Type=MimeType
+MimeType=inode/chardevice
+Patterns=;

@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Directory
+Comment[de]=Ordner
+Icon=folder.xpm
+Type=MimeType
+MimeType=inode/directory
+Patterns=;

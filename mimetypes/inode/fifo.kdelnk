@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Pipe
+Comment[de]=Pipe
+Icon=pipe.xpm
+Type=MimeType
+MimeType=inode/fifo
+Patterns=;

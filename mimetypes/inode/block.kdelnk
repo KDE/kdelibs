@@ -1,0 +1,8 @@
+# KDE Config File
+[KDE Desktop Entry]
+Comment=Block Device
+Comment[de]=Block-Orientiertes Gerät
+Icon=block_dev.xpm
+Type=MimeType
+MimeType=inode/blockdevice
+Patterns=;
