@@ -40,7 +40,7 @@ KFilterDev::KFilterDev( KFilterBase * _filter )
     d = new KFilterDevPrivate;
     // Some setFlags calls are probably missing here,
     // for proper results of the state methods,
-    // but the Qt doc says "internal" (??).
+    // but the Qt doc says "internal" ??.
 }
 
 KFilterDev::~KFilterDev()
@@ -133,7 +133,7 @@ bool KFilterDev::at( int pos )
 
 bool KFilterDev::atEnd() const
 {
-    return filter->device()->atEnd();
+    return filter->device()->atEnd() && (d->result == KFilterBase::END);
 }
 
 int KFilterDev::readBlock( char *data, uint maxlen )
@@ -212,10 +212,13 @@ int KFilterDev::getch()
         int len = d->ungetchBuffer.length();
         int ch = d->ungetchBuffer[ len-1 ];
         d->ungetchBuffer.truncate( len - 1 );
+        //kdDebug() << "KFilterDev::getch from ungetch: " << QString(QChar(ch)) << endl;
         return ch;
     }
     char buf[1];
-    return readBlock( buf, 1 ) == 1 ? buf[0] : EOF;
+    int ret = readBlock( buf, 1 ) == 1 ? buf[0] : EOF;
+    //kdDebug() << "KFilterDev::getch ret=" << QString(QChar(ret)) << endl;
+    return ret;
 }
 
 int KFilterDev::putch( int )
@@ -226,7 +229,7 @@ int KFilterDev::putch( int )
 
 int KFilterDev::ungetch( int ch )
 {
-    kdDebug() << "KFilterDev::ungetch" << endl;
+    //kdDebug() << "KFilterDev::ungetch " << QString(QChar(ch)) << endl;
     if ( ch == EOF )                            // cannot unget EOF
         return ch;
 

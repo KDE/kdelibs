@@ -37,7 +37,7 @@ public:
     virtual void reset() {}
     virtual bool readHeader() = 0;
     virtual void setOutBuffer( char * data, uint maxlen ) = 0;
-    virtual void setInBuffer( char * data, uint maxlen ) = 0;
+    virtual void setInBuffer( char * data, uint size ) = 0;
     virtual bool inBufferEmpty() const { return inBufferAvailable() == 0; }
     virtual int  inBufferAvailable() const = 0;
     virtual bool outBufferFull() const { return outBufferAvailable() == 0; }
