@@ -31,9 +31,15 @@ class HistoryProvider;
 class KHTMLSettings;
 class KHTMLPart;
 
+namespace DOM
+{
+  class DocumentImpl;
+};
+
 class KHTMLFactory : public KParts::Factory
 {
   Q_OBJECT
+  friend class DOM::DocumentImpl;
 public:
   KHTMLFactory( bool clone = false );
   virtual ~KHTMLFactory();

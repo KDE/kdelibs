@@ -378,6 +378,8 @@ DocumentImpl::DocumentImpl(DOMImplementationImpl *_implementation, KHTMLView *v)
     m_docLoading = false;
     m_inSyncLoad = false;
     m_loadingXMLDoc = 0;
+
+    KHTMLFactory::ref();
 }
 
 DocumentImpl::~DocumentImpl()
@@ -408,6 +410,8 @@ DocumentImpl::~DocumentImpl()
 	delete m_renderArena;
 	m_renderArena = 0;
     }
+
+    KHTMLFactory::deref();
 }
 
 
