@@ -1,26 +1,16 @@
-- Uses KDE language in IPP requests instead of standard CUPS
-  language.
-
 - Implement a generic banner behaviour: banners would be insrted
   as standard print file before and/or after the actual file. This
   would allow for KDE-specific banners and translated banners.
 
-- Use another tool for preview (maybe difficult to know if we want to
-  continue or not)
-
 - Possibility to specify a different input slot for first page???
 
-- make use global instance file
-
 - make a backup of the CUPS config file before overwriting it
+  -> use GET/PUT methods to handle CUPS config files
 
 - change DCOP call of kdeprintd so that the command is a QStrList to
   avoid quoting problems.
 
-- integration of some features into kicker "start" menu
-	Add printer
-	Global settings
-	---------------
-	pr34copy
-	pr34cpaper
-	...
+- graphical configuration of basic print options:
+	- default paper size
+	- default margins
+	- preview program
