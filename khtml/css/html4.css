@@ -223,7 +223,7 @@ TD, TH {
 	display: table-cell;
 	vertical-align: inherit;
 	padding: inherit;
-	border-style: inset;
+	border-style: inset;   /* actually we should inherit border style in case it is set by the user */
 	border-color: inherit;
         border-width: inherit; /* argh, we shouldn't inherit border-width. looks terrible ugly for <table border=42>. 
                                   but is currently necessary for <table border=0> :-( */
