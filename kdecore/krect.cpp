@@ -69,7 +69,7 @@ bool KRect::isValid() const
 //==========================================================
 KRect KRect::normalize() const
 {
-  int xx1, xx2, yy1, yy2;
+  int xx1,xx2,yy1,yy2;
   if (x1 <= x2) 
     {
       xx1 = x1;
@@ -90,7 +90,8 @@ KRect KRect::normalize() const
       yy1 = y2;
       yy2 = y1;
     }
-  return KRect(KPoint(xx1,xx2),KPoint(yy1,yy2));
+
+  return KRect(KPoint(xx1,yy1),KPoint(xx2,yy2));
 }
 
 //==========================================================
