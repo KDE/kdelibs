@@ -20,6 +20,7 @@
 
 #include "khtml_factory.h"
 #include "khtml_part.h"
+#include "khtml_settings.h"
 
 #include <kinstance.h>
 #include <kaboutdata.h>
@@ -35,11 +36,15 @@ extern "C"
   }
 };
 
-KInstance *KHTMLFactory::s_instance = 0L;
-KAboutData *KHTMLFactory::s_about = 0L;
+KInstance *KHTMLFactory::s_instance = 0;
+KAboutData *KHTMLFactory::s_about = 0;
+KHTMLSettings *KHTMLFactory::s_settings = 0;
 
 KHTMLFactory::KHTMLFactory()
 {
+  s_instance = 0;
+  s_about = 0;
+  s_settings = 0;
 }
 
 KHTMLFactory::~KHTMLFactory()
@@ -48,6 +53,12 @@ KHTMLFactory::~KHTMLFactory()
     delete s_instance;
   if ( s_about )
     delete s_about;
+  if ( s_settings )
+    delete s_settings;
+  
+  s_instance = 0;
+  s_about = 0;
+  s_settings = 0;
 }
 
 KParts::Part *KHTMLFactory::createPart( QWidget *parentWidget, const char *widgetName, QObject *parent, const char *name, const char *, const QStringList & )
@@ -75,4 +86,12 @@ KInstance *KHTMLFactory::instance()
   }
 
   return s_instance;
+}
+
+KHTMLSettings *KHTMLFactory::defaultHTMLSettings()
+{
+  if ( !s_settings )
+    s_settings = new KHTMLSettings();
+  
+  return s_settings;
 }

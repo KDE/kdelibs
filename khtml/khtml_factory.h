@@ -24,6 +24,7 @@
 
 class KInstance;
 class KAboutData;
+class KHTMLSettings;
 
 class KHTMLFactory : public KParts::Factory
 {
@@ -36,9 +37,12 @@ public:
 
   static KInstance *instance();
 
+  static KHTMLSettings *defaultHTMLSettings();
+
 private:
   static KInstance *s_instance;
   static KAboutData *s_about;
+  static KHTMLSettings *s_settings;
 };
 
 #endif

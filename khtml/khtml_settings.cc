@@ -24,12 +24,12 @@
 #include <kapp.h>
 #include <kglobal.h>
 
-KonqHTMLSettings::KonqHTMLSettings()
+KHTMLSettings::KHTMLSettings()
 {
   init(); 
 } 
 
-void KonqHTMLSettings::init()
+void KHTMLSettings::init()
 {
   KConfig global( "khtmlrc", true );
   global.setGroup( "HTML Settings" );
@@ -46,7 +46,7 @@ void KonqHTMLSettings::init()
   init( local, false );
 }
 
-void KonqHTMLSettings::init( KConfig * config, bool reset )
+void KHTMLSettings::init( KConfig * config, bool reset )
 {
   // Fonts and colors
 

@@ -40,6 +40,7 @@
 #include "khtmlview.h"
 #include "decoder.h"
 #include "kjs.h"
+#include "khtml_settings.h"
 
 #include <assert.h>
 
@@ -211,8 +212,8 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   d->m_extension = new KHTMLPartBrowserExtension( this );
 
-  d->m_bJScriptEnabled = false;
-  d->m_bJavaEnabled = false;
+  d->m_bJScriptEnabled = KHTMLFactory::defaultHTMLSettings()->enableJavaScript();
+  d->m_bJavaEnabled = KHTMLFactory::defaultHTMLSettings()->enableJava();
 
   d->m_paViewDocument = new KAction( i18n( "View Document Source" ), 0, this, SLOT( slotViewDocumentSource() ), actionCollection(), "viewDocumentSource" );
   d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), 0, this, SLOT( slotViewFrameSource() ), actionCollection(), "viewFrameSource" );
@@ -728,7 +729,7 @@ bool KHTMLPart::setEncoding( const QString &name, bool /*override*/ )
     KURL url = m_url;
     m_url = 0;
     openURL(url);
-    
+
     return true;
 }
 
@@ -1507,7 +1508,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 
   // Save font data
   stream << fontSizes() << d->m_fontBase;
-  
+
   // Save frame data
   stream << (Q_UINT32)d->m_frames.count();
 
@@ -1542,7 +1543,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 void KHTMLPart::restoreState( QDataStream &stream )
 {
   KURL u;
-  Q_INT32 xOffset; 
+  Q_INT32 xOffset;
   Q_INT32 yOffset;
   Q_UINT32 frameCount;
   QStringList frameNames, frameServiceTypes, docState, frameServiceNames;
@@ -1552,10 +1553,10 @@ void KHTMLPart::restoreState( QDataStream &stream )
 
   stream >> u >> xOffset >> yOffset;
   stream >> docState;
-  
+
   stream >> fSizes >> d->m_fontBase;
   setFontSizes( fSizes );
-  
+
   stream >> frameCount >> frameNames >> frameServiceTypes >> frameServiceNames
 	 >> frameURLs >> frameStateBuffers;
 
@@ -1750,7 +1751,7 @@ void KHTMLPartBrowserExtension::copy()
 void KHTMLPartBrowserExtension::reparseConfiguration()
 {
   kdDebug() << "void KHTMLPartBrowserExtension::reparseConfiguration()" << endl;
-} 
+}
 
 class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate
 {

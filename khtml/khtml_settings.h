@@ -29,13 +29,13 @@ class KConfig;
  * We need this in konqueror since we need to call reparseConfiguration
  * on the static instance (even when we don't have an HTML view any longer).
  */
-class KonqHTMLSettings
+class KHTMLSettings
 {
-protected:
+public:
   /**
    * @internal Constructor
    */
-  KonqHTMLSettings();
+  KHTMLSettings();
 
   void init();
 
@@ -43,9 +43,7 @@ protected:
   void init( KConfig * config, bool reset = true );
 
   /** Destructor. Don't delete any instance by yourself. */
-  virtual ~KonqHTMLSettings() {};
-
-public:
+  virtual ~KHTMLSettings() {};
 
   // Behaviour settings
   bool changeCursor() { return m_bChangeCursor; }
@@ -91,7 +89,7 @@ private:
   //  static KonqHTMLSettings * s_HTMLSettings;
 private:
   // There is no copy constructors. Use the static method
-  KonqHTMLSettings( const KonqHTMLSettings &);
+  KHTMLSettings( const KHTMLSettings &);
 };
 
 #endif
