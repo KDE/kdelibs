@@ -481,6 +481,11 @@ private:
     SlaveBasePrivate *d;
 };
 
+// by kahl for netmgr
+class SlaveBasePrivate {
+public:
+    QString slaveid;
+};
 
 };
 

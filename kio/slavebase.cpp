@@ -72,10 +72,18 @@ SlaveBase::SlaveBase( const QCString &protocol,
     listEntry_usec = tp.tv_usec;
     mConnectedToApp = true;
     connectSlave(mAppSocket);
+
+    // by kahl for netmgr (need a way to identify slaves)
+    d = new SlaveBasePrivate;
+    d->slaveid = protocol;
+    d->slaveid += QString::number(getpid());
 }
 
 SlaveBase::~SlaveBase()
 {
+    // by kahl for netmgr
+    if (d)
+       delete d;
 }
 
 void SlaveBase::dispatchLoop()
@@ -299,7 +307,7 @@ void SlaveBase::infoMessage( const QString &_msg)
 
 bool SlaveBase::requestNetwork(const QString& host)
 {
-    KIO_DATA << host;
+    KIO_DATA << host << d->slaveid;
     m_pConnection->send( MSG_NET_REQUEST, data );
 
     int cmd;
@@ -323,7 +331,7 @@ bool SlaveBase::requestNetwork(const QString& host)
 
 void SlaveBase::dropNetwork(const QString& host)
 {
-    KIO_DATA << host;
+    KIO_DATA << host << d->slaveid;
     m_pConnection->send( MSG_NET_DROP, data );
 }
 

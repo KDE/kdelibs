@@ -33,6 +33,8 @@
 namespace KIO {
 
 class Connection;
+// better there is one ...
+class SlaveInterfacePrivate;
 
 /**
  * Commands that can be invoked by a job.
@@ -181,8 +183,9 @@ protected:
      */
     void openPassDlg( const QString& /*head*/, const QString& /*user*/, const QString& /*pass*/, const QString& /*key*/ = QString::null );
 
-    void requestNetwork( const QString & );
-    void dropNetwork( const QString & );
+    // I need to identify the slaves
+    void requestNetwork( const QString &, const QString &);
+    void dropNetwork( const QString &, const QString &);
 
     /**
      * @internal
@@ -191,6 +194,9 @@ protected:
 
 protected:
     Connection * m_pConnection;
+
+private:
+    SlaveInterfacePrivate *d;
 };
 
 };

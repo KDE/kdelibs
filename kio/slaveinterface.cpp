@@ -177,14 +177,16 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     }
     case MSG_NET_REQUEST: {
         QString host;
-        stream >> host;
-        requestNetwork(host);
+	QString slaveid;
+        stream >> host >> slaveid;
+        requestNetwork(host, slaveid);
         break;
     }
     case MSG_NET_DROP: {
         QString host;
-        stream >> host;
-        dropNetwork(host);
+	QString slaveid;
+        stream >> host >> slaveid;
+        dropNetwork(host, slaveid);
         break;
     }
     case MSG_NEED_SUBURL_DATA: {
@@ -196,17 +198,18 @@ void SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     }
 }
 
-void SlaveInterface::requestNetwork(const QString &host)
+void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 {
-    kdDebug(7007) << "requestNetwork " << host << endl;
+    kdDebug(7007) << "requestNetwork " << host << slaveid << endl;
     QByteArray packedArgs;
     QDataStream stream( packedArgs, IO_WriteOnly );
     stream << true;
     m_pConnection->sendnow( INF_NETWORK_STATUS, packedArgs );
 }
 
-void SlaveInterface::dropNetwork(const QString &)
+void SlaveInterface::dropNetwork(const QString &host, const QString &slaveid)
 {
+    kdDebug(7007) << "dropNetwork " << host << slaveid << endl;
 }
 
 void SlaveInterface::openPassDlg( const QString& head, const QString& user, const QString& pass, const QString& key )
