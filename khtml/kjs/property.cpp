@@ -23,6 +23,7 @@
 #include <strings.h>
 #include <iostream.h>
 
+#include "kjs.h"
 #include "object.h"
 #include "operations.h"
 

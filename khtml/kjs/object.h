@@ -368,7 +368,7 @@ class KJSGlobal : public KJSO {
 public:
   KJSGlobal();
   Type type() const { return Object; }
-  KJSPrototype *objProto, *funcProto, *arrayProto, *boolProto;
+  KJSPrototype *objProto, *funcProto, *arrayProto, *stringProto, *boolProto;
 };
 
 class KJSParamList {

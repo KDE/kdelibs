@@ -284,7 +284,6 @@ double UString::toDouble() const
 
   CString str = cstring();
   const char *c = str.ascii();
-  printf("ascii = %s\n", c);
 
   // skip leading white space
   while (isspace(*c))

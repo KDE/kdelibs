@@ -35,6 +35,7 @@
 #include "function_object.h"
 #include "array_object.h"
 #include "bool_object.h"
+#include "string_object.h"
 #include "math_object.h"
 
 namespace KJS {
@@ -315,10 +316,12 @@ KJSGlobal::KJSGlobal()
   objProto = new ObjectPrototype();
   funcProto = new FunctionPrototype();
   arrayProto = new ArrayPrototype(this);
+  stringProto = new StringPrototype(this);
   boolProto = new BooleanPrototype(this);
 
   put("Object", zeroRef(new ObjectObject(this)), DontEnum);
   put("Array", zeroRef(new ArrayObject(this)), DontEnum);
+  put("String", zeroRef(new StringObject(this)), DontEnum);
   put("Boolean", zeroRef(new BooleanObject(this)), DontEnum);
 
   // other properties
