@@ -44,6 +44,9 @@
 using namespace DOM;
 using namespace khtml;
 
+const Q_UINT32 NodeImpl::IdNSMask    = 0xffff0000;
+const Q_UINT32 NodeImpl::IdLocalMask = 0x0000ffff;
+
 NodeImpl::NodeImpl(DocumentPtr *doc)
     : document(doc),
       m_parent(0),

@@ -383,8 +383,6 @@ protected:
 
     // 3 bits unused
 };
-const Q_UINT32 NodeImpl::IdNSMask    = 0xffff0000;
-const Q_UINT32 NodeImpl::IdLocalMask = 0x0000ffff;
 
 // this is the full Node Implementation with parents and children.
 class NodeBaseImpl : public NodeImpl
