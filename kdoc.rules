@@ -20,7 +20,7 @@ kdecore_LIBS = -lkdefx -ldcop -lqt
 kdeui_FILES = *.h
 kdeui_LIBS = -lkdecore -lkdefx -ldcop -lqt
 
-kabc_FILES = address.h addressbook.h addressee.h addresseedialog.h distributionlist.h distributionlisteditor.h format.h geo.h phonenumber.h resource.h resourcefile.h simpleformat.h stdaddressbook.h timezone.h vcardformat.h
+kabc_FILES = address.h addressbook.h addressee.h addresseedialog.h distributionlist.h distributionlisteditor.h format.h geo.h phonenumber.h resource.h simpleformat.h stdaddressbook.h timezone.h vcardformat.h
 kabc_LIBS = -lkdecore -lkdeui -lqt
 
 kfile_FILES= *.h
