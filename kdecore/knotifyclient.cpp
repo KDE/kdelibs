@@ -214,10 +214,7 @@ public:
 	{
 		if (m_instances.isEmpty())
 		{
-			if (!m_defaultInstance)
-				m_instances.push(m_defaultInstance = new Instance(kapp));
-			else
-				m_instances.push(m_defaultInstance);
+			m_defaultInstance = new Instance(kapp);
 		}
 		return m_instances.top();
 	}
