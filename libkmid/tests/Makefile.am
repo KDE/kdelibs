@@ -1,5 +1,5 @@
 
-INCLUDES = $(all_includes) -I$(srcdir)/..
+INCLUDES = -I$(srcdir)/.. $(all_includes)
 
 noinst_PROGRAMS = ctest apitest notesoff
 
