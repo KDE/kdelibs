@@ -190,17 +190,37 @@ bool KSharedPixmap::copy(QString id, QRect rect)
     KSharedPixmapData pmd(desc);
     if (!pmd.ok())
 	return false;
-
-    if (rect.isNull())
+    if (rect.isEmpty())
 	rect = QRect(0, 0, pmd.width(), pmd.height());
-    else
-	rect &= QRect(0, 0, pmd.width(), pmd.height());
+
+    QPoint p1 = rect.topLeft();
+    QPoint p2 = rect.bottomRight();
+    QSize size = rect.size();
+    int offx=0, offy=0;
+
+    // Topleft corner out of desktop?
+    if ((p1.x() > pmd.width()) || (p1.y() > pmd.height()))
+	return false;
+    if (p1.x() < 0) {
+	offx = -p1.x();
+	p1.setX(0);
+    }
+    if (p1.y() < 0) {
+	offy = -p1.y();
+	p1.setY(0);
+    }
+
+    // Bottom right corner out of desktop?
+    if (p2.x() > pmd.width())
+	size.setWidth(pmd.width() - p1.x() + offx);
+    if (p2.y() > pmd.height())
+	size.setHeight(pmd.height() - p1.y() + offy);
 
     detach(); 
-    resize(rect.size());
+    resize(size);
 
     XCopyArea(qt_xdisplay(), pmd.handle(), handle(), qt_xget_temp_gc(),
-	rect.x(), rect.y(), rect.width(), rect.height(), 0, 0);
+	p1.x(), p1.y(), size.width(), size.height(), offx, offy);
 
     return true;
 }

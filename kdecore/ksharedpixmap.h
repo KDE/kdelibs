@@ -72,7 +72,8 @@ public:
      * bit block transfer.
      *
      * @param id The shared pixmap id string.
-     * @param rect The region of the pixmap you want.
+     * @param rect The region of the pixmap you want. The area is clipped
+     * in the south east corner to the desktop rectangle.
      * @param prop The X property to read the pixmap id from. The default is
      * "KDE_SHARED_PIXMAPS".
      */
