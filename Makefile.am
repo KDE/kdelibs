@@ -27,11 +27,13 @@ $(top_srcdir)/acinclude.m4: $(top_srcdir)/admin/acinclude.m4.in $(top_srcdir)/ad
 
 AUTOMAKE_OPTIONS = foreign 1.4
 
+include_HEADERS = kde.pot
+
 messages:
 	$(XGETTEXT) -C -ktranslate -ki18n -x qt-messages.pot common_texts.cpp */*.cpp */*.cc && cat messages.po qt-messages.pot > po/kdelibs.pot; rm messages.po
-	$(XGETTEXT) -C -ktranslate -ki18n common_texts.cpp && mv messages.po po/kde.pot
+	$(XGETTEXT) -C -ktranslate -ki18n common_texts.cpp && mv messages.po kde.pot
 
-EXTRA_DIST = admin bsd-port debian kdelibs.spec.in
+EXTRA_DIST = admin bsd-port debian kdelibs.spec.in kde.pot
 
 dist-hook:
 	cd $(top_distdir) && perl $(top_srcdir)/admin/am_edit -padmin
