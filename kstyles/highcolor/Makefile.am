@@ -21,7 +21,7 @@
 AM_CPPFLAGS = -DQT_PLUGIN
 
 INCLUDES = -I$(top_srcdir)/kdefx $(all_includes)
-noinst_HEADERS = highcolor.h 
+noinst_HEADERS = highcolor.h bitmaps.h
 kde_style_LTLIBRARIES = highcolor.la
 highcolor_la_LDFLAGS = $(all_libraries) $(KDE_PLUGIN) -module
 highcolor_la_LIBADD = ../../kdefx/libkdefx.la
