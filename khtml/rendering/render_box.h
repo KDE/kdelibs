@@ -97,7 +97,7 @@ public:
     virtual void repaintRectangle(int x, int y, int w, int h);
     virtual void repaintObject(RenderObject *o, int x, int y);
 
-    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate, bool brokenImage);
+    virtual void setPixmap(const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
 
     virtual short containingBlockWidth() const;
 

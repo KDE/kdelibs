@@ -42,10 +42,10 @@ using namespace khtml;
 RenderImage::RenderImage()
     : RenderReplaced()
 {
-    berrorPic = false;
     setLayouted(false);
     setParsing(false);
     image = 0;
+    berrorPic = false;
 }
 
 RenderImage::~RenderImage()
@@ -64,10 +64,10 @@ void RenderImage::setStyle(RenderStyle* style)
     m_inline = ( m_style->display()==INLINE );
 }
 
-void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate, bool brokenImage )
+void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate )
 {
     if(o != image) {
-        RenderReplaced::setPixmap(p, r, o, manualUpdate, brokenImage);
+        RenderReplaced::setPixmap(p, r, o, manualUpdate);
         return;
     }
 
@@ -77,12 +77,12 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
         return;
     }
 
-    berrorPic = brokenImage;
-    if(brokenImage)
+    if(o->isErrorImage())
     {
         pixSize.setWidth(QMAX(p.width()+8, pixSize.width()));
         pixSize.setHeight(QMAX(p.height()+8, pixSize.height()));
     }
+    berrorPic = o->isErrorImage();
 
     // Image dimensions have been changed, recalculate layout
     if(o->pixmap_size() !=  pixSize)
@@ -91,7 +91,7 @@ void RenderImage::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, b
 //               o->pixmap_size().width(), o->pixmap_size().height());
 
         pix = p;
-        if(!brokenImage)
+        if(!o->isErrorImage())
             pixSize = o->pixmap_size();
         setLayouted(false);
         setMinMaxKnown(false);
@@ -275,9 +275,12 @@ void RenderImage::layout()
 void RenderImage::setImageUrl(DOMString url, DOMString baseUrl, DocLoader *docLoader)
 {
     if(image) image->deref(this);
-    berrorPic = false;
     image = docLoader->requestImage(url, baseUrl);
-    if(image) image->ref(this);
+    if(image)
+    {
+        image->ref(this);
+        berrorPic = image->isErrorImage();
+    }
 }
 
 void RenderImage::setAlt(DOM::DOMString text)

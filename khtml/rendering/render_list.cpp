@@ -311,7 +311,7 @@ void RenderListMarker::layout()
     calcMinMaxWidth();
 }
 
-void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate, bool brokenImage )
+void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage *o, bool *manualUpdate)
 {
     if (manualUpdate && *manualUpdate)
     {
@@ -321,7 +321,7 @@ void RenderListMarker::setPixmap( const QPixmap &p, const QRect& r, CachedImage 
     }
 
     if(o != listImage)
-        RenderBox::setPixmap(p, r, o, 0, brokenImage);
+        RenderBox::setPixmap(p, r, o, 0);
 
     if(m_width != listImage->pixmap_size().width() || m_height != listImage->pixmap_size().height())
     {

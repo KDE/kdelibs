@@ -52,7 +52,7 @@ public:
 
     virtual void layout();
 
-    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate, bool brokenImage);
+    virtual void setPixmap( const QPixmap &, const QRect&, CachedImage *, bool *manualUpdate);
 
     QPixmap pixmap() const { return pix; }
 
@@ -89,7 +89,6 @@ private:
     DOM::DOMString alt;
 
     CachedImage *image;
-
     bool berrorPic : 1;
 };
 

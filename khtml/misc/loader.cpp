@@ -523,7 +523,7 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
         kdDebug( 6060 ) << "found a client to update..." << endl;
 #endif
         bool manualUpdate = false; // set the pixmap, dont update yet.
-        c->setPixmap( p, r, this, &manualUpdate, errorOccured );
+        c->setPixmap( p, r, this, &manualUpdate);
         if (manualUpdate)
             updateList.append(c);
     }
@@ -533,7 +533,7 @@ void CachedImage::do_notify(const QPixmap& p, const QRect& r)
             // This is a terrible hack which does the same.
             // updateSize() does not exist in CachecObjectClient only
             // in RenderBox()
-            c->setPixmap( p, r, this, &manualUpdate, errorOccured );
+            c->setPixmap( p, r, this, &manualUpdate);
         }
 }
 
