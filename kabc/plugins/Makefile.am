@@ -1,1 +1,1 @@
-SUBDIRS = ldap
+SUBDIRS = $(LDAP_SUBDIR)
