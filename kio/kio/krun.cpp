@@ -532,17 +532,19 @@ static pid_t runCommandInternal( KProcess* proc, const QString& binName,
   QString execName = execName_P;
   QString iconName = iconName_P;
 #ifdef Q_WS_X11 // Startup notification doesn't work with QT/E, service isn't needed without Startup notification
-  KStartupInfoId id;
-  // Find service, if any
   KService::Ptr service = 0;
-  if( bin[0] == '/' ) // Full path
-      service = new KService( bin );
-  else
-      service = KService::serviceByDesktopName( bin );
-#endif
+  // Find service, if starting a .desktop file
+  // (not when starting an executable)
+  if ( KDesktopFile::isDesktopFile( bin ) )
+  {
+      if( bin[0] == '/' ) // Full path
+          service = new KService( bin );
+      else
+          service = KService::serviceByDesktopName( bin );
+  }
   bool startup_notify = false;
-#ifdef Q_WS_X11 // Startup notification doesn't work yet on Qt Embedded
   QCString wmclass;
+  KStartupInfoId id;
   if( service != NULL )
   {
       if( service->property( "X-KDE-StartupNotify" ).isValid())
