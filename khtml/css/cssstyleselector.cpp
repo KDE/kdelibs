@@ -2152,7 +2152,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
     case CSS_PROP_COLOR:
     case CSS_PROP_OUTLINE_COLOR:
         // this property is an extension used to get HTML4 <font> right.
-    case CSS_PROP_TEXT_DECORATION_COLOR:
+    case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
         // ie scrollbar styling
     case CSS_PROP_SCROLLBAR_FACE_COLOR:
     case CSS_PROP_SCROLLBAR_SHADOW_COLOR:
@@ -2220,7 +2220,7 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             style->setBorderLeftColor(col); break;
         case CSS_PROP_COLOR:
             style->setColor(col); break;
-        case CSS_PROP_TEXT_DECORATION_COLOR:
+        case CSS_PROP__KHTML_TEXT_DECORATION_COLOR:
             style->setTextDecorationColor(col); break;
         case CSS_PROP_OUTLINE_COLOR:
             style->setOutlineColor(col); break;

@@ -105,7 +105,6 @@ size
 table-layout
 text-align
 text-decoration
-text-decoration-color
 text-indent
 text-transform
 top
@@ -147,3 +146,4 @@ scrollbar-arrow-color
 # khtml internals
 -khtml-flow-mode
 -khtml-user-input
+-khtml-text-decoration-color
