@@ -579,8 +579,8 @@ namespace KIO {
 
         // ?
         void canResume( KIO::Job *, bool can_resume );
-    
-        void copyingDone( KIO::Job *, const KURL &from, const KURL &to );
+
+        void copyingDone( KIO::Job *, const KURL &from, const KURL &to, bool directory );
 
     protected:
         void startNextJob();
