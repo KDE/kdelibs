@@ -85,6 +85,56 @@ static void handleArgs(int argc, char **argv)
 	}
 }
 
+static bool publishReferences(SimpleSoundServer server, bool silent)
+{
+	ObjectManager *om = ObjectManager::the();
+	bool result;
+
+	result=om->addGlobalReference(server,"Arts_SimpleSoundServer")
+        && om->addGlobalReference(server,"Arts_PlayObjectFactory");
+	
+	if(!result && !silent)
+	{
+		cerr <<
+"Error: Can't add object reference (probably artsd is already running)."
+              << endl <<
+"       If you are sure it is not already running, remove the relevant files:"
+              << endl << endl <<
+"       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl <<
+"       "<< MCOPUtils::createFilePath("Arts_PlayObjectFactory") << endl << endl;
+	}
+	return result;
+}
+
+static void cleanUnusedReferences()
+{
+	Object test;
+	int i = 0;
+
+	cerr << "There are already artsd objects registered, "
+			"looking if they are active..." << endl;
+
+	sleep(1); // maybe an artsd process has just started (give it some time)
+
+	test = Reference("global:Arts_SimpleSoundServer");
+	if(test.isNull())
+	{
+		i++;
+		Dispatcher::the()->globalComm().erase("Arts_SimpleSoundServer");
+	}
+
+	test = Reference("global:Arts_PlayObjectFactory");
+	if(test.isNull())
+	{
+		i++;
+		Dispatcher::the()->globalComm().erase("Arts_PlayObjectFactory");
+	}
+
+	if(i)
+		cerr << "... cleaned " <<i<< " unused mcop global references." << endl;
+	cerr << endl;
+}
+
 int main(int argc, char **argv)
 {
 	handleArgs(argc, argv);
@@ -100,19 +150,11 @@ int main(int argc, char **argv)
 	/* start sound server implementation */
 	SimpleSoundServer server;
 
-	bool result = ObjectManager::the()
-				->addGlobalReference(server,"Arts_SimpleSoundServer")
-             &&   ObjectManager::the()
-				->addGlobalReference(server,"Arts_PlayObjectFactory");
-	if(!result)
+	/* make global MCOP references available */
+	if(!publishReferences(server,true))
 	{
-		cerr <<
-"Error: Can't add object reference (perhaps it is already running?)." << endl <<
-"       If you are sure it is not already running, remove the relevant files:"
-              << endl << endl <<
-"       "<< MCOPUtils::createFilePath("Arts_SimpleSoundServer") << endl <<
-"       "<< MCOPUtils::createFilePath("Arts_PlayObjectFactory") << endl << endl;
-		return 1;
+		cleanUnusedReferences();
+		if(!publishReferences(server,false)) return 1;
 	}
 
 	dispatcher.run();
