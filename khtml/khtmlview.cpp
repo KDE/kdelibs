@@ -595,8 +595,20 @@ QString KHTMLView::selectedText() const
     NodeImpl *n = d->selectionStart;
     while(n) {
 	if(n->isTextNode()) {
-	    text += static_cast<TextImpl *>(n)->data().string();
+	    QString str = static_cast<TextImpl *>(n)->data().string();
+	    if(n == d->selectionStart && n == d->selectionEnd)
+		text = str.mid(d->startOffset, d->endOffset - d->startOffset);
+	    else if(n == d->selectionStart)
+		text = str.mid(d->startOffset);
+	    else if(n == d->selectionEnd)
+		text += str.left(d->endOffset);
+	    else
+		text += str;
 	}
+	else if(n->id() == ID_BR)
+	    text += "\n";
+	else if(n->id() == ID_P || n->id() == ID_TD)
+	    text += "\n\n";
 	if(n == d->selectionEnd) break;
 	NodeImpl *next = n->firstChild();
 	if(!next) next = n->nextSibling();
