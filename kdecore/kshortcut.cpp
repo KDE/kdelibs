@@ -263,7 +263,7 @@ bool KKeySequence::init( const KKeySequence& seq )
 	m_nKeys = seq.m_nKeys;
 	for( uint i = 0; i < m_nKeys; i++ ) {
 		if( seq.m_rgvar[i].isNull() ) {
-			kdWarning(125) << "KKeySequence::init( seq ): key[" << i << "] is null." << endl;
+			kdDebug(125) << "KKeySequence::init( seq ): key[" << i << "] is null." << endl;
 			m_nKeys = 0;
 			return false;
 		}
