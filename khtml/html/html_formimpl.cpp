@@ -859,7 +859,8 @@ void HTMLInputElementImpl::attach(KHTMLView *_view)
         }
     }
     NodeBaseImpl::attach(_view);
-    if (_type == IMAGE) {
+
+    if (m_render && _type == IMAGE) {
         static_cast<RenderImageButton*>
             (m_render)->setImageUrl(_src,
                                     static_cast<HTMLDocumentImpl *>(document)->URL(),
