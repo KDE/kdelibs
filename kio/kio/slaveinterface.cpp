@@ -129,6 +129,7 @@ public:
     last_time = 0; 
     nums = 0;
     filesize = 0;
+    offset = 0;
   }
   bool slave_calcs_speed;
   struct timeval start_time;
@@ -136,7 +137,7 @@ public:
   long times[max_nums];
   KIO::filesize_t sizes[max_nums];
   size_t last_time;
-  KIO::filesize_t filesize;
+  KIO::filesize_t filesize, offset;
 
   QTimer speed_timer;
 };
@@ -215,7 +216,8 @@ void SlaveInterface::calcSpeed()
     d->sizes[d->nums++] = d->filesize;
     
     KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
-    kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " << long(d->sizes[d->nums-1] - d->sizes[0]) << " " <<  d->times[d->nums-1] - d->times[0] << " " << long(lspeed) << " " << double(d->filesize) / diff << " " << convertSize(lspeed) << " " << convertSize(long(double(d->filesize) / diff) * 1000) << endl;
+    kdDebug() << "proceeed " << (long)d->filesize << " " << diff << " " << long(d->sizes[d->nums-1] - d->sizes[0]) << " " <<  d->times[d->nums-1] - d->times[0] << " " << long(lspeed) << " " << double(d->filesize) / diff << " " << convertSize(lspeed) << " " << convertSize(long(double(d->filesize) / diff) * 1000) << " " <<  endl ;
+    kdDebug() << "offset " << long(d->offset) << " " << long(d->sizes[0]) << endl;
     if (!lspeed) {
       d->nums = 1;
       d->times[0] = diff;
@@ -245,6 +247,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	break;
     case MSG_FINISHED:
 	//kdDebug(7007) << "Finished [this = " << this << "]" << endl;
+        d->offset = 0;
         d->speed_timer.stop();
 	emit finished();
 	break;
@@ -277,6 +280,7 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	}   
 	break;
     case MSG_CANRESUME: // From the get job
+        d->filesize = d->offset;
         emit canResume(0); // the arg doesn't matter
         break;
     case MSG_ERROR:
@@ -302,10 +306,10 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
 	    kdDebug() << "totalSize " << endl;
 	    gettimeofday(&d->start_time, 0);
 	    d->last_time = 0;
-	    d->sizes[0] = 0;
+	    d->filesize = d->offset;
+	    d->sizes[0] = d->filesize;
 	    d->times[0] = 0;
 	    d->nums = 1;
-	    d->filesize = 0;
 	    d->speed_timer.start(1000);
 	    d->slave_calcs_speed = false;
 	    emit totalSize( size );
@@ -416,6 +420,13 @@ bool SlaveInterface::dispatch( int _cmd, const QByteArray &rawdata )
     }
     return true;
 }
+
+void SlaveInterface::setOffset( KIO::filesize_t o)
+{
+    d->offset = o;
+}
+
+KIO::filesize_t SlaveInterface::offset() const { return d->offset; }
 
 void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 {

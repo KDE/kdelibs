@@ -142,6 +142,9 @@ public:
     // (to tell the "put" job whether to resume or not)
     void sendResumeAnswer( bool resume );
 
+    void setOffset( KIO::filesize_t offset );
+    KIO::filesize_t offset() const;
+
 signals:
     ///////////
     // Messages sent by the slave
@@ -273,7 +276,7 @@ protected:
 
 protected slots:
     void calcSpeed();
-
+ 
 protected:
     Connection * m_pConnection;
 

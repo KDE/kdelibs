@@ -1292,10 +1292,12 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         {
             kdDebug(7007) << "Setting metadata for resume to " << (unsigned long) offset << endl;
             m_getJob->addMetaData( "resume", KIO::number(offset) );
+	   
             // Might or might not get emitted
             connect( m_getJob, SIGNAL(canResume(KIO::Job *, KIO::filesize_t)),
-                     SLOT( slotCanResume(KIO::Job *, KIO:filesize_t)));
+                     SLOT( slotCanResume(KIO::Job *, KIO::filesize_t)));
         }
+	m_putJob->slave()->setOffset( offset );
 
         m_putJob->suspend();
         addSubjob( m_getJob );
@@ -1310,6 +1312,8 @@ void FileCopyJob::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
         // Cool, the get job said ok, we can resume
         m_canResume = true;
         kdDebug(7007) << "FileCopyJob::slotCanResume from the GET job -> we can resume" << endl;
+	
+	m_getJob->slave()->setOffset( m_putJob->slave()->offset() );
     }
     else
         kdWarning(7007) << "FileCopyJob::slotCanResume from unknown job=" << job
