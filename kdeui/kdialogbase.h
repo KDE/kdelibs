@@ -418,11 +418,177 @@ class KDialogBase : public KDialog
      * Adjust the size of the dialog to fit the contents just before
      * @ref QDialog::exec() or @ref QDialog::show() is called.
      *
-     * This method will not 
-     * be called if the dialog has been explicitly resized before 
-     * showing it.
+     * This method will not be called if the dialog has been explicitly 
+     * resized before showing it.
      **/
     virtual void adjustSize();
+
+
+    /**
+     * Returns the empty page when the predefined layout is used in Plain
+     * mode. This widget must used as the toplevel widget of your dialog
+     * code.
+     *
+     * @return The widget or 0 if the predefined layout mode is not Plain
+     *         or if you don't use any predefined layout.
+     */
+    QFrame *plainPage();
+
+    /**
+     * Adds a page to the dialog when the class is used in TreeList, 
+     * IconList or Tabbed mode. The returned widget must be used as the 
+     * toplevel widget for this particular page. 
+     * Note: The returned frame widget has no
+     * layout manager associated with it. In order to use it you must 
+     * create a layout yourself as the example below illustrates:
+     * <pre>
+     *
+     * QFrame *page = addPage( i18n("Layout") );
+     * QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 6 );
+     * QLabel *label = new QLabel( i18n("Layout type"), page );
+     * topLayout->addWidget( label );
+     * ..
+     * </pre>
+     *
+     * @param itemName String used in the list or as tab item name.
+     * @param header Header text use in the list modes. Ignored in Tabbed 
+     *        mode. If empty, the item text is used instead.
+     * @param pixmap Used in IconList mode. You should prefer a pixmap
+     *        with size 32x32 pixels.
+     *
+     * @return The page widget which must be used as the toplevel widget for
+     *         the page.
+     */
+    QFrame  *addPage( const QString &item, 
+                      const QString &header=QString::null,
+		      const QPixmap &pixmap=QPixmap() );
+
+    /**
+     * Adds a page to the dialog when the class is used in TreeList, 
+     * IconList or Tabbed mode. The returned widget must be used as the 
+     * toplevel widget for this particular page. The widget contains a 
+     * QVBoxLayout layout so the widget children are lined up vertically. 
+     * You can use it as follows:
+     * <pre>
+     *
+     * QVBox *page = addVBoxPage( i18n("Layout") );
+     * QLabel *label = new QLabel( i18n("Layout type"), page );
+     * ..
+     * </pre>
+     *
+     * @param itemName String used in the list or as tab item name.
+     * @param header Header text use in the list modes. Ignored in Tabbed 
+     *        mode. If empty, the item text is used instead.
+     * @param pixmap Used in IconList mode. You should prefer a pixmap
+     *        with size 32x32 pixels.
+     *
+     * @return The page widget which must be used as the toplevel widget for
+     *         the page.
+     */
+    QVBox *addVBoxPage( const QString &itemName, 
+			const QString &header=QString::null,
+			const QPixmap &pixmap=QPixmap() );
+
+    /**
+     * Adds a page to the dialog when the class is used in TreeList, 
+     * IconList or Tabbed mode. The returned widget must be used as the 
+     * toplevel widget for this particular page. The widget contains a 
+     * QHBoxLayout layout so the widget children are lined up horizontally. 
+     * You can use it as follows:
+     *
+     * @param itemName String used in the list or as tab item name.
+     * @param header Header text use in the list modes. Ignored in Tabbed 
+     *        mode. If empty, the item text is used instead.
+     * @param pixmap Used in IconList mode. You should prefer a pixmap
+     *        with size 32x32 pixels.
+     *
+     * @return The page widget which must be used as the toplevel widget for
+     *         the page.
+     */
+    QHBox *addHBoxPage( const QString &itemName, 
+			const QString &header=QString::null,
+			const QPixmap &pixmap=QPixmap() );
+
+   
+    /**
+     * Adds a page to the dialog when the class is used in TreeList, 
+     * IconList or Tabbed mode. The returned widget must be used as the 
+     * toplevel widget for this particular page. The widget contains a 
+     * QGridLayout layout so the widget children are  positioned in a grid.
+     *
+     * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
+     *          or the number of rows if 'dir' is QGrid::Vertical.
+     * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
+     * @param itemName String used in the list or as tab item name.
+     * @param header Header text use in the list modes Ignored in Tabbed 
+     *        mode. If empty, the item text is used instead.
+     * @param pixmap Used in IconList mode. You should prefer a pixmap
+     *        with size 32x32 pixels.
+     *
+     * @return The page widget which must be used as the toplevel widget for
+     *         the page.
+     */
+    QGrid *addGridPage( int n, QGrid::Direction dir, 
+			const QString &itemName, 
+			const QString &header=QString::null,
+			const QPixmap &pixmap=QPixmap() );
+
+    /**
+     * Makes a main widget. The function will make a @ref QFrame widget
+     * and use @ref setMainWidget to register it. You can NOT use this
+     * function more than once, NOT if you have already defined a 
+     * main widget with @ref setMainWidget and NOT if you have used the 
+     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * TreeList).
+     *
+     * @return The main widget or 0 if any of the rules described above 
+     *         were broken.
+     */
+    QFrame *makeMainWidget();
+
+    /**
+     * Makes a main widget. The function will make a @ref QVBox widget
+     * and use @ref setMainWidget to register it. You can NOT use this
+     * function more than once, NOT if you have already defined a 
+     * main widget with @ref setMainWidget and NOT if you have used the 
+     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * TreeList, IconList).
+     *
+     * @return The main widget or 0 if any of the rules described above 
+     *         were broken.
+     */
+    QVBox *makeVBoxMainWidget();
+
+    /**
+     * Makes a main widget. The function will make a @ref QHBox widget
+     * and use @ref setMainWidget to register it. You can NOT use this
+     * function more than once, NOT if you have already defined a 
+     * main widget with @ref setMainWidget and NOT if you have used the 
+     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * TreeList, IconList).
+     *
+     * @return The main widget or 0 if any of the rules described above 
+     *         were broken.
+     */
+    QHBox *makeHBoxMainWidget();
+
+    /**
+     * Makes a main widget. The function will make a @ref QGrid widget
+     * and use @ref setMainWidget to register it. You can NOT use this
+     * function more than once, NOT if you have already defined a 
+     * main widget with @ref setMainWidget and NOT if you have used the 
+     * constructor where you define the face (Plain, Swallow, Tabbed, 
+     * TreeList, IconList).
+     *
+     * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
+     *          or the number of rows if 'dir' is QGrid::Vertical.
+     * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
+     *
+     * @return The main widget or 0 if any of the rules described above 
+     *         were broken.
+     */
+    QGrid *makeGridMainWidget( int n, QGrid::Direction dir );
+
 
     /**
      * Hide or display the a separator line drawn between the action
@@ -927,171 +1093,6 @@ class KDialogBase : public KDialog
     void hidden();
 
   protected:
-    /**
-     * Returns the empty page when the predefined layout is used in Plain
-     * mode. This widget must used as the toplevel widget of your dialog
-     * code.
-     *
-     * @return The widget or 0 if the predefined layout mode is not Plain
-     *         or if you don't use any predefined layout
-     */
-    QFrame *plainPage();
-
-    /**
-     * Adds a page to the dialog when the class is used in TreeList, 
-     * IconList or Tabbed mode. The returned widget must be used as the 
-     * toplevel widget for this particular page. 
-     * Note: The returned frame widget has no
-     * layout manager associated with it. In order to use it you must 
-     * create a layout yourself as the example below illustrates:
-     * <pre>
-     *
-     * QFrame *page = addPage( i18n("Layout") );
-     * QVBoxLayout *topLayout = new QVBoxLayout( page, 0, 6 );
-     * QLabel *label = new QLabel( i18n("Layout type"), page );
-     * topLayout->addWidget( label );
-     * ..
-     * </pre>
-     *
-     * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes. Ignored in Tabbed 
-     *        mode. If empty, the item text is used instead.
-     * @param pixmap Used in IconList mode. You should prefer a pixmap
-     *        with size 32x32 pixels.
-     *
-     * @return The page widget which must be used as the toplevel widget for
-     *         the page.
-     */
-    QFrame  *addPage( const QString &item, 
-                      const QString &header=QString::null,
-		      const QPixmap &pixmap=QPixmap() );
-
-    /**
-     * Adds a page to the dialog when the class is used in TreeList, 
-     * IconList or Tabbed mode. The returned widget must be used as the 
-     * toplevel widget for this particular page. The widget contains a 
-     * QVBoxLayout layout so the widget children are lined up vertically. 
-     * You can use it as follows:
-     * <pre>
-     *
-     * QVBox *page = addVBoxPage( i18n("Layout") );
-     * QLabel *label = new QLabel( i18n("Layout type"), page );
-     * ..
-     * </pre>
-     *
-     * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes. Ignored in Tabbed 
-     *        mode. If empty, the item text is used instead.
-     * @param pixmap Used in IconList mode. You should prefer a pixmap
-     *        with size 32x32 pixels.
-     *
-     * @return The page widget which must be used as the toplevel widget for
-     *         the page.
-     */
-    QVBox *addVBoxPage( const QString &itemName, 
-			const QString &header=QString::null,
-			const QPixmap &pixmap=QPixmap() );
-
-    /**
-     * Adds a page to the dialog when the class is used in TreeList, 
-     * IconList or Tabbed mode. The returned widget must be used as the 
-     * toplevel widget for this particular page. The widget contains a 
-     * QHBoxLayout layout so the widget children are lined up horizontally. 
-     * You can use it as follows:
-     *
-     * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes. Ignored in Tabbed 
-     *        mode. If empty, the item text is used instead.
-     * @param pixmap Used in IconList mode. You should prefer a pixmap
-     *        with size 32x32 pixels.
-     *
-     * @return The page widget which must be used as the toplevel widget for
-     *         the page.
-     */
-    QHBox *addHBoxPage( const QString &itemName, 
-			const QString &header=QString::null,
-			const QPixmap &pixmap=QPixmap() );
-
-   
-    /**
-     * Adds a page to the dialog when the class is used in TreeList, 
-     * IconList or Tabbed mode. The returned widget must be used as the 
-     * toplevel widget for this particular page. The widget contains a 
-     * QGridLayout layout so the widget children are  positioned in a grid.
-     *
-     * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
-     *          or the number of rows if 'dir' is QGrid::Vertical.
-     * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
-     * @param itemName String used in the list or as tab item name.
-     * @param header Header text use in the list modes Ignored in Tabbed 
-     *        mode. If empty, the item text is used instead.
-     * @param pixmap Used in IconList mode. You should prefer a pixmap
-     *        with size 32x32 pixels.
-     *
-     * @return The page widget which must be used as the toplevel widget for
-     *         the page.
-     */
-    QGrid *addGridPage( int n, QGrid::Direction dir, 
-			const QString &itemName, 
-			const QString &header=QString::null,
-			const QPixmap &pixmap=QPixmap() );
-
-    /**
-     * Makes a main widget. The function will make a @ref QFrame widget
-     * and use @ref setMainWidget to register it. You can NOT use this
-     * function more than once, NOT if you have already defined a 
-     * main widget with @ref setMainWidget and NOT if you have used the 
-     * constructor where you define the face (Plain, Swallow, Tabbed, 
-     * TreeList).
-     *
-     * @return The main widget or 0 if any of the rules described above 
-     *         were broken.
-     */
-    QFrame *makeMainWidget();
-
-    /**
-     * Makes a main widget. The function will make a @ref QVBox widget
-     * and use @ref setMainWidget to register it. You can NOT use this
-     * function more than once, NOT if you have already defined a 
-     * main widget with @ref setMainWidget and NOT if you have used the 
-     * constructor where you define the face (Plain, Swallow, Tabbed, 
-     * TreeList, IconList).
-     *
-     * @return The main widget or 0 if any of the rules described above 
-     *         were broken.
-     */
-    QVBox *makeVBoxMainWidget();
-
-    /**
-     * Makes a main widget. The function will make a @ref QHBox widget
-     * and use @ref setMainWidget to register it. You can NOT use this
-     * function more than once, NOT if you have already defined a 
-     * main widget with @ref setMainWidget and NOT if you have used the 
-     * constructor where you define the face (Plain, Swallow, Tabbed, 
-     * TreeList, IconList).
-     *
-     * @return The main widget or 0 if any of the rules described above 
-     *         were broken.
-     */
-    QHBox *makeHBoxMainWidget();
-
-    /**
-     * Makes a main widget. The function will make a @ref QGrid widget
-     * and use @ref setMainWidget to register it. You can NOT use this
-     * function more than once, NOT if you have already defined a 
-     * main widget with @ref setMainWidget and NOT if you have used the 
-     * constructor where you define the face (Plain, Swallow, Tabbed, 
-     * TreeList, IconList).
-     *
-     * @param n Specifies the number of columns if 'dir' is QGrid::Horizontal
-     *          or the number of rows if 'dir' is QGrid::Vertical.
-     * @param dir Can be QGrid::Horizontal or QGrid::Vertical.
-     *
-     * @return The main widget or 0 if any of the rules described above 
-     *         were broken.
-     */
-    QGrid *makeGridMainWidget( int n, QGrid::Direction dir );
-
     /**
      * Maps some keys to the actions buttons. F1 is mapped to the Help
      * button if present and Escape to the Cancel or Close if present. The
