@@ -139,6 +139,7 @@ void Collector::privateCollect()
 	// emulate 'operator delete()'
 	(*r)->~Imp();
 	free(*r);
+	*r = 0L;
 	count--;
       }
     CollectorBlock *next = block->next;

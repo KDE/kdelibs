@@ -534,8 +534,9 @@ Imp::~Imp()
   count--;
 #endif
 
-  if (proto)
-    proto->deref();
+// dangling pointer during garbage collection !
+//   if (proto)
+//     proto->deref();
 
   // delete attached properties
   Property *tmp, *p = prop;
