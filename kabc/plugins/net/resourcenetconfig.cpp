@@ -47,7 +47,6 @@ ResourceNetConfig::ResourceNetConfig( QWidget* parent, const char* name )
 
   label = new QLabel( i18n( "Location:" ), this );
   mUrlEdit = new KURLRequester( this );
-  mUrlEdit->setMode( KFile::Directory );
 
   mainLayout->addWidget( label, 1, 0 );
   mainLayout->addWidget( mUrlEdit, 1, 1 );
