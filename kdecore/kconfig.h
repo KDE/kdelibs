@@ -236,7 +236,7 @@ private slots:
 inline bool KConfig::hasGroup(const QString &_pGroup) const
 {
     //  cacheCheck();
-    KEntryKey groupKey = { _pGroup, "" };
+    KEntryKey groupKey = { _pGroup, QString::fromLatin1("") };
     return aEntryMap.contains(groupKey);
 }
 
