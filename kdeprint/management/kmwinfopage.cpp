@@ -21,6 +21,7 @@
 
 #include "kmwinfopage.h"
 #include "kmwizard.h"
+#include "kactivelabel.h"
 
 #include <qlabel.h>
 #include <qlayout.h>
@@ -33,14 +34,16 @@ KMWInfoPage::KMWInfoPage(QWidget *parent, const char *name)
 	m_title = i18n("Introduction");
 	m_nextpage = KMWizard::Backend;
 
-	QLabel	*m_label = new QLabel(this);
+	//QLabel	*m_label = new QLabel(this);
+	KActiveLabel	*m_label = new KActiveLabel(this);
 	m_label->setText(i18n("<p>Welcome,</p><br>"
 		"<p>This wizard will help to install a new printer on your computer. "
 		"It will guide you through the various steps of the process of installing "
 		"and configuring a printer for your printing system. At each step, you "
 		"can always go back using the <b>Back</b> button.</p><br>"
 		"<p>We hope you'll enjoy this tool !</p><br>"
-		"<p align=right><i>The KDE printing team.</i></p>"));
+		"<p align=right>Contact: <a href=\"mailto:goffioul@imec.be\"><i>"
+		"The KDE printing team</i></a>.</p>"));
 
 	QVBoxLayout	*main_ = new QVBoxLayout(this, 0, 0);
 	main_->addWidget(m_label);

@@ -20,6 +20,7 @@
 #include "cupsaddsmb2.h"
 #include "cupsinfos.h"
 #include "sidepixmap.h"
+#include "kactivelabel.h"
 
 #include <qtimer.h>
 #include <qprogressbar.h>
@@ -55,7 +56,7 @@ CupsAddSmb::CupsAddSmb(QWidget *parent, const char *name)
 	connect(m_doit, SIGNAL(clicked()), SLOT(slotActionClicked()));
 	connect(m_passbtn, SIGNAL(clicked()), SLOT(slotChangePassword()));
 	m_bar = new QProgressBar(this);
-	m_text = new QLabel(this);
+	m_text = new KActiveLabel(this);
 	QLabel	*m_title = new QLabel(i18n("Export printer driver to Windows clients"), this);
 	setCaption(m_title->text());
 	QFont	f(m_title->font());
@@ -282,8 +283,9 @@ void CupsAddSmb::slotProcessExited(KProcess*)
 	{
 		showError(
 				i18n("Operation failed. Possible reasons are: permission denied "
-				     "or invalid samba configuration (see <b>cupsaddsmb</b> manual "
-					 "page for detailed information, needs at least cups-1.1.11). "
+				     "or invalid samba configuration (see <a href=\"man:/cupsaddsmb\">"
+					 "cupsaddsmb</a> manual page for detailed information, you need "
+					 "<a href=\"http://www.cups.org\">CUPS</a> version 1.1.11 or higher). "
 					 "You may want to try again with another login/password."));
 
 	}
@@ -314,9 +316,10 @@ bool CupsAddSmb::exportDest(const QString &dest, const QString& datadir)
 	dlg.m_datadir = datadir;
 	dlg.m_text->setText(
 			i18n("You are about to export the <b>%1</b> driver to Windows client "
-				 "through samba. This operation requires Adobe PostScript driver "
-				 "(http://www.adobe.com), version 2.2 of samba and a running SMB service "
-				 "on server <b>%1</b>. Click <b>Export</b> to start operation.").arg(dest).arg(cupsServer()));
+				 "through samba. This operation requires <a href=\"http://www.adobe.com\">"
+				 "Adobe PostScript Driver</a>, <a href=\"http://www.samba.org\">Samba</a> "
+				 "version 2.2 and a running SMB service on server <b>%1</b>. Click <b>Export</b> "
+				 "to start operation.").arg(dest).arg(cupsServer()));
 	dlg.exec();
 	return dlg.m_status;
 }
@@ -330,9 +333,11 @@ bool CupsAddSmb::doExport()
 	    !QFile::exists(m_datadir+"/drivers/ADOBEPS4.DRV"))
 	{
 		showError(
-			i18n("Some driver files are missing. You can get them on Adobe web site "
-			     "(http://www.adobe.com). See <b>cupsaddsmb</b> manual page for more "
-				 " details (needs at least cups-1.1.11)."));
+			i18n("Some driver files are missing. You can get them on "
+			     "<a href=\"http://www.adobe.com\">Adobe</a> web site. "
+			     "See <a href=\"man:/cupsaddsmb\">cupsaddsmb</a> manual "
+				 "page for more details (you need <a href=\"http://www.cups.org\">CUPS</a> "
+				 "version 1.1.11 or higher)."));
 		return false;
 	}
 
