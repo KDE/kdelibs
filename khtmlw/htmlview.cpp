@@ -211,7 +211,10 @@ void KHTMLView::initGUI()
 	     this, SLOT( slotDocumentStarted() ) );
     connect( view, SIGNAL( documentDone() ),
 	     this, SLOT( slotDocumentDone() ) );
-    
+    connect( view, SIGNAL( goUp() ), this, SLOT( slotGoUp() ) );
+    connect( view, SIGNAL( goLeft() ), this, SLOT( slotGoLeft() ) );
+    connect( view, SIGNAL( goRight() ), this, SLOT( slotGoRight() ) );
+
     view->setURLCursor( upArrowCursor );
     view->raise();
 }
@@ -483,6 +486,24 @@ void KHTMLView::slotFormSubmitted( const char *_method, const char *_url )
     // debugT("Form submitted '%s'\n",_url);
     
     emit formSubmitted( this, _url, _method );
+}
+
+void KHTMLView::slotGoUp()
+{
+  emit goUp( this );
+  emit goUp();
+}
+
+void KHTMLView::slotGoRight()
+{
+  emit goRight( this );
+  emit goRight();
+}
+
+void KHTMLView::slotGoLeft()
+{
+  emit goLeft( this );
+  emit goLeft();
 }
 
 int KHTMLView::xOffset()

@@ -786,21 +786,26 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 
 	case Key_Next:
 	    {
-		if ( docHeight() < height() ) break;
-		int newY = y_offset + height() - 20;
-		if ( newY > docHeight() - height() )
-		    newY = docHeight() - height();
-		slotScrollVert( newY );
-		emit scrollVert( newY );
-
-		flushKeys();
+	      if ( docHeight() < height() ) break;
+	      int newY = y_offset + height() - 20;
+	      if ( newY > docHeight() - height() )
+		newY = docHeight() - height();
+	      slotScrollVert( newY );
+	      emit scrollVert( newY );
+		
+	      flushKeys();
 	    }
 	    break;
 
 	case Key_Up:
 	    {
 	      // KFM Extension
-	      if ( !cellUp() )
+	      if ( _ke->state() & AltButton )
+	      {
+		emit goUp();
+              }
+	      // KFM Extension
+	      else if ( !cellUp() )
 	      {  
 		if ( docHeight() < height() ) break;
 		int newY = y_offset - 20;
@@ -829,25 +834,35 @@ void KHTMLWidget::keyPressEvent( QKeyEvent *_ke )
 
 	case Key_Right:
 	    {
-	      // KFM Extension
-	      if ( !cellRight() )
-	      {  
-		if ( docWidth() < width() ) break;
-		int newX = x_offset + 20;
-		if ( newX > docWidth() - width() )
-		  newX = docWidth() - width();
-		slotScrollHorz( newX );
-		emit scrollHorz( newX );
-	      }
+	        // KFM Extension
+	        if ( _ke->state() & AltButton )
+	        {
+		  emit goRight();
+                }
+		// KFM Extension
+		else if ( !cellRight() )
+		{  
+		  if ( docWidth() < width() ) break;
+		  int newX = x_offset + 20;
+		  if ( newX > docWidth() - width() )
+		    newX = docWidth() - width();
+		  slotScrollHorz( newX );
+		  emit scrollHorz( newX );
+		}
 	      
-	      flushKeys();
+		flushKeys();
 	    }
 	    break;
 
 	case Key_Left:
 	    {
 	      // KFM Extension
-	      if ( !cellLeft() )
+	      if ( _ke->state() & AltButton )
+	      {
+		emit goLeft();
+	      }
+	      // KFM Extension
+	      else if ( !cellLeft() )
 	      {  
 		if ( docWidth() < width() ) break;
 		int newX = x_offset - 20;

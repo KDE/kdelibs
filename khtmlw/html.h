@@ -560,6 +560,19 @@ signals:
     void setTitle( const char * );
 
     /**
+     * The user pressed ALT + Up
+     */
+    void goUp();
+    /**
+     * The user pressed ALT + Left
+     */
+    void goLeft();
+    /**
+     * The user pressed ALT + Right
+     */
+    void goRight();
+  
+    /**
      * The user double clicked on a URL.
      *
      * @param _url the URL that the user clicked on.

@@ -628,7 +628,23 @@ signals:
      * This signal is the complement to @ref #documentStarted
      */
     void documentDone( KHTMLView *_view );
-    
+
+    /**
+     * The user pressed ALT + Up
+     */
+    void goUp( KHTMLView *_view );
+    void goUp();
+    /**
+     * The user pressed ALT + Right
+     */
+    void goRight( KHTMLView *_view );
+    void goRight();
+    /**
+     * The user pressed ALT + Left
+     */
+    void goLeft( KHTMLView *_view );
+    void goLeft();
+  
 public slots:
     void slotScrollVert( int _dy );
     void slotScrollHorz( int _dx );
@@ -819,6 +835,19 @@ protected slots:
      * Connected to the HTML widget
      */
     void slotInternScrollHorz( int );
+
+    /**
+     * The user pressed ALT + Up
+     */
+    void slotGoUp();
+    /**
+     * The user pressed ALT + Right
+     */
+    void slotGoRight();
+    /**
+     * The user pressed ALT + Left
+     */
+    void slotGoLeft();
     
 protected:
     virtual void resizeEvent( QResizeEvent* _ev );
