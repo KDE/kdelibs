@@ -17,6 +17,8 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
+#include <lber.h>
+#include <ldap.h>
 
 #include <kdebug.h>
 #include <kglobal.h>
@@ -90,14 +92,18 @@ bool ResourceLDAP::doOpen()
   if ( !mPort )
 	  mPort = 389;
 
+<<<<<<< resourceldap.cpp
+  mLdap = ldap_init( mHost.local8Bit().data(), mPort.toInt() );
+=======
   mLdap = ldap_init( mHost.local8Bit(), mPort );
+>>>>>>> 1.15
   if ( !mLdap ) {
 	  addressBook()->error( i18n( "Unable to connect to server '%1' on port '%2'" ).arg( mHost ).arg( mPort ) );
 	  return false;
   }
 
   if ( !mUser.isEmpty() && !mAnonymous ) {
-	  if ( ldap_simple_bind_s( mLdap, mUser.local8Bit(), mPassword.local8Bit() ) != LDAP_SUCCESS ) {
+	  if ( ldap_simple_bind_s( mLdap, mUser.local8Bit().data(), mPassword.local8Bit().data() ) != LDAP_SUCCESS ) {
 	    addressBook()->error( i18n( "Unable to bind to server '%1'" ).arg( mHost ) );
       return false;
     }
@@ -148,7 +154,7 @@ bool ResourceLDAP::load()
     "uid",
     0 };
 
-  if ( ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( mFilter ).local8Bit(),
+  if ( ldap_search_s( mLdap, mDn.local8Bit().data(), LDAP_SCOPE_SUBTREE, QString( "(%1)" ).arg( mFilter ).local8Bit().data(),
       (char **)LdapSearchAttr, 0, &res ) != LDAP_SUCCESS ) {
     addressBook()->error( i18n( "Unable to search on server '%1'" ).arg( mHost ) );
     return false;
@@ -248,7 +254,7 @@ bool ResourceLDAP::save( Ticket * )
       QString dn = "cn=" + (*it).assembledName() + "," + mDn;
 
       int retval;
-      if ( (retval = ldap_add_s( mLdap, dn.local8Bit(), mods )) != LDAP_SUCCESS )
+      if ( (retval = ldap_add_s( mLdap, dn.local8Bit().data(), mods )) != LDAP_SUCCESS )
          addressBook()->error( i18n( "Unable to modify '%1' on server '%2'" ).arg( (*it).uid() ).arg( mHost ) );
 
       ldap_mods_free( mods, 1 );
@@ -270,7 +276,7 @@ void ResourceLDAP::removeAddressee( const Addressee &addr )
 
   kdDebug(5700) << "ldap:removeAddressee" << filter << endl;
 
-  ldap_search_s( mLdap, mDn.local8Bit(), LDAP_SCOPE_SUBTREE, filter.local8Bit(),
+  ldap_search_s( mLdap, mDn.local8Bit().data(), LDAP_SCOPE_SUBTREE, filter.local8Bit().data(),
       0, 0, &res );
 
   for ( msg = ldap_first_entry( mLdap, res ); msg; msg = ldap_next_entry( mLdap, msg ) ) {
