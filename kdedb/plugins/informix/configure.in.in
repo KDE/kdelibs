@@ -54,8 +54,8 @@ fi
 if test "$compile_informix_plugin" = "yes"; then
   AC_MSG_RESULT([libraries $informix_libdir, headers $informix_incdir])
   
-  PLUGINS="$PLUGINS informix"
-  AC_SUBST(PLUGINS)
+  KDEDB_PLUGINS="$KDEDB_PLUGINS informix"
+  AC_SUBST(KDEDB_PLUGINS)
 else
   AC_MSG_RESULT(not found)
 fi

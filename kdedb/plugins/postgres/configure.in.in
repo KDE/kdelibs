@@ -58,8 +58,8 @@ fi
 if test "$compile_postgresql_plugin" = "yes"; then
   AC_MSG_RESULT([libraries $pgsql_libdir, headers $pgsql_incdir])
   
-  PLUGINS="$PLUGINS postgresql"
-  AC_SUBST(PLUGINS)
+  KDEDB_PLUGINS="$KDEDB_PLUGINS postgres"
+  AC_SUBST(KDEDB_PLUGINS)
 else
   AC_MSG_RESULT(not found)
 fi

@@ -58,23 +58,25 @@ HandlerImpl::rows()
     kdDebug(20012) << "KDB::RowHandlerImpl::rows" << endl;
     if (m_rows.isEmpty()) {
         for (int i = 0; i < PQntuples(res); i++)
-	{
-	    KDB::Row f;
-	    for (int j = 0; j < numFields; j++)
-	    {
-                Value v(QString::fromLocal8Bit(PQgetvalue(res, i, j),PQgetlength(res, i, j) + 1));
-                f << v;
+            {
+                KDB::Row f;
+                for (int j = 0; j < numFields; j++)
+                    {
+                        Value v(QString::fromLocal8Bit(PQgetvalue(res, i, j),PQgetlength(res, i, j) + 1));
+                        f << v;
+                    }
+                m_rows << f;
             }
-	    m_rows << f;
-        }
     }
     return m_rows;
 }
 
 QStringList
-HandlerImpl::fields() {
+HandlerImpl::fields()
 {
+    
     kdDebug(20012) << "HandlerImpl::fields" << endl;
+    QStringList f;
     for (int i = 0; i < numFields; i++) 
         f << PQfname(res, i);
     return f;

@@ -54,8 +54,8 @@ fi
 if test "$compile_mysql_plugin" = "yes"; then
   AC_MSG_RESULT([libraries $mysql_libdir, headers $mysql_incdir])
   
-  PLUGINS="$PLUGINS mysql"
-  AC_SUBST(PLUGINS)
+  KDEDB_PLUGINS="$KDEDB_PLUGINS mysql"
+  AC_SUBST(KDEDB_PLUGINS)
 else
   AC_MSG_RESULT(not found)
 fi
