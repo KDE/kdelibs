@@ -373,6 +373,8 @@ public:
        @li Withdrawn indicates that neither the client window nor its icon is visible.
 
        @li Iconic indicates that the client window is not visible, but its icon is.
+           This can be when the window is minimized or when it's on a different
+           virtual desktop. See also NET::Hidden.
     **/
 
     enum MappingState {

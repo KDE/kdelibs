@@ -402,6 +402,24 @@ QString KWin::Info::visibleNameWithState() const
     return s;
 }
 
+// see NETWM spec section 7.6
+bool KWin::Info::isIconified() const
+{
+    if( mappingState != NET::Iconic )
+        return false;
+    if( state & NET::Hidden ) // NETWM 1.2 compliant WM
+        return true;
+    static enum { noidea, yes, no } wm_is_1_2_compliant = noidea;
+    if( wm_is_1_2_compliant == noidea ) {
+        NETRootInfo info( qt_xdisplay(), NET::Supported );
+        wm_is_1_2_compliant =
+            info.supportedProperties()[ NETRootInfo::STATES ] & NET::Hidden
+            ? yes : no;
+    }
+    // older WMs use WithdrawnState for other virtual desktops
+    // and IconicState only for minimized
+    return wm_is_1_2_compliant == yes ? false : true;
+}
 
 void KWin::setStrut( WId win, int left, int right, int top, int bottom )
 {

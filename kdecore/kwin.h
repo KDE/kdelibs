@@ -114,7 +114,7 @@ public:
        * Checks whether the window is iconified (minimized).
        * @return true if iconified
        */
-	bool isIconified() const { return mappingState == NET::Iconic; }
+	bool isIconified() const;
       /// Position and size of the window contents.
 	QRect geometry;
       /// Position and size of the window's frame.
