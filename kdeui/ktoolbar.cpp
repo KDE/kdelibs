@@ -1384,8 +1384,8 @@ void KToolBar::rebuildLayout()
         if ( stretchableWidget )
             l->setStretchFactor( stretchableWidget, 10 );
     }
-    l->activate();
-    
+    l->invalidate();
+    QApplication::postEvent( this, new QEvent( QEvent::LayoutHint ) );
 #endif
 }
 
