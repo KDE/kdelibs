@@ -29,6 +29,7 @@ Test::Test( QWidget* parent, const char *name )
   connect( mWidget, SIGNAL( mouseDoubleClick( QWidget * )), this, SLOT(mouseDoubleClick( QWidget * )));
   connect( mWidget, SIGNAL( mouseMiddleClick( QWidget * )), this, SLOT(mouseMiddleClick( QWidget * )));
   connect( mWidget, SIGNAL( receivedDropEvent( QDropEvent * )), this, SLOT(receivedDropEvent( QDropEvent * )));
+  connect( mWidget, SIGNAL( receivedDropEvent( QWidget *, QDropEvent * )), this, SLOT(receivedDropEvent( QWidget *, QDropEvent * )));
   connect( mWidget, SIGNAL( dragInitiated( QWidget * )), this, SLOT(dragInitiated( QWidget * )));
 
   QWidget * grid = new QWidget(this);
@@ -97,6 +98,14 @@ void Test::receivedDropEvent( QDropEvent *e )
   QString dropText;
   if (QTextDrag::decode(e, dropText)) {
     mList.append( mWidget->addChangeableTab( dropText ) );
+  }
+}
+
+void Test::receivedDropEvent( QWidget *w, QDropEvent *e )
+{
+  QString dropText;
+  if (QTextDrag::decode(e, dropText)) {
+    mWidget->changeTab( w, dropText );
   }
 }
 

@@ -37,6 +37,7 @@ private slots:
   void tabbarContextMenu(const QPoint&);
   void receivedDropEvent( QDropEvent* );
   void dragInitiated( QWidget * );
+  void receivedDropEvent( QWidget *, QDropEvent * );
   void mouseDoubleClick(QWidget*);
   void mouseMiddleClick(QWidget*);
 

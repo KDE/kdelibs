@@ -40,6 +40,7 @@ protected slots:
 signals:
     void tabbarContextMenu( const QPoint & );
     void receivedDropEvent( QDropEvent * );
+    void receivedDropEvent( QWidget *, QDropEvent * );
     void dragInitiated( QWidget * );
 
     void contextMenu( QWidget *, const QPoint & );

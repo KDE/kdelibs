@@ -35,11 +35,14 @@ signals:
     void mouseDoubleClick( QWidget * );
     void mouseMiddleClick( QWidget * );
     void dragInitiated( QWidget * );
-    
+    void receivedDropEvent( QWidget *, QDropEvent * );
+
 protected slots:
     virtual void mouseDoubleClickEvent(QMouseEvent *e);
     virtual void mousePressEvent(QMouseEvent *e);
     virtual void mouseMoveEvent(QMouseEvent *e);
+    virtual void dragMoveEvent( QDragMoveEvent * );
+    virtual void dropEvent( QDropEvent * );
 
 private:
     QPoint mDragStart;

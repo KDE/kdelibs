@@ -30,6 +30,7 @@ KTabWidget::KTabWidget( QWidget *parent, const char *name, WFlags f )
   connect(m_pTabBar, SIGNAL(mouseDoubleClick( QWidget * )), this, SIGNAL(mouseDoubleClick( QWidget * )));
   connect(m_pTabBar, SIGNAL(mouseMiddleClick( QWidget * )), this, SIGNAL(mouseMiddleClick( QWidget * )));
   connect(m_pTabBar, SIGNAL(dragInitiated( QWidget * )), this, SIGNAL(dragInitiated( QWidget * )));
+  connect(m_pTabBar, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )), this, SIGNAL(receivedDropEvent( QWidget *, QDropEvent * )));
 }
 
 void KTabWidget::dragMoveEvent( QDragMoveEvent *e )

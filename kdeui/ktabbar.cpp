@@ -23,6 +23,7 @@
 KTabBar::KTabBar( QWidget * parent, const char *name )
     : QTabBar( parent, name )
 {
+  setAcceptDrops(TRUE);
 }
 
 void KTabBar::mouseDoubleClickEvent(QMouseEvent *e)
@@ -73,6 +74,28 @@ void KTabBar::mouseMoveEvent(QMouseEvent *e)
     }
   }
   QTabBar::mouseMoveEvent(e);
+}
+
+void KTabBar::dragMoveEvent( QDragMoveEvent *e )
+{
+  QTab *tab = selectTab(e->pos() );
+  if( tab!= 0L ) {
+    e->accept(true);  // How to make it conditional?
+    return;
+  }
+  e->accept(false);
+  QTabBar::dragMoveEvent( e );
+}
+
+void KTabBar::dropEvent( QDropEvent *e )
+{
+  QTab *tab = selectTab(e->pos() );
+  if( tab!= 0L ) {
+    QWidget *page = ((KTabWidget*)parent())->page( indexOf( tab->identifier() ) );
+    emit( receivedDropEvent( page, e ) );
+    return;
+  }
+  QTabBar::dropEvent( e );
 }
 
 #include "ktabbar.moc"
