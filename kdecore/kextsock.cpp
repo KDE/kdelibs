@@ -1092,53 +1092,74 @@ QList<KAddressInfo> KExtendedSocket::lookup(const QString& host, const QString& 
 
 KSocketAddress *KExtendedSocket::localAddress(int fd)
 {
-  sockaddr *sa = NULL;
-  ksize_t len = 0;
+  KSocketAddress *local;
+  struct sockaddr static_sa, *sa = &static_sa;
+  ksize_t len = sizeof(static_sa);
 
-  /* find out the socket length, in advance */
+  /* find out the socket length, in advance
+   * we use a sockaddr allocated on the heap just not to pass down
+   * a NULL pointer to the first call. Some systems are reported to
+   * set len to 0 if we pass NULL as the sockaddr */
   if (KSocks::self()->getsockname(fd, sa, &len) == -1)
-    return NULL;
+    return NULL;		// error!
 
-  /* now malloc the socket */
-  sa = (sockaddr*)malloc(len);
-  if (sa == NULL)
-    return NULL;
-
-  if (KSocks::self()->getsockname(fd, sa, &len) == -1)
+  /* was it enough? */
+  if (len > sizeof(static_sa))
     {
-      free(sa);
-      return NULL;
-    }
+      /* nope, malloc a new socket with the proper size */
+      sa = (sockaddr*)malloc(len);
+      if (sa == NULL)
+	return NULL;		// out of memory
 
-  KSocketAddress *local = KSocketAddress::newAddress(sa, len);
-  free(sa);
+      if (KSocks::self()->getsockname(fd, sa, &len) == -1)
+	{
+	  free(sa);
+	  return NULL;
+	}
+
+      local = KSocketAddress::newAddress(sa, len);
+      free(sa);
+    }
+  else
+    local = KSocketAddress::newAddress(sa, len);
 
   return local;
 }
 
+/* This is exactly the same code as localAddress, except
+ * we call getpeername here */
 KSocketAddress *KExtendedSocket::peerAddress(int fd)
 {
+  KSocketAddress *peer;
+  struct sockaddr static_sa, *sa = &static_sa;
+  ksize_t len = sizeof(static_sa);
 
-  sockaddr *sa = NULL;
-  ksize_t len = 0;
-
-  /* find out the socket length, in advance */
+  /* find out the socket length, in advance
+   * we use a sockaddr allocated on the heap just not to pass down
+   * a NULL pointer to the first call. Some systems are reported to
+   * set len to 0 if we pass NULL as the sockaddr */
   if (KSocks::self()->getpeername(fd, sa, &len) == -1)
-    return NULL;
+    return NULL;		// error!
 
-  /* now malloc the socket */
-  sa = (sockaddr*)malloc(len);
-  if (sa == NULL)
-    return NULL;
-
-  if (KSocks::self()->getpeername(fd, sa, &len) == -1)
+  /* was it enough? */
+  if (len > sizeof(static_sa))
     {
-      free(sa);
-      return NULL;
-    }
+      /* nope, malloc a new socket with the proper size */
+      sa = (sockaddr*)malloc(len);
+      if (sa == NULL)
+	return NULL;		// out of memory
 
-  KSocketAddress *peer = KSocketAddress::newAddress(sa, len);
-  free(sa);
+      if (KSocks::self()->getpeername(fd, sa, &len) == -1)
+	{
+	  free(sa);
+	  return NULL;
+	}
+
+      peer = KSocketAddress::newAddress(sa, len);
+      free(sa);
+    }
+  else
+    peer = KSocketAddress::newAddress(sa, len);
 
   return peer;
 }
