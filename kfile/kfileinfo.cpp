@@ -47,39 +47,39 @@ KFileInfo::KFileInfo(const UDSEntry &e)
     myPermissions = 0755;
     mySize = 0;
     myIsReadable = true;
-    
+
     debugC("KFileInfo::KFileInfo");
-    UDSEntry::const_iterator it = e.begin();
+    UDSEntry::ConstIterator it = e.begin();
     for( ; it != e.end(); it++ ) {
-	switch (it->m_uds) {
+	switch (( *it ).m_uds) {
 	case UDS_NAME:
-	    myName = it->m_str;
+	    myName = ( *it ).m_str;
 	    break;
 	case UDS_SIZE:
-	    mySize = it->m_long;
+	    mySize = ( *it ).m_long;
 	    break;
 	case UDS_MODIFICATION_TIME:
-	    myDate = dateTime(it->m_long);
+	    myDate = dateTime(( *it ).m_long);
 	    break;
 	case UDS_USER:
-	    myOwner = it->m_str;
+	    myOwner = ( *it ).m_str;
 	    break;
 	case UDS_GROUP:
-	    myGroup = it->m_str;
+	    myGroup = ( *it ).m_str;
 	    break;
 	case UDS_ACCESS:
-	    myPermissions = it->m_long;
+	    myPermissions = ( *it ).m_long;
 	    parsePermissions(myPermissions);
 	    break;
 	case UDS_FILE_TYPE:
-	    myIsDir = (it->m_long & S_IFDIR) != 0;
+	    myIsDir = (( *it ).m_long & S_IFDIR) != 0;
 	    myIsFile = !myIsDir;
 	    break;
 	case UDS_LINK_DEST:
-	    myIsSymLink = (it->m_str.length());
+	    myIsSymLink = (( *it ).m_str.length());
 	    break;
 	default:
-	    debugC("got %ld", it->m_uds);
+	    debugC("got %ld", ( *it ).m_uds);
 	};
     }
 
