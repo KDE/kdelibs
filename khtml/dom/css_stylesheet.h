@@ -23,7 +23,6 @@
  * http://www.w3.org/TR/2000/CR-DOM-Level-2-20000510/
  * Copyright © 2000 W3C® (MIT, INRIA, Keio), All Rights Reserved.
  *
- * $Id$
  */
 #ifndef _CSS_css_stylesheet_h_
 #define _CSS_css_stylesheet_h_
@@ -160,7 +159,7 @@ public:
      */
     bool isCSSStyleSheet() const;
     StyleSheetImpl *handle() const { return impl; }
-    bool isNull() const;
+    bool isNull() const { return !impl; }
 protected:
     StyleSheetImpl *impl;
 };
@@ -480,7 +479,11 @@ public:
 
     StyleSheetList styleSheets();
 
-    bool isNull() const;
+    DOMString preferredStylesheetSet();
+    DOMString selectedStylesheetSet();
+    void setSelectedStylesheetSet( const DOMString& aString );
+
+    bool isNull() const { return !impl; }
 
 protected:
     DOM::DocumentImpl *doc;

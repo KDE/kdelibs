@@ -25,7 +25,6 @@
  * Technology , Institut National de Recherche en Informatique et en
  * Automatique , Keio University ). All Rights Reserved.
  *
- * $Id$
  */
 #ifndef _DOM_ELEMENT_h_
 #define _DOM_ELEMENT_h_
@@ -93,6 +92,7 @@ class Attr : public Node
     friend class HTMLDocument;
     friend class ElementImpl;
     friend class NamedAttrMapImpl;
+    friend class AttrImpl;
 
 public:
     Attr();

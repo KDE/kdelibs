@@ -117,22 +117,7 @@ unsigned long NamedNodeMap::length() const
     return impl->length();
 }
 
-NamedNodeMapImpl *NamedNodeMap::handle() const throw()
-{
-    return impl;
-}
-
-bool NamedNodeMap::isNull() const throw()
-{
-    return (impl == 0);
-}
-
 // ---------------------------------------------------------------------------
-
-Node::Node()
-{
-    impl = 0;
-}
 
 Node::Node(const Node &other)
 {
@@ -421,16 +406,6 @@ QRect Node::getRect()
     return impl->getRect();
 }
 
-bool Node::isNull() const
-{
-    return (impl == 0);
-}
-
-NodeImpl *Node::handle() const
-{
-    return impl;
-}
-
 //-----------------------------------------------------------------------------
 
 NodeList::NodeList()
@@ -476,14 +451,3 @@ unsigned long NodeList::length() const
     if (!impl) return 0;
     return impl->length();
 }
-
-NodeListImpl *NodeList::handle() const
-{
-    return impl;
-}
-
-bool NodeList::isNull() const
-{
-    return (impl == 0);
-}
-

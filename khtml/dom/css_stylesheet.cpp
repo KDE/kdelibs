@@ -1,7 +1,8 @@
 /**
  * This file is part of the DOM implementation for KDE.
  *
- * (C) 1999 Lars Knoll (knoll@kde.org)
+ * (C) 1999-2003 Lars Knoll (knoll@kde.org)
+ * (C) 2001-2003 Dirk Mueller (mueller@kde.org)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -18,7 +19,6 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id$
  */
 #include "dom/dom_exception.h"
 #include "dom/css_rule.h"
@@ -121,11 +121,23 @@ bool StyleSheet::isCSSStyleSheet() const
     return ((StyleSheetImpl *)impl)->isCSSStyleSheet();
 }
 
-bool StyleSheet::isNull() const
+#if 0 // FIXME_SAFARI
+DOMString DocumentStyle::preferredStylesheetSet()
 {
-    return (impl == 0);
+    return doc->preferredStylesheetSet();
 }
 
+void DocumentStyle::setSelectedStylesheetSet( const DOMString& aStr )
+{
+    return doc->setSelectedStylesheetSet( aStr );
+}
+
+DOMString DocumentStyle::selectedStylesheetSet()
+{
+    return doc->selectedStylesheetSet();
+}
+
+#endif
 
 
 CSSStyleSheet::CSSStyleSheet() : StyleSheet()
@@ -447,8 +459,4 @@ StyleSheetList DocumentStyle::styleSheets()
     return doc->styleSheets();
 }
 
-bool DocumentStyle::isNull() const
-{
-    return (doc == 0);
-}
 

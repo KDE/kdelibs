@@ -49,6 +49,8 @@ class CharacterDataImpl;
  */
 class CharacterData : public Node
 {
+    friend class CharacterDataImpl;
+
 public:
     CharacterData();
     CharacterData(const CharacterData &other);
@@ -222,6 +224,7 @@ class CommentImpl;
 class Comment : public CharacterData
 {
     friend class Document;
+    friend class TextImpl;
 
 public:
     Comment();

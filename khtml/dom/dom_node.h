@@ -225,8 +225,8 @@ public:
      * @internal
      * not part of the DOM
      */
-    NamedNodeMapImpl *handle() const throw();
-    bool isNull() const throw();
+    NamedNodeMapImpl *handle() const { return impl; }
+    bool isNull() const { return !impl; }
 
 protected:
     NamedNodeMap( NamedNodeMapImpl *i);
@@ -274,7 +274,7 @@ class Node
     friend class StyleSheet;
 
 public:
-    Node();
+    Node() : impl(0) {}
     Node(const Node &other);
 
     /**
@@ -856,12 +856,12 @@ public:
      *   kdDebug(300) << "node isn't an element node" << endl;
      * </pre>
      */
-    bool isNull() const;
+    bool isNull() const { return !impl; }
 
     /**
      * @internal handle to the implementation object
      */
-    NodeImpl *handle() const;
+    NodeImpl *handle() const { return impl; }
 
     /**
      * @internal returns the index of a node
@@ -933,8 +933,8 @@ public:
      * @internal
      * not part of the DOM
      */
-    NodeListImpl *handle() const;
-    bool isNull() const;
+    NodeListImpl *handle() const { return impl; }
+    bool isNull() const { return !impl; }
 
 protected:
     NodeList(const NodeListImpl *i);
