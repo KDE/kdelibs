@@ -25,6 +25,8 @@
 #include <kdelibs_export.h>
 
 /**
+ * @short Extended QTextBrowser.
+ *
  * An extended QTextBrowser.
  *
  * By default it will
@@ -34,9 +36,7 @@
  *
  * \image html ktextbrowser.png "KDE Text Browser"
  *
- * @short Extended QTextBrowser.
  * @author Espen Sand (espensa@online.no)
- * @version $Id$
  */
 
 class KDEUI_EXPORT KTextBrowser : public QTextBrowser
@@ -94,14 +94,14 @@ class KDEUI_EXPORT KTextBrowser : public QTextBrowser
      * Reimplemented to support Qt2 behavior (Ctrl-Wheel = fast scroll)
      */
     virtual void contentsWheelEvent( QWheelEvent *e );
-    
+
     /**
     * Re-implemented for internal reasons.  API not affected.
     *
     * See QLineEdit::createPopupMenu().
     */
     virtual QPopupMenu *createPopupMenu( const QPoint &pos );
-  
+
   signals:
     /**
      * Emitted when a mail link has been activated and the widget has
