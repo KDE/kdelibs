@@ -35,7 +35,8 @@ static KCmdLineOptions options[] = { { "+file", "url to open", 0 } , {0, 0, 0} }
 int main(int argc, char *argv[])
 {
 
-    KCmdLineArgs::init(argc, argv, "Testkhtml", "a basic web browser using the KHTML library", "1.0");
+    KCmdLineArgs::init(argc, argv, "testkhtml", "Testkhtml",
+            "a basic web browser using the KHTML library", "1.0");
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication a;
