@@ -88,6 +88,11 @@ protected:
      */
     virtual void keyPressEvent( QKeyEvent * );
 
+    /**
+     * Reimplemented to remove an eventual tooltip
+     */
+    virtual void hideEvent( QHideEvent * );
+
 private slots:
     void selected( QIconViewItem *item );
     void highlighted( QIconViewItem *item );

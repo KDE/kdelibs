@@ -146,6 +146,12 @@ KFileIconView::~KFileIconView()
     removeToolTip();
 }
 
+void KFileIconView::hideEvent( QHideEvent *e )
+{
+    removeToolTip();
+    KIconView::hideEvent( e );
+}
+
 void KFileIconView::keyPressEvent( QKeyEvent *e )
 {
     KIconView::keyPressEvent( e );
