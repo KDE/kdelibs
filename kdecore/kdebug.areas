@@ -273,7 +273,7 @@
 7124        kio_cgi
 7125        kio_ldap
 7126        kio_devices
-
+7127        kio_fish
 
 # kdesdk
 8100        kompare
