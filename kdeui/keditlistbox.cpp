@@ -149,7 +149,7 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
    m_lineEdit->setTrapReturnKey(true);
    connect(m_lineEdit,SIGNAL(returnPressed()),this,SLOT(addItem()));
    connect(m_listBox, SIGNAL(highlighted(int)), SLOT(enableMoveButtons(int)));
-   
+
    // maybe supplied lineedit has some text already
    typedSomething( m_lineEdit->text() );
 }
@@ -157,7 +157,11 @@ void KEditListBox::init( bool checkAtEntering, int buttons,
 void KEditListBox::typedSomething(const QString& text)
 {
     if(currentItem() >= 0) {
-        if(currentText() != m_lineEdit->text()) m_listBox->changeItem(text, currentItem());
+        if(currentText() != m_lineEdit->text()) 
+        {
+            m_listBox->changeItem(text, currentItem());
+            emit changed();
+        }
     }
 
     if ( !servNewButton )
