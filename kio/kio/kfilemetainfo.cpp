@@ -57,7 +57,7 @@ public:
     ~Data() 
     {
         if ( this == null ) // only the null item owns its mimeTypeInfo
-            delete const_cast<KFileMimeTypeInfo::ItemInfo*>( mimeTypeInfo );
+            delete mimeTypeInfo;
     }
 
     const KFileMimeTypeInfo::ItemInfo*  mimeTypeInfo;
