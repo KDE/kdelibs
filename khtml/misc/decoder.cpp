@@ -81,7 +81,7 @@ QString Decoder::decode(const char *data, int len)
 	    m_codec = QTextCodec::codecForName(enc);
 	} else {
 
-	    // ### hack for a bug in QTextCodec. It cut's the input stream 
+	    // ### hack for a bug in QTextCodec. It cut's the input stream
 	    // in case there are \0 in it. ZDNET has them inside... :-(
 	    char *d = const_cast<char *>(data);
 	    int i = len - 1;
@@ -89,9 +89,9 @@ QString Decoder::decode(const char *data, int len)
 		if(*(d+i) == 0) *(d+i) = ' ';
 		i--;
 	    }
-	    buffer += data;
-	    
-	    
+	    buffer += QCString(data, len+1);
+	
+	
 	    // we still don't have an encoding, and are in the head
 	    // the following tags are allowed in <head>:
 	    // SCRIPT|STYLE|META|LINK|OBJECT|TITLE|BASE
@@ -190,7 +190,7 @@ QString Decoder::decode(const char *data, int len)
 	out = m_codec->toUnicode(buffer);
 	buffer = "";
     } else {
-	// ### hack for a bug in QTextCodec. It cut's the input stream 
+	// ### hack for a bug in QTextCodec. It cut's the input stream
 	// in case there are \0 in it. ZDNET has them inside... :-(
 	char *d = const_cast<char *>(data);
 	int i = len - 1;

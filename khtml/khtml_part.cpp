@@ -198,7 +198,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
   encodings.prepend( i18n( "Auto" ) );
   d->m_paSetEncoding->setItems( encodings );
   d->m_paSetEncoding->setCurrentItem(0);
-  
+
   connect( this, SIGNAL( completed() ),
 	   this, SLOT( updateActions() ) );
   connect( this, SIGNAL( started( KIO::Job * ) ),
@@ -423,7 +423,7 @@ DOM::HTMLDocumentImpl *KHTMLPart::docImpl() const
 void KHTMLPart::slotData( KIO::Job*, const QByteArray &data )
 {
   kdDebug(300) << "slotData: " << data.size() << endl;
-
+  //kdDebug(300) << "data = " << data.data() << endl << endl;
   // The first data ?
   if ( !d->m_workingURL.isEmpty() )
   {
@@ -657,7 +657,8 @@ bool KHTMLPart::setEncoding( const QString &name, bool override )
 {
     printf("setting the encoding to %s\n",name.latin1());
     d->m_encoding = name;
-        
+    d->m_settings->charset = KGlobal::charsets()->nameToID(name);
+
     // reload document
     closeURL();
     openURL(m_url);

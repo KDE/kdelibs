@@ -1012,7 +1012,7 @@ void HTMLTokenizer::write( const QString &str )
     // we have to make this function reentrant. This is needed, because some
     // script code could call document.write(), which would add something here.
 #ifdef TOKEN_DEBUG
-    printf("Tokenizer::write(\"%s\")\n", _src.ascii());
+    printf("Tokenizer::write(\"%s\")\n", str.ascii());
 #endif
 
     if ( str.isEmpty() || buffer == 0L )
