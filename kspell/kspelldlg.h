@@ -15,13 +15,13 @@
 
 //Possible result codes
 enum {
-  KS_CANCEL      0,
-  KS_REPLACE     1,
-  KS_REPLACEALL  2,
-  KS_IGNORE      3,
-  KS_IGNOREALL   4,
-  KS_ADD         5,
-  KS_STOP        7
+  KS_CANCEL=     0,
+  KS_REPLACE=    1,
+  KS_REPLACEALL= 2,
+  KS_IGNORE=     3,
+  KS_IGNOREALL=  4,
+  KS_ADD=        5,
+  KS_STOP=       7
 };
 
 class KSpellDlg : public QWidget
