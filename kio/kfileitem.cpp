@@ -1,5 +1,6 @@
 /* This file is part of the KDE project
    Copyright (C) 1999 David Faure <faure@kde.org>
+                 2001 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -30,6 +31,7 @@
 
 #include <qdir.h>
 #include <qfile.h>
+#include <qmap.h>
 
 #include <klargefile.h>
 #include <kiconloader.h>
@@ -46,17 +48,32 @@ public:
     bMimeTypeKnown = false;
     refresh();
   }
+
+  void operator=( const KFileItemPrivate& d ) {
+      guessedMimeType   = d.guessedMimeType;
+      access            = d.access;
+      bMimeTypeKnown    = d.bMimeTypeKnown;
+      for ( int i = 0; i < NumFlags; i++ )
+          time[i] = d.time[i];
+      size              = d.size;
+      // note: extra is NOT copied, as we'd have no control over who is
+      // deleting the data or not.
+  }
+
   void refresh() {
+    access = QString::null;
     size = (KIO::filesize_t) -1;
-    for ( int i = Modification; i <= Creation; i++ )
+    for ( int i = 0; i < NumFlags; i++ )
       time[i] = (time_t) -1;
   }
 
    // For special case like link to dirs over FTP
-  QString m_guessedMimeType;
+  QString guessedMimeType;
+  QString access;
   bool bMimeTypeKnown;
+  QMap<const void*, void*> extra;
 
-  enum { Modification = 0, Access = 1, Creation = 2 };
+  enum { Modification = 0, Access = 1, Creation = 2, NumFlags = 3 };
   time_t time[3];
   KIO::filesize_t size;
 };
@@ -111,7 +128,7 @@ KFileItem::KFileItem( const KIO::UDSEntry& _entry, const KURL& _url,
           break;
 
         case KIO::UDS_GUESSED_MIME_TYPE:
-          d->m_guessedMimeType = (*it).m_str;
+          d->guessedMimeType = (*it).m_str;
           break;
 
         case KIO::UDS_LINK_DEST:
@@ -386,7 +403,7 @@ bool KFileItem::isMimeTypeKnown() const
   // The mimetype isn't known if determineMimeType was never called (on-demand determination)
   // or if this fileitem has a guessed mimetype (e.g. ftp symlink) - in which case
   // it always remains "not fully determined"
-  return d->bMimeTypeKnown && d->m_guessedMimeType.isEmpty();
+  return d->bMimeTypeKnown && d->guessedMimeType.isEmpty();
 }
 
 QString KFileItem::mimeComment()
@@ -428,8 +445,8 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
 
   KMimeType::Ptr mime;
   // Use guessed mimetype if the main one hasn't been determined for sure
-  if ( !d->bMimeTypeKnown && !d->m_guessedMimeType.isEmpty() )
-      mime = KMimeType::mimeType( d->m_guessedMimeType );
+  if ( !d->bMimeTypeKnown && !d->guessedMimeType.isEmpty() )
+      mime = KMimeType::mimeType( d->guessedMimeType );
   else
       mime = m_pMimeType;
 
@@ -463,8 +480,8 @@ bool KFileItem::isReadable() const
   if ( !(S_IRUSR & m_permissions) && !(S_IRGRP & m_permissions) && !(S_IROTH & m_permissions) )
       return false;
 
-  // Or if we can't read it [using access()] - not network transparent
-  else if ( m_bIsLocalURL && access( QFile::encodeName(m_url.path()), R_OK ) == -1 )
+  // Or if we can't read it [using ::access()] - not network transparent
+  else if ( m_bIsLocalURL && ::access( QFile::encodeName(m_url.path()), R_OK ) == -1 )
       return false;
 
   return true;
@@ -472,7 +489,7 @@ bool KFileItem::isReadable() const
 
 bool KFileItem::isDir() const
 {
-  if ( !d->bMimeTypeKnown && !d->m_guessedMimeType.isEmpty() )
+  if ( !d->bMimeTypeKnown && !d->guessedMimeType.isEmpty() )
   {
     kdDebug() << " KFileItem::isDir can't say -> false " << endl;
     return false; // can't say for sure, so no
@@ -486,7 +503,7 @@ bool KFileItem::acceptsDrops()
   if ( S_ISDIR( mode() ) )
   {
     if ( m_bIsLocalURL ) // local -> check if we can enter it
-       return (access( QFile::encodeName(m_url.path()), X_OK ) == 0);
+       return (::access( QFile::encodeName(m_url.path()), X_OK ) == 0);
     else
        return true; // assume ok for remote urls
   }
@@ -499,7 +516,7 @@ bool KFileItem::acceptsDrops()
     return true;
 
   // Executable, shell script ... ?
-  if ( access( QFile::encodeName(m_url.path()), X_OK ) == 0 )
+  if ( ::access( QFile::encodeName(m_url.path()), X_OK ) == 0 )
     return true;
 
   return false;
@@ -579,7 +596,85 @@ void KFileItem::assign( const KFileItem & item )
     m_bLink = item.m_bLink;
     m_pMimeType = item.m_pMimeType;
     m_strLowerCaseName = item.m_strLowerCaseName;
-    *d = *item.d;
+    *d = *item.d; // Note: d->extra is just a shallow copy...
     // We had a mimetype previously (probably), so we need to re-determine it
     determineMimeType();
+}
+
+void KFileItem::setExtraData( const void *key, void *value )
+{
+    if ( !key )
+        return;
+
+    d->extra.replace( key, value );
+}
+
+const void * KFileItem::extraData( const void *key ) const
+{
+    QMapConstIterator<const void*,void*> it = d->extra.find( key );
+    if ( it != d->extra.end() )
+        return it.data();
+    return 0L;
+}
+
+void * KFileItem::extraData( const void *key )
+{
+    QMapIterator<const void*,void*> it = d->extra.find( key );
+    if ( it != d->extra.end() )
+        return it.data();
+    return 0L;
+}
+
+void KFileItem::removeExtraData( const void *key )
+{
+    d->extra.remove( key );
+}
+
+QString KFileItem::permissionsString() const
+{
+    if (d->access.isNull())
+      d->access = parsePermissions( m_permissions );
+
+    return d->access;
+}
+
+QString KFileItem::parsePermissions(mode_t perm) const
+{
+    char p[] = "----------";
+
+    if (isDir())
+	p[0]='d';
+    else if (isLink())
+	p[0]='l';
+
+    if (perm & QFileInfo::ReadUser)
+	p[1]='r';
+    if (perm & QFileInfo::WriteUser)
+	p[2]='w';
+    if (perm & QFileInfo::ExeUser)
+	p[3]='x';
+
+    if (perm & QFileInfo::ReadGroup)
+	p[4]='r';
+    if (perm & QFileInfo::WriteGroup)
+	p[5]='w';
+    if (perm & QFileInfo::ExeGroup)
+	p[6]='x';
+
+    if (perm & QFileInfo::ReadOther)
+	p[7]='r';
+    if (perm & QFileInfo::WriteOther)
+	p[8]='w';
+    if (perm & QFileInfo::ExeOther)
+	p[9]='x';
+
+    return QString::fromLatin1(p);
+}
+
+// check if we need to cache this
+QString KFileItem::timeString( unsigned int which ) const
+{
+    QDateTime t;
+    t.setTime_t( time(which) );
+    return KGlobal::locale()->formatDateTime( t );
 }

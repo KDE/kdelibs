@@ -28,6 +28,7 @@
 #include <kio/global.h>
 #include <kurl.h>
 #include <kmimetype.h>
+#include <kio/global.h>
 
 /**
  * A KFileItem is a generic class to handle a file, local or remote.
@@ -79,7 +80,8 @@ public:
   KFileItem( const KURL &url, const QString &mimeType, mode_t mode );
 
   /**
-   * Copy constructor
+   * Copy constructor. Note that extra-data set via @ref setExtraData() is not
+   * deeply copied -- just the pointers are copied.
    */
   KFileItem( const KFileItem &item );
 
@@ -117,6 +119,11 @@ public:
   mode_t permissions() const { return m_permissions; }
 
   /**
+   * Returns the access permissions for the file as a string.
+   */
+  QString permissionsString() const;
+
+  /**
    * @return the file type (stat.st_mode containing only S_IFDIR, S_IFLNK, ...)
    */
   mode_t mode() const { return m_fileMode; }
@@ -143,6 +150,11 @@ public:
   bool isDir() const;
 
   /**
+   * Returns true if this item represents a file (and not a a directory)
+   */
+  bool isFile() const { return !isDir(); }
+
+  /**
    * @returns true if the file can be read - more precisely,
    * returns false if we know for sure it can't. In some cases
    * (remote files), we may return true even though it can't be read.
@@ -162,8 +174,17 @@ public:
   /**
    * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
    * @return the time asked for, (time_t)0 if not available
+   * @see timeString
    */
   time_t time( unsigned int which ) const;
+
+  /**
+   * @param which UDS_MODIFICATION_TIME, UDS_ACCESS_TIME or even UDS_CREATION_TIME
+   * @returns a formatted string of the requested time.
+   *
+   * @see #time
+   */
+  QString timeString( unsigned int which = KIO::UDS_MODIFICATION_TIME ) const;
 
   /**
    * @return true if the file is a local file
@@ -281,7 +302,63 @@ public:
   bool cmp( const KFileItem & item );
 
   /**
-   * Somewhat like an assignment operator, but more explicit
+   * This allows to associate some "extra" data to a KFileItem. As one
+   * KFileItem can be used by several objects (often views) which all need
+   * to add some data, you have to use a key to reference your extra data
+   * within the KFileItem.
+   *
+   * That way a KFileItem can hold and provide access to all those views
+   * separately.
+   *
+   * I.e. a KFileIconView that associates a KFileIconViewItem (an item suitable
+   * for use with QIconView) does
+   *
+   * <pre>
+   * kfileItem->setExtraData( this, iconViewItem );
+   * </pre>
+   *
+   * and can later access the iconViewItem by doing
+   *
+   * <pre>
+   * KFileIconViewItem *iconViewItem = static_cast<KFileIconViewItem*>( kfileItem->extraData( this ));
+   * </pre>
+   *
+   * This is usually more efficient then having every view associate data to
+   * items by using a separate QDict or QMap.
+   *
+   * Note: you have to remove and destroy the data you associated yourself
+   * when you don't need it anymore!
+   *
+   * @see #extraData
+   * @see #removeExtraData
+   */
+  virtual void setExtraData( const void *key, void *value );
+
+  /**
+   * @returns the extra data associated to an item with @p key via
+   * @ref setExtraData.
+   * Returns 0L if nothing was associated with @p key.
+   *
+   * @see #extraData
+   */
+  virtual const void * extraData( const void *key ) const;
+
+  /**
+   * The non-const version of the previous @p extraData() method.
+   */
+  virtual void * extraData( const void *key );
+
+  /**
+   * Removes the extra data associated with an item via @p key.
+   */
+  virtual void removeExtraData( const void *key );
+
+  /**
+   * Somewhat like an assignment operator, but more explicit.
+   * Note: extra-data set with @ref setExtraData() is not copied, so be careful
+   * what you do!
+   *
+   * I.e. KDirLister uses it to update existing items from a fresh item.
    */
   void assign( const KFileItem & item );
 
@@ -293,6 +370,11 @@ protected:
    * Called by constructor, but can be called again later
    */
   void init( bool _determineMimeTypeOnDemand );
+
+  /**
+   * Parses the given permission set and provides it for @ref access()
+   */
+  QString parsePermissions( mode_t perm ) const;
 
   /**
    * We keep a copy of the UDSEntry since we need it for @ref #getStatusBarInfo
