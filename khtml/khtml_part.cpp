@@ -2483,7 +2483,7 @@ bool KHTMLPart::initFindNode( bool selection, bool reverse, bool fromCursor )
               obj = obj->lastChild();
           }
           // now get the last object with a NodeImpl associated
-          while ( !obj->element() )
+          while ( !obj->element() && obj->objectAbove() )
           {
              obj = obj->objectAbove();
           }
