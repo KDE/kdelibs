@@ -44,7 +44,7 @@
 
 KBugReport::KBugReport( QWidget * parentw, bool modal )
   : KDialogBase( Plain,
-                 i18n("Submit a KDE bug report"),
+                 i18n("Submit a bug report"),
                  Ok | Cancel,
                  Ok,
                  parentw,
