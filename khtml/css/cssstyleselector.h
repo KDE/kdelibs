@@ -63,8 +63,8 @@ namespace khtml
      */
     enum Source {
 	Default = 0,
-	User = 1,
-	NonCSSHint = 2,
+	NonCSSHint = 1,
+	User = 2,
 	Author = 3,
 	Inline = 4,
 	AuthorImportant = 5,
