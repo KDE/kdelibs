@@ -2,6 +2,8 @@ kdelibs (4:2.2-cvs20010507-1) experimental; urgency=low
 
   * New upstream CVS pull
   * Move /usr/share/applnk to /etc/kde2/applnk and link back
+  * Move /usr/share/mimelnk to /etc/kde2/mimelnk and link back
+  * Move /usr/share/services to /etc/kde2/services and link back
 
  -- Ivan E. Moore II <rkrusty@debian.org>  Mon, 07 May 2001 06:15:00 -0700
 

@@ -17,6 +17,26 @@ case "$1" in
         fi
       fi
       rm -rf /usr/share/applnk > /dev/null 2>&1
+      if [ -e /usr/share/mimelnk -a ! -L /usr/share/mimelnk ]; then
+        if [ -e /etc/kde2/mimelnk -a ! -L /etc/kde2/mimelnk ]; then
+          cd /usr/share/mimelnk && find ./ | cpio -pmd /etc/kde2/mimelnk/ >/dev/null 2>&1
+          rm -rf /usr/share/mimelnk > /dev/null 2>&1
+        else
+          rm -f /etc/kde2/mimelnk >/dev/null 2>&1
+          mv /usr/share/mimelnk /etc/kde2/mimelnk
+        fi
+      fi
+      rm -rf /usr/share/mimelnk > /dev/null 2>&1
+      if [ -e /usr/share/services -a ! -L /usr/share/services ]; then
+        if [ -e /etc/kde2/services -a ! -L /etc/kde2/services ]; then
+          cd /usr/share/services && find ./ | cpio -pmd /etc/kde2/services/ >/dev/null 2>&1
+          rm -rf /usr/share/services> /dev/null 2>&1
+        else
+          rm -f /etc/kde2/services >/dev/null 2>&1
+          mv /usr/share/services /etc/kde2/services
+        fi
+      fi
+      rm -rf /usr/share/services > /dev/null 2>&1
     ;;
 
     abort-upgrade)
