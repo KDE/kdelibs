@@ -183,3 +183,6 @@ an alternative help->contents action)
 
 - Fix KURLRequester API to use KURL for urls instead of QString to make clear that
   we work with URLs and not with paths.
+
+- Dump KPixmapIO class. QPixmap with qt-copy patches #0005 and #0007 can perform just as well,
+  KPixmapIO can't dither, and it generally doesn't make much sense to have this class.
