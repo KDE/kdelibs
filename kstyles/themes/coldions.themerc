@@ -15,6 +15,7 @@ Name[nl]=Koude pictogrammen
 Name[no]=Kalde ioner
 Name[ro]=Ioni reci
 Name[sl]=Mrzli ioni
+Name[sr]=Hladne ikonice
 Name[sv]=Kalla joner
 Name[tr]=Soðuk Ýyonlar
 Comment=Cold Ions unthemed style
@@ -35,6 +36,7 @@ Comment[no_NY]='Cold Ions'-stil utan tema
 Comment[pt]=Estilo Cold Ions
 Comment[ro]=Stil fără temă Ioni reci
 Comment[sl]=Netematski slog mrzlih ionov
+Comment[sr]=Hladne ikonice, stil bez teme
 Comment[sv]=Otemad stil 'Kalla joner'
 Comment[tr]=Temasýz Soðuk Ýyonlar stili
 [KDE]
