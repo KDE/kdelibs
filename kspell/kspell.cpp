@@ -85,7 +85,7 @@ KSpell::KSpell (QWidget *_parent, QString _caption,
      break;
   }
 
-  kDebugInfo( 750, "%s:%d Codec = %s", __FILE__, __LINE__, codec ? codec->name() : "<default>");
+  kdDebug(750) << __FILE__ << ":" << __LINE__ << " Codec = " << (codec ? codec->name() : "<default>") << endl;
 
   texmode=dlgon=FALSE;
   m_status = Starting;
@@ -123,7 +123,7 @@ KSpell::startIspell()
   //trystart = {0,1,2}
 {
 
-  kDebugInfo( 750, "Try #%d",trystart);
+  kdDebug(750) << "Try #" << trystart << endl;
 
   if (trystart>0)
     proc->resetAll();
@@ -132,11 +132,11 @@ KSpell::startIspell()
     {
     case KS_CLIENT_ISPELL:
       proc->setExecutable("ispell");
-      kDebugInfo(750, "Using ispell");
+      kdDebug(750) << "Using ispell" << endl;
       break;
     case KS_CLIENT_ASPELL:
       proc->setExecutable("aspell");
-      kDebugInfo( 750, "Using aspell");
+      kdDebug(750) << "Using aspell" << endl;
       break;
     }
 
@@ -154,7 +154,7 @@ KSpell::startIspell()
     {
       if (! ksconfig->dictionary().isEmpty())
 	{
-	  kDebugInfo( 750,"using dictionary [%s]",ksconfig->dictionary().latin1());
+	  kdDebug(750) << "using dictionary [" << ksconfig->dictionary() << "]" << endl;
 	  *proc << "-d";
 	  *proc << ksconfig->dictionary();
 	}
@@ -180,7 +180,7 @@ KSpell::startIspell()
   /*
   if (ksconfig->personalDict()[0]!='\0')
     {
-      kDebugInfo( 750, "personal dictionary [%s]",ksconfig->personalDict());
+      kdDebug(750) << "personal dictionary [" << ksconfig->personalDict() << "]" << endl;
       *proc << "-p";
       *proc << ksconfig->personalDict();
     }
@@ -217,7 +217,7 @@ KSpell::ispellErrors (KProcess *, char *buffer, int buflen)
 void KSpell::KSpell2 (KProcIO *)
 
 {
-  kDebugInfo( 750, "KSpell::KSpell2");
+  kdDebug(750) << "KSpell::KSpell2" << endl;
   trystart=maxtrystart;  //We've officially started ispell and don't want
        //to try again if it dies.
   QString line;
@@ -238,7 +238,7 @@ void KSpell::KSpell2 (KProcIO *)
   //We want to recognize KDE in any text!
   if (ignore ("kde")==FALSE)
   {
-     kDebugInfo( 750, "@KDE was FALSE");
+     kdDebug(750) << "@KDE was FALSE" << endl;
      QTimer::singleShot( 0, this, SLOT(emitDeath()));
      return;
   }
@@ -246,7 +246,7 @@ void KSpell::KSpell2 (KProcIO *)
   //We want to recognize linux in any text!
   if (ignore ("linux")==FALSE)
   {
-     kDebugInfo( 750, "@Linux was FALSE");
+     kdDebug(750) << "@Linux was FALSE" << endl;
      QTimer::singleShot( 0, this, SLOT(emitDeath()));
      return;
   }
@@ -533,9 +533,9 @@ int KSpell::parseOneResponse (const QString &buffer, QString &word, QStringList 
     }
 
 
-  kDebugError( 750, "HERE?: [%s]", buffer.ascii());
-  kDebugError( 750, "Please report this to dsweet@kde.org");
-  kDebugError( 750, "Thank you!");
+  kdError(750) << "HERE?: [" << buffer << "]" << endl;
+  kdError(750) << "Please report this to dsweet@kde.org" << endl;
+  kdError(750) << "Thank you!" << endl;
   emit done((bool)FALSE);
   emit done (KSpell::origbuffer);
   return MISTAKE;
@@ -604,7 +604,7 @@ void KSpell::checkList3 ()
 	if (tempe>0)
 	  {
 	    lastpos++;
-	    //kDebugInfo( 750, "lastpos advance on [%s]", temp);
+	    //kdDebug(750) << "lastpos advance on [" << temp << "]" << endl;
 	    if ((e=parseOneResponse (line, word, &sugg))==MISTAKE ||
 		e==REPLACE)
 	      {
@@ -646,7 +646,7 @@ void KSpell::checkList4 ()
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
-      kDebugInfo( 750, "cklist4: lastpos==(%d)", lastpos);
+      kdDebug(750) << "cklist4: lastpos==(" << lastpos << ")" << endl;
       wordlist->remove (wlIt);
       wordlist->insert (wlIt, replacement());
       wlIt++;
@@ -672,7 +672,7 @@ bool KSpell::check( const QString &_buffer )
   //set the dialog signal handler
   dialog3slot = SLOT (check3 ());
 
-  kDebugInfo( 750, "KS: check");
+  kdDebug(750) << "KS: check" << endl;
   origbuffer = _buffer;
   if ( ( totalpos = origbuffer.length() ) == 0 )
     {
@@ -724,11 +724,11 @@ void KSpell::check2 (KProcIO *)
   do
     {
       tempe=proc->fgets (line); //get ispell's response
-      kDebugInfo( 750, "2:(%d)", tempe);
+      kdDebug(750) << "2:(" << tempe << ")" << endl;
 
       if (tempe>0)
 	{
-	  //kDebugInfo( 750, "2:[%s]", temp);
+	  //kdDebug(750) << "2:[" << temp << "]" << endl;
 	
 	  if ((e=parseOneResponse (line, word, &sugg))==MISTAKE ||
 	      e==REPLACE)
@@ -748,7 +748,7 @@ void KSpell::check2 (KProcIO *)
 	      else  //MISTAKE
 		{
 		  cwword=word;
-		  //kDebugInfo( 750, "(Before dialog) word=[%s] cwword =[%s]\n", word, cwword);
+		  //kdDebug(750) << "(Before dialog) word=[" << word << "] cwword =[" << cwword << "]\n" << endl;
 
 		  dialog (word, &sugg, SLOT (check3()));
 		  return;
@@ -773,7 +773,7 @@ void KSpell::check2 (KProcIO *)
       int i;
       QString qs;
 
-      //kDebugInfo( 750, "[EOL](%d)[%s]", tempe, temp);
+      //kdDebug(750) << "[EOL](" << tempe << ")[" << temp << "]" << endl;
 
       lastpos=(lastlastline=lastline)+offset; //do we really want this?
       i=origbuffer.find('\n', lastline)+1;
@@ -799,7 +799,7 @@ void KSpell::check3 ()
 {
   disconnect (this, SIGNAL (dialog3()), this, SLOT (check3()));
 
-  kDebugInfo( 750, "check3 [%s] [%s] %d", cwword.ascii(), replacement().ascii(), dlgresult);
+  kdDebug(750) << "check3 [" << cwword << "] [" << replacement() << "] " << dlgresult << endl;
 
   //others should have been processed by dialog() already
   switch (dlgresult)
@@ -832,7 +832,7 @@ KSpell::slotStopCancel (int result)
   if (dialogwillprocess)
     return;
 
-  kDebugInfo( 750, "KSpell::slotStopCancel [%d]", result);
+  kdDebug(750) << "KSpell::slotStopCancel [" << result << "]" << endl;
 
   if (result==KS_STOP || result==KS_CANCEL)
     if (!dialog3slot.isEmpty())
@@ -925,7 +925,7 @@ void KSpell::cleanUp ()
 
 void KSpell::ispellExit (KProcess *)
 {
-  kDebugInfo( 750, "KSpell::ispellExit()");
+  kdDebug(750) << "KSpell::ispellExit()" << endl;
   if ((m_status == Starting) && (trystart<maxtrystart))
   {
     trystart++;
@@ -942,7 +942,7 @@ void KSpell::ispellExit (KProcess *)
   else // Error, Finished, Crashed
      return; // Dead already
 
-  kDebugError( 750, "Death");
+  kdError(750) << "Death" << endl;
   QTimer::singleShot( 0, this, SLOT(emitDeath()));
 }
 

@@ -280,7 +280,7 @@ KSpellConfig::writeGlobalSettings ()
 void
 KSpellConfig::sChangeEncoding(int i)
 {
-    kDebugInfo( 750, "KSpellConfig::sChangeEncoding(%d)", i);
+    kdDebug(750) << "KSpellConfig::sChangeEncoding(" << i << ")" << endl;
   setEncoding (i);
 }
 
@@ -303,7 +303,7 @@ KSpellConfig::interpret (QString &fname, QString &lname,
       fname.remove (fname.length()-4,4);
 
 
-    kDebugInfo( 750, "KSpellConfig::interpret [%s]", fname.ascii());
+    kdDebug(750) << "KSpellConfig::interpret [" << fname << "]" << endl;
 
   //These are mostly the ispell-langpack defaults
   if (fname=="english")
@@ -352,7 +352,7 @@ KSpellConfig::fillInDialog ()
   if (nodialog)
     return;
 
-    kDebugInfo( 750, "KSpellConfig::fillinDialog");
+    kdDebug(750) << "KSpellConfig::fillinDialog" << endl;
 
   cb1->setChecked (noRootAffix());
   cb2->setChecked (runTogether());
@@ -374,12 +374,12 @@ KSpellConfig::fillInDialog ()
       if (!dir.exists() || !dir.isDir())
 	return;
 
-            kDebugInfo( 750, "KSpellConfig::fillInDialog %s %s", dir.filePath().ascii(), dir.dirPath().ascii());
+            kdDebug(750) << "KSpellConfig::fillInDialog " << dir.filePath() << " " << dir.dirPath() << endl;
 
       QDir thedir (dir.filePath(),"*.aff");
-            kDebugInfo( 750, "KSpellConfig%s\n",thedir.path().ascii());
+            kdDebug(750) << "KSpellConfig" << thedir.path() << "\n" << endl;
 
-            kDebugInfo( 750, "entryList().count()=%d", thedir.entryList().count());
+            kdDebug(750) << "entryList().count()=" << thedir.entryList().count() << endl;
 
       for (unsigned int i=0;i<thedir.entryList().count();i++)
 	{
