@@ -119,9 +119,10 @@ void CachedObject::setRequest(Request *_request)
 
 void CachedObject::ref(CachedObjectClient *c)
 {
-    assert( !m_clients.find( c ) );
-    assert( !free() );
-    m_clients.replace(c,c);
+    // unfortunately we can be ref'ed multiple times from the
+    // same object,  because it uses e.g. the same foreground
+    // and the same background picture. so deal with it.
+    m_clients.insert(c,c);
     Cache::removeFromLRUList(this);
     m_accessCount++;
 }
@@ -1227,12 +1228,8 @@ void Cache::clear()
     cache->setAutoDelete( true );
 
 #ifndef NDEBUG
-    for (QDictIterator<CachedObject> it(*cache); it.current(); ++it) {
-        qDebug( "it.current(): %p type: %d canDelete: %d clients: %d request: %d",
-                it.current(), it.current()->type(), it.current()->canDelete(), it.current()->count(), -1 );
+    for (QDictIterator<CachedObject> it(*cache); it.current(); ++it)
         assert(it.current()->canDelete());
-
-    }
     for (QPtrListIterator<CachedObject> it(*freeList); it.current(); ++it)
         assert(it.current()->canDelete());
 #endif
