@@ -2273,7 +2273,7 @@ void KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if (!m_url.url().isEmpty())
       args.metaData()["referrer"]=m_url.url();
-  
+
   if ( button == MidButton && (state & ShiftButton) )
   {
     KParts::WindowArgs winArgs;
@@ -2558,7 +2558,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KURL &_url
   if ( url.isEmpty() && mimetype.isEmpty() )
   {
       child->m_bCompleted = true;
-      return true; 
+      return true;
   }
 
   if (child->m_bNotify)
@@ -2818,7 +2818,10 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 
 void KHTMLPart::popupMenu( const QString &url )
 {
-  KURL u( completeURL( url ) );
+  KURL u;
+  if ( !url.isEmpty() )
+    u = completeURL( url );
+
   /*
   mode_t mode = 0;
   if ( !u.isLocalFile() )
