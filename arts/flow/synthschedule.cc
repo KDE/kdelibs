@@ -698,12 +698,16 @@ void StdFlowSystem::removeObject(ScheduleNode *node)
 
 void StdFlowSystem::startObject(Object* node)
 {
-	assert(false);
+	StdScheduleNode *sn =
+		(StdScheduleNode *)node->_node()->cast("StdScheduleNode");
+	sn->start();
 }
 
 void StdFlowSystem::stopObject(Object* node)
 {
-	assert(false);
+	StdScheduleNode *sn =
+		(StdScheduleNode *)node->_node()->cast("StdScheduleNode");
+	sn->stop();
 }
 
 void StdFlowSystem::connectObject(Object* sourceObject,const string& sourcePort,
@@ -760,7 +764,14 @@ FlowSystemReceiver *StdFlowSystem::createReceiver(Object *object,
 	if(ap)
 	{
 		cout << "creating packet receiver" << endl;
-		return new ASyncNetReceive(ap, sender);
+		/*
+		 * TODO: FIXME: this is to prevent the receiver from just disappearing
+		 * which has the disadvantage that then datapackets which are still
+		 * outstanding cause problems. However, like this, it will never get
+		 * really disconnected on connection drop, which is also bad (but
+		 * not as ugly as a crash)
+		 */
+		return (new ASyncNetReceive(ap, sender))->_copy();
 	}
 	return 0;
 }

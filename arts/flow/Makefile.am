@@ -18,12 +18,13 @@ libartsflow_la_SOURCES =  synth_play_impl.cc artsserver_impl.cc \
   pipebuffer.cc convert.cc synth_wave_sin_impl.cc synth_frequency_impl.cc \
   synth_multi_add_impl.cc synth_add_impl.cc synth_mul_impl.cc \
   synth_play_wav_impl.cc stdsynthmodule.cc cache.cc utils.c asyncschedule.cc \
-  bytestreamtoaudio_impl.cc
+  bytestreamtoaudio_impl.cc stereovolumecontrol_impl.cc \
+  stereoeffectstack_impl.cc fft.c
 
 artsincludedir = $(includedir)/arts
 artsinclude_HEADERS = artsflow.h artsserver_impl.h audiosubsys.h cache.h \
   cachedwav.h convert.h debug.h execrequest.h pipebuffer.h stdsynthmodule.h \
-  synthschedule.h utils.h
+  synthschedule.h utils.h fft.h
 
 DISTCLEANFILES = artsflow.cc artsflow.h
 

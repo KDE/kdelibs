@@ -36,6 +36,7 @@ class SimpleSoundServer_impl : virtual public SimpleSoundServer_skel,
 protected:
 	Object_var play_obj, add_left, add_right;
 	std::list<Synth_PLAY_WAV *> activeWavs;
+	StereoEffectStack_var _outstack;
 
 public:
 	SimpleSoundServer_impl();
@@ -44,6 +45,8 @@ public:
 	long attach(ByteSoundProducer *bsp);
 	long play(const std::string& s);
 	PlayObject *createPlayObject(const std::string& filename);
+	StereoEffectStack *outstack();
+	Object *createObject(const string& name);
 
 	void notifyTime();
 };

@@ -42,8 +42,19 @@ SimpleSoundServer_impl::SimpleSoundServer_impl()
 	add_right = ObjectManager::the()->create("Synth_MULTI_ADD");
 	assert(add_right);
 
+	Object_skel *obj = ObjectManager::the()->create("StereoEffectStack");
+	assert(obj);
+
+	_outstack = (StereoEffectStack *)obj->_cast("StereoEffectStack");
+	assert(_outstack);
+
+	/*
 	play_obj->_node()->connect("invalue_left",add_left->_node(),"outvalue");
 	play_obj->_node()->connect("invalue_right",add_right->_node(),"outvalue");
+	*/
+
+	_outstack->setInputs(add_left,"outvalue",add_right,"outvalue");
+	_outstack->setOutputs(play_obj,"invalue_left",play_obj,"invalue_right");
 
 	add_left->_node()->start();
 	add_right->_node()->start();
@@ -107,6 +118,16 @@ long SimpleSoundServer_impl::attach(ByteSoundProducer *bsp)
 
 	convert->_node()->start();
 	return 1;
+}
+
+StereoEffectStack *SimpleSoundServer_impl::outstack()
+{
+	return _outstack->_copy();
+}
+
+Object *SimpleSoundServer_impl::createObject(const string& name)
+{
+	return ObjectManager::the()->create(name);
 }
 
 void SimpleSoundServer_impl::notifyTime()
@@ -198,7 +219,7 @@ PlayObject *SimpleSoundServer_impl::createPlayObject(const string& filename)
 	}
 	else
 	{
-		cout << "object not abailable" << endl;
+		cout << "object not available" << endl;
 	}
 
 	return 0;

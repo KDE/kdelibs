@@ -22,6 +22,8 @@ interface SimpleSoundServer
  */
 			: PlayObjectFactory
 {
+	readonly attribute StereoEffectStack outstack;
+
 	/**
 	 * tries to play the sound in "filename"
 	 *
@@ -40,6 +42,8 @@ interface SimpleSoundServer
 	//void stop(long ID);
 
 	long attach(ByteSoundProducer producer);
+
+	object createObject(string name);
 };
 
 /*

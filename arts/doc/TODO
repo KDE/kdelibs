@@ -33,6 +33,8 @@ These are:
   different architectures and probably different code for some machines
 - more work on audio playing stuff (different sampling rates, different
   hardware, mono, tunable buffer sizes)
+- make buffer sizes configurable
+- write a kcontrol module
 
 3. To have more fun
 

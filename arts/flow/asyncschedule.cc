@@ -234,6 +234,19 @@ void ASyncNetReceive::receive(Buffer *buffer)
 	NotificationManager::the()->send(gotPacketNotification);
 }
 
+/*
+ * It will happen that this routine is called in time critical situations,
+ * such as: while audio calculation is running, and must be finished in
+ * time. The routine is mostly harmless, because sender->processed() is
+ * a oneway function, which just queues the buffer for sending and returns
+ * back, so it should return at once.
+ *
+ * However there is an exception upon first call: when sender->processed()
+ * is called for the first time, the method processed has still to be looked
+ * up. Thus, a synchronous call to _lookupMethod is made. That means, upon
+ * first call, the method will send out an MCOP request and block until the
+ * remote process tells that id.
+ */
 void ASyncNetReceive::processedPacket(GenericDataPacket *packet)
 {
 	stream->freePacket(packet);

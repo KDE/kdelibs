@@ -300,3 +300,33 @@ interface ByteStreamToAudio : SynthModule {
 
 	out audio stream left,right;
 };
+
+interface StereoEffect : SynthModule {
+	in audio stream inleft, inright;
+	out audio stream outleft, outright;
+};
+
+/*
+ * this is a simple clipping stereo volume control
+ */
+interface StereoVolumeControl : StereoEffect {
+	attribute float scaleFactor;
+	readonly attribute float currentVolumeLeft;
+	readonly attribute float currentVolumeRight;
+};
+
+interface StereoEffectStack : SynthModule {
+	/*
+	   these should be streams - however dynamic expansion isn't there
+	   yet, so this is the quick & dirty solution
+	 */
+	void setInputs(object leftObj, string leftPort,
+					object rightObj, string rightPort);
+	void setOutputs(object leftObj, string leftPort,
+					object rightObj, string rightPort);
+
+	long insertTop(StereoEffect effect, string name);
+	long insertBottom(StereoEffect effect, string name);
+
+	void remove(long ID);
+};
