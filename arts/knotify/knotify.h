@@ -26,6 +26,7 @@
 #include <soundserver.h>
 
 class KNotifyPrivate;
+class KProcess;
 
 class KNotify : public QObject, public DCOPObject
 {
@@ -36,21 +37,39 @@ public:
 	KNotify( bool useArts );
 	~KNotify();
 
+    enum PlayingFinishedStatus
+    {
+        PlayedOK = 0,        // success, all following mean failure
+        NoSoundFile,
+        FileAlreadyPlaying,
+        NoSoundSupport,
+        PlayerBusy,
+        Aborted,
+        Unknown = 5000
+    };
+
 protected:
 k_dcop:
+	// deprecated
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
                          int present, int level);
 
+	// deprecated
 	void notify(const QString &event, const QString &fromApp,
                          const QString &text, QString sound, QString file,
                          int present, int level, int winId);
 
+	void notify(const QString &event, const QString &fromApp,
+                         const QString &text, QString sound, QString file,
+                         int present, int level, int winId, int eventId);
+
+
 	void reconfigure();
 	void setVolume( int volume );
 
-protected:
-	bool notifyBySound(const QString &sound, const QString &appname);
+private:
+	bool notifyBySound(const QString &sound, const QString &appname, int eventId);
 	bool notifyByMessagebox(const QString &text, int level);
 	bool notifyByLogfile(const QString &text, const QString &file);
 	bool notifyByStderr(const QString &text);
@@ -59,8 +78,10 @@ protected:
 	bool notifyByExecute(const QString &command);
 	
 	bool isPlaying( const QString& soundFile ) const;
+
+    void soundFinished( int eventId, PlayingFinishedStatus reason );
+    void abortFirstPlayObject();
 	
-public:
 	/**
 	 * checks if eventname is a global event (exists in config/eventsrc)
 	 **/
@@ -68,6 +89,7 @@ public:
 
 private slots:
     void playTimeout();
+    void slotPlayerProcessExited( KProcess *proc );
 
 private:
     KNotifyPrivate* d;

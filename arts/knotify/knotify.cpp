@@ -4,6 +4,7 @@
                  2000 Stefan Schimanski (1Stein@gmx.de)
                  2000 Matthias Ettrich (ettrich@kde.org)
                  2000 Waldo Bastian <bastian@kde.org>
+                 2000-2003 Carsten Pfeiffer <pfeiffer@kde.org>
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -72,6 +73,8 @@ public:
     KProcess *externalPlayerProc;
 
     QPtrList<KDE::PlayObject> playObjects;
+    QMap<KDE::PlayObject*,int> playObjectEventMap;
+    int externalPlayerEventId;
 
     bool useExternal;
     bool useArts;
@@ -269,15 +272,22 @@ void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
                      int present, int level)
 {
-    notify( event, fromApp, text, sound, file, present, level, 0 );
+    notify( event, fromApp, text, sound, file, present, level, 0, 1 );
 }
 
 void KNotify::notify(const QString &event, const QString &fromApp,
                      const QString &text, QString sound, QString file,
-                     int present, int level, int winId )
+                     int present, int level, int winId)
+{
+    notify( event, fromApp, text, sound, file, present, level, winId, 1 );
+}
+
+void KNotify::notify(const QString &event, const QString &fromApp,
+                     const QString &text, QString sound, QString file,
+                     int present, int level, int winId, int eventId )
 {
     // kdDebug() << "event=" << event << " fromApp=" << fromApp << " text=" << text << " sound=" << sound <<
-    //    " file=" << file << " present=" << present << " level=" << level << endl;
+    //    " file=" << file << " present=" << present << " level=" << level <<  " winId=" << winId << " eventId=" << eventId endl;
 
     QString commandline;
 
@@ -343,7 +353,7 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 
     // emit event
     if ( present & KNotifyClient::Sound ) // && QFile(sound).isReadable()
-        notifyBySound( sound, fromApp );
+        notifyBySound( sound, fromApp, eventId );
 
     if ( present & KNotifyClient::PassivePopup )
         notifyByPassivePopup( text, fromApp, winId );
@@ -362,9 +372,10 @@ void KNotify::notify(const QString &event, const QString &fromApp,
 }
 
 
-bool KNotify::notifyBySound( const QString &sound, const QString &appname )
+bool KNotify::notifyBySound( const QString &sound, const QString &appname, int eventId )
 {
     if (sound.isEmpty()) {
+        soundFinished( eventId, NoSoundFile );
         return false;
     }
     
@@ -379,7 +390,10 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
             soundFile = locate( "sound", sound );
     }
     if ( soundFile.isEmpty() || isPlaying( soundFile ) )
+    {
+        soundFinished( eventId, soundFile.isEmpty() ? NoSoundFile : FileAlreadyPlaying );
         return false;
+    }
 
 
     // kdDebug() << "KNotify::notifyBySound - trying to play file " << soundFile << endl;
@@ -388,11 +402,14 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
         //If we disabled using aRts, just return, 
         //(If we don't, we'll blow up accessing the null soundServer)
         if (!d->useArts)
+        {
+            soundFinished( eventId, NoSoundSupport );
             return false;
+        }
     
         // play sound finally
         while( d->playObjects.count()>5 )
-            d->playObjects.removeFirst();
+            abortFirstPlayObject();
 
         KDE::PlayObjectFactory factory(soundServer->server());
         KURL soundURL;
@@ -401,6 +418,7 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
 
         if (playObject->isNull())
         {
+            soundFinished( eventId, NoSoundSupport );
             delete playObject;
             return false;
         }
@@ -434,6 +452,8 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
 
         playObject->play();
         d->playObjects.append( playObject );
+        d->playObjectEventMap.insert( playObject, eventId );
+
         if ( !d->playTimer )
         {
             d->playTimer = new QTimer( this );
@@ -450,14 +470,22 @@ bool KNotify::notifyBySound( const QString &sound, const QString &appname )
         if (!proc)
         {
            proc = d->externalPlayerProc = new KProcess;
+           connect( proc, SIGNAL( processExited( KProcess * )),
+                    SLOT( slotPlayerProcessExited( KProcess * )));
         }
         if (proc->isRunning())
+        {
+           soundFinished( eventId, PlayerBusy );
            return false; // Skip
+        }
         proc->clearArguments();
         (*proc) << d->externalPlayer << QFile::encodeName( soundFile );
-        proc->start(KProcess::DontCare);
+        d->externalPlayerEventId = eventId;
+        proc->start(KProcess::NotifyOnExit);
         return true;
     }
+
+    soundFinished( eventId, Unknown );
     return false;
 }
 
@@ -596,7 +624,15 @@ void KNotify::playTimeout()
         QPtrListIterator< KDE::PlayObject > current = it;
         ++it;
         if ( (*current)->state() != Arts::posPlaying )
+        {
+            QMap<KDE::PlayObject*,int>::Iterator eit = d->playObjectEventMap.find( *current );
+            if ( eit != d->playObjectEventMap.end() )
+            {
+                soundFinished( *eit, PlayedOK );
+                d->playObjectEventMap.remove( eit );
+            }
             d->playObjects.remove( current );
+        }
     }
     if ( !d->playObjects.count() )
         d->playTimer->stop();
@@ -612,3 +648,31 @@ bool KNotify::isPlaying( const QString& soundFile ) const
 
     return false;
 }
+
+void KNotify::slotPlayerProcessExited( KProcess *proc )
+{
+    soundFinished( d->externalPlayerEventId, 
+                   (proc->normalExit() && proc->exitStatus() == 0) ? PlayedOK : Unknown );
+}
+
+void KNotify::abortFirstPlayObject()
+{
+    QMap<KDE::PlayObject*,int>::Iterator it = d->playObjectEventMap.find( d->playObjects.getFirst() );
+    if ( it != d->playObjectEventMap.end() )
+    {
+        soundFinished( it.data(), Aborted );
+        d->playObjectEventMap.remove( it );
+    }
+    d->playObjects.removeFirst();
+}
+
+void KNotify::soundFinished( int eventId, PlayingFinishedStatus reason )
+{
+    QByteArray data;
+    QDataStream stream( data, IO_WriteOnly );
+    stream << eventId << (int) reason;
+
+    DCOPClient::mainClient()->emitDCOPSignal( "KNotify", "playingFinished(int,int)", data );
+}
+
+
