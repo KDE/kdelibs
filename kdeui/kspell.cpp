@@ -1121,15 +1121,9 @@ void KSpell::dialog2 (int result)
 
 KSpell:: ~KSpell ()
 {
-  if(d)
-      delete d;
-
-  if (proc)
-      delete proc;
-  if (ksconfig)
+    delete d;
+    delete proc;
     delete ksconfig;
-
-  if (ksdlg)
     delete  ksdlg;
 }
 
