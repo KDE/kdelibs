@@ -20,6 +20,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.112  1998/09/28 07:54:23  garbanzo
+// Remove some unneeded/unused kdebug gunk.
+//
 // Revision 1.111  1998/09/21 18:33:30  bieker
 // Use paths.h if we can.
 //
@@ -367,12 +370,12 @@ void KApplication::init()
   // by creating the KProcController instance (if its not already existing)
   // This is handled be KProcess (stefh)
   /*
-  if ( theKProcessController == 0L) 
+  if ( theKProcessController == 0L)
     theKProcessController = new KProcessController();
   */
   KApp = this;
   bLocaleConstructed = false; // no work around mutual dependencies
-  
+
   pIconLoader = 0L;
 
   // create the config directory
@@ -382,7 +385,7 @@ void KApplication::init()
   configPath += "/share";
   mkdir (configPath.data(), 0755); // make it public
   configPath += "/config";
-  mkdir (configPath.data(), 0700); // make it private    
+  mkdir (configPath.data(), 0700); // make it private
 
   // try to read a global application file
   QString aGlobalAppConfigName = kde_configdir() + "/" + aAppName + "rc";
@@ -394,7 +397,7 @@ void KApplication::init()
 	aGlobalAppConfigName = "";
   aGlobalAppConfigFile.close();
 
-  
+
   // now for the local app config file
   QString aConfigName = KApplication::localkdedir();
   aConfigName += "/share/config/";
@@ -405,7 +408,7 @@ void KApplication::init()
 
   // Open the application-specific config file. It will be created if
   // it does not exist yet.
-  bSuccess = aConfigFile.open( IO_ReadWrite ); 
+  bSuccess = aConfigFile.open( IO_ReadWrite );
   if( !bSuccess )
 	{
 	  // try to open at least read-only
@@ -431,17 +434,17 @@ void KApplication::init()
 	}
 
   pCharsets = new KCharsets();
-  
+
   pLocale = new KLocale(aAppName);
   bLocaleConstructed = true;
 
   // Drag 'n drop stuff taken from kfm
   display = desktop()->x11Display();
   DndSelection = XInternAtom( display, "DndSelection", False );
-  DndProtocol = XInternAtom( display, "DndProtocol", False );    
-  DndEnterProtocol = XInternAtom( display, "DndEnterProtocol", False );    
-  DndLeaveProtocol = XInternAtom( display, "DndLeaveProtocol", False );    
-  DndRootProtocol = XInternAtom( display, "DndRootProtocol", False );    
+  DndProtocol = XInternAtom( display, "DndProtocol", False );
+  DndEnterProtocol = XInternAtom( display, "DndEnterProtocol", False );
+  DndLeaveProtocol = XInternAtom( display, "DndLeaveProtocol", False );
+  DndRootProtocol = XInternAtom( display, "DndRootProtocol", False );
   lastEnteredDropZone = 0L;
   dropZones.setAutoDelete( FALSE );
 
@@ -476,7 +479,7 @@ void KApplication::init()
     XChangeProperty(qt_xdisplay(), w->winId(), a, a, 32,
 					PropModeReplace, (unsigned char *)&data, 1);
   }
-  aWmCommand = argv()[0]; 
+  aWmCommand = argv()[0];
 }
 
 KConfig* KApplication::getSessionConfig() {
@@ -497,7 +500,7 @@ KConfig* KApplication::getSessionConfig() {
     aSessionConfigName = aConfigName + "." + num;
   } while (QFile::exists(aSessionConfigName));
   QFile aConfigFile(aSessionConfigName);
-  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
+  bool bSuccess = aConfigFile.open( IO_ReadWrite );
   if( bSuccess ){
     aConfigFile.close();
     pSessionConfig = new KConfig(0L, aSessionConfigName);
@@ -534,7 +537,7 @@ KIconLoader* KApplication::getIconLoader()
 }
 
 
-QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/, 
+QPopupMenu* KApplication::getHelpMenu( bool /*bAboutQtMenu*/,
 									   const char* aboutAppText )
 {
   QPopupMenu* pMenu = new QPopupMenu();
@@ -574,7 +577,7 @@ void KApplication::appHelpActivated()
 void KApplication::aboutKDE()
 {
   QMessageBox::about( 0L, klocale->translate( "About KDE" ),
-					  klocale->translate( 
+					  klocale->translate(
 "\nThe KDE Desktop Environment was written by the KDE Team,\n"
 "a world-wide network of software engineers committed to\n"
 "free software development.\n\n"
@@ -588,7 +591,7 @@ void KApplication::aboutApp()
 {
   QMessageBox::about( 0L, getCaption(), aAppAboutString );
 }
- 
+
 
 void KApplication::aboutQt()
 {
@@ -607,9 +610,9 @@ KLocale* KApplication::getLocale()
 
 bool KApplication::eventFilter ( QObject*, QEvent* e )
 {
-  if ( e->type() == Event_KeyPress ) 
-	{    
-	  QKeyEvent *k = (QKeyEvent*)e;  
+  if ( e->type() == Event_KeyPress )
+	{
+	  QKeyEvent *k = (QKeyEvent*)e;
 	  if( ( k->key() == Key_F12 ) &&
 		  ( k->state() & ControlButton ) &&
 		  ( k->state() & ShiftButton ) )
@@ -620,19 +623,19 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 		  QString aOldGroup = pConfig->getGroup();
 		  pConfig->setGroup( "KDebug" );
 		  pDialog->setInfoOutput( pConfig->readNumEntry( "InfoOutput", 4 ) );
-		  pDialog->setInfoFile( pConfig->readEntry( "InfoFilename", 
+		  pDialog->setInfoFile( pConfig->readEntry( "InfoFilename",
 													"kdebug.dbg" ) );
 		  pDialog->setInfoShow( pConfig->readEntry( "InfoShow", "" ) );
 		  pDialog->setWarnOutput( pConfig->readNumEntry( "WarnOutput", 4 ) );
-		  pDialog->setWarnFile( pConfig->readEntry( "WarnFilename", 
+		  pDialog->setWarnFile( pConfig->readEntry( "WarnFilename",
 													"kdebug.dbg" ) );
 		  pDialog->setWarnShow( pConfig->readEntry( "WarnShow", "" ) );
 		  pDialog->setErrorOutput( pConfig->readNumEntry( "ErrorOutput", 4 ) );
-		  pDialog->setErrorFile( pConfig->readEntry( "ErrorFilename", 
+		  pDialog->setErrorFile( pConfig->readEntry( "ErrorFilename",
 													 "kdebug.dbg" ) );
 		  pDialog->setErrorShow( pConfig->readEntry( "ErrorShow", "" ) );
 		  pDialog->setFatalOutput( pConfig->readNumEntry( "FatalOutput", 4 ) );
-		  pDialog->setFatalFile( pConfig->readEntry( "FatalFilename", 
+		  pDialog->setFatalFile( pConfig->readEntry( "FatalFilename",
 													 "kdebug.dbg" ) );
 		  pDialog->setFatalShow( pConfig->readEntry( "FatalShow", "" ) );
 		  pDialog->setAbortFatal( pConfig->readNumEntry( "AbortFatal", 0 ) );
@@ -663,7 +666,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 			{
 			  /* User pressed Cancel, do nothing */
 			}
-		  
+		
 		  /* restore old group */
 		  pConfig->setGroup( aOldGroup );
 
@@ -684,18 +687,18 @@ void KApplication::parseCommandLine( int& argc, char** argv )
   parameter_code parameter;
   while( i < argc ) {
     parameter = unknown;
-    
+
     for ( int p = 0 ; parameter_strings[p]; p++)
       if ( !strcmp( argv[i], parameter_strings[p]) ) {
         parameter = static_cast<parameter_code>(p + 1);
         break;
       }
-    
+
     if ( parameter != unknown && argc < i +2 ) { // last argument without parameters
       argc -= 1;
       break; // jump out of the while loop
     }
-    
+
     switch (parameter) {
     case caption:
       aCaption = argv[i+1];
@@ -743,13 +746,14 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 		}
 		if (QFile::exists(aSessionConfigName)){
 		  QFile aConfigFile(aSessionConfigName);
-		  bool bSuccess = aConfigFile.open( IO_ReadWrite ); 
+		  bool bSuccess = aConfigFile.open( IO_ReadWrite );
 		  if( bSuccess ){
 			aConfigFile.close();
 			pSessionConfig = new KConfig(0L, aSessionConfigName);
 			if (pSessionConfig){
 			  bIsRestored = True;
 			}
+			aConfigFile.remove();
 		  }
 		}
       }
@@ -759,10 +763,10 @@ void KApplication::parseCommandLine( int& argc, char** argv )
     }
 
     if ( parameter != unknown ) { // remove arguments
-      
+
       for( int j = i;  j < argc-2; j++ )
         argv[j] = argv[j+2];
-      
+
       argc -=2 ;
     }
 
@@ -780,10 +784,10 @@ void KApplication::parseCommandLine( int& argc, char** argv )
 KApplication::~KApplication()
 {
   removeEventFilter( this );
-  
+
   if( pIconLoader )
     delete pIconLoader;
-    
+
   if( pLocale )
     delete pLocale;
 
@@ -803,7 +807,7 @@ KApplication::~KApplication()
   theKProcessController = 0;
   delete ctrl; // Stephan: "there can be only one" ;)
 
-  KApp = 0; 
+  KApp = 0;
 }
 
 bool KApplication::x11EventFilter( XEvent *_event )
@@ -811,7 +815,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
   // You can get root drop events twice.
   // This is to avoid this.
   static int rootDropEventID = -1;
-    
+
   if ( _event->type == ClientMessage )
     {
 	  XClientMessageEvent *cme = ( XClientMessageEvent * ) _event;
@@ -820,18 +824,26 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		{
 		  if( (Atom)(cme->data.l[0]) == WM_SAVE_YOURSELF )
 			{
-			  if (!topWidget() || 
+			    //we want a new session config!
+			    if (bIsRestored && pSessionConfig) {
+				delete pSessionConfig;
+				pSessionConfig = 0;
+				bIsRestored = false;
+			    }
+				
+			    
+			  if (!topWidget() ||
 			      cme->window != topWidget()->winId()){
 			    KWM::setWmCommand(cme->window, "");
 			    return true;
 			  }
-			    
+			
 			  emit saveYourself(); // give applications a chance to
-			  // save their data 
+			  // save their data
 			  if (bSessionManagementUserDefined)
 			    KWM::setWmCommand( topWidget()->winId(), aWmCommand);
 			  else {
-			    
+			
 			    if (pSessionConfig && !aSessionName.isEmpty()){
 			      QString aCommand = aAppName.copy();
 			      if (aAppName != argv()[0]){
@@ -848,17 +860,17 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			      aCommand+=" -restore ";
 			      aCommand+=aSessionName;
 			      aCommand+=aDummyString2;
-			      KWM::setWmCommand( topWidget()->winId(), 
+			      KWM::setWmCommand( topWidget()->winId(),
 									 aCommand);
 			      pSessionConfig->sync();
 			    } else {
 			      QString aCommand = argv()[0];
 			      aCommand+=aDummyString2;
-			      KWM::setWmCommand( topWidget()->winId(), 
+			      KWM::setWmCommand( topWidget()->winId(),
 									 aCommand);
 			    }
 			  }
-			    
+			
 			  return true;
 			}
 		}
@@ -867,10 +879,10 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	  if ( cme->message_type == KDEChangeStyle )
 		{
 		  QString str;
-		  
+		
 		  getConfig()->setGroup("KDE");
 		  str = getConfig()->readEntry("widgetStyle");
-		  if(!str.isNull()) 
+		  if(!str.isNull())
 		    if(str == "Motif")
 		      applyGUIStyle(MotifStyle);
 		    else
@@ -878,12 +890,12 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			applyGUIStyle(WindowsStyle);
 		  return TRUE;
 		}
- 
+
 	  if ( cme->message_type == KDEChangePalette )
 		{
 		  readSettings();
 		  kdisplaySetPalette();
-		  
+		
 		  return True;
 		}
 	  if ( cme->message_type == KDEChangeGeneral )
@@ -891,15 +903,15 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		  readSettings();
 		  kdisplaySetStyleAndFont();
 		  kdisplaySetPalette();
-		  
+		
 		  return True;
 		}
-	  
+	
 	  if ( cme->message_type == DndLeaveProtocol )
 		{
 		  if ( lastEnteredDropZone != 0L )
 			lastEnteredDropZone->leave();
-	    
+	
 		  lastEnteredDropZone = 0L;
 
 		  return TRUE;
@@ -907,15 +919,15 @@ bool KApplication::x11EventFilter( XEvent *_event )
 	  else if ( cme->message_type != DndProtocol && cme->message_type != DndEnterProtocol &&
 				cme->message_type != DndRootProtocol )
 	    return FALSE;
-	  
+	
 	  Window root = DefaultRootWindow(display);
-	  
+	
 	  unsigned char *Data;
 	  unsigned long Size;
 	  Atom    ActualType;
 	  int     ActualFormat;
 	  unsigned long RemainingBytes;
-      
+
 	  XGetWindowProperty(display,root,DndSelection,
 						 0L,1000000L,
 						 FALSE,AnyPropertyType,
@@ -929,7 +941,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 		{
 		  if ( rootDropEventID == (int)cme->data.l[1] )
 			return FALSE;
-	    
+	
 		  rootDropEventID = (int)cme->data.l[1];
 
 		  if ( rootDropZone != 0L )
@@ -958,7 +970,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			  if ( dz->getWidget() == w )
 				result = dz;
 			}
-	      
+	
 	      if ( result == 0L )
 			w = w->parentWidget();
 		}
@@ -971,7 +983,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			if ( dz->getWidget()->rect().contains( p2 ) )
 		      result = dz;
 	      }
-	  
+	
 	  if ( result != 0L )
 		{
 	      if ( cme->message_type == DndProtocol )
@@ -983,7 +995,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 			  // If we entered another drop zone, tell the drop zone we left about it
 			  if ( lastEnteredDropZone != 0L && lastEnteredDropZone != result )
 				lastEnteredDropZone->leave();
-		  
+		
 			  // Notify the drop zone over which the pointer is right now.
 			  result->enter( (char*)Data, Size, (int)cme->data.l[0], p.x(), p.y() );
 			  lastEnteredDropZone = result;
@@ -999,7 +1011,7 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 	  return TRUE;
     }
-    
+
   return FALSE;
 }
 
@@ -1068,7 +1080,7 @@ void KApplication::buildSearchPaths()
   // We want to search the local files with highest priority
   QString tmp = KApplication::localkdedir();
   appendSearchPath( tmp );
-    
+
   // add paths from "[KDE Setup]:Path=" config file entry
   getConfig()->setGroup( "KDE Setup" );
   QString kdePathRc = getConfig()->readEntry( "Path" );
@@ -1135,25 +1147,25 @@ void KApplication::readSettings()
 	
   // Read the color scheme group from config file
   // If unavailable set color scheme to KDE default
-  
+
   config->setGroup( "General");
   // this default is Qt black
   textColor = config->readColorEntry( "foreground", &black );
-  
+
   // this default is the Qt lightGray
   backgroundColor = config->readColorEntry( "background", &lightGray  );
-  
+
   // this default is Qt darkBlue
   selectColor = config->readColorEntry( "selectBackground", &darkBlue );
 
   // this default is Qt white
   selectTextColor = config->readColorEntry( "selectForeground", &white);
-  
+
   // this default is Qt white
   windowColor = config->readColorEntry( "windowBackground", &white );
-  
+
   // this default is Qt black
-  windowTextColor = config->readColorEntry( "windowForeground", &black ); 
+  windowTextColor = config->readColorEntry( "windowForeground", &black );
 	
   config->setGroup( "WM");
   // this default is Qt lightGray
@@ -1161,13 +1173,13 @@ void KApplication::readSettings()
 
   // this default is Qt darkGrey
   inactiveTextColor = config->readColorEntry( "inactiveForeground", &darkGray );
-  
+
   // this default is Qt darkBlue
   activeTitleColor = config->readColorEntry( "activeBackground", &darkBlue );
 
   // this default is Qt white
   activeTextColor = config->readColorEntry( "activeForeground", &white );
-  
+
   config->setGroup( "KDE");
   contrast = config->readNumEntry( "contrast", 7 );
 
@@ -1183,7 +1195,7 @@ void KApplication::readSettings()
   config->setGroup( "General" );
   generalFont = config->readFontEntry( "font", &generalFont );
   fixedFont = config->readFontEntry( "fixedFont", &fixedFont );
-  
+
   // Finally, read GUI style from config.
 	
   config->setGroup( "KDE" );
@@ -1211,15 +1223,15 @@ void KApplication::kdisplaySetPalette()
   // printf("contrast = %d\n", contrast);
 	
   if ( applicationStyle==MotifStyle ) {
-	QColorGroup disabledgrp( textColor, backgroundColor, 
+	QColorGroup disabledgrp( textColor, backgroundColor,
 							 backgroundColor.light(highlightVal),
-							 backgroundColor.dark(lowlightVal), 
+							 backgroundColor.dark(lowlightVal),
 							 backgroundColor.dark(120),
 							 backgroundColor.dark(120), windowColor );
 
-	QColorGroup colgrp( textColor, backgroundColor, 
+	QColorGroup colgrp( textColor, backgroundColor,
 						backgroundColor.light(highlightVal),
-						backgroundColor.dark(lowlightVal), 
+						backgroundColor.dark(lowlightVal),
 						backgroundColor.dark(120),
 						textColor, windowColor );
 
@@ -1229,15 +1241,15 @@ void KApplication::kdisplaySetPalette()
 	emit appearanceChanged();
 
   } else {
-	QColorGroup disabledgrp( textColor, backgroundColor, 
+	QColorGroup disabledgrp( textColor, backgroundColor,
 							 backgroundColor.light(150),
-							 backgroundColor.dark(), 
+							 backgroundColor.dark(),
 							 backgroundColor.dark(120),
 							 backgroundColor.dark(120), windowColor );
 
-	QColorGroup colgrp( textColor, backgroundColor, 
+	QColorGroup colgrp( textColor, backgroundColor,
 						backgroundColor.light(150),
-						backgroundColor.dark(), 
+						backgroundColor.dark(),
 						backgroundColor.dark(120),
 						textColor, windowColor );
 
@@ -1251,19 +1263,19 @@ void KApplication::kdisplaySetPalette()
 }
 
 void KApplication::kdisplaySetFont()
-{   
+{
   QApplication::setFont( generalFont, TRUE );
   // setFont() works every time for me !
 
-  emit kdisplayFontChanged();    
+  emit kdisplayFontChanged();
   emit appearanceChanged();
- 
+
   resizeAll();
 }	
 
 
 void KApplication::kdisplaySetStyle()
-{   
+{
   // QApplication::setStyle( applicationStyle );
   applyGUIStyle( applicationStyle );
 
@@ -1274,17 +1286,17 @@ void KApplication::kdisplaySetStyle()
 
 
 void KApplication::kdisplaySetStyleAndFont()
-{   
+{
   //  QApplication::setStyle( applicationStyle );
   // 	setStyle() works pretty well but may not change the style of combo
   //	boxes.
   QApplication::setFont( generalFont, TRUE );
-  applyGUIStyle(applicationStyle);   
-    
+  applyGUIStyle(applicationStyle);
+
   emit kdisplayStyleChanged();
   emit kdisplayFontChanged();
   emit appearanceChanged();
-  
+
   resizeAll();
 }	
 
@@ -1362,14 +1374,14 @@ QString KApplication::kdedir()
 }
 
 
-/* maybe we could read it out of a config file, but 
+/* maybe we could read it out of a config file, but
    this can be added later */
 const QString& KApplication::kde_htmldir()
 {
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_HTMLDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1380,7 +1392,7 @@ const QString& KApplication::kde_appsdir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_APPSDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1391,7 +1403,7 @@ const QString& KApplication::kde_icondir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_ICONDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1402,7 +1414,7 @@ const QString& KApplication::kde_datadir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_DATADIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1413,7 +1425,7 @@ const QString& KApplication::kde_localedir()
   static QString dir;
   if (dir.isNull()) {
 	dir = KDE_LOCALE;
-	if (!strncmp(dir.data(), "KDEDIR", 6)) 
+	if (!strncmp(dir.data(), "KDEDIR", 6))
 	    dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1424,7 +1436,7 @@ const QString& KApplication::kde_cgidir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_CGIDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1435,7 +1447,7 @@ const QString& KApplication::kde_sounddir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_SOUNDDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1446,7 +1458,7 @@ const QString& KApplication::kde_toolbardir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_TOOLBARDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1457,18 +1469,18 @@ const QString& KApplication::kde_wallpaperdir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_WALLPAPERDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
 }
- 
+
 const QString& KApplication::kde_bindir()
 {
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_BINDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1479,7 +1491,7 @@ const QString& KApplication::kde_partsdir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_PARTSDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1490,7 +1502,7 @@ const QString& KApplication::kde_configdir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_CONFIGDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1501,7 +1513,7 @@ const QString& KApplication::kde_mimedir()
   static QString dir;
   if (dir.isNull()) {
       dir = KDE_MIMEDIR;
-      if (!strncmp(dir.data(), "KDEDIR", 6)) 
+      if (!strncmp(dir.data(), "KDEDIR", 6))
 	  dir = kdedir() + dir.right(dir.length() - 6);
   }
   return dir;
@@ -1532,7 +1544,7 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
   if(fontfilename.isEmpty()){
     return false;
   }
-    
+
   fontfilename = fontfilename + "/share/config/kdefonts";
 
   QFile fontfile(fontfilename);
@@ -1546,7 +1558,7 @@ bool KApplication::getKDEFonts(QStrList *fontlist)
 
   if (!fontfile.isReadable())
     return false;
-  
+
   QTextStream t(&fontfile);
 
 
@@ -1590,7 +1602,7 @@ const char* KApplication::tempSaveName( const char* pFilename )
 }
 
 
-const char* KApplication::checkRecoverFile( const char* pFilename, 
+const char* KApplication::checkRecoverFile( const char* pFilename,
 											bool& bRecover )
 {
   QString aFilename;

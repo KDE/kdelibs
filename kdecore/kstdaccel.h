@@ -24,11 +24,14 @@
 #include "kaccel.h"
 // #include <kkeyconf.h>
 
-/** 
+/**
  * Convenient methods for access of the common accelerator keys in
  * the key configuration. These standard keybindings that shall be used
  * in all Kde applications. They will be configurable, so do not hardcode
  * the default behaviour.
+ *
+ * If you want real configurable keybindings in your applications,
+ * please checkout the class KAccel in kaccel.h
  */
 class KStdAccel //: public KKeyConfig
 {
