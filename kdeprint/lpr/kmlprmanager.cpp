@@ -27,6 +27,7 @@
 #include <qfileinfo.h>
 #include <qlist.h>
 #include <klocale.h>
+#include <kstandarddirs.h>
 #include <unistd.h>
 
 KMLprManager::KMLprManager(QObject *parent, const char *name)
@@ -206,4 +207,75 @@ bool KMLprManager::savePrinterDriver(KMPrinter *prt, DrMain *driver)
 	if (handler && entry)
 		return handler->savePrinterDriver(prt, entry, driver);
 	return false;
+}
+
+bool KMLprManager::savePrintcapFile()
+{
+	if (!LprSettings::self()->isLocalPrintcap())
+	{
+		setErrorMsg(i18n("The printcap file is a remote file (NIS). It cannot be written."));
+		return false;
+	}
+	QFile	f(LprSettings::self()->printcapFile());
+	if (f.open(IO_WriteOnly))
+	{
+		QTextStream	t(&f);
+		QDictIterator<PrintcapEntry>	it(m_entries);
+		for (; it.current(); ++it)
+		{
+			it.current()->writeEntry(t);
+		}
+	}
+	else
+	{
+		setErrorMsg(i18n("Unable to save printcap file. Check that "
+		                 "you have write permissions for that file."));
+		return false;
+	}
+}
+
+bool KMLprManager::createPrinter(KMPrinter *prt)
+{
+	// remove existing printcap entry
+	m_entries.remove(prt->printerName());
+
+	// look for the handler and re-create entry
+	LprHandler	*handler = findHandler(prt);
+	if (!handler)
+	{
+		setErrorMsg(i18n("Unrecognized entry."));
+		return false;
+	}
+	QString	sd = LprSettings::self()->baseSpoolDir();
+	if (sd.isEmpty())
+	{
+		setErrorMsg(i18n("Couldn't determine spool directory. See options dialog."));
+		return false;
+	}
+	sd.append("/").append(prt->printerName());
+	if (!KStandardDirs::makeDir(sd, 0700))
+	{
+		setErrorMsg(i18n("Unable to create the spool directory %1. Check that you "
+		                 "have the required permissions for that operation.").arg(sd));
+		return false;
+	}
+	PrintcapEntry	*entry = handler->createEntry(prt);
+	if (!entry)
+		return false;	// error should be set in the handler
+	entry->name = prt->printerName();
+	entry->addField("sh", Field::Boolean);
+	entry->addField("mx", Field::Integer, "0");
+	entry->addField("sd", Field::String, sd);
+	if (!prt->option("kde-aliases").isEmpty())
+		entry->aliases += QStringList::split("|", prt->option("kde-aliases"), false);
+
+	// insert the new entry and save printcap file
+	m_entries.insert(prt->printerName(), entry);
+	bool	result = savePrintcapFile();
+	if (result)
+	{
+		if (prt->driver())
+			result = savePrinterDriver(prt, prt->driver());
+	}
+	return result;
 }

@@ -68,16 +68,9 @@ void LprSettings::init()
 	// Printcap file
 	m_printcapfile = QString::null;
 	m_local = true;
-}
 
-LprSettings::Mode LprSettings::mode() const
-{
-	return m_mode;
-}
-
-bool LprSettings::isLocalPrintcap()
-{
-	return m_local;
+	// Spool directory
+	m_spooldir = "/var/spool/lpd";
 }
 
 QString LprSettings::printcapFile()

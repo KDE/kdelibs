@@ -38,6 +38,7 @@ public:
 	virtual DrMain* loadDriver(KMPrinter*, PrintcapEntry*);
 	virtual DrMain* loadDbDriver(const QString&);
 	virtual bool savePrinterDriver(KMPrinter*, PrintcapEntry*, DrMain*);
+	virtual PrintcapEntry* createEntry(KMPrinter*);
 
 	QString name() const;
 	KMManager* manager() const;

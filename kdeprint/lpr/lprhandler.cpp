@@ -73,3 +73,30 @@ DrMain* LprHandler::loadDbDriver(const QString&)
 	manager()->setErrorMsg(i18n("Unrecognized entry."));
 	return NULL;
 }
+
+PrintcapEntry* LprHandler::createEntry(KMPrinter *prt)
+{
+	// this default handler only supports local parallel and remote lpd URIs
+	KURL	uri = prt->device();
+	QString	prot = uri.protocol();
+	if (!prot.isEmpty() && prot != "parallel" && prot != "file" && prot != "lpd")
+	{
+		manager()->setErrorMsg(i18n("Unsupported backend."));
+		return NULL;
+	}
+	PrintcapEntry	*entry = new PrintcapEntry;
+	entry->comment = "# Default handler";
+	if (prot == "lpd")
+	{
+		entry->addField("rm", Field::String, uri.host());
+		QString	rp = uri.path();
+		if (rp[0] == '/')
+			rp = rp.mid(1);
+		entry->addField("rp", Field::String, rp);
+	}
+	else
+	{
+		entry->addField("lp", Field::String, uri.path());
+	}
+	return entry;
+}

@@ -31,9 +31,10 @@ public:
 	static LprSettings* self();
 
 	enum Mode { LPR, LPRng };
-	Mode mode() const;
+	Mode mode() const		{ return m_mode; }
 	QString printcapFile();
-	bool isLocalPrintcap();
+	bool isLocalPrintcap()		{ return m_local; }
+	QString baseSpoolDir()		{ return m_spooldir; }
 
 protected:
 	void init();
@@ -43,6 +44,7 @@ private:
 	Mode	m_mode;
 	QString	m_printcapfile;
 	bool	m_local;
+	QString	m_spooldir;
 };
 
 #endif

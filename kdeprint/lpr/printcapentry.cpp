@@ -49,3 +49,12 @@ bool PrintcapEntry::writeEntry(QTextStream& t)
 	t << endl << endl;
 	return true;
 }
+
+void PrintcapEntry::addField(const QString& name, Field::Type type, const QString& value)
+{
+	Field	f;
+	f.name = name;
+	f.type = type;
+	f.value = value;
+	fields[name] = f;
+}

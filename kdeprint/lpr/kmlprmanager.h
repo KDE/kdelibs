@@ -43,6 +43,7 @@ public:
 	bool savePrinterDriver(KMPrinter*, DrMain*);
 	DrMain* loadPrinterDriver(KMPrinter*, bool = false);
 	DrMain* loadFileDriver(const QString&);
+	bool createPrinter(KMPrinter*);
 
 protected:
 	void listPrinters();
@@ -51,6 +52,7 @@ protected:
 	PrintcapEntry* findEntry(KMPrinter*);
 	LprHandler* findHandler(KMPrinter*);
 	void checkPrinterState(KMPrinter*);
+	bool savePrintcapFile();
 
 private:
 	QDict<LprHandler>	m_handlers;
