@@ -1,4 +1,4 @@
-#include <qapplication.h>
+#include <kapp.h>
 #include <qwidget.h>
 #include <qstringlist.h>
 #include <qdir.h>
@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    KApplication app(argc, argv, "kopenwithtest");
     QStringList list;
 
     list += "file://home/testfile";
