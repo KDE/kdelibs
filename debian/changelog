@@ -1,3 +1,9 @@
+kdelibs (4:2.2.2-11) unstable; urgency=low
+
+  * Remove | cupsys-dev as cupsys-dev doesn't exist
+
+ -- Ivan E. Moore II <rkrusty@debian.org>  Thu, 03 Jan 2002 13:15:00 -0700
+
 kdelibs (4:2.2.2-10) unstable; urgency=low
 
   * Fix Deps (Closes: #126232)
