@@ -1,35 +1,28 @@
 /*
-  This file is part of the KDE libraries
-  Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
-            (c) 1999 Mario Weilguni <mweilguni@sime.com>
+ * This file is part of the KDE libraries
+ * Copyright (c) 1999 Waldo Bastian <bastian@kde.org>
+ *           (c) 1999 Mario Weilguni <mweilguni@sime.com>
+ *
+ * $Id$
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License version 2 as published by the Free Software Foundation.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public License
+ * along with this library; see the file COPYING.LIB.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Library General Public
-  License version 2 as published by the Free Software Foundation.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Library General Public License for more details.
-
-  You should have received a copy of the GNU Library General Public License
-  along with this library; see the file COPYING.LIB.  If not, write to
-  the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-  Boston, MA 02111-1307, USA.
-*/
-
-#include "config.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <signal.h>
-#include <string.h>
-#include "ltdl.h"
-
-#include "klauncher_cmds.h"
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -38,12 +31,22 @@
 #include <sys/un.h>
 #include <sys/wait.h>
 
+#include <errno.h>
+#include <fcntl.h>
 #include <setproctitle.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include <qstring.h>
 #include <qfile.h>
 #include <kinstance.h>
 #include <kstddirs.h>
+
+#include "ltdl.h"
+#include "klauncher_cmds.h"
 
 int waitForPid;
 
@@ -100,8 +103,7 @@ static pid_t launch(int argc, const char *_name, const char *args)
   QCString cmd;
   QCString name;
 
-  if (strcmp(_name, "klauncher") == 0)
-  {
+  if (strcmp(_name, "klauncher") == 0) {
      /* klauncher is launched in a special way:
       * instead of calling 'main(argc, argv)',
       * we call 'start_launcher(comm_socket)'.
