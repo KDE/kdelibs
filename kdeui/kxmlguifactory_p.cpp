@@ -534,12 +534,11 @@ void BuildHelper::processElement( const QDomElement &e )
     QString tag( e.tagName().lower() );
     QString currName( e.attribute( attrName ) );
 
-    bool isActionTag = false;
+    bool isActionTag = ( tag == tagAction );
 
-    if ( ( isActionTag = ( tag == tagAction ) ) ||
-           customTags.findIndex( tag ) != -1 )
+    if ( isActionTag || customTags.findIndex( tag ) != -1 )
         processActionOrCustomElement( e, isActionTag );
-   else if ( containerTags.findIndex( tag ) != -1 )
+    else if ( containerTags.findIndex( tag ) != -1 )
         processContainerElement( e, tag, currName );
     else if ( tag == tagMerge || tag == tagDefineGroup || tag == tagActionList )
         processMergeElement( tag, currName );
