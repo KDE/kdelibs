@@ -153,6 +153,13 @@ void KDockMainWindow::readDockConfig( KConfig* c, QString group )
 }
 #endif
 
+void KDockMainWindow::slotDockWidgetUndocked()
+{
+  QObject* pSender = (QObject*) sender();
+  if (!pSender->inherits("KDockWidget")) return;
+  KDockWidget* pDW = (KDockWidget*) pSender;
+  emit dockWidgetHasUndocked( pDW);
+}
 
 /*************************************************************************/
 KDockWidgetAbstractHeaderDrag::KDockWidgetAbstractHeaderDrag( KDockWidgetAbstractHeader* parent, KDockWidget* dock, const char* name )
@@ -324,6 +331,7 @@ KDockWidget::KDockWidget( KDockManager* dockManager, const char* name, const QPi
   setIcon( pixmap);
   widget = 0L;
 
+  QObject::connect(this, SIGNAL(hasUndocked()), manager->main, SLOT(slotDockWidgetUndocked()) );
   applyToWidget( parent, QPoint(0,0) );
 }
 
@@ -648,6 +656,7 @@ void KDockWidget::undock()
   QWidget* parentW = parentWidget();
   if ( !parentW ){
     hide();
+    emit hasUndocked();
     return;
   }
 
@@ -766,6 +775,8 @@ void KDockWidget::undock()
   manager->blockSignals(false);
   emit manager->change();
   manager->undockProcess = false;
+
+  emit hasUndocked();
 }
 
 void KDockWidget::setWidget( QWidget* mw )

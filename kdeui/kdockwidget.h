@@ -600,6 +600,10 @@ signals:
    * Signals that the widget processes a close event.
    */
 	void iMBeingClosed();
+  /**
+   * Signals that the widget is undocked now.
+   */
+  void hasUndocked();
 
 protected slots:
 
@@ -1153,6 +1157,12 @@ public:
    */
   void setView( QWidget* );
 
+signals:
+  /**
+  * Signals a certain dockwidget is undocked now.
+  */
+  void dockWidgetHasUndocked(KDockWidget*);
+
 protected:
 
   /** A pointer to the main dockwidget (where one can manualDock() to */
@@ -1160,6 +1170,12 @@ protected:
 
   /** A pointer to the manager for the dock process */
   KDockManager* dockManager;
+
+protected slots:
+  /**
+  * Called whenever one of the dockwidgets of this has been undocked.
+  */
+  void slotDockWidgetUndocked();
 
 private:
   class KDockMainWindowPrivate;
