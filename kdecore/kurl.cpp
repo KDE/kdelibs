@@ -46,9 +46,9 @@ static QString encode( const QString& segment, bool encode_slash, int encoding_h
 {
   const char *encode_string;
   if (encode_slash)
-    encode_string = "<>#@\"&%?={}|^~[]\'`\\:/";
+    encode_string = "<>#@\"&%?={}|^~[]\'`\\:+/";
   else
-    encode_string = "<>#@\"&%?={}|^~[]\'`\\:";
+    encode_string = "<>#@\"&%?={}|^~[]\'`\\:+";
 
   QCString local;
   if (encoding_hint==0)
