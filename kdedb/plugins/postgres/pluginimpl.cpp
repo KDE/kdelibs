@@ -19,6 +19,7 @@
 */     
 #include "pluginimpl.h"
 #include "connectorimpl.h"
+#include "controlimpl.h"
 
 #include <kdebug.h>
 #include <iostream.h>
@@ -26,12 +27,14 @@
 #include "pluginimpl.moc"
 
 PluginImpl::PluginImpl(QObject *parent)
-    : Plugin(parent, "Postgres")
+    : Plugin(parent, "Postgres"), m_control(0L)
 {
 }
 
 PluginImpl::~PluginImpl()
 {
+    if (m_control)
+        delete m_control;
 }
 
 KDB::Plugin::PluginInfo
@@ -57,12 +60,31 @@ PluginImpl::createConnector()
 bool
 PluginImpl::provides(KDB::capability cap)
 {
-    return false;
+    bool ret = false;
+    switch (cap) {
+    case KDB::CONFIG:
+        ret = true;
+        break;
+    default:
+        break;
+    }
+    return ret;
 }
 
 KDB::Capability *
 PluginImpl::createObject(KDB::capability cap)
 {
-    //throw new KDB::UnsupportedCapability("this plugin does nothing!");
-    return 0L;
+    KDB::Capability *ret = 0L;
+    
+    switch (cap) {
+    case KDB::CONFIG:
+        if (!m_control)
+            m_control = new ControlImpl("PGControl");
+        ret = m_control;
+        break;
+    default:
+        break;
+    }
+
+    return ret;
 }

@@ -91,3 +91,22 @@ KDB::DataType
 HandlerImpl::kdbDataType(const QString &fieldName)
 {
 }
+
+bool 
+HandlerImpl::append(KDB::Row row)
+{
+    return false;
+}
+
+bool 
+HandlerImpl::update(KDB_ULONG pos, KDB::Row row)
+{
+    return false;
+}
+
+bool 
+HandlerImpl::remove(KDB_ULONG pos, KDB::Row row)
+{
+    return false;
+}
+

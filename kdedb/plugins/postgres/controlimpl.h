@@ -17,37 +17,22 @@
    the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.
 */     
-#ifndef __PLUGINIMPL_H
-#define __PLUGINIMPL_H
+#ifndef __CONTROLIMPL_H
+#define __CONTROLIMPL_H
 
-#include <kdb/plugin.h>
+#include <kdb/control.h>
 
-class KDB::Connector;
 
-class ControlImpl;
-class PluginImpl : public KDB::Plugin
+class ControlImpl : public KDB::Control
 {
     Q_OBJECT
 
 public:
 
-    PluginImpl(QObject *parent);
-    ~PluginImpl();
+    ControlImpl(const char * name);
+    ~ControlImpl();
 
-    /**
-     * returns the information about the plugin
-     */
-    virtual KDB::Plugin::PluginInfo info();
-
-    virtual bool provides(KDB::capability cap);
-
-    virtual KDB::Capability *createObject(KDB::capability cap);
-
-protected:
-
-    virtual KDB::Connector *createConnector();
-
-    ControlImpl * m_control;
+    virtual bool showDialog(KConfigBase *conf, QWidget *parent, const char * name);
 
 };
 

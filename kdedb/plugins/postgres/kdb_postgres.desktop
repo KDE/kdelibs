@@ -1,8 +1,19 @@
 [Desktop Entry]
 Type=Service
 Exec=blahfoo
-Name=KDBPluginPostgres
+Name=Postgres
+Name[da]=KDB indstik Postgres
+Name[eo]=KDB-kromaĵo por Postgres
+Name[es]=Plugin de KDB para Postgres
+Name[ro]=Postgres
 Comment=kdbcore database plugin for Postgres
+Comment[da]=kdbcore database indstik for Postgres
+Comment[eo]=kdbcore datumbaza kromaĵo por Postgres
+Comment[es]=Plugin de la base de datos Kdbcore para Postgres
+Comment[he]=Postgres לש םינותנ יסיסבל kdbcore עקת ןקתה
+Comment[nl]=kdbcore database plugin voor Postgres
+Comment[ro]=Modul bază de date KDBcore pentru Postgres
+Comment[ru]=Плагин базы данных kdbcore для Postgres
 MimeType=inode/directory
 ServiceTypes=KDB/DBPlugin
 X-KDE-Library=libkdb_postgres

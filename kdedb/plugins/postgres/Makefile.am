@@ -5,7 +5,11 @@ METASOURCES = AUTO
 
 lib_LTLIBRARIES = libkdb_postgres.la
 
-libkdb_postgres_la_SOURCES = connectorimpl.cpp factory.cpp pluginimpl.cpp handlerimpl.cpp
+libkdb_postgres_la_SOURCES = 	connectorimpl.cpp \
+				factory.cpp \
+				pluginimpl.cpp \
+				handlerimpl.cpp \
+				controlimpl.cpp
 
 libkdb_postgres_la_LDFLAGS = -L$(top_builddir)/kdedb/kdbcore -L$(PG_LIBDIR) $(all_libraries) $(KDE_PLUGIN)
 

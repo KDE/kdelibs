@@ -30,7 +30,7 @@ ConnectorImpl::ConnectorImpl()
 }
 
 ConnectorImpl::ConnectorImpl(const ConnectorImpl &c)
-    : Connector(c)
+    : Connector(c), conn(c.conn)
 {
     setHost( c.host() );
     setPort( c.port() );
@@ -46,7 +46,17 @@ ConnectorImpl::~ConnectorImpl()
 
 bool ConnectorImpl::connect()
 {
-    DBENGINE->pushError( new KDB::InvalidRequest("Not (yet) able to connect") );
+    if (conn) {
+        PQfinish(conn);
+        conn = 0;
+    }
+    
+    QString connString = QString("host=%1 user=%2 password=%3");
+    
+    connString = connString.arg(host()).arg(user()).arg(password());
+
+    conn = PQconnectdb(connString.ascii());                               
+    
     return false;
 }
 
@@ -57,6 +67,7 @@ void ConnectorImpl::close()
 KDB::Connector *
 ConnectorImpl::clone()
 {
+    return new ConnectorImpl(*this);
 }
 
 QStringList
@@ -116,6 +127,7 @@ ConnectorImpl::KDBToNative(KDB::DataType type)
 bool
 ConnectorImpl::createTable(const KDB::Table &tab)
 {
+    return true;
 }
 
 bool

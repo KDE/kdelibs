@@ -42,6 +42,9 @@ public:
     QString nativeType(const QString &fieldName) ;
     KDB::DataType kdbDataType(const QString &fieldName) ;
 
+    bool append(KDB::Row row);
+    bool update(KDB_ULONG pos, KDB::Row row);
+    bool remove(KDB_ULONG pos, KDB::Row row);
 
 private:
     PGresult *res;

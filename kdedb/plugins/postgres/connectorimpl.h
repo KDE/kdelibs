@@ -66,6 +66,7 @@ protected:
 
     KDB::RowList resultQuery(const QString &sql);
 
+    PGconn *conn;
 };
 
 
