@@ -416,6 +416,24 @@ protected:
     */
    virtual void saveData(KConfig* sessionConfig);
 
+public slots:
+    /**
+     * Makes a KDE compliant caption.
+     * 
+     * @param caption Your caption. DO NOT include the application name
+     * in this string. It will be added automatically according to the KDE
+     * standard.
+     */
+    virtual void setCaption( const QString &caption );
+
+    /**
+     * Makes a plain caption without any modifications.
+     * 
+     * @param caption Your caption. This is the string that will be 
+     * displayed in the window title.
+     */
+    virtual void setPlainCaption( const QString &caption );
+
 protected slots:
 
    /**

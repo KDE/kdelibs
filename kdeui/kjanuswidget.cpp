@@ -123,7 +123,7 @@ KJanusWidget::KJanusWidget( QWidget *parent, const char *name, int face )
   else
   {
     mFace = Plain;
-    mPlainPage = new QWidget( this );
+    mPlainPage = new QFrame( this );
     if( mPlainPage == 0 ) { return; }
     topLayout->addWidget( mPlainPage, 10 );
   }
@@ -150,7 +150,7 @@ bool KJanusWidget::isValid( void ) const
 }
 
 
-QWidget *KJanusWidget::plainPage( void )
+QFrame *KJanusWidget::plainPage( void )
 {
   return( mPlainPage );
 }

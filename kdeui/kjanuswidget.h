@@ -35,7 +35,33 @@ class KSeparator;
  * as an internal widget in @ref KDialogBase, but can also used as a 
  * widget of its own. 
  *
- * It provides TreeList, Tabbed, Plain and Swallow layouts.
+ * It provides TreeList, Tabbed, Plain and Swallow layouts. 
+ * 
+ * The TreeList face provides a list in the left area and pages in the 
+ * right. The area are separated by a movable splitter. The look is somewhat
+ * similar to the layout in the Control Center. A page is raised by 
+ * selecting the corresponding tree list item.
+ *
+ * The Tabbed face is a common tabbed widget. The procedure for creating a 
+ * page is similar for creating a TreeList. This has the advantage that if
+ * your widget contain too many pages it is trivial to convert it into a 
+ * TreeList. Just change the face in the @ref KJanusWidget constructor to
+ * KJanusWidget::TreeList and you have a tree list layout instead.
+ *
+ * The Plain face provided an empty widget (QFrame) where you can place your
+ * widgets. The KJanusWidget makes no assumptions regarding the contents so
+ * you are free to add whatever you want.
+ *
+ * The Swallow face is provided in order to simplify the usage of existing
+ * widgets and to allow changing the visible widget. You specify the widget
+ * to be displayed by @ref setSwallowedWidget . Your widget will be 
+ * reparented inside the widget. You can specify a Null (0) widget. A empty
+ * space is then displayed.
+ *
+ * For all modes it is important that you specify the @ref QWidget::minimumSize
+ * on the page, plain widget or the swallowed widget. This size is used
+ * when the KJanusWidget determines its own minimum size. You get the latter
+ * minimum size by using the @ref minimumSizeHint method.
  *
  * To be continued...
  *
@@ -56,17 +82,86 @@ class KJanusWidget : public QWidget
     };
 
   public:
+
+    /** 
+     * Constructore wher you specify the face.
+     * 
+     * @param parent Parent of the widget.
+     * @param name Widget name.
+     * @param int face The kind of dialog, Use TreeList, Tabbed, Plain or
+     * Swallow
+     */
     KJanusWidget( QWidget *parent=0, const char *name=0, int face=Plain );
+
+    /**
+     * Destructor
+     */
     ~KJanusWidget( void );
 
+    /**
+     * Raises the page which was added by @ref addPage. If you want to display
+     * the third page, specify 2.
+     *
+     * @parame index The index of the page you want to raise.
+     */
     bool showPage( int index );
+
+    /**
+     * Returns the index of the page that are currentlt displayed.
+     *
+     * @return The index or -1 of the face is not TreeList or Tabbed
+     */
     int  activePageIndex( void ) const;
+
+    /**
+     * Return true if the widget was properly created. Use this to verify 
+     * that no memory allocation failed.
+     *
+     * @return true if widget is valid.
+     */
     bool isValid( void ) const;
-    int  face( void ) const;
+
+    /**
+     * Returns the face type
+     *
+     * @return The face type.
+     */
+    int face( void ) const;
+
+    /**
+     * Returns the minimum size that must be made avaiable for the widget
+     * so that uis can be displayed properly
+     *
+     * @return the minimum size.
+     */
     virtual QSize minimumSizeHint( void );
 
-    QWidget *plainPage( void );
-    QFrame  *addPage(const QString &item,const QString &header=QString::null);
+    /**
+     * Returns the empty widget that is available in Plain mode.
+     *
+     * @return The widget or 0 if the face in not Plain.
+     */
+    QFrame *plainPage( void );
+
+    /**
+     * Add a new page to either TreeList or Tabbed mode. The returned widget
+     * is empty and you add your widget code to this widget.
+     *
+     * @param item String used in the tree list or Tab item.
+     * @param header A longer string only used in TreeList mode to describe
+     * the contents of a page. If empty, the item string will be used instead.
+     *
+     * @return The empty page or 0 if the face is not TreeList or Tabbed.
+     */
+    QFrame *addPage(const QString &item,const QString &header=QString::null);
+
+    /**
+     * Defines the widget to be swallowed. This method can be used several 
+     * times. Only the latest defined widget will be shown.
+     *
+     * @param widget The widget to be swallowed. If 0, then an empty rectangle
+     * is displayed.
+     */
     bool setSwallowedWidget( QWidget *widget );
 
   public slots:
@@ -91,7 +186,7 @@ class KJanusWidget : public QWidget
     QWidgetStack *mPageStack;
     QLabel       *mTitleLabel;
     KTabCtl      *mTabControl;
-    QWidget      *mPlainPage;
+    QFrame       *mPlainPage;
     QWidget      *mSwallowPage;
     QWidget      *mActivePageWidget;
     KSeparator   *mTitleSep;

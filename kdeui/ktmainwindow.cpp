@@ -103,6 +103,23 @@ KTMainWindow::KTMainWindow( const char *name, WFlags f )
 
     kapp->setTopWidget( this );
 
+    //
+    // 1999-09-29 Espen Sand
+    // The KApplication::setTopWidget() above does a 
+    // "widget->setCaption(getCaption())". I have reimplemented 
+    // KTMainWindow::setCaption() so that it automatically adds the 
+    // application name, so I need to revert the caption made in 
+    // KApplication::setTopWidget().
+    //
+    // We should consider adding as new (default) parameter to 
+    // KApplication::setTopWidget() were we can force it to use a 
+    // "QString::null" argument instead of the current getCaption(). 
+    // That will reduce some overhead when starting an app. The code below
+    // is then not necessary.
+    //
+    setCaption( QString::null );
+
+
     // see if there already is a member list
     if( !memberList )
       memberList = new QList<KTMainWindow>;
@@ -229,6 +246,20 @@ void KTMainWindow::show ()
     QWidget::show();
     updateRects();
 }
+
+
+void KTMainWindow::setCaption( const QString &caption )
+{
+  QWidget::setCaption( kapp->makeStdCaption(caption) );
+}
+
+
+void KTMainWindow::setPlainCaption( const QString &caption )
+{
+  QWidget::setCaption( caption );
+}
+
+
 
 QRect KTMainWindow::mainViewGeometry() const
 {

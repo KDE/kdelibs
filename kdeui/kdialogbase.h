@@ -275,29 +275,29 @@ class KDialogBase : public KDialog
     /**
      * Enables or disables (grays out) a general action button.
      *
-     * @param int flag A mask of @ref ButtonCode flags
-     * @param bool state true enables the button(s). 
+     * @param flag A mask of @ref ButtonCode flags
+     * @param state true enables the button(s). 
      */
     void enableButton( int flag, bool state );
     
     /**
      * Enables or disables (grays out) the OK button.
      *
-     * @param bool state true enables the button. 
+     * @param state true enables the button. 
      */
     void enableButtonOK( bool state );
 
     /**
      * Enables or disables (grays out) the Apply button.
      *
-     * @param bool state true enables the button. 
+     * @param state true enables the button. 
      */
     void enableButtonApply( bool state );
     
     /**
      * Enables or disables (grays out) the Cancel button.
      *
-     * @param bool state true enables the button. 
+     * @param state true enables the button. 
      */
     void enableButtonCancel( bool state );
     
@@ -306,8 +306,8 @@ class KDialogBase : public KDialog
      * been created in the constructor can be displayed. This method will
      * not create a new button.
      *
-     * @param int flag A mask of @ref ButtonCode flags.
-     * @param bool state true display the button(s). 
+     * @param flag A mask of @ref ButtonCode flags.
+     * @param state true display the button(s). 
      */
     void showButton( int flag, bool state );
     
@@ -315,7 +315,7 @@ class KDialogBase : public KDialog
      * Hides or displays the OK button. The OK button must have
      * been created in the constructor to be displayed.
      *
-     * @param bool state true display the button(s). 
+     * @param state true display the button(s). 
      */
     void showButtonOK( bool state );
     
@@ -323,7 +323,7 @@ class KDialogBase : public KDialog
      * Hides or displays the Apply button. The Apply button must have
      * been created in the constructor to be displayed.
      *
-     * @param bool state true display the button(s). 
+     * @param state true display the button(s). 
      */
     void showButtonApply( bool state );
 
@@ -331,7 +331,7 @@ class KDialogBase : public KDialog
      * Hides or displays the Cancel button. The Cancel button must have
      * been created in the constructor to be displayed.
      *
-     * @param bool state true display the button(s). 
+     * @param state true display the button(s). 
      */
     void showButtonCancel( bool state );
 
@@ -340,7 +340,7 @@ class KDialogBase : public KDialog
      * work when the dialog is using the prefefined shape of TreeList or
      * Tabbed.
      *
-     * @param int index Index of the page to be shown.
+     * @param index Index of the page to be shown.
      * @return true if the page is shown, false otherwise.
      */
     bool showPage( int index );
@@ -360,7 +360,7 @@ class KDialogBase : public KDialog
      * swallow control widget. If the dialog is being used in the standard
      * mode then the 'widget' must have the dialog as parent.
      *
-     * @param QWidget *widget The widget to be displayed as main widget. If it
+     * @param *widget The widget to be displayed as main widget. If it
      * is 0, then the dialog will show an empty space of 100x100 pixels
      * instead.
      */
@@ -376,7 +376,7 @@ class KDialogBase : public KDialog
     /**
      * Sets the resize mode.
      *
-     * @param int mode The resize mode. It can be ResizeFixed (no resize
+     * @param mode The resize mode. It can be ResizeFixed (no resize
      * possible), ResizeMinimum (resize is allowed, but limited by the 
      * minimum size) or ResizeFree (the main widget can be resized to zero
      * size )
@@ -397,9 +397,9 @@ class KDialogBase : public KDialog
      * (internationalized) and the quickhelp text explains the standard 
      * behaviour of the OK button in dialogs. 
      *
-     * @param const QString &text Button text
-     * @param const QString &tooltip Tooltip text
-     * @param const QString &quickhelp Quick help text
+     * @param text Button text
+     * @param tooltip Tooltip text
+     * @param quickhelp Quick help text
      */
     void setButtonOKText( const QString &text=QString::null, 
 			  const QString &tooltip=QString::null, 
@@ -412,9 +412,9 @@ class KDialogBase : public KDialog
      * (internationalized) and the quickhelp text explains the standard 
      * behaviour of the apply button in dialogs. 
      *
-     * @param const QString &text Button text
-     * @param const QString &tooltip Tooltip text
-     * @param const QString &quickhelp Quick help text
+     * @param text Button text
+     * @param tooltip Tooltip text
+     * @param quickhelp Quick help text
      */
     void setButtonApplyText( const QString &text=QString::null, 
 			     const QString &tooltip=QString::null, 
@@ -427,9 +427,9 @@ class KDialogBase : public KDialog
      * (internationalized) and the quickhelp text explains the standard 
      * behaviour of the cancel button in dialogs. 
      *
-     * @param const QString &text Button text
-     * @param const QString &tooltip Tooltip text
-     * @param const QString &quickhelp Quick help text
+     * @param text Button text
+     * @param tooltip Tooltip text
+     * @param quickhelp Quick help text
      */
     void setButtonCancelText( const QString &text=QString::null, 
 			      const QString &tooltip=QString::null, 
@@ -454,14 +454,14 @@ class KDialogBase : public KDialog
      * Sets the background tile. If it is Null (0), the background
      * image is deleted. 
      *
-     * @param const QPixmap *pix The background tile
+     * @param pix The background tile
      */
     static void  setBackgroundTile( const QPixmap *pix );
 
     /**
      * Enables of hides the background tile (if any)
      *
-     * @param bool state true will make the tile visible. 
+     * @param state true will make the tile visible. 
      */
     void showTile( bool state );
 
@@ -498,8 +498,8 @@ class KDialogBase : public KDialog
      * You should not need to use this method and never if you use one of
      * the prefined shapes.
      *
-     * @param int w The width of you special widget.
-     * @param int h The height of you special widget.
+     * @param w The width of you special widget.
+     * @param h The height of you special widget.
      * @return The minimum width and height of the dialog using 'w' and 'h'
      * as the size of the main widget.
      */
@@ -515,7 +515,7 @@ class KDialogBase : public KDialog
     /**
      * Displays or hides the help link area on the top of the dialog.
      *
-     * @param bool state true will displa the area.
+     * @param state true will displa the area.
      */
     void enableLinkedHelp( bool state );
 
@@ -524,9 +524,9 @@ class KDialogBase : public KDialog
      * If text is empty, the text is "Get help..."  (internationalized) 
      * is used insread
      *
-     * @param const QString &path Path to help text
-     * @param const QString &topic Topic in help text.
-     * @param const QString &text Link text.
+     * @param path Path to help text
+     * @param topic Topic in help text.
+     * @param text Link text.
      */
     void setHelp( const QString &path, const QString& topic,
 		  const QString& text );
@@ -629,17 +629,17 @@ class KDialogBase : public KDialog
      * @return The widget or 0 if the predefined layout mode is not Plain
      * or if you don't use any predefined layout
      */
-    QWidget *plainPage( void );
+    QFrame *plainPage( void );
 
     /**
      * Add a page to the predefined layout when used in TreeList or Tabbed
      * mode. The returned widget must used as the toplevel widget for 
      * this particular page.
      *
-     * @param const QString &item Name used in the list (TreeList mode) or
-     * Tab name (Tabbed mode).
-     * @param const QString &header Header text use in TreeList mode. Ignored
-     * in Tabbed mode. If empty, the item text is used instead.
+     * @param item Name used in the list (TreeList mode) or Tab name 
+     * (Tabbed mode).
+     * @param header Header text use in TreeList mode. Ignored in Tabbed 
+     * mode. If empty, the item text is used instead.
      *
      * @return The page widget which must be used as the toplevel widget for
      * the page.
@@ -751,12 +751,12 @@ class KDialogBase : public KDialog
      * Makes the button box and all the buttons in it. This method must 
      * only be ran once from the constructor.
      *
-     * @param int buttonMask Specifies what buttons will be made.
-     * @param int defaultButton Specifies what button we be marked as the 
+     * @param buttonMask Specifies what buttons will be made.
+     * @param defaultButton Specifies what button we be marked as the 
      * default.
-     * @param const QString &user1 User button1 text.
-     * @param const QString &user2 User button2 text.
-     * @param const QString &user2 User button3 text. 
+     * @param user1 User button1 text.
+     * @param user2 User button2 text.
+     * @param user2 User button3 text. 
      */
 
     void makeButtonBox( int mask, int defaultButton, 
@@ -766,9 +766,9 @@ class KDialogBase : public KDialog
     /**
      * Sets the action button that is marked as default and has focus.
      *
-     * @param QPushButton *p The action button
-     * @param bool isDefault If true, make the button default 
-     * @param bool isFocus If true, give the button focus.
+     * @param p The action button
+     * @param isDefault If true, make the button default 
+     * @param isFocus If true, give the button focus.
      */
     void setButtonFocus( QPushButton *p, bool isDefault, bool isFocus );
 
@@ -788,7 +788,7 @@ class KDialogBase : public KDialog
     /**
      * Sets the action button order accoring to the 'style'.
      *
-     * @param int style The style index.
+     * @param style The style index.
      */
     void setButtonStyle( int style );
 

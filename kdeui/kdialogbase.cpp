@@ -149,7 +149,7 @@ void KDialogBase::enableButtonSeparator( bool state )
 
 
 
-QWidget *KDialogBase::plainPage( void )
+QFrame *KDialogBase::plainPage( void )
 {
   return( mJanus == 0 ? 0 : mJanus->plainPage() );
 }
@@ -363,53 +363,53 @@ void KDialogBase::setButtonStyle( int style )
   QHBoxLayout *hbox = new QHBoxLayout( mButton.box, 0, spacingHint() );
   hbox->addSpacing( marginHint() ); // always
 
-
+  int numButton = 0;
   for( uint i=0; i<8; i++ )
   {
-    if( i>0 && layout[i-1]&Stretch )
+    if( i>0 && (layout[i-1]&Stretch) /*&& numButton>0*/ )
     {
-      hbox->addStretch(10);
+      hbox->addStretch(1);
     }
 
     if( mButton.mask & Help & layout[i] )
     {
-      hbox->addWidget( mButton.help );
+      hbox->addWidget( mButton.help ); numButton++;
     }
     else if( mButton.mask & Default & layout[i] )
     {
-      hbox->addWidget( mButton.def );
+      hbox->addWidget( mButton.def ); numButton++;
     }
     else if( mButton.mask & User3 & layout[i] )
     {
-      hbox->addWidget( mButton.user3 );
+      hbox->addWidget( mButton.user3 ); numButton++;
     }
     else if( mButton.mask & User2 & layout[i] )
     {
-      hbox->addWidget( mButton.user2 );
+      hbox->addWidget( mButton.user2 ); numButton++;
     }
     else if( mButton.mask & User1 & layout[i] )
     {
-      hbox->addWidget( mButton.user1 );
+      hbox->addWidget( mButton.user1 ); numButton++;
     }
     else if( mButton.mask & Ok & layout[i] )
     {
-      hbox->addWidget( mButton.ok );
+      hbox->addWidget( mButton.ok ); numButton++;
     }
     else if( mButton.mask & Apply & layout[i] )
     {
-      hbox->addWidget( mButton.apply );
+      hbox->addWidget( mButton.apply ); numButton++;
     }
     else if( mButton.mask & Try & layout[i] )
     {
-      hbox->addWidget( mButton._try );
-    }
+      hbox->addWidget( mButton._try ); numButton++;
+    } 
     else if( mButton.mask & Cancel & layout[i] )
     {
-      hbox->addWidget( mButton.cancel );
+      hbox->addWidget( mButton.cancel ); numButton++;
     }
     else if( mButton.mask & Close & layout[i] )
     {
-      hbox->addWidget( mButton.close );
+      hbox->addWidget( mButton.close ); numButton++;
     }
   }
 
