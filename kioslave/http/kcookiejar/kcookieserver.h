@@ -25,27 +25,23 @@
 #ifndef KCOOKIESERVER_H
 #define KCOOKIESERVER_H
 
-#include <qasciidict.h>
-#include <dcopobject.h>
-#include <kuniqueapplication.h>
-#include <kpasswdserver.h>
-
+#include <qstringlist.h>
+#include <kdedmodule.h>
 
 class KHttpCookieList;
 class KCookieJar;
 class KHttpCookie;
 class QTimer;
 class RequestList;
+class DCOPClient;
 
-class KCookieServer : public KUniqueApplication
+class KCookieServer : public KDEDModule
 {
   Q_OBJECT
   K_DCOP
 public:
-  KCookieServer();
+  KCookieServer(const QCString &);
   ~KCookieServer();
-
-  virtual int newInstance();
 
 k_dcop:
   QString findCookies(QString);
@@ -57,8 +53,6 @@ k_dcop:
   void addCookies(QString, QCString, long);
   void deleteCookie(QString, QString, QString, QString);
   void deleteCookiesFromDomain(QString);
-  void registerWindowId(long int);
-  void unregisterWindowId(long int);
   void deleteSessionCookies(long);
   void deleteSessionCookiesFor(QString, long);
   void deleteAllCookies();
@@ -76,7 +70,7 @@ public:
 
 public slots:
   void slotSave();
-  void unregisterApp(const QCString &);
+  void slotDeleteSessionCookies(long);
 
 protected:
   KCookieJar *mCookieJar;
@@ -84,8 +78,7 @@ protected:
   RequestList *mRequestList;
   QTimer *mTimer;
   bool mAdvicePending;
-  QAsciiDict<QValueList<long> > mWindowIdList;
-  KPasswdServer mPasswdServer;
+  DCOPClient *mOldCookieServer;
 
 private:
   virtual int newInstance(QValueList<QCString>) { return 0; }

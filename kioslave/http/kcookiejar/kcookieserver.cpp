@@ -27,21 +27,31 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #define SAVE_DELAY 3 // Save after 3 minutes
 
-#include "kcookieserver.h"
-#include "kcookiejar.h"
-#include "kcookiewin.h"
-
-#include <kdebug.h>
-#include <kapplication.h>
-#include <kcmdlineargs.h>
-#include <kstandarddirs.h>
-#include <qtimer.h>
 #include <unistd.h>
+
+#include <qtimer.h>
 #include <qptrlist.h>
 #include <qfile.h>
 
 #include <dcopclient.h>
+
 #include <kconfig.h>
+#include <kdebug.h>
+#include <kapplication.h>
+#include <kcmdlineargs.h>
+#include <kstandarddirs.h>
+
+#include "kcookiejar.h"
+#include "kcookiewin.h"
+#include "kcookieserver.h"
+
+extern "C" {
+    KDEDModule *create_kcookiejar(const QCString &name)
+    {
+       return new KCookieServer(name);
+    }
+};
+
 
 // Cookie field indexes
 enum CookieDetails { CF_DOMAIN=0, CF_PATH, CF_NAME, CF_HOST,
@@ -50,6 +60,7 @@ enum CookieDetails { CF_DOMAIN=0, CF_PATH, CF_NAME, CF_HOST,
 
 class CookieRequest {
 public:
+   DCOPClient *client;
    DCOPClientTransaction *transaction;
    QString url;
    bool DOM;
@@ -64,9 +75,11 @@ public:
    RequestList() : QPtrList<CookieRequest>() { }
 };
 
-KCookieServer::KCookieServer()
-              :KUniqueApplication()
+KCookieServer::KCookieServer(const QCString &name)
+              :KDEDModule(name)
 {
+   mOldCookieServer = new DCOPClient(); // backwards compatibility.
+   mOldCookieServer->registerAs("kcookiejar", false);
    mCookieJar = new KCookieJar;
    mPendingCookies = new KHttpCookieList;
    mPendingCookies->setAutoDelete(true);
@@ -91,43 +104,18 @@ KCookieServer::KCookieServer()
    {
       mCookieJar->loadCookies( filename);
    }
-   
-   connect(dcopClient(), SIGNAL(applicationRemoved(const QCString&)),
-           this, SLOT(unregisterApp(const QCString&)));
+   connect(this, SIGNAL(windowUnregistered(long)),
+           this, SLOT(slotDeleteSessionCookies(long)));
 }
 
 KCookieServer::~KCookieServer()
 {
    if (mCookieJar->changed())
       slotSave();
+   delete mOldCookieServer;
    delete mCookieJar;
    delete mTimer;
    delete mPendingCookies;
-}
-
-int KCookieServer::newInstance()
-{
-   KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-   if (args->isSet("remove-all"))
-   {
-        mCookieJar->eatAllCookies();
-        slotSave();
-   }
-   if (args->isSet("remove"))
-   {
-        mCookieJar->eatCookiesForDomain(args->getOption("remove"));
-        slotSave();
-   }
-
-   if (args->isSet("shutdown"))
-   {
-        shutdown();
-   }
-   if(args->isSet("reload-config"))
-   {
-        mCookieJar->loadConfig( kapp->config(), true );
-   }
-   return 0;
 }
 
 bool KCookieServer::cookiesPending( const QString &url )
@@ -283,8 +271,8 @@ void KCookieServer::checkCookies( KHttpCookieList *cookieList)
            QDataStream stream2(replyData, IO_WriteOnly);
            stream2 << res;
            replyType = "QString";
-           dcopClient()->endTransaction( request->transaction,
-                                       replyType, replyData);
+           request->client->endTransaction( request->transaction,
+                                            replyType, replyData);
            CookieRequest *tmp = request;
            request = mRequestList->next();
            mRequestList->removeRef( tmp );
@@ -385,7 +373,8 @@ KCookieServer::findCookies(QString url, long windowId)
    if (cookiesPending(url))
    {
       CookieRequest *request = new CookieRequest;
-      request->transaction = dcopClient()->beginTransaction();
+      request->client = callingDcopClient();
+      request->transaction = request->client->beginTransaction();
       request->url = url;
       request->DOM = false;
       request->windowId = windowId;
@@ -459,7 +448,8 @@ KCookieServer::findDOMCookies(QString url, long windowId)
    if (cookiesPending(url))
    {
       CookieRequest *request = new CookieRequest;
-      request->transaction = dcopClient()->beginTransaction();
+      request->client = callingDcopClient();
+      request->transaction = request->client->beginTransaction();
       request->url = url;
       request->DOM = true;
       request->windowId = windowId;
@@ -507,17 +497,18 @@ KCookieServer::deleteCookiesFromDomain(QString domain)
       saveCookieJar();
 }
 
+
+// Qt function
+void
+KCookieServer::slotDeleteSessionCookies( long windowId )
+{
+   deleteSessionCookies(windowId);
+}
+
+// DCOP function
 void
 KCookieServer::deleteSessionCookies( long windowId )
 {
-  QCString sender = dcopClient()->senderId();
-  QValueList<long> *windowIds = mWindowIdList.find(sender);
-  if (windowIds)
-  {
-     windowIds->remove(windowId);
-  }
-
-  mPasswdServer.removeAuthForWindowId( windowId ); 
   mCookieJar->eatSessionCookies( windowId );
   if(!mTimer)
     saveCookieJar();
@@ -589,60 +580,7 @@ KCookieServer::reloadPolicy()
 void
 KCookieServer::shutdown()
 {
-   quit();
-}
-
-// DCOP function
-void
-KCookieServer::registerWindowId(long windowId)
-{
-   if (!windowId)
-      return;
-
-   if (mWindowIdList.isEmpty()) //Only listen for notifications when needed
-   {
-      dcopClient()->setNotifications(true);
-   }      
-
-   QCString sender = dcopClient()->senderId();
-   QValueList<long> *windowIds = mWindowIdList.find(sender);
-   if (!windowIds)
-   {
-      windowIds = new QValueList<long>;
-      mWindowIdList.insert(sender, windowIds);
-   }
-   windowIds->append(windowId);
-}
-
-// DCOP function
-void
-KCookieServer::unregisterWindowId(long windowId)
-{
-   deleteSessionCookies(windowId);
-}
-
-void
-KCookieServer::unregisterApp(const QCString& sender)
-{
-   QValueList<long> *windowIds = mWindowIdList.find(sender);
-   if (!windowIds)
-      return;
-      
-   while(!windowIds->isEmpty())
-   {
-      long windowId = windowIds->first();
-      windowIds->remove(windowId);
-      mPasswdServer.removeAuthForWindowId( windowId );
-      mCookieJar->eatSessionCookies( windowId );
-   }
-
-   mWindowIdList.remove(sender);
-   if (mWindowIdList.isEmpty()) //Only listen for notifications when needed
-   {
-      dcopClient()->setNotifications(false);
-   }
-   if(!mTimer)
-      saveCookieJar();
+   deleteLater();
 }
 
 #include "kcookieserver.moc"
