@@ -62,7 +62,7 @@ protected:
 public:
 	Connection();
 
-	inline void setServerID(std::string serverID) { this->serverID = serverID; }
+	inline void setServerID(std::string _serverID) { serverID = _serverID; }
 	inline bool isConnected(std::string s) { return (serverID == s); } 
 	inline void setConnState(ConnectionState cs) { _connState = cs; };
 
