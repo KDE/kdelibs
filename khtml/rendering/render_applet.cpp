@@ -56,7 +56,6 @@ RenderApplet::RenderApplet(QScrollView *view,
         //kdDebug(6100) << "RenderApplet::RenderApplet, setting QWidget" << endl;
         setQWidget( new KJavaAppletWidget(context, view->viewport()) );
         processArguments(args);
-        static_cast<KJavaAppletWidget*>(m_widget)->create();
     }
 }
 
@@ -117,7 +116,8 @@ void RenderApplet::layout()
 
             if(child->id() == ID_PARAM) {
                 HTMLParamElementImpl *p = static_cast<HTMLParamElementImpl *>(child);
-                tmp->setParameter( p->name(), p->value());
+                if(tmp->applet())
+                    tmp->applet()->setParameter( p->name(), p->value());
             }
             child = child->nextSibling();
         }
@@ -132,22 +132,23 @@ void RenderApplet::layout()
 
 void RenderApplet::processArguments(QMap<QString, QString> args)
 {
-    KJavaAppletWidget *tmp = static_cast<KJavaAppletWidget*>(m_widget);
+    KJavaAppletWidget *w = static_cast<KJavaAppletWidget*>(m_widget);
+    KJavaApplet* applet = w ? w->applet() : 0;
 
-    if ( tmp ) {
-        tmp->setBaseURL( args[QString::fromLatin1("baseURL") ] );
-        tmp->setAppletClass( args[QString::fromLatin1("code") ] );
+    if ( applet ) {
+        applet->setBaseURL( args[QString::fromLatin1("baseURL") ] );
+        applet->setAppletClass( args[QString::fromLatin1("code") ] );
 
         if( !args[QString::fromLatin1("codeBase") ].isEmpty() )
-            tmp->setCodeBase( args[QString::fromLatin1("codeBase") ] );
+            applet->setCodeBase( args[QString::fromLatin1("codeBase") ] );
 
         if( !args[QString::fromLatin1("name") ].isNull() )
-            tmp->setAppletName( args[QString::fromLatin1("name") ] );
+            applet->setAppletName( args[QString::fromLatin1("name") ] );
         else
-            tmp->setAppletName( args[QString::fromLatin1("code") ] );
+            applet->setAppletName( args[QString::fromLatin1("code") ] );
 
         if( !args[QString::fromLatin1("archive") ].isEmpty() )
-            tmp->setJARFile( args[QString::fromLatin1("archive") ] );
+            applet->setArchives( args[QString::fromLatin1("archive") ] );
     }
 }
 
