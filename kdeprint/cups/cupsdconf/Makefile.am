@@ -8,8 +8,6 @@ cupsdconf_SOURCES = main.cpp
 cupsdconf_LDADD   =  libcupsdconf.la
 cupsdconf_LDFLAGS = $(all_libraries) $(KDE_RPATH)
 
-SUBDIRS = po
-
 # library creation
 lib_LTLIBRARIES = libcupsdconf.la
 libcupsdconf_la_SOURCES = cupsdconf.cpp cupsddialog.cpp cupsdoption.cpp cupsdpage.cpp cupsdserverdirpage.cpp \
