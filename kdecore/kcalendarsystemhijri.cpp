@@ -65,14 +65,6 @@ static const long LeapYear[] = {
   2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29
 };
 
-class h_date
-{
-  public:
-    int hd_year;
-    int hd_month;
-    int hd_day;
-};
-
 /**
  * @internal
  * This function returns the Julian date/time of the Nth new moon since
@@ -183,9 +175,9 @@ static double getJulianDay(long day, long month, long year)
 /*
  * compute general hijri date structure from gregorian date
  */
-static class h_date * gregorianToHijri(long day, long month, long year)
+static SDATE * gregorianToHijri(long day, long month, long year)
 {
-  static class h_date h;
+  static SDATE h;
 
   double prevday;
   // CFM unused double dayfraction;
@@ -234,9 +226,9 @@ static class h_date * gregorianToHijri(long day, long month, long year)
   // If Before Hijri subtract 1
   if (year <= 0) (year)--;
 
-  h.hd_day = day;
-  h.hd_month = month;
-  h.hd_year = year;
+  h.day = day;
+  h.mon = month;
+  h.year = year;
   
   return(&h);
 }
@@ -292,9 +284,9 @@ static void getGregorianDay(long lJulianDay, long *pnDay,
 /*
  * compute general gregorian date structure from hijri date
  */
-static class h_date * hijriToGregorian(long *day, long *month, long *year)
+static SDATE *hijriToGregorian(long *day, long *month, long *year)
 {
-  static class h_date h;
+  static SDATE h;
 
   long nmonth;
   // CFM unused double dayfraction;
@@ -326,16 +318,16 @@ static class h_date * hijriToGregorian(long *day, long *month, long *year)
     *year = -1;
   }
     
-  h.hd_day = (int)*day;
-  h.hd_month = (int)*month;
-  h.hd_year = (int)*year;
+  h.day = (int)*day;
+  h.mon = (int)*month;
+  h.year = (int)*year;
   
   return(&h);
 }
 
-static class h_date * toHijri(const QDate & date)
+static SDATE * toHijri(const QDate & date)
 {
-  class h_date *sd;
+  SDATE *sd;
   sd = gregorianToHijri(date.day(), date.month(), date.year());
   return sd;
 }
@@ -352,8 +344,8 @@ KCalendarSystemHijri::~KCalendarSystemHijri()
 
 int KCalendarSystemHijri::year(const QDate& date) const
 {
-  class h_date *sd = toHijri(date);
-  return sd->hd_year;
+  SDATE *sd = toHijri(date);
+  return sd->year;
 }
 
 int KCalendarSystemHijri::monthsInYear( const QDate & date ) const
@@ -567,9 +559,9 @@ bool KCalendarSystemHijri::setYMD(QDate & date, int y, int m, int d) const
   if ( d < 1 || d > hndays(m, y) )
     return false;
     
-  class h_date * gd = hijriToGregorian( (long *)&d, (long *)&m, (long *)&y );
+  SDATE * gd = hijriToGregorian( (long *)&d, (long *)&m, (long *)&y );
 
-  return date.setYMD(gd->hd_year, gd->hd_month, gd->hd_day);
+  return date.setYMD(gd->year, gd->mon, gd->day);
 }
 
 QString KCalendarSystemHijri::weekDayName(int day, bool shortName) const
@@ -649,9 +641,9 @@ static int islamicLeapYear(int year)
 
 int KCalendarSystemHijri::daysInMonth(const QDate& date) const
 { 
-  class h_date *sd = toHijri(date);
+  SDATE *sd = toHijri(date);
  
-  return hndays(sd->hd_month, sd->hd_year);
+  return hndays(sd->mon, sd->year);
 }
 
 int KCalendarSystemHijri::hndays(int month, int year) const
@@ -680,21 +672,21 @@ int KCalendarSystemHijri::maxValidYear() const
 
   QDate date(8000, 1, 1);
 
-  class h_date *sd = toHijri(date);
+  SDATE *sd = toHijri(date);
   
-  return sd->hd_year;
+  return sd->year;
 }
 
 int KCalendarSystemHijri::day(const QDate& date) const
 {
-  class h_date *sd = toHijri(date);
-  return sd->hd_day;
+  SDATE *sd = toHijri(date);
+  return sd->day;
 }
 
 int KCalendarSystemHijri::month(const QDate& date) const
 {
-  class h_date *sd = toHijri(date);
-  return sd->hd_month;
+  SDATE *sd = toHijri(date);
+  return sd->mon;
 }
 
 int KCalendarSystemHijri::daysInYear(const QDate & date) const
