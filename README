@@ -187,11 +187,11 @@ How to report
 -------------
 Reporting bugs is an art. Why?  Because bug reports can help and hinder.
 
-They hinder if the developers are just buried in an avanche of bug reports.
-They spend hours figuring out which bug reports are valid and which non,
+They hinder if the developers are just buried in an avalanche of bug reports.
+They spend hours figuring out which bug reports are valid and which aren't,
 which bug reports are due to bugs or due to installation problems.
 
-They can be a tremendous help to notify developers on problems in areas that
+They can be of tremendous help to notify developers on problems in areas that
 they normally don't have access (e.g. KDE on AIX) to.
 
 So, here are some tips on bug reporting:
