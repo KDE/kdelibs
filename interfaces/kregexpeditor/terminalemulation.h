@@ -35,7 +35,6 @@
  *   proc->start();
  *
  *   // Finally show the dialog
- *   setMainWidget( term );
  *   term->show();
  * }
  * else {
@@ -53,7 +52,47 @@
  */
 class TermEmuInterface
 {
+signals:
+  /**
+   * This signal is emitted when the widget's size changes...
+   */
+  virtual void sizeChanged( int width, int height ) = 0;
+  
+  /**
+   * This signal is emitted when a line is being added to the widget.
+   * You can change the text being shown, colorize it etc.
+   * NOT SUPPORTED YET
+   */
+//   virtual void addingLine( charData* line );
 public:
+  /**
+   * set whether the cursor is shown...
+   * @see isCursorShown()
+   */
+  virtual void setCursorShown( const bool ) = 0;
+
+  /**
+   * whether the cursor is shown...
+   * @see setCursorShown()
+   */
+  virtual bool isCursorShown() const = 0;
+
+  /**
+   * allow the user to give input or not...
+   * @see isInteractive()
+   */
+  virtual void setInteractive( const bool ) = 0;
+
+  /**
+   * is the user allowed to give input ?
+   * @see setInteractive()
+   */
+  virtual bool isInteractive() const = 0;
+
+  /**
+   * set the process we're emulating a Terminal for...
+   */
+  virtual void setProcess( KProcess* proc ) = 0;
 };
 
 #endif
