@@ -28,9 +28,8 @@
 namespace KDB {
 
 /**
- * this class represents and exceptional condition
- * of the library. The type of exceptional condition
- * depends on the subclasses of this class
+ * This class represents and exceptional condition of the library. The type
+ * of exceptional condition depends on the subclasses of this class
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version kdbcore 0.0.2
@@ -41,8 +40,8 @@ class Exception : public QObject {
     
 public:
     /**
-     * Builds an exception with the given description
-     * Stores name and type of the originating object
+     * Builds an exception with the given description.  Stores name and type
+     * of the originating object.
      */
     Exception (const QObject *origin, const QString & description)
         : m_description(description)
@@ -52,17 +51,17 @@ public:
             kdDebug(20000) << k_funcinfo << description << endl;
         };
     /**
-     * this is the detailed description of the exception
+     * This is the detailed description of the exception.
      */
     QString description() const { return m_description; };
 
     /**
-     * the name of the generating object
+     * The name of the generating object.
      */
     QString originName() const { return m_originName; };
 
     /**
-     * the type of the originating object
+     * The type of the originating object.
      */
     QString originType() const { return m_originType; };
     

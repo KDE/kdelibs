@@ -33,10 +33,10 @@ class Value;
 /**
  * Representation of a value object.
  *
- * It stores a value and a value type. mostly is a QVariant, with some more datatypes
- * when QT 3.0 will be out, probably all implementation will go away and we will have
- * only a QVariant here. Actually, at my best knowledge, this is source compatible with
- * QT 3.0 QVariant.
+ * It stores a value and a value type. mostly is a QVariant, with some more
+ * datatypes when QT 3.0 will be out, probably all implementation will go
+ * away and we will have only a QVariant here. Actually, at my best
+ * knowledge, this is source compatible with QT 3.0 QVariant.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version kdbcore 0.0.2

@@ -38,18 +38,20 @@ typedef QList<Plugin>         PluginList;
 typedef QListIterator<Plugin> PluginIterator;
 
 /**
- * A Plugin handles all connections related to a DBMS (Postgres, MySQL, and so on).
+ * A Plugin handles all connections related to a DBMS (Postgres, MySQL, and
+ * so on).
  *
  * This class allows traversal of the list of available connections, and can
- * be queried about general informations and implemented capabilities through @ref provides
+ * be queried about general informations and implemented capabilities
+ * through @ref providers.
  *
- * The Plugin is also responsible of creating "capability objects", that is
- * objects that can implement a specific capabilities.
+ * The Plugin is also responsible of creating "capability objects": objects
+ * that can implement a specific capabilities. Actually we have the
+ * following capabilities:
  *
- * Actually we have found the following capabilities:
  * @li Transactions (does not have a "capability object")
- * @li Reorganization, that is the ability of 'compressing' database objects after
- * a big number of deletes (does not have a "capability object")
+ * @li Reorganization, that is the ability of 'compressing' database objects
+ * after a big number of deletes (does not have a "capability object")
  * @li Stored procedures
  * @li Administration
  * @li Users and Groups (ACL)
@@ -89,8 +91,8 @@ public:
     virtual PluginInfo info() = 0;
 
     /**
-     * Create a connection, append it to the connection list,
-     * open the connection and return it.
+     * Create a connection, append it to the connection list, open the
+     * connection and return it.
      */
     Connection * openConnection (const QString &host,
                                  int port = 0,
@@ -106,32 +108,31 @@ public:
                                         const QString &password = QString::null);
 
     /**
-     * Removes a connection from the list of connections.
-     * This will delete the connection, so make sure to not have
-     * dangling reference to the connection.
+     * Removes a connection from the list of connections.  This will delete
+     * the connection, so make sure to not have dangling reference to the
+     * connection.
      */
     void remove(Connection *);
 
     /**
-     * Return a connection to the specified host for the given user.
-     * If no connection is found 0L is returned.
+     * Return a connection to the specified host for the given user.  If no
+     * connection is found 0L is returned.
      */
     Connection * findConnection(const QString &host, const QString & user);
 
     /**
-     * Returns an iterator that points to the first Connection
-     * object.
+     * Returns an iterator that points to the first Connection object.
      */
     ConnectionIterator begin();
 
     /**
-     * returns true if the plugin can handle a given capability.
+     * Returns true if the plugin can handle a given capability.
      */
     virtual bool provides(capability cap) = 0;
 
     /**
-     * Create an object that will handle the specific capability
-     * if the plugin does not support a capability, an exception is thrown.
+     * Create an object that will handle the specific capability if the
+     * plugin does not support a capability, an exception is thrown.
      */
     virtual Capability * createObject(capability cap) = 0;
 

@@ -40,16 +40,16 @@ typedef QListIterator<Field> FieldIterator;
 /**
  * Representation of a field object.
  *
- * It knows its name, its datatype, constraints
- * when available (like null/not null) and, when it is part of a record, its value.
+ * It knows its name, its datatype, constraints when available (like
+ * null/not null) and, when it is part of a record, its value.
  *
- * The field object can manage only the data type of the underlying column.
- * Conversion operators are provided for all common C++ datatypes. If a conversion
- * is not allowed, a @ref KDB::ConversionException is raised.
+ * The field object can manage only the data type of the underlying column. 
+ * Conversion operators are provided for all common C++ datatypes. If a
+ * conversion is not allowed, a @ref KDB::ConversionException is raised.
  *
- * It is responsibility of the plugin to instantiate a correct field object for
- * the underlying datatype. For datatypes not supported natively by C++, the
- * Plugin can handle either QStrings or QByteArrays.
+ * It is responsibility of the plugin to instantiate a correct field object
+ * for the underlying datatype. For datatypes not supported natively by C++,
+ * the Plugin can handle either QStrings or QByteArrays.
  *
  * The datatype supported are the following:
  *

@@ -33,9 +33,9 @@ typedef QList<Index>         IndexList;
 typedef QListIterator<Index> IndexIterator;
 	
 /**
- * This class should provide information for an index of a table
+ * This class should provide information for an index of a table.
  *
- * Things such fields involved, ordering, if primary or not and so on.
+ * Things such fields involved, ordering, if primary or not etc.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version kdbcore 0.0.2

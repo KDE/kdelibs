@@ -43,10 +43,11 @@ class Database;
  * servers or databases.
  *
  * In more detail:
- * @li On first reference, loads all plugins registered in $KDEDIR/share/services.
+ * @li On first reference, loads all plugins registered in
+ * $KDEDIR/share/services.
  * @li Allows iterations through all available plugins.
- * @li Provide functions to directly access connections and databases through @ref openDatabase
- * and @ref openConnection
+ * @li Provide functions to directly access connections and databases
+ * through @ref openDatabase and @ref openConnection
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version kdbcore 0.0.2
@@ -60,7 +61,7 @@ class DBEngine : public Object{
     virtual ~DBEngine();
 
     /**
-     * creates, if needed, the engine object, and returns it
+     * Creates, if needed, the engine object, and returns it.
      */
     static DBEngine *self();
 
@@ -75,21 +76,23 @@ class DBEngine : public Object{
     Plugin * findPlugin(const QString &name);
 
     /**
-     * Returns the names of all detected plugins
+     * Returns the names of all detected plugins.
      */
     QStringList pluginNames();
 
     /**
      * Open a connection to the given host, with the given plugin, username
      * and password. If the plugin does not exists, OL is returned. This is
-     * a convenience function, to avoid passing through a plugin to get a connection
+     * a convenience function, to avoid passing through a plugin to get a
+     * connection
      */
     Connection * openConnection(const QString &pluginName, const QString &host, int port,
                                 const QString &user, const QString &password = QString::null);
 
     /**
-     * open a connection by name. If there is no such connection, 0L is returned. This differs
-     * from the other openConnection call, that builds one on the fly 
+     * Open a connection by name. If there is no such connection, 0L is
+     * returned. This differs from the other openConnection call, that
+     * builds one on the fly.
      */
     Connection * openConnection(const QString &name);
 
@@ -103,43 +106,40 @@ class DBEngine : public Object{
                                         const QString &password = QString::null);
 
     /**
-     * Removes a connection from the list of connections.
-     * This will delete the connection, so make sure to not have
-     * dangling reference to the connection.
+     * Removes a connection from the list of connections.  This will delete
+     * the connection, so make sure to not have dangling reference to the
+     * connection.
      */
     void remove(Connection *);
 
     /**
-     * Return a connection to the specified host for the given user.
-     * If the returned value is 0L no connection with the specified
-     * arguments is found.
+     * Return a connection to the specified host for the given user.  If the
+     * returned value is 0L no connection with the specified arguments is
+     * found.
      */
     Connection * findConnection(const QString &plugin,
                                 const QString &host,
                                 const int port,
                                 const QString &user);
     /**
-     * return a connection with the specified name
+     * Return a connection with the specified name.
      */
     Connection * findConnection(const QString &name);
 
     /**
-     * Returns an iterator that points to the first Connection
-     * object.
+     * Returns an iterator that points to the first Connection object.
      */
     ConnectionIterator beginConnections();
 
     /**
-     * Load all connections saved in the KConfig-object config.
-     * If config is 0L the connections will be load from the
-     * standard file kdbrc.
+     * Load all connections saved in the KConfig-object config.  If config
+     * is 0L the connections will be load from the standard file kdbrc.
      */
     void loadConnections(KConfigBase *config = 0L);
 
     /**
-     * Save all connections to the KConfig-object config.
-     * If config is 0L the connections will be saved into the
-     * standard file kdbrc.
+     * Save all connections to the KConfig-object config.  If config is 0L
+     * the connections will be saved into the standard file kdbrc.
      */
     void saveConnections(KConfigBase *config = 0L);
 
@@ -151,14 +151,14 @@ class DBEngine : public Object{
                             const QString &databaseName);
 
     /**
-     * retrieves the engine config object. this is either the general kde-db config
-     * file kdbrc or a user supplied one, set using setConfig()
+     * Retrieves the engine config object. This is either the general kde-db
+     * config file kdbrc or a user supplied one, set using @ref setConfig() .
      */
     KConfigBase * config();
 
     /**
-     * sets the config file for the current session.
-     * any unsaved change to the previous config file will be lost
+     * Sets the config file for the current session. Any unsaved change to
+     * the previous config file will be lost.
      */
     void setConfig(KConfigBase* config);
 

@@ -39,8 +39,8 @@ typedef QListIterator<Connection> ConnectionIterator;
 /**
  * Manages the connection state to a SQL engine.
  *
- * Basically stores all authentication tokens and
- * opens/closes connection as needed.
+ * Basically stores all authentication tokens and opens/closes connection as
+ * needed.
  *
  * It is also a collection of database objects, allowing
  * @li traversal of all databases (@ref DatabaseIterator and @ref databases )
@@ -61,35 +61,34 @@ class Connection : public Object {
     virtual ~Connection();
 
     /**
-     * Connect to the host. If username and password are missing,
-     * pops up a dialog to ask them. If the connection is open, nothing
-     * is actually done. Returns true if the connection has been succesfully
-     * opened, false otherwise.
+     * Connect to the host. If username and password are missing, pops up a
+     * dialog to ask them. If the connection is open, nothing is actually
+     * done. Returns true if the connection has been succesfully opened,
+     * false otherwise.
      */
     bool open() ;
 
     /**
-     * Disconnects from the host. all databases are closed. unless destructive == false,
-     * the connection is deleted right after the call
+     * Disconnects from the host. All databases are closed. Unless
+     * destructive == false, the connection is deleted right after the call.
      */
     void close(bool destructive = true);
 
     /**
-     * Returns true if a successful connection has been established.
+     * Returns if a successful connection has been established.
      */
     bool isConnected();
 
     /**
-     * Returns true if a the connection will be saved in config files
-     */
-    bool saveStatus();
-
-    /**
-     * sets the save status for this connection. If the save status is true,
-     * the connection will be saved in kdbrc
+     * Sets the save status for this connection. If the save status is true,
+     * the connection will be saved in kdbrc.
      */
     void setSaveStatus(bool status);
 
+    /**
+     * Returns if a the connection will be saved in config files.
+     */
+    bool saveStatus();
     
     /**
      * Sets the user for this connection. The change will not take
@@ -141,8 +140,8 @@ class Connection : public Object {
     Database * openDatabase(const QString &name);
 
     /**
-     * Return a database by name. If no database with this name exists
-     * it returns 0L.
+     * Return a database by name. If no database with this name exists it
+     * returns 0L.
      */
     Database * findDatabase(const QString &name);
 
@@ -167,31 +166,29 @@ class Connection : public Object {
     DatabaseIterator begin();
 
     /**
-     * saves this connection to the given config file, with an
-     * optional connection number. The config file must exists
-     * and must refer to the correct section.
+     * Saves this connection to the given config file, with an optional
+     * connection number. The config file must exist and must refer to the
+     * correct section.
      */
     void saveToConfig( KConfigBase *config, int number = 0);
 
     /**
-     * start a transaction for the current connection
-     * an error is raised if the underlying DBMS does not support
-     * transactions
+     * Start a transaction for the current connection. An error is raised if
+     * the underlying DBMS does not support transactions.
      */
     void beginTransaction();
 
     /**
-     * end the current transaction and save all the changes to the
-     * database.
-     * an error is raised if the underlying DBMS does not support
-     * transactions or if there isn't any transaction started
+     * End the current transaction and save all the changes to the database. 
+     * An error is raised if the underlying DBMS does not support
+     * transactions or if no transaction has been started.
      */
     void commit();
 
     /**
-     * end the current transaction and drop all changes made up to now.
-     * an error is raised if the underlying DBMS does not support
-     * transactions or if there isn't any transaction started
+     * End the current transaction and drop all changes made up to now.  An
+     * error is raised if the underlying DBMS does not support transactions
+     * or if no transaction has been started.
      */
     void rollback();
       
@@ -199,14 +196,12 @@ class Connection : public Object {
     void slotDeleteYourself();
         
  signals:
-
     void closing(KDB::Connection *);
     void opened();
-    void databaseAdded( QString );
-    void databaseRemoved( QString );
+    void databaseAdded(QString);
+    void databaseRemoved(QString);
     
  private:
-
     Connector *connector;
     DatabaseList m_databases;
 
@@ -219,7 +214,6 @@ class Connection : public Object {
     bool m_saveStatus;
     
     Connection(const QString &pluginName, const QString &host, int port, QObject *parent = 0);
-
 };
 
 }

@@ -30,8 +30,8 @@ namespace KDB {
 /**
  * Base class for all 'real' data access objects.
  *
- * It mostly provide shared support (with automatic deallocation)
- * It inherits from KShared.
+ * Inherited from KShared, mostly provide shared support (with automatic
+ * deallocation).
  *
  * Table, Query and Recordset are DatabaseObject.
  *
@@ -48,7 +48,6 @@ class DataObject : public Object, public KShared {
     DataObject(QObject *parent = 0L, const char *name = 0L);
 
     virtual ~DataObject();
-
 
 };
 

@@ -29,9 +29,9 @@ class QWidget;
 namespace KDB {
 
 /**
- * base class for control dialog extension. All plugins that
- * need a specific configuration dialog in the KControl module must
- * provide a subclass of this class.
+ * Base class to extend the control dialog. All plugins that need a specific
+ * configuration dialog in the KControl module must provide a subclass of
+ * this class.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version kdbcore 0.0.2

@@ -33,8 +33,7 @@ namespace KDB {
 /**
  * Base class for all KDB objects.
  *
- * It inherits QObject and provide base
- * error reporting
+ * It inherits QObject and provide base error reporting.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version kdbcore 0.0.2

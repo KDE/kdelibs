@@ -44,11 +44,11 @@ typedef QListIterator<Database> DatabaseIterator;
 /**
  * Central access point to all functionality of the single database.
  *
- * That means it provides a list of all queries and tables, and is able to execute
- * a command query and to return a recordset for a given query.
+ * That means it provides a list of all queries and tables, and is able to
+ * execute a command query and to return a recordset for a given query.
  *
- * Tables and queries can be accessed by name, and the class can
- * provide collection objects for both.
+ * Tables and queries can be accessed by name, and the class can provide
+ * collection objects for both.
  *
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
@@ -67,82 +67,76 @@ class Database : public Object{
     virtual ~Database();
 
     /**
-     * creates a new table for the current database.
-     * please note that the table is not yet part of the
-     * database until you call @ref KDB::Table::create
+     * Creates a new table for the current database.  Please note that the
+     * table is not yet part of the database until you call @ref
+     * KDB::Table::create
      */
     TablePtr newTable(const QString &name);
 
     /**
-     * returns an existing table by name, or 0L if the
-     * table does not exists
+     * Returns an existing table by name, or 0L if the table does not exists.
      */
     TablePtr getTable(const QString &name);
 
     /**
-     * return the list of available tables.
-     * tables whose name begins with "__" ( so called
-     * system tables) will be returned only if system = true
+     * Return the list of available tables.  Tables whose name begins with
+     * "__" ( so called system tables) will be returned only if system =
+     * true.
      */
     TableList tables(bool system = false);
 
     /**
-     * return a list of names of available tables.
-     * tables whose name begins with "__" ( so called
-     * system tables) will be returned only if system = true
+     * Return a list of names of available tables.  Tables whose name begins
+     * with "__" ( so called system tables) will be returned only if system
+     * = true.
      */
     QStringList tableNames(bool system = false);
     
     /**
-     * removes a table from the database. This means
-     * that the table is dropped, and all the content
-     * is erased
+     * Removes a table from the database. This means that the table is
+     * dropped, and all the content is erased.
      */
      bool removeTable(const QString &name);
 
     /**
-     * creates a new query
+     * Creates a new query
      *
      * @param name this is the name of the query
      *
-     * @param SQL this is the sql executed by the
-     * query. if it is not given, the query can be built
-     * with addTable, addField and so on
+     * @param SQL this is the sql executed by the query. if it is not given,
+     * the query can be built with addTable, addField etc.
      */
     QueryPtr newQuery(const QString &name, const QString &SQL = QString::null);
 
     /**
-     * returns an existing query by name, or 0L if the
-     * query does not exists
+     * Returns an existing query by name, or 0L if the query does not exists.
      */
     QueryPtr getQuery(const QString &name);
     
     /**
-     * return the list of available queries
+     * Return the list of available queries.
      */
     QueryList queries();
 
     /**
-     * return the list of names of available queries
+     * Return the list of names of available queries.
      */
     QStringList queryNames();
 
     /**
-     * removes a query from the database. 
+     * Removes a query from the database. 
      */
     bool removeQuery(const QString &name);
 
     /**
-     * creates a recordset based on a given query.
-     * if the query fails, 0L is returned. you can then
-     * check @ref errorMessage() to get a specific error
-     * message
+     * Creates a recordset based on a given query.  If the query fails, 0L
+     * is returned. You can then check @ref errorMessage() to get a specific
+     * error message.
      */
     RecordsetPtr openRecordset(const QString &SQL);
 
     /**
-     * exec a command query. returns the number of
-     * records affected
+     * Exec a command query. Returns the number of records affected.
      */
     KDB_ULONG execute(const QString &SQL);
     

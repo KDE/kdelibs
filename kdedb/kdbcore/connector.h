@@ -39,17 +39,16 @@ class Query;
 /**
  * @short base interaction class for plugins.
  *
- * This is the base class for the interaction between kdbcore and
- * the various plugins. It should be subclassed by plugins, but should
- * not be used by the client programs
+ * This is the base class for the interaction between kdbcore and the
+ * various plugins. It should be subclassed by plugins, but should not be
+ * used by the client programs.
  *
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version kdbcore 0.0.2
  */
  
-class Connector :
-	public Object {
+class Connector : public Object {
 
  public:
     Connector();
@@ -59,30 +58,29 @@ class Connector :
     // virtual methods: must be overridden in the subclass
 
     /**
-     * closes the connection to the database backend
+     * Closes the connection to the database backend.
      */
     virtual void close();
 
     /**
-     * opens the connection to the database backend
+     * Opens the connection to the database backend.
      */
     virtual bool connect() = 0;
 
     /**
-     * returns the list of the available databases
-     * for the current open connection
+     * Returns the list of the available databases for the current open
+     * connection.
      */
     virtual QStringList databases() = 0;
 
     /**
-     * returns the list of the available tables
-     * for the current open database
+     * Returns the list of the available tables for the current open
+     * database.
      */
     virtual QStringList tables() = 0;
 
     /**
-     * returns the list of the fields for the given table
-     * for the current open database. The rows must contain:
+     * Returns the list of the fields for the given table. The rows contain:
      *
      * @li field name
      * @li datatype, native form
@@ -93,109 +91,110 @@ class Connector :
      * @li referential constraint
      * @li comment
      *
-     * the only mandatory fields are field name, datatype and size. All
-     * other values can be present if the DBMS is able to give them
+     * The only mandatory fields are field name, datatype and size. All
+     * other values can be present if the DBMS is able to give them.
      */
     virtual RowList fields(const QString & tableName) = 0;
 
     /**
-     * executes an SQL statement. The return value is the number of
-     * rows affected by the statement
+     * Executes an SQL statement. The return value is the number of rows
+     * affected by the statement.
      */
     virtual KDB_ULONG execute(const QString &sql) = 0;
 
     /**
-     * creates an empty database
+     * Creates an empty database.
      */
     virtual bool createDatabase(const QString & name) = 0;
 
     /**
-     * drops a database with all its content
+     * Drops a database with all its content.
      */
     virtual bool dropDatabase(const QString & name) = 0;
 
     /**
-     * creates a table with the characteristic of the given one
+     * Creates a table with the characteristic of the given one.
      */
     virtual bool createTable(const Table & tab) = 0;
 
     /**
-     * remove a table in the currend database deleting all its content
+     * Remove a table in the currend database deleting all its content.
      */
     virtual bool dropTable(const QString & name) = 0;
 
     /**
-     * append a file to a table. the underlying DBMS must issue an alter here
+     * Append a file to a table. The underlying DBMS may issue an "ALTER
+     * TABLE" statement here.
      */
     virtual bool appendField(const QString &table, Field *f) = 0;
 
     /**
-     * remove a field from a table. the underlying DBMS must issue an alter here
+     * Remove a field from a table. The underlying DBMS may issue an "ALTER
+     * TABLE" statement here.
      */
     virtual bool removeField(const QString &table, const QString &field) = 0;
 
     /**
-     * change the definition of a field of the given table. the underlying DBMS
-     * must issue an alter here
+     * Change the definition of a field of the given table. The underlying
+     * DBMS may issue an "ALTER TABLE" statement here.
      */
     virtual bool changeField(const QString &table, Field *f) = 0;
     
     /**
-     * clones the current object. If the object holds an open connection,
-     * the resulting connector must be open too.
+     * Clones the current object. If the object holds an open connection,
+     * the resulting connector must be open, too.
      */
     virtual Connector * clone() = 0;
 
     /**
-     * set the operational database for the current connector. From this
-     * point all the methods will affect the selected database
+     * Set the operational database for the current connector. From this
+     * point all the methods will affect the selected database.
      */
     virtual bool setCurrentDatabase(const QString &name) = 0;
 
     /**
-     * returns the corresponding KDB datatype for the given native one
+     * Returns the corresponding KDB datatype for the given native one.
      */
     virtual DataType nativeToKDB(const QString &type) = 0;
 
     /**
-     *  returns the corresponding native datatype for the given KDB one
+     *  Returns the corresponding native datatype for the given KDB one.
      */
     virtual QString KDBToNative(DataType type) = 0;
 
     /**
-     * executes a select to the backend and returns an handler to the
-     * result
+     * Executes a "SELECT" statement on the backend and returns an handler
+     * to the result.
      */
     virtual Handler *query(const QString &SQL) = 0;
 
     /**
-     * Create a query object. Plugins can override some functions of the class Query to take
-     * advantage of some specific optimizations. This is entirely optional, default implementations
-     * with a meaningful behaviour are provided in the kdedb core library
+     * Create a query object. Plugins can override some functions of the
+     * class Query to take advantage of some specific optimizations. This is
+     * entirely optional, default implementations with a meaningful
+     * behaviour are provided in the kdedb core library.
      */
     virtual Query *createQueryObject(QObject *parent = 0L,
                                      const char *name = 0L,
                                      const QString &sql = QString::null);
 
     /**
-     * start a transaction for the current connection
-     * an error is raised if the underlying DBMS does not support
-     * transactions
+     * Start a transaction for the current connection. An error is raised if
+     * the underlying DBMS does not support transactions.
      */
     virtual void beginTransaction() = 0;
 
     /**
-     * end the current transaction and save all the changes to the
-     * database.
-     * an error is raised if the underlying DBMS does not support
-     * transactions or if there isn't any transaction started
+     * End the current transaction and save all the changes to the database. 
+     * An error is raised if the underlying DBMS does not support
+     * transactions or if there isn't any transaction started.
      */
     virtual void commit() = 0;
 
     /**
-     * end the current transaction and drop all changes made up to now.
-     * an error is raised if the underlying DBMS does not support
-     * transactions or if there isn't any transaction started
+     * End the current transaction and drop all changes made up to now.  An
+     * error is raised if the underlying DBMS does not support transactions
+     * or if there isn't any transaction started.
      */
     virtual void rollback() = 0;
 
@@ -224,8 +223,8 @@ class Connector :
  protected:
 
     /**
-     * must be called by subclasses when a connection to the backend
-     * is established
+     * Must be called by subclasses when a connection to the backend
+     * is established.
      */
     void setConnected(bool conn);
 

@@ -34,8 +34,8 @@ class Recordset;
 /**
  * This is an iterator over a recordset.
  *
- * It can be used to access all records of a recordset
- * either sequentialy or randomly.
+ * It can be used to access all records of a recordset either sequentialy or
+ * randomly.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version KDB 0.0.2

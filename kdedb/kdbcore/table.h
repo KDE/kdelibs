@@ -44,9 +44,9 @@ typedef KSharedPtr<Recordset> RecordsetPtr;
 /**
  * Representation of a database table.
  *
- * Trough this object we access the fields and
- * indices of a given table (when available). This object will allow building of
- * new fields and indexes, as well as editing of the table data using
+ * Trough this object we access the fields and indices of a given table
+ * (when available). This object will allow building of new fields and
+ * indexes, as well as editing of the table data using
  * @ref openRecordset
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
@@ -63,36 +63,33 @@ public:
     ~Table();
 
     /**
-     * creates a new field for the current table.
-     * If the table is not create()d, the field is appended
-     * to the list of fields and created with the table itself.
-     * else no modification will occur. To apply the changes to the
-     * table, you must use @ref appendField
+     * creates a new field for the current table.  If the table is not
+     * create()d, the field is appended to the list of fields and created
+     * with the table itself.  else no modification will occur. To apply the
+     * changes to the table, you must use @ref appendField
      */
     Field * newField(const QString &name);
 
     /**
-     * appends the field to the list of fields and issue an
-     * alter table to the underlying DBMS.
+     * appends the field to the list of fields and issue an alter table to
+     * the underlying DBMS.
      */
     bool appendField(Field *);
 
     /**
-     * appends the field to the list of fields and issue an
-     * alter table to the underlying DBMS.
+     * appends the field to the list of fields and issue an alter table to
+     * the underlying DBMS.
      */
     bool removeField(const QString &name);
 
     /**
-     * changes a field definition and issue an
-     * alter table to the underlying DBMS.
-     * the field must be already present in the list of fields
+     * changes a field definition and issue an alter table to the underlying
+     * DBMS.  the field must be already present in the list of fields
      */
     bool changeField(Field *);
 
     /**
-     * returns an existing field by name, or 0L if the
-     * field does not exists
+     * returns an existing field by name, or 0L if the field does not exists
      */
     Field * getField(const QString &name) const;
 
@@ -136,8 +133,7 @@ public:
     bool create();
 
     /**
-     * returns true if the table is in design mode, i.e. it
-     * is not created
+     * returns true if the table is in design mode, i.e. it is not created
      */
     bool designMode() const;
 

@@ -42,15 +42,15 @@ typedef KSharedPtr<Recordset> RecordsetPtr;
 /**
  * A set of records, that can be traversed through iterators.
  *
- * A recordset can be obtained directly by the database (through
- * @ref KDB::Database::openRecordset ("Select * from blah") ) or from an
+ * A recordset can be obtained directly by the database, through @ref
+ * KDB::Database::openRecordset ("SELECT * FROM table"), or from an
  * existing table or query.
  *
- * There are two types of recordsets: read only or updatable. the type can
+ * There are two types of recordsets: read only or updatable. The type can
  * be queried through @ref updatable
  *
- * an updatable recordset can be asked to build new records, as well as delete
- * existing ones. Updates are allowed in the @ref KDB::Record class
+ * An updatable recordset can be asked to build new records, as well as
+ * delete existing ones. Updates are allowed in the @ref KDB::Record class.
  *
  * @author Alessandro Praduroux <pradu@thekompany.com>
  * @version kdbcore 0.0.2
@@ -84,8 +84,8 @@ class Recordset : public DataObject {
     bool updatable();
 
     /**
-     * creates a new record. The programmer must call Record::update to actually
-     * insert the record in the database.
+     * creates a new record. The programmer must call Record::update to
+     * actually insert the record in the database.
      */
     RecordPtr addRecord();
 

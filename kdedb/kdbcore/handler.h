@@ -28,8 +28,8 @@
 namespace KDB {
 
 /**
-  * will contain the handler to a set of records
-  **/
+  * Will contain the handler to a set of records.
+  */
 class Handler : public Object, public KShared {
 
 public:
