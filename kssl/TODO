@@ -1,6 +1,5 @@
-This library is severely functionally challenged.
 
-This TODO happens to cover SSL in all of KDE though.
+- Proper TLS support
 
 - Report if CN == this host using the method in KSSLPeerInfo
 
@@ -43,8 +42,6 @@ This TODO happens to cover SSL in all of KDE though.
 - Document libkssl interface
 
 - Make a tamper proof certificate repository of some sort
-
-- Wizard buttons for autoconfiguring the cipher selection
 
 - Is it possible to provide warning if a particular attack is detected?
   (OpenSSL looks for these if it knows about them)
