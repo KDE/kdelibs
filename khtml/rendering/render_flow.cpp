@@ -78,10 +78,16 @@ RenderFlow::RenderFlow()
 
 void RenderFlow::setStyle(RenderStyle *style)
 {
+
+//    kdDebug( 6040 ) << (void*)this<< " renderFlow::setstyle()" << endl;
+
     RenderBox::setStyle(style);
     
     if(m_positioned || m_floating || !style->display() == INLINE)
 	m_inline = false;
+	
+    if (m_inline == true && m_childrenInline==false)
+    	m_inline = false;
 
     switch(m_style->textAlign())
     {
@@ -940,7 +946,7 @@ void RenderFlow::calcMinMaxWidth()
 
 void RenderFlow::close()
 {
-    //kdDebug( 6040 ) << "renderFlow::close()" << endl;
+//    kdDebug( 6040 ) << (void*)this<< " renderFlow::close()" << endl;
     if(haveAnonymousBox())
     {
 	m_last->close();
@@ -1046,11 +1052,19 @@ void RenderFlow::addChild(RenderObject *newChild)
 	}
     }
     else if(!newChild->isInline() && !newChild->isFloating())
+    {
 	m_childrenInline = false;
+    }
 
     if(!newChild->isInline() && !newChild->isFloating())
     {
 	newChild->setParent(this);
+	if (style()->display() == INLINE)
+	{
+    	    m_inline=false; // inline can't contain blocks
+	    if (parent() && parent()->isFlow())
+	    	static_cast<RenderFlow*>(parent())->m_childrenInline = false;
+	}
     }
 
     switch (newChild->style()->position())

@@ -308,8 +308,10 @@ void RenderObject::printTree(int indent) const
 {
     QString ind;
     ind.fill(' ', indent);
-    kdDebug( 6040 ) << ind << renderName() << ": " << (void*)this << " il=" << isInline()
+    kdDebug( 6040 ) << ind << renderName() << ": " << (void*)this 
+    	    	 << " il=" << isInline() << " ci=" << childrenInline()
                  << " fl=" << isFloating() << " rp=" << isReplaced()
+		 << " an=" << isAnonymousBox()
                  << " laytd=" << layouted()
                  << " (" << xPos() << "," << yPos() << "," << width() << "," << height() << ")" << endl;
     RenderObject *child = firstChild();
