@@ -2504,13 +2504,13 @@ DOMString HTMLTextAreaElementImpl::value()
         if ( m_render && m_initialized ) {
             RenderTextArea* renderArea = static_cast<RenderTextArea*>( m_render );
             m_value = renderArea->text();
+            m_dirtyvalue = false; // before onChange (#100963)
             onChange();
         } else {
             m_value = defaultValue().string();
             m_initialized = true;
+            m_dirtyvalue = false;
         }
-
-        m_dirtyvalue = false;
     }
 
     if ( m_value.isNull() ) return "";
