@@ -1,13 +1,15 @@
-#include <kjavaappletcontext.moc>
+#include "kjavaappletcontext.h"
+
 #include <kjavaappletserver.h>
 #include <kjavaapplet.h>
 #include <kdebug.h>
 #include <qmap.h>
+#include <qguardedptr.h>
 
 // For future expansion
 struct KJavaAppletContextPrivate
 {
-    QMap<int,KJavaApplet*> applets;
+    QMap< int, QGuardedPtr<KJavaApplet> > applets;
 };
 
 KJavaAppletContext::KJavaAppletContext()
@@ -123,6 +125,25 @@ void KJavaAppletContext::received( const QString &cmd, const QStringList &arg )
     }
     else if ( cmd=="resizeapplet" )
     {
+        //arg[1] should be appletID
+        //arg[2] should be new width
+        //arg[3] should be new height
+        bool ok;
+        int appletID = arg[0].toInt( &ok );
+        int width = arg[1].toInt( &ok );
+        int height = arg[2].toInt( &ok );
+
+        if( !ok )
+        {
+            kdError() << "could not parse out parameters for resize" << endl;
+        }
+        else
+        {
+            KJavaApplet* tmp = d->applets[appletID];
+            tmp->resizeAppletWidget( width, height );
+        }
 
     }
 }
+
+#include <kjavaappletcontext.moc>
