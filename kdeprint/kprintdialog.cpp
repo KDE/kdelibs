@@ -699,6 +699,10 @@ bool KPrintDialog::checkOutputFile()
 		if ( !url.isLocalFile() )
 			return true;
 
+		bool	anotherCheck;
+		do
+		{
+		anotherCheck = false;
 		QFileInfo	f(url.path());
 		if (f.exists())
 		{
@@ -719,8 +723,10 @@ bool KPrintDialog::checkOutputFile()
 						value = false;
 						break;
 					case KIO::R_RENAME:
-						d->m_file->lineEdit()->setText( dlg.newDestURL().path() );
+						url = dlg.newDestURL();
+						d->m_file->lineEdit()->setText( url.path() );
 						value = true;
+						anotherCheck = true;
 						break;
 				}
 			}
@@ -737,6 +743,7 @@ bool KPrintDialog::checkOutputFile()
 			else
 				value = true;
 		}
+		} while( anotherCheck );
 	}
 	return value;
 }
