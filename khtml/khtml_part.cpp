@@ -91,7 +91,6 @@ using namespace DOM;
 #include <qapplication.h>
 #include <qdragobject.h>
 #include <qmetaobject.h>
-#include <qtooltip.h>
 
 namespace khtml
 {
@@ -130,18 +129,6 @@ int kjs_lib_count = 0;
 
 typedef FrameList::ConstIterator ConstFrameIt;
 typedef FrameList::Iterator FrameIt;
-
-class KHTMLToolTip : public QToolTip
-{
-public:
-  KHTMLToolTip(KHTMLPart *part) : QToolTip(part->widget()), m_part(part) {};
-
-protected:
-  virtual void maybeTip(const QPoint &);
-
-private:
-  KHTMLPart *m_part;
-};
 
 class KHTMLPartPrivate
 {
@@ -432,13 +419,6 @@ static QString splitUrlTarget(const QString &url, QString *target=0)
    return result;
 }
 
-void KHTMLToolTip::maybeTip(const QPoint &)
-{
-    DOM::NodeImpl *node = m_part->nodeUnderMouse().handle();
-    if ( node && node->isElementNode() && node->hasTooltip() )
-        tip( node->getRect(), static_cast<DOM::ElementImpl *>( node )->getAttribute( ATTR_TITLE ).string() );
-}
-
 KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *parent, const char *name,
                       GUIProfile prof )
 : KParts::ReadOnlyPart( parent, name )
@@ -536,7 +516,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
            this, SLOT( slotRedirect() ) );
 
   d->m_view->viewport()->installEventFilter( this );
-  new KHTMLToolTip( this );
 }
 
 KHTMLPart::~KHTMLPart()
@@ -1434,7 +1413,13 @@ void KHTMLPart::stopAnimations()
   if ( d->m_doc )
     d->m_doc->docLoader()->setShowAnimations(false);
 
-  // ### propagate to child frames
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
+  for (; it != end; ++it )
+    if ( !( *it ).m_part.isNull() && ( *it ).m_part->inherits( "KHTMLPart" ) ) {
+      KParts::ReadOnlyPart* p = ( *it ).m_part;
+      static_cast<KHTMLPart*>( p )->stopAnimations();
+    }
 }
 
 void KHTMLPart::slotFinishedParsing()
@@ -3348,11 +3333,13 @@ void KHTMLPart::slotLoadImages()
   if (d->m_doc )
     d->m_doc->docLoader()->setAutoloadImages( !d->m_doc->docLoader()->autoloadImages() );
 
-  for ( KHTMLPart* p = KHTMLFactory::partList()->first(); p;
-        p = KHTMLFactory::partList()->next() ) {
-    if ( p->parentPart() == this )
-      p->slotLoadImages();
-  }
+  ConstFrameIt it = d->m_frames.begin();
+  ConstFrameIt end = d->m_frames.end();
+  for (; it != end; ++it )
+    if ( !( *it ).m_part.isNull() && ( *it ).m_part->inherits( "KHTMLPart" ) ) {
+      KParts::ReadOnlyPart* p = ( *it ).m_part;
+      static_cast<KHTMLPart*>( p )->slotLoadImages();
+    }
 }
 
 void KHTMLPart::reparseConfiguration()
