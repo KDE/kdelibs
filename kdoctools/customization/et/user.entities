@@ -19,6 +19,11 @@
 <!ENTITY HKNga       "hiire <mousebutton>keskmise</mousebutton> nupuga">
 <!ENTITY HPNga       "hiire <mousebutton>parema</mousebutton> nupuga">
 
+<!ENTITY LMB         "hiire <mousebutton>vasak</mousebutton> nupp">
+<!ENTITY MMB         "hiire <mousebutton>keskmine</mousebutton> nupp">
+<!ENTITY RMB         "hiire <mousebutton>parem</mousebutton> nupp">
+
+
 <!ENTITY cdrom  '<hardware>CD-ROM</hardware>'>
 
 <!ENTITY nt     "<abbrev>nt.</abbrev>">		<!-- English: &eg; -->
