@@ -92,6 +92,8 @@ kcontainertest_SOURCES = kcontainertest.cpp
 krulertest_SOURCES = krulertest.cpp
 knotebooktest_SOURCES = knotebooktest.cpp
 kwizardtest_SOURCES = kwizardtest.cpp
+kquickhelptest_SOURCE = kquickhelptest.cpp
+
 
 klinetest.moc: klinetest.h
 	$(MOC) klinetest.h -o klinetest.moc
