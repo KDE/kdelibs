@@ -3066,6 +3066,7 @@ KParts::ReadOnlyPart *KHTMLPart::currentFrame() const
           static_cast<KHTMLPart *>(part)->d->m_frames.count() > 0 ) {
     KHTMLPart* frameset = static_cast<KHTMLPart *>(part);
     part = static_cast<KParts::ReadOnlyPart *>(frameset->partManager()->activePart());
+    if ( !part ) return frameset;
   }
   return part;
 }
