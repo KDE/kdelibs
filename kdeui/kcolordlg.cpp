@@ -41,6 +41,7 @@
 #include <qvalidator.h>
 #include <qpainter.h>
 #include <qpushbutton.h>
+#include <qspinbox.h>
 #include <qtimer.h>
 
 #include <kapp.h>
@@ -228,7 +229,8 @@ KValueSelector::KValueSelector( QWidget *parent, const char *name )
 	pixmap.setOptimization( QPixmap::BestOptim );
 }
 
-KValueSelector::KValueSelector(Orientation o, QWidget *parent, const char *name )
+KValueSelector::KValueSelector(Orientation o, QWidget *parent, const char *name
+ )
 	: KSelector( o, parent, name), _hue(0), _sat(0)
 {
 	setRange( 0, 255 );
@@ -826,12 +828,12 @@ public:
     bool bColorPicking;
     QLabel *colorName;
     QLineEdit *htmlName;
-    QLineEdit *hedit;
-    QLineEdit *sedit;
-    QLineEdit *vedit;
-    QLineEdit *redit;
-    QLineEdit *gedit;
-    QLineEdit *bedit;
+    QSpinBox *hedit;
+    QSpinBox *sedit;
+    QSpinBox *vedit;
+    QSpinBox *redit;
+    QSpinBox *gedit;
+    QSpinBox *bedit;
     KColorPatch *patch;
     KHSSelector *hsSelector;
     KPalette *palette;
@@ -907,26 +909,29 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("H:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 0, 2);
-  d->hedit = new QLineEdit( page );
+  d->hedit = new QSpinBox( 0, 359, 1, page );
   d->hedit->setValidator( new QIntValidator( d->hedit ) );
   l_lbot->addWidget(d->hedit, 0, 3);
-  connect( d->hedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
+  connect( d->hedit, SIGNAL( valueChanged(int) ),
+  	SLOT( slotHSVChanged() ) );
 
   label = new QLabel( QString::fromLatin1("S:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 1, 2);
-  d->sedit = new QLineEdit( page );
+  d->sedit = new QSpinBox( 0, 255, 1, page );
   d->sedit->setValidator( new QIntValidator( d->sedit ) );
   l_lbot->addWidget(d->sedit, 1, 3);
-  connect( d->sedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
+  connect( d->sedit, SIGNAL( valueChanged(int) ),
+  	SLOT( slotHSVChanged() ) );
 
   label = new QLabel( QString::fromLatin1("V:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 2);
-  d->vedit = new QLineEdit( page );
+  d->vedit = new QSpinBox( 0, 255, 1, page );
   d->vedit->setValidator( new QIntValidator( d->vedit ) );
   l_lbot->addWidget(d->vedit, 2, 3);
-  connect( d->vedit, SIGNAL( textChanged(const QString &) ),SLOT( slotHSVChanged() ) );
+  connect( d->vedit, SIGNAL( valueChanged(int) ),
+  	SLOT( slotHSVChanged() ) );
 
   //
   // add the RGB fields
@@ -934,31 +939,34 @@ KColorDialog::KColorDialog( QWidget *parent, const char *name, bool modal )
   label = new QLabel( QString::fromLatin1("R:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 0, 4);
-  d->redit = new QLineEdit( page );
+  d->redit = new QSpinBox( 0, 255, 1, page );
   d->redit->setValidator( new QIntValidator( d->redit ) );
   l_lbot->addWidget(d->redit, 0, 5);
-  connect( d->redit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
+  connect( d->redit, SIGNAL( valueChanged(int) ),
+  	SLOT( slotRGBChanged() ) );
 
   label = new QLabel( QString::fromLatin1("G:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget( label, 1, 4);
-  d->gedit = new QLineEdit( page );
+  d->gedit = new QSpinBox( 0, 255,1, page );
   d->gedit->setValidator( new QIntValidator( d->gedit ) );
   l_lbot->addWidget(d->gedit, 1, 5);
-  connect( d->gedit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
+  connect( d->gedit, SIGNAL( valueChanged(int) ),
+  	SLOT( slotRGBChanged() ) );
 
   label = new QLabel( QString::fromLatin1("B:"), page );
   label->setAlignment(AlignRight | AlignVCenter);
   l_lbot->addWidget(label, 2, 4);
-  d->bedit = new QLineEdit( page );
+  d->bedit = new QSpinBox( 0, 255, 1, page );
   d->bedit->setValidator( new QIntValidator( d->bedit ) );
   l_lbot->addWidget(d->bedit, 2, 5);
-  connect( d->bedit, SIGNAL( textChanged(const QString &) ), SLOT( slotRGBChanged() ) );
+  connect( d->bedit, SIGNAL( valueChanged(int) ),
+  	SLOT( slotRGBChanged() ) );
 
   //
-  // the entry fields should be wide enought to hold 88888
+  // the entry fields should be wide enought to hold 8888888
   //
-  int w = d->hedit->fontMetrics().width(QString::fromLatin1("888888"));
+  int w = d->hedit->fontMetrics().width(QString::fromLatin1("8888888"));
   d->hedit->setFixedWidth(w);
   d->sedit->setFixedWidth(w);
   d->vedit->setFixedWidth(w);
@@ -1126,9 +1134,9 @@ int KColorDialog::getColor( QColor &theColor, QWidget *parent )
 void KColorDialog::slotRGBChanged( void )
 {
   if (d->bRecursion) return;
-  int red = d->redit->text().toInt();
-  int grn = d->gedit->text().toInt();
-  int blu = d->bedit->text().toInt();
+  int red = d->redit->value();
+  int grn = d->gedit->value();
+  int blu = d->bedit->value();
 
   if ( red > 255 || red < 0 ) return;
   if ( grn > 255 || grn < 0 ) return;
@@ -1164,9 +1172,9 @@ void KColorDialog::slotHtmlChanged( void )
 void KColorDialog::slotHSVChanged( void )
 {
   if (d->bRecursion) return;
-  int hue = d->hedit->text().toInt();
-  int sat = d->sedit->text().toInt();
-  int val = d->vedit->text().toInt();
+  int hue = d->hedit->value();
+  int sat = d->sedit->value();
+  int val = d->vedit->value();
 
   if ( hue > 359 || hue < 0 ) return;
   if ( sat > 255 || sat < 0 ) return;
@@ -1319,14 +1327,10 @@ void KColorDialog::setRgbEdit( void )
   if (d->bEditRgb) return;
   int r, g, b;
   d->selColor.rgb( &r, &g, &b );
-  QString num;
 
-  num.setNum( r );
-  d->redit->setText( num );
-  num.setNum( g );
-  d->gedit->setText( num );
-  num.setNum( b );
-  d->bedit->setText( num );
+  d->redit->setValue( r );
+  d->gedit->setValue( g );
+  d->bedit->setValue( b );
 }
 
 void KColorDialog::setHtmlEdit( void )
@@ -1346,14 +1350,10 @@ void KColorDialog::setHsvEdit( void )
   if (d->bEditHsv) return;
   int h, s, v;
   d->selColor.hsv( &h, &s, &v );
-  QString num;
 
-  num.setNum( h );
-  d->hedit->setText( num );
-  num.setNum( s );
-  d->sedit->setText( num );
-  num.setNum( v );
-  d->vedit->setText( num );
+  d->hedit->setValue( h );
+  d->sedit->setValue( s );
+  d->vedit->setValue( v );
 }
 
 #include "kcolordialog.moc"
