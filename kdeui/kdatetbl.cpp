@@ -217,7 +217,7 @@ KDateTable::paintCell(QPainter *painter, int row, int col)
       QDate pCellDate = dateFromPos( pos );
       // First day of month
       text = calendar->dayString(pCellDate, true);
-      if( pCellDate.month()!=date.month() ) 
+      if( calendar->month(pCellDate) != calendar->month(date) )
         { // we are either
           // ° painting a day of the previous month or
           // ° painting a day of the following month
