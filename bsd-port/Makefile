@@ -1,53 +1,69 @@
-# New ports collection makefile for:   kdelibs
-# Version required:    1.0
-# Date created:        18 June 1998
-# Whom:                Alex Zepeda <garbanzo@hooked.net>
+# New ports collection makefile for:	KDE libraries 2
+# Date created:				Fri Apr 14 2000 15:05:00 EDT
+# Whom:					will
 #
-# $Id$
+# $FreeBSD: ports/x11/kdelibs2/Makefile,v 1.69 2001/01/05 06:20:28 kevlo Exp $
 #
-PKGNAME=	kdelibs-`date "+%y%m%d"`
+
+PORTNAME=	kdelibs
+PORTVERSION=	2.0.1
+PORTREVISION=	2
 CATEGORIES=	x11 kde
+MASTER_SITES=	${MASTER_SITE_KDE}
+MASTER_SITE_SUBDIR=	stable/${PORTVERSION}/distribution/tar/generic/src
 
-MAINTAINER=	garbanzo@hooked.net
+MAINTAINER=	kevlo@FreeBSD.org
 
-BUILD_DEPENDS=	autoconf:${PORTSDIR}/devel/autoconf \
-		automake:${PORTSDIR}/devel/automake
-INSTALL_ROOT=	${.CURDIR}/${PKGNAME}
-USE_QT=		yes
-LIB_DEPENDS=	gif.3:${PORTSDIR}/graphics/giflib \
-		jpeg.9:${PORTSDIR}/graphics/jpeg
-NO_MTREE=	yup
-USE_GMAKE=	"without a doubt"
-NO_WRKDIR=	"Cause, you've obviously got the source in the parent directory"
-WRKSRC=		../
-NO_EXTRACT=	"yes, please"
-HAS_CONFIGURE=	yes
-CONFIGURE_ARGS=	"--prefix=$(PREFIX)" \
-		"--x-inc=$(X11BASE)/include" \
-		"--x-lib=$(X11BASE)/lib" \
-		"--with-extra-includes=$(PREFIX)/include/giflib"
-INSTALL_TARGET=	prefix=$(INSTALL_ROOT)$(PREFIX) install
+LIB_DEPENDS=	tiff.4:${PORTSDIR}/graphics/tiff \
+		audiofile.0:${PORTSDIR}/audio/libaudiofile \
+		mimelib.3:${PORTSDIR}/converters/kdesupport2
 
-post-install-pre-lib:
-	${SETENV} OBJFORMAT=${PORTOBJFORMAT}
-	if [ "${PORTOBJFORMAT}" = "aout" ]; then \
-		${LN} -sf libjscript.so.0.90  ${PREFIX}/lib/libjscript.so; \
-		${LN} -sf libkdecore.so.1.0   ${PREFIX}/lib/libkdecore.so; \
-		${LN} -sf libkdeui.so.1.0     ${PREFIX}/lib/libkdeui.so; \
-		${LN} -sf libkfile.so.1.0     ${PREFIX}/lib/libkfile.so; \
-		${LN} -sf libkfm.so.1.0       ${PREFIX}/lib/libkfm.so; \
-		${LN} -sf libkhtmlw.so.1.0    ${PREFIX}/lib/libkhtmlw.so; \
-		${LN} -sf libmediatool.so.1.0 ${PREFIX}/lib/libmediatool.so; \
-	else
-		${LN} -sf libjscript.so.0     ${PREFIX}/lib/libjscript.so; \
-		${LN} -sf libkdecore.so.1     ${PREFIX}/lib/libkdecore.so; \
-		${LN} -sf libkdeui.so.1       ${PREFIX}/lib/libkdeui.so; \
-		${LN} -sf libkfile.so.1       ${PREFIX}/lib/libkfile.so; \
-		${LN} -sf libkfm.so.1         ${PREFIX}/lib/libkfm.so; \
-		${LN} -sf libkhtmlw.so.1      ${PREFIX}/lib/libkhtmlw.so; \
-		${LN} -sf libmediatool.so.1   ${PREFIX}/lib/libmediatool.so; \
-	fi
-	${LDCONFIG} -m ${PREFIX}/lib
+USE_OPENSSL=	yes
+USE_QT2=	yes
+MOC?=		${X11BASE}/bin/moc2
+SOMAJOR=	4
+SOMINOR=	0
+USE_BZIP2=	yes
+USE_NEWGCC=	yes
+INSTALLS_SHLIB=	yes
+GNU_CONFIGURE=	yes
+CONFIGURE_ARGS+=--with-qt-includes=${X11BASE}/include/qt2 \
+		--with-qt-libraries=${X11BASE}/lib \
+		--with-extra-libs=${LOCALBASE}/lib
+CONFIGURE_ENV=	CPPFLAGS="-I${LOCALBASE}/include -I${PREFIX}/include" \
+		MOC="${MOC}" LIBQT="-lqt2" LIBQTFILE="libqt2" \
+		LIBS="-Wl,-export-dynamic -L${LOCALBASE}/lib -ljpeg -lgcc -lstdc++"
+USE_GMAKE=	yes
+MAKE_ENV=	SOMAJOR="${SOMAJOR}" SOMINOR="${SOMINOR}"
+PLIST_SUB+=	LIBVER="${SOMAJOR}"
 
-.include "kde-snapshot.mk"
-.include <bsd.port.mk>
+.include <bsd.port.pre.mk>
+
+pre-fetch:
+.if ${OSVERSION} <= 410002
+	@${ECHO}
+	@${ECHO} "			NOTICE"
+	@${ECHO}
+	@${ECHO} "Your OpenSSL installation could be out of date.  This is"
+	@${ECHO} "just a warning, but if your system's world was built on"
+	@${ECHO} "sources earlier than August 20 along RELENG_4 or older,"
+	@${ECHO} "then KDE2 will not build with SSL support."
+	@${ECHO}
+.endif
+
+pre-configure:
+.for NUM in 1 3
+	(find ${WRKSRC} -name Makefile.in | xargs ${PERL} -pi -e \
+		"s@version-info ${NUM}:0@version-info ${SOMAJOR}:${SOMINOR}@g")
+.endfor
+
+post-install:
+.for LIB in DCOP kab kdecore kdesu kdeui kfile kformula kio kjs \
+	    kparts kspell ksycoca kjava
+	@${LN} -sf ${PREFIX}/lib/lib${LIB}.so.${SOMAJOR} ${PREFIX}/lib/lib${LIB}.so
+.endfor
+.for LIB in artsc artsflow artsflow_idl kmid kmedia2_idl qtmcop soundserver_idl
+	@${LN} -sf ${PREFIX}/lib/lib${LIB}.so.0 ${PREFIX}/lib/lib${LIB}.so
+.endfor
+
+.include <bsd.port.post.mk>
