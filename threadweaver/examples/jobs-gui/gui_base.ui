@@ -1,0 +1,337 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>GUIBase</class>
+<widget class="QMainWindow">
+    <property name="name">
+        <cstring>GUIBase</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>490</width>
+            <height>312</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Weaver Thread Manager Example</string>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QPushButton" row="8" column="0">
+            <property name="name">
+                <cstring>pbStart</cstring>
+            </property>
+            <property name="text">
+                <string>Start</string>
+            </property>
+        </widget>
+        <widget class="QLayoutWidget" row="5" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>layout1</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="KLed">
+                    <property name="name">
+                        <cstring>kLedExample_9</cstring>
+                    </property>
+                    <property name="state">
+                        <enum>Off</enum>
+                    </property>
+                    <property name="shape">
+                        <enum>Rectangular</enum>
+                    </property>
+                    <property name="look">
+                        <enum>Raised</enum>
+                    </property>
+                </widget>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel7</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Stopped</string>
+                    </property>
+                </widget>
+                <widget class="KLed">
+                    <property name="name">
+                        <cstring>kLedExample_9_2</cstring>
+                    </property>
+                    <property name="state">
+                        <enum>On</enum>
+                    </property>
+                    <property name="shape">
+                        <enum>Rectangular</enum>
+                    </property>
+                    <property name="look">
+                        <enum>Raised</enum>
+                    </property>
+                </widget>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel7_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Running</string>
+                    </property>
+                </widget>
+                <widget class="KLed">
+                    <property name="name">
+                        <cstring>kLedExample_9_3</cstring>
+                    </property>
+                    <property name="state">
+                        <enum>On</enum>
+                    </property>
+                    <property name="shape">
+                        <enum>Rectangular</enum>
+                    </property>
+                    <property name="look">
+                        <enum>Raised</enum>
+                    </property>
+                    <property name="color">
+                        <color>
+                            <red>255</red>
+                            <green>0</green>
+                            <blue>0</blue>
+                        </color>
+                    </property>
+                </widget>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel7_3</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Suspended</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer1</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+            </hbox>
+        </widget>
+        <widget class="QPushButton" row="8" column="1">
+            <property name="name">
+                <cstring>pbStop</cstring>
+            </property>
+            <property name="enabled">
+                <bool>false</bool>
+            </property>
+            <property name="text">
+                <string>Stop</string>
+            </property>
+        </widget>
+        <widget class="QPushButton" row="8" column="3">
+            <property name="name">
+                <cstring>pbQuit</cstring>
+            </property>
+            <property name="text">
+                <string>Quit</string>
+            </property>
+        </widget>
+        <spacer row="8" column="2">
+            <property name="name">
+                <cstring>spacer4</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>40</width>
+                    <height>20</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QLabel" row="0" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>tlHeader</cstring>
+            </property>
+            <property name="text">
+                <string>&lt;font size="+1"&gt;&lt;p align="center"&gt;GUI based example for the Weaver Thread Manager&lt;/p&gt;&lt;/font&gt;</string>
+            </property>
+        </widget>
+        <widget class="Line" row="1" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>line1</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+        </widget>
+        <widget class="Line" row="7" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>line3</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+        </widget>
+        <spacer row="6" column="1">
+            <property name="name">
+                <cstring>spacer2</cstring>
+            </property>
+            <property name="orientation">
+                <enum>Vertical</enum>
+            </property>
+            <property name="sizeType">
+                <enum>Expanding</enum>
+            </property>
+            <property name="sizeHint">
+                <size>
+                    <width>20</width>
+                    <height>16</height>
+                </size>
+            </property>
+        </spacer>
+        <widget class="QLabel" row="3" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>tlProgress</cstring>
+            </property>
+            <property name="text">
+                <string>Progress:</string>
+            </property>
+            <property name="alignment">
+                <set>AlignVCenter|AlignRight</set>
+            </property>
+        </widget>
+        <widget class="QLabel" row="2" column="0" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>tlNumJobs</cstring>
+            </property>
+            <property name="text">
+                <string>Number of Jobs remaining:</string>
+            </property>
+            <property name="alignment">
+                <set>AlignVCenter|AlignRight</set>
+            </property>
+        </widget>
+        <widget class="QProgressBar" row="3" column="2" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>pbProgress</cstring>
+            </property>
+            <property name="percentageVisible">
+                <bool>false</bool>
+            </property>
+            <property name="toolTip" stdset="0">
+                <string>Overall Progress</string>
+            </property>
+        </widget>
+        <widget class="QLabel" row="2" column="2" rowspan="1" colspan="2">
+            <property name="name">
+                <cstring>tlNumJobsRem</cstring>
+            </property>
+            <property name="text">
+                <string></string>
+            </property>
+            <property name="alignment">
+                <set>WordBreak|AlignCenter</set>
+            </property>
+        </widget>
+        <widget class="QGroupBox" row="4" column="0" rowspan="1" colspan="4">
+            <property name="name">
+                <cstring>gbThrStatus</cstring>
+            </property>
+            <property name="title">
+                <string>Thread Status</string>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <property name="spacing">
+                    <number>2</number>
+                </property>
+                <widget class="QFrame">
+                    <property name="name">
+                        <cstring>frameThrStatus</cstring>
+                    </property>
+                    <property name="frameShape">
+                        <enum>NoFrame</enum>
+                    </property>
+                    <property name="frameShadow">
+                        <enum>Plain</enum>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer5</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+            </hbox>
+        </widget>
+    </grid>
+</widget>
+<toolbars>
+</toolbars>
+<connections>
+    <connection>
+        <sender>pbStart</sender>
+        <signal>clicked()</signal>
+        <receiver>GUIBase</receiver>
+        <slot>slotStart()</slot>
+    </connection>
+    <connection>
+        <sender>pbStop</sender>
+        <signal>clicked()</signal>
+        <receiver>GUIBase</receiver>
+        <slot>slotStop()</slot>
+    </connection>
+    <connection>
+        <sender>pbQuit</sender>
+        <signal>clicked()</signal>
+        <receiver>GUIBase</receiver>
+        <slot>slotQuit()</slot>
+    </connection>
+</connections>
+<slots>
+    <slot>slotStart()</slot>
+    <slot>slotStop()</slot>
+    <slot>slotQuit()</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+</UI>
