@@ -489,7 +489,7 @@ void HTMLFrameSetElementImpl::recalcStyle( StyleChange ch )
 {
     if (changed() && m_render) {
         m_render->setLayouted(false);
-        m_render->layout();
+//         m_render->layout();
         setChanged(false);
     }
     HTMLElementImpl::recalcStyle( ch );
