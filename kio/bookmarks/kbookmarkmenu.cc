@@ -499,7 +499,7 @@ void KBookmarkMenu::slotAddBookmark()
   } 
   else 
   {
-    BookmarkEditDialog dlg( title, url, m_pManager );
+    KBookmarkEditDialog dlg( title, url, m_pManager );
     if ( dlg.exec() != KDialogBase::Accepted )
       return;
 
@@ -595,7 +595,7 @@ void KBookmarkMenuNSImporter::endFolder()
 
 // -----------------------------------------------------------------------------
 
-BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr,
+KBookmarkEditDialog::KBookmarkEditDialog(const QString& title, const QString& url, KBookmarkManager * mgr,
                                        QWidget * parent, const char * name, const QString& caption)
   : KDialogBase(parent, name, true, caption, User1|Ok|Cancel, Ok, false, KGuiItem(i18n("New Folder...")))
 {
@@ -625,20 +625,20 @@ BookmarkEditDialog::BookmarkEditDialog(const QString& title, const QString& url,
   connect( this, SIGNAL( user1Clicked() ), SLOT( slotInsertFolder() ) );
 }
 
-void BookmarkEditDialog::slotOk() { accept(); }
-void BookmarkEditDialog::slotCancel() { reject(); } 
+void KBookmarkEditDialog::slotOk() { accept(); }
+void KBookmarkEditDialog::slotCancel() { reject(); } 
 
-QString BookmarkEditDialog::finalAddress()
+QString KBookmarkEditDialog::finalAddress()
 { 
   return KBookmarkFolderTree::selectedAddress( m_folderTree ); 
 }
 
-QString BookmarkEditDialog::finalUrl() { return m_url->text(); }
-QString BookmarkEditDialog::finalTitle() { return m_title->text(); }
+QString KBookmarkEditDialog::finalUrl() { return m_url->text(); }
+QString KBookmarkEditDialog::finalTitle() { return m_title->text(); }
 
-void BookmarkEditDialog::slotInsertFolder()
+void KBookmarkEditDialog::slotInsertFolder()
 {
-  // kdDebug(7043) << "BookmarkEditDialog::slotInsertFolder" << endl;
+  // kdDebug(7043) << "KBookmarkEditDialog::slotInsertFolder" << endl;
   QString address = KBookmarkFolderTree::selectedAddress( m_folderTree ); 
   if ( address.isNull() ) return;
   KBookmarkGroup parentBookmark = m_mgr->findByAddress( address ).toGroup();

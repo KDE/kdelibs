@@ -69,14 +69,12 @@ private:
   QString m_address;
 };
 
-// RENAME!
-
-class BookmarkEditDialog : public KDialogBase
+class KBookmarkEditDialog : public KDialogBase
 {
   Q_OBJECT
 
 public:
-  BookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
+  KBookmarkEditDialog( const QString& title, const QString& url, KBookmarkManager *, QWidget * = 0, const char * = 0, const QString& caption = i18n( "Add Bookmark" ) );
   QString finalUrl();
   QString finalTitle();
   QString finalAddress();
