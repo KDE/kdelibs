@@ -26,8 +26,6 @@
 class QUrl;
 class QStringList;
 
-struct KURLPrivate;
-
 /**
  * Represents and parses a URL.
  *
@@ -83,7 +81,8 @@ public:
    *             should not use this constructor.
    *             Instead create an empty url and set the path by using
    *             @ref setPath().
-   * @param encoding_hint Reserved, should be 0.
+   * @param encoding_hint MIB of original encoding of URL. 
+   *             @see QTextCodec::mibEnum()
    */
   KURL( const QString& url, int encoding_hint = 0 );
   /**
@@ -109,7 +108,8 @@ public:
    * If this is a relative URL it will be combined with @p _baseurl.
    * Note that _rel_url should be encoded too, in any case.
    * So do NOT pass a path here (use setPath or addPath instead).
-   * @param encoding_hint Reserved, should be 0.
+   * @param encoding_hint MIB of original encoding of URL. 
+   *             @see QTextCodec::mibEnum()
    */
   KURL( const KURL& _baseurl, const QString& _rel_url, int encoding_hint=0 );
 
@@ -208,25 +208,21 @@ public:
   bool hasPath() const { return !m_strPath.isEmpty(); }
 
   /**
-   * Removes all multiple directory separators ('/') and
-   * resolves any "." or ".." found in the path.
-   * Calls @ref QDir::cleanDirPath but saves the trailing slash if any.
-   */
-  void cleanPath();
-
-  /**
-   * Same as above except it takes a flag that allows you
-   * to ignore the clean up of the multiple directory separators.
+   * Resolves "." and ".." components in path.
+   * 
+   * @param cleanDirSeparator if true, occurances of consecutive
+   * directory seperators (e.g. /foo//bar) are cleaned up as well.
    *
    * Some servers seem not to like the removal of extra '/'
    * eventhough it is against the specification in RFC 2396.
    */
-  void cleanPath(bool cleanDirSeparator);
+  void cleanPath(bool cleanDirSeparator = true);
 
   /**
    * This is useful for HTTP. It looks first for '?' and decodes then.
    * The encoded path is the concatenation of the current path and the query.
-   * @param encoding_hint Reserved, should be 0.
+   * @param encoding_hint MIB of original encoding of @p _txt . 
+   *             @see QTextCodec::mibEnum()
    */
   void setEncodedPathAndQuery( const QString& _txt, int encoding_hint = 0 );
 
@@ -236,7 +232,8 @@ public:
    * @return The concatenation if the encoded path , '?' and the encoded query.
    *
    * @param _no_empty_path If set to true then an empty path is substituted by "/".
-   * @param encoding_hint Reserved, should be 0.
+   * @param encoding_hint MIB of desired encoding of URL. 
+   *             @see QTextCodec::mibEnum()
    */
   QString encodedPathAndQuery( int _trailing = 0, bool _no_empty_path = false, int encoding_hint = 0) const;
 
@@ -245,6 +242,8 @@ public:
    * The query may contain the 0 character.
    *
    * The query should start with a '?'. If it doesn't '?' is prepended.
+   * @param encoding_hint MIB of original encoding of _txt. 
+   *             @see QTextCodec::mibEnum()
    * @param encoding_hint Reserved, should be 0.
    */
   void setQuery( const QString& _txt, int encoding_hint = 0);
@@ -381,10 +380,6 @@ public:
    *                                     is considered to be the filename.
    */
   QString fileName( bool _ignore_trailing_slash_in_path = true ) const;
-  QString filename( bool _ignore_trailing_slash_in_path = true ) const
-  {
-    return fileName(_ignore_trailing_slash_in_path);
-  }
 
   /**
    * @return The directory part of the current path. Everything between the last and the second last '/'
@@ -415,16 +410,6 @@ public:
   bool cd( const QString& _dir );
 
   /**
-   * @return The complete URL, with all escape sequences intact.
-   * Example: http://localhost:8080/test.cgi?test=hello%20world&name=fred
-   *
-   * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
-   *                  a trailing '/' if there is none yet and 0 returns the
-   *                  path unchanged.
-   */
-  QString url( int _trailing = 0 ) const;
-
-  /**
    * @return The complete URL, with all escape sequences intact, encoded
    * in a given charset.
    * This is used in particular for encoding URLs in UTF-8 before using them
@@ -433,9 +418,10 @@ public:
    * @param _trailing This may be ( -1, 0 +1 ). -1 strips a trailing '/' from the path, +1 adds
    *                  a trailing '/' if there is none yet and 0 returns the
    *                  path unchanged.
-   * @param encoding_hint The charset to use for encoding (see QFont::Charset).
+   * @param encoding_hint MIB of encoding to use. 
+   *             @see QTextCodec::mibEnum()
    */
-  QString url( int _trailing, int encoding_hint ) const;
+  QString url( int _trailing = 0, int encoding_hint = 0) const;
 
   /**
    * @return A human readable URL, with no non-necessary encodings/escaped
@@ -517,7 +503,8 @@ public:
    * Convert unicoded string to local encoding and use %-style
    * encoding for all common delimiters / non-ascii characters.
    * @param str String to encode
-   * @param encoding_hint Reserved, should be 0.
+   * @param encoding_hint MIB of encoding to use. 
+   *             @see QTextCodec::mibEnum()
    **/
   static QString encode_string(const QString &str, int encoding_hint = 0);
 
@@ -528,7 +515,8 @@ public:
    * encoding for all common delimiters / non-ascii characters
    * as well as the slash '/'.
    * @param str String to encode
-   * @param encoding_hint Reserved, should be 0.
+   * @param encoding_hint MIB of encoding to use. 
+   *             @see QTextCodec::mibEnum()
    **/
   static QString encode_string_no_slash(const QString &str, int encoding_hint = 0);
 
@@ -539,7 +527,8 @@ public:
    *
    * Revers of encode_string()
    * @param str String to decode
-   * @param encoding_hint Reserved, should be 0.
+   * @param encoding_hint MIB of original encoding of @p str . 
+   *             @see QTextCodec::mibEnum()
    **/
   static QString decode_string(const QString &str, int encoding_hint = 0);
 
@@ -553,6 +542,14 @@ public:
    */
   static bool isRelativeURL(const QString &_url);
 
+#ifdef KDE_NO_COMPAT
+private:
+#endif
+  QString filename( bool _ignore_trailing_slash_in_path = true ) const
+  {
+    return fileName(_ignore_trailing_slash_in_path);
+  }
+
 protected:
   void reset();
   void parse( const QString& _url, int encoding_hint = 0);
@@ -565,7 +562,6 @@ private:
   QString m_strPath;
   QString m_strRef_encoded;
   QString m_strQuery_encoded;
-  KURLPrivate* d;
   bool m_bIsMalformed : 1;
   int freeForUse      : 7;
   unsigned short int m_iPort;

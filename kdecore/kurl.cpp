@@ -903,7 +903,7 @@ void KURL::setFileName( const QString& _txt )
   else
     tmp = _txt;
 
-  QString path = m_strPath;
+  QString path = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
   if ( path.isEmpty() )
     path = "/";
   else
@@ -918,15 +918,17 @@ void KURL::setFileName( const QString& _txt )
     else if ( path.right(1) != "/" )
       path.truncate( lastSlash+1 ); // keep the "/"
   }
-
-  path += tmp;
-  setPath( path );
+  if (m_strPath_encoded.isEmpty())
+  {
+     path += tmp;
+     setPath( path );
+  }
+  else
+  {
+     path += encode_string(tmp);
+     setEncodedPath( path );
+  }
   cleanPath();
-}
-
-void KURL::cleanPath()
-{
-   cleanPath( true );
 }
 
 void KURL::cleanPath( bool cleanDirSeparator ) // taken from the old KURL
@@ -990,10 +992,14 @@ QString KURL::encodedPathAndQuery( int _trailing, bool _no_empty_path, int encod
 
 void KURL::setEncodedPath( const QString& _txt, int encoding_hint )
 {
+  static const QString & fileProt = KGlobal::staticQString( "file" );
   m_strPath_encoded = _txt;
 
   bool keepEncoded;
   m_strPath = decode( m_strPath_encoded, &keepEncoded, encoding_hint );
+  // Throw away encoding for local files, makes file-operations faster.
+  if (m_strProtocol == fileProt)
+     keepEncoded = false;
   if (!keepEncoded)
      m_strPath_encoded = QString::null;
 }
@@ -1094,12 +1100,6 @@ bool KURL::hasSubURL() const
   if (m_strRef_encoded.startsWith("tar:"))
      return true;
   return false;
-}
-
-// BCI: Should be removed, and the other one should have '= 0' for both args.
-QString KURL::url( int _trailing ) const
-{
-    return url( _trailing, 0 );
 }
 
 QString KURL::url( int _trailing, int encoding_hint ) const
@@ -1259,37 +1259,43 @@ KURL KURL::join( const KURL::List & lst )
 QString KURL::fileName( bool _strip_trailing_slash ) const
 {
   QString fname;
+  const QString &path = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
 
-  int len = m_strPath.length();
+  int len = path.length();
   if ( len == 0 )
     return fname;
 
   if ( _strip_trailing_slash )
   {
-    while ( len >= 1 && m_strPath[ len - 1 ] == '/' )
+    while ( len >= 1 && path[ len - 1 ] == '/' )
       len--;
   }
-  else if ( m_strPath[ len - 1 ] == '/' )
+  else if ( path[ len - 1 ] == '/' )
     return fname;
 
   // Does the path only consist of '/' characters ?
-  if ( len == 1 && m_strPath[ 0 ] == '/' )
+  if ( len == 1 && path[ 0 ] == '/' )
     return fname;
 
-  int i = m_strPath.findRev( '/', len - 1 );
+  int i = path.findRev( '/', len - 1 );
   // If ( i == -1 ) => the first character is not a '/'
   // So it's some URL like file:blah.tgz, return the whole path
   if ( i == -1 ) {
-    if ( len == (int)m_strPath.length() )
-      return m_strPath;
+    if ( len == (int)path.length() )
+      fname = path;
     else
       // Might get here if _strip_trailing_slash is true
-      return m_strPath.left( len );
+      fname = path.left( len );
   }
-
-  fname = m_strPath.mid( i + 1, len - i - 1 ); // TO CHECK
+  else
+  {
+     fname = path.mid( i + 1, len - i - 1 ); // TO CHECK
+  }
   // fname.assign( m_strPath, i + 1, len - i - 1 );
-  return fname;
+  if (m_strPath_encoded.isEmpty())
+     return fname;
+  else
+     return decode_string(fname);
 }
 
 void KURL::addPath( const QString& _txt )
@@ -1323,11 +1329,9 @@ void KURL::addPath( const QString& _txt )
 QString KURL::directory( bool _strip_trailing_slash_from_result,
                          bool _ignore_trailing_slash_in_path ) const
 {
-  QString result;
+  QString result = m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
   if ( _ignore_trailing_slash_in_path )
-    result = path( -1 );
-  else
-    result = m_strPath;
+    result = trailingSlash( -1, result );
 
   if ( result.isEmpty() || result == "/" )
     return result;
@@ -1345,9 +1349,12 @@ QString KURL::directory( bool _strip_trailing_slash_from_result,
   }
 
   if ( _strip_trailing_slash_from_result )
-    result = m_strPath.left( i );
+    result = result.left( i );
   else
-    result = m_strPath.left( i + 1 );
+    result = result.left( i + 1 );
+
+  if (!m_strPath_encoded.isEmpty())
+    result = decode(result);
 
   return result;
 }
