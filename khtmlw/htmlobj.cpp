@@ -771,12 +771,14 @@ int HTMLImage::calcPreferredWidth()
 
 void HTMLImage::setMaxWidth( int _max_width )
 {
+    if ( percent > 0 )
+	max_width = _max_width;
+
     if ( pixmap == 0 || pixmap->isNull() )
 	return;
 
     if ( percent > 0 )
     {
-	max_width = _max_width;
 	width = (int)max_width * (int)percent / 100;
 	if ( !predefinedHeight )
 	    ascent = pixmap->height() * width / pixmap->width() + border * 2;

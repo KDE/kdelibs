@@ -210,7 +210,6 @@ KHTMLWidget::KHTMLWidget( QWidget *parent, const char *name, const char * )
 
 void KHTMLWidget::requestFile( HTMLObject *_obj, const char *_url )
 {
-    debug( "Requesting File: %s", _url );
     waitingFileList.append( _obj );
     emit fileRequest( _url );
 }
@@ -726,6 +725,7 @@ void KHTMLWidget::resizeEvent( QResizeEvent* _re )
 	{
 	    calcSize();
 	    calcAbsolutePos();
+	    positionFormElements();
 	}
 
 	emit resized( _re->size() );
@@ -4099,6 +4099,8 @@ void KHTMLWidget::slotScrollVert( int _val )
     if ( _val == y_offset )
 	return;
 
+    bDrawBackground = true;
+
     if ( abs( y_offset - _val ) < height() )
     {
 	if ( bIsSelected )	
@@ -4111,8 +4113,6 @@ void KHTMLWidget::slotScrollVert( int _val )
 	    bitBlt( this, 0, ( y_offset - _val ), this );
 	}
     }
-
-    bDrawBackground = true;
 
     if ( _val > y_offset)
     {
