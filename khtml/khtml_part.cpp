@@ -249,7 +249,7 @@ KHTMLPart::KHTMLPart( QWidget *parentWidget, const char *widgetname, QObject *pa
 
   connect( khtml::Cache::loader(), SIGNAL( requestDone() ),
 	   this, SLOT( checkCompleted() ) );
-  
+
   findTextBegin(); //reset find variables
 }
 
@@ -1703,9 +1703,10 @@ void KHTMLPart::slotIncFontSizes()
 
 void KHTMLPart::slotDecFontSizes()
 {
-  if ( d->m_fontBase > 1 )
+  if ( d->m_fontBase >= 1 )
     updateFontSize( --d->m_fontBase );
-  else
+  
+  if ( d->m_fontBase == 0 )
     d->m_paDecFontSizes->setEnabled( false );
 }
 
