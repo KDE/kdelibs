@@ -1122,9 +1122,6 @@ void HTMLInputElementImpl::parseAttribute(AttributeImpl *attr)
     case ATTR_ACCESSKEY:
         // ### ignore for the moment
         break;
-    case ATTR_ALIGN:
-        addHTMLAlignment( attr->value() );
-        break;
     case ATTR_WIDTH:
         // ignore this attribute,  do _not_ add
         // a CSS_PROP_WIDTH here!

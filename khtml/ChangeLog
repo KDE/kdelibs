@@ -1,3 +1,8 @@
+2003-11-29  Stephan Kulow  <coolo@kde.org>
+
+	* html/html_formimpl.cpp (HTMLInputElementImpl): don't make input elements
+	floating, but only care for the text alignment
+
 2003-11-28  Harri Porten  <porten@kde.org>
 
 	* css/css_valueimpl.cpp (setProperty): remove superfluous
