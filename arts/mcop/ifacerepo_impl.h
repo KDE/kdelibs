@@ -28,21 +28,36 @@
 namespace Arts {
 
 class InterfaceRepo_impl : virtual public InterfaceRepo_skel {
-	class TypeEntry : public TypeDef {
+	class Entry {
 	public:
 		long moduleID;
-		TypeEntry(Buffer& stream, long moduleID) :TypeDef(stream)
+		Entry(long moduleID) : moduleID(moduleID)
 		{
-			this->moduleID = moduleID;
 		}
 	};
-	class InterfaceEntry : public InterfaceDef {
+	class EnumEntry : public EnumDef, public Entry {
 	public:
-		long moduleID;
-		InterfaceEntry(Buffer& stream, long moduleID) :InterfaceDef(stream),
-			moduleID(moduleID) { };
+		EnumEntry(Buffer& stream, long moduleID)
+				:EnumDef(stream), Entry(moduleID)
+		{
+		}
+	};
+	class TypeEntry : public TypeDef, public Entry {
+	public:
+		TypeEntry(Buffer& stream, long moduleID)
+				:TypeDef(stream), Entry(moduleID)
+		{
+		}
+	};
+	class InterfaceEntry : public InterfaceDef, public Entry {
+	public:
+		InterfaceEntry(Buffer& stream, long moduleID)
+				:InterfaceDef(stream), Entry(moduleID)
+		{
+		};
 	};
 
+	std::list<EnumEntry *> enums;
 	std::list<TypeEntry *> types;
 	std::list<InterfaceEntry *> interfaces;
 
@@ -57,6 +72,7 @@ public:
 	void removeModule(long moduleID);
 	InterfaceDef queryInterface(const std::string& name);
 	TypeDef queryType(const std::string& name);
+	EnumDef queryEnum(const std::string& name);
 };
 };
 #endif /* IFACEREPO_H */

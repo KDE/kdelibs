@@ -160,7 +160,7 @@ TypeDef InterfaceRepo_impl::queryType(const string& name)
 
 	for(ti = types.begin();ti != types.end();ti++)
 	{
-		if((*ti)->name == name)	/* TODO: namespace! */
+		if((*ti)->name == name)
 		{
 			Buffer b;
 			(*ti)->writeType(b);
@@ -170,8 +170,24 @@ TypeDef InterfaceRepo_impl::queryType(const string& name)
 
 	cout << "MCOP error: no information about the type "
 		 << name << " is known" << endl;
-	/* TODO: what happens here?
-	assert(false);
-	 */
 	return TypeDef();
+}
+
+EnumDef InterfaceRepo_impl::queryEnum(const string& name)
+{
+	list<EnumEntry *>::iterator ei;
+
+	for(ei = enums.begin();ei != enums.end();ei++)
+	{
+		if((*ei)->name == name)
+		{
+			Buffer b;
+			(*ei)->writeType(b);
+			return EnumDef(b);
+		}
+	}
+
+	cout << "MCOP error: no information about the enum "
+		 << name << " is known" << endl;
+	return EnumDef();
 }

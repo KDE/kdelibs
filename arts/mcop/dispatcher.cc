@@ -690,7 +690,7 @@ void Dispatcher::initiateConnection(Connection *connection)
 
 	Header header(MCOP_MAGIC,0,mcopServerHello);
 	header.writeType(*helloBuffer);
-	ServerHello serverHello(serverID,authProtocols,authSeed);
+	ServerHello serverHello("aRts/MCOP-1.0.0-alpha",serverID,authProtocols,authSeed);
 	serverHello.writeType(*helloBuffer);
 
 	helloBuffer->patchLength();

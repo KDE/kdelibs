@@ -62,10 +62,11 @@ public:
 class ServerHello : public Arts::Type {
 public:
 	ServerHello();
-	ServerHello(const std::string& serverID, const std::vector<std::string>& authProtocols, const std::string& authSeed);
+	ServerHello(const std::string& mcopVersion, const std::string& serverID, const std::vector<std::string>& authProtocols, const std::string& authSeed);
 	ServerHello(Arts::Buffer& stream);
 	ServerHello(const ServerHello& copyType);
 	ServerHello& operator=(const ServerHello& assignType);
+	std::string mcopVersion;
 	std::string serverID;
 	std::vector<std::string> authProtocols;
 	std::string authSeed;
@@ -236,12 +237,11 @@ public:
 class ModuleDef : public Arts::Type {
 public:
 	ModuleDef();
-	ModuleDef(const std::string& moduleName, const std::vector<Arts::ModuleDef>& modules, const std::vector<Arts::EnumDef>& enums, const std::vector<Arts::TypeDef>& types, const std::vector<Arts::InterfaceDef>& interfaces);
+	ModuleDef(const std::string& moduleName, const std::vector<Arts::EnumDef>& enums, const std::vector<Arts::TypeDef>& types, const std::vector<Arts::InterfaceDef>& interfaces);
 	ModuleDef(Arts::Buffer& stream);
 	ModuleDef(const ModuleDef& copyType);
 	ModuleDef& operator=(const ModuleDef& assignType);
 	std::string moduleName;
-	std::vector<Arts::ModuleDef> modules;
 	std::vector<Arts::EnumDef> enums;
 	std::vector<Arts::TypeDef> types;
 	std::vector<Arts::InterfaceDef> interfaces;
@@ -285,6 +285,7 @@ public:
 	virtual void removeModule(long moduleID) = 0;
 	virtual Arts::InterfaceDef queryInterface(const std::string& name) = 0;
 	virtual Arts::TypeDef queryType(const std::string& name) = 0;
+	virtual Arts::EnumDef queryEnum(const std::string& name) = 0;
 };
 
 class InterfaceRepo_stub : virtual public InterfaceRepo_base, virtual public Arts::Object_stub {
@@ -298,6 +299,7 @@ public:
 	void removeModule(long moduleID);
 	Arts::InterfaceDef queryInterface(const std::string& name);
 	Arts::TypeDef queryType(const std::string& name);
+	Arts::EnumDef queryEnum(const std::string& name);
 };
 
 class InterfaceRepo_skel : virtual public InterfaceRepo_base, virtual public Arts::Object_skel {
@@ -358,6 +360,7 @@ public:
 	inline void removeModule(long moduleID);
 	inline Arts::InterfaceDef queryInterface(const std::string& name);
 	inline Arts::TypeDef queryType(const std::string& name);
+	inline Arts::EnumDef queryEnum(const std::string& name);
 };
 
 class FlowSystemSender_base : virtual public Arts::Object_base {
@@ -1031,6 +1034,11 @@ inline Arts::InterfaceDef Arts::InterfaceRepo::queryInterface(const std::string&
 inline Arts::TypeDef Arts::InterfaceRepo::queryType(const std::string& name)
 {
 	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryType(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryType(name);
+}
+
+inline Arts::EnumDef Arts::InterfaceRepo::queryEnum(const std::string& name)
+{
+	return _cache?static_cast<Arts::InterfaceRepo_base*>(_cache)->queryEnum(name):static_cast<Arts::InterfaceRepo_base*>(_method_call())->queryEnum(name);
 }
 
 inline void Arts::FlowSystemSender::processed()

@@ -82,6 +82,7 @@ struct OnewayInvocation {
  * Body of the mcopServerHello MCOP message
  */
 struct ServerHello {
+	string mcopVersion;
 	string serverID;
 	sequence<string> authProtocols;
 	string authSeed;
@@ -256,7 +257,6 @@ struct EnumDef {
 struct ModuleDef {
 	string moduleName;
 
-	sequence<ModuleDef> modules;
 	sequence<EnumDef> enums;
 	sequence<TypeDef> types;
 	sequence<InterfaceDef> interfaces;
@@ -287,6 +287,11 @@ interface InterfaceRepo {
 	 * queries the definition of a type
 	 */
 	TypeDef queryType(string name);
+
+	/**
+	 * queries the definition of an enum value
+	 */
+	EnumDef queryEnum(string name);
 };
 
 /**
