@@ -32,7 +32,7 @@ using namespace KJS;
 
 // ------------------------------ ErrorInstanceImp ----------------------------
 
-const ClassInfo ErrorInstanceImp::info = {"Function", 0, 0, 0};
+const ClassInfo ErrorInstanceImp::info = {"Error", 0, 0, 0};
 
 ErrorInstanceImp::ErrorInstanceImp(ObjectImp *proto)
   : ObjectImp(proto)
@@ -147,7 +147,7 @@ NativeErrorPrototypeImp::NativeErrorPrototypeImp(ExecState */*exec*/, ErrorProto
 
 // ------------------------------ NativeErrorImp -------------------------------
 
-const ClassInfo NativeErrorImp::info = {"Error", &InternalFunctionImp::info, 0, 0};
+const ClassInfo NativeErrorImp::info = {"Function", &InternalFunctionImp::info, 0, 0};
 
 NativeErrorImp::NativeErrorImp(ExecState */*exec*/, FunctionPrototypeImp *funcProto,
                                const Object &prot)
