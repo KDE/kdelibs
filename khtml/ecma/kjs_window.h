@@ -21,6 +21,7 @@
 #define _KJS_WINDOW_H_
 
 #include <qobject.h>
+#include <qguardedptr.h>
 #include <kjs/object.h>
 #include <kjs/function.h>
 
@@ -48,7 +49,7 @@ namespace KJS {
     int installTimeout(const UString &handler, int t);
     void clearTimeout(int timerId);
   private:
-    KHTMLPart *part;
+    QGuardedPtr<KHTMLPart> part;
     WindowQObject *winq;
   };
 
@@ -87,22 +88,22 @@ namespace KJS {
 
   class Location : public HostImp {
   public:
-    Location(KHTMLPart *p) : part(p) { }
+    Location(KHTMLPart *p);
     virtual KJSO get(const UString &p) const;
     virtual void put(const UString &p, const KJSO &v);
     virtual KJSO toPrimitive(Type preferred) const;
     virtual String toString() const;
   private:
-    KHTMLPart *part;
+    QGuardedPtr<KHTMLPart> part;
   };
 
   class LocationFunc : public DOMFunction {
   public:
-    LocationFunc(KHTMLPart *p, int i) : part(p), id(i) { };
+    LocationFunc(KHTMLPart *p, int i);
     Completion tryExecute(const List &);
     enum { Replace };
   private:
-    KHTMLPart *part;
+    QGuardedPtr<KHTMLPart> part;
     int id;
   };
 

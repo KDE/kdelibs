@@ -62,7 +62,7 @@ public:
   FrameArray(KHTMLPart *p) : part(p) { }
   KJSO get(const UString &p) const;
 private:
-  KHTMLPart *part;
+  QGuardedPtr<KHTMLPart> part;
 };
 
 Window::Window(KHTMLPart *p)
@@ -87,6 +87,13 @@ bool Window::hasProperty(const UString &p, bool) const
 
 KJSO Window::get(const UString &p) const
 {
+  if (p == "closed")
+    return Boolean(part.isNull());
+
+  // we don't want any operations on a closed window
+  if (part.isNull())
+    return Undefined();
+  
   if (p == "location")
     return KJSO(new Location(part));
   else if (p == "document")
@@ -96,7 +103,7 @@ KJSO Window::get(const UString &p) const
   else if (p == "self")
     return KJSO(newWindow(part));
   else if (p == "parent")
-    return KJSO(newWindow(part->parentPart() ? part->parentPart() : part));
+    return KJSO(newWindow(part->parentPart() ? part->parentPart() : (KHTMLPart*)part));
   else if (p == "top") {
     KHTMLPart *p = part;
     while (p->parentPart())
@@ -104,6 +111,8 @@ KJSO Window::get(const UString &p) const
     return KJSO(newWindow(p));
   } else if (p == "name")
     return String(part->name());
+  else if (p == "closed")
+    return Boolean(part.isNull());
   else if (p == "Image")
     return KJSO(new ImageConstructor(Global::current()));
   else if (p == "alert")
@@ -171,7 +180,13 @@ Completion WindowFunc::tryExecute(const List &args)
   QString str, str2;
   int i;
 
+  if (!window->part)
+    return Completion(Normal, Undefined());
+
   KHTMLPart *part = window->part;
+  if (!part)
+    return Completion(Normal, Undefined());
+
   KHTMLView *widget = part->view();
   KJSO v = args[0];
   String s = v.toString();
@@ -338,8 +353,13 @@ KJSO FrameArray::get(const UString &p) const
   return Undefined();
 }
 
+Location::Location(KHTMLPart *p) : part(p) { }
+
 KJSO Location::get(const UString &p) const
 {
+  if (part.isNull())
+    return Undefined();
+  
   KURL url = part->url();
   QString str;
 
@@ -373,6 +393,9 @@ KJSO Location::get(const UString &p) const
 
 void Location::put(const UString &p, const KJSO &v)
 {
+  if (part.isNull())
+    return;
+
   QString str = v.toString().value().qstring();
 
   if (p == "href")
@@ -390,10 +413,14 @@ String Location::toString() const
   return String(part->url().prettyURL());
 }
 
+LocationFunc::LocationFunc(KHTMLPart *p, int i) : part(p), id(i) { };
+
 Completion LocationFunc::tryExecute(const List &args)
 {
-  QString str = args[0].toString().value().qstring();
-  part->scheduleRedirection(0, str);
+  if (!part.isNull()) {
+    QString str = args[0].toString().value().qstring();
+    part->scheduleRedirection(0, str);
+  }
   return Completion(Normal, Undefined());
 }
 
