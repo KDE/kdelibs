@@ -18,6 +18,8 @@
     Boston, MA 02111-1307, USA.
 */
 
+#include "address.h"
+
 #include <kapplication.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -26,8 +28,6 @@
 #include <kstaticdeleter.h>
 
 #include <qfile.h>
-
-#include "address.h"
 
 using namespace KABC;
 

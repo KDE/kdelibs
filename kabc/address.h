@@ -25,6 +25,8 @@
 #include <qstring.h>
 #include <qvaluelist.h>
 
+#include <kdelibs_export.h>
+
 // template tags for address formatting localization
 #define KABC_FMTTAG_realname   QString("%n")
 #define KABC_FMTTAG_REALNAME   QString("%N")
