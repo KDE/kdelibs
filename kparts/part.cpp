@@ -99,7 +99,7 @@ Part::~Part()
     // We need to disconnect first, to avoid calling it !
     disconnect( m_widget, SIGNAL( destroyed() ),
                 this, SLOT( slotWidgetDestroyed() ) );
-    kDebugInfo( 1000, QString("***** deleting widget '%1'").arg(m_widget->name()) );
+    kdDebug(1000) << "deleting widget " << m_widget->name() << endl;
     delete (QWidget *)m_widget;
   }
 
@@ -201,7 +201,7 @@ QWidget *Part::hostContainer( const QString &containerName )
 
 void Part::slotWidgetDestroyed()
 {
-  kDebugInfo( 1000, QString(" ********** KPart::slotWidgetDestroyed(), deleting part '%1'").arg(name()) );
+  kdDebug(1000) << "KPart::slotWidgetDestroyed(), deleting part " << name() << endl;
   m_widget = 0;
   delete this;
 }
@@ -312,7 +312,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
   {
     if (!m_url.isEmpty())
     {
-      kDebugInfo( 1000, "ReadOnlyPart::guiActivateEvent -> %s", m_url.decodedURL().ascii() );
+      kdDebug(1000) << "ReadOnlyPart::guiActivateEvent -> " << m_url.decodedURL() << endl;
       emit setWindowCaption( m_url.decodedURL() );
     } else emit setWindowCaption( "" );
   }
@@ -342,10 +342,10 @@ void ReadWritePart::setReadWrite( bool readwrite )
 
 void ReadWritePart::setModified( bool modified )
 {
-  kdDebug() << "ReadWritePart::setModified( " << (modified ? "true" : "false") << ")" << endl;
+  kdDebug(1000) << "ReadWritePart::setModified( " << (modified ? "true" : "false") << ")" << endl;
   if ( !m_bReadWrite && modified )
   {
-      kDebugError( 1000, "Can't set a read-only document to 'modified' !" );
+      kdError(1000) << "Can't set a read-only document to 'modified' !" << endl;
       return;
   }
   m_bModified = modified;
@@ -392,7 +392,10 @@ bool ReadWritePart::save()
 bool ReadWritePart::saveAs( const KURL & kurl )
 {
   if (kurl.isMalformed())
+  {
+      kdError(1000) << "saveAs: Malformed URL" << kurl.url() << endl;
       return false;
+  }
   m_url = kurl; // Store where to upload in saveToURL
   // Local file
   if ( m_url.isLocalFile() )
