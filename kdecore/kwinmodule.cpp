@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.3  1999/08/26 02:44:34  tibirna
+    CT: kill a segfault which affected any kwm module app when a window lowering was operated
+
     Revision 1.2  1999/08/18 22:40:29  ettrich
     shortcut to get the current desktop faster
 
@@ -191,7 +194,7 @@ bool KWinModulePrivate::x11Event( XEvent * ev )
 	emit module->desktopChange( (int) w);
     }
     else if (a == module_desktop_name_change){
-	emit module->desktopNameChange( (int) w, KWM::getDesktopName( (int) w ) );
+	emit module->desktopNameChange( (int) w, KWM::desktopName( (int) w ) );
     }
     else if (a == module_desktop_number_change){
 	emit module->desktopNumberChange( (int) w);

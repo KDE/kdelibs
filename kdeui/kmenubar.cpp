@@ -48,6 +48,9 @@
 
 // $Id$
 // $Log$
+// Revision 1.84  1999/10/08 23:23:23  bero
+// ktopwidget.h removals
+//
 // Revision 1.83  1999/07/25 18:29:56  kulow
 // unbreak --enable-final
 //
@@ -859,7 +862,7 @@ void KMenuBar::setMenuBarPos(menuPosition mpos)
 	
 
 	if (mpos == FloatingSystem) {
-	    QRect r =  KWM::getWindowRegion(KWM::currentDesktop());
+	    QRect r =  KWM::windowRegion(KWM::currentDesktop());
 	    setGeometry(r.x(),(r.y()-1)<=0?-2:r.y()-1, r.width(), // check panel top
 			heightForWidth(r.width()));
 	    int dim = fontMetrics().height();

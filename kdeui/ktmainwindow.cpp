@@ -362,7 +362,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
     config->writeEntry("ClassName", className());
 
     //use KWM for window properties 
-    config->writeEntry("KTWGeometry", KWM::getProperties(winId()));
+    config->writeEntry("KTWGeometry", KWM::properties(winId()));
     entryList.clear();
 
     if (kstatusbar)
@@ -390,7 +390,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
                 break;
             case KMenuBar::Floating:
                 entryList.append("Floating");
-                entryList.append(KWM::getProperties(kmenubar->winId()).ascii());
+                entryList.append(KWM::properties(kmenubar->winId()).ascii());
                 break;
             case KMenuBar::FloatingSystem:
                 entryList.append("FloatingSystem");
@@ -425,7 +425,7 @@ void KTMainWindow::savePropertiesInternal (KConfig* config, int number)
                 break;
             case KToolBar::Floating:
                 entryList.append("Floating");
-                entryList.append(KWM::getProperties(toolbar->winId()).ascii());
+                entryList.append(KWM::properties(toolbar->winId()).ascii());
                 break;
         }
         toolKey.setNum(n);

@@ -22,6 +22,9 @@
     Boston, MA 02111-1307, USA.
 
     $Log$
+    Revision 1.19  1999/03/01 00:00:43  ettrich
+    new windowRegionChanged() signal
+
     Revision 1.18  1999/01/18 10:57:18  kulow
     .moc files are back in kdelibs. Built fine here using automake 1.3
 
@@ -186,7 +189,7 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
     }
     else if (a == module_desktop_name_change){
       int d = (int) w;
-      emit desktopNameChange(d, KWM::getDesktopName(d));
+      emit desktopNameChange(d, KWM::desktopName(d));
     }
     else if (a == module_desktop_number_change){
       int d = (int) w;

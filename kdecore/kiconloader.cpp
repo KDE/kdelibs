@@ -20,6 +20,9 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.72  1999/10/09 00:08:27  kalle
+   The dreaded library cleanup: getConfig() -> config() and friends (see separate mail)
+
    Revision 1.71  1999/10/08 23:04:36  torben
    For components in libraries one has to use KLibGlobal instead
    of KGlobal
@@ -369,7 +372,7 @@ QPixmap KIconLoader::loadApplicationMiniIcon ( const QString& name,
 	return result;
 }
 
-QString KIconLoader::getIconPath( const QString& name, bool always_valid)
+QString KIconLoader::iconPath( const QString& name, bool always_valid)
 {
   if (name.at(0) == '/') // we can't do anything with an absolute path than returning
     return name;
@@ -406,7 +409,7 @@ QPixmap KIconLoader::loadInternal ( const QString& name, int w,  int h,
 		return pix;
 	}
 
-	pix.load( getIconPath(name), 0, KPixmap::LowColor );
+	pix.load( iconPath(name), 0, KPixmap::LowColor );
 
 	if ( pix.isNull() ) {
 		return pix;

@@ -48,7 +48,7 @@ public:
    * Return all window properties needed to restore a window in
    * a string. The string can be used as a command line argument
    * for the session management (See setWmCommand below).  */
-  static QString getProperties(Window w);
+  static QString properties(Window w);
 
   /**
    * Apply properties from a property string to a window. This will
@@ -389,7 +389,7 @@ public:
   /**
     * Returns the window region of the specified virtual desktop.
     */
-  static QRect getWindowRegion(int desk);
+  static QRect windowRegion(int desk);
 
   /**
    * At present the maximium number of desktops is limited to 32
@@ -412,7 +412,7 @@ public:
   /**
     * Returns the name of the specified virtual desktop.
     */
-  static QString getDesktopName(int desk);
+  static QString desktopName(int desk);
 
   /**
    * low level kwm communication. This can also be used for a one-way
@@ -514,7 +514,7 @@ public:
   /**
    * Returns the KDE decoration hints of the window.
    */
-  static long getDecoration(Window w);
+  static long decoration(Window w);
   /**
    * Is the window sticky?
    */
@@ -688,47 +688,47 @@ public:
   /**
    * An i18n'ed string for maximize.
    */
-  static QString getMaximizeString();
+  static QString maximizeString();
   /**
    * An i18n'ed string for unmaximize
    */
-  static QString getUnMaximizeString();
+  static QString unMaximizeString();
   /**
    * An i18n'ed string for iconify
    */
-  static QString getIconifyString();
+  static QString iconifyString();
   /**
    * An i18n'ed string for uniconify
    */
-  static QString getUnIconifyString();
+  static QString unIconifyString();
   /**
    * An i18n'ed string for sticky
    */
-  static QString getStickyString();
+  static QString stickyString();
   /**
    * An i18n'ed string for unsticky.
    */
-  static QString getUnStickyString();
+  static QString unStickyString();
   /**
    * An i18n'ed string for move.
    */
-  static QString getMoveString();
+  static QString moveString();
   /**
    * An i18n'ed string for resize.
    */
-  static QString getResizeString();
+  static QString resizeString();
   /**
    * An i18n'ed string for close.
    */
-  static QString getCloseString();
+  static QString closeString();
   /**
    * An i18n'ed string for "toDesktop".
    */
-  static QString getToDesktopString();
+  static QString toDesktopString();
   /**
    * An i18n'ed string for "ontoCurrentDesktop".
    */
-  static QString getOntoCurrentDesktopString();
+  static QString ontoCurrentDesktopString();
 
 
   /**
@@ -743,7 +743,7 @@ public:
   /**
    * Returns the X window state of the specified winodw
    */
-  static int getWindowState(Window w);
+  static int windowState(Window w);
 
 };
 

@@ -20,6 +20,10 @@
    Boston, MA 02111-1307, USA.
 
    $Log$
+   Revision 1.39  1999/10/08 23:04:37  torben
+   For components in libraries one has to use KLibGlobal instead
+   of KGlobal
+
    Revision 1.38  1999/09/12 14:56:09  dfaure
    docu fixes (loadMiniIcon doesn't exist anymore)
 
@@ -312,7 +316,7 @@ public:
 
 	@return the physical path to the named icon.
   */
-  QString getIconPath( const QString& name,
+  QString iconPath( const QString& name,
 		       bool always_valid=false);
 
 
