@@ -33,10 +33,10 @@ Shell::Shell()
   {
     KService::Ptr ptr = (*it);
 
-    factory = KLibLoader::self()->factory( ptr->library() );
+    factory = KLibLoader::self()->factory( ptr->library().latin1() );
     if (factory)
     {
-      m_gvpart = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name(), "KParts::ReadOnlyPart"));
+      m_gvpart = static_cast<KParts::ReadOnlyPart *>(factory->create(this, ptr->name().latin1(), "KParts::ReadOnlyPart"));
       setView( m_gvpart->widget() );
       // Integrate its GUI
       createGUI( m_gvpart );

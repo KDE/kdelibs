@@ -13,6 +13,7 @@
 
 #include <kiconloader.h>
 #include <kapp.h>
+#include <kdebug.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <klocale.h>
@@ -36,7 +37,7 @@ Part1::~Part1()
 
 bool Part1::openFile()
 {
-  debug("Part1: opening %s", m_file.ascii());
+  kdDebug() << "Part1: opening " << QFile::encodeName(m_file) << endl;
   // Hehe this is from a tutorial I did some time ago :)
   QFile f(m_file);
   QString s;
