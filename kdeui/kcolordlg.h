@@ -25,7 +25,7 @@
 #ifndef __KCOLORDLG_H__
 #define __KCOLORDLG_H__
 
-#include <qdialog.h>
+#include <kdialogbase.h>
 #include <qtableview.h>
 #include <qframe.h>
 #include <qrangecontrol.h>
@@ -175,73 +175,75 @@ Simplest use:
 </pre>
 
  */
-class KColorDialog : public QDialog
+class KColorDialog : public KDialogBase
 {
   Q_OBJECT
-public:
-  /** Construct a KColorDialog */
-  KColorDialog( QWidget *parent = 0L, const char *name = 0L,
-				bool modal = FALSE );
 
-  /** Retrieve the currently selected color. */
-  QColor color()	{	return selColor; }
+  public:
+    /** 
+     * Construct a KColorDialog 
+     */
+    KColorDialog( QWidget *parent = 0L, const char *name = 0L,
+		  bool modal = FALSE );
+
+    /** 
+     * Retrieve the currently selected color. 
+     */
+    QColor color() { return selColor; }
   
-  /**
-	This is probably the function you are looking for.
-	Just call this to pop up dialog get the selected color.
-	returns result().
-	*/
-  static int getColor( QColor &theColor );
+    /**
+     * This is probably the function you are looking for.
+     * Just call this to pop up dialog get the selected color.
+     * returns result().
+     */
+    static int getColor( QColor &theColor, QWidget *parent=0L );
 
-public slots:
-  /** Preselect a color */
-  void setColor( const QColor &col );
+  public slots:
+    /** 
+     * Preselect a color 
+     */
+    void setColor( const QColor &col );
 
-  void slotOkPressed();
+  signals:
+    /** 
+     * Notify when a color is selected.
+     * Connect to this to monitor the color as it as selected if you are
+     * not running modal.
+     */
+    void colorSelected( const QColor &col );
 
-signals:
+  private slots:
+    void slotRGBChanged( void );
+    void slotHSVChanged( void );
+    void slotHSChanged( int, int );
+    void slotVChanged( int );
+    void slotSysColorSelected( int );
+    void slotCustColorSelected( int );
+    void slotAddToCustom( void );
+    void slotWriteSettings( void );
 
- /** 
-  * Notify when a color is selected.
-  * Connect to this to monitor the color as it as selected if you are
-  * not running modal.
-  */
- void colorSelected( const QColor &col );
+  private:
+    void readSettings( void );
+    void setRgbEdit( void );
+    void setHsvEdit( void );
 
-private slots:
-
-  void slotRGBChanged();
-  void slotHSVChanged();
-  void slotHSChanged( int, int );
-  void slotVChanged( int );
-  void slotSysColorSelected( int );
-  void slotCustColorSelected( int );
-  void slotAddToCustom();
-  void getHelp();
-
-private:
-
-  void readSettings();
-  void writeSettings();
-  void setRgbEdit();
-  void setHsvEdit();
-
-private:
-
-  KColorCells *sysColorCells;
-  KColorCells *custColorCells;
-  QLineEdit *hedit;
-  QLineEdit *sedit;
-  QLineEdit *vedit;
-  QLineEdit *redit;
-  QLineEdit *gedit;
-  QLineEdit *bedit;
-  KColorPatch *patch;
-  KHSSelector *palette;
-  KValueSelector *valuePal;
-  QColor selColor;
-
+  private:
+    KColorCells *sysColorCells;
+    KColorCells *custColorCells;
+    QLineEdit *hedit;
+    QLineEdit *sedit;
+    QLineEdit *vedit;
+    QLineEdit *redit;
+    QLineEdit *gedit;
+    QLineEdit *bedit;
+    KColorPatch *patch;
+    KHSSelector *palette;
+    KValueSelector *valuePal;
+    QColor selColor;
 };
+
+
+
 
 /**
  * Combobox for colours.
