@@ -1,5 +1,5 @@
 [Image Format]
-Type=PNM
+Type=PGM
 Header=
 Name=Portable Graymap Image
 Name[ar]=صورة ثنائية اللون قابلة للنقل
