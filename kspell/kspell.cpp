@@ -375,13 +375,25 @@ bool
 KSpell::cleanFputsWord (QString s, bool appendCR)
 {
   QString qs(s);
+  bool firstchar = TRUE;
+  bool empty = TRUE;
 
-  for (unsigned int i=0;i<qs.length();i++)
+  for (unsigned int i=0; i<qs.length(); i++)
   {
     //we need some punctuation for ornaments
-    if (qs.at(i)!='\'' && qs.at(i)!='\"')
-      if (qs[i].isPunct() || qs[i].isSpace()) qs.remove(i,1);
+    if (qs[i] != '\'' && qs[i] != '\"' && !qs[i].isLetter() &&
+      // permit hyphen when it's not at the beginning of the word 
+      (firstchar || qs[i] != '-')) {
+	qs.remove(i,1);
+	i--;
+      } else {
+	firstchar = FALSE; 
+	if (qs[i].isLetter()) empty=FALSE;
+      }
   }
+
+  // don't check empty words, otherwise synchronisation fails
+  if (empty) return FALSE;
 
   return proc->fputs(qs, appendCR);
 }
@@ -391,6 +403,7 @@ KSpell::cleanFputs (QString s, bool appendCR)
 {
   QString qs(s);
   unsigned l = qs.length();
+  bool firstchar = TRUE;
 
   //  kdDebug(750) << "KS::cleanFputs (before)" << qs.length() << " [" << qs <<"]" << endl;
 
@@ -399,8 +412,12 @@ KSpell::cleanFputs (QString s, bool appendCR)
     {
       for (unsigned int i=0; i<l; i++)
 	{
-	  if ( qs[i].isPunct() && qs.at(i)!='\'' && qs.at(i)!='\"')
-	    qs.replace (i,1," ");
+	  if ( !qs[i].isLetter() && qs[i] != '\'' && qs[i] != '\"' &&
+	    // let hyphens pass, but in the beginning, where ispell would
+	    // interpret it as a control char
+	    (firstchar || qs[i] != '-')) {
+	      qs.replace (i,1," ");
+	    } else firstchar = FALSE; 
 	}
 
       if (qs.isEmpty())
@@ -635,13 +652,22 @@ void KSpell::checkList2 ()
   // send one word from the list to KProcIO
   // invoked first time by checkList, later by checkList3 and checkList4
 {
-  kdDebug(750) << "KS: checkList2" << endl;
-
   // send next word
   if (wlIt != wordlist->end())
     {
-      cleanFputsWord (*wlIt);
+      kdDebug(750) << "KS::cklist2 " << lastpos << ": " << *wlIt << endl;
+
+      bool put;
+      put = cleanFputsWord (*wlIt);
       wlIt++;
+
+      // when cleanFPutsWord failed (e.g. on empty word)
+      // try next word; may be this is not good for other
+      // problems, because this will make read the list up to the end
+      if (!put) {
+	lastpos++;
+	checkList2();
+      }
     }
   else
     // end of word list
@@ -710,12 +736,10 @@ void KSpell::checkList4 ()
     {
     case KS_REPLACE:
     case KS_REPLACEALL:
-      kdDebug(750) << "cklist4: lastpos: " << lastpos << endl;
+      kdDebug(750) << "KS: cklist4: lastpos: " << lastpos << endl;
       wlIt--; // go back to misspelled word
-      kdDebug(750) << *wlIt << endl;
       wordlist->insert (wlIt, replacement());
       wlIt = wordlist->remove (wlIt);
-      kdDebug(750) << *wlIt << endl;
       break;
     case KS_CANCEL:
       ksdlg->hide();
