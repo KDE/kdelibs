@@ -50,6 +50,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <dcopserver.h>
 #include <dcopglobal.h>
 
+template class QStack<_IceConn>;
+template class QDict<DCOPConnection>;
+template class QList<_IceConn>;
+template class QPtrDict<DCOPConnection>;
+template class QList<DCOPListener>;
+
 static Bool HostBasedAuthProc ( char* /*hostname*/)
 {
   return false; // no host based authentication

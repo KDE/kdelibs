@@ -27,6 +27,8 @@
 #include <klocale.h>
 #include <assert.h>
 
+template class QDict<KMimeType>;
+
 KBuildServiceTypeFactory::KBuildServiceTypeFactory() :
   KServiceTypeFactory()
 {
