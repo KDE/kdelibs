@@ -247,37 +247,32 @@ void kimgio_eps_read (QImageIO *image)
 // Sven Wiegand <SWiegand@tfh-berlin.de> -- eps output filter (from KSnapshot)
 void kimgio_eps_write( QImageIO *imageio )
 {
-  QPrinter psOut;
+  QPrinter psOut(QPrinter::PrinterResolution);
   QPainter p;
 
   // making some definitions (papersize, output to file, filename):
   psOut.setCreator( "KDE " KDE_VERSION_STRING  );
   psOut.setOutputToFile( true );
 
-  KTempFile tmpFile;
+  // Extension must be .eps so that Qt generates EPS file
+  KTempFile tmpFile(QString::null, ".eps");
   tmpFile.setAutoDelete(true);
   if ( tmpFile.status() != 0)
      return;
   tmpFile.close(); // Close the file, we just want the filename
 
   psOut.setOutputFileName(tmpFile.name());
+  psOut.setFullPage(true);
 
   // painting the pixmap to the "printer" which is a file
   p.begin( &psOut );
-
-  p.translate( -36, 820 - imageio->image().height() );
-
+  // Qt uses the clip rect for the bounding box
+  p.setClipRect( 0, 0, imageio->image().width(), imageio->image().height(), QPainter::CoordPainter);
   p.drawImage( QPoint( 0, 0 ), imageio->image() );
   p.end();
 
-  // write BoundingBox to File
+  // Copy file to imageio struct
   QFile inFile(tmpFile.name());
-  QString szBoxInfo;
-
-  szBoxInfo.sprintf("%%%%BoundingBox: 0 0 %d %d\n", 
-                    imageio->image().width(),
-                    imageio->image().height());
-
   inFile.open( IO_ReadOnly );
 
   QTextStream in( &inFile );
@@ -287,7 +282,6 @@ void kimgio_eps_write( QImageIO *imageio )
 
   QString szInLine = in.readLine();
   out << szInLine << '\n';
-  out << szBoxInfo;
 
   while( !in.atEnd() ){
     szInLine = in.readLine();
@@ -298,4 +292,3 @@ void kimgio_eps_write( QImageIO *imageio )
 
   imageio->setStatus(0);
 }
-
