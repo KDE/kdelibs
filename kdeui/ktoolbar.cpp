@@ -1000,7 +1000,7 @@ void KToolBar::setFlat (bool flag)
 }
 
 
-int KToolBar::count()
+int KToolBar::count() const
 {
     return id2widget.count();
 }

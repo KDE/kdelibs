@@ -876,7 +876,7 @@ public:
   /**
    * @return the number of items in the toolbar
    */
-    int count();
+    int count() const;
 
   /**
    * Instruct the toolbar to save it's current state to either the app
