@@ -31,7 +31,7 @@
                   name CDATA #IMPLIED
 		  type (String|StringList|Font|Rect|Size|Color|
 		        Point|Int|UInt|Bool|Double|DateTime|
-			Int64|UInt64|IntList|Enum|Path) #REQUIRED
+			Int64|UInt64|IntList|Enum|Path|Password) #REQUIRED
 		  key  CDATA #IMPLIED
 		  hidden  (true|false) #IMPLIED>
 
