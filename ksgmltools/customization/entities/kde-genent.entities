@@ -244,7 +244,7 @@
 <!ENTITY Netscape	'<trademark class="registered">Netscape</trademark>'>
 <!ENTITY NeXTSTEP	"<trademark>NeXTSTEP</trademark>">
 <!ENTITY noatun "<application>Noatun</application>">
-<!ENTITY Pixie	"<application>Pixie</application>">
+<!ENTITY pixie	"<application>Pixie</application>">
 <!ENTITY PalmPilot      "<productname><trademark>PalmPilot</trademark></productname>">
 <!ENTITY PostScript	'<trademark class="registered">PostScript</trademark>'>
 <!ENTITY PPP	"<acronym>PPP</acronym>">
