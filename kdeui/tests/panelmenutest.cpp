@@ -9,8 +9,14 @@ TestWidget::TestWidget(QWidget *parent, const char *name)
     testMenu = new PanelMenu(locate("mini", "x.png"), "Client Test", this,
                               "menu1");
 
-    connect(testMenu, SIGNAL(activated(int)), SLOT(slotMenuCalled(int)));
+    subMenu = testMenu->insertMenu(locate("mini", "x.png"), "Submenu Test");
+    subMenu->insertItem(locate("mini", "bx2.png"), "First Entry", 100);
+    subMenu->insertItem(locate("mini", "bx2.png"), "Second Entry", 101);
 
+    PanelMenu *ssub = subMenu->insertMenu(locate("mini", "x.png"), "One more");
+   
+    connect(testMenu, SIGNAL(activated(int)), SLOT(slotMenuCalled(int)));
+    connect(subMenu, SIGNAL(activated(int)), SLOT(slotSubMenuCalled(int)));
     init();
     
     setText("We added \"Client Test\" to kicker. Click the K Menu to check.");
@@ -41,6 +47,14 @@ void TestWidget::slotMenuCalled(int id)
     }
 }
 
+
+void TestWidget::slotSubMenuCalled(int id)
+{
+  QString msg("Called with id=%1");
+  setText(msg.arg(id));
+}
+
+
 int main(int argc, char **argv)
 {
     KApplication *app = new KApplication(argc, argv, "menutest");
@@ -49,8 +63,7 @@ int main(int argc, char **argv)
     app->setMainWidget(&w);
     w.show();
     
-    
-    return(app->exec());
+    app->exec();
 }
 
 #include "panelmenutest.moc"

@@ -12,9 +12,10 @@ public:
     ~TestWidget(){delete testMenu;}
 public slots:
     void slotMenuCalled(int id);
+    void slotSubMenuCalled(int id);
 private:
     void init();
-    PanelMenu *testMenu;
+    PanelMenu *testMenu, *subMenu;
 };
 
 #endif

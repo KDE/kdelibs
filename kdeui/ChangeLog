@@ -1,3 +1,8 @@
+2000-03-20  Matthias Hoelzer-Kluepfel <mhk@caldera.de>
+
+        * panelmenu: Added functions to add sub menus to client menus
+
+
 1999-03-04  Harri Porten  <porten@kde.org>
 
 	* kquickhelp.*: changed 'tips' to be a pointer instead of an object.

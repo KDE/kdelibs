@@ -50,6 +50,11 @@ public:
     PanelMenu(const QPixmap &icon, const QString &title, QObject *parent,
               const char *name);
     /**
+     * Constructs a new (sub)menu with a given id.
+     */
+    PanelMenu(QObject *parent, const char *name);
+
+    /**
      * Make sure you actually destroy this thing or the menu will never go
      * away until this application quits or Kicker restarts ;-)
      */
@@ -63,6 +68,10 @@ public:
      * Inserts an item with a icon. The icon name must be a full path.
      */
     int insertItem(const QPixmap &icon, const QString &text, int id = -1 );
+    /** 
+     * Inserts a sub menu with a icon. The icon name must be a full path.
+     */
+    PanelMenu *insertMenu(const QPixmap &icon, const QString &text, int id=-1);
 
     /**
      * Clears the menu.
