@@ -29,8 +29,9 @@
 #include "kssld.h"
 #include <kconfig.h>
 #include <ksimpleconfig.h>
-#include "ksslcertchain.h"
-#include "ksslcertificate.h"
+#include <ksslcertchain.h>
+#include <ksslcertificate.h>
+#include <ksslx509map.h>
 #include <qlist.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -205,7 +206,7 @@ KSSLCertificateCache::KSSLCertificatePolicy KSSLD::cacheGetPolicyByCN(QString cn
   KSSLCNode *node;
 
   for (node = certList.first(); node; node = certList.next()) {
-    if (node->cert->getSubject() == cn) {
+    if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
       if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
@@ -245,7 +246,7 @@ bool KSSLD::cacheSeenCN(QString cn) {
   KSSLCNode *node;
 
   for (node = certList.first(); node; node = certList.next()) {
-    if (node->cert->getSubject() == cn) {
+    if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
       if (!node->permanent && node->expires < QDateTime::currentDateTime()) {
         certList.remove(node);
         cfg->deleteGroup(node->cert->getSubject());
@@ -306,7 +307,7 @@ bool KSSLD::cacheRemoveByCN(QString cn) {
   bool gotOne = false;
 
   for (node = certList.first(); node; node = certList.next()) {
-    if (node->cert->getSubject() == cn) {
+    if (KSSLX509Map(node->cert->getSubject()).getValue("CN") == cn) {
       certList.remove(node);
       cfg->deleteGroup(node->cert->getSubject());
       delete node;
