@@ -279,14 +279,6 @@ public:
   static QString kde_datadir();
 
   /**
-   * Returns the directory where toolbar icons are stored
-   *
-   * The default for this directory is $KDEDIR/share/toolbar
-   * @return the name of the directory
-   */
-  static QString kde_toolbardir();
-
-  /**
    * Returns the directory where executable programs are stored
    *
    * The default for this directory is $KDEDIR/bin
@@ -301,7 +293,6 @@ public:
    * @return the name of the directory
    */
   static QString kde_configdir();
-
 
  /**
   * Returns the directory where mimetypes are stored
@@ -349,7 +340,7 @@ public:
    */
   bool getKDEFonts(QStringList &fontlist);
 
-  QString appName () const { return name(); }
+  // QString appName () const { return name(); }
 
   /**
 	* Return a text for the window caption.
@@ -639,6 +630,9 @@ private:
 #endif
 
 // $Log$
+// Revision 1.86  1999/06/16 18:43:11  mario
+// Mario: made aboutKDE(), aboutQt() and aboutApp() public slots. No need to hide it
+//
 // Revision 1.85  1999/06/14 11:41:15  kulow
 // hmm, -Wwrite-strings gives _lot_ of warnings
 //

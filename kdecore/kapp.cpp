@@ -1186,18 +1186,6 @@ QString KApplication::kde_datadir()
     return dir;
 }
 
-QString KApplication::kde_toolbardir()
-{
-    warning("kde_toolbardir() is obsolete. Try to use KStandardDirs instead");
-    static QString dir;
-    if (dir.isNull()) {
-	dir = KDE_TOOLBARDIR;
-	if (!strncmp(dir.ascii(), "KDEDIR", 6))
-	    dir = kdedir() + dir.right(dir.length() - 6);
-    }
-    return dir;
-}
-
 QString KApplication::kde_bindir()
 {
     warning("kde_bindir() is obsolete. Try to use KStandardDirs instead");
