@@ -4,6 +4,7 @@
 #include <kapp.h>
 #include <dcopclient.h>
 
+#undef None // X11 headers...
 
 /**
  * This class provides a method for issuing events to a KNotifyServer

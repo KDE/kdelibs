@@ -62,7 +62,7 @@ static Atom net_kde_docking_windows;
 
 extern Atom qt_wm_state;
 
-static void createAtoms() {
+static void createModuleAtoms() {
     if (!atoms){
 	// #### TODO make this an X11 big call (less roundtrips)
 
@@ -127,7 +127,7 @@ public:
     KWinModulePrivate( KWinModule* m  )
 	: QWidget(0,0)
     {
-	createAtoms();
+	createModuleAtoms();
 	module = m;
 	desktop = KWin::currentDesktop();
 	kapp->installX11EventFilter( this );

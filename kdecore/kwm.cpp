@@ -56,7 +56,7 @@ static int _getprop(Window w, Atom a, Atom type, long len, unsigned char **p){
   return n;
 }
 
-static bool getSimpleProperty(Window w, Atom a, long &result){
+static bool KWM_getSimpleProperty(Window w, Atom a, long &result){
   long *p = 0;
 
   if (_getprop(w, a, a, 1L, (unsigned char**)&p) <= 0){
@@ -70,12 +70,12 @@ static bool getSimpleProperty(Window w, Atom a, long &result){
   return true;
 }
 
-static void setSimpleProperty(Window w, Atom a, long data){
+static void KWM_setSimpleProperty(Window w, Atom a, long data){
   XChangeProperty(qt_xdisplay(), w, a, a, 32,
 		  PropModeReplace, (unsigned char *)&data, 1);
 }
 
-static bool getDoubleProperty(Window w, Atom a, long &result1, long &result2){
+static bool KWM_getDoubleProperty(Window w, Atom a, long &result1, long &result2){
   long *p = 0;
 
   if (_getprop(w, a, a, 2L, (unsigned char**)&p) <= 0){
@@ -90,7 +90,7 @@ static bool getDoubleProperty(Window w, Atom a, long &result1, long &result2){
   return true;
 }
 
-static void setDoubleProperty(Window w, Atom a, long data1, long data2){
+static void KWM_setDoubleProperty(Window w, Atom a, long data1, long data2){
   long data[2];
   data[0] = data1;
   data[1] = data2;
@@ -98,7 +98,7 @@ static void setDoubleProperty(Window w, Atom a, long data1, long data2){
 		  PropModeReplace, (unsigned char *)data, 2);
 }
 
-static bool getQRectProperty(Window w, Atom a, QRect &rect){
+static bool KWM_getQRectProperty(Window w, Atom a, QRect &rect){
   long *p = 0;
 
   if (_getprop(w, a, a, 4L, (unsigned char**)&p) <= 0){
@@ -110,7 +110,7 @@ static bool getQRectProperty(Window w, Atom a, QRect &rect){
   kwm_error = false;
   return true;
 }
-static void setQRectProperty(Window w, Atom a, const QRect &rect){
+static void KWM_setQRectProperty(Window w, Atom a, const QRect &rect){
   long data[4];
   data[0] = rect.x();
   data[1] = rect.y();
@@ -123,7 +123,7 @@ static void setQRectProperty(Window w, Atom a, const QRect &rect){
 
 /*
   old function in KDE-1.0 and KDE-1.1
-static bool getQStringProperty(Window w, Atom a, QString &str){
+static bool KWM_getQStringProperty(Window w, Atom a, QString &str){
   unsigned char *p = 0;
 
   if (_getprop(w, a, XA_STRING, 100L, (unsigned char**)&p) <= 0){
@@ -140,7 +140,7 @@ static bool getQStringProperty(Window w, Atom a, QString &str){
 */
 
 // new version in KDE-1.1+, handles compound text as well.
-static bool getQStringProperty (Window w, Atom a, QString& str)
+static bool KWM_getQStringProperty (Window w, Atom a, QString& str)
 {
     XTextProperty tp;
     char **text;
@@ -168,7 +168,7 @@ static bool getQStringProperty (Window w, Atom a, QString& str)
 }
 
 
-static void sendClientMessage(Window w, Atom a, long x){
+static void KWM_sendClientMessage(Window w, Atom a, long x){
   XEvent ev;
   long mask;
 
@@ -187,7 +187,7 @@ static void sendClientMessage(Window w, Atom a, long x){
 
 
 
-static void setQStringProperty(Window w, Atom a, const QString &str){
+static void KWM_setQStringProperty(Window w, Atom a, const QString &str){
   XChangeProperty(qt_xdisplay(), w, a, XA_STRING, 8,
 		  PropModeReplace, (unsigned const char *)str.ascii(),
 		  str.length()+1);
@@ -287,7 +287,7 @@ void KWM::enableSessionManagement(Window w){
   }
   else
     XSetWMProtocols(qt_xdisplay(), w, &a, 1);
-  setSimpleProperty(w, b, 1);
+  KWM_setSimpleProperty(w, b, 1);
 }
 
 
@@ -295,7 +295,7 @@ void KWM::setWmCommand(Window w, const QString &command){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "WM_CLIENT_MACHINE", False);
-  setQStringProperty(w, XA_WM_COMMAND, command);
+  KWM_setQStringProperty(w, XA_WM_COMMAND, command);
   QString machine;
   QString domain;
   QString all="";
@@ -306,14 +306,14 @@ void KWM::setWmCommand(Window w, const QString &command){
     domain = buf;
   if (!machine.isEmpty())
       all = machine + "." + domain;
-  setQStringProperty(w, a, all);
+  KWM_setQStringProperty(w, a, all);
 }
 
 void KWM::setUnsavedDataHint(Window w, bool value){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_UNSAVED_DATA", False);
-  setSimpleProperty(w, a, value?1:0);
+  KWM_setSimpleProperty(w, a, value?1:0);
 }
 
 void KWM::setMiniIcon(Window w, const QPixmap &pm){
@@ -322,7 +322,7 @@ void KWM::setMiniIcon(Window w, const QPixmap &pm){
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICON", False);
   QPixmap *p = new QPixmap;
   *p = pm;
-  setDoubleProperty(w, a, (long) p->handle(),
+  KWM_setDoubleProperty(w, a, (long) p->handle(),
 		    (long) (p->mask()?p->mask()->handle():None));
   delete p;
 }
@@ -355,7 +355,7 @@ void KWM::setDecoration(Window w, long value){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_DECORATION", False);
-  setSimpleProperty(w, a, value);
+  KWM_setSimpleProperty(w, a, value);
 }
 
 
@@ -380,7 +380,7 @@ int KWM::currentDesktop(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_CURRENT_DESKTOP", False);
   long result = 1;
-  if (!getSimpleProperty(qt_xrootwin(), a, result))
+  if (!KWM_getSimpleProperty(qt_xrootwin(), a, result))
     switchToDesktop((int)result);
   return (int) result;
 }
@@ -470,16 +470,16 @@ void KWM::setKWMModule(Window w){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MODULE", False);
-  setSimpleProperty(w, a, 1);
-  sendClientMessage(qt_xrootwin(), a, (long) w);
+  KWM_setSimpleProperty(w, a, 1);
+  KWM_sendClientMessage(qt_xrootwin(), a, (long) w);
 }
 
 void KWM::setKWMDockModule(Window w){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MODULE", False);
-  setSimpleProperty(w, a, 2);
-  sendClientMessage(qt_xrootwin(), a, (long) w);
+  KWM_setSimpleProperty(w, a, 2);
+  KWM_sendClientMessage(qt_xrootwin(), a, (long) w);
 }
 
 bool KWM::isKWMModule(Window w){
@@ -487,7 +487,7 @@ bool KWM::isKWMModule(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MODULE", False);
   long result = 0;
-  getSimpleProperty(w, a, result);
+  KWM_getSimpleProperty(w, a, result);
   return result != 0;
 }
 
@@ -496,7 +496,7 @@ bool KWM::isKWMDockModule(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MODULE", False);
   long result = 0;
-  getSimpleProperty(w, a, result);
+  KWM_getSimpleProperty(w, a, result);
   return result == 2;
 }
 
@@ -505,7 +505,7 @@ bool KWM::isKWMInitialized(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_RUNNING", False);
   long result = 0;
-  getSimpleProperty(qt_xrootwin(), a, result);
+  KWM_getSimpleProperty(qt_xrootwin(), a, result);
   return result != 0;
 }
 
@@ -515,14 +515,14 @@ Window KWM::activeWindow(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_ACTIVE_WINDOW", False);
   long result = 0;
-  getSimpleProperty(qt_xrootwin(), a, result);
+  KWM_getSimpleProperty(qt_xrootwin(), a, result);
   return (Window) result;
 }
 void KWM::switchToDesktop(int desk){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_CURRENT_DESKTOP", False);
-  setSimpleProperty(qt_xrootwin(), a, (long) desk);
+  KWM_setSimpleProperty(qt_xrootwin(), a, (long) desk);
 }
 
 void KWM::setWindowRegion(int desk, const QRect &region){
@@ -541,10 +541,10 @@ void KWM::setWindowRegion(int desk, const QRect &region){
     n.prepend("KWM_WINDOW_REGION_");
     a[desk-1] = XInternAtom(qt_xdisplay(), n.ascii(), False);
   }
-  setQRectProperty(qt_xrootwin(), a[desk-1], region);
+  KWM_setQRectProperty(qt_xrootwin(), a[desk-1], region);
   if (!ac)
       ac = XInternAtom(qt_xdisplay(), "KWM_WINDOW_REGION_CHANGED", False);
-  sendClientMessage(qt_xrootwin(), ac, (long) desk); // inform the window manager
+  KWM_sendClientMessage(qt_xrootwin(), ac, (long) desk); // inform the window manager
 }
 
 QRect KWM::windowRegion(int desk){
@@ -563,7 +563,7 @@ QRect KWM::windowRegion(int desk){
     a[desk-1] = XInternAtom(qt_xdisplay(), n.ascii(), False);
   }
   QRect result = QApplication::desktop()->geometry();
-  getQRectProperty(qt_xrootwin(), a[desk-1], result);
+  KWM_getQRectProperty(qt_xrootwin(), a[desk-1], result);
   return result;
 }
 
@@ -572,7 +572,7 @@ int KWM::numberOfDesktops(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_NUMBER_OF_DESKTOPS", False);
   long result = 1;
-  getSimpleProperty(qt_xrootwin(), a, result);
+  KWM_getSimpleProperty(qt_xrootwin(), a, result);
   return (int) result;
 }
 
@@ -580,7 +580,7 @@ void KWM::setNumberOfDesktops(int num){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_NUMBER_OF_DESKTOPS", False);
-  setSimpleProperty(qt_xrootwin(), a, (long) num);
+  KWM_setSimpleProperty(qt_xrootwin(), a, (long) num);
 }
 
 void KWM::setDesktopName(int desk, const QString &name){
@@ -598,7 +598,7 @@ void KWM::setDesktopName(int desk, const QString &name){
     n.prepend("KWM_DESKTOP_NAME_");
     a[desk-1] = XInternAtom(qt_xdisplay(), n.ascii(), False);
   }
-  setQStringProperty(qt_xrootwin(), a[desk-1], name);
+  KWM_setQStringProperty(qt_xrootwin(), a[desk-1], name);
 }
 
 QString KWM::desktopName(int desk){
@@ -617,7 +617,7 @@ QString KWM::desktopName(int desk){
     n.prepend("KWM_DESKTOP_NAME_");
     a[desk-1] = XInternAtom(qt_xdisplay(), n.ascii(), False);
   }
-  getQStringProperty(qt_xrootwin(), a[desk-1], result);
+  KWM_getQStringProperty(qt_xrootwin(), a[desk-1], result);
   return result;
 }
 
@@ -652,8 +652,8 @@ QString KWM::title(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_TITLE", False);
   QString result;
-  if (!getQStringProperty(w, a, result)){
-    getQStringProperty(w, XA_WM_NAME, result);
+  if (!KWM_getQStringProperty(w, a, result)){
+    KWM_getQStringProperty(w, XA_WM_NAME, result);
   }
   return result;
 }
@@ -663,8 +663,8 @@ QString KWM::titleWithState(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_TITLE", False);
   QString result;
-  if (!getQStringProperty(w, a, result)){
-    getQStringProperty(w, XA_WM_NAME, result);
+  if (!KWM_getQStringProperty(w, a, result)){
+    KWM_getQStringProperty(w, XA_WM_NAME, result);
   }
   if (isIconified(w)){
     result.prepend("(");
@@ -682,7 +682,7 @@ QPixmap KWM::miniIcon(Window w, int width, int height){
   Pixmap p_mask = None;
 
   long tmp[2] = {None, None};
-  if (!getDoubleProperty(w, a, tmp[0], tmp[1])){
+  if (!KWM_getDoubleProperty(w, a, tmp[0], tmp[1])){
     XWMHints *hints = XGetWMHints(qt_xdisplay(), w);
     if (hints && (hints->flags & IconPixmapHint)){
       p = hints->icon_pixmap;
@@ -824,7 +824,7 @@ int KWM::desktop(Window w){
   if (isSticky(w))
       return currentDesktop();
   long result = 1;
-  if (!getSimpleProperty(w, a, result) || result <= 0){
+  if (!KWM_getSimpleProperty(w, a, result) || result <= 0){
     result = currentDesktop();
     kwm_error = true; // restore error
   }
@@ -836,12 +836,12 @@ QRect KWM::geometry(Window w, bool including_frame){
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_FRAME_GEOMETRY", False);
   QRect result;
   if (including_frame){
-    if (getQRectProperty(w, a, result))
+    if (KWM_getQRectProperty(w, a, result))
       return result;
   }
   XWindowAttributes attr;
   if (XGetWindowAttributes(qt_xdisplay(), w, &attr)){
-    if (getQRectProperty(w, a, result)){
+    if (KWM_getQRectProperty(w, a, result)){
       result.setWidth(attr.width);
       result.setHeight(attr.height);
     }
@@ -861,7 +861,7 @@ QRect KWM::geometryRestore(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_GEOMETRY_RESTORE", False);
   QRect result;
-  if (!getQRectProperty(w, a, result)){
+  if (!KWM_getQRectProperty(w, a, result)){
     result = geometry(w);
     setGeometryRestore(w, result);
   }
@@ -872,7 +872,7 @@ QRect KWM::iconGeometry(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICON_GEOMETRY", False);
   QRect result;
-  if (!getQRectProperty(w, a, result) || result.isEmpty()){
+  if (!KWM_getQRectProperty(w, a, result) || result.isEmpty()){
       QRect geom = geometry(w);
       result = QRect(geom.x()+geom.width()/2,
 		     geom.y()+geom.height()/2,
@@ -889,7 +889,7 @@ bool KWM::isMaximized(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_MAXIMIZED", False);
   long result = 0;
-  if (!getSimpleProperty(w, a, result)){
+  if (!KWM_getSimpleProperty(w, a, result)){
     setMaximize(w, result != 0);
   }
   return result != 0;
@@ -899,7 +899,7 @@ bool KWM::isDoMaximize(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
   long result = 0;
-  if (!getSimpleProperty(w, a, result)){
+  if (!KWM_getSimpleProperty(w, a, result)){
     doMaximize(w, result != 0);
   }
   return result != 0;
@@ -910,7 +910,7 @@ int KWM::maximizeMode(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_MAXIMIZED", False);
   long result = 0;
-  if (!getSimpleProperty(w, a, result) || result == 0){
+  if (!KWM_getSimpleProperty(w, a, result) || result == 0){
       result = fullscreen;
   }
   return result;
@@ -921,7 +921,7 @@ int KWM::doMaximizeMode(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
   long result = 0;
-  if (!getSimpleProperty(w, a, result) || result == 0){
+  if (!KWM_getSimpleProperty(w, a, result) || result == 0){
       result = fullscreen;
   }
   return result;
@@ -932,7 +932,7 @@ bool KWM::isSticky(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_STICKY", False);
   long result = 0;
-  if (!getSimpleProperty(w, a, result)){
+  if (!KWM_getSimpleProperty(w, a, result)){
     setSticky(w, result != 0);
   }
   return result != 0;
@@ -942,7 +942,7 @@ long KWM::decoration(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_DECORATION", False);
   long result = 1;
-  if (!getSimpleProperty(w, a, result)){
+  if (!KWM_getSimpleProperty(w, a, result)){
     setDecoration(w, result);
   }
   return result;
@@ -962,7 +962,7 @@ bool KWM::containsUnsavedData(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_UNSAVED_DATA", False);
   long result = 0;
-  getSimpleProperty(w, a, result);
+  KWM_getSimpleProperty(w, a, result);
   return result != 0;
 }
 
@@ -971,7 +971,7 @@ bool KWM::unsavedDataHintDefined(Window w){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_UNSAVED_DATA", False);
   long tmp = 0;
-  return getSimpleProperty(w, a, tmp);
+  return KWM_getSimpleProperty(w, a, tmp);
 }
 
 bool KWM::isActive(Window w){
@@ -983,7 +983,7 @@ void KWM::moveToDesktop(Window w, int desk){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_DESKTOP", False);
-  setSimpleProperty(w, a, (long) desk);
+  KWM_setSimpleProperty(w, a, (long) desk);
 }
 void KWM::setGeometry(Window w, const QRect &geom){
   XMoveResizeWindow(qt_xdisplay(), w, geom.x(), geom.y(),
@@ -993,13 +993,13 @@ void KWM::setGeometryRestore(Window w, const QRect &geom){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_GEOMETRY_RESTORE", False);
-  setQRectProperty(w, a, geom);
+  KWM_setQRectProperty(w, a, geom);
 }
 void KWM::setIconGeometry(Window w, const QRect &geom){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICON_GEOMETRY", False);
-  setQRectProperty(w, a, geom);
+  KWM_setQRectProperty(w, a, geom);
 }
 void KWM::move(Window w, const QPoint &pos){
   XMoveWindow(qt_xdisplay(), w, pos.x(), pos.y());
@@ -1008,37 +1008,37 @@ void KWM::setMaximize(Window w, bool value){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_MAXIMIZED", False);
-  setSimpleProperty(w, a, value?fullscreen:0);
+  KWM_setSimpleProperty(w, a, value?fullscreen:0);
 }
 void KWM::doMaximize(Window w, bool value) {
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
-  setSimpleProperty(w, a, value?fullscreen:0);
+  KWM_setSimpleProperty(w, a, value?fullscreen:0);
 }
 void KWM::setMaximize(Window w, bool value, int mode){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_MAXIMIZED", False);
-  setSimpleProperty(w, a, value?mode:0);
+  KWM_setSimpleProperty(w, a, value?mode:0);
 }
 void KWM::doMaximize(Window w, bool value, int mode) {
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_MAXIMIZE_WINDOW", False);
-  setSimpleProperty(w, a, value?mode:0);
+  KWM_setSimpleProperty(w, a, value?mode:0);
 }
 void KWM::setIconify(Window w, bool value){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_ICONIFIED", False);
-  setSimpleProperty(w, a, value?1:0);
+  KWM_setSimpleProperty(w, a, value?1:0);
 }
 void KWM::setSticky(Window w, bool value){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_WIN_STICKY", False);
-  setSimpleProperty(w, a, value?1:0);
+  KWM_setSimpleProperty(w, a, value?1:0);
 }
 void KWM::close(Window w){
   static Atom a = 0;
@@ -1056,7 +1056,7 @@ void KWM::close(Window w){
   if (XGetWMProtocols(qt_xdisplay(), w, &p, &n)){
     for (i = 0; i < n; i++){
       if (p[i] == a){
-	sendClientMessage(w, ap, a);
+	KWM_sendClientMessage(w, ap, a);
 	XFree((char*)p);
 	return;
       }
@@ -1082,7 +1082,7 @@ void KWM::activateInternal(Window w){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_ACTIVATE_WINDOW", False);
-  sendClientMessage(qt_xrootwin(), a, (long) w);
+  KWM_sendClientMessage(qt_xrootwin(), a, (long) w);
 }
 
 void KWM::raise(Window w){
@@ -1095,7 +1095,7 @@ void KWM::lower(Window w){
 
 void KWM::prepareForSwallowing(Window w){
   XWithdrawWindow(qt_xdisplay(), w, qt_xscreen());
-  while (windowState(w) != WithdrawnState);
+  while (windowState(w) != KWin::WithdrawnState);
 }
 
 void KWM::doNotManage(const QString& title){
@@ -1130,7 +1130,7 @@ QString KWM::maximizeString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_MAXIMIZE", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::unMaximizeString(){
@@ -1138,7 +1138,7 @@ QString KWM::unMaximizeString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_UNMAXIMIZE", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::iconifyString(){
@@ -1146,7 +1146,7 @@ QString KWM::iconifyString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_ICONIFY", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::unIconifyString(){
@@ -1154,7 +1154,7 @@ QString KWM::unIconifyString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_UNICONIFY", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::stickyString(){
@@ -1162,7 +1162,7 @@ QString KWM::stickyString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_STICKY", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::unStickyString(){
@@ -1170,7 +1170,7 @@ QString KWM::unStickyString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_UNSTICKY", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::moveString(){
@@ -1178,7 +1178,7 @@ QString KWM::moveString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_MOVE", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::resizeString(){
@@ -1186,7 +1186,7 @@ QString KWM::resizeString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_RESIZE", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::closeString(){
@@ -1194,7 +1194,7 @@ QString KWM::closeString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_CLOSE", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 
@@ -1203,7 +1203,7 @@ QString KWM::toDesktopString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_TODESKTOP", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 QString KWM::ontoCurrentDesktopString(){
@@ -1211,7 +1211,7 @@ QString KWM::ontoCurrentDesktopString(){
   if (!a)
     a = XInternAtom(qt_xdisplay(), "KWM_STRING_ONTOCURRENTDESKTOP", False);
   QString result;
-  getQStringProperty(qt_xrootwin(), a, result);
+  KWM_getQStringProperty(qt_xrootwin(), a, result);
   return result;
 }
 
@@ -1223,8 +1223,8 @@ int KWM::windowState(Window w){
   static Atom a = 0;
   if (!a)
     a = XInternAtom(qt_xdisplay(), "WM_STATE", False);
-  long result = WithdrawnState;
-  getSimpleProperty(w, a, result);
+  long result = KWin::WithdrawnState;
+  KWM_getSimpleProperty(w, a, result);
   return (int) result;
 }
 
@@ -1233,7 +1233,7 @@ void KWM::keepOnTop(Window w) {
     static Atom a = 0;
     if (!a)
 	a = XInternAtom(qt_xdisplay(), "KWM_KEEP_ON_TOP", False);
-    sendClientMessage(qt_xrootwin(), a, (long) w);
+    KWM_sendClientMessage(qt_xrootwin(), a, (long) w);
 
 
 
