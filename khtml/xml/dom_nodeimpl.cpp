@@ -557,7 +557,7 @@ NodeImpl *NodeBaseImpl::insertBefore ( NodeImpl *newChild, NodeImpl *refChild, i
 	child->setParent(this);
 	child->setPreviousSibling(prev);
 	child->setNextSibling(refChild);
-	if (attached())
+	if (!attached())
 	    child->attach(document ? document->view() : static_cast<DocumentImpl*>(this)->view());
 
 	prev = child;
@@ -634,7 +634,7 @@ NodeImpl *NodeBaseImpl::replaceChild ( NodeImpl *newChild, NodeImpl *oldChild, i
 	child->setParent(this);
 	child->setPreviousSibling(prev);
 	child->setNextSibling(next);
-	if (attached())
+	if (!attached())
 	    child->attach(document ? document->view() : static_cast<DocumentImpl*>(this)->view());
 	prev = child;
 	child = nextChild;
@@ -726,7 +726,7 @@ NodeImpl *NodeBaseImpl::appendChild ( NodeImpl *newChild, int &exceptioncode )
 	{
 	    _first = _last = child;
 	}
-	if (attached())
+	if (!attached())
 	    child->attach(document ? document->view() : static_cast<DocumentImpl*>(this)->view());
 
 	child = nextChild;

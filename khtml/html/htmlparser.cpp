@@ -370,14 +370,14 @@ bool KHTMLParser::insertNode(NodeImpl *n)
         {
             pushBlock(id, tagPriority[id]);
             current = newNode;
-            n->attach(HTMLWidget);
+            if(!n->attached())  n->attach(HTMLWidget);
             // ### HACK!!!
             if(n->id() == ID_BODY)
                 document->createSelector();
             if(current->isInline()) _inline = true;
         }
         else
-            n->attach(HTMLWidget);
+            if(!n->attached())  n->attach(HTMLWidget);
 
         if(tagPriority[id] == 0 && n->renderer()) {
             n->renderer()->calcMinMaxWidth();
@@ -410,7 +410,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 createHead();
             if( head ) {
                 head->addChild(n);
-                n->attach(HTMLWidget);
+                if(!n->attached())
+                    n->attach(HTMLWidget);
                 return true;
             }
             break;
@@ -428,7 +429,8 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 if ( newNode ) {
                     pushBlock(id, tagPriority[id]);
                     current = newNode;
-                    n->attach(HTMLWidget);
+                    if(!n->attached())
+                        n->attach(HTMLWidget);
                 } else {
 #ifdef PARSER_DEBUG
                     kdDebug( 6035 ) << "adding style before to body failed!!!!" << endl;
@@ -451,7 +453,6 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                 int exceptioncode;
                 for (attrNo = 0; attrNo < map->length(); attrNo++)
                     document->body()->setAttributeNode(static_cast<AttrImpl*>(map->item(attrNo)->cloneNode(false)), exceptioncode);
-
                 document->body()->applyChanges();
             } else if ( current->isDocumentNode() )
                 break;
@@ -513,7 +514,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
                     pushBlock(id, tagPriority[id]);
                     current = n;
                 }
-                n->attach(HTMLWidget);
+                if(!n->attached())  n->attach(HTMLWidget);
                 if(tagPriority[id] == 0 && n->renderer())
                     n->renderer()->close();
                 return true;
@@ -532,7 +533,7 @@ bool KHTMLParser::insertNode(NodeImpl *n)
             if(map)
             {
                 map->addChild(n);
-                n->attach(HTMLWidget);
+                if(!n->attached())  n->attach(HTMLWidget);
                 handled = true;
             }
             else
