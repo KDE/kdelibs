@@ -74,7 +74,7 @@ TestRender::TestRender(QString _sourceDir, QString _destDir, QString _logFilenam
   QFileInfoListIterator it(*fileInfoList);
 
   for (; it.current(); ++it) {
-    if (!strcasecmp(it.current()->fileName().right(5),".html"))
+    if (!strcasecmp(it.current()->fileName().right(5).latin1(),".html"))
         filenames.append(it.current()->fileName().latin1());
   }
 
