@@ -66,6 +66,7 @@ public:
 	void drawPolyline(QPointArray polyArray, int points = -1);
 	void drawPolygon(QPointArray polyArray);
 	void drawPath(const QString &data, bool fill);
+	void drawImage(double x, double y, QImage &image);
 
 	QColor parseColor(const QString &param);
 	double toPixel(const QString &s, bool hmode);

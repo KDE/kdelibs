@@ -21,8 +21,12 @@
 #include <qdom.h>
 #include <qfile.h>
 #include <qcolor.h>
+#include <qimage.h>
 #include <qregexp.h>
 #include <qwmatrix.h>
+
+#include <kdebug.h>
+#include <kmdcodec.h>
 
 #include <math.h>
 
@@ -359,6 +363,7 @@ public:
 			m_engine->painter()->addRadialGradientElement(gradient, element);	
 			return;
 		}
+		
 		if(!paint)
 			return;
 
@@ -446,6 +451,37 @@ public:
 				filled = false;
 
 			m_engine->painter()->drawPath(element.attribute("d"), filled);
+		}
+		else if(element.tagName() == "image")
+		{
+			double x = toPixel(element.attribute("x"), true);
+			double y = toPixel(element.attribute("y"), false);
+			double w = toPixel(element.attribute("width"), true);
+			double h = toPixel(element.attribute("height"), false);
+
+			QString href = element.attribute("xlink:href");
+			
+			if(href.startsWith("data:"))
+			{
+				// Get input
+				QCString input = href.mid(13).utf8();
+
+				// Decode into 'output'
+				QByteArray output;
+				KCodecs::base64Decode(input, output);
+
+				// Display
+				QImage *image = new QImage(output);
+
+				// Scale, if needed
+				if(image->width() != (int) w || image->height() != (int) h)
+				{
+					QImage show = image->smoothScale((int) w, (int) h, QImage::ScaleMin);
+					m_engine->painter()->drawImage(x, y, show);
+				}
+
+				m_engine->painter()->drawImage(x, y, *image);
+			}
 		}
 	}
 	

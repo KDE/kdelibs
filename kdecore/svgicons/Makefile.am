@@ -6,5 +6,4 @@ libkdesvgicons_la_SOURCES = ksvgiconengine.cpp ksvgiconpainter.cpp
 
 bin_PROGRAMS = ksvgtopng
 ksvgtopng_SOURCES = ksvgtopng.cpp
-ksvgtopng_LDADD =  $(all_libraries) $(LIB_QT) $(LIBART_LIBS) libkdesvgicons.la
-
+ksvgtopng_LDADD =  $(all_libraries) $(LIB_QT) $(LIBART_LIBS) $(LIB_KDECORE) libkdesvgicons.la

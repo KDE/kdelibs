@@ -1,16 +1,6 @@
-- Units.svg is wronk
-- faster implementations of parseStyle, parseTransform, if needed
-- smaller art_render_new areas, if needed
-- make gradients work for boundingbox as well
-- patterns
-- handle <svg> nested inside <svg>
-
-Things doubtful of supporting
-
-- ICC color (possible, requires extra lib)
-- text (possible, requires freetype)
-- js (technically possible, but strongly related to user events)
-
-Things that make no sense to support
-
-- everything related to user input (mouse, keyboard events, linking)
+* Units.svg is wrong
+* faster implementations of parseStyle, parseTransform, if needed
+* smaller art_render_new areas, if needed
+* make gradients work for boundingbox as well
+* gradient references
+* patterns
