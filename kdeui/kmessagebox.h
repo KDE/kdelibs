@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1999/11/27 21:30:47  antlarr
+ * Added a new questionYesNo which displays a "question" dialog with a listbox
+ * to show information to the user (see the mail in kde-core-devel for more info)
+ *
  * Revision 1.8  1999/11/27 22:20:41  antlarr
  * Added a new questionYesNo which displays a "question" dialog with a listbox 
  * to show information to the user (see the docs for more info)
@@ -128,7 +132,7 @@ public:
   * The default button is "Yes". Pressing "Esc" selects "No".
   */
  
- static int questionYesNo(QWidget *parent,
+ static int questionYesNoList(QWidget *parent,
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString::null,

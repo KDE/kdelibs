@@ -20,6 +20,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.12  1999/12/09 07:08:00  antlarr
+ * Fixed the layout of the message boxes, now the text and icon are always
+ * centered in the dialog. The solution was to add setStretch calls, but
+ * then there was a problem as you cannot use a setStretch in a QHBox
+ * (in general, in a widget with an "autoAdd" to layout), so I
+ * had to turn every QHBox in a QWidget/QHBoxLayout pair.
+ *
  * Revision 1.11  1999/11/27 21:30:47  antlarr
  * Added a new questionYesNo which displays a "question" dialog with a listbox
  * to show information to the user (see the mail in kde-core-devel for more info)
@@ -99,46 +106,12 @@ KMessageBox::questionYesNo(QWidget *parent, const QString &text,
                            const QString &buttonYes, 
                            const QString &buttonNo)
 {
-    KDialogBase dialog(caption.isEmpty() ? i18n("Question") : caption,
-                       KDialogBase::Yes | KDialogBase::No,
-                       KDialogBase::Yes, KDialogBase::Yes,
-                       parent, "questionYesNo", true, true,
-                       buttonYes, buttonNo);
-
-    QWidget *contents = new QWidget(&dialog);
-    QHBoxLayout * lay = new QHBoxLayout(contents);
-    lay->setSpacing(KDialog::spacingHint()*2);
-    lay->setMargin(KDialog::marginHint()*2);
-
-    lay->addStretch(1);
-    QLabel *label1 = new QLabel( contents);
-    label1->setPixmap(QMessageBox::standardIcon(QMessageBox::Information, kapp->style().guiStyle()));
-    lay->add( label1 );
-    lay->add( new QLabel(text, contents) );
-    lay->addStretch(1);
-
-    dialog.setMainWidget(contents);
-    dialog.enableButtonSeparator(false);
-
-    int result = dialog.exec();
-    
-    switch( result )
-    {
-      case KDialogBase::Yes:
-         return Yes;
-
-      case KDialogBase::No:
-         return No;
-      
-      default: // Huh?
-         break;
-    }
-
-    return Yes; // Default
+    questionYesNoList( parent, text, QStringList(), caption, 
+			buttonYes, buttonNo );
 }
 
 int
-KMessageBox::questionYesNo(QWidget *parent, const QString &text,
+KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
                            const QStringList &strlist,
                            const QString &caption,
                            const QString &buttonYes,
