@@ -517,7 +517,7 @@ bool HTTPProtocol::http_open( KURL &_url, const char* _post_data, int _post_data
 
 #ifdef DO_GZIP
   // Content negotiation
-  command += "Accept-Encoding: gzip, identity\r\n";
+  command += "Accept-Encoding: x-gzip, x-deflate, gzip, deflate, identity\r\n";
 #endif
 
   // Charset negotiation:
@@ -801,7 +801,7 @@ void HTTPProtocol::slotGetSize( const char *_url )
 
 const char *HTTPProtocol::getUserAgentString ()
 {
-  QString user_agent("Konqueror/1.9.040599.2");
+  QString user_agent("Konqueror/1.9.040699");
 #ifdef DO_MD5
   user_agent+="; Supports MD5-Digest";
 #endif
@@ -1075,19 +1075,18 @@ size_t HTTPProtocol::sendData()
 
 void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 {
-  string source = _source;
-  string dest = _dest;
+  IOProtocol::slotCopy(_source, _dest);
   
   KURL udest( _dest );
   if ( udest.isMalformed() ) {
-    error( ERR_MALFORMED_URL, dest.c_str() );
+    error( ERR_MALFORMED_URL, _dest );
     m_cmd = CMD_NONE;
     return;
   }
 
   KURL usrc( _source );
   if ( usrc.isMalformed() ) {
-    error( ERR_MALFORMED_URL, source.c_str() );
+    error( ERR_MALFORMED_URL, _source );
     m_cmd = CMD_NONE;
     return;
   }
@@ -1162,7 +1161,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
 
     KURL u1( fit->c_str() );
     if ( u1.isMalformed() ) {
-      error( ERR_MALFORMED_URL, source.c_str() );
+      error( ERR_MALFORMED_URL, _source );
       m_cmd = CMD_NONE;
       return;
     }
@@ -1424,7 +1423,7 @@ void HTTPProtocol::slotCopy( const char *_source, const char *_dest )
     processedFiles( ++processed_files );
   }
   
-  debug( "kio_http : Copied files %s", dest.c_str() );
+  debug( "kio_http : Copied files %s", _dest );
 
   finished();
 
