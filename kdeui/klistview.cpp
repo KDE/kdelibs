@@ -84,12 +84,12 @@ public:
       createChildren (true),
       pressedOnSelected (false),
       wasShiftEvent (false),
+      selectionDirection(0),
       tooltipColumn (0),
       selectionMode (Single),
       contextMenuKey (KGlobalSettings::contextMenuKey()),
       showContextMenusOnPress (KGlobalSettings::showContextMenusOnPress()),
       mDropVisualizerWidth (4),
-      shiftStartPos(-1)
   {
       renameable += 0;
       connect(editor, SIGNAL(done(QListViewItem*,int)), listview, SLOT(doneEditing(QListViewItem*,int)));
@@ -128,6 +128,8 @@ public:
   bool pressedOnSelected:1;
   bool wasShiftEvent:1;
 
+  //+1 means downwards (y increases, -1 means upwards, 0 means not selected), aleXXX
+  int selectionDirection;
   int tooltipColumn;
 
   SelectionModeExt selectionMode;
@@ -139,7 +141,6 @@ public:
   QListViewItem *afterItemDrop;
   QListViewItem *parentItemDrop;
 
-  int shiftStartPos;
 };
 
 
@@ -1123,16 +1124,19 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
    //don't care whether it's on the keypad or not
     int e_state=(e->state() & ~Keypad);
 
-    if ((e_state==ShiftButton) && (e->key()!=Key_Shift) &&
-        (e->key()!=Key_Control) && (e->key()!=Key_Meta) &&
-        (e->key()!=Key_Alt) && (!d->wasShiftEvent))
-    {
-        selectAll(FALSE);
-        d->selectedBySimpleMove=false;
-    }
+    int oldSelectionDirection(d->selectionDirection);
 
-    //kdDebug()<<"state: "<<e->state()<<" key: "<<e->key()<<endl;
-    d->wasShiftEvent = e_state == ShiftButton;
+    if ((e->key()!=Key_Shift) && (e->key()!=Key_Control)
+        && (e->key()!=Key_Meta) && (e->key()!=Key_Alt))
+    {
+       if ((e_state==ShiftButton) && (!d->wasShiftEvent) && (!d->selectedBySimpleMove))
+          selectAll(FALSE);
+       d->selectionDirection=0;
+       d->wasShiftEvent = (e_state == ShiftButton);
+    };
+
+    //d->wasShiftEvent = (e_state == ShiftButton);
+
 
     QListViewItem* item = currentItem();
     if (item==0) return;
@@ -1165,17 +1169,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 
     bool emitSelectionChanged(false);
 
-    if ( shiftOrCtrl && d->shiftStartPos == -1 ) 
-        d->shiftStartPos = item->itemPos();
-
-    if ( !shiftOrCtrl )
-        d->shiftStartPos = -1;
-
     switch (e->key())
     {
     case Key_Escape:
        selectAll(FALSE);
-       d->selectedBySimpleMove=false;
        emitSelectionChanged=TRUE;
        break;
 
@@ -1210,38 +1207,26 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
           visItem=nextItem;
           setCurrentItem(nextItem);
        };
+       d->selectionDirection=1;
        emitSelectionChanged=TRUE;
        break;
 
     case Key_Down:
        nextItem=item->itemBelow();
        //toggle selection of current item and move to the next item
-
        if (shiftOrCtrl)
        {
+          d->selectionDirection=1;
           if (d->selectedBySimpleMove)
              d->selectedBySimpleMove=false;
           else
           {
-             int pos = item->itemPos();
-
-             if ( pos >= d->shiftStartPos ) 
-                 item->setSelected(!item->isSelected());
-             else {
-                 if ( nextItem )
-                     nextItem->setSelected(!nextItem->isSelected());
-
-                 // Special for the first item. It should be reset to
-                 // what it was before, but there's no way of knowing
-                 // what that was.
-                 // Most likely, though, is that it should be the
-                 // same as nextItem
-                 if ( !item->itemAbove() )
-                     item->setSelected( nextItem->isSelected() );
-             }
-                    
-             emitSelectionChanged=TRUE;
-          }
+             if (oldSelectionDirection!=-1)
+             {
+                item->setSelected(!item->isSelected());
+                emitSelectionChanged=TRUE;
+             };
+          };
        }
        else if ((d->selectedBySimpleMove) && (nextItem!=0))
        {
@@ -1261,6 +1246,7 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
 
     case Key_Up:
        nextItem=item->itemAbove();
+       d->selectionDirection=-1;
        //move to the prev. item and toggle selection of this one
        // => No, can't select the last item, with this. For symmetry, let's
        // toggle selection and THEN move up, just like we do in down (David)
@@ -1270,24 +1256,11 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
              d->selectedBySimpleMove=false;
           else
           {
-             int pos = item->itemPos();
-
-             if ( pos <= d->shiftStartPos ) 
-                 item->setSelected(!item->isSelected());
-             else {
-                 if ( nextItem )
-                     nextItem->setSelected(!nextItem->isSelected());
-
-                 // Special for the last item. It should be reset to
-                 // what it was before, but there's no way of knowing
-                 // what that was.
-                 // Most likely, though, is that it should be the
-                 // same as nextItem
-                 if ( !item->itemBelow() )
-                     item->setSelected( nextItem->isSelected() );
-             }
-
-             emitSelectionChanged=TRUE;
+             if (oldSelectionDirection!=1)
+             {
+                item->setSelected(!item->isSelected());
+                emitSelectionChanged=TRUE;
+             };
           }
        }
        else if ((d->selectedBySimpleMove) && (nextItem!=0))
@@ -1362,7 +1335,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        if (d->selectedBySimpleMove)
           item->setSelected(false);
        if (shiftOrCtrl)
+       {
           d->selectedBySimpleMove=false;
+          d->selectionDirection=1;
+       };
 
        for (int i=0; i<items; i++)
        {
@@ -1376,7 +1352,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
                 nextItem->setSelected(!nextItem->isSelected());
              if (d->selectedBySimpleMove)
                 nextItem->setSelected(true);
-             //nextItem->repaint();
              setUpdatesEnabled(true);
              ensureItemVisible(nextItem);
              setCurrentItem(nextItem);
@@ -1397,7 +1372,10 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
        if (d->selectedBySimpleMove)
           item->setSelected(false);
        if (shiftOrCtrl)
+       {
+          d->selectionDirection=-1;
           d->selectedBySimpleMove=false;
+       };
 
        for (int i=0; i<items; i++)
        {
@@ -1409,7 +1387,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
           {
              if (d->selectedBySimpleMove)
                 nextItem->setSelected(true);
-             //nextItem->repaint();
              setUpdatesEnabled(true);
              ensureItemVisible(nextItem);
              setCurrentItem(nextItem);
@@ -1454,7 +1431,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     if (visItem)
        ensureItemVisible(visItem);
 
-    //taken from QListView updateDirtyItems, aleXXX
     QRect ir;
     if (repaintItem1)
        ir = ir.unite( itemRect(repaintItem1) );
@@ -1467,10 +1443,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
           ir.moveBy( -ir.x(), 0 );
        viewport()->repaint( ir, FALSE );
     }
-
-    //the repaint()-calls create tails behind the selected
-    //item if scrolling down, due to the null-timer, aleXXX
-
     /*if (repaintItem1)
        repaintItem1->repaint();
     if (repaintItem2)
@@ -1479,7 +1451,6 @@ void KListView::konquerorKeyPressEvent (QKeyEvent* e)
     if (emitSelectionChanged)
        emit selectionChanged();
 }
-
 
 void KListView::setSelectionModeExt (SelectionModeExt mode)
 {
