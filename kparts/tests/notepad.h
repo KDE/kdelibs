@@ -19,8 +19,6 @@ public:
 
   virtual bool save();
 
-  virtual KInstance *instance();
-
 protected:
   virtual bool openFile();
 

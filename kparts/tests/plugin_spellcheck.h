@@ -4,9 +4,7 @@
 #include <kplugin.h>
 #include <klibloader.h>
 
-using namespace KParts;
-
-class PluginSpellCheck : public Plugin
+class PluginSpellCheck : public KParts::Plugin
 {
     Q_OBJECT
 public:
@@ -28,7 +26,7 @@ public:
     virtual QObject* create( QObject* parent = 0, const char* name = 0, const char* name = "QObject", const QStringList &args = QStringList() );
 
 private:
-    static KInstance* s_global;
+    static KInstance* s_instance;
 };
 
 #endif

@@ -75,14 +75,8 @@ public:
 
     /**
      * @return the instance (@see KInstance) for this part
-     * This is a virtual method, so obviously you need to implement it.
-     * A typical implementation is, in the constructor :
-     *
-     * m_instance = new KInstance( "mypartname" );
-     *
-     * and return m_instance in @ref instance
      */
-    virtual KInstance *instance() = 0;
+    virtual KInstance *instance() { return m_instance; }
 
     // Only called by PartManager - should be protected and using friend ?
     void setManager( PartManager * manager ) { m_manager = manager; }
@@ -97,6 +91,13 @@ public:
     virtual QDomDocument document() const;
 
 protected:
+    /**
+     * Set the instance (@see KInstance) for this part
+     * Call this first in the inherited class constructor.
+     * (At least before @ref setXMLFile)
+     */
+    virtual void setInstance( KInstance *instance, bool loadPlugins = true );
+
     /**
      * Call this in the Part-inherited class constructor
      * to set the main widget
@@ -121,6 +122,7 @@ private slots:
 
 private:
     QGuardedPtr<QWidget> m_widget;
+    KInstance * m_instance;
     /**
      * Holds the contents of the config file
      */

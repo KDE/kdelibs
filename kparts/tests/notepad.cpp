@@ -21,27 +21,19 @@
 NotepadPart::NotepadPart( QWidget * parentWidget )
  : KParts::ReadWritePart( "NotepadPart" )
 {
-  m_instance = new KInstance( "notepadpart" );
-
   debug("NotepadPart::NotepadPart");
+  KInstance * instance = new KInstance( "notepadpart" );
+  setInstance( instance );
   m_edit = new QMultiLineEdit( parentWidget, "NotepadPart's multiline edit" );
   m_edit->setFocus();
   setWidget( m_edit );
   setXMLFile( "notepadpart.rc" );
   (void)new KAction( i18n( "Search and replace" ), 0, this, SLOT( slotSearchReplace() ), actionCollection(), "searchreplace" );
   // TODO connect m_edit->changed to setModified()
-  
-  KParts::Plugin::loadPlugins( this, m_instance );
 }
 
 NotepadPart::~NotepadPart()
 {
-  delete m_instance;
-}
-
-KInstance *NotepadPart::instance()
-{
-  return m_instance;
 }
 
 bool NotepadPart::openFile()

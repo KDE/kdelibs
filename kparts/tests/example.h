@@ -45,8 +45,6 @@ public:
   Part1( QWidget * parentWidget );
   virtual ~Part1();
 
-  virtual KInstance *instance();
-
 protected:
   virtual bool openFile();
 
@@ -61,8 +59,6 @@ class Part2 : public KParts::Part
 public:
   Part2( QWidget * parentWidget );
   virtual ~Part2();
-
-  virtual KInstance *instance();
 
 protected:
 

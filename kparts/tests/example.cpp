@@ -118,6 +118,7 @@ Part1::Part1( QWidget * parentWidget )
  : KParts::ReadOnlyPart( "Part1" )
 {
   m_instance = new KInstance( "kpartstestpart" );
+  setInstance( m_instance );
   m_edit = new QMultiLineEdit( parentWidget );
   setWidget( m_edit );
   setXMLFile( "kpartstest_part1.rc" );
@@ -128,11 +129,6 @@ Part1::Part1( QWidget * parentWidget )
 Part1::~Part1()
 {
   delete m_instance;
-}
-
-KInstance *Part1::instance()
-{
-  return m_instance;
 }
 
 bool Part1::openFile()
@@ -162,6 +158,7 @@ Part2::Part2( QWidget * parentWidget )
  : KParts::Part( "Part2" )
 {
   m_instance = new KInstance( "part2" );
+  setInstance( m_instance );
   QWidget * w = new QWidget( parentWidget, "Part2Widget" );
   setWidget( w );
 
@@ -180,11 +177,6 @@ Part2::Part2( QWidget * parentWidget )
 Part2::~Part2()
 {
   delete m_instance;
-}
-
-KInstance *Part2::instance()
-{
-  return m_instance;
 }
 
 int main( int argc, char **argv )

@@ -90,6 +90,13 @@ void Part::setXML( const QString &document )
   d->m_doc.setContent( document );
 }
 
+void Part::setInstance( KInstance *instance, bool loadPlugins )
+{
+  m_instance = instance;
+  if ( loadPlugins )
+    Plugin::loadPlugins( this, m_instance );
+}
+
 QAction* Part::action( const char* name )
 {
     return m_collection.action( name );

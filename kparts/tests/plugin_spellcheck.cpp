@@ -1,5 +1,6 @@
 #include "plugin_spellcheck.h"
 #include <kaction.h>
+#include <kinstance.h>
 #include <kmessagebox.h>
 #include <klocale.h>
 
@@ -16,6 +17,12 @@ PluginSpellCheck::~PluginSpellCheck()
 void PluginSpellCheck::slotSpellCheck()
 {
     KMessageBox::error(0L,"You just called the spell-check action");
+}
+
+KPluginFactory::KPluginFactory( QObject* parent, const char* name )
+  : KLibFactory( parent, name )
+{
+  s_instance = new KInstance("KPluginFactory");
 }
 
 QObject* KPluginFactory::create( QObject* parent, const char* name, const char*, const QStringList & )
@@ -36,5 +43,7 @@ extern "C"
   }*/
 
 }
+
+KInstance* KPluginFactory::s_instance = 0L;
 
 #include <plugin_spellcheck.moc>
