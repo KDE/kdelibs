@@ -268,7 +268,7 @@ KCmdLineArgs *KCmdLineArgs::parsedArgs(const char *id)
    KCmdLineArgs *args = argsList ? argsList->first() : 0;
    while(args)
    {
-      if (!id || strcmp(args->id, id) == 0)
+      if ((id && strcmp(args->id, id) == 0) || (!id && !args->id))
       {
           if (!parsed)
              parseAllArgs();
