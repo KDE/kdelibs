@@ -677,11 +677,6 @@ void DocumentImpl::updateRendering()
      changedNodes.clear();
 }
 
-void DocumentImpl::setReloading()
-{
-    m_docLoader->reloading = true;
-}
-
 void DocumentImpl::attach(KHTMLView *w)
 {
     m_view = w;
