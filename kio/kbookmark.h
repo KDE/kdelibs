@@ -109,8 +109,8 @@ public:
    * Creates a bookmark manager with a path to the bookmarks
    * (e.g. kapp->localkdedir()+"/share/apps/kfm/bookmarks")
    */
-  KBookmarkManager( QString path );
-  ~KBookmarkManager() {};
+  KBookmarkManager( QString _path );
+  virtual ~KBookmarkManager();
 
   /**
    * For internal use only
@@ -119,11 +119,11 @@ public:
   /**
    * For internal use only
    */
-  KBookmark* root() { return &m_Root; }
+  KBookmark* root() { return m_Root; }
   /**
    * For internal use only
    */
-  KBookmark* findBookmark( int _id ) { return m_Root.findBookmark( _id ); }
+  KBookmark* findBookmark( int _id ) { return m_Root->findBookmark( _id ); }
 
   /**
    * For internal use only
@@ -168,10 +168,10 @@ protected:
   void disableNotify() { m_bNotify = false; }
   void enableNotify() { m_bNotify = true; }
     
-  KBookmark m_Root;
   bool m_bAllowSignalChanged;
   bool m_bNotify;
   QString m_sPath;
+  KBookmark * m_Root;
 
   /**
    * This list is to prevent infinite looping while

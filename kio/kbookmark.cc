@@ -59,15 +59,13 @@ KBookmarkManager* KBookmarkManager::self()
   return s_pSelf;
 }
 
-KBookmarkManager::KBookmarkManager( QString path ) : m_Root( 0L, 0L, 0L ),
-  m_sPath( path )
+KBookmarkManager::KBookmarkManager( QString _path ) : m_sPath( _path )
 {
+  m_Root = new KBookmark( this, 0L, 0L );
   s_pSelf = this;
 
   m_lstParsedDirs.setAutoDelete( true );
 
-  // Little hack
-  m_Root.m_pManager = this;
   m_bAllowSignalChanged = true;
   m_bNotify = true;
 
@@ -76,6 +74,11 @@ KBookmarkManager::KBookmarkManager( QString path ) : m_Root( 0L, 0L, 0L ),
   // HACK
   // connect( KIOServer::getKIOServer(), SIGNAL( notify( const char* ) ),
   // this, SLOT( slotNotify( const char* ) ) );
+}
+
+KBookmarkManager::~KBookmarkManager()
+{
+  delete m_Root;
 }
 
 void KBookmarkManager::slotNotify( const char *_url )
@@ -117,11 +120,11 @@ void KBookmarkManager::emitChanged()
 
 void KBookmarkManager::scan( const char * _path )
 {
-  m_Root.clear();
+  m_Root->clear();
 
   // Do not emit 'changed' signals here.
   m_bAllowSignalChanged = false;
-  scanIntern( &m_Root, _path );
+  scanIntern( m_Root, _path );
   m_lstParsedDirs.clear();
   m_bAllowSignalChanged = true;
 
