@@ -23,6 +23,10 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.1.1.1  1997/12/09 22:02:49  jacek
+    Imported sorces fromkde
+
+    Revision 1.14  1997/11/20 22:36:48  kalle
     - Removed some more hardcoded colors
     - A patch from Bernd regarding KProgress
 
@@ -179,7 +183,7 @@
   style_label->setGeometry(6*XOFFSET + LABLE_LENGTH + 12*XOFFSET + 
 			   2*FONTLABLE_LENGTH,
 			    ,8*YOFFSET - COMBO_ADJUST ,4* LABLE_LENGTH,COMBO_BOX_HEIGHT);
-  if (fontlist != NULL){
+			 ,LABLE_LENGTH,
 			   LABLE_HEIGHT);
 
   actual_style_label = new QLabel(this,"astyle");
@@ -294,7 +298,7 @@
 
   example_label->setFont(selFont);
 
-	KFontDialog dlg( NULL, "Font Selector", TRUE );
+  example_label->setGeometry(200,190,190, 80);
   example_label->setAlignment(AlignCenter);
   // let's initialize the display if possible
   if(family_combo->count() != 0){
@@ -483,7 +487,7 @@ bool KFontDialog::loadKDEInstalledFonts(){
     QString s = t.readLine();
     s = s.stripWhiteSpace();
     if(!s.isEmpty())
-  kde_display = XOpenDisplay( NULL );
+      family_combo->insertItem( s ,-1 );
   }
 
   fontfile.close();

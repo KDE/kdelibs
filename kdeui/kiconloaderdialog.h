@@ -56,7 +56,7 @@ public:
   ~KIconLoaderCanvas ();
 
   void loadDir(QString dir_name, QString filter);
-  QString getCurrent() { if(name_list.isEmpty()) return (char *)NULL; return name_list.at(sel_id); }
+  QString getCurrent() { if(name_list.isEmpty()) return ""; return name_list.at(sel_id); }
 
 signals:
   void nameChanged( const char * );
@@ -120,7 +120,7 @@ public:
 	 This function pops up a modal dialog and lets you select an icon by its
 	 picture not name. The function returns a QPixmap object and the icons 
 	 name in 'name'
-	 if the user has selected an icon, or NULL if the user has pressed the 
+	 if the user has selected an icon, or null if the user has pressed the 
 	 cancel button. So check the result before taking any action.
 	 The argument filter specifies a filter for the names of the icons to 
 	 display. For example "*" displays all icons and "mini*" displays only 

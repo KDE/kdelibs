@@ -42,7 +42,7 @@ class HTMLElement : public QObject, public HTMLObject
 	Q_OBJECT
 public:
 	HTMLElement( const char *n )
-		{	_name = n; _absX = 0; _absY = 0; widget = NULL; }
+		{	_name = n; _absX = 0; _absY = 0; widget = 0L; }
 	virtual ~HTMLElement();
 
 	const QString &name() const

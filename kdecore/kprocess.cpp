@@ -49,19 +49,19 @@ KProcess::KProcess()
 { 
   arguments.setAutoDelete(TRUE);
 
-  if (NULL == theKProcessController) {
+  if ( theKProcessController == 0L) {
 	theKProcessController= new KProcessController();
 	CHECK_PTR(theKProcessController);
   }
 
   run_mode = NotifyOnExit;
   runs = FALSE;
-  process = NULL;
+  process = 0L;
   pid = 0;
   status = 0;
-  innot = outnot = errnot = NULL;
+  innot = outnot = errnot = 0L;
   communication = NoCommunication;
-  input_data = NULL;
+  input_data = 0L;
   input_sent = 0;
   input_total = 0;
 
@@ -91,11 +91,11 @@ bool KProcess::setExecutable(const char *proc)
 {
   if (runs) return FALSE;
 
-  if (NULL != process)
+  if (0 != process)
     free(process);
 
-  if (NULL == proc)
-    process = NULL;
+  if (0L == proc)
+    process = 0L;
   else {
     process = strdup(proc);
     CHECK_PTR(process);
@@ -118,7 +118,7 @@ KProcess &KProcess::operator<<(const char *arg)
 
 void KProcess::clearArguments()
 {
-  if (NULL != arguments.first()) {
+  if (0L != arguments.first()) {
     while (arguments.remove())
       ;
   }
@@ -132,7 +132,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   uint n = arguments.count();
   char **arglist;
 
-  if (runs || (NULL == process) ) {
+  if (runs || (0L == process) ) {
 	return FALSE;  // cannot start a process that is already running
 	// or if no executable has been assigned
   }
@@ -145,7 +145,7 @@ bool KProcess::start(RunMode runmode, Communication comm)
   arglist[0]= process;
   for (i=0; i < n; i++)
 	arglist[i+1] = arguments.at(i);
-  arglist[n+1]= NULL;
+  arglist[n+1]= 0L;
 
   if (!setupCommunication(comm))
 	debug("Could not setup Communication!");

@@ -67,7 +67,7 @@ public:
      * This function should cause the HTMLObject to calculate its
      * width and height.
      */
-    virtual void calcSize( HTMLClue * = NULL ) { }
+    virtual void calcSize( HTMLClue * = 0L ) { }
     
     /*
      * This function forces a size calculation for objects which

@@ -20,6 +20,11 @@
 // $Id$
 // Revision 1.87  1998/01/27 20:17:01  kulow
 // $Log$
+// corrected grammar and added one more .copy()
+//
+// Revision 1.79  1997/12/29 14:36:46  kulow
+// kdedir() does no longer return a deep copy, but a shallow copy.
+// I inserted a test against a deep copy to take care of changes. But this
 // is just to find problems and can be removed by undefining TEST_KDEDIR in
 // Makefile.am
 //
@@ -136,13 +141,13 @@
 #include "kapp.moc"
 
 #include <kapp.h>
-  if (NULL == theKProcessController) 
+#include "kkeyconf.h"
 #include <kiconloader.h>
 #include <klocale.h>
 #include <kcharsets.h>
 #include <kdebug.h>
 #include "kwm.h"
-  pIconLoader = NULL;
+#include <kdebugdialog.h>
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -237,11 +242,11 @@ void KApplication::init()
 	aGlobalAppConfigName = "";
   aGlobalAppConfigFile.close();
 
-  pSessionConfig = NULL;
+  QString aConfigName;
   char* pHome;
   if( (pHome = getenv( "HOME" )) )
 	aConfigName = pHome;
-  pTopWidget = NULL;
+  else
 	aConfigName = "."; // use current dir if $HOME is not set
   aConfigName += "/.kde/share/config/";
   aConfigName += aAppName;
@@ -280,7 +285,7 @@ void KApplication::init()
   
   pLocale = new KLocale(aAppName);
   bLocaleConstructed = true;
-    pSessionConfig = new KConfig(NULL, aSessionConfigName);
+
   // Drag 'n drop stuff taken from kfm
   display = desktop()->x11Display();
   DndSelection = XInternAtom( display, "DndSelection", False );
@@ -342,7 +347,7 @@ KConfig* KApplication::getSessionConfig() {
   if( bAboutQtMenu )
     num.setNum(i);
 	  id = pMenu->insertItem( klocale->translate( "About Qt" ) );
-  QMessageBox::about( NULL, getCaption(),
+  QMessageBox::about( 0L, getCaption(),
 					  "The KDE Desktop Environment was written by\n\n"
 					  "Christian Czezatke\n"
 					  "Kalle Dalheimer (kalle@kde.org)\n"
@@ -366,7 +371,7 @@ KConfig* KApplication::getSessionConfig() {
 					  "The KDE Desktop Environment was written by "
 					  "the KDE team.\n\n"
 					  "Please send bug reports to kde-bugs@kde.org.\n\n\n"
-  QMessageBox::aboutQt( NULL, getCaption() );
+  QMessageBox::aboutQt( 0L, getCaption() );
 					  "Qt is a product of Troll Tech (http://www.troll.no, info@troll.no).\n" 
 					  "Qt may be used freely to develop free software on the X Window System.\n"
 					  )
@@ -506,7 +511,7 @@ bool KApplication::eventFilter ( QObject*, QEvent* e )
 	aSessionName = argv[i+1];
 	QString aSessionConfigName;
 	if (argv[i+1][0] == '/')
-	    pSessionConfig = new KConfig(NULL, aSessionConfigName);
+	  aSessionConfigName = argv[i+1];
 	else {
 	  char* pHome;
 	  if( (pHome = getenv( "HOME" )) )
@@ -1094,7 +1099,7 @@ void KApplication::kdisplaySetFont()
 	path.append(filename);
   QApplication::setStyle( applicationStyle );
 	if( !topic.isEmpty() )
-	execl(shell, shell, "-c", path.data(), NULL);
+	{
 	    path.append( "#" );
 	    path.append(topic);
 	}
@@ -1119,7 +1124,7 @@ void KApplication::kdisplaySetFont()
     
   QString kdedir = getenv("KDEDIR");
   emit kdisplayFontChanged();
-  if(fontlist == NULL)
+  if (kdedir.isEmpty())
 
 	kdedir = KDEDIR;
 void KApplication::resizeAll()

@@ -87,7 +87,7 @@ public:
     /************************************************************
      * Calls all children and tells them to calculate their size.
      */
-    virtual void calcSize( HTMLClue *parent = NULL );
+    virtual void calcSize( HTMLClue *parent = 0L );
 	virtual void recalcBaseSize( QPainter * );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
@@ -170,7 +170,7 @@ public:
     
     virtual void setMaxWidth( int );
     virtual void setMaxAscent( int ) { }
-    virtual void calcSize( HTMLClue *_parent = NULL );
+    virtual void calcSize( HTMLClue *_parent = 0L );
     
     HTMLClue *parent()
 	{ return prnt; }
@@ -197,7 +197,7 @@ public:
     virtual bool selectText( QPainter *_painter, int _x1, int _y1,
 	    int _x2, int _y2, int _tx, int _ty );
     virtual void getSelectedText( QString & );
-    virtual void calcSize( HTMLClue *parent = NULL );
+    virtual void calcSize( HTMLClue *parent = 0L );
 	virtual int  findPageBreak( int _y );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
@@ -223,7 +223,7 @@ public:
 
     virtual void setMaxWidth( int );
     virtual HTMLObject* checkPoint( int, int );
-    virtual void calcSize( HTMLClue *parent = NULL );
+    virtual void calcSize( HTMLClue *parent = 0L );
     virtual bool print( QPainter *_painter, int _x, int _y, int _width,
 		int _height, int _tx, int _ty, bool toPrinter );
     virtual void print( QPainter *_painter, HTMLObject *_obj, int _x, int _y,
@@ -258,7 +258,7 @@ public:
     virtual bool selectText( QPainter *_painter, int _x1, int _y1,
 	    int _x2, int _y2, int _tx, int _ty );
     virtual void setMaxWidth( int );
-    virtual void calcSize( HTMLClue *parent = NULL );
+    virtual void calcSize( HTMLClue *parent = 0L );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
 
@@ -324,7 +324,7 @@ public:
 	    {	caption = cap; capAlign = al; }
 
     virtual void reset();
-    virtual void calcSize( HTMLClue *parent = NULL );
+    virtual void calcSize( HTMLClue *parent = 0L );
     virtual int  calcMinWidth();
     virtual int  calcPreferredWidth();
     virtual void setMaxWidth( int _max_width );

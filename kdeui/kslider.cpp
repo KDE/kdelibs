@@ -222,7 +222,7 @@ void KSlider::rangeChange()
 {
   QSlider::rangeChange();
   // when range changes, everything must be repainted  
-  paintEvent(NULL);
+  paintEvent(0L);
 }
 
 int KSlider::checkWidth()

@@ -19,6 +19,11 @@
 // $Id$
 //
 // $Log$
+// Revision 1.9  1997/12/27 22:57:26  kulow
+// I was a little bit nerved by the QFile warnings caused by the KApplication
+// constructor, so I investigated a little bit ;) Fixed now
+// Added KCharset class - small changes in interface. I hope it is all source
+// Revision 1.8  1997/12/18 20:51:27  kalle
 // Some patches by Alex and me
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // Imported sources from KDE CVS
@@ -81,7 +86,7 @@ static char* aConfigFileName[] =
 }
 
 
-      parseOneConfigFile( aConfigFile, NULL, true ); 
+KConfig::~KConfig()
 {
   sync();
 }
@@ -91,7 +96,7 @@ void KConfig::parseConfigFiles()
 {
   // Parse all desired files from the least to the most specific. This
   // gives the intended behaviour because the QDict returns the last
-	  parseOneConfigFile( aConfigFile, NULL, false );
+  // appropriate entry.
   
   // Parse the general config files
   for( int i = 0; i < CONFIGFILECOUNT; i++ )
@@ -99,7 +104,7 @@ void KConfig::parseConfigFiles()
       QString aFileName = aConfigFileName[i];
      // replace a leading tilde with the home directory
       // is there a more portable way to find out the home directory?
-	  parseOneConfigFile( aConfigFile, NULL, false );
+      char* pHome = getenv( "HOME" );
       if( (aFileName[0] == '~') && pHome )
 		aFileName.replace( 0, 1, pHome );
 

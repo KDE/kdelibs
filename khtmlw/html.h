@@ -189,7 +189,7 @@ public:
     /**
      * Select all objects with a URL matching the regular expression.
      *
-     * If _painter is NULL a new painter is created.
+     * If _painter is null a new painter is created.
      */
     virtual void select( QPainter *_painter, QRegExp& _pattern, bool _select );
 
@@ -547,7 +547,7 @@ signals:
      * Signals that the mouse cursor has moved on or off a URL.
      *
      * @param _url is the URL that the mouse cursor has moved onto.
-     * _url is NULL if the cursor moved off a URL.
+     * _url is null if the cursor moved off a URL.
      */
     void onURL( const char *_url );
 
@@ -591,7 +591,7 @@ signals:
     /// Emitted if the user pressed the right mouse button
     /**
      * If the user pressed the right mouse button over a URL than _url
-     * points to this URL, otherwise _url will be NULL.
+     * points to this URL, otherwise _url will be null.
      * The position is in global coordinates.
      */
     void popupMenu( const char *_url, const QPoint & );
@@ -600,7 +600,7 @@ signals:
      * This signal is emitted if the user presses the mouse. If he clicks on
      * a link you get the URL in '_url'.
      *
-     * @param _url is the clicked URL or NULL is there was none.
+     * @param _url is the clicked URL or null is there was none.
      * @param _target is the target frame if one is mentioned otherwise 0L.
      * @param _ev the @ref QMouseEvent.
      */

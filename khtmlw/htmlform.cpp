@@ -38,7 +38,7 @@
 
 void HTMLElement::position( int _x, int _y, int , int _height )
 {
-	if ( widget == NULL ) // CC: HTMLHidden does not have a widget...
+	if ( widget == 0L ) // CC: HTMLHidden does not have a widget...
 		return;
 
 	if ( _y > absY() + ascent + descent || _y + _height < absY() )
@@ -579,7 +579,7 @@ void HTMLForm::position( int _x, int _y, int _width, int _height )
 {
 	HTMLElement *e;
 
-	for ( e = elements.first(); e != NULL; e = elements.next() )
+	for ( e = elements.first(); e != 0L; e = elements.next() )
 	{
 		e->position( _x, _y, _width, _height );
 	}
@@ -589,7 +589,7 @@ void HTMLForm::slotReset()
 {
 	HTMLElement *e;
 
-	for ( e = elements.first(); e != NULL; e = elements.next() )
+	for ( e = elements.first(); e != 0L; e = elements.next() )
 	{
 		e->reset();
 	}
@@ -601,7 +601,7 @@ void HTMLForm::slotSubmit()
 	QString encoding = "";
 	bool first = true;
 
-	for ( e = elements.first(); e != NULL; e = elements.next() )
+	for ( e = elements.first(); e != 0L; e = elements.next() )
 	{
 		QString enc = e->encoding();
 		if ( enc.length() )

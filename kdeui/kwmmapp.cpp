@@ -174,5 +174,5 @@ bool KWMModuleApplication::x11EventFilter( XEvent * ev){
 bool KWMModuleApplication::hasWindow(Window w){
   Window *wp;
   for (wp=windows.first(); wp && *wp != w; wp=windows.next());
-  return wp != NULL;
+  return wp != 0L;
 }

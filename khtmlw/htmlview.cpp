@@ -26,7 +26,7 @@
 
 #include "htmlview.h"
 
-QList<KHTMLView> *KHTMLView::viewList = NULL;
+QList<KHTMLView> *KHTMLView::viewList = 0L;
 
 KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView *_parent_view ) 
     : QWidget( _parent, _name, _flags )
@@ -41,7 +41,7 @@ KHTMLView::KHTMLView( QWidget *_parent, const char *_name, int _flags, KHTMLView
     
     // debugT("Constructed KHTML View\n");
     
-    if ( viewList == NULL )
+    if ( viewList == 0L )
 	viewList = new QList<KHTMLView>;
     viewList->setAutoDelete( FALSE );
     viewList->append( this );

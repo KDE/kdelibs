@@ -35,8 +35,8 @@
 #endif
 
 bool bAreaCalculated = false;
-QBitArray *pInfoArray = NULL, *pWarnArray = NULL,
-  *pErrorArray = NULL, *pFatalArray = NULL;
+QBitArray *pInfoArray = 0L, *pWarnArray = 0L,
+  *pErrorArray = 0L, *pFatalArray = 0L;
 
 static void recalculateAreaBits( QBitArray*, QString* );
 static void evalToken( QBitArray*, QString* );
@@ -232,7 +232,7 @@ void kdebug( ushort nLevel, ushort nArea,
 
 
 KDebugDialog::KDebugDialog() :
-  QDialog( NULL, "Debug Settings", true )
+  QDialog( 0L, "Debug Settings", true )
 {
   pInfoGroup = new QGroupBox( "Information", this );
   pInfoGroup->setGeometry( 5, 10, 140, 185 );

@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1997/11/16 20:46:51  mark
+ * MD: Reworked look of KMessageBox dialogs.
+ *   Originally I was going to make KMessageBox a wrapper for
+ *   QMessageBox. However, the classes are too different. I
  *   settled for a reworking the look of KMessageBox to make it
  *   conpatible with QMessageBox.
  *   Also fixed a possible bug in KButtonBox to do with the
@@ -70,9 +74,9 @@
 #include <stdlib.h>
 #include <kapp.h>
  *
-				 msg(NULL), picture(NULL),
-				 b1(NULL), b2(NULL), b3(NULL), b4(NULL),
-				 f1(NULL)
+KMsgBox::KMsgBox(QWidget *parent, const char *caption, const char
+				 *message, int type, const char *b1text, const char
+				 *b2text, const char *b3text, const char *b4text) :
 				 QDialog (parent, caption, TRUE, 0),
 				 msg(0L), picture(0L),
 				 b1(0L), b2(0L), b3(0L), b4(0L),

@@ -37,7 +37,7 @@ class KXYSelector : public QWidget
 {
   Q_OBJECT
 public:
-  KXYSelector( QWidget *parent = NULL, const char *name = NULL );
+  KXYSelector( QWidget *parent = 0L, const char *name = 0L );
 
   void setValues( int _xPos, int _yPos );
   void setRange( int _minX, int _minY, int _maxX, int _maxY );
@@ -88,7 +88,7 @@ class KSelector : public QWidget, public QRangeControl
 public:
   enum Orientation { Horizontal, Vertical };
 
-  KSelector( Orientation o, QWidget *parent = NULL, const char *name = NULL );
+  KSelector( Orientation o, QWidget *parent = 0L, const char *name = 0L );
 
   Orientation orientation() const
   {	return _orientation; }
@@ -132,8 +132,8 @@ class KGradientSelector : public KSelector
 {
   Q_OBJECT
 public:
-  KGradientSelector( Orientation o, QWidget *parent = NULL,
-					 const char *name = NULL );
+  KGradientSelector( Orientation o, QWidget *parent = 0L,
+					 const char *name = 0L );
 
   void setColors( const QColor &col1, const QColor &col2 )
   {	color1 = col1; color2 = col2; }

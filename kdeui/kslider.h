@@ -59,10 +59,10 @@ class KSlider : public QSlider
     public:
   enum Orientation { Horizontal, Vertical };
 
-  KSlider( QWidget *parent = NULL, const char *name = NULL );
-  KSlider( Orientation o, QWidget *parent = NULL, const char *name = NULL );
+  KSlider( QWidget *parent = 0L, const char *name = 0L );
+  KSlider( Orientation o, QWidget *parent = 0L, const char *name = 0L );
   KSlider( int _minValue, int _maxValue, int _Step, int _value,
-	   Orientation o, QWidget *parent = NULL, const char *name = NULL );
+	   Orientation o, QWidget *parent = 0L, const char *name = 0L );
 
   virtual QSize sizeHint() const;
 

@@ -189,7 +189,7 @@ void qimageio_jpeg_src(j_decompress_ptr cinfo, QDataStream * image)
 
     // Set up buffer for the first time
 
-    if (cinfo->src == NULL) {
+    if (cinfo->src == 0L) {
 
 	cinfo->src = (struct jpeg_source_mgr *)
 	    (*cinfo->mem->alloc_small)
@@ -220,7 +220,7 @@ void qimageio_jpeg_src(j_decompress_ptr cinfo, QDataStream * image)
     src->infile = image;
 
     src->pub.bytes_in_buffer = 0;	/* forces fill_input_buffer on first read */
-    src->pub.next_input_byte = NULL;	/* until buffer loaded */
+    src->pub.next_input_byte = 0L;	/* until buffer loaded */
 
 }
 

@@ -20,6 +20,10 @@
  * $Id$
  * 
  * $Log$
+ *
+ * Revision 1.1.1.1  1997/12/09 22:02:45  jacek
+ * Imported sorces fromkde
+ *
  * Revision 1.16  1997/11/04 11:00:30  kulow
  * fixed some free mismatch errors
  *
@@ -290,7 +294,7 @@ Window KDNDWidget::findRootWindow( QPoint & p )
 			}
 		}
     }     
-int (* oldErrorHandler)(Display *, XErrorEvent *) = NULL;
+  
   delete attribs;
   */
   return win;
@@ -367,7 +371,7 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 	      XEvent Event;
 	  
 	      Event.xclient.type              = ClientMessage;
-              if (oldErrorHandler == NULL)
+	      Event.xclient.display           = kapp->getDisplay();
 	      Event.xclient.message_type      = kapp->getDndProtocolAtom();
 	      Event.xclient.format            = 32;
 	      Event.xclient.window            = dndLastWindow;
@@ -375,7 +379,7 @@ void KDNDWidget::mouseReleaseEvent( QMouseEvent * _mouse )
 	      Event.xclient.data.l[1]         = 0;
 	      Event.xclient.data.l[2]         = 0;
 	      Event.xclient.data.l[3]         = p.x();
-              oldErrorHandler = NULL;
+	      Event.xclient.data.l[4]         = p.y();
 
               // Switch to "friendly" error handler.
 	  delete dndData;
@@ -432,7 +436,7 @@ void KDNDWidget::mouseMoveEvent( QMouseEvent * _mouse )
 }
 
 void KDNDWidget::rootDropEvent( int _x, int _y )
-  if (oldErrorHandler == NULL)
+{
   Window root;
   Window parent;
   Window *children;
@@ -465,7 +469,7 @@ void KDNDWidget::rootDropEvent( int _x, int _y )
 	  Event.xclient.message_type      = kapp->getDndRootProtocolAtom();
 	  Event.xclient.format            = 32;
 	  Event.xclient.window            = children[ i ];
-  oldErrorHandler = NULL;
+	  Event.xclient.data.l[0]         = dndType;
 	  Event.xclient.data.l[1]         = (long) time( 0L );
 	  Event.xclient.data.l[2]         = 0;
 	  Event.xclient.data.l[3]         = _x;

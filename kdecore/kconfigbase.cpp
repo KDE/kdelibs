@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.14  1997/12/27 22:57:28  kulow
+// I was a little bit nerved by the QFile warnings caused by the KApplication
+// constructor, so I investigated a little bit ;) Fixed now
 // Added KCharset class - small changes in interface. I hope it is all source
 // Revision 1.13  1997/12/18 20:51:28  kalle
 // Some patches by Alex and me
@@ -488,7 +491,7 @@ const char* KConfigBase::writeEntry( const char* pKey, const char* pValue,
 	  // the key currently does not exist
 	  KEntryDictEntry* pEntry = new KEntryDictEntry;
 	  pEntry->bGlobal = bGlobal;
-  for( value = list.first(); value != (char*)NULL; value = list.next() )
+	  pEntry->bNLS = bNLS;
 	  pEntry->aValue = pValue;
 	  if( bPersistent )
 		pEntry->bDirty = TRUE;
@@ -595,7 +598,7 @@ void KConfigBase::rollback( bool bDeep )
   QDictIterator<KEntryDict> aIt( data()->aGroupDict );
   // loop over all the groups
   const char* pCurrentGroup;
-	return NULL; // that group does not exist
+  while( (pCurrentGroup = aIt.currentKey()) )
 	{
 	  QDictIterator<KEntryDictEntry> aInnerIt( *aIt.current() );
 	  // loop over all the entries

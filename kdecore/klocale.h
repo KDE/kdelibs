@@ -81,7 +81,7 @@ public:
     void aliasLocale( const char *text, long int index);
     
     /** 
-      * Returns an alias, that you have set before or NULL, if not
+      * Returns an alias, that you have set before or 0, if not
       * set. This method uses @ref QIntDict.
       */
     const char* getAlias( long key ) const;

@@ -132,7 +132,7 @@ public:
 * @param rKey		The key to write.
 * @param rValue		The value to write.
 * @return The old value for this key. If this key did not exist, 
-*	  a NULL string is returned.	  
+*	  a null string is returned.	  
 *
 * @see #writeEntry
 */				
@@ -143,7 +143,7 @@ public:
 * @param rKey The key to write.
 * @param nValue The value to write.
 * @return The old value for this key. If this key did not
-* exist, a NULL string is returned.	  
+* exist, a null string is returned.	  
 */
   QString writeEntry( const QString& rKey, int nValue );
   
@@ -152,7 +152,7 @@ public:
 * @param rKey The key to write.
 * @param rValue The value to write.
 * @return The old value for this key. If this key did not
-* exist, a NULL string is returned.	  
+* exist, a null string is returned.	  
 */
   QString writeEntry( const QString& rKey, const QFont& rFont );
   
@@ -161,7 +161,7 @@ public:
 * @param rKey The key to write.
 * @param rValue The value to write.
 * @return The old value for this key. If this key did not
-*  exist, a NULL string is returned.	  
+*  exist, a null string is returned.	  
 */
   QString writeEntry( const QString& rKey, const QColor& rColor );
 

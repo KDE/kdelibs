@@ -28,14 +28,14 @@
 //#include <qobjcoll.h>
 
 // a static pointer (too bad we cannot have static objects in libraries)
-QList<KTopLevelWidget>* KTopLevelWidget::memberList = NULL;
+QList<KTopLevelWidget>* KTopLevelWidget::memberList = 0L;
 
 KTopLevelWidget::KTopLevelWidget( const char *name )
     : QWidget( 0L, name )
 {
-    kmenubar = NULL;
-    kmainwidget = NULL;
-    kstatusbar = NULL;
+    kmenubar = 0L;
+    kmainwidget = 0L;
+    kstatusbar = 0L;
     borderwidth = 0;
 
     // set the specified icons
@@ -107,14 +107,14 @@ KTopLevelWidget::~KTopLevelWidget()
 	// if this was the topWidget, find a new one to be it
 	if( kapp->topWidget() == this )
 	  {
-		KTopLevelWidget* pTemp = NULL;
+		KTopLevelWidget* pTemp = 0L;
 		if( ( pTemp = memberList->getFirst() ) )
 		  kapp->setTopWidget( pTemp );
 		// if there is no mainWidget left: bad luck
 		else
 		  {
 //			KDEBUG( KDEBUG_FATAL, 151, "No main widget left" );
-			kapp->setTopWidget( NULL );
+			kapp->setTopWidget( 0L );
 
 			// but since it is the last one, it can at least deallocate
 			// the member list...
@@ -207,7 +207,7 @@ void KTopLevelWidget::updateRects()
         h = kmainwidget->height()+2*borderwidth;
 
         // left toolbars first
-        for (toolbar = toolbars.first(); toolbar != NULL; toolbar = toolbars.next() )
+        for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() )
             if ( toolbar->barPos() == KToolBar::Left && toolbar->isVisible() )
             {
                 toolbar->setMaxHeight(h);   // Sven: You have to do this here
@@ -230,7 +230,7 @@ void KTopLevelWidget::updateRects()
         
         // Now right (I'm ok now)
         for ( toolbar = toolbars.first();
-              toolbar != NULL; toolbar = toolbars.next() )
+              toolbar != 0L; toolbar = toolbars.next() )
             if ( toolbar->barPos() == KToolBar::Right && toolbar->isVisible() )
             {
                 toolbar->setMaxHeight(h);   // Sven: You have to do this here
@@ -263,7 +263,7 @@ void KTopLevelWidget::updateRects()
 
         // Top toolbars
         for ( toolbar = toolbars.first() ;
-              toolbar != NULL ; toolbar = toolbars.next() )
+              toolbar != 0L ; toolbar = toolbars.next() )
             if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
             {
                 toolbar->setMaxWidth(w);
@@ -284,14 +284,14 @@ void KTopLevelWidget::updateRects()
         h+=t;
 
         // move vertical toolbar for t down.
-        for (toolbar = toolbars.first(); toolbar != NULL; toolbar = toolbars.next())
+        for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
             if (toolbar->isVisible())
                 if (toolbar->barPos() == KToolBar::Left ||
                     toolbar->barPos() == KToolBar::Right)
                     toolbar->move(toolbar->x(), t);
         
         // Bottom toolbars
-        for (toolbar = toolbars.first(); toolbar != NULL; toolbar = toolbars.next())
+        for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
             if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
             {
                 toolbar->setMaxWidth(w);
@@ -355,7 +355,7 @@ void KTopLevelWidget::updateRects()
             }
 
         // top toolbars
-        for (toolbar = toolbars.first(); toolbar != NULL ; toolbar = toolbars.next())
+        for (toolbar = toolbars.first(); toolbar != 0L ; toolbar = toolbars.next())
             if ( toolbar->barPos() == KToolBar::Top && toolbar->isVisible() )
             {
                 toolbar->updateRects (TRUE);     // Sven: You have to do this
@@ -376,7 +376,7 @@ void KTopLevelWidget::updateRects()
         if (fixedY == TRUE)
         {
             // Bottom toolbars
-            for (toolbar = toolbars.first(); toolbar != NULL; toolbar = toolbars.next())
+            for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
                 if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
                 {
                     toolbar->updateRects (TRUE);   // Sven: You have to this
@@ -428,7 +428,7 @@ void KTopLevelWidget::updateRects()
             }
 
             // Bottom toolbars
-            for (toolbar = toolbars.first(); toolbar != NULL; toolbar = toolbars.next())
+            for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
                 if ( toolbar->barPos() == KToolBar::Bottom && toolbar->isVisible() )
                 {
                     toolbar->updateRects (TRUE);   // Sven: You have to this
@@ -449,7 +449,7 @@ void KTopLevelWidget::updateRects()
             freeHeight = h-b-t;
         }
         // left toolbars
-        for (toolbar = toolbars.first(); toolbar != NULL; toolbar = toolbars.next() )
+        for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next() )
             if ( toolbar->barPos() == KToolBar::Left && toolbar->isVisible() )
             {
                 toolbar->setMaxHeight(freeHeight);   // Sven: You have to do this here
@@ -470,7 +470,7 @@ void KTopLevelWidget::updateRects()
         
         // right toolbars
         for ( toolbar = toolbars.first();
-              toolbar != NULL; toolbar = toolbars.next() )
+              toolbar != 0L; toolbar = toolbars.next() )
             if ( toolbar->barPos() == KToolBar::Right && toolbar->isVisible() )
             {
                 toolbar->setMaxHeight(freeHeight);   // Sven: You have to do this here
@@ -583,7 +583,7 @@ void KTopLevelWidget::savePropertiesInternal (KConfig* config, int number)
 
     KToolBar *toolbar;
     QString toolKey;
-    for (toolbar = toolbars.first(); toolbar != NULL; toolbar = toolbars.next())
+    for (toolbar = toolbars.first(); toolbar != 0L; toolbar = toolbars.next())
     {
         if (toolbar->isVisible())
             entryList.append("Enabled");

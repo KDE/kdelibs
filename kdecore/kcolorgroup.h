@@ -19,6 +19,10 @@
 // $Id$
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // $Log$
+// Imported sources from KDE CVS
+//
+// Revision 1.1.1.2  1997/12/10 07:08:29  jacek
+// Imported sources from KDE CVS
 //
 // Revision 1.1.1.1  1997/12/09 22:02:45  jacek
 // Imported sorces fromkde
@@ -127,17 +131,17 @@ public:
   const QColor& base() const 
   { return pQColorGroup->base(); }
 
-    is used. If pString is not NULL, the value of pString is prepended
+  /// Compare two KColorGroups.
   /** Compare two KColorGroups. */
   bool operator==( const KColorGroup& rColorGroup ) const
-  void load( KConfig& rConfig, QString* pString = 0 );
+  { return (*pQColorGroup) == (*rColorGroup.pQColorGroup); }
 
   /// Compare two KColorGroups.
   /** Compare two KColorGroups. */
-    used. If pString is not NULL, the value of pString is prepended to
+  bool operator!=( const KColorGroup& rColorGroup ) const
   { return (*pQColorGroup) != (*rColorGroup.pQColorGroup); }
 
-  void save( KConfig& rConfig, QString* pString = 0 );
+  /// Load color values from a KConfig object.
   /** Load color values from a KConfig object. The group "ColorGroup"
     is used. If pString is not 0, the value of pString is prepended
     to the group name.

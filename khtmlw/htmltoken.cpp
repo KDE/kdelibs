@@ -102,11 +102,11 @@ void HTMLTokenizer::write( const char *str )
     // this function.
     char *srcPtr = 0L;
     
-    if ( str == NULL )
+    if ( str == 0L )
 	return;
     
     const char *src = str;
-    if ( tokenList.current() == NULL )
+    if ( tokenList.current() == 0L )
 	tokenList.last();
     int pos = tokenList.at();
 

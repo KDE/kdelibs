@@ -37,12 +37,12 @@ public:
 	/**
 	* Constructor. Create a KColorButton.
 	*/
-	KColorButton( QWidget *parent, const char *name = NULL );
+	KColorButton( QWidget *parent, const char *name = 0L );
 	/**
 	* Constructor. Create a KColorButton.
 	* @param c	The initial colour of the button.
 	*/
-	KColorButton( const QColor &c, QWidget *parent, const char *name = NULL );
+	KColorButton( const QColor &c, QWidget *parent, const char *name = 0L );
 	/**
 	* Destructor.
 	*/

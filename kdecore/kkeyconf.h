@@ -43,7 +43,7 @@ uint stringToKey(const QString& sKey );
 
 /** 
  *  Return the string corresponding to the given keycode. 
- *  Return NULL if the keyCode is not recognized.
+ *  Return a null string if the keyCode is not recognized.
  */
 const QString keyToString( uint keyCode );
 

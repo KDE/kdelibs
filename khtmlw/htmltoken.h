@@ -66,7 +66,7 @@ protected:
 class HTMLTokenizer
 {
 public:
-    HTMLTokenizer( KHTMLWidget *_widget = NULL );
+    HTMLTokenizer( KHTMLWidget *_widget = 0L );
     ~HTMLTokenizer();
 
     void begin();

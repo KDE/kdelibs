@@ -34,8 +34,8 @@ class KStatusBarItem : public QLabel {
 
 public:
 
-  KStatusBarItem( const char *text, int ID, QWidget *parent=NULL,
-                  const char *name=NULL );
+  KStatusBarItem( const char *text, int ID, QWidget *parent=0L,
+                  const char *name=0L );
 
   /**
 	* Returns id of item. Internal
@@ -90,7 +90,7 @@ public:
   enum Position{Top, Left, Bottom, Right, Floating};
   enum InsertOrder{LeftToRight, RightToLeft};
 
-  KStatusBar(QWidget *parent = NULL, const char *name = NULL );
+  KStatusBar(QWidget *parent = 0L, const char *name = 0L );
   ~KStatusBar();
 
   /**

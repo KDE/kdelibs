@@ -187,7 +187,7 @@ void KToolBarButton::makeDisabledPixmap()
   
   QBitmap *pmm = (QBitmap*) enabledPixmap.mask();
   QPixmap pm;
-  if (pmm != NULL) 
+  if (pmm != 0L) 
     {
       pmm->setMask( *pmm );
       pm = *pmm;
@@ -340,7 +340,7 @@ int KToolBar::insertLineSeparator( int index )
   if (position == Floating)
      recreate (Parent, oldWFlags, QPoint (oldX, oldY), TRUE);
   
-  for ( KToolBarItem *b = items.first(); b!=NULL; b=items.next() )
+  for ( KToolBarItem *b = items.first(); b!=0L; b=items.next() )
     items.remove();
   
   // MD: Get a seg. fault if following line included.
@@ -384,7 +384,7 @@ void KToolBar::layoutHorizontal ()
   rightOffset=maxwidth;
   toolbarHeight= TOOLBARHEIGHT;
     updateRects( true );
-  for ( KToolBarItem *b = items.first(); b!=NULL; b=items.next() )
+  for ( KToolBarItem *b = items.first(); b; b=items.next() )
    {
      if (fullWidth == TRUE)
       {
@@ -462,7 +462,7 @@ void KToolBar::layoutVertical ()
    AFTER you have managed Top and Bottom toolbars, menus, statusbars...  with max free height
    */
 
-  for ( KToolBarItem *b = items.first(); b!=NULL; b=items.next() )
+  for ( KToolBarItem *b = items.first(); b; b=items.next() )
    {
      if (offset > ((max_height)-(b->height()+3)))
       {
@@ -688,7 +688,7 @@ void KToolBar::paintEvent(QPaintEvent *)
 //  	 }
 
 // Separators
-//  for ( KToolBarItem *b = items.first(); b!=NULL; b=items.next() )
+//  for ( KToolBarItem *b = items.first(); b; b=items.next() )
 //   {
 //     switch ( position )
 //      {
@@ -1017,7 +1017,7 @@ int KToolBar::insertCombo (const char *text, int id, bool writable,
 
 void KToolBar::removeItem (int id)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
      {
        items.remove();
@@ -1032,7 +1032,7 @@ void KToolBar::removeItem (int id)
 void KToolBar::addConnection (int id, const char *signal,
                               const QObject *receiver, const char *slot)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
      {
        switch(getType(b))
@@ -1052,7 +1052,7 @@ void KToolBar::addConnection (int id, const char *signal,
 
 KToolBarFrame *KToolBar::getFrame (int id)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_FRAME)
         return ((KToolBarFrame *) b);
@@ -1062,7 +1062,7 @@ KToolBarFrame *KToolBar::getFrame (int id)
 /// Common
 void KToolBar::setItemEnabled( int id, bool enabled )
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
      {
        switch(getType(b))
@@ -1084,7 +1084,7 @@ void KToolBar::setItemEnabled( int id, bool enabled )
 
 void KToolBar::setItemAutoSized ( int id, bool enabled )
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
      {
        switch(getType(b))
@@ -1111,7 +1111,7 @@ void KToolBar::setItemAutoSized ( int id, bool enabled )
 
 void KToolBar::alignItemRight(int id, bool yes)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
      {
        switch(getType(b))
@@ -1139,7 +1139,7 @@ void KToolBar::alignItemRight(int id, bool yes)
 /// Butoons
 void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_BUTTON)
 	((KToolBarButton *) b)->setPixmap( _pixmap ); 
@@ -1149,7 +1149,7 @@ void KToolBar::setButtonPixmap( int id, const QPixmap& _pixmap )
 
 void KToolBar::setToggle ( int id, bool yes )
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_BUTTON)
          ((KToolBarButton *) b)->beToggle(yes);
@@ -1157,7 +1157,7 @@ void KToolBar::setToggle ( int id, bool yes )
 
 void KToolBar::toggleButton (int id)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_BUTTON)
        {
@@ -1168,7 +1168,7 @@ void KToolBar::toggleButton (int id)
 
 void KToolBar::setButton (int id, bool on)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_BUTTON)
        {
@@ -1179,7 +1179,7 @@ void KToolBar::setButton (int id, bool on)
 
 bool KToolBar::isButtonOn (int id)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_BUTTON)
        {
@@ -1192,7 +1192,7 @@ bool KToolBar::isButtonOn (int id)
 /// Lined
 void KToolBar::setLinedText (int id, const char *text)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_LINED)
        {
@@ -1203,7 +1203,7 @@ void KToolBar::setLinedText (int id, const char *text)
 
 const char *KToolBar::getLinedText (int id )
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_LINED)
 	return ((KToolBarLined *) b)->text();
@@ -1213,7 +1213,7 @@ const char *KToolBar::getLinedText (int id )
 /// Combos
 void KToolBar::insertComboItem (int id, const char *text, int index)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_COMBO)
        {
@@ -1224,7 +1224,7 @@ void KToolBar::insertComboItem (int id, const char *text, int index)
 
 void KToolBar::insertComboList (int id, QStrList *list, int index)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_COMBO)
 	((KToolBarCombo *) b)->insertStrList(list, index);
@@ -1232,7 +1232,7 @@ void KToolBar::insertComboList (int id, QStrList *list, int index)
 
 void KToolBar::setCurrentComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_COMBO)
        {
@@ -1243,7 +1243,7 @@ void KToolBar::setCurrentComboItem (int id, int index)
 
 void KToolBar::removeComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_COMBO)
 	((KToolBarCombo *) b)->removeItem(index);
@@ -1251,7 +1251,7 @@ void KToolBar::removeComboItem (int id, int index)
 
 void KToolBar::changeComboItem  (int id, const char *text, int index)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_COMBO)
        {
@@ -1270,7 +1270,7 @@ void KToolBar::changeComboItem  (int id, const char *text, int index)
 
 void KToolBar::clearCombo (int id)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_COMBO)
 	((KToolBarCombo *) b)->clear();
@@ -1278,7 +1278,7 @@ void KToolBar::clearCombo (int id)
 
 const char *KToolBar::getComboItem (int id, int index)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_COMBO)
        {
@@ -1291,7 +1291,7 @@ const char *KToolBar::getComboItem (int id, int index)
 
 KToolBarCombo *KToolBar::getCombo (int id)
 {
-  for (KToolBarItem *b = items.first(); b!=NULL; b=items.next())
+  for (KToolBarItem *b = items.first(); b; b=items.next())
     if (getID(b) == id )
       if (getType(b) == ITEM_COMBO)
         return ((KToolBarCombo *) b);

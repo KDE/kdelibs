@@ -35,7 +35,7 @@ public:
     /**
      * Constructor.
      */
-    KTopLevelWidget( const char *name = NULL );
+    KTopLevelWidget( const char *name = 0L );
     /**
      * Destructor. Do not forget to delete all toolbars in destructor of your
      * reimplementation
@@ -116,7 +116,7 @@ public:
      * The toolbar must have been added to the widget with
      * addToolBar.
      *
-     * If no toolbars were added, NULL is returned.
+     * If no toolbars were added, null is returned.
      */
     KToolBar *toolBar( int ID = 0 );
 
@@ -125,7 +125,7 @@ public:
      * The status bar must have been added to the widget with
      * addStatusBar.
      *
-     * If no status bar was added, NULL is returned.
+     * If no status bar was added, null is returned.
      */
     KStatusBar *statusBar();
 

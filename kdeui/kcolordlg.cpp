@@ -508,7 +508,7 @@ void KColorDialog::setColor( const QColor &col )
 // static function to display dialog and return color
 int KColorDialog::getColor( QColor &theColor )
 {
-	KColorDialog dlg( NULL, "Color Selector", TRUE );
+	KColorDialog dlg( 0L, "Color Selector", TRUE );
 	if ( theColor.isValid() )
 		dlg.setColor( theColor );
 	int result = dlg.exec();

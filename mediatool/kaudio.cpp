@@ -67,7 +67,7 @@ KAudio::KAudio()
   MediaCon	m;
 
   ServerContacted = false;
-  WAVname         = NULL;
+  WAVname         = 0L;
   autosync        = false;
 
   /*********************************************************************************
@@ -77,7 +77,7 @@ KAudio::KAudio()
   strcpy(KMServerCidFile,tmpadr);
   strcpy(KMServerCidFile+strlen(KMServerCidFile),"/.kaudioserver");
   KMServerCidHandle = fopen(KMServerCidFile,"r");
-  if (KMServerCidHandle == NULL)
+  if (KMServerCidHandle == 0L)
     {
       cerr << "PID could not get read.\n";
       return;
@@ -90,7 +90,7 @@ KAudio::KAudio()
 
   /************* connect audio player ******************************/
   MdConnect(atoi(ServerId), &m);
-  if ( m.shm_adr == NULL )
+  if ( m.shm_adr == 0L )
     {
       cerr << "Could not find media master.\n";
       return;
@@ -156,7 +156,7 @@ bool KAudio::setFilename(char *filename)
 {
   if (!ServerContacted)
     return false;
-  if (WAVname  != NULL)
+  if (WAVname  != 0L )
     free(WAVname);
   WAVname = mystrdup(filename);
 

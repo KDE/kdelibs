@@ -57,7 +57,7 @@ KTabListBoxItem::KTabListBoxItem(int aColumns)
 KTabListBoxItem::~KTabListBoxItem()
 {
   if (txt) delete[] txt;
-  txt = NULL;
+  txt = 0L;
 }
 
 
@@ -137,7 +137,7 @@ void KTabListBoxColumn::paintCell(QPainter* paint, int row,
 				  const QString& string, bool marked)
 {
   QFontMetrics fm = paint->fontMetrics();
-  QPixmap* pix = NULL;
+  QPixmap* pix = 0L;
   int beg, end, x;
 
   // p->fillRect(0, 0, cellWidth(col), cellHeight(row), bg);
@@ -234,8 +234,8 @@ KTabListBox::KTabListBox(QWidget *parent, const char *name, int columns,
   tabPixels = 10;
   maxItems  = 0;
   current   = -1;
-  colList   = NULL;
-  itemList  = NULL;
+  colList   = 0L;
+  itemList  = 0L;
   sepChar   = '\n';
   labelHeight = fm.height() + 4;
   columnPadding = fm.height() / 2;
@@ -267,8 +267,8 @@ KTabListBox::~KTabListBox()
 	    delete itemList[i];
 	::free(itemList);
     }
-    colList  = NULL;
-    itemList = NULL;
+    colList  = 0L;
+    itemList = 0L;
 }
 
 
@@ -300,8 +300,8 @@ void KTabListBox::setNumCols(int aCols)
 	  delete itemList[i];
       ::free(itemList);
   }
-  colList  = NULL;
-  itemList = NULL;
+  colList  = 0L;
+  itemList = 0L;
   maxItems = 0;
   
   if (aCols < 0) aCols = 0;
@@ -454,7 +454,7 @@ const QString& KTabListBox::text(int row, int col) const
 
   if (!item) 
   {
-    str = NULL;
+    str = 0L;
     return str;
   }
   if (col >= 0) return item->text(col);
@@ -530,7 +530,7 @@ void KTabListBox::changeItem(const char* aStr, int row)
   for (i=0; pos && *pos && i<numCols(); i++)
   {
     item->setText(i, pos);
-    pos = strtok(NULL, sepStr);
+    pos = strtok(0L, sepStr);
   }
   item->setForeground(black);
 

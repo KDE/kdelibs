@@ -115,8 +115,8 @@ class KToolBarButton : public KButton
    Q_OBJECT
 
  public:
-   KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent, const char *name=NULL);
-   KToolBarButton(QWidget *parent=NULL, const char *name=NULL);
+   KToolBarButton(const QPixmap& pixmap,int ID, QWidget *parent, const char *name=0L);
+   KToolBarButton(QWidget *parent=0L, const char *name=0L);
    void enable(bool enable);
    void makeDisabledPixmap();
    QPixmap disabledPixmap;
@@ -189,7 +189,7 @@ public:
   /**
    * Constructor
    */
-  KToolBar(QWidget *parent=NULL, const char *name=NULL);
+  KToolBar(QWidget *parent=0L, const char *name=0L);
 
   /**
    * Destructor. If toolbar is floating it will cleanup itself.
@@ -206,7 +206,7 @@ public:
    * @return Returns item index
    */
   int insertButton(const QPixmap& pixmap, int ID, bool enabled = TRUE,
-                   const char *ToolTipText = NULL, int index=-1 );
+                   const char *ToolTipText = 0L, int index=-1 );
   /**
    * This is the same as above, but with specified signals and
    * slots to which this button will be connected. KButton emits
@@ -218,7 +218,7 @@ public:
   int insertButton(const QPixmap& pixmap, int ID, const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = TRUE,
-                   const char *tooltiptext = NULL, int index=-1 );
+                   const char *tooltiptext = 0L, int index=-1 );
   /**
    * Inserts a KLined. You have to specify signals and slots to
    * which KLined will be connected. KLined has all slots QLineEdit
@@ -234,7 +234,7 @@ public:
                    const char *signal,
                    const QObject *receiver, const char *slot,
                    bool enabled = TRUE,
-                   const char *toolTipText = NULL, int size = 70, int index =-1);
+                   const char *toolTipText = 0L, int size = 70, int index =-1);
 
   /**
    * Inserts QComboBox with list. Can be writable, but cannot contain pixmaps. By
@@ -248,7 +248,7 @@ public:
   int insertCombo (QStrList *list, int id, bool writable,
                    const char *signal, QObject *recevier,
                    const char *slot, bool enabled=TRUE,
-                   const char *tooltiptext=NULL,
+                   const char *tooltiptext=0L,
                    int size=70, int index=-1,
                    QComboBox::Policy policy = QComboBox::AtBottom);
 
@@ -261,7 +261,7 @@ public:
   int insertCombo (const char *text, int id, bool writable,
                    const char *signal, QObject *recevier,
                    const char *slot, bool enabled=TRUE,
-                   const char *tooltiptext=NULL,
+                   const char *tooltiptext=0L,
                    int size=70, int index=-1,
                    QComboBox::Policy policy = QComboBox::AtBottom);
   /**
@@ -523,7 +523,7 @@ public:
    *
    */
   int insertItem(const QPixmap& pixmap, int ID, bool enabled = TRUE,
-               char *ToolTipText = NULL, int index=-1 );
+               char *ToolTipText = 0L, int index=-1 );
 
   /**
    * This is provided for compatibility with old KToolBar. Writes
@@ -532,7 +532,7 @@ public:
   int insertItem(const QPixmap& pixmap, int ID, const char *signal,
                const QObject *receiver, const char *slot,
                bool enabled = TRUE,
-               char *tooltiptext = NULL, int index=-1 );
+               char *tooltiptext = 0L, int index=-1 );
 
   /**
    * This is provided for compatibility with old KToolBar. Writes

@@ -77,7 +77,7 @@ void read_gif_file(QImageIO * imageio)
 
     // Initialise GIF struct and read init block
 
-    if ((GifFile = DGifOpenFileName(imageio->fileName())) == NULL)
+    if ((GifFile = DGifOpenFileName(imageio->fileName())) == 0L)
       return;
 
     // Create the new image using read dimensions.
@@ -94,11 +94,11 @@ void read_gif_file(QImageIO * imageio)
     /* the GIF file parameters itself.                                       */
 
     if ((ScreenBuffer = (GifRowType *)
-	 malloc(GifFile->SHeight * sizeof(GifRowType *))) == NULL)
+	 malloc(GifFile->SHeight * sizeof(GifRowType *))) == 0L)
       return;
 
     Size = GifFile->SWidth * sizeof(GifPixelType);	/* Bytes in one row */
-    if ((ScreenBuffer[0] = (GifRowType) malloc(Size)) == NULL)	/* First row */
+    if ((ScreenBuffer[0] = (GifRowType) malloc(Size)) == 0L)	/* First row */
       return;
 
     for (i = 0; i < GifFile->SWidth; i++)	/* Set color to BackGround */
@@ -106,7 +106,7 @@ void read_gif_file(QImageIO * imageio)
 
     for (i = 1; i < GifFile->SHeight; i++) {
       /* Allocate the other rows, and set their color to background too: */
-      if ((ScreenBuffer[i] = (GifRowType) malloc(Size)) == NULL)
+      if ((ScreenBuffer[i] = (GifRowType) malloc(Size)) == 0L)
 	return;
 
       memcpy(ScreenBuffer[i], ScreenBuffer[0], Size);
@@ -179,7 +179,7 @@ void read_gif_file(QImageIO * imageio)
 	    PrintGifError();
 	    return;
 	  }
-	  if (Extension != NULL) {
+	  if (Extension != 0L) {
 	    if ( ExtCode == 249 )	// Graphic Control Ext
 	    {
 #ifdef KPDEBUG
@@ -194,7 +194,7 @@ void read_gif_file(QImageIO * imageio)
 	    }
 	    }
 	  }
-	} while	 (Extension != NULL);
+	} while	 (Extension != 0L);
 	break;
       case TERMINATE_RECORD_TYPE:
 	break;
@@ -254,13 +254,13 @@ void write_gif_file(QImageIO *imageio)
   fprintf(stderr, "write_gif_file()\n");
 #endif
 
-  imageColourmap= MakeMapObject(256, NULL);
+  imageColourmap= MakeMapObject(256, 0L);
   if (!imageColourmap) {
     fprintf(stderr, "Could not create image colour map\n");
     return;
   }
 
-  screenColourmap= MakeMapObject(256, NULL);
+  screenColourmap= MakeMapObject(256, 0L);
   if (!screenColourmap) {
     fprintf(stderr, "Could not create screen colour map\n");
     return;

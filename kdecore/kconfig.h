@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.5  1997/12/12 14:46:01  denis
+// Reverting to lower case true/false
+// Added KCharset class - small changes in interface. I hope it is all source
+// Revision 1.4  1997/12/12 14:33:45  denis
 // replaced true by TRUE and false by FALSE
 // Revision 1.1.1.3  1997/12/11 07:19:11  jacek
 // Imported sources from KDE CVS
@@ -38,7 +42,7 @@
 // kdoctoolbar removed
 //
 // Revision 1.1  1997/10/04 19:50:58  kalle
-* @version $Id$
+// new KConfig
 //
 
 #ifndef _KCONFIG_H
@@ -69,8 +73,8 @@ class KConfig : public KConfigBase
   KConfig& operator= ( const KConfig& rConfig );
 
 protected:
-  KConfig( const char* pGlobalAppFile = NULL, 
-		   const char* pLocalAppFile = NULL );
+  /** Open all appropriate configuration files and pass them on to
+	* parseOneConfigFile()
 	*/
   virtual void parseConfigFiles();
 

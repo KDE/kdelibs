@@ -114,16 +114,6 @@ extern "C" {
 # define PATH_MAX _POSIX_PATH_MAX
 #endif
 
-/* XPG3 defines the result of `setlocale (category, NULL)' as:
-   ``Directs `setlocale()' to query `category' and return the current
-     setting of `local'.''
-   However it does not specify the exact format.  And even worse: POSIX
-   defines this not at all.  So we can use this feature only on selected
-   system (e.g. those using GNU C Library).  */
-#ifdef _LIBC
-# define HAVE_LOCALE_NULL
-#endif
-
 /* Encoding of locale name parts.  */
 #define CEN_REVISION		1
 #define CEN_SPONSOR		2
@@ -317,7 +307,7 @@ _nl_load_domain (struct loaded_l10nfile *domain_file)
   domain_file->data = 0L;
 
   /* If the record does not represent a valid locale the FILENAME
-     might be NULL.  This can happen when according to the given
+     might be null.  This can happen when according to the given
      specification the locale file name is different for XPG and CEN
      syntax.  */
   if (domain_file->filename == 0L)
@@ -1033,7 +1023,7 @@ k_textdomain (const char *domainname)
   else
     {
       /* If the following malloc fails `_nl_current_default_domain'
-	 will be NULL.  This value will be returned and so signals we
+	 will be null.  This value will be returned and so signals we
 	 are out of core.  */
       size_t len = strlen (domainname) + 1;
       char *cp = (char *) malloc (len);

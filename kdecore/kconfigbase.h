@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.7  1998/01/09 08:06:47  kalle
+// KConfigGroupSaver
+// Added KCharset class - small changes in interface. I hope it is all source
+// Revision 1.6  1997/12/12 14:46:03  denis
 // Reverting to lower case true/false
 // Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
 // Revision 1.5  1997/12/12 14:33:46  denis
@@ -67,7 +71,7 @@
 /** 
 * Abstract base class for KDE configuration entries
 *
-* @version $Id$
+*	This class forms the base for all KDE configuration. It is an
 * 	abstract base class, meaning that you cannot directly instantiate
 * 	objects of this class. Either use KConfig (for usual KDE
 * 	configuration) or KSimpleConfig (for special needs like ksamba).
@@ -124,7 +128,7 @@ protected:
 	* possible due to some mutual dependencies in KApplication::init()
 	*/
   void setLocale();
-								   KGroupDict* pGroup = NULL,
+
   /** Parse all configuration files for a configuration object.
 	*
 	* This method must be reimplemented by the derived classes. It
@@ -186,7 +190,7 @@ public:
 	* Retrieve the group where keys are currently searched in.
 	*
 	* @return The current group
-						 const char* pDefault = NULL ) const;
+	*/
   const char* group() const;
 
   /** 
@@ -222,7 +226,7 @@ public:
 
   /**
 	* Read a numerical value. 
-					   const QFont* pDefault = NULL ) const;
+	*
 	* Read the value of an entry specified by rKey in the current group 
 	* and interpret it numerically.
 	*
@@ -236,7 +240,7 @@ public:
 	* Read a QFont.
 	*
 	* Read the value of an entry specified by rKey in the current group 
-						 const QColor* pDefault = NULL ) const;
+	* and interpret it as a font object.
 	*
 	* @param pKey		The key to search for.
 	* @param pDefault	A default value returned if the key was not found.
@@ -253,7 +257,7 @@ public:
 	*
 	* @param pKey		The key to search for.
 	* @param pDefault	A default value returned if the key was not found.
-	*   exist, a NULL string is returned.	  
+	* @return The value for this key or a default color if no value
 	* was found.
 	*/
   QColor readColorEntry( const char* pKey, 
@@ -294,7 +298,7 @@ public:
 	*			written to disk at deletion time.
 	* @param bGlobal	If bGlobal is true, the pair is not saved to the
 	*  application specific config file, but to the global ~/.kderc
-	* exist, a NULL string is returned.	  
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	*
 	* @see #writeEntry
@@ -312,7 +316,7 @@ public:
 	* disk at deletion time.
 	* @param bGlobal	If bGlobal is true, the pair is not saved to the
 	*  application specific config file, but to the global ~/.kderc
-	* exist, a NULL string is returned.	  
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	  
@@ -330,7 +334,7 @@ public:
 	* disk at deletion time.
 	* @param bGlobal	If bGlobal is true, the pair is not saved to the
 	*  application specific config file, but to the global ~/.kderc
-	*  exist, a NULL string is returned.	  
+	* @param bNLS	If bNLS is true, the locale tag is added to the key
 	*  when writing it back.
 	* @return The old value for this key. If this key did not
 	* exist, a null string is returned.	  
@@ -373,7 +377,7 @@ public:
 	* the most specific file. This is called automatically from the
 	* destructor. 
 	* This method must be implemented by the derived classes.
-	  @return The iterator for the group or NULL if the group does not
+   */
   virtual void sync() = 0;
 
   /** Check if the key has an entry in the specified group

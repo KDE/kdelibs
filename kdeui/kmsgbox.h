@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * removed all NULLs and replaced it with 0L or "".
+ * There are some left in mediatool, but this is not C++
+ *
+ * Revision 1.4  1997/10/16 11:15:27  torben
  * Kalle: Copyright headers
  * kdoctoolbar removed
  *
@@ -143,7 +147,7 @@ private:
     int         w, h, h1, text_offset;
     void        calcOptimalSize();
     void        resizeEvent(QResizeEvent *);
-                       const QPixmap & icon = (char *)NULL);
+                       const QPixmap & icon = 0L);
     void        initMe(const char *caption, const char *message, const char *b1text,
                        const char *b2text, const char *b3text, const char *b4text,
                        const QPixmap & icon = QPixmap());

@@ -23,6 +23,10 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
   
     $Log$
+    Revision 1.1.1.1  1997/12/09 22:02:49  jacek
+    Imported sorces fromkde
+
+    Revision 1.7  1997/11/09 22:56:12  wuebben
     Bernd: colorscheme related changes
 
     Revision 1.6  1997/11/09 03:45:57  wuebben
@@ -85,7 +89,7 @@
 #include <qframe.h>
 #include <qgrpbox.h>
 #include <qlabel.h>
-* @version $Id$
+#include <qlined.h>
 #include <qlistbox.h>
 #include <qpushbt.h>
 #include <qradiobt.h>
@@ -93,7 +97,7 @@
 #include <qtooltip.h>
 
 #include <qstring.h>
-      // Case 1) The pointer fontlist is NULL ( Recommended Usage !!)
+#include <qfont.h>
 
 * @version $Id$
 * Dialog for interactive font selection.
@@ -107,7 +111,7 @@ class KFontDialog : public QDialog {
       // Usage of the KFontDialog Class:
       //
       // Case 1) The pointer fontlist is null ( Recommended Usage !!)
-      // Case 2) The pointer fontlist is non NULL. In this cae KFontDialog 
+      // 
       // In this case KFontDialog will first search
       // for ~/.kde/config/kdefonts. If kdefonts if available
       // it will insert the fonts listed there into the family combo.
@@ -117,8 +121,8 @@ class KFontDialog : public QDialog {
       // Such as: time\nhelvetica\nfixed\n etc.You should however not 
       // manipulate that list -- that is the job of kfontmanager.
       // 
-    KFontDialog( QWidget *parent = NULL, const char *name = NULL,
-			bool modal = FALSE, const QStrList* fontlist = NULL );
+      // If ~/.kde/config/kdefonts doesn't exist, KFontDialog will query
+      // the X server and insert all availabe fonts.
       //
       // Case 2) The pointer fontlist is non null. In this cae KFontDialog 
       // will insert the strings of that QStrList into the family combo.

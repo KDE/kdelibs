@@ -139,7 +139,7 @@ int JSBinaryOperator::rightValue( JSScopeStack *_scope, JSValue *_val )
 	return ret;
     }
 
-    // Is at least one of the operands NULL ?
+    // Is at least one of the operands null ?
     if ( lv->getObject()->isA() == TYPE_JSObject || rv->getObject()->isA() == TYPE_JSObject )
     {
 	_val->setLeftValue( FALSE );    

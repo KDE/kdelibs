@@ -38,7 +38,7 @@
 #include "htmlobj.moc"
 
 // This will be constructed once and NEVER deleted.
-QList<HTMLCachedImage>* HTMLImage::pCache = NULL;
+QList<HTMLCachedImage>* HTMLImage::pCache = 0L;
 int HTMLObject::objCount = 0;
 
 //-----------------------------------------------------------------------------
@@ -84,9 +84,9 @@ void HTMLObject::select( QPainter *_painter, QRect &_rect, int _tx, int _ty )
 
 void HTMLObject::getSelected( QStrList &_list )
 {
-    if ( &_list == NULL )
+    if ( &_list == 0L )
     {
-	debugM( "HTMLObject::getSelected(): _list is NULL\n" );
+	debugM( "HTMLObject::getSelected(): _list is null\n" );
 	return;
     }
 
@@ -593,7 +593,7 @@ HTMLImage::HTMLImage( KHTMLWidget *widget, const char *_filename,
 	int _max_width, int _width, int _height, int _percent, int bdr )
     : QObject(), HTMLObject()
 {
-    if ( pCache == NULL )
+    if ( pCache == 0L )
 	pCache = new QList<HTMLCachedImage>;
 
     pixmap = 0L;

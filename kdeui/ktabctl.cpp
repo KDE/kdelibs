@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  1997/11/18 21:41:39  kalle
+ * kiconloaderdialog uses the default fonts (patch by Paul Kendall)
+ * ktabctl paints the header lines correctly (patch by Paul Kendall)
+ *
  * Revision 1.9  1997/11/15 03:10:49  esken
  * Applied another patch by Bertrand Leconte, which corrects the
  * Tab-Changes-Focus bug.
@@ -138,7 +142,7 @@ void KTabCtl::show()
     QResizeEvent r(size(), size());
     resizeEvent(&r);
 
-    if((name == NULL) || (strlen(name) == 0))
+    QWidget::show();
 }
 
 bool KTabCtl::isTabEnabled(const char *name)

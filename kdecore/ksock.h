@@ -20,6 +20,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  1997/12/18 01:56:25  torben
+ * Torben: Secure string operations. Use instead of QString::sprintf
+ * Revision 1.1.1.3  1997/12/11 07:19:15  jacek
+ * Imported sources from KDE CVS
  *
  * Revision 1.1.1.2  1997/12/10 07:08:33  jacek
  * Imported sources from KDE CVS
@@ -89,7 +93,7 @@
 * If you have already such a socket identifier you can construct a KSocket
 * on this identifier. 
 *  
-* @version $Id$
+* If socket() delivers a value of -1 or less, the connection 
 * had no success.
 *
 * @author Torben Weis <weis@uni-frankfurt.de>
@@ -101,7 +105,7 @@
   Q_OBJECT
 #include <netinet/in.h> 
 
-  KSocket( int _sock ) { sock = _sock; readNotifier = NULL; writeNotifier = NULL; }
+/** 
 * Create a KSocket with the provided file descriptor.
 * @param _sock	the file descriptor to use.
 */
@@ -204,7 +208,7 @@
 * is created and the signal accepted is raised. Make sure you
 * always connect to this signal. If you dont the ServerSocket will
 * create new KSocket's and no one will delete them!
-* @version $Id$
+*
 * If socket() is -1 or less the socket was not created properly.
 *
 * @author Torben Weis <weis@stud.uni-frankfurt.de>

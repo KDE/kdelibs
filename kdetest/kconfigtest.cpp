@@ -19,6 +19,10 @@
 /* $Id$
 
  * $Log$
+ * Revision 1.11  1997/10/21 20:44:56  kulow
+ * removed all NULLs and replaced it with 0L or "".
+ * There are some left in mediatool, but this is not C++
+ *
  * Revision 1.10  1997/10/16 11:15:08  torben
  * Kalle: Copyright headers
  * kdoctoolbar removed
@@ -156,9 +160,9 @@
 #include "kconfigtest.moc"
 //
 // Construct the KConfigTestView with buttons
-      pConfig( NULL ),
-      pFile( NULL ),
-      pStream( NULL )
+//
+
+KConfigTestView::KConfigTestView( QWidget *parent, const char *name )
     : QDialog( parent, name ),
       pConfig( 0L ),
       pFile( 0L ),
@@ -219,7 +223,7 @@
   // Quit button
   pQuitButton = new QPushButton( this, "quitbutton" );
   pQuitButton->setText( "Quit" );
-  pConfig = new KConfig( NULL );
+  pQuitButton->setGeometry( 340, 60, 60, 60 ); 
   connect( pQuitButton, SIGNAL(clicked()), qApp, SLOT(quit()) );
 
   // create a default KConfig object in order to be able to start right away
@@ -238,17 +242,17 @@ KConfigTestView::~KConfigTestView()
 
 void KConfigTestView::appConfigEditReturnPressed()
 {
-      pConfig = NULL;
+  // if there already was a config object, delete it and its associated data
   if( pConfig )
     {
       delete pConfig;
       pConfig = 0L;
-      pFile = NULL;
+    }
   if( pFile )
     {
       delete pFile;
       pFile = 0L;
-      pStream = NULL;
+    }
   if( pStream )
     {
       delete pStream;

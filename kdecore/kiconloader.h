@@ -80,7 +80,7 @@ public:
   /**
 	 This function searches for the icon called name 
 	 and returns a QPixmap object
-	 of this icon if it was found and NULL otherwise.
+	 of this icon if it was found and 0 otherwise.
 	 If name starts with "/..." loadIcon treats it as an absolut pathname.
 	 LoadIcon() creates a list of all loaded icons, 
 	 so calling loadIcon() a second time

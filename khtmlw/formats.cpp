@@ -42,17 +42,17 @@ void KHTMLWidget::registerFormats()
 
 #ifdef HAVE_LIBGIF
         QImageIO::defineIOHandler("GIF", "^GIF[0-9][0-9][a-z]", 0, 
-                read_gif_file, NULL);
+                read_gif_file, 0L);
 #endif
 
 #ifdef HAVE_LIBJPEG
         QImageIO::defineIOHandler("JFIF","^\377\330\377\340..JFIF", 0,
-                read_jpeg_jfif, NULL);
+                read_jpeg_jfif, 0L);
 #endif
 
 #ifdef HAVE_LIBPNG
 	QImageIO::defineIOHandler("PNG","^\211PNG\015\012\32\012", 0,
-		read_png_file, NULL);	
+		read_png_file, 0L);	
 #endif
 
 //

@@ -103,7 +103,7 @@ void KStatusBar::setBorderWidth(int b){
   resize( width(),height() + 2* borderwidth);
 KStatusBar::~KStatusBar()
 {
-  for ( KStatusBarItem *b = labels.first(); b!=NULL; b=labels.next() ) 
+  for ( KStatusBarItem *b = labels.first(); b; b=labels.next() ) 
 	delete b;
 }
 
@@ -142,7 +142,7 @@ void KStatusBar::updateRects( bool res )
 
 void KStatusBar::updateRects( bool res ){
   
-    for ( KStatusBarItem *b = labels.first(); b!=NULL; b=labels.next() ) {
+    for ( KStatusBarItem *b = labels.first(); b; b=labels.next() ) {
 
     int offset= borderwidth;	
     for ( KStatusBarItem *b = items.first(); b; b=items.next() ) {
@@ -150,7 +150,7 @@ void KStatusBar::updateRects( bool res ){
       b->setGeometry( offset, borderwidth, b->width(), fieldheight );	
       offset+=b->width() + borderwidth;
       KStatusBarItem *l = labels.getLast();
-      if( l != NULL ) {
+    
     if ( !res ) {
       KStatusBarItem *l = items.getLast();
       if( l ) {
@@ -159,7 +159,7 @@ void KStatusBar::updateRects( bool res ){
       }
     }
   }
-    for ( KStatusBarItem *b = labels.first(); b!=NULL; b=labels.next() ) {
+    for ( KStatusBarItem *b = labels.first(); b; b=labels.next() ) {
     int offset = width();
 
     for ( KStatusBarItem *b = items.first(); b; b=items.next() ) {
@@ -167,7 +167,7 @@ void KStatusBar::updateRects( bool res ){
       b->setGeometry(offset,borderwidth,b->width(),fieldheight );
 
       KStatusBarItem *l = labels.getLast();
-      if( l != NULL ) {
+    
     if ( !res ) {
       KStatusBarItem *l = items.getLast();
       if( l != 0L ) {
@@ -177,14 +177,14 @@ void KStatusBar::updateRects( bool res ){
     }
 void KStatusBar::changeItem( const char *text, int id )
 }
-  for ( KStatusBarItem *b = labels.first(); b!=NULL; b=labels.next() ) 
+  for ( KStatusBarItem *b = labels.first(); b; b=labels.next() ) 
 void KStatusBar::changeItem( const QString& text, int id )
 	  b->setText( text );
   for ( KStatusBarItem *b = items.first(); b; b=items.next() ) 
 	if ( b->ID() == id )
 	  ((KStatusBarLabel *)b->getItem())->setText( text );
 }
-  for ( KStatusBarItem *b = labels.first(); b!=NULL; b=labels.next() ) 
+  for ( KStatusBarItem *b = labels.first(); b; b=labels.next() ) 
 void KStatusBar::setAlignment( int id, int align)
 	  b->setAlignment( align | AlignVCenter );
   for ( KStatusBarItem *b = items.first(); b; b=items.next() ) 

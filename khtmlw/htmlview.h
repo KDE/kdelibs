@@ -525,7 +525,7 @@ signals:
 
     /**
      * Signals that the mouse cursor is over URL '_url'.
-     * If '_url' is NULL then cursor moved off a URL
+     * If '_url' is null then cursor moved off a URL
      *
      * @param _url is a full qualified URL.
      */

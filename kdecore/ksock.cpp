@@ -19,6 +19,10 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.13  1997/12/18 01:56:24  torben
+ * Torben: Secure string operations. Use instead of QString::sprintf
+ * Revision 1.1.1.3  1997/12/11 07:19:15  jacek
+ * Imported sources from KDE CVS
  *
  * Revision 1.1.1.2  1997/12/10 07:08:33  jacek
  * Imported sources from KDE CVS
@@ -104,7 +108,7 @@
 #endif
 
 #include "ksock.moc"
-  sock( -1 ), readNotifier( NULL ), writeNotifier( NULL )
+#include <stdio.h>
 #include <errno.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>

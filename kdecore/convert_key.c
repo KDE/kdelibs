@@ -29,13 +29,13 @@ void main( int argc, char ** argv )
 	
 	sprintf(qt_path, "%s/include/qkeycode.h", argv[1]);
 	qt_key = fopen(qt_path, "r");
-	if ( qt_key==NULL ) {
+	if ( qt_key==0L ) {
 		printf("Unable to read %s\n", qt_path);
 		exit(0);
 	}
 	
 	conv_key = fopen(CONV_FILE, "w");
-	if ( conv_key==NULL ) {
+	if ( conv_key==0L ) {
 		printf("Unable to create %s\n", CONV_FILE);
 		exit(0);
 	}
@@ -43,14 +43,14 @@ void main( int argc, char ** argv )
 	nb_lines = 0;
 	do {
 		result = fgets(line, 200, qt_key);
-		if ( result==NULL ) break;
+		if ( result==0L ) break;
 		token = strtok(line, " ");
 		if ( strcmp(token, "#define")!=0 ) continue;
-		token = strtok(NULL, "\t\t");
+		token = strtok(0L, "\t\t");
 		if ( strncmp(token, "Key_", 4)!=0 ) continue;
 		if ( nb_lines!=0 ) fprintf(conv_key, ",\n");        
 		fprintf(conv_key, "\t{ \"%s\"", token+4);
-		token = strtok(NULL,"\t\n");
+		token = strtok(0L,"\t\n");
 		fprintf(conv_key, ", %s }", token);
 		nb_lines++;
 	} while (1);
@@ -58,7 +58,7 @@ void main( int argc, char ** argv )
 	fclose(conv_key);
 	
 	conv_key = fopen(ADD_CONV_FILE, "w");
-	if ( conv_key==NULL ) {
+	if ( conv_key==0L ) {
 		printf("Unable to read %s\n", ADD_CONV_FILE);
         exit(0);
 	}

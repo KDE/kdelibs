@@ -148,7 +148,7 @@ class KColorDialog : public QDialog
 public:
   /// Constructor
   /** Construct a KColorDialog */
-  KColorDialog( QWidget *parent = NULL, const char *name = NULL,
+  KColorDialog( QWidget *parent = 0L, const char *name = 0L,
 				bool modal = FALSE );
 
   /// Preselect a color
@@ -214,7 +214,7 @@ class KColorCombo : public QComboBox
 {
 	Q_OBJECT
 public:
-	KColorCombo( QWidget *parent, const char *name = NULL );
+	KColorCombo( QWidget *parent, const char *name = 0L );
 
 	void setColor( const QColor &col );
 

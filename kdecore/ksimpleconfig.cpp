@@ -19,6 +19,10 @@
 // $Id$
 //
 // $Log$
+// Revision 1.8  1998/01/15 13:22:30  kalle
+// Read-only mode for KSimpleConfig
+// Added KCharset class - small changes in interface. I hope it is all source
+// Revision 1.7  1998/01/11 13:41:42  kalle
 // Write tag line for MIME detection even in KSimpleConfig
 // Added Unicode maping for adobe-symbol fonts, but they are not well displayable yet.
 // Revision 1.6  1997/12/18 20:51:34  kalle
@@ -50,7 +54,7 @@ KSimpleConfig::KSimpleConfig( const char* pFile )
 		{
 		  QFile file( pFile );
 		  file.open( IO_WriteOnly );
-  parseOneConfigFile( aFile, NULL );
+
 	  // we use the global app config file to save the filename 
   sync();
 
