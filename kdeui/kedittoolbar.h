@@ -158,6 +158,10 @@ public:
    * @param factory Your application's factory object
    * @param parent The usual parent for the dialog.
    * @param name An internal name.
+   *
+   * Some people seem tempted to use this also in non-KParts apps, using KMainWindow::guiFactory().
+   * This works, but only _if_ setting conserveMemory to false when calling
+   * KMainWindow::createGUI()! If not, use the other KEditToolbar constructor.
    */
   KEditToolbar(KXMLGUIFactory* factory, QWidget* parent = 0, const char* name = 0);
 
