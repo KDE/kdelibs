@@ -16,14 +16,9 @@
     the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     Boston, MA 02111-1307, USA.
 */
-//
-//  KPROCESSCONTROLLER -- A helper class for KProcess
-//
-//  version 0.3.1, Jan, 8th 1997
-//
-//  (C) Christian Czezatke
-//  e9025461@student.tuwien.ac.at
-//
+
+#include "kprocess.h"
+#include "kprocctrl.h"
 
 #include <config.h>
 
@@ -31,27 +26,30 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 #include <assert.h>
 
 #include <qsocketnotifier.h>
-#include "kprocess.h"
-#include "kprocctrl.h"
 
 KProcessController *KProcessController::theKProcessController = 0;
 
-struct sigaction KProcessController::oldChildHandlerData;
-bool KProcessController::handlerSet = false;
+void KProcessController::create()
+{
+  if ( !theKProcessController )
+    theKProcessController = new KProcessController;
+}
+
+void KProcessController::destroy()
+{
+  delete theKProcessController;
+  theKProcessController = 0;
+}
 
 KProcessController::KProcessController()
 {
-  assert( theKProcessController == 0 );
-
   if (0 > pipe(fd))
 	puts(strerror(errno));
 
@@ -66,11 +64,22 @@ KProcessController::KProcessController()
   connect( &delayedChildrenCleanupTimer, SIGNAL( timeout()),
       SLOT( delayedChildrenCleanup()));
 
-  theKProcessController = this;
-
   setupHandlers();
 }
 
+KProcessController::~KProcessController()
+{
+  resetHandlers();
+
+  delete notifier;
+
+  close(fd[0]);
+  close(fd[1]);
+}
+
+
+struct sigaction KProcessController::oldChildHandlerData;
+bool KProcessController::handlerSet = false;
 
 void KProcessController::setupHandlers()
 {
@@ -256,20 +265,6 @@ void KProcessController::delayedChildrenCleanup()
         break;
       }
   }
-}
-
-KProcessController::~KProcessController()
-{
-  assert( theKProcessController == this );
-  resetHandlers();
-
-  notifier->setEnabled(false);
-
-  close(fd[0]);
-  close(fd[1]);
-
-  delete notifier;
-  theKProcessController = 0;
 }
 
 bool

@@ -279,9 +279,6 @@ KProcess::KProcess()
     d(0)
 {
   d = new KProcessPrivate;
-  if (KProcessController::theKProcessController == 0) {
-        (void) new KProcessController();
-  }
 
   KProcessController::theKProcessController->addKProcess(this);
   out[0] = out[1] = -1;
